@@ -1,0 +1,3 @@
+1、Script组件的onEnable执行属性，父节点->子节点->子节点，在父节点执行onEnable期间把子节点移除还会激活子节点的Script组件，
+子节点还是会继续执行onEnable，onUpdate周期函数。
+    示例：UIChooseBattleCtrl中view.list_battle.numItems需要在onDisable时设置为0

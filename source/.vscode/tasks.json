@@ -1,0 +1,178 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        { //编译项目
+            "label": "编译项目",
+            "type": "shell",
+            "command": "nvm use 22.4.1",
+            "dependsOn": [
+                "切换node_10_24_1",
+                "编译"
+            ],
+            "dependsOrder": "sequence",
+            "presentation": {
+                "close": true
+            },
+            "problemMatcher": []
+        },
+        { //切换node_10_24_1
+            "label": "切换node_10_24_1",
+            "type": "shell",
+            "command": "nvm use 10.24.1",
+            "hide": true,
+            "presentation": {
+                "close": true
+            }
+        },
+        { //编译
+            "label": "编译",
+            "type": "shell",
+            "command": "layaair2-cmd compile",
+            "hide": true,
+            "presentation": {
+                "close": true
+            }
+        },
+        { //执行所有工具
+            "label": "执行所有工具",
+            "type": "shell",
+            "dependsOn": [
+                "创建 View & ViewCtrl & ViewProxy",
+                "导出表配置",
+                "更新资源路径",
+                "用户数据事件",
+                "更新网络相关"
+            ],
+            "dependsOrder": "parallel",
+            "problemMatcher": []
+        },
+        { //创建 View & Mediator
+            "label": "创建 View & Mediator",
+            "type": "shell",
+            "command": "node ../../../laya_framework_tool/bin/js/BatMain.js 0",
+            "presentation": {
+                "close": true
+            },
+            "problemMatcher": []
+        },
+        { //导出表配置
+            "label": "导出表配置",
+            "type": "shell",
+            "command": "node ../../../laya_framework_tool/bin/js/BatMain.js 10",
+            "presentation": {
+                "close": true
+            },
+            "problemMatcher": []
+        },
+        { //更新资源路径
+            "label": "更新资源路径",
+            "type": "shell",
+            "command": "node ../../../laya_framework_tool/bin/js/BatMain.js 2",
+            "presentation": {
+                "close": true
+            },
+            "problemMatcher": []
+        },
+        { //用户数据事件
+            "label": "用户数据事件",
+            "type": "shell",
+            "command": "node ../../../laya_framework_tool/bin/js/BatMain.js 3",
+            "presentation": {
+                "close": true
+            },
+            "problemMatcher": []
+        },
+        { //更新网络相关
+            "label": "更新网络相关",
+            "type": "shell",
+            "command": "node ../../../laya_framework_tool/bin/js/BatMain.js 4",
+            "presentation": {
+                "close": true
+            },
+            "problemMatcher": []
+        },
+        { //tsc监视
+            "label": "tsc监视",
+            "type": "typescript",
+            "tsconfig": "tsconfig.json",
+            "option": "watch",
+            "problemMatcher": [
+                "$tsc-watch"
+            ],
+            "group": "build",
+            "hide": true
+        },
+        { //监视&端口刷新
+            "label": "监视&端口刷新",
+            "type": "shell",
+            "command": "gulp",
+            "dependsOn": [
+                "tsc监视"
+            ],
+            "problemMatcher": []
+        },
+        { //leb
+            "label": "leb",
+            "type": "shell",
+            "command": "leb",
+            "problemMatcher": []
+        },
+        // 目录 D:\liqi\laya_liqi_new 作为你的根工作区被打开。
+        // 那么你将得到以下变量值：
+        // 1 ${userHome} - 用户主文件夹的路径 ==> C:\Users\Catfood
+        // 2 ${workspaceFolder} - 在 VS Code 中打开的文件夹的路径 ==> D:\liqi\laya_liqi_new
+        // 3 ${workspaceFolderBasename} - 在 VS Code 中打开的文件夹名称（不含斜杠 (/)) ==> laya_liqi_new
+        // 4 ${file} - 当前打开的文件 ==> D:\liqi\laya_liqi_new\.vscode\tasks.json
+        // 5 ${fileWorkspaceFolder} - 当前打开文件的工作区文件夹 ==> D:\liqi\laya_liqi_new
+        // 6 ${relativeFile} - 相对于 workspaceFolder 的当前打开文件 ==> .vscode\tasks.json
+        // 7 ${relativeFileDirname} - 相对于 workspaceFolder 的当前打开文件的目录名 ==> .vscode
+        // 8 ${fileBasename} - 当前打开文件的基本名 ==> tasks.json
+        // 9 ${fileBasenameNoExtension} - 没有文件扩展名的当前打开文件的基本名 ==> tasks
+        // 10 ${fileExtname} - 当前打开文件的扩展名 ==> .json
+        // 11 ${fileDirname} - 当前打开文件的文件夹路径 ==> D:\liqi\laya_liqi_new\.vscode
+        // 12 ${fileDirnameBasename} - 当前打开文件的文件夹名称 ==> .vscode
+        // 13 ${cwd} - 在 VS Code 启动时，任务运行器的当前工作目录 ==> D:\liqi\laya_liqi_new
+        // 14 ${lineNumber} - 当前活动文件中选择的行号 ==> 370
+        // 15 ${selectedText} - 当前活动文件中选择的文本，只有选择文本才有值不然会提示报错 ==> Home
+        // 16 ${execPath} - 运行中的 VS Code 可执行文件路径 ==> C:\Users\Catfood\AppData\Local\Programs\Microsoft VS Code\Code.exe
+        // 17 ${defaultBuildTask} - 默认构建任务的名称 ==> npm: build - project-tools/guanzhan1
+        // 18 ${pathSeparator} - 操作系统用于分隔文件路径组件的字符，在 macOS 或 Linux 上为 /，在 Windows 上为 \ ==> \
+        { //输出编辑器预定义变量值
+            "label": "输出编辑器预定义变量值",
+            "type": "shell",
+            "command": "echo",
+            "options": {
+                // "cwd": "../majsoul-extendres/tools"
+            },
+            "args": [
+                "1 ${userHome}",
+                "2 ${workspaceFolder}",
+                "3 ${workspaceFolderBasename}",
+                "4 ${file}",
+                "5 ${fileWorkspaceFolder}",
+                "6 ${relativeFile}",
+                "7 ${relativeFileDirname}",
+                "8 ${fileBasename}",
+                "9 ${fileBasenameNoExtension}",
+                "10 ${fileExtname}",
+                "11 ${fileDirname}",
+                "12 ${fileDirnameBasename}",
+                "13 ${cwd}",
+                "14 ${lineNumber}",
+                // "15 ${selectedText}",
+                "16 ${execPath}",
+                // "17 ${defaultBuildTask}",
+                "18 ${pathSeparator}",
+            ],
+            "dependsOn": [
+                // "撤销extendRes得所有更改",
+                // "拉取extendRes"
+            ],
+            "dependsOrder": "sequence",
+            "presentation": {
+                // "close": true
+            },
+            "problemMatcher": []
+        },
+    ]
+}

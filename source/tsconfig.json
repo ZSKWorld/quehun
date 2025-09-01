@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "module": "es6",
+    "target": "es6",
+    "noEmitHelpers": true,
+    "sourceMap": true,
+    "experimentalDecorators": true,
+    "noImplicitOverride": true,
+    "removeComments": false,
+    "skipLibCheck": true,
+    "outDir": "bin/js",
+    "lib": [
+      "ES2018",
+      "DOM"
+    ],
+    "types": [
+      "minigame-api-typings",
+    ]
+  },
+  "exclude": [
+    "node_modules",
+  ]
+}

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1920,1080" designImage="ui://n809nszxr1bg7pln2y" designImageAlpha="0" bgColorEnabled="true" bgColor="#000000">
+  <displayList>
+    <image id="n16_mj5k" name="n16" src="108ab6b" fileName="Texture/img_1376.png" xy="686,844" size="548,70">
+      <relation target="" sidePair="center-center,bottom-bottom%"/>
+    </image>
+  </displayList>
+  <transition name="t0" autoPlay="true" autoPlayRepeat="-1" frameRate="60">
+    <item time="0" type="Alpha" target="n16_mj5k" tween="true" startValue="1" endValue="0.25" duration="60" ease="Linear"/>
+    <item time="60" type="Alpha" target="n16_mj5k" tween="true" startValue="0.25" endValue="1" duration="60" ease="Linear"/>
+  </transition>
+</component>

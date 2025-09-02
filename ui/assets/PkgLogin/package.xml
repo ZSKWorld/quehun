@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<packageDescription id="vs9845at">
+  <resources>
+    <component id="qjdo0" name="UILogin.xml" path="/" exported="true"/>
+    <image id="108ab5h" name="img_341.png" path="/Texture/" exported="true"/>
+    <image id="108ab5i" name="img_342.png" path="/Texture/" exported="true"/>
+    <image id="108ab5j" name="img_343.png" path="/Texture/" exported="true"/>
+    <image id="108ab5l" name="img_45.png" path="/Texture/" exported="true"/>
+    <image id="108ab5m" name="img_467.png" path="/Texture/" exported="true"/>
+    <image id="108ab5o" name="img_473.png" path="/Texture/" exported="true"/>
+    <image id="108ab5p" name="img_540.png" path="/Texture/" exported="true"/>
+    <image id="108ab5r" name="img_572.png" path="/Texture/" exported="true"/>
+    <image id="108ab5s" name="img_701.png" path="/Texture/" exported="true"/>
+    <image id="108ab5t" name="img_702.png" path="/Texture/" exported="true"/>
+    <image id="108ab5u" name="img_71.png" path="/Texture/" exported="true"/>
+    <image id="108ab5v" name="img_757.png" path="/Texture/" exported="true"/>
+    <image id="108ab5w" name="img_758.png" path="/Texture/" exported="true"/>
+    <image id="108ab5x" name="img_783.png" path="/Texture/" exported="true" scale="9grid" scale9grid="50,0,0,50"/>
+    <image id="108ab5y" name="img_839.png" path="/Texture/" exported="true"/>
+    <image id="108ab5z" name="img_864.png" path="/Texture/" exported="true"/>
+    <image id="108ab60" name="img_865.png" path="/Texture/" exported="true"/>
+    <image id="108ab61" name="img_946.png" path="/Texture/" exported="true"/>
+    <image id="108ab62" name="img_340.png" path="/Texture/" exported="true"/>
+    <image id="108ab63" name="img_969.png" path="/Texture/" exported="true"/>
+    <image id="108ab64" name="img_339.png" path="/Texture/" exported="true"/>
+    <image id="108ab65" name="img_232.png" path="/Texture/" exported="true"/>
+    <image id="108ab66" name="img_1058.png" path="/Texture/" exported="true"/>
+    <image id="108ab68" name="img_11.png" path="/Texture/" exported="true"/>
+    <image id="108ab69" name="img_1232.png" path="/Texture/" exported="true"/>
+    <image id="108ab6a" name="img_1233.png" path="/Texture/" exported="true"/>
+    <image id="108ab6b" name="img_1376.png" path="/Texture/" exported="true"/>
+    <image id="108ab6c" name="img_1377.png" path="/Texture/" exported="true"/>
+    <image id="108ab6d" name="img_1420.png" path="/Texture/" exported="true"/>
+    <image id="108ab6e" name="img_1457.png" path="/Texture/" exported="true"/>
+    <image id="108ab6f" name="img_148.png" path="/Texture/" exported="true"/>
+    <image id="108ab6g" name="img_15.png" path="/Texture/" exported="true"/>
+    <image id="108ab6k" name="img_1532.png" path="/Texture/" exported="true"/>
+    <image id="108ab6l" name="img_160.png" path="/Texture/" exported="true"/>
+    <image id="108ab6o" name="img_18.png" path="/Texture/" exported="true"/>
+    <image id="108ab6p" name="img_226.png" path="/Texture/" exported="true"/>
+    <image id="108ab6q" name="img_227.png" path="/Texture/" exported="true"/>
+    <image id="108ab6r" name="img_338.png" path="/Texture/" exported="true" scale="9grid" scale9grid="15,15,10,10"/>
+    <image id="108ab6s" name="img_970.png" path="/Texture/" exported="true"/>
+    <component id="mj5kb6u" name="UIRegister.xml" path="/" exported="true"/>
+    <component id="mj5kb6v" name="UIEnterGame.xml" path="/" exported="true"/>
+    <component id="mj5kb6w" name="UILoginWaitting.xml" path="/" exported="true"/>
+  </resources>
+  <publish name="" genCode="true"/>
+</packageDescription>

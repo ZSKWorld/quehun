@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="352,100" extention="Button">
+  <controller name="button" pages="0,up,1,down,2,over,3,selectedOver" selected="0"/>
+  <displayList>
+    <loader id="n3_mj5k" name="bg" xy="0,0" size="100,100" autoSize="true">
+      <relation target="" sidePair="middle-middle"/>
+    </loader>
+    <loader id="n4_mj5k" name="icon" xy="0,0" size="100,100" autoSize="true">
+      <relation target="n3_mj5k" sidePair="center-center,middle-middle"/>
+    </loader>
+    <text id="n5_mj5k" name="title" xy="108,29" size="244,42" fontSize="30" vAlign="middle" singleLine="true" text="测试测试测试测试">
+      <relation target="" sidePair="middle-middle"/>
+      <relation target="n3_mj5k" sidePair="left-right"/>
+    </text>
+  </displayList>
+  <Button mode="Check"/>
+  <relation target="n5_mj5k" sidePair="rightext-right"/>
+  <customProperty target="bg" propertyId="1"/>
+</component>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1920,1080" pivot="0.5,0.5" designImage="ui://n809nszxr1bg7pln2y" designImageAlpha="0">
+  <displayList>
+    <image id="n0_108ab" name="n0" src="108ab5k" fileName="Texture/img_37.png" xy="0,0" size="1920,1080" alpha="0.5">
+      <relation target="" sidePair="width-width,height-height"/>
+    </image>
+    <image id="n1_108ab" name="n1" src="108ab6n" fileName="Texture/img_1685.png" xy="603,208" size="714,663">
+      <relation target="" sidePair="center-center,middle-middle"/>
+    </image>
+    <image id="n5_mj5k" name="n5" src="108ab6o" fileName="Texture/img_1740.png" xy="603,208" size="714,665">
+      <relation target="n1_108ab" sidePair="width-width,height-height,center-center,middle-middle"/>
+    </image>
+    <component id="n2_mj5k" name="btn_close" src="mj5kb6u" fileName="Component/BtnIcon.xml" xy="1191,247" size="60,60">
+      <relation target="n1_108ab" sidePair="right-right,top-top"/>
+      <Button icon="ui://vx9zwser108ab5n"/>
+    </component>
+    <component id="n12_mj5k" name="btn_login" src="mj5kb6r" fileName="Component/BtnNormalFit.xml" xy="750,715" size="420,104">
+      <Button title="确定" titleColor="#ffffff" titleFontSize="40" icon="ui://vx9zwser108ab67"/>
+    </component>
+    <text id="n3_mj5k" name="txt_title" xy="910,245" size="100,64" fontSize="48" color="#fff0eb" vAlign="middle" leading="0" singleLine="true" text="登录">
+      <relation target="n1_108ab" sidePair="center-center,top-top"/>
+    </text>
+  </displayList>
+</component>

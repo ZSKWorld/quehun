@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1920,1080" designImage="ui://ca43vz0echpj7pln21" designImageAlpha="0">
+  <displayList>
+    <image id="n0_108ab" name="n0" src="108ab5k" fileName="Texture/img_37.png" xy="0,0" size="1920,1080">
+      <relation target="" sidePair="width-width,height-height"/>
+    </image>
+    <loader id="n16_kuka" name="loader_bg" xy="0,0" size="1920,1080" fill="scaleFree">
+      <relation target="" sidePair="center-center,middle-middle"/>
+    </loader>
+    <image id="n18_kuka" name="n18" src="kukab70" fileName="Texture/img_1461.png" xy="676,851" group="n22_kuka"/>
+    <image id="n19_kuka" name="n19" src="kukab6z" fileName="Texture/img_1460.png" xy="676,851" group="n22_kuka" fillMethod="hz"/>
+    <image id="n21_kuka" name="n21" src="108ab6m" fileName="Texture/img_1531.png" xy="642,883" pivot="0.5,0.5" group="n22_kuka" scale="0.33,0.33">
+      <relation target="n20_kuka" sidePair="left-left,top-top"/>
+    </image>
+    <text id="n17_kuka" name="txt_progress" xy="913,780" pivot="0.5,0.5" size="92,54" group="n22_kuka" fontSize="40" color="#9993a1" align="center" vAlign="middle" leading="0" singleLine="true" text="55%"/>
+    <text id="n20_kuka" name="txt_tips" xy="797,980" pivot="0.5,0.5" size="324,54" group="n22_kuka" fontSize="40" color="#ffffff" align="center" vAlign="middle" leading="0" singleLine="true" text="正在拆封新的扑克"/>
+    <group id="n22_kuka" name="n22" xy="642,780" size="604,359" advanced="true">
+      <relation target="" sidePair="center-center,bottom-bottom"/>
+    </group>
+  </displayList>
+  <transition name="t0" autoPlay="true" autoPlayRepeat="-1" frameRate="30">
+    <item time="0" type="Scale" target="n21_kuka" tween="true" startValue="0.33,0.33" endValue="0,0.33" duration="24" ease="Expo.In"/>
+    <item time="24" type="Scale" target="n21_kuka" tween="true" startValue="0,0.33" endValue="0.33,0.33" duration="24" ease="Expo.Out"/>
+    <item time="48" type="Scale" target="n21_kuka" tween="true" startValue="0.33,0.33" endValue="0,0.33" duration="24" ease="Expo.In"/>
+    <item time="72" type="Scale" target="n21_kuka" tween="true" startValue="0,0.33" endValue="0.33,0.33" duration="24" ease="Expo.Out"/>
+  </transition>
+</component>

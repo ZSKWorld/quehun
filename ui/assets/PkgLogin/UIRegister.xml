@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1920,1080" designImage="ui://n809nszxchpj7pln2i" designImageAlpha="0">
+  <displayList>
+    <image id="n0_108ab" name="n0" src="108ab5k" fileName="Texture/img_37.png" pkg="vx9zwser" xy="0,0" size="1920,1080" alpha="0.5">
+      <relation target="" sidePair="width-width,height-height"/>
+    </image>
+    <image id="n1_108ab" name="n1" src="108ab6n" fileName="Texture/img_1685.png" pkg="vx9zwser" xy="603,120" size="714,838">
+      <relation target="" sidePair="center-center,middle-middle"/>
+    </image>
+    <image id="n5_mj5k" name="n5" src="108ab6o" fileName="Texture/img_1740.png" pkg="vx9zwser" xy="603,120" size="714,840">
+      <relation target="n1_108ab" sidePair="width-width,height-height,center-center,middle-middle"/>
+    </image>
+    <component id="n2_mj5k" name="btn_close" src="mj5kb6u" fileName="Component/BtnIcon.xml" pkg="vx9zwser" xy="1191,159" size="60,60">
+      <relation target="n1_108ab" sidePair="right-right,top-top"/>
+      <Button icon="ui://vx9zwser108ab5n"/>
+    </component>
+    <component id="n13_mj5k" name="btn_back" src="mj5kb6u" fileName="Component/BtnIcon.xml" pkg="vx9zwser" xy="669,160" size="60,60">
+      <relation target="n1_108ab" sidePair="right-right,top-top"/>
+      <Button icon="ui://vx9zwser108ab5q"/>
+    </component>
+    <component id="n79_mj5k" name="btn_agreement" src="mj5kb6p" fileName="Component/BtnCheck.xml" pkg="vx9zwser" xy="668,728" size="60,60">
+      <Button selectedIcon="ui://vs9845at108ab6q"/>
+      <property target="bg" propertyId="1" value="ui://vs9845at108ab5p"/>
+    </component>
+    <component id="n12_mj5k" name="n12" src="mj5kb6r" fileName="Component/BtnNormalFit.xml" pkg="vx9zwser" xy="750,802" size="420,104">
+      <relation target="n1_108ab" sidePair="center-center,bottom-bottom"/>
+      <Button title="确定" titleColor="#ffffff" titleFontSize="40" icon="ui://vx9zwser108ab67"/>
+    </component>
+    <text id="n3_mj5k" name="n3" xy="910,156" size="100,64" fontSize="48" color="#fff0eb" vAlign="middle" leading="0" singleLine="true" text="注册">
+      <relation target="n1_108ab" sidePair="center-center,top-top"/>
+    </text>
+    <image id="n4_mj5k" name="n4" src="108ab6r" fileName="Texture/img_338.png" xy="675,272" size="570,78" group="n32_mj5k"/>
+    <image id="n19_mj5k" name="n19" src="108ab5u" fileName="Texture/img_71.png" xy="945,351" group="n20_mj5k"/>
+    <image id="n18_mj5k" name="n18" src="108ab5x" fileName="Texture/img_783.png" xy="685,360" size="540,50" group="n20_mj5k"/>
+    <text id="n21_mj5k" name="n21" xy="850,361" pivot="0.5,0.5" size="208,46" group="n20_mj5k" fontSize="34" color="#ffffff" vAlign="middle" singleLine="true" text="账号格式错误"/>
+    <group id="n20_mj5k" name="n20" xy="685,351" size="540,59" group="n32_mj5k" advanced="true"/>
+    <text id="n7_mj5k" name="n7" xy="690,285" size="540,49" group="n32_mj5k" fontSize="36" color="#615b72" vAlign="middle" leading="0" autoSize="height" singleLine="true" text="" input="true" prompt="请输入账号/邮箱"/>
+    <group id="n32_mj5k" name="n32" xy="675,272" size="570,138" group="n31_mj5k" advanced="true"/>
+    <image id="n6_mj5k" name="n6" src="108ab6r" fileName="Texture/img_338.png" xy="675,420" size="570,78" group="n33_mj5k"/>
+    <image id="n22_mj5k" name="n22" src="108ab5u" fileName="Texture/img_71.png" xy="945,499" group="n25_mj5k"/>
+    <image id="n23_mj5k" name="n23" src="108ab5x" fileName="Texture/img_783.png" xy="685,508" size="540,50" group="n25_mj5k"/>
+    <text id="n24_mj5k" name="n24" xy="850,509" pivot="0.5,0.5" size="208,46" group="n25_mj5k" fontSize="34" color="#ffffff" vAlign="middle" singleLine="true" text="账号格式错误"/>
+    <group id="n25_mj5k" name="n25" xy="685,499" size="540,59" group="n33_mj5k"/>
+    <text id="n8_mj5k" name="n8" xy="690,435" size="540,49" group="n33_mj5k" fontSize="36" color="#615b72" vAlign="middle" leading="0" autoSize="none" singleLine="true" text="" input="true" prompt="请输入密码"/>
+    <group id="n33_mj5k" name="n33" xy="675,420" size="570,138" group="n31_mj5k" advanced="true"/>
+    <image id="n16_mj5k" name="n16" src="108ab6r" fileName="Texture/img_338.png" xy="675,568" size="570,78" group="n34_mj5k"/>
+    <image id="n26_mj5k" name="n26" src="108ab5u" fileName="Texture/img_71.png" xy="945,647" group="n29_mj5k"/>
+    <image id="n27_mj5k" name="n27" src="108ab5x" fileName="Texture/img_783.png" xy="685,656" size="540,50" group="n29_mj5k"/>
+    <text id="n28_mj5k" name="n28" xy="850,657" pivot="0.5,0.5" size="208,46" group="n29_mj5k" fontSize="34" color="#ffffff" vAlign="middle" singleLine="true" text="账号格式错误"/>
+    <group id="n29_mj5k" name="n29" xy="685,647" size="540,59" group="n34_mj5k"/>
+    <text id="n17_mj5k" name="n17" xy="690,583" size="540,49" group="n34_mj5k" fontSize="36" color="#615b72" vAlign="middle" leading="0" autoSize="none" singleLine="true" text="" input="true" prompt="请再次输入密码"/>
+    <group id="n34_mj5k" name="n34" xy="675,568" size="570,138" group="n31_mj5k" advanced="true"/>
+    <group id="n31_mj5k" name="n31" xy="675,272" size="570,434" advanced="true" layout="vt" lineGap="10" excludeInvisibles="true">
+      <relation target="n1_108ab" sidePair="top-top"/>
+    </group>
+    <richtext id="n80_mj5k" name="txt_protocol" xy="733,735" size="514,46" fontSize="34" color="#4c485f" vAlign="middle" ubb="true" singleLine="true" text="同意[u][url=userProtocol]《用户协议》[/url][/u]和[u][url=privacyProtocol]《隐私协议》[/url][/u]"/>
+  </displayList>
+</component>

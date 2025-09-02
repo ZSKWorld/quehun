@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<packageDescription id="vx9zwser">
+  <resources>
+    <font id="kyy064" name="Font01.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
+    <font id="kyy065" name="Font02.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
+    <font id="kyy066" name="Font03.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
+    <font id="kyy067" name="Font04.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
+    <font id="kyy068" name="Font05.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
+    <font id="kyy069" name="Font06.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
+    <font id="kyy06a" name="Font07.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
+    <font id="kyy06b" name="Font08.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
+    <font id="kyy06c" name="Font09.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
+    <font id="kyy06d" name="Font10.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
+    <font id="kyy06e" name="Font11.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
+    <font id="kyy06f" name="Font12.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
+    <font id="kyy06g" name="Font13.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
+    <font id="kyy06h" name="Font14.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
+    <component id="108ab6i" name="BtnNormal.xml" path="/Component/" exported="true"/>
+    <image id="108ab5g" name="img_1049.png" path="/Texture/" exported="true"/>
+    <image id="108ab67" name="img_1059.png" path="/Texture/" exported="true" scale="9grid" scale9grid="55,0,20,104"/>
+    <image id="108ab6m" name="img_1531.png" path="/Texture/" exported="true"/>
+    <image id="108ab6n" name="img_1685.png" path="/Texture/" exported="true" scale="9grid" scale9grid="220,129,200,7"/>
+    <image id="108ab6o" name="img_1740.png" path="/Texture/" exported="true" scale="9grid" scale9grid="170,50,70,80"/>
+    <image id="108ab5k" name="img_37.png" path="/Texture/" exported="true"/>
+    <image id="108ab5n" name="img_472.png" path="/Texture/" exported="true"/>
+    <image id="108ab5q" name="img_561.png" path="/Texture/" exported="true"/>
+    <component id="mj5kb6p" name="BtnCheck.xml" path="/Component/" exported="true"/>
+    <component id="mj5kb6q" name="BtnCheckTxtRight.xml" path="/Component/" exported="true"/>
+    <component id="mj5kb6r" name="BtnNormalFit.xml" path="/Component/" exported="true"/>
+    <component id="mj5kb6t" name="BtnCheckRichTxtRight.xml" path="/Component/" exported="true"/>
+    <component id="mj5kb6u" name="BtnIcon.xml" path="/Component/" exported="true"/>
+    <component id="mj5kb6v" name="BtnIconFit.xml" path="/Component/" exported="true"/>
+    <component id="mj5kb6w" name="BtnTxt.xml" path="/Component/" exported="true"/>
+    <component id="mj5kb6x" name="BtnTxtUnderline.xml" path="/Component/" exported="true"/>
+    <component id="kukab6x" name="UILoading.xml" path="/" exported="true"/>
+    <image id="108ab6h" name="img_1509.png" path="/Texture/" exported="true"/>
+    <image id="kukab6y" name="img_1510.png" path="/Texture/" exported="true"/>
+    <image id="kukab6z" name="img_1460.png" path="/Texture/" exported="true"/>
+    <image id="kukab70" name="img_1461.png" path="/Texture/" exported="true"/>
+    <component id="kb0eb6x" name="UIConfirm.xml" path="/" exported="true"/>
+  </resources>
+  <publish name="" genCode="true"/>
+</packageDescription>

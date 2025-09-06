@@ -18,7 +18,7 @@ export class SceneLogin extends LogicSceneBase<SceneLoginData> {
 
 	protected override getConstResArray() {
 		return [
-			ResPath.FontPath.Font08,
+			ResPath.FontPath.HYWH,
 			ResPath.PkgPath.PkgCommon,
 		];
 	}

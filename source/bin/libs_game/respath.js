@@ -35,6 +35,9 @@ ResPath = {
 		Font24: "Font24",
 		Font25: "Font25",
 		Font26: "Font26",
+		FZHT: "FZHT",
+		HYWH: "HYWH",
+		NotoSansKR: "NotoSansKR",
 	},
 
 	FontPath: {
@@ -64,6 +67,9 @@ ResPath = {
 		Font24: "res/font/Font24.ttf",
 		Font25: "res/font/Font25.ttf",
 		Font26: "res/font/Font26.ttf",
+		FZHT: "res/font/FZHT.ttf",
+		HYWH: "res/font/HYWH.ttf",
+		NotoSansKR: "res/font/NotoSansKR.ttf",
 	},
 
 	PrescreenPath: {

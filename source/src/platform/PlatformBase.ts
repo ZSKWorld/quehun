@@ -2,13 +2,10 @@
 export abstract class PlatformBase implements IPlatform {
     protected _safeArea: ISafeArea;
     protected _menuBtnArea: ISafeArea;
-    private _config: IGameConfig;
     get safeArea() { return this._safeArea; }
     get menuBtnArea() { return this._menuBtnArea; }
-    get config() { return this._config; }
 
-    init(config: IGameConfig) {
-        this._config = config;
+    constructor() {
         this.onFix();
         this.onInit();
     }

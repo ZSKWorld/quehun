@@ -35,7 +35,7 @@ export const enum SocketEvent {
     Close = "SocketEvent_Close",
 }
 
-export class WebSocket extends SingletonExtend<WebSocket, Observer>(Observer) {
+export class WebSocket {
 
     private _url: string = "ws://192.168.1.105:8007";
     private _socket: Laya.Socket;
@@ -76,6 +76,7 @@ export class WebSocket extends SingletonExtend<WebSocket, Observer>(Observer) {
     init() {
         if (this._socket) return;
         this._socket = new Laya.Socket();
+        this._socket.endian = Laya.Byte.LITTLE_ENDIAN;
         this._socket.on(Laya.Event.OPEN, this, this.onOpen);
         this._socket.on(Laya.Event.MESSAGE, this, this.onMessage);
         this._socket.on(Laya.Event.ERROR, this, this.onError);

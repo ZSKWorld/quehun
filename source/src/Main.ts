@@ -29,13 +29,9 @@ class Main {
 		Laya.stage.screenMode = Laya.Stage.SCREEN_NONE;
 		Laya.stage.alignV = Laya.Stage.ALIGN_MIDDLE;
 		Laya.stage.alignH = Laya.Stage.ALIGN_CENTER;
-		Laya.Config.defaultFont = ResPath.FontName.Font08;
-		fgui.UIConfig.defaultFont = ResPath.FontName.Font08;
+		Laya.Config.defaultFont = ResPath.FontName.HYWH;
+		fgui.UIConfig.defaultFont = ResPath.FontName.HYWH;
 		Laya.InputManager.multiTouchEnabled = false;
-		Laya.stage.on(Laya.Event.VISIBILITY_CHANGE, this, () => {
-			if (Laya.stage.isVisibility) facade.dispatch(NotifyConst.OnGameShow);
-			else facade.dispatch(NotifyConst.OnGameHide);
-		});
 
 		facade.registerCommand(NotifyConst.InitContext, InitContextCommand);
 		facade.dispatch(NotifyConst.InitContext);

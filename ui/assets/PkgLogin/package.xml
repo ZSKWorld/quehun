@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <packageDescription id="vs9845at">
-  <resources/>
+  <resources>
+    <component id="jdu6b6x" name="UILogin.xml" path="/"/>
+  </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

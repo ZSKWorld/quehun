@@ -25,25 +25,6 @@ export class PlatformWeb extends PlatformBase {
     }
 
     protected onInit() {
-        Laya.stage.scaleMode = Laya.Stage.SCALE_SHOWALL;
-        Laya.stage.screenMode = Laya.Stage.SCREEN_NONE;
-        Laya.stage.alignV = Laya.Stage.ALIGN_MIDDLE;
-        Laya.stage.alignH = Laya.Stage.ALIGN_CENTER;
-        Laya.Config.defaultFont = ResPath.FontName.Font08;
-        fgui.UIConfig.defaultFont = ResPath.FontName.Font08;
-
-        this.config.stat && Laya.Stat.show(0, 0, [
-            Laya.Stat.FPSStatUIParams,
-            Laya.Stat.NodeStatUIParams,
-            Laya.Stat.Sprite3DStatUIParams,
-            Laya.Stat.DrawCall,
-            Laya.Stat.TriangleFace,
-            Laya.Stat.GPUMemory,
-            Laya.Stat.TextureMemeory,
-            Laya.Stat.RenderTextureMemory,
-            Laya.Stat.BufferMemory,
-        ]);
-        Laya.InputManager.multiTouchEnabled = false;
         Laya.stage.on(Laya.Event.VISIBILITY_CHANGE, this, () => {
             if (Laya.stage.isVisibility) this.dispatch(NotifyConst.OnGameShow);
             else this.dispatch(NotifyConst.OnGameHide);

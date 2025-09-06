@@ -4,39 +4,30 @@ import { PlatformWX } from "./PlatformWX";
 
 export class PlatfromManager implements IPlatformManager {
     private _platform: IPlatform;
-    get stat() {
-        return this._platform.config.stat;
+    private get platformType() {
+        return PlatformType.Web;
     }
-    get released() {
-        return this._platform.config.released;
-    }
-    get platform() {
-        return this._platform.config.platform;
-    }
-    get safeArea() {
-        return this._platform.safeArea;
-    }
-    get menuBtnArea() {
-        return this._platform.menuBtnArea;
-    }
-    get config() {
-        return this._platform.config;
-    }
-
-    init() {
-        const config = loadMgr.getRes<Laya.TextResource>(ResPath.UnclassifiedPath.Gameconfig).data;
-        switch (config.platform) {
+    private get platform() {
+        if (this._platform) return this._platform;
+        
+        switch (this.platformType) {
             case PlatformType.Wechat: this._platform = new PlatformWX(); break;
             default: this._platform = new PlatformWeb(); break;
         }
-        this._platform.init(config);
+        return this._platform;
+    }
+    get safeArea() {
+        return this.platform.safeArea;
+    }
+    get menuBtnArea() {
+        return this.platform.menuBtnArea;
     }
 
     showConfirm(title: string, msg: string) {
-        return this._platform.showConfirm(title, msg);
+        return this.platform.showConfirm(title, msg);
     }
 
     isPlatform(platform: PlatformType) {
-        return this.platform == platform;
+        return this.platformType == platform;
     }
 }

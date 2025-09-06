@@ -14,26 +14,14 @@ declare interface ISafeArea {
     width: number;
 }
 
-declare interface IGameConfig {
-    readonly stat: boolean;
-    readonly released: boolean;
-    readonly platform: PlatformType;
-}
-
 declare interface IPlatform {
     /** 屏幕安全区域 */
     get safeArea(): ISafeArea;
     /** 右上角胶囊按钮区域 */
     get menuBtnArea(): ISafeArea;
-    get config(): IGameConfig;
-    init(config: IGameConfig): void;
     showConfirm(title: string, msg: string): Promise<boolean>;
 }
 
 declare interface IPlatformManager extends IPlatform {
-    get stat(): boolean;
-    get released(): boolean;
-    get platform(): PlatformType;
-    init(): void;
     isPlatform(type: PlatformType): boolean;
 }

@@ -1,0 +1,44 @@
+{
+    "ip": [
+        {
+            "name": "player",
+            "gateways": [
+                {
+                    "id": "route-2",
+                    "url": "https://route-2.maj-soul.com"
+                },
+                {
+                    "id": "route-3",
+                    "url": "https://route-3.maj-soul.com:8443"
+                },
+                {
+                    "id": "route-4",
+                    "url": "https://route-4.maj-soul.com"
+                },
+                {
+                    "id": "route-5",
+                    "url": "https://route-5.maj-soul.com"
+                },
+                {
+                    "id": "route-6",
+                    "url": "https://route-6.maj-soul.com"
+                }
+            ],
+            "system_email_url": "https://common-202411.maj-soul.com",
+            "prefix_url": "https://record-old.maj-soul.com:9443/majsoul/game_record",
+            "contest_chat_url": "wss://contest-gate-202411.maj-soul.com/client",
+            "dhs_url": "https://www.maj-soul.com/contest-login/"
+        }
+    ],
+    "goods_sheleve_id": "shelves_001",
+    "emergency_url": "https://majsoul-hk-game.oss-accelerate.aliyuncs.com/app/misc",
+    "awsc_sdk_js": "https://g.alicdn.com/AWSC/AWSC/awsc.js",
+    "nec_sdk_js": "https://cstaticdun.126.net/load.min.js",
+    "tracker_url": "cn-hongkong.log.aliyuncs.com/majsoul-hk-client/client",
+    "wapchat_url": "https://ykf-webchat.7moor.com/wapchat.html",
+    "mycard_url": "https://www.mycard520.com.tw/MyCardPay/",
+    "homepage_url": "https://www.maj-soul.com",
+    "fb_oauth_url": "https://www.facebook.com/dialog/oauth",
+    "fb_sdk_js": "https://connect.facebook.net/en_US/sdk.js",
+    "sgoogle_redirect_uri": "https://game.maj-soul.com/1/"
+}

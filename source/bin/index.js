@@ -40,6 +40,7 @@ loadLib("libs_game/extend.js");
 loadLib("libs_game/logger.js");
 loadLib("libs_game/messageid.js");
 loadLib("libs_game/mygame.js");
+loadLib("libs_game/protobuf.js");
 loadLib("libs_game/proxyid.js");
 loadLib("libs_game/respath.js");
 loadLib("libs_game/userdataevent.js");

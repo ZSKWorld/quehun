@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+import "notify.lobby.proto";
+import "server.customized-contest.proto";
+import "server.rpc.proto";
+import "cli.game.proto";
+import "cli.route.proto";
+import "cli.lobby.proto";
+import "database.proto";
+import "amulet.struct.proto";

@@ -1,0 +1,609 @@
+syntax = "proto3";
+
+package lq;
+
+option go_package = ".;majprotocol";
+
+message AmuletBadgeData {
+  uint32 id = 1; // 表内的印章id
+  uint32 uid = 2; // 实例id
+  repeated string store = 3;
+  uint32 random = 4; // 随机值，用于印章随机角度展示等，范围 1-100000
+}
+
+message AmuletEffectData {
+  uint32 id = 1; // 表内的护身符id
+  uint32 uid = 2; // 实例id
+  repeated string store = 3;
+
+  AmuletBadgeData badge = 4; // 印章数据，可能为空
+  uint32 volume = 5; // （客户端数据）护身符占用体积
+
+  repeated uint32 tags = 6; // 护身符标记位，tags[0] = 当前护身符是否回合结束消失
+
+}
+
+message AmuletTile {
+  uint32 id = 1;
+  string tile = 2;
+}
+
+message AmuletBuffData {
+  uint32 id = 1; // 表内的buff id
+  repeated string store = 3;
+}
+
+message AmuletGameShopGoods {
+  uint32 id = 1;
+  bool sold = 2;
+  uint32 goods_id = 3;
+  uint32 price = 4;
+}
+
+message AmuletActivityTingInfo {
+  string tile = 1; // 打这张牌能听，在换牌阶段没有这个字段
+  string fan = 2;
+  string ting_tile = 3; // 听的牌
+}
+
+message AmuletShowDesktopTileData {
+  uint32 id = 1;
+  uint32 pos = 2; // 位置，从后往前数第几个，最小为0，发牌后不会随着摸牌而变化
+}
+
+message AmuletMingInfo {
+  uint32 type = 1;
+  repeated uint32 tile_list = 2;
+}
+
+message AmuletGameOperation {
+  message GangTiles {
+    repeated uint32 tiles = 1;
+  }
+
+  uint32 type = 1; // 1-切牌 4-杠 8-和 99-模切，只能打刚刚摸到的牌 100-开始游戏(仅限换牌阶段) 101-换手牌
+  repeated GangTiles gang = 2; // type = 4 时可以杠的列表
+  int32 value = 3; // 换手牌时表示最多可以换多少张牌
+}
+
+message AmuletTileScore {
+  string tile = 1;
+  string score = 2;
+}
+
+message ActivityAmuletHuRecord {
+  string point = 1; // 得分
+  string pai = 2; // 牌型  例：1m2m3m4m4m,5p5p5p0p,7s7s7s7s
+  string fan = 3; // 番数
+  string base = 4; // 分
+  repeated ActivityAmuletEffectRecordData effect_builds = 5;
+}
+
+message AmuletEffectCounterData {
+  uint32 effect_id = 1;
+  uint32 pack_candidate_count = 2;
+  uint32 gain_count = 3;
+}
+
+message AmuletGameRecordData {
+  uint32 yiman_count = 1;
+  uint32 level_hu_count = 2;
+  uint32 game_hu_count = 3;
+  uint32 effect_gain = 4;
+  string coin_consume = 5;
+  string coin_gain = 6;
+  ActivityAmuletHuRecord highest_hu = 7;
+  string highest_level_score = 8;
+  string highest_fan = 9;
+  uint32 pack_count = 10;
+  uint32 round_count = 11;
+  repeated AmuletEffectCounterData effect_counter = 12; // 统计护身符出现次数，仅统计出现过的护身符
+  repeated uint32 hu_tiles_id = 13; // 上局和牌手牌（记录牌id）
+}
+
+message AmuletSkillData {
+  uint32 id = 1;
+  uint32 level = 2;
+}
+
+message ActivityAmuletUpgradeData {
+  repeated AmuletSkillData skill = 2; // 已分配技能点数与等级
+}
+
+message AmuletGameRoundData {
+  // 客户端与服务端共用
+  repeated AmuletTile pool = 1;
+  repeated AmuletTile tile_replace = 2;
+  repeated string tian_dora = 3;
+  repeated uint32 dora = 5;
+  repeated uint32 hands = 6;
+  repeated uint32 used_desktop = 8;
+  repeated AmuletMingInfo ming = 9;
+  repeated uint32 locked_tile = 12;
+  uint32 change_tile_count = 13;
+  uint32 total_change_tile_count = 14;
+  repeated AmuletGameOperation next_operation = 15;
+  repeated AmuletActivityTingInfo ting_list = 16;
+  string point = 18;
+  string target_point = 19;
+  uint32 locked_tile_count = 22;
+
+  // 服务端专用
+  repeated uint32 mountain = 4;
+  repeated uint32 used = 7;
+  repeated uint32 desktop = 10;
+  repeated uint32 show_desktop = 11;
+  uint32 after_gang = 17;
+
+  // 客户端专用
+  uint32 desktop_remain = 20;
+  repeated AmuletShowDesktopTileData show_desktop_tiles = 21;
+}
+
+message AmuletEffectCandidate {
+  uint32 id = 1; // 护身符ID
+  uint32 badge_id = 2; // 印章ID，0表示没有印章
+}
+
+message AmuletGameEffectData {
+  repeated AmuletEffectData effect_list = 1;
+  repeated AmuletBuffData buff_list = 2;
+  repeated AmuletBuffData skill_buff_list = 3;
+  repeated AmuletBuffData shop_buff_list = 4;
+  repeated AmuletEffectCandidate free_reward_candidates = 5;
+  repeated AmuletEffectCandidate level_reward_candidates = 6; // 关卡奖励卡包护身符选项
+  repeated uint32 level_reward_packs = 7; // 未开的关卡奖励卡包
+  uint32 current_level_reward_pack = 8; // 当前关卡奖励卡包id
+  uint32 max_effect_volume = 9; // 客户端数据，最大护身符持有体积
+}
+
+message AmuletShopData {
+  repeated AmuletGameShopGoods goods = 1;
+  repeated AmuletEffectCandidate candidate_effect_list = 2;
+  uint32 shop_refresh_count = 3;
+
+  // 客户端专用
+  uint32 refresh_price = 4;
+}
+
+message AmuletGameData {
+  AmuletGameRoundData round = 1;
+  AmuletGameEffectData effect = 2;
+  AmuletGameInfoData game = 3;
+  uint32 stage = 4;
+  AmuletShopData shop = 5;
+  AmuletGameRecordData record = 6;
+  bool ended = 7; // 本局游戏是否已经结束
+}
+
+message AmuletGameInfoData {
+  uint32 level = 1;
+  string coin = 2;
+  uint32 max_effect_volume = 3;
+  repeated uint32 next_boss_buff = 4;
+  repeated uint32 boss_buff = 5;
+  repeated AmuletTileScore tile_score_map = 6;
+  uint32 book_effect_id = 8;
+}
+
+message ActivityAmuletIllustratedBookData {
+  repeated uint32 effect_collection = 1; // 护身符
+  repeated uint32 badge_collection = 4;
+  // ActivityAmuletHuRecord highest_hu = 2; // 历史最高胡牌记录
+  // uint32 highest_level = 3; // 历史最高关卡记录
+}
+
+message ActivityAmuletEffectRecordData {
+  uint32 id = 1;
+  uint32 badge_id = 2;
+  uint32 volume = 3;
+}
+
+message ActivityAmuletGameRecordData {
+  repeated ActivityAmuletEffectRecordData effect_builds = 1;
+  uint32 level = 2;
+  string highest_level_score = 3;
+  string highest_fan = 4;
+  string highest_score = 5;
+  string coin_consumed = 6;
+  uint32 pack_count = 7;
+  uint32 time = 8;
+  ActivityAmuletHuRecord highest_hu = 9; // 最高和牌记录
+}
+
+message ActivityAmuletStatisticData {
+  uint32 highest_level = 1; // 历史最高关卡记录
+  ActivityAmuletHuRecord highest_hu = 2; // 历史最高和牌记录
+  string highest_level_score = 3;
+  string highest_fan = 4;
+  string highest_score = 5;
+  uint32 pass_game_count = 6; // 	完成5-3的次数
+  uint32 round_count = 7; // 完成小关数量
+  uint32 open_pack_count = 8; // 累计开包次数，包含商店+过关奖励
+  string highest_coin_consumed = 9; // 最多单轮花费星币
+}
+
+// 修改同时也需要修改 BlobAmuletActivity
+message ActivityAmuletData {
+  uint32 activity_id = 1;
+  AmuletGameData game = 2; // 游戏对局信息
+  uint32 version = 3;
+  ActivityAmuletUpgradeData upgrade = 4; // 永久强化信息
+  ActivityAmuletIllustratedBookData illustrated_book = 5; // 图鉴信息
+  uint32 book_effect_id = 6; // 钦定护身符，可能为空
+  repeated ActivityAmuletGameRecordData game_records = 7; // 最近通关记录
+  ActivityAmuletStatisticData statistic = 8; // 统计数据
+}
+
+message AmuletFan {
+  uint32 id = 1;
+  string val = 2;
+  uint32 count = 3;
+  bool yiman = 4;
+}
+
+message AmuletHookResult {
+  message AddEffectResult {
+    uint32 uid = 1; // 新护身符uid
+    uint32 id = 2; // 新护身符id
+
+    // 如果发生升级/合并会有以下值
+    uint32 merge_type = 3; // 1 - 相同护身符合并   2 - 护身符组合并  3 - 替换印章
+    repeated uint32 merged_list = 4; // 合并护身符uid
+    uint32 merged_result = 5; // 合并结果（uid）
+    AmuletBadgeData badge = 6; // 印章
+    repeated string store = 7;
+    uint32 volume = 8; // 生成的护身符(uid)体积
+  }
+  repeated AddEffectResult add_effect = 1;
+  repeated uint32 remove_effect = 2; // 移除护身符 uid
+
+  repeated uint32 add_buff = 3;
+  repeated uint32 remove_buff = 4;
+
+  repeated string add_tian_dora = 5;
+
+  message AddDoraResult {
+    uint32 count = 1; // 新增 dora 数量
+    repeated uint32 list = 2; // 实际增加的 dora，牌id
+  }
+  AddDoraResult add_dora = 6;
+
+  message ValueResult {
+    string origin = 1;
+    string modify = 2;
+    string final = 3;
+  }
+  ValueResult coin_modify = 8;
+
+  repeated AmuletTile tile_replace = 10;
+
+  repeated uint32 add_show_tile = 11;
+
+  repeated AmuletTileScore modify_tile_score = 12;
+
+  int32 modify_desktop_count = 14;
+  int32 modify_show_desktop_count = 15;
+  int32 modify_lock_tile_count = 16;
+  int32 modify_change_hands_count = 17; // 修改换牌次数
+  int32 modify_change_hands_tile_count = 18; // 修改单次换牌牌数
+
+  bool force_moqie = 19;
+  bool replace_hu = 20; // 变牌后可以和牌
+  string modify_target_point = 21;
+  bool upgrade_level = 22; // 无视过关分数直接过关
+
+  message ModifyDoraResult {
+    string tile = 1;
+    bool is_dora = 2;
+    bool is_red_dora = 3;
+    bool is_tian_dora = 4;
+    uint32 dora_count = 5; // 一张牌算作几dora（可能存在两张相同的宝牌指示牌的情况）
+  }
+  repeated ModifyDoraResult modify_dora = 23; // 修改宝牌判定
+  // bool modify_tian_dora = 24;
+  int32 modify_dora_max_count = 25; // 修改最大宝牌数量
+  int32 modify_shop_goods_count = 26; // 修改商店刷新卡包数量
+  bool modify_shop_rare_weight = 27; // 修改商店卡包稀有度
+  bool modify_shop_goods_price = 28; // 修改商店卡包价格
+  repeated uint32 modify_shop_pack_effect = 29; // 修改购买卡包后待选护身符列表
+  int32 modify_effect_max_count = 30; // 修改持有护身符上限
+
+  repeated AmuletGameShopGoods modify_goods = 31; // 修改商店卡包列表
+  repeated uint32 remove_goods = 32; // 移除商店卡包
+
+  ValueResult modify_base = 33;
+  ValueResult modify_fan = 34;
+  repeated AmuletFan modify_fan_info = 37;
+
+  message TransformResult {
+    uint32 uid = 1;
+    uint32 effect_id = 2;
+    AddEffectResult add_result = 3;
+  }
+
+  repeated TransformResult transform_effect = 39; // 护身符变形(从A卡变为B卡)
+
+  message AddBadge {
+    uint32 uid = 1; // 护身符uid
+    uint32 badge_id = 2; // 印章id
+    uint32 badge_uid = 3; // 印章uid
+  }
+  repeated AddBadge add_badge = 40; // 添加印章
+
+  repeated uint32 remove_badge = 41; // 移除印章(护身符uid)
+
+  string modify_effect_price = 42; // 修改护身符出售价
+
+  message CopyEffect {
+    uint32 uid = 1; // 拷贝生成的护身符uid
+    uint32 from_uid = 2; // 从哪个护身符拷贝来的
+  }
+  repeated CopyEffect copy_effect = 43; // 拷贝护身符
+
+  bool effect_growth = 44; // 护身符数值成长
+
+  string modify_tile_score_aura = 45; // 修改牌基础分成长值，光环效果，不需要抖动动画
+
+  uint32 modify_hule_count = 46; // 修改和牌次数
+  bool can_gang = 47; // 是否可以开杠
+  repeated uint32 modify_change_hands_list = 48; // 修改换牌(修改换牌后的全量手牌数据)
+
+  message AmuletChangeDesktopResult {
+    repeated AmuletShowDesktopTileData show_desktop_tiles = 1; // 当前可见牌
+    uint32 locked_tile_count = 3;
+    uint32 desktop_remain = 4;
+    repeated uint32 locked_tile = 5;
+  }
+  AmuletChangeDesktopResult modify_change_desktop = 49; // 修改待摸牌数据
+
+  uint32 self_effect_id = 50; // 自身效果变化效果（如星际黑客凌与不稳定的护身符）
+
+  string modify_change_coin = 51; // 修改获取星币数量
+
+  repeated AmuletTileScore set_tile_score = 52; // 直接设置牌基础分
+
+  message UpgradeEffectResult {
+    uint32 uid = 1; // 护身符uid
+    uint32 id = 2; // 新护身符id
+
+    AmuletBadgeData badge = 3; // 印章
+    repeated string store = 4;
+    uint32 volume = 5; // 新护身符体积
+  }
+  repeated UpgradeEffectResult upgrade_effect = 53; // 护身符升级
+
+  repeated AmuletTileScore modify_tile_base_score = 54; // 修改和牌基础分
+}
+
+message AmuletEffectedHookData {
+  uint32 uid = 1;
+  uint32 id = 2;
+  AmuletHookResult result = 3;
+  uint32 type = 4; // 1 - 护身符  2 - 印章  3 - buff
+}
+
+message AmuletEffectCandidatesArrayDirty {
+  bool dirty = 1;
+  repeated AmuletEffectCandidate value = 2;
+}
+
+message AmuletTileArrayDirty {
+  bool dirty = 1;
+  repeated AmuletTile value = 2;
+}
+
+message StringDirty {
+  bool dirty = 1;
+  string value = 2;
+}
+
+message StringArrayDirty {
+  bool dirty = 1;
+  repeated string value = 2;
+}
+
+message UInt32ArrayDirty {
+  bool dirty = 1;
+  repeated uint32 value = 2;
+}
+
+message AmuletMingInfoArrayDirty {
+  bool dirty = 1;
+  repeated AmuletMingInfo value = 2;
+}
+
+message UInt32Dirty {
+  bool dirty = 1;
+  uint32 value = 2;
+}
+
+message AmuletGameOperationArrayDirty {
+  bool dirty = 1;
+  repeated AmuletGameOperation value = 2;
+}
+
+message AmuletTingInfoArrayDirty {
+  bool dirty = 1;
+  repeated AmuletActivityTingInfo value = 2;
+}
+
+message AmuletShowDesktopTileDataArrayDirty {
+  bool dirty = 1;
+  repeated AmuletShowDesktopTileData value = 2;
+}
+
+message AmuletRoundDataChanges {
+  AmuletTileArrayDirty pool = 1;
+  AmuletTileArrayDirty tile_replace = 2;
+  StringArrayDirty tian_dora = 3;
+  UInt32ArrayDirty dora = 5;
+  UInt32ArrayDirty hands = 6;
+  UInt32ArrayDirty used_desktop = 7;
+  UInt32ArrayDirty used = 8;
+  AmuletMingInfoArrayDirty ming = 9;
+  UInt32ArrayDirty locked_tile = 12;
+  UInt32Dirty change_tile_count = 13;
+  UInt32Dirty total_change_tile_count = 14;
+  AmuletGameOperationArrayDirty next_operation = 15;
+  AmuletTingInfoArrayDirty ting_list = 16;
+  StringDirty point = 18;
+  StringDirty target_point = 19;
+  UInt32Dirty desktop_remain = 20;
+  AmuletShowDesktopTileDataArrayDirty show_desktop_tiles = 21;
+  UInt32Dirty locked_tile_count = 22;
+}
+
+message AmuletEffectDataArrayDirty {
+  bool dirty = 1;
+  repeated AmuletEffectData value = 2;
+}
+
+message AmuletBuffDataArrayDirty {
+  bool dirty = 1;
+  repeated AmuletBuffData value = 2;
+}
+
+message AmuletEffectDataChanges {
+  AmuletEffectDataArrayDirty effect_list = 1;
+  AmuletBuffDataArrayDirty buff_list = 2;
+  AmuletBuffDataArrayDirty skill_buff_list = 3;
+  AmuletBuffDataArrayDirty shop_buff_list = 4;
+  AmuletEffectCandidatesArrayDirty free_reward_candidates = 5;
+  AmuletEffectCandidatesArrayDirty level_reward_candidates = 6;
+  UInt32Dirty current_level_reward_pack = 7;
+}
+
+message AmuletTileScoreArrayDirty {
+  bool dirty = 1;
+  repeated AmuletTileScore value = 2;
+}
+
+message AmuletGameInfoDataChanges {
+  UInt32Dirty level = 1;
+  StringDirty coin = 2;
+  UInt32Dirty max_effect_volume = 3;
+  UInt32ArrayDirty next_boss_buff = 4;
+  UInt32ArrayDirty boss_buff = 5;
+  AmuletTileScoreArrayDirty tile_score_map = 6;
+}
+
+message AmuletShopGoodsArrayDirty {
+  bool dirty = 1;
+  repeated AmuletGameShopGoods value = 2;
+}
+
+message AmuletShopDataChanges {
+  AmuletShopGoodsArrayDirty goods = 1;
+  AmuletEffectCandidatesArrayDirty candidate_effect_list = 2;
+  UInt32Dirty shop_refresh_count = 3;
+  UInt32Dirty refresh_price = 4;
+}
+
+message ActivityAmuletHuRecordDirty {
+  bool dirty = 1;
+  ActivityAmuletHuRecord value = 2;
+}
+
+message AmuletEffectCounterDataArrayDirty {
+  bool dirty = 1;
+  repeated AmuletEffectCounterData value = 2;
+}
+
+message AmuletRecordDataChanges {
+  UInt32Dirty yiman_count = 1;
+  UInt32Dirty level_hu_count = 2;
+  UInt32Dirty game_hu_count = 3;
+  UInt32Dirty effect_gain = 4;
+  StringDirty coin_consume = 5;
+  StringDirty coin_gain = 6;
+  ActivityAmuletHuRecordDirty highest_hu = 7;
+  StringDirty highest_level_score = 8;
+  StringDirty highest_fan = 9;
+  UInt32Dirty pack_count = 10;
+  UInt32Dirty round_count = 11;
+  AmuletEffectCounterDataArrayDirty effect_counter = 12;
+}
+
+message AmuletValueChanges {
+  AmuletRoundDataChanges round = 1;
+  AmuletEffectDataChanges effect = 2;
+
+  AmuletGameInfoDataChanges game = 3;
+  uint32 stage = 4;
+
+  AmuletShopDataChanges shop = 5;
+
+  AmuletRecordDataChanges record = 6;
+
+  bool ended = 7;
+}
+
+message AmuletEventResult {
+  message DealResult {
+    uint32 tile = 1;
+  }
+  DealResult deal_result = 1; // DealTile(6)
+
+  message HuResult {
+    message HuInfo {
+      uint32 tile = 1;
+      repeated AmuletFan fan_list = 2;
+      string fan = 3;
+      string base = 4;
+      string point = 5;
+    }
+    HuInfo hu_final = 1;
+    HuInfo hu_base = 2;
+  }
+  HuResult hu_result = 2; // Hule(8)
+
+  message GameEndResult {
+    uint32 reason = 1;
+  }
+  GameEndResult game_end_result = 3; // GameEnd(100)
+
+  message GangResult {
+    repeated uint32 new_dora = 1;
+  }
+  GangResult gang_result = 4; // Gang(9)
+
+  message UpgradeResult {
+    string level_coin = 1;
+    string point_coin = 2;
+  }
+  UpgradeResult upgrade_result = 5; // RoundEnd(11)
+
+  AmuletGameData new_game_result = 6; // NewGame(1)
+
+  message SellEffectResult {
+    string price = 1;
+  }
+  SellEffectResult sell_effect_result = 7; // SellEffect(17)
+
+  message SelectPackResult {
+    uint32 uid = 1; // 新护身符uid
+    uint32 id = 2; // 新护身符id
+
+    // 如果发生升级/合并会有以下值
+    uint32 merge_type = 3; // 1 - 相同护身符合并   2 - 护身符组合并  3 - 护身符印章替换
+    repeated uint32 merged_list = 4; // 合并护身符uid(哪些护身符参与了合并)
+    uint32 merged_result = 5; // 合并结果（uid）
+
+    AmuletBadgeData badge = 6; // 新印章数据
+  }
+  SelectPackResult select_pack_result = 8; // SelectFreeEffect(2) SelectPack(14) SelectLevelRewardPack(16)
+}
+
+message AmuletEventHookData {
+  repeated uint32 remove_effect = 1; // 移除护身符 uid
+}
+
+// 文档：https://confluence.catfoodstudio.net:5443/pages/viewpage.action?pageId=133279130
+message AmuletEventData {
+  uint32 type = 1;
+  repeated AmuletEffectedHookData effected_hooks = 2;
+  AmuletValueChanges value_changes = 3;
+  AmuletEventResult result = 4;
+  repeated AmuletEventHookData event_hooks = 5; // 事件影响，类似 effected_hooks 但是由事件本身触发的，而不是 hook 触发的
+}

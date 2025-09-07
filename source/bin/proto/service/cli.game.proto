@@ -1,0 +1,318 @@
+syntax = "proto3";
+
+import "com.struct.proto";
+import "liqi.struct.proto";
+
+package lq;
+
+option go_package = ".;majprotocol";
+
+// 注意：
+// - 所有时间单位为毫秒，发送的是服务器绝对时间
+// - 通过专门一条协议同步服务器时间
+// - 服务的所有method都是小写字母开始, camelCase形式
+
+
+service FastTest {
+
+  // 验证游戏口令
+  rpc authGame (ReqAuthGame) returns (ResAuthGame);
+
+  // 客户端资源加载完毕，可以进入游戏
+  rpc enterGame (ReqCommon) returns (ResEnterGame);
+
+  // 同步游戏
+  rpc syncGame (ReqSyncGame) returns (ResSyncGame);
+
+  // 完成同步游戏
+  rpc finishSyncGame (ReqCommon) returns (ResCommon);
+
+  // 中断游戏（仅1个人模式有效）
+  rpc terminateGame (ReqCommon) returns (ResCommon);
+
+  // 输入基本操作
+  rpc inputOperation (ReqSelfOperation) returns (ResCommon);
+
+  // 输入吃碰胡
+  rpc inputChiPengGang (ReqChiPengGang) returns (ResCommon);
+
+  // 确认新的回合
+  rpc confirmNewRound (ReqCommon) returns (ResCommon);
+
+  // 玩家游戏内广播
+  rpc broadcastInGame (ReqBroadcastInGame) returns (ResCommon);
+
+  // 玩家游戏内Gm指令
+  // deprecated
+  rpc inputGameGMCommand (ReqGMCommandInGaming) returns (ResCommon);
+
+  // 获取对局玩家状态
+  rpc fetchGamePlayerState (ReqCommon) returns (ResGamePlayerState);
+
+  // 客户端定时刷新网络延迟
+  rpc checkNetworkDelay (ReqCommon) returns (ResCommon);
+
+  // 清除玩家自身的离开状态
+  rpc clearLeaving (ReqCommon) returns (ResCommon);
+
+  // 开始投票退出游戏
+  rpc voteGameEnd(ReqVoteGameEnd) returns (ResGameEndVote);
+
+  // 实时观战验证
+  rpc authObserve (ReqAuthObserve) returns (ResCommon);
+
+  // 开始实时观战
+  rpc startObserve (ReqCommon) returns (ResStartObserve);
+
+  // 停止实时观战
+  rpc stopObserve (ReqCommon) returns (ResCommon);
+}
+
+// ------------------- request & response ----------------- //
+
+// 协议：验证游戏连接
+message ReqAuthGame {
+  uint32 account_id = 1;
+  string token = 2; // 口令
+  string game_uuid = 3; // 游戏的uuid
+  string session = 4;
+  string gift = 5;
+  uint32 vs = 6;
+}
+message ResAuthGame {
+  Error error = 1;
+  repeated PlayerGameView players = 2;
+  repeated uint32 seat_list = 3; // 东南西北（保证4个）
+  bool is_game_start = 4; // 游戏是否已经开始（正常准备流程 or 同步流程）
+  GameConfig game_config = 5; // 游戏配置
+  repeated uint32 ready_id_list = 6; // 已就绪Id列表
+  repeated PlayerGameView robots = 7; // 机器人外观数据
+  message ContestInfo {
+    uint32 contest_type = 1; // 赛事类型 官方/热门/民间
+    uint32 season_type = 2; // 赛季类型 0-个人赛 1-团队赛
+  }
+  ContestInfo contest_info = 8;
+}
+
+// 游戏对局还原
+message GameRestore {
+  GameSnapshot snapshot = 1; // 快照
+  repeated ActionPrototype actions = 2; // 动作列表
+  uint32 passed_waiting_time = 3; // 已经经过的等待时间（没有等待事件，则为null）
+  uint32 game_state = 4; // 对局状态
+  uint32 start_time = 5; // 开始时间（秒）
+  uint32 last_pause_time_ms = 6; // 上次暂停的时间（距离对局开始的时间，单位：毫秒，不在暂停中则为0）
+}
+
+// 协议：进入游戏
+message ResEnterGame {
+  Error error = 1;
+  bool is_end = 2; // 游戏状态
+  uint32 step = 3;
+  GameRestore game_restore = 4;
+}
+
+// 协议：同步游戏
+message ReqSyncGame {
+  string round_id = 1; // 回合id：场局本
+  uint32 step = 2;
+}
+message ResSyncGame {
+  Error error = 1;
+  bool is_end = 2; // 游戏状态
+  uint32 step = 3;
+  GameRestore game_restore = 4;
+}
+
+// 请求：玩家打牌、自摸、暗杠等操作
+// !!修改此协议记得同步 GameSelfOperation 消息结构
+message ReqSelfOperation {
+  uint32 type = 1;
+  uint32 index = 2;
+  string tile = 3;
+  bool cancel_operation = 4;
+  bool moqie = 5;
+  uint32 timeuse = 6;
+  int32 tile_state = 7; //0:默认，1：从open中出牌
+  repeated string change_tiles = 8; // 换三张-待换的牌
+  repeated int32 tile_states = 9;   // 换三张-待换的牌的明牌暗牌
+  uint32 gap_type = 10;             // 川麻：定缺
+}
+
+// 请求：玩家吃碰明杠
+// !!修改此协议记得同步 GameChiPengGang 消息结构
+message ReqChiPengGang {
+  uint32 type = 1;
+  uint32 index = 2;
+  bool cancel_operation = 3;
+  uint32 timeuse = 6;
+}
+
+// 请求：广播内容 （在游戏中）
+message ReqBroadcastInGame {
+  string content = 1;
+  bool except_self = 2;
+}
+
+// 请求：游戏中GM命令
+// deprecated
+message ReqGMCommandInGaming {
+  string json_data = 1;
+}
+
+// 协议：获取对局玩家状态
+message ResGamePlayerState {
+  Error error = 1;
+  repeated GamePlayerState state_list = 2; // 状态列表
+}
+
+// 协议：投票退出房间
+
+// 退出房间投票
+// !!修改此协议记得同步 GameVoteGameEnd 消息结构
+message ReqVoteGameEnd {
+  bool yes = 1;
+}
+
+message ResGameEndVote {
+  bool success = 1;
+  uint32 vote_cd_end_time = 2;
+  Error error = 3;
+}
+
+
+// 观战验证
+message ReqAuthObserve {
+  string token = 1; // 口令
+}
+
+// 开始实时观战
+message ResStartObserve {
+  GameLiveHead head = 1;
+  GameLiveSegment passed = 2; // 过去的记录
+}
+
+// ---------------------- notify ------------------------ //
+
+// 通知新的一场游戏开始了
+message NotifyNewGame {
+  string game_uuid = 1; // 游戏的uuid
+  repeated string player_list = 2; // 玩家名字列表 - 按这个次序座 [0, 1, 2, 3]
+}
+
+// 通知玩家进入游戏的准备就绪
+message NotifyPlayerLoadGameReady {
+  repeated uint32 ready_id_list = 1; // 已就绪Id列表
+}
+
+// 玩家游戏内广播
+message NotifyGameBroadcast {
+  uint32 seat = 1;
+  string content = 2;
+}
+
+// 发送整场游戏结束信息
+message NotifyGameEndResult {
+  GameEndResult result = 1;
+}
+
+// 通知游戏中断
+message NotifyGameTerminate {
+  string reason = 1;
+}
+
+// 广播玩家连接状态变化
+message NotifyPlayerConnectionState {
+  uint32 seat = 1;
+  GamePlayerState state = 2;
+}
+
+// 通知玩家段位变化
+message NotifyAccountLevelChange {
+  AccountLevel origin = 1; // 原来的段位
+  AccountLevel final = 2; // 变化后的段位
+  uint32 type = 3; // 1=四麻 2=三麻
+}
+
+// 比赛结束奖励
+message NotifyGameFinishReward {
+  uint32 mode_id = 1;
+
+  message LevelChange {
+    AccountLevel origin = 1; // 原来的段位
+    AccountLevel final = 2; // 变化后的段位
+    uint32 type = 3; // 1=四麻 2=三麻
+  }
+  LevelChange level_change = 2;
+
+  message MatchChest {
+    uint32 chest_id = 1;
+    uint32 origin = 2;
+    uint32 final = 3;
+    bool is_graded = 4;
+    repeated RewardSlot rewards = 5;
+  }
+  MatchChest match_chest = 3; // 比赛宝箱
+
+  message MainCharacter {
+    uint32 level = 1;
+    uint32 exp = 2;
+    uint32 add = 3;
+  }
+  MainCharacter main_character = 4;
+
+  message CharacterGift {
+    uint32 origin = 1;
+    uint32 final = 2;
+    uint32 add = 3;
+    bool is_graded = 4;
+  }
+  CharacterGift character_gift = 5;
+
+  repeated BadgeAchieveProgress badges = 6;
+}
+
+message NotifyActivityReward {
+  message ActivityReward {
+    uint32 activity_id = 1;
+    repeated RewardSlot rewards = 2;
+  }
+  repeated ActivityReward activity_reward = 1; // 活动奖励
+}
+
+message NotifyActivityPoint {
+  message ActivityPoint {
+    uint32 activity_id = 1;
+    uint32 point = 2; // 当前累计点数
+  }
+  repeated ActivityPoint activity_points = 1; // 活动对局得点
+}
+
+message NotifyLeaderboardPoint {
+  message LeaderboardPoint {
+    uint32 leaderboard_id = 1;
+    uint32 point = 2; // 当前排名点数
+  }
+  repeated LeaderboardPoint leaderboard_points = 1; // 排行榜对局得点
+}
+
+// 比赛暂停通知
+message NotifyGamePause {
+  bool paused = 1; // 是不是在暂停中
+}
+
+// 比赛退出投票通知
+message NotifyEndGameVote {
+  message VoteResult {
+    uint32 account_id = 1;
+    bool yes = 2;
+  }
+  repeated VoteResult results = 1;
+  uint32 start_time = 2; // 投票开始时间
+  uint32 duration_time = 3; // 投票持续时间
+}
+
+// 通知观战数据
+message NotifyObserveData {
+  GameLiveUnit unit = 1;
+}

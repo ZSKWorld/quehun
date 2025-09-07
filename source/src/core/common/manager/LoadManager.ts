@@ -1,5 +1,9 @@
 /** 资源加载管理 */
 export class LoadManager implements ILoadManager {
+	fetch<K extends keyof Laya.ContentTypeMap>(url: string, contentType: K, onProgress?: Laya.ProgressCallback, options?: Readonly<Laya.ILoadOptions>) {
+		return Laya.loader.fetch(url, contentType, onProgress, options);
+	}
+
 	load(url: LoadURL, type?: string, onProgress?: Laya.ProgressCallback): any;
 	load(url: LoadURL, options?: Readonly<Laya.ILoadOptions>, onProgress?: Laya.ProgressCallback): any;
 	load(url: LoadURL, complete?: Laya.Handler, progress?: Laya.Handler, type?: string, priority?: number, cache?: boolean, group?: string, ignoreCache?: boolean, useWorkerLoader?: boolean): any;

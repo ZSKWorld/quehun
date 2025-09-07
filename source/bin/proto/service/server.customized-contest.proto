@@ -1,0 +1,579 @@
+syntax = "proto3";
+
+package lq;
+
+option go_package = ".;majprotocol";
+
+import "com.struct.proto";
+
+
+// 自定义比赛协议 Manager Api
+service CustomizedContestManagerApi {
+  // 登录管理员
+  rpc loginContestManager (ReqContestManageLogin) returns (ResContestManageLogin);
+
+  // Oauth2 授权
+  rpc oauth2AuthContestManager (ReqContestManageOauth2Auth) returns (ResContestManageOauth2Auth);
+
+  // Oauth2 登录
+  rpc oauth2LoginContestManager (ReqContestManageOauth2Login) returns (ResContestManageOauth2Login);
+
+  // 登出管理员
+  rpc logoutContestManager (ReqCommon) returns (ResCommon);
+
+  // 查看我管理的赛事列表
+  rpc fetchRelatedContestList (ReqCommon) returns (ResFetchRelatedContestList);
+
+  // 创建比赛
+  rpc createContest (ReqCreateContest) returns (ResCreateContest);
+
+  // 删除比赛
+  rpc deleteContest (ReqDeleteCustomizedContest) returns (ResCommon);
+
+  // 延长比赛
+  rpc prolongContest (ReqProlongContest) returns (ResProlongContest);
+
+  // 进入管理比赛页面
+  rpc manageContest (ReqManageContest) returns (ResManageContest);
+
+  // 获取比赛信息
+  rpc fetchContestInfo (ReqCommon) returns (ResManageContest);
+
+  // 退出管理比赛
+  rpc exitManageContest (ReqCommon) returns (ResCommon);
+
+  // 获取赛事规则设定
+  rpc fetchContestGameRule (ReqCommon) returns (ResFetchContestGameRule);
+
+  // 修改赛事规则设定
+  rpc updateContestGameRule (ReqUpdateContestGameRule) returns (ResCommon);
+
+  // 查找玩家列表
+  rpc searchAccountByNickname (ReqSearchAccountByNickname) returns (ResSearchAccountByNickname);
+  rpc searchAccountByEid (ReqSearchAccountByEid) returns (ResSearchAccountByEid);
+
+  // 获取比赛选手列表
+  rpc fetchContestPlayer (ReqCommon) returns (ResFetchCustomizedContestPlayer);
+
+  rpc fetchContestMatchingPlayer(ReqCommon) returns(ResFetchCustomizedContestPlayer);
+
+  // 设定比赛选手
+  rpc updateContestPlayer (ReqUpdateCustomizedContestPlayer) returns (ResCommon);
+
+  // 开始对局管理
+  rpc startManageGame (ReqCommon) returns (ResStartManageGame);
+
+  // 结束对局管理
+  rpc stopManageGame (ReqCommon) returns (ResCommon);
+
+  // 锁定对玩家的操作
+  rpc lockGamePlayer (ReqLockGamePlayer) returns (ResCommon);
+
+  // 解除对玩家的锁定
+  rpc unlockGamePlayer (ReqUnlockGamePlayer) returns (ResCommon);
+
+  // 开始对局
+  rpc createContestGame (ReqCreateContestGame) returns (ResCreateContestGame);
+
+  // 获取赛事牌谱列表
+  rpc fetchContestGameRecords (ReqFetchCustomizedContestGameRecordList) returns (ResFetchCustomizedContestGameRecordList);
+
+  // 删除比赛对局记录（添加删除标记）
+  rpc removeContestGameRecord (ReqRemoveContestGameRecord) returns (ResCommon);
+
+  // 获取比赛公告
+  rpc fetchContestNotice (ReqFetchContestNotice) returns (ResFetchContestNotice);
+
+  // 设定比赛公告（对外、对内、管理员）
+  rpc updateContestNotice (ReqUpdateCustomizedContestNotice) returns (ResCommon);
+
+  // 获取比赛管理列表
+  rpc fetchContestManager (ReqCommon) returns (ResFetchCustomizedContestManager);
+
+  // 设定比赛管理员
+  rpc updateContestManager (ReqUpdateCustomizedContestManager) returns (ResCommon);
+
+  // 获取聊天管理信息
+  rpc fetchChatSetting (ReqCommon) returns (ResCustomizedContestChatInfo);
+
+  // 聊天管理设置
+  rpc updateChatSetting (ReqUpdateCustomizedContestChatSetting) returns (ResUpdateCustomizedContestChatSetting);
+
+  // 更新牌谱标签
+  rpc updateGameTag (ReqUpdateGameTag) returns (ResCommon);
+
+  // 中止对局
+  rpc terminateGame (ReqTerminateContestGame) returns (ResCommon);
+
+  // 暂停对局
+  rpc pauseGame (ReqPauseContestGame) returns (ResCommon);
+
+  // 继续对局
+  rpc resumeGame (ReqResumeContestGame) returns (ResCommon);
+
+  // 获取当前排名设置
+  rpc fetchCurrentRankList (ReqCommon) returns (ResFetchCurrentRankList);
+
+  // 获取最新审核信息
+  rpc fetchContestLastModify (ReqCommon) returns (ResFetchContestLastModify);
+
+  // 获取实时OB名单
+  rpc fetchContestObserver (ReqCommon) returns (ResFetchContestObserver);
+
+  // 添加实时OB名单
+  rpc addContestObserver (ReqAddContestObserver) returns (ResAddContestObserver);
+
+  // 删除实时OB名单
+  rpc removeContestObserver (ReqRemoveContestObserver) returns (ResCommon);
+
+  // 获取大会室聊天历史
+  rpc fetchContestChatHistory (ReqCommon) returns (ResFetchContestChatHistory);
+
+  // 清空大会室聊天历史
+  rpc clearChatHistory (ReqCommon) returns (ResCommon);
+}
+
+
+message CustomizedContest {
+  uint32 unique_id = 1;
+  uint32 creator_id = 2;
+  uint32 contest_id = 3;
+  string contest_name = 4;
+  uint32 state = 5;
+  uint32 create_time = 6;
+  uint32 start_time = 7;
+  uint32 finish_time = 8;
+  bool open = 9; // 公开
+  uint32 rank_rule = 10; // 排名显示方式
+  uint32 deadline = 11;
+  bool auto_match = 12;
+  bool auto_disable_end_chat = 13;
+  uint32 contest_type = 14;
+  repeated uint32 hidden_zones = 15;
+  repeated uint32 banned_zones = 16;
+  uint32 observer_switch = 17;
+  uint32 emoji_switch = 18;
+  uint32 player_roster_type = 19;
+  uint32 disable_broadcast = 20;
+  string game_rule_type = 21;
+  uint32 round_type = 22;
+}
+
+message ContestGameInfo {
+  string game_uuid = 1;
+  message Player {
+    uint32 account_id = 1;
+    string nickname = 2;
+  }
+  repeated Player players = 2;
+  uint32 start_time = 3;
+  uint32 end_time = 4;
+}
+
+message ContestPlayerInfo {
+  uint32 account_id = 1;
+  string nickname = 2;
+}
+
+message ContestMatchingPlayer {
+  uint32 account_id = 1;
+  string nickname = 2;
+
+  message Controller {
+    uint32 account_id = 1;
+    string nickname = 2;
+  }
+  Controller controller = 3;
+}
+
+//================== 自定义比赛协议 Admin Api ======================//
+
+// 协议：登录管理员
+message ReqContestManageLogin {
+  string account = 1; // 玩家登陆账号名
+  string password = 2; // hash后的密码
+  bool gen_access_token = 3; // 生成快速登录口令
+  uint32 type = 4;
+}
+message ResContestManageLogin {
+  Error error = 1;
+  uint32 account_id = 2; // 账号id
+  string nickname = 3; // 昵称
+  string access_token = 4; // 游戏通用登录口令
+  uint32 diamond = 5; // 钻石
+  uint32 last_create_time = 6; // 上次创建时间
+}
+
+// 协议：Oauth2 授权
+message ReqContestManageOauth2Auth {
+  uint32 type = 1; // oauth2 自定义平台类型
+  string code = 2; // oauth2 code
+  string uid = 3; // yostar uid
+}
+message ResContestManageOauth2Auth {
+  Error error = 1;
+  string access_token = 2;
+}
+
+// 协议：Oauth2 登录
+message ReqContestManageOauth2Login {
+  uint32 type = 1; // 0=账号密码快速登录 1=微信 2=微博 3=QQ
+  string access_token = 2;
+  bool reconnect = 3;
+}
+message ResContestManageOauth2Login {
+  Error error = 1;
+  uint32 account_id = 2; // 账号id
+  string nickname = 3; // 昵称
+  string access_token = 4; // 游戏通用登录口令
+  uint32 diamond = 5; // 钻石
+  uint32 last_create_time = 6; // 上次创建时间
+}
+
+// 协议：查看我管理的赛事列表
+message ResFetchRelatedContestList {
+  Error error = 1;
+  repeated CustomizedContest contests = 2; // 管理的比赛列表
+}
+
+// 协议：创建比赛
+message ReqCreateContest {
+  string contest_name = 1; // 比赛名称
+  uint32 start_time = 2; // 开始时间
+  uint32 finish_time = 3; // 结束时间
+  bool open = 4; // 是否公开
+  uint32 rank_rule = 5; // 排名显示方式
+  GameRuleSetting game_rule_setting = 6; // 游戏详细规则
+}
+message ResCreateContest {
+  Error error = 1;
+  CustomizedContest contest = 2;
+  uint32 diamond = 3;
+}
+
+// 协议：删除比赛
+message ReqDeleteCustomizedContest {
+  uint32 unique_id = 1;
+}
+
+message ReqProlongContest {
+  uint32 unique_id = 1;
+}
+message ResProlongContest {
+  Error error = 1;
+  uint32 deadline = 2;
+}
+
+// 协议：进入管理比赛页面
+message ReqManageContest {
+  uint32 unique_id = 1;
+}
+message ResManageContest {
+  Error error = 1;
+  CustomizedContest contest = 2;
+}
+
+// 协议：获取赛事规则设定
+message ResFetchContestGameRule {
+  Error error = 1;
+  GameRuleSetting game_rule_setting = 2; // 游戏详细规则
+}
+
+// 协议：修改赛事规则设定
+message ReqUpdateContestGameRule {
+  string contest_name = 1;
+  uint32 start_time = 2;
+  uint32 finish_time = 3;
+  bool open = 4; // 公开
+  uint32 rank_rule = 5; // 排名显示方式
+  GameRuleSetting game_rule_setting = 6; // 游戏详细规则
+  bool auto_match = 7;
+  bool auto_disable_end_chat = 8;
+  uint32 contest_type = 9;
+  string banned_zones = 10;
+  string hidden_zones = 11;
+  bool emoji_switch = 12;
+  uint32 player_roster_type = 13;
+  uint32 disable_broadcast = 14;
+}
+
+message ReqSearchAccountByNickname {
+  repeated string query_nicknames = 1;
+}
+message ResSearchAccountByNickname {
+  Error error = 1;
+  message Item {
+    uint32 account_id = 1;
+    string nickname = 2;
+  }
+  repeated Item search_result = 3;
+}
+
+message ReqSearchAccountByEid {
+  repeated uint32 eids = 1;
+}
+message ResSearchAccountByEid {
+  Error error = 1;
+  message Item {
+    uint32 account_id = 1;
+    string nickname = 2;
+  }
+  repeated Item search_result = 3;
+}
+
+// 协议：获取比赛选手列表
+message ResFetchCustomizedContestPlayer {
+  Error error = 1;
+  repeated ContestPlayerInfo players = 2;
+}
+
+// 协议：设定比赛选手
+message ReqUpdateCustomizedContestPlayer {
+  uint32 setting_type = 1; // 设定方式 1=overwrite-all 2=add-some 3=delete-some
+  repeated string nicknames = 2; // 操作的昵称 （1，2 有效）
+  repeated uint32 account_ids = 3; // 操作的账号Id（3 删除时有效）
+}
+message ResUpdateCustomizedContestPlayer {
+  Error error = 1;
+  repeated uint32 failed_index = 2; // 找不到昵称的对应下标（必须全部找到才会设置成功）
+}
+
+// 协议：开始对局管理信息
+message ResStartManageGame {
+  Error error = 1;
+  repeated ContestMatchingPlayer players = 2;
+  repeated ContestGameInfo games = 3; // 正在进行的游戏
+}
+
+// 协议：锁定对玩家的操作
+message ReqLockGamePlayer {
+  uint32 account_id = 1;
+}
+
+// 协议：解除对玩家的锁定
+message ReqUnlockGamePlayer {
+  uint32 account_id = 1;
+}
+
+// 开始对局
+message ReqCreateContestGame {
+  message Slot {
+    uint32 account_id = 1;
+    uint32 start_point = 2; // 初始点数
+    uint32 seat = 3;
+  }
+  repeated Slot slots = 1; // 东南西北顺序
+  string tag = 2;
+  bool random_position = 3; // 随机坐席
+  bool open_live = 4; // 允许观战
+  bool chat_broadcast_for_end = 5; // 对局结束后发送至聊天广播
+  uint32 ai_level = 6; // AI等级
+}
+message ResCreateContestGame {
+  Error error = 1;
+  string game_uuid = 2;
+}
+
+// 协议：查询赛事牌谱列表
+message ReqFetchCustomizedContestGameRecordList {
+  uint32 last_index = 2; // 最新下标 从0开始 初始填null
+}
+message ResFetchCustomizedContestGameRecordList {
+  Error error = 1;
+  uint32 next_index = 2; // 下次请求的下标
+
+  message Item {
+    RecordGame record = 1;
+    string tag = 2;
+  }
+
+  repeated Item record_list = 3; // 记录列表（长度不超过请求中的count）
+}
+
+// 协议：删除比赛对局记录（添加删除标记）
+message ReqRemoveContestGameRecord {
+  string uuid = 1;
+}
+
+// 协议：获取比赛公告（对外、对内、管理员）
+message ReqFetchContestNotice {
+  repeated uint32 notice_types = 1; // 1=对外 2=对内 3=管理员
+}
+message ResFetchContestNotice {
+  Error error = 1;
+  repeated string notices = 2;
+}
+
+// 协议：设定比赛公告（对外、对内、管理员）
+message ReqUpdateCustomizedContestNotice {
+  uint32 notice_type = 1; // 公告类型 1=对外 2=对内 3=管理员
+  string content = 2;
+}
+
+// 协议：获取比赛管理元列表
+message ResFetchCustomizedContestManager {
+  Error error = 1;
+  repeated ContestPlayerInfo players = 2;
+}
+
+// 协议：设定比赛管理员
+message ReqUpdateCustomizedContestManager {
+  uint32 setting_type = 1; // 设定方式 1=overwrite-all 2=add-some 3=delete-some
+  repeated string nicknames = 2; // 操作的昵称 （1，2 有效）
+  repeated uint32 account_ids = 3; // 操作的账号Id（3 删除时有效）
+}
+
+// 协议：获取聊天管理信息
+message ResCustomizedContestChatInfo {
+  Error error = 1;
+  uint32 chat_limit_type = 2;
+
+  message Item {
+    uint32 account_id = 1;
+    string nickname = 2;
+  }
+  repeated Item chat_limit_roster = 3;
+}
+
+// 协议：聊天管理设置
+message ReqUpdateCustomizedContestChatSetting {
+  uint32 setting_type = 1; // 设定方式 1=overwrite-all 2=add-some 3=delete-some 4=update-chat-limit-type
+  repeated string nicknames = 2; // 操作的昵称 （1，2 有效）
+  repeated uint32 account_ids = 3; // 操作的账号Id（3 删除时有效）
+  uint32 chat_limit_type = 4; // 聊天限制类型
+}
+message ResUpdateCustomizedContestChatSetting {
+  Error error = 1;
+  repeated uint32 failed_index = 2; // 找不到昵称的对应下标（必须全部找到才会设置成功）
+}
+
+// 协议：更新牌谱标签
+message ReqUpdateGameTag {
+  string uuid = 1;
+  string tag = 2;
+}
+
+// 协议：中止对局
+message ReqTerminateContestGame {
+  string uuid = 1;
+}
+
+message ReqPauseContestGame {
+  string uuid = 1;
+}
+
+message ReqResumeContestGame {
+  string uuid = 1;
+}
+
+// 获取当前排名列表
+message ResFetchCurrentRankList {
+  Error error = 1;
+
+  message AccountRankData {
+    uint32 account_id = 1;
+    string nickname = 2;
+    int32 total_point = 3; // 当前排名规则下总分
+    uint32 total_count = 4;
+  }
+
+  repeated AccountRankData rank_list = 2;
+
+  uint32 rank_rule = 3;
+}
+
+message ResFetchContestLastModify {
+  message ContestLastModify {
+    string contest_name = 1;
+    string external_notice = 2;
+    string internal_notice = 3;
+    string manager_notice = 4;
+    string reason = 5;
+    uint32 status = 6;
+  }
+  ContestLastModify modify = 1;
+}
+
+message ResFetchContestObserver {
+  Error error = 1;
+
+  message Observer {
+    uint32 account_id = 1;
+    string nickname = 2;
+  }
+
+  repeated Observer observers = 2;
+}
+
+message ReqAddContestObserver {
+  message Observer {
+    uint32 account_id = 1;
+    string nickname = 2;
+  }
+  repeated Observer observers = 1;
+}
+
+message ResAddContestObserver {
+  Error error = 1;
+
+  message Observer {
+    uint32 account_id = 1;
+    string nickname = 2;
+  }
+  repeated Observer success = 2;
+}
+
+message ReqRemoveContestObserver {
+  repeated uint32 observers = 1;
+}
+
+message ResFetchContestChatHistory {
+  Error error = 1;
+  repeated bytes chat_history = 2; // 聊天历史
+}
+
+message ReqClearChatHistory {
+  uint32 unique_id = 1;
+}
+
+//=================== Notify ===================//
+
+// 通知：有新玩家进入匹配中
+message NotifyContestMatchingPlayer {
+  uint32 unique_id = 1;
+  uint32 type = 2; // 1=开始匹配 2=取消匹配
+  uint32 account_id = 3;
+  string nickname = 4;
+}
+
+// 通知：有玩家有锁操作
+message NotifyContestMatchingPlayerLock {
+  uint32 unique_id = 1;
+  uint32 type = 2; // 1=锁定 2=解锁
+  uint32 account_id = 3;
+  uint32 manager_id = 4;
+}
+
+// 通知：有一场对局开始
+message NotifyContestGameStart {
+  uint32 unique_id = 1;
+  ContestGameInfo game_info = 2;
+}
+
+// 通知：有一场对局结束
+message NotifyContestGameEnd {
+  uint32 unique_id = 1;
+  string game_uuid = 2;
+}
+
+// 通知：比赛公告更新
+message NotifyContestNoticeUpdate {
+  uint32 unique_id = 1;
+  uint32 notice_type = 2;
+  string content = 3;
+}
+
+// 通知：管理员下线
+message NotifyContestManagerKick {
+  uint32 reason = 1;
+}

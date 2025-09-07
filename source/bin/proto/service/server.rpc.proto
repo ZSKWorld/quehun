@@ -1,0 +1,1470 @@
+syntax = "proto3";
+
+package lq;
+
+option go_package = ".;majprotocol";
+
+import "cli.lobby.proto";
+import "cli.game.proto";
+import "com.struct.proto";
+
+service ServerRpc {
+
+  // ws-gateway => *
+  rpc forwardAccountRequest (ReqForwardAccountMessage) returns (ResForwardAccountMessage);
+  rpc forwardManagerRequest (ReqForwardAccountMessage) returns (ResForwardAccountMessage);
+
+  rpc forwardAccountActivityRequest(ReqForwardAccountActivityRequest) returns (ResForwardAccountActivityRequest);
+  rpc fetchAccountActivityData(ReqSrvFetchAccountActivityData) returns (ResSrvFetchAccountActivityData);
+  rpc modifyAccountActivityData(ReqSrvModifyAccountActivityData) returns (ResCommon);
+  rpc deleteAccountActivityData(ReqDeleteAccountActivityData) returns (ResCommon);
+
+  // ws-gateway => session-manger
+  rpc sessionClose(ReqCommon) returns (ResCommon);
+
+  // session-manager => ws-gateway
+  rpc setSessionStatus(ReqSetSessionStatus) returns (ResCommon);
+
+  // lobby => match
+  rpc startMatch (StartMatchQueue) returns (ResCommon);
+  rpc cancelMatch (CancelMatchQueue) returns (ResCancelMatchQueue);
+  rpc forceClearMatchState (ReqClearMatchState) returns (ResCommon);
+
+  // lobby => activity
+  rpc generateSimulationGameRecord(ReqGenerateSimulationGameRecord) returns (ResGenerateSimulationGameRecord);
+
+  // match => game
+  rpc createGame (CreateGame) returns (ResCreateGame);
+  rpc transportAction (ReqForwardAccountMessage) returns (ResForwardAccountMessage);
+
+  // ws-gateway => account-online
+  rpc accountLogin (ReqAccountLogin) returns (ResCommon);
+  rpc accountLogout (ReqAccountLogout) returns (ResCommon);
+  rpc accountNewId (ReqCommon) returns (ResAccountNewId);
+
+  // account-online => ws-gateway
+  rpc forwardAccount (ReqForwardAccount) returns (ResCommon);
+  rpc forwardAccountBatch (ReqForwardAccountBatch) returns (ResCommon);
+  rpc forwardSession (ReqForwardSession) returns (ResCommon);
+  rpc duplicateAccountLogin (ReqDuplicateAccountLogin) returns (ResCommon);
+
+  // ws-game-gateway => game
+  rpc authGame (ReqForwardAuthGame) returns (ResAuthGame);
+  rpc playerDisconnect (ReqPlayerDisconnect) returns (ResCommon);
+
+  rpc startObserve (ReqGameStartObserve) returns (ResGameStartObserve);
+  rpc stopObserve (ReqStopObserve) returns (ResCommon);
+  rpc observerDisconnect (ReqObserverDisconnect) returns (ResCommon);
+
+  // game => ws-game-gateway
+  rpc accountGameEnd(ReqAccountGameEnd) returns (ResCommon);
+
+  // api => game
+  rpc terminateGame (ReqTerminateGame) returns (ResCommon);
+  rpc pauseGame (ReqPauseGame) returns (ResCommon);
+  rpc resumeGame (ReqResumeGame) returns (ResCommon);
+
+  // => game-record
+  rpc saveGameRecord (ReqSaveGameRecord) returns (ResCommon);
+  rpc fetchGameRecord (ReqFetchGameRecord) returns (ResFetchGameRecord);
+
+  // => room
+  rpc notifyPlayerUpdate(ReqNotifyPlayerUpdate) returns (ResCommon);
+
+  // => gateway
+  rpc broadcastAnnouncement (ReqBroadcastAnnouncement) returns (ResCommon);
+  rpc broadcastOver5Clock (ReqCommon) returns (ResCommon);
+  rpc updateMatchCheat (ReqCommon) returns (ResCommon);
+  rpc broadcastRollingNotice (ReqCommon) returns (ResCommon);
+  rpc broadcastMaintainNotice (ReqCommon) returns (ResCommon);
+  rpc broadcastUpdateSettings (ReqCommon) returns (ResCommon);
+  rpc broadcastPaymentSettings (ReqCommon) returns (ResCommon);
+  rpc broadcastMessage (ReqBroadcastMessage) returns (ResCommon);
+
+  // => account-sync
+  rpc loadAccount (ReqLoadAccount) returns (ResCommon);
+  rpc loadAccountCacheView (ReqLoadAccount) returns (ResCommon);
+
+  // => game-live
+  rpc createGameLive (ReqCreateGameLive) returns (ResCreateGameLive);
+  rpc endGameLive (ReqEndGameLive) returns (ResCommon);
+  rpc terminateGameLive (ReqTernimateGameLive) returns (ResCommon);
+  rpc transportGameLiveSegment (ReqTransportGameLiveUnit) returns (ResCommon);
+  // 获取游戏直播信息（全视角）
+  rpc fetchGameLiveInfo (ReqGameLiveInfo) returns (ResGameLiveInfo);
+  // 获取游戏直播剩余分片信息（增量）
+  rpc fetchGameLiveLeftSegment (ReqGameLiveLeftSegment) returns (ResGameLiveLeftSegment);
+
+  // => game-live-filter
+  rpc syncGameLiveList (ReqSyncGameLiveList) returns (ResCommon);
+  rpc startGameLive (ReqStartGameLive) returns (ResCommon);
+  rpc finishGameLive (ReqFinishGameLive) returns (ResCommon);
+  rpc fetchGameLiveList (ReqGameLiveList) returns (ResGameLiveList);
+  rpc fetchCustomizedContestGameLiveList (ReqFetchCustomizedContestGameLiveList) returns (ResFetchCustomizedContestGameLiveList);
+
+  // => account-search
+  rpc searchNickname (ReqSearchNickname) returns (ResSearchNickname);
+  rpc modifyNickname (ReqChangeNickname) returns (ResCommon);
+
+  // => payment
+  rpc updatePaymentSetting (ReqCommon) returns (ResCommon);
+
+  rpc fetchPlatformProducts (lq.ReqPlatformBillingProducts) returns (lq.ResPlatformBillingProducts);
+  rpc createBillingOrder (lq.ReqCreateBillingOrder) returns (lq.ResCreateBillingOrder);
+  rpc solveGooglePlayOrder (lq.ReqSolveGooglePlayOrder) returns (ResCommon);
+  rpc solveGooglePayOrderV3(lq.ReqSolveGooglePlayOrderV3) returns (ResCommon);
+  rpc cancelGooglePlayOrder (lq.ReqCancelGooglePlayOrder) returns (ResCommon);
+
+  // rpc deliverNintendoOrder(lq.ReqDeliverNintendoOrder) returns (ResCommon);
+  rpc deliverAA32Order(lq.ReqDeliverAA32Order) returns (ResCommon);
+
+  rpc createWechatNativeOrder (lq.ReqCreateWechatNativeOrder) returns (lq.ResCreateWechatNativeOrder);
+  rpc createWechatAppOrder (lq.ReqCreateWechatAppOrder) returns (lq.ResCreateWechatAppOrder);
+  rpc createAlipayOrder (lq.ReqCreateAlipayOrder) returns (lq.ResCreateAlipayOrder);
+  rpc createAlipayScanOrder (lq.ReqCreateAlipayScanOrder) returns (lq.ResCreateAlipayScanOrder);
+  rpc createAlipayAppOrder (lq.ReqCreateAlipayAppOrder) returns (lq.ResCreateAlipayAppOrder);
+  rpc createJPCreditCardOrder (lq.ReqCreateJPCreditCardOrder) returns (lq.ResCreateJPCreditCardOrder);
+  rpc createJPPaypalOrder (lq.ReqCreateJPPaypalOrder) returns (lq.ResCreateJPPaypalOrder);
+  rpc createJPAuOrder (lq.ReqCreateJPAuOrder) returns (lq.ResCreateJPAuOrder);
+  rpc createJPDocomoOrder (lq.ReqCreateJPDocomoOrder) returns (lq.ResCreateJPDocomoOrder);
+  rpc createJPWebMoneyOrder (lq.ReqCreateJPWebMoneyOrder) returns (lq.ResCreateJPWebMoneyOrder);
+  rpc createJPSoftbankOrder (lq.ReqCreateJPSoftbankOrder) returns (lq.ResCreateJPSoftbankOrder);
+  rpc createJPPayPayOrder (lq.ReqCreateJPPayPayOrder) returns (lq.ResCreateJPPayPayOrder);
+  rpc fetchJPCommonCreditCardOrder (lq.ReqFetchJPCommonCreditCardOrder) returns (lq.ResFetchJPCommonCreditCardOrder);
+  rpc createJPGMOOrder (lq.ReqCreateJPGMOOrder) returns (lq.ResCreateJPGMOOrder);
+  rpc createYostarSDKOrder(lq.ReqCreateYostarOrder) returns (lq.ResCreateYostarOrder);
+  rpc createDMMOrder(lq.ReqCreateDMMOrder) returns (lq.ResCreateDmmOrder);
+  rpc createENPaypalOrder (lq.ReqCreateENPaypalOrder) returns (lq.ResCreateENPaypalOrder);
+  rpc createENMasterCardOrder (lq.ReqCreateENMasterCardOrder) returns (lq.ResCreateENMasterCardOrder);
+  rpc createENVisaOrder (lq.ReqCreateENVisaOrder) returns (lq.ResCreateENVisaOrder);
+  rpc createENJCBOrder (lq.ReqCreateENJCBOrder) returns (lq.ResCreateENJCBOrder);
+  rpc createENAlipayOrder (lq.ReqCreateENAlipayOrder) returns (lq.ResCreateENAlipayOrder);
+  rpc createKRPaypalOrder (lq.ReqCreateKRPaypalOrder) returns (lq.ResCreateKRPaypalOrder);
+  rpc createKRMasterCardOrder (lq.ReqCreateKRMasterCardOrder) returns (lq.ResCreateKRMasterCardOrder);
+  rpc createKRVisaOrder (lq.ReqCreateKRVisaOrder) returns (lq.ResCreateKRVisaOrder);
+  rpc createKRJCBOrder (lq.ReqCreateKRJCBOrder) returns (lq.ResCreateKRJCBOrder);
+  rpc createKRAlipayOrder (lq.ReqCreateKRAlipayOrder) returns (lq.ResCreateKRAlipayOrder);
+  rpc createIAPOrder (lq.ReqCreateIAPOrder) returns (lq.ResCreateIAPOrder);
+  rpc createMyCardAndroidOrder (lq.ReqCreateMyCardOrder) returns (lq.ResCreateMyCardOrder);
+  rpc createMyCardWebOrder (lq.ReqCreateMyCardOrder) returns (lq.ResCreateMyCardOrder);
+  rpc verifyMyCardOrder(lq.ReqVerifyMyCardOrder) returns (ResCommon);
+  rpc verificationIAPOrder (lq.ReqVerificationIAPOrder) returns (lq.ResVerificationIAPOrder);
+  rpc createSteamOrder (lq.ReqCreateSteamOrder) returns (lq.ResCreateSteamOrder);
+  rpc verifySteamOrder (lq.ReqVerifySteamOrder) returns (ResCommon);
+  rpc createPaypalOrder (lq.ReqCreatePaypalOrder) returns (lq.ResCreatePaypalOrder);
+  rpc createXsollaOrder (lq.ReqCreateXsollaOrder) returns (lq.ResCreateXsollaOrder);
+  rpc createXsollaV4Order (lq.ReqCreateXsollaOrder) returns (lq.ResCreateXsollaOrder);
+
+  rpc solveOrder (ReqSolveOrder) returns (ResCommon);
+  // 查询订单信息
+  rpc queryPaymentOrder (ReqQueryPaymentOrder) returns (ResQueryPaymentOrder);
+  // 查询订单信息 2
+  rpc queryPaymentOrderByPlatform (ReqQueryPaymentOrderByPlatform) returns (ResQueryPaymentOrderByPlatform);
+  // 刷新订单信息
+  rpc refreshPaymentOrder (ReqRefreshPaymentOrder) returns (ResRefreshPaymentOrder);
+  // 补发订单内容
+  rpc deliverPaymentOrder (ReqDeliverPaymentOrder) returns (ResDeliverPaymentOrder);
+  // 下载对账单
+  rpc downloadWechatBill (ReqDownloadWechatBill) returns (ResDownloadWechatBill);
+
+  // 订单退款
+  rpc refundPaymentOrder(ReqRefundPaymentOrder) returns (ResRefundPaymentOrder);
+
+  // => http file write
+  rpc writeQRCodePicture (ReqWriteQRCodePicture) returns (ResWriteQRCodePicture);
+
+  // => customized-contest
+  // 强制取消正在进行的赛事
+  rpc forceCancelContest (ReqForceCancelContest) returns (ResCommon);
+  rpc loginContestManager (ReqContestManagerLogin) returns (ResContestManagerLogin);
+  rpc logoutContestManager (ReqContestManagerLogout) returns (ResContestManagerLogout);
+  rpc forwardManager (ReqForwardManager) returns (ResCommon);
+  rpc updateContestType (ReqUpdateContestType) returns (ResCommon);
+  rpc afterMatchStart (ReqAfterMatchStart) returns (ResCommon);
+  rpc playerMatchTimeout (ReqPlayerMatchTimeout) returns (ResCommon);
+
+  rpc fetchManagerCustomizedContestList(ReqSrvFetchManagerCustomizedContestList) returns (ResSrvFetchManagerCustomizedContestList);
+  rpc fetchManagerCustomizedContest (ReqSrvFetchManagerCustomizedContest) returns (ResSrvFetchManagerCustomizedContest);
+  rpc updateManagerCustomizedContest(ReqSrvUpdateManagerCusomizedContest) returns (ResCommon);
+  rpc fetchContestPlayerRank(ReqSrvFetchContestPlayerRank) returns (ResSrvFetchContestPlayerRank);
+  rpc fetchReadyPlayerList(ReqSrvFetchReadyPlayerList) returns (ResSrvFetchReadyPlayerList);
+  rpc createGamePlan(ReqSrvCreateGamePlan) returns (ResCommon);
+  rpc fetchContestTeamRank(ReqSrvFetchContestTeamRank) returns (ResSrvFetchContestTeamRank);
+  rpc fetchContestTeamMember(ReqSrvFetchContestTeamMember) returns (ResSrvFetchContestTeamMember);
+  rpc fetchContestTeamPlayerRank(ReqSrvFetchContestTeamPlayerRank) returns (ResSrvFetchContestTeamPlayerRank);
+
+  // 获取赛事列表
+  rpc fetchCustomizedContestList (ReqSrvFetchCustomizedContestList) returns (ResSrvFetchCustomizedContestList);
+  // 获取赛事额外信息
+  rpc fetchCustomizedContestExtendInfo (ReqSrvFetchCustomizedContestExtendInfo) returns (ResSrvFetchCustomizedContestExtendInfo);
+  // 进入赛事
+  rpc enterCustomizedContest (ReqSrvEnterCustomizedContest) returns (ResSrvEnterCustomizedContest);
+  // 退出赛事
+  rpc leaveCustomizedContest (ReqSrvLeaveCustomizedContest) returns (ResCommon);
+  // 请求比赛在线信息
+  rpc fetchCustomizedContestOnlineInfo (ReqSrvFetchCustomizedContestOnlineInfo) returns (ResSrvFetchCustomizedContestOnlineInfo);
+  // 获取赛事基本信息（通过赛事ID）
+  rpc fetchCustomizedContestByContestId (ReqSrvFetchCustomizedContestByContestId) returns (ResSrvFetchCustomizedContestByContestId);
+  // 报名比赛
+  rpc signupCustomizedContest(ReqSrvSignupCustomizedContest) returns (ResSrvSignupCustomizedContest);
+  // 开始比赛匹配
+  rpc startCustomizedContest (ReqSrvStartCustomizedContest) returns (ResCommon);
+  // 停止比赛匹配
+  rpc stopCustomizedContest (ReqSrvStopCustomizedContest) returns (ResCommon);
+  // 进入比赛聊天室
+  rpc joinCustomizedContestChatRoom (ReqSrvJoinCustomizedContestChatRoom) returns (ResSrvJoinCustomizedContestChatRoom);
+  // 退出比赛聊天室
+  rpc leaveCustomizedContestChatRoom (ReqSrvLeaveCustomizedContestChatRoom) returns (ResCommon);
+  // 发送聊天消息
+  rpc sayChatMessage (ReqSrvSayChatMessage) returns (ResCommon);
+  // 查询赛事牌谱列表
+//  rpc fetchCustomizedContestGameRecords (ReqSrvFetchCustomizedContestGameRecords) returns (ResSrvFetchCustomizedContestGameRecords);
+  // 处理赛事审核
+  rpc handleContestModify(ReqSrvHandleContestModify) returns (ResCommon);
+  // 更新自定义比赛规则
+  rpc updateContestGameMode(ReqSrvContestGameMode) returns (ResCommon);
+  //
+  rpc updateContestObserverSwitch(ReqSrvUpdateContestObserverSwitch) returns (ResCommon);
+
+  // 创建大会室
+  rpc createContest(ReqSrvCreateContest) returns (ResSrvCreateContest);
+
+  // 关注自定义比赛
+  rpc followCustomizedContest (ReqTargetCustomizedContest) returns (ResCommon);
+  // 取消关注自定义比赛
+  rpc unfollowCustomizedContest (ReqTargetCustomizedContest) returns (ResCommon);
+
+  rpc fetchRoom (ReqRoomFetchRoom) returns (ResRoomFetchRoom);
+  rpc createRoom (ReqRoomCreateRoom) returns (ResRoomCreateRoom);
+  rpc joinRoom (ReqRoomJoinRoom) returns (ResRoomJoinRoom);
+  rpc leaveRoom (ReqRoomLeaveRoom) returns (ResCommon);
+  rpc readyPlay (ReqRoomReadyRoom) returns (ResCommon);
+  rpc dressingStatus (ReqRoomDressingStatus) returns (ResCommon);
+  rpc startRoom (ReqRoomStartRoom) returns (ResCommon);
+  rpc roomKickPlayer (ReqSrvRoomKickPlayer) returns (ResCommon);
+  rpc modifyRoom (ReqRoomModifyRoom) returns (ResCommon); // 已废弃
+  rpc addRoomRobot(ReqSrvAddRoomRobot) returns (ResCommon);
+  rpc roomGameFinished (ReqRoomGameFinished) returns (ResCommon);
+  rpc matchGameFinished (ReqMatchGameFinished) returns (ResCommon);
+  rpc contestGameFinished (ReqContestGameFinished) returns (ResCommon);
+
+  // => account-online
+  rpc notifyPlayerGameStart (ReqNotifyPlayerGameStart) returns (ResCommon);
+  rpc notifyPlayerGameEnd (ReqNotifyPlayerGameEnd) returns (ResCommon);
+  rpc notifyPlayerMatchTimeout (ReqNotifyPlayerMatchTimeout) returns (ResCommon);
+  rpc notifyPlayerMatchFailed (ReqNotifyPlayerMatchTimeout) returns (ResCommon);
+
+  // => game-controller
+  rpc handleGameEnd (ReqHandleGameFinished) returns (ResHandleGameFinished);
+
+  // => account-data
+  rpc saveAccountDataSync(ReqAccountInfo) returns (ResCommon);
+  rpc handleAccountGameComplete (ReqHandleAccountGameFinished) returns (ResHandleAccountGameFinished);
+  rpc handleAccountGameTerminate (ReqHandleAccountGameTerminate) returns (ResHandleAccountGameTerminate);
+  rpc fetchMultiAccountBrief(ReqMultiAccountId) returns (ResMultiAccountBrief);
+  rpc changeMainCharacter(ReqChangeMainChar) returns (ResCommon);
+
+  rpc fetchAccountNicknames (ReqAccountList) returns (ResAccountNicknames);
+  rpc fetchAccountInfo (ReqAccountInfo) returns (ResAccountInfo);
+  rpc fetchAccountInfoExtra (ReqFetchAccountInfoExtra) returns (ResFetchAccountInfoExtra);
+  rpc fetchAccountStatisticInfo (ReqAccountStatisticInfo) returns (ResAccountStatisticInfo);
+  rpc fetchCommentList (ReqFetchCommentList) returns (ResFetchCommentList);
+  rpc fetchCommentContent (ReqFetchCommentContent) returns (ResFetchCommentContent);
+  rpc fetchAccountChallengeRankInfo (ReqAccountInfo) returns (ResAccountChallengeRankInfo);
+
+  rpc setAccountAFKBanSetting(ReqAFKBanSetting) returns (ResCommon);
+
+  rpc importCustomizedContest(ReqImportCustomizedContest) returns (ResImportCustomizedContest);
+  rpc addCustomizedContestManager(ReqAddCustomizedContestManager) returns (ResCommon);
+  rpc deleteCustomizedContestManager(ReqAddCustomizedContestManager) returns (ResCommon);
+  rpc refreshPlayerGameData(ReqRefreshPlayerGameData) returns (ResCommon);
+  rpc addFollowCustomizedContest(ReqAddFollowCustomizedContest) returns (ResCommon);
+  rpc accountLeaveRoom(ReqSrvLeaveRoom) returns (ResCommon);
+
+  // => center-gift-code
+  rpc createGiftCodeUsage(ReqCreateGiftCodeUsage) returns (ResCommon);
+  rpc fetchGiftCodeUsage(ReqCommon) returns (ResFetchGiftCodeUsage);
+  rpc updateGiftCodeUsage(ReqUpdateGiftCodeUsage) returns(ResCommon);
+  rpc generateGiftCodes(ReqGenerateGiftCodes) returns (ResGenerateGiftCodes);
+  rpc fetchGiftCodeRecords(ReqFetchGiftCodeRecords) returns (ResFetchGiftCodeRecords);
+  rpc useCenterGiftCode(ReqUseCenterGiftCode) returns (ResUseCenterGiftCode);
+
+  rpc voteActivity(ReqServerVoteActivity) returns (ResCommon);
+  rpc fetchVoteActivity(lq.ReqFetchVoteActivity) returns (ResServerFetchVoteActivity);
+  rpc updateVoteActivity(ReqUpdateVoteActivity) returns(ResCommon);
+
+  rpc notifySeerReport(ReqSeverNotifySeerReport) returns (ResCommon);
+  rpc cleanSeerList(ReqAccountInfo) returns (ResCommon);
+}
+
+message ReqForwardAccountMessage {
+  uint32 account_id = 1;
+  string method = 2;
+  bytes request = 3;
+}
+
+message ReqForwardAccountActivityRequest {
+  uint32 account_id = 1;
+  string method = 2;
+  bytes request = 3;
+  bytes activity_data = 4;
+}
+
+message ResForwardAccountActivityRequest {
+  Error error = 1;
+  bytes response = 2;
+  bytes activity_data = 3;
+}
+
+message ReqSrvFetchAccountActivityData {
+  string type = 1;
+  uint32 account_id = 2;
+}
+
+message ResSrvFetchAccountActivityData {
+  Error error = 1;
+  bytes activity_data = 2;
+}
+
+message ReqSrvModifyAccountActivityData {
+  string type = 1;
+  uint32 account_id = 2;
+  bytes activity_data = 3;
+}
+
+message ReqDeleteAccountActivityData {
+  string type = 1;
+  uint32 account_id = 2;
+}
+
+message ResForwardAccountMessage {
+  Error error = 1;
+  bytes response = 2;
+}
+
+message ReqSetSessionStatus {
+  string session_id = 1;
+  uint32 status = 2;
+}
+
+message StartMatchQueue {
+  uint32 account_id = 1;
+  uint32 mode_id = 2;
+  PlayerGameView view = 3;
+}
+
+message ReqChangeMainChar {
+  uint32 account_id = 1; // 账户id
+  uint32 char_id = 2; // 角色id
+  uint32 skin = 3; // 皮肤id
+}
+
+message CancelMatchQueue {
+  uint32 account_id = 1;
+  uint32 mode_id = 2;
+}
+message ResCancelMatchQueue {
+  Error error = 1;
+  uint32 match_state = 2;
+}
+
+message ReqClearMatchState {
+  uint32 account_id = 1;
+}
+
+message MatchQueueTimeout {
+  uint32 account_id = 1;
+}
+
+message SimulationGameResultWeight {
+  uint32 type = 1;
+  uint32 weight = 2;
+}
+
+message ReqGenerateSimulationGameRecord {
+  uint32 account_id = 1;
+  uint32 rank = 2;
+  uint32 seat = 3;
+  repeated SimulationGameResultWeight result_weight = 4;
+}
+
+message ResGenerateSimulationGameRecord {
+  Error error = 1;
+  repeated int32 scores = 2;
+  string uuid = 3;
+}
+
+message CreateGame {
+  uint32 category = 1;
+
+  GameMetaData meta_options = 2; // 创建时和category有关的参数
+
+  message GameOptions {
+    GameMode mode = 1;
+    repeated int32 init_points = 2; // 设置座位初始分
+    bool public_live = 3; // 开放观战
+    bool shuffle_seats = 4; // 随机打乱座位
+  }
+  GameOptions game_options = 3;
+
+  repeated PlayerGameView players = 4;
+  repeated PlayerGameView bots = 5;
+}
+message ResCreateGame {
+  Error error = 1;
+  string game_uuid = 2;
+  string url = 3;
+
+  message GameToken {
+    uint32 account_id = 1;
+    string token = 2;
+  }
+  repeated GameToken tokens = 4;
+
+  string location = 5;
+}
+
+message ReqSrvLeaveRoom {
+  uint32 account_id = 1;
+  uint32 room_id = 2;
+}
+
+message ReqForwardAccount {
+  uint32 account_id = 1;
+  bytes packet = 2; // 直接转发的内容（Notify类型的包）
+}
+
+message ReqForwardAccountBatch {
+  repeated uint32 account_id_list = 1;
+  bytes packet = 2; // 直接转发的内容（Notify类型的包）
+}
+
+message ReqForwardSession {
+  string session_id = 1;
+  bytes packet = 2;
+}
+
+message ReqAccountLogin {
+  uint32 account_id = 1;
+
+  message GatewayCommunicationListen {
+    string address = 1;
+    uint32 port = 2;
+  }
+  GatewayCommunicationListen gateway_listen = 2;
+
+  uint32 room_id = 3;
+  bool is_playing = 4;
+}
+
+message ReqAccountLogout {
+  uint32 account_id = 1;
+}
+
+message ResAccountNewId {
+  Error error = 1;
+  uint32 account_id = 2;
+}
+
+// 玩家重复登录
+message ReqDuplicateAccountLogin {
+  uint32 account_id = 1;
+}
+
+
+message ReqForwardAuthGame {
+  uint32 account_id = 1;
+  string account = 2;
+  string game_uuid = 3;
+  string remote_address = 4;
+  uint32 unique_id = 5; // 随机数值 （用于判断session的唯一性）
+}
+
+message ReqPlayerDisconnect {
+  uint32 account_id = 1;
+  uint32 unique_id = 2; // 随机数值 （用于判断session的唯一性）
+}
+
+message ReqGameStartObserve {
+  uint32 account_id = 1;
+  string game_uuid = 2;
+  string remote_address = 3;
+  uint32 unique_id = 4; // 随机数值 （用于判断session的唯一性）
+}
+message ResGameStartObserve {
+  Error error = 1;
+  GameLiveHead head = 2;
+  GameLiveSegment passed = 3; // 过去的记录
+}
+message ReqStopObserve {
+  uint32 account_id = 1;
+  uint32 unique_id = 2;
+}
+message ReqObserverDisconnect {
+  uint32 account_id = 1;
+  uint32 unique_id = 2;
+}
+
+message ReqAccountGameEnd {
+  uint32 account_id = 1;
+}
+
+message ReqTerminateGame {
+  string game_uuid = 1;
+  string reason = 2;
+}
+
+message ReqPauseGame {
+  string game_uuid = 1;
+}
+
+message ReqResumeGame {
+  string game_uuid = 1;
+}
+
+message ReqSaveGameRecord {
+  string game_uuid = 1;
+  bytes record = 2;
+}
+
+message ReqFetchGameRecord {
+  string game_uuid = 1;
+}
+message ResFetchGameRecord {
+  Error error = 1;
+  bytes data = 2;
+  string data_url = 3;  // 牌谱打牌数据url地址
+}
+
+message ReqNotifyPlayerUpdate {
+  uint32 account_id = 1;
+  lq.PlayerGameView view = 2;
+}
+
+message ReqBroadcastAnnouncement {
+  message AnnouncementUpdate {
+    string lang = 1;
+    string platform = 2;
+  }
+
+  repeated AnnouncementUpdate update_list = 1;
+}
+
+message ReqBroadcastMessage {
+  bytes message_data = 1;
+}
+
+message ReqLoadAccount {
+  uint32 account_id = 1;
+}
+
+message ReqCreateGameLive {
+  string game_uuid = 1;
+  GameLiveHead head = 2;
+  bool public_live = 3; // 公开观战
+}
+message ResCreateGameLive {
+  Error error = 1;
+}
+message ReqEndGameLive {
+  string game_uuid = 1;
+  uint32 end_time = 2; // second
+}
+message ReqTernimateGameLive {
+  string game_uuid = 1;
+  uint32 terminate_time = 2; // second
+}
+message ReqTransportGameLiveUnit {
+  string game_uuid = 1;
+  uint32 segment_id = 2;
+  GameLiveSegment segment = 3;
+  string segment_round_id = 4; // 分片回合id：所属分片中的最后一段的回合id
+}
+
+message ReqSyncGameLiveList {
+  message GameLiveData {
+    string game_uuid = 1;
+    GameLiveHead head = 2;
+  }
+  repeated GameLiveData live_list = 1;
+}
+message ReqStartGameLive {
+  string game_uuid = 1;
+  GameLiveHead head = 2;
+  bool public_live = 3; // 公开观战
+}
+message ReqFinishGameLive {
+  repeated string game_uuid_list = 1;
+}
+
+
+message ReqSearchNickname {
+  string pattern = 1;
+  uint32 limit = 2;
+}
+message ResSearchNickname {
+  Error error = 1;
+  repeated string matched = 2;
+}
+
+message ReqChangeNickname {
+  string new_nickname = 1;
+  string old_nickname = 2;
+}
+
+message ResAccountNicknames {
+  Error error = 1;
+  message Data {
+    uint32 account_id = 1;
+    string nickname = 2;
+  }
+  repeated Data datas = 2;
+}
+// // 协议：获取对应平台的商品列表
+// message ReqPlatformBillingProducts {
+//   uint32 shelves_id = 1; // 货架ID
+// }
+// message ResPlatformBillingProducts {
+//   Error error = 1;
+//   repeated BillingProduct products = 2;
+// }
+
+// // 协议：创建支付订单
+// message ReqCreateBillingOrder {
+//   string goods_id = 1; // 商品ID
+//   uint32 payment_platform = 2; // 支付渠道类型枚举
+//   uint32 client_type = 3; // 设备类型
+//   uint32 account_id = 4; // 账号ID
+// }
+
+// // 协议：处理 Google Play 支付完成
+// message ReqSolveGooglePlayOrder {
+//   string inapp_purchase_data = 2; // INAPP_PURCHASE_DATA 字段
+//   string inapp_data_signature = 3; // INAPP_DATA_SIGNATURE 字段
+// }
+
+message ReqSolveOrder {
+  string order_id = 1; // 支付订单id
+  uint32 payment_state = 2; // 支付订单的支付状态
+}
+
+message PaymentOrder {
+  string order_id = 1;
+  string product_id = 2;
+  uint32 goods_id = 3;
+  string currency_code = 4;
+  uint32 currency_price = 5;
+  uint32 account_id = 6;
+  uint32 client_type = 7;
+  uint32 payment_platform = 8;
+  string payment_platform_trade_type = 9;
+  string payment_platform_order_id = 10;
+  uint32 payment_state = 11;
+  uint32 deliver_state = 12;
+  uint32 create_time = 13;
+  uint32 success_time = 14;
+  uint32 closed_time = 15;
+  uint32 refund_time = 16;
+  string error_message = 17;
+}
+
+// 查询订单信息
+message ReqQueryPaymentOrder {
+  string order_id = 1;
+}
+message ResQueryPaymentOrder {
+  Error error = 1;
+  PaymentOrder order = 2; // json string content
+}
+
+// 查询订单信息 2
+message ReqQueryPaymentOrderByPlatform {
+  uint32 payment_platform = 1;
+  string payment_platform_order_id = 2;
+}
+message ResQueryPaymentOrderByPlatform {
+  Error error = 1;
+  PaymentOrder order = 2; // json string content
+}
+
+
+// 刷新订单信息
+message ReqRefreshPaymentOrder {
+  uint32 order_platform_type = 1; // 刷新的支付平台类型
+  string order_platform_order_id = 2; // 刷新的支付平台订单Id
+  string origin_order_id = 3; // 自身的订单Id
+  string trade_type = 4; // 平台交易类型（目前微信支付才有用）
+}
+message ResRefreshPaymentOrder {
+  Error error = 1;
+  PaymentOrder order = 2; // json string content
+}
+
+// 补发订单内容
+message ReqDeliverPaymentOrder {
+  string order_id = 1;
+}
+message ResDeliverPaymentOrder {
+  Error error = 1;
+  PaymentOrder order = 2; // json string content
+}
+
+// 下载对账单
+message ReqDownloadWechatBill {
+  string bill_type = 1;
+  string bill_date = 2;
+}
+message ResDownloadWechatBill {
+  Error error = 1;
+  string content = 2;
+}
+
+message ReqRefundPaymentOrder {
+  string order_id = 1;
+}
+
+message ResRefundPaymentOrder {
+  Error error = 1;
+  bool is_frozen = 2;
+  bool is_banned = 3;
+}
+
+message ReqWriteQRCodePicture {
+  string content = 1;
+  uint32 expire_duration = 2; // 超时时长
+}
+message ResWriteQRCodePicture {
+  Error error = 1;
+  string qr_code_url = 2;
+}
+
+message ReqForceCancelContest {
+  uint32 unique_id = 1;
+}
+
+message ReqContestManagerLogin {
+  uint32 account_id = 1;
+  string nickname = 2;
+  uint32 session_id = 3;
+}
+message ResContestManagerLogin {
+  Error error = 1;
+  uint32 last_create_time = 2;
+}
+
+message ReqContestManagerLogout {
+  uint32 account_id = 1;
+  uint32 session_id = 2;
+}
+message ResContestManagerLogout {
+  Error error = 1;
+}
+
+message ReqForwardManager {
+  uint32 account_id = 1;
+  bytes packet = 2; // 直接转发的内容（Notify类型的包）
+}
+
+message ReqUpdateContestType {
+  uint32 unique_id = 1;
+  uint32 contest_type = 2;
+  repeated uint32 hot_zones = 3;
+}
+
+message ReqAfterMatchStart {
+  uint32 unique_id = 1;
+  repeated uint32 players = 2;
+  string uuid = 3;
+}
+
+message ReqPlayerMatchTimeout {
+  repeated uint32 account_list = 1;
+  uint32 unique_id = 2;
+}
+
+message ReqRoomFetchRoom {
+  uint32 account_id = 1;
+}
+message ResRoomFetchRoom {
+  Error error = 1;
+  Room room = 2;
+}
+
+message ReqRoomCreateRoom {
+  uint32 account_id = 1;
+  PlayerGameView view = 2;
+  ReqCreateRoom forward = 3;
+}
+message ResRoomCreateRoom {
+  Error error = 1;
+  Room room = 2;
+}
+
+message ReqRoomJoinRoom {
+  uint32 account_id = 1;
+  uint32 room_id = 2;
+  PlayerGameView view = 3;
+}
+message ResRoomJoinRoom {
+  Error error = 1;
+  Room room = 2;
+}
+
+message ReqRoomLeaveRoom {
+  uint32 account_id = 1;
+}
+
+message ReqRoomReadyRoom {
+  uint32 account_id = 1;
+  bool ready = 2; // true=准备 false=取消准备
+}
+
+message ReqRoomDressingStatus {
+  uint32 account_id = 1;
+  bool dressing = 2; // true=正在装扮 false=正常状态
+}
+
+message ReqRoomStartRoom {
+  uint32 account_id = 1;
+}
+
+message ReqSrvRoomKickPlayer {
+  uint32 account_id = 1;
+  uint32 kicked_id = 2;
+  uint32 room_id = 3;
+}
+
+message ReqRoomModifyRoom {
+  uint32 account_id = 1;
+  uint32 robot_count = 2;
+}
+
+message ReqSrvAddRoomRobot {
+  uint32 account_id = 1;
+  uint32 position = 2;
+  PlayerGameView view = 3;
+}
+
+message ReqRoomGameFinished {
+  uint32 room_id = 1;
+  string game_uuid = 2;
+  bool is_complete = 3; // 正常完成
+  repeated uint32 need_kicked = 4;
+  repeated uint32 players = 5;
+}
+
+message ReqMatchGameFinished {
+  string game_uuid = 1;
+  bool is_complete = 2; // 正常完成
+  repeated uint32 players = 3;
+}
+
+message ReqContestGameFinished {
+  uint32 contest_uid = 1;
+  string game_uuid = 2;
+  uint32 create_time = 3;
+  uint32 finish_time = 4;
+  bool is_complete = 5;
+
+  message ContestPlayer {
+    uint32 account_id = 1;
+    string nickname = 2;
+    int32 total_point = 3;
+    uint32 rank = 4;
+  }
+  repeated ContestPlayer players = 6;
+
+  message ContestGameMarkInfo {
+    message ContestGameYimanInfo {
+      uint32 chang = 1;
+      uint32 ju = 2;
+      uint32 ben = 3;
+      uint32 yiman = 4;
+      uint32 account_id = 5;
+      string nickname = 6;
+    }
+    repeated ContestGameYimanInfo yiman = 1;
+  }
+
+  ContestGameMarkInfo mark_info = 7;
+}
+
+message ReqNotifyPlayerGameStart {
+  uint32 account_id = 1;
+  string game_uuid = 2;
+  string game_url = 3;
+  string connect_token = 4;
+  uint32 category = 5;
+  GameMetaData meta = 6;
+  string location = 7; // zone or local
+  uint32 char_id = 8;
+  uint32 skin = 9;
+}
+message ReqNotifyPlayerGameEnd {
+  uint32 account_id = 1;
+  string game_uuid = 2;
+  uint32 category = 3;
+  message Extra {
+    bool clear_room = 1;
+  }
+  Extra extra = 4;
+}
+message ReqNotifyPlayerMatchTimeout {
+  uint32 account_id = 1;
+  string sid = 2;
+}
+
+
+message ReqHandleGameFinished {
+  GameFinalSnapshot snapshot = 1;
+  bytes record = 2;
+  GameEndResult result = 3;
+  RecordAnalysisedData analysis_record = 4;
+}
+message ResHandleGameFinished {
+  Error error = 1;
+
+  message Response {
+    uint32 account_id = 1;
+    NotifyGameFinishReward game_finish_notify = 2;
+    NotifyActivityReward activity_notify = 3;
+    NotifyActivityPoint activity_point_notify = 4;
+    NotifyLeaderboardPoint leaderboard_point_notify = 5;
+  }
+  repeated Response notifies = 2;
+}
+
+message ReqHandleAccountGameFinished {
+  uint32 account_id = 1;
+  GameFinalSnapshot snapshot = 2;
+  GameEndResult result = 3;
+  RecordAnalysisedData analysis_record = 4;
+  uint32 category = 5;
+  repeated uint32 need_kicked = 6;
+}
+message ResHandleAccountGameFinished {
+  Error error = 1;
+  NotifyGameFinishReward game_finish_notify = 2;
+  NotifyActivityReward activity_notify = 3;
+  NotifyActivityPoint activity_point_notify = 4;
+  NotifyLeaderboardPoint leaderboard_point_notify = 5;
+}
+
+message ReqHandleAccountGameTerminate {
+  uint32 account_id = 1;
+}
+message ResHandleAccountGameTerminate {
+  Error error = 1;
+}
+
+
+message ReqSrvFetchManagerCustomizedContestList {
+  uint32 account_id = 1;
+  string lang = 2;
+}
+
+message ResSrvFetchManagerCustomizedContestList {
+  Error error = 1;
+  repeated CustomizedContestBase contests = 2; // 比赛列表
+}
+
+message ReqSrvFetchManagerCustomizedContest {
+  uint32 account_id = 1;
+  uint32 unique_id = 2;
+}
+
+message ResSrvFetchManagerCustomizedContest {
+  Error error = 1;
+  string name = 2;
+  uint32 open_show = 3;
+  GameMode game_rule_setting = 4;
+  uint32 start_time = 5;
+  uint32 end_time = 6;
+  uint32 auto_match = 7;
+  uint32 rank_rule = 8;
+  uint32 check_state = 9; // 审核状态 0-正常 1-正在审核中
+  string checking_name = 10; // 审核中的名称
+  ContestSetting contest_setting = 11;
+  uint32 season_type = 12;
+}
+
+message ReqSrvUpdateManagerCusomizedContest {
+  string name = 1;
+  uint32 open_show = 2;
+  GameMode game_rule_setting = 3;
+  uint32 start_time = 4;
+  uint32 end_time = 5;
+  uint32 unique_id = 6;
+  uint32 account_id = 7;
+  uint32 auto_match = 8;
+  uint32 rank_rule = 9;
+  ContestSetting contest_setting = 10;
+}
+
+message ReqSrvFetchContestPlayerRank {
+  uint32 account_id = 1;
+  uint32 unique_id = 2;
+  uint32 limit = 3;
+  uint32 offset = 4;
+}
+
+message ResSrvFetchContestPlayerRank {
+  message ContestPlayerAccountData {
+    message ContestGameResult {
+      uint32 rank = 1;
+      int32 total_point = 2;
+    }
+    message ContestSeriesGameResult {
+      uint32 key = 1;
+      repeated ContestGameResult results = 2;
+    }
+    uint32 total_game_count = 1;
+    repeated ContestGameResult recent_games = 2;
+    repeated ContestSeriesGameResult highest_series_points = 3;
+  }
+  message SeasonRank {
+    uint32 account_id = 1;
+    string nickname = 2;
+    ContestPlayerAccountData data = 3;
+  }
+  message PlayerData {
+    uint32 rank = 1;
+    ContestPlayerAccountData data = 2;
+  }
+  Error error = 1;
+  uint32 total = 2;
+  repeated SeasonRank rank = 3;
+  PlayerData player_data = 4;
+}
+
+message ReqSrvFetchReadyPlayerList {
+  uint32 account_id = 1;
+  uint32 unique_id = 2;
+}
+
+message ResSrvFetchReadyPlayerList {
+  message Player {
+    uint32 account_id = 1;
+    string nickname = 2;
+    string team_name = 3;
+  }
+  Error error = 1;
+  repeated Player list = 2;
+}
+
+message ReqSrvCreateGamePlan {
+  uint32 account_id = 1;
+  uint32 unique_id = 2;
+  repeated uint32 account_list = 3; // 0=电脑
+  uint32 game_start_time = 4;
+  uint32 shuffle_seats = 5; // 0=不随机座位 1=随机座位
+  uint32 ai_level = 6; // 0=摸切电脑 1=简单电脑 2=普通电脑
+}
+
+// 大会室团队赛个人排名请求协议
+message ReqSrvFetchContestTeamPlayerRank {
+  uint32 unique_id = 1; // 赛事唯一id
+  uint32 season_id = 2; // 赛程id
+  uint32 offset = 4;
+  uint32 limit = 5;
+  uint32 account_id = 6;
+}
+
+// 大会室团队赛个人协议返回协议
+message ResSrvFetchContestTeamPlayerRank {
+  message ContestTeamPlayerAccountData {
+    uint32 rank = 1; // 玩家名次
+    int32 total_point = 2; // 玩家累计总分
+    uint32 total_game_count = 3; // 玩家对局总数
+  }
+  message SeasonTeamRank {
+    uint32 account_id = 1; // 玩家id
+    string nickname = 2; // 玩家昵称
+    ContestTeamPlayerAccountData data = 3; // 玩家排名数据
+    string team_name = 4; // 团队名称（若当前玩家不属于任何队伍则为空）
+    uint32 team_id = 5; // 团队id
+  }
+  message PlayerData {
+    uint32 rank = 1; // 当前玩家排名
+    ContestTeamPlayerAccountData data = 2;
+    string team_name = 3; // 团队名称（若当前玩家不属于任何队伍则为空）
+    uint32 team_id = 4; // 团队id
+  }
+  Error error = 1;
+  uint32 total = 2; // 玩家总数
+  repeated SeasonTeamRank rank = 3; // 排行榜位次信息
+  PlayerData player_data = 4; // 当前玩家排名数据
+}
+
+message ReqSrvFetchContestTeamRank {
+  uint32 unique_id = 1; // 赛事唯一id
+  uint32 season_id = 2; // 赛程id
+  uint32 limit = 3;
+  uint32 offset = 4;
+  uint32 account_id = 5;
+}
+ 
+// 团队赛排行榜返回信息
+message ResSrvFetchContestTeamRank {
+  message ContestTeamRankResult {
+    uint32 rank = 1; // 团队名次
+    int32 total_point = 2; // 团队累计总分
+    uint32 total_game_count = 3; // 全队累计对局次数
+    uint32 member_count = 4; // 队员总数
+  }
+  message SeasonTeamRank {
+    uint32 team_id = 1; // 队伍id
+    string name = 2; // 队伍名称
+    ContestTeamRankResult result = 3; // 队伍排名数据
+  }
+  Error error = 1;
+  uint32 total = 2; // 当前队伍总数
+  repeated SeasonTeamRank rank = 3; // 排行榜总数据
+  SeasonTeamRank team_rank = 4; // 玩家所在队伍数据（玩家无归属时该字段为空）
+}
+
+// 队伍明细请求数据
+message ReqSrvFetchContestTeamMember {
+  uint32 unique_id = 1; // 赛事唯一id
+  uint32 season_id = 2; // 赛程id
+  uint32 team_id = 3; // 队伍id
+  uint32 offset = 4;
+  uint32 limit = 5;
+  uint32 account_id = 6;
+}
+ 
+// 队伍明细返回数据
+message ResSrvFetchContestTeamMember {
+  message ContestTeamMember {
+    uint32 account_id = 1; // 玩家id
+    uint32 total_game_count = 3; // 玩家对局总数
+    int32 total_score = 4; // 玩家分数
+    string nickname = 5; // 玩家昵称
+  }
+  Error error = 1;
+  repeated ContestTeamMember members = 2; // 玩家列表按分数排序
+}
+
+// 协议：获取赛事列表
+message ReqSrvFetchCustomizedContestList {
+  uint32 start = 1;
+  uint32 count = 2; // 服务器限制最多 100 个
+  repeated uint32 follow_list = 3; // 关注列表
+  uint32 zone = 4;
+  string lang = 5;
+}
+message ResSrvFetchCustomizedContestList {
+  Error error = 1;
+  repeated CustomizedContestBase contests = 2; // 比赛列表
+  repeated CustomizedContestBase follow_contests = 3; // 关注的比赛列表（与contests会有重复）
+}
+
+// 协议：获取赛事额外信息
+message ReqSrvFetchCustomizedContestExtendInfo {
+  repeated uint32 uid_list = 1; // unique_id list 最多20个
+}
+message ResSrvFetchCustomizedContestExtendInfo {
+  Error error = 1;
+  repeated CustomizedContestExtend extend_list = 2; // 找不到的不会给（也就是返回长度可能小于请求长度）
+}
+
+// 协议：进入赛事主页
+message ReqSrvEnterCustomizedContest {
+  uint32 unique_id = 1;
+  uint32 account_id = 2;
+  string lang = 3;
+}
+message ResSrvEnterCustomizedContest {
+  Error error = 1;
+  CustomizedContestDetail detail_info = 2;
+  CustomizedContestPlayerReport player_report = 3; // null 表示没有 参与
+  bool is_followed = 4;
+  uint32 state = 5;
+  bool is_admin = 6;
+}
+
+message ReqSrvLeaveCustomizedContest {
+  uint32 account_id = 1;
+}
+
+// 协议：请求比赛在线信息
+message ReqSrvFetchCustomizedContestOnlineInfo {
+  uint32 unique_id = 1;
+}
+message ResSrvFetchCustomizedContestOnlineInfo {
+  Error error = 1;
+  uint32 online_player = 2; // 在线人数
+}
+
+// 协议：获取赛事基本信息（通过赛事ID）
+message ReqSrvFetchCustomizedContestByContestId {
+  uint32 contest_id = 1;
+  uint32 zone = 2;
+  string lang = 3;
+}
+message ResSrvFetchCustomizedContestByContestId {
+  Error error = 1;
+  CustomizedContestAbstract contest_info = 2;
+}
+
+// 协议：报名赛事
+message ReqSrvSignupCustomizedContest {
+  uint32 unique_id = 1;
+  uint32 account_id = 2;
+  string nickname = 3;
+  uint32 level_id = 4;
+  uint32 level3_id = 5;
+}
+
+message ResSrvSignupCustomizedContest {
+  Error error = 1;
+  uint32 state = 2;
+}
+
+// 协议：开始比赛匹配
+message ReqSrvStartCustomizedContest {
+  uint32 unique_id = 1;
+  PlayerGameView account = 2;
+}
+
+message ReqSrvStopCustomizedContest {
+  uint32 account_id = 1;
+  uint32 unique_id = 2;
+}
+
+// 协议：进入比赛聊天室
+message ReqSrvJoinCustomizedContestChatRoom {
+  uint32 unique_id = 1;
+  PlayerBaseView account_view = 2;
+  // uint32 account_id = 2;
+}
+message ResSrvJoinCustomizedContestChatRoom {
+  Error error = 1;
+  string token = 2;
+  // repeated bytes chat_history = 2; // 聊天历史
+}
+
+message ReqSrvLeaveCustomizedContestChatRoom {
+  uint32 account_id = 1;
+}
+
+// 协议：发送聊天消息
+message ReqSrvSayChatMessage {
+  string content = 1;
+  uint32 account_id = 2;
+  // PlayerBaseView account = 2;
+  uint32 unique_id = 3;
+}
+
+message ReqSrvHandleContestModify {
+  uint32 auto_id = 1;
+  uint32 result = 2;
+  string random = 3;
+  string reason = 4;
+}
+
+message ReqSrvContestGameMode {
+  uint32 unique_id = 1;
+
+  message UpdateContestGameRule {
+    string contest_name = 1;
+    uint32 start_time = 2;
+    uint32 finish_time = 3;
+    bool open = 4; // 公开
+    uint32 rank_rule = 5; // 排名显示方式
+    GameRuleSetting game_rule_setting = 6; // 游戏详细规则
+    bool auto_match = 7;
+    bool auto_disable_end_chat = 8;
+    uint32 contest_type = 9;
+    string banned_zones = 10;
+    string hidden_zones = 11;
+    bool emoji_switch = 12;
+    uint32 player_roster_type = 13;
+    repeated uint32 hot_zones = 14;
+  }
+  UpdateContestGameRule rule = 2;
+}
+
+message ReqSrvCreateContest {
+  uint32 open_show = 1;
+  uint32 start_time = 2;
+  uint32 end_time = 3;
+  string name = 4;
+  uint32 account_id = 5;
+  string nickname = 6;
+  GameMode game_rule_setting = 7;
+}
+
+message ResSrvCreateContest {
+  Error error = 1;
+  uint32 unique_id = 2;
+}
+
+message ReqSrvUpdateContestObserverSwitch {
+  uint32 unique_id = 1;
+  uint32 observer_switch = 2;
+}
+
+//
+message ReqAFKBanSetting {
+  message AFKLevelConfig {
+    uint32 level = 1;
+    uint32 time = 2;
+    uint32 upgrade_count = 3;
+    uint32 upgrade_day = 4;
+  }
+
+  uint32 continue_count = 1;
+  uint32 day_sum_count = 2;
+  uint32 day_afk_count = 3;
+  repeated AFKLevelConfig level_config = 4;
+  uint32 min_deal_tile_count = 5;
+  uint32 min_moqie_percent = 6;
+  bool enabled = 7;
+}
+
+message ReqImportCustomizedContest {
+  message UnitData {
+    string file = 1;
+    uint32 unique_id = 2;
+  }
+  repeated UnitData list = 1;
+}
+
+message ResImportCustomizedContest {
+  message ImportError {
+    string file_url = 1;
+    string message = 2;
+  }
+  Error error = 1;
+  repeated ImportError errors = 2;
+}
+
+message ReqAddCustomizedContestManager {
+  uint32 unique_id = 1;
+  uint32 account_id = 2;
+  string nickname = 3;
+}
+
+message ReqRefreshPlayerGameData {
+  uint32 unique_id = 1;
+}
+
+message ReqAddFollowCustomizedContest {
+  uint32 unique_id = 1;
+  repeated uint32 account_list = 2;
+}
+
+message ReqSaveAccountDataSync {
+  uint32 account_id = 1;
+}
+
+message ReqCreateGiftCodeUsage {
+  uint32 usage_id = 1;
+  uint32 start_time = 2;
+  uint32 finish_time = 3;
+  string reward_content = 4;
+  string description = 5;
+  uint32 discarded = 6;
+  uint32 hidden = 7;
+  uint32 dup_use_code = 8;
+  uint32 dup_use_usage = 9;
+  string available_zones = 10;
+}
+
+message ResFetchGiftCodeUsage {
+  message GiftCodeUsage {
+    uint32 usage_id = 1;
+    uint32 start_time = 2;
+    uint32 finish_time = 3;
+    string reward_content = 4;
+    string description = 5;
+    uint32 discarded = 6;
+    uint32 hidden = 7;
+    uint32 dup_use_code = 8;
+    uint32 dup_use_usage = 9;
+    string available_zones = 10;
+    uint32 create_time = 11;
+  }
+  Error error = 1;
+  repeated GiftCodeUsage list = 2;
+}
+
+message ReqUpdateGiftCodeUsage {
+  uint32 usage_id = 1;
+  uint32 discarded = 2;
+  uint32 hidden = 3;
+  string available_zones = 4;
+}
+
+message ReqGenerateGiftCodes {
+  uint32 count = 1;
+  uint32 usage_id = 2;
+}
+
+message ResGenerateGiftCodes {
+  Error error = 1;
+  uint32 success = 2;
+  uint32 failed = 3;
+}
+
+message ReqFetchGiftCodeRecords {
+  uint32 usage_id = 1;
+}
+
+message ResFetchGiftCodeRecords {
+  message GiftCodeRecord {
+    string giftcode = 1;
+    uint32 usage_id = 2;
+    uint32 create_time = 3;
+    uint32 origin_id = 4;
+    uint32 use_count = 5;
+  }
+
+  Error error = 1;
+  repeated GiftCodeRecord records = 2;
+}
+
+message ReqUseCenterGiftCode {
+  uint32 account_id = 1;
+  string nickname = 2;
+  string code = 3;
+}
+
+message ResUseCenterGiftCode {
+  Error error = 1;
+  repeated lq.RewardSlot rewards = 2;
+}
+
+message ReqServerVoteActivity {
+  uint32 vote = 1;
+  uint32 activity_id = 2;
+  uint32 account_id = 3;
+  uint32 server = 4;
+  uint32 count = 5;
+}
+
+message ResServerFetchVoteActivity {
+  message VoteResult {
+    uint32 vote = 1;
+    uint32 count = 2;
+    int32 modify = 3;
+    uint32 hidden = 4;
+  }
+
+  Error error = 1;
+  repeated VoteResult vote_result = 2;
+}
+
+message ReqUpdateVoteActivity {
+  uint32 activity_id = 1;
+  uint32 vote = 2;
+  int32 modify = 3;
+  uint32 hidden = 4;
+}
+
+message ReqSeverNotifySeerReport {
+  string uuid = 1;
+  uint32 account_id = 2;
+  repeated lq.SeerScore player_scores = 3;
+}

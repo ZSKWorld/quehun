@@ -1,6 +1,12 @@
 import { SingletonExtend } from "../common/Singleton";
 import { Observer } from "../mvc/provider/Observer";
-import { MessageType } from "./enum/MessageType";
+import { HeaderType, ServiceType } from "./NetDefine";
+
+interface IWaitRpcInfo{
+    service: ServiceType;
+    method: string;
+    cb: protobuf.RPCImplCallback;
+}
 
 const enum SocketState {
     /** 未连接 */
@@ -35,14 +41,16 @@ export const enum SocketEvent {
     Close = "SocketEvent_Close",
 }
 
-export class WebSocket {
-
-    private _url: string = "ws://192.168.1.105:8007";
+export class WebSocket extends Laya.EventDispatcher {
     private _socket: Laya.Socket;
+    private _routeInfo: IRouteInfo;
+    private _tail: string;
+    private _rpcServices: { [key in ServiceType]?: protobuf.rpc.Service } = {};
+    private _rpcIndex = 0;
     private _state: SocketState = SocketState.Disconnect;
-    private _waitList: (IUserInput | Function)[] = [];
-    private _current: IUserInput;
-    private _curCb: Function;
+    private _waitList: { [key: number]: IWaitRpcInfo } = {};
+
+
     private _stateTranslateMap: { [key in SocketState]: { [key in SocketState]?: SocketEvent[] } } = {
         [SocketState.Disconnect]: {
             [SocketState.Connecting]: [SocketEvent.Connecting],
@@ -60,6 +68,9 @@ export class WebSocket {
             [SocketState.Disconnect]: [SocketEvent.Close],
         },
     };
+    get url() {
+        return `${this._routeInfo.ssl ? "wss://" : "ws://"}${this._routeInfo.domain}/${this._tail}`;
+    }
     get state() { return this._state; }
     private set state(v) {
         const lastState = this._state;
@@ -67,38 +78,47 @@ export class WebSocket {
         this._state = v;
         const events = this._stateTranslateMap[lastState][v];
         if (!events) Logger.error(`状态错误 ${ lastState } => ${ v }`);
-        else events.forEach(v => this.dispatch(v));
+        else events.forEach(v => this.event(v));
     }
     get connected() { return this.state == SocketState.Connected; }
 
-    private constructor() { super(); }
-
-    init() {
-        if (this._socket) return;
+    constructor(routeInfo: IRouteInfo, tail:string, services: ServiceType[]) {
+        super();
         this._socket = new Laya.Socket();
         this._socket.endian = Laya.Byte.LITTLE_ENDIAN;
         this._socket.on(Laya.Event.OPEN, this, this.onOpen);
         this._socket.on(Laya.Event.MESSAGE, this, this.onMessage);
         this._socket.on(Laya.Event.ERROR, this, this.onError);
         this._socket.on(Laya.Event.CLOSE, this, this.onClose);
-        this.connect();
+        
+        this._routeInfo = routeInfo;
+        this._tail = tail;
+
+        services.forEach(v => { 
+            const service = pbMgr.lookupService(v);
+            const rpcService = service.create((method:protobuf.Method, request:Uint8Array, cb) => {
+                this._rpcIndex = (this._rpcIndex + 1) % 60007;
+                const rpcID = this._rpcIndex;
+                const header = pbMgr.encodeHeaderData({ type: HeaderType.Request, reqIndex: rpcID });
+                const packet = pbMgr.encodeRpc(method.fullName, request);
+
+                this._waitList[rpcID] = { service: v, method: method.fullName, cb };
+                const byte = new Laya.Byte();
+                byte.writeArrayBuffer(header);
+                byte.writeArrayBuffer(packet);
+                this._socket.send(byte.buffer);
+            });
+            this._rpcServices[v] = rpcService;
+        });
     }
 
     connect() {
         this.state = SocketState.Connecting;
-        this._socket.connectByUrl(this._url);
+        this._socket.connectByUrl(this.url);
     }
 
-    send(input: IUserInput) {
-        return new Promise<IUserOutput>(resolve => {
-            const { _current, _waitList } = this;
-            if (_current && input.cmd == _current.cmd)
-                return resolve(null);
-            if (_waitList.length && _waitList.find((v: any) => v.cmd == input.cmd))
-                return resolve(null);
-            _waitList.push(input, resolve);
-            this.executeWaitMsg();
-        });
+    send(input) {
+        
     }
 
     close() {
@@ -108,16 +128,11 @@ export class WebSocket {
 
     private onOpen(e: Event) {
         this.state = SocketState.Connected;
-        this.executeWaitMsg();
+        Logger.log("连接成功", this.url);
     }
 
-    private onMessage(message: string): void {
-        const output: IUserOutput = JSON.parse(message);
-        switch (output.type) {
-            case MessageType.Response: this.dealResponse(output); break;
-            case MessageType.Notify: this.dealNotify(output); break;
-            default: Logger.error("未知的消息类型: ", output); break;
-        }
+    private onMessage(message: string) {
+        Logger.error("收到消息", message);
     }
 
     private onError(e: Event) {
@@ -127,19 +142,8 @@ export class WebSocket {
     private onClose(e: Event) {
         if (this.state == SocketState.Disconnect) return;
         this.state = SocketState.Disconnect;
-        this._current = null;
-        this._curCb = null;
-        this._waitList.length = 0;
+        this._waitList = {};
         Laya.timer.once(1000, this, this.reconnect);
-    }
-
-    private executeWaitMsg() {
-        const { connected, _current, _waitList, _socket } = this;
-        if (connected && !_current && _waitList.length > 0) {
-            this._current = <IUserInput>_waitList.shift();
-            this._curCb = <Function>_waitList.shift();
-            _socket.send(JSON.stringify(this._current));
-        }
     }
 
     private dealResponse(output: IUserOutput) {

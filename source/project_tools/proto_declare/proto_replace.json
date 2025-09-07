@@ -1,0 +1,25 @@
+{
+    "enums":[
+    ],
+    "cli.lobby": {
+        "ReqAmuletActivityOperate": {
+            "tile_list": { "omissible": true }
+        },
+        "ReqFetchActivityRank": {
+            "account_list": { "omissible": true }
+        },
+        "ReqUserComplain": {
+            "round_info": { "omissible": true },
+            "game_uuid": { "omissible": true },
+            "content": { "omissible": true }
+        }
+    },
+    "amulet.struct": {
+        "AmuletEffectData": {
+            "badge": { "omissible": true },
+            "store": { "omissible": true },
+            "volume": { "omissible": true },
+            "tags": { "omissible": true }
+        }
+    }
+}

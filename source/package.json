@@ -11,6 +11,7 @@
     "json-bigint": "^1.0.0",
     "miniprogram-api-typings": "^3.2.2",
     "node-xlsx": "^0.21.0",
+    "protobufjs": "^7.5.4",
     "reflect-metadata": "^0.1.13",
     "ts-node": "^10.9.1",
     "tslib": "^2.0.3"

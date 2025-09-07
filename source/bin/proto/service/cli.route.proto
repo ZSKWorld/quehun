@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+import "com.struct.proto";
+
+package lq;
+
+option go_package = ".;majprotocol";
+
+/**
+  service Route 下的所有请求与返回中的 timestamp 都是服务器物理时间的毫秒时间戳，不受GM后台修改时间影响
+*/
+service Route {
+  // 主备线路功能
+  rpc requestConnection(ReqRequestConnection) returns (ResRequestConnection);
+  rpc requestRouteChange(ReqRequestRouteChange) returns (ResRequestRouteChange);
+  rpc heartbeat(ReqHeartbeat) returns (ResHeartbeat);
+}
+
+message ReqRequestConnection {
+  uint32 type = 2; // 连接类型 1-主链接 2-备用连接 3-测探连接
+  string route_id = 3; // 线路ID
+  uint64 timestamp = 4; // 时间戳（毫秒）
+  // ConnectionChangeInfo change_info = 5; // 线路切换信息
+}
+
+message ResRequestConnection {
+  Error error = 1;
+  uint64 timestamp = 2; // 时间戳（毫秒）
+  uint32 result = 3; // 1-ok 2-拒绝连接
+}
+
+message ReqRequestRouteChange {
+  string before = 1; // 之前使用的线路ID
+  string route_id = 2; // 本连接使用的线路ID
+  uint32 type = 3; // 新的连接类型 1-主链接 2-备用连接 3-测探连接
+}
+
+message ResRequestRouteChange {
+  Error error = 1;
+  uint32 result = 3; // 1-ok 2-拒绝
+}
+
+message ReqHeartbeat {
+  uint32 delay = 1; // 网络延迟
+  uint32 no_operation_counter = 2;
+  uint32 platform = 3; // 客户端包体 iOS=1,Steam_Mac,Android_GP,Android_MyCard,Win,Steam_Win
+  uint32 network_quality = 4; // 网络质量
+}
+
+message ResHeartbeat {
+  Error error = 1;
+}

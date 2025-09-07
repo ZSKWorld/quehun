@@ -1,0 +1,4955 @@
+syntax = "proto3";
+
+import "com.struct.proto";
+import "amulet.struct.proto";
+
+package lq;
+
+option go_package = ".;majprotocol";
+
+service Lobby {
+
+  // 获取连接相关信息
+  rpc fetchConnectionInfo (ReqCommon) returns (ResConnectionInfo);
+
+  // 获取排队信息
+  rpc fetchQueueInfo(ReqCommon) returns (ResFetchQueueInfo);
+
+  rpc cancelQueue(ReqCommon) returns (ResCommon);
+
+  rpc openidCheck(ReqOpenidCheck) returns (ResOauth2Check);
+
+  // 注册账号
+  rpc signup(ReqSignupAccount) returns (ResSignupAccount);
+
+  // 登录账号
+  rpc login(ReqLogin) returns (ResLogin);
+
+  // 备线半登录状态
+  rpc prepareLogin(ReqPrepareLogin) returns (ResCommon);
+
+  // 备线切换主线快速登录
+  rpc fastLogin(ReqCommon) returns (ResFastLogin);
+
+  // 登录后获取信息
+  rpc fetchInfo(ReqCommon) returns (ResFetchInfo);
+
+  // 登录成功后摇
+  rpc loginSuccess(ReqCommon) returns (ResCommon);
+
+  // 获取服务器维护信息
+  rpc fetchServerMaintenanceInfo(ReqCommon) returns (ResFetchServerMaintenanceInfo);
+
+  rpc emailLogin (ReqEmailLogin) returns (ResLogin);
+
+  // oauth2 方式登录授权
+  rpc oauth2Auth (ReqOauth2Auth) returns (ResOauth2Auth);
+
+  // oauth2 验证是否已经注册过账号
+  rpc oauth2Check (ReqOauth2Check) returns (ResOauth2Check);
+
+  // oauth2 注册
+  rpc oauth2Signup (ReqOauth2Signup) returns (ResOauth2Signup);
+
+  // oauth2 登录
+  rpc oauth2Login (ReqOauth2Login) returns (ResLogin);
+
+  // dmm 获取登录参数
+  rpc dmmPreLogin (ReqDMMPreLogin) returns (ResDMMPreLogin);
+
+  // 获取手机验证码（已登录的情况下）
+  rpc createPhoneVerifyCode (ReqCreatePhoneVerifyCode) returns (ResCommon);
+
+  // 获取邮箱验证码
+  rpc createEmailVerifyCode (ReqCreateEmailVerifyCode) returns (ResCommon);
+
+  // 验证码获取安全权限
+  rpc verfifyCodeForSecure (ReqVerifyCodeForSecure) returns (ResVerfiyCodeForSecure);
+
+  // 绑定手机号
+  rpc bindPhoneNumber (ReqBindPhoneNumber) returns (ResCommon);
+
+  // 解绑手机号
+  rpc unbindPhoneNumber (ReqUnbindPhoneNumber) returns (ResCommon);
+
+  // 查询已绑定手机是否有登录绑定
+  rpc fetchPhoneLoginBind (ReqCommon) returns (ResFetchPhoneLoginBind);
+
+  // 生成手机登录绑定
+  rpc createPhoneLoginBind (ReqCreatePhoneLoginBind) returns (ResCommon);
+
+  // 绑定邮箱
+  rpc bindEmail (ReqBindEmail) returns (ResCommon);
+
+  // 修改密码
+  rpc modifyPassword (ReqModifyPassword) returns (ResCommon);
+
+  // 绑定账号密码（Oauth2注册的账号使用，只有一次机会）
+  rpc bindAccount (ReqBindAccount) returns (ResCommon);
+
+  // 注销账号
+  rpc logout(ReqLogout) returns (ResLogout);
+
+  // 心跳
+  rpc heatbeat(ReqHeatBeat) returns (ResCommon);
+
+  // 通过Eid获取账号ID
+  rpc searchAccountByEid(ReqSearchAccountByEidLobby) returns (ResSearchAccountbyEidLobby);
+
+  // 登录心跳（用于防止第三方客户端，登录后不调用该接口无法进行匹配游戏）
+  rpc loginBeat(ReqLoginBeat) returns (ResCommon);
+
+  // 创建昵称
+  rpc createNickname(ReqCreateNickname) returns (ResCommon);
+
+  // 修改昵称
+  rpc modifyNickname(ReqModifyNickname) returns (ResCommon);
+
+  // 修改生日
+  rpc modifyBirthday(ReqModifyBirthday) returns (ResCommon);
+
+  // 请求自己的房间信息
+  rpc fetchRoom(ReqCommon) returns (ResSelfRoom);
+
+  // 请求自己的对局信息
+  rpc fetchGamingInfo(ReqCommon) returns (ResFetchGamingInfo);
+
+  // 创建房间
+  rpc createRoom(ReqCreateRoom) returns (ResCreateRoom);
+
+  // 加入房间
+  rpc joinRoom(ReqJoinRoom) returns (ResJoinRoom);
+
+  // 离开房间
+  rpc leaveRoom(ReqCommon) returns (ResCommon);
+
+  // 准备
+  rpc readyPlay(ReqRoomReady) returns (ResCommon);
+
+  // 切换装扮状态
+  rpc dressingStatus(ReqRoomDressing) returns (ResCommon);
+
+  // 开始
+  rpc startRoom(ReqRoomStart) returns (ResCommon);
+
+  // 踢出玩家
+  rpc roomKickPlayer(ReqRoomKickPlayer) returns (ResCommon);
+
+  // 修改房间
+  rpc modifyRoom (ReqModifyRoom) returns (ResCommon);
+
+  // 添加好友房机器人
+  rpc addRoomRobot (ReqAddRoomRobot) returns (ResCommon);
+
+  // 加入匹配
+  rpc matchGame (ReqJoinMatchQueue) returns (ResCommon);
+
+  // 取消匹配
+  rpc cancelMatch (ReqCancelMatchQueue) returns (ResCommon);
+
+  // 请求账号信息
+  rpc fetchAccountInfo (ReqAccountInfo) returns (ResAccountInfo);
+
+  // 修改头像
+  rpc changeAvatar (ReqChangeAvatar) returns (ResCommon);
+
+  // 领取更新礼包
+  rpc receiveVersionReward (ReqCommon) returns (ResCommon);
+
+  // 请求账号统计信息
+  rpc fetchAccountStatisticInfo (ReqAccountStatisticInfo) returns (ResAccountStatisticInfo);
+
+  // 获取试炼赛赛季排名信息
+  rpc fetchAccountChallengeRankInfo (ReqAccountInfo) returns (ResAccountChallengeRankInfo);
+
+  // 获取账号人物信息
+  rpc fetchAccountCharacterInfo (ReqCommon) returns (ResAccountCharacterInfo);
+
+  // 商店购买
+  rpc shopPurchase (ReqShopPurchase) returns (ResShopPurchase);
+
+  // 获取单场牌谱记录
+  rpc fetchGameRecord (ReqGameRecord) returns (ResGameRecord);
+
+  // 添加查看牌谱记录
+  rpc readGameRecord (ReqGameRecord) returns (ResCommon);
+
+  // 获取牌谱列表
+  // 20240820更新之前的牌谱通过这个接口获取
+  rpc fetchGameRecordList (ReqGameRecordList) returns (ResGameRecordList);
+
+  // 获取牌谱列表V2
+  // 202408新版牌谱功能使用（基于迭代器）
+  // 2024.08.20 06:33 停服  07:40 国服启动
+  // 只有 2024.08.20 07:30 (1724110200) 停服维护之后的牌谱可以通过这个接口获取列表
+  rpc fetchGameRecordListV2 (ReqGameRecordListV2) returns (ResGameRecordListV2);
+
+  // 获取后续牌谱列表内容
+  // 基于 fetchGameRecordListV2 协议返回结果使用
+  // 只有 2024.08.20 07:30 (1724110200) 停服维护之后的牌谱可以通过这个接口获取列表
+  rpc fetchNextGameRecordList (ReqNextGameRecordList) returns (ResNextGameRecordList);
+
+  // 获得收藏的牌谱列表（简要信息）
+  rpc fetchCollectedGameRecordList (ReqCommon) returns (ResCollectedGameRecordList);
+
+  // 获取牌谱列表的详细信息
+  rpc fetchGameRecordsDetail (ReqGameRecordsDetail) returns (ResGameRecordsDetail);
+
+  // 获取牌谱列表的详细信息 （新版）
+  rpc fetchGameRecordsDetailV2 (ReqGameRecordsDetailV2) returns (ResGameRecordsDetailV2);
+
+  // 添加牌谱收藏
+  rpc addCollectedGameRecord (ReqAddCollectedGameRecord) returns (ResAddCollectedGameRecord);
+
+  // 移除牌谱收藏
+  rpc removeCollectedGameRecord (ReqRemoveCollectedGameRecord) returns (ResRemoveCollectedGameRecord);
+
+  // 修改牌谱备注
+  rpc changeCollectedGameRecordRemarks (ReqChangeCollectedGameRecordRemarks) returns (ResChangeCollectedGameRecordRemarks);
+
+  // 获取排行榜
+  rpc fetchLevelLeaderboard (ReqLevelLeaderboard) returns (ResLevelLeaderboard);
+
+  // 获取试炼赛排行榜
+  rpc fetchChallengeLeaderboard (ReqChallangeLeaderboard) returns (ResChallengeLeaderboard);
+
+  // 获取多人试炼赛等级信息
+  rpc fetchMutiChallengeLevel (ReqMutiChallengeLevel) returns (ResMutiChallengeLevel);
+
+  // 获取多人简要信息
+  rpc fetchMultiAccountBrief (ReqMultiAccountId) returns (ResMultiAccountBrief);
+
+  // 获取好友列表
+  rpc fetchFriendList (ReqCommon) returns (ResFriendList);
+
+  // 获取好友申请列表
+  rpc fetchFriendApplyList (ReqCommon) returns (ResFriendApplyList);
+
+  // 申请好友
+  rpc applyFriend (ReqApplyFriend) returns (ResCommon);
+
+  // 处理好友申请
+  rpc handleFriendApply (ReqHandleFriendApply) returns (ResCommon);
+
+  // 删除好友
+  rpc removeFriend (ReqRemoveFriend) returns (ResCommon);
+
+  // 查询单个玩家
+  rpc searchAccountById (ReqSearchAccountById) returns (ResSearchAccountById);
+
+  // 模糊查询玩家
+  rpc searchAccountByPattern (ReqSearchAccountByPattern) returns (ResSearchAccountByPattern);
+
+  // 查询玩家状态
+  rpc fetchAccountState (ReqAccountList) returns (ResAccountStates);
+
+//  // 发送一条私聊
+//  rpc sendPrivateMessage (ReqPrivateMessage) returns (ResCommon);
+//
+//  // 发送一条世界聊天
+//  rpc sendWorldMessage (ReqWorldMessage) returns (ResCommon);
+
+  // 请求背包信息
+  rpc fetchBagInfo (ReqCommon) returns (ResBagInfo);
+
+  // 使用背包道具
+  rpc useBagItem (ReqUseBagItem) returns (ResCommon);
+
+  // 使用手选道具物品
+  rpc openManualItem (ReqOpenManualItem) returns (ResCommon);
+
+  // 使用随机道具物品
+  rpc openRandomRewardItem (ReqOpenRandomRewardItem) returns (ResOpenRandomRewardItem);
+
+  // 使用全领礼包物品
+  rpc openAllRewardItem(ReqOpenAllRewardItem) returns (ResOpenAllRewardItem);
+
+  // 合成碎片
+  rpc composeShard (ReqComposeShard) returns (ResCommon);
+
+  // 获取公告
+  rpc fetchAnnouncement (ReqFetchAnnouncement) returns (ResAnnouncement);
+
+  // 阅读公告
+  rpc readAnnouncement (ReqReadAnnouncement) returns (ResCommon);
+
+  // 获取邮件列表
+  rpc fetchMailInfo (ReqCommon) returns (ResMailInfo);
+
+  // 阅读邮件
+  rpc readMail (ReqReadMail) returns (ResCommon);
+
+  // 删除邮件
+  rpc deleteMail (ReqDeleteMail) returns (ResCommon);
+
+  // 拿取邮件附件
+  rpc takeAttachmentFromMail (ReqTakeAttachment) returns (ResCommon);
+
+  // 领取成就奖励
+  rpc receiveAchievementReward (ReqReceiveAchievementReward) returns (ResReceiveAchievementReward);
+
+  // 领取成就大组奖励
+  rpc receiveAchievementGroupReward (ReqReceiveAchievementGroupReward) returns (ResReceiveAchievementGroupReward);
+
+  // 获取全服成就完成率
+  rpc fetchAchievementRate(ReqCommon) returns (ResFetchAchievementRate);
+
+  // 获取成就
+  rpc fetchAchievement (ReqCommon) returns (ResAchievement);
+
+  // 购买试炼资格
+  rpc buyShiLian (ReqBuyShiLian) returns (ResCommon);
+
+  // 试炼匹配
+  rpc matchShiLian (ReqCommon) returns (ResCommon);
+
+  // 继续下一阶段试炼
+  rpc goNextShiLian (ReqCommon) returns (ResCommon);
+
+  // 更新客户端数据
+  rpc updateClientValue (ReqUpdateClientValue) returns (ResCommon);
+
+  // 获取客户端数据
+  rpc fetchClientValue (ReqCommon) returns (ResClientValue);
+
+  // 客户端信息
+  rpc clientMessage (ReqClientMessage) returns (ResCommon);
+
+  // 请求当前匹配模式信息
+  rpc fetchCurrentMatchInfo (ReqCurrentMatchInfo) returns (ResCurrentMatchInfo);
+
+  // 用户举报
+  rpc userComplain(ReqUserComplain) returns (ResCommon);
+
+  // ------ 复活币 -------- //
+  // 获取复活币信息
+  rpc fetchReviveCoinInfo (ReqCommon) returns (ResReviveCoinInfo);
+
+  // 领取复活币
+  rpc gainReviveCoin (ReqCommon) returns (ResCommon);
+
+  // 获取每日任务
+  rpc fetchDailyTask (ReqCommon) returns (ResDailyTask);
+
+  // 刷新每日任务
+  rpc refreshDailyTask (ReqRefreshDailyTask) returns (ResRefreshDailyTask);
+
+  // 使用礼品码
+  rpc useGiftCode (ReqUseGiftCode) returns (ResUseGiftCode);
+
+  // 使用特殊礼品码
+  rpc useSpecialGiftCode (ReqUseGiftCode) returns (ResUseSpecialGiftCode);
+
+  // 获取称号列表
+  rpc fetchTitleList (ReqCommon) returns (ResTitleList);
+
+   // 使用称号
+  rpc useTitle (ReqUseTitle) returns (ResCommon);
+
+  // 发送给其他玩家自定义消息
+  rpc sendClientMessage (ReqSendClientMessage) returns (ResCommon);
+
+  // 获取游戏直播信息（全视角）
+  rpc fetchGameLiveInfo (ReqGameLiveInfo) returns (ResGameLiveInfo);
+
+  // 获取游戏直播剩余分片信息（增量）
+  rpc fetchGameLiveLeftSegment (ReqGameLiveLeftSegment) returns (ResGameLiveLeftSegment);
+
+  // 获取正在直播的游戏列表
+  rpc fetchGameLiveList (ReqGameLiveList) returns (ResGameLiveList);
+
+  // 留言板设置信息
+  rpc fetchCommentSetting (ReqCommon) returns (ResCommentSetting);
+
+  // 更新留言板设置
+  rpc updateCommentSetting (ReqUpdateCommentSetting) returns (ResCommon);
+
+  // 获取留言板列表
+  rpc fetchCommentList (ReqFetchCommentList) returns (ResFetchCommentList);
+
+  // 获取留言板内容
+  rpc fetchCommentContent (ReqFetchCommentContent) returns (ResFetchCommentContent);
+
+  // 发送留言
+  rpc leaveComment (ReqLeaveComment) returns (ResCommon);
+
+  // 删除留言
+  rpc deleteComment (ReqDeleteComment) returns (ResCommon);
+
+  // 更新留言阅读记录
+  rpc updateReadComment (ReqUpdateReadComment) returns (ResCommon);
+
+  // 获取滚动公告
+  rpc fetchRollingNotice (ReqFetchRollingNotice) returns (ResFetchRollingNotice);
+
+  // 获取维护公告
+  rpc fetchMaintainNotice (ReqCommon) returns (ResFetchMaintainNotice);
+
+  // 获取服务器时间
+  rpc fetchServerTime (ReqCommon) returns (ResServerTime);
+
+  // 获取对应平台的商品列表
+  rpc fetchPlatformProducts (ReqPlatformBillingProducts) returns (ResPlatformBillingProducts);
+
+  // 获取角色随机池信息
+  rpc fetchRandomCharacter (ReqCommon) returns (ResRandomCharacter);
+
+  // 设置随机角色池
+  rpc setRandomCharacter (ReqRandomCharacter) returns (ResCommon);
+
+  // 取消 Google Play 订单
+  rpc cancelGooglePlayOrder (ReqCancelGooglePlayOrder) returns (ResCommon);
+
+  // 抽宝箱
+  rpc openChest (ReqOpenChest) returns (ResOpenChest);
+
+  // 宝箱商店购买商品
+  rpc buyFromChestShop (ReqBuyFromChestShop) returns (ResBuyFromChestShop);
+
+  // 获取每日签到信息
+  rpc fetchDailySignInInfo (ReqCommon) returns (ResDailySignInInfo);
+
+  // 签到
+  rpc doDailySignIn (ReqCommon) returns (ResCommon);
+
+  rpc doActivitySignIn (ReqDoActivitySignIn) returns (ResDoActivitySignIn);
+
+  // 获取角色信息
+  rpc fetchCharacterInfo (ReqCommon) returns (ResCharacterInfo);
+
+  // 更新角色排序
+  rpc updateCharacterSort (ReqUpdateCharacterSort) returns (ResCommon);
+
+  // 切换主角色
+  rpc changeMainCharacter (ReqChangeMainCharacter) returns (ResCommon);
+
+  // 切换角色皮肤
+  rpc changeCharacterSkin (ReqChangeCharacterSkin) returns (ResCommon);
+
+  // 设置角色外观
+  rpc changeCharacterView (ReqChangeCharacterView) returns (ResCommon);
+
+  // 设置隐藏角色
+  rpc setHiddenCharacter (ReqSetHiddenCharacter) returns (ResSetHiddenCharacter);
+
+  // 赠送礼物给角色
+  rpc sendGiftToCharacter (ReqSendGiftToCharacter) returns (ResSendGiftToCharacter);
+
+  // 出售道具（目前只有礼物可以出售）
+  rpc sellItem (ReqSellItem) returns (ResCommon);
+
+  // 获取通用外观
+  rpc fetchCommonView (ReqCommon) returns (ResCommonView);
+
+  // 切换通用外观（牌桌，牌背等）
+  rpc changeCommonView (ReqChangeCommonView) returns (ResCommon);
+
+  // 保存通用外观方案
+  rpc saveCommonViews (ReqSaveCommonViews) returns (ResCommon);
+
+  // 获取通用外观方案
+  rpc fetchCommonViews (ReqCommonViews) returns (ResCommonViews);
+
+  // 获取所有通用外观方案
+  rpc fetchAllCommonViews (ReqCommon) returns (ResAllcommonViews);
+
+  rpc useCommonView(ReqUseCommonView) returns (ResCommon);
+
+  // 突破角色
+  rpc upgradeCharacter (ReqUpgradeCharacter) returns (ResUpgradeCharacter);
+
+  // ====角色传记相关====
+  // 完成结局
+  rpc addFinishedEnding(ReqFinishedEnding) returns (ResCommon);
+
+  // 领取结局奖励
+  rpc receiveEndingReward(ReqFinishedEnding) returns (ResCommon);
+
+  // GM指令
+  rpc gameMasterCommand (ReqGMCommand) returns (ResCommon);
+
+  // 获取商店信息
+  rpc fetchShopInfo (ReqCommon) returns (ResShopInfo);
+
+  // 普通商店购买
+  rpc buyFromShop (ReqBuyFromShop) returns (ResBuyFromShop);
+
+  // 杂货铺购买
+  rpc buyFromZHP (ReqBuyFromZHP) returns (ResCommon);
+
+  // 刷新杂货铺商店
+  rpc refreshZHPShop (ReqReshZHPShop) returns (ResRefreshZHPShop);
+
+  // 获取账号月卡信息
+  rpc fetchMonthTicketInfo (ReqCommon) returns (ResMonthTicketInfo);
+
+  // 领取月卡工资
+  rpc payMonthTicket (ReqCommon) returns (ResPayMonthTicket);
+
+  // 兑换货币
+  rpc exchangeCurrency (ReqExchangeCurrency) returns (ResCommon);
+
+  // 兑换寻觅石头
+  rpc exchangeChestStone (ReqExchangeCurrency) returns (ResCommon);
+
+  // 皮肤券兑换辉玉
+  rpc exchangeDiamond (ReqExchangeCurrency) returns (ResCommon);
+
+  // 获取服务器设置
+  rpc fetchServerSettings (ReqCommon) returns (ResServerSettings);
+
+  // 账户设置
+  rpc fetchAccountSettings (ReqCommon) returns (ResAccountSettings);
+
+  // 更新账号设置
+  rpc updateAccountSettings (ReqUpdateAccountSettings) returns (ResCommon);
+
+  // 获取改名时间
+  rpc fetchModNicknameTime (ReqCommon) returns (ResModNicknameTime);
+
+  // 创建微信支付（扫码支付）订单
+  rpc createWechatNativeOrder (ReqCreateWechatNativeOrder) returns (ResCreateWechatNativeOrder);
+
+  // 创建微信支付（App支付）订单
+  rpc createWechatAppOrder (ReqCreateWechatAppOrder) returns (ResCreateWechatAppOrder);
+
+  // 创建支付宝（链接地址）订单
+  rpc createAlipayOrder (ReqCreateAlipayOrder) returns (ResCreateAlipayOrder);
+
+  // 创建支付宝（扫码支付）订单
+  rpc createAlipayScanOrder (ReqCreateAlipayScanOrder) returns (ResCreateAlipayScanOrder);
+
+  // 创建支付宝（App支付）订单
+  rpc createAlipayAppOrder (ReqCreateAlipayAppOrder) returns (ResCreateAlipayAppOrder);
+
+  // 创建日服-CreditCard订单
+  rpc createJPCreditCardOrder (ReqCreateJPCreditCardOrder) returns (ResCreateJPCreditCardOrder);
+
+  // 创建日服-Paypal订单
+  rpc createJPPaypalOrder (ReqCreateJPPaypalOrder) returns (ResCreateJPPaypalOrder);
+
+  // 创建日服-Au订单
+  rpc createJPAuOrder (ReqCreateJPAuOrder) returns (ResCreateJPAuOrder);
+
+  // 创建日服-Docomo订单
+  rpc createJPDocomoOrder (ReqCreateJPDocomoOrder) returns (ResCreateJPDocomoOrder);
+
+  // 创建日服-WebMoney订单
+  rpc createJPWebMoneyOrder (ReqCreateJPWebMoneyOrder) returns (ResCreateJPWebMoneyOrder);
+
+  // 创建日服-Softbank订单
+  rpc createJPSoftbankOrder (ReqCreateJPSoftbankOrder) returns (ResCreateJPSoftbankOrder);
+
+  // 创建日服-Paypay订单
+  rpc createJPPayPayOrder(ReqCreateJPPayPayOrder) returns (ResCreateJPPayPayOrder);
+
+  // 获取日服信用卡订单信息
+  rpc fetchJPCommonCreditCardOrder (ReqFetchJPCommonCreditCardOrder) returns (ResFetchJPCommonCreditCardOrder);
+
+  // 创建日服-GMO订单
+  rpc createJPGMOOrder(ReqCreateJPGMOOrder) returns (ResCreateJPGMOOrder);
+
+  // 创建美服-Paypal订单
+  rpc createENPaypalOrder (ReqCreateENPaypalOrder) returns (ResCreateENPaypalOrder);
+
+  // 创建美服-MasterCard订单
+  rpc createENMasterCardOrder (ReqCreateENMasterCardOrder) returns (ResCreateENMasterCardOrder);
+
+  // 创建美服-Visa订单
+  rpc createENVisaOrder (ReqCreateENVisaOrder) returns (ResCreateENVisaOrder);
+
+  // 创建美服-JCB订单
+  rpc createENJCBOrder (ReqCreateENJCBOrder) returns (ResCreateENJCBOrder);
+
+  // 创建美服-Alipay订单
+  rpc createENAlipayOrder (ReqCreateENAlipayOrder) returns (ResCreateENAlipayOrder);
+
+  // 创建韩服-Paypal订单
+  rpc createKRPaypalOrder (ReqCreateKRPaypalOrder) returns (ResCreateKRPaypalOrder);
+
+  // 创建韩服-MasterCard订单
+  rpc createKRMasterCardOrder (ReqCreateKRMasterCardOrder) returns (ResCreateKRMasterCardOrder);
+
+  // 创建韩服-Visa订单
+  rpc createKRVisaOrder (ReqCreateKRVisaOrder) returns (ResCreateKRVisaOrder);
+
+  // 创建韩服-JCB订单
+  rpc createKRJCBOrder (ReqCreateKRJCBOrder) returns (ResCreateKRJCBOrder);
+
+  // 创建韩服-Alipay订单
+  rpc createKRAlipayOrder (ReqCreateKRAlipayOrder) returns (ResCreateKRAlipayOrder);
+
+  // 创建DMM订单
+  rpc createDMMOrder(ReqCreateDMMOrder) returns (ResCreateDmmOrder);
+
+  // 创建苹果内购订单
+  rpc createIAPOrder (ReqCreateIAPOrder) returns (ResCreateIAPOrder);
+
+  // 创建Steam订单
+  rpc createSteamOrder (ReqCreateSteamOrder) returns (ResCreateSteamOrder);
+
+  // Steam验单
+  rpc verifySteamOrder (ReqVerifySteamOrder) returns (ResCommon);
+
+  // 创建MyCard Android订单
+  rpc createMyCardAndroidOrder (ReqCreateMyCardOrder) returns (ResCreateMyCardOrder);
+
+  // 创建MyCard Web订单
+  rpc createMyCardWebOrder (ReqCreateMyCardOrder) returns (ResCreateMyCardOrder);
+
+  // 创建Paypal订单
+  rpc createPaypalOrder (ReqCreatePaypalOrder) returns (ResCreatePaypalOrder);
+
+  // 创建Xsolla订单
+  rpc createXsollaOrder (ReqCreateXsollaOrder) returns (ResCreateXsollaOrder);
+
+  // 创建XsollaV4订单
+  rpc createXsollaV4Order (ReqCreateXsollaOrder) returns (ResCreateXsollaOrder);
+
+  // MyCard验单
+  rpc verifyMyCardOrder(ReqVerifyMyCardOrder) returns (ResCommon);
+
+  // 验证苹果内购订单
+  rpc verificationIAPOrder (ReqVerificationIAPOrder) returns (ResVerificationIAPOrder);
+  // 创建Yostar-SDK订单
+  rpc createYostarSDKOrder (ReqCreateYostarOrder) returns (ResCreateYostarOrder);
+
+    // 创建支付订单
+  rpc createBillingOrder (ReqCreateBillingOrder) returns (ResCreateBillingOrder);
+
+  // 处理 Google Play 订单支付结果
+  rpc solveGooglePlayOrder (ReqSolveGooglePlayOrder) returns (ResCommon);
+
+  rpc solveGooglePayOrderV3(ReqSolveGooglePlayOrderV3) returns (ResCommon);
+
+  // 处理 AA32 订单
+  rpc deliverAA32Order(ReqDeliverAA32Order) returns (ResCommon);
+
+  // 获取账号杂七杂八的数据
+  rpc fetchMisc (ReqCommon) returns (ResMisc);
+
+  // 修改签名
+  rpc modifySignature (ReqModifySignature) returns (ResCommon);
+
+  // 获取实名认证信息
+  rpc fetchIDCardInfo (ReqCommon) returns (ResIDCardInfo);
+
+  // 进行实名认证
+  rpc updateIDCardInfo (ReqUpdateIDCardInfo) returns (ResCommon);
+
+  // 获取vip奖励领取状态
+  rpc fetchVipReward (ReqCommon) returns (ResVipReward);
+
+  // 领取vip奖励
+  rpc gainVipReward (ReqGainVipReward) returns (ResCommon);
+
+  // 获取需要补单的订单信息
+  rpc fetchRefundOrder (ReqCommon) returns (ResFetchRefundOrder);
+
+
+  // 获取赛事列表
+  rpc fetchCustomizedContestList (ReqFetchCustomizedContestList) returns (ResFetchCustomizedContestList);
+
+  // 废弃
+  // 获取赛事额外信息
+  // rpc fetchCustomizedContestExtendInfo (ReqFetchCustomizedContestExtendInfo) returns (ResFetchCustomizedContestExtendInfo);
+
+  // 获取赛事权限相关信息
+  rpc fetchCustomizedContestAuthInfo (ReqFetchCustomizedContestAuthInfo) returns (ResFetchCustomizedContestAuthInfo);
+
+  // 进入赛事
+  rpc enterCustomizedContest (ReqEnterCustomizedContest) returns (ResEnterCustomizedContest);
+
+  // 退出赛事
+  rpc leaveCustomizedContest (ReqCommon) returns (ResCommon);
+
+  // 请求比赛在线信息
+  rpc fetchCustomizedContestOnlineInfo (ReqFetchCustomizedContestOnlineInfo) returns (ResFetchCustomizedContestOnlineInfo);
+
+  // 获取赛事基本信息（通过赛事ID）
+  rpc fetchCustomizedContestByContestId (ReqFetchCustomizedContestByContestId) returns (ResFetchCustomizedContestByContestId);
+
+  // 报名比赛
+  rpc signupCustomizedContest (ReqSignupCustomizedContest) returns (ResSignupCustomizedContest);
+
+  // 开始比赛匹配
+  rpc startCustomizedContest (ReqStartCustomizedContest) returns (ResCommon);
+
+  // 停止比赛匹配
+  rpc stopCustomizedContest (ReqStopCustomizedContest) returns (ResCommon);
+
+  // 进入比赛聊天室
+  rpc joinCustomizedContestChatRoom (ReqJoinCustomizedContestChatRoom) returns (ResJoinCustomizedContestChatRoom);
+
+  // 退出比赛聊天室
+  rpc leaveCustomizedContestChatRoom (ReqCommon) returns (ResCommon);
+
+  // 发送聊天消息
+  rpc sayChatMessage (ReqSayChatMessage) returns (ResCommon);
+
+  // 查询赛事牌谱列表
+  rpc fetchCustomizedContestGameRecords (ReqFetchCustomizedContestGameRecords) returns (ResFetchCustomizedContestGameRecords);
+
+  // 获取正在直播的比赛游戏列表
+  rpc fetchCustomizedContestGameLiveList (ReqFetchCustomizedContestGameLiveList) returns (ResFetchCustomizedContestGameLiveList);
+
+  // 关注自定义比赛
+  rpc followCustomizedContest (ReqTargetCustomizedContest) returns (ResCommon);
+
+  // 取消关注自定义比赛
+  rpc unfollowCustomizedContest (ReqTargetCustomizedContest) returns (ResCommon);
+
+
+  // 活动
+
+  // 获取活动列表
+  rpc fetchActivityList (ReqCommon) returns (ResActivityList);
+
+  // 获取玩家活动数据
+  rpc fetchAccountActivityData (ReqCommon) returns (ResAccountActivityData);
+
+  // 兑换活动
+  rpc exchangeActivityItem (ReqExchangeActivityItem) returns (ResExchangeActivityItem);
+
+  // 领取活动任务奖励
+  rpc completeActivityTask (ReqCompleteActivityTask) returns (ResCommon);
+
+  rpc completeActivityTaskBatch (ReqCompleteActivityTaskBatch) returns (ResCommon);
+
+  // 领取翻牌牌任务奖励
+  rpc completeActivityFlipTask (ReqCompleteActivityTask) returns (ResCommon);
+
+  // 领取长期任务奖励
+  rpc completePeriodActivityTask (ReqCompleteActivityTask) returns (ResCommon);
+  rpc completePeriodActivityTaskBatch(ReqCompletePeriodActivityTaskBatch) returns (ResCommon);
+
+  // 领取随机任务奖励
+  rpc completeRandomActivityTask (ReqCompleteActivityTask) returns (ResCommon);
+  rpc completeRandomActivityTaskBatch(ReqCompleteActivityTaskBatch) returns (ResCommon);
+
+  // 翻牌牌领任务
+  rpc receiveActivityFlipTask (ReqReceiveActivityFlipTask) returns (ResReceiveActivityFlipTask);
+
+  // 领取分段任务奖励
+  rpc completeSegmentTaskReward (ReqCompleteSegmentTaskReward) returns (ResCompleteSegmentTaskReward);
+
+  // 获取翻牌牌任务信息
+  rpc fetchActivityFlipInfo (ReqFetchActivityFlipInfo) returns (ResFetchActivityFlipInfo);
+
+  // 领取得点活动奖励
+  rpc gainAccumulatedPointActivityReward (ReqGainAccumulatedPointActivityReward) returns (ResCommon);
+
+  // 批量领取得点活动奖励
+  rpc gainMultiPointActivityReward (ReqGainMultiPointActivityReward) returns (ResCommon);
+
+  // 获取得分排行榜数据
+  rpc fetchRankPointLeaderboard (ReqFetchRankPointLeaderboard) returns (ResFetchRankPointLeaderboard);
+
+  // 领取得分排行奖励
+  rpc gainRankPointReward (ReqGainRankPointReward) returns (ResCommon);
+
+  // 大富翁投骰子
+  rpc richmanActivityNextMove (ReqRichmanNextMove) returns (ResRichmanNextMove);
+
+  // 大富翁遥控骰子
+  rpc richmanAcitivitySpecialMove (ReqRichmanSpecialMove) returns (ResRichmanNextMove);
+
+  // 大富翁宝箱信息
+  rpc richmanActivityChestInfo (ReqRichmanChestInfo) returns (ResRichmanChestInfo);
+
+  // 创建实时OB权限
+  rpc createGameObserveAuth (ReqCreateGameObserveAuth) returns (ResCreateGameObserveAuth);
+
+  // 刷新实时OB权限时长
+  rpc refreshGameObserveAuth (ReqRefreshGameObserveAuth) returns (ResRefreshGameObserveAuth);
+
+  // 获取活动buff信息
+  rpc fetchActivityBuff (ReqCommon) returns (ResActivityBuff);
+
+  // 升级活动buff
+  rpc upgradeActivityBuff (ReqUpgradeActivityBuff) returns (ResActivityBuff);
+
+  // 升级活动升级
+  rpc upgradeActivityLevel (ReqUpgradeActivityLevel) returns (ResUpgradeActivityLevel);
+
+  // 获取总等级奖励
+  rpc receiveUpgradeActivityReward (ReqReceiveUpgradeActivityReward) returns (ResReceiveUpgradeActivityReward);
+
+  // 试炼赛
+
+  // 试炼赛升级
+  rpc upgradeChallenge (ReqCommon) returns (ResUpgradeChallenge);
+
+  // 再发行
+  rpc refreshChallenge (ReqCommon) returns (ResRefreshChallenge);
+
+  // 获取试炼赛信息
+  rpc fetchChallengeInfo (ReqCommon) returns (ResFetchChallengeInfo);
+
+  // 盖章完成试炼任务
+  rpc forceCompleteChallengeTask (ReqForceCompleteChallengeTask) returns (ResCommon);
+
+  // 获取当前试炼赛信息
+  rpc fetchChallengeSeason (ReqCommon) returns (ResChallengeSeasonInfo);
+
+  // 获取试炼赛排名奖励
+  rpc receiveChallengeRankReward (ReqReceiveChallengeRankReward) returns (ResReceiveChallengeRankReward);
+
+  // AB赛
+  rpc fetchABMatchInfo(ReqCommon) returns (ResFetchABMatch);
+
+  rpc buyInABMatch (ReqBuyInABMatch) returns (ResCommon);
+
+  rpc receiveABMatchReward (ReqCommon) returns (ResCommon);
+
+  rpc quitABMatch(ReqCommon) returns (ResCommon);
+
+  // 匹配
+
+  rpc startUnifiedMatch (ReqStartUnifiedMatch) returns (ResCommon);
+
+  rpc cancelUnifiedMatch (ReqCancelUnifiedMatch) returns (ResCommon);
+
+  // 打点活动
+
+  rpc fetchGamePointRank(ReqGamePointRank) returns (ResGamePointRank);
+
+  rpc fetchSelfGamePointRank(ReqGamePointRank) returns (ResFetchSelfGamePointRank);
+
+  // SNS活动
+  rpc readSNS (ReqReadSNS) returns (ResReadSNS);
+
+  rpc replySNS (ReqReplySNS) returns (ResReplySNS);
+
+  rpc likeSNS (ReqLikeSNS) returns (ResLikeSNS);
+
+  // 挖矿活动
+  rpc digMine(ReqDigMine) returns (ResDigMine);
+
+  // 用户协议
+  rpc fetchLastPrivacy(ReqFetchLastPrivacy) returns (ResFetchLastPrivacy);
+
+  rpc checkPrivacy(ReqCheckPrivacy) returns (ResCommon);
+
+  // 机器人验证
+  // 2025.05.20 验证码功能下架
+  // rpc responseCaptcha(ReqResponseCaptcha) returns (ResCommon);
+
+  // rpg活动
+  rpc fetchRPGBattleHistory(ReqFetchRPGBattleHistory) returns (ResFetchRPGBattleHistory);
+
+  rpc fetchRPGBattleHistoryV2(ReqFetchRPGBattleHistory) returns (ResFetchRPGBattleHistoryV2);
+
+  rpc receiveRPGRewards(ReqReceiveRPGRewards) returns (ResReceiveRPGRewards);
+
+  rpc receiveRPGReward(ReqReceiveRPGReward) returns (ResReceiveRPGRewards);
+
+  // 竞技场活动
+  rpc buyArenaTicket(ReqBuyArenaTicket) returns (ResCommon);
+
+  rpc enterArena(ReqEnterArena) returns (ResCommon);
+
+  rpc receiveArenaReward(ReqArenaReward) returns (ResArenaReward);
+
+  // 观战
+  rpc fetchOBToken(ReqFetchOBToken) returns (ResFetchOBToken);
+
+  // 角色好感度
+  rpc receiveCharacterRewards(ReqReceiveCharacterRewards) returns (ResReceiveCharacterRewards);
+
+  // 喂年兽活动 -> 已经拆分成 friend-gift 与 upgrade 活动，这个协议不再使用
+  rpc feedActivityFeed(ReqFeedActivityFeed) returns (ResFeedActivityFeed);
+
+  // 送礼活动
+  rpc sendActivityGiftToFriend(ReqSendActivityGiftToFriend) returns (ResSendActivityGiftToFriend);
+  rpc receiveActivityGift(ReqReceiveActivityGift) returns (ResCommon);
+  rpc receiveAllActivityGift (ReqReceiveAllActivityGift) returns (ResReceiveAllActivityGift);
+  rpc fetchFriendGiftActivityData(ReqFetchFriendGiftActivityData) returns (ResFetchFriendGiftActivityData);
+
+  // 自选卡池
+  rpc openPreChestItem(ReqOpenPreChestItem) returns (ResOpenPreChestItem);
+
+  // 投票活动
+  rpc fetchVoteActivity(ReqFetchVoteActivity) returns (ResFetchVoteActivity);
+  rpc voteActivity(ReqVoteActivity) returns (ResVoteActivity);
+
+  // 剧情活动
+  rpc unlockActivitySpot(ReqUnlockActivitySpot) returns (ResCommon);
+  rpc unlockActivitySpotEnding (ReqUnlockActivitySpotEnding) returns (ResCommon);
+  rpc receiveActivitySpotReward(ReqReceiveActivitySpotReward) returns(ResReceiveActivitySpotReward);
+
+  // 删除账号接口
+  rpc deleteAccount(ReqCommon) returns (ResDeleteAccount);
+  rpc cancelDeleteAccount(ReqCommon) returns (ResCommon);
+
+  rpc logReport(ReqLogReport) returns (ResCommon);
+  // oauth2
+  rpc bindOauth2(ReqBindOauth2) returns (ResCommon);
+  rpc fetchOauth2Info(ReqFetchOauth2) returns (ResFetchOauth2);
+
+  // loading图
+  rpc setLoadingImage(ReqSetLoadingImage) returns(ResCommon);
+
+  // 获取商店信息
+  rpc fetchShopInterval(ReqCommon) returns (ResFetchShopInterval);
+
+  // 获取活动轮换信息
+  rpc fetchActivityInterval(ReqCommon) returns (ResFetchActivityInterval);
+
+  // 获取最近对战玩家
+  rpc fetchRecentFriend(ReqCommon) returns (ResFetchrecentFriend);
+
+  // 扭蛋活动
+  rpc openGacha(ReqOpenGacha) returns (ResOpenGacha);
+
+  // 前端完成任务
+  rpc taskRequest(ReqTaskRequest) returns (ResCommon);
+
+  // 养成活动
+  rpc simulationActivityTrain(ReqSimulationActivityTrain) returns (ResSimulationActivityTrain);
+  rpc fetchSimulationGameRecord(ReqFetchSimulationGameRecord) returns (ResFetchSimulationGameRecord);
+  rpc startSimulationActivityGame(ReqStartSimulationActivityGame) returns (ResStartSimulationActivityGame);
+  rpc fetchSimulationGameRank(ReqFetchSimulationGameRank) returns (ResFetchSimulationGameRank);
+
+  // 合成活动
+  rpc generateCombiningCraft(ReqGenerateCombiningCraft) returns (ResGenerateCombiningCraft);
+  rpc moveCombiningCraft(ReqMoveCombiningCraft) returns (ResMoveCombiningCraft);
+  rpc combiningRecycleCraft(ReqCombiningRecycleCraft) returns (ResCombiningRecycleCraft);
+  rpc recoverCombiningRecycle(ReqRecoverCombiningRecycle) returns (ResRecoverCombiningRecycle);
+  rpc finishCombiningOrder(ReqFinishCombiningOrder) returns (ResFinishCombiningOrder);
+
+  // 小村活动
+  rpc upgradeVillageBuilding(ReqUpgradeVillageBuilding) returns (ResCommon);
+  rpc receiveVillageBuildingReward(ReqReceiveVillageBuildingReward) returns (ResReceiveVillageBuildingReward);
+  rpc startVillageTrip(ReqStartVillageTrip) returns (ResCommon);
+  rpc receiveVillageTripReward(ReqReceiveVillageTripReward) returns(ResReceiveVillageTripReward);
+  rpc completeVillageTask(ReqCompleteVillageTask) returns (ResCompleteVillageTask);
+  rpc getFriendVillageData(ReqGetFriendVillageData) returns (ResGetFriendVillageData);
+  rpc setVillageWorker(ReqSetVillageWorker) returns (ResSetVillageWorker);
+  rpc nextRoundVillage(ReqNextRoundVillage) returns (ResNextRoundVillage); // 下一个丰收季
+
+  // 庆典活动
+  rpc resolveFestivalActivityProposal(ReqResolveFestivalActivityProposal) returns (ResResolveFestivalActivityProposal);
+  rpc resolveFestivalActivityEvent(ReqResolveFestivalActivityEvent) returns (ResResolveFestivalActivityEvent);
+  rpc buyFestivalProposal(ReqBuyFestivalProposal) returns (ResBuyFestivalProposal);
+  // ==DevDebug Start==
+  // debug 协议在正式版本删除
+  rpc festivalActivityFetchDebug(ReqFestivalFetchDebug) returns (ResFestivalFetchDebug);
+  rpc festivalActivityDebug(ReqFestivalDebug) returns (ResCommon);
+  // ==DevDebug End==
+
+  // 海岛活动
+  rpc islandActivityMove(ReqIslandActivityMove) returns (ResCommon);
+  rpc islandActivityBuy(ReqIslandActivityBuy) returns (ResCommon);
+  rpc islandActivitySell(ReqIslandActivitySell) returns (ResCommon);
+  rpc islandActivityTidyBag(ReqIslandActivityTidyBag) returns (ResCommon);
+  rpc islandActivityUnlockBagGrid(ReqIslandActivityUnlockBagGrid) returns (ResCommon);
+
+  // 大会室管理相关
+  rpc createCustomizedContest(ReqCreateCustomizedContest) returns (ResCreateCustomizedContest);
+  rpc fetchManagerCustomizedContestList(ReqFetchmanagerCustomizedContestList) returns (ResFetchManagerCustomizedContestList);
+  rpc fetchManagerCustomizedContest(ReqFetchManagerCustomizedContest) returns (ResFetchManagerCustomizedContest);
+  rpc updateManagerCustomizedContest(ReqUpdateManagerCustomizedContest) returns (ResCommon);
+  rpc fetchContestPlayerRank(ReqFetchContestPlayerRank) returns (ResFetchContestPlayerRank);
+  rpc fetchReadyPlayerList(ReqFetchReadyPlayerList) returns (ResFetchReadyPlayerList);
+  rpc createGamePlan(ReqCreateGamePlan) returns (ResCommon);
+  rpc generateContestManagerLoginCode(ReqCommon) returns (ResGenerateContestManagerLoginCode);
+  rpc fetchContestTeamRank(ReqFetchContestTeamRank) returns (ResFetchContestTeamRank);
+  rpc fetchContestTeamMember(ReqFetchContestTeamMember) returns (ResFetchContestTeamMember);
+  rpc fetchContestTeamPlayerRank(ReqFetchContestTeamPlayerRank) returns (ResFetchContestTeamPlayerRank);
+
+  // 青云之志活动
+  rpc fetchAmuletActivityData(ReqFetchAmuletActivityData) returns (ResFetchAmuletActivityData); // 获取青云之志活动数据
+  rpc amuletActivityFetchBrief(ReqAmuletActivityFetchBrief) returns (ResAmuletActivityFetchBrief); // 获取挑战任务与收藏数据
+
+  rpc amuletActivityStartGame(ReqAmuletActivityStartGame) returns (ResAmuletEventResponse); // 开始游戏
+  rpc amuletActivityOperate(ReqAmuletActivityOperate) returns (ResAmuletEventResponse); // 换牌/打牌/开杠/和牌/模切/结束换牌 操作
+  rpc amuletActivityUpgrade(ReqAmuletActivityUpgrade) returns (ResAmuletEventResponse); // 下一关
+  rpc amuletActivityBuy(ReqAmuletActivityBuy) returns (ResAmuletEventResponse); // 购买卡包
+  rpc amuletActivitySelectPack(ReqAmuletActivitySelectPack) returns (ResAmuletEventResponse); // 选择卡包护身符
+  rpc amuletActivitySellEffect(ReqAmuletActivitySellEffect) returns (ResAmuletEventResponse); // 出售护身符
+  rpc amuletActivityEffectSort(ReqAmuletActivityEffectSort) returns (ResAmuletEventResponse); // 护身符排序
+  rpc amuletActivityGiveup(ReqAmuletActivityGiveup) returns (ResCommon); // 放弃当前对局
+  rpc amuletActivityRefreshShop(ReqAmuletActivityRefreshShop) returns (ResAmuletEventResponse); // 刷新商店
+  rpc amuletActivitySelectFreeEffect(ReqAmuletActivitySelectFreeEffect) returns (ResAmuletEventResponse); // 选择开局免费护身符
+  rpc amuletActivityUpgradeShopBuff(ReqAmuletActivityUpgradeShopBuff) returns (ResAmuletEventResponse); // 商店升级buff
+  rpc amuletActivityEndShopping(ReqAmuletActivityEndShopping) returns (ResAmuletEventResponse); // 退出商店，进入选关
+
+  rpc amuletActivitySetSkillLevel(ReqAmuletActivitySetSkillLevel) returns (ResCommon); // 设置场外增强
+  rpc amuletActivityMaintainInfo(ReqCommon) returns (ResAmuletActivityMaintainInfo); // 获取青云之志维护信息
+  rpc amuletActivitySelectRewardPack(ReqAmuletActivitySelectRewardPack) returns (ResAmuletEventResponse);
+  rpc amuletActivitySelectBookEffect(ReqAmuletActivitySelectBookEffect) returns (ResCommon); // 设置青云之志钦定护身符
+  // rpc amuletActivityReceiveTaskReward(ReqAmuletActivityReceiveTaskReward) returns (ResAmuletActivityReceiveTaskReward);
+
+  // ==DevDebug Start==
+  // debug 协议在正式版本删除
+  rpc amuletActivityDebug(ReqAmuletActivityDebug) returns (ResCommon);
+  rpc amuletActivityFetchDebug(ReqAmuletActivityFetchDebug) returns (ResFetchAmuletActivityDebug);
+  // ==DevDebug End==
+
+  // story剧情活动相关
+  rpc storyActivityUnlock(ReqStoryActivityUnlock) returns (ResCommon); // 解锁剧情
+  rpc storyActivityUnlockEnding(ReqStoryActivityUnlockEnding) returns (ResCommon); // 解锁结局
+  rpc storyActivityReceiveEndingReward(ReqStoryActivityReceiveEndingReward) returns (ResStoryReward); // 领取结局奖励
+  rpc storyActivityReceiveFinishReward(ReqStoryActivityReceiveFinishReward) returns (ResStoryReward); // 领取剧情通关奖励（完成剧情任一结局）
+  rpc storyActivityReceiveAllFinishReward(ReqStoryActivityReceiveAllFinishReward) returns (ResStoryReward); // 领取剧情全通奖励（完成所有结局）
+  rpc storyActivityUnlockEndingAndReceive(ReqStoryActivityUnlockEndingAndReceive) returns (ResStoryActivityUnlockEndingAndReceive); //解锁结局并领取结局奖励
+
+  // 活动排名相关
+  /**
+    活动排名通用接口，每个活动类型对应的data不同
+    青云之志： {point: string, level: number}
+    青云之志v2: {point: string, finished_task: number, effect_count: number}
+  */
+  rpc fetchActivityRank(ReqFetchActivityRank) returns (ResFetchActivityRank); // 获取活动排名
+
+  // 玩家职业/主播标识开关
+  rpc setVerifiedHidden(ReqSetVerifiedHidden) returns (ResCommon);
+
+  // 问卷相关协议
+  rpc fetchQuestionnaireList(ReqFetchQuestionnaireList) returns (ResFetchQuestionnaireList); // 获取问卷列表
+  rpc fetchQuestionnaireDetail(ReqFetchQuestionnaireDetail) returns (ResFetchQuestionnaireDetail); // 获取问卷详情
+  rpc submitQuestionnaire(ReqSubmitQuestionnaire) returns (ResCommon); // 提交调查问卷结果
+
+  // 好友房随机机器人角色开关
+  rpc setFriendRoomRandomBotChar(ReqSetFriendRoomRandomBotChar) returns (ResCommon);
+
+  rpc fetchAccountGameHuRecords(ReqFetchAccountGameHuRecords) returns (ResFetchAccountGameHuRecords);
+  rpc fetchAccountInfoExtra(ReqFetchAccountInfoExtra) returns (ResFetchAccountInfoExtra);
+  rpc setAccountFavoriteHu(ReqSetAccountFavoriteHu) returns (ResCommon);
+
+  // seer 报告
+  rpc fetchSeerReport(ReqFetchSeerReport) returns (ResFetchSeerReport);
+  rpc createSeerReport(ReqCreateSeerReport) returns (ResCreateSeerReport);
+  rpc fetchSeerReportList(ReqCommon) returns (ResFetchSeerReportList); // 获取当前 seer 报告状态（只返回分析中和未过期的）
+  rpc fetchSeerInfo(ReqCommon) returns (ResFetchSeerInfo);
+
+  // 可选up卡池活动
+  rpc selectChestChooseUpActivity(ReqSelectChestChooseUp) returns (ReqCommon);
+
+  // 年度报告
+  rpc generateAnnualReportToken(ReqGenerateAnnualReportToken) returns (ResGenerateAnnualReportToken);
+  rpc fetchAnnualReportInfo(ReqCommon) returns (ResFetchAnnualReportInfo);
+
+  // 好友备注
+  rpc remarkFriend(ReqRemarkFriend) returns (ResCommon);
+
+  // 雀斗大会
+  rpc simV2ActivityFetchInfo(ReqSimV2ActivityFetchInfo) returns (ResSimV2ActivityFetchInfo);
+  rpc simV2ActivityStartSeason(ReqSimV2ActivityStartSeason) returns (ResSimV2ActivityStartSeason);
+  rpc simV2ActivityTrain(ReqSimV2ActivityTrain) returns (ResSimV2ActivityTrain);
+  rpc simV2ActivitySelectEvent(ReqSimV2ActivitySelectEvent) returns (ResSimV2ActivitySelectEvent);
+  rpc simV2ActivityStartMatch(ReqSimV2ActivityStartMatch) returns (ResSimV2ActivityStartMatch);
+  rpc simV2ActivityEndMatch(ReqSimV2ActivityEndMatch) returns (ResSimV2ActivityEndMatch);
+  rpc simV2ActivityGiveUp(ReqSimV2ActivityGiveUp) returns (ResCommon);
+  rpc simV2ActivitySetUpgrade(ReqSimV2ActivitySetUpgrade) returns (ResCommon);
+  // ==DevDebug Start==
+  // debug 协议在正式版本删除
+  rpc simV2ActivityDebug(ReqSimV2ActivityDebug) returns (ResCommon);
+  rpc simV2ActivityFetchDebug(ReqSimV2ActivityFetchDebug) returns (ResSimV2ActivityFetchDebug);
+  // ==DevDebug End==
+
+  // 进度奖励活动
+  rpc progressRewardActivityReceive(ReqProgressRewardActivityReceive) returns (ResProgressRewardActivityReceive);
+  rpc fetchProgressRewardActivityInfo(ReqFetchProgressRewardActivityInfo) returns (ResFetchProgressRewardActivityInfo);
+}
+
+// 获取客户端连接信息
+message ResConnectionInfo {
+  Error error = 1;
+  NetworkEndpoint client_endpoint = 2;
+}
+
+message ResFetchQueueInfo {
+  Error error = 1;
+  uint32 remain = 2;
+  uint32 rank = 3;
+}
+
+message ReqOpenidCheck {
+  uint32 type = 1;
+  string token = 2;
+}
+
+// 协议：注册账号
+message ReqSignupAccount {
+  string account = 1; // 玩家登陆账号名
+  string password = 2; // hash后的密码
+  string code = 3; // 验证码
+  uint32 type = 4; // 类型 email=1 phone=2
+  ClientDeviceInfo device = 5; // 客户端设备信息
+  string client_version_string = 6; // 客户端版本验证用
+  string tag = 7; // 服务器标签，日志统计用
+}
+message ResSignupAccount {
+  Error error = 1;
+}
+
+// 协议：登录游戏内账号
+message ReqLogin {
+  string account = 1; // 玩家登陆账号名
+  string password = 2; // hash后的密码
+  bool reconnect = 3;
+  ClientDeviceInfo device = 4; // 客户端设备信息
+  string random_key = 5; // 登录随机key
+  ClientVersionInfo client_version = 6; // 客户端版本
+  bool gen_access_token = 7; // 生成快速登录口令
+  repeated uint32 currency_platforms = 8; // 客户端支持的货币平台
+  uint32 type = 9; // 0=account/email 1=phone
+  uint32 version = 10; // 客户端替换包奖励版本
+  string client_version_string = 11; // 客户端版本验证用
+  string tag = 12; // 服务器标签，日志统计用
+}
+message ResLogin {
+  Error error = 1;
+  uint32 account_id = 2; // 账号id
+  Account account = 3;
+  GameConnectInfo game_info = 4; // 正在进行的游戏信息
+  bool has_unread_announcement = 5; // 有未读公告
+  string access_token = 6; // 游戏通用登录口令
+  uint32 signup_time = 7; // 帐号注册时间
+  bool is_id_card_authed = 8; // 是否进行了实名认证
+  string country = 9; // 用户登录地区
+  repeated uint32 logined_version = 10; // 该账户曾经登录过的奖励version值
+  repeated uint32 rewarded_version = 11; // 该账户曾经领取过的奖励version值
+}
+
+message ReqPrepareLogin {
+  string access_token = 1; // Oauth2Login 中的 access_token
+  uint32 type = 2; // Oauth2Login 中的 type
+}
+
+message ResFastLogin {
+  Error error = 1;
+  GameConnectInfo game_info = 2; // 正在进行的游戏信息
+  Room room = 3; // 不在好友房内的话本字段为空
+}
+
+message ReqEmailLogin {
+  string email = 1; // 玩家登陆账号名
+  string password = 2; // hash后的密码
+  bool reconnect = 3;
+  ClientDeviceInfo device = 4; // 客户端设备信息
+  string random_key = 5; // 登录随机key
+  string client_version = 6; // 客户端版本
+  bool gen_access_token = 7; // 生成快速登录口令
+  repeated uint32 currency_platforms = 8; // 客户端支持的货币平台
+}
+
+// 协议：绑定账号密码
+message ReqBindAccount {
+  string account = 1;
+  string password = 2;
+}
+
+// 协议：获取手机验证码
+message ReqCreatePhoneVerifyCode {
+  string phone = 1;
+
+  // 用途（用于之后的操作校验）
+  //BIND_EMAIL       = 1, // 绑定电子邮箱
+  //MODIFY_PASSWORD  = 4, // 更换密码
+  //SIGN_UP          = 5, // 注册账号
+  //BIND_PHONE       = 6, // 绑定手机
+  //VERIFY_THRID_PARTY = 7, // 验证第三方账号
+  //UNBIND_PHONE     = 8, // 解绑手机
+  uint32 usage = 2;
+}
+
+// 协议：获取邮箱验证码
+message ReqCreateEmailVerifyCode {
+  string email = 1;
+  // 用途（用于之后的操作校验）
+  // 1=绑定邮箱
+  uint32 usage = 2;
+}
+
+// 协议：验证码获取安全权限
+message ReqVerifyCodeForSecure {
+  string code = 1;
+  uint32 operation = 2; // 1=更换手机号绑定
+}
+message ResVerfiyCodeForSecure {
+  Error error = 1;
+  string secure_token = 2; // 操作口令
+}
+
+// 协议：绑定手机号
+message ReqBindPhoneNumber {
+  string code = 1; // 验证码
+  string phone = 2;
+  string password = 3; // 没有密码需要设置密码（老客户端用，下个版本删除）
+  bool multi_bind_version = 4; // 多手机号绑定版本（新客户端用，填true，下个版本删除）
+}
+
+// 协议：解绑账号手机
+message ReqUnbindPhoneNumber {
+  string code = 1;
+  string phone = 2;
+  string password = 3;
+}
+
+// 协议：查询已绑定手机是否有该手机登录方式
+message ResFetchPhoneLoginBind {
+  Error error = 1;
+  uint32 phone_login = 2; // 0=无绑定登录方式 1=已绑定登录方式且是本游戏账号 2=已绑定登录方式但不是本游戏账号
+}
+
+// 协议：生成手机登录绑定
+message ReqCreatePhoneLoginBind {
+  string password = 1; // 没有密码需要设置密码
+}
+
+// 协议：绑定邮箱
+message ReqBindEmail {
+  string email = 1;
+  string code = 2;
+  string password = 3; // 没有密码需要设置密码
+}
+
+// 协议：修改密码
+message ReqModifyPassword {
+  string new_password = 1; // 新密码
+  string old_password = 2; // 老密码（无任何绑定的情况）
+  string secure_token = 3; // 安全操作口令
+}
+
+// 协议：Oauth2 授权
+message ReqOauth2Auth {
+  uint32 type = 1; // oauth2 自定义平台类型
+  string code = 2; // oauth2 code
+  string uid = 3; // 只在悠星sdk下登陆使用
+  string client_version_string = 4; // 客户端版本验证用
+}
+message ResOauth2Auth {
+  Error error = 1;
+  string access_token = 2;
+}
+
+// 协议：Oauth2 验证是否已经注册过账号
+message ReqOauth2Check {
+  uint32 type = 1; // oauth2 自定义平台类型
+  string access_token = 2; // oauth2 code
+}
+message ResOauth2Check {
+  Error error = 1;
+  bool has_account = 2; // true=已经注册 false=未注册
+}
+
+// 协议：Oauth2 注册账号
+message ReqOauth2Signup {
+  uint32 type = 1;
+  string access_token = 2;
+  string email = 3;
+  string advertise_str = 4;
+  ClientDeviceInfo device = 5; // 客户端设备信息
+  ClientVersionInfo client_version = 6; // 客户端版本
+  string client_version_string = 7; // 客户端版本验证用
+  string tag = 8; // 服务器标签，日志统计用
+}
+message ResOauth2Signup {
+  Error error = 1;
+}
+
+// 协议：Oauth2 登录
+message ReqOauth2Login {
+  uint32 type = 1; // 0=账号密码快速登录 1=微信 2=微博 3=QQ
+  string access_token = 2;
+  bool reconnect = 3;
+  ClientDeviceInfo device = 4; // 客户端设备信息
+  string random_key = 5; // 登录随机key
+  ClientVersionInfo client_version = 6; // 客户端版本
+  bool gen_access_token = 7; // 生成快速登录口令
+  repeated uint32 currency_platforms = 8; // 客户端支持的货币平台
+  uint32 version = 9; // 客户端替换包奖励版本
+  string client_version_string = 10; // 客户端版本验证用
+  string tag = 11; // 服务器标签，日志统计用
+}
+
+// 协议：获取DMM登录参数
+message ReqDMMPreLogin {
+  string finish_url = 1;
+}
+
+message ResDMMPreLogin {
+  Error error = 2;
+  string parameter = 1;
+}
+
+// 协议：注销账号
+message ReqLogout {
+}
+message ResLogout {
+  Error error = 1;
+}
+
+// 心跳请求
+message ReqHeatBeat {
+  uint32 no_operation_counter = 1; // 无操作时间计数（用于踢下线）
+}
+
+message ReqSearchAccountByEidLobby {
+  uint32 eid = 1;
+}
+
+message ResSearchAccountbyEidLobby {
+  Error error = 1;
+  uint32 account_id = 2;
+}
+
+// 登录心跳
+message ReqLoginBeat {
+  string contract = 1;
+}
+
+// 协议：加入匹配队列
+message ReqJoinMatchQueue {
+  uint32 match_mode = 1;
+  string client_version_string = 2; // 客户端版本验证用
+}
+
+// 协议：取消匹配
+message ReqCancelMatchQueue {
+  uint32 match_mode = 1;
+}
+
+// 协议：请求账号信息
+message ReqAccountInfo {
+  uint32 account_id = 1; // 本人可以不填数据
+}
+message ResAccountInfo {
+  Error error = 1;
+  lq.Account account = 2;
+  Room room = 3;
+}
+
+// 协议：创建昵称
+message ReqCreateNickname {
+  string nickname = 1;
+  string advertise_str = 2;
+  string tag = 3; // 服务器标签，日志统计用
+}
+
+// 协议：修改昵称
+message ReqModifyNickname {
+  string nickname = 1;
+  uint32 use_item_id = 2; // 使用改名卡
+}
+
+// 协议：修改生日
+message ReqModifyBirthday {
+  int32 birthday = 1; // unix second
+}
+
+// 协议：请求自身房间信息
+message ResSelfRoom {
+  Error error = 1;
+  Room room = 2;
+}
+
+message ResFetchGamingInfo {
+  Error error = 1;
+  GameConnectInfo game_info = 2;
+}
+
+// 协议：创建房间
+message ReqCreateRoom {
+  uint32 player_count = 1;
+  GameMode mode = 2;
+  bool public_live = 3; // 公开观战
+  string client_version_string = 4; // 客户端版本验证用
+  string pre_rule = 5; // 预设规则 liqi xuezhandaodi chuanma reveal_discard jiuchao dora3 field_spell zhanxing tianming yongchang beishui
+  // 设置pre_rule后，如果设置值不为 liqi，则 mode.detail_rule 只有 time_fixed 与 time_add 生效
+}
+message ResCreateRoom {
+  Error error = 1;
+  Room room = 2;
+}
+
+// 协议：加入房间
+message ReqJoinRoom {
+  uint32 room_id = 1;
+  string client_version_string = 2; // 客户端版本验证用
+}
+message ResJoinRoom {
+  Error error = 1;
+  Room room = 2;
+}
+
+// 协议：准备就绪
+message ReqRoomReady {
+  bool ready = 1; // true=准备 false=取消准备
+}
+
+// 协议：切换装扮状态
+message ReqRoomDressing {
+  bool dressing = 1; // true=正在装扮 false=普通状态
+}
+
+// 协议：开始游戏
+message ReqRoomStart {
+}
+
+// 协议：踢出玩家
+message ReqRoomKickPlayer {
+  uint32 id = 1; // 玩家账号id或机器人id
+}
+
+// 协议：修改房间
+message ReqModifyRoom {
+  uint32 robot_count = 1;
+}
+
+// 协议：添加好友房机器人
+message ReqAddRoomRobot {
+  uint32 position = 1;
+}
+
+// 协议：修改头像
+message ReqChangeAvatar {
+  uint32 avatar_id = 1;
+}
+
+// 协议：请求账号统计信息
+message ReqAccountStatisticInfo {
+  uint32 account_id = 1;
+}
+message ResAccountStatisticInfo {
+  Error error = 1;
+  repeated AccountStatisticData statistic_data = 2;
+  AccountDetailStatisticV2 detail_data = 3;
+}
+
+// 协议：获取试炼赛排名信息
+message ResAccountChallengeRankInfo {
+  Error error = 1;
+  message ChallengeRank {
+    uint32 season = 1;
+    uint32 rank = 2;
+    uint32 level = 3;
+  }
+  repeated ChallengeRank season_info = 2;
+}
+
+// 协议：获取账号人物信息
+message ResAccountCharacterInfo {
+  Error error = 2;
+  repeated uint32 unlock_list = 1; // 已经解锁列表
+}
+
+// 协议：商店购买
+message ReqShopPurchase {
+  string type = 1;
+  uint32 id = 2;
+}
+message ResShopPurchase {
+  Error error = 1;
+  AccountUpdate update = 2; // 增量更新数据
+}
+
+
+// 协议：获取单场牌谱记录
+message ReqGameRecord {
+  string game_uuid = 1;
+  string client_version_string = 2;
+}
+message ResGameRecord {
+  Error error = 1;
+//  GameDetailRecords game = 2;
+  RecordGame head = 3;  // 牌谱头部数据
+  bytes data = 4;       // 牌谱打牌数据（优先判断）
+  string data_url = 5;  // 牌谱打牌数据url地址
+}
+
+// 协议：获取牌谱列表
+// 已废弃，使用v2
+message ReqGameRecordList {
+  uint32 start = 1; // 起始下标，基于0
+  uint32 count = 2; // 期望获取的数量（结果可能少于该数量，最大有效值为30，超过按照30获取）
+  uint32 type = 3;  // ALL=0 好友房=1 段位=2 大会室=4
+}
+message ResGameRecordList {
+  Error error = 1;
+  uint32 total_count = 2; // 所有游戏记录的长度（20240829 xienanjie 客户端没有使用该字段）
+  repeated RecordGame record_list = 3; // 记录列表（长度不超过请求中的count）
+}
+
+// 协议：获取牌谱列表V2
+// 202408牌谱改版后使用，兼容老结构内容
+// 本结构使用了迭代器模式，只用于创建迭代器，不会返回实际数据
+// 客户端得到迭代器游标之后，使用游标进行后续请求
+// 迭代器有失效时间，过期后调用本接口重新申请
+message ReqGameRecordListV2 {
+  uint32 tag = 1; // 标签，总览（全部）=0/段位=1/友人=2/活动=3/赛事=4（收藏是另外的逻辑）
+  uint32 begin_time = 2; // 筛选的开始日期（精确到选择的0点），不填服务器默认为90天前的日期（也是0点）
+  uint32 end_time = 3; // 筛选的结束日期（精确到选择的23:59:59），不填服务器默认为今天的日期
+  repeated uint32 ranks = 4; // 筛选的顺位列表，1/2/3/4，长度为0等价于全选
+  repeated uint32 modes = 5; // 筛选的模式列表，三人=3/四人=4，长度为0等价于全选
+  uint32 max_hu_type = 6; // 筛选的出现大和，全部=0/倍满以上=1/三倍满以上=2/役满以上=3
+  repeated uint32 level_mode = 7; // 筛选的对局模式（仅段位筛选条件下有效），铜=1/银=2/金=3/玉=4/王座普通=5/王座巅峰=6，长度为0等价于全选
+}
+message ResGameRecordListV2 {
+  Error error = 1; // 这里可能会返回创建迭代器过快的报错
+  string iterator = 2; // 迭代器游标
+  uint32 iterator_expire = 3; // 迭代器游标过期时间戳
+
+  // 当游标失效，但是需要继续原有内容请求时使用
+  // 新的请求应为 [actual_begin_time, 之前拉取过的最小时间)
+  uint32 actual_begin_time = 4; // 实际的开始时间（服务器筛选的实际时间范围）
+  uint32 actual_end_time = 5; // 实际的结束时间（同上）
+}
+
+// 协议：根据迭代器获取牌谱列表内容
+message ReqNextGameRecordList {
+  string iterator = 1;
+  uint32 count = 2; // 期望的数量（服务器最大返回30条，这个与原先做法一致）
+}
+message ResNextGameRecordList {
+  Error error = 1;
+  bool next = 2; // 是否还有后续内容
+  repeated RecordListEntry entries = 3;
+  uint32 iterator_expire = 4; // 迭代器游标过期时间戳
+
+  // 下一次查询的时间范围右区间值
+  // 如果entries有数据，那么就是最后一个entries的end_time字段
+  // 如果没有数据，那么是服务器查询不到数据的范围（注：服务器有分月表，跨月表查询可能会分批次）
+  uint32 next_end_time = 5;
+}
+
+
+// 协议:获得收藏的牌谱列表（简要信息）
+message ResCollectedGameRecordList {
+  Error error = 1;
+  repeated RecordCollectedData record_list = 2; // 简要的收藏信息
+  uint32 record_collect_limit = 3;
+}
+
+// 协议:获取牌谱列表的详细信息
+message ReqGameRecordsDetail {
+  repeated string uuid_list = 1; // 根据uuid获取牌谱详情（返回的结果不超过30个）
+}
+message ResGameRecordsDetail {
+  Error error = 1;
+  repeated RecordGame record_list = 2; // 记录列表（长度不超过请求中的uuid_list的长度）
+}
+
+// 协议:获取牌谱列表的详细信息（新版）
+message ReqGameRecordsDetailV2 {
+  repeated string uuid_list = 1; // 根据uuid获取牌谱详情（返回的结果不超过30个）
+}
+message ResGameRecordsDetailV2 {
+  Error error = 1;
+  repeated RecordListEntry entries = 2; // 记录列表（长度不超过请求中的uuid_list的长度）
+}
+
+
+// 协议:添加牌谱收藏
+message ReqAddCollectedGameRecord {
+  string uuid = 1;      // 牌谱uuid
+  string remarks = 2;   // 备注，如果是默认备注则不用传过来
+  uint32 start_time = 3;
+  uint32 end_time = 4;
+}
+message ResAddCollectedGameRecord {
+  Error error = 1;
+}
+
+// 协议:移除牌谱收藏
+message ReqRemoveCollectedGameRecord {
+  string uuid = 1;  // 牌谱uuid
+}
+message ResRemoveCollectedGameRecord {
+  Error error = 1;
+}
+
+// 协议:修改收藏牌谱的注释
+message ReqChangeCollectedGameRecordRemarks {
+  string uuid     = 1; // 牌谱uuid
+  string remarks  = 2; // 备注，只能修改收藏过的牌谱
+}
+message ResChangeCollectedGameRecordRemarks {
+  Error error = 1;
+}
+
+// 协议：排行榜
+message ReqLevelLeaderboard {
+  uint32 type = 1; // 1=四麻 2=三麻
+}
+message ResLevelLeaderboard {
+  message Item {
+    uint32 account_id = 1;
+    AccountLevel level = 2;
+  }
+
+  Error error = 1;
+  repeated Item items = 2;
+  uint32 self_rank = 3; // 自身的排名（null表示无排名）
+}
+
+// 协议：试炼赛排行榜
+message ReqChallangeLeaderboard {
+  uint32 season = 1;
+}
+message ResChallengeLeaderboard {
+  message Item {
+    uint32 account_id = 1;
+    uint32 level = 2;
+    string nickname = 3;
+  }
+
+  Error error = 1;
+  repeated Item items = 2;
+  uint32 self_rank = 3; // 自身的排名（null表示无排名）
+}
+
+// 协议：获取多人试炼赛等级
+message ReqMutiChallengeLevel {
+  repeated uint32 account_id_list = 1;
+  uint32 season = 2;
+}
+
+message ResMutiChallengeLevel {
+  message Item {
+    uint32 account_id = 1;
+    uint32 level = 2;
+  }
+
+  Error error = 1;
+  repeated Item items = 2;
+}
+
+// 协议：获取多人信息
+message ReqMultiAccountId {
+  repeated uint32 account_id_list = 1;
+}
+message ResMultiAccountBrief {
+  Error error = 1;
+  repeated PlayerBaseView players = 2;
+}
+
+// 获取好友列表
+message ResFriendList {
+  Error error = 1;
+  repeated Friend friends = 2;
+  uint32 friend_max_count = 3; // 好友数量上限
+  uint32 friend_count = 4;
+}
+
+// 获取好友申请列表
+message ResFriendApplyList {
+  Error error = 1;
+  message FriendApply {
+    uint32 account_id = 1; // 申请者id
+    uint32 apply_time = 2; // 申请时间
+  }
+  repeated FriendApply applies = 2; // 申请列表
+}
+
+// 申请好友
+message ReqApplyFriend {
+  uint32 target_id = 1; // 申请的目标id
+}
+
+// 处理好友申请
+message ReqHandleFriendApply {
+  uint32 target_id = 1;
+  uint32 method = 2; // 1=agree 2=refuse
+}
+
+// 删除好友
+message ReqRemoveFriend {
+  uint32 target_id = 1;
+}
+
+// 模糊查询
+message ReqSearchAccountByPattern {
+  bool search_next = 1; // 继续上次查询
+  string pattern = 2; // 开启新的模糊查询
+}
+message ResSearchAccountByPattern {
+  Error error = 1;
+  bool is_finished = 2;
+  repeated uint32 match_accounts = 3;
+  uint32 decode_id = 4; // 解析后的id
+}
+
+// 查询玩家状态
+message ReqAccountList {
+  repeated uint32 account_id_list = 1; // 最多一次20个
+}
+message ResAccountStates {
+  Error error = 1;
+  repeated AccountActiveState states = 2;
+}
+
+//// 协议：请求发送私聊
+//message ReqPrivateMessage {
+//  uint32 target_id = 1;
+//  string content = 2;
+//}
+//
+//// 协议：请求发送世界聊天
+//message ReqWorldMessage {
+//  string content = 1;
+//}
+
+// 查询单个玩家
+message ReqSearchAccountById {
+  uint32 account_id = 1;
+}
+message ResSearchAccountById {
+  Error error = 1;
+  PlayerBaseView player = 2; // for account_id
+}
+
+
+// 协议：请求背包信息
+message ResBagInfo {
+  Error error = 1;
+  Bag bag = 2;
+}
+
+// 协议：使用背包道具
+message ReqUseBagItem {
+  uint32 item_id = 1;
+}
+
+// 协议：使用手选道具物品
+message ReqOpenManualItem {
+  uint32 item_id = 1; // 使用的道具物品ID
+  uint32 count = 2;  // 使用数量
+  uint32 select_id = 3; // 选择的获取道具ID
+}
+
+// 协议：使用随机道具物品
+message ReqOpenRandomRewardItem {
+  uint32 item_id = 1; // 使用的道具物品ID
+  uint32 count = 2; // 使用个数
+}
+message ResOpenRandomRewardItem {
+  Error error = 1;
+  repeated OpenResult results = 2; // 抽取结果
+}
+
+// 协议：使用全领礼包物品
+message ReqOpenAllRewardItem {
+  uint32 item_id = 1; // 使用的道具物品ID
+}
+message ResOpenAllRewardItem {
+  Error error = 1;
+  repeated OpenResult results = 2; // 抽取结果
+}
+
+// 协议：合成碎片
+message ReqComposeShard {
+  uint32 item_id = 1;
+}
+
+// 协议：公告
+message ReqFetchAnnouncement {
+  string lang = 1;
+  string platform = 2; // web, steam, apple, android, google, dmm_web, windows
+}
+
+message ResAnnouncement {
+  Error error = 1;
+  repeated Announcement announcements = 2; // 公告内容
+  repeated uint32 sort = 3; // 排序, yaya: 不再使用，announcements里就是sort好的内容
+  repeated uint32 read_list = 4;
+}
+
+message ResMailInfo {
+  Error error = 1;
+  repeated Mail mails = 2;
+}
+
+message ReqReadMail {
+  uint32 mail_id = 1;
+}
+
+message ReqDeleteMail {
+  uint32 mail_id = 1;
+}
+
+message ReqTakeAttachment {
+  uint32 mail_id = 1;
+}
+
+// 协议：领取成就组奖励
+message ReqReceiveAchievementGroupReward {
+  uint32 group_id = 1;
+}
+
+message ResReceiveAchievementGroupReward {
+  Error error = 1;
+  repeated ExecuteReward execute_reward = 2;
+}
+
+// 协议：领取成就奖励
+message ReqReceiveAchievementReward {
+  uint32 achievement_id = 1;
+}
+
+message ResReceiveAchievementReward {
+  Error error = 1;
+  repeated ExecuteReward execute_reward = 2;
+}
+
+// 协议：获取全服成就完成率
+message ResFetchAchievementRate {
+  message AchievementRate {
+    uint32 id = 1;
+    uint32 rate = 2; // 4000 表示 40.00%
+  }
+  Error error = 2;
+  repeated AchievementRate rate = 1;
+}
+
+// 协议：获取成就
+message ResAchievement {
+  Error error = 1;
+  repeated AchievementProgress progresses = 2;
+  repeated uint32 rewarded_group = 3;
+}
+
+// 称号列表
+message ResTitleList {
+  Error error = 1;
+  repeated uint32 title_list = 2;
+}
+
+// 协议：使用称号
+message ReqUseTitle {
+  uint32 title = 1;
+}
+
+// 协议：购买试炼资格
+message ReqBuyShiLian {
+  uint32 type = 1; // 0=ticket 1=currency
+}
+
+// 协议：更新客户端统计信息
+message ReqUpdateClientValue {
+  uint32 key = 1;
+  uint32 value = 2;
+}
+
+// 协议：客户端统计信息
+message ResClientValue {
+  message Value {
+    uint32 key = 1;
+    uint32 value = 2;
+  }
+  Error error = 3;
+  repeated Value datas = 1;
+  uint32 recharged_count = 2; // 充值成功次数
+}
+
+// 协议：客户端信息
+message ReqClientMessage {
+  uint32 timestamp = 1;
+  string message = 2;
+}
+
+// 协议：请求当前匹配模式信息
+message ReqCurrentMatchInfo {
+  repeated uint32 mode_list = 1;
+}
+message ResCurrentMatchInfo {
+  Error error = 1;
+
+  message CurrentMatchInfo {
+    uint32 mode_id = 1;
+    uint32 playing_count = 2;
+  }
+  repeated CurrentMatchInfo matches = 2;
+}
+
+// 协议：用户举报
+message ReqUserComplain {
+  message GameRoundInfo {
+    uint32 chang = 1;
+    uint32 ju = 2;
+    uint32 ben = 3;
+    uint32 seat = 4;
+    uint32 xun = 5;
+  }
+
+  uint32 target_id = 1;
+  uint32 type = 2; // 0-不友善对局 1-昵称违规 2-中途退出/挂机 3-作弊 4-通牌
+  string content = 3; // 用户填写的详细信息，可选
+  string game_uuid = 4; // 对局/牌谱uuid，可选
+  GameRoundInfo round_info = 5; // 对局详情
+}
+
+// 阅读公告
+message ReqReadAnnouncement {
+  uint32 announcement_id = 1;
+  repeated uint32 announcement_list = 2;
+}
+
+// 复活币信息
+message ResReviveCoinInfo {
+  Error error = 1;
+  bool has_gained = 2; // 是否已经领取
+}
+
+message ResDailyTask {
+  Error error = 1;
+  repeated TaskProgress progresses = 2; // 任务列表
+  bool has_refresh_count = 3; // 有刷新次数，废弃不用，改用refresh_count
+  uint32 max_daily_task_count = 4; // 最高任务上限
+  uint32 refresh_count = 5; // 剩余刷新次数
+}
+
+message ReqRefreshDailyTask {
+  uint32 task_id = 1;
+}
+message ResRefreshDailyTask {
+  Error error = 1;
+  TaskProgress progress = 2;
+  uint32 refresh_count = 3; // 剩余刷新次数
+}
+
+message ReqUseGiftCode {
+  string code = 1; // 礼品码
+}
+message ResUseGiftCode {
+  Error error = 1;
+  repeated RewardSlot rewards = 6; // 奖励内容
+}
+
+message ResUseSpecialGiftCode {
+  Error error = 1;
+  repeated ExecuteReward rewards = 2;
+}
+
+// 发送一条单方面消息
+message ReqSendClientMessage {
+  uint32 target_id = 1;
+  uint32 type = 2;
+  string content = 3;
+}
+
+
+// 协议：获取游戏直播信息（全视角）
+message ReqGameLiveInfo {
+  string game_uuid = 1;
+}
+message ResGameLiveInfo {
+  Error error = 1;
+  uint32 left_start_seconds = 2; // 剩余可以开始观看时间
+  GameLiveHead live_head = 3;
+  repeated GameLiveSegmentUri segments = 4; // 当前局的所有分片列表
+  uint32 now_millisecond = 5; // 直播时间线对应的当前相对时间（距离开始的毫秒数）
+}
+
+// 协议：获取游戏直播剩余分片信息（增量）
+message ReqGameLiveLeftSegment  {
+  string game_uuid = 1;
+  uint32 last_segment_id = 2; // 客户端已经接收到的最大分片id
+}
+message ResGameLiveLeftSegment {
+  Error error = 1;
+  uint32 live_state = 2; // 1=游戏进行中 2=游戏结束了 3=游戏已中断（所有玩家掉线）
+  repeated GameLiveSegmentUri segments = 4; // 当前局的所有分片列表
+  uint32 now_millisecond = 5; // 直播时间线对应的当前相对时间（距离开始的毫秒数）
+  uint32 segment_end_millisecond = 6; // 这些分片列表所提供的最大时长（可能会出现空的分片，但是时长依然包含空分片）
+}
+
+// 协议：获取正在直播的游戏列表
+message ReqGameLiveList {
+  uint32 filter_id = 1;
+}
+message ResGameLiveList {
+  Error error = 1;
+  repeated GameLiveHead live_list = 2;
+}
+
+
+// 协议：查看留言板设置信息
+message ResCommentSetting {
+  Error error = 1;
+  uint32 comment_allow = 2; // 许可的留言人：0=所有人都可以 1=只允许好友 2=不允许任何人留言
+}
+
+// 协议：更新留言板设置
+message ReqUpdateCommentSetting {
+  uint32 comment_allow = 1;
+}
+
+// 协议：获取留言板列表
+message ReqFetchCommentList {
+  uint32 target_id = 1;
+}
+message ResFetchCommentList {
+  Error error = 1;
+  uint32 comment_allow = 2; // 许可的留言人：0=所有人都可以 1=只允许好友 2=不允许任何人留言
+  repeated uint32 comment_id_list = 3;
+  uint32 last_read_id = 4;
+}
+
+// 协议：获取留言板内容
+message ReqFetchCommentContent {
+  uint32 target_id = 1;
+  repeated uint32 comment_id_list = 2;
+}
+message ResFetchCommentContent {
+  Error error = 1;
+  repeated CommentItem comments = 2;
+}
+
+// 协议：发送留言
+message ReqLeaveComment {
+  uint32 target_id = 1; //
+  string content = 2;
+}
+
+// 协议：删除留言
+message ReqDeleteComment {
+  uint32 target_id = 1;
+  repeated uint32 delete_list = 2; // 删除列表
+}
+
+// 协议：更新留言阅读记录
+message ReqUpdateReadComment {
+  uint32 read_id = 1; // 阅读的最大id
+}
+
+// 协议：获取滚动公告
+message ResFetchRollingNotice {
+  Error error = 2;
+  RollingNotice notice = 3;
+}
+
+// 协议：获取维护公告
+message ResFetchMaintainNotice {
+  Error error = 1;
+  MaintainNotice notice = 2;
+}
+
+// 滚动公告请求数据
+message ReqFetchRollingNotice {
+  string lang = 1; // 语言信息
+}
+
+// 协议：获取服务器时间
+message ResServerTime {
+  uint32 server_time = 1; // 服务器时间
+  Error error = 2;
+}
+
+// 协议：获取对应平台的商品列表
+message ReqPlatformBillingProducts {
+  uint32 shelves_id = 1; // 货架ID
+}
+message ResPlatformBillingProducts {
+  Error error = 1;
+  repeated BillingProduct products = 2;
+}
+
+// 协议：创建支付订单
+message ReqCreateBillingOrder {
+  uint32 goods_id = 1; // 商品ID
+  uint32 payment_platform = 2; // 支付渠道类型枚举
+  uint32 client_type = 3; // 设备类型
+  uint32 account_id = 4; // 账号ID
+  string client_version_string = 5;
+}
+message ResCreateBillingOrder {
+  Error error = 1;
+  string order_id = 2; // 生成的订单号
+}
+
+// 协议：处理 Google Play 支付完成
+message ReqSolveGooglePlayOrder {
+  string inapp_purchase_data = 2; // INAPP_PURCHASE_DATA 字段
+  string inapp_data_signature = 3; // INAPP_DATA_SIGNATURE 字段
+}
+
+message ReqSolveGooglePlayOrderV3 {
+  string order_id = 1;
+  string transaction_id = 2;
+  string token = 3;
+  uint32 account_id = 4;
+}
+
+// 协议：取消 Google Play 订单
+message ReqCancelGooglePlayOrder {
+  string order_id = 1;
+}
+
+// 协议：创建微信支付（扫码支付）订单
+message ReqCreateWechatNativeOrder {
+  uint32 goods_id = 1; // 商品ID
+  uint32 client_type = 2; // 设备类型
+  uint32 account_id = 3; // 账号ID
+  string account_ip = 4; // 服务器用字段，客户端不用填
+  string client_version_string = 5;
+}
+message ResCreateWechatNativeOrder {
+  Error error = 1;
+  string qrcode_buffer = 2; // 生成的二维码图片
+  string order_id = 3;
+}
+
+// 协议：创建微信支付（App支付）订单
+message ReqCreateWechatAppOrder {
+  uint32 goods_id = 1; // 商品ID
+  uint32 client_type = 2; // 设备类型
+  uint32 account_id = 3; // 账号ID
+  string account_ip = 4; // 服务器用字段，客户端不用填
+  string client_version_string = 5;
+}
+message ResCreateWechatAppOrder {
+  Error error = 1;
+  message CallWechatAppParam {
+    string appid = 1;
+    string partnerid = 2;
+    string prepayid = 3;
+    string package = 4;
+    string noncestr = 5;
+    string timestamp = 6;
+    string sign = 7;
+  }
+  CallWechatAppParam call_wechat_app_param = 2; // APP端调起支付的参数列表对象
+}
+
+// 协议：创建支付宝（链接地址）订单
+message ReqCreateAlipayOrder {
+  uint32 goods_id = 1; // 商品ID
+  uint32 client_type = 2; // 设备类型
+  uint32 account_id = 3; // 账号ID
+  string alipay_trade_type = 4; // PC_WEB MOBILE_WEB APP
+  string return_url = 5;
+  string client_version_string = 6;
+}
+message ResCreateAlipayOrder {
+  Error error = 1;
+  string alipay_url = 2; // 支付跳转链接
+}
+
+// 协议：创建支付宝（扫码支付）订单
+message ReqCreateAlipayScanOrder {
+  uint32 goods_id = 1; // 商品ID
+  uint32 client_type = 2; // 设备类型
+  uint32 account_id = 3; // 账号ID
+  string client_version_string = 4;
+}
+message ResCreateAlipayScanOrder {
+  Error error = 1;
+  string qrcode_buffer = 2; // 生成的二维码图片
+  string order_id = 3;
+  string qr_code = 4; // 二维码链接地址
+}
+
+// 协议：创建支付宝（App支付）订单
+message ReqCreateAlipayAppOrder {
+  uint32 goods_id = 1; // 商品ID
+  uint32 client_type = 2; // 设备类型
+  uint32 account_id = 3; // 账号ID
+  string client_version_string = 4;
+}
+message ResCreateAlipayAppOrder {
+  Error error = 1;
+  string alipay_url = 2; // 支付App拉起参数
+}
+
+// 协议：创建日服-CreditCard订单
+message ReqCreateJPCreditCardOrder {
+  uint32 goods_id = 1; // 商品ID
+  uint32 client_type = 2; // 设备类型
+  uint32 account_id = 3; // 账号ID
+  string return_url = 4; // 订单结束后客户端的跳转地址
+  string access_token = 5; // 用户登录时，悠星的sdk token
+  string client_version_string = 6;
+}
+
+message ResCreateJPCreditCardOrder {
+  Error error = 1;
+  string order_id = 2; //创建订单返回的订单号
+}
+
+// 协议：创建日服-Paypal订单
+message ReqCreateJPPaypalOrder {
+  uint32 goods_id = 1; // 商品ID
+  uint32 client_type = 2; // 设备类型
+  uint32 account_id = 3; // 账号ID
+  string return_url = 4; // 订单结束后客户端的跳转地址
+  string access_token = 5; // 用户登录时，悠星的sdk token
+  string client_version_string = 6;
+}
+
+message ResCreateJPPaypalOrder {
+  Error error = 1;
+  string order_id = 2; //创建订单返回的订单号
+}
+
+// 协议：创建日服-Au订单
+message ReqCreateJPAuOrder {
+  uint32 goods_id = 1; // 商品ID
+  uint32 client_type = 2; // 设备类型
+  uint32 account_id = 3; // 账号ID
+  string return_url = 4; // 订单结束后客户端的跳转地址
+  string access_token = 5; // 用户登录时，悠星的sdk token
+  string client_version_string = 6;
+}
+
+message ResCreateJPAuOrder {
+  Error error = 1;
+  string order_id = 2; //创建订单返回的订单号
+}
+
+// 协议：创建日服-Docomo订单
+message ReqCreateJPDocomoOrder {
+  uint32 goods_id = 1; // 商品ID
+  uint32 client_type = 2; // 设备类型
+  uint32 account_id = 3; // 账号ID
+  string return_url = 4; // 订单结束后客户端的跳转地址
+  string access_token = 5; // 用户登录时，悠星的sdk token
+  string client_version_string = 6;
+}
+
+message ResCreateJPDocomoOrder {
+  Error error = 1;
+  string order_id = 2; //创建订单返回的订单号
+}
+
+// 协议：创建日服-WebMoney订单
+message ReqCreateJPWebMoneyOrder {
+  uint32 goods_id = 1; // 商品ID
+  uint32 client_type = 2; // 设备类型
+  uint32 account_id = 3; // 账号ID
+  string return_url = 4; // 订单结束后客户端的跳转地址
+  string access_token = 5; // 用户登录时，悠星的sdk token
+  string client_version_string = 6;
+}
+
+message ResCreateJPWebMoneyOrder {
+  Error error = 1;
+  string order_id = 2; //创建订单返回的订单号
+}
+
+// 协议：创建日服-Softbank订单
+message ReqCreateJPSoftbankOrder {
+  uint32 goods_id = 1; // 商品ID
+  uint32 client_type = 2; // 设备类型
+  uint32 account_id = 3; // 账号ID
+  string return_url = 4; // 订单结束后客户端的跳转地址
+  string access_token = 5; // 用户登录时，悠星的sdk token
+  string client_version_string = 6;
+}
+
+message ResCreateJPSoftbankOrder {
+  Error error = 1;
+  string order_id = 2; //创建订单返回的订单号
+}
+
+message ReqCreateJPPayPayOrder {
+  uint32 goods_id = 1; // 商品ID
+  uint32 client_type = 2; // 设备类型
+  uint32 account_id = 3; // 账号ID
+  string return_url = 4; // 订单结束后客户端的跳转地址
+  string access_token = 5; // 用户登录时，悠星的sdk token
+  string client_version_string = 6;
+}
+
+message ResCreateJPPayPayOrder {
+  Error error = 1;
+  string order_id = 2; //创建订单返回的订单号
+}
+
+message ReqFetchJPCommonCreditCardOrder {
+  string order_id = 1;
+  uint32 account_id = 2;
+}
+
+message ResFetchJPCommonCreditCardOrder {
+  Error error = 1;
+}
+
+message ReqCreateJPGMOOrder {
+  uint32 goods_id = 1; // 商品ID
+  uint32 client_type = 2; // 设备类型
+  uint32 account_id = 3; // 账号ID
+  string return_url = 4; // 订单结束后客户端的跳转地址
+  string access_token = 5; // 用户登录时，悠星的sdk token
+  string client_version_string = 6;
+}
+
+message ResCreateJPGMOOrder {
+  Error error = 1;
+  string order_id = 2; //创建订单返回的订单号
+}
+
+// 协议：创建yostar-sdk订单
+message ReqCreateYostarOrder {
+  uint32 goods_id = 1; // 商品ID
+  uint32 client_type = 2; // 设备类型
+  uint32 account_id = 3; // 账号ID
+  uint32 order_type = 4; // 平台订单类型，谷歌 = 1,iap = 2,common = 3
+  string client_version_string = 5;
+}
+
+// 协议：创建yostar-sdk订单
+message ResCreateYostarOrder {
+  Error error = 1;
+  string order_id = 2; // 创建订单返回的订单号
+}
+
+// 协议：创建美服-Paypal订单
+message ReqCreateENPaypalOrder {
+  uint32 goods_id = 1; // 商品ID
+  uint32 client_type = 2; // 设备类型
+  uint32 account_id = 3; // 账号ID
+  string return_url = 4; // 订单结束后客户端的跳转地址
+  string access_token = 5; // 用户登录时，悠星的sdk token
+  string client_version_string = 6;
+}
+
+message ResCreateENPaypalOrder {
+  Error error = 1;
+  string order_id = 2; //创建订单返回的订单号
+}
+
+// 协议：创建美服-JCB订单
+message ReqCreateENJCBOrder {
+  uint32 goods_id = 1; // 商品ID
+  uint32 client_type = 2; // 设备类型
+  uint32 account_id = 3; // 账号ID
+  string return_url = 4; // 订单结束后客户端的跳转地址
+  string access_token = 5; // 用户登录时，悠星的sdk token
+  string client_version_string = 6;
+}
+
+message ResCreateENJCBOrder {
+  Error error = 1;
+  string order_id = 2; //创建订单返回的订单号
+}
+
+// 协议：创建美服-MasterCard订单
+message ReqCreateENMasterCardOrder {
+  uint32 goods_id = 1; // 商品ID
+  uint32 client_type = 2; // 设备类型
+  uint32 account_id = 3; // 账号ID
+  string return_url = 4; // 订单结束后客户端的跳转地址
+  string access_token = 5; // 用户登录时，悠星的sdk token
+  string client_version_string = 6;
+}
+
+message ResCreateENMasterCardOrder {
+  Error error = 1;
+  string order_id = 2; //创建订单返回的订单号
+}
+
+// 协议：创建美服-Visa订单
+message ReqCreateENVisaOrder {
+  uint32 goods_id = 1; // 商品ID
+  uint32 client_type = 2; // 设备类型
+  uint32 account_id = 3; // 账号ID
+  string return_url = 4; // 订单结束后客户端的跳转地址
+  string access_token = 5; // 用户登录时，悠星的sdk token
+  string client_version_string = 6;
+}
+
+message ResCreateENVisaOrder {
+  Error error = 1;
+  string order_id = 2; //创建订单返回的订单号
+}
+
+// 协议：创建美服-支付宝订单
+message ReqCreateENAlipayOrder {
+  uint32 goods_id = 1; // 商品ID
+  uint32 client_type = 2; // 设备类型
+  uint32 account_id = 3; // 账号ID
+  string return_url = 4; // 订单结束后客户端的跳转地址
+  string access_token = 5; // 用户登录时，悠星的sdk token
+  string client_version_string = 6;
+}
+
+message ResCreateENAlipayOrder {
+  Error error = 1;
+  string order_id = 2; //创建订单返回的订单号
+}
+
+// 协议：创建韩服-Paypal订单
+message ReqCreateKRPaypalOrder {
+  uint32 goods_id = 1; // 商品ID
+  uint32 client_type = 2; // 设备类型
+  uint32 account_id = 3; // 账号ID
+  string return_url = 4; // 订单结束后客户端的跳转地址
+  string access_token = 5; // 用户登录时，悠星的sdk token
+  string client_version_string = 6;
+}
+
+message ResCreateKRPaypalOrder {
+  Error error = 1;
+  string order_id = 2; //创建订单返回的订单号
+}
+
+// 协议：创建韩服-JCB订单
+message ReqCreateKRJCBOrder {
+  uint32 goods_id = 1; // 商品ID
+  uint32 client_type = 2; // 设备类型
+  uint32 account_id = 3; // 账号ID
+  string return_url = 4; // 订单结束后客户端的跳转地址
+  string access_token = 5; // 用户登录时，悠星的sdk token
+  string client_version_string = 6;
+}
+
+message ResCreateKRJCBOrder {
+  Error error = 1;
+  string order_id = 2; //创建订单返回的订单号
+}
+
+// 协议：创建韩服-MasterCard订单
+message ReqCreateKRMasterCardOrder {
+  uint32 goods_id = 1; // 商品ID
+  uint32 client_type = 2; // 设备类型
+  uint32 account_id = 3; // 账号ID
+  string return_url = 4; // 订单结束后客户端的跳转地址
+  string access_token = 5; // 用户登录时，悠星的sdk token
+  string client_version_string = 6;
+}
+
+message ResCreateKRMasterCardOrder {
+  Error error = 1;
+  string order_id = 2; //创建订单返回的订单号
+}
+
+// 协议：创建韩服-Visa订单
+message ReqCreateKRVisaOrder {
+  uint32 goods_id = 1; // 商品ID
+  uint32 client_type = 2; // 设备类型
+  uint32 account_id = 3; // 账号ID
+  string return_url = 4; // 订单结束后客户端的跳转地址
+  string access_token = 5; // 用户登录时，悠星的sdk token
+  string client_version_string = 6;
+}
+
+message ResCreateKRVisaOrder {
+  Error error = 1;
+  string order_id = 2; //创建订单返回的订单号
+}
+
+// 协议：创建韩服-支付宝订单
+message ReqCreateKRAlipayOrder {
+  uint32 goods_id = 1; // 商品ID
+  uint32 client_type = 2; // 设备类型
+  uint32 account_id = 3; // 账号ID
+  string return_url = 4; // 订单结束后客户端的跳转地址
+  string access_token = 5; // 用户登录时，悠星的sdk token
+  string client_version_string = 6;
+}
+
+message ResCreateKRAlipayOrder {
+  Error error = 1;
+  string order_id = 2; //创建订单返回的订单号
+}
+
+// 协议：创建DMM订单
+message ReqCreateDMMOrder {
+  uint32 goods_id = 1;
+  uint32 account_id = 2;
+  uint32 client_type = 3;
+  string client_version_string = 4;
+}
+
+message ResCreateDmmOrder {
+  Error error = 1;
+  string order_id = 2; //创建订单返回的订单号
+  string transaction_id = 3;
+  string dmm_user_id = 4;
+  string token = 5;
+  string callback_url = 6;
+  string request_time = 9;
+  string dmm_app_id = 10;
+}
+
+// 协议：创建苹果内购订单
+message ReqCreateIAPOrder {
+  uint32 goods_id = 1; // 商品ID
+  uint32 client_type = 2; // 设备类型
+  uint32 account_id = 3; // 账号ID
+  string access_token = 4; // 用户登录时，悠星的sdk token
+  string debt_order_id = 5;
+  string client_version_string = 6;
+}
+
+message ResCreateIAPOrder {
+  Error error = 1;
+  string order_id = 2; //创建订单返回的订单号
+}
+
+// 协议：验证苹果内购订单
+message ReqVerificationIAPOrder {
+  string order_id = 1; //创建订单返回的订单号
+  string transaction_id = 2; //苹果订单id
+  string receipt_data = 3; //去验证的数据
+  uint32 account_id = 4; // 账号ID
+}
+
+message ResVerificationIAPOrder {
+  Error error = 1;
+}
+
+// 协议：创建Steam订单
+message ReqCreateSteamOrder {
+  string language = 1;
+  uint32 account_id = 2;
+  uint32 client_type = 3;
+  uint32 goods_id = 4;
+  string steam_id = 5;
+  string debt_order_id = 6;
+  string client_version_string = 7;
+}
+
+message ResCreateSteamOrder {
+  Error error = 1;
+  string order_id = 2;
+  string platform_order_id = 3;
+}
+
+// 协议：获取角色随机池
+message ResRandomCharacter {
+  Error error = 1;
+  bool enabled = 2; // 当前随机角色池启用开关(1 = 启用 0 = 不启用)
+  repeated RandomCharacter pool = 3; // 随机角色池
+}
+
+// 协议：设置角色随机池
+message ReqRandomCharacter {
+  bool enabled = 1; // 随机角色池启用开关(1 = 启用 0 = 不启用)
+  repeated RandomCharacter pool = 2; // 随机角色池
+}
+
+// 协议：Steam验单
+message ReqVerifySteamOrder {
+  string order_id = 1;
+  uint32 account_id = 2;
+}
+
+// 协议：创建MyCard订单
+message ReqCreateMyCardOrder {
+  uint32 goods_id = 1; // 商品ID
+  uint32 client_type = 2; // 设备类型
+  uint32 account_id = 3; // 账号ID
+  string debt_order_id = 4;
+  string client_version_string = 5;
+}
+
+message ResCreateMyCardOrder {
+  Error error = 1;
+  string auth_code = 2;
+  string order_id = 3;
+}
+
+message ReqVerifyMyCardOrder {
+  string order_id = 1;
+  uint32 account_id = 2;
+}
+
+// 协议：创建Palpal订单
+message ReqCreatePaypalOrder {
+  uint32 goods_id = 1; // 商品ID
+  uint32 client_type = 2; // 设备类型
+  uint32 account_id = 3; // 账号ID
+  string debt_order_id = 4;
+  string client_version_string = 5;
+}
+
+message ResCreatePaypalOrder {
+  Error error = 1;
+  string order_id = 2;
+  string url = 3;
+}
+
+// 协议：创建Xsolla订单
+message ReqCreateXsollaOrder {
+  uint32 goods_id = 1; // 商品ID
+  uint32 client_type = 2; // 设备类型
+  uint32 account_id = 3; // 账号ID
+  uint32 payment_method = 4; // 支付方式 直接跳转银联的话传2580，其他传空
+  string debt_order_id = 5;
+  string client_version_string = 6;
+  string account_ip = 7; // 服务端字段，客户端不用传
+}
+
+message ResCreateXsollaOrder {
+  Error error = 1;
+  string order_id = 2;
+  string url = 3;
+}
+
+// 协议：处理AA32订单
+message ReqDeliverAA32Order {
+  uint32 account_id = 1;
+  string nsa_id = 2;
+  string nsa_token = 3;
+}
+
+// 协议：抽宝箱
+message ReqOpenChest {
+  uint32 chest_id = 1; // 宝箱Id
+  uint32 count = 2; // 1 or 10
+  bool use_ticket = 3; // 使用宝箱道具
+  uint32 choose_up_activity_id = 4; // 可选up宝箱活动id
+}
+message ResOpenChest {
+  Error error = 1;
+  repeated OpenResult results = 2; // 抽取结果
+  uint32 total_open_count = 3; // [已弃用]该宝箱总共开启次数
+  uint32 faith_count = 4; // 新的信仰值
+  message ChestReplaceCountData {
+    uint32 id = 1;
+    uint32 count = 2;
+  }
+  repeated ChestReplaceCountData chest_replace_up = 5; // 必 new up 数据
+}
+
+// 协议：宝箱商店购买商品
+message ReqBuyFromChestShop {
+  uint32 goods_id = 1;
+  uint32 count = 2;
+}
+message ResBuyFromChestShop {
+  Error error = 1;
+  uint32 chest_id = 2;
+  uint32 consume_count = 3; // 消耗的次数
+  int32 faith_count = 4; // 购物后剩余信仰点数
+}
+
+// 协议：获取每日签到信息
+message ResDailySignInInfo {
+  Error error = 1;
+  uint32 sign_in_days = 2; // 已经签到的天数
+}
+
+// 协议：活动签到
+message ReqDoActivitySignIn {
+  uint32 activity_id = 2;
+}
+message ResDoActivitySignIn {
+  Error error = 1;
+  message RewardData {
+    uint32 resource_id = 1;
+    uint32 count = 2;
+  }
+  repeated RewardData rewards = 2;
+  uint32 sign_in_count = 3;
+}
+
+// 协议：获取角色信息
+message ResCharacterInfo {
+  Error error = 1;
+  repeated Character characters = 2; // 角色列表
+  repeated uint32 skins = 3; // 皮肤列表
+  uint32 main_character_id = 4; // 主角色id
+  uint32 send_gift_count = 5; // 每日已经送礼次数
+  uint32 send_gift_limit = 6; // 每日送礼次数上限
+  repeated uint32 finished_endings = 7;
+  repeated uint32 rewarded_endings = 8;
+  repeated uint32 character_sort = 9; // 星标排序
+  repeated uint32 hidden_characters = 10;
+  repeated uint32 other_character_sort = 11; // 非星标排序
+}
+
+// 协议：更新角色排序和隐藏角色
+message ReqUpdateCharacterSort {
+  repeated uint32 sort = 1; // 星标排序
+  repeated uint32 other_sort = 2; // 非星标排序
+  repeated uint32 hidden_characters = 3; // 隐藏角色
+}
+
+// 协议：切换主角色
+message ReqChangeMainCharacter {
+  uint32 character_id = 1;
+}
+
+// 协议：切换角色皮肤
+message ReqChangeCharacterSkin {
+  uint32 character_id = 1;
+  uint32 skin = 2;
+}
+
+// 协议：设置角色外观
+message ReqChangeCharacterView {
+  uint32 character_id = 1;
+  uint32 slot = 2;
+  uint32 item_id = 3;
+}
+
+// 协议：设置隐藏角色
+message ReqSetHiddenCharacter {
+  repeated uint32 chara_list = 1;
+}
+
+message ResSetHiddenCharacter {
+  Error error = 1;
+  repeated uint32 hidden_characters = 2;
+}
+
+// 协议：赠送礼物给角色
+message ReqSendGiftToCharacter {
+  uint32 character_id = 1;
+
+  message Gift {
+    uint32 item_id = 1;
+    uint32 count = 2;
+  }
+  repeated Gift gifts = 2;
+}
+message ResSendGiftToCharacter {
+  Error error = 1;
+  uint32 level = 2;
+  uint32 exp = 3;
+}
+
+// 协议：出售道具
+message ReqSellItem {
+  message Item {
+    uint32 item_id = 1;
+    uint32 count = 2;
+  }
+  repeated Item sells = 1;
+}
+
+// 协议：获取通用外观
+message ResCommonView {
+  Error error = 1;
+  message Slot {
+    uint32 slot = 1;
+    uint32 value = 2;
+  }
+  repeated Slot slots = 2;
+}
+
+// 协议：切换通用外观（牌桌，牌背等）
+message ReqChangeCommonView {
+  uint32 slot = 1;
+  uint32 value = 2;
+}
+
+// 协议：保存通用外观方案
+message ReqSaveCommonViews {
+  repeated ViewSlot views = 1;
+  uint32 save_index = 2;
+  uint32 is_use = 3;
+  string name = 4; // 方案名称
+}
+
+// 协议：获取通用外观方案
+message ReqCommonViews {
+  uint32 index = 1;
+}
+
+message ResCommonViews {
+  Error error = 2;
+  repeated ViewSlot views = 1;
+  string name = 3; // 方案名称
+}
+
+// 协议：获取所有通用外观方案
+message ResAllcommonViews {
+  message Views {
+    repeated ViewSlot values = 1;
+    uint32 index = 2;
+    string name = 3; // 方案名称
+  }
+  repeated Views views = 1;
+  uint32 use = 2;
+  Error error = 3;
+}
+
+// 协议：切换通用外观方案
+message ReqUseCommonView {
+  uint32 index = 3;
+}
+
+// 协议：突破角色
+message ReqUpgradeCharacter {
+  uint32 character_id = 1;
+}
+message ResUpgradeCharacter {
+  Error error = 1;
+  Character character = 2;
+}
+
+// 协议：完成结局
+// 协议：领取结局奖励
+message ReqFinishedEnding {
+  uint32 character_id = 1; // 角色ID
+  uint32 story_id = 2; // 剧情ID
+  uint32 ending_id = 3; // 结局ID
+}
+
+// 协议：GM指令
+message ReqGMCommand {
+  string command = 1;
+}
+
+
+// 协议：获取商店信息
+message ResShopInfo {
+  Error error = 1;
+  ShopInfo shop_info = 2;
+}
+
+// 协议：普通商店购买
+message ReqBuyFromShop {
+  message Item {
+    uint32 id = 1; // 物品ID
+    uint32 count = 2; // 数量
+  }
+
+  uint32 goods_id = 1; // 商品Id
+  uint32 count = 2; // 购买数量
+
+  repeated Item ver_price = 3; // 最终结算总价用于验证
+  repeated Item ver_goods = 4; // 最终可以获得的东西，用于验证
+}
+message ResBuyFromShop {
+  Error error = 1;
+  repeated RewardSlot rewards = 2; // 打开福袋时才有奖励内容
+}
+
+// 协议：杂货铺购买
+message ReqBuyFromZHP {
+  uint32 goods_id = 1; // 商品Id
+  uint32 count = 2; // 购买数量
+}
+
+// 协议：领取月卡工资
+message ReqPayMonthTicket {
+  uint32 ticket_id = 1; // 月卡Id
+}
+message ResPayMonthTicket {
+  Error error = 1;
+  uint32 resource_id = 2; // 获得的资源Id
+  uint32 resource_count = 3; // 获得的资源数量
+}
+
+// 协议：刷新杂货铺商店
+message ReqReshZHPShop {
+  uint32 free_refresh = 1;
+  uint32 cost_refresh = 2;
+}
+message ResRefreshZHPShop {
+  Error error = 1;
+  ZHPShop zhp = 2;
+}
+
+// 协议：获取月卡信息
+message ResMonthTicketInfo {
+  Error error = 2;
+  MonthTicketInfo month_ticket_info = 1;
+}
+
+// 协议：兑换货币
+message ReqExchangeCurrency {
+  uint32 id = 1;
+  uint32 count = 2;
+}
+
+// 协议：获取服务器设置
+message ResServerSettings {
+  Error error = 2;
+  ServerSettings settings = 1;
+}
+
+// 协议：账户设置
+message ResAccountSettings {
+  Error error = 1;
+  repeated AccountSetting settings = 2;
+}
+// 更新账号设置
+message ReqUpdateAccountSettings {
+  AccountSetting setting = 1;
+}
+
+// 协议：获取改名时间
+message ResModNicknameTime {
+  Error error = 2;
+  uint32 last_mod_time = 1; // 最后一次改名时间
+}
+
+// 获取账号杂七杂八的数据
+message ResMisc {
+  message MiscFaithData {
+    uint32 faith_id = 1;
+    int32 count = 2;
+  }
+
+  Error error = 1;
+  repeated uint32 recharged_list = 2; // 以及充值过的人民币档位
+  repeated MiscFaithData faiths = 3; // 信仰数据
+  uint32 verified_hidden = 4; // 是否隐藏主播/职业标记 1-隐藏（在任何地方都不显示） 2-显示
+  uint32 verified_value = 5; // 隐藏主播/职业标记时记录原值是什么
+
+  uint32 disable_room_random_bot_char = 6; // 好友房电脑随机角色开关
+}
+
+// 协议：修改签名
+message ReqModifySignature {
+  string signature = 1;
+}
+
+// 协议：获取实名认证信息
+message ResIDCardInfo {
+  Error error = 1;
+  bool is_authed = 2; // 是否已经认证
+  string country = 3; // IP地址 国家
+}
+
+// 协议：进行实名认证
+message ReqUpdateIDCardInfo {
+  string fullname = 1; // 全名
+  string card_no = 2; // 身份证
+}
+
+// 协议：获取vip奖励
+message ResVipReward {
+  Error error = 1;
+  repeated uint32 gained_vip_levels = 2;
+}
+
+// 协议： 获取退款订单信息
+message ResFetchRefundOrder {
+  message OrderInfo {
+    uint32 success_time = 1; // 支付时间
+    uint32 goods_id = 2; // 商品ID
+    uint32 cleared = 3; // 是否已经补款
+    string order_id = 4; // 订单ID
+  }
+
+  Error error = 1;
+  repeated OrderInfo orders = 2; // 欠款订单列表
+  uint32 clear_deadline = 3; // 最后补款时间
+  repeated I18nContext message = 4; // 提示消息
+}
+
+// 协议：领取vip奖励
+message ReqGainVipReward {
+  uint32 vip_level = 1;
+}
+
+// 协议：获取赛事列表
+message ReqFetchCustomizedContestList {
+  uint32 start = 1;
+  uint32 count = 2; // 服务器限制最多 100 个
+  string lang = 3; // 对外公告语言
+}
+message ResFetchCustomizedContestList {
+  Error error = 1;
+  repeated CustomizedContestBase contests = 2; // 比赛列表
+  repeated CustomizedContestBase follow_contests = 3; // 关注的比赛列表（与contests会有重复）
+}
+
+// 废弃
+// // 协议：获取赛事额外信息
+// message ReqFetchCustomizedContestExtendInfo {
+//   repeated uint32 uid_list = 1; // unique_id list 最多20个
+// }
+// message ResFetchCustomizedContestExtendInfo {
+//   Error error = 1;
+//   repeated CustomizedContestExtend extend_list = 2; // 找不到的不会给（也就是返回长度可能小于请求长度）
+// }
+
+// 协议：获取赛事权限相关信息
+message ReqFetchCustomizedContestAuthInfo {
+  uint32 unique_id = 1;
+}
+message ResFetchCustomizedContestAuthInfo {
+  Error error = 1;
+  uint32 observer_level = 2; // 0=无OB权限 1=有OB权限
+}
+
+// 协议：进入赛事主页
+message ReqEnterCustomizedContest {
+  uint32 unique_id = 1;
+  string lang = 2;
+}
+message ResEnterCustomizedContest {
+  Error error = 1;
+  CustomizedContestDetail detail_info = 2;
+  CustomizedContestPlayerReport player_report = 3; // null 表示没有 参与
+  bool is_followed = 4;
+  uint32 state = 5; // 0-未报名 1-已报名 2-可以参赛
+  bool is_admin = 6;
+}
+
+// 协议：请求比赛在线信息
+message ReqFetchCustomizedContestOnlineInfo {
+  uint32 unique_id = 1;
+}
+message ResFetchCustomizedContestOnlineInfo {
+  Error error = 1;
+  uint32 online_player = 2; // 在线人数
+}
+
+// 协议：获取赛事基本信息（通过赛事ID）
+message ReqFetchCustomizedContestByContestId {
+  uint32 contest_id = 1;
+  string lang = 2;
+}
+message ResFetchCustomizedContestByContestId {
+  Error error = 1;
+  CustomizedContestAbstract contest_info = 2;
+}
+
+// 协议：报名比赛
+message ReqSignupCustomizedContest {
+  uint32 unique_id = 1;
+  string client_version_string = 2;
+}
+
+message ResSignupCustomizedContest {
+  Error error = 1;
+  uint32 state = 2;
+}
+
+// 协议：开始比赛匹配
+message ReqStartCustomizedContest {
+  uint32 unique_id = 1;
+  string client_version_string = 2;
+}
+
+message ReqStopCustomizedContest {
+  uint32 unique_id = 1;
+}
+
+// 协议：进入比赛聊天室
+message ReqJoinCustomizedContestChatRoom {
+  uint32 unique_id = 1;
+}
+message ResJoinCustomizedContestChatRoom {
+  Error error = 1;
+  string token = 2;
+  // repeated bytes chat_history = 2; // 聊天历史
+}
+
+// 协议：发送聊天消息
+message ReqSayChatMessage {
+  string content = 1;
+  uint32 unique_id = 2;
+}
+
+// 协议：获取正在直播的比赛游戏列表
+message ReqFetchCustomizedContestGameLiveList {
+  uint32 unique_id = 1;
+}
+message ResFetchCustomizedContestGameLiveList {
+  Error error = 1;
+  repeated GameLiveHead live_list = 2;
+}
+
+
+// 协议：查询赛事牌谱列表
+message ReqFetchCustomizedContestGameRecords {
+  uint32 unique_id = 1;
+  uint32 last_index = 2; // 最新下标 从0开始 初始填null
+  uint32 season_id = 3;
+}
+message ResFetchCustomizedContestGameRecords {
+  Error error = 1;
+  uint32 next_index = 2; // 下次请求的下标
+  repeated RecordGame record_list = 3; // 记录列表（长度不超过请求中的count）
+}
+
+
+message ReqTargetCustomizedContest {
+  uint32 unique_id = 1;
+}
+
+// 协议：获取获得列表
+message ResActivityList {
+  Error error = 1;
+  repeated Activity activities = 2;
+}
+
+// 协议：获取玩家获得数据
+message ResAccountActivityData {
+  Error error = 1;
+
+  repeated ExchangeRecord exchange_records = 2;
+
+  repeated TaskProgress task_progress_list = 3;
+
+  repeated ActivityAccumulatedPointData accumulated_point_list = 4;
+
+  repeated ActivityRankPointData rank_data_list = 5;
+
+  repeated TaskProgress flip_task_progress_list = 6;
+
+  message ActivitySignInData {
+    uint32 activity_id = 1;
+    uint32 sign_in_count = 2;
+    uint32 last_sign_in_time = 3;
+  }
+  repeated ActivitySignInData sign_in_data = 7;
+
+  message BuffData {
+    uint32 type = 1;
+    uint32 remain = 2;
+    uint32 effect = 3;
+  }
+
+  message ActivityRichmanData {
+    uint32 activity_id = 1;
+    uint32 location = 2;
+    uint32 finished_count = 3;
+    uint32 chest_position = 4;
+    uint32 bank_save = 5;
+    uint32 exp = 6;
+    repeated BuffData buff = 7;
+  }
+  repeated ActivityRichmanData richman_data = 8;
+
+  repeated TaskProgress period_task_progress_list = 9;
+
+  repeated TaskProgress random_task_progress_list = 10;
+
+  message ChestUpData {
+    uint32 id = 1; // count id
+    uint32 count = 2; // 累计抽到非up物品次数
+  }
+  repeated ChestUpData chest_up_data = 11;
+
+  message ActivitySNSData {
+    repeated SNSBlog blog = 1;
+    repeated uint32 liked_id = 2; // 点赞博文ID
+    repeated SNSReply reply = 3;
+  }
+  ActivitySNSData sns_data = 12;
+
+  repeated lq.MineActivityData mine_data = 13;
+
+  repeated lq.RPGActivity rpg_data = 14;
+
+  repeated lq.ActivityArenaData arena_data = 15;
+
+  repeated lq.FeedActivityData feed_data = 16;
+
+  repeated lq.SegmentTaskProgress segment_task_progress_list = 17;
+
+  repeated lq.VoteData vote_records = 18;
+
+  repeated lq.ActivitySpotData spot_data = 19;
+
+  repeated lq.ActivityFriendGiftData friend_gift_data = 20;
+
+  repeated lq.ActivityUpgradeData upgrade_data = 21;
+
+  repeated lq.ActivityGachaUpdateData gacha_data = 22;
+
+  repeated lq.ActivitySimulationData simulation_data = 23;
+
+  repeated lq.ActivityCombiningLQData combining_data = 24;
+
+  repeated lq.ActivityVillageData village_data = 25;
+
+  repeated lq.ActivityFestivalData festival_data = 26;
+
+  repeated lq.ActivityIslandData island_data = 27;
+
+  // repeated lq.ActivityAmuletData amulet_data = 28; // 青云之志数据不再储存在 account blob 中
+
+  repeated lq.ActivityStoryData story_data = 29;
+
+  repeated lq.ActivityChooseUpData choose_up_data = 30;
+
+  // repeated lq.SimulationV2Data simulation_v2_data = 31;
+
+  repeated lq.ActivityProgressRewardData progress_reward_data = 32;
+}
+
+message SNSBlog {
+  uint32 id = 1; // 博文id
+  uint32 read_time = 2; // 第一次打开时间
+}
+
+message SNSReply {
+  uint32 id = 1; // 博文ID
+  uint32 reply_time = 2; // NPC回复显示时间（在此时间前不显示NPC回复）
+}
+
+// 协议：兑换活动道具
+message ReqExchangeActivityItem {
+  uint32 exchange_id = 1; // 兑换ID
+  uint32 count = 2;
+}
+message ResExchangeActivityItem {
+  Error error = 1;
+  repeated ExecuteReward execute_reward = 2;
+}
+
+// 协议：完成活动任务
+message ReqCompleteActivityTask {
+  uint32 task_id = 1;
+}
+
+message ReqCompleteActivityTaskBatch {
+  repeated uint32 task_list= 1;
+}
+
+message ReqCompletePeriodActivityTaskBatch {
+  repeated uint32 task_list = 1;
+}
+
+// 协议：翻牌牌
+message ReqReceiveActivityFlipTask {
+  uint32 task_id = 1;
+}
+message ResReceiveActivityFlipTask {
+  uint32 count = 1;
+  Error error = 2;
+}
+
+// 协议：完成分段任务
+message ReqCompleteSegmentTaskReward {
+  uint32 task_id = 1;
+  uint32 count = 2;
+}
+
+message ResCompleteSegmentTaskReward {
+  Error error = 1;
+  repeated ExecuteReward rewards = 2;
+}
+
+// 协议：翻牌牌奖励格领取
+message ReqFetchActivityFlipInfo {
+  uint32 activity_id = 1;
+}
+message ResFetchActivityFlipInfo {
+  repeated uint32 rewards = 1;
+  uint32 count = 2;
+  Error error = 3;
+}
+
+// 协议：领取得点活动奖励
+message ReqGainAccumulatedPointActivityReward {
+  uint32 activity_id = 1;
+  uint32 reward_id = 2;
+}
+
+message ReqGainMultiPointActivityReward {
+  uint32 activity_id = 1;
+  repeated uint32 reward_id_list = 2;
+}
+
+message ReqFetchRankPointLeaderboard {
+  uint32 leaderboard_id = 1;
+}
+message ResFetchRankPointLeaderboard {
+  Error error = 1;
+  message Item {
+    uint32 account_id = 1;
+    uint32 rank = 2;
+    PlayerBaseView view = 3;
+    uint32 point = 4;
+  }
+  repeated Item items = 2;
+  uint32 last_refresh_time = 3; // 上次刷新排行榜时间
+}
+
+message ReqGainRankPointReward {
+  uint32 leaderboard_id = 1;
+  uint32 activity_id = 2;
+}
+
+// 协议：大富翁投骰子
+message ReqRichmanNextMove {
+  uint32 activity_id = 1;
+}
+
+message ResRichmanNextMove {
+  message RewardData {
+    uint32 resource_id = 1;
+    uint32 count = 2; // 实际获取资源数量
+    uint32 origin_count = 3; // 未加成前资源数量
+    // uint32 is_chest = 4; // 是否是宝箱奖励
+    uint32 type = 5; // 奖励类型  0-踩点奖励 1-宝箱奖励 2-圈数奖励
+  }
+
+  message PathData {
+    uint32 location = 1;  // 起始点为0，其他位置见表
+    repeated RewardData rewards = 2; // 该点获取奖励
+    repeated uint32 events = 3; // 该点触发事件ID
+  }
+
+  message BuffData {
+    uint32 type = 1; // 1 - 影响金币获取 2 - 影响下次骰子行走步数
+    uint32 remain = 2; // 剩余回合数
+    uint32 effect = 3; // 效果 50 代表 50% 200 代表 200%
+  }
+
+  repeated PathData paths = 1; // 本次行动路径
+  uint32 dice = 2; // 本次投骰子结果
+  uint32 location = 3; // 新的位置
+  uint32 finished_count = 4; // 踏破次数
+  uint32 step = 5; // 本次行走步数
+  repeated BuffData buff = 6;
+  uint32 bank_save = 7;
+  uint32 chest_position = 8;
+  uint32 exp = 9;
+  uint32 bank_save_add = 10;
+  Error error = 11;
+}
+
+message ReqRichmanSpecialMove {
+  uint32 activity_id = 1;
+  uint32 step = 2;
+}
+
+message ReqRichmanChestInfo {
+  uint32 activity_id = 1;
+}
+
+message ResRichmanChestInfo {
+  message ItemData {
+    uint32 id = 1;
+    uint32 count = 2;
+  }
+  repeated ItemData items = 1;
+  Error error = 2;
+}
+
+// 协议：创建实时OB权限
+message ReqCreateGameObserveAuth {
+  string game_uuid = 1;
+}
+message ResCreateGameObserveAuth {
+  Error error = 1;
+  string token = 2;
+  string location = 3;
+}
+
+// 协议：刷新实时OB权限时长
+message ReqRefreshGameObserveAuth {
+  string token = 1;
+}
+message ResRefreshGameObserveAuth {
+  Error error = 1;
+  uint32 ttl = 2;
+}
+
+// 协议：获取活动buff
+message ResActivityBuff {
+  Error error = 1;
+  repeated lq.ActivityBuffData buff_list = 2;
+}
+
+// 协议：升级活动buff
+message ReqUpgradeActivityBuff {
+  uint32 buff_id = 1;
+}
+
+// 协议：升级活动升级
+message ReqUpgradeActivityLevel {
+  uint32 activity_id = 1;
+  uint32 group = 2;
+  uint32 count = 3;
+}
+
+message ResUpgradeActivityLevel {
+  Error error = 1;
+  repeated ExecuteReward rewards = 2;
+}
+
+message ReqReceiveUpgradeActivityReward {
+  uint32 activity_id = 1;
+}
+
+message ResReceiveUpgradeActivityReward {
+  Error error = 1;
+  repeated ExecuteReward rewards = 2;
+}
+
+message ReqReceiveAllActivityGift {
+  uint32 activity_id = 1;
+}
+
+message ResReceiveAllActivityGift {
+  Error error = 1;
+  message ReceiveRewards {
+    uint32 id = 1;
+    uint32 from_account_id = 2;
+    uint32 item_id = 3;
+    uint32 count = 4;
+  }
+  repeated ExecuteReward rewards = 2;
+  repeated ReceiveRewards receive_gift = 3;
+}
+
+// 协议：试炼券升级
+message ResUpgradeChallenge {
+  Error error = 1;
+  repeated TaskProgress task_progress = 2; // 当前试炼券任务
+  uint32 refresh_count = 3; // 再发行次数
+  uint32 level = 4; // 试炼等级
+  uint32 match_count = 5; // 已进行比赛场次
+  uint32 ticket_id = 6; // 试炼券ID
+}
+
+// 协议：试炼赛再发行
+message ResRefreshChallenge {
+  Error error = 1;
+  repeated TaskProgress task_progress = 2; // 当前试炼券任务
+  uint32 refresh_count = 3; // 再发行次数
+  uint32 level = 4; // 试炼等级
+  uint32 match_count = 5; // 已进行比赛场次
+  uint32 ticket_id = 6; // 试炼券ID
+}
+
+// 协议：获取试炼赛信息
+message ResFetchChallengeInfo {
+  Error error = 1;
+  repeated TaskProgress task_progress = 2; // 当前试炼券任务
+  uint32 refresh_count = 3; // 再发行次数
+  uint32 level = 4; // 试炼等级
+  uint32 match_count = 5; // 已进行比赛场次
+  uint32 ticket_id = 6; // 试炼券ID
+  repeated uint32 rewarded_season = 7;
+}
+
+// 协议：试炼赛盖章
+message ReqForceCompleteChallengeTask {
+  uint32 task_id = 1;
+}
+
+// 协议获取AB轮赛信息
+message ResFetchABMatch {
+  message MatchPoint {
+    uint32 match_id = 1;
+    uint32 point = 2;
+  }
+
+  Error error = 1;
+  uint32 match_id = 2;
+  uint32 match_count = 3;
+  uint32 buy_in_count = 4;
+  uint32 point = 5;
+  bool rewarded = 6;
+  repeated MatchPoint match_max_point = 7;
+  bool quit = 8;
+}
+
+// 协议：开始匹配
+message ReqStartUnifiedMatch {
+  string match_sid = 1;
+  string client_version_string = 2; // 客户端版本验证用
+}
+
+// 协议：取消匹配
+message ReqCancelUnifiedMatch {
+  string match_sid = 1;
+}
+
+// 协议：获取试炼赛赛季信息
+message ResChallengeSeasonInfo {
+  message ChallengeInfo {
+    uint32 season_id = 1;
+    uint32 start_time = 2;
+    uint32 end_time = 3;
+    uint32 state = 4;
+  }
+
+  Error error = 2;
+  repeated ChallengeInfo challenge_season_list = 1;
+}
+
+// 协议：领取赛季排名奖励
+message ReqReceiveChallengeRankReward {
+  uint32 season_id = 1;
+}
+
+message ResReceiveChallengeRankReward {
+  message Reward {
+    uint32 resource_id = 1;
+    uint32 count = 2;
+  }
+
+  Error error = 2;
+  repeated Reward rewards = 1;
+}
+
+// 协议：买入AB赛
+message ReqBuyInABMatch {
+  uint32 match_id = 1;
+}
+
+// 协议：获取打点活动排行榜
+message ReqGamePointRank {
+  uint32 activity_id = 1;
+}
+
+message ResGamePointRank {
+  message RankInfo {
+    uint32 account_id = 1;
+    uint32 point = 2;
+  }
+
+  Error error = 1;
+  repeated RankInfo rank = 2;
+  uint32 self_rank = 3;
+}
+
+// 协议：获取自身打点活动排名
+message ResFetchSelfGamePointRank {
+  Error error = 1;
+  uint32 self_rate = 2; // 自身的排名百分比,0表示没有参加
+}
+
+message ReqReadSNS {
+  uint32 id = 1;
+}
+
+message ResReadSNS {
+  Error error = 1;
+  SNSBlog sns_content = 2;
+}
+
+message ReqReplySNS {
+  uint32 id = 1;
+}
+
+message ResReplySNS {
+  Error error = 1;
+  SNSReply sns_reply = 2;
+}
+
+message ReqLikeSNS {
+  uint32 id = 1;
+}
+
+message ResLikeSNS {
+  Error error = 1;
+  uint32 is_liked = 2;
+}
+
+message ReqDigMine {
+  uint32 activity_id = 1;
+  Point point = 2;
+}
+
+message ResDigMine {
+  Error error = 1;
+  repeated MineReward map = 2;
+  repeated lq.RewardSlot reward = 3;
+}
+
+message ReqFetchLastPrivacy {
+  repeated uint32 type = 1;
+}
+
+message ResFetchLastPrivacy {
+  message PrivacyInfo {
+    uint32 type = 1;
+    string version = 2;
+  }
+
+  Error error = 1;
+  repeated PrivacyInfo privacy = 2;
+}
+
+message ReqCheckPrivacy {
+  string device_type = 1;
+
+  message Versions {
+    string version = 1;
+    uint32 type = 3;
+  }
+  repeated Versions versions = 2;
+}
+
+// message ReqResponseCaptcha {
+//   uint32 check_id = 1;
+//   uint32 check_time = 2;
+//   string result = 3; // web 端发送阿里云的验证信息，app端发送 (account_id + check_id + notifyAuthGame随机字符串 + notifyAuthGame时间戳 + check_time + client_version_string) 用,分割的 sha1 加密字符串
+//   string client_version_string = 4;
+//   uint32 type = 5; // 1 - NVC 2 - NV 3 - HASH
+// }
+
+message ReqFetchRPGBattleHistory {
+  uint32 activity_id = 1;
+}
+
+message ResFetchRPGBattleHistory {
+  message BattleResult {
+    string uuid = 14; // 牌谱 uuid
+    uint32 chang = 1; // 场
+    uint32 ju = 2; // 局
+    uint32 ben = 3; // 本
+    uint32 target = 4; // 作用目标 1 - player 2 - monster
+    uint32 damage = 5; // 对目标造成伤害
+    uint32 heal = 6; // 对目标造成治疗
+    uint32 monster_seq = 7; // 怪物序列号
+    uint32 chain_atk = 8; // 玩家连续攻击次数
+    uint32 killed = 9; // 是否击杀目标
+    uint32 is_luk = 10; // 是否暴击
+    uint32 is_dex = 11; // 是否闪避
+    uint32 is_extra = 12; // 该次攻击是否是击飞其他玩家造成的连续攻击
+    string reward = 13; // 奖励
+    uint32 points = 15; // 打点
+    uint32 is_zimo = 16; // 是否自摸
+  }
+
+  Error error = 1;
+  repeated BattleResult battle_result = 2;
+  lq.RPGState start_state = 3;
+  lq.RPGState current_state = 4;
+}
+
+message ResFetchRPGBattleHistoryV2 {
+  message BattleResultV2 {
+    string uuid = 14;
+    uint32 chang = 1; // 场
+    uint32 ju = 2; // 局
+    uint32 ben = 3; // 本
+    uint32 damage = 5; // 对目标造成伤害
+    uint32 monster_seq = 7; // 怪物序列号
+    uint32 killed = 9; // 是否击杀目标
+    repeated lq.ActivityBuffData buff = 10;
+    uint32 points = 11;
+  }
+
+  Error error = 1;
+  repeated BattleResultV2 battle_result = 2;
+  lq.RPGState start_state = 3;
+  lq.RPGState current_state = 4;
+  repeated BattleResultV2 recent_battle_result = 5;
+}
+
+message ReqBuyArenaTicket {
+  uint32 activity_id = 1;
+}
+
+message ReqArenaReward {
+  uint32 activity_id = 1;
+}
+
+message ReqEnterArena {
+  uint32 activity_id = 1;
+}
+
+message ResArenaReward {
+  message RewardItem {
+    uint32 id = 1;
+    uint32 count = 2;
+  }
+
+  Error error = 1;
+  repeated RewardItem items = 2;
+}
+
+message ReqReceiveRPGRewards {
+  uint32 activity_id = 1;
+}
+
+message ReqReceiveRPGReward {
+  uint32 activity_id = 1;
+  uint32 monster_seq = 2;
+}
+
+message ResReceiveRPGRewards {
+  message RewardItem {
+    uint32 id = 1;
+    uint32 count = 2;
+  }
+
+  Error error = 1;
+  repeated RewardItem items = 2;
+}
+
+message ReqFetchOBToken {
+  string uuid = 1;
+}
+
+message ResFetchOBToken {
+  Error error = 1;
+  string token = 2;
+  uint32 create_time = 3;
+  uint32 delay = 4;
+  uint32 start_time = 5;
+}
+
+message ReqReceiveCharacterRewards {
+  uint32 character_id = 1;
+  uint32 level = 2;
+}
+
+message ResReceiveCharacterRewards {
+  message RewardItem {
+    uint32 id = 1;
+    uint32 count = 2;
+  }
+
+  Error error = 1;
+  repeated RewardItem items = 2;
+}
+message ReqFeedActivityFeed {
+  uint32 activity_id = 1;
+  uint32 count = 2;
+}
+
+message ResFeedActivityFeed {
+  message RewardItem {
+    uint32 id = 1;
+    uint32 count = 2;
+  }
+
+  Error error = 1;
+  repeated RewardItem items = 2;
+  uint32 feed_count = 3;
+}
+
+message ReqSendActivityGiftToFriend {
+  uint32 activity_id = 1;
+  uint32 item_id = 2;
+  uint32 target_id = 3;
+}
+
+message ResSendActivityGiftToFriend {
+  Error error = 1;
+  uint32 send_gift_count = 2;
+}
+
+message ReqReceiveActivityGift {
+  uint32 activity_id = 1;
+  uint32 id = 2;
+}
+
+message ReqFetchFriendGiftActivityData {
+  uint32 activity_id = 1;
+  repeated uint32 account_list = 2;
+}
+
+message ResFetchFriendGiftActivityData {
+  message ItemCountData {
+    uint32 item = 1;
+    uint32 count = 2;
+  }
+
+  message FriendData {
+    uint32 account_id = 1;
+    repeated ItemCountData items = 2;
+    uint32 receive_count = 3;
+  }
+
+  Error error = 1;
+  repeated FriendData list = 2;
+}
+
+message ReqOpenPreChestItem {
+  uint32 item_id = 1;
+  uint32 pool_id = 2;
+}
+
+message ResOpenPreChestItem {
+  Error error = 1;
+  repeated OpenResult results = 2; // 抽取结果
+}
+
+message ReqFetchVoteActivity {
+  uint32 activity_id = 1;
+}
+
+message ResFetchVoteActivity {
+  Error error = 1;
+  // repeated uint32 vote_rank = 2;
+  uint32 update_time = 3;
+
+  message VoteRankData {
+    uint32 id = 1;
+    uint32 share = 2;
+  }
+  repeated VoteRankData data = 4;
+}
+
+message ReqVoteActivity {
+  uint32 vote = 1;
+  uint32 activity_id = 2;
+  uint32 count = 3; // 1 或 10
+}
+
+message ResVoteActivity {
+  Error error = 1;
+  repeated VoteData vote_records = 2;
+}
+
+message ReqUnlockActivitySpot {
+  uint32 unique_id = 1;
+}
+
+message ReqUnlockActivitySpotEnding {
+  uint32 unique_id = 1;
+  uint32 ending_id = 2;
+}
+
+message ReqReceiveActivitySpotReward {
+  uint32 unique_id = 1;
+}
+
+message ResReceiveActivitySpotReward {
+  message RewardItem {
+    uint32 id = 1;
+    uint32 count = 2;
+  }
+
+  Error error = 1;
+  repeated RewardItem items = 2;
+}
+
+message ReqLogReport {
+  uint32 success = 1;
+  uint32 failed = 2;
+}
+
+message ReqBindOauth2 {
+  uint32 type = 1;
+  string token = 2;
+}
+
+message ReqFetchOauth2 {
+  uint32 type = 1;
+}
+
+message ResFetchOauth2 {
+  Error error = 1;
+  string openid = 2;
+}
+
+message ResDeleteAccount {
+  Error error = 1;
+  uint32 delete_time = 2;
+}
+
+message ReqSetLoadingImage {
+  repeated uint32 images = 1;
+}
+
+message ResFetchShopInterval {
+  message ShopInterval {
+    uint32 group_id = 1;
+    uint32 interval = 2;
+  }
+
+  Error error = 1;
+  repeated ShopInterval result = 2;
+}
+
+message ResFetchActivityInterval {
+  message ActivityInterval {
+    uint32 activity_id = 1;
+    uint32 interval = 2;
+  }
+  Error error = 1;
+  repeated ActivityInterval result = 2;
+}
+
+message ResFetchrecentFriend {
+  Error error = 1;
+  repeated uint32 account_list = 2;
+}
+
+message ReqOpenGacha {
+  uint32 activity_id = 1;
+  uint32 count = 2;
+}
+
+message ResOpenGacha {
+  Error error = 1;
+  repeated uint32 result_list = 2;
+  repeated ExecuteReward reward_items = 3;
+  repeated ExecuteReward sp_reward_items = 4;
+  uint32 remain_count = 5;
+}
+
+message ReqTaskRequest {
+  repeated uint32 params = 1;
+}
+
+message ReqSimulationActivityTrain {
+  uint32 activity_id = 1;
+  uint32 type = 2; // 训练指令, 1-对局 2-读书 3-跑步 4-祈祷 5-摸鱼
+}
+
+message ResSimulationActivityTrain {
+  Error error = 1;
+  uint32 result_type = 2; // 1-成功 2-失败 3-大成功
+  repeated uint32 final_stats = 4; // 能力值变动后最终值
+}
+
+message ReqFetchSimulationGameRecord {
+  string game_uuid = 1;
+  uint32 activity_id = 2;
+}
+
+message ResFetchSimulationGameRecord {
+  Error error = 1;
+  repeated ActivitySimulationGameRecordMessage messages = 2;
+}
+
+message ReqStartSimulationActivityGame {
+  uint32 activity_id = 1;
+}
+
+message ResStartSimulationActivityGame {
+  Error error = 1;
+  repeated lq.ActivitySimulationGameRecord records = 2;
+}
+
+message ReqFetchSimulationGameRank {
+  uint32 activity_id = 1;
+  uint32 day = 2;
+}
+
+message ResFetchSimulationGameRank {
+  Error error = 1;
+
+  message RankInfo {
+    uint32 character = 1;
+    float score = 2;
+  }
+  repeated RankInfo rank = 2;
+}
+
+message ReqGenerateCombiningCraft {
+  uint32 activity_id = 1;
+  uint32 bin_id = 2;
+}
+
+message ResGenerateCombiningCraft {
+  Error error = 1;
+
+  uint32 pos = 2;
+  uint32 craft_id = 3;
+}
+
+message ReqMoveCombiningCraft {
+  uint32 activity_id = 1;
+  uint32 from = 2;
+  uint32 to = 3;
+}
+
+message ResMoveCombiningCraft {
+  message BonusData {
+    uint32 craft_id = 1;
+    uint32 pos = 2;
+  }
+
+  Error error = 1;
+
+  uint32 pos = 2;
+  uint32 combined = 3;
+  uint32 craft_id = 4;
+  BonusData bonus = 5;
+}
+
+message ReqCombiningRecycleCraft {
+  uint32 activity_id = 1;
+  uint32 pos = 2;
+}
+
+message ResCombiningRecycleCraft {
+  Error error = 1;
+
+  repeated ExecuteReward reward_items = 2;
+}
+
+message ReqRecoverCombiningRecycle {
+  uint32 activity_id = 1;
+}
+
+message ResRecoverCombiningRecycle {
+  Error error = 1;
+
+  uint32 craft_id = 2;
+  uint32 pos = 3;
+}
+
+message ReqFinishCombiningOrder {
+  uint32 activity_id = 1;
+  uint32 craft_pos = 2;
+  uint32 order_pos = 3;
+}
+
+message ResFinishCombiningOrder {
+  Error error = 1;
+
+  repeated ExecuteReward reward_items = 2;
+}
+
+message ResFetchInfo {
+  Error error = 1;
+  ResServerTime server_time =  2;
+  ResServerSettings server_setting = 3;
+  ResClientValue client_value = 4;
+  ResFriendList friend_list = 5;
+  ResFriendApplyList friend_apply_list = 6;
+  ResFetchrecentFriend recent_friend = 7;
+  ResMailInfo mail_info = 8;
+  ResReviveCoinInfo receive_coin_info = 9;
+  ResTitleList title_list = 10;
+  ResBagInfo bag_info = 11;
+  ResShopInfo shop_info = 12;
+  ResFetchShopInterval shop_interval = 13;
+  ResAccountActivityData activity_data = 14;
+  ResFetchActivityInterval activity_interval = 15;
+  ResActivityBuff activity_buff = 16;
+  ResVipReward vip_reward = 17;
+  ResMonthTicketInfo month_ticket_info = 18;
+  ResAchievement achievement = 19;
+  ResCommentSetting comment_setting = 20;
+  ResAccountSettings account_settings = 21;
+  ResModNicknameTime mod_nickname_time = 22;
+  ResMisc misc = 23;
+  ResAnnouncement announcement = 24;
+  ResActivityList activity_list = 26;
+  ResCharacterInfo character_info = 27;
+  ResAllcommonViews all_common_views = 28;
+  ResCollectedGameRecordList collected_game_record_list = 29;
+  ResFetchMaintainNotice maintain_notice = 30;
+  ResRandomCharacter random_character = 31;
+  ResFetchServerMaintenanceInfo maintenance_info = 32;
+  ResFetchSeerInfo seer_info = 33;
+  ResFetchAnnualReportInfo annual_report_info = 34;
+}
+
+message ResFetchSeerInfo {
+  Error error = 1;
+  uint32 remain_count = 2;
+  uint32 date_limit = 3; // 牌谱时间范围限制，小于该值的牌谱不显示分析按钮，形式：250101，代表牌谱 uuid 时间小于 250101 的牌谱不能分析
+  uint32 expire_time = 4; // 解析成功的牌谱过期时间，秒
+}
+
+message ResFetchServerMaintenanceInfo {
+  message ServerFunctionMaintenanceInfo {
+    /**
+      FunctionName {
+        RandomCharacter = 'random-character',
+        Badge = 'badge',
+        Seer = 'seer',
+      }
+    **/
+    string name = 1;
+    bool open = 2;
+  }
+  repeated ServerFunctionMaintenanceInfo function_maintenance = 1;
+}
+
+message ReqUpgradeVillageBuilding {
+  uint32 building_id = 1; // 建筑id
+  uint32 activity_id = 2; // 活动id
+}
+
+message ReqReceiveVillageBuildingReward {
+  uint32 activity_id = 1;
+  uint32 building_id = 2;
+  repeated RewardSlot rewards = 3;
+}
+
+message ResReceiveVillageBuildingReward {
+  Error error = 1;
+
+  repeated ExecuteReward reward_items = 2;
+}
+
+message ReqStartVillageTrip {
+  uint32 dest = 1;
+  uint32 activity_id = 2;
+}
+
+message ReqReceiveVillageTripReward {
+  uint32 activity_id = 1;
+  uint32 dest_id = 2;
+  repeated RewardSlot rewards = 3;
+}
+
+message ResReceiveVillageTripReward {
+  Error error = 1;
+
+  repeated ExecuteReward reward_items = 2;
+}
+
+message ReqCompleteVillageTask {
+  uint32 task_id = 1;
+  uint32 activity_id = 2;
+}
+
+message ResCompleteVillageTask {
+  Error error = 1;
+
+  repeated ExecuteReward reward_items = 2;
+}
+
+message ReqGetFriendVillageData {
+  repeated uint32 account_list = 1;
+  uint32 activity_id = 2;
+}
+
+message ResGetFriendVillageData {
+  message FriendVillageData {
+    uint32 account_id = 1;
+    uint32 level = 2;
+  }
+
+  Error error = 1;
+  repeated FriendVillageData list = 2;
+}
+
+message ReqSetVillageWorker {
+  uint32 building_id = 1;
+  uint32 worker_pos = 2; // 如果这个位置上有人就卸下来，没人就装上去
+  uint32 activity_id = 3;
+}
+
+message ResSetVillageWorker {
+  Error error = 1;
+  VillageBuildingData building = 2;
+  uint32 update_time = 3;
+}
+
+message ReqNextRoundVillage {
+  uint32 activity_id = 1;
+}
+
+message ResNextRoundVillage {
+  Error error = 1;
+  ActivityVillageData activity_data = 2;
+}
+
+message ReqResolveFestivalActivityProposal {
+  uint32 activity_id = 1;
+  uint32 id = 2;
+  uint32 select = 3;
+}
+
+message ResResolveFestivalActivityProposal {
+  Error error = 1;
+  repeated uint32 effected_buff = 2; // 生效技能
+  uint32 result = 3; // 1-成功 2-大成功 3-失败
+  repeated ExecuteResult reward_items = 4;
+  uint32 level = 5;
+}
+
+message ReqResolveFestivalActivityEvent {
+  uint32 activity_id = 1;
+  uint32 id = 2;
+  uint32 select = 3;
+}
+
+message ResResolveFestivalActivityEvent {
+  Error error = 1;
+  repeated uint32 effected_buff = 2; // 生效技能
+  repeated ExecuteResult reward_items = 4;
+  uint32 ending_id = 5;
+  uint32 level = 6;
+}
+
+message ReqBuyFestivalProposal {
+  uint32 activity_id = 1;
+}
+
+message ResBuyFestivalProposal {
+  Error error = 1;
+  FestivalProposalData new_proposal = 2;
+}
+
+message ReqIslandActivityMove {
+  uint32 activity_id = 1;
+  uint32 zone_id = 2;
+}
+
+message ReqIslandActivityBuy {
+  uint32 activity_id = 1;
+  message BuyItems {
+    uint32 goods_id = 2;
+    repeated uint32 pos = 3;
+    uint32 rotate = 4;
+    uint32 bag_id = 5;
+    uint32 price = 6;
+  }
+  repeated BuyItems items = 2;
+}
+
+message ReqIslandActivitySell {
+  uint32 activity_id = 1;
+  message SellItem {
+    uint32 bag_id = 2;
+    uint32 id = 3;
+    uint32 price = 4;
+  }
+  repeated SellItem items = 2;
+
+}
+
+message ReqIslandActivityTidyBag {
+  uint32 activity_id = 1;
+
+  message BagData {
+    uint32 bag_id = 2;
+    message ITemData {
+      uint32 id = 1;
+      repeated uint32 pos = 2;
+      uint32 rotate = 3;
+    }
+    repeated ITemData items = 3;
+    repeated uint32 drops = 4;
+  }
+  repeated BagData bag_data = 2;
+}
+
+message ReqIslandActivityUnlockBagGrid {
+  uint32 activity_id = 1;
+  uint32 bag_id = 2;
+  repeated uint32 pos = 3;
+}
+
+message ContestSetting {
+  message LevelLimit {
+    uint32 type = 1; // 类型 1=四人麻将 2=三人麻将
+    uint32 value = 2; // 段位 10101=初心一星...
+  }
+  repeated LevelLimit level_limit = 1; // 报名玩家等级段位限制, or 关系
+  uint32 game_limit = 2; // 对局数限制
+  uint32 system_broadcast = 3; // 赛事系统消息推送 0=不推送 1=推送
+}
+
+message ReqCreateCustomizedContest {
+  string name = 1;
+  uint32 open_show = 2;
+  GameMode game_rule_setting = 3;
+  uint32 start_time = 4;
+  uint32 end_time = 5;
+  uint32 auto_match = 6; // 0=非自动匹配 1=自动匹配
+  uint32 rank_rule = 7; // 排名显示方式 0=无 1=最近3场 2=最近5场 12=最佳2场 13=最佳3场 14=最佳4场 15=最佳5场 若season_type为团队赛，则传0
+  ContestSetting contest_setting = 8;
+  uint32 season_type = 9; // 赛季模式 0：个人赛 1：团队赛
+}
+
+message ResCreateCustomizedContest {
+  Error error = 1;
+  uint32 unique_id = 2;
+}
+
+message ReqFetchmanagerCustomizedContestList {
+  string lang = 1;
+}
+
+message ResFetchManagerCustomizedContestList {
+  Error error = 1;
+  repeated CustomizedContestBase contests = 2; // 比赛列表
+}
+
+message ReqFetchManagerCustomizedContest {
+  uint32 unique_id = 1;
+}
+
+message ResFetchManagerCustomizedContest {
+  Error error = 1;
+  string name = 2;
+  uint32 open_show = 3;
+  GameMode game_rule_setting = 4;
+  uint32 start_time = 5;
+  uint32 end_time = 6;
+  uint32 auto_match = 7;
+  uint32 rank_rule = 8;
+  uint32 check_state = 9; // 审核状态 0-正常 1-正在审核中
+  string checking_name = 10; // 审核中的名称
+  ContestSetting contest_setting = 11;
+  uint32 season_type = 12; // 赛季模式 0-个人赛 1-团队赛
+}
+
+message ReqUpdateManagerCustomizedContest {
+  string name = 1;
+  uint32 open_show = 2;
+  GameMode game_rule_setting = 3;
+  uint32 start_time = 4;
+  uint32 end_time = 5;
+  uint32 unique_id = 6;
+  uint32 auto_match = 7;
+  uint32 rank_rule = 8;
+  ContestSetting contest_setting = 9;
+}
+
+message ReqFetchContestPlayerRank {
+  uint32 unique_id = 1;
+  uint32 limit = 2;
+  uint32 offset = 3;
+}
+
+message ResFetchContestPlayerRank {
+  message ContestPlayerAccountData {
+    message ContestGameResult {
+      uint32 rank = 1;
+      int32 total_point = 2;
+    }
+    message ContestSeriesGameResult {
+      uint32 key = 1;
+      repeated ContestGameResult results = 2;
+    }
+    uint32 total_game_count = 1;
+    repeated ContestGameResult recent_games = 2;
+    repeated ContestSeriesGameResult highest_series_points = 3;
+  }
+  message SeasonRank {
+    uint32 account_id = 1;
+    string nickname = 2;
+    ContestPlayerAccountData data = 3;
+  }
+  message PlayerData {
+    uint32 rank = 1;
+    ContestPlayerAccountData data = 2;
+  }
+  Error error = 1;
+  uint32 total = 2;
+  repeated SeasonRank rank = 3;
+  PlayerData player_data = 4;
+}
+
+message ReqFetchContestTeamRank {
+  uint32 unique_id = 1; // 赛事唯一id
+  uint32 season_id = 2; // 赛程id
+  uint32 limit = 3;
+  uint32 offset = 4;
+}
+ 
+// 团队赛排行榜返回信息
+message ResFetchContestTeamRank {
+  message ContestTeamRankResult {
+    uint32 rank = 1; // 团队名次
+    int32 total_point = 2; // 团队累计总分
+    uint32 total_game_count = 3; // 全队累计对局次数
+    uint32 member_count = 4; // 队员总数
+  }
+  message SeasonTeamRank {
+    uint32 team_id = 1; // 队伍id
+    string name = 2; // 队伍名称
+    ContestTeamRankResult result = 3; // 队伍排名数据
+  }
+  Error error = 1;
+  uint32 total = 2; // 当前队伍总数
+  repeated SeasonTeamRank rank = 3; // 排行榜总数据
+  SeasonTeamRank team_rank = 4; // 玩家所在队伍数据（玩家无归属时该字段为空）
+}
+
+// 大会室团队赛个人排名请求协议
+message ReqFetchContestTeamPlayerRank {
+  uint32 unique_id = 1; // 赛事唯一id
+  uint32 season_id = 2; // 赛程id
+  uint32 offset = 4;
+  uint32 limit = 5;
+}
+
+// 大会室团队赛个人协议返回协议
+message ResFetchContestTeamPlayerRank {
+  message ContestTeamPlayerAccountData {
+    uint32 rank = 1; // 玩家名次
+    int32 total_point = 2; // 玩家累计总分
+    uint32 total_game_count = 3; // 玩家对局总数
+  }
+  message SeasonTeamRank {
+    uint32 account_id = 1; // 玩家id
+    string nickname = 2; // 玩家昵称
+    ContestTeamPlayerAccountData data = 3; // 玩家排名数据
+    string team_name = 4; // 团队名称（若当前玩家不属于任何队伍则为空）
+    uint32 team_id = 5; // 团队id
+  }
+  message PlayerData {
+    uint32 rank = 1; // 当前玩家排名
+    ContestTeamPlayerAccountData data = 2;
+    string team_name = 3; // 团队名称（若当前玩家不属于任何队伍则为空）
+    uint32 team_id = 4; // 团队id
+  }
+  Error error = 1;
+  uint32 total = 2; // 玩家总数
+  repeated SeasonTeamRank rank = 3; // 排行榜位次信息
+  PlayerData player_data = 4; // 当前玩家排名数据
+}
+
+// 队伍明细请求数据
+message ReqFetchContestTeamMember {
+  uint32 unique_id = 1; // 赛事唯一id
+  uint32 season_id = 2; // 赛程id
+  uint32 team_id = 3; // 队伍id
+  uint32 offset = 4;
+  uint32 limit = 5;
+}
+ 
+// 队伍明细返回数据
+message ResFetchContestTeamMember {
+  message ContestTeamMember {
+    uint32 account_id = 1; // 玩家id
+    uint32 total_game_count = 3; // 玩家对局总数
+    int32 total_score = 4; // 玩家分数
+    string nickname = 5; // 玩家昵称
+  }
+  Error error = 1;
+  repeated ContestTeamMember members = 2; // 玩家列表按分数排序
+}
+
+message ReqFetchReadyPlayerList {
+  uint32 unique_id = 1;
+}
+
+message ResFetchReadyPlayerList {
+  message Player {
+    uint32 account_id = 1;
+    string nickname = 2;
+    string team_name = 3;
+  }
+  Error error = 1;
+  repeated Player list = 2;
+}
+
+message ReqCreateGamePlan {
+  uint32 unique_id = 1;
+  repeated uint32 account_list = 2;
+  uint32 game_start_time = 3;
+  uint32 shuffle_seats = 4; // 0=不随机座位 1=随机座位
+  uint32 ai_level = 5; // 0=摸切电脑 1=简单电脑 2=普通电脑
+}
+
+message ResGenerateContestManagerLoginCode {
+  Error error = 1;
+  string code = 2;
+}
+
+message ReqAmuletActivityFetchInfo {
+  uint32 activity_id = 1;
+}
+
+message ResAmuletActivityFetchInfo {
+  Error error = 1;
+  ActivityAmuletData data = 2;
+}
+
+
+message ReqAmuletActivityFetchBrief {
+  uint32 activity_id = 1;
+}
+
+message ResAmuletActivityFetchBrief {
+  Error error = 1;
+  ActivityAmuletUpgradeData upgrade = 4; // 永久强化信息
+  ActivityAmuletIllustratedBookData illustrated_book = 5; // 图鉴信息
+  // ActivityAmuletTaskData task = 6; // 挑战任务
+  repeated ActivityAmuletGameRecordData game_records = 7; // 最近通关记录
+  ActivityAmuletStatisticData statistic = 8; // 统计数据
+}
+
+message ReqFetchAmuletActivityData {
+  uint32 activity_id = 1;
+}
+
+message ResFetchAmuletActivityData {
+  Error error = 1;
+  ActivityAmuletData data = 2;
+}
+
+message ResAmuletEventResponse {
+  Error error = 1;
+  repeated AmuletEventData events = 2;
+}
+
+message ReqAmuletActivityStartGame {
+  uint32 activity_id = 1;
+}
+
+message ReqAmuletActivityOperate {
+  uint32 activity_id = 1;
+  uint32 type = 2; // 操作类型 1-切牌 4-开杠 8-和牌 99-模切 100-结束换牌 101-换牌
+  repeated uint32 tile_list = 3; // 操作牌 切牌时传要切的牌  杠时传杠的牌(四张都要传)  和牌不用传
+}
+
+message ReqAmuletActivityUpgrade {
+  uint32 activity_id = 1;
+}
+
+message ReqAmuletActivitySelectPack {
+  uint32 activity_id = 1;
+  uint32 id = 2;
+}
+
+message ReqAmuletActivityBuy {
+  uint32 activity_id = 1;
+  uint32 id = 3;
+}
+
+message ReqAmuletActivitySellEffect {
+  uint32 activity_id = 1;
+  uint32 id = 2;
+}
+
+message ReqAmuletActivityEffectSort {
+  uint32 activity_id = 1;
+  repeated uint32 sorted_id = 2;
+}
+
+message ReqAmuletActivityGiveup {
+  uint32 activity_id = 1;
+}
+
+message ReqAmuletActivityRefreshShop {
+  uint32 activity_id = 1;
+}
+message ReqAmuletActivitySelectFreeEffect {
+  uint32 activity_id = 1;
+  uint32 selected_id = 2; // 选择的护身符id
+}
+message ReqAmuletActivityUpgradeShopBuff {
+  uint32 activity_id = 1;
+  uint32 id = 2;
+}
+
+message ReqAmuletActivityEndShopping {
+  uint32 activity_id = 1;
+}
+
+message ReqAmuletActivitySetSkillLevel {
+  uint32 activity_id = 1;
+  repeated AmuletSkillData skill = 2; // 技能点数与等级
+}
+
+message ResAmuletActivityMaintainInfo {
+  Error error = 1;
+  string mode = 2; // 'maintain' 表示当前处于维护模式中，其他任意值都等于不维护
+}
+
+message ReqAmuletActivitySelectRewardPack {
+  uint32 activity_id = 1;
+  uint32 id = 2;
+}
+
+message ReqAmuletActivitySelectBookEffect {
+  uint32 activity_id = 1;
+  uint32 effect_id = 2;
+}
+
+// message ResAmuletActivitySelectRewardPack {
+//   Error error = 1;
+//   AmuletGameUpdateData game_update = 2;
+//   AmuletGameShopData shop = 3;
+// }
+
+// message ReqAmuletActivityReceiveTaskReward {
+//   uint32 activity_id = 1;
+//   repeated uint32 task_list = 2;
+// }
+
+// message ResAmuletActivityReceiveTaskReward {
+//   Error error = 1;
+//   ActivityAmuletTaskData task = 2;
+// }
+
+// ==DevDebug Start==
+// debug 协议在正式版本删除
+message ReqAmuletActivityDebug {
+ ActivityAmuletData activity_data = 1;
+}
+
+message ReqAmuletActivityFetchDebug {
+ uint32 activity_id = 1;
+}
+
+message ResFetchAmuletActivityDebug {
+ Error error = 1;
+ ActivityAmuletData activity_data = 2;
+}
+// ==DevDebug End==
+
+message ReqStoryActivityUnlock {
+  uint32 activity_id = 1;
+  uint32 story_id = 2;
+}
+
+message ReqStoryActivityUnlockEnding {
+  uint32 activity_id = 1;
+  uint32 story_id = 2;
+  uint32 ending_id = 3;
+}
+
+message ReqStoryActivityReceiveEndingReward {
+  uint32 activity_id = 1;
+  uint32 story_id = 2;
+  uint32 ending_id = 3;
+}
+
+message ResStoryReward {
+  Error error = 1;
+  repeated ExecuteReward reward_items = 2;
+}
+
+message ReqStoryActivityReceiveFinishReward {
+  uint32 activity_id = 1;
+  uint32 story_id = 2;
+}
+
+message ReqStoryActivityReceiveAllFinishReward {
+  uint32 activity_id = 1;
+  uint32 story_id = 2;
+}
+
+message ReqStoryActivityUnlockEndingAndReceive {
+  uint32 activity_id = 1;
+  uint32 story_id = 2;
+  uint32 ending_id = 3;
+}
+
+message ResStoryActivityUnlockEndingAndReceive {
+  Error error = 1;
+  repeated ExecuteReward ending_reward = 2;
+  repeated ExecuteReward finish_reward = 3;
+  repeated ExecuteReward all_finish_reward = 4;
+}
+
+message ReqFetchActivityRank {
+  uint32 activity_id = 1;
+  repeated uint32 account_list = 2; // 可选，不传就是获取全服排名，传了就是获取 account_list 内的账号排名，account_list 内的账号必须是好友
+}
+
+message ResFetchActivityRank {
+  Error error = 1;
+
+  message ActivityRankItem {
+    uint32 account_id = 1;
+    uint64 score = 2;
+    string data = 3; // json字符串,排行榜额外信息
+    uint32 rank = 4; // 排名
+  }
+  repeated ActivityRankItem items = 4; // 排名信息，如果是全服排名返回前100
+  ActivityRankItem self = 5;
+}
+
+message ReqFetchQuestionnaireList {
+  string lang = 1;
+  string channel = 2;
+}
+
+message ResFetchQuestionnaireList {
+  Error error = 1;
+
+  repeated QuestionnaireBrief list = 2;
+  repeated uint32 finished_list = 3; // 已经回答过的问卷列表
+}
+
+message ReqFetchQuestionnaireDetail {
+  uint32 id = 1;
+  string lang = 2;
+  string channel = 3;
+}
+
+message ResFetchQuestionnaireDetail {
+  Error error = 1;
+
+  QuestionnaireDetail detail = 2;
+}
+
+message ReqSetVerifiedHidden {
+  uint32 verified_hidden = 1;
+}
+
+message ReqSubmitQuestionnaire {
+  message QuestionnaireAnswer {
+    uint32 question_id = 1;
+
+    message QuestionnaireAnswerValue {
+      string value = 1;
+      string custom_input = 2;
+    }
+    repeated QuestionnaireAnswerValue values = 2;
+  }
+
+  uint32 questionnaire_id = 1;
+  uint32 questionnaire_version_id = 2;
+  repeated QuestionnaireAnswer answers = 3;
+  uint32 open_time = 4; // 客户端问卷打开的时间
+  uint32 finish_time = 5; // 客户端问卷完成的时间
+  string client = 6; // 客户端类型
+}
+
+message ReqSetFriendRoomRandomBotChar {
+  uint32 disable_random_char = 1; // 1 - 只用一姬  0 - 所有角色池里随机
+}
+
+message ReqFetchAccountGameHuRecords {
+  string uuid = 1;
+  uint32 category = 2; // 1 - 四人麻将  2 - 三人麻将
+  uint32 type = 3; // 1 - 段位场  2 - 友人场  3 - 活动场
+}
+
+message ResFetchAccountGameHuRecords {
+  message GameHuRecords {
+    uint32 chang = 1;
+    uint32 ju = 2;
+    uint32 ben = 3;
+    uint32 title_id = 4;
+    repeated string hands = 5;
+    repeated string ming = 6;
+    string hupai = 7;
+    repeated uint32 hu_fans = 8;
+  }
+
+  Error error = 1;
+  repeated GameHuRecords records = 2;
+}
+
+message ReqFetchAccountInfoExtra {
+  uint32 account_id = 1;
+  uint32 category = 2; // 1 - 四人麻将  2 - 三人麻将
+  uint32 type = 3; // 1 - 段位场  2 - 友人场  3 - 活动场
+}
+
+message ResFetchAccountInfoExtra {
+  Error error = 1;
+
+  message AccountInfoGameRecord {
+    string uuid = 1;
+    uint32 start_time = 2;
+    uint32 end_time = 3;
+    uint32 tag = 4;
+    uint32 sub_tag = 5;
+    uint32 rank = 6;
+    uint32 final_point = 7;
+
+    message AccountGameResult {
+      uint32 rank = 1;
+      uint32 account_id = 2;
+      string nickname = 3;
+      uint32 verified = 4;
+      int32 grading_score = 5;
+      int32 final_point = 6;
+      uint32 seat = 7;
+      AccountLevel level = 8;
+      AccountLevel level3 = 9;
+    }
+    repeated AccountGameResult results = 8;
+  }
+
+  repeated AccountInfoGameRecord recent_games = 2;
+
+  message GameHuTypeDetail {
+    uint32 type = 1; // 1- 立直 2- 副露 3- 默听
+    uint32 count = 2;
+  }
+  repeated GameHuTypeDetail hu_type_details = 3;
+
+  message AccountGameRankDetail {
+    uint32 rank = 1;
+    uint32 count = 2;
+  }
+  repeated AccountGameRankDetail game_rank_details = 4;
+}
+
+message ReqSetAccountFavoriteHu {
+  uint32 mode = 1; // 1- 显示最近大和 2- 显示自选和牌
+  uint32 category = 2; // 1 - 四人麻将  2 - 三人麻将
+  uint32 type = 3; // 1 - 段位场  2 - 友人场  3 - 活动场
+
+  // mode = 1 时不用传以下参数
+  string uuid = 4;
+  uint32 chang = 5;
+  uint32 ju = 6;
+  uint32 ben = 7;
+}
+
+message ReqFetchSeerReport {
+  string uuid = 1;
+}
+
+message ResFetchSeerReport {
+  Error error = 1;
+  SeerReport report = 2;
+}
+
+message ReqCreateSeerReport {
+  string uuid = 1;
+}
+
+message ResCreateSeerReport {
+  Error error = 1;
+  SeerBrief seer_report = 2;
+}
+
+message ResFetchSeerReportList {
+  Error error = 1;
+  repeated SeerBrief seer_report_list = 2; // seer 任务状态
+}
+
+message ReqSelectChestChooseUp {
+  uint32 activity_id = 1;
+  uint32 selection = 2; // 选择的物品id
+  uint32 chest_id = 3; // 选择的卡池id
+}
+
+// ==DevDebug Start==
+// debug 协议在正式版本删除
+message ReqFestivalDebug {
+  ActivityFestivalData festival_activity = 1;
+}
+
+message ReqFestivalFetchDebug {
+  uint32 activity_id = 1;
+}
+
+message ResFestivalFetchDebug {
+  Error error = 1;
+  ActivityFestivalData festival_activity = 2;
+}
+// ==DevDebug End==
+
+message ReqGenerateAnnualReportToken {
+  string lang = 1; // cn jp en kr
+}
+
+message ResGenerateAnnualReportToken {
+  Error error = 1;
+  string token = 2;
+  string url = 3;
+}
+
+message ResFetchAnnualReportInfo {
+  Error error = 1;
+  uint32 start_time = 2;
+  uint32 end_time = 3;
+}
+
+message ReqRemarkFriend {
+  uint32 account_id = 1;
+  string remark = 2;
+}
+
+message ReqSimV2ActivityFetchInfo {
+  uint32 activity_id = 1;
+}
+
+message ResSimV2ActivityFetchInfo {
+  Error error = 1;
+  SimulationV2Data data = 2;
+}
+
+message ReqSimV2ActivityStartSeason {
+  uint32 activity_id = 1;
+}
+
+message ResSimV2ActivityStartSeason {
+  Error error = 1;
+  SimulationV2SeasonData season = 2;
+}
+
+message ReqSimV2ActivityTrain {
+  uint32 activity_id = 1;
+  uint32 ability = 2;
+  uint32 skip = 3;
+}
+
+message ResSimV2ActivityTrain {
+  Error error = 1;
+  SimulationV2Event event = 2; // 触发事件的话有值
+  SimulationV2Ability ability = 3; // 更新后的数值
+  uint32 round = 4; // 新的回合数
+  repeated SimulationV2Effect effect_list = 5; // 当前特性
+  uint32 train_result = 6; // 训练结果 1-成功 2-大成功 3-失败
+  bool is_end = 7; // 当前赛季是否结束
+  SimulationV2Record record = 8; // 本轮游戏记录（当前赛季结束即is_end字段为true时有值）
+}
+
+message ReqSimV2ActivitySelectEvent {
+  uint32 activity_id = 1;
+  uint32 selection_id = 2;
+}
+
+message ResSimV2ActivitySelectEvent {
+  Error error = 1;
+  SimulationV2Event event = 2; // 触发事件的话有值
+  SimulationV2Ability ability = 3; // 更新后的数值
+  SimulationV2Match match = 4; // 对局信息
+  repeated SimulationV2Effect effect_list = 5; // 当前特性
+  uint32 round = 7; // 新的回合数
+  bool is_end = 8; // 当前赛季是否结束
+  uint32 result_id = 9; // 结果id
+  SimulationV2Record record = 10; // 本轮游戏记录（当前赛季结束即is_end字段为true时有值）
+  repeated uint32 effected_buff_list = 11; // 新的buff
+}
+
+message ReqSimV2ActivityStartMatch {
+  uint32 activity_id = 1;
+}
+
+message ResSimV2ActivityStartMatch {
+  Error error = 1;
+  SimulationV2Event event = 2; // 触发事件的话有值
+  SimulationV2Match match = 4; // 对局信息
+  repeated SimulationV2Effect effect_list = 5; // 当前特性
+  bool is_match_end = 6; // 对局是否已结束
+}
+
+message ReqSimV2ActivityEndMatch {
+  uint32 activity_id = 1;
+}
+
+message ResSimV2ActivityEndMatch {
+  Error error = 1;
+  uint32 round = 2; // 新的回合数
+  bool is_end = 3; // 当前赛季是否结束
+  SimulationV2Record record = 4; // 本轮游戏记录（当前赛季结束即is_end字段为true时有值）
+  int32 total_score = 5; // 当前总分
+  repeated SimulationV2MatchRecord match_history = 6; // 对局历史记录
+
+  message SimulationV2MatchReward {
+    uint32 type = 1; // 类型 1-属性奖励 2-特性奖励
+    repeated uint32 params = 2; // 属性奖励：[属性类型， 增长值]  特性奖励：[特性id]
+  }
+  repeated SimulationV2MatchReward rewards = 7;
+
+  repeated SimulationV2Effect effect_list = 8; // 当前特性
+  SimulationV2Ability ability = 9; // 更新后的数值
+}
+
+message ReqSimV2ActivityGiveUp {
+  uint32 activity_id = 1;
+}
+
+message ReqSimV2ActivitySetUpgrade {
+  uint32 activity_id = 1;
+  SimulationV2Ability upgrade = 2; // 场外升级全量数据
+}
+
+// ==DevDebug Start==
+// debug 协议在正式版本删除
+message ReqSimV2ActivityDebug {
+  SimulationV2Data sim_activity = 1;
+}
+
+message ReqSimV2ActivityFetchDebug {
+  uint32 activity_id = 1;
+}
+
+message ResSimV2ActivityFetchDebug {
+  Error error = 1;
+  SimulationV2Data sim_activity = 2;
+}
+// ==DevDebug End==
+
+message ReqProgressRewardActivityReceive {
+  uint32 activity_id = 1;
+  repeated uint32 progresses = 2;
+}
+
+message ResProgressRewardActivityReceive {
+  Error error = 1;
+  repeated ExecuteReward reward_items = 2;
+}
+
+message ReqFetchProgressRewardActivityInfo {
+  uint32 activity_id = 1;
+}
+
+message ResFetchProgressRewardActivityInfo {
+  Error error = 1;
+  uint32 progress = 2;
+}
+/*********************************************************************************************************************************
+ ********************************************** next request & response **********************************************************
+ *********************************************************************************************************************************/

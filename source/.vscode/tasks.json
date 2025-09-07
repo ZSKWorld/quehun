@@ -174,5 +174,18 @@
             },
             "problemMatcher": []
         },
+        { //更新proto_declare
+            "label": "更新proto_declare",
+            "type": "shell",
+            "command": "node ProtoDeclare.js",
+            "problemMatcher": [],
+            "options": {
+                "cwd": "project_tools/proto_declare"
+            },
+            // "hide": true,
+            "presentation": {
+                "close": true
+            }
+        },
     ]
 }

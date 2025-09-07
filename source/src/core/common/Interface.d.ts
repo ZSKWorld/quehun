@@ -13,6 +13,8 @@ declare interface IObserver extends INotifier {
 }
 
 declare interface ILoadManager {
+    fetch<K extends keyof Laya.ContentTypeMap>(url: string, contentType: K, onProgress?: Laya.ProgressCallback, options?: Readonly<Laya.ILoadOptions>): Promise<Laya.ContentTypeMap[K]>;
+
     load<D = any, T extends LoadURL>(url: T, type?: string, onProgress?: Laya.ProgressCallback): Promise<T extends Array<any> ? D[] : D>;
     load<D = any, T extends LoadURL>(url: T, options?: Readonly<Laya.ILoadOptions>, onProgress?: Laya.ProgressCallback): Promise<T extends Array<any> ? D[] : D>;
     load<D = any, T extends LoadURL>(url: T, complete?: Laya.Handler, progress?: Laya.Handler, type?: string, priority?: number, cache?: boolean, group?: string, ignoreCache?: boolean, useWorkerLoader?: boolean): Promise<T extends Array<any> ? D[] : D>;

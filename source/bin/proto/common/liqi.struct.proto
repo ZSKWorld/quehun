@@ -1,0 +1,796 @@
+syntax = "proto3";
+
+package lq;
+
+option go_package = ".;majprotocol";
+
+// -------------------- actions --------------------------- //
+
+message ActionMJStart {
+  //广播游戏要开始了
+}
+
+message NewRoundOpenedTiles {
+  uint32 seat = 1;
+  repeated string tiles = 2; // open的牌的种类序列
+  repeated uint32 count = 3; // 与tile想对应的类别的牌的个数
+}
+
+// 龙之目玉
+message MuyuInfo {
+  uint32 seat = 1; // 目玉的座位
+  uint32 count = 2; // 目玉的计数
+  uint32 count_max = 3; // 目玉计数上限
+  uint32 id = 4; // 目玉改变的编号，如果编号不同了说明变过
+}
+
+//川麻杠的算分
+message ChuanmaGang {
+  repeated int32 old_scores = 1;
+  repeated int32 delta_scores = 2;
+  repeated int32 scores = 3;
+  GameEnd gameend = 4;
+  repeated HuleInfo hules_history = 5; // 历史历次胡牌
+}
+
+//咏唱之战
+message YongchangInfo {
+  uint32 seat = 1; // 咏唱的座位
+  uint32 moqie_count = 2; // 摸切张数
+  uint32 moqie_bonus = 3; // 咏唱摸切的番数奖励
+  uint32 shouqie_count = 4; // 手切张数
+  uint32 shouqie_bonus = 5; // 咏唱手切的番数奖励
+}
+
+message ActionNewCard {
+  uint32 field_spell = 1;
+}
+
+message RecordNewCard {
+  uint32 field_spell = 1;
+}
+
+// 开局
+message ActionNewRound {
+  uint32 chang = 1; // 场
+  uint32 ju = 2; // 局，场风是谁的自风
+  uint32 ben = 3; // 本
+  repeated string tiles = 4; // 开局的牌
+  string dora = 5; // 朵拉指示牌
+  repeated int32 scores = 6; // 所有人的分数
+  OptionalOperationList operation = 7; //若是庄家，则会有操作（一般情况只有庄家有操作，但是换牌需要所有人有操作）
+  uint32 liqibang = 8; //场上立直棒的数量
+  repeated TingPaiDiscardInfo tingpais0 = 9; //当亲家有听牌
+  repeated TingPaiInfo tingpais1 = 10; //当子家有听牌
+  bool al = 11; // 是否最后一局
+  string md5 = 12;
+  uint32 left_tile_count = 13; //剩下的牌的数量
+  repeated string doras = 14; // dora3模式后会一开始就有多个，覆盖之前
+  repeated NewRoundOpenedTiles opens = 15; //open状态的牌
+  MuyuInfo muyu = 16;
+  uint32 ju_count = 17; //川麻专用
+  uint32 field_spell = 18; //环境魔法专用
+  string sha256 = 19; //替代md5的字符串，如果该字段有值，则md5字段无效，牌山明文中会包含手牌明文
+  YongchangInfo yongchang = 20;
+  string saltSha256 = 21; // 牌山字符串的加的盐的sha
+}
+
+//牌谱：开局
+message RecordNewRound {
+  uint32 chang = 1; // 场
+  uint32 ju = 2; // 局
+  uint32 ben = 3; // 本
+  string dora = 4; // 朵拉指示牌
+  repeated int32 scores = 5; // 所有人的分数
+  uint32 liqibang = 6; //场上立直棒的数量
+  repeated string tiles0 = 7; // 开局的牌
+  repeated string tiles1 = 8; // 开局的牌
+  repeated string tiles2 = 9; // 开局的牌
+  repeated string tiles3 = 10; // 开局的牌
+
+  message TingPai {
+    uint32 seat = 1;
+    repeated TingPaiInfo tingpais1 = 2; //当子家有听牌
+  }
+
+  repeated TingPai tingpai = 11; //当子家有听牌
+  OptionalOperationList operation = 12; //若是庄家，则会有操作（一般情况只有庄家有操作，但是换牌则用换牌里面的数据来替换）
+  string md5 = 13;
+  string paishan = 14; //牌山明文
+  uint32 left_tile_count = 15; //剩下的牌的数量
+  repeated string doras = 16; // dora3模式后会一开始就有多个，覆盖之前
+  repeated NewRoundOpenedTiles opens = 17; //open状态的牌
+  MuyuInfo muyu = 18;
+
+  repeated OptionalOperationList operations = 19; //像换三张时候所有人开局都会有操作，就从这边读
+  uint32 ju_count = 20; //川麻专用
+  uint32 field_spell = 21; //环境魔法专用
+  string sha256 = 22; //替代md5的字符串，如果该字段有值，则md5字段无效，牌山明文中会包含手牌明文
+  YongchangInfo yongchang = 23;
+  string saltSha256 = 24; // 牌山字符串的加的盐的sha
+  string salt = 25; // 牌山字符串的加的盐
+}
+
+// 快照
+message GameSnapshot {
+  uint32 chang = 1; // 场
+  uint32 ju = 2; // 局
+  uint32 ben = 3; // 本
+  uint32 index_player = 4;
+  uint32 left_tile_count = 5;
+  repeated string hands = 6; // 手牌
+  repeated string doras = 7; // 朵拉指示牌
+  uint32 liqibang = 8; //场上立直棒的数量
+
+  message PlayerSnapshot {
+    int32 score = 1; //当前分数
+    int32 liqiposition = 2; //立直的位子，-1就是没立直
+    uint32 tilenum = 3; //手牌数量
+    repeated string qipais = 4; //弃牌
+
+    message Fulu {
+      uint32 type = 1;
+      repeated string tile = 2;
+      repeated uint32 from = 3;
+    }
+    repeated Fulu mings = 5; //鸣牌
+  }
+  repeated PlayerSnapshot players = 9;
+  bool zhenting = 10;
+}
+
+// 动作
+// 对局用户广播通知包的封装结构
+message ActionPrototype {
+  uint32 step = 1; // 当前回合数
+  string name = 2; // 包名
+  bytes data = 3; // 包体
+}
+
+// 牌谱
+message GameDetailRecords {
+  repeated bytes records = 1; // Wrapper 解析
+  uint32 version = 2; // 版本 目前的值=210715
+  repeated GameAction actions = 3;
+  bytes bar = 4; // 冗余数据，客户端不需要处理
+}
+
+// 对局用户基本输入
+// 来源：ReqSelfOperation
+message GameSelfOperation {
+  uint32 type = 1;
+  uint32 index = 2;
+  string tile = 3;
+  bool cancel_operation = 4;
+  bool moqie = 5;
+  uint32 timeuse = 6;
+  int32 tile_state = 7; //0:默认，1：从open中出牌
+  repeated string change_tiles = 8; // 换三张-待换的牌
+  repeated int32 tile_states = 9;   // 换三张-待换的牌的明牌暗牌
+  uint32 gap_type = 10;             // 川麻：定缺
+}
+
+// 对局用户吃碰明杠输入
+// 来源：ReqChiPengGang
+message GameChiPengGang {
+  uint32 type = 1;
+  uint32 index = 2;
+  bool cancel_operation = 3;
+  uint32 timeuse = 6;
+}
+
+// 退出房间投票
+// 来源：ReqVoteGameEnd
+message GameVoteGameEnd {
+  bool yes = 1;
+}
+
+// 对局用户的输入
+message GameUserInput {
+  uint32 seat = 1; // 座位编号
+
+  // 输入类型
+  // 1=emo 2=operation 3=cpg 4=vote
+  // 5=confirmNewRound 6=clearLeaving
+  // 7=enterGame 8=syncGame 9=finishSyncGame 10=terminateGame
+  uint32 type = 2;
+
+  uint32 emo = 3;
+  GameSelfOperation operation = 10;
+  GameChiPengGang cpg = 11;
+  GameVoteGameEnd vote = 12;
+}
+
+// 对局用户事件
+message GameUserEvent {
+  uint32 seat = 1;
+
+  // 事件类型
+  // 1=Connect 2=Disconnect
+  uint32 type = 2;
+}
+
+// xienanjie 2021.07.14 添加
+// 对局Action结构，记录了操作相关信息
+message GameAction {
+  // 相对于开始时间经过的毫秒数
+  uint32 passed = 1;
+  // 操作类型
+  // 1=ActionResult 2=UserInput 3=UserEvent 4=GameEvent
+  uint32 type = 2;
+  // Protobuf封装的ActionResult数据
+  bytes result = 3;
+  GameUserInput user_input = 4;
+  GameUserEvent user_event = 5;
+  // 对局事件
+  // 0=create 1=start 2=end 3=terminate 4=destroy 5=paused
+  uint32 game_event = 6;
+}
+
+message OptionalOperation {
+  uint32 type = 1; // 吃碰胡类型
+  repeated string combination = 2; // 组合列表
+  // 换三张所需
+  repeated string change_tiles = 3; //需要换的默认牌
+  repeated int32 change_tile_states = 4; //需要换的默认牌的明牌暗牌
+  uint32 gap_type = 5;                    //默认定的缺 0筒1万2条
+}
+
+message OptionalOperationList {
+  uint32 seat = 1;
+  repeated OptionalOperation operation_list = 2;
+  uint32 time_add = 4;
+  uint32 time_fixed = 5;
+}
+
+message LiQiSuccess {
+  uint32 seat = 1;
+  int32 score = 2;
+  uint32 liqibang = 3;
+  bool failed = 4; // 立直了，但是立直没有成立，比如血战立直点炮，然后交不出立直棒的情况
+  uint32 liqi_type_beishuizhizhan = 5; // 背水之战，立直成功类型，0:普通立直，1:5000点立直，2:10000点立直
+}
+
+//番的信息
+message FanInfo {
+  string name = 1; //番种名字 （弃用，改为id）
+  uint32 val = 2; //番数
+  uint32 id = 3; //番种名字
+}
+
+//胡牌时候单个人的信息
+message HuleInfo {
+  repeated string hand = 1;
+  repeated string ming = 2;
+  string hu_tile = 3;
+  uint32 seat = 4;
+  bool zimo = 5;
+  bool qinjia = 6;
+  bool liqi = 7;
+  repeated string doras = 8;
+  repeated string li_doras = 9;
+  bool yiman = 10; //是否役满了
+  uint32 count = 11; // 役满了话就是倍数，否则是番数
+  repeated FanInfo fans = 12; //各个番
+  uint32 fu = 13; //符数
+  string title = 14; //番名 （弃用，改用title_id）
+  uint32 point_rong = 15; //点炮的点数
+  uint32 point_zimo_qin = 16; //自摸时亲家需要支付的点数
+  uint32 point_zimo_xian = 17; //自摸时闲家需要支付的点数
+  uint32 title_id = 18; //胡牌标题
+  uint32 point_sum = 19; //累计打点（正的），给类似端午累计得点活动使用
+
+  uint32 dadian = 20; // 2020.10.5新增，用point_rong/point_zimo_qin/point_zimo_xian计算的打点，方便血战这边计算
+  uint32 baopai = 21; // 2022.03.25新增
+  repeated uint32 baopai_seats = 22; // 2022.02.15新增，因为大四喜和四杠子可能有两个人包，改成数组吧
+  repeated string lines = 23; // 2023.2.24新增，包牌的分数指向，仅在baopai_seats有值时会传
+  uint32 tianming_bonus = 24; // 2023.01.05新增，用于天命之战模式下的倍数显示
+  repeated string baida_changed = 25; // 百搭牌模式下，hand数组里面的百搭牌变成了什么牌，不包含hu_tile
+  string hu_tile_baiDa_changed = 26; // 百搭模式下，若hu_tile是百搭牌，那么它变成的牌
+}
+
+//听牌的状态
+message TingPaiInfo {
+  string tile = 1;
+  bool haveyi = 2;            // 听这张牌是否有役（番缚>1时候以下面为准，<=1时还是用这个减少线上影响）（荣和）
+  bool yiman = 3;             // 听这张牌是否役满了（荣和）
+  uint32 count = 4;           // 不役满时候为番数，役满时候为役满倍数，跟dora无关（荣和）
+  uint32 fu = 5;              // 听这张牌胡牌的番数 （荣和）
+  uint32 biao_dora_count = 6; // 明面可见的手牌dora个数，和count相加就可以算出明面上的番数 （荣和，不过这个自摸也一样）
+  bool yiman_zimo = 7;        // 自摸是否役满 （自摸）
+  uint32 count_zimo = 8;      // 自摸不役满时候为番数，役满时候为役满倍数，跟dora无关（自摸）
+  uint32 fu_zimo = 9;         // 听这张牌胡牌的番数 （自摸）
+}
+
+//听牌时候换牌的状态
+message TingPaiDiscardInfo {
+  string tile = 1;
+  bool zhenting = 2;
+  repeated TingPaiInfo infos = 3;
+}
+
+//魂之一击buff的状态
+message HunZhiYiJiBuffInfo {
+  uint32 seat = 1;    // 改变buff的玩家的seat
+  uint32 continue_deal_count = 2;   // 立直后，还能连续摸牌的次数，6|5|4|3|2|1|0，0不等于过载
+  bool overload = 3;    // 是否过载了，优先判断本字段，=true的时候就不用管continue_deal_count的数值了
+}
+
+message GameEnd {
+  repeated int32 scores = 1;
+}
+
+//定缺
+message ActionSelectGap {
+  repeated uint32 gap_types = 1; //定的缺
+  repeated TingPaiDiscardInfo tingpais0 = 2; //当亲家有听牌
+  repeated TingPaiInfo tingpais1 = 3; //当子家有听牌
+  OptionalOperationList operation = 4; // 只有庄家有操作，自己是子家的时候没有操作
+}
+
+//牌谱：定缺
+message RecordSelectGap {
+  repeated uint32 gap_types = 1; //定的缺
+  message TingPai {
+    uint32 seat = 1;
+    repeated TingPaiInfo tingpais1 = 2; //当子家有听牌
+  }
+  repeated TingPai tingpai = 2; //当子家有听牌
+  OptionalOperationList operation = 3; // 只有庄家有操作，自己是子家的时候没有操作
+}
+
+//换牌
+message ActionChangeTile {
+  repeated string in_tiles = 1; //换到手的牌
+  repeated int32 in_tile_states = 2; // 换到手的牌的open状态
+  repeated string out_tiles = 3; //换出去的牌
+  repeated int32 out_tile_states = 4; // 换出去的牌的open状态
+
+  repeated string doras = 5; //换完之后翻出宝牌
+  repeated TingPaiDiscardInfo tingpais0 = 6; //当亲家有听牌
+  repeated TingPaiInfo tingpais1 = 7; //当子家有听牌
+  OptionalOperationList operation = 8; // 只有庄家有操作，自己是子家的时候没有操作
+  uint32 change_type = 9; //换牌形式 0-换下家 1-换对家 2-换上家
+}
+
+// 牌谱：换牌
+message RecordChangeTile {
+  repeated string doras = 1; //换完之后翻出宝牌
+
+  message TingPai {
+    uint32 seat = 1;
+    repeated TingPaiInfo tingpais1 = 2; //当子家有听牌
+  }
+  repeated TingPai tingpai = 2; //当子家有听牌
+
+  message ChangeTile {
+    repeated string in_tiles = 1; //换到手的牌
+    repeated int32 in_tile_states = 2; // 换到手的牌的open状态
+    repeated string out_tiles = 3; //换出去的牌
+    repeated int32 out_tile_states = 4; // 换出去的牌的open状态
+  }
+  repeated ChangeTile change_tile_infos = 3; //所有玩家的换牌信息
+  OptionalOperationList operation = 4; // 只有庄家有操作，自己是子家的时候没有操作
+
+  uint32 change_type = 5; //换牌形式 0-换下家 1-换对家 2-换上家
+
+  repeated OptionalOperationList operations = 6;
+}
+
+// 暗牌模式：盖牌
+message ActionRevealTile {
+  uint32 seat = 1;
+  bool is_liqi = 2;
+  bool is_wliqi = 3;
+  bool moqie = 4;
+  repeated int32 scores = 5;
+  uint32 liqibang = 6;
+  OptionalOperationList operation = 7;
+  repeated TingPaiInfo tingpais = 8;
+  string tile = 9;
+  bool zhenting = 10;
+}
+
+message RecordRevealTile {
+  uint32 seat = 1;
+  bool is_liqi = 2;
+  bool is_wliqi = 3;
+  bool moqie = 4;
+  repeated int32 scores = 5;
+  uint32 liqibang = 6;
+  repeated OptionalOperationList operations = 7;
+  repeated TingPaiInfo tingpais = 8;
+  string tile = 9;
+  repeated bool zhenting = 10;
+}
+
+// 暗牌模式：揭牌
+message ActionUnveilTile {
+  int32 seat = 1;
+  repeated int32 scores = 2;
+  uint32 liqibang = 3;
+  OptionalOperationList operation = 4; //只有选择盖牌的人有操作：是否锁牌
+}
+
+message RecordUnveilTile {
+  int32 seat = 1;
+  repeated int32 scores = 2;
+  uint32 liqibang = 3;
+  OptionalOperationList operation = 4;
+}
+
+// 暗牌模式：锁牌
+message ActionLockTile {
+  uint32 seat = 1;
+  repeated int32 scores = 2;
+  uint32 liqibang = 3;
+  string tile = 4;
+  OptionalOperationList operation = 5;
+  bool zhenting = 6;
+  repeated TingPaiInfo tingpais = 7; //我自己打牌的话我自己的听牌状态
+  repeated string doras = 8; // 明杠之后根据模式而定，可能是出完牌再翻宝牌
+  int32 lock_state = 9;  // 0：主动被解锁 1：主动锁定为暗牌 2：无人要求开牌 3：开牌（锁牌方点数不足）
+}
+
+message RecordLockTile {
+  uint32 seat = 1;
+  repeated int32 scores = 2;
+  uint32 liqibang = 3;
+  string tile = 4;
+  repeated OptionalOperationList operation = 5; //所有人的操作
+  repeated bool zhentings = 6;
+  repeated TingPaiInfo tingpais = 7; //我自己打牌的话我自己的听牌状态
+  repeated string doras = 8; // 明杠之后根据模式而定，可能是出完牌再翻宝牌
+  int32 lock_state = 9;  // 0被别人解锁 1被自己锁定 2没人要求开牌
+}
+
+// 出牌
+message ActionDiscardTile {
+  uint32 seat = 1;
+  string tile = 2;
+  bool is_liqi = 3;
+  OptionalOperationList operation = 4; // 我可以进行的操作
+  bool moqie = 5;
+  bool zhenting = 6;
+  repeated TingPaiInfo tingpais = 7; //我自己打牌的话我自己的听牌状态
+  repeated string doras = 8;
+  bool is_wliqi = 9; //是否是w立直
+  uint32 tile_state = 10; // tile_state: 0.正常, 1.open
+
+  MuyuInfo muyu = 11;
+  bool revealed = 12; //暗牌模式用，表示打出的时候宣言这张牌是否为暗牌
+  repeated int32 scores = 13; //暗牌模式用，表示大家的分数
+  uint32 liqibang = 14; //暗牌模式用，表示场上的场供棒数量
+  YongchangInfo yongchang = 25;
+
+  HunZhiYiJiBuffInfo hun_zhi_yi_ji_info = 26;// 魂之一击模式，立直的那一下会有赋值，其他时候不会有
+  uint32 liqi_type_beishuizhizhan = 27; // 背水之战立直，0：普通立直，1:5000点立直，2:10000点立直
+}
+
+// 牌谱：出牌
+message RecordDiscardTile {
+  uint32 seat = 1;
+  string tile = 2;
+  bool is_liqi = 3;
+  bool moqie = 5;
+  repeated bool zhenting = 6;
+  repeated TingPaiInfo tingpais = 7; //我自己打牌的话我自己的听牌状态
+  repeated string doras = 8;
+  bool is_wliqi = 9; //是否是w立直
+  repeated OptionalOperationList operations = 10; // 所有人的操作
+  uint32 tile_state = 11; // tile_state: 0.正常, 1.open
+  MuyuInfo muyu = 12;
+  YongchangInfo yongchang = 13;
+  HunZhiYiJiBuffInfo hun_zhi_yi_ji_info = 14;// 魂之一击模式，立直的那一下会有赋值，其他时候不会有。
+  uint32 liqi_type_beishuizhizhan = 27; // 背水之战立直，0：普通立直，1:5000点立直，2:10000点立直
+}
+
+// 接牌
+message ActionDealTile {
+  uint32 seat = 1;
+  string tile = 2;
+  uint32 left_tile_count = 3;
+  OptionalOperationList operation = 4;
+  LiQiSuccess liqi = 5;
+  repeated string doras = 6;
+  bool zhenting = 7;
+  repeated TingPaiDiscardInfo tingpais = 8;
+  uint32 tile_state = 9; // tile_state: 0.正常，tile没意义； 1.open，tile是真实值
+  MuyuInfo muyu = 10;
+  uint32 tile_index = 11; // 占星模式中三张预选牌中的index
+  HunZhiYiJiBuffInfo hun_zhi_yi_ji_info = 12; // 魂之一击模式，开大状态下每摸一张牌都有赋值；另一个人抓牌的时候也会有赋值，比如前一个人过载了
+}
+
+// 牌谱：接牌
+message RecordDealTile {
+  uint32 seat = 1;
+  string tile = 2;
+  uint32 left_tile_count = 3;
+  LiQiSuccess liqi = 5;
+  repeated string doras = 6;
+  repeated bool zhenting = 7;
+  OptionalOperationList operation = 8;
+  uint32 tile_state = 9; // tile_state: 0.正常，tile是白板； 1.open，tile是真实值
+  MuyuInfo muyu = 11;
+  uint32 tile_index = 12; // 占星模式中三张预选牌中的index
+  HunZhiYiJiBuffInfo hun_zhi_yi_ji_info = 13; // 魂之一击模式，立直成功后的第一张牌会有赋值；另一个人抓牌的时候也会有赋值，比如前一个人过载了
+}
+
+// 补充牌
+message ActionFillAwaitingTiles {
+  repeated string awaiting_tiles = 1;
+  uint32 left_tile_count = 2;
+  OptionalOperationList operation = 3;
+  LiQiSuccess liqi = 4;
+}
+
+// 补充牌
+message RecordFillAwaitingTiles {
+  repeated string awaiting_tiles = 1;
+  uint32 left_tile_count = 2;
+  OptionalOperationList operation = 3;
+  LiQiSuccess liqi = 4;
+}
+
+// 吃碰明杠（做完需要打出一张牌,明杠的话没有操作）
+message ActionChiPengGang {
+  uint32 seat = 1;
+  uint32 type = 2;
+  repeated string tiles = 3;
+  repeated uint32 froms = 4;
+  LiQiSuccess liqi = 5;
+  OptionalOperationList operation = 6; //这个人可以做的操作，其实只有打牌一种，有计时
+  bool zhenting = 7;
+  repeated TingPaiDiscardInfo tingpais = 8;
+  repeated uint32 tile_states = 9; //对应tiles，在配牌open中哪些牌是从open中出来的
+  MuyuInfo muyu = 10;
+  repeated int32 scores = 11;
+  uint32 liqibang = 12; //辉夜模式用，表示场上的场供棒数量
+  YongchangInfo yongchang = 13;
+  HunZhiYiJiBuffInfo hun_zhi_yi_ji_info = 14; // 魂之一击模式，吃碰杠会导致正在开大的人过载
+}
+
+// 牌谱：吃碰明杠
+message RecordChiPengGang {
+  uint32 seat = 1;
+  uint32 type = 2;
+  repeated string tiles = 3;
+  repeated uint32 froms = 4;
+  LiQiSuccess liqi = 5;
+  repeated bool zhenting = 7;
+  OptionalOperationList operation = 8; //这个人可以做的操作，其实只有打牌一种，有计时
+  repeated uint32 tile_states = 9; //对应tiles，在配牌open中哪些牌是从open中出来的
+  MuyuInfo muyu = 10;
+  repeated int32 scores = 11;
+  uint32 liqibang = 12; //辉夜模式用，表示场上的场供棒数量
+  YongchangInfo yongchang = 13;
+  HunZhiYiJiBuffInfo hun_zhi_yi_ji_info = 14; // 魂之一击模式，吃碰杠会导致正在开大的人过载
+}
+
+// 川麻吃碰明杠的分数结算（做完需要打出一张牌,明杠的话没有操作）
+message ActionGangResult {
+  ChuanmaGang gang_infos = 1;   //川麻的杠会带来分数变动
+}
+
+// 牌谱：川麻吃碰明杠的终场
+message RecordGangResult {
+  ChuanmaGang gang_infos = 1;   //川麻的杠会带来分数变动
+}
+
+// 川麻吃碰明杠的分数结算（做完需要打出一张牌,明杠的话没有操作）
+message ActionGangResultEnd {
+  ChuanmaGang gang_infos = 1;   //川麻的杠会带来分数变动
+}
+
+// 牌谱：川麻吃碰明杠的终场
+message RecordGangResultEnd {
+  ChuanmaGang gang_infos = 1;   //川麻的杠会带来分数变动
+}
+
+// 暗杠加杠（可能会被抢杠，还没接牌）
+message ActionAnGangAddGang {
+  uint32 seat = 1;
+  uint32 type = 2;
+  string tiles = 3;
+  OptionalOperationList operation = 4; //我可以进行的操作
+  repeated string doras = 6;
+  bool zhenting = 7;
+  repeated TingPaiInfo tingpais = 8; //我自己打牌的话我自己的听牌状态
+  MuyuInfo muyu = 9;
+}
+
+// 牌谱：暗杠加杠
+message RecordAnGangAddGang {
+  uint32 seat = 1;
+  uint32 type = 2;
+  string tiles = 3;
+  repeated string doras = 6;
+  repeated OptionalOperationList operations = 7; //所有人的操作
+  MuyuInfo muyu = 8;
+}
+
+// 拔北（可能会被抢杠，还没接牌）
+message ActionBaBei {
+  uint32 seat = 1;
+  OptionalOperationList operation = 4; //我可以进行的操作
+  repeated string doras = 6;
+  bool zhenting = 7;
+  repeated TingPaiInfo tingpais = 8; //我自己打牌的话我自己的听牌状态
+  bool moqie = 9; //拔北需要知道摸切
+  uint32 tile_state = 10; // 0:常规的北，1：open中的北
+  MuyuInfo muyu = 11;
+}
+
+// 牌谱：拔北
+message RecordBaBei {
+  uint32 seat = 1;
+  repeated string doras = 6;
+  repeated OptionalOperationList operations = 7; //所有人的操作
+  bool moqie = 8; //拔北需要知道摸切
+  uint32 tile_state = 10; // 0:常规的北，1：open中的北
+  MuyuInfo muyu = 11;
+}
+
+//胡牌了
+message ActionHule {
+  repeated HuleInfo hules = 1;
+  repeated int32 old_scores = 2;
+  repeated int32 delta_scores = 3;
+  uint32 wait_timeout = 4;
+  repeated int32 scores = 5;
+  GameEnd gameend = 6;
+  repeated string doras = 7;
+  MuyuInfo muyu = 8;
+  int32 baopai = 9; //2021.4.8新增，包牌座位
+
+  HunZhiYiJiBuffInfo hun_zhi_yi_ji_info = 10; // 魂之一击模式，被胡了会导致正在开大的人过载
+}
+
+// 牌谱：胡牌了
+message RecordHule {
+  repeated HuleInfo hules = 1;
+  repeated int32 old_scores = 2;
+  repeated int32 delta_scores = 3;
+  uint32 wait_timeout = 4;
+  repeated int32 scores = 5;
+  GameEnd gameend = 6;
+  repeated string doras = 7;
+  MuyuInfo muyu = 8;
+  int32 baopai = 9;
+
+  HunZhiYiJiBuffInfo hun_zhi_yi_ji_info = 10; // 魂之一击模式，被胡了会导致正在开大的人过载
+}
+
+// 血战中途胡牌
+message HuInfoXueZhanMid {
+  uint32 seat = 1;
+  uint32 hand_count = 2;  // 手牌张数，自摸的时候包含了自摸的那张牌
+  repeated string hand = 3; // 只有自己胡牌会有hand，其他人胡牌不会有hand信息而使用hand_count，
+  repeated string ming = 4;
+  string hu_tile = 5;
+  bool zimo = 6;
+  bool yiman = 7; //是否役满了
+  uint32 count = 8; // 役满了话就是倍数，否则是番数
+  repeated FanInfo fans = 9; //各个番
+  uint32 fu = 10; //符数
+  uint32 title_id = 11; //胡牌标题
+}
+
+// 血战中途胡牌
+message ActionHuleXueZhanMid {
+  repeated HuInfoXueZhanMid hules = 1;
+  repeated int32 old_scores = 2;
+  repeated int32 delta_scores = 3;
+  repeated int32 scores = 5;
+  repeated string doras = 7;
+  MuyuInfo muyu = 8;
+  LiQiSuccess liqi = 9;
+  bool zhenting = 10;
+}
+
+// 牌谱：血战中途胡牌
+message RecordHuleXueZhanMid {
+  repeated HuInfoXueZhanMid hules = 1;
+  repeated int32 old_scores = 2;
+  repeated int32 delta_scores = 3;
+  repeated int32 scores = 5;
+  repeated string doras = 7;
+  MuyuInfo muyu = 8;
+  LiQiSuccess liqi = 9;
+  repeated bool zhenting = 10;
+}
+
+// 血战最后的胡牌,胡牌后结束这次配牌对局
+message ActionHuleXueZhanEnd {
+  repeated HuInfoXueZhanMid hules = 1; // 本次胡牌的胡牌信息
+  repeated int32 old_scores = 2;
+  repeated int32 delta_scores = 3;
+  repeated int32 scores = 4;
+  uint32 wait_timeout = 5;
+  GameEnd gameend = 6;
+  repeated string doras = 7;
+  MuyuInfo muyu = 8;
+  repeated HuleInfo hules_history = 9; // 历史历次胡牌
+}
+
+// 牌谱：血战最后的胡牌,胡牌后结束这次配牌对局
+message RecordHuleXueZhanEnd {
+  repeated HuInfoXueZhanMid hules = 1; // 本次胡牌的胡牌信息
+  repeated int32 old_scores = 2;
+  repeated int32 delta_scores = 3;
+  repeated int32 scores = 4;
+  uint32 wait_timeout = 5;
+  GameEnd gameend = 6;
+  repeated string doras = 7;
+  MuyuInfo muyu = 8;
+  repeated HuleInfo hules_history = 9; // 历史历次胡牌
+}
+
+message ActionLiuJu {
+  uint32 type = 1;
+  GameEnd gameend = 2;
+  uint32 seat = 3;
+  repeated string tiles = 4;
+  LiQiSuccess liqi = 5;
+  repeated string allplayertiles = 6;
+  MuyuInfo muyu = 7;
+
+  repeated HuleInfo hules_history = 9; // 历史历次胡牌
+}
+
+//牌谱：流局
+message RecordLiuJu {
+  uint32 type = 1;
+  GameEnd gameend = 2;
+  uint32 seat = 3;
+  repeated string tiles = 4;
+  LiQiSuccess liqi = 5;
+  repeated string allplayertiles = 6;
+  MuyuInfo muyu = 7;
+
+  repeated HuleInfo hules_history = 9; // 历史历次胡牌
+}
+
+//荒牌流局，玩家的数据
+message NoTilePlayerInfo {
+  bool tingpai = 3;
+  repeated string hand = 4;
+  repeated TingPaiInfo tings = 5;
+  bool already_hule = 6; // 血流模式下，胡牌的不计在荒牌中
+}
+
+message NoTileScoreInfo {
+  uint32 seat = 1;
+  repeated int32 old_scores = 2;
+  repeated int32 delta_scores = 3;
+  repeated string hand = 4;
+  repeated string ming = 5;
+  repeated string doras = 6;
+  uint32 score = 7;
+  repeated int32 taxes = 8;
+  repeated string lines = 9; //川麻的线乱七八糟的！需要麻将库支援了！
+}
+
+//荒牌流局
+message ActionNoTile {
+  bool liujumanguan = 1;
+  repeated NoTilePlayerInfo players = 2;
+  repeated NoTileScoreInfo scores = 3;
+  bool gameend = 4;
+  MuyuInfo muyu = 5;
+  repeated HuleInfo hules_history = 9; // 历史历次胡牌
+}
+
+//牌谱：荒牌流局
+message RecordNoTile {
+  bool liujumanguan = 1;
+  repeated NoTilePlayerInfo players = 2;
+  repeated NoTileScoreInfo scores = 3;
+  bool gameend = 4;
+  MuyuInfo muyu = 5;
+  repeated HuleInfo hules_history = 9; // 历史历次胡牌
+}
+
+message PlayerLeaving {
+  uint32 seat = 1;
+}

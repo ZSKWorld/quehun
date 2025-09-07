@@ -6,6 +6,8 @@ declare namespace ResPath {
 
 	enum ConfigPath {
 		Config = "res/config/Config.json",
+		Ip_config = "res/config/ip_config.json",
+		Proto = "res/config/proto.json",
 	}
 
 	enum FontName {
@@ -70,10 +72,6 @@ declare namespace ResPath {
 		FZHT = "res/font/FZHT.ttf",
 		HYWH = "res/font/HYWH.ttf",
 		NotoSansKR = "res/font/NotoSansKR.ttf",
-	}
-
-	enum PrescreenPath {
-		Prescreen = "res/prescreen/prescreen.png",
 	}
 
 	enum ScenePath { }

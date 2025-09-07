@@ -1,0 +1,853 @@
+syntax = "proto3";
+
+import "com.struct.proto";
+import "amulet.struct.proto";
+
+package lqdb;
+
+option go_package = ".;majprotocol";
+
+// account_blob.character
+message BlobCharacter {
+  // 2018.09.13 舍弃该字段
+  repeated uint32 unlock_characters = 1; // 已经解锁的人物列表
+
+  repeated lq.Character characters = 2; // 拥有的角色列表
+  repeated uint32 skins = 3; // 拥有的皮肤列表
+  uint32 main_character_id = 4; // 主角色Id
+  uint32 send_gift_count = 5; // 送礼次数
+  uint32 send_gift_limit = 6; // 送礼次数上限
+  uint32 last_refresh_gift_count = 7; // 上次刷新送礼次数时间
+  repeated uint32 finished_endings = 8;
+  repeated uint32 rewarded_endings = 9;
+  repeated uint32 character_sort = 10;
+  repeated uint32 hidden_characters = 11;
+  repeated uint32 other_character_sort = 12;
+}
+
+message PlayerWinRecord {
+  uint32 dora_count = 1; // 表宝牌数量
+  uint32 fan = 2; // 总番数
+  bool liqi = 3; // 是否立直
+  uint32 lidoranum = 4; // 里宝牌数量
+  uint32 dadian = 5; // 打点
+  uint32 xuanshang = 6; // 悬赏
+}
+
+message HuPaiInfo {
+  uint32 fanshu = 1;
+  uint32 doranum = 2;
+  string title = 3; // 老的title，需要判断下
+  repeated string hands = 4;
+  repeated string ming = 5;
+  string hupai = 6;
+  uint32 title_id = 7;
+}
+
+message GeneralStatistic {
+  repeated uint32 final_position_counts = 1; // 最终排名次数统计（1-4）
+  repeated uint32 recent_round_results = 2; // 最近的单小局结果记录
+  repeated PlayerWinRecord recent_win_results = 3; // 最近的和牌记录
+  HuPaiInfo highest_fan_win = 4; // 最大番记录
+  repeated uint32 recent_ranks = 5; // 最近的对局结束排名记录（弃用）
+
+  message GameResult {
+    uint32 rank = 1; // 排名
+    int32 final_point = 2; // 最终打点
+  }
+  repeated GameResult recent_game_results = 6; // 最近10场结果
+}
+
+// account_blob.statistic
+// 1-5字段都不使用了，作为老字段解析迁移用
+message BlobStatistic {
+  repeated uint32 final_position_counts = 1;
+  repeated uint32 recent_round_results = 2;
+  repeated PlayerWinRecord recent_win_results = 3;
+  HuPaiInfo highest_fan_win = 4;
+  repeated uint32 recent_ranks = 5;
+
+  message MahjongCategoryStatistic {
+    uint32 mahjong_category = 1;
+    uint32 game_category = 2;
+    GeneralStatistic statistic = 3;
+    uint32 game_type = 4;
+  }
+  repeated MahjongCategoryStatistic mahjong_statistic_list = 6;
+}
+
+message RemoveItemRecord {
+  uint32 item_id = 1;
+  uint32 stack = 2; // 回收时的数量
+  uint32 version = 4; // 回收时的版本
+  bool revoked = 5; // 撤销
+  uint32 update_time = 6; // 更新时间
+}
+
+message BlobBag {
+  message Item {
+    uint32 item_id = 1;
+    uint32 stack = 2;
+    uint32 version = 3;
+  }
+  repeated Item items = 1;
+  repeated RemoveItemRecord remove_records = 2; // 回收记录（用于撤销）
+  repeated lq.ItemGainRecords daily_item_gain_record = 3;
+  repeated lq.FakeRandomRecords fake_random_record = 4;
+}
+
+message BlobAchievement {
+  repeated lq.AchievementProgress progress = 1;
+  repeated uint32 rewarded_group = 2;
+  uint32 version = 3;
+}
+
+message BlobDailyTask {
+  repeated lq.TaskProgress progress = 1;
+  uint32 last_refresh_time = 2;
+  uint32 last_manual_refresh_time = 3; // 废弃不用
+  uint32 manual_refresh_count = 4;
+}
+
+message BlobActivityTask {
+  repeated lq.TaskProgress progress = 1;
+  message ActivityDay {
+    uint32 activity_id = 1;
+    uint32 day = 2;
+  }
+  repeated ActivityDay activity_days = 2;
+}
+
+message BlobFlipTask {
+  repeated lq.TaskProgress progress = 1;
+  message FlipCount {
+    uint32 activity_id = 1;
+    uint32 count = 2;
+  }
+  repeated FlipCount flip_count = 2;
+  message RewardRecord {
+    uint32 activity_id = 1;
+    repeated uint32 records = 2;
+  }
+  repeated RewardRecord reward_record = 3;
+
+  message RewardTimeData {
+    uint32 id = 1;
+    uint32 time = 2;
+  }
+
+  message RewardTimeRecord {
+    uint32 activity_id = 1;
+    repeated RewardTimeData records = 2;
+  }
+  repeated RewardTimeRecord reward_time_record = 4;
+}
+
+message BlobPeriodTask {
+  repeated lq.TaskProgress progress = 1;
+  message RefreshRecord {
+    uint32 task_id = 1;
+    uint32 time = 2;
+  }
+  repeated RefreshRecord refresh_time = 2;
+  message IntervalProgress {
+    uint32 task_id = 1;
+    uint32 time = 2;
+    uint32 progress = 3;
+  }
+  repeated IntervalProgress interval_progress = 3;
+
+  message JoinTime {
+    uint32 activity_id = 1;
+    uint32 time = 2;
+  }
+  repeated JoinTime join_time = 4;
+}
+
+message BlobRandomTask {
+  message RandomTaskUpdateTime {
+    uint32 activity_id = 1;
+    uint32 update_time = 2;
+  }
+  repeated lq.TaskProgress progress = 1;
+  uint32 last_update_time = 2; // 已废弃，使用按activity_id进行分类的last_update_time_list
+  repeated RandomTaskUpdateTime last_update_time_list = 3;
+}
+
+message BlobSegmentTask {
+  message TaskProgress {
+    uint32 id = 1; // 任务类型
+    uint32 counter = 2; // 进度计数
+    bool achieved = 3; // 是否已经达成
+    bool rewarded = 4; // 是否已经领取奖励
+    bool failed = 5; // 是否已经失败
+    uint32 reward_count = 6;
+    uint32 achieved_count = 7;
+  }
+
+  message RefreshRecord {
+    uint32 task_id = 1;
+    uint32 time = 2;
+  }
+
+  repeated TaskProgress progress = 1;
+  repeated RefreshRecord refresh_time = 2;
+}
+
+message BlobMail {
+  repeated lq.Mail mails = 1;
+}
+
+message BlobActivity {
+  message MineActivity {
+    message DigPoint {
+      uint32 x = 1;
+      uint32 y = 2;
+      uint32 time = 3;
+      uint32 reward_id = 4;
+    }
+
+    message MineMap {
+      uint32 x = 1;
+      uint32 y = 2;
+      uint32 reward_id = 3; // 奖励ID
+      bool received = 4; // 是否已经完全挖开，并领取到奖励
+    }
+
+    repeated MineMap map = 1;
+    repeated DigPoint dig = 2;
+    uint32 activity_id = 3;
+  }
+
+  repeated MineActivity mine_activity = 1;
+
+  repeated lq.RPGActivity rpg_activity = 2;
+
+  repeated lq.ActivityBuffData activity_buff = 3;
+
+  repeated lq.ActivityArenaData arena_activity = 4;
+
+  repeated lq.ActivityFeedData feed_activity = 5;
+
+  repeated lq.ActivitySpotData spot_activity = 6;
+
+  message ActivityItemData {
+    repeated uint32 received_activity_id = 1;
+  }
+  ActivityItemData item_activity = 7;
+
+  repeated lq.ActivityFriendGiftData friend_gift_activity = 8;
+
+  repeated lq.ActivityUpgradeData upgrade_activity = 9;
+
+  repeated lq.ActivityGachaData gacha_activity = 10;
+
+  repeated lq.ActivitySimulationData simulation_activity = 11;
+
+  repeated lq.ActivityCombiningData combining_activity = 12;
+
+  repeated lq.ActivityVillageData village_activity = 13;
+
+  repeated lq.ActivityFestivalData festival_activity = 14;
+
+  repeated lq.ActivityIslandData island_activity = 15;
+
+  // repeated lq.ActivityAmuletData amulet_activity = 16;
+
+  repeated lq.ActivityStoryData story_activity = 17;
+
+  message ActivityChooseUpDBData {
+    uint32 activity_id = 1;
+    uint32 chest_id = 2;
+    uint32 selection = 3;
+    repeated uint32 reward_gain = 4;
+  }
+  repeated ActivityChooseUpDBData choose_up_activity = 18;
+
+  // repeated lq.SimulationV2Data simulation_v2_activity = 19;
+
+  repeated lq.ActivityProgressRewardData progress_reward_activity = 20;
+}
+
+message BlobAmuletActivity {
+  uint32 activity_id = 1;
+  lq.AmuletGameData game = 2; // 游戏对局信息
+  uint32 version = 3;
+  lq.ActivityAmuletUpgradeData upgrade = 4; // 永久强化信息
+  lq.ActivityAmuletIllustratedBookData illustrated_book = 5; // 图鉴信息
+  uint32 book_effect_id = 6; // 钦定护身符，可能为空
+  repeated lq.ActivityAmuletGameRecordData game_records = 7; // 最近通关记录
+  lq.ActivityAmuletStatisticData statistic = 8; // 统计数据
+}
+
+message BlobSimV2Activity {
+  uint32 activity_id = 1;
+  lq.SimulationV2SeasonData season = 2; // 赛季（一轮游戏）信息
+  int32 highest_score = 3; // 历史最高分
+  lq.SimulationV2Ability upgrade = 4; // 场外升级数据
+  repeated uint32 event_pool = 5; // 已经触发过的事件，用于判断是否显示new标识
+  uint32 season_count = 6; // 玩过的完整赛季数量（用来判断 highest_score 是否为空）
+}
+
+// 由于读取频率比较高，所以这里面尽量不要存文本内容（禁止存储动态长度文本）
+message BlobImplicit {
+  message ContinuousData {
+    uint32 id = 1;
+    uint32 counter = 2;
+  }
+  repeated ContinuousData continuous = 1; // 连续保持数据
+
+  /// !!!!! 不再使用的字段，使用detail_statistic_v1
+  lq.AccountDetailStatistic detail_statistic = 2; // 详细统计数据
+
+  message TimestampRecord {
+    uint32 id = 1;
+    uint32 value = 2;
+  }
+  repeated TimestampRecord timestamp_records = 3; // 记录玩家的一些时间戳
+
+  message GiftCodeRecord {
+    uint32 id = 1; // 礼品码使用Id
+    uint32 count = 2; // 领取过的次数
+  }
+  repeated GiftCodeRecord gift_code_record = 4;
+
+  repeated uint32 title_list = 5; // 称号列表
+
+  // 系统邮件领取记录
+  repeated uint32 duration_mails = 6; // 全服邮件
+
+  /// !!!!! 不再使用的字段，使用 detail_statistic_data
+  repeated lq.AccountDetailStatisticByCategory detail_statistic_v1 = 7; // 详细统计数据 v1
+
+  message CommentSetting {
+    uint32 comment_allow = 1; // 0=所有人 1=仅好友 2=不允许任何人
+  }
+  CommentSetting comment_setting = 8;
+
+  message DetailStatistic {
+    lq.AccountDetailStatisticV2 detail_statistic_v2 = 1; // 详细统计数据 v2
+  }
+  DetailStatistic detail_statistic_data = 9;
+
+  // 每日签到
+  message DailySignIn {
+    uint32 sign_in_days = 1; // 已经签到的天数
+  }
+  DailySignIn daily_sign_in = 10;
+
+  // 通用外观
+  message CommonView {
+    uint32 slot = 1;
+    uint32 value = 2;
+  }
+  repeated CommonView common_views = 11;
+
+  lq.ShopInfo shop_info = 12;
+
+  // 比赛宝箱
+  message MatchChest {
+    uint32 chest_id = 1;
+    uint32 progress = 2; // 进度
+  }
+  repeated MatchChest match_chests = 13;
+
+  repeated lq.AccountSetting settings = 14; // 账号设置列表
+
+  repeated uint32 recharges = 15; // 充值的档位记录，弃用，仅用于已有数据转换
+
+  message PlatformDiamond {
+    uint32 id = 1;
+    uint32 count = 2;
+  }
+  repeated PlatformDiamond platform_diamond = 16;
+
+  repeated lq.ChestData chests = 17;
+
+  repeated uint32 follow_customized_contest = 18; // 关注的自定义比赛列表
+
+  repeated lq.ExchangeRecord activity_exchange_records = 19; // 活动兑换记录
+
+  uint32 friendship_progress = 20; // 账号好感度进度
+
+  repeated uint32 vip_reward_gained = 21; // VIP等级奖励领取记录
+
+  repeated uint32 special_events = 22; // 特殊事件记录
+
+  repeated uint32 announcements = 23; // 公告记录
+
+  message MonthPayment {
+    uint32 payment_time = 1;
+    message Currency {
+      string code = 3;
+      uint32 count = 2;
+    }
+    repeated Currency currency = 2;
+  }
+  MonthPayment month_payment = 24;
+
+  message ClientValue {
+    uint32 key = 1;
+    uint32 value = 2;
+  }
+  repeated ClientValue client_values = 25;
+
+  uint32 recharged_count = 26; // 充值成功次数
+
+  message AccumulatedPointActivityData {
+    uint32 activity_id = 1;
+    int32 point = 2;
+    repeated uint32 gained_list = 3;
+  }
+  repeated AccumulatedPointActivityData accumulated_point = 27;
+
+  message RankPointLeaderboardData {
+    uint32 leaderboard_id = 1;
+    int32 point = 2;
+    uint32 gain_time = 3;
+  }
+  repeated RankPointLeaderboardData rank_point = 28;
+
+  message ChestInfoV2 {
+    repeated lq.ChestDataV2 chests = 1;
+    repeated lq.FaithData faiths = 2;
+  }
+  ChestInfoV2 chest_info_v2 = 29; // 宝箱数据
+
+  message RechargeInfo {
+    uint32 level = 1;
+    uint32 recharge_time = 2;
+  }
+  repeated RechargeInfo recharge_records = 30; // 最后充值记录
+
+  message MonthTicketInfo {
+    uint32 id = 1; // 月卡ID
+    uint32 end_time = 2; // 月卡结束时间
+    uint32 last_pay_time = 3; // 上次领取时间
+    uint32 record_start_time = 4; // 记录开始时间
+    repeated uint32 history = 5; // 领取记录
+  }
+  repeated MonthTicketInfo month_ticket_info = 31; //月卡记录
+
+  message ActivitySignInRecord {
+    uint32 activity_id = 1;
+    uint32 sign_in_count = 2;
+    uint32 last_sign_time = 3;
+  }
+  repeated ActivitySignInRecord activity_sign_in = 32;
+
+  message PlatformSkinTicket {
+    uint32 id = 1;
+    uint32 count = 2;
+  }
+  repeated PlatformSkinTicket platform_skin_ticket = 33;
+
+  uint32 skin_ticket = 34;
+
+  message SavedViews {
+    repeated lq.ViewSlot views = 1;
+    uint32 index = 2;
+    string name = 3;
+  }
+  repeated SavedViews saved_views = 35;
+
+  uint32 use_view_index = 36;
+
+  message AFKRecord {
+    string game_uuid = 1;
+    uint32 time = 2;
+    uint32 ban_end_time = 3;
+    uint32 ban_level = 4;
+  }
+  repeated AFKRecord afk_record = 37;
+
+  uint32 continue_afk_count = 38;
+
+  message BuffData {
+    uint32 type = 1;
+    uint32 remain = 2;
+    uint32 effect = 3;
+  }
+
+  message RichmanActivityData {
+    uint32 activity_id = 1;
+    uint32 location = 2;
+    uint32 finished_count = 3;
+    uint32 exp = 4;
+    repeated BuffData buff = 5;
+    uint32 bank_save = 6;
+    uint32 chest_position = 7;
+    uint32 pre_step = 8;
+    uint32 total_price = 9;
+    uint32 step_count = 10;
+    uint32 chest_black_face_count = 11;
+  }
+  repeated RichmanActivityData richman_activity_data = 39;
+
+  // 月卡记录历史
+  repeated MonthTicketInfo month_ticket_history = 40;
+
+  repeated uint32 logined_version = 41;
+  repeated uint32 rewarded_version = 42;
+  repeated uint32 observe_records = 43;
+
+  message ChestReplaceCountData {
+    uint32 id = 1;
+    uint32 count = 2;
+  }
+  repeated ChestReplaceCountData chest_replace_count = 44;
+
+  repeated lq.ActivityBuffData activity_buff = 45;
+
+  repeated uint32 game_point_reward = 46;
+
+  uint32 auto_ban_deadline = 47;
+
+  message SNSBlog {
+    uint32 id = 1; // 博文id
+    uint32 read_time = 2; // 第一次打开时间
+  }
+
+  message SNSReply {
+    uint32 id = 1; // 博文ID
+    uint32 reply_time = 2; // NPC回复显示时间（在此时间前不显示NPC回复）
+  }
+
+  message SNSData {
+    repeated SNSBlog blog = 1;
+    repeated uint32 liked_id = 2; // 点赞博文ID
+    repeated SNSReply reply = 3;
+  }
+
+  SNSData sns_data = 48;
+
+  repeated lq.VoteData vote_records = 49;
+
+  message ContinueTaskData {
+    uint32 id = 1;
+    uint32 count = 2;
+  }
+  repeated ContinueTaskData continue_task_data = 50;
+
+  repeated uint32 loading_images = 51;
+
+  repeated uint32 recent_friend = 52;
+
+  uint32 follow_contest_version = 53;
+
+  uint32 verified_hidden = 54;
+  uint32 verified_value = 55;
+
+  repeated uint32 finished_questionnaire_list = 56;
+  repeated uint32 rewarded_questionnaire_list = 57;
+
+  message RandomCharacterPool {
+    repeated lq.RandomCharacter pool = 1; // 角色随机池
+    bool enabled = 3; // 随机角色池启用开关(1 = 启用 0 = 不启用)
+    repeated lq.RandomCharacter used_character = 4; // 最近几场使用的角色（目前为五场）
+  }
+  RandomCharacterPool random_character = 58;
+
+  repeated lq.FavoriteHu favorite_hu = 61;
+
+  repeated lq.BadgeAchieveProgress badges = 62; // 当前用户勋章进度信息
+
+  uint32 disable_room_random_bot_char = 63;
+
+  repeated lq.SeerBrief seer_list = 64;
+  message SeerUseData {
+    uint32 count = 1;
+    uint32 update_time = 2;
+  }
+  SeerUseData seer_data = 65;
+}
+
+// 冗杂数据
+message BlobMiscData {
+  message Announcement {
+    repeated uint32 read_list = 1;
+  }
+  Announcement announcement = 1;
+
+  repeated lq.ChangeNicknameRecord nickname_history = 2; // 改名历史
+}
+
+// 留言条目
+message CommentData {
+  uint32 id = 1;
+  uint32 timestamp = 2;
+  uint32 account_id = 3;
+  string content = 4;
+}
+
+message BlobComments {
+  repeated CommentData comments = 1;
+  repeated uint32 comment_id_list = 2;
+  uint32 max_comment_id = 3;
+  uint32 last_read_id = 4; // 最后阅读的id
+}
+
+message BlobFriend {
+  repeated uint32 friends = 1; // 好友id列表
+  message FriendApply {
+    uint32 apply_id = 1;
+    uint32 apply_time = 2;
+  }
+  repeated FriendApply applies = 2; // 好友申请
+  message FriendRemark {
+    uint32 account_id = 1;
+    string remark = 2;
+  }
+  repeated FriendRemark remarks = 3; // 好友备注
+}
+
+message BlobChallenge {
+  repeated lq.TaskProgress task_progress = 1; // 当前试炼券任务
+  uint32 last_refresh_time = 2; // 上次再发行时间
+  uint32 refresh_count = 3; // 再发行次数
+  uint32 level = 4; // 试炼等级
+  uint32 current_ticket_id = 5; // 当前试炼券等级
+  uint32 season_id = 6; // 当前赛季ID
+  uint32 match_count = 7; // 已进行比赛场次
+
+  message PreLevelTicketRecord {
+    uint32 level = 1;
+    uint32 ticket_id = 2;
+  }
+  repeated PreLevelTicketRecord pre_ticket_record = 8;
+
+  message ChallengeLevel {
+    uint32 season = 1;
+    uint32 level = 2;
+    uint32 rank = 3;
+    uint32 update_time = 4;
+  }
+  repeated ChallengeLevel season_level = 9;
+
+  bool used_force_complete = 10;
+
+  repeated uint32 rewarded_season = 11;
+}
+
+message BlobABMatch {
+  message MatchPoint {
+    uint32 match_id = 1;
+    uint32 point = 2;
+  }
+
+  uint32 match_id = 1;
+  uint32 match_count = 2;
+  uint32 buy_in_count = 3;
+  uint32 point = 4;
+  bool rewarded = 5;
+  repeated MatchPoint match_max_point = 6;
+  bool quit = 7;
+}
+
+message PlayerRosterBlob {
+  message Item {
+    uint32 account_id = 1;
+    string nickname = 2;
+  }
+  repeated Item player_roster = 1;
+}
+
+message ManagerRosterBlob {
+  message Item {
+    uint32 account_id = 1;
+    string nickname = 2;
+  }
+  repeated Item manager_roster = 1;
+}
+
+message ChatLimitRosterBlob {
+  message Item {
+    uint32 account_id = 1;
+    string nickname = 2;
+  }
+  uint32 chat_limit_type = 1; // 聊天禁言模式 0=黑名单 1=白名单
+  repeated Item chat_limit_roster = 2;
+}
+
+message ContestManagerDataBlob {
+  repeated uint32 related_contests = 1;
+}
+
+message ContestPlayerGameData {
+  message Player {
+    uint32 account_id = 1;
+
+    // 最近的对局记录
+    message ContestPlayerGameResultView {
+      uint32 rank = 1;
+      int32 total_point = 2;
+    }
+    repeated ContestPlayerGameResultView recent_games = 2;
+
+    uint32 total_count = 3; // 总共参加的次数
+
+    // 最高连续得分
+    message HighestSeriesPoint {
+      uint32 series = 1; // 连续的场次数量
+      repeated ContestPlayerGameResultView best_games = 2;
+    }
+    repeated HighestSeriesPoint highest_series_points = 4;
+
+    string nickname = 5;
+  }
+  repeated Player players = 1;
+}
+
+
+// 房间信息
+message BlobRoom {
+  uint32 room_id = 1; // 房间号
+  uint32 owner_id = 2; // 房主账号id
+  lq.GameMode mode = 3;
+  uint32 max_player_count = 4; // 最大玩家数量
+  repeated lq.PlayerGameView persons = 5; // 玩家信息
+  repeated uint32 ready_list = 6; // 就绪玩家列表
+  string game_uuid = 7; // 正在游戏中
+  bool public_live = 8; // 是否公开观战
+  uint32 robot_count = 9; // 机器人数量，已废弃，使用 robots 字段
+  uint32 notify_seq = 10;
+  string pre_rule = 11;
+  repeated lq.PlayerGameView robots = 12; // 机器人外观数据
+  repeated uint32 positions = 13; // 各个位置上的id，id < 1000 的都是机器人
+}
+
+message BlobRecordCollect {
+  repeated lq.RecordCollectedData collected_data = 1;
+}
+
+// 货币信息
+message BlobCurrency {
+  message CurrencyInfo {
+    uint32 id = 1;
+    uint32 value = 2;
+  }
+
+  message CurrencyRecord {
+    uint32 id = 1;
+    int32 value = 2;
+  }
+
+  message MonthRecord {
+    uint32 time = 1;
+    repeated CurrencyRecord records = 3;
+  }
+  repeated CurrencyInfo wallet = 1;
+  uint32 converted = 2;
+  repeated MonthRecord records = 3;
+
+  message MonthTicket {
+    uint32 end_time = 1; // 月卡结束时间
+    uint32 last_pay_time = 2; // 上次领取时间
+    uint32 record_start_time = 3; // 记录开始时间
+    repeated uint32 history = 4; // 领取记录
+  }
+  MonthTicket month_ticket = 4;
+}
+
+// 大会室数据转移协议
+message ContestTransferData {
+  message ContestData {
+    uint32 creator_id = 1;
+    string contest_name = 2;
+    uint32 contest_id = 3;
+    uint32 create_time = 4;
+    uint32 start_time = 5;
+    uint32 finish_time = 6;
+    uint32 deadline_time = 7;
+    uint32 state = 8;
+    uint32 open_show = 9;
+    uint32 contest_type = 10;
+    repeated uint32 hot_zones = 27;
+    string hidden_zones = 11;
+    string banned_zones = 12;
+    uint32 rank_rule = 13;
+    uint32 auto_match = 14;
+    uint32 auto_disable_end_chat = 15;
+    string game_rule_setting = 16;
+    uint32 chat_limit_type = 17;
+    string external_notice = 18;
+    string internal_notice = 19;
+    string manager_notice = 20;
+    uint32 observer_switch = 21;
+    PlayerRosterBlob player_roster = 22;
+    ManagerRosterBlob manager_roster = 23;
+    ChatLimitRosterBlob chat_limit_roster = 24;
+    ContestPlayerGameData players_game_data = 25;
+    uint32 unique_id = 26;
+    uint32 disable_broadcast = 28;
+  }
+
+  message GameRecord {
+    string game_uuid = 1;
+    uint32 start_time = 2;
+    uint32 end_time = 3;
+    string tag = 4;
+    uint32 removed = 5;
+  }
+
+  message ManagerData {
+    uint32 account_id = 1;
+    uint32 login_time = 2;
+    uint32 logout_time = 3;
+    uint32 last_create_time = 4;
+    ContestManagerDataBlob manager_data = 5;
+  }
+
+  ContestData contest_data = 1;
+  repeated GameRecord game_records = 2;
+  ManagerData manager_data = 3;
+}
+
+// 牌谱公共平台交互数据结构
+message PlayerGameRecordResult {
+  uint32 account_id = 1;
+  uint32 seat = 2;
+  uint32 rank = 3;
+  int32 total_point = 4;
+  int32 part_point_1 = 5;
+  int32 part_point_2 = 6;
+  int32 grading_score = 7;
+  int32 gold = 8;
+}
+
+message PlayerGameRecordView {
+  uint32 account_id = 1;
+  uint32 avatar_id = 2; // 头像
+  uint32 title = 3; // 称号
+  string nickname = 4;
+  lq.AccountLevel level = 5;
+  lq.Character character = 6;
+  lq.AccountLevel level3 = 7;
+  uint32 avatar_frame = 8;
+  uint32 verified = 9;
+  repeated lq.ViewSlot views = 10;
+  uint32 seat = 11;
+  string client_address = 12;
+}
+
+message PlayerGameAccountWrapper {
+  repeated PlayerGameRecordView accounts = 1;
+  uint32 version = 2;
+}
+
+message PlayerGameResultWrapper {
+  repeated PlayerGameRecordResult results = 1;
+}
+
+message PlayerGameConfig {
+  uint32 category = 1;  // 1=好友房 2=匹配 3=比赛房（临时）  4=自定义比赛
+  lq.GameMode mode = 2; // 修改后需要修改牌谱公共平台
+  lq.GameMetaData meta = 3;
+}
+
+// game数据库：game_summary_v2.players 字段
+message GameSummaryV2Players {
+  repeated lq.RecordPlayerResult players = 1;
+}
+
+// 青云之志

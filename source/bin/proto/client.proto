@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+import "notify.lobby.proto";
+import "cli.lobby.proto";
+import "cli.game.proto";
+import "cli.route.proto";
+import "amulet.struct.proto";

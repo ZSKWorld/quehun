@@ -46,5 +46,8 @@ loadLib("libs_game/respath.js");
 loadLib("libs_game/userdataevent.js");
 loadLib("libs_game/viewid.js");
 
+//leb js
+loadLib("libs_leb/proto.d.js");
+
 loadLib("js/bundle.js");
 

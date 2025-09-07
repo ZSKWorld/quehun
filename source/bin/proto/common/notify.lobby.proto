@@ -1,0 +1,401 @@
+syntax = "proto3";
+
+import "com.struct.proto";
+
+package lq;
+
+option go_package = ".;majprotocol";
+
+// 通知用户需要进行人机验证
+// message NotifyCaptcha {
+//   uint32 check_id = 1;
+//   uint32 start_time = 2; // 验证开始时间戳
+//   string random_str = 3; // 随机字符串
+//   uint32 type = 4; // 1 - 无痕验证 2 - 滑动验证
+// }
+
+// 通知房间游戏开始了
+message NotifyRoomGameStart {
+  string game_url = 1; // 游戏的url
+  string connect_token = 2; // 连接口令
+  string game_uuid = 3; // 游戏的uuid
+  string location = 4; // zone or local
+}
+
+// 通知匹配场游戏开始了
+message NotifyMatchGameStart {
+  string game_url = 1; // 游戏的url
+  string connect_token = 2; // 连接口令
+  string game_uuid = 3; // 游戏的uuid
+  uint32 match_mode_id = 4; // 匹配场的modeId
+  string location = 5; // zone or local
+}
+
+// 通知玩家就绪
+message NotifyRoomPlayerReady {
+  message AccountReadyState {
+    uint32 account_id = 1;
+    bool ready = 2;
+  }
+
+  uint32 account_id = 1;
+  bool ready = 2; // true=准备 false=未准备
+  AccountReadyState account_list = 3;
+  uint32 seq = 4;
+}
+
+// 通知玩家装扮状态
+message NotifyRoomPlayerDressing {
+  message AccountDressingState {
+    uint32 account_id = 1;
+    bool dressing = 2;
+  }
+  uint32 account_id = 1;
+  bool dressing = 2; // true=正在装扮 false=没有装扮
+  AccountDressingState account_list = 3;
+  uint32 seq = 4;
+}
+
+// 通知玩家变化
+message NotifyRoomPlayerUpdate {
+  // repeated PlayerBaseView update_list = 1; // 添加 & 更新  已停用
+  // repeated uint32 remove_list = 2; // 删除 已停用
+  uint32 owner_id = 3; // 房主变化
+  uint32 robot_count = 4; // 机器人数量，已废弃，使用 robots 字段
+  repeated PlayerGameView player_list = 5;
+  uint32 seq = 6; // 通知序列号，最大为10000000，之后重置为0
+  repeated PlayerGameView robots = 7; // 机器人外观数据
+  repeated uint32 positions = 8;
+}
+
+// 通知玩家被踢出
+message NotifyRoomKickOut {
+}
+
+// 通知好友状态变化
+message NotifyFriendStateChange {
+  uint32 target_id = 1;
+  AccountActiveState active_state = 2;
+}
+
+// 通知好友展示信息变化
+message NotifyFriendViewChange {
+  uint32 target_id = 1;
+  PlayerBaseView base = 2;
+}
+
+// 通知好友变化
+message NotifyFriendChange {
+  uint32 account_id = 1; // 好友id
+  uint32 type = 2; // 1=add 2=remove
+  Friend friend = 3; // type=1 是有数据
+}
+
+// 新的好友申请
+message NotifyNewFriendApply {
+  uint32 account_id = 1; // 申请者id
+  uint32 apply_time = 2; // 申请时间
+  uint32 removed_id = 3; // 被顶替掉的申请者id（申请上限时会有）
+}
+
+// 通知聊天信息
+//message NotifyChatMessage {
+//  ChatMessage chat = 1;
+//}
+
+// 发送一条单方面消息
+message NotifyClientMessage {
+  PlayerBaseView sender = 1;
+  uint32 type = 2;
+  string content = 3;
+}
+
+// 人物数据更新
+message NotifyAccountUpdate {
+  AccountUpdate update = 1;
+}
+
+// 提示有另一处登录
+message NotifyAnotherLogin {
+}
+
+// 提示玩家需要登出
+message NotifyAccountLogout {
+}
+
+// 公告更新
+// yaya(2020-07-29): 现在不放具体内容，只进行通知（消息体内容除lang外为空），客户端在收到通知后随机延迟（五分钟内）重新调用获取通知接口进行更新
+// yaya(2021-12-09): 改成以列表形式通知
+message NotifyAnnouncementUpdate {
+  message AnnouncementUpdate {
+    string lang = 1;
+    string platform = 2;
+  }
+
+  repeated AnnouncementUpdate update_list = 1;
+  // repeated Announcement announcements = 1;
+  // repeated uint32 sort = 2;
+  // string lang = 3;
+  // string platform = 4;
+}
+
+// 通知新邮件
+message NotifyNewMail {
+  Mail mail = 1;
+}
+
+// 通知删除邮件
+message NotifyDeleteMail {
+  repeated uint32 mail_id_list = 1;
+}
+
+// 通知复活币更新
+message NotifyReviveCoinUpdate {
+  bool has_gained = 1;
+}
+
+// 每日任务刷新推送
+message NotifyDailyTaskUpdate {
+  repeated TaskProgress progresses = 1;
+  uint32 max_daily_task_count = 2;
+  uint32 refresh_count = 3; // 剩余可刷新次数
+}
+
+// 每日活动任务刷新推送
+message NotifyActivityTaskUpdate {
+  repeated TaskProgress progresses = 1;
+}
+
+// 长期活动任务刷新推送
+message NotifyActivityPeriodTaskUpdate {
+  repeated TaskProgress progresses = 1;
+}
+
+// 随机活动任务刷新推送
+message NotifyAccountRandomTaskUpdate {
+  repeated TaskProgress progresses = 1;
+}
+
+message NotifyActivitySegmentTaskUpdate {
+  repeated lq.SegmentTaskProgress progresses = 1;
+}
+
+message NotifyActivityUpdate {
+  message FeedActivityData {
+    message CountWithTimeData {
+      uint32 count = 1;
+      uint32 last_update_time = 2;
+    }
+
+    message GiftBoxData {
+      uint32 id = 1;
+      uint32 item_id = 2;
+      uint32 count = 3;
+      uint32 from_account_id = 4;
+      uint32 time = 5;
+      uint32 received = 6;
+    }
+
+    uint32 activity_id = 1;
+    uint32 feed_count = 2;
+    CountWithTimeData friend_receive_data = 3;
+    CountWithTimeData friend_send_data = 4;
+    repeated GiftBoxData gift_inbox = 5;
+  }
+  repeated FeedActivityData list = 1;
+}
+
+// 试炼赛更新推送
+message NotifyAccountChallengeTaskUpdate {
+  repeated TaskProgress progresses = 1;
+  uint32 level = 2; // 试炼等级
+  uint32 refresh_count = 3; // 当前再发行次数
+  uint32 match_count = 4; // 当前比赛场数
+  uint32 ticket_id = 5; // 试炼券ID
+  repeated uint32 rewarded_season = 6; // 已经领取过奖励的赛季
+}
+
+// 通知：有新的留言
+message NotifyNewComment {
+}
+
+// 通知：新滚动公告
+message NotifyRollingNotice {
+}
+
+// 通知：新维护公告
+message NotifyMaintainNotice {
+}
+
+// 通知：每日送礼次数刷新
+message NotifyGiftSendRefresh {
+}
+
+// 通知：商店更新
+message NotifyShopUpdate {
+  ShopInfo shop_info = 1;
+}
+
+// 通知：轮换商店/活动发生改变
+message NotifyIntervalUpdate {
+}
+
+// 通知：VIP等级变化
+message NotifyVipLevelChange {
+  uint32 gift_limit = 1; // 每日送礼次数上限
+  uint32 friend_max_count = 2; // 好像数量上限
+  uint32 zhp_free_refresh_limit = 3; // 杂货铺免费刷新上限
+  uint32 zhp_cost_refresh_limit = 4; // 杂货铺花钱刷新上限
+  float buddy_bonus = 5; // 对局好感度加成
+  uint32 record_collect_limit = 6;
+}
+
+// 服务器设置
+message NotifyServerSetting {
+  ServerSettings settings = 1;
+}
+
+// 通知：充值结果
+message NotifyPayResult {
+  message ResourceModify {
+    uint32 id = 1;
+    uint32 count = 2;
+    uint32 final = 3;
+  }
+
+  uint32 pay_result = 1; // 0=success other=failed
+  string order_id = 2;
+  uint32 goods_id = 3;
+  uint32 new_month_ticket = 4;
+  repeated ResourceModify resource_modify = 5;
+}
+
+// 通知：比赛聊天消息
+message NotifyCustomContestAccountMsg {
+  uint32 unique_id = 1;
+  uint32 account_id = 2;
+  string sender = 3; // 发送人的昵称
+  string content = 4;
+  uint32 verified = 5;
+}
+
+// 通知：比赛系统消息
+message NotifyCustomContestSystemMsg {
+  uint32 unique_id = 1;
+  uint32 type = 2; // 1=game-start 2=game-end
+  string uuid = 3;
+  CustomizedContestGameStart game_start = 4;
+  CustomizedContestGameEnd game_end = 5;
+}
+
+// 通知：匹配超时通知
+message NotifyMatchTimeout {
+  string sid = 1;
+}
+
+// 通知：匹配出错
+message NotifyMatchFailed {
+  string sid = 1;
+}
+
+// 通知：自定义比赛状态变化
+message NotifyCustomContestState {
+  uint32 unique_id = 1;
+
+  // NULL      = 0,
+  // CREATE    = 1,
+  // START     = 2,
+  // FINISH    = 3,
+  // EXPIRED   = 4,
+  // CANCELLED = 5,
+  uint32 state = 2; // 比赛状态
+}
+
+// 通知：活动变化
+message NotifyActivityChange {
+  repeated Activity new_activities = 1; // 新活动
+  repeated uint32 end_activities = 2; // 结束的活动
+}
+
+// 通知：挂机惩罚
+message NotifyAFKResult {
+  uint32 type = 1; // 惩罚类型 1-无结算奖励 2-封号
+  uint32 ban_end_time = 2; // 封号->封号结束时间
+  string game_uuid = 3; // 被判定挂机的游戏uuid
+}
+
+// 通知：登录排队完成
+message NotifyLoginQueueFinished {}
+
+// 比赛结束奖励
+message NotifyGameFinishRewardV2 {
+  uint32 mode_id = 1;
+
+  message LevelChange {
+    AccountLevel origin = 1; // 原来的段位
+    AccountLevel final = 2; // 变化后的段位
+    uint32 type = 3; // 1=四麻 2=三麻
+  }
+  LevelChange level_change = 2;
+
+  message MatchChest {
+    uint32 chest_id = 1;
+    uint32 origin = 2;
+    uint32 final = 3;
+    bool is_graded = 4;
+    repeated RewardSlot rewards = 5;
+  }
+  MatchChest match_chest = 3; // 比赛宝箱
+
+  message MainCharacter {
+    uint32 level = 1;
+    uint32 exp = 2;
+    uint32 add = 3;
+  }
+  MainCharacter main_character = 4;
+
+  message CharacterGift {
+    uint32 origin = 1;
+    uint32 final = 2;
+    uint32 add = 3;
+    bool is_graded = 4;
+  }
+  CharacterGift character_gift = 5;
+
+  repeated BadgeAchieveProgress badges = 6;
+}
+
+message NotifyActivityRewardV2 {
+  message ActivityReward {
+    uint32 activity_id = 1;
+    repeated RewardSlot rewards = 2;
+  }
+  repeated ActivityReward activity_reward = 1; // 活动奖励
+}
+
+message NotifyActivityPointV2 {
+  message ActivityPoint {
+    uint32 activity_id = 1;
+    uint32 point = 2; // 当前累计点数
+  }
+  repeated ActivityPoint activity_points = 1; // 活动对局得点
+}
+
+message NotifyLeaderboardPointV2 {
+  message LeaderboardPoint {
+    uint32 leaderboard_id = 1;
+    uint32 point = 2; // 当前排名点数
+  }
+  repeated LeaderboardPoint leaderboard_points = 1; // 排行榜对局得点
+
+}
+
+message NotifySeerReport {
+  SeerBrief report = 1;
+}
+
+// 服务端主动断开
+message NotifyConnectionShutdown {
+  uint32 reason = 1;
+  uint32 close_at = 2; // 服务器将于这个时间戳断开连接
+}

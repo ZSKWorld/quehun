@@ -22,6 +22,7 @@ declare type LoadURL = string | Laya.ILoadURL | (string | Readonly<Laya.ILoadURL
 
 declare const platformMgr: IPlatformManager;
 declare const netService: INetService;
+declare const netMgr: INetManager;
 declare const userData: IUser & { decode(data: Partial<OriginData<IUser>>): IUser };
 declare const cfgMgr: ICfgManager;
 declare const loadMgr: ILoadManager;
@@ -30,6 +31,7 @@ declare const uiMgr: IUIManager;
 declare const tipMgr: ITipManager;
 declare const sceneMgr: ISceneManager;
 declare const facade: IFacade;
+declare const pbMgr: IPbManager;
 
 /** 注入全局变量 */
 declare function windowImmit(name: string, obj: any): void;

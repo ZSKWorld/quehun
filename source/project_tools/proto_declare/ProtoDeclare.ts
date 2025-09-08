@@ -212,7 +212,7 @@ export class ProtoDeclare {
         for (const key in notifies) {
             const type = notifies[key];
             const comment = (type.comment || "") + `\nres: {@link I${ key }}`;
-            notifiesContent += `${ this.buildTSComments(comment.trim(), 1) }\t${ key } = "${ key }",\n`;
+            notifiesContent += `${ this.buildTSComments(comment.trim(), 1) }\t${ key } = "${ type.fullName }",\n`;
         }
         notifiesContent = `/** 网络通知 */\ndeclare const enum ENotify {\n${ notifiesContent }}\n`;
 

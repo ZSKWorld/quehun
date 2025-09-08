@@ -6,287 +6,287 @@ declare const enum ENotify {
 	 * * 通知房间游戏开始了
 	 * * res: {@link INotifyRoomGameStart}
 	 */
-	NotifyRoomGameStart = "NotifyRoomGameStart",
+	NotifyRoomGameStart = ".lq.NotifyRoomGameStart",
 	/**
 	 * * 通知匹配场游戏开始了
 	 * * res: {@link INotifyMatchGameStart}
 	 */
-	NotifyMatchGameStart = "NotifyMatchGameStart",
+	NotifyMatchGameStart = ".lq.NotifyMatchGameStart",
 	/**
 	 * * 通知玩家就绪
 	 * * res: {@link INotifyRoomPlayerReady}
 	 */
-	NotifyRoomPlayerReady = "NotifyRoomPlayerReady",
+	NotifyRoomPlayerReady = ".lq.NotifyRoomPlayerReady",
 	/**
 	 * * 通知玩家装扮状态
 	 * * res: {@link INotifyRoomPlayerDressing}
 	 */
-	NotifyRoomPlayerDressing = "NotifyRoomPlayerDressing",
+	NotifyRoomPlayerDressing = ".lq.NotifyRoomPlayerDressing",
 	/**
 	 * * 通知玩家变化
 	 * * res: {@link INotifyRoomPlayerUpdate}
 	 */
-	NotifyRoomPlayerUpdate = "NotifyRoomPlayerUpdate",
+	NotifyRoomPlayerUpdate = ".lq.NotifyRoomPlayerUpdate",
 	/**
 	 * * 通知玩家被踢出
 	 * * res: {@link INotifyRoomKickOut}
 	 */
-	NotifyRoomKickOut = "NotifyRoomKickOut",
+	NotifyRoomKickOut = ".lq.NotifyRoomKickOut",
 	/**
 	 * * 通知好友状态变化
 	 * * res: {@link INotifyFriendStateChange}
 	 */
-	NotifyFriendStateChange = "NotifyFriendStateChange",
+	NotifyFriendStateChange = ".lq.NotifyFriendStateChange",
 	/**
 	 * * 通知好友展示信息变化
 	 * * res: {@link INotifyFriendViewChange}
 	 */
-	NotifyFriendViewChange = "NotifyFriendViewChange",
+	NotifyFriendViewChange = ".lq.NotifyFriendViewChange",
 	/**
 	 * * 通知好友变化
 	 * * res: {@link INotifyFriendChange}
 	 */
-	NotifyFriendChange = "NotifyFriendChange",
+	NotifyFriendChange = ".lq.NotifyFriendChange",
 	/**
 	 * * 新的好友申请
 	 * * res: {@link INotifyNewFriendApply}
 	 */
-	NotifyNewFriendApply = "NotifyNewFriendApply",
+	NotifyNewFriendApply = ".lq.NotifyNewFriendApply",
 	/**
 	 * * 发送一条单方面消息
 	 * * res: {@link INotifyClientMessage}
 	 */
-	NotifyClientMessage = "NotifyClientMessage",
+	NotifyClientMessage = ".lq.NotifyClientMessage",
 	/**
 	 * * 人物数据更新
 	 * * res: {@link INotifyAccountUpdate}
 	 */
-	NotifyAccountUpdate = "NotifyAccountUpdate",
+	NotifyAccountUpdate = ".lq.NotifyAccountUpdate",
 	/**
 	 * * 提示有另一处登录
 	 * * res: {@link INotifyAnotherLogin}
 	 */
-	NotifyAnotherLogin = "NotifyAnotherLogin",
+	NotifyAnotherLogin = ".lq.NotifyAnotherLogin",
 	/**
 	 * * 提示玩家需要登出
 	 * * res: {@link INotifyAccountLogout}
 	 */
-	NotifyAccountLogout = "NotifyAccountLogout",
+	NotifyAccountLogout = ".lq.NotifyAccountLogout",
 	/**
 	 * * 公告更新
 	 * * yaya(2020-07-29): 现在不放具体内容，只进行通知（消息体内容除lang外为空），客户端在收到通知后随机延迟（五分钟内）重新调用获取通知接口进行更新
 	 * * yaya(2021-12-09): 改成以列表形式通知
 	 * * res: {@link INotifyAnnouncementUpdate}
 	 */
-	NotifyAnnouncementUpdate = "NotifyAnnouncementUpdate",
+	NotifyAnnouncementUpdate = ".lq.NotifyAnnouncementUpdate",
 	/**
 	 * * 通知新邮件
 	 * * res: {@link INotifyNewMail}
 	 */
-	NotifyNewMail = "NotifyNewMail",
+	NotifyNewMail = ".lq.NotifyNewMail",
 	/**
 	 * * 通知删除邮件
 	 * * res: {@link INotifyDeleteMail}
 	 */
-	NotifyDeleteMail = "NotifyDeleteMail",
+	NotifyDeleteMail = ".lq.NotifyDeleteMail",
 	/**
 	 * * 通知复活币更新
 	 * * res: {@link INotifyReviveCoinUpdate}
 	 */
-	NotifyReviveCoinUpdate = "NotifyReviveCoinUpdate",
+	NotifyReviveCoinUpdate = ".lq.NotifyReviveCoinUpdate",
 	/**
 	 * * 每日任务刷新推送
 	 * * res: {@link INotifyDailyTaskUpdate}
 	 */
-	NotifyDailyTaskUpdate = "NotifyDailyTaskUpdate",
+	NotifyDailyTaskUpdate = ".lq.NotifyDailyTaskUpdate",
 	/**
 	 * * 每日活动任务刷新推送
 	 * * res: {@link INotifyActivityTaskUpdate}
 	 */
-	NotifyActivityTaskUpdate = "NotifyActivityTaskUpdate",
+	NotifyActivityTaskUpdate = ".lq.NotifyActivityTaskUpdate",
 	/**
 	 * * 长期活动任务刷新推送
 	 * * res: {@link INotifyActivityPeriodTaskUpdate}
 	 */
-	NotifyActivityPeriodTaskUpdate = "NotifyActivityPeriodTaskUpdate",
+	NotifyActivityPeriodTaskUpdate = ".lq.NotifyActivityPeriodTaskUpdate",
 	/**
 	 * * 随机活动任务刷新推送
 	 * * res: {@link INotifyAccountRandomTaskUpdate}
 	 */
-	NotifyAccountRandomTaskUpdate = "NotifyAccountRandomTaskUpdate",
+	NotifyAccountRandomTaskUpdate = ".lq.NotifyAccountRandomTaskUpdate",
 	/** res: {@link INotifyActivitySegmentTaskUpdate} */
-	NotifyActivitySegmentTaskUpdate = "NotifyActivitySegmentTaskUpdate",
+	NotifyActivitySegmentTaskUpdate = ".lq.NotifyActivitySegmentTaskUpdate",
 	/** res: {@link INotifyActivityUpdate} */
-	NotifyActivityUpdate = "NotifyActivityUpdate",
+	NotifyActivityUpdate = ".lq.NotifyActivityUpdate",
 	/**
 	 * * 试炼赛更新推送
 	 * * res: {@link INotifyAccountChallengeTaskUpdate}
 	 */
-	NotifyAccountChallengeTaskUpdate = "NotifyAccountChallengeTaskUpdate",
+	NotifyAccountChallengeTaskUpdate = ".lq.NotifyAccountChallengeTaskUpdate",
 	/**
 	 * * 通知：有新的留言
 	 * * res: {@link INotifyNewComment}
 	 */
-	NotifyNewComment = "NotifyNewComment",
+	NotifyNewComment = ".lq.NotifyNewComment",
 	/**
 	 * * 通知：新滚动公告
 	 * * res: {@link INotifyRollingNotice}
 	 */
-	NotifyRollingNotice = "NotifyRollingNotice",
+	NotifyRollingNotice = ".lq.NotifyRollingNotice",
 	/**
 	 * * 通知：新维护公告
 	 * * res: {@link INotifyMaintainNotice}
 	 */
-	NotifyMaintainNotice = "NotifyMaintainNotice",
+	NotifyMaintainNotice = ".lq.NotifyMaintainNotice",
 	/**
 	 * * 通知：每日送礼次数刷新
 	 * * res: {@link INotifyGiftSendRefresh}
 	 */
-	NotifyGiftSendRefresh = "NotifyGiftSendRefresh",
+	NotifyGiftSendRefresh = ".lq.NotifyGiftSendRefresh",
 	/**
 	 * * 通知：商店更新
 	 * * res: {@link INotifyShopUpdate}
 	 */
-	NotifyShopUpdate = "NotifyShopUpdate",
+	NotifyShopUpdate = ".lq.NotifyShopUpdate",
 	/**
 	 * * 通知：轮换商店/活动发生改变
 	 * * res: {@link INotifyIntervalUpdate}
 	 */
-	NotifyIntervalUpdate = "NotifyIntervalUpdate",
+	NotifyIntervalUpdate = ".lq.NotifyIntervalUpdate",
 	/**
 	 * * 通知：VIP等级变化
 	 * * res: {@link INotifyVipLevelChange}
 	 */
-	NotifyVipLevelChange = "NotifyVipLevelChange",
+	NotifyVipLevelChange = ".lq.NotifyVipLevelChange",
 	/**
 	 * * 服务器设置
 	 * * res: {@link INotifyServerSetting}
 	 */
-	NotifyServerSetting = "NotifyServerSetting",
+	NotifyServerSetting = ".lq.NotifyServerSetting",
 	/**
 	 * * 通知：充值结果
 	 * * res: {@link INotifyPayResult}
 	 */
-	NotifyPayResult = "NotifyPayResult",
+	NotifyPayResult = ".lq.NotifyPayResult",
 	/**
 	 * * 通知：比赛聊天消息
 	 * * res: {@link INotifyCustomContestAccountMsg}
 	 */
-	NotifyCustomContestAccountMsg = "NotifyCustomContestAccountMsg",
+	NotifyCustomContestAccountMsg = ".lq.NotifyCustomContestAccountMsg",
 	/**
 	 * * 通知：比赛系统消息
 	 * * res: {@link INotifyCustomContestSystemMsg}
 	 */
-	NotifyCustomContestSystemMsg = "NotifyCustomContestSystemMsg",
+	NotifyCustomContestSystemMsg = ".lq.NotifyCustomContestSystemMsg",
 	/**
 	 * * 通知：匹配超时通知
 	 * * res: {@link INotifyMatchTimeout}
 	 */
-	NotifyMatchTimeout = "NotifyMatchTimeout",
+	NotifyMatchTimeout = ".lq.NotifyMatchTimeout",
 	/**
 	 * * 通知：匹配出错
 	 * * res: {@link INotifyMatchFailed}
 	 */
-	NotifyMatchFailed = "NotifyMatchFailed",
+	NotifyMatchFailed = ".lq.NotifyMatchFailed",
 	/**
 	 * * 通知：自定义比赛状态变化
 	 * * res: {@link INotifyCustomContestState}
 	 */
-	NotifyCustomContestState = "NotifyCustomContestState",
+	NotifyCustomContestState = ".lq.NotifyCustomContestState",
 	/**
 	 * * 通知：活动变化
 	 * * res: {@link INotifyActivityChange}
 	 */
-	NotifyActivityChange = "NotifyActivityChange",
+	NotifyActivityChange = ".lq.NotifyActivityChange",
 	/**
 	 * * 通知：挂机惩罚
 	 * * res: {@link INotifyAFKResult}
 	 */
-	NotifyAFKResult = "NotifyAFKResult",
+	NotifyAFKResult = ".lq.NotifyAFKResult",
 	/**
 	 * * 通知：登录排队完成
 	 * * res: {@link INotifyLoginQueueFinished}
 	 */
-	NotifyLoginQueueFinished = "NotifyLoginQueueFinished",
+	NotifyLoginQueueFinished = ".lq.NotifyLoginQueueFinished",
 	/**
 	 * * 比赛结束奖励
 	 * * res: {@link INotifyGameFinishRewardV2}
 	 */
-	NotifyGameFinishRewardV2 = "NotifyGameFinishRewardV2",
+	NotifyGameFinishRewardV2 = ".lq.NotifyGameFinishRewardV2",
 	/** res: {@link INotifyActivityRewardV2} */
-	NotifyActivityRewardV2 = "NotifyActivityRewardV2",
+	NotifyActivityRewardV2 = ".lq.NotifyActivityRewardV2",
 	/** res: {@link INotifyActivityPointV2} */
-	NotifyActivityPointV2 = "NotifyActivityPointV2",
+	NotifyActivityPointV2 = ".lq.NotifyActivityPointV2",
 	/** res: {@link INotifyLeaderboardPointV2} */
-	NotifyLeaderboardPointV2 = "NotifyLeaderboardPointV2",
+	NotifyLeaderboardPointV2 = ".lq.NotifyLeaderboardPointV2",
 	/** res: {@link INotifySeerReport} */
-	NotifySeerReport = "NotifySeerReport",
+	NotifySeerReport = ".lq.NotifySeerReport",
 	/**
 	 * * 服务端主动断开
 	 * * res: {@link INotifyConnectionShutdown}
 	 */
-	NotifyConnectionShutdown = "NotifyConnectionShutdown",
+	NotifyConnectionShutdown = ".lq.NotifyConnectionShutdown",
 	/**
 	 * * 通知新的一场游戏开始了
 	 * * res: {@link INotifyNewGame}
 	 */
-	NotifyNewGame = "NotifyNewGame",
+	NotifyNewGame = ".lq.NotifyNewGame",
 	/**
 	 * * 通知玩家进入游戏的准备就绪
 	 * * res: {@link INotifyPlayerLoadGameReady}
 	 */
-	NotifyPlayerLoadGameReady = "NotifyPlayerLoadGameReady",
+	NotifyPlayerLoadGameReady = ".lq.NotifyPlayerLoadGameReady",
 	/**
 	 * * 玩家游戏内广播
 	 * * res: {@link INotifyGameBroadcast}
 	 */
-	NotifyGameBroadcast = "NotifyGameBroadcast",
+	NotifyGameBroadcast = ".lq.NotifyGameBroadcast",
 	/**
 	 * * 发送整场游戏结束信息
 	 * * res: {@link INotifyGameEndResult}
 	 */
-	NotifyGameEndResult = "NotifyGameEndResult",
+	NotifyGameEndResult = ".lq.NotifyGameEndResult",
 	/**
 	 * * 通知游戏中断
 	 * * res: {@link INotifyGameTerminate}
 	 */
-	NotifyGameTerminate = "NotifyGameTerminate",
+	NotifyGameTerminate = ".lq.NotifyGameTerminate",
 	/**
 	 * * 广播玩家连接状态变化
 	 * * res: {@link INotifyPlayerConnectionState}
 	 */
-	NotifyPlayerConnectionState = "NotifyPlayerConnectionState",
+	NotifyPlayerConnectionState = ".lq.NotifyPlayerConnectionState",
 	/**
 	 * * 通知玩家段位变化
 	 * * res: {@link INotifyAccountLevelChange}
 	 */
-	NotifyAccountLevelChange = "NotifyAccountLevelChange",
+	NotifyAccountLevelChange = ".lq.NotifyAccountLevelChange",
 	/**
 	 * * 比赛结束奖励
 	 * * res: {@link INotifyGameFinishReward}
 	 */
-	NotifyGameFinishReward = "NotifyGameFinishReward",
+	NotifyGameFinishReward = ".lq.NotifyGameFinishReward",
 	/** res: {@link INotifyActivityReward} */
-	NotifyActivityReward = "NotifyActivityReward",
+	NotifyActivityReward = ".lq.NotifyActivityReward",
 	/** res: {@link INotifyActivityPoint} */
-	NotifyActivityPoint = "NotifyActivityPoint",
+	NotifyActivityPoint = ".lq.NotifyActivityPoint",
 	/** res: {@link INotifyLeaderboardPoint} */
-	NotifyLeaderboardPoint = "NotifyLeaderboardPoint",
+	NotifyLeaderboardPoint = ".lq.NotifyLeaderboardPoint",
 	/**
 	 * * 比赛暂停通知
 	 * * res: {@link INotifyGamePause}
 	 */
-	NotifyGamePause = "NotifyGamePause",
+	NotifyGamePause = ".lq.NotifyGamePause",
 	/**
 	 * * 比赛退出投票通知
 	 * * res: {@link INotifyEndGameVote}
 	 */
-	NotifyEndGameVote = "NotifyEndGameVote",
+	NotifyEndGameVote = ".lq.NotifyEndGameVote",
 	/**
 	 * * 通知观战数据
 	 * * res: {@link INotifyObserveData}
 	 */
-	NotifyObserveData = "NotifyObserveData",
+	NotifyObserveData = ".lq.NotifyObserveData",
 }
 
 /** 网络请求协议 */

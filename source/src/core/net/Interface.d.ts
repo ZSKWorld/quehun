@@ -6,6 +6,7 @@ declare interface IHeaderData {
 }
 
 declare interface IPbManager {
+    get methodMap(): { [key in ERequest]: ServiceType };
     loadPb(): Promise<void>;
     lookup(path: (string | string[]), parentAlreadyChecked?: boolean): protobuf.ReflectionObject;
     lookupType(path: (string | string[])): protobuf.Type;

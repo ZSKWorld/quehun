@@ -1,8 +1,6 @@
-import { SingletonExtend } from "../common/Singleton";
-import { Observer } from "../mvc/provider/Observer";
 import { HeaderType, ServiceType } from "./NetDefine";
 
-interface IWaitRpcInfo{
+interface IWaitRpcInfo {
     service: ServiceType;
     method: string;
     cb: protobuf.RPCImplCallback;
@@ -48,7 +46,7 @@ export class WebSocket extends Laya.EventDispatcher {
     private _rpcServices: { [key in ServiceType]?: protobuf.rpc.Service } = {};
     private _rpcIndex = 0;
     private _state: SocketState = SocketState.Disconnect;
-    private _waitList: { [key: number]: IWaitRpcInfo } = {};
+    private _waitList: { [key: number]: IWaitRpcInfo; } = {};
 
 
     private _stateTranslateMap: { [key in SocketState]: { [key in SocketState]?: SocketEvent[] } } = {
@@ -69,7 +67,7 @@ export class WebSocket extends Laya.EventDispatcher {
         },
     };
     get url() {
-        return `${this._routeInfo.ssl ? "wss://" : "ws://"}${this._routeInfo.domain}/${this._tail}`;
+        return `${ this._routeInfo.ssl ? "wss://" : "ws://" }${ this._routeInfo.domain }/${ this._tail }`;
     }
     get state() { return this._state; }
     private set state(v) {
@@ -82,7 +80,7 @@ export class WebSocket extends Laya.EventDispatcher {
     }
     get connected() { return this.state == SocketState.Connected; }
 
-    constructor(routeInfo: IRouteInfo, tail:string, services: ServiceType[]) {
+    constructor(routeInfo: IRouteInfo, tail: string, services: ServiceType[]) {
         super();
         this._socket = new Laya.Socket();
         this._socket.endian = Laya.Byte.LITTLE_ENDIAN;
@@ -90,19 +88,19 @@ export class WebSocket extends Laya.EventDispatcher {
         this._socket.on(Laya.Event.MESSAGE, this, this.onMessage);
         this._socket.on(Laya.Event.ERROR, this, this.onError);
         this._socket.on(Laya.Event.CLOSE, this, this.onClose);
-        
+
         this._routeInfo = routeInfo;
         this._tail = tail;
 
-        services.forEach(v => { 
+        services.forEach(v => {
             const service = pbMgr.lookupService(v);
-            const rpcService = service.create((method:protobuf.Method, request:Uint8Array, cb) => {
+            const rpcService = service.create((method: protobuf.Method, request: Uint8Array, cb) => {
                 this._rpcIndex = (this._rpcIndex + 1) % 60007;
                 const rpcID = this._rpcIndex;
                 const header = pbMgr.encodeHeaderData({ type: HeaderType.Request, reqIndex: rpcID });
                 const packet = pbMgr.encodeRpc(method.fullName, request);
 
-                this._waitList[rpcID] = { service: v, method: method.fullName, cb };
+                this._waitList[rpcID] = { service: v, method: method.name, cb };
                 const byte = new Laya.Byte();
                 byte.writeArrayBuffer(header);
                 byte.writeArrayBuffer(packet);
@@ -113,17 +111,33 @@ export class WebSocket extends Laya.EventDispatcher {
     }
 
     connect() {
+        if (this.state != SocketState.Disconnect) return;
         this.state = SocketState.Connecting;
         this._socket.connectByUrl(this.url);
     }
 
     send(input) {
-        
+
     }
 
     close() {
         this.state = SocketState.Disconnect;
         this._socket.close();
+    }
+
+
+    public sendRequest(rpcName: ERequest, data: any, callback: (error, res) => void) {
+
+        if (this.state !== game.EConnectState.connecting && this.state !== game.EConnectState.usable) {
+            callback('no open', null);
+            return;
+        }
+
+        const _service = this.services_[service];
+        if (!_service) {
+            throw new Error(`ERR_SERVICE_NOT_FOUND, name=FastTest`);
+        }
+        _service[rpc_name](data, callback);
     }
 
     private onOpen(e: Event) {
@@ -176,8 +190,7 @@ export class WebSocket extends Laya.EventDispatcher {
     }
 
     private reconnect() {
-        if (!this._socket) return;
         this.state = SocketState.Reconnecting;
-        this._socket.connectByUrl(this._url);
+        this._socket.connectByUrl(this.url);
     }
 }

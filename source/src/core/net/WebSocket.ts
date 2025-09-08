@@ -43,7 +43,7 @@ export class WebSocket extends Laya.EventDispatcher {
     private _socket: Laya.Socket;
     private _routeInfo: IRouteInfo;
     private _tail: string;
-    private _rpcServices: { [key in ServiceType]?: protobuf.rpc.Service } = {};
+    private _rpcServices: KeyMap<protobuf.rpc.Service> = {};
     private _rpcIndex = 0;
     private _state: SocketState = SocketState.Disconnect;
     private _waitList: { [key: number]: IWaitRpcInfo; } = {};
@@ -94,20 +94,10 @@ export class WebSocket extends Laya.EventDispatcher {
 
         services.forEach(v => {
             const service = pbMgr.lookupService(v);
-            const rpcService = service.create((method: protobuf.Method, request: Uint8Array, cb) => {
-                this._rpcIndex = (this._rpcIndex + 1) % 60007;
-                const rpcID = this._rpcIndex;
-                const header = pbMgr.encodeHeaderData({ type: HeaderType.Request, reqIndex: rpcID });
-                const packet = pbMgr.encodeRpc(method.fullName, request);
-
-                this._waitList[rpcID] = { service: v, method: method.name, cb };
-                const byte = new Laya.Byte();
-                byte.writeArrayBuffer(header);
-                byte.writeArrayBuffer(packet);
-                this._socket.send(byte.buffer);
-            });
+            const rpcService = service.create(this.sendRpc.bind(this));
             this._rpcServices[v] = rpcService;
         });
+
     }
 
     connect() {
@@ -116,8 +106,21 @@ export class WebSocket extends Laya.EventDispatcher {
         this._socket.connectByUrl(this.url);
     }
 
-    send(input) {
+    send(rpcName: ERequest, data: any) {
+        return new Promise<IResponse>(resolve => {
+            if (this.state != SocketState.Connected) {
+                resolve({ error: { code: -1 } });
+                return;
+            }
 
+            const serviceName = pbMgr.methodMap[rpcName];
+            const service = this._rpcServices[serviceName];
+            if (!service) {
+                resolve({ error: { code: -2 } });
+                return;
+            }
+            service[rpcName](data, resolve);
+        });
     }
 
     close() {
@@ -125,28 +128,49 @@ export class WebSocket extends Laya.EventDispatcher {
         this._socket.close();
     }
 
-
-    public sendRequest(rpcName: ERequest, data: any, callback: (error, res) => void) {
-
-        if (this.state !== game.EConnectState.connecting && this.state !== game.EConnectState.usable) {
-            callback('no open', null);
-            return;
-        }
-
-        const _service = this.services_[service];
-        if (!_service) {
-            throw new Error(`ERR_SERVICE_NOT_FOUND, name=FastTest`);
-        }
-        _service[rpc_name](data, callback);
-    }
-
     private onOpen(e: Event) {
         this.state = SocketState.Connected;
         Logger.log("连接成功", this.url);
+        this.send(ERequest.addRoomRobot, { position: 1 }).then(res => Logger.error("add robot", res));
     }
 
-    private onMessage(message: string) {
-        Logger.error("收到消息", message);
+    private onMessage(data: Uint8Array) {
+        const header: IHeaderData = { type: data[0] };
+        switch (header.type) {
+            case HeaderType.Response:
+                if (data.length < 3)
+                    throw new Error(`invalid message length.`);
+                header.reqIndex = data[1] + (data[2] << 8);
+                data = data.slice(3);
+                break;
+            case HeaderType.Notify:
+                data = data.slice(1);
+                break;
+            default:
+                throw new Error(`unknown header type: ${ header.type }`);
+        }
+        switch (header.type) {
+            case HeaderType.Response:
+                const requestID = header.reqIndex;
+                const request = this._waitList[requestID];
+                if (!request) {
+                    Logger.error(`收到不存在的requestID: ${ requestID }`);
+                    return;
+                }
+                delete this._waitList[requestID];
+                const wrapper = pbMgr.decodeRpc(data);
+                try {
+                    request.cb(null, wrapper.data);
+                } catch (err) {
+                    Logger.error("处理回调时出错", err);
+                }
+                break;
+            case HeaderType.Notify:
+                const msg = pbMgr.decodeMessage(data);
+                const msgName = msg.$type.fullName;
+                this.event('OnNotify', [msgName, msg]);
+                break;
+        }
     }
 
     private onError(e: Event) {
@@ -160,33 +184,17 @@ export class WebSocket extends Laya.EventDispatcher {
         Laya.timer.once(1000, this, this.reconnect);
     }
 
-    private dealResponse(output: IUserOutput) {
-        const input = this._current;
-        if (input && input.cmd == output.cmd) {
-            const netMsg = `MessageID_${ output.cmd[0].toUpperCase() + output.cmd.substring(1) }`;
-            if (!output.error) {
-                userData.decode(output.syncInfo);
-                this.dispatch(netMsg, [input, output]);
-            } else {
-                this.dispatch(SocketEvent.MsgError, output);
-                this.dispatch(`${ netMsg }_Error`, [input, output]);
-            }
-        } else {
-            Logger.error("消息错误", input, output);
-        }
-        this._curCb?.(output);
-        this._current = null;
-        this._curCb = null;
-
-        this._socket.input.clear();
-        this.executeWaitMsg();
-    }
-
-    private dealNotify(output: IUserOutput) {
-        if (output && output.syncInfo)
-            userData.decode(output.syncInfo);
-        this.dispatch(output.cmd, output);
-        this._socket.input.clear();
+    private sendRpc(method: protobuf.Method, request: Uint8Array, cb: protobuf.RPCImplCallback) {
+        this._rpcIndex = (this._rpcIndex + 1) % 60007;
+        const rpcID = this._rpcIndex;
+        const header = pbMgr.encodeHeaderData({ type: HeaderType.Request, reqIndex: rpcID });
+        const packet = pbMgr.encodeRpc(method.fullName, request);
+        this._waitList[rpcID] = { service: method.parent.fullName as ServiceType, method: method.name, cb };
+        const byte = new Laya.Byte();
+        byte.writeArrayBuffer(header);
+        byte.writeArrayBuffer(packet);
+        this._socket.send(byte.buffer);
+        byte.clear();
     }
 
     private reconnect() {

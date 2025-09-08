@@ -4,10 +4,10 @@ import { HeaderType, ServiceType } from "./NetDefine";
 export class PbManager implements IPbManager {
   private _root: protobuf.Root;
   private _seriveMethods: { [key in ServiceType]: protobuf.Method[] };
-  private _methodMap: { [key in ERequest]: ServiceType };
+  private _methodMap: KeyMap<ServiceType>;
   private _wrapperCtor: protobuf.Type;
 
-  get methodMap(): { [key in ERequest]: ServiceType } { return this._methodMap; }
+  get methodMap() { return this._methodMap; }
 
   async loadPb() {
     const protoJson = await loadMgr.fetch(ResPath.ConfigPath.Proto, "json");

@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "es6",
+    "module": "commonjs",
     "target": "es6",
     "noEmitHelpers": true,
     "sourceMap": true,
@@ -15,6 +15,7 @@
     ],
     "types": [
       "minigame-api-typings",
+      "@types/node"
     ]
   },
   "exclude": [

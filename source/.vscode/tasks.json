@@ -91,6 +91,15 @@
             },
             "problemMatcher": []
         },
+        { //更新Proto声明文件
+            "label": "更新Proto声明文件",
+            "type": "shell",
+            "command": "node ../../../laya_framework_tool/bin/js/BatMain.js 8",
+            "presentation": {
+                "close": true
+            },
+            "problemMatcher": []
+        },
         { //tsc监视
             "label": "tsc监视",
             "type": "typescript",
@@ -173,19 +182,6 @@
                 // "close": true
             },
             "problemMatcher": []
-        },
-        { //更新proto_declare
-            "label": "更新proto_declare",
-            "type": "shell",
-            "command": "ts-node ProtoDeclare.ts",
-            "problemMatcher": [],
-            "options": {
-                "cwd": "project_tools/proto_declare"
-            },
-            // "hide": true,
-            "presentation": {
-                "close": true
-            }
         },
     ]
 }

@@ -15,7 +15,6 @@
     ],
     "types": [
       "minigame-api-typings",
-      "@types/node"
     ]
   },
   "exclude": [

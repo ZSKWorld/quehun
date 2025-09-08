@@ -298,7 +298,7 @@ function buildTsDeclare() {
         + notifies + "\n"
         + request + "\n"
         + customEnum
-        + interfaces; 
+        + interfaces;
     fs.writeFileSync(tsDeclarePath, content);
 }
 

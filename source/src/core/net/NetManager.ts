@@ -3,7 +3,8 @@ import { WebSocket } from "./WebSocket";
 
 export class NetManager implements INetManager {
     private _ipConfig: IIPConfig;
-    private _version: { version: string };
+    private _version: { version: string; };
+    private _gateway: string;
     private _routes: IRouteInfo[];
     private lobbySocket: WebSocket;
     // private gameSocket: ISocket;
@@ -15,16 +16,17 @@ export class NetManager implements INetManager {
         this._ipConfig = ipConfig;
         this._version = version;
         const routes = await this.fetchRoutes();
-        this._routes = routes?.data?.routes;
-        // Logger.error(this.ipConfig);
-        // Logger.error(this.version);
-        // Logger.error(this.routes);
+        this._routes = routes.routes;
+        this._gateway = routes.url;
         this.lobbySocket = new WebSocket(this._routes[0], "gateway", [ServiceType.Lobby]);
         this.lobbySocket.connect();
     }
 
     private fetchRoutes() {
-        const urls = this._ipConfig.ip[0].gateways.map(v => `${ v.url }/api/clientgate/routes?platform=Web&version=${ this._version.version }&lang=chs`);
-        return Promise.race(urls.map(v => loadMgr.fetch(v, "json", null, { ignoreCache: true })));
+        const gateways = this._ipConfig.ip[0].gateways;
+        return Promise.race(gateways.map(v => {
+            const url = `${ v.url }/api/clientgate/routes?platform=Web&version=${ this._version.version }&lang=chs`;
+            return loadMgr.fetch(url, "json", null, { ignoreCache: true }).then(res => ({ routes: res?.data?.routes, url }));
+        }));
     }
 }

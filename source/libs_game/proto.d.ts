@@ -290,7 +290,7 @@ declare const enum ENotify {
 }
 
 /** 网络请求协议 */
-declare const enum ERequest {
+declare enum ERequest {
 	/**
 	 * * 获取连接相关信息
 	 * * req: {@link IReqCommon}, res: {@link IResConnectionInfo}

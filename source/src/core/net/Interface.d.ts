@@ -53,11 +53,12 @@ declare interface IRouteInfo {
     state: ERouteState,
 }
 
-declare interface IResponseData{
+declare interface IResponseData {
 
 }
 
 declare interface INetManager {
     get version(): string;
+    get clientVersion(): string;
     fetchConfig(): Promise<void>;
 }

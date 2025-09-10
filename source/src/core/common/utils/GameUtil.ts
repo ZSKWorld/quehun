@@ -45,28 +45,4 @@ export class GameUtil {
     static HmacSHA256(msg: string) {
         return String(CryptoJS.HmacSHA256(msg, "lailai"));
     }
-
-
-    static getDeviceInfo() {
-        const userAgent = navigator.userAgent;
-        const device: IClientDeviceInfo = {
-            hardware: 'pc',
-            platform: 'pc',
-            os: 'windows',
-            os_version: 'win10',
-            sale_platform: 'web',
-            is_browser: true,
-            software: 'Chrome',
-            model_number: '',
-            screen_height: window.innerHeight,
-            screen_width: window.innerWidth,
-            user_agent: userAgent,
-            screen_type: 'ontouchstart' in window || navigator.maxTouchPoints > 0 ? 2 : 1,
-            hardware_vendor: ""
-        };
-        /;\s+([a-zA-Z0-9-_\s]+)\s+Build/.exec(userAgent);
-        const type = (RegExp.$1).toLowerCase();
-        if (type) device.model_number = type;
-        return device;
-    }
 }

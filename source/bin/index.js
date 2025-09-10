@@ -1,5 +1,3 @@
-const { load } = require("protobufjs");
-
 /**
  * 设置LayaNative屏幕方向，可设置以下值
  * landscape           横屏

@@ -3,13 +3,12 @@ import { SkeletonManager } from "./core/common/manager/SkeletonManager";
 import { ConfigManager } from "./core/config/ConfigManager";
 import { Facade } from "./core/mvc/Facade";
 import { NetManager } from "./core/net/NetManager";
-import { NetService } from "./core/net/NetService";
 import { PbManager } from "./core/net/PbManager";
 import { UIManager } from "./core/ui/core/UIManager";
 import { RichText } from "./core/ui/tool/RichText";
 import { TipManager } from "./core/ui/tool/TipManager";
 import { User } from "./core/userData/User";
-import { PlatfromManager } from "./platform/PlatfromManager";
+import { GameManager } from "./GameManager";
 import { SceneManager } from "./scene/SceneManager";
 
 windowImmit("facade", Facade.Inst);
@@ -19,15 +18,14 @@ windowImmit("pbMgr", new PbManager());
 windowImmit("tipMgr", new TipManager());
 windowImmit("netMgr", new NetManager());
 windowImmit("loadMgr", new LoadManager());
+windowImmit("gameMgr", new GameManager());
 windowImmit("cfgMgr", new ConfigManager());
-windowImmit("netService", new NetService());
 windowImmit("sceneMgr", new SceneManager());
-windowImmit("platformMgr", new PlatfromManager());
 windowImmit("skeletonMgr", new SkeletonManager());
 
 windowImmit("$confirm", (title: string, msg: string, cancel = true) => {
     if (!fgui.UIPackage.getByName(ResPath.PkgName.PkgCommon))
-        return platformMgr.showConfirm(title, msg);
+        return gameMgr.showConfirm(msg);
     windowImmit("$confirm", (title: string, msg: string, cancel = true) => new Promise<boolean>(resolve => {
         uiMgr.openView(ViewID.UIConfirmView, {
             title,

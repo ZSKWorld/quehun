@@ -20,9 +20,8 @@ declare type KeyMap<T> = { [key: string]: T; };
 declare type Class<T> = new (...args: any[]) => T;
 declare type LoadURL = string | Laya.ILoadURL | (string | Readonly<Laya.ILoadURL>)[];
 
-declare const platformMgr: IPlatformManager;
-declare const netService: INetService;
-declare const netMgr: INetManager;
+declare const gameMgr: IGameManager;
+declare const netMgr: INetManager & INetMethod;
 declare const userData: IUser & { decode(data: Partial<OriginData<IUser>>): IUser };
 declare const cfgMgr: ICfgManager;
 declare const loadMgr: ILoadManager;

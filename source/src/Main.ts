@@ -33,6 +33,10 @@ class Main {
 		fgui.UIConfig.defaultFont = ResPath.FontName.HYWH;
 		Laya.InputManager.multiTouchEnabled = false;
 
+        Laya.stage.on(Laya.Event.VISIBILITY_CHANGE, this, () => {
+            if (Laya.stage.isVisibility) facade.dispatch(NotifyConst.OnGameShow);
+            else facade.dispatch(NotifyConst.OnGameHide);
+        });
 		facade.registerCommand(NotifyConst.InitContext, InitContextCommand);
 		facade.dispatch(NotifyConst.InitContext);
 	}

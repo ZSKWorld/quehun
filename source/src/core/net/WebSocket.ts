@@ -120,85 +120,13 @@ export class WebSocket extends Laya.EventDispatcher {
                 resolve({ error: { code: -2 } });
                 return;
             }
-            service[rpcName](data, resolve);
+            service[rpcName](data, (_, res) => resolve(res || { error: { code: -3 } }));
         });
     }
 
     close() {
         this.state = SocketState.Disconnect;
         this._socket.close();
-    }
-
-    private onOpen(e: Event) {
-        this.state = SocketState.Connected;
-        Logger.log("连接成功", this.url);
-        const param:IReqLogin = {
-				account: "1052938743@qq.com",
-				password: GameUtil.HmacSHA256("zsk412824"),
-				reconnect: false,
-				device: GameUtil.getDeviceInfo(),
-				random_key: platformMgr.deviceId,
-				client_version: {
-                    resource: netMgr.version,
-                    package:"",
-				},
-				gen_access_token: true,
-				currency_platforms: currency_platforms,
-				type: this.login_type_tab_index,
-				client_version_string: GameMgr.Inst.getClientVersion(),
-				tag: GameMgr.Inst.getReportClientType()
-			};
-        this.send(ERequest.login, param).then(res => Logger.error("login", res));
-    }
-
-    private onMessage(data: Uint8Array) {
-        const header: IHeaderData = { type: data[0] };
-        switch (header.type) {
-            case HeaderType.Response:
-                if (data.length < 3)
-                    throw new Error(`invalid message length.`);
-                header.reqIndex = data[1] + (data[2] << 8);
-                data = data.slice(3);
-                break;
-            case HeaderType.Notify:
-                data = data.slice(1);
-                break;
-            default:
-                throw new Error(`unknown header type: ${ header.type }`);
-        }
-        switch (header.type) {
-            case HeaderType.Response:
-                const requestID = header.reqIndex;
-                const request = this._waitList[requestID];
-                if (!request) {
-                    Logger.error(`收到不存在的requestID: ${ requestID }`);
-                    return;
-                }
-                delete this._waitList[requestID];
-                const wrapper = pbMgr.decodeRpc(data);
-                try {
-                    request.cb(null, wrapper.data);
-                } catch (err) {
-                    Logger.error("处理回调时出错", err);
-                }
-                break;
-            case HeaderType.Notify:
-                const msg = pbMgr.decodeMessage(data);
-                const msgName = msg.$type.fullName;
-                this.event('OnNotify', [msgName, msg]);
-                break;
-        }
-    }
-
-    private onError(e: Event) {
-
-    }
-
-    private onClose(e: Event) {
-        if (this.state == SocketState.Disconnect) return;
-        this.state = SocketState.Disconnect;
-        this._waitList = {};
-        Laya.timer.once(1000, this, this.reconnect);
     }
 
     private sendRpc(method: protobuf.Method, request: Uint8Array, cb: protobuf.RPCImplCallback) {
@@ -217,5 +145,60 @@ export class WebSocket extends Laya.EventDispatcher {
     private reconnect() {
         this.state = SocketState.Reconnecting;
         this._socket.connectByUrl(this.url);
+    }
+
+    private onOpen(e: Event) {
+        Logger.log("连接成功", this.url);
+        this.state = SocketState.Connected;
+    }
+
+    private onMessage(msg: Uint8Array) {
+        const data = new Uint8Array(msg);
+        const header: IHeaderData = { type: data[0] };
+        switch (header.type) {
+            case HeaderType.Response:
+                if (data.length < 3)
+                    throw new Error(`invalid message length.`);
+                header.reqIndex = data[1] + (data[2] << 8);
+                break;
+            case HeaderType.Notify:
+                break;
+            default:
+                throw new Error(`unknown header type: ${ header.type }`);
+        }
+        switch (header.type) {
+            case HeaderType.Response:
+                const requestID = header.reqIndex;
+                const request = this._waitList[requestID];
+                if (!request) {
+                    Logger.error(`收到不存在的requestID: ${ requestID }`);
+                    return;
+                }
+                delete this._waitList[requestID];
+                const wrapper = pbMgr.decodeRpc(data.slice(3));
+                try {
+                    request.cb(null, wrapper.data);
+                } catch (err) {
+                    Logger.error("处理回调时出错", err);
+                }
+                break;
+            case HeaderType.Notify:
+                const msg = pbMgr.decodeMessage(data.slice(1));
+                const msgName = msg.$type.name;
+                this.event('OnNotify', [msgName, msg]);
+                Logger.error("收到服务器推送", msgName, msg);
+                break;
+        }
+    }
+
+    private onError(e: Event) {
+
+    }
+
+    private onClose(e: Event) {
+        if (this.state == SocketState.Disconnect) return;
+        this.state = SocketState.Disconnect;
+        this._waitList = {};
+        Laya.timer.once(1000, this, this.reconnect);
     }
 }

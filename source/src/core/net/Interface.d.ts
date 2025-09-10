@@ -58,5 +58,6 @@ declare interface IResponseData{
 }
 
 declare interface INetManager {
+    get version(): string;
     fetchConfig(): Promise<void>;
 }

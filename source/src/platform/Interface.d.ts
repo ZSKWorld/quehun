@@ -15,10 +15,13 @@ declare interface ISafeArea {
 }
 
 declare interface IPlatform {
+    /** 设备id */
+    get deviceId(): string;
     /** 屏幕安全区域 */
     get safeArea(): ISafeArea;
     /** 右上角胶囊按钮区域 */
     get menuBtnArea(): ISafeArea;
+    getCurrency(): number[];
     showConfirm(title: string, msg: string): Promise<boolean>;
 }
 

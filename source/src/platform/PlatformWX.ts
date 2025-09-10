@@ -1,5 +1,4 @@
 import { NotifyConst } from "../core/common/NotifyConst";
-import { GameUtil } from "../core/common/utils/GameUtil";
 import { PlatformBase } from "./PlatformBase";
 
 /** 比较微信基础库版本号 */
@@ -21,6 +20,22 @@ function cmpVersion(v1: string, v2: string) {
 function gtEqVersion(v1: string, v2: string) { return cmpVersion(v1, v2) == 1 || cmpVersion(v1, v2) == 0; }
 /** v1 小于等于 v2 */
 function ltEqVersion(v1: string, v2: string) { return cmpVersion(v1, v2) == -1 || cmpVersion(v1, v2) == 0; }
+/** 物理分辨率x坐标转逻辑分辨率x坐标 */
+function PRX2LRX(x: number) {
+    return Math.round(x * Laya.stage.width / Laya.Browser.clientWidth);
+}
+/** 物理分辨率y坐标转逻辑分辨率y坐标 */
+function PRY2LRY(y: number) {
+    return Math.round(y * Laya.stage.height / Laya.Browser.clientHeight);
+}
+/** 逻辑分辨率x坐标转物理分辨率x坐标 */
+function LRX2PRX(x: number) {
+    return Math.round(x / (Laya.stage.width / Laya.Browser.clientWidth));
+}
+/** 逻辑分辨率y坐标转物理分辨率y坐标 */
+function LRY2PRY(y: number) {
+    return Math.round(y / (Laya.stage.height / Laya.Browser.clientHeight));
+}
 
 export class PlatformWX extends PlatformBase {
     override get safeArea() {
@@ -29,12 +44,12 @@ export class PlatformWX extends PlatformBase {
             if (safeArea) {
                 const { width, height, top, bottom, left, right } = safeArea;
                 this._safeArea = {
-                    width: GameUtil.PRX2LRX(width),
-                    height: GameUtil.PRY2LRY(height),
-                    top: GameUtil.PRY2LRY(top),
-                    bottom: GameUtil.PRY2LRY(bottom),
-                    left: GameUtil.PRX2LRX(left),
-                    right: GameUtil.PRX2LRX(right),
+                    width: PRX2LRX(width),
+                    height: PRY2LRY(height),
+                    top: PRY2LRY(top),
+                    bottom: PRY2LRY(bottom),
+                    left: PRX2LRX(left),
+                    right: PRX2LRX(right),
                 };
             } else {
                 const { width, height } = Laya.stage;
@@ -47,12 +62,12 @@ export class PlatformWX extends PlatformBase {
         if (!this._menuBtnArea) {
             const { width, height, top, bottom, left, right } = wx.getMenuButtonBoundingClientRect();
             this._menuBtnArea = {
-                width: GameUtil.PRX2LRX(width),
-                height: GameUtil.PRY2LRY(height),
-                top: GameUtil.PRY2LRY(top),
-                bottom: GameUtil.PRY2LRY(bottom),
-                left: GameUtil.PRX2LRX(left),
-                right: GameUtil.PRX2LRX(right),
+                width: PRX2LRX(width),
+                height: PRY2LRY(height),
+                top: PRY2LRY(top),
+                bottom: PRY2LRY(bottom),
+                left: PRX2LRX(left),
+                right: PRX2LRX(right),
             };
         }
         return this._menuBtnArea;

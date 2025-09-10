@@ -9,19 +9,15 @@ export class PlatfromManager implements IPlatformManager {
     }
     private get platform() {
         if (this._platform) return this._platform;
-        
         switch (this.platformType) {
             case PlatformType.Wechat: this._platform = new PlatformWX(); break;
             default: this._platform = new PlatformWeb(); break;
         }
         return this._platform;
     }
-    get safeArea() {
-        return this.platform.safeArea;
-    }
-    get menuBtnArea() {
-        return this.platform.menuBtnArea;
-    }
+    get deviceId() { return this.platform.deviceId; }
+    get safeArea() { return this.platform.safeArea; }
+    get menuBtnArea() { return this.platform.menuBtnArea; }
 
     showConfirm(title: string, msg: string) {
         return this.platform.showConfirm(title, msg);

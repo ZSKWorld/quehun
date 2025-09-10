@@ -1,11 +1,12 @@
 export const enum LocalDataKey {
     /** 可以自动登录 */
-    AutoLogin = "AutoLogin",
-    LoginRemeber = "LoginRemeber",
+    AutoLogin = "LocalDataKey_AutoLogin",
+    LoginRemeber = "LocalDataKey_LoginRemeber",
     /** 上次登录账号 */
-    LastLoginAccount = "LastLoginAccount",
+    LastLoginAccount = "LocalDataKey_LastLoginAccount",
     /** 战斗速度 */
-    BattleSpeed = "BattleSpeed",
+    BattleSpeed = "LocalDataKey_BattleSpeed",
+    DeviceId = "LocalDataKey_DeviceId",
 }
 
 export class LocalData {

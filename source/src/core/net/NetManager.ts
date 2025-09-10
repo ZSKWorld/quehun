@@ -10,6 +10,8 @@ export class NetManager implements INetManager {
     // private gameSocket: ISocket;
     // private obSocket: ISocket;
 
+    get version() { return this._version?.version || ""; }
+
     async fetchConfig() {
         const ipConfig = await loadMgr.fetch(ResPath.ConfigPath.Ip_config, Laya.Loader.JSON);
         const version = await loadMgr.fetch("https://game.maj-soul.com/1/version.json", "json", null, { ignoreCache: true });

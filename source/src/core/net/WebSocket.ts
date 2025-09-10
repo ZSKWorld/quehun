@@ -1,3 +1,4 @@
+import { GameUtil } from "../common/utils/GameUtil";
 import { HeaderType, ServiceType } from "./NetDefine";
 
 interface IWaitRpcInfo {
@@ -43,8 +44,8 @@ export class WebSocket extends Laya.EventDispatcher {
     private _socket: Laya.Socket;
     private _routeInfo: IRouteInfo;
     private _tail: string;
-    private _rpcServices: KeyMap<protobuf.rpc.Service> = {};
     private _rpcIndex = 0;
+    private _rpcServices: KeyMap<protobuf.rpc.Service> = {};
     private _state: SocketState = SocketState.Disconnect;
     private _waitList: { [key: number]: IWaitRpcInfo; } = {};
 
@@ -131,7 +132,22 @@ export class WebSocket extends Laya.EventDispatcher {
     private onOpen(e: Event) {
         this.state = SocketState.Connected;
         Logger.log("连接成功", this.url);
-        this.send(ERequest.addRoomRobot, { position: 1 }).then(res => Logger.error("add robot", res));
+        const param:IReqLogin = {
+				account: "1052938743@qq.com",
+				password: GameUtil.HmacSHA256("zsk412824"),
+				reconnect: false,
+				device: device,
+				random_key: GameMgr.device_id,
+				client_version: {
+					resource: game.ResourceVersion.version,
+				},
+				gen_access_token: true,
+				currency_platforms: currency_platforms,
+				type: this.login_type_tab_index,
+				client_version_string: GameMgr.Inst.getClientVersion(),
+				tag: GameMgr.Inst.getReportClientType()
+			};
+        this.send(ERequest.login, param).then(res => Logger.error("login", res));
     }
 
     private onMessage(data: Uint8Array) {

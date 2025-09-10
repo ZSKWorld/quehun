@@ -14,7 +14,6 @@ interface IGameConfig {
 export class GamePreloadCommand extends Command {
     override execute(notifyName: string, data?: any) {
         this.load().then(() => {
-            cfgMgr.init();
             uiMgr.init();
             // WebSocket.Inst.init();
             RedDotManager.Inst.init();
@@ -30,6 +29,7 @@ export class GamePreloadCommand extends Command {
 
     private async load() {
         await pbMgr.loadPb();
+        await cfgMgr.loadCfg();
         await netMgr.fetchConfig();
 
         await loadMgr.load(ResPath.UnclassifiedPath.Gameconfig);
@@ -45,7 +45,5 @@ export class GamePreloadCommand extends Command {
             Laya.Stat.RenderTextureMemory,
             Laya.Stat.BufferMemory,
         ]);
-
-        await loadMgr.load(ResPath.ConfigPath.Config);
     }
 }

@@ -5,9 +5,10 @@ ResPath = {
 	},
 
 	ConfigPath: {
-		Config: "res/config/Config.json",
 		Ip_config: "res/config/ip_config.json",
+		Lqc: "res/config/lqc.bin",
 		Proto: "res/config/proto.json",
+		Tbl_pbConfig: "res/config/tbl_pbConfig.proto",
 	},
 
 	FontName: {

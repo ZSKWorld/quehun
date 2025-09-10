@@ -1,6 +1,6 @@
 import { LoadManager } from "./core/common/manager/LoadManager";
 import { SkeletonManager } from "./core/common/manager/SkeletonManager";
-import { CfgManager } from "./core/config/CfgManager";
+import { ConfigManager } from "./core/config/ConfigManager";
 import { Facade } from "./core/mvc/Facade";
 import { NetManager } from "./core/net/NetManager";
 import { NetService } from "./core/net/NetService";
@@ -17,9 +17,9 @@ windowImmit("userData", new User());
 windowImmit("uiMgr", new UIManager());
 windowImmit("pbMgr", new PbManager());
 windowImmit("tipMgr", new TipManager());
-windowImmit("cfgMgr", new CfgManager());
 windowImmit("netMgr", new NetManager());
 windowImmit("loadMgr", new LoadManager());
+windowImmit("cfgMgr", new ConfigManager());
 windowImmit("netService", new NetService());
 windowImmit("sceneMgr", new SceneManager());
 windowImmit("platformMgr", new PlatfromManager());

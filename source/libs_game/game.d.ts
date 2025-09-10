@@ -141,3 +141,10 @@ declare namespace fgui {
         removeChild<T extends GObject>(child: T, dispose?: boolean): T;
     }
 }
+
+declare namespace CryptoJS {
+    class AES {
+        static encrypt(message: string, key: string): any;
+    }
+    function HmacSHA256(message: string, key: string): any;
+}

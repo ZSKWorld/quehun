@@ -6,7 +6,7 @@ export class NetManager implements INetManager {
     private _version: { version: string; };
     private _gateway: string;
     private _routes: IRouteInfo[];
-    private lobbySocket: WebSocket;
+    private _lobbySocket: WebSocket;
     // private gameSocket: ISocket;
     // private obSocket: ISocket;
 
@@ -18,8 +18,8 @@ export class NetManager implements INetManager {
         const routes = await this.fetchRoutes();
         this._routes = routes.routes;
         this._gateway = routes.url;
-        this.lobbySocket = new WebSocket(this._routes[0], "gateway", [ServiceType.Lobby]);
-        this.lobbySocket.connect();
+        this._lobbySocket = new WebSocket(this._routes[0], "gateway", [ServiceType.Lobby]);
+        this._lobbySocket.connect();
     }
 
     private fetchRoutes() {

@@ -1,3 +1,5 @@
+const { load } = require("protobufjs");
+
 /**
  * 设置LayaNative屏幕方向，可设置以下值
  * landscape           横屏
@@ -35,6 +37,7 @@ loadLib("libs/laya.bullet.js");
 loadLib("libs/laya.gltf.js");
 loadLib("libs/laya.device.js");
 
+loadLib("libs_game/crypto-js.js");
 loadLib("libs_game/fairygui.js");
 loadLib("libs_game/extend.js");
 loadLib("libs_game/logger.js");

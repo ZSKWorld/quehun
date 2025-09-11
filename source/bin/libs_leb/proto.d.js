@@ -289,7 +289,7 @@ ENotify = {
 }
 
 /** 网络请求协议 */
-ERequest = {
+EMessageID = {
 	/**
 	 * * 获取连接相关信息
 	 * * req: {@link IReqCommon}, res: {@link IResConnectionInfo}

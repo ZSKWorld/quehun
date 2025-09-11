@@ -1,10 +1,9 @@
-import { GameUtil } from "../common/utils/GameUtil";
 import { HeaderType, ServiceType } from "./NetDefine";
 
 interface IWaitRpcInfo {
     service: ServiceType;
     method: string;
-    cb: protobuf.RPCImplCallback;
+    callback: (res: IResponse) => void;
 }
 
 const enum SocketState {
@@ -31,13 +30,10 @@ export const enum SocketEvent {
     ReconnectSuccess = "SocketEvent_ReconnectSuccess",
     /** 重连失败 */
     ReconnectFail = "SocketEvent_ReconnectFail",
-    /**
-     * 消息错误
-     * @param msg {@link IUserOutput} 错误消息
-     */
-    MsgError = "SocketEvent_MsgError",
     /** 连接关闭 */
     Close = "SocketEvent_Close",
+    Response = "SocketEvent_Response",
+    Notify = "SocketEvent_Notify",
 }
 
 export class WebSocket extends Laya.EventDispatcher {
@@ -45,10 +41,8 @@ export class WebSocket extends Laya.EventDispatcher {
     private _routeInfo: IRouteInfo;
     private _tail: string;
     private _rpcIndex = 0;
-    private _rpcServices: KeyMap<protobuf.rpc.Service> = {};
     private _state: SocketState = SocketState.Disconnect;
     private _waitList: { [key: number]: IWaitRpcInfo; } = {};
-
 
     private _stateTranslateMap: { [key in SocketState]: { [key in SocketState]?: SocketEvent[] } } = {
         [SocketState.Disconnect]: {
@@ -67,9 +61,7 @@ export class WebSocket extends Laya.EventDispatcher {
             [SocketState.Disconnect]: [SocketEvent.Close],
         },
     };
-    get url() {
-        return `${ this._routeInfo.ssl ? "wss://" : "ws://" }${ this._routeInfo.domain }/${ this._tail }`;
-    }
+    get url() { return `${ this._routeInfo.ssl ? "wss://" : "ws://" }${ this._routeInfo.domain }/${ this._tail }`; }
     get state() { return this._state; }
     private set state(v) {
         const lastState = this._state;
@@ -81,7 +73,7 @@ export class WebSocket extends Laya.EventDispatcher {
     }
     get connected() { return this.state == SocketState.Connected; }
 
-    constructor(routeInfo: IRouteInfo, tail: string, services: ServiceType[]) {
+    constructor(routeInfo: IRouteInfo, tail: string) {
         super();
         this._socket = new Laya.Socket();
         this._socket.endian = Laya.Byte.LITTLE_ENDIAN;
@@ -92,13 +84,6 @@ export class WebSocket extends Laya.EventDispatcher {
 
         this._routeInfo = routeInfo;
         this._tail = tail;
-
-        services.forEach(v => {
-            const service = pbMgr.lookupService(v);
-            const rpcService = service.create(this.sendRpc.bind(this));
-            this._rpcServices[v] = rpcService;
-        });
-
     }
 
     connect() {
@@ -107,20 +92,23 @@ export class WebSocket extends Laya.EventDispatcher {
         this._socket.connectByUrl(this.url);
     }
 
-    send(rpcName: ERequest, data: any) {
+    send(methodName: EMessageID, data: any) {
         return new Promise<IResponse>(resolve => {
-            if (this.state != SocketState.Connected) {
+            if (!this.connected) {
                 resolve({ error: { code: -1 } });
                 return;
             }
 
-            const serviceName = pbMgr.methodMap[rpcName];
-            const service = this._rpcServices[serviceName];
-            if (!service) {
-                resolve({ error: { code: -2 } });
-                return;
-            }
-            service[rpcName](data, (_, res) => resolve(res || { error: { code: -3 } }));
+            this._rpcIndex = (this._rpcIndex + 1) % 60007;
+            const rpcID = this._rpcIndex;
+            const method = pbMgr.methodMap[methodName];
+            const header = new Uint8Array([HeaderType.Request, rpcID & 0xff, rpcID >> 8]);
+            const packet = pbMgr.encodeRpc(method.fullName, method.resolvedRequestType.encode(data).finish());
+            this._waitList[rpcID] = { service: method.parent.fullName as ServiceType, method: methodName, callback: resolve };
+            const byte = new Laya.Byte();
+            byte.writeArrayBuffer(header);
+            byte.writeArrayBuffer(packet);
+            this._socket.send(byte.buffer);
         });
     }
 
@@ -129,46 +117,21 @@ export class WebSocket extends Laya.EventDispatcher {
         this._socket.close();
     }
 
-    private sendRpc(method: protobuf.Method, request: Uint8Array, cb: protobuf.RPCImplCallback) {
-        this._rpcIndex = (this._rpcIndex + 1) % 60007;
-        const rpcID = this._rpcIndex;
-        const header = pbMgr.encodeHeaderData({ type: HeaderType.Request, reqIndex: rpcID });
-        const packet = pbMgr.encodeRpc(method.fullName, request);
-        this._waitList[rpcID] = { service: method.parent.fullName as ServiceType, method: method.name, cb };
-        const byte = new Laya.Byte();
-        byte.writeArrayBuffer(header);
-        byte.writeArrayBuffer(packet);
-        this._socket.send(byte.buffer);
-        byte.clear();
-    }
-
     private reconnect() {
         this.state = SocketState.Reconnecting;
         this._socket.connectByUrl(this.url);
     }
 
     private onOpen(e: Event) {
-        Logger.log("连接成功", this.url);
         this.state = SocketState.Connected;
     }
 
     private onMessage(msg: Uint8Array) {
         const data = new Uint8Array(msg);
-        const header: IHeaderData = { type: data[0] };
-        switch (header.type) {
+        const type = data[0];
+        switch (type) {
             case HeaderType.Response:
-                if (data.length < 3)
-                    throw new Error(`invalid message length.`);
-                header.reqIndex = data[1] + (data[2] << 8);
-                break;
-            case HeaderType.Notify:
-                break;
-            default:
-                throw new Error(`unknown header type: ${ header.type }`);
-        }
-        switch (header.type) {
-            case HeaderType.Response:
-                const requestID = header.reqIndex;
+                const requestID = data[1] + (data[2] << 8);
                 const request = this._waitList[requestID];
                 if (!request) {
                     Logger.error(`收到不存在的requestID: ${ requestID }`);
@@ -176,17 +139,14 @@ export class WebSocket extends Laya.EventDispatcher {
                 }
                 delete this._waitList[requestID];
                 const wrapper = pbMgr.decodeRpc(data.slice(3));
-                try {
-                    request.cb(null, wrapper.data);
-                } catch (err) {
-                    Logger.error("处理回调时出错", err);
-                }
+                const res = pbMgr.methodMap[request.method].resolvedResponseType.decode(wrapper.data);
+                request.callback(res);
+                this.event(SocketEvent.Response, [request.method, res]);
                 break;
             case HeaderType.Notify:
                 const msg = pbMgr.decodeMessage(data.slice(1));
                 const msgName = msg.$type.name;
-                this.event('OnNotify', [msgName, msg]);
-                Logger.error("收到服务器推送", msgName, msg);
+                this.event(SocketEvent.Notify, [msgName, msg]);
                 break;
         }
     }

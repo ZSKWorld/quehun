@@ -4,7 +4,8 @@ import { GameUtil } from "./core/common/utils/GameUtil";
 export class GameManager implements IGameManager {
 
     private _inDmm = false;
-    private _deviceId = "";
+    private _deviceId: string;
+    private _version: { version: string; };
     get deviceId() {
         if (!this._deviceId) {
             this._deviceId = LocalData.get(LocalDataKey.DeviceId);
@@ -17,6 +18,8 @@ export class GameManager implements IGameManager {
     }
     get language() { return "chs"; }
     get clientType() { return "chs"; }
+    get version() { return this._version?.version || ""; }
+    get clientVersion() { return 'web-' + this.version.replace('.w', ''); }
     get payChannelId() {
         if (this._inDmm) {
             return 403;
@@ -29,6 +32,11 @@ export class GameManager implements IGameManager {
         } else {
             return 402;
         }
+    }
+
+    async init() {
+        const version = await loadMgr.fetch("https://game.maj-soul.com/1/version.json", "json", null, { ignoreCache: true });
+        this._version = version;
     }
 
     getDeviceInfo() {

@@ -1,21 +1,7 @@
-declare interface IHeaderData {
-    /** HeaderType */
-    type: number;
-    /** for HeaderType.REQUEST */
-    reqIndex?: number;
-}
-
 declare interface IPbManager {
-    get methodMap(): KeyMap<ServiceType>;
-    loadPb(): Promise<void>;
-    lookup(path: (string | string[]), parentAlreadyChecked?: boolean): protobuf.ReflectionObject;
-    lookupType(path: (string | string[])): protobuf.Type;
-    lookupEnum(path: (string | string[])): protobuf.Enum;
-    lookupTypeOrEnum(path: (string | string[])): protobuf.Type;
-    lookupService(path: (string | string[])): protobuf.Service;
-    lookupMethod(path: (string | string[])): protobuf.Method;
-    encodeHeaderData(header: IHeaderData): Uint8Array;
-    encodeMessage(message: protobuf.Message<{}>): Uint8Array;
+    get methodMap(): KeyMap<protobuf.Method>;
+    get method2Service(): KeyMap<ServiceType>;
+    init(): Promise<void>;
     decodeMessage(bytes: Uint8Array): protobuf.Message<{}>;
     encodeRpc(method: string, bytes: Uint8Array): Uint8Array;
     decodeRpc(bytes: Uint8Array): { name: string, data: Uint8Array };
@@ -53,12 +39,6 @@ declare interface IRouteInfo {
     state: ERouteState,
 }
 
-declare interface IResponseData {
-
-}
-
 declare interface INetManager {
-    get version(): string;
-    get clientVersion(): string;
-    fetchConfig(): Promise<void>;
+    init(): Promise<void>;
 }

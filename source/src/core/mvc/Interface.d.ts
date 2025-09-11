@@ -17,7 +17,7 @@ declare function InterestNotify(eventName: string, once?: boolean, args?: any[])
  * @param once 是否只监听一次
  * @param args 参数
  */
-declare function InterestMessage(msgId: MessageID, once?: boolean, args?: any[]): MethodDecorator;
+declare function InterestMessage(msgId: EMessageID, once?: boolean, args?: any[]): MethodDecorator;
 
 declare enum ProxyID {
     Login,

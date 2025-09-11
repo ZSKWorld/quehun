@@ -1,7 +1,5 @@
 import { Command } from "../core/mvc/controller/Command";
 import { RedDotManager } from "../core/ui/redDot/RedDotManager";
-import { SceneGame } from "../scene/scene/SceneGame";
-import { SceneLittleGame } from "../scene/scene/SceneLittleGame";
 import { SceneLogin } from "../scene/scene/SceneLogin";
 import { SceneMain } from "../scene/scene/SceneMain";
 import { SceneType } from "../scene/SceneDefine";
@@ -15,22 +13,20 @@ export class GamePreloadCommand extends Command {
     override execute(notifyName: string, data?: any) {
         this.load().then(() => {
             uiMgr.init();
-            // WebSocket.Inst.init();
             RedDotManager.Inst.init();
             sceneMgr.init([
                 new SceneLogin(),
                 new SceneMain(),
-                new SceneGame(),
-                new SceneLittleGame(),
             ]);
             sceneMgr.enterScene(SceneType.LoginScene);
         });
     }
 
     private async load() {
-        await pbMgr.loadPb();
+        await gameMgr.init();
+        await pbMgr.init();
         await cfgMgr.loadCfg();
-        await netMgr.fetchConfig();
+        await netMgr.init();
 
         await loadMgr.load(ResPath.UnclassifiedPath.Gameconfig);
         const config: IGameConfig = loadMgr.getRes<Laya.TextResource>(ResPath.UnclassifiedPath.Gameconfig).data;

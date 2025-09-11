@@ -25,23 +25,4 @@ export class SceneLogin extends LogicSceneBase<SceneLoginData> {
     protected override onEnter() {
         this.openView(ViewID.UILoginView);
     }
-
-    @InterestNotify(SocketEvent.ConnectSuccess, false, [true, SocketEvent.ConnectSuccess])
-    @InterestNotify(SocketEvent.ReconnectSuccess, false, [true, SocketEvent.ReconnectSuccess])
-    @InterestNotify(SocketEvent.Close, false, [false, SocketEvent.Close])
-    private socketConnectChanged(open: boolean, eventName: string) {
-        if (open) {
-            uiMgr.closeView(ViewID.UIWaitingView);
-            if (eventName == SocketEvent.ReconnectSuccess && userData.account.account)
-                netService.login({ account: userData.account.account, password: userData.account.password });
-        }
-        else this.openView(ViewID.UIWaitingView, "网络已断开");
-    }
-
-    @InterestNotify(SocketEvent.MsgError)
-    private netMsgError() {
-        // tipMgr.showTip(cfgMgr.Error[msg.error].text);
-        // if (msg.error == ErrorCode.NOT_LOGIN)
-        //     sceneMgr.enterScene(SceneType.LoginScene);
-    }
 }

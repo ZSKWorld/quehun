@@ -1,219 +1,114 @@
-declare interface INetMethod {
+/** This script is generated automatically, Please do not any modify! */
 
-	/**
-	 * * 获取连接相关信息
-	 */
+declare interface IReqMethod {
+	/** 获取连接相关信息 */
 	fetchConnectionInfo(data: IReqCommon): Promise<IResConnectionInfo>;
-	/**
-	 * * 获取排队信息
-	 */
+	/** 获取排队信息 */
 	fetchQueueInfo(data: IReqCommon): Promise<IResFetchQueueInfo>;
 	cancelQueue(data: IReqCommon): Promise<IResCommon>;
 	openidCheck(data: IReqOpenidCheck): Promise<IResOauth2Check>;
-	/**
-	 * * 注册账号
-	 */
+	/** 注册账号 */
 	signup(data: IReqSignupAccount): Promise<IResSignupAccount>;
-	/**
-	 * * 登录账号
-	 */
+	/** 登录账号 */
 	login(data: IReqLogin): Promise<IResLogin>;
-	/**
-	 * * 备线半登录状态
-	 */
+	/** 备线半登录状态 */
 	prepareLogin(data: IReqPrepareLogin): Promise<IResCommon>;
-	/**
-	 * * 备线切换主线快速登录
-	 */
+	/** 备线切换主线快速登录 */
 	fastLogin(data: IReqCommon): Promise<IResFastLogin>;
-	/**
-	 * * 登录后获取信息
-	 */
+	/** 登录后获取信息 */
 	fetchInfo(data: IReqCommon): Promise<IResFetchInfo>;
-	/**
-	 * * 登录成功后摇
-	 */
+	/** 登录成功后摇 */
 	loginSuccess(data: IReqCommon): Promise<IResCommon>;
-	/**
-	 * * 获取服务器维护信息
-	 */
+	/** 获取服务器维护信息 */
 	fetchServerMaintenanceInfo(data: IReqCommon): Promise<IResFetchServerMaintenanceInfo>;
 	emailLogin(data: IReqEmailLogin): Promise<IResLogin>;
-	/**
-	 * * oauth2 方式登录授权
-	 */
+	/** oauth2 方式登录授权 */
 	oauth2Auth(data: IReqOauth2Auth): Promise<IResOauth2Auth>;
-	/**
-	 * * oauth2 验证是否已经注册过账号
-	 */
+	/** oauth2 验证是否已经注册过账号 */
 	oauth2Check(data: IReqOauth2Check): Promise<IResOauth2Check>;
-	/**
-	 * * oauth2 注册
-	 */
+	/** oauth2 注册 */
 	oauth2Signup(data: IReqOauth2Signup): Promise<IResOauth2Signup>;
-	/**
-	 * * oauth2 登录
-	 */
+	/** oauth2 登录 */
 	oauth2Login(data: IReqOauth2Login): Promise<IResLogin>;
-	/**
-	 * * dmm 获取登录参数
-	 */
+	/** dmm 获取登录参数 */
 	dmmPreLogin(data: IReqDMMPreLogin): Promise<IResDMMPreLogin>;
-	/**
-	 * * 获取手机验证码（已登录的情况下）
-	 */
+	/** 获取手机验证码（已登录的情况下） */
 	createPhoneVerifyCode(data: IReqCreatePhoneVerifyCode): Promise<IResCommon>;
-	/**
-	 * * 获取邮箱验证码
-	 */
+	/** 获取邮箱验证码 */
 	createEmailVerifyCode(data: IReqCreateEmailVerifyCode): Promise<IResCommon>;
-	/**
-	 * * 验证码获取安全权限
-	 */
+	/** 验证码获取安全权限 */
 	verfifyCodeForSecure(data: IReqVerifyCodeForSecure): Promise<IResVerfiyCodeForSecure>;
-	/**
-	 * * 绑定手机号
-	 */
+	/** 绑定手机号 */
 	bindPhoneNumber(data: IReqBindPhoneNumber): Promise<IResCommon>;
-	/**
-	 * * 解绑手机号
-	 */
+	/** 解绑手机号 */
 	unbindPhoneNumber(data: IReqUnbindPhoneNumber): Promise<IResCommon>;
-	/**
-	 * * 查询已绑定手机是否有登录绑定
-	 */
+	/** 查询已绑定手机是否有登录绑定 */
 	fetchPhoneLoginBind(data: IReqCommon): Promise<IResFetchPhoneLoginBind>;
-	/**
-	 * * 生成手机登录绑定
-	 */
+	/** 生成手机登录绑定 */
 	createPhoneLoginBind(data: IReqCreatePhoneLoginBind): Promise<IResCommon>;
-	/**
-	 * * 绑定邮箱
-	 */
+	/** 绑定邮箱 */
 	bindEmail(data: IReqBindEmail): Promise<IResCommon>;
-	/**
-	 * * 修改密码
-	 */
+	/** 修改密码 */
 	modifyPassword(data: IReqModifyPassword): Promise<IResCommon>;
-	/**
-	 * * 绑定账号密码（Oauth2注册的账号使用，只有一次机会）
-	 */
+	/** 绑定账号密码（Oauth2注册的账号使用，只有一次机会） */
 	bindAccount(data: IReqBindAccount): Promise<IResCommon>;
-	/**
-	 * * 注销账号
-	 */
+	/** 注销账号 */
 	logout(data: IReqLogout): Promise<IResLogout>;
-	/**
-	 * * 心跳
-	 */
+	/** 心跳 */
 	heatbeat(data: IReqHeatBeat): Promise<IResCommon>;
-	/**
-	 * * 通过Eid获取账号ID
-	 */
+	/** 通过Eid获取账号ID */
 	searchAccountByEid(data: IReqSearchAccountByEidLobby): Promise<IResSearchAccountbyEidLobby>;
-	/**
-	 * * 登录心跳（用于防止第三方客户端，登录后不调用该接口无法进行匹配游戏）
-	 */
+	/** 登录心跳（用于防止第三方客户端，登录后不调用该接口无法进行匹配游戏） */
 	loginBeat(data: IReqLoginBeat): Promise<IResCommon>;
-	/**
-	 * * 创建昵称
-	 */
+	/** 创建昵称 */
 	createNickname(data: IReqCreateNickname): Promise<IResCommon>;
-	/**
-	 * * 修改昵称
-	 */
+	/** 修改昵称 */
 	modifyNickname(data: IReqModifyNickname): Promise<IResCommon>;
-	/**
-	 * * 修改生日
-	 */
+	/** 修改生日 */
 	modifyBirthday(data: IReqModifyBirthday): Promise<IResCommon>;
-	/**
-	 * * 请求自己的房间信息
-	 */
+	/** 请求自己的房间信息 */
 	fetchRoom(data: IReqCommon): Promise<IResSelfRoom>;
-	/**
-	 * * 请求自己的对局信息
-	 */
+	/** 请求自己的对局信息 */
 	fetchGamingInfo(data: IReqCommon): Promise<IResFetchGamingInfo>;
-	/**
-	 * * 创建房间
-	 */
+	/** 创建房间 */
 	createRoom(data: IReqCreateRoom): Promise<IResCreateRoom>;
-	/**
-	 * * 加入房间
-	 */
+	/** 加入房间 */
 	joinRoom(data: IReqJoinRoom): Promise<IResJoinRoom>;
-	/**
-	 * * 离开房间
-	 */
+	/** 离开房间 */
 	leaveRoom(data: IReqCommon): Promise<IResCommon>;
-	/**
-	 * * 准备
-	 */
+	/** 准备 */
 	readyPlay(data: IReqRoomReady): Promise<IResCommon>;
-	/**
-	 * * 切换装扮状态
-	 */
+	/** 切换装扮状态 */
 	dressingStatus(data: IReqRoomDressing): Promise<IResCommon>;
-	/**
-	 * * 开始
-	 */
+	/** 开始 */
 	startRoom(data: IReqRoomStart): Promise<IResCommon>;
-	/**
-	 * * 踢出玩家
-	 */
+	/** 踢出玩家 */
 	roomKickPlayer(data: IReqRoomKickPlayer): Promise<IResCommon>;
-	/**
-	 * * 修改房间
-	 */
+	/** 修改房间 */
 	modifyRoom(data: IReqModifyRoom): Promise<IResCommon>;
-	/**
-	 * * 添加好友房机器人
-	 */
+	/** 添加好友房机器人 */
 	addRoomRobot(data: IReqAddRoomRobot): Promise<IResCommon>;
-	/**
-	 * * 加入匹配
-	 */
+	/** 加入匹配 */
 	matchGame(data: IReqJoinMatchQueue): Promise<IResCommon>;
-	/**
-	 * * 取消匹配
-	 */
+	/** 取消匹配 */
 	cancelMatch(data: IReqCancelMatchQueue): Promise<IResCommon>;
-	/**
-	 * * 请求账号信息
-	 */
+	/** 请求账号信息 */
 	fetchAccountInfo(data: IReqAccountInfo): Promise<IResAccountInfo>;
-	/**
-	 * * 修改头像
-	 */
+	/** 修改头像 */
 	changeAvatar(data: IReqChangeAvatar): Promise<IResCommon>;
-	/**
-	 * * 领取更新礼包
-	 */
+	/** 领取更新礼包 */
 	receiveVersionReward(data: IReqCommon): Promise<IResCommon>;
-	/**
-	 * * 请求账号统计信息
-	 */
+	/** 请求账号统计信息 */
 	fetchAccountStatisticInfo(data: IReqAccountStatisticInfo): Promise<IResAccountStatisticInfo>;
-	/**
-	 * * 获取试炼赛赛季排名信息
-	 */
+	/** 获取试炼赛赛季排名信息 */
 	fetchAccountChallengeRankInfo(data: IReqAccountInfo): Promise<IResAccountChallengeRankInfo>;
-	/**
-	 * * 获取账号人物信息
-	 */
+	/** 获取账号人物信息 */
 	fetchAccountCharacterInfo(data: IReqCommon): Promise<IResAccountCharacterInfo>;
-	/**
-	 * * 商店购买
-	 */
+	/** 商店购买 */
 	shopPurchase(data: IReqShopPurchase): Promise<IResShopPurchase>;
-	/**
-	 * * 获取单场牌谱记录
-	 */
+	/** 获取单场牌谱记录 */
 	fetchGameRecord(data: IReqGameRecord): Promise<IResGameRecord>;
-	/**
-	 * * 添加查看牌谱记录
-	 */
+	/** 添加查看牌谱记录 */
 	readGameRecord(data: IReqGameRecord): Promise<IResCommon>;
 	/**
 	 * * 获取牌谱列表
@@ -233,789 +128,405 @@ declare interface INetMethod {
 	 * * 只有 2024.08.20 07:30 (1724110200) 停服维护之后的牌谱可以通过这个接口获取列表
 	 */
 	fetchNextGameRecordList(data: IReqNextGameRecordList): Promise<IResNextGameRecordList>;
-	/**
-	 * * 获得收藏的牌谱列表（简要信息）
-	 */
+	/** 获得收藏的牌谱列表（简要信息） */
 	fetchCollectedGameRecordList(data: IReqCommon): Promise<IResCollectedGameRecordList>;
-	/**
-	 * * 获取牌谱列表的详细信息
-	 */
+	/** 获取牌谱列表的详细信息 */
 	fetchGameRecordsDetail(data: IReqGameRecordsDetail): Promise<IResGameRecordsDetail>;
-	/**
-	 * * 获取牌谱列表的详细信息 （新版）
-	 */
+	/** 获取牌谱列表的详细信息 （新版） */
 	fetchGameRecordsDetailV2(data: IReqGameRecordsDetailV2): Promise<IResGameRecordsDetailV2>;
-	/**
-	 * * 添加牌谱收藏
-	 */
+	/** 添加牌谱收藏 */
 	addCollectedGameRecord(data: IReqAddCollectedGameRecord): Promise<IResAddCollectedGameRecord>;
-	/**
-	 * * 移除牌谱收藏
-	 */
+	/** 移除牌谱收藏 */
 	removeCollectedGameRecord(data: IReqRemoveCollectedGameRecord): Promise<IResRemoveCollectedGameRecord>;
-	/**
-	 * * 修改牌谱备注
-	 */
+	/** 修改牌谱备注 */
 	changeCollectedGameRecordRemarks(data: IReqChangeCollectedGameRecordRemarks): Promise<IResChangeCollectedGameRecordRemarks>;
-	/**
-	 * * 获取排行榜
-	 */
+	/** 获取排行榜 */
 	fetchLevelLeaderboard(data: IReqLevelLeaderboard): Promise<IResLevelLeaderboard>;
-	/**
-	 * * 获取试炼赛排行榜
-	 */
+	/** 获取试炼赛排行榜 */
 	fetchChallengeLeaderboard(data: IReqChallangeLeaderboard): Promise<IResChallengeLeaderboard>;
-	/**
-	 * * 获取多人试炼赛等级信息
-	 */
+	/** 获取多人试炼赛等级信息 */
 	fetchMutiChallengeLevel(data: IReqMutiChallengeLevel): Promise<IResMutiChallengeLevel>;
-	/**
-	 * * 获取多人简要信息
-	 */
+	/** 获取多人简要信息 */
 	fetchMultiAccountBrief(data: IReqMultiAccountId): Promise<IResMultiAccountBrief>;
-	/**
-	 * * 获取好友列表
-	 */
+	/** 获取好友列表 */
 	fetchFriendList(data: IReqCommon): Promise<IResFriendList>;
-	/**
-	 * * 获取好友申请列表
-	 */
+	/** 获取好友申请列表 */
 	fetchFriendApplyList(data: IReqCommon): Promise<IResFriendApplyList>;
-	/**
-	 * * 申请好友
-	 */
+	/** 申请好友 */
 	applyFriend(data: IReqApplyFriend): Promise<IResCommon>;
-	/**
-	 * * 处理好友申请
-	 */
+	/** 处理好友申请 */
 	handleFriendApply(data: IReqHandleFriendApply): Promise<IResCommon>;
-	/**
-	 * * 删除好友
-	 */
+	/** 删除好友 */
 	removeFriend(data: IReqRemoveFriend): Promise<IResCommon>;
-	/**
-	 * * 查询单个玩家
-	 */
+	/** 查询单个玩家 */
 	searchAccountById(data: IReqSearchAccountById): Promise<IResSearchAccountById>;
-	/**
-	 * * 模糊查询玩家
-	 */
+	/** 模糊查询玩家 */
 	searchAccountByPattern(data: IReqSearchAccountByPattern): Promise<IResSearchAccountByPattern>;
-	/**
-	 * * 查询玩家状态
-	 */
+	/** 查询玩家状态 */
 	fetchAccountState(data: IReqAccountList): Promise<IResAccountStates>;
-	/**
-	 * * 请求背包信息
-	 */
+	/** 请求背包信息 */
 	fetchBagInfo(data: IReqCommon): Promise<IResBagInfo>;
-	/**
-	 * * 使用背包道具
-	 */
+	/** 使用背包道具 */
 	useBagItem(data: IReqUseBagItem): Promise<IResCommon>;
-	/**
-	 * * 使用手选道具物品
-	 */
+	/** 使用手选道具物品 */
 	openManualItem(data: IReqOpenManualItem): Promise<IResCommon>;
-	/**
-	 * * 使用随机道具物品
-	 */
+	/** 使用随机道具物品 */
 	openRandomRewardItem(data: IReqOpenRandomRewardItem): Promise<IResOpenRandomRewardItem>;
-	/**
-	 * * 使用全领礼包物品
-	 */
+	/** 使用全领礼包物品 */
 	openAllRewardItem(data: IReqOpenAllRewardItem): Promise<IResOpenAllRewardItem>;
-	/**
-	 * * 合成碎片
-	 */
+	/** 合成碎片 */
 	composeShard(data: IReqComposeShard): Promise<IResCommon>;
-	/**
-	 * * 获取公告
-	 */
+	/** 获取公告 */
 	fetchAnnouncement(data: IReqFetchAnnouncement): Promise<IResAnnouncement>;
-	/**
-	 * * 阅读公告
-	 */
+	/** 阅读公告 */
 	readAnnouncement(data: IReqReadAnnouncement): Promise<IResCommon>;
-	/**
-	 * * 获取邮件列表
-	 */
+	/** 获取邮件列表 */
 	fetchMailInfo(data: IReqCommon): Promise<IResMailInfo>;
-	/**
-	 * * 阅读邮件
-	 */
+	/** 阅读邮件 */
 	readMail(data: IReqReadMail): Promise<IResCommon>;
-	/**
-	 * * 删除邮件
-	 */
+	/** 删除邮件 */
 	deleteMail(data: IReqDeleteMail): Promise<IResCommon>;
-	/**
-	 * * 拿取邮件附件
-	 */
+	/** 拿取邮件附件 */
 	takeAttachmentFromMail(data: IReqTakeAttachment): Promise<IResCommon>;
-	/**
-	 * * 领取成就奖励
-	 */
+	/** 领取成就奖励 */
 	receiveAchievementReward(data: IReqReceiveAchievementReward): Promise<IResReceiveAchievementReward>;
-	/**
-	 * * 领取成就大组奖励
-	 */
+	/** 领取成就大组奖励 */
 	receiveAchievementGroupReward(data: IReqReceiveAchievementGroupReward): Promise<IResReceiveAchievementGroupReward>;
-	/**
-	 * * 获取全服成就完成率
-	 */
+	/** 获取全服成就完成率 */
 	fetchAchievementRate(data: IReqCommon): Promise<IResFetchAchievementRate>;
-	/**
-	 * * 获取成就
-	 */
+	/** 获取成就 */
 	fetchAchievement(data: IReqCommon): Promise<IResAchievement>;
-	/**
-	 * * 购买试炼资格
-	 */
+	/** 购买试炼资格 */
 	buyShiLian(data: IReqBuyShiLian): Promise<IResCommon>;
-	/**
-	 * * 试炼匹配
-	 */
+	/** 试炼匹配 */
 	matchShiLian(data: IReqCommon): Promise<IResCommon>;
-	/**
-	 * * 继续下一阶段试炼
-	 */
+	/** 继续下一阶段试炼 */
 	goNextShiLian(data: IReqCommon): Promise<IResCommon>;
-	/**
-	 * * 更新客户端数据
-	 */
+	/** 更新客户端数据 */
 	updateClientValue(data: IReqUpdateClientValue): Promise<IResCommon>;
-	/**
-	 * * 获取客户端数据
-	 */
+	/** 获取客户端数据 */
 	fetchClientValue(data: IReqCommon): Promise<IResClientValue>;
-	/**
-	 * * 客户端信息
-	 */
+	/** 客户端信息 */
 	clientMessage(data: IReqClientMessage): Promise<IResCommon>;
-	/**
-	 * * 请求当前匹配模式信息
-	 */
+	/** 请求当前匹配模式信息 */
 	fetchCurrentMatchInfo(data: IReqCurrentMatchInfo): Promise<IResCurrentMatchInfo>;
-	/**
-	 * * 用户举报
-	 */
+	/** 用户举报 */
 	userComplain(data: IReqUserComplain): Promise<IResCommon>;
 	/**
 	 * * ------ 复活币 -------- //
 	 * * 获取复活币信息
 	 */
 	fetchReviveCoinInfo(data: IReqCommon): Promise<IResReviveCoinInfo>;
-	/**
-	 * * 领取复活币
-	 */
+	/** 领取复活币 */
 	gainReviveCoin(data: IReqCommon): Promise<IResCommon>;
-	/**
-	 * * 获取每日任务
-	 */
+	/** 获取每日任务 */
 	fetchDailyTask(data: IReqCommon): Promise<IResDailyTask>;
-	/**
-	 * * 刷新每日任务
-	 */
+	/** 刷新每日任务 */
 	refreshDailyTask(data: IReqRefreshDailyTask): Promise<IResRefreshDailyTask>;
-	/**
-	 * * 使用礼品码
-	 */
+	/** 使用礼品码 */
 	useGiftCode(data: IReqUseGiftCode): Promise<IResUseGiftCode>;
-	/**
-	 * * 使用特殊礼品码
-	 */
+	/** 使用特殊礼品码 */
 	useSpecialGiftCode(data: IReqUseGiftCode): Promise<IResUseSpecialGiftCode>;
-	/**
-	 * * 获取称号列表
-	 */
+	/** 获取称号列表 */
 	fetchTitleList(data: IReqCommon): Promise<IResTitleList>;
-	/**
-	 * * 使用称号
-	 */
+	/** 使用称号 */
 	useTitle(data: IReqUseTitle): Promise<IResCommon>;
-	/**
-	 * * 发送给其他玩家自定义消息
-	 */
+	/** 发送给其他玩家自定义消息 */
 	sendClientMessage(data: IReqSendClientMessage): Promise<IResCommon>;
-	/**
-	 * * 获取游戏直播信息（全视角）
-	 */
+	/** 获取游戏直播信息（全视角） */
 	fetchGameLiveInfo(data: IReqGameLiveInfo): Promise<IResGameLiveInfo>;
-	/**
-	 * * 获取游戏直播剩余分片信息（增量）
-	 */
+	/** 获取游戏直播剩余分片信息（增量） */
 	fetchGameLiveLeftSegment(data: IReqGameLiveLeftSegment): Promise<IResGameLiveLeftSegment>;
-	/**
-	 * * 获取正在直播的游戏列表
-	 */
+	/** 获取正在直播的游戏列表 */
 	fetchGameLiveList(data: IReqGameLiveList): Promise<IResGameLiveList>;
-	/**
-	 * * 留言板设置信息
-	 */
+	/** 留言板设置信息 */
 	fetchCommentSetting(data: IReqCommon): Promise<IResCommentSetting>;
-	/**
-	 * * 更新留言板设置
-	 */
+	/** 更新留言板设置 */
 	updateCommentSetting(data: IReqUpdateCommentSetting): Promise<IResCommon>;
-	/**
-	 * * 获取留言板列表
-	 */
+	/** 获取留言板列表 */
 	fetchCommentList(data: IReqFetchCommentList): Promise<IResFetchCommentList>;
-	/**
-	 * * 获取留言板内容
-	 */
+	/** 获取留言板内容 */
 	fetchCommentContent(data: IReqFetchCommentContent): Promise<IResFetchCommentContent>;
-	/**
-	 * * 发送留言
-	 */
+	/** 发送留言 */
 	leaveComment(data: IReqLeaveComment): Promise<IResCommon>;
-	/**
-	 * * 删除留言
-	 */
+	/** 删除留言 */
 	deleteComment(data: IReqDeleteComment): Promise<IResCommon>;
-	/**
-	 * * 更新留言阅读记录
-	 */
+	/** 更新留言阅读记录 */
 	updateReadComment(data: IReqUpdateReadComment): Promise<IResCommon>;
-	/**
-	 * * 获取滚动公告
-	 */
+	/** 获取滚动公告 */
 	fetchRollingNotice(data: IReqFetchRollingNotice): Promise<IResFetchRollingNotice>;
-	/**
-	 * * 获取维护公告
-	 */
+	/** 获取维护公告 */
 	fetchMaintainNotice(data: IReqCommon): Promise<IResFetchMaintainNotice>;
-	/**
-	 * * 获取服务器时间
-	 */
+	/** 获取服务器时间 */
 	fetchServerTime(data: IReqCommon): Promise<IResServerTime>;
-	/**
-	 * * 获取对应平台的商品列表
-	 */
+	/** 获取对应平台的商品列表 */
 	fetchPlatformProducts(data: IReqPlatformBillingProducts): Promise<IResPlatformBillingProducts>;
-	/**
-	 * * 获取角色随机池信息
-	 */
+	/** 获取角色随机池信息 */
 	fetchRandomCharacter(data: IReqCommon): Promise<IResRandomCharacter>;
-	/**
-	 * * 设置随机角色池
-	 */
+	/** 设置随机角色池 */
 	setRandomCharacter(data: IReqRandomCharacter): Promise<IResCommon>;
-	/**
-	 * * 取消 Google Play 订单
-	 */
+	/** 取消 Google Play 订单 */
 	cancelGooglePlayOrder(data: IReqCancelGooglePlayOrder): Promise<IResCommon>;
-	/**
-	 * * 抽宝箱
-	 */
+	/** 抽宝箱 */
 	openChest(data: IReqOpenChest): Promise<IResOpenChest>;
-	/**
-	 * * 宝箱商店购买商品
-	 */
+	/** 宝箱商店购买商品 */
 	buyFromChestShop(data: IReqBuyFromChestShop): Promise<IResBuyFromChestShop>;
-	/**
-	 * * 获取每日签到信息
-	 */
+	/** 获取每日签到信息 */
 	fetchDailySignInInfo(data: IReqCommon): Promise<IResDailySignInInfo>;
-	/**
-	 * * 签到
-	 */
+	/** 签到 */
 	doDailySignIn(data: IReqCommon): Promise<IResCommon>;
 	doActivitySignIn(data: IReqDoActivitySignIn): Promise<IResDoActivitySignIn>;
-	/**
-	 * * 获取角色信息
-	 */
+	/** 获取角色信息 */
 	fetchCharacterInfo(data: IReqCommon): Promise<IResCharacterInfo>;
-	/**
-	 * * 更新角色排序
-	 */
+	/** 更新角色排序 */
 	updateCharacterSort(data: IReqUpdateCharacterSort): Promise<IResCommon>;
-	/**
-	 * * 切换主角色
-	 */
+	/** 切换主角色 */
 	changeMainCharacter(data: IReqChangeMainCharacter): Promise<IResCommon>;
-	/**
-	 * * 切换角色皮肤
-	 */
+	/** 切换角色皮肤 */
 	changeCharacterSkin(data: IReqChangeCharacterSkin): Promise<IResCommon>;
-	/**
-	 * * 设置角色外观
-	 */
+	/** 设置角色外观 */
 	changeCharacterView(data: IReqChangeCharacterView): Promise<IResCommon>;
-	/**
-	 * * 设置隐藏角色
-	 */
+	/** 设置隐藏角色 */
 	setHiddenCharacter(data: IReqSetHiddenCharacter): Promise<IResSetHiddenCharacter>;
-	/**
-	 * * 赠送礼物给角色
-	 */
+	/** 赠送礼物给角色 */
 	sendGiftToCharacter(data: IReqSendGiftToCharacter): Promise<IResSendGiftToCharacter>;
-	/**
-	 * * 出售道具（目前只有礼物可以出售）
-	 */
+	/** 出售道具（目前只有礼物可以出售） */
 	sellItem(data: IReqSellItem): Promise<IResCommon>;
-	/**
-	 * * 获取通用外观
-	 */
+	/** 获取通用外观 */
 	fetchCommonView(data: IReqCommon): Promise<IResCommonView>;
-	/**
-	 * * 切换通用外观（牌桌，牌背等）
-	 */
+	/** 切换通用外观（牌桌，牌背等） */
 	changeCommonView(data: IReqChangeCommonView): Promise<IResCommon>;
-	/**
-	 * * 保存通用外观方案
-	 */
+	/** 保存通用外观方案 */
 	saveCommonViews(data: IReqSaveCommonViews): Promise<IResCommon>;
-	/**
-	 * * 获取通用外观方案
-	 */
+	/** 获取通用外观方案 */
 	fetchCommonViews(data: IReqCommonViews): Promise<IResCommonViews>;
-	/**
-	 * * 获取所有通用外观方案
-	 */
+	/** 获取所有通用外观方案 */
 	fetchAllCommonViews(data: IReqCommon): Promise<IResAllcommonViews>;
 	useCommonView(data: IReqUseCommonView): Promise<IResCommon>;
-	/**
-	 * * 突破角色
-	 */
+	/** 突破角色 */
 	upgradeCharacter(data: IReqUpgradeCharacter): Promise<IResUpgradeCharacter>;
 	/**
 	 * * ====角色传记相关====
 	 * * 完成结局
 	 */
 	addFinishedEnding(data: IReqFinishedEnding): Promise<IResCommon>;
-	/**
-	 * * 领取结局奖励
-	 */
+	/** 领取结局奖励 */
 	receiveEndingReward(data: IReqFinishedEnding): Promise<IResCommon>;
-	/**
-	 * * GM指令
-	 */
+	/** GM指令 */
 	gameMasterCommand(data: IReqGMCommand): Promise<IResCommon>;
-	/**
-	 * * 获取商店信息
-	 */
+	/** 获取商店信息 */
 	fetchShopInfo(data: IReqCommon): Promise<IResShopInfo>;
-	/**
-	 * * 普通商店购买
-	 */
+	/** 普通商店购买 */
 	buyFromShop(data: IReqBuyFromShop): Promise<IResBuyFromShop>;
-	/**
-	 * * 杂货铺购买
-	 */
+	/** 杂货铺购买 */
 	buyFromZHP(data: IReqBuyFromZHP): Promise<IResCommon>;
-	/**
-	 * * 刷新杂货铺商店
-	 */
+	/** 刷新杂货铺商店 */
 	refreshZHPShop(data: IReqReshZHPShop): Promise<IResRefreshZHPShop>;
-	/**
-	 * * 获取账号月卡信息
-	 */
+	/** 获取账号月卡信息 */
 	fetchMonthTicketInfo(data: IReqCommon): Promise<IResMonthTicketInfo>;
-	/**
-	 * * 领取月卡工资
-	 */
+	/** 领取月卡工资 */
 	payMonthTicket(data: IReqCommon): Promise<IResPayMonthTicket>;
-	/**
-	 * * 兑换货币
-	 */
+	/** 兑换货币 */
 	exchangeCurrency(data: IReqExchangeCurrency): Promise<IResCommon>;
-	/**
-	 * * 兑换寻觅石头
-	 */
+	/** 兑换寻觅石头 */
 	exchangeChestStone(data: IReqExchangeCurrency): Promise<IResCommon>;
-	/**
-	 * * 皮肤券兑换辉玉
-	 */
+	/** 皮肤券兑换辉玉 */
 	exchangeDiamond(data: IReqExchangeCurrency): Promise<IResCommon>;
-	/**
-	 * * 获取服务器设置
-	 */
+	/** 获取服务器设置 */
 	fetchServerSettings(data: IReqCommon): Promise<IResServerSettings>;
-	/**
-	 * * 账户设置
-	 */
+	/** 账户设置 */
 	fetchAccountSettings(data: IReqCommon): Promise<IResAccountSettings>;
-	/**
-	 * * 更新账号设置
-	 */
+	/** 更新账号设置 */
 	updateAccountSettings(data: IReqUpdateAccountSettings): Promise<IResCommon>;
-	/**
-	 * * 获取改名时间
-	 */
+	/** 获取改名时间 */
 	fetchModNicknameTime(data: IReqCommon): Promise<IResModNicknameTime>;
-	/**
-	 * * 创建微信支付（扫码支付）订单
-	 */
+	/** 创建微信支付（扫码支付）订单 */
 	createWechatNativeOrder(data: IReqCreateWechatNativeOrder): Promise<IResCreateWechatNativeOrder>;
-	/**
-	 * * 创建微信支付（App支付）订单
-	 */
+	/** 创建微信支付（App支付）订单 */
 	createWechatAppOrder(data: IReqCreateWechatAppOrder): Promise<IResCreateWechatAppOrder>;
-	/**
-	 * * 创建支付宝（链接地址）订单
-	 */
+	/** 创建支付宝（链接地址）订单 */
 	createAlipayOrder(data: IReqCreateAlipayOrder): Promise<IResCreateAlipayOrder>;
-	/**
-	 * * 创建支付宝（扫码支付）订单
-	 */
+	/** 创建支付宝（扫码支付）订单 */
 	createAlipayScanOrder(data: IReqCreateAlipayScanOrder): Promise<IResCreateAlipayScanOrder>;
-	/**
-	 * * 创建支付宝（App支付）订单
-	 */
+	/** 创建支付宝（App支付）订单 */
 	createAlipayAppOrder(data: IReqCreateAlipayAppOrder): Promise<IResCreateAlipayAppOrder>;
-	/**
-	 * * 创建日服-CreditCard订单
-	 */
+	/** 创建日服-CreditCard订单 */
 	createJPCreditCardOrder(data: IReqCreateJPCreditCardOrder): Promise<IResCreateJPCreditCardOrder>;
-	/**
-	 * * 创建日服-Paypal订单
-	 */
+	/** 创建日服-Paypal订单 */
 	createJPPaypalOrder(data: IReqCreateJPPaypalOrder): Promise<IResCreateJPPaypalOrder>;
-	/**
-	 * * 创建日服-Au订单
-	 */
+	/** 创建日服-Au订单 */
 	createJPAuOrder(data: IReqCreateJPAuOrder): Promise<IResCreateJPAuOrder>;
-	/**
-	 * * 创建日服-Docomo订单
-	 */
+	/** 创建日服-Docomo订单 */
 	createJPDocomoOrder(data: IReqCreateJPDocomoOrder): Promise<IResCreateJPDocomoOrder>;
-	/**
-	 * * 创建日服-WebMoney订单
-	 */
+	/** 创建日服-WebMoney订单 */
 	createJPWebMoneyOrder(data: IReqCreateJPWebMoneyOrder): Promise<IResCreateJPWebMoneyOrder>;
-	/**
-	 * * 创建日服-Softbank订单
-	 */
+	/** 创建日服-Softbank订单 */
 	createJPSoftbankOrder(data: IReqCreateJPSoftbankOrder): Promise<IResCreateJPSoftbankOrder>;
-	/**
-	 * * 创建日服-Paypay订单
-	 */
+	/** 创建日服-Paypay订单 */
 	createJPPayPayOrder(data: IReqCreateJPPayPayOrder): Promise<IResCreateJPPayPayOrder>;
-	/**
-	 * * 获取日服信用卡订单信息
-	 */
+	/** 获取日服信用卡订单信息 */
 	fetchJPCommonCreditCardOrder(data: IReqFetchJPCommonCreditCardOrder): Promise<IResFetchJPCommonCreditCardOrder>;
-	/**
-	 * * 创建日服-GMO订单
-	 */
+	/** 创建日服-GMO订单 */
 	createJPGMOOrder(data: IReqCreateJPGMOOrder): Promise<IResCreateJPGMOOrder>;
-	/**
-	 * * 创建美服-Paypal订单
-	 */
+	/** 创建美服-Paypal订单 */
 	createENPaypalOrder(data: IReqCreateENPaypalOrder): Promise<IResCreateENPaypalOrder>;
-	/**
-	 * * 创建美服-MasterCard订单
-	 */
+	/** 创建美服-MasterCard订单 */
 	createENMasterCardOrder(data: IReqCreateENMasterCardOrder): Promise<IResCreateENMasterCardOrder>;
-	/**
-	 * * 创建美服-Visa订单
-	 */
+	/** 创建美服-Visa订单 */
 	createENVisaOrder(data: IReqCreateENVisaOrder): Promise<IResCreateENVisaOrder>;
-	/**
-	 * * 创建美服-JCB订单
-	 */
+	/** 创建美服-JCB订单 */
 	createENJCBOrder(data: IReqCreateENJCBOrder): Promise<IResCreateENJCBOrder>;
-	/**
-	 * * 创建美服-Alipay订单
-	 */
+	/** 创建美服-Alipay订单 */
 	createENAlipayOrder(data: IReqCreateENAlipayOrder): Promise<IResCreateENAlipayOrder>;
-	/**
-	 * * 创建韩服-Paypal订单
-	 */
+	/** 创建韩服-Paypal订单 */
 	createKRPaypalOrder(data: IReqCreateKRPaypalOrder): Promise<IResCreateKRPaypalOrder>;
-	/**
-	 * * 创建韩服-MasterCard订单
-	 */
+	/** 创建韩服-MasterCard订单 */
 	createKRMasterCardOrder(data: IReqCreateKRMasterCardOrder): Promise<IResCreateKRMasterCardOrder>;
-	/**
-	 * * 创建韩服-Visa订单
-	 */
+	/** 创建韩服-Visa订单 */
 	createKRVisaOrder(data: IReqCreateKRVisaOrder): Promise<IResCreateKRVisaOrder>;
-	/**
-	 * * 创建韩服-JCB订单
-	 */
+	/** 创建韩服-JCB订单 */
 	createKRJCBOrder(data: IReqCreateKRJCBOrder): Promise<IResCreateKRJCBOrder>;
-	/**
-	 * * 创建韩服-Alipay订单
-	 */
+	/** 创建韩服-Alipay订单 */
 	createKRAlipayOrder(data: IReqCreateKRAlipayOrder): Promise<IResCreateKRAlipayOrder>;
-	/**
-	 * * 创建DMM订单
-	 */
+	/** 创建DMM订单 */
 	createDMMOrder(data: IReqCreateDMMOrder): Promise<IResCreateDmmOrder>;
-	/**
-	 * * 创建苹果内购订单
-	 */
+	/** 创建苹果内购订单 */
 	createIAPOrder(data: IReqCreateIAPOrder): Promise<IResCreateIAPOrder>;
-	/**
-	 * * 创建Steam订单
-	 */
+	/** 创建Steam订单 */
 	createSteamOrder(data: IReqCreateSteamOrder): Promise<IResCreateSteamOrder>;
-	/**
-	 * * Steam验单
-	 */
+	/** Steam验单 */
 	verifySteamOrder(data: IReqVerifySteamOrder): Promise<IResCommon>;
-	/**
-	 * * 创建MyCard Android订单
-	 */
+	/** 创建MyCard Android订单 */
 	createMyCardAndroidOrder(data: IReqCreateMyCardOrder): Promise<IResCreateMyCardOrder>;
-	/**
-	 * * 创建MyCard Web订单
-	 */
+	/** 创建MyCard Web订单 */
 	createMyCardWebOrder(data: IReqCreateMyCardOrder): Promise<IResCreateMyCardOrder>;
-	/**
-	 * * 创建Paypal订单
-	 */
+	/** 创建Paypal订单 */
 	createPaypalOrder(data: IReqCreatePaypalOrder): Promise<IResCreatePaypalOrder>;
-	/**
-	 * * 创建Xsolla订单
-	 */
+	/** 创建Xsolla订单 */
 	createXsollaOrder(data: IReqCreateXsollaOrder): Promise<IResCreateXsollaOrder>;
-	/**
-	 * * 创建XsollaV4订单
-	 */
+	/** 创建XsollaV4订单 */
 	createXsollaV4Order(data: IReqCreateXsollaOrder): Promise<IResCreateXsollaOrder>;
-	/**
-	 * * MyCard验单
-	 */
+	/** MyCard验单 */
 	verifyMyCardOrder(data: IReqVerifyMyCardOrder): Promise<IResCommon>;
-	/**
-	 * * 验证苹果内购订单
-	 */
+	/** 验证苹果内购订单 */
 	verificationIAPOrder(data: IReqVerificationIAPOrder): Promise<IResVerificationIAPOrder>;
-	/**
-	 * * 创建Yostar-SDK订单
-	 */
+	/** 创建Yostar-SDK订单 */
 	createYostarSDKOrder(data: IReqCreateYostarOrder): Promise<IResCreateYostarOrder>;
-	/**
-	 * * 创建支付订单
-	 */
+	/** 创建支付订单 */
 	createBillingOrder(data: IReqCreateBillingOrder): Promise<IResCreateBillingOrder>;
-	/**
-	 * * 处理 Google Play 订单支付结果
-	 */
+	/** 处理 Google Play 订单支付结果 */
 	solveGooglePlayOrder(data: IReqSolveGooglePlayOrder): Promise<IResCommon>;
 	solveGooglePayOrderV3(data: IReqSolveGooglePlayOrderV3): Promise<IResCommon>;
-	/**
-	 * * 处理 AA32 订单
-	 */
+	/** 处理 AA32 订单 */
 	deliverAA32Order(data: IReqDeliverAA32Order): Promise<IResCommon>;
-	/**
-	 * * 获取账号杂七杂八的数据
-	 */
+	/** 获取账号杂七杂八的数据 */
 	fetchMisc(data: IReqCommon): Promise<IResMisc>;
-	/**
-	 * * 修改签名
-	 */
+	/** 修改签名 */
 	modifySignature(data: IReqModifySignature): Promise<IResCommon>;
-	/**
-	 * * 获取实名认证信息
-	 */
+	/** 获取实名认证信息 */
 	fetchIDCardInfo(data: IReqCommon): Promise<IResIDCardInfo>;
-	/**
-	 * * 进行实名认证
-	 */
+	/** 进行实名认证 */
 	updateIDCardInfo(data: IReqUpdateIDCardInfo): Promise<IResCommon>;
-	/**
-	 * * 获取vip奖励领取状态
-	 */
+	/** 获取vip奖励领取状态 */
 	fetchVipReward(data: IReqCommon): Promise<IResVipReward>;
-	/**
-	 * * 领取vip奖励
-	 */
+	/** 领取vip奖励 */
 	gainVipReward(data: IReqGainVipReward): Promise<IResCommon>;
-	/**
-	 * * 获取需要补单的订单信息
-	 */
+	/** 获取需要补单的订单信息 */
 	fetchRefundOrder(data: IReqCommon): Promise<IResFetchRefundOrder>;
-	/**
-	 * * 获取赛事列表
-	 */
+	/** 获取赛事列表 */
 	fetchCustomizedContestList(data: IReqFetchCustomizedContestList): Promise<IResFetchCustomizedContestList>;
-	/**
-	 * * 获取赛事权限相关信息
-	 */
+	/** 获取赛事权限相关信息 */
 	fetchCustomizedContestAuthInfo(data: IReqFetchCustomizedContestAuthInfo): Promise<IResFetchCustomizedContestAuthInfo>;
-	/**
-	 * * 进入赛事
-	 */
+	/** 进入赛事 */
 	enterCustomizedContest(data: IReqEnterCustomizedContest): Promise<IResEnterCustomizedContest>;
-	/**
-	 * * 退出赛事
-	 */
+	/** 退出赛事 */
 	leaveCustomizedContest(data: IReqCommon): Promise<IResCommon>;
-	/**
-	 * * 请求比赛在线信息
-	 */
+	/** 请求比赛在线信息 */
 	fetchCustomizedContestOnlineInfo(data: IReqFetchCustomizedContestOnlineInfo): Promise<IResFetchCustomizedContestOnlineInfo>;
-	/**
-	 * * 获取赛事基本信息（通过赛事ID）
-	 */
+	/** 获取赛事基本信息（通过赛事ID） */
 	fetchCustomizedContestByContestId(data: IReqFetchCustomizedContestByContestId): Promise<IResFetchCustomizedContestByContestId>;
-	/**
-	 * * 报名比赛
-	 */
+	/** 报名比赛 */
 	signupCustomizedContest(data: IReqSignupCustomizedContest): Promise<IResSignupCustomizedContest>;
-	/**
-	 * * 开始比赛匹配
-	 */
+	/** 开始比赛匹配 */
 	startCustomizedContest(data: IReqStartCustomizedContest): Promise<IResCommon>;
-	/**
-	 * * 停止比赛匹配
-	 */
+	/** 停止比赛匹配 */
 	stopCustomizedContest(data: IReqStopCustomizedContest): Promise<IResCommon>;
-	/**
-	 * * 进入比赛聊天室
-	 */
+	/** 进入比赛聊天室 */
 	joinCustomizedContestChatRoom(data: IReqJoinCustomizedContestChatRoom): Promise<IResJoinCustomizedContestChatRoom>;
-	/**
-	 * * 退出比赛聊天室
-	 */
+	/** 退出比赛聊天室 */
 	leaveCustomizedContestChatRoom(data: IReqCommon): Promise<IResCommon>;
-	/**
-	 * * 发送聊天消息
-	 */
+	/** 发送聊天消息 */
 	sayChatMessage(data: IReqSayChatMessage): Promise<IResCommon>;
-	/**
-	 * * 查询赛事牌谱列表
-	 */
+	/** 查询赛事牌谱列表 */
 	fetchCustomizedContestGameRecords(data: IReqFetchCustomizedContestGameRecords): Promise<IResFetchCustomizedContestGameRecords>;
-	/**
-	 * * 获取正在直播的比赛游戏列表
-	 */
+	/** 获取正在直播的比赛游戏列表 */
 	fetchCustomizedContestGameLiveList(data: IReqFetchCustomizedContestGameLiveList): Promise<IResFetchCustomizedContestGameLiveList>;
-	/**
-	 * * 关注自定义比赛
-	 */
+	/** 关注自定义比赛 */
 	followCustomizedContest(data: IReqTargetCustomizedContest): Promise<IResCommon>;
-	/**
-	 * * 取消关注自定义比赛
-	 */
+	/** 取消关注自定义比赛 */
 	unfollowCustomizedContest(data: IReqTargetCustomizedContest): Promise<IResCommon>;
-	/**
-	 * * 获取活动列表
-	 */
+	/** 获取活动列表 */
 	fetchActivityList(data: IReqCommon): Promise<IResActivityList>;
-	/**
-	 * * 获取玩家活动数据
-	 */
+	/** 获取玩家活动数据 */
 	fetchAccountActivityData(data: IReqCommon): Promise<IResAccountActivityData>;
-	/**
-	 * * 兑换活动
-	 */
+	/** 兑换活动 */
 	exchangeActivityItem(data: IReqExchangeActivityItem): Promise<IResExchangeActivityItem>;
-	/**
-	 * * 领取活动任务奖励
-	 */
+	/** 领取活动任务奖励 */
 	completeActivityTask(data: IReqCompleteActivityTask): Promise<IResCommon>;
 	completeActivityTaskBatch(data: IReqCompleteActivityTaskBatch): Promise<IResCommon>;
-	/**
-	 * * 领取翻牌牌任务奖励
-	 */
+	/** 领取翻牌牌任务奖励 */
 	completeActivityFlipTask(data: IReqCompleteActivityTask): Promise<IResCommon>;
-	/**
-	 * * 领取长期任务奖励
-	 */
+	/** 领取长期任务奖励 */
 	completePeriodActivityTask(data: IReqCompleteActivityTask): Promise<IResCommon>;
 	completePeriodActivityTaskBatch(data: IReqCompletePeriodActivityTaskBatch): Promise<IResCommon>;
-	/**
-	 * * 领取随机任务奖励
-	 */
+	/** 领取随机任务奖励 */
 	completeRandomActivityTask(data: IReqCompleteActivityTask): Promise<IResCommon>;
 	completeRandomActivityTaskBatch(data: IReqCompleteActivityTaskBatch): Promise<IResCommon>;
-	/**
-	 * * 翻牌牌领任务
-	 */
+	/** 翻牌牌领任务 */
 	receiveActivityFlipTask(data: IReqReceiveActivityFlipTask): Promise<IResReceiveActivityFlipTask>;
-	/**
-	 * * 领取分段任务奖励
-	 */
+	/** 领取分段任务奖励 */
 	completeSegmentTaskReward(data: IReqCompleteSegmentTaskReward): Promise<IResCompleteSegmentTaskReward>;
-	/**
-	 * * 获取翻牌牌任务信息
-	 */
+	/** 获取翻牌牌任务信息 */
 	fetchActivityFlipInfo(data: IReqFetchActivityFlipInfo): Promise<IResFetchActivityFlipInfo>;
-	/**
-	 * * 领取得点活动奖励
-	 */
+	/** 领取得点活动奖励 */
 	gainAccumulatedPointActivityReward(data: IReqGainAccumulatedPointActivityReward): Promise<IResCommon>;
-	/**
-	 * * 批量领取得点活动奖励
-	 */
+	/** 批量领取得点活动奖励 */
 	gainMultiPointActivityReward(data: IReqGainMultiPointActivityReward): Promise<IResCommon>;
-	/**
-	 * * 获取得分排行榜数据
-	 */
+	/** 获取得分排行榜数据 */
 	fetchRankPointLeaderboard(data: IReqFetchRankPointLeaderboard): Promise<IResFetchRankPointLeaderboard>;
-	/**
-	 * * 领取得分排行奖励
-	 */
+	/** 领取得分排行奖励 */
 	gainRankPointReward(data: IReqGainRankPointReward): Promise<IResCommon>;
-	/**
-	 * * 大富翁投骰子
-	 */
+	/** 大富翁投骰子 */
 	richmanActivityNextMove(data: IReqRichmanNextMove): Promise<IResRichmanNextMove>;
-	/**
-	 * * 大富翁遥控骰子
-	 */
+	/** 大富翁遥控骰子 */
 	richmanAcitivitySpecialMove(data: IReqRichmanSpecialMove): Promise<IResRichmanNextMove>;
-	/**
-	 * * 大富翁宝箱信息
-	 */
+	/** 大富翁宝箱信息 */
 	richmanActivityChestInfo(data: IReqRichmanChestInfo): Promise<IResRichmanChestInfo>;
-	/**
-	 * * 创建实时OB权限
-	 */
+	/** 创建实时OB权限 */
 	createGameObserveAuth(data: IReqCreateGameObserveAuth): Promise<IResCreateGameObserveAuth>;
-	/**
-	 * * 刷新实时OB权限时长
-	 */
+	/** 刷新实时OB权限时长 */
 	refreshGameObserveAuth(data: IReqRefreshGameObserveAuth): Promise<IResRefreshGameObserveAuth>;
-	/**
-	 * * 获取活动buff信息
-	 */
+	/** 获取活动buff信息 */
 	fetchActivityBuff(data: IReqCommon): Promise<IResActivityBuff>;
-	/**
-	 * * 升级活动buff
-	 */
+	/** 升级活动buff */
 	upgradeActivityBuff(data: IReqUpgradeActivityBuff): Promise<IResActivityBuff>;
-	/**
-	 * * 升级活动升级
-	 */
+	/** 升级活动升级 */
 	upgradeActivityLevel(data: IReqUpgradeActivityLevel): Promise<IResUpgradeActivityLevel>;
-	/**
-	 * * 获取总等级奖励
-	 */
+	/** 获取总等级奖励 */
 	receiveUpgradeActivityReward(data: IReqReceiveUpgradeActivityReward): Promise<IResReceiveUpgradeActivityReward>;
-	/**
-	 * * 试炼赛升级
-	 */
+	/** 试炼赛升级 */
 	upgradeChallenge(data: IReqCommon): Promise<IResUpgradeChallenge>;
-	/**
-	 * * 再发行
-	 */
+	/** 再发行 */
 	refreshChallenge(data: IReqCommon): Promise<IResRefreshChallenge>;
-	/**
-	 * * 获取试炼赛信息
-	 */
+	/** 获取试炼赛信息 */
 	fetchChallengeInfo(data: IReqCommon): Promise<IResFetchChallengeInfo>;
-	/**
-	 * * 盖章完成试炼任务
-	 */
+	/** 盖章完成试炼任务 */
 	forceCompleteChallengeTask(data: IReqForceCompleteChallengeTask): Promise<IResCommon>;
-	/**
-	 * * 获取当前试炼赛信息
-	 */
+	/** 获取当前试炼赛信息 */
 	fetchChallengeSeason(data: IReqCommon): Promise<IResChallengeSeasonInfo>;
-	/**
-	 * * 获取试炼赛排名奖励
-	 */
+	/** 获取试炼赛排名奖励 */
 	receiveChallengeRankReward(data: IReqReceiveChallengeRankReward): Promise<IResReceiveChallengeRankReward>;
-	/**
-	 * * AB赛
-	 */
+	/** AB赛 */
 	fetchABMatchInfo(data: IReqCommon): Promise<IResFetchABMatch>;
 	buyInABMatch(data: IReqBuyInABMatch): Promise<IResCommon>;
 	receiveABMatchReward(data: IReqCommon): Promise<IResCommon>;
@@ -1024,121 +535,75 @@ declare interface INetMethod {
 	cancelUnifiedMatch(data: IReqCancelUnifiedMatch): Promise<IResCommon>;
 	fetchGamePointRank(data: IReqGamePointRank): Promise<IResGamePointRank>;
 	fetchSelfGamePointRank(data: IReqGamePointRank): Promise<IResFetchSelfGamePointRank>;
-	/**
-	 * * SNS活动
-	 */
+	/** SNS活动 */
 	readSNS(data: IReqReadSNS): Promise<IResReadSNS>;
 	replySNS(data: IReqReplySNS): Promise<IResReplySNS>;
 	likeSNS(data: IReqLikeSNS): Promise<IResLikeSNS>;
-	/**
-	 * * 挖矿活动
-	 */
+	/** 挖矿活动 */
 	digMine(data: IReqDigMine): Promise<IResDigMine>;
-	/**
-	 * * 用户协议
-	 */
+	/** 用户协议 */
 	fetchLastPrivacy(data: IReqFetchLastPrivacy): Promise<IResFetchLastPrivacy>;
 	checkPrivacy(data: IReqCheckPrivacy): Promise<IResCommon>;
-	/**
-	 * * rpg活动
-	 */
+	/** rpg活动 */
 	fetchRPGBattleHistory(data: IReqFetchRPGBattleHistory): Promise<IResFetchRPGBattleHistory>;
 	fetchRPGBattleHistoryV2(data: IReqFetchRPGBattleHistory): Promise<IResFetchRPGBattleHistoryV2>;
 	receiveRPGRewards(data: IReqReceiveRPGRewards): Promise<IResReceiveRPGRewards>;
 	receiveRPGReward(data: IReqReceiveRPGReward): Promise<IResReceiveRPGRewards>;
-	/**
-	 * * 竞技场活动
-	 */
+	/** 竞技场活动 */
 	buyArenaTicket(data: IReqBuyArenaTicket): Promise<IResCommon>;
 	enterArena(data: IReqEnterArena): Promise<IResCommon>;
 	receiveArenaReward(data: IReqArenaReward): Promise<IResArenaReward>;
-	/**
-	 * * 观战
-	 */
+	/** 观战 */
 	fetchOBToken(data: IReqFetchOBToken): Promise<IResFetchOBToken>;
-	/**
-	 * * 角色好感度
-	 */
+	/** 角色好感度 */
 	receiveCharacterRewards(data: IReqReceiveCharacterRewards): Promise<IResReceiveCharacterRewards>;
-	/**
-	 * * 喂年兽活动 -> 已经拆分成 friend-gift 与 upgrade 活动，这个协议不再使用
-	 */
+	/** 喂年兽活动 -> 已经拆分成 friend-gift 与 upgrade 活动，这个协议不再使用 */
 	feedActivityFeed(data: IReqFeedActivityFeed): Promise<IResFeedActivityFeed>;
-	/**
-	 * * 送礼活动
-	 */
+	/** 送礼活动 */
 	sendActivityGiftToFriend(data: IReqSendActivityGiftToFriend): Promise<IResSendActivityGiftToFriend>;
 	receiveActivityGift(data: IReqReceiveActivityGift): Promise<IResCommon>;
 	receiveAllActivityGift(data: IReqReceiveAllActivityGift): Promise<IResReceiveAllActivityGift>;
 	fetchFriendGiftActivityData(data: IReqFetchFriendGiftActivityData): Promise<IResFetchFriendGiftActivityData>;
-	/**
-	 * * 自选卡池
-	 */
+	/** 自选卡池 */
 	openPreChestItem(data: IReqOpenPreChestItem): Promise<IResOpenPreChestItem>;
-	/**
-	 * * 投票活动
-	 */
+	/** 投票活动 */
 	fetchVoteActivity(data: IReqFetchVoteActivity): Promise<IResFetchVoteActivity>;
 	voteActivity(data: IReqVoteActivity): Promise<IResVoteActivity>;
-	/**
-	 * * 剧情活动
-	 */
+	/** 剧情活动 */
 	unlockActivitySpot(data: IReqUnlockActivitySpot): Promise<IResCommon>;
 	unlockActivitySpotEnding(data: IReqUnlockActivitySpotEnding): Promise<IResCommon>;
 	receiveActivitySpotReward(data: IReqReceiveActivitySpotReward): Promise<IResReceiveActivitySpotReward>;
-	/**
-	 * * 删除账号接口
-	 */
+	/** 删除账号接口 */
 	deleteAccount(data: IReqCommon): Promise<IResDeleteAccount>;
 	cancelDeleteAccount(data: IReqCommon): Promise<IResCommon>;
 	logReport(data: IReqLogReport): Promise<IResCommon>;
-	/**
-	 * * oauth2
-	 */
+	/** oauth2 */
 	bindOauth2(data: IReqBindOauth2): Promise<IResCommon>;
 	fetchOauth2Info(data: IReqFetchOauth2): Promise<IResFetchOauth2>;
-	/**
-	 * * loading图
-	 */
+	/** loading图 */
 	setLoadingImage(data: IReqSetLoadingImage): Promise<IResCommon>;
-	/**
-	 * * 获取商店信息
-	 */
+	/** 获取商店信息 */
 	fetchShopInterval(data: IReqCommon): Promise<IResFetchShopInterval>;
-	/**
-	 * * 获取活动轮换信息
-	 */
+	/** 获取活动轮换信息 */
 	fetchActivityInterval(data: IReqCommon): Promise<IResFetchActivityInterval>;
-	/**
-	 * * 获取最近对战玩家
-	 */
+	/** 获取最近对战玩家 */
 	fetchRecentFriend(data: IReqCommon): Promise<IResFetchrecentFriend>;
-	/**
-	 * * 扭蛋活动
-	 */
+	/** 扭蛋活动 */
 	openGacha(data: IReqOpenGacha): Promise<IResOpenGacha>;
-	/**
-	 * * 前端完成任务
-	 */
+	/** 前端完成任务 */
 	taskRequest(data: IReqTaskRequest): Promise<IResCommon>;
-	/**
-	 * * 养成活动
-	 */
+	/** 养成活动 */
 	simulationActivityTrain(data: IReqSimulationActivityTrain): Promise<IResSimulationActivityTrain>;
 	fetchSimulationGameRecord(data: IReqFetchSimulationGameRecord): Promise<IResFetchSimulationGameRecord>;
 	startSimulationActivityGame(data: IReqStartSimulationActivityGame): Promise<IResStartSimulationActivityGame>;
 	fetchSimulationGameRank(data: IReqFetchSimulationGameRank): Promise<IResFetchSimulationGameRank>;
-	/**
-	 * * 合成活动
-	 */
+	/** 合成活动 */
 	generateCombiningCraft(data: IReqGenerateCombiningCraft): Promise<IResGenerateCombiningCraft>;
 	moveCombiningCraft(data: IReqMoveCombiningCraft): Promise<IResMoveCombiningCraft>;
 	combiningRecycleCraft(data: IReqCombiningRecycleCraft): Promise<IResCombiningRecycleCraft>;
 	recoverCombiningRecycle(data: IReqRecoverCombiningRecycle): Promise<IResRecoverCombiningRecycle>;
 	finishCombiningOrder(data: IReqFinishCombiningOrder): Promise<IResFinishCombiningOrder>;
-	/**
-	 * * 小村活动
-	 */
+	/** 小村活动 */
 	upgradeVillageBuilding(data: IReqUpgradeVillageBuilding): Promise<IResCommon>;
 	receiveVillageBuildingReward(data: IReqReceiveVillageBuildingReward): Promise<IResReceiveVillageBuildingReward>;
 	startVillageTrip(data: IReqStartVillageTrip): Promise<IResCommon>;
@@ -1146,17 +611,16 @@ declare interface INetMethod {
 	completeVillageTask(data: IReqCompleteVillageTask): Promise<IResCompleteVillageTask>;
 	getFriendVillageData(data: IReqGetFriendVillageData): Promise<IResGetFriendVillageData>;
 	setVillageWorker(data: IReqSetVillageWorker): Promise<IResSetVillageWorker>;
-	/**
-	 * * 下一个丰收季
-	 */
+	/** 下一个丰收季 */
 	nextRoundVillage(data: IReqNextRoundVillage): Promise<IResNextRoundVillage>;
-	/**
-	 * * 庆典活动
-	 */
+	/** 庆典活动 */
 	resolveFestivalActivityProposal(data: IReqResolveFestivalActivityProposal): Promise<IResResolveFestivalActivityProposal>;
 	resolveFestivalActivityEvent(data: IReqResolveFestivalActivityEvent): Promise<IResResolveFestivalActivityEvent>;
 	buyFestivalProposal(data: IReqBuyFestivalProposal): Promise<IResBuyFestivalProposal>;
-	/** debug 协议在正式版本删除 */
+	/**
+	 * * ==DevDebug Start==
+	 * * debug 协议在正式版本删除
+	 */
 	festivalActivityFetchDebug(data: IReqFestivalFetchDebug): Promise<IResFestivalFetchDebug>;
 	festivalActivityDebug(data: IReqFestivalDebug): Promise<IResCommon>;
 	/** 海岛活动 */
@@ -1212,7 +676,10 @@ declare interface INetMethod {
 	amuletActivitySelectRewardPack(data: IReqAmuletActivitySelectRewardPack): Promise<IResAmuletEventResponse>;
 	/** 设置青云之志钦定护身符 */
 	amuletActivitySelectBookEffect(data: IReqAmuletActivitySelectBookEffect): Promise<IResCommon>;
-	/** debug 协议在正式版本删除 */
+	/**
+	 * * ==DevDebug Start==
+	 * * debug 协议在正式版本删除
+	 */
 	amuletActivityDebug(data: IReqAmuletActivityDebug): Promise<IResCommon>;
 	amuletActivityFetchDebug(data: IReqAmuletActivityFetchDebug): Promise<IResFetchAmuletActivityDebug>;
 	/** 解锁剧情 */
@@ -1264,9 +731,11 @@ declare interface INetMethod {
 	simV2ActivityEndMatch(data: IReqSimV2ActivityEndMatch): Promise<IResSimV2ActivityEndMatch>;
 	simV2ActivityGiveUp(data: IReqSimV2ActivityGiveUp): Promise<IResCommon>;
 	simV2ActivitySetUpgrade(data: IReqSimV2ActivitySetUpgrade): Promise<IResCommon>;
-	/** debug 协议在正式版本删除 */
+	/**
+	 * * ==DevDebug Start==
+	 * * debug 协议在正式版本删除
+	 */
 	simV2ActivityDebug(data: IReqSimV2ActivityDebug): Promise<IResCommon>;
-	/** debug 协议在正式版本删除 */
 	simV2ActivityFetchDebug(data: IReqSimV2ActivityFetchDebug): Promise<IResSimV2ActivityFetchDebug>;
 	/** 进度奖励活动 */
 	progressRewardActivityReceive(data: IReqProgressRewardActivityReceive): Promise<IResProgressRewardActivityReceive>;
@@ -1291,7 +760,7 @@ declare interface INetMethod {
 	broadcastInGame(data: IReqBroadcastInGame): Promise<IResCommon>;
 	/**
 	 * * 玩家游戏内Gm指令
-	 * @deprecated
+	 * * deprecated
 	 */
 	inputGameGMCommand(data: IReqGMCommandInGaming): Promise<IResCommon>;
 	/** 获取对局玩家状态 */

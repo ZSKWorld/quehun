@@ -93,7 +93,7 @@ export class WebSocket extends Laya.EventDispatcher {
     }
 
     send(methodName: EMessageID, data: any) {
-        return new Promise<IResponse>(resolve => {
+        return new Promise<PartialAll<IResponse>>(resolve => {
             if (!this.connected) {
                 resolve({ error: { code: -1 } });
                 return;

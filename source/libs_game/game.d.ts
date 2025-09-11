@@ -21,7 +21,7 @@ declare type Class<T> = new (...args: any[]) => T;
 declare type LoadURL = string | Laya.ILoadURL | (string | Readonly<Laya.ILoadURL>)[];
 
 declare const gameMgr: IGameManager;
-declare const netMgr: INetManager & INetMethod;
+declare const netMgr: INetManager & IReqMethod;
 declare const userData: IUser & { decode(data: Partial<OriginData<IUser>>): IUser };
 declare const cfgMgr: ICfgManager;
 declare const loadMgr: ILoadManager;

@@ -24,9 +24,7 @@ export class NetManager extends Observer implements INetManager {
             else if (service == ServiceType.FastTest) socket = this._gameSocket;
             else if (service == ServiceType.Route) socket = this._lobbySocket;
             else continue;
-            this[key] = (data) => {
-                return socket.send(key as EMessageID, data)
-            };
+            this[key] = data => socket.send(EMessageID[key], data);
         }
 
         this._lobbySocket.on(SocketEvent.ConnectSuccess, this, () => {
@@ -34,17 +32,17 @@ export class NetManager extends Observer implements INetManager {
                 account: "1052938743@qq.com",
                 password: GameUtil.HmacSHA256("zsk412824"),
                 reconnect: false,
-                device: gameMgr.getDeviceInfo(),
+                device: gameMgr.deviceInfo,
                 random_key: gameMgr.deviceId,
                 client_version: {
                     resource: gameMgr.version,
                     package: "",
                 },
                 gen_access_token: true,
-                currency_platforms: gameMgr.getCurrency(),
+                currency_platforms: gameMgr.currency,
                 type: 0,
                 client_version_string: gameMgr.clientVersion,
-                tag: gameMgr.getReportClientType(),
+                tag: gameMgr.reportClientType,
                 version: 0,
             };
             netMgr.login(param);

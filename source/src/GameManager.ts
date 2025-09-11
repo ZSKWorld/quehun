@@ -16,30 +16,7 @@ export class GameManager implements IGameManager {
         }
         return this._deviceId;
     }
-    get language() { return "chs"; }
-    get clientType() { return "chs"; }
-    get version() { return this._version?.version || ""; }
-    get clientVersion() { return 'web-' + this.version.replace('.w', ''); }
-    get payChannelId() {
-        if (this._inDmm) {
-            return 403;
-        } else if (this.clientType == 'en') {
-            return 302;
-        } else if (this.clientType == 'chs_t') {
-            return 204;
-        } else if (this.clientType == 'kr') {
-            return 502;
-        } else {
-            return 402;
-        }
-    }
-
-    async init() {
-        const version = await loadMgr.fetch("https://game.maj-soul.com/1/version.json", "json", null, { ignoreCache: true });
-        this._version = version;
-    }
-
-    getDeviceInfo() {
+    get deviceInfo() {
         const userAgent = navigator.userAgent;
         const device: IClientDeviceInfo = {
             hardware: 'pc',
@@ -61,16 +38,29 @@ export class GameManager implements IGameManager {
         if (type) device.model_number = type;
         return device;
     }
-    getCurrency() {
+    get language() { return "chs"; }
+    get clientType() { return "chs"; }
+    get version() { return this._version?.version || ""; }
+    get clientVersion() { return 'web-' + this.version.replace('.w', ''); }
+    get currency() {
         const info = cfgMgr.mall.channel_config.get(this.payChannelId);
         if (!info.currency_platforms) return [];
         return info.currency_platforms.split("-").map(Number);
     }
-
-    showConfirm(msg: string) {
-        return Promise.resolve(confirm(msg));
+    get payChannelId() {
+        if (this._inDmm) {
+            return 403;
+        } else if (this.clientType == 'en') {
+            return 302;
+        } else if (this.clientType == 'chs_t') {
+            return 204;
+        } else if (this.clientType == 'kr') {
+            return 502;
+        } else {
+            return 402;
+        }
     }
-    getReportClientType() {
+    get reportClientType() {
         switch (this.clientType) {
             case 'chs_t':
                 return 'cn';
@@ -82,5 +72,14 @@ export class GameManager implements IGameManager {
                 return 'en';
         }
         return 'unknown';
+    }
+
+    async init() {
+        const version = await loadMgr.fetch("https://game.maj-soul.com/1/version.json", "json", null, { ignoreCache: true });
+        this._version = version;
+    }
+
+    showConfirm(msg: string) {
+        return Promise.resolve(confirm(msg));
     }
 }

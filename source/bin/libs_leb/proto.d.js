@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 ENotify = {
 	NotifyRoomGameStart: "NotifyRoomGameStart",
 	NotifyMatchGameStart: "NotifyMatchGameStart",
@@ -62,6 +64,7 @@ ENotify = {
 	NotifyEndGameVote: "NotifyEndGameVote",
 	NotifyObserveData: "NotifyObserveData",
 }
+
 EMessageID = {
 	fetchConnectionInfo: "fetchConnectionInfo",
 	fetchQueueInfo: "fetchQueueInfo",

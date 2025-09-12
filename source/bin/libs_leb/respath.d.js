@@ -75,8 +75,6 @@ ResPath = {
 		NotoSansKR: "res/font/NotoSansKR.ttf",
 	},
 
-	ScenePath: { },
-
 	SkeletonPath: {
 		Bianhua: "res/skeleton/bianhua.sk",
 		Biaoqing: "res/skeleton/biaoqing.sk",

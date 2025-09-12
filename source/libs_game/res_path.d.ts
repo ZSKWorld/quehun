@@ -75,8 +75,6 @@ declare namespace ResPath {
 		NotoSansKR = "res/font/NotoSansKR.ttf",
 	}
 
-	enum ScenePath { }
-
 	enum SkeletonPath {
 		Bianhua = "res/skeleton/bianhua.sk",
 		Biaoqing = "res/skeleton/biaoqing.sk",

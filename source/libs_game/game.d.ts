@@ -23,7 +23,7 @@ declare type LoadURL = string | Laya.ILoadURL | (string | Readonly<Laya.ILoadURL
 declare const gameMgr: IGameManager;
 declare const netMgr: INetManager & IReqMethod;
 declare const userData: IUser & { decode(data: Partial<OriginData<IUser>>): IUser };
-declare const cfgMgr: ICfgManager;
+declare const cfgMgr: IConfigManager;
 declare const loadMgr: ILoadManager;
 declare const skeletonMgr: ISkeletonManager;
 declare const uiMgr: IUIManager;

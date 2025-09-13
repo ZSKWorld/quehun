@@ -56,7 +56,6 @@ export class RedDotTrigger extends SingletonExtend<RedDotTrigger, Observer>(Obse
     @RDTriggerEvent(RDTriggerType.HiddenWeeaponCanWear)
     @RDTriggerEvent(RDTriggerType.MagicWeaponCanWear)
     @RDTriggerEvent(RDTriggerType.EquipCanWear)
-    @InterestNotify(UserDataEvent.Bag_Equipment_Changed, false, [RDTriggerType.EquipCanWear])
     private checkAnyEquipCanWear(type: RDTriggerType) {
         let triggered = false;
         if (type == RDTriggerType.EquipCanWear) {

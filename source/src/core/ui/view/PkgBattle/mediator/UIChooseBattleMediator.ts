@@ -40,7 +40,6 @@ export class UIChooseBattleMediator extends MediatorBase<UIChooseBattleView, Bat
 		this.view.list_battle.numItems = 0;
 	}
 
-	@InterestNotify(UserDataEvent.User_Battle_Changed)
 	private refreshList() {
 		this.view.setBattleType(this.data - 1);
 		let itemCfg: BattleCfg;

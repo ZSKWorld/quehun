@@ -89,8 +89,6 @@ export class UIMainMediator extends MediatorBase<UIMainView, UIMainData> {
 		this._sphereDragged = value;
 	}
 
-	@InterestNotify(UserDataEvent.Account_Nickname_Changed)
-	@InterestNotify(UserDataEvent.User_Base_Changed)
 	private refreshPlayerInfo() {
 		this.view.refreshPlayerInfo();
 	}

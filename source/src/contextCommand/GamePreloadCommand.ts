@@ -25,7 +25,7 @@ export class GamePreloadCommand extends Command {
     private async load() {
         await gameMgr.init();
         await pbMgr.init();
-        await cfgMgr.loadCfg();
+        await cfgMgr.init();
         await netMgr.init();
 
         await loadMgr.load(ResPath.UnclassifiedPath.Gameconfig);

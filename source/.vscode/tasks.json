@@ -100,6 +100,15 @@
             },
             "problemMatcher": []
         },
+        { //更新Excel声明文件
+            "label": "更新Excel声明文件",
+            "type": "shell",
+            "command": "node ../../../laya_framework_tool/bin/js/BatMain.js 7",
+            "presentation": {
+                "close": true
+            },
+            "problemMatcher": []
+        },
         { //tsc监视
             "label": "tsc监视",
             "type": "typescript",

@@ -28,24 +28,24 @@ export class NetManager extends Observer implements INetManager {
         }
 
         this._lobbySocket.on(SocketEvent.ConnectSuccess, this, () => {
-            const param: IReqLogin = {
-                account: "1052938743@qq.com",
-                password: GameUtil.HmacSHA256("zsk412824"),
-                reconnect: false,
-                device: gameMgr.deviceInfo,
-                random_key: gameMgr.deviceId,
-                client_version: {
-                    resource: gameMgr.version,
-                    package: "",
-                },
-                gen_access_token: true,
-                currency_platforms: gameMgr.currency,
-                type: 0,
-                client_version_string: gameMgr.clientVersion,
-                tag: gameMgr.reportClientType,
-                version: 0,
-            };
-            netMgr.login(param);
+            // const param: IReqLogin = {
+            //     account: "1052938743@qq.com",
+            //     password: GameUtil.HmacSHA256("zsk412824"),
+            //     reconnect: false,
+            //     device: gameMgr.deviceInfo,
+            //     random_key: gameMgr.deviceId,
+            //     client_version: {
+            //         resource: gameMgr.version,
+            //         package: "",
+            //     },
+            //     gen_access_token: true,
+            //     currency_platforms: gameMgr.currency,
+            //     type: 0,
+            //     client_version_string: gameMgr.clientVersion,
+            //     tag: gameMgr.reportClientType,
+            //     version: 0,
+            // };
+            // netMgr.login(param);
         });
         this._lobbySocket.on(SocketEvent.Response, this, this.dispatch);
         this._lobbySocket.on(SocketEvent.Notify, this, this.dispatch);

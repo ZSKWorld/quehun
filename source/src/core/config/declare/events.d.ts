@@ -1,12 +1,14 @@
 declare interface ITable_Events {
-	soscoin: ISheet_Events_Soscoin;
-	dailyevent: ISheet_Events_Dailyevent;
-	base_task: ISheet_Events_BaseTask;
+	/** unique */
+	soscoin: CfgExt<ISheet_Events_Soscoin>;
+	/** unique */
+	dailyevent: CfgExt<ISheet_Events_Dailyevent>;
+	/** unique */
+	base_task: CfgExt<ISheet_Events_BaseTask>;
 }
 
-//#region soscoin --- unique
+//#region soscoin
 declare interface ISheet_Events_Soscoin {
-	rows: ISheetData_Events_Soscoin[];
 	101: ISheetData_Events_Soscoin;
 	102: ISheetData_Events_Soscoin;
 	103: ISheetData_Events_Soscoin;
@@ -43,9 +45,8 @@ declare interface ISheetData_Events_Soscoin {
 }
 //#endregion
 
-//#region dailyevent --- unique
+//#region dailyevent
 declare interface ISheet_Events_Dailyevent {
-	rows: ISheetData_Events_Dailyevent[];
 	20001: ISheetData_Events_Dailyevent;
 	20002: ISheetData_Events_Dailyevent;
 	20003: ISheetData_Events_Dailyevent;
@@ -306,9 +307,8 @@ declare interface ISheetData_Events_Dailyevent {
 }
 //#endregion
 
-//#region base_task --- unique
+//#region base_task
 declare interface ISheet_Events_BaseTask {
-	rows: ISheetData_Events_BaseTask[];
 	20001: ISheetData_Events_BaseTask;
 	20002: ISheetData_Events_BaseTask;
 	20003: ISheetData_Events_BaseTask;

@@ -1,12 +1,14 @@
 declare interface ITable_MatchShilian {
-	shilian: ISheet_MatchShilian_Shilian;
-	shilian_reward: ISheet_MatchShilian_ShilianReward;
-	shilian_time: ISheet_MatchShilian_ShilianTime;
+	/** unique */
+	shilian: CfgExt<ISheet_MatchShilian_Shilian>;
+	/** group */
+	shilian_reward: CfgExt<ISheet_MatchShilian_ShilianReward>;
+	/** unique */
+	shilian_time: CfgExt<ISheet_MatchShilian_ShilianTime>;
 }
 
-//#region shilian --- unique
+//#region shilian
 declare interface ISheet_MatchShilian_Shilian {
-	rows: ISheetData_MatchShilian_Shilian[];
 	1: ISheetData_MatchShilian_Shilian;
 }
 declare interface ISheetData_MatchShilian_Shilian {
@@ -26,9 +28,8 @@ declare interface ISheetData_MatchShilian_Shilian {
 }
 //#endregion
 
-//#region shilian_reward --- group
+//#region shilian_reward
 declare interface ISheet_MatchShilian_ShilianReward {
-	rows: ISheetData_MatchShilian_ShilianReward[];
 	1: ISheetData_MatchShilian_ShilianReward[];
 	2: ISheetData_MatchShilian_ShilianReward[];
 	3: ISheetData_MatchShilian_ShilianReward[];
@@ -42,9 +43,8 @@ declare interface ISheetData_MatchShilian_ShilianReward {
 }
 //#endregion
 
-//#region shilian_time --- unique
+//#region shilian_time
 declare interface ISheet_MatchShilian_ShilianTime {
-	rows: ISheetData_MatchShilian_ShilianTime[];
 	1: ISheetData_MatchShilian_ShilianTime;
 }
 declare interface ISheetData_MatchShilian_ShilianTime {

@@ -1,11 +1,12 @@
 declare interface ITable_Tutorial {
-	init: ISheet_Tutorial_Init;
-	step: ISheet_Tutorial_Step;
+	/** unique */
+	init: CfgExt<ISheet_Tutorial_Init>;
+	/** group */
+	step: CfgExt<ISheet_Tutorial_Step>;
 }
 
-//#region init --- unique
+//#region init
 declare interface ISheet_Tutorial_Init {
-	rows: ISheetData_Tutorial_Init[];
 	1: ISheetData_Tutorial_Init;
 	2: ISheetData_Tutorial_Init;
 	3: ISheetData_Tutorial_Init;
@@ -53,9 +54,8 @@ declare interface ISheetData_Tutorial_Init {
 }
 //#endregion
 
-//#region step --- group
+//#region step
 declare interface ISheet_Tutorial_Step {
-	rows: ISheetData_Tutorial_Step[];
 	1: ISheetData_Tutorial_Step[];
 	2: ISheetData_Tutorial_Step[];
 	3: ISheetData_Tutorial_Step[];

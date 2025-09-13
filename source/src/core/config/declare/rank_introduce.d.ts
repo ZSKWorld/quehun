@@ -1,11 +1,12 @@
 declare interface ITable_RankIntroduce {
-	rank: ISheet_RankIntroduce_Rank;
-	rank3: ISheet_RankIntroduce_Rank3;
+	/** unique */
+	rank: CfgExt<ISheet_RankIntroduce_Rank>;
+	/** unique */
+	rank3: CfgExt<ISheet_RankIntroduce_Rank3>;
 }
 
-//#region rank --- unique
+//#region rank
 declare interface ISheet_RankIntroduce_Rank {
-	rows: ISheetData_RankIntroduce_Rank[];
 	1: ISheetData_RankIntroduce_Rank;
 	2: ISheetData_RankIntroduce_Rank;
 	3: ISheetData_RankIntroduce_Rank;
@@ -29,9 +30,8 @@ declare interface ISheetData_RankIntroduce_Rank {
 }
 //#endregion
 
-//#region rank3 --- unique
+//#region rank3
 declare interface ISheet_RankIntroduce_Rank3 {
-	rows: ISheetData_RankIntroduce_Rank3[];
 	1: ISheetData_RankIntroduce_Rank3;
 	2: ISheetData_RankIntroduce_Rank3;
 	3: ISheetData_RankIntroduce_Rank3;

@@ -1,16 +1,22 @@
 declare interface ITable_Mall {
-	goods: ISheet_Mall_Goods;
-	product: ISheet_Mall_Product;
-	goods_shelves: ISheet_Mall_GoodsShelves;
-	zone_params: ISheet_Mall_ZoneParams;
-	month_ticket: ISheet_Mall_MonthTicket;
-	channel_config: ISheet_Mall_ChannelConfig;
-	month_ticket_info: ISheet_Mall_MonthTicketInfo;
+	/** 商品表  ---  unique */
+	goods: CfgExt<ISheet_Mall_Goods>;
+	/** 商品上架表（映射对应渠道商品ID）  ---  group */
+	product: CfgExt<ISheet_Mall_Product>;
+	/** 货架表（设定对应货架有哪些商品可以购买）  ---  group */
+	goods_shelves: CfgExt<ISheet_Mall_GoodsShelves>;
+	/** 区域通用参数  ---  group */
+	zone_params: CfgExt<ISheet_Mall_ZoneParams>;
+	/** 月卡表  ---  unique */
+	month_ticket: CfgExt<ISheet_Mall_MonthTicket>;
+	/** 渠道支付信息  ---  unique */
+	channel_config: CfgExt<ISheet_Mall_ChannelConfig>;
+	/** 各服月卡统一的发放内容  ---  unique */
+	month_ticket_info: CfgExt<ISheet_Mall_MonthTicketInfo>;
 }
 
-//#region goods --- unique
+//#region goods
 declare interface ISheet_Mall_Goods {
-	rows: ISheetData_Mall_Goods[];
 	1001: ISheetData_Mall_Goods;
 	1002: ISheetData_Mall_Goods;
 	1003: ISheetData_Mall_Goods;
@@ -137,9 +143,8 @@ declare interface ISheetData_Mall_Goods {
 }
 //#endregion
 
-//#region product --- group
+//#region product
 declare interface ISheet_Mall_Product {
-	rows: ISheetData_Mall_Product[];
 	10: ISheetData_Mall_Product[];
 	11: ISheetData_Mall_Product[];
 	12: ISheetData_Mall_Product[];
@@ -202,9 +207,8 @@ declare interface ISheetData_Mall_Product {
 }
 //#endregion
 
-//#region goods_shelves --- group
+//#region goods_shelves
 declare interface ISheet_Mall_GoodsShelves {
-	rows: ISheetData_Mall_GoodsShelves[];
 	shelves_001: ISheetData_Mall_GoodsShelves[];
 	shelves_002: ISheetData_Mall_GoodsShelves[];
 	shelves_003: ISheetData_Mall_GoodsShelves[];
@@ -229,9 +233,8 @@ declare interface ISheetData_Mall_GoodsShelves {
 }
 //#endregion
 
-//#region zone_params --- group
+//#region zone_params
 declare interface ISheet_Mall_ZoneParams {
-	rows: ISheetData_Mall_ZoneParams[];
 	1: ISheetData_Mall_ZoneParams[];
 	2: ISheetData_Mall_ZoneParams[];
 	3: ISheetData_Mall_ZoneParams[];
@@ -243,9 +246,8 @@ declare interface ISheetData_Mall_ZoneParams {
 }
 //#endregion
 
-//#region month_ticket --- unique
+//#region month_ticket
 declare interface ISheet_Mall_MonthTicket {
-	rows: ISheetData_Mall_MonthTicket[];
 	1010: ISheetData_Mall_MonthTicket;
 	2010: ISheetData_Mall_MonthTicket;
 	3010: ISheetData_Mall_MonthTicket;
@@ -291,9 +293,8 @@ declare interface ISheetData_Mall_MonthTicket {
 }
 //#endregion
 
-//#region channel_config --- unique
+//#region channel_config
 declare interface ISheet_Mall_ChannelConfig {
-	rows: ISheetData_Mall_ChannelConfig[];
 	100: ISheetData_Mall_ChannelConfig;
 	101: ISheetData_Mall_ChannelConfig;
 	200: ISheetData_Mall_ChannelConfig;
@@ -341,9 +342,8 @@ declare interface ISheetData_Mall_ChannelConfig {
 }
 //#endregion
 
-//#region month_ticket_info --- unique
+//#region month_ticket_info
 declare interface ISheet_Mall_MonthTicketInfo {
-	rows: ISheetData_Mall_MonthTicketInfo[];
 	1: ISheetData_Mall_MonthTicketInfo;
 }
 declare interface ISheetData_Mall_MonthTicketInfo {

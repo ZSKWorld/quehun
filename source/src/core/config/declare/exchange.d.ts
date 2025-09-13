@@ -1,12 +1,14 @@
 declare interface ITable_Exchange {
-	exchange: ISheet_Exchange_Exchange;
-	searchexchange: ISheet_Exchange_Searchexchange;
-	fushiquanexchange: ISheet_Exchange_Fushiquanexchange;
+	/** unique */
+	exchange: CfgExt<ISheet_Exchange_Exchange>;
+	/** unique */
+	searchexchange: CfgExt<ISheet_Exchange_Searchexchange>;
+	/** unique */
+	fushiquanexchange: CfgExt<ISheet_Exchange_Fushiquanexchange>;
 }
 
-//#region exchange --- unique
+//#region exchange
 declare interface ISheet_Exchange_Exchange {
-	rows: ISheetData_Exchange_Exchange[];
 	2001: ISheetData_Exchange_Exchange;
 	2002: ISheetData_Exchange_Exchange;
 	2003: ISheetData_Exchange_Exchange;
@@ -41,9 +43,8 @@ declare interface ISheetData_Exchange_Exchange {
 }
 //#endregion
 
-//#region searchexchange --- unique
+//#region searchexchange
 declare interface ISheet_Exchange_Searchexchange {
-	rows: ISheetData_Exchange_Searchexchange[];
 	3001: ISheetData_Exchange_Searchexchange;
 	3002: ISheetData_Exchange_Searchexchange;
 }
@@ -74,9 +75,8 @@ declare interface ISheetData_Exchange_Searchexchange {
 }
 //#endregion
 
-//#region fushiquanexchange --- unique
+//#region fushiquanexchange
 declare interface ISheet_Exchange_Fushiquanexchange {
-	rows: ISheetData_Exchange_Fushiquanexchange[];
 	4001: ISheetData_Exchange_Fushiquanexchange;
 }
 declare interface ISheetData_Exchange_Fushiquanexchange {

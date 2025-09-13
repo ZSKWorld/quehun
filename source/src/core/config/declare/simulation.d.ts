@@ -1,22 +1,34 @@
 declare interface ITable_Simulation {
-	sim_v2_info: ISheet_Simulation_SimV2Info;
-	sim_v2_round: ISheet_Simulation_SimV2Round;
-	sim_v2_character: ISheet_Simulation_SimV2Character;
-	sim_v2_roll: ISheet_Simulation_SimV2Roll;
-	sim_v2_event: ISheet_Simulation_SimV2Event;
-	sim_v2_trigger: ISheet_Simulation_SimV2Trigger;
-	sim_v2_selection: ISheet_Simulation_SimV2Selection;
-	sim_v2_effect: ISheet_Simulation_SimV2Effect;
-	sim_v2_selection_result: ISheet_Simulation_SimV2SelectionResult;
-	sim_v2_buff: ISheet_Simulation_SimV2Buff;
-	sim_v2_upgrade: ISheet_Simulation_SimV2Upgrade;
-	sim_v2_story: ISheet_Simulation_SimV2Story;
-	sim_v2_reward: ISheet_Simulation_SimV2Reward;
+	/** 主表  ---  unique */
+	sim_v2_info: CfgExt<ISheet_Simulation_SimV2Info>;
+	/** 每轮游戏日程  ---  group */
+	sim_v2_round: CfgExt<ISheet_Simulation_SimV2Round>;
+	/** 活动内参与的NPC  ---  group */
+	sim_v2_character: CfgExt<ISheet_Simulation_SimV2Character>;
+	/** roll点分布结果  ---  group */
+	sim_v2_roll: CfgExt<ISheet_Simulation_SimV2Roll>;
+	/** 养成/对局中触发的事件列举  ---  group */
+	sim_v2_event: CfgExt<ISheet_Simulation_SimV2Event>;
+	/** 事件触发条件列举  ---  unique */
+	sim_v2_trigger: CfgExt<ISheet_Simulation_SimV2Trigger>;
+	/** 触发事件后，列举的3-5选项  ---  group */
+	sim_v2_selection: CfgExt<ISheet_Simulation_SimV2Selection>;
+	/** 特性列表  ---  unique */
+	sim_v2_effect: CfgExt<ISheet_Simulation_SimV2Effect>;
+	/** 选择选项后的结果  ---  group */
+	sim_v2_selection_result: CfgExt<ISheet_Simulation_SimV2SelectionResult>;
+	/** 对局结果buff列举  ---  unique */
+	sim_v2_buff: CfgExt<ISheet_Simulation_SimV2Buff>;
+	/** 场外强化  ---  unique */
+	sim_v2_upgrade: CfgExt<ISheet_Simulation_SimV2Upgrade>;
+	/** 调剂文本生成  ---  group */
+	sim_v2_story: CfgExt<ISheet_Simulation_SimV2Story>;
+	/** 对局结束奖励  ---  group */
+	sim_v2_reward: CfgExt<ISheet_Simulation_SimV2Reward>;
 }
 
-//#region sim_v2_info --- unique
+//#region sim_v2_info
 declare interface ISheet_Simulation_SimV2Info {
-	rows: ISheetData_Simulation_SimV2Info[];
 	250401: ISheetData_Simulation_SimV2Info;
 }
 declare interface ISheetData_Simulation_SimV2Info {
@@ -63,9 +75,8 @@ declare interface ISheetData_Simulation_SimV2Info {
 }
 //#endregion
 
-//#region sim_v2_round --- group
+//#region sim_v2_round
 declare interface ISheet_Simulation_SimV2Round {
-	rows: ISheetData_Simulation_SimV2Round[];
 	250401: ISheetData_Simulation_SimV2Round[];
 }
 declare interface ISheetData_Simulation_SimV2Round {
@@ -78,9 +89,8 @@ declare interface ISheetData_Simulation_SimV2Round {
 }
 //#endregion
 
-//#region sim_v2_character --- group
+//#region sim_v2_character
 declare interface ISheet_Simulation_SimV2Character {
-	rows: ISheetData_Simulation_SimV2Character[];
 	250401: ISheetData_Simulation_SimV2Character[];
 }
 declare interface ISheetData_Simulation_SimV2Character {
@@ -105,9 +115,8 @@ declare interface ISheetData_Simulation_SimV2Character {
 }
 //#endregion
 
-//#region sim_v2_roll --- group
+//#region sim_v2_roll
 declare interface ISheet_Simulation_SimV2Roll {
-	rows: ISheetData_Simulation_SimV2Roll[];
 	25040101: ISheetData_Simulation_SimV2Roll[];
 }
 declare interface ISheetData_Simulation_SimV2Roll {
@@ -122,9 +131,8 @@ declare interface ISheetData_Simulation_SimV2Roll {
 }
 //#endregion
 
-//#region sim_v2_event --- group
+//#region sim_v2_event
 declare interface ISheet_Simulation_SimV2Event {
-	rows: ISheetData_Simulation_SimV2Event[];
 	25040101: ISheetData_Simulation_SimV2Event[];
 	25040153: ISheetData_Simulation_SimV2Event[];
 }
@@ -150,9 +158,8 @@ declare interface ISheetData_Simulation_SimV2Event {
 }
 //#endregion
 
-//#region sim_v2_trigger --- unique
+//#region sim_v2_trigger
 declare interface ISheet_Simulation_SimV2Trigger {
-	rows: ISheetData_Simulation_SimV2Trigger[];
 	9001002: ISheetData_Simulation_SimV2Trigger;
 	9001013: ISheetData_Simulation_SimV2Trigger;
 	9002055: ISheetData_Simulation_SimV2Trigger;
@@ -360,9 +367,8 @@ declare interface ISheetData_Simulation_SimV2Trigger {
 }
 //#endregion
 
-//#region sim_v2_selection --- group
+//#region sim_v2_selection
 declare interface ISheet_Simulation_SimV2Selection {
-	rows: ISheetData_Simulation_SimV2Selection[];
 	1001: ISheetData_Simulation_SimV2Selection[];
 	1002: ISheetData_Simulation_SimV2Selection[];
 	1003: ISheetData_Simulation_SimV2Selection[];
@@ -480,9 +486,8 @@ declare interface ISheetData_Simulation_SimV2Selection {
 }
 //#endregion
 
-//#region sim_v2_effect --- unique
+//#region sim_v2_effect
 declare interface ISheet_Simulation_SimV2Effect {
-	rows: ISheetData_Simulation_SimV2Effect[];
 	9001: ISheetData_Simulation_SimV2Effect;
 	9002: ISheetData_Simulation_SimV2Effect;
 	9003: ISheetData_Simulation_SimV2Effect;
@@ -524,9 +529,8 @@ declare interface ISheetData_Simulation_SimV2Effect {
 }
 //#endregion
 
-//#region sim_v2_selection_result --- group
+//#region sim_v2_selection_result
 declare interface ISheet_Simulation_SimV2SelectionResult {
-	rows: ISheetData_Simulation_SimV2SelectionResult[];
 	100101: ISheetData_Simulation_SimV2SelectionResult[];
 	100102: ISheetData_Simulation_SimV2SelectionResult[];
 	100103: ISheetData_Simulation_SimV2SelectionResult[];
@@ -930,9 +934,8 @@ declare interface ISheetData_Simulation_SimV2SelectionResult {
 }
 //#endregion
 
-//#region sim_v2_buff --- unique
+//#region sim_v2_buff
 declare interface ISheet_Simulation_SimV2Buff {
-	rows: ISheetData_Simulation_SimV2Buff[];
 	10440111: ISheetData_Simulation_SimV2Buff;
 	10440121: ISheetData_Simulation_SimV2Buff;
 	10440211: ISheetData_Simulation_SimV2Buff;
@@ -1356,9 +1359,8 @@ declare interface ISheetData_Simulation_SimV2Buff {
 }
 //#endregion
 
-//#region sim_v2_upgrade --- unique
+//#region sim_v2_upgrade
 declare interface ISheet_Simulation_SimV2Upgrade {
-	rows: ISheetData_Simulation_SimV2Upgrade[];
 	250401: ISheetData_Simulation_SimV2Upgrade;
 }
 declare interface ISheetData_Simulation_SimV2Upgrade {
@@ -1373,9 +1375,8 @@ declare interface ISheetData_Simulation_SimV2Upgrade {
 }
 //#endregion
 
-//#region sim_v2_story --- group
+//#region sim_v2_story
 declare interface ISheet_Simulation_SimV2Story {
-	rows: ISheetData_Simulation_SimV2Story[];
 	250401: ISheetData_Simulation_SimV2Story[];
 }
 declare interface ISheetData_Simulation_SimV2Story {
@@ -1392,9 +1393,8 @@ declare interface ISheetData_Simulation_SimV2Story {
 }
 //#endregion
 
-//#region sim_v2_reward --- group
+//#region sim_v2_reward
 declare interface ISheet_Simulation_SimV2Reward {
-	rows: ISheetData_Simulation_SimV2Reward[];
 	250401: ISheetData_Simulation_SimV2Reward[];
 }
 declare interface ISheetData_Simulation_SimV2Reward {

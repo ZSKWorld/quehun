@@ -1,14 +1,18 @@
 declare interface ITable_Season {
-	season: ISheet_Season_Season;
-	level_ticket: ISheet_Season_LevelTicket;
-	level_ticket_pool: ISheet_Season_LevelTicketPool;
-	ticket_retry: ISheet_Season_TicketRetry;
-	season_reward: ISheet_Season_SeasonReward;
+	/** unique */
+	season: CfgExt<ISheet_Season_Season>;
+	/** unique */
+	level_ticket: CfgExt<ISheet_Season_LevelTicket>;
+	/** group */
+	level_ticket_pool: CfgExt<ISheet_Season_LevelTicketPool>;
+	/** group */
+	ticket_retry: CfgExt<ISheet_Season_TicketRetry>;
+	/** group */
+	season_reward: CfgExt<ISheet_Season_SeasonReward>;
 }
 
-//#region season --- unique
+//#region season
 declare interface ISheet_Season_Season {
-	rows: ISheetData_Season_Season[];
 	1001: ISheetData_Season_Season;
 }
 declare interface ISheetData_Season_Season {
@@ -44,9 +48,8 @@ declare interface ISheetData_Season_Season {
 }
 //#endregion
 
-//#region level_ticket --- unique
+//#region level_ticket
 declare interface ISheet_Season_LevelTicket {
-	rows: ISheetData_Season_LevelTicket[];
 	100001: ISheetData_Season_LevelTicket;
 	100002: ISheetData_Season_LevelTicket;
 	100003: ISheetData_Season_LevelTicket;
@@ -188,9 +191,8 @@ declare interface ISheetData_Season_LevelTicket {
 }
 //#endregion
 
-//#region level_ticket_pool --- group
+//#region level_ticket_pool
 declare interface ISheet_Season_LevelTicketPool {
-	rows: ISheetData_Season_LevelTicketPool[];
 	100101: ISheetData_Season_LevelTicketPool[];
 }
 declare interface ISheetData_Season_LevelTicketPool {
@@ -205,9 +207,8 @@ declare interface ISheetData_Season_LevelTicketPool {
 }
 //#endregion
 
-//#region ticket_retry --- group
+//#region ticket_retry
 declare interface ISheet_Season_TicketRetry {
-	rows: ISheetData_Season_TicketRetry[];
 	100102: ISheetData_Season_TicketRetry[];
 }
 declare interface ISheetData_Season_TicketRetry {
@@ -220,9 +221,8 @@ declare interface ISheetData_Season_TicketRetry {
 }
 //#endregion
 
-//#region season_reward --- group
+//#region season_reward
 declare interface ISheet_Season_SeasonReward {
-	rows: ISheetData_Season_SeasonReward[];
 	1001: ISheetData_Season_SeasonReward[];
 }
 declare interface ISheetData_Season_SeasonReward {

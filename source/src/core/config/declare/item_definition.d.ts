@@ -1,22 +1,34 @@
 declare interface ITable_ItemDefinition {
-	currency: ISheet_ItemDefinition_Currency;
-	item: ISheet_ItemDefinition_Item;
-	title: ISheet_ItemDefinition_Title;
-	character: ISheet_ItemDefinition_Character;
-	view: ISheet_ItemDefinition_View;
-	skin: ISheet_ItemDefinition_Skin;
-	item_recovery: ISheet_ItemDefinition_ItemRecovery;
-	item_manual_pool: ISheet_ItemDefinition_ItemManualPool;
-	source_limit: ISheet_ItemDefinition_SourceLimit;
-	item_package: ISheet_ItemDefinition_ItemPackage;
-	fake_random_pool: ISheet_ItemDefinition_FakeRandomPool;
-	loading_image: ISheet_ItemDefinition_LoadingImage;
-	function_item: ISheet_ItemDefinition_FunctionItem;
+	/** unique */
+	currency: CfgExt<ISheet_ItemDefinition_Currency>;
+	/** unique */
+	item: CfgExt<ISheet_ItemDefinition_Item>;
+	/** unique */
+	title: CfgExt<ISheet_ItemDefinition_Title>;
+	/** 角色表  ---  unique */
+	character: CfgExt<ISheet_ItemDefinition_Character>;
+	/** 装扮表  ---  unique */
+	view: CfgExt<ISheet_ItemDefinition_View>;
+	/** 皮肤表  ---  unique */
+	skin: CfgExt<ISheet_ItemDefinition_Skin>;
+	/** 版本道具恢复表  ---  group */
+	item_recovery: CfgExt<ISheet_ItemDefinition_ItemRecovery>;
+	/** 手动开箱物品池  ---  group */
+	item_manual_pool: CfgExt<ISheet_ItemDefinition_ItemManualPool>;
+	/** 限制活动道具每日上限  ---  group */
+	source_limit: CfgExt<ISheet_ItemDefinition_SourceLimit>;
+	/** 自动打开全领奖励包  ---  group */
+	item_package: CfgExt<ISheet_ItemDefinition_ItemPackage>;
+	/** unique */
+	fake_random_pool: CfgExt<ISheet_ItemDefinition_FakeRandomPool>;
+	/** 插画loading图  ---  unique */
+	loading_image: CfgExt<ISheet_ItemDefinition_LoadingImage>;
+	/** 功能型道具表  ---  unique */
+	function_item: CfgExt<ISheet_ItemDefinition_FunctionItem>;
 }
 
-//#region currency --- unique
+//#region currency
 declare interface ISheet_ItemDefinition_Currency {
-	rows: ISheetData_ItemDefinition_Currency[];
 	100001: ISheetData_ItemDefinition_Currency;
 	100002: ISheetData_ItemDefinition_Currency;
 	100003: ISheetData_ItemDefinition_Currency;
@@ -44,9 +56,8 @@ declare interface ISheetData_ItemDefinition_Currency {
 }
 //#endregion
 
-//#region item --- unique
+//#region item
 declare interface ISheet_ItemDefinition_Item {
-	rows: ISheetData_ItemDefinition_Item[];
 	300001: ISheetData_ItemDefinition_Item;
 	300002: ISheetData_ItemDefinition_Item;
 	300003: ISheetData_ItemDefinition_Item;
@@ -1118,9 +1129,8 @@ declare interface ISheetData_ItemDefinition_Item {
 }
 //#endregion
 
-//#region title --- unique
+//#region title
 declare interface ISheet_ItemDefinition_Title {
-	rows: ISheetData_ItemDefinition_Title[];
 	600001: ISheetData_ItemDefinition_Title;
 	600002: ISheetData_ItemDefinition_Title;
 	600003: ISheetData_ItemDefinition_Title;
@@ -1279,9 +1289,8 @@ declare interface ISheetData_ItemDefinition_Title {
 }
 //#endregion
 
-//#region character --- unique
+//#region character
 declare interface ISheet_ItemDefinition_Character {
-	rows: ISheetData_ItemDefinition_Character[];
 	200001: ISheetData_ItemDefinition_Character;
 	200002: ISheetData_ItemDefinition_Character;
 	200003: ISheetData_ItemDefinition_Character;
@@ -1511,9 +1520,8 @@ declare interface ISheetData_ItemDefinition_Character {
 }
 //#endregion
 
-//#region view --- unique
+//#region view
 declare interface ISheet_ItemDefinition_View {
-	rows: ISheetData_ItemDefinition_View[];
 	305001: ISheetData_ItemDefinition_View;
 	305002: ISheetData_ItemDefinition_View;
 	305003: ISheetData_ItemDefinition_View;
@@ -1945,9 +1953,8 @@ declare interface ISheetData_ItemDefinition_View {
 }
 //#endregion
 
-//#region skin --- unique
+//#region skin
 declare interface ISheet_ItemDefinition_Skin {
-	rows: ISheetData_ItemDefinition_Skin[];
 	400000: ISheetData_ItemDefinition_Skin;
 	400001: ISheetData_ItemDefinition_Skin;
 	400101: ISheetData_ItemDefinition_Skin;
@@ -2497,9 +2504,8 @@ declare interface ISheetData_ItemDefinition_Skin {
 }
 //#endregion
 
-//#region item_recovery --- group
+//#region item_recovery
 declare interface ISheet_ItemDefinition_ItemRecovery {
-	rows: ISheetData_ItemDefinition_ItemRecovery[];
 	server: ISheetData_ItemDefinition_ItemRecovery[];
 }
 declare interface ISheetData_ItemDefinition_ItemRecovery {
@@ -2510,9 +2516,8 @@ declare interface ISheetData_ItemDefinition_ItemRecovery {
 }
 //#endregion
 
-//#region item_manual_pool --- group
+//#region item_manual_pool
 declare interface ISheet_ItemDefinition_ItemManualPool {
-	rows: ISheetData_ItemDefinition_ItemManualPool[];
 	10001: ISheetData_ItemDefinition_ItemManualPool[];
 	304101: ISheetData_ItemDefinition_ItemManualPool[];
 	304102: ISheetData_ItemDefinition_ItemManualPool[];
@@ -2527,9 +2532,8 @@ declare interface ISheetData_ItemDefinition_ItemManualPool {
 }
 //#endregion
 
-//#region source_limit --- group
+//#region source_limit
 declare interface ISheet_ItemDefinition_SourceLimit {
-	rows: ISheetData_ItemDefinition_SourceLimit[];
 	10000: ISheetData_ItemDefinition_SourceLimit[];
 	10001: ISheetData_ItemDefinition_SourceLimit[];
 	10002: ISheetData_ItemDefinition_SourceLimit[];
@@ -2558,9 +2562,8 @@ declare interface ISheetData_ItemDefinition_SourceLimit {
 }
 //#endregion
 
-//#region item_package --- group
+//#region item_package
 declare interface ISheet_ItemDefinition_ItemPackage {
-	rows: ISheetData_ItemDefinition_ItemPackage[];
 	1001: ISheetData_ItemDefinition_ItemPackage[];
 }
 declare interface ISheetData_ItemDefinition_ItemPackage {
@@ -2572,9 +2575,8 @@ declare interface ISheetData_ItemDefinition_ItemPackage {
 }
 //#endregion
 
-//#region fake_random_pool --- unique
+//#region fake_random_pool
 declare interface ISheet_ItemDefinition_FakeRandomPool {
-	rows: ISheetData_ItemDefinition_FakeRandomPool[];
 	309047: ISheetData_ItemDefinition_FakeRandomPool;
 }
 declare interface ISheetData_ItemDefinition_FakeRandomPool {
@@ -2585,9 +2587,8 @@ declare interface ISheetData_ItemDefinition_FakeRandomPool {
 }
 //#endregion
 
-//#region loading_image --- unique
+//#region loading_image
 declare interface ISheet_ItemDefinition_LoadingImage {
-	rows: ISheetData_ItemDefinition_LoadingImage[];
 	201201: ISheetData_ItemDefinition_LoadingImage;
 	201202: ISheetData_ItemDefinition_LoadingImage;
 	210201: ISheetData_ItemDefinition_LoadingImage;
@@ -2697,9 +2698,8 @@ declare interface ISheetData_ItemDefinition_LoadingImage {
 }
 //#endregion
 
-//#region function_item --- unique
+//#region function_item
 declare interface ISheet_ItemDefinition_FunctionItem {
-	rows: ISheetData_ItemDefinition_FunctionItem[];
 	700001: ISheetData_ItemDefinition_FunctionItem;
 	700002: ISheetData_ItemDefinition_FunctionItem;
 	700003: ISheetData_ItemDefinition_FunctionItem;

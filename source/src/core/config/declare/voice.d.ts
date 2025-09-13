@@ -1,12 +1,14 @@
 declare interface ITable_Voice {
-	sound: ISheet_Voice_Sound;
-	event: ISheet_Voice_Event;
-	spot: ISheet_Voice_Spot;
+	/** 语音表  ---  group */
+	sound: CfgExt<ISheet_Voice_Sound>;
+	/** 非常规角色的特殊语音表  ---  group */
+	event: CfgExt<ISheet_Voice_Event>;
+	/** 剧情模式用的语音表，放在一起  ---  unique */
+	spot: CfgExt<ISheet_Voice_Spot>;
 }
 
-//#region sound --- group
+//#region sound
 declare interface ISheet_Voice_Sound {
-	rows: ISheetData_Voice_Sound[];
 	1: ISheetData_Voice_Sound[];
 	2: ISheetData_Voice_Sound[];
 	3: ISheetData_Voice_Sound[];
@@ -151,9 +153,8 @@ declare interface ISheetData_Voice_Sound {
 }
 //#endregion
 
-//#region event --- group
+//#region event
 declare interface ISheet_Voice_Event {
-	rows: ISheetData_Voice_Event[];
 	1: ISheetData_Voice_Event[];
 	2: ISheetData_Voice_Event[];
 	3: ISheetData_Voice_Event[];
@@ -181,9 +182,8 @@ declare interface ISheetData_Voice_Event {
 }
 //#endregion
 
-//#region spot --- unique
+//#region spot
 declare interface ISheet_Voice_Spot {
-	rows: ISheetData_Voice_Spot[];
 	101: ISheetData_Voice_Spot;
 	102: ISheetData_Voice_Spot;
 	103: ISheetData_Voice_Spot;

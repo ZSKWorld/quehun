@@ -1,10 +1,10 @@
 declare interface ITable_Leaderboard {
-	leaderboard: ISheet_Leaderboard_Leaderboard;
+	/** 排行榜  ---  unique */
+	leaderboard: CfgExt<ISheet_Leaderboard_Leaderboard>;
 }
 
-//#region leaderboard --- unique
+//#region leaderboard
 declare interface ISheet_Leaderboard_Leaderboard {
-	rows: ISheetData_Leaderboard_Leaderboard[];
 	1010: ISheetData_Leaderboard_Leaderboard;
 }
 declare interface ISheetData_Leaderboard_Leaderboard {

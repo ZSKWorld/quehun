@@ -1,10 +1,10 @@
 declare interface ITable_Tournament {
-	tournaments: ISheet_Tournament_Tournaments;
+	/** 联赛列表  ---  unique */
+	tournaments: CfgExt<ISheet_Tournament_Tournaments>;
 }
 
-//#region tournaments --- unique
+//#region tournaments
 declare interface ISheet_Tournament_Tournaments {
-	rows: ISheetData_Tournament_Tournaments[];
 	1: ISheetData_Tournament_Tournaments;
 }
 declare interface ISheetData_Tournament_Tournaments {

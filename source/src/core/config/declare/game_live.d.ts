@@ -1,10 +1,10 @@
 declare interface ITable_GameLive {
-	select_filters: ISheet_GameLive_SelectFilters;
+	/** 观战选项过滤  ---  unique */
+	select_filters: CfgExt<ISheet_GameLive_SelectFilters>;
 }
 
-//#region select_filters --- unique
+//#region select_filters
 declare interface ISheet_GameLive_SelectFilters {
-	rows: ISheetData_GameLive_SelectFilters[];
 	101: ISheetData_GameLive_SelectFilters;
 	102: ISheetData_GameLive_SelectFilters;
 	201: ISheetData_GameLive_SelectFilters;

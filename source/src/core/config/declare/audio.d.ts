@@ -1,11 +1,12 @@
 declare interface ITable_Audio {
-	audio: ISheet_Audio_Audio;
-	bgm: ISheet_Audio_Bgm;
+	/** unique */
+	audio: CfgExt<ISheet_Audio_Audio>;
+	/** unique */
+	bgm: CfgExt<ISheet_Audio_Bgm>;
 }
 
-//#region audio --- unique
+//#region audio
 declare interface ISheet_Audio_Audio {
-	rows: ISheetData_Audio_Audio[];
 	101: ISheetData_Audio_Audio;
 	102: ISheetData_Audio_Audio;
 	103: ISheetData_Audio_Audio;
@@ -389,9 +390,8 @@ declare interface ISheetData_Audio_Audio {
 }
 //#endregion
 
-//#region bgm --- unique
+//#region bgm
 declare interface ISheet_Audio_Bgm {
-	rows: ISheetData_Audio_Bgm[];
 	306001: ISheetData_Audio_Bgm;
 	306002: ISheetData_Audio_Bgm;
 	306003: ISheetData_Audio_Bgm;

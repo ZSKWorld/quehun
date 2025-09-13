@@ -1,13 +1,16 @@
 declare interface ITable_Info {
-	error: ISheet_Info_Error;
-	forbidden: ISheet_Info_Forbidden;
-	near: ISheet_Info_Near;
-	translate: ISheet_Info_Translate;
+	/** 错误码  ---  unique */
+	error: CfgExt<ISheet_Info_Error>;
+	/** 屏蔽词库  ---  nokey */
+	forbidden: CfgExt<ISheet_Info_Forbidden>;
+	/** 形近字，暂留了5个，超过5个的话可以换一行，只要有联系都是一组的  ---  nokey */
+	near: CfgExt<ISheet_Info_Near>;
+	/** 错误文本  ---  unique */
+	translate: CfgExt<ISheet_Info_Translate>;
 }
 
-//#region error --- unique
+//#region error
 declare interface ISheet_Info_Error {
-	rows: ISheetData_Info_Error[];
 	1: ISheetData_Info_Error;
 	2: ISheetData_Info_Error;
 	3: ISheetData_Info_Error;
@@ -517,9 +520,9 @@ declare interface ISheetData_Info_Error {
 }
 //#endregion
 
-//#region forbidden --- nokey
+//#region forbidden
 declare interface ISheet_Info_Forbidden {
-	rows: ISheetData_Info_Forbidden[];
+
 }
 declare interface ISheetData_Info_Forbidden {
 	word: string;
@@ -535,9 +538,9 @@ declare interface ISheetData_Info_Forbidden {
 }
 //#endregion
 
-//#region near --- nokey
+//#region near
 declare interface ISheet_Info_Near {
-	rows: ISheetData_Info_Near[];
+
 }
 declare interface ISheetData_Info_Near {
 	/** 形近字1 */
@@ -553,9 +556,8 @@ declare interface ISheetData_Info_Near {
 }
 //#endregion
 
-//#region translate --- unique
+//#region translate
 declare interface ISheet_Info_Translate {
-	rows: ISheetData_Info_Translate[];
 	"unknown error": ISheetData_Info_Translate;
 	"auth not found": ISheetData_Info_Translate;
 	"auth expired": ISheetData_Info_Translate;

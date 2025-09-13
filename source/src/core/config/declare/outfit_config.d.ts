@@ -1,18 +1,26 @@
 declare interface ITable_OutfitConfig {
-	ron: ISheet_OutfitConfig_Ron;
-	liqi: ISheet_OutfitConfig_Liqi;
-	effect_liqi: ISheet_OutfitConfig_EffectLiqi;
-	mpzs: ISheet_OutfitConfig_Mpzs;
-	tablecloth: ISheet_OutfitConfig_Tablecloth;
-	mjp: ISheet_OutfitConfig_Mjp;
-	mjpface: ISheet_OutfitConfig_Mjpface;
-	headframe: ISheet_OutfitConfig_Headframe;
-	hand: ISheet_OutfitConfig_Hand;
+	/** 和牌特效  ---  unique */
+	ron: CfgExt<ISheet_OutfitConfig_Ron>;
+	/** 立直特效  ---  unique */
+	liqi: CfgExt<ISheet_OutfitConfig_Liqi>;
+	/** 立直棒  ---  unique */
+	effect_liqi: CfgExt<ISheet_OutfitConfig_EffectLiqi>;
+	/** 鸣牌指示  ---  unique */
+	mpzs: CfgExt<ISheet_OutfitConfig_Mpzs>;
+	/** 桌布  ---  unique */
+	tablecloth: CfgExt<ISheet_OutfitConfig_Tablecloth>;
+	/** 牌背  ---  unique */
+	mjp: CfgExt<ISheet_OutfitConfig_Mjp>;
+	/** 牌面  ---  unique */
+	mjpface: CfgExt<ISheet_OutfitConfig_Mjpface>;
+	/** 头像框  ---  unique */
+	headframe: CfgExt<ISheet_OutfitConfig_Headframe>;
+	/** 手  ---  unique */
+	hand: CfgExt<ISheet_OutfitConfig_Hand>;
 }
 
-//#region ron --- unique
+//#region ron
 declare interface ISheet_OutfitConfig_Ron {
-	rows: ISheetData_OutfitConfig_Ron[];
 	300001: ISheetData_OutfitConfig_Ron;
 	305215: ISheetData_OutfitConfig_Ron;
 	305217: ISheetData_OutfitConfig_Ron;
@@ -35,9 +43,8 @@ declare interface ISheetData_OutfitConfig_Ron {
 }
 //#endregion
 
-//#region liqi --- unique
+//#region liqi
 declare interface ISheet_OutfitConfig_Liqi {
-	rows: ISheetData_OutfitConfig_Liqi[];
 	uint32: ISheetData_OutfitConfig_Liqi;
 }
 declare interface ISheetData_OutfitConfig_Liqi {
@@ -46,9 +53,8 @@ declare interface ISheetData_OutfitConfig_Liqi {
 }
 //#endregion
 
-//#region effect_liqi --- unique
+//#region effect_liqi
 declare interface ISheet_OutfitConfig_EffectLiqi {
-	rows: ISheetData_OutfitConfig_EffectLiqi[];
 	uint32: ISheetData_OutfitConfig_EffectLiqi;
 }
 declare interface ISheetData_OutfitConfig_EffectLiqi {
@@ -57,9 +63,8 @@ declare interface ISheetData_OutfitConfig_EffectLiqi {
 }
 //#endregion
 
-//#region mpzs --- unique
+//#region mpzs
 declare interface ISheet_OutfitConfig_Mpzs {
-	rows: ISheetData_OutfitConfig_Mpzs[];
 	uint32: ISheetData_OutfitConfig_Mpzs;
 }
 declare interface ISheetData_OutfitConfig_Mpzs {
@@ -68,9 +73,8 @@ declare interface ISheetData_OutfitConfig_Mpzs {
 }
 //#endregion
 
-//#region tablecloth --- unique
+//#region tablecloth
 declare interface ISheet_OutfitConfig_Tablecloth {
-	rows: ISheetData_OutfitConfig_Tablecloth[];
 	uint32: ISheetData_OutfitConfig_Tablecloth;
 }
 declare interface ISheetData_OutfitConfig_Tablecloth {
@@ -79,9 +83,8 @@ declare interface ISheetData_OutfitConfig_Tablecloth {
 }
 //#endregion
 
-//#region mjp --- unique
+//#region mjp
 declare interface ISheet_OutfitConfig_Mjp {
-	rows: ISheetData_OutfitConfig_Mjp[];
 	uint32: ISheetData_OutfitConfig_Mjp;
 }
 declare interface ISheetData_OutfitConfig_Mjp {
@@ -90,9 +93,8 @@ declare interface ISheetData_OutfitConfig_Mjp {
 }
 //#endregion
 
-//#region mjpface --- unique
+//#region mjpface
 declare interface ISheet_OutfitConfig_Mjpface {
-	rows: ISheetData_OutfitConfig_Mjpface[];
 	uint32: ISheetData_OutfitConfig_Mjpface;
 }
 declare interface ISheetData_OutfitConfig_Mjpface {
@@ -101,9 +103,8 @@ declare interface ISheetData_OutfitConfig_Mjpface {
 }
 //#endregion
 
-//#region headframe --- unique
+//#region headframe
 declare interface ISheet_OutfitConfig_Headframe {
-	rows: ISheetData_OutfitConfig_Headframe[];
 	uint32: ISheetData_OutfitConfig_Headframe;
 }
 declare interface ISheetData_OutfitConfig_Headframe {
@@ -112,9 +113,8 @@ declare interface ISheetData_OutfitConfig_Headframe {
 }
 //#endregion
 
-//#region hand --- unique
+//#region hand
 declare interface ISheet_OutfitConfig_Hand {
-	rows: ISheetData_OutfitConfig_Hand[];
 	uint32: ISheetData_OutfitConfig_Hand;
 }
 declare interface ISheetData_OutfitConfig_Hand {

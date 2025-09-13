@@ -1,15 +1,20 @@
 declare interface ITable_Spot {
-	spot: ISheet_Spot_Spot;
-	rewards: ISheet_Spot_Rewards;
-	event: ISheet_Spot_Event;
-	character_spot: ISheet_Spot_CharacterSpot;
-	skin_spot: ISheet_Spot_SkinSpot;
-	audio_spot: ISheet_Spot_AudioSpot;
+	/** 剧情表  ---  group */
+	spot: CfgExt<ISheet_Spot_Spot>;
+	/** 奖励表  ---  unique */
+	rewards: CfgExt<ISheet_Spot_Rewards>;
+	/** 活动剧情表  ---  unique */
+	event: CfgExt<ISheet_Spot_Event>;
+	/** 卫星角色增量表  ---  unique */
+	character_spot: CfgExt<ISheet_Spot_CharacterSpot>;
+	/** 卫星角色及特殊皮肤增量表  ---  unique */
+	skin_spot: CfgExt<ISheet_Spot_SkinSpot>;
+	/** 编辑器用到的音效id列表  ---  unique */
+	audio_spot: CfgExt<ISheet_Spot_AudioSpot>;
 }
 
-//#region spot --- group
+//#region spot
 declare interface ISheet_Spot_Spot {
-	rows: ISheetData_Spot_Spot[];
 	200001: ISheetData_Spot_Spot[];
 	200002: ISheetData_Spot_Spot[];
 	200003: ISheetData_Spot_Spot[];
@@ -76,9 +81,8 @@ declare interface ISheetData_Spot_Spot {
 }
 //#endregion
 
-//#region rewards --- unique
+//#region rewards
 declare interface ISheet_Spot_Rewards {
-	rows: ISheetData_Spot_Rewards[];
 	300041: ISheetData_Spot_Rewards;
 	300042: ISheetData_Spot_Rewards;
 	300051: ISheetData_Spot_Rewards;
@@ -223,9 +227,8 @@ declare interface ISheetData_Spot_Rewards {
 }
 //#endregion
 
-//#region event --- unique
+//#region event
 declare interface ISheet_Spot_Event {
-	rows: ISheetData_Spot_Event[];
 	118201: ISheetData_Spot_Event;
 	118202: ISheetData_Spot_Event;
 	118203: ISheetData_Spot_Event;
@@ -295,9 +298,8 @@ declare interface ISheetData_Spot_Event {
 }
 //#endregion
 
-//#region character_spot --- unique
+//#region character_spot
 declare interface ISheet_Spot_CharacterSpot {
-	rows: ISheetData_Spot_CharacterSpot[];
 	20000104: ISheetData_Spot_CharacterSpot;
 	20000105: ISheetData_Spot_CharacterSpot;
 	20009998: ISheetData_Spot_CharacterSpot;
@@ -415,9 +417,8 @@ declare interface ISheetData_Spot_CharacterSpot {
 }
 //#endregion
 
-//#region skin_spot --- unique
+//#region skin_spot
 declare interface ISheet_Spot_SkinSpot {
-	rows: ISheetData_Spot_SkinSpot[];
 	401899: ISheetData_Spot_SkinSpot;
 	404699: ISheetData_Spot_SkinSpot;
 	409199: ISheetData_Spot_SkinSpot;
@@ -533,9 +534,8 @@ declare interface ISheetData_Spot_SkinSpot {
 }
 //#endregion
 
-//#region audio_spot --- unique
+//#region audio_spot
 declare interface ISheet_Spot_AudioSpot {
-	rows: ISheetData_Spot_AudioSpot[];
 	101: ISheetData_Spot_AudioSpot;
 	102: ISheetData_Spot_AudioSpot;
 	103: ISheetData_Spot_AudioSpot;

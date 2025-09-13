@@ -1,12 +1,14 @@
 declare interface ITable_Character {
-	emoji: ISheet_Character_Emoji;
-	cutin: ISheet_Character_Cutin;
-	skin: ISheet_Character_Skin;
+	/** 表情解锁表  ---  group */
+	emoji: CfgExt<ISheet_Character_Emoji>;
+	/** 特殊cutin表  ---  unique */
+	cutin: CfgExt<ISheet_Character_Cutin>;
+	/** 特殊动皮表  ---  unique */
+	skin: CfgExt<ISheet_Character_Skin>;
 }
 
-//#region emoji --- group
+//#region emoji
 declare interface ISheet_Character_Emoji {
-	rows: ISheetData_Character_Emoji[];
 	200001: ISheetData_Character_Emoji[];
 	200002: ISheetData_Character_Emoji[];
 	200003: ISheetData_Character_Emoji[];
@@ -147,9 +149,8 @@ declare interface ISheetData_Character_Emoji {
 }
 //#endregion
 
-//#region cutin --- unique
+//#region cutin
 declare interface ISheet_Character_Cutin {
-	rows: ISheetData_Character_Cutin[];
 	405201: ISheetData_Character_Cutin;
 	405202: ISheetData_Character_Cutin;
 	406101: ISheetData_Character_Cutin;
@@ -178,9 +179,8 @@ declare interface ISheetData_Character_Cutin {
 }
 //#endregion
 
-//#region skin --- unique
+//#region skin
 declare interface ISheet_Character_Skin {
-	rows: ISheetData_Character_Skin[];
 	400107: ISheetData_Character_Skin;
 	400305: ISheetData_Character_Skin;
 	400306: ISheetData_Character_Skin;

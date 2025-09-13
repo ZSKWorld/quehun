@@ -1,10 +1,10 @@
 declare interface ITable_Vip {
-	vip: ISheet_Vip_Vip;
+	/** unique */
+	vip: CfgExt<ISheet_Vip_Vip>;
 }
 
-//#region vip --- unique
+//#region vip
 declare interface ISheet_Vip_Vip {
-	rows: ISheetData_Vip_Vip[];
 	1: ISheetData_Vip_Vip;
 	2: ISheetData_Vip_Vip;
 	3: ISheetData_Vip_Vip;

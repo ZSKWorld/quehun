@@ -37,3 +37,22 @@ declare interface IConfigManager {
 	readonly voice: ITable_Voice;
 	init(): Promise<void>;
 }
+
+
+type CfgFieldType<T> = { [P in keyof T]: T[P] }[keyof T];
+interface CfgExtension<T> {
+	rows: CfgFieldType<T>[];
+	forEach(callbackfn: (value: CfgFieldType<T>, index: number, array: CfgFieldType<T>[]) => void, thisArg?: any): void;
+	filter(predicate: (value: CfgFieldType<T>, index: number, array: CfgFieldType<T>[]) => boolean, thisArg?: any): CfgFieldType<T>[];
+	find(predicate: (value: CfgFieldType<T>, index: number, array: CfgFieldType<T>[]) => boolean, thisArg?: any): CfgFieldType<T>;
+	every(predicate: (value: CfgFieldType<T>, index: number, array: CfgFieldType<T>[]) => boolean, thisArg?: any): boolean;
+	findIndex(predicate: (value: CfgFieldType<T>, index: number, obj: CfgFieldType<T>[]) => boolean, thisArg?: any): number;
+	includes(searchElement: CfgFieldType<T>, fromIndex?: number): boolean;
+	indexOf(searchElement: CfgFieldType<T>, fromIndex?: number): number;
+	lastIndexOf(searchElement: CfgFieldType<T>, fromIndex?: number): number;
+	map<U>(callbackfn: (value: CfgFieldType<T>, index: number, array: CfgFieldType<T>[]) => U, thisArg?: any): U[];
+	reduce<U>(callbackfn: (previousValue: U, currentValue: CfgFieldType<T>, currentIndex: number, array: CfgFieldType<T>[]) => U, initialValue: U): U;
+	slice(start?: number, end?: number): CfgFieldType<T>[];
+	some(predicate: (value: CfgFieldType<T>, index: number, array: CfgFieldType<T>[]) => boolean, thisArg?: any): boolean;
+}
+type CfgExt<T> = { [P in keyof T]: T[P] } & CfgExtension<T>;

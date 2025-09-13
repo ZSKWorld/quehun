@@ -1,17 +1,24 @@
 declare interface ITable_Shops {
-	zhp_goods: ISheet_Shops_ZhpGoods;
-	zhp_refresh_group: ISheet_Shops_ZhpRefreshGroup;
-	zhp_refresh_price: ISheet_Shops_ZhpRefreshPrice;
-	goods: ISheet_Shops_Goods;
-	goods_package: ISheet_Shops_GoodsPackage;
-	interval_refresh_goods: ISheet_Shops_IntervalRefreshGoods;
-	item_package: ISheet_Shops_ItemPackage;
-	selected_package: ISheet_Shops_SelectedPackage;
+	/** 杂货铺商品列表  ---  unique */
+	zhp_goods: CfgExt<ISheet_Shops_ZhpGoods>;
+	/** 杂货铺组刷新个数  ---  unique */
+	zhp_refresh_group: CfgExt<ISheet_Shops_ZhpRefreshGroup>;
+	/** 杂货铺刷新价格曲线  ---  unique */
+	zhp_refresh_price: CfgExt<ISheet_Shops_ZhpRefreshPrice>;
+	/** 通用商品列表  ---  unique */
+	goods: CfgExt<ISheet_Shops_Goods>;
+	/** 商品组成的礼包（goods_package）  ---  group */
+	goods_package: CfgExt<ISheet_Shops_GoodsPackage>;
+	/** 定期刷新商店（插画屋）  ---  group */
+	interval_refresh_goods: CfgExt<ISheet_Shops_IntervalRefreshGoods>;
+	/** 道具组成的礼包（item_package）  ---  unique */
+	item_package: CfgExt<ISheet_Shops_ItemPackage>;
+	/** 自选商品包（selected_package）  ---  group */
+	selected_package: CfgExt<ISheet_Shops_SelectedPackage>;
 }
 
-//#region zhp_goods --- unique
+//#region zhp_goods
 declare interface ISheet_Shops_ZhpGoods {
-	rows: ISheetData_Shops_ZhpGoods[];
 	1: ISheetData_Shops_ZhpGoods;
 	2: ISheetData_Shops_ZhpGoods;
 	3: ISheetData_Shops_ZhpGoods;
@@ -66,9 +73,8 @@ declare interface ISheetData_Shops_ZhpGoods {
 }
 //#endregion
 
-//#region zhp_refresh_group --- unique
+//#region zhp_refresh_group
 declare interface ISheet_Shops_ZhpRefreshGroup {
-	rows: ISheetData_Shops_ZhpRefreshGroup[];
 	1: ISheetData_Shops_ZhpRefreshGroup;
 	2: ISheetData_Shops_ZhpRefreshGroup;
 	3: ISheetData_Shops_ZhpRefreshGroup;
@@ -81,9 +87,8 @@ declare interface ISheetData_Shops_ZhpRefreshGroup {
 }
 //#endregion
 
-//#region zhp_refresh_price --- unique
+//#region zhp_refresh_price
 declare interface ISheet_Shops_ZhpRefreshPrice {
-	rows: ISheetData_Shops_ZhpRefreshPrice[];
 	1: ISheetData_Shops_ZhpRefreshPrice;
 	2: ISheetData_Shops_ZhpRefreshPrice;
 	3: ISheetData_Shops_ZhpRefreshPrice;
@@ -193,9 +198,8 @@ declare interface ISheetData_Shops_ZhpRefreshPrice {
 }
 //#endregion
 
-//#region goods --- unique
+//#region goods
 declare interface ISheet_Shops_Goods {
-	rows: ISheetData_Shops_Goods[];
 	1001: ISheetData_Shops_Goods;
 	1002: ISheetData_Shops_Goods;
 	1003: ISheetData_Shops_Goods;
@@ -755,9 +759,8 @@ declare interface ISheetData_Shops_Goods {
 }
 //#endregion
 
-//#region goods_package --- group
+//#region goods_package
 declare interface ISheet_Shops_GoodsPackage {
-	rows: ISheetData_Shops_GoodsPackage[];
 	700001: ISheetData_Shops_GoodsPackage[];
 }
 declare interface ISheetData_Shops_GoodsPackage {
@@ -769,9 +772,8 @@ declare interface ISheetData_Shops_GoodsPackage {
 }
 //#endregion
 
-//#region interval_refresh_goods --- group
+//#region interval_refresh_goods
 declare interface ISheet_Shops_IntervalRefreshGoods {
-	rows: ISheetData_Shops_IntervalRefreshGoods[];
 	1001: ISheetData_Shops_IntervalRefreshGoods[];
 }
 declare interface ISheetData_Shops_IntervalRefreshGoods {
@@ -782,9 +784,8 @@ declare interface ISheetData_Shops_IntervalRefreshGoods {
 }
 //#endregion
 
-//#region item_package --- unique
+//#region item_package
 declare interface ISheet_Shops_ItemPackage {
-	rows: ISheetData_Shops_ItemPackage[];
 	700002: ISheetData_Shops_ItemPackage;
 	700003: ISheetData_Shops_ItemPackage;
 }
@@ -795,9 +796,8 @@ declare interface ISheetData_Shops_ItemPackage {
 }
 //#endregion
 
-//#region selected_package --- group
+//#region selected_package
 declare interface ISheet_Shops_SelectedPackage {
-	rows: ISheetData_Shops_SelectedPackage[];
 	5399: ISheetData_Shops_SelectedPackage[];
 }
 declare interface ISheetData_Shops_SelectedPackage {

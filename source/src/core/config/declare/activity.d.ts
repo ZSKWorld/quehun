@@ -1,92 +1,174 @@
 declare interface ITable_Activity {
-	activity: ISheet_Activity_Activity;
-	task: ISheet_Activity_Task;
-	exchange: ISheet_Activity_Exchange;
-	chest_up: ISheet_Activity_ChestUp;
-	game_task: ISheet_Activity_GameTask;
-	game_point: ISheet_Activity_GamePoint;
-	rank: ISheet_Activity_Rank;
-	rank_reward: ISheet_Activity_RankReward;
-	flip_task: ISheet_Activity_FlipTask;
-	flip_info: ISheet_Activity_FlipInfo;
-	daily_sign: ISheet_Activity_DailySign;
-	richman_info: ISheet_Activity_RichmanInfo;
-	richman_map: ISheet_Activity_RichmanMap;
-	richman_level: ISheet_Activity_RichmanLevel;
-	richman_event: ISheet_Activity_RichmanEvent;
-	period_task: ISheet_Activity_PeriodTask;
-	random_task_pool: ISheet_Activity_RandomTaskPool;
-	random_task_info: ISheet_Activity_RandomTaskInfo;
-	richman_reward_seq: ISheet_Activity_RichmanRewardSeq;
-	activity_buff: ISheet_Activity_ActivityBuff;
-	buff_condition: ISheet_Activity_BuffCondition;
-	game_point_info: ISheet_Activity_GamePointInfo;
-	game_point_rank: ISheet_Activity_GamePointRank;
-	game_point_filter: ISheet_Activity_GamePointFilter;
-	activity_room: ISheet_Activity_ActivityRoom;
-	sns_activity: ISheet_Activity_SnsActivity;
-	mine_activity: ISheet_Activity_MineActivity;
-	mine_reward: ISheet_Activity_MineReward;
-	rpg_activity: ISheet_Activity_RpgActivity;
-	rpg_monster_group: ISheet_Activity_RpgMonsterGroup;
-	arena_activity: ISheet_Activity_ArenaActivity;
-	arena_reward: ISheet_Activity_ArenaReward;
-	arena_reward_display: ISheet_Activity_ArenaRewardDisplay;
-	segment_task: ISheet_Activity_SegmentTask;
-	feed_activity_info: ISheet_Activity_FeedActivityInfo;
-	feed_activity_reward: ISheet_Activity_FeedActivityReward;
-	vote_activity: ISheet_Activity_VoteActivity;
-	rpg_v2_activity: ISheet_Activity_RpgV2Activity;
-	spot_activity: ISheet_Activity_SpotActivity;
-	activity_item: ISheet_Activity_ActivityItem;
-	upgrade_activity: ISheet_Activity_UpgradeActivity;
-	upgrade_activity_reward: ISheet_Activity_UpgradeActivityReward;
-	friend_gift_activity: ISheet_Activity_FriendGiftActivity;
-	upgrade_activity_display: ISheet_Activity_UpgradeActivityDisplay;
-	activity_desktop: ISheet_Activity_ActivityDesktop;
-	gacha_activity_info: ISheet_Activity_GachaActivityInfo;
-	gacha_pool: ISheet_Activity_GachaPool;
-	gacha_control: ISheet_Activity_GachaControl;
-	task_display: ISheet_Activity_TaskDisplay;
-	simulation_activity_info: ISheet_Activity_SimulationActivityInfo;
-	reward_mail: ISheet_Activity_RewardMail;
-	combining_activity_info: ISheet_Activity_CombiningActivityInfo;
-	combining_craft_pool: ISheet_Activity_CombiningCraftPool;
-	combining_map: ISheet_Activity_CombiningMap;
-	combining_order: ISheet_Activity_CombiningOrder;
-	combining_craft: ISheet_Activity_CombiningCraft;
-	combining_customer: ISheet_Activity_CombiningCustomer;
-	chest_replace_up: ISheet_Activity_ChestReplaceUp;
-	village_activity_info: ISheet_Activity_VillageActivityInfo;
-	village_building: ISheet_Activity_VillageBuilding;
-	village_task: ISheet_Activity_VillageTask;
-	liver_event_info: ISheet_Activity_LiverEventInfo;
-	liver_text_info: ISheet_Activity_LiverTextInfo;
-	festival_activity: ISheet_Activity_FestivalActivity;
-	festival_level: ISheet_Activity_FestivalLevel;
-	festival_proposal: ISheet_Activity_FestivalProposal;
-	festival_event: ISheet_Activity_FestivalEvent;
-	festival_ending: ISheet_Activity_FestivalEnding;
-	island_activity: ISheet_Activity_IslandActivity;
-	island_goods: ISheet_Activity_IslandGoods;
-	island_bag: ISheet_Activity_IslandBag;
-	island_map: ISheet_Activity_IslandMap;
-	island_shop: ISheet_Activity_IslandShop;
-	island_news: ISheet_Activity_IslandNews;
-	summer_story: ISheet_Activity_SummerStory;
-	story_activity: ISheet_Activity_StoryActivity;
-	story_ending: ISheet_Activity_StoryEnding;
-	activity_banner: ISheet_Activity_ActivityBanner;
-	activity_guide: ISheet_Activity_ActivityGuide;
-	summer_story_reward: ISheet_Activity_SummerStoryReward;
-	choose_up_activity: ISheet_Activity_ChooseUpActivity;
-	choose_up_replace: ISheet_Activity_ChooseUpReplace;
-	progress_reward: ISheet_Activity_ProgressReward;
+	/** 活动定义表  ---  unique */
+	activity: CfgExt<ISheet_Activity_Activity>;
+	/** 活动任务表  ---  unique */
+	task: CfgExt<ISheet_Activity_Task>;
+	/** 活动兑换表  ---  unique */
+	exchange: CfgExt<ISheet_Activity_Exchange>;
+	/** 宝箱up表  ---  group */
+	chest_up: CfgExt<ISheet_Activity_ChestUp>;
+	/** 对局活动任务表  ---  unique */
+	game_task: CfgExt<ISheet_Activity_GameTask>;
+	/** 对局和牌活动表  ---  unique */
+	game_point: CfgExt<ISheet_Activity_GamePoint>;
+	/** 排名活动设定  ---  group */
+	rank: CfgExt<ISheet_Activity_Rank>;
+	/** 排名活动奖励  ---  group */
+	rank_reward: CfgExt<ISheet_Activity_RankReward>;
+	/** 翻牌牌任务  ---  unique */
+	flip_task: CfgExt<ISheet_Activity_FlipTask>;
+	/** 翻牌牌信息  ---  unique */
+	flip_info: CfgExt<ISheet_Activity_FlipInfo>;
+	/** 每日签到任务  ---  group */
+	daily_sign: CfgExt<ISheet_Activity_DailySign>;
+	/** 大富翁活动详情表  ---  unique */
+	richman_info: CfgExt<ISheet_Activity_RichmanInfo>;
+	/** 大富翁活动地图表  ---  group */
+	richman_map: CfgExt<ISheet_Activity_RichmanMap>;
+	/** 大富翁配置人物升级表  ---  group */
+	richman_level: CfgExt<ISheet_Activity_RichmanLevel>;
+	/** 大富翁活动随机事件表  ---  unique */
+	richman_event: CfgExt<ISheet_Activity_RichmanEvent>;
+	/** 活动常驻任务表  ---  unique */
+	period_task: CfgExt<ISheet_Activity_PeriodTask>;
+	/** 随机任务池  ---  group */
+	random_task_pool: CfgExt<ISheet_Activity_RandomTaskPool>;
+	/** 随机任务活动信息  ---  unique */
+	random_task_info: CfgExt<ISheet_Activity_RandomTaskInfo>;
+	/** 大富翁完成一圈的奖励序列  ---  group */
+	richman_reward_seq: CfgExt<ISheet_Activity_RichmanRewardSeq>;
+	/** 活动奖励加点buff表  ---  group */
+	activity_buff: CfgExt<ISheet_Activity_ActivityBuff>;
+	/** buff条件（受影响的任务编号)  ---  group */
+	buff_condition: CfgExt<ISheet_Activity_BuffCondition>;
+	/** 打点活动限制条件  ---  unique */
+	game_point_info: CfgExt<ISheet_Activity_GamePointInfo>;
+	/** 打点活动排名奖励  ---  group */
+	game_point_rank: CfgExt<ISheet_Activity_GamePointRank>;
+	/** 打点活动配置组表  ---  group */
+	game_point_filter: CfgExt<ISheet_Activity_GamePointFilter>;
+	/** 友人活动控制  ---  unique */
+	activity_room: CfgExt<ISheet_Activity_ActivityRoom>;
+	/** sns活动博客记录  ---  unique */
+	sns_activity: CfgExt<ISheet_Activity_SnsActivity>;
+	/** 挖奖励活动  ---  unique */
+	mine_activity: CfgExt<ISheet_Activity_MineActivity>;
+	/** 挖奖励活动奖励  ---  group */
+	mine_reward: CfgExt<ISheet_Activity_MineReward>;
+	/** RPG活动  ---  unique */
+	rpg_activity: CfgExt<ISheet_Activity_RpgActivity>;
+	/** RPG怪物配置  ---  group */
+	rpg_monster_group: CfgExt<ISheet_Activity_RpgMonsterGroup>;
+	/** 竞技场活动配置  ---  unique */
+	arena_activity: CfgExt<ISheet_Activity_ArenaActivity>;
+	/** 竞技场奖励配置  ---  group */
+	arena_reward: CfgExt<ISheet_Activity_ArenaReward>;
+	/** 竞技场奖励显示用  ---  group */
+	arena_reward_display: CfgExt<ISheet_Activity_ArenaRewardDisplay>;
+	/** 多次任务配置  ---  unique */
+	segment_task: CfgExt<ISheet_Activity_SegmentTask>;
+	/** unique */
+	feed_activity_info: CfgExt<ISheet_Activity_FeedActivityInfo>;
+	/** group */
+	feed_activity_reward: CfgExt<ISheet_Activity_FeedActivityReward>;
+	/** 投票活动  ---  unique */
+	vote_activity: CfgExt<ISheet_Activity_VoteActivity>;
+	/** RPG活动2022年版v2  ---  unique */
+	rpg_v2_activity: CfgExt<ISheet_Activity_RpgV2Activity>;
+	/** 解锁剧情分支活动  ---  unique */
+	spot_activity: CfgExt<ISheet_Activity_SpotActivity>;
+	/** 发放道具到背包  ---  unique */
+	activity_item: CfgExt<ISheet_Activity_ActivityItem>;
+	/** 配置升级分组  ---  unique */
+	upgrade_activity: CfgExt<ISheet_Activity_UpgradeActivity>;
+	/** 配置升级奖励  ---  group */
+	upgrade_activity_reward: CfgExt<ISheet_Activity_UpgradeActivityReward>;
+	/** 好友互助  ---  unique */
+	friend_gift_activity: CfgExt<ISheet_Activity_FriendGiftActivity>;
+	/** group */
+	upgrade_activity_display: CfgExt<ISheet_Activity_UpgradeActivityDisplay>;
+	/** 控制轮巡活动  ---  group */
+	activity_desktop: CfgExt<ISheet_Activity_ActivityDesktop>;
+	/** unique */
+	gacha_activity_info: CfgExt<ISheet_Activity_GachaActivityInfo>;
+	/** group */
+	gacha_pool: CfgExt<ISheet_Activity_GachaPool>;
+	/** group */
+	gacha_control: CfgExt<ISheet_Activity_GachaControl>;
+	/** group */
+	task_display: CfgExt<ISheet_Activity_TaskDisplay>;
+	/** unique */
+	simulation_activity_info: CfgExt<ISheet_Activity_SimulationActivityInfo>;
+	/** unique */
+	reward_mail: CfgExt<ISheet_Activity_RewardMail>;
+	/** unique */
+	combining_activity_info: CfgExt<ISheet_Activity_CombiningActivityInfo>;
+	/** group */
+	combining_craft_pool: CfgExt<ISheet_Activity_CombiningCraftPool>;
+	/** group */
+	combining_map: CfgExt<ISheet_Activity_CombiningMap>;
+	/** unique */
+	combining_order: CfgExt<ISheet_Activity_CombiningOrder>;
+	/** unique */
+	combining_craft: CfgExt<ISheet_Activity_CombiningCraft>;
+	/** 合成活动客人表  ---  unique */
+	combining_customer: CfgExt<ISheet_Activity_CombiningCustomer>;
+	/** group */
+	chest_replace_up: CfgExt<ISheet_Activity_ChestReplaceUp>;
+	/** unique */
+	village_activity_info: CfgExt<ISheet_Activity_VillageActivityInfo>;
+	/** group */
+	village_building: CfgExt<ISheet_Activity_VillageBuilding>;
+	/** group */
+	village_task: CfgExt<ISheet_Activity_VillageTask>;
+	/** 主播弹幕活动前端参数表  ---  unique */
+	liver_event_info: CfgExt<ISheet_Activity_LiverEventInfo>;
+	/** 主播弹幕活动文本表  ---  group */
+	liver_text_info: CfgExt<ISheet_Activity_LiverTextInfo>;
+	/** 庆典活动主表  ---  unique */
+	festival_activity: CfgExt<ISheet_Activity_FestivalActivity>;
+	/** 庆典等级  ---  group */
+	festival_level: CfgExt<ISheet_Activity_FestivalLevel>;
+	/** 庆典提案表  ---  group */
+	festival_proposal: CfgExt<ISheet_Activity_FestivalProposal>;
+	/** 庆典事件表  ---  group */
+	festival_event: CfgExt<ISheet_Activity_FestivalEvent>;
+	/** 结果表，提案和事件共用  ---  group */
+	festival_ending: CfgExt<ISheet_Activity_FestivalEnding>;
+	/** 海岛活动主表  ---  unique */
+	island_activity: CfgExt<ISheet_Activity_IslandActivity>;
+	/** 海岛商品表  ---  group */
+	island_goods: CfgExt<ISheet_Activity_IslandGoods>;
+	/** 海岛背包表  ---  group */
+	island_bag: CfgExt<ISheet_Activity_IslandBag>;
+	/** 海岛地图表  ---  group */
+	island_map: CfgExt<ISheet_Activity_IslandMap>;
+	/** 海岛商店表  ---  group */
+	island_shop: CfgExt<ISheet_Activity_IslandShop>;
+	/** 海岛新闻表  ---  group */
+	island_news: CfgExt<ISheet_Activity_IslandNews>;
+	/** 竹云庆典剧情建筑  ---  group */
+	summer_story: CfgExt<ISheet_Activity_SummerStory>;
+	/** 剧情活动表（后端用）  ---  group */
+	story_activity: CfgExt<ISheet_Activity_StoryActivity>;
+	/** 剧情活动分支表（后端用）  ---  group */
+	story_ending: CfgExt<ISheet_Activity_StoryEnding>;
+	/** 活动banner配置表（前端用）  ---  unique */
+	activity_banner: CfgExt<ISheet_Activity_ActivityBanner>;
+	/** 活动引导配置表（前端用）  ---  unique */
+	activity_guide: CfgExt<ISheet_Activity_ActivityGuide>;
+	/** 竹云庆典剧情奖励显示  ---  group */
+	summer_story_reward: CfgExt<ISheet_Activity_SummerStoryReward>;
+	/** 自选卡池活动主表  ---  unique */
+	choose_up_activity: CfgExt<ISheet_Activity_ChooseUpActivity>;
+	/** 自选卡池概率替换  ---  group */
+	choose_up_replace: CfgExt<ISheet_Activity_ChooseUpReplace>;
+	/** 根据进度领奖  ---  group */
+	progress_reward: CfgExt<ISheet_Activity_ProgressReward>;
 }
 
-//#region activity --- unique
+//#region activity
 declare interface ISheet_Activity_Activity {
-	rows: ISheetData_Activity_Activity[];
 	1001: ISheetData_Activity_Activity;
 	1002: ISheetData_Activity_Activity;
 	1003: ISheetData_Activity_Activity;
@@ -1158,9 +1240,8 @@ declare interface ISheetData_Activity_Activity {
 }
 //#endregion
 
-//#region task --- unique
+//#region task
 declare interface ISheet_Activity_Task {
-	rows: ISheetData_Activity_Task[];
 	1001001: ISheetData_Activity_Task;
 	1001002: ISheetData_Activity_Task;
 	1001003: ISheetData_Activity_Task;
@@ -1863,9 +1944,8 @@ declare interface ISheetData_Activity_Task {
 }
 //#endregion
 
-//#region exchange --- unique
+//#region exchange
 declare interface ISheet_Activity_Exchange {
-	rows: ISheetData_Activity_Exchange[];
 	1002001: ISheetData_Activity_Exchange;
 	1002002: ISheetData_Activity_Exchange;
 	1002003: ISheetData_Activity_Exchange;
@@ -2241,9 +2321,8 @@ declare interface ISheetData_Activity_Exchange {
 }
 //#endregion
 
-//#region chest_up --- group
+//#region chest_up
 declare interface ISheet_Activity_ChestUp {
-	rows: ISheetData_Activity_ChestUp[];
 	1003: ISheetData_Activity_ChestUp[];
 	1008: ISheetData_Activity_ChestUp[];
 	1015: ISheetData_Activity_ChestUp[];
@@ -2704,9 +2783,8 @@ declare interface ISheetData_Activity_ChestUp {
 }
 //#endregion
 
-//#region game_task --- unique
+//#region game_task
 declare interface ISheet_Activity_GameTask {
-	rows: ISheetData_Activity_GameTask[];
 	1004001: ISheetData_Activity_GameTask;
 	1004002: ISheetData_Activity_GameTask;
 	1004003: ISheetData_Activity_GameTask;
@@ -3489,9 +3567,8 @@ declare interface ISheetData_Activity_GameTask {
 }
 //#endregion
 
-//#region game_point --- unique
+//#region game_point
 declare interface ISheet_Activity_GamePoint {
-	rows: ISheetData_Activity_GamePoint[];
 	1014001: ISheetData_Activity_GamePoint;
 	1014002: ISheetData_Activity_GamePoint;
 	1014003: ISheetData_Activity_GamePoint;
@@ -3678,9 +3755,8 @@ declare interface ISheetData_Activity_GamePoint {
 }
 //#endregion
 
-//#region rank --- group
+//#region rank
 declare interface ISheet_Activity_Rank {
-	rows: ISheetData_Activity_Rank[];
 	1010: ISheetData_Activity_Rank[];
 }
 declare interface ISheetData_Activity_Rank {
@@ -3695,9 +3771,8 @@ declare interface ISheetData_Activity_Rank {
 }
 //#endregion
 
-//#region rank_reward --- group
+//#region rank_reward
 declare interface ISheet_Activity_RankReward {
-	rows: ISheetData_Activity_RankReward[];
 	1010: ISheetData_Activity_RankReward[];
 }
 declare interface ISheetData_Activity_RankReward {
@@ -3709,9 +3784,8 @@ declare interface ISheetData_Activity_RankReward {
 }
 //#endregion
 
-//#region flip_task --- unique
+//#region flip_task
 declare interface ISheet_Activity_FlipTask {
-	rows: ISheetData_Activity_FlipTask[];
 	1020001: ISheetData_Activity_FlipTask;
 	1020002: ISheetData_Activity_FlipTask;
 	1020003: ISheetData_Activity_FlipTask;
@@ -4163,9 +4237,8 @@ declare interface ISheetData_Activity_FlipTask {
 }
 //#endregion
 
-//#region flip_info --- unique
+//#region flip_info
 declare interface ISheet_Activity_FlipInfo {
-	rows: ISheetData_Activity_FlipInfo[];
 	1022: ISheetData_Activity_FlipInfo;
 	1028: ISheetData_Activity_FlipInfo;
 	1037: ISheetData_Activity_FlipInfo;
@@ -4193,9 +4266,8 @@ declare interface ISheetData_Activity_FlipInfo {
 }
 //#endregion
 
-//#region daily_sign --- group
+//#region daily_sign
 declare interface ISheet_Activity_DailySign {
-	rows: ISheetData_Activity_DailySign[];
 	1038: ISheetData_Activity_DailySign[];
 	1162: ISheetData_Activity_DailySign[];
 	1165: ISheetData_Activity_DailySign[];
@@ -4228,9 +4300,8 @@ declare interface ISheetData_Activity_DailySign {
 }
 //#endregion
 
-//#region richman_info --- unique
+//#region richman_info
 declare interface ISheet_Activity_RichmanInfo {
-	rows: ISheetData_Activity_RichmanInfo[];
 	1064: ISheetData_Activity_RichmanInfo;
 	1073: ISheetData_Activity_RichmanInfo;
 	1094: ISheetData_Activity_RichmanInfo;
@@ -4271,9 +4342,8 @@ declare interface ISheetData_Activity_RichmanInfo {
 }
 //#endregion
 
-//#region richman_map --- group
+//#region richman_map
 declare interface ISheet_Activity_RichmanMap {
-	rows: ISheetData_Activity_RichmanMap[];
 	106401: ISheetData_Activity_RichmanMap[];
 	107301: ISheetData_Activity_RichmanMap[];
 	109401: ISheetData_Activity_RichmanMap[];
@@ -4301,9 +4371,8 @@ declare interface ISheetData_Activity_RichmanMap {
 }
 //#endregion
 
-//#region richman_level --- group
+//#region richman_level
 declare interface ISheet_Activity_RichmanLevel {
-	rows: ISheetData_Activity_RichmanLevel[];
 	1064: ISheetData_Activity_RichmanLevel[];
 	1073: ISheetData_Activity_RichmanLevel[];
 	1094: ISheetData_Activity_RichmanLevel[];
@@ -4324,9 +4393,8 @@ declare interface ISheetData_Activity_RichmanLevel {
 }
 //#endregion
 
-//#region richman_event --- unique
+//#region richman_event
 declare interface ISheet_Activity_RichmanEvent {
-	rows: ISheetData_Activity_RichmanEvent[];
 	106401: ISheetData_Activity_RichmanEvent;
 	106402: ISheetData_Activity_RichmanEvent;
 	106403: ISheetData_Activity_RichmanEvent;
@@ -4371,9 +4439,8 @@ declare interface ISheetData_Activity_RichmanEvent {
 }
 //#endregion
 
-//#region period_task --- unique
+//#region period_task
 declare interface ISheet_Activity_PeriodTask {
-	rows: ISheetData_Activity_PeriodTask[];
 	1066001: ISheetData_Activity_PeriodTask;
 	1066002: ISheetData_Activity_PeriodTask;
 	1066003: ISheetData_Activity_PeriodTask;
@@ -5983,9 +6050,8 @@ declare interface ISheetData_Activity_PeriodTask {
 }
 //#endregion
 
-//#region random_task_pool --- group
+//#region random_task_pool
 declare interface ISheet_Activity_RandomTaskPool {
-	rows: ISheetData_Activity_RandomTaskPool[];
 	106501: ISheetData_Activity_RandomTaskPool[];
 	106502: ISheetData_Activity_RandomTaskPool[];
 	106503: ISheetData_Activity_RandomTaskPool[];
@@ -6057,9 +6123,8 @@ declare interface ISheetData_Activity_RandomTaskPool {
 }
 //#endregion
 
-//#region random_task_info --- unique
+//#region random_task_info
 declare interface ISheet_Activity_RandomTaskInfo {
-	rows: ISheetData_Activity_RandomTaskInfo[];
 	1065: ISheetData_Activity_RandomTaskInfo;
 	1074: ISheetData_Activity_RandomTaskInfo;
 	1095: ISheetData_Activity_RandomTaskInfo;
@@ -6085,9 +6150,8 @@ declare interface ISheetData_Activity_RandomTaskInfo {
 }
 //#endregion
 
-//#region richman_reward_seq --- group
+//#region richman_reward_seq
 declare interface ISheet_Activity_RichmanRewardSeq {
-	rows: ISheetData_Activity_RichmanRewardSeq[];
 	10101: ISheetData_Activity_RichmanRewardSeq[];
 }
 declare interface ISheetData_Activity_RichmanRewardSeq {
@@ -6100,9 +6164,8 @@ declare interface ISheetData_Activity_RichmanRewardSeq {
 }
 //#endregion
 
-//#region activity_buff --- group
+//#region activity_buff
 declare interface ISheet_Activity_ActivityBuff {
-	rows: ISheetData_Activity_ActivityBuff[];
 	10001: ISheetData_Activity_ActivityBuff[];
 	10002: ISheetData_Activity_ActivityBuff[];
 	10003: ISheetData_Activity_ActivityBuff[];
@@ -6158,9 +6221,8 @@ declare interface ISheetData_Activity_ActivityBuff {
 }
 //#endregion
 
-//#region buff_condition --- group
+//#region buff_condition
 declare interface ISheet_Activity_BuffCondition {
-	rows: ISheetData_Activity_BuffCondition[];
 	10001: ISheetData_Activity_BuffCondition[];
 	10002: ISheetData_Activity_BuffCondition[];
 	10003: ISheetData_Activity_BuffCondition[];
@@ -6196,9 +6258,8 @@ declare interface ISheetData_Activity_BuffCondition {
 }
 //#endregion
 
-//#region game_point_info --- unique
+//#region game_point_info
 declare interface ISheet_Activity_GamePointInfo {
-	rows: ISheetData_Activity_GamePointInfo[];
 	1135: ISheetData_Activity_GamePointInfo;
 	221201: ISheetData_Activity_GamePointInfo;
 	231151: ISheetData_Activity_GamePointInfo;
@@ -6217,9 +6278,8 @@ declare interface ISheetData_Activity_GamePointInfo {
 }
 //#endregion
 
-//#region game_point_rank --- group
+//#region game_point_rank
 declare interface ISheet_Activity_GamePointRank {
-	rows: ISheetData_Activity_GamePointRank[];
 	1135: ISheetData_Activity_GamePointRank[];
 }
 declare interface ISheetData_Activity_GamePointRank {
@@ -6234,9 +6294,8 @@ declare interface ISheetData_Activity_GamePointRank {
 }
 //#endregion
 
-//#region game_point_filter --- group
+//#region game_point_filter
 declare interface ISheet_Activity_GamePointFilter {
-	rows: ISheetData_Activity_GamePointFilter[];
 	1001: ISheetData_Activity_GamePointFilter[];
 	221201: ISheetData_Activity_GamePointFilter[];
 	231151: ISheetData_Activity_GamePointFilter[];
@@ -6256,9 +6315,8 @@ declare interface ISheetData_Activity_GamePointFilter {
 }
 //#endregion
 
-//#region activity_room --- unique
+//#region activity_room
 declare interface ISheet_Activity_ActivityRoom {
-	rows: ISheetData_Activity_ActivityRoom[];
 	1161: ISheetData_Activity_ActivityRoom;
 	1166: ISheetData_Activity_ActivityRoom;
 	1190: ISheetData_Activity_ActivityRoom;
@@ -6311,9 +6369,8 @@ declare interface ISheetData_Activity_ActivityRoom {
 }
 //#endregion
 
-//#region sns_activity --- unique
+//#region sns_activity
 declare interface ISheet_Activity_SnsActivity {
-	rows: ISheetData_Activity_SnsActivity[];
 	1: ISheetData_Activity_SnsActivity;
 	101: ISheetData_Activity_SnsActivity;
 	102: ISheetData_Activity_SnsActivity;
@@ -8768,9 +8825,8 @@ declare interface ISheetData_Activity_SnsActivity {
 }
 //#endregion
 
-//#region mine_activity --- unique
+//#region mine_activity
 declare interface ISheet_Activity_MineActivity {
-	rows: ISheetData_Activity_MineActivity[];
 	1194: ISheetData_Activity_MineActivity;
 	1301: ISheetData_Activity_MineActivity;
 	221002: ISheetData_Activity_MineActivity;
@@ -8793,9 +8849,8 @@ declare interface ISheetData_Activity_MineActivity {
 }
 //#endregion
 
-//#region mine_reward --- group
+//#region mine_reward
 declare interface ISheet_Activity_MineReward {
-	rows: ISheetData_Activity_MineReward[];
 	1194: ISheetData_Activity_MineReward[];
 	1301: ISheetData_Activity_MineReward[];
 	221002: ISheetData_Activity_MineReward[];
@@ -8819,9 +8874,8 @@ declare interface ISheetData_Activity_MineReward {
 }
 //#endregion
 
-//#region rpg_activity --- unique
+//#region rpg_activity
 declare interface ISheet_Activity_RpgActivity {
-	rows: ISheetData_Activity_RpgActivity[];
 	1206: ISheetData_Activity_RpgActivity;
 }
 declare interface ISheetData_Activity_RpgActivity {
@@ -8857,9 +8911,8 @@ declare interface ISheetData_Activity_RpgActivity {
 }
 //#endregion
 
-//#region rpg_monster_group --- group
+//#region rpg_monster_group
 declare interface ISheet_Activity_RpgMonsterGroup {
-	rows: ISheetData_Activity_RpgMonsterGroup[];
 	120601: ISheetData_Activity_RpgMonsterGroup[];
 	22081101: ISheetData_Activity_RpgMonsterGroup[];
 }
@@ -8888,9 +8941,8 @@ declare interface ISheetData_Activity_RpgMonsterGroup {
 }
 //#endregion
 
-//#region arena_activity --- unique
+//#region arena_activity
 declare interface ISheet_Activity_ArenaActivity {
-	rows: ISheetData_Activity_ArenaActivity[];
 	1245: ISheetData_Activity_ArenaActivity;
 }
 declare interface ISheetData_Activity_ArenaActivity {
@@ -8920,9 +8972,8 @@ declare interface ISheetData_Activity_ArenaActivity {
 }
 //#endregion
 
-//#region arena_reward --- group
+//#region arena_reward
 declare interface ISheet_Activity_ArenaReward {
-	rows: ISheetData_Activity_ArenaReward[];
 	124501: ISheetData_Activity_ArenaReward[];
 }
 declare interface ISheetData_Activity_ArenaReward {
@@ -8934,9 +8985,8 @@ declare interface ISheetData_Activity_ArenaReward {
 }
 //#endregion
 
-//#region arena_reward_display --- group
+//#region arena_reward_display
 declare interface ISheet_Activity_ArenaRewardDisplay {
-	rows: ISheetData_Activity_ArenaRewardDisplay[];
 	124501: ISheetData_Activity_ArenaRewardDisplay[];
 }
 declare interface ISheetData_Activity_ArenaRewardDisplay {
@@ -8962,9 +9012,8 @@ declare interface ISheetData_Activity_ArenaRewardDisplay {
 }
 //#endregion
 
-//#region segment_task --- unique
+//#region segment_task
 declare interface ISheet_Activity_SegmentTask {
-	rows: ISheetData_Activity_SegmentTask[];
 	126101: ISheetData_Activity_SegmentTask;
 	126102: ISheetData_Activity_SegmentTask;
 	126103: ISheetData_Activity_SegmentTask;
@@ -8988,9 +9037,8 @@ declare interface ISheetData_Activity_SegmentTask {
 }
 //#endregion
 
-//#region feed_activity_info --- unique
+//#region feed_activity_info
 declare interface ISheet_Activity_FeedActivityInfo {
-	rows: ISheetData_Activity_FeedActivityInfo[];
 	1260: ISheetData_Activity_FeedActivityInfo;
 }
 declare interface ISheetData_Activity_FeedActivityInfo {
@@ -9009,9 +9057,8 @@ declare interface ISheetData_Activity_FeedActivityInfo {
 }
 //#endregion
 
-//#region feed_activity_reward --- group
+//#region feed_activity_reward
 declare interface ISheet_Activity_FeedActivityReward {
-	rows: ISheetData_Activity_FeedActivityReward[];
 	126001: ISheetData_Activity_FeedActivityReward[];
 }
 declare interface ISheetData_Activity_FeedActivityReward {
@@ -9026,9 +9073,8 @@ declare interface ISheetData_Activity_FeedActivityReward {
 }
 //#endregion
 
-//#region vote_activity --- unique
+//#region vote_activity
 declare interface ISheet_Activity_VoteActivity {
-	rows: ISheetData_Activity_VoteActivity[];
 	220710: ISheetData_Activity_VoteActivity;
 	230620: ISheetData_Activity_VoteActivity;
 	230621: ISheetData_Activity_VoteActivity;
@@ -9049,9 +9095,8 @@ declare interface ISheetData_Activity_VoteActivity {
 }
 //#endregion
 
-//#region rpg_v2_activity --- unique
+//#region rpg_v2_activity
 declare interface ISheet_Activity_RpgV2Activity {
-	rows: ISheetData_Activity_RpgV2Activity[];
 	220811: ISheetData_Activity_RpgV2Activity;
 }
 declare interface ISheetData_Activity_RpgV2Activity {
@@ -9078,9 +9123,8 @@ declare interface ISheetData_Activity_RpgV2Activity {
 }
 //#endregion
 
-//#region spot_activity --- unique
+//#region spot_activity
 declare interface ISheet_Activity_SpotActivity {
-	rows: ISheetData_Activity_SpotActivity[];
 	22082101: ISheetData_Activity_SpotActivity;
 	22082102: ISheetData_Activity_SpotActivity;
 	22082103: ISheetData_Activity_SpotActivity;
@@ -9148,9 +9192,8 @@ declare interface ISheetData_Activity_SpotActivity {
 }
 //#endregion
 
-//#region activity_item --- unique
+//#region activity_item
 declare interface ISheet_Activity_ActivityItem {
-	rows: ISheetData_Activity_ActivityItem[];
 	221209: ISheetData_Activity_ActivityItem;
 	230142: ISheetData_Activity_ActivityItem;
 	230209: ISheetData_Activity_ActivityItem;
@@ -9198,9 +9241,8 @@ declare interface ISheetData_Activity_ActivityItem {
 }
 //#endregion
 
-//#region upgrade_activity --- unique
+//#region upgrade_activity
 declare interface ISheet_Activity_UpgradeActivity {
-	rows: ISheetData_Activity_UpgradeActivity[];
 	230101: ISheetData_Activity_UpgradeActivity;
 }
 declare interface ISheetData_Activity_UpgradeActivity {
@@ -9217,9 +9259,8 @@ declare interface ISheetData_Activity_UpgradeActivity {
 }
 //#endregion
 
-//#region upgrade_activity_reward --- group
+//#region upgrade_activity_reward
 declare interface ISheet_Activity_UpgradeActivityReward {
-	rows: ISheetData_Activity_UpgradeActivityReward[];
 	23010101: ISheetData_Activity_UpgradeActivityReward[];
 	23010102: ISheetData_Activity_UpgradeActivityReward[];
 	23010103: ISheetData_Activity_UpgradeActivityReward[];
@@ -9238,9 +9279,8 @@ declare interface ISheetData_Activity_UpgradeActivityReward {
 }
 //#endregion
 
-//#region friend_gift_activity --- unique
+//#region friend_gift_activity
 declare interface ISheet_Activity_FriendGiftActivity {
-	rows: ISheetData_Activity_FriendGiftActivity[];
 	230102: ISheetData_Activity_FriendGiftActivity;
 }
 declare interface ISheetData_Activity_FriendGiftActivity {
@@ -9259,9 +9299,8 @@ declare interface ISheetData_Activity_FriendGiftActivity {
 }
 //#endregion
 
-//#region upgrade_activity_display --- group
+//#region upgrade_activity_display
 declare interface ISheet_Activity_UpgradeActivityDisplay {
-	rows: ISheetData_Activity_UpgradeActivityDisplay[];
 	23010101: ISheetData_Activity_UpgradeActivityDisplay[];
 	23010102: ISheetData_Activity_UpgradeActivityDisplay[];
 	23010103: ISheetData_Activity_UpgradeActivityDisplay[];
@@ -9276,9 +9315,8 @@ declare interface ISheetData_Activity_UpgradeActivityDisplay {
 }
 //#endregion
 
-//#region activity_desktop --- group
+//#region activity_desktop
 declare interface ISheet_Activity_ActivityDesktop {
-	rows: ISheetData_Activity_ActivityDesktop[];
 	230143: ISheetData_Activity_ActivityDesktop[];
 }
 declare interface ISheetData_Activity_ActivityDesktop {
@@ -9289,9 +9327,8 @@ declare interface ISheetData_Activity_ActivityDesktop {
 }
 //#endregion
 
-//#region gacha_activity_info --- unique
+//#region gacha_activity_info
 declare interface ISheet_Activity_GachaActivityInfo {
-	rows: ISheetData_Activity_GachaActivityInfo[];
 	230301: ISheetData_Activity_GachaActivityInfo;
 	231001: ISheetData_Activity_GachaActivityInfo;
 	240901: ISheetData_Activity_GachaActivityInfo;
@@ -9313,9 +9350,8 @@ declare interface ISheetData_Activity_GachaActivityInfo {
 }
 //#endregion
 
-//#region gacha_pool --- group
+//#region gacha_pool
 declare interface ISheet_Activity_GachaPool {
-	rows: ISheetData_Activity_GachaPool[];
 	101: ISheetData_Activity_GachaPool[];
 	102: ISheetData_Activity_GachaPool[];
 	103: ISheetData_Activity_GachaPool[];
@@ -9337,9 +9373,8 @@ declare interface ISheetData_Activity_GachaPool {
 }
 //#endregion
 
-//#region gacha_control --- group
+//#region gacha_control
 declare interface ISheet_Activity_GachaControl {
-	rows: ISheetData_Activity_GachaControl[];
 	101: ISheetData_Activity_GachaControl[];
 	102: ISheetData_Activity_GachaControl[];
 	103: ISheetData_Activity_GachaControl[];
@@ -9355,9 +9390,8 @@ declare interface ISheetData_Activity_GachaControl {
 }
 //#endregion
 
-//#region task_display --- group
+//#region task_display
 declare interface ISheet_Activity_TaskDisplay {
-	rows: ISheetData_Activity_TaskDisplay[];
 	230601: ISheetData_Activity_TaskDisplay[];
 }
 declare interface ISheetData_Activity_TaskDisplay {
@@ -9379,9 +9413,8 @@ declare interface ISheetData_Activity_TaskDisplay {
 }
 //#endregion
 
-//#region simulation_activity_info --- unique
+//#region simulation_activity_info
 declare interface ISheet_Activity_SimulationActivityInfo {
-	rows: ISheetData_Activity_SimulationActivityInfo[];
 	230801: ISheetData_Activity_SimulationActivityInfo;
 }
 declare interface ISheetData_Activity_SimulationActivityInfo {
@@ -9392,9 +9425,8 @@ declare interface ISheetData_Activity_SimulationActivityInfo {
 }
 //#endregion
 
-//#region reward_mail --- unique
+//#region reward_mail
 declare interface ISheet_Activity_RewardMail {
-	rows: ISheetData_Activity_RewardMail[];
 	230803: ISheetData_Activity_RewardMail;
 	231204: ISheetData_Activity_RewardMail;
 	240103: ISheetData_Activity_RewardMail;
@@ -9422,9 +9454,8 @@ declare interface ISheetData_Activity_RewardMail {
 }
 //#endregion
 
-//#region combining_activity_info --- unique
+//#region combining_activity_info
 declare interface ISheet_Activity_CombiningActivityInfo {
-	rows: ISheetData_Activity_CombiningActivityInfo[];
 	231201: ISheetData_Activity_CombiningActivityInfo;
 	250601: ISheetData_Activity_CombiningActivityInfo;
 }
@@ -9454,9 +9485,8 @@ declare interface ISheetData_Activity_CombiningActivityInfo {
 }
 //#endregion
 
-//#region combining_craft_pool --- group
+//#region combining_craft_pool
 declare interface ISheet_Activity_CombiningCraftPool {
-	rows: ISheetData_Activity_CombiningCraftPool[];
 	23120101: ISheetData_Activity_CombiningCraftPool[];
 	23120102: ISheetData_Activity_CombiningCraftPool[];
 	23120103: ISheetData_Activity_CombiningCraftPool[];
@@ -9474,9 +9504,8 @@ declare interface ISheetData_Activity_CombiningCraftPool {
 }
 //#endregion
 
-//#region combining_map --- group
+//#region combining_map
 declare interface ISheet_Activity_CombiningMap {
-	rows: ISheetData_Activity_CombiningMap[];
 	231201: ISheetData_Activity_CombiningMap[];
 	250601: ISheetData_Activity_CombiningMap[];
 }
@@ -9492,9 +9521,8 @@ declare interface ISheetData_Activity_CombiningMap {
 }
 //#endregion
 
-//#region combining_order --- unique
+//#region combining_order
 declare interface ISheet_Activity_CombiningOrder {
-	rows: ISheetData_Activity_CombiningOrder[];
 	23120101: ISheetData_Activity_CombiningOrder;
 	23120102: ISheetData_Activity_CombiningOrder;
 	23120103: ISheetData_Activity_CombiningOrder;
@@ -9540,9 +9568,8 @@ declare interface ISheetData_Activity_CombiningOrder {
 }
 //#endregion
 
-//#region combining_craft --- unique
+//#region combining_craft
 declare interface ISheet_Activity_CombiningCraft {
-	rows: ISheetData_Activity_CombiningCraft[];
 	1001: ISheetData_Activity_CombiningCraft;
 	1002: ISheetData_Activity_CombiningCraft;
 	1003: ISheetData_Activity_CombiningCraft;
@@ -9618,9 +9645,8 @@ declare interface ISheetData_Activity_CombiningCraft {
 }
 //#endregion
 
-//#region combining_customer --- unique
+//#region combining_customer
 declare interface ISheet_Activity_CombiningCustomer {
-	rows: ISheetData_Activity_CombiningCustomer[];
 	1001: ISheetData_Activity_CombiningCustomer;
 	1002: ISheetData_Activity_CombiningCustomer;
 	1003: ISheetData_Activity_CombiningCustomer;
@@ -9698,9 +9724,8 @@ declare interface ISheetData_Activity_CombiningCustomer {
 }
 //#endregion
 
-//#region chest_replace_up --- group
+//#region chest_replace_up
 declare interface ISheet_Activity_ChestReplaceUp {
-	rows: ISheetData_Activity_ChestReplaceUp[];
 	231241: ISheetData_Activity_ChestReplaceUp[];
 	231242: ISheetData_Activity_ChestReplaceUp[];
 	231243: ISheetData_Activity_ChestReplaceUp[];
@@ -9871,9 +9896,8 @@ declare interface ISheetData_Activity_ChestReplaceUp {
 }
 //#endregion
 
-//#region village_activity_info --- unique
+//#region village_activity_info
 declare interface ISheet_Activity_VillageActivityInfo {
-	rows: ISheetData_Activity_VillageActivityInfo[];
 	240101: ISheetData_Activity_VillageActivityInfo;
 }
 declare interface ISheetData_Activity_VillageActivityInfo {
@@ -9900,9 +9924,8 @@ declare interface ISheetData_Activity_VillageActivityInfo {
 }
 //#endregion
 
-//#region village_building --- group
+//#region village_building
 declare interface ISheet_Activity_VillageBuilding {
-	rows: ISheetData_Activity_VillageBuilding[];
 	240101: ISheetData_Activity_VillageBuilding[];
 }
 declare interface ISheetData_Activity_VillageBuilding {
@@ -9940,9 +9963,8 @@ declare interface ISheetData_Activity_VillageBuilding {
 }
 //#endregion
 
-//#region village_task --- group
+//#region village_task
 declare interface ISheet_Activity_VillageTask {
-	rows: ISheetData_Activity_VillageTask[];
 	240101: ISheetData_Activity_VillageTask[];
 }
 declare interface ISheetData_Activity_VillageTask {
@@ -9967,9 +9989,8 @@ declare interface ISheetData_Activity_VillageTask {
 }
 //#endregion
 
-//#region liver_event_info --- unique
+//#region liver_event_info
 declare interface ISheet_Activity_LiverEventInfo {
-	rows: ISheetData_Activity_LiverEventInfo[];
 	240301: ISheetData_Activity_LiverEventInfo;
 }
 declare interface ISheetData_Activity_LiverEventInfo {
@@ -10002,9 +10023,8 @@ declare interface ISheetData_Activity_LiverEventInfo {
 }
 //#endregion
 
-//#region liver_text_info --- group
+//#region liver_text_info
 declare interface ISheet_Activity_LiverTextInfo {
-	rows: ISheetData_Activity_LiverTextInfo[];
 	240301: ISheetData_Activity_LiverTextInfo[];
 }
 declare interface ISheetData_Activity_LiverTextInfo {
@@ -10023,9 +10043,8 @@ declare interface ISheetData_Activity_LiverTextInfo {
 }
 //#endregion
 
-//#region festival_activity --- unique
+//#region festival_activity
 declare interface ISheet_Activity_FestivalActivity {
-	rows: ISheetData_Activity_FestivalActivity[];
 	240401: ISheetData_Activity_FestivalActivity;
 	250101: ISheetData_Activity_FestivalActivity;
 }
@@ -10057,9 +10076,8 @@ declare interface ISheetData_Activity_FestivalActivity {
 }
 //#endregion
 
-//#region festival_level --- group
+//#region festival_level
 declare interface ISheet_Activity_FestivalLevel {
-	rows: ISheetData_Activity_FestivalLevel[];
 	240401: ISheetData_Activity_FestivalLevel[];
 	250101: ISheetData_Activity_FestivalLevel[];
 }
@@ -10079,9 +10097,8 @@ declare interface ISheetData_Activity_FestivalLevel {
 }
 //#endregion
 
-//#region festival_proposal --- group
+//#region festival_proposal
 declare interface ISheet_Activity_FestivalProposal {
-	rows: ISheetData_Activity_FestivalProposal[];
 	240401: ISheetData_Activity_FestivalProposal[];
 	250101: ISheetData_Activity_FestivalProposal[];
 }
@@ -10107,9 +10124,8 @@ declare interface ISheetData_Activity_FestivalProposal {
 }
 //#endregion
 
-//#region festival_event --- group
+//#region festival_event
 declare interface ISheet_Activity_FestivalEvent {
-	rows: ISheetData_Activity_FestivalEvent[];
 	240401: ISheetData_Activity_FestivalEvent[];
 	250101: ISheetData_Activity_FestivalEvent[];
 }
@@ -10139,9 +10155,8 @@ declare interface ISheetData_Activity_FestivalEvent {
 }
 //#endregion
 
-//#region festival_ending --- group
+//#region festival_ending
 declare interface ISheet_Activity_FestivalEnding {
-	rows: ISheetData_Activity_FestivalEnding[];
 	100101: ISheetData_Activity_FestivalEnding[];
 	100102: ISheetData_Activity_FestivalEnding[];
 	100201: ISheetData_Activity_FestivalEnding[];
@@ -10342,9 +10357,8 @@ declare interface ISheetData_Activity_FestivalEnding {
 }
 //#endregion
 
-//#region island_activity --- unique
+//#region island_activity
 declare interface ISheet_Activity_IslandActivity {
-	rows: ISheetData_Activity_IslandActivity[];
 	240601: ISheetData_Activity_IslandActivity;
 }
 declare interface ISheetData_Activity_IslandActivity {
@@ -10363,9 +10377,8 @@ declare interface ISheetData_Activity_IslandActivity {
 }
 //#endregion
 
-//#region island_goods --- group
+//#region island_goods
 declare interface ISheet_Activity_IslandGoods {
-	rows: ISheetData_Activity_IslandGoods[];
 	240601: ISheetData_Activity_IslandGoods[];
 }
 declare interface ISheetData_Activity_IslandGoods {
@@ -10386,9 +10399,8 @@ declare interface ISheetData_Activity_IslandGoods {
 }
 //#endregion
 
-//#region island_bag --- group
+//#region island_bag
 declare interface ISheet_Activity_IslandBag {
-	rows: ISheetData_Activity_IslandBag[];
 	240601: ISheetData_Activity_IslandBag[];
 }
 declare interface ISheetData_Activity_IslandBag {
@@ -10417,9 +10429,8 @@ declare interface ISheetData_Activity_IslandBag {
 }
 //#endregion
 
-//#region island_map --- group
+//#region island_map
 declare interface ISheet_Activity_IslandMap {
-	rows: ISheetData_Activity_IslandMap[];
 	240601: ISheetData_Activity_IslandMap[];
 }
 declare interface ISheetData_Activity_IslandMap {
@@ -10444,9 +10455,8 @@ declare interface ISheetData_Activity_IslandMap {
 }
 //#endregion
 
-//#region island_shop --- group
+//#region island_shop
 declare interface ISheet_Activity_IslandShop {
-	rows: ISheetData_Activity_IslandShop[];
 	240601: ISheetData_Activity_IslandShop[];
 }
 declare interface ISheetData_Activity_IslandShop {
@@ -10465,9 +10475,8 @@ declare interface ISheetData_Activity_IslandShop {
 }
 //#endregion
 
-//#region island_news --- group
+//#region island_news
 declare interface ISheet_Activity_IslandNews {
-	rows: ISheetData_Activity_IslandNews[];
 	240601: ISheetData_Activity_IslandNews[];
 }
 declare interface ISheetData_Activity_IslandNews {
@@ -10492,9 +10501,8 @@ declare interface ISheetData_Activity_IslandNews {
 }
 //#endregion
 
-//#region summer_story --- group
+//#region summer_story
 declare interface ISheet_Activity_SummerStory {
-	rows: ISheetData_Activity_SummerStory[];
 	240811: ISheetData_Activity_SummerStory[];
 }
 declare interface ISheetData_Activity_SummerStory {
@@ -10523,9 +10531,8 @@ declare interface ISheetData_Activity_SummerStory {
 }
 //#endregion
 
-//#region story_activity --- group
+//#region story_activity
 declare interface ISheet_Activity_StoryActivity {
-	rows: ISheetData_Activity_StoryActivity[];
 	240811: ISheetData_Activity_StoryActivity[];
 	241107: ISheetData_Activity_StoryActivity[];
 	250405: ISheetData_Activity_StoryActivity[];
@@ -10558,9 +10565,8 @@ declare interface ISheetData_Activity_StoryActivity {
 }
 //#endregion
 
-//#region story_ending --- group
+//#region story_ending
 declare interface ISheet_Activity_StoryEnding {
-	rows: ISheetData_Activity_StoryEnding[];
 	2504051: ISheetData_Activity_StoryEnding[];
 	2504052: ISheetData_Activity_StoryEnding[];
 	2504053: ISheetData_Activity_StoryEnding[];
@@ -10605,9 +10611,8 @@ declare interface ISheetData_Activity_StoryEnding {
 }
 //#endregion
 
-//#region activity_banner --- unique
+//#region activity_banner
 declare interface ISheet_Activity_ActivityBanner {
-	rows: ISheetData_Activity_ActivityBanner[];
 	1: ISheetData_Activity_ActivityBanner;
 	2: ISheetData_Activity_ActivityBanner;
 	3: ISheetData_Activity_ActivityBanner;
@@ -10666,9 +10671,8 @@ declare interface ISheetData_Activity_ActivityBanner {
 }
 //#endregion
 
-//#region activity_guide --- unique
+//#region activity_guide
 declare interface ISheet_Activity_ActivityGuide {
-	rows: ISheetData_Activity_ActivityGuide[];
 	24081101: ISheetData_Activity_ActivityGuide;
 	24081102: ISheetData_Activity_ActivityGuide;
 	24081103: ISheetData_Activity_ActivityGuide;
@@ -10705,9 +10709,8 @@ declare interface ISheetData_Activity_ActivityGuide {
 }
 //#endregion
 
-//#region summer_story_reward --- group
+//#region summer_story_reward
 declare interface ISheet_Activity_SummerStoryReward {
-	rows: ISheetData_Activity_SummerStoryReward[];
 	240811: ISheetData_Activity_SummerStoryReward[];
 }
 declare interface ISheetData_Activity_SummerStoryReward {
@@ -10722,9 +10725,8 @@ declare interface ISheetData_Activity_SummerStoryReward {
 }
 //#endregion
 
-//#region choose_up_activity --- unique
+//#region choose_up_activity
 declare interface ISheet_Activity_ChooseUpActivity {
-	rows: ISheetData_Activity_ChooseUpActivity[];
 	250125: ISheetData_Activity_ChooseUpActivity;
 }
 declare interface ISheetData_Activity_ChooseUpActivity {
@@ -10769,9 +10771,8 @@ declare interface ISheetData_Activity_ChooseUpActivity {
 }
 //#endregion
 
-//#region choose_up_replace --- group
+//#region choose_up_replace
 declare interface ISheet_Activity_ChooseUpReplace {
-	rows: ISheetData_Activity_ChooseUpReplace[];
 	1001: ISheetData_Activity_ChooseUpReplace[];
 	1002: ISheetData_Activity_ChooseUpReplace[];
 }
@@ -10788,9 +10789,8 @@ declare interface ISheetData_Activity_ChooseUpReplace {
 }
 //#endregion
 
-//#region progress_reward --- group
+//#region progress_reward
 declare interface ISheet_Activity_ProgressReward {
-	rows: ISheetData_Activity_ProgressReward[];
 	250895: ISheetData_Activity_ProgressReward[];
 }
 declare interface ISheetData_Activity_ProgressReward {

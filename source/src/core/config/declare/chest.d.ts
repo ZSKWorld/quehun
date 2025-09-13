@@ -1,19 +1,28 @@
 declare interface ITable_Chest {
-	chest: ISheet_Chest_Chest;
-	pool: ISheet_Chest_Pool;
-	pool_seq: ISheet_Chest_PoolSeq;
-	item_pool: ISheet_Chest_ItemPool;
-	chest_shop: ISheet_Chest_ChestShop;
-	preview: ISheet_Chest_Preview;
-	up: ISheet_Chest_Up;
-	item_price: ISheet_Chest_ItemPrice;
-	replace_up: ISheet_Chest_ReplaceUp;
-	replace_pool: ISheet_Chest_ReplacePool;
+	/** 宝箱表  ---  unique */
+	chest: CfgExt<ISheet_Chest_Chest>;
+	/** 宝箱奖池表  ---  group */
+	pool: CfgExt<ISheet_Chest_Pool>;
+	/** group */
+	pool_seq: CfgExt<ISheet_Chest_PoolSeq>;
+	/** group */
+	item_pool: CfgExt<ISheet_Chest_ItemPool>;
+	/** 宝箱保底商店  ---  unique */
+	chest_shop: CfgExt<ISheet_Chest_ChestShop>;
+	/** 卡池一栏  ---  group */
+	preview: CfgExt<ISheet_Chest_Preview>;
+	/** 抽卡up  ---  group */
+	up: CfgExt<ISheet_Chest_Up>;
+	/** 道具价格  ---  group */
+	item_price: CfgExt<ISheet_Chest_ItemPrice>;
+	/** 必new卡池配置表  ---  unique */
+	replace_up: CfgExt<ISheet_Chest_ReplaceUp>;
+	/** 必new物品池  ---  group */
+	replace_pool: CfgExt<ISheet_Chest_ReplacePool>;
 }
 
-//#region chest --- unique
+//#region chest
 declare interface ISheet_Chest_Chest {
-	rows: ISheetData_Chest_Chest[];
 	1000: ISheetData_Chest_Chest;
 	1001: ISheetData_Chest_Chest;
 	1002: ISheetData_Chest_Chest;
@@ -83,9 +92,8 @@ declare interface ISheetData_Chest_Chest {
 }
 //#endregion
 
-//#region pool --- group
+//#region pool
 declare interface ISheet_Chest_Pool {
-	rows: ISheetData_Chest_Pool[];
 	10000: ISheetData_Chest_Pool[];
 	10001: ISheetData_Chest_Pool[];
 	10002: ISheetData_Chest_Pool[];
@@ -535,9 +543,8 @@ declare interface ISheetData_Chest_Pool {
 }
 //#endregion
 
-//#region pool_seq --- group
+//#region pool_seq
 declare interface ISheet_Chest_PoolSeq {
-	rows: ISheetData_Chest_PoolSeq[];
 	1001: ISheetData_Chest_PoolSeq[];
 	1002: ISheetData_Chest_PoolSeq[];
 	1003: ISheetData_Chest_PoolSeq[];
@@ -574,9 +581,8 @@ declare interface ISheetData_Chest_PoolSeq {
 }
 //#endregion
 
-//#region item_pool --- group
+//#region item_pool
 declare interface ISheet_Chest_ItemPool {
-	rows: ISheetData_Chest_ItemPool[];
 	100001: ISheetData_Chest_ItemPool[];
 	100002: ISheetData_Chest_ItemPool[];
 	100003: ISheetData_Chest_ItemPool[];
@@ -676,9 +682,8 @@ declare interface ISheetData_Chest_ItemPool {
 }
 //#endregion
 
-//#region chest_shop --- unique
+//#region chest_shop
 declare interface ISheet_Chest_ChestShop {
-	rows: ISheetData_Chest_ChestShop[];
 	1001: ISheetData_Chest_ChestShop;
 	1002: ISheetData_Chest_ChestShop;
 	1003: ISheetData_Chest_ChestShop;
@@ -1622,9 +1627,8 @@ declare interface ISheetData_Chest_ChestShop {
 }
 //#endregion
 
-//#region preview --- group
+//#region preview
 declare interface ISheet_Chest_Preview {
-	rows: ISheetData_Chest_Preview[];
 	1000: ISheetData_Chest_Preview[];
 	1001: ISheetData_Chest_Preview[];
 	1002: ISheetData_Chest_Preview[];
@@ -1660,9 +1664,8 @@ declare interface ISheetData_Chest_Preview {
 }
 //#endregion
 
-//#region up --- group
+//#region up
 declare interface ISheet_Chest_Up {
-	rows: ISheetData_Chest_Up[];
 	2001: ISheetData_Chest_Up[];
 	2002: ISheetData_Chest_Up[];
 	2003: ISheetData_Chest_Up[];
@@ -1716,9 +1719,8 @@ declare interface ISheetData_Chest_Up {
 }
 //#endregion
 
-//#region item_price --- group
+//#region item_price
 declare interface ISheet_Chest_ItemPrice {
-	rows: ISheetData_Chest_ItemPrice[];
 	1064: ISheetData_Chest_ItemPrice[];
 }
 declare interface ISheetData_Chest_ItemPrice {
@@ -1730,9 +1732,8 @@ declare interface ISheetData_Chest_ItemPrice {
 }
 //#endregion
 
-//#region replace_up --- unique
+//#region replace_up
 declare interface ISheet_Chest_ReplaceUp {
-	rows: ISheetData_Chest_ReplaceUp[];
 	100001: ISheetData_Chest_ReplaceUp;
 }
 declare interface ISheetData_Chest_ReplaceUp {
@@ -1753,9 +1754,8 @@ declare interface ISheetData_Chest_ReplaceUp {
 }
 //#endregion
 
-//#region replace_pool --- group
+//#region replace_pool
 declare interface ISheet_Chest_ReplacePool {
-	rows: ISheetData_Chest_ReplacePool[];
 	1001: ISheetData_Chest_ReplacePool[];
 	1002: ISheetData_Chest_ReplacePool[];
 }

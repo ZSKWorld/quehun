@@ -1,13 +1,16 @@
 declare interface ITable_Achievement {
-	achievement: ISheet_Achievement_Achievement;
-	achievement_group: ISheet_Achievement_AchievementGroup;
-	badge: ISheet_Achievement_Badge;
-	badge_group: ISheet_Achievement_BadgeGroup;
+	/** 成就  ---  unique */
+	achievement: CfgExt<ISheet_Achievement_Achievement>;
+	/** 成就大类  ---  unique */
+	achievement_group: CfgExt<ISheet_Achievement_AchievementGroup>;
+	/** 勋章后端  ---  unique */
+	badge: CfgExt<ISheet_Achievement_Badge>;
+	/** 勋章前端显示  ---  unique */
+	badge_group: CfgExt<ISheet_Achievement_BadgeGroup>;
 }
 
-//#region achievement --- unique
+//#region achievement
 declare interface ISheet_Achievement_Achievement {
-	rows: ISheetData_Achievement_Achievement[];
 	100001: ISheetData_Achievement_Achievement;
 	100002: ISheetData_Achievement_Achievement;
 	100003: ISheetData_Achievement_Achievement;
@@ -595,9 +598,8 @@ declare interface ISheetData_Achievement_Achievement {
 }
 //#endregion
 
-//#region achievement_group --- unique
+//#region achievement_group
 declare interface ISheet_Achievement_AchievementGroup {
-	rows: ISheetData_Achievement_AchievementGroup[];
 	1: ISheetData_Achievement_AchievementGroup;
 	2: ISheetData_Achievement_AchievementGroup;
 	3: ISheetData_Achievement_AchievementGroup;
@@ -633,9 +635,8 @@ declare interface ISheetData_Achievement_AchievementGroup {
 }
 //#endregion
 
-//#region badge --- unique
+//#region badge
 declare interface ISheet_Achievement_Badge {
-	rows: ISheetData_Achievement_Badge[];
 	810001: ISheetData_Achievement_Badge;
 	810002: ISheetData_Achievement_Badge;
 	810003: ISheetData_Achievement_Badge;
@@ -664,9 +665,8 @@ declare interface ISheetData_Achievement_Badge {
 }
 //#endregion
 
-//#region badge_group --- unique
+//#region badge_group
 declare interface ISheet_Achievement_BadgeGroup {
-	rows: ISheetData_Achievement_BadgeGroup[];
 	1: ISheetData_Achievement_BadgeGroup;
 	2: ISheetData_Achievement_BadgeGroup;
 	3: ISheetData_Achievement_BadgeGroup;

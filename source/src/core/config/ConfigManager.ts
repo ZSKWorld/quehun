@@ -80,7 +80,6 @@ export class ConfigManager implements IConfigManager {
             const keyName = sheet.meta.key;
 
             const configSheet = {};
-            configSheet["__proto__"] = { rows };
             switch (sheet.meta.category) {
                 case 'unique':
                     rows.sort((a, b) => a[keyName] - b[keyName]);
@@ -101,6 +100,20 @@ export class ConfigManager implements IConfigManager {
             }
 
             this[sheet.table][sheet.sheet] = configSheet;
+
+            
+            const proto = configSheet["__proto__"] = { rows };
+            const defineFun = (funName: string) => {
+                Object.defineProperty(proto, funName, {
+                    value: function (...args) { return this.rows[funName](...args); },
+                    enumerable: false,
+                    configurable: false,
+                });
+            };
+            [
+                "forEach", "filter", "find", "every", "findIndex", "includes",
+                "indexOf", "lastIndexOf", "map", "reduce", "slice", "some",
+            ].forEach(v => defineFun(v));
         });
     }
 

@@ -1,15 +1,20 @@
 declare interface ITable_Desktop {
-	matchmode: ISheet_Desktop_Matchmode;
-	chest: ISheet_Desktop_Chest;
-	settings: ISheet_Desktop_Settings;
-	field_spell: ISheet_Desktop_FieldSpell;
-	friend_room: ISheet_Desktop_FriendRoom;
-	tour_preset_rule: ISheet_Desktop_TourPresetRule;
+	/** unique */
+	matchmode: CfgExt<ISheet_Desktop_Matchmode>;
+	/** 比赛宝箱  ---  unique */
+	chest: CfgExt<ISheet_Desktop_Chest>;
+	/** 简单设定字段  ---  kv */
+	settings: CfgExt<ISheet_Desktop_Settings>;
+	/** unique */
+	field_spell: CfgExt<ISheet_Desktop_FieldSpell>;
+	/** unique */
+	friend_room: CfgExt<ISheet_Desktop_FriendRoom>;
+	/** 创建比赛的预设规则  ---  unique */
+	tour_preset_rule: CfgExt<ISheet_Desktop_TourPresetRule>;
 }
 
-//#region matchmode --- unique
+//#region matchmode
 declare interface ISheet_Desktop_Matchmode {
-	rows: ISheetData_Desktop_Matchmode[];
 	1: ISheetData_Desktop_Matchmode;
 	2: ISheetData_Desktop_Matchmode;
 	3: ISheetData_Desktop_Matchmode;
@@ -168,9 +173,8 @@ declare interface ISheetData_Desktop_Matchmode {
 }
 //#endregion
 
-//#region chest --- unique
+//#region chest
 declare interface ISheet_Desktop_Chest {
-	rows: ISheetData_Desktop_Chest[];
 	1: ISheetData_Desktop_Chest;
 	2: ISheetData_Desktop_Chest;
 	3: ISheetData_Desktop_Chest;
@@ -199,9 +203,8 @@ declare interface ISheetData_Desktop_Chest {
 }
 //#endregion
 
-//#region settings --- kv
+//#region settings
 declare interface ISheet_Desktop_Settings {
-	rows: ISheetData_Desktop_Settings[];
 	account_friendship_bar_length: ISheetData_Desktop_Settings;
 	account_friendship_bar_reward_id: ISheetData_Desktop_Settings;
 }
@@ -211,9 +214,8 @@ declare interface ISheetData_Desktop_Settings {
 }
 //#endregion
 
-//#region field_spell --- unique
+//#region field_spell
 declare interface ISheet_Desktop_FieldSpell {
-	rows: ISheetData_Desktop_FieldSpell[];
 	1: ISheetData_Desktop_FieldSpell;
 	2: ISheetData_Desktop_FieldSpell;
 	3: ISheetData_Desktop_FieldSpell;
@@ -244,9 +246,8 @@ declare interface ISheetData_Desktop_FieldSpell {
 }
 //#endregion
 
-//#region friend_room --- unique
+//#region friend_room
 declare interface ISheet_Desktop_FriendRoom {
-	rows: ISheetData_Desktop_FriendRoom[];
 	1: ISheetData_Desktop_FriendRoom;
 	2: ISheetData_Desktop_FriendRoom;
 	3: ISheetData_Desktop_FriendRoom;
@@ -281,9 +282,8 @@ declare interface ISheetData_Desktop_FriendRoom {
 }
 //#endregion
 
-//#region tour_preset_rule --- unique
+//#region tour_preset_rule
 declare interface ISheet_Desktop_TourPresetRule {
-	rows: ISheetData_Desktop_TourPresetRule[];
 	1: ISheetData_Desktop_TourPresetRule;
 	2: ISheetData_Desktop_TourPresetRule;
 	3: ISheetData_Desktop_TourPresetRule;

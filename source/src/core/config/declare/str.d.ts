@@ -1,11 +1,12 @@
 declare interface ITable_Str {
-	str: ISheet_Str_Str;
-	event: ISheet_Str_Event;
+	/** unique */
+	str: CfgExt<ISheet_Str_Str>;
+	/** unique */
+	event: CfgExt<ISheet_Str_Event>;
 }
 
-//#region str --- unique
+//#region str
 declare interface ISheet_Str_Str {
-	rows: ISheetData_Str_Str[];
 	1: ISheetData_Str_Str;
 	2: ISheetData_Str_Str;
 	3: ISheetData_Str_Str;
@@ -4258,9 +4259,8 @@ declare interface ISheetData_Str_Str {
 }
 //#endregion
 
-//#region event --- unique
+//#region event
 declare interface ISheet_Str_Event {
-	rows: ISheetData_Str_Event[];
 	1: ISheetData_Str_Event;
 	2: ISheetData_Str_Event;
 	3: ISheetData_Str_Event;

@@ -1,10 +1,10 @@
 declare interface ITable_Compose {
-	characompose: ISheet_Compose_Characompose;
+	/** unique */
+	characompose: CfgExt<ISheet_Compose_Characompose>;
 }
 
-//#region characompose --- unique
+//#region characompose
 declare interface ISheet_Compose_Characompose {
-	rows: ISheetData_Compose_Characompose[];
 	1: ISheetData_Compose_Characompose;
 }
 declare interface ISheetData_Compose_Characompose {

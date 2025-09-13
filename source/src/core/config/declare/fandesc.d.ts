@@ -1,10 +1,10 @@
 declare interface ITable_Fandesc {
-	fandesc: ISheet_Fandesc_Fandesc;
+	/** unique */
+	fandesc: CfgExt<ISheet_Fandesc_Fandesc>;
 }
 
-//#region fandesc --- unique
+//#region fandesc
 declare interface ISheet_Fandesc_Fandesc {
-	rows: ISheetData_Fandesc_Fandesc[];
 	101: ISheetData_Fandesc_Fandesc;
 	102: ISheetData_Fandesc_Fandesc;
 	103: ISheetData_Fandesc_Fandesc;

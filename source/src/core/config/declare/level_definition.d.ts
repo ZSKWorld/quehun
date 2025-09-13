@@ -1,13 +1,16 @@
 declare interface ITable_LevelDefinition {
-	level_definition: ISheet_LevelDefinition_LevelDefinition;
-	character: ISheet_LevelDefinition_Character;
-	trail: ISheet_LevelDefinition_Trail;
-	top_rank: ISheet_LevelDefinition_TopRank;
+	/** unique */
+	level_definition: CfgExt<ISheet_LevelDefinition_LevelDefinition>;
+	/** 角色通用等级表  ---  group */
+	character: CfgExt<ISheet_LevelDefinition_Character>;
+	/** 试炼头像对应表  ---  unique */
+	trail: CfgExt<ISheet_LevelDefinition_Trail>;
+	/** 顺位分变动表  ---  group */
+	top_rank: CfgExt<ISheet_LevelDefinition_TopRank>;
 }
 
-//#region level_definition --- unique
+//#region level_definition
 declare interface ISheet_LevelDefinition_LevelDefinition {
-	rows: ISheetData_LevelDefinition_LevelDefinition[];
 	10101: ISheetData_LevelDefinition_LevelDefinition;
 	10102: ISheetData_LevelDefinition_LevelDefinition;
 	10103: ISheetData_LevelDefinition_LevelDefinition;
@@ -111,9 +114,8 @@ declare interface ISheetData_LevelDefinition_LevelDefinition {
 }
 //#endregion
 
-//#region character --- group
+//#region character
 declare interface ISheet_LevelDefinition_Character {
-	rows: ISheetData_LevelDefinition_Character[];
 	200052: ISheetData_LevelDefinition_Character[];
 	200061: ISheetData_LevelDefinition_Character[];
 	200076: ISheetData_LevelDefinition_Character[];
@@ -138,9 +140,8 @@ declare interface ISheetData_LevelDefinition_Character {
 }
 //#endregion
 
-//#region trail --- unique
+//#region trail
 declare interface ISheet_LevelDefinition_Trail {
-	rows: ISheetData_LevelDefinition_Trail[];
 	1: ISheetData_LevelDefinition_Trail;
 	2: ISheetData_LevelDefinition_Trail;
 	3: ISheetData_LevelDefinition_Trail;
@@ -168,9 +169,8 @@ declare interface ISheetData_LevelDefinition_Trail {
 }
 //#endregion
 
-//#region top_rank --- group
+//#region top_rank
 declare interface ISheet_LevelDefinition_TopRank {
-	rows: ISheetData_LevelDefinition_TopRank[];
 	1001: ISheetData_LevelDefinition_TopRank[];
 }
 declare interface ISheetData_LevelDefinition_TopRank {

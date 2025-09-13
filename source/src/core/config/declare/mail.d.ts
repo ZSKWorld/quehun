@@ -1,10 +1,10 @@
 declare interface ITable_Mail {
-	mail_template: ISheet_Mail_MailTemplate;
+	/** 邮件模板  ---  unique */
+	mail_template: CfgExt<ISheet_Mail_MailTemplate>;
 }
 
-//#region mail_template --- unique
+//#region mail_template
 declare interface ISheet_Mail_MailTemplate {
-	rows: ISheetData_Mail_MailTemplate[];
 	101: ISheetData_Mail_MailTemplate;
 	102: ISheetData_Mail_MailTemplate;
 	103: ISheetData_Mail_MailTemplate;

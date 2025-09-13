@@ -1,10 +1,10 @@
 declare interface ITable_MiscFunction {
-	daily_sign_in: ISheet_MiscFunction_DailySignIn;
+	/** 每日签到  ---  unique */
+	daily_sign_in: CfgExt<ISheet_MiscFunction_DailySignIn>;
 }
 
-//#region daily_sign_in --- unique
+//#region daily_sign_in
 declare interface ISheet_MiscFunction_DailySignIn {
-	rows: ISheetData_MiscFunction_DailySignIn[];
 	1: ISheetData_MiscFunction_DailySignIn;
 	2: ISheetData_MiscFunction_DailySignIn;
 	3: ISheetData_MiscFunction_DailySignIn;

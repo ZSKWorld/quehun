@@ -1,10 +1,10 @@
 declare interface ITable_Animation {
-	animation: ISheet_Animation_Animation;
+	/** unique */
+	animation: CfgExt<ISheet_Animation_Animation>;
 }
 
-//#region animation --- unique
+//#region animation
 declare interface ISheet_Animation_Animation {
-	rows: ISheetData_Animation_Animation[];
 	1000101: ISheetData_Animation_Animation;
 	1000102: ISheetData_Animation_Animation;
 	1000103: ISheetData_Animation_Animation;

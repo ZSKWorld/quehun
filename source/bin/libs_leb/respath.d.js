@@ -75,6 +75,8 @@ ResPath = {
 		NotoSansKR: "res/font/NotoSansKR.ttf",
 	},
 
+	ScenePath: { },
+
 	SkeletonPath: {
 		Bianhua: "res/skeleton/bianhua.sk",
 		Biaoqing: "res/skeleton/biaoqing.sk",
@@ -876,6 +878,7 @@ ResPath = {
 		PNG_Image_597: "res/texture/image_597.png",
 		PNG_Image_6401: "res/texture/image_6401.png",
 		PNG_Image_645: "res/texture/image_645.png",
+		JPG_Background: "res/texture/background.jpg",
 	},
 
 	PkgName: {

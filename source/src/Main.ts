@@ -13,8 +13,8 @@ class Main {
 	}
 	private async init() {
 		await Laya.init(1920, 1080);
-		document.body.style.backgroundColor = "#666666";
-		// document.body.style.backgroundImage = `url(${ ResPath.TexturePath.Background })`;
+		document.body.style.backgroundColor = "#000000";
+		document.body.style.backgroundImage = `url(${ ResPath.TexturePath.JPG_Background })`;
 
 		LayaRepair.repair();
 		LayaExtend.extends();

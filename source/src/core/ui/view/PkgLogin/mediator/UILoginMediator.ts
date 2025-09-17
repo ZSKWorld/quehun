@@ -1,5 +1,3 @@
-import { LocalData, LocalDataKey } from "../../../../common/LocalData";
-import { NotifyConst } from "../../../../common/NotifyConst";
 import { MediatorBase } from "../../../../mvc/view/MediatorBase";
 import { UILoginMsg, UILoginView } from "../view/UILoginView";
 
@@ -8,46 +6,65 @@ export interface UILoginData {
 }
 
 export class UILoginMediator extends MediatorBase<UILoginView, UILoginData> {
+	private _loginType: 0 | 1;
 
-    override onAwake() {
-        this.addEvent(UILoginMsg.OnBtnLoginClick, this.onBtnLoginClick);
-        this.addEvent(UILoginMsg.OnBtnToRegisterClick, this.onBtnToRegisterClick);
-    }
+	override onAwake() {
+		this.addEvent(UILoginMsg.OnBtnLoginClick, this.onBtnLoginClick);
+		this.addEvent(UILoginMsg.OnBtnAnnounceClick, this.onBtnAnnounceClick);
+		this.addEvent(UILoginMsg.OnBtnHelpClick, this.onBtnHelpClick);
+		this.addEvent(UILoginMsg.OnBtnLoginByAccountClick, this.setLoginType, [0]);
+		this.addEvent(UILoginMsg.OnBtnLoginBtnPhoneClick, this.setLoginType, [1]);
+		this.addEvent(UILoginMsg.OnBtnRegisterClick, this.onBtnRegisterClick);
+		this.addEvent(UILoginMsg.OnBtnForgotPasswordClick, this.onBtnForgotPasswordClick);
+		this.addEvent(UILoginMsg.OnBtnForgotAccountClick, this.onBtnForgotAccountClick);
+		this.addEvent(UILoginMsg.OnBtnRouteNameClick, this.onBtnRouteNameClick);
+		this.addEvent(UILoginMsg.OnBtnRouteDelayClick, this.onBtnRouteDelayClick);
+	}
 
-    override onEnable() {
-        const autoLogin = LocalData.get<boolean>(LocalDataKey.AutoLogin);
-        const remeber = !!LocalData.get<boolean>(LocalDataKey.LoginRemeber);
-        const data = remeber ? LocalData.get<ILoginInput>(LocalDataKey.LastLoginAccount) : null;
-        this.view.refreshLoginInfo(data?.account, data?.password, remeber);
-        autoLogin && data && this.login(data);
-    }
+	private onBtnLoginClick() {
 
-    private login(data: ILoginInput) {
-        this.view.refreshLoginInfo(data?.account, data?.password, this.view.btn_remeber.selected);
-        this.onBtnLoginClick();
-    }
+	}
 
-    private onBtnLoginClick() {
-        const { input_account, input_password, btn_remeber } = this.view;
-        if (!input_account.text.trim()) tipMgr.showTip("请输入账号");
-        else if (!input_password.text.trim()) tipMgr.showTip("请输入密码");
-        else {
-            LocalData.set(LocalDataKey.AutoLogin, true);
-            LocalData.set(LocalDataKey.LoginRemeber, btn_remeber.selected);
-            const param = { account: input_account.text, password: input_password.text };
-            if (btn_remeber.selected)
-                LocalData.set(LocalDataKey.LastLoginAccount, param);
-            else {
-                
-                LocalData.remove(LocalDataKey.LastLoginAccount);
-            }
-            this.closeSelf();
-            this.openView(ViewID.UILoginWaittingView, param);
+	private onBtnAnnounceClick() {
 
-        }
-    }
+	}
 
-    private onBtnToRegisterClick() {
-        this.openView(ViewID.UIRegisterView);
-    }
+	private onBtnHelpClick() {
+
+	}
+
+	private onBtnLoginByAccountClick() {
+
+	}
+
+	private onBtnLoginBtnPhoneClick() {
+
+	}
+
+	private onBtnRegisterClick() {
+
+	}
+
+	private onBtnForgotPasswordClick() {
+
+	}
+
+	private onBtnForgotAccountClick() {
+
+	}
+
+	private onBtnRouteNameClick() {
+
+	}
+
+	private onBtnRouteDelayClick() {
+
+	}
+
+	private setLoginType(type: 0 | 1) {
+		if (this._loginType == type) return;
+		this._loginType = type;
+		this.view.refreshLoginType(type);
+	}
+
 }

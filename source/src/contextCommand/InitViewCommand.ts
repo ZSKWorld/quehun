@@ -27,16 +27,8 @@ import { UI2048View } from "../core/ui/view/PkgLittleGame/view/UI2048View";
 import { UI2048Mediator } from "../core/ui/view/PkgLittleGame/mediator/UI2048Mediator";
 import { UILittleGameView } from "../core/ui/view/PkgLittleGame/view/UILittleGameView";
 import { UILittleGameMediator } from "../core/ui/view/PkgLittleGame/mediator/UILittleGameMediator";
-import { UIEnterGameView } from "../core/ui/view/PkgLogin/view/UIEnterGameView";
-import { UIEnterGameMediator } from "../core/ui/view/PkgLogin/mediator/UIEnterGameMediator";
 import { UILoginView } from "../core/ui/view/PkgLogin/view/UILoginView";
 import { UILoginMediator } from "../core/ui/view/PkgLogin/mediator/UILoginMediator";
-import { UILoginWaittingView } from "../core/ui/view/PkgLogin/view/UILoginWaittingView";
-import { UILoginWaittingMediator } from "../core/ui/view/PkgLogin/mediator/UILoginWaittingMediator";
-import { UIRegisterView } from "../core/ui/view/PkgLogin/view/UIRegisterView";
-import { UIRegisterMediator } from "../core/ui/view/PkgLogin/mediator/UIRegisterMediator";
-import { UIMainView } from "../core/ui/view/PkgMain/view/UIMainView";
-import { UIMainMediator } from "../core/ui/view/PkgMain/mediator/UIMainMediator";
 import { UITestView } from "../core/ui/view/PkgTest/view/UITestView";
 import { UITestMediator } from "../core/ui/view/PkgTest/mediator/UITestMediator";
 import { UITest2View } from "../core/ui/view/PkgTest/view/UITest2View";
@@ -71,11 +63,7 @@ export class InitViewCommand extends Command {
 		register(ViewID.UIChooseBattleView, ViewType.UI, UIChooseBattleView, UIChooseBattleMediator);
 		register(ViewID.UI2048View, ViewType.UI, UI2048View, UI2048Mediator);
 		register(ViewID.UILittleGameView, ViewType.UI, UILittleGameView, UILittleGameMediator);
-		register(ViewID.UIEnterGameView, ViewType.UI, UIEnterGameView, UIEnterGameMediator);
 		register(ViewID.UILoginView, ViewType.UI, UILoginView, UILoginMediator);
-		register(ViewID.UILoginWaittingView, ViewType.UI, UILoginWaittingView, UILoginWaittingMediator);
-		register(ViewID.UIRegisterView, ViewType.UI, UIRegisterView, UIRegisterMediator);
-		register(ViewID.UIMainView, ViewType.UI, UIMainView, UIMainMediator);
 		register(ViewID.UITestView, ViewType.UI, UITestView, UITestMediator);
 		register(ViewID.UITest2View, ViewType.UI, UITest2View, UITest2Mediator);
     }

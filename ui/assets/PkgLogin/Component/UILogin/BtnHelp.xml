@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="66,99" pivot="0.5,0.5" extention="Button" designImage="ui://ca43vz0ejdu67plo08" designImageOffsetX="-1936" designImageOffsetY="-91" designImageAlpha="100">
+  <controller name="button" pages="0,up,1,down" selected="0"/>
+  <displayList>
+    <loader id="n5_nxde" name="icon" xy="0,0" size="66,66" url="ui://vs9845atmde1b83" clearOnPublish="true"/>
+    <text id="n4_mj5k" name="title" xy="6,63" pivot="0.5,0.5" size="54,35" fontSize="25" color="#765e38" autoClearText="true" text="帮助"/>
+  </displayList>
+  <Button downEffect="scale" downEffectValue="0.9"/>
+</component>

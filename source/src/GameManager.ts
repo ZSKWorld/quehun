@@ -43,7 +43,7 @@ export class GameManager implements IGameManager {
     get version() { return this._version?.version || ""; }
     get clientVersion() { return 'web-' + this.version.replace('.w', ''); }
     get currency() {
-        const info = cfgMgr.mall.channel_config.get(this.payChannelId);
+        const info = cfgMgr.mall.channel_config[this.payChannelId];
         if (!info.currency_platforms) return [];
         return info.currency_platforms.split("-").map(Number);
     }

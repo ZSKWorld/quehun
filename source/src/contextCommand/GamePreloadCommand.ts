@@ -28,8 +28,7 @@ export class GamePreloadCommand extends Command {
         await cfgMgr.init();
         await netMgr.init();
 
-        await loadMgr.load(ResPath.UnclassifiedPath.Gameconfig);
-        const config: IGameConfig = loadMgr.getRes<Laya.TextResource>(ResPath.UnclassifiedPath.Gameconfig).data;
+        const config: IGameConfig = await loadMgr.fetch(ResPath.UnclassifiedPath.Gameconfig, "json");
         config.stat && Laya.Stat.show(0, 0, [
             Laya.Stat.FPSStatUIParams,
             Laya.Stat.NodeStatUIParams,

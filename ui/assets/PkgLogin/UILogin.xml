@@ -1,4 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" designImage="ui://ca43vz0ejdu67plo08">
-  <displayList/>
+<component size="1920,1080" designImage="ui://ca43vz0ejdu67plo08" designImageAlpha="100">
+  <displayList>
+    <graph id="n0_mde1" name="graph_scene" xy="0,0" size="100,100" alpha="0" type="rect" lineSize="0"/>
+    <image id="n8_h638" name="n8" src="mde1b7r" fileName="Texture/img_1065.png" xy="1189,237" size="620,476"/>
+    <image id="n1_h638" name="n1" src="mde1b7g" fileName="Texture/img_716.png" xy="1228,269" size="393,85"/>
+    <image id="n9_h638" name="n9" src="mde1b7g" fileName="Texture/img_716.png" xy="1228,386" size="393,85"/>
+    <image id="n12_h638" name="n12" src="mde1b78" fileName="Texture/img_3070.png" xy="1227,501"/>
+    <image id="n22_nxde" name="n22" src="mde1b88" fileName="Texture/img_228.png" xy="1321,529"/>
+    <component id="n13_nxde" name="btn_login" src="mj5kb6v" fileName="Component/BtnIconFit.xml" pkg="vx9zwser" xy="1224,590" size="402,94" aspect="true">
+      <Button icon="ui://vs9845atmde1b7a"/>
+    </component>
+    <component id="n26_nxde" name="btn_announce" src="nxdeb8c" fileName="Component/UILogin/BtnHelp.xml" xy="1742,26">
+      <Button title="公告" icon="ui://vs9845atmde1b84"/>
+    </component>
+    <component id="n25_nxde" name="btn_help" src="nxdeb8c" fileName="Component/UILogin/BtnHelp.xml" xy="1828,26">
+      <Button title="帮助" icon="ui://vs9845atmde1b83"/>
+    </component>
+    <component id="n19_nxde" name="btn_loginByAccount" src="nxdeb8b" fileName="Component/UILogin/BtnLogin.xml" xy="1228,196" size="190,45">
+      <Button checked="true" title="邮箱/账号登录"/>
+    </component>
+    <component id="n20_nxde" name="btn_loginBtnPhone" src="nxdeb8b" fileName="Component/UILogin/BtnLogin.xml" xy="1428,196" size="190,45">
+      <Button title="手机号登录"/>
+    </component>
+    <component id="n14_nxde" name="btn_register" src="mj5kb6x" fileName="Component/BtnTxtUnderline.xml" pkg="vx9zwser" xy="1631,281" size="170,60">
+      <Button title="立即注册" titleColor="#7294f2" titleFontSize="36"/>
+    </component>
+    <component id="n15_nxde" name="btn_forgotPassword" src="mj5kb6x" fileName="Component/BtnTxtUnderline.xml" pkg="vx9zwser" xy="1631,398" size="170,60">
+      <Button title="忘记密码" titleColor="#d12e31" titleFontSize="36"/>
+    </component>
+    <component id="n16_nxde" name="btn_forgotAccount" src="mj5kb6x" fileName="Component/BtnTxtUnderline.xml" pkg="vx9zwser" xy="1631,606" size="170,60">
+      <Button title="忘记账号" titleColor="#7294f2" titleFontSize="36"/>
+    </component>
+    <text id="n21_nxde" name="n21" xy="1253,519" size="50,33" fontSize="23" color="#af7743" leading="0" text="切换"/>
+    <text id="n23_nxde" name="btn_routeName" xy="1364,510" pivot="0.5,0.5" size="118,48" fontSize="35" color="#ffffff" leading="0" text="线路36"/>
+    <text id="n24_nxde" name="btn_routeDelay" xy="1514,518" pivot="0.5,0.5" size="101,35" fontSize="25" color="#40bf79" leading="0" text="1024ms"/>
+    <text id="n27_nxde" name="n27" xy="1241,286" size="366,48" fontSize="35" color="#ffffff" vAlign="middle" leading="0" autoSize="height" singleLine="true" text="" input="true" prompt="用户名"/>
+    <text id="n28_nxde" name="n28" xy="1241,405" size="366,48" fontSize="35" color="#ffffff" vAlign="middle" leading="0" autoSize="height" singleLine="true" text="" input="true" prompt="密码" password="true"/>
+  </displayList>
 </component>

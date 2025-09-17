@@ -18,11 +18,7 @@ ViewID = {
 	UIChooseBattleView: "UIChooseBattleView",
 	UI2048View: "UI2048View",
 	UILittleGameView: "UILittleGameView",
-	UIEnterGameView: "UIEnterGameView",
 	UILoginView: "UILoginView",
-	UILoginWaittingView: "UILoginWaittingView",
-	UIRegisterView: "UIRegisterView",
-	UIMainView: "UIMainView",
 	UITest2View: "UITest2View",
 	UITestView: "UITestView",
 }

@@ -69,6 +69,7 @@ export class ConfigManager implements IConfigManager {
             if (!this[sheet.table]) this[sheet.table] = {};
 
             const rows = [];
+            let groups: any[];
             sheet.rows.forEach(row => {
                 const tsrow = {};
                 sheet.header.forEach(field => {
@@ -77,35 +78,43 @@ export class ConfigManager implements IConfigManager {
                 rows.push(tsrow);
             });
 
-            const keyName = sheet.meta.key;
+            const key = sheet.meta.key;
+            const category = sheet.meta.category;
 
             const configSheet = {};
-            switch (sheet.meta.category) {
+            switch (category) {
                 case 'unique':
-                    rows.sort((a, b) => a[keyName] - b[keyName]);
-                    rows.forEach(row => (configSheet[row[keyName]] = row));
+                    rows.sort((a, b) => a[key] - b[key]);
+                    rows.forEach(row => (configSheet[row[key]] = row));
                     break;
                 case 'nokey': break;
                 case 'group':
+                    groups = [];
                     rows.forEach(row => {
-                        const key = row[keyName];
-                        if (!configSheet[key]) configSheet[key] = [];
-                        const group = configSheet[key];
+                        const groupName = row[key];
+                        let group = configSheet[groupName];
+                        if (!group) {
+                            group = configSheet[groupName] = [];
+                            groups.push(group);
+                        }
                         group.push(row);
                     });
                     break;
                 case 'kv':
-                    rows.forEach(row => (configSheet[row[sheet.meta.key]] = row));
+                    rows.forEach(row => (configSheet[row[key]] = row));
                     break;
             }
 
             this[sheet.table][sheet.sheet] = configSheet;
-
             
-            const proto = configSheet["__proto__"] = { rows };
+            const proto = configSheet["__proto__"] = { rows } as any;
+            if (groups) proto.groups = groups;
             const defineFun = (funName: string) => {
                 Object.defineProperty(proto, funName, {
-                    value: function (...args) { return this.rows[funName](...args); },
+                    value: function (...args) {
+                        if (this.groups) return this.groups[funName](...args);
+                        return this.rows[funName](...args);
+                    },
                     enumerable: false,
                     configurable: false,
                 });
@@ -229,3 +238,20 @@ export class ConfigManager implements IConfigManager {
         return sheetRawData;
     }
 }
+cfgMgr.ab_match.consume_seq.rows.forEach(v => {
+    
+});
+cfgMgr.ab_match.match_info.rows.forEach(v => {
+    
+});
+cfgMgr.ab_match.consume_seq.forEach(v => {
+    
+})
+cfgMgr.ab_match.match_info.forEach(v => {
+    
+});
+type a = ISheetData_AbMatch_ConsumeSeq[];
+type b<T> = T extends Array<infer U> ? U : T;
+
+let c: b<a>;
+let d = c;

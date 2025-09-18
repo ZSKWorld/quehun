@@ -41,7 +41,7 @@ declare interface IConfigManager {
 
 type CfgFieldType<T> = { [P in keyof T]: T[P] }[keyof T];
 interface CfgExtension<T> {
-	rows: CfgFieldType<T>[];
+	rows: (CfgFieldType<T> extends Array<infer U> ? U : CfgFieldType<T>)[];
 	forEach(callbackfn: (value: CfgFieldType<T>, index: number, array: CfgFieldType<T>[]) => void, thisArg?: any): void;
 	filter(predicate: (value: CfgFieldType<T>, index: number, array: CfgFieldType<T>[]) => boolean, thisArg?: any): CfgFieldType<T>[];
 	find(predicate: (value: CfgFieldType<T>, index: number, array: CfgFieldType<T>[]) => boolean, thisArg?: any): CfgFieldType<T>;
@@ -54,5 +54,8 @@ interface CfgExtension<T> {
 	reduce<U>(callbackfn: (previousValue: U, currentValue: CfgFieldType<T>, currentIndex: number, array: CfgFieldType<T>[]) => U, initialValue: U): U;
 	slice(start?: number, end?: number): CfgFieldType<T>[];
 	some(predicate: (value: CfgFieldType<T>, index: number, array: CfgFieldType<T>[]) => boolean, thisArg?: any): boolean;
+}
+interface CfgGroupExtension<T> extends CfgExtension<T> {
+	groups: CfgFieldType<T>[];
 }
 type CfgExt<T> = { [P in keyof T]: T[P] } & CfgExtension<T>;

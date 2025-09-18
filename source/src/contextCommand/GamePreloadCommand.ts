@@ -11,18 +11,21 @@ interface IGameConfig {
 
 export class GamePreloadCommand extends Command {
     override execute(notifyName: string, data?: any) {
+        uiMgr.init();
+        sceneMgr.init([
+            new SceneLogin(),
+            new SceneMain(),
+        ]);
+        RedDotManager.Inst.init();
         this.load().then(() => {
-            uiMgr.init();
-            RedDotManager.Inst.init();
-            sceneMgr.init([
-                new SceneLogin(),
-                new SceneMain(),
-            ]);
             sceneMgr.enterScene(SceneType.LoginScene);
         });
     }
 
     private async load() {
+        await loadMgr.loadPackage(ResPath.PkgPath.PkgEntrance);
+        uiMgr.openView(ViewID.UIEntranceView);
+        await new Promise(resolve => Laya.timer.once(4000, null, resolve));
         await gameMgr.init();
         await pbMgr.init();
         await cfgMgr.init();

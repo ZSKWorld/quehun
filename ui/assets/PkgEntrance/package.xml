@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<packageDescription id="8tw6j59f">
+  <resources>
+    <component id="nrcf0" name="UIEntrance.xml" path="/" exported="true"/>
+    <image id="nrcf1" name="img_2161.png" path="/Texture/"/>
+    <image id="nrcf2" name="img_27.png" path="/Texture/"/>
+    <image id="nrcf3" name="img_3208.png" path="/Texture/"/>
+  </resources>
+  <publish name="" genCode="true"/>
+</packageDescription>

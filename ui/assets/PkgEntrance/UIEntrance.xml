@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1920,1080" bgColorEnabled="true" bgColor="#000000">
+  <displayList>
+    <image id="n0_nrcf" name="n0" src="nrcf3" fileName="Texture/img_3208.png" xy="1296,545" pivot="0.5,0.5" anchor="true"/>
+    <image id="n1_nrcf" name="n1" src="nrcf2" fileName="Texture/img_27.png" xy="1296,545" pivot="0.5,0.5" anchor="true" size="242,120" alpha="0.3"/>
+    <image id="n2_nrcf" name="n2" src="nrcf1" fileName="Texture/img_2161.png" xy="517,587" pivot="0.5,0.5" anchor="true" size="43,47" rotation="18"/>
+    <image id="n3_nrcf" name="n3" src="nrcf1" fileName="Texture/img_2161.png" xy="619,553" pivot="0.5,0.5" anchor="true" size="63,69" rotation="-20"/>
+    <image id="n4_nrcf" name="n4" src="nrcf1" fileName="Texture/img_2161.png" xy="730,623" pivot="0.5,0.5" anchor="true" size="96,105" rotation="35"/>
+    <image id="n5_nrcf" name="n5" src="nrcf1" fileName="Texture/img_2161.png" xy="834,523" pivot="0.5,0.5" anchor="true" size="62,68" rotation="-22"/>
+    <image id="n6_nrcf" name="n6" src="nrcf1" fileName="Texture/img_2161.png" xy="946,607" pivot="0.5,0.5" anchor="true" size="50,56" rotation="21"/>
+    <image id="n7_nrcf" name="n7" src="nrcf1" fileName="Texture/img_2161.png" xy="1034,557" pivot="0.5,0.5" anchor="true" size="43,48" rotation="-31"/>
+    <image id="n8_nrcf" name="n8" src="nrcf1" fileName="Texture/img_2161.png" xy="1142,590" pivot="0.5,0.5" anchor="true" size="51,58" rotation="23"/>
+  </displayList>
+  <transition name="t0" autoPlay="true" frameRate="30">
+    <item time="0" type="Alpha" target="n0_nrcf" tween="true" startValue="0" endValue="1" duration="8" ease="Linear"/>
+    <item time="0" type="Alpha" target="n1_nrcf" value="0.3"/>
+    <item time="0" type="Alpha" target="n2_nrcf" value="0"/>
+    <item time="0" type="Alpha" target="n3_nrcf" value="0"/>
+    <item time="0" type="Alpha" target="n4_nrcf" value="0"/>
+    <item time="0" type="Alpha" target="n5_nrcf" value="0"/>
+    <item time="0" type="Alpha" target="n6_nrcf" value="0"/>
+    <item time="0" type="Alpha" target="n7_nrcf" value="0"/>
+    <item time="0" type="Alpha" target="n8_nrcf" value="0"/>
+    <item time="21" type="Alpha" target="n2_nrcf" tween="true" startValue="0" endValue="1" duration="3" ease="Linear"/>
+    <item time="29" type="Alpha" target="n3_nrcf" tween="true" startValue="0" endValue="1" duration="3" ease="Linear"/>
+    <item time="38" type="Alpha" target="n4_nrcf" tween="true" startValue="0" endValue="1" duration="3" ease="Linear"/>
+    <item time="45" type="Alpha" target="n5_nrcf" tween="true" startValue="0" endValue="1" duration="3" ease="Linear"/>
+    <item time="52" type="Alpha" target="n6_nrcf" tween="true" startValue="0" endValue="1" duration="3" ease="Linear"/>
+    <item time="59" type="Alpha" target="n7_nrcf" tween="true" startValue="0" endValue="1" duration="3" ease="Linear"/>
+    <item time="66" type="Alpha" target="n8_nrcf" tween="true" startValue="0" endValue="1" duration="3" ease="Linear"/>
+    <item time="74" type="Alpha" target="n1_nrcf" tween="true" startValue="0.3" endValue="0" duration="5" ease="Linear"/>
+  </transition>
+</component>

@@ -16,6 +16,7 @@ declare enum ViewID {
 	UIBattleConfirmView = "UIBattleConfirmView",
 	UIBattleView = "UIBattleView",
 	UIChooseBattleView = "UIChooseBattleView",
+	UIEntranceView = "UIEntranceView",
 	UI2048View = "UI2048View",
 	UILittleGameView = "UILittleGameView",
 	UILoginView = "UILoginView",

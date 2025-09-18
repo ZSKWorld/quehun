@@ -8,13 +8,13 @@ declare interface ITable_Shops {
 	/** 通用商品列表  ---  unique */
 	goods: CfgExt<ISheet_Shops_Goods>;
 	/** 商品组成的礼包（goods_package）  ---  group */
-	goods_package: CfgExt<ISheet_Shops_GoodsPackage>;
+	goods_package: CfgExtGroup<ISheet_Shops_GoodsPackage>;
 	/** 定期刷新商店（插画屋）  ---  group */
-	interval_refresh_goods: CfgExt<ISheet_Shops_IntervalRefreshGoods>;
+	interval_refresh_goods: CfgExtGroup<ISheet_Shops_IntervalRefreshGoods>;
 	/** 道具组成的礼包（item_package）  ---  unique */
 	item_package: CfgExt<ISheet_Shops_ItemPackage>;
 	/** 自选商品包（selected_package）  ---  group */
-	selected_package: CfgExt<ISheet_Shops_SelectedPackage>;
+	selected_package: CfgExtGroup<ISheet_Shops_SelectedPackage>;
 }
 
 //#region zhp_goods

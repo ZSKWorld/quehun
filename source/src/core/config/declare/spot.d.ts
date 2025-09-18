@@ -1,6 +1,6 @@
 declare interface ITable_Spot {
 	/** 剧情表  ---  group */
-	spot: CfgExt<ISheet_Spot_Spot>;
+	spot: CfgExtGroup<ISheet_Spot_Spot>;
 	/** 奖励表  ---  unique */
 	rewards: CfgExt<ISheet_Spot_Rewards>;
 	/** 活动剧情表  ---  unique */

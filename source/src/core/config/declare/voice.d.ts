@@ -1,8 +1,8 @@
 declare interface ITable_Voice {
 	/** 语音表  ---  group */
-	sound: CfgExt<ISheet_Voice_Sound>;
+	sound: CfgExtGroup<ISheet_Voice_Sound>;
 	/** 非常规角色的特殊语音表  ---  group */
-	event: CfgExt<ISheet_Voice_Event>;
+	event: CfgExtGroup<ISheet_Voice_Event>;
 	/** 剧情模式用的语音表，放在一起  ---  unique */
 	spot: CfgExt<ISheet_Voice_Spot>;
 }

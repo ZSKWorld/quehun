@@ -1,6 +1,6 @@
 declare interface ITable_Character {
 	/** 表情解锁表  ---  group */
-	emoji: CfgExt<ISheet_Character_Emoji>;
+	emoji: CfgExtGroup<ISheet_Character_Emoji>;
 	/** 特殊cutin表  ---  unique */
 	cutin: CfgExt<ISheet_Character_Cutin>;
 	/** 特殊动皮表  ---  unique */

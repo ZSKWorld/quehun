@@ -6,47 +6,47 @@ declare interface ITable_Activity {
 	/** 活动兑换表  ---  unique */
 	exchange: CfgExt<ISheet_Activity_Exchange>;
 	/** 宝箱up表  ---  group */
-	chest_up: CfgExt<ISheet_Activity_ChestUp>;
+	chest_up: CfgExtGroup<ISheet_Activity_ChestUp>;
 	/** 对局活动任务表  ---  unique */
 	game_task: CfgExt<ISheet_Activity_GameTask>;
 	/** 对局和牌活动表  ---  unique */
 	game_point: CfgExt<ISheet_Activity_GamePoint>;
 	/** 排名活动设定  ---  group */
-	rank: CfgExt<ISheet_Activity_Rank>;
+	rank: CfgExtGroup<ISheet_Activity_Rank>;
 	/** 排名活动奖励  ---  group */
-	rank_reward: CfgExt<ISheet_Activity_RankReward>;
+	rank_reward: CfgExtGroup<ISheet_Activity_RankReward>;
 	/** 翻牌牌任务  ---  unique */
 	flip_task: CfgExt<ISheet_Activity_FlipTask>;
 	/** 翻牌牌信息  ---  unique */
 	flip_info: CfgExt<ISheet_Activity_FlipInfo>;
 	/** 每日签到任务  ---  group */
-	daily_sign: CfgExt<ISheet_Activity_DailySign>;
+	daily_sign: CfgExtGroup<ISheet_Activity_DailySign>;
 	/** 大富翁活动详情表  ---  unique */
 	richman_info: CfgExt<ISheet_Activity_RichmanInfo>;
 	/** 大富翁活动地图表  ---  group */
-	richman_map: CfgExt<ISheet_Activity_RichmanMap>;
+	richman_map: CfgExtGroup<ISheet_Activity_RichmanMap>;
 	/** 大富翁配置人物升级表  ---  group */
-	richman_level: CfgExt<ISheet_Activity_RichmanLevel>;
+	richman_level: CfgExtGroup<ISheet_Activity_RichmanLevel>;
 	/** 大富翁活动随机事件表  ---  unique */
 	richman_event: CfgExt<ISheet_Activity_RichmanEvent>;
 	/** 活动常驻任务表  ---  unique */
 	period_task: CfgExt<ISheet_Activity_PeriodTask>;
 	/** 随机任务池  ---  group */
-	random_task_pool: CfgExt<ISheet_Activity_RandomTaskPool>;
+	random_task_pool: CfgExtGroup<ISheet_Activity_RandomTaskPool>;
 	/** 随机任务活动信息  ---  unique */
 	random_task_info: CfgExt<ISheet_Activity_RandomTaskInfo>;
 	/** 大富翁完成一圈的奖励序列  ---  group */
-	richman_reward_seq: CfgExt<ISheet_Activity_RichmanRewardSeq>;
+	richman_reward_seq: CfgExtGroup<ISheet_Activity_RichmanRewardSeq>;
 	/** 活动奖励加点buff表  ---  group */
-	activity_buff: CfgExt<ISheet_Activity_ActivityBuff>;
+	activity_buff: CfgExtGroup<ISheet_Activity_ActivityBuff>;
 	/** buff条件（受影响的任务编号)  ---  group */
-	buff_condition: CfgExt<ISheet_Activity_BuffCondition>;
+	buff_condition: CfgExtGroup<ISheet_Activity_BuffCondition>;
 	/** 打点活动限制条件  ---  unique */
 	game_point_info: CfgExt<ISheet_Activity_GamePointInfo>;
 	/** 打点活动排名奖励  ---  group */
-	game_point_rank: CfgExt<ISheet_Activity_GamePointRank>;
+	game_point_rank: CfgExtGroup<ISheet_Activity_GamePointRank>;
 	/** 打点活动配置组表  ---  group */
-	game_point_filter: CfgExt<ISheet_Activity_GamePointFilter>;
+	game_point_filter: CfgExtGroup<ISheet_Activity_GamePointFilter>;
 	/** 友人活动控制  ---  unique */
 	activity_room: CfgExt<ISheet_Activity_ActivityRoom>;
 	/** sns活动博客记录  ---  unique */
@@ -54,23 +54,23 @@ declare interface ITable_Activity {
 	/** 挖奖励活动  ---  unique */
 	mine_activity: CfgExt<ISheet_Activity_MineActivity>;
 	/** 挖奖励活动奖励  ---  group */
-	mine_reward: CfgExt<ISheet_Activity_MineReward>;
+	mine_reward: CfgExtGroup<ISheet_Activity_MineReward>;
 	/** RPG活动  ---  unique */
 	rpg_activity: CfgExt<ISheet_Activity_RpgActivity>;
 	/** RPG怪物配置  ---  group */
-	rpg_monster_group: CfgExt<ISheet_Activity_RpgMonsterGroup>;
+	rpg_monster_group: CfgExtGroup<ISheet_Activity_RpgMonsterGroup>;
 	/** 竞技场活动配置  ---  unique */
 	arena_activity: CfgExt<ISheet_Activity_ArenaActivity>;
 	/** 竞技场奖励配置  ---  group */
-	arena_reward: CfgExt<ISheet_Activity_ArenaReward>;
+	arena_reward: CfgExtGroup<ISheet_Activity_ArenaReward>;
 	/** 竞技场奖励显示用  ---  group */
-	arena_reward_display: CfgExt<ISheet_Activity_ArenaRewardDisplay>;
+	arena_reward_display: CfgExtGroup<ISheet_Activity_ArenaRewardDisplay>;
 	/** 多次任务配置  ---  unique */
 	segment_task: CfgExt<ISheet_Activity_SegmentTask>;
 	/** unique */
 	feed_activity_info: CfgExt<ISheet_Activity_FeedActivityInfo>;
 	/** group */
-	feed_activity_reward: CfgExt<ISheet_Activity_FeedActivityReward>;
+	feed_activity_reward: CfgExtGroup<ISheet_Activity_FeedActivityReward>;
 	/** 投票活动  ---  unique */
 	vote_activity: CfgExt<ISheet_Activity_VoteActivity>;
 	/** RPG活动2022年版v2  ---  unique */
@@ -82,21 +82,21 @@ declare interface ITable_Activity {
 	/** 配置升级分组  ---  unique */
 	upgrade_activity: CfgExt<ISheet_Activity_UpgradeActivity>;
 	/** 配置升级奖励  ---  group */
-	upgrade_activity_reward: CfgExt<ISheet_Activity_UpgradeActivityReward>;
+	upgrade_activity_reward: CfgExtGroup<ISheet_Activity_UpgradeActivityReward>;
 	/** 好友互助  ---  unique */
 	friend_gift_activity: CfgExt<ISheet_Activity_FriendGiftActivity>;
 	/** group */
-	upgrade_activity_display: CfgExt<ISheet_Activity_UpgradeActivityDisplay>;
+	upgrade_activity_display: CfgExtGroup<ISheet_Activity_UpgradeActivityDisplay>;
 	/** 控制轮巡活动  ---  group */
-	activity_desktop: CfgExt<ISheet_Activity_ActivityDesktop>;
+	activity_desktop: CfgExtGroup<ISheet_Activity_ActivityDesktop>;
 	/** unique */
 	gacha_activity_info: CfgExt<ISheet_Activity_GachaActivityInfo>;
 	/** group */
-	gacha_pool: CfgExt<ISheet_Activity_GachaPool>;
+	gacha_pool: CfgExtGroup<ISheet_Activity_GachaPool>;
 	/** group */
-	gacha_control: CfgExt<ISheet_Activity_GachaControl>;
+	gacha_control: CfgExtGroup<ISheet_Activity_GachaControl>;
 	/** group */
-	task_display: CfgExt<ISheet_Activity_TaskDisplay>;
+	task_display: CfgExtGroup<ISheet_Activity_TaskDisplay>;
 	/** unique */
 	simulation_activity_info: CfgExt<ISheet_Activity_SimulationActivityInfo>;
 	/** unique */
@@ -104,9 +104,9 @@ declare interface ITable_Activity {
 	/** unique */
 	combining_activity_info: CfgExt<ISheet_Activity_CombiningActivityInfo>;
 	/** group */
-	combining_craft_pool: CfgExt<ISheet_Activity_CombiningCraftPool>;
+	combining_craft_pool: CfgExtGroup<ISheet_Activity_CombiningCraftPool>;
 	/** group */
-	combining_map: CfgExt<ISheet_Activity_CombiningMap>;
+	combining_map: CfgExtGroup<ISheet_Activity_CombiningMap>;
 	/** unique */
 	combining_order: CfgExt<ISheet_Activity_CombiningOrder>;
 	/** unique */
@@ -114,57 +114,57 @@ declare interface ITable_Activity {
 	/** 合成活动客人表  ---  unique */
 	combining_customer: CfgExt<ISheet_Activity_CombiningCustomer>;
 	/** group */
-	chest_replace_up: CfgExt<ISheet_Activity_ChestReplaceUp>;
+	chest_replace_up: CfgExtGroup<ISheet_Activity_ChestReplaceUp>;
 	/** unique */
 	village_activity_info: CfgExt<ISheet_Activity_VillageActivityInfo>;
 	/** group */
-	village_building: CfgExt<ISheet_Activity_VillageBuilding>;
+	village_building: CfgExtGroup<ISheet_Activity_VillageBuilding>;
 	/** group */
-	village_task: CfgExt<ISheet_Activity_VillageTask>;
+	village_task: CfgExtGroup<ISheet_Activity_VillageTask>;
 	/** 主播弹幕活动前端参数表  ---  unique */
 	liver_event_info: CfgExt<ISheet_Activity_LiverEventInfo>;
 	/** 主播弹幕活动文本表  ---  group */
-	liver_text_info: CfgExt<ISheet_Activity_LiverTextInfo>;
+	liver_text_info: CfgExtGroup<ISheet_Activity_LiverTextInfo>;
 	/** 庆典活动主表  ---  unique */
 	festival_activity: CfgExt<ISheet_Activity_FestivalActivity>;
 	/** 庆典等级  ---  group */
-	festival_level: CfgExt<ISheet_Activity_FestivalLevel>;
+	festival_level: CfgExtGroup<ISheet_Activity_FestivalLevel>;
 	/** 庆典提案表  ---  group */
-	festival_proposal: CfgExt<ISheet_Activity_FestivalProposal>;
+	festival_proposal: CfgExtGroup<ISheet_Activity_FestivalProposal>;
 	/** 庆典事件表  ---  group */
-	festival_event: CfgExt<ISheet_Activity_FestivalEvent>;
+	festival_event: CfgExtGroup<ISheet_Activity_FestivalEvent>;
 	/** 结果表，提案和事件共用  ---  group */
-	festival_ending: CfgExt<ISheet_Activity_FestivalEnding>;
+	festival_ending: CfgExtGroup<ISheet_Activity_FestivalEnding>;
 	/** 海岛活动主表  ---  unique */
 	island_activity: CfgExt<ISheet_Activity_IslandActivity>;
 	/** 海岛商品表  ---  group */
-	island_goods: CfgExt<ISheet_Activity_IslandGoods>;
+	island_goods: CfgExtGroup<ISheet_Activity_IslandGoods>;
 	/** 海岛背包表  ---  group */
-	island_bag: CfgExt<ISheet_Activity_IslandBag>;
+	island_bag: CfgExtGroup<ISheet_Activity_IslandBag>;
 	/** 海岛地图表  ---  group */
-	island_map: CfgExt<ISheet_Activity_IslandMap>;
+	island_map: CfgExtGroup<ISheet_Activity_IslandMap>;
 	/** 海岛商店表  ---  group */
-	island_shop: CfgExt<ISheet_Activity_IslandShop>;
+	island_shop: CfgExtGroup<ISheet_Activity_IslandShop>;
 	/** 海岛新闻表  ---  group */
-	island_news: CfgExt<ISheet_Activity_IslandNews>;
+	island_news: CfgExtGroup<ISheet_Activity_IslandNews>;
 	/** 竹云庆典剧情建筑  ---  group */
-	summer_story: CfgExt<ISheet_Activity_SummerStory>;
+	summer_story: CfgExtGroup<ISheet_Activity_SummerStory>;
 	/** 剧情活动表（后端用）  ---  group */
-	story_activity: CfgExt<ISheet_Activity_StoryActivity>;
+	story_activity: CfgExtGroup<ISheet_Activity_StoryActivity>;
 	/** 剧情活动分支表（后端用）  ---  group */
-	story_ending: CfgExt<ISheet_Activity_StoryEnding>;
+	story_ending: CfgExtGroup<ISheet_Activity_StoryEnding>;
 	/** 活动banner配置表（前端用）  ---  unique */
 	activity_banner: CfgExt<ISheet_Activity_ActivityBanner>;
 	/** 活动引导配置表（前端用）  ---  unique */
 	activity_guide: CfgExt<ISheet_Activity_ActivityGuide>;
 	/** 竹云庆典剧情奖励显示  ---  group */
-	summer_story_reward: CfgExt<ISheet_Activity_SummerStoryReward>;
+	summer_story_reward: CfgExtGroup<ISheet_Activity_SummerStoryReward>;
 	/** 自选卡池活动主表  ---  unique */
 	choose_up_activity: CfgExt<ISheet_Activity_ChooseUpActivity>;
 	/** 自选卡池概率替换  ---  group */
-	choose_up_replace: CfgExt<ISheet_Activity_ChooseUpReplace>;
+	choose_up_replace: CfgExtGroup<ISheet_Activity_ChooseUpReplace>;
 	/** 根据进度领奖  ---  group */
-	progress_reward: CfgExt<ISheet_Activity_ProgressReward>;
+	progress_reward: CfgExtGroup<ISheet_Activity_ProgressReward>;
 }
 
 //#region activity

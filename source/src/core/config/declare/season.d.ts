@@ -4,11 +4,11 @@ declare interface ITable_Season {
 	/** unique */
 	level_ticket: CfgExt<ISheet_Season_LevelTicket>;
 	/** group */
-	level_ticket_pool: CfgExt<ISheet_Season_LevelTicketPool>;
+	level_ticket_pool: CfgExtGroup<ISheet_Season_LevelTicketPool>;
 	/** group */
-	ticket_retry: CfgExt<ISheet_Season_TicketRetry>;
+	ticket_retry: CfgExtGroup<ISheet_Season_TicketRetry>;
 	/** group */
-	season_reward: CfgExt<ISheet_Season_SeasonReward>;
+	season_reward: CfgExtGroup<ISheet_Season_SeasonReward>;
 }
 
 //#region season

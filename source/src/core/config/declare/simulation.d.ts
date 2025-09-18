@@ -2,29 +2,29 @@ declare interface ITable_Simulation {
 	/** 主表  ---  unique */
 	sim_v2_info: CfgExt<ISheet_Simulation_SimV2Info>;
 	/** 每轮游戏日程  ---  group */
-	sim_v2_round: CfgExt<ISheet_Simulation_SimV2Round>;
+	sim_v2_round: CfgExtGroup<ISheet_Simulation_SimV2Round>;
 	/** 活动内参与的NPC  ---  group */
-	sim_v2_character: CfgExt<ISheet_Simulation_SimV2Character>;
+	sim_v2_character: CfgExtGroup<ISheet_Simulation_SimV2Character>;
 	/** roll点分布结果  ---  group */
-	sim_v2_roll: CfgExt<ISheet_Simulation_SimV2Roll>;
+	sim_v2_roll: CfgExtGroup<ISheet_Simulation_SimV2Roll>;
 	/** 养成/对局中触发的事件列举  ---  group */
-	sim_v2_event: CfgExt<ISheet_Simulation_SimV2Event>;
+	sim_v2_event: CfgExtGroup<ISheet_Simulation_SimV2Event>;
 	/** 事件触发条件列举  ---  unique */
 	sim_v2_trigger: CfgExt<ISheet_Simulation_SimV2Trigger>;
 	/** 触发事件后，列举的3-5选项  ---  group */
-	sim_v2_selection: CfgExt<ISheet_Simulation_SimV2Selection>;
+	sim_v2_selection: CfgExtGroup<ISheet_Simulation_SimV2Selection>;
 	/** 特性列表  ---  unique */
 	sim_v2_effect: CfgExt<ISheet_Simulation_SimV2Effect>;
 	/** 选择选项后的结果  ---  group */
-	sim_v2_selection_result: CfgExt<ISheet_Simulation_SimV2SelectionResult>;
+	sim_v2_selection_result: CfgExtGroup<ISheet_Simulation_SimV2SelectionResult>;
 	/** 对局结果buff列举  ---  unique */
 	sim_v2_buff: CfgExt<ISheet_Simulation_SimV2Buff>;
 	/** 场外强化  ---  unique */
 	sim_v2_upgrade: CfgExt<ISheet_Simulation_SimV2Upgrade>;
 	/** 调剂文本生成  ---  group */
-	sim_v2_story: CfgExt<ISheet_Simulation_SimV2Story>;
+	sim_v2_story: CfgExtGroup<ISheet_Simulation_SimV2Story>;
 	/** 对局结束奖励  ---  group */
-	sim_v2_reward: CfgExt<ISheet_Simulation_SimV2Reward>;
+	sim_v2_reward: CfgExtGroup<ISheet_Simulation_SimV2Reward>;
 }
 
 //#region sim_v2_info

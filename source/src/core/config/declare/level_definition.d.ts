@@ -2,11 +2,11 @@ declare interface ITable_LevelDefinition {
 	/** unique */
 	level_definition: CfgExt<ISheet_LevelDefinition_LevelDefinition>;
 	/** 角色通用等级表  ---  group */
-	character: CfgExt<ISheet_LevelDefinition_Character>;
+	character: CfgExtGroup<ISheet_LevelDefinition_Character>;
 	/** 试炼头像对应表  ---  unique */
 	trail: CfgExt<ISheet_LevelDefinition_Trail>;
 	/** 顺位分变动表  ---  group */
-	top_rank: CfgExt<ISheet_LevelDefinition_TopRank>;
+	top_rank: CfgExtGroup<ISheet_LevelDefinition_TopRank>;
 }
 
 //#region level_definition

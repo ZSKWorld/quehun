@@ -2,9 +2,9 @@ declare interface ITable_Amulet {
 	/** 初始化状态6参数  ---  unique */
 	amulet_activity: CfgExt<ISheet_Amulet_AmuletActivity>;
 	/** 关卡配置  ---  group */
-	amulet_games: CfgExt<ISheet_Amulet_AmuletGames>;
+	amulet_games: CfgExtGroup<ISheet_Amulet_AmuletGames>;
 	/** group */
-	amulet_rewards: CfgExt<ISheet_Amulet_AmuletRewards>;
+	amulet_rewards: CfgExtGroup<ISheet_Amulet_AmuletRewards>;
 	/** BOSSbuff  ---  unique */
 	amulet_buff: CfgExt<ISheet_Amulet_AmuletBuff>;
 	/** 护身符效果  ---  unique */
@@ -16,13 +16,13 @@ declare interface ITable_Amulet {
 	/** 商店销售卡包内容权重  ---  unique */
 	amulet_goods: CfgExt<ISheet_Amulet_AmuletGoods>;
 	/** group */
-	amulet_shop_upgrade: CfgExt<ISheet_Amulet_AmuletShopUpgrade>;
+	amulet_shop_upgrade: CfgExtGroup<ISheet_Amulet_AmuletShopUpgrade>;
 	/** 场外升级id  ---  group */
-	amulet_upgrade: CfgExt<ISheet_Amulet_AmuletUpgrade>;
+	amulet_upgrade: CfgExtGroup<ISheet_Amulet_AmuletUpgrade>;
 	/** 护身符挑战任务  ---  unique */
 	amulet_task: CfgExt<ISheet_Amulet_AmuletTask>;
 	/** 护身符刷新池  ---  group */
-	amulet_pool: CfgExt<ISheet_Amulet_AmuletPool>;
+	amulet_pool: CfgExtGroup<ISheet_Amulet_AmuletPool>;
 	/** 印章效果  ---  unique */
 	amulet_badge: CfgExt<ISheet_Amulet_AmuletBadge>;
 	/** 关键词  ---  unique */

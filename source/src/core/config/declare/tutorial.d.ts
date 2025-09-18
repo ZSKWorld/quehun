@@ -2,7 +2,7 @@ declare interface ITable_Tutorial {
 	/** unique */
 	init: CfgExt<ISheet_Tutorial_Init>;
 	/** group */
-	step: CfgExt<ISheet_Tutorial_Step>;
+	step: CfgExtGroup<ISheet_Tutorial_Step>;
 }
 
 //#region init

@@ -12,13 +12,13 @@ declare interface ITable_ItemDefinition {
 	/** 皮肤表  ---  unique */
 	skin: CfgExt<ISheet_ItemDefinition_Skin>;
 	/** 版本道具恢复表  ---  group */
-	item_recovery: CfgExt<ISheet_ItemDefinition_ItemRecovery>;
+	item_recovery: CfgExtGroup<ISheet_ItemDefinition_ItemRecovery>;
 	/** 手动开箱物品池  ---  group */
-	item_manual_pool: CfgExt<ISheet_ItemDefinition_ItemManualPool>;
+	item_manual_pool: CfgExtGroup<ISheet_ItemDefinition_ItemManualPool>;
 	/** 限制活动道具每日上限  ---  group */
-	source_limit: CfgExt<ISheet_ItemDefinition_SourceLimit>;
+	source_limit: CfgExtGroup<ISheet_ItemDefinition_SourceLimit>;
 	/** 自动打开全领奖励包  ---  group */
-	item_package: CfgExt<ISheet_ItemDefinition_ItemPackage>;
+	item_package: CfgExtGroup<ISheet_ItemDefinition_ItemPackage>;
 	/** unique */
 	fake_random_pool: CfgExt<ISheet_ItemDefinition_FakeRandomPool>;
 	/** 插画loading图  ---  unique */

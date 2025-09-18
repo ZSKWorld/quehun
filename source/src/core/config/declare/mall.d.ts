@@ -2,11 +2,11 @@ declare interface ITable_Mall {
 	/** 商品表  ---  unique */
 	goods: CfgExt<ISheet_Mall_Goods>;
 	/** 商品上架表（映射对应渠道商品ID）  ---  group */
-	product: CfgExt<ISheet_Mall_Product>;
+	product: CfgExtGroup<ISheet_Mall_Product>;
 	/** 货架表（设定对应货架有哪些商品可以购买）  ---  group */
-	goods_shelves: CfgExt<ISheet_Mall_GoodsShelves>;
+	goods_shelves: CfgExtGroup<ISheet_Mall_GoodsShelves>;
 	/** 区域通用参数  ---  group */
-	zone_params: CfgExt<ISheet_Mall_ZoneParams>;
+	zone_params: CfgExtGroup<ISheet_Mall_ZoneParams>;
 	/** 月卡表  ---  unique */
 	month_ticket: CfgExt<ISheet_Mall_MonthTicket>;
 	/** 渠道支付信息  ---  unique */

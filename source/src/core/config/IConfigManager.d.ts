@@ -59,3 +59,4 @@ interface CfgGroupExtension<T> extends CfgExtension<T> {
 	groups: CfgFieldType<T>[];
 }
 type CfgExt<T> = { [P in keyof T]: T[P] } & CfgExtension<T>;
+type CfgExtGroup<T> = { [P in keyof T]: T[P] } & CfgGroupExtension<T>;

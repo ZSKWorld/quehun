@@ -2,23 +2,23 @@ declare interface ITable_Chest {
 	/** 宝箱表  ---  unique */
 	chest: CfgExt<ISheet_Chest_Chest>;
 	/** 宝箱奖池表  ---  group */
-	pool: CfgExt<ISheet_Chest_Pool>;
+	pool: CfgExtGroup<ISheet_Chest_Pool>;
 	/** group */
-	pool_seq: CfgExt<ISheet_Chest_PoolSeq>;
+	pool_seq: CfgExtGroup<ISheet_Chest_PoolSeq>;
 	/** group */
-	item_pool: CfgExt<ISheet_Chest_ItemPool>;
+	item_pool: CfgExtGroup<ISheet_Chest_ItemPool>;
 	/** 宝箱保底商店  ---  unique */
 	chest_shop: CfgExt<ISheet_Chest_ChestShop>;
 	/** 卡池一栏  ---  group */
-	preview: CfgExt<ISheet_Chest_Preview>;
+	preview: CfgExtGroup<ISheet_Chest_Preview>;
 	/** 抽卡up  ---  group */
-	up: CfgExt<ISheet_Chest_Up>;
+	up: CfgExtGroup<ISheet_Chest_Up>;
 	/** 道具价格  ---  group */
-	item_price: CfgExt<ISheet_Chest_ItemPrice>;
+	item_price: CfgExtGroup<ISheet_Chest_ItemPrice>;
 	/** 必new卡池配置表  ---  unique */
 	replace_up: CfgExt<ISheet_Chest_ReplaceUp>;
 	/** 必new物品池  ---  group */
-	replace_pool: CfgExt<ISheet_Chest_ReplacePool>;
+	replace_pool: CfgExtGroup<ISheet_Chest_ReplacePool>;
 }
 
 //#region chest

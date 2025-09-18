@@ -238,20 +238,3 @@ export class ConfigManager implements IConfigManager {
         return sheetRawData;
     }
 }
-cfgMgr.ab_match.consume_seq.rows.forEach(v => {
-    
-});
-cfgMgr.ab_match.match_info.rows.forEach(v => {
-    
-});
-cfgMgr.ab_match.consume_seq.forEach(v => {
-    
-})
-cfgMgr.ab_match.match_info.forEach(v => {
-    
-});
-type a = ISheetData_AbMatch_ConsumeSeq[];
-type b<T> = T extends Array<infer U> ? U : T;
-
-let c: b<a>;
-let d = c;

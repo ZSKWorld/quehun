@@ -2,7 +2,7 @@ declare interface ITable_MatchShilian {
 	/** unique */
 	shilian: CfgExt<ISheet_MatchShilian_Shilian>;
 	/** group */
-	shilian_reward: CfgExt<ISheet_MatchShilian_ShilianReward>;
+	shilian_reward: CfgExtGroup<ISheet_MatchShilian_ShilianReward>;
 	/** unique */
 	shilian_time: CfgExt<ISheet_MatchShilian_ShilianTime>;
 }

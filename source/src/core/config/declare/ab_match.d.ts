@@ -2,11 +2,11 @@ declare interface ITable_AbMatch {
 	/** unique */
 	match_info: CfgExt<ISheet_AbMatch_MatchInfo>;
 	/** group */
-	point: CfgExt<ISheet_AbMatch_Point>;
+	point: CfgExtGroup<ISheet_AbMatch_Point>;
 	/** group */
-	reward_seq: CfgExt<ISheet_AbMatch_RewardSeq>;
+	reward_seq: CfgExtGroup<ISheet_AbMatch_RewardSeq>;
 	/** group */
-	consume_seq: CfgExt<ISheet_AbMatch_ConsumeSeq>;
+	consume_seq: CfgExtGroup<ISheet_AbMatch_ConsumeSeq>;
 }
 
 //#region match_info

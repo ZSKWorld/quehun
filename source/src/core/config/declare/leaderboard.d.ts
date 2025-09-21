@@ -5,6 +5,7 @@ declare interface ITable_Leaderboard {
 
 //#region leaderboard
 declare interface ISheet_Leaderboard_Leaderboard {
+	[key: string]: ISheetData_Leaderboard_Leaderboard;
 	1010: ISheetData_Leaderboard_Leaderboard;
 }
 declare interface ISheetData_Leaderboard_Leaderboard {

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1920,1080" designImage="ui://ca43vz0ejdu67plnjr" designImageOffsetX="-239" designImageOffsetY="-44" designImageAlpha="0" designImageLayer="1">
+  <controller name="format" pages="0,,1,,2,,3," selected="3"/>
+  <displayList>
+    <component id="n0_j0dd" name="n0" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" xy="959,540" pivot="0.5,0.5" anchor="true" size="1437,992"/>
+    <image id="n2_j0dd" name="n2" src="j0ddob77" fileName="Texture/img_374.png" xy="313,160" size="607,4" group="n18_j0dd"/>
+    <image id="n4_j0dd" name="n4" src="j0ddob77" fileName="Texture/img_374.png" xy="997,160" pivot="1,0" anchor="true" size="608,4" group="n18_j0dd" scale="-1,1"/>
+    <image id="n5_j0dd" name="n5" src="j0ddob7a" fileName="Texture/img_680.png" xy="932,151" group="n18_j0dd"/>
+    <group id="n18_j0dd" name="n18" xy="313,151" size="683,22" advanced="true">
+      <gearDisplay controller="format" pages="0,1,4,6"/>
+    </group>
+    <image id="n6_j0dd" name="n6" src="j0ddob77" fileName="Texture/img_374.png" xy="314,840" size="607,4" group="n17_j0dd"/>
+    <image id="n7_j0dd" name="n7" src="j0ddob77" fileName="Texture/img_374.png" xy="997,840" pivot="1,0" anchor="true" size="608,4" group="n17_j0dd" scale="-1,1"/>
+    <image id="n8_j0dd" name="n8" src="j0ddob7a" fileName="Texture/img_680.png" xy="932,831" group="n17_j0dd"/>
+    <group id="n17_j0dd" name="n17" xy="314,831" size="682,22" advanced="true">
+      <gearDisplay controller="format" pages="0"/>
+    </group>
+    <component id="n10_j0dd" name="close" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" xy="1555,77" size="70,70">
+      <relation target="n0_j0dd" sidePair="right-right,top-top"/>
+      <Button icon="ui://vx9zwserj0ddob7b"/>
+    </component>
+    <component id="n14_j0dd" name="confirm" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="528,884" size="412,92" group="n16_j0dd">
+      <gearDisplay controller="format" pages="0,2,3,4,5,6"/>
+      <Button title="确认" titleColor="#6d2e3a" titleFontSize="38" icon="ui://vx9zwserj0ddob73"/>
+    </component>
+    <component id="n15_j0dd" name="cancel" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="978,884" size="412,92" group="n16_j0dd">
+      <gearDisplay controller="format" pages="3,6,10"/>
+      <Button title="取消" titleColor="#e5b673" titleFontSize="38" icon="ui://vx9zwserj0ddob70"/>
+    </component>
+    <group id="n16_j0dd" name="n16" xy="528,884" size="862,92" advanced="true" layout="hz" colGap="38" excludeInvisibles="true">
+      <relation target="n0_j0dd" sidePair="center-center,bottom-bottom"/>
+    </group>
+    <text id="n12_j0dd" name="title" xy="665,82" pivot="0.5,0.5" size="589,60" fontSize="45" color="#edb26f" singleLine="true" text="雀魂麻将游戏许可及服务协议">
+      <gearDisplay controller="format" pages="0,1,4,6"/>
+      <relation target="n0_j0dd" sidePair="center-center,top-top"/>
+    </text>
+    <component id="n13_j0dd" name="content" src="j0ddob7i" fileName="Component/Component/LabelConfirm.xml" xy="343,150" size="1270,680">
+      <gearXY controller="format" pages="0,1,2,3" values="342,188|343,188|343,150|343,150"/>
+      <gearSize controller="format" pages="0,2,3" values="1270,622,1,1|1270,680,1,1|1270,680,1,1" default="1270,778,1,1"/>
+      <Label title="当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交&#xA;&#xA;&#xA;当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交&#xA;&#xA;&#xA;当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交&#xA;&#xA;&#xA;当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交&#xA;&#xA;&#xA;当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交&#xA;&#xA;&#xA;当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交"/>
+    </component>
+  </displayList>
+</component>

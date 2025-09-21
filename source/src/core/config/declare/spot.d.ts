@@ -15,6 +15,7 @@ declare interface ITable_Spot {
 
 //#region spot
 declare interface ISheet_Spot_Spot {
+	[key: string]: ISheetData_Spot_Spot[];
 	200001: ISheetData_Spot_Spot[];
 	200002: ISheetData_Spot_Spot[];
 	200003: ISheetData_Spot_Spot[];
@@ -83,6 +84,7 @@ declare interface ISheetData_Spot_Spot {
 
 //#region rewards
 declare interface ISheet_Spot_Rewards {
+	[key: string]: ISheetData_Spot_Rewards;
 	300041: ISheetData_Spot_Rewards;
 	300042: ISheetData_Spot_Rewards;
 	300051: ISheetData_Spot_Rewards;
@@ -229,6 +231,7 @@ declare interface ISheetData_Spot_Rewards {
 
 //#region event
 declare interface ISheet_Spot_Event {
+	[key: string]: ISheetData_Spot_Event;
 	118201: ISheetData_Spot_Event;
 	118202: ISheetData_Spot_Event;
 	118203: ISheetData_Spot_Event;
@@ -300,6 +303,7 @@ declare interface ISheetData_Spot_Event {
 
 //#region character_spot
 declare interface ISheet_Spot_CharacterSpot {
+	[key: string]: ISheetData_Spot_CharacterSpot;
 	20000104: ISheetData_Spot_CharacterSpot;
 	20000105: ISheetData_Spot_CharacterSpot;
 	20009998: ISheetData_Spot_CharacterSpot;
@@ -419,6 +423,7 @@ declare interface ISheetData_Spot_CharacterSpot {
 
 //#region skin_spot
 declare interface ISheet_Spot_SkinSpot {
+	[key: string]: ISheetData_Spot_SkinSpot;
 	401899: ISheetData_Spot_SkinSpot;
 	404699: ISheetData_Spot_SkinSpot;
 	409199: ISheetData_Spot_SkinSpot;
@@ -536,6 +541,7 @@ declare interface ISheetData_Spot_SkinSpot {
 
 //#region audio_spot
 declare interface ISheet_Spot_AudioSpot {
+	[key: string]: ISheetData_Spot_AudioSpot;
 	101: ISheetData_Spot_AudioSpot;
 	102: ISheetData_Spot_AudioSpot;
 	103: ISheetData_Spot_AudioSpot;

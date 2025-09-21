@@ -29,6 +29,7 @@ declare interface ITable_Simulation {
 
 //#region sim_v2_info
 declare interface ISheet_Simulation_SimV2Info {
+	[key: string]: ISheetData_Simulation_SimV2Info;
 	250401: ISheetData_Simulation_SimV2Info;
 }
 declare interface ISheetData_Simulation_SimV2Info {
@@ -77,6 +78,7 @@ declare interface ISheetData_Simulation_SimV2Info {
 
 //#region sim_v2_round
 declare interface ISheet_Simulation_SimV2Round {
+	[key: string]: ISheetData_Simulation_SimV2Round[];
 	250401: ISheetData_Simulation_SimV2Round[];
 }
 declare interface ISheetData_Simulation_SimV2Round {
@@ -91,6 +93,7 @@ declare interface ISheetData_Simulation_SimV2Round {
 
 //#region sim_v2_character
 declare interface ISheet_Simulation_SimV2Character {
+	[key: string]: ISheetData_Simulation_SimV2Character[];
 	250401: ISheetData_Simulation_SimV2Character[];
 }
 declare interface ISheetData_Simulation_SimV2Character {
@@ -117,6 +120,7 @@ declare interface ISheetData_Simulation_SimV2Character {
 
 //#region sim_v2_roll
 declare interface ISheet_Simulation_SimV2Roll {
+	[key: string]: ISheetData_Simulation_SimV2Roll[];
 	25040101: ISheetData_Simulation_SimV2Roll[];
 }
 declare interface ISheetData_Simulation_SimV2Roll {
@@ -133,6 +137,7 @@ declare interface ISheetData_Simulation_SimV2Roll {
 
 //#region sim_v2_event
 declare interface ISheet_Simulation_SimV2Event {
+	[key: string]: ISheetData_Simulation_SimV2Event[];
 	25040101: ISheetData_Simulation_SimV2Event[];
 	25040153: ISheetData_Simulation_SimV2Event[];
 }
@@ -160,6 +165,7 @@ declare interface ISheetData_Simulation_SimV2Event {
 
 //#region sim_v2_trigger
 declare interface ISheet_Simulation_SimV2Trigger {
+	[key: string]: ISheetData_Simulation_SimV2Trigger;
 	9001002: ISheetData_Simulation_SimV2Trigger;
 	9001013: ISheetData_Simulation_SimV2Trigger;
 	9002055: ISheetData_Simulation_SimV2Trigger;
@@ -369,6 +375,7 @@ declare interface ISheetData_Simulation_SimV2Trigger {
 
 //#region sim_v2_selection
 declare interface ISheet_Simulation_SimV2Selection {
+	[key: string]: ISheetData_Simulation_SimV2Selection[];
 	1001: ISheetData_Simulation_SimV2Selection[];
 	1002: ISheetData_Simulation_SimV2Selection[];
 	1003: ISheetData_Simulation_SimV2Selection[];
@@ -488,6 +495,7 @@ declare interface ISheetData_Simulation_SimV2Selection {
 
 //#region sim_v2_effect
 declare interface ISheet_Simulation_SimV2Effect {
+	[key: string]: ISheetData_Simulation_SimV2Effect;
 	9001: ISheetData_Simulation_SimV2Effect;
 	9002: ISheetData_Simulation_SimV2Effect;
 	9003: ISheetData_Simulation_SimV2Effect;
@@ -531,6 +539,7 @@ declare interface ISheetData_Simulation_SimV2Effect {
 
 //#region sim_v2_selection_result
 declare interface ISheet_Simulation_SimV2SelectionResult {
+	[key: string]: ISheetData_Simulation_SimV2SelectionResult[];
 	100101: ISheetData_Simulation_SimV2SelectionResult[];
 	100102: ISheetData_Simulation_SimV2SelectionResult[];
 	100103: ISheetData_Simulation_SimV2SelectionResult[];
@@ -936,6 +945,7 @@ declare interface ISheetData_Simulation_SimV2SelectionResult {
 
 //#region sim_v2_buff
 declare interface ISheet_Simulation_SimV2Buff {
+	[key: string]: ISheetData_Simulation_SimV2Buff;
 	10440111: ISheetData_Simulation_SimV2Buff;
 	10440121: ISheetData_Simulation_SimV2Buff;
 	10440211: ISheetData_Simulation_SimV2Buff;
@@ -1361,6 +1371,7 @@ declare interface ISheetData_Simulation_SimV2Buff {
 
 //#region sim_v2_upgrade
 declare interface ISheet_Simulation_SimV2Upgrade {
+	[key: string]: ISheetData_Simulation_SimV2Upgrade;
 	250401: ISheetData_Simulation_SimV2Upgrade;
 }
 declare interface ISheetData_Simulation_SimV2Upgrade {
@@ -1377,6 +1388,7 @@ declare interface ISheetData_Simulation_SimV2Upgrade {
 
 //#region sim_v2_story
 declare interface ISheet_Simulation_SimV2Story {
+	[key: string]: ISheetData_Simulation_SimV2Story[];
 	250401: ISheetData_Simulation_SimV2Story[];
 }
 declare interface ISheetData_Simulation_SimV2Story {
@@ -1395,6 +1407,7 @@ declare interface ISheetData_Simulation_SimV2Story {
 
 //#region sim_v2_reward
 declare interface ISheet_Simulation_SimV2Reward {
+	[key: string]: ISheetData_Simulation_SimV2Reward[];
 	250401: ISheetData_Simulation_SimV2Reward[];
 }
 declare interface ISheetData_Simulation_SimV2Reward {

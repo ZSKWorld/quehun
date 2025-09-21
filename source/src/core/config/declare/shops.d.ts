@@ -19,6 +19,7 @@ declare interface ITable_Shops {
 
 //#region zhp_goods
 declare interface ISheet_Shops_ZhpGoods {
+	[key: string]: ISheetData_Shops_ZhpGoods;
 	1: ISheetData_Shops_ZhpGoods;
 	2: ISheetData_Shops_ZhpGoods;
 	3: ISheetData_Shops_ZhpGoods;
@@ -75,6 +76,7 @@ declare interface ISheetData_Shops_ZhpGoods {
 
 //#region zhp_refresh_group
 declare interface ISheet_Shops_ZhpRefreshGroup {
+	[key: string]: ISheetData_Shops_ZhpRefreshGroup;
 	1: ISheetData_Shops_ZhpRefreshGroup;
 	2: ISheetData_Shops_ZhpRefreshGroup;
 	3: ISheetData_Shops_ZhpRefreshGroup;
@@ -89,6 +91,7 @@ declare interface ISheetData_Shops_ZhpRefreshGroup {
 
 //#region zhp_refresh_price
 declare interface ISheet_Shops_ZhpRefreshPrice {
+	[key: string]: ISheetData_Shops_ZhpRefreshPrice;
 	1: ISheetData_Shops_ZhpRefreshPrice;
 	2: ISheetData_Shops_ZhpRefreshPrice;
 	3: ISheetData_Shops_ZhpRefreshPrice;
@@ -200,6 +203,7 @@ declare interface ISheetData_Shops_ZhpRefreshPrice {
 
 //#region goods
 declare interface ISheet_Shops_Goods {
+	[key: string]: ISheetData_Shops_Goods;
 	1001: ISheetData_Shops_Goods;
 	1002: ISheetData_Shops_Goods;
 	1003: ISheetData_Shops_Goods;
@@ -761,6 +765,7 @@ declare interface ISheetData_Shops_Goods {
 
 //#region goods_package
 declare interface ISheet_Shops_GoodsPackage {
+	[key: string]: ISheetData_Shops_GoodsPackage[];
 	700001: ISheetData_Shops_GoodsPackage[];
 }
 declare interface ISheetData_Shops_GoodsPackage {
@@ -774,6 +779,7 @@ declare interface ISheetData_Shops_GoodsPackage {
 
 //#region interval_refresh_goods
 declare interface ISheet_Shops_IntervalRefreshGoods {
+	[key: string]: ISheetData_Shops_IntervalRefreshGoods[];
 	1001: ISheetData_Shops_IntervalRefreshGoods[];
 }
 declare interface ISheetData_Shops_IntervalRefreshGoods {
@@ -786,6 +792,7 @@ declare interface ISheetData_Shops_IntervalRefreshGoods {
 
 //#region item_package
 declare interface ISheet_Shops_ItemPackage {
+	[key: string]: ISheetData_Shops_ItemPackage;
 	700002: ISheetData_Shops_ItemPackage;
 	700003: ISheetData_Shops_ItemPackage;
 }
@@ -798,6 +805,7 @@ declare interface ISheetData_Shops_ItemPackage {
 
 //#region selected_package
 declare interface ISheet_Shops_SelectedPackage {
+	[key: string]: ISheetData_Shops_SelectedPackage[];
 	5399: ISheetData_Shops_SelectedPackage[];
 }
 declare interface ISheetData_Shops_SelectedPackage {

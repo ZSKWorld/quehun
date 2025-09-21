@@ -1,4 +1,3 @@
-import { LocalData, LocalDataKey } from "./core/common/LocalData";
 import { GameUtil } from "./core/common/utils/GameUtil";
 
 export class GameManager implements IGameManager {
@@ -8,10 +7,10 @@ export class GameManager implements IGameManager {
     private _version: { version: string; };
     get deviceId() {
         if (!this._deviceId) {
-            this._deviceId = LocalData.get(LocalDataKey.DeviceId);
+            this._deviceId = localDataMgr.get(LocalDataKey.DeviceId);
             if (!this._deviceId) {
                 this._deviceId = GameUtil.createUUID();
-                LocalData.set(LocalDataKey.DeviceId, this._deviceId);
+                localDataMgr.set(LocalDataKey.DeviceId, this._deviceId);
             }
         }
         return this._deviceId;

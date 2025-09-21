@@ -15,15 +15,35 @@
     <font id="kyy06f" name="Font12.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
     <font id="kyy06g" name="Font13.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
     <font id="kyy06h" name="Font14.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
-    <component id="108ab6i" name="BtnNormal.xml" path="/Component/" exported="true"/>
-    <component id="mj5kb6p" name="BtnCheck.xml" path="/Component/" exported="true"/>
-    <component id="mj5kb6q" name="BtnCheckTxtRight.xml" path="/Component/" exported="true"/>
-    <component id="mj5kb6r" name="BtnNormalFit.xml" path="/Component/" exported="true"/>
-    <component id="mj5kb6t" name="BtnCheckRichTxtRight.xml" path="/Component/" exported="true"/>
-    <component id="mj5kb6u" name="BtnIcon.xml" path="/Component/" exported="true"/>
-    <component id="mj5kb6v" name="BtnIconFit.xml" path="/Component/" exported="true"/>
-    <component id="mj5kb6w" name="BtnTxt.xml" path="/Component/" exported="true"/>
-    <component id="mj5kb6x" name="BtnTxtUnderline.xml" path="/Component/" exported="true"/>
+    <component id="108ab6i" name="BtnNormal.xml" path="/Component/Button/" exported="true"/>
+    <component id="mj5kb6p" name="BtnCheck.xml" path="/Component/Button/" exported="true"/>
+    <component id="mj5kb6q" name="BtnCheckTxtRight.xml" path="/Component/Button/" exported="true"/>
+    <component id="mj5kb6r" name="BtnNormalFit.xml" path="/Component/Button/" exported="true"/>
+    <component id="mj5kb6t" name="BtnCheckRichTxtRight.xml" path="/Component/Button/" exported="true"/>
+    <component id="mj5kb6u" name="BtnIcon.xml" path="/Component/Button/" exported="true"/>
+    <component id="mj5kb6v" name="BtnIconFit.xml" path="/Component/Button/" exported="true"/>
+    <component id="mj5kb6w" name="BtnTxt.xml" path="/Component/Button/" exported="true"/>
+    <component id="mj5kb6x" name="BtnTxtUnderline.xml" path="/Component/Button/" exported="true"/>
+    <image id="10mrob6y" name="img_2422.png" path="/Texture/" exported="true"/>
+    <image id="j0ddob6z" name="img_235.png" path="/Texture/" exported="true" scale="9grid" scale9grid="0,15,10,0"/>
+    <image id="j0ddob70" name="img_2600.png" path="/Texture/" exported="true" scale="9grid" scale9grid="50,0,62,92"/>
+    <image id="j0ddob71" name="img_2601.png" path="/Texture/" exported="true" scale="9grid" scale9grid="50,0,62,92"/>
+    <image id="j0ddob72" name="img_2602.png" path="/Texture/" exported="true" scale="9grid" scale9grid="50,0,62,92"/>
+    <image id="j0ddob73" name="img_2603.png" path="/Texture/" exported="true" scale="9grid" scale9grid="50,0,62,92"/>
+    <image id="j0ddob74" name="img_3077.png" path="/Texture/" exported="true"/>
+    <image id="j0ddob75" name="img_3221.png" path="/Texture/" exported="true" scale="9grid" scale9grid="30,30,240,40"/>
+    <image id="j0ddob76" name="img_3419.png" path="/Texture/" exported="true"/>
+    <image id="j0ddob77" name="img_374.png" path="/Texture/" exported="true" scale="9grid" scale9grid="102,0,2,4"/>
+    <image id="j0ddob78" name="img_3845.png" path="/Texture/" exported="true" scale="9grid" scale9grid="90,90,157,152"/>
+    <image id="j0ddob79" name="img_479.png" path="/Texture/" exported="true" scale="9grid" scale9grid="0,20,20,0"/>
+    <image id="j0ddob7a" name="img_680.png" path="/Texture/" exported="true"/>
+    <image id="j0ddob7b" name="img_903.png" path="/Texture/" exported="true"/>
+    <component id="j0ddob7c" name="ComPopBg.xml" path="/Component/Component/" exported="true"/>
+    <component id="j0ddob7e" name="UIConfirmBig.xml" path="/" exported="true"/>
+    <component id="j0ddob7h" name="VScrollBar1.xml" path="/Component/ScrollBar/"/>
+    <component id="j0ddob7i" name="LabelConfirm.xml" path="/Component/Component/"/>
+    <component id="j0ddob7j" name="UIConfirmMiddle.xml" path="/" exported="true"/>
+    <component id="j0ddob7k" name="UIConfirmSmall.xml" path="/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

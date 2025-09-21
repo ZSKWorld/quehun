@@ -5,6 +5,7 @@ declare interface ITable_Mail {
 
 //#region mail_template
 declare interface ISheet_Mail_MailTemplate {
+	[key: string]: ISheetData_Mail_MailTemplate;
 	101: ISheetData_Mail_MailTemplate;
 	102: ISheetData_Mail_MailTemplate;
 	103: ISheetData_Mail_MailTemplate;

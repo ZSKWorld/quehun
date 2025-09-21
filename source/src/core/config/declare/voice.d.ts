@@ -9,6 +9,7 @@ declare interface ITable_Voice {
 
 //#region sound
 declare interface ISheet_Voice_Sound {
+	[key: string]: ISheetData_Voice_Sound[];
 	1: ISheetData_Voice_Sound[];
 	2: ISheetData_Voice_Sound[];
 	3: ISheetData_Voice_Sound[];
@@ -155,6 +156,7 @@ declare interface ISheetData_Voice_Sound {
 
 //#region event
 declare interface ISheet_Voice_Event {
+	[key: string]: ISheetData_Voice_Event[];
 	1: ISheetData_Voice_Event[];
 	2: ISheetData_Voice_Event[];
 	3: ISheetData_Voice_Event[];
@@ -184,6 +186,7 @@ declare interface ISheetData_Voice_Event {
 
 //#region spot
 declare interface ISheet_Voice_Spot {
+	[key: string]: ISheetData_Voice_Spot;
 	101: ISheetData_Voice_Spot;
 	102: ISheetData_Voice_Spot;
 	103: ISheetData_Voice_Spot;

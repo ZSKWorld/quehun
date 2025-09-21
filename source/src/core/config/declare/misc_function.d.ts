@@ -5,6 +5,7 @@ declare interface ITable_MiscFunction {
 
 //#region daily_sign_in
 declare interface ISheet_MiscFunction_DailySignIn {
+	[key: string]: ISheetData_MiscFunction_DailySignIn;
 	1: ISheetData_MiscFunction_DailySignIn;
 	2: ISheetData_MiscFunction_DailySignIn;
 	3: ISheetData_MiscFunction_DailySignIn;

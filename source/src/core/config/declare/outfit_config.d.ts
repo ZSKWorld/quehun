@@ -21,6 +21,7 @@ declare interface ITable_OutfitConfig {
 
 //#region ron
 declare interface ISheet_OutfitConfig_Ron {
+	[key: string]: ISheetData_OutfitConfig_Ron;
 	300001: ISheetData_OutfitConfig_Ron;
 	305215: ISheetData_OutfitConfig_Ron;
 	305217: ISheetData_OutfitConfig_Ron;
@@ -45,6 +46,7 @@ declare interface ISheetData_OutfitConfig_Ron {
 
 //#region liqi
 declare interface ISheet_OutfitConfig_Liqi {
+	[key: string]: ISheetData_OutfitConfig_Liqi;
 	uint32: ISheetData_OutfitConfig_Liqi;
 }
 declare interface ISheetData_OutfitConfig_Liqi {
@@ -55,6 +57,7 @@ declare interface ISheetData_OutfitConfig_Liqi {
 
 //#region effect_liqi
 declare interface ISheet_OutfitConfig_EffectLiqi {
+	[key: string]: ISheetData_OutfitConfig_EffectLiqi;
 	uint32: ISheetData_OutfitConfig_EffectLiqi;
 }
 declare interface ISheetData_OutfitConfig_EffectLiqi {
@@ -65,6 +68,7 @@ declare interface ISheetData_OutfitConfig_EffectLiqi {
 
 //#region mpzs
 declare interface ISheet_OutfitConfig_Mpzs {
+	[key: string]: ISheetData_OutfitConfig_Mpzs;
 	uint32: ISheetData_OutfitConfig_Mpzs;
 }
 declare interface ISheetData_OutfitConfig_Mpzs {
@@ -75,6 +79,7 @@ declare interface ISheetData_OutfitConfig_Mpzs {
 
 //#region tablecloth
 declare interface ISheet_OutfitConfig_Tablecloth {
+	[key: string]: ISheetData_OutfitConfig_Tablecloth;
 	uint32: ISheetData_OutfitConfig_Tablecloth;
 }
 declare interface ISheetData_OutfitConfig_Tablecloth {
@@ -85,6 +90,7 @@ declare interface ISheetData_OutfitConfig_Tablecloth {
 
 //#region mjp
 declare interface ISheet_OutfitConfig_Mjp {
+	[key: string]: ISheetData_OutfitConfig_Mjp;
 	uint32: ISheetData_OutfitConfig_Mjp;
 }
 declare interface ISheetData_OutfitConfig_Mjp {
@@ -95,6 +101,7 @@ declare interface ISheetData_OutfitConfig_Mjp {
 
 //#region mjpface
 declare interface ISheet_OutfitConfig_Mjpface {
+	[key: string]: ISheetData_OutfitConfig_Mjpface;
 	uint32: ISheetData_OutfitConfig_Mjpface;
 }
 declare interface ISheetData_OutfitConfig_Mjpface {
@@ -105,6 +112,7 @@ declare interface ISheetData_OutfitConfig_Mjpface {
 
 //#region headframe
 declare interface ISheet_OutfitConfig_Headframe {
+	[key: string]: ISheetData_OutfitConfig_Headframe;
 	uint32: ISheetData_OutfitConfig_Headframe;
 }
 declare interface ISheetData_OutfitConfig_Headframe {
@@ -115,6 +123,7 @@ declare interface ISheetData_OutfitConfig_Headframe {
 
 //#region hand
 declare interface ISheet_OutfitConfig_Hand {
+	[key: string]: ISheetData_OutfitConfig_Hand;
 	uint32: ISheetData_OutfitConfig_Hand;
 }
 declare interface ISheetData_OutfitConfig_Hand {

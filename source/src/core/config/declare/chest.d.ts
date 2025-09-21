@@ -23,6 +23,7 @@ declare interface ITable_Chest {
 
 //#region chest
 declare interface ISheet_Chest_Chest {
+	[key: string]: ISheetData_Chest_Chest;
 	1000: ISheetData_Chest_Chest;
 	1001: ISheetData_Chest_Chest;
 	1002: ISheetData_Chest_Chest;
@@ -94,6 +95,7 @@ declare interface ISheetData_Chest_Chest {
 
 //#region pool
 declare interface ISheet_Chest_Pool {
+	[key: string]: ISheetData_Chest_Pool[];
 	10000: ISheetData_Chest_Pool[];
 	10001: ISheetData_Chest_Pool[];
 	10002: ISheetData_Chest_Pool[];
@@ -545,6 +547,7 @@ declare interface ISheetData_Chest_Pool {
 
 //#region pool_seq
 declare interface ISheet_Chest_PoolSeq {
+	[key: string]: ISheetData_Chest_PoolSeq[];
 	1001: ISheetData_Chest_PoolSeq[];
 	1002: ISheetData_Chest_PoolSeq[];
 	1003: ISheetData_Chest_PoolSeq[];
@@ -583,6 +586,7 @@ declare interface ISheetData_Chest_PoolSeq {
 
 //#region item_pool
 declare interface ISheet_Chest_ItemPool {
+	[key: string]: ISheetData_Chest_ItemPool[];
 	100001: ISheetData_Chest_ItemPool[];
 	100002: ISheetData_Chest_ItemPool[];
 	100003: ISheetData_Chest_ItemPool[];
@@ -684,6 +688,7 @@ declare interface ISheetData_Chest_ItemPool {
 
 //#region chest_shop
 declare interface ISheet_Chest_ChestShop {
+	[key: string]: ISheetData_Chest_ChestShop;
 	1001: ISheetData_Chest_ChestShop;
 	1002: ISheetData_Chest_ChestShop;
 	1003: ISheetData_Chest_ChestShop;
@@ -1629,6 +1634,7 @@ declare interface ISheetData_Chest_ChestShop {
 
 //#region preview
 declare interface ISheet_Chest_Preview {
+	[key: string]: ISheetData_Chest_Preview[];
 	1000: ISheetData_Chest_Preview[];
 	1001: ISheetData_Chest_Preview[];
 	1002: ISheetData_Chest_Preview[];
@@ -1666,6 +1672,7 @@ declare interface ISheetData_Chest_Preview {
 
 //#region up
 declare interface ISheet_Chest_Up {
+	[key: string]: ISheetData_Chest_Up[];
 	2001: ISheetData_Chest_Up[];
 	2002: ISheetData_Chest_Up[];
 	2003: ISheetData_Chest_Up[];
@@ -1721,6 +1728,7 @@ declare interface ISheetData_Chest_Up {
 
 //#region item_price
 declare interface ISheet_Chest_ItemPrice {
+	[key: string]: ISheetData_Chest_ItemPrice[];
 	1064: ISheetData_Chest_ItemPrice[];
 }
 declare interface ISheetData_Chest_ItemPrice {
@@ -1734,6 +1742,7 @@ declare interface ISheetData_Chest_ItemPrice {
 
 //#region replace_up
 declare interface ISheet_Chest_ReplaceUp {
+	[key: string]: ISheetData_Chest_ReplaceUp;
 	100001: ISheetData_Chest_ReplaceUp;
 }
 declare interface ISheetData_Chest_ReplaceUp {
@@ -1756,6 +1765,7 @@ declare interface ISheetData_Chest_ReplaceUp {
 
 //#region replace_pool
 declare interface ISheet_Chest_ReplacePool {
+	[key: string]: ISheetData_Chest_ReplacePool[];
 	1001: ISheetData_Chest_ReplacePool[];
 	1002: ISheetData_Chest_ReplacePool[];
 }

@@ -9,6 +9,7 @@ declare interface ITable_Exchange {
 
 //#region exchange
 declare interface ISheet_Exchange_Exchange {
+	[key: string]: ISheetData_Exchange_Exchange;
 	2001: ISheetData_Exchange_Exchange;
 	2002: ISheetData_Exchange_Exchange;
 	2003: ISheetData_Exchange_Exchange;
@@ -45,6 +46,7 @@ declare interface ISheetData_Exchange_Exchange {
 
 //#region searchexchange
 declare interface ISheet_Exchange_Searchexchange {
+	[key: string]: ISheetData_Exchange_Searchexchange;
 	3001: ISheetData_Exchange_Searchexchange;
 	3002: ISheetData_Exchange_Searchexchange;
 }
@@ -77,6 +79,7 @@ declare interface ISheetData_Exchange_Searchexchange {
 
 //#region fushiquanexchange
 declare interface ISheet_Exchange_Fushiquanexchange {
+	[key: string]: ISheetData_Exchange_Fushiquanexchange;
 	4001: ISheetData_Exchange_Fushiquanexchange;
 }
 declare interface ISheetData_Exchange_Fushiquanexchange {

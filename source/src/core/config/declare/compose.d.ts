@@ -5,6 +5,7 @@ declare interface ITable_Compose {
 
 //#region characompose
 declare interface ISheet_Compose_Characompose {
+	[key: string]: ISheetData_Compose_Characompose;
 	1: ISheetData_Compose_Characompose;
 }
 declare interface ISheetData_Compose_Characompose {

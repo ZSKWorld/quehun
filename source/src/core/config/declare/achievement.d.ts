@@ -11,6 +11,7 @@ declare interface ITable_Achievement {
 
 //#region achievement
 declare interface ISheet_Achievement_Achievement {
+	[key: string]: ISheetData_Achievement_Achievement;
 	100001: ISheetData_Achievement_Achievement;
 	100002: ISheetData_Achievement_Achievement;
 	100003: ISheetData_Achievement_Achievement;
@@ -600,6 +601,7 @@ declare interface ISheetData_Achievement_Achievement {
 
 //#region achievement_group
 declare interface ISheet_Achievement_AchievementGroup {
+	[key: string]: ISheetData_Achievement_AchievementGroup;
 	1: ISheetData_Achievement_AchievementGroup;
 	2: ISheetData_Achievement_AchievementGroup;
 	3: ISheetData_Achievement_AchievementGroup;
@@ -637,6 +639,7 @@ declare interface ISheetData_Achievement_AchievementGroup {
 
 //#region badge
 declare interface ISheet_Achievement_Badge {
+	[key: string]: ISheetData_Achievement_Badge;
 	810001: ISheetData_Achievement_Badge;
 	810002: ISheetData_Achievement_Badge;
 	810003: ISheetData_Achievement_Badge;
@@ -667,6 +670,7 @@ declare interface ISheetData_Achievement_Badge {
 
 //#region badge_group
 declare interface ISheet_Achievement_BadgeGroup {
+	[key: string]: ISheetData_Achievement_BadgeGroup;
 	1: ISheetData_Achievement_BadgeGroup;
 	2: ISheetData_Achievement_BadgeGroup;
 	3: ISheetData_Achievement_BadgeGroup;

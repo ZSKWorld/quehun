@@ -169,6 +169,7 @@ declare interface ITable_Activity {
 
 //#region activity
 declare interface ISheet_Activity_Activity {
+	[key: string]: ISheetData_Activity_Activity;
 	1001: ISheetData_Activity_Activity;
 	1002: ISheetData_Activity_Activity;
 	1003: ISheetData_Activity_Activity;
@@ -1242,6 +1243,7 @@ declare interface ISheetData_Activity_Activity {
 
 //#region task
 declare interface ISheet_Activity_Task {
+	[key: string]: ISheetData_Activity_Task;
 	1001001: ISheetData_Activity_Task;
 	1001002: ISheetData_Activity_Task;
 	1001003: ISheetData_Activity_Task;
@@ -1946,6 +1948,7 @@ declare interface ISheetData_Activity_Task {
 
 //#region exchange
 declare interface ISheet_Activity_Exchange {
+	[key: string]: ISheetData_Activity_Exchange;
 	1002001: ISheetData_Activity_Exchange;
 	1002002: ISheetData_Activity_Exchange;
 	1002003: ISheetData_Activity_Exchange;
@@ -2323,6 +2326,7 @@ declare interface ISheetData_Activity_Exchange {
 
 //#region chest_up
 declare interface ISheet_Activity_ChestUp {
+	[key: string]: ISheetData_Activity_ChestUp[];
 	1003: ISheetData_Activity_ChestUp[];
 	1008: ISheetData_Activity_ChestUp[];
 	1015: ISheetData_Activity_ChestUp[];
@@ -2785,6 +2789,7 @@ declare interface ISheetData_Activity_ChestUp {
 
 //#region game_task
 declare interface ISheet_Activity_GameTask {
+	[key: string]: ISheetData_Activity_GameTask;
 	1004001: ISheetData_Activity_GameTask;
 	1004002: ISheetData_Activity_GameTask;
 	1004003: ISheetData_Activity_GameTask;
@@ -3569,6 +3574,7 @@ declare interface ISheetData_Activity_GameTask {
 
 //#region game_point
 declare interface ISheet_Activity_GamePoint {
+	[key: string]: ISheetData_Activity_GamePoint;
 	1014001: ISheetData_Activity_GamePoint;
 	1014002: ISheetData_Activity_GamePoint;
 	1014003: ISheetData_Activity_GamePoint;
@@ -3757,6 +3763,7 @@ declare interface ISheetData_Activity_GamePoint {
 
 //#region rank
 declare interface ISheet_Activity_Rank {
+	[key: string]: ISheetData_Activity_Rank[];
 	1010: ISheetData_Activity_Rank[];
 }
 declare interface ISheetData_Activity_Rank {
@@ -3773,6 +3780,7 @@ declare interface ISheetData_Activity_Rank {
 
 //#region rank_reward
 declare interface ISheet_Activity_RankReward {
+	[key: string]: ISheetData_Activity_RankReward[];
 	1010: ISheetData_Activity_RankReward[];
 }
 declare interface ISheetData_Activity_RankReward {
@@ -3786,6 +3794,7 @@ declare interface ISheetData_Activity_RankReward {
 
 //#region flip_task
 declare interface ISheet_Activity_FlipTask {
+	[key: string]: ISheetData_Activity_FlipTask;
 	1020001: ISheetData_Activity_FlipTask;
 	1020002: ISheetData_Activity_FlipTask;
 	1020003: ISheetData_Activity_FlipTask;
@@ -4239,6 +4248,7 @@ declare interface ISheetData_Activity_FlipTask {
 
 //#region flip_info
 declare interface ISheet_Activity_FlipInfo {
+	[key: string]: ISheetData_Activity_FlipInfo;
 	1022: ISheetData_Activity_FlipInfo;
 	1028: ISheetData_Activity_FlipInfo;
 	1037: ISheetData_Activity_FlipInfo;
@@ -4268,6 +4278,7 @@ declare interface ISheetData_Activity_FlipInfo {
 
 //#region daily_sign
 declare interface ISheet_Activity_DailySign {
+	[key: string]: ISheetData_Activity_DailySign[];
 	1038: ISheetData_Activity_DailySign[];
 	1162: ISheetData_Activity_DailySign[];
 	1165: ISheetData_Activity_DailySign[];
@@ -4302,6 +4313,7 @@ declare interface ISheetData_Activity_DailySign {
 
 //#region richman_info
 declare interface ISheet_Activity_RichmanInfo {
+	[key: string]: ISheetData_Activity_RichmanInfo;
 	1064: ISheetData_Activity_RichmanInfo;
 	1073: ISheetData_Activity_RichmanInfo;
 	1094: ISheetData_Activity_RichmanInfo;
@@ -4344,6 +4356,7 @@ declare interface ISheetData_Activity_RichmanInfo {
 
 //#region richman_map
 declare interface ISheet_Activity_RichmanMap {
+	[key: string]: ISheetData_Activity_RichmanMap[];
 	106401: ISheetData_Activity_RichmanMap[];
 	107301: ISheetData_Activity_RichmanMap[];
 	109401: ISheetData_Activity_RichmanMap[];
@@ -4373,6 +4386,7 @@ declare interface ISheetData_Activity_RichmanMap {
 
 //#region richman_level
 declare interface ISheet_Activity_RichmanLevel {
+	[key: string]: ISheetData_Activity_RichmanLevel[];
 	1064: ISheetData_Activity_RichmanLevel[];
 	1073: ISheetData_Activity_RichmanLevel[];
 	1094: ISheetData_Activity_RichmanLevel[];
@@ -4395,6 +4409,7 @@ declare interface ISheetData_Activity_RichmanLevel {
 
 //#region richman_event
 declare interface ISheet_Activity_RichmanEvent {
+	[key: string]: ISheetData_Activity_RichmanEvent;
 	106401: ISheetData_Activity_RichmanEvent;
 	106402: ISheetData_Activity_RichmanEvent;
 	106403: ISheetData_Activity_RichmanEvent;
@@ -4441,6 +4456,7 @@ declare interface ISheetData_Activity_RichmanEvent {
 
 //#region period_task
 declare interface ISheet_Activity_PeriodTask {
+	[key: string]: ISheetData_Activity_PeriodTask;
 	1066001: ISheetData_Activity_PeriodTask;
 	1066002: ISheetData_Activity_PeriodTask;
 	1066003: ISheetData_Activity_PeriodTask;
@@ -6052,6 +6068,7 @@ declare interface ISheetData_Activity_PeriodTask {
 
 //#region random_task_pool
 declare interface ISheet_Activity_RandomTaskPool {
+	[key: string]: ISheetData_Activity_RandomTaskPool[];
 	106501: ISheetData_Activity_RandomTaskPool[];
 	106502: ISheetData_Activity_RandomTaskPool[];
 	106503: ISheetData_Activity_RandomTaskPool[];
@@ -6125,6 +6142,7 @@ declare interface ISheetData_Activity_RandomTaskPool {
 
 //#region random_task_info
 declare interface ISheet_Activity_RandomTaskInfo {
+	[key: string]: ISheetData_Activity_RandomTaskInfo;
 	1065: ISheetData_Activity_RandomTaskInfo;
 	1074: ISheetData_Activity_RandomTaskInfo;
 	1095: ISheetData_Activity_RandomTaskInfo;
@@ -6152,6 +6170,7 @@ declare interface ISheetData_Activity_RandomTaskInfo {
 
 //#region richman_reward_seq
 declare interface ISheet_Activity_RichmanRewardSeq {
+	[key: string]: ISheetData_Activity_RichmanRewardSeq[];
 	10101: ISheetData_Activity_RichmanRewardSeq[];
 }
 declare interface ISheetData_Activity_RichmanRewardSeq {
@@ -6166,6 +6185,7 @@ declare interface ISheetData_Activity_RichmanRewardSeq {
 
 //#region activity_buff
 declare interface ISheet_Activity_ActivityBuff {
+	[key: string]: ISheetData_Activity_ActivityBuff[];
 	10001: ISheetData_Activity_ActivityBuff[];
 	10002: ISheetData_Activity_ActivityBuff[];
 	10003: ISheetData_Activity_ActivityBuff[];
@@ -6223,6 +6243,7 @@ declare interface ISheetData_Activity_ActivityBuff {
 
 //#region buff_condition
 declare interface ISheet_Activity_BuffCondition {
+	[key: string]: ISheetData_Activity_BuffCondition[];
 	10001: ISheetData_Activity_BuffCondition[];
 	10002: ISheetData_Activity_BuffCondition[];
 	10003: ISheetData_Activity_BuffCondition[];
@@ -6260,6 +6281,7 @@ declare interface ISheetData_Activity_BuffCondition {
 
 //#region game_point_info
 declare interface ISheet_Activity_GamePointInfo {
+	[key: string]: ISheetData_Activity_GamePointInfo;
 	1135: ISheetData_Activity_GamePointInfo;
 	221201: ISheetData_Activity_GamePointInfo;
 	231151: ISheetData_Activity_GamePointInfo;
@@ -6280,6 +6302,7 @@ declare interface ISheetData_Activity_GamePointInfo {
 
 //#region game_point_rank
 declare interface ISheet_Activity_GamePointRank {
+	[key: string]: ISheetData_Activity_GamePointRank[];
 	1135: ISheetData_Activity_GamePointRank[];
 }
 declare interface ISheetData_Activity_GamePointRank {
@@ -6296,6 +6319,7 @@ declare interface ISheetData_Activity_GamePointRank {
 
 //#region game_point_filter
 declare interface ISheet_Activity_GamePointFilter {
+	[key: string]: ISheetData_Activity_GamePointFilter[];
 	1001: ISheetData_Activity_GamePointFilter[];
 	221201: ISheetData_Activity_GamePointFilter[];
 	231151: ISheetData_Activity_GamePointFilter[];
@@ -6317,6 +6341,7 @@ declare interface ISheetData_Activity_GamePointFilter {
 
 //#region activity_room
 declare interface ISheet_Activity_ActivityRoom {
+	[key: string]: ISheetData_Activity_ActivityRoom;
 	1161: ISheetData_Activity_ActivityRoom;
 	1166: ISheetData_Activity_ActivityRoom;
 	1190: ISheetData_Activity_ActivityRoom;
@@ -6371,6 +6396,7 @@ declare interface ISheetData_Activity_ActivityRoom {
 
 //#region sns_activity
 declare interface ISheet_Activity_SnsActivity {
+	[key: string]: ISheetData_Activity_SnsActivity;
 	1: ISheetData_Activity_SnsActivity;
 	101: ISheetData_Activity_SnsActivity;
 	102: ISheetData_Activity_SnsActivity;
@@ -8827,6 +8853,7 @@ declare interface ISheetData_Activity_SnsActivity {
 
 //#region mine_activity
 declare interface ISheet_Activity_MineActivity {
+	[key: string]: ISheetData_Activity_MineActivity;
 	1194: ISheetData_Activity_MineActivity;
 	1301: ISheetData_Activity_MineActivity;
 	221002: ISheetData_Activity_MineActivity;
@@ -8851,6 +8878,7 @@ declare interface ISheetData_Activity_MineActivity {
 
 //#region mine_reward
 declare interface ISheet_Activity_MineReward {
+	[key: string]: ISheetData_Activity_MineReward[];
 	1194: ISheetData_Activity_MineReward[];
 	1301: ISheetData_Activity_MineReward[];
 	221002: ISheetData_Activity_MineReward[];
@@ -8876,6 +8904,7 @@ declare interface ISheetData_Activity_MineReward {
 
 //#region rpg_activity
 declare interface ISheet_Activity_RpgActivity {
+	[key: string]: ISheetData_Activity_RpgActivity;
 	1206: ISheetData_Activity_RpgActivity;
 }
 declare interface ISheetData_Activity_RpgActivity {
@@ -8913,6 +8942,7 @@ declare interface ISheetData_Activity_RpgActivity {
 
 //#region rpg_monster_group
 declare interface ISheet_Activity_RpgMonsterGroup {
+	[key: string]: ISheetData_Activity_RpgMonsterGroup[];
 	120601: ISheetData_Activity_RpgMonsterGroup[];
 	22081101: ISheetData_Activity_RpgMonsterGroup[];
 }
@@ -8943,6 +8973,7 @@ declare interface ISheetData_Activity_RpgMonsterGroup {
 
 //#region arena_activity
 declare interface ISheet_Activity_ArenaActivity {
+	[key: string]: ISheetData_Activity_ArenaActivity;
 	1245: ISheetData_Activity_ArenaActivity;
 }
 declare interface ISheetData_Activity_ArenaActivity {
@@ -8974,6 +9005,7 @@ declare interface ISheetData_Activity_ArenaActivity {
 
 //#region arena_reward
 declare interface ISheet_Activity_ArenaReward {
+	[key: string]: ISheetData_Activity_ArenaReward[];
 	124501: ISheetData_Activity_ArenaReward[];
 }
 declare interface ISheetData_Activity_ArenaReward {
@@ -8987,6 +9019,7 @@ declare interface ISheetData_Activity_ArenaReward {
 
 //#region arena_reward_display
 declare interface ISheet_Activity_ArenaRewardDisplay {
+	[key: string]: ISheetData_Activity_ArenaRewardDisplay[];
 	124501: ISheetData_Activity_ArenaRewardDisplay[];
 }
 declare interface ISheetData_Activity_ArenaRewardDisplay {
@@ -9014,6 +9047,7 @@ declare interface ISheetData_Activity_ArenaRewardDisplay {
 
 //#region segment_task
 declare interface ISheet_Activity_SegmentTask {
+	[key: string]: ISheetData_Activity_SegmentTask;
 	126101: ISheetData_Activity_SegmentTask;
 	126102: ISheetData_Activity_SegmentTask;
 	126103: ISheetData_Activity_SegmentTask;
@@ -9039,6 +9073,7 @@ declare interface ISheetData_Activity_SegmentTask {
 
 //#region feed_activity_info
 declare interface ISheet_Activity_FeedActivityInfo {
+	[key: string]: ISheetData_Activity_FeedActivityInfo;
 	1260: ISheetData_Activity_FeedActivityInfo;
 }
 declare interface ISheetData_Activity_FeedActivityInfo {
@@ -9059,6 +9094,7 @@ declare interface ISheetData_Activity_FeedActivityInfo {
 
 //#region feed_activity_reward
 declare interface ISheet_Activity_FeedActivityReward {
+	[key: string]: ISheetData_Activity_FeedActivityReward[];
 	126001: ISheetData_Activity_FeedActivityReward[];
 }
 declare interface ISheetData_Activity_FeedActivityReward {
@@ -9075,6 +9111,7 @@ declare interface ISheetData_Activity_FeedActivityReward {
 
 //#region vote_activity
 declare interface ISheet_Activity_VoteActivity {
+	[key: string]: ISheetData_Activity_VoteActivity;
 	220710: ISheetData_Activity_VoteActivity;
 	230620: ISheetData_Activity_VoteActivity;
 	230621: ISheetData_Activity_VoteActivity;
@@ -9097,6 +9134,7 @@ declare interface ISheetData_Activity_VoteActivity {
 
 //#region rpg_v2_activity
 declare interface ISheet_Activity_RpgV2Activity {
+	[key: string]: ISheetData_Activity_RpgV2Activity;
 	220811: ISheetData_Activity_RpgV2Activity;
 }
 declare interface ISheetData_Activity_RpgV2Activity {
@@ -9125,6 +9163,7 @@ declare interface ISheetData_Activity_RpgV2Activity {
 
 //#region spot_activity
 declare interface ISheet_Activity_SpotActivity {
+	[key: string]: ISheetData_Activity_SpotActivity;
 	22082101: ISheetData_Activity_SpotActivity;
 	22082102: ISheetData_Activity_SpotActivity;
 	22082103: ISheetData_Activity_SpotActivity;
@@ -9194,6 +9233,7 @@ declare interface ISheetData_Activity_SpotActivity {
 
 //#region activity_item
 declare interface ISheet_Activity_ActivityItem {
+	[key: string]: ISheetData_Activity_ActivityItem;
 	221209: ISheetData_Activity_ActivityItem;
 	230142: ISheetData_Activity_ActivityItem;
 	230209: ISheetData_Activity_ActivityItem;
@@ -9243,6 +9283,7 @@ declare interface ISheetData_Activity_ActivityItem {
 
 //#region upgrade_activity
 declare interface ISheet_Activity_UpgradeActivity {
+	[key: string]: ISheetData_Activity_UpgradeActivity;
 	230101: ISheetData_Activity_UpgradeActivity;
 }
 declare interface ISheetData_Activity_UpgradeActivity {
@@ -9261,6 +9302,7 @@ declare interface ISheetData_Activity_UpgradeActivity {
 
 //#region upgrade_activity_reward
 declare interface ISheet_Activity_UpgradeActivityReward {
+	[key: string]: ISheetData_Activity_UpgradeActivityReward[];
 	23010101: ISheetData_Activity_UpgradeActivityReward[];
 	23010102: ISheetData_Activity_UpgradeActivityReward[];
 	23010103: ISheetData_Activity_UpgradeActivityReward[];
@@ -9281,6 +9323,7 @@ declare interface ISheetData_Activity_UpgradeActivityReward {
 
 //#region friend_gift_activity
 declare interface ISheet_Activity_FriendGiftActivity {
+	[key: string]: ISheetData_Activity_FriendGiftActivity;
 	230102: ISheetData_Activity_FriendGiftActivity;
 }
 declare interface ISheetData_Activity_FriendGiftActivity {
@@ -9301,6 +9344,7 @@ declare interface ISheetData_Activity_FriendGiftActivity {
 
 //#region upgrade_activity_display
 declare interface ISheet_Activity_UpgradeActivityDisplay {
+	[key: string]: ISheetData_Activity_UpgradeActivityDisplay[];
 	23010101: ISheetData_Activity_UpgradeActivityDisplay[];
 	23010102: ISheetData_Activity_UpgradeActivityDisplay[];
 	23010103: ISheetData_Activity_UpgradeActivityDisplay[];
@@ -9317,6 +9361,7 @@ declare interface ISheetData_Activity_UpgradeActivityDisplay {
 
 //#region activity_desktop
 declare interface ISheet_Activity_ActivityDesktop {
+	[key: string]: ISheetData_Activity_ActivityDesktop[];
 	230143: ISheetData_Activity_ActivityDesktop[];
 }
 declare interface ISheetData_Activity_ActivityDesktop {
@@ -9329,6 +9374,7 @@ declare interface ISheetData_Activity_ActivityDesktop {
 
 //#region gacha_activity_info
 declare interface ISheet_Activity_GachaActivityInfo {
+	[key: string]: ISheetData_Activity_GachaActivityInfo;
 	230301: ISheetData_Activity_GachaActivityInfo;
 	231001: ISheetData_Activity_GachaActivityInfo;
 	240901: ISheetData_Activity_GachaActivityInfo;
@@ -9352,6 +9398,7 @@ declare interface ISheetData_Activity_GachaActivityInfo {
 
 //#region gacha_pool
 declare interface ISheet_Activity_GachaPool {
+	[key: string]: ISheetData_Activity_GachaPool[];
 	101: ISheetData_Activity_GachaPool[];
 	102: ISheetData_Activity_GachaPool[];
 	103: ISheetData_Activity_GachaPool[];
@@ -9375,6 +9422,7 @@ declare interface ISheetData_Activity_GachaPool {
 
 //#region gacha_control
 declare interface ISheet_Activity_GachaControl {
+	[key: string]: ISheetData_Activity_GachaControl[];
 	101: ISheetData_Activity_GachaControl[];
 	102: ISheetData_Activity_GachaControl[];
 	103: ISheetData_Activity_GachaControl[];
@@ -9392,6 +9440,7 @@ declare interface ISheetData_Activity_GachaControl {
 
 //#region task_display
 declare interface ISheet_Activity_TaskDisplay {
+	[key: string]: ISheetData_Activity_TaskDisplay[];
 	230601: ISheetData_Activity_TaskDisplay[];
 }
 declare interface ISheetData_Activity_TaskDisplay {
@@ -9415,6 +9464,7 @@ declare interface ISheetData_Activity_TaskDisplay {
 
 //#region simulation_activity_info
 declare interface ISheet_Activity_SimulationActivityInfo {
+	[key: string]: ISheetData_Activity_SimulationActivityInfo;
 	230801: ISheetData_Activity_SimulationActivityInfo;
 }
 declare interface ISheetData_Activity_SimulationActivityInfo {
@@ -9427,6 +9477,7 @@ declare interface ISheetData_Activity_SimulationActivityInfo {
 
 //#region reward_mail
 declare interface ISheet_Activity_RewardMail {
+	[key: string]: ISheetData_Activity_RewardMail;
 	230803: ISheetData_Activity_RewardMail;
 	231204: ISheetData_Activity_RewardMail;
 	240103: ISheetData_Activity_RewardMail;
@@ -9456,6 +9507,7 @@ declare interface ISheetData_Activity_RewardMail {
 
 //#region combining_activity_info
 declare interface ISheet_Activity_CombiningActivityInfo {
+	[key: string]: ISheetData_Activity_CombiningActivityInfo;
 	231201: ISheetData_Activity_CombiningActivityInfo;
 	250601: ISheetData_Activity_CombiningActivityInfo;
 }
@@ -9487,6 +9539,7 @@ declare interface ISheetData_Activity_CombiningActivityInfo {
 
 //#region combining_craft_pool
 declare interface ISheet_Activity_CombiningCraftPool {
+	[key: string]: ISheetData_Activity_CombiningCraftPool[];
 	23120101: ISheetData_Activity_CombiningCraftPool[];
 	23120102: ISheetData_Activity_CombiningCraftPool[];
 	23120103: ISheetData_Activity_CombiningCraftPool[];
@@ -9506,6 +9559,7 @@ declare interface ISheetData_Activity_CombiningCraftPool {
 
 //#region combining_map
 declare interface ISheet_Activity_CombiningMap {
+	[key: string]: ISheetData_Activity_CombiningMap[];
 	231201: ISheetData_Activity_CombiningMap[];
 	250601: ISheetData_Activity_CombiningMap[];
 }
@@ -9523,6 +9577,7 @@ declare interface ISheetData_Activity_CombiningMap {
 
 //#region combining_order
 declare interface ISheet_Activity_CombiningOrder {
+	[key: string]: ISheetData_Activity_CombiningOrder;
 	23120101: ISheetData_Activity_CombiningOrder;
 	23120102: ISheetData_Activity_CombiningOrder;
 	23120103: ISheetData_Activity_CombiningOrder;
@@ -9570,6 +9625,7 @@ declare interface ISheetData_Activity_CombiningOrder {
 
 //#region combining_craft
 declare interface ISheet_Activity_CombiningCraft {
+	[key: string]: ISheetData_Activity_CombiningCraft;
 	1001: ISheetData_Activity_CombiningCraft;
 	1002: ISheetData_Activity_CombiningCraft;
 	1003: ISheetData_Activity_CombiningCraft;
@@ -9647,6 +9703,7 @@ declare interface ISheetData_Activity_CombiningCraft {
 
 //#region combining_customer
 declare interface ISheet_Activity_CombiningCustomer {
+	[key: string]: ISheetData_Activity_CombiningCustomer;
 	1001: ISheetData_Activity_CombiningCustomer;
 	1002: ISheetData_Activity_CombiningCustomer;
 	1003: ISheetData_Activity_CombiningCustomer;
@@ -9726,6 +9783,7 @@ declare interface ISheetData_Activity_CombiningCustomer {
 
 //#region chest_replace_up
 declare interface ISheet_Activity_ChestReplaceUp {
+	[key: string]: ISheetData_Activity_ChestReplaceUp[];
 	231241: ISheetData_Activity_ChestReplaceUp[];
 	231242: ISheetData_Activity_ChestReplaceUp[];
 	231243: ISheetData_Activity_ChestReplaceUp[];
@@ -9898,6 +9956,7 @@ declare interface ISheetData_Activity_ChestReplaceUp {
 
 //#region village_activity_info
 declare interface ISheet_Activity_VillageActivityInfo {
+	[key: string]: ISheetData_Activity_VillageActivityInfo;
 	240101: ISheetData_Activity_VillageActivityInfo;
 }
 declare interface ISheetData_Activity_VillageActivityInfo {
@@ -9926,6 +9985,7 @@ declare interface ISheetData_Activity_VillageActivityInfo {
 
 //#region village_building
 declare interface ISheet_Activity_VillageBuilding {
+	[key: string]: ISheetData_Activity_VillageBuilding[];
 	240101: ISheetData_Activity_VillageBuilding[];
 }
 declare interface ISheetData_Activity_VillageBuilding {
@@ -9965,6 +10025,7 @@ declare interface ISheetData_Activity_VillageBuilding {
 
 //#region village_task
 declare interface ISheet_Activity_VillageTask {
+	[key: string]: ISheetData_Activity_VillageTask[];
 	240101: ISheetData_Activity_VillageTask[];
 }
 declare interface ISheetData_Activity_VillageTask {
@@ -9991,6 +10052,7 @@ declare interface ISheetData_Activity_VillageTask {
 
 //#region liver_event_info
 declare interface ISheet_Activity_LiverEventInfo {
+	[key: string]: ISheetData_Activity_LiverEventInfo;
 	240301: ISheetData_Activity_LiverEventInfo;
 }
 declare interface ISheetData_Activity_LiverEventInfo {
@@ -10025,6 +10087,7 @@ declare interface ISheetData_Activity_LiverEventInfo {
 
 //#region liver_text_info
 declare interface ISheet_Activity_LiverTextInfo {
+	[key: string]: ISheetData_Activity_LiverTextInfo[];
 	240301: ISheetData_Activity_LiverTextInfo[];
 }
 declare interface ISheetData_Activity_LiverTextInfo {
@@ -10045,6 +10108,7 @@ declare interface ISheetData_Activity_LiverTextInfo {
 
 //#region festival_activity
 declare interface ISheet_Activity_FestivalActivity {
+	[key: string]: ISheetData_Activity_FestivalActivity;
 	240401: ISheetData_Activity_FestivalActivity;
 	250101: ISheetData_Activity_FestivalActivity;
 }
@@ -10078,6 +10142,7 @@ declare interface ISheetData_Activity_FestivalActivity {
 
 //#region festival_level
 declare interface ISheet_Activity_FestivalLevel {
+	[key: string]: ISheetData_Activity_FestivalLevel[];
 	240401: ISheetData_Activity_FestivalLevel[];
 	250101: ISheetData_Activity_FestivalLevel[];
 }
@@ -10099,6 +10164,7 @@ declare interface ISheetData_Activity_FestivalLevel {
 
 //#region festival_proposal
 declare interface ISheet_Activity_FestivalProposal {
+	[key: string]: ISheetData_Activity_FestivalProposal[];
 	240401: ISheetData_Activity_FestivalProposal[];
 	250101: ISheetData_Activity_FestivalProposal[];
 }
@@ -10126,6 +10192,7 @@ declare interface ISheetData_Activity_FestivalProposal {
 
 //#region festival_event
 declare interface ISheet_Activity_FestivalEvent {
+	[key: string]: ISheetData_Activity_FestivalEvent[];
 	240401: ISheetData_Activity_FestivalEvent[];
 	250101: ISheetData_Activity_FestivalEvent[];
 }
@@ -10157,6 +10224,7 @@ declare interface ISheetData_Activity_FestivalEvent {
 
 //#region festival_ending
 declare interface ISheet_Activity_FestivalEnding {
+	[key: string]: ISheetData_Activity_FestivalEnding[];
 	100101: ISheetData_Activity_FestivalEnding[];
 	100102: ISheetData_Activity_FestivalEnding[];
 	100201: ISheetData_Activity_FestivalEnding[];
@@ -10359,6 +10427,7 @@ declare interface ISheetData_Activity_FestivalEnding {
 
 //#region island_activity
 declare interface ISheet_Activity_IslandActivity {
+	[key: string]: ISheetData_Activity_IslandActivity;
 	240601: ISheetData_Activity_IslandActivity;
 }
 declare interface ISheetData_Activity_IslandActivity {
@@ -10379,6 +10448,7 @@ declare interface ISheetData_Activity_IslandActivity {
 
 //#region island_goods
 declare interface ISheet_Activity_IslandGoods {
+	[key: string]: ISheetData_Activity_IslandGoods[];
 	240601: ISheetData_Activity_IslandGoods[];
 }
 declare interface ISheetData_Activity_IslandGoods {
@@ -10401,6 +10471,7 @@ declare interface ISheetData_Activity_IslandGoods {
 
 //#region island_bag
 declare interface ISheet_Activity_IslandBag {
+	[key: string]: ISheetData_Activity_IslandBag[];
 	240601: ISheetData_Activity_IslandBag[];
 }
 declare interface ISheetData_Activity_IslandBag {
@@ -10431,6 +10502,7 @@ declare interface ISheetData_Activity_IslandBag {
 
 //#region island_map
 declare interface ISheet_Activity_IslandMap {
+	[key: string]: ISheetData_Activity_IslandMap[];
 	240601: ISheetData_Activity_IslandMap[];
 }
 declare interface ISheetData_Activity_IslandMap {
@@ -10457,6 +10529,7 @@ declare interface ISheetData_Activity_IslandMap {
 
 //#region island_shop
 declare interface ISheet_Activity_IslandShop {
+	[key: string]: ISheetData_Activity_IslandShop[];
 	240601: ISheetData_Activity_IslandShop[];
 }
 declare interface ISheetData_Activity_IslandShop {
@@ -10477,6 +10550,7 @@ declare interface ISheetData_Activity_IslandShop {
 
 //#region island_news
 declare interface ISheet_Activity_IslandNews {
+	[key: string]: ISheetData_Activity_IslandNews[];
 	240601: ISheetData_Activity_IslandNews[];
 }
 declare interface ISheetData_Activity_IslandNews {
@@ -10503,6 +10577,7 @@ declare interface ISheetData_Activity_IslandNews {
 
 //#region summer_story
 declare interface ISheet_Activity_SummerStory {
+	[key: string]: ISheetData_Activity_SummerStory[];
 	240811: ISheetData_Activity_SummerStory[];
 }
 declare interface ISheetData_Activity_SummerStory {
@@ -10533,6 +10608,7 @@ declare interface ISheetData_Activity_SummerStory {
 
 //#region story_activity
 declare interface ISheet_Activity_StoryActivity {
+	[key: string]: ISheetData_Activity_StoryActivity[];
 	240811: ISheetData_Activity_StoryActivity[];
 	241107: ISheetData_Activity_StoryActivity[];
 	250405: ISheetData_Activity_StoryActivity[];
@@ -10567,6 +10643,7 @@ declare interface ISheetData_Activity_StoryActivity {
 
 //#region story_ending
 declare interface ISheet_Activity_StoryEnding {
+	[key: string]: ISheetData_Activity_StoryEnding[];
 	2504051: ISheetData_Activity_StoryEnding[];
 	2504052: ISheetData_Activity_StoryEnding[];
 	2504053: ISheetData_Activity_StoryEnding[];
@@ -10613,6 +10690,7 @@ declare interface ISheetData_Activity_StoryEnding {
 
 //#region activity_banner
 declare interface ISheet_Activity_ActivityBanner {
+	[key: string]: ISheetData_Activity_ActivityBanner;
 	1: ISheetData_Activity_ActivityBanner;
 	2: ISheetData_Activity_ActivityBanner;
 	3: ISheetData_Activity_ActivityBanner;
@@ -10673,6 +10751,7 @@ declare interface ISheetData_Activity_ActivityBanner {
 
 //#region activity_guide
 declare interface ISheet_Activity_ActivityGuide {
+	[key: string]: ISheetData_Activity_ActivityGuide;
 	24081101: ISheetData_Activity_ActivityGuide;
 	24081102: ISheetData_Activity_ActivityGuide;
 	24081103: ISheetData_Activity_ActivityGuide;
@@ -10711,6 +10790,7 @@ declare interface ISheetData_Activity_ActivityGuide {
 
 //#region summer_story_reward
 declare interface ISheet_Activity_SummerStoryReward {
+	[key: string]: ISheetData_Activity_SummerStoryReward[];
 	240811: ISheetData_Activity_SummerStoryReward[];
 }
 declare interface ISheetData_Activity_SummerStoryReward {
@@ -10727,6 +10807,7 @@ declare interface ISheetData_Activity_SummerStoryReward {
 
 //#region choose_up_activity
 declare interface ISheet_Activity_ChooseUpActivity {
+	[key: string]: ISheetData_Activity_ChooseUpActivity;
 	250125: ISheetData_Activity_ChooseUpActivity;
 }
 declare interface ISheetData_Activity_ChooseUpActivity {
@@ -10773,6 +10854,7 @@ declare interface ISheetData_Activity_ChooseUpActivity {
 
 //#region choose_up_replace
 declare interface ISheet_Activity_ChooseUpReplace {
+	[key: string]: ISheetData_Activity_ChooseUpReplace[];
 	1001: ISheetData_Activity_ChooseUpReplace[];
 	1002: ISheetData_Activity_ChooseUpReplace[];
 }
@@ -10791,6 +10873,7 @@ declare interface ISheetData_Activity_ChooseUpReplace {
 
 //#region progress_reward
 declare interface ISheet_Activity_ProgressReward {
+	[key: string]: ISheetData_Activity_ProgressReward[];
 	250895: ISheetData_Activity_ProgressReward[];
 }
 declare interface ISheetData_Activity_ProgressReward {

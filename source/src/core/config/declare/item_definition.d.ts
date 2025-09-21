@@ -29,6 +29,7 @@ declare interface ITable_ItemDefinition {
 
 //#region currency
 declare interface ISheet_ItemDefinition_Currency {
+	[key: string]: ISheetData_ItemDefinition_Currency;
 	100001: ISheetData_ItemDefinition_Currency;
 	100002: ISheetData_ItemDefinition_Currency;
 	100003: ISheetData_ItemDefinition_Currency;
@@ -58,6 +59,7 @@ declare interface ISheetData_ItemDefinition_Currency {
 
 //#region item
 declare interface ISheet_ItemDefinition_Item {
+	[key: string]: ISheetData_ItemDefinition_Item;
 	300001: ISheetData_ItemDefinition_Item;
 	300002: ISheetData_ItemDefinition_Item;
 	300003: ISheetData_ItemDefinition_Item;
@@ -1131,6 +1133,7 @@ declare interface ISheetData_ItemDefinition_Item {
 
 //#region title
 declare interface ISheet_ItemDefinition_Title {
+	[key: string]: ISheetData_ItemDefinition_Title;
 	600001: ISheetData_ItemDefinition_Title;
 	600002: ISheetData_ItemDefinition_Title;
 	600003: ISheetData_ItemDefinition_Title;
@@ -1291,6 +1294,7 @@ declare interface ISheetData_ItemDefinition_Title {
 
 //#region character
 declare interface ISheet_ItemDefinition_Character {
+	[key: string]: ISheetData_ItemDefinition_Character;
 	200001: ISheetData_ItemDefinition_Character;
 	200002: ISheetData_ItemDefinition_Character;
 	200003: ISheetData_ItemDefinition_Character;
@@ -1522,6 +1526,7 @@ declare interface ISheetData_ItemDefinition_Character {
 
 //#region view
 declare interface ISheet_ItemDefinition_View {
+	[key: string]: ISheetData_ItemDefinition_View;
 	305001: ISheetData_ItemDefinition_View;
 	305002: ISheetData_ItemDefinition_View;
 	305003: ISheetData_ItemDefinition_View;
@@ -1955,6 +1960,7 @@ declare interface ISheetData_ItemDefinition_View {
 
 //#region skin
 declare interface ISheet_ItemDefinition_Skin {
+	[key: string]: ISheetData_ItemDefinition_Skin;
 	400000: ISheetData_ItemDefinition_Skin;
 	400001: ISheetData_ItemDefinition_Skin;
 	400101: ISheetData_ItemDefinition_Skin;
@@ -2506,6 +2512,7 @@ declare interface ISheetData_ItemDefinition_Skin {
 
 //#region item_recovery
 declare interface ISheet_ItemDefinition_ItemRecovery {
+	[key: string]: ISheetData_ItemDefinition_ItemRecovery[];
 	server: ISheetData_ItemDefinition_ItemRecovery[];
 }
 declare interface ISheetData_ItemDefinition_ItemRecovery {
@@ -2518,6 +2525,7 @@ declare interface ISheetData_ItemDefinition_ItemRecovery {
 
 //#region item_manual_pool
 declare interface ISheet_ItemDefinition_ItemManualPool {
+	[key: string]: ISheetData_ItemDefinition_ItemManualPool[];
 	10001: ISheetData_ItemDefinition_ItemManualPool[];
 	304101: ISheetData_ItemDefinition_ItemManualPool[];
 	304102: ISheetData_ItemDefinition_ItemManualPool[];
@@ -2534,6 +2542,7 @@ declare interface ISheetData_ItemDefinition_ItemManualPool {
 
 //#region source_limit
 declare interface ISheet_ItemDefinition_SourceLimit {
+	[key: string]: ISheetData_ItemDefinition_SourceLimit[];
 	10000: ISheetData_ItemDefinition_SourceLimit[];
 	10001: ISheetData_ItemDefinition_SourceLimit[];
 	10002: ISheetData_ItemDefinition_SourceLimit[];
@@ -2564,6 +2573,7 @@ declare interface ISheetData_ItemDefinition_SourceLimit {
 
 //#region item_package
 declare interface ISheet_ItemDefinition_ItemPackage {
+	[key: string]: ISheetData_ItemDefinition_ItemPackage[];
 	1001: ISheetData_ItemDefinition_ItemPackage[];
 }
 declare interface ISheetData_ItemDefinition_ItemPackage {
@@ -2577,6 +2587,7 @@ declare interface ISheetData_ItemDefinition_ItemPackage {
 
 //#region fake_random_pool
 declare interface ISheet_ItemDefinition_FakeRandomPool {
+	[key: string]: ISheetData_ItemDefinition_FakeRandomPool;
 	309047: ISheetData_ItemDefinition_FakeRandomPool;
 }
 declare interface ISheetData_ItemDefinition_FakeRandomPool {
@@ -2589,6 +2600,7 @@ declare interface ISheetData_ItemDefinition_FakeRandomPool {
 
 //#region loading_image
 declare interface ISheet_ItemDefinition_LoadingImage {
+	[key: string]: ISheetData_ItemDefinition_LoadingImage;
 	201201: ISheetData_ItemDefinition_LoadingImage;
 	201202: ISheetData_ItemDefinition_LoadingImage;
 	210201: ISheetData_ItemDefinition_LoadingImage;
@@ -2700,6 +2712,7 @@ declare interface ISheetData_ItemDefinition_LoadingImage {
 
 //#region function_item
 declare interface ISheet_ItemDefinition_FunctionItem {
+	[key: string]: ISheetData_ItemDefinition_FunctionItem;
 	700001: ISheetData_ItemDefinition_FunctionItem;
 	700002: ISheetData_ItemDefinition_FunctionItem;
 	700003: ISheetData_ItemDefinition_FunctionItem;

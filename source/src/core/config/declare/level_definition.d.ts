@@ -11,6 +11,7 @@ declare interface ITable_LevelDefinition {
 
 //#region level_definition
 declare interface ISheet_LevelDefinition_LevelDefinition {
+	[key: string]: ISheetData_LevelDefinition_LevelDefinition;
 	10101: ISheetData_LevelDefinition_LevelDefinition;
 	10102: ISheetData_LevelDefinition_LevelDefinition;
 	10103: ISheetData_LevelDefinition_LevelDefinition;
@@ -116,6 +117,7 @@ declare interface ISheetData_LevelDefinition_LevelDefinition {
 
 //#region character
 declare interface ISheet_LevelDefinition_Character {
+	[key: string]: ISheetData_LevelDefinition_Character[];
 	200052: ISheetData_LevelDefinition_Character[];
 	200061: ISheetData_LevelDefinition_Character[];
 	200076: ISheetData_LevelDefinition_Character[];
@@ -142,6 +144,7 @@ declare interface ISheetData_LevelDefinition_Character {
 
 //#region trail
 declare interface ISheet_LevelDefinition_Trail {
+	[key: string]: ISheetData_LevelDefinition_Trail;
 	1: ISheetData_LevelDefinition_Trail;
 	2: ISheetData_LevelDefinition_Trail;
 	3: ISheetData_LevelDefinition_Trail;
@@ -171,6 +174,7 @@ declare interface ISheetData_LevelDefinition_Trail {
 
 //#region top_rank
 declare interface ISheet_LevelDefinition_TopRank {
+	[key: string]: ISheetData_LevelDefinition_TopRank[];
 	1001: ISheetData_LevelDefinition_TopRank[];
 }
 declare interface ISheetData_LevelDefinition_TopRank {

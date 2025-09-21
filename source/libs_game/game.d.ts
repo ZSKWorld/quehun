@@ -22,7 +22,7 @@ declare type LoadURL = string | Laya.ILoadURL | (string | Readonly<Laya.ILoadURL
 
 declare const gameMgr: IGameManager;
 declare const netMgr: INetManager & IReqMethod;
-declare const userData: IUser & { decode(data: Partial<OriginData<IUser>>): IUser };
+declare const userData: UserData.IUserData;
 declare const cfgMgr: IConfigManager;
 declare const loadMgr: ILoadManager;
 declare const skeletonMgr: ISkeletonManager;
@@ -31,6 +31,7 @@ declare const tipMgr: ITipManager;
 declare const sceneMgr: ISceneManager;
 declare const facade: IFacade;
 declare const pbMgr: IPbManager;
+declare const localDataMgr: ILocalDataManager;
 
 /** 注入全局变量 */
 declare function windowImmit(name: string, obj: any): void;
@@ -43,6 +44,7 @@ declare function windowImmit(name: string, obj: any): void;
  */
 declare function $confirm(title: string, msg: string, cancel?: boolean): Promise<boolean>;
 declare function $richText(text: string = ""): IRichText;
+declare function $localizeTxt(id: number, ...args: any[]): string;
 
 /**
  * 扩展类字段，用于在外部定义的字段在内部可读，扩展的字段或方法不能在构造期间调用

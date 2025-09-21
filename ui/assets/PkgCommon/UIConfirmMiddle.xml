@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1920,1080" designImage="ui://ca43vz0ejdu67plnjt" designImageOffsetX="-239" designImageOffsetY="-44" designImageAlpha="0" designImageLayer="1">
+  <controller name="format" pages="4,,5," selected="0"/>
+  <displayList>
+    <component id="n0_j0dd" name="n0" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" xy="960,540" pivot="0.5,0.5" anchor="true" size="1144,720"/>
+    <image id="n2_j0dd" name="n2" src="j0ddob77" fileName="Texture/img_374.png" xy="461,296" size="461,4" group="n18_j0dd"/>
+    <image id="n4_j0dd" name="n4" src="j0ddob77" fileName="Texture/img_374.png" xy="998,296" pivot="1,0" anchor="true" size="462,4" group="n18_j0dd" scale="-1,1"/>
+    <image id="n5_j0dd" name="n5" src="j0ddob7a" fileName="Texture/img_680.png" xy="933,287" group="n18_j0dd"/>
+    <group id="n18_j0dd" name="n18" xy="461,287" size="537,22" advanced="true">
+      <gearDisplay controller="format" pages="0,1,4,6"/>
+    </group>
+    <component id="n10_j0dd" name="close" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" xy="1410,213" size="70,70">
+      <Button icon="ui://vx9zwserj0ddob7b"/>
+    </component>
+    <text id="n12_j0dd" name="title" xy="868,218" pivot="0.5,0.5" size="184,60" fontSize="45" color="#edb26f" singleLine="true" text="弹窗标题">
+      <gearDisplay controller="format" pages="0,1,4,6"/>
+    </text>
+    <text id="n13_j0dd" name="content" xy="470,318" size="1009,418" fontSize="35" color="#ffffff" vAlign="middle" autoSize="shrink" text="一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零">
+      <gearXY controller="format" pages="4,5" values="470,318|470,279"/>
+      <gearSize controller="format" pages="4,5" values="1009,418,1,1|1009,467,1,1"/>
+    </text>
+    <component id="n14_j0dd" name="confirm" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="804,748" size="312,92" group="n16_j0dd">
+      <gearDisplay controller="format" pages="0,2,3,4,5,6"/>
+      <Button title="确认" titleColor="#6d2e3a" titleFontSize="38" icon="ui://vx9zwserj0ddob73"/>
+    </component>
+    <component id="n15_j0dd" name="cancel" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="1154,748" size="312,92" group="n16_j0dd" visible="false">
+      <gearDisplay controller="format" pages="3,6,10"/>
+      <Button title="确认" titleColor="#e5b673" titleFontSize="38" icon="ui://vx9zwserj0ddob70"/>
+    </component>
+    <group id="n16_j0dd" name="n16" xy="804,748" size="312,92" advanced="true" layout="hz" colGap="38" excludeInvisibles="true">
+      <relation target="n0_j0dd" sidePair="center-center,bottom-bottom"/>
+    </group>
+  </displayList>
+</component>

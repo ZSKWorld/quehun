@@ -5,6 +5,7 @@ declare interface ITable_Animation {
 
 //#region animation
 declare interface ISheet_Animation_Animation {
+	[key: string]: ISheetData_Animation_Animation;
 	1000101: ISheetData_Animation_Animation;
 	1000102: ISheetData_Animation_Animation;
 	1000103: ISheetData_Animation_Animation;

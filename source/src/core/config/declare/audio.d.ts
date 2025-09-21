@@ -7,6 +7,7 @@ declare interface ITable_Audio {
 
 //#region audio
 declare interface ISheet_Audio_Audio {
+	[key: string]: ISheetData_Audio_Audio;
 	101: ISheetData_Audio_Audio;
 	102: ISheetData_Audio_Audio;
 	103: ISheetData_Audio_Audio;
@@ -392,6 +393,7 @@ declare interface ISheetData_Audio_Audio {
 
 //#region bgm
 declare interface ISheet_Audio_Bgm {
+	[key: string]: ISheetData_Audio_Bgm;
 	306001: ISheetData_Audio_Bgm;
 	306002: ISheetData_Audio_Bgm;
 	306003: ISheetData_Audio_Bgm;

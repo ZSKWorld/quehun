@@ -5,6 +5,7 @@ declare interface ITable_Global {
 
 //#region global
 declare interface ISheet_Global_Global {
+	[key: string]: ISheetData_Global_Global;
 	1: ISheetData_Global_Global;
 	2: ISheetData_Global_Global;
 	3: ISheetData_Global_Global;

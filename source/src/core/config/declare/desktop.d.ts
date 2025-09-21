@@ -15,6 +15,7 @@ declare interface ITable_Desktop {
 
 //#region matchmode
 declare interface ISheet_Desktop_Matchmode {
+	[key: string]: ISheetData_Desktop_Matchmode;
 	1: ISheetData_Desktop_Matchmode;
 	2: ISheetData_Desktop_Matchmode;
 	3: ISheetData_Desktop_Matchmode;
@@ -175,6 +176,7 @@ declare interface ISheetData_Desktop_Matchmode {
 
 //#region chest
 declare interface ISheet_Desktop_Chest {
+	[key: string]: ISheetData_Desktop_Chest;
 	1: ISheetData_Desktop_Chest;
 	2: ISheetData_Desktop_Chest;
 	3: ISheetData_Desktop_Chest;
@@ -205,6 +207,7 @@ declare interface ISheetData_Desktop_Chest {
 
 //#region settings
 declare interface ISheet_Desktop_Settings {
+	[key: string]: ISheetData_Desktop_Settings;
 	account_friendship_bar_length: ISheetData_Desktop_Settings;
 	account_friendship_bar_reward_id: ISheetData_Desktop_Settings;
 }
@@ -216,6 +219,7 @@ declare interface ISheetData_Desktop_Settings {
 
 //#region field_spell
 declare interface ISheet_Desktop_FieldSpell {
+	[key: string]: ISheetData_Desktop_FieldSpell;
 	1: ISheetData_Desktop_FieldSpell;
 	2: ISheetData_Desktop_FieldSpell;
 	3: ISheetData_Desktop_FieldSpell;
@@ -248,6 +252,7 @@ declare interface ISheetData_Desktop_FieldSpell {
 
 //#region friend_room
 declare interface ISheet_Desktop_FriendRoom {
+	[key: string]: ISheetData_Desktop_FriendRoom;
 	1: ISheetData_Desktop_FriendRoom;
 	2: ISheetData_Desktop_FriendRoom;
 	3: ISheetData_Desktop_FriendRoom;
@@ -284,6 +289,7 @@ declare interface ISheetData_Desktop_FriendRoom {
 
 //#region tour_preset_rule
 declare interface ISheet_Desktop_TourPresetRule {
+	[key: string]: ISheetData_Desktop_TourPresetRule;
 	1: ISheetData_Desktop_TourPresetRule;
 	2: ISheetData_Desktop_TourPresetRule;
 	3: ISheetData_Desktop_TourPresetRule;

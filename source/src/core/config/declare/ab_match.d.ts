@@ -11,6 +11,7 @@ declare interface ITable_AbMatch {
 
 //#region match_info
 declare interface ISheet_AbMatch_MatchInfo {
+	[key: string]: ISheetData_AbMatch_MatchInfo;
 	1001: ISheetData_AbMatch_MatchInfo;
 	1002: ISheetData_AbMatch_MatchInfo;
 	1003: ISheetData_AbMatch_MatchInfo;
@@ -40,6 +41,7 @@ declare interface ISheetData_AbMatch_MatchInfo {
 
 //#region point
 declare interface ISheet_AbMatch_Point {
+	[key: string]: ISheetData_AbMatch_Point[];
 	4001: ISheetData_AbMatch_Point[];
 	4002: ISheetData_AbMatch_Point[];
 	4003: ISheetData_AbMatch_Point[];
@@ -56,6 +58,7 @@ declare interface ISheetData_AbMatch_Point {
 
 //#region reward_seq
 declare interface ISheet_AbMatch_RewardSeq {
+	[key: string]: ISheetData_AbMatch_RewardSeq[];
 	5001: ISheetData_AbMatch_RewardSeq[];
 	5002: ISheetData_AbMatch_RewardSeq[];
 	5003: ISheetData_AbMatch_RewardSeq[];
@@ -73,6 +76,7 @@ declare interface ISheetData_AbMatch_RewardSeq {
 
 //#region consume_seq
 declare interface ISheet_AbMatch_ConsumeSeq {
+	[key: string]: ISheetData_AbMatch_ConsumeSeq[];
 	9001: ISheetData_AbMatch_ConsumeSeq[];
 	9002: ISheetData_AbMatch_ConsumeSeq[];
 	9003: ISheetData_AbMatch_ConsumeSeq[];

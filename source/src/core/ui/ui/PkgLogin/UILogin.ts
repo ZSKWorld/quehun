@@ -2,6 +2,7 @@
 
 export default class UILogin extends fgui.GComponent {
 
+	public ctrl_page: fgui.Controller;
 	public graph_scene: fgui.GGraph;
 	public btn_login: fgui.GButton;
 	public btn_announce: fgui.GButton;
@@ -11,8 +12,12 @@ export default class UILogin extends fgui.GComponent {
 	public btn_register: fgui.GButton;
 	public btn_forgotPassword: fgui.GButton;
 	public btn_forgotAccount: fgui.GButton;
-	public btn_routeName: fgui.GTextField;
-	public btn_routeDelay: fgui.GTextField;
+	public txt_routeName: fgui.GTextField;
+	public txt_routeDelay: fgui.GTextField;
+	public itxt_account: fgui.GTextInput;
+	public itxt_password: fgui.GTextInput;
+	public btn_logout: fgui.GButton;
+	public trans_t0: fgui.Transition;
 	public static url: string = "ui://vs9845atjdu6b6x";
 
 	public static createInstance(): UILogin {
@@ -20,6 +25,7 @@ export default class UILogin extends fgui.GComponent {
 	}
 
 	protected override onConstruct(): void {
+		this.ctrl_page = this.getControllerAt(0);
 		this.graph_scene = <fgui.GGraph>(this.getChildAt(0));
 		this.btn_login = <fgui.GButton>(this.getChildAt(6));
 		this.btn_announce = <fgui.GButton>(this.getChildAt(7));
@@ -29,7 +35,11 @@ export default class UILogin extends fgui.GComponent {
 		this.btn_register = <fgui.GButton>(this.getChildAt(11));
 		this.btn_forgotPassword = <fgui.GButton>(this.getChildAt(12));
 		this.btn_forgotAccount = <fgui.GButton>(this.getChildAt(13));
-		this.btn_routeName = <fgui.GTextField>(this.getChildAt(15));
-		this.btn_routeDelay = <fgui.GTextField>(this.getChildAt(16));
+		this.txt_routeName = <fgui.GTextField>(this.getChildAt(15));
+		this.txt_routeDelay = <fgui.GTextField>(this.getChildAt(16));
+		this.itxt_account = <fgui.GTextInput>(this.getChildAt(17));
+		this.itxt_password = <fgui.GTextInput>(this.getChildAt(18));
+		this.btn_logout = <fgui.GButton>(this.getChildAt(21));
+		this.trans_t0 = this.getTransitionAt(0);
 	}
 }

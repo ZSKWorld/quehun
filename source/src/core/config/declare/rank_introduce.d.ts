@@ -7,6 +7,7 @@ declare interface ITable_RankIntroduce {
 
 //#region rank
 declare interface ISheet_RankIntroduce_Rank {
+	[key: string]: ISheetData_RankIntroduce_Rank;
 	1: ISheetData_RankIntroduce_Rank;
 	2: ISheetData_RankIntroduce_Rank;
 	3: ISheetData_RankIntroduce_Rank;
@@ -32,6 +33,7 @@ declare interface ISheetData_RankIntroduce_Rank {
 
 //#region rank3
 declare interface ISheet_RankIntroduce_Rank3 {
+	[key: string]: ISheetData_RankIntroduce_Rank3;
 	1: ISheetData_RankIntroduce_Rank3;
 	2: ISheetData_RankIntroduce_Rank3;
 	3: ISheetData_RankIntroduce_Rank3;

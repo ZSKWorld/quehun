@@ -88,38 +88,24 @@ export class UIUtil {
 	// 	input.on(Laya.Event.INPUT, null, () => !duringComposition && onInput && onInput.run());
 	// }
 
-	static showRewardsTip(title: string, rewards: OriginData<IGoods>[]) {
-		const logStr = $richText(title);
-		title && logStr.break();
-		rewards.forEach(v => {
-			const str = GameUtil.getItemCountStr(v.id, v.count);
-			tipMgr.showTip(`恭喜获得${ str }`);
-			logStr.append(str).break();
-		});
-		facade.dispatch(NotifyConst.AddGameLog, logStr.end());
-	}
 
-	static animAlphaIn(bg: fgui.GObject, panel: fgui.GObject) {
+	static popAlphaIn(panel: fgui.GObject) {
 		return new Promise<void>(resolve => {
-			bg.alpha = panel.alpha = 0;
+			panel.alpha = 0;
 			panel.setScale(0, 0);
-			Laya.Tween.killAll(bg);
 			Laya.Tween.killAll(panel);
 			Laya.Tween.create()
-				.parallel(bg).duration(150).ease(Laya.Ease.quadOut).to("alpha", 0.8)
-				.parallel(panel).duration(150).ease(Laya.Ease.quadOut).to("alpha", 1)
+				.parallel(panel).duration(150).ease(Laya.Ease.backOut).to("alpha", 1)
 				.parallel(panel).duration(150).ease(Laya.Ease.backOut).to("scaleX", 1).to("scaleY", 1)
 				.then(v => (v.owner.recover(), resolve()));
 		});
 	}
 
-	static animAlphaOut(bg: fgui.GObject, panel: fgui.GObject) {
+	static popAlphaOut(panel: fgui.GObject) {
 		return new Promise<void>(resolve => {
-			Laya.Tween.killAll(bg);
 			Laya.Tween.killAll(panel);
 			Laya.Tween.create()
-				.parallel(bg).duration(150).ease(Laya.Ease.linear).to("alpha", 0)
-				.parallel(panel).duration(150).ease(Laya.Ease.linear).to("alpha", 0.4)
+				.parallel(panel).duration(150).ease(Laya.Ease.backIn).to("alpha", 0.4)
 				.parallel(panel).duration(150).ease(Laya.Ease.backIn).to("scaleX", 0).to("scaleY", 0)
 				.then(v => (v.owner.recover(), resolve()));
 		});

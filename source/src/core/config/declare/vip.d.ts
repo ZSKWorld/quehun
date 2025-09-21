@@ -5,6 +5,7 @@ declare interface ITable_Vip {
 
 //#region vip
 declare interface ISheet_Vip_Vip {
+	[key: string]: ISheetData_Vip_Vip;
 	1: ISheetData_Vip_Vip;
 	2: ISheetData_Vip_Vip;
 	3: ISheetData_Vip_Vip;

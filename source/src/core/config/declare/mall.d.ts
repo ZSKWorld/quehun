@@ -17,6 +17,7 @@ declare interface ITable_Mall {
 
 //#region goods
 declare interface ISheet_Mall_Goods {
+	[key: string]: ISheetData_Mall_Goods;
 	1001: ISheetData_Mall_Goods;
 	1002: ISheetData_Mall_Goods;
 	1003: ISheetData_Mall_Goods;
@@ -145,6 +146,7 @@ declare interface ISheetData_Mall_Goods {
 
 //#region product
 declare interface ISheet_Mall_Product {
+	[key: string]: ISheetData_Mall_Product[];
 	10: ISheetData_Mall_Product[];
 	11: ISheetData_Mall_Product[];
 	12: ISheetData_Mall_Product[];
@@ -209,6 +211,7 @@ declare interface ISheetData_Mall_Product {
 
 //#region goods_shelves
 declare interface ISheet_Mall_GoodsShelves {
+	[key: string]: ISheetData_Mall_GoodsShelves[];
 	shelves_001: ISheetData_Mall_GoodsShelves[];
 	shelves_002: ISheetData_Mall_GoodsShelves[];
 	shelves_003: ISheetData_Mall_GoodsShelves[];
@@ -235,6 +238,7 @@ declare interface ISheetData_Mall_GoodsShelves {
 
 //#region zone_params
 declare interface ISheet_Mall_ZoneParams {
+	[key: string]: ISheetData_Mall_ZoneParams[];
 	1: ISheetData_Mall_ZoneParams[];
 	2: ISheetData_Mall_ZoneParams[];
 	3: ISheetData_Mall_ZoneParams[];
@@ -248,6 +252,7 @@ declare interface ISheetData_Mall_ZoneParams {
 
 //#region month_ticket
 declare interface ISheet_Mall_MonthTicket {
+	[key: string]: ISheetData_Mall_MonthTicket;
 	1010: ISheetData_Mall_MonthTicket;
 	2010: ISheetData_Mall_MonthTicket;
 	3010: ISheetData_Mall_MonthTicket;
@@ -295,6 +300,7 @@ declare interface ISheetData_Mall_MonthTicket {
 
 //#region channel_config
 declare interface ISheet_Mall_ChannelConfig {
+	[key: string]: ISheetData_Mall_ChannelConfig;
 	100: ISheetData_Mall_ChannelConfig;
 	101: ISheetData_Mall_ChannelConfig;
 	200: ISheetData_Mall_ChannelConfig;
@@ -344,6 +350,7 @@ declare interface ISheetData_Mall_ChannelConfig {
 
 //#region month_ticket_info
 declare interface ISheet_Mall_MonthTicketInfo {
+	[key: string]: ISheetData_Mall_MonthTicketInfo;
 	1: ISheetData_Mall_MonthTicketInfo;
 }
 declare interface ISheetData_Mall_MonthTicketInfo {

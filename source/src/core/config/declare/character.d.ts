@@ -9,6 +9,7 @@ declare interface ITable_Character {
 
 //#region emoji
 declare interface ISheet_Character_Emoji {
+	[key: string]: ISheetData_Character_Emoji[];
 	200001: ISheetData_Character_Emoji[];
 	200002: ISheetData_Character_Emoji[];
 	200003: ISheetData_Character_Emoji[];
@@ -151,6 +152,7 @@ declare interface ISheetData_Character_Emoji {
 
 //#region cutin
 declare interface ISheet_Character_Cutin {
+	[key: string]: ISheetData_Character_Cutin;
 	405201: ISheetData_Character_Cutin;
 	405202: ISheetData_Character_Cutin;
 	406101: ISheetData_Character_Cutin;
@@ -181,6 +183,7 @@ declare interface ISheetData_Character_Cutin {
 
 //#region skin
 declare interface ISheet_Character_Skin {
+	[key: string]: ISheetData_Character_Skin;
 	400107: ISheetData_Character_Skin;
 	400305: ISheetData_Character_Skin;
 	400306: ISheetData_Character_Skin;

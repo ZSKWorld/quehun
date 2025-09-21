@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1000,600" designImage="ui://ca43vz0ejdu67plnjr" designImageOffsetX="-395" designImageOffsetY="-964" designImageAlpha="0">
+  <displayList>
+    <image id="n0_j0dd" name="n0" src="j0ddob75" fileName="Texture/img_3221.png" xy="23,18" size="959,564">
+      <relation target="" sidePair="width-width,height-height"/>
+    </image>
+    <image id="n2_j0dd" name="n2" src="j0ddob74" fileName="Texture/img_3077.png" xy="21,477">
+      <relation target="" sidePair="bottom-bottom"/>
+    </image>
+    <image id="n3_j0dd" name="n3" src="j0ddob76" fileName="Texture/img_3419.png" xy="588,480">
+      <relation target="" sidePair="right-right,bottom-bottom"/>
+    </image>
+    <image id="n1_j0dd" name="n1" src="j0ddob78" fileName="Texture/img_3845.png" xy="0,0" size="1000,600">
+      <relation target="" sidePair="width-width,height-height"/>
+    </image>
+  </displayList>
+</component>

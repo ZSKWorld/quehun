@@ -7,6 +7,7 @@ declare interface ITable_Tutorial {
 
 //#region init
 declare interface ISheet_Tutorial_Init {
+	[key: string]: ISheetData_Tutorial_Init;
 	1: ISheetData_Tutorial_Init;
 	2: ISheetData_Tutorial_Init;
 	3: ISheetData_Tutorial_Init;
@@ -56,6 +57,7 @@ declare interface ISheetData_Tutorial_Init {
 
 //#region step
 declare interface ISheet_Tutorial_Step {
+	[key: string]: ISheetData_Tutorial_Step[];
 	1: ISheetData_Tutorial_Step[];
 	2: ISheetData_Tutorial_Step[];
 	3: ISheetData_Tutorial_Step[];

@@ -7,6 +7,7 @@ declare interface ITable_Str {
 
 //#region str
 declare interface ISheet_Str_Str {
+	[key: string]: ISheetData_Str_Str;
 	1: ISheetData_Str_Str;
 	2: ISheetData_Str_Str;
 	3: ISheetData_Str_Str;
@@ -4261,6 +4262,7 @@ declare interface ISheetData_Str_Str {
 
 //#region event
 declare interface ISheet_Str_Event {
+	[key: string]: ISheetData_Str_Event;
 	1: ISheetData_Str_Event;
 	2: ISheetData_Str_Event;
 	3: ISheetData_Str_Event;

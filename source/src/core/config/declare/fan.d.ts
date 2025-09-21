@@ -5,6 +5,7 @@ declare interface ITable_Fan {
 
 //#region fan
 declare interface ISheet_Fan_Fan {
+	[key: string]: ISheetData_Fan_Fan;
 	1: ISheetData_Fan_Fan;
 	2: ISheetData_Fan_Fan;
 	3: ISheetData_Fan_Fan;

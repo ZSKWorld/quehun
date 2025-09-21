@@ -13,6 +13,7 @@ declare interface ITable_Season {
 
 //#region season
 declare interface ISheet_Season_Season {
+	[key: string]: ISheetData_Season_Season;
 	1001: ISheetData_Season_Season;
 }
 declare interface ISheetData_Season_Season {
@@ -50,6 +51,7 @@ declare interface ISheetData_Season_Season {
 
 //#region level_ticket
 declare interface ISheet_Season_LevelTicket {
+	[key: string]: ISheetData_Season_LevelTicket;
 	100001: ISheetData_Season_LevelTicket;
 	100002: ISheetData_Season_LevelTicket;
 	100003: ISheetData_Season_LevelTicket;
@@ -193,6 +195,7 @@ declare interface ISheetData_Season_LevelTicket {
 
 //#region level_ticket_pool
 declare interface ISheet_Season_LevelTicketPool {
+	[key: string]: ISheetData_Season_LevelTicketPool[];
 	100101: ISheetData_Season_LevelTicketPool[];
 }
 declare interface ISheetData_Season_LevelTicketPool {
@@ -209,6 +212,7 @@ declare interface ISheetData_Season_LevelTicketPool {
 
 //#region ticket_retry
 declare interface ISheet_Season_TicketRetry {
+	[key: string]: ISheetData_Season_TicketRetry[];
 	100102: ISheetData_Season_TicketRetry[];
 }
 declare interface ISheetData_Season_TicketRetry {
@@ -223,6 +227,7 @@ declare interface ISheetData_Season_TicketRetry {
 
 //#region season_reward
 declare interface ISheet_Season_SeasonReward {
+	[key: string]: ISheetData_Season_SeasonReward[];
 	1001: ISheetData_Season_SeasonReward[];
 }
 declare interface ISheetData_Season_SeasonReward {

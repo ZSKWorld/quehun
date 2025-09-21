@@ -2,7 +2,7 @@
 
 export default class BtnCheckRichTxtRight extends fgui.GButton {
 
-	public bg: fgui.GLoader;
+	public loader_bg: fgui.GLoader;
 	public static url: string = "ui://vx9zwsermj5kb6t";
 
 	public static createInstance(): BtnCheckRichTxtRight {
@@ -10,6 +10,6 @@ export default class BtnCheckRichTxtRight extends fgui.GButton {
 	}
 
 	protected override onConstruct(): void {
-		this.bg = <fgui.GLoader>(this.getChildAt(0));
+		this.loader_bg = <fgui.GLoader>(this.getChildAt(0));
 	}
 }

@@ -23,14 +23,6 @@ export class GamePreloadCommand extends Command {
     }
 
     private async load() {
-        await loadMgr.loadPackage(ResPath.PkgPath.PkgEntrance);
-        uiMgr.openView(ViewID.UIEntranceView);
-        await new Promise(resolve => Laya.timer.once(4000, null, resolve));
-        await gameMgr.init();
-        await pbMgr.init();
-        await cfgMgr.init();
-        await netMgr.init();
-
         const config: IGameConfig = await loadMgr.fetch(ResPath.UnclassifiedPath.Gameconfig, "json");
         config.stat && Laya.Stat.show(0, 0, [
             Laya.Stat.FPSStatUIParams,
@@ -43,5 +35,12 @@ export class GamePreloadCommand extends Command {
             Laya.Stat.RenderTextureMemory,
             Laya.Stat.BufferMemory,
         ]);
+        await loadMgr.loadPackage(ResPath.PkgPath.PkgEntrance);
+        uiMgr.openView(ViewID.UIEntranceView);
+        await gameMgr.init();
+        await pbMgr.init();
+        await cfgMgr.init();
+        await netMgr.init();
+        await new Promise(resolve => Laya.timer.once(1000, null, resolve));
     }
 }

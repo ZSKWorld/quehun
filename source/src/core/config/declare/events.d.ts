@@ -9,6 +9,7 @@ declare interface ITable_Events {
 
 //#region soscoin
 declare interface ISheet_Events_Soscoin {
+	[key: string]: ISheetData_Events_Soscoin;
 	101: ISheetData_Events_Soscoin;
 	102: ISheetData_Events_Soscoin;
 	103: ISheetData_Events_Soscoin;
@@ -47,6 +48,7 @@ declare interface ISheetData_Events_Soscoin {
 
 //#region dailyevent
 declare interface ISheet_Events_Dailyevent {
+	[key: string]: ISheetData_Events_Dailyevent;
 	20001: ISheetData_Events_Dailyevent;
 	20002: ISheetData_Events_Dailyevent;
 	20003: ISheetData_Events_Dailyevent;
@@ -309,6 +311,7 @@ declare interface ISheetData_Events_Dailyevent {
 
 //#region base_task
 declare interface ISheet_Events_BaseTask {
+	[key: string]: ISheetData_Events_BaseTask;
 	20001: ISheetData_Events_BaseTask;
 	20002: ISheetData_Events_BaseTask;
 	20003: ISheetData_Events_BaseTask;

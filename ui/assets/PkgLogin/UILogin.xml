@@ -1,40 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" designImage="ui://ca43vz0ejdu67plo08" designImageAlpha="100">
+<component size="1920,1080" designImage="ui://ca43vz0ejdu67plo08" designImageAlpha="0" bgColorEnabled="true" bgColor="#000000">
+  <controller name="page" pages="0,,1," selected="0"/>
   <displayList>
-    <graph id="n0_mde1" name="graph_scene" xy="0,0" size="100,100" alpha="0" type="rect" lineSize="0"/>
-    <image id="n8_h638" name="n8" src="mde1b7r" fileName="Texture/img_1065.png" xy="1189,237" size="620,476"/>
-    <image id="n1_h638" name="n1" src="mde1b7g" fileName="Texture/img_716.png" xy="1228,269" size="393,85"/>
-    <image id="n9_h638" name="n9" src="mde1b7g" fileName="Texture/img_716.png" xy="1228,386" size="393,85"/>
-    <image id="n12_h638" name="n12" src="mde1b78" fileName="Texture/img_3070.png" xy="1227,501"/>
-    <image id="n22_nxde" name="n22" src="mde1b88" fileName="Texture/img_228.png" xy="1321,529"/>
-    <component id="n13_nxde" name="btn_login" src="mj5kb6v" fileName="Component/BtnIconFit.xml" pkg="vx9zwser" xy="1224,590" size="402,94" aspect="true">
+    <graph id="n0_mde1" name="scene" xy="0,0" size="100,100" alpha="0" type="rect" lineSize="0"/>
+    <image id="n8_h638" name="n8" src="mde1b7r" fileName="Texture/img_1065.png" xy="1189,237" size="620,476" group="n30_10mro"/>
+    <image id="n1_h638" name="n1" src="mde1b7g" fileName="Texture/img_716.png" xy="1228,269" size="393,85" group="n30_10mro"/>
+    <image id="n9_h638" name="n9" src="mde1b7g" fileName="Texture/img_716.png" xy="1228,386" size="393,85" group="n30_10mro"/>
+    <image id="n12_h638" name="n12" src="mde1b78" fileName="Texture/img_3070.png" xy="1227,501" group="n30_10mro"/>
+    <image id="n22_nxde" name="n22" src="mde1b88" fileName="Texture/img_228.png" xy="1321,529" group="n30_10mro"/>
+    <component id="n13_nxde" name="login" src="mj5kb6v" fileName="Component/BtnIconFit.xml" pkg="vx9zwser" xy="1224,590" size="402,94" group="n30_10mro" aspect="true">
       <Button icon="ui://vs9845atmde1b7a"/>
     </component>
-    <component id="n26_nxde" name="btn_announce" src="nxdeb8c" fileName="Component/UILogin/BtnHelp.xml" xy="1742,26">
+    <component id="n26_nxde" name="announce" src="nxdeb8c" fileName="Component/UILogin/BtnHelp.xml" xy="1742,26" group="n30_10mro">
       <Button title="公告" icon="ui://vs9845atmde1b84"/>
     </component>
-    <component id="n25_nxde" name="btn_help" src="nxdeb8c" fileName="Component/UILogin/BtnHelp.xml" xy="1828,26">
+    <component id="n25_nxde" name="help" src="nxdeb8c" fileName="Component/UILogin/BtnHelp.xml" xy="1828,26" group="n30_10mro">
       <Button title="帮助" icon="ui://vs9845atmde1b83"/>
     </component>
-    <component id="n19_nxde" name="btn_loginByAccount" src="nxdeb8b" fileName="Component/UILogin/BtnLogin.xml" xy="1228,196" size="190,45">
+    <component id="n19_nxde" name="loginByAccount" src="nxdeb8b" fileName="Component/UILogin/BtnLogin.xml" xy="1228,196" size="190,45" group="n30_10mro">
       <Button checked="true" title="邮箱/账号登录"/>
     </component>
-    <component id="n20_nxde" name="btn_loginBtnPhone" src="nxdeb8b" fileName="Component/UILogin/BtnLogin.xml" xy="1428,196" size="190,45">
+    <component id="n20_nxde" name="loginBtnPhone" src="nxdeb8b" fileName="Component/UILogin/BtnLogin.xml" xy="1428,196" size="190,45" group="n30_10mro">
       <Button title="手机号登录"/>
     </component>
-    <component id="n14_nxde" name="btn_register" src="mj5kb6x" fileName="Component/BtnTxtUnderline.xml" pkg="vx9zwser" xy="1631,281" size="170,60">
+    <component id="n14_nxde" name="register" src="mj5kb6x" fileName="Component/BtnTxtUnderline.xml" pkg="vx9zwser" xy="1631,281" size="170,60" group="n30_10mro">
       <Button title="立即注册" titleColor="#7294f2" titleFontSize="36"/>
     </component>
-    <component id="n15_nxde" name="btn_forgotPassword" src="mj5kb6x" fileName="Component/BtnTxtUnderline.xml" pkg="vx9zwser" xy="1631,398" size="170,60">
+    <component id="n15_nxde" name="forgotPassword" src="mj5kb6x" fileName="Component/BtnTxtUnderline.xml" pkg="vx9zwser" xy="1631,398" size="170,60" group="n30_10mro">
       <Button title="忘记密码" titleColor="#d12e31" titleFontSize="36"/>
     </component>
-    <component id="n16_nxde" name="btn_forgotAccount" src="mj5kb6x" fileName="Component/BtnTxtUnderline.xml" pkg="vx9zwser" xy="1631,606" size="170,60">
+    <component id="n16_nxde" name="forgotAccount" src="mj5kb6x" fileName="Component/BtnTxtUnderline.xml" pkg="vx9zwser" xy="1631,606" size="170,60" group="n30_10mro">
       <Button title="忘记账号" titleColor="#7294f2" titleFontSize="36"/>
     </component>
-    <text id="n21_nxde" name="n21" xy="1253,519" size="50,33" fontSize="23" color="#af7743" leading="0" text="切换"/>
-    <text id="n23_nxde" name="btn_routeName" xy="1364,510" pivot="0.5,0.5" size="118,48" fontSize="35" color="#ffffff" leading="0" text="线路36"/>
-    <text id="n24_nxde" name="btn_routeDelay" xy="1514,518" pivot="0.5,0.5" size="101,35" fontSize="25" color="#40bf79" leading="0" text="1024ms"/>
-    <text id="n27_nxde" name="n27" xy="1241,286" size="366,48" fontSize="35" color="#ffffff" vAlign="middle" leading="0" autoSize="height" singleLine="true" text="" input="true" prompt="用户名"/>
-    <text id="n28_nxde" name="n28" xy="1241,405" size="366,48" fontSize="35" color="#ffffff" vAlign="middle" leading="0" autoSize="height" singleLine="true" text="" input="true" prompt="密码" password="true"/>
+    <text id="n21_nxde" name="n21" xy="1253,519" size="50,33" group="n30_10mro" fontSize="23" color="#af7743" leading="0" text="切换"/>
+    <text id="n23_nxde" name="routeName" xy="1364,510" pivot="0.5,0.5" size="118,48" group="n30_10mro" fontSize="35" color="#ffffff" leading="0" text="线路36"/>
+    <text id="n24_nxde" name="routeDelay" xy="1514,518" pivot="0.5,0.5" size="101,35" group="n30_10mro" fontSize="25" color="#40bf79" leading="0" text="1024ms"/>
+    <text id="n29_10mro" name="account" xy="1242,287" size="366,48" group="n30_10mro" fontSize="35" color="#ffffff" vAlign="middle" leading="0" autoSize="height" singleLine="true" text="" input="true" prompt="用户名"/>
+    <text id="n28_nxde" name="password" xy="1242,405" size="366,48" group="n30_10mro" fontSize="35" color="#ffffff" vAlign="middle" leading="0" autoSize="height" singleLine="true" text="" input="true" prompt="密码" password="true"/>
+    <group id="n30_10mro" name="n30" xy="1189,26" size="705,687" advanced="true">
+      <gearDisplay controller="page" pages="0"/>
+    </group>
+    <image id="n31_10mro" name="n31" src="10mrob6y" fileName="Texture/img_2422.png" pkg="vx9zwser" xy="1434,448" pivot="0.5,0.5" anchor="true" size="219,219" group="n34_10mro" scale="1.2,1.2"/>
+    <component id="n33_10mro" name="logout" src="108ab6i" fileName="Component/BtnNormal.xml" pkg="vx9zwser" xy="1434,657" pivot="0.5,0.5" anchor="true" size="276,100" group="n34_10mro">
+      <Button title="登出账号" titleColor="#c3bac5" titleFontSize="27" icon="ui://vs9845atmde1b73"/>
+    </component>
+    <text id="n32_10mro" name="n32" xy="1434,448" pivot="0.5,0.5" anchor="true" size="154,66" group="n34_10mro" fontSize="50" color="#a6f69f" vAlign="middle" leading="0" singleLine="true" text="登入中"/>
+    <group id="n34_10mro" name="n34" xy="1296,338" size="276,368" advanced="true">
+      <gearDisplay controller="page" pages="1"/>
+    </group>
   </displayList>
+  <transition name="t0" autoPlay="true" autoPlayRepeat="-1" frameRate="60">
+    <item time="0" type="Rotation" target="n31_10mro" tween="true" startValue="0" endValue="360" duration="120" ease="Linear"/>
+  </transition>
 </component>

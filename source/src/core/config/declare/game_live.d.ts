@@ -5,6 +5,7 @@ declare interface ITable_GameLive {
 
 //#region select_filters
 declare interface ISheet_GameLive_SelectFilters {
+	[key: string]: ISheetData_GameLive_SelectFilters;
 	101: ISheetData_GameLive_SelectFilters;
 	102: ISheetData_GameLive_SelectFilters;
 	201: ISheetData_GameLive_SelectFilters;

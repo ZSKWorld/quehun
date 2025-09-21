@@ -5,6 +5,7 @@ declare interface ITable_Fandesc {
 
 //#region fandesc
 declare interface ISheet_Fandesc_Fandesc {
+	[key: string]: ISheetData_Fandesc_Fandesc;
 	101: ISheetData_Fandesc_Fandesc;
 	102: ISheetData_Fandesc_Fandesc;
 	103: ISheetData_Fandesc_Fandesc;

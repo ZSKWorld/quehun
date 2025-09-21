@@ -2,7 +2,7 @@
 
 export default class UIEntrance extends fgui.GComponent {
 
-	public t0: fgui.Transition;
+	public trans_t0: fgui.Transition;
 	public static url: string = "ui://8tw6j59fnrcf0";
 
 	public static createInstance(): UIEntrance {
@@ -10,6 +10,6 @@ export default class UIEntrance extends fgui.GComponent {
 	}
 
 	protected override onConstruct(): void {
-		this.t0 = this.getTransitionAt(0);
+		this.trans_t0 = this.getTransitionAt(0);
 	}
 }

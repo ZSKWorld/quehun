@@ -13431,6 +13431,8 @@ const labelPadding = [2, 2, 2, 2];
                 if (pi.type == fgui.PackageItemType.Atlas) {
                     if (pi.texture)
                         Laya.loader.clearTextureRes(pi.texture.url);
+                    else
+                        Laya.loader.clearTextureRes(pi.file);
                 }
             }
         }
@@ -13442,7 +13444,8 @@ const labelPadding = [2, 2, 2, 2];
                     if (pi.texture) {
                         pi.texture.destroy();
                         pi.texture = null;
-                    }
+                    } else
+                        Laya.loader.clearRes(pi.file);
                 }
                 else if (pi.type == fgui.PackageItemType.Sound) {
                     Laya.SoundManager.destroySound(pi.file);

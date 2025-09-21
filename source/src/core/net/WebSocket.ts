@@ -109,6 +109,7 @@ export class WebSocket extends Laya.EventDispatcher {
             byte.writeArrayBuffer(header);
             byte.writeArrayBuffer(packet);
             this._socket.send(byte.buffer);
+            Logger.error("send req:", methodName, data);
         });
     }
 

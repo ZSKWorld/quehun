@@ -33,6 +33,7 @@ declare interface ITable_Amulet {
 
 //#region amulet_activity
 declare interface ISheet_Amulet_AmuletActivity {
+	[key: string]: ISheetData_Amulet_AmuletActivity;
 	240801: ISheetData_Amulet_AmuletActivity;
 	250111: ISheetData_Amulet_AmuletActivity;
 	250811: ISheetData_Amulet_AmuletActivity;
@@ -80,6 +81,7 @@ declare interface ISheetData_Amulet_AmuletActivity {
 
 //#region amulet_games
 declare interface ISheet_Amulet_AmuletGames {
+	[key: string]: ISheetData_Amulet_AmuletGames[];
 	240801: ISheetData_Amulet_AmuletGames[];
 	250111: ISheetData_Amulet_AmuletGames[];
 	250811: ISheetData_Amulet_AmuletGames[];
@@ -110,6 +112,7 @@ declare interface ISheetData_Amulet_AmuletGames {
 
 //#region amulet_rewards
 declare interface ISheet_Amulet_AmuletRewards {
+	[key: string]: ISheetData_Amulet_AmuletRewards[];
 	240801: ISheetData_Amulet_AmuletRewards[];
 	250111: ISheetData_Amulet_AmuletRewards[];
 	250811: ISheetData_Amulet_AmuletRewards[];
@@ -125,6 +128,7 @@ declare interface ISheetData_Amulet_AmuletRewards {
 
 //#region amulet_buff
 declare interface ISheet_Amulet_AmuletBuff {
+	[key: string]: ISheetData_Amulet_AmuletBuff;
 	901: ISheetData_Amulet_AmuletBuff;
 	902: ISheetData_Amulet_AmuletBuff;
 	903: ISheetData_Amulet_AmuletBuff;
@@ -191,6 +195,7 @@ declare interface ISheetData_Amulet_AmuletBuff {
 
 //#region amulet_effect
 declare interface ISheet_Amulet_AmuletEffect {
+	[key: string]: ISheetData_Amulet_AmuletEffect;
 	10: ISheetData_Amulet_AmuletEffect;
 	11: ISheetData_Amulet_AmuletEffect;
 	20: ISheetData_Amulet_AmuletEffect;
@@ -594,6 +599,7 @@ declare interface ISheetData_Amulet_AmuletEffect {
 
 //#region amulet_effect_group
 declare interface ISheet_Amulet_AmuletEffectGroup {
+	[key: string]: ISheetData_Amulet_AmuletEffectGroup;
 	1: ISheetData_Amulet_AmuletEffectGroup;
 	2: ISheetData_Amulet_AmuletEffectGroup;
 }
@@ -607,6 +613,7 @@ declare interface ISheetData_Amulet_AmuletEffectGroup {
 
 //#region amulet_fan
 declare interface ISheet_Amulet_AmuletFan {
+	[key: string]: ISheetData_Amulet_AmuletFan;
 	1: ISheetData_Amulet_AmuletFan;
 	2: ISheetData_Amulet_AmuletFan;
 	3: ISheetData_Amulet_AmuletFan;
@@ -669,6 +676,7 @@ declare interface ISheetData_Amulet_AmuletFan {
 
 //#region amulet_goods
 declare interface ISheet_Amulet_AmuletGoods {
+	[key: string]: ISheetData_Amulet_AmuletGoods;
 	101: ISheetData_Amulet_AmuletGoods;
 	102: ISheetData_Amulet_AmuletGoods;
 	103: ISheetData_Amulet_AmuletGoods;
@@ -699,6 +707,7 @@ declare interface ISheetData_Amulet_AmuletGoods {
 
 //#region amulet_shop_upgrade
 declare interface ISheet_Amulet_AmuletShopUpgrade {
+	[key: string]: ISheetData_Amulet_AmuletShopUpgrade[];
 	8001: ISheetData_Amulet_AmuletShopUpgrade[];
 	8002: ISheetData_Amulet_AmuletShopUpgrade[];
 	8003: ISheetData_Amulet_AmuletShopUpgrade[];
@@ -718,6 +727,7 @@ declare interface ISheetData_Amulet_AmuletShopUpgrade {
 
 //#region amulet_upgrade
 declare interface ISheet_Amulet_AmuletUpgrade {
+	[key: string]: ISheetData_Amulet_AmuletUpgrade[];
 	901: ISheetData_Amulet_AmuletUpgrade[];
 	902: ISheetData_Amulet_AmuletUpgrade[];
 	903: ISheetData_Amulet_AmuletUpgrade[];
@@ -741,6 +751,7 @@ declare interface ISheetData_Amulet_AmuletUpgrade {
 
 //#region amulet_task
 declare interface ISheet_Amulet_AmuletTask {
+	[key: string]: ISheetData_Amulet_AmuletTask;
 	25011301: ISheetData_Amulet_AmuletTask;
 	25011302: ISheetData_Amulet_AmuletTask;
 	25011303: ISheetData_Amulet_AmuletTask;
@@ -774,6 +785,7 @@ declare interface ISheetData_Amulet_AmuletTask {
 
 //#region amulet_pool
 declare interface ISheet_Amulet_AmuletPool {
+	[key: string]: ISheetData_Amulet_AmuletPool[];
 	25011101: ISheetData_Amulet_AmuletPool[];
 	25011102: ISheetData_Amulet_AmuletPool[];
 	25011103: ISheetData_Amulet_AmuletPool[];
@@ -793,6 +805,7 @@ declare interface ISheetData_Amulet_AmuletPool {
 
 //#region amulet_badge
 declare interface ISheet_Amulet_AmuletBadge {
+	[key: string]: ISheetData_Amulet_AmuletBadge;
 	600010: ISheetData_Amulet_AmuletBadge;
 	600020: ISheetData_Amulet_AmuletBadge;
 	600030: ISheetData_Amulet_AmuletBadge;
@@ -840,6 +853,7 @@ declare interface ISheetData_Amulet_AmuletBadge {
 
 //#region amulet_tag
 declare interface ISheet_Amulet_AmuletTag {
+	[key: string]: ISheetData_Amulet_AmuletTag;
 	25084001: ISheetData_Amulet_AmuletTag;
 	25084002: ISheetData_Amulet_AmuletTag;
 	25084003: ISheetData_Amulet_AmuletTag;
@@ -878,6 +892,7 @@ declare interface ISheetData_Amulet_AmuletTag {
 
 //#region amulet_large_number
 declare interface ISheet_Amulet_AmuletLargeNumber {
+	[key: string]: ISheetData_Amulet_AmuletLargeNumber;
 	4: ISheetData_Amulet_AmuletLargeNumber;
 	6: ISheetData_Amulet_AmuletLargeNumber;
 	8: ISheetData_Amulet_AmuletLargeNumber;

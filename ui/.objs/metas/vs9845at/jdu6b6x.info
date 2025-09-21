@@ -1,15 +1,4 @@
 {
-  "objectStatus": {
-    "n8_h638": {
-      "hidden": true
-    },
-    "n1_h638": {
-      "hidden": true
-    },
-    "n9_h638": {
-      "hidden": true
-    }
-  },
   "adaptiveTest": true,
   "designImages": [
     "ui://ca43vz0ejdu67plo03",

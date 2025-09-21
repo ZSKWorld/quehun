@@ -6,20 +6,13 @@ ViewID = {
 	BtnCheckView: "BtnCheckView",
 
 	/**Renders */
-	RenderChooseBattleView: "RenderChooseBattleView",
 
 	/**Coms */
-	ComBattleConfirmView: "ComBattleConfirmView",
-	ComItem2048View: "ComItem2048View",
 
 	/**UIs */
-	UIBattleConfirmView: "UIBattleConfirmView",
-	UIBattleView: "UIBattleView",
-	UIChooseBattleView: "UIChooseBattleView",
+	UIConfirmBigView: "UIConfirmBigView",
+	UIConfirmMiddleView: "UIConfirmMiddleView",
+	UIConfirmSmallView: "UIConfirmSmallView",
 	UIEntranceView: "UIEntranceView",
-	UI2048View: "UI2048View",
-	UILittleGameView: "UILittleGameView",
 	UILoginView: "UILoginView",
-	UITest2View: "UITest2View",
-	UITestView: "UITestView",
 }

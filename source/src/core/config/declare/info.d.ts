@@ -11,6 +11,7 @@ declare interface ITable_Info {
 
 //#region error
 declare interface ISheet_Info_Error {
+	[key: string]: ISheetData_Info_Error;
 	1: ISheetData_Info_Error;
 	2: ISheetData_Info_Error;
 	3: ISheetData_Info_Error;
@@ -558,6 +559,7 @@ declare interface ISheetData_Info_Near {
 
 //#region translate
 declare interface ISheet_Info_Translate {
+	[key: string]: ISheetData_Info_Translate;
 	"unknown error": ISheetData_Info_Translate;
 	"auth not found": ISheetData_Info_Translate;
 	"auth expired": ISheetData_Info_Translate;

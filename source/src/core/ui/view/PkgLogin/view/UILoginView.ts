@@ -1,4 +1,5 @@
 import UILogin from "../../../ui/PkgLogin/UILogin";
+import { ELoginByType } from "../event/UILoginEvent";
 
 export const enum UILoginMsg {
 	OnBtnLoginClick = "UILogin_OnBtnLoginClick",
@@ -9,14 +10,16 @@ export const enum UILoginMsg {
 	OnBtnRegisterClick = "UILogin_OnBtnRegisterClick",
 	OnBtnForgotPasswordClick = "UILogin_OnBtnForgotPasswordClick",
 	OnBtnForgotAccountClick = "UILogin_OnBtnForgotAccountClick",
-	OnBtnRouteNameClick = "UILogin_OnBtnRouteNameClick",
-	OnBtnRouteDelayClick = "UILogin_OnBtnRouteDelayClick",
+	OnBtnLogoutClick = "UILogin_OnBtnLogoutClick",
 }
 
 export class UILoginView extends ExtensionClass<IView, UILogin>(UILogin) implements IView {
 
 	override onCreate() {
-		const { btn_login, btn_announce, btn_help, btn_loginByAccount, btn_loginBtnPhone, btn_register, btn_forgotPassword, btn_forgotAccount, btn_routeName, btn_routeDelay } = this;
+		const {
+			btn_login, btn_announce, btn_help, btn_loginByAccount, btn_loginBtnPhone,
+			btn_register, btn_forgotPassword, btn_forgotAccount,
+			btn_logout } = this;
 		btn_login.onClick(this, this.sendEvent, [UILoginMsg.OnBtnLoginClick]);
 		btn_announce.onClick(this, this.sendEvent, [UILoginMsg.OnBtnAnnounceClick]);
 		btn_help.onClick(this, this.sendEvent, [UILoginMsg.OnBtnHelpClick]);
@@ -25,19 +28,20 @@ export class UILoginView extends ExtensionClass<IView, UILogin>(UILogin) impleme
 		btn_register.onClick(this, this.sendEvent, [UILoginMsg.OnBtnRegisterClick]);
 		btn_forgotPassword.onClick(this, this.sendEvent, [UILoginMsg.OnBtnForgotPasswordClick]);
 		btn_forgotAccount.onClick(this, this.sendEvent, [UILoginMsg.OnBtnForgotAccountClick]);
-		btn_routeName.onClick(this, this.sendEvent, [UILoginMsg.OnBtnRouteNameClick]);
-		btn_routeDelay.onClick(this, this.sendEvent, [UILoginMsg.OnBtnRouteDelayClick]);
+		btn_logout.onClick(this, this.sendEvent, [UILoginMsg.OnBtnLogoutClick]);
 	}
 
-	refreshLoginInfo(account: string, password: string, autoLogin: boolean) {
-		// this.input_account.text = account || "";
-		// this.input_password.text = password || "";
-		// this.btn_remeber.selected = autoLogin;
+	refreshAccount(account: string, password: string) {
+		this.itxt_account.text = account || "";
+		this.itxt_password.text = password || "";
 	}
 
-	refreshLoginType(type: 0 | 1) {
-		this.btn_loginByAccount.selected = type == 0;
-		this.btn_loginBtnPhone.selected = type == 1;
+	refreshLoginType(type: ELoginByType) {
+		const { btn_loginByAccount, btn_loginBtnPhone, itxt_account } = this;
+		btn_loginByAccount.selected = type == ELoginByType.Account;
+		btn_loginBtnPhone.selected = type == ELoginByType.PhoneNumber;
+		itxt_account.promptText = $localizeTxt(type == ELoginByType.Account ? 3138 : 3132);
 	}
+
 
 }

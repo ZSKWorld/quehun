@@ -1,0 +1,96 @@
+precision highp float;
+#include "Lighting.glsl";
+uniform sampler2D _MainTex;
+uniform sampler2D _MaskTex;
+uniform sampler2D _MaskTexY;
+uniform lowp float _Alpha;
+uniform lowp float _MaskXmove;
+uniform lowp float _LuminanceRange;
+uniform lowp float _VagueRange;
+uniform lowp float _VaguePow;
+uniform lowp float _MaskYmove;
+uniform lowp vec4 _Disturb;
+varying highp vec2 xlv_TEXCOORD0;
+varying highp vec2 xlv_TEXCOORD1;
+void main()
+{
+
+  highp vec2 tmpvar_1;
+  highp vec2 tmpvar_2;
+  tmpvar_1.y = xlv_TEXCOORD0.y;
+  tmpvar_2.y = xlv_TEXCOORD1.y;
+  lowp vec4 col_3;
+  lowp vec2 uvy_4;
+  tmpvar_2.x = (xlv_TEXCOORD1.x + _MaskXmove);
+  uvy_4 = xlv_TEXCOORD0;
+  tmpvar_1.x = (xlv_TEXCOORD0.x + _Disturb.x);
+  uvy_4.y = ((uvy_4.y * 0.4) + _MaskYmove);
+  lowp vec4 tmpvar_5;
+  tmpvar_5 = texture2D (_MainTex, tmpvar_1);
+  lowp vec4 col_6;
+  col_6.w = tmpvar_5.w;
+  lowp vec2 uv_7;
+  uv_7 = tmpvar_1;
+  highp vec4 lm1_8;
+  lowp float tmpvar_9;
+  tmpvar_9 = (_VagueRange * 0.001);
+  lowp vec2 tmpvar_10;
+  tmpvar_10.x = (uv_7.x + tmpvar_9);
+  tmpvar_10.y = uv_7.y;
+  lowp vec4 tmpvar_11;
+  tmpvar_11 = texture2D (_MainTex, tmpvar_10);
+  highp vec4 tmpvar_12;
+  tmpvar_12 = (tmpvar_11 * 0.118318);
+  lowp vec2 tmpvar_13;
+  tmpvar_13.x = (uv_7.x - tmpvar_9);
+  tmpvar_13.y = uv_7.y;
+  lowp vec4 tmpvar_14;
+  tmpvar_14 = texture2D (_MainTex, tmpvar_13);
+  lm1_8 = (tmpvar_12 + (tmpvar_14 * 0.118318));
+  lowp vec2 tmpvar_15;
+  tmpvar_15.x = (uv_7.x - tmpvar_9);
+  tmpvar_15.y = (uv_7.y + tmpvar_9);
+  lowp vec4 tmpvar_16;
+  tmpvar_16 = texture2D (_MainTex, tmpvar_15);
+  lm1_8 = (lm1_8 + (tmpvar_16 * 0.0947416));
+  lowp vec4 tmpvar_17;
+  tmpvar_17 = texture2D (_MainTex, (uv_7 - vec2(tmpvar_9)));
+  lm1_8 = (lm1_8 + (tmpvar_17 * 0.0947416));
+  lowp vec4 tmpvar_18;
+  tmpvar_18 = texture2D (_MainTex, (uv_7 + vec2(tmpvar_9)));
+  lm1_8 = (lm1_8 + (tmpvar_18 * 0.0947416));
+  lowp vec2 tmpvar_19;
+  tmpvar_19.x = (uv_7.x + tmpvar_9);
+  tmpvar_19.y = (uv_7.y - tmpvar_9);
+  lowp vec4 tmpvar_20;
+  tmpvar_20 = texture2D (_MainTex, tmpvar_19);
+  lm1_8 = (lm1_8 + (tmpvar_20 * 0.0947416));
+  lowp vec2 tmpvar_21;
+  tmpvar_21.x = uv_7.x;
+  tmpvar_21.y = (uv_7.y + tmpvar_9);
+  lowp vec4 tmpvar_22;
+  tmpvar_22 = texture2D (_MainTex, tmpvar_21);
+  lm1_8 = (lm1_8 + (tmpvar_22 * 0.118318));
+  lowp vec2 tmpvar_23;
+  tmpvar_23.x = uv_7.x;
+  tmpvar_23.y = (uv_7.y - tmpvar_9);
+  lowp vec4 tmpvar_24;
+  tmpvar_24 = texture2D (_MainTex, tmpvar_23);
+  lm1_8 = (lm1_8 + (tmpvar_24 * 0.118318));
+  lowp vec4 tmpvar_25;
+  tmpvar_25 = texture2D (_MainTex, uv_7);
+  lm1_8 = (lm1_8 + (tmpvar_25 * 0.147761));
+  highp vec3 tmpvar_26;
+  tmpvar_26 = mix (tmpvar_5.xyz, lm1_8.xyz, vec3(_VaguePow));
+  col_6.xyz = tmpvar_26;
+  lowp vec4 col_27;
+  col_27.w = col_6.w;
+  col_27.xyz = mix (col_6.xyz, (vec3((
+    ((col_6.x * 0.2125) + (col_6.y * 0.7154))
+   + 
+    (col_6.z * 0.0721)
+  )) + _LuminanceRange), vec3(_LuminanceRange));
+  col_3.xyz = col_27.xyz;
+  col_3.w = ((tmpvar_5.w * _Alpha) * (texture2D (_MaskTex, tmpvar_2).x * texture2D (_MaskTexY, uvy_4).x));
+  gl_FragColor = col_3;
+}

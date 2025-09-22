@@ -1,0 +1,71 @@
+#include "Lighting.glsl";
+
+attribute vec4 a_Position;
+
+attribute vec2 a_Texcoord0;
+attribute vec2 a_Texcoord1;
+
+#ifdef GPU_INSTANCE
+attribute mat4 a_MvpMatrix;
+#else
+uniform mat4 u_MvpMatrix;
+#endif
+
+uniform mat4 u_WorldMat;
+uniform float u_Time;
+uniform float u_frequency;
+uniform float u_intencity;
+uniform float u_range;
+
+attribute vec4 a_Color;
+varying vec4 v_Color;
+varying vec2 v_uv0;
+varying vec2 v_uv1;
+varying vec4 v_posWorld;
+
+#ifdef TILINGOFFSET
+uniform vec4 u_TilingOffset;
+#endif
+
+#ifdef BONE
+const int c_MaxBoneCount = 24;
+attribute vec4 a_BoneIndices;
+attribute vec4 a_BoneWeights;
+uniform mat4 u_Bones[c_MaxBoneCount];
+#endif
+
+void main() {
+    vec4 position;
+#ifdef BONE
+    mat4 skinTransform = u_Bones[int(a_BoneIndices.x)] * a_BoneWeights.x;
+    skinTransform += u_Bones[int(a_BoneIndices.y)] * a_BoneWeights.y;
+    skinTransform += u_Bones[int(a_BoneIndices.z)] * a_BoneWeights.z;
+    skinTransform += u_Bones[int(a_BoneIndices.w)] * a_BoneWeights.w;
+    position=skinTransform*a_Position;
+#else
+    position=a_Position;
+#endif
+
+    v_uv0=a_Texcoord0;
+    v_uv1=a_Texcoord1;
+
+    vec4 objPos = u_WorldMat * vec4(0,0,0,1);
+
+    vec4 worldPos = u_WorldMat * position;
+    vec3 vertexAni = (vec3(0.6,0.3254902,0.1098039)*sin(((((worldPos.r-objPos.r)+(worldPos.b-objPos.b))+(u_Time*u_frequency))*u_range))*u_intencity);
+    position.xyz += vertexAni;
+    v_posWorld = u_WorldMat * position;
+
+#if defined(COLOR)&&defined(ENABLEVERTEXCOLOR)
+    v_Color = a_Color;
+#endif
+
+#ifdef GPU_INSTANCE
+    gl_Position = a_MvpMatrix * position;
+#else
+    gl_Position = u_MvpMatrix * position;
+#endif 
+
+    gl_Position=remapGLPositionZ(gl_Position);
+}
+

@@ -1,0 +1,26 @@
+#include "Lighting.glsl";
+
+attribute vec4 a_Position;
+attribute vec2 a_Texcoord0;
+attribute vec2 a_Texcoord1;
+
+uniform mat4 u_MvpMatrix;
+uniform mat4 u_WorldMat;
+
+varying vec2 v_Texcoord0;
+varying vec2 v_Texcoord1;
+
+#ifdef TILINGOFFSET
+uniform vec4 u_TilingOffset;
+#endif
+
+void main() {
+    gl_Position = u_MvpMatrix * a_Position;
+    #ifdef TILINGOFFSET
+          v_Texcoord0=TransformUV(a_Texcoord0,u_TilingOffset);
+      #else
+          v_Texcoord0=a_Texcoord0;
+      #endif
+    gl_Position = remapGLPositionZ(gl_Position);
+}
+

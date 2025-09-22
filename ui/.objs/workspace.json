@@ -1,10 +1,10 @@
 {
-  "libview.firstColumnWidth": 443,
+  "libview.firstColumnWidth": 365,
   "libview.iconScale": 0,
   "doc.openedDocs": [
+    "ui://vx9zwserj0ddob7e",
     "ui://vx9zwserj0ddob7j",
     "ui://vx9zwserj0ddob7k",
-    "ui://vx9zwserj0ddob7e",
     "ui://vx9zwserj0ddob7i"
   ],
   "packageGroup.mine": [
@@ -17,7 +17,7 @@
   "test.device": "iPhone 8 Plus",
   "canvasColor": 10066329,
   "auxline2": true,
-  "doc.activeDoc": "ui://vx9zwserj0ddob7j",
+  "doc.activeDoc": "ui://vx9zwserj0ddob7e",
   "libview.twoColumn": false,
   "libview.expandedNodes": [
     "vx9zwser",
@@ -43,9 +43,7 @@
     "vs9845at",
     "/Component/UILogin/",
     "vith2b66",
-    "/",
-    "vith2b66",
-    "/Texture/"
+    "/"
   ],
   "auxline1": true,
   "showGrid": false,

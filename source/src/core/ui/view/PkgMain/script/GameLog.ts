@@ -1,5 +1,5 @@
 import { MathUtil } from "../../../../common/math/MathUtil";
-import { NotifyConst } from "../../../../common/NotifyConst";
+import { ENotifyConst } from "../../../../common/NotifyConst";
 import { UIScriptBase } from "../../../core/UIScriptBase";
 import { UIUtil } from "../../../tool/UIUtil";
 import { RenderTextView } from "../view/renders/RenderTextView";
@@ -44,14 +44,14 @@ export class GameLog extends UIScriptBase<fgui.GList> {
         item.refreshText(this._logs[index]);
     }
 
-    @InterestNotify(NotifyConst.AddGameLog)
+    @InterestNotify(ENotifyConst.AddGameLog)
     private addLog(log: string | string[]) {
         if (Array.isArray(log)) this._logs.push(...log);
         else this._logs.push(log);
         Laya.timer.callLater(this, this.refreshLogList);
     }
 
-    @InterestNotify(NotifyConst.ClearGameLog)
+    @InterestNotify(ENotifyConst.ClearGameLog)
     private clearLog() {
         this._logs.length = 0;
         Laya.timer.callLater(this, this.refreshLogList);

@@ -1,4 +1,4 @@
-import { NotifyConst } from "../../common/NotifyConst";
+import { ENotifyConst } from "../../common/NotifyConst";
 import { SingletonExtend } from "../../common/Singleton";
 import { RDDefineInit, RDMap } from "./RedDotDefine";
 import { RedDotNode } from "./RedDotNode";
@@ -12,13 +12,13 @@ export class RedDotManager extends SingletonExtend<RedDotManager, Laya.EventDisp
         facade.interestNotify(this);
     }
 
-    @InterestNotify(NotifyConst.RedDotCompAwake)
+    @InterestNotify(ENotifyConst.RedDotCompAwake)
     private onRedDotCompAwake(comp: fgui.GComponent) {
         const data = this.getRDByComp(RDMap.Root, comp);
         data && data.refresh();
     }
 
-    @InterestNotify(NotifyConst.RedDotCompDestroy)
+    @InterestNotify(ENotifyConst.RedDotCompDestroy)
     private onRedDotCompDestroy(comp: fgui.GComponent) {
         const data = this.getRDByComp(RDMap.Root, comp);
         data && data.recover();

@@ -1,4 +1,4 @@
-declare interface UIConfirmData {
+declare interface IUIConfirmData {
     format: 0 | 1 | 2 | 3;
     title: string;
     content: string;

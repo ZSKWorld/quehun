@@ -2,12 +2,12 @@ import { SocketEvent } from "../../core/net/WebSocket";
 import { LogicSceneBase } from "../SceneBase";
 import { SceneType } from "../SceneDefine";
 
-export interface SceneLoginData {
+export interface ISceneLoginData {
 
 }
 
 /** 登录逻辑场景 */
-export class SceneLogin extends LogicSceneBase<SceneLoginData> {
+export class SceneLogin extends LogicSceneBase<ISceneLoginData> {
     override readonly type = SceneType.LoginScene;
     protected override getNormalResArray() {
         return [

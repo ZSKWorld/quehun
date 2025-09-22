@@ -69,7 +69,7 @@ declare interface ISkeletonManager {
     dispose(url: string): void;
 }
 
-declare enum LocalDataKey {
+declare enum ELocalDataKey {
     /** 自动登录 */
     AutoLogin = "LocalDataKey_AutoLogin",
     /** 上次登录账号 */
@@ -79,11 +79,11 @@ declare enum LocalDataKey {
 }
 
 declare interface ILocalDataManager {
-    set<T = any>(key: LocalDataKey, value: T): void;
+    set<T = any>(key: ELocalDataKey, value: T): void;
 
-    get<T = any>(key: LocalDataKey): T;
+    get<T = any>(key: ELocalDataKey): T;
 
-    remove(key: LocalDataKey): void;
+    remove(key: ELocalDataKey): void;
 
     removeAll(): void;
 }

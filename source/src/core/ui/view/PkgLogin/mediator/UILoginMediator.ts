@@ -2,7 +2,7 @@ import { MediatorBase } from "../../../../mvc/view/MediatorBase";
 import { ELoginByType } from "../event/UILoginEvent";
 import { UILoginMsg, UILoginView } from "../view/UILoginView";
 
-export interface UILoginData {
+export interface IUILoginData {
 
 }
 
@@ -19,11 +19,11 @@ const enum ELoginType {
 	Token,
 }
 
-export class UILoginMediator extends MediatorBase<UILoginView, UILoginData> {
+export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 	private _lastLoginData: ILastLoginData;
 	private _loginByType = ELoginByType.None;
-	private _accountInput = { account: "", password: "" }
-	private _phoneInput = { account: "", password: "" }
+	private _accountInput = { account: "", password: "" };
+	private _phoneInput = { account: "", password: "" };
 
 	override onAwake() {
 		this.addEvent(UILoginMsg.OnBtnLoginClick, this.onBtnLoginClick);
@@ -38,8 +38,8 @@ export class UILoginMediator extends MediatorBase<UILoginView, UILoginData> {
 	}
 
 	override onEnable() {
-		const autoLogin = !!localDataMgr.get(LocalDataKey.AutoLogin);
-		const lastLoginData = this._lastLoginData = localDataMgr.get(LocalDataKey.LastLoginData);
+		const autoLogin = !!localDataMgr.get(ELocalDataKey.AutoLogin);
+		const lastLoginData = this._lastLoginData = localDataMgr.get(ELocalDataKey.LastLoginData);
 		let loginType = ELoginType.Account;
 		let loginByType = ELoginByType.Account;
 		if (lastLoginData) {
@@ -92,7 +92,7 @@ export class UILoginMediator extends MediatorBase<UILoginView, UILoginData> {
 	private onBtnLogoutClick() {
 		Laya.timer.clear(this, this.sendLogin);
 		this.view.ctrl_page.selectedIndex = 0;
-		localDataMgr.remove(LocalDataKey.AutoLogin);
+		localDataMgr.remove(ELocalDataKey.AutoLogin);
 	}
 
 	private setLoginByType(type: ELoginByType) {
@@ -120,8 +120,8 @@ export class UILoginMediator extends MediatorBase<UILoginView, UILoginData> {
 	private doLogin(type: ELoginType) {
 		const { view, _loginByType } = this;
 		view.ctrl_page.selectedIndex = 1;
-		localDataMgr.set(LocalDataKey.AutoLogin, 1);
-		localDataMgr.set<ILastLoginData>(LocalDataKey.LastLoginData, {
+		localDataMgr.set(ELocalDataKey.AutoLogin, 1);
+		localDataMgr.set<ILastLoginData>(ELocalDataKey.LastLoginData, {
 			loginByType: _loginByType,
 			loginType: type,
 			account: view.itxt_account.text,

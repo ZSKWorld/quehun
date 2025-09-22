@@ -1,4 +1,4 @@
-const enum LogLevel {
+const enum ELogLevel {
     Log = "Log",
     Warn = "Warn",
     Error = "Error",
@@ -18,11 +18,11 @@ export class Logger {
     /** 是否开启日志打印，全局开关 */
     private static _enable: boolean = true;
     /** 各类型日志 字体颜色和背景色 */
-    private static _color: { [key in LogLevel]: [string, string, string] } = {
-        [LogLevel.Log]: ["#FFFFFF", "#00AAFF", "#FF0000"],
-        [LogLevel.Warn]: ["#000080", "#FFC900", "#FF0000"],
-        [LogLevel.Error]: ["#FF0000", "#FFC8C8", "#FF0000"],
-        [LogLevel.Assert]: ["#FF0000", "#FFC8C8", "#FF0000"],
+    private static _color: { [key in ELogLevel]: [string, string, string] } = {
+        [ELogLevel.Log]: ["#FFFFFF", "#00AAFF", "#FF0000"],
+        [ELogLevel.Warn]: ["#000080", "#FFC900", "#FF0000"],
+        [ELogLevel.Error]: ["#FF0000", "#FFC8C8", "#FF0000"],
+        [ELogLevel.Assert]: ["#FF0000", "#FFC8C8", "#FF0000"],
     }
 
     /**
@@ -54,7 +54,7 @@ export class Logger {
      * @param name 名称
      * @param args 参数
      */
-    private static processingLogParam(type: LogLevel, name: string, ...args: any[]) {
+    private static processingLogParam(type: ELogLevel, name: string, ...args: any[]) {
         return args;
         const borderRadius = 7;
         name += name ? ":" : "";
@@ -86,14 +86,14 @@ export class Logger {
      * @param name 名称
      * @param args 参数
      */
-    private static doLog(type: LogLevel, name: string, ...args: any[]) {
+    private static doLog(type: ELogLevel, name: string, ...args: any[]) {
         if (!this._enable) return;
         const logArr = this.processingLogParam(type, name, ...args);
         switch (type) {
-            case LogLevel.Log: this._consoleMap.log.call(console, ...logArr); break;
-            case LogLevel.Warn: this._consoleMap.warn.call(console, ...logArr); break;
-            case LogLevel.Error: this._consoleMap.error.call(console, ...logArr); break;
-            case LogLevel.Assert: this._consoleMap.error.call(console, ...logArr); break;
+            case ELogLevel.Log: this._consoleMap.log.call(console, ...logArr); break;
+            case ELogLevel.Warn: this._consoleMap.warn.call(console, ...logArr); break;
+            case ELogLevel.Error: this._consoleMap.error.call(console, ...logArr); break;
+            case ELogLevel.Assert: this._consoleMap.error.call(console, ...logArr); break;
             default: break;
         }
     }
@@ -104,13 +104,13 @@ export class Logger {
         private _enable: boolean = true,
     ) { }
 
-    log(...args: any[]) { this._enable && Logger.doLog(LogLevel.Log, this._name, ...args); }
+    log(...args: any[]) { this._enable && Logger.doLog(ELogLevel.Log, this._name, ...args); }
 
-    warn(...args: any[]) { this._enable && Logger.doLog(LogLevel.Warn, this._name, ...args); }
+    warn(...args: any[]) { this._enable && Logger.doLog(ELogLevel.Warn, this._name, ...args); }
 
-    error(...args: any[]) { this._enable && Logger.doLog(LogLevel.Error, this._name, ...args); }
+    error(...args: any[]) { this._enable && Logger.doLog(ELogLevel.Error, this._name, ...args); }
 
-    assert(assert: boolean, tipText?: string) { this._enable && !assert && Logger.doLog(LogLevel.Assert, this._name, tipText || "assert failed !"); }
+    assert(assert: boolean, tipText?: string) { this._enable && !assert && Logger.doLog(ELogLevel.Assert, this._name, tipText || "assert failed !"); }
 
     private setEnable(enable: boolean) { this._enable = enable; return this; }
 }

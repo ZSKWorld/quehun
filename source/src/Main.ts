@@ -1,6 +1,6 @@
 import { GlobalInitialize } from "./GlobalInitializer";
 import { InitContextCommand } from "./contextCommand/InitContextCommand";
-import { NotifyConst } from "./core/common/NotifyConst";
+import { ENotifyConst } from "./core/common/NotifyConst";
 import { ViewExtend } from "./core/ui/core/ViewExtend";
 import { FGUIExtend } from "./engine/FGUIExtend";
 import { FGUIRepair } from "./engine/FGUIRepair";
@@ -33,12 +33,12 @@ class Main {
 		fgui.UIConfig.defaultFont = ResPath.FontName.HYWH;
 		Laya.InputManager.multiTouchEnabled = false;
 
-        Laya.stage.on(Laya.Event.VISIBILITY_CHANGE, this, () => {
-            if (Laya.stage.isVisibility) facade.dispatch(NotifyConst.OnGameShow);
-            else facade.dispatch(NotifyConst.OnGameHide);
-        });
-		facade.registerCommand(NotifyConst.InitContext, InitContextCommand);
-		facade.dispatch(NotifyConst.InitContext);
+		Laya.stage.on(Laya.Event.VISIBILITY_CHANGE, this, () => {
+			if (Laya.stage.isVisibility) facade.dispatch(ENotifyConst.OnGameShow);
+			else facade.dispatch(ENotifyConst.OnGameHide);
+		});
+		facade.registerCommand(ENotifyConst.InitContext, InitContextCommand);
+		facade.dispatch(ENotifyConst.InitContext);
 	}
 }
 

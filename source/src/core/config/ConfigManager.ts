@@ -1,4 +1,4 @@
-interface SheetRawData {
+interface ISheetRawData {
     /** excel 名字 */
     table: string;
     /** sheet 名字 */
@@ -213,7 +213,7 @@ export class ConfigManager implements IConfigManager {
         const data = {};
         schemas.forEach(t => { schema[t.name] = t; });
         datas.forEach(d => { data[d.name] = d; });
-        const sheetRawData: SheetRawData[] = [];
+        const sheetRawData: ISheetRawData[] = [];
         Object.keys(schema).forEach(name => {
             const tableSchema = schema[name];
             const tableData = data[name];

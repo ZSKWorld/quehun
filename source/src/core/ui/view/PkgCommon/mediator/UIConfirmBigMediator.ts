@@ -10,7 +10,7 @@ export class UIConfirmBigMediator extends ConfirmBaseMediator<UIConfirmBigView> 
 	}
 
 	private onBtnConfirmClick() {
-		
+
 	}
 
 }

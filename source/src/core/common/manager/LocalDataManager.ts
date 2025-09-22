@@ -1,4 +1,4 @@
-export enum LocalDataKey {
+export enum ELocalDataKey {
     /** 自动登录 */
     AutoLogin = "LocalDataKey_AutoLogin",
     /** 上次登录账号 */

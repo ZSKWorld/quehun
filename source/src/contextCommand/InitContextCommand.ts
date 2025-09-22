@@ -1,4 +1,4 @@
-import { NotifyConst } from "../core/common/NotifyConst";
+import { ENotifyConst } from "../core/common/NotifyConst";
 import { CommandQueue } from "../core/mvc/controller/CommandQueue";
 import { GamePreloadCommand } from "./GamePreloadCommand";
 import { InitGameCommand } from "./InitGameCommand";
@@ -7,7 +7,7 @@ import { InitViewCommand } from "./InitViewCommand";
 
 export class InitContextCommand extends CommandQueue {
     protected override initialize() {
-        facade.removeCommand(NotifyConst.InitContext);
+        facade.removeCommand(ENotifyConst.InitContext);
         this.addSubCommand(InitModelCommand);
         this.addSubCommand(InitViewCommand);
         this.addSubCommand(InitGameCommand);

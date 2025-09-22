@@ -1,4 +1,4 @@
-export const enum NotifyConst {
+export const enum ENotifyConst {
 	/** 初始化上下文 */
 	InitContext = "NotifyConst_InitContext",
 	/** 游戏回到前台事件 */

@@ -1,5 +1,3 @@
-import { NotifyConst } from "../../common/NotifyConst";
-import { GameUtil } from "../../common/utils/GameUtil";
 
 /** UI工具类 */
 export class UIUtil {

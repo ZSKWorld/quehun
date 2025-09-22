@@ -7,10 +7,10 @@ export class GameManager implements IGameManager {
     private _version: { version: string; };
     get deviceId() {
         if (!this._deviceId) {
-            this._deviceId = localDataMgr.get(LocalDataKey.DeviceId);
+            this._deviceId = localDataMgr.get(ELocalDataKey.DeviceId);
             if (!this._deviceId) {
                 this._deviceId = GameUtil.createUUID();
-                localDataMgr.set(LocalDataKey.DeviceId, this._deviceId);
+                localDataMgr.set(ELocalDataKey.DeviceId, this._deviceId);
             }
         }
         return this._deviceId;

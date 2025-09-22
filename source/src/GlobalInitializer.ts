@@ -1,5 +1,5 @@
 import { LoadManager } from "./core/common/manager/LoadManager";
-import { LocalDataKey, LocalDataManager } from "./core/common/manager/LocalDataManager";
+import { ELocalDataKey, LocalDataManager } from "./core/common/manager/LocalDataManager";
 import { SkeletonManager } from "./core/common/manager/SkeletonManager";
 import { GameUtil } from "./core/common/utils/GameUtil";
 import { ConfigManager } from "./core/config/ConfigManager";
@@ -20,13 +20,13 @@ windowImmit("uiMgr", new UIManager());
 windowImmit("pbMgr", new PbManager());
 windowImmit("tipMgr", new TipManager());
 windowImmit("netMgr", new NetManager());
+windowImmit("ELocalDataKey", ELocalDataKey);
 windowImmit("loadMgr", new LoadManager());
 windowImmit("gameMgr", new GameManager());
 windowImmit("cfgMgr", new ConfigManager());
 windowImmit("sceneMgr", new SceneManager());
 windowImmit("skeletonMgr", new SkeletonManager());
 windowImmit("localDataMgr", new LocalDataManager());
-windowImmit("LocalDataKey", LocalDataKey);
 
 windowImmit("$localizeTxt", function (id: number, ...args: any[]) {
     const d_excel = cfgMgr.str.str[id];
@@ -41,7 +41,7 @@ windowImmit("$localizeTxt", function (id: number, ...args: any[]) {
         }
     }
     return s;
-})
+});
 
 windowImmit("$confirm", (title: string, msg: string, cancel = true) => {
     if (!fgui.UIPackage.getByName(ResPath.PkgName.PkgCommon))

@@ -8,8 +8,4 @@ export class UIConfirmSmallMediator extends ConfirmBaseMediator<UIConfirmSmallVi
 		this.addEvent(UIConfirmSmallMsg.OnBtnConfirmClick, this.onBtnConfirmClick);
 		this.addEvent(UIConfirmSmallMsg.OnBtnCancelClick, this.closeSelf);
 	}
-
-	private onBtnConfirmClick() {
-
-	}
 }

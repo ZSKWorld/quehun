@@ -28,6 +28,7 @@ export class NetManager extends Observer implements INetManager {
         }
 
         this._lobbySocket.on(SocketEvent.ConnectSuccess, this, () => {
+            Logger.error("socket open")
         });
         this._lobbySocket.on(SocketEvent.Response, this, (methodName: string, data: any) => {
             Logger.error("response " + methodName, data);

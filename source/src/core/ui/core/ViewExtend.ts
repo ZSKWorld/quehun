@@ -56,8 +56,8 @@ export class ViewExtend {
 	}
 
 	private static viewExtend(prototype: IViewExtend) {
-		prototype.dispatch = function (...args) { return facade.dispatch(...args); };
-		prototype.openView = function (...args) { return uiMgr.openView(...args); };
+		prototype.dispatch = function (...args) { facade.dispatch(...args); };
+		prototype.openView = function (...args) { uiMgr.openView(...args); };
 		prototype.closeSelf = function () {
 			const { viewId, viewType } = (<IViewExtend>this);
 			(viewType == ViewType.UI) && uiMgr.closeView(viewId);

@@ -8,8 +8,4 @@ export class UIConfirmMiddleMediator extends ConfirmBaseMediator<UIConfirmMiddle
 		this.addEvent(UIConfirmMiddleMsg.OnBtnConfirmClick, this.onBtnConfirmClick);
 		this.addEvent(UIConfirmMiddleMsg.OnBtnCancelClick, this.closeSelf);
 	}
-
-	private onBtnConfirmClick() {
-
-	}
 }

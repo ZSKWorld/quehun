@@ -99,7 +99,7 @@ export class UIManager extends Observer implements IUIManager {
 		} else {
 			mediator = this._openedViews[openedIndex];
 		}
-		return this.openView2(mediator, data);
+		this.openView2(mediator, data);
 	}
 
 	closeView(viewId: ViewID) {
@@ -155,8 +155,9 @@ export class UIManager extends Observer implements IUIManager {
 			this._openedViews.unshift(mediator);
 			mediator.view.removeFromParent();
 			this.addToLayer(mediator.view, mediator.view.layer || Layer.UIBottom);
-			return mediator.onOpenAni().finally(this.openViewFinal.bind(this));
-		} else return this.openViewFinal();
+			mediator.onOpenAni().finally(this.openViewFinal.bind(this));
+		} else 
+			this.openViewFinal();
 	}
 
 	private openViewFinal() {

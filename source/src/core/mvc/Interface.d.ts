@@ -65,7 +65,7 @@ declare interface IViewExtend {
      * @param viewId 页面id
      * @param data 传入参数
      */
-    openView<T = any>(viewId: ViewID, data?: T): Promise<void>;
+    openView<T = any>(viewId: ViewID, data?: T): void;
 
     /** 移除当前页面，只有UI界面才能移除自身，其他Com，Btn，Render之类的无效 */
     closeSelf(): void;

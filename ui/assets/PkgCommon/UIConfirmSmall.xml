@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" designImage="ui://ca43vz0ejdu67plnjm" designImageOffsetX="-239" designImageOffsetY="-44" designImageAlpha="0" designImageLayer="1">
+<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0ejdu67plnjm" designImageOffsetX="-239" designImageOffsetY="-44" designImageAlpha="0" designImageLayer="1">
   <controller name="format" pages="6,,7,,8,,9," selected="0"/>
   <displayList>
     <component id="n0_j0dd" name="n0" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" xy="960,540" pivot="0.5,0.5" anchor="true" size="838,512"/>

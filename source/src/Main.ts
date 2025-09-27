@@ -34,11 +34,11 @@ class Main {
 		Laya.InputManager.multiTouchEnabled = false;
 
 		Laya.stage.on(Laya.Event.VISIBILITY_CHANGE, this, () => {
-			if (Laya.stage.isVisibility) facade.dispatch(ENotifyConst.OnGameShow);
-			else facade.dispatch(ENotifyConst.OnGameHide);
+			if (Laya.stage.isVisibility) $facade.dispatch(ENotifyConst.OnGameShow);
+			else $facade.dispatch(ENotifyConst.OnGameHide);
 		});
-		facade.registerCommand(ENotifyConst.InitContext, InitContextCommand);
-		facade.dispatch(ENotifyConst.InitContext);
+		$facade.registerCommand(ENotifyConst.InitContext, InitContextCommand);
+		$facade.dispatch(ENotifyConst.InitContext);
 	}
 }
 

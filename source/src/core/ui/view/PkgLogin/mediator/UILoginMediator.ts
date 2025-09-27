@@ -38,8 +38,8 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 	}
 
 	override onEnable() {
-		const autoLogin = !!localDataMgr.get(ELocalDataKey.AutoLogin);
-		const lastLoginData = this._lastLoginData = localDataMgr.get(ELocalDataKey.LastLoginData);
+		const autoLogin = !!$localDataMgr.get(ELocalDataKey.AutoLogin);
+		const lastLoginData = this._lastLoginData = $localDataMgr.get(ELocalDataKey.LastLoginData);
 		let loginType = ELoginType.Account;
 		let loginByType = ELoginByType.Account;
 		if (lastLoginData) {
@@ -92,7 +92,7 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 	private onBtnLogoutClick() {
 		Laya.timer.clear(this, this.sendLogin);
 		this.view.ctrl_page.selectedIndex = 0;
-		localDataMgr.remove(ELocalDataKey.AutoLogin);
+		$localDataMgr.remove(ELocalDataKey.AutoLogin);
 	}
 
 	private setLoginByType(type: ELoginByType) {
@@ -120,8 +120,8 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 	private doLogin(type: ELoginType) {
 		const { view, _loginByType } = this;
 		view.ctrl_page.selectedIndex = 1;
-		localDataMgr.set(ELocalDataKey.AutoLogin, 1);
-		localDataMgr.set<ILastLoginData>(ELocalDataKey.LastLoginData, {
+		$localDataMgr.set(ELocalDataKey.AutoLogin, 1);
+		$localDataMgr.set<ILastLoginData>(ELocalDataKey.LastLoginData, {
 			loginByType: _loginByType,
 			loginType: type,
 			account: view.itxt_account.text,
@@ -134,21 +134,21 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 	private sendLogin(type: ELoginType) {
 		const view = this.view;
 		if (type == ELoginType.Account) {
-			netMgr.login({
+			$netMgr.login({
 				account: view.itxt_account.text,
-				password: GameUtil.HmacSHA256(view.itxt_password.text),
+				password: $gameUtil.HmacSHA256(view.itxt_password.text),
 				reconnect: false,
-				device: gameMgr.deviceInfo,
-				random_key: gameMgr.deviceId,
+				device: $gameMgr.deviceInfo,
+				random_key: $gameMgr.deviceId,
 				client_version: {
-					resource: gameMgr.version,
+					resource: $gameMgr.version,
 					package: "",
 				},
 				gen_access_token: true,
-				currency_platforms: gameMgr.currency,
+				currency_platforms: $gameMgr.currency,
 				type: 0,
-				client_version_string: gameMgr.clientVersion,
-				tag: gameMgr.reportClientType,
+				client_version_string: $gameMgr.clientVersion,
+				tag: $gameMgr.reportClientType,
 				version: 0,
 			});
 		}

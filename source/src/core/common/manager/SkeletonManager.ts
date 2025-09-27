@@ -14,7 +14,7 @@ export class SkeletonManager implements ISkeletonManager {
             return Promise.resolve<Laya.Templet[]>([]);
         }
         const loadUrl = url.filter(v => !this._templetMap.get(v));
-        const promise = loadMgr.load<Laya.Templet, string[]>(loadUrl, null, progress).then(data => {
+        const promise = $loadMgr.load<Laya.Templet, string[]>(loadUrl, null, progress).then(data => {
             data.forEach(v => this._templetMap[v.url] = v);
             return url.map(v => this._templetMap.get(v));
         });

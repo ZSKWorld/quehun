@@ -20,9 +20,9 @@ export class TipManager implements ITipManager {
         this._inCD = false;
         if (!this._cache.length) return;
         this._inCD = true;
-        const mediator = Laya.Pool.getItemByCreateFun(UIPoolKey.TipInfo, () => facade.createMediator(ViewID.ComTipInfoView));
+        const mediator = Laya.Pool.getItemByCreateFun(UIPoolKey.TipInfo, () => $facade.createMediator(ViewID.ComTipInfoView));
         mediator.data = { text: this._cache.shift(), color: this._cache.shift() };
-        uiMgr.addToLayer(mediator.view, Layer.UITop);
+        $uiMgr.addToLayer(mediator.view, Layer.UITop);
         Laya.timer.once(100, this, this.showNext);
     }
 }

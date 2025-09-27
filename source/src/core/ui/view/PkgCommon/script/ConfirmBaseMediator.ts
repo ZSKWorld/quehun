@@ -34,6 +34,12 @@ export abstract class ConfirmBaseMediator<V extends IConfirmView = IConfirmView,
     }
 
     protected onBtnConfirmClick() {
+        this.data.onConfirm?.run();
+        this.closeSelf();
+    }
 
+    protected onBtnCancelClick() {
+        this.data.onCancel?.run();
+        this.closeSelf();
     }
 }

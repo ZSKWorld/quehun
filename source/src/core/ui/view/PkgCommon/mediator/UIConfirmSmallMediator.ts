@@ -4,8 +4,8 @@ import { UIConfirmSmallMsg, UIConfirmSmallView } from "../view/UIConfirmSmallVie
 export class UIConfirmSmallMediator extends ConfirmBaseMediator<UIConfirmSmallView> {
 
 	override onAwake() {
-		this.addEvent(UIConfirmSmallMsg.OnBtnCloseClick, this.closeSelf);
+		this.addEvent(UIConfirmSmallMsg.OnBtnCloseClick, this.onBtnCancelClick);
 		this.addEvent(UIConfirmSmallMsg.OnBtnConfirmClick, this.onBtnConfirmClick);
-		this.addEvent(UIConfirmSmallMsg.OnBtnCancelClick, this.closeSelf);
+		this.addEvent(UIConfirmSmallMsg.OnBtnCancelClick, this.onBtnCancelClick);
 	}
 }

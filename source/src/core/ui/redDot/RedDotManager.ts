@@ -9,7 +9,7 @@ export class RedDotManager extends SingletonExtend<RedDotManager, Laya.EventDisp
         RedDotNode.eventCenter = this;
         RedDotTrigger.Inst.init(this);
         RDDefineInit();
-        facade.interestNotify(this);
+        $facade.interestNotify(this);
     }
 
     @InterestNotify(ENotifyConst.RedDotCompAwake)

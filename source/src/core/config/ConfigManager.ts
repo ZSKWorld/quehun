@@ -60,8 +60,8 @@ export class ConfigManager implements IConfigManager {
     //#endregion
 
     async init() {
-        const tblPbCfg = await loadMgr.fetch(ResPath.ConfigPath.Tbl_pbConfig, "text");
-        const lqcBin = await loadMgr.fetch(ResPath.ConfigPath.Lqc, "arraybuffer");
+        const tblPbCfg = await $loadMgr.fetch(ResPath.ConfigPath.Tbl_pbConfig, "text");
+        const lqcBin = await $loadMgr.fetch(ResPath.ConfigPath.Lqc, "arraybuffer");
 
         const bytes = new Laya.Byte(lqcBin);
         const rawData = this.parseConfig(tblPbCfg, bytes.readUint8Array(0, bytes.length))
@@ -106,7 +106,7 @@ export class ConfigManager implements IConfigManager {
             }
 
             this[sheet.table][sheet.sheet] = configSheet;
-            
+
             const proto = configSheet["__proto__"] = { rows } as any;
             if (groups) proto.groups = groups;
             const defineFun = (funName: string) => {

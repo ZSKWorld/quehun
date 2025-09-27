@@ -11,19 +11,19 @@ interface IGameConfig {
 
 export class GamePreloadCommand extends Command {
     override execute(notifyName: string, data?: any) {
-        uiMgr.init();
-        sceneMgr.init([
+        $uiMgr.init();
+        $sceneMgr.init([
             new SceneLogin(),
             new SceneMain(),
         ]);
         RedDotManager.Inst.init();
         this.load().then(() => {
-            sceneMgr.enterScene(SceneType.LoginScene);
+            $sceneMgr.enterScene(SceneType.LoginScene);
         });
     }
 
     private async load() {
-        const config: IGameConfig = await loadMgr.fetch(ResPath.UnclassifiedPath.Gameconfig, "json");
+        const config: IGameConfig = await $loadMgr.fetch(ResPath.UnclassifiedPath.Gameconfig, "json");
         config.stat && Laya.Stat.show(0, 0, [
             Laya.Stat.FPSStatUIParams,
             Laya.Stat.NodeStatUIParams,
@@ -35,12 +35,12 @@ export class GamePreloadCommand extends Command {
             Laya.Stat.RenderTextureMemory,
             Laya.Stat.BufferMemory,
         ]);
-        await loadMgr.loadPackage(ResPath.PkgPath.PkgEntrance);
-        uiMgr.openView(ViewID.UIEntranceView);
-        await gameMgr.init();
-        await pbMgr.init();
-        await cfgMgr.init();
-        await netMgr.init();
+        await $loadMgr.loadPackage(ResPath.PkgPath.PkgEntrance);
+        $uiMgr.openView(ViewID.UIEntranceView);
+        await $gameMgr.init();
+        await $pbMgr.init();
+        await $cfgMgr.init();
+        await $netMgr.init();
         await new Promise(resolve => Laya.timer.once(1000, null, resolve));
     }
 }

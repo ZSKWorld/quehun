@@ -53,15 +53,13 @@ export class UIManager extends Observer implements IUIManager {
 		const gRoot = fgui.GRoot.inst;
 		Laya.stage.addChild(gRoot.displayObject);
 		for (const key in Layer) {
-			if (Object.prototype.hasOwnProperty.call(Layer, key)) {
-				const layer = new fgui.GComponent();
-				layer.name = Layer[key];
-				gRoot.addChild(layer);
-				this._layerMap[layer.name] = layer;
-				layer.displayObject.mouseThrough = true;
-				layer.displayObject.mouseEnabled = true;
-				layer.makeFullScreen();
-			}
+			const layer = new fgui.GComponent();
+			layer.name = Layer[key];
+			gRoot.addChild(layer);
+			this._layerMap[layer.name] = layer;
+			layer.displayObject.mouseThrough = true;
+			layer.displayObject.mouseEnabled = true;
+			layer.makeFullScreen();
 		}
 
 		this._cache = new UICache();
@@ -90,19 +88,27 @@ export class UIManager extends Observer implements IUIManager {
 		return topView == view || topView.view == view;
 	}
 
-	openView<T = any>(viewId: ViewID, data?: T) {
+	async openView<T = any>(viewId: ViewID, data?: T) {
 		this.lockMark++;
 		let mediator: IMediator;
-		let openedIndex = this._openedViews.findIndex(v => v.viewId == viewId);
-		if (openedIndex == -1) {
-			mediator = this._cache.get(viewId) || facade.createMediator(viewId, true);
+		const openIndex = this._openedViews.findIndex(v => v.viewId == viewId);
+		if (openIndex == -1) {
+			mediator = this._cache.get(viewId) || $facade.createMediator(viewId, true);
 		} else {
-			mediator = this._openedViews[openedIndex];
+			mediator = this._openedViews[openIndex];
 		}
-		this.openView2(mediator, data);
+
+		this._openedStack.push(mediator.viewId);
+		data && (mediator.data = data);
+		openIndex >= 0 && this._openedViews.splice(openIndex, 1);
+		this._openedViews.unshift(mediator);
+		mediator.view.removeFromParent();
+		this.addToLayer(mediator.view, mediator.view.layer || Layer.UIBottom);
+		await mediator.onOpenAni();
+		this.lockMark--;
 	}
 
-	closeView(viewId: ViewID) {
+	async closeView(viewId: ViewID) {
 		const index = this._openedViews.findIndex(v => v.viewId == viewId);
 		if (index <= -1) return;
 		const mediator = this._openedViews[index];
@@ -116,15 +122,14 @@ export class UIManager extends Observer implements IUIManager {
 		if (stackIndex == -1) Logger.error("未知得stack view id");
 		else this._openedStack.splice(stackIndex, 1);
 		this.lockMark++;
-		mediator.onCloseAni().then(() => {
-			this._cache.cache(mediator);
-			mediator.view.removeFromParent();
-			this.lockMark--;
-			const nextViewId = this._openedStack[this._openedStack.length - 1];
-			const topViewId = this._openedViews[0]?.viewId;
-			if (topViewId != nextViewId)
-				this.openView(this._openedStack.pop());
-		});
+		await mediator.onCloseAni();
+		this._cache.cache(mediator);
+		mediator.view.removeFromParent();
+		this.lockMark--;
+		const nextViewId = this._openedStack[this._openedStack.length - 1];
+		const topViewId = this._openedViews[0]?.viewId;
+		if (topViewId != nextViewId)
+			this.openView(this._openedStack.pop());
 	}
 
 	closeAllView() {
@@ -144,25 +149,6 @@ export class UIManager extends Observer implements IUIManager {
 			this._openedViews.splice(index, 1);
 			mediator.view.dispose();
 		}
-	}
-
-	private openView2(mediator: IMediator, data: any) {
-		if (mediator) {
-			this._openedStack.push(mediator.viewId);
-			mediator.data = data || mediator.data;
-			const openIndex = this._openedViews.findIndex(v => v == mediator);
-			openIndex >= 0 && this._openedViews.splice(openIndex, 1);
-			this._openedViews.unshift(mediator);
-			mediator.view.removeFromParent();
-			this.addToLayer(mediator.view, mediator.view.layer || Layer.UIBottom);
-			mediator.onOpenAni().finally(this.openViewFinal.bind(this));
-		} else 
-			this.openViewFinal();
-	}
-
-	private openViewFinal() {
-		this.lockMark--;
-		return Promise.resolve();
 	}
 
 	private onResize() {

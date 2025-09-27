@@ -4,8 +4,8 @@ import { UIConfirmMiddleMsg, UIConfirmMiddleView } from "../view/UIConfirmMiddle
 export class UIConfirmMiddleMediator extends ConfirmBaseMediator<UIConfirmMiddleView> {
 
 	override onAwake() {
-		this.addEvent(UIConfirmMiddleMsg.OnBtnCloseClick, this.closeSelf);
+		this.addEvent(UIConfirmMiddleMsg.OnBtnCloseClick, this.onBtnCancelClick);
 		this.addEvent(UIConfirmMiddleMsg.OnBtnConfirmClick, this.onBtnConfirmClick);
-		this.addEvent(UIConfirmMiddleMsg.OnBtnCancelClick, this.closeSelf);
+		this.addEvent(UIConfirmMiddleMsg.OnBtnCancelClick, this.onBtnCancelClick);
 	}
 }

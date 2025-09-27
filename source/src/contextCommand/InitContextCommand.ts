@@ -7,7 +7,7 @@ import { InitViewCommand } from "./InitViewCommand";
 
 export class InitContextCommand extends CommandQueue {
     protected override initialize() {
-        facade.removeCommand(ENotifyConst.InitContext);
+        $facade.removeCommand(ENotifyConst.InitContext);
         this.addSubCommand(InitModelCommand);
         this.addSubCommand(InitViewCommand);
         this.addSubCommand(InitGameCommand);

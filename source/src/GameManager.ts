@@ -1,5 +1,3 @@
-import { GameUtil } from "./core/common/utils/GameUtil";
-
 export class GameManager implements IGameManager {
 
     private _inDmm = false;
@@ -7,10 +5,10 @@ export class GameManager implements IGameManager {
     private _version: { version: string; };
     get deviceId() {
         if (!this._deviceId) {
-            this._deviceId = localDataMgr.get(ELocalDataKey.DeviceId);
+            this._deviceId = $localDataMgr.get(ELocalDataKey.DeviceId);
             if (!this._deviceId) {
-                this._deviceId = GameUtil.createUUID();
-                localDataMgr.set(ELocalDataKey.DeviceId, this._deviceId);
+                this._deviceId = $gameUtil.createUUID();
+                $localDataMgr.set(ELocalDataKey.DeviceId, this._deviceId);
             }
         }
         return this._deviceId;
@@ -42,7 +40,7 @@ export class GameManager implements IGameManager {
     get version() { return this._version?.version || ""; }
     get clientVersion() { return 'web-' + this.version.replace('.w', ''); }
     get currency() {
-        const info = cfgMgr.mall.channel_config[this.payChannelId];
+        const info = $cfgMgr.mall.channel_config[this.payChannelId];
         if (!info.currency_platforms) return [];
         return info.currency_platforms.split("-").map(Number);
     }
@@ -74,7 +72,7 @@ export class GameManager implements IGameManager {
     }
 
     async init() {
-        const version = await loadMgr.fetch("https://game.maj-soul.com/1/version.json", "json", null, { ignoreCache: true });
+        const version = await $loadMgr.fetch("https://game.maj-soul.com/1/version.json", "json", null, { ignoreCache: true });
         this._version = version;
     }
 

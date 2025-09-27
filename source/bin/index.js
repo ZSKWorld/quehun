@@ -41,9 +41,9 @@ loadLib("libs_game/extend.js");
 loadLib("libs_game/logger.js");
 loadLib("libs_game/mygame.js");
 loadLib("libs_game/protobuf.js");
-loadLib("libs_game/proxyid.js");
 
 //leb js
+loadLib("libs_leb/enum_define.d.js");
 loadLib("libs_leb/proto.d.js");
 loadLib("libs_leb/respath.d.js");
 loadLib("libs_leb/viewid.d.js");

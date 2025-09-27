@@ -69,6 +69,13 @@ declare interface ISkeletonManager {
     dispose(url: string): void;
 }
 
+declare interface IGameUtil {
+    createUUID(): string;
+    /** 随机颜色字符串 */
+    randomColor(): string;
+    HmacSHA256(msg: string): string;
+}
+
 declare enum ELocalDataKey {
     /** 自动登录 */
     AutoLogin = "LocalDataKey_AutoLogin",

@@ -1,5 +1,5 @@
 import { LoadManager } from "./core/common/manager/LoadManager";
-import { ELocalDataKey, LocalDataManager } from "./core/common/manager/LocalDataManager";
+import { LocalDataManager } from "./core/common/manager/LocalDataManager";
 import { SkeletonManager } from "./core/common/manager/SkeletonManager";
 import { GameUtil } from "./core/common/utils/GameUtil";
 import { ConfigManager } from "./core/config/ConfigManager";
@@ -13,26 +13,25 @@ import { UserData } from "./core/userData/UserData";
 import { GameManager } from "./GameManager";
 import { SceneManager } from "./scene/SceneManager";
 
-windowImmit("GameUtil", GameUtil);
-windowImmit("facade", Facade.Inst);
-windowImmit("userData", new UserData());
-windowImmit("uiMgr", new UIManager());
-windowImmit("pbMgr", new PbManager());
-windowImmit("tipMgr", new TipManager());
-windowImmit("netMgr", new NetManager());
-windowImmit("ELocalDataKey", ELocalDataKey);
-windowImmit("loadMgr", new LoadManager());
-windowImmit("gameMgr", new GameManager());
-windowImmit("cfgMgr", new ConfigManager());
-windowImmit("sceneMgr", new SceneManager());
-windowImmit("skeletonMgr", new SkeletonManager());
-windowImmit("localDataMgr", new LocalDataManager());
+windowImmit("$facade", Facade.Inst);
+windowImmit("$uiMgr", new UIManager());
+windowImmit("$pbMgr", new PbManager());
+windowImmit("$userData", new UserData());
+windowImmit("$gameUtil", new GameUtil());
+windowImmit("$tipMgr", new TipManager());
+windowImmit("$netMgr", new NetManager());
+windowImmit("$loadMgr", new LoadManager());
+windowImmit("$gameMgr", new GameManager());
+windowImmit("$cfgMgr", new ConfigManager());
+windowImmit("$sceneMgr", new SceneManager());
+windowImmit("$skeletonMgr", new SkeletonManager());
+windowImmit("$localDataMgr", new LocalDataManager());
 
 windowImmit("$localizeTxt", function (id: number, ...args: any[]) {
-    const d_excel = cfgMgr.str.str[id];
+    const d_excel = $cfgMgr.str.str[id];
     let s = "";
     if (d_excel) {
-        s = d_excel[gameMgr.language];
+        s = d_excel[$gameMgr.language];
         if (args) {
             for (let i = 0; i < args.length; i++) {
                 const reg = new RegExp(`{${ i }}`, 'g');
@@ -45,9 +44,9 @@ windowImmit("$localizeTxt", function (id: number, ...args: any[]) {
 
 windowImmit("$confirm", (title: string, msg: string, cancel = true) => {
     if (!fgui.UIPackage.getByName(ResPath.PkgName.PkgCommon))
-        return gameMgr.showConfirm(msg);
+        return $gameMgr.showConfirm(msg);
     windowImmit("$confirm", (title: string, msg: string, cancel = true) => new Promise<boolean>(resolve => {
-        uiMgr.openView(ViewID.UIConfirmView, {
+        $uiMgr.openView(ViewID.UIConfirmView, {
             title,
             content: msg,
             cancel: cancel,

@@ -29,7 +29,7 @@ export class ViewExtend {
 			const _this = <IView>this;
 			_this.onCreate?.();
 			if (_this.viewId) {
-				const MediatorCls = facade.getMediator(_this.viewId);
+				const MediatorCls = $facade.getMediator(_this.viewId);
 				let mediator = _this.getComponent(MediatorCls);
 				if (!mediator && MediatorCls) {
 					mediator = _this.addComponent(MediatorCls);
@@ -56,11 +56,11 @@ export class ViewExtend {
 	}
 
 	private static viewExtend(prototype: IViewExtend) {
-		prototype.dispatch = function (...args) { facade.dispatch(...args); };
-		prototype.openView = function (...args) { uiMgr.openView(...args); };
+		prototype.dispatch = function (...args) { $facade.dispatch(...args); };
+		prototype.openView = function (...args) { $uiMgr.openView(...args); };
 		prototype.closeSelf = function () {
 			const { viewId, viewType } = (<IViewExtend>this);
-			(viewType == ViewType.UI) && uiMgr.closeView(viewId);
+			(viewType == ViewType.UI) && $uiMgr.closeView(viewId);
 		};
 	}
 }

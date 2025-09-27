@@ -101,9 +101,9 @@ export class WebSocket extends Laya.EventDispatcher {
 
             this._rpcIndex = (this._rpcIndex + 1) % 60007;
             const rpcID = this._rpcIndex;
-            const method = pbMgr.methodMap[methodName];
+            const method = $pbMgr.methodMap[methodName];
             const header = new Uint8Array([HeaderType.Request, rpcID & 0xff, rpcID >> 8]);
-            const packet = pbMgr.encodeRpc(method.fullName, method.resolvedRequestType.encode(data).finish());
+            const packet = $pbMgr.encodeRpc(method.fullName, method.resolvedRequestType.encode(data).finish());
             this._waitList[rpcID] = { service: method.parent.fullName as ServiceType, method: methodName, callback: resolve };
             const byte = new Laya.Byte();
             byte.writeArrayBuffer(header);
@@ -139,13 +139,13 @@ export class WebSocket extends Laya.EventDispatcher {
                     return;
                 }
                 delete this._waitList[requestID];
-                const wrapper = pbMgr.decodeRpc(data.slice(3));
-                const res = pbMgr.methodMap[request.method].resolvedResponseType.decode(wrapper.data);
+                const wrapper = $pbMgr.decodeRpc(data.slice(3));
+                const res = $pbMgr.methodMap[request.method].resolvedResponseType.decode(wrapper.data);
                 request.callback(res);
                 this.event(SocketEvent.Response, [request.method, res]);
                 break;
             case HeaderType.Notify:
-                const msg = pbMgr.decodeMessage(data.slice(1));
+                const msg = $pbMgr.decodeMessage(data.slice(1));
                 const msgName = msg.$type.name;
                 this.event(SocketEvent.Notify, [msgName, msg]);
                 break;

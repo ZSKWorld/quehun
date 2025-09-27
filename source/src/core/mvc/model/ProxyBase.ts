@@ -5,6 +5,6 @@ export abstract class ProxyBase extends Notifier implements IProxy {
     readonly proxyId: ProxyID;
     constructor() {
         super();
-        facade.interestMessage(this);
+        $facade.interestMessage(this);
     }
 }

@@ -4,6 +4,6 @@ export class LoginProxy extends ProxyBase {
 
     @InterestMessage(EMessageID.login)
     private login(res: IResLogin) {
-        userData.loginUpdate(res);
+        $userData.loginUpdate(res);
     }
 }

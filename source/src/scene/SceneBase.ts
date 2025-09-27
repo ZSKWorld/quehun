@@ -25,9 +25,9 @@ export abstract class LogicSceneBase<T> extends Observer implements IScene<T> {
 		const [uiRes, skeletonRes, otherRes] = resArr;
 		let loadCnt = this.setLoadProgres(resArr.length);
 		return Promise.all([
-			loadMgr.loadPackage(uiRes, this._progressHandlers[--loadCnt]),
-			skeletonMgr.load(skeletonRes, this._progressHandlers[--loadCnt]),
-			loadMgr.load(otherRes, null, this._progressHandlers[--loadCnt]),
+			$loadMgr.loadPackage(uiRes, this._progressHandlers[--loadCnt]),
+			$skeletonMgr.load(skeletonRes, this._progressHandlers[--loadCnt]),
+			$loadMgr.load(otherRes, null, this._progressHandlers[--loadCnt]),
 			//加个最短加载时间，避免loading页一闪而过
 			this.loadViewId ? new Promise(resolve => {
 				const prop = --loadCnt;
@@ -41,7 +41,7 @@ export abstract class LogicSceneBase<T> extends Observer implements IScene<T> {
 			}) : null,
 		]).then(
 			() => {
-				uiMgr.closeAllView();
+				$uiMgr.closeAllView();
 			},
 			() => {
 				return Promise.reject<void>();
@@ -63,15 +63,15 @@ export abstract class LogicSceneBase<T> extends Observer implements IScene<T> {
 	exit() {
 		this.onExit();
 		if (this.loadViewId) {
-			uiMgr.closeView(this.loadViewId);
+			$uiMgr.closeView(this.loadViewId);
 		}
-		this.views.forEach(v => uiMgr.destroyView(v));
+		this.views.forEach(v => $uiMgr.destroyView(v));
 		this.clearRes(ResGroupType.Normal);
 		this.dispatch(SceneEvent.OnExitScene, this.type);
 	}
 
 	protected openView(viewId: ViewID, data?: any) {
-		uiMgr.openView(viewId, data);
+		$uiMgr.openView(viewId, data);
 	}
 
 	/**
@@ -84,7 +84,7 @@ export abstract class LogicSceneBase<T> extends Observer implements IScene<T> {
 			const res = fgui.UIPackage.getById(v);
 			res && res.unloadAssets();
 		});
-		skeletonRes.forEach(v => skeletonMgr.dispose(v));
+		skeletonRes.forEach(v => $skeletonMgr.dispose(v));
 		otherRes.forEach(v => Laya.loader.clearRes(v));
 	}
 

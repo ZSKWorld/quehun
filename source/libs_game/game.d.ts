@@ -20,18 +20,19 @@ declare type KeyMap<T> = { [key: string]: T; };
 declare type Class<T> = new (...args: any[]) => T;
 declare type LoadURL = string | Laya.ILoadURL | (string | Readonly<Laya.ILoadURL>)[];
 
-declare const gameMgr: IGameManager;
-declare const netMgr: INetManager & IReqMethod;
-declare const userData: UserData.IUserData;
-declare const cfgMgr: IConfigManager;
-declare const loadMgr: ILoadManager;
-declare const skeletonMgr: ISkeletonManager;
-declare const uiMgr: IUIManager;
-declare const tipMgr: ITipManager;
-declare const sceneMgr: ISceneManager;
-declare const facade: IFacade;
-declare const pbMgr: IPbManager;
-declare const localDataMgr: ILocalDataManager;
+declare const $gameMgr: IGameManager;
+declare const $netMgr: INetManager & IReqMethod;
+declare const $userData: UserData.IUserData;
+declare const $cfgMgr: IConfigManager;
+declare const $loadMgr: ILoadManager;
+declare const $skeletonMgr: ISkeletonManager;
+declare const $uiMgr: IUIManager;
+declare const $tipMgr: ITipManager;
+declare const $sceneMgr: ISceneManager;
+declare const $facade: IFacade;
+declare const $pbMgr: IPbManager;
+declare const $localDataMgr: ILocalDataManager;
+declare const $gameUtil: IGameUtil;
 
 /** 注入全局变量 */
 declare function windowImmit(name: string, obj: any): void;

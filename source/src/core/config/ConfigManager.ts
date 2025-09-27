@@ -60,8 +60,8 @@ export class ConfigManager implements IConfigManager {
     //#endregion
 
     async init() {
-        const tblPbCfg = await $loadMgr.fetch(ResPath.ConfigPath.Tbl_pbConfig, "text");
-        const lqcBin = await $loadMgr.fetch(ResPath.ConfigPath.Lqc, "arraybuffer");
+        const tblPbCfg = await $loadMgr.fetch(ResPath.EConfigPath.Tbl_pbConfig, "text");
+        const lqcBin = await $loadMgr.fetch(ResPath.EConfigPath.Lqc, "arraybuffer");
 
         const bytes = new Laya.Byte(lqcBin);
         const rawData = this.parseConfig(tblPbCfg, bytes.readUint8Array(0, bytes.length))

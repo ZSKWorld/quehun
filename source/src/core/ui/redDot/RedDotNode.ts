@@ -1,4 +1,4 @@
-import { RDTriggerType } from "./RedDotEnum";
+import { ERDTriggerType } from "./RedDotEnum";
 
 export class RedDotNode implements IRedDotNode {
     static eventCenter: Laya.EventDispatcher;
@@ -8,9 +8,9 @@ export class RedDotNode implements IRedDotNode {
     private _nameList: string[];
     private _parent: RedDotNode;
     private _childs: RedDotNode[] = [];
-    private _triggers: RDTriggerType[];
+    private _triggers: ERDTriggerType[];
     private _rdCount: number = 0;
-    private _triggeredMap = new Map<RDTriggerType, number>();
+    private _triggeredMap = new Map<ERDTriggerType, number>();
     /** 红点组件 */
     private _comp: fgui.GComponent;
 
@@ -58,7 +58,7 @@ export class RedDotNode implements IRedDotNode {
 
     private constructor() { }
 
-    static create(parent?: IRedDotNode, path: string = "", triggers?: RDTriggerType[]) {
+    static create(parent?: IRedDotNode, path: string = "", triggers?: ERDTriggerType[]) {
         const data = Laya.Pool.createByClass(RedDotNode as any) as RedDotNode;
         data._enable = true;
 
@@ -141,7 +141,7 @@ export class RedDotNode implements IRedDotNode {
      * @param type 事件类型
      * @param triggered 是否检测出了红点
      */
-    private onTrigger(type: RDTriggerType, triggered: boolean) {
+    private onTrigger(type: ERDTriggerType, triggered: boolean) {
         if (!this.hasTrigger) return;
         if (this.triggers.indexOf(type) >= 0) {
             this._triggeredMap.set(type, +!!triggered);

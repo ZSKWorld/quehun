@@ -19,7 +19,7 @@ export abstract class MediatorBase<V extends IView = IView, D = any> extends Ext
 	}
 	override get view() { return this.owner.$owner as V; }
 	protected get parent() {
-		if (this.viewType == ViewType.UI) return null;
+		if (this.viewType == EViewType.UI) return null;
 		if (!this._parent) {
 			let viewParent = this.view.parent;
 			while (!this._parent && viewParent) {

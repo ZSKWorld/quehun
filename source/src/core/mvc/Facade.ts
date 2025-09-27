@@ -20,33 +20,33 @@ export class Facade extends Singleton<Facade>() implements IFacade {
     }
 
     //#region Proxy
-    registerProxy(proxyId: ProxyID, proxyCls: IProxyClass) {
+    registerProxy(proxyId: EProxyID, proxyCls: IProxyClass) {
         this._proxyMgr.register(proxyId, proxyCls);
     }
 
-    hasProxy(proxyId: ProxyID) {
+    hasProxy(proxyId: EProxyID) {
         return this._proxyMgr.has(proxyId);
     }
 
-    getProxy(proxyId: ProxyID) {
+    getProxy(proxyId: EProxyID) {
         return this._proxyMgr.get(proxyId);
     }
     //#endregion
 
     //#region View
-    registerView(viewId: ViewID, viewType: ViewType, viewCls: IViewClass, mediatorCls: IMediatorClass) {
+    registerView(viewId: EViewID, viewType: EViewType, viewCls: IViewClass, mediatorCls: IMediatorClass) {
         this._viewMgr.register(viewId, viewType, viewCls, mediatorCls);
     }
 
-    hasMediator(viewId: ViewID) {
+    hasMediator(viewId: EViewID) {
         return this._viewMgr.has(viewId);
     }
 
-    getMediator(viewId: ViewID) {
+    getMediator(viewId: EViewID) {
         return this._viewMgr.get(viewId);
     }
 
-    createMediator(viewId: ViewID, fullScreen: boolean = false) {
+    createMediator(viewId: EViewID, fullScreen: boolean = false) {
         return this._viewMgr.create(viewId, fullScreen);
     }
     //#endregion

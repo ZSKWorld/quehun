@@ -1,6 +1,6 @@
 import { Observer } from "../mvc/provider/Observer";
-import { ServiceType } from "./NetDefine";
-import { SocketEvent, WebSocket } from "./WebSocket";
+import { EServiceType } from "./NetDefine";
+import { ESocketEvent, WebSocket } from "./WebSocket";
 
 export class NetManager extends Observer implements INetManager {
     private _ipConfig: IIPConfig;
@@ -12,28 +12,28 @@ export class NetManager extends Observer implements INetManager {
 
 
     async init() {
-        this._ipConfig = await $loadMgr.fetch(ResPath.ConfigPath.Ip_config, Laya.Loader.JSON);
+        this._ipConfig = await $loadMgr.fetch(ResPath.EConfigPath.Ip_config, Laya.Loader.JSON);
         await this.fetchRoutes();
         this._lobbySocket = new WebSocket(this._routes[0], "gateway");
 
         for (const key in EMessageID) {
             const service = $pbMgr.method2Service[key];
             let socket: WebSocket;
-            if (service == ServiceType.Lobby) socket = this._lobbySocket;
-            else if (service == ServiceType.FastTest) socket = this._gameSocket;
-            else if (service == ServiceType.Route) socket = this._lobbySocket;
+            if (service == EServiceType.Lobby) socket = this._lobbySocket;
+            else if (service == EServiceType.FastTest) socket = this._gameSocket;
+            else if (service == EServiceType.Route) socket = this._lobbySocket;
             else continue;
             this[key] = data => socket.send(EMessageID[key], data);
         }
 
-        this._lobbySocket.on(SocketEvent.ConnectSuccess, this, () => {
+        this._lobbySocket.on(ESocketEvent.ConnectSuccess, this, () => {
             Logger.error("socket open")
         });
-        this._lobbySocket.on(SocketEvent.Response, this, (methodName: string, data: any) => {
+        this._lobbySocket.on(ESocketEvent.Response, this, (methodName: string, data: any) => {
             Logger.error("response " + methodName, data);
             this.dispatch(methodName, data);
         });
-        this._lobbySocket.on(SocketEvent.Notify, this, this.dispatch);
+        this._lobbySocket.on(ESocketEvent.Notify, this, this.dispatch);
         this._lobbySocket.connect();
     }
 

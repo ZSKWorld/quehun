@@ -5,7 +5,7 @@
 module net {
     export class NetRouteGroup_Entrance {
         public static Inst: NetRouteGroup_Entrance | null = null;
-        public routeInfos: { [routeID: string]: any} = {};
+        public routeInfos: { [routeID: string]: any } = {};
         public routeCount: number = 0;
         public eventHandler: Laya.EventDispatcher;
         public notifyHander: NotifyHandler;
@@ -30,7 +30,7 @@ module net {
 
         private _onGatewayInfo() {
             const routeInfos = GatewayFetcher.getRoutes();
-            this._logInfo(`_OnGatewayInfo routes: ${JSON.stringify(routeInfos)}`);
+            this._logInfo(`_OnGatewayInfo routes: ${ JSON.stringify(routeInfos) }`);
             for (const id in routeInfos) {
                 const routeInfo = routeInfos[id];
                 if (!this.routeInfos[id]) {
@@ -153,12 +153,12 @@ module net {
         // #region ---------------- 子线路事件处理 -----------------------------------------
 
         private _onRouteOpen(route: NetRoute) {
-            this._logInfo(`_OnRouteOpen: ${route.routeID}`);
-            route.routeType = RouteType.Main;
+            this._logInfo(`_OnRouteOpen: ${ route.routeID }`);
+            route.routeType = ERouteType.Main;
         }
 
         private _onRouteUseable(route: NetRoute) {
-            this._logInfo(`OnRouteUseable: ${route.routeID}`);
+            this._logInfo(`OnRouteUseable: ${ route.routeID }`);
             route.detect();
             if (route === this.routeMain) {
                 if (this.openListener) {
@@ -169,7 +169,7 @@ module net {
         }
 
         private _onRouteClose(route: NetRoute, msg: string) {
-            this._logInfo(`OnRouteClose: ${route.routeID}, msg: ${msg}`);
+            this._logInfo(`OnRouteClose: ${ route.routeID }, msg: ${ msg }`);
             this.routeInfos[route.routeID].duringDetect = false;
             if (route === this.routeMain) {
                 if (this.openListener) {
@@ -180,19 +180,19 @@ module net {
         }
 
         private _onRouteError(route: NetRoute, msg: string) {
-            this._logInfo(`OnRouteError: ${route.routeID}, msg: ${msg}`);
+            this._logInfo(`OnRouteError: ${ route.routeID }, msg: ${ msg }`);
         }
 
         private _onRouteNotifyProto(route: NetRoute, name: string, msg: any) {
             if (route !== this.routeMain) {
-                this._logError(`收到通知消息: ${name}，但不是主线路`);
+                this._logError(`收到通知消息: ${ name }，但不是主线路`);
                 return;
             }
             if (this.notifyHander.hasHandler(name)) {
-                this._logInfo(`收到通知消息: ${name}`);
+                this._logInfo(`收到通知消息: ${ name }`);
                 this.notifyHander.dispatch(name, msg);
             } else {
-                this._logError(`消息：${name}未被监听`);
+                this._logError(`消息：${ name }未被监听`);
             }
         }
 
@@ -200,7 +200,7 @@ module net {
 
         // #region ------------------- public api ------------------------------------------
 
-        public isOK():boolean {
+        public isOK(): boolean {
             return this.routeMain !== null && this.routeMain.state === game.EConnectState.usable;
         }
 
@@ -227,11 +227,11 @@ module net {
                 if (callback) callback({ open: false, info: game.Tools.strOfLocalization(65) });
             } else if (this.routeMain.busyState === 'removed') {
                 // 线路被移除，不可用
-                if (callback) callback({ open: false, info: `${game.Tools.strOfLocalization(66)}(1)` });
+                if (callback) callback({ open: false, info: `${ game.Tools.strOfLocalization(66) }(1)` });
             } else if (this.routeMain.busyState === 'rejected') {
                 // 线路链接被拒绝过，不可用
                 GatewayFetcher.checkFetch();
-                if (callback) callback({ open: false, info: `${game.Tools.strOfLocalization(66)}(2)` });
+                if (callback) callback({ open: false, info: `${ game.Tools.strOfLocalization(66) }(2)` });
             } else if (this.routeMain.busyStateCanUse()) {
                 // 正常可连接
                 this.openListener = callback;
@@ -239,7 +239,7 @@ module net {
             } else {
                 // 未知情况，不可用
                 GatewayFetcher.checkFetch();
-                if (callback) callback({ open: false, info: `${game.Tools.strOfLocalization(66)}(3)` });
+                if (callback) callback({ open: false, info: `${ game.Tools.strOfLocalization(66) }(3)` });
             }
         }
 
@@ -295,7 +295,7 @@ module net {
             }
         }
 
-        public getRouteInfo(routeID: string): {busyState: string, state?: game.EConnectState, delay?: number} {
+        public getRouteInfo(routeID: string): { busyState: string, state?: game.EConnectState, delay?: number } {
             const routeInfo = this.routeInfos[routeID];
             if (!routeInfo) return { busyState: 'removed' };
             const route = routeInfo.route;
@@ -313,10 +313,10 @@ module net {
 
         // 对业务接口，调用远程rpc
         public sendRequest(serviceName: string, methodName: string, request: any, callback: (error: string | null, response: any) => void) {
-            this._logInfo(`发送业务请求, Service Name: ${serviceName}, Method Name: ${methodName}, request: ${JSON.stringify(request)}`);
+            this._logInfo(`发送业务请求, Service Name: ${ serviceName }, Method Name: ${ methodName }, request: ${ JSON.stringify(request) }`);
             if (!this.isOK()) {
                 callback('no open', null);
-                this._logError(`连接没打开， rpcName: ${methodName}发送失败`);
+                this._logError(`连接没打开， rpcName: ${ methodName }发送失败`);
                 return;
             }
             this.routeMain!.sendRequest(serviceName, methodName, request, callback);

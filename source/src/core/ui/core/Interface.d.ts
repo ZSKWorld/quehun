@@ -6,7 +6,7 @@
  * @param args 参数
  * @return MethodDecorator
  */
-declare function ViewKeyEvent(keyEventType: KeyEventType, key?: number, once?: boolean, args?: any[]): MethodDecorator;
+declare function ViewKeyEvent(keyEventType: EKeyEventType, key?: number, once?: boolean, args?: any[]): MethodDecorator;
 
 /**
  * 页面控制器鼠标事件装饰器工厂
@@ -15,7 +15,7 @@ declare function ViewKeyEvent(keyEventType: KeyEventType, key?: number, once?: b
  * @param args 参数
  * @return MethodDecorator
  */
-declare function ViewMouseEvent(mouseEventType: MouseEventType, once?: boolean, args?: any[]): MethodDecorator;
+declare function ViewMouseEvent(mouseEventType: EMouseEventType, once?: boolean, args?: any[]): MethodDecorator;
 
 /**
  * 页面控制器自定义事件装饰器工厂
@@ -27,14 +27,14 @@ declare function ViewMouseEvent(mouseEventType: MouseEventType, once?: boolean, 
 declare function ViewEvent(name: string, once?: boolean, args?: any[]): MethodDecorator;
 
 /** 按键事件类型 */
-declare enum KeyEventType {
+declare enum EKeyEventType {
     KeyDown = "keydown",
     KeyPress = "keypress",
     KeyUp = "keyup",
 }
 
 /** 鼠标事件类型 */
-declare enum MouseEventType {
+declare enum EMouseEventType {
     MouseDown = "mousedown",
     MouseUp = "mouseup",
     MouseMove = "mousemove",
@@ -51,7 +51,7 @@ declare enum MouseEventType {
 }
 
 /** UI层级 */
-declare enum Layer {
+declare enum ELayer {
     Scene = "Scene",
     UIBottom = "UIBottom",
     UIMiddle = "UIMiddle",
@@ -71,7 +71,7 @@ declare interface IUIManager {
      * @param index 插入位置
      * @returns
      */
-    addToLayer(obj: fgui.GObject, layer: Layer, index?: number): void;
+    addToLayer(obj: fgui.GObject, layer: ELayer, index?: number): void;
 
     /** 是否是最顶层ui */
     isTopView(view: IMediator | IView): boolean;
@@ -81,15 +81,15 @@ declare interface IUIManager {
      * @param viewId 页面id
      * @param data 传入参数
      */
-    openView<T = any>(viewId: ViewID, data?: T): void;
+    openView<T = any>(viewId: EViewID, data?: T): void;
 
     /** 移除页面
      * @param viewId 页面id
      */
-    closeView(viewId: ViewID): void;
+    closeView(viewId: EViewID): void;
 
     /** 移除所有页面 */
     closeAllView(): void;
 
-    destroyView(viewId: ViewID): void;
+    destroyView(viewId: EViewID): void;
 }

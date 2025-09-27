@@ -10,13 +10,13 @@ class UICache {
 		this._mediators.set(viewId, mediator);
 	}
 
-	get(viewId: ViewID) {
+	get(viewId: EViewID) {
 		const mediator = this._mediators.get(viewId);
 		this._mediators.delete(viewId);
 		return mediator;
 	}
 
-	destroy(viewId: ViewID) {
+	destroy(viewId: EViewID) {
 		const mediator = this.get(viewId);
 		mediator && mediator.view.dispose();
 	}
@@ -29,7 +29,7 @@ class UICache {
 
 /** UI管理类 */
 export class UIManager extends Observer implements IUIManager {
-	private _layerMap: { [key in Layer]: fgui.GComponent };
+	private _layerMap: { [key in ELayer]: fgui.GComponent };
 
 	/** 缓存池 */
 	private _cache: UICache;
@@ -39,7 +39,7 @@ export class UIManager extends Observer implements IUIManager {
 	private _lockMask: fgui.GGraph;
 	/** 已打开页面 */
 	private _openedViews: IMediator[] = [];
-	private _openedStack: ViewID[] = [];
+	private _openedStack: EViewID[] = [];
 
 	private get lockMark() { return this._lockMark; }
 	private set lockMark(value: number) {
@@ -52,9 +52,9 @@ export class UIManager extends Observer implements IUIManager {
 		this._layerMap = {} as any;
 		const gRoot = fgui.GRoot.inst;
 		Laya.stage.addChild(gRoot.displayObject);
-		for (const key in Layer) {
+		for (const key in ELayer) {
 			const layer = new fgui.GComponent();
-			layer.name = Layer[key];
+			layer.name = ELayer[key];
 			gRoot.addChild(layer);
 			this._layerMap[layer.name] = layer;
 			layer.displayObject.mouseThrough = true;
@@ -67,7 +67,7 @@ export class UIManager extends Observer implements IUIManager {
 		mask.visible = false;
 		mask.sortingOrder = 9999;
 		mask.name = "UIManager_Mask";
-		this.addToLayer(mask, Layer.UITop);
+		this.addToLayer(mask, ELayer.UITop);
 		mask.drawRect(0, "", "#00000000");
 		mask.makeFullScreen();
 		mask.addRelation(mask.parent, fgui.RelationType.Size);
@@ -75,7 +75,7 @@ export class UIManager extends Observer implements IUIManager {
 		Laya.stage.on(Laya.Event.RESIZE, this, () => Laya.timer.callLater(this, this.onResize));
 	}
 
-	addToLayer(obj: fgui.GObject, layer: Layer, index?: number) {
+	addToLayer(obj: fgui.GObject, layer: ELayer, index?: number) {
 		if (!obj || obj.isDisposed || !this._layerMap[layer]) return;
 		index = index ?? this._layerMap[layer].numChildren;
 		this._layerMap[layer].addChildAt(obj, index);
@@ -88,7 +88,7 @@ export class UIManager extends Observer implements IUIManager {
 		return topView == view || topView.view == view;
 	}
 
-	async openView<T = any>(viewId: ViewID, data?: T) {
+	async openView<T = any>(viewId: EViewID, data?: T) {
 		this.lockMark++;
 		let mediator: IMediator;
 		const openIndex = this._openedViews.findIndex(v => v.viewId == viewId);
@@ -103,12 +103,12 @@ export class UIManager extends Observer implements IUIManager {
 		openIndex >= 0 && this._openedViews.splice(openIndex, 1);
 		this._openedViews.unshift(mediator);
 		mediator.view.removeFromParent();
-		this.addToLayer(mediator.view, mediator.view.layer || Layer.UIBottom);
+		this.addToLayer(mediator.view, mediator.view.layer || ELayer.UIBottom);
 		await mediator.onOpenAni();
 		this.lockMark--;
 	}
 
-	async closeView(viewId: ViewID) {
+	async closeView(viewId: EViewID) {
 		const index = this._openedViews.findIndex(v => v.viewId == viewId);
 		if (index <= -1) return;
 		const mediator = this._openedViews[index];
@@ -141,7 +141,7 @@ export class UIManager extends Observer implements IUIManager {
 		this._openedStack.length = 0;
 	}
 
-	destroyView(viewId: ViewID) {
+	destroyView(viewId: EViewID) {
 		this._cache.destroy(viewId);
 		const index = this._openedViews.findIndex(v => v.viewId == viewId);
 		if (index >= 0) {

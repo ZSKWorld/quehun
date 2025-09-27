@@ -1,10 +1,10 @@
 import { Singleton } from "../../common/Singleton";
 
 export class ViewManager extends Singleton<ViewManager>() {
-    private _viewClsMap: { [viewId in ViewID]?: IViewClass; } = {};
-    private _mediatorlClsMap: { [viewId in ViewID]?: IMediatorClass; } = {};
+    private _viewClsMap: { [viewId in EViewID]?: IViewClass; } = {};
+    private _mediatorlClsMap: { [viewId in EViewID]?: IMediatorClass; } = {};
 
-    register(viewId: ViewID, viewType: ViewType, viewCls: IViewClass, mediatorCls: IMediatorClass) {
+    register(viewId: EViewID, viewType: EViewType, viewCls: IViewClass, mediatorCls: IMediatorClass) {
         if (!viewCls || !mediatorCls) {
             Logger.error("viewCls or mediatorCls 不能为空", viewId, viewCls, mediatorCls);
             return;
@@ -21,15 +21,15 @@ export class ViewManager extends Singleton<ViewManager>() {
         this._mediatorlClsMap[viewId] = mediatorCls;
     }
 
-    has(viewId: ViewID) {
+    has(viewId: EViewID) {
         return !!this._mediatorlClsMap[viewId];
     }
 
-    get(viewId: ViewID) {
+    get(viewId: EViewID) {
         return this._mediatorlClsMap[viewId];
     }
 
-    create(viewId: ViewID, fullScreen: boolean = false) {
+    create(viewId: EViewID, fullScreen: boolean = false) {
         const viewInst = this._viewClsMap[viewId].createInstance();
         viewInst.name = viewId;
         fullScreen && viewInst.makeFullScreen();

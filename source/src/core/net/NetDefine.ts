@@ -1,10 +1,10 @@
-export const enum ServiceType {
+export const enum EServiceType {
     Lobby = ".lq.Lobby",
     FastTest = ".lq.FastTest",
     Route = ".lq.Route",
 }
 
-export const enum HeaderType {
+export const enum EHeaderType {
     Notify = 1,
     Request,
     Response,

@@ -1,8 +1,8 @@
 import { SingletonExtend } from "../../common/Singleton";
 import { Observer } from "../../mvc/provider/Observer";
-import { RDTriggerType } from "./RedDotEnum";
+import { ERDTriggerType } from "./RedDotEnum";
 
-function RDTriggerEvent(eventName: RDTriggerType) {
+function RDTriggerEvent(eventName: ERDTriggerType) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
         const eventMap: KeyMap<Function[]> = target._triggerEventMap = target._triggerEventMap || {};
         const func = descriptor.value;
@@ -15,7 +15,7 @@ function RDTriggerEvent(eventName: RDTriggerType) {
 
 export class RedDotTrigger extends SingletonExtend<RedDotTrigger, Observer>(Observer) {
 
-    private _triggers = new Map<RDTriggerType, boolean>();
+    private _triggers = new Map<ERDTriggerType, boolean>();
     private _triggerEventMap: KeyMap<Function[]>;
     private _eventCenter: Laya.EventDispatcher;
 
@@ -27,7 +27,7 @@ export class RedDotTrigger extends SingletonExtend<RedDotTrigger, Observer>(Obse
         }
     }
 
-    private setTriggered(type: RDTriggerType, triggered: boolean) {
+    private setTriggered(type: ERDTriggerType, triggered: boolean) {
         this._triggers.set(type, triggered);
         Laya.timer.callLater(this, this.callTrigger);
     }

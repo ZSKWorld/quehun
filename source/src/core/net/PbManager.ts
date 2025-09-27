@@ -1,18 +1,18 @@
-import { ServiceType } from "./NetDefine";
+import { EServiceType } from "./NetDefine";
 
 
 export class PbManager implements IPbManager {
     private _root: protobuf.Root;
     private _methodMap: KeyMap<protobuf.Method>;
-    private _seriveMethods: { [key in ServiceType]: protobuf.Method[] };
-    private _method2Service: KeyMap<ServiceType>;
+    private _seriveMethods: { [key in EServiceType]: protobuf.Method[] };
+    private _method2Service: KeyMap<EServiceType>;
     private _wrapperCtor: protobuf.Type;
 
     get methodMap() { return this._methodMap; }
     get method2Service() { return this._method2Service; }
 
     async init() {
-        const protoJson = await $loadMgr.fetch(ResPath.ConfigPath.Proto, "json");
+        const protoJson = await $loadMgr.fetch(ResPath.EConfigPath.Proto, "json");
         this._root = protobuf.Root.fromJSON(protoJson);
         this._root.resolveAll();
         const services: protobuf.Service[] = [];
@@ -29,7 +29,7 @@ export class PbManager implements IPbManager {
         services.forEach(s => {
             s.methodsArray.forEach(m => {
                 this._methodMap[m.name] = m;
-                this._method2Service[m.name] = s.fullName as ServiceType;
+                this._method2Service[m.name] = s.fullName as EServiceType;
             });
             this._seriveMethods[s.fullName] = [...s.methodsArray];
         });

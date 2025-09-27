@@ -60,7 +60,7 @@ export class ViewExtend {
 		prototype.openView = function (...args) { $uiMgr.openView(...args); };
 		prototype.closeSelf = function () {
 			const { viewId, viewType } = (<IViewExtend>this);
-			(viewType == ViewType.UI) && $uiMgr.closeView(viewId);
+			(viewType == EViewType.UI) && $uiMgr.closeView(viewId);
 		};
 	}
 }

@@ -1,22 +1,22 @@
 import { Observer } from "../core/mvc/provider/Observer";
-import { SceneType } from "./SceneDefine";
+import { ESceneType } from "./SceneDefine";
 
 /** 逻辑场景管理类 */
 export class SceneManager extends Observer implements ISceneManager {
-	private _currentType: SceneType;
-	private _sceneMap: Map<SceneType, IScene>;
+	private _currentType: ESceneType;
+	private _sceneMap: Map<ESceneType, IScene>;
 
 	init(sceneMap: IScene[]) {
 		if (!this._sceneMap) this._sceneMap = new Map();
 		sceneMap.forEach(v => this._sceneMap.set(v.type, v));
 	}
 
-	registerSceneView(type: SceneType, view: string) {
+	registerSceneView(type: ESceneType, view: string) {
 		const scene = this._sceneMap.get(type);
 		if (scene) scene.views.add(view);
 	}
 
-	enterScene(type: SceneType, data?: any) {
+	enterScene(type: ESceneType, data?: any) {
 		if (this._currentType != type) {
 			const newScene = this._sceneMap.get(type);
 			newScene.load().then(() => {

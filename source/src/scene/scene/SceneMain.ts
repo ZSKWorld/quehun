@@ -1,5 +1,5 @@
 import { LogicSceneBase } from "../SceneBase";
-import { SceneType } from "../SceneDefine";
+import { ESceneType } from "../SceneDefine";
 
 export interface ISceneMainData {
 
@@ -7,17 +7,17 @@ export interface ISceneMainData {
 
 /** 主页逻辑场景 */
 export class SceneMain extends LogicSceneBase<ISceneMainData> {
-	override readonly type = SceneType.MainScene;
-	protected override loadViewId = ViewID.UILoading4View;
+	override readonly type = ESceneType.MainScene;
+	protected override loadViewId = EViewID.UILoading4View;
 	protected override getNormalResArray() {
 		return [
-			ResPath.PkgPath.PkgMain,
-			ResPath.PkgPath.PkgTest,
+			ResPath.EPkgPath.PkgMain,
+			ResPath.EPkgPath.PkgTest,
 		];
 	}
 
 	protected override onEnter() {
-		this.openView(ViewID.UIMainView);
+		this.openView(EViewID.UIMainView);
 	}
 
 }

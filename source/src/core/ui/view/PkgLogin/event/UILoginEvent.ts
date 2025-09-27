@@ -3,6 +3,6 @@ export const enum ELoginByType {
     Account,
     PhoneNumber,
 }
-export const enum UILoginEvent {
+export const enum EUILoginEvent {
 
 }

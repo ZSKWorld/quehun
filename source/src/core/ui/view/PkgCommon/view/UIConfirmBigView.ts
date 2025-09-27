@@ -1,6 +1,6 @@
 import UIConfirmBig from "../../../ui/PkgCommon/UIConfirmBig";
 
-export const enum UIConfirmBigMsg {
+export const enum EUIConfirmBigMsg {
 	OnBtnCloseClick = "UIConfirmBig_OnBtnCloseClick",
 	OnBtnConfirmClick = "UIConfirmBig_OnBtnConfirmClick",
 	OnBtnCancelClick = "UIConfirmBig_OnBtnCancelClick",
@@ -9,10 +9,10 @@ export const enum UIConfirmBigMsg {
 export class UIConfirmBigView extends ExtensionClass<IView, UIConfirmBig>(UIConfirmBig) implements IView {
 
 	override onCreate() {
-        const { btn_close, btn_confirm, btn_cancel } = this;
-		btn_close.onClick(this, this.sendEvent, [UIConfirmBigMsg.OnBtnCloseClick]);
-		btn_confirm.onClick(this, this.sendEvent, [UIConfirmBigMsg.OnBtnConfirmClick]);
-		btn_cancel.onClick(this, this.sendEvent, [UIConfirmBigMsg.OnBtnCancelClick]);
-    }
+		const { btn_close, btn_confirm, btn_cancel } = this;
+		btn_close.onClick(this, this.sendEvent, [EUIConfirmBigMsg.OnBtnCloseClick]);
+		btn_confirm.onClick(this, this.sendEvent, [EUIConfirmBigMsg.OnBtnConfirmClick]);
+		btn_cancel.onClick(this, this.sendEvent, [EUIConfirmBigMsg.OnBtnCancelClick]);
+	}
 
 }

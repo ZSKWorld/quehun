@@ -1,9 +1,9 @@
 import { Singleton } from "../../common/Singleton";
 
 export class ModelManager extends Singleton<ModelManager>() {
-    private _proxyMap: { [proxyId in ProxyID]?: IProxy; } = {};
+    private _proxyMap: { [proxyId in EProxyID]?: IProxy; } = {};
 
-    register(proxyId: ProxyID, proxy: IProxyClass) {
+    register(proxyId: EProxyID, proxy: IProxyClass) {
         if (!proxy) {
             Logger.error("cls 不能为空", proxyId, proxy);
         }
@@ -15,11 +15,11 @@ export class ModelManager extends Singleton<ModelManager>() {
         this._proxyMap[proxyId] = new proxy();
     }
 
-    has(proxyId: ProxyID) {
+    has(proxyId: EProxyID) {
         return !!this._proxyMap[proxyId];
     }
 
-    get(proxyId: ProxyID) {
+    get(proxyId: EProxyID) {
         return this._proxyMap[proxyId];
     }
 }

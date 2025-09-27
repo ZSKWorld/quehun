@@ -45,12 +45,12 @@ declare class Logger {
 declare interface ISkeletonManager {
     /**
      * 加载骨骼动画模板
-     * @param urls 动画路径 {@link ResPath.SkeletonPath}[]
+     * @param urls 动画路径 {@link ResPath.ESkeletonPath}[]
      */
     load(urls: string[], progress?: Laya.Handler): Promise<Laya.Templet[]>;
     /**
      * 获取一个骨骼动画
-     * @param url 动画路径 {@link ResPath.SkeletonPath}
+     * @param url 动画路径 {@link ResPath.ESkeletonPath}
      * @param enableSkin 是否开启换装
      */
     create(url: string, aniMode: 0 | 1 | 2 = 0): Laya.Skeleton;

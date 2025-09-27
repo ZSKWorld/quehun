@@ -1,10 +1,10 @@
 /** 逻辑场景类型枚举 */
-export const enum SceneType {
+export const enum ESceneType {
 	LoginScene = "LoginScene",
 	MainScene = "MainScene",
 }
 
-export const enum SceneEvent {
+export const enum ESceneEvent {
 	/** 场景开始加载 */
 	OnLoadBegin = "SceneEvent_OnLoadBegin",
 	/** 场景加载进度 */

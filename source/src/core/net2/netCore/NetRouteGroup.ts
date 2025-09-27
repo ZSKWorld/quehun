@@ -141,7 +141,7 @@ module net {
                 return false;
             }
             if (count10Sec > 100) {
-                this._logError('糟了，在十秒内出现了大喷发, count10Sec: ' +  count10Sec + ', totalCount: ' + this.sendHistory.length + ', history: ' + this.sendHistory);
+                this._logError('糟了，在十秒内出现了大喷发, count10Sec: ' + count10Sec + ', totalCount: ' + this.sendHistory.length + ', history: ' + this.sendHistory);
                 return false;
             }
             return true;
@@ -316,7 +316,7 @@ module net {
             }
             this._logInfo('OnChangeMainRouteBegin IDBefore: ' + IDBefore + ', IDAfter: ' + IDAfter);
             this.eventHandler.event('OnChangeMainRouteBegin', { IDBefore: IDBefore, IDAfter: IDAfter });
-            this._switchRoute(this.routeMain, this.routeStandby, RouteType.Main, (success: boolean) => {
+            this._switchRoute(this.routeMain, this.routeStandby, ERouteType.Main, (success: boolean) => {
                 if (success) {
                     Laya.LocalStorage.setItem('routeID', this.routeMain.routeID);
                     this.routeMain.sendRequest('Lobby', 'fastLogin', {}, (err: any, res: any) => {
@@ -347,8 +347,8 @@ module net {
             });
         }
 
-        private _switchRoute(routeBefore: NetRoute | null, routeAfter: NetRoute, routeType: RouteType, callback: (success: boolean) => void) {
-            if (routeType !== RouteType.Main && routeType !== RouteType.Standby) return;
+        private _switchRoute(routeBefore: NetRoute | null, routeAfter: NetRoute, routeType: ERouteType, callback: (success: boolean) => void) {
+            if (routeType !== ERouteType.Main && routeType !== ERouteType.Standby) return;
             if (!routeAfter) return;
 
             let routeBeforeID = '';
@@ -388,15 +388,15 @@ module net {
                     if (routeBefore) {
                         routeBefore.locked = false;
                         routeBefore.close();
-                        routeBefore.routeType = RouteType.None;
+                        routeBefore.routeType = ERouteType.None;
                         routeBefore.bannedTimestamp = Laya.timer.currTimer / 1000 + 1 * 60;
                     }
                     routeAfter.routeType = routeType;
                     routeAfter.locked = false;
-                    if (routeType === RouteType.Main) {
+                    if (routeType === ERouteType.Main) {
                         this.routeMain = routeAfter;
                         this.routeStandby = null;
-                    } else if (routeType === RouteType.Standby) {
+                    } else if (routeType === ERouteType.Standby) {
                         this.routeStandby = routeAfter;
                         this.routeDetect = null;
                     }
@@ -492,7 +492,7 @@ module net {
         }
 
         private _switchDetect2Standby() {
-            this._switchRoute(this.routeStandby, this.routeDetect!, RouteType.Standby, (success: boolean) => {
+            this._switchRoute(this.routeStandby, this.routeDetect!, ERouteType.Standby, (success: boolean) => {
                 this._logInfo('探测线路替换备用线路, success: ' + success);
                 if (success) {
                     this._standbyPrepareLogin();
@@ -559,20 +559,20 @@ module net {
             if (!this.routeMain || this.routeMain === route) {
                 this.routeMain = route;
                 this.routeMainStartTime = Laya.timer.currTimer / 1000;
-                route.routeType = RouteType.Main;
+                route.routeType = ERouteType.Main;
                 Laya.LocalStorage.setItem('routeID', this.routeMain.routeID);
                 this.state = game.EConnectState.connecting;
             } else if (!this.routeStandby || this.routeStandby === route) {
                 this.routeStandby = route;
                 this.routeStandbyStartTime = Laya.timer.currTimer / 1000;
-                route.routeType = RouteType.Standby;
+                route.routeType = ERouteType.Standby;
                 route.locked = true;
             } else if (!this.routeDetect || this.routeDetect === route) {
                 this.routeDetect = route;
                 this.routeDetectStartTime = Laya.timer.currTimer / 1000;
-                route.routeType = RouteType.Detect;
+                route.routeType = ERouteType.Detect;
             } else {
-                route.routeType = RouteType.None;
+                route.routeType = ERouteType.None;
                 route.close();
             }
         }

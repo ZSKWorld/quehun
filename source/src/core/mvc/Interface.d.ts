@@ -19,7 +19,7 @@ declare function InterestNotify(eventName: string, once?: boolean, args?: any[])
  */
 declare function InterestMessage(msgId: EMessageID, once?: boolean, args?: any[]): MethodDecorator;
 
-declare enum ProxyID {
+declare enum EProxyID {
     Login,
     Main,
     Bag,
@@ -28,11 +28,11 @@ declare enum ProxyID {
 
 /** 代理类 */
 declare interface IProxy {
-    readonly proxyId: ProxyID;
+    readonly proxyId: EProxyID;
 }
 
 /** 页面类型 */
-declare enum ViewType {
+declare enum EViewType {
     UI = "UI",
     Component = "Component",
     Render = "Render",
@@ -41,8 +41,8 @@ declare enum ViewType {
 
 /**页面扩展 */
 declare interface IViewExtend {
-    readonly viewId: ViewID;
-    readonly viewType: ViewType;
+    readonly viewId: EViewID;
+    readonly viewType: EViewType;
 
     /**
      * 派发全局事件
@@ -65,7 +65,7 @@ declare interface IViewExtend {
      * @param viewId 页面id
      * @param data 传入参数
      */
-    openView<T = any>(viewId: ViewID, data?: T): void;
+    openView<T = any>(viewId: EViewID, data?: T): void;
 
     /** 移除当前页面，只有UI界面才能移除自身，其他Com，Btn，Render之类的无效 */
     closeSelf(): void;
@@ -73,7 +73,7 @@ declare interface IViewExtend {
 
 /**页面 */
 declare interface IView extends fgui.GComponent, IViewExtend {
-    readonly layer: Layer;
+    readonly layer: ELayer;
     mediator: IMediator;
 
     /**
@@ -112,14 +112,14 @@ declare interface ICommand {
 }
 
 declare interface IFacade {
-    registerProxy(proxyId: ProxyID, proxyCls: IProxyClass): void;
-    hasProxy(proxyId: ProxyID): boolean;
-    getProxy(proxyId: ProxyID): IProxy;
+    registerProxy(proxyId: EProxyID, proxyCls: IProxyClass): void;
+    hasProxy(proxyId: EProxyID): boolean;
+    getProxy(proxyId: EProxyID): IProxy;
 
-    registerView(viewId: ViewID, viewType: ViewType, viewCls: IViewClass, mediatorCls: IMediatorClass): void;
-    hasMediator(viewId: ViewID): boolean;
-    getMediator(viewId: ViewID): IMediatorClass;
-    createMediator(viewId: ViewID, fullScreen: boolean = false): IMediator;
+    registerView(viewId: EViewID, viewType: EViewType, viewCls: IViewClass, mediatorCls: IMediatorClass): void;
+    hasMediator(viewId: EViewID): boolean;
+    getMediator(viewId: EViewID): IMediatorClass;
+    createMediator(viewId: EViewID, fullScreen: boolean = false): IMediator;
 
     registerCommand(notifyName: string, cls: ICommandClass): void;
     hasCommand(notifyName: string): boolean;

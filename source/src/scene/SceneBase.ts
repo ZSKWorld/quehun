@@ -1,7 +1,7 @@
 import { Observer } from "../core/mvc/provider/Observer";
-import { SceneEvent, SceneType } from "./SceneDefine";
+import { ESceneEvent, ESceneType } from "./SceneDefine";
 
-const enum ResGroupType {
+const enum EResGroupType {
 	Normal,
 	Const,
 	All,
@@ -9,19 +9,19 @@ const enum ResGroupType {
 
 /** 逻辑场景基类 */
 export abstract class LogicSceneBase<T> extends Observer implements IScene<T> {
-	readonly type: SceneType;
+	readonly type: ESceneType;
 	data: T;
-	readonly views = new Set<ViewID>();
+	readonly views = new Set<EViewID>();
 	/** 加载时显示的load页面id */
-	protected loadViewId: ViewID;
+	protected loadViewId: EViewID;
 	/** 资源加载进度更新回调 */
 	private _progressHandlers: Laya.Handler[] = [];
 	/** 资源加载进度 */
 	private _progresses: number[] = [];
 
 	load() {
-		this.dispatch(SceneEvent.OnLoadBegin, this.type);
-		const resArr = this.getResGroup(ResGroupType.All);
+		this.dispatch(ESceneEvent.OnLoadBegin, this.type);
+		const resArr = this.getResGroup(EResGroupType.All);
 		const [uiRes, skeletonRes, otherRes] = resArr;
 		let loadCnt = this.setLoadProgres(resArr.length);
 		return Promise.all([
@@ -50,14 +50,14 @@ export abstract class LogicSceneBase<T> extends Observer implements IScene<T> {
 			Laya.Tween.killAll(this);
 			this._progressHandlers.forEach(v => v.recover());
 			this._progressHandlers.length = 0;
-			this.dispatch(SceneEvent.OnLoadEnd, this.type);
+			this.dispatch(ESceneEvent.OnLoadEnd, this.type);
 		});
 	}
 
 	enter(data: T) {
 		this.data = data;
 		this.onEnter();
-		this.dispatch(SceneEvent.OnEnterScene, this.type);
+		this.dispatch(ESceneEvent.OnEnterScene, this.type);
 	}
 
 	exit() {
@@ -66,11 +66,11 @@ export abstract class LogicSceneBase<T> extends Observer implements IScene<T> {
 			$uiMgr.closeView(this.loadViewId);
 		}
 		this.views.forEach(v => $uiMgr.destroyView(v));
-		this.clearRes(ResGroupType.Normal);
-		this.dispatch(SceneEvent.OnExitScene, this.type);
+		this.clearRes(EResGroupType.Normal);
+		this.dispatch(ESceneEvent.OnExitScene, this.type);
 	}
 
-	protected openView(viewId: ViewID, data?: any) {
+	protected openView(viewId: EViewID, data?: any) {
 		$uiMgr.openView(viewId, data);
 	}
 
@@ -78,7 +78,7 @@ export abstract class LogicSceneBase<T> extends Observer implements IScene<T> {
 	 * 清理场景资源
 	 * @param type 要清理的资源类型
 	 */
-	protected clearRes(type: ResGroupType) {
+	protected clearRes(type: EResGroupType) {
 		const [uiRes, skeletonRes, otherRes] = this.getResGroup(type);
 		uiRes.forEach(v => {
 			const res = fgui.UIPackage.getById(v);
@@ -120,19 +120,19 @@ export abstract class LogicSceneBase<T> extends Observer implements IScene<T> {
 		let loadPro = _progresses.reduce((pv, cv, i) => pv + cv, 0);
 		if (this.loadViewId) loadPro *= _progresses[0] / (_progresses.length - 1);
 		else loadPro /= _progresses.length;
-		this.dispatch(SceneEvent.OnLoadProgress, loadPro);
+		this.dispatch(ESceneEvent.OnLoadProgress, loadPro);
 	}
 
 	/** 获取资源数组 */
-	private getResGroup(groupType: ResGroupType): [string[], string[], string[]] {
+	private getResGroup(groupType: EResGroupType): [string[], string[], string[]] {
 		const uiRes: string[] = [];
 		const skeletonRes: string[] = [];
 		const otherRes: string[] = [];
 		let resArr: string[];
 		switch (groupType) {
-			case ResGroupType.Normal: resArr = this.getNormalResArray(); break;
-			case ResGroupType.Const: resArr = this.getConstResArray(); break;
-			case ResGroupType.All: resArr = this.getNormalResArray().concat(this.getConstResArray()); break;
+			case EResGroupType.Normal: resArr = this.getNormalResArray(); break;
+			case EResGroupType.Const: resArr = this.getConstResArray(); break;
+			case EResGroupType.All: resArr = this.getNormalResArray().concat(this.getConstResArray()); break;
 			default: return [[], [], []];
 		}
 		resArr.forEach(res => {

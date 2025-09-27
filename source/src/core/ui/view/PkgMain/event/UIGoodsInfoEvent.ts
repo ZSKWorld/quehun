@@ -1,3 +1,3 @@
-export const enum UIGoodsInfoEvent {
+export const enum EUIGoodsInfoEvent {
 
 }

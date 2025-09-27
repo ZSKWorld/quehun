@@ -1,6 +1,5 @@
-import { SocketEvent } from "../../core/net/WebSocket";
 import { LogicSceneBase } from "../SceneBase";
-import { SceneType } from "../SceneDefine";
+import { ESceneType } from "../SceneDefine";
 
 export interface ISceneLoginData {
 
@@ -8,21 +7,21 @@ export interface ISceneLoginData {
 
 /** 登录逻辑场景 */
 export class SceneLogin extends LogicSceneBase<ISceneLoginData> {
-    override readonly type = SceneType.LoginScene;
+    override readonly type = ESceneType.LoginScene;
     protected override getNormalResArray() {
         return [
-            ResPath.PkgPath.PkgLogin,
+            ResPath.EPkgPath.PkgLogin,
         ];
     }
 
     protected override getConstResArray() {
         return [
-            ResPath.FontPath.HYWH,
-            ResPath.PkgPath.PkgCommon,
+            ResPath.EFontPath.HYWH,
+            ResPath.EPkgPath.PkgCommon,
         ];
     }
 
     protected override onEnter() {
-        this.openView(ViewID.UILoginView);
+        this.openView(EViewID.UILoginView);
     }
 }

@@ -1,11 +1,11 @@
 import { ConfirmBaseMediator } from "../script/ConfirmBaseMediator";
-import { UIConfirmSmallMsg, UIConfirmSmallView } from "../view/UIConfirmSmallView";
+import { EUIConfirmSmallMsg, UIConfirmSmallView } from "../view/UIConfirmSmallView";
 
 export class UIConfirmSmallMediator extends ConfirmBaseMediator<UIConfirmSmallView> {
 
 	override onAwake() {
-		this.addEvent(UIConfirmSmallMsg.OnBtnCloseClick, this.onBtnCancelClick);
-		this.addEvent(UIConfirmSmallMsg.OnBtnConfirmClick, this.onBtnConfirmClick);
-		this.addEvent(UIConfirmSmallMsg.OnBtnCancelClick, this.onBtnCancelClick);
+		this.addEvent(EUIConfirmSmallMsg.OnBtnCloseClick, this.onBtnCancelClick);
+		this.addEvent(EUIConfirmSmallMsg.OnBtnConfirmClick, this.onBtnConfirmClick);
+		this.addEvent(EUIConfirmSmallMsg.OnBtnCancelClick, this.onBtnCancelClick);
 	}
 }

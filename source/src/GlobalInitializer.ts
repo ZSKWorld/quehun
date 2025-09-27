@@ -43,10 +43,10 @@ windowImmit("$localizeTxt", function (id: number, ...args: any[]) {
 });
 
 windowImmit("$confirm", (title: string, msg: string, cancel = true) => {
-    if (!fgui.UIPackage.getByName(ResPath.PkgName.PkgCommon))
+    if (!fgui.UIPackage.getByName(ResPath.EPkgName.PkgCommon))
         return $gameMgr.showConfirm(msg);
     windowImmit("$confirm", (title: string, msg: string, cancel = true) => new Promise<boolean>(resolve => {
-        $uiMgr.openView(ViewID.UIConfirmView, {
+        $uiMgr.openView(EViewID.UIConfirmView, {
             title,
             content: msg,
             cancel: cancel,

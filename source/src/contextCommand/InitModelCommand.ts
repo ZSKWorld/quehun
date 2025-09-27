@@ -6,8 +6,8 @@ import { MainProxy } from "../core/ui/view/PkgMain/proxy/MainProxy";
 export class InitModelCommand extends Command {
     override execute(notifyName: string, data?: any) {
         const registerProxy = $facade.registerProxy.bind($facade) as typeof $facade.registerProxy;
-        registerProxy(ProxyID.Bag, BagProxy);
-        registerProxy(ProxyID.Login, LoginProxy);
-        registerProxy(ProxyID.Main, MainProxy);
+        registerProxy(EProxyID.Bag, BagProxy);
+        registerProxy(EProxyID.Login, LoginProxy);
+        registerProxy(EProxyID.Main, MainProxy);
     }
 }

@@ -1,17 +1,17 @@
 /** This script is generated automatically, Please do not any modify! */
 declare namespace ResPath {
-	enum UnclassifiedPath {
+	enum EUnclassifiedPath {
 		Gameconfig = "res/gameconfig.json",
 	}
 
-	enum ConfigPath {
+	enum EConfigPath {
 		Ip_config = "res/config/ip_config.json",
 		Lqc = "res/config/lqc.bin",
 		Proto = "res/config/proto.json",
 		Tbl_pbConfig = "res/config/tbl_pbConfig.proto",
 	}
 
-	enum FontName {
+	enum EFontName {
 		Font01 = "Font01",
 		Font02 = "Font02",
 		Font03 = "Font03",
@@ -43,7 +43,7 @@ declare namespace ResPath {
 		NotoSansKR = "NotoSansKR",
 	}
 
-	enum FontPath {
+	enum EFontPath {
 		Font01 = "res/font/Font01.ttf",
 		Font02 = "res/font/Font02.ttf",
 		Font03 = "res/font/Font03.ttf",
@@ -75,9 +75,9 @@ declare namespace ResPath {
 		NotoSansKR = "res/font/NotoSansKR.ttf",
 	}
 
-	enum ScenePath { }
+	enum EScenePath { }
 
-	enum SkeletonPath {
+	enum ESkeletonPath {
 		Bianhua = "res/skeleton/bianhua.sk",
 		Biaoqing = "res/skeleton/biaoqing.sk",
 		Biaoti = "res/skeleton/biaoti.sk",
@@ -807,7 +807,7 @@ declare namespace ResPath {
 		Zhuancheng = "res/skeleton/zhuancheng.sk",
 	}
 
-	enum SoundPath {
+	enum ESoundPath {
 		WAV_Button1 = "res/sound/Button1.wav",
 		WAV_Button10 = "res/sound/Button10.wav",
 		WAV_Button11 = "res/sound/Button11.wav",
@@ -859,7 +859,7 @@ declare namespace ResPath {
 		WAV_Button9 = "res/sound/Button9.wav",
 	}
 
-	enum SpinePath {
+	enum ESpinePath {
 		Yinglingweigong_1_0 = "res/spine/archer/yinglingweigong_1_0.skel",
 		Yinglingweigong_1_1 = "res/spine/archer/yinglingweigong_1_1.skel",
 		Jiantongying_1_0 = "res/spine/jiantongying/jiantongying_1_0.skel",
@@ -871,7 +871,7 @@ declare namespace ResPath {
 		Yuanbanlin_1_1 = "res/spine/yuanbanlin/yuanbanlin_1_1.skel",
 	}
 
-	enum TexturePath {
+	enum ETexturePath {
 		PNG_Aaaa = "res/texture/aaaa.png",
 		PNG_Image_1232 = "res/texture/image_1232.png",
 		PNG_Image_2007 = "res/texture/image_2007.png",
@@ -881,7 +881,7 @@ declare namespace ResPath {
 		JPG_Background = "res/texture/background.jpg",
 	}
 
-	enum PkgName {
+	enum EPkgName {
 		PkgBattle = "PkgBattle",
 		PkgCommon = "PkgCommon",
 		PkgDesign = "PkgDesign",
@@ -892,7 +892,7 @@ declare namespace ResPath {
 		PkgTest = "PkgTest",
 	}
 
-	enum PkgPath {
+	enum EPkgPath {
 		PkgBattle = "res/ui/PkgBattle",
 		PkgCommon = "res/ui/PkgCommon",
 		PkgDesign = "res/ui/PkgDesign",

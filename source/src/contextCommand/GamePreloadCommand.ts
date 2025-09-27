@@ -2,7 +2,7 @@ import { Command } from "../core/mvc/controller/Command";
 import { RedDotManager } from "../core/ui/redDot/RedDotManager";
 import { SceneLogin } from "../scene/scene/SceneLogin";
 import { SceneMain } from "../scene/scene/SceneMain";
-import { SceneType } from "../scene/SceneDefine";
+import { ESceneType } from "../scene/SceneDefine";
 
 interface IGameConfig {
     readonly stat: boolean;
@@ -18,12 +18,12 @@ export class GamePreloadCommand extends Command {
         ]);
         RedDotManager.Inst.init();
         this.load().then(() => {
-            $sceneMgr.enterScene(SceneType.LoginScene);
+            $sceneMgr.enterScene(ESceneType.LoginScene);
         });
     }
 
     private async load() {
-        const config: IGameConfig = await $loadMgr.fetch(ResPath.UnclassifiedPath.Gameconfig, "json");
+        const config: IGameConfig = await $loadMgr.fetch(ResPath.EUnclassifiedPath.Gameconfig, "json");
         config.stat && Laya.Stat.show(0, 0, [
             Laya.Stat.FPSStatUIParams,
             Laya.Stat.NodeStatUIParams,
@@ -35,8 +35,8 @@ export class GamePreloadCommand extends Command {
             Laya.Stat.RenderTextureMemory,
             Laya.Stat.BufferMemory,
         ]);
-        await $loadMgr.loadPackage(ResPath.PkgPath.PkgEntrance);
-        $uiMgr.openView(ViewID.UIEntranceView);
+        await $loadMgr.loadPackage(ResPath.EPkgPath.PkgEntrance);
+        $uiMgr.openView(EViewID.UIEntranceView);
         await $gameMgr.init();
         await $pbMgr.init();
         await $cfgMgr.init();

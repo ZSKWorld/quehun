@@ -143,7 +143,7 @@ module net {
                 route.close();
                 return;
             }
-            route.routeType = RouteType.Main;
+            route.routeType = ERouteType.Main;
             this.state = game.EConnectState.connecting;
         }
 

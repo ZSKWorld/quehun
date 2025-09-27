@@ -19,7 +19,7 @@ module net {
         public detectEndTime: number = -1000;      // 检测结束的时间戳
         public lastDetectQuilty: number = DELAY_INF;   // 上次检测的网络质量等级，长期保存，当前连接关了，也保存了之前的
         public bannedTimestamp: number = 0;        // 被禁用的时间，禁用一段时间
-        public routeType: RouteType = RouteType.None;
+        public routeType: ERouteType = ERouteType.None;
         public name: string = '';          // 线路名称，一般是1、2、3、4、5这样，客户端自己加上“线路”的本地化
         public busyState: 'idle' | 'normal' | 'busy' | 'removed' | 'rejected' = 'idle'; // 当前线路的繁忙状态，idle/normal/busy/removed/rejected，分别表示空闲/正常/忙碌/维护/移除/拒绝
         public level: number = 0;  // 当前线路的优先级，跟运营协商确定
@@ -36,7 +36,7 @@ module net {
         private requestIndex_: number = 0;
         private services_: any = {};
 
-        constructor(routeID: string, url: string, tail: string, ssl:boolean, service_list: Array<string>) {
+        constructor(routeID: string, url: string, tail: string, ssl: boolean, service_list: Array<string>) {
             this.routeID = routeID;
             this.url = url;
             this.tail = tail || '';
@@ -57,7 +57,7 @@ module net {
             if (this.state === game.EConnectState.tryconnect || this.state === game.EConnectState.connecting || this.state === game.EConnectState.usable) {
                 return;
             }
-            this._logInfo(`开始建立连接, url: ${this.url}, tail: ${this.tail}`);
+            this._logInfo(`开始建立连接, url: ${ this.url }, tail: ${ this.tail }`);
 
             if (!this.ws) {
                 this.ws = new Laya.Socket();
@@ -75,7 +75,7 @@ module net {
             this.waitingRpcCount = 0;
             this._version++;
             const version = this._version;
-            this.ws.connectByUrl(`${((this.ssl || GameMgr.inHttps) ? 'wss://' : 'ws://')}${this.url}/${this.tail}`);
+            this.ws.connectByUrl(`${ ((this.ssl || GameMgr.inHttps) ? 'wss://' : 'ws://') }${ this.url }/${ this.tail }`);
             Laya.timer.once(10 * 1000, this, () => {
                 if (version !== this._version) return;
                 this.close();
@@ -85,7 +85,7 @@ module net {
 
         close() {
             if (this.state === game.EConnectState.tryconnect || this.state === game.EConnectState.connecting || this.state === game.EConnectState.usable) {
-                this._logInfo(`执行主动关闭, url: ${this.url}, tail: ${this.tail}`);
+                this._logInfo(`执行主动关闭, url: ${ this.url }, tail: ${ this.tail }`);
                 this.state = game.EConnectState.closing;
                 this.delayWatcher.clear();
                 this.delayWatcherAll.clear();
@@ -110,9 +110,9 @@ module net {
         }
 
         private _registerService(service: string) {
-            const Service = ProtobufManager.lookupService(`lq.${service}`);
+            const Service = ProtobufManager.lookupService(`lq.${ service }`);
             if (!Service)
-                throw new Error(`ERR_SERVICE_NOT_FOUND, name=${service}`);
+                throw new Error(`ERR_SERVICE_NOT_FOUND, name=${ service }`);
 
             const serv = Service.create((method, requestData, callback) => {
                 // console.log(`method=${method.fullName}, request=${JSON.stringify(requestData)}`);
@@ -133,7 +133,7 @@ module net {
             if (method !== '.lq.Route.heartbeat') {
                 // this._logInfo('socket _sendRpc: ' + method);
                 this.waitingRpcCount++;
-            } else { 
+            } else {
                 this.delayWatcher.addNewWaiting(requestID);
             }
             const by: Laya.Byte = new Laya.Byte();
@@ -144,7 +144,7 @@ module net {
 
         public sendRequest(service_name: string, rpc_name: string, data: any, func_response: (error, res) => void) {
             if (rpc_name !== 'heartbeat') {
-                this._logInfo(`发送业务请求, Service Name: ${service_name}, Method Name: ${rpc_name}, request: ${JSON.stringify(data)}`);
+                this._logInfo(`发送业务请求, Service Name: ${ service_name }, Method Name: ${ rpc_name }, request: ${ JSON.stringify(data) }`);
             }
 
             if (this.state !== game.EConnectState.connecting && this.state !== game.EConnectState.usable) {
@@ -160,7 +160,7 @@ module net {
         }
 
         private _onOpen() {
-            this._logInfo(`连接建立成功 OnOpen, url: ${this.url}, tail: ${this.tail}`);
+            this._logInfo(`连接建立成功 OnOpen, url: ${ this.url }, tail: ${ this.tail }`);
             this._version++;
             this.session_id = game.Tools.generateUUID();
             this.state = game.EConnectState.connecting;
@@ -177,7 +177,7 @@ module net {
 
         private _onUseable() {
             if (this.state !== game.EConnectState.connecting) return;
-            this._logInfo(`服务器接受连接 OnUseable, url: ${this.url}, tail: ${this.tail}`);
+            this._logInfo(`服务器接受连接 OnUseable, url: ${ this.url }, tail: ${ this.tail }`);
             this.state = game.EConnectState.usable;
             this.eventHandler.event('OnUseable', { route: this, routeID: this.routeID });
         }
@@ -185,7 +185,7 @@ module net {
         private _onClose(msg: any) {
             if (this.state === game.EConnectState.disconnect) return;
             msg = msg || {};
-            this._logInfo(`链接被关闭 OnClose, url: ${this.url}, tail: ${this.tail}, msg: ${JSON.stringify(msg)}`);
+            this._logInfo(`链接被关闭 OnClose, url: ${ this.url }, tail: ${ this.tail }, msg: ${ JSON.stringify(msg) }`);
             this._version++;
             this.state = game.EConnectState.disconnect;
             this.eventHandler.event('OnClose', { route: this, routeID: this.routeID, msg: msg });
@@ -195,13 +195,13 @@ module net {
             this.waitingRpcCount = 0;
             this.locked = false;
             this.duringDetect = false;
-            this.routeType = RouteType.None;
+            this.routeType = ERouteType.None;
         }
 
         private _onError(msg: any) {
             if (this.state === game.EConnectState.disconnect) return;
             msg = msg || {};
-            this._logInfo(`链接产生错误 OnError, url: ${this.url}, tail: ${this.tail}, msg: ${JSON.stringify(msg)}`);
+            this._logInfo(`链接产生错误 OnError, url: ${ this.url }, tail: ${ this.tail }, msg: ${ JSON.stringify(msg) }`);
             this.state = game.EConnectState.disconnect;
             this.eventHandler.event('OnError', { route: this, routeID: this.routeID, msg: msg });
             this.eventHandler.event('OnClose', { route: this, routeID: this.routeID, msg: msg });
@@ -211,7 +211,7 @@ module net {
             this.waitingRpcCount = 0;
             this.locked = false;
             this.duringDetect = false;
-            this.routeType = RouteType.None;
+            this.routeType = ERouteType.None;
         }
 
         private _onMessage(msg: any) {
@@ -269,7 +269,7 @@ module net {
                     data = data.slice(1);
                     break;
                 default:
-                    console.error('net', `unknown headerType: ${header.type}`);
+                    console.error('net', `unknown headerType: ${ header.type }`);
                     return;
             }
             // app.Log.info_net('socket _handleMsg0 header.type:' + header.type + ', data.length:' + data.length);
@@ -282,7 +282,7 @@ module net {
                     const requestID = header.reqIndex;
                     const request = this.waitingRequests[requestID];
                     if (!request) {
-                        this._logError(`收到不存在的requestID: ${requestID}, routeID:${this.routeID}`);
+                        this._logError(`收到不存在的requestID: ${ requestID }, routeID:${ this.routeID }`);
                         return;
                     }
                     delete this.waitingRequests[requestID];
@@ -294,19 +294,19 @@ module net {
                     const _msg = wrapper.data;
 
                     if (request.methodName !== '.lq.Route.heartbeat') {
-                        this._logInfo(`接收到业务请求返回, Service Name: ${request.serviceName}, Method Name: ${request.methodName}, Msg: ${JSON.stringify(_msg)}`);
+                        this._logInfo(`接收到业务请求返回, Service Name: ${ request.serviceName }, Method Name: ${ request.methodName }, Msg: ${ JSON.stringify(_msg) }`);
                     }
                     try {
                         request.callback(null, _msg);
                     } catch (err) {
-                        this._logError(`处理回调时出错: ${JSON.stringify(err)}`);
+                        this._logError(`处理回调时出错: ${ JSON.stringify(err) }`);
                     }
                     break;
                 }
                 case HeaderType.NOTIFY: {
                     const message = MessageWrapper.decodeMessage(data);
                     let msgName: string = message.$type.fullName;
-                    this._logInfo(`收到服务器通知, name: ${msgName}, msg: ${JSON.stringify(message)}`);
+                    this._logInfo(`收到服务器通知, name: ${ msgName }, msg: ${ JSON.stringify(message) }`);
                     if (msgName === 'NotifyConnectionShutdown') {
                         this.close();
                     } else {
@@ -315,7 +315,7 @@ module net {
                     return;
                 }
                 default:
-                    console.error('net', `unknown headerType: ${header.type}`);
+                    console.error('net', `unknown headerType: ${ header.type }`);
                     return;
             }
         }
@@ -334,7 +334,7 @@ module net {
         // 在Open后，检查服务器是否接受连接
         private _checkConnectAvalible() {
             this._logInfo('_CheckConnectAvalible start');
-            if (this.routeType === RouteType.None) {
+            if (this.routeType === ERouteType.None) {
                 this._logError('未指定线路类型，线路关闭');
                 this.close();
                 return;
@@ -348,18 +348,18 @@ module net {
             this.sendRequest(serviceName, methodName, request, (err, res) => {
                 let success = false;
                 if (err) {
-                    this._logError(`_CheckConnectAvalible, 连接失败1, err: ${JSON.stringify(err)}`);
+                    this._logError(`_CheckConnectAvalible, 连接失败1, err: ${ JSON.stringify(err) }`);
                     success = false;
                 } else if (res) {
                     if (res.error && res.error.code !== 0) {
-                        this._logError(`_CheckConnectAvalible, 连接失败2, error: ${JSON.stringify(res.error)}`);
+                        this._logError(`_CheckConnectAvalible, 连接失败2, error: ${ JSON.stringify(res.error) }`);
                         success = false;
                     } else {
                         if (res.result === 1) {
                             this._logInfo('_CheckConnectAvalible, 连接成功');
                             success = true;
                         } else {
-                            this._logError(`_CheckConnectAvalible, 连接失败3, result: ${res.result}`);
+                            this._logError(`_CheckConnectAvalible, 连接失败3, result: ${ res.result }`);
                             success = false;
                             // GatewayFetcher.CheckFetch();
                             this.busyState = 'rejected';
@@ -381,23 +381,23 @@ module net {
             const nowTime = Laya.timer.currTimer / 1000;
             if (!this.duringDetect) {
                 var pingCD = 15
-                if (Math.abs(this.delayWatcherAll.getQualityGrade() - this.delayWatcher.getQualityGrade()) > 0.1) { 
+                if (Math.abs(this.delayWatcherAll.getQualityGrade() - this.delayWatcher.getQualityGrade()) > 0.1) {
                     pingCD = 5
                 }
-            
+
                 if (nowTime - this.lastPingTime >= pingCD) {
                     this._ping();
                 }
             }
-            if (this.routeType === RouteType.Standby) {
+            if (this.routeType === ERouteType.Standby) {
                 if (!this.locked && nowTime - this.openStartTime >= 20 * 60) {
                     this.close();
                 }
-            } else if (this.routeType === RouteType.Detect) {
+            } else if (this.routeType === ERouteType.Detect) {
                 if (!this.locked && nowTime - this.openStartTime >= 40) {
                     this.close();
                 }
-            } else if (this.routeType === RouteType.None) {
+            } else if (this.routeType === ERouteType.None) {
                 if (nowTime - this.openStartTime >= 20) {
                     this.close();
                 }
@@ -409,7 +409,7 @@ module net {
             if (data) {
                 if (data.methodName !== '.lq.Route.heartbeat') {
                     this.waitingRpcCount--;
-                    this._logError(`收到超时消息, routeID: ${this.routeID}, requestID:${requestID}，服务名：${data.serviceName}, methodName: ${data.methodName}`);
+                    this._logError(`收到超时消息, routeID: ${ this.routeID }, requestID:${ requestID }，服务名：${ data.serviceName }, methodName: ${ data.methodName }`);
                 }
                 delete this.waitingRequests[requestID];
                 if (data.callback) {
@@ -492,11 +492,11 @@ module net {
         }
 
         private _logInfo(msg: string) {
-            app.Log.info_net_t(`NetRoute: ${this.routeID}`, msg);
+            app.Log.info_net_t(`NetRoute: ${ this.routeID }`, msg);
         }
 
         private _logError(msg: string) {
-            app.Log.error_net_t(`NetRoute: ${this.routeID}`, msg);
+            app.Log.error_net_t(`NetRoute: ${ this.routeID }`, msg);
         }
     }
 }

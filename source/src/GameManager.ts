@@ -3,38 +3,6 @@ export class GameManager implements IGameManager {
     private _inDmm = false;
     private _deviceId: string;
     private _version: { version: string; };
-    get deviceId() {
-        if (!this._deviceId) {
-            this._deviceId = $localDataMgr.get(ELocalDataKey.DeviceId);
-            if (!this._deviceId) {
-                this._deviceId = $gameUtil.createUUID();
-                $localDataMgr.set(ELocalDataKey.DeviceId, this._deviceId);
-            }
-        }
-        return this._deviceId;
-    }
-    get deviceInfo() {
-        const userAgent = navigator.userAgent;
-        const device: IClientDeviceInfo = {
-            hardware: 'pc',
-            platform: 'pc',
-            os: 'windows',
-            os_version: 'win10',
-            sale_platform: 'web',
-            is_browser: true,
-            software: 'Chrome',
-            model_number: '',
-            screen_height: window.innerHeight,
-            screen_width: window.innerWidth,
-            user_agent: userAgent,
-            screen_type: 'ontouchstart' in window || navigator.maxTouchPoints > 0 ? 2 : 1,
-            hardware_vendor: ""
-        };
-        /;\s+([a-zA-Z0-9-_\s]+)\s+Build/.exec(userAgent);
-        const type = (RegExp.$1).toLowerCase();
-        if (type) device.model_number = type;
-        return device;
-    }
     get language() { return "chs"; }
     get clientType() { return "chs"; }
     get version() { return this._version?.version || ""; }
@@ -69,6 +37,36 @@ export class GameManager implements IGameManager {
                 return 'en';
         }
         return 'unknown';
+    }
+    get deviceId() {
+        this._deviceId = this._deviceId || $localDataMgr.get(ELocalDataKey.DeviceId);
+        if (!this._deviceId) {
+            this._deviceId = $gameUtil.createUUID();
+            $localDataMgr.set(ELocalDataKey.DeviceId, this._deviceId);
+        }
+        return this._deviceId;
+    }
+    get deviceInfo() {
+        const userAgent = navigator.userAgent;
+        const device: IClientDeviceInfo = {
+            hardware: 'pc',
+            platform: 'pc',
+            os: 'windows',
+            os_version: 'win10',
+            sale_platform: 'web',
+            is_browser: true,
+            software: 'Chrome',
+            model_number: '',
+            screen_height: window.innerHeight,
+            screen_width: window.innerWidth,
+            user_agent: userAgent,
+            screen_type: 'ontouchstart' in window || navigator.maxTouchPoints > 0 ? 2 : 1,
+            hardware_vendor: ""
+        };
+        /;\s+([a-zA-Z0-9-_\s]+)\s+Build/.exec(userAgent);
+        const type = (RegExp.$1).toLowerCase();
+        if (type) device.model_number = type;
+        return device;
     }
 
     async init() {

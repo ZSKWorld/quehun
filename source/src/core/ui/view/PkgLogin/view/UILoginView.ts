@@ -1,7 +1,6 @@
 import UILogin from "../../../ui/PkgLogin/UILogin";
-import { ELoginByType } from "../event/UILoginEvent";
 
-export const enum UILoginMsg {
+export const enum EUILoginMsg {
 	OnBtnLoginClick = "UILogin_OnBtnLoginClick",
 	OnBtnAnnounceClick = "UILogin_OnBtnAnnounceClick",
 	OnBtnHelpClick = "UILogin_OnBtnHelpClick",
@@ -20,28 +19,23 @@ export class UILoginView extends ExtensionClass<IView, UILogin>(UILogin) impleme
 			btn_login, btn_announce, btn_help, btn_loginByAccount, btn_loginBtnPhone,
 			btn_register, btn_forgotPassword, btn_forgotAccount,
 			btn_logout } = this;
-		btn_login.onClick(this, this.sendEvent, [UILoginMsg.OnBtnLoginClick]);
-		btn_announce.onClick(this, this.sendEvent, [UILoginMsg.OnBtnAnnounceClick]);
-		btn_help.onClick(this, this.sendEvent, [UILoginMsg.OnBtnHelpClick]);
-		btn_loginByAccount.onClick(this, this.sendEvent, [UILoginMsg.OnBtnLoginByAccountClick]);
-		btn_loginBtnPhone.onClick(this, this.sendEvent, [UILoginMsg.OnBtnLoginBtnPhoneClick]);
-		btn_register.onClick(this, this.sendEvent, [UILoginMsg.OnBtnRegisterClick]);
-		btn_forgotPassword.onClick(this, this.sendEvent, [UILoginMsg.OnBtnForgotPasswordClick]);
-		btn_forgotAccount.onClick(this, this.sendEvent, [UILoginMsg.OnBtnForgotAccountClick]);
-		btn_logout.onClick(this, this.sendEvent, [UILoginMsg.OnBtnLogoutClick]);
+		btn_login.onClick(this, this.sendEvent, [EUILoginMsg.OnBtnLoginClick]);
+		btn_announce.onClick(this, this.sendEvent, [EUILoginMsg.OnBtnAnnounceClick]);
+		btn_help.onClick(this, this.sendEvent, [EUILoginMsg.OnBtnHelpClick]);
+		btn_loginByAccount.onClick(this, this.sendEvent, [EUILoginMsg.OnBtnLoginByAccountClick]);
+		btn_loginBtnPhone.onClick(this, this.sendEvent, [EUILoginMsg.OnBtnLoginBtnPhoneClick]);
+		btn_register.onClick(this, this.sendEvent, [EUILoginMsg.OnBtnRegisterClick]);
+		btn_forgotPassword.onClick(this, this.sendEvent, [EUILoginMsg.OnBtnForgotPasswordClick]);
+		btn_forgotAccount.onClick(this, this.sendEvent, [EUILoginMsg.OnBtnForgotAccountClick]);
+		btn_logout.onClick(this, this.sendEvent, [EUILoginMsg.OnBtnLogoutClick]);
 	}
 
-	refreshAccount(account: string, password: string) {
-		this.itxt_account.text = account || "";
-		this.itxt_password.text = password || "";
+	refresh(loginAccountType: 0 | 1, account: string, password: string) {
+		const { itxt_account, itxt_password, btn_loginByAccount, btn_loginBtnPhone } = this;
+		itxt_account.text = account || "";
+		itxt_password.text = password || "";
+		btn_loginByAccount.selected = loginAccountType == 0;
+		btn_loginBtnPhone.selected = loginAccountType == 1;
+		itxt_account.promptText = $localizeTxt(loginAccountType == 0 ? 3138 : 3132);
 	}
-
-	refreshLoginType(type: ELoginByType) {
-		const { btn_loginByAccount, btn_loginBtnPhone, itxt_account } = this;
-		btn_loginByAccount.selected = type == ELoginByType.Account;
-		btn_loginBtnPhone.selected = type == ELoginByType.PhoneNumber;
-		itxt_account.promptText = $localizeTxt(type == ELoginByType.Account ? 3138 : 3132);
-	}
-
-
 }

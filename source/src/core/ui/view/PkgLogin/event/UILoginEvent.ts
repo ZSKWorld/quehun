@@ -1,8 +1,8 @@
-export const enum ELoginByType {
+export const enum ELoginType {
     None = -1,
     Account,
-    PhoneNumber,
 }
+
 export const enum EUILoginEvent {
 
 }

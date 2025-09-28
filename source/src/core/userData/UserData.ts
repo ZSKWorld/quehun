@@ -1,4 +1,5 @@
 import { Account } from "./Account";
+import { Activity } from "./Activity";
 import { Character } from "./Character";
 
 export class UserData implements UserData.IUserData{
@@ -24,6 +25,7 @@ export class UserData implements UserData.IUserData{
 
     account = new Account();
     character = new Character();
+    activity = new Activity();
 
     numerical: IAccountUpdate_NumericalUpdate[];
     /** 背包 */
@@ -35,15 +37,8 @@ export class UserData implements UserData.IUserData{
     title: IAccountUpdate_TitleUpdate;
     /** 新增首充档位充值记录 */
     new_recharged_list: number[];
-    activity_task: IAccountUpdate_TaskUpdate;
-    /** 翻牌牌任务 */
-    activity_flip_task: IAccountUpdate_TaskUpdate;
-    activity_period_task: IAccountUpdate_TaskUpdate;
-    activity_random_task: IAccountUpdate_TaskUpdate;
     challenge: IAccountUpdate_AccountChallengeUpdate;
     ab_match: IAccountUpdate_AccountABMatchUpdate;
-    activity: IAccountActivityUpdate;
-    activity_segment_task: IAccountUpdate_SegmentTaskUpdate;
     month_ticket: IAccountUpdate_MonthTicketUpdate;
     badge: IAccountUpdate_BadgeUpdate;
 
@@ -72,5 +67,6 @@ export class UserData implements UserData.IUserData{
     update(data:IAccountUpdate) {
         if (!data) return;
         this.character.update(data);
+        this.activity.update(data);
     }
 }

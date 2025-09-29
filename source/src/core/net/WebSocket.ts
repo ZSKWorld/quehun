@@ -114,6 +114,7 @@ export class WebSocket extends Laya.EventDispatcher {
     }
 
     close() {
+        if (this.state == ESocketState.Disconnect) return;
         this.state = ESocketState.Disconnect;
         this._socket.close();
     }

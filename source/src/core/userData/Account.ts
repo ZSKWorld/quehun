@@ -1,4 +1,6 @@
-export class Account implements UserData.IAccount {
+import { MessageData } from "./MessageData";
+
+export class Account extends MessageData implements UserData.IAccount {
     account_id: number = 0;
     nickname: string = "";
     login_time: number = 0;
@@ -43,35 +45,8 @@ export class Account implements UserData.IAccount {
 
     update(data: IAccount) {
         if (!data) return;
-        this.account_id = data.account_id;
-        this.nickname = data.nickname;
-        this.login_time = data.login_time;
-        this.logout_time = data.logout_time;
-        this.room_id = data.room_id;
-        this.anti_addiction = data.anti_addiction;
-        this.title = data.title;
-        this.signature = data.signature;
-        this.email = data.email;
-        this.email_verify = data.email_verify;
-        this.gold = data.gold;
-        this.diamond = data.diamond;
-        this.avatar_id = data.avatar_id;
-        this.vip = data.vip;
-        this.birthday = data.birthday;
-        this.phone = data.phone;
-        this.phone_verify = data.phone_verify;
-        this.platform_diamond = data.platform_diamond;
-        this.level = data.level;
-        this.level3 = data.level3;
-        this.avatar_frame = data.avatar_frame;
-        this.skin_ticket = data.skin_ticket;
-        this.platform_skin_ticket = data.platform_skin_ticket;
-        this.verified = data.verified;
-        this.challenge_levels = data.challenge_levels;
-        this.frozen_state = data.frozen_state;
-        this.achievement_count = data.achievement_count;
-        this.loading_image = data.loading_image;
-        this.favorite_hu = data.favorite_hu;
-        this.badges = data.badges;
+        data.$type.fieldsArray.forEach(v => {
+            this[v.name] = this.decodeMessage(v);
+        });
     }
 }

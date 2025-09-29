@@ -131,29 +131,66 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 		Laya.timer.clear(this, this.sendLogin);
 		this.view.ctrl_page.selectedIndex = 0;
 		$localDataMgr.remove(ELocalDataKey.AutoLogin);
+		$netMgr.closeLobby();
+		Laya.timer.frameOnce(10, $netMgr, $netMgr.connectLobby);
 	}
 
 	private sendLogin() {
 		const { _loginInfo } = this;
-		Logger.error(_loginInfo.loginType);
 		if (_loginInfo.loginType == ELoginType.Account) {
-			$netMgr.login({
-				account: _loginInfo.account,
-				password: $gameUtil.HmacSHA256(_loginInfo.password),
-				reconnect: false,
-				device: $gameMgr.deviceInfo,
-				random_key: $gameMgr.deviceId,
-				client_version: {
-					resource: $gameMgr.version,
-					package: "",
-				},
-				gen_access_token: true,
-				currency_platforms: $gameMgr.currency,
-				type: 0,
-				client_version_string: $gameMgr.clientVersion,
-				tag: $gameMgr.reportClientType,
-				version: 0,
-			});
+			if (!_loginInfo.access_token)
+				this.reqLogin();
+			else
+				this.reqOauth2Check();
 		}
+	}
+
+	private reqLogin() {
+		const { _loginInfo } = this;
+		$netMgr.reqs.login({
+			account: _loginInfo.account,
+			password: $gameUtil.HmacSHA256(_loginInfo.password),
+			reconnect: false,
+			device: $gameMgr.deviceInfo,
+			random_key: $gameMgr.deviceId,
+			client_version: {
+				resource: $gameMgr.version,
+				package: "",
+			},
+			gen_access_token: true,
+			currency_platforms: $gameMgr.currency,
+			type: 0,
+			client_version_string: $gameMgr.clientVersion,
+			tag: $gameMgr.reportClientType,
+			version: 0,
+		});
+	}
+
+	private reqOauth2Check() {
+		const { _loginInfo } = this;
+		$netMgr.reqs.oauth2Check({
+			type: _loginInfo.loginType,
+			access_token: _loginInfo.access_token
+		});
+	}
+
+	private reqOauth2Login() {
+		const { _loginInfo } = this;
+		$netMgr.reqs.oauth2Login({
+			type: _loginInfo.loginType,
+			access_token: _loginInfo.access_token,
+			reconnect: false,
+			device: $gameMgr.deviceInfo,
+			random_key: $gameMgr.deviceId,
+			client_version: {
+				resource: $gameMgr.version,
+				package: "",
+			},
+			gen_access_token: false,
+			currency_platforms: $gameMgr.currency,
+			version: 0,
+			client_version_string: $gameMgr.clientVersion,
+			tag: $gameMgr.reportClientType
+		});
 	}
 }

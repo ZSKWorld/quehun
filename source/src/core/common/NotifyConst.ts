@@ -10,25 +10,8 @@ export const enum ENotifyConst {
 	RedDotCompAwake = "NotifyConst_RedDotCompAwake",
 	/** 红点组件销毁 */
 	RedDotCompDestroy = "NotifyConst_RedDotCompDestroy",
-
-	LoginSuccess = "NotifyConst_LoginSuccess",
-	LoginFail = "NotifyConst_LoginFail",
-
-	/** 添加游戏日志 */
-	AddGameLog = "NotifyConst_AddGameLog",
-	/** 清除游戏日志 */
-	ClearGameLog = "NotifyConst_ClearGameLog",
-
-	/** 清除账号 */
-	ClearAccount = "NotifyConst_ClearAccount",
-
-
-	/** 进入战斗 */
-	EnterBattle = "NotifyConst_EnterBattle",
-	/** 退出战斗 */
-	ExitBattle = "NotifyConst_ExitBattle",
-
-	/** 开始采集 */
-	StartGather = "NotifyConst_StartGather",
+	
+	
+	
 
 }

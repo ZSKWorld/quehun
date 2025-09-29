@@ -48,15 +48,7 @@ export class UserData extends MessageData implements UserData.IUserData {
         if (!data) return;
         this.account_id = data.account_id;
         this.account.update(data.account);
-        if (data.game_info) {
-            this.game_info = {
-                connect_token: data.game_info.connect_token,
-                game_uuid: data.game_info.game_uuid,
-                location: data.game_info.location,
-            };
-        } else {
-            this.game_info = null;
-        }
+        this.game_info = this.decodeMessage(data.game_info);
         this.has_unread_announcement = data.has_unread_announcement;
         this.access_token = data.access_token;
         this.signup_time = data.signup_time;

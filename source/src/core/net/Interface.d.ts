@@ -40,5 +40,12 @@ declare interface IRouteInfo {
 }
 
 declare interface INetManager {
+    get reqs(): IReqMethod;
     init(): Promise<void>;
+    connectLobby():void;
+    closeLobby():void;
+    connectGame():void;
+    closeGame():void;
+    connectOb():void;
+    closeOb():void;
 }

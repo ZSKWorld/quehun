@@ -8,16 +8,14 @@ export interface IUILoginData {
 
 interface ILoginInfo {
 	loginType: ELoginType;
-	loginAccountType: 0 | 1;
+	accountType: 0 | 1;
 	account?: string;
 	password?: string;
 	access_token?: string;
 }
 
 export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
-	private _lastLoginData: ILoginInfo;
-	private _loginType = ELoginType.None;
-	private _loginAccountType: 0 | 1;
+	private _loginInfo: ILoginInfo;
 	private _accountInput = { account: "", password: "" };
 	private _phoneInput = { account: "", password: "" };
 
@@ -35,26 +33,36 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 
 	override onEnable() {
 		const autoLogin = !!$localDataMgr.get(ELocalDataKey.AutoLogin);
-		const lastLoginData = this._lastLoginData = $localDataMgr.get(ELocalDataKey.LastLoginData);
-		let loginType = ELoginType.Account;
-		let loginAccountType: 0 | 1 = 0;
-		if (lastLoginData) {
-			loginType = lastLoginData.loginType;
-			loginAccountType = lastLoginData.loginAccountType;
-			if (loginAccountType == 0) {
-				this._accountInput.account = lastLoginData.account;
-				this._accountInput.password = lastLoginData.password;
-			} else if (loginAccountType == 1) {
-				this._phoneInput.account = lastLoginData.account;
-				this._phoneInput.password = lastLoginData.password;
-			}
+		this._loginInfo = $localDataMgr.get(ELocalDataKey.LastLoginData);
+		if (!this._loginInfo) {
+			this._loginInfo = {
+				loginType: ELoginType.Account,
+				accountType: 0,
+			};
 		}
-		this.setLoginType(loginType, loginAccountType);
-		autoLogin && this.doLogin();
+		const loginInfo = this._loginInfo;
+		if (loginInfo.accountType == 0) {
+			this._accountInput.account = loginInfo.account;
+			this._accountInput.password = loginInfo.password;
+		} else if (loginInfo.accountType == 1) {
+			this._phoneInput.account = loginInfo.account;
+			this._phoneInput.password = loginInfo.password;
+		}
+		this.view.refresh(loginInfo.accountType, loginInfo.account, loginInfo.password);
+		this.setLoginType(loginInfo.loginType, loginInfo.accountType);
+		autoLogin && this.toLogin();
 	}
 
 	private onBtnLoginClick() {
-		// this.doLogin(ELoginType.Account);
+		const { view, _loginInfo } = this;
+		const txtAccount = view.itxt_account.text;
+		const txtPassword = view.itxt_password.text;
+		if (!txtAccount) return;
+		if (!txtPassword) return;
+		_loginInfo.loginType = ELoginType.Account;
+		_loginInfo.account = txtAccount;
+		_loginInfo.password = txtPassword;
+		this.toLogin();
 	}
 
 	private onBtnAnnounceClick() {
@@ -78,60 +86,60 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 	}
 
 	private onBtnLogoutClick() {
-		Laya.timer.clear(this, this.sendLogin);
-		this.view.ctrl_page.selectedIndex = 0;
-		$localDataMgr.remove(ELocalDataKey.AutoLogin);
+		this.cancelLogin();
 	}
 
-	private setLoginType(type: ELoginType, arg: 0 | 1 = 0) {
-		const lastLoginType = this._loginType;
+	private setLoginType(type: ELoginType, accountType: 0 | 1 = 0) {
+		const loginInfo = this._loginInfo;
+		const lastLoginType = loginInfo.loginType;
 		if (lastLoginType != ELoginType.Account && lastLoginType == type) return;
-		const lastLoginAccountType = this._loginAccountType;
-		if (lastLoginType == ELoginType.Account && lastLoginAccountType == arg) return;
+		const lastAccountType = loginInfo.accountType;
+		if (lastLoginType == ELoginType.Account && lastAccountType == accountType) return;
 
 		const { view, _accountInput, _phoneInput } = this;
 		if (lastLoginType == ELoginType.Account) {
-			if (lastLoginAccountType == 0) {
+			if (lastAccountType == 0) {
 				_accountInput.account = view.itxt_account.text;
 				_accountInput.password = view.itxt_password.text;
 			} else {
 				_phoneInput.account = view.itxt_account.text;
 				_phoneInput.password = view.itxt_password.text;
 			}
-			this._loginAccountType = arg;
+			loginInfo.accountType = accountType;
 		}
 
-		this._loginType = type;
+		loginInfo.loginType = type;
 		if (type == ELoginType.Account) {
-			if (arg == 0)
-				view.refresh(arg, _accountInput.account, _accountInput.password);
+			if (accountType == 0)
+				view.refresh(accountType, _accountInput.account, _accountInput.password);
 			else
-				view.refresh(arg, _phoneInput.account, _phoneInput.password);
+				view.refresh(accountType, _phoneInput.account, _phoneInput.password);
 		} else {
 
 		}
 	}
 
-	private doLogin() {
-		const { view, _loginType, _loginAccountType } = this;
+	private toLogin() {
+		const { view, _loginInfo } = this;
 		view.ctrl_page.selectedIndex = 1;
 		$localDataMgr.set(ELocalDataKey.AutoLogin, 1);
-		$localDataMgr.set<ILoginInfo>(ELocalDataKey.LastLoginData, {
-			loginType: _loginType,
-			loginAccountType: _loginAccountType,
-			account: view.itxt_account.text,
-			password: view.itxt_password.text,
-			access_token: "",
-		});
+		$localDataMgr.set<ILoginInfo>(ELocalDataKey.LastLoginData, _loginInfo);
 		Laya.timer.once(1000, this, this.sendLogin);
 	}
 
+	private cancelLogin() {
+		Laya.timer.clear(this, this.sendLogin);
+		this.view.ctrl_page.selectedIndex = 0;
+		$localDataMgr.remove(ELocalDataKey.AutoLogin);
+	}
+
 	private sendLogin() {
-		const { view, _loginType } = this;
-		if (_loginType == ELoginType.Account) {
+		const { _loginInfo } = this;
+		Logger.error(_loginInfo.loginType);
+		if (_loginInfo.loginType == ELoginType.Account) {
 			$netMgr.login({
-				account: view.itxt_account.text,
-				password: $gameUtil.HmacSHA256(view.itxt_password.text),
+				account: _loginInfo.account,
+				password: $gameUtil.HmacSHA256(_loginInfo.password),
 				reconnect: false,
 				device: $gameMgr.deviceInfo,
 				random_key: $gameMgr.deviceId,

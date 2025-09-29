@@ -1,9 +1,10 @@
 import { Account } from "./Account";
 import { Activity } from "./Activity";
 import { Character } from "./Character";
+import { MessageData } from "./MessageData";
 
-export class UserData implements UserData.IUserData{
-    
+export class UserData extends MessageData implements UserData.IUserData {
+
     /** 账号id */
     account_id: number;
     /** 正在进行的游戏信息 */
@@ -42,7 +43,8 @@ export class UserData implements UserData.IUserData{
     month_ticket: IAccountUpdate_MonthTicketUpdate;
     badge: IAccountUpdate_BadgeUpdate;
 
-    loginUpdate(data: IResLogin) {
+    @InterestMessage(EMessageID.login)
+    private loginUpdate(data: IResLogin) {
         if (!data) return;
         this.account_id = data.account_id;
         this.account.update(data.account);
@@ -64,9 +66,11 @@ export class UserData implements UserData.IUserData{
         this.rewarded_version = [...data.rewarded_version];
     }
 
-    update(data:IAccountUpdate) {
+    @InterestMessage(ENotify.NotifyAccountUpdate)
+    private update(data: IAccountUpdate) {
         if (!data) return;
         this.character.update(data);
         this.activity.update(data);
+        Logger.error("account update");
     }
 }

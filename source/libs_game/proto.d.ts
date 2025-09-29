@@ -2139,9 +2139,10 @@ declare enum EMessageID {
 	heartbeat = "heartbeat",
 }
 
-declare type ProtoObject<T> = Omit<T, "toJSON">;
+declare type ProtoObject<T> = Omit<T, "toJSON" | "$type">;
 
 declare interface IProto {
+	$type?: protobuf.Type;
 	toJSON?(): ProtoObject<this>;
 }
 

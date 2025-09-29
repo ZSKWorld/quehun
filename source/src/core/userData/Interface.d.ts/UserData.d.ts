@@ -1,6 +1,5 @@
 declare namespace UserData {
-    declare interface IUserData {
-        loginUpdate(data: IResLogin): void;
-        update(data: IAccountUpdate): void;
+    declare interface IUserData extends IObserver {
+        
     }
 }

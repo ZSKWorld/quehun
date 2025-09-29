@@ -64,3 +64,18 @@ export class Activity implements UserData.IActivity {
         };
     }
 }
+
+windowImmit("decodeMessage", function decodeMessage<T extends IProto>(data: T): ProtoObject<T> {
+    if (!data) return data;
+    var type = data.$type;
+    if (!type) return data;
+    var result: ProtoObject<T> = {} as any;
+    type.fieldsArray.forEach(v => {
+        var value = data[v.name];
+        if(Array.isArray(value))
+            result[v.name] = [...value.map(v1 => decodeMessage(v1))];
+        else
+            result[v.name] = decodeMessage(value);
+    });
+    return result;
+})

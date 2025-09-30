@@ -1,4 +1,3 @@
-declare type IProxyClass = Class<IProxy>;
 declare type IViewClass = Class<IView> & { createInstance?(): IView; };
 declare type IMediatorClass = Class<IMediator>;
 declare type ICommandClass = Class<ICommand>;
@@ -19,13 +18,6 @@ declare function InterestNotify(eventName: string, once?: boolean, args?: any[])
  */
 declare function InterestMessage(msgId: EMessageID | ENotify, once?: boolean, args?: any[]): MethodDecorator;
 
-declare enum EProxyID {
-    Login,
-    Main,
-    Bag,
-    Battle,
-}
-
 declare interface INotifier {
     /**
      * 派发事件。
@@ -38,11 +30,6 @@ declare interface INotifier {
 
 declare interface IObserver extends INotifier {
 
-}
-
-/** 代理类 */
-declare interface IProxy {
-    readonly proxyId: EProxyID;
 }
 
 /** 页面类型 */
@@ -126,9 +113,6 @@ declare interface ICommand {
 }
 
 declare interface IFacade {
-    registerProxy(proxyId: EProxyID, proxyCls: IProxyClass): void;
-    hasProxy(proxyId: EProxyID): boolean;
-    getProxy(proxyId: EProxyID): IProxy;
 
     registerView(viewId: EViewID, viewType: EViewType, viewCls: IViewClass, mediatorCls: IMediatorClass): void;
     hasMediator(viewId: EViewID): boolean;

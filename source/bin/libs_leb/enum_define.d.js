@@ -1,11 +1,3 @@
-let index = 1;
-EProxyID = {
-    Login: index++,
-    Main: index++,
-    Bag: index++,
-    Battle: index++,
-}
-
 ELocalDataKey = {
     /** 自动登录 */
     AutoLogin: "LocalDataKey_AutoLogin",

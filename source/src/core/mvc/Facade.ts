@@ -1,37 +1,20 @@
 import { Singleton } from "../common/Singleton";
 import { Controller } from "./controller/Controller";
-import { ModelManager } from "./model/ModelManager";
 import { Provider } from "./provider/Provider";
 import { ViewManager } from "./view/ViewManager";
 
 /** mvc门面类 */
 export class Facade extends Singleton<Facade>() implements IFacade {
-    private _proxyMgr: ModelManager;
     private _viewMgr: ViewManager;
     private _controller: Controller;
     private _provider: Provider;
 
     protected constructor() {
         super();
-        this._proxyMgr = ModelManager.Inst;
         this._viewMgr = ViewManager.Inst;
         this._controller = Controller.Inst;
         this._provider = Provider.Inst;
     }
-
-    //#region Proxy
-    registerProxy(proxyId: EProxyID, proxyCls: IProxyClass) {
-        this._proxyMgr.register(proxyId, proxyCls);
-    }
-
-    hasProxy(proxyId: EProxyID) {
-        return this._proxyMgr.has(proxyId);
-    }
-
-    getProxy(proxyId: EProxyID) {
-        return this._proxyMgr.get(proxyId);
-    }
-    //#endregion
 
     //#region View
     registerView(viewId: EViewID, viewType: EViewType, viewCls: IViewClass, mediatorCls: IMediatorClass) {

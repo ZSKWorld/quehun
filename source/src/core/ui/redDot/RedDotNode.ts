@@ -1,7 +1,6 @@
 import { ERDTriggerType } from "./RedDotEnum";
 
 export class RedDotNode implements IRedDotNode {
-    static eventCenter: Laya.EventDispatcher;
     private static _gid: number = 0;
     private _id: number = ++RedDotNode._gid;
     private _enable: boolean = false;
@@ -23,13 +22,13 @@ export class RedDotNode implements IRedDotNode {
     private get hasTrigger() { return this._triggers && this._triggers.length > 0; }
     get triggers() { return this._triggers; }
     set triggers(value) {
-        RedDotNode.eventCenter.offAllCaller(this);
+        $redDotMgr.offAllCaller(this);
         this._triggers = value;
         this._triggeredMap.clear();
         if (this.hasTrigger)
             value.forEach(v => {
                 this._triggeredMap.set(v, 0);
-                RedDotNode.eventCenter.on(v, this, this.onTrigger);
+                $redDotMgr.on(v, this, this.onTrigger);
             });
         this.trigger();
     }
@@ -76,7 +75,7 @@ export class RedDotNode implements IRedDotNode {
     trigger() {
         if (this.hasTrigger) {
             this.comp && this.triggers.forEach(v => {
-                RedDotNode.eventCenter.event("Trigger" + v);
+                $redDotMgr.event("Trigger" + v);
             });
         } else {
             this.calculateCountLater();
@@ -133,7 +132,7 @@ export class RedDotNode implements IRedDotNode {
         this._triggeredMap.clear();
         this._comp = null;
         Laya.Pool.recoverByClass(this);
-        RedDotNode.eventCenter.offAllCaller(this);
+        $redDotMgr.offAllCaller(this);
     }
 
     /**

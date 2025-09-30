@@ -1,4 +1,3 @@
-import { GlobalInitialize } from "./GlobalInitializer";
 import { InitContextCommand } from "./contextCommand/InitContextCommand";
 import { ENotifyConst } from "./core/common/NotifyConst";
 import { ViewExtend } from "./core/ui/core/ViewExtend";
@@ -23,7 +22,6 @@ class Main {
 		ViewExtend.extends();
 		fgui.UIConfig.packageFileExtension = "zip";
 		Laya.SpineTemplet.RuntimeVersion = "4.2";
-		GlobalInitialize();
 
 		Laya.stage.scaleMode = Laya.Stage.SCALE_SHOWALL;
 		Laya.stage.screenMode = Laya.Stage.SCREEN_NONE;
@@ -37,8 +35,7 @@ class Main {
 			if (Laya.stage.isVisibility) $facade.dispatch(ENotifyConst.OnGameShow);
 			else $facade.dispatch(ENotifyConst.OnGameHide);
 		});
-		$facade.registerCommand(ENotifyConst.InitContext, InitContextCommand);
-		$facade.dispatch(ENotifyConst.InitContext);
+		new InitContextCommand().execute("");
 	}
 }
 

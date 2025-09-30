@@ -1,16 +1,16 @@
-import { ENotifyConst } from "../core/common/NotifyConst";
 import { CommandQueue } from "../core/mvc/controller/CommandQueue";
 import { GamePreloadCommand } from "./GamePreloadCommand";
-import { InitGameCommand } from "./InitGameCommand";
+import { InitGlobalCommand } from "./InitGlobalCommand";
 import { InitModelCommand } from "./InitModelCommand";
+import { InitSceneCommand } from "./InitSceneCommand";
 import { InitViewCommand } from "./InitViewCommand";
 
 export class InitContextCommand extends CommandQueue {
     protected override initialize() {
-        $facade.removeCommand(ENotifyConst.InitContext);
+        this.addSubCommand(InitGlobalCommand);
         this.addSubCommand(InitModelCommand);
         this.addSubCommand(InitViewCommand);
-        this.addSubCommand(InitGameCommand);
+        this.addSubCommand(InitSceneCommand);
         this.addSubCommand(GamePreloadCommand);
     }
 }

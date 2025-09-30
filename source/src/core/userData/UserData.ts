@@ -1,12 +1,9 @@
 import { Account } from "./Account";
 import { Activity } from "./Activity";
 import { Character } from "./Character";
-import { MessageData } from "./MessageData";
+import { BaseData } from "./MessageData";
 
-export class UserData extends MessageData implements UserData.IUserData {
-
-    /** 账号id */
-    account_id: number;
+export class UserData extends BaseData implements UserData.IUserData {
     /** 正在进行的游戏信息 */
     game_info: IGameConnectInfo;
     /** 有未读公告 */
@@ -46,9 +43,8 @@ export class UserData extends MessageData implements UserData.IUserData {
     @InterestMessage(EMessageID.login)
     private loginUpdate(data: IResLogin) {
         if (!data || data.error) return;
-        this.account_id = data.account_id;
         this.account.update(data.account);
-        this.game_info = this.decodeMessage(data.game_info);
+        this.game_info = this.decode(data.game_info);
         this.has_unread_announcement = data.has_unread_announcement;
         this.access_token = data.access_token;
         this.signup_time = data.signup_time;

@@ -1,6 +1,6 @@
-import { MessageData } from "./MessageData";
+import { BaseData } from "./MessageData";
 
-export class Character extends MessageData implements UserData.ICharacter {
+export class Character extends BaseData implements UserData.ICharacter {
     /** 主角色id */
     character_id: number = 0;
     /** 主角色装扮id */
@@ -26,7 +26,7 @@ export class Character extends MessageData implements UserData.ICharacter {
         if (data.character) {
             const { characters, skins, finished_endings, rewarded_endings } = data.character;
             if (characters && characters.length) {
-                this.characters.push(...characters.map(v => this.decodeMessage(v)));
+                this.characters.push(...characters.map(v => this.decode(v)));
             }
             if (skins && skins.length) {
                 this.skins.push(...skins);

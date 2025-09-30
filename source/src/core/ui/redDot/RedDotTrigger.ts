@@ -17,13 +17,11 @@ export class RedDotTrigger extends SingletonExtend<RedDotTrigger, Observer>(Obse
 
     private _triggers = new Map<ERDTriggerType, boolean>();
     private _triggerEventMap: KeyMap<Function[]>;
-    private _eventCenter: Laya.EventDispatcher;
 
-    init(event: Laya.EventDispatcher) {
-        this._eventCenter = event;
+    init() {
         const triggerEventMap = this._triggerEventMap;
         for (const key in triggerEventMap) {
-            triggerEventMap[key].forEach(func => event.on("Trigger" + key, this, func, [key]));
+            triggerEventMap[key].forEach(func => $redDotMgr.on("Trigger" + key, this, func, [key]));
         }
     }
 
@@ -33,9 +31,9 @@ export class RedDotTrigger extends SingletonExtend<RedDotTrigger, Observer>(Obse
     }
 
     private callTrigger() {
-        const { _triggers, _eventCenter } = this;
+        const { _triggers } = this;
         _triggers.forEach((v, k) => {
-            _eventCenter.event(k, [k, v]);
+            $redDotMgr.event(k, [k, v]);
         });
         _triggers.clear();
     }

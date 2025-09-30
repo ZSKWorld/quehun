@@ -4,11 +4,13 @@ import { ESceneType } from "./SceneDefine";
 /** 逻辑场景管理类 */
 export class SceneManager extends Observer implements ISceneManager {
 	private _currentType: ESceneType;
-	private _sceneMap: Map<ESceneType, IScene>;
+	private _sceneMap = new Map<ESceneType, IScene>();
 
-	init(sceneMap: IScene[]) {
-		if (!this._sceneMap) this._sceneMap = new Map();
-		sceneMap.forEach(v => this._sceneMap.set(v.type, v));
+	registerScene(scene: IScene) {
+		if (this._sceneMap.has(scene.type))
+			Logger.error("重复注册scene:", scene);
+		else
+			this._sceneMap.set(scene.type, scene);
 	}
 
 	registerSceneView(type: ESceneType, view: string) {

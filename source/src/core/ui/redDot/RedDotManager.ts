@@ -1,13 +1,11 @@
 import { ENotifyConst } from "../../common/NotifyConst";
-import { SingletonExtend } from "../../common/Singleton";
 import { RDDefineInit, RDMap } from "./RedDotDefine";
 import { RedDotNode } from "./RedDotNode";
 import { RedDotTrigger } from "./RedDotTrigger";
 
-export class RedDotManager extends SingletonExtend<RedDotManager, Laya.EventDispatcher>(Laya.EventDispatcher) {
+export class RedDotManager extends Laya.EventDispatcher implements IRedDotManager {
     init() {
-        RedDotNode.eventCenter = this;
-        RedDotTrigger.Inst.init(this);
+        RedDotTrigger.Inst.init();
         RDDefineInit();
         $facade.interestNotify(this);
     }

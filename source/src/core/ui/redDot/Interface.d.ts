@@ -13,3 +13,7 @@ declare interface IRedDotNode {
     removeSelf(): void;
     recover(): void;
 }
+
+declare interface IRedDotManager extends Laya.EventDispatcher {
+    init(): void;
+}

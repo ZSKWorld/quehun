@@ -1,0 +1,69 @@
+import { LoadManager } from "../core/common/manager/LoadManager";
+import { LocalDataManager } from "../core/common/manager/LocalDataManager";
+import { SkeletonManager } from "../core/common/manager/SkeletonManager";
+import { GameUtil } from "../core/common/utils/GameUtil";
+import { ConfigManager } from "../core/config/ConfigManager";
+import { Command } from "../core/mvc/controller/Command";
+import { Facade } from "../core/mvc/Facade";
+import { NetManager } from "../core/net/NetManager";
+import { PbManager } from "../core/net/PbManager";
+import { UIManager } from "../core/ui/core/UIManager";
+import { RedDotManager } from "../core/ui/redDot/RedDotManager";
+import { RichText } from "../core/ui/tool/RichText";
+import { TipManager } from "../core/ui/tool/TipManager";
+import { UserData } from "../core/userData/UserData";
+import { GameManager } from "../GameManager";
+import { SceneManager } from "../scene/SceneManager";
+
+export class InitGlobalCommand extends Command {
+    override execute(notifyName: string, data?: any) {
+        windowImmit("$facade", Facade.Inst);
+        windowImmit("$uiMgr", new UIManager());
+        windowImmit("$pbMgr", new PbManager());
+        windowImmit("$userData", new UserData());
+        windowImmit("$gameUtil", new GameUtil());
+        windowImmit("$tipMgr", new TipManager());
+        windowImmit("$netMgr", new NetManager());
+        windowImmit("$loadMgr", new LoadManager());
+        windowImmit("$gameMgr", new GameManager());
+        windowImmit("$cfgMgr", new ConfigManager());
+        windowImmit("$sceneMgr", new SceneManager());
+        windowImmit("$redDotMgr", new RedDotManager());
+        windowImmit("$skeletonMgr", new SkeletonManager());
+        windowImmit("$localDataMgr", new LocalDataManager());
+
+        windowImmit("$localizeTxt", function (id: number, ...args: any[]) {
+            const d_excel = $cfgMgr.str.str[id];
+            let s = "";
+            if (d_excel) {
+                s = d_excel[$gameMgr.language];
+                if (args) {
+                    for (let i = 0; i < args.length; i++) {
+                        const reg = new RegExp(`{${ i }}`, 'g');
+                        s = s.replace(reg, args[i]);
+                    }
+                }
+            }
+            return s;
+        });
+
+        windowImmit("$confirm", function (title: string, msg: string, cancel = true) {
+            if (!fgui.UIPackage.getByName(ResPath.EPkgName.PkgCommon))
+                return $gameMgr.showConfirm(msg);
+            windowImmit("$confirm", (title: string, msg: string, cancel = true) => new Promise<boolean>(resolve => {
+                $uiMgr.openView(EViewID.UIConfirmView, {
+                    title,
+                    content: msg,
+                    cancel: cancel,
+                    onCancel: cancel ? Laya.Handler.create(null, resolve, [false]) : null,
+                    onConfirm: Laya.Handler.create(null, resolve, [true]),
+                });
+            }));
+            return $confirm(title, msg, cancel);
+        });
+
+        windowImmit("$richText", function (text: string = "") {
+            return Laya.Pool.createByClass(RichText).start(text);
+        });
+    }
+}

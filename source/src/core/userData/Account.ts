@@ -1,6 +1,6 @@
-import { MessageData } from "./MessageData";
+import { BaseData } from "./MessageData";
 
-export class Account extends MessageData implements UserData.IAccount {
+export class Account extends BaseData implements UserData.IAccount {
     account_id: number = 0;
     nickname: string = "";
     login_time: number = 0;
@@ -46,7 +46,11 @@ export class Account extends MessageData implements UserData.IAccount {
     update(data: IAccount) {
         if (!data) return;
         data.$type.fieldsArray.forEach(v => {
-            this[v.name] = this.decodeMessage(v);
+            const value = data[v.name];
+            if (Array.isArray(value))
+                this[v.name] = [...value.map(v1 => this.decode(v1))];
+            else
+                this[v.name] = this.decode(value);
         });
     }
 }

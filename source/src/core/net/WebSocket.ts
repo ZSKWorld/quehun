@@ -7,32 +7,28 @@ interface IWaitRpcInfo {
 }
 
 const enum ESocketState {
-    /** 未连接 */
-    Disconnect = "SocketState_Disconnect",
     /** 连接中 */
     Connecting = "SocketState_Connecting",
     /** 重连中 */
     Reconnecting = "SocketState_Reconnecting",
     /** 已连接 */
     Connected = "SocketState_Connected",
+    /** 未连接 */
+    Disconnect = "SocketState_Disconnect",
 }
 
 export const enum ESocketEvent {
     /** 连接中 */
     Connecting = "SocketEvent_Connecting",
-    /** 连接成功 */
-    ConnectSuccess = "SocketEvent_ConnectSuccess",
-    /** 连接失败 */
-    ConnectFail = "SocketEvent_ConnectFail",
     /** 重连中 */
     Reconnecting = "SocketEvent_Reconnecting",
-    /** 重连成功 */
-    ReconnectSuccess = "SocketEvent_ReconnectSuccess",
-    /** 重连失败 */
-    ReconnectFail = "SocketEvent_ReconnectFail",
+    /** 连接成功 */
+    Connected = "SocketEvent_Connected",
     /** 连接关闭 */
-    Close = "SocketEvent_Close",
+    Closed = "SocketEvent_Closed",
+    /** 网络回报 */
     Response = "SocketEvent_Response",
+    /** 网络通知 */
     Notify = "SocketEvent_Notify",
 }
 
@@ -44,22 +40,24 @@ export class WebSocket extends Laya.EventDispatcher {
     private _state: ESocketState = ESocketState.Disconnect;
     private _waitList: { [key: number]: IWaitRpcInfo } = {};
     private _rpcRepeatMap: KeyMap<[string[], Promise<PartialAll<IResponse>>]> = {};
+    private _reconnectIndex: number = 0;
+    private _reconnectTime = [1000, 2000, 3000];
 
     private _stateTranslateMap: { [key in ESocketState]: { [key in ESocketState]?: ESocketEvent[] } } = {
         [ESocketState.Disconnect]: {
             [ESocketState.Connecting]: [ESocketEvent.Connecting],
-            [ESocketState.Reconnecting]: [ESocketEvent.Reconnecting],
         },
         [ESocketState.Connecting]: {
-            [ESocketState.Disconnect]: [ESocketEvent.ConnectFail, ESocketEvent.Close],
-            [ESocketState.Connected]: [ESocketEvent.ConnectSuccess],
+            [ESocketState.Connected]: [ESocketEvent.Connected],
+            [ESocketState.Disconnect]: [ESocketEvent.Closed],
         },
         [ESocketState.Reconnecting]: {
-            [ESocketState.Disconnect]: [ESocketEvent.ReconnectFail, ESocketEvent.Close],
-            [ESocketState.Connected]: [ESocketEvent.ReconnectSuccess],
+            [ESocketState.Connected]: [ESocketEvent.Connected],
+            [ESocketState.Disconnect]: [ESocketEvent.Closed],
         },
         [ESocketState.Connected]: {
-            [ESocketState.Disconnect]: [ESocketEvent.Close],
+            [ESocketState.Reconnecting]: [ESocketEvent.Reconnecting],
+            [ESocketState.Disconnect]: [ESocketEvent.Closed],
         },
     };
     get url() { return `${ this._routeInfo.ssl ? "wss://" : "ws://" }${ this._routeInfo.domain }/${ this._tail }`; }
@@ -69,8 +67,8 @@ export class WebSocket extends Laya.EventDispatcher {
         if (v == lastState) return;
         this._state = v;
         const events = this._stateTranslateMap[lastState][v];
-        if (!events) Logger.error(`状态错误 ${ lastState } => ${ v }`);
-        else events.forEach(v => this.event(v));
+        if (events)
+            events.forEach(v => this.event(v));
     }
     get connected() { return this.state == ESocketState.Connected; }
 
@@ -80,7 +78,7 @@ export class WebSocket extends Laya.EventDispatcher {
         this._socket.endian = Laya.Byte.LITTLE_ENDIAN;
         this._socket.on(Laya.Event.OPEN, this, this.onOpen);
         this._socket.on(Laya.Event.MESSAGE, this, this.onMessage);
-        this._socket.on(Laya.Event.ERROR, this, this.onError);
+        // this._socket.on(Laya.Event.ERROR, this, this.onError);
         this._socket.on(Laya.Event.CLOSE, this, this.onClose);
 
         this._routeInfo = routeInfo;
@@ -89,6 +87,7 @@ export class WebSocket extends Laya.EventDispatcher {
 
     connect() {
         if (this.state != ESocketState.Disconnect) return;
+        this._reconnectIndex = 0;
         this.state = ESocketState.Connecting;
         this._socket.connectByUrl(this.url);
     }
@@ -96,6 +95,7 @@ export class WebSocket extends Laya.EventDispatcher {
     close() {
         if (this.state == ESocketState.Disconnect) return;
         this.state = ESocketState.Disconnect;
+        Laya.timer.clear(this, this.reconnect);
         this._socket.close();
     }
 
@@ -128,12 +128,8 @@ export class WebSocket extends Laya.EventDispatcher {
         return promise;
     }
 
-    private reconnect() {
-        this.state = ESocketState.Reconnecting;
-        this._socket.connectByUrl(this.url);
-    }
-
     private onOpen(e: Event) {
+        this._reconnectIndex = 0;
         this.state = ESocketState.Connected;
     }
 
@@ -162,20 +158,25 @@ export class WebSocket extends Laya.EventDispatcher {
         }
     }
 
-    private onError(e: Event) {
-
-    }
-
     private onClose(e: Event) {
         if (this.state == ESocketState.Disconnect) return;
-        this.state = ESocketState.Disconnect;
         for (const key in this._waitList) {
             const request = this._waitList[key];
             this.eventResponse(request.method, { error: { code: -1 } }, request.callback);
         }
         this._waitList = {};
         this._rpcRepeatMap = {};
-        Laya.timer.once(1000, this, this.reconnect);
+
+        if (this._reconnectTime[this._reconnectIndex]) {
+            this.state = ESocketState.Reconnecting;
+            Laya.timer.once(this._reconnectTime[this._reconnectIndex++], this, this.reconnect);
+        } else {
+            this.state = ESocketState.Disconnect;
+        }
+    }
+
+    private reconnect() {
+        this._socket.connectByUrl(this.url);
     }
 
     private eventResponse(name: string, res: PartialAll<IResponse>, callback: (res: PartialAll<IResponse>) => void) {

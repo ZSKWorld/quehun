@@ -1,3 +1,4 @@
+import { ENotifyConst } from "../common/NotifyConst";
 import { Observer } from "../mvc/provider/Observer";
 import { EServiceType } from "./NetDefine";
 import { ESocketEvent, WebSocket } from "./WebSocket";
@@ -28,17 +29,12 @@ export class NetManager extends Observer implements INetManager {
             reqs[key] = data => socket.send(EMessageID[key], data);
         }
 
-        this._lobbySocket.on(ESocketEvent.ConnectSuccess, this, () => {
-            Logger.error("socket open");
-        });
-        this._lobbySocket.on(ESocketEvent.Response, this, (methodName: string, data: IResponse) => {
-            Logger.error("response " + methodName, data);
-            this.dispatch(methodName, data);
-        });
-        this._lobbySocket.on(ESocketEvent.Notify, this, (notifyName: string, data: IProto) => {
-            Logger.error("notify " + notifyName, data);
-            this.dispatch(notifyName, data);
-        });
+        this._lobbySocket.on(ESocketEvent.Connecting, this, () => this.dispatch(ENotifyConst.LobbyConnecting));
+        this._lobbySocket.on(ESocketEvent.Reconnecting, this, () => this.dispatch(ENotifyConst.LobbyReconnecting));
+        this._lobbySocket.on(ESocketEvent.Connected, this, () => this.dispatch(ENotifyConst.LobbyConnected));
+        this._lobbySocket.on(ESocketEvent.Closed, this, () => this.dispatch(ENotifyConst.LobbyClosed));
+        this._lobbySocket.on(ESocketEvent.Response, this, this.dispatch);
+        this._lobbySocket.on(ESocketEvent.Notify, this, this.dispatch);
         this._lobbySocket.connect();
     }
 

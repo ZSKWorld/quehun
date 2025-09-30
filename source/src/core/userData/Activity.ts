@@ -1,6 +1,6 @@
-import { MessageData } from "./MessageData";
+import { BaseData } from "./MessageData";
 
-export class Activity extends MessageData implements UserData.IActivity {
+export class Activity extends BaseData implements UserData.IActivity {
     activity: IAccountActivityUpdate;
     activity_task: IAccountUpdate_TaskUpdate;
     /** 翻牌牌任务 */
@@ -10,11 +10,11 @@ export class Activity extends MessageData implements UserData.IActivity {
     activity_segment_task: IAccountUpdate_SegmentTaskUpdate;
     update(data: IAccountUpdate) {
         if (!data) return;
-        this.activity = this.decodeMessage(data.activity);
-        this.activity_task = this.decodeMessage(data.activity_task);
-        this.activity_flip_task = this.decodeMessage(data.activity_flip_task);
-        this.activity_period_task = this.decodeMessage(data.activity_period_task);
-        this.activity_random_task = this.decodeMessage(data.activity_random_task);
-        this.activity_segment_task = this.decodeMessage(data.activity_segment_task);
+        this.activity = this.decode(data.activity);
+        this.activity_task = this.decode(data.activity_task);
+        this.activity_flip_task = this.decode(data.activity_flip_task);
+        this.activity_period_task = this.decode(data.activity_period_task);
+        this.activity_random_task = this.decode(data.activity_random_task);
+        this.activity_segment_task = this.decode(data.activity_segment_task);
     }
 }

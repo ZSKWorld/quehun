@@ -12,14 +12,8 @@ interface IGameConfig {
 export class GamePreloadCommand extends Command {
     override execute(notifyName: string, data?: any) {
         $uiMgr.init();
-        $sceneMgr.init([
-            new SceneLogin(),
-            new SceneMain(),
-        ]);
-        RedDotManager.Inst.init();
-        this.load().then(() => {
-            $sceneMgr.enterScene(ESceneType.LoginScene);
-        });
+        $redDotMgr.init();
+        this.load();
     }
 
     private async load() {
@@ -41,6 +35,5 @@ export class GamePreloadCommand extends Command {
         await $pbMgr.init();
         await $cfgMgr.init();
         await $netMgr.init();
-        await new Promise(resolve => Laya.timer.once(1000, null, resolve));
     }
 }

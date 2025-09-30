@@ -45,7 +45,7 @@ export class UserData extends MessageData implements UserData.IUserData {
 
     @InterestMessage(EMessageID.login)
     private loginUpdate(data: IResLogin) {
-        if (!data) return;
+        if (!data || data.error) return;
         this.account_id = data.account_id;
         this.account.update(data.account);
         this.game_info = this.decodeMessage(data.game_info);

@@ -23,8 +23,8 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 		this.addEvent(EUILoginMsg.OnBtnLoginClick, this.onBtnLoginClick);
 		this.addEvent(EUILoginMsg.OnBtnAnnounceClick, this.onBtnAnnounceClick);
 		this.addEvent(EUILoginMsg.OnBtnHelpClick, this.onBtnHelpClick);
-		this.addEvent(EUILoginMsg.OnBtnLoginByAccountClick, this.setLoginType, [ELoginType.Account, 0]);
-		this.addEvent(EUILoginMsg.OnBtnLoginBtnPhoneClick, this.setLoginType, [ELoginType.Account, 1]);
+		this.addEvent(EUILoginMsg.OnBtnLoginByAccountClick, this.onBtnLoginByAccountClick);
+		this.addEvent(EUILoginMsg.OnBtnLoginBtnPhoneClick, this.onBtnLoginBtnPhoneClick);
 		this.addEvent(EUILoginMsg.OnBtnRegisterClick, this.onBtnRegisterClick);
 		this.addEvent(EUILoginMsg.OnBtnForgotPasswordClick, this.onBtnForgotPasswordClick);
 		this.addEvent(EUILoginMsg.OnBtnForgotAccountClick, this.onBtnForgotAccountClick);
@@ -40,16 +40,15 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 				accountType: 0,
 			};
 		}
-		const loginInfo = this._loginInfo;
-		if (loginInfo.accountType == 0) {
-			this._accountInput.account = loginInfo.account;
-			this._accountInput.password = loginInfo.password;
-		} else if (loginInfo.accountType == 1) {
-			this._phoneInput.account = loginInfo.account;
-			this._phoneInput.password = loginInfo.password;
+		const { _loginInfo, _accountInput, _phoneInput } = this;
+		if (_loginInfo.accountType == 0) {
+			_accountInput.account = _loginInfo.account;
+			_accountInput.password = _loginInfo.password;
+		} else if (_loginInfo.accountType == 1) {
+			_phoneInput.account = _loginInfo.account;
+			_phoneInput.password = _loginInfo.password;
 		}
-		this.view.refresh(loginInfo.accountType, loginInfo.account, loginInfo.password);
-		this.setLoginType(loginInfo.loginType, loginInfo.accountType);
+		this.setLoginType(_loginInfo.loginType);
 		autoLogin && this.toLogin();
 	}
 
@@ -59,7 +58,6 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 		const txtPassword = view.itxt_password.text;
 		if (!txtAccount) return;
 		if (!txtPassword) return;
-		_loginInfo.loginType = ELoginType.Account;
 		_loginInfo.account = txtAccount;
 		_loginInfo.password = txtPassword;
 		this.toLogin();
@@ -71,6 +69,24 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 
 	private onBtnHelpClick() {
 
+	}
+
+	private onBtnLoginByAccountClick() {
+		const { view, _loginInfo, _phoneInput } = this;
+		if (_loginInfo.loginType == ELoginType.Account && _loginInfo.accountType == 0) return;
+		_loginInfo.accountType = 0;
+		_phoneInput.account = view.itxt_account.text;
+		_phoneInput.password = view.itxt_password.text;
+		this.setLoginType(ELoginType.Account);
+	}
+
+	private onBtnLoginBtnPhoneClick() {
+		const { view, _loginInfo, _accountInput } = this;
+		if (_loginInfo.loginType == ELoginType.Account && _loginInfo.accountType == 1) return;
+		_loginInfo.accountType = 1;
+		_accountInput.account = view.itxt_account.text;
+		_accountInput.password = view.itxt_password.text;
+		this.setLoginType(ELoginType.Account);
 	}
 
 	private onBtnRegisterClick() {
@@ -89,27 +105,11 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 		this.cancelLogin();
 	}
 
-	private setLoginType(type: ELoginType, accountType: 0 | 1 = 0) {
-		const loginInfo = this._loginInfo;
-		const lastLoginType = loginInfo.loginType;
-		if (lastLoginType != ELoginType.Account && lastLoginType == type) return;
-		const lastAccountType = loginInfo.accountType;
-		if (lastLoginType == ELoginType.Account && lastAccountType == accountType) return;
-
-		const { view, _accountInput, _phoneInput } = this;
-		if (lastLoginType == ELoginType.Account) {
-			if (lastAccountType == 0) {
-				_accountInput.account = view.itxt_account.text;
-				_accountInput.password = view.itxt_password.text;
-			} else {
-				_phoneInput.account = view.itxt_account.text;
-				_phoneInput.password = view.itxt_password.text;
-			}
-			loginInfo.accountType = accountType;
-		}
-
-		loginInfo.loginType = type;
+	private setLoginType(type: ELoginType) {
+		const { view, _loginInfo, _accountInput, _phoneInput } = this;
+		_loginInfo.loginType = type;
 		if (type == ELoginType.Account) {
+			const accountType = _loginInfo.accountType;
 			if (accountType == 0)
 				view.refresh(accountType, _accountInput.account, _accountInput.password);
 			else
@@ -147,7 +147,7 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 
 	private reqLogin() {
 		const { _loginInfo } = this;
-		$netMgr.reqs.login({
+		$netMgr.requests.login({
 			account: _loginInfo.account,
 			password: $gameUtil.HmacSHA256(_loginInfo.password),
 			reconnect: false,
@@ -168,7 +168,7 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 
 	private reqOauth2Check() {
 		const { _loginInfo } = this;
-		$netMgr.reqs.oauth2Check({
+		$netMgr.requests.oauth2Check({
 			type: _loginInfo.loginType,
 			access_token: _loginInfo.access_token
 		});
@@ -176,7 +176,7 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 
 	private reqOauth2Login() {
 		const { _loginInfo } = this;
-		$netMgr.reqs.oauth2Login({
+		$netMgr.requests.oauth2Login({
 			type: _loginInfo.loginType,
 			access_token: _loginInfo.access_token,
 			reconnect: false,

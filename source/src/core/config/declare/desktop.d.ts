@@ -66,6 +66,7 @@ declare interface ISheet_Desktop_Matchmode {
 	50: ISheetData_Desktop_Matchmode;
 	51: ISheetData_Desktop_Matchmode;
 	52: ISheetData_Desktop_Matchmode;
+	53: ISheetData_Desktop_Matchmode;
 }
 declare interface ISheetData_Desktop_Matchmode {
 	/** 匹配ID */
@@ -110,6 +111,8 @@ declare interface ISheetData_Desktop_Matchmode {
 	wanxiangxiuluo_mode: number;
 	/** 背水之战 */
 	beishuizhizhan_mode: number;
+	/** 下克上 */
+	xiakeshang_mode: number;
 	/** 匹配房间 */
 	room: number;
 	/** 对局模式 */
@@ -268,6 +271,7 @@ declare interface ISheet_Desktop_FriendRoom {
 	13: ISheetData_Desktop_FriendRoom;
 	14: ISheetData_Desktop_FriendRoom;
 	15: ISheetData_Desktop_FriendRoom;
+	16: ISheetData_Desktop_FriendRoom;
 }
 declare interface ISheetData_Desktop_FriendRoom {
 	/** 友人房模式 */

@@ -42,7 +42,8 @@ export class WebSocket extends Laya.EventDispatcher {
     private _tail: string;
     private _rpcIndex = 0;
     private _state: ESocketState = ESocketState.Disconnect;
-    private _waitList: { [key: number]: IWaitRpcInfo; } = {};
+    private _waitList: { [key: number]: IWaitRpcInfo } = {};
+    private _rpcRepeatMap: KeyMap<[string[], Promise<PartialAll<IResponse>>]> = {};
 
     private _stateTranslateMap: { [key in ESocketState]: { [key in ESocketState]?: ESocketEvent[] } } = {
         [ESocketState.Disconnect]: {
@@ -92,13 +93,23 @@ export class WebSocket extends Laya.EventDispatcher {
         this._socket.connectByUrl(this.url);
     }
 
+    close() {
+        if (this.state == ESocketState.Disconnect) return;
+        this.state = ESocketState.Disconnect;
+        this._socket.close();
+    }
+
     send(methodName: EMessageID, data: any) {
-        return new Promise<PartialAll<IResponse>>(resolve => {
+        const dataStr = JSON.stringify(data);
+        const rpcRepeatMap = this._rpcRepeatMap;
+        if (rpcRepeatMap[methodName] && rpcRepeatMap[methodName][0].includes(dataStr))
+            return rpcRepeatMap[methodName][1];
+
+        const promise = new Promise<PartialAll<IResponse>>(resolve => {
             if (!this.connected) {
-                resolve({ error: { code: -1 } });
+                this.eventResponse(methodName, { error: { code: -1 } }, resolve);
                 return;
             }
-
             this._rpcIndex = (this._rpcIndex + 1) % 60007;
             const rpcID = this._rpcIndex;
             const method = $pbMgr.methodMap[methodName];
@@ -109,14 +120,12 @@ export class WebSocket extends Laya.EventDispatcher {
             byte.writeArrayBuffer(header);
             byte.writeArrayBuffer(packet);
             this._socket.send(byte.buffer);
-            Logger.error("send req:", methodName, data);
         });
-    }
 
-    close() {
-        if (this.state == ESocketState.Disconnect) return;
-        this.state = ESocketState.Disconnect;
-        this._socket.close();
+        if (!rpcRepeatMap[methodName]) rpcRepeatMap[methodName] = [[dataStr], promise];
+        else rpcRepeatMap[methodName][0].push(dataStr);
+
+        return promise;
     }
 
     private reconnect() {
@@ -140,10 +149,10 @@ export class WebSocket extends Laya.EventDispatcher {
                     return;
                 }
                 delete this._waitList[requestID];
+                delete this._rpcRepeatMap[request.method];
                 const wrapper = $pbMgr.decodeRpc(data.slice(3));
                 const res = $pbMgr.methodMap[request.method].resolvedResponseType.decode(wrapper.data);
-                request.callback(res);
-                this.event(ESocketEvent.Response, [request.method, res]);
+                this.eventResponse(request.method, res, request.callback);
                 break;
             case EHeaderType.Notify:
                 const msg = $pbMgr.decodeMessage(data.slice(1));
@@ -160,7 +169,17 @@ export class WebSocket extends Laya.EventDispatcher {
     private onClose(e: Event) {
         if (this.state == ESocketState.Disconnect) return;
         this.state = ESocketState.Disconnect;
+        for (const key in this._waitList) {
+            const request = this._waitList[key];
+            this.eventResponse(request.method, { error: { code: -1 } }, request.callback);
+        }
         this._waitList = {};
+        this._rpcRepeatMap = {};
         Laya.timer.once(1000, this, this.reconnect);
+    }
+
+    private eventResponse(name: string, res: PartialAll<IResponse>, callback: (res: PartialAll<IResponse>) => void) {
+        callback(res);
+        this.event(ESocketEvent.Response, [name, res]);
     }
 }

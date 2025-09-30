@@ -473,6 +473,7 @@ declare interface ISheet_ItemDefinition_Item {
 	307275: ISheetData_ItemDefinition_Item;
 	307276: ISheetData_ItemDefinition_Item;
 	307277: ISheetData_ItemDefinition_Item;
+	307278: ISheetData_ItemDefinition_Item;
 	307401: ISheetData_ItemDefinition_Item;
 	307402: ISheetData_ItemDefinition_Item;
 	307403: ISheetData_ItemDefinition_Item;
@@ -550,6 +551,7 @@ declare interface ISheet_ItemDefinition_Item {
 	307475: ISheetData_ItemDefinition_Item;
 	307476: ISheetData_ItemDefinition_Item;
 	307477: ISheetData_ItemDefinition_Item;
+	307478: ISheetData_ItemDefinition_Item;
 	308001: ISheetData_ItemDefinition_Item;
 	308002: ISheetData_ItemDefinition_Item;
 	308003: ISheetData_ItemDefinition_Item;
@@ -595,6 +597,12 @@ declare interface ISheet_ItemDefinition_Item {
 	308043: ISheetData_ItemDefinition_Item;
 	308044: ISheetData_ItemDefinition_Item;
 	308045: ISheetData_ItemDefinition_Item;
+	308046: ISheetData_ItemDefinition_Item;
+	308047: ISheetData_ItemDefinition_Item;
+	308048: ISheetData_ItemDefinition_Item;
+	308049: ISheetData_ItemDefinition_Item;
+	308050: ISheetData_ItemDefinition_Item;
+	308051: ISheetData_ItemDefinition_Item;
 	308996: ISheetData_ItemDefinition_Item;
 	308997: ISheetData_ItemDefinition_Item;
 	308998: ISheetData_ItemDefinition_Item;
@@ -1028,6 +1036,7 @@ declare interface ISheet_ItemDefinition_Item {
 	30900092: ISheetData_ItemDefinition_Item;
 	30900093: ISheetData_ItemDefinition_Item;
 	30900094: ISheetData_ItemDefinition_Item;
+	30900095: ISheetData_ItemDefinition_Item;
 	30910001: ISheetData_ItemDefinition_Item;
 	30910002: ISheetData_ItemDefinition_Item;
 	30910003: ISheetData_ItemDefinition_Item;
@@ -1054,6 +1063,10 @@ declare interface ISheet_ItemDefinition_Item {
 	30990004: ISheetData_ItemDefinition_Item;
 	30990005: ISheetData_ItemDefinition_Item;
 	30990006: ISheetData_ItemDefinition_Item;
+	30990007: ISheetData_ItemDefinition_Item;
+	30990008: ISheetData_ItemDefinition_Item;
+	30990009: ISheetData_ItemDefinition_Item;
+	30990010: ISheetData_ItemDefinition_Item;
 }
 declare interface ISheetData_ItemDefinition_Item {
 	id: number;
@@ -1405,6 +1418,10 @@ declare interface ISheet_ItemDefinition_Character {
 	20000110: ISheetData_ItemDefinition_Character;
 	20000111: ISheetData_ItemDefinition_Character;
 	20000112: ISheetData_ItemDefinition_Character;
+	20000113: ISheetData_ItemDefinition_Character;
+	20000114: ISheetData_ItemDefinition_Character;
+	20000115: ISheetData_ItemDefinition_Character;
+	20000116: ISheetData_ItemDefinition_Character;
 }
 declare interface ISheetData_ItemDefinition_Character {
 	id: number;
@@ -1809,6 +1826,12 @@ declare interface ISheet_ItemDefinition_View {
 	308043: ISheetData_ItemDefinition_View;
 	308044: ISheetData_ItemDefinition_View;
 	308045: ISheetData_ItemDefinition_View;
+	308046: ISheetData_ItemDefinition_View;
+	308047: ISheetData_ItemDefinition_View;
+	308048: ISheetData_ItemDefinition_View;
+	308049: ISheetData_ItemDefinition_View;
+	308050: ISheetData_ItemDefinition_View;
+	308051: ISheetData_ItemDefinition_View;
 	308996: ISheetData_ItemDefinition_View;
 	308997: ISheetData_ItemDefinition_View;
 	308998: ISheetData_ItemDefinition_View;
@@ -1939,6 +1962,10 @@ declare interface ISheet_ItemDefinition_View {
 	30990004: ISheetData_ItemDefinition_View;
 	30990005: ISheetData_ItemDefinition_View;
 	30990006: ISheetData_ItemDefinition_View;
+	30990007: ISheetData_ItemDefinition_View;
+	30990008: ISheetData_ItemDefinition_View;
+	30990009: ISheetData_ItemDefinition_View;
+	30990010: ISheetData_ItemDefinition_View;
 }
 declare interface ISheetData_ItemDefinition_View {
 	id: number;
@@ -1951,8 +1978,8 @@ declare interface ISheetData_ItemDefinition_View {
 	sargs: string[];
 	/** 旧特效标记 */
 	old_effect_mark: number;
-	/** 新版手模型标记 */
-	new_hand: number;
+	/** 手模型版本 */
+	hand_version: number;
 	/** 不同座位特效不同 */
 	seat_related: number;
 }
@@ -2399,6 +2426,18 @@ declare interface ISheet_ItemDefinition_Skin {
 	40011201: ISheetData_ItemDefinition_Skin;
 	40011202: ISheetData_ItemDefinition_Skin;
 	40011203: ISheetData_ItemDefinition_Skin;
+	40011301: ISheetData_ItemDefinition_Skin;
+	40011302: ISheetData_ItemDefinition_Skin;
+	40011303: ISheetData_ItemDefinition_Skin;
+	40011401: ISheetData_ItemDefinition_Skin;
+	40011402: ISheetData_ItemDefinition_Skin;
+	40011403: ISheetData_ItemDefinition_Skin;
+	40011501: ISheetData_ItemDefinition_Skin;
+	40011502: ISheetData_ItemDefinition_Skin;
+	40011503: ISheetData_ItemDefinition_Skin;
+	40011601: ISheetData_ItemDefinition_Skin;
+	40011602: ISheetData_ItemDefinition_Skin;
+	40011603: ISheetData_ItemDefinition_Skin;
 }
 declare interface ISheetData_ItemDefinition_Skin {
 	id: number;
@@ -2678,6 +2717,7 @@ declare interface ISheet_ItemDefinition_LoadingImage {
 	250801: ISheetData_ItemDefinition_LoadingImage;
 	250802: ISheetData_ItemDefinition_LoadingImage;
 	250901: ISheetData_ItemDefinition_LoadingImage;
+	251001: ISheetData_ItemDefinition_LoadingImage;
 	30740001: ISheetData_ItemDefinition_LoadingImage;
 	30740002: ISheetData_ItemDefinition_LoadingImage;
 	30740003: ISheetData_ItemDefinition_LoadingImage;

@@ -29,7 +29,7 @@ service Lobby {
   rpc prepareLogin(ReqPrepareLogin) returns (ResCommon);
 
   // 备线切换主线快速登录
-  rpc fastLogin(ReqCommon) returns (ResFastLogin);
+  rpc fastLogin(ReqFastLogin) returns (ResFastLogin);
 
   // 登录后获取信息
   rpc fetchInfo(ReqCommon) returns (ResFetchInfo);
@@ -699,6 +699,17 @@ service Lobby {
   // 取消关注自定义比赛
   rpc unfollowCustomizedContest (ReqTargetCustomizedContest) returns (ResCommon);
 
+  // 获取大会室队伍排名
+  rpc fetchContestTeamRank(ReqFetchContestTeamRank) returns (ResFetchContestTeamRank);
+
+  // 获取大会室队伍成员
+  rpc fetchContestTeamMember(ReqFetchContestTeamMember) returns (ResFetchContestTeamMember);
+
+  // 获取大会室队伍成员排名
+  rpc fetchContestTeamPlayerRank(ReqFetchContestTeamPlayerRank) returns (ResFetchContestPlayerRank);
+
+  // 获取大会室玩家排名
+  rpc fetchContestPlayerRank(ReqFetchContestPlayerRank) returns (ResFetchContestPlayerRank);
 
   // 活动
 
@@ -928,6 +939,9 @@ service Lobby {
   rpc setVillageWorker(ReqSetVillageWorker) returns (ResSetVillageWorker);
   rpc nextRoundVillage(ReqNextRoundVillage) returns (ResNextRoundVillage); // 下一个丰收季
 
+  // 射击活动
+  rpc shootActivityAttackEnemies(ReqShootActivityAttackEnemies) returns (ResShootActivityAttackEnemies);
+
   // 庆典活动
   rpc resolveFestivalActivityProposal(ReqResolveFestivalActivityProposal) returns (ResResolveFestivalActivityProposal);
   rpc resolveFestivalActivityEvent(ReqResolveFestivalActivityEvent) returns (ResResolveFestivalActivityEvent);
@@ -950,13 +964,9 @@ service Lobby {
   rpc fetchManagerCustomizedContestList(ReqFetchmanagerCustomizedContestList) returns (ResFetchManagerCustomizedContestList);
   rpc fetchManagerCustomizedContest(ReqFetchManagerCustomizedContest) returns (ResFetchManagerCustomizedContest);
   rpc updateManagerCustomizedContest(ReqUpdateManagerCustomizedContest) returns (ResCommon);
-  rpc fetchContestPlayerRank(ReqFetchContestPlayerRank) returns (ResFetchContestPlayerRank);
   rpc fetchReadyPlayerList(ReqFetchReadyPlayerList) returns (ResFetchReadyPlayerList);
   rpc createGamePlan(ReqCreateGamePlan) returns (ResCommon);
   rpc generateContestManagerLoginCode(ReqCommon) returns (ResGenerateContestManagerLoginCode);
-  rpc fetchContestTeamRank(ReqFetchContestTeamRank) returns (ResFetchContestTeamRank);
-  rpc fetchContestTeamMember(ReqFetchContestTeamMember) returns (ResFetchContestTeamMember);
-  rpc fetchContestTeamPlayerRank(ReqFetchContestTeamPlayerRank) returns (ResFetchContestTeamPlayerRank);
 
   // 青云之志活动
   rpc fetchAmuletActivityData(ReqFetchAmuletActivityData) returns (ResFetchAmuletActivityData); // 获取青云之志活动数据
@@ -1052,6 +1062,12 @@ service Lobby {
   // 进度奖励活动
   rpc progressRewardActivityReceive(ReqProgressRewardActivityReceive) returns (ResProgressRewardActivityReceive);
   rpc fetchProgressRewardActivityInfo(ReqFetchProgressRewardActivityInfo) returns (ResFetchProgressRewardActivityInfo);
+
+  // 万事屋活动
+  rpc questCrewActivityStartQuest(ReqQuestCrewActivityStartQuest) returns (ResQuestCrewActivityStartQuest);
+  rpc questCrewActivityHire(ReqQuestCrewActivityHire) returns (ResQuestCrewActivityHire);
+  rpc questCrewActivityFeed(ReqQuestCrewActivityFeed) returns (ResQuestCrewActivityFeed);
+  rpc questCrewActivityRefreshMarket(ReqQuestCrewActivityRefreshMarket) returns (ResQuestCrewActivityRefreshMarket);
 }
 
 // 获取客户端连接信息
@@ -1117,6 +1133,10 @@ message ResLogin {
 message ReqPrepareLogin {
   string access_token = 1; // Oauth2Login 中的 access_token
   uint32 type = 2; // Oauth2Login 中的 type
+}
+
+message ReqFastLogin {
+  string client_version_string = 1;
 }
 
 message ResFastLogin {
@@ -2805,9 +2825,12 @@ message ReqBuyFromShop {
   uint32 goods_id = 1; // 商品Id
   uint32 count = 2; // 购买数量
 
-  repeated Item ver_price = 3; // 最终结算总价用于验证
-  repeated Item ver_goods = 4; // 最终可以获得的东西，用于验证
+  repeated Item ver_price = 3; // 最终结算总价用于验证（购买自选类商品时，礼包内的服饰都需要传）
+  repeated Item ver_goods = 4; // 最终可以获得的东西，用于验证（购买自选类商品时，礼包内的服饰都需要传）
+
+  repeated Item package_goods = 5; // 购买自选礼包内商品
 }
+
 message ResBuyFromShop {
   Error error = 1;
   repeated RewardSlot rewards = 2; // 打开福袋时才有奖励内容
@@ -2969,6 +2992,7 @@ message ReqEnterCustomizedContest {
   uint32 unique_id = 1;
   string lang = 2;
 }
+
 message ResEnterCustomizedContest {
   Error error = 1;
   CustomizedContestDetail detail_info = 2;
@@ -3161,6 +3185,10 @@ message ResAccountActivityData {
   // repeated lq.SimulationV2Data simulation_v2_data = 31;
 
   repeated lq.ActivityProgressRewardData progress_reward_data = 32;
+
+  repeated lq.ActivityQuestCrewData quest_crew_data = 33;
+
+  repeated lq.ActivityShootData shoot_data = 34;
 }
 
 message SNSBlog {
@@ -4223,9 +4251,9 @@ message ReqCreateCustomizedContest {
   uint32 start_time = 4;
   uint32 end_time = 5;
   uint32 auto_match = 6; // 0=非自动匹配 1=自动匹配
-  uint32 rank_rule = 7; // 排名显示方式 0=无 1=最近3场 2=最近5场 12=最佳2场 13=最佳3场 14=最佳4场 15=最佳5场 若season_type为团队赛，则传0
+  uint32 rank_rule = 7; // 排名显示方式 0=无 1=最近3场 2=最近5场 12=最佳2场 13=最佳3场 14=最佳4场 15=最佳5场 若 rank_type 为团队赛，则传0
   ContestSetting contest_setting = 8;
-  uint32 season_type = 9; // 赛季模式 0：个人赛 1：团队赛
+  uint32 rank_type = 9; // 赛季模式 0：个人赛 1：团队赛
 }
 
 message ResCreateCustomizedContest {
@@ -4258,7 +4286,7 @@ message ResFetchManagerCustomizedContest {
   uint32 check_state = 9; // 审核状态 0-正常 1-正在审核中
   string checking_name = 10; // 审核中的名称
   ContestSetting contest_setting = 11;
-  uint32 season_type = 12; // 赛季模式 0-个人赛 1-团队赛
+  uint32 rank_type = 12; // 赛季模式 0-个人赛 1-团队赛
 }
 
 message ReqUpdateManagerCustomizedContest {
@@ -4292,15 +4320,18 @@ message ResFetchContestPlayerRank {
     uint32 total_game_count = 1;
     repeated ContestGameResult recent_games = 2;
     repeated ContestSeriesGameResult highest_series_points = 3;
+    int32 accumulate_point = 4; // 带马点总分
   }
   message SeasonRank {
     uint32 account_id = 1;
     string nickname = 2;
     ContestPlayerAccountData data = 3;
+    string team_name = 4;
   }
   message PlayerData {
     uint32 rank = 1;
     ContestPlayerAccountData data = 2;
+    string team_name = 3;
   }
   Error error = 1;
   uint32 total = 2;
@@ -4310,83 +4341,55 @@ message ResFetchContestPlayerRank {
 
 message ReqFetchContestTeamRank {
   uint32 unique_id = 1; // 赛事唯一id
-  uint32 season_id = 2; // 赛程id
-  uint32 limit = 3;
-  uint32 offset = 4;
+  uint32 limit = 2;
+  uint32 offset = 3;
 }
- 
+
 // 团队赛排行榜返回信息
 message ResFetchContestTeamRank {
-  message ContestTeamRankResult {
-    uint32 rank = 1; // 团队名次
-    int32 total_point = 2; // 团队累计总分
-    uint32 total_game_count = 3; // 全队累计对局次数
-    uint32 member_count = 4; // 队员总数
+  message ContestTeamData {
+    int32 total_point = 1; // 团队累计总分
+    uint32 total_game_count = 2; // 全队累计对局次数
+    uint32 member_count = 3; // 队员总数
   }
   message SeasonTeamRank {
     uint32 team_id = 1; // 队伍id
     string name = 2; // 队伍名称
-    ContestTeamRankResult result = 3; // 队伍排名数据
+    ContestTeamData data = 3; // 队伍排名数据
+    uint32 rank = 4;
   }
   Error error = 1;
   uint32 total = 2; // 当前队伍总数
   repeated SeasonTeamRank rank = 3; // 排行榜总数据
-  SeasonTeamRank team_rank = 4; // 玩家所在队伍数据（玩家无归属时该字段为空）
+  SeasonTeamRank self_team_rank = 4; // 玩家所在队伍数据（玩家无归属时该字段为空）
 }
 
 // 大会室团队赛个人排名请求协议
 message ReqFetchContestTeamPlayerRank {
   uint32 unique_id = 1; // 赛事唯一id
-  uint32 season_id = 2; // 赛程id
-  uint32 offset = 4;
-  uint32 limit = 5;
-}
-
-// 大会室团队赛个人协议返回协议
-message ResFetchContestTeamPlayerRank {
-  message ContestTeamPlayerAccountData {
-    uint32 rank = 1; // 玩家名次
-    int32 total_point = 2; // 玩家累计总分
-    uint32 total_game_count = 3; // 玩家对局总数
-  }
-  message SeasonTeamRank {
-    uint32 account_id = 1; // 玩家id
-    string nickname = 2; // 玩家昵称
-    ContestTeamPlayerAccountData data = 3; // 玩家排名数据
-    string team_name = 4; // 团队名称（若当前玩家不属于任何队伍则为空）
-    uint32 team_id = 5; // 团队id
-  }
-  message PlayerData {
-    uint32 rank = 1; // 当前玩家排名
-    ContestTeamPlayerAccountData data = 2;
-    string team_name = 3; // 团队名称（若当前玩家不属于任何队伍则为空）
-    uint32 team_id = 4; // 团队id
-  }
-  Error error = 1;
-  uint32 total = 2; // 玩家总数
-  repeated SeasonTeamRank rank = 3; // 排行榜位次信息
-  PlayerData player_data = 4; // 当前玩家排名数据
+  uint32 offset = 2;
+  uint32 limit = 3;
 }
 
 // 队伍明细请求数据
 message ReqFetchContestTeamMember {
   uint32 unique_id = 1; // 赛事唯一id
-  uint32 season_id = 2; // 赛程id
-  uint32 team_id = 3; // 队伍id
-  uint32 offset = 4;
-  uint32 limit = 5;
+  uint32 team_id = 2; // 队伍id
+  uint32 offset = 3;
+  uint32 limit = 4;
 }
- 
+
 // 队伍明细返回数据
 message ResFetchContestTeamMember {
-  message ContestTeamMember {
+  message ContestTeamMemberRank {
     uint32 account_id = 1; // 玩家id
     uint32 total_game_count = 3; // 玩家对局总数
     int32 total_score = 4; // 玩家分数
     string nickname = 5; // 玩家昵称
   }
   Error error = 1;
-  repeated ContestTeamMember members = 2; // 玩家列表按分数排序
+  uint32 total = 2;
+  repeated ContestTeamMemberRank rank = 3; // 玩家列表按分数排序
 }
 
 message ReqFetchReadyPlayerList {
@@ -4949,6 +4952,75 @@ message ReqFetchProgressRewardActivityInfo {
 message ResFetchProgressRewardActivityInfo {
   Error error = 1;
   uint32 progress = 2;
+}
+
+message ReqShootActivityAttackEnemies {
+  uint32 activity_id = 1;
+  uint32 bullets_count = 2; // 子弹数量
+  uint32 position = 3; // 战机x轴位置
+}
+
+message ResShootActivityAttackEnemies {
+  Error error = 1;
+  message ActivityShootAttackRecord {
+    uint32 position = 1; // 攻击时战机位置
+    ActivityShootEnemyInfo enemy = 2; // 被攻击敌人信息
+    uint32 level = 3; // 当前关卡
+    repeated uint32 reward_ids = 4; // 本次攻击获得奖励
+    repeated ExecuteReward rewards = 5; // 本次攻击获得具体奖励
+  }
+  repeated ActivityShootAttackRecord records = 2; // 当前攻击事件记录
+  ActivityShootValueChange value_change = 3; // 游戏数据更新情况
+}
+
+message ReqQuestCrewActivityStartQuest {
+  uint32 activity_id = 1;
+  repeated uint32 joined_members = 2;
+  uint32 quest_id = 3;
+}
+
+message ResQuestCrewActivityStartQuest {
+  Error error = 1;
+  uint32 result = 2; // 1 - 成功 2 - 大成功，最终结果
+  ActivityQuestCrewChanges value_changes = 3;
+  message ActivityQuestCrewEffectInfo {
+    uint32 member_id = 1;
+    uint32 effect_id = 2;
+    ActivityQuestCrewEffectResult result = 3;
+  }
+  repeated ActivityQuestCrewEffectInfo effect_info = 4;
+}
+
+message ReqQuestCrewActivityHire {
+  uint32 activity_id = 1;
+  uint32 member_id = 2;
+}
+
+message ResQuestCrewActivityHire {
+  Error error = 1;
+  ActivityQuestCrewChanges value_changes = 2;
+  repeated ExecuteResult execute_result = 3;
+}
+
+message ReqQuestCrewActivityFeed {
+  uint32 activity_id = 1;
+  repeated uint32 member_id = 2;
+}
+
+message ResQuestCrewActivityFeed {
+  Error error = 1;
+  ActivityQuestCrewChanges value_changes = 2;
+  repeated ExecuteResult execute_result = 3;
+}
+
+message ReqQuestCrewActivityRefreshMarket {
+  uint32 activity_id = 1;
+}
+
+message ResQuestCrewActivityRefreshMarket {
+  Error error = 1;
+  ActivityQuestCrewChanges value_changes = 2;
+  repeated ExecuteResult execute_result = 3;
 }
 /*********************************************************************************************************************************
  ********************************************** next request & response **********************************************************

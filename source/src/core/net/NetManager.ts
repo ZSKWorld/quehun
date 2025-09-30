@@ -10,14 +10,14 @@ export class NetManager extends Observer implements INetManager {
     private _gameSocket: WebSocket;
     private _obSocket: WebSocket;
 
-    reqs: IReqMethod;
+    requests: IReqMethod;
 
     async init() {
         this._ipConfig = await $loadMgr.fetch(ResPath.EConfigPath.Ip_config, Laya.Loader.JSON);
         await this.fetchRoutes();
         this._lobbySocket = new WebSocket(this._routes[0], "gateway");
 
-        const reqs = this.reqs = {} as any;
+        const reqs = this.requests = {} as any;
         for (const key in EMessageID) {
             const service = $pbMgr.method2Service[key];
             let socket: WebSocket;
@@ -29,13 +29,16 @@ export class NetManager extends Observer implements INetManager {
         }
 
         this._lobbySocket.on(ESocketEvent.ConnectSuccess, this, () => {
-            Logger.error("socket open")
+            Logger.error("socket open");
         });
-        this._lobbySocket.on(ESocketEvent.Response, this, (methodName: string, data: any) => {
+        this._lobbySocket.on(ESocketEvent.Response, this, (methodName: string, data: IResponse) => {
             Logger.error("response " + methodName, data);
             this.dispatch(methodName, data);
         });
-        this._lobbySocket.on(ESocketEvent.Notify, this, this.dispatch);
+        this._lobbySocket.on(ESocketEvent.Notify, this, (notifyName: string, data: IProto) => {
+            Logger.error("notify " + notifyName, data);
+            this.dispatch(notifyName, data);
+        });
         this._lobbySocket.connect();
     }
 

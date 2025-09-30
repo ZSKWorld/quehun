@@ -424,11 +424,14 @@ declare interface ISheetData_Spot_CharacterSpot {
 //#region skin_spot
 declare interface ISheet_Spot_SkinSpot {
 	[key: string]: ISheetData_Spot_SkinSpot;
+	401799: ISheetData_Spot_SkinSpot;
 	401899: ISheetData_Spot_SkinSpot;
+	403299: ISheetData_Spot_SkinSpot;
 	404699: ISheetData_Spot_SkinSpot;
 	409199: ISheetData_Spot_SkinSpot;
 	40010401: ISheetData_Spot_SkinSpot;
 	40010501: ISheetData_Spot_SkinSpot;
+	40011499: ISheetData_Spot_SkinSpot;
 	40999801: ISheetData_Spot_SkinSpot;
 	40999901: ISheetData_Spot_SkinSpot;
 }
@@ -629,6 +632,7 @@ declare interface ISheet_Spot_AudioSpot {
 	6002: ISheetData_Spot_AudioSpot;
 	6003: ISheetData_Spot_AudioSpot;
 	6004: ISheetData_Spot_AudioSpot;
+	6005: ISheetData_Spot_AudioSpot;
 	10001: ISheetData_Spot_AudioSpot;
 	10002: ISheetData_Spot_AudioSpot;
 	10003: ISheetData_Spot_AudioSpot;

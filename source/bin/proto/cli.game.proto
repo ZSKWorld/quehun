@@ -87,13 +87,8 @@ message ResAuthGame {
   GameConfig game_config = 5; // 游戏配置
   repeated uint32 ready_id_list = 6; // 已就绪Id列表
   repeated PlayerGameView robots = 7; // 机器人外观数据
-  message ContestInfo {
-    uint32 contest_type = 1; // 赛事类型 官方/热门/民间
-    uint32 season_type = 2; // 赛季类型 0-个人赛 1-团队赛
-  }
-  ContestInfo contest_info = 8;
 }
-
+ 
 // 游戏对局还原
 message GameRestore {
   GameSnapshot snapshot = 1; // 快照

@@ -47,11 +47,13 @@ declare interface ISheetData_OutfitConfig_Ron {
 //#region liqi
 declare interface ISheet_OutfitConfig_Liqi {
 	[key: string]: ISheetData_OutfitConfig_Liqi;
-	uint32: ISheetData_OutfitConfig_Liqi;
+	308048: ISheetData_OutfitConfig_Liqi;
 }
 declare interface ISheetData_OutfitConfig_Liqi {
 	/** 道具id */
 	id: number;
+	/** 部分方向隐藏特效 */
+	hide_direction: string;
 }
 //#endregion
 

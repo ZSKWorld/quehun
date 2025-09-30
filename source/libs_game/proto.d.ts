@@ -322,7 +322,7 @@ declare enum EMessageID {
 	prepareLogin = "prepareLogin",
 	/**
 	 * * 备线切换主线快速登录
-	 * * req: {@link IReqCommon}, res: {@link IResFastLogin}
+	 * * req: {@link IReqFastLogin}, res: {@link IResFastLogin}
 	 */
 	fastLogin = "fastLogin",
 	/**
@@ -1412,6 +1412,26 @@ declare enum EMessageID {
 	 */
 	unfollowCustomizedContest = "unfollowCustomizedContest",
 	/**
+	 * * 获取大会室队伍排名
+	 * * req: {@link IReqFetchContestTeamRank}, res: {@link IResFetchContestTeamRank}
+	 */
+	fetchContestTeamRank = "fetchContestTeamRank",
+	/**
+	 * * 获取大会室队伍成员
+	 * * req: {@link IReqFetchContestTeamMember}, res: {@link IResFetchContestTeamMember}
+	 */
+	fetchContestTeamMember = "fetchContestTeamMember",
+	/**
+	 * * 获取大会室队伍成员排名
+	 * * req: {@link IReqFetchContestTeamPlayerRank}, res: {@link IResFetchContestPlayerRank}
+	 */
+	fetchContestTeamPlayerRank = "fetchContestTeamPlayerRank",
+	/**
+	 * * 获取大会室玩家排名
+	 * * req: {@link IReqFetchContestPlayerRank}, res: {@link IResFetchContestPlayerRank}
+	 */
+	fetchContestPlayerRank = "fetchContestPlayerRank",
+	/**
 	 * * 获取活动列表
 	 * * req: {@link IReqCommon}, res: {@link IResActivityList}
 	 */
@@ -1762,6 +1782,11 @@ declare enum EMessageID {
 	 */
 	nextRoundVillage = "nextRoundVillage",
 	/**
+	 * * 射击活动
+	 * * req: {@link IReqShootActivityAttackEnemies}, res: {@link IResShootActivityAttackEnemies}
+	 */
+	shootActivityAttackEnemies = "shootActivityAttackEnemies",
+	/**
 	 * * 庆典活动
 	 * * req: {@link IReqResolveFestivalActivityProposal}, res: {@link IResResolveFestivalActivityProposal}
 	 */
@@ -1802,20 +1827,12 @@ declare enum EMessageID {
 	fetchManagerCustomizedContest = "fetchManagerCustomizedContest",
 	/** req: {@link IReqUpdateManagerCustomizedContest}, res: {@link IResCommon} */
 	updateManagerCustomizedContest = "updateManagerCustomizedContest",
-	/** req: {@link IReqFetchContestPlayerRank}, res: {@link IResFetchContestPlayerRank} */
-	fetchContestPlayerRank = "fetchContestPlayerRank",
 	/** req: {@link IReqFetchReadyPlayerList}, res: {@link IResFetchReadyPlayerList} */
 	fetchReadyPlayerList = "fetchReadyPlayerList",
 	/** req: {@link IReqCreateGamePlan}, res: {@link IResCommon} */
 	createGamePlan = "createGamePlan",
 	/** req: {@link IReqCommon}, res: {@link IResGenerateContestManagerLoginCode} */
 	generateContestManagerLoginCode = "generateContestManagerLoginCode",
-	/** req: {@link IReqFetchContestTeamRank}, res: {@link IResFetchContestTeamRank} */
-	fetchContestTeamRank = "fetchContestTeamRank",
-	/** req: {@link IReqFetchContestTeamMember}, res: {@link IResFetchContestTeamMember} */
-	fetchContestTeamMember = "fetchContestTeamMember",
-	/** req: {@link IReqFetchContestTeamPlayerRank}, res: {@link IResFetchContestTeamPlayerRank} */
-	fetchContestTeamPlayerRank = "fetchContestTeamPlayerRank",
 	/**
 	 * * 获取青云之志活动数据
 	 * * req: {@link IReqFetchAmuletActivityData}, res: {@link IResFetchAmuletActivityData}
@@ -2042,6 +2059,17 @@ declare enum EMessageID {
 	progressRewardActivityReceive = "progressRewardActivityReceive",
 	/** req: {@link IReqFetchProgressRewardActivityInfo}, res: {@link IResFetchProgressRewardActivityInfo} */
 	fetchProgressRewardActivityInfo = "fetchProgressRewardActivityInfo",
+	/**
+	 * * 万事屋活动
+	 * * req: {@link IReqQuestCrewActivityStartQuest}, res: {@link IResQuestCrewActivityStartQuest}
+	 */
+	questCrewActivityStartQuest = "questCrewActivityStartQuest",
+	/** req: {@link IReqQuestCrewActivityHire}, res: {@link IResQuestCrewActivityHire} */
+	questCrewActivityHire = "questCrewActivityHire",
+	/** req: {@link IReqQuestCrewActivityFeed}, res: {@link IResQuestCrewActivityFeed} */
+	questCrewActivityFeed = "questCrewActivityFeed",
+	/** req: {@link IReqQuestCrewActivityRefreshMarket}, res: {@link IResQuestCrewActivityRefreshMarket} */
+	questCrewActivityRefreshMarket = "questCrewActivityRefreshMarket",
 	/**
 	 * * 验证游戏口令
 	 * * req: {@link IReqAuthGame}, res: {@link IResAuthGame}
@@ -2755,6 +2783,30 @@ declare interface IReqCommon extends IProto {
 declare interface IResCommon extends IResponse {
 }
 
+/** .lq.StringDirty */
+declare interface IStringDirty extends IProto {
+	dirty: boolean;
+	value: string;
+}
+
+/** .lq.StringArrayDirty */
+declare interface IStringArrayDirty extends IProto {
+	dirty: boolean;
+	value: string[];
+}
+
+/** .lq.UInt32ArrayDirty */
+declare interface IUInt32ArrayDirty extends IProto {
+	dirty: boolean;
+	value: number[];
+}
+
+/** .lq.UInt32Dirty */
+declare interface IUInt32Dirty extends IProto {
+	dirty: boolean;
+	value: number;
+}
+
 /**
  * * .lq.ResAccountUpdate
  * * 账号更新数据
@@ -3161,13 +3213,33 @@ declare interface IAccountUpdate_MatchPoint extends IProto {
 	point: number;
 }
 
-/** .lq.GameMetaData */
+/** .lq.ContestGameMetaData */
+declare interface IContestGameMetaData extends IProto {
+	/** 对于不同地区来说 赛事类别，热门赛事 官方赛事 普通赛事 */
+	type_list: IContestGameMetaData_ContestTypeZoneData[];
+	/** 赛季类型 0-个人赛 1-团队赛 */
+	rank_type: number;
+}
+
+/** undefined */
+declare interface IContestGameMetaData_ContestTypeZoneData extends IProto {
+	zone: number;
+	contest_type: number;
+}
+
+/**
+ * * .lq.GameMetaData
+ * * 对局信息，在 2509 版本之前只有三种id，contest_info 与 contest_uid 绑定出现
+ * * contest_info 主要用于大会室团队战客户端判断是否需要对队名进行屏蔽字处理
+ */
 declare interface IGameMetaData extends IProto {
 	/** 友人房的房间id，不要被骗了！ */
 	room_id: number;
 	/** 模式id */
 	mode_id: number;
 	contest_uid: number;
+	/** 大会室信息，只有 contest_uid 有值时才会有值，202509版本上线之前也都没值 */
+	contest_info: IContestGameMetaData;
 }
 
 /**
@@ -3441,6 +3513,34 @@ declare interface IGameDetailRule extends IProto {
 	wanxiangxiuluo_mode: number;
 	/** 背水之战，默认0：不开启，1：开启 */
 	beishuizhizhan_mode: number;
+	/**
+	 * * 娱乐模式开关（注意：有些可能会存在组合模式，即一个玩法需要多个模式）
+	 * * 2025/7/30 新增
+	 * * 主要目的是将所有娱乐模式全都变成一个枚举列表，这样之后的牌谱服务不需要每次都重新编译代码和调整逻辑
+	 * * 原先老的字段依然是有效的，这里分为2种牌谱模式，1. 旧模式，2. 新模式
+	 * * - 旧模式：只包含旧字段，按照之前的方式处理
+	 * * - 新模式：只包含新字段，按照新字段处理
+	 * * 枚举列表：
+	 * * - GuYi = 1, // 古役模式
+	 * * - Dora3 = 2, // dora3模式
+	 * * - BeginOpen = 3, // 配牌open模式
+	 * * - JiuChao = 4, // 鹫巢模式
+	 * * - MuYu = 5, // 龙之目玉
+	 * * - OpenHand = 6, // 友人房公开手牌
+	 * * - XueZhanDaoDi = 7, // 血战到底
+	 * * - HuanSanZhang = 8, // 换三张（换三张模式不是一个单独的模式，是和其他模式复合的）
+	 * * - ChuanMa = 9, // 川麻
+	 * * - RevealDiscard = 10, // 暗牌模式
+	 * * - FieldSpell = 11, // 环境魔法卡模式，默认0：不开启，5*5*5种模式缩写为3个[1, 5]拼成的int值，eg:121代表冲锋、倒计时、通货膨胀
+	 * * - ZhanXing = 12, // 占星模式
+	 * * - TianMing = 13, // 天命之战模式
+	 * * - YongChang = 14, // 咏唱之战模式
+	 * * - HunZhiYiJi = 15, // 魂之一击模式
+	 * * - WanXiangXiuLuo = 16, // 万象修罗模式
+	 * * - BeiShuiZhiZhan = 17, // 背水之战
+	 * * - XiaKeShang = 18, // 下克上玩法
+	 */
+	amusement_switches: number[];
 }
 
 /**
@@ -4017,6 +4117,8 @@ declare interface IAccountActivityUpdate extends IProto {
 	story_data: IActivityStoryData[];
 	choose_up_data: IActivityChooseUpData[];
 	simulation_v2_data: ISimulationV2Data[];
+	quest_crew_data: IActivityQuestCrewChanges[];
+	shoot_data: IActivityShootData[];
 }
 
 /** .lq.ActivityCombiningWorkbench */
@@ -4139,7 +4241,10 @@ declare interface IActivityVillageData extends IProto {
 	round: number;
 }
 
-/** .lq.TimeCounterData */
+/**
+ * * .lq.TimeCounterData
+ * * 在当日5点以后的，count有效，不然就是默认值(一般为0)
+ */
 declare interface ITimeCounterData extends IProto {
 	count: number;
 	update_time: number;
@@ -4271,6 +4376,77 @@ declare interface IActivityStoryData extends IProto {
 declare interface IActivityProgressRewardData extends IProto {
 	activity_id: number;
 	rewarded_progresses: number[];
+}
+
+/** .lq.QCMember */
+declare interface IQCMember extends IProto {
+	member_id: number;
+	/** 已使用体力值，需要根据 update_time 进行判定 */
+	consumed_sta: ITimeCounterData;
+}
+
+/** .lq.ActivityQuestCrewEffectResult */
+declare interface IActivityQuestCrewEffectResult extends IProto {
+	/** 修改委托结果 */
+	result_change: IActivityQuestCrewEffectResult_QCQuestResultChange;
+	consumed_change: IActivityQuestCrewEffectResult_QCQuestConsumeChange[];
+	reward: IActivityQuestCrewEffectResult_QCItemReward;
+}
+
+/** undefined */
+declare interface IActivityQuestCrewEffectResult_QCQuestResultChange extends IProto {
+	from: number;
+	to: number;
+}
+
+/** undefined */
+declare interface IActivityQuestCrewEffectResult_QCQuestConsumeChange extends IProto {
+	member_id: number;
+	from: number;
+	to: number;
+}
+
+/** undefined */
+declare interface IActivityQuestCrewEffectResult_QCItemReward extends IProto {
+	execute_reward: IExecuteReward[];
+}
+
+/** .lq.QCQuest */
+declare interface IQCQuest extends IProto {
+	quest_id: number;
+	finished: number;
+	finished_time: number;
+}
+
+/** .lq.ActivityQuestCrewData */
+declare interface IActivityQuestCrewData extends IProto {
+	activity_id: number;
+	/** 已有干员列表 */
+	members: IQCMember[];
+	/** 委托看板任务列表 */
+	quest_board: IQCQuest[];
+	/** 人才中心角色列表 */
+	market_board: number[];
+}
+
+/** .lq.ActivityQuestCrewChanges */
+declare interface IActivityQuestCrewChanges extends IProto {
+	activity_id: number;
+	members: IActivityQuestCrewChanges_QCMemberArrayDirty;
+	quest_board: IActivityQuestCrewChanges_QCQuestArrayDirty;
+	market_board: IUInt32ArrayDirty;
+}
+
+/** undefined */
+declare interface IActivityQuestCrewChanges_QCMemberArrayDirty extends IProto {
+	dirty: boolean;
+	value: IQCMember[];
+}
+
+/** undefined */
+declare interface IActivityQuestCrewChanges_QCQuestArrayDirty extends IProto {
+	dirty: boolean;
+	value: IQCQuest[];
 }
 
 /** .lq.ActivityChooseUpData */
@@ -4681,6 +4857,15 @@ declare interface IShopInfo extends IProto {
 	buy_records: IBuyRecord[];
 	/** 上次刷新时间 */
 	last_refresh_time: number;
+	/** 自选礼包购买的货物记录 */
+	selected_package_records: IShopInfo_SelectedPackageBuyRecord[];
+}
+
+/** undefined */
+declare interface IShopInfo_SelectedPackageBuyRecord extends IProto {
+	/** 当前商品归属礼包id */
+	package_id: number;
+	buy_records: IBuyRecord[];
 }
 
 /** .lq.ChangeNicknameRecord */
@@ -4842,7 +5027,7 @@ declare interface ICustomizedContestBase extends IProto {
 	public_notice: string;
 	check_state: number;
 	checking_name: string;
-	season_type: number;
+	rank_type: number;
 	show_team_rank: boolean;
 }
 
@@ -4909,7 +5094,7 @@ declare interface ICustomizedContestDetail extends IProto {
 	/** 0=非自动匹配 1=自动匹配 */
 	auto_match: number;
 	/** 赛季模式 0：个人赛 1：团队赛 */
-	season_type: number;
+	rank_type: number;
 	/** 是否公开团队排名 */
 	show_team_rank: boolean;
 }
@@ -6166,6 +6351,57 @@ declare interface ISimulationActionData_HuleInfo extends IProto {
 	toutiao: boolean;
 }
 
+/** .lq.ActivityShootValueChange */
+declare interface IActivityShootValueChange extends IProto {
+	/** 当前关卡脏数据 */
+	level: IActivityShootValueChange_Uint32ValueDirty;
+	/** 当前敌人情况脏数据 */
+	enemies: IActivityShootEnemyInfoDirty;
+	/** 当前已获得奖励情况脏数据 */
+	rewarded_ids: IActivityShootValueChange_RewardArrayDirty;
+}
+
+/** undefined */
+declare interface IActivityShootValueChange_Uint32ValueDirty extends IProto {
+	value: number;
+	dirty: number;
+}
+
+/** undefined */
+declare interface IActivityShootValueChange_RewardArrayDirty extends IProto {
+	reward_ids: number[];
+	dirty: number;
+}
+
+/**
+ * * .lq.ActivityShootEnemyInfoDirty
+ * * 敌人信息脏数据类，只传信息有更新的敌人
+ */
+declare interface IActivityShootEnemyInfoDirty extends IProto {
+	dirty: number;
+	/** 当敌人hp降到0时,表示敌人被打败，可以移除 */
+	enemies: IActivityShootEnemyInfo[];
+}
+
+/** .lq.ActivityShootData */
+declare interface IActivityShootData extends IProto {
+	activity_id: number;
+	/** 当前关卡数 */
+	level: number;
+	/** 敌人信息 */
+	enemies: IActivityShootEnemyInfo[];
+	/** 奖励获取进度，已经获得过的reward_id */
+	rewarded_ids: number[];
+}
+
+/** .lq.ActivityShootEnemyInfo */
+declare interface IActivityShootEnemyInfo extends IProto {
+	/** 对应敌人组id */
+	group_id: number;
+	enemy_id: number;
+	hp: number;
+}
+
 /**
  * * .lq.ResConnectionInfo
  * * 获取客户端连接信息
@@ -6270,6 +6506,11 @@ declare interface IReqPrepareLogin extends IProto {
 	access_token: string;
 	/** Oauth2Login 中的 type */
 	type: number;
+}
+
+/** .lq.ReqFastLogin */
+declare interface IReqFastLogin extends IProto {
+	client_version_string: string;
 }
 
 /** .lq.ResFastLogin */
@@ -8806,10 +9047,12 @@ declare interface IReqBuyFromShop extends IProto {
 	goods_id: number;
 	/** 购买数量 */
 	count: number;
-	/** 最终结算总价用于验证 */
+	/** 最终结算总价用于验证（购买自选类商品时，礼包内的服饰都需要传） */
 	ver_price: IReqBuyFromShop_Item[];
-	/** 最终可以获得的东西，用于验证 */
+	/** 最终可以获得的东西，用于验证（购买自选类商品时，礼包内的服饰都需要传） */
 	ver_goods: IReqBuyFromShop_Item[];
+	/** 购买自选礼包内商品 */
+	package_goods: IReqBuyFromShop_Item[];
 }
 
 /** undefined */
@@ -9223,6 +9466,8 @@ declare interface IResAccountActivityData extends IResponse {
 	story_data: IActivityStoryData[];
 	choose_up_data: IActivityChooseUpData[];
 	progress_reward_data: IActivityProgressRewardData[];
+	quest_crew_data: IActivityQuestCrewData[];
+	shoot_data: IActivityShootData[];
 }
 
 /** undefined */
@@ -10569,11 +10814,11 @@ declare interface IReqCreateCustomizedContest extends IProto {
 	end_time: number;
 	/** 0=非自动匹配 1=自动匹配 */
 	auto_match: number;
-	/** 排名显示方式 0=无 1=最近3场 2=最近5场 12=最佳2场 13=最佳3场 14=最佳4场 15=最佳5场 若season_type为团队赛，则传0 */
+	/** 排名显示方式 0=无 1=最近3场 2=最近5场 12=最佳2场 13=最佳3场 14=最佳4场 15=最佳5场 若 rank_type 为团队赛，则传0 */
 	rank_rule: number;
 	contest_setting: IContestSetting;
 	/** 赛季模式 0：个人赛 1：团队赛 */
-	season_type: number;
+	rank_type: number;
 }
 
 /** .lq.ResCreateCustomizedContest */
@@ -10612,7 +10857,7 @@ declare interface IResFetchManagerCustomizedContest extends IResponse {
 	checking_name: string;
 	contest_setting: IContestSetting;
 	/** 赛季模式 0-个人赛 1-团队赛 */
-	season_type: number;
+	rank_type: number;
 }
 
 /** .lq.ReqUpdateManagerCustomizedContest */
@@ -10647,6 +10892,8 @@ declare interface IResFetchContestPlayerRank_ContestPlayerAccountData extends IP
 	total_game_count: number;
 	recent_games: IResFetchContestPlayerRank_ContestGameResult[];
 	highest_series_points: IResFetchContestPlayerRank_ContestSeriesGameResult[];
+	/** 带马点总分 */
+	accumulate_point: number;
 }
 
 /** undefined */
@@ -10654,12 +10901,14 @@ declare interface IResFetchContestPlayerRank_SeasonRank extends IProto {
 	account_id: number;
 	nickname: string;
 	data: IResFetchContestPlayerRank_ContestPlayerAccountData;
+	team_name: string;
 }
 
 /** undefined */
 declare interface IResFetchContestPlayerRank_PlayerData extends IProto {
 	rank: number;
 	data: IResFetchContestPlayerRank_ContestPlayerAccountData;
+	team_name: string;
 }
 
 /** undefined */
@@ -10678,8 +10927,6 @@ declare interface IResFetchContestPlayerRank_ContestSeriesGameResult extends IPr
 declare interface IReqFetchContestTeamRank extends IProto {
 	/** 赛事唯一id */
 	unique_id: number;
-	/** 赛程id */
-	season_id: number;
 	limit: number;
 	offset: number;
 }
@@ -10694,13 +10941,11 @@ declare interface IResFetchContestTeamRank extends IResponse {
 	/** 排行榜总数据 */
 	rank: IResFetchContestTeamRank_SeasonTeamRank[];
 	/** 玩家所在队伍数据（玩家无归属时该字段为空） */
-	team_rank: IResFetchContestTeamRank_SeasonTeamRank;
+	self_team_rank: IResFetchContestTeamRank_SeasonTeamRank;
 }
 
 /** undefined */
-declare interface IResFetchContestTeamRank_ContestTeamRankResult extends IProto {
-	/** 团队名次 */
-	rank: number;
+declare interface IResFetchContestTeamRank_ContestTeamData extends IProto {
 	/** 团队累计总分 */
 	total_point: number;
 	/** 全队累计对局次数 */
@@ -10716,7 +10961,8 @@ declare interface IResFetchContestTeamRank_SeasonTeamRank extends IProto {
 	/** 队伍名称 */
 	name: string;
 	/** 队伍排名数据 */
-	result: IResFetchContestTeamRank_ContestTeamRankResult;
+	data: IResFetchContestTeamRank_ContestTeamData;
+	rank: number;
 }
 
 /**
@@ -10726,58 +10972,8 @@ declare interface IResFetchContestTeamRank_SeasonTeamRank extends IProto {
 declare interface IReqFetchContestTeamPlayerRank extends IProto {
 	/** 赛事唯一id */
 	unique_id: number;
-	/** 赛程id */
-	season_id: number;
 	offset: number;
 	limit: number;
-}
-
-/**
- * * .lq.ResFetchContestTeamPlayerRank
- * * 大会室团队赛个人协议返回协议
- */
-declare interface IResFetchContestTeamPlayerRank extends IResponse {
-	/** 玩家总数 */
-	total: number;
-	/** 排行榜位次信息 */
-	rank: IResFetchContestTeamPlayerRank_SeasonTeamRank[];
-	/** 当前玩家排名数据 */
-	player_data: IResFetchContestTeamPlayerRank_PlayerData;
-}
-
-/** undefined */
-declare interface IResFetchContestTeamPlayerRank_ContestTeamPlayerAccountData extends IProto {
-	/** 玩家名次 */
-	rank: number;
-	/** 玩家累计总分 */
-	total_point: number;
-	/** 玩家对局总数 */
-	total_game_count: number;
-}
-
-/** undefined */
-declare interface IResFetchContestTeamPlayerRank_SeasonTeamRank extends IProto {
-	/** 玩家id */
-	account_id: number;
-	/** 玩家昵称 */
-	nickname: string;
-	/** 玩家排名数据 */
-	data: IResFetchContestTeamPlayerRank_ContestTeamPlayerAccountData;
-	/** 团队名称（若当前玩家不属于任何队伍则为空） */
-	team_name: string;
-	/** 团队id */
-	team_id: number;
-}
-
-/** undefined */
-declare interface IResFetchContestTeamPlayerRank_PlayerData extends IProto {
-	/** 当前玩家排名 */
-	rank: number;
-	data: IResFetchContestTeamPlayerRank_ContestTeamPlayerAccountData;
-	/** 团队名称（若当前玩家不属于任何队伍则为空） */
-	team_name: string;
-	/** 团队id */
-	team_id: number;
 }
 
 /**
@@ -10787,8 +10983,6 @@ declare interface IResFetchContestTeamPlayerRank_PlayerData extends IProto {
 declare interface IReqFetchContestTeamMember extends IProto {
 	/** 赛事唯一id */
 	unique_id: number;
-	/** 赛程id */
-	season_id: number;
 	/** 队伍id */
 	team_id: number;
 	offset: number;
@@ -10800,12 +10994,13 @@ declare interface IReqFetchContestTeamMember extends IProto {
  * * 队伍明细返回数据
  */
 declare interface IResFetchContestTeamMember extends IResponse {
+	total: number;
 	/** 玩家列表按分数排序 */
-	members: IResFetchContestTeamMember_ContestTeamMember[];
+	rank: IResFetchContestTeamMember_ContestTeamMemberRank[];
 }
 
 /** undefined */
-declare interface IResFetchContestTeamMember_ContestTeamMember extends IProto {
+declare interface IResFetchContestTeamMember_ContestTeamMemberRank extends IProto {
 	/** 玩家id */
 	account_id: number;
 	/** 玩家对局总数 */
@@ -11489,6 +11684,94 @@ declare interface IResFetchProgressRewardActivityInfo extends IResponse {
 	progress: number;
 }
 
+/** .lq.ReqShootActivityAttackEnemies */
+declare interface IReqShootActivityAttackEnemies extends IProto {
+	activity_id: number;
+	/** 子弹数量 */
+	bullets_count: number;
+	/** 战机x轴位置 */
+	position: number;
+}
+
+/** .lq.ResShootActivityAttackEnemies */
+declare interface IResShootActivityAttackEnemies extends IResponse {
+	/** 当前攻击事件记录 */
+	records: IResShootActivityAttackEnemies_ActivityShootAttackRecord[];
+	/** 游戏数据更新情况 */
+	value_change: IActivityShootValueChange;
+}
+
+/** undefined */
+declare interface IResShootActivityAttackEnemies_ActivityShootAttackRecord extends IProto {
+	/** 攻击时战机位置 */
+	position: number;
+	/** 被攻击敌人信息 */
+	enemy: IActivityShootEnemyInfo;
+	/** 当前关卡 */
+	level: number;
+	/** 本次攻击获得奖励 */
+	reward_ids: number[];
+	/** 本次攻击获得具体奖励 */
+	rewards: IExecuteReward[];
+}
+
+/** .lq.ReqQuestCrewActivityStartQuest */
+declare interface IReqQuestCrewActivityStartQuest extends IProto {
+	activity_id: number;
+	joined_members: number[];
+	quest_id: number;
+}
+
+/** .lq.ResQuestCrewActivityStartQuest */
+declare interface IResQuestCrewActivityStartQuest extends IResponse {
+	/** 1 - 成功 2 - 大成功，最终结果 */
+	result: number;
+	value_changes: IActivityQuestCrewChanges;
+	effect_info: IResQuestCrewActivityStartQuest_ActivityQuestCrewEffectInfo[];
+}
+
+/** undefined */
+declare interface IResQuestCrewActivityStartQuest_ActivityQuestCrewEffectInfo extends IProto {
+	member_id: number;
+	effect_id: number;
+	result: IActivityQuestCrewEffectResult;
+}
+
+/** .lq.ReqQuestCrewActivityHire */
+declare interface IReqQuestCrewActivityHire extends IProto {
+	activity_id: number;
+	member_id: number;
+}
+
+/** .lq.ResQuestCrewActivityHire */
+declare interface IResQuestCrewActivityHire extends IResponse {
+	value_changes: IActivityQuestCrewChanges;
+	execute_result: IExecuteResult[];
+}
+
+/** .lq.ReqQuestCrewActivityFeed */
+declare interface IReqQuestCrewActivityFeed extends IProto {
+	activity_id: number;
+	member_id: number[];
+}
+
+/** .lq.ResQuestCrewActivityFeed */
+declare interface IResQuestCrewActivityFeed extends IResponse {
+	value_changes: IActivityQuestCrewChanges;
+	execute_result: IExecuteResult[];
+}
+
+/** .lq.ReqQuestCrewActivityRefreshMarket */
+declare interface IReqQuestCrewActivityRefreshMarket extends IProto {
+	activity_id: number;
+}
+
+/** .lq.ResQuestCrewActivityRefreshMarket */
+declare interface IResQuestCrewActivityRefreshMarket extends IResponse {
+	value_changes: IActivityQuestCrewChanges;
+	execute_result: IExecuteResult[];
+}
+
 /** .lq.AmuletBadgeData */
 declare interface IAmuletBadgeData extends IProto {
 	/** 表内的印章id */
@@ -11985,34 +12268,10 @@ declare interface IAmuletTileArrayDirty extends IProto {
 	value: IAmuletTile[];
 }
 
-/** .lq.StringDirty */
-declare interface IStringDirty extends IProto {
-	dirty: boolean;
-	value: string;
-}
-
-/** .lq.StringArrayDirty */
-declare interface IStringArrayDirty extends IProto {
-	dirty: boolean;
-	value: string[];
-}
-
-/** .lq.UInt32ArrayDirty */
-declare interface IUInt32ArrayDirty extends IProto {
-	dirty: boolean;
-	value: number[];
-}
-
 /** .lq.AmuletMingInfoArrayDirty */
 declare interface IAmuletMingInfoArrayDirty extends IProto {
 	dirty: boolean;
 	value: IAmuletMingInfo[];
-}
-
-/** .lq.UInt32Dirty */
-declare interface IUInt32Dirty extends IProto {
-	dirty: boolean;
-	value: number;
 }
 
 /** .lq.AmuletGameOperationArrayDirty */
@@ -12271,15 +12530,6 @@ declare interface IResAuthGame extends IResponse {
 	ready_id_list: number[];
 	/** 机器人外观数据 */
 	robots: IPlayerGameView[];
-	contest_info: IResAuthGame_ContestInfo;
-}
-
-/** undefined */
-declare interface IResAuthGame_ContestInfo extends IProto {
-	/** 赛事类型 官方/热门/民间 */
-	contest_type: number;
-	/** 赛季类型 0-个人赛 1-团队赛 */
-	season_type: number;
 }
 
 /**
@@ -12671,6 +12921,20 @@ declare interface IYongchangInfo extends IProto {
 	shouqie_bonus: number;
 }
 
+/**
+ * * .lq.XiaKeShangInfo
+ * * 下克上信息
+ * * 玩法文档：https://confluence.catfoodstudio.net:5443/x/sb8GBg
+ */
+declare interface IXiaKeShangInfo extends IProto {
+	/**
+	 * * 分数倍率，最终得分会乘以倍率
+	 * * 可能的值有 1/2/3/4
+	 * * 下标含义：0-3 代表对应位置的人的分数倍率
+	 */
+	score_coefficients: number[];
+}
+
 /** .lq.ActionNewCard */
 declare interface IActionNewCard extends IProto {
 	field_spell: number;
@@ -12725,6 +12989,8 @@ declare interface IActionNewRound extends IProto {
 	yongchang: IYongchangInfo;
 	/** 牌山字符串的加的盐的sha */
 	saltSha256: string;
+	/** 下克上玩法专用 */
+	xia_ke_shang: IXiaKeShangInfo;
 }
 
 /**
@@ -12779,6 +13045,8 @@ declare interface IRecordNewRound extends IProto {
 	saltSha256: string;
 	/** 牌山字符串的加的盐 */
 	salt: string;
+	/** 下克上玩法专用 */
+	xia_ke_shang: IXiaKeShangInfo;
 }
 
 /** undefined */
@@ -12991,6 +13259,8 @@ declare interface ILiQiSuccess extends IProto {
 	failed: boolean;
 	/** 背水之战，立直成功类型，0:普通立直，1:5000点立直，2:10000点立直 */
 	liqi_type_beishuizhizhan: number;
+	/** 下克上玩法专用 */
+	xia_ke_shang: IXiaKeShangInfo;
 }
 
 /**
@@ -13054,6 +13324,8 @@ declare interface IHuleInfo extends IProto {
 	baida_changed: string[];
 	/** 百搭模式下，若hu_tile是百搭牌，那么它变成的牌 */
 	hu_tile_baiDa_changed: string;
+	/** 下克上玩法的系数 */
+	xia_ke_shang_coefficient: number;
 }
 
 /**

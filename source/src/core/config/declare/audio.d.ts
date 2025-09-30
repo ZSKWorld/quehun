@@ -277,6 +277,15 @@ declare interface ISheet_Audio_Audio {
 	10352: ISheetData_Audio_Audio;
 	10353: ISheetData_Audio_Audio;
 	10354: ISheetData_Audio_Audio;
+	10355: ISheetData_Audio_Audio;
+	10356: ISheetData_Audio_Audio;
+	10357: ISheetData_Audio_Audio;
+	10358: ISheetData_Audio_Audio;
+	10359: ISheetData_Audio_Audio;
+	10360: ISheetData_Audio_Audio;
+	10361: ISheetData_Audio_Audio;
+	10362: ISheetData_Audio_Audio;
+	10363: ISheetData_Audio_Audio;
 	305032: ISheetData_Audio_Audio;
 	305033: ISheetData_Audio_Audio;
 	305034: ISheetData_Audio_Audio;
@@ -358,6 +367,8 @@ declare interface ISheet_Audio_Audio {
 	308037: ISheetData_Audio_Audio;
 	308041: ISheetData_Audio_Audio;
 	308042: ISheetData_Audio_Audio;
+	308046: ISheetData_Audio_Audio;
+	308047: ISheetData_Audio_Audio;
 	309205: ISheetData_Audio_Audio;
 	30520001: ISheetData_Audio_Audio;
 	30520002: ISheetData_Audio_Audio;

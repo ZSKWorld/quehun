@@ -42,6 +42,15 @@ message YongchangInfo {
   uint32 shouqie_bonus = 5; // 咏唱手切的番数奖励
 }
 
+// 下克上信息
+// 玩法文档：https://confluence.catfoodstudio.net:5443/x/sb8GBg
+message XiaKeShangInfo {
+  // 分数倍率，最终得分会乘以倍率
+  // 可能的值有 1/2/3/4
+  // 下标含义：0-3 代表对应位置的人的分数倍率
+  repeated uint32 score_coefficients = 1;
+}
+
 message ActionNewCard {
   uint32 field_spell = 1;
 }
@@ -73,6 +82,7 @@ message ActionNewRound {
   string sha256 = 19; //替代md5的字符串，如果该字段有值，则md5字段无效，牌山明文中会包含手牌明文
   YongchangInfo yongchang = 20;
   string saltSha256 = 21; // 牌山字符串的加的盐的sha
+  XiaKeShangInfo xia_ke_shang = 26; // 下克上玩法专用
 }
 
 //牌谱：开局
@@ -109,6 +119,7 @@ message RecordNewRound {
   YongchangInfo yongchang = 23;
   string saltSha256 = 24; // 牌山字符串的加的盐的sha
   string salt = 25; // 牌山字符串的加的盐
+  XiaKeShangInfo xia_ke_shang = 26; // 下克上玩法专用
 }
 
 // 快照
@@ -249,6 +260,8 @@ message LiQiSuccess {
   uint32 liqibang = 3;
   bool failed = 4; // 立直了，但是立直没有成立，比如血战立直点炮，然后交不出立直棒的情况
   uint32 liqi_type_beishuizhizhan = 5; // 背水之战，立直成功类型，0:普通立直，1:5000点立直，2:10000点立直
+
+  XiaKeShangInfo xia_ke_shang = 6; // 下克上玩法专用
 }
 
 //番的信息
@@ -287,6 +300,7 @@ message HuleInfo {
   uint32 tianming_bonus = 24; // 2023.01.05新增，用于天命之战模式下的倍数显示
   repeated string baida_changed = 25; // 百搭牌模式下，hand数组里面的百搭牌变成了什么牌，不包含hu_tile
   string hu_tile_baiDa_changed = 26; // 百搭模式下，若hu_tile是百搭牌，那么它变成的牌
+  uint32 xia_ke_shang_coefficient = 27; // 下克上玩法的系数
 }
 
 //听牌的状态

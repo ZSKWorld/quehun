@@ -183,15 +183,15 @@ service ServerRpc {
   rpc afterMatchStart (ReqAfterMatchStart) returns (ResCommon);
   rpc playerMatchTimeout (ReqPlayerMatchTimeout) returns (ResCommon);
 
-  rpc fetchManagerCustomizedContestList(ReqSrvFetchManagerCustomizedContestList) returns (ResSrvFetchManagerCustomizedContestList);
-  rpc fetchManagerCustomizedContest (ReqSrvFetchManagerCustomizedContest) returns (ResSrvFetchManagerCustomizedContest);
+  rpc fetchManagerCustomizedContestList(ReqSrvFetchManagerCustomizedContestList) returns (lq.ResFetchManagerCustomizedContestList);
+  rpc fetchManagerCustomizedContest (ReqSrvFetchManagerCustomizedContest) returns (lq.ResFetchManagerCustomizedContest);
   rpc updateManagerCustomizedContest(ReqSrvUpdateManagerCusomizedContest) returns (ResCommon);
   rpc fetchContestPlayerRank(ReqSrvFetchContestPlayerRank) returns (ResSrvFetchContestPlayerRank);
   rpc fetchReadyPlayerList(ReqSrvFetchReadyPlayerList) returns (ResSrvFetchReadyPlayerList);
   rpc createGamePlan(ReqSrvCreateGamePlan) returns (ResCommon);
-  rpc fetchContestTeamRank(ReqSrvFetchContestTeamRank) returns (ResSrvFetchContestTeamRank);
-  rpc fetchContestTeamMember(ReqSrvFetchContestTeamMember) returns (ResSrvFetchContestTeamMember);
-  rpc fetchContestTeamPlayerRank(ReqSrvFetchContestTeamPlayerRank) returns (ResSrvFetchContestTeamPlayerRank);
+  rpc fetchContestTeamRank(ReqSrvFetchContestTeamRank) returns (lq.ResFetchContestTeamRank);
+  rpc fetchContestTeamMember(ReqSrvFetchContestTeamMember) returns (lq.ResFetchContestTeamMember);
+  rpc fetchContestTeamPlayerRank(ReqSrvFetchContestTeamPlayerRank) returns (lq.ResFetchContestPlayerRank);
 
   // 获取赛事列表
   rpc fetchCustomizedContestList (ReqSrvFetchCustomizedContestList) returns (ResSrvFetchCustomizedContestList);
@@ -290,7 +290,7 @@ service ServerRpc {
   rpc useCenterGiftCode(ReqUseCenterGiftCode) returns (ResUseCenterGiftCode);
 
   rpc voteActivity(ReqServerVoteActivity) returns (ResCommon);
-  rpc fetchVoteActivity(lq.ReqFetchVoteActivity) returns (ResServerFetchVoteActivity);
+  rpc fetchVoteActivity(ReqSrvFetchVoteActivity) returns (ResServerFetchVoteActivity);
   rpc updateVoteActivity(ReqUpdateVoteActivity) returns(ResCommon);
 
   rpc notifySeerReport(ReqSeverNotifySeerReport) returns (ResCommon);
@@ -409,6 +409,21 @@ message CreateGame {
 
   repeated PlayerGameView players = 4;
   repeated PlayerGameView bots = 5;
+
+  message ContestInfo {
+    message ContestZoneType {
+      uint32 zone_id = 1;
+      uint32 contest_type = 2;
+    }
+    message TeamInfo {
+      uint32 team_id = 1;
+      string team_name = 2;
+    }
+    repeated ContestZoneType contest_types = 1; // 赛事类型 官方/热门/民间
+    uint32 season_type = 2; // 赛季类型 0-个人赛 1-团队赛
+    repeated TeamInfo teams_info = 3; // 玩家队伍信息
+  }
+  ContestInfo contest_info = 6;
 }
 message ResCreateGame {
   Error error = 1;
@@ -963,29 +978,9 @@ message ReqSrvFetchManagerCustomizedContestList {
   string lang = 2;
 }
 
-message ResSrvFetchManagerCustomizedContestList {
-  Error error = 1;
-  repeated CustomizedContestBase contests = 2; // 比赛列表
-}
-
 message ReqSrvFetchManagerCustomizedContest {
   uint32 account_id = 1;
   uint32 unique_id = 2;
-}
-
-message ResSrvFetchManagerCustomizedContest {
-  Error error = 1;
-  string name = 2;
-  uint32 open_show = 3;
-  GameMode game_rule_setting = 4;
-  uint32 start_time = 5;
-  uint32 end_time = 6;
-  uint32 auto_match = 7;
-  uint32 rank_rule = 8;
-  uint32 check_state = 9; // 审核状态 0-正常 1-正在审核中
-  string checking_name = 10; // 审核中的名称
-  ContestSetting contest_setting = 11;
-  uint32 season_type = 12;
 }
 
 message ReqSrvUpdateManagerCusomizedContest {
@@ -1021,11 +1016,13 @@ message ResSrvFetchContestPlayerRank {
     uint32 total_game_count = 1;
     repeated ContestGameResult recent_games = 2;
     repeated ContestSeriesGameResult highest_series_points = 3;
+    int32 accumulate_point = 4; // 带马点总分
   }
   message SeasonRank {
     uint32 account_id = 1;
     string nickname = 2;
     ContestPlayerAccountData data = 3;
+    string team_name = 4;
   }
   message PlayerData {
     uint32 rank = 1;
@@ -1061,88 +1058,26 @@ message ReqSrvCreateGamePlan {
   uint32 ai_level = 6; // 0=摸切电脑 1=简单电脑 2=普通电脑
 }
 
-// 大会室团队赛个人排名请求协议
-message ReqSrvFetchContestTeamPlayerRank {
-  uint32 unique_id = 1; // 赛事唯一id
-  uint32 season_id = 2; // 赛程id
-  uint32 offset = 4;
-  uint32 limit = 5;
-  uint32 account_id = 6;
-}
-
-// 大会室团队赛个人协议返回协议
-message ResSrvFetchContestTeamPlayerRank {
-  message ContestTeamPlayerAccountData {
-    uint32 rank = 1; // 玩家名次
-    int32 total_point = 2; // 玩家累计总分
-    uint32 total_game_count = 3; // 玩家对局总数
-  }
-  message SeasonTeamRank {
-    uint32 account_id = 1; // 玩家id
-    string nickname = 2; // 玩家昵称
-    ContestTeamPlayerAccountData data = 3; // 玩家排名数据
-    string team_name = 4; // 团队名称（若当前玩家不属于任何队伍则为空）
-    uint32 team_id = 5; // 团队id
-  }
-  message PlayerData {
-    uint32 rank = 1; // 当前玩家排名
-    ContestTeamPlayerAccountData data = 2;
-    string team_name = 3; // 团队名称（若当前玩家不属于任何队伍则为空）
-    uint32 team_id = 4; // 团队id
-  }
-  Error error = 1;
-  uint32 total = 2; // 玩家总数
-  repeated SeasonTeamRank rank = 3; // 排行榜位次信息
-  PlayerData player_data = 4; // 当前玩家排名数据
-}
-
 message ReqSrvFetchContestTeamRank {
   uint32 unique_id = 1; // 赛事唯一id
-  uint32 season_id = 2; // 赛程id
-  uint32 limit = 3;
-  uint32 offset = 4;
-  uint32 account_id = 5;
-}
- 
-// 团队赛排行榜返回信息
-message ResSrvFetchContestTeamRank {
-  message ContestTeamRankResult {
-    uint32 rank = 1; // 团队名次
-    int32 total_point = 2; // 团队累计总分
-    uint32 total_game_count = 3; // 全队累计对局次数
-    uint32 member_count = 4; // 队员总数
-  }
-  message SeasonTeamRank {
-    uint32 team_id = 1; // 队伍id
-    string name = 2; // 队伍名称
-    ContestTeamRankResult result = 3; // 队伍排名数据
-  }
-  Error error = 1;
-  uint32 total = 2; // 当前队伍总数
-  repeated SeasonTeamRank rank = 3; // 排行榜总数据
-  SeasonTeamRank team_rank = 4; // 玩家所在队伍数据（玩家无归属时该字段为空）
+  uint32 limit = 2;
+  uint32 offset = 3;
+  uint32 account_id = 4;
 }
 
-// 队伍明细请求数据
 message ReqSrvFetchContestTeamMember {
   uint32 unique_id = 1; // 赛事唯一id
-  uint32 season_id = 2; // 赛程id
-  uint32 team_id = 3; // 队伍id
-  uint32 offset = 4;
-  uint32 limit = 5;
-  uint32 account_id = 6;
+  uint32 team_id = 2; // 队伍id
+  uint32 offset = 3;
+  uint32 limit = 4;
+  uint32 account_id = 5;
 }
- 
-// 队伍明细返回数据
-message ResSrvFetchContestTeamMember {
-  message ContestTeamMember {
-    uint32 account_id = 1; // 玩家id
-    uint32 total_game_count = 3; // 玩家对局总数
-    int32 total_score = 4; // 玩家分数
-    string nickname = 5; // 玩家昵称
-  }
-  Error error = 1;
-  repeated ContestTeamMember members = 2; // 玩家列表按分数排序
+
+message ReqSrvFetchContestTeamPlayerRank {
+  uint32 unique_id = 1; // 赛事唯一id
+  uint32 offset = 2;
+  uint32 limit = 3;
+  uint32 account_id = 4;
 }
 
 // 协议：获取赛事列表
@@ -1454,6 +1389,11 @@ message ResServerFetchVoteActivity {
 
   Error error = 1;
   repeated VoteResult vote_result = 2;
+}
+
+message ReqSrvFetchVoteActivity {
+  uint32 activity_id = 1;
+  uint32 use_cache = 2;
 }
 
 message ReqUpdateVoteActivity {

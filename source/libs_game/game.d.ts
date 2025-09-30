@@ -21,7 +21,7 @@ declare type Class<T> = new (...args: any[]) => T;
 declare type LoadURL = string | Laya.ILoadURL | (string | Readonly<Laya.ILoadURL>)[];
 
 declare const $gameMgr: IGameManager;
-declare const $netMgr: INetManager & { reqs: IReqMethod };
+declare const $netMgr: INetManager;
 declare const $userData: UserData.IUserData;
 declare const $cfgMgr: IConfigManager;
 declare const $loadMgr: ILoadManager;

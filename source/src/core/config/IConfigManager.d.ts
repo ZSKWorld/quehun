@@ -25,6 +25,7 @@ declare interface IConfigManager {
 	readonly match_shilian: ITable_MatchShilian;
 	readonly misc_function: ITable_MiscFunction;
 	readonly outfit_config: ITable_OutfitConfig;
+	readonly quest_crew: ITable_QuestCrew;
 	readonly rank_introduce: ITable_RankIntroduce;
 	readonly season: ITable_Season;
 	readonly shops: ITable_Shops;

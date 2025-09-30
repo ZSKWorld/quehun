@@ -267,6 +267,10 @@ message BlobActivity {
   // repeated lq.SimulationV2Data simulation_v2_activity = 19;
 
   repeated lq.ActivityProgressRewardData progress_reward_activity = 20;
+
+  repeated lq.ActivityQuestCrewData quest_crew_activity = 21;
+
+  repeated lq.ActivityShootData shoot_activity = 22; // 射击活动数据
 }
 
 message BlobAmuletActivity {

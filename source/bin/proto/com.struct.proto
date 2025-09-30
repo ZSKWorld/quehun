@@ -30,6 +30,26 @@ message ResCommon {
   Error error = 1;
 }
 
+message StringDirty {
+  bool dirty = 1;
+  string value = 2;
+}
+
+message StringArrayDirty {
+  bool dirty = 1;
+  repeated string value = 2;
+}
+
+message UInt32ArrayDirty {
+  bool dirty = 1;
+  repeated uint32 value = 2;
+}
+
+message UInt32Dirty {
+  bool dirty = 1;
+  uint32 value = 2;
+}
+
 // 账号更新数据
 message ResAccountUpdate {
   Error error = 1;
@@ -322,12 +342,22 @@ message AccountUpdate {
   BadgeUpdate badge = 19;
 }
 
+message ContestGameMetaData {
+  message ContestTypeZoneData {
+    uint32 zone = 1;
+    uint32 contest_type = 2;
+  }
+  repeated ContestTypeZoneData type_list = 1; // 对于不同地区来说 赛事类别，热门赛事 官方赛事 普通赛事
+  uint32 rank_type = 2; // 赛季类型 0-个人赛 1-团队赛
+}
 
-
+// 对局信息，在 2509 版本之前只有三种id，contest_info 与 contest_uid 绑定出现
+// contest_info 主要用于大会室团队战客户端判断是否需要对队名进行屏蔽字处理
 message GameMetaData {
   uint32 room_id = 1; //友人房的房间id，不要被骗了！
   uint32 mode_id = 2; //模式id
   uint32 contest_uid = 3;
+  ContestGameMetaData contest_info = 4; // 大会室信息，只有 contest_uid 有值时才会有值，202509版本上线之前也都没值
 }
 
 // 玩家正在进行的对局信息
@@ -493,8 +523,35 @@ message GameDetailRule {
   // 娱乐规则
   uint32 yongchang_mode = 70;               // 咏唱之战模式，默认0：不开启，1：开启
   uint32 hunzhiyiji_mode = 71;              // 魂之一击模式，默认0：不开启，1：开启
-  uint32 wanxiangxiuluo_mode = 72;         // 万象修罗模式，默认0：不开启，1：开启
+  uint32 wanxiangxiuluo_mode = 72;          // 万象修罗模式，默认0：不开启，1：开启
   uint32 beishuizhizhan_mode = 73;          // 背水之战，默认0：不开启，1：开启
+
+  // 娱乐模式开关（注意：有些可能会存在组合模式，即一个玩法需要多个模式）
+  // 2025/7/30 新增
+  // 主要目的是将所有娱乐模式全都变成一个枚举列表，这样之后的牌谱服务不需要每次都重新编译代码和调整逻辑
+  // 原先老的字段依然是有效的，这里分为2种牌谱模式，1. 旧模式，2. 新模式
+  //  - 旧模式：只包含旧字段，按照之前的方式处理
+  //  - 新模式：只包含新字段，按照新字段处理
+  // 枚举列表：
+  //  - GuYi = 1, // 古役模式
+  //  - Dora3 = 2, // dora3模式
+  //  - BeginOpen = 3, // 配牌open模式
+  //  - JiuChao = 4, // 鹫巢模式
+  //  - MuYu = 5, // 龙之目玉
+  //  - OpenHand = 6, // 友人房公开手牌
+  //  - XueZhanDaoDi = 7, // 血战到底
+  //  - HuanSanZhang = 8, // 换三张（换三张模式不是一个单独的模式，是和其他模式复合的）
+  //  - ChuanMa = 9, // 川麻
+  //  - RevealDiscard = 10, // 暗牌模式
+  //  - FieldSpell = 11, // 环境魔法卡模式，默认0：不开启，5*5*5种模式缩写为3个[1, 5]拼成的int值，eg:121代表冲锋、倒计时、通货膨胀
+  //  - ZhanXing = 12, // 占星模式
+  //  - TianMing = 13, // 天命之战模式
+  //  - YongChang = 14, // 咏唱之战模式
+  //  - HunZhiYiJi = 15, // 魂之一击模式
+  //  - WanXiangXiuLuo = 16, // 万象修罗模式
+  //  - BeiShuiZhiZhan = 17, // 背水之战
+  //  - XiaKeShang = 18, // 下克上玩法
+  repeated uint32 amusement_switches = 74;
 }
 
 // 房间信息
@@ -927,6 +984,8 @@ message AccountActivityUpdate {
   repeated lq.ActivityStoryData story_data = 14;
   repeated lq.ActivityChooseUpData choose_up_data = 15;
   repeated lq.SimulationV2Data simulation_v2_data = 16;
+  repeated lq.ActivityQuestCrewChanges quest_crew_data = 17;
+  repeated lq.ActivityShootData shoot_data = 18;
 }
 
 message ActivityCombiningWorkbench {
@@ -1028,6 +1087,7 @@ message ActivityVillageData {
   uint32 round = 7; // 总回合数
 }
 
+// 在当日5点以后的，count有效，不然就是默认值(一般为0)
 message TimeCounterData {
   uint32 count = 1;
   uint32 update_time = 2;
@@ -1310,6 +1370,66 @@ message ActivityProgressRewardData {
   repeated uint32 rewarded_progresses = 2;
 }
 
+message QCMember {
+  uint32 member_id = 1;
+  TimeCounterData consumed_sta = 2; // 已使用体力值，需要根据 update_time 进行判定
+}
+
+message ActivityQuestCrewEffectResult {
+  message QCQuestResultChange {
+    uint32 from = 1;
+    uint32 to = 2;
+  }
+  QCQuestResultChange result_change = 1; // 修改委托结果
+
+  message QCQuestConsumeChange {
+    uint32 member_id = 1;
+    uint32 from = 2;
+    uint32 to = 3;
+  }
+  repeated QCQuestConsumeChange consumed_change = 2;
+
+  message QCItemReward {
+    repeated ExecuteReward execute_reward = 1;
+  }
+  QCItemReward reward = 3;
+}
+
+message QCQuest {
+  uint32 quest_id = 1;
+  uint32 finished = 2;
+  uint32 finished_time = 3;
+}
+
+message ActivityQuestCrewData {
+  uint32 activity_id = 1;
+
+  repeated QCMember members = 2; // 已有干员列表
+
+  repeated QCQuest quest_board = 3; // 委托看板任务列表
+
+  repeated uint32 market_board = 4; // 人才中心角色列表
+}
+
+message ActivityQuestCrewChanges {
+  uint32 activity_id = 1;
+
+  message QCMemberArrayDirty {
+    bool dirty = 1;
+    repeated QCMember value = 2;
+  }
+
+  QCMemberArrayDirty members = 2;
+
+  message QCQuestArrayDirty {
+    bool dirty = 1;
+    repeated QCQuest value = 2;
+  }
+  QCQuestArrayDirty quest_board = 3;
+
+  UInt32ArrayDirty market_board = 4;
+}
+
 message ActivityChooseUpData {
   uint32 activity_id = 1;
   uint32 chest_id = 2;
@@ -1580,6 +1700,11 @@ message ShopInfo {
   ZHPShop zhp = 1; // 杂货铺
   repeated BuyRecord buy_records = 2; // 玩家已经购买的货物次数（有数量限制的货物限定，非杂货铺）
   uint32 last_refresh_time = 3; // 上次刷新时间
+  message SelectedPackageBuyRecord {
+    uint32 package_id = 1; // 当前商品归属礼包id
+    repeated BuyRecord buy_records = 2;
+  }
+  repeated SelectedPackageBuyRecord selected_package_records = 4; // 自选礼包购买的货物记录
 }
 
 message ChangeNicknameRecord {
@@ -1699,7 +1824,7 @@ message CustomizedContestBase {
   string public_notice = 11; // 对外公告
   uint32 check_state = 12;
   string checking_name = 13;
-  uint32 season_type = 14;
+  uint32 rank_type = 14;
   bool show_team_rank = 15;
 }
 
@@ -1745,7 +1870,7 @@ message CustomizedContestDetail {
   uint32 signup_end_time = 18;
   uint32 signup_type = 19; // 报名类型 1 - 关闭报名 2 - 自动报名 3 - 开启报名
   uint32 auto_match = 20; // 0=非自动匹配 1=自动匹配
-  uint32 season_type = 21; // 赛季模式 0：个人赛 1：团队赛
+  uint32 rank_type = 21; // 赛季模式 0：个人赛 1：团队赛
   bool show_team_rank = 22; // 是否公开团队排名
 }
 
@@ -2779,4 +2904,38 @@ message SimulationActionData {
     uint32 seat = 1;
   }
   ActionDealTileData deal_tile = 6;
+}
+message ActivityShootValueChange {
+  message Uint32ValueDirty {
+    uint32 value = 1;
+    uint32 dirty = 2;
+  }
+  Uint32ValueDirty level = 1; // 当前关卡脏数据
+
+  ActivityShootEnemyInfoDirty enemies = 2; // 当前敌人情况脏数据
+
+  message RewardArrayDirty {
+    repeated uint32 reward_ids = 1;
+    uint32 dirty = 2;
+  }
+  RewardArrayDirty rewarded_ids = 3; // 当前已获得奖励情况脏数据
+}
+
+// 敌人信息脏数据类，只传信息有更新的敌人
+message ActivityShootEnemyInfoDirty {
+  uint32 dirty = 1;
+  repeated ActivityShootEnemyInfo enemies = 2; // 当敌人hp降到0时,表示敌人被打败，可以移除
+}
+
+message ActivityShootData {
+  uint32 activity_id = 1;
+  uint32 level = 2; // 当前关卡数
+  repeated ActivityShootEnemyInfo enemies = 3; // 敌人信息
+  repeated uint32 rewarded_ids = 4; // 奖励获取进度，已经获得过的reward_id
+}
+
+message ActivityShootEnemyInfo {
+  uint32 group_id = 1; // 对应敌人组id
+  uint32 enemy_id = 2;
+  uint32 hp = 3;
 }

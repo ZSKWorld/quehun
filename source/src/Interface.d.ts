@@ -17,6 +17,8 @@ declare interface IGameManager {
     get payChannelId(): number;
     /** 上报客户端类型 */
     get reportClientType(): string;
+    /** 重复登陆 */
+    get multiLogin(): boolean;
     init(): Promise<void>;
     showConfirm(msg: string): Promise<boolean>;
 }

@@ -138,40 +138,31 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 	private sendLogin() {
 		const { _loginInfo } = this;
 		if (_loginInfo.loginType == ELoginType.Account) {
-			if (!_loginInfo.access_token)
-				this.reqLogin();
-			else
-				this.reqOauth2Check();
+			if (!_loginInfo.access_token) {
+				$netMgr.requests.login({
+					account: _loginInfo.account,
+					password: $gameUtil.HmacSHA256(_loginInfo.password),
+					reconnect: false,
+					device: $gameMgr.deviceInfo,
+					random_key: $gameMgr.deviceId,
+					client_version: {
+						resource: $gameMgr.version,
+						package: "",
+					},
+					gen_access_token: true,
+					currency_platforms: $gameMgr.currency,
+					type: 0,
+					client_version_string: $gameMgr.clientVersion,
+					tag: $gameMgr.reportClientType,
+					version: 0,
+				});
+			} else {
+				$netMgr.requests.oauth2Check({
+					type: _loginInfo.loginType,
+					access_token: _loginInfo.access_token
+				});
+			}
 		}
-	}
-
-	private reqLogin() {
-		const { _loginInfo } = this;
-		$netMgr.requests.login({
-			account: _loginInfo.account,
-			password: $gameUtil.HmacSHA256(_loginInfo.password),
-			reconnect: false,
-			device: $gameMgr.deviceInfo,
-			random_key: $gameMgr.deviceId,
-			client_version: {
-				resource: $gameMgr.version,
-				package: "",
-			},
-			gen_access_token: true,
-			currency_platforms: $gameMgr.currency,
-			type: 0,
-			client_version_string: $gameMgr.clientVersion,
-			tag: $gameMgr.reportClientType,
-			version: 0,
-		});
-	}
-
-	private reqOauth2Check() {
-		const { _loginInfo } = this;
-		$netMgr.requests.oauth2Check({
-			type: _loginInfo.loginType,
-			access_token: _loginInfo.access_token
-		});
 	}
 
 	private reqOauth2Login() {
@@ -192,5 +183,20 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 			client_version_string: $gameMgr.clientVersion,
 			tag: $gameMgr.reportClientType
 		});
+	}
+
+	@InterestMessage(EMessageID.login)
+	private resLogin(res: IResLogin) {
+
+	}
+
+	@InterestMessage(EMessageID.oauth2Check)
+	private resOauth2Check(res: IResOauth2Check) {
+
+	}
+
+	@InterestMessage(EMessageID.oauth2Login)
+	private resOauth2Login(res: IResLogin) {
+
 	}
 }

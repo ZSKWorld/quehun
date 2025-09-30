@@ -1,10 +1,9 @@
-import { TimeUtil } from "./TimeUtil";
 
 
-export class GameUtil implements IGameUtil{
+export class GameUtil implements IGameUtil {
 
     createUUID() {
-        let d = TimeUtil.milliSecond();
+        let d = $timeUtil.milliSecond;
         const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
             const r = (d + Math.random() * 16) % 16 | 0;
             d = Math.floor(d / 16);

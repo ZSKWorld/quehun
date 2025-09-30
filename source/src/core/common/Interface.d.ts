@@ -62,6 +62,15 @@ declare interface IGameUtil {
     HmacSHA256(msg: string): string;
 }
 
+declare interface ITimeUtil {
+    get milliSecond(): number;
+    get second(): number;
+    setServerDelta(delta: number): void;
+    milliSecond2YMDHMS(milliSecond: number): string;
+    timeFormat(seconds: number, keepHour: boolean = true): string;
+    timeFormatChinese(seconds: number): string;
+}
+
 declare enum ELocalDataKey {
     /** 自动登录 */
     AutoLogin = "LocalDataKey_AutoLogin",
@@ -69,6 +78,8 @@ declare enum ELocalDataKey {
     LastLoginData = "LocalDataKey_LastLoginData",
     /** 设备id */
     DeviceId = "LocalDataKey_DeviceId",
+    /** 重复登陆 */
+    MultiLogin = "LocalDataKey_MultiLogin",
 }
 
 declare interface ILocalDataManager {

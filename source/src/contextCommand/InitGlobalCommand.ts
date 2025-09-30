@@ -2,6 +2,7 @@ import { LoadManager } from "../core/common/manager/LoadManager";
 import { LocalDataManager } from "../core/common/manager/LocalDataManager";
 import { SkeletonManager } from "../core/common/manager/SkeletonManager";
 import { GameUtil } from "../core/common/utils/GameUtil";
+import { TimeUtil } from "../core/common/utils/TimeUtil";
 import { ConfigManager } from "../core/config/ConfigManager";
 import { Command } from "../core/mvc/controller/Command";
 import { Facade } from "../core/mvc/Facade";
@@ -18,6 +19,7 @@ import { SceneManager } from "../scene/SceneManager";
 export class InitGlobalCommand extends Command {
     override execute(notifyName: string, data?: any) {
         windowImmit("$facade", Facade.Inst);
+        windowImmit("$timeUtil", new TimeUtil());
         windowImmit("$uiMgr", new UIManager());
         windowImmit("$pbMgr", new PbManager());
         windowImmit("$netMgr", new NetManager());

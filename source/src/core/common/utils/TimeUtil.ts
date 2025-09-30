@@ -1,19 +1,24 @@
-export class TimeUtil {
-    private static _date = new Date();
-    static milliSecond() {
-        return Date.now();
+export class TimeUtil implements ITimeUtil {
+    private _date = new Date();
+    private _serverDelta: number = 0;
+    get milliSecond() {
+        return Date.now() + this._serverDelta;
     }
 
-    static second() {
-        return Math.floor(Date.now() / 1000);
+    get second() {
+        return Math.floor(this.milliSecond / 1000);
     }
 
-    static milliSecond2YMDHMS(milliSecond: number) {
+    setServerDelta(delta: number) {
+        this._serverDelta = delta;
+    }
+
+    milliSecond2YMDHMS(milliSecond: number) {
         this._date.setTime(milliSecond);
         return this._date.toLocaleString();
     }
 
-    static timeFormat(seconds: number, keepHour: boolean = true) {
+    timeFormat(seconds: number, keepHour: boolean = true) {
         const hours = Math.floor(seconds / 3600);
         const mins = Math.floor((seconds - hours * 3600) / 60);
         const secs = seconds - hours * 3600 - mins * 60;
@@ -28,7 +33,7 @@ export class TimeUtil {
             return "00:" + secsStr;
     }
 
-    static timeFormatChinese(seconds: number) {
+    timeFormatChinese(seconds: number) {
         const hours = Math.floor(seconds / 3600);
         const mins = Math.floor((seconds - hours * 3600) / 60);
         const secs = seconds - hours * 3600 - mins * 60;

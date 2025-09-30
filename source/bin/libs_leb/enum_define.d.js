@@ -3,7 +3,10 @@ ELocalDataKey = {
     AutoLogin: "LocalDataKey_AutoLogin",
     /** 上次登录账号 */
     LastLoginData: "LocalDataKey_LastLoginData",
+    /** 设备id */
     DeviceId: "LocalDataKey_DeviceId",
+    /** 重复登陆 */
+    MultiLogin: "LocalDataKey_MultiLogin",
 }
 
 /** 页面类型 */

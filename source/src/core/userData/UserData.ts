@@ -41,7 +41,7 @@ export class UserData extends BaseData implements UserData.IUserData {
     badge: IAccountUpdate_BadgeUpdate;
 
     @InterestMessage(EMessageID.login)
-    private loginUpdate(data: IResLogin) {
+    private resLogin(data: IResLogin) {
         if (!data || data.error) return;
         this.account.update(data.account);
         this.game_info = this.decode(data.game_info);
@@ -55,7 +55,7 @@ export class UserData extends BaseData implements UserData.IUserData {
     }
 
     @InterestMessage(ENotify.NotifyAccountUpdate)
-    private update(data: IAccountUpdate) {
+    private notifyAccountUpdate(data: IAccountUpdate) {
         if (!data) return;
         this.character.update(data);
         this.activity.update(data);

@@ -68,13 +68,24 @@ export class GameManager implements IGameManager {
         if (type) device.model_number = type;
         return device;
     }
+    get multiLogin() {
+        const stime = $localDataMgr.get<number>(ELocalDataKey.MultiLogin);
+        if (!stime) return false;
+        Logger.error($timeUtil.second, stime + 1.5, $timeUtil.second + 1800);
+        return $timeUtil.second < stime + 1.5 && stime < $timeUtil.second + 1800;
+    }
 
     async init() {
+        Laya.timer.loop(1000, this, this.setMultiLoginTime);
         const version = await $loadMgr.fetch("https://game.maj-soul.com/1/version.json", "json", null, { ignoreCache: true });
         this._version = version;
     }
 
     showConfirm(msg: string) {
         return Promise.resolve(confirm(msg));
+    }
+
+    private setMultiLoginTime() {
+        $localDataMgr.set(ELocalDataKey.MultiLogin, $timeUtil.second);
     }
 }

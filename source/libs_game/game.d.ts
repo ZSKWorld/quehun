@@ -34,6 +34,7 @@ declare const $pbMgr: IPbManager;
 declare const $localDataMgr: ILocalDataManager;
 declare const $gameUtil: IGameUtil;
 declare const $redDotMgr: IRedDotManager;
+declare const $timeUtil: ITimeUtil;
 
 /** 注入全局变量 */
 declare function windowImmit(name: string, obj: any): void;

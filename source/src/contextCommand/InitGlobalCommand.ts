@@ -20,10 +20,10 @@ export class InitGlobalCommand extends Command {
         windowImmit("$facade", Facade.Inst);
         windowImmit("$uiMgr", new UIManager());
         windowImmit("$pbMgr", new PbManager());
+        windowImmit("$netMgr", new NetManager());
         windowImmit("$userData", new UserData());
         windowImmit("$gameUtil", new GameUtil());
         windowImmit("$tipMgr", new TipManager());
-        windowImmit("$netMgr", new NetManager());
         windowImmit("$loadMgr", new LoadManager());
         windowImmit("$gameMgr", new GameManager());
         windowImmit("$cfgMgr", new ConfigManager());

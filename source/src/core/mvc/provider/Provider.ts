@@ -3,16 +3,8 @@ import { SingletonExtend } from "../../common/Singleton";
 export class Provider extends SingletonExtend<Provider, Laya.EventDispatcher>(Laya.EventDispatcher) {
 
     interestNotify(caller: any) {
-        this.interest(caller, "__notifyMap");
-    }
-
-    interestMessage(caller: any) {
-        this.interest(caller, "__messageMap");
-    }
-
-    private interest(caller: any, mapName: string) {
         if (!caller) return;
-        const eventList = caller[mapName];
+        const eventList = caller["__notifyMap"];
         if (!eventList) return;
         for (const eventName in eventList) {
             const callbackList = eventList[eventName];

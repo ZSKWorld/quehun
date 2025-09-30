@@ -1,4 +1,4 @@
-import { BaseData } from "./MessageData";
+import { BaseData } from "./BaseData";
 
 export class Character extends BaseData implements UserData.ICharacter {
     /** 主角色id */

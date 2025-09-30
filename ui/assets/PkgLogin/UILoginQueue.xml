@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0ejdu67plni2" designImageAlpha="0">
+  <displayList>
+    <component id="n0_6eqp" name="n0" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" pkg="vx9zwser" xy="570,305" size="805,469"/>
+    <component id="n1_6eqp" name="quit" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="868,643" size="209,78">
+      <Button title="退出排队" titleColor="#6d2e3a" titleFontSize="38"/>
+    </component>
+    <text id="n2_6eqp" name="n2" xy="777,373" pivot="0.5,0.5" size="394,42" fontSize="30" color="#cacac8" text="当前服务器繁忙，正在排队中"/>
+    <text id="n3_6eqp" name="n3" xy="715,423" pivot="1,0" size="154,42" fontSize="30" color="#cacac8" text="队列位置："/>
+    <text id="n4_6eqp" name="n4" xy="975,423" pivot="1,0" size="154,42" fontSize="30" color="#cacac8" text="预计时间："/>
+    <text id="n5_6eqp" name="n5" xy="1171,423" size="64,42" fontSize="30" color="#cacac8" text="分钟"/>
+    <text id="n6_6eqp" name="pos" xy="860,423" size="80,42" fontSize="30" color="#ffc9a0" text="9999"/>
+    <text id="n7_6eqp" name="time" xy="1121,423" pivot="0.5,0.5" size="42,42" fontSize="30" color="#ffc9a0" text="99"/>
+  </displayList>
+</component>

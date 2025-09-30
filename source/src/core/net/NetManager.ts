@@ -1,9 +1,8 @@
 import { ENotifyConst } from "../common/NotifyConst";
-import { Observer } from "../mvc/provider/Observer";
 import { EServiceType } from "./NetDefine";
 import { ESocketEvent, WebSocket } from "./WebSocket";
 
-export class NetManager extends Observer implements INetManager {
+export class NetManager extends Laya.EventDispatcher implements INetManager {
     private _ipConfig: IIPConfig;
     private _gateway: string;
     private _routes: IRouteInfo[];
@@ -29,12 +28,12 @@ export class NetManager extends Observer implements INetManager {
             reqs[key] = data => socket.send(EMessageID[key], data);
         }
 
-        this._lobbySocket.on(ESocketEvent.Connecting, this, () => this.dispatch(ENotifyConst.LobbyConnecting));
-        this._lobbySocket.on(ESocketEvent.Reconnecting, this, () => this.dispatch(ENotifyConst.LobbyReconnecting));
-        this._lobbySocket.on(ESocketEvent.Connected, this, () => this.dispatch(ENotifyConst.LobbyConnected));
-        this._lobbySocket.on(ESocketEvent.Closed, this, () => this.dispatch(ENotifyConst.LobbyClosed));
-        this._lobbySocket.on(ESocketEvent.Response, this, this.dispatch);
-        this._lobbySocket.on(ESocketEvent.Notify, this, this.dispatch);
+        this._lobbySocket.on(ESocketEvent.Connecting, this, () => $facade.dispatch(ENotifyConst.LobbyConnecting));
+        this._lobbySocket.on(ESocketEvent.Reconnecting, this, () => $facade.dispatch(ENotifyConst.LobbyReconnecting));
+        this._lobbySocket.on(ESocketEvent.Connected, this, () => $facade.dispatch(ENotifyConst.LobbyConnected));
+        this._lobbySocket.on(ESocketEvent.Closed, this, () => $facade.dispatch(ENotifyConst.LobbyClosed));
+        this._lobbySocket.on(ESocketEvent.Response, this, this.event);
+        this._lobbySocket.on(ESocketEvent.Notify, this, this.event);
         this._lobbySocket.connect();
     }
 
@@ -46,6 +45,26 @@ export class NetManager extends Observer implements INetManager {
 
     connectOb() { this._obSocket?.connect(); }
     closeOb() { this._obSocket?.close(); }
+
+    interestMessage(caller: any) {
+        if (!caller) return;
+        const eventList = caller["__messageMap"];
+        if (!eventList) return;
+        for (const eventName in eventList) {
+            const callbackList = eventList[eventName];
+            for (const k in callbackList) {
+                const callback: any = callbackList[k];
+                const param = callback[eventName];
+                const once = param ? param.__once : false;
+                const args = param ? param.__args : null;
+                if (once) {
+                    this.once(eventName, caller, callback, args);
+                } else {
+                    this.on(eventName, caller, callback, args);
+                }
+            }
+        }
+    }
 
     private async fetchRoutes() {
         const gateways = this._ipConfig.ip[0].gateways;

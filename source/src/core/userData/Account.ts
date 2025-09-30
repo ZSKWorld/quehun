@@ -1,4 +1,4 @@
-import { BaseData } from "./MessageData";
+import { BaseData } from "./BaseData";
 
 export class Account extends BaseData implements UserData.IAccount {
     account_id: number = 0;

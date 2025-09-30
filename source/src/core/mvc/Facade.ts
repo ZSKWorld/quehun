@@ -91,9 +91,5 @@ export class Facade extends Singleton<Facade>() implements IFacade {
     interestNotify(caller: any) {
         this._provider.interestNotify(caller);
     }
-
-    interestMessage(caller: any) {
-        this._provider.interestMessage(caller);
-    }
     //#endregion
 }

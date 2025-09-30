@@ -19,6 +19,8 @@ import { UIEntranceView } from "../core/ui/view/PkgEntrance/view/UIEntranceView"
 import { UIEntranceMediator } from "../core/ui/view/PkgEntrance/mediator/UIEntranceMediator";
 import { UILoginView } from "../core/ui/view/PkgLogin/view/UILoginView";
 import { UILoginMediator } from "../core/ui/view/PkgLogin/mediator/UILoginMediator";
+import { UILoginQueueView } from "../core/ui/view/PkgLogin/view/UILoginQueueView";
+import { UILoginQueueMediator } from "../core/ui/view/PkgLogin/mediator/UILoginQueueMediator";
 import { Command } from "../core/mvc/controller/Command";
 
 export class InitViewCommand extends Command {
@@ -44,5 +46,6 @@ export class InitViewCommand extends Command {
 		register(EViewID.UIConfirmSmallView, EViewType.UI, UIConfirmSmallView, UIConfirmSmallMediator);
 		register(EViewID.UIEntranceView, EViewType.UI, UIEntranceView, UIEntranceMediator);
 		register(EViewID.UILoginView, EViewType.UI, UILoginView, UILoginMediator);
+		register(EViewID.UILoginQueueView, EViewType.UI, UILoginQueueView, UILoginQueueMediator);
     }
 }

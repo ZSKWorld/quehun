@@ -1,4 +1,4 @@
-import { BaseData } from "./MessageData";
+import { BaseData } from "./BaseData";
 
 export class Activity extends BaseData implements UserData.IActivity {
     activity: IAccountActivityUpdate;

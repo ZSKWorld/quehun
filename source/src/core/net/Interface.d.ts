@@ -39,7 +39,7 @@ declare interface IRouteInfo {
     state: ERouteState,
 }
 
-declare interface INetManager {
+declare interface INetManager extends Laya.EventDispatcher {
     get requests(): IReqMethod;
     init(): Promise<void>;
     connectLobby(): void;
@@ -48,4 +48,5 @@ declare interface INetManager {
     closeGame(): void;
     connectOb(): void;
     closeOb(): void;
+    interestMessage(caller: any): void;
 }

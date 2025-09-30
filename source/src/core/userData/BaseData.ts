@@ -3,7 +3,7 @@ import { Observer } from "../mvc/provider/Observer";
 export class BaseData extends Observer {
     constructor() {
         super();
-        $facade.interestMessage(this);
+        $netMgr.interestMessage(this);
     }
 
     protected decode<T extends IProto>(data: T): ProtoObject<T> {

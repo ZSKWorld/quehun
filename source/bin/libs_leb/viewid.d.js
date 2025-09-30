@@ -14,5 +14,6 @@ EViewID = {
 	UIConfirmMiddleView: "UIConfirmMiddleView",
 	UIConfirmSmallView: "UIConfirmSmallView",
 	UIEntranceView: "UIEntranceView",
+	UILoginQueueView: "UILoginQueueView",
 	UILoginView: "UILoginView",
 }

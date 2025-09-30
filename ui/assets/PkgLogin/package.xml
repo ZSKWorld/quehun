@@ -53,6 +53,7 @@
     <image id="mde1b8a" name="img_933.png" path="/Texture/"/>
     <component id="nxdeb8b" name="BtnLogin.xml" path="/Component/UILogin/" exported="true"/>
     <component id="nxdeb8c" name="BtnHelp.xml" path="/Component/UILogin/" exported="true"/>
+    <component id="6eqpb8d" name="UILoginQueue.xml" path="/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

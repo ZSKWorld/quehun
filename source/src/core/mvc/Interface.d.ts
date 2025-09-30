@@ -145,5 +145,4 @@ declare interface IFacade {
     offAllCaller(caller: any): void;
     dispatch(eventName: string, data?: any): void;
     interestNotify(caller: any): void;
-    interestMessage(caller: any): void;
 }

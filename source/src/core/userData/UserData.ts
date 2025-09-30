@@ -1,7 +1,7 @@
 import { Account } from "./Account";
 import { Activity } from "./Activity";
+import { BaseData } from "./BaseData";
 import { Character } from "./Character";
-import { BaseData } from "./MessageData";
 
 export class UserData extends BaseData implements UserData.IUserData {
     /** 正在进行的游戏信息 */

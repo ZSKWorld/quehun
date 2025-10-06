@@ -2,7 +2,7 @@
 
 import UILoading from "./UILoading";
 import { UILoadingView } from "../../view/PkgCommon/view/UILoadingView";
-import PbLoading from "./PbLoading";
+import PbLoading1 from "./PbLoading1";
 import UIConfirmBig from "./UIConfirmBig";
 import { UIConfirmBigView } from "../../view/PkgCommon/view/UIConfirmBigView";
 import UIConfirmMiddle from "./UIConfirmMiddle";
@@ -19,7 +19,7 @@ import { BtnCheckRichTxtRightView } from "../../view/PkgCommon/view/btns/BtnChec
 export default class PkgCommonBinder {
 	public static bindAll(): void {
 		fgui.UIObjectFactory.setExtension(UILoading.url, UILoadingView);
-		fgui.UIObjectFactory.setExtension(PbLoading.url, PbLoading);
+		fgui.UIObjectFactory.setExtension(PbLoading1.url, PbLoading1);
 		fgui.UIObjectFactory.setExtension(UIConfirmBig.url, UIConfirmBigView);
 		fgui.UIObjectFactory.setExtension(UIConfirmMiddle.url, UIConfirmMiddleView);
 		fgui.UIObjectFactory.setExtension(UIConfirmSmall.url, UIConfirmSmallView);

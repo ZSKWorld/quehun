@@ -77,7 +77,7 @@
     <image id="ieavob89" name="img_75.png" path="/Texture/" exported="true"/>
     <image id="ieavob8a" name="img_811.png" path="/Texture/" exported="true"/>
     <component id="ieavob8b" name="UILoading.xml" path="/" exported="true"/>
-    <component id="ieavob8c" name="PbLoading.xml" path="/Component/PbBar/"/>
+    <component id="ieavob8c" name="PbLoading1.xml" path="/Component/PbBar/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

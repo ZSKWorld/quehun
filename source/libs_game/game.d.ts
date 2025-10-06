@@ -46,6 +46,7 @@ declare function $confirmSma(format: 0 | 1 | 2 | 3, title: string, content: stri
 declare function $richText(text: string = ""): IRichText;
 declare function $lang(id: number, ...args: any[]): string;
 declare function $netLang(id: number, ...args: any[]): string;
+declare function $langRes(url: string): string;
 declare function $showNetError(res: IError): void;
 
 /**

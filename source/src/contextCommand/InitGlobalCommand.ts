@@ -68,6 +68,10 @@ export class InitGlobalCommand extends Command {
             return s;
         });
 
+        windowImmit("$langRes", function (url: string) {
+            return "langRes/" + $gameMgr.language + "/" + url;
+        });
+
         windowImmit("$showNetError", function (error: IError) {
             if (!error) return;
             const code = error.code;

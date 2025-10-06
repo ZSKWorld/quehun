@@ -6,6 +6,7 @@ export class FGUIRepair {
 		this.fixGTextField();
 		this.fixGImage();
 		this.fixGComponent();
+		this.fixUIPackageUnload();
 	}
 
 
@@ -88,5 +89,41 @@ export class FGUIRepair {
 			}
 			this.setBounds(ax, ay, aw, ah);
 		}
+	}
+
+	private static fixUIPackageUnload() {
+		const prototype = fgui.UIPackage.prototype;
+		prototype.unloadAssets = function () {
+			var cnt = this._items.length;
+			for (var i = 0; i < cnt; i++) {
+				var pi = this._items[i];
+				if (pi.type == fgui.PackageItemType.Atlas) {
+					if (pi.texture)
+						Laya.loader.clearTextureRes(pi.texture.url);
+					else
+						Laya.loader.clearTextureRes(pi.file);
+				}
+			}
+		};
+		prototype.dispose = function () {
+			var cnt = this._items.length;
+			for (var i = 0; i < cnt; i++) {
+				var pi = this._items[i];
+				if (pi.type == fgui.PackageItemType.Atlas) {
+					if (pi.texture) {
+						pi.texture.destroy();
+						pi.texture = null;
+					} else
+						Laya.loader.clearRes(pi.file);
+				}
+				else if (pi.type == fgui.PackageItemType.Sound) {
+					// Laya.SoundManager.destroySound(pi.file);
+					Laya.SoundManager.stopSound(pi.file);
+				}
+				else if (pi.templet)
+					pi.templet.destroy();
+			}
+			Laya.loader.clearRes(this._resKey + "." + fgui.UIConfig.packageFileExtension);
+		};
 	}
 }

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="183,205" pivot="0.5,0.5" extention="Button" designImage="ui://ca43vz0ejdu67plngr" designImageOffsetX="-1735" designImageOffsetY="-904" designImageAlpha="0">
+  <displayList>
+    <loader id="n7_vwgm" name="icon" xy="0,45" size="183,160" url="ui://vith2b66vwgmd" fill="scaleFree"/>
+    <image id="n8_vwgm" name="n8" src="vwgmi" fileName="Texture/img_582.png" xy="23,27" pivot="0.538,0.667" size="13,30" rotation="-62"/>
+    <image id="n10_vwgm" name="n10" src="vwgmh" fileName="Texture/img_1332.png" xy="23,0" pivot="0.582,0.596" size="54,46"/>
+    <image id="n9_vwgm" name="n9" src="vwgmi" fileName="Texture/img_582.png" xy="75,25" pivot="0.5,0.5" size="10,20" rotation="33"/>
+  </displayList>
+  <Button downEffect="scale" downEffectValue="0.9"/>
+  <transition name="t0" options="4" autoPlay="true" autoPlayRepeat="-1">
+    <item time="0" type="Size" target="n10_vwgm" tween="true" startValue="54,46" endValue="70,62" duration="4" ease="Linear"/>
+    <item time="0" type="Size" target="n8_vwgm" tween="true" startValue="13,30" endValue="20,37" duration="6" ease="Linear"/>
+    <item time="0" type="Size" target="n9_vwgm" tween="true" startValue="10,20" endValue="18,28" duration="6" ease="Linear"/>
+    <item time="0" type="XY" target="n10_vwgm" tween="true" startValue="23,0.596" endValue="13,-14" duration="4" ease="Linear"/>
+    <item time="0" type="XY" target="n8_vwgm" tween="true" startValue="23,27" endValue="12,24" duration="6" ease="Linear"/>
+    <item time="0" type="XY" target="n9_vwgm" tween="true" startValue="75,25" endValue="71,20" duration="6" ease="Linear"/>
+    <item time="4" type="Size" target="n10_vwgm" tween="true" startValue="70,62" endValue="54,46" duration="8" ease="Linear"/>
+    <item time="4" type="XY" target="n10_vwgm" tween="true" startValue="13,-14" endValue="23,0.596" duration="8" ease="Linear"/>
+    <item time="6" type="Size" target="n8_vwgm" tween="true" startValue="20,37" endValue="13,30" duration="6" ease="Linear"/>
+    <item time="6" type="Size" target="n9_vwgm" tween="true" startValue="18,28" endValue="10,20" duration="6" ease="Linear"/>
+    <item time="6" type="XY" target="n8_vwgm" tween="true" startValue="12,24" endValue="23,27" duration="6" ease="Linear"/>
+    <item time="6" type="XY" target="n9_vwgm" tween="true" startValue="71,20" endValue="75,25" duration="6" ease="Linear"/>
+    <item time="24" type="Size" target="n10_vwgm" tween="true" startValue="54,46" endValue="55,47" duration="4" ease="Linear"/>
+    <item time="24" type="Size" target="n8_vwgm" tween="true" startValue="13,30" endValue="13,31" duration="6" ease="Linear"/>
+    <item time="24" type="Size" target="n9_vwgm" tween="true" startValue="10,20" endValue="11,21" duration="6" ease="Linear"/>
+    <item time="24" type="XY" target="n10_vwgm" tween="true" startValue="23,0.596" endValue="23,-2" duration="4" ease="Linear"/>
+    <item time="24" type="XY" target="n8_vwgm" tween="true" startValue="23,27" endValue="22,26" duration="6" ease="Linear"/>
+    <item time="24" type="XY" target="n9_vwgm" tween="true" startValue="75,25" endValue="75,24" duration="6" ease="Linear"/>
+    <item time="28" type="Size" target="n10_vwgm" tween="true" startValue="55,47" endValue="54,46" duration="8" ease="Linear"/>
+    <item time="28" type="XY" target="n10_vwgm" tween="true" startValue="23,-2" endValue="23,0.596" duration="8" ease="Linear"/>
+    <item time="30" type="Size" target="n8_vwgm" tween="true" startValue="13,31" endValue="13,30" duration="6" ease="Linear"/>
+    <item time="30" type="Size" target="n9_vwgm" tween="true" startValue="11,21" endValue="10,20" duration="6" ease="Linear"/>
+    <item time="30" type="XY" target="n8_vwgm" tween="true" startValue="22,26" endValue="23,27" duration="6" ease="Linear"/>
+    <item time="30" type="XY" target="n9_vwgm" tween="true" startValue="75,24" endValue="75,25" duration="6" ease="Linear"/>
+    <item time="48" type="Size" target="n10_vwgm" tween="true" startValue="54,46" endValue="55,47" duration="4" ease="Linear"/>
+    <item time="48" type="Size" target="n8_vwgm" tween="true" startValue="13,30" endValue="13,30" duration="6" ease="Linear"/>
+    <item time="48" type="Size" target="n9_vwgm" tween="true" startValue="10,20" endValue="11,21" duration="6" ease="Linear"/>
+    <item time="48" type="XY" target="n10_vwgm" tween="true" startValue="23,0.596" endValue="23,-2" duration="4" ease="Linear"/>
+    <item time="48" type="XY" target="n8_vwgm" tween="true" startValue="23,27" endValue="22,26" duration="6" ease="Linear"/>
+    <item time="48" type="XY" target="n9_vwgm" tween="true" startValue="75,25" endValue="75,24" duration="6" ease="Linear"/>
+    <item time="52" type="Size" target="n10_vwgm" tween="true" startValue="55,47" endValue="54,46" duration="8" ease="Linear"/>
+    <item time="52" type="XY" target="n10_vwgm" tween="true" startValue="23,-2" endValue="23,0.596" duration="8" ease="Linear"/>
+    <item time="54" type="Size" target="n8_vwgm" tween="true" startValue="13,30" endValue="13,30" duration="6" ease="Linear"/>
+    <item time="54" type="Size" target="n9_vwgm" tween="true" startValue="11,21" endValue="10,20" duration="6" ease="Linear"/>
+    <item time="54" type="XY" target="n8_vwgm" tween="true" startValue="22,26" endValue="23,27" duration="6" ease="Linear"/>
+    <item time="54" type="XY" target="n9_vwgm" tween="true" startValue="75,24" endValue="75,25" duration="6" ease="Linear"/>
+    <item time="72" type="Size" target="n10_vwgm" tween="true" startValue="54,46" endValue="55,47" duration="4" ease="Linear"/>
+    <item time="72" type="Size" target="n8_vwgm" tween="true" startValue="13,30" endValue="13,30" duration="6" ease="Linear"/>
+    <item time="72" type="Size" target="n9_vwgm" tween="true" startValue="10,20" endValue="11,21" duration="6" ease="Linear"/>
+    <item time="72" type="XY" target="n10_vwgm" tween="true" startValue="23,0.596" endValue="23,-2" duration="4" ease="Linear"/>
+    <item time="72" type="XY" target="n8_vwgm" tween="true" startValue="23,27" endValue="22,26" duration="6" ease="Linear"/>
+    <item time="72" type="XY" target="n9_vwgm" tween="true" startValue="75,25" endValue="75,24" duration="6" ease="Linear"/>
+    <item time="76" type="Size" target="n10_vwgm" tween="true" startValue="55,47" endValue="54,46" duration="8" ease="Linear"/>
+    <item time="76" type="XY" target="n10_vwgm" tween="true" startValue="23,-2" endValue="23,0.596" duration="8" ease="Linear"/>
+    <item time="78" type="Size" target="n8_vwgm" tween="true" startValue="13,30" endValue="13,30" duration="6" ease="Linear"/>
+    <item time="78" type="Size" target="n9_vwgm" tween="true" startValue="11,21" endValue="10,20" duration="6" ease="Linear"/>
+    <item time="78" type="XY" target="n8_vwgm" tween="true" startValue="22,26" endValue="23,27" duration="6" ease="Linear"/>
+    <item time="78" type="XY" target="n9_vwgm" tween="true" startValue="75,24" endValue="75,25" duration="6" ease="Linear"/>
+    <item time="96" type="Size" target="n10_vwgm" tween="true" startValue="54,46" endValue="55,47" duration="4" ease="Linear"/>
+    <item time="96" type="Size" target="n8_vwgm" tween="true" startValue="13,30" endValue="13,30" duration="6" ease="Linear"/>
+    <item time="96" type="Size" target="n9_vwgm" tween="true" startValue="10,20" endValue="11,21" duration="6" ease="Linear"/>
+    <item time="96" type="XY" target="n10_vwgm" tween="true" startValue="23,0.596" endValue="23,-2" duration="4" ease="Linear"/>
+    <item time="96" type="XY" target="n8_vwgm" tween="true" startValue="23,27" endValue="22,26" duration="6" ease="Linear"/>
+    <item time="96" type="XY" target="n9_vwgm" tween="true" startValue="75,25" endValue="75,24" duration="6" ease="Linear"/>
+    <item time="100" type="Size" target="n10_vwgm" tween="true" startValue="55,47" endValue="54,46" duration="8" ease="Linear"/>
+    <item time="100" type="XY" target="n10_vwgm" tween="true" startValue="23,-2" endValue="23,0.596" duration="8" ease="Linear"/>
+    <item time="102" type="Size" target="n8_vwgm" tween="true" startValue="13,30" endValue="13,30" duration="6" ease="Linear"/>
+    <item time="102" type="Size" target="n9_vwgm" tween="true" startValue="11,21" endValue="10,20" duration="6" ease="Linear"/>
+    <item time="102" type="XY" target="n8_vwgm" tween="true" startValue="22,26" endValue="23,27" duration="6" ease="Linear"/>
+    <item time="102" type="XY" target="n9_vwgm" tween="true" startValue="75,24" endValue="75,25" duration="6" ease="Linear"/>
+    <item time="120" type="Size" target="n10_vwgm" tween="true" startValue="54,46" endValue="55,47" duration="4" ease="Linear"/>
+    <item time="120" type="Size" target="n8_vwgm" tween="true" startValue="13,30" endValue="13,30" duration="6" ease="Linear"/>
+    <item time="120" type="Size" target="n9_vwgm" tween="true" startValue="10,20" endValue="11,21" duration="6" ease="Linear"/>
+    <item time="120" type="XY" target="n10_vwgm" tween="true" startValue="23,0.596" endValue="23,-2" duration="4" ease="Linear"/>
+    <item time="120" type="XY" target="n8_vwgm" tween="true" startValue="23,27" endValue="22,26" duration="6" ease="Linear"/>
+    <item time="120" type="XY" target="n9_vwgm" tween="true" startValue="75,25" endValue="75,24" duration="6" ease="Linear"/>
+    <item time="124" type="Size" target="n10_vwgm" tween="true" startValue="55,47" endValue="54,46" duration="8" ease="Linear"/>
+    <item time="124" type="XY" target="n10_vwgm" tween="true" startValue="23,-2" endValue="23,0.596" duration="8" ease="Linear"/>
+    <item time="126" type="Size" target="n8_vwgm" tween="true" startValue="13,30" endValue="13,30" duration="6" ease="Linear"/>
+    <item time="126" type="Size" target="n9_vwgm" tween="true" startValue="11,21" endValue="10,20" duration="6" ease="Linear"/>
+    <item time="126" type="XY" target="n8_vwgm" tween="true" startValue="22,26" endValue="23,27" duration="6" ease="Linear"/>
+    <item time="126" type="XY" target="n9_vwgm" tween="true" startValue="75,24" endValue="75,25" duration="6" ease="Linear"/>
+    <item time="144" type="Size" target="n10_vwgm" tween="true" startValue="54,46" endValue="55,47" duration="4" ease="Linear"/>
+    <item time="144" type="Size" target="n8_vwgm" tween="true" startValue="13,30" endValue="13,30" duration="6" ease="Linear"/>
+    <item time="144" type="Size" target="n9_vwgm" tween="true" startValue="10,20" endValue="11,21" duration="6" ease="Linear"/>
+    <item time="144" type="XY" target="n10_vwgm" tween="true" startValue="23,0.596" endValue="23,-2" duration="4" ease="Linear"/>
+    <item time="144" type="XY" target="n8_vwgm" tween="true" startValue="23,27" endValue="22,26" duration="6" ease="Linear"/>
+    <item time="144" type="XY" target="n9_vwgm" tween="true" startValue="75,25" endValue="75,24" duration="6" ease="Linear"/>
+    <item time="148" type="Size" target="n10_vwgm" tween="true" startValue="55,47" endValue="54,46" duration="8" ease="Linear"/>
+    <item time="148" type="XY" target="n10_vwgm" tween="true" startValue="23,-2" endValue="23,0.596" duration="8" ease="Linear"/>
+    <item time="150" type="Size" target="n8_vwgm" tween="true" startValue="13,30" endValue="13,30" duration="6" ease="Linear"/>
+    <item time="150" type="Size" target="n9_vwgm" tween="true" startValue="11,21" endValue="10,20" duration="6" ease="Linear"/>
+    <item time="150" type="XY" target="n8_vwgm" tween="true" startValue="22,26" endValue="23,27" duration="6" ease="Linear"/>
+    <item time="150" type="XY" target="n9_vwgm" tween="true" startValue="75,24" endValue="75,25" duration="6" ease="Linear"/>
+    <item time="168" type="Size" target="n10_vwgm" value="54,46"/>
+    <item time="168" type="Size" target="n8_vwgm" value="13,30"/>
+    <item time="168" type="Size" target="n9_vwgm" value="10,20"/>
+    <item time="168" type="XY" target="n10_vwgm" value="23,0.596"/>
+    <item time="168" type="XY" target="n8_vwgm" value="23,27"/>
+    <item time="168" type="XY" target="n9_vwgm" value="75,25"/>
+  </transition>
+</component>

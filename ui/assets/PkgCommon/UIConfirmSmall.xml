@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0ejdu67plnjm" designImageOffsetX="-239" designImageOffsetY="-44" designImageAlpha="0" designImageLayer="1">
-  <controller name="format" pages="6,,7,,8,,9," selected="0"/>
+  <controller name="format" pages="6,,7,,8,,9," selected="3"/>
   <displayList>
     <component id="n0_j0dd" name="n0" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" xy="960,540" pivot="0.5,0.5" anchor="true" size="838,512"/>
     <image id="n2_j0dd" name="n2" src="j0ddob77" fileName="Texture/img_374.png" xy="614,400" size="308,4" group="n18_j0dd"/>
@@ -18,7 +18,7 @@
     </component>
     <component id="n15_j0dd" name="cancel" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="979,644" size="312,92" group="n16_j0dd">
       <gearDisplay controller="format" pages="6,9"/>
-      <Button title="确认" titleColor="#e5b673" titleFontSize="38" icon="ui://vx9zwserj0ddob70"/>
+      <Button title="取消" titleColor="#e5b673" titleFontSize="38" icon="ui://vx9zwserj0ddob70"/>
     </component>
     <group id="n16_j0dd" name="n16" xy="629,644" size="662,92" advanced="true" layout="hz" colGap="38" excludeInvisibles="true">
       <relation target="n0_j0dd" sidePair="center-center,bottom-bottom"/>
@@ -26,7 +26,7 @@
     <text id="n12_j0dd" name="title" xy="868,322" pivot="0.5,0.5" size="184,60" fontSize="45" color="#edb26f" singleLine="true" text="举报昵称">
       <gearDisplay controller="format" pages="0,1,4,6"/>
     </text>
-    <text id="n13_j0dd" name="content" xy="611,424" size="704,206" fontSize="35" color="#ffffff" vAlign="middle" autoSize="none" text="当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交">
+    <text id="n13_j0dd" name="content" xy="611,403" size="704,206" fontSize="35" color="#ffffff" align="center" vAlign="middle" autoSize="none" text="bbbbb">
       <gearXY controller="format" pages="6,7,8,9" values="611,424|611,437|611,403|611,403"/>
     </text>
   </displayList>

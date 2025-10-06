@@ -22,7 +22,7 @@ declare type LoadURL = string | Laya.ILoadURL | (string | Readonly<Laya.ILoadURL
 
 declare const $gameMgr: IGameManager;
 declare const $netMgr: INetManager;
-declare const $userData: UserData.IUserData;
+declare const $userData: VO.IUserDataVO;
 declare const $cfgMgr: IConfigManager;
 declare const $loadMgr: ILoadManager;
 declare const $skeletonMgr: ISkeletonManager;
@@ -39,15 +39,14 @@ declare const $timeUtil: ITimeUtil;
 /** 注入全局变量 */
 declare function windowImmit(name: string, obj: any): void;
 
-/**
- * 确认弹窗
- * @param title
- * @param msg
- * @param cancel 默认true
- */
-declare function $confirm(title: string, msg: string, cancel?: boolean): Promise<boolean>;
+declare function $confirmBig(format: 0 | 1 | 2 | 3, title: string, content: string): Promise<boolean>;
+declare function $confirmMid(format: 0 | 1, title: string, content: string): Promise<boolean>;
+declare function $confirmSma(format: 0 | 1 | 2 | 3, title: string, content: string): Promise<boolean>;
+
 declare function $richText(text: string = ""): IRichText;
-declare function $localizeTxt(id: number, ...args: any[]): string;
+declare function $lang(id: number, ...args: any[]): string;
+declare function $netLang(id: number, ...args: any[]): string;
+declare function $showNetError(res: IError): void;
 
 /**
  * 扩展类字段，用于在外部定义的字段在内部可读，扩展的字段或方法不能在构造期间调用

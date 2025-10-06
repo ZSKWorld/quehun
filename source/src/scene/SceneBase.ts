@@ -1,5 +1,6 @@
+import { ENotifyConst } from "../core/common/NotifyConst";
 import { Observer } from "../core/mvc/provider/Observer";
-import { ESceneEvent, ESceneType } from "./SceneDefine";
+import { ESceneType } from "./SceneDefine";
 
 const enum EResGroupType {
 	Normal,
@@ -20,7 +21,7 @@ export abstract class LogicSceneBase<T> extends Observer implements IScene<T> {
 	private _progresses: number[] = [];
 
 	load() {
-		this.dispatch(ESceneEvent.OnLoadBegin, this.type);
+		this.dispatch(ENotifyConst.OnSceneLoadBegin, this.type);
 		const resArr = this.getResGroup(EResGroupType.All);
 		const [uiRes, skeletonRes, otherRes] = resArr;
 		let loadCnt = this.setLoadProgres(resArr.length);
@@ -41,7 +42,7 @@ export abstract class LogicSceneBase<T> extends Observer implements IScene<T> {
 			}) : null,
 		]).then(
 			() => {
-				$uiMgr.closeAllView();
+				return $timeUtil.waitTime(250);
 			},
 			() => {
 				return Promise.reject<void>();
@@ -50,24 +51,22 @@ export abstract class LogicSceneBase<T> extends Observer implements IScene<T> {
 			Laya.Tween.killAll(this);
 			this._progressHandlers.forEach(v => v.recover());
 			this._progressHandlers.length = 0;
-			this.dispatch(ESceneEvent.OnLoadEnd, this.type);
+			this.dispatch(ENotifyConst.OnSceneLoadEnd, this.type);
+			$uiMgr.closeAllView();
 		});
 	}
 
 	enter(data: T) {
 		this.data = data;
 		this.onEnter();
-		this.dispatch(ESceneEvent.OnEnterScene, this.type);
+		this.dispatch(ENotifyConst.OnEnterScene, this.type);
 	}
 
 	exit() {
-		this.onExit();
-		if (this.loadViewId) {
-			$uiMgr.closeView(this.loadViewId);
-		}
 		this.views.forEach(v => $uiMgr.destroyView(v));
 		this.clearRes(EResGroupType.Normal);
-		this.dispatch(ESceneEvent.OnExitScene, this.type);
+		this.onExit();
+		this.dispatch(ENotifyConst.OnExitScene, this.type);
 	}
 
 	protected openView(viewId: EViewID, data?: any) {
@@ -82,7 +81,7 @@ export abstract class LogicSceneBase<T> extends Observer implements IScene<T> {
 		const [uiRes, skeletonRes, otherRes] = this.getResGroup(type);
 		uiRes.forEach(v => {
 			const res = fgui.UIPackage.getById(v);
-			res && res.unloadAssets();
+			res && fgui.UIPackage.removePackage(v);
 		});
 		skeletonRes.forEach(v => $skeletonMgr.dispose(v));
 		otherRes.forEach(v => Laya.loader.clearRes(v));
@@ -118,9 +117,9 @@ export abstract class LogicSceneBase<T> extends Observer implements IScene<T> {
 		const _progresses = this._progresses;
 		progress != null && (_progresses[index] = progress);
 		let loadPro = _progresses.reduce((pv, cv, i) => pv + cv, 0);
-		if (this.loadViewId) loadPro *= _progresses[0] / (_progresses.length - 1);
+		if (this.loadViewId) loadPro *= _progresses[0] / _progresses.length;
 		else loadPro /= _progresses.length;
-		this.dispatch(ESceneEvent.OnLoadProgress, loadPro);
+		this.dispatch(ENotifyConst.OnSceneLoadProgress, loadPro);
 	}
 
 	/** 获取资源数组 */

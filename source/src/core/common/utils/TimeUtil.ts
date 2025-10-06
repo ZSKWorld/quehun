@@ -39,4 +39,10 @@ export class TimeUtil implements ITimeUtil {
         const secs = seconds - hours * 3600 - mins * 60;
         return (hours ? `${ hours }小时` : "") + ((hours || mins) ? `${ mins }分钟` : "") + `${ secs }秒`;
     }
+
+    waitTime(milSec: number) {
+        return new Promise<void>(resolve => {
+            Laya.timer.once(milSec, null, resolve);
+        });
+    }
 }

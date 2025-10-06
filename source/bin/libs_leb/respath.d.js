@@ -872,34 +872,22 @@ ResPath = {
 	},
 
 	ETexturePath: {
-		PNG_Aaaa: "res/texture/aaaa.png",
-		PNG_Image_1232: "res/texture/image_1232.png",
-		PNG_Image_2007: "res/texture/image_2007.png",
-		PNG_Image_597: "res/texture/image_597.png",
-		PNG_Image_6401: "res/texture/image_6401.png",
-		PNG_Image_645: "res/texture/image_645.png",
 		JPG_Background: "res/texture/background.jpg",
 	},
 
 	EPkgName: {
-		PkgBattle: "PkgBattle",
 		PkgCommon: "PkgCommon",
 		PkgDesign: "PkgDesign",
 		PkgEntrance: "PkgEntrance",
-		PkgLittleGame: "PkgLittleGame",
 		PkgLogin: "PkgLogin",
 		PkgMain: "PkgMain",
-		PkgTest: "PkgTest",
 	},
 
 	EPkgPath: {
-		PkgBattle: "res/ui/PkgBattle",
 		PkgCommon: "res/ui/PkgCommon",
 		PkgDesign: "res/ui/PkgDesign",
 		PkgEntrance: "res/ui/PkgEntrance",
-		PkgLittleGame: "res/ui/PkgLittleGame",
 		PkgLogin: "res/ui/PkgLogin",
 		PkgMain: "res/ui/PkgMain",
-		PkgTest: "res/ui/PkgTest",
 	},
 }

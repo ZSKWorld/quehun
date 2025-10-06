@@ -13,12 +13,11 @@ interface IConfirmView extends IView {
 export abstract class ConfirmBaseMediator<V extends IConfirmView = IConfirmView, D extends IUIConfirmData = IUIConfirmData> extends MediatorBase<V, D> {
     protected _datas: IUIConfirmData[] = [];
     override onEnable() {
-        Logger.error("onEnable");
         this.refreshView();
     }
 
     override onDisable() {
-        Logger.error("onDisable");
+
     }
 
     override onOpenAni() { return UIUtil.popAlphaIn(this.view); }

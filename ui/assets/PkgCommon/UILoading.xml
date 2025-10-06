@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1920,1080" bgColor="#000000">
+  <controller name="state" pages="0,,1," selected="0"/>
+  <displayList>
+    <graph id="n10_vwgm" name="n10" xy="0,0" size="1920,1080" type="rect" lineSize="0" fillColor="#ff000000"/>
+    <image id="n0_ieav" name="n0" src="ieavob7r" fileName="Texture/img_335.png" xy="945,736" pivot="0.5,0.5" size="30,30"/>
+    <image id="n1_ieav" name="n1" src="ieavob7u" fileName="Texture/img_265.png" xy="337,736" pivot="0.5,0.5" size="600,30"/>
+    <image id="n2_ieav" name="n2" src="ieavob7u" fileName="Texture/img_265.png" xy="983,736" pivot="0.5,0.5" size="600,30" scale="-1,1"/>
+    <text id="n3_ieav" name="tip" xy="883,778" pivot="0.5,0.5" size="154,42" fontSize="30" color="#b3d7dd" text="缩卵毁一生"/>
+    <component id="n4_ieav" name="progress" src="ieavob8c" fileName="Component/PbBar/PbLoading.xml" xy="959,1001" pivot="0.5,0.5" anchor="true" scale="1.2,1.2">
+      <ProgressBar value="50" max="100"/>
+    </component>
+    <loader id="n5_ieav" name="tipIcon" xy="859,933" pivot="0.5,0.5" size="202,29" scale="1.2,1.2" url="ui://vx9zwserieavob81" autoSize="true"/>
+    <loader id="n7_ieav" name="mid" xy="757,108" size="409,436" url="ui://ca43vz0eieav7plof2" autoSize="true"/>
+    <loader id="n6_ieav" name="left" xy="518,126" size="342,518" url="ui://ca43vz0eieav7ploeg" autoSize="true"/>
+    <loader id="n8_ieav" name="right" xy="1004,208" size="380,436" url="ui://ca43vz0eieav7plody" autoSize="true"/>
+    <loader id="n9_ieav" name="desk" xy="779,345" size="357,325" url="ui://ca43vz0eieav7ploee" autoSize="true"/>
+  </displayList>
+</component>

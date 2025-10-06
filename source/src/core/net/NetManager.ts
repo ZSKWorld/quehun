@@ -32,7 +32,12 @@ export class NetManager extends Laya.EventDispatcher implements INetManager {
         this._lobbySocket.on(ESocketEvent.Reconnecting, this, () => $facade.dispatch(ENotifyConst.LobbyReconnecting));
         this._lobbySocket.on(ESocketEvent.Connected, this, () => $facade.dispatch(ENotifyConst.LobbyConnected));
         this._lobbySocket.on(ESocketEvent.Closed, this, () => $facade.dispatch(ENotifyConst.LobbyClosed));
-        this._lobbySocket.on(ESocketEvent.Response, this, this.event);
+        this._lobbySocket.on(ESocketEvent.Response, this, (method: string, res: IResponse) => {
+            if (res.error && res.error.code == -1) {
+                $confirmSma(2, "", $lang(2061));
+            } else
+                this.event(method, res);
+        });
         this._lobbySocket.on(ESocketEvent.Notify, this, this.event);
         this._lobbySocket.connect();
     }

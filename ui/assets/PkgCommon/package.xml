@@ -44,6 +44,40 @@
     <component id="j0ddob7i" name="LabelConfirm.xml" path="/Component/Component/"/>
     <component id="j0ddob7j" name="UIConfirmMiddle.xml" path="/" exported="true"/>
     <component id="j0ddob7k" name="UIConfirmSmall.xml" path="/" exported="true"/>
+    <image id="mde1b7v" name="img_124.png" path="/Texture/" exported="true"/>
+    <image id="mde1b8a" name="img_933.png" path="/Texture/" exported="true"/>
+    <image id="mde1b7c" name="img_491.png" path="/Texture/" exported="true"/>
+    <image id="mde1b7d" name="img_492.png" path="/Texture/" exported="true"/>
+    <image id="mde1b7n" name="img_2455.png" path="/Texture/" exported="true"/>
+    <image id="mde1b71" name="img_2800.png" path="/Texture/" exported="true"/>
+    <image id="ieavob7l" name="img_112.png" path="/Texture/" exported="true"/>
+    <image id="ieavob7m" name="img_74.png" path="/Texture/" exported="true"/>
+    <image id="ieavob7n" name="img_717.png" path="/Texture/" exported="true"/>
+    <image id="ieavob7o" name="img_4138.png" path="/Texture/" exported="true"/>
+    <image id="ieavob7p" name="img_3921.png" path="/Texture/" exported="true"/>
+    <image id="ieavob7q" name="img_3920.png" path="/Texture/" exported="true" scale="9grid" scale9grid="10,10,453,282"/>
+    <image id="ieavob7r" name="img_335.png" path="/Texture/" exported="true"/>
+    <image id="ieavob7s" name="img_2840.png" path="/Texture/" exported="true"/>
+    <image id="ieavob7t" name="img_2839.png" path="/Texture/" exported="true"/>
+    <image id="ieavob7u" name="img_265.png" path="/Texture/" exported="true" scale="9grid" scale9grid="7,0,4,20"/>
+    <image id="ieavob7v" name="img_2421.png" path="/Texture/" exported="true"/>
+    <image id="ieavob7w" name="img_2420.png" path="/Texture/" exported="true"/>
+    <image id="ieavob7x" name="img_2295.png" path="/Texture/" exported="true"/>
+    <image id="ieavob7y" name="img_1793.png" path="/Texture/" exported="true"/>
+    <image id="ieavob7z" name="img_175.png" path="/Texture/" exported="true"/>
+    <image id="ieavob80" name="img_174.png" path="/Texture/" exported="true"/>
+    <image id="ieavob81" name="img_1719.png" path="/Texture/" exported="true"/>
+    <image id="ieavob82" name="img_1718.png" path="/Texture/" exported="true"/>
+    <image id="ieavob83" name="img_1717.png" path="/Texture/" exported="true"/>
+    <image id="ieavob84" name="img_1714.png" path="/Texture/" exported="true"/>
+    <image id="ieavob85" name="img_1531.png" path="/Texture/" exported="true"/>
+    <image id="ieavob86" name="img_1515.png" path="/Texture/" exported="true"/>
+    <image id="ieavob87" name="img_1453.png" path="/Texture/" exported="true"/>
+    <image id="ieavob88" name="img_1285.png" path="/Texture/" exported="true"/>
+    <image id="ieavob89" name="img_75.png" path="/Texture/" exported="true"/>
+    <image id="ieavob8a" name="img_811.png" path="/Texture/" exported="true"/>
+    <component id="ieavob8b" name="UILoading.xml" path="/" exported="true"/>
+    <component id="ieavob8c" name="PbLoading.xml" path="/Component/PbBar/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

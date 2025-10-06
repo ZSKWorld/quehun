@@ -16,7 +16,12 @@ declare interface IScene<T = any> extends IObserver {
 }
 
 declare interface ISceneManager {
-    registerScene(scene: IScene): void;
-    registerSceneView(type: SceneType, view: string): void;
-    enterScene(type: SceneType, data?: any): void;
+    registerScene(type: string, scene: Class<IScene>): void;
+    registerView(type: string, view: string): void;
+    /**
+     * 
+     * @param type ESceneType
+     * @param data 
+     */
+    enterScene(type: string, data?: any): void;
 }

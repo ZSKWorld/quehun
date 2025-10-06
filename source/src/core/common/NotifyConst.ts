@@ -24,5 +24,19 @@ export const enum ENotifyConst {
 	OBClosed = "NotifyConst_OBClosed",
 	//#endregion
 
+	/**绑定手机号完成 */
+	BindPhoneCompleted = "NotifyConst_BindPhoneCompleted",
 
+	//#region logicScene相关
+	/** 场景开始加载 */
+	OnSceneLoadBegin = "NotifyConst_OnSceneLoadBegin",
+	/** 场景加载进度 */
+	OnSceneLoadProgress = "NotifyConst_OnSceneLoadProgress",
+	/** 场景加载结束 */
+	OnSceneLoadEnd = "NotifyConst_OnSceneLoadEnd",
+	/** 进入场景 */
+	OnEnterScene = "NotifyConst_OnEnterScene",
+	/** 退出场景 */
+	OnExitScene = "NotifyConst_OnExitScene",
+	//#endregion
 }

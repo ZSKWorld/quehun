@@ -1,3 +1,4 @@
+import { ESceneType } from "../../../../../scene/SceneDefine";
 import { MediatorBase } from "../../../../mvc/view/MediatorBase";
 import { ELoginType } from "../event/UILoginEvent";
 import { EUILoginMsg, UILoginView } from "../view/UILoginView";
@@ -122,52 +123,101 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 	private toLogin() {
 		const { view, _loginInfo } = this;
 		view.ctrl_page.selectedIndex = 1;
-		$localDataMgr.set(ELocalDataKey.AutoLogin, 1);
-		$localDataMgr.set<ILoginInfo>(ELocalDataKey.LastLoginData, _loginInfo);
 		Laya.timer.once(1000, this, this.sendLogin);
 	}
 
 	private cancelLogin() {
 		Laya.timer.clear(this, this.sendLogin);
 		this.view.ctrl_page.selectedIndex = 0;
+		this._loginInfo.access_token = "";
 		$localDataMgr.remove(ELocalDataKey.AutoLogin);
-		$netMgr.closeLobby();
-		Laya.timer.frameOnce(10, $netMgr, $netMgr.connectLobby);
 	}
 
 	private sendLogin() {
-		const { _loginInfo } = this;
+		const { view, _loginInfo } = this;
 		if (_loginInfo.loginType == ELoginType.Account) {
+			view.ctrl_page.selectedIndex = 2;
 			if (!_loginInfo.access_token) {
-				$netMgr.requests.login({
-					account: _loginInfo.account,
-					password: $gameUtil.HmacSHA256(_loginInfo.password),
-					reconnect: false,
-					device: $gameMgr.deviceInfo,
-					random_key: $gameMgr.deviceId,
-					client_version: {
-						resource: $gameMgr.version,
-						package: "",
-					},
-					gen_access_token: true,
-					currency_platforms: $gameMgr.currency,
-					type: 0,
-					client_version_string: $gameMgr.clientVersion,
-					tag: $gameMgr.reportClientType,
-					version: 0,
-				});
+				this.loginAccount();
 			} else {
-				$netMgr.requests.oauth2Check({
-					type: _loginInfo.loginType,
-					access_token: _loginInfo.access_token
-				});
+				this.loginToken();
 			}
+		} else {
+			this.cancelLogin();
 		}
 	}
 
-	private reqOauth2Login() {
+	private async loginAccount() {
+		const { view, _loginInfo } = this;
+		const res = await $netMgr.requests.login({
+			account: _loginInfo.account,
+			password: $gameUtil.HmacSHA256(_loginInfo.password),
+			reconnect: false,
+			device: $gameMgr.deviceInfo,
+			random_key: $gameMgr.deviceId,
+			client_version: {
+				resource: $gameMgr.version,
+				package: "",
+			},
+			gen_access_token: true,
+			currency_platforms: $gameMgr.currency,
+			type: 0,
+			client_version_string: $gameMgr.clientVersion,
+			tag: $gameMgr.reportClientType,
+			version: 0,
+		});
+		if (res.error) {
+			const code = res.error.code;
+			if (code == 156) {
+				//排队
+			} else if (code == 503) {
+				//账号待删除
+			} else {
+				$showNetError(res.error);
+			}
+			this.cancelLogin();
+			return;
+		}
+		//协议
+		if (res.access_token) {
+			_loginInfo.access_token = res.access_token;
+		}
+		this.afterLogin();
+	}
+
+	private async loginToken() {
 		const { _loginInfo } = this;
-		$netMgr.requests.oauth2Login({
+		const res = await $netMgr.requests.oauth2Check({
+			type: _loginInfo.loginType,
+			access_token: _loginInfo.access_token
+		});
+		if (res.error) {
+			$showNetError(res.error);
+			this.cancelLogin();
+			return;
+		}
+
+		if (!res.has_account) {
+			const res = await $netMgr.requests.oauth2Signup({
+				type: _loginInfo.loginType,
+				access_token: _loginInfo.access_token,
+				email: "",
+				advertise_str: "",
+				device: $gameMgr.deviceInfo,
+				client_version: {
+					resource: $gameMgr.version,
+					package: "",
+				},
+				client_version_string: $gameMgr.clientVersion,
+				tag: $gameMgr.reportClientType
+			});
+			if (res.error) {
+				$showNetError(res.error);
+				this.cancelLogin();
+				return;
+			}
+		}
+		const res2 = await $netMgr.requests.oauth2Login({
 			type: _loginInfo.loginType,
 			access_token: _loginInfo.access_token,
 			reconnect: false,
@@ -183,20 +233,62 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 			client_version_string: $gameMgr.clientVersion,
 			tag: $gameMgr.reportClientType
 		});
+		if (res2.error) {
+			const code = res2.error.code;
+			if (code == 156) {
+				//排队
+			} else if (code == 503) {
+				//账号待删除
+			} else {
+				$showNetError(res2.error);
+			}
+			this.cancelLogin();
+			return;
+		}
+		//协议
+		if (res2.access_token) {
+			_loginInfo.access_token = res2.access_token;
+		}
+		this.afterLogin();
 	}
 
-	@InterestMessage(EMessageID.login)
-	private resLogin(res: IResLogin) {
+	private async afterLogin() {
+		const { _loginInfo } = this;
+		$localDataMgr.set(ELocalDataKey.AutoLogin, 1);
+		$localDataMgr.set<ILoginInfo>(ELocalDataKey.LastLoginData, _loginInfo);
 
-	}
+		const account = $userData.account;
+		//绑定电话
+		// if ($gameMgr.clientType == 'chs' && !account.phone_verify) {
+		// 	UI_Bind_Phone1.Inst.show(true, Laya.Handler.create(this, () => {
+		// 		app.NetAgent.sendReq2Lobby('Lobby', 'fetchPhoneLoginBind', {}, (err, res) => {
+		// 			if (err || res['error']) {
+		// 				this.showError(err, res['error']);
+		// 			} else {
+		// 				if (res['phone_login'] == 0) {
+		// 					UI_Create_Phone_Account.Inst.show(Laya.Handler.create(this, () => {
+		// 						this.checkFrozenState();
+		// 					}));
+		// 				} else {
+		// 					UI_Canot_Create_Phone_Account.Inst.show(Laya.Handler.create(this, () => {
+		// 						this.checkFrozenState();
+		// 					}));
+		// 				}
+		// 			}
+		// 		});
+		// 	}));
+		// } else {
+		// 	this.checkFrozenState();
+		// }
 
-	@InterestMessage(EMessageID.oauth2Check)
-	private resOauth2Check(res: IResOauth2Check) {
-
-	}
-
-	@InterestMessage(EMessageID.oauth2Login)
-	private resOauth2Login(res: IResLogin) {
-
+		if (account.frozen_state) {
+			const res = await $netMgr.requests.fetchRefundOrder({});
+			if (res.error) {
+				$showNetError(res.error);
+				this.cancelLogin();
+				return;
+			}
+		}
+		$sceneMgr.enterScene(ESceneType.MainScene);
 	}
 }

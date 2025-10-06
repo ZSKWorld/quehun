@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="867,23" extention="ProgressBar">
+  <displayList>
+    <image id="n2_ieav" name="n2" src="ieavob7s" fileName="Texture/img_2840.png" xy="0,0" size="867,23"/>
+    <image id="n3_ieav" name="bar" src="ieavob7t" fileName="Texture/img_2839.png" xy="0,0" size="867,23" fillMethod="hz" fillAmount="50"/>
+    <image id="n4_ieav" name="block" src="ieavob84" fileName="Texture/img_1714.png" xy="433,12" pivot="0.5,0.5" anchor="true"/>
+    <text id="n5_ieav" name="title" xy="346,-5" pivot="1,0.5" size="55,33" fontSize="23" color="#191931" text="60%">
+      <relation target="n4_ieav" sidePair="right-right"/>
+    </text>
+  </displayList>
+  <ProgressBar/>
+  <transition name="t0" autoPlay="true" autoPlayRepeat="-1" frameRate="60">
+    <item time="0" type="Rotation" target="n4_ieav" tween="true" startValue="0" endValue="360" duration="120" ease="Linear"/>
+  </transition>
+</component>

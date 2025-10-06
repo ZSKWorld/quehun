@@ -114,17 +114,25 @@ const MemberTypeMap = {
     "fgui.GImage": "img_",
     "fgui.Controller": "ctrl_",
     "fgui.Transition": "trans_",
-    "component": "com_",
+    // "component":"com_",
+    "Button": "btn_",
+    "Label": "label_",
+    "ProgressBar": "pb_",
+    "ScrollBar": "sb_",
+    "Slider": "slider_",
+    "ComboBox": "cmb_",
 };
 function customMemberVarName(member) {
-    const { varName, type } = member;
+    var _a;
+    const { varName, type, res } = member;
     if (!MemberTypeMap[type]) {
-        if (member.res && MemberTypeMap[member.res.type]) {
-            return MemberTypeMap[member.res.type] + varName;
+        const extType = (_a = res === null || res === void 0 ? void 0 : res.GetAsset()) === null || _a === void 0 ? void 0 : _a.extension;
+        if (MemberTypeMap[extType]) {
+            return MemberTypeMap[extType] + varName;
         }
         else {
-            console.error("未知的类型：", varName);
-            return varName;
+            console.error("未知的类型：", varName, extType);
+            return "com_" + varName;
         }
     }
     return MemberTypeMap[type] + varName;

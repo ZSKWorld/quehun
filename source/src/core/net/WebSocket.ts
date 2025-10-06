@@ -180,7 +180,7 @@ export class WebSocket extends Laya.EventDispatcher {
     }
 
     private eventResponse(name: string, res: PartialAll<IResponse>, callback: (res: PartialAll<IResponse>) => void) {
-        callback(res);
         this.event(ESocketEvent.Response, [name, res]);
+        callback(res);
     }
 }

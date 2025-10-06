@@ -36,6 +36,6 @@ export class UILoginView extends ExtensionClass<IView, UILogin>(UILogin) impleme
 		itxt_password.text = password || "";
 		btn_loginByAccount.selected = loginAccountType == 0;
 		btn_loginBtnPhone.selected = loginAccountType == 1;
-		itxt_account.promptText = $localizeTxt(loginAccountType == 0 ? 3138 : 3132);
+		itxt_account.promptText = $lang(loginAccountType == 0 ? 3138 : 3132);
 	}
 }

@@ -9,18 +9,26 @@ import { BtnCheckRichTxtRightView } from "../core/ui/view/PkgCommon/view/btns/Bt
 import { BtnCheckRichTxtRightMediator } from "../core/ui/view/PkgCommon/mediator/btns/BtnCheckRichTxtRightMediator";
 import { BtnCheckTxtRightView } from "../core/ui/view/PkgCommon/view/btns/BtnCheckTxtRightView";
 import { BtnCheckTxtRightMediator } from "../core/ui/view/PkgCommon/mediator/btns/BtnCheckTxtRightMediator";
+import { BtnXunMiView } from "../core/ui/view/PkgMain/view/btns/BtnXunMiView";
+import { BtnXunMiMediator } from "../core/ui/view/PkgMain/mediator/btns/BtnXunMiMediator";
 import { UIConfirmBigView } from "../core/ui/view/PkgCommon/view/UIConfirmBigView";
 import { UIConfirmBigMediator } from "../core/ui/view/PkgCommon/mediator/UIConfirmBigMediator";
 import { UIConfirmMiddleView } from "../core/ui/view/PkgCommon/view/UIConfirmMiddleView";
 import { UIConfirmMiddleMediator } from "../core/ui/view/PkgCommon/mediator/UIConfirmMiddleMediator";
 import { UIConfirmSmallView } from "../core/ui/view/PkgCommon/view/UIConfirmSmallView";
 import { UIConfirmSmallMediator } from "../core/ui/view/PkgCommon/mediator/UIConfirmSmallMediator";
+import { UILoadingView } from "../core/ui/view/PkgCommon/view/UILoadingView";
+import { UILoadingMediator } from "../core/ui/view/PkgCommon/mediator/UILoadingMediator";
 import { UIEntranceView } from "../core/ui/view/PkgEntrance/view/UIEntranceView";
 import { UIEntranceMediator } from "../core/ui/view/PkgEntrance/mediator/UIEntranceMediator";
+import { UIBindPhoneView } from "../core/ui/view/PkgLogin/view/UIBindPhoneView";
+import { UIBindPhoneMediator } from "../core/ui/view/PkgLogin/mediator/UIBindPhoneMediator";
 import { UILoginView } from "../core/ui/view/PkgLogin/view/UILoginView";
 import { UILoginMediator } from "../core/ui/view/PkgLogin/mediator/UILoginMediator";
 import { UILoginQueueView } from "../core/ui/view/PkgLogin/view/UILoginQueueView";
 import { UILoginQueueMediator } from "../core/ui/view/PkgLogin/mediator/UILoginQueueMediator";
+import { UIMainView } from "../core/ui/view/PkgMain/view/UIMainView";
+import { UIMainMediator } from "../core/ui/view/PkgMain/mediator/UIMainMediator";
 import { Command } from "../core/mvc/controller/Command";
 
 export class InitViewCommand extends Command {
@@ -35,6 +43,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.BtnCheckView, EViewType.Button, BtnCheckView, BtnCheckMediator);
 		register(EViewID.BtnCheckRichTxtRightView, EViewType.Button, BtnCheckRichTxtRightView, BtnCheckRichTxtRightMediator);
 		register(EViewID.BtnCheckTxtRightView, EViewType.Button, BtnCheckTxtRightView, BtnCheckTxtRightMediator);
+		register(EViewID.BtnXunMiView, EViewType.Button, BtnXunMiView, BtnXunMiMediator);
 
 		//Renders
 
@@ -44,8 +53,11 @@ export class InitViewCommand extends Command {
 		register(EViewID.UIConfirmBigView, EViewType.UI, UIConfirmBigView, UIConfirmBigMediator);
 		register(EViewID.UIConfirmMiddleView, EViewType.UI, UIConfirmMiddleView, UIConfirmMiddleMediator);
 		register(EViewID.UIConfirmSmallView, EViewType.UI, UIConfirmSmallView, UIConfirmSmallMediator);
+		register(EViewID.UILoadingView, EViewType.UI, UILoadingView, UILoadingMediator);
 		register(EViewID.UIEntranceView, EViewType.UI, UIEntranceView, UIEntranceMediator);
+		register(EViewID.UIBindPhoneView, EViewType.UI, UIBindPhoneView, UIBindPhoneMediator);
 		register(EViewID.UILoginView, EViewType.UI, UILoginView, UILoginMediator);
 		register(EViewID.UILoginQueueView, EViewType.UI, UILoginQueueView, UILoginQueueMediator);
+		register(EViewID.UIMainView, EViewType.UI, UIMainView, UIMainMediator);
     }
 }

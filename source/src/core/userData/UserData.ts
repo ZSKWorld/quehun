@@ -1,9 +1,10 @@
-import { Account } from "./Account";
-import { Activity } from "./Activity";
-import { BaseData } from "./BaseData";
-import { Character } from "./Character";
+import { AccountVO } from "./AccountVO";
+import { ActivityVO } from "./ActivityVO";
+import { BaseVO } from "./BaseVO";
+import { CharacterVO } from "./CharacterVO";
+import { RechargeVO } from "./RechargeVO";
 
-export class UserData extends BaseData implements UserData.IUserData {
+export class UserData extends BaseVO implements VO.IUserDataVO {
     /** 正在进行的游戏信息 */
     game_info: IGameConnectInfo;
     /** 有未读公告 */
@@ -21,9 +22,10 @@ export class UserData extends BaseData implements UserData.IUserData {
     /** 该账户曾经领取过的奖励version值 */
     rewarded_version: number[];
 
-    account = new Account();
-    character = new Character();
-    activity = new Activity();
+    account = new AccountVO();
+    character = new CharacterVO();
+    activity = new ActivityVO();
+    recharge = new RechargeVO();
 
     numerical: IAccountUpdate_NumericalUpdate[];
     /** 背包 */

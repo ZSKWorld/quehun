@@ -1,5 +1,4 @@
 import { LogicSceneBase } from "../SceneBase";
-import { ESceneType } from "../SceneDefine";
 
 export interface ISceneLoginData {
 
@@ -7,7 +6,6 @@ export interface ISceneLoginData {
 
 /** 登录逻辑场景 */
 export class SceneLogin extends LogicSceneBase<ISceneLoginData> {
-    override readonly type = ESceneType.LoginScene;
     protected override getNormalResArray() {
         return [
             ResPath.EPkgPath.PkgLogin,
@@ -23,5 +21,10 @@ export class SceneLogin extends LogicSceneBase<ISceneLoginData> {
 
     protected override onEnter() {
         this.openView(EViewID.UILoginView);
+    }
+
+    protected override onExit() {
+        const res = fgui.UIPackage.getById(ResPath.EPkgPath.PkgEntrance);
+        res && fgui.UIPackage.removePackage(ResPath.EPkgPath.PkgEntrance);
     }
 }

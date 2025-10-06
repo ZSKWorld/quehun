@@ -34,7 +34,11 @@ export class InitGlobalCommand extends Command {
         windowImmit("$skeletonMgr", new SkeletonManager());
         windowImmit("$localDataMgr", new LocalDataManager());
 
-        windowImmit("$localizeTxt", function (id: number, ...args: any[]) {
+        this.registerConfirm("$confirmBig", EViewID.UIConfirmBigView);
+        this.registerConfirm("$confirmMid", EViewID.UIConfirmMiddleView);
+        this.registerConfirm("$confirmSma", EViewID.UIConfirmSmallView);
+
+        windowImmit("$lang", function (id: number, ...args: any[]) {
             const d_excel = $cfgMgr.str.str[id];
             let s = "";
             if (d_excel) {
@@ -49,23 +53,47 @@ export class InitGlobalCommand extends Command {
             return s;
         });
 
-        windowImmit("$confirm", function (title: string, msg: string, cancel = true) {
-            if (!fgui.UIPackage.getByName(ResPath.EPkgName.PkgCommon))
-                return $gameMgr.showConfirm(msg);
-            windowImmit("$confirm", (title: string, msg: string, cancel = true) => new Promise<boolean>(resolve => {
-                $uiMgr.openView(EViewID.UIConfirmView, {
-                    title,
-                    content: msg,
-                    cancel: cancel,
-                    onCancel: cancel ? Laya.Handler.create(null, resolve, [false]) : null,
-                    onConfirm: Laya.Handler.create(null, resolve, [true]),
-                });
-            }));
-            return $confirm(title, msg, cancel);
+        windowImmit("$netLang", function (id: number, ...args: any[]) {
+            const d_excel = $cfgMgr.info.error[id];
+            let s = "";
+            if (d_excel) {
+                s = d_excel[$gameMgr.language];
+                if (args) {
+                    for (let i = 0; i < args.length; i++) {
+                        const reg = new RegExp(`{${ i }}`, 'g');
+                        s = s.replace(reg, args[i]);
+                    }
+                }
+            }
+            return s;
         });
+
+        windowImmit("$showNetError", function (error: IError) {
+            if (!error) return;
+            const code = error.code;
+            const errStr = $netLang(code) || $lang(2068);
+            $confirmSma(2, "", errStr);
+        })
 
         windowImmit("$richText", function (text: string = "") {
             return Laya.Pool.createByClass(RichText).start(text);
+        });
+    }
+
+    private registerConfirm(name: string, viewId: EViewID) {
+        windowImmit(name, function (format: number, title: string, content: string) {
+            if (!fgui.UIPackage.getByName(ResPath.EPkgName.PkgCommon))
+                return $gameMgr.showConfirm(content);
+            windowImmit(name, (format: number, title: string, content: string) => new Promise<boolean>(resolve => {
+                $uiMgr.openView(viewId, {
+                    format,
+                    title,
+                    content,
+                    onConfirm: Laya.Handler.create(null, resolve, [true]),
+                    onCancel: Laya.Handler.create(null, resolve, [false]),
+                });
+            }));
+            return window[name](format, title, content);
         });
     }
 }

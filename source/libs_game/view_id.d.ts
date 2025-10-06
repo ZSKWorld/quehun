@@ -4,6 +4,7 @@ declare enum EViewID {
 	BtnCheckRichTxtRightView = "BtnCheckRichTxtRightView",
 	BtnCheckTxtRightView = "BtnCheckTxtRightView",
 	BtnCheckView = "BtnCheckView",
+	BtnXunMiView = "BtnXunMiView",
 
 	/**Renders */
 
@@ -13,7 +14,10 @@ declare enum EViewID {
 	UIConfirmBigView = "UIConfirmBigView",
 	UIConfirmMiddleView = "UIConfirmMiddleView",
 	UIConfirmSmallView = "UIConfirmSmallView",
+	UILoadingView = "UILoadingView",
 	UIEntranceView = "UIEntranceView",
+	UIBindPhoneView = "UIBindPhoneView",
 	UILoginQueueView = "UILoginQueueView",
 	UILoginView = "UILoginView",
+	UIMainView = "UIMainView",
 }

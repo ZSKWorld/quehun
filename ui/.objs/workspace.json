@@ -5,11 +5,12 @@
     "ui://vx9zwserj0ddob7e",
     "ui://vx9zwserj0ddob7j",
     "ui://vx9zwserj0ddob7k",
-    "ui://vs9845atjdu6b6x",
     "ui://vs9845at6eqpb8d",
-    "ui://vs9845atieavb8e",
     "ui://vx9zwserieavob8b",
-    "ui://vx9zwserieavob8c"
+    "ui://vx9zwservwgmob8d",
+    "ui://vx9zwserieavob8c",
+    "ui://vith2b66vwgm0",
+    "ui://vith2b66vwgmob8d"
   ],
   "packageGroup.mine": [
     "vx9zwser",
@@ -18,10 +19,10 @@
     "vith2b66"
   ],
   "libview.syncEditor": 1,
-  "test.device": "iPhone Xs Max",
+  "test.device": "iPhone 8 Plus",
   "canvasColor": 10066329,
   "auxline2": true,
-  "doc.activeDoc": "ui://vx9zwserieavob8c",
+  "doc.activeDoc": "ui://vx9zwserieavob8b",
   "libview.twoColumn": false,
   "libview.expandedNodes": [
     "vx9zwser",
@@ -29,9 +30,21 @@
     "vx9zwser",
     "/Component/",
     "vx9zwser",
-    "/Component/Component/",
+    "/Component/PbBar/",
     "vx9zwser",
-    "/Component/PbBar/"
+    "/Texture/",
+    "ca43vz0e",
+    "/",
+    "ca43vz0e",
+    "/11/",
+    "vs9845at",
+    "/",
+    "vith2b66",
+    "/",
+    "vith2b66",
+    "/Component/",
+    "vith2b66",
+    "/Texture/"
   ],
   "auxline1": true,
   "showGrid": false,

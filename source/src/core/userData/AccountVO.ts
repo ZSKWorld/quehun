@@ -53,4 +53,7 @@ export class AccountVO extends BaseVO implements VO.IAccountVO {
                 this[v.name] = this.decode(value);
         });
     }
+
+    isLoadingCG() { return this.loading_image.length > 0; }
+    getCGId() { return $mathUtil.randomInt(0, this.loading_image.length); }
 }

@@ -1,6 +1,7 @@
 import { LoadManager } from "../core/common/manager/LoadManager";
 import { LocalDataManager } from "../core/common/manager/LocalDataManager";
 import { SkeletonManager } from "../core/common/manager/SkeletonManager";
+import { MathUtil } from "../core/common/math/MathUtil";
 import { GameUtil } from "../core/common/utils/GameUtil";
 import { TimeUtil } from "../core/common/utils/TimeUtil";
 import { ConfigManager } from "../core/config/ConfigManager";
@@ -26,6 +27,7 @@ export class InitGlobalCommand extends Command {
         windowImmit("$userData", new UserData());
         windowImmit("$gameUtil", new GameUtil());
         windowImmit("$tipMgr", new TipManager());
+        windowImmit("$mathUtil", new MathUtil());
         windowImmit("$loadMgr", new LoadManager());
         windowImmit("$gameMgr", new GameManager());
         windowImmit("$cfgMgr", new ConfigManager());

@@ -55,6 +55,66 @@ declare interface ISkeletonManager {
     dispose(url: string): void;
 }
 
+declare interface IMathUtil {
+    readonly Radian: number;
+
+    /** 角度转弧度 */
+    angle2Radian(angle: number): number;
+
+    /** 弧度转角度 */
+    radian2Angle(radian: number): number;
+
+    /**数字转中文数字 */
+    chineseNum(num: number): string;
+
+    /**数字转组合数字 */
+    groupNumber(num: number, fixed: number = 2): string;
+
+    num2Letter(num: number, dp: number = 3): string;
+
+    letter2Num(str: string): number;
+
+    /**
+     * 返回min-max之间得随机整数
+     * @param min 最小值整数(包含)
+     * @param max 最大值整数(不包含)
+     * @returns
+     */
+    randomInt(min: number, max: number): number;
+
+    /**
+     * 返回min-max之间得随机数
+     * @param min 最小值(包含)
+     * @param max 最大值(不包含)
+     * @returns
+     */
+    randomFloat(min: number, max: number): number;
+
+    /**
+     * 数值限制
+     * @param value
+     * @param min
+     * @param max
+     * @returns
+     */
+    clamp(value: number, min: number, max: number): number;
+
+    /**
+     * 数值限制在0-1
+     * @param value
+     * @returns
+     */
+    clamp01(value: number): number;
+
+    /** x从0平滑过渡到1 */
+    smoothStep(x: number): number;
+
+    lerp(a: number, b: number, t: number): number;
+
+    /** 获取数字正负号 */
+    symbol(num: number): -1 | 0 | 1;
+}
+
 declare interface IGameUtil {
     createUUID(): string;
     /** 随机颜色字符串 */

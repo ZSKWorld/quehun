@@ -1,6 +1,7 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
 import PbLoading1 from "./PbLoading1";
+import PbLoading2 from "./PbLoading2";
 
 export default class UILoading extends fgui.GComponent {
 
@@ -12,6 +13,9 @@ export default class UILoading extends fgui.GComponent {
 	public loader_left: fgui.GLoader;
 	public loader_right: fgui.GLoader;
 	public loader_desk: fgui.GLoader;
+	public loader_cg: fgui.GLoader;
+	public loader_tipIcon2: fgui.GLoader;
+	public pb_progress2: PbLoading2;
 	public static url: string = "ui://vx9zwserieavob8b";
 
 	public static createInstance(): UILoading {
@@ -27,5 +31,8 @@ export default class UILoading extends fgui.GComponent {
 		this.loader_left = <fgui.GLoader>(this.getChildAt(8));
 		this.loader_right = <fgui.GLoader>(this.getChildAt(9));
 		this.loader_desk = <fgui.GLoader>(this.getChildAt(10));
+		this.loader_cg = <fgui.GLoader>(this.getChildAt(12));
+		this.loader_tipIcon2 = <fgui.GLoader>(this.getChildAt(14));
+		this.pb_progress2 = <PbLoading2>(this.getChildAt(15));
 	}
 }

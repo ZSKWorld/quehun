@@ -1,19 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="1920,1080" bgColor="#000000">
-  <controller name="state" pages="0,,1," selected="0"/>
+  <controller name="state" pages="0,,1," selected="1"/>
   <displayList>
     <graph id="n10_vwgm" name="n10" xy="0,0" size="1920,1080" type="rect" lineSize="0" fillColor="#ff000000"/>
-    <image id="n0_ieav" name="n0" src="ieavob7r" fileName="Texture/img_335.png" xy="945,736" pivot="0.5,0.5" size="30,30"/>
-    <image id="n1_ieav" name="n1" src="ieavob7u" fileName="Texture/img_265.png" xy="337,736" pivot="0.5,0.5" size="600,30"/>
-    <image id="n2_ieav" name="n2" src="ieavob7u" fileName="Texture/img_265.png" xy="983,736" pivot="0.5,0.5" size="600,30" scale="-1,1"/>
-    <text id="n3_ieav" name="tip" xy="883,778" pivot="0.5,0.5" size="154,42" fontSize="30" color="#b3d7dd" text="缩卵毁一生"/>
-    <component id="n4_ieav" name="progress" src="ieavob8c" fileName="Component/PbBar/PbLoading.xml" xy="959,1001" pivot="0.5,0.5" anchor="true" scale="1.2,1.2">
+    <image id="n0_ieav" name="n0" src="ieavob7r" fileName="Texture/img_335.png" xy="945,736" pivot="0.5,0.5" size="30,30" group="n11_vwgm"/>
+    <image id="n1_ieav" name="n1" src="ieavob7u" fileName="Texture/img_265.png" xy="337,736" pivot="0.5,0.5" size="600,30" group="n11_vwgm"/>
+    <image id="n2_ieav" name="n2" src="ieavob7u" fileName="Texture/img_265.png" xy="983,736" pivot="0.5,0.5" size="600,30" group="n11_vwgm" scale="-1,1"/>
+    <text id="n3_ieav" name="tip" xy="883,778" pivot="0.5,0.5" size="154,42" group="n11_vwgm" fontSize="30" color="#b3d7dd" text="缩卵毁一生"/>
+    <component id="n4_ieav" name="progress" src="ieavob8c" fileName="Component/PbBar/PbLoading1.xml" xy="959,1001" pivot="0.5,0.5" anchor="true" group="n11_vwgm" scale="1.2,1.2">
       <ProgressBar value="50" max="100"/>
     </component>
-    <loader id="n5_ieav" name="tipIcon" xy="859,933" pivot="0.5,0.5" size="202,29" scale="1.2,1.2" url="ui://vx9zwserieavob81" autoSize="true"/>
-    <loader id="n7_ieav" name="mid" xy="757,108" size="409,436" url="ui://ca43vz0eieav7plof2" autoSize="true"/>
-    <loader id="n6_ieav" name="left" xy="518,126" size="342,518" url="ui://ca43vz0eieav7ploeg" autoSize="true"/>
-    <loader id="n8_ieav" name="right" xy="1004,208" size="380,436" url="ui://ca43vz0eieav7plody" autoSize="true"/>
-    <loader id="n9_ieav" name="desk" xy="779,345" size="357,325" url="ui://ca43vz0eieav7ploee" autoSize="true"/>
+    <loader id="n5_ieav" name="tipIcon" xy="859,933" pivot="0.5,0.5" size="202,29" group="n11_vwgm" scale="1.2,1.2" url="ui://vx9zwserieavob81" autoSize="true"/>
+    <loader id="n7_ieav" name="mid" xy="757,108" size="409,436" group="n11_vwgm" url="ui://ca43vz0eieav7plof2" autoSize="true"/>
+    <loader id="n6_ieav" name="left" xy="518,126" size="342,518" group="n11_vwgm" url="ui://ca43vz0eieav7ploeg" autoSize="true"/>
+    <loader id="n8_ieav" name="right" xy="1004,208" size="380,436" group="n11_vwgm" url="ui://ca43vz0eieav7plody" autoSize="true"/>
+    <loader id="n9_ieav" name="desk" xy="779,345" size="357,325" group="n11_vwgm" url="ui://ca43vz0eieav7ploee" autoSize="true"/>
+    <group id="n11_vwgm" name="n11" xy="337,108" size="1246,904" advanced="true">
+      <gearDisplay controller="state" pages="0"/>
+    </group>
+    <loader id="n13_vwgm" name="cg" xy="0,0" size="1920,1080" group="n14_vwgm" url="ui://ca43vz0evwgm7plof6" fill="scaleMatchWidth"/>
+    <image id="n16_vo11" name="n16" src="ieavob89" fileName="Texture/img_75.png" xy="0,902" size="1920,180" group="n14_vwgm"/>
+    <loader id="n15_vwgm" name="tipIcon2" xy="859,936" pivot="0.5,0.5" size="202,29" group="n14_vwgm" scale="1.2,1.2" url="ui://vx9zwserieavob81" autoSize="true"/>
+    <component id="n12_vwgm" name="progress2" src="vwgmob8d" fileName="Component/PbBar/PbLoading2.xml" xy="0,1000" group="n14_vwgm">
+      <ProgressBar value="81" max="100"/>
+    </component>
+    <group id="n14_vwgm" name="n14" xy="0,0" size="1920,1082" advanced="true">
+      <gearDisplay controller="state" pages="1"/>
+    </group>
   </displayList>
 </component>

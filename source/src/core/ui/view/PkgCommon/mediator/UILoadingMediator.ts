@@ -9,7 +9,7 @@ export interface IUILoadingData {
 export class UILoadingMediator extends MediatorBase<UILoadingView, IUILoadingData> {
 
     override onEnable() {
-        this.view.refreshProgress(0);
+        this.view.refreshContent();
     }
 
 

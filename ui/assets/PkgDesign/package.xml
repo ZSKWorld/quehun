@@ -1477,6 +1477,10 @@
     <image id="ieav7plof3" name="mid_13.png" path="/111/"/>
     <image id="ieav7plof4" name="left_3.png" path="/111/"/>
     <image id="ieav7plof5" name="right_9.png" path="/111/"/>
+    <image id="vwgm7plof6" name="201201.jpg" path="/11/"/>
+    <image id="vwgm7plof7" name="201202.jpg" path="/11/"/>
+    <image id="vwgm7plof8" name="210201.jpg" path="/11/"/>
+    <image id="vwgm7plof9" name="210601.jpg" path="/11/"/>
   </resources>
   <publish name=""/>
 </packageDescription>

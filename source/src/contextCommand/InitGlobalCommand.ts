@@ -1,6 +1,6 @@
 import { LoadManager } from "../core/common/manager/LoadManager";
 import { LocalDataManager } from "../core/common/manager/LocalDataManager";
-import { SkeletonManager } from "../core/common/manager/SkeletonManager";
+import { SkeletonManager } from "../core/common/skeleton/SkeletonManager";
 import { MathUtil } from "../core/common/math/MathUtil";
 import { GameUtil } from "../core/common/utils/GameUtil";
 import { TimeUtil } from "../core/common/utils/TimeUtil";
@@ -16,6 +16,7 @@ import { TipManager } from "../core/ui/tool/TipManager";
 import { UserData } from "../core/userData/UserData";
 import { GameManager } from "../GameManager";
 import { SceneManager } from "../scene/SceneManager";
+import { SpineManager } from "../core/common/skeleton/SpineManager";
 
 export class InitGlobalCommand extends Command {
     override execute(notifyName: string, data?: any) {
@@ -31,6 +32,7 @@ export class InitGlobalCommand extends Command {
         windowImmit("$loadMgr", new LoadManager());
         windowImmit("$gameMgr", new GameManager());
         windowImmit("$cfgMgr", new ConfigManager());
+        windowImmit("$spineMgr", new SpineManager());
         windowImmit("$sceneMgr", new SceneManager());
         windowImmit("$redDotMgr", new RedDotManager());
         windowImmit("$skeletonMgr", new SkeletonManager());

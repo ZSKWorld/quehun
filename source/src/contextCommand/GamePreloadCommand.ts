@@ -29,30 +29,14 @@ export class GamePreloadCommand extends Command {
             Laya.Stat.RenderTextureMemory,
             Laya.Stat.BufferMemory,
         ]);
-        // await $loadMgr.loadPackage(ResPath.EPkgPath.PkgEntrance);
-        // $uiMgr.openView(EViewID.UIEntranceView);
-        // await $gameMgr.init();
-        // await $pbMgr.init();
-        // await $cfgMgr.init();
+        await $loadMgr.loadPackage(ResPath.EPkgPath.PkgEntrance);
+        $uiMgr.openView(EViewID.UIEntranceView);
+        await $gameMgr.init();
+        await $pbMgr.init();
+        await $cfgMgr.init();
         // await $netMgr.init();
-        
 
-
-		const spineRoot = Laya.stage.addChild(new Laya.Sprite());
-		const spinePath = [
-			$langRes("extendRes/charactor/archer_hf/spine/spine_0.skel.txt"),
-			$langRes("extendRes/charactor/archer_hf/spine/spine_1.skel.txt"),
-		];
-        $loadMgr.load(spinePath, Laya.Loader.SPINE).then((a) => {
-            Logger.error(a);
-			spinePath.forEach(v => {
-				const sp = spineRoot.addChild(new Laya.Sprite());
-				const spine = sp.addComponent(Laya.Spine2DRenderNode);
-				spine.source = v;
-				spine.skinName = "default";
-                spine.play("idle", true);
-                Logger.error(spine);
-            });
-		});
+        await $spineMgr.load([40011203]);
+        const spine = $spineMgr.create(40011203, fgui.GRoot.inst);
     }
 }

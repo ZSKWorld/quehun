@@ -55,6 +55,40 @@ declare interface ISkeletonManager {
     dispose(url: string): void;
 }
 
+declare interface ISpineController extends Laya.Script {
+    override owner: Laya.Sprite;
+    get gowner(): fgui.GComponent;
+    get spineId(): number;
+    play(nameOrIndex: string | number, loop: boolean, force?: boolean, start?: number, end?: number, freshSkin?: boolean, playAudio?: boolean): void;
+}
+
+declare interface ISpineManager {
+    /**
+     * 加载spine动画模板
+     * @param ids spine id
+     */
+    load(ids: number[], progress?: Laya.Handler): Promise<Laya.SpineTemplet[][]>;
+    /**
+     * 获取一个spine动画
+     * @param id spine id
+     * @param parent 父节点
+     */
+    create(id: number, parent?: fgui.GComponent): ISpineController;
+    /**
+     * 回收spin动画到对象池
+     */
+    recover(spine: ISpineController): void;
+    /**
+     * 清除动画对象池
+     * @param url
+     */
+    clear(id: number): void;
+    /**
+     * 销毁动画并释放内存
+     */
+    dispose(id: number): void;
+}
+
 declare interface IMathUtil {
     readonly Radian: number;
 

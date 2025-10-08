@@ -12,8 +12,8 @@ export class LoadManager implements ILoadManager {
 		const invalidUrl = isArray ? !url.length : !url;
 		if (invalidUrl) {
 			arg2 instanceof Laya.Handler ? arg2.runWith(1) : (arg2 && arg2(1));
-			arg1 instanceof Laya.Handler && arg1.runWith(isArray ? [null] : null);
-			return Promise.resolve(isArray ? [null] : null);
+			arg1 instanceof Laya.Handler && arg1.runWith(isArray ? [] : null);
+			return Promise.resolve(isArray ? [] : null);
 		}
 
 		return Laya.loader.load(url, arg1, arg2, arg3, priority, cache, group, ignoreCache, useWorkerLoader);
@@ -38,7 +38,7 @@ export class LoadManager implements ILoadManager {
 		Laya.loader.clearRes(url, checkObj);
 	}
 
-	clearTextureRes(url:string) {
+	clearTextureRes(url: string) {
 		Laya.loader.clearTextureRes(url);
 	}
 }

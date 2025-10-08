@@ -1,36 +1,34 @@
 export class SkeletonManager implements ISkeletonManager {
-    /** 动画模板 */
     private _templetMap = new Map<string, Laya.Templet>();
-    /** 动画对象池 */
     private _skeletonPool = new Map<string, Laya.Skeleton[]>();
 
-    load(url: string[], progress?: Laya.Handler) {
-        if (!url) {
+    load(urls: string[], progress?: Laya.Handler) {
+        if (!urls) {
             if (progress) progress.runWith(1);
             return Promise.resolve<Laya.Templet[]>(null);
         }
-        if (!url.length) {
+        const loadUrl = urls.filter(v => !this._templetMap.get(v));
+        if (!loadUrl.length) {
             if (progress) progress.runWith(1);
-            return Promise.resolve<Laya.Templet[]>([]);
+            const templets = urls.map(v => this._templetMap.get(v));
+            return Promise.resolve<Laya.Templet[]>(templets);
         }
-        const loadUrl = url.filter(v => !this._templetMap.get(v));
         const promise = $loadMgr.load<Laya.Templet, string[]>(loadUrl, null, progress).then(data => {
-            data.forEach(v => this._templetMap[v.url] = v);
-            return url.map(v => this._templetMap.get(v));
+            data.forEach(v => this._templetMap.set(v.url, v));
+            return urls.map(v => this._templetMap.get(v));
         });
         return promise;
     }
 
     create(url: string, aniMode: 0 | 1 | 2 = 0) {
         let ske: Laya.Skeleton;
-        const templet = this._templetMap.get(url);
         const skeletonPool = this._skeletonPool.get(url);
         if (skeletonPool && skeletonPool.length) {
             ske = skeletonPool.pop();
             ske.aniMode = aniMode;
-            ske.templet = templet;
         }
         else {
+            const templet = this._templetMap.get(url);
             if (templet) {
                 ske = templet.buildArmature(aniMode);
             }

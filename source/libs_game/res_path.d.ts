@@ -859,18 +859,6 @@ declare namespace ResPath {
 		WAV_Button9 = "res/sound/Button9.wav",
 	}
 
-	enum ESpinePath {
-		Yinglingweigong_1_0 = "res/spine/archer/yinglingweigong_1_0.skel",
-		Yinglingweigong_1_1 = "res/spine/archer/yinglingweigong_1_1.skel",
-		Jiantongying_1_0 = "res/spine/jiantongying/jiantongying_1_0.skel",
-		Jiantongying_1_1 = "res/spine/jiantongying/jiantongying_1_1.skel",
-		Jiantongying_1_2 = "res/spine/jiantongying/jiantongying_1_2.skel",
-		Aertuoliya_1_0 = "res/spine/saber/aertuoliya_1_0.skel",
-		Aertuoliya_1_1 = "res/spine/saber/aertuoliya_1_1.skel",
-		Yuanbanlin_1_0 = "res/spine/yuanbanlin/yuanbanlin_1_0.skel",
-		Yuanbanlin_1_1 = "res/spine/yuanbanlin/yuanbanlin_1_1.skel",
-	}
-
 	enum ETexturePath {
 		JPG_Background = "res/texture/background.jpg",
 	}

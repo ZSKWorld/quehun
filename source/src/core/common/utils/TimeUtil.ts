@@ -9,8 +9,8 @@ export class TimeUtil implements ITimeUtil {
         return Math.floor(this.milliSecond / 1000);
     }
 
-    setServerDelta(delta: number) {
-        this._serverDelta = delta;
+    setServerTime(time: number) {
+        this._serverDelta = time * 1000 - Date.now();
     }
 
     milliSecond2YMDHMS(milliSecond: number) {

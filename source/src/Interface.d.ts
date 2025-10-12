@@ -1,4 +1,5 @@
 declare interface IGameManager {
+    get inDmm(): boolean;
     /** 设备id */
     get deviceId(): string;
     /** 设备信息 */

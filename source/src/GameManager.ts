@@ -1,8 +1,13 @@
-export class GameManager implements IGameManager {
+import { ENotifyConst } from "./core/common/NotifyConst";
+import { ObserverAll } from "./core/mvc/provider/ObserverAll";
+
+export class GameManager extends ObserverAll implements IGameManager {
 
     private _inDmm = false;
     private _deviceId: string;
     private _version: { version: string; };
+    private _clientEndPoint: ProtoObject<INetworkEndpoint>;
+    get inDmm() { return this._inDmm; }
     get language() { return "chs"; }
     get clientType() { return "chs"; }
     get version() { return this._version?.version || ""; }
@@ -74,6 +79,7 @@ export class GameManager implements IGameManager {
         Logger.error($timeUtil.second, stime + 1.5, $timeUtil.second + 1800);
         return $timeUtil.second < stime + 1.5 && stime < $timeUtil.second + 1800;
     }
+    get p2() { return "DF2vkXCnfeXp4WoGSBGNcJBufZiMN3UP" + (window["pertinent3"] || ""); }
 
     async init() {
         Laya.timer.loop(1000, this, this.setMultiLoginTime);
@@ -87,5 +93,21 @@ export class GameManager implements IGameManager {
 
     private setMultiLoginTime() {
         $localDataMgr.set(ELocalDataKey.MultiLogin, $timeUtil.second);
+    }
+
+    @InterestNotify(ENotifyConst.LoginSuccess)
+    private loginSuccess() {
+        $netMgr.requests.fetchConnectionInfo().then(res => {
+            if (res.error) return;
+            this._clientEndPoint = $decodeProtoData(res.client_endpoint);
+        });
+        $netMgr.requests.fetchClientValue();
+        $userData.announcement.fetchAnnouncement();
+    }
+
+    @InterestMessage(EMessageID.login)
+    @InterestMessage(EMessageID.oauth2Login)
+    private onLogin() {
+        $netMgr.requests.loginBeat({ contract: this.p2 });
     }
 }

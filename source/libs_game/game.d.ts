@@ -39,7 +39,8 @@ declare const $mathUtil: IMathUtil;
 declare const $spineMgr: ISpineManager;
 
 /** 注入全局变量 */
-declare function windowImmit(name: string, obj: any): void;
+declare function $windowImmit(name: string, obj: any): void;
+declare function $decodeProtoData<T extends IProto>(data: T): ProtoObject<T>;
 
 declare function $confirmBig(format: 0 | 1 | 2 | 3, title: string, content: string): Promise<boolean>;
 declare function $confirmMid(format: 0 | 1, title: string, content: string): Promise<boolean>;

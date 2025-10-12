@@ -1,5 +1,5 @@
+import { LoadingBgLoader } from "../../../../game/LoadingBgLoader";
 import UILoading from "../../../ui/PkgCommon/UILoading";
-import { LoadingBgLoader } from "../script/LoadingBgLoader";
 
 export const enum EUILoadingMsg {
 

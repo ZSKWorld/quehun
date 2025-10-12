@@ -10,7 +10,7 @@ export class RechargeVO extends BaseVO implements VO.ICharacterVO {
     message: II18nContext[];
 
     @InterestMessage(EMessageID.fetchRefundOrder)
-    private fetchRefundOrder(data: IResFetchRefundOrder) {
+    private onFetchRefundOrder(data: IResFetchRefundOrder) {
         if (!data || data.error) return;
         this.orders = data.orders.map(v => this.decode(v));
         this.clear_deadline = data.clear_deadline;

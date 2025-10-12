@@ -21,7 +21,7 @@ export class UILoginQueueMediator extends MediatorBase<UILoginQueueView, IUILogi
         this._time -= Laya.timer.delta;
         if (this._time < 0) {
             this._time = 10 * 1000;
-            $netMgr.requests.fetchQueueInfo({});
+            $netMgr.requests.fetchQueueInfo();
         }
     }
 
@@ -30,7 +30,7 @@ export class UILoginQueueMediator extends MediatorBase<UILoginQueueView, IUILogi
     }
 
     @InterestMessage(ENotify.NotifyLoginQueueFinished)
-    private notifyLoginQueueFinished(res: INotifyLoginQueueFinished) {
+    private onNotifyLoginQueueFinished(res: INotifyLoginQueueFinished) {
         this.closeSelf();
     }
 

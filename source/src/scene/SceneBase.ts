@@ -1,6 +1,6 @@
 import { ENotifyConst } from "../core/common/NotifyConst";
+import { LoadingBgLoader } from "../core/game/LoadingBgLoader";
 import { Observer } from "../core/mvc/provider/Observer";
-import { LoadingBgLoader } from "../core/ui/view/PkgCommon/script/LoadingBgLoader";
 import { ESceneType } from "./SceneDefine";
 
 const enum EResGroupType {

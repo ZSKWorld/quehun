@@ -25,7 +25,7 @@ export class NetManager extends Laya.EventDispatcher implements INetManager {
             else if (service == EServiceType.FastTest) socket = this._gameSocket;
             else if (service == EServiceType.Route) socket = this._lobbySocket;
             else continue;
-            reqs[key] = data => socket.send(EMessageID[key], data);
+            reqs[key] = data => socket.send(EMessageID[key], data || {});
         }
 
         this._lobbySocket.on(ESocketEvent.Connecting, this, () => $facade.dispatch(ENotifyConst.LobbyConnecting));

@@ -1,4 +1,5 @@
 import { ESceneType } from "../../../../../scene/SceneDefine";
+import { ENotifyConst } from "../../../../common/NotifyConst";
 import { MediatorBase } from "../../../../mvc/view/MediatorBase";
 import { ELoginType } from "../event/UILoginEvent";
 import { EUILoginMsg, UILoginView } from "../view/UILoginView";
@@ -282,13 +283,14 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 		// }
 
 		if (account.frozen_state) {
-			const res = await $netMgr.requests.fetchRefundOrder({});
+			const res = await $netMgr.requests.fetchRefundOrder();
 			if (res.error) {
 				$showNetError(res.error);
 				this.cancelLogin();
 				return;
 			}
 		}
+		this.dispatch(ENotifyConst.LoginSuccess);
 		$sceneMgr.enterScene(ESceneType.MainScene);
 	}
 }

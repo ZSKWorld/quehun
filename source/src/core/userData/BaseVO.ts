@@ -1,23 +1,8 @@
-import { Observer } from "../mvc/provider/Observer";
+import { ObserverAll } from "../mvc/provider/ObserverAll";
 
-export class BaseVO extends Observer {
-    constructor() {
-        super();
-        $netMgr.interestMessage(this);
-    }
+export class BaseVO extends ObserverAll {
 
-    protected decode<T extends IProto>(data: T): ProtoObject<T> {
-        if (!data) return data;
-        const type = data.$type;
-        if (!type) return data;
-        const result: ProtoObject<T> = {} as any;
-        type.fieldsArray.forEach(v => {
-            const value = data[v.name];
-            if (Array.isArray(value))
-                result[v.name] = [...value.map(v1 => this.decode(v1))];
-            else
-                result[v.name] = this.decode(value);
-        });
-        return result;
+    protected decode<T extends IProto>(data: T) {
+        return $decodeProtoData(data);
     }
 }

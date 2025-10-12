@@ -1,5 +1,5 @@
-import { SingletonExtend } from "../../../../common/Singleton";
-import { Observer } from "../../../../mvc/provider/Observer";
+import { SingletonExtend } from "../common/Singleton";
+import { Observer } from "../mvc/provider/Observer";
 
 export class LoadingBgLoader extends SingletonExtend<LoadingBgLoader, Observer>(Observer) {
     private _cg: string;

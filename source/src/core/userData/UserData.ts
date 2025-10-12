@@ -1,7 +1,9 @@
 import { AccountVO } from "./AccountVO";
 import { ActivityVO } from "./ActivityVO";
+import { AnnouncementVO } from "./AnnouncementVO";
 import { BaseVO } from "./BaseVO";
 import { CharacterVO } from "./CharacterVO";
+import { ClientValueVO } from "./ClientValueVO";
 import { RechargeVO } from "./RechargeVO";
 
 export class UserData extends BaseVO implements VO.IUserDataVO {
@@ -26,6 +28,8 @@ export class UserData extends BaseVO implements VO.IUserDataVO {
     character = new CharacterVO();
     activity = new ActivityVO();
     recharge = new RechargeVO();
+    announcement = new AnnouncementVO();
+    clientValue = new ClientValueVO();
 
     numerical: IAccountUpdate_NumericalUpdate[];
     /** 背包 */
@@ -44,7 +48,7 @@ export class UserData extends BaseVO implements VO.IUserDataVO {
 
     @InterestMessage(EMessageID.login)
     @InterestMessage(EMessageID.oauth2Login)
-    private resLogin(data: IResLogin) {
+    private onLogin(data: IResLogin) {
         if (!data || data.error) return;
         this.account.update(data.account);
         this.game_info = this.decode(data.game_info);
@@ -58,7 +62,7 @@ export class UserData extends BaseVO implements VO.IUserDataVO {
     }
 
     @InterestMessage(ENotify.NotifyAccountUpdate)
-    private notifyAccountUpdate(data: IAccountUpdate) {
+    private onNotifyAccountUpdate(data: IAccountUpdate) {
         if (!data) return;
         this.character.update(data);
         this.activity.update(data);

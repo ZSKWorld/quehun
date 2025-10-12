@@ -13,6 +13,22 @@ Object.defineProperties(Array.prototype, {
         },
         enumerable: false,
         configurable: false,
+    },
+    "remove": {
+        value: function (value) {
+            const index = this.indexOf(value);
+            if (index >= 0) this.splice(index, 1);
+        },
+        enumerable: false,
+        configurable: false,
+    },
+    "pushUnique": {
+        value: function (value) {
+            const index = this.indexOf(value);
+            if (index < 0) this.push(value);
+        },
+        enumerable: false,
+        configurable: false,
     }
 });
 

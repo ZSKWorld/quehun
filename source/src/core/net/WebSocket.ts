@@ -153,6 +153,7 @@ export class WebSocket extends Laya.EventDispatcher {
             case EHeaderType.Notify:
                 const msg = $pbMgr.decodeMessage(data.slice(1));
                 const msgName = msg.$type.name;
+                Logger.error(msgName, msg);
                 this.event(ESocketEvent.Notify, [msgName, msg]);
                 break;
         }

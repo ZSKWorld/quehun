@@ -54,6 +54,11 @@ export class AccountVO extends BaseVO implements VO.IAccountVO {
         });
     }
 
-    isLoadingCG() { return this.loading_image.length > 0; }
-    getCGId() { return $mathUtil.randomInt(0, this.loading_image.length); }
+    getRandomCgPath() {
+        const cgId = this.loading_image[$mathUtil.randomInt(0, this.loading_image.length)];
+        if (!cgId) return "";
+        const cfgInfo = $cfgMgr.item_definition.loading_image[cgId];
+        if (!cfgInfo) return "";
+        return $langRes(cfgInfo.img_path);
+    }
 }

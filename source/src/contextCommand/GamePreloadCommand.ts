@@ -1,8 +1,4 @@
 import { Command } from "../core/mvc/controller/Command";
-import { RedDotManager } from "../core/ui/redDot/RedDotManager";
-import { SceneLogin } from "../scene/scene/SceneLogin";
-import { SceneMain } from "../scene/scene/SceneMain";
-import { ESceneType } from "../scene/SceneDefine";
 
 interface IGameConfig {
     readonly stat: boolean;
@@ -34,9 +30,6 @@ export class GamePreloadCommand extends Command {
         await $gameMgr.init();
         await $pbMgr.init();
         await $cfgMgr.init();
-        // await $netMgr.init();
-
-        await $spineMgr.load([40011203]);
-        const spine = $spineMgr.create(40011203, fgui.GRoot.inst);
+        await $netMgr.init();
     }
 }

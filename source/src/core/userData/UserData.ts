@@ -43,6 +43,7 @@ export class UserData extends BaseVO implements VO.IUserDataVO {
     badge: IAccountUpdate_BadgeUpdate;
 
     @InterestMessage(EMessageID.login)
+    @InterestMessage(EMessageID.oauth2Login)
     private resLogin(data: IResLogin) {
         if (!data || data.error) return;
         this.account.update(data.account);

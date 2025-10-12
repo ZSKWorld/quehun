@@ -12,7 +12,6 @@ export class UILoadingMediator extends MediatorBase<UILoadingView, IUILoadingDat
         this.view.refreshContent();
     }
 
-
     override onUpdate() {
         this.view.updateBlockPos();
     }

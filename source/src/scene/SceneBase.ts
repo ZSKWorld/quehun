@@ -1,5 +1,6 @@
 import { ENotifyConst } from "../core/common/NotifyConst";
 import { Observer } from "../core/mvc/provider/Observer";
+import { LoadingBgLoader } from "../core/ui/view/PkgCommon/script/LoadingBgLoader";
 import { ESceneType } from "./SceneDefine";
 
 const enum EResGroupType {
@@ -20,8 +21,9 @@ export abstract class LogicSceneBase<T> extends Observer implements IScene<T> {
 	/** 资源加载进度 */
 	private _progresses: number[] = [];
 
-	load() {
+	async load() {
 		this.dispatch(ENotifyConst.OnSceneLoadBegin, this.type);
+		await LoadingBgLoader.Inst.randomLoad();
 		const resArr = this.getResGroup(EResGroupType.All);
 		const [uiRes, skeletonRes, otherRes] = resArr;
 		let loadCnt = this.setLoadProgres(resArr.length);
@@ -53,6 +55,7 @@ export abstract class LogicSceneBase<T> extends Observer implements IScene<T> {
 			this._progressHandlers.length = 0;
 			this.dispatch(ENotifyConst.OnSceneLoadEnd, this.type);
 			$uiMgr.closeAllView();
+			LoadingBgLoader.Inst.clear();
 		});
 	}
 

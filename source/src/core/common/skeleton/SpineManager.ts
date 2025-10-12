@@ -1,8 +1,18 @@
 import { SpineController } from "./SpineController";
 
+const enum SpineAnimation {
+    Celebrate_idle = "celebrate_idle",
+    Click = "click",
+    Click2 = "click2",
+    Greeting = "greeting",
+    Idle = "idle",
+    IdleCelebrate = "idle+celebrate",
+}
+
 export class SpineManager implements ISpineManager {
     private _templetMap = new Map<string, Laya.SpineTemplet>();
-    private _spinePool = new Map<number, ISpineController[]>();
+    private _unusedPool = new Map<number, ISpineController[]>();
+    private _usingPool = new Map<number, ISpineController[]>();
     load(ids: number[], progress?: Laya.Handler) {
         if (!ids) {
             if (progress) progress.runWith(1);
@@ -37,11 +47,12 @@ export class SpineManager implements ISpineManager {
         });
         return promise;
     }
+
     create(id: number, parent?: fgui.GComponent) {
         let spine: ISpineController;
-        const skeletonPool = this._spinePool.get(id);
-        if (skeletonPool && skeletonPool.length) {
-            spine = skeletonPool.pop();
+        const unusedArr = this._unusedPool.get(id);
+        if (unusedArr && unusedArr.length) {
+            spine = unusedArr.pop();
         }
         else {
             const templetMap = this._templetMap;
@@ -56,37 +67,55 @@ export class SpineManager implements ISpineManager {
                 }
                 const spineCtrl = sp.addComponent(SpineController);
                 spineCtrl.init(id);
-                parent && parent.addChild(sp);
                 spine = spineCtrl;
             }
         }
-        spine && spine.play("idle", true);
+        if (spine) {
+            parent && parent.addChild(spine.gowner);
+            const usingArr = this._usingPool.get(id);
+            if (usingArr) usingArr.push(spine);
+            else this._usingPool.set(id, [spine]);
+            spine.play(SpineAnimation.Idle, true);
+        }
         return spine;
     }
+
     recover(spine: ISpineController) {
         if (!spine) return;
         const id = spine.spineId;
-        const poolArr = this._spinePool.get(id);
-        if (poolArr && poolArr.includes(spine)) return;
-        spine.gowner.removeFromParent();
-        if (poolArr) poolArr.push(spine);
-        else this._spinePool.set(id, [spine]);
+        const usingArr = this._usingPool.get(id);
+        usingArr && usingArr.remove(spine);
+        const unusedArr = this._unusedPool.get(id);
+        if (spine.destroyed)
+            unusedArr && unusedArr.remove(spine);
+        else {
+            if (unusedArr) unusedArr.pushUnique(spine);
+            else this._unusedPool.set(id, [spine]);
+            spine.gowner.removeFromParent();
+        }
     }
+
     clear(id: number) {
-        const poolArr = this._spinePool.get(id);
-        if (!poolArr) return;
-        poolArr.forEach(v => v.gowner.dispose());
-        poolArr.length = 0;
+        const unusedArr = this._unusedPool.get(id);
+        const usingArr = this._usingPool.get(id);
+        if (unusedArr) {
+            unusedArr.forEach(v => v.gowner.dispose());
+            unusedArr.length = 0;
+        }
+        if (usingArr) {
+            usingArr.forEach(v => v.gowner.dispose());
+            usingArr.length = 0;
+        }
     }
+
     dispose(id: number) {
         this.clear(id);
         const urls = this.getSpineUrls(id);
-        if (!urls.length) return;
         for (let i = 0; i < urls.length; i++) {
             const templet = this._templetMap.get(urls[i]);
+            this._templetMap.delete(urls[i]);
             if (!templet) continue;
             Laya.timer.frameOnce(0, this, () => templet.destroy());
-            this._templetMap.delete(urls[i]);
         }
     }
 
@@ -96,7 +125,8 @@ export class SpineManager implements ISpineManager {
         if (!t1) return urls;
         const t2 = $cfgMgr.character.skin[v];
         const layer = t2 ? t2.spine_layers : 1;
-        if (layer == 1) urls.push(t1.path + "/spine/spine.skel");
+        if (layer == 1)
+            urls.push($langRes(t1.path + "/spine/spine.skel"));
         else {
             for (let i = 0; i < layer; i++) {
                 urls.push($langRes(t1.path + "/spine/spine_" + i + ".skel"));

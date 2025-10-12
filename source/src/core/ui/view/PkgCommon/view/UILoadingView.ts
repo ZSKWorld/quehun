@@ -1,4 +1,5 @@
 import UILoading from "../../../ui/PkgCommon/UILoading";
+import { LoadingBgLoader } from "../script/LoadingBgLoader";
 
 export const enum EUILoadingMsg {
 
@@ -11,30 +12,30 @@ export class UILoadingView extends ExtensionClass<IView, UILoading>(UILoading) i
     }
 
     refreshContent() {
-        const isCG = $userData.account.isLoadingCG();
-        this.ctrl_state.selectedIndex = isCG ? 1 : 0;
-        if (isCG) {
-            const cgId = $userData.account.getCGId();
-            const cgPath = $cfgMgr.item_definition.loading_image[cgId].img_path;
-            this.loader_cg.icon = $langRes(cgPath);
+        const { cg, left, mid, right, desk } = LoadingBgLoader.Inst;
+        this.ctrl_state.selectedIndex = cg ? 1 : 0;
+        if (cg) {
+            this.loader_cg.icon = cg;
         } else {
-            this.loader_left.icon = $langRes(`myres2/loading_3que1/left_${ $mathUtil.randomInt(0, 18) }.png`);
-            this.loader_mid.icon = $langRes(`myres2/loading_3que1/mid_${ $mathUtil.randomInt(0, 18) }.png`);
-            this.loader_right.icon = $langRes(`myres2/loading_3que1/right_${ $mathUtil.randomInt(0, 19) }.png`);
-            this.loader_desk.icon = $langRes(`myres2/loading_3que1/desktop${ $mathUtil.randomInt(0, 2) }.png`);
+            this.loader_left.icon = left;
+            this.loader_mid.icon = mid;
+            this.loader_right.icon = right;
+            this.loader_desk.icon = desk;
         }
         this.refreshProgress(0);
         this.updateBlockPos();
     }
 
     updateBlockPos() {
-        const pb = $userData.account.isLoadingCG() ? this.pb_progress2 : this.pb_progress;
+        const cg = LoadingBgLoader.Inst.cg;
+        const pb = cg ? this.pb_progress2 : this.pb_progress;
         const x = pb.value / pb.max * pb.width;
         pb.img_block.x = x;
     }
 
     refreshProgress(pro: number) {
-        const pb = $userData.account.isLoadingCG() ? this.pb_progress2 : this.pb_progress;
+        const cg = LoadingBgLoader.Inst.cg;
+        const pb = cg ? this.pb_progress2 : this.pb_progress;
         pb.value = pro * pb.max;
     }
 

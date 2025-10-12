@@ -33,6 +33,6 @@ export class ViewManager extends Singleton<ViewManager>() {
         const viewInst = this._viewClsMap[viewId].createInstance();
         viewInst.name = viewId;
         fullScreen && viewInst.makeFullScreen();
-        return viewInst.getComponent(this.get(viewId));
+        return viewInst.mediator;
     }
 }

@@ -12,6 +12,10 @@ export class NetManager extends Laya.EventDispatcher implements INetManager {
 
     requests: IReqMethod;
 
+    get lobbyConnected() { return this._lobbySocket?.connected; }
+    get gameConnected() { return this._gameSocket?.connected; }
+    get obConnected() { return this._obSocket?.connected; }
+
     async init() {
         this._ipConfig = await $loadMgr.fetch(ResPath.EConfigPath.Ip_config, Laya.Loader.JSON);
         await this.fetchRoutes();

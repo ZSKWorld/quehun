@@ -5,6 +5,7 @@ import { BaseVO } from "./BaseVO";
 import { CharacterVO } from "./CharacterVO";
 import { ClientValueVO } from "./ClientValueVO";
 import { RechargeVO } from "./RechargeVO";
+import { ServerSettingVO } from "./ServerSettingVO";
 
 export class UserData extends BaseVO implements VO.IUserDataVO {
     /** 正在进行的游戏信息 */
@@ -30,6 +31,7 @@ export class UserData extends BaseVO implements VO.IUserDataVO {
     recharge = new RechargeVO();
     announcement = new AnnouncementVO();
     clientValue = new ClientValueVO();
+    serverSetting = new ServerSettingVO();
 
     numerical: IAccountUpdate_NumericalUpdate[];
     /** 背包 */

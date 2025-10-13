@@ -106,6 +106,7 @@ export class GameManager extends ObserverAll implements IGameManager {
         let lastHeatBeatTime = 0, lastMouseX = 0, lastMouseY = 0;
         //每6分钟心跳一次，挂机超过1个小时会掉线
         Laya.timer.loop(6 * 60 * 1000, this, () => {
+            if (!$netMgr.lobbyConnected) return;
             //23/12/27新增，每6分钟同步服务器时间
             $netMgr.requests.fetchServerTime().then(res => {
                 if (res.error) return;
@@ -115,10 +116,9 @@ export class GameManager extends ObserverAll implements IGameManager {
             $netMgr.requests.heatbeat({ no_operation_counter: t });
             //客户端有能力断线的话，超过50分钟就断线
             if (t >= 50 * 60) {
-                uiscript.UI_Hanguplogout.Inst.show();
+                this.onNotifyAccountLogout();
             }
         });
-
         Laya.timer.loop(1000, this, () => {
             const _m = Laya.stage.getMousePoint();
             if (_m.x != lastMouseX || _m.y != lastMouseY) {
@@ -154,6 +154,9 @@ export class GameManager extends ObserverAll implements IGameManager {
 
     @InterestMessage(ENotify.NotifyAccountLogout)
     private onNotifyAccountLogout() {
+        $netMgr.closeLobby();
+        $netMgr.closeGame();
+        $netMgr.closeOb();
         $confirmSma(2, "", $lang(2329)).then(v => {
             window.location.reload();
         });
@@ -166,8 +169,8 @@ export class GameManager extends ObserverAll implements IGameManager {
         }
     }
 
-    @InterestMessage(ENotify.NotifyServerSetting)
-    private onNotifyServerSetting(data: INotifyServerSetting) {
-
+    @InterestMessage(ENotify.NotifyVipLevelChange)
+    private onNotifyVipLevelChange(data: INotifyVipLevelChange) {
+        Logger.error("NotifyVipLevelChange", data);
     }
 }

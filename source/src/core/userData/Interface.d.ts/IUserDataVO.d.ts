@@ -5,6 +5,7 @@ declare namespace VO {
         activity: IActivityVO;
         recharge: IRechargeVO;
         announcement: IAnnouncementVO;
-        clientValue: ClientValueVO;
+        clientValue: IClientValueVO;
+        serverSetting: IServerSettingVO;
     }
 }

@@ -41,6 +41,10 @@ declare interface IRouteInfo {
 
 declare interface INetManager extends Laya.EventDispatcher {
     get requests(): IReqMethod;
+    get lobbyConnected(): boolean;
+    get gameConnected(): boolean;
+    get obConnected(): boolean;
+
     init(): Promise<void>;
     connectLobby(): void;
     closeLobby(): void;

@@ -1,3 +1,22 @@
+/** 本地化语言 */
+ELanguage = {
+    CHS : "chs",
+    CHST : "chs_t",
+    EN: "en",
+    JP: "jp",
+    KR: "kr",
+}
+
+/** 行政版本 */
+EClientType = {
+    CHS : "chs",
+    CHST : "chs_t",
+    EN: "en",
+    JP: "jp",
+    KR: "kr",
+}
+
+/** 本地数据类型 */
 ELocalDataKey = {
     /** 自动登录 */
     AutoLogin: "LocalDataKey_AutoLogin",

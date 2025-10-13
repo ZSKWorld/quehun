@@ -5,7 +5,9 @@ export class AnnouncementVO extends BaseVO implements VO.IAnnouncementVO {
     private _sort: number[] = [];
     private _readList: number[] = [];
 
-    private get lang() { return $gameMgr.clientType == 'en' && $gameMgr.language == 'kr' ? 'us-kr' : $gameMgr.language; }
+    private get lang() {
+        return $gameMgr.clientType == EClientType.EN && $gameMgr.language == ELanguage.KR ? 'us-kr' : $gameMgr.language.toString();
+    }
     private get platform() { return $gameMgr.inDmm ? 'web_dmm' : 'web'; }
     get announcements() { return this._announcements; }
     get sort() { return this._sort; }

@@ -12,8 +12,8 @@ export class GameManager extends ObserverAll implements IGameManager {
     private _version: { version: string; };
     private _clientEndPoint: ProtoObject<INetworkEndpoint>;
     get inDmm() { return this._inDmm; }
-    get language() { return "chs"; }
-    get clientType() { return "chs"; }
+    get language() { return ELanguage.CHS; }
+    get clientType() { return EClientType.CHS; }
     get version() { return this._version?.version || ""; }
     get clientVersion() { return 'web-' + this.version.replace('.w', ''); }
     get currency() {
@@ -24,11 +24,11 @@ export class GameManager extends ObserverAll implements IGameManager {
     get payChannelId() {
         if (this._inDmm) {
             return 403;
-        } else if (this.clientType == 'en') {
+        } else if (this.clientType == EClientType.EN) {
             return 302;
-        } else if (this.clientType == 'chs_t') {
+        } else if (this.clientType == EClientType.CHST) {
             return 204;
-        } else if (this.clientType == 'kr') {
+        } else if (this.clientType == EClientType.KR) {
             return 502;
         } else {
             return 402;
@@ -36,13 +36,13 @@ export class GameManager extends ObserverAll implements IGameManager {
     }
     get reportClientType() {
         switch (this.clientType) {
-            case 'chs_t':
+            case EClientType.CHST:
                 return 'cn';
-            case 'jp':
+            case EClientType.JP:
                 return 'jp';
-            case 'kr':
+            case EClientType.KR:
                 return 'kr';
-            case 'en':
+            case EClientType.EN:
                 return 'en';
         }
         return 'unknown';

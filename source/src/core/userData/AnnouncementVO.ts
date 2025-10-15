@@ -23,16 +23,16 @@ export class AnnouncementVO extends BaseVO implements VO.IAnnouncementVO {
     @InterestMessage(EMessageID.fetchAnnouncement)
     private onFetchAnnouncement(res: IResAnnouncement) {
         if (res.error) return;
-        const decodeRes = $decodeProtoData(res);
+        const decodeRes = this.decodeProtoData(res);
         this._announcements = decodeRes.announcements;
         this._sort = decodeRes.sort;
         this._readList = decodeRes.read_list;
     }
 
     @InterestMessage(ENotify.NotifyAnnouncementUpdate)
-    private onAnnouncementUpdate(res: INotifyAnnouncementUpdate) {
-        for (let i = 0; i < res.update_list.length; i++) {
-            const e = res.update_list[i];
+    private onAnnouncementUpdate(data: INotifyAnnouncementUpdate) {
+        for (let i = 0; i < data.update_list.length; i++) {
+            const e = data.update_list[i];
             if (e.lang == this.lang && e.platform == this.platform) {
                 this.fetchAnnouncement();
                 break;

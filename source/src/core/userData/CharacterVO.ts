@@ -7,7 +7,7 @@ export class CharacterVO extends BaseVO implements VO.ICharacterVO {
     skin_id: number = 0;
 
     /** 角色 */
-    characters: ICharacter[] = [];
+    characters: ProtoObject<ICharacter>[] = [];
     /** 皮肤 */
     skins: number[] = [];
     /** 完成结局 */
@@ -19,14 +19,15 @@ export class CharacterVO extends BaseVO implements VO.ICharacterVO {
         return this.characters.find(v => v.charid == id) != null;
     }
 
-    update(data: IAccountUpdate) {
+    @InterestMessage(ENotify.NotifyAccountUpdate)
+    private onNotifyAccountUpdate(data: IAccountUpdate) {
         if (!data) return;
         this.character_id = data.main_character.character_id;
         this.skin_id = data.main_character.skin_id;
         if (data.character) {
             const { characters, skins, finished_endings, rewarded_endings } = data.character;
             if (characters && characters.length) {
-                this.characters.push(...characters.map(v => this.decode(v)));
+                this.characters.push(...characters.map(v => this.decodeProtoData(v)));
             }
             if (skins && skins.length) {
                 this.skins.push(...skins);

@@ -50,24 +50,15 @@ export class UserData extends BaseVO implements VO.IUserDataVO {
 
     @InterestMessage(EMessageID.login)
     @InterestMessage(EMessageID.oauth2Login)
-    private onLogin(data: IResLogin) {
-        if (!data || data.error) return;
-        this.account.update(data.account);
-        this.game_info = this.decode(data.game_info);
-        this.has_unread_announcement = data.has_unread_announcement;
-        this.access_token = data.access_token;
-        this.signup_time = data.signup_time;
-        this.is_id_card_authed = data.is_id_card_authed;
-        this.country = data.country;
-        this.logined_version = [...data.logined_version];
-        this.rewarded_version = [...data.rewarded_version];
-    }
-
-    @InterestMessage(ENotify.NotifyAccountUpdate)
-    private onNotifyAccountUpdate(data: IAccountUpdate) {
-        if (!data) return;
-        this.character.update(data);
-        this.activity.update(data);
-        Logger.error("account update");
+    private onLogin(res: IResLogin) {
+        if (!res || res.error) return;
+        this.game_info = this.decodeProtoData(res.game_info);
+        this.has_unread_announcement = res.has_unread_announcement;
+        this.access_token = res.access_token;
+        this.signup_time = res.signup_time;
+        this.is_id_card_authed = res.is_id_card_authed;
+        this.country = res.country;
+        this.logined_version = [...res.logined_version];
+        this.rewarded_version = [...res.rewarded_version];
     }
 }

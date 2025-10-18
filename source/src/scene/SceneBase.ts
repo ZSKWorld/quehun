@@ -44,7 +44,7 @@ export abstract class LogicSceneBase<T> extends Observer implements IScene<T> {
 			}) : null,
 		]).then(
 			() => {
-				return $timeUtil.waitTime(250);
+				return $timeUtil.wait(250);
 			},
 			() => {
 				return Promise.reject<void>();

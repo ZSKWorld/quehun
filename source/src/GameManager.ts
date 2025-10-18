@@ -57,7 +57,7 @@ export class GameManager extends ObserverAll implements IGameManager {
     }
     get deviceInfo() {
         const userAgent = navigator.userAgent;
-        const device: IClientDeviceInfo = {
+        const device: ProtoObject<IClientDeviceInfo> = {
             hardware: 'pc',
             platform: 'pc',
             os: 'windows',

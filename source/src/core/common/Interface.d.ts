@@ -163,7 +163,7 @@ declare interface ITimeUtil {
     milliSecond2YMDHMS(milliSecond: number): string;
     timeFormat(seconds: number, keepHour: boolean = true): string;
     timeFormatChinese(seconds: number): string;
-    waitTime(milSec: number): Promise<void>;
+    wait(milSec: number): Promise<void>;
 }
 
 declare enum ELocalDataKey {

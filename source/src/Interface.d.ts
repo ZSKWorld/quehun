@@ -21,7 +21,7 @@ declare interface IGameManager {
     /** 设备id */
     get deviceId(): string;
     /** 设备信息 */
-    get deviceInfo(): IClientDeviceInfo;
+    get deviceInfo(): ProtoObject<IClientDeviceInfo>;
     /** 客户端语言 */
     get language(): ELanguage;
     /** 客户端类型 */

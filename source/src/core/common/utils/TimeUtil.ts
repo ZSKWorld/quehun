@@ -40,7 +40,7 @@ export class TimeUtil implements ITimeUtil {
         return (hours ? `${ hours }小时` : "") + ((hours || mins) ? `${ mins }分钟` : "") + `${ secs }秒`;
     }
 
-    waitTime(milSec: number) {
+    wait(milSec: number) {
         return new Promise<void>(resolve => {
             Laya.timer.once(milSec, null, resolve);
         });

@@ -35,14 +35,16 @@ loadLib("libs/laya.bullet.js");
 loadLib("libs/laya.gltf.js");
 loadLib("libs/laya.device.js");
 
+//libs game
 loadLib("libs_game/crypto-js.js");
 loadLib("libs_game/fairygui.js");
+// loadLib("libs_game/howler.js");
 loadLib("libs_game/extend.js");
 loadLib("libs_game/logger.js");
 loadLib("libs_game/mygame.js");
 loadLib("libs_game/protobuf.js");
 
-//leb js
+//libs leb
 loadLib("libs_leb/enum_define.d.js");
 loadLib("libs_leb/proto.d.js");
 loadLib("libs_leb/respath.d.js");

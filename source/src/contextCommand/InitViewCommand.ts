@@ -11,6 +11,8 @@ import { BtnCheckTxtRightView } from "../core/ui/view/PkgCommon/view/btns/BtnChe
 import { BtnCheckTxtRightMediator } from "../core/ui/view/PkgCommon/mediator/btns/BtnCheckTxtRightMediator";
 import { BtnXunMiView } from "../core/ui/view/PkgMain/view/btns/BtnXunMiView";
 import { BtnXunMiMediator } from "../core/ui/view/PkgMain/mediator/btns/BtnXunMiMediator";
+import { ComMatchModeView } from "../core/ui/view/PkgMain/view/coms/ComMatchModeView";
+import { ComMatchModeMediator } from "../core/ui/view/PkgMain/mediator/coms/ComMatchModeMediator";
 import { UIConfirmBigView } from "../core/ui/view/PkgCommon/view/UIConfirmBigView";
 import { UIConfirmBigMediator } from "../core/ui/view/PkgCommon/mediator/UIConfirmBigMediator";
 import { UIConfirmMiddleView } from "../core/ui/view/PkgCommon/view/UIConfirmMiddleView";
@@ -48,6 +50,7 @@ export class InitViewCommand extends Command {
 		//Renders
 
 		//Coms
+		register(EViewID.ComMatchModeView, EViewType.Component, ComMatchModeView, ComMatchModeMediator);
 
 		//UIs
 		register(EViewID.UIConfirmBigView, EViewType.UI, UIConfirmBigView, UIConfirmBigMediator);

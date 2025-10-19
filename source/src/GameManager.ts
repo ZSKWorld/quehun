@@ -146,10 +146,13 @@ export class GameManager extends ObserverAll implements IGameManager {
 
     @InterestMessage(ENotify.NotifyAnotherLogin)
     private onNotifyAnotherLogin() {
-        $localDataMgr.set(ELocalDataKey.AutoLogin, 0);
-        $confirmSma(2, "", $lang(2324)).then(v => {
-            window.location.reload();
-        });
+        // $netMgr.closeLobby();
+        // $netMgr.closeGame();
+        // $netMgr.closeOb();
+        // $localDataMgr.set(ELocalDataKey.AutoLogin, 0);
+        // $confirmSma(2, "", $lang(2324)).then(v => {
+        //     window.location.reload();
+        // });
     }
 
     @InterestMessage(ENotify.NotifyAccountLogout)

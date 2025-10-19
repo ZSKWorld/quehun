@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1920,1080" designImage="ui://ca43vz0ew29k7plofb">
+  <controller name="type" pages="0,模式,1,段位,2,比赛,3,友人" selected="0"/>
+  <displayList>
+    <component id="n0_w29k" name="rankMode" src="w29kob8e" fileName="Component/Button/BtnIconFitNoScale.xml" pkg="vx9zwser" xy="1183,368" pivot="0.167,0.731" anchor="true" size="619,241" group="n3_w29k">
+      <Button icon="ui://vith2b66vwgmf"/>
+    </component>
+    <component id="n1_w29k" name="matchMode" src="w29kob8e" fileName="Component/Button/BtnIconFitNoScale.xml" pkg="vx9zwser" xy="1110,547" pivot="0.063,0.484" anchor="true" size="654,226" group="n3_w29k">
+      <Button icon="ui://vith2b66w29kob8e"/>
+    </component>
+    <component id="n2_w29k" name="friendMode" src="w29kob8e" fileName="Component/Button/BtnIconFitNoScale.xml" pkg="vx9zwser" xy="1122,735" pivot="0.078,0.339" anchor="true" size="661,230" group="n3_w29k">
+      <Button icon="ui://vith2b66vwgmg"/>
+    </component>
+    <group id="n3_w29k" name="n3" xy="1068,191" size="663,696" advanced="true">
+      <gearDisplay controller="type" pages="0"/>
+    </group>
+    <image id="n4_w29k" name="n4" src="w29kob8h" fileName="Texture/img_2565.png" xy="1075,231" size="628,73" group="n8_w29k"/>
+    <component id="n5_w29k" name="back" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1119,232" size="220,73" group="n8_w29k">
+      <Button icon="ui://vith2b66w29kob8g"/>
+    </component>
+    <component id="n7_w29k" name="rule" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1569,221" size="97,95" group="n8_w29k">
+      <gearDisplay controller="type" pages="2"/>
+      <Button icon="ui://vith2b66vwgmc"/>
+    </component>
+    <text id="n6_w29k" name="title" xy="1323,234" size="235,66" group="n8_w29k" fontSize="50" color="#e4b582" vAlign="middle" autoSize="shrink" singleLine="true" text="比赛场"/>
+    <group id="n8_w29k" name="n8" xy="1075,221" size="628,95" advanced="true">
+      <gearDisplay controller="type" pages="1,2,3"/>
+    </group>
+  </displayList>
+  <transition name="modeIn" options="2" frameRate="60">
+    <item time="0" type="Alpha" target="n0_w29k" tween="true" startValue="0" endValue="1" duration="14" ease="Back.Out"/>
+    <item time="0" type="Alpha" target="n1_w29k" value="0"/>
+    <item time="0" type="Alpha" target="n2_w29k" value="0"/>
+    <item time="0" type="Scale" target="n0_w29k" tween="true" startValue="0.17,0.17" endValue="1,1" duration="14" ease="Back.Out"/>
+    <item time="0" type="Scale" target="n1_w29k" value="0.17,0.17"/>
+    <item time="0" type="Scale" target="n2_w29k" value="0.17,0.17"/>
+    <item time="0" type="XY" target="n0_w29k" tween="true" startValue="700,405" endValue="1183,368" duration="14" ease="Back.Out"/>
+    <item time="0" type="XY" target="n1_w29k" value="700,530"/>
+    <item time="0" type="XY" target="n2_w29k" value="700,634"/>
+    <item time="6" type="Alpha" target="n1_w29k" tween="true" startValue="0" endValue="1" duration="14" ease="Back.Out"/>
+    <item time="6" type="Scale" target="n1_w29k" tween="true" startValue="0.17,0.17" endValue="1,1" duration="14" ease="Back.Out"/>
+    <item time="6" type="XY" target="n1_w29k" tween="true" startValue="700,530" endValue="1110.2,547.384" duration="14" ease="Back.Out"/>
+    <item time="12" type="Alpha" target="n2_w29k" tween="true" startValue="0" endValue="1" duration="14" ease="Back.Out"/>
+    <item time="12" type="Scale" target="n2_w29k" tween="true" startValue="0.17,0.17" endValue="1,1" duration="14" ease="Back.Out"/>
+    <item time="12" type="XY" target="n2_w29k" tween="true" startValue="700,634" endValue="1122.558,735.97" duration="14" ease="Back.Out"/>
+  </transition>
+  <transition name="modeOut" options="2" frameRate="60">
+    <item time="0" type="Alpha" target="n0_w29k" tween="true" startValue="1" endValue="0" duration="13" ease="Back.In"/>
+    <item time="0" type="Alpha" target="n1_w29k" tween="true" startValue="1" endValue="0" duration="13" ease="Back.In"/>
+    <item time="0" type="Alpha" target="n2_w29k" tween="true" startValue="1" endValue="0" duration="13" ease="Back.In"/>
+    <item time="0" type="Scale" target="n0_w29k" tween="true" startValue="1,1" endValue="0.2,0.2" duration="13" ease="Back.In"/>
+    <item time="0" type="Scale" target="n1_w29k" tween="true" startValue="1,1" endValue="0.2,0.2" duration="13" ease="Back.In"/>
+    <item time="0" type="Scale" target="n2_w29k" tween="true" startValue="1,1" endValue="0.2,0.2" duration="13" ease="Back.In"/>
+    <item time="0" type="XY" target="n0_w29k" tween="true" startValue="1183.373,368.171" endValue="700,540" duration="13" ease="Back.In"/>
+    <item time="0" type="XY" target="n1_w29k" tween="true" startValue="1110.2,547.384" endValue="700,530" duration="13" ease="Back.In"/>
+    <item time="0" type="XY" target="n2_w29k" tween="true" startValue="1122.558,735.97" endValue="700,520" duration="13" ease="Back.In"/>
+    <item time="13" type="Scale" target="n0_w29k" value="0.2,0.2"/>
+    <item time="13" type="Scale" target="n1_w29k" value="0.2,0.2"/>
+    <item time="13" type="Scale" target="n2_w29k" value="0.2,0.2"/>
+    <item time="13" type="XY" target="n0_w29k" value="700,540"/>
+    <item time="13" type="XY" target="n1_w29k" value="700,530"/>
+    <item time="13" type="XY" target="n2_w29k" value="700,520"/>
+  </transition>
+  <transition name="titleIn" options="2">
+    <item time="0" type="Alpha" target="n8_w29k" tween="true" startValue="0" endValue="1" duration="3" ease="Linear"/>
+    <item time="0" type="XY" target="n8_w29k" tween="true" startValue="-,141" endValue="-,221" duration="3" ease="Linear"/>
+  </transition>
+  <transition name="titleOut" options="2">
+    <item time="0" type="Alpha" target="n8_w29k" tween="true" startValue="1" endValue="0" duration="4" ease="Linear"/>
+    <item time="0" type="XY" target="n8_w29k" tween="true" startValue="-,221" endValue="-,141" duration="4" ease="Linear"/>
+  </transition>
+</component>

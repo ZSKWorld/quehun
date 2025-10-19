@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" designImage="ui://ca43vz0ejdu67plngr" designImageAlpha="100">
+<component size="1920,1080" designImage="ui://ca43vz0ejdu67plngr" designImageAlpha="36">
   <displayList>
+    <component id="n19_w29k" name="matchMode" src="w29kob8f" fileName="Component/UIMain/ComMatchMode.xml" xy="0,0"/>
     <component id="n0_vwgm" name="liaoShe" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="869,953" size="134,112" group="n7_vwgm">
       <Button icon="ui://vith2b66vwgma"/>
     </component>

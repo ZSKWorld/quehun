@@ -1,4 +1,12 @@
 {
+  "objectStatus": {
+    "n18_vwgm": {
+      "collapsed": true
+    },
+    "n7_vwgm": {
+      "collapsed": true
+    }
+  },
   "adaptiveTest": true,
   "designImages": [
     "ui://ca43vz0ejdu67plngr"

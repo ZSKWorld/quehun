@@ -79,6 +79,7 @@
     <component id="ieavob8b" name="UILoading.xml" path="/" exported="true"/>
     <component id="ieavob8c" name="PbLoading1.xml" path="/Component/PbBar/"/>
     <component id="vwgmob8d" name="PbLoading2.xml" path="/Component/PbBar/"/>
+    <component id="w29kob8e" name="BtnIconFitNoScale.xml" path="/Component/Button/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

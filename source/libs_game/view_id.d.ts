@@ -9,6 +9,7 @@ declare enum EViewID {
 	/**Renders */
 
 	/**Coms */
+	ComMatchModeView = "ComMatchModeView",
 
 	/**UIs */
 	UIConfirmBigView = "UIConfirmBigView",

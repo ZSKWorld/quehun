@@ -1481,6 +1481,8 @@
     <image id="vwgm7plof7" name="201202.jpg" path="/11/"/>
     <image id="vwgm7plof8" name="210201.jpg" path="/11/"/>
     <image id="vwgm7plof9" name="210601.jpg" path="/11/"/>
+    <image id="w29k7plofa" name="1.png" path="/大厅活动入口/"/>
+    <image id="w29k7plofb" name="2.png" path="/大厅活动入口/"/>
   </resources>
   <publish name=""/>
 </packageDescription>

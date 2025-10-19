@@ -108,4 +108,12 @@ export class UIUtil {
 				.then(v => (v.owner.recover(), resolve()));
 		});
 	}
+
+	static playTrans(trans: fgui.Transition, reverse?: boolean) {
+		return new Promise<void>(resolve => {
+			if (!trans) return resolve();
+			if (reverse) trans.playReverse(Laya.Handler.create(null, resolve));
+			else trans.play(Laya.Handler.create(null, resolve));
+		});
+	}
 }

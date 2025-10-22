@@ -2222,7 +2222,7 @@ declare interface INotifyRoomPlayerReady extends IProto {
 	seq: number;
 }
 
-/** undefined */
+/** .lq.NotifyRoomPlayerReady.AccountReadyState */
 declare interface INotifyRoomPlayerReady_AccountReadyState extends IProto {
 	account_id: number;
 	ready: boolean;
@@ -2240,7 +2240,7 @@ declare interface INotifyRoomPlayerDressing extends IProto {
 	seq: number;
 }
 
-/** undefined */
+/** .lq.NotifyRoomPlayerDressing.AccountDressingState */
 declare interface INotifyRoomPlayerDressing_AccountDressingState extends IProto {
 	account_id: number;
 	dressing: boolean;
@@ -2356,7 +2356,7 @@ declare interface INotifyAnnouncementUpdate extends IProto {
 	update_list: INotifyAnnouncementUpdate_AnnouncementUpdate[];
 }
 
-/** undefined */
+/** .lq.NotifyAnnouncementUpdate.AnnouncementUpdate */
 declare interface INotifyAnnouncementUpdate_AnnouncementUpdate extends IProto {
 	lang: string;
 	platform: string;
@@ -2431,7 +2431,7 @@ declare interface INotifyActivityUpdate extends IProto {
 	list: INotifyActivityUpdate_FeedActivityData[];
 }
 
-/** undefined */
+/** .lq.NotifyActivityUpdate.FeedActivityData */
 declare interface INotifyActivityUpdate_FeedActivityData extends IProto {
 	activity_id: number;
 	feed_count: number;
@@ -2440,13 +2440,13 @@ declare interface INotifyActivityUpdate_FeedActivityData extends IProto {
 	gift_inbox: INotifyActivityUpdate_GiftBoxData[];
 }
 
-/** undefined */
+/** .lq.NotifyActivityUpdate.FeedActivityData.CountWithTimeData */
 declare interface INotifyActivityUpdate_CountWithTimeData extends IProto {
 	count: number;
 	last_update_time: number;
 }
 
-/** undefined */
+/** .lq.NotifyActivityUpdate.FeedActivityData.GiftBoxData */
 declare interface INotifyActivityUpdate_GiftBoxData extends IProto {
 	id: number;
 	item_id: number;
@@ -2556,7 +2556,7 @@ declare interface INotifyPayResult extends IProto {
 	resource_modify: INotifyPayResult_ResourceModify[];
 }
 
-/** undefined */
+/** .lq.NotifyPayResult.ResourceModify */
 declare interface INotifyPayResult_ResourceModify extends IResponse {
 	id: number;
 	count: number;
@@ -2660,7 +2660,7 @@ declare interface INotifyGameFinishRewardV2 extends IProto {
 	badges: IBadgeAchieveProgress[];
 }
 
-/** undefined */
+/** .lq.NotifyGameFinishRewardV2.LevelChange */
 declare interface INotifyGameFinishRewardV2_LevelChange extends IProto {
 	/** 原来的段位 */
 	origin: IAccountLevel;
@@ -2670,7 +2670,7 @@ declare interface INotifyGameFinishRewardV2_LevelChange extends IProto {
 	type: number;
 }
 
-/** undefined */
+/** .lq.NotifyGameFinishRewardV2.MatchChest */
 declare interface INotifyGameFinishRewardV2_MatchChest extends IProto {
 	chest_id: number;
 	origin: number;
@@ -2679,14 +2679,14 @@ declare interface INotifyGameFinishRewardV2_MatchChest extends IProto {
 	rewards: IRewardSlot[];
 }
 
-/** undefined */
+/** .lq.NotifyGameFinishRewardV2.MainCharacter */
 declare interface INotifyGameFinishRewardV2_MainCharacter extends IProto {
 	level: number;
 	exp: number;
 	add: number;
 }
 
-/** undefined */
+/** .lq.NotifyGameFinishRewardV2.CharacterGift */
 declare interface INotifyGameFinishRewardV2_CharacterGift extends IProto {
 	origin: number;
 	final: number;
@@ -2700,7 +2700,7 @@ declare interface INotifyActivityRewardV2 extends IProto {
 	activity_reward: INotifyActivityRewardV2_ActivityReward[];
 }
 
-/** undefined */
+/** .lq.NotifyActivityRewardV2.ActivityReward */
 declare interface INotifyActivityRewardV2_ActivityReward extends IProto {
 	activity_id: number;
 	rewards: IRewardSlot[];
@@ -2712,7 +2712,7 @@ declare interface INotifyActivityPointV2 extends IProto {
 	activity_points: INotifyActivityPointV2_ActivityPoint[];
 }
 
-/** undefined */
+/** .lq.NotifyActivityPointV2.ActivityPoint */
 declare interface INotifyActivityPointV2_ActivityPoint extends IProto {
 	activity_id: number;
 	/** 当前累计点数 */
@@ -2725,7 +2725,7 @@ declare interface INotifyLeaderboardPointV2 extends IProto {
 	leaderboard_points: INotifyLeaderboardPointV2_LeaderboardPoint[];
 }
 
-/** undefined */
+/** .lq.NotifyLeaderboardPointV2.LeaderboardPoint */
 declare interface INotifyLeaderboardPointV2_LeaderboardPoint extends IProto {
 	leaderboard_id: number;
 	/** 当前排名点数 */
@@ -2856,7 +2856,7 @@ declare interface IAccountMahjongStatistic extends IProto {
 }
 
 /**
- * * undefined
+ * * .lq.AccountMahjongStatistic.RoundSummary
  * * 回合总结
  */
 declare interface IAccountMahjongStatistic_RoundSummary extends IProto {
@@ -2871,7 +2871,7 @@ declare interface IAccountMahjongStatistic_RoundSummary extends IProto {
 }
 
 /**
- * * undefined
+ * * .lq.AccountMahjongStatistic.HuSummary
  * * 胡牌总结
  */
 declare interface IAccountMahjongStatistic_HuSummary extends IProto {
@@ -2883,7 +2883,7 @@ declare interface IAccountMahjongStatistic_HuSummary extends IProto {
 	total_fan: number;
 }
 
-/** undefined */
+/** .lq.AccountMahjongStatistic.Liqi20Summary */
 declare interface IAccountMahjongStatistic_Liqi20Summary extends IProto {
 	/** 胡牌的次数 */
 	total_count: number;
@@ -2893,7 +2893,7 @@ declare interface IAccountMahjongStatistic_Liqi20Summary extends IProto {
 	average_hu_point: number;
 }
 
-/** undefined */
+/** .lq.AccountMahjongStatistic.LiQi10Summary */
 declare interface IAccountMahjongStatistic_LiQi10Summary extends IProto {
 	/** 悬赏数之和 */
 	total_xuanshang: number;
@@ -2901,7 +2901,7 @@ declare interface IAccountMahjongStatistic_LiQi10Summary extends IProto {
 	total_fanshu: number;
 }
 
-/** undefined */
+/** .lq.AccountMahjongStatistic.GameResult */
 declare interface IAccountMahjongStatistic_GameResult extends IProto {
 	/** 排名 */
 	rank: number;
@@ -3004,19 +3004,19 @@ declare interface IAccount extends IProto {
 	badges: IAccount_Badge[];
 }
 
-/** undefined */
+/** .lq.Account.PlatformDiamond */
 declare interface IAccount_PlatformDiamond extends IProto {
 	id: number;
 	count: number;
 }
 
-/** undefined */
+/** .lq.Account.PlatformSkinTicket */
 declare interface IAccount_PlatformSkinTicket extends IProto {
 	id: number;
 	count: number;
 }
 
-/** undefined */
+/** .lq.Account.ChallengeLevel */
 declare interface IAccount_ChallengeLevel extends IProto {
 	season: number;
 	level: number;
@@ -3024,7 +3024,7 @@ declare interface IAccount_ChallengeLevel extends IProto {
 }
 
 /**
- * * undefined
+ * * .lq.Account.AchievementCount
  * * 成就统计
  */
 declare interface IAccount_AchievementCount extends IProto {
@@ -3033,7 +3033,7 @@ declare interface IAccount_AchievementCount extends IProto {
 }
 
 /**
- * * undefined
+ * * .lq.Account.Badge
  * * 勋章信息统计
  */
 declare interface IAccount_Badge extends IProto {
@@ -3086,7 +3086,7 @@ declare interface IAccountUpdate extends IProto {
 }
 
 /**
- * * undefined
+ * * .lq.AccountUpdate.NumericalUpdate
  * * 数值资源变化
  */
 declare interface IAccountUpdate_NumericalUpdate extends IProto {
@@ -3097,7 +3097,7 @@ declare interface IAccountUpdate_NumericalUpdate extends IProto {
 }
 
 /**
- * * undefined
+ * * .lq.AccountUpdate.CharacterUpdate
  * * 角色
  */
 declare interface IAccountUpdate_CharacterUpdate extends IProto {
@@ -3112,7 +3112,7 @@ declare interface IAccountUpdate_CharacterUpdate extends IProto {
 }
 
 /**
- * * undefined
+ * * .lq.AccountUpdate.AchievementUpdate
  * * 成就
  */
 declare interface IAccountUpdate_AchievementUpdate extends IProto {
@@ -3123,7 +3123,7 @@ declare interface IAccountUpdate_AchievementUpdate extends IProto {
 }
 
 /**
- * * undefined
+ * * .lq.AccountUpdate.DailyTaskUpdate
  * * 每日任务
  */
 declare interface IAccountUpdate_DailyTaskUpdate extends IProto {
@@ -3132,7 +3132,7 @@ declare interface IAccountUpdate_DailyTaskUpdate extends IProto {
 }
 
 /**
- * * undefined
+ * * .lq.AccountUpdate.TitleUpdate
  * * 称号
  */
 declare interface IAccountUpdate_TitleUpdate extends IProto {
@@ -3143,7 +3143,7 @@ declare interface IAccountUpdate_TitleUpdate extends IProto {
 }
 
 /**
- * * undefined
+ * * .lq.AccountUpdate.TaskUpdate
  * * 活动任务
  */
 declare interface IAccountUpdate_TaskUpdate extends IProto {
@@ -3152,7 +3152,7 @@ declare interface IAccountUpdate_TaskUpdate extends IProto {
 	task_list: number[];
 }
 
-/** undefined */
+/** .lq.AccountUpdate.AccountChallengeUpdate */
 declare interface IAccountUpdate_AccountChallengeUpdate extends IProto {
 	progresses: ITaskProgress[];
 	/** 试炼等级 */
@@ -3169,7 +3169,7 @@ declare interface IAccountUpdate_AccountChallengeUpdate extends IProto {
 	rewarded_season: number[];
 }
 
-/** undefined */
+/** .lq.AccountUpdate.AccountABMatchUpdate */
 declare interface IAccountUpdate_AccountABMatchUpdate extends IProto {
 	match_id: number;
 	match_count: number;
@@ -3180,20 +3180,20 @@ declare interface IAccountUpdate_AccountABMatchUpdate extends IProto {
 	quit: boolean;
 }
 
-/** undefined */
+/** .lq.AccountUpdate.SegmentTaskUpdate */
 declare interface IAccountUpdate_SegmentTaskUpdate extends IProto {
 	progresses: ISegmentTaskProgress[];
 	/** 当前任务列表 */
 	task_list: number[];
 }
 
-/** undefined */
+/** .lq.AccountUpdate.MonthTicketUpdate */
 declare interface IAccountUpdate_MonthTicketUpdate extends IProto {
 	end_time: number;
 	last_pay_time: number;
 }
 
-/** undefined */
+/** .lq.AccountUpdate.MainCharacterUpdate */
 declare interface IAccountUpdate_MainCharacterUpdate extends IProto {
 	/** 主角色id */
 	character_id: number;
@@ -3201,13 +3201,13 @@ declare interface IAccountUpdate_MainCharacterUpdate extends IProto {
 	skin_id: number;
 }
 
-/** undefined */
+/** .lq.AccountUpdate.BadgeUpdate */
 declare interface IAccountUpdate_BadgeUpdate extends IProto {
 	/** 只发送有进度更新的勋章 */
 	progresses: IBadgeAchieveProgress[];
 }
 
-/** undefined */
+/** .lq.AccountUpdate.AccountABMatchUpdate.MatchPoint */
 declare interface IAccountUpdate_MatchPoint extends IProto {
 	match_id: number;
 	point: number;
@@ -3221,7 +3221,7 @@ declare interface IContestGameMetaData extends IProto {
 	rank_type: number;
 }
 
-/** undefined */
+/** .lq.ContestGameMetaData.ContestTypeZoneData */
 declare interface IContestGameMetaData_ContestTypeZoneData extends IProto {
 	zone: number;
 	contest_type: number;
@@ -3582,7 +3582,7 @@ declare interface IGameEndResult extends IProto {
 	players: IGameEndResult_PlayerItem[];
 }
 
-/** undefined */
+/** .lq.GameEndResult.PlayerItem */
 declare interface IGameEndResult_PlayerItem extends IProto {
 	seat: number;
 	/** 总分数点 */
@@ -3681,7 +3681,7 @@ declare interface IRewardPlusResult extends IProto {
 	exchange: IRewardPlusResult_Exchange;
 }
 
-/** undefined */
+/** .lq.RewardPlusResult.Exchange */
 declare interface IRewardPlusResult_Exchange extends IProto {
 	/** 实际加的id */
 	id: number;
@@ -3798,7 +3798,7 @@ declare interface IAccountStatisticByGameMode extends IProto {
 	rank_score: IAccountStatisticByGameMode_RankScore[];
 }
 
-/** undefined */
+/** .lq.AccountStatisticByGameMode.RoundEndData */
 declare interface IAccountStatisticByGameMode_RoundEndData extends IProto {
 	/** 每局结束方式：自摸、荣和、放铳等 */
 	type: number;
@@ -3806,7 +3806,7 @@ declare interface IAccountStatisticByGameMode_RoundEndData extends IProto {
 	sum: number;
 }
 
-/** undefined */
+/** .lq.AccountStatisticByGameMode.RankScore */
 declare interface IAccountStatisticByGameMode_RankScore extends IProto {
 	/** 顺位 */
 	rank: number;
@@ -3872,7 +3872,7 @@ declare interface IAccountDetailStatisticV2 extends IProto {
 }
 
 /**
- * * undefined
+ * * .lq.AccountDetailStatisticV2.RankStatistic
  * * 段位赛统计数据
  */
 declare interface IAccountDetailStatisticV2_RankStatistic extends IProto {
@@ -3885,7 +3885,7 @@ declare interface IAccountDetailStatisticV2_RankStatistic extends IProto {
 }
 
 /**
- * * undefined
+ * * .lq.AccountDetailStatisticV2.CustomizedContestStatistic
  * * 自定义比赛统计数据
  */
 declare interface IAccountDetailStatisticV2_CustomizedContestStatistic extends IProto {
@@ -3896,7 +3896,7 @@ declare interface IAccountDetailStatisticV2_CustomizedContestStatistic extends I
 }
 
 /**
- * * undefined
+ * * .lq.AccountDetailStatisticV2.ChallengeStatistic
  * * 试炼赛比赛统计数据
  */
 declare interface IAccountDetailStatisticV2_ChallengeStatistic extends IProto {
@@ -3904,7 +3904,7 @@ declare interface IAccountDetailStatisticV2_ChallengeStatistic extends IProto {
 	season_data_list: IAccountDetailStatisticV2_SeasonData[];
 }
 
-/** undefined */
+/** .lq.AccountDetailStatisticV2.RankStatistic.RankData */
 declare interface IAccountDetailStatisticV2_RankData extends IProto {
 	/** 所有级别的统计数据（总览） */
 	all_level_statistic: IAccountDetailStatistic;
@@ -3912,13 +3912,13 @@ declare interface IAccountDetailStatisticV2_RankData extends IProto {
 	level_data_list: IAccountDetailStatisticV2_RankLevelData[];
 }
 
-/** undefined */
+/** .lq.AccountDetailStatisticV2.RankStatistic.RankData.RankLevelData */
 declare interface IAccountDetailStatisticV2_RankLevelData extends IProto {
 	rank_level: number;
 	statistic: IAccountDetailStatistic;
 }
 
-/** undefined */
+/** .lq.AccountDetailStatisticV2.ChallengeStatistic.SeasonData */
 declare interface IAccountDetailStatisticV2_SeasonData extends IProto {
 	season_id: number;
 	statistic: IAccountDetailStatistic;
@@ -4057,13 +4057,13 @@ declare interface IFeedActivityData extends IProto {
 	gift_inbox: IFeedActivityData_GiftBoxData[];
 }
 
-/** undefined */
+/** .lq.FeedActivityData.CountWithTimeData */
 declare interface IFeedActivityData_CountWithTimeData extends IProto {
 	count: number;
 	last_update_time: number;
 }
 
-/** undefined */
+/** .lq.FeedActivityData.GiftBoxData */
 declare interface IFeedActivityData_GiftBoxData extends IProto {
 	id: number;
 	item_id: number;
@@ -4134,7 +4134,7 @@ declare interface IActivityCombiningMenuData extends IProto {
 	multi_generated: IActivityCombiningMenuData_MenuRequire[];
 }
 
-/** undefined */
+/** .lq.ActivityCombiningMenuData.MenuRequire */
 declare interface IActivityCombiningMenuData_MenuRequire extends IProto {
 	level: number;
 	count: number;
@@ -4185,7 +4185,7 @@ declare interface IActivityCombiningData extends IProto {
 	order_pool: IActivityCombiningPoolData[];
 }
 
-/** undefined */
+/** .lq.ActivityCombiningData.BonusData */
 declare interface IActivityCombiningData_BonusData extends IProto {
 	count: number;
 	update_time: number;
@@ -4340,13 +4340,13 @@ declare interface IActivityFeedData extends IProto {
 	max_inbox_id: number;
 }
 
-/** undefined */
+/** .lq.ActivityFeedData.CountWithTimeData */
 declare interface IActivityFeedData_CountWithTimeData extends IProto {
 	count: number;
 	last_update_time: number;
 }
 
-/** undefined */
+/** .lq.ActivityFeedData.GiftBoxData */
 declare interface IActivityFeedData_GiftBoxData extends IProto {
 	id: number;
 	item_id: number;
@@ -4393,20 +4393,20 @@ declare interface IActivityQuestCrewEffectResult extends IProto {
 	reward: IActivityQuestCrewEffectResult_QCItemReward;
 }
 
-/** undefined */
+/** .lq.ActivityQuestCrewEffectResult.QCQuestResultChange */
 declare interface IActivityQuestCrewEffectResult_QCQuestResultChange extends IProto {
 	from: number;
 	to: number;
 }
 
-/** undefined */
+/** .lq.ActivityQuestCrewEffectResult.QCQuestConsumeChange */
 declare interface IActivityQuestCrewEffectResult_QCQuestConsumeChange extends IProto {
 	member_id: number;
 	from: number;
 	to: number;
 }
 
-/** undefined */
+/** .lq.ActivityQuestCrewEffectResult.QCItemReward */
 declare interface IActivityQuestCrewEffectResult_QCItemReward extends IProto {
 	execute_reward: IExecuteReward[];
 }
@@ -4437,13 +4437,13 @@ declare interface IActivityQuestCrewChanges extends IProto {
 	market_board: IUInt32ArrayDirty;
 }
 
-/** undefined */
+/** .lq.ActivityQuestCrewChanges.QCMemberArrayDirty */
 declare interface IActivityQuestCrewChanges_QCMemberArrayDirty extends IProto {
 	dirty: boolean;
 	value: IQCMember[];
 }
 
-/** undefined */
+/** .lq.ActivityQuestCrewChanges.QCQuestArrayDirty */
 declare interface IActivityQuestCrewChanges_QCQuestArrayDirty extends IProto {
 	dirty: boolean;
 	value: IQCQuest[];
@@ -4467,14 +4467,14 @@ declare interface IActivityFriendGiftData extends IProto {
 	gift_inbox: IActivityFriendGiftData_GiftBoxData[];
 }
 
-/** undefined */
+/** .lq.ActivityFriendGiftData.CountWithTimeData */
 declare interface IActivityFriendGiftData_CountWithTimeData extends IProto {
 	count: number;
 	last_update_time: number;
 	send_friend_id: number[];
 }
 
-/** undefined */
+/** .lq.ActivityFriendGiftData.GiftBoxData */
 declare interface IActivityFriendGiftData_GiftBoxData extends IProto {
 	id: number;
 	item_id: number;
@@ -4491,7 +4491,7 @@ declare interface IActivityUpgradeData extends IProto {
 	received_level: number;
 }
 
-/** undefined */
+/** .lq.ActivityUpgradeData.LevelGroup */
 declare interface IActivityUpgradeData_LevelGroup extends IProto {
 	group_id: number;
 	level: number;
@@ -4573,7 +4573,7 @@ declare interface IActivitySpotData extends IProto {
 	spots: IActivitySpotData_SpotData[];
 }
 
-/** undefined */
+/** .lq.ActivitySpotData.SpotData */
 declare interface IActivitySpotData_SpotData extends IProto {
 	unique_id: number;
 	rewarded: number;
@@ -4825,7 +4825,7 @@ declare interface IZHPShop extends IProto {
 	cost_refresh: IZHPShop_RefreshCount;
 }
 
-/** undefined */
+/** .lq.ZHPShop.RefreshCount */
 declare interface IZHPShop_RefreshCount extends IProto {
 	/** 已经使用的刷新次数 */
 	count: number;
@@ -4861,7 +4861,7 @@ declare interface IShopInfo extends IProto {
 	selected_package_records: IShopInfo_SelectedPackageBuyRecord[];
 }
 
-/** undefined */
+/** .lq.ShopInfo.SelectedPackageBuyRecord */
 declare interface IShopInfo_SelectedPackageBuyRecord extends IProto {
 	/** 当前商品归属礼包id */
 	package_id: number;
@@ -4905,7 +4905,7 @@ declare interface IPaymentSettingV2 extends IProto {
 	payment_platforms: IPaymentSettingV2_PaymentSettingUnit[];
 }
 
-/** undefined */
+/** .lq.PaymentSettingV2.PaymentMaintain */
 declare interface IPaymentSettingV2_PaymentMaintain extends IProto {
 	start_time: number;
 	end_time: number;
@@ -4914,7 +4914,7 @@ declare interface IPaymentSettingV2_PaymentMaintain extends IProto {
 	enabled_channel: string[];
 }
 
-/** undefined */
+/** .lq.PaymentSettingV2.PaymentSettingUnit */
 declare interface IPaymentSettingV2_PaymentSettingUnit extends IProto {
 	platform: string;
 	is_show: boolean;
@@ -4946,7 +4946,7 @@ declare interface IPaymentSetting extends IProto {
 	alipay: IPaymentSetting_AlipayData;
 }
 
-/** undefined */
+/** .lq.PaymentSetting.WechatData */
 declare interface IPaymentSetting_WechatData extends IProto {
 	disable_create: boolean;
 	/** 0=原生 1=汇潮 */
@@ -4954,7 +4954,7 @@ declare interface IPaymentSetting_WechatData extends IProto {
 	enable_credit: boolean;
 }
 
-/** undefined */
+/** .lq.PaymentSetting.AlipayData */
 declare interface IPaymentSetting_AlipayData extends IProto {
 	disable_create: boolean;
 	/** 0=原生 1=汇潮 */
@@ -5143,7 +5143,7 @@ declare interface IRecordGame extends IProto {
 	standard_rule: number;
 }
 
-/** undefined */
+/** .lq.RecordGame.AccountInfo */
 declare interface IRecordGame_AccountInfo extends IProto {
 	account_id: number;
 	seat: number;
@@ -5220,7 +5220,7 @@ declare interface ICustomizedContestGameStart extends IProto {
 	players: ICustomizedContestGameStart_Item[];
 }
 
-/** undefined */
+/** .lq.CustomizedContestGameStart.Item */
 declare interface ICustomizedContestGameStart_Item extends IProto {
 	account_id: number;
 	nickname: string;
@@ -5234,7 +5234,7 @@ declare interface ICustomizedContestGameEnd extends IProto {
 	players: ICustomizedContestGameEnd_Item[];
 }
 
-/** undefined */
+/** .lq.CustomizedContestGameEnd.Item */
 declare interface ICustomizedContestGameEnd_Item extends IProto {
 	account_id: number;
 	nickname: string;
@@ -5310,14 +5310,14 @@ declare interface IGameRoundHuData extends IProto {
 	pai_left_count: number;
 }
 
-/** undefined */
+/** .lq.GameRoundHuData.HuPai */
 declare interface IGameRoundHuData_HuPai extends IProto {
 	tile: string;
 	seat: number;
 	liqi: number;
 }
 
-/** undefined */
+/** .lq.GameRoundHuData.Fan */
 declare interface IGameRoundHuData_Fan extends IProto {
 	id: number;
 	count: number;
@@ -5381,7 +5381,7 @@ declare interface IGameFinalSnapshot extends IProto {
 }
 
 /**
- * * undefined
+ * * .lq.GameFinalSnapshot.CalculateParam
  * * 计算相关参数
  */
 declare interface IGameFinalSnapshot_CalculateParam extends IProto {
@@ -5393,7 +5393,7 @@ declare interface IGameFinalSnapshot_CalculateParam extends IProto {
 	rank_points: number[];
 }
 
-/** undefined */
+/** .lq.GameFinalSnapshot.GameSeat */
 declare interface IGameFinalSnapshot_GameSeat extends IProto {
 	type: number;
 	account_id: number;
@@ -5405,7 +5405,7 @@ declare interface IGameFinalSnapshot_GameSeat extends IProto {
 	is_connected: boolean;
 }
 
-/** undefined */
+/** .lq.GameFinalSnapshot.FinalPlayer */
 declare interface IGameFinalSnapshot_FinalPlayer extends IProto {
 	seat: number;
 	total_point: number;
@@ -5415,7 +5415,7 @@ declare interface IGameFinalSnapshot_FinalPlayer extends IProto {
 	gold: number;
 }
 
-/** undefined */
+/** .lq.GameFinalSnapshot.AFKInfo */
 declare interface IGameFinalSnapshot_AFKInfo extends IProto {
 	deal_tile_count: number;
 	moqie_count: number;
@@ -5543,7 +5543,7 @@ declare interface IContestDetailRuleV2 extends IProto {
 	extra_rule: IContestDetailRuleV2_ExtraRule;
 }
 
-/** undefined */
+/** .lq.ContestDetailRuleV2.ExtraRule */
 declare interface IContestDetailRuleV2_ExtraRule extends IProto {
 	required_level: number;
 	max_game_count: number;
@@ -5620,7 +5620,7 @@ declare interface IRecordHuleInfo extends IProto {
 	ting_mian: number;
 }
 
-/** undefined */
+/** .lq.RecordHuleInfo.RecordFanInfo */
 declare interface IRecordHuleInfo_RecordFanInfo extends IProto {
 	val: number;
 	id: number;
@@ -5724,25 +5724,25 @@ declare interface IAccountResourceSnapshot extends IProto {
 	currency_convert: number;
 }
 
-/** undefined */
+/** .lq.AccountResourceSnapshot.BagItemSnapshot */
 declare interface IAccountResourceSnapshot_BagItemSnapshot extends IProto {
 	resource_id: number;
 	resource_count: number;
 	resource_version: number;
 }
 
-/** undefined */
+/** .lq.AccountResourceSnapshot.CurrencySnapshot */
 declare interface IAccountResourceSnapshot_CurrencySnapshot extends IProto {
 	currency_id: number;
 	currency_count: number;
 }
 
-/** undefined */
+/** .lq.AccountResourceSnapshot.TitleSnapshot */
 declare interface IAccountResourceSnapshot_TitleSnapshot extends IProto {
 	title_list: number[];
 }
 
-/** undefined */
+/** .lq.AccountResourceSnapshot.UsedTitleSnapshot */
 declare interface IAccountResourceSnapshot_UsedTitleSnapshot extends IProto {
 	title_id: number;
 }
@@ -5757,17 +5757,17 @@ declare interface IAccountCharacterSnapshot extends IProto {
 	hidden_characters: IAccountCharacterSnapshot_HiddenCharacter;
 }
 
-/** undefined */
+/** .lq.AccountCharacterSnapshot.MainCharacterSnapshot */
 declare interface IAccountCharacterSnapshot_MainCharacterSnapshot extends IProto {
 	character_id: number;
 }
 
-/** undefined */
+/** .lq.AccountCharacterSnapshot.SkinsSnapshot */
 declare interface IAccountCharacterSnapshot_SkinsSnapshot extends IProto {
 	skin_list: number[];
 }
 
-/** undefined */
+/** .lq.AccountCharacterSnapshot.HiddenCharacter */
 declare interface IAccountCharacterSnapshot_HiddenCharacter extends IProto {
 	hidden_list: number[];
 }
@@ -5779,7 +5779,7 @@ declare interface IAccountMailRecord extends IProto {
 	modified_mails: IAccountMailRecord_MailSnapshot[];
 }
 
-/** undefined */
+/** .lq.AccountMailRecord.MailSnapshot */
 declare interface IAccountMailRecord_MailSnapshot extends IProto {
 	mail_id: number;
 	reference_id: number;
@@ -5796,12 +5796,12 @@ declare interface IAccountAchievementSnapshot extends IProto {
 	version: IAccountAchievementSnapshot_AchievementVersion;
 }
 
-/** undefined */
+/** .lq.AccountAchievementSnapshot.RewardedGroupSnapshot */
 declare interface IAccountAchievementSnapshot_RewardedGroupSnapshot extends IProto {
 	rewarded_id: number;
 }
 
-/** undefined */
+/** .lq.AccountAchievementSnapshot.AchievementVersion */
 declare interface IAccountAchievementSnapshot_AchievementVersion extends IProto {
 	version: number;
 }
@@ -5817,12 +5817,12 @@ declare interface IAccountMiscSnapshot extends IProto {
 	month_ticket_v2: IAccountMiscSnapshot_AccountMonthTicketSnapshotV2;
 }
 
-/** undefined */
+/** .lq.AccountMiscSnapshot.AccountVIPRewardSnapshot */
 declare interface IAccountMiscSnapshot_AccountVIPRewardSnapshot extends IProto {
 	rewarded: number[];
 }
 
-/** undefined */
+/** .lq.AccountMiscSnapshot.MonthTicketInfo */
 declare interface IAccountMiscSnapshot_MonthTicketInfo extends IProto {
 	/** 月卡ID */
 	id: number;
@@ -5836,23 +5836,23 @@ declare interface IAccountMiscSnapshot_MonthTicketInfo extends IProto {
 	history: number[];
 }
 
-/** undefined */
+/** .lq.AccountMiscSnapshot.AccountMonthTicketSnapshot */
 declare interface IAccountMiscSnapshot_AccountMonthTicketSnapshot extends IProto {
 	tickets: IAccountMiscSnapshot_MonthTicketInfo[];
 }
 
-/** undefined */
+/** .lq.AccountMiscSnapshot.AccountVIP */
 declare interface IAccountMiscSnapshot_AccountVIP extends IProto {
 	vip: number;
 }
 
-/** undefined */
+/** .lq.AccountMiscSnapshot.AccountRechargeInfo */
 declare interface IAccountMiscSnapshot_AccountRechargeInfo extends IProto {
 	records: IAccountMiscSnapshot_RechargeRecord[];
 	has_data: number;
 }
 
-/** undefined */
+/** .lq.AccountMiscSnapshot.AccountMonthTicketSnapshotV2 */
 declare interface IAccountMiscSnapshot_AccountMonthTicketSnapshotV2 extends IProto {
 	/** 月卡结束时间 */
 	end_time: number;
@@ -5864,7 +5864,7 @@ declare interface IAccountMiscSnapshot_AccountMonthTicketSnapshotV2 extends IPro
 	history: number[];
 }
 
-/** undefined */
+/** .lq.AccountMiscSnapshot.AccountRechargeInfo.RechargeRecord */
 declare interface IAccountMiscSnapshot_RechargeRecord extends IProto {
 	level: number;
 	recharge_time: number;
@@ -5948,27 +5948,27 @@ declare interface IQuestionnaireQuestion extends IProto {
 	option_random_sort_index: number;
 }
 
-/** undefined */
+/** .lq.QuestionnaireQuestion.QuestionOption */
 declare interface IQuestionnaireQuestion_QuestionOption extends IProto {
 	label: string;
 	value: string;
 	allow_input: boolean;
 }
 
-/** undefined */
+/** .lq.QuestionnaireQuestion.NextQuestionData */
 declare interface IQuestionnaireQuestion_NextQuestionData extends IProto {
 	target_question_id: number;
 	conditions: IQuestionnaireQuestion_QuestionconditionWrapper[];
 }
 
-/** undefined */
+/** .lq.QuestionnaireQuestion.NextQuestionData.QuestionCondition */
 declare interface IQuestionnaireQuestion_QuestionCondition extends IProto {
 	question_id: number;
 	op: string;
 	values: string[];
 }
 
-/** undefined */
+/** .lq.QuestionnaireQuestion.NextQuestionData.QuestionconditionWrapper */
 declare interface IQuestionnaireQuestion_QuestionconditionWrapper extends IProto {
 	conditions: IQuestionnaireQuestion_QuestionCondition[];
 }
@@ -6114,14 +6114,14 @@ declare interface ISimulationV2Event extends IProto {
 	next_round: number;
 }
 
-/** undefined */
+/** .lq.SimulationV2Event.SimulationV2EventSelection */
 declare interface ISimulationV2Event_SimulationV2EventSelection extends IProto {
 	/** 选项id */
 	id: number;
 	results: ISimulationV2Event_SimulationV2EventResult[];
 }
 
-/** undefined */
+/** .lq.SimulationV2Event.SimulationV2EventSelection.SimulationV2EventResult */
 declare interface ISimulationV2Event_SimulationV2EventResult extends IProto {
 	/** 结果id */
 	id: number;
@@ -6199,7 +6199,7 @@ declare interface ISimulationV2MatchHistory extends IProto {
 	story: ISimulationV2MatchHistory_StoryArgs;
 }
 
-/** undefined */
+/** .lq.SimulationV2MatchHistory.RoundStartArgs */
 declare interface ISimulationV2MatchHistory_RoundStartArgs extends IProto {
 	info: ISimulationV2MatchInfo;
 	scores: number[];
@@ -6209,12 +6209,12 @@ declare interface ISimulationV2MatchHistory_RoundStartArgs extends IProto {
 	effected_buff_list: number[];
 }
 
-/** undefined */
+/** .lq.SimulationV2MatchHistory.RiichiArgs */
 declare interface ISimulationV2MatchHistory_RiichiArgs extends IProto {
 	seat: number;
 }
 
-/** undefined */
+/** .lq.SimulationV2MatchHistory.FuluArgs */
 declare interface ISimulationV2MatchHistory_FuluArgs extends IProto {
 	seat: number;
 	/** 副露后向听数 */
@@ -6223,7 +6223,7 @@ declare interface ISimulationV2MatchHistory_FuluArgs extends IProto {
 	fulu: number;
 }
 
-/** undefined */
+/** .lq.SimulationV2MatchHistory.HuleArgs */
 declare interface ISimulationV2MatchHistory_HuleArgs extends IProto {
 	seat: number;
 	zimo: boolean;
@@ -6233,25 +6233,25 @@ declare interface ISimulationV2MatchHistory_HuleArgs extends IProto {
 	score_modify: number[];
 }
 
-/** undefined */
+/** .lq.SimulationV2MatchHistory.PushTingArgs */
 declare interface ISimulationV2MatchHistory_PushTingArgs extends IProto {
 	seat: number;
 	ting: number;
 }
 
-/** undefined */
+/** .lq.SimulationV2MatchHistory.FindTingArgs */
 declare interface ISimulationV2MatchHistory_FindTingArgs extends IProto {
 	seat: number;
 	target: number;
 }
 
-/** undefined */
+/** .lq.SimulationV2MatchHistory.LiujuArgs */
 declare interface ISimulationV2MatchHistory_LiujuArgs extends IProto {
 	/** 玩家是否听牌(seat 索引) */
 	ting: number[];
 }
 
-/** undefined */
+/** .lq.SimulationV2MatchHistory.StoryArgs */
 declare interface ISimulationV2MatchHistory_StoryArgs extends IProto {
 	story_id: number;
 }
@@ -6280,7 +6280,7 @@ declare interface ISimulationV2Match extends IProto {
 	triggered_story: number[];
 }
 
-/** undefined */
+/** .lq.SimulationV2Match.SimulationV2Player */
 declare interface ISimulationV2Match_SimulationV2Player extends IProto {
 	/** 角色id */
 	id: number;
@@ -6314,33 +6314,33 @@ declare interface ISimulationActionData extends IProto {
 	deal_tile: ISimulationActionData_ActionDealTileData;
 }
 
-/** undefined */
+/** .lq.SimulationActionData.ActionRiichiData */
 declare interface ISimulationActionData_ActionRiichiData extends IProto {
 	seat: number;
 }
 
-/** undefined */
+/** .lq.SimulationActionData.ActionHuleData */
 declare interface ISimulationActionData_ActionHuleData extends IProto {
 	hule: ISimulationActionData_HuleInfo[];
 }
 
-/** undefined */
+/** .lq.SimulationActionData.ActionFuluData */
 declare interface ISimulationActionData_ActionFuluData extends IProto {
 	seat: number;
 }
 
-/** undefined */
+/** .lq.SimulationActionData.ActionDiscardData */
 declare interface ISimulationActionData_ActionDiscardData extends IProto {
 	seat: number;
 	riichi: boolean;
 }
 
-/** undefined */
+/** .lq.SimulationActionData.ActionDealTileData */
 declare interface ISimulationActionData_ActionDealTileData extends IProto {
 	seat: number;
 }
 
-/** undefined */
+/** .lq.SimulationActionData.ActionHuleData.HuleInfo */
 declare interface ISimulationActionData_HuleInfo extends IProto {
 	fan: number;
 	zimo: boolean;
@@ -6361,13 +6361,13 @@ declare interface IActivityShootValueChange extends IProto {
 	rewarded_ids: IActivityShootValueChange_RewardArrayDirty;
 }
 
-/** undefined */
+/** .lq.ActivityShootValueChange.Uint32ValueDirty */
 declare interface IActivityShootValueChange_Uint32ValueDirty extends IProto {
 	value: number;
 	dirty: number;
 }
 
-/** undefined */
+/** .lq.ActivityShootValueChange.RewardArrayDirty */
 declare interface IActivityShootValueChange_RewardArrayDirty extends IProto {
 	reward_ids: number[];
 	dirty: number;
@@ -6991,7 +6991,7 @@ declare interface IResAccountChallengeRankInfo extends IResponse {
 	season_info: IResAccountChallengeRankInfo_ChallengeRank[];
 }
 
-/** undefined */
+/** .lq.ResAccountChallengeRankInfo.ChallengeRank */
 declare interface IResAccountChallengeRankInfo_ChallengeRank extends IProto {
 	season: number;
 	rank: number;
@@ -7227,7 +7227,7 @@ declare interface IResLevelLeaderboard extends IResponse {
 	self_rank: number;
 }
 
-/** undefined */
+/** .lq.ResLevelLeaderboard.Item */
 declare interface IResLevelLeaderboard_Item extends IProto {
 	account_id: number;
 	level: IAccountLevel;
@@ -7248,7 +7248,7 @@ declare interface IResChallengeLeaderboard extends IResponse {
 	self_rank: number;
 }
 
-/** undefined */
+/** .lq.ResChallengeLeaderboard.Item */
 declare interface IResChallengeLeaderboard_Item extends IProto {
 	account_id: number;
 	level: number;
@@ -7269,7 +7269,7 @@ declare interface IResMutiChallengeLevel extends IResponse {
 	items: IResMutiChallengeLevel_Item[];
 }
 
-/** undefined */
+/** .lq.ResMutiChallengeLevel.Item */
 declare interface IResMutiChallengeLevel_Item extends IProto {
 	account_id: number;
 	level: number;
@@ -7308,7 +7308,7 @@ declare interface IResFriendApplyList extends IResponse {
 	applies: IResFriendApplyList_FriendApply[];
 }
 
-/** undefined */
+/** .lq.ResFriendApplyList.FriendApply */
 declare interface IResFriendApplyList_FriendApply extends IProto {
 	/** 申请者id */
 	account_id: number;
@@ -7532,7 +7532,7 @@ declare interface IResFetchAchievementRate extends IResponse {
 	rate: IResFetchAchievementRate_AchievementRate[];
 }
 
-/** undefined */
+/** .lq.ResFetchAchievementRate.AchievementRate */
 declare interface IResFetchAchievementRate_AchievementRate extends IProto {
 	id: number;
 	/** 4000 表示 40.00% */
@@ -7592,7 +7592,7 @@ declare interface IResClientValue extends IResponse {
 	recharged_count: number;
 }
 
-/** undefined */
+/** .lq.ResClientValue.Value */
 declare interface IResClientValue_Value extends IProto {
 	key: number;
 	value: number;
@@ -7620,7 +7620,7 @@ declare interface IResCurrentMatchInfo extends IResponse {
 	matches: IResCurrentMatchInfo_CurrentMatchInfo[];
 }
 
-/** undefined */
+/** .lq.ResCurrentMatchInfo.CurrentMatchInfo */
 declare interface IResCurrentMatchInfo_CurrentMatchInfo extends IProto {
 	mode_id: number;
 	playing_count: number;
@@ -7642,7 +7642,7 @@ declare interface IReqUserComplain extends IProto {
 	round_info: IReqUserComplain_GameRoundInfo;
 }
 
-/** undefined */
+/** .lq.ReqUserComplain.GameRoundInfo */
 declare interface IReqUserComplain_GameRoundInfo extends IProto {
 	chang: number;
 	ju: number;
@@ -7991,7 +7991,7 @@ declare interface IResCreateWechatAppOrder extends IResponse {
 	call_wechat_app_param: IResCreateWechatAppOrder_CallWechatAppParam;
 }
 
-/** undefined */
+/** .lq.ResCreateWechatAppOrder.CallWechatAppParam */
 declare interface IResCreateWechatAppOrder_CallWechatAppParam extends IProto {
 	appid: string;
 	partnerid: string;
@@ -8755,7 +8755,7 @@ declare interface IResOpenChest extends IResponse {
 	chest_replace_up: IResOpenChest_ChestReplaceCountData[];
 }
 
-/** undefined */
+/** .lq.ResOpenChest.ChestReplaceCountData */
 declare interface IResOpenChest_ChestReplaceCountData extends IProto {
 	id: number;
 	count: number;
@@ -8802,7 +8802,7 @@ declare interface IResDoActivitySignIn extends IResponse {
 	sign_in_count: number;
 }
 
-/** undefined */
+/** .lq.ResDoActivitySignIn.RewardData */
 declare interface IResDoActivitySignIn_RewardData extends IProto {
 	resource_id: number;
 	count: number;
@@ -8894,7 +8894,7 @@ declare interface IReqSendGiftToCharacter extends IProto {
 	gifts: IReqSendGiftToCharacter_Gift[];
 }
 
-/** undefined */
+/** .lq.ReqSendGiftToCharacter.Gift */
 declare interface IReqSendGiftToCharacter_Gift extends IProto {
 	item_id: number;
 	count: number;
@@ -8914,7 +8914,7 @@ declare interface IReqSellItem extends IProto {
 	sells: IReqSellItem_Item[];
 }
 
-/** undefined */
+/** .lq.ReqSellItem.Item */
 declare interface IReqSellItem_Item extends IProto {
 	item_id: number;
 	count: number;
@@ -8928,7 +8928,7 @@ declare interface IResCommonView extends IResponse {
 	slots: IResCommonView_Slot[];
 }
 
-/** undefined */
+/** .lq.ResCommonView.Slot */
 declare interface IResCommonView_Slot extends IProto {
 	slot: number;
 	value: number;
@@ -8979,7 +8979,7 @@ declare interface IResAllcommonViews extends IResponse {
 	use: number;
 }
 
-/** undefined */
+/** .lq.ResAllcommonViews.Views */
 declare interface IResAllcommonViews_Views extends IProto {
 	values: IViewSlot[];
 	index: number;
@@ -9055,7 +9055,7 @@ declare interface IReqBuyFromShop extends IProto {
 	package_goods: IReqBuyFromShop_Item[];
 }
 
-/** undefined */
+/** .lq.ReqBuyFromShop.Item */
 declare interface IReqBuyFromShop_Item extends IProto {
 	/** 物品ID */
 	id: number;
@@ -9178,7 +9178,7 @@ declare interface IResMisc extends IResponse {
 	disable_room_random_bot_char: number;
 }
 
-/** undefined */
+/** .lq.ResMisc.MiscFaithData */
 declare interface IResMisc_MiscFaithData extends IProto {
 	faith_id: number;
 	count: number;
@@ -9235,7 +9235,7 @@ declare interface IResFetchRefundOrder extends IResponse {
 	message: II18nContext[];
 }
 
-/** undefined */
+/** .lq.ResFetchRefundOrder.OrderInfo */
 declare interface IResFetchRefundOrder_OrderInfo extends IProto {
 	/** 支付时间 */
 	success_time: number;
@@ -9470,21 +9470,21 @@ declare interface IResAccountActivityData extends IResponse {
 	shoot_data: IActivityShootData[];
 }
 
-/** undefined */
+/** .lq.ResAccountActivityData.ActivitySignInData */
 declare interface IResAccountActivityData_ActivitySignInData extends IProto {
 	activity_id: number;
 	sign_in_count: number;
 	last_sign_in_time: number;
 }
 
-/** undefined */
+/** .lq.ResAccountActivityData.BuffData */
 declare interface IResAccountActivityData_BuffData extends IProto {
 	type: number;
 	remain: number;
 	effect: number;
 }
 
-/** undefined */
+/** .lq.ResAccountActivityData.ActivityRichmanData */
 declare interface IResAccountActivityData_ActivityRichmanData extends IProto {
 	activity_id: number;
 	location: number;
@@ -9495,7 +9495,7 @@ declare interface IResAccountActivityData_ActivityRichmanData extends IProto {
 	buff: IResAccountActivityData_BuffData[];
 }
 
-/** undefined */
+/** .lq.ResAccountActivityData.ChestUpData */
 declare interface IResAccountActivityData_ChestUpData extends IProto {
 	/** count id */
 	id: number;
@@ -9503,7 +9503,7 @@ declare interface IResAccountActivityData_ChestUpData extends IProto {
 	count: number;
 }
 
-/** undefined */
+/** .lq.ResAccountActivityData.ActivitySNSData */
 declare interface IResAccountActivityData_ActivitySNSData extends IProto {
 	blog: ISNSBlog[];
 	/** 点赞博文ID */
@@ -9628,7 +9628,7 @@ declare interface IResFetchRankPointLeaderboard extends IResponse {
 	last_refresh_time: number;
 }
 
-/** undefined */
+/** .lq.ResFetchRankPointLeaderboard.Item */
 declare interface IResFetchRankPointLeaderboard_Item extends IProto {
 	account_id: number;
 	rank: number;
@@ -9669,7 +9669,7 @@ declare interface IResRichmanNextMove extends IResponse {
 	bank_save_add: number;
 }
 
-/** undefined */
+/** .lq.ResRichmanNextMove.RewardData */
 declare interface IResRichmanNextMove_RewardData extends IProto {
 	resource_id: number;
 	/** 实际获取资源数量 */
@@ -9680,7 +9680,7 @@ declare interface IResRichmanNextMove_RewardData extends IProto {
 	type: number;
 }
 
-/** undefined */
+/** .lq.ResRichmanNextMove.PathData */
 declare interface IResRichmanNextMove_PathData extends IProto {
 	/** 起始点为0，其他位置见表 */
 	location: number;
@@ -9690,7 +9690,7 @@ declare interface IResRichmanNextMove_PathData extends IProto {
 	events: number[];
 }
 
-/** undefined */
+/** .lq.ResRichmanNextMove.BuffData */
 declare interface IResRichmanNextMove_BuffData extends IProto {
 	/** 1 - 影响金币获取 2 - 影响下次骰子行走步数 */
 	type: number;
@@ -9716,7 +9716,7 @@ declare interface IResRichmanChestInfo extends IResponse {
 	items: IResRichmanChestInfo_ItemData[];
 }
 
-/** undefined */
+/** .lq.ResRichmanChestInfo.ItemData */
 declare interface IResRichmanChestInfo_ItemData extends IProto {
 	id: number;
 	count: number;
@@ -9801,7 +9801,7 @@ declare interface IResReceiveAllActivityGift extends IResponse {
 	receive_gift: IResReceiveAllActivityGift_ReceiveRewards[];
 }
 
-/** undefined */
+/** .lq.ResReceiveAllActivityGift.ReceiveRewards */
 declare interface IResReceiveAllActivityGift_ReceiveRewards extends IProto {
 	id: number;
 	from_account_id: number;
@@ -9883,7 +9883,7 @@ declare interface IResFetchABMatch extends IResponse {
 	quit: boolean;
 }
 
-/** undefined */
+/** .lq.ResFetchABMatch.MatchPoint */
 declare interface IResFetchABMatch_MatchPoint extends IProto {
 	match_id: number;
 	point: number;
@@ -9915,7 +9915,7 @@ declare interface IResChallengeSeasonInfo extends IResponse {
 	challenge_season_list: IResChallengeSeasonInfo_ChallengeInfo[];
 }
 
-/** undefined */
+/** .lq.ResChallengeSeasonInfo.ChallengeInfo */
 declare interface IResChallengeSeasonInfo_ChallengeInfo extends IProto {
 	season_id: number;
 	start_time: number;
@@ -9936,7 +9936,7 @@ declare interface IResReceiveChallengeRankReward extends IResponse {
 	rewards: IResReceiveChallengeRankReward_Reward[];
 }
 
-/** undefined */
+/** .lq.ResReceiveChallengeRankReward.Reward */
 declare interface IResReceiveChallengeRankReward_Reward extends IProto {
 	resource_id: number;
 	count: number;
@@ -9964,7 +9964,7 @@ declare interface IResGamePointRank extends IResponse {
 	self_rank: number;
 }
 
-/** undefined */
+/** .lq.ResGamePointRank.RankInfo */
 declare interface IResGamePointRank_RankInfo extends IProto {
 	account_id: number;
 	point: number;
@@ -10031,7 +10031,7 @@ declare interface IResFetchLastPrivacy extends IResponse {
 	privacy: IResFetchLastPrivacy_PrivacyInfo[];
 }
 
-/** undefined */
+/** .lq.ResFetchLastPrivacy.PrivacyInfo */
 declare interface IResFetchLastPrivacy_PrivacyInfo extends IProto {
 	type: number;
 	version: string;
@@ -10043,7 +10043,7 @@ declare interface IReqCheckPrivacy extends IProto {
 	versions: IReqCheckPrivacy_Versions[];
 }
 
-/** undefined */
+/** .lq.ReqCheckPrivacy.Versions */
 declare interface IReqCheckPrivacy_Versions extends IProto {
 	version: string;
 	type: number;
@@ -10061,7 +10061,7 @@ declare interface IResFetchRPGBattleHistory extends IResponse {
 	current_state: IRPGState;
 }
 
-/** undefined */
+/** .lq.ResFetchRPGBattleHistory.BattleResult */
 declare interface IResFetchRPGBattleHistory_BattleResult extends IProto {
 	/** 牌谱 uuid */
 	uuid: string;
@@ -10105,7 +10105,7 @@ declare interface IResFetchRPGBattleHistoryV2 extends IResponse {
 	recent_battle_result: IResFetchRPGBattleHistoryV2_BattleResultV2[];
 }
 
-/** undefined */
+/** .lq.ResFetchRPGBattleHistoryV2.BattleResultV2 */
 declare interface IResFetchRPGBattleHistoryV2_BattleResultV2 extends IProto {
 	uuid: string;
 	/** 场 */
@@ -10144,7 +10144,7 @@ declare interface IResArenaReward extends IResponse {
 	items: IResArenaReward_RewardItem[];
 }
 
-/** undefined */
+/** .lq.ResArenaReward.RewardItem */
 declare interface IResArenaReward_RewardItem extends IProto {
 	id: number;
 	count: number;
@@ -10166,7 +10166,7 @@ declare interface IResReceiveRPGRewards extends IResponse {
 	items: IResReceiveRPGRewards_RewardItem[];
 }
 
-/** undefined */
+/** .lq.ResReceiveRPGRewards.RewardItem */
 declare interface IResReceiveRPGRewards_RewardItem extends IProto {
 	id: number;
 	count: number;
@@ -10196,7 +10196,7 @@ declare interface IResReceiveCharacterRewards extends IResponse {
 	items: IResReceiveCharacterRewards_RewardItem[];
 }
 
-/** undefined */
+/** .lq.ResReceiveCharacterRewards.RewardItem */
 declare interface IResReceiveCharacterRewards_RewardItem extends IProto {
 	id: number;
 	count: number;
@@ -10214,7 +10214,7 @@ declare interface IResFeedActivityFeed extends IResponse {
 	feed_count: number;
 }
 
-/** undefined */
+/** .lq.ResFeedActivityFeed.RewardItem */
 declare interface IResFeedActivityFeed_RewardItem extends IProto {
 	id: number;
 	count: number;
@@ -10249,13 +10249,13 @@ declare interface IResFetchFriendGiftActivityData extends IResponse {
 	list: IResFetchFriendGiftActivityData_FriendData[];
 }
 
-/** undefined */
+/** .lq.ResFetchFriendGiftActivityData.ItemCountData */
 declare interface IResFetchFriendGiftActivityData_ItemCountData extends IProto {
 	item: number;
 	count: number;
 }
 
-/** undefined */
+/** .lq.ResFetchFriendGiftActivityData.FriendData */
 declare interface IResFetchFriendGiftActivityData_FriendData extends IProto {
 	account_id: number;
 	items: IResFetchFriendGiftActivityData_ItemCountData[];
@@ -10286,7 +10286,7 @@ declare interface IResFetchVoteActivity extends IResponse {
 	data: IResFetchVoteActivity_VoteRankData[];
 }
 
-/** undefined */
+/** .lq.ResFetchVoteActivity.VoteRankData */
 declare interface IResFetchVoteActivity_VoteRankData extends IProto {
 	id: number;
 	share: number;
@@ -10326,7 +10326,7 @@ declare interface IResReceiveActivitySpotReward extends IResponse {
 	items: IResReceiveActivitySpotReward_RewardItem[];
 }
 
-/** undefined */
+/** .lq.ResReceiveActivitySpotReward.RewardItem */
 declare interface IResReceiveActivitySpotReward_RewardItem extends IProto {
 	id: number;
 	count: number;
@@ -10369,7 +10369,7 @@ declare interface IResFetchShopInterval extends IResponse {
 	result: IResFetchShopInterval_ShopInterval[];
 }
 
-/** undefined */
+/** .lq.ResFetchShopInterval.ShopInterval */
 declare interface IResFetchShopInterval_ShopInterval extends IProto {
 	group_id: number;
 	interval: number;
@@ -10380,7 +10380,7 @@ declare interface IResFetchActivityInterval extends IResponse {
 	result: IResFetchActivityInterval_ActivityInterval[];
 }
 
-/** undefined */
+/** .lq.ResFetchActivityInterval.ActivityInterval */
 declare interface IResFetchActivityInterval_ActivityInterval extends IProto {
 	activity_id: number;
 	interval: number;
@@ -10457,7 +10457,7 @@ declare interface IResFetchSimulationGameRank extends IResponse {
 	rank: IResFetchSimulationGameRank_RankInfo[];
 }
 
-/** undefined */
+/** .lq.ResFetchSimulationGameRank.RankInfo */
 declare interface IResFetchSimulationGameRank_RankInfo extends IProto {
 	character: number;
 	score: number;
@@ -10490,7 +10490,7 @@ declare interface IResMoveCombiningCraft extends IResponse {
 	bonus: IResMoveCombiningCraft_BonusData;
 }
 
-/** undefined */
+/** .lq.ResMoveCombiningCraft.BonusData */
 declare interface IResMoveCombiningCraft_BonusData extends IProto {
 	craft_id: number;
 	pos: number;
@@ -10580,7 +10580,7 @@ declare interface IResFetchServerMaintenanceInfo extends IResponse {
 	function_maintenance: IResFetchServerMaintenanceInfo_ServerFunctionMaintenanceInfo[];
 }
 
-/** undefined */
+/** .lq.ResFetchServerMaintenanceInfo.ServerFunctionMaintenanceInfo */
 declare interface IResFetchServerMaintenanceInfo_ServerFunctionMaintenanceInfo extends IProto {
 	/**
 	 * * FunctionName {
@@ -10653,7 +10653,7 @@ declare interface IResGetFriendVillageData extends IResponse {
 	list: IResGetFriendVillageData_FriendVillageData[];
 }
 
-/** undefined */
+/** .lq.ResGetFriendVillageData.FriendVillageData */
 declare interface IResGetFriendVillageData_FriendVillageData extends IProto {
 	account_id: number;
 	level: number;
@@ -10738,7 +10738,7 @@ declare interface IReqIslandActivityBuy extends IProto {
 	items: IReqIslandActivityBuy_BuyItems[];
 }
 
-/** undefined */
+/** .lq.ReqIslandActivityBuy.BuyItems */
 declare interface IReqIslandActivityBuy_BuyItems extends IProto {
 	goods_id: number;
 	pos: number[];
@@ -10753,7 +10753,7 @@ declare interface IReqIslandActivitySell extends IProto {
 	items: IReqIslandActivitySell_SellItem[];
 }
 
-/** undefined */
+/** .lq.ReqIslandActivitySell.SellItem */
 declare interface IReqIslandActivitySell_SellItem extends IProto {
 	bag_id: number;
 	id: number;
@@ -10766,14 +10766,14 @@ declare interface IReqIslandActivityTidyBag extends IProto {
 	bag_data: IReqIslandActivityTidyBag_BagData[];
 }
 
-/** undefined */
+/** .lq.ReqIslandActivityTidyBag.BagData */
 declare interface IReqIslandActivityTidyBag_BagData extends IProto {
 	bag_id: number;
 	items: IReqIslandActivityTidyBag_ITemData[];
 	drops: number[];
 }
 
-/** undefined */
+/** .lq.ReqIslandActivityTidyBag.BagData.ITemData */
 declare interface IReqIslandActivityTidyBag_ITemData extends IProto {
 	id: number;
 	pos: number[];
@@ -10797,7 +10797,7 @@ declare interface IContestSetting extends IProto {
 	system_broadcast: number;
 }
 
-/** undefined */
+/** .lq.ContestSetting.LevelLimit */
 declare interface IContestSetting_LevelLimit extends IProto {
 	/** 类型 1=四人麻将 2=三人麻将 */
 	type: number;
@@ -10887,7 +10887,7 @@ declare interface IResFetchContestPlayerRank extends IResponse {
 	player_data: IResFetchContestPlayerRank_PlayerData;
 }
 
-/** undefined */
+/** .lq.ResFetchContestPlayerRank.ContestPlayerAccountData */
 declare interface IResFetchContestPlayerRank_ContestPlayerAccountData extends IProto {
 	total_game_count: number;
 	recent_games: IResFetchContestPlayerRank_ContestGameResult[];
@@ -10896,7 +10896,7 @@ declare interface IResFetchContestPlayerRank_ContestPlayerAccountData extends IP
 	accumulate_point: number;
 }
 
-/** undefined */
+/** .lq.ResFetchContestPlayerRank.SeasonRank */
 declare interface IResFetchContestPlayerRank_SeasonRank extends IProto {
 	account_id: number;
 	nickname: string;
@@ -10904,20 +10904,20 @@ declare interface IResFetchContestPlayerRank_SeasonRank extends IProto {
 	team_name: string;
 }
 
-/** undefined */
+/** .lq.ResFetchContestPlayerRank.PlayerData */
 declare interface IResFetchContestPlayerRank_PlayerData extends IProto {
 	rank: number;
 	data: IResFetchContestPlayerRank_ContestPlayerAccountData;
 	team_name: string;
 }
 
-/** undefined */
+/** .lq.ResFetchContestPlayerRank.ContestPlayerAccountData.ContestGameResult */
 declare interface IResFetchContestPlayerRank_ContestGameResult extends IProto {
 	rank: number;
 	total_point: number;
 }
 
-/** undefined */
+/** .lq.ResFetchContestPlayerRank.ContestPlayerAccountData.ContestSeriesGameResult */
 declare interface IResFetchContestPlayerRank_ContestSeriesGameResult extends IProto {
 	key: number;
 	results: IResFetchContestPlayerRank_ContestGameResult[];
@@ -10944,7 +10944,7 @@ declare interface IResFetchContestTeamRank extends IResponse {
 	self_team_rank: IResFetchContestTeamRank_SeasonTeamRank;
 }
 
-/** undefined */
+/** .lq.ResFetchContestTeamRank.ContestTeamData */
 declare interface IResFetchContestTeamRank_ContestTeamData extends IProto {
 	/** 团队累计总分 */
 	total_point: number;
@@ -10954,7 +10954,7 @@ declare interface IResFetchContestTeamRank_ContestTeamData extends IProto {
 	member_count: number;
 }
 
-/** undefined */
+/** .lq.ResFetchContestTeamRank.SeasonTeamRank */
 declare interface IResFetchContestTeamRank_SeasonTeamRank extends IProto {
 	/** 队伍id */
 	team_id: number;
@@ -10999,7 +10999,7 @@ declare interface IResFetchContestTeamMember extends IResponse {
 	rank: IResFetchContestTeamMember_ContestTeamMemberRank[];
 }
 
-/** undefined */
+/** .lq.ResFetchContestTeamMember.ContestTeamMemberRank */
 declare interface IResFetchContestTeamMember_ContestTeamMemberRank extends IProto {
 	/** 玩家id */
 	account_id: number;
@@ -11021,7 +11021,7 @@ declare interface IResFetchReadyPlayerList extends IResponse {
 	list: IResFetchReadyPlayerList_Player[];
 }
 
-/** undefined */
+/** .lq.ResFetchReadyPlayerList.Player */
 declare interface IResFetchReadyPlayerList_Player extends IProto {
 	account_id: number;
 	nickname: string;
@@ -11266,7 +11266,7 @@ declare interface IResFetchActivityRank extends IResponse {
 	self: IResFetchActivityRank_ActivityRankItem;
 }
 
-/** undefined */
+/** .lq.ResFetchActivityRank.ActivityRankItem */
 declare interface IResFetchActivityRank_ActivityRankItem extends IProto {
 	account_id: number;
 	score: number;
@@ -11319,13 +11319,13 @@ declare interface IReqSubmitQuestionnaire extends IProto {
 	client: string;
 }
 
-/** undefined */
+/** .lq.ReqSubmitQuestionnaire.QuestionnaireAnswer */
 declare interface IReqSubmitQuestionnaire_QuestionnaireAnswer extends IProto {
 	question_id: number;
 	values: IReqSubmitQuestionnaire_QuestionnaireAnswerValue[];
 }
 
-/** undefined */
+/** .lq.ReqSubmitQuestionnaire.QuestionnaireAnswer.QuestionnaireAnswerValue */
 declare interface IReqSubmitQuestionnaire_QuestionnaireAnswerValue extends IProto {
 	value: string;
 	custom_input: string;
@@ -11351,7 +11351,7 @@ declare interface IResFetchAccountGameHuRecords extends IResponse {
 	records: IResFetchAccountGameHuRecords_GameHuRecords[];
 }
 
-/** undefined */
+/** .lq.ResFetchAccountGameHuRecords.GameHuRecords */
 declare interface IResFetchAccountGameHuRecords_GameHuRecords extends IProto {
 	chang: number;
 	ju: number;
@@ -11379,7 +11379,7 @@ declare interface IResFetchAccountInfoExtra extends IResponse {
 	game_rank_details: IResFetchAccountInfoExtra_AccountGameRankDetail[];
 }
 
-/** undefined */
+/** .lq.ResFetchAccountInfoExtra.AccountInfoGameRecord */
 declare interface IResFetchAccountInfoExtra_AccountInfoGameRecord extends IProto {
 	uuid: string;
 	start_time: number;
@@ -11391,20 +11391,20 @@ declare interface IResFetchAccountInfoExtra_AccountInfoGameRecord extends IProto
 	results: IResFetchAccountInfoExtra_AccountGameResult[];
 }
 
-/** undefined */
+/** .lq.ResFetchAccountInfoExtra.GameHuTypeDetail */
 declare interface IResFetchAccountInfoExtra_GameHuTypeDetail extends IProto {
 	/** 1- 立直 2- 副露 3- 默听 */
 	type: number;
 	count: number;
 }
 
-/** undefined */
+/** .lq.ResFetchAccountInfoExtra.AccountGameRankDetail */
 declare interface IResFetchAccountInfoExtra_AccountGameRankDetail extends IProto {
 	rank: number;
 	count: number;
 }
 
-/** undefined */
+/** .lq.ResFetchAccountInfoExtra.AccountInfoGameRecord.AccountGameResult */
 declare interface IResFetchAccountInfoExtra_AccountGameResult extends IProto {
 	rank: number;
 	account_id: number;
@@ -11624,7 +11624,7 @@ declare interface IResSimV2ActivityEndMatch extends IResponse {
 	ability: ISimulationV2Ability;
 }
 
-/** undefined */
+/** .lq.ResSimV2ActivityEndMatch.SimulationV2MatchReward */
 declare interface IResSimV2ActivityEndMatch_SimulationV2MatchReward extends IProto {
 	/** 类型 1-属性奖励 2-特性奖励 */
 	type: number;
@@ -11701,7 +11701,7 @@ declare interface IResShootActivityAttackEnemies extends IResponse {
 	value_change: IActivityShootValueChange;
 }
 
-/** undefined */
+/** .lq.ResShootActivityAttackEnemies.ActivityShootAttackRecord */
 declare interface IResShootActivityAttackEnemies_ActivityShootAttackRecord extends IProto {
 	/** 攻击时战机位置 */
 	position: number;
@@ -11730,7 +11730,7 @@ declare interface IResQuestCrewActivityStartQuest extends IResponse {
 	effect_info: IResQuestCrewActivityStartQuest_ActivityQuestCrewEffectInfo[];
 }
 
-/** undefined */
+/** .lq.ResQuestCrewActivityStartQuest.ActivityQuestCrewEffectInfo */
 declare interface IResQuestCrewActivityStartQuest_ActivityQuestCrewEffectInfo extends IProto {
 	member_id: number;
 	effect_id: number;
@@ -11851,7 +11851,7 @@ declare interface IAmuletGameOperation extends IProto {
 	value: number;
 }
 
-/** undefined */
+/** .lq.AmuletGameOperation.GangTiles */
 declare interface IAmuletGameOperation_GangTiles extends IProto {
 	tiles: number[];
 }
@@ -12156,7 +12156,7 @@ declare interface IAmuletHookResult extends IProto {
 	modify_tile_base_score: IAmuletTileScore[];
 }
 
-/** undefined */
+/** .lq.AmuletHookResult.AddEffectResult */
 declare interface IAmuletHookResult_AddEffectResult extends IProto {
 	/** 新护身符uid */
 	uid: number;
@@ -12175,7 +12175,7 @@ declare interface IAmuletHookResult_AddEffectResult extends IProto {
 	volume: number;
 }
 
-/** undefined */
+/** .lq.AmuletHookResult.AddDoraResult */
 declare interface IAmuletHookResult_AddDoraResult extends IProto {
 	/** 新增 dora 数量 */
 	count: number;
@@ -12183,14 +12183,14 @@ declare interface IAmuletHookResult_AddDoraResult extends IProto {
 	list: number[];
 }
 
-/** undefined */
+/** .lq.AmuletHookResult.ValueResult */
 declare interface IAmuletHookResult_ValueResult extends IProto {
 	origin: string;
 	modify: string;
 	final: string;
 }
 
-/** undefined */
+/** .lq.AmuletHookResult.ModifyDoraResult */
 declare interface IAmuletHookResult_ModifyDoraResult extends IProto {
 	tile: string;
 	is_dora: boolean;
@@ -12200,14 +12200,14 @@ declare interface IAmuletHookResult_ModifyDoraResult extends IProto {
 	dora_count: number;
 }
 
-/** undefined */
+/** .lq.AmuletHookResult.TransformResult */
 declare interface IAmuletHookResult_TransformResult extends IProto {
 	uid: number;
 	effect_id: number;
 	add_result: IAmuletHookResult_AddEffectResult;
 }
 
-/** undefined */
+/** .lq.AmuletHookResult.AddBadge */
 declare interface IAmuletHookResult_AddBadge extends IProto {
 	/** 护身符uid */
 	uid: number;
@@ -12217,7 +12217,7 @@ declare interface IAmuletHookResult_AddBadge extends IProto {
 	badge_uid: number;
 }
 
-/** undefined */
+/** .lq.AmuletHookResult.CopyEffect */
 declare interface IAmuletHookResult_CopyEffect extends IProto {
 	/** 拷贝生成的护身符uid */
 	uid: number;
@@ -12225,7 +12225,7 @@ declare interface IAmuletHookResult_CopyEffect extends IProto {
 	from_uid: number;
 }
 
-/** undefined */
+/** .lq.AmuletHookResult.AmuletChangeDesktopResult */
 declare interface IAmuletHookResult_AmuletChangeDesktopResult extends IProto {
 	/** 当前可见牌 */
 	show_desktop_tiles: IAmuletShowDesktopTileData[];
@@ -12234,7 +12234,7 @@ declare interface IAmuletHookResult_AmuletChangeDesktopResult extends IProto {
 	locked_tile: number[];
 }
 
-/** undefined */
+/** .lq.AmuletHookResult.UpgradeEffectResult */
 declare interface IAmuletHookResult_UpgradeEffectResult extends IProto {
 	/** 护身符uid */
 	uid: number;
@@ -12426,39 +12426,39 @@ declare interface IAmuletEventResult extends IProto {
 	select_pack_result: IAmuletEventResult_SelectPackResult;
 }
 
-/** undefined */
+/** .lq.AmuletEventResult.DealResult */
 declare interface IAmuletEventResult_DealResult extends IProto {
 	tile: number;
 }
 
-/** undefined */
+/** .lq.AmuletEventResult.HuResult */
 declare interface IAmuletEventResult_HuResult extends IProto {
 	hu_final: IAmuletEventResult_HuInfo;
 	hu_base: IAmuletEventResult_HuInfo;
 }
 
-/** undefined */
+/** .lq.AmuletEventResult.GameEndResult */
 declare interface IAmuletEventResult_GameEndResult extends IProto {
 	reason: number;
 }
 
-/** undefined */
+/** .lq.AmuletEventResult.GangResult */
 declare interface IAmuletEventResult_GangResult extends IProto {
 	new_dora: number[];
 }
 
-/** undefined */
+/** .lq.AmuletEventResult.UpgradeResult */
 declare interface IAmuletEventResult_UpgradeResult extends IProto {
 	level_coin: string;
 	point_coin: string;
 }
 
-/** undefined */
+/** .lq.AmuletEventResult.SellEffectResult */
 declare interface IAmuletEventResult_SellEffectResult extends IProto {
 	price: string;
 }
 
-/** undefined */
+/** .lq.AmuletEventResult.SelectPackResult */
 declare interface IAmuletEventResult_SelectPackResult extends IProto {
 	/** 新护身符uid */
 	uid: number;
@@ -12474,7 +12474,7 @@ declare interface IAmuletEventResult_SelectPackResult extends IProto {
 	badge: IAmuletBadgeData;
 }
 
-/** undefined */
+/** .lq.AmuletEventResult.HuResult.HuInfo */
 declare interface IAmuletEventResult_HuInfo extends IProto {
 	tile: number;
 	fan_list: IAmuletFan[];
@@ -12756,7 +12756,7 @@ declare interface INotifyGameFinishReward extends IProto {
 	badges: IBadgeAchieveProgress[];
 }
 
-/** undefined */
+/** .lq.NotifyGameFinishReward.LevelChange */
 declare interface INotifyGameFinishReward_LevelChange extends IProto {
 	/** 原来的段位 */
 	origin: IAccountLevel;
@@ -12766,7 +12766,7 @@ declare interface INotifyGameFinishReward_LevelChange extends IProto {
 	type: number;
 }
 
-/** undefined */
+/** .lq.NotifyGameFinishReward.MatchChest */
 declare interface INotifyGameFinishReward_MatchChest extends IProto {
 	chest_id: number;
 	origin: number;
@@ -12775,14 +12775,14 @@ declare interface INotifyGameFinishReward_MatchChest extends IProto {
 	rewards: IRewardSlot[];
 }
 
-/** undefined */
+/** .lq.NotifyGameFinishReward.MainCharacter */
 declare interface INotifyGameFinishReward_MainCharacter extends IProto {
 	level: number;
 	exp: number;
 	add: number;
 }
 
-/** undefined */
+/** .lq.NotifyGameFinishReward.CharacterGift */
 declare interface INotifyGameFinishReward_CharacterGift extends IProto {
 	origin: number;
 	final: number;
@@ -12796,7 +12796,7 @@ declare interface INotifyActivityReward extends IProto {
 	activity_reward: INotifyActivityReward_ActivityReward[];
 }
 
-/** undefined */
+/** .lq.NotifyActivityReward.ActivityReward */
 declare interface INotifyActivityReward_ActivityReward extends IProto {
 	activity_id: number;
 	rewards: IRewardSlot[];
@@ -12808,7 +12808,7 @@ declare interface INotifyActivityPoint extends IProto {
 	activity_points: INotifyActivityPoint_ActivityPoint[];
 }
 
-/** undefined */
+/** .lq.NotifyActivityPoint.ActivityPoint */
 declare interface INotifyActivityPoint_ActivityPoint extends IProto {
 	activity_id: number;
 	/** 当前累计点数 */
@@ -12821,7 +12821,7 @@ declare interface INotifyLeaderboardPoint extends IProto {
 	leaderboard_points: INotifyLeaderboardPoint_LeaderboardPoint[];
 }
 
-/** undefined */
+/** .lq.NotifyLeaderboardPoint.LeaderboardPoint */
 declare interface INotifyLeaderboardPoint_LeaderboardPoint extends IProto {
 	leaderboard_id: number;
 	/** 当前排名点数 */
@@ -12849,7 +12849,7 @@ declare interface INotifyEndGameVote extends IProto {
 	duration_time: number;
 }
 
-/** undefined */
+/** .lq.NotifyEndGameVote.VoteResult */
 declare interface INotifyEndGameVote_VoteResult extends IProto {
 	account_id: number;
 	yes: boolean;
@@ -13049,7 +13049,7 @@ declare interface IRecordNewRound extends IProto {
 	xia_ke_shang: IXiaKeShangInfo;
 }
 
-/** undefined */
+/** .lq.RecordNewRound.TingPai */
 declare interface IRecordNewRound_TingPai extends IProto {
 	seat: number;
 	/** 当子家有听牌 */
@@ -13079,7 +13079,7 @@ declare interface IGameSnapshot extends IProto {
 	zhenting: boolean;
 }
 
-/** undefined */
+/** .lq.GameSnapshot.PlayerSnapshot */
 declare interface IGameSnapshot_PlayerSnapshot extends IProto {
 	/** 当前分数 */
 	score: number;
@@ -13093,7 +13093,7 @@ declare interface IGameSnapshot_PlayerSnapshot extends IProto {
 	mings: IGameSnapshot_Fulu[];
 }
 
-/** undefined */
+/** .lq.GameSnapshot.PlayerSnapshot.Fulu */
 declare interface IGameSnapshot_Fulu extends IProto {
 	type: number;
 	tile: string[];
@@ -13408,7 +13408,7 @@ declare interface IRecordSelectGap extends IProto {
 	operation: IOptionalOperationList;
 }
 
-/** undefined */
+/** .lq.RecordSelectGap.TingPai */
 declare interface IRecordSelectGap_TingPai extends IProto {
 	seat: number;
 	/** 当子家有听牌 */
@@ -13458,14 +13458,14 @@ declare interface IRecordChangeTile extends IProto {
 	operations: IOptionalOperationList[];
 }
 
-/** undefined */
+/** .lq.RecordChangeTile.TingPai */
 declare interface IRecordChangeTile_TingPai extends IProto {
 	seat: number;
 	/** 当子家有听牌 */
 	tingpais1: ITingPaiInfo[];
 }
 
-/** undefined */
+/** .lq.RecordChangeTile.ChangeTile */
 declare interface IRecordChangeTile_ChangeTile extends IProto {
 	/** 换到手的牌 */
 	in_tiles: string[];

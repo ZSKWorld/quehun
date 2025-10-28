@@ -24,6 +24,7 @@ declare interface ISheet_Spot_Spot {
 	200006: ISheetData_Spot_Spot[];
 	200007: ISheetData_Spot_Spot[];
 	200008: ISheetData_Spot_Spot[];
+	200009: ISheetData_Spot_Spot[];
 	200013: ISheetData_Spot_Spot[];
 	200014: ISheetData_Spot_Spot[];
 	200016: ISheetData_Spot_Spot[];
@@ -130,6 +131,12 @@ declare interface ISheet_Spot_Rewards {
 	800061: ISheetData_Spot_Rewards;
 	800062: ISheetData_Spot_Rewards;
 	800063: ISheetData_Spot_Rewards;
+	900011: ISheetData_Spot_Rewards;
+	900012: ISheetData_Spot_Rewards;
+	900021: ISheetData_Spot_Rewards;
+	900022: ISheetData_Spot_Rewards;
+	900031: ISheetData_Spot_Rewards;
+	900032: ISheetData_Spot_Rewards;
 	1000041: ISheetData_Spot_Rewards;
 	1000042: ISheetData_Spot_Rewards;
 	1000043: ISheetData_Spot_Rewards;

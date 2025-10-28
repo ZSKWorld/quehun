@@ -1,5 +1,5 @@
 declare interface ITable_Contest {
-	/** kv */
+	/** unique */
 	contest: CfgExt<ISheet_Contest_Contest>;
 }
 

@@ -2071,6 +2071,17 @@ declare enum EMessageID {
 	/** req: {@link IReqQuestCrewActivityRefreshMarket}, res: {@link IResQuestCrewActivityRefreshMarket} */
 	questCrewActivityRefreshMarket = "questCrewActivityRefreshMarket",
 	/**
+	 * * 雪球活动
+	 * * req: {@link IReqSnowballActivityStartBattle}, res: {@link IResSnowballActivityStartBattle}
+	 */
+	snowballActivityStartBattle = "snowballActivityStartBattle",
+	/** req: {@link IReqSnowballActivityFinishBattle}, res: {@link IResSnowballActivityFinishBattle} */
+	snowballActivityFinishBattle = "snowballActivityFinishBattle",
+	/** req: {@link IReqSnowballActivityUpgrade}, res: {@link IResSnowballActivityUpgrade} */
+	snowballActivityUpgrade = "snowballActivityUpgrade",
+	/** req: {@link IReqSnowballActivityReceiveReward}, res: {@link IResSnowballActivityReceiveReward} */
+	snowballActivityReceiveReward = "snowballActivityReceiveReward",
+	/**
 	 * * 验证游戏口令
 	 * * req: {@link IReqAuthGame}, res: {@link IResAuthGame}
 	 */
@@ -4119,6 +4130,7 @@ declare interface IAccountActivityUpdate extends IProto {
 	simulation_v2_data: ISimulationV2Data[];
 	quest_crew_data: IActivityQuestCrewChanges[];
 	shoot_data: IActivityShootData[];
+	snowball_data: IActivitySnowballValueChanges[];
 }
 
 /** .lq.ActivityCombiningWorkbench */
@@ -6400,6 +6412,96 @@ declare interface IActivityShootEnemyInfo extends IProto {
 	group_id: number;
 	enemy_id: number;
 	hp: number;
+}
+
+/** .lq.ActivitySnowballData */
+declare interface IActivitySnowballData extends IProto {
+	activity_id: number;
+	level: number;
+	upgrade: IActivitySnowballUpgrade[];
+	rewarded_level: number[];
+	finished_level: number[];
+	/** 服务端数据，不会发给客户端 */
+	random_seed: number;
+}
+
+/** .lq.ActivitySnowballUpgrade */
+declare interface IActivitySnowballUpgrade extends IProto {
+	id: number;
+}
+
+/** .lq.ActivitySnowballUpgradeDirty */
+declare interface IActivitySnowballUpgradeDirty extends IProto {
+	value: IActivitySnowballUpgrade[];
+	dirty: boolean;
+}
+
+/** .lq.ActivitySnowballValueChanges */
+declare interface IActivitySnowballValueChanges extends IProto {
+	level: IUInt32Dirty;
+	upgrade: IActivitySnowballUpgradeDirty;
+	rewarded_level: IUInt32ArrayDirty;
+	finished_level: IUInt32ArrayDirty;
+}
+
+/** .lq.ActivitySnowballPlayerAttackedInfo */
+declare interface IActivitySnowballPlayerAttackedInfo extends IProto {
+	/** 1-玩家 2-boss */
+	target: number;
+	/** 雪球id */
+	ball_id: number;
+	/** 轨道 */
+	track: number;
+	/** 伤害 */
+	damage: number;
+}
+
+/** .lq.ActivitySnowballPlayerActionInfo */
+declare interface IActivitySnowballPlayerActionInfo extends IProto {
+	/** 1-玩家 2-boss */
+	action_player: number;
+	/** 雪球id */
+	ball_id: number;
+	/** 是否暴击 */
+	critical: number;
+	/** 轨道 */
+	track: number;
+}
+
+/** .lq.ActivitySnowballPlayerState */
+declare interface IActivitySnowballPlayerState extends IProto {
+	/** 1-玩家 2-boss */
+	player: number;
+	hp: number;
+	mp: number;
+}
+
+/** .lq.ActivitySnowballBallActionInfo */
+declare interface IActivitySnowballBallActionInfo extends IProto {
+	track: number;
+	/** 相撞的雪球信息 */
+	balls_id: number[];
+}
+
+/** .lq.SnowballActivityBossAction */
+declare interface ISnowballActivityBossAction extends IProto {
+	tick: number;
+	track: number;
+	damage: number;
+}
+
+/** .lq.ActivitySnowballEvent */
+declare interface IActivitySnowballEvent extends IProto {
+	tick: number;
+	/** 1-发射雪球 2-击中目标 3-雪球相撞 */
+	type: number;
+	/** 受击信息 */
+	player_attacked: IActivitySnowballPlayerAttackedInfo[];
+	/** 操作信息 */
+	player_action: IActivitySnowballPlayerActionInfo[];
+	player_state: IActivitySnowballPlayerState[];
+	/** 雪球信息 */
+	ball_action: IActivitySnowballBallActionInfo[];
 }
 
 /**
@@ -9468,6 +9570,7 @@ declare interface IResAccountActivityData extends IResponse {
 	progress_reward_data: IActivityProgressRewardData[];
 	quest_crew_data: IActivityQuestCrewData[];
 	shoot_data: IActivityShootData[];
+	snowball_data: IActivitySnowballData[];
 }
 
 /** .lq.ResAccountActivityData.ActivitySignInData */
@@ -11770,6 +11873,59 @@ declare interface IReqQuestCrewActivityRefreshMarket extends IProto {
 declare interface IResQuestCrewActivityRefreshMarket extends IResponse {
 	value_changes: IActivityQuestCrewChanges;
 	execute_result: IExecuteResult[];
+}
+
+/** .lq.ReqSnowballActivityStartBattle */
+declare interface IReqSnowballActivityStartBattle extends IProto {
+	activity_id: number;
+}
+
+/** .lq.ResSnowballActivityStartBattle */
+declare interface IResSnowballActivityStartBattle extends IResponse {
+	/** 随机种子，用于随机玩家攻击是否暴击 */
+	random_seed: number;
+	boss_action: ISnowballActivityBossAction[];
+	/** 对局id，5分钟内有效 */
+	battle_id: string;
+	/** 对局开始时玩家与boss信息(tick=0) */
+	player_state: IActivitySnowballPlayerState[];
+}
+
+/** .lq.ReqSnowballActivityFinishBattle */
+declare interface IReqSnowballActivityFinishBattle extends IProto {
+	activity_id: number;
+	events: IActivitySnowballEvent[];
+	/** 1-过关 2-未过关 */
+	result: number;
+	battle_id: string;
+}
+
+/** .lq.ResSnowballActivityFinishBattle */
+declare interface IResSnowballActivityFinishBattle extends IResponse {
+	changes: IActivitySnowballValueChanges;
+}
+
+/** .lq.ReqSnowballActivityUpgrade */
+declare interface IReqSnowballActivityUpgrade extends IProto {
+	activity_id: number;
+	upgrade: IActivitySnowballUpgrade[];
+}
+
+/** .lq.ResSnowballActivityUpgrade */
+declare interface IResSnowballActivityUpgrade extends IResponse {
+	changes: IActivitySnowballValueChanges;
+}
+
+/** .lq.ReqSnowballActivityReceiveReward */
+declare interface IReqSnowballActivityReceiveReward extends IProto {
+	activity_id: number;
+	level: number[];
+}
+
+/** .lq.ResSnowballActivityReceiveReward */
+declare interface IResSnowballActivityReceiveReward extends IResponse {
+	changes: IActivitySnowballValueChanges;
+	rewards: IExecuteReward[];
 }
 
 /** .lq.AmuletBadgeData */

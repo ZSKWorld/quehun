@@ -474,6 +474,7 @@ declare interface ISheet_ItemDefinition_Item {
 	307276: ISheetData_ItemDefinition_Item;
 	307277: ISheetData_ItemDefinition_Item;
 	307278: ISheetData_ItemDefinition_Item;
+	307279: ISheetData_ItemDefinition_Item;
 	307401: ISheetData_ItemDefinition_Item;
 	307402: ISheetData_ItemDefinition_Item;
 	307403: ISheetData_ItemDefinition_Item;
@@ -552,6 +553,7 @@ declare interface ISheet_ItemDefinition_Item {
 	307476: ISheetData_ItemDefinition_Item;
 	307477: ISheetData_ItemDefinition_Item;
 	307478: ISheetData_ItemDefinition_Item;
+	307479: ISheetData_ItemDefinition_Item;
 	308001: ISheetData_ItemDefinition_Item;
 	308002: ISheetData_ItemDefinition_Item;
 	308003: ISheetData_ItemDefinition_Item;
@@ -859,6 +861,8 @@ declare interface ISheet_ItemDefinition_Item {
 	30557040: ISheetData_ItemDefinition_Item;
 	30557041: ISheetData_ItemDefinition_Item;
 	30557042: ISheetData_ItemDefinition_Item;
+	30557043: ISheetData_ItemDefinition_Item;
+	30557044: ISheetData_ItemDefinition_Item;
 	30560001: ISheetData_ItemDefinition_Item;
 	30560002: ISheetData_ItemDefinition_Item;
 	30560003: ISheetData_ItemDefinition_Item;
@@ -942,6 +946,7 @@ declare interface ISheet_ItemDefinition_Item {
 	30740016: ISheetData_ItemDefinition_Item;
 	30740017: ISheetData_ItemDefinition_Item;
 	30740018: ISheetData_ItemDefinition_Item;
+	30740019: ISheetData_ItemDefinition_Item;
 	30900001: ISheetData_ItemDefinition_Item;
 	30900002: ISheetData_ItemDefinition_Item;
 	30900003: ISheetData_ItemDefinition_Item;
@@ -1037,6 +1042,7 @@ declare interface ISheet_ItemDefinition_Item {
 	30900093: ISheetData_ItemDefinition_Item;
 	30900094: ISheetData_ItemDefinition_Item;
 	30900095: ISheetData_ItemDefinition_Item;
+	30900096: ISheetData_ItemDefinition_Item;
 	30910001: ISheetData_ItemDefinition_Item;
 	30910002: ISheetData_ItemDefinition_Item;
 	30910003: ISheetData_ItemDefinition_Item;
@@ -1275,6 +1281,8 @@ declare interface ISheet_ItemDefinition_Title {
 	600134: ISheetData_ItemDefinition_Title;
 	600135: ISheetData_ItemDefinition_Title;
 	600136: ISheetData_ItemDefinition_Title;
+	600137: ISheetData_ItemDefinition_Title;
+	600138: ISheetData_ItemDefinition_Title;
 }
 declare interface ISheetData_ItemDefinition_Title {
 	id: number;
@@ -2159,6 +2167,7 @@ declare interface ISheet_ItemDefinition_Skin {
 	402904: ISheetData_ItemDefinition_Skin;
 	402905: ISheetData_ItemDefinition_Skin;
 	402906: ISheetData_ItemDefinition_Skin;
+	402907: ISheetData_ItemDefinition_Skin;
 	403001: ISheetData_ItemDefinition_Skin;
 	403002: ISheetData_ItemDefinition_Skin;
 	403003: ISheetData_ItemDefinition_Skin;
@@ -2242,6 +2251,7 @@ declare interface ISheet_ItemDefinition_Skin {
 	404902: ISheetData_ItemDefinition_Skin;
 	404903: ISheetData_ItemDefinition_Skin;
 	404904: ISheetData_ItemDefinition_Skin;
+	404905: ISheetData_ItemDefinition_Skin;
 	405001: ISheetData_ItemDefinition_Skin;
 	405002: ISheetData_ItemDefinition_Skin;
 	405003: ISheetData_ItemDefinition_Skin;
@@ -2327,6 +2337,7 @@ declare interface ISheet_ItemDefinition_Skin {
 	407401: ISheetData_ItemDefinition_Skin;
 	407402: ISheetData_ItemDefinition_Skin;
 	407403: ISheetData_ItemDefinition_Skin;
+	407404: ISheetData_ItemDefinition_Skin;
 	407501: ISheetData_ItemDefinition_Skin;
 	407502: ISheetData_ItemDefinition_Skin;
 	407503: ISheetData_ItemDefinition_Skin;
@@ -2376,6 +2387,7 @@ declare interface ISheet_ItemDefinition_Skin {
 	409003: ISheetData_ItemDefinition_Skin;
 	409101: ISheetData_ItemDefinition_Skin;
 	409102: ISheetData_ItemDefinition_Skin;
+	409103: ISheetData_ItemDefinition_Skin;
 	409201: ISheetData_ItemDefinition_Skin;
 	409202: ISheetData_ItemDefinition_Skin;
 	409301: ISheetData_ItemDefinition_Skin;
@@ -2718,6 +2730,7 @@ declare interface ISheet_ItemDefinition_LoadingImage {
 	250802: ISheetData_ItemDefinition_LoadingImage;
 	250901: ISheetData_ItemDefinition_LoadingImage;
 	251001: ISheetData_ItemDefinition_LoadingImage;
+	251101: ISheetData_ItemDefinition_LoadingImage;
 	30740001: ISheetData_ItemDefinition_LoadingImage;
 	30740002: ISheetData_ItemDefinition_LoadingImage;
 	30740003: ISheetData_ItemDefinition_LoadingImage;

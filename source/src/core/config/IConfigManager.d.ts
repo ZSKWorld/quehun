@@ -28,6 +28,7 @@ declare interface IConfigManager {
 	readonly quest_crew: ITable_QuestCrew;
 	readonly rank_introduce: ITable_RankIntroduce;
 	readonly season: ITable_Season;
+	readonly shoot: ITable_Shoot;
 	readonly shops: ITable_Shops;
 	readonly simulation: ITable_Simulation;
 	readonly spot: ITable_Spot;

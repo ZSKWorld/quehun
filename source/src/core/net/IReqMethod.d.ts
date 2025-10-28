@@ -1781,6 +1781,17 @@ declare interface IReqMethod {
 	/** req: {@link IReqQuestCrewActivityRefreshMarket}, res: {@link IResQuestCrewActivityRefreshMarket} */
 	questCrewActivityRefreshMarket(data?: IReqQuestCrewActivityRefreshMarket): Promise<IResQuestCrewActivityRefreshMarket>;
 	/**
+	 * * 雪球活动
+	 * * req: {@link IReqSnowballActivityStartBattle}, res: {@link IResSnowballActivityStartBattle}
+	 */
+	snowballActivityStartBattle(data?: IReqSnowballActivityStartBattle): Promise<IResSnowballActivityStartBattle>;
+	/** req: {@link IReqSnowballActivityFinishBattle}, res: {@link IResSnowballActivityFinishBattle} */
+	snowballActivityFinishBattle(data?: IReqSnowballActivityFinishBattle): Promise<IResSnowballActivityFinishBattle>;
+	/** req: {@link IReqSnowballActivityUpgrade}, res: {@link IResSnowballActivityUpgrade} */
+	snowballActivityUpgrade(data?: IReqSnowballActivityUpgrade): Promise<IResSnowballActivityUpgrade>;
+	/** req: {@link IReqSnowballActivityReceiveReward}, res: {@link IResSnowballActivityReceiveReward} */
+	snowballActivityReceiveReward(data?: IReqSnowballActivityReceiveReward): Promise<IResSnowballActivityReceiveReward>;
+	/**
 	 * * 验证游戏口令
 	 * * req: {@link IReqAuthGame}, res: {@link IResAuthGame}
 	 */

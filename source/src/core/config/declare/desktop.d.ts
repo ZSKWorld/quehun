@@ -3,7 +3,7 @@ declare interface ITable_Desktop {
 	matchmode: CfgExt<ISheet_Desktop_Matchmode>;
 	/** 比赛宝箱  ---  unique */
 	chest: CfgExt<ISheet_Desktop_Chest>;
-	/** 简单设定字段  ---  kv */
+	/** 简单设定字段  ---  unique */
 	settings: CfgExt<ISheet_Desktop_Settings>;
 	/** unique */
 	field_spell: CfgExt<ISheet_Desktop_FieldSpell>;

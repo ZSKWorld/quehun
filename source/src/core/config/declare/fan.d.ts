@@ -127,7 +127,7 @@ declare interface ISheetData_Fan_Fan {
 	/** 役满特效的珍稀度 */
 	rarity: number;
 	/** 显示区间三四麻 */
-	show_range_1: number;
+	show_range_1: string;
 	/** 显示区间段位友人活动 */
 	show_range_2: string;
 	/** 合并至其他役种id */

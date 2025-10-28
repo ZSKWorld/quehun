@@ -4303,6 +4303,13 @@ declare interface ISheet_Str_Str {
 	25101058: ISheetData_Str_Str;
 	25101059: ISheetData_Str_Str;
 	25101060: ISheetData_Str_Str;
+	25101061: ISheetData_Str_Str;
+	25101062: ISheetData_Str_Str;
+	25101063: ISheetData_Str_Str;
+	25101064: ISheetData_Str_Str;
+	25101065: ISheetData_Str_Str;
+	25110101: ISheetData_Str_Str;
+	25110201: ISheetData_Str_Str;
 }
 declare interface ISheetData_Str_Str {
 	id: number;

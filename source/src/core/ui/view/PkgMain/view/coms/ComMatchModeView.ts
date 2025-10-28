@@ -27,9 +27,11 @@ export class ComMatchModeView extends ExtensionClass<IView, ComMatchMode>(ComMat
 		const lastMode = this.curMode || this.lastMode;
 		this.curMode = type;
 		this.touchable = false;
+		const { ctrl_type, trans_modeIn, trans_modeOut, trans_titleIn, trans_titleOut, com_content1, com_content2 } = this;
 		switch (type) {
 			case EComMatchModeShowType.Mode:
-				await UIUtil.playTrans(this.trans_titleOut);
+				UIUtil.playTrans(this.trans_titleOut);
+				await com_content1.transOut();
 				this.ctrl_type.selectedIndex = 0;
 				await UIUtil.playTrans(this.trans_modeIn);
 				break;
@@ -39,7 +41,8 @@ export class ComMatchModeView extends ExtensionClass<IView, ComMatchMode>(ComMat
 				if (lastMode == EComMatchModeShowType.Mode) {
 					await UIUtil.playTrans(this.trans_modeOut);
 					this.ctrl_type.selectedIndex = type;
-					await UIUtil.playTrans(this.trans_titleIn);
+					UIUtil.playTrans(this.trans_titleIn);
+					await com_content1.transIn();
 				} else {
 
 				}

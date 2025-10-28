@@ -28,6 +28,45 @@
     <component id="w29kob8f" name="ComMatchMode.xml" path="/Component/UIMain/"/>
     <image id="w29kob8g" name="img_1554.png" path="/Texture/"/>
     <image id="w29kob8h" name="img_2565.png" path="/Texture/"/>
+    <image id="gnjqob8i" name="img_3740.png" path="/Texture/"/>
+    <image id="gnjqob8j" name="img_3741.png" path="/Texture/"/>
+    <image id="gnjqob8k" name="img_3742.png" path="/Texture/"/>
+    <image id="gnjqob8l" name="img_3445.png" path="/Texture/"/>
+    <image id="gnjqob8m" name="img_3476.png" path="/Texture/"/>
+    <image id="gnjqob8n" name="img_3475.png" path="/Texture/"/>
+    <image id="gnjqob8o" name="img_3474.png" path="/Texture/"/>
+    <image id="gnjqob8p" name="img_3473.png" path="/Texture/"/>
+    <image id="gnjqob8q" name="img_3472.png" path="/Texture/"/>
+    <image id="gnjqob8r" name="img_3471.png" path="/Texture/"/>
+    <image id="gnjqob8s" name="img_3470.png" path="/Texture/"/>
+    <image id="gnjqob8t" name="img_3469.png" path="/Texture/"/>
+    <image id="gnjqob8u" name="img_3468.png" path="/Texture/"/>
+    <image id="gnjqob8v" name="img_3467.png" path="/Texture/"/>
+    <image id="gnjqob8w" name="img_3466.png" path="/Texture/"/>
+    <image id="gnjqob8x" name="img_3465.png" path="/Texture/"/>
+    <image id="gnjqob8y" name="img_3464.png" path="/Texture/"/>
+    <image id="gnjqob8z" name="img_3463.png" path="/Texture/"/>
+    <image id="gnjqob90" name="img_3462.png" path="/Texture/"/>
+    <image id="gnjqob91" name="img_3461.png" path="/Texture/"/>
+    <image id="gnjqob92" name="img_3460.png" path="/Texture/"/>
+    <image id="gnjqob93" name="img_3446.png" path="/Texture/"/>
+    <image id="gnjqob94" name="img_3447.png" path="/Texture/"/>
+    <image id="gnjqob95" name="img_3448.png" path="/Texture/"/>
+    <image id="gnjqob96" name="img_3449.png" path="/Texture/"/>
+    <image id="gnjqob97" name="img_3450.png" path="/Texture/"/>
+    <image id="gnjqob98" name="img_3451.png" path="/Texture/"/>
+    <image id="gnjqob99" name="img_887.png" path="/Texture/"/>
+    <image id="gnjqob9a" name="img_3452.png" path="/Texture/"/>
+    <image id="gnjqob9b" name="img_3454.png" path="/Texture/"/>
+    <image id="gnjqob9c" name="img_3455.png" path="/Texture/"/>
+    <image id="gnjqob9d" name="img_3456.png" path="/Texture/"/>
+    <image id="gnjqob9e" name="img_3457.png" path="/Texture/"/>
+    <image id="gnjqob9f" name="img_3458.png" path="/Texture/"/>
+    <image id="gnjqob9g" name="img_3459.png" path="/Texture/"/>
+    <image id="gnjqob9h" name="img_3453.png" path="/Texture/"/>
+    <image id="gnjqob9i" name="img_934.png" path="/Texture/"/>
+    <component id="gnjqob9j" name="ComMatchItem.xml" path="/Component/UIMain/"/>
+    <component id="z63pob9k" name="ComMatchContent.xml" path="/Component/UIMain/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

@@ -47,6 +47,8 @@ export class UIManager extends Observer implements IUIManager {
 		this._lockMask.visible = value != 0;
 	}
 
+	private _curMediator: IMediator<IView, any>;
+
 	init() {
 		if (this._layerMap) return;
 		this._layerMap = {} as any;
@@ -104,6 +106,7 @@ export class UIManager extends Observer implements IUIManager {
 		this._openedViews.unshift(mediator);
 		mediator.view.removeFromParent();
 		this.addToLayer(mediator.view, mediator.view.layer || ELayer.UIBottom);
+		this._curMediator = mediator;
 		await mediator.onOpenAni();
 		this.lockMark--;
 	}

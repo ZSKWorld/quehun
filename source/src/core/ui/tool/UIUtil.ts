@@ -7,7 +7,7 @@ export class UIUtil {
 	 * @param name 贴图名字
 	 * @returns
 	 */
-	static getFGUITexture(pkg: string, name: string): Laya.Texture {
+	static getFGUITexture(pkg: string, name: string) {
 		let temp = fgui.UIPackage.getItemByURL(fgui.UIPackage.getItemURL(pkg, name)).getBranch();
 		temp = temp.getHighResolution();
 		temp.load();

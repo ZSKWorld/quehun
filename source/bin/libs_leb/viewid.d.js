@@ -9,6 +9,8 @@ EViewID = {
 	/**Renders */
 
 	/**Coms */
+	ComMatchContentView: "ComMatchContentView",
+	ComMatchItemView: "ComMatchItemView",
 	ComMatchModeView: "ComMatchModeView",
 
 	/**UIs */

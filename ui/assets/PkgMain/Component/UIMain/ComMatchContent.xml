@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="547,583" overflow="scroll">
+  <displayList>
+    <component id="n9_z63p" name="item0" src="gnjqob9j" fileName="Component/UIMain/ComMatchItem.xml" xy="0,0" alpha="0">
+      <property target="bg" propertyId="1" value="ui://vith2b66gnjqob8i"/>
+      <property target="icon" propertyId="1" value="ui://vith2b66gnjqob92"/>
+      <property target="time" propertyId="0" value=""/>
+      <property target="name" propertyId="0" value="火热进行"/>
+    </component>
+    <component id="n11_z63p" name="item1" src="gnjqob9j" fileName="Component/UIMain/ComMatchItem.xml" xy="0,166" alpha="0">
+      <property target="bg" propertyId="1" value="ui://vith2b66gnjqob8i"/>
+      <property target="icon" propertyId="1" value="ui://vith2b66gnjqob8o"/>
+      <property target="time" propertyId="0" value="距离刷新还剩:15小时"/>
+      <property target="name" propertyId="0" value="每周轮换"/>
+    </component>
+    <component id="n12_z63p" name="item2" src="gnjqob9j" fileName="Component/UIMain/ComMatchItem.xml" xy="0,332" alpha="0">
+      <property target="bg" propertyId="1" value="ui://vith2b66gnjqob8i"/>
+      <property target="icon" propertyId="1" value="ui://vith2b66gnjqob8o"/>
+      <property target="time" propertyId="0" value="距离刷新还剩:15小时"/>
+      <property target="name" propertyId="0" value="每周轮换"/>
+    </component>
+    <component id="n13_z63p" name="item3" src="gnjqob9j" fileName="Component/UIMain/ComMatchItem.xml" xy="0,498" alpha="0">
+      <property target="bg" propertyId="1" value="ui://vith2b66gnjqob8i"/>
+      <property target="icon" propertyId="1" value="ui://vith2b66gnjqob8o"/>
+      <property target="time" propertyId="0" value="距离刷新还剩:15小时"/>
+      <property target="name" propertyId="0" value="每周轮换"/>
+    </component>
+    <component id="n14_z63p" name="item4" src="gnjqob9j" fileName="Component/UIMain/ComMatchItem.xml" xy="0,664">
+      <property target="bg" propertyId="1" value="ui://vith2b66gnjqob8i"/>
+      <property target="icon" propertyId="1" value="ui://vith2b66gnjqob8o"/>
+      <property target="time" propertyId="0" value="距离刷新还剩:15小时"/>
+      <property target="name" propertyId="0" value="每周轮换"/>
+    </component>
+    <graph id="n15_z63p" name="n15" xy="194,750" size="100,100" visible="false" touchable="false" type="rect"/>
+  </displayList>
+  <transition name="out">
+    <item time="0" type="Alpha" target="n11_z63p" tween="true" startValue="1" endValue="0" duration="4" ease="Linear"/>
+    <item time="0" type="Alpha" target="n12_z63p" tween="true" startValue="1" endValue="0" duration="4" ease="Linear"/>
+    <item time="0" type="Alpha" target="n13_z63p" tween="true" startValue="1" endValue="0" duration="4" ease="Linear"/>
+    <item time="0" type="Alpha" target="n14_z63p" tween="true" startValue="1" endValue="0" duration="4" ease="Linear"/>
+    <item time="0" type="Alpha" target="n9_z63p" tween="true" startValue="1" endValue="0" duration="4" ease="Linear"/>
+    <item time="0" type="XY" target="n11_z63p" tween="true" startValue="-,166" endValue="-,126" duration="4" ease="Linear"/>
+    <item time="0" type="XY" target="n12_z63p" tween="true" startValue="-,332" endValue="-,292" duration="4" ease="Linear"/>
+    <item time="0" type="XY" target="n13_z63p" tween="true" startValue="-,498" endValue="-,458" duration="4" ease="Linear"/>
+    <item time="0" type="XY" target="n14_z63p" tween="true" startValue="-,664" endValue="-,624" duration="4" ease="Linear"/>
+    <item time="0" type="XY" target="n9_z63p" tween="true" startValue="-,0" endValue="-,-40" duration="4" ease="Linear"/>
+    <item time="4" type="Visible" value="false"/>
+  </transition>
+  <transition name="in">
+    <item time="0" type="Alpha" target="n11_z63p" value="1"/>
+    <item time="0" type="Alpha" target="n12_z63p" value="1"/>
+    <item time="0" type="Alpha" target="n13_z63p" value="1"/>
+    <item time="0" type="Alpha" target="n14_z63p" value="1"/>
+    <item time="0" type="Alpha" target="n9_z63p" value="1"/>
+    <item time="0" type="Visible" value="true"/>
+    <item time="0" type="XY" target="n11_z63p" value="-,-220"/>
+    <item time="0" type="XY" target="n12_z63p" value="-,-220"/>
+    <item time="0" type="XY" target="n13_z63p" tween="true" startValue="-,-220" endValue="-,498" duration="6" ease="Expo.Out"/>
+    <item time="0" type="XY" target="n14_z63p" value="-,664"/>
+    <item time="0" type="XY" target="n9_z63p" value="-,-220"/>
+    <item time="2" type="XY" target="n12_z63p" tween="true" startValue="-,-220" endValue="-,332" duration="6" ease="Expo.Out"/>
+    <item time="4" type="XY" target="n11_z63p" tween="true" startValue="-,-220" endValue="-,166" duration="6" ease="Expo.Out"/>
+    <item time="6" type="XY" target="n9_z63p" tween="true" startValue="-,-220" endValue="-,0" duration="6" ease="Expo.Out"/>
+  </transition>
+</component>

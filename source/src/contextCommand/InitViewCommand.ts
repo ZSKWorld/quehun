@@ -11,6 +11,10 @@ import { BtnCheckTxtRightView } from "../core/ui/view/PkgCommon/view/btns/BtnChe
 import { BtnCheckTxtRightMediator } from "../core/ui/view/PkgCommon/mediator/btns/BtnCheckTxtRightMediator";
 import { BtnXunMiView } from "../core/ui/view/PkgMain/view/btns/BtnXunMiView";
 import { BtnXunMiMediator } from "../core/ui/view/PkgMain/mediator/btns/BtnXunMiMediator";
+import { ComMatchContentView } from "../core/ui/view/PkgMain/view/coms/ComMatchContentView";
+import { ComMatchContentMediator } from "../core/ui/view/PkgMain/mediator/coms/ComMatchContentMediator";
+import { ComMatchItemView } from "../core/ui/view/PkgMain/view/coms/ComMatchItemView";
+import { ComMatchItemMediator } from "../core/ui/view/PkgMain/mediator/coms/ComMatchItemMediator";
 import { ComMatchModeView } from "../core/ui/view/PkgMain/view/coms/ComMatchModeView";
 import { ComMatchModeMediator } from "../core/ui/view/PkgMain/mediator/coms/ComMatchModeMediator";
 import { UIConfirmBigView } from "../core/ui/view/PkgCommon/view/UIConfirmBigView";
@@ -34,14 +38,14 @@ import { UIMainMediator } from "../core/ui/view/PkgMain/mediator/UIMainMediator"
 import { Command } from "../core/mvc/controller/Command";
 
 export class InitViewCommand extends Command {
-    override execute(notifyName: string, data?: any) {
-        PkgCommonBinder.bindAll();
+	override execute(notifyName: string, data?: any) {
+		PkgCommonBinder.bindAll();
 		PkgEntranceBinder.bindAll();
 		PkgLoginBinder.bindAll();
 		PkgMainBinder.bindAll();
 
-        const register = $facade.registerView.bind($facade) as typeof $facade.registerView;
-        //Btns
+		const register = $facade.registerView.bind($facade) as typeof $facade.registerView;
+		//Btns
 		register(EViewID.BtnCheckView, EViewType.Button, BtnCheckView, BtnCheckMediator);
 		register(EViewID.BtnCheckRichTxtRightView, EViewType.Button, BtnCheckRichTxtRightView, BtnCheckRichTxtRightMediator);
 		register(EViewID.BtnCheckTxtRightView, EViewType.Button, BtnCheckTxtRightView, BtnCheckTxtRightMediator);
@@ -50,6 +54,8 @@ export class InitViewCommand extends Command {
 		//Renders
 
 		//Coms
+		register(EViewID.ComMatchContentView, EViewType.Component, ComMatchContentView, ComMatchContentMediator);
+		register(EViewID.ComMatchItemView, EViewType.Component, ComMatchItemView, ComMatchItemMediator);
 		register(EViewID.ComMatchModeView, EViewType.Component, ComMatchModeView, ComMatchModeMediator);
 
 		//UIs
@@ -62,5 +68,5 @@ export class InitViewCommand extends Command {
 		register(EViewID.UILoginView, EViewType.UI, UILoginView, UILoginMediator);
 		register(EViewID.UILoginQueueView, EViewType.UI, UILoginQueueView, UILoginQueueMediator);
 		register(EViewID.UIMainView, EViewType.UI, UIMainView, UIMainMediator);
-    }
+	}
 }

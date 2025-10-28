@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="547,186" designImage="ui://ca43vz0ew29k7plofb" designImageAlpha="0">
+  <displayList>
+    <loader id="n9_gnjq" name="bg" xy="0,0" size="547,186" url="ui://vith2b66gnjqob8i" fill="scaleFree"/>
+    <loader id="n11_gnjq" name="icon" xy="89,30" pivot="0.5,0.5" size="360,120" url="ui://vith2b66gnjqob8o" autoSize="true"/>
+    <component id="n10_gnjq" name="info" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="467,34" size="50,50">
+      <Button icon="ui://vith2b66gnjqob9i"/>
+    </component>
+    <text id="n12_gnjq" name="time" xy="169,26" pivot="0.5,0.5" size="213,32" fontSize="22" color="#b68a8b" align="center" vAlign="middle" leading="0" singleLine="true" text="距离刷新还剩:15小时"/>
+    <text id="n14_z63p" name="name" xy="198,133" pivot="0.5,0.5" size="136,45" fontSize="33" color="#ded4d4" align="center" vAlign="middle" leading="0" singleLine="true" text="每周轮换"/>
+    <image id="n15_z63p" name="delete" src="gnjqob99" fileName="Texture/img_887.png" xy="198,144"/>
+  </displayList>
+  <transition name="modeIn" options="2" frameRate="60"/>
+  <transition name="modeOut" options="2" frameRate="60"/>
+  <transition name="titleIn" options="2"/>
+  <transition name="titleOut" options="2"/>
+  <customProperty target="bg" propertyId="1"/>
+  <customProperty target="icon" propertyId="1"/>
+  <customProperty target="time" propertyId="0"/>
+  <customProperty target="name" propertyId="0"/>
+</component>

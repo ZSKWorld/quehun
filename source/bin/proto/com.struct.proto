@@ -986,6 +986,7 @@ message AccountActivityUpdate {
   repeated lq.SimulationV2Data simulation_v2_data = 16;
   repeated lq.ActivityQuestCrewChanges quest_crew_data = 17;
   repeated lq.ActivityShootData shoot_data = 18;
+  repeated lq.ActivitySnowballValueChanges snowball_data = 19;
 }
 
 message ActivityCombiningWorkbench {
@@ -2938,4 +2939,71 @@ message ActivityShootEnemyInfo {
   uint32 group_id = 1; // 对应敌人组id
   uint32 enemy_id = 2;
   uint32 hp = 3;
+}
+
+message ActivitySnowballData {
+  uint32 activity_id = 1;
+  uint32 level = 2;
+  repeated ActivitySnowballUpgrade upgrade = 3;
+  repeated uint32 rewarded_level = 4;
+  repeated uint32 finished_level = 5;
+
+  // 服务端数据，不会发给客户端
+  uint32 random_seed = 6;
+}
+
+message ActivitySnowballUpgrade {
+  uint32 id = 1;
+}
+
+message ActivitySnowballUpgradeDirty {
+  repeated ActivitySnowballUpgrade value = 1;
+  bool dirty = 2;
+}
+
+message ActivitySnowballValueChanges {
+  UInt32Dirty level = 1;
+  ActivitySnowballUpgradeDirty upgrade = 2;
+  UInt32ArrayDirty rewarded_level = 3;
+  UInt32ArrayDirty finished_level = 4;
+}
+
+message ActivitySnowballPlayerAttackedInfo {
+  uint32 target = 1; // 1-玩家 2-boss
+  uint32 ball_id = 2; // 雪球id
+  uint32 track = 3; // 轨道
+  uint32 damage = 4; // 伤害
+}
+
+message ActivitySnowballPlayerActionInfo {
+  uint32 action_player = 1; // 1-玩家 2-boss
+  uint32 ball_id = 2; // 雪球id
+  uint32 critical = 3; // 是否暴击
+  uint32 track = 4; // 轨道
+}
+
+message ActivitySnowballPlayerState {
+  uint32 player = 1; // 1-玩家 2-boss
+  uint32 hp = 2;
+  uint32 mp = 3;
+}
+
+message ActivitySnowballBallActionInfo {
+  uint32 track = 1;
+  repeated uint32 balls_id = 2; // 相撞的雪球信息
+}
+
+message SnowballActivityBossAction {
+  uint32 tick = 1;
+  uint32 track = 2;
+  uint32 damage = 3;
+}
+
+message ActivitySnowballEvent {
+  uint32 tick = 1;
+  uint32 type = 2; // 1-发射雪球 2-击中目标 3-雪球相撞
+  repeated ActivitySnowballPlayerAttackedInfo player_attacked = 3; // 受击信息
+  repeated ActivitySnowballPlayerActionInfo player_action = 4; // 操作信息
+  repeated ActivitySnowballPlayerState player_state = 5;
+  repeated ActivitySnowballBallActionInfo ball_action = 6; // 雪球信息
 }

@@ -1068,6 +1068,12 @@ service Lobby {
   rpc questCrewActivityHire(ReqQuestCrewActivityHire) returns (ResQuestCrewActivityHire);
   rpc questCrewActivityFeed(ReqQuestCrewActivityFeed) returns (ResQuestCrewActivityFeed);
   rpc questCrewActivityRefreshMarket(ReqQuestCrewActivityRefreshMarket) returns (ResQuestCrewActivityRefreshMarket);
+
+  // 雪球活动
+  rpc snowballActivityStartBattle(ReqSnowballActivityStartBattle) returns (ResSnowballActivityStartBattle);
+  rpc snowballActivityFinishBattle(ReqSnowballActivityFinishBattle) returns (ResSnowballActivityFinishBattle);
+  rpc snowballActivityUpgrade(ReqSnowballActivityUpgrade) returns (ResSnowballActivityUpgrade);
+  rpc snowballActivityReceiveReward(ReqSnowballActivityReceiveReward) returns (ResSnowballActivityReceiveReward);
 }
 
 // 获取客户端连接信息
@@ -3189,6 +3195,8 @@ message ResAccountActivityData {
   repeated lq.ActivityQuestCrewData quest_crew_data = 33;
 
   repeated lq.ActivityShootData shoot_data = 34;
+
+  repeated lq.ActivitySnowballData snowball_data = 35;
 }
 
 message SNSBlog {
@@ -5021,6 +5029,52 @@ message ResQuestCrewActivityRefreshMarket {
   Error error = 1;
   ActivityQuestCrewChanges value_changes = 2;
   repeated ExecuteResult execute_result = 3;
+}
+
+message ReqSnowballActivityStartBattle {
+  uint32 activity_id = 1;
+}
+
+message ResSnowballActivityStartBattle {
+  Error error = 1;
+  // 随机种子，用于随机玩家攻击是否暴击
+  uint32 random_seed = 2;
+  repeated SnowballActivityBossAction boss_action = 3;
+  string battle_id = 4; // 对局id，5分钟内有效
+  repeated ActivitySnowballPlayerState player_state = 5; // 对局开始时玩家与boss信息(tick=0)
+}
+
+message ReqSnowballActivityFinishBattle {
+  uint32 activity_id = 1;
+  repeated ActivitySnowballEvent events = 2;
+  uint32 result = 3; // 1-过关 2-未过关
+  string battle_id = 4;
+}
+
+message ResSnowballActivityFinishBattle {
+  Error error = 1;
+  ActivitySnowballValueChanges changes = 2;
+}
+
+message ReqSnowballActivityUpgrade {
+  uint32 activity_id = 1;
+  repeated ActivitySnowballUpgrade upgrade = 2;
+}
+
+message ResSnowballActivityUpgrade {
+  Error error = 1;
+  ActivitySnowballValueChanges changes = 2;
+}
+
+message ReqSnowballActivityReceiveReward {
+  uint32 activity_id = 1;
+  repeated uint32 level = 2;
+}
+
+message ResSnowballActivityReceiveReward {
+  Error error = 1;
+  ActivitySnowballValueChanges changes = 2;
+  repeated ExecuteReward rewards = 3;
 }
 /*********************************************************************************************************************************
  ********************************************** next request & response **********************************************************

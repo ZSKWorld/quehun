@@ -271,6 +271,8 @@ message BlobActivity {
   repeated lq.ActivityQuestCrewData quest_crew_activity = 21;
 
   repeated lq.ActivityShootData shoot_activity = 22; // 射击活动数据
+
+  repeated lq.ActivitySnowballData snowball_activity = 23; // 雪球活动
 }
 
 message BlobAmuletActivity {

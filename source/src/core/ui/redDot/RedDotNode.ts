@@ -1,165 +1,165 @@
 import { ERDTriggerType } from "./RedDotEnum";
 
 export class RedDotNode implements IRedDotNode {
-    private static _gid: number = 0;
-    private _id: number = ++RedDotNode._gid;
-    private _enable: boolean = false;
-    private _nameList: string[];
-    private _parent: RedDotNode;
-    private _childs: RedDotNode[] = [];
-    private _triggers: ERDTriggerType[];
-    private _rdCount: number = 0;
-    private _triggeredMap = new Map<ERDTriggerType, number>();
-    /** 红点组件 */
-    private _comp: fgui.GComponent;
+	private static _gid: number = 0;
+	private _id: number = ++RedDotNode._gid;
+	private _enable: boolean = false;
+	private _nameList: string[];
+	private _parent: RedDotNode;
+	private _childs: RedDotNode[] = [];
+	private _triggers: ERDTriggerType[];
+	private _rdCount: number = 0;
+	private _triggeredMap = new Map<ERDTriggerType, number>();
+	/** 红点组件 */
+	private _comp: fgui.GComponent;
 
-    get id() { return this._id; }
-    get enable() { return this._enable && (this._parent ? this._parent.enable : true); }
-    set enable(value: boolean) { this._enable = value; }
-    get parent() { return this._parent; }
-    set parent(parent: RedDotNode) { parent ? parent.addChild(this) : this.removeSelf(); }
-    get childs() { return this._childs; }
-    private get hasTrigger() { return this._triggers && this._triggers.length > 0; }
-    get triggers() { return this._triggers; }
-    set triggers(value) {
-        $redDotMgr.offAllCaller(this);
-        this._triggers = value;
-        this._triggeredMap.clear();
-        if (this.hasTrigger)
-            value.forEach(v => {
-                this._triggeredMap.set(v, 0);
-                $redDotMgr.on(v, this, this.onTrigger);
-            });
-        this.trigger();
-    }
-    get comp() {
-        if (this._comp && this._comp.isDisposed) this._comp = null;
-        if (!this._comp) {
-            const nameList = this._nameList;
-            if (nameList && nameList.length) {
-                let target: fgui.GComponent = fgui.GRoot.inst;
-                for (let i = 0, cnt = nameList.length; i < cnt; i++) {
-                    target = <fgui.GComponent>target.getChild(nameList[i]);
-                    if (!target) break;
-                }
-                if (target) {
-                    this._comp = <fgui.GComponent>target.getChild("com_redDot");
-                }
-            }
-        }
-        return this._comp;
-    }
-    set comp(value: fgui.GComponent) {
-        if (this._comp == value) return;
-        this._comp = value;
-        this.trigger();
-    }
+	get id() { return this._id; }
+	get enable() { return this._enable && (this._parent ? this._parent.enable : true); }
+	set enable(value: boolean) { this._enable = value; }
+	get parent() { return this._parent; }
+	set parent(parent: RedDotNode) { parent ? parent.addChild(this) : this.removeSelf(); }
+	get childs() { return this._childs; }
+	private get hasTrigger() { return this._triggers && this._triggers.length > 0; }
+	get triggers() { return this._triggers; }
+	set triggers(value) {
+		$redDotMgr.offAllCaller(this);
+		this._triggers = value;
+		this._triggeredMap.clear();
+		if (this.hasTrigger)
+			value.forEach(v => {
+				this._triggeredMap.set(v, 0);
+				$redDotMgr.on(v, this, this.onTrigger);
+			});
+		this.trigger();
+	}
+	get comp() {
+		if (this._comp && this._comp.isDisposed) this._comp = null;
+		if (!this._comp) {
+			const nameList = this._nameList;
+			if (nameList && nameList.length) {
+				let target: fgui.GComponent = fgui.GRoot.inst;
+				for (let i = 0, cnt = nameList.length; i < cnt; i++) {
+					target = <fgui.GComponent>target.getChild(nameList[i]);
+					if (!target) break;
+				}
+				if (target) {
+					this._comp = <fgui.GComponent>target.getChild("com_redDot");
+				}
+			}
+		}
+		return this._comp;
+	}
+	set comp(value: fgui.GComponent) {
+		if (this._comp == value) return;
+		this._comp = value;
+		this.trigger();
+	}
 
-    private constructor() { }
+	private constructor() { }
 
-    static create(parent?: IRedDotNode, path: string = "", triggers?: ERDTriggerType[]) {
-        const data = Laya.Pool.createByClass(RedDotNode as any) as RedDotNode;
-        data._enable = true;
+	static create(parent?: IRedDotNode, path: string = "", triggers?: ERDTriggerType[]) {
+		const data = Laya.Pool.createByClass(RedDotNode as any) as RedDotNode;
+		data._enable = true;
 
-        data._nameList = path ? path.split(".") : null;
-        data.parent = parent as any;
-        data.triggers = triggers;
-        return data as IRedDotNode;
-    }
+		data._nameList = path ? path.split(".") : null;
+		data.parent = parent as any;
+		data.triggers = triggers;
+		return data as IRedDotNode;
+	}
 
-    refresh() {
-        this.comp && (this.comp.visible = this._rdCount > 0 && this.enable);
-    }
+	refresh() {
+		this.comp && (this.comp.visible = this._rdCount > 0 && this.enable);
+	}
 
-    /** 触发当前节点红点检测事件 */
-    trigger() {
-        if (this.hasTrigger) {
-            this.comp && this.triggers.forEach(v => {
-                $redDotMgr.event("Trigger" + v);
-            });
-        } else {
-            this.calculateCountLater();
-        }
-    }
+	/** 触发当前节点红点检测事件 */
+	trigger() {
+		if (this.hasTrigger) {
+			this.comp && this.triggers.forEach(v => {
+				$redDotMgr.event("Trigger" + v);
+			});
+		} else {
+			this.calculateCountLater();
+		}
+	}
 
-    addChild(child: RedDotNode) {
-        if (!child) return;
-        if (child._parent == this) return;
-        child.removeSelf();
-        child._parent = this;
-        this._childs.push(child);
-        child.calculateCountLater();
-    }
+	addChild(child: RedDotNode) {
+		if (!child) return;
+		if (child._parent == this) return;
+		child.removeSelf();
+		child._parent = this;
+		this._childs.push(child);
+		child.calculateCountLater();
+	}
 
-    /**
-     * 获取子节点
-     * @param id 子节点id
-     * @returns
-     */
-    getChild(id: number) {
-        return this._childs.find(v => v.id == id);
-    }
+	/**
+	 * 获取子节点
+	 * @param id 子节点id
+	 * @returns
+	 */
+	getChild(id: number) {
+		return this._childs.find(v => v.id == id);
+	}
 
-    /**
-     * 移除子节点
-     * @param id 子节点id
-     */
-    removeChild(id: number) {
-        const { _childs } = this;
-        const index = _childs.findIndex(v => v.id == id);
-        const child = _childs[index];
-        if (child) {
-            child._parent = null;
-            _childs.splice(index, 1);
-            this.calculateCountLater();
-        }
-        return child;
-    }
+	/**
+	 * 移除子节点
+	 * @param id 子节点id
+	 */
+	removeChild(id: number) {
+		const { _childs } = this;
+		const index = _childs.findIndex(v => v.id == id);
+		const child = _childs[index];
+		if (child) {
+			child._parent = null;
+			_childs.splice(index, 1);
+			this.calculateCountLater();
+		}
+		return child;
+	}
 
-    removeSelf() {
-        if (this._parent) {
-            this._parent.removeChild(this.id);
-        }
-    }
+	removeSelf() {
+		if (this._parent) {
+			this._parent.removeChild(this.id);
+		}
+	}
 
-    recover() {
-        this.removeSelf();
-        this._rdCount = 0;
-        this._enable = false;
-        this._parent = null;
-        this._triggers = null;
-        this._childs.length = 0;
-        this._triggeredMap.clear();
-        this._comp = null;
-        Laya.Pool.recoverByClass(this);
-        $redDotMgr.offAllCaller(this);
-    }
+	recover() {
+		this.removeSelf();
+		this._rdCount = 0;
+		this._enable = false;
+		this._parent = null;
+		this._triggers = null;
+		this._childs.length = 0;
+		this._triggeredMap.clear();
+		this._comp = null;
+		Laya.Pool.recoverByClass(this);
+		$redDotMgr.offAllCaller(this);
+	}
 
-    /**
-     * 红点事件触发回调
-     * @param type 事件类型
-     * @param triggered 是否检测出了红点
-     */
-    private onTrigger(type: ERDTriggerType, triggered: boolean) {
-        if (!this.hasTrigger) return;
-        if (this.triggers.indexOf(type) >= 0) {
-            this._triggeredMap.set(type, +!!triggered);
-            this.calculateCountLater();
-        }
-    }
+	/**
+	 * 红点事件触发回调
+	 * @param type 事件类型
+	 * @param triggered 是否检测出了红点
+	 */
+	private onTrigger(type: ERDTriggerType, triggered: boolean) {
+		if (!this.hasTrigger) return;
+		if (this.triggers.indexOf(type) >= 0) {
+			this._triggeredMap.set(type, +!!triggered);
+			this.calculateCountLater();
+		}
+	}
 
-    private calculateCountLater() {
-        Laya.timer.callLater(this, this.calculateRD);
-    }
+	private calculateCountLater() {
+		Laya.timer.callLater(this, this.calculateRD);
+	}
 
-    private calculateRD() {
-        const { _triggeredMap, _childs } = this;
-        let count = 0;
-        _triggeredMap.forEach(v => count += v);
-        _childs.forEach(v => count += Math.max(v._rdCount, 0));
-        this._rdCount = count;
-        this.refresh();
-        this._parent && this._parent.calculateCountLater();
-    }
+	private calculateRD() {
+		const { _triggeredMap, _childs } = this;
+		let count = 0;
+		_triggeredMap.forEach(v => count += v);
+		_childs.forEach(v => count += Math.max(v._rdCount, 0));
+		this._rdCount = count;
+		this.refresh();
+		this._parent && this._parent.calculateCountLater();
+	}
 }
 

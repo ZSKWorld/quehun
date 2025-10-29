@@ -22,7 +22,7 @@ export const enum EUIMainMsg {
 export class UIMainView extends ExtensionClass<IView, UIMain>(UIMain) implements IView {
 
 	override onCreate() {
-        const { btn_liaoShe, btn_friend, btn_observe, btn_paiPu, btn_cangKu, btn_shop, btn_xunMi, btn_setting, btn_help, btn_guide, btn_camera, btn_achieve, btn_activity, btn_email, btn_rank, btn_announcement } = this;
+		const { btn_liaoShe, btn_friend, btn_observe, btn_paiPu, btn_cangKu, btn_shop, btn_xunMi, btn_setting, btn_help, btn_guide, btn_camera, btn_achieve, btn_activity, btn_email, btn_rank, btn_announcement } = this;
 		btn_liaoShe.onClick(this, this.sendEvent, [EUIMainMsg.OnBtnLiaoSheClick]);
 		btn_friend.onClick(this, this.sendEvent, [EUIMainMsg.OnBtnFriendClick]);
 		btn_observe.onClick(this, this.sendEvent, [EUIMainMsg.OnBtnObserveClick]);
@@ -39,6 +39,6 @@ export class UIMainView extends ExtensionClass<IView, UIMain>(UIMain) implements
 		btn_email.onClick(this, this.sendEvent, [EUIMainMsg.OnBtnEmailClick]);
 		btn_rank.onClick(this, this.sendEvent, [EUIMainMsg.OnBtnRankClick]);
 		btn_announcement.onClick(this, this.sendEvent, [EUIMainMsg.OnBtnAnnouncementClick]);
-    }
+	}
 
 }

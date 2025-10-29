@@ -1,7 +1,7 @@
 declare interface IUIConfirmData {
-    format: 0 | 1 | 2 | 3;
-    title: string;
-    content: string;
-    onConfirm?: Laya.Handler;
-    onCancel?: Laya.Handler;
+	format: 0 | 1 | 2 | 3;
+	title: string;
+	content: string;
+	onConfirm?: Laya.Handler;
+	onCancel?: Laya.Handler;
 }

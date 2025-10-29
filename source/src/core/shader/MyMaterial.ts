@@ -1,3 +1,3 @@
-export class MyMaterial extends Laya.Material{
-    A:Laya.UnlitMaterial
+export class MyMaterial extends Laya.Material {
+	A: Laya.UnlitMaterial
 }

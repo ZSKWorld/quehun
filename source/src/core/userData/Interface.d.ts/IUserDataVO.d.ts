@@ -1,11 +1,11 @@
 declare namespace VO {
-    declare interface IUserDataVO extends IObserver {
-        account: IAccountVO;
-        character: ICharacterVO;
-        activity: IActivityVO;
-        recharge: IRechargeVO;
-        announcement: IAnnouncementVO;
-        clientValue: IClientValueVO;
-        serverSetting: IServerSettingVO;
-    }
+	declare interface IUserDataVO extends IObserver {
+		account: IAccountVO;
+		character: ICharacterVO;
+		activity: IActivityVO;
+		recharge: IRechargeVO;
+		announcement: IAnnouncementVO;
+		clientValue: IClientValueVO;
+		serverSetting: IServerSettingVO;
+	}
 }

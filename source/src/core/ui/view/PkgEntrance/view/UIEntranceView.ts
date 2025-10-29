@@ -6,8 +6,8 @@ export const enum EUIEntranceMsg {
 
 export class UIEntranceView extends ExtensionClass<IView, UIEntrance>(UIEntrance) implements IView {
 
-    override onCreate() {
+	override onCreate() {
 
-    }
+	}
 
 }

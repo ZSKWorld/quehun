@@ -7,8 +7,8 @@ export interface BtnCheckTxtRightData {
 
 export class BtnCheckTxtRightMediator extends MediatorBase<BtnCheckTxtRightView, BtnCheckTxtRightData> {
 
-    override onAwake() {
+	override onAwake() {
 
-    }
+	}
 
 }

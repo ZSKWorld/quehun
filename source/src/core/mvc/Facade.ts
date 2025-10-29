@@ -5,74 +5,74 @@ import { ViewManager } from "./view/ViewManager";
 
 /** mvc门面类 */
 export class Facade extends Singleton<Facade>() implements IFacade {
-    private _viewMgr: ViewManager;
-    private _controller: Controller;
-    private _provider: Provider;
+	private _viewMgr: ViewManager;
+	private _controller: Controller;
+	private _provider: Provider;
 
-    protected constructor() {
-        super();
-        this._viewMgr = ViewManager.Inst;
-        this._controller = Controller.Inst;
-        this._provider = Provider.Inst;
-    }
+	protected constructor() {
+		super();
+		this._viewMgr = ViewManager.Inst;
+		this._controller = Controller.Inst;
+		this._provider = Provider.Inst;
+	}
 
-    //#region View
-    registerView(viewId: EViewID, viewType: EViewType, viewCls: IViewClass, mediatorCls: IMediatorClass) {
-        this._viewMgr.register(viewId, viewType, viewCls, mediatorCls);
-    }
+	//#region View
+	registerView(viewId: EViewID, viewType: EViewType, viewCls: IViewClass, mediatorCls: IMediatorClass) {
+		this._viewMgr.register(viewId, viewType, viewCls, mediatorCls);
+	}
 
-    hasMediator(viewId: EViewID) {
-        return this._viewMgr.has(viewId);
-    }
+	hasMediator(viewId: EViewID) {
+		return this._viewMgr.has(viewId);
+	}
 
-    getMediator(viewId: EViewID) {
-        return this._viewMgr.get(viewId);
-    }
+	getMediator(viewId: EViewID) {
+		return this._viewMgr.get(viewId);
+	}
 
-    createMediator(viewId: EViewID, fullScreen: boolean = false) {
-        return this._viewMgr.create(viewId, fullScreen);
-    }
-    //#endregion
+	createMediator(viewId: EViewID, fullScreen: boolean = false) {
+		return this._viewMgr.create(viewId, fullScreen);
+	}
+	//#endregion
 
-    //#region Controller
-    registerCommand(notifyName: string, cls: ICommandClass) {
-        this._controller.register(notifyName, cls);
-    }
+	//#region Controller
+	registerCommand(notifyName: string, cls: ICommandClass) {
+		this._controller.register(notifyName, cls);
+	}
 
-    hasCommand(notifyName: string) {
-        return this._controller.has(notifyName);
-    }
+	hasCommand(notifyName: string) {
+		return this._controller.has(notifyName);
+	}
 
-    removeCommand(notifyName: string, cls?: ICommandClass) {
-        this._controller.remove(notifyName, cls);
-    }
-    //#endregion
+	removeCommand(notifyName: string, cls?: ICommandClass) {
+		this._controller.remove(notifyName, cls);
+	}
+	//#endregion
 
-    //#region Event
-    on(type: string, caller: any, listener: Function, args?: any[], once?: boolean) {
-        if (once) this._provider.once(type, caller, listener, args);
-        else this._provider.on(type, caller, listener, args);
-    }
+	//#region Event
+	on(type: string, caller: any, listener: Function, args?: any[], once?: boolean) {
+		if (once) this._provider.once(type, caller, listener, args);
+		else this._provider.on(type, caller, listener, args);
+	}
 
-    off(type: string, caller: any, listener: Function) {
-        this._provider.off(type, caller, listener);
-    }
+	off(type: string, caller: any, listener: Function) {
+		this._provider.off(type, caller, listener);
+	}
 
-    offAll(type: string) {
-        this._provider.offAll(type);
-    }
+	offAll(type: string) {
+		this._provider.offAll(type);
+	}
 
-    offAllCaller(caller: any) {
-        this._provider.offAllCaller(caller);
-    }
+	offAllCaller(caller: any) {
+		this._provider.offAllCaller(caller);
+	}
 
-    dispatch(eventName: string, data?: any) {
-        this._provider.event(eventName, data);
-        this._controller.execute(eventName, data);
-    }
+	dispatch(eventName: string, data?: any) {
+		this._provider.event(eventName, data);
+		this._controller.execute(eventName, data);
+	}
 
-    interestNotify(caller: any) {
-        this._provider.interestNotify(caller);
-    }
-    //#endregion
+	interestNotify(caller: any) {
+		this._provider.interestNotify(caller);
+	}
+	//#endregion
 }

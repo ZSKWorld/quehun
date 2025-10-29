@@ -1,17 +1,17 @@
 export class LocalDataManager {
-    set<T>(key: string, value: T) {
-        Laya.LocalStorage.setJSON(key, value);
-    }
+	set<T>(key: string, value: T) {
+		Laya.LocalStorage.setJSON(key, value);
+	}
 
-    get<T = any>(key: string) {
-        return Laya.LocalStorage.getJSON(key) as T;
-    }
+	get<T = any>(key: string) {
+		return Laya.LocalStorage.getJSON(key) as T;
+	}
 
-    remove(key: string) {
-        Laya.LocalStorage.removeItem(key);
-    }
+	remove(key: string) {
+		Laya.LocalStorage.removeItem(key);
+	}
 
-    removeAll() {
-        Laya.LocalStorage.clear();
-    }
+	removeAll() {
+		Laya.LocalStorage.clear();
+	}
 }

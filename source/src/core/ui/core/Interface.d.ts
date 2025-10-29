@@ -28,68 +28,68 @@ declare function ViewEvent(name: string, once?: boolean, args?: any[]): MethodDe
 
 /** 按键事件类型 */
 declare enum EKeyEventType {
-    KeyDown = "keydown",
-    KeyPress = "keypress",
-    KeyUp = "keyup",
+	KeyDown = "keydown",
+	KeyPress = "keypress",
+	KeyUp = "keyup",
 }
 
 /** 鼠标事件类型 */
 declare enum EMouseEventType {
-    MouseDown = "mousedown",
-    MouseUp = "mouseup",
-    MouseMove = "mousemove",
-    MouseClick = "click",
-    MouseDoubleClick = "doubleclick",
-    MouseRightClick = "rightclick",
-    RightMouseDown = "rightmousedown",
-    RightMouseUp = "rightmouseup",
-    MouseOver = "mouseover",
-    MouseOut = "mouseout",
-    MouseWheel = "mousewheel",
-    MouseDrag = "mousedrag",
-    MouseDragEnd = "mousedragend",
+	MouseDown = "mousedown",
+	MouseUp = "mouseup",
+	MouseMove = "mousemove",
+	MouseClick = "click",
+	MouseDoubleClick = "doubleclick",
+	MouseRightClick = "rightclick",
+	RightMouseDown = "rightmousedown",
+	RightMouseUp = "rightmouseup",
+	MouseOver = "mouseover",
+	MouseOut = "mouseout",
+	MouseWheel = "mousewheel",
+	MouseDrag = "mousedrag",
+	MouseDragEnd = "mousedragend",
 }
 
 /** UI层级 */
 declare enum ELayer {
-    Scene = "Scene",
-    UIBottom = "UIBottom",
-    UIMiddle = "UIMiddle",
-    UITop = "UITop",
-    Dialog = "Dialog",
-    Alert = "Alert",
-    Lock = "Lock",
+	Scene = "Scene",
+	UIBottom = "UIBottom",
+	UIMiddle = "UIMiddle",
+	UITop = "UITop",
+	Dialog = "Dialog",
+	Alert = "Alert",
+	Lock = "Lock",
 }
 
 declare interface IUIManager {
-    init(): void;
+	init(): void;
 
-    /**
-     * 添加对象
-     * @param obj 要添加的对象
-     * @param layer 目标层级
-     * @param index 插入位置
-     * @returns
-     */
-    addToLayer(obj: fgui.GObject, layer: ELayer, index?: number): void;
+	/**
+	 * 添加对象
+	 * @param obj 要添加的对象
+	 * @param layer 目标层级
+	 * @param index 插入位置
+	 * @returns
+	 */
+	addToLayer(obj: fgui.GObject, layer: ELayer, index?: number): void;
 
-    /** 是否是最顶层ui */
-    isTopView(view: IMediator | IView): boolean;
+	/** 是否是最顶层ui */
+	isTopView(view: IMediator | IView): boolean;
 
-    /**
-     * 打开页面
-     * @param viewId 页面id
-     * @param data 传入参数
-     */
-    openView<T = any>(viewId: EViewID, data?: T): void;
+	/**
+	 * 打开页面
+	 * @param viewId 页面id
+	 * @param data 传入参数
+	 */
+	openView<T = any>(viewId: EViewID, data?: T): void;
 
-    /** 移除页面
-     * @param viewId 页面id
-     */
-    closeView(viewId: EViewID): void;
+	/** 移除页面
+	 * @param viewId 页面id
+	 */
+	closeView(viewId: EViewID): void;
 
-    /** 移除所有页面 */
-    closeAllView(): void;
+	/** 移除所有页面 */
+	closeAllView(): void;
 
-    destroyView(viewId: EViewID): void;
+	destroyView(viewId: EViewID): void;
 }

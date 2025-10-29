@@ -1,5 +1,5 @@
 declare namespace VO {
-    declare interface ICharacterVO {
-        
-    }
+	declare interface ICharacterVO {
+
+	}
 }

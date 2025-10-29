@@ -7,8 +7,8 @@ export interface IUIMainData {
 
 export class UIMainMediator extends MediatorBase<UIMainView, IUIMainData> {
 
-    override onAwake() {
-        this.addEvent(EUIMainMsg.OnBtnLiaoSheClick, this.onBtnLiaoSheClick);
+	override onAwake() {
+		this.addEvent(EUIMainMsg.OnBtnLiaoSheClick, this.onBtnLiaoSheClick);
 		this.addEvent(EUIMainMsg.OnBtnFriendClick, this.onBtnFriendClick);
 		this.addEvent(EUIMainMsg.OnBtnObserveClick, this.onBtnObserveClick);
 		this.addEvent(EUIMainMsg.OnBtnPaiPuClick, this.onBtnPaiPuClick);
@@ -24,8 +24,8 @@ export class UIMainMediator extends MediatorBase<UIMainView, IUIMainData> {
 		this.addEvent(EUIMainMsg.OnBtnEmailClick, this.onBtnEmailClick);
 		this.addEvent(EUIMainMsg.OnBtnRankClick, this.onBtnRankClick);
 		this.addEvent(EUIMainMsg.OnBtnAnnouncementClick, this.onBtnAnnouncementClick);
-    }
-    
+	}
+
 	private onBtnLiaoSheClick() {
 
 	}

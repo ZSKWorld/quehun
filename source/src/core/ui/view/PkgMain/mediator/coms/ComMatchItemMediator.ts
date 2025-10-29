@@ -1,5 +1,5 @@
 import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
-import { EComMatchItemMsg, ComMatchItemView } from "../../view/coms/ComMatchItemView";
+import { ComMatchItemView, EComMatchItemMsg } from "../../view/coms/ComMatchItemView";
 
 export interface IComMatchItemData {
 
@@ -10,7 +10,7 @@ export class ComMatchItemMediator extends MediatorBase<ComMatchItemView, IComMat
 	override onAwake() {
 		this.addEvent(EComMatchItemMsg.OnBtnInfoClick, this.onBtnInfoClick);
 	}
-	
+
 	private onBtnInfoClick() {
 
 	}

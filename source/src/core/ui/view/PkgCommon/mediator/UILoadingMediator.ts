@@ -8,16 +8,16 @@ export interface IUILoadingData {
 
 export class UILoadingMediator extends MediatorBase<UILoadingView, IUILoadingData> {
 
-    override onEnable() {
-        this.view.refreshContent();
-    }
+	override onEnable() {
+		this.view.refreshContent();
+	}
 
-    override onUpdate() {
-        this.view.updateBlockPos();
-    }
+	override onUpdate() {
+		this.view.updateBlockPos();
+	}
 
-    @InterestNotify(ENotifyConst.OnSceneLoadProgress)
-    protected onSceneLoadProgrss(pro: number) {
-        this.view.refreshProgress(pro);
-    }
+	@InterestNotify(ENotifyConst.OnSceneLoadProgress)
+	protected onSceneLoadProgrss(pro: number) {
+		this.view.refreshProgress(pro);
+	}
 }

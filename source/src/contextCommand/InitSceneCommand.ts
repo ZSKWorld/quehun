@@ -4,16 +4,16 @@ import { SceneMain } from "../scene/scene/SceneMain";
 import { ESceneType } from "../scene/SceneDefine";
 
 export class InitSceneCommand extends Command {
-    override execute(notifyName: string, data?: any) {
-        const registerScene = $sceneMgr.registerScene.bind($sceneMgr) as typeof $sceneMgr.registerScene;
-        const registerView = $sceneMgr.registerView.bind($sceneMgr) as typeof $sceneMgr.registerView;
-        registerScene(ESceneType.LoginScene, SceneLogin);
-        registerView(ESceneType.LoginScene, EViewID.UIEntranceView);
-        registerView(ESceneType.LoginScene, EViewID.UILoginView);
-        registerView(ESceneType.LoginScene, EViewID.UIBindPhoneView);
-        registerView(ESceneType.LoginScene, EViewID.UILoginQueueView);
+	override execute(notifyName: string, data?: any) {
+		const registerScene = $sceneMgr.registerScene.bind($sceneMgr) as typeof $sceneMgr.registerScene;
+		const registerView = $sceneMgr.registerView.bind($sceneMgr) as typeof $sceneMgr.registerView;
+		registerScene(ESceneType.LoginScene, SceneLogin);
+		registerView(ESceneType.LoginScene, EViewID.UIEntranceView);
+		registerView(ESceneType.LoginScene, EViewID.UILoginView);
+		registerView(ESceneType.LoginScene, EViewID.UIBindPhoneView);
+		registerView(ESceneType.LoginScene, EViewID.UILoginQueueView);
 
 
-        registerScene(ESceneType.MainScene, SceneMain);
-    }
+		registerScene(ESceneType.MainScene, SceneMain);
+	}
 }

@@ -2,7 +2,7 @@
 
 export default class ComMatchItem extends fgui.GComponent {
 
-	public loader_bg: fgui.GLoader;
+	public btn_bg: fgui.GButton;
 	public loader_icon: fgui.GLoader;
 	public btn_info: fgui.GButton;
 	public txt_time: fgui.GTextField;
@@ -19,7 +19,7 @@ export default class ComMatchItem extends fgui.GComponent {
 	}
 
 	protected override onConstruct(): void {
-		this.loader_bg = <fgui.GLoader>(this.getChildAt(0));
+		this.btn_bg = <fgui.GButton>(this.getChildAt(0));
 		this.loader_icon = <fgui.GLoader>(this.getChildAt(1));
 		this.btn_info = <fgui.GButton>(this.getChildAt(2));
 		this.txt_time = <fgui.GTextField>(this.getChildAt(3));

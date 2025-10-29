@@ -3,6 +3,7 @@ export class FGUIExtend {
 	static extends() {
 		this.gobjectExtension();
 		this.addGUIObjectEventLockable();
+		this.addGTextLangText();
 	}
 
 	/** GObject扩展 */
@@ -102,6 +103,18 @@ export class FGUIExtend {
 		gobjProto.removeAllEventLock = function () {
 			if (this.isDisposed) return;
 			this.displayObject.__eventLockMap = null;
+		};
+	}
+
+	private static addGTextLangText() {
+		const objPrototype = fgui.GObject.prototype;
+		objPrototype.langText = function (id: number, ...args: any[]) {
+			this.text = $lang(id, ...args);
+		};
+
+		const inputPrototype = fgui.GTextInput.prototype;
+		inputPrototype.langPrompt = function (id: number, ...args: any[]) {
+			this.promptText = $lang(id, ...args);
 		};
 	}
 }

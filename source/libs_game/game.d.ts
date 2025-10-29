@@ -107,6 +107,7 @@ declare namespace Laya {
 
 declare namespace fgui {
 	interface GObject {
+		langText(id: number, ...args: any[]): void;
 		tweenMove(endX: number, endY: number, duration: number): GTweener;
 		tweenMoveX(endX: number, duration: number): GTweener;
 		tweenMoveY(endY: number, duration: number): GTweener;
@@ -150,6 +151,10 @@ declare namespace fgui {
 		addChild<T extends GObject>(child: T): T;
 		addChildAt<T extends GObject>(child: T, index: number): T;
 		removeChild<T extends GObject>(child: T, dispose?: boolean): T;
+	}
+
+	interface GTextInput {
+		langPrompt(id: number, ...args: any[]): void;
 	}
 }
 

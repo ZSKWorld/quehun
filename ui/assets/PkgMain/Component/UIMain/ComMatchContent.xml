@@ -25,7 +25,7 @@
       <property target="time" propertyId="0" value="距离刷新还剩:15小时"/>
       <property target="name" propertyId="0" value="每周轮换"/>
     </component>
-    <component id="n14_z63p" name="item4" src="gnjqob9j" fileName="Component/UIMain/ComMatchItem.xml" xy="0,664">
+    <component id="n14_z63p" name="item4" src="gnjqob9j" fileName="Component/UIMain/ComMatchItem.xml" xy="0,664" alpha="0">
       <property target="bg" propertyId="1" value="ui://vith2b66gnjqob8i"/>
       <property target="icon" propertyId="1" value="ui://vith2b66gnjqob8o"/>
       <property target="time" propertyId="0" value="距离刷新还剩:15小时"/>

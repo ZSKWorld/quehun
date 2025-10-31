@@ -72,3 +72,7 @@ const InterestMessage = function (msgId, once, args) {
         setEvent(msgId, list, func, once, args);
     };
 }
+
+const ExcuteAfterEngineInit = function(target, propertyKey, descriptor) {
+	Laya.addAfterInitCallback(descriptor.value.bind(target));
+}

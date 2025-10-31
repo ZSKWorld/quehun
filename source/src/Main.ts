@@ -1,3 +1,5 @@
+import { FxBRDF } from "./core/shader/3d/FxBRDF/FxBRDF";
+import { SoftDissolveAtlasMaterial } from "./core/shader/3d/SoftDissolveAtlas/SoftDissolveAtlasMaterial";
 import { InitContextCommand } from "./contextCommand/InitContextCommand";
 import { ENotifyConst } from "./core/common/NotifyConst";
 import { ViewExtend } from "./core/ui/core/ViewExtend";
@@ -36,6 +38,8 @@ class Main {
 			else $facade.dispatch(ENotifyConst.OnGameHide);
 		});
 		new InitContextCommand().execute("");
+		// new FxBRDF();
+		// new SoftDissolveAtlasMaterial();
 	}
 }
 

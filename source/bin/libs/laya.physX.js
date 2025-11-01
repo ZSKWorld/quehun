@@ -582,6 +582,7 @@
             this._characterCapableMap.set(Laya.ECharacterCapable.Character_minDistance, true);
             this._characterCapableMap.set(Laya.ECharacterCapable.Character_EventFilter, true);
             this._characterCapableMap.set(Laya.ECharacterCapable.Character_SimulateGravity, true);
+            this._characterCapableMap.set(Laya.ECharacterCapable.Character_IsOnGround, true);
         }
         _createController() {
             let desc;
@@ -625,6 +626,10 @@
         }
         jump(velocity) {
             return this._pxController && this._pxController.move(velocity, this._minDistance, 1 / 60);
+        }
+        isGrounded() {
+            let flag = this._pxController && this._pxController.move(new Laya.Vector3(0, -0.1, 0), this._minDistance, 1 / 60);
+            return (flag & exports.ECharacterCollisionFlag.eCOLLISION_DOWN) != 0;
         }
         setStepOffset(offset) {
             this._stepOffset = offset;
@@ -757,6 +762,8 @@
             this._dynamicCapableMap.set(Laya.EColliderCapable.RigidBody_Mass, true);
             this._dynamicCapableMap.set(Laya.EColliderCapable.RigidBody_InertiaTensor, true);
             this._dynamicCapableMap.set(Laya.EColliderCapable.RigidBody_MassCenter, true);
+            this._dynamicCapableMap.set(Laya.EColliderCapable.RigidBody_SleepThreshold, true);
+            this._dynamicCapableMap.set(Laya.EColliderCapable.RigidBody_SleepAngularVelocity, false);
             this._dynamicCapableMap.set(Laya.EColliderCapable.RigidBody_SolverIterations, true);
             this._dynamicCapableMap.set(Laya.EColliderCapable.RigidBody_AllowDetectionMode, true);
             this._dynamicCapableMap.set(Laya.EColliderCapable.RigidBody_AllowKinematic, true);
@@ -1890,22 +1897,22 @@
             switch (pxcollider._type) {
                 case exports.pxColliderType.StaticCollider:
                     this._pxScene.addActor(pxcollider._pxActor, null);
-                    Laya.Stat.physics_staticRigidBodyCount++;
+                    Laya.LayaGL.statAgent.recordCountData(Laya.StatElement.C_PhysicaStaticRigidBody, 1);
                     break;
                 case exports.pxColliderType.RigidbodyCollider:
                     pxcollider.setWorldTransform(true);
                     this._pxScene.addActor(pxcollider._pxActor, null);
                     if (!collider.IsKinematic) {
                         this._dynamicUpdateList.add(collider);
-                        Laya.Stat.physics_dynamicRigidBodyCount++;
+                        Laya.LayaGL.statAgent.recordCountData(Laya.StatElement.C_PhysicaDynamicRigidBody, 1);
                     }
                     else {
-                        Laya.Stat.phyiscs_KinematicRigidBodyCount++;
+                        Laya.LayaGL.statAgent.recordCountData(Laya.StatElement.C_PhysicaKinematicRigidBody, 1);
                     }
                     break;
                 case exports.pxColliderType.CharactorCollider:
                     this._addCharactorCollider(collider);
-                    Laya.Stat.physics_CharacterControllerCount++;
+                    Laya.LayaGL.statAgent.recordCountData(Laya.StatElement.C_PhysicaCharacterController, 1);
                     break;
             }
             pxcollider._isSimulate = true;
@@ -1917,22 +1924,22 @@
                     if (collider.inPhysicUpdateListIndex !== -1)
                         this._physicsUpdateList.remove(collider);
                     this._pxScene.removeActor(pxcollider._pxActor, true);
-                    Laya.Stat.physics_staticRigidBodyCount--;
+                    Laya.LayaGL.statAgent.recordCountData(Laya.StatElement.C_PhysicaStaticRigidBody, -1);
                     break;
                 case exports.pxColliderType.RigidbodyCollider:
                     if (collider.inPhysicUpdateListIndex !== -1)
                         !collider.IsKinematic && this._dynamicUpdateList.remove(collider);
                     this._pxScene.removeActor(pxcollider._pxActor, true);
                     if (!collider.IsKinematic) {
-                        Laya.Stat.physics_dynamicRigidBodyCount--;
+                        Laya.LayaGL.statAgent.recordCountData(Laya.StatElement.C_PhysicaDynamicRigidBody, -1);
                     }
                     else {
-                        Laya.Stat.phyiscs_KinematicRigidBodyCount--;
+                        Laya.LayaGL.statAgent.recordCountData(Laya.StatElement.C_PhysicaKinematicRigidBody, -1);
                     }
                     break;
                 case exports.pxColliderType.CharactorCollider:
                     this._removeCharactorCollider(pxcollider);
-                    Laya.Stat.physics_CharacterControllerCount--;
+                    Laya.LayaGL.statAgent.recordCountData(Laya.StatElement.C_PhysicaCharacterController, -1);
                     break;
             }
             pxcollider._isSimulate = false;

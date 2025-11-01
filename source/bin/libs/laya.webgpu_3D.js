@@ -13,7 +13,6 @@
                 canPass = ((1 << render.layer) & cullMask) != 0 && (render.renderbitFlag == 0);
                 canPass = canPass && ((render.staticMask & staticMask) != 0);
                 if (canPass) {
-                    Laya.Stat.frustumCulling++;
                     if (!cameraCullInfo.useOcclusionCulling || render._needRender(boundFrustum)) {
                         render.distanceForSort = Laya.Vector3.distanceSquared(render.bounds._imp.getCenter(), cameraCullInfo.position);
                         render._renderUpdatePre(context);
@@ -35,7 +34,6 @@
             for (let i = 0; i < count; i++) {
                 const render = list[i];
                 if (render.shadowCullPass()) {
-                    Laya.Stat.frustumCulling++;
                     if (Laya.FrustumCulling.cullingRenderBounds(render.bounds, shadowCullInfo)) {
                         render.distanceForSort = Laya.Vector3.distanceSquared(render.bounds._imp.getCenter(), shadowCullInfo.position);
                         render._renderUpdatePre(context);
@@ -57,7 +55,6 @@
                 const render = list[i];
                 render._renderUpdatePre(context);
                 if (render.shadowCullPass()) {
-                    Laya.Stat.frustumCulling++;
                     render.distanceForSort = Laya.Vector3.distanceSquared(render.bounds._imp.getCenter(), cameraCullInfo.position);
                     if (render._needRender(boundFrustum)) {
                         let element;
@@ -148,14 +145,18 @@
             renderelement.materialShaderData && this._elements.add(renderelement);
         }
         _batchQueue() {
-            if (!this._isTransparent)
+            if (!this._isTransparent) {
+                let time = Laya.Browser.now();
                 this._batch.batch(this._elements);
+                Laya.LayaGL.statAgent.recordTimeData(Laya.StatisticsElement.T_3DBatchTime, Laya.Browser.now() - time);
+            }
         }
         renderQueue(context) {
             this._batchQueue();
             const count = this._elements.length;
             this._quickSort.sort(this._elements, this._isTransparent, 0, count - 1);
             context.drawRenderElementList(this._elements);
+            Laya.LayaGL.statAgent.recordCTData(this._isTransparent ? Laya.StatisticsElement.CT_TransDrawCall : Laya.StatisticsElement.CT_OpaqueDrawCall, this.elements.length);
             this._batch.clearRenderData();
         }
         clear() {
@@ -215,13 +216,19 @@
         render(context, list, count) {
             context.cameraUpdateMask++;
             this._clearRenderList();
+            var time = Laya.Browser.now();
             RenderCullUtil.cullByCameraCullInfo(this.cameraCullInfo, list, count, this._opaqueList, this._transparent, context);
+            Laya.LayaGL.statAgent.recordTimeData(Laya.StatisticsElement.T_CullMain, Laya.Browser.now() - time);
+            time = Laya.Browser.now();
             if ((this.depthTextureMode & Laya.DepthTextureMode.Depth) != 0)
                 this._renderDepthPass(context);
             if ((this.depthTextureMode & Laya.DepthTextureMode.DepthNormals) != 0)
                 this._renderDepthNormalPass(context);
+            Laya.LayaGL.statAgent.recordTimeData(Laya.StatisticsElement.T_DepthPass, Laya.Browser.now() - time);
             this._cacheViewPortAndScissor();
+            time = Laya.Browser.now();
             this._mainPass(context);
+            Laya.LayaGL.statAgent.recordTimeData(Laya.StatisticsElement.T_3DMainPass, Laya.Browser.now() - time);
             this._opaqueList._batch.recoverData();
         }
         _clearRenderList() {
@@ -245,15 +252,18 @@
             context.setRenderTarget(this.depthTarget, Laya.RenderClearFlag.Depth);
             context.setClearData(Laya.RenderClearFlag.Depth, Laya.Color.BLACK, 1, 0);
             this._opaqueList.renderQueue(context);
-            const far = this.camera.farplane;
-            const near = this.camera.nearplane;
+            Laya.LayaGL.statAgent.recordCTData(Laya.StatisticsElement.CT_DepthCastDrawCall, this._opaqueList.elements.length);
+            const far = this.camera.farPlane;
+            const near = this.camera.nearPlane;
             this._zBufferParams.setValue(1.0 - far / near, far / near, (near - far) / (near * far), 1 / near);
             context.cameraData.setVector(Laya.DepthPass.DEFINE_SHADOW_BIAS, Laya.DepthPass.SHADOW_BIAS);
             context.cameraData.setVector(Laya.DepthPass.DEPTHZBUFFERPARAMS, this._zBufferParams);
+            Laya.Camera.depthPass._setupDepthModeShaderValue(Laya.DepthTextureMode.Depth, this.camera);
             shadervalue.removeDefine(Laya.DepthPass.DEPTHPASS);
         }
         _renderDepthNormalPass(context) {
             context.pipelineMode = this.depthNormalPipelineMode;
+            this.camera._shaderValues.setTexture(Laya.DepthPass.DEPTHNORMALSTEXTURE, Laya.Texture2D.blackTexture);
             const viewport = this._viewPort;
             Laya.Viewport.TEMP.set(viewport.x, viewport.y, viewport.width, viewport.height);
             Laya.Vector4.TEMP.setValue(viewport.x, viewport.y, viewport.width, viewport.height);
@@ -262,13 +272,17 @@
             context.setClearData(Laya.RenderClearFlag.Color | Laya.RenderClearFlag.Depth, this._defaultNormalDepthColor, 1, 0);
             context.setRenderTarget(this.depthNormalTarget, Laya.RenderClearFlag.Color | Laya.RenderClearFlag.Depth);
             this._opaqueList.renderQueue(context);
+            Laya.LayaGL.statAgent.recordCTData(Laya.StatisticsElement.CT_DepthCastDrawCall, this._opaqueList.elements.length);
+            Laya.Camera.depthPass._setupDepthModeShaderValue(Laya.DepthTextureMode.DepthNormals, this.camera);
         }
         _mainPass(context) {
             context.pipelineMode = this.pipelineMode;
             RenderPassUtil.renderCmd(this.beforeForwardCmds, context);
             RenderPassUtil.recoverRenderContext3D(context, this.destTarget);
             context.setClearData(this.clearFlag, this.clearColor, 1, 0);
-            this.enableOpaque && this._opaqueList.renderQueue(context);
+            var time = Laya.Browser.now();
+            this._opaqueList.renderQueue(context);
+            Laya.LayaGL.statAgent.recordTimeData(Laya.StatisticsElement.T_3DMainPass_Opaque, Laya.Browser.now() - time);
             RenderPassUtil.renderCmd(this.beforeSkyboxCmds, context);
             if (this.skyRenderNode) {
                 const skyRenderElement = this.skyRenderNode.renderelements[0];
@@ -279,20 +293,20 @@
                 this._opaqueTexturePass();
             RenderPassUtil.renderCmd(this.beforeTransparentCmds, context);
             RenderPassUtil.recoverRenderContext3D(context, this.destTarget);
+            time = Laya.Browser.now();
             this._transparent.renderQueue(context);
+            Laya.LayaGL.statAgent.recordTimeData(Laya.StatisticsElement.T_3DMainPass_Trans, Laya.Browser.now() - time);
         }
         _opaqueTexturePass() {
         }
     }
 
     class WebBaseRenderNode {
-        _renderUpdatePre_StatUse(context3D) {
-            if (this._updateMark == context3D.cameraUpdateMask)
-                return;
-            var time = performance.now();
-            this._renderUpdatePreFun.call(this._renderUpdatePreCall, context3D);
-            Laya.Stat.renderPassStatArray[Laya.RenderPassStatisticsInfo.T_RenderPreUpdate] += (performance.now() - time);
-            this._updateMark = context3D.cameraUpdateMask;
+        get shaderData() {
+            return this._shaderData;
+        }
+        set shaderData(value) {
+            this._shaderData = value;
         }
         _renderUpdatePre(context3D) {
             if (this._updateMark == context3D.cameraUpdateMask)
@@ -326,13 +340,14 @@
             }
         }
         constructor() {
+            this.ismoved = new Laya.Vector2();
             this.renderelements = [];
             this._commonUniformMap = [];
             this._worldParams = new Laya.Vector4(1, 0, 0, 0);
             this.lightmapDirtyFlag = -1;
             this.lightmapScaleOffset = new Laya.Vector4(1, 1, 0, 0);
             this.set_caculateBoundingBox(this, this._ownerCalculateBoundingBox);
-            this.additionShaderData = new Map();
+            this._additionShaderData = new Map();
         }
         setNodeCustomData(dataSlot, data) {
             switch (dataSlot) {
@@ -438,10 +453,10 @@
             this.volumetricGI = null;
             this.renderelements.length = 0;
             this.renderelements = null;
-            this._commonUniformMap.length = 0;
-            this._commonUniformMap = null;
             this.shaderData && this.shaderData.destroy();
             this.shaderData = null;
+            this._commonUniformMap.length = 0;
+            this._commonUniformMap = null;
             this.additionShaderData.clear();
             this.additionShaderData = null;
             this._additionShaderDataKeys.length = 0;
@@ -469,23 +484,32 @@
         }
     }
 
-    class WebMeshRenderNode extends WebBaseRenderNode {
-        constructor() {
-            super();
-            this.set_renderUpdatePreCall(this, this._renderUpdate);
-        }
-        _renderUpdate(context) {
-            if (context.sceneModuleData.lightmapDirtyFlag != this.lightmapDirtyFlag) {
-                this._applyLightMapParams();
-                this.lightmapDirtyFlag = context.sceneModuleData.lightmapDirtyFlag;
-            }
-            this._applyReflection();
-            this._applyLightProb();
-            let trans = this.transform;
-            this.shaderData.setMatrix4x4(Laya.Sprite3D.WORLDMATRIX, trans.worldMatrix);
-            this._worldParams.x = trans.getFrontFaceValue();
-            this.shaderData.setVector(Laya.Sprite3D.WORLDINVERTFRONT, this._worldParams);
-        }
+    var CLS = null;
+    function WebMeshRenderNode() {
+        if (!CLS)
+            CLS = class extends WebBaseRenderNode.BaseRenderNodeClass {
+                constructor() {
+                    super();
+                    this._cacheMoved = new Laya.Vector2(-1, -1);
+                    this.set_renderUpdatePreCall(this, this._renderUpdate);
+                }
+                _renderUpdate(context) {
+                    if (context.sceneModuleData.lightmapDirtyFlag != this.lightmapDirtyFlag) {
+                        this._applyLightMapParams();
+                        this.lightmapDirtyFlag = context.sceneModuleData.lightmapDirtyFlag;
+                    }
+                    this._applyReflection();
+                    this._applyLightProb();
+                    if (this.ismoved.x > this._cacheMoved.x || (this.ismoved.x == this._cacheMoved.x && this.ismoved.y > this._cacheMoved.y)) {
+                        let trans = this.transform;
+                        this.shaderData.setMatrix4x4(Laya.Sprite3D.WORLDMATRIX, trans.worldMatrix);
+                        this._worldParams.x = trans.getFrontFaceValue();
+                        this.shaderData.setVector(Laya.Sprite3D.WORLDINVERTFRONT, this._worldParams);
+                        this.ismoved.cloneTo(this._cacheMoved);
+                    }
+                }
+            };
+        return CLS;
     }
 
     class WebCameraNodeData {
@@ -578,95 +602,77 @@
     }
     WebReflectionProbe._idCounter = 0;
 
-    class WebSimpleSkinRenderNode extends WebBaseRenderNode {
-        constructor() {
-            super();
-            this.set_renderUpdatePreCall(this, this._renderUpdate);
-            this._simpleAnimatorParams = new Laya.Vector4();
-        }
-        setSimpleAnimatorParams(value) {
-            value.cloneTo(this._simpleAnimatorParams);
-            this.shaderData.setVector(Laya.SimpleSkinnedMeshSprite3D.SIMPLE_SIMPLEANIMATORPARAMS, this._simpleAnimatorParams);
-        }
-        _renderUpdate(context3D) {
-            let shaderData = this.shaderData;
-            let worldMat = this.transform.worldMatrix;
-            let worldParams = this._worldParams;
-            worldParams.x = this.transform.getFrontFaceValue();
-            shaderData.setMatrix4x4(Laya.Sprite3D.WORLDMATRIX, worldMat);
-            shaderData.setVector(Laya.Sprite3D.WORLDINVERTFRONT, worldParams);
-            this._applyLightProb();
-            this._applyReflection();
-            shaderData.setVector(Laya.SimpleSkinnedMeshSprite3D.SIMPLE_SIMPLEANIMATORPARAMS, this._simpleAnimatorParams);
-        }
-    }
-
-    class WebSkinRenderNode extends WebBaseRenderNode {
-        constructor() {
-            super();
-            this._bones = [];
-            this.set_renderUpdatePreCall(this, this._renderUpdate);
-        }
-        setRootBoneTransfom(value) {
-            this._cacheRootBone = value.transform;
-        }
-        setOwnerTransform(value) {
-            this._owner = value.transform;
-        }
-        setCacheMesh(cacheMesh) {
-            this._cacheMesh = cacheMesh;
-            this._skinnedDataLoopMarks = new Uint32Array(cacheMesh._inverseBindPoses.length);
-        }
-        setBones(value) {
-            this._bones = value;
-        }
-        setSkinnedData(value) {
-            this._skinnedData = value;
-        }
-        computeSkinnedData() {
-            var bindPoses = this._cacheMesh._inverseBindPoses;
-            var pathMarks = this._cacheMesh._skinnedMatrixCaches;
-            for (var i = 0, n = this._cacheMesh.subMeshCount; i < n; i++) {
-                var subMeshBoneIndices = ((this._cacheMesh.getSubMesh(i)))._boneIndicesList;
-                var subData = this._skinnedData[i];
-                for (var j = 0, m = subMeshBoneIndices.length; j < m; j++) {
-                    var boneIndices = subMeshBoneIndices[j];
-                    this._computeSubSkinnedData(bindPoses, boneIndices, subData[j], pathMarks);
+    var CLSSK = null;
+    function WebSkinRenderNode() {
+        if (!CLSSK)
+            CLSSK = class extends WebBaseRenderNode.BaseRenderNodeClass {
+                constructor() {
+                    super();
+                    this._bones = [];
+                    this.set_renderUpdatePreCall(this, this._renderUpdate);
                 }
-            }
-        }
-        _computeSubSkinnedData(bindPoses, boneIndices, data, matrixCaches) {
-            for (let k = 0, q = boneIndices.length; k < q; k++) {
-                let index = boneIndices[k];
-                if (this._skinnedDataLoopMarks[index] === Laya.Stat.loopCount) {
-                    let c = matrixCaches[index];
-                    let preData = this._skinnedData[c.subMeshIndex][c.batchIndex];
-                    let srcIndex = c.batchBoneIndex * 16;
-                    let dstIndex = k * 16;
-                    for (let d = 0; d < 16; d++)
-                        data[dstIndex + d] = preData[srcIndex + d];
+                setRootBoneTransfom(value) {
+                    this._cacheRootBone = value.transform;
                 }
-                else {
-                    let bone = this._bones[index];
-                    if (bone)
-                        Laya.Utils3D._mulMatrixArray(bone.transform.worldMatrix.elements, bindPoses[index].elements, 0, data, k * 16);
-                    this._skinnedDataLoopMarks[index] = Laya.Stat.loopCount;
+                setOwnerTransform(value) {
+                    this._owner = value.transform;
                 }
-            }
-        }
-        _renderUpdate(context3D) {
-            let mat = this._owner.worldMatrix;
-            let worldParams = this._worldParams;
-            worldParams.x = this._owner.getFrontFaceValue();
-            if (this._cacheRootBone) {
-                mat = Laya.Matrix4x4.DEFAULT;
-                worldParams.x = 1;
-            }
-            this._applyLightProb();
-            this._applyReflection();
-            this.shaderData.setMatrix4x4(Laya.Sprite3D.WORLDMATRIX, mat);
-            this.shaderData.setVector(Laya.Sprite3D.WORLDINVERTFRONT, worldParams);
-        }
+                setCacheMesh(cacheMesh) {
+                    this._cacheMesh = cacheMesh;
+                    this._skinnedDataLoopMarks = new Uint32Array(cacheMesh._inverseBindPoses.length);
+                }
+                setBones(value) {
+                    this._bones = value;
+                }
+                setSkinnedData(value) {
+                    this._skinnedData = value;
+                }
+                computeSkinnedData() {
+                    var bindPoses = this._cacheMesh._inverseBindPoses;
+                    var pathMarks = this._cacheMesh._skinnedMatrixCaches;
+                    for (var i = 0, n = this._cacheMesh.subMeshCount; i < n; i++) {
+                        var subMeshBoneIndices = ((this._cacheMesh.getSubMesh(i)))._boneIndicesList;
+                        var subData = this._skinnedData[i];
+                        for (var j = 0, m = subMeshBoneIndices.length; j < m; j++) {
+                            var boneIndices = subMeshBoneIndices[j];
+                            this._computeSubSkinnedData(bindPoses, boneIndices, subData[j], pathMarks);
+                        }
+                    }
+                }
+                _computeSubSkinnedData(bindPoses, boneIndices, data, matrixCaches) {
+                    for (let k = 0, q = boneIndices.length; k < q; k++) {
+                        let index = boneIndices[k];
+                        if (this._skinnedDataLoopMarks[index] === Laya.Stat.loopCount) {
+                            let c = matrixCaches[index];
+                            let preData = this._skinnedData[c.subMeshIndex][c.batchIndex];
+                            let srcIndex = c.batchBoneIndex * 16;
+                            let dstIndex = k * 16;
+                            for (let d = 0; d < 16; d++)
+                                data[dstIndex + d] = preData[srcIndex + d];
+                        }
+                        else {
+                            let bone = this._bones[index];
+                            if (bone)
+                                Laya.Utils3D._mulMatrixArray(bone.transform.worldMatrix.elements, bindPoses[index].elements, 0, data, k * 16);
+                            this._skinnedDataLoopMarks[index] = Laya.Stat.loopCount;
+                        }
+                    }
+                }
+                _renderUpdate(context3D) {
+                    let mat = this._owner.worldMatrix;
+                    let worldParams = this._worldParams;
+                    worldParams.x = this._owner.getFrontFaceValue();
+                    if (this._cacheRootBone) {
+                        mat = Laya.Matrix4x4.DEFAULT;
+                        worldParams.x = 1;
+                    }
+                    this._applyLightProb();
+                    this._applyReflection();
+                    this.shaderData.setMatrix4x4(Laya.Sprite3D.WORLDMATRIX, mat);
+                    this.shaderData.setVector(Laya.Sprite3D.WORLDINVERTFRONT, worldParams);
+                }
+            };
+        return CLSSK;
     }
 
     class WebSpotLight {
@@ -721,9 +727,37 @@
     }
     WebVolumetricGI._idCounter = 0;
 
+    var CLASSIMPLESKIN = null;
+    function WebSimpleSkinRenderNode() {
+        if (!CLASSIMPLESKIN)
+            CLASSIMPLESKIN = class extends WebBaseRenderNode.BaseRenderNodeClass {
+                constructor() {
+                    super();
+                    this.set_renderUpdatePreCall(this, this._renderUpdate);
+                    this._simpleAnimatorParams = new Laya.Vector4();
+                }
+                setSimpleAnimatorParams(value) {
+                    value.cloneTo(this._simpleAnimatorParams);
+                    this.shaderData.setVector(Laya.SimpleSkinnedMeshSprite3D.SIMPLE_SIMPLEANIMATORPARAMS, this._simpleAnimatorParams);
+                }
+                _renderUpdate(context3D) {
+                    let shaderData = this.shaderData;
+                    let worldMat = this.transform.worldMatrix;
+                    let worldParams = this._worldParams;
+                    worldParams.x = this.transform.getFrontFaceValue();
+                    shaderData.setMatrix4x4(Laya.Sprite3D.WORLDMATRIX, worldMat);
+                    shaderData.setVector(Laya.Sprite3D.WORLDINVERTFRONT, worldParams);
+                    this._applyLightProb();
+                    this._applyReflection();
+                    shaderData.setVector(Laya.SimpleSkinnedMeshSprite3D.SIMPLE_SIMPLEANIMATORPARAMS, this._simpleAnimatorParams);
+                }
+            };
+        return CLASSIMPLESKIN;
+    }
+
     class Web3DRenderModuleFactory {
         createSimpleSkinRenderNode() {
-            return new WebSimpleSkinRenderNode();
+            return new (WebSimpleSkinRenderNode())();
         }
         createTransform(owner) {
             return new Laya.Transform3D(owner);
@@ -757,16 +791,13 @@
         }
         createBaseRenderNode() {
             let renderNode = new WebBaseRenderNode();
-            if (Laya.Stat.enableRenderPassStatArray) {
-                renderNode._renderUpdatePre = renderNode._renderUpdatePre_StatUse;
-            }
             return renderNode;
         }
         createMeshRenderNode() {
-            return new WebMeshRenderNode();
+            return new (WebMeshRenderNode())();
         }
         createSkinRenderNode() {
-            return new WebSkinRenderNode();
+            return new (WebSkinRenderNode())();
         }
     }
     Laya.Laya.addBeforeInitCallback(() => {
@@ -813,28 +844,375 @@
         }
     }
 
+    class WebGPURenderContext3D {
+        get sceneData() {
+            return this._sceneData;
+        }
+        set sceneData(value) {
+            if (value == this._sceneData)
+                return;
+            this._sceneData = value;
+            if (value) {
+                for (let key of this._preDrawUniformMaps) {
+                    let uniformMap = Laya.LayaGL.renderDeviceFactory.createGlobalUniformMap(key);
+                    if (uniformMap._idata.size > 0) {
+                        this.sceneData.createSubUniformBuffer(key, key, uniformMap._idata);
+                    }
+                }
+            }
+        }
+        get cameraData() {
+            return this._cameraData;
+        }
+        set cameraData(value) {
+            if (value == this._cameraData)
+                return;
+            if (value) {
+                this._cameraData = value;
+                let cameraMap = Laya.LayaGL.renderDeviceFactory.createGlobalUniformMap("BaseCamera");
+                this.cameraData.createUniformBuffer("BaseCamera", cameraMap);
+            }
+        }
+        get sceneModuleData() {
+            return this._sceneModuleData;
+        }
+        set sceneModuleData(value) {
+            this._sceneModuleData = value;
+        }
+        get cameraModuleData() {
+            return this._cameraModuleData;
+        }
+        set cameraModuleData(value) {
+            this._cameraModuleData = value;
+        }
+        get globalShaderData() {
+            return this._globalShaderData;
+        }
+        set globalShaderData(value) {
+            this._globalShaderData = value;
+        }
+        get sceneUpdataMask() {
+            return this._sceneUpdataMask;
+        }
+        set sceneUpdataMask(value) {
+            this._sceneUpdataMask = value;
+        }
+        get cameraUpdateMask() {
+            return this._cameraUpdateMask;
+        }
+        set cameraUpdateMask(value) {
+            this._cameraUpdateMask = value;
+        }
+        get pipelineMode() {
+            return this._pipelineMode;
+        }
+        set pipelineMode(value) {
+            this._pipelineMode = value;
+        }
+        get invertY() {
+            return this._invertY;
+        }
+        set invertY(value) {
+            this._invertY = value;
+        }
+        constructor() {
+            this._globalComkeyCounter = 0;
+            this._globalComkeyNameMap = {};
+            this._globalRendercacheInfoMap = new Map();
+            this._sceneUpdataMask = 0;
+            this._cameraUpdateMask = 0;
+            this._clearColor = Laya.Color.BLACK.clone();
+            this._needStart = true;
+            this._blitFrameCount = 0;
+            this._blitScreen = false;
+            this._viewScissorSaved = false;
+            this._viewPortSave = new Laya.Viewport();
+            this._scissorSave = new Laya.Vector4();
+            this._renderCommand = new Laya.WebGPURenderCommandEncoder();
+            this._cacheGlobalDefines = new Laya.WebDefineDatas();
+            this.rtNeedClear = false;
+            this.device = Laya.WebGPURenderEngine._instance.getDevice();
+            this._preDrawUniformMaps = new Set();
+            WebGPURenderContext3D._instance = this;
+        }
+        globalComkeyToID(name) {
+            if (this._globalComkeyNameMap[name] !== undefined) {
+                return this._globalComkeyNameMap[name];
+            }
+            else {
+                const id = this._globalComkeyCounter++;
+                this._globalComkeyNameMap[name] = id;
+                return id;
+            }
+        }
+        _getRenderPipeLine() {
+            const engine = Laya.WebGPURenderEngine._instance;
+            let sceneCommands = Array.from(this._preDrawUniformMaps);
+            let sceneResources = Laya.WebGPUBindGroupHelper.createBindPropertyInfoArrayByCommandMap(0, sceneCommands);
+            let sceneLayoutInfo = engine.bindGroupCache.getLayoutInfo(sceneCommands, this._sceneData, null, sceneResources, ~0);
+            let cameraCommands = ["BaseCamera"];
+            let cameraResources = Laya.WebGPUBindGroupHelper.createBindPropertyInfoArrayByCommandMap(1, cameraCommands);
+            let cameraLayoutInfo = engine.bindGroupCache.getLayoutInfo(cameraCommands, this.cameraData, null, cameraResources, ~0);
+            return `${this.destRT.stateCacheID},${this.invertY ? 1 : 0},(${sceneLayoutInfo.id},${cameraLayoutInfo.id})`;
+        }
+        _getSceneCameraCacheKey() {
+            let key = `${this.sceneData._id ? this.sceneData._id : -1} + ${this.cameraData ? this.cameraData._id : -1}+${this._pipelineMode}+${this.destRT == Laya.WebGPURenderEngine._instance._screenRT ? 0 : 1}`;
+            this._curRenderGlobalKey = this.globalComkeyToID(key);
+            let pipelineLayout = this._getRenderPipeLine();
+            if (!this._globalRendercacheInfoMap.has(this._curRenderGlobalKey)) {
+                let cacheInfo = new Laya.WebGPUGlobalPipeLineCacheInfo();
+                this._curRenderCacheInfo = cacheInfo;
+                this._cacheGlobalDefines.cloneTo(cacheInfo.globalDefineData);
+                this._curRenderCacheInfo.globalDefineChangeFlag.setValue(Laya.Stat.loopCount, Laya.WebGPURenderEngine._instance._framePassCount);
+                cacheInfo.pipeLineChangeFlag.setValue(Laya.Stat.loopCount, Laya.WebGPURenderEngine._instance._framePassCount);
+                cacheInfo.globalPipelineCacheKey = pipelineLayout;
+                this._globalRendercacheInfoMap.set(this._curRenderGlobalKey, cacheInfo);
+                this._pipelineChange = this._curRenderCacheInfo.pipeLineChangeFlag;
+            }
+            else {
+                this._curRenderCacheInfo = this._globalRendercacheInfoMap.get(this._curRenderGlobalKey);
+                if (this._curRenderCacheInfo.globalPipelineCacheKey == pipelineLayout) {
+                    this._pipelineChange = this._curRenderCacheInfo.pipeLineChangeFlag;
+                }
+                else {
+                    this._pipelineChange = this._curRenderCacheInfo.pipeLineChangeFlag;
+                    this._curRenderCacheInfo.globalPipelineCacheKey = pipelineLayout;
+                    this._curRenderCacheInfo.pipeLineChangeFlag.setValue(Laya.Stat.loopCount, Laya.WebGPURenderEngine._instance._framePassCount);
+                }
+                if (!this._curRenderCacheInfo.globalDefineData.isEual(this._cacheGlobalDefines)) {
+                    this._cacheGlobalDefines.cloneTo(this._curRenderCacheInfo.globalDefineData);
+                    this._curRenderCacheInfo.globalDefineChangeFlag.setValue(Laya.Stat.loopCount, Laya.WebGPURenderEngine._instance._framePassCount);
+                }
+            }
+            this._curDefineChangeFlag = this._curRenderCacheInfo.globalDefineChangeFlag;
+        }
+        _prepareContext() {
+            let contextDef = this._cacheGlobalDefines;
+            if (this._sceneData) {
+                this._sceneData._defineDatas.cloneTo(contextDef);
+                for (let key of this._preDrawUniformMaps) {
+                    let uniformMap = Laya.LayaGL.renderDeviceFactory.createGlobalUniformMap(key);
+                    if (uniformMap._idata.size > 0) {
+                        let buffer = this.sceneData.createSubUniformBuffer(key, key, uniformMap._idata);
+                        buffer.upload();
+                    }
+                }
+                let commandArray = Array.from(this._preDrawUniformMaps);
+                let resource = Laya.WebGPUBindGroupHelper.createBindPropertyInfoArrayByCommandMap(0, commandArray);
+                this._sceneBindGroup = Laya.LayaGL.renderEngine.bindGroupCache.getBindGroup(commandArray, this._sceneData, null, resource, ~0);
+            }
+            else {
+                this._globalConfigShaderData.cloneTo(contextDef);
+            }
+            if (this.cameraData) {
+                contextDef.addDefineDatas(this.cameraData._defineDatas);
+                let cameraMap = Laya.LayaGL.renderDeviceFactory.createGlobalUniformMap("BaseCamera");
+                let cameraBuffer = this.cameraData.createUniformBuffer("BaseCamera", cameraMap);
+                if (cameraBuffer) {
+                    cameraBuffer.upload();
+                }
+                let commandArray = ["BaseCamera"];
+                let resource = Laya.WebGPUBindGroupHelper.createBindPropertyInfoArrayByCommandMap(1, commandArray);
+                this._cameraBindGroup = Laya.LayaGL.renderEngine.bindGroupCache.getBindGroup(commandArray, this.cameraData, null, resource, ~0);
+            }
+            this._getSceneCameraCacheKey();
+        }
+        _setScreenRT() {
+            if (!this.destRT) {
+                const engine = Laya.WebGPURenderEngine._instance;
+                engine._screenResized = false;
+                if (this._blitFrameCount === Laya.Laya.timer.currFrame) {
+                    this.setRenderTarget(engine._screenRT, Laya.RenderClearFlag.Nothing);
+                }
+                else {
+                    this.setRenderTarget(engine._screenRT, Laya.RenderClearFlag.Color | Laya.RenderClearFlag.Depth);
+                    engine.hasScreenCleared = true;
+                }
+                Laya.Color.BLACK.cloneTo(this._clearColor);
+                this._blitFrameCount = Laya.Laya.timer.currFrame;
+                this._blitScreen = true;
+            }
+            else
+                this._blitScreen = false;
+        }
+        _start(viewPortAndScissor = true) {
+            const renderPassDesc = Laya.WebGPURenderPassHelper.getDescriptor(this.destRT, this._clearFlag, this._clearColor, this._clearDepth, this._clearStencil);
+            this._renderCommand.startRender(renderPassDesc);
+            this._clearFlag = Laya.RenderClearFlag.Nothing;
+            if (viewPortAndScissor) {
+                if (this._viewPort) {
+                    this._viewPort.y = this._viewPort.y | 0;
+                    this._viewPort.width = this._viewPort.width | 0;
+                    this._viewPort.height = this._viewPort.height | 0;
+                    this._renderCommand.setViewport(this._viewPort.x, this._viewPort.y, this._viewPort.width, this._viewPort.height, 0, 1);
+                }
+                if (this._scissor) {
+                    this._scissor.y = this._scissor.y | 0;
+                    this._renderCommand.setScissorRect(this._scissor.x, this._scissor.y, this._scissor.z, this._scissor.w);
+                }
+            }
+        }
+        _submit() {
+            const engine = Laya.WebGPURenderEngine._instance;
+            if (this._blitScreen && engine._screenResized)
+                return;
+            this._renderCommand.end();
+            engine.upload();
+            this.device.queue.submit([this._renderCommand.finish()]);
+            this._needStart = true;
+        }
+        setRenderTarget(rt, clearFlag) {
+            if (rt !== this.destRT) {
+                this._clearFlag = clearFlag;
+                this.destRT = rt;
+                this._needStart = true;
+            }
+            else {
+                if (!this.rtNeedClear) {
+                    this._clearFlag = clearFlag;
+                }
+                else {
+                    if (clearFlag != Laya.RenderClearFlag.Nothing) {
+                        this._clearFlag |= clearFlag;
+                    }
+                }
+            }
+        }
+        setViewPort(value) {
+            this._viewPort = value;
+        }
+        setScissor(value) {
+            this._scissor = value;
+        }
+        saveViewPortAndScissor() {
+            if (this._viewPort && this._scissor) {
+                this._viewPort.cloneTo(this._viewPortSave);
+                this._scissor.cloneTo(this._scissorSave);
+                this._viewScissorSaved = true;
+            }
+        }
+        restoreViewPortAndScissor() {
+            if (this._viewScissorSaved) {
+                this._viewPortSave.cloneTo(this._viewPort);
+                this._scissorSave.cloneTo(this._scissor);
+                this._viewScissorSaved = false;
+            }
+        }
+        setClearData(flag, color, depth, stencil) {
+            if (this.rtNeedClear) {
+                if (flag & Laya.RenderClearFlag.Color) {
+                    this._clearFlag |= Laya.RenderClearFlag.Color;
+                    color.cloneTo(this._clearColor);
+                }
+                if (flag & Laya.RenderClearFlag.Depth) {
+                    this._clearFlag |= Laya.RenderClearFlag.Depth;
+                    this._clearDepth = depth;
+                }
+                if (flag & Laya.RenderClearFlag.Stencil) {
+                    this._clearFlag |= Laya.RenderClearFlag.Stencil;
+                    this._clearStencil = stencil;
+                }
+            }
+            else {
+                this._clearFlag = flag;
+                this._clearDepth = depth;
+                this._clearStencil = stencil;
+                color.cloneTo(this._clearColor);
+            }
+            if (flag != Laya.RenderClearFlag.Nothing) {
+                this.rtNeedClear = true;
+            }
+            return 0;
+        }
+        drawRenderElementList(list) {
+            const len = list.length;
+            if (len === 0)
+                return 0;
+            this._setScreenRT();
+            this._prepareContext();
+            const elements = list.elements;
+            let element;
+            for (let i = 0; i < len; i++) {
+                element = elements[i];
+                element._preUpdatePre(this);
+            }
+            Laya.WebGPURenderEngine._instance.gpuBufferMgr.upload();
+            if (this._needStart) {
+                this._start();
+                this._needStart = false;
+            }
+            let cmd = this._renderCommand;
+            cmd.setBindGroup(0, this._sceneBindGroup);
+            cmd.setBindGroup(1, this._cameraBindGroup);
+            for (let i = 0; i < len; i++)
+                elements[i]._render(this, cmd);
+            this._submit();
+            this.rtNeedClear = false;
+            Laya.LayaGL.statAgent.recordCTData(Laya.StatisticsElement.CT_3DDrawCall, list.length);
+            Laya.WebGPURenderEngine._instance._framePassCount++;
+            return 0;
+        }
+        drawRenderElementOne(node) {
+            this._setScreenRT();
+            this._prepareContext();
+            node._preUpdatePre(this);
+            Laya.WebGPURenderEngine._instance.gpuBufferMgr.upload();
+            if (this._needStart) {
+                this._start();
+                this._needStart = false;
+            }
+            this._renderCommand.setBindGroup(0, this._sceneBindGroup);
+            this._renderCommand.setBindGroup(1, this._cameraBindGroup);
+            node._render(this, this._renderCommand);
+            this._submit();
+            this.rtNeedClear = false;
+            Laya.LayaGL.statAgent.recordCTData(Laya.StatisticsElement.CT_3DDrawCall, 1);
+            Laya.WebGPURenderEngine._instance._framePassCount++;
+            return 0;
+        }
+        runCMDList(cmds) {
+            cmds.forEach((cmd, index) => {
+                cmd.apply(this);
+            });
+        }
+        runOneCMD(cmd) {
+            cmd.apply(this);
+        }
+        clearRenderTarget() {
+            this._start(false);
+            this._submit();
+        }
+        destroy() {
+            this._renderCommand.destroy();
+            this.destRT = null;
+        }
+    }
+
     class WebGPUForwardAddClusterRP extends ForwardAddClusterRP {
+        constructor() {
+            super();
+            let context = WebGPURenderContext3D._instance;
+            context._preDrawUniformMaps.add("Scene3D");
+            context._preDrawUniformMaps.add("Global");
+            context._preDrawUniformMaps.add("Shadow");
+        }
         _mainPass(context) {
             context.pipelineMode = this.pipelineMode;
-            context.setClearData(this.clearFlag, this.clearColor, 1, 0);
             context.setRenderTarget(this.destTarget, this.clearFlag);
-            context.clearRenderTarget();
+            context.setClearData(this.clearFlag, this.clearColor, 1, 0);
             RenderPassUtil.renderCmd(this.beforeForwardCmds, context);
             RenderPassUtil.recoverRenderContext3D(context, this.destTarget);
+            context.setClearData(this.clearFlag, this.clearColor, 1, 0);
+            this._opaqueList.renderQueue(context);
             RenderPassUtil.renderCmd(this.beforeSkyboxCmds, context);
             RenderPassUtil.recoverRenderContext3D(context, this.destTarget);
             if (this.skyRenderNode) {
-                context.setClearData(Laya.RenderClearFlag.Depth, this.clearColor, 1, 0);
                 const skyRenderElement = this.skyRenderNode.renderelements[0];
-                if (skyRenderElement.subShader)
+                if (skyRenderElement.subShader) {
                     context.drawRenderElementOne(skyRenderElement);
+                }
             }
-            this.clearFlag = Laya.RenderClearFlag.Depth | Laya.RenderClearFlag.Stencil;
-            context.setClearData(this.clearFlag, this.clearColor, 1, 0);
-            if (this.enableOpaque) {
-                this._opaqueList.renderQueue(context);
-                this._opaqueTexturePass();
-            }
+            this.enableOpaque && this._opaqueTexturePass();
             RenderPassUtil.renderCmd(this.beforeTransparentCmds, context);
             RenderPassUtil.recoverRenderContext3D(context, this.destTarget);
             context.setClearData(Laya.RenderClearFlag.Nothing, this.clearColor, 1, 0);
@@ -936,8 +1314,6 @@
             context.setViewPort(Laya.Viewport.TEMP);
             context.setScissor(Laya.Vector4.TEMP);
             context.setClearData(Laya.RenderClearFlag.Depth, Laya.Color.BLACK, 1, 0);
-            context.clearRenderTarget();
-            context.setClearData(Laya.RenderClearFlag.Nothing, Laya.Color.BLACK, 1, 0);
             for (let i = 0, n = this._cascadeCount; i < n; i++) {
                 const sliceData = this._shadowSliceDatas[i];
                 this._getShadowBias(sliceData.projectionMatrix, sliceData.resolution, this._shadowBias);
@@ -948,7 +1324,11 @@
                 shadowCullInfo.cullPlaneCount = sliceData.cullPlaneCount;
                 shadowCullInfo.cullSphere = sliceData.splitBoundSphere;
                 shadowCullInfo.direction = this._lightForward;
+                var time = Laya.Browser.now();
                 RenderCullUtil.cullDirectLightShadow(shadowCullInfo, list, count, this._renderQueue, context);
+                Laya.LayaGL.statAgent.recordTimeData(Laya.StatisticsElement.T_CullShadow, Laya.Browser.now() - time);
+                let cameraDephtTex = context.cameraData.getTexture(Laya.DepthPass.DEPTHTEXTURE);
+                sliceData.cameraShaderValue.setTexture(Laya.DepthPass.DEPTHTEXTURE, cameraDephtTex);
                 context.cameraData = sliceData.cameraShaderValue;
                 context.cameraUpdateMask++;
                 const resolution = sliceData.resolution;
@@ -967,7 +1347,9 @@
                     context.setScissor(Laya.Vector4.TEMP);
                 }
                 this._renderQueue.renderQueue(context);
+                Laya.LayaGL.statAgent.recordCTData(Laya.StatisticsElement.CT_ShadowDrawCall, this._renderQueue.elements.length);
                 this._applyCasterPassCommandBuffer(context);
+                context.setClearData(Laya.RenderClearFlag.Nothing, Laya.Color.BLACK, 1, 0);
             }
             this._applyRenderData(context.sceneData, context.cameraData);
             this._renderQueue._batch.recoverData();
@@ -1061,7 +1443,11 @@
             context.saveViewPortAndScissor();
             this._getShadowBias(shadowSpotData.resolution, this._shadowBias);
             this._setupShadowCasterShaderValues(shaderData, shadowSpotData, this._shadowBias);
+            var time = Laya.Browser.now();
             RenderCullUtil.cullSpotShadow(shadowSpotData.cameraCullInfo, list, count, this._renderQueue, context);
+            Laya.LayaGL.statAgent.recordTimeData(Laya.StatisticsElement.T_CullShadow, Laya.Browser.now() - time);
+            let cameraDepthTex = context.cameraData.getTexture(Laya.DepthPass.DEPTHTEXTURE);
+            shadowSpotData.cameraShaderValue.setTexture(Laya.DepthPass.DEPTHTEXTURE, cameraDepthTex);
             context.cameraData = shadowSpotData.cameraShaderValue;
             context.cameraUpdateMask++;
             Laya.Viewport.TEMP.set(shadowSpotData.offsetX, shadowSpotData.offsetY, shadowSpotData.resolution, shadowSpotData.resolution);
@@ -1070,6 +1456,7 @@
             context.setScissor(Laya.Vector4.TEMP);
             context.setClearData(Laya.RenderClearFlag.Depth, Laya.Color.BLACK, 1, 0);
             this._renderQueue.renderQueue(context);
+            Laya.LayaGL.statAgent.recordCTData(Laya.StatisticsElement.CT_ShadowDrawCall, this._renderQueue.elements.length);
             this._applyCasterPassCommandBuffer(context);
             this._applyRenderData(context.sceneData, context.cameraData);
             context.restoreViewPortAndScissor();
@@ -1134,7 +1521,6 @@
                     sceneData.removeDefine(Laya.Scene3DShaderDeclaration.SHADERDEFINE_SHADOW_SPOT_SOFT_SHADOW_LOW);
                     break;
             }
-            Laya.Matrix4x4.multiply(WebGPUSpotLightShadowRP._invertYScaleMatrix, this._shadowSpotMatrices, this._shadowSpotMatrices);
             sceneData.setMatrix4x4(Laya.ShadowCasterPass.SHADOW_SPOTMATRICES, this._shadowSpotMatrices);
             sceneData.setVector(Laya.ShadowCasterPass.SHADOW_SPOTMAP_SIZE, this._shadowSpotMapSize);
         }
@@ -1171,9 +1557,12 @@
     const offsetScale = new Laya.Vector4();
     class WebGPU3DRenderPass {
         constructor() {
-            this.objectName = 'WebGPU3DRenderPass';
             this._renderPass = new WebGPUForwardAddRP();
-            this.globalId = Laya.WebGPUGlobal.getId(this);
+            this._defaultShadowMap = Laya.ShadowUtils.getTemporaryShadowTexture(1, 1, Laya.ShadowMapFormat.bit16);
+            this._defaultDepthTex = Laya.RenderTexture.createFromPool(1, 1, Laya.RenderTargetFormat.DEPTH_32, Laya.RenderTargetFormat.None, false, 1);
+            let shadowMap = Laya.LayaGL.renderDeviceFactory.createGlobalUniformMap("Shadow");
+            shadowMap._defaultData.set(Laya.ShadowCasterPass.SHADOW_MAP, this._defaultShadowMap);
+            shadowMap._defaultData.set(Laya.ShadowCasterPass.SHADOW_SPOTMAP, this._defaultShadowMap);
         }
         _initRenderPass(camera, context) {
             const renderPass = this._renderPass.renderPass;
@@ -1199,7 +1588,7 @@
                     break;
             }
             const clearValue = renderRT._texture.gammaCorrection !== 1 ? camera.clearColor : camera._linearClearColor;
-            renderPass.camera = camera._renderDataModule;
+            renderPass.camera = camera;
             renderPass.destTarget = renderRT._renderTarget;
             renderPass.clearFlag = clearConst;
             renderPass.clearColor = clearValue;
@@ -1228,8 +1617,11 @@
             else
                 renderPass.skyRenderNode = null;
             renderPass.pipelineMode = Laya.RenderContext3D._instance.configPipeLineMode;
+            camera._shaderValues.setTexture(Laya.DepthPass.DEPTHTEXTURE, this._defaultDepthTex);
             const enableShadow = (Laya.Scene3D._updateMark % camera.scene._ShadowMapupdateFrequency === 0) && Laya.Stat.enableShadow;
             this._renderPass.shadowCastPass = enableShadow;
+            camera.scene._shaderValues.setTexture(Laya.ShadowCasterPass.SHADOW_MAP, this._defaultShadowMap);
+            camera.scene._shaderValues.setTexture(Laya.ShadowCasterPass.SHADOW_SPOTMAP, this._defaultShadowMap);
             if (enableShadow) {
                 const shadowParams = this._renderPass.shadowParams;
                 shadowParams.setValue(0, 0, 0, 0);
@@ -1241,8 +1633,8 @@
                     this._renderPass.directLightShadowPass.light = mainDirectionLight._dataModule;
                     const directionShadowMap = Laya.ILaya.Scene3D._shadowCasterPass.getDirectLightShadowMap(mainDirectionLight);
                     this._renderPass.directLightShadowPass.destTarget = directionShadowMap._renderTarget;
+                    this._renderPass.shadowMap = directionShadowMap;
                     shadowParams.x = this._renderPass.directLightShadowPass.light.shadowStrength;
-                    camera.scene._shaderValues.setTexture(Laya.ShadowCasterPass.SHADOW_MAP, directionShadowMap);
                 }
                 const mainSpotLight = camera.scene._mainSpotLight;
                 const needSpotShadow = mainSpotLight && mainSpotLight.shadowMode !== Laya.ShadowMode.None;
@@ -1251,8 +1643,8 @@
                     this._renderPass.spotLightShadowPass.light = mainSpotLight._dataModule;
                     const spotShadowMap = Laya.ILaya.Scene3D._shadowCasterPass.getSpotLightShadowPassData(mainSpotLight);
                     this._renderPass.spotLightShadowPass.destTarget = spotShadowMap._renderTarget;
+                    this._renderPass.spotShadowMap = spotShadowMap;
                     shadowParams.y = this._renderPass.spotLightShadowPass.light.shadowStrength;
-                    camera.scene._shaderValues.setTexture(Laya.ShadowCasterPass.SHADOW_SPOTMAP, spotShadowMap);
                 }
                 camera.scene._shaderValues.setVector(Laya.ShadowCasterPass.SHADOW_PARAMS, shadowParams);
             }
@@ -1271,34 +1663,29 @@
                 offsetScale.setValue(camera.normalizedViewport.x, camera.normalizedViewport.y, renderRT.width / dst.width, renderRT.height / dst.height);
                 this._renderPass.finalize.blitScreenQuad(renderRT, camera._offScreenRenderTexture, offsetScale);
             }
+            if (this._renderPass.enableDirectLightShadow || this._renderPass.enableSpotLightShadowPass) {
+                let sceneShaderData = context.sceneData;
+                context._preDrawUniformMaps.add("Shadow");
+                let shadowUniformMap = Laya.ShadowCasterPass.ShadowUniformMap;
+                sceneShaderData.createSubUniformBuffer("Shadow", "Shadow", shadowUniformMap._idata);
+            }
         }
         _renderDepth(camera) {
             let depthMode = camera.depthTextureMode;
             if (camera.postProcess && camera.postProcess.enable)
                 depthMode |= camera.postProcess.cameraDepthTextureMode;
             if ((depthMode & Laya.DepthTextureMode.Depth) != 0) {
-                const needDepthTex = camera.canblitDepth && camera._internalRenderTexture.depthStencilTexture;
-                if (needDepthTex) {
-                    camera.depthTexture = camera._cacheDepthTexture.depthStencilTexture;
-                    Laya.Camera.depthPass._depthTexture = camera.depthTexture;
-                    camera._shaderValues.setTexture(Laya.DepthPass.DEPTHTEXTURE, camera.depthTexture);
-                    Laya.Camera.depthPass._setupDepthModeShaderValue(Laya.DepthTextureMode.Depth, camera);
-                    depthMode &= ~Laya.DepthTextureMode.Depth;
-                }
-                else {
-                    Laya.Camera.depthPass.getTarget(camera, Laya.DepthTextureMode.Depth, camera.depthTextureFormat);
-                    this._renderPass.renderPass.depthTarget = camera.depthTexture._renderTarget;
-                    camera._shaderValues.setTexture(Laya.DepthPass.DEPTHTEXTURE, camera.depthTexture);
-                }
+                Laya.Camera.depthPass.getTarget(camera, Laya.DepthTextureMode.Depth, camera.depthTextureFormat);
+                this._renderPass.renderPass.depthTarget = camera.depthTexture._renderTarget;
             }
             if ((depthMode & Laya.DepthTextureMode.DepthNormals) != 0) {
                 Laya.Camera.depthPass.getTarget(camera, Laya.DepthTextureMode.DepthNormals, camera.depthTextureFormat);
                 this._renderPass.renderPass.depthNormalTarget = camera.depthNormalTexture._renderTarget;
-                camera._shaderValues.setTexture(Laya.DepthPass.DEPTHNORMALSTEXTURE, camera.depthNormalTexture);
             }
             this._renderPass.renderPass.depthTextureMode = depthMode;
         }
         _renderForwardAddCameraPass(context, renderPass, list, count) {
+            var time = Laya.Browser.now();
             if (renderPass.shadowCastPass) {
                 if (renderPass.enableDirectLightShadow) {
                     context.sceneData.addDefine(Laya.Scene3DShaderDeclaration.SHADERDEFINE_SHADOW);
@@ -1313,18 +1700,28 @@
                     renderPass.spotLightShadowPass.render(context, list, count);
                 }
             }
-            if (renderPass.enableDirectLightShadow)
+            if (renderPass.enableDirectLightShadow) {
                 context.sceneData.addDefine(Laya.Scene3DShaderDeclaration.SHADERDEFINE_SHADOW);
-            else
+                context.sceneData.setTexture(Laya.ShadowCasterPass.SHADOW_MAP, this._renderPass.shadowMap);
+            }
+            else {
                 context.sceneData.removeDefine(Laya.Scene3DShaderDeclaration.SHADERDEFINE_SHADOW);
-            if (renderPass.enableSpotLightShadowPass)
+            }
+            if (renderPass.enableSpotLightShadowPass) {
                 context.sceneData.addDefine(Laya.Scene3DShaderDeclaration.SHADERDEFINE_SHADOW_SPOT);
-            else
+                context.sceneData.setTexture(Laya.ShadowCasterPass.SHADOW_SPOTMAP, this._renderPass.spotShadowMap);
+            }
+            else {
                 context.sceneData.removeDefine(Laya.Scene3DShaderDeclaration.SHADERDEFINE_SHADOW_SPOT);
+            }
+            Laya.LayaGL.statAgent.recordTimeData(Laya.StatisticsElement.T_ShadowPass, Laya.Browser.now() - time);
             renderPass.renderPass.render(context, list, count);
             renderPass._beforeImageEffectCMDS && this._renderCmd(renderPass._beforeImageEffectCMDS, context);
-            if (renderPass.enablePostProcess && renderPass.postProcess)
+            if (renderPass.enablePostProcess && renderPass.postProcess) {
+                time = Laya.Browser.now();
                 this._renderPostProcess(renderPass.postProcess, context);
+                Laya.LayaGL.statAgent.recordTimeData(Laya.StatisticsElement.T_Render_PostProcess, Laya.Browser.now() - time);
+            }
             renderPass._afterAllRenderCMDS && this._renderCmd(renderPass._afterAllRenderCMDS, context);
             renderPass.finalize._apply(false);
             context.runCMDList(renderPass.finalize._renderCMDs);
@@ -1337,16 +1734,112 @@
             context.runCMDList(postprocessCMD._renderCMDs);
         }
         fowardRender(context, camera) {
-            Laya.WebGPUStatis.startFrame();
-            this._initRenderPass(camera, context);
+            Laya.Camera.depthPass.cleanUp(camera);
             this._renderDepth(camera);
+            this._initRenderPass(camera, context);
             let renderList = this.render3DManager.baseRenderList.elements;
             let count = this.render3DManager.baseRenderList.length;
             this._renderForwardAddCameraPass(context, this._renderPass, renderList, count);
-            Laya.Camera.depthPass.cleanUp();
         }
         destroy() {
-            Laya.WebGPUGlobal.releaseId(this);
+            this._defaultShadowMap.destroy();
+            this._defaultShadowMap = null;
+            this._defaultDepthTex.destroy();
+            this._defaultDepthTex = null;
+        }
+    }
+
+    class WebGPUBaseRenderNode extends WebBaseRenderNode {
+        constructor() {
+            super(...arguments);
+            this.bindGroupChangeFlag = new Laya.Vector2();
+            this.bindGroupLayoutChangeFlag = new Laya.Vector2();
+            this.defineDataChangeFlag = new Laya.Vector2();
+            this.spriteUBOs = [];
+            this.additionalUBOs = [];
+        }
+        get shaderData() {
+            return this._shaderData;
+        }
+        set shaderData(value) {
+            if (this._shaderData != value) {
+                let oldCommandMap = this._commonUniformMap.slice();
+                if (this._shaderData) {
+                    this.setCommonUniformMap([]);
+                }
+                this._shaderData = value;
+                this.setCommonUniformMap(oldCommandMap);
+            }
+        }
+        set additionShaderData(value) {
+            if (this._additionShaderData && this._additionShaderData.size > 0) {
+                if (!value)
+                    for (var [key, date] of this._additionShaderData) {
+                        date.removeBindGroupChangeFlag(key, this.bindGroupChangeFlag, this.bindGroupLayoutChangeFlag);
+                        date._defineDatas.removeChangeFlagInfo(this.defineDataChangeFlag);
+                    }
+                else {
+                    for (var [key, date] of this._additionShaderData) {
+                        if (!value.has(key)) {
+                            date.removeBindGroupChangeFlag(key, this.bindGroupChangeFlag, this.bindGroupLayoutChangeFlag);
+                            date._defineDatas.removeChangeFlagInfo(this.defineDataChangeFlag);
+                        }
+                    }
+                }
+            }
+            this._additionShaderData = value;
+            if (value && value.size > 0) {
+                this._additionShaderDataKeys = Array.from(this._additionShaderData.keys());
+                this.additionalUBOs.length = 0;
+                for (var [key, shaderdate] of value) {
+                    let unifomrMap = Laya.LayaGL.renderDeviceFactory.createGlobalUniformMap(key);
+                    let uniformBuffer = shaderdate.createSubUniformBuffer(key, key, unifomrMap._idata);
+                    uniformBuffer && this.additionalUBOs.push(uniformBuffer);
+                    shaderdate.addBindGroupChangeLink(key, unifomrMap._idata);
+                    shaderdate.addBindGroupChangeFlag(key, this.bindGroupChangeFlag, this.bindGroupLayoutChangeFlag);
+                    shaderdate._defineDatas.addChangeFlagInfo(this.defineDataChangeFlag);
+                }
+            }
+            else {
+                this._additionShaderDataKeys = [];
+                this.additionalUBOs.length = 0;
+            }
+            if (this.additionalUBOs.length == 1) {
+                this.additionalUBO0 = this.additionalUBOs[0];
+            }
+            else {
+                this.additionalUBO0 = null;
+            }
+        }
+        get additionShaderData() {
+            return this._additionShaderData;
+        }
+        setCommonUniformMap(value) {
+            this._commonUniformMap.forEach(element => {
+                if (value.indexOf(element) == -1) {
+                    let unifomrMap = Laya.LayaGL.renderDeviceFactory.createGlobalUniformMap(element);
+                    this._shaderData.removeBindGroupChangeLink(element, unifomrMap._idata);
+                }
+            });
+            this._commonUniformMap.length = 0;
+            this.spriteUBOs.length = 0;
+            value.forEach(element => {
+                this._commonUniformMap.push(element);
+                if (this.shaderData) {
+                    let unifomrMap = Laya.LayaGL.renderDeviceFactory.createGlobalUniformMap(element);
+                    let uniformBuffer = this.shaderData.createSubUniformBuffer(element, element, unifomrMap._idata);
+                    uniformBuffer && this.spriteUBOs.push(uniformBuffer);
+                    this._shaderData.addBindGroupChangeLink(element, unifomrMap._idata);
+                    this._shaderData.addBindGroupChangeFlag(element, this.bindGroupChangeFlag, this.bindGroupLayoutChangeFlag);
+                    this._shaderData._defineDatas.addChangeFlagInfo(this.defineDataChangeFlag);
+                }
+            });
+            if (this.spriteUBOs.length == 1) {
+                this.spriteUBO0 = this.spriteUBOs[0];
+            }
+            else {
+                this.spriteUBO0 = null;
+            }
         }
     }
 
@@ -1370,7 +1863,8 @@
             const lightProbeFlag = (renderNode.volumetricGI ? renderNode.volumetricGI._id : -1) + 1;
             const giId = (reflectFlag << 10) + (lightmapFlag << 20) + lightProbeFlag;
             const data = this._batchOpaqueMarks[renderId] || (this._batchOpaqueMarks[renderId] = []);
-            return data[giId] || (data[giId] = new Laya.BatchMark());
+            let batch = data[giId] || (data[giId] = new Laya.BatchMark());
+            return batch;
         }
         batch(elements) {
             if (!Laya.Config3D.enableDynamicBatch
@@ -1393,6 +1887,7 @@
                             if (instanceElements.length === maxInstanceCount) {
                                 instanceMark.indexInList = elements.length;
                                 instanceMark.batched = false;
+                                instanceMark._curBindElementIndex++;
                                 elements.add(element);
                             }
                             else {
@@ -1401,14 +1896,23 @@
                         }
                         else {
                             const originElement = elementArray[instanceIndex];
-                            const instanceRenderElement = Laya.Laya3DRender.Render3DPassFactory.createInstanceRenderElement3D();
-                            this._recoverList.add(instanceRenderElement);
+                            let instanceRenderElement = instanceMark._cacheRenderElement[instanceMark._curBindElementIndex];
+                            if (!instanceRenderElement) {
+                                instanceMark._cacheRenderElement[instanceMark._curBindElementIndex] = instanceRenderElement = Laya.Laya3DRender.Render3DPassFactory.createInstanceRenderElement3D();
+                                instanceRenderElement.owner = element.owner;
+                                instanceRenderElement.renderShaderData = element.renderShaderData;
+                                instanceRenderElement.setGeometry(element.geometry);
+                            }
                             instanceRenderElement.subShader = element.subShader;
                             instanceRenderElement.materialShaderData = element.materialShaderData;
                             instanceRenderElement.materialRenderQueue = element.materialRenderQueue;
                             instanceRenderElement.renderShaderData = element.renderShaderData;
                             instanceRenderElement.owner = element.owner;
-                            instanceRenderElement.setGeometry(element.geometry);
+                            let instanceStateID = instanceRenderElement.oriBufferStateCacheID;
+                            let elementStateID = element.geometry._bufferState.stateCacheID;
+                            if (instanceStateID != elementStateID) {
+                                instanceRenderElement.setGeometry(element.geometry);
+                            }
                             const list = instanceRenderElement.instanceElementList;
                             list.length = 0;
                             list.add(originElement);
@@ -1422,6 +1926,7 @@
                         instanceMark.updateMark = this._updateCountMark;
                         instanceMark.indexInList = elements.length;
                         instanceMark.batched = false;
+                        instanceMark._curBindElementIndex = 0;
                         elements.add(element);
                     }
                 }
@@ -1440,245 +1945,256 @@
     }
     WebGPUInstanceRenderBatch.MAX_INSTANCE_COUNT = 1024;
 
-    class WebGPUContext {
-        static startRender() {
-            this.lastBundle = null;
-            this.lastCommand = null;
-            this.lastBundlePipeline = null;
-            this.lastCommandPipeline = null;
-            this.lastBundleGeometry = null;
-            this.lastCommandGeometry = null;
-        }
-        static clearLastBundle() {
-            this.lastBundlePipeline = null;
-            this.lastBundleGeometry = null;
-        }
-        static clearLastCommand() {
-            this.lastCommandPipeline = null;
-            this.lastCommandGeometry = null;
-        }
-        static setBundlePipeline(bundle, pipeline) {
-            if (this.lastBundle !== bundle || this.lastBundlePipeline !== pipeline) {
-                bundle.setPipeline(pipeline);
-                if (this.lastBundle !== bundle)
-                    this.clearLastBundle();
-                this.lastBundle = bundle;
-                this.lastBundlePipeline = pipeline;
-            }
-        }
-        static setCommandPipeline(command, pipeline) {
-            if (this.lastCommand !== command || this.lastCommandPipeline !== pipeline) {
-                command.setPipeline(pipeline);
-                if (this.lastCommand !== command)
-                    this.clearLastCommand();
-                this.lastCommand = command;
-                this.lastCommandPipeline = pipeline;
-            }
-        }
-        static applyBundleGeometry(bundle, geometry) {
-            let triangles = 0;
-            if (this.lastBundle !== bundle || this.lastBundleGeometry !== geometry) {
-                triangles += bundle.applyGeometry(geometry, true);
-                if (this.lastBundle !== bundle)
-                    this.clearLastBundle();
-                this.lastBundle = bundle;
-                this.lastBundleGeometry = geometry;
-            }
-            else
-                triangles += bundle.applyGeometry(geometry, false);
-            return triangles;
-        }
-        static applyBundleGeometryPart(bundle, geometry, part) {
-            let triangles = 0;
-            if (this.lastBundle !== bundle || this.lastBundleGeometry !== geometry) {
-                triangles += bundle.applyGeometryPart(geometry, part, true);
-                if (this.lastBundle !== bundle)
-                    this.clearLastBundle();
-                this.lastBundle = bundle;
-                this.lastBundleGeometry = geometry;
-            }
-            else
-                triangles += bundle.applyGeometryPart(geometry, part, false);
-            return triangles;
-        }
-        static applyCommandGeometry(command, geometry) {
-            let triangles = 0;
-            if (this.lastCommand !== command || this.lastCommandGeometry !== geometry) {
-                triangles += command.applyGeometry(geometry, true);
-                if (this.lastCommand !== command)
-                    this.clearLastCommand();
-                this.lastCommand = command;
-                this.lastCommandGeometry = geometry;
-            }
-            else
-                triangles += command.applyGeometry(geometry, false);
-            return triangles;
-        }
-        static applyCommandGeometryPart(command, geometry, part) {
-            let triangles = 0;
-            if (this.lastCommand !== command || this.lastCommandGeometry !== geometry) {
-                triangles += command.applyGeometryPart(geometry, part, true);
-                if (this.lastCommand !== command)
-                    this.clearLastCommand();
-                this.lastCommand = command;
-                this.lastCommandGeometry = geometry;
-            }
-            else
-                triangles += command.applyGeometryPart(geometry, part, false);
-            return triangles;
-        }
-    }
-    WebGPUContext.lastBundle = null;
-    WebGPUContext.lastCommand = null;
-    WebGPUContext.lastBundlePipeline = null;
-    WebGPUContext.lastCommandPipeline = null;
-    WebGPUContext.lastBundleGeometry = null;
-    WebGPUContext.lastCommandGeometry = null;
-
     class WebGPURenderElement3D {
+        get materialShaderData() {
+            return this._materialShaderData;
+        }
+        set materialShaderData(value) {
+            if (this._materialShaderData != value) {
+                this._materialShaderData = value;
+                this._matChangeFlag.setValue(Laya.Stat.loopCount, Laya.WebGPURenderEngine._instance._framePassCount);
+            }
+        }
+        get renderShaderData() {
+            return this._renderShaderData;
+        }
+        set renderShaderData(value) {
+            if (this._renderShaderData != value) {
+                this._renderShaderData = value;
+                this._renderNodeChangeFlag.setValue(Laya.Stat.loopCount, Laya.WebGPURenderEngine._instance._framePassCount);
+            }
+        }
+        get subShader() {
+            return this._subShader;
+        }
+        set subShader(value) {
+            if (this._subShader != value) {
+                this._subShader = value;
+                this._matChangeFlag.setValue(Laya.Stat.loopCount, Laya.WebGPURenderEngine._instance._framePassCount);
+            }
+        }
         constructor() {
-            this._stencilParam = {};
-            this._stateKey = [];
-            this._pipeline = [];
-            this._shaderInstances = [];
-            this._passNum = 0;
-            this._passIndex = [];
-            this._shaderDataState = {};
-            this.needClearBundle = false;
-            this.isStatic = false;
-            this.staticChange = false;
-            this.objectName = 'WebGPURenderElement3D';
-            this.globalId = Laya.WebGPUGlobal.getId(this);
-            this.bundleId = WebGPURenderElement3D.bundleIdCounter++;
+            this._materialRenderDataChange = false;
+            this._spriteRenderDataChange = false;
+            this._bindGroupMap = new Map();
+            this.depthStencilParam = new Laya.DepthStencilParam();
+            this._passRenderInfo = new Map();
+            this._matChangeFlag = new Laya.Vector2();
+            this._renderNodeChangeFlag = new Laya.Vector2();
+            this._pipelineChangeFlag = new Laya.Vector2();
+            this._cacheGeometryStateID = -1;
+        }
+        _needUpdatePipeline() {
+            this._pipelineChangeFlag.setValue(Laya.Stat.loopCount, Laya.WebGPURenderEngine._instance._framePassCount);
         }
         _getInvertFront() {
             var _a;
             const transform = (_a = this.owner) === null || _a === void 0 ? void 0 : _a.transform;
             return transform ? transform._isFrontFaceInvert : false;
         }
-        _getShaderPassUniform(shaderpass, defineData) {
-            const defineString = WebGPURenderElement3D._defineStrings;
-            defineString.length = 0;
-            Laya.Shader3D._getNamesByDefineData(defineData, defineString);
-            return Laya.WebGPUCodeGenerator.collectUniform(defineString, shaderpass._owner._uniformMap, shaderpass._VS, shaderpass._PS);
-        }
-        _collectUniform(compileDefine) {
-            const uniformMap = {};
-            const arrayMap = {};
-            const passes = this.subShader._passes;
-            for (let i = passes.length - 1; i > -1; i--) {
-                const { uniform, arr } = this._getShaderPassUniform(passes[i], compileDefine);
-                for (const key in uniform)
-                    uniformMap[key] = uniform[key];
-                for (const key in arr)
-                    arrayMap[key] = arr[key];
+        _getShaderInstanceDefines(context) {
+            let comDef = WebGPURenderElement3D._compileDefine;
+            const globalShaderDefines = context._cacheGlobalDefines;
+            globalShaderDefines.cloneTo(comDef);
+            if (this._renderShaderData) {
+                comDef.addDefineDatas(this._renderShaderData.getDefineData());
             }
-            return { uniformMap, arrayMap };
+            if (this._materialShaderData) {
+                comDef.addDefineDatas(this._materialShaderData._defineDatas);
+            }
+            if (this.owner) {
+                let additionShaderData = this.owner.additionShaderData;
+                if (additionShaderData.size > 0) {
+                    for (let [key, value] of additionShaderData.entries()) {
+                        comDef.addDefineDatas(value.getDefineData());
+                    }
+                }
+            }
+            return comDef;
         }
-        _takeCurrentPass(pipelineMode) {
-            this._passNum = 0;
-            this._passName = pipelineMode;
-            const passes = this.subShader._passes;
-            for (let i = 0, len = passes.length; i < len; i++) {
-                if (passes[i].pipelineMode === pipelineMode) {
-                    this._passIndex[this._passNum++] = i;
+        _compileShader(context) {
+            let comDef = this._getShaderInstanceDefines(context);
+            var passes = this.subShader._passes;
+            let renderCount = 0;
+            for (var j = 0, m = passes.length; j < m; j++) {
+                let pass = passes[j];
+                let passdata = pass.moduleData;
+                if (passdata.pipelineMode !== context.pipelineMode)
+                    continue;
+                if (this._renderShaderData) {
+                    passdata.nodeCommonMap = this.owner._commonUniformMap;
+                }
+                else {
+                    passdata.nodeCommonMap = null;
+                }
+                passdata.additionShaderData = null;
+                if (this.owner) {
+                    passdata.additionShaderData = this.owner._additionShaderDataKeys;
+                }
+                let attributeLocations = this.geometry.bufferState._attriLocArray;
+                pass.moduleData.attributeLocations = attributeLocations;
+                var shaderIns = pass.withCompile(comDef, false);
+                if (this._drawCacheArray[renderCount]) {
+                    let oneInfo = this._drawCacheArray[renderCount];
+                    if (oneInfo.shaderInstance != shaderIns) {
+                        oneInfo.shaderChange = true;
+                        oneInfo.shaderInstance = shaderIns;
+                    }
+                }
+                else {
+                    let oneInfo = new Laya.OneDrawCacheInfo();
+                    oneInfo.shaderChange = true;
+                    oneInfo.shaderInstance = shaderIns;
+                    this._drawCacheArray[renderCount] = oneInfo;
+                }
+                renderCount++;
+            }
+            this._drawCacheArray.length = renderCount;
+        }
+        _updateMatChangeFlag() {
+            this._materialRenderDataChange = Laya.compareCahceFlag(this._matChangeFlag, this._drawPassInfo.matCacheFlag);
+            if (this._renderShaderData && Laya.compareCahceFlag(this._renderNodeChangeFlag, this._drawPassInfo.nodeCacheFlag)) {
+                this._drawPassInfo.nodeCacheFlag.setValue(Laya.Stat.loopCount, Laya.WebGPURenderEngine._instance._framePassCount);
+                this._spriteRenderDataChange = true;
+            }
+            else {
+                this._spriteRenderDataChange = false;
+            }
+        }
+        _handleMaterialChange() {
+            this._drawPassInfo.matCacheFlag.setValue(Laya.Stat.loopCount, Laya.WebGPURenderEngine._instance._framePassCount);
+            let shadername = this._subShader._owner.name;
+            if (!WebGPURenderElement3D._matChangeFlagMap.has(shadername))
+                WebGPURenderElement3D._matChangeFlagMap.set(shadername, new Map());
+            let shadermap = WebGPURenderElement3D._matChangeFlagMap.get(shadername);
+            if (!shadermap.has(this._materialShaderData._id)) {
+                let flagArray = [new Laya.Vector2(Laya.Stat.loopCount, Laya.WebGPURenderEngine._instance._framePassCount), new Laya.Vector2(Laya.Stat.loopCount, Laya.WebGPURenderEngine._instance._framePassCount), new Laya.Vector2(Laya.Stat.loopCount, Laya.WebGPURenderEngine._instance._framePassCount)];
+                shadermap.set(this._materialShaderData._id, flagArray);
+                this._materialShaderData.addBindGroupChangeLink(this._subShader._owner.name, this._subShader._uniformMap);
+                this._materialShaderData.addBindGroupChangeFlag(this._subShader._owner.name, flagArray[0], flagArray[1]);
+                this._materialShaderData._defineDatas.addChangeFlagInfo(flagArray[2]);
+            }
+            let flagArray = shadermap.get(this._materialShaderData._id);
+            this._matBindGroupChangeFlag = flagArray[0];
+            this._matBindGroupLayoutFlag = flagArray[1];
+            this._matDefChangeFlag = flagArray[2];
+            let subShader = this._subShader;
+            this._materialUBO = this._materialShaderData.createSubUniformBuffer("Material", subShader._owner.name, subShader._uniformMap);
+        }
+        _updateNodeUBO() {
+            let owner = this.owner;
+            if (owner) {
+                if (owner.spriteUBO0) {
+                    owner.spriteUBO0.upload();
+                }
+                else {
+                    owner.spriteUBOs.forEach(ubo => {
+                        ubo.upload();
+                    });
+                }
+                if (owner.additionalUBO0) {
+                    owner.additionalUBO0.upload();
+                }
+                else {
+                    owner.additionalUBOs.forEach(ubo => {
+                        ubo.upload();
+                    });
                 }
             }
         }
         _preUpdatePre(context) {
-            var _a, _b, _c, _d;
-            this._takeCurrentPass(context.pipelineMode);
-            if (this._passNum === 0)
-                return false;
-            this._sceneData = context.sceneData;
-            this._cameraData = context.cameraData;
-            if (!this._sceneData)
-                this._sceneData = WebGPURenderElement3D._sceneShaderData;
-            if (!this.renderShaderData)
-                this.renderShaderData = WebGPURenderElement3D._renderShaderData;
-            if ((_b = (_a = this.transform) === null || _a === void 0 ? void 0 : _a.owner) === null || _b === void 0 ? void 0 : _b.isStatic) {
-                if (this.isStatic !== true)
-                    this.staticChange = true;
-                this.isStatic = true;
-                this.renderShaderData.isStatic = true;
+            if (!this._passRenderInfo.has(context._curRenderGlobalKey)) {
+                this._drawPassInfo = new Laya.OneDrawPassCacheInfo();
+                this._passRenderInfo.set(context._curRenderGlobalKey, this._drawPassInfo);
             }
             else {
-                if (this.isStatic !== false)
-                    this.staticChange = true;
-                this.isStatic = false;
-                this.renderShaderData.isStatic = false;
+                this._drawPassInfo = this._passRenderInfo.get(context._curRenderGlobalKey);
             }
-            let compile = false;
-            if (this._isShaderDataChange(context)) {
+            this._drawCacheArray = this._drawPassInfo.drawInfos;
+            this._updateMatChangeFlag();
+            if (this.geometry.getStateCacheID() != this._cacheGeometryStateID) {
+                this._needUpdatePipeline();
+                this._cacheGeometryStateID = this.geometry.getStateCacheID();
+            }
+            let passDefineChangeFlag = this._drawPassInfo.passDefineCacheFlag;
+            if (this._materialRenderDataChange ||
+                !this._matDefChangeFlag ||
+                Laya.compareCahceFlag(this._matDefChangeFlag, passDefineChangeFlag) ||
+                (this.owner && Laya.compareCahceFlag(this.owner.defineDataChangeFlag, passDefineChangeFlag)) ||
+                Laya.compareCahceFlag(context._curDefineChangeFlag, passDefineChangeFlag) ||
+                this._drawPassInfo.geometryStateID != this._cacheGeometryStateID) {
+                passDefineChangeFlag.setValue(Laya.Stat.loopCount, Laya.WebGPURenderEngine._instance._framePassCount);
                 this._compileShader(context);
-                compile = true;
+                this._drawPassInfo.geometryStateID = this._cacheGeometryStateID;
             }
-            else {
-                const index = this._passIndex[0];
-                if (this._shaderInstances[index]) {
-                    (_c = this._sceneData) === null || _c === void 0 ? void 0 : _c._createUniformBuffer(this._shaderInstances[index].uniformInfo[0], true);
-                    (_d = this._cameraData) === null || _d === void 0 ? void 0 : _d._createUniformBuffer(this._shaderInstances[index].uniformInfo[1], true);
-                }
+            if (this._materialRenderDataChange) {
+                this._handleMaterialChange();
             }
+            let cullmode = this._materialShaderData.getInt(Laya.Shader3D.CULL);
+            cullmode = cullmode ? cullmode : Laya.RenderState.CULL_NONE;
+            let depthStencilID = this._materialShaderData.depthStencilStateKey;
+            let blendid = this._materialShaderData.blendStateCache ? this._materialShaderData.blendStateCache.id : -1;
+            if (this._cacheMatCullMode != cullmode ||
+                this._cacheMatDepthStencilID != depthStencilID ||
+                this._cacheMatBlendStateID != blendid) {
+                this._cacheMatBlendStateID = blendid;
+                this._cacheMatDepthStencilID = depthStencilID;
+                this._cacheMatCullMode = cullmode;
+                this._needUpdatePipeline();
+            }
+            this._updateNodeUBO();
+            this._materialUBO && this._materialUBO.upload();
             this._invertFrontFace = this._getInvertFront();
-            return compile;
+            return;
         }
-        _compileShader(context) {
-            var _a, _b, _c, _d;
-            const compileDefine = WebGPURenderElement3D._compileDefine;
-            if (this._sceneData)
-                this._sceneData._defineDatas.cloneTo(compileDefine);
-            else if (context.globalConfigShaderData)
-                context.globalConfigShaderData.cloneTo(compileDefine);
-            if (this._cameraData)
-                compileDefine.addDefineDatas(this._cameraData._defineDatas);
-            if (this.renderShaderData)
-                compileDefine.addDefineDatas(this.renderShaderData._defineDatas);
-            if (this.materialShaderData)
-                compileDefine.addDefineDatas(this.materialShaderData._defineDatas);
-            for (let i = 0; i < this._passNum; i++) {
-                const index = this._passIndex[i];
-                const pass = this.subShader._passes[index];
-                if (!pass.moduleData.getCacheShader(compileDefine.clone())) {
-                    const { uniformMap, arrayMap } = this._collectUniform(compileDefine);
-                    pass.uniformMap = uniformMap;
-                    pass.arrayMap = arrayMap;
-                }
-                const shaderInstance = pass.withCompile(compileDefine.clone());
-                this._shaderInstances[index] = shaderInstance;
-                if (i === 0) {
-                    (_a = this._sceneData) === null || _a === void 0 ? void 0 : _a._createUniformBuffer(shaderInstance.uniformInfo[0], true);
-                    (_b = this._cameraData) === null || _b === void 0 ? void 0 : _b._createUniformBuffer(shaderInstance.uniformInfo[1], true);
-                    (_c = this.renderShaderData) === null || _c === void 0 ? void 0 : _c._createUniformBuffer(shaderInstance.uniformInfo[2], false);
-                    (_d = this.materialShaderData) === null || _d === void 0 ? void 0 : _d._createUniformBuffer(shaderInstance.uniformInfo[3], false);
-                }
+        _render(context, command) {
+            if (!this.isRender) {
+                return 0;
             }
-            this._takeCurrentPass(context.pipelineMode);
+            if (!this._drawCacheArray || this._drawCacheArray.length == 0)
+                return 0;
+            for (let j = 0, m = this._drawCacheArray.length; j < m; j++) {
+                let drawInfo = this._drawCacheArray[j];
+                let shaderInstance = drawInfo.shaderInstance;
+                if (!shaderInstance.complete)
+                    return 0;
+                this._bindGroup(context, drawInfo, command);
+                let pipelineCache = drawInfo.pipeLineCacheFlag;
+                if (drawInfo.shaderChange ||
+                    Laya.compareCahceFlag(context._pipelineChange, pipelineCache) ||
+                    Laya.compareCahceFlag(this._pipelineChangeFlag, pipelineCache)) {
+                    this._bindGroupMap.clear();
+                    this._bindGroupMap.set(0, context._sceneBindGroup);
+                    this._bindGroupMap.set(1, context._cameraBindGroup);
+                    this._bindGroupMap.set(2, drawInfo.nodeBindGroup);
+                    this._bindGroupMap.set(3, drawInfo.matBindGroup);
+                    drawInfo.shaderChange = false;
+                    drawInfo.pipeline = this._getWebGPURenderPipeline(drawInfo.shaderInstance, context.destRT, context);
+                    drawInfo.pipeLineCacheFlag.setValue(Laya.Stat.loopCount, Laya.WebGPURenderEngine._instance._framePassCount);
+                }
+                command.setPipeline(drawInfo.pipeline);
+                if (!command.isBundle && this.depthStencilParam.stencilEnable) {
+                    command.setStencilReference(this.depthStencilParam.stencilRef);
+                }
+                this.geometry.applyToEncoder(command.encoder);
+            }
+            return 1;
         }
-        _calcStateKey(shaderInstance, dest, context) {
-            let stateKey = '';
-            stateKey += dest.formatId + '_';
-            stateKey += dest._samples + '_';
-            stateKey += shaderInstance._id + '_';
-            if (this.materialShaderData)
-                stateKey += this.materialShaderData.stateKey;
-            stateKey += this.geometry.bufferState.stateId + '_';
-            stateKey += this.geometry.bufferState.updateBufferLayoutFlag;
-            return stateKey;
-        }
-        _getWebGPURenderPipeline(shaderInstance, dest, context, entries, stateKey) {
-            if (this.materialShaderData) {
+        _getWebGPURenderPipeline(shaderInstance, dest, context) {
+            if (this._materialShaderData) {
                 this._getBlendState(shaderInstance);
                 this._getDepthStencilState(shaderInstance, dest);
-                this._getCullFrontMode(this.materialShaderData, shaderInstance, this._invertFrontFace, context.invertY);
+                this._getCullFrontMode(this._materialShaderData, shaderInstance, this._invertFrontFace, context.invertY);
             }
-            return Laya.WebGPURenderPipeline.getRenderPipeline(this, shaderInstance, dest, entries, stateKey);
+            let pipeline = Laya.WebGPURenderEngine._instance.pipelineCache.getPipeline(this._bindGroupMap, this, shaderInstance, context.destRT);
+            return pipeline;
         }
         _getBlendState(shaderInstance) {
             if (shaderInstance._shaderPass.statefirst)
-                this.blendState = this._getRenderStateBlendByShader(this.materialShaderData, shaderInstance);
-            else
-                this.blendState = this._getRenderStateBlendByMaterial(this.materialShaderData);
+                this.blendState = this._getRenderStateBlendByShader(this._materialShaderData, shaderInstance);
+            else {
+                this.blendState = this._materialShaderData.blendStateCache;
+            }
         }
         _getRenderStateBlendByShader(shaderData, shaderInstance) {
             var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v;
@@ -1710,96 +2226,23 @@
             }
             return blendState;
         }
-        _getRenderStateBlendByMaterial(shaderData) {
-            var _a;
-            const data = shaderData.getData();
-            const blend = (_a = data[Laya.Shader3D.BLEND]) !== null && _a !== void 0 ? _a : Laya.RenderState.Default.blend;
-            let blendState;
-            switch (blend) {
-                case Laya.RenderState.BLEND_DISABLE:
-                    blendState = Laya.WebGPUBlendState.getBlendState(blend, Laya.RenderState.BLENDEQUATION_ADD, Laya.RenderState.BLENDPARAM_ONE, Laya.RenderState.BLENDPARAM_ZERO, Laya.RenderState.BLENDEQUATION_ADD, Laya.RenderState.BLENDPARAM_ONE, Laya.RenderState.BLENDPARAM_ZERO);
-                    break;
-                case Laya.RenderState.BLEND_ENABLE_ALL:
-                    let blendEquation = data[Laya.Shader3D.BLEND_EQUATION];
-                    blendEquation = blendEquation !== null && blendEquation !== void 0 ? blendEquation : Laya.RenderState.Default.blendEquation;
-                    let srcBlend = data[Laya.Shader3D.BLEND_SRC];
-                    srcBlend = srcBlend !== null && srcBlend !== void 0 ? srcBlend : Laya.RenderState.Default.srcBlend;
-                    let dstBlend = data[Laya.Shader3D.BLEND_DST];
-                    dstBlend = dstBlend !== null && dstBlend !== void 0 ? dstBlend : Laya.RenderState.Default.dstBlend;
-                    blendState = Laya.WebGPUBlendState.getBlendState(blend, blendEquation, srcBlend, dstBlend, blendEquation, srcBlend, dstBlend);
-                    break;
-                case Laya.RenderState.BLEND_ENABLE_SEPERATE:
-                    let blendEquationRGB = data[Laya.Shader3D.BLEND_EQUATION_RGB];
-                    blendEquationRGB = blendEquationRGB !== null && blendEquationRGB !== void 0 ? blendEquationRGB : Laya.RenderState.Default.blendEquationRGB;
-                    let blendEquationAlpha = data[Laya.Shader3D.BLEND_EQUATION_ALPHA];
-                    blendEquationAlpha = blendEquationAlpha !== null && blendEquationAlpha !== void 0 ? blendEquationAlpha : Laya.RenderState.Default.blendEquationAlpha;
-                    let srcRGB = data[Laya.Shader3D.BLEND_SRC_RGB];
-                    srcRGB = srcRGB !== null && srcRGB !== void 0 ? srcRGB : Laya.RenderState.Default.srcBlendRGB;
-                    let dstRGB = data[Laya.Shader3D.BLEND_DST_RGB];
-                    dstRGB = dstRGB !== null && dstRGB !== void 0 ? dstRGB : Laya.RenderState.Default.dstBlendRGB;
-                    let srcAlpha = data[Laya.Shader3D.BLEND_SRC_ALPHA];
-                    srcAlpha = srcAlpha !== null && srcAlpha !== void 0 ? srcAlpha : Laya.RenderState.Default.srcBlendAlpha;
-                    let dstAlpha = data[Laya.Shader3D.BLEND_DST_ALPHA];
-                    dstAlpha = dstAlpha !== null && dstAlpha !== void 0 ? dstAlpha : Laya.RenderState.Default.dstBlendAlpha;
-                    blendState = Laya.WebGPUBlendState.getBlendState(blend, blendEquationRGB, srcRGB, dstRGB, blendEquationAlpha, srcAlpha, dstAlpha);
-                    break;
-                default:
-                    throw 'blendState set error';
-            }
-            return blendState;
-        }
         _getDepthStencilState(shaderInstance, dest) {
             if (dest._depthTexture) {
                 if (shaderInstance._shaderPass.statefirst)
-                    this.depthStencilState = this._getRenderStateDepthByShader(this.materialShaderData, shaderInstance, dest);
+                    this.depthStencilState = this._getRenderStateDepthByShader(this._materialShaderData, shaderInstance, dest);
                 else
-                    this.depthStencilState = this._getRenderStateDepthByMaterial(this.materialShaderData, dest);
+                    this.depthStencilState = this._getRenderStateDepthByMaterial(this._materialShaderData, dest);
             }
             else
                 this.depthStencilState = null;
         }
         _getRenderStateDepthByShader(shaderData, shaderInstance, dest) {
-            var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
-            const data = shaderData.getData();
-            const renderState = shaderInstance._shaderPass.renderState;
-            const depthWrite = (_b = ((_a = renderState.depthWrite) !== null && _a !== void 0 ? _a : data[Laya.Shader3D.DEPTH_WRITE])) !== null && _b !== void 0 ? _b : Laya.RenderState.Default.depthWrite;
-            const depthTest = (_d = ((_c = renderState.depthTest) !== null && _c !== void 0 ? _c : data[Laya.Shader3D.DEPTH_TEST])) !== null && _d !== void 0 ? _d : Laya.RenderState.Default.depthTest;
-            const stencilParam = this._stencilParam;
-            const stencilTest = (_f = ((_e = renderState.stencilTest) !== null && _e !== void 0 ? _e : data[Laya.Shader3D.STENCIL_TEST])) !== null && _f !== void 0 ? _f : Laya.RenderState.Default.stencilTest;
-            if (stencilTest === Laya.RenderState.STENCILTEST_OFF)
-                stencilParam['enable'] = false;
-            else {
-                const stencilRef = (_h = (_g = renderState.stencilRef) !== null && _g !== void 0 ? _g : data[Laya.Shader3D.STENCIL_Ref]) !== null && _h !== void 0 ? _h : Laya.RenderState.Default.stencilRef;
-                const stencilWrite = (_k = (_j = renderState.stencilWrite) !== null && _j !== void 0 ? _j : data[Laya.Shader3D.STENCIL_WRITE]) !== null && _k !== void 0 ? _k : Laya.RenderState.Default.stencilWrite;
-                const stencilOp = stencilWrite ? ((_m = (_l = renderState.stencilOp) !== null && _l !== void 0 ? _l : data[Laya.Shader3D.STENCIL_Op]) !== null && _m !== void 0 ? _m : Laya.RenderState.Default.stencilOp) : Laya.RenderState.Default.stencilOp;
-                stencilParam['enable'] = true;
-                stencilParam['write'] = stencilWrite;
-                stencilParam['test'] = stencilTest;
-                stencilParam['ref'] = stencilRef;
-                stencilParam['op'] = stencilOp;
-            }
-            return Laya.WebGPUDepthStencilState.getDepthStencilState(dest.depthStencilFormat, depthWrite, depthTest, stencilParam);
+            Laya.getDepthStencilParamFromShader(shaderData, shaderInstance, dest, this.depthStencilParam);
+            return Laya.WebGPUDepthStencilState.getDepthStencilState(dest.depthStencilFormat, this.depthStencilParam);
         }
         _getRenderStateDepthByMaterial(shaderData, dest) {
-            var _a, _b, _c, _d, _e, _f;
-            const data = shaderData.getData();
-            const depthWrite = (_a = data[Laya.Shader3D.DEPTH_WRITE]) !== null && _a !== void 0 ? _a : Laya.RenderState.Default.depthWrite;
-            const depthTest = (_b = data[Laya.Shader3D.DEPTH_TEST]) !== null && _b !== void 0 ? _b : Laya.RenderState.Default.depthTest;
-            const stencilParam = this._stencilParam;
-            const stencilTest = (_c = data[Laya.Shader3D.STENCIL_TEST]) !== null && _c !== void 0 ? _c : Laya.RenderState.Default.stencilTest;
-            if (stencilTest === Laya.RenderState.STENCILTEST_OFF)
-                stencilParam['enable'] = false;
-            else {
-                const stencilRef = (_d = data[Laya.Shader3D.STENCIL_Ref]) !== null && _d !== void 0 ? _d : Laya.RenderState.Default.stencilRef;
-                const stencilWrite = (_e = data[Laya.Shader3D.STENCIL_WRITE]) !== null && _e !== void 0 ? _e : Laya.RenderState.Default.stencilWrite;
-                const stencilOp = stencilWrite ? ((_f = data[Laya.Shader3D.STENCIL_Op]) !== null && _f !== void 0 ? _f : Laya.RenderState.Default.stencilOp) : Laya.RenderState.Default.stencilOp;
-                stencilParam['enable'] = true;
-                stencilParam['write'] = stencilWrite;
-                stencilParam['test'] = stencilTest;
-                stencilParam['ref'] = stencilRef;
-                stencilParam['op'] = stencilOp;
-            }
-            return Laya.WebGPUDepthStencilState.getDepthStencilState(dest.depthStencilFormat, depthWrite, depthTest, stencilParam);
+            Laya.getDepthStencilParamFromMaterial(shaderData, dest, this.depthStencilParam);
+            return Laya.WebGPUDepthStencilState.getDepthStencilState(dest.depthStencilFormat, this.depthStencilParam);
         }
         _getCullFrontMode(shaderData, shaderInstance, isTarget, invertFront) {
             var _a;
@@ -1834,270 +2277,65 @@
                     break;
             }
         }
-        _isShaderDataChange(context) {
-            let change = false;
-            let shaderDataState = this._shaderDataState[context.pipelineMode];
-            if (!shaderDataState)
-                shaderDataState = this._shaderDataState[context.pipelineMode] = [];
-            if (this._sceneData) {
-                if (shaderDataState[0] != this._sceneData.changeMark) {
-                    shaderDataState[0] = this._sceneData.changeMark;
-                    change = true;
+        _bindGroup(context, info, command) {
+            var _a, _b, _c;
+            let shaderInstance = info.shaderInstance;
+            {
+                if (this.owner) {
+                    let bindgroupChangeFlag = this.owner.bindGroupChangeFlag;
+                    if (info.shaderChange || this._spriteRenderDataChange || Laya.compareCahceFlag(bindgroupChangeFlag, info.renderNodeBindGroupCacheFlag)) {
+                        info.renderNodeBindGroupCacheFlag.setValue(Laya.Stat.loopCount, Laya.WebGPURenderEngine._instance._framePassCount);
+                        let shaderResource = shaderInstance.uniformSetMap.get(2);
+                        let textureExitsMask = shaderInstance.uniformTextureExits.get(2);
+                        let commands = (_a = this.owner) === null || _a === void 0 ? void 0 : _a._commonUniformMap;
+                        let shaderData = (_b = this.owner) === null || _b === void 0 ? void 0 : _b.shaderData;
+                        let addition = (_c = this.owner) === null || _c === void 0 ? void 0 : _c.additionShaderData;
+                        info.nodeBindGroup = Laya.WebGPURenderEngine._instance.bindGroupCache.getBindGroup(commands, shaderData, addition, shaderResource, textureExitsMask);
+                        Laya.coverCahceFlag(this.owner.bindGroupLayoutChangeFlag, this._pipelineChangeFlag);
+                    }
                 }
-            }
-            if (this._cameraData) {
-                if (shaderDataState[1] != this._cameraData.changeMark) {
-                    shaderDataState[1] = this._cameraData.changeMark;
-                    change = true;
+                else {
+                    info.nodeBindGroup = Laya.WebGPUBindGroupCache.emptyBindGroup;
                 }
+                command.setBindGroup(2, info.nodeBindGroup);
             }
-            if (this.renderShaderData) {
-                if (shaderDataState[2] != this.renderShaderData.changeMark) {
-                    shaderDataState[2] = this.renderShaderData.changeMark;
-                    change = true;
+            {
+                if (this._materialShaderData) {
+                    if (info.shaderChange || this._materialRenderDataChange || Laya.compareCahceFlag(this._matBindGroupChangeFlag, info.matBindGroupCacheFlag)) {
+                        info.matBindGroupCacheFlag.setValue(Laya.Stat.loopCount, Laya.WebGPURenderEngine._instance._framePassCount);
+                        let shaderResource = shaderInstance.uniformSetMap.get(3);
+                        let textureExitsMask = shaderInstance.uniformTextureExits.get(3);
+                        info.matBindGroup = Laya.WebGPURenderEngine._instance.bindGroupCache.getBindGroup([this._subShader._owner.name], this._materialShaderData, null, shaderResource, textureExitsMask);
+                        Laya.coverCahceFlag(this._matBindGroupLayoutFlag, this._pipelineChangeFlag);
+                    }
                 }
-            }
-            if (this.materialShaderData) {
-                if (shaderDataState[3] != this.materialShaderData.changeMark) {
-                    shaderDataState[3] = this.materialShaderData.changeMark;
-                    change = true;
+                else {
+                    info.matBindGroup = Laya.WebGPUBindGroupCache.emptyBindGroup;
                 }
+                command.setBindGroup(3, info.matBindGroup);
             }
-            return change;
         }
-        _createBindGroupLayout(shaderInstance) {
-            let entries;
-            const bindGroupLayout = new Array(4);
-            const shaderData = new Array(4);
-            shaderData[0] = this._sceneData;
-            shaderData[1] = this._cameraData;
-            shaderData[2] = this.renderShaderData;
-            shaderData[3] = this.materialShaderData;
-            const uniformSetMap = shaderInstance.uniformSetMap;
-            let error = false;
-            for (let i = 0; i < 4; i++) {
-                if (shaderData[i]) {
-                    entries = shaderData[i].createBindGroupLayoutEntry(uniformSetMap[i]);
-                    if (entries)
-                        bindGroupLayout[i] = entries;
-                    else
-                        error = true;
-                }
-                else
-                    error = true;
-            }
-            return error ? undefined : bindGroupLayout;
-        }
-        _bindGroup(shaderInstance, command, bundle) {
-            var _a, _b, _c, _d;
-            const uniformSetMap = shaderInstance.uniformSetMap;
-            (_a = this._sceneData) === null || _a === void 0 ? void 0 : _a.bindGroup(0, 'scene3D', uniformSetMap[0], command, bundle);
-            (_b = this._cameraData) === null || _b === void 0 ? void 0 : _b.bindGroup(1, 'camera', uniformSetMap[1], command, bundle);
-            (_c = this.renderShaderData) === null || _c === void 0 ? void 0 : _c.bindGroup(2, 'sprite3D', uniformSetMap[2], command, bundle);
-            (_d = this.materialShaderData) === null || _d === void 0 ? void 0 : _d.bindGroup(3, 'material', uniformSetMap[3], command, bundle);
-        }
-        _uploadUniform() {
-            var _a, _b, _c, _d;
-            (_a = this._sceneData) === null || _a === void 0 ? void 0 : _a.uploadUniform();
-            (_b = this._cameraData) === null || _b === void 0 ? void 0 : _b.uploadUniform();
-            (_c = this.renderShaderData) === null || _c === void 0 ? void 0 : _c.uploadUniform();
-            (_d = this.materialShaderData) === null || _d === void 0 ? void 0 : _d.uploadUniform();
-        }
-        _uploadStencilReference(command) {
-            if (this._stencilParam['enable'] && command)
-                command.setStencilReference(this._stencilParam['ref']);
-        }
-        _uploadGeometry(command, bundle) {
+        _uploadGeometry(command) {
             let triangles = 0;
             if (command) {
-                if (Laya.WebGPUGlobal.useGlobalContext)
-                    triangles += WebGPUContext.applyCommandGeometryPart(command, this.geometry, 0);
-                else
-                    triangles += command.applyGeometryPart(this.geometry, 0);
-            }
-            if (bundle) {
-                if (Laya.WebGPUGlobal.useGlobalContext)
-                    triangles += WebGPUContext.applyBundleGeometryPart(bundle, this.geometry, 0);
-                else
-                    triangles += bundle.applyGeometryPart(this.geometry, 0);
+                triangles += command.applyGeometry(this.geometry);
             }
             return triangles;
         }
-        _createPipeline(index, context, shaderInstance, command, bundle, stateKey) {
-            const bindGroupLayout = this._createBindGroupLayout(shaderInstance);
-            if (bindGroupLayout) {
-                const pipeline = this._getWebGPURenderPipeline(shaderInstance, context.destRT, context, bindGroupLayout, stateKey);
-                if (command) {
-                    if (Laya.WebGPUGlobal.useGlobalContext)
-                        WebGPUContext.setCommandPipeline(command, pipeline);
-                    else
-                        command.setPipeline(pipeline);
-                }
-                if (bundle) {
-                    if (Laya.WebGPUGlobal.useGlobalContext)
-                        WebGPUContext.setBundlePipeline(bundle, pipeline);
-                    else
-                        bundle.setPipeline(pipeline);
-                }
-                if (Laya.WebGPUGlobal.useCache) {
-                    shaderInstance.renderPipelineMap.set(stateKey, pipeline);
-                    this._stateKey[index] = stateKey;
-                    this._pipeline[index] = pipeline;
-                }
-                context.pipelineCache.push({ name: shaderInstance.name, pipeline, shaderInstance, samples: context.destRT._samples, stateKey });
-                return pipeline;
-            }
-            return null;
-        }
-        _changeDataFormat() {
-            var _a;
-            const bufferState = this.geometry.bufferState;
-            for (let i = 0; i < bufferState._vertexBuffers.length; i++) {
-                const vb = bufferState._vertexBuffers[i];
-                const vs = bufferState.vertexState[i];
-                if (!vb.buffer)
-                    continue;
-                let attrOld = [], attrNew = [];
-                const attributes = vs.attributes;
-                const attrLen = attributes.length;
-                for (let j = 0; j < attrLen; j++) {
-                    const attr = attributes[j];
-                    attrOld.push({
-                        offset: attr.offset,
-                        format: attr.format,
-                    });
-                }
-                for (let j = 0; j < attrLen; j++) {
-                    const attr = attributes[j];
-                    if (attr.format === 'uint8x4') {
-                        attr.format = 'float32x4';
-                        for (let k = 0; k < attrLen; k++) {
-                            const attr2 = attributes[k];
-                            if (attr2.offset > attr.offset)
-                                attr2.offset += 12;
-                            attrNew.push({
-                                offset: attr2.offset,
-                                format: attr2.format,
-                            });
-                        }
-                        bufferState.updateBufferLayoutFlag++;
-                        const strideOld = vs.arrayStride;
-                        const vertexCount = vb.buffer.byteLength / vs.arrayStride;
-                        vs.arrayStride += 12;
-                        const strideNew = vs.arrayStride;
-                        const buffer = vb.buffer;
-                        const buffer2 = new ArrayBuffer(vs.arrayStride * vertexCount);
-                        const src_ui8 = new Uint8Array(buffer);
-                        const src_f32 = new Float32Array(buffer);
-                        const dst_ui8 = new Uint8Array(buffer2);
-                        const dst_f32 = new Float32Array(buffer2);
-                        let src_ui8_off1 = 0;
-                        let src_f32_off1 = 0;
-                        let dst_ui8_off1 = 0;
-                        let dst_f32_off1 = 0;
-                        let src_ui8_off2 = 0;
-                        let src_f32_off2 = 0;
-                        let dst_ui8_off2 = 0;
-                        let dst_f32_off2 = 0;
-                        for (let k = 0; k < vertexCount; k++) {
-                            src_ui8_off1 = k * strideOld;
-                            src_f32_off1 = k * strideOld / 4;
-                            dst_ui8_off1 = k * strideNew;
-                            dst_f32_off1 = k * strideNew / 4;
-                            for (let l = 0; l < attrLen; l++) {
-                                if (attrOld[l].format === 'uint8x4') {
-                                    if (l === j) {
-                                        src_ui8_off2 = src_ui8_off1 + attrOld[l].offset;
-                                        dst_f32_off2 = dst_f32_off1 + attrNew[l].offset / 4;
-                                        for (let m = 0; m < 4; m++)
-                                            dst_f32[dst_f32_off2 + m] = src_ui8[src_ui8_off2 + m];
-                                    }
-                                    else {
-                                        src_ui8_off2 = src_ui8_off1 + attrOld[l].offset;
-                                        dst_ui8_off2 = dst_ui8_off1 + attrNew[l].offset;
-                                        for (let m = 0; m < 4; m++)
-                                            dst_ui8[dst_ui8_off2 + m] = src_ui8[src_ui8_off2 + m];
-                                    }
-                                }
-                                else {
-                                    src_f32_off2 = src_f32_off1 + attrOld[l].offset / 4;
-                                    dst_f32_off2 = dst_f32_off1 + attrNew[l].offset / 4;
-                                    for (let m = 0; m < 4; m++)
-                                        dst_f32[dst_f32_off2 + m] = src_f32[src_f32_off2 + m];
-                                }
-                            }
-                        }
-                        (_a = vb.source) === null || _a === void 0 ? void 0 : _a.release();
-                        vb.source = new Laya.WebGPUBuffer(vb.source._usage, vs.arrayStride * vertexCount);
-                        vb.source.setData(buffer2, 0);
-                        attrOld = attrNew;
-                        attrNew = [];
-                    }
-                }
-            }
-        }
-        _render(context, command, bundle) {
+        _uploadGeometryIndex(command, index) {
             let triangles = 0;
-            if (!this.geometry.checkDataFormat) {
-                this._changeDataFormat();
-                this.geometry.checkDataFormat = true;
-            }
-            if (this.isRender) {
-                for (let i = 0; i < this._passNum; i++) {
-                    const index = this._passIndex[i];
-                    let pipeline = this._pipeline[index];
-                    const shaderInstance = this._shaderInstances[index];
-                    if (shaderInstance && shaderInstance.complete) {
-                        this._getDepthStencilState(shaderInstance, context.destRT);
-                        if (Laya.WebGPUGlobal.useCache) {
-                            const stateKey = this._calcStateKey(shaderInstance, context.destRT, context);
-                            if (this._stateKey[index] !== stateKey || !pipeline) {
-                                this._stateKey[index] = stateKey;
-                                pipeline = this._pipeline[index] = shaderInstance.renderPipelineMap.get(stateKey);
-                            }
-                            if (!pipeline) {
-                                pipeline = this._createPipeline(index, context, shaderInstance, command, bundle, stateKey);
-                            }
-                            else {
-                                if (command) {
-                                    if (Laya.WebGPUGlobal.useGlobalContext)
-                                        WebGPUContext.setCommandPipeline(command, pipeline);
-                                    else
-                                        command.setPipeline(pipeline);
-                                }
-                                if (bundle) {
-                                    if (Laya.WebGPUGlobal.useGlobalContext)
-                                        WebGPUContext.setBundlePipeline(bundle, pipeline);
-                                    else
-                                        bundle.setPipeline(pipeline);
-                                }
-                            }
-                        }
-                        else
-                            this._createPipeline(index, context, shaderInstance, command, bundle);
-                        if (command || bundle) {
-                            this._bindGroup(shaderInstance, command, bundle);
-                            this._uploadStencilReference(command);
-                        }
-                        this._uploadUniform();
-                        triangles += this._uploadGeometry(command, bundle);
-                    }
-                }
+            if (command) {
+                triangles += command.applyGeometryIndex(this.geometry, index);
             }
             return triangles;
         }
         destroy() {
-            Laya.WebGPUGlobal.releaseId(this);
-            this._shaderInstances.length = 0;
-            this._pipeline.length = 0;
-            this._stateKey.length = 0;
+            this._materialUBO = null;
+            this._passRenderInfo.clear();
         }
     }
-    WebGPURenderElement3D._sceneShaderData = Laya.WebGPUShaderData.create(null, Laya.WebGPUShaderDataElementType.Element3D, 'scene');
-    WebGPURenderElement3D._renderShaderData = Laya.WebGPUShaderData.create(null, Laya.WebGPUShaderDataElementType.Element3D, 'sprite');
+    WebGPURenderElement3D._matChangeFlagMap = new Map();
     WebGPURenderElement3D._compileDefine = new Laya.WebDefineDatas();
-    WebGPURenderElement3D._defineStrings = [];
-    WebGPURenderElement3D.bundleIdCounter = 0;
 
     class WebGPUInstanceRenderElement3D extends WebGPURenderElement3D {
         static getInstanceBufferState(stateinfo, geometry, renderType, spriteDefine) {
@@ -2105,16 +2343,17 @@
                 const oriBufferState = geometry.bufferState;
                 const vertexArray = oriBufferState._vertexBuffers.slice();
                 let worldMatVertex = stateinfo.worldInstanceVB;
-                const size = this.MaxInstanceCount * 16 * 4;
+                let declaration = Laya.VertexMesh.instanceWorldMatrixDeclaration;
+                const size = this.MaxInstanceCount * declaration.vertexStride;
                 if (!worldMatVertex || worldMatVertex.source._size < size) {
                     if (worldMatVertex) {
                         worldMatVertex.destroy();
                         worldMatVertex.source._source.destroy();
                     }
                     stateinfo.worldInstanceVB = worldMatVertex = new Laya.WebGPUVertexBuffer(Laya.BufferTargetType.ARRAY_BUFFER, Laya.BufferUsage.Dynamic);
-                    worldMatVertex.setDataLength(this.MaxInstanceCount * 16 * 4);
-                    worldMatVertex.vertexDeclaration = Laya.VertexMesh.instanceWorldMatrixDeclaration;
                     worldMatVertex.instanceBuffer = true;
+                    worldMatVertex.setDataLength(size);
+                    worldMatVertex.vertexDeclaration = declaration;
                 }
                 vertexArray.push(worldMatVertex);
                 switch (renderType) {
@@ -2128,9 +2367,9 @@
                                     instanceLightMapVertexBuffer.source._source.destroy();
                                 }
                                 stateinfo.lightmapScaleOffsetVB = instanceLightMapVertexBuffer = new Laya.WebGPUVertexBuffer(Laya.BufferTargetType.ARRAY_BUFFER, Laya.BufferUsage.Dynamic);
+                                instanceLightMapVertexBuffer.instanceBuffer = true;
                                 instanceLightMapVertexBuffer.setDataLength(this.MaxInstanceCount * 4 * 4);
                                 instanceLightMapVertexBuffer.vertexDeclaration = Laya.VertexMesh.instanceLightMapScaleOffsetDeclaration;
-                                instanceLightMapVertexBuffer.instanceBuffer = true;
                             }
                             vertexArray.push(instanceLightMapVertexBuffer);
                         }
@@ -2144,9 +2383,9 @@
                                 instanceSimpleAnimatorBuffer.source._source.destroy();
                             }
                             stateinfo.simpleAnimatorVB = instanceSimpleAnimatorBuffer = new Laya.WebGPUVertexBuffer(Laya.BufferTargetType.ARRAY_BUFFER, Laya.BufferUsage.Dynamic);
+                            instanceSimpleAnimatorBuffer.instanceBuffer = true;
                             instanceSimpleAnimatorBuffer.setDataLength(this.MaxInstanceCount * 4 * 4);
                             instanceSimpleAnimatorBuffer.vertexDeclaration = Laya.VertexMesh.instanceSimpleAnimatorDeclaration;
-                            instanceSimpleAnimatorBuffer.instanceBuffer = true;
                         }
                         vertexArray.push(instanceSimpleAnimatorBuffer);
                         break;
@@ -2177,7 +2416,6 @@
             this._vertexBuffers = [];
             this._updateData = [];
             this._updateDataNum = [];
-            this.objectName = 'WebGPUInstanceRenderElement3D';
             this.instanceElementList = new Laya.SingletonList();
             this.drawCount = 0;
             this.updateNums = 0;
@@ -2192,111 +2430,44 @@
             this._updateData[index] = WebGPUInstanceRenderElement3D._instanceBufferCreate(length);
             return this._updateData[index];
         }
-        _calcStateKey(shaderInstance, dest, context) {
-            let stateKey = '';
-            stateKey += dest.formatId + '_';
-            stateKey += dest._samples + '_';
-            stateKey += shaderInstance._id + '_';
-            if (this.materialShaderData)
-                stateKey += this.materialShaderData.stateKey;
-            stateKey += this.geometry.bufferState.stateId + '_';
-            stateKey += 'x';
-            return stateKey;
-        }
         _isShaderDataChange(context) {
             return true;
         }
         _compileShader(context) {
-            var _a, _b, _c, _d, _e;
-            if (this.renderShaderData && !this.renderShaderData.instShaderData) {
-                this.renderShaderData.instShaderData = Laya.WebGPUShaderData.create(null, Laya.WebGPUShaderDataElementType.Element3DInstance, 'sprite_inst');
-                this.renderShaderData.cloneTo(this.renderShaderData.instShaderData);
-            }
-            const compileDefine = WebGPURenderElement3D._compileDefine;
-            if (this._sceneData)
-                this._sceneData._defineDatas.cloneTo(compileDefine);
-            else if (context.globalConfigShaderData)
-                context.globalConfigShaderData.cloneTo(compileDefine);
-            if (this._cameraData)
-                compileDefine.addDefineDatas(this._cameraData._defineDatas);
-            if (this.renderShaderData)
-                compileDefine.addDefineDatas(this.renderShaderData.getDefineData());
-            if (this.materialShaderData)
-                compileDefine.addDefineDatas(this.materialShaderData._defineDatas);
-            compileDefine.add(Laya.MeshSprite3DShaderDeclaration.SHADERDEFINE_GPU_INSTANCE);
-            this._updateInstanceData();
-            for (let i = 0; i < this._passNum; i++) {
-                const index = this._passIndex[i];
-                const pass = this.subShader._passes[index];
-                if (!pass.moduleData.getCacheShader(compileDefine.clone())) {
-                    const { uniformMap, arrayMap } = this._collectUniform(compileDefine);
-                    pass.uniformMap = uniformMap;
-                    pass.arrayMap = arrayMap;
-                }
-                const shaderInstance = pass.withCompile(compileDefine.clone());
-                this._shaderInstances[index] = shaderInstance;
-                if (i === 0) {
-                    (_a = this._sceneData) === null || _a === void 0 ? void 0 : _a._createUniformBuffer(shaderInstance.uniformInfo[0], true);
-                    (_b = this._cameraData) === null || _b === void 0 ? void 0 : _b._createUniformBuffer(shaderInstance.uniformInfo[1], true);
-                    (_d = (_c = this.renderShaderData) === null || _c === void 0 ? void 0 : _c.instShaderData) === null || _d === void 0 ? void 0 : _d._createUniformBuffer(shaderInstance.uniformInfo[2], false);
-                    (_e = this.materialShaderData) === null || _e === void 0 ? void 0 : _e._createUniformBuffer(shaderInstance.uniformInfo[3], false);
-                }
+            this.renderShaderData.addDefine(Laya.MeshSprite3DShaderDeclaration.SHADERDEFINE_GPU_INSTANCE);
+            super._compileShader(context);
+            if (this._drawCacheArray.length > 0) {
+                this._updateInstanceData();
             }
         }
-        _createBindGroupLayout(shaderInstance) {
+        _preUpdatePre(context) {
             var _a;
-            let entries;
-            const bindGroupLayout = new Array(4);
-            const shaderData = new Array(4);
-            shaderData[0] = this._sceneData;
-            shaderData[1] = this._cameraData;
-            shaderData[2] = (_a = this.renderShaderData) === null || _a === void 0 ? void 0 : _a.instShaderData;
-            shaderData[3] = this.materialShaderData;
-            const uniformSetMap = shaderInstance.uniformSetMap;
-            let error = false;
-            for (let i = 0; i < 4; i++) {
-                if (shaderData[i]) {
-                    entries = shaderData[i].createBindGroupLayoutEntry(uniformSetMap[i]);
-                    if (entries)
-                        bindGroupLayout[i] = entries;
-                    else
-                        error = true;
-                }
-                else
-                    error = true;
+            super._preUpdatePre(context);
+            this._updateInstanceData();
+            for (let i = 0; i < this.updateNums; i++) {
+                (_a = this._vertexBuffers[i]) === null || _a === void 0 ? void 0 : _a.setData(this._updateData[i].buffer, 0, 0, this.drawCount * this._updateDataNum[i] * 4);
             }
-            return error ? undefined : bindGroupLayout;
-        }
-        _bindGroup(shaderInstance, command, bundle) {
-            var _a, _b, _c, _d, _e;
-            const uniformSetMap = shaderInstance.uniformSetMap;
-            (_a = this._sceneData) === null || _a === void 0 ? void 0 : _a.bindGroup(0, 'scene3D', uniformSetMap[0], command, bundle);
-            (_b = this._cameraData) === null || _b === void 0 ? void 0 : _b.bindGroup(1, 'camera', uniformSetMap[1], command, bundle);
-            (_d = (_c = this.renderShaderData) === null || _c === void 0 ? void 0 : _c.instShaderData) === null || _d === void 0 ? void 0 : _d.bindGroup(2, 'sprite3D', uniformSetMap[2], command, bundle);
-            (_e = this.materialShaderData) === null || _e === void 0 ? void 0 : _e.bindGroup(3, 'material', uniformSetMap[3], command, bundle);
-        }
-        _uploadUniform() {
-            var _a, _b, _c, _d, _e;
-            (_a = this._sceneData) === null || _a === void 0 ? void 0 : _a.uploadUniform();
-            (_b = this._cameraData) === null || _b === void 0 ? void 0 : _b.uploadUniform();
-            (_d = (_c = this.renderShaderData) === null || _c === void 0 ? void 0 : _c.instShaderData) === null || _d === void 0 ? void 0 : _d.uploadUniform();
-            (_e = this.materialShaderData) === null || _e === void 0 ? void 0 : _e.uploadUniform();
         }
         _updateInstanceData() {
             if (this.updateNums != 0)
                 this.clearRenderData();
+            let worldDeclaration = Laya.VertexMesh.instanceWorldMatrixDeclaration;
+            let worldMatFloatStride = worldDeclaration.vertexStride / 4;
+            const worldMatrixData = this.getUpdateData(0, worldMatFloatStride * WebGPUInstanceRenderElement3D.MaxInstanceCount);
+            this.addUpdateBuffer(this._instanceStateInfo.worldInstanceVB, worldMatFloatStride);
+            const insBatches = this.instanceElementList;
+            const elements = insBatches.elements;
+            const count = insBatches.length;
+            this.drawCount = count;
+            this.geometry.instanceCount = this.drawCount;
+            for (let i = 0; i < count; i++) {
+                let element = elements[i];
+                worldMatrixData.set(element.transform.worldMatrix.elements, i * worldMatFloatStride);
+                element.owner._worldParams.writeTo(worldMatrixData, i * worldMatFloatStride + 16);
+            }
             switch (this.owner.renderNodeType) {
                 case Laya.BaseRenderType.MeshRender:
                     {
-                        const worldMatrixData = this.getUpdateData(0, 16 * WebGPUInstanceRenderElement3D.MaxInstanceCount);
-                        this.addUpdateBuffer(this._instanceStateInfo.worldInstanceVB, 16);
-                        const insBatches = this.instanceElementList;
-                        const elements = insBatches.elements;
-                        const count = insBatches.length;
-                        this.drawCount = count;
-                        this.geometry.instanceCount = this.drawCount;
-                        for (let i = 0; i < count; i++)
-                            worldMatrixData.set(elements[i].transform.worldMatrix.elements, i * 16);
                         const haveLightMap = this.renderShaderData.hasDefine(Laya.RenderableSprite3D.SAHDERDEFINE_LIGHTMAP) && this.renderShaderData.hasDefine(Laya.MeshSprite3DShaderDeclaration.SHADERDEFINE_UV1);
                         if (haveLightMap) {
                             const lightMapData = this.getUpdateData(1, 4 * WebGPUInstanceRenderElement3D.MaxInstanceCount);
@@ -2314,15 +2485,6 @@
                     }
                 case Laya.BaseRenderType.SimpleSkinRender:
                     {
-                        const worldMatrixData = this.getUpdateData(0, 16 * WebGPUInstanceRenderElement3D.MaxInstanceCount);
-                        this.addUpdateBuffer(this._instanceStateInfo.worldInstanceVB, 16);
-                        const insBatches = this.instanceElementList;
-                        const elements = insBatches.elements;
-                        const count = insBatches.length;
-                        this.drawCount = count;
-                        this.geometry.instanceCount = this.drawCount;
-                        for (let i = 0; i < count; i++)
-                            worldMatrixData.set(elements[i].transform.worldMatrix.elements, i * 16);
                         const simpleAnimatorData = this.getUpdateData(1, 4 * WebGPUInstanceRenderElement3D.MaxInstanceCount);
                         for (let i = 0; i < count; i++) {
                             const simpleAnimatorParams = elements[i].renderShaderData.getVector(Laya.SimpleSkinnedMeshSprite3D.SIMPLE_SIMPLEANIMATORPARAMS);
@@ -2337,20 +2499,22 @@
                     }
             }
         }
-        setGeometry(geometry) {
-            if (!this.geometry)
-                this.geometry = new Laya.WebGPURenderGeometry(geometry.mode, geometry.drawType);
-            geometry.cloneTo(this.geometry);
-            this.geometry.drawType = Laya.DrawType.DrawElementInstance;
-            this._instanceStateInfo = WebGPUInstanceRenderElement3D.getInstanceBufferState(this._instanceStateInfo, geometry, this.owner.renderNodeType, this.renderShaderData._defineDatas);
-            this.geometry.bufferState = this._instanceStateInfo.state;
-            this.geometry.checkDataFormat = this.geometry.bufferState.isNeedChangeFormat() ? false : true;
+        setGeometry(value) {
+            this.oriBufferStateCacheID = value._bufferState.stateCacheID;
+            let geometry = this.geometry;
+            if (!geometry) {
+                this.geometry = geometry = new Laya.WebGPURenderGeometry(value.mode, value.drawType);
+            }
+            value.cloneTo(geometry);
+            geometry.drawType = Laya.DrawType.DrawElementInstance;
+            this._instanceStateInfo = WebGPUInstanceRenderElement3D.getInstanceBufferState(this._instanceStateInfo, value, this.owner.renderNodeType, this.renderShaderData._defineDatas);
+            geometry.bufferState = this._instanceStateInfo.state;
         }
-        _uploadGeometry(command, bundle) {
+        _uploadGeometry(command) {
             var _a;
             for (let i = 0; i < this.updateNums; i++)
                 (_a = this._vertexBuffers[i]) === null || _a === void 0 ? void 0 : _a.setData(this._updateData[i].buffer, 0, 0, this.drawCount * this._updateDataNum[i] * 4);
-            return super._uploadGeometry(command, bundle);
+            return super._uploadGeometry(command);
         }
         clearRenderData() {
             this.drawCount = 0;
@@ -2361,6 +2525,7 @@
             });
             this._updateData.length = 0;
             this._updateDataNum.length = 0;
+            this.renderShaderData.removeDefine(Laya.MeshSprite3DShaderDeclaration.SHADERDEFINE_GPU_INSTANCE);
         }
         recover() {
             this.instanceElementList.clear();
@@ -2579,424 +2744,162 @@
         }
     }
 
-    class WebGPURenderContext3D {
-        constructor() {
-            this._sceneUpdataMask = 0;
-            this._cameraUpdateMask = 0;
-            this._clearColor = Laya.Color.BLACK.clone();
-            this._needStart = true;
-            this.bundleHit = 0;
-            this.needRemoveBundle = [];
-            this.bundleManagerSets = new Map();
-            this.blitFrameCount = 0;
-            this.blitScreen = false;
-            this.renderCommand = new Laya.WebGPURenderCommandEncoder();
-            this.pipelineCache = [];
-            this._viewScissorSaved = false;
-            this._viewPortSave = new Laya.Viewport();
-            this._scissorSave = new Laya.Vector4();
-            this.notifyGPUBufferChangeCounter = 0;
-            this.objectName = 'WebGPURenderContext3D';
-            this.globalId = Laya.WebGPUGlobal.getId(this);
-            this.device = Laya.WebGPURenderEngine._instance.getDevice();
-            Laya.WebGPURenderEngine._instance.gpuBufferMgr.renderContext = this;
-        }
-        get sceneData() {
-            return this._sceneData;
-        }
-        set sceneData(value) {
-            this._sceneData = value;
-        }
-        get cameraData() {
-            return this._cameraData;
-        }
-        set cameraData(value) {
-            this._cameraData = value;
-        }
-        get sceneModuleData() {
-            return this._sceneModuleData;
-        }
-        set sceneModuleData(value) {
-            this._sceneModuleData = value;
-        }
-        get cameraModuleData() {
-            return this._cameraModuleData;
-        }
-        set cameraModuleData(value) {
-            this._cameraModuleData = value;
-        }
-        get globalShaderData() {
-            return this._globalShaderData;
-        }
-        set globalShaderData(value) {
-            this._globalShaderData = value;
-        }
-        get sceneUpdataMask() {
-            return this._sceneUpdataMask;
-        }
-        set sceneUpdataMask(value) {
-            this._sceneUpdataMask = value;
-        }
-        get cameraUpdateMask() {
-            return this._cameraUpdateMask;
-        }
-        set cameraUpdateMask(value) {
-            this._cameraUpdateMask = value;
-        }
-        get pipelineMode() {
-            return this._pipelineMode;
-        }
-        set pipelineMode(value) {
-            this._pipelineMode = value;
-        }
-        get invertY() {
-            return this._invertY;
-        }
-        set invertY(value) {
-            this._invertY = value;
-        }
-        setRenderTarget(rt, clearFlag) {
-            this._clearFlag = clearFlag;
-            if (rt !== this.destRT) {
-                this.destRT = rt;
-                this._needStart = true;
-            }
-        }
-        setViewPort(value) {
-            this._viewPort = value;
-        }
-        setScissor(value) {
-            this._scissor = value;
-        }
-        saveViewPortAndScissor() {
-            if (this._viewPort && this._scissor) {
-                this._viewPort.cloneTo(this._viewPortSave);
-                this._scissor.cloneTo(this._scissorSave);
-                this._viewScissorSaved = true;
-            }
-        }
-        restoreViewPortAndScissor() {
-            if (this._viewScissorSaved) {
-                this._viewPortSave.cloneTo(this._viewPort);
-                this._scissorSave.cloneTo(this._scissor);
-                this._viewScissorSaved = false;
-            }
-        }
-        setClearData(flag, color, depth, stencil) {
-            this._clearFlag = flag;
-            this._clearDepth = depth;
-            this._clearStencil = stencil;
-            color.cloneTo(this._clearColor);
-            return 0;
-        }
-        notifyGPUBufferChange() {
-            this.bundleManagerSets.forEach(bms => bms.clearBundle());
-            this.bundleManagerSets.clear();
-        }
-        getBundleManagerKey() {
-            return this.cameraData.globalId + '_' + this.destRT.globalId;
-        }
-        drawRenderElementList(list) {
-            const len = list.length;
-            if (len === 0)
-                return 0;
-            this._setScreenRT();
-            if (this._needStart) {
-                this._start();
-                this._needStart = false;
-            }
-            if (Laya.WebGPUGlobal.useGlobalContext)
-                WebGPUContext.startRender();
-            let bundleManager;
-            let elementsToBundleStatic;
-            let elementsToBundleDynamic;
-            if (Laya.WebGPUGlobal.useBundle) {
-                const bundleKey = this.getBundleManagerKey();
-                let rbms = this.bundleManagerSets.get(bundleKey);
-                if (!rbms) {
-                    rbms = new Laya.WebGPURenderBundleManagerSet();
-                    this.bundleManagerSets.set(bundleKey, rbms);
-                }
-                bundleManager = rbms.bundleManager;
-                elementsToBundleStatic = rbms.elementsToBundleStatic;
-                elementsToBundleDynamic = rbms.elementsToBundleDynamic;
-            }
-            let compile = false;
-            let createBundleCount = 0;
-            const elements = list.elements;
-            let element;
-            for (let i = 0; i < len; i++) {
-                element = elements[i];
-                compile = element._preUpdatePre(this);
-                if (Laya.WebGPUGlobal.useBundle) {
-                    if (compile || element.staticChange) {
-                        element.staticChange = false;
-                        bundleManager.removeBundleByElement(element.bundleId);
-                    }
-                }
-            }
-            if (Laya.WebGPUGlobal.useBundle) {
-                const needRemoveBundle = this.needRemoveBundle;
-                for (let i = 0, n = needRemoveBundle.length; i < n; i++)
-                    bundleManager.removeBundleByElement(needRemoveBundle[i]);
-                needRemoveBundle.length = 0;
-                bundleManager.removeLowShotBundle();
-                bundleManager.clearShot();
-                const elementsMaxPerBundleStatic = bundleManager.elementsMaxPerBundleStatic;
-                const elementsMaxPerBundleDynamic = bundleManager.elementsMaxPerBundleDynamic;
-                for (let i = 0; i < len; i++) {
-                    element = elements[i];
-                    if (!bundleManager.has(element.bundleId)) {
-                        if (createBundleCount < 300) {
-                            if (element.isStatic) {
-                                if (elementsToBundleStatic.indexOf(element) === -1)
-                                    elementsToBundleStatic.push(element);
-                                if (elementsToBundleStatic.length >= elementsMaxPerBundleStatic) {
-                                    bundleManager.createBundle(this, elementsToBundleStatic, 0.7);
-                                    createBundleCount += elementsToBundleStatic.length;
-                                    elementsToBundleStatic.length = 0;
-                                }
-                            }
-                            else {
-                                if (elementsToBundleDynamic.indexOf(element) === -1)
-                                    elementsToBundleDynamic.push(element);
-                                if (elementsToBundleDynamic.length >= elementsMaxPerBundleDynamic) {
-                                    bundleManager.createBundle(this, elementsToBundleDynamic, 1);
-                                    createBundleCount += elementsToBundleDynamic.length;
-                                    elementsToBundleDynamic.length = 0;
-                                }
-                            }
-                        }
-                        element._render(this, this.renderCommand, null);
-                    }
-                    else {
-                        this.bundleHit++;
-                        element._render(this, null, null);
-                    }
-                }
-                if (elementsToBundleStatic.length >= elementsMaxPerBundleStatic / 2)
-                    bundleManager.createBundle(this, elementsToBundleStatic, 0.7);
-                if (elementsToBundleDynamic.length >= elementsMaxPerBundleDynamic / 2)
-                    bundleManager.createBundle(this, elementsToBundleDynamic, 1);
-                elementsToBundleStatic.length = 0;
-                elementsToBundleDynamic.length = 0;
-                bundleManager.renderBundles(this.renderCommand.encoder);
-            }
-            else {
-                for (let i = 0; i < len; i++)
-                    elements[i]._render(this, this.renderCommand, null);
-            }
-            this._submit();
-            Laya.WebGPUStatis.addRenderElement(list.length);
-            return 0;
-        }
-        drawRenderElementOne(node) {
-            this._setScreenRT();
-            if (this._needStart) {
-                this._start();
-                this._needStart = false;
-            }
-            if (Laya.WebGPUGlobal.useGlobalContext)
-                WebGPUContext.startRender();
-            node._preUpdatePre(this);
-            node._render(this, this.renderCommand, null);
-            this._submit();
-            Laya.WebGPUStatis.addRenderElement(1);
-            return 0;
-        }
-        runCMDList(cmds) {
-            cmds.forEach(cmd => cmd.apply(this));
-        }
-        runOneCMD(cmd) {
-            cmd.apply(this);
-        }
-        clearRenderTarget() {
-            this._start(false);
-            this._submit();
-        }
-        _setScreenRT() {
-            if (!this.destRT) {
-                const engine = Laya.WebGPURenderEngine._instance;
-                engine._screenResized = false;
-                engine._screenRT._textures[0].resource = engine._context.getCurrentTexture();
-                engine._screenRT._textures[0].multiSamplers = 1;
-                if (this.blitFrameCount === Laya.Laya.timer.currFrame)
-                    this.setRenderTarget(engine._screenRT, Laya.RenderClearFlag.Nothing);
-                else
-                    this.setRenderTarget(engine._screenRT, Laya.RenderClearFlag.Color | Laya.RenderClearFlag.Depth);
-                Laya.Color.BLACK.cloneTo(this._clearColor);
-                this.blitFrameCount = Laya.Laya.timer.currFrame;
-                this.blitScreen = true;
-            }
-            else
-                this.blitScreen = false;
-        }
-        _start(viewPortAndScissor = true) {
-            const renderPassDesc = Laya.WebGPURenderPassHelper.getDescriptor(this.destRT, this._clearFlag, this._clearColor, this._clearDepth, this._clearStencil);
-            this.renderCommand.startRender(renderPassDesc);
-            this._clearFlag = Laya.RenderClearFlag.Nothing;
-            if (viewPortAndScissor) {
-                if (this._viewPort) {
-                    this._viewPort.y = this._viewPort.y | 0;
-                    this._viewPort.width = this._viewPort.width | 0;
-                    this._viewPort.height = this._viewPort.height | 0;
-                    this.renderCommand.setViewport(this._viewPort.x, this._viewPort.y, this._viewPort.width, this._viewPort.height, 0, 1);
-                }
-                if (this._scissor) {
-                    this._scissor.y = this._scissor.y | 0;
-                    this.renderCommand.setScissorRect(this._scissor.x, this._scissor.y, this._scissor.z, this._scissor.w);
-                }
-            }
-        }
-        _submit() {
-            const engine = Laya.WebGPURenderEngine._instance;
-            if (this.blitScreen && engine._screenResized)
-                return;
-            this.renderCommand.end();
-            engine.upload();
-            this.device.queue.submit([this.renderCommand.finish()]);
-            this._needStart = true;
-            Laya.WebGPUStatis.addSubmit();
-            engine._addStatisticsInfo(Laya.GPUEngineStatisticsInfo.C_DrawCallCount, 1);
-        }
-        destroy() {
-            Laya.WebGPUGlobal.releaseId(this);
-            this.notifyGPUBufferChange();
-            this.needRemoveBundle.length = 0;
-            this.renderCommand.destroy();
-            this.destRT = null;
-        }
-    }
-
+    const dynamicOffsetsData = new Uint32Array(1);
     class WebGPUSkinRenderElement3D extends WebGPURenderElement3D {
         constructor() {
             super();
             this.objectName = 'WebGPUSkinRenderElement3D';
-            this.globalId = Laya.WebGPUGlobal.getId(this);
-            this.bundleId = WebGPUSkinRenderElement3D.bundleIdCounter++;
+            this._skinnedDataSize = 0;
+            this._skinnedBufferOffsetAlignment = 0;
+            this.skinnedUniformMap = new Map();
+            this.skinnedUniformMap.set(Laya.SkinnedMeshRenderer.BONES, {
+                id: Laya.SkinnedMeshRenderer.BONES,
+                uniformtype: Laya.ShaderDataType.Matrix4x4,
+                propertyName: "u_bones",
+                arrayLength: 1,
+            });
+            const boneCount = 24;
+            let bufferLength = boneCount * 16 * Float32Array.BYTES_PER_ELEMENT;
+            const engine = Laya.WebGPURenderEngine._instance;
+            const alignment = engine.getDevice().limits.minUniformBufferOffsetAlignment;
+            this._skinnedBufferOffsetAlignment = Math.ceil(bufferLength / alignment) * alignment;
+            this._skinnedDataSize = this._skinnedBufferOffsetAlignment / Float32Array.BYTES_PER_ELEMENT;
         }
-        _compileShader(context) {
-            super._compileShader(context);
-            const len = this.skinnedData ? this.skinnedData.length : 0;
-            if (len > 0) {
-                if (!this.renderShaderDatas)
-                    this.renderShaderDatas = [];
-                else
-                    this._recoverRenderShaderDatas();
-                for (let i = 0; i < len; i++) {
-                    this.renderShaderDatas[i] = Laya.WebGPUShaderData.create(null, Laya.WebGPUShaderDataElementType.Element3DSkin, 'sprite_skin' + i);
-                    this.renderShaderDatas[i]._createUniformBuffer(this._shaderInstances[this._passIndex[0]].uniformInfo[2], false);
-                    this.renderShaderData.cloneTo(this.renderShaderDatas[i]);
+        _updateNodeUBO() {
+            let owner = this.owner;
+            if (owner) {
+                if (owner.spriteUBO0) {
+                    owner.spriteUBO0.upload();
                 }
-                if (!this.renderShaderData.skinShaderData)
-                    this.renderShaderData.skinShaderData = [];
-                else
-                    this.renderShaderData.skinShaderData.length = 0;
-                this.renderShaderData.skinShaderData.push(...this.renderShaderDatas);
+                else {
+                    owner.spriteUBOs.forEach(ubo => {
+                        ubo.upload();
+                    });
+                }
+                if (owner.additionalUBO0) {
+                    owner.additionalUBO0.upload();
+                }
+                else {
+                    owner.additionalUBOs.forEach(ubo => {
+                        ubo.upload();
+                    });
+                }
             }
         }
-        _destroyRenderShaderDatas() {
-            for (let i = this.renderShaderDatas.length - 1; i > -1; i--)
-                this.renderShaderDatas[i].destroy();
-            this.renderShaderDatas.length = 0;
-        }
-        _recoverRenderShaderDatas() {
-            for (let i = this.renderShaderDatas.length - 1; i > -1; i--)
-                this.renderShaderDatas[i].recover();
-            this.renderShaderDatas.length = 0;
-        }
-        _bindGroupEx(shaderInstance, command, bundle, index) {
-            var _a, _b, _c, _d;
-            const uniformSetMap = shaderInstance.uniformSetMap;
-            (_a = this._sceneData) === null || _a === void 0 ? void 0 : _a.bindGroup(0, 'scene3D', uniformSetMap[0], command, bundle);
-            (_b = this._cameraData) === null || _b === void 0 ? void 0 : _b.bindGroup(1, 'camera', uniformSetMap[1], command, bundle);
-            (_c = this.renderShaderDatas[index]) === null || _c === void 0 ? void 0 : _c.bindGroup(2, 'sprite3D', uniformSetMap[2], command, bundle);
-            (_d = this.materialShaderData) === null || _d === void 0 ? void 0 : _d.bindGroup(3, 'material', uniformSetMap[3], command, bundle);
-        }
-        _uploadUniformEx(index) {
-            var _a, _b, _c, _d;
-            (_a = this._sceneData) === null || _a === void 0 ? void 0 : _a.uploadUniform();
-            (_b = this._cameraData) === null || _b === void 0 ? void 0 : _b.uploadUniform();
-            (_c = this.renderShaderDatas[index]) === null || _c === void 0 ? void 0 : _c.uploadUniform();
-            (_d = this.materialShaderData) === null || _d === void 0 ? void 0 : _d.uploadUniform();
-        }
-        _uploadGeometryEx(command, bundle, index) {
-            let triangles = 0;
-            if (command) {
-                if (Laya.WebGPUGlobal.useGlobalContext)
-                    triangles += WebGPUContext.applyCommandGeometryPart(command, this.geometry, index);
-                else
-                    triangles += command.applyGeometryPart(this.geometry, index);
-            }
-            if (bundle) {
-                if (Laya.WebGPUGlobal.useGlobalContext)
-                    triangles += WebGPUContext.applyBundleGeometryPart(bundle, this.geometry, index);
-                else
-                    triangles += bundle.applyGeometryPart(this.geometry, index);
-            }
-            return triangles;
-        }
-        _render(context, command, bundle) {
+        _preUpdatePre(context) {
             var _a;
-            let triangles = 0;
-            if (!this.geometry.checkDataFormat) {
-                this._changeDataFormat();
-                this.geometry.checkDataFormat = true;
+            super._preUpdatePre(context);
+            if (this._renderShaderData && this.owner._commonUniformMap.length > 0) {
+                if (this.skinnedData) {
+                    let uniform = this.skinnedUniformMap.get(Laya.SkinnedMeshRenderer.BONES);
+                    let arrayLength = 24 * (this.skinnedData.length);
+                    if (arrayLength != uniform.arrayLength) {
+                        uniform.arrayLength = arrayLength;
+                        (_a = this.skinnedBuffer) === null || _a === void 0 ? void 0 : _a.destroy();
+                        this.skinnedBuffer = new Laya.WebGPUSubUniformBuffer("SkinSprite3D", this.skinnedUniformMap, null);
+                        this._spriteRenderDataChange = true;
+                    }
+                    for (let i = 0; i < this.skinnedData.length; i++) {
+                        let data = this.skinnedData[i];
+                        this.skinnedBuffer.descriptor.uniforms.get(Laya.SkinnedMeshRenderer.BONES).view.set(data, this._skinnedDataSize * i);
+                        this.skinnedBuffer.needUpload = true;
+                    }
+                    this.skinnedBuffer.upload();
+                }
             }
-            if (this.isRender && this.skinnedData) {
-                for (let i = 0; i < this._passNum; i++) {
-                    const index = this._passIndex[i];
-                    let pipeline = this._pipeline[index];
-                    const shaderInstance = this._shaderInstances[index];
-                    if (shaderInstance && shaderInstance.complete) {
-                        if (Laya.WebGPUGlobal.useCache) {
-                            let stateKey = this._calcStateKey(shaderInstance, context.destRT, context);
-                            if (this._stateKey[index] !== stateKey || !pipeline) {
-                                this._stateKey[index] = stateKey;
-                                pipeline = this._pipeline[index] = shaderInstance.renderPipelineMap.get(stateKey);
-                            }
-                            if (!pipeline) {
-                                pipeline = this._createPipeline(index, context, shaderInstance, command, bundle, stateKey);
-                            }
-                            else {
-                                if (command) {
-                                    if (Laya.WebGPUGlobal.useGlobalContext)
-                                        WebGPUContext.setCommandPipeline(command, pipeline);
-                                    else
-                                        command.setPipeline(pipeline);
-                                }
-                                if (bundle) {
-                                    if (Laya.WebGPUGlobal.useGlobalContext)
-                                        WebGPUContext.setBundlePipeline(bundle, pipeline);
-                                    else
-                                        bundle.setPipeline(pipeline);
-                                }
-                            }
-                        }
-                        else
-                            this._createPipeline(index, context, shaderInstance, command, bundle);
-                        if (!this.skinnedData || this.skinnedData.length == 0) {
-                            if (command || bundle)
-                                this._bindGroup(shaderInstance, command, bundle);
-                            this._uploadUniform();
-                            triangles += this._uploadGeometry(command, bundle);
-                        }
-                        else {
-                            for (let j = 0, len = this.skinnedData.length; j < len; j++) {
-                                (_a = this.renderShaderDatas[j]) === null || _a === void 0 ? void 0 : _a.setBuffer(Laya.SkinnedMeshRenderer.BONES, this.skinnedData[j]);
-                                if (command || bundle)
-                                    this._bindGroupEx(shaderInstance, command, bundle, j);
-                                this._uploadUniformEx(j);
-                                triangles += this._uploadGeometryEx(command, bundle, j);
-                            }
-                        }
+            return;
+        }
+        _bindGroup(context, info, command) {
+            var _a, _b, _c;
+            let shaderInstance = info.shaderInstance;
+            {
+                command.setBindGroup(0, context._sceneBindGroup);
+            }
+            {
+                command.setBindGroup(1, context._cameraBindGroup);
+            }
+            {
+                if (this.owner) {
+                    let bindgroupChangeFlag = this.owner.bindGroupChangeFlag;
+                    if (info.shaderChange || this._spriteRenderDataChange || Laya.compareCahceFlag(bindgroupChangeFlag, info.renderNodeBindGroupCacheFlag)) {
+                        info.renderNodeBindGroupCacheFlag.setValue(Laya.Stat.loopCount, Laya.WebGPURenderEngine._instance._framePassCount);
+                        let shaderResource = shaderInstance.uniformSetMap.get(2);
+                        let textureExitsMask = shaderInstance.uniformTextureExits.get(2);
+                        let commands = (_a = this.owner) === null || _a === void 0 ? void 0 : _a._commonUniformMap;
+                        let shaderData = (_b = this.owner) === null || _b === void 0 ? void 0 : _b.shaderData;
+                        let addition = (_c = this.owner) === null || _c === void 0 ? void 0 : _c.additionShaderData;
+                        shaderData._cacheSubUniformBuffer(this.skinnedBuffer, "SkinSprite3D", "SkinSprite3D", this.skinnedUniformMap);
+                        info.nodeBindGroup = Laya.WebGPURenderEngine._instance.bindGroupCache.getBindGroup(commands, shaderData, addition, shaderResource, textureExitsMask);
+                        Laya.coverCahceFlag(this.owner.bindGroupLayoutChangeFlag, this._pipelineChangeFlag);
+                    }
+                }
+                else {
+                    info.nodeBindGroup = Laya.WebGPUBindGroupCache.emptyBindGroup;
+                }
+            }
+            {
+                if (this._materialShaderData) {
+                    if (info.shaderChange || this._materialRenderDataChange || Laya.compareCahceFlag(this._matBindGroupChangeFlag, info.matBindGroupCacheFlag)) {
+                        info.matBindGroupCacheFlag.setValue(Laya.Stat.loopCount, Laya.WebGPURenderEngine._instance._framePassCount);
+                        let shaderResource = shaderInstance.uniformSetMap.get(3);
+                        let textureExitsMask = shaderInstance.uniformTextureExits.get(3);
+                        info.matBindGroup = Laya.WebGPURenderEngine._instance.bindGroupCache.getBindGroup([this._subShader._owner.name], this._materialShaderData, null, shaderResource, textureExitsMask);
+                        Laya.coverCahceFlag(this._matBindGroupLayoutFlag, this._pipelineChangeFlag);
+                    }
+                }
+                else {
+                    info.matBindGroup = Laya.WebGPUBindGroupCache.emptyBindGroup;
+                }
+                command.setBindGroup(3, info.matBindGroup);
+            }
+        }
+        _render(context, command) {
+            if (!this.isRender) {
+                return 0;
+            }
+            if (this._drawCacheArray && this._drawCacheArray.length == 0)
+                return 0;
+            for (let j = 0, m = this._drawCacheArray.length; j < m; j++) {
+                let drawInfo = this._drawCacheArray[j];
+                let shaderInstance = drawInfo.shaderInstance;
+                if (!shaderInstance.complete)
+                    return 0;
+                this._bindGroup(context, drawInfo, command);
+                let pipelineCache = drawInfo.pipeLineCacheFlag;
+                if (drawInfo.shaderChange ||
+                    Laya.compareCahceFlag(context._pipelineChange, pipelineCache) ||
+                    Laya.compareCahceFlag(this._pipelineChangeFlag, pipelineCache)) {
+                    this._bindGroupMap.clear();
+                    this._bindGroupMap.set(0, context._sceneBindGroup);
+                    this._bindGroupMap.set(1, context._cameraBindGroup);
+                    this._bindGroupMap.set(2, drawInfo.nodeBindGroup);
+                    this._bindGroupMap.set(3, drawInfo.matBindGroup);
+                    drawInfo.shaderChange = false;
+                    drawInfo.pipeline = this._getWebGPURenderPipeline(drawInfo.shaderInstance, context.destRT, context);
+                    drawInfo.pipeLineCacheFlag.setValue(Laya.Stat.loopCount, Laya.WebGPURenderEngine._instance._framePassCount);
+                }
+                command.setPipeline(drawInfo.pipeline);
+                if (!command.isBundle && this.depthStencilParam.stencilEnable) {
+                    command.setStencilReference(this.depthStencilParam.stencilRef);
+                }
+                {
+                    let bindgroup = drawInfo.nodeBindGroup;
+                    for (let i = 0; i < this.skinnedData.length; i++) {
+                        dynamicOffsetsData[0] = i * this._skinnedBufferOffsetAlignment;
+                        command.setBindGroupByDataOffaset(2, bindgroup, dynamicOffsetsData, 0, 1);
+                        this._uploadGeometryIndex(command, i);
                     }
                 }
             }
-            return triangles;
+            return 1;
+        }
+        destroy() {
+            super.destroy();
+            this.skinnedData = null;
         }
     }
 
+    WebBaseRenderNode.BaseRenderNodeClass = WebGPUBaseRenderNode;
     class WebGPU3DRenderPassFactory {
         createInstanceBatch() {
             return new WebGPUInstanceRenderBatch();
@@ -3040,10 +2943,20 @@
         createSetShaderDefineCMD() {
             return new Laya.WebGPUSetShaderDefine();
         }
+        createComputeCommandAppatchCMD() {
+            return new Laya.WebGPUComputeCommandAppatchCMD();
+        }
     }
     Laya.Laya.addBeforeInitCallback(() => {
-        if (!Laya.Laya3DRender.Render3DPassFactory)
+        if (!Laya.Laya3DRender.Render3DPassFactory) {
             Laya.Laya3DRender.Render3DPassFactory = new WebGPU3DRenderPassFactory();
+            Laya.LayaGL.statAgent = new Laya.DefaultStaticsContext();
+        }
+    });
+    Laya.Laya.addAfterInitCallback(() => {
+        Laya.Laya3DRender.Render3DModuleDataFactory.createBaseRenderNode = () => {
+            return new WebGPUBaseRenderNode();
+        };
     });
 
     class WebGPUShaderDefine {
@@ -4758,8 +4671,8 @@
     exports.WebDirectLight = WebDirectLight;
     exports.WebGPU3DRenderPass = WebGPU3DRenderPass;
     exports.WebGPU3DRenderPassFactory = WebGPU3DRenderPassFactory;
+    exports.WebGPUBaseRenderNode = WebGPUBaseRenderNode;
     exports.WebGPUBlitQuadCMDData = WebGPUBlitQuadCMDData;
-    exports.WebGPUContext = WebGPUContext;
     exports.WebGPUDirectLightShadowRP = WebGPUDirectLightShadowRP;
     exports.WebGPUDrawElementCMDData = WebGPUDrawElementCMDData;
     exports.WebGPUDrawNodeCMDData = WebGPUDrawNodeCMDData;

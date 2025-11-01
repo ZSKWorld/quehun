@@ -195,6 +195,9 @@
         constructor() {
             super();
         }
+        _isMaterialVaild(value) {
+            return value.checkType(Laya.ShaderFeatureType.Effect);
+        }
         _getcommonUniformMap() {
             return ["Sprite3D", "TrailRender"];
         }

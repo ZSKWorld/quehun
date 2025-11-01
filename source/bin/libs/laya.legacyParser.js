@@ -1626,7 +1626,7 @@
             }
             else {
                 for (i = 0, n = alphasData.length; i < n; i++) {
-                    if (i == maxkeyCount - 1 && n > maxkeyCount) {
+                    if (i === maxkeyCount - 1 && n > maxkeyCount) {
                         i = n - 1;
                         console.warn(`GradientDataColor warning:alpha data length is large than ${maxkeyCount}, will ignore the middle data.`);
                     }
@@ -1641,7 +1641,7 @@
             }
             else {
                 for (i = 0, n = rgbsData.length; i < n; i++) {
-                    if (i == maxkeyCount - 1 && n > maxkeyCount) {
+                    if (i === maxkeyCount - 1 && n > maxkeyCount) {
                         i = n - 1;
                         console.warn(`GradientDataColor warning:rgb data length is large than ${maxkeyCount}, will ignore the middle data.`);
                     }

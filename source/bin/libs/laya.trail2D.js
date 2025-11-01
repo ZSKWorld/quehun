@@ -1,7 +1,7 @@
 (function (exports, Laya) {
     'use strict';
 
-    var TrailVS = "#define SHADER_NAME Trail2DVS\n#include \"Sprite2DVertex.glsl\"\n#include \"TrailVertexUtil.glsl\"\nvoid main(){float normalizeTime=(u_CurTime-a_BirthTime)/u_LifeTime;v_Texcoord0=vec2(a_Texcoord0X,1.0-a_Texcoord0Y)*u_TilingOffset.xy+u_TilingOffset.zw;v_Color=a_Color;vec4 glPos;vec2 globalPos;vec2 trailPos=a_position.xy+a_OffsetVector.xy*getCurWidth(normalizeTime);getGlobalPos(trailPos,globalPos);vec2 viewPos;getViewPos(globalPos,viewPos);v_cliped=getClipedInfo(viewPos);getProjectPos(viewPos,glPos);gl_Position=glPos;}";
+    var TrailVS = "#define SHADER_NAME Trail2DVS\n#include \"Sprite2DVertex.glsl\"\n#include \"TrailVertexUtil.glsl\"\nvoid main(){float normalizeTime=(u_CurTime-a_BirthTime)/u_LifeTime;v_Texcoord0=vec2(a_Texcoord0X,1.0-a_Texcoord0Y)*u_TilingOffset.xy+u_TilingOffset.zw;v_Color=a_Color;vec4 glPos;vec2 globalPos;vec2 trailPos=a_position.xy+a_OffsetVector.xy*getCurWidth(normalizeTime);getGlobalPos(trailPos,globalPos);vec2 viewPos;getViewPos(globalPos,viewPos);clip(viewPos);getProjectPos(viewPos,glPos);gl_Position=glPos;}";
 
     var TrailFS = "#define SHADER_NAME Trail2DFS\nvarying vec2 v_Texcoord0;varying vec4 v_Color;\n#include \"Sprite2DFrag.glsl\";\nvoid main(){vec4 color=v_Color;vec4 textureColor=texture2D(u_baseRender2DTexture,v_Texcoord0);textureColor=transspaceColor(textureColor);color*=textureColor*u_baseRenderColor;gl_FragColor=color;}";
 
@@ -14,6 +14,7 @@
             shader.addSubShader(subShader);
             subShader.addShaderPass(TrailVS, TrailFS);
             let mat = Trail2DRender.defaultTrail2DMaterial = new Laya.Material();
+            mat.lock = true;
             mat.setShaderName("Trail2D");
             mat.alphaTest = false;
             mat.depthTest = Laya.RenderState.DEPTHTEST_OFF;
@@ -96,6 +97,9 @@
         get color() {
             return this._color;
         }
+        _isMaterialVaild(value) {
+            return value.checkType(Laya.ShaderFeatureType.Effect);
+        }
         _getcommonUniformMap() {
             return ["BaseRender2D", "TrailRender"];
         }
@@ -112,36 +116,18 @@
             renderElement.value2DShaderData = this._spriteShaderData;
             renderElement.renderStateIsBySprite = false;
             renderElement.nodeCommonMap = this._getcommonUniformMap();
+            renderElement.owner = this.owner._struct;
             Laya.BaseRenderNode2D._setRenderElement2DMaterial(renderElement, this._materials[0] ? this._materials[0] : Trail2DRender.defaultTrail2DMaterial);
             this._renderElements[0] = renderElement;
-        }
-        addCMDCall(context, px, py) {
-            let mat;
-            if (this.owner.scene && !context._drawingToTexture) {
-                mat = Laya.Matrix.TEMP;
-                Laya.Matrix.mul(this.owner.scene.globalTrans.getMatrix(), Laya.Laya.stage.transform, mat);
-            }
-            else {
-                mat = Laya.Matrix.EMPTY;
-            }
-            let vec3 = Laya.Vector3.TEMP;
-            vec3.x = mat.a;
-            vec3.y = mat.c;
-            vec3.z = mat.tx;
-            this._spriteShaderData.setVector3(Laya.BaseRenderNode2D.NMATRIX_0, vec3);
-            vec3.x = mat.b;
-            vec3.y = mat.d;
-            vec3.z = mat.ty;
-            this._spriteShaderData.setVector3(Laya.BaseRenderNode2D.NMATRIX_1, vec3);
-            this._setRenderSize(context.width, context.height);
-            context._copyClipInfoToShaderData(this._spriteShaderData);
+            this.owner._struct.renderElements = this._renderElements;
+            this._renderHandle.needUseMatrix = false;
         }
         onPreRender() {
             let curtime = this._trailFilter._curtime += Math.min(Laya.Laya.timer.delta / 1000, 0.016);
             let trailGeometry = this._trailFilter._trialGeometry;
             this._spriteShaderData.setNumber(Laya.TrailShaderCommon.CURTIME, curtime);
             let globalPos = Laya.Point.TEMP;
-            this.owner.globalTrans.getScenePos(globalPos);
+            this.owner.globalTrans.getPos(globalPos);
             let curPosV3 = Laya.Vector3.TEMP;
             curPosV3.set(globalPos.x, globalPos.y, 0);
             trailGeometry._updateDisappear(curtime, this.time);
@@ -170,16 +156,18 @@
         clear() {
             this._trailFilter.clear();
         }
-        constructor() {
-            super();
-            this._color = new Laya.Color(1, 1, 1, 1);
-            this._renderElements = [];
-            this._materials = [];
+        _initDefaultRenderData() {
             this._time = 0.5;
             this._widthMultiplier = 50;
             this._spriteShaderData.setColor(Laya.BaseRenderNode2D.BASERENDER2DCOLOR, this._color);
             this._spriteShaderData.addDefine(Laya.BaseRenderNode2D.SHADERDEFINE_BASERENDER2D);
             this.texture = Laya.Texture2D.whiteTexture;
+        }
+        constructor() {
+            super();
+            this._color = new Laya.Color(1, 1, 1, 1);
+            this._renderElements = [];
+            this._materials = [];
             if (!Trail2DRender.defaultTrail2DMaterial)
                 Trail2DShaderInit.init();
         }

@@ -13,7 +13,6 @@
                 canPass = ((1 << render.layer) & cullMask) != 0 && (render.renderbitFlag == 0);
                 canPass = canPass && ((render.staticMask & staticMask) != 0);
                 if (canPass) {
-                    Laya.Stat.frustumCulling++;
                     if (!cameraCullInfo.useOcclusionCulling || render._needRender(boundFrustum)) {
                         render.distanceForSort = Laya.Vector3.distanceSquared(render.bounds._imp.getCenter(), cameraCullInfo.position);
                         render._renderUpdatePre(context);
@@ -35,7 +34,6 @@
             for (let i = 0; i < count; i++) {
                 const render = list[i];
                 if (render.shadowCullPass()) {
-                    Laya.Stat.frustumCulling++;
                     if (Laya.FrustumCulling.cullingRenderBounds(render.bounds, shadowCullInfo)) {
                         render.distanceForSort = Laya.Vector3.distanceSquared(render.bounds._imp.getCenter(), shadowCullInfo.position);
                         render._renderUpdatePre(context);
@@ -57,7 +55,6 @@
                 const render = list[i];
                 render._renderUpdatePre(context);
                 if (render.shadowCullPass()) {
-                    Laya.Stat.frustumCulling++;
                     render.distanceForSort = Laya.Vector3.distanceSquared(render.bounds._imp.getCenter(), cameraCullInfo.position);
                     if (render._needRender(boundFrustum)) {
                         let element;
@@ -148,14 +145,18 @@
             renderelement.materialShaderData && this._elements.add(renderelement);
         }
         _batchQueue() {
-            if (!this._isTransparent)
+            if (!this._isTransparent) {
+                let time = performance.now();
                 this._batch.batch(this._elements);
+                Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_3DBatchTime, performance.now() - time);
+            }
         }
         renderQueue(context) {
             this._batchQueue();
             const count = this._elements.length;
             this._quickSort.sort(this._elements, this._isTransparent, 0, count - 1);
             context.drawRenderElementList(this._elements);
+            Laya.LayaGL.statAgent.recordCTData(this._isTransparent ? Laya.StatElement.CT_TransDrawCall : Laya.StatElement.CT_OpaqueDrawCall, this.elements.length);
             this._batch.clearRenderData();
         }
         clear() {
@@ -215,13 +216,19 @@
         render(context, list, count) {
             context.cameraUpdateMask++;
             this._clearRenderList();
+            var time = performance.now();
             RenderCullUtil.cullByCameraCullInfo(this.cameraCullInfo, list, count, this._opaqueList, this._transparent, context);
+            Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_CullMain, performance.now() - time);
+            time = performance.now();
             if ((this.depthTextureMode & Laya.DepthTextureMode.Depth) != 0)
                 this._renderDepthPass(context);
             if ((this.depthTextureMode & Laya.DepthTextureMode.DepthNormals) != 0)
                 this._renderDepthNormalPass(context);
+            Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_DepthPass, performance.now() - time);
             this._cacheViewPortAndScissor();
+            time = performance.now();
             this._mainPass(context);
+            Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_3DMainPass, performance.now() - time);
             this._opaqueList._batch.recoverData();
         }
         _clearRenderList() {
@@ -245,15 +252,18 @@
             context.setRenderTarget(this.depthTarget, Laya.RenderClearFlag.Depth);
             context.setClearData(Laya.RenderClearFlag.Depth, Laya.Color.BLACK, 1, 0);
             this._opaqueList.renderQueue(context);
-            const far = this.camera.farplane;
-            const near = this.camera.nearplane;
+            Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_DepthCastDrawCall, this._opaqueList.elements.length);
+            const far = this.camera.farPlane;
+            const near = this.camera.nearPlane;
             this._zBufferParams.setValue(1.0 - far / near, far / near, (near - far) / (near * far), 1 / near);
             context.cameraData.setVector(Laya.DepthPass.DEFINE_SHADOW_BIAS, Laya.DepthPass.SHADOW_BIAS);
             context.cameraData.setVector(Laya.DepthPass.DEPTHZBUFFERPARAMS, this._zBufferParams);
+            Laya.Camera.depthPass._setupDepthModeShaderValue(Laya.DepthTextureMode.Depth, this.camera);
             shadervalue.removeDefine(Laya.DepthPass.DEPTHPASS);
         }
         _renderDepthNormalPass(context) {
             context.pipelineMode = this.depthNormalPipelineMode;
+            this.camera._shaderValues.setTexture(Laya.DepthPass.DEPTHNORMALSTEXTURE, Laya.Texture2D.blackTexture);
             const viewport = this._viewPort;
             Laya.Viewport.TEMP.set(viewport.x, viewport.y, viewport.width, viewport.height);
             Laya.Vector4.TEMP.setValue(viewport.x, viewport.y, viewport.width, viewport.height);
@@ -262,13 +272,17 @@
             context.setClearData(Laya.RenderClearFlag.Color | Laya.RenderClearFlag.Depth, this._defaultNormalDepthColor, 1, 0);
             context.setRenderTarget(this.depthNormalTarget, Laya.RenderClearFlag.Color | Laya.RenderClearFlag.Depth);
             this._opaqueList.renderQueue(context);
+            Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_DepthCastDrawCall, this._opaqueList.elements.length);
+            Laya.Camera.depthPass._setupDepthModeShaderValue(Laya.DepthTextureMode.DepthNormals, this.camera);
         }
         _mainPass(context) {
             context.pipelineMode = this.pipelineMode;
             RenderPassUtil.renderCmd(this.beforeForwardCmds, context);
             RenderPassUtil.recoverRenderContext3D(context, this.destTarget);
             context.setClearData(this.clearFlag, this.clearColor, 1, 0);
-            this.enableOpaque && this._opaqueList.renderQueue(context);
+            var time = performance.now();
+            this._opaqueList.renderQueue(context);
+            Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_3DMainPass_Opaque, performance.now() - time);
             RenderPassUtil.renderCmd(this.beforeSkyboxCmds, context);
             if (this.skyRenderNode) {
                 const skyRenderElement = this.skyRenderNode.renderelements[0];
@@ -279,20 +293,20 @@
                 this._opaqueTexturePass();
             RenderPassUtil.renderCmd(this.beforeTransparentCmds, context);
             RenderPassUtil.recoverRenderContext3D(context, this.destTarget);
+            time = performance.now();
             this._transparent.renderQueue(context);
+            Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_3DMainPass_Trans, performance.now() - time);
         }
         _opaqueTexturePass() {
         }
     }
 
     class WebBaseRenderNode {
-        _renderUpdatePre_StatUse(context3D) {
-            if (this._updateMark == context3D.cameraUpdateMask)
-                return;
-            var time = performance.now();
-            this._renderUpdatePreFun.call(this._renderUpdatePreCall, context3D);
-            Laya.Stat.renderPassStatArray[Laya.RenderPassStatisticsInfo.T_RenderPreUpdate] += (performance.now() - time);
-            this._updateMark = context3D.cameraUpdateMask;
+        get shaderData() {
+            return this._shaderData;
+        }
+        set shaderData(value) {
+            this._shaderData = value;
         }
         _renderUpdatePre(context3D) {
             if (this._updateMark == context3D.cameraUpdateMask)
@@ -326,13 +340,14 @@
             }
         }
         constructor() {
+            this.ismoved = new Laya.Vector2();
             this.renderelements = [];
             this._commonUniformMap = [];
             this._worldParams = new Laya.Vector4(1, 0, 0, 0);
             this.lightmapDirtyFlag = -1;
             this.lightmapScaleOffset = new Laya.Vector4(1, 1, 0, 0);
             this.set_caculateBoundingBox(this, this._ownerCalculateBoundingBox);
-            this.additionShaderData = new Map();
+            this._additionShaderData = new Map();
         }
         setNodeCustomData(dataSlot, data) {
             switch (dataSlot) {
@@ -438,10 +453,10 @@
             this.volumetricGI = null;
             this.renderelements.length = 0;
             this.renderelements = null;
-            this._commonUniformMap.length = 0;
-            this._commonUniformMap = null;
             this.shaderData && this.shaderData.destroy();
             this.shaderData = null;
+            this._commonUniformMap.length = 0;
+            this._commonUniformMap = null;
             this.additionShaderData.clear();
             this.additionShaderData = null;
             this._additionShaderDataKeys.length = 0;
@@ -469,23 +484,32 @@
         }
     }
 
-    class WebMeshRenderNode extends WebBaseRenderNode {
-        constructor() {
-            super();
-            this.set_renderUpdatePreCall(this, this._renderUpdate);
-        }
-        _renderUpdate(context) {
-            if (context.sceneModuleData.lightmapDirtyFlag != this.lightmapDirtyFlag) {
-                this._applyLightMapParams();
-                this.lightmapDirtyFlag = context.sceneModuleData.lightmapDirtyFlag;
-            }
-            this._applyReflection();
-            this._applyLightProb();
-            let trans = this.transform;
-            this.shaderData.setMatrix4x4(Laya.Sprite3D.WORLDMATRIX, trans.worldMatrix);
-            this._worldParams.x = trans.getFrontFaceValue();
-            this.shaderData.setVector(Laya.Sprite3D.WORLDINVERTFRONT, this._worldParams);
-        }
+    var CLS = null;
+    function WebMeshRenderNode() {
+        if (!CLS)
+            CLS = class extends WebBaseRenderNode.BaseRenderNodeClass {
+                constructor() {
+                    super();
+                    this._cacheMoved = new Laya.Vector2(-1, -1);
+                    this.set_renderUpdatePreCall(this, this._renderUpdate);
+                }
+                _renderUpdate(context) {
+                    if (context.sceneModuleData.lightmapDirtyFlag != this.lightmapDirtyFlag) {
+                        this._applyLightMapParams();
+                        this.lightmapDirtyFlag = context.sceneModuleData.lightmapDirtyFlag;
+                    }
+                    this._applyReflection();
+                    this._applyLightProb();
+                    if (this.ismoved.x > this._cacheMoved.x || (this.ismoved.x == this._cacheMoved.x && this.ismoved.y > this._cacheMoved.y)) {
+                        let trans = this.transform;
+                        this.shaderData.setMatrix4x4(Laya.Sprite3D.WORLDMATRIX, trans.worldMatrix);
+                        this._worldParams.x = trans.getFrontFaceValue();
+                        this.shaderData.setVector(Laya.Sprite3D.WORLDINVERTFRONT, this._worldParams);
+                        this.ismoved.cloneTo(this._cacheMoved);
+                    }
+                }
+            };
+        return CLS;
     }
 
     class WebCameraNodeData {
@@ -578,95 +602,77 @@
     }
     WebReflectionProbe._idCounter = 0;
 
-    class WebSimpleSkinRenderNode extends WebBaseRenderNode {
-        constructor() {
-            super();
-            this.set_renderUpdatePreCall(this, this._renderUpdate);
-            this._simpleAnimatorParams = new Laya.Vector4();
-        }
-        setSimpleAnimatorParams(value) {
-            value.cloneTo(this._simpleAnimatorParams);
-            this.shaderData.setVector(Laya.SimpleSkinnedMeshSprite3D.SIMPLE_SIMPLEANIMATORPARAMS, this._simpleAnimatorParams);
-        }
-        _renderUpdate(context3D) {
-            let shaderData = this.shaderData;
-            let worldMat = this.transform.worldMatrix;
-            let worldParams = this._worldParams;
-            worldParams.x = this.transform.getFrontFaceValue();
-            shaderData.setMatrix4x4(Laya.Sprite3D.WORLDMATRIX, worldMat);
-            shaderData.setVector(Laya.Sprite3D.WORLDINVERTFRONT, worldParams);
-            this._applyLightProb();
-            this._applyReflection();
-            shaderData.setVector(Laya.SimpleSkinnedMeshSprite3D.SIMPLE_SIMPLEANIMATORPARAMS, this._simpleAnimatorParams);
-        }
-    }
-
-    class WebSkinRenderNode extends WebBaseRenderNode {
-        constructor() {
-            super();
-            this._bones = [];
-            this.set_renderUpdatePreCall(this, this._renderUpdate);
-        }
-        setRootBoneTransfom(value) {
-            this._cacheRootBone = value.transform;
-        }
-        setOwnerTransform(value) {
-            this._owner = value.transform;
-        }
-        setCacheMesh(cacheMesh) {
-            this._cacheMesh = cacheMesh;
-            this._skinnedDataLoopMarks = new Uint32Array(cacheMesh._inverseBindPoses.length);
-        }
-        setBones(value) {
-            this._bones = value;
-        }
-        setSkinnedData(value) {
-            this._skinnedData = value;
-        }
-        computeSkinnedData() {
-            var bindPoses = this._cacheMesh._inverseBindPoses;
-            var pathMarks = this._cacheMesh._skinnedMatrixCaches;
-            for (var i = 0, n = this._cacheMesh.subMeshCount; i < n; i++) {
-                var subMeshBoneIndices = ((this._cacheMesh.getSubMesh(i)))._boneIndicesList;
-                var subData = this._skinnedData[i];
-                for (var j = 0, m = subMeshBoneIndices.length; j < m; j++) {
-                    var boneIndices = subMeshBoneIndices[j];
-                    this._computeSubSkinnedData(bindPoses, boneIndices, subData[j], pathMarks);
+    var CLSSK = null;
+    function WebSkinRenderNode() {
+        if (!CLSSK)
+            CLSSK = class extends WebBaseRenderNode.BaseRenderNodeClass {
+                constructor() {
+                    super();
+                    this._bones = [];
+                    this.set_renderUpdatePreCall(this, this._renderUpdate);
                 }
-            }
-        }
-        _computeSubSkinnedData(bindPoses, boneIndices, data, matrixCaches) {
-            for (let k = 0, q = boneIndices.length; k < q; k++) {
-                let index = boneIndices[k];
-                if (this._skinnedDataLoopMarks[index] === Laya.Stat.loopCount) {
-                    let c = matrixCaches[index];
-                    let preData = this._skinnedData[c.subMeshIndex][c.batchIndex];
-                    let srcIndex = c.batchBoneIndex * 16;
-                    let dstIndex = k * 16;
-                    for (let d = 0; d < 16; d++)
-                        data[dstIndex + d] = preData[srcIndex + d];
+                setRootBoneTransfom(value) {
+                    this._cacheRootBone = value.transform;
                 }
-                else {
-                    let bone = this._bones[index];
-                    if (bone)
-                        Laya.Utils3D._mulMatrixArray(bone.transform.worldMatrix.elements, bindPoses[index].elements, 0, data, k * 16);
-                    this._skinnedDataLoopMarks[index] = Laya.Stat.loopCount;
+                setOwnerTransform(value) {
+                    this._owner = value.transform;
                 }
-            }
-        }
-        _renderUpdate(context3D) {
-            let mat = this._owner.worldMatrix;
-            let worldParams = this._worldParams;
-            worldParams.x = this._owner.getFrontFaceValue();
-            if (this._cacheRootBone) {
-                mat = Laya.Matrix4x4.DEFAULT;
-                worldParams.x = 1;
-            }
-            this._applyLightProb();
-            this._applyReflection();
-            this.shaderData.setMatrix4x4(Laya.Sprite3D.WORLDMATRIX, mat);
-            this.shaderData.setVector(Laya.Sprite3D.WORLDINVERTFRONT, worldParams);
-        }
+                setCacheMesh(cacheMesh) {
+                    this._cacheMesh = cacheMesh;
+                    this._skinnedDataLoopMarks = new Uint32Array(cacheMesh._inverseBindPoses.length);
+                }
+                setBones(value) {
+                    this._bones = value;
+                }
+                setSkinnedData(value) {
+                    this._skinnedData = value;
+                }
+                computeSkinnedData() {
+                    var bindPoses = this._cacheMesh._inverseBindPoses;
+                    var pathMarks = this._cacheMesh._skinnedMatrixCaches;
+                    for (var i = 0, n = this._cacheMesh.subMeshCount; i < n; i++) {
+                        var subMeshBoneIndices = ((this._cacheMesh.getSubMesh(i)))._boneIndicesList;
+                        var subData = this._skinnedData[i];
+                        for (var j = 0, m = subMeshBoneIndices.length; j < m; j++) {
+                            var boneIndices = subMeshBoneIndices[j];
+                            this._computeSubSkinnedData(bindPoses, boneIndices, subData[j], pathMarks);
+                        }
+                    }
+                }
+                _computeSubSkinnedData(bindPoses, boneIndices, data, matrixCaches) {
+                    for (let k = 0, q = boneIndices.length; k < q; k++) {
+                        let index = boneIndices[k];
+                        if (this._skinnedDataLoopMarks[index] === Laya.Stat.loopCount) {
+                            let c = matrixCaches[index];
+                            let preData = this._skinnedData[c.subMeshIndex][c.batchIndex];
+                            let srcIndex = c.batchBoneIndex * 16;
+                            let dstIndex = k * 16;
+                            for (let d = 0; d < 16; d++)
+                                data[dstIndex + d] = preData[srcIndex + d];
+                        }
+                        else {
+                            let bone = this._bones[index];
+                            if (bone)
+                                Laya.Utils3D._mulMatrixArray(bone.transform.worldMatrix.elements, bindPoses[index].elements, 0, data, k * 16);
+                            this._skinnedDataLoopMarks[index] = Laya.Stat.loopCount;
+                        }
+                    }
+                }
+                _renderUpdate(context3D) {
+                    let mat = this._owner.worldMatrix;
+                    let worldParams = this._worldParams;
+                    worldParams.x = this._owner.getFrontFaceValue();
+                    if (this._cacheRootBone) {
+                        mat = Laya.Matrix4x4.DEFAULT;
+                        worldParams.x = 1;
+                    }
+                    this._applyLightProb();
+                    this._applyReflection();
+                    this.shaderData.setMatrix4x4(Laya.Sprite3D.WORLDMATRIX, mat);
+                    this.shaderData.setVector(Laya.Sprite3D.WORLDINVERTFRONT, worldParams);
+                }
+            };
+        return CLSSK;
     }
 
     class WebSpotLight {
@@ -721,9 +727,37 @@
     }
     WebVolumetricGI._idCounter = 0;
 
+    var CLASSIMPLESKIN = null;
+    function WebSimpleSkinRenderNode() {
+        if (!CLASSIMPLESKIN)
+            CLASSIMPLESKIN = class extends WebBaseRenderNode.BaseRenderNodeClass {
+                constructor() {
+                    super();
+                    this.set_renderUpdatePreCall(this, this._renderUpdate);
+                    this._simpleAnimatorParams = new Laya.Vector4();
+                }
+                setSimpleAnimatorParams(value) {
+                    value.cloneTo(this._simpleAnimatorParams);
+                    this.shaderData.setVector(Laya.SimpleSkinnedMeshSprite3D.SIMPLE_SIMPLEANIMATORPARAMS, this._simpleAnimatorParams);
+                }
+                _renderUpdate(context3D) {
+                    let shaderData = this.shaderData;
+                    let worldMat = this.transform.worldMatrix;
+                    let worldParams = this._worldParams;
+                    worldParams.x = this.transform.getFrontFaceValue();
+                    shaderData.setMatrix4x4(Laya.Sprite3D.WORLDMATRIX, worldMat);
+                    shaderData.setVector(Laya.Sprite3D.WORLDINVERTFRONT, worldParams);
+                    this._applyLightProb();
+                    this._applyReflection();
+                    shaderData.setVector(Laya.SimpleSkinnedMeshSprite3D.SIMPLE_SIMPLEANIMATORPARAMS, this._simpleAnimatorParams);
+                }
+            };
+        return CLASSIMPLESKIN;
+    }
+
     class Web3DRenderModuleFactory {
         createSimpleSkinRenderNode() {
-            return new WebSimpleSkinRenderNode();
+            return new (WebSimpleSkinRenderNode())();
         }
         createTransform(owner) {
             return new Laya.Transform3D(owner);
@@ -757,16 +791,13 @@
         }
         createBaseRenderNode() {
             let renderNode = new WebBaseRenderNode();
-            if (Laya.Stat.enableRenderPassStatArray) {
-                renderNode._renderUpdatePre = renderNode._renderUpdatePre_StatUse;
-            }
             return renderNode;
         }
         createMeshRenderNode() {
-            return new WebMeshRenderNode();
+            return new (WebMeshRenderNode())();
         }
         createSkinRenderNode() {
-            return new WebSkinRenderNode();
+            return new (WebSkinRenderNode())();
         }
     }
     Laya.Laya.addBeforeInitCallback(() => {
@@ -810,192 +841,6 @@
             this.baseRenderList.destroy();
             this._list = null;
             this.baseRenderList = null;
-        }
-    }
-
-    class WebGLRenderElement3D {
-        constructor() {
-            this._shaderInstances = new Laya.FastSinglelist();
-        }
-        _addShaderInstance(shader) {
-            this._shaderInstances.add(shader);
-        }
-        _clearShaderInstance() {
-            this._shaderInstances.length = 0;
-        }
-        _preUpdatePre(context) {
-            this._compileShader(context);
-            if (this.materialShaderData && Laya.Config.matUseUBO) {
-                let subShader = this.subShader;
-                let materialData = this.materialShaderData;
-                let matSubBuffer = materialData.createSubUniformBuffer("Material", subShader._owner.name, subShader._uniformMap);
-                if (matSubBuffer && matSubBuffer.needUpload) {
-                    matSubBuffer.bufferBlock.needUpload();
-                }
-            }
-            if (this.owner && Laya.Config._uniformBlock) {
-                for (let [key, value] of this.owner.additionShaderData) {
-                    let shaderData = value;
-                    let unifomrMap = Laya.LayaGL.renderDeviceFactory.createGlobalUniformMap(key);
-                    let uniformBuffer = shaderData.createSubUniformBuffer(key, key, unifomrMap._idata);
-                    if (uniformBuffer && uniformBuffer.needUpload) {
-                        uniformBuffer.bufferBlock.needUpload();
-                    }
-                }
-            }
-            this._invertFront = this._getInvertFront();
-        }
-        _getInvertFront() {
-            var _a;
-            let transform = (_a = this.owner) === null || _a === void 0 ? void 0 : _a.transform;
-            return transform ? transform._isFrontFaceInvert : false;
-        }
-        _render(context) {
-            let forceInvertFace = context.invertY;
-            let updateMark = context.cameraUpdateMask;
-            let sceneShaderData = context.sceneData;
-            let cameraShaderData = context.cameraData;
-            if (this.isRender) {
-                let passes = this._shaderInstances.elements;
-                for (let j = 0, m = this._shaderInstances.length; j < m; j++) {
-                    const shaderIns = passes[j];
-                    if (!shaderIns.complete)
-                        continue;
-                    let switchShader = shaderIns.bind();
-                    let switchUpdateMark = (updateMark !== shaderIns._uploadMark);
-                    let uploadScene = (shaderIns._uploadScene !== sceneShaderData) || switchUpdateMark;
-                    if (uploadScene || switchShader) {
-                        if (sceneShaderData) {
-                            shaderIns.uploadUniforms(shaderIns._sceneUniformParamsMap, sceneShaderData, uploadScene);
-                        }
-                        shaderIns._uploadScene = sceneShaderData;
-                    }
-                    if (this.renderShaderData) {
-                        let uploadSprite3D = (shaderIns._uploadRender !== this.renderShaderData) || switchUpdateMark;
-                        if (uploadSprite3D || switchShader) {
-                            shaderIns.uploadUniforms(shaderIns._spriteUniformParamsMap, this.renderShaderData, uploadSprite3D);
-                            shaderIns._uploadRender = this.renderShaderData;
-                        }
-                    }
-                    if (this.owner) {
-                        let additionShaderData = this.owner.additionShaderData;
-                        for (let [key, encoder] of shaderIns._additionUniformParamsMaps) {
-                            let additionData = additionShaderData.get(key);
-                            if (additionData) {
-                                let needUpload = shaderIns._additionShaderData.get(key) !== additionData || switchUpdateMark;
-                                if (needUpload || switchShader) {
-                                    shaderIns.uploadUniforms(encoder, additionData, needUpload);
-                                    shaderIns._additionShaderData.set(key, additionData);
-                                }
-                            }
-                        }
-                    }
-                    let uploadCamera = shaderIns._uploadCameraShaderValue !== cameraShaderData || switchUpdateMark;
-                    if (uploadCamera || switchShader) {
-                        cameraShaderData && shaderIns.uploadUniforms(shaderIns._cameraUniformParamsMap, cameraShaderData, uploadCamera);
-                        shaderIns._uploadCameraShaderValue = cameraShaderData;
-                    }
-                    let uploadMaterial = (shaderIns._uploadMaterial !== this.materialShaderData) || switchUpdateMark;
-                    if (uploadMaterial || switchShader) {
-                        shaderIns.uploadUniforms(shaderIns._materialUniformParamsMap, this.materialShaderData, uploadMaterial);
-                        shaderIns._uploadMaterial = this.materialShaderData;
-                    }
-                    shaderIns.uploadRenderStateBlendDepth(this.materialShaderData);
-                    shaderIns.uploadRenderStateFrontFace(this.materialShaderData, forceInvertFace, this._invertFront);
-                    this.drawGeometry(shaderIns);
-                }
-            }
-        }
-        _getShaderInstanceDefines(context) {
-            let comDef = WebGLRenderElement3D._compileDefine;
-            const globalShaderDefines = context._getContextShaderDefines();
-            globalShaderDefines.cloneTo(comDef);
-            if (this.renderShaderData) {
-                comDef.addDefineDatas(this.renderShaderData.getDefineData());
-            }
-            if (this.materialShaderData) {
-                comDef.addDefineDatas(this.materialShaderData._defineDatas);
-            }
-            if (this.owner) {
-                let additionShaderData = this.owner.additionShaderData;
-                if (additionShaderData.size > 0) {
-                    for (let [key, value] of additionShaderData.entries()) {
-                        comDef.addDefineDatas(value.getDefineData());
-                    }
-                }
-            }
-            return comDef;
-        }
-        _compileShader(context) {
-            this._clearShaderInstance();
-            let comDef = this._getShaderInstanceDefines(context);
-            var passes = this.subShader._passes;
-            for (var j = 0, m = passes.length; j < m; j++) {
-                let pass = passes[j];
-                let passdata = pass.moduleData;
-                if (passdata.pipelineMode !== context.pipelineMode)
-                    continue;
-                if (this.renderShaderData) {
-                    passdata.nodeCommonMap = this.owner._commonUniformMap;
-                }
-                else {
-                    passdata.nodeCommonMap = null;
-                }
-                passdata.additionShaderData = null;
-                if (this.owner) {
-                    passdata.additionShaderData = this.owner._additionShaderDataKeys;
-                }
-                var shaderIns = pass.withCompile(comDef);
-                this._addShaderInstance(shaderIns);
-            }
-        }
-        drawGeometry(shaderIns) {
-            Laya.WebGLEngine.instance.getDrawContext().drawGeometryElement(this.geometry);
-        }
-        destroy() {
-            this.geometry = null;
-            this._shaderInstances = null;
-            this.materialShaderData = null;
-            this.renderShaderData = null;
-            this.transform = null;
-            this.isRender = null;
-        }
-    }
-    WebGLRenderElement3D._compileDefine = new Laya.WebDefineDatas();
-
-    class InstanceRenderElementOBJ extends WebGLRenderElement3D {
-        addUpdateBuffer(vb, length) {
-            this._vertexBuffer3D[this.updateNums] = vb;
-            this._updateDataNum[this.updateNums++] = length;
-        }
-        getUpdateData(index, length) {
-            let data = this._updateData[index];
-            if (!data || data.length < length) {
-                data = this._updateData[index] = new Float32Array(length);
-            }
-            return data;
-        }
-        constructor() {
-            super();
-            this._vertexBuffer3D = [];
-            this._updateData = [];
-            this._updateDataNum = [];
-        }
-        drawGeometry(shaderIns) {
-            let data;
-            let buffer;
-            for (let i = 0; i < this.updateNums; i++) {
-                buffer = this._vertexBuffer3D[i]._deviceBuffer;
-                if (!buffer)
-                    break;
-                data = this._updateData[i];
-                buffer.orphanStorage();
-                buffer.setData(data.buffer, 0, 0, this.drawCount * this._updateDataNum[i] * 4);
-            }
-            Laya.WebGLEngine.instance.getDrawContext().drawGeometryElement(this.geometry);
-        }
-        clear() {
-            this.updateNums = 0;
         }
     }
 
@@ -1094,6 +939,156 @@
     }
     WebGLInstanceRenderBatch.MaxInstanceCount = 1024;
 
+    class WebGLRenderElement3D {
+        constructor() {
+            this._shaderInstances = new Laya.FastSinglelist();
+        }
+        _addShaderInstance(shader) {
+            this._shaderInstances.add(shader);
+        }
+        _clearShaderInstance() {
+            this._shaderInstances.length = 0;
+        }
+        _preUpdatePre(context) {
+            this._compileShader(context);
+            if (this.materialShaderData && Laya.Config.matUseUBO) {
+                let subShader = this.subShader;
+                let materialData = this.materialShaderData;
+                let matSubBuffer = materialData.createSubUniformBuffer("Material", subShader._owner.name, subShader._uniformMap);
+                if (matSubBuffer) {
+                    matSubBuffer.upload();
+                }
+            }
+            if (this.owner && Laya.Config._uniformBlock) {
+                for (let [key, value] of this.owner.additionShaderData) {
+                    let shaderData = value;
+                    let unifomrMap = Laya.LayaGL.renderDeviceFactory.createGlobalUniformMap(key);
+                    let uniformBuffer = shaderData.createSubUniformBuffer(key, key, unifomrMap._idata);
+                    if (uniformBuffer) {
+                        uniformBuffer.upload();
+                    }
+                }
+            }
+            this._invertFront = this._getInvertFront();
+        }
+        _getInvertFront() {
+            var _a;
+            let transform = (_a = this.owner) === null || _a === void 0 ? void 0 : _a.transform;
+            return transform ? transform._isFrontFaceInvert : false;
+        }
+        _render(context) {
+            let forceInvertFace = context.invertY;
+            let updateMark = context.cameraUpdateMask;
+            let sceneShaderData = context.sceneData;
+            let cameraShaderData = context.cameraData;
+            if (this.isRender) {
+                let passes = this._shaderInstances.elements;
+                for (let j = 0, m = this._shaderInstances.length; j < m; j++) {
+                    const shaderIns = passes[j];
+                    if (!shaderIns.complete)
+                        continue;
+                    let switchShader = shaderIns.bind();
+                    let switchUpdateMark = (updateMark !== shaderIns._uploadMark);
+                    let uploadScene = (shaderIns._uploadScene !== sceneShaderData) || switchUpdateMark;
+                    if (uploadScene || switchShader) {
+                        if (sceneShaderData) {
+                            shaderIns.uploadUniforms(shaderIns._sceneUniformParamsMap, sceneShaderData, uploadScene);
+                        }
+                        shaderIns._uploadScene = sceneShaderData;
+                    }
+                    if (this.renderShaderData) {
+                        let uploadSprite3D = (shaderIns._uploadRender !== this.renderShaderData) || switchUpdateMark;
+                        if (uploadSprite3D || switchShader) {
+                            shaderIns.uploadUniforms(shaderIns._spriteUniformParamsMap, this.renderShaderData, uploadSprite3D);
+                            shaderIns._uploadRender = this.renderShaderData;
+                        }
+                    }
+                    if (this.owner) {
+                        let additionShaderData = this.owner.additionShaderData;
+                        for (let [key, encoder] of shaderIns._additionUniformParamsMaps) {
+                            let additionData = additionShaderData.get(key);
+                            if (additionData) {
+                                let needUpload = shaderIns._additionShaderData.get(key) !== additionData || switchUpdateMark;
+                                if (needUpload || switchShader) {
+                                    shaderIns.uploadUniforms(encoder, additionData, needUpload);
+                                    shaderIns._additionShaderData.set(key, additionData);
+                                }
+                            }
+                        }
+                    }
+                    let uploadCamera = shaderIns._uploadCameraShaderValue !== cameraShaderData || switchUpdateMark;
+                    if (uploadCamera || switchShader) {
+                        cameraShaderData && shaderIns.uploadUniforms(shaderIns._cameraUniformParamsMap, cameraShaderData, uploadCamera);
+                        shaderIns._uploadCameraShaderValue = cameraShaderData;
+                    }
+                    let uploadMaterial = (shaderIns._uploadMaterial !== this.materialShaderData) || switchUpdateMark;
+                    if (uploadMaterial || switchShader) {
+                        shaderIns.uploadUniforms(shaderIns._materialUniformParamsMap, this.materialShaderData, uploadMaterial);
+                        shaderIns._uploadMaterial = this.materialShaderData;
+                    }
+                    shaderIns.uploadRenderStateBlendDepth(this.materialShaderData);
+                    shaderIns.uploadRenderStateFrontFace(this.materialShaderData, forceInvertFace, this._invertFront);
+                    this.drawGeometry(shaderIns);
+                }
+            }
+        }
+        _getShaderInstanceDefines(context) {
+            let comDef = WebGLRenderElement3D._compileDefine;
+            const globalShaderDefines = context._getContextShaderDefines();
+            globalShaderDefines.cloneTo(comDef);
+            if (this.renderShaderData) {
+                comDef.addDefineDatas(this.renderShaderData.getDefineData());
+            }
+            if (this.materialShaderData) {
+                comDef.addDefineDatas(this.materialShaderData._defineDatas);
+            }
+            if (this.owner) {
+                let additionShaderData = this.owner.additionShaderData;
+                if (additionShaderData.size > 0) {
+                    for (let [key, value] of additionShaderData.entries()) {
+                        comDef.addDefineDatas(value.getDefineData());
+                    }
+                }
+            }
+            return comDef;
+        }
+        _compileShader(context) {
+            this._clearShaderInstance();
+            var passes = this.subShader._passes;
+            for (var j = 0, m = passes.length; j < m; j++) {
+                let pass = passes[j];
+                let passdata = pass.moduleData;
+                if (passdata.pipelineMode !== context.pipelineMode)
+                    continue;
+                if (this.renderShaderData) {
+                    passdata.nodeCommonMap = this.owner._commonUniformMap;
+                }
+                else {
+                    passdata.nodeCommonMap = null;
+                }
+                passdata.additionShaderData = null;
+                if (this.owner) {
+                    passdata.additionShaderData = this.owner._additionShaderDataKeys;
+                }
+                let comDef = this._getShaderInstanceDefines(context);
+                var shaderIns = pass.withCompile(comDef);
+                this._addShaderInstance(shaderIns);
+            }
+        }
+        drawGeometry(shaderIns) {
+            Laya.WebGLEngine.instance.getDrawContext().drawGeometryElement(this.geometry);
+        }
+        destroy() {
+            this.geometry = null;
+            this._shaderInstances = null;
+            this.materialShaderData = null;
+            this.renderShaderData = null;
+            this.transform = null;
+            this.isRender = null;
+        }
+    }
+    WebGLRenderElement3D._compileDefine = new Laya.WebDefineDatas();
+
     class WebGLInstanceRenderElement3D extends WebGLRenderElement3D {
         static getInstanceBufferState(geometry, renderType, spriteDefine) {
             let stateinfo = WebGLInstanceRenderElement3D._instanceBufferStateMap.get(geometry._id);
@@ -1164,8 +1159,6 @@
         }
         _compileShader(context) {
             this._clearShaderInstance();
-            let comDef = this._getShaderInstanceDefines(context);
-            comDef.add(Laya.MeshSprite3DShaderDeclaration.SHADERDEFINE_GPU_INSTANCE);
             let passes = this.subShader._passes;
             for (let i = 0; i < passes.length; i++) {
                 let pass = passes[i];
@@ -1181,6 +1174,8 @@
                 if (this.owner) {
                     pass.additionShaderData = this.owner._additionShaderDataKeys;
                 }
+                let comDef = this._getShaderInstanceDefines(context);
+                comDef.add(Laya.MeshSprite3DShaderDeclaration.SHADERDEFINE_GPU_INSTANCE);
                 let shaderIns = pass.withCompile(comDef);
                 this._addShaderInstance(shaderIns);
             }
@@ -1378,7 +1373,7 @@
                 shadowCullInfo.direction = this._lightForward;
                 var time = performance.now();
                 RenderCullUtil.cullDirectLightShadow(shadowCullInfo, list, count, this._renderQueue, context);
-                Laya.Stat.renderPassStatArray[Laya.RenderPassStatisticsInfo.T_ShadowMapCull] += (performance.now() - time);
+                Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_CullShadow, performance.now() - time);
                 context.cameraData = sliceData.cameraShaderValue;
                 context.cameraUpdateMask++;
                 var resolution = sliceData.resolution;
@@ -1398,7 +1393,7 @@
                 }
                 context.setClearData(Laya.RenderClearFlag.Depth, Laya.Color.BLACK, 1, 0);
                 this._renderQueue.renderQueue(context);
-                Laya.Stat.shadowMapDrawCall += this._renderQueue.elements.length;
+                Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_ShadowDrawCall, this._renderQueue.elements.length);
                 this._applyCasterPassCommandBuffer(context);
             }
             this._applyRenderData(context.sceneData, context.cameraData);
@@ -1478,9 +1473,13 @@
         }
         set sceneData(value) {
             this._sceneData = value;
-            if (this.sceneData) {
-                let sceneMap = Laya.LayaGL.renderDeviceFactory.createGlobalUniformMap("Scene3D");
-                this.sceneData.createUniformBuffer("Scene3D", sceneMap._idata);
+            if (Laya.Config._uniformBlock && this.sceneData) {
+                for (let key of this._preDrawUniformMaps) {
+                    let uniformMap = Laya.LayaGL.renderDeviceFactory.createGlobalUniformMap(key);
+                    if (uniformMap._idata.size > 0) {
+                        this.sceneData.createUniformBuffer(key, uniformMap._idata);
+                    }
+                }
             }
         }
         get cameraData() {
@@ -1488,7 +1487,7 @@
         }
         set cameraData(value) {
             this._cameraData = value;
-            if (this.cameraData) {
+            if (Laya.Config._uniformBlock && this.cameraData) {
                 let cameraMap = Laya.LayaGL.renderDeviceFactory.createGlobalUniformMap("BaseCamera");
                 this.cameraData.createUniformBuffer("BaseCamera", cameraMap._idata);
             }
@@ -1599,6 +1598,7 @@
                 this._start();
                 this._needStart = false;
             }
+            let time = performance.now();
             this._prepareContext();
             let elements = list.elements;
             for (var i = 0, n = list.length; i < n; i++) {
@@ -1608,9 +1608,14 @@
             if (bufferMgr) {
                 bufferMgr.upload();
             }
+            Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_3DContextPre, performance.now() - time);
+            time = performance.now();
             for (var i = 0, n = list.length; i < n; i++) {
                 elements[i]._render(this);
             }
+            Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_3DContextRender, performance.now() - time);
+            Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_3DDrawCall, list.length);
+            Laya.LayaGL.renderEngine._framePassCount++;
             return 0;
         }
         drawRenderElementOne(node) {
@@ -1626,73 +1631,8 @@
                 bufferMgr.upload();
             }
             node._render(this);
-            return 0;
-        }
-        drawRenderElementList_StatUse(list) {
-            if (this._needStart) {
-                this._bindRenderTarget();
-                this._start();
-                this._needStart = false;
-            }
-            let elements = list.elements;
-            for (var i = 0, n = list.length; i < n; i++) {
-                elements[i]._preUpdatePre(this);
-            }
-            let bufferMgr = Laya.WebGLEngine.instance.bufferMgr;
-            if (bufferMgr) {
-                bufferMgr.upload();
-            }
-            for (var i = 0, n = list.length; i < n; i++) {
-                var time = performance.now();
-                elements[i]._render(this);
-                if (elements[i].owner) {
-                    switch (elements[i].owner.renderNodeType) {
-                        case 0:
-                            Laya.Stat.renderPassStatArray[Laya.RenderPassStatisticsInfo.T_OtherRender] += (performance.now() - time);
-                            break;
-                        case 1:
-                            Laya.Stat.renderPassStatArray[Laya.RenderPassStatisticsInfo.T_OnlyMeshRender] += (performance.now() - time);
-                            break;
-                        case 2:
-                            Laya.Stat.renderPassStatArray[Laya.RenderPassStatisticsInfo.T_OnlyShurikenParticleRender] += (performance.now() - time);
-                            break;
-                        case 9:
-                            Laya.Stat.renderPassStatArray[Laya.RenderPassStatisticsInfo.T_OnlySkinnedMeshRender] += (performance.now() - time);
-                            break;
-                    }
-                }
-            }
-            return 0;
-        }
-        drawRenderElementOne_StatUse(node) {
-            if (this._needStart) {
-                this._bindRenderTarget();
-                this._start();
-                this._needStart = false;
-            }
-            node._preUpdatePre(this);
-            let bufferMgr = Laya.WebGLEngine.instance.bufferMgr;
-            if (bufferMgr) {
-                bufferMgr.upload();
-            }
-            var time = performance.now();
-            node._render(this);
-            if (node.owner) {
-                switch (node.owner.renderNodeType) {
-                    case 0:
-                        Laya.Stat.renderPassStatArray[Laya.RenderPassStatisticsInfo.T_OtherRender] += (performance.now() - time);
-                        break;
-                    case 1:
-                        Laya.Stat.renderPassStatArray[Laya.RenderPassStatisticsInfo.T_OnlyMeshRender] += (performance.now() - time);
-                        break;
-                    case 2:
-                        Laya.Stat.renderPassStatArray[Laya.RenderPassStatisticsInfo.T_OnlyShurikenParticleRender] += (performance.now() - time);
-                        break;
-                    case 9:
-                        Laya.Stat.renderPassStatArray[Laya.RenderPassStatisticsInfo.T_OnlySkinnedMeshRender] += (performance.now() - time);
-                        break;
-                }
-            }
+            Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_3DDrawCall, 1);
+            Laya.LayaGL.renderEngine._framePassCount++;
             return 0;
         }
         _bindRenderTarget() {
@@ -1781,7 +1721,7 @@
             this.transparent.clear();
             var time = performance.now();
             RenderCullUtil.cullByCameraCullInfo(this.cameraCullInfo, list, count, this.opaqueList, this.transparent, context);
-            Laya.Stat.renderPassStatArray[Laya.RenderPassStatisticsInfo.T_CameraMainCull] += (performance.now() - time);
+            Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_CullMain, performance.now() - time);
             time = performance.now();
             if ((this.depthTextureMode & Laya.DepthTextureMode.Depth) != 0) {
                 this._renderDepthPass(context);
@@ -1789,10 +1729,12 @@
             if ((this.depthTextureMode & Laya.DepthTextureMode.DepthNormals) != 0) {
                 this._renderDepthNormalPass(context);
             }
-            Laya.Stat.renderPassStatArray[Laya.RenderPassStatisticsInfo.T_Render_CameraOtherDest] += (performance.now() - time);
+            Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_DepthPass, performance.now() - time);
             this._viewPort.cloneTo(WebGLForwardAddClusterRP._context3DViewPortCatch);
             this._scissor.cloneTo(WebGLForwardAddClusterRP._contextScissorPortCatch);
+            time = performance.now();
             this._mainPass(context);
+            Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_3DMainPass, performance.now() - time);
             this.opaqueList._batch.recoverData();
         }
         _renderDepthPass(context) {
@@ -1808,7 +1750,7 @@
             context.setRenderTarget(this.depthTarget, Laya.RenderClearFlag.Depth);
             context.setClearData(Laya.RenderClearFlag.Depth, Laya.Color.BLACK, 1, 0);
             this.opaqueList.renderQueue(context);
-            Laya.Stat.depthCastDrawCall += this.opaqueList.elements.length;
+            Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_DepthCastDrawCall, this.opaqueList.elements.length);
             var far = this.camera.farplane;
             var near = this.camera.nearplane;
             this._zBufferParams.setValue(1.0 - far / near, far / near, (near - far) / (near * far), 1 / near);
@@ -1818,11 +1760,9 @@
         }
         _transparentListRender(context) {
             this.transparent.renderQueue(context);
-            Laya.Stat.transDrawCall += this.transparent.elements.length;
         }
         _opaqueListRender(context) {
             this.opaqueList.renderQueue(context);
-            Laya.Stat.opaqueDrawCall += this.opaqueList.elements.length;
         }
         _renderDepthNormalPass(context) {
             context.pipelineMode = this.depthNormalPipelineMode;
@@ -1834,7 +1774,7 @@
             context.setClearData(Laya.RenderClearFlag.Color | Laya.RenderClearFlag.Depth, this._defaultNormalDepthColor, 1, 0);
             context.setRenderTarget(this.depthNormalTarget, Laya.RenderClearFlag.Color | Laya.RenderClearFlag.Depth);
             this.opaqueList.renderQueue(context);
-            Laya.Stat.depthCastDrawCall += this.opaqueList.elements.length;
+            Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_DepthCastDrawCall, this.opaqueList.elements.length);
         }
         opaqueTexturePass(context) {
             let commanbuffer = this.blitOpaqueBuffer;
@@ -1848,7 +1788,7 @@
             context.setClearData(this.clearFlag, this.clearColor, 1, 0);
             var time = performance.now();
             this.enableOpaque && this._opaqueListRender(context);
-            Laya.Stat.renderPassStatArray[Laya.RenderPassStatisticsInfo.T_Render_OpaqueRender] += (performance.now() - time);
+            Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_3DMainPass_Opaque, performance.now() - time);
             this._rendercmd(this.beforeSkyboxCmds, context);
             if (this.skyRenderNode) {
                 let skyRenderNode = this.skyRenderNode;
@@ -1862,16 +1802,14 @@
             this._recoverRenderContext3D(context);
             time = performance.now();
             this.transparent && this._transparentListRender(context);
-            Laya.Stat.renderPassStatArray[Laya.RenderPassStatisticsInfo.T_Render_TransparentRender] += (performance.now() - time);
+            Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_3DMainPass_Trans, performance.now() - time);
         }
         _rendercmd(cmds, context) {
             if (!cmds || cmds.length == 0)
                 return;
-            var time = performance.now();
             cmds.forEach(function (value) {
                 context.runCMDList(value._renderCMDs);
             });
-            Laya.Stat.renderPassStatArray[Laya.RenderPassStatisticsInfo.T_Render_CameraEventCMD] += (performance.now() - time);
         }
         _recoverRenderContext3D(context) {
             const cacheViewPor = WebGLForwardAddClusterRP._context3DViewPortCatch;
@@ -1928,7 +1866,7 @@
             this._setupShadowCasterShaderValues(shaderValues, shadowSpotData, this._shadowBias);
             var time = performance.now();
             RenderCullUtil.cullSpotShadow(shadowSpotData.cameraCullInfo, list, count, this._renderQueue, context);
-            Laya.Stat.renderPassStatArray[Laya.RenderPassStatisticsInfo.T_ShadowMapCull] += (performance.now() - time);
+            Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_CullShadow, performance.now() - time);
             context.cameraData = shadowSpotData.cameraShaderValue;
             context.cameraUpdateMask++;
             Laya.Viewport.TEMP.set(shadowSpotData.offsetX, shadowSpotData.offsetY, shadowSpotData.resolution, shadowSpotData.resolution);
@@ -1937,7 +1875,7 @@
             context.setScissor(Laya.Vector4.TEMP);
             context.setClearData(Laya.RenderClearFlag.Depth, Laya.Color.BLACK, 1, 0);
             this._renderQueue.renderQueue(context);
-            Laya.Stat.shadowMapDrawCall += this._renderQueue.elements.length;
+            Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_ShadowDrawCall, this._renderQueue.elements.length);
             this._applyCasterPassCommandBuffer(context);
             this._applyRenderData(context.sceneData, context.cameraData);
             this._renderQueue._batch.recoverData();
@@ -2168,13 +2106,6 @@
                 offsetScale.setValue(camera.normalizedViewport.x, 1.0 - camera.normalizedViewport.y, renderRT.width / dst.width, -renderRT.height / dst.height);
                 this.renderpass.finalize.blitScreenQuad(renderRT, camera._offScreenRenderTexture, offsetScale);
             }
-            if (this.renderpass.enableDirectLightShadow || this.renderpass.enableSpotLightShadowPass) {
-                let sceneShaderData = context.sceneData;
-                let shadowUniformMap = Laya.ShadowCasterPass.ShadowUniformMap;
-                if (Laya.Config._uniformBlock) {
-                    sceneShaderData.createSubUniformBuffer("Shadow", "Shadow", shadowUniformMap._idata);
-                }
-            }
         }
         renderDepth(camera) {
             let depthMode = camera.depthTextureMode;
@@ -2182,34 +2113,25 @@
                 depthMode |= camera.postProcess.cameraDepthTextureMode;
             }
             if ((depthMode & Laya.DepthTextureMode.Depth) != 0) {
-                let needDepthTex = camera.canblitDepth && camera._internalRenderTexture.depthStencilTexture;
-                if (needDepthTex) {
-                    camera.depthTexture = camera._cacheDepthTexture.depthStencilTexture;
-                    Laya.Camera.depthPass._depthTexture = camera.depthTexture;
-                    camera._shaderValues.setTexture(Laya.DepthPass.DEPTHTEXTURE, camera.depthTexture);
-                    Laya.Camera.depthPass._setupDepthModeShaderValue(Laya.DepthTextureMode.Depth, camera);
-                    depthMode &= ~Laya.DepthTextureMode.Depth;
-                }
-                else {
-                    Laya.Camera.depthPass.getTarget(camera, Laya.DepthTextureMode.Depth, camera.depthTextureFormat);
-                    this.renderpass.renderpass.depthTarget = camera.depthTexture._renderTarget;
-                    camera._shaderValues.setTexture(Laya.DepthPass.DEPTHTEXTURE, camera.depthTexture);
-                }
+                Laya.Camera.depthPass.getTarget(camera, Laya.DepthTextureMode.Depth, camera.depthTextureFormat);
+                this.renderpass.renderpass.depthTarget = camera.depthTexture._renderTarget;
+                Laya.Camera.depthPass._setupDepthModeShaderValue(Laya.DepthTextureMode.Depth, camera);
             }
             if ((depthMode & Laya.DepthTextureMode.DepthNormals) != 0) {
                 Laya.Camera.depthPass.getTarget(camera, Laya.DepthTextureMode.DepthNormals, camera.depthTextureFormat);
                 this.renderpass.renderpass.depthNormalTarget = camera.depthNormalTexture._renderTarget;
                 camera._shaderValues.setTexture(Laya.DepthPass.DEPTHNORMALSTEXTURE, camera.depthNormalTexture);
+                Laya.Camera.depthPass._setupDepthModeShaderValue(Laya.DepthTextureMode.DepthNormals, camera);
             }
             this.renderpass.renderpass.depthTextureMode = depthMode;
         }
         fowardRender(context, camera) {
-            this.initRenderpass(camera, context);
+            Laya.Camera.depthPass.cleanUp(camera);
             this.renderDepth(camera);
+            this.initRenderpass(camera, context);
             let renderList = this.render3DManager.baseRenderList.elements;
             let count = this.render3DManager.baseRenderList.length;
             this.renderFowarAddCameraPass(context, this.renderpass, renderList, count);
-            Laya.Camera.depthPass.cleanUp();
         }
         renderFowarAddCameraPass(context, renderpass, list, count) {
             var time = performance.now();
@@ -2239,13 +2161,13 @@
                     context.sceneData.removeDefine(Laya.Scene3DShaderDeclaration.SHADERDEFINE_SHADOW_SPOT);
                 }
             }
-            Laya.Stat.renderPassStatArray[Laya.RenderPassStatisticsInfo.T_Render_ShadowPassMode] += (performance.now() - time);
+            Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_ShadowPass, performance.now() - time);
             renderpass.renderpass.render(context, list, count);
             renderpass._beforeImageEffectCMDS && this._rendercmd(renderpass._beforeImageEffectCMDS, context);
             if (renderpass.enablePostProcess) {
                 time = performance.now();
                 renderpass.postProcess && this._renderPostProcess(renderpass.postProcess, context);
-                Laya.Stat.renderPassStatArray[Laya.RenderPassStatisticsInfo.T_Render_PostProcess] += (performance.now() - time);
+                Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_Render_PostProcess, performance.now() - time);
             }
             renderpass._afterAllRenderCMDS && this._rendercmd(renderpass._afterAllRenderCMDS, context);
             renderpass.finalize._apply(false);
@@ -2254,11 +2176,9 @@
         _rendercmd(cmds, context) {
             if (!cmds || cmds.length == 0)
                 return;
-            var time = performance.now();
             cmds.forEach(function (value) {
                 context.runCMDList(value._renderCMDs);
             });
-            Laya.Stat.renderPassStatArray[Laya.RenderPassStatisticsInfo.T_Render_CameraEventCMD] += (performance.now() - time);
         }
         _renderPostProcess(postprocessCMD, context) {
             context.runCMDList(postprocessCMD._renderCMDs);
@@ -2503,6 +2423,7 @@
         }
     }
 
+    WebBaseRenderNode.BaseRenderNodeClass = WebBaseRenderNode;
     class WebGL3DRenderPassFactory {
         createInstanceBatch() {
             return new WebGLInstanceRenderBatch();
@@ -2536,10 +2457,6 @@
         }
         createRenderContext3D() {
             let context = new WebGLRenderContext3D();
-            if (Laya.Stat.enableRenderPassStatArray) {
-                context.drawRenderElementOne = context.drawRenderElementOne_StatUse;
-                context.drawRenderElementList = context.drawRenderElementList_StatUse;
-            }
             return context;
         }
         createRenderElement3D() {
@@ -2558,7 +2475,6 @@
     });
 
     exports.ForwardAddClusterRP = ForwardAddClusterRP;
-    exports.InstanceRenderElementOBJ = InstanceRenderElementOBJ;
     exports.RenderCullUtil = RenderCullUtil;
     exports.RenderListQueue = RenderListQueue;
     exports.RenderPassUtil = RenderPassUtil;

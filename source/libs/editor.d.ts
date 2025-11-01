@@ -701,6 +701,13 @@ declare global {
              * @returns Whether the new UI system is being used.
              */
             isUsingNewUI(): boolean;
+
+            /**
+             * Filter top-level items from a list of items.
+             * @param items The list of items to filter.
+             * @returns The filtered list of top-level items. 
+             */
+            filterTopLevels<T extends { parent: any }>(items: ReadonlyArray<T>): ReadonlyArray<T>;
         }
         export interface IUUIDUtils {
             /**
@@ -1277,6 +1284,28 @@ declare global {
             push?(keys?: ReadonlyArray<string>): Promise<void>;
         }
 
+        export interface ICreateSettingsOptions {
+            /**
+             * The location of the configuration file. The default is "project".
+             * - application: Saved to the user data directory of the application. On Windows, it is generally C:\Users\{user}\AppData\Local\{appname}, and on Mac, it is generally ~/Library/Application Support/{appname}. This means that this configuration needs to be shared across different projects.
+             * - project: Saved to the `settings` directory of the project. This means that this configuration is specific to the current project.
+             * - local: Saved to the `local` directory of the project. This means that this configuration is specific to the current project but does not need to be tracked by the version control system.
+             * - memory: Maintained only in memory and not saved to a file.
+             * - other value: specify the storage path of the configuration file by yourself. It is a relative path to the assets directory.
+             */
+            location?: SettingsLocation | string;
+
+            /**
+             * The data type corresponding to the configuration. If it is a string, it means that this type has been registered through typeRegistry. If it is FTypeDescriptor, it will be automatically registered when created. If it is a Function, it means that this is a class decorated with ＠IEditor.regClass.
+             */
+            type?: string | FTypeDescriptor | Function;
+
+            /**
+             * In general, custom configuration files are only used in the editor environment. If the configuration data also needs to be read at runtime, this parameter can be set to true, and then accessed at runtime through `Laya.PlayerConfig.XXX`, where `XXX` is the name of the configuration file.
+             */
+            contributeToPlayerConfig?: boolean;
+        }
+
         export interface ISettingsService {
             /**
              * Create a built-in configuration file. This method is only available in the UI process. User should call this method directly.
@@ -1297,12 +1326,26 @@ declare global {
              * @param typeName The data type corresponding to the configuration.
              */
             enableSettings(name: string, pathToAsset: string, typeName?: string): void;
+
+            /**
+             * Create a built-in configuration file. This method is only available in the UI process. User should call this method directly.
+             * @param name The name of the configuration. It should be unique within the editor and use characters that conform to file name specifications.
+             * @param options Options to create the settings.
+             */
+            enableSettings(name: string, options?: ICreateSettingsOptions): void;
             /**
              * Query the settings by name.
              * @param name The name of the settings.
              * @returns The settings.
              */
             getSettings(name: string): ISettings;
+
+            /**
+             * Query the settings type name.
+             * @param name The name of the settings.
+             * @returns The type name of the settings.
+             */
+            getSettingsType(name: string): string;
         }
         export interface IServiceProvider {
             /**
@@ -1416,8 +1459,9 @@ declare global {
              * @param allowInternalAssets Whether to allow internal assets. Default is false.
              * @param customFilter The custom filter. Developers can register custom filters by calling the `IEditorEnv.assetMgr.customAssetFilters` method in scene process.
              * @param allowInternalGUIAssets Whether to allow internal GUI assets. Default is false.
+             * @param needConfirm Whether to need confirm button. Default is false.
              */
-            show(popupOwner?: gui.Widget, initialValue?: string, assetTypeFilter?: AssetType[], allowInternalAssets?: boolean, customFilter?: string, allowInternalGUIAssets?: boolean): Promise<void>;
+            show(popupOwner?: gui.Widget, initialValue?: string, assetTypeFilter?: AssetType[], allowInternalAssets?: boolean, customFilter?: string, allowInternalGUIAssets?: boolean, needConfirm?: boolean): Promise<void>;
         }
         export interface ISelectNodeDialog extends IDialog {
             /**
@@ -1901,6 +1945,27 @@ declare global {
              * Update the UI according to the data. This method is called when the data is changed.
              */
             refresh(): void;
+
+            /**
+             * Copy the data of the field to the clipboard.
+             */
+            copyData(): void;
+
+            /**
+             * Paste the data to the field. If the data is not compatible with the field, it will do nothing.
+             * @param data The data to paste. If not provided, it will try to get the data from the clipboard.
+             */
+            pasteData(data?: any): void;
+
+            /**
+             * Reset the data of the field to the default value.
+             */
+            resetData(): void;
+
+            /**
+             * Check if any clipboard data that can be pasted.
+             */
+            hasClipboardData(): boolean;
         }
 
         export interface IProjectPanel extends IEditorPanel {
@@ -2850,7 +2915,14 @@ declare global {
              * @param nodes a node or an array of nodes.
              * @param nodeType The new type of the node. 
              */
-            changeNodesType(nodes: IMyNode | ReadonlyArray<IMyNode>, nodeType: string): Promise<void>;
+            changeNodesType(nodes: IMyNode | ReadonlyArray<IMyNode>, nodeType: string): Promise<IMyNode[]>;
+
+            /**
+             * Replace a prefab node with another prefab asset.
+             * @param nodes A node to be replaced. 
+             * @param assetId The id of the prefab asset to replace with.
+             */
+            replaceNodesWithPrefab(nodes: IMyNode | ReadonlyArray<IMyNode>, assetId: string): Promise<IMyNode[]>;
 
             /**
              * Get the children of a node.
@@ -2892,9 +2964,10 @@ declare global {
 
             /**
              * Paste the copied nodes.
+             * @param inPlace If true, the nodes will be pasted in place, which means the position of the nodes will not change. Default is false.
              * @return The new nodes.
              */
-            pasteNodes(): Promise<Array<IMyNode>>;
+            pasteNodes(inPlace?: boolean): Promise<Array<IMyNode>>;
 
             /**
              * Duplicate the selected nodes.
@@ -4618,6 +4691,20 @@ declare global {
             createSettings(name: string, pathToAsset: string, type?: string | FTypeDescriptor | Function): void;
 
             /**
+             * Create a new settings. It usually corresponds to a configuration file and may be saved to different locations depending on the value of location.
+             * 
+             * In different processes, developers can access the configuration data through Editor.getSettings. If you want to modify the configuration data, it is generally done in the UI process. The data will be automatically saved to the file after modification.
+             * 
+             * Each configuration has a corresponding data type, which can be manually written and registered through typeRegistry, or it can be a class decorated with @IEditor.regClass.
+             * 
+             * This method is only allowed to be called in ＠IEditor.onLoad.
+             * 
+             * @param name The name of the configuration. It should be unique within the editor and use characters that conform to file name specifications. The file name of the configuration file will automatically be prefixed with "plugin-" to help users understand that this is a configuration file created by a plugin.
+             * @param options Options for creating settings.
+             */
+            createSettings(name: string, options?: ICreateSettingsOptions): void;
+
+            /**
              * Create a custom build target.
              * 
              * This method is only allowed to be called in ＠IEditor.onLoad.
@@ -5003,7 +5090,7 @@ declare global {
              * Settings are editor configuration information. It can be a configuration file or an in-memory table. Settings are defined in the sceneEditor module, and other modules can read the data but generally do not modify it directly.
              * 
              * Therefore, in the sceneEditor module, Settings can be used synchronously, but in other modules, Settings can only be used asynchronously. In other words, if you need to read the latest data, you need to call the sync method first.
-             * @param name The name of the configuration information. The default supported configuration information includes: PlayerSettings, EditorSettings, CompilerSettings, BuildSettings, SceneSettings, SceneViewSettings, Preferences, DimensionsSettings.
+             * @param name The name of the settings. The default supported configuration information includes: PlayerSettings, EditorSettings, CompilerSettings, BuildSettings, SceneViewSettings, Preferences, DimensionsSettings.
              * @param autoSync If true, when the data changes in the sceneEditor module, it will automatically sync to this module. The default is false.
              * @return The settings object.
              */
@@ -6221,6 +6308,12 @@ declare global {
             addChange(target: any, datapath: string | string[], value: any, oldvalue: any, extInfo?: any, transient?: boolean, batchId?: number, group?: number): number;
 
             /**
+             * Get the most recent batch ID. If there are no changes or the lastest batch is too old, it will return null.
+             * @returns The most recent batch ID, or null.
+             */
+            getRecentBatchId(): number | null;
+
+            /**
              * If there are changes pending, flush them immediately.
              */
             flush(): void;
@@ -6680,6 +6773,13 @@ declare global {
              * Whether the build target is a mini-game platform, e.g. WeChat Mini Game, Oppo Mini Game, etc.
              */
             isMiniGame?: boolean;
+
+            /**
+             * Sets the position of the build target in the build settings panel. 
+             * 
+             * Supported syntax: "first" / "last" / "before id" / "after id". e.g. "before web" or "after android".
+             */
+            position?: string;
         }
 
         /**
@@ -7355,11 +7455,6 @@ declare global {
             refreshFolder(folderAsset: IAssetInfo): void;
 
             /**
-             * Sync the i18n settings with AssetManager.
-             */
-            syncI18nSettings(): Promise<void>;
-
-            /**
              * Check if the asset type matches the specified types.
              * @param assetId The id of the asset.
              * @param types The types to be matched. 
@@ -7944,6 +8039,11 @@ declare global {
              * ```
              */
             toTemplate?: string;
+
+            /**
+             * Applicable to properties of type Node or Component. It sets a filter for the node/component types that can be selected. If not provided, all node types can be selected.
+             */
+            nodeTypeFilter?: Array<string>;
 
             /**
              * Indicates whether the property is writable. The default is true. If set to false, the property is read-only.
@@ -8726,6 +8826,7 @@ declare global {
             startEditing(): void;
             cancelEditing(): void;
             onConstruct(): void;
+            protected onNativeDragStart(evt: gui.Event): void;
             private onClickHandler;
             getFullWidth(): number;
         }
@@ -8884,12 +8985,6 @@ declare global {
             target: IInspectingTarget;
             watchProps: Array<string>;
             memberProps: Array<FPropertyDescriptor>;
-            _inheritedFlag: number;
-            _flag: number;
-            _readonlyFlag: boolean;
-            _hotUpdateTime: number;
-            _statusKey: string;
-            _stayInvisible: boolean;
             get parent(): IPropertyField;
             create(): IPropertyFieldCreateResult;
             makeReadonly(value: boolean): void;
@@ -8905,6 +9000,13 @@ declare global {
             findChildField(name: string): IPropertyField;
             getChildFields(result?: Array<IPropertyField>): Array<IPropertyField>;
             displayError(msg: string): void;
+            private doCopyData;
+            private doPasteData;
+            private doResetData;
+            copyData(): void;
+            pasteData(data?: any): void;
+            resetData(): void;
+            hasClipboardData(): boolean;
         }
 
         export class ButtonsField extends PropertyField {
@@ -9001,7 +9103,6 @@ declare global {
             protected _buttons: gui.Box;
             protected _actionButton: gui.Widget;
             private _typeName;
-            private _isCatalog;
             private _prefabNewAddedSign;
             create(): IPropertyFieldCreateResult;
             refresh(): void;
@@ -9010,16 +9111,10 @@ declare global {
             onClickSetNull(): void;
             setupCatalogBar(isComponent: boolean, removable?: boolean): void;
             setCatalogBarStyle(style: CatalogBarStyle): void;
-            private getData;
-            private setData;
-            private resetData;
-            copyData(): void;
-            pasteData(): void;
             resetComponentDefault(): Promise<void>;
             removeComponent(): void;
             moveUp(): void;
             moveDown(): void;
-            resetDefault(): void;
             copyComponent(): void;
             pasteComponent(): Promise<void>;
         }

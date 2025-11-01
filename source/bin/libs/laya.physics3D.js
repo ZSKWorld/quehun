@@ -182,7 +182,7 @@
             this.owner.off(Laya.Event.UPDATE_PHY_EVENT_FILTER, this, this._setEventFilter);
         }
         _onDestroy() {
-            this._collider.destroy();
+            this._collider && this._collider.destroy();
             this._colliderShape && this._colliderShape.destroy();
             this._collider = null;
             this._isColliderInit = false;
@@ -318,6 +318,7 @@
                     this.colliderShape.destroy();
                 }
                 this.colliderShape = new CapsuleColliderShape(this.radius, this.height);
+                this.colliderShape.localOffset = this._offset;
                 this._collider.component = this;
             }
             else {
@@ -492,6 +493,9 @@
                 }
             }
         }
+        isOnGround() {
+            return this._collider ? this._collider.isGrounded() : false;
+        }
         _cloneTo(dest) {
             super._cloneTo(dest);
             dest.stepHeight = this._stepHeight;
@@ -623,7 +627,11 @@
             }
         }
         _onDestroy() {
-            this._joint.destroy();
+            this._joint && this._joint.destroy();
+            this._joint = null;
+            this._ownCollider = null;
+            this._connectCollider = null;
+            this._physicsManager = null;
             this._isJointInit = false;
         }
         isBreakConstrained() {
@@ -1407,7 +1415,10 @@
             var index = element.inPhysicUpdateListIndex;
             if (index !== -1)
                 console.error("PhysicsUpdateList:element has  in  PhysicsUpdateList.");
-            this._add(element);
+            if (this.length === this.elements.length)
+                this.elements.push(element);
+            else
+                this.elements[this.length] = element;
             element.inPhysicUpdateListIndex = this.length++;
         }
         remove(element) {
@@ -1545,6 +1556,15 @@
                 this._collider.setSleepThreshold(value);
             }
         }
+        get sleepAngularThreshold() {
+            return this._sleepAngularThreshold;
+        }
+        set sleepAngularThreshold(value) {
+            this._sleepAngularThreshold = value;
+            if (this._collider && this.collider.getCapable(Laya.EColliderCapable.RigidBody_SleepAngularVelocity)) {
+                this._collider.setSleepAngularThreshold(value);
+            }
+        }
         set position(pos) {
             if (this._collider && this.collider.getCapable(Laya.EColliderCapable.RigidBody_WorldPosition)) {
                 this._collider.setWorldPosition(pos);
@@ -1584,6 +1604,8 @@
             this._angularVelocity = new Laya.Vector3();
             this._linearFactor = new Laya.Vector3(1, 1, 1);
             this._angularFactor = new Laya.Vector3(1, 1, 1);
+            this._sleepThreshold = 0.8;
+            this._sleepAngularThreshold = 1.0;
             this._trigger = false;
             this._collisionDetectionMode = 0;
             this._allowSleep = true;
@@ -1654,12 +1676,14 @@
         }
         set sleepLinearVelocity(value) {
             this.sleepThreshold = value;
+            this.sleepAngularThreshold = value;
         }
         get sleepAngularVelocity() {
             return this.sleepThreshold;
         }
         set sleepAngularVelocity(value) {
             this.sleepThreshold = value;
+            this.sleepAngularThreshold = value;
         }
         applyForceXYZ(fx, fy, fz, localOffset = null) {
             _tempV0.set(fx, fy, fz);

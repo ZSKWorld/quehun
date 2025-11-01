@@ -479,9 +479,9 @@
             let world = shape.world;
             shape.m_radius = this.convertLayaValueToPhysics(world, radius * scale);
         }
-        set_CircleShape_pos(shape, x, y, scale) {
+        set_CircleShape_pos(shape, x, y, scaleX, scaleY) {
             let world = shape.world;
-            shape.m_p.Set(this.convertLayaValueToPhysics(world, x * scale), this.convertLayaValueToPhysics(world, y * scale));
+            shape.m_p.Set(this.convertLayaValueToPhysics(world, x * scaleX), this.convertLayaValueToPhysics(world, y * scaleY));
         }
         set_EdgeShape_data(shape, x, y, arr, scaleX, scaleY) {
             let world = shape.world;

@@ -238,7 +238,7 @@
             if (this.compareValue(oldValue, newValue))
                 return;
             let tc = this._tweenCfg;
-            this._tween = Laya.Tween.create(obj)
+            this._tween = Laya.Tween.create(obj, this._owner)
                 .duration(tc.duration)
                 .delay(tc.delay)
                 .ease(Laya.Ease[tc.easeType])
@@ -247,8 +247,11 @@
                 this._tween.recover();
                 this._tween = null;
             });
+            if (obj.cmdID)
+                this._tween.onUpdate(() => { var _a; return (_a = this._owner._graphics) === null || _a === void 0 ? void 0 : _a.repaint(); });
         }
         runGear(initiator) {
+            var _a;
             let arr = this._propPathArr;
             if (!arr)
                 return;
@@ -272,6 +275,8 @@
                 || Gear.disableAllTweenEffect
                 || this._owner._getBit(Laya.NodeFlags.EDITING_NODE)) {
                 obj[key] = newValue;
+                if (obj.cmdID)
+                    (_a = this._owner._graphics) === null || _a === void 0 ? void 0 : _a.repaint();
                 return;
             }
             this.doTween(obj, key, oldValue, newValue);
@@ -442,7 +447,7 @@
         }
         set selectedPage(value) {
             let i = this._pages.indexOf(value);
-            if (i == -1)
+            if (i === -1)
                 i = 0;
             this.selectedIndex = i;
         }
@@ -466,7 +471,6 @@
         UIEvent["PullDownRelease"] = "pull_down_release";
         UIEvent["PullUpRelease"] = "pull_up_release";
         UIEvent["ClickItem"] = "click_item";
-        UIEvent["Submit"] = "submit";
         UIEvent["Popup"] = "popup";
         UIEvent["InstanceReload"] = "instance_reload";
     })(exports.UIEvent || (exports.UIEvent = {}));
@@ -569,7 +573,7 @@
     UIConfig2.tooltipsWidget = null;
     UIConfig2.defaultTooltipsShowDelay = 100;
     UIConfig2.defaultComboBoxVisibleItemCount = 20;
-    UIConfig2.touchScrollSensitivity = 20;
+    UIConfig2.touchScrollSensitivity = 10;
     UIConfig2.touchDragSensitivity = 10;
     UIConfig2.clickDragSensitivity = 2;
     UIConfig2.bringWindowToFrontOnClick = true;
@@ -980,7 +984,7 @@
             }
         }
         posChanged() {
-            if (!this._owner || this._owner[handlingFlag]) {
+            if (!this._owner || this._owner[handlingFlag] || this._isDisabled) {
                 this._tx = this._target.x;
                 this._ty = this._target.y;
                 return;
@@ -1004,7 +1008,7 @@
         sizeChanged() {
             let tw = this._target.width, th = this._target.height;
             let ow = this._owner;
-            if (!ow || ow[handlingFlag]) {
+            if (!ow || ow[handlingFlag] || this._isDisabled) {
                 this._tw = tw;
                 this._th = th;
                 return;
@@ -1049,7 +1053,6 @@
     class GWidget extends Laya.Sprite {
         constructor() {
             super();
-            this._asGroup = false;
             this._grayed = false;
             this._draggable = false;
             this._rawWidth = 0;
@@ -1090,7 +1093,7 @@
                 if (this.parent)
                     r = this.parent;
                 else
-                    r = Laya.ILaya.stage;
+                    r = GWidget._defaultRoot;
             }
             this.setLeftTop(Math.floor((r.width - this.width) * 0.5), Math.floor((r.height - this.height) * 0.5));
             return this;
@@ -1141,39 +1144,46 @@
             this._deltaHeight = 0;
             return this;
         }
-        makeFullSize(target) {
+        makeFullSize(target, constraints) {
             let r = target;
             if (!r) {
-                if (this.parent)
+                if (this.parent instanceof GWidget)
                     r = this.parent;
                 else
-                    r = Laya.ILaya.stage;
+                    r = GWidget._defaultRoot;
             }
             this.size(r.width, r.height);
+            if (constraints)
+                this.addRelation(r, exports.RelationType.Size);
             return this;
         }
         get grayed() {
             return this._grayed;
         }
         set grayed(value) {
-            if (this._grayed != value) {
+            value = !!value;
+            if (this._grayed !== value) {
                 this._grayed = value;
-                let cc = this.getController("grayed");
-                if (cc != null) {
-                    cc.selectedIndex = value ? 1 : 0;
-                    return;
+                let c = this.getController("grayed");
+                if (c) {
+                    c.selectedIndex = value ? 1 : 0;
+                    value = false;
                 }
-                let filters = this.filters || [];
-                let i = filters.indexOf(grayFilter);
+                let postProcess = this.getPostProcess(value);
                 if (value) {
-                    if (i == -1) {
-                        filters.push(grayFilter);
-                        this.filters = filters;
-                    }
+                    let effect = postProcess.getEffect(Laya.GrayscaleEffect2D);
+                    if (!effect)
+                        effect = postProcess.addEffect(new Laya.GrayscaleEffect2D());
                 }
-                else if (i != -1) {
-                    filters.splice(i, 1);
-                    this.filters = filters;
+                else {
+                    if (postProcess) {
+                        let effect = postProcess.getEffect(Laya.GrayscaleEffect2D);
+                        if (effect) {
+                            postProcess.removeEffect(effect);
+                            if (!Laya.LayaEnv.isPlaying && postProcess.effects.length === 0)
+                                this.postProcess = null;
+                        }
+                    }
                 }
             }
         }
@@ -1195,9 +1205,6 @@
                 if (((_a = this._parent) === null || _a === void 0 ? void 0 : _a.activeInHierarchy) && this.active)
                     this._processActive(value, true);
             }
-        }
-        get treeNode() {
-            return this._treeNode;
         }
         get tooltips() {
             return this._tooltips;
@@ -1234,10 +1241,12 @@
         }
         set background(value) {
             if (this._background)
-                this._graphics.removeCmd(this._background);
+                this.graphics.removeCmd(this._background, true);
             this._background = value;
-            if (value)
+            if (value) {
+                value.lock = true;
                 this.graphics.addCmd(value, 0);
+            }
         }
         get draggable() {
             return this._draggable;
@@ -1368,7 +1377,23 @@
                 value.owner = null;
             }
         }
+        onClick(caller, listener, args) {
+            if (arguments.length == 1) {
+                listener = caller;
+                caller = null;
+            }
+            this.on(Laya.Event.CLICK, caller, listener, args);
+        }
+        offClick(caller, listener) {
+            if (arguments.length == 1) {
+                listener = caller;
+                caller = null;
+            }
+            this.off(Laya.Event.CLICK, caller, listener);
+        }
         destroy() {
+            if (this._background)
+                this._background.lock = false;
             super.destroy();
             for (let k in this._controllers)
                 this._controllers[k].offAll();
@@ -1392,12 +1417,6 @@
                 return false;
         }
         setLayoutChangedFlag(reason) {
-        }
-        get asGroup() {
-            return !!this._asGroup;
-        }
-        set asGroup(value) {
-            this._asGroup = !!value;
         }
         _onConstruct(inPrefab) {
             if (inPrefab && this._relations.length > 0) {
@@ -1426,12 +1445,913 @@
             }
         }
     }
-    const grayFilter = new Laya.ColorFilter([
-        0.3086, 0.6094, 0.082, 0, 0,
-        0.3086, 0.6094, 0.082, 0, 0,
-        0.3086, 0.6094, 0.082, 0, 0,
-        0, 0, 0, 1, 0
-    ]);
+
+    class ImageRenderer {
+        constructor(owner) {
+            this._owner = owner;
+            this._color = new Laya.Color();
+        }
+        destroy() {
+            if (this._tex) {
+                if (this._owner._getBit(Laya.NodeFlags.EDITING_NODE))
+                    this._tex.off("reload", this, this.onTextureReload);
+                this._tex = null;
+            }
+            if (this._drawCmd) {
+                this._drawCmd.lock = false;
+                this._drawCmd.recover();
+            }
+        }
+        setTexture(value) {
+            if (this._tex && this._owner._getBit(Laya.NodeFlags.EDITING_NODE))
+                this._tex.off("reload", this, this.onTextureReload);
+            this._tex = value;
+            if (value) {
+                if (this._owner._getBit(Laya.NodeFlags.EDITING_NODE))
+                    value.on("reload", this, this.onTextureReload);
+                this.createCmd();
+            }
+            else {
+                if (this._drawCmd)
+                    this._drawCmd = this._owner.graphics.replaceCmd(this._drawCmd, null, true);
+            }
+        }
+        setMesh(value) {
+            if (this._meshFactory === value) {
+                this._owner.graphics.repaint();
+                return;
+            }
+            this._meshFactory = value;
+            if (this._tex)
+                this.createCmd();
+        }
+        setColor(value) {
+            this._color.parse(value);
+            if (this._drawCmd) {
+                this._drawCmd.color = this._color.getABGR();
+                this._owner.graphics.repaint();
+            }
+        }
+        onTextureReload() {
+            var _a;
+            (_a = this._onReload) === null || _a === void 0 ? void 0 : _a.call(this);
+            this.setTexture(this._tex);
+        }
+        createCmd() {
+            let drawClass;
+            if (this._meshFactory)
+                drawClass = Laya.DrawTrianglesCmd;
+            else if (this._tex._sizeGrid)
+                drawClass = Laya.Draw9GridTextureCmd;
+            else
+                drawClass = Laya.DrawTextureCmd;
+            if (this._drawCmd && this._drawCmd.cmdID === drawClass.ID) {
+                this._drawCmd.texture = this._tex;
+                if (drawClass === Laya.DrawTrianglesCmd)
+                    this._drawCmd.mesh = this._meshFactory;
+                this._owner.graphics.repaint();
+                return;
+            }
+            let cmd;
+            if (this._meshFactory)
+                cmd = Laya.DrawTrianglesCmd.create2(this._tex, this._meshFactory);
+            else if (this._tex._sizeGrid)
+                cmd = Laya.Draw9GridTextureCmd.create(this._tex, 0, 0, 1, 1, this._tex._sizeGrid, true);
+            else
+                cmd = Laya.DrawTextureCmd.create(this._tex, 0, 0, 1, 1, null, 1, null, null, null, true);
+            cmd.lock = true;
+            cmd.color = this._color.getABGR();
+            this._drawCmd = this._owner.graphics.replaceCmd(this._drawCmd, cmd, true);
+        }
+    }
+
+    class GLoader extends GWidget {
+        constructor() {
+            super();
+            this._frame = 0;
+            this._autoPlay = true;
+            this._loop = true;
+            this._srcWidth = 0;
+            this._srcHeight = 0;
+            this._loadId = 0;
+            this._src = "";
+            this._color = "#ffffff";
+            this._fitMode = exports.LoaderFitMode.Contain;
+            this._shrinkOnly = false;
+            this._align = exports.AlignType.Center;
+            this._valign = exports.VAlignType.Middle;
+            this._content = new Laya.Sprite();
+            this._content.hideFlags |= Laya.HideFlags.HideAndDontSave;
+            this._renderer = new ImageRenderer(this._content);
+            this._renderer._onReload = () => this.onTextureReload();
+            this.addChild(this._content);
+        }
+        get src() {
+            return this._src;
+        }
+        set src(value) {
+            if (value == null)
+                value = "";
+            if (this._src == value)
+                return;
+            this._src = value;
+            if (value)
+                this.loadContent();
+            else
+                this.clearContent();
+        }
+        get icon() {
+            return this._src;
+        }
+        set icon(value) {
+            this.src = value;
+        }
+        get align() {
+            return this._align;
+        }
+        set align(value) {
+            if (this._align != value) {
+                this._align = value;
+                Laya.ILaya.timer.callLater(this, this.updateLayout);
+            }
+        }
+        get valign() {
+            return this._valign;
+        }
+        set valign(value) {
+            if (this._valign != value) {
+                this._valign = value;
+                Laya.ILaya.timer.callLater(this, this.updateLayout);
+            }
+        }
+        get fitMode() {
+            return this._fitMode;
+        }
+        set fitMode(value) {
+            if (this._fitMode != value) {
+                this._fitMode = value;
+                Laya.ILaya.timer.callLater(this, this.updateLayout);
+            }
+        }
+        get shrinkOnly() {
+            return this._shrinkOnly;
+        }
+        set shrinkOnly(value) {
+            if (this._shrinkOnly != value) {
+                this._shrinkOnly = value;
+                Laya.ILaya.timer.callLater(this, this.updateLayout);
+            }
+        }
+        get color() {
+            return this._color;
+        }
+        set color(value) {
+            this._color = value;
+            this._renderer.setColor(value);
+            if (this._ani)
+                this._ani.color = this._ani.color.parse(value);
+        }
+        get ani() {
+            return this._ani;
+        }
+        get frame() {
+            return this._frame;
+        }
+        set frame(value) {
+            this._frame = value;
+            if (this._ani)
+                this._ani.frame = value;
+        }
+        get autoPlay() {
+            return this._autoPlay;
+        }
+        set autoPlay(value) {
+            this._autoPlay = value;
+            if (this._ani)
+                this._ani.autoPlay = value;
+        }
+        get loop() {
+            return this._loop;
+        }
+        set loop(value) {
+            this._loop = value;
+            if (this._ani)
+                this._ani.loop = value;
+        }
+        get texture() {
+            return this._renderer._tex;
+        }
+        set texture(value) {
+            this._src = "instance-0";
+            this.onLoaded(value, ++this._loadId);
+        }
+        get mesh() {
+            return this._renderer._meshFactory;
+        }
+        set mesh(value) {
+            this._renderer.setMesh(value);
+        }
+        get material() {
+            return this._content.material;
+        }
+        set material(value) {
+            this._content.material = value;
+        }
+        loadContent() {
+            let loadID = ++this._loadId;
+            let res = Laya.Loader.getRes(this._src, Laya.Loader.IMAGE);
+            if (!res)
+                Laya.ILaya.loader.load(this._src, { maybeType: Laya.Loader.IMAGE }).then(res => this.onLoaded(res, loadID));
+            else
+                this.onLoaded(res, loadID);
+        }
+        onLoaded(value, loadID) {
+            if (this._loadId != loadID || this.destroyed)
+                return;
+            if (value instanceof Laya.Texture) {
+                if (this._ani)
+                    this._ani.setAtlas(null);
+                this._renderer.setTexture(value);
+                this._srcWidth = value.sourceWidth;
+                this._srcHeight = value.sourceHeight;
+            }
+            else if (value instanceof Laya.AtlasResource) {
+                this._renderer.setTexture(null);
+                if (!this._ani) {
+                    this._ani = this._content.addComponent(Laya.FrameAnimation);
+                    this._ani.color = this._ani.color.parse(this._color);
+                    this._ani.stretchMode = Laya.AnimationStretchMode.Fill;
+                    this._ani.autoPlay = this._autoPlay;
+                    this._ani.loop = this._loop;
+                    this._ani.frame = this._frame;
+                }
+                this._ani.setAtlas(value);
+                this._srcWidth = this._ani.width;
+                this._srcHeight = this._ani.height;
+            }
+            else {
+                this._renderer.setTexture(null);
+                if (this._ani)
+                    this._ani.setAtlas(null);
+                this._srcWidth = 0;
+                this._srcHeight = 0;
+            }
+            Laya.ILaya.timer.runCallLater(this, this.updateLayout, true);
+            this.event(Laya.Event.LOADED);
+        }
+        onTextureReload() {
+            let tex = this._renderer._tex;
+            this._srcWidth = tex.sourceWidth;
+            this._srcHeight = tex.sourceHeight;
+            Laya.ILaya.timer.runCallLater(this, this.updateLayout, true);
+            this.event(Laya.Event.LOADED);
+        }
+        clearContent() {
+            this._srcWidth = 0;
+            this._srcHeight = 0;
+            this._loadId++;
+            this._renderer.setTexture(null);
+            if (this._ani)
+                this._ani.source = null;
+        }
+        updateLayout() {
+            let cw = this._srcWidth, ch = this._srcHeight;
+            if (cw == 0 || ch == 0)
+                return;
+            this._updatingLayout = true;
+            let sx = 1, sy = 1;
+            if (this._fitMode != exports.LoaderFitMode.None && cw != 0 && ch != 0) {
+                sx = this.width / cw;
+                sy = this.height / ch;
+                if (sx != 1 || sy != 1) {
+                    if (this._fitMode == exports.LoaderFitMode.CoverHeight)
+                        sx = sy;
+                    else if (this._fitMode == exports.LoaderFitMode.CoverWidth)
+                        sy = sx;
+                    else if (this._fitMode == exports.LoaderFitMode.Contain) {
+                        if (sx > sy)
+                            sx = sy;
+                        else
+                            sy = sx;
+                    }
+                    else if (this._fitMode == exports.LoaderFitMode.Cover) {
+                        if (sx > sy)
+                            sy = sx;
+                        else
+                            sx = sy;
+                    }
+                    if (this._shrinkOnly) {
+                        if (sx > 1)
+                            sx = 1;
+                        if (sy > 1)
+                            sy = 1;
+                    }
+                    cw = cw * sx;
+                    ch = ch * sy;
+                }
+            }
+            this._content.size(cw, ch);
+            let nx, ny;
+            if (this._align == exports.AlignType.Center)
+                nx = Math.floor((this.width - cw) / 2);
+            else if (this._align == exports.AlignType.Right)
+                nx = this.width - cw;
+            else
+                nx = 0;
+            if (this._valign == exports.VAlignType.Middle)
+                ny = Math.floor((this.height - ch) / 2);
+            else if (this._valign == exports.VAlignType.Bottom)
+                ny = this.height - ch;
+            else
+                ny = 0;
+            this._content.pos(nx, ny);
+            this._updatingLayout = false;
+        }
+        _sizeChanged() {
+            super._sizeChanged();
+            if (!this._updatingLayout)
+                Laya.ILaya.timer.callLater(this, this.updateLayout);
+        }
+        destroy() {
+            super.destroy();
+            this._renderer.destroy();
+        }
+    }
+
+    class GWindow extends GWidget {
+        constructor() {
+            super();
+            this._requestingCmd = 0;
+            this.bringToFontOnClick = UIConfig2.bringWindowToFrontOnClick;
+            this.on(Laya.Event.DISPLAY, this, this._onShown);
+            this.on(Laya.Event.UNDISPLAY, this, this._onHidden);
+            this.on(Laya.Event.MOUSE_DOWN, this, this._winTouchBegin);
+        }
+        get contentPane() {
+            return this._contentPane;
+        }
+        set contentPane(value) {
+            if (this._contentPane != value) {
+                if (this._contentPane)
+                    this.removeChild(this._contentPane);
+                this._contentPane = value;
+                if (this._contentPane) {
+                    this.addChild(this._contentPane);
+                    this.size(this._contentPane.width, this._contentPane.height);
+                    this._contentPane.addRelation(this, exports.RelationType.Size);
+                    this._frame = this._contentPane.getChild("frame");
+                    if (this._frame) {
+                        this.closeButton = this._frame.getChild("closeButton");
+                        this.dragArea = this._frame.getChild("dragArea");
+                        this.contentArea = this._frame.getChild("contentArea");
+                    }
+                }
+            }
+        }
+        get frame() {
+            return this._frame;
+        }
+        get closeButton() {
+            return this._closeButton;
+        }
+        set closeButton(value) {
+            if (this._closeButton)
+                this._closeButton.off(Laya.Event.CLICK, this, this.closeEventHandler);
+            this._closeButton = value;
+            if (this._closeButton)
+                this._closeButton.on(Laya.Event.CLICK, this, this.closeEventHandler);
+        }
+        get dragArea() {
+            return this._dragArea;
+        }
+        set dragArea(value) {
+            if (this._dragArea != value) {
+                if (this._dragArea) {
+                    this._dragArea.draggable = false;
+                    this._dragArea.off(Laya.Event.DRAG_START, this, this._dragStart);
+                }
+                this._dragArea = value;
+                if (this._dragArea) {
+                    this._dragArea.draggable = true;
+                    this._dragArea.on(Laya.Event.DRAG_START, this, this._dragStart);
+                }
+            }
+        }
+        get contentArea() {
+            return this._contentArea;
+        }
+        set contentArea(value) {
+            this._contentArea = value;
+        }
+        show() {
+            GWidget._defaultRoot.showWindow(this);
+        }
+        hide() {
+            if (this.isShowing)
+                this.doHideAnimation();
+        }
+        hideImmediately() {
+            GWidget._defaultRoot.hideWindowImmediately(this);
+        }
+        toggleStatus() {
+            if (this.isTop)
+                this.hide();
+            else
+                this.show();
+        }
+        get isShowing() {
+            return this.parent != null;
+        }
+        get isTop() {
+            return this.parent && this.parent.getChildIndex(this) == this.parent.numChildren - 1;
+        }
+        get modal() {
+            return this._modal;
+        }
+        set modal(val) {
+            this._modal = val;
+        }
+        bringToFront() {
+            GWidget._defaultRoot.bringToFront(this);
+        }
+        showModalWait(requestingCmd) {
+            if (requestingCmd != null)
+                this._requestingCmd = requestingCmd;
+            if (UIConfig2.windowModalWaiting) {
+                if (!this._modalWaitPane)
+                    this._modalWaitPane = Laya.Loader.createNodes(UIConfig2.windowModalWaiting);
+                this._modalWaitPane.mouseEnabled = true;
+                this.layoutModalWaitPane();
+                this.addChild(this._modalWaitPane);
+            }
+        }
+        layoutModalWaitPane() {
+            if (this._contentArea) {
+                let pt = this._frame.localToGlobal(s_pt.setTo(0, 0));
+                pt = this.globalToLocal(pt);
+                this._modalWaitPane.pos(pt.x + this._contentArea.x, pt.y + this._contentArea.y);
+                this._modalWaitPane.size(this._contentArea.width, this._contentArea.height);
+            }
+            else
+                this._modalWaitPane.size(this.width, this.height);
+        }
+        closeModalWait(requestingCmd) {
+            if (requestingCmd != null) {
+                if (this._requestingCmd != requestingCmd)
+                    return false;
+            }
+            this._requestingCmd = 0;
+            if (this.modalWaiting)
+                this.removeChild(this._modalWaitPane);
+            return true;
+        }
+        get modalWaiting() {
+            return this._modalWaitPane != null && this._modalWaitPane.parent != null;
+        }
+        onInit() {
+        }
+        onShown() {
+        }
+        onHide() {
+        }
+        doShowAnimation() {
+            this.onShown();
+        }
+        doHideAnimation() {
+            this.hideImmediately();
+        }
+        destroy() {
+            if (this.parent)
+                this.hideImmediately();
+            super.destroy();
+        }
+        closeEventHandler() {
+            this.hide();
+        }
+        _onShown() {
+            if (!this._inited) {
+                if (!this._loading) {
+                    this._loading = true;
+                    Promise.resolve(this.onInit()).then(() => {
+                        this._loading = false;
+                        this._inited = true;
+                        if (this.isShowing)
+                            this.doShowAnimation();
+                    });
+                }
+            }
+            else
+                this.doShowAnimation();
+        }
+        _onHidden() {
+            this.closeModalWait();
+            this.onHide();
+        }
+        _winTouchBegin() {
+            if (this.isShowing && this.bringToFontOnClick)
+                this.bringToFront();
+        }
+        _dragStart() {
+            this._dragArea.stopDrag();
+            this.startDrag();
+        }
+    }
+    const s_pt = new Laya.Point();
+
+    const popupTargetKey = Symbol("popupTarget");
+    class PopupManager {
+        constructor(owner) {
+            this._owner = owner;
+            this._popupStack = [];
+            this._justClosedPopups = [];
+            Laya.InputManager.onMouseDownCapture.add(this._touchBegin, this);
+            Laya.ILaya.stage.on(Laya.Event.BLUR, this, this.checkPopups);
+        }
+        showPopup(popup, target, dir) {
+            if (this._popupStack.length > 0) {
+                let k = this._popupStack.indexOf(popup);
+                if (k != -1) {
+                    for (let i = this._popupStack.length - 1; i >= k; i--)
+                        this._owner.removeChild(this._popupStack.pop());
+                }
+            }
+            this._popupStack.push(popup);
+            if (target) {
+                let p = target;
+                while (p) {
+                    if (p.parent == this._owner) {
+                        if (popup.zOrder < p.zOrder) {
+                            popup.zOrder = p.zOrder;
+                        }
+                        break;
+                    }
+                    p = p.parent;
+                }
+            }
+            popup[popupTargetKey] = target;
+            this._owner.addChild(popup);
+            this._owner.adjustModalLayer();
+            this.validatePopupPosition(popup, target, dir);
+        }
+        validatePopupPosition(popup, target, dir, offsetX, offsetY) {
+            let px, py;
+            let sizeW = 0, sizeH = 0;
+            if (offsetX == null)
+                offsetX = 0;
+            if (offsetY == null)
+                offsetY = 0;
+            if (target) {
+                let pos = target.localToGlobal(Laya.Point.TEMP.setTo(0, 0));
+                px = pos.x;
+                py = pos.y;
+                let size = target.localToGlobal(Laya.Point.TEMP.setTo(target.width, target.height));
+                sizeW = size.x - px;
+                sizeH = size.y - py;
+            }
+            else {
+                let pos = this._owner.globalToLocal(Laya.Point.TEMP.copy(Laya.InputManager.getTouchPos()));
+                px = pos.x;
+                py = pos.y;
+            }
+            let xx, yy;
+            xx = px + offsetX;
+            if (xx + popup.width > this._owner.width)
+                xx = px + sizeW - popup.width - offsetX;
+            yy = py + sizeH + offsetY;
+            if (((dir === undefined || dir === exports.PopupDirection.Auto) && yy + popup.height > this._owner.height)
+                || dir === exports.PopupDirection.Up) {
+                yy = py - popup.height - offsetY - 1;
+                if (yy < 0) {
+                    yy = 0;
+                    xx += sizeW / 2;
+                    if (xx + popup.width > this._owner.width)
+                        xx = this._owner.width - popup.width;
+                }
+            }
+            popup.pos(xx, yy);
+        }
+        togglePopup(popup, target, dir) {
+            if (this._justClosedPopups.indexOf(popup) != -1)
+                return false;
+            this.showPopup(popup, target, dir);
+            return true;
+        }
+        hidePopup(popup) {
+            if (popup) {
+                let k = this._popupStack.indexOf(popup);
+                if (k != -1) {
+                    for (let i = this._popupStack.length - 1; i >= k; i--)
+                        this.closePopup(this._popupStack.pop());
+                }
+            }
+            else {
+                let cnt = this._popupStack.length;
+                for (let i = cnt - 1; i >= 0; i--)
+                    this.closePopup(this._popupStack[i]);
+                this._popupStack.length = 0;
+            }
+        }
+        get hasAnyPopup() {
+            return this._popupStack.length != 0;
+        }
+        isPopupJustClosed(popup) {
+            return this._justClosedPopups.indexOf(popup) != -1;
+        }
+        closePopup(popup) {
+            if (popup.parent) {
+                if (popup instanceof GWindow)
+                    popup.hide();
+                else
+                    this._owner.removeChild(popup);
+            }
+        }
+        showTooltips(msg, delay) {
+            if (this._defaultTooltipWin == null) {
+                if (!UIConfig2.tooltipsWidget) {
+                    console.warn("UIConfig.tooltipsWidget not defined");
+                    return;
+                }
+                this._defaultTooltipWin = Laya.Loader.createNodes(UIConfig2.tooltipsWidget);
+                this._defaultTooltipWin.mouseEnabled = false;
+            }
+            this._defaultTooltipWin.text = msg;
+            this.showTooltipsWin(this._defaultTooltipWin, delay);
+        }
+        showTooltipsWin(tooltipWin, delay) {
+            this.hideTooltips();
+            this._tooltipWin = tooltipWin;
+            if (delay != null && delay != 0)
+                Laya.ILaya.timer.once(delay, this, this._doShowTooltips);
+            else
+                this._doShowTooltips();
+        }
+        _doShowTooltips() {
+            if (this._tooltipWin == null)
+                return;
+            this.validatePopupPosition(this._tooltipWin, null, exports.PopupDirection.Auto, 10, 20);
+            this._owner.addChild(this._tooltipWin);
+        }
+        hideTooltips() {
+            if (this._tooltipWin) {
+                if (this._tooltipWin.parent)
+                    this._owner.removeChild(this._tooltipWin);
+                this._tooltipWin = null;
+            }
+        }
+        checkPopups() {
+            this._justClosedPopups.length = 0;
+            if (this._popupStack.length > 0) {
+                let gobj = Laya.InputManager.touchTarget;
+                let handled = false;
+                while (gobj) {
+                    let k = this._popupStack.indexOf(gobj);
+                    if (k != -1) {
+                        for (let i = this._popupStack.length - 1; i > k; i--) {
+                            let last = this._popupStack.length - 1;
+                            let popup = this._popupStack[last];
+                            this.closePopup(popup);
+                            this._justClosedPopups.push(popup);
+                            this._popupStack.splice(last, 1);
+                        }
+                        handled = true;
+                        break;
+                    }
+                    gobj = gobj.parent;
+                }
+                if (!handled) {
+                    for (let i = this._popupStack.length - 1; i >= 0; i--) {
+                        let popup = this._popupStack[i];
+                        this.closePopup(popup);
+                        this._justClosedPopups.push(popup);
+                        this._popupStack.splice(i, 1);
+                    }
+                }
+            }
+        }
+        _touchBegin() {
+            if (this._tooltipWin)
+                this.hideTooltips();
+            this.checkPopups();
+        }
+    }
+
+    class GRoot extends GWidget {
+        static get inst() {
+            var _a;
+            return (_a = GWidget._defaultRoot) !== null && _a !== void 0 ? _a : (GWidget._defaultRoot = new GRoot());
+        }
+        constructor() {
+            super();
+            this.name = "GRoot";
+            this.zOrder = GRoot.LAYER;
+            this.mouseThrough = true;
+            this.hideFlags |= Laya.HideFlags.HideAndDontSave;
+            this.size(Laya.ILaya.stage.width, Laya.ILaya.stage.height);
+            Laya.ILaya.stage.addChild(this);
+            this._popupMgr = new PopupManager(this);
+            this._modalLayer = new GWidget();
+            this._modalLayer.mouseEnabled = true;
+            this._modalLayer.hideFlags |= Laya.HideFlags.HideAndDontSave;
+            this._modalLayer.size(this.width, this.height);
+            this._modalLayer.addRelation(this, exports.RelationType.Size);
+            Laya.ILaya.stage.on(Laya.Event.RESIZE, () => {
+                this.size(Laya.ILaya.stage.width, Laya.ILaya.stage.height);
+            });
+        }
+        get popupMgr() {
+            return this._popupMgr;
+        }
+        showWindow(win) {
+            this.addChild(win);
+            if (win.x > this.width)
+                win.x = this.width - win.width;
+            else if (win.x + win.width < 0)
+                win.x = 0;
+            if (win.y > this.height)
+                win.y = this.height - win.height;
+            else if (win.y + win.height < 0)
+                win.y = 0;
+            this.adjustModalLayer();
+        }
+        hideWindow(win) {
+            win.hide();
+        }
+        hideWindowImmediately(win) {
+            if (win.parent == this)
+                this.removeChild(win);
+            this.adjustModalLayer();
+        }
+        bringToFront(win) {
+            let cnt = this.numChildren;
+            let i;
+            if (this._modalLayer.parent && !win.modal)
+                i = this.getChildIndex(this._modalLayer) - 1;
+            else
+                i = cnt - 1;
+            for (; i >= 0; i--) {
+                let g = this.getChildAt(i);
+                if (g == win)
+                    return;
+                if (g instanceof GWindow)
+                    break;
+            }
+            if (i >= 0)
+                this.setChildIndex(win, i);
+        }
+        showModalWait(msg) {
+            if (UIConfig2.globalModalWaiting) {
+                if (this._modalWaitPane == null)
+                    this._modalWaitPane = Laya.Loader.createNodes(UIConfig2.globalModalWaiting);
+                this._modalWaitPane.size(this.width, this.height);
+                this._modalWaitPane.addRelation(this, exports.RelationType.Size);
+                this.addChild(this._modalWaitPane);
+                this._modalWaitPane.text = msg || "";
+            }
+        }
+        closeModalWait() {
+            if (this._modalWaitPane && this._modalWaitPane.parent)
+                this.removeChild(this._modalWaitPane);
+        }
+        closeAllExceptModals() {
+            let arr = this.children.slice();
+            let cnt = arr.length;
+            for (let i = 0; i < cnt; i++) {
+                let g = arr[i];
+                if ((g instanceof GWindow) && !g.modal)
+                    g.hide();
+            }
+        }
+        closeAllWindows() {
+            let arr = this.children.slice();
+            let cnt = arr.length;
+            for (let i = 0; i < cnt; i++) {
+                let g = arr[i];
+                if (g instanceof GWindow)
+                    g.hide();
+            }
+        }
+        getTopWindow() {
+            let cnt = this.numChildren;
+            for (let i = cnt - 1; i >= 0; i--) {
+                let g = this.getChildAt(i);
+                if (g instanceof GWindow) {
+                    return g;
+                }
+            }
+            return null;
+        }
+        get modalLayer() {
+            return this._modalLayer;
+        }
+        get hasModalWindow() {
+            return this._modalLayer.parent != null;
+        }
+        get modalWaiting() {
+            return this._modalWaitPane && this._modalWaitPane.displayedInStage;
+        }
+        showPopup(popup, target, dir) {
+            this._popupMgr.showPopup(popup, target, dir);
+        }
+        togglePopup(popup, target, dir) {
+            return this._popupMgr.togglePopup(popup, target, dir);
+        }
+        hidePopup(popup) {
+            this._popupMgr.hidePopup(popup);
+        }
+        get hasAnyPopup() {
+            return this._popupMgr.hasAnyPopup;
+        }
+        adjustModalLayer() {
+            let cnt = this.numChildren;
+            if (this._modalWaitPane && this._modalWaitPane.parent)
+                this.setChildIndex(this._modalWaitPane, cnt - 1);
+            for (let i = cnt - 1; i >= 0; i--) {
+                let g = this.getChildAt(i);
+                if ((g instanceof GWindow) && g.modal) {
+                    if (this._modalLayer.graphics.cmds.length === 0)
+                        this._modalLayer.graphics.drawRect(0, 0, 1, 1, UIConfig2.modalLayerColor, null, 0, true);
+                    if (this._modalLayer.parent == null)
+                        this.addChildAt(this._modalLayer, i);
+                    else
+                        this.setChildIndexBefore(this._modalLayer, i);
+                    return;
+                }
+            }
+            if (this._modalLayer.parent)
+                this.removeChild(this._modalLayer);
+        }
+    }
+    GRoot.LAYER = 1000;
+
+    class DragDropManager {
+        static get inst() {
+            return DragDropManager._inst || (DragDropManager._inst = new DragDropManager());
+        }
+        constructor() {
+            this.iconWidth = 200;
+            this.iconHeight = 200;
+            let agent = this.agent = new GLoader();
+            agent.name = "dragAgent";
+            agent.anchor(0.5, 0.5);
+            agent.mouseEnabled = false;
+            agent.draggable = true;
+            agent.fitMode = exports.LoaderFitMode.Contain;
+            agent.shrinkOnly = true;
+            agent.align = exports.AlignType.Center;
+            agent.valign = exports.VAlignType.Middle;
+            agent.zOrder = Number.POSITIVE_INFINITY;
+            agent.on(Laya.Event.DRAG_END, this, this._dragEnd);
+        }
+        get dragging() {
+            return this.agent.parent != null;
+        }
+        start(source, icon, data, iconWidth, iconHeight) {
+            if (this.agent.parent != null)
+                return;
+            this._source = source;
+            let pt = Laya.InputManager.getTouchPos();
+            this.agent.pos(pt.x, pt.y);
+            if (typeof (icon) === 'string')
+                this.agent.src = icon;
+            else if (icon != null) {
+                if (this._rt == null) {
+                    let rt = new Laya.RenderTexture2D(this.iconWidth, this.iconHeight, Laya.RenderTargetFormat.R8G8B8A8);
+                    this._rt = new Laya.Texture(rt);
+                }
+                icon.drawToRenderTexture2D(this._rt.width, this._rt.height, 0, 0, this._rt.bitmap);
+                this.agent.texture = this._rt;
+            }
+            this.agent.size(iconWidth || this.iconWidth, iconHeight || this.iconHeight);
+            GRoot.inst.addChild(this.agent);
+            this.agent.startDrag(null, false, null, null, data);
+        }
+        stop() {
+            if (this.agent.parent != null) {
+                this.agent.src = null;
+                this.agent.stopDrag();
+                this.agent.removeSelf();
+                this._source = null;
+            }
+        }
+        _dragEnd(data, cancelled) {
+            if (this.agent.parent == null)
+                return;
+            this.agent.src = null;
+            this.agent.removeSelf();
+            let source = this._source;
+            this._source = null;
+            if (!cancelled) {
+                let obj = Laya.InputManager.touchTarget;
+                while (obj != null) {
+                    if (obj.hasListener(Laya.Event.DROP)) {
+                        obj.event(Laya.Event.DROP, [source, data]);
+                        return;
+                    }
+                    obj = obj.parent;
+                }
+            }
+        }
+    }
 
     class StretchParam {
         constructor() {
@@ -1484,7 +2404,7 @@
         }
         set type(value) {
             var _a;
-            if (this._type != value) {
+            if (this._type !== value) {
                 this._type = value;
                 if (!Laya.SerializeUtil.isDeserializing) {
                     (_a = this._owner.scroller) === null || _a === void 0 ? void 0 : _a._setDefaultDirection();
@@ -1506,7 +2426,7 @@
             return this._rows;
         }
         set rows(value) {
-            if (this._rows != value) {
+            if (this._rows !== value) {
                 this._rows = value;
                 this.setChangedFlag();
             }
@@ -1515,7 +2435,7 @@
             return this._columns;
         }
         set columns(value) {
-            if (this._columns != value) {
+            if (this._columns !== value) {
                 this._columns = value;
                 this.setChangedFlag();
             }
@@ -1524,7 +2444,7 @@
             return this._rowGap;
         }
         set rowGap(value) {
-            if (this._rowGap != value) {
+            if (this._rowGap !== value) {
                 this._rowGap = value;
                 this.setChangedFlag();
             }
@@ -1533,7 +2453,7 @@
             return this._columnGap;
         }
         set columnGap(value) {
-            if (this._columnGap != value) {
+            if (this._columnGap !== value) {
                 this._columnGap = value;
                 this.setChangedFlag();
             }
@@ -1553,7 +2473,7 @@
             return this._align;
         }
         set align(value) {
-            if (this._align != value) {
+            if (this._align !== value) {
                 this._align = value;
                 this.setChangedFlag();
             }
@@ -1562,7 +2482,7 @@
             return this._valign;
         }
         set valign(value) {
-            if (this._valign != value) {
+            if (this._valign !== value) {
                 this._valign = value;
                 this.setChangedFlag();
             }
@@ -1571,7 +2491,7 @@
             return this._stretchX;
         }
         set stretchX(value) {
-            if (this._stretchX != value) {
+            if (this._stretchX !== value) {
                 this._stretchX = value;
                 this.setChangedFlag();
             }
@@ -1580,7 +2500,7 @@
             return this._stretchY;
         }
         set stretchY(value) {
-            if (this._stretchY != value) {
+            if (this._stretchY !== value) {
                 this._stretchY = value;
                 this.setChangedFlag();
             }
@@ -1612,7 +2532,7 @@
             return this._minChildSize;
         }
         set minChildSize(value) {
-            if (this._minChildSize != value) {
+            if (this._minChildSize !== value) {
                 this._minChildSize = value;
                 this.setChangedFlag();
             }
@@ -1631,7 +2551,7 @@
                 resultPoint = new Laya.Point();
             let children = this._owner.children;
             let cnt = children.length;
-            if (cnt == 0) {
+            if (cnt === 0) {
                 resultPoint.x = 0;
                 resultPoint.y = 0;
                 return resultPoint;
@@ -1640,49 +2560,49 @@
             let obj = null;
             let prev = null;
             let i = 0;
-            if (yValue != 0) {
+            if (yValue !== 0) {
                 for (; i < cnt; i++) {
                     obj = children[i];
-                    if (yValue < obj.y) {
-                        if (i == 0) {
+                    if (yValue < obj.top) {
+                        if (i === 0) {
                             yValue = 0;
                             break;
                         }
                         else {
                             prev = children[i - 1];
-                            if (yValue < prev.y + prev.height / 2)
-                                yValue = prev.y;
+                            if (yValue < prev.top + prev.height / 2)
+                                yValue = prev.top;
                             else
-                                yValue = obj.y;
+                                yValue = obj.top;
                             break;
                         }
                     }
                 }
-                if (i == cnt)
-                    yValue = obj.y;
+                if (i === cnt)
+                    yValue = obj.top;
             }
-            if (xValue != 0) {
+            if (xValue !== 0) {
                 if (i > 0)
                     i--;
                 for (; i < cnt; i++) {
                     obj = children[i];
-                    if (xValue < obj.x) {
-                        if (i == 0) {
+                    if (xValue < obj.left) {
+                        if (i === 0) {
                             xValue = 0;
                             break;
                         }
                         else {
                             prev = children[i - 1];
-                            if (xValue < prev.x + prev.width / 2)
-                                xValue = prev.x;
+                            if (xValue < prev.left + prev.width / 2)
+                                xValue = prev.left;
                             else
-                                xValue = obj.x;
+                                xValue = obj.left;
                             break;
                         }
                     }
                 }
-                if (i == cnt)
-                    xValue = obj.x;
+                if (i === cnt)
+                    xValue = obj.left;
             }
             resultPoint.x = xValue;
             resultPoint.y = yValue;
@@ -1692,16 +2612,16 @@
             if (this._layoutChanged)
                 return;
             let layout = this._type;
-            if (layout == exports.LayoutType.None && !this._owner.scroller)
+            if (layout === exports.LayoutType.None && !this._owner.scroller)
                 return;
-            if (reason == exports.LayoutChangedReason.Visible && !this._foldInvisibles)
+            if (reason === exports.LayoutChangedReason.Visible && !this._foldInvisibles)
                 return;
-            if (reason == exports.LayoutChangedReason.Pos && layout != exports.LayoutType.None)
+            if (reason === exports.LayoutChangedReason.Pos && layout !== exports.LayoutType.None)
                 return;
-            if (reason == exports.LayoutChangedReason.Size)
+            if (reason === exports.LayoutChangedReason.Size)
                 this._childSizeChangedFlag = true;
             this._layoutChanged = true;
-            if (_dirtyLayouts.indexOf(this) == -1) {
+            if (_dirtyLayouts.indexOf(this) === -1) {
                 _dirtyLayouts.push(this);
                 if (!_timerAdded) {
                     _timerAdded = true;
@@ -1778,16 +2698,16 @@
             var _a;
             this._contentWidth = aw;
             this._contentHeight = ah;
-            if (aw != 0 && ah != 0) {
-                if (this._stretchX == exports.StretchMode.ResizeToFit && this._stretchY == exports.StretchMode.ResizeToFit) {
+            if (aw !== 0 && ah !== 0) {
+                if (this._stretchX === exports.StretchMode.ResizeToFit && this._stretchY === exports.StretchMode.ResizeToFit) {
                     if (this._owner.scroller)
                         this._owner.scroller.setViewSize(aw, ah);
                     else
                         this._owner.size(aw + this._padding[3] + this._padding[1], ah + this._padding[0] + this._padding[2]);
                 }
-                else if (this._stretchX == exports.StretchMode.ResizeToFit)
+                else if (this._stretchX === exports.StretchMode.ResizeToFit)
                     this.viewWidth = aw;
-                else if (this._stretchY == exports.StretchMode.ResizeToFit)
+                else if (this._stretchY === exports.StretchMode.ResizeToFit)
                     this.viewHeight = ah;
             }
             (_a = this._owner.scroller) === null || _a === void 0 ? void 0 : _a._ownerContentSizeChanged();
@@ -1799,8 +2719,8 @@
             if (childCount == null || childCount > curCount)
                 childCount = curCount;
             minSize = minSize || 0;
-            if (childCount == 0) {
-                if (this._type == exports.LayoutType.SingleColumn || this._type == exports.LayoutType.FlowX)
+            if (childCount === 0) {
+                if (this._type === exports.LayoutType.SingleColumn || this._type === exports.LayoutType.FlowX)
                     this.viewHeight = minSize;
                 else
                     this.viewWidth = minSize;
@@ -1810,19 +2730,19 @@
                 let obj = null;
                 while (i >= 0) {
                     obj = this._owner.getChildAt(i);
-                    if ((!this._foldInvisibles || obj._getBit(Laya.NodeFlags.ACTUAL_VISIBLE)) && !obj._getBit(Laya.NodeFlags.ESCAPE_LAYOUT))
+                    if ((!this._foldInvisibles || obj._struct.enabled) && !obj._getBit(Laya.NodeFlags.ESCAPE_LAYOUT))
                         break;
                     i--;
                 }
                 if (i < 0) {
-                    if (this._type == exports.LayoutType.SingleColumn || this._type == exports.LayoutType.FlowX)
+                    if (this._type === exports.LayoutType.SingleColumn || this._type === exports.LayoutType.FlowX)
                         this.viewHeight = minSize;
                     else
                         this.viewWidth = minSize;
                 }
                 else {
                     let size = 0;
-                    if (this._type == exports.LayoutType.SingleColumn || this._type == exports.LayoutType.FlowX) {
+                    if (this._type === exports.LayoutType.SingleColumn || this._type === exports.LayoutType.FlowX) {
                         size = obj.y + obj.height;
                         if (size < minSize)
                             size = minSize;
@@ -1838,7 +2758,7 @@
             }
         }
         applyNone() {
-            this._owner.getChildrenBounds(false, this._foldInvisibles, false, s_rect$1);
+            Laya.SpriteUtils.getChildrenBounds(this._owner, false, this._foldInvisibles, false, s_rect$1);
             this.setContentSize(Math.max(0, Math.ceil(s_rect$1.right)), Math.max(0, Math.ceil(s_rect$1.bottom)));
         }
         applyFlowX(singleRow) {
@@ -1848,13 +2768,13 @@
             let pageMode = this._pageMode;
             if (singleRow) {
                 rows = 1;
-                if (cols == 0 && !pageMode)
+                if (cols === 0 && !pageMode)
                     cols = 1000000;
             }
             let rowGap = this._rowGap;
             let colGap = this._columnGap;
-            let stretchX = this._stretchX == exports.StretchMode.Stretch;
-            let stretchY = this._stretchY == exports.StretchMode.Stretch;
+            let stretchX = this._stretchX === exports.StretchMode.Stretch;
+            let stretchY = this._stretchY === exports.StretchMode.Stretch;
             let align = stretchX ? 0 : this._align;
             let data = tempDataPool.take();
             let cnt = this.getLayoutChildren(data);
@@ -1867,7 +2787,7 @@
             let mh = 0;
             let pi = 0;
             if (stretchX) {
-                if (cols == 0 || cnt < cols)
+                if (cols === 0 || cnt < cols)
                     cols = cnt;
                 let stretchParamsX = this.checkStretchParams(this._stretchParamsX, data);
                 for (let i = 0; i < cols; i++)
@@ -1875,7 +2795,7 @@
                 this.handleStrecth(vw, cols, colGap, stretchParamsX, data.swidth, data.width);
             }
             if (cnt > 0 && stretchY) {
-                if (rows == 0)
+                if (rows === 0)
                     rows = 1;
                 for (let i = 0; i < rows; i++)
                     data.sheight[i] = this._childSizeChangedFlag ? children[0].height : children[0]._giveHeight;
@@ -1883,18 +2803,18 @@
             }
             function newLine(i) {
                 mh = Math.ceil(mh);
-                if (cy != 0)
+                if (cy !== 0)
                     cy += rowGap;
                 if (cx > cw)
                     cw = cx;
-                if (align == 1)
+                if (align === 1)
                     cx = (vw - cx) * 0.5;
-                else if (align == 2)
+                else if (align === 2)
                     cx = vw - cx;
                 else
                     cx = 0;
                 if (pageMode) {
-                    if ((cy + mh > vh || ri === rows) && cy != 0) {
+                    if ((cy + mh > vh || ri === rows) && cy !== 0) {
                         px += vw;
                         cy = 0;
                         pi++;
@@ -1916,51 +2836,51 @@
                     let child = children[i];
                     child.size(stretchX ? data.width[ci % cols] : child._giveWidth, stretchY ? data.height[ri % rows] : child._giveHeight, true);
                     let sw = Math.ceil(child.width);
-                    if (cols == 0 && cx + colGap + sw > vw && cx != 0) {
+                    if (cols === 0 && cx + colGap + sw > vw && cx !== 0) {
                         newLine(i);
                         child.size(stretchX ? data.width[ci] : child._giveWidth, stretchY ? data.height[ri % rows] : child._giveHeight, true);
                         sw = Math.ceil(child.width);
                     }
-                    if (cx != 0)
+                    if (cx !== 0)
                         cx += colGap;
                     data.posx[i] = cx;
                     cx += sw;
                     if (child.height > mh)
                         mh = child.height;
                     ci++;
-                    if (ci == cols && !singleRow || i == cnt - 1)
+                    if (ci === cols && !singleRow || i === cnt - 1)
                         newLine(i + 1);
                 }
                 ch = py + cy;
                 let checkOverflow = (_a = this._owner.scroller) === null || _a === void 0 ? void 0 : _a._shouldCheckOverflow();
                 if (checkOverflow == null)
                     break;
-                if (ch <= vh && stretchX && (checkOverflow & 1) != 0) {
+                if (ch <= vh && stretchX && (checkOverflow & 1) !== 0) {
                     vw += this._owner.scroller.vScrollBar.width;
                     this.handleStrecth(vw, cols, colGap, this._stretchParamsX, data.swidth, data.width);
                 }
                 else
                     checkOverflow &= ~1;
-                if (cw <= vw && stretchY && (checkOverflow & 2) != 0) {
+                if (cw <= vw && stretchY && (checkOverflow & 2) !== 0) {
                     vh += this._owner.scroller.hScrollBar.height;
                     this.handleStrecth(vh, rows, rowGap, this._stretchParamsY, data.sheight, data.height);
                 }
                 else
                     checkOverflow &= ~2;
-                if (checkOverflow == 0)
+                if (checkOverflow === 0)
                     break;
                 cx = cy = px = py = ci = ri = cw = ch = mh = 0;
             }
             cy = 0;
-            if (ch < vh && this._stretchY != exports.StretchMode.ResizeToFit) {
-                if (this._valign == 1)
+            if (ch < vh && this._stretchY !== exports.StretchMode.ResizeToFit) {
+                if (this._valign === 1)
                     cy = (vh - ch) / 2;
-                else if (this._valign == 2)
+                else if (this._valign === 2)
                     cy = vh - ch;
             }
             cx = 0;
-            if (this._stretchX == exports.StretchMode.ResizeToFit) {
-                if (align == 1 || align == 2) {
+            if (this._stretchX === exports.StretchMode.ResizeToFit) {
+                if (align === 1 || align === 2) {
                     cx = Math.floor((cw - vw) / 2);
                     if (cx > 0)
                         cx = 0;
@@ -1970,7 +2890,7 @@
                 cx += this._padding[3];
                 cy += this._padding[0];
             }
-            if (singleRow && !stretchY && this._valign == 3) {
+            if (singleRow && !stretchY && this._valign === 3) {
                 for (let i = 0; i < cnt; i++)
                     children[i].left = data.posx[i] + cx;
             }
@@ -1990,13 +2910,13 @@
             let pageMode = this._pageMode;
             if (singleColumn) {
                 cols = 1;
-                if (rows == 0 && !pageMode)
+                if (rows === 0 && !pageMode)
                     rows = 1000000;
             }
             let rowGap = this._rowGap;
             let colGap = this._columnGap;
-            let stretchX = this._stretchX == exports.StretchMode.Stretch;
-            let stretchY = this._stretchY == exports.StretchMode.Stretch;
+            let stretchX = this._stretchX === exports.StretchMode.Stretch;
+            let stretchY = this._stretchY === exports.StretchMode.Stretch;
             let valign = stretchY ? 0 : this._valign;
             let data = tempDataPool.take();
             let cnt = this.getLayoutChildren(data);
@@ -2009,14 +2929,14 @@
             let mw = 0;
             let pi = 0;
             if (cnt > 0 && stretchX) {
-                if (cols == 0)
+                if (cols === 0)
                     cols = 1;
                 for (let i = 0; i < cols; i++)
                     data.swidth[i] = this._childSizeChangedFlag ? children[0].width : children[0]._giveWidth;
                 this.handleStrecth(vw, cols, colGap, this._stretchParamsX, data.swidth, data.width);
             }
             if (stretchY) {
-                if (rows == 0 || cnt < rows)
+                if (rows === 0 || cnt < rows)
                     rows = cnt;
                 let stretchParamsY = this.checkStretchParams(this._stretchParamsY, data);
                 for (let i = 0; i < rows; i++)
@@ -2025,18 +2945,18 @@
             }
             function newLine(i) {
                 mw = Math.ceil(mw);
-                if (cx != 0)
+                if (cx !== 0)
                     cx += colGap;
                 if (cy > ch)
                     ch = cy;
-                if (valign == 1)
+                if (valign === 1)
                     cy = (vh - cy) * 0.5;
-                else if (valign == 2)
+                else if (valign === 2)
                     cy = vh - cy;
                 else
                     cy = 0;
                 if (pageMode) {
-                    if ((cx + mw > vw || ci === cols) && cx != 0) {
+                    if ((cx + mw > vw || ci === cols) && cx !== 0) {
                         py += vh;
                         cx = 0;
                         pi++;
@@ -2058,53 +2978,53 @@
                     let child = children[i];
                     child.size(stretchX ? data.width[ci % cols] : child._giveWidth, stretchY ? data.height[ri % rows] : child._giveHeight, true);
                     let sh = Math.ceil(child.height);
-                    if (rows == 0 && cy + rowGap + sh > vh && cy != 0) {
+                    if (rows === 0 && cy + rowGap + sh > vh && cy !== 0) {
                         newLine(i);
                         child.size(stretchX ? data.width[ci % cols] : child._giveWidth, stretchY ? data.height[ri] : child._giveHeight, true);
                         sh = Math.ceil(child.height);
                     }
-                    if (cy != 0)
+                    if (cy !== 0)
                         cy += rowGap;
                     data.posy[i] = cy;
                     cy += sh;
                     if (child.width > mw)
                         mw = child.width;
                     ri++;
-                    if (ri == rows && !singleColumn || i == cnt - 1)
+                    if (ri === rows && !singleColumn || i === cnt - 1)
                         newLine(i + 1);
                 }
                 cw = px + cx;
                 let checkOverflow = (_a = this._owner.scroller) === null || _a === void 0 ? void 0 : _a._shouldCheckOverflow();
                 if (checkOverflow == null)
                     break;
-                if (ch <= vh && stretchX && (checkOverflow & 1) != 0) {
+                if (ch <= vh && stretchX && (checkOverflow & 1) !== 0) {
                     vw += this._owner.scroller.vScrollBar.width;
                     this.handleStrecth(vw, cols, colGap, this._stretchParamsX, data.swidth, data.width);
                 }
                 else
                     checkOverflow &= ~1;
-                if (cw <= vw && stretchY && (checkOverflow & 2) != 0) {
+                if (cw <= vw && stretchY && (checkOverflow & 2) !== 0) {
                     vh += this._owner.scroller.hScrollBar.height;
                     this.handleStrecth(vh, rows, rowGap, this._stretchParamsY, data.sheight, data.height);
                 }
                 else
                     checkOverflow &= ~2;
-                if (checkOverflow == 0)
+                if (checkOverflow === 0)
                     break;
                 cx = cy = px = py = ci = ri = cw = ch = mw = 0;
             }
             cx = 0;
-            if (cw < vw && this._stretchX != exports.StretchMode.ResizeToFit) {
-                if (this._align == 1)
+            if (cw < vw && this._stretchX !== exports.StretchMode.ResizeToFit) {
+                if (this._align === 1)
                     cx = (vw - cw) / 2;
-                else if (this._align == 2)
+                else if (this._align === 2)
                     cx = vw - cw;
                 else
                     cx = 0;
             }
             cy = 0;
-            if (this._stretchY == exports.StretchMode.ResizeToFit) {
-                if (valign == 1 || valign == 2) {
+            if (this._stretchY === exports.StretchMode.ResizeToFit) {
+                if (valign === 1 || valign === 2) {
                     cy = Math.floor((ch - vh) / 2);
                     if (cy > 0)
                         cy = 0;
@@ -2114,7 +3034,7 @@
                 cx += this._padding[3];
                 cy += this._padding[0];
             }
-            if (singleColumn && !stretchX && this._align == 3) {
+            if (singleColumn && !stretchX && this._align === 3) {
                 for (let i = 0; i < cnt; i++)
                     children[i].top = data.posy[i] + cy;
             }
@@ -2133,7 +3053,7 @@
             for (let child of this._owner.children) {
                 if (child._nodeType !== 2)
                     continue;
-                if (this._foldInvisibles && !child._getBit(Laya.NodeFlags.ACTUAL_VISIBLE) || child._getBit(Laya.NodeFlags.ESCAPE_LAYOUT))
+                if (this._foldInvisibles && !child._struct.enabled || child._getBit(Laya.NodeFlags.ESCAPE_LAYOUT))
                     data.invisibles[data.invisibleCnt++] = i;
                 else
                     data.children[j++] = child;
@@ -2142,13 +3062,13 @@
             return j;
         }
         checkStretchParams(src, data) {
-            if (data.invisibleCnt == 0)
+            if (data.invisibleCnt === 0)
                 return src;
             let out = data.stretchParams;
             let j = 0, k = 0;
             let test = data.invisibles[j];
             for (let i = 0; i < src.length; i++) {
-                if (i != test)
+                if (i !== test)
                     out[k++] = src[i];
                 else {
                     j++;
@@ -2162,7 +3082,7 @@
         }
         handleStrecth(size, count, gap, params, sourceSizes, outSizes) {
             outSizes = outSizes || sourceSizes;
-            if (count == 1 && !params[0]) {
+            if (count === 1 && !params[0]) {
                 outSizes[0] = size;
                 return;
             }
@@ -2174,7 +3094,7 @@
             let hasRatio;
             for (let i = 0; i < count; i++) {
                 let param = params[i] || defParam;
-                if (param.ratio != 0) {
+                if (param.ratio !== 0) {
                     hasRatio = true;
                     ratio += param.ratio;
                 }
@@ -2186,13 +3106,13 @@
                 let param = params[i] || defParam;
                 let itemSize = sourceSizes[i];
                 if (hasRatio) {
-                    if (param.ratio != 0)
+                    if (param.ratio !== 0)
                         itemSize = Math.floor(lineSize * param.ratio);
                     else
                         itemSize = ratio * (itemSize / lineSize3);
                 }
                 if (!param.fixed) {
-                    let min = param.min != 0 ? param.min : minChildSize;
+                    let min = param.min !== 0 ? param.min : minChildSize;
                     if (itemSize < min)
                         itemSize = min;
                     if (param.max > 0 && itemSize > param.max)
@@ -2212,19 +3132,19 @@
                             limit[i] = null;
                             continue;
                         }
-                        let min = param.min != 0 ? param.min : minChildSize;
+                        let min = param.min !== 0 ? param.min : minChildSize;
                         let ts = outSizes[i];
                         if (ts > min
                             && (round >= 2
-                                || round == 0 && param.priority > 0
-                                || round == 1 && (param == defParam || param.ratio == 0 && param.priority >= 0))) {
+                                || round === 0 && param.priority > 0
+                                || round === 1 && (param == defParam || param.ratio === 0 && param.priority >= 0))) {
                             limit[i] = min;
                             k++;
                         }
                         else
                             limit[i] = null;
                     }
-                    if (k == 0) {
+                    if (k === 0) {
                         round++;
                         if (round > 2)
                             break;
@@ -2240,7 +3160,7 @@
                         ps2 += ps;
                         k--;
                         if (ps2 < 0) {
-                            if (k != 0)
+                            if (k !== 0)
                                 continue;
                             else
                                 ps2 = Math.floor(ps2);
@@ -2267,19 +3187,19 @@
                             limit[i] = null;
                             continue;
                         }
-                        let max = param.max != 0 ? param.max : 1000000;
+                        let max = param.max !== 0 ? param.max : 1000000;
                         let ts = outSizes[i];
                         if (ts < max
                             && (round >= 2
-                                || round == 0 && param.priority > 0
-                                || round == 1 && (param == defParam || param.ratio == 0 && param.priority >= 0))) {
+                                || round === 0 && param.priority > 0
+                                || round === 1 && (param == defParam || param.ratio === 0 && param.priority >= 0))) {
                             limit[i] = max;
                             k++;
                         }
                         else
                             limit[i] = null;
                     }
-                    if (k == 0) {
+                    if (k === 0) {
                         round++;
                         if (round > 2)
                             break;
@@ -2295,7 +3215,7 @@
                         ps2 += ps;
                         k--;
                         if (ps2 < 1) {
-                            if (k != 0)
+                            if (k !== 0)
                                 continue;
                             else
                                 ps2 = 1;
@@ -2314,7 +3234,7 @@
         }
         static refreshAllLayouts(caller) {
             let len = _dirtyLayouts.length;
-            if (len == 0)
+            if (len === 0)
                 return;
             if (caller) {
                 for (let i = 0; i < len; i++) {
@@ -2544,6 +3464,7 @@
             this.textIns.padding.fill(2);
             this.textIns._onPostLayout = () => this._onPostLayout();
             this.textIns._onTranslate = Translations.translate;
+            this.textIns.on(Laya.Event.LINK, (href) => this.event(Laya.Event.LINK, href));
             this.addChild(this.textIns);
         }
         get textWidth() {
@@ -2700,6 +3621,12 @@
         set maxWidth(value) {
             this.textIns.maxWidth = value;
         }
+        get singleCharRender() {
+            return this.textIns.singleCharRender;
+        }
+        set singleCharRender(value) {
+            this.textIns.singleCharRender = value;
+        }
         get templateVars() {
             return this.textIns.templateVars;
         }
@@ -2718,6 +3645,10 @@
                 && (!this._getBit(Laya.NodeFlags.EDITING_NODE) || this.textIns.textHeight > 0))
                 height = this._height;
             return super.size(width, height);
+        }
+        typeset() {
+            this.textIns.typeset();
+            return this;
         }
         _transChanged(kind) {
             super._transChanged(kind);
@@ -2746,7 +3677,11 @@
             this.textIns.hideFlags |= Laya.HideFlags.HideAndDontSave;
             this.textIns.overflow = "hidden";
             this.textIns.padding.fill(2);
-            this.textIns.on(Laya.Event.KEY_DOWN, this, this._onKeyDown);
+            this.textIns.on(Laya.Event.INPUT, () => this.event(Laya.Event.INPUT));
+            this.textIns.on(Laya.Event.ENTER, () => this.event(Laya.Event.ENTER));
+            this.textIns.on(Laya.Event.CHANGE, () => this.event(Laya.Event.CHANGE));
+            this.textIns.on(Laya.Event.FOCUS, () => this.event(Laya.Event.FOCUS));
+            this.textIns.on(Laya.Event.BLUR, () => this.event(Laya.Event.BLUR));
             this.addChild(this.textIns);
         }
         get text() {
@@ -2899,12 +3834,6 @@
                 this.textIns.size(this.width, this.height);
             }
         }
-        _onKeyDown(evt) {
-            if (!this.multiline && evt.key == "Enter") {
-                this.event(exports.UIEvent.Submit);
-                evt.preventDefault();
-            }
-        }
     }
 
     class WidgetRef {
@@ -3017,157 +3946,6 @@
         }
     }
 
-    const defaultVertice = new Float32Array(new Array(36).fill(0));
-    const defaultIndices = new Uint16Array([0, 1, 2, 0, 2, 3]);
-    class ImageRenderer {
-        constructor(owner) {
-            this._isChanged = false;
-            this._owner = owner;
-            this._color = new Laya.Color();
-        }
-        destroy() {
-            if (this._mesh) {
-                this._mesh.destroy();
-                this._mesh = null;
-            }
-            if (this._tex) {
-                if (this._owner._getBit(Laya.NodeFlags.EDITING_NODE))
-                    this._tex.off("reload", this, this.onTextureReload);
-                this._tex = null;
-            }
-        }
-        setTexture(value) {
-            if (this._tex && this._owner._getBit(Laya.NodeFlags.EDITING_NODE))
-                this._tex.off("reload", this, this.onTextureReload);
-            this._tex = value;
-            if (value) {
-                if (this._owner._getBit(Laya.NodeFlags.EDITING_NODE))
-                    value.on("reload", this, this.onTextureReload);
-                if (this._meshFactory) {
-                    this._meshRender.sharedMesh = this._mesh;
-                    this.changeTexture();
-                }
-                else
-                    this.createCmd();
-            }
-            else {
-                if (this._meshFactory) {
-                    this._meshRender.texture = null;
-                    this._meshRender.sharedMesh = null;
-                }
-                else if (this._drawCmd)
-                    this._drawCmd = this._owner.graphics.replaceCmd(this._drawCmd, null, true);
-            }
-        }
-        setMesh(value) {
-            if (this._meshFactory === value) {
-                this.updateMesh();
-                return;
-            }
-            this._meshFactory = value;
-            if (value) {
-                if (!this._meshRender) {
-                    let declaration = Laya.VertexMesh2D.getVertexDeclaration(["POSITION,UV,COLOR"], false)[0];
-                    this._mesh = Laya.Mesh2D.createMesh2DByPrimitive([defaultVertice], [declaration], defaultIndices, Laya.IndexFormat.UInt16, [{ length: defaultIndices.length, start: 0 }]);
-                    this._mesh.lock = true;
-                    this._meshRender = this._owner.addComponent(Laya.Mesh2DRender);
-                    this._meshRender.hideFlags |= Laya.HideFlags.HideAndDontSave;
-                }
-                this._meshRender.sharedMesh = this._mesh;
-                this._meshRender.color = this._color;
-                if (this._drawCmd)
-                    this._drawCmd = this._owner.graphics.replaceCmd(this._drawCmd, null, true);
-                if (this._tex)
-                    this.changeTexture();
-            }
-            else {
-                if (this._meshRender) {
-                    this._meshRender.texture = null;
-                    this._meshRender.sharedMesh = null;
-                }
-                if (this._tex && !this._drawCmd)
-                    this.createCmd();
-            }
-        }
-        setColor(value) {
-            this._color.parse(value);
-            if (this._meshFactory)
-                this._meshRender.color = this._color;
-            else if (this._drawCmd)
-                this._drawCmd.color = this._color.getABGR();
-        }
-        updateMesh(delay) {
-            if (!this._meshFactory || !this._tex)
-                return;
-            if (!this._isChanged) {
-                if (delay == null || delay) {
-                    this._isChanged = true;
-                    Laya.Laya.timer.callLater(this, this._updateMesh);
-                }
-                else
-                    this._updateMesh();
-            }
-            else if (delay === false)
-                Laya.Laya.timer.runCallLater(this, this._updateMesh, true);
-        }
-        onTextureReload() {
-            var _a;
-            (_a = this._onReload) === null || _a === void 0 ? void 0 : _a.call(this);
-            this.setTexture(this._tex);
-        }
-        createCmd() {
-            let cmd;
-            if (this._tex._sizeGrid)
-                cmd = Laya.Draw9GridTextureCmd.create(this._tex, 0, 0, 1, 1, this._tex._sizeGrid, true, null);
-            else
-                cmd = Laya.DrawTextureCmd.create(this._tex, 0, 0, 1, 1, null, 1, null, null, null, true);
-            cmd.lock = true;
-            cmd.color = this._color.getABGR();
-            this._drawCmd = this._owner.graphics.replaceCmd(this._drawCmd, cmd, true);
-        }
-        changeTexture() {
-            this._meshRender.texture = this._tex.bitmap;
-            let uv = this._tex.uvrect;
-            this._meshRender.textureRange = Laya.Vector4.TEMP.setValue(uv[0], uv[1], uv[0] + uv[2], uv[1] + uv[3]);
-            this._meshRender.textureRangeIsClip = !(uv[0] === 0 && uv[1] === 0 && uv[2] === 1 && uv[3] === 1);
-            this.updateMesh();
-        }
-        _updateMesh() {
-            this._isChanged = false;
-            let tex = this._tex;
-            if (!this._meshFactory || !tex)
-                return;
-            let vb = Laya.VertexStream.pool.take(tex, true);
-            vb.contentRect.setTo(0, 0, this._owner.width, this._owner.height);
-            try {
-                this._meshFactory.onPopulateMesh(vb);
-            }
-            catch (e) {
-                console.error(e);
-            }
-            let mesh = this._mesh;
-            let c = vb.getVertices();
-            let offsetX = -this._owner.pivotX;
-            let offsetY = -this._owner.pivotY;
-            if (offsetX != 0 || offsetY != 0) {
-                for (let i = 0, n = c.length, step = vb.vertexStride; i < n; i += step) {
-                    c[i] += offsetX;
-                    c[i + 1] += offsetY;
-                }
-            }
-            mesh._vertexBuffers[0].setDataLength(c.byteLength);
-            mesh._vertexBuffers[0].setData(c.buffer, 0, 0, c.byteLength);
-            let c2 = vb.getIndices();
-            mesh._indexBuffer._setIndexDataLength(c2.byteLength);
-            mesh._indexBuffer._setIndexData(c2, 0);
-            mesh._setBuffers(mesh._vertexBuffers, mesh._indexBuffer);
-            mesh._subMeshes[0].clearRenderParams();
-            mesh._subMeshes[0].setDrawElemenParams(c2.length, 0);
-            Laya.VertexStream.pool.recover(vb);
-            this._meshRender.sharedMesh = mesh;
-        }
-    }
-
     class GImage extends GWidget {
         constructor() {
             super();
@@ -3210,9 +3988,6 @@
         }
         set mesh(value) {
             this._renderer.setMesh(value);
-        }
-        updateMesh() {
-            this._renderer.updateMesh();
         }
         get icon() {
             return this.src;
@@ -3262,12 +4037,6 @@
             super._sizeChanged();
             if (!changeByLayout && !Laya.SerializeUtil.isDeserializing)
                 this._autoSize = false;
-            this._renderer.updateMesh();
-        }
-        _transChanged(kind) {
-            super._transChanged(kind);
-            if (kind & Laya.TransformKind.Anchor)
-                this._renderer.updateMesh();
         }
         destroy() {
             super.destroy();
@@ -3358,8 +4127,8 @@
         get sound() {
             return this._sound;
         }
-        set sound(val) {
-            this._sound = val;
+        set sound(value) {
+            this._sound = value;
         }
         get soundVolumeScale() {
             return this._soundVolumeScale;
@@ -3439,16 +4208,17 @@
         fireClick(downEffect, clickCall) {
             if (this._mode !== exports.ButtonMode.Common)
                 return;
-            downEffect = downEffect || false;
             if (downEffect) {
                 this.setState(exports.ButtonStatus.Over);
                 Laya.Laya.timer.once(100, this, this.setState, [exports.ButtonStatus.Down]);
                 Laya.Laya.timer.once(200, null, () => {
                     this.setState(exports.ButtonStatus.Up);
-                    if (clickCall)
+                    if (clickCall == null || clickCall)
                         this.event(Laya.Event.CLICK);
                 });
             }
+            else if (clickCall == null || clickCall)
+                this.event(Laya.Event.CLICK);
         }
         setState(page) {
             if (this._buttonController) {
@@ -3598,510 +4368,6 @@
             }
         }
     }
-
-    class GWindow extends GWidget {
-        constructor() {
-            super();
-            this._requestingCmd = 0;
-            this.bringToFontOnClick = UIConfig2.bringWindowToFrontOnClick;
-            this.on(Laya.Event.DISPLAY, this, this._onShown);
-            this.on(Laya.Event.UNDISPLAY, this, this._onHidden);
-            this.on(Laya.Event.MOUSE_DOWN, this, this._winTouchBegin);
-        }
-        set contentPane(val) {
-            if (this._contentPane != val) {
-                if (this._contentPane)
-                    this.removeChild(this._contentPane);
-                this._contentPane = val;
-                if (this._contentPane) {
-                    this.addChild(this._contentPane);
-                    this.size(this._contentPane.width, this._contentPane.height);
-                    this._contentPane.addRelation(this, exports.RelationType.Size);
-                    this._frame = this._contentPane.getChild("frame");
-                    if (this._frame) {
-                        this.closeButton = this._frame.getChild("closeButton");
-                        this.dragArea = this._frame.getChild("dragArea");
-                        this.contentArea = this._frame.getChild("contentArea");
-                    }
-                }
-            }
-        }
-        get contentPane() {
-            return this._contentPane;
-        }
-        get frame() {
-            return this._frame;
-        }
-        get closeButton() {
-            return this._closeButton;
-        }
-        set closeButton(value) {
-            if (this._closeButton)
-                this._closeButton.off(Laya.Event.CLICK, this, this.closeEventHandler);
-            this._closeButton = value;
-            if (this._closeButton)
-                this._closeButton.on(Laya.Event.CLICK, this, this.closeEventHandler);
-        }
-        get dragArea() {
-            return this._dragArea;
-        }
-        set dragArea(value) {
-            if (this._dragArea != value) {
-                if (this._dragArea) {
-                    this._dragArea.draggable = false;
-                    this._dragArea.off(Laya.Event.DRAG_START, this, this._dragStart);
-                }
-                this._dragArea = value;
-                if (this._dragArea) {
-                    this._dragArea.draggable = true;
-                    this._dragArea.on(Laya.Event.DRAG_START, this, this._dragStart);
-                }
-            }
-        }
-        get contentArea() {
-            return this._contentArea;
-        }
-        set contentArea(value) {
-            this._contentArea = value;
-        }
-        show() {
-            GWidget._defaultRoot.showWindow(this);
-        }
-        hide() {
-            if (this.isShowing)
-                this.doHideAnimation();
-        }
-        hideImmediately() {
-            GWidget._defaultRoot.hideWindowImmediately(this);
-        }
-        toggleStatus() {
-            if (this.isTop)
-                this.hide();
-            else
-                this.show();
-        }
-        get isShowing() {
-            return this.parent != null;
-        }
-        get isTop() {
-            return this.parent && this.parent.getChildIndex(this) == this.parent.numChildren - 1;
-        }
-        get modal() {
-            return this._modal;
-        }
-        set modal(val) {
-            this._modal = val;
-        }
-        bringToFront() {
-            GWidget._defaultRoot.bringToFront(this);
-        }
-        showModalWait(requestingCmd) {
-            if (requestingCmd != null)
-                this._requestingCmd = requestingCmd;
-            if (UIConfig2.windowModalWaiting) {
-                if (!this._modalWaitPane)
-                    this._modalWaitPane = Laya.Loader.createNodes(UIConfig2.windowModalWaiting);
-                this._modalWaitPane.mouseEnabled = true;
-                this.layoutModalWaitPane();
-                this.addChild(this._modalWaitPane);
-            }
-        }
-        layoutModalWaitPane() {
-            if (this._contentArea) {
-                let pt = this._frame.localToGlobal(s_pt.setTo(0, 0));
-                pt = this.globalToLocal(pt);
-                this._modalWaitPane.pos(pt.x + this._contentArea.x, pt.y + this._contentArea.y);
-                this._modalWaitPane.size(this._contentArea.width, this._contentArea.height);
-            }
-            else
-                this._modalWaitPane.size(this.width, this.height);
-        }
-        closeModalWait(requestingCmd) {
-            if (requestingCmd != null) {
-                if (this._requestingCmd != requestingCmd)
-                    return false;
-            }
-            this._requestingCmd = 0;
-            if (this.modalWaiting)
-                this.removeChild(this._modalWaitPane);
-            return true;
-        }
-        get modalWaiting() {
-            return this._modalWaitPane != null && this._modalWaitPane.parent != null;
-        }
-        async onInit() {
-        }
-        onShown() {
-        }
-        onHide() {
-        }
-        doShowAnimation() {
-            this.onShown();
-        }
-        doHideAnimation() {
-            this.hideImmediately();
-        }
-        destroy() {
-            if (this.parent)
-                this.hideImmediately();
-            super.destroy();
-        }
-        closeEventHandler() {
-            this.hide();
-        }
-        _onShown() {
-            if (!this._inited) {
-                if (!this._loading) {
-                    this._loading = true;
-                    this.onInit().then(() => {
-                        this._loading = false;
-                        this._inited = true;
-                        if (this.isShowing)
-                            this.doShowAnimation();
-                    });
-                }
-            }
-            else
-                this.doShowAnimation();
-        }
-        _onHidden() {
-            this.closeModalWait();
-            this.onHide();
-        }
-        _winTouchBegin() {
-            if (this.isShowing && this.bringToFontOnClick)
-                this.bringToFront();
-        }
-        _dragStart(evt) {
-            this._dragArea.stopDrag();
-            this.startDrag();
-        }
-    }
-    const s_pt = new Laya.Point();
-
-    const popupTargetKey = Symbol("popupTarget");
-    class PopupManager {
-        constructor(owner) {
-            this._owner = owner;
-            this._popupStack = [];
-            this._justClosedPopups = [];
-            Laya.InputManager.onMouseDownCapture.add(this._touchBegin, this);
-            Laya.ILaya.stage.on(Laya.Event.BLUR, this, this.checkPopups);
-        }
-        showPopup(popup, target, dir) {
-            if (this._popupStack.length > 0) {
-                let k = this._popupStack.indexOf(popup);
-                if (k != -1) {
-                    for (let i = this._popupStack.length - 1; i >= k; i--)
-                        this._owner.removeChild(this._popupStack.pop());
-                }
-            }
-            this._popupStack.push(popup);
-            if (target) {
-                let p = target;
-                while (p) {
-                    if (p.parent == this._owner) {
-                        if (popup.zOrder < p.zOrder) {
-                            popup.zOrder = p.zOrder;
-                        }
-                        break;
-                    }
-                    p = p.parent;
-                }
-            }
-            popup[popupTargetKey] = target;
-            this._owner.addChild(popup);
-            this._owner.adjustModalLayer();
-            this.validatePopupPosition(popup, target, dir);
-        }
-        validatePopupPosition(popup, target, dir, offsetX, offsetY) {
-            let px, py;
-            let sizeW = 0, sizeH = 0;
-            if (offsetX == null)
-                offsetX = 0;
-            if (offsetY == null)
-                offsetY = 0;
-            if (target) {
-                let pos = target.localToGlobal(Laya.Point.TEMP.setTo(0, 0));
-                px = pos.x;
-                py = pos.y;
-                let size = target.localToGlobal(Laya.Point.TEMP.setTo(target.width, target.height));
-                sizeW = size.x - px;
-                sizeH = size.y - py;
-            }
-            else {
-                let pos = this._owner.globalToLocal(Laya.Point.TEMP.copy(Laya.InputManager.getTouchPos()));
-                px = pos.x;
-                py = pos.y;
-            }
-            let xx, yy;
-            xx = px + offsetX;
-            if (xx + popup.width > this._owner.width)
-                xx = px + sizeW - popup.width - offsetX;
-            yy = py + sizeH + offsetY;
-            if (((dir === undefined || dir === exports.PopupDirection.Auto) && yy + popup.height > this._owner.height)
-                || dir === exports.PopupDirection.Up) {
-                yy = py - popup.height - offsetY - 1;
-                if (yy < 0) {
-                    yy = 0;
-                    xx += sizeW / 2;
-                    if (xx + popup.width > this._owner.width)
-                        xx = this._owner.width - popup.width;
-                }
-            }
-            popup.pos(xx, yy);
-        }
-        togglePopup(popup, target, dir) {
-            if (this._justClosedPopups.indexOf(popup) != -1)
-                return false;
-            this.showPopup(popup, target, dir);
-            return true;
-        }
-        hidePopup(popup) {
-            if (popup) {
-                let k = this._popupStack.indexOf(popup);
-                if (k != -1) {
-                    for (let i = this._popupStack.length - 1; i >= k; i--)
-                        this.closePopup(this._popupStack.pop());
-                }
-            }
-            else {
-                let cnt = this._popupStack.length;
-                for (let i = cnt - 1; i >= 0; i--)
-                    this.closePopup(this._popupStack[i]);
-                this._popupStack.length = 0;
-            }
-        }
-        get hasAnyPopup() {
-            return this._popupStack.length != 0;
-        }
-        isPopupJustClosed(popup) {
-            return this._justClosedPopups.indexOf(popup) != -1;
-        }
-        closePopup(popup) {
-            if (popup.parent) {
-                if (popup instanceof GWindow)
-                    popup.hide();
-                else
-                    this._owner.removeChild(popup);
-            }
-        }
-        showTooltips(msg, delay) {
-            if (this._defaultTooltipWin == null) {
-                if (!UIConfig2.tooltipsWidget) {
-                    console.warn("UIConfig.tooltipsWidget not defined");
-                    return;
-                }
-                this._defaultTooltipWin = Laya.Loader.createNodes(UIConfig2.tooltipsWidget);
-                this._defaultTooltipWin.mouseEnabled = false;
-            }
-            this._defaultTooltipWin.text = msg;
-            this.showTooltipsWin(this._defaultTooltipWin, delay);
-        }
-        showTooltipsWin(tooltipWin, delay) {
-            this.hideTooltips();
-            this._tooltipWin = tooltipWin;
-            if (delay != null && delay != 0)
-                Laya.ILaya.timer.once(delay, this, this._doShowTooltips);
-            else
-                this._doShowTooltips();
-        }
-        _doShowTooltips() {
-            if (this._tooltipWin == null)
-                return;
-            this.validatePopupPosition(this._tooltipWin, null, exports.PopupDirection.Auto, 10, 20);
-            this._owner.addChild(this._tooltipWin);
-        }
-        hideTooltips() {
-            if (this._tooltipWin) {
-                if (this._tooltipWin.parent)
-                    this._owner.removeChild(this._tooltipWin);
-                this._tooltipWin = null;
-            }
-        }
-        checkPopups() {
-            this._justClosedPopups.length = 0;
-            if (this._popupStack.length > 0) {
-                let gobj = Laya.InputManager.touchTarget;
-                let handled = false;
-                while (gobj) {
-                    let k = this._popupStack.indexOf(gobj);
-                    if (k != -1) {
-                        for (let i = this._popupStack.length - 1; i > k; i--) {
-                            let last = this._popupStack.length - 1;
-                            let popup = this._popupStack[last];
-                            this.closePopup(popup);
-                            this._justClosedPopups.push(popup);
-                            this._popupStack.splice(last, 1);
-                        }
-                        handled = true;
-                        break;
-                    }
-                    gobj = gobj.parent;
-                }
-                if (!handled) {
-                    for (let i = this._popupStack.length - 1; i >= 0; i--) {
-                        let popup = this._popupStack[i];
-                        this.closePopup(popup);
-                        this._justClosedPopups.push(popup);
-                        this._popupStack.splice(i, 1);
-                    }
-                }
-            }
-        }
-        _touchBegin() {
-            if (this._tooltipWin)
-                this.hideTooltips();
-            this.checkPopups();
-        }
-    }
-
-    class GRoot extends GWidget {
-        static get inst() {
-            var _a;
-            return (_a = GWidget._defaultRoot) !== null && _a !== void 0 ? _a : (GWidget._defaultRoot = new GRoot());
-        }
-        constructor() {
-            super();
-            this.name = "GRoot";
-            this.zOrder = GRoot.LAYER;
-            this.mouseThrough = true;
-            this.hideFlags |= Laya.HideFlags.HideAndDontSave;
-            this.size(Laya.ILaya.stage.width, Laya.ILaya.stage.height);
-            Laya.ILaya.stage.addChild(this);
-            this._popupMgr = new PopupManager(this);
-            this._modalLayer = new GWidget();
-            this._modalLayer.mouseEnabled = true;
-            this._modalLayer.hideFlags |= Laya.HideFlags.HideAndDontSave;
-            this._modalLayer.size(this.width, this.height);
-            this._modalLayer.graphics.drawRect(0, 0, 1, 1, UIConfig2.modalLayerColor, null, 0, true);
-            this._modalLayer.addRelation(this, exports.RelationType.Size);
-            Laya.ILaya.stage.on(Laya.Event.RESIZE, () => {
-                this.size(Laya.ILaya.stage.width, Laya.ILaya.stage.height);
-            });
-        }
-        get popupMgr() {
-            return this._popupMgr;
-        }
-        showWindow(win) {
-            this.addChild(win);
-            if (win.x > this.width)
-                win.x = this.width - win.width;
-            else if (win.x + win.width < 0)
-                win.x = 0;
-            if (win.y > this.height)
-                win.y = this.height - win.height;
-            else if (win.y + win.height < 0)
-                win.y = 0;
-            this.adjustModalLayer();
-        }
-        hideWindow(win) {
-            win.hide();
-        }
-        hideWindowImmediately(win) {
-            if (win.parent == this)
-                this.removeChild(win);
-            this.adjustModalLayer();
-        }
-        bringToFront(win) {
-            let cnt = this.numChildren;
-            let i;
-            if (this._modalLayer.parent && !win.modal)
-                i = this.getChildIndex(this._modalLayer) - 1;
-            else
-                i = cnt - 1;
-            for (; i >= 0; i--) {
-                let g = this.getChildAt(i);
-                if (g == win)
-                    return;
-                if (g instanceof GWindow)
-                    break;
-            }
-            if (i >= 0)
-                this.setChildIndex(win, i);
-        }
-        showModalWait(msg) {
-            if (UIConfig2.globalModalWaiting) {
-                if (this._modalWaitPane == null)
-                    this._modalWaitPane = Laya.Loader.createNodes(UIConfig2.globalModalWaiting);
-                this._modalWaitPane.size(this.width, this.height);
-                this._modalWaitPane.addRelation(this, exports.RelationType.Size);
-                this.addChild(this._modalWaitPane);
-                this._modalWaitPane.text = msg || "";
-            }
-        }
-        closeModalWait() {
-            if (this._modalWaitPane && this._modalWaitPane.parent)
-                this.removeChild(this._modalWaitPane);
-        }
-        closeAllExceptModals() {
-            let arr = this.children.slice();
-            let cnt = arr.length;
-            for (let i = 0; i < cnt; i++) {
-                let g = arr[i];
-                if ((g instanceof GWindow) && !g.modal)
-                    g.hide();
-            }
-        }
-        closeAllWindows() {
-            let arr = this.children.slice();
-            let cnt = arr.length;
-            for (let i = 0; i < cnt; i++) {
-                let g = arr[i];
-                if (g instanceof GWindow)
-                    g.hide();
-            }
-        }
-        getTopWindow() {
-            let cnt = this.numChildren;
-            for (let i = cnt - 1; i >= 0; i--) {
-                let g = this.getChildAt(i);
-                if (g instanceof GWindow) {
-                    return g;
-                }
-            }
-            return null;
-        }
-        get modalLayer() {
-            return this._modalLayer;
-        }
-        get hasModalWindow() {
-            return this._modalLayer.parent != null;
-        }
-        get modalWaiting() {
-            return this._modalWaitPane && this._modalWaitPane.displayedInStage;
-        }
-        showPopup(popup, target, dir) {
-            this._popupMgr.showPopup(popup, target, dir);
-        }
-        togglePopup(popup, target, dir) {
-            return this._popupMgr.togglePopup(popup, target, dir);
-        }
-        hidePopup(popup) {
-            this._popupMgr.hidePopup(popup);
-        }
-        get hasAnyPopup() {
-            return this._popupMgr.hasAnyPopup;
-        }
-        adjustModalLayer() {
-            let cnt = this.numChildren;
-            if (this._modalWaitPane && this._modalWaitPane.parent)
-                this.setChildIndex(this._modalWaitPane, cnt - 1);
-            for (let i = cnt - 1; i >= 0; i--) {
-                let g = this.getChildAt(i);
-                if ((g instanceof GWindow) && g.modal) {
-                    if (this._modalLayer.parent == null)
-                        this.addChildAt(this._modalLayer, i);
-                    else
-                        this.setChildIndexBefore(this._modalLayer, i);
-                    return;
-                }
-            }
-            if (this._modalLayer.parent)
-                this.removeChild(this._modalLayer);
-        }
-    }
-    GRoot.LAYER = 1000;
 
     class GComboBox extends GLabel {
         constructor() {
@@ -4383,7 +4649,7 @@
             else
                 this._createOptions = null;
         }
-        getObject(url) {
+        take(url) {
             var _a;
             if (!url) {
                 url = (_a = this._defaultRes) === null || _a === void 0 ? void 0 : _a.url;
@@ -4406,7 +4672,7 @@
                 ret.hideFlags |= Laya.HideFlags.HideAndDontSave;
             return ret;
         }
-        returnObject(obj) {
+        recover(obj) {
             let url = obj.url;
             if (!url) {
                 obj.destroy();
@@ -4461,7 +4727,7 @@
                     for (let i = this._realNumItems; i < oldCount; i++)
                         this._items[i].selected = false;
                 }
-                if (this._changed != 0)
+                if (this._changed !== 0)
                     Laya.ILaya.timer.clearCallLater(this, this._refreshVirtualList);
                 this._refreshVirtualList();
             }
@@ -4490,7 +4756,7 @@
         set itemSize(value) {
             this._itemSize.setTo(value.x, value.y);
             if (this._virtual) {
-                if (this._type == exports.LayoutType.SingleColumn || this._type == exports.LayoutType.FlowX)
+                if (this._type === exports.LayoutType.SingleColumn || this._type === exports.LayoutType.FlowX)
                     this._owner.scroller.step = this._itemSize.y;
                 else
                     this._owner.scroller.step = this._itemSize.x;
@@ -4506,7 +4772,7 @@
             this._items = [];
             this._itemSizes = [];
             this._owner.removeChildrenToPool();
-            if (this._itemSize.x == 0 && this._itemSize.y == 0) {
+            if (this._itemSize.x === 0 && this._itemSize.y === 0) {
                 let obj = this._owner.getFromPool();
                 if (obj == null) {
                     throw new Error("Virtual List must have a default list item resource.");
@@ -4517,7 +4783,8 @@
                 }
                 this._owner.returnToPool(obj);
             }
-            if (this._type == exports.LayoutType.SingleColumn || this._type == exports.LayoutType.FlowX) {
+            this._owner.itemPool.clear();
+            if (this._type === exports.LayoutType.SingleColumn || this._type === exports.LayoutType.FlowX) {
                 this._owner.scroller.step = this._itemSize.y;
                 if (this._loop)
                     this._owner.scroller._loop = 2;
@@ -4573,7 +4840,7 @@
         shouldSnapToNext(dir, delta, size) {
             return dir < 0 && delta > UIConfig2.defaultScrollSnappingThreshold * size
                 || dir > 0 && delta > (1 - UIConfig2.defaultScrollSnappingThreshold) * size
-                || dir == 0 && delta > size / 2;
+                || dir === 0 && delta > size / 2;
         }
         getSnappingPosition(xValue, yValue, xDir, yDir, resultPoint) {
             if (this._virtual) {
@@ -4609,7 +4876,7 @@
                 return super.getSnappingPosition(xValue, yValue, xDir, yDir, resultPoint);
         }
         getRectByItemIndex(index) {
-            if (!this._virtual || this._numItems == 0)
+            if (!this._virtual || this._numItems === 0)
                 return new Laya.Rectangle();
             this._checkVirtualList();
             if (index >= this._items.length)
@@ -4619,7 +4886,7 @@
             let rect;
             let ii = this._items[index];
             let pos = 0;
-            if (this._type == exports.LayoutType.SingleColumn || this._type == exports.LayoutType.FlowX) {
+            if (this._type === exports.LayoutType.SingleColumn || this._type === exports.LayoutType.FlowX) {
                 for (let i = this._lineItemCnt - 1; i < index; i += this._lineItemCnt)
                     pos += this._items[i].height + this._rowGap;
                 rect = new Laya.Rectangle(0, pos, this._itemSize.x, ii.height);
@@ -4643,13 +4910,13 @@
                 super.refresh(force);
         }
         _checkVirtualList() {
-            if (this._changed != 0) {
+            if (this._changed !== 0) {
                 this._refreshVirtualList();
                 Laya.ILaya.timer.clearCallLater(this, this._refreshVirtualList);
             }
         }
         refreshVirtualList() {
-            if (this._changed == 0)
+            if (this._changed === 0)
                 this._changed = 1;
             Laya.ILaya.timer.callLater(this, this._refreshVirtualList);
         }
@@ -4668,7 +4935,7 @@
         _refreshVirtualList() {
             if (this._owner.destroyed)
                 return;
-            let layoutChanged = this._changed == 2;
+            let layoutChanged = this._changed === 2;
             this._changed = 0;
             this._eventLocked = true;
             let vw = this.viewWidth;
@@ -4676,26 +4943,26 @@
             if (layoutChanged) {
                 this._lineItemCnt = 1;
                 this._lineItemCnt2 = 1;
-                if (this._type == exports.LayoutType.FlowX) {
+                if (this._type === exports.LayoutType.FlowX) {
                     this._lineItemCnt = this.getColumns();
                     if (this._pageMode)
                         this._lineItemCnt2 = this.getRows();
                 }
-                else if (this._type == exports.LayoutType.FlowY) {
+                else if (this._type === exports.LayoutType.FlowY) {
                     this._lineItemCnt = this.getRows();
                     if (this._pageMode)
                         this._lineItemCnt2 = this.getColumns();
                 }
                 this._itemSizes.length = 0;
-                if (this._type == exports.LayoutType.SingleColumn || this._type == exports.LayoutType.FlowX) {
-                    if (this._stretchX == exports.StretchMode.Stretch) {
+                if (this._type === exports.LayoutType.SingleColumn || this._type === exports.LayoutType.FlowX) {
+                    if (this._stretchX === exports.StretchMode.Stretch) {
                         for (let i = 0; i < this._lineItemCnt; i++)
                             this._itemSizes[i] = this._itemSize.x;
                         this.handleStrecth(vw, this._lineItemCnt, this._columnGap, this.stretchParamsX, this._itemSizes);
                     }
                 }
                 else {
-                    if (this._stretchY == exports.StretchMode.Stretch) {
+                    if (this._stretchY === exports.StretchMode.Stretch) {
                         for (let i = 0; i < this._lineItemCnt; i++)
                             this._itemSizes[i] = this._itemSize.y;
                         this.handleStrecth(vh, this._lineItemCnt, this._rowGap, this.stretchParamsY, this._itemSizes);
@@ -4708,7 +4975,7 @@
                 let len2 = Math.min(this._lineItemCnt, this._realNumItems);
                 if (this._pageMode) {
                     let pageCount = Math.ceil(len / (this._lineItemCnt * this._lineItemCnt2));
-                    if (this._type == exports.LayoutType.SingleRow || this._type == exports.LayoutType.FlowX) {
+                    if (this._type === exports.LayoutType.SingleRow || this._type === exports.LayoutType.FlowX) {
                         cw = pageCount * vw;
                         ch = vh;
                     }
@@ -4717,12 +4984,12 @@
                         ch = pageCount * vh;
                     }
                 }
-                else if (this._type == exports.LayoutType.SingleColumn || this._type == exports.LayoutType.FlowX) {
+                else if (this._type === exports.LayoutType.SingleColumn || this._type === exports.LayoutType.FlowX) {
                     for (let i = 0; i < len; i += this._lineItemCnt)
                         ch += this._items[i].height + this._rowGap;
                     if (ch > 0)
                         ch -= this._rowGap;
-                    if (this._stretchX == exports.StretchMode.Stretch)
+                    if (this._stretchX === exports.StretchMode.Stretch)
                         cw = vw;
                     else {
                         for (let i = 0; i < len2; i++)
@@ -4736,7 +5003,7 @@
                         cw += this._items[i].width + this._columnGap;
                     if (cw > 0)
                         cw -= this._columnGap;
-                    if (this._stretchY == exports.StretchMode.Stretch)
+                    if (this._stretchY === exports.StretchMode.Stretch)
                         ch = vh;
                     else {
                         for (let i = 0; i < len2; i++)
@@ -4748,17 +5015,17 @@
                 this._offsetX = 0;
                 this._offsetY = 0;
                 if (cw < vw) {
-                    if (this._align == 1)
+                    if (this._align === 1)
                         this._offsetX = (vw - cw) / 2;
-                    else if (this._align == 2)
+                    else if (this._align === 2)
                         this._offsetX = vw - cw;
                     if (!this._owner.scroller)
                         this._offsetX += this._padding[3];
                 }
                 if (ch < vh) {
-                    if (this._valign == 1)
+                    if (this._valign === 1)
                         this._offsetY = (vh - ch) / 2;
-                    else if (this._valign == 2)
+                    else if (this._valign === 2)
                         this._offsetY = vh - ch;
                     if (!this._owner.scroller)
                         this._offsetY += this._padding[0];
@@ -4777,7 +5044,7 @@
                 return 0;
             }
             if (this._owner.numChildren > 0 && !forceUpdate) {
-                let pos2 = this._owner.getChildAt(0).y;
+                let pos2 = this._owner.getChildAt(0).top;
                 if (pos2 > s_n) {
                     for (let i = this._firstIndex - this._lineItemCnt; i >= 0; i -= this._lineItemCnt) {
                         pos2 -= (this._items[i].height + this._rowGap);
@@ -4822,7 +5089,7 @@
                 return 0;
             }
             if (this._owner.numChildren > 0 && !forceUpdate) {
-                let pos2 = this._owner.getChildAt(0).x;
+                let pos2 = this._owner.getChildAt(0).left;
                 if (pos2 > s_n) {
                     for (let i = this._firstIndex - this._lineItemCnt; i >= 0; i -= this._lineItemCnt) {
                         pos2 -= (this._items[i].width + this._columnGap);
@@ -4905,12 +5172,12 @@
             if (this._eventLocked)
                 return;
             if (this._pageMode) {
-                if (this._type == exports.LayoutType.SingleRow || this._type == exports.LayoutType.FlowX)
+                if (this._type === exports.LayoutType.SingleRow || this._type === exports.LayoutType.FlowX)
                     this.handleScroll3(forceUpdate);
                 else
                     this.handleScroll4(forceUpdate);
             }
-            else if (this._type == exports.LayoutType.SingleColumn || this._type == exports.LayoutType.FlowX) {
+            else if (this._type === exports.LayoutType.SingleColumn || this._type === exports.LayoutType.FlowX) {
                 let enterCounter = 0;
                 while (this.handleScroll1(forceUpdate)) {
                     enterCounter++;
@@ -4938,11 +5205,11 @@
             let scroller = this._owner.scroller;
             let pos = scroller.scrollingPosY;
             let max = pos + scroller.viewHeight;
-            let end = max == scroller.contentHeight;
+            let end = max === scroller.contentHeight;
             s_n = pos;
             let newFirstIndex = this.getIndexOnPos1(forceUpdate);
             pos = s_n;
-            if (newFirstIndex == this._firstIndex && !forceUpdate)
+            if (newFirstIndex === this._firstIndex && !forceUpdate)
                 return false;
             let oldFirstIndex = this._firstIndex;
             this._firstIndex = newFirstIndex;
@@ -4977,12 +5244,12 @@
                     if (forward) {
                         for (let j = reuseIndex; j >= oldFirstIndex; j--) {
                             let ii2 = this._items[j];
-                            if (ii2.obj && ii2.flag != this._itemInfoVer && ii2.obj.url == url) {
+                            if (ii2.obj && ii2.flag !== this._itemInfoVer && ii2.obj.url == url) {
                                 if (ii2.obj instanceof GButton)
                                     ii2.selected = ii2.obj.selected;
                                 ii.obj = ii2.obj;
                                 ii2.obj = null;
-                                if (j == reuseIndex)
+                                if (j === reuseIndex)
                                     reuseIndex--;
                                 break;
                             }
@@ -4991,12 +5258,12 @@
                     else {
                         for (let j = reuseIndex; j <= lastIndex; j++) {
                             let ii2 = this._items[j];
-                            if (ii2.obj && ii2.flag != this._itemInfoVer && ii2.obj.url == url) {
+                            if (ii2.obj && ii2.flag !== this._itemInfoVer && ii2.obj.url == url) {
                                 if (ii2.obj instanceof GButton)
                                     ii2.selected = ii2.obj.selected;
                                 ii.obj = ii2.obj;
                                 ii2.obj = null;
-                                if (j == reuseIndex)
+                                if (j === reuseIndex)
                                     reuseIndex++;
                                 break;
                             }
@@ -5006,7 +5273,7 @@
                         this._owner.setChildIndex(ii.obj, forward ? curIndex - newFirstIndex : this._owner.numChildren);
                     }
                     else {
-                        ii.obj = pool.getObject(url);
+                        ii.obj = pool.take(url);
                         if (forward)
                             this._owner.addChildAt(ii.obj, curIndex - newFirstIndex);
                         else
@@ -5020,13 +5287,13 @@
                     needRender = forceUpdate;
                 if (needRender) {
                     let k = curIndex % this._lineItemCnt;
-                    if (this._stretchX == exports.StretchMode.Stretch)
+                    if (this._stretchX === exports.StretchMode.Stretch)
                         ii.obj.size(this._itemSizes[k], ii.obj.height);
                     this._owner.itemRenderer(curIndex % this._numItems, ii.obj);
                     Layout.refreshAllLayouts(this._owner);
-                    if (k == 0) {
+                    if (k === 0) {
                         deltaSize += Math.ceil(ii.obj.height) - ii.height;
-                        if (curIndex == newFirstIndex && oldFirstIndex > newFirstIndex) {
+                        if (curIndex === newFirstIndex && oldFirstIndex > newFirstIndex) {
                             firstItemDeltaSize = Math.ceil(ii.obj.height) - ii.height;
                         }
                     }
@@ -5034,11 +5301,11 @@
                     ii.height = Math.ceil(ii.obj.height);
                 }
                 ii.flag = this._itemInfoVer;
-                ii.obj.pos(this._offsetX + curX, curY);
-                if (curIndex == newFirstIndex)
+                ii.obj.setLeftTop(this._offsetX + curX, curY);
+                if (curIndex === newFirstIndex)
                     max += ii.height;
                 curX += ii.width + this._columnGap;
-                if (curIndex % this._lineItemCnt == this._lineItemCnt - 1) {
+                if (curIndex % this._lineItemCnt === this._lineItemCnt - 1) {
                     curX = 0;
                     curY += ii.height + this._rowGap;
                 }
@@ -5046,7 +5313,7 @@
             }
             for (let i = 0; i < childCount; i++) {
                 let ii = this._items[oldFirstIndex + i];
-                if (ii.flag != this._itemInfoVer && ii.obj) {
+                if (ii.flag !== this._itemInfoVer && ii.obj) {
                     if (ii.obj instanceof GButton)
                         ii.selected = ii.obj.selected;
                     this._owner.removeChildToPool(ii.obj);
@@ -5065,13 +5332,13 @@
             }
             let deltaWidth = 0;
             let checkOverflow;
-            if (this._type == exports.LayoutType.SingleColumn && (checkOverflow = scroller._shouldCheckOverflow()) != 0) {
+            if (this._type === exports.LayoutType.SingleColumn && (checkOverflow = scroller._shouldCheckOverflow()) !== 0) {
                 let resize;
-                if ((checkOverflow & 2) != 0) {
+                if ((checkOverflow & 2) !== 0) {
                     deltaWidth = maxWidth - scroller.contentWidth;
                     resize = Math.abs(deltaWidth) >= 1;
                 }
-                if ((checkOverflow & 1) != 0 && scroller.contentHeight < scroller.viewHeight && maxWidth <= scroller.viewWidth) {
+                if ((checkOverflow & 1) !== 0 && scroller.contentHeight < scroller.viewHeight && maxWidth <= scroller.viewWidth) {
                     maxWidth = scroller.viewWidth + scroller.vScrollBar.width;
                     resize = true;
                 }
@@ -5082,9 +5349,9 @@
                     }
                 }
             }
-            if (deltaWidth != 0 || deltaSize != 0 || firstItemDeltaSize != 0)
+            if (deltaWidth !== 0 || deltaSize !== 0 || firstItemDeltaSize !== 0)
                 scroller._changeContentSizeOnScrolling(deltaWidth, deltaSize, 0, firstItemDeltaSize);
-            if (curIndex > 0 && this._owner.numChildren > 0 && this._owner._$container.y <= 0 && this._owner.getChildAt(0).y > -this._owner._$container.y)
+            if (curIndex > 0 && this._owner.numChildren > 0 && this._owner._$container.y <= 0 && this._owner.getChildAt(0).top > -this._owner._$container.y)
                 return true;
             else
                 return false;
@@ -5092,11 +5359,11 @@
         handleScroll2(forceUpdate) {
             let pos = this._owner.scroller.scrollingPosX;
             let max = pos + this._owner.scroller.viewWidth;
-            let end = max == this._owner.scroller.contentWidth;
+            let end = max === this._owner.scroller.contentWidth;
             s_n = pos;
             let newFirstIndex = this.getIndexOnPos2(forceUpdate);
             pos = s_n;
-            if (newFirstIndex == this._firstIndex && !forceUpdate)
+            if (newFirstIndex === this._firstIndex && !forceUpdate)
                 return false;
             let oldFirstIndex = this._firstIndex;
             this._firstIndex = newFirstIndex;
@@ -5131,12 +5398,12 @@
                     if (forward) {
                         for (let j = reuseIndex; j >= oldFirstIndex; j--) {
                             let ii2 = this._items[j];
-                            if (ii2.obj && ii2.flag != this._itemInfoVer && ii2.obj.url == url) {
+                            if (ii2.obj && ii2.flag !== this._itemInfoVer && ii2.obj.url == url) {
                                 if (ii2.obj instanceof GButton)
                                     ii2.selected = ii2.obj.selected;
                                 ii.obj = ii2.obj;
                                 ii2.obj = null;
-                                if (j == reuseIndex)
+                                if (j === reuseIndex)
                                     reuseIndex--;
                                 break;
                             }
@@ -5145,12 +5412,12 @@
                     else {
                         for (let j = reuseIndex; j <= lastIndex; j++) {
                             let ii2 = this._items[j];
-                            if (ii2.obj && ii2.flag != this._itemInfoVer && ii2.obj.url == url) {
+                            if (ii2.obj && ii2.flag !== this._itemInfoVer && ii2.obj.url == url) {
                                 if (ii2.obj instanceof GButton)
                                     ii2.selected = ii2.obj.selected;
                                 ii.obj = ii2.obj;
                                 ii2.obj = null;
-                                if (j == reuseIndex)
+                                if (j === reuseIndex)
                                     reuseIndex++;
                                 break;
                             }
@@ -5160,7 +5427,7 @@
                         this._owner.setChildIndex(ii.obj, forward ? curIndex - newFirstIndex : this._owner.numChildren);
                     }
                     else {
-                        ii.obj = pool.getObject(url);
+                        ii.obj = pool.take(url);
                         if (forward)
                             this._owner.addChildAt(ii.obj, curIndex - newFirstIndex);
                         else
@@ -5174,13 +5441,13 @@
                     needRender = forceUpdate;
                 if (needRender) {
                     let k = curIndex % this._lineItemCnt;
-                    if (this._stretchY == exports.StretchMode.Stretch)
+                    if (this._stretchY === exports.StretchMode.Stretch)
                         ii.obj.size(ii.obj.width, this._itemSizes[k]);
                     this._owner.itemRenderer(curIndex % this._numItems, ii.obj);
                     Layout.refreshAllLayouts(this._owner);
                     if (k == 0) {
                         deltaSize += Math.ceil(ii.obj.width) - ii.width;
-                        if (curIndex == newFirstIndex && oldFirstIndex > newFirstIndex) {
+                        if (curIndex === newFirstIndex && oldFirstIndex > newFirstIndex) {
                             firstItemDeltaSize = Math.ceil(ii.obj.width) - ii.width;
                         }
                     }
@@ -5188,11 +5455,11 @@
                     ii.height = Math.ceil(ii.obj.height);
                 }
                 ii.flag = this._itemInfoVer;
-                ii.obj.pos(curX, this._offsetY + curY);
-                if (curIndex == newFirstIndex)
+                ii.obj.setLeftTop(curX, this._offsetY + curY);
+                if (curIndex === newFirstIndex)
                     max += ii.width;
                 curY += ii.height + this._rowGap;
-                if (curIndex % this._lineItemCnt == this._lineItemCnt - 1) {
+                if (curIndex % this._lineItemCnt === this._lineItemCnt - 1) {
                     curY = 0;
                     curX += ii.width + this._columnGap;
                 }
@@ -5200,7 +5467,7 @@
             }
             for (let i = 0; i < childCount; i++) {
                 let ii = this._items[oldFirstIndex + i];
-                if (ii.flag != this._itemInfoVer && ii.obj) {
+                if (ii.flag !== this._itemInfoVer && ii.obj) {
                     if (ii.obj instanceof GButton)
                         ii.selected = ii.obj.selected;
                     this._owner.removeChildToPool(ii.obj);
@@ -5213,9 +5480,9 @@
                 if (this._owner.children[i] != obj)
                     this._owner.setChildIndex(obj, i);
             }
-            if (deltaSize != 0 || firstItemDeltaSize != 0)
+            if (deltaSize !== 0 || firstItemDeltaSize !== 0)
                 this._owner.scroller._changeContentSizeOnScrolling(deltaSize, 0, firstItemDeltaSize, 0);
-            if (curIndex > 0 && this._owner.numChildren > 0 && this._owner._$container.x <= 0 && this._owner.getChildAt(0).x > -this._owner._$container.x)
+            if (curIndex > 0 && this._owner.numChildren > 0 && this._owner._$container.x <= 0 && this._owner.getChildAt(0).left > -this._owner._$container.x)
                 return true;
             else
                 return false;
@@ -5225,7 +5492,7 @@
             s_n = pos;
             let newFirstIndex = this.getIndexOnPos3(forceUpdate);
             pos = s_n;
-            if (newFirstIndex == this._firstIndex && !forceUpdate)
+            if (newFirstIndex === this._firstIndex && !forceUpdate)
                 return;
             let oldFirstIndex = this._firstIndex;
             this._firstIndex = newFirstIndex;
@@ -5240,10 +5507,10 @@
             let lastIndex = startIndex + pageSize * 2;
             let needRender;
             let partWidth, partHeight;
-            if (this._stretchX == exports.StretchMode.Stretch || this._stretchY == exports.StretchMode.Stretch) {
-                if (this._lineItemCnt == this._columns)
+            if (this._stretchX === exports.StretchMode.Stretch || this._stretchY === exports.StretchMode.Stretch) {
+                if (this._lineItemCnt === this._columns)
                     partWidth = (vw - this._columnGap * (this._lineItemCnt - 1)) / this._lineItemCnt;
-                if (this._lineItemCnt2 == this._rows)
+                if (this._lineItemCnt2 === this._rows)
                     partHeight = (vh - this._rowGap * (this._lineItemCnt2 - 1)) / this._lineItemCnt2;
             }
             let pool = this._owner.itemPool;
@@ -5269,12 +5536,12 @@
                 if (i >= this._realNumItems)
                     continue;
                 let ii = this._items[i];
-                if (ii.flag != this._itemInfoVer)
+                if (ii.flag !== this._itemInfoVer)
                     continue;
                 if (ii.obj == null) {
                     while (reuseIndex < virtualItemCount) {
                         let ii2 = this._items[reuseIndex];
-                        if (ii2.obj && ii2.flag != this._itemInfoVer) {
+                        if (ii2.obj && ii2.flag !== this._itemInfoVer) {
                             if (ii2.obj instanceof GButton)
                                 ii2.selected = ii2.obj.selected;
                             ii.obj = ii2.obj;
@@ -5283,7 +5550,7 @@
                         }
                         reuseIndex++;
                     }
-                    if (insertIndex == -1)
+                    if (insertIndex === -1)
                         insertIndex = this._owner.getChildIndex(lastObj) + 1;
                     if (ii.obj == null) {
                         if (this._owner.itemProvider) {
@@ -5291,7 +5558,7 @@
                             if (!url)
                                 url = pool.defaultRes.url;
                         }
-                        ii.obj = pool.getObject(url);
+                        ii.obj = pool.take(url);
                         this._owner.addChildAt(ii.obj, insertIndex);
                     }
                     else {
@@ -5324,15 +5591,15 @@
                 if (i >= this._realNumItems)
                     continue;
                 let ii = this._items[i];
-                if (ii.flag == this._itemInfoVer)
-                    ii.obj.pos(xx, yy);
+                if (ii.flag === this._itemInfoVer)
+                    ii.obj.setLeftTop(xx, yy);
                 if (ii.height > lineHeight)
                     lineHeight = ii.height;
-                if (i % this._lineItemCnt == this._lineItemCnt - 1) {
+                if (i % this._lineItemCnt === this._lineItemCnt - 1) {
                     xx = borderX;
                     yy += lineHeight + this._rowGap;
                     lineHeight = 0;
-                    if (i == startIndex + pageSize - 1) {
+                    if (i === startIndex + pageSize - 1) {
                         borderX += vw;
                         xx = borderX;
                         yy = 0;
@@ -5343,7 +5610,7 @@
             }
             for (let i = reuseIndex; i < virtualItemCount; i++) {
                 let ii = this._items[i];
-                if (ii.flag != this._itemInfoVer && ii.obj) {
+                if (ii.flag !== this._itemInfoVer && ii.obj) {
                     if (ii.obj instanceof GButton)
                         ii.selected = ii.obj.selected;
                     this._owner.removeChildToPool(ii.obj);
@@ -5356,7 +5623,7 @@
             s_n = pos;
             let newFirstIndex = this.getIndexOnPos4(forceUpdate);
             pos = s_n;
-            if (newFirstIndex == this._firstIndex && !forceUpdate)
+            if (newFirstIndex === this._firstIndex && !forceUpdate)
                 return;
             let oldFirstIndex = this._firstIndex;
             this._firstIndex = newFirstIndex;
@@ -5371,10 +5638,10 @@
             let lastIndex = startIndex + pageSize * 2;
             let needRender;
             let partWidth, partHeight;
-            if (this._stretchX == exports.StretchMode.Stretch || this._stretchY == exports.StretchMode.Stretch) {
-                if (this._lineItemCnt2 == this._columns)
+            if (this._stretchX === exports.StretchMode.Stretch || this._stretchY === exports.StretchMode.Stretch) {
+                if (this._lineItemCnt2 === this._columns)
                     partWidth = (vw - this._columnGap * (this._lineItemCnt2 - 1)) / this._lineItemCnt2;
-                if (this._lineItemCnt == this._rows)
+                if (this._lineItemCnt === this._rows)
                     partHeight = (vh - this._rowGap * (this._lineItemCnt - 1)) / this._lineItemCnt;
             }
             let pool = this._owner.itemPool;
@@ -5401,12 +5668,12 @@
                 if (i >= this._realNumItems)
                     continue;
                 let ii = this._items[i];
-                if (ii.flag != this._itemInfoVer)
+                if (ii.flag !== this._itemInfoVer)
                     continue;
                 if (ii.obj == null) {
                     while (reuseIndex < virtualItemCount) {
                         let ii2 = this._items[reuseIndex];
-                        if (ii2.obj && ii2.flag != this._itemInfoVer) {
+                        if (ii2.obj && ii2.flag !== this._itemInfoVer) {
                             if (ii2.obj instanceof GButton)
                                 ii2.selected = ii2.obj.selected;
                             ii.obj = ii2.obj;
@@ -5415,7 +5682,7 @@
                         }
                         reuseIndex++;
                     }
-                    if (insertIndex == -1)
+                    if (insertIndex === -1)
                         insertIndex = this._owner.getChildIndex(lastObj) + 1;
                     if (ii.obj == null) {
                         if (this._owner.itemProvider) {
@@ -5423,7 +5690,7 @@
                             if (!url)
                                 url = pool.defaultRes.url;
                         }
-                        ii.obj = pool.getObject(url);
+                        ii.obj = pool.take(url);
                         this._owner.addChildAt(ii.obj, insertIndex);
                     }
                     else {
@@ -5456,15 +5723,15 @@
                 if (i >= this._realNumItems)
                     continue;
                 let ii = this._items[i];
-                if (ii.flag == this._itemInfoVer)
-                    ii.obj.pos(xx, yy);
+                if (ii.flag === this._itemInfoVer)
+                    ii.obj.setLeftTop(xx, yy);
                 if (ii.width > lineWidth)
                     lineWidth = ii.width;
-                if (i % this._lineItemCnt == this._lineItemCnt - 1) {
+                if (i % this._lineItemCnt === this._lineItemCnt - 1) {
                     xx += lineWidth + this._columnGap;
                     yy = borderY;
                     lineWidth = 0;
-                    if (i == startIndex + pageSize - 1) {
+                    if (i === startIndex + pageSize - 1) {
                         borderY += vh;
                         xx = 0;
                         yy = borderY;
@@ -5475,7 +5742,7 @@
             }
             for (let i = reuseIndex; i < virtualItemCount; i++) {
                 let ii = this._items[i];
-                if (ii.flag != this._itemInfoVer && ii.obj) {
+                if (ii.flag !== this._itemInfoVer && ii.obj) {
                     if (ii.obj instanceof GButton)
                         ii.selected = ii.obj.selected;
                     this._owner.removeChildToPool(ii.obj);
@@ -6182,9 +6449,7 @@
             if (this._clipping != value) {
                 this._clipping = value;
                 if (this._clipping) {
-                    if (!this._cachedScrollRect)
-                        this._cachedScrollRect = new Laya.Rectangle(0, 0, this.width, this.height);
-                    this.scrollRect = this._cachedScrollRect;
+                    this.scrollRect = new Laya.Rectangle(0, 0, this.width, this.height);
                 }
                 else
                     this.scrollRect = null;
@@ -6222,8 +6487,8 @@
             return null;
         }
         _sizeChanged(changeByLayout) {
-            if (this._cachedScrollRect)
-                this._cachedScrollRect.setTo(0, 0, this.width, this.height);
+            if (this._scrollRect)
+                this.scrollRect = this._scrollRect.setTo(0, 0, this.width, this.height);
             if (this._scroller)
                 this._scroller._ownerSizeChanged();
             if (changeByLayout)
@@ -6271,13 +6536,13 @@
             return this._pool;
         }
         getFromPool(url) {
-            let obj = this._pool.getObject(url);
+            let obj = this._pool.take(url);
             if (obj)
                 obj.visible = true;
             return obj;
         }
         returnToPool(obj) {
-            this._pool.returnObject(obj);
+            this._pool.recover(obj);
         }
         addItemFromPool(url) {
             let child = this.getFromPool(url);
@@ -6340,7 +6605,7 @@
         }
         onAfterDeserialize() {
             super.onAfterDeserialize();
-            if (Laya.SerializeUtil.hasProp("_initItemNum", "_itemData") && (Laya.LayaEnv.isPreview || !this._isDemo))
+            if (Laya.SerializeUtil.hasProp("_initItemNum", "_itemData") && (Laya.LayaEnv.isPreview || !Laya.SerializeUtil._data._isDemo))
                 this._buildInitItems();
         }
         _buildInitItems() {
@@ -6358,7 +6623,8 @@
                     let child = (m.res ? m.res.create() : this.getFromPool());
                     child.hideFlags |= Laya.HideFlags.HideAndDontSave;
                     child.text = m.title;
-                    child.icon = m.icon;
+                    if (m.icon)
+                        child.icon = m.icon;
                     if (child instanceof GButton) {
                         if (m.selectedTitle)
                             child.selectedTitle = m.selectedTitle;
@@ -6374,256 +6640,6 @@
                     this.addItemFromPool();
             }
             this.selection._refresh();
-        }
-    }
-
-    class GLoader extends GWidget {
-        constructor() {
-            super();
-            this._frame = 0;
-            this._autoPlay = true;
-            this._loop = true;
-            this._srcWidth = 0;
-            this._srcHeight = 0;
-            this._loadId = 0;
-            this._src = "";
-            this._color = "#ffffff";
-            this._fitMode = exports.LoaderFitMode.Contain;
-            this._shrinkOnly = false;
-            this._align = exports.AlignType.Center;
-            this._valign = exports.VAlignType.Middle;
-            this._content = new Laya.Sprite();
-            this._content.hideFlags |= Laya.HideFlags.HideAndDontSave;
-            this._renderer = new ImageRenderer(this._content);
-            this._renderer._onReload = () => this.onTextureReload();
-            this.addChild(this._content);
-        }
-        get src() {
-            return this._src;
-        }
-        set src(value) {
-            if (value == null)
-                value = "";
-            if (this._src == value)
-                return;
-            this._src = value;
-            if (value)
-                this.loadContent();
-            else
-                this.clearContent();
-        }
-        get icon() {
-            return this._src;
-        }
-        set icon(value) {
-            this.src = value;
-        }
-        get align() {
-            return this._align;
-        }
-        set align(value) {
-            if (this._align != value) {
-                this._align = value;
-                Laya.ILaya.timer.callLater(this, this.updateLayout);
-            }
-        }
-        get valign() {
-            return this._valign;
-        }
-        set valign(value) {
-            if (this._valign != value) {
-                this._valign = value;
-                Laya.ILaya.timer.callLater(this, this.updateLayout);
-            }
-        }
-        get fitMode() {
-            return this._fitMode;
-        }
-        set fitMode(value) {
-            if (this._fitMode != value) {
-                this._fitMode = value;
-                Laya.ILaya.timer.callLater(this, this.updateLayout);
-            }
-        }
-        get shrinkOnly() {
-            return this._shrinkOnly;
-        }
-        set shrinkOnly(value) {
-            if (this._shrinkOnly != value) {
-                this._shrinkOnly = value;
-                Laya.ILaya.timer.callLater(this, this.updateLayout);
-            }
-        }
-        get color() {
-            return this._color;
-        }
-        set color(value) {
-            this._color = value;
-            this._renderer.setColor(value);
-            if (this._ani)
-                this._ani.color = this._ani.color.parse(value);
-        }
-        get ani() {
-            return this._ani;
-        }
-        get frame() {
-            return this._frame;
-        }
-        set frame(value) {
-            this._frame = value;
-            if (this._ani)
-                this._ani.frame = value;
-        }
-        get autoPlay() {
-            return this._autoPlay;
-        }
-        set autoPlay(value) {
-            this._autoPlay = value;
-            if (this._ani)
-                this._ani.autoPlay = value;
-        }
-        get loop() {
-            return this._loop;
-        }
-        set loop(value) {
-            this._loop = value;
-            if (this._ani)
-                this._ani.loop = value;
-        }
-        get texture() {
-            return this._renderer._tex;
-        }
-        set texture(value) {
-            this._src = "instance-0";
-            this.onLoaded(value, ++this._loadId);
-        }
-        get mesh() {
-            return this._renderer._meshFactory;
-        }
-        set mesh(value) {
-            this._renderer.setMesh(value);
-        }
-        updateMesh() {
-            this._renderer.updateMesh();
-        }
-        async loadContent() {
-            let loadID = ++this._loadId;
-            let res = Laya.Loader.getRes(this._src);
-            if (!res)
-                res = await Laya.ILaya.loader.load(this._src, { maybeType: Laya.Loader.IMAGE });
-            this.onLoaded(res, loadID);
-        }
-        onLoaded(value, loadID) {
-            if (this._loadId != loadID || this.destroyed)
-                return;
-            if (value instanceof Laya.Texture) {
-                if (this._ani)
-                    this._ani.setAtlas(null);
-                this._renderer.setTexture(value);
-                this._srcWidth = value.sourceWidth;
-                this._srcHeight = value.sourceHeight;
-            }
-            else if (value instanceof Laya.AtlasResource) {
-                this._renderer.setTexture(null);
-                if (!this._ani) {
-                    this._ani = this._content.addComponent(Laya.FrameAnimation);
-                    this._ani.color = this._ani.color.parse(this._color);
-                    this._ani.stretchMode = Laya.AnimationStretchMode.Fill;
-                    this._ani.autoPlay = this._autoPlay;
-                    this._ani.loop = this._loop;
-                    this._ani.frame = this._frame;
-                }
-                this._ani.setAtlas(value);
-                this._srcWidth = this._ani.width;
-                this._srcHeight = this._ani.height;
-            }
-            else {
-                this._renderer.setTexture(null);
-                if (this._ani)
-                    this._ani.setAtlas(null);
-                this._srcWidth = 0;
-                this._srcHeight = 0;
-            }
-            Laya.ILaya.timer.runCallLater(this, this.updateLayout, true);
-            this.event(Laya.Event.LOADED);
-        }
-        onTextureReload() {
-            let tex = this._renderer._tex;
-            this._srcWidth = tex.sourceWidth;
-            this._srcHeight = tex.sourceHeight;
-            Laya.ILaya.timer.runCallLater(this, this.updateLayout, true);
-            this.event(Laya.Event.LOADED);
-        }
-        clearContent() {
-            this._srcWidth = 0;
-            this._srcHeight = 0;
-            this._loadId++;
-            this._renderer.setTexture(null);
-            if (this._ani)
-                this._ani.source = null;
-        }
-        updateLayout() {
-            let cw = this._srcWidth, ch = this._srcHeight;
-            if (cw == 0 || ch == 0)
-                return;
-            this._updatingLayout = true;
-            let sx = 1, sy = 1;
-            if (this._fitMode != exports.LoaderFitMode.None && cw != 0 && ch != 0) {
-                sx = this.width / cw;
-                sy = this.height / ch;
-                if (sx != 1 || sy != 1) {
-                    if (this._fitMode == exports.LoaderFitMode.CoverHeight)
-                        sx = sy;
-                    else if (this._fitMode == exports.LoaderFitMode.CoverWidth)
-                        sy = sx;
-                    else if (this._fitMode == exports.LoaderFitMode.Contain) {
-                        if (sx > sy)
-                            sx = sy;
-                        else
-                            sy = sx;
-                    }
-                    else if (this._fitMode == exports.LoaderFitMode.Cover) {
-                        if (sx > sy)
-                            sy = sx;
-                        else
-                            sx = sy;
-                    }
-                    if (this._shrinkOnly) {
-                        if (sx > 1)
-                            sx = 1;
-                        if (sy > 1)
-                            sy = 1;
-                    }
-                    cw = cw * sx;
-                    ch = ch * sy;
-                }
-            }
-            this._content.size(cw, ch);
-            this._renderer.updateMesh(false);
-            let nx, ny;
-            if (this._align == exports.AlignType.Center)
-                nx = Math.floor((this.width - cw) / 2);
-            else if (this._align == exports.AlignType.Right)
-                nx = this.width - cw;
-            else
-                nx = 0;
-            if (this._valign == exports.VAlignType.Middle)
-                ny = Math.floor((this.height - ch) / 2);
-            else if (this._valign == exports.VAlignType.Bottom)
-                ny = this.height - ch;
-            else
-                ny = 0;
-            this._content.pos(nx, ny);
-            this._updatingLayout = false;
-        }
-        _sizeChanged() {
-            super._sizeChanged();
-            if (!this._updatingLayout)
-                Laya.ILaya.timer.callLater(this, this.updateLayout);
-        }
-        destroy() {
-            super.destroy();
-            this._renderer.destroy();
         }
     }
 
@@ -6667,6 +6683,9 @@
         set frame(value) {
             this.comp.frame = value;
         }
+        get isPlaying() {
+            return this.comp.isPlaying;
+        }
         get autoPlay() {
             return this.comp.autoPlay;
         }
@@ -6690,345 +6709,6 @@
             if (!changeByLayout && !Laya.SerializeUtil.isDeserializing)
                 this.autoSize = false;
         }
-    }
-
-    exports.FillMethod = void 0;
-    (function (FillMethod) {
-        FillMethod[FillMethod["None"] = 0] = "None";
-        FillMethod[FillMethod["Horizontal"] = 1] = "Horizontal";
-        FillMethod[FillMethod["Vertical"] = 2] = "Vertical";
-        FillMethod[FillMethod["Radial90"] = 3] = "Radial90";
-        FillMethod[FillMethod["Radial180"] = 4] = "Radial180";
-        FillMethod[FillMethod["Radial360"] = 5] = "Radial360";
-    })(exports.FillMethod || (exports.FillMethod = {}));
-    exports.FillOrigin = void 0;
-    (function (FillOrigin) {
-        FillOrigin[FillOrigin["Top"] = 0] = "Top";
-        FillOrigin[FillOrigin["Bottom"] = 1] = "Bottom";
-        FillOrigin[FillOrigin["Left"] = 2] = "Left";
-        FillOrigin[FillOrigin["Right"] = 3] = "Right";
-        FillOrigin[FillOrigin["TopLeft"] = 0] = "TopLeft";
-        FillOrigin[FillOrigin["TopRight"] = 1] = "TopRight";
-        FillOrigin[FillOrigin["BottomLeft"] = 2] = "BottomLeft";
-        FillOrigin[FillOrigin["BottomRight"] = 3] = "BottomRight";
-    })(exports.FillOrigin || (exports.FillOrigin = {}));
-    class ProgressMesh {
-        constructor() {
-            this.origin = 0;
-            this.amount = 0.6;
-            this.clockwise = false;
-            this._method = 5;
-        }
-        get method() {
-            return this._method;
-        }
-        set method(value) {
-            if (this._method != value) {
-                this._method = value;
-                if (!Laya.LayaEnv.isPlaying
-                    && (value === exports.FillMethod.Horizontal || value === exports.FillMethod.Vertical)
-                    && this.origin > 1)
-                    this.origin = 0;
-            }
-        }
-        onPopulateMesh(vb) {
-            let amount = Laya.MathUtil.clamp01(this.amount);
-            switch (this.method) {
-                case exports.FillMethod.Horizontal:
-                    fillHorizontal(vb, vb.contentRect, this.origin, amount);
-                    break;
-                case exports.FillMethod.Vertical:
-                    fillVertical(vb, vb.contentRect, this.origin, amount);
-                    break;
-                case exports.FillMethod.Radial90:
-                    fillRadial90(vb, vb.contentRect, this.origin, amount, this.clockwise);
-                    break;
-                case exports.FillMethod.Radial180:
-                    fillRadial180(vb, vb.contentRect, this.origin, amount, this.clockwise);
-                    break;
-                case exports.FillMethod.Radial360:
-                    fillRadial360(vb, vb.contentRect, this.origin, amount, this.clockwise);
-                    break;
-                default:
-                    vb.addQuad(vb.contentRect);
-                    vb.triangulateQuad(0);
-                    break;
-            }
-        }
-    }
-    function fillHorizontal(vb, vertRect, origin, amount) {
-        const tmpRect = Laya.Rectangle.create();
-        let rect = tmpRect.copyFrom(vertRect);
-        let a = rect.width * amount;
-        if (origin === exports.FillOrigin.Right || origin === exports.FillOrigin.Bottom)
-            rect.x += (rect.width - a);
-        rect.width = a;
-        vb.addQuad(rect);
-        vb.triangulateQuad(0);
-        tmpRect.recover();
-    }
-    function fillVertical(vb, vertRect, origin, amount) {
-        const tmpRect = Laya.Rectangle.create();
-        let rect = tmpRect.copyFrom(vertRect);
-        let a = rect.height * amount;
-        if (origin === exports.FillOrigin.Right || origin === exports.FillOrigin.Bottom)
-            rect.y += (rect.height - a);
-        rect.height = a;
-        vb.addQuad(rect);
-        vb.triangulateQuad(0);
-        tmpRect.recover();
-    }
-    function fillRadial90(vb, vertRect, origin, amount, clockwise) {
-        let flipX = origin === exports.FillOrigin.TopRight || origin === exports.FillOrigin.BottomRight;
-        let flipY = origin === exports.FillOrigin.BottomLeft || origin === exports.FillOrigin.BottomRight;
-        if (flipX !== flipY)
-            clockwise = !clockwise;
-        let ratio = clockwise ? amount : (1 - amount);
-        let tan = Math.tan(Math.PI * 0.5 * ratio);
-        let thresold = false;
-        if (ratio !== 1)
-            thresold = (vertRect.height / vertRect.width - tan) > 0;
-        if (!clockwise)
-            thresold = !thresold;
-        let x = vertRect.x + (ratio === 0 ? Number.MAX_VALUE : (vertRect.height / tan));
-        let y = vertRect.y + (ratio === 1 ? Number.MAX_VALUE : (vertRect.width * tan));
-        let x2 = x;
-        let y2 = y;
-        if (flipX)
-            x2 = vertRect.width - x;
-        if (flipY)
-            y2 = vertRect.height - y;
-        let xMin = flipX ? (vertRect.width - vertRect.x) : vertRect.x;
-        let yMin = flipY ? (vertRect.height - vertRect.y) : vertRect.y;
-        let xMax = flipX ? -vertRect.x : vertRect.right;
-        let yMax = flipY ? -vertRect.y : vertRect.bottom;
-        vb.addVert(xMin, yMin, 0);
-        if (clockwise)
-            vb.addVert(xMax, yMin, 0);
-        if (y > vertRect.bottom) {
-            if (thresold)
-                vb.addVert(x2, yMax, 0);
-            else
-                vb.addVert(xMax, yMax, 0);
-        }
-        else
-            vb.addVert(xMax, y2, 0);
-        if (x > vertRect.right) {
-            if (thresold)
-                vb.addVert(xMax, y2, 0);
-            else
-                vb.addVert(xMax, yMax, 0);
-        }
-        else
-            vb.addVert(x2, yMax, 0);
-        if (!clockwise)
-            vb.addVert(xMin, yMax, 0);
-        if (flipX === flipY) {
-            vb.addTriangle(0, 1, 2);
-            vb.addTriangle(0, 2, 3);
-        }
-        else {
-            vb.addTriangle(2, 1, 0);
-            vb.addTriangle(3, 2, 0);
-        }
-    }
-    function fillRadial180(vb, vertRect, origin, amount, clockwise) {
-        const tmpRect = Laya.Rectangle.create();
-        let rect = tmpRect.copyFrom(vertRect);
-        switch (origin) {
-            case exports.FillOrigin.Top:
-                if (amount <= 0.5) {
-                    rect.width /= 2;
-                    if (clockwise)
-                        rect.x += rect.width;
-                    fillRadial90(vb, rect, clockwise ? exports.FillOrigin.TopLeft : exports.FillOrigin.TopRight, amount / 0.5, clockwise);
-                    let vec = vb.getPos(-4);
-                    vb.addQuad(Laya.Rectangle.TEMP.setTo(vec.x, vec.y, 0, 0));
-                    vb.triangulateQuad(-4);
-                }
-                else {
-                    rect.width /= 2;
-                    if (!clockwise)
-                        rect.x += rect.width;
-                    fillRadial90(vb, rect, clockwise ? exports.FillOrigin.TopRight : exports.FillOrigin.TopLeft, (amount - 0.5) / 0.5, clockwise);
-                    if (clockwise)
-                        rect.x += rect.width;
-                    else
-                        rect.x -= rect.width;
-                    vb.addQuad(rect);
-                    vb.triangulateQuad(-4);
-                }
-                break;
-            case exports.FillOrigin.Bottom:
-                if (amount <= 0.5) {
-                    rect.width /= 2;
-                    if (!clockwise)
-                        rect.x += rect.width;
-                    fillRadial90(vb, rect, clockwise ? exports.FillOrigin.BottomRight : exports.FillOrigin.BottomLeft, amount / 0.5, clockwise);
-                    let vec = vb.getPos(-4);
-                    vb.addQuad(Laya.Rectangle.TEMP.setTo(vec.x, vec.y, 0, 0));
-                    vb.triangulateQuad(-4);
-                }
-                else {
-                    rect.width /= 2;
-                    if (clockwise)
-                        rect.x += rect.width;
-                    fillRadial90(vb, rect, clockwise ? exports.FillOrigin.BottomLeft : exports.FillOrigin.BottomRight, (amount - 0.5) / 0.5, clockwise);
-                    if (clockwise)
-                        rect.x -= rect.width;
-                    else
-                        rect.x += rect.width;
-                    vb.addQuad(rect);
-                    vb.triangulateQuad(-4);
-                }
-                break;
-            case exports.FillOrigin.Left:
-                if (amount <= 0.5) {
-                    rect.height /= 2;
-                    if (!clockwise)
-                        rect.y += rect.height;
-                    fillRadial90(vb, rect, clockwise ? exports.FillOrigin.BottomLeft : exports.FillOrigin.TopLeft, amount / 0.5, clockwise);
-                    let vec = vb.getPos(-4);
-                    vb.addQuad(Laya.Rectangle.TEMP.setTo(vec.x, vec.y, 0, 0));
-                    vb.triangulateQuad(-4);
-                }
-                else {
-                    rect.height /= 2;
-                    if (clockwise)
-                        rect.y += rect.height;
-                    fillRadial90(vb, rect, clockwise ? exports.FillOrigin.TopLeft : exports.FillOrigin.BottomLeft, (amount - 0.5) / 0.5, clockwise);
-                    if (clockwise)
-                        rect.y -= rect.height;
-                    else
-                        rect.y += rect.height;
-                    vb.addQuad(rect);
-                    vb.triangulateQuad(-4);
-                }
-                break;
-            case exports.FillOrigin.Right:
-                if (amount <= 0.5) {
-                    rect.height /= 2;
-                    if (clockwise)
-                        rect.y += rect.height;
-                    fillRadial90(vb, rect, clockwise ? exports.FillOrigin.TopRight : exports.FillOrigin.BottomRight, amount / 0.5, clockwise);
-                    let vec = vb.getPos(-4);
-                    vb.addQuad(Laya.Rectangle.TEMP.setTo(vec.x, vec.y, 0, 0));
-                    vb.triangulateQuad(-4);
-                }
-                else {
-                    rect.height /= 2;
-                    if (!clockwise)
-                        rect.y += rect.height;
-                    fillRadial90(vb, rect, clockwise ? exports.FillOrigin.BottomRight : exports.FillOrigin.TopRight, (amount - 0.5) / 0.5, clockwise);
-                    if (clockwise)
-                        rect.y += rect.height;
-                    else
-                        rect.y -= rect.height;
-                    vb.addQuad(rect);
-                    vb.triangulateQuad(-4);
-                }
-                break;
-        }
-        tmpRect.recover();
-    }
-    function fillRadial360(vb, vertRect, origin, amount, clockwise) {
-        const tmpRect = Laya.Rectangle.create();
-        let rect = tmpRect.copyFrom(vertRect);
-        switch (origin) {
-            case exports.FillOrigin.Top:
-                if (amount < 0.5) {
-                    rect.width /= 2;
-                    if (clockwise)
-                        rect.x += rect.width;
-                    fillRadial180(vb, rect, clockwise ? exports.FillOrigin.Left : exports.FillOrigin.Right, amount / 0.5, clockwise);
-                    let vec = vb.getPos(-8);
-                    vb.addQuad(Laya.Rectangle.TEMP.setTo(vec.x, vec.y, 0, 0));
-                    vb.triangulateQuad(-4);
-                }
-                else {
-                    rect.width /= 2;
-                    if (!clockwise)
-                        rect.x += rect.width;
-                    fillRadial180(vb, rect, clockwise ? exports.FillOrigin.Right : exports.FillOrigin.Left, (amount - 0.5) / 0.5, clockwise);
-                    if (clockwise)
-                        rect.x += rect.width;
-                    else
-                        rect.x -= rect.width;
-                    vb.addQuad(rect);
-                    vb.triangulateQuad(-4);
-                }
-                break;
-            case exports.FillOrigin.Bottom:
-                if (amount < 0.5) {
-                    rect.width /= 2;
-                    if (!clockwise)
-                        rect.x += rect.width;
-                    fillRadial180(vb, rect, clockwise ? exports.FillOrigin.Right : exports.FillOrigin.Left, amount / 0.5, clockwise);
-                    let vec = vb.getPos(-8);
-                    vb.addQuad(Laya.Rectangle.TEMP.setTo(vec.x, vec.y, 0, 0));
-                    vb.triangulateQuad(-4);
-                }
-                else {
-                    rect.width /= 2;
-                    if (clockwise)
-                        rect.x += rect.width;
-                    fillRadial180(vb, rect, clockwise ? exports.FillOrigin.Left : exports.FillOrigin.Right, (amount - 0.5) / 0.5, clockwise);
-                    if (clockwise)
-                        rect.x -= rect.width;
-                    else
-                        rect.x += rect.width;
-                    vb.addQuad(rect);
-                    vb.triangulateQuad(-4);
-                }
-                break;
-            case exports.FillOrigin.Left:
-                if (amount < 0.5) {
-                    rect.height /= 2;
-                    if (!clockwise)
-                        rect.y += rect.height;
-                    fillRadial180(vb, rect, clockwise ? exports.FillOrigin.Bottom : exports.FillOrigin.Top, amount / 0.5, clockwise);
-                    let vec = vb.getPos(-8);
-                    vb.addQuad(Laya.Rectangle.TEMP.setTo(vec.x, vec.y, 0, 0));
-                    vb.triangulateQuad(-4);
-                }
-                else {
-                    rect.height /= 2;
-                    if (clockwise)
-                        rect.y += rect.height;
-                    fillRadial180(vb, rect, clockwise ? exports.FillOrigin.Top : exports.FillOrigin.Bottom, (amount - 0.5) / 0.5, clockwise);
-                    if (clockwise)
-                        rect.y -= rect.height;
-                    else
-                        rect.y += rect.height;
-                    vb.addQuad(rect);
-                    vb.triangulateQuad(-4);
-                }
-                break;
-            case exports.FillOrigin.Right:
-                if (amount < 0.5) {
-                    rect.height /= 2;
-                    if (clockwise)
-                        rect.y += rect.height;
-                    fillRadial180(vb, rect, clockwise ? exports.FillOrigin.Top : exports.FillOrigin.Bottom, amount / 0.5, clockwise);
-                    let vec = vb.getPos(-8);
-                    vb.addQuad(Laya.Rectangle.TEMP.setTo(vec.x, vec.y, 0, 0));
-                    vb.triangulateQuad(-4);
-                }
-                else {
-                    rect.height /= 2;
-                    if (!clockwise)
-                        rect.y += rect.height;
-                    fillRadial180(vb, rect, clockwise ? exports.FillOrigin.Bottom : exports.FillOrigin.Top, (amount - 0.5) / 0.5, clockwise);
-                    if (clockwise)
-                        rect.y += rect.height;
-                    else
-                        rect.y -= rect.height;
-                    vb.addQuad(rect);
-                    vb.triangulateQuad(-4);
-                }
-                break;
-        }
-        tmpRect.recover();
     }
 
     class GProgressBar extends GWidget {
@@ -7161,9 +6841,9 @@
         }
         setFillAmount(bar, amount) {
             let mesh = bar.mesh;
-            if (mesh instanceof ProgressMesh) {
+            if (mesh instanceof Laya.ProgressMesh) {
                 mesh.amount = amount;
-                bar.updateMesh();
+                bar.graphics.repaint();
                 return true;
             }
             else
@@ -7565,6 +7245,9 @@
                 this._addIndent = addIndent;
             this._children = [];
         }
+        get expanded() {
+            return this._expanded;
+        }
         set expanded(value) {
             this._setExpanded(value);
         }
@@ -7580,9 +7263,6 @@
                 if (this._expandCtrler)
                     this._expandCtrler.selectedIndex = this.expanded ? 1 : 0;
             }
-        }
-        get expanded() {
-            return this._expanded;
         }
         get isFolder() {
             return this._isFolder || this._children.length > 0;
@@ -7628,7 +7308,7 @@
         }
         set cell(value) {
             if (this._cell) {
-                this._cell._treeNode = null;
+                this._cell.treeNode = null;
                 this._indentObj = null;
                 this._leafController = null;
                 if (this._expandCtrler)
@@ -7641,7 +7321,7 @@
             this._cell = value;
             this._cellFromPool = false;
             if (this._cell) {
-                this._cell._treeNode = this;
+                this._cell.treeNode = this;
                 this._indentObj = this._cell.findChild("indent");
                 if (this._tree && this._indentObj)
                     this._indentObj.width = Math.max(this._indentLevel - 1, 0) * this._tree.indent;
@@ -7662,9 +7342,10 @@
         createCell(tree) {
             if (this._cell)
                 return;
-            let child = (this._tree || tree).itemPool.getObject(this._resURL ? this._resURL : "");
+            let child = (this._tree || tree).itemPool.take(this._resURL ? this._resURL : "");
             if (!child)
                 throw new Error("cannot create tree node object.");
+            child.hideFlags |= Laya.HideFlags.HideAndDontSave;
             if (child instanceof GButton)
                 child.selected = false;
             this.cell = child;
@@ -7878,7 +7559,7 @@
         getSelectedNode() {
             let i = this.index;
             if (i != -1)
-                return this._owner.getChildAt(i)._treeNode;
+                return this._owner.getChildAt(i).treeNode;
             else
                 return null;
         }
@@ -7888,7 +7569,7 @@
             let cnt = s_list.length;
             let ret = [];
             for (let i = 0; i < cnt; i++) {
-                let node = this._owner.getChildAt(s_list[i])._treeNode;
+                let node = this._owner.getChildAt(s_list[i]).treeNode;
                 ret.push(node);
             }
             return ret;
@@ -7915,7 +7596,7 @@
             if (evt.button == 2 && !this.allowSelectByRightClick)
                 return;
             if (this._clickToExpand != 0) {
-                let node = item._treeNode;
+                let node = item.treeNode;
                 if (node && node.isFolder && this._expandedStatusInEvt == node.expanded) {
                     if (this._clickToExpand == 2) {
                         if (evt.isDblClick)
@@ -7931,7 +7612,7 @@
             if (dir == 3 || dir == 7) {
                 let i = this.index;
                 if (i != -1) {
-                    let node = this._owner.getChildAt(i)._treeNode;
+                    let node = this._owner.getChildAt(i).treeNode;
                     if (node.isFolder) {
                         node.expanded = dir == 3;
                         return i;
@@ -8019,8 +7700,8 @@
             let myLevel = node.level;
             let cnt = this.numChildren;
             for (let i = insertIndex; i < cnt; i++) {
-                let testNode = this.getChildAt(i)._treeNode;
-                if (testNode.level <= myLevel)
+                let testNode = this.getChildAt(i).treeNode;
+                if (testNode && testNode.level <= myLevel)
                     break;
                 insertIndex++;
             }
@@ -8096,7 +7777,7 @@
         getFolderEndIndex(startIndex, level) {
             let cnt = this.numChildren;
             for (let i = startIndex + 1; i < cnt; i++) {
-                let node = this.getChildAt(i)._treeNode;
+                let node = this.getChildAt(i).treeNode;
                 if (node.level <= level)
                     return i;
             }
@@ -8130,7 +7811,7 @@
             if (node.cell) {
                 node.cell.removeSelf();
                 if (node._cellFromPool) {
-                    this._pool.returnObject(node.cell);
+                    this._pool.recover(node.cell);
                     node.cell = null;
                 }
             }
@@ -8141,6 +7822,64 @@
                     this.removeNode(node2);
                 }
             }
+        }
+        onAfterDeserialize() {
+            super.onAfterDeserialize();
+            if (Laya.SerializeUtil.hasProp("_initItemNum", "_itemData") && (Laya.LayaEnv.isPreview || !Laya.SerializeUtil._data._isDemo))
+                this._buildInitItems();
+        }
+        _buildInitItems() {
+            var _a, _b;
+            this.rootNode.removeChildren();
+            if (this.itemTemplate == null)
+                return;
+            let itemData = this._itemData;
+            let prevLevel = 0;
+            let lastNode;
+            for (let i = 0; i < this._initItemNum; i++) {
+                let m = (itemData && i < itemData.length) ? itemData[i] : null;
+                if (m != null) {
+                    let level = m.level || 0;
+                    let isFolder = (((_a = itemData[i + 1]) === null || _a === void 0 ? void 0 : _a.level) || 0) > level;
+                    let node = new GTreeNode(isFolder, (_b = m.res) === null || _b === void 0 ? void 0 : _b.url);
+                    node.expanded = true;
+                    if (i == 0)
+                        this.rootNode.addChild(node);
+                    else {
+                        if (level > prevLevel)
+                            lastNode.addChild(node);
+                        else if (level < prevLevel) {
+                            for (let j = level; j <= prevLevel; j++)
+                                lastNode = lastNode.parent;
+                            lastNode.addChild(node);
+                        }
+                        else
+                            lastNode.parent.addChild(node);
+                    }
+                    lastNode = node;
+                    prevLevel = level;
+                    let child = node.cell;
+                    child.text = m.title;
+                    if (m.icon)
+                        child.icon = m.icon;
+                    if (child instanceof GButton) {
+                        if (m.selectedTitle)
+                            child.selectedTitle = m.selectedTitle;
+                        if (m.selectedIcon)
+                            child.selectedIcon = m.selectedIcon;
+                        child.selected = false;
+                    }
+                    if (m.name != null)
+                        child.name = m.name;
+                }
+                else {
+                    let node = new GTreeNode();
+                    this.rootNode.addChild(node);
+                    prevLevel = 0;
+                    lastNode = node;
+                }
+            }
+            this.selection._refresh();
         }
     }
 
@@ -8162,6 +7901,7 @@
     const TWEEN_TIME_GO = 0.5;
     const TWEEN_TIME_DEFAULT = 0.3;
     const PULL_RATIO = 0.5;
+    var draggingInst;
     class Scroller {
         constructor() {
             this._dir = 0;
@@ -8175,10 +7915,10 @@
             this._xPos = 0;
             this._yPos = 0;
             this._aniFlag = 0;
-            this._loop = 0;
             this._headerLockedSize = 0;
             this._footerLockedSize = 0;
             this._tweening = 0;
+            this._loop = 0;
             this._barMargin = [0, 0, 0, 0];
             this._viewSize = new Laya.Point();
             this._contentSize = new Laya.Point();
@@ -8206,7 +7946,7 @@
                 return;
             if (this._owner) {
                 this._owner.offAllCaller(this);
-                if (this._tweening != 0)
+                if (this._tweening !== 0)
                     Laya.ILaya.timer.clear(this, this.tweenUpdate);
                 if (this._hScrollBar) {
                     this._hScrollBar.destroy();
@@ -8240,8 +7980,6 @@
                 this.createHzScrollBar();
                 this.createVtScrollBar();
                 value.on(Laya.Event.MOUSE_DOWN, this, this._touchBegin);
-                value.on(Laya.Event.MOUSE_DRAG, this, this._touchMove);
-                value.on(Laya.Event.MOUSE_UP, this, this._touchEnd);
                 value.on(Laya.Event.MOUSE_WHEEL, this, this._mouseWheel);
                 value.on(Laya.Event.ROLL_OVER, this, this._rollOver);
                 value.on(Laya.Event.ROLL_OUT, this, this._rollOut);
@@ -8297,10 +8035,10 @@
             return this._dir;
         }
         set direction(value) {
-            if (this._dir != value) {
+            if (this._dir !== value) {
                 this._dir = value;
                 if (this._refreshBarAxis != null)
-                    this._refreshBarAxis = (this._dir == exports.ScrollDirection.Both || this._dir == exports.ScrollDirection.Vertical) ? "y" : "x";
+                    this._refreshBarAxis = (this._dir === exports.ScrollDirection.Both || this._dir === exports.ScrollDirection.Vertical) ? "y" : "x";
                 this.createHzScrollBar();
                 this.createVtScrollBar();
             }
@@ -8309,9 +8047,9 @@
             return this._barDisplay2;
         }
         set barDisplay(value) {
-            if (this._barDisplay2 != value) {
+            if (this._barDisplay2 !== value) {
                 this._barDisplay2 = value;
-                this._barDisplay = value == exports.ScrollBarDisplay.Default ? UIConfig2.defaultScrollBarDisplay : value;
+                this._barDisplay = value === exports.ScrollBarDisplay.Default ? UIConfig2.defaultScrollBarDisplay : value;
                 this.createHzScrollBar();
                 this.createVtScrollBar();
             }
@@ -8348,7 +8086,7 @@
         }
         set bouncebackEffect(value) {
             this._bouncebackEffect2 = value;
-            if (value == exports.ScrollBounceBackEffect.Default)
+            if (value === exports.ScrollBounceBackEffect.Default)
                 this._bouncebackEffect = UIConfig2.defaultScrollBounceEffect;
             else
                 this._bouncebackEffect = value == exports.ScrollBounceBackEffect.On;
@@ -8358,10 +8096,10 @@
         }
         set touchEffect(value) {
             this._touchEffect2 = value;
-            if (value == exports.ScrollTouchEffect.Default)
+            if (value === exports.ScrollTouchEffect.Default)
                 this._touchEffect = UIConfig2.defaultScrollTouchEffect;
             else
-                this._touchEffect = value == exports.ScrollTouchEffect.On;
+                this._touchEffect = value === exports.ScrollTouchEffect.On;
         }
         get touchEffectButton() {
             return this._touchEffectButton;
@@ -8418,7 +8156,7 @@
             return this._dragged;
         }
         get percX() {
-            return this._overlapSize.x == 0 ? 0 : this._xPos / this._overlapSize.x;
+            return this._overlapSize.x === 0 ? 0 : this._xPos / this._overlapSize.x;
         }
         set percX(value) {
             this.setPercX(value, false);
@@ -8428,7 +8166,7 @@
             this.setPosX(this._overlapSize.x * Laya.MathUtil.clamp01(value), ani);
         }
         get percY() {
-            return this._overlapSize.y == 0 ? 0 : this._yPos / this._overlapSize.y;
+            return this._overlapSize.y === 0 ? 0 : this._yPos / this._overlapSize.y;
         }
         set percY(value) {
             this.setPercY(value, false);
@@ -8445,10 +8183,10 @@
         }
         setPosX(value, ani) {
             this._layout.refresh();
-            if (this._loop == 1)
+            if (this._loop === 1)
                 value = this.loopCheckingNewPos(value, "x");
             value = Laya.MathUtil.clamp(value, 0, this._overlapSize.x);
-            if (value != this._xPos) {
+            if (value !== this._xPos) {
                 this._xPos = value;
                 this.posChanged(ani);
             }
@@ -8461,10 +8199,10 @@
         }
         setPosY(value, ani) {
             this._layout.refresh();
-            if (this._loop == 1)
+            if (this._loop === 1)
                 value = this.loopCheckingNewPos(value, "y");
             value = Laya.MathUtil.clamp(value, 0, this._overlapSize.y);
-            if (value != this._yPos) {
+            if (value !== this._yPos) {
                 this._yPos = value;
                 this.posChanged(ani);
             }
@@ -8526,11 +8264,17 @@
             if (this._overlapSize.y > 0)
                 this.setPosY(value * this._pageSize.y, ani);
         }
+        get pageCountX() {
+            return Math.ceil(this._contentSize.x / this._viewSize.x);
+        }
+        get pageCountY() {
+            return Math.ceil(this._contentSize.y / this._viewSize.y);
+        }
         get isBottomMost() {
-            return this._yPos == this._overlapSize.y || this._overlapSize.y == 0;
+            return this._yPos === this._overlapSize.y || this._overlapSize.y === 0;
         }
         get isRightMost() {
-            return this._xPos == this._overlapSize.x || this._overlapSize.x == 0;
+            return this._xPos === this._overlapSize.x || this._overlapSize.x === 0;
         }
         get scrollingPosX() {
             return Laya.MathUtil.clamp(-this._container.x, 0, this._overlapSize.x);
@@ -8574,7 +8318,7 @@
         }
         getRect(target, rect) {
             if (target._parent != this._owner._$container)
-                Laya.SpriteUtils.transformRect(target._parent, rect.setTo(target.x, target.y, target.width, target.height), this._owner._$container);
+                Laya.SpriteUtils.transformRect(target._parent, rect.setTo(target.x, target.y, target.width, target.height), this._owner._$container, rect);
             else
                 rect.setTo(target.x, target.y, target.width, target.height);
             return rect;
@@ -8659,12 +8403,12 @@
         }
         isChildInView(obj) {
             if (this._overlapSize.y > 0) {
-                let dist = obj.y + this._container.y;
+                let dist = obj.top + this._container.y;
                 if (dist < -obj.height || dist > this._viewSize.y)
                     return false;
             }
             if (this._overlapSize.x > 0) {
-                let dist = obj.x + this._container.x;
+                let dist = obj.left + this._container.x;
                 if (dist < -obj.width || dist > this._viewSize.x)
                     return false;
             }
@@ -8680,8 +8424,10 @@
             return -1;
         }
         cancelDragging() {
-            if (Scroller.draggingInst == this)
-                Scroller.draggingInst = null;
+            Laya.ILaya.stage.off(Laya.Event.MOUSE_MOVE, this, this._touchMove);
+            Laya.ILaya.stage.off(Laya.Event.MOUSE_UP, this, this._touchEnd);
+            if (draggingInst == this)
+                draggingInst = null;
             s_gestureFlag = 0;
             this._dragged = false;
         }
@@ -8689,9 +8435,9 @@
             let layout = this._layout;
             if (layout.pageMode)
                 return;
-            if (layout.type == exports.LayoutType.SingleColumn || layout.type == exports.LayoutType.FlowX)
+            if (layout.type === exports.LayoutType.SingleColumn || layout.type === exports.LayoutType.FlowX)
                 this.direction = exports.ScrollDirection.Vertical;
-            else if (layout.type == exports.LayoutType.SingleRow || layout.type == exports.LayoutType.FlowY)
+            else if (layout.type === exports.LayoutType.SingleRow || layout.type === exports.LayoutType.FlowY)
                 this.direction = exports.ScrollDirection.Horizontal;
         }
         createVtScrollBar(force) {
@@ -8707,7 +8453,7 @@
                 }
                 return;
             }
-            if (this._barDisplay != exports.ScrollBarDisplay.Hidden && (this._dir == exports.ScrollDirection.Both || this._dir == exports.ScrollDirection.Vertical)) {
+            if (this._barDisplay !== exports.ScrollBarDisplay.Hidden && (this._dir === exports.ScrollDirection.Both || this._dir === exports.ScrollDirection.Vertical)) {
                 if (this._vScrollBar)
                     return;
                 let res = this._vScrollBarRes ? this._vScrollBarRes : (UIConfig2.verticalScrollBar ? Laya.ILaya.loader.getRes(UIConfig2.verticalScrollBar) : null);
@@ -8719,7 +8465,7 @@
                     }
                     this._vScrollBar.hideFlags |= Laya.HideFlags.HideAndDontSave;
                     this._vScrollBar.setOwner(this, true);
-                    this._vScrollBar.visible = this._barDisplay != exports.ScrollBarDisplay.OnScroll;
+                    this._vScrollBar.visible = this._barDisplay !== exports.ScrollBarDisplay.OnScroll;
                     this._owner._addChild(this._vScrollBar);
                     this.onSizeChanged();
                 }
@@ -8742,7 +8488,7 @@
                     this.onSizeChanged();
                 }
             }
-            if (this._barDisplay != exports.ScrollBarDisplay.Hidden && (this._dir == exports.ScrollDirection.Both || this._dir == exports.ScrollDirection.Horizontal)) {
+            if (this._barDisplay !== exports.ScrollBarDisplay.Hidden && (this._dir === exports.ScrollDirection.Both || this._dir === exports.ScrollDirection.Horizontal)) {
                 if (this._hScrollBar)
                     return;
                 let res = this._hScrollBarRes ? this._hScrollBarRes : (UIConfig2.horizontalScrollBar ? Laya.ILaya.loader.getRes(UIConfig2.horizontalScrollBar) : null);
@@ -8754,7 +8500,7 @@
                     }
                     this._hScrollBar.hideFlags |= Laya.HideFlags.HideAndDontSave;
                     this._hScrollBar.setOwner(this, false);
-                    this._hScrollBar.visible = this._barDisplay != exports.ScrollBarDisplay.OnScroll;
+                    this._hScrollBar.visible = this._barDisplay !== exports.ScrollBarDisplay.OnScroll;
                     this._owner._addChild(this._hScrollBar);
                     this.onSizeChanged();
                 }
@@ -8776,7 +8522,7 @@
                     this._header.hideFlags |= Laya.HideFlags.HideAndDontSave;
             }
             if (this._header || this._footer)
-                this._refreshBarAxis = (this._dir == exports.ScrollDirection.Both || this._dir == exports.ScrollDirection.Vertical) ? "y" : "x";
+                this._refreshBarAxis = (this._dir === exports.ScrollDirection.Both || this._dir === exports.ScrollDirection.Vertical) ? "y" : "x";
             else
                 this._refreshBarAxis = null;
         }
@@ -8791,12 +8537,12 @@
                     this._footer.hideFlags |= Laya.HideFlags.HideAndDontSave;
             }
             if (this._header || this._footer)
-                this._refreshBarAxis = (this._dir == exports.ScrollDirection.Both || this._dir == exports.ScrollDirection.Vertical) ? "y" : "x";
+                this._refreshBarAxis = (this._dir === exports.ScrollDirection.Both || this._dir === exports.ScrollDirection.Vertical) ? "y" : "x";
             else
                 this._refreshBarAxis = null;
         }
         lockHeader(size) {
-            if (this._headerLockedSize == size)
+            if (this._headerLockedSize === size)
                 return;
             this._headerLockedSize = size;
             if (!this._refreshEventDispatching && this._container[this._refreshBarAxis] >= 0) {
@@ -8808,14 +8554,14 @@
             }
         }
         lockFooter(size) {
-            if (this._footerLockedSize == size)
+            if (this._footerLockedSize === size)
                 return;
             this._footerLockedSize = size;
             if (!this._refreshEventDispatching && this._container[this._refreshBarAxis] <= -this._overlapSize[this._refreshBarAxis]) {
                 this._tweenStart.setTo(this._container.x, this._container.y);
                 this._tweenChange.setTo(0, 0);
                 let max = this._overlapSize[this._refreshBarAxis];
-                if (max == 0)
+                if (max === 0)
                     max = Math.max(this._contentSize[this._refreshBarAxis] + this._footerLockedSize - this._viewSize[this._refreshBarAxis], 0);
                 else
                     max += this._footerLockedSize;
@@ -8825,7 +8571,7 @@
             }
         }
         _shouldCheckOverflow() {
-            if (this._barDisplay == exports.ScrollBarDisplay.OnOverflow || this._barDisplay == exports.ScrollBarDisplay.OnOverflowAndScroll)
+            if (this._barDisplay === exports.ScrollBarDisplay.OnOverflow || this._barDisplay === exports.ScrollBarDisplay.OnOverflowAndScroll)
                 return (this._vScrollBar != null ? 1 : 0) + (this._hScrollBar != null ? 2 : 0);
             else
                 return null;
@@ -8877,58 +8623,58 @@
         _ownerContentSizeChanged() {
             let aWidth = this._layout.contentWidth;
             let aHeight = this._layout.contentHeight;
-            if (this._contentSize.x == aWidth && this._contentSize.y == aHeight)
+            if (this._contentSize.x === aWidth && this._contentSize.y === aHeight)
                 return;
             this._contentSize.x = aWidth;
             this._contentSize.y = aHeight;
             this.onContentSizeChanged();
         }
         _changeContentSizeOnScrolling(deltaWidth, deltaHeight, deltaPosX, deltaPosY) {
-            let isRightmost = this._xPos != 0 && this._xPos == this._overlapSize.x;
-            let isBottom = this._yPos != 0 && this._yPos == this._overlapSize.y;
+            let isRightmost = this._xPos !== 0 && this._xPos === this._overlapSize.x;
+            let isBottom = this._yPos !== 0 && this._yPos === this._overlapSize.y;
             this._contentSize.x += deltaWidth;
             this._contentSize.y += deltaHeight;
             this.onContentSizeChanged();
-            if (this._tweening == 1) {
-                if (deltaWidth != 0 && isRightmost && this._tweenChange.x < 0) {
+            if (this._tweening === 1) {
+                if (deltaWidth !== 0 && isRightmost && this._tweenChange.x < 0) {
                     this._xPos = this._overlapSize.x;
                     this._tweenChange.x = -this._xPos - this._tweenStart.x;
                 }
-                if (deltaHeight != 0 && isBottom && this._tweenChange.y < 0) {
+                if (deltaHeight !== 0 && isBottom && this._tweenChange.y < 0) {
                     this._yPos = this._overlapSize.y;
                     this._tweenChange.y = -this._yPos - this._tweenStart.y;
                 }
             }
-            else if (this._tweening == 2) {
-                if (deltaPosX != 0) {
+            else if (this._tweening === 2) {
+                if (deltaPosX !== 0) {
                     this._container.x -= deltaPosX;
                     this._tweenStart.x -= deltaPosX;
                     this._xPos = -this._container.x;
                 }
-                if (deltaPosY != 0) {
+                if (deltaPosY !== 0) {
                     this._container.y -= deltaPosY;
                     this._tweenStart.y -= deltaPosY;
                     this._yPos = -this._container.y;
                 }
             }
             else if (this._dragged) {
-                if (deltaPosX != 0) {
+                if (deltaPosX !== 0) {
                     this._container.x -= deltaPosX;
                     this._containerPos.x -= deltaPosX;
                     this._xPos = -this._container.x;
                 }
-                if (deltaPosY != 0) {
+                if (deltaPosY !== 0) {
                     this._container.y -= deltaPosY;
                     this._containerPos.y -= deltaPosY;
                     this._yPos = -this._container.y;
                 }
             }
             else {
-                if (deltaWidth != 0 && isRightmost) {
+                if (deltaWidth !== 0 && isRightmost) {
                     this._xPos = this._overlapSize.x;
                     this._container.x = -this._xPos;
                 }
-                if (deltaHeight != 0 && isBottom) {
+                if (deltaHeight !== 0 && isBottom) {
                     this._yPos = this._overlapSize.y;
                     this._container.y = -this._yPos;
                 }
@@ -8937,7 +8683,7 @@
         onContentSizeChanged() {
             if (!this._owner)
                 return;
-            if (this._barDisplay == exports.ScrollBarDisplay.OnOverflow || this._barDisplay == exports.ScrollBarDisplay.OnOverflowAndScroll) {
+            if (this._barDisplay === exports.ScrollBarDisplay.OnOverflow || this._barDisplay === exports.ScrollBarDisplay.OnOverflowAndScroll) {
                 this._vScrollNone = this._contentSize.y <= this._viewSize.y;
                 this._hScrollNone = this._contentSize.x <= this._viewSize.x;
                 if (this._vScrollBar && this._hScrollBar) {
@@ -8952,13 +8698,13 @@
                 }
             }
             if (this._vScrollBar) {
-                if (this._contentSize.y == 0)
+                if (this._contentSize.y === 0)
                     this._vScrollBar.setDisplayPerc(0);
                 else
                     this._vScrollBar.setDisplayPerc(Math.min(1, this._viewSize.y / this._contentSize.y));
             }
             if (this._hScrollBar) {
-                if (this._contentSize.x == 0)
+                if (this._contentSize.x === 0)
                     this._hScrollBar.setDisplayPerc(0);
                 else
                     this._hScrollBar.setDisplayPerc(Math.min(1, this._viewSize.x / this._contentSize.x));
@@ -8972,11 +8718,13 @@
                 mh += this._hScrollBar.height;
             this._maskContainer.size(mw, mh);
             this._cachedScrollRect.setTo(0, 0, mw, mh);
-            if (this._dir == exports.ScrollDirection.Horizontal || this._dir == exports.ScrollDirection.Both)
+            if (this._maskContainer._scrollRect != null)
+                this._maskContainer.scrollRect = this._cachedScrollRect;
+            if (this._dir === exports.ScrollDirection.Horizontal || this._dir === exports.ScrollDirection.Both)
                 this._overlapSize.x = Math.ceil(Math.max(0, this._contentSize.x - this._viewSize.x));
             else
                 this._overlapSize.x = 0;
-            if (this._dir == exports.ScrollDirection.Vertical || this._dir == exports.ScrollDirection.Both)
+            if (this._dir === exports.ScrollDirection.Vertical || this._dir === exports.ScrollDirection.Both)
                 this._overlapSize.y = Math.ceil(Math.max(0, this._contentSize.y - this._viewSize.y));
             else
                 this._overlapSize.y = 0;
@@ -8984,7 +8732,7 @@
             this._yPos = Laya.MathUtil.clamp(this._yPos, 0, this._overlapSize.y);
             if (this._refreshBarAxis) {
                 let max = this._overlapSize[this._refreshBarAxis];
-                if (max == 0)
+                if (max === 0)
                     max = Math.max(this._contentSize[this._refreshBarAxis] + this._footerLockedSize - this._viewSize[this._refreshBarAxis], 0);
                 else
                     max += this._footerLockedSize;
@@ -9001,7 +8749,7 @@
                         this._header.width = this._viewSize.x;
                 }
                 if (this._footer) {
-                    if (this._refreshBarAxis == "y")
+                    if (this._refreshBarAxis == "x")
                         this._footer.height = this._viewSize.y;
                     else
                         this._footer.width = this._viewSize.x;
@@ -9013,9 +8761,9 @@
             this.updateScrollBarPos();
         }
         posChanged(ani) {
-            if (this._aniFlag == 0)
+            if (this._aniFlag === 0)
                 this._aniFlag = ani ? 1 : -1;
-            else if (this._aniFlag == 1 && !ani)
+            else if (this._aniFlag === 1 && !ani)
                 this._aniFlag = -1;
             this._needRefresh = true;
             Laya.ILaya.timer.callLater(this, this.refresh);
@@ -9042,43 +8790,43 @@
             this._aniFlag = 0;
         }
         refresh2() {
-            if (this._aniFlag == 1 && !this._dragged) {
+            if (this._aniFlag === 1 && !this._dragged) {
                 let posX;
                 let posY;
                 if (this._overlapSize.x > 0)
                     posX = -Math.floor(this._xPos);
                 else {
-                    if (this._container.x != 0)
+                    if (this._container.x !== 0)
                         this._container.x = 0;
                     posX = 0;
                 }
                 if (this._overlapSize.y > 0)
                     posY = -Math.floor(this._yPos);
                 else {
-                    if (this._container.y != 0)
+                    if (this._container.y !== 0)
                         this._container.y = 0;
                     posY = 0;
                 }
-                if (posX != this._container.x || posY != this._container.y) {
+                if (posX !== this._container.x || posY !== this._container.y) {
                     this._tweenDuration.setTo(TWEEN_TIME_GO, TWEEN_TIME_GO);
                     this._tweenStart.setTo(this._container.x, this._container.y);
                     this._tweenChange.setTo(posX - this._tweenStart.x, posY - this._tweenStart.y);
                     this.startTween(1);
                 }
-                else if (this._tweening != 0)
+                else if (this._tweening !== 0)
                     this.killTween();
             }
             else {
-                if (this._tweening != 0)
+                if (this._tweening !== 0)
                     this.killTween();
                 this._container.pos(Math.floor(-this._xPos), Math.floor(-this._yPos));
                 this.loopCheckingCurrent();
             }
         }
         _touchBegin(evt) {
-            if (!this._touchEffect || this._touchEffectButton != evt.button)
+            if (!this._touchEffect || this._touchEffectButton !== evt.button)
                 return;
-            if (this._tweening != 0) {
+            if (this._tweening !== 0) {
                 this.killTween();
                 Laya.InputManager.cancelClick(evt.touchId);
                 this._dragged = true;
@@ -9090,12 +8838,15 @@
             this._beginTouchPos.setTo(pt.x, pt.y);
             this._isHoldAreaDone = false;
             this._slidingPoints.length = 0;
-            this._slidingPoints.push(pt.x, pt.y, Laya.Browser.now());
+            this._slidingPoints.push(pt.x, pt.y, performance.now());
+            Laya.ILaya.stage.on(Laya.Event.MOUSE_MOVE, this, this._touchMove);
+            Laya.ILaya.stage.on(Laya.Event.MOUSE_UP, this, this._touchEnd);
         }
         _touchMove(evt) {
+            var _a;
             if (!this._touchEffect || this.owner.destroyed)
                 return;
-            if (Scroller.draggingInst && Scroller.draggingInst != this)
+            if (((_a = draggingInst === null || draggingInst === void 0 ? void 0 : draggingInst.owner) === null || _a === void 0 ? void 0 : _a.displayedInStage) && draggingInst != this)
                 return;
             let sensitivity = UIConfig2.touchScrollSensitivity;
             let pt = this._owner.parent.globalToLocal(s_Point.copy(evt.touchPos));
@@ -9103,13 +8854,13 @@
             let offsetY = pt.y - this._slidingPoints[this._slidingPoints.length - 2];
             let diff;
             let sv, sh;
-            if (this._dir == exports.ScrollDirection.Vertical) {
+            if (this._dir === exports.ScrollDirection.Vertical) {
                 if (!this._isHoldAreaDone) {
                     s_gestureFlag |= 1;
                     diff = Math.abs(offsetY);
                     if (diff < sensitivity)
                         return;
-                    if ((s_gestureFlag & 2) != 0) {
+                    if ((s_gestureFlag & 2) !== 0) {
                         let diff2 = Math.abs(offsetX);
                         if (diff < diff2)
                             return;
@@ -9117,13 +8868,13 @@
                 }
                 sv = true;
             }
-            else if (this._dir == exports.ScrollDirection.Horizontal) {
+            else if (this._dir === exports.ScrollDirection.Horizontal) {
                 if (!this._isHoldAreaDone) {
                     s_gestureFlag |= 2;
                     diff = Math.abs(offsetX);
                     if (diff < sensitivity)
                         return;
-                    if ((s_gestureFlag & 1) != 0) {
+                    if ((s_gestureFlag & 1) !== 0) {
                         let diff2 = Math.abs(offsetY);
                         if (diff < diff2)
                             return;
@@ -9177,7 +8928,7 @@
                 else
                     this._container.x = newPosX;
             }
-            let now = Laya.Browser.now();
+            let now = performance.now();
             while (this._slidingPoints.length > 0 && this._slidingPoints[2] < now - 100)
                 this._slidingPoints.splice(0, 3);
             this._slidingPoints.push(pt.x, pt.y, now);
@@ -9185,7 +8936,7 @@
                 this._xPos = Laya.MathUtil.clamp(-this._container.x, 0, this._overlapSize.x);
             if (this._overlapSize.y > 0)
                 this._yPos = Laya.MathUtil.clamp(-this._container.y, 0, this._overlapSize.y);
-            if (this._loop != 0) {
+            if (this._loop !== 0) {
                 newPosX = this._container.x;
                 newPosY = this._container.y;
                 if (this.loopCheckingCurrent()) {
@@ -9193,7 +8944,7 @@
                     this._containerPos.y += this._container.y - newPosY;
                 }
             }
-            Scroller.draggingInst = this;
+            draggingInst = this;
             this._isHoldAreaDone = true;
             this._dragged = true;
             this.updateScrollBarPos();
@@ -9201,8 +8952,10 @@
             this._owner.event(exports.UIEvent.Scroll);
         }
         _touchEnd() {
-            if (Scroller.draggingInst == this)
-                Scroller.draggingInst = null;
+            Laya.ILaya.stage.off(Laya.Event.MOUSE_MOVE, this, this._touchMove);
+            Laya.ILaya.stage.off(Laya.Event.MOUSE_UP, this, this._touchEnd);
+            if (draggingInst == this)
+                draggingInst = null;
             s_gestureFlag = 0;
             if (!this._dragged || !this._touchEffect) {
                 this._dragged = false;
@@ -9240,14 +8993,14 @@
                     this._owner.event(exports.UIEvent.PullUpRelease);
                     this._refreshEventDispatching = false;
                 }
-                if (this._headerLockedSize > 0 && s_endPos[this._refreshBarAxis] == 0) {
+                if (this._headerLockedSize > 0 && s_endPos[this._refreshBarAxis] === 0) {
                     s_endPos[this._refreshBarAxis] = this._headerLockedSize;
                     this._tweenChange.x = s_endPos.x - this._tweenStart.x;
                     this._tweenChange.y = s_endPos.y - this._tweenStart.y;
                 }
-                else if (this._footerLockedSize > 0 && s_endPos[this._refreshBarAxis] == -this._overlapSize[this._refreshBarAxis]) {
+                else if (this._footerLockedSize > 0 && s_endPos[this._refreshBarAxis] === -this._overlapSize[this._refreshBarAxis]) {
                     let max = this._overlapSize[this._refreshBarAxis];
-                    if (max == 0)
+                    if (max === 0)
                         max = Math.max(this._contentSize[this._refreshBarAxis] + this._footerLockedSize - this._viewSize[this._refreshBarAxis], 0);
                     else
                         max += this._footerLockedSize;
@@ -9271,7 +9024,7 @@
                     this.alignPosition(s_endPos, true);
                 this._tweenChange.x = s_endPos.x - this._tweenStart.x;
                 this._tweenChange.y = s_endPos.y - this._tweenStart.y;
-                if (this._tweenChange.x == 0 && this._tweenChange.y == 0) {
+                if (this._tweenChange.x === 0 && this._tweenChange.y === 0) {
                     this._updateScrollBarVisible();
                     return;
                 }
@@ -9283,12 +9036,12 @@
             this.startTween(2);
         }
         _mouseWheel(evt) {
-            if (this._mouseWheelDisabled || this._barDisplay == exports.ScrollBarDisplay.Hidden)
+            if (this._mouseWheelDisabled || this._barDisplay === exports.ScrollBarDisplay.Hidden)
                 return;
             let delta = evt.delta;
             if (this._snapToItem && Math.abs(delta) < 1)
                 delta = Math.sign(delta);
-            if (this._overlapSize.x > 0 && this._overlapSize.y == 0) {
+            if (this._overlapSize.x > 0 && this._overlapSize.y === 0) {
                 let step = this._pageMode ? this._pageSize.x : this._step;
                 this.setPosX(this._xPos + step * delta, false);
                 evt.stopPropagation();
@@ -9301,19 +9054,19 @@
         }
         _rollOver() {
             this._hover = true;
-            if (this._barDisplay == exports.ScrollBarDisplay.OnScroll || this._barDisplay == exports.ScrollBarDisplay.OnOverflowAndScroll)
+            if (this._barDisplay === exports.ScrollBarDisplay.OnScroll || this._barDisplay === exports.ScrollBarDisplay.OnOverflowAndScroll)
                 this._updateScrollBarVisible();
         }
         _rollOut() {
             this._hover = false;
-            if (this._barDisplay == exports.ScrollBarDisplay.OnScroll || this._barDisplay == exports.ScrollBarDisplay.OnOverflowAndScroll)
+            if (this._barDisplay === exports.ScrollBarDisplay.OnScroll || this._barDisplay === exports.ScrollBarDisplay.OnOverflowAndScroll)
                 this._updateScrollBarVisible();
         }
         updateScrollBarPos() {
             if (this._vScrollBar)
-                this._vScrollBar.setScrollPerc(this._overlapSize.y == 0 ? 0 : Laya.MathUtil.clamp(-this._container.y, 0, this._overlapSize.y) / this._overlapSize.y);
+                this._vScrollBar.setScrollPerc(this._overlapSize.y === 0 ? 0 : Laya.MathUtil.clamp(-this._container.y, 0, this._overlapSize.y) / this._overlapSize.y);
             if (this._hScrollBar)
-                this._hScrollBar.setScrollPerc(this._overlapSize.x == 0 ? 0 : Laya.MathUtil.clamp(-this._container.x, 0, this._overlapSize.x) / this._overlapSize.x);
+                this._hScrollBar.setScrollPerc(this._overlapSize.x === 0 ? 0 : Laya.MathUtil.clamp(-this._container.x, 0, this._overlapSize.x) / this._overlapSize.x);
             this.checkRefreshBar();
         }
         _updateScrollBarVisible() {
@@ -9331,10 +9084,10 @@
             }
         }
         updateScrollBarVisible2(bar) {
-            let flag = this._barDisplay == exports.ScrollBarDisplay.OnScroll || this._barDisplay == exports.ScrollBarDisplay.OnOverflowAndScroll;
+            let flag = this._barDisplay === exports.ScrollBarDisplay.OnScroll || this._barDisplay === exports.ScrollBarDisplay.OnOverflowAndScroll;
             if (flag)
                 Laya.Tween.killAll(bar);
-            if (flag && !this._hover && this._tweening == 0 && !this._dragged && !bar.gripDragging) {
+            if (flag && !this._hover && this._tweening === 0 && !this._dragged && !bar.gripDragging) {
                 if (bar.visible)
                     Laya.Tween.create(bar).go("alpha", 1, 0).duration(0.5).delay(0.5).then(this._barTweenComplete, this);
             }
@@ -9349,12 +9102,11 @@
             bar.visible = false;
         }
         getLoopPartSize(division, axis) {
-            let list = this._owner;
-            return (this._contentSize[axis] + (axis == "x" ? list.columnGap : list.lineGap)) / division;
+            return (this._contentSize[axis] + (axis == "x" ? this._owner.layout.columnGap : this._owner.layout.rowGap)) / division;
         }
         loopCheckingCurrent() {
             let changed = false;
-            if (this._loop == 1 && this._overlapSize.x > 0) {
+            if (this._loop === 1 && this._overlapSize.x > 0) {
                 if (this._xPos < 0.001) {
                     this._xPos += this.getLoopPartSize(2, "x");
                     changed = true;
@@ -9364,7 +9116,7 @@
                     changed = true;
                 }
             }
-            else if (this._loop == 2 && this._overlapSize.y > 0) {
+            else if (this._loop === 2 && this._overlapSize.y > 0) {
                 if (this._yPos < 0.001) {
                     this._yPos += this.getLoopPartSize(2, "y");
                     changed = true;
@@ -9379,9 +9131,9 @@
             return changed;
         }
         loopCheckingTarget(endPos) {
-            if (this._loop == 1)
+            if (this._loop === 1)
                 this.loopCheckingTarget2(endPos, "x");
-            if (this._loop == 2)
+            if (this._loop === 2)
                 this.loopCheckingTarget2(endPos, "y");
         }
         loopCheckingTarget2(endPos, axis) {
@@ -9405,7 +9157,7 @@
             }
         }
         loopCheckingNewPos(value, axis) {
-            if (this._overlapSize[axis] == 0)
+            if (this._overlapSize[axis] === 0)
                 return value;
             let pos = axis == "x" ? this._xPos : this._yPos;
             let changed = false;
@@ -9501,7 +9253,7 @@
         updateTargetAndDuration(start, velocity, axis, outEnd, outDuration) {
             let pos = start[axis];
             let v = velocity[axis];
-            if (pos > 0 || this._overlapSize[axis] == 0) {
+            if (pos > 0 || this._overlapSize[axis] === 0) {
                 outEnd[axis] = 0;
                 outDuration[axis] = TWEEN_TIME_DEFAULT;
             }
@@ -9509,7 +9261,7 @@
                 outEnd[axis] = -this._overlapSize[axis];
                 outDuration[axis] = TWEEN_TIME_DEFAULT;
             }
-            else if (v != 0) {
+            else if (v !== 0) {
                 let ratio = UIConfig2.defaultScrollDecelerationRate;
                 let tmp = Math.log(ratio);
                 let frames = -Math.log(Math.abs(v)) / tmp;
@@ -9529,8 +9281,8 @@
             }
         }
         fixDuration(axis, oldChange) {
-            if (this._tweenChange[axis] == 0 || Math.abs(this._tweenChange[axis]) >= Math.abs(oldChange)) {
-                if (oldChange == 0)
+            if (this._tweenChange[axis] === 0 || Math.abs(this._tweenChange[axis]) >= Math.abs(oldChange)) {
+                if (oldChange === 0)
                     this._tweenDuration[axis] = TWEEN_TIME_DEFAULT;
                 return;
             }
@@ -9546,7 +9298,7 @@
             this._updateScrollBarVisible();
         }
         killTween() {
-            if (this._tweening == 1) {
+            if (this._tweening === 1) {
                 this._container.pos(this._tweenStart.x + this._tweenChange.x, this._tweenStart.y + this._tweenChange.y);
                 this._owner.event(exports.UIEvent.Scroll);
             }
@@ -9575,7 +9327,7 @@
             }
             if (this._footer) {
                 let max = this._overlapSize[this._refreshBarAxis];
-                if (pos < -max || max == 0 && this._footerLockedSize > 0) {
+                if (pos < -max || max === 0 && this._footerLockedSize > 0) {
                     if (!this._footer.parent) {
                         this._maskContainer.addChildAt(this._footer, this._maskContainer.getChildIndex(this._container));
                     }
@@ -9585,7 +9337,7 @@
                         pt[this._refreshBarAxis] = pos + this._contentSize[this._refreshBarAxis];
                     else
                         pt[this._refreshBarAxis] = Math.max(Math.min(pos + this._viewSize[this._refreshBarAxis], this._viewSize[this._refreshBarAxis] - this._footerLockedSize), this._viewSize[this._refreshBarAxis] - this._contentSize[this._refreshBarAxis]);
-                    this._footer.pos(pt.x, pt.y);
+                    this._footer.setLeftTop(pt.x, pt.y);
                     pt.setTo(this._footer.width, this._footer.height);
                     if (max > 0)
                         pt[this._refreshBarAxis] = -max - pos;
@@ -9602,13 +9354,13 @@
             let nx = this.runTween("x");
             let ny = this.runTween("y");
             this._container.pos(nx, ny);
-            if (this._tweening == 2) {
+            if (this._tweening === 2) {
                 if (this._overlapSize.x > 0)
                     this._xPos = Laya.MathUtil.clamp(-nx, 0, this._overlapSize.x);
                 if (this._overlapSize.y > 0)
                     this._yPos = Laya.MathUtil.clamp(-ny, 0, this._overlapSize.y);
             }
-            if (this._tweenChange.x == 0 && this._tweenChange.y == 0) {
+            if (this._tweenChange.x === 0 && this._tweenChange.y === 0) {
                 this._tweening = 0;
                 Laya.ILaya.timer.clear(this, this.tweenUpdate);
                 this.loopCheckingCurrent();
@@ -9624,7 +9376,7 @@
         }
         runTween(axis) {
             let newValue;
-            if (this._tweenChange[axis] != 0) {
+            if (this._tweenChange[axis] !== 0) {
                 this._tweenTime[axis] += Laya.ILaya.timer.delta / 1000;
                 if (this._tweenTime[axis] >= this._tweenDuration[axis]) {
                     newValue = this._tweenStart[axis] + this._tweenChange[axis];
@@ -9636,26 +9388,26 @@
                 }
                 let threshold1 = 0;
                 let threshold2 = -this._overlapSize[axis];
-                if (this._headerLockedSize > 0 && this._refreshBarAxis == axis)
+                if (this._headerLockedSize > 0 && this._refreshBarAxis === axis)
                     threshold1 = this._headerLockedSize;
-                if (this._footerLockedSize > 0 && this._refreshBarAxis == axis) {
+                if (this._footerLockedSize > 0 && this._refreshBarAxis === axis) {
                     let max = this._overlapSize[this._refreshBarAxis];
-                    if (max == 0)
+                    if (max === 0)
                         max = Math.max(this._contentSize[this._refreshBarAxis] + this._footerLockedSize - this._viewSize[this._refreshBarAxis], 0);
                     else
                         max += this._footerLockedSize;
                     threshold2 = -max;
                 }
-                if (this._tweening == 2 && this._bouncebackEffect) {
+                if (this._tweening === 2 && this._bouncebackEffect) {
                     if (newValue > 20 + threshold1 && this._tweenChange[axis] > 0
-                        || newValue > threshold1 && this._tweenChange[axis] == 0) {
+                        || newValue > threshold1 && this._tweenChange[axis] === 0) {
                         this._tweenTime[axis] = 0;
                         this._tweenDuration[axis] = TWEEN_TIME_DEFAULT;
                         this._tweenChange[axis] = -newValue + threshold1;
                         this._tweenStart[axis] = newValue;
                     }
                     else if (newValue < threshold2 - 20 && this._tweenChange[axis] < 0
-                        || newValue < threshold2 && this._tweenChange[axis] == 0) {
+                        || newValue < threshold2 && this._tweenChange[axis] === 0) {
                         this._tweenTime[axis] = 0;
                         this._tweenDuration[axis] = TWEEN_TIME_DEFAULT;
                         this._tweenChange[axis] = threshold2 - newValue;
@@ -9683,352 +9435,30 @@
     }
 
     class TranslationsLoader {
-        async load(task) {
+        load(task) {
             let url = task.url;
-            const data = await task.loader.fetch(url, "json", task.progress.createCallback(0.2), task.options);
-            if (!data)
-                return null;
-            let files = data.files || {};
-            let jsonFile = files[Translations.provider.language];
-            if (!jsonFile && Translations.provider.language != data.defaultLanguage)
-                jsonFile = files[data.fallbackLanguage];
-            let content;
-            if (jsonFile) {
-                content = await task.loader.fetch(jsonFile, "json", task.progress.createCallback(0.8), task.options);
-                if (!content)
+            return task.loader.fetch(url, "json", task.progress.createCallback(0.2), task.options).then(data => {
+                if (!data)
                     return null;
-            }
-            else
-                content = {};
-            let inst;
-            if (task.obsoluteInst && task.obsoluteInst.id == data.id)
-                inst = task.obsoluteInst;
-            else
-                inst = Translations.create(data.id);
-            inst.setContent(Translations.provider.language, content);
-            return inst;
-        }
-    }
-
-    class RoundedRectMesh {
-        constructor() {
-            this.lt = 6;
-            this.rt = 6;
-            this.lb = 6;
-            this.rb = 6;
-        }
-        onPopulateMesh(vb) {
-            let x = vb.contentRect.x;
-            let y = vb.contentRect.y;
-            let w = vb.contentRect.width;
-            let h = vb.contentRect.height;
-            let radiusX = w / 2;
-            let radiusY = h / 2;
-            let cornerMaxRadius = Math.min(radiusX, radiusY);
-            let centerX = x + radiusX;
-            let centerY = y + radiusY;
-            vb.addVert(centerX, centerY, 0);
-            let cnt = vb.vertCount;
-            for (let i = 0; i < 4; i++) {
-                let radius = 0;
-                switch (i) {
-                    case 0:
-                        radius = this.rb;
-                        break;
-                    case 1:
-                        radius = this.lb;
-                        break;
-                    case 2:
-                        radius = this.lt;
-                        break;
-                    case 3:
-                        radius = this.rt;
-                        break;
-                }
-                radius = Math.min(cornerMaxRadius, radius);
-                let offsetX = 0;
-                let offsetY = 0;
-                if (i === 0 || i === 3)
-                    offsetX = w - radius * 2;
-                if (i === 0 || i === 1)
-                    offsetY = h - radius * 2;
-                offsetX += x;
-                offsetY += y;
-                if (radius !== 0) {
-                    let partNumSides = Math.max(1, Math.ceil(Math.PI * radius / 8)) + 1;
-                    let angleDelta = Math.PI / 2 / partNumSides;
-                    let angle = Math.PI / 2 * i;
-                    let startAngle = angle;
-                    for (let j = 1; j <= partNumSides; j++) {
-                        if (j === partNumSides)
-                            angle = startAngle + Math.PI / 2;
-                        vb.addVert(offsetX + Math.cos(angle) * radius + radius, offsetY + Math.sin(angle) * radius + radius, 0);
-                        angle += angleDelta;
-                    }
-                }
-                else {
-                    vb.addVert(offsetX, offsetY, 0);
-                }
-            }
-            cnt = vb.vertCount - cnt;
-            for (let i = 0; i < cnt; i++)
-                vb.addTriangle(0, i + 1, i === cnt - 1 ? 1 : i + 2);
-        }
-    }
-
-    class CircleMesh {
-        onPopulateMesh(vb) {
-            let rect = vb.contentRect;
-            const radiusX = rect.width / 2;
-            const radiusY = rect.height / 2;
-            let sides = Math.ceil(Math.PI * (radiusX + radiusY) / 4);
-            sides = Laya.MathUtil.clamp(sides, 40, 800);
-            const angleDelta = 2 * Math.PI / sides;
-            let angle = 0;
-            const centerX = rect.x + radiusX;
-            const centerY = rect.y + radiusY;
-            vb.addVert(centerX, centerY, 0);
-            for (let i = 0; i < sides; i++) {
-                let vx = Math.cos(angle) * radiusX + centerX;
-                let vy = Math.sin(angle) * radiusY + centerY;
-                vb.addVert(vx, vy, 0);
-                angle += angleDelta;
-            }
-            for (let i = 0; i < sides; i++) {
-                if (i != sides - 1)
-                    vb.addTriangle(0, i + 1, i + 2);
+                let files = data.files || {};
+                let jsonFile = files[Translations.provider.language];
+                if (!jsonFile && Translations.provider.language != data.defaultLanguage)
+                    jsonFile = files[data.fallbackLanguage];
+                let awaitor;
+                if (jsonFile)
+                    awaitor = task.loader.fetch(jsonFile, "json", task.progress.createCallback(0.8), task.options);
                 else
-                    vb.addTriangle(0, i + 1, 1);
-            }
-        }
-    }
-
-    const gridTileIndice = [-1, 0, -1, 2, 4, 3, -1, 1, -1];
-    const TRIANGLES_9_GRID = [
-        4, 0, 1, 1, 5, 4,
-        5, 1, 2, 2, 6, 5,
-        6, 2, 3, 3, 7, 6,
-        8, 4, 5, 5, 9, 8,
-        9, 5, 6, 6, 10, 9,
-        10, 6, 7, 7, 11, 10,
-        12, 8, 9, 9, 13, 12,
-        13, 9, 10, 10, 14, 13,
-        14, 10, 11,
-        11, 15, 14
-    ];
-    const gridTexX = [0, 0, 0, 0];
-    const gridTexY = [0, 0, 0, 0];
-    const gridX = [0, 0, 0, 0];
-    const gridY = [0, 0, 0, 0];
-    function genSliceMesh(vb, contentRect, uvRect, gridRect, tileGridIndice) {
-        const sourceW = vb.mainTex.sourceWidth;
-        const sourceH = vb.mainTex.sourceHeight;
-        const sx = uvRect.width / sourceW;
-        const sy = uvRect.height / sourceH;
-        const xMax = gridRect.right;
-        const yMax = gridRect.bottom;
-        gridTexX.length = 0;
-        gridTexX.push(uvRect.x, uvRect.x + gridRect.x * sx, uvRect.x + xMax * sx, uvRect.right);
-        gridTexY.length = 0;
-        gridTexY.push(uvRect.y, uvRect.y + gridRect.y * sy, uvRect.y + yMax * sy, uvRect.bottom);
-        gridX[0] = contentRect.x;
-        if (contentRect.width >= (sourceW - gridRect.width)) {
-            gridX[1] = gridX[0] + gridRect.x;
-            gridX[2] = contentRect.right - (sourceW - xMax);
-            gridX[3] = contentRect.right;
-        }
-        else {
-            const tmp = gridRect.x / (sourceW - xMax);
-            const adjustedTmp = gridX[0] + contentRect.width * tmp / (1 + tmp);
-            gridX[1] = adjustedTmp;
-            gridX[2] = adjustedTmp;
-            gridX[3] = contentRect.right;
-        }
-        gridY[0] = contentRect.y;
-        if (contentRect.height >= (sourceH - gridRect.height)) {
-            gridY[1] = gridY[0] + gridRect.y;
-            gridY[2] = contentRect.bottom - (sourceH - yMax);
-            gridY[3] = contentRect.bottom;
-        }
-        else {
-            const tmp = gridRect.y / (sourceH - yMax);
-            const adjustedTmp = gridY[0] + contentRect.height * tmp / (1 + tmp);
-            gridY[1] = adjustedTmp;
-            gridY[2] = adjustedTmp;
-            gridY[3] = contentRect.bottom;
-        }
-        if (tileGridIndice === 0) {
-            for (let cy = 0; cy < 4; cy++) {
-                for (let cx = 0; cx < 4; cx++) {
-                    vb.addVert(gridX[cx], gridY[cy], 0, null, gridTexX[cx], gridTexY[cy]);
-                }
-            }
-            vb.addTriangles(TRIANGLES_9_GRID);
-        }
-        else {
-            const drawRect = Laya.Rectangle.create();
-            const uvRect = Laya.Rectangle.create();
-            let qi = vb.vertCount;
-            for (let pi = 0; pi < 9; pi++) {
-                const col = pi % 3;
-                const row = Math.floor(pi / 3);
-                const part = gridTileIndice[pi];
-                Laya.Rectangle.minMaxRect(gridX[col], gridY[row], gridX[col + 1], gridY[row + 1], drawRect);
-                Laya.Rectangle.minMaxRect(gridTexX[col], gridTexY[row], gridTexX[col + 1], gridTexY[row + 1], uvRect);
-                if (part !== -1 && (tileGridIndice & (1 << part)) !== 0) {
-                    if (qi !== vb.vertCount)
-                        vb.triangulateQuad(qi);
-                    genTileMesh(vb, drawRect, uvRect, (part === 0 || part === 1 || part === 4) ? gridRect.width : drawRect.width, (part === 2 || part === 3 || part === 4) ? gridRect.height : drawRect.height, true, true);
-                    qi = vb.vertCount;
-                }
-                else {
-                    vb.addQuad(drawRect, null, uvRect);
-                }
-            }
-            if (qi !== vb.vertCount)
-                vb.triangulateQuad(qi);
-            drawRect.recover();
-            uvRect.recover();
-        }
-    }
-    function genTileMesh(vb, drawRect, uvRect, sourceW, sourceH, repeatX, repeatY) {
-        let hc = repeatX ? (Math.ceil(drawRect.width / sourceW) - 1) : 0;
-        let vc = repeatY ? (Math.ceil(drawRect.height / sourceH) - 1) : 0;
-        let tailWidth = drawRect.width - hc * sourceW;
-        let tailHeight = drawRect.height - vc * sourceH;
-        const tmpRect = Laya.Rectangle.create();
-        const tmpUV = Laya.Rectangle.create();
-        let qi = vb.vertCount;
-        for (let i = 0; i <= hc; i++) {
-            for (let j = 0; j <= vc; j++) {
-                tmpRect.setTo(drawRect.x + i * sourceW, drawRect.y + j * sourceH, (i < hc) ? sourceW : tailWidth, (j < vc) ? sourceH : tailHeight);
-                tmpUV.setTo(uvRect.x, uvRect.y, (i < hc || !repeatX) ? uvRect.width : uvRect.width * tailWidth / sourceW, (j < vc || !repeatY) ? uvRect.height : uvRect.height * tailHeight / sourceH);
-                vb.addQuad(tmpRect, null, tmpUV);
-            }
-        }
-        vb.triangulateQuad(qi);
-        tmpRect.recover();
-        tmpUV.recover();
-    }
-
-    class FlipMesh {
-        constructor() {
-            this.flipX = true;
-            this.flipY = false;
-        }
-        onPopulateMesh(vb) {
-            const tmpUV = Laya.Rectangle.create();
-            let uvRect = tmpUV.copyFrom(vb.uvRect);
-            if (this.flipX) {
-                let tmp = uvRect.x;
-                uvRect.x = uvRect.right;
-                uvRect.right = tmp;
-            }
-            if (this.flipY) {
-                let tmp = uvRect.y;
-                uvRect.y = uvRect.bottom;
-                uvRect.bottom = tmp;
-            }
-            let sizeGrid = vb.mainTex._sizeGrid;
-            if (sizeGrid) {
-                let gridRect = Laya.Rectangle.create();
-                let sourceWidth = vb.mainTex.sourceWidth;
-                let sourceHeight = vb.mainTex.sourceHeight;
-                gridRect.setTo(sizeGrid[3], sizeGrid[0], sourceWidth - sizeGrid[1] - sizeGrid[3], sourceHeight - sizeGrid[0] - sizeGrid[2]);
-                if (this.flipX)
-                    gridRect.x = sourceWidth - gridRect.right;
-                if (this.flipY)
-                    gridRect.y = sourceHeight - gridRect.bottom;
-                genSliceMesh(vb, vb.contentRect, uvRect, gridRect, sizeGrid[4] === 1 ? 0xff : 0);
-            }
-            else {
-                vb.addQuad(vb.contentRect, null, uvRect);
-                vb.triangulateQuad(0);
-            }
-            tmpUV.recover();
-        }
-    }
-
-    class RegularPolygonMesh {
-        constructor() {
-            this.sides = 6;
-            this.distances = [];
-            this.rotation = 0;
-            this.lineWidth = 0;
-            this.lineColor = null;
-            this.centerColor = null;
-            this.fillColor = null;
-        }
-        onPopulateMesh(vb) {
-            var _a;
-            let color = this.fillColor || vb.color;
-            let lineColor = this.lineColor || vb.color;
-            const angleDelta = 2 * Math.PI / this.sides;
-            let angle = this.rotation * Laya.MathUtils3D.Deg2Rad;
-            const radius = Math.min(vb.contentRect.width / 2, vb.contentRect.height / 2);
-            const lineWidth = this.lineWidth;
-            const centerX = radius + vb.contentRect.x;
-            const centerY = radius + vb.contentRect.y;
-            vb.addVert(centerX, centerY, 0, this.centerColor || color);
-            for (let i = 0; i < this.sides; i++) {
-                let r = radius;
-                if (this.distances != null)
-                    r *= (_a = this.distances[i]) !== null && _a !== void 0 ? _a : 1;
-                let xv = centerX + Math.cos(angle) * (r - lineWidth);
-                let yv = centerY + Math.sin(angle) * (r - lineWidth);
-                vb.addVert(xv, yv, 0, color);
-                if (lineWidth > 0) {
-                    vb.addVert(xv, yv, 0, lineColor);
-                    vb.addVert(Math.cos(angle) * r + centerX, Math.sin(angle) * r + centerY, 0, lineColor);
-                }
-                angle += angleDelta;
-            }
-            if (lineWidth > 0) {
-                let tmp = this.sides * 3;
-                for (let i = 0; i < tmp; i += 3) {
-                    if (i != tmp - 3) {
-                        vb.addTriangle(0, i + 1, i + 4);
-                        vb.addTriangle(i + 5, i + 2, i + 3);
-                        vb.addTriangle(i + 3, i + 6, i + 5);
-                    }
-                    else {
-                        vb.addTriangle(0, i + 1, 1);
-                        vb.addTriangle(2, i + 2, i + 3);
-                        vb.addTriangle(i + 3, 3, 2);
-                    }
-                }
-            }
-            else {
-                for (let i = 0; i < this.sides; i++)
-                    vb.addTriangle(0, i + 1, (i == this.sides - 1) ? 1 : i + 2);
-            }
-        }
-    }
-
-    class TileMesh {
-        constructor() {
-            this.repeatX = true;
-            this.repeatY = true;
-        }
-        onPopulateMesh(vb) {
-            let tex = vb.mainTex;
-            if (tex != null
-                && vb.uvRect.x == 0 && vb.uvRect.y == 0 && vb.uvRect.width == 1 && vb.uvRect.height == 1
-                && tex.bitmap.wrapModeU == Laya.WrapMode.Repeat
-                && tex.bitmap.wrapModeV == Laya.WrapMode.Repeat) {
-                let tmpRect = Laya.Rectangle.create();
-                tmpRect.copyFrom(vb.uvRect);
-                if (this.repeatX)
-                    tmpRect.width *= vb.contentRect.width / tex.width;
-                if (this.repeatY)
-                    tmpRect.height *= vb.contentRect.height / tex.height;
-                vb.addQuad(vb.contentRect, null, tmpRect);
-                vb.triangulateQuad(0);
-                tmpRect.recover();
-            }
-            else {
-                genTileMesh(vb, vb.contentRect, vb.uvRect, tex.sourceWidth, tex.sourceHeight, this.repeatX, this.repeatY);
-            }
+                    awaitor = Promise.resolve({});
+                return awaitor.then(content => {
+                    let inst;
+                    if (task.obsoluteInst && task.obsoluteInst.id == data.id)
+                        inst = task.obsoluteInst;
+                    else
+                        inst = Translations.create(data.id);
+                    inst.setContent(Translations.provider.language, content);
+                    return inst;
+                });
+            });
         }
     }
 
@@ -10069,12 +9499,6 @@
     r("StretchParam", StretchParam);
     r("ItemData", class extends Object {
     });
-    r("RoundedRectMesh", RoundedRectMesh);
-    r("ProgressMesh", ProgressMesh);
-    r("CircleMesh", CircleMesh);
-    r("FlipMesh", FlipMesh);
-    r("RegularPolygonMesh", RegularPolygonMesh);
-    r("TileMesh", TileMesh);
     Laya.Loader.registerLoader(["i18ns"], TranslationsLoader);
 
     const internalEvent = "click_menu_item";
@@ -10307,10 +9731,9 @@
     Laya.Laya.addAfterInitCallback(UIPackage._init);
 
     exports.ButtonPageAlternatives = ButtonPageAlternatives;
-    exports.CircleMesh = CircleMesh;
     exports.Controller = Controller;
     exports.ControllerRef = ControllerRef;
-    exports.FlipMesh = FlipMesh;
+    exports.DragDropManager = DragDropManager;
     exports.GBox = GBox;
     exports.GButton = GButton;
     exports.GComboBox = GComboBox;
@@ -10345,14 +9768,10 @@
     exports.ListSelection = ListSelection;
     exports.PopupManager = PopupManager;
     exports.PopupMenu = PopupMenu;
-    exports.ProgressMesh = ProgressMesh;
-    exports.RegularPolygonMesh = RegularPolygonMesh;
     exports.Relation = Relation;
-    exports.RoundedRectMesh = RoundedRectMesh;
     exports.Scroller = Scroller;
     exports.Selection = Selection;
     exports.StretchParam = StretchParam;
-    exports.TileMesh = TileMesh;
     exports.Translations = Translations;
     exports.TranslationsLoader = TranslationsLoader;
     exports.TreeSelection = TreeSelection;
@@ -10360,8 +9779,6 @@
     exports.UIPackage = UIPackage;
     exports.WidgetPool = WidgetPool;
     exports.WidgetRef = WidgetRef;
-    exports.genSliceMesh = genSliceMesh;
-    exports.genTileMesh = genTileMesh;
 
 })(window.Laya = window.Laya || {}, Laya);
 //# sourceMappingURL=laya.ui2.js.map

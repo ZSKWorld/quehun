@@ -445,7 +445,7 @@
             }
             if (this._spriteNum == 0) {
                 Laya.ILaya.timer.frameLoop(3, this, this.animate);
-                this._preFrameTime = Laya.Browser.now();
+                this._preFrameTime = performance.now();
                 this._frameIndex = 0;
                 this._time = 0;
                 this._interval = 0;
@@ -459,7 +459,7 @@
         }
         animate() {
             if (this.textureArray && this.textureArray.length > 0 && this.durationTimeArray && this.durationTimeArray.length > 0) {
-                var tNow = Laya.Browser.now();
+                var tNow = performance.now();
                 this._interval = tNow - this._preFrameTime;
                 this._preFrameTime = tNow;
                 if (this._interval > this.animationTotalTime) {
@@ -1147,16 +1147,10 @@
             }
         }
         cacheGridsArray(arr) {
-            var canvas;
-            if (!TiledMap._tempCanvas) {
+            let canvas;
+            if (!TiledMap._tempCanvas)
                 TiledMap._tempCanvas = new Laya.HTMLCanvas();
-                var tx = TiledMap._tempCanvas.context;
-                if (!tx) {
-                    tx = TiledMap._tempCanvas.getContext('2d');
-                }
-            }
             canvas = TiledMap._tempCanvas;
-            canvas.context.asBitmap = false;
             var i, len;
             len = arr.length;
             var tGrid;
@@ -1164,7 +1158,6 @@
                 tGrid = arr[i];
                 canvas.clear();
                 canvas.size(1, 1);
-                tGrid.render(canvas.context, 0, 0);
                 tGrid.hide();
             }
             canvas.clear();
@@ -1421,8 +1414,11 @@
             }
             this._layerArray = [];
             this._renderLayerArray = [];
-            if (this._mapSprite) {
+            if (this._mapSprite && !this._mapSprite.destroyed) {
                 this._mapSprite.destroy();
+                this._mapSprite = null;
+            }
+            else {
                 this._mapSprite = null;
             }
             var tDic = this._animationDic;

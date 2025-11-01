@@ -348,6 +348,7 @@ declare namespace gui {
     }
     interface ILoadOptions {
         type?: string;
+        maybeType?: string;
         priority?: number;
         group?: string;
         cache?: boolean;
@@ -397,6 +398,16 @@ declare namespace gui {
     }
     class Prefab extends Resource {
         static parserAPI: IPrefabParserAPI;
+        /**
+         * @en Instantiate a prefab from a URL.
+         * @param url The URL of the prefab.
+         * @param options Optional parameters for instantiation.
+         * @zh 从 URL 实例化一个预制体。
+         * @param url 预制体的 URL。
+         * @param options 可选的实例化参数。
+         * @returns A promise that resolves to the instantiated Node.
+         */
+        static instantiate<T extends Widget>(url: string, classType?: new () => T): Promise<T>;
         protected _deps: Array<IResource>;
         data: any;
         basePath: string;
@@ -469,7 +480,7 @@ declare namespace gui {
         private queueToDownload;
         private download;
         private completeItem;
-        getURLInfo(url: string, type?: string): URLInfo;
+        getURLInfo(url: string, type?: string, maybeType?: string): URLInfo;
         warnFailed(url: string, err?: any, initiatorUrl?: string): void;
         warn(msg: string, err?: any): void;
         getRes(url: string, type?: string): any;
@@ -495,6 +506,7 @@ declare namespace gui {
     const TypedArrayClasses: Record<string, any>;
     class SerializeUtil {
         static isDeserializing: boolean;
+        static _data: any;
         static hasProp(...keys: string[]): boolean;
         errors: Array<string>;
         getNodeByRef: (id: string | string[]) => Widget;
@@ -1578,9 +1590,6 @@ declare namespace gui {
         itemProvider: (index: number) => string;
         _layout: IListLayout;
         private _pool;
-        private _initItemNum;
-        private _itemData;
-        private _isDemo;
         _templateNode: Widget;
         constructor();
         destroy(): void;
@@ -1619,6 +1628,7 @@ declare namespace gui {
         private _srcWidth;
         private _srcHeight;
         private _loadId;
+        readonly loadOptions: ILoadOptions;
         constructor();
         get src(): string;
         set src(value: string);
@@ -1846,7 +1856,6 @@ declare namespace gui {
         private _lastMoveTime;
         private _isHoldAreaDone;
         private _aniFlag;
-        private _loop;
         private _headerLockedSize;
         private _footerLockedSize;
         private _refreshEventDispatching;
@@ -2185,6 +2194,7 @@ declare namespace gui {
         private checkChildren;
         private hideFolderNode;
         private removeNode;
+        onAfterDeserialize(): void;
     }
     class TreeNode {
         data: any;
@@ -2245,6 +2255,11 @@ declare namespace gui {
     class Widget extends EventDispatcher {
         prefabUrl: string;
         data: any;
+        /**
+         * @en The tree node associated with this widget.
+         * @zh 与此小部件关联的树节点。
+         */
+        readonly treeNode: TreeNode;
         private _id;
         private _name;
         private _bits;
@@ -2297,19 +2312,19 @@ declare namespace gui {
         set x(value: number);
         get y(): number;
         set y(value: number);
-        setPos(xv: number, yv: number): void;
+        setPos(xv: number, yv: number): this;
         get left(): number;
         set left(value: number);
         get top(): number;
         set top(value: number);
-        setLeftTop(xv: number, yv: number): void;
+        setLeftTop(xv: number, yv: number): this;
         center(target?: Widget): this;
         get width(): number;
         set width(value: number);
         get height(): number;
         set height(value: number);
-        setSize(wv: number, hv: number, changeByLayout?: boolean): void;
-        makeFullSize(target?: Widget): this;
+        setSize(wv: number, hv: number, changeByLayout?: boolean): this;
+        makeFullSize(target?: Widget, constraints?: boolean): this;
         get scaleX(): number;
         set scaleX(value: number);
         get scaleY(): number;
@@ -2338,7 +2353,6 @@ declare namespace gui {
         set active(value: boolean);
         get activeInHierarchy(): boolean;
         get onStage(): boolean;
-        get treeNode(): TreeNode;
         get zOrder(): number;
         set zOrder(value: number);
         get childrenRenderOrder(): ChildrenRenderOrder;
@@ -2384,6 +2398,8 @@ declare namespace gui {
         get controllerCount(): number;
         addController(name: string, pageCount?: number): Controller;
         getController(name: string): Controller;
+        setPage(controllerName: string, pageName: string): void;
+        setPage(controllerName: string, pageIndex: number): void;
         protected _controllersChanged(): void;
         get gears(): ReadonlyArray<Gear<any>>;
         addGear(value: Gear<any>): void;

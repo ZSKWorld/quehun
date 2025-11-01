@@ -804,20 +804,17 @@
                 let sx = this._scaleX;
                 let sy = this._scaleY;
                 if (this._owner) {
-                    const mm = Laya.ILaya.stage.transform;
-                    const pp = this._owner.globalTrans.getScenePos(Laya.Point.TEMP);
-                    px = mm.a * pp.x + mm.c * pp.y + mm.tx;
-                    py = mm.b * pp.x + mm.d * pp.y + mm.ty;
-                    this._owner.globalTrans.getSceneScale(pp);
-                    sx = Math.abs(pp.x * mm.getScaleX());
-                    sy = Math.abs(pp.y * mm.getScaleY());
+                    let globalTrans = this._owner.globalTrans;
+                    const pp = globalTrans.getPos(Laya.Point.TEMP);
+                    px = pp.x;
+                    py = pp.y;
+                    sx = globalTrans.scaleX;
+                    sy = globalTrans.scaleY;
                 }
                 const globalPoly = this._globalPolygon.points;
                 const polygon = this._occluderPolygon.points;
                 const len = polygon.length / 2 | 0;
-                let m = this._owner ? this._owner.globalTrans.getSceneMatrix(this._sceneMatrix) : this.transform;
-                Laya.Matrix.mul(Laya.ILaya.stage.transform, m, this._sceneMatrix);
-                m = this._sceneMatrix;
+                let m = this._owner ? this._owner.globalTrans.getMatrix() : this.transform;
                 if (m) {
                     for (let i = 0; i < len; i++) {
                         const x = polygon[i * 2 + 0];
@@ -1030,14 +1027,14 @@
         }
     }
 
-    var lightGen_vs = "#define SHADER_NAME FreeformLight_VS\n#include \"Sprite2DVertex.glsl\";\nvoid main(){v_texcoord=a_uv;gl_Position=vec4((a_position.x/u_baseRenderSize2D.x-0.5)*2.0,(a_position.y/u_baseRenderSize2D.y-0.5)*2.0,0.0,1.0);\n#ifdef INVERTY\ngl_Position.y=-gl_Position.y;\n#endif\n}";
+    var lightGen_vs = "#define SHADER_NAME FreeformLight_VS\n#include \"Sprite2DVertex.glsl\";\nvoid main(){v_texcoord=a_uv;gl_Position=vec4((a_position.x/u_size.x-0.5)*2.0,(a_position.y/u_size.y-0.5)*2.0,0.0,1.0);\n#ifdef INVERTY\ngl_Position.y=-gl_Position.y;\n#endif\n}";
 
     var lightGen_ps = "#define SHADER_NAME FreeformLight_PS\n#if defined(GL_FRAGMENT_PRECISION_HIGH)\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n#include \"Sprite2DFrag.glsl\";\nvoid main(){gl_FragColor=vec4(v_texcoord.x);}";
 
     class LightGenShader2D {
         static __init__() {
             this.renderShader = Laya.Shader3D.add('LightGen2D', false, false);
-            this.renderShader.shaderType = Laya.ShaderFeatureType.DEFAULT;
+            this.renderShader.shaderType = Laya.ShaderFeatureType.Default;
             const subShader = new Laya.SubShader(this.RenderAttribute, {}, {});
             this.renderShader.addSubShader(subShader);
             subShader.addShaderPass(lightGen_vs, lightGen_ps);
@@ -1048,14 +1045,14 @@
         'a_uv': [2, Laya.ShaderDataType.Vector2],
     };
 
-    var shadowGen2D_vs = "#define SHADER_NAME ShadowGen2D_VS\n#include \"Sprite2DVertex.glsl\";\nvec2 rotateAndScaleUV(vec2 uv,float rotation,vec2 scale){vec2 mid=vec2(0.5);float c=cos(rotation);float s=sin(rotation);vec2 ret=vec2(c*(uv.x-mid.x)+s*(uv.y-mid.y)+mid.x,c*(uv.y-mid.y)-s*(uv.x-mid.x)+mid.y);return(ret-mid)*scale+mid;}void main(){v_texcoord=rotateAndScaleUV(a_uv,u_LightRotation,u_LightScale);v_color=min(vec4(1.0),u_LightColor*min(1.0,u_LightIntensity)*(1.0-u_Shadow2DStrength)+u_ShadowColor);gl_Position=vec4((a_position.x/u_baseRenderSize2D.x-0.5)*2.0,(0.5-a_position.y/u_baseRenderSize2D.y)*2.0,0.0,1.0);\n#ifdef INVERTY\ngl_Position.y=-gl_Position.y;\n#endif\n}";
+    var shadowGen2D_vs = "#define SHADER_NAME ShadowGen2D_VS\n#include \"Sprite2DVertex.glsl\";\nvec2 rotateAndScaleUV(vec2 uv,float rotation,vec2 scale){vec2 mid=vec2(0.5);float c=cos(rotation);float s=sin(rotation);vec2 ret=vec2(c*(uv.x-mid.x)+s*(uv.y-mid.y)+mid.x,c*(uv.y-mid.y)-s*(uv.x-mid.x)+mid.y);return(ret-mid)*scale+mid;}void main(){v_texcoord=rotateAndScaleUV(a_uv,u_LightRotation,u_LightScale);v_color=min(vec4(1.0),u_LightColor*min(1.0,u_LightIntensity)*(1.0-u_Shadow2DStrength)+u_ShadowColor);gl_Position=vec4((a_position.x/u_size.x-0.5)*2.0,(0.5-a_position.y/u_size.y)*2.0,0.0,1.0);\n#ifdef INVERTY\ngl_Position.y=-gl_Position.y;\n#endif\n}";
 
     var shadowGen2D_ps = "#define SHADER_NAME ShadowGen2D_PS\n#if defined(GL_FRAGMENT_PRECISION_HIGH)\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n#include \"Sprite2DFrag.glsl\";\nvoid main(){vec2 t=step(vec2(0.0),v_texcoord)*step(v_texcoord,vec2(1.0));gl_FragColor=texture2D(u_baseRender2DTexture,v_texcoord)*v_color*t.x*t.y;}";
 
     class ShadowGenShader2D {
         static __init__() {
             this.renderShader = Laya.Shader3D.add('ShadowGen2D', false, false);
-            this.renderShader.shaderType = Laya.ShaderFeatureType.DEFAULT;
+            this.renderShader.shaderType = Laya.ShaderFeatureType.Default;
             const subShader = new Laya.SubShader(this.RenderAttribute, this.RenderUniform, {});
             this.renderShader.addSubShader(subShader);
             subShader.addShaderPass(shadowGen2D_vs, shadowGen2D_ps);
@@ -1075,14 +1072,14 @@
         'a_uv': [2, Laya.ShaderDataType.Vector2],
     };
 
-    var lightAndShadowGen2D_vs = "#define SHADER_NAME LightAndShadowGen2D_VS\n#include \"Sprite2DVertex.glsl\";\nvec2 rotateAndScaleUV(vec2 uv,float rotation,vec2 scale){vec2 mid=vec2(0.5);float c=cos(rotation);float s=sin(rotation);vec2 ret=vec2(c*(uv.x-mid.x)+s*(uv.y-mid.y)+mid.x,c*(uv.y-mid.y)-s*(uv.x-mid.x)+mid.y);return(ret-mid)*scale+mid;}void main(){v_texcoord=rotateAndScaleUV(a_uv,u_LightRotation,u_LightScale);v_color=u_LightColor*u_LightIntensity*u_PCFIntensity;gl_Position=vec4((a_position.x/u_baseRenderSize2D.x-0.5)*2.0,(0.5-a_position.y/u_baseRenderSize2D.y)*2.0,0.0,1.0);\n#ifdef INVERTY\ngl_Position.y=-gl_Position.y;\n#endif\n}";
+    var lightAndShadowGen2D_vs = "#define SHADER_NAME LightAndShadowGen2D_VS\n#include \"Sprite2DVertex.glsl\";\nvec2 rotateAndScaleUV(vec2 uv,float rotation,vec2 scale){vec2 mid=vec2(0.5);float c=cos(rotation);float s=sin(rotation);vec2 ret=vec2(c*(uv.x-mid.x)+s*(uv.y-mid.y)+mid.x,c*(uv.y-mid.y)-s*(uv.x-mid.x)+mid.y);return(ret-mid)*scale+mid;}void main(){v_texcoord=rotateAndScaleUV(a_uv,u_LightRotation,u_LightScale);v_color=u_LightColor*u_LightIntensity*u_PCFIntensity;gl_Position=vec4((a_position.x/u_size.x-0.5)*2.0,(0.5-a_position.y/u_size.y)*2.0,0.0,1.0);\n#ifdef INVERTY\ngl_Position.y=-gl_Position.y;\n#endif\n}";
 
     var lightAndShadowGen2D_ps = "#define SHADER_NAME LightAndShadowGen2D_PS\n#if defined(GL_FRAGMENT_PRECISION_HIGH)\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n#include \"Sprite2DFrag.glsl\";\nvoid main(){vec2 t=step(vec2(0.0),v_texcoord)*step(v_texcoord,vec2(1.0));gl_FragColor=texture2D(u_baseRender2DTexture,v_texcoord)*v_color*t.x*t.y;}";
 
     class LightAndShadowGenShader2D {
         static __init__() {
             this.renderShader = Laya.Shader3D.add('LightAndShadowGen2D', false, false);
-            this.renderShader.shaderType = Laya.ShaderFeatureType.DEFAULT;
+            this.renderShader.shaderType = Laya.ShaderFeatureType.Default;
             const subShader = new Laya.SubShader(this.RenderAttribute, this.RenderUniform, {});
             this.renderShader.addSubShader(subShader);
             subShader.addShaderPass(lightAndShadowGen2D_vs, lightAndShadowGen2D_ps);
@@ -1123,15 +1120,6 @@
         static __init__() {
             if (!Laya.Scene.scene2DUniformMap)
                 Laya.Scene.scene2DUniformMap = Laya.LayaGL.renderDeviceFactory.createGlobalUniformMap('Sprite2DGlobal');
-            const scene2DUniformMap = Laya.Scene.scene2DUniformMap;
-            this.LIGHTANDSHADOW_SCENE_INV_0 = Laya.Shader3D.propertyNameToID('u_LightAndShadow2DSceneInv0');
-            this.LIGHTANDSHADOW_SCENE_INV_1 = Laya.Shader3D.propertyNameToID('u_LightAndShadow2DSceneInv1');
-            this.LIGHTANDSHADOW_STAGE_MAT_0 = Laya.Shader3D.propertyNameToID('u_LightAndShadow2DStageMat0');
-            this.LIGHTANDSHADOW_STAGE_MAT_1 = Laya.Shader3D.propertyNameToID('u_LightAndShadow2DStageMat1');
-            scene2DUniformMap.addShaderUniform(this.LIGHTANDSHADOW_SCENE_INV_0, 'u_LightAndShadow2DSceneInv0', Laya.ShaderDataType.Vector3);
-            scene2DUniformMap.addShaderUniform(this.LIGHTANDSHADOW_SCENE_INV_1, 'u_LightAndShadow2DSceneInv1', Laya.ShaderDataType.Vector3);
-            scene2DUniformMap.addShaderUniform(this.LIGHTANDSHADOW_STAGE_MAT_0, 'u_LightAndShadow2DStageMat0', Laya.ShaderDataType.Vector3);
-            scene2DUniformMap.addShaderUniform(this.LIGHTANDSHADOW_STAGE_MAT_1, 'u_LightAndShadow2DStageMat1', Laya.ShaderDataType.Vector3);
         }
         constructor(scene) {
             this.lsTarget = [];
@@ -1206,24 +1194,7 @@
             this._lights.forEach(light => light._transformChange());
             this._occluders.forEach(occluder => occluder._transformChange());
         }
-        _sceneTransformChange(context) {
-            let mat = Laya.ILaya.stage.transform;
-            this._stageMat0.set(mat.a, mat.c, mat.tx);
-            this._stageMat1.set(mat.b, mat.d, mat.ty);
-            if (context._drawingToTexture) {
-                this._sceneInv0.set(mat.a, mat.c, mat.tx);
-                this._sceneInv1.set(mat.b, mat.d, mat.ty);
-            }
-            else {
-                mat = this._scene.globalTrans.getMatrixInv(Laya.Matrix.TEMP);
-                this._sceneInv0.set(mat.a, mat.c, mat.tx);
-                this._sceneInv1.set(mat.b, mat.d, mat.ty);
-            }
-            const shaderData = this._scene.sceneShaderData;
-            shaderData.setVector3(Light2DManager.LIGHTANDSHADOW_SCENE_INV_0, this._sceneInv0);
-            shaderData.setVector3(Light2DManager.LIGHTANDSHADOW_SCENE_INV_1, this._sceneInv1);
-            shaderData.setVector3(Light2DManager.LIGHTANDSHADOW_STAGE_MAT_0, this._stageMat0);
-            shaderData.setVector3(Light2DManager.LIGHTANDSHADOW_STAGE_MAT_1, this._stageMat1);
+        _sceneTransformChange() {
         }
         addRender(node) {
             const layer = node.layer;
@@ -1534,7 +1505,7 @@
         }
         _updateLayerRenderRes(layer) {
             if (!this._lightRenderRes[layer])
-                this._lightRenderRes[layer] = new Light2DRenderRes(this._scene, layer, Laya.LayaGL.renderEngine._screenInvertY);
+                this._lightRenderRes[layer] = new Light2DRenderRes(this._scene, layer, false);
             this._lightRenderRes[layer].addLights(this._lightsInLayer[layer], this._needToRecover);
             this._needUpdateLightRes |= (1 << layer);
             if (Light2DManager.REUSE_CMD) {
@@ -1610,8 +1581,8 @@
                 this._recoverFC = Laya.ILaya.timer.currFrame + 10;
             }
         }
-        preRenderUpdate(context) {
-            this._sceneTransformChange(context);
+        preRenderUpdate() {
+            this._sceneTransformChange();
             const _isLightUpdate = (light) => {
                 return light._needUpdateLightAndShadow;
             };
@@ -1687,7 +1658,7 @@
                     const shadowMesh = renderRes.shadowMeshs[j];
                     const material = renderRes.material[j];
                     const materialShadow = renderRes.materialShadow[j];
-                    light.getScenePos(this._lightScenePos);
+                    light.getGlobalPos(this._lightScenePos);
                     light.renderLightTexture();
                     if (!screenChange) {
                         lightChange = _isLightUpdate(light);
@@ -1789,39 +1760,10 @@
             }
         }
         _updateScreen() {
-            const area2DArrays = this._scene._area2Ds;
-            if (area2DArrays.length > 0) {
-                let xL = 10000000;
-                let xR = -10000000;
-                let yB = 10000000;
-                let yT = -10000000;
-                for (let i = 0; i < area2DArrays.length; i++) {
-                    const camera = area2DArrays[i].mainCamera;
-                    if (camera) {
-                        let rect = camera._rect;
-                        xL = Math.min(xL, rect.x);
-                        xR = Math.max(xR, rect.y);
-                        yB = Math.min(yB, rect.z);
-                        yT = Math.max(yT, rect.w);
-                    }
-                }
-                this._screen.x = xL;
-                this._screen.y = yB;
-                this._screen.width = xR - xL;
-                this._screen.height = yT - yB;
-                if (this._screen.width < 0 || this._screen.height < 0) {
-                    this._screen.x = 0;
-                    this._screen.y = 0;
-                    this._screen.width = Laya.RenderState2D.width | 0;
-                    this._screen.height = Laya.RenderState2D.height | 0;
-                }
-            }
-            else {
-                this._screen.x = 0;
-                this._screen.y = 0;
-                this._screen.width = Laya.RenderState2D.width | 0;
-                this._screen.height = Laya.RenderState2D.height | 0;
-            }
+            this._screen.x = 0;
+            this._screen.y = 0;
+            this._screen.width = Laya.RenderState2D.width | 0;
+            this._screen.height = Laya.RenderState2D.height | 0;
             if (this._screen.width <= 0 || this._screen.height <= 0)
                 return false;
             if (this._screen.x < this._screenSchmitt.x
@@ -2445,13 +2387,8 @@
         getGlobalPosY() {
             return this.owner.globalTrans.y;
         }
-        getScenePos(out) {
-            this.owner.globalTrans.getScenePos(out);
-            const m = Laya.ILaya.stage.transform;
-            const x = m.a * out.x + m.c * out.y + m.tx;
-            const y = m.b * out.x + m.d * out.y + m.ty;
-            out.x = x;
-            out.y = y;
+        getGlobalPos(out) {
+            this.owner.globalTrans.getPos(out);
             return out;
         }
         setLayerMaskByList(layerList) {
@@ -2485,10 +2422,8 @@
             (_c = (_b = (_a = this.owner) === null || _a === void 0 ? void 0 : _a.scene) === null || _b === void 0 ? void 0 : _b._light2DManager) === null || _c === void 0 ? void 0 : _c.needCheckLightRange(this);
         }
         _lightScaleAndRotation() {
-            const m = Laya.ILaya.stage.transform;
-            const p = this.owner.globalTrans.getSceneScale(Laya.Point.TEMP);
-            const sx = Math.abs(p.x * m.getScaleX());
-            const sy = Math.abs(p.y * m.getScaleY());
+            const sx = this.owner.globalTrans.scaleX;
+            const sy = this.owner.globalTrans.scaleY;
             Laya.Vector2.TEMP.x = 1 / sx;
             Laya.Vector2.TEMP.y = 1 / sy;
             this.lightScale = Laya.Vector2.TEMP;
@@ -2755,13 +2690,12 @@
         _calcWorldRange(screen) {
             super._calcWorldRange(screen);
             this._lightScaleAndRotation();
-            const mm = Laya.ILaya.stage.transform;
-            const pp = this.owner.globalTrans.getScenePos(Laya.Point.TEMP);
-            const px = mm.a * pp.x + mm.c * pp.y + mm.tx;
-            const py = mm.b * pp.x + mm.d * pp.y + mm.ty;
-            this.owner.globalTrans.getSceneScale(pp);
-            const sx = Math.abs(pp.x * mm.getScaleX());
-            const sy = Math.abs(pp.y * mm.getScaleY());
+            let globalTrans = this.owner.globalTrans;
+            const pp = globalTrans.getPos(Laya.Point.TEMP);
+            const px = pp.x;
+            const py = pp.y;
+            const sx = globalTrans.scaleX;
+            const sy = globalTrans.scaleY;
             const x = this._localRange.x;
             const y = this._localRange.y;
             const w = this._localRange.width;
@@ -2793,7 +2727,7 @@
             const tex = this._texLight = new Laya.RenderTexture(width, height, Laya.RenderTargetFormat.R8G8B8A8, null, false, this.antiAlias ? 4 : 1);
             tex.wrapModeU = tex.wrapModeV = Laya.WrapMode.Clamp;
             if (!this._cmdRT)
-                this._cmdRT = Laya.Set2DRTCMD.create(tex, true, Laya.Color.CLEAR, Laya.LayaGL.renderEngine._screenInvertY);
+                this._cmdRT = Laya.Set2DRTCMD.create(tex, true, Laya.Color.CLEAR, false);
             else
                 this._cmdRT.renderTexture = tex;
         }
@@ -3129,13 +3063,12 @@
         _calcWorldRange(screen) {
             super._calcWorldRange(screen);
             this._lightScaleAndRotation();
-            const mm = Laya.ILaya.stage.transform;
-            const pp = this.owner.globalTrans.getScenePos(Laya.Point.TEMP);
-            const px = mm.a * pp.x + mm.c * pp.y + mm.tx;
-            const py = mm.b * pp.x + mm.d * pp.y + mm.ty;
-            this.owner.globalTrans.getSceneScale(pp);
-            const sx = Math.abs(pp.x * mm.getScaleX());
-            const sy = Math.abs(pp.y * mm.getScaleY());
+            let globalTrans = this.owner.globalTrans;
+            const pp = globalTrans.getPos(Laya.Point.TEMP);
+            const px = pp.x;
+            const py = pp.y;
+            const sx = globalTrans.scaleX;
+            const sy = globalTrans.scaleY;
             const x = this._localRange.x;
             const y = this._localRange.y;
             const w = this._localRange.width;
@@ -3161,7 +3094,7 @@
             const tex = this._texLight = new Laya.RenderTexture(width, height, Laya.RenderTargetFormat.R8G8B8A8, null, false, this.antiAlias ? 4 : 1);
             tex.wrapModeU = tex.wrapModeV = Laya.WrapMode.Clamp;
             if (!this._cmdRT)
-                this._cmdRT = Laya.Set2DRTCMD.create(tex, true, Laya.Color.CLEAR, Laya.LayaGL.renderEngine._screenInvertY);
+                this._cmdRT = Laya.Set2DRTCMD.create(tex, true, Laya.Color.CLEAR, false);
             else
                 this._cmdRT.renderTexture = tex;
         }
@@ -3317,13 +3250,12 @@
         _calcWorldRange(screen) {
             super._calcWorldRange(screen);
             this._lightScaleAndRotation();
-            const mm = Laya.ILaya.stage.transform;
-            const pp = this.owner.globalTrans.getScenePos(Laya.Point.TEMP);
-            const px = mm.a * pp.x + mm.c * pp.y + mm.tx;
-            const py = mm.b * pp.x + mm.d * pp.y + mm.ty;
-            this.owner.globalTrans.getSceneScale(pp);
-            const sx = Math.abs(pp.x * mm.getScaleX());
-            const sy = Math.abs(pp.y * mm.getScaleY());
+            let globalTrans = this.owner.globalTrans;
+            const pp = globalTrans.getPos(Laya.Point.TEMP);
+            const px = pp.x;
+            const py = pp.y;
+            const sx = globalTrans.scaleX;
+            const sy = globalTrans.scaleY;
             const x = this._localRange.x;
             const y = this._localRange.y;
             const w = this._localRange.width;

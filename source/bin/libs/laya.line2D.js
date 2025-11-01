@@ -3,7 +3,7 @@
 
     var LineFs = "#define SHADER_NAME 2DLineFS\n#include \"Sprite2DFrag.glsl\"\nvarying vec2 v_position;varying vec4 v_linePionts;varying float v_lineLength;varying vec2 v_linedir;varying vec3 v_dashed;varying float v_lineWidth;uniform vec4 u_TilingOffset;vec2 dotToline(in vec2 a,vec2 b,in vec2 p){vec2 pa=p-a,ba=b-a;float h=clamp(dot(pa,ba)/dot(ba,ba),0.0,1.0);return ba*h+a;}void main(){vec2 p=dotToline(v_linePionts.xy,v_linePionts.zw,v_position);float d=v_lineWidth*0.5-length(p-v_position);vec2 left=v_linePionts.xy-v_linedir;vec2 p1=dotToline(left,v_linePionts.zw+v_linedir,v_position);float t=v_lineLength+length(left-p1)-v_dashed.z;d*=step(fract(t/v_dashed.x),v_dashed.y);vec2 uv=transformUV(v_texcoord.xy,u_TilingOffset);vec4 textureColor=texture2D(u_baseRender2DTexture,fract(uv));textureColor=transspaceColor(textureColor*u_baseRenderColor);gl_FragColor=vec4(textureColor.rgb,textureColor.a*smoothstep(0.0,2.0,d));}";
 
-    var LineVs = "#define SHADER_NAME 2DLineVS\n#include \"Sprite2DVertex.glsl\"\nvarying vec2 v_position;varying vec4 v_linePionts;varying float v_lineLength;varying vec2 v_linedir;varying vec3 v_dashed;varying float v_lineWidth;uniform vec3 u_dashed;uniform float u_lineWidth;void lineMat(in vec2 left,in vec2 right,inout vec3 xDir,inout vec3 yDir,float LineWidth){vec2 dir=right-left;float lineLength=length(dir)+LineWidth+2.0;dir=normalize(dir);xDir.x=dir.x*lineLength;yDir.x=dir.y*lineLength;float lineWidth=LineWidth+2.0;xDir.y=-dir.y*LineWidth;yDir.y=dir.x*LineWidth;xDir.z=(left.x+right.x)*0.5;yDir.z=(left.y+right.y)*0.5;}void main(){vec2 oriUV=(a_position.xy+vec2(0.5,0.5));oriUV.x=(oriUV.x*length(a_linePos.xy-a_linePos.zw)+a_linelength)/50.0;v_texcoord=oriUV;vec2 left,right;getGlobalPos(a_linePos.xy,left);getGlobalPos(a_linePos.zw,right);float lengthScale=length(right-left)/length(a_linePos.zw-a_linePos.xy);v_lineLength=a_linelength*lengthScale;v_dashed=vec3(u_dashed.x*lengthScale,u_dashed.y,u_dashed.z*lengthScale);v_linePionts=vec4(left,right);float lineWidth=u_lineWidth*lengthScale;v_lineWidth=lineWidth;v_linedir=normalize(right-left)*v_lineWidth*0.5;vec3 xDir;vec3 yDir;lineMat(left,right,xDir,yDir,v_lineWidth);transfrom(a_position.xy,xDir,yDir,v_position);vec2 viewPos;getViewPos(v_position,viewPos);v_cliped=getClipedInfo(viewPos);vec4 pos;getProjectPos(viewPos,pos);gl_Position=pos;}";
+    var LineVs = "#define SHADER_NAME 2DLineVS\n#include \"Sprite2DVertex.glsl\"\nvarying vec2 v_position;varying vec4 v_linePionts;varying float v_lineLength;varying vec2 v_linedir;varying vec3 v_dashed;varying float v_lineWidth;uniform vec3 u_dashed;uniform float u_lineWidth;void lineMat(in vec2 left,in vec2 right,inout vec3 xDir,inout vec3 yDir,float LineWidth){vec2 dir=right-left;float lineLength=length(dir)+LineWidth+2.0;dir=normalize(dir);xDir.x=dir.x*lineLength;yDir.x=dir.y*lineLength;float lineWidth=LineWidth+2.0;xDir.y=-dir.y*LineWidth;yDir.y=dir.x*LineWidth;xDir.z=(left.x+right.x)*0.5;yDir.z=(left.y+right.y)*0.5;}void main(){vec2 oriUV=(a_position.xy+vec2(0.5,0.5));oriUV.x=(oriUV.x*length(a_linePos.xy-a_linePos.zw)+a_linelength)/50.0;v_texcoord=oriUV;vec2 left,right;getGlobalPos(a_linePos.xy,left);getGlobalPos(a_linePos.zw,right);float lengthScale=length(right-left)/length(a_linePos.zw-a_linePos.xy);v_lineLength=a_linelength*lengthScale;v_dashed=vec3(u_dashed.x*lengthScale,u_dashed.y,u_dashed.z*lengthScale);v_linePionts=vec4(left,right);float lineWidth=u_lineWidth*lengthScale;v_lineWidth=lineWidth;v_linedir=normalize(right-left)*v_lineWidth*0.5;vec3 xDir;vec3 yDir;lineMat(left,right,xDir,yDir,v_lineWidth);transfrom(a_position.xy,xDir,yDir,v_position);vec2 viewPos;getViewPos(v_position,viewPos);clip(viewPos);vec4 pos;getProjectPos(viewPos,pos);gl_Position=pos;}";
 
     class LineShader {
         static __init__() {
@@ -17,7 +17,7 @@
             };
             let uniformMap = {};
             let shader = Laya.Shader3D.add("LineShader", true, false);
-            shader.shaderType = Laya.ShaderFeatureType.DEFAULT;
+            shader.shaderType = Laya.ShaderFeatureType.Default;
             let subShader = new Laya.SubShader(attributeMap, uniformMap, {});
             shader.addSubShader(subShader);
             subShader.addShaderPass(LineVs, LineFs);
@@ -56,12 +56,14 @@
     }
     LineShader._isInit = false;
 
+    const defaultDashedValue = new Laya.Vector3(20, 1, 0);
     class Line2DRender extends Laya.BaseRenderNode2D {
         static _createDefaultLineMaterial() {
             if (Line2DRender.defaultLine2DMaterial)
                 return;
             LineShader.__init__();
             let mat = Line2DRender.defaultLine2DMaterial = new Laya.Material();
+            mat.lock = true;
             mat.setShaderName("LineShader");
             mat.alphaTest = false;
             mat.depthTest = Laya.RenderState.DEPTHTEST_OFF;
@@ -168,11 +170,21 @@
                 this._spriteShaderData.setVector3(LineShader.DASHED, this._dashedValue);
             }
             else {
-                this._spriteShaderData.setVector3(LineShader.DASHED, Line2DRender.defaultDashedValue);
+                this._spriteShaderData.setVector3(LineShader.DASHED, defaultDashedValue);
             }
+        }
+        _isMaterialVaild(value) {
+            return value.checkType(Laya.ShaderFeatureType.Default);
         }
         _getcommonUniformMap() {
             return ["BaseRender2D", "Line2DRender"];
+        }
+        _initDefaultRenderData() {
+            this._initRender();
+            this._spriteShaderData.setColor(Laya.BaseRenderNode2D.BASERENDER2DCOLOR, this._color);
+            this._updateDashValue();
+            this.tillOffset = null;
+            this.texture = null;
         }
         _changeGeometry() {
             let lineLength = this._positions.length / 4;
@@ -205,20 +217,6 @@
         clear() {
             this._positions.length = 0;
             this._needUpdate = true;
-        }
-        addCMDCall(context, px, py) {
-            let mat = context._curMat;
-            let vec3 = Laya.Vector3.TEMP;
-            vec3.x = mat.a;
-            vec3.y = mat.c;
-            vec3.z = px * mat.a + py * mat.c + mat.tx;
-            this._spriteShaderData.setVector3(Laya.BaseRenderNode2D.NMATRIX_0, vec3);
-            vec3.x = mat.b;
-            vec3.y = mat.d;
-            vec3.z = px * mat.b + py * mat.d + mat.ty;
-            this._spriteShaderData.setVector3(Laya.BaseRenderNode2D.NMATRIX_1, vec3);
-            this._setRenderSize(context.width, context.height);
-            context._copyClipInfoToShaderData(this._spriteShaderData);
         }
         onPreRender() {
             if (!this._needUpdate)
@@ -255,8 +253,10 @@
             renderElement.value2DShaderData = this._spriteShaderData;
             renderElement.renderStateIsBySprite = false;
             renderElement.nodeCommonMap = this._getcommonUniformMap();
+            renderElement.owner = this._struct;
             Laya.BaseRenderNode2D._setRenderElement2DMaterial(renderElement, this._materials[0] ? this._materials[0] : Line2DRender.defaultLine2DMaterial);
             this._renderElements[0] = renderElement;
+            this._struct.renderElements = this._renderElements;
         }
         constructor() {
             super();
@@ -272,31 +272,36 @@
             Line2DRender._createDefaultLineMaterial();
             this._renderElements = [];
             this._materials = [];
-            this._initRender();
-            this._spriteShaderData.addDefine(Laya.BaseRenderNode2D.SHADERDEFINE_BASERENDER2D);
-            this._spriteShaderData.setColor(Laya.BaseRenderNode2D.BASERENDER2DCOLOR, this._color);
-            this._updateDashValue();
-            this.tillOffset = null;
-            this.texture = null;
         }
     }
-    Line2DRender.defaultDashedValue = new Laya.Vector3(20, 1, 0);
     Laya.Laya.addInitCallback(() => Line2DRender._createDefaultLineMaterial());
 
     class Draw2DLineCMD extends Laya.Command2D {
         static create(pointArray, mat, color = Laya.Color.WHITE, lineWidth = 3) {
-            var cmd = Draw2DLineCMD._pool.length > 0 ? Draw2DLineCMD._pool.pop() : new Draw2DLineCMD();
+            var cmd = Draw2DLineCMD._pool.take();
             cmd._line2DRender.color = color;
             cmd._line2DRender.positions = pointArray;
             cmd._line2DRender.lineWidth = lineWidth;
+            cmd._needUpdateElement = true;
             cmd._setMatrix(mat);
             return cmd;
         }
         constructor() {
             super();
             this._drawElementData = Laya.LayaGL.render2DRenderPassFactory.createDraw2DElementCMDData();
-            this._line2DRender = new Line2DRender();
-            this._needUpdateElement = true;
+            this._shaderData = Laya.LayaGL.renderDeviceFactory.createShaderData();
+            this._shaderData.addDefine(Laya.BaseRenderNode2D.SHADERDEFINE_BASERENDER2D);
+            let temp = Laya.Vector4.TEMP.setValue(0, 0, 0, 0);
+            this._shaderData.setVector(Laya.ShaderDefines2D.UNIFORM_CLIPMATPOS, temp);
+            temp.x = temp.w = Laya.Const.MAX_CLIP_SIZE;
+            this._shaderData.setVector(Laya.ShaderDefines2D.UNIFORM_CLIPMATDIR, temp);
+            this._struct = Laya.LayaGL.render2DRenderPassFactory.createRenderStruct2D();
+            this._line2DRender = new Line2DRender;
+            this._line2DRender._struct = this._struct;
+            this._line2DRender._spriteShaderData = this._shaderData;
+            this._line2DRender._initRender();
+            this._line2DRender.tillOffset = null;
+            this._line2DRender.texture = null;
             this._matrix = new Laya.Matrix();
             this._line2DRender.enableDashedMode = false;
             this._drawElementData.setRenderelements(this._line2DRender._renderElements);
@@ -308,25 +313,28 @@
             vec3.x = mat.a;
             vec3.y = mat.c;
             vec3.z = mat.tx;
-            this._line2DRender._spriteShaderData.setVector3(Laya.BaseRenderNode2D.NMATRIX_0, vec3);
+            this._shaderData.setVector3(Laya.ShaderDefines2D.UNIFORM_NMATRIX_0, vec3);
             vec3.x = mat.b;
             vec3.y = mat.d;
             vec3.z = mat.ty;
-            this._line2DRender._spriteShaderData.setVector3(Laya.BaseRenderNode2D.NMATRIX_1, vec3);
+            this._shaderData.setVector3(Laya.ShaderDefines2D.UNIFORM_NMATRIX_1, vec3);
         }
         getRenderCMD() {
             return this._drawElementData;
         }
         run() {
             this._line2DRender.onPreRender();
-            this._line2DRender._setRenderSize(this._commandBuffer._renderSize.x, this._commandBuffer._renderSize.y);
+            if (this._needUpdateElement) {
+                this._drawElementData.setRenderelements(this._line2DRender._renderElements);
+                this._needUpdateElement = false;
+            }
         }
         recover() {
-            Draw2DLineCMD._pool.push(this);
+            Draw2DLineCMD._pool.recover(this);
             super.recover();
         }
     }
-    Draw2DLineCMD._pool = [];
+    Draw2DLineCMD._pool = Laya.Pool.createPool(Draw2DLineCMD);
 
     let c = Laya.ClassUtils.regClass;
     c("Line2DRender", Line2DRender);

@@ -783,26 +783,26 @@
     }
 
     const readNavTileCache = function (byte, navData) {
-        navData._dirtyFlag = byte.getFloat32();
+        navData._dirtyFlag = byte.readFloat32();
         const min = navData._boundMin;
-        min.x = byte.getFloat32();
-        min.y = byte.getFloat32();
-        min.z = byte.getFloat32();
+        min.x = byte.readFloat32();
+        min.y = byte.readFloat32();
+        min.z = byte.readFloat32();
         const max = navData._boundMax;
-        max.x = byte.getFloat32();
-        max.y = byte.getFloat32();
-        max.z = byte.getFloat32();
+        max.x = byte.readFloat32();
+        max.y = byte.readFloat32();
+        max.z = byte.readFloat32();
         let navCount = byte.readUint16();
         for (var i = 0; i < navCount; i++) {
             let nav = navData._oriTiles[i] = new NavTileCache();
             const min = nav._boundMin;
-            min.x = byte.getFloat32();
-            min.y = byte.getFloat32();
-            min.z = byte.getFloat32();
+            min.x = byte.readFloat32();
+            min.y = byte.readFloat32();
+            min.z = byte.readFloat32();
             const max = nav._boundMax;
-            max.x = byte.getFloat32();
-            max.y = byte.getFloat32();
-            max.z = byte.getFloat32();
+            max.x = byte.readFloat32();
+            max.y = byte.readFloat32();
+            max.z = byte.readFloat32();
             nav.x = byte.readUint16();
             nav.y = byte.readUint16();
             let vertStart = byte.readUint32();
@@ -1717,6 +1717,7 @@
             this._quality = exports.ObstacleAvoidanceType.MedQuality;
             this._priority = 0;
             this._baseOffset = 1;
+            this._navMeshSurfaceReady = false;
             this._navAgentLinkAnim = new NavAgentLinkAnim();
             this._areaMask = new AreaMask();
             this._curentSpeed = new Laya.Vector3();
@@ -1724,6 +1725,8 @@
         onUpdate() {
             if (this._crowAgent != null)
                 return;
+            if (!this._navMeshSurfaceReady)
+                this._addAgent();
             if (!this._navAgentLinkAnim._active)
                 return;
             let position = tempVector3;
@@ -1831,23 +1834,28 @@
             this._areaMask._setAreaMap(manager.getAreaFlagMap());
             this._addAgent();
         }
+        _onDisable() {
+            super._onDisable();
+            this._removeAgent();
+        }
         _addAgent() {
             if (this._navManager == null)
                 return;
             this._getpos(tempVector3);
             let surface = this._navManager.getNavMeshSurface(tempVector3, this._agentType);
             if (surface == null) {
-                console.error("not get the NavMeshSurface in this position.");
                 return;
             }
             this._currentNaveSurface = surface;
             this._currentNaveSurface._navMesh._addAgent(this);
+            this._navMeshSurfaceReady = true;
         }
         _removeAgent() {
             if (this._currentNaveSurface == null || this._agentId == null || this._crowAgent == null)
                 return;
             this._currentNaveSurface._navMesh._removeAgent(this);
             this._currentNaveSurface = null;
+            this._navMeshSurfaceReady = false;
         }
         _getheight() {
             throw new Laya.NotImplementedError();

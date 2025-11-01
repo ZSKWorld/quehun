@@ -2583,6 +2583,11 @@ declare global {
              * Scale of the image.
              */
             scale: number;
+
+            /**
+             * 0: nearest, 1: linear, 2: cubic
+             */
+            filterMode: number;
         }
 
         export interface ITextureInAutoAtlasInfo {
@@ -2602,9 +2607,9 @@ declare global {
             config: any;
 
             /**
-             * Output path.
+             * The frame key name will be used in description file.
              */
-            outPath: string;
+            frameKey: string;
         }
 
         export interface IAutoAtlasInfo {
@@ -3084,7 +3089,6 @@ declare global {
              * Application activate event.
              */
             readonly onAppActivate: IDelegate<() => void>;
-
             /**
              * Player settings.
              */
@@ -3115,10 +3119,7 @@ declare global {
 
             /**
              * Get a settings object by name. Note that the settings are defined in the UI process, so the data read directly from settings may not be the latest. You can set autoSync=true to automatically synchronize when the data changes, or you can call the sync method to synchronize manually.
-             * 
-             * EditorEnv.playerSettings/EditorEnv.editorSettings/EditorEnv.sceneViewSettings are pre-cached settings objects and have autoSync=true set.
-             * 
-             * @param name The name of the settings.
+             * @param name The name of the settings. The default supported configuration information includes: PlayerSettings, EditorSettings, CompilerSettings, BuildSettings, SceneViewSettings, Preferences, DimensionsSettings.
              * @param autoSync Whether to automatically synchronize when the data changes.
              * @return The settings object.
              */
@@ -3826,6 +3827,12 @@ declare global {
             findFileInBuildTemplate(filePath: string): string;
 
             /**
+             * Load the index.html template file. This method is used to load the index.html template file for web platforms.
+             * @returns The content of the index.html template file.
+             */
+            loadIndexHTMLTemplate(): Promise<string>;
+
+            /**
              * Get a module location by its ID.
              * @param moduleId The ID of the module.
              * @returns The absolute path of the module. 
@@ -3916,58 +3923,58 @@ declare global {
              * The modifications to these configurations are only effective for this task and will not affect the project.
              * @param task The build task.
              */
-            onSetup?(task: IBuildTask): Promise<void>;
+            onSetup?(task: IBuildTask): void | Promise<void>;
 
             /**
              * Build task start event. You can initialize the structure of the output folder, perform necessary checks, and module installations in this event.
              * @param task The build task.
              */
-            onStart?(task: IBuildTask): Promise<void>;
+            onStart?(task: IBuildTask): void | Promise<void>;
 
             /**
              * Collecting assets required for the build. The assets set is collected based on dependencies, rules of the resources directory, and all other valid rules. You can add more assets to the set.
              * @param task The build task.
              * @param assets The set of assets to be exported. 
              */
-            onCollectAssets?(task: IBuildTask, assets: Set<IAssetInfo>): Promise<void>;
+            onCollectAssets?(task: IBuildTask, assets: Set<IAssetInfo>): void | Promise<void>;
 
             /**
              * Assets are ready to be written to the output directory. The exportInfoMap contains information about all the resources to be written, including the output path, etc. You can modify outPath to customize the output path of the asset.
              * @param task The build task.
              * @param exportInfoMap The information of all the assets to be written. 
              */
-            onBeforeExportAssets?(task: IBuildTask, exportInfoMap: Map<IAssetInfo, IAssetExportInfo>): Promise<void>;
+            onBeforeExportAssets?(task: IBuildTask, exportInfoMap: Map<IAssetInfo, IAssetExportInfo>): void | Promise<void>;
 
             /**
              * Script generation completed. If developers need to modify the generated code files, e.g. minify, obsfucate, etc., they can handle it in this event.
              * @param task The build task.
              */
-            onExportScripts?(task: IBuildTask): Promise<void>;
+            onExportScripts?(task: IBuildTask): void | Promise<void>;
 
             /**
              * Assets writing completed. If developers need to add their own files, or perform operations such as file compression, they can handle it in this event.
              * @param task The build task.
              */
-            onAfterExportAssets?(task: IBuildTask): Promise<void>;
+            onAfterExportAssets?(task: IBuildTask): void | Promise<void>;
 
             /**
              * The build is complete. You can generate some manifest files, configuration files, etc. in this event.
              * Common examples include generating the index.html file for web platforms, manifest.json files for mini-game platforms, etc.
              * @param task The build task.
              */
-            onCreateManifest?(task: IBuildTask): Promise<void>;
+            onCreateManifest?(task: IBuildTask): void | Promise<void>;
 
             /**
              * If there is a native packaging process, handle it here. e.g. apk, ipa, etc.
              * @param task The build task.
              */
-            onCreatePackage?(task: IBuildTask): Promise<void>;
+            onCreatePackage?(task: IBuildTask): void | Promise<void>;
 
             /**
              * Event triggered when the build task is completed.
              * @param task The build task.
              */
-            onEnd?(task: IBuildTask): Promise<void>;
+            onEnd?(task: IBuildTask): void | Promise<void>;
         }
 
         export enum BuildTaskStatus {
@@ -4015,6 +4022,13 @@ declare global {
              * @param platform The platform. For example, "android", "ios", "web", etc.
              */
             getTargetInfo(platform: string): IBuildTargetInfo;
+
+            /**
+             * Get the default build plugin for the specified platform.
+             * @param targetName The name of the target platform, such as "web", "android", "ios", etc.
+             * @returns The default build plugin class for the specified platform.
+             */
+            getDefaultPlugin(targetName: string): new () => IBuildPlugin;
         }
         export interface IBuildConfig {
             /**
@@ -4113,6 +4127,11 @@ declare global {
              * Subpackages configuration.
              */
             subpackages: Array<ISubpackageInfo>;
+
+            /**
+             * Enable WebAssembly subpackage. If true, the WebAssembly libraries will be placed in a separate subpackage.
+             */
+            enableWasmSubpackage: boolean;
 
             /**
              * If true, The main package will be treated as a remote package, which means the main package also needs to be configured with a remote address and will be automatically loaded from the remote at startup.
@@ -4222,6 +4241,7 @@ declare global {
              * { serve: "abc", open: "test.html" } // Open the test.html page of the website, the root directory is abc.
              * { serve: "", QRCode: "abc.apk" } // Open the test.apk page of the website by scanning the QR code.
              * { open: "https://example.com" } // Open an url.
+             * { open: "index.html" } // Open an local file in the release folder.
              * { runInTerminal: "{projectPath}/abc.exe" } // Open the abc.exe in the project folder.
              * ```
              */
@@ -4414,6 +4434,13 @@ declare global {
             getAllAssetsInResourceDir(types?: ReadonlyArray<AssetType>, customFilter?: string): Array<IAssetInfo>;
 
             /**
+             * Get all possible `resources` or `editorResources` folders that may contain the specified path.
+             * @param path A folder path relative to the assets folder.
+             * @returns The folders.
+             */
+            getPossibleResourceDirs(path: string): Array<IAssetInfo>;
+
+            /**
              * Get children assets of the specified folder.
              * @param folderAsset The folder asset.
              * @param types The types of assets to get. If not specified, all types of assets will be returned.
@@ -4473,7 +4500,7 @@ declare global {
              * @param matchSubType Whether to return assets whose subtypes match the types parameter.
              * @returns The assets.
              */
-            getAssetsByType(types?: ReadonlyArray<AssetType>, matchSubType?: boolean): Array<IAssetInfo>;
+            getAssetsByType(types?: ReadonlyArray<AssetType>, matchSubType?: boolean): ReadonlyArray<IAssetInfo>;
 
             /**
              * Create a new asset with the specified path. If the asset already exists, throw an error when allowOverwrite is false. When allowOverwrite is true or null, return the existing resource.
@@ -4662,6 +4689,16 @@ declare global {
              * How many tasks of this importer can be executed in parallel. Default is 100.
              */
             numParallelTasks?: number;
+
+            /**
+             * Reimport the asset when the name of the asset is changed. Default is false.
+             */
+            runAfterRenaming?: boolean;
+
+            /**
+             * Reimport the asset when the path of the asset is changed. Default is false.
+             */
+            runAfterMoving?: boolean;
         }
 
         export interface IAssetImporter {
@@ -5301,6 +5338,11 @@ declare global {
              * ```
              */
             toTemplate?: string;
+
+            /**
+             * Applicable to properties of type Node or Component. It sets a filter for the node/component types that can be selected. If not provided, all node types can be selected.
+             */
+            nodeTypeFilter?: Array<string>;
 
             /**
              * Indicates whether the property is writable. The default is true. If set to false, the property is read-only.
@@ -6728,6 +6770,28 @@ declare global {
             push?(keys?: ReadonlyArray<string>): Promise<void>;
         }
 
+        export interface ICreateSettingsOptions {
+            /**
+             * The location of the configuration file. The default is "project".
+             * - application: Saved to the user data directory of the application. On Windows, it is generally C:\Users\{user}\AppData\Local\{appname}, and on Mac, it is generally ~/Library/Application Support/{appname}. This means that this configuration needs to be shared across different projects.
+             * - project: Saved to the `settings` directory of the project. This means that this configuration is specific to the current project.
+             * - local: Saved to the `local` directory of the project. This means that this configuration is specific to the current project but does not need to be tracked by the version control system.
+             * - memory: Maintained only in memory and not saved to a file.
+             * - other value: specify the storage path of the configuration file by yourself. It is a relative path to the assets directory.
+             */
+            location?: SettingsLocation | string;
+
+            /**
+             * The data type corresponding to the configuration. If it is a string, it means that this type has been registered through typeRegistry. If it is FTypeDescriptor, it will be automatically registered when created. If it is a Function, it means that this is a class decorated with ＠IEditor.regClass.
+             */
+            type?: string | FTypeDescriptor | Function;
+
+            /**
+             * In general, custom configuration files are only used in the editor environment. If the configuration data also needs to be read at runtime, this parameter can be set to true, and then accessed at runtime through `Laya.PlayerConfig.XXX`, where `XXX` is the name of the configuration file.
+             */
+            contributeToPlayerConfig?: boolean;
+        }
+
         export interface ISettingsService {
             /**
              * Create a built-in configuration file. This method is only available in the UI process. User should call this method directly.
@@ -6748,12 +6812,26 @@ declare global {
              * @param typeName The data type corresponding to the configuration.
              */
             enableSettings(name: string, pathToAsset: string, typeName?: string): void;
+
+            /**
+             * Create a built-in configuration file. This method is only available in the UI process. User should call this method directly.
+             * @param name The name of the configuration. It should be unique within the editor and use characters that conform to file name specifications.
+             * @param options Options to create the settings.
+             */
+            enableSettings(name: string, options?: ICreateSettingsOptions): void;
             /**
              * Query the settings by name.
              * @param name The name of the settings.
              * @returns The settings.
              */
             getSettings(name: string): ISettings;
+
+            /**
+             * Query the settings type name.
+             * @param name The name of the settings.
+             * @returns The type name of the settings.
+             */
+            getSettingsType(name: string): string;
         }
         export const ShaderTypePrefix = "Shader.";
         /**
@@ -7505,6 +7583,13 @@ declare global {
              * @returns Whether the new UI system is being used.
              */
             isUsingNewUI(): boolean;
+
+            /**
+             * Filter top-level items from a list of items.
+             * @param items The list of items to filter.
+             * @returns The filtered list of top-level items. 
+             */
+            filterTopLevels<T extends { parent: any }>(items: ReadonlyArray<T>): ReadonlyArray<T>;
         }
         export interface IUUIDUtils {
             /**
@@ -7752,6 +7837,13 @@ declare global {
              * Whether the build target is a mini-game platform, e.g. WeChat Mini Game, Oppo Mini Game, etc.
              */
             isMiniGame?: boolean;
+
+            /**
+             * Sets the position of the build target in the build settings panel. 
+             * 
+             * Supported syntax: "first" / "last" / "before id" / "after id". e.g. "before web" or "after android".
+             */
+            position?: string;
         }
 
         /**

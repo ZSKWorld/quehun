@@ -282,7 +282,7 @@
             const spriteParms = Laya.LayaGL.renderDeviceFactory.createGlobalUniformMap("TrailRender");
             spriteParms.addShaderUniform(TrailShaderCommon.CURTIME, "u_CurTime", Laya.ShaderDataType.Float);
             spriteParms.addShaderUniform(TrailShaderCommon.LIFETIME, "u_LifeTime", Laya.ShaderDataType.Float);
-            spriteParms.addShaderUniform(TrailShaderCommon.WIDTHCURVE, "u_WidthCurve", Laya.ShaderDataType.Buffer);
+            spriteParms.addShaderUniformArray(TrailShaderCommon.WIDTHCURVE, "u_WidthCurve", Laya.ShaderDataType.Vector4, 10);
             spriteParms.addShaderUniform(TrailShaderCommon.WIDTHCURVEKEYLENGTH, "u_WidthCurveKeyLength", Laya.ShaderDataType.Int);
             TrailShaderCommon.attributeMap = {
                 'a_position': [VertexTrail.TRAIL_POSITION0, Laya.ShaderDataType.Vector4],

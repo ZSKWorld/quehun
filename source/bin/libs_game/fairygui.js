@@ -1072,8 +1072,9 @@
             }
         }
         get internalVisible() {
+            var _a;
             return this._internalVisible && (!this._group || this._group.internalVisible)
-                && !this._displayObject._cacheStyle.maskParent;
+                && !((_a = this._displayObject._cacheStyle) === null || _a === void 0 ? void 0 : _a.maskParent); //3.3开始mask需要visible，之前不需要
         }
         get internalVisible2() {
             return this._visible && (!this._group || this._group.internalVisible2);
@@ -1675,7 +1676,7 @@
     }
     fgui.GObject = GObject;
     fgui.BlendMode = {
-        2: Laya.BlendMode.LIGHTER,
+        2: "lighter",
         //3: Laya.BlendMode.MULTIPLY,
         //4: Laya.BlendMode.SCREEN
     };
@@ -2048,7 +2049,7 @@
             }
             if (!child.displayObject)
                 return;
-            if (child.internalVisible && child.displayObject != this._displayObject.mask) {
+            if (child.internalVisible && (child.displayObject != this._displayObject.mask || this._displayObject._struct)) { //3.3开始mask需要visible，之前不需要
                 if (!child.displayObject.parent) {
                     var index = 0;
                     if (this._childrenRenderOrder == fgui.ChildrenRenderOrder.Ascent) {
@@ -3429,13 +3430,13 @@
             if (str) {
                 this.dropdown = (fgui.UIPackage.createObjectFromURL(str));
                 if (!this.dropdown) {
-                    Laya.Log.print("下拉框必须为元件");
+                    console.warn("下拉框必须为元件");
                     return;
                 }
                 this.dropdown.name = "this._dropdownObject";
                 this._list = this.dropdown.getChild("list");
                 if (!this._list) {
-                    Laya.Log.print(this.resourceURL + ": 下拉框的弹出元件里必须包含名为list的列表");
+                    console.warn(this.resourceURL + ": 下拉框的弹出元件里必须包含名为list的列表");
                     return;
                 }
                 this._list.on(fgui.Events.CLICK_ITEM, this, this.__clickItem);
@@ -5437,7 +5438,7 @@
                 this._virtualListChanged = 2;
             else if (this._virtualListChanged == 0)
                 this._virtualListChanged = 1;
-            Laya.timer.callLater(this, this._refreshVirtualList);
+            Laya.timer.frameOnce(1, this, this._refreshVirtualList);
         }
         _refreshVirtualList() {
             if (!this._displayObject)
@@ -8148,7 +8149,7 @@ const labelPadding = [2, 2, 2, 2];
             if (this._defaultTooltipWin == null) {
                 var resourceURL = fgui.UIConfig.tooltipsWin;
                 if (!resourceURL) {
-                    Laya.Log.print("UIConfig.tooltipsWin not defined");
+                    console.warn("UIConfig.tooltipsWin not defined");
                     return;
                 }
                 this._defaultTooltipWin = fgui.UIPackage.createObjectFromURL(resourceURL);
@@ -8345,12 +8346,12 @@ const labelPadding = [2, 2, 2, 2];
             this._fixedGripSize = buffer.readBool();
             this._grip = this.getChild("grip");
             if (!this._grip) {
-                Laya.Log.print("需要定义grip");
+                console.warn("需要定义grip");
                 return;
             }
             this._bar = this.getChild("bar");
             if (!this._bar) {
-                Laya.Log.print("需要定义bar");
+                console.warn("需要定义bar");
                 return;
             }
             this._arrowButton1 = this.getChild("arrow1");
@@ -8700,6 +8701,13 @@ const labelPadding = [2, 2, 2, 2];
         }
         get restrict() {
             return this._displayObject.restrict;
+        }
+        get singleLine() {
+            return this._singleLine;
+        }
+        set singleLine(value) {
+            super.singleLine = value;
+            this._displayObject.multiline = !value;
         }
         requestFocus() {
             this._displayObject.focus = true;
@@ -13068,19 +13076,10 @@ const labelPadding = [2, 2, 2, 2];
                     i--;
                 }
             }
-            //zsk start
-            // if (loadKeyArr.length == 0 && completeHandler) {
-            //     typeof completeHandler === 'function' ? completeHandler(pkgArr) : completeHandler.runWith([pkgArr]);
-            //     return;
-            // }
-            if (loadKeyArr.length == 0) {
-                if (progressHandler)
-                    typeof progressHandler === 'function' ? progressHandler(1) : progressHandler.runWith(1);
-                if(completeHandler)
-                    typeof completeHandler === 'function' ? completeHandler(pkgArr) : completeHandler.runWith([pkgArr]);
+            if (loadKeyArr.length == 0 && completeHandler) {
+                typeof completeHandler === 'function' ? completeHandler(pkgArr) : completeHandler.runWith([pkgArr]);
                 return;
             }
-            //zsk end
             fgui.AssetProxy.inst.load(loadKeyArr, Laya.Loader.BUFFER).then((resArr) => {
                 let pkg;
                 let urls = [];
@@ -13116,11 +13115,7 @@ const labelPadding = [2, 2, 2, 2];
                                 UIPackage._instById[pkg._resKey] = pkg;
                             }
                         }
-                        //zsk start
-                        // typeof completeHandler === 'function' ? completeHandler(pkgArr) : completeHandler.runWith([pkgArr]);
-                        if(completeHandler)
-                            typeof completeHandler === 'function' ? completeHandler(pkgArr) : completeHandler.runWith([pkgArr]);
-                        //zsk end
+                        typeof completeHandler === 'function' ? completeHandler(pkgArr) : completeHandler.runWith([pkgArr]);
                     });
                 }
                 else {
@@ -13132,12 +13127,7 @@ const labelPadding = [2, 2, 2, 2];
                             UIPackage._instById[pkg._resKey] = pkg;
                         }
                     }
-                    //zsk start
-                    if (progressHandler)
-                        typeof progressHandler === 'function' ? progressHandler(1) : progressHandler.runWith(1);
-                    //zsk end
-                    if(completeHandler)
-                        typeof completeHandler === 'function' ? completeHandler(pkgArr) : completeHandler.runWith([pkgArr]);
+                    typeof completeHandler === 'function' ? completeHandler(pkgArr) : completeHandler.runWith([pkgArr]);
                 }
             });
         }
@@ -13445,7 +13435,7 @@ const labelPadding = [2, 2, 2, 2];
                     }
                 }
                 else if (pi.type == fgui.PackageItemType.Sound) {
-                    Laya.SoundManager.destroySound(pi.file);
+                    //Laya.SoundManager.destroySound(pi.file);
                 }
                 else if (pi.templet)
                     pi.templet.destroy();
@@ -14309,12 +14299,28 @@ const labelPadding = [2, 2, 2, 2];
             this.mouseEnabled = false;
             this._color = "#FFFFFF";
         }
+        /**
+         * @internal
+         * @param value
+         */
         set_width(value) {
+            //@ts-ignore 3.3 remove this
             super.set_width(value);
             this.markChanged(1);
         }
+        /**
+         * @internal
+         * @param value
+         */
         set_height(value) {
+            //@ts-ignore 3.3 remove this
             super.set_height(value);
+            this.markChanged(1);
+        }
+        //@ts-ignore 3.3 add this
+        _transChanged(kind) {
+            //@ts-ignore 3.3 add this
+            super._transChanged(kind);
             this.markChanged(1);
         }
         get texture() {
@@ -14366,15 +14372,17 @@ const labelPadding = [2, 2, 2, 2];
             if (this._fillMethod != value) {
                 this._fillMethod = value;
                 if (this._fillMethod != 0) {
-                    if (!this._mask) {
-                        this._mask = new Laya.Sprite();
-                        this._mask.mouseEnabled = false;
+                    if (!this._mask2) {
+                        this._mask2 = new Laya.Sprite();
+                        this._mask2.mouseEnabled = false;
+                        this.addChild(this._mask2);
                     }
-                    this.mask = this._mask;
+                    this.mask = this._mask2;
                     this.markChanged(2);
                 }
                 else if (this.mask) {
-                    this._mask.graphics.clear();
+                    this._mask2.graphics.clear();
+                    this._mask2.removeSelf();
                     this.mask = null;
                 }
             }
@@ -14453,7 +14461,7 @@ const labelPadding = [2, 2, 2, 2];
                     var right = Math.max(tw - this._scale9Grid.right, 0);
                     var top = this._scale9Grid.y;
                     var bottom = Math.max(th - this._scale9Grid.bottom, 0);
-                    this._sizeGrid = [top, right, bottom, left, this._tileGridIndice];
+                    this._sizeGrid = [top, right, bottom, left, this._tileGridIndice != 0 ? 1 : 0];
                 }
                 g.draw9Grid(tex, 0, 0, w, h, this._sizeGrid, this._color);
             }
@@ -14464,7 +14472,7 @@ const labelPadding = [2, 2, 2, 2];
         doFill() {
             var w = this.width;
             var h = this.height;
-            var g = this._mask.graphics;
+            var g = this._mask2.graphics;
             g.clear();
             if (w == 0 || h == 0)
                 return;

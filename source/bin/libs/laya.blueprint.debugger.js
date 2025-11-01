@@ -9,15 +9,6 @@
         }
     }
     class BluePrintDebuggerMainBlock extends BP.BluePrintMainBlock {
-        _onEventParse(...args) {
-            const eventName = args.shift();
-            const originFunc = args.shift();
-            const caller = args.shift();
-            const funcContext = caller[BP.BlueprintFactory.contextSymbol];
-            if (funcContext.debuggerManager.debugging)
-                return;
-            super._onEventParse(eventName, originFunc, caller, ...args);
-        }
     }
 
     var InputManager = Laya.InputManager;

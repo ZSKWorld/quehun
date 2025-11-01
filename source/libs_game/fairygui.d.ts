@@ -1436,6 +1436,8 @@ declare namespace fgui {
         get promptText(): string;
         set restrict(value: string);
         get restrict(): string;
+        get singleLine(): boolean;
+        set singleLine(value: boolean);
         requestFocus(): void;
         setup_beforeAdd(buffer: ByteBuffer, beginPos: number): void;
     }
@@ -2080,11 +2082,20 @@ declare namespace fgui {
         private _fillOrigin;
         private _fillAmount;
         private _fillClockwise?;
-        private _mask?;
+        private _mask2?;
         private _color;
         constructor();
+        /**
+         * @internal
+         * @param value
+         */
         set_width(value: number): void;
+        /**
+         * @internal
+         * @param value
+         */
         set_height(value: number): void;
+        protected _transChanged(kind: Laya.TransformKind): void;
         get texture(): Laya.Texture;
         set texture(value: Laya.Texture);
         get scale9Grid(): Laya.Rectangle;

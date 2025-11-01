@@ -384,6 +384,7 @@
             this._characterCapableMap.set(Laya.ECharacterCapable.Character_minDistance, false);
             this._characterCapableMap.set(Laya.ECharacterCapable.Character_EventFilter, false);
             this._characterCapableMap.set(Laya.ECharacterCapable.Character_SimulateGravity, false);
+            this._characterCapableMap.set(Laya.ECharacterCapable.Character_IsOnGround, true);
         }
         getColliderType() {
             return exports.btColliderType.CharactorCollider;
@@ -420,6 +421,10 @@
                 convertToBulletVec3(velocity, btVelocity);
                 btStatics.bt.btKinematicCharacterController_jump(this._btKinematicCharacter, btVelocity);
             }
+        }
+        isGrounded() {
+            let bt = btStatics.bt;
+            return bt.btKinematicCharacterController_onGround(this._btKinematicCharacter) == 1 ? true : false;
         }
         setJumpSpeed(value) {
             this._jumpSpeed = value;
@@ -865,7 +870,7 @@
         setSleepThreshold(value) {
             this._btCollider && btStatics.bt.btRigidBody_setSleepingThresholds(this._btCollider, value, btStatics.bt.btRigidBody_getAngularSleepingThreshold(this._btCollider));
         }
-        setSleepAngularVelocity(value) {
+        setSleepAngularThreshold(value) {
             this._btCollider && btStatics.bt.btRigidBody_setSleepingThresholds(this._btCollider, btStatics.bt.btRigidBody_getLinearSleepingThreshold(this._btCollider), value);
         }
         setSolverIterations(value) {
@@ -1968,7 +1973,7 @@
             this._btShape = bt.btCompoundShape_create();
         }
         clearChildShape() {
-            throw new Error("Method not implemented.");
+            throw new Laya.NotImplementedError();
         }
         _getType() {
             return this._type = btColliderShape.SHAPETYPES_COMPOUND;

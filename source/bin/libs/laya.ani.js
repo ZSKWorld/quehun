@@ -18,73 +18,73 @@
 
     class AnimationParser01 {
         static parse(templet, reader) {
-            var data = reader.__getBuffer();
+            var data = reader.rawBuffer;
             var i, j, k, n, l, m, o;
             var aniClassName = reader.readUTFString();
             templet._aniClassName = aniClassName;
             var strList = reader.readUTFString().split("\n");
-            var aniCount = reader.getUint8();
-            var publicDataPos = reader.getUint32();
-            var publicExtDataPos = reader.getUint32();
+            var aniCount = reader.readUint8();
+            var publicDataPos = reader.readUint32();
+            var publicExtDataPos = reader.readUint32();
             var publicData;
             if (publicDataPos > 0)
                 publicData = data.slice(publicDataPos, publicExtDataPos);
             var publicRead = new Laya.Byte(publicData);
             if (publicExtDataPos > 0)
                 templet._publicExtData = data.slice(publicExtDataPos, data.byteLength);
-            templet._useParent = !!reader.getUint8();
+            templet._useParent = !!reader.readUint8();
             templet._anis.length = aniCount;
             for (i = 0; i < aniCount; i++) {
                 var ani = templet._anis[i] = new AnimationContent();
                 ani.nodes = [];
-                var name = ani.name = strList[reader.getUint16()];
+                var name = ani.name = strList[reader.readUint16()];
                 templet._aniMap[name] = i;
                 ani.bone3DMap = {};
-                ani.playTime = reader.getFloat32();
-                var boneCount = ani.nodes.length = reader.getUint8();
+                ani.playTime = reader.readFloat32();
+                var boneCount = ani.nodes.length = reader.readUint8();
                 ani.totalKeyframeDatasLength = 0;
                 for (j = 0; j < boneCount; j++) {
                     var node = ani.nodes[j] = new AnimationNodeContent();
                     node.childs = [];
-                    var nameIndex = reader.getInt16();
+                    var nameIndex = reader.readInt16();
                     if (nameIndex >= 0) {
                         node.name = strList[nameIndex];
                         ani.bone3DMap[node.name] = j;
                     }
                     node.keyFrame = [];
-                    node.parentIndex = reader.getInt16();
+                    node.parentIndex = reader.readInt16();
                     node.parentIndex == -1 ? node.parent = null : node.parent = ani.nodes[node.parentIndex];
-                    node.lerpType = reader.getUint8();
-                    var keyframeParamsOffset = reader.getUint32();
+                    node.lerpType = reader.readUint8();
+                    var keyframeParamsOffset = reader.readUint32();
                     publicRead.pos = keyframeParamsOffset;
-                    var keyframeDataCount = node.keyframeWidth = publicRead.getUint16();
+                    var keyframeDataCount = node.keyframeWidth = publicRead.readUint16();
                     ani.totalKeyframeDatasLength += keyframeDataCount;
                     if (node.lerpType === 0 || node.lerpType === 1) {
                         node.interpolationMethod = [];
                         node.interpolationMethod.length = keyframeDataCount;
                         for (k = 0; k < keyframeDataCount; k++)
-                            node.interpolationMethod[k] = IAniLib.AnimationTemplet.interpolation[publicRead.getUint8()];
+                            node.interpolationMethod[k] = IAniLib.AnimationTemplet.interpolation[publicRead.readUint8()];
                     }
                     if (node.parent != null)
                         node.parent.childs.push(node);
-                    var privateDataLen = reader.getUint16();
+                    var privateDataLen = reader.readUint16();
                     if (privateDataLen > 0) {
                         node.extenData = data.slice(reader.pos, reader.pos + privateDataLen);
                         reader.pos += privateDataLen;
                     }
-                    var keyframeCount = reader.getUint16();
+                    var keyframeCount = reader.readUint16();
                     node.keyFrame.length = keyframeCount;
                     var startTime = 0;
                     var keyFrame;
                     for (k = 0, n = keyframeCount; k < n; k++) {
                         keyFrame = node.keyFrame[k] = new KeyFramesContent();
-                        keyFrame.duration = reader.getFloat32();
+                        keyFrame.duration = reader.readFloat32();
                         keyFrame.startTime = startTime;
                         if (node.lerpType === 2) {
                             keyFrame.interpolationData = [];
-                            var interDataLength = reader.getUint8();
+                            var interDataLength = reader.readUint8();
                             var lerpType;
-                            lerpType = reader.getFloat32();
+                            lerpType = reader.readFloat32();
                             switch (lerpType) {
                                 case 254:
                                     keyFrame.interpolationData.length = keyframeDataCount;
@@ -99,7 +99,7 @@
                                 default:
                                     keyFrame.interpolationData.push(lerpType);
                                     for (m = 1; m < interDataLength; m++) {
-                                        keyFrame.interpolationData.push(reader.getFloat32());
+                                        keyFrame.interpolationData.push(reader.readFloat32());
                                     }
                             }
                         }
@@ -107,7 +107,7 @@
                         keyFrame.dData = new Float32Array(keyframeDataCount);
                         keyFrame.nextData = new Float32Array(keyframeDataCount);
                         for (l = 0; l < keyframeDataCount; l++) {
-                            keyFrame.data[l] = reader.getFloat32();
+                            keyFrame.data[l] = reader.readFloat32();
                             if (keyFrame.data[l] > -0.00000001 && keyFrame.data[l] < 0.00000001)
                                 keyFrame.data[l] = 0;
                         }
@@ -123,21 +123,21 @@
 
     class AnimationParser02 {
         static READ_DATA() {
-            AnimationParser02._DATA.offset = AnimationParser02._reader.getUint32();
-            AnimationParser02._DATA.size = AnimationParser02._reader.getUint32();
+            AnimationParser02._DATA.offset = AnimationParser02._reader.readUint32();
+            AnimationParser02._DATA.size = AnimationParser02._reader.readUint32();
         }
         static READ_BLOCK() {
-            var count = AnimationParser02._BLOCK.count = AnimationParser02._reader.getUint16();
+            var count = AnimationParser02._BLOCK.count = AnimationParser02._reader.readUint16();
             var blockStarts = AnimationParser02._BLOCK.blockStarts = [];
             var blockLengths = AnimationParser02._BLOCK.blockLengths = [];
             for (var i = 0; i < count; i++) {
-                blockStarts.push(AnimationParser02._reader.getUint32());
-                blockLengths.push(AnimationParser02._reader.getUint32());
+                blockStarts.push(AnimationParser02._reader.readUint32());
+                blockLengths.push(AnimationParser02._reader.readUint32());
             }
         }
         static READ_STRINGS() {
-            var offset = AnimationParser02._reader.getUint32();
-            var count = AnimationParser02._reader.getUint16();
+            var offset = AnimationParser02._reader.readUint32();
+            var count = AnimationParser02._reader.readUint16();
             var prePos = AnimationParser02._reader.pos;
             AnimationParser02._reader.pos = offset + AnimationParser02._DATA.offset;
             for (var i = 0; i < count; i++)
@@ -147,12 +147,11 @@
         static parse(templet, reader) {
             AnimationParser02._templet = templet;
             AnimationParser02._reader = reader;
-            reader.__getBuffer();
             AnimationParser02.READ_DATA();
             AnimationParser02.READ_BLOCK();
             AnimationParser02.READ_STRINGS();
             for (var i = 0, n = AnimationParser02._BLOCK.count; i < n; i++) {
-                var index = reader.getUint16();
+                var index = reader.readUint16();
                 var blockName = AnimationParser02._strings[index];
                 var fn = AnimationParser02["READ_" + blockName];
                 if (fn == null)
@@ -163,51 +162,51 @@
         }
         static READ_ANIMATIONS() {
             var reader = AnimationParser02._reader;
-            var arrayBuffer = reader.__getBuffer();
+            var arrayBuffer = reader.rawBuffer;
             var i, j, k, n;
-            var keyframeWidth = reader.getUint16();
+            var keyframeWidth = reader.readUint16();
             var interpolationMethod = [];
             interpolationMethod.length = keyframeWidth;
             for (i = 0; i < keyframeWidth; i++)
-                interpolationMethod[i] = IAniLib.AnimationTemplet.interpolation[reader.getByte()];
-            var aniCount = reader.getUint8();
+                interpolationMethod[i] = IAniLib.AnimationTemplet.interpolation[reader.readByte()];
+            var aniCount = reader.readUint8();
             AnimationParser02._templet._anis.length = aniCount;
             for (i = 0; i < aniCount; i++) {
                 var ani = AnimationParser02._templet._anis[i] = new AnimationContent();
                 ani.nodes = [];
-                var aniName = ani.name = AnimationParser02._strings[reader.getUint16()];
+                var aniName = ani.name = AnimationParser02._strings[reader.readUint16()];
                 AnimationParser02._templet._aniMap[aniName] = i;
                 ani.bone3DMap = {};
-                ani.playTime = reader.getFloat32();
-                var boneCount = ani.nodes.length = reader.getInt16();
+                ani.playTime = reader.readFloat32();
+                var boneCount = ani.nodes.length = reader.readInt16();
                 ani.totalKeyframeDatasLength = 0;
                 for (j = 0; j < boneCount; j++) {
                     var node = ani.nodes[j] = new AnimationNodeContent();
                     node.keyframeWidth = keyframeWidth;
                     node.childs = [];
-                    var nameIndex = reader.getUint16();
+                    var nameIndex = reader.readUint16();
                     if (nameIndex >= 0) {
                         node.name = AnimationParser02._strings[nameIndex];
                         ani.bone3DMap[node.name] = j;
                     }
                     node.keyFrame = [];
-                    node.parentIndex = reader.getInt16();
+                    node.parentIndex = reader.readInt16();
                     node.parentIndex == -1 ? node.parent = null : node.parent = ani.nodes[node.parentIndex];
                     ani.totalKeyframeDatasLength += keyframeWidth;
                     node.interpolationMethod = interpolationMethod;
                     if (node.parent != null)
                         node.parent.childs.push(node);
-                    var keyframeCount = reader.getUint16();
+                    var keyframeCount = reader.readUint16();
                     node.keyFrame.length = keyframeCount;
                     var keyFrame = null, lastKeyFrame = null;
                     for (k = 0, n = keyframeCount; k < n; k++) {
                         keyFrame = node.keyFrame[k] = new KeyFramesContent();
-                        keyFrame.startTime = reader.getFloat32();
+                        keyFrame.startTime = reader.readFloat32();
                         (lastKeyFrame) && (lastKeyFrame.duration = keyFrame.startTime - lastKeyFrame.startTime);
                         keyFrame.dData = new Float32Array(keyframeWidth);
                         keyFrame.nextData = new Float32Array(keyframeWidth);
                         var offset = AnimationParser02._DATA.offset;
-                        var keyframeDataOffset = reader.getUint32();
+                        var keyframeDataOffset = reader.readUint32();
                         var keyframeDataLength = keyframeWidth * 4;
                         var keyframeArrayBuffer = arrayBuffer.slice(offset + keyframeDataOffset, offset + keyframeDataOffset + keyframeDataLength);
                         keyFrame.data = new Float32Array(keyframeArrayBuffer);
@@ -1903,7 +1902,7 @@
                     let tPathConstraint = this._pathDic[tBoneData.name];
                     if (tPathConstraint) {
                         let tByte = new Laya.Byte(tBoneData.extenData);
-                        switch (tByte.getByte()) {
+                        switch (tByte.readByte()) {
                             case 1:
                                 tPathConstraint.position = origDt[tStartIndex++];
                                 break;
@@ -2164,7 +2163,7 @@
                             GraphicsAni.recycle(gp);
                         }
                     }
-                    this._graphicsCache[i].length = 0;
+                    this._graphicsCache[i] = [];
                 }
             }
         }
@@ -2203,7 +2202,7 @@
                         this._templet.showSkinByIndex(this._boneSlotDic, this._skinIndex);
                     if (this._pause) {
                         this._pause = false;
-                        this._lastTime = Laya.Browser.now();
+                        this._lastTime = performance.now();
                         this.timer.frameLoop(1, this, this._update, null, true);
                     }
                     this._update();
@@ -2259,7 +2258,7 @@
                         }
                     }
                 }
-                this._lastTime = Laya.Browser.now();
+                this._lastTime = performance.now();
                 this.timer.frameLoop(1, this, this._update, null, true);
             }
         }
@@ -3168,43 +3167,43 @@
             var tX = 0, tY = 0, tWidth = 0, tHeight = 0;
             var tFrameX = 0, tFrameY = 0, tFrameWidth = 0, tFrameHeight = 0;
             var tTempleData = 0;
-            var tTextureLen = tByte.getInt32();
+            var tTextureLen = tByte.readInt32();
             var tTextureName = tByte.readUTFString();
             var tTextureNameArr = tTextureName.split("\n");
             for (let i = 0; i < tTextureLen; i++) {
                 this._path + tTextureNameArr[i * 2];
                 tTextureName = tTextureNameArr[i * 2 + 1];
-                tX = tByte.getFloat32();
-                tY = tByte.getFloat32();
-                tWidth = tByte.getFloat32();
-                tHeight = tByte.getFloat32();
-                tTempleData = tByte.getFloat32();
+                tX = tByte.readFloat32();
+                tY = tByte.readFloat32();
+                tWidth = tByte.readFloat32();
+                tHeight = tByte.readFloat32();
+                tTempleData = tByte.readFloat32();
                 tFrameX = isNaN(tTempleData) ? 0 : tTempleData;
-                tTempleData = tByte.getFloat32();
+                tTempleData = tByte.readFloat32();
                 tFrameY = isNaN(tTempleData) ? 0 : tTempleData;
-                tTempleData = tByte.getFloat32();
+                tTempleData = tByte.readFloat32();
                 tFrameWidth = isNaN(tTempleData) ? tWidth : tTempleData;
-                tTempleData = tByte.getFloat32();
+                tTempleData = tByte.readFloat32();
                 tFrameHeight = isNaN(tTempleData) ? tHeight : tTempleData;
                 this.subTextureDic[tTextureName] = Laya.Texture.create(this._mainTexture, tX, tY, tWidth, tHeight, -tFrameX, -tFrameY, tFrameWidth, tFrameHeight);
             }
             var isSpine;
             isSpine = this._aniClassName != "Dragon";
-            var tAniCount = tByte.getUint16();
+            var tAniCount = tByte.readUint16();
             var tSectionArr;
             for (let i = 0; i < tAniCount; i++) {
                 tSectionArr = [];
-                tSectionArr.push(tByte.getUint16());
-                tSectionArr.push(tByte.getUint16());
-                tSectionArr.push(tByte.getUint16());
-                tSectionArr.push(tByte.getUint16());
+                tSectionArr.push(tByte.readUint16());
+                tSectionArr.push(tByte.readUint16());
+                tSectionArr.push(tByte.readUint16());
+                tSectionArr.push(tByte.readUint16());
                 this.aniSectionDic[i] = tSectionArr;
             }
             var tBone;
             var tParentBone;
             var tName;
             var tParentName;
-            var tBoneLen = tByte.getInt16();
+            var tBoneLen = tByte.readInt16();
             var tBoneDic = {};
             var tRootBone;
             for (let i = 0; i < tBoneLen; i++) {
@@ -3218,11 +3217,11 @@
                 tBone.d = isSpine ? -1 : 1;
                 tName = tByte.readUTFString();
                 tParentName = tByte.readUTFString();
-                tBone.length = tByte.getFloat32();
-                if (tByte.getByte() == 1) {
+                tBone.length = tByte.readFloat32();
+                if (tByte.readByte() == 1) {
                     tBone.inheritRotation = false;
                 }
-                if (tByte.getByte() == 1) {
+                if (tByte.readByte() == 1) {
                     tBone.inheritScale = false;
                 }
                 tBone.name = tName;
@@ -3238,87 +3237,87 @@
                 tBoneDic[tName] = tBone;
                 this.mBoneArr.push(tBone);
             }
-            this.tMatrixDataLen = tByte.getUint16();
-            var tLen = tByte.getUint16();
+            this.tMatrixDataLen = tByte.readUint16();
+            var tLen = tByte.readUint16();
             var boneLength = Math.floor(tLen / this.tMatrixDataLen);
             var tResultTransform;
             var tMatrixArray = this.srcBoneMatrixArr;
             for (let i = 0; i < boneLength; i++) {
                 tResultTransform = new Transform();
-                tResultTransform.scX = tByte.getFloat32();
-                tResultTransform.skX = tByte.getFloat32();
-                tResultTransform.skY = tByte.getFloat32();
-                tResultTransform.scY = tByte.getFloat32();
-                tResultTransform.x = tByte.getFloat32();
-                tResultTransform.y = tByte.getFloat32();
+                tResultTransform.scX = tByte.readFloat32();
+                tResultTransform.skX = tByte.readFloat32();
+                tResultTransform.skY = tByte.readFloat32();
+                tResultTransform.scY = tByte.readFloat32();
+                tResultTransform.x = tByte.readFloat32();
+                tResultTransform.y = tByte.readFloat32();
                 if (this.tMatrixDataLen === 8) {
-                    tResultTransform.skewX = tByte.getFloat32();
-                    tResultTransform.skewY = tByte.getFloat32();
+                    tResultTransform.skewX = tByte.readFloat32();
+                    tResultTransform.skewY = tByte.readFloat32();
                 }
                 tMatrixArray.push(tResultTransform);
                 tBone = this.mBoneArr[i];
                 tBone.transform = tResultTransform;
             }
             var tIkConstraintData;
-            var tIkLen = tByte.getUint16();
+            var tIkLen = tByte.readUint16();
             var tIkBoneLen;
             for (let i = 0; i < tIkLen; i++) {
                 tIkConstraintData = new IkConstraintData();
-                tIkBoneLen = tByte.getUint16();
+                tIkBoneLen = tByte.readUint16();
                 for (let j = 0; j < tIkBoneLen; j++) {
                     tIkConstraintData.boneNames.push(tByte.readUTFString());
-                    tIkConstraintData.boneIndexs.push(tByte.getInt16());
+                    tIkConstraintData.boneIndexs.push(tByte.readInt16());
                 }
                 tIkConstraintData.name = tByte.readUTFString();
                 tIkConstraintData.targetBoneName = tByte.readUTFString();
-                tIkConstraintData.targetBoneIndex = tByte.getInt16();
-                tIkConstraintData.bendDirection = tByte.getFloat32();
-                tIkConstraintData.mix = tByte.getFloat32();
+                tIkConstraintData.targetBoneIndex = tByte.readInt16();
+                tIkConstraintData.bendDirection = tByte.readFloat32();
+                tIkConstraintData.mix = tByte.readFloat32();
                 tIkConstraintData.isSpine = isSpine;
                 this.ikArr.push(tIkConstraintData);
             }
             var tTfConstraintData;
-            var tTfLen = tByte.getUint16();
+            var tTfLen = tByte.readUint16();
             var tTfBoneLen;
             for (let i = 0; i < tTfLen; i++) {
                 tTfConstraintData = new TfConstraintData();
-                tTfBoneLen = tByte.getUint16();
+                tTfBoneLen = tByte.readUint16();
                 for (let j = 0; j < tTfBoneLen; j++) {
-                    tTfConstraintData.boneIndexs.push(tByte.getInt16());
+                    tTfConstraintData.boneIndexs.push(tByte.readInt16());
                 }
-                tTfConstraintData.name = tByte.getUTFString();
-                tTfConstraintData.targetIndex = tByte.getInt16();
-                tTfConstraintData.rotateMix = tByte.getFloat32();
-                tTfConstraintData.translateMix = tByte.getFloat32();
-                tTfConstraintData.scaleMix = tByte.getFloat32();
-                tTfConstraintData.shearMix = tByte.getFloat32();
-                tTfConstraintData.offsetRotation = tByte.getFloat32();
-                tTfConstraintData.offsetX = tByte.getFloat32();
-                tTfConstraintData.offsetY = tByte.getFloat32();
-                tTfConstraintData.offsetScaleX = tByte.getFloat32();
-                tTfConstraintData.offsetScaleY = tByte.getFloat32();
-                tTfConstraintData.offsetShearY = tByte.getFloat32();
+                tTfConstraintData.name = tByte.readUTFString();
+                tTfConstraintData.targetIndex = tByte.readInt16();
+                tTfConstraintData.rotateMix = tByte.readFloat32();
+                tTfConstraintData.translateMix = tByte.readFloat32();
+                tTfConstraintData.scaleMix = tByte.readFloat32();
+                tTfConstraintData.shearMix = tByte.readFloat32();
+                tTfConstraintData.offsetRotation = tByte.readFloat32();
+                tTfConstraintData.offsetX = tByte.readFloat32();
+                tTfConstraintData.offsetY = tByte.readFloat32();
+                tTfConstraintData.offsetScaleX = tByte.readFloat32();
+                tTfConstraintData.offsetScaleY = tByte.readFloat32();
+                tTfConstraintData.offsetShearY = tByte.readFloat32();
                 this.tfArr.push(tTfConstraintData);
             }
             var tPathConstraintData;
-            var tPathLen = tByte.getUint16();
+            var tPathLen = tByte.readUint16();
             var tPathBoneLen;
             for (let i = 0; i < tPathLen; i++) {
                 tPathConstraintData = new PathConstraintData();
                 tPathConstraintData.name = tByte.readUTFString();
-                tPathBoneLen = tByte.getUint16();
+                tPathBoneLen = tByte.readUint16();
                 for (let j = 0; j < tPathBoneLen; j++) {
-                    tPathConstraintData.bones.push(tByte.getInt16());
+                    tPathConstraintData.bones.push(tByte.readInt16());
                 }
                 tPathConstraintData.target = tByte.readUTFString();
                 tPathConstraintData.positionMode = tByte.readUTFString();
                 tPathConstraintData.spacingMode = tByte.readUTFString();
                 tPathConstraintData.rotateMode = tByte.readUTFString();
-                tPathConstraintData.offsetRotation = tByte.getFloat32();
-                tPathConstraintData.position = tByte.getFloat32();
-                tPathConstraintData.spacing = tByte.getFloat32();
-                tPathConstraintData.rotateMix = tByte.getFloat32();
-                tPathConstraintData.translateMix = tByte.getFloat32();
+                tPathConstraintData.offsetRotation = tByte.readFloat32();
+                tPathConstraintData.position = tByte.readFloat32();
+                tPathConstraintData.spacing = tByte.readFloat32();
+                tPathConstraintData.rotateMix = tByte.readFloat32();
+                tPathConstraintData.translateMix = tByte.readFloat32();
                 this.pathArr.push(tPathConstraintData);
             }
             var tDeformSlotLen;
@@ -3330,40 +3329,40 @@
             var tDeformSlotData;
             var tDeformSlotDisplayData;
             var tDeformVectices;
-            var tDeformAniLen = tByte.getInt16();
+            var tDeformAniLen = tByte.readInt16();
             for (let i = 0; i < tDeformAniLen; i++) {
-                var tDeformSkinLen = tByte.getUint8();
+                var tDeformSkinLen = tByte.readUint8();
                 var tSkinDic = {};
                 this.deformAniArr.push(tSkinDic);
                 for (let f = 0; f < tDeformSkinLen; f++) {
                     tDeformAniData = new DeformAniData();
-                    tDeformAniData.skinName = tByte.getUTFString();
+                    tDeformAniData.skinName = tByte.readUTFString();
                     tSkinDic[tDeformAniData.skinName] = tDeformAniData;
-                    tDeformSlotLen = tByte.getInt16();
+                    tDeformSlotLen = tByte.readInt16();
                     for (let j = 0; j < tDeformSlotLen; j++) {
                         tDeformSlotData = new DeformSlotData();
                         tDeformAniData.deformSlotDataList.push(tDeformSlotData);
-                        tDeformSlotDisplayLen = tByte.getInt16();
+                        tDeformSlotDisplayLen = tByte.readInt16();
                         for (let k = 0; k < tDeformSlotDisplayLen; k++) {
                             tDeformSlotDisplayData = new DeformSlotDisplayData();
                             tDeformSlotData.deformSlotDisplayList.push(tDeformSlotDisplayData);
-                            tDeformSlotDisplayData.slotIndex = tByte.getInt16();
-                            tDeformSlotDisplayData.attachment = tByte.getUTFString();
-                            tDeformTimeLen = tByte.getInt16();
+                            tDeformSlotDisplayData.slotIndex = tByte.readInt16();
+                            tDeformSlotDisplayData.attachment = tByte.readUTFString();
+                            tDeformTimeLen = tByte.readInt16();
                             for (let l = 0; l < tDeformTimeLen; l++) {
-                                if (tByte.getByte() == 1) {
+                                if (tByte.readByte() == 1) {
                                     tDeformSlotDisplayData.tweenKeyList.push(true);
                                 }
                                 else {
                                     tDeformSlotDisplayData.tweenKeyList.push(false);
                                 }
-                                tDTime = tByte.getFloat32();
+                                tDTime = tByte.readFloat32();
                                 tDeformSlotDisplayData.timeList.push(tDTime);
                                 tDeformVectices = [];
                                 tDeformSlotDisplayData.vectices.push(tDeformVectices);
-                                tDeformVecticesLen = tByte.getInt16();
+                                tDeformVecticesLen = tByte.readInt16();
                                 for (let n = 0; n < tDeformVecticesLen; n++) {
-                                    tDeformVectices.push(tByte.getFloat32());
+                                    tDeformVectices.push(tByte.readFloat32());
                                 }
                             }
                         }
@@ -3371,52 +3370,52 @@
                 }
             }
             var tDrawOrderArr;
-            var tDrawOrderAniLen = tByte.getInt16();
+            var tDrawOrderAniLen = tByte.readInt16();
             var tDrawOrderLen;
             var tDrawOrderData;
             var tDoLen;
             for (let i = 0; i < tDrawOrderAniLen; i++) {
-                tDrawOrderLen = tByte.getInt16();
+                tDrawOrderLen = tByte.readInt16();
                 tDrawOrderArr = [];
                 for (let j = 0; j < tDrawOrderLen; j++) {
                     tDrawOrderData = new DrawOrderData();
-                    tDrawOrderData.time = tByte.getFloat32();
-                    tDoLen = tByte.getInt16();
+                    tDrawOrderData.time = tByte.readFloat32();
+                    tDoLen = tByte.readInt16();
                     for (let k = 0; k < tDoLen; k++) {
-                        tDrawOrderData.drawOrder.push(tByte.getInt16());
+                        tDrawOrderData.drawOrder.push(tByte.readInt16());
                     }
                     tDrawOrderArr.push(tDrawOrderData);
                 }
                 this.drawOrderAniArr.push(tDrawOrderArr);
             }
             var tEventArr;
-            var tEventAniLen = tByte.getInt16();
+            var tEventAniLen = tByte.readInt16();
             var tEventLen;
             var tEventData;
             for (let i = 0; i < tEventAniLen; i++) {
-                tEventLen = tByte.getInt16();
+                tEventLen = tByte.readInt16();
                 tEventArr = [];
                 for (let j = 0; j < tEventLen; j++) {
                     tEventData = new EventData();
-                    tEventData.name = tByte.getUTFString();
+                    tEventData.name = tByte.readUTFString();
                     if (this._isParseAudio)
-                        tEventData.audioValue = tByte.getUTFString();
-                    tEventData.intValue = tByte.getInt32();
-                    tEventData.floatValue = tByte.getFloat32();
-                    tEventData.stringValue = tByte.getUTFString();
-                    tEventData.time = tByte.getFloat32();
+                        tEventData.audioValue = tByte.readUTFString();
+                    tEventData.intValue = tByte.readInt32();
+                    tEventData.floatValue = tByte.readFloat32();
+                    tEventData.stringValue = tByte.readUTFString();
+                    tEventData.time = tByte.readFloat32();
                     tEventArr.push(tEventData);
                 }
                 this.eventAniArr.push(tEventArr);
             }
-            var tAttachmentLen = tByte.getInt16();
+            var tAttachmentLen = tByte.readInt16();
             if (tAttachmentLen > 0) {
                 this.attachmentNames = [];
                 for (let i = 0; i < tAttachmentLen; i++) {
-                    this.attachmentNames.push(tByte.getUTFString());
+                    this.attachmentNames.push(tByte.readUTFString());
                 }
             }
-            var tBoneSlotLen = tByte.getInt16();
+            var tBoneSlotLen = tByte.readInt16();
             var tDBBoneSlot;
             var tDBBoneSlotArr;
             for (let i = 0; i < tBoneSlotLen; i++) {
@@ -3424,7 +3423,7 @@
                 tDBBoneSlot.name = tByte.readUTFString();
                 tDBBoneSlot.parent = tByte.readUTFString();
                 tDBBoneSlot.attachmentName = tByte.readUTFString();
-                tDBBoneSlot.srcDisplayIndex = tDBBoneSlot.displayIndex = tByte.getInt16();
+                tDBBoneSlot.srcDisplayIndex = tDBBoneSlot.displayIndex = tByte.readInt16();
                 tDBBoneSlot.templet = this;
                 this.boneSlotDic[tDBBoneSlot.name] = tDBBoneSlot;
                 tDBBoneSlotArr = this.bindBoneBoneSlotDic[tDBBoneSlot.parent];
@@ -3437,77 +3436,77 @@
             var tNameString = tByte.readUTFString();
             var tNameArray = tNameString.split("\n");
             var tNameStartIndex = 0;
-            var tSkinDataLen = tByte.getUint8();
+            var tSkinDataLen = tByte.readUint8();
             var tSkinData, tSlotData, tDisplayData;
             var tSlotDataLen, tDisplayDataLen;
             var tUvLen, tWeightLen, tTriangleLen, tVerticeLen, tLengthLen;
             for (let i = 0; i < tSkinDataLen; i++) {
                 tSkinData = new SkinData();
                 tSkinData.name = tNameArray[tNameStartIndex++];
-                tSlotDataLen = tByte.getUint8();
+                tSlotDataLen = tByte.readUint8();
                 for (let j = 0; j < tSlotDataLen; j++) {
                     tSlotData = new SlotData();
                     tSlotData.name = tNameArray[tNameStartIndex++];
                     tDBBoneSlot = this.boneSlotDic[tSlotData.name];
-                    tDisplayDataLen = tByte.getUint8();
+                    tDisplayDataLen = tByte.readUint8();
                     for (let k = 0; k < tDisplayDataLen; k++) {
                         tDisplayData = new SkinSlotDisplayData();
                         this.skinSlotDisplayDataArr.push(tDisplayData);
                         tDisplayData.name = tNameArray[tNameStartIndex++];
                         tDisplayData.attachmentName = tNameArray[tNameStartIndex++];
                         tDisplayData.transform = new Transform();
-                        tDisplayData.transform.scX = tByte.getFloat32();
-                        tDisplayData.transform.skX = tByte.getFloat32();
-                        tDisplayData.transform.skY = tByte.getFloat32();
-                        tDisplayData.transform.scY = tByte.getFloat32();
-                        tDisplayData.transform.x = tByte.getFloat32();
-                        tDisplayData.transform.y = tByte.getFloat32();
+                        tDisplayData.transform.scX = tByte.readFloat32();
+                        tDisplayData.transform.skX = tByte.readFloat32();
+                        tDisplayData.transform.skY = tByte.readFloat32();
+                        tDisplayData.transform.scY = tByte.readFloat32();
+                        tDisplayData.transform.x = tByte.readFloat32();
+                        tDisplayData.transform.y = tByte.readFloat32();
                         tSlotData.displayArr.push(tDisplayData);
-                        tDisplayData.width = tByte.getFloat32();
-                        tDisplayData.height = tByte.getFloat32();
-                        tDisplayData.type = tByte.getUint8();
-                        tDisplayData.verLen = tByte.getUint16();
-                        tBoneLen = tByte.getUint16();
+                        tDisplayData.width = tByte.readFloat32();
+                        tDisplayData.height = tByte.readFloat32();
+                        tDisplayData.type = tByte.readUint8();
+                        tDisplayData.verLen = tByte.readUint16();
+                        tBoneLen = tByte.readUint16();
                         if (tBoneLen > 0) {
                             tDisplayData.bones = [];
                             for (let l = 0; l < tBoneLen; l++) {
-                                let tBoneId = tByte.getUint16();
+                                let tBoneId = tByte.readUint16();
                                 tDisplayData.bones.push(tBoneId);
                             }
                         }
-                        tUvLen = tByte.getUint16();
+                        tUvLen = tByte.readUint16();
                         if (tUvLen > 0) {
                             tDisplayData.uvs = [];
                             for (let l = 0; l < tUvLen; l++) {
-                                tDisplayData.uvs.push(tByte.getFloat32());
+                                tDisplayData.uvs.push(tByte.readFloat32());
                             }
                         }
-                        tWeightLen = tByte.getUint16();
+                        tWeightLen = tByte.readUint16();
                         if (tWeightLen > 0) {
                             tDisplayData.weights = [];
                             for (let l = 0; l < tWeightLen; l++) {
-                                tDisplayData.weights.push(tByte.getFloat32());
+                                tDisplayData.weights.push(tByte.readFloat32());
                             }
                         }
-                        tTriangleLen = tByte.getUint16();
+                        tTriangleLen = tByte.readUint16();
                         if (tTriangleLen > 0) {
                             tDisplayData.triangles = [];
                             for (let l = 0; l < tTriangleLen; l++) {
-                                tDisplayData.triangles.push(tByte.getUint16());
+                                tDisplayData.triangles.push(tByte.readUint16());
                             }
                         }
-                        tVerticeLen = tByte.getUint16();
+                        tVerticeLen = tByte.readUint16();
                         if (tVerticeLen > 0) {
                             tDisplayData.vertices = [];
                             for (let l = 0; l < tVerticeLen; l++) {
-                                tDisplayData.vertices.push(tByte.getFloat32());
+                                tDisplayData.vertices.push(tByte.readFloat32());
                             }
                         }
-                        tLengthLen = tByte.getUint16();
+                        tLengthLen = tByte.readUint16();
                         if (tLengthLen > 0) {
                             tDisplayData.lengths = [];
                             for (let l = 0; l < tLengthLen; l++) {
-                                tDisplayData.lengths.push(tByte.getFloat32());
+                                tDisplayData.lengths.push(tByte.readFloat32());
                             }
                         }
                     }
@@ -3516,7 +3515,7 @@
                 this.skinDic[tSkinData.name] = tSkinData;
                 this.skinDataArray.push(tSkinData);
             }
-            var tReverse = tByte.getUint8();
+            var tReverse = tByte.readUint8();
             if (tReverse == 1) {
                 this.yReverseMatrix = new Laya.Matrix(1, 0, 0, -1, 0, 0);
                 if (tRootBone) {
@@ -3802,23 +3801,24 @@
                 _data.pos = this._Pos;
             }
             while ((this._curIndex <= frameIndex) && (!this._ended)) {
-                type = _data.getUint16();
+                type = _data.readUint16();
                 switch (type) {
                     case 12:
-                        key = _data.getUint16();
-                        tPos = this._ids[_data.getUint16()];
+                        key = _data.readUint16();
+                        tPos = this._ids[_data.readUint16()];
                         this._Pos = _data.pos;
                         _data.pos = tPos;
-                        if ((ttype = _data.getUint8()) == 0) {
-                            var pid = _data.getUint16();
+                        if ((ttype = _data.readUint8()) == 0) {
+                            var pid = _data.readUint16();
                             sp = _idOfSprite[key];
                             if (!sp) {
                                 sp = _idOfSprite[key] = new Laya.Sprite();
                                 var spp = new Laya.Sprite();
                                 spp.loadImage(this.basePath + pid + ".png");
+                                spp.name = pid + "";
                                 this._loadedImage[this.basePath + pid + ".png"] = true;
                                 sp.addChild(spp);
-                                spp.size(_data.getFloat32(), _data.getFloat32());
+                                spp.size(_data.readFloat32(), _data.readFloat32());
                                 var mat = _data._getMatrix();
                                 spp.transform = mat;
                             }
@@ -3840,49 +3840,49 @@
                         _data.pos = this._Pos;
                         break;
                     case 3:
-                        var node = _idOfSprite[_data.getUint16()];
+                        var node = _idOfSprite[_data.readUint16()];
                         if (node) {
                             this.addChild(node);
-                            node.zOrder = _data.getUint16();
+                            node.zOrder = _data.readUint16();
                             ifAdd = true;
                         }
                         break;
                     case 4:
-                        node = _idOfSprite[_data.getUint16()];
+                        node = _idOfSprite[_data.readUint16()];
                         node && node.removeSelf();
                         break;
                     case 5:
-                        _idOfSprite[_data.getUint16()][MovieClip._ValueList[_data.getUint16()]] = (_data.getFloat32());
+                        _idOfSprite[_data.readUint16()][MovieClip._ValueList[_data.readUint16()]] = (_data.readFloat32());
                         break;
                     case 6:
-                        _idOfSprite[_data.getUint16()].visible = (_data.getUint8() > 0);
+                        _idOfSprite[_data.readUint16()].visible = (_data.readUint8() > 0);
                         break;
                     case 7:
-                        sp = _idOfSprite[_data.getUint16()];
+                        sp = _idOfSprite[_data.readUint16()];
                         var mt = sp.transform || Laya.Matrix.create();
-                        mt.setTo(_data.getFloat32(), _data.getFloat32(), _data.getFloat32(), _data.getFloat32(), _data.getFloat32(), _data.getFloat32());
+                        mt.setTo(_data.readFloat32(), _data.readFloat32(), _data.readFloat32(), _data.readFloat32(), _data.readFloat32(), _data.readFloat32());
                         sp.transform = mt;
                         break;
                     case 8:
-                        _idOfSprite[_data.getUint16()].setPos(_data.getFloat32(), _data.getFloat32());
+                        _idOfSprite[_data.readUint16()].setPos(_data.readFloat32(), _data.readFloat32());
                         break;
                     case 9:
-                        _idOfSprite[_data.getUint16()].setSize(_data.getFloat32(), _data.getFloat32());
+                        _idOfSprite[_data.readUint16()].setSize(_data.readFloat32(), _data.readFloat32());
                         break;
                     case 10:
-                        _idOfSprite[_data.getUint16()].alpha = _data.getFloat32();
+                        _idOfSprite[_data.readUint16()].alpha = _data.readFloat32();
                         break;
                     case 11:
-                        _idOfSprite[_data.getUint16()].setScale(_data.getFloat32(), _data.getFloat32());
+                        _idOfSprite[_data.readUint16()].setScale(_data.readFloat32(), _data.readFloat32());
                         break;
                     case 98:
-                        eStr = _data.getString();
+                        eStr = _data.readString();
                         this.event(eStr);
                         if (eStr == "stop")
                             this.stop();
                         break;
                     case 99:
-                        this._curIndex = _data.getUint16();
+                        this._curIndex = _data.readUint16();
                         ifAdd && this.updateZOrder();
                         break;
                     case 100:
@@ -3940,10 +3940,10 @@
         }
         _initData(data, basePath) {
             this.basePath = basePath;
-            let len = data.getUint16();
+            let len = data.readUint16();
             for (let i = 0; i < len; i++)
-                this._ids[data.getInt16()] = data.getInt32();
-            this.interval = 1000 / data.getUint16();
+                this._ids[data.readInt16()] = data.readInt32();
+            this.interval = 1000 / data.readUint16();
             this._setData(data, this._ids[32767]);
             this._initState();
             this.play(0);

@@ -40,16 +40,24 @@ declare const $spineMgr: ISpineManager;
 
 /** 注入全局变量 */
 declare function $windowImmit(name: string, obj: any): void;
+/** 把proto数据转成普通object对象 */
 declare function $decodeProtoData<T extends IProto>(data: T): ProtoObject<T>;
 
+/** 大号弹窗 */
 declare function $confirmBig(format: 0 | 1 | 2 | 3, title: string, content: string): Promise<boolean>;
+/** 中号弹窗 */
 declare function $confirmMid(format: 0 | 1, title: string, content: string): Promise<boolean>;
+/** 小号弹窗 */
 declare function $confirmSma(format: 0 | 1 | 2 | 3, title: string, content: string): Promise<boolean>;
 
 declare function $richText(text: string = ""): IRichText;
+/** 本地化文本， str.str表 */
 declare function $lang(id: number, ...args: any[]): string;
+/** 本地化网络文本，info.error表 */
 declare function $netLang(id: number, ...args: any[]): string;
+/** 本地化资源，bin/langRes/xx/下的资源 */
 declare function $langRes(url: string): string;
+/** 限时网络错误码弹窗 */
 declare function $showNetError(res: IError): void;
 
 /**
@@ -58,10 +66,6 @@ declare function $showNetError(res: IError): void;
  * @returns 扩展后的类
  */
 declare function ExtensionClass<E, T>(cls: Class<T>): Class<T & E>;
-
-declare const BeforeEngineInit: MethodDecorator;
-
-declare const AfterEngineInit: MethodDecorator;
 
 declare interface Object {
 	/** 对象类名 */
@@ -111,6 +115,7 @@ declare namespace Laya {
 
 declare namespace fgui {
 	interface GObject {
+		/** 设置本地化文本 */
 		langText(id: number, ...args: any[]): void;
 		tweenMove(endX: number, endY: number, duration: number): GTweener;
 		tweenMoveX(endX: number, duration: number): GTweener;
@@ -158,6 +163,7 @@ declare namespace fgui {
 	}
 
 	interface GTextInput {
+		/** 设置本地化提示文本 */
 		langPrompt(id: number, ...args: any[]): void;
 	}
 }

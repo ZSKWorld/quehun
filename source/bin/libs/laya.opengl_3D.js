@@ -39,7 +39,6 @@
             this._list.destroy();
             this._clearBaseRenderNode();
             this._list = null;
-            this._nativeObj = null;
         }
         constructor() {
             this._list = new Laya.SingletonList();
@@ -73,7 +72,6 @@
             this._nativeObj = new window.conchGLESDirectLightShadowCastRP();
         }
         destroy() {
-            this._nativeObj = null;
             this._shadowCasterCommanBuffer && (this._shadowCasterCommanBuffer.length = 0);
             this._shadowCasterCommanBuffer = null;
             this._destTarget = null;
@@ -276,7 +274,6 @@
             this._nativeObj = new window.conchGLESForwardAddClusterRP();
         }
         destroy() {
-            this._nativeObj = null;
         }
     }
 
@@ -299,7 +296,6 @@
             this._nativeObj = new window.conchGLESSpotLightShadowRP();
         }
         destroy() {
-            this._nativeObj = null;
         }
     }
 
@@ -408,7 +404,6 @@
             }
         }
         destroy() {
-            this._nativeObj = null;
             this.directLightShadowPass.destroy();
             this._directLightShadowPass = null;
             this.spotLightShadowPass.destroy();
@@ -435,7 +430,6 @@
             this._nativeObj.renderManager = value._nativeObj;
         }
         destroy() {
-            this._nativeObj = null;
             this._tempList = null;
             this.renderpass.destroy();
         }
@@ -556,32 +550,23 @@
                 depthMode |= camera.postProcess.cameraDepthTextureMode;
             }
             if ((depthMode & Laya.DepthTextureMode.Depth) != 0) {
-                let needDepthTex = camera.canblitDepth && camera._internalRenderTexture.depthStencilTexture;
-                if (needDepthTex) {
-                    camera.depthTexture = camera._cacheDepthTexture.depthStencilTexture;
-                    Laya.Camera.depthPass._depthTexture = camera.depthTexture;
-                    camera._shaderValues.setTexture(Laya.DepthPass.DEPTHTEXTURE, camera.depthTexture);
-                    Laya.Camera.depthPass._setupDepthModeShaderValue(Laya.DepthTextureMode.Depth, camera);
-                    depthMode &= ~Laya.DepthTextureMode.Depth;
-                }
-                else {
-                    Laya.Camera.depthPass.getTarget(camera, Laya.DepthTextureMode.Depth, camera.depthTextureFormat);
-                    this.renderpass.renderpass.depthTarget = camera.depthTexture._renderTarget;
-                    camera._shaderValues.setTexture(Laya.DepthPass.DEPTHTEXTURE, camera.depthTexture);
-                }
+                Laya.Camera.depthPass.getTarget(camera, Laya.DepthTextureMode.Depth, camera.depthTextureFormat);
+                this.renderpass.renderpass.depthTarget = camera.depthTexture._renderTarget;
+                Laya.Camera.depthPass._setupDepthModeShaderValue(Laya.DepthTextureMode.Depth, camera);
             }
             if ((depthMode & Laya.DepthTextureMode.DepthNormals) != 0) {
                 Laya.Camera.depthPass.getTarget(camera, Laya.DepthTextureMode.DepthNormals, camera.depthTextureFormat);
                 this.renderpass.renderpass.depthNormalTarget = camera.depthNormalTexture._renderTarget;
                 camera._shaderValues.setTexture(Laya.DepthPass.DEPTHNORMALSTEXTURE, camera.depthNormalTexture);
+                Laya.Camera.depthPass._setupDepthModeShaderValue(Laya.DepthTextureMode.DepthNormals, camera);
             }
             this.renderpass.renderpass.depthTextureMode = depthMode;
         }
         fowardRender(context, camera) {
-            this.initRenderpass(camera, context);
+            Laya.Camera.depthPass.cleanUp(camera);
             this.renderDepth(camera);
+            this.initRenderpass(camera, context);
             this.renderFowarAddCameraPass(context, this.renderpass);
-            Laya.Camera.depthPass.cleanUp();
         }
         renderFowarAddCameraPass(context, renderpass) {
             this._tempList.length = 0;
@@ -872,7 +857,7 @@
     class GLESRenderElement3D {
         set geometry(data) {
             this._geometry = data;
-            this._nativeObj.setGeometry(data._nativeObj);
+            this._nativeObj.setGeometry(data ? data._nativeObj : null);
         }
         get geometry() {
             return this._geometry;
@@ -942,11 +927,12 @@
             window.conchGLESRenderElement3D.setCompileDefine(Laya.RTShaderPass.getGlobalCompileDefine()._nativeObj);
         }
         destroy() {
-            this._nativeObj.destroy();
+            var _a;
             this._geometry = null;
             this._materialShaderData = null;
             this._renderShaderData = null;
             this._transform = null;
+            (_a = this._nativeObj) === null || _a === void 0 ? void 0 : _a.destroy();
         }
         init() {
             this._nativeObj = new window.conchGLESRenderElement3D();
@@ -1044,59 +1030,59 @@
             this.setMax(value);
         }
         setMin(value) {
-            this.float64Array[0] = value.x;
-            this.float64Array[1] = value.y;
-            this.float64Array[2] = value.z;
+            this.float32Array[0] = value.x;
+            this.float32Array[1] = value.y;
+            this.float32Array[2] = value.z;
             this._nativeObj.setMin();
         }
         getMin() {
             var min = this._boundBox.min;
             this._nativeObj.getMin();
-            min.x = this.float64Array[0];
-            min.y = this.float64Array[1];
-            min.z = this.float64Array[2];
+            min.x = this.float32Array[0];
+            min.y = this.float32Array[1];
+            min.z = this.float32Array[2];
             return min;
         }
         setMax(value) {
-            this.float64Array[0] = value.x;
-            this.float64Array[1] = value.y;
-            this.float64Array[2] = value.z;
+            this.float32Array[0] = value.x;
+            this.float32Array[1] = value.y;
+            this.float32Array[2] = value.z;
             this._nativeObj.setMax();
         }
         getMax() {
             var max = this._boundBox.max;
             this._nativeObj.getMax();
-            max.x = this.float64Array[0];
-            max.y = this.float64Array[1];
-            max.z = this.float64Array[2];
+            max.x = this.float32Array[0];
+            max.y = this.float32Array[1];
+            max.z = this.float32Array[2];
             return max;
         }
         setCenter(value) {
-            this.float64Array[0] = value.x;
-            this.float64Array[1] = value.y;
-            this.float64Array[2] = value.z;
+            this.float32Array[0] = value.x;
+            this.float32Array[1] = value.y;
+            this.float32Array[2] = value.z;
             this._nativeObj.setCenter();
         }
         getCenter() {
             var center = this._center;
             this._nativeObj.getCenter();
-            center.x = this.float64Array[0];
-            center.y = this.float64Array[1];
-            center.z = this.float64Array[2];
+            center.x = this.float32Array[0];
+            center.y = this.float32Array[1];
+            center.z = this.float32Array[2];
             return center;
         }
         setExtent(value) {
-            this.float64Array[0] = value.x;
-            this.float64Array[1] = value.y;
-            this.float64Array[2] = value.z;
+            this.float32Array[0] = value.x;
+            this.float32Array[1] = value.y;
+            this.float32Array[2] = value.z;
             this._nativeObj.setExtent();
         }
         getExtent() {
             var extent = this._extent;
             this._nativeObj.getExtent();
-            extent.x = this.float64Array[0];
-            extent.y = this.float64Array[1];
-            extent.z = this.float64Array[2];
+            extent.x = this.float32Array[0];
+            extent.y = this.float32Array[1];
+            extent.z = this.float32Array[2];
             return extent;
         }
         constructor(min, max) {
@@ -1105,7 +1091,6 @@
             this._boundBox = new Laya.BoundBox(new Laya.Vector3(), new Laya.Vector3());
             this.nativeMemory = new Laya.NativeMemory(NativeBounds.MemoryBlock_size, true);
             this.float32Array = this.nativeMemory.float32Array;
-            this.float64Array = this.nativeMemory.float64Array;
             this._nativeObj = new window.conchBounds(this.nativeMemory._buffer);
             min && this.setMin(min);
             max && this.setMax(max);
@@ -1116,12 +1101,12 @@
         }
         _getBoundBox() {
             this._nativeObj._getBoundBox();
-            this._boundBox.min.x = this.float64Array[0];
-            this._boundBox.min.y = this.float64Array[1];
-            this._boundBox.min.z = this.float64Array[2];
-            this._boundBox.max.x = this.float64Array[3];
-            this._boundBox.max.y = this.float64Array[4];
-            this._boundBox.max.z = this.float64Array[5];
+            this._boundBox.min.x = this.float32Array[0];
+            this._boundBox.min.y = this.float32Array[1];
+            this._boundBox.min.z = this.float32Array[2];
+            this._boundBox.max.x = this.float32Array[3];
+            this._boundBox.max.y = this.float32Array[4];
+            this._boundBox.max.z = this.float32Array[5];
             return this._boundBox;
         }
         calculateBoundsintersection(bounds) {
@@ -1766,6 +1751,7 @@
         }
         constructor() {
             this._additionShaderData = new Map();
+            this.ismoved = new Laya.Vector2();
             this._worldParams = new Laya.Vector4();
             this._getNativeObj();
             this._defaultBaseGeometryBounds = new Laya.Bounds();

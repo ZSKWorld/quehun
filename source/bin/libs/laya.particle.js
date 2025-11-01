@@ -503,46 +503,52 @@
                 uniformMap.addShaderUniform(index, name, type);
                 return index;
             };
+            const addUniformArray = (name, type, arrayLength) => {
+                let index = Laya.Shader3D.propertyNameToID(name);
+                uniformMap.addShaderUniformArray(index, name, type, arrayLength);
+                return index;
+            };
             Particle2DShader.CurrentTime = addUniform("u_CurrentTime", Laya.ShaderDataType.Float);
             Particle2DShader.UnitPixels = addUniform("u_UnitPixels", Laya.ShaderDataType.Float);
+            Particle2DShader.SpriteRotAndScale = addUniform("u_SpriteRotAndScale", Laya.ShaderDataType.Vector4);
             {
                 Particle2DShader.ColorOverLifetimeDef = Laya.Shader3D.getDefineByName("COLOROVERLIFETIME");
                 Particle2DShader.ColorOverLifetimeRandom = Laya.Shader3D.getDefineByName("COLOROVERLIFETIME_RANDOM");
                 Particle2DShader.ColorOVerLifetimeColorKey_8 = Laya.Shader3D.getDefineByName("COLOROVERLIFETIME_COLORKEY_8");
-                Particle2DShader.GradientRGB = addUniform("u_GradientRGB", Laya.ShaderDataType.Buffer);
-                Particle2DShader.GradientAlpha = addUniform("u_GradientAlpha", Laya.ShaderDataType.Buffer);
+                Particle2DShader.GradientRGB = addUniformArray("u_GradientRGB", Laya.ShaderDataType.Vector4, 8);
+                Particle2DShader.GradientAlpha = addUniformArray("u_GradientAlpha", Laya.ShaderDataType.Vector4, 4);
                 Particle2DShader.GradientTimeRange = addUniform("u_GradientTimeRange", Laya.ShaderDataType.Vector4);
-                Particle2DShader.GradientMaxRGB = addUniform("u_GradientMaxRGB", Laya.ShaderDataType.Buffer);
-                Particle2DShader.GradientMaxAlpha = addUniform("u_GradientMaxAlpha", Laya.ShaderDataType.Buffer);
+                Particle2DShader.GradientMaxRGB = addUniformArray("u_GradientMaxRGB", Laya.ShaderDataType.Vector4, 8);
+                Particle2DShader.GradientMaxAlpha = addUniformArray("u_GradientMaxAlpha", Laya.ShaderDataType.Vector4, 4);
                 Particle2DShader.GradientMaxTimeRange = addUniform("u_GradientMaxTimeRange", Laya.ShaderDataType.Vector4);
             }
             {
                 Particle2DShader.VelocityOverLifetimeDef = Laya.Shader3D.getDefineByName("VELOCITYOVERLIFETIME");
-                Particle2DShader.VelocityCurveMinX = addUniform("u_VelocityCurveMinX", Laya.ShaderDataType.Buffer);
-                Particle2DShader.VelocityCurveMinY = addUniform("u_VelocityCurveMinY", Laya.ShaderDataType.Buffer);
-                Particle2DShader.VelocityCurveMaxX = addUniform("u_VelocityCurveMaxX", Laya.ShaderDataType.Buffer);
-                Particle2DShader.VelocityCurveMaxY = addUniform("u_VelocityCurveMaxY", Laya.ShaderDataType.Buffer);
+                Particle2DShader.VelocityCurveMinX = addUniformArray("u_VelocityCurveMinX", Laya.ShaderDataType.Vector4, 2);
+                Particle2DShader.VelocityCurveMinY = addUniformArray("u_VelocityCurveMinY", Laya.ShaderDataType.Vector4, 2);
+                Particle2DShader.VelocityCurveMaxX = addUniformArray("u_VelocityCurveMaxX", Laya.ShaderDataType.Vector4, 2);
+                Particle2DShader.VelocityCurveMaxY = addUniformArray("u_VelocityCurveMaxY", Laya.ShaderDataType.Vector4, 2);
                 Particle2DShader.VelocityOverLifetimeSpace = addUniform("u_VelocityOverLifetimeSpace", Laya.ShaderDataType.Float);
             }
             {
                 Particle2DShader.SizeOverLifetimeDef = Laya.Shader3D.getDefineByName("SIZEOVERLIFETIME");
-                Particle2DShader.SizeCurveMinX = addUniform("u_SizeCurveMinX", Laya.ShaderDataType.Buffer);
-                Particle2DShader.SizeCurveMinY = addUniform("u_SizeCurveMinY", Laya.ShaderDataType.Buffer);
+                Particle2DShader.SizeCurveMinX = addUniformArray("u_SizeCurveMinX", Laya.ShaderDataType.Vector4, 2);
+                Particle2DShader.SizeCurveMinY = addUniformArray("u_SizeCurveMinY", Laya.ShaderDataType.Vector4, 2);
                 Particle2DShader.SizeCurveMinTimeRange = addUniform("u_SizeCurveMinTimeRange", Laya.ShaderDataType.Vector4);
-                Particle2DShader.SizeCurveMaxX = addUniform("u_SizeCurveMaxX", Laya.ShaderDataType.Buffer);
-                Particle2DShader.SizeCurveMaxY = addUniform("u_SizeCurveMaxY", Laya.ShaderDataType.Buffer);
+                Particle2DShader.SizeCurveMaxX = addUniformArray("u_SizeCurveMaxX", Laya.ShaderDataType.Vector4, 2);
+                Particle2DShader.SizeCurveMaxY = addUniformArray("u_SizeCurveMaxY", Laya.ShaderDataType.Vector4, 2);
                 Particle2DShader.SizeCurveMaxTimeRange = addUniform("u_SizeCurveMaxTimeRange", Laya.ShaderDataType.Vector4);
             }
             {
                 Particle2DShader.RotationOverLifetimeDef = Laya.Shader3D.getDefineByName("ROTATIONOVERLIFETIME");
-                Particle2DShader.RotationCurveMin = addUniform("u_RotationCurveMin", Laya.ShaderDataType.Buffer);
-                Particle2DShader.RotationCurveMax = addUniform("u_RotationCurveMax", Laya.ShaderDataType.Buffer);
+                Particle2DShader.RotationCurveMin = addUniformArray("u_RotationCurveMin", Laya.ShaderDataType.Vector4, 2);
+                Particle2DShader.RotationCurveMax = addUniformArray("u_RotationCurveMax", Laya.ShaderDataType.Vector4, 2);
             }
             {
                 Particle2DShader.TextureSheetAnimationDef = Laya.Shader3D.getDefineByName("TEXTURESHEETANIMATION");
                 Particle2DShader.TextureSheetFrameData = addUniform("u_TextureSheetFrameData", Laya.ShaderDataType.Vector4);
-                Particle2DShader.TextureSheetFrame = addUniform("u_TextureSheetFrame", Laya.ShaderDataType.Buffer);
-                Particle2DShader.TextureSheetFrameMax = addUniform("u_TextureSheetFrameMax", Laya.ShaderDataType.Buffer);
+                Particle2DShader.TextureSheetFrame = addUniformArray("u_TextureSheetFrame", Laya.ShaderDataType.Vector4, 2);
+                Particle2DShader.TextureSheetFrameMax = addUniformArray("u_TextureSheetFrameMax", Laya.ShaderDataType.Vector4, 2);
                 Particle2DShader.TextureSheetFrameRange = addUniform("u_TextureSheetFrameRange", Laya.ShaderDataType.Vector4);
             }
         }
@@ -1008,7 +1014,7 @@
                 this.totalTime += deltaTime;
                 if (this.time >= this.main.duration) {
                     if (this.main.looping) {
-                        this.time -= this.main.duration;
+                        this.time %= this.main.duration;
                     }
                     else {
                         this._isEmitting = false;
@@ -1077,8 +1083,8 @@
         }
     }
 
-    const nMatrix0 = new Laya.Vector3();
-    const nMatrix1 = new Laya.Vector3();
+    new Laya.Vector3();
+    new Laya.Vector3();
     const tempV4 = new Laya.Vector4();
     const fillGradientRGB = (gradient, buffer) => {
         let count = Math.min(gradient.colorRGBKeysCount, 8);
@@ -1250,7 +1256,9 @@
             this._renderElements = [];
             this._materials = [];
             this._particleSystem = new ShurikenParticle2DSystem();
-            this._spriteShaderData.addDefine(Laya.BaseRenderNode2D.SHADERDEFINE_BASERENDER2D);
+        }
+        _isMaterialVaild(value) {
+            return value.checkType(Laya.ShaderFeatureType.Default);
         }
         _getcommonUniformMap() {
             return ["BaseRender2D", "_Particle2D"];
@@ -1584,8 +1592,8 @@
             let scaleY = worldMat.getScaleY();
             let cosAngle = worldMat.a / scaleX;
             let sinAngle = worldMat.b / scaleX;
-            let translateX = nMatrix0.z;
-            let translateY = nMatrix1.z;
+            let translateX = worldMat.tx;
+            let translateY = worldMat.ty;
             let simulationSpace = 0;
             switch (ps.main.simulationSpace) {
                 case exports.Particle2DSimulationSpace.Local:
@@ -1599,11 +1607,16 @@
                 case exports.Particle2DScalingMode.Hierarchy:
                     break;
                 case exports.Particle2DScalingMode.Local:
-                    scaleX = this.owner.scaleX * this.owner.scene.globalScaleX;
-                    scaleY = this.owner.scaleY * this.owner.scene.globalScaleY;
+                    scaleX = this.owner.scaleX;
+                    scaleY = this.owner.scaleY;
+                    if (this.owner.scene) {
+                        scaleX *= this.owner.scene.globalScaleX;
+                        scaleY *= this.owner.scene.globalScaleY;
+                    }
                     break;
             }
             ps.main._spriteRotAndScale.setValue(cosAngle, sinAngle, scaleX, scaleY);
+            shaderData.setVector(Particle2DShader.SpriteRotAndScale, ps.main._spriteRotAndScale);
             ps.main._spriteTranslateAndSpace.setValue(translateX, translateY, simulationSpace);
             const Physics2DSettingPixelRatio = (_a = Laya.Physics2DOption === null || Laya.Physics2DOption === void 0 ? void 0 : Laya.Physics2DOption.pixelRatio) !== null && _a !== void 0 ? _a : 50;
             const Physics2DSettingGravity = (_b = Laya.Physics2DOption === null || Laya.Physics2DOption === void 0 ? void 0 : Laya.Physics2DOption.gravity) !== null && _b !== void 0 ? _b : { x: 0, y: 9.8 };
@@ -1645,23 +1658,7 @@
                 ps._dirtyFlags &= ~exports.Particle2DSystemDirtyFlagBits.TextureSheetAnimationBit;
             }
         }
-        addCMDCall(context, px, py) {
-            if (!this.particleSystem) {
-                return;
-            }
-            let mat = context._curMat;
-            nMatrix0.x = mat.a;
-            nMatrix0.y = mat.c;
-            nMatrix0.z = px * mat.a + py * mat.c + mat.tx;
-            this._spriteShaderData.setVector3(Laya.BaseRenderNode2D.NMATRIX_0, nMatrix0);
-            nMatrix1.x = mat.b;
-            nMatrix1.y = mat.d;
-            nMatrix1.z = px * mat.b + py * mat.d + mat.ty;
-            this._spriteShaderData.setVector3(Laya.BaseRenderNode2D.NMATRIX_1, nMatrix1);
-            this._setRenderSize(context.width, context.height);
-            context._copyClipInfoToShaderData(this._spriteShaderData);
-            this._lightReceive && this._updateLight();
-            this.setParticleData(this._spriteShaderData, mat);
+        addCMDCall(px, py) {
         }
         _createRenderGeometry() {
             if (this.particleGeometry) {
@@ -1680,6 +1677,7 @@
             });
             this._renderElements.length = 0;
             if (!this.sharedMaterial) {
+                this._struct.renderElements = this._renderElements;
                 return;
             }
             {
@@ -1695,6 +1693,7 @@
                 Laya.BaseRenderNode2D._setRenderElement2DMaterial(element, this.sharedMaterial);
                 element.renderStateIsBySprite = false;
                 element.nodeCommonMap = this._getcommonUniformMap();
+                element.owner = this._struct;
                 return element;
             };
             if (this.particleGeometry) {
@@ -1702,6 +1701,7 @@
                 let element = createRenderElement(geometry);
                 this._renderElements.push(element);
             }
+            this._struct.renderElements = this._renderElements;
         }
         _updateParticleBuffer(startActive, endActive) {
             let ps = this.particleSystem;
@@ -1742,12 +1742,14 @@
         }
         renderUpdate(context) {
             let ps = this.particleSystem;
+            this.setParticleData(this._spriteShaderData, this.owner._globalTrans.getMatrix());
+            this._updateLight();
             if (this._renderElements.length <= 0) {
                 return;
             }
             if (this._updateMark != Laya.Stat.loopCount) {
                 this._updateMark = Laya.Stat.loopCount;
-                let elapsedTime = this.owner.scene.timer.delta / 1000;
+                let elapsedTime = this.owner.timer.delta / 1000;
                 ps._update(elapsedTime);
                 const startUpdate = ps.particlePool.updateStartIndex;
                 const endUpdate = ps.particlePool.updateEndIndex;

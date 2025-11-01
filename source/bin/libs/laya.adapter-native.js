@@ -7,8 +7,13 @@
             Laya.Browser.onLayaRuntime = true;
             Laya.Browser.isDomSupported = false;
             Laya.PAL.g = window.conch;
+            if (window.conchConfig.getOS() == "Conch-ios") {
+                Laya.Config.enableUniformBufferObject = false;
+                Laya.Config.matUseUBO = false;
+            }
             Laya.WasmAdapter.instantiateWasm = (wasmFile, imports) => {
-                return Laya.Laya.loader.fetch("libs/" + wasmFile, "arraybuffer").then(data => {
+                wasmFile = Laya.WasmAdapter.locateFileDefault(wasmFile);
+                return Laya.Laya.loader.fetch(wasmFile, "arraybuffer").then(data => {
                     if (data) {
                         let module = new window.WebAssembly.Module(data);
                         let instance = new window.WebAssembly.Instance(module, imports);
@@ -56,6 +61,173 @@
     }
     Laya.PAL.register("font", NativeFontAdapter);
 
+    class NativeVideoPlayer extends Laya.VideoPlayer {
+        constructor() {
+            super(...arguments);
+            this._loop = false;
+            this._ended = false;
+            this._muted = false;
+            this._playbackRate = 1;
+        }
+        get loop() {
+            return this._loop;
+        }
+        set loop(value) {
+            this._loop = value;
+            if (this.video)
+                this.video.loop = value;
+        }
+        get ended() {
+            return this._ended;
+        }
+        get currentTime() {
+            if (this.video)
+                return this.video.tell();
+            return 0.0;
+        }
+        set currentTime(value) {
+            if (this.video)
+                this.video.seek(value * 1000);
+        }
+        get muted() {
+            return this._muted;
+        }
+        set muted(value) {
+            this._muted = value;
+            if (this.video)
+                this.video.muted = value;
+        }
+        get playbackRate() {
+            return this._playbackRate;
+        }
+        set playbackRate(value) {
+            this._playbackRate = value;
+            if (this.video)
+                this.video.playbackRate = value;
+        }
+        onLoad(url) {
+            this._ended = false;
+            if (this._loaded)
+                this.video.destroy();
+            this.video = Laya.PAL.g.createVideo(Object.assign({}, this.options, this.getNodeTransform(), {
+                src: Laya.URL.postFormatURL(Laya.URL.formatURL(url)),
+                autoplay: this._playing,
+                loop: this._loop,
+                muted: this._muted,
+                playbackRate: this._playbackRate,
+            }));
+            this.video.onEnded(() => this._ended = true);
+            this.video.onError((err) => {
+                console.error("NativeVideoPlayer: " + Laya.getErrorMsg(err));
+            });
+            this.setLoaded();
+        }
+        onPlay() {
+            this.video.play();
+        }
+        onPause() {
+            this.video.pause();
+        }
+        onTransformChanged() {
+            if (!this.video)
+                return;
+            let { x, y, width, height } = this.getNodeTransform();
+            this.video.x = x;
+            this.video.y = y;
+            this.video.width = width;
+            this.video.height = height;
+        }
+        onDestroy() {
+            this.video.destroy();
+        }
+    }
+
+    class NativeVideoTexture extends Laya.VideoTexture {
+        constructor() {
+            super();
+            this._ended = false;
+            this._waitFirstFrame = false;
+            this.decoder = Laya.PAL.g.createVideoDecoder({
+                type: "wemedia"
+            });
+            this.decoder.on("frame", (res) => {
+                this._currentTime = res.pts / 1000;
+                if (this._waitFirstFrame) {
+                    this._waitFirstFrame = false;
+                    if (!this._playing) {
+                        this.render(true);
+                        this.decoder.wait(true);
+                    }
+                }
+            });
+            this.decoder.on("ended", () => {
+                if (this._loop)
+                    this.decoder.stop().then(() => this.decoder.start(this._startOption));
+                else
+                    this._ended = true;
+            });
+        }
+        get readyState() {
+            return this._loaded ? 1 : 0;
+        }
+        get ended() {
+            return this._ended;
+        }
+        get currentTime() {
+            return this._currentTime;
+        }
+        set currentTime(value) {
+            this.decoder.seek(value * 1000);
+        }
+        onLoad(url) {
+            let src = this._source;
+            this._ended = false;
+            this._waitFirstFrame = false;
+            if (this._loaded)
+                this.decoder.stop();
+            this._loaded = false;
+            if (this._source !== src)
+                return;
+            this._startOption = {};
+            this._startOption.source = Laya.URL.postFormatURL(Laya.URL.formatURL(url));
+            if (Laya.Browser.isIOSHighPerformanceModePlus)
+                this._startOption.videoDataType = 2;
+            this.decoder.start(this._startOption).then((res) => {
+                this.setLoaded(res.width, res.height, true);
+                if (!this._playing)
+                    this._waitFirstFrame = true;
+            }).catch((err) => {
+                console.warn("MgVideoTexture: " + err.message);
+            });
+        }
+        onPlay() {
+            this.decoder.wait(false);
+        }
+        onPause() {
+            this.decoder.wait(true);
+        }
+        onStop() {
+            this.decoder.stop();
+        }
+        onRender() {
+            Laya.LayaGL.textureContext.setTextureImageData(this._texture, this.decoder, false, false);
+            return true;
+        }
+        onDestroy() {
+            this.decoder.remove();
+        }
+    }
+
+    class NativeMediaAdapter extends Laya.MediaAdapter {
+        init() {
+            this.shortAudioClass = Laya.HTMLAudioChannel;
+            this.longAudioClass = Laya.HTMLAudioChannel;
+            this.videoPlayerClass = NativeVideoPlayer;
+            this.videoTextureClass = NativeVideoTexture;
+        }
+    }
+    Laya.PAL.register("media", NativeMediaAdapter);
+
     class NativeTextInputAdapter extends Laya.TextInputAdapter {
         constructor() {
             super();
@@ -96,7 +268,15 @@
             style.direction = Laya.Text.RightToLeft ? "rtl" : "";
             this.setPromptColor();
             this.syncTransform();
+            Laya.PAL.browser.on(Laya.Event.RESIZE, this, this._onResize);
+            Laya.ILaya.stage.on(Laya.Event.RESIZE, this, this.syncTransform);
             return Promise.resolve();
+        }
+        _onResize() {
+            if (Laya.ILaya.stage.screenAdaptationEnabled) {
+                Laya.ILaya.stage.event(Laya.Event.WILL_RESIZE);
+                Laya.ILaya.stage.updateCanvasSize(true);
+            }
         }
         onCanShowKeyboard() {
             if (this._editInline)
@@ -111,6 +291,7 @@
                     multiple: target.multiline,
                     confirmHold: true,
                     confirmType: target.confirmType,
+                    keyboardType: 'text',
                     success: resolve,
                     fail: reject
                 });
@@ -129,16 +310,19 @@
                 this._visEle.blur();
                 this.hideInputElement();
                 this._visEle = null;
+                Laya.PAL.browser.off(Laya.Event.RESIZE, this, this._onResize);
+                Laya.ILaya.stage.off(Laya.Event.RESIZE, this, this.syncTransform);
                 return Promise.resolve();
             }
         }
         syncTransform() {
-            let t = this.getTargetTransform();
-            if (t != null) {
-                this._visEle.setScale(t.scaleX, t.scaleY);
-                this._visEle.setSize(t.width, t.height);
-                this._visEle.setPos(t.x, t.y);
-            }
+            let padding = this.target.padding;
+            let { x, y, scaleX, scaleY } = Laya.SpriteUtils.getTransformRelativeToWindow(this.target, padding[3], padding[0]);
+            let w = this.target.width - padding[1] - padding[3];
+            let h = this.target.height - padding[0] - padding[2];
+            this._visEle.setScale(scaleX, scaleY);
+            this._visEle.setSize(w, h);
+            this._visEle.setPos(x, y);
         }
         hideInputElement() {
             if (this._editInline)
@@ -164,6 +348,9 @@
 
     exports.NativeBrowserAdapter = NativeBrowserAdapter;
     exports.NativeFontAdapter = NativeFontAdapter;
+    exports.NativeMediaAdapter = NativeMediaAdapter;
     exports.NativeTextInputAdapter = NativeTextInputAdapter;
+    exports.NativeVideoPlayer = NativeVideoPlayer;
+    exports.NativeVideoTexture = NativeVideoTexture;
 
 })(window.Laya = window.Laya || {}, Laya);

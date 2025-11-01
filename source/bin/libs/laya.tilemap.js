@@ -679,7 +679,15 @@
     const BYTE_MASK_CELL = 0xff << BYTE_POS_CELL;
     const BYTE_MASK_GROUP = 0xff << BYTE_POS_GROUP;
     const BYTE_MASK_NATIVE = 0xffff;
+    const BYTE_MASK_ROTATECOUNT = 0x07;
+    const BYTE_MASK_FLIP_H = 0x08;
+    const BYTE_MASK_FLIP_V = 0x10;
+    const BYTE_MASK_TRANSPOSE = 0x20;
     class TileMapUtils {
+        static getRotateCount(transFlag) { return transFlag & BYTE_MASK_ROTATECOUNT; }
+        static getFlipH(transFlag) { return (transFlag & BYTE_MASK_FLIP_H) != 0; }
+        static getFlipV(transFlag) { return (transFlag & BYTE_MASK_FLIP_V) != 0; }
+        static getTranspose(transFlag) { return (transFlag & BYTE_MASK_TRANSPOSE) != 0; }
         static parseCellIndex(gid) { return (gid & BYTE_MASK_CELL) >> 24; }
         static parseGroupId(gid) { return (gid & BYTE_MASK_GROUP) >> 16; }
         static parseNativeIndex(gid) { return gid & BYTE_MASK_NATIVE; }
@@ -716,7 +724,29 @@
             }
             return Math.PI * 2 * rotateCount / maxCount;
         }
-        static getUvRotate(tileshape, flip_h = false, flip_v = false, transpose = false, rountCount = 0) {
+        static getTransFlag(rotateCount, flip_h, flip_v, transpose) {
+            return rotateCount << 0 | (flip_h ? 1 : 0) << 3 | (flip_v ? 1 : 0) << 4 | (transpose ? 1 : 0) << 5;
+        }
+        static parseTransFlag(tileshape, transFlag, cellData) {
+            let cellFlag = cellData.transFlag;
+            let key = transFlag + "_" + cellFlag + "_" + tileshape;
+            let cache = this.CACHE_UVs.get(key);
+            if (cache) {
+                return cache;
+            }
+            let transFlagHigh = transFlag & ~BYTE_MASK_ROTATECOUNT;
+            let cellFlagsHigh = cellFlag & ~BYTE_MASK_ROTATECOUNT;
+            let realFlagHigh = transFlagHigh ^ cellFlagsHigh;
+            let rotateCount = (this.getRotateCount(transFlag) + cellData.rotateCount) % 4;
+            let flip_h = this.getFlipH(realFlagHigh);
+            let flip_v = this.getFlipV(realFlagHigh);
+            let transpose = this.getTranspose(realFlagHigh);
+            cache = new Laya.Vector4();
+            this.getUvRotate(tileshape, flip_h, flip_v, transpose, rotateCount, cache);
+            this.CACHE_UVs.set(key, cache);
+            return cache;
+        }
+        static getUvRotate(tileshape, flip_h = false, flip_v = false, transpose = false, rountCount = 0, out = Laya.Vector4.TEMP) {
             let vx = 1;
             let vy = transpose ? -1 : 1;
             const dx = (vx + vy) * 0.5;
@@ -726,7 +756,6 @@
             let rotate = -this.getRotateAngle(rountCount, tileshape);
             const cos = Math.cos(rotate);
             const sin = Math.sin(rotate);
-            let out = Laya.Vector4.TEMP;
             out.x = cos * vx * dx - sin * vx * dy;
             out.y = cos * vy * dy - sin * vy * dx;
             out.z = sin * vx * dx + cos * vx * dy;
@@ -751,19 +780,8 @@
             }
             return keys.length > 0 ? keys[keys.length - 1] + 1 : 0;
         }
-        static findCellData(nativeData, rotateCount, flipV, flipH) {
-            let datas = nativeData._tileDatas;
-            for (const key in datas) {
-                let data = datas[key];
-                if (data.rotateCount == rotateCount
-                    && data.flip_h == flipH
-                    && data.flip_v == flipV) {
-                    return data;
-                }
-            }
-            return null;
-        }
     }
+    TileMapUtils.CACHE_UVs = new Map();
 
     class TileMapTerrain {
         static fillConnect(tileMapLayer, list, terrainSetId, terrainId, ignoreEmpty = false) {
@@ -1057,13 +1075,15 @@
     class TileSetCellNavigationInfo {
     }
     class TileSetCellData {
-        get transData() {
-            if (this._updateTrans)
-                this._updateTransData();
-            return this._transData;
-        }
         get index() {
             return this._index;
+        }
+        get transFlag() {
+            if (this._transChange) {
+                this._transFlag = TileMapUtils.getTransFlag(this.rotateCount, this._flip_h, this._flip_v, this._transpose);
+                this._transChange = false;
+            }
+            return this._transFlag;
         }
         get cellowner() {
             return this._cellowner;
@@ -1076,7 +1096,7 @@
         }
         set flip_h(value) {
             this._flip_h = value;
-            this._updateTrans = true;
+            this._transChange = true;
             this._notifyDataChange(exports.TileMapDirtyFlag.CELL_UVTRAN, exports.DirtyFlagType.RENDER);
         }
         get flip_v() {
@@ -1084,7 +1104,7 @@
         }
         set flip_v(value) {
             this._flip_v = value;
-            this._updateTrans = true;
+            this._transChange = true;
             this._notifyDataChange(exports.TileMapDirtyFlag.CELL_UVTRAN, exports.DirtyFlagType.RENDER);
         }
         get transpose() {
@@ -1092,7 +1112,7 @@
         }
         set transpose(value) {
             this._transpose = value;
-            this._updateTrans = true;
+            this._transChange = true;
             this._notifyDataChange(exports.TileMapDirtyFlag.CELL_UVTRAN, exports.DirtyFlagType.RENDER);
         }
         get rotateCount() {
@@ -1100,7 +1120,7 @@
         }
         set rotateCount(value) {
             this._rotateCount = value;
-            this._updateTrans = true;
+            this._transChange = true;
             this._notifyDataChange(exports.TileMapDirtyFlag.CELL_UVTRAN, exports.DirtyFlagType.RENDER);
         }
         get texture_origin() {
@@ -1185,13 +1205,13 @@
             this._flip_v = false;
             this._transpose = false;
             this._rotateCount = 0;
+            this._transChange = false;
+            this._transFlag = 0;
             this._terrainSet = -1;
             this._terrain = -1;
             this._terrain_peering_bits = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1];
             this._probability = 1;
             this._destroyed = false;
-            this._updateTrans = true;
-            this._transData = new Laya.Vector4();
             this.gid = -1;
             this._notiveRenderTile = [];
             this._flip_h = false;
@@ -1219,14 +1239,8 @@
             if (!this.cellowner)
                 return;
             this._notiveRenderTile.forEach(element => {
-                element.modifyRenderData();
+                element._modifyData();
             });
-        }
-        _updateTransData() {
-            this._updateTrans = false;
-            let tileshape = this.cellowner.owner._owner.tileShape;
-            let out = TileMapUtils.getUvRotate(tileshape, this._flip_h, this._flip_v, this._transpose, this._rotateCount);
-            out.cloneTo(this._transData);
         }
         _removeNoticeRenderTile(layerRenderTile) {
             let index = this._notiveRenderTile.indexOf(layerRenderTile);
@@ -1291,16 +1305,10 @@
             return this._customDatas[id];
         }
         cloneTo(dst) {
-            dst._flip_h = this._flip_h;
-            dst._flip_v = this._flip_v;
             dst._material = this._material;
             dst._cellowner = this._cellowner;
-            dst._rotateCount = this._rotateCount;
-            dst._transpose = this._transpose;
             dst._z_index = this._z_index;
             dst._y_sort_origin = this._y_sort_origin;
-            this._transData.cloneTo(dst._transData);
-            dst._updateTrans = true;
         }
         destroy() {
             this._notiveRenderTile.forEach(element => {
@@ -1510,13 +1518,13 @@
         }
     }
 
-    var TileMapVS = "#define SHADER_NAME TileMap2DVS\n#include \"TileMapVertex.glsl\"\nuniform vec2 u_TileSize;void main(){vertexInfo info;getVertexInfoTileMap(info);vec4 wordpos;getPosition(info,wordpos);setVertexInfo(info);\n#ifdef LIGHT2D_ENABLE\nlightAndShadow(info);\n#endif\ngl_Position=wordpos;}";
+    var TileMapVS = "#define SHADER_NAME TileMap2DVS\n#include \"TileMapVertex.glsl\"\nuniform vec2 u_TileSize;void main(){vertexInfo info;getVertexInfoTileMap(info);vec4 wordpos=getPosition(info.pos);setVertexInfo(info);\n#ifdef LIGHT2D_ENABLE\nlightAndShadow(info);\n#endif\ngl_Position=wordpos;}";
 
-    var TileMapFS = "#define SHADER_NAME TileMap2DFS\n#include \"TileMapFragment.glsl\"\nvoid main(){vec4 textureColor=getTextureColor(v_texcoord);\n#ifdef LIGHT2D_ENABLE\nlightAndShadow(textureColor);\n#endif\ngl_FragColor=textureColor*v_color;}";
+    var TileMapFS = "#define SHADER_NAME TileMap2DFS\n#include \"TileMapFragment.glsl\"\nvoid main(){clip();vec4 textureColor=getTextureColor(v_texcoord);vec4 finalColor=textureColor*v_color;\n#ifdef LIGHT2D_ENABLE\nlightAndShadow(finalColor);\n#endif\ngl_FragColor=finalColor;}";
 
     var TileMapCommonGLSL = "varying vec2 v_pos;";
 
-    var TileMapVertexGLSL = "\n#include \"Sprite2DVertex.glsl\";\n#include \"TileMapCommon.glsl\";\nvec2 getVertexPos(){float x=a_cellPosScale.x+a_position.x*a_cellPosScale.z;float y=a_cellPosScale.y+a_position.y*a_cellPosScale.w;return vec2(x,y);}vec2 getVertexUv(){float u=a_cellUVOriScale.z*dot(a_texcoord,a_celluvTrans.xy)+a_cellUVOriScale.x;float v=a_cellUVOriScale.w*dot(a_texcoord,a_celluvTrans.zw)+a_cellUVOriScale.y;return vec2(u,v);}vec4 getVertexColor(){return a_color*a_cellColor;}void getVertexInfoTileMap(inout vertexInfo info){info.pos=getVertexPos();info.color=getVertexColor();info.uv=getVertexUv();\n#ifdef LIGHT2D_ENABLE\nvec2 global;getGlobalPos(info.pos,global);info.lightUV.x=(global.x-u_LightAndShadow2DParam.x)/u_LightAndShadow2DParam.z;info.lightUV.y=1.0-(global.y-u_LightAndShadow2DParam.y)/u_LightAndShadow2DParam.w;\n#endif\n}void getPosition(in vertexInfo info,inout vec4 pos){vec2 a_pos=info.pos;vec2 globalPos;getGlobalPos(a_pos.xy,globalPos);vec2 viewPos;getViewPos(globalPos,viewPos);v_cliped=getClipedInfo(viewPos);getProjectPos(viewPos,pos);}void setVertexInfo(in vertexInfo info){v_texcoord=info.uv;v_color=info.color;v_pos=info.pos;}";
+    var TileMapVertexGLSL = "\n#include \"Sprite2DVertex.glsl\";\n#include \"TileMapCommon.glsl\";\nvec2 getVertexPos(){float x=a_cellPosScale.x+a_position.x*a_cellPosScale.z;float y=a_cellPosScale.y+a_position.y*a_cellPosScale.w;return vec2(x,y);}vec2 getVertexUv(){float u=a_cellUVOriScale.z*dot(a_texcoord,a_celluvTrans.xy)+a_cellUVOriScale.x;float v=a_cellUVOriScale.w*dot(a_texcoord,a_celluvTrans.zw)+a_cellUVOriScale.y;return vec2(u,v);}vec4 getVertexColor(){return a_color*a_cellColor;}void getVertexInfoTileMap(inout vertexInfo info){info.pos=getVertexPos();info.color=getVertexColor();info.uv=getVertexUv();\n#ifdef LIGHT2D_ENABLE\nvec2 global;getGlobalPos(info.pos,global);info.lightUV.x=(global.x-u_LightAndShadow2DParam.x)/u_LightAndShadow2DParam.z;info.lightUV.y=1.0-(global.y-u_LightAndShadow2DParam.y)/u_LightAndShadow2DParam.w;\n#endif\n}void setVertexInfo(in vertexInfo info){v_texcoord=info.uv;v_color=info.color;v_pos=info.pos;}";
 
     var TileMapFragmentGLSL = "#include \"TileMapCommon.glsl\"\n#include \"Sprite2DFrag.glsl\";\nuniform sampler2D u_render2DTexture;vec4 getTextureColor(in vec2 uv){return texture2D(u_render2DTexture,uv);}";
 
@@ -1560,12 +1568,9 @@
     }
 
     class ChunkCellInfo {
-        constructor(cellx, celly, chuckLocalindex, zOrider = 0, cell) {
-            this.chuckLocalindex = chuckLocalindex;
-            this.zOrderValue = zOrider;
-            this.cellx = cellx;
-            this.celly = celly;
-            this.cell = cell;
+        constructor() {
+            this._transFlag = 0;
+            this.updateTransFlag = true;
         }
     }
     class TileMapChunkData {
@@ -1573,12 +1578,13 @@
             this._reCreateRenderData = true;
             this._refGids = [];
             this._dirtyFlags = [];
+            this._transFlags = {};
             this._cellDataMap = {};
             this._chuckCellList = [];
             this._animatorAlterArray = new Map();
+            this._needUpdateRange = true;
             this._cellDataRefMap = [];
             this._tileSize = new Laya.Vector2();
-            this._reCreateRenderData = true;
             this._oriCellIndex = new Laya.Vector2(0, 0);
             this._renderElementArray = [];
             for (let i = 0; i < DIRTY_TYPES; i++)
@@ -1599,7 +1605,7 @@
                 }
             }
             this._cellDataRefMap = data;
-            this._reCreateRenderData = true;
+            this._modifyData();
         }
         get compressData() {
             let out = {};
@@ -1619,7 +1625,20 @@
                 this._refGids.push(gid);
             }
             this._cellDataRefMap = nDdata;
-            this._reCreateRenderData = true;
+            this._modifyData();
+        }
+        get transFlags() {
+            this._transFlags = {};
+            this._chuckCellList.forEach(cell => {
+                this._transFlags[cell.chuckLocalindex] = cell._transFlag;
+            });
+            return this._transFlags;
+        }
+        set transFlags(value) {
+            if (!value)
+                this._transFlags = {};
+            else
+                this._transFlags = value;
         }
         _parseCellDataRefMap() {
             if (this._chuckCellList.length)
@@ -1640,7 +1659,13 @@
                         for (let i = 0, len = localIndexs.length; i < len; i++) {
                             let index = localIndexs[i];
                             chunk._getCellPosByChunkPosAndIndex(0, 0, index, localPos);
-                            let chuckCellInfo = new ChunkCellInfo(localPos.x, localPos.y, index, cellData.z_index, cellData);
+                            let chuckCellInfo = new ChunkCellInfo();
+                            chuckCellInfo.chuckLocalindex = index;
+                            chuckCellInfo.zOrderValue = cellData.z_index;
+                            chuckCellInfo.cellx = localPos.x;
+                            chuckCellInfo.celly = localPos.y;
+                            chuckCellInfo.cell = cellData;
+                            chuckCellInfo._transFlag = this._transFlags[index] || 0;
                             this._cellDataMap[index] = chuckCellInfo;
                             this._chuckCellList.push(chuckCellInfo);
                         }
@@ -1652,7 +1677,7 @@
                     }
                 }
             }
-            this._reCreateRenderData = true;
+            this._modifyData();
         }
         _mergeBuffer(datas, minRange, maxRange) {
             const tempVec2 = Laya.Vector2.TEMP;
@@ -1671,7 +1696,7 @@
                     row = new Map();
                     datas.set(cellY, row);
                 }
-                row.set(cellX, info.cell);
+                row.set(cellX, { cell: info.cell, transFlag: info._transFlag });
             }
         }
         _setBuffer(datas, minRange, maxRange, tileSize) {
@@ -1692,37 +1717,42 @@
                     let data = row.get(i);
                     if (data) {
                         const index = chunk._getChunkIndexByCellPos(i - ocix, j - ociy);
-                        this._setCell(index, data);
+                        this._setCell(index, data.cell, data.transFlag);
                         mark++;
                     }
                 }
             }
-            this._reCreateRenderData = true;
+            this._modifyData();
             return mark;
         }
         _updateChunkData(chunkX, chunkY) {
             this.chunkX = chunkX;
             this.chunkY = chunkY;
             this._tileLayer._chunk._getCellPosByChunkPosAndIndex(chunkX, chunkY, 0, this._oriCellIndex);
+            let tileSet = this._tileLayer.tileSet;
+            if (tileSet) {
+                tileSet.tileSize.cloneTo(this._tileSize);
+                this._gridShape = tileSet.tileShape;
+            }
         }
         _upeateGridData() {
-            if (this._sortMode != this._tileLayer.sortMode) {
-                this._sortMode = this._tileLayer.sortMode;
-                this._reCreateRenderData = true;
-            }
-            let tileSet = this._tileLayer.tileSet;
             if (this._animatorAlterArray.size > 0) {
                 this._animatorAlterArray.forEach((value, key) => {
                     value._updateAnimator();
                 });
             }
+            if (this._sortMode != this._tileLayer.sortMode) {
+                this._sortMode = this._tileLayer.sortMode;
+                this._modifyData();
+            }
+            let tileSet = this._tileLayer.tileSet;
             let tileShape = tileSet.tileShape;
             if (this._gridShape != tileShape) {
                 this._gridShape = tileShape;
                 this._refGids.forEach(gid => {
                     this._setDirtyFlag(gid, exports.TileMapDirtyFlag.CELL_QUAD, exports.DirtyFlagType.RENDER);
                 });
-                this._reCreateRenderData = true;
+                this._modifyData();
             }
             if (!Laya.Vector2.equals(this._tileSize, tileSet.tileSize)) {
                 tileSet.tileSize.cloneTo(this._tileSize);
@@ -1832,11 +1862,12 @@
                                     data[dataoffset + 2] = color.b;
                                     data[dataoffset + 3] = color.a;
                                 }
-                                if ((value & exports.TileMapDirtyFlag.CELL_CHANGE) || (value & exports.TileMapDirtyFlag.CELL_UVTRAN)) {
+                                if (chuckCellinfo.updateTransFlag || (value & exports.TileMapDirtyFlag.CELL_UVTRAN) || (value & exports.TileMapDirtyFlag.CELL_CHANGE)) {
+                                    chuckCellinfo.updateTransFlag = false;
                                     let data = tilemapRenderElementInfo.cacheData[TileMapChunkData.instanceuvTransBufferIndex];
                                     tilemapRenderElementInfo.updateFlag[TileMapChunkData.instanceuvTransBufferIndex] = true;
                                     let dataoffset = chuckCellinfo._cellPosInRenderData * 4;
-                                    let transData = cellData.transData;
+                                    let transData = TileMapUtils.parseTransFlag(this._gridShape, chuckCellinfo._transFlag, cellData);
                                     data[dataoffset] = transData.x;
                                     data[dataoffset + 1] = transData.y;
                                     data[dataoffset + 2] = transData.z;
@@ -1860,7 +1891,7 @@
             }
         }
         _updatePhysicsData() {
-            if (!this._tileLayer.tileMapPhysics.enable || !this._dirtyFlags[exports.DirtyFlagType.PHYSICS].size)
+            if (!this._tileLayer.tileMapPhysics.enable || !this._tileLayer.owner.scene || !this._dirtyFlags[exports.DirtyFlagType.PHYSICS].size)
                 return;
             let physicsLayers = this._tileLayer.tileSet.physicsLayers;
             if (!physicsLayers || !physicsLayers.length)
@@ -1997,6 +2028,7 @@
             }
             let element = TileChunkPool._getTileRenderElement(cellNum);
             let renderElement = element.renderElement;
+            renderElement.owner = this._tileLayer.owner._struct;
             let cachDatas = element.cacheData;
             let instanceColor = cachDatas[TileMapChunkData.instanceColorBufferIndex];
             let instanceposScal = cachDatas[TileMapChunkData.instanceposScalBufferIndex];
@@ -2029,11 +2061,12 @@
                 instanceuvOriScal[dataOffset + 1] = uvOri.y;
                 instanceuvOriScal[dataOffset + 2] = uvextend.x;
                 instanceuvOriScal[dataOffset + 3] = uvextend.y;
-                const transData = curCell.transData;
+                const transData = TileMapUtils.parseTransFlag(this._gridShape, chuckcellInfo._transFlag, cellData);
                 instanceuvTrans[dataOffset] = transData.x;
                 instanceuvTrans[dataOffset + 1] = transData.y;
                 instanceuvTrans[dataOffset + 2] = transData.z;
                 instanceuvTrans[dataOffset + 3] = transData.w;
+                chuckcellInfo.updateTransFlag = false;
             }
             let instanceColorBuffer = TileChunkPool._getVertexBuffer(TileMapShaderInit._tileMapCellColorInstanceDec, instanceColor);
             let instanceposScalBuffer = TileChunkPool._getVertexBuffer(TileMapShaderInit._tileMapCellPosScaleDec, instanceposScal);
@@ -2067,14 +2100,15 @@
             let tileSet = this._tileLayer.tileSet;
             let tiles = datas.tiles;
             let temp = {};
-            for (let i = 0, len = tiles.length; i < len; i += 2) {
+            for (let i = 0, len = tiles.length; i < len; i += 3) {
                 let gid = tiles[i + 1];
+                let transFlag = tiles[i + 2];
                 let celldata = temp[gid];
                 if (!celldata) {
                     celldata = tileSet.getCellDataByGid(gid);
                     temp[gid] = celldata;
                 }
-                this._setCell(tiles[i], celldata);
+                this._setCell(tiles[i], celldata, transFlag);
             }
         }
         _clearnRefTileCellData() {
@@ -2109,7 +2143,7 @@
                 renderElements.push(element.renderElement);
             });
         }
-        _setCell(index, cellData) {
+        _setCell(index, cellData, transFlag) {
             let gid = cellData.gid;
             if (gid < 0)
                 return;
@@ -2123,11 +2157,17 @@
                 let chunk = this._tileLayer._chunk;
                 let localPos = Laya.Vector2.TEMP;
                 chunk._getCellPosByChunkPosAndIndex(0, 0, index, localPos);
-                let chuckCellInfo = new ChunkCellInfo(localPos.x, localPos.y, index, cellData.z_index, cellData);
+                let chuckCellInfo = new ChunkCellInfo();
+                chuckCellInfo.chuckLocalindex = index;
+                chuckCellInfo.zOrderValue = cellData.z_index;
+                chuckCellInfo.cellx = localPos.x;
+                chuckCellInfo.celly = localPos.y;
+                chuckCellInfo.cell = cellData;
+                chuckCellInfo._transFlag = transFlag;
                 this._cellDataRefMap[gid].push(index);
                 this._cellDataMap[index] = chuckCellInfo;
                 this._chuckCellList.push(chuckCellInfo);
-                this._reCreateRenderData = true;
+                this._modifyData();
             }
             else if (chunkCellInfo.cell != cellData) {
                 let oldcell = chunkCellInfo.cell;
@@ -2143,9 +2183,15 @@
                 chunkCellInfo.zOrderValue = cellData.z_index;
                 localIndexArray = this._cellDataRefMap[gid];
                 localIndexArray.push(chunkCellInfo.chuckLocalindex);
+                chunkCellInfo._transFlag = transFlag;
+                chunkCellInfo.updateTransFlag = true;
                 if (this._breakBatch(oldcell, cellData)) {
-                    this._reCreateRenderData = true;
+                    this._modifyData();
                 }
+            }
+            else if (chunkCellInfo._transFlag != transFlag) {
+                chunkCellInfo._transFlag = transFlag;
+                chunkCellInfo.updateTransFlag = true;
             }
             this._setDirtyFlag(gid, exports.TileMapDirtyFlag.CELL_CHANGE);
         }
@@ -2181,6 +2227,79 @@
             }
             this._reCreateRenderData = true;
         }
+        _modifyData() {
+            this._needUpdateRange = true;
+            this._reCreateRenderData = true;
+        }
+        getRange() {
+            if (this._needUpdateRange) {
+                this._range || (this._range = new Laya.Rectangle());
+                this._needUpdateRange = false;
+                this._calculateRange();
+            }
+            return this._range;
+        }
+        _calculateRange() {
+            if (!this._tileSize || this._tileSize.x <= 0 || this._tileSize.y <= 0) {
+                this._range.setTo(0, 0, 0, 0);
+                return;
+            }
+            let chunkMinX = Number.MAX_VALUE, chunkMinY = Number.MAX_VALUE;
+            let chunkMaxX = -Number.MAX_VALUE, chunkMaxY = -Number.MAX_VALUE;
+            let chunkWidth = 0, chunkHeight = 0;
+            if (this._chuckCellList.length > 0) {
+                for (let cellInfo of this._chuckCellList) {
+                    let atlasSize = cellInfo.cell.cellowner.sizeByAtlas;
+                    let halfWidth = atlasSize.x * 0.5;
+                    let halfHeight = atlasSize.y * 0.5;
+                    let minx = cellInfo.cellx - halfWidth;
+                    let miny = cellInfo.celly - halfHeight;
+                    let maxx = cellInfo.cellx + halfWidth;
+                    let maxy = cellInfo.celly + halfHeight;
+                    chunkMinX = Math.min(chunkMinX, minx);
+                    chunkMinY = Math.min(chunkMinY, miny);
+                    chunkMaxX = Math.max(chunkMaxX, maxx);
+                    chunkMaxY = Math.max(chunkMaxY, maxy);
+                }
+                chunkWidth = chunkMaxX - chunkMinX;
+                chunkHeight = chunkMaxY - chunkMinY;
+            }
+            let width = 0, height = 0;
+            switch (this._gridShape) {
+                case exports.TileShape.TILE_SHAPE_SQUARE:
+                    width = chunkWidth * this._tileSize.x;
+                    height = chunkHeight * this._tileSize.y;
+                    break;
+                case exports.TileShape.TILE_SHAPE_ISOMETRIC:
+                    width = chunkWidth * this._tileSize.x;
+                    if (chunkHeight > 1 && chunkHeight % 2 === 1) {
+                        width += 0.5 * this._tileSize.x;
+                    }
+                    height = chunkHeight * this._tileSize.y;
+                    break;
+                case exports.TileShape.TILE_SHAPE_HALF_OFFSET_SQUARE:
+                    width = chunkWidth * this._tileSize.x;
+                    if (chunkHeight > 1 && chunkHeight % 2 === 1) {
+                        width += 0.5 * this._tileSize.x;
+                    }
+                    height = chunkHeight * this._tileSize.y;
+                    break;
+                case exports.TileShape.TILE_SHAPE_HEXAGON:
+                    width = chunkWidth * this._tileSize.x;
+                    if (chunkHeight > 1 && chunkHeight % 2 === 1) {
+                        width += 0.5 * this._tileSize.x;
+                    }
+                    height = chunkHeight * this._tileSize.y;
+                    break;
+                default:
+                    width = chunkWidth * this._tileSize.x;
+                    height = chunkHeight * this._tileSize.y;
+                    break;
+            }
+            let x = (this._oriCellIndex.x + chunkMinX + 0.5) * this._tileSize.x;
+            let y = (this._oriCellIndex.y + chunkMinY + 0.5) * this._tileSize.y;
+            this._range.setTo(x, y, width, height);
+        }
         getCell(index) {
             return this._cellDataMap[index];
         }
@@ -2192,7 +2311,7 @@
             cell._removeNoticeRenderTile(this);
             delete this._cellDataRefMap[gid];
             this._refGids.splice(this._refGids.indexOf(gid), 1);
-            this._reCreateRenderData = true;
+            this._modifyData();
             this._dirtyFlags.forEach(flags => flags.delete(gid));
         }
         _setDirtyFlag(gid, flag, type = exports.DirtyFlagType.ALL) {
@@ -2207,9 +2326,6 @@
                 flags.set(gid, flags.get(gid) | flag);
             }
         }
-        modifyRenderData() {
-            this._reCreateRenderData = true;
-        }
         _forceUpdateDrity(flags) {
             this._cellDataRefMap.forEach((value, gid) => {
                 for (let i = 0, len = DIRTY_TYPES; i < len; i++) {
@@ -2221,7 +2337,7 @@
             this._clearAllChunkCellInfo();
             this._clearnRefTileCellData();
             this._dirtyFlags.forEach(flags => flags.clear());
-            this._reCreateRenderData = true;
+            this._modifyData();
         }
         _destroy() {
             if (this._rigidBody) {
@@ -2779,6 +2895,9 @@
         }
         destroyFixture(rigidBody, fixture) {
             Laya.Laya.physics2D.rigidBody_DestroyShape(rigidBody, fixture);
+        }
+        destroy() {
+            this._rigidBodys = [];
         }
     }
 
@@ -3588,7 +3707,8 @@
                 for (let j = 0; j < length; j++) {
                     let localId = byte.readUint32();
                     let gid = byte.readUint32();
-                    tiles.push(localId, gid);
+                    let transFlag = byte.readUint32();
+                    tiles.push(localId, gid, transFlag);
                 }
                 let chunkInfos = { x, y, length, tiles };
                 chunks.push(chunkInfos);
@@ -3753,6 +3873,7 @@
                     }
                 }
             }
+            this._boundsChange = true;
         }
         get layerColor() {
             return this._layerColor;
@@ -3841,7 +3962,9 @@
             this._renderElements = [];
             this._materials = [];
             this.sortMode = exports.TileLayerSortMode.YSort;
-            this._spriteShaderData.addDefine(Laya.BaseRenderNode2D.SHADERDEFINE_BASERENDER2D);
+        }
+        _isMaterialVaild(value) {
+            return value.checkType(Laya.ShaderFeatureType.Effect);
         }
         _initialTileSet() {
             this._grid._updateTileShape(this._tileSet.tileShape, this._tileSet.tileSize);
@@ -3849,6 +3972,7 @@
             this._grid._updateBufferData();
         }
         _updateChunkData() {
+            var _a;
             const minVec = TempVector2_1;
             minVec.setValue(Number.MAX_VALUE, Number.MAX_VALUE);
             const maxVec = TempVector2_2;
@@ -3891,8 +4015,11 @@
                 }
             }
             allDatas.forEach(data => data._destroy());
+            this._boundsChange = true;
+            (_a = this.owner) === null || _a === void 0 ? void 0 : _a.repaint();
         }
         _updateMapDatas() {
+            var _a;
             if (this._tileMapDatas == null || !this._tileMapDatas.length) {
                 return;
             }
@@ -3903,6 +4030,7 @@
                 data._setRenderData(chunks[i]);
                 this._setLayerDataByPos(data);
             }
+            (_a = this.owner) === null || _a === void 0 ? void 0 : _a.repaint();
         }
         _setLayerDataByPos(tile) {
             const chunkX = tile.chunkX;
@@ -3913,6 +4041,7 @@
                 this._chunkDatas[chunkY] = rowData;
             }
             rowData[chunkX] = tile;
+            this._boundsChange = true;
         }
         _getLayerDataTileByPos(chunkX, chunkY) {
             let rowData = this._chunkDatas[chunkY];
@@ -3926,6 +4055,7 @@
                 data._tileLayer = this;
                 data._updateChunkData(chunkX, chunkY);
                 rowData[chunkX] = data;
+                this._boundsChange = true;
             }
             return data;
         }
@@ -3949,7 +4079,7 @@
         }
         onDestroy() {
             super.onDestroy();
-            this._tileMapPhysics;
+            this._tileMapPhysics.destroy();
             this._tileMapOccluder.destroy();
         }
         _globalChangeHandler() {
@@ -3958,25 +4088,57 @@
         _globalTransfrom() {
             return this.owner.globalTrans.getMatrix();
         }
-        addCMDCall(context, px, py) {
-            let mat = context._curMat;
-            let vec3 = Laya.Vector3.TEMP;
-            vec3.setValue(mat.a, mat.c, px * mat.a + py * mat.c + mat.tx);
-            this._spriteShaderData.setVector3(Laya.BaseRenderNode2D.NMATRIX_0, vec3);
-            vec3.setValue(mat.b, mat.d, px * mat.b + py * mat.d + mat.ty);
-            this._spriteShaderData.setVector3(Laya.BaseRenderNode2D.NMATRIX_1, vec3);
-            this._setRenderSize(context.width, context.height);
-            context._copyClipInfoToShaderData(this._spriteShaderData);
+        addCMDCall(px, py) {
         }
-        preRenderUpdate(context) {
+        get rect() {
+            if (this._boundsChange) {
+                this._calculateLayerRect();
+                this._boundsChange = false;
+            }
+            return this._rect;
+        }
+        _calculateLayerRect() {
+            if (!this._chunkDatas || Object.keys(this._chunkDatas).length === 0) {
+                this._rect.setValue(0, 0, 0, 0);
+                return;
+            }
+            let minX = Number.MAX_VALUE, minY = Number.MAX_VALUE;
+            let maxX = Number.MIN_VALUE, maxY = Number.MIN_VALUE;
+            let hasValidChunk = false;
+            for (const col in this._chunkDatas) {
+                let rowData = this._chunkDatas[col];
+                if (!rowData)
+                    continue;
+                for (const row in rowData) {
+                    let chunkData = rowData[row];
+                    if (!chunkData)
+                        continue;
+                    let chunkRect = chunkData.getRange();
+                    if (chunkRect && chunkRect.width > 0 && chunkRect.height > 0) {
+                        hasValidChunk = true;
+                        minX = Math.min(minX, chunkRect.x);
+                        minY = Math.min(minY, chunkRect.y);
+                        maxX = Math.max(maxX, chunkRect.x + chunkRect.width);
+                        maxY = Math.max(maxY, chunkRect.y + chunkRect.height);
+                    }
+                }
+            }
+            if (hasValidChunk) {
+                this._rect.setValue(minX, minY, maxX, maxY);
+            }
+            else {
+                this._rect.setValue(0, 0, 0, 0);
+            }
+        }
+        renderUpdate(context) {
             let tileSet = this._tileSet;
             if (tileSet == null)
                 return;
             const clipChuckMat = TempMatrix;
             const renderRect = TempRectange;
             let mat = this._globalTransfrom();
-            let scene = this.owner.scene;
-            let camera = scene === null || scene === void 0 ? void 0 : scene._curCamera;
+            let scene = this.owner._ownerArea;
+            let camera = scene === null || scene === void 0 ? void 0 : scene.mainCamera;
             let ofx = 0, ofy = 0;
             if (camera == null) {
                 renderRect.setTo(0, 0, Laya.Laya.stage.width, Laya.Laya.stage.height);
@@ -4010,6 +4172,7 @@
             this._chunk._getChunkPosByPixel(chuckLocalRect.z + tileSize.x, chuckLocalRect.w + tileSize.y, tempVec3);
             let chuckendRow = tempVec3.x;
             let chuckendCol = tempVec3.y;
+            let _needUpdateBounds = false;
             for (let j = chuckstartCol; j <= chuckendCol; j++) {
                 if (!this._chunkDatas[j]) {
                     continue;
@@ -4022,18 +4185,25 @@
                     }
                     this._chunk._getChunkLeftTop(i, j, checkPoint);
                     if (!this._cliper.isClipper(checkPoint.x, checkPoint.y)) {
+                        _needUpdateBounds = _needUpdateBounds || chunkData._needUpdateRange;
                         chunkData._update();
                         chunkData._mergeToElement(this._renderElements);
                     }
                 }
             }
+            this._boundsChange = _needUpdateBounds;
             let needUpdatePhysics = this._tileMapPhysics.enable && this._needUpdateDirtys[exports.DirtyFlagType.PHYSICS];
             if (needUpdatePhysics) {
                 this._tileMapPhysics._updateTransfrom();
                 this._needUpdateDirtys[exports.DirtyFlagType.PHYSICS] = false;
             }
+            this.owner._struct.renderElements = this._renderElements;
         }
-        setCellData(x, y, cellData, isPixel = true) {
+        setCellData(x, y, cellData, isPixel = true, rotateCount = 0, flipH = false, flipV = false, transpose = false) {
+            this._setCellData(x, y, cellData, TileMapUtils.getTransFlag(rotateCount, flipH, flipV, transpose), isPixel);
+        }
+        _setCellData(x, y, cellData, transFlag = 0, isPixel = true) {
+            var _a;
             if (cellData == null)
                 return;
             let tempVec3 = Laya.Vector3.TEMP;
@@ -4044,7 +4214,8 @@
                 this._chunk._getChunkPosByCell(x, y, tempVec3);
             }
             let chunkData = this._getLayerDataTileByPos(tempVec3.x, tempVec3.y);
-            chunkData._setCell(tempVec3.z, cellData);
+            chunkData._setCell(tempVec3.z, cellData, transFlag);
+            (_a = this.owner) === null || _a === void 0 ? void 0 : _a.repaint();
         }
         getCellData(x, y, isPixel = true) {
             let tempVec3 = Laya.Vector3.TEMP;
@@ -4063,6 +4234,7 @@
             return data.getCell(tempVec3.z);
         }
         removeCell(x, y, isPixel = true) {
+            var _a;
             let tempVec3 = Laya.Vector3.TEMP;
             if (isPixel) {
                 this._chunk._getChunkPosByPixel(x, y, tempVec3);
@@ -4072,6 +4244,7 @@
             }
             let chunkData = this._getLayerDataTileByPos(tempVec3.x, tempVec3.y);
             chunkData._removeCell(tempVec3.z);
+            (_a = this.owner) === null || _a === void 0 ? void 0 : _a.repaint();
         }
         pixelToGrid(pixelX, pixelY, out) {
             this._grid._pixelToGrid(pixelX, pixelY, out);

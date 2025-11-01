@@ -27,24 +27,24 @@ export class LayaRepair {
 	}
 
 	private static fixStatUISize() {
-		const prototype = Laya.StatUI.prototype;
-		const oldFunc = prototype["createUI"];
-		prototype["createUI"] = function () {
-			oldFunc.call(this);
-			const sp = <Laya.Sprite>this._sp;
-			const txt1 = sp.getChildAt(0) as Laya.Text;
-			const txt2 = sp.getChildAt(1) as Laya.Text;
-			txt1.fontSize = txt2.fontSize = 30;
-			txt1.singleCharRender = txt2.singleCharRender = false;
+		// const prototype = Laya.StatUI.prototype;
+		// const oldFunc = prototype["createUI"];
+		// prototype["createUI"] = function () {
+		// 	oldFunc.call(this);
+		// 	const sp = <Laya.Sprite>this._sp;
+		// 	const txt1 = sp.getChildAt(0) as Laya.Text;
+		// 	const txt2 = sp.getChildAt(1) as Laya.Text;
+		// 	txt1.fontSize = txt2.fontSize = 30;
+		// 	txt1.singleCharRender = txt2.singleCharRender = false;
 
-			txt2.pos(txt1.textWidth + 20, 5);
+		// 	txt2.pos(txt1.textWidth + 20, 5);
 
-			sp.size(txt1.textWidth + 150, txt1.textHeight + 10);
-			sp.graphics.clear();
-			sp.graphics.alpha(0.5);
-			sp.graphics.drawRect(0, 0, sp.width, sp.height, "#999999");
-			sp.graphics.alpha(2);
-		}
+		// 	sp.size(txt1.textWidth + 150, txt1.textHeight + 10);
+		// 	sp.graphics.clear();
+		// 	sp.graphics.alpha(0.5);
+		// 	sp.graphics.drawRect(0, 0, sp.width, sp.height, "#999999");
+		// 	sp.graphics.alpha(2);
+		// }
 	}
 
 	private static fixTween() {

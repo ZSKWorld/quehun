@@ -29,13 +29,10 @@
         else if (arguments.length < 2) {
             throw new Error("Failed to construct 'ImageData': 2 arguments required, but only " + arguments.length + " present.");
         }
-        let imgdata = Laya.Browser.canvas.getContext("2d").getImageData(0, 0, width, height);
-        for (let i = 0; i < data.length; i += 4) {
-            imgdata.data[i] = data[i];
-            imgdata.data[i + 1] = data[i + 1];
-            imgdata.data[i + 2] = data[i + 2];
-            imgdata.data[i + 3] = data[i + 3];
-        }
+        let imgdata = Laya.Browser.canvas.context.getImageData(0, 0, width, height);
+        let arr = imgdata.data;
+        for (let i = 0, n = data.length; i < n; i++)
+            arr[i] = data[i];
         return imgdata;
     }
     if (!window.ImageData) {
@@ -45,14 +42,11 @@
     const GROUP_COUNT = 5;
     class MgCacheManager {
         constructor(cacheRoot) {
-            this.minClearSpace = (5 * 1024 * 1024);
-            this.spaceLimit = (200 * 1024 * 1024);
-            this.processInterval = 2000;
             this.totalFileSize = 0;
             this.running = false;
             this.lastGroup = -1;
             this.lastGroupUsed = 0;
-            this.toClearAll = false;
+            this.toClear = 0;
             this.cacheRoot = cacheRoot;
             this.fileCache = new Map();
             this.cacheGroups = new Array(GROUP_COUNT);
@@ -63,14 +57,14 @@
         start() {
             this.checkAndDeleteOldCacheDir();
             return this.createCacheDirs().then(() => this.loadAllManifests()).then(() => {
-                Laya.ILaya.systemTimer.loop(this.processInterval, this, this.process);
+                Laya.ILaya.systemTimer.loop(MgCacheManager.processInterval, this, this.process);
             });
         }
         getFile(url) {
             let info = this.fileCache.get(url);
             if (!info)
                 return Promise.resolve(null);
-            info.accessTime = this.toSaveManifestRequest = Laya.Browser.now();
+            info.accessTime = this.toSaveManifestRequest = performance.now();
             this.toSaveManifestFlags[info.group] = true;
             let cacheFilePath = `${this.cacheRoot}/${info.group}/${info.fileName}`;
             return Laya.PAL.fs.exists(cacheFilePath).then(exists => exists ? cacheFilePath : null);
@@ -82,26 +76,25 @@
             });
         }
         clearAllCache() {
-            this.toClearAll = true;
+            this.toClear = 2;
         }
         process() {
             if (this.running)
                 return;
-            if (this.toClearAll) {
+            if (this.toClear != 0) {
                 this.running = true;
-                this.doClearAllCache().then(() => {
-                    this.running = false;
-                    this.toClearAll = false;
-                });
+                this.toClear = 0;
+                if ((this.toClear & 2) !== 0)
+                    this.doClearAllCache().then(() => this.running = false);
+                else
+                    this.clearSpace(0).then(() => this.saveDirtyManifests()).then(() => this.running = false);
                 return;
             }
             if (this.cacheRequest.length === 0) {
-                if (this.toSaveManifestRequest != null && Laya.Browser.now() - this.toSaveManifestRequest > 5000) {
+                if (this.toSaveManifestRequest != null && performance.now() - this.toSaveManifestRequest > MgCacheManager.saveAccessTimeInterval) {
                     this.toSaveManifestRequest = null;
                     this.running = true;
-                    this.saveDirtyManifests().then(() => {
-                        this.running = false;
-                    });
+                    this.saveDirtyManifests().then(() => this.running = false);
                 }
                 return;
             }
@@ -112,8 +105,8 @@
             let needSpace = 0;
             for (let info of files)
                 needSpace += info.size;
-            let toClearSpace = this.totalFileSize + needSpace - this.spaceLimit;
-            (toClearSpace >= 0 ? this.clearSpace(toClearSpace) : Promise.resolve())
+            let toClearSpace = this.totalFileSize + needSpace - MgCacheManager.spaceLimit;
+            this.clearSpace(toClearSpace)
                 .then(() => this.addFilesToCache(files, group))
                 .then(() => this.saveDirtyManifests())
                 .then(() => this.running = false);
@@ -135,15 +128,6 @@
             this.lastGroupUsed = fileCount;
             return j;
         }
-        deleteFile(info) {
-            this.fileCache.delete(info.url);
-            this.totalFileSize -= info.size;
-            this.cacheGroups[info.group]--;
-            let fielName = `${this.cacheRoot}/${info.group}/${info.fileName}`;
-            return Laya.PAL.fs.unlink(fielName).catch(err => {
-                console.error("[Cache]delete cache file", Laya.getErrorMsg(err));
-            });
-        }
         addFilesToCache(files, group) {
             for (let { url, tempFilePath, size } of files) {
                 let info = this.fileCache.get(url);
@@ -151,7 +135,7 @@
                     this.cacheGroups[info.group]--;
                     this.totalFileSize -= info.size;
                     this.fileCache.delete(url);
-                    info.accessTime = Laya.Browser.now();
+                    info.accessTime = performance.now();
                     info.size = size;
                 }
                 else {
@@ -160,40 +144,74 @@
                         url,
                         size,
                         fileName: Laya.Utils.getBaseName(tempFilePath),
-                        accessTime: Laya.Browser.now()
+                        accessTime: performance.now()
                     };
                 }
                 this.fileCache.set(url, info);
                 this.cacheGroups[info.group]++;
                 this.totalFileSize += size;
             }
-            return this.saveManifest(group).then(() => {
+            return this.saveManifest(group).then(success => {
+                if (!success)
+                    return;
                 return Laya.Utils.runTasks(files, 5, ({ url, tempFilePath }) => {
                     let info = this.fileCache.get(url);
                     let saveFilePath = `${this.cacheRoot}/${group}/${info.fileName}`;
                     return Laya.PAL.fs.copyFile(tempFilePath, saveFilePath)
                         .catch(err => {
-                        console.warn("[Cache]create cache file", Laya.getErrorMsg(err));
+                        let msg = Laya.getErrorMsg(err);
+                        console.warn("[Cache]create cache file", msg);
+                        if (msg.indexOf("the maximum size of the file storage") !== -1) {
+                            this.toClear |= 1;
+                        }
                     });
                 });
             });
         }
         clearSpace(sizeToClear) {
-            let t = Laya.Browser.now();
-            sizeToClear += this.minClearSpace;
-            let totalSize = 0;
-            let arr = Array.from(this.fileCache.values());
-            arr.sort((a, b) => a.accessTime - b.accessTime);
+            if (sizeToClear < 0)
+                return Promise.resolve();
+            sizeToClear += MgCacheManager.minClearSpace;
+            let allFiles = Array.from(this.fileCache.values());
+            allFiles.sort((a, b) => a.accessTime - b.accessTime);
+            let t = performance.now();
+            let info = [0, 0];
+            return this.doClearSpace(allFiles, sizeToClear, 0, info).then(() => {
+                console.log(`[Cache]cleared ${info[0]} files/${info[1]} bytes in ${performance.now() - t}ms`);
+            });
+        }
+        doClearSpace(allFiles, sizeToClear, round, outInfo) {
+            let sizeCleared = 0;
             let i = 0;
-            for (let n = arr.length; i < n; i++) {
-                let info = arr[i];
-                totalSize += info.size;
-                this.toSaveManifestFlags[info.group] = true;
-                if (totalSize >= sizeToClear)
+            let n = allFiles.length;
+            for (; i < n; i++) {
+                let info = allFiles[i];
+                sizeCleared += info.size;
+                if (sizeCleared >= sizeToClear)
                     break;
             }
-            return Laya.Utils.runTasks(arr.slice(0, i + 1), 20, (info) => this.deleteFile(info)).then(() => {
-                console.log(`[Cache]cleared ${arr.length} files/${totalSize} bytes in ${Laya.Browser.now() - t}ms`);
+            let arr = allFiles.splice(0, i + 1);
+            sizeCleared = 0;
+            return Laya.Utils.runTasks(arr, 20, (info) => {
+                this.fileCache.delete(info.url);
+                this.totalFileSize -= info.size;
+                this.cacheGroups[info.group]--;
+                this.toSaveManifestFlags[info.group] = true;
+                let fielName = `${this.cacheRoot}/${info.group}/${info.fileName}`;
+                return Laya.PAL.fs.unlink(fielName).then(() => {
+                    sizeCleared += info.size;
+                }).catch(err => {
+                    let msg = Laya.getErrorMsg(err);
+                    if (msg.indexOf("no such file") === -1)
+                        console.error("[Cache]delete cache file", msg);
+                });
+            }).then(() => {
+                outInfo[0] += arr.length;
+                outInfo[1] += sizeCleared;
+                if (sizeCleared < sizeToClear && allFiles.length > 0 && round < 10)
+                    return this.doClearSpace(allFiles, sizeToClear - sizeCleared, ++round, outInfo);
+                else
+                    return null;
             });
         }
         doClearAllCache() {
@@ -284,8 +302,14 @@
             return Laya.PAL.fs.writeFile(`${this.cacheRoot}/manifest-${group}.bin`, bytes.buffer).then(() => {
                 this.toSaveManifestFlags[group] = false;
                 console.log(`[Cache]save manifest-${group} ${fileCnt}(files)/${bytesTotal}(bytes)`);
+                return true;
             }).catch(err => {
-                console.error(`[Cache]save manifest-${group}`, Laya.getErrorMsg(err));
+                let msg = Laya.getErrorMsg(err);
+                console.error(`[Cache]save manifest-${group}`, msg);
+                if (msg.indexOf("the maximum size of the file storage") !== -1) {
+                    this.toClear |= 1;
+                }
+                return false;
             });
         }
         createCacheDirs() {
@@ -315,9 +339,13 @@
             });
         }
     }
+    MgCacheManager.minClearSpace = (5 * 1024 * 1024);
+    MgCacheManager.spaceLimit = (200 * 1024 * 1024);
+    MgCacheManager.processInterval = 2000;
+    MgCacheManager.saveAccessTimeInterval = 15000;
 
     class MgDownloader extends Laya.Downloader {
-        constructor() {
+        constructor(enableCache = true) {
             super();
             this.escapeZhCharsInURL = true;
             this.supportSubPackageMultiLevelFolders = true;
@@ -328,20 +356,23 @@
             };
             if (Laya.Browser.onVVMiniGame || Laya.Browser.onQGMiniGame)
                 this.supportSubPackageMultiLevelFolders = false;
-            if (Laya.Browser.onWXMiniGame)
+            if (Laya.Browser.onWXMiniGame || Laya.Browser.onHWMiniGame)
                 this.escapeZhCharsInURL = false;
-            let cacheRoot;
-            if (Laya.Browser.onVVMiniGame)
-                cacheRoot = "internal://files/layaCache";
-            else
-                cacheRoot = Laya.PAL.g.env.USER_DATA_PATH + "/layaCache";
-            this.cacheManager = new MgCacheManager(cacheRoot);
+            if (enableCache) {
+                let cacheRoot;
+                if (Laya.Browser.onVVMiniGame)
+                    cacheRoot = "internal://files/layaCache";
+                else
+                    cacheRoot = Laya.PAL.g.env.USER_DATA_PATH + "/layaCache";
+                this.cacheManager = new MgCacheManager(cacheRoot);
+            }
         }
         common(owner, url, originalUrl, contentType, onProgress, onComplete) {
             if (!url.startsWith("http://") && !url.startsWith("https://")) {
                 if (contentType === "filePath")
                     onComplete(url);
-                this.readFile(url, contentType, onComplete);
+                else
+                    this.readFile(url, contentType, onComplete);
                 return;
             }
             Promise.resolve().then(() => {
@@ -372,7 +403,7 @@
         }
         image(owner, url, originalUrl, onProgress, onComplete) {
             if (!url.startsWith("http://") && !url.startsWith("https://") || !this.cacheManager) {
-                super.image(owner, url, originalUrl, onProgress, onComplete);
+                super.image(owner, this.escapeURL(url), originalUrl, onProgress, onComplete);
                 return;
             }
             this.cacheManager.getFile(url).then(cacheFilePath => {
@@ -398,16 +429,22 @@
                     this.subPackages[path] = packageName;
                 }
             }
-            let loadTask = Laya.PAL.g.loadSubpackage({
-                name: packageName,
+            let loadSubpackageParams = {
                 success: () => {
-                    onComplete(null);
+                    onComplete({ loadScript: false });
                 },
-                fail: err => {
-                    onComplete(null, Laya.getErrorMsg(err));
+                fail: (err) => {
+                    onComplete({ loadScript: false }, Laya.getErrorMsg(err));
                 },
                 complete: null
-            });
+            };
+            if (Laya.Browser.onHWMiniGame) {
+                loadSubpackageParams.subpackage = packageName;
+            }
+            else {
+                loadSubpackageParams.name = packageName;
+            }
+            let loadTask = Laya.PAL.g.loadSubpackage(loadSubpackageParams);
             onProgress && loadTask.onProgressUpdate && loadTask.onProgressUpdate(res => onProgress(res.progress));
         }
         downloadFile(url, onProgress, onComplete) {
@@ -434,7 +471,7 @@
         }
         readFile(url, contentType, onComplete) {
             let filePath = this.urlToFilePath(url);
-            Laya.PAL.fs.readFile(filePath, contentType === "arraybuffer" ? "" : "utf8").then(data => {
+            Laya.PAL.fs.readFile(filePath, contentType === "arraybuffer" ? null : "utf8").then(data => {
                 switch (contentType) {
                     case "json":
                         onComplete(JSON.parse(data));
@@ -533,7 +570,8 @@
     class MgBrowserAdapter extends Laya.BrowserAdapter {
         constructor() {
             super(...arguments);
-            this.webSocketClass = MgWebSocket;
+            this._visible = true;
+            this._orientation = "portrait-primary";
         }
         init() {
             var _a;
@@ -546,14 +584,20 @@
             }
             Laya.Browser.isDomSupported = false;
             (_a = MgBrowserAdapter.beforeInit) === null || _a === void 0 ? void 0 : _a.call(MgBrowserAdapter);
+            this._supportSetCursor = Laya.PAL.hasAPI("setCursor");
+            this._supportCreateArrayBufferURL = Laya.PAL.hasAPI("createBufferURL");
+            if (Laya.PAL.hasAPI("connectSocket"))
+                this.webSocketClass = MgWebSocket;
+            else
+                this.webSocketClass = null;
             let platform = "";
-            if (Laya.PAL.g.getSystemInfoSync) {
-                let systemInfo = Laya.PAL.g.getSystemInfoSync();
+            let systemInfo = Laya.PAL.hasAPI("getSystemInfoSync") ? Laya.PAL.g.getSystemInfoSync() : null;
+            if (systemInfo) {
                 this._pixelRatio = systemInfo.pixelRatio;
                 this._orientation = systemInfo.deviceOrientation === "landscape" ? "landscape-primary" : "portrait-primary";
                 platform = systemInfo.platform || "";
             }
-            else if (Laya.PAL.g.getWindowInfo) {
+            else if (Laya.PAL.hasAPI("getWindowInfo")) {
                 let windowInfo = Laya.PAL.g.getWindowInfo();
                 this._pixelRatio = windowInfo.pixelRatio;
                 if (Laya.PAL.g.getDeviceInfo) {
@@ -565,15 +609,21 @@
                 this._pixelRatio = window.devicePixelRatio;
             }
             this.setPlatform("", platform);
-            const { SDKVersion } = Laya.PAL.g.getAppBaseInfo ? Laya.PAL.g.getAppBaseInfo() : Laya.PAL.g.getSystemInfoSync();
+            systemInfo = systemInfo || {};
+            const { SDKVersion } = Laya.PAL.hasAPI("getAppBaseInfo") ? Laya.PAL.g.getAppBaseInfo() : systemInfo;
             Laya.Browser.SDKVersion = SDKVersion || "";
-            const { system } = Laya.PAL.g.getDeviceInfo ? Laya.PAL.g.getDeviceInfo() : Laya.PAL.g.getSystemInfoSync();
+            const { system } = Laya.PAL.hasAPI("getDeviceInfo") ? Laya.PAL.g.getDeviceInfo() : systemInfo;
             const systemVersionArr = system ? system.split(' ') : [];
             Laya.Browser.systemVersion = systemVersionArr.length ? systemVersionArr[systemVersionArr.length - 1] : '';
             Laya.TextRenderConfig.useImageData = false;
             if (Laya.Browser.platform === Laya.Browser.PLATFORM_IOS && Laya.Utils.compareVersion(Laya.Browser.systemVersion, "10.1.1") === 0)
                 Laya.TextRenderConfig.useImageData = true;
-            this._visible = true;
+            if (Laya.Browser.onHWMiniGame && !Laya.WebGLEngine) {
+                Laya.TextRenderConfig.useImageData = true;
+            }
+            if (Laya.Browser.onHWMiniGame) {
+                this._pixelRatio = 1;
+            }
             Laya.PAL.g.onShow(() => {
                 this._visible = true;
                 this.event(Laya.Event.VISIBILITY_CHANGE, true);
@@ -584,7 +634,7 @@
                 this.event(Laya.Event.VISIBILITY_CHANGE, false);
                 this.event(Laya.Event.BLUR);
             });
-            if (Laya.PAL.g.onWindowResize) {
+            if (Laya.PAL.hasAPI("onWindowResize")) {
                 Laya.PAL.g.onWindowResize(result => {
                     this.event(Laya.Event.RESIZE);
                 });
@@ -592,10 +642,13 @@
         }
         start() {
             var _a;
-            let downloader = Laya.Loader.downloader = new MgDownloader();
+            let downloader = Laya.Loader.downloader = new MgDownloader(Laya.PAL.hasAPI("getFileSystemManager") && Laya.PAL.hasAPI(Laya.PAL.g.getFileSystemManager(), "writeFile"));
             this.setupWasmSupport();
             (_a = MgBrowserAdapter.afterInit) === null || _a === void 0 ? void 0 : _a.call(MgBrowserAdapter);
-            return downloader.cacheManager.start();
+            if (downloader.cacheManager)
+                return downloader.cacheManager.start();
+            else
+                return Promise.resolve();
         }
         onInitRender() {
             if (Laya.Browser.onAlipayMiniGame || Laya.Browser.onTBMiniGame) {
@@ -607,6 +660,9 @@
                     gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
                 }
             }
+            if (Laya.Browser.onHWMiniGame) {
+                Laya.LayaGL.textureContext.needBitmap = false;
+            }
         }
         setupWasmSupport() {
             let wasmGlobal;
@@ -616,18 +672,22 @@
                 wasmGlobal = window.MYWebAssembly;
             else if (Laya.Browser.onTTMiniGame)
                 wasmGlobal = window.TTWebAssembly;
+            else if (Laya.Browser.onHWMiniGame)
+                wasmGlobal = window.qg;
             if (wasmGlobal) {
                 if (!window.WebAssembly)
                     window.WebAssembly = {};
                 Laya.WasmAdapter.Memory = wasmGlobal.Memory;
                 Laya.WasmAdapter.instantiateWasm = (wasmFile, imports) => {
-                    return wasmGlobal.instantiate((Laya.PlayerConfig.wasmSubpackage || "libs") + "/" + wasmFile, imports);
+                    wasmFile = Laya.WasmAdapter.locateFileDefault(wasmFile);
+                    return wasmGlobal.instantiate(wasmFile, imports);
                 };
             }
             else if (window.WebAssembly) {
                 let shouldInit = Laya.PAL.g.setWasmTaskCompile != null;
                 Laya.WasmAdapter.instantiateWasm = (wasmFile, imports) => {
-                    return Laya.Laya.loader.fetch((Laya.PlayerConfig.wasmSubpackage || "libs") + "/" + wasmFile, "arraybuffer").then(data => {
+                    wasmFile = Laya.WasmAdapter.locateFileDefault(wasmFile);
+                    return Laya.Laya.loader.fetch(wasmFile, "arraybuffer").then(data => {
                         if (data) {
                             if (shouldInit) {
                                 shouldInit = false;
@@ -671,7 +731,7 @@
             return ele;
         }
         setCursor(cursor) {
-            if (!Laya.PAL.g.setCursor)
+            if (!this._supportSetCursor)
                 return;
             let arr = cursor.split(" ");
             let x = arr[1] ? parseInt(arr[1].trim()) : 0;
@@ -687,7 +747,7 @@
             Laya.PAL.g.setCursor(arr[0], x, y);
         }
         get supportArrayBufferURL() {
-            return Laya.PAL.g.createBufferURL != null && Laya.PAL.g.revokeBufferURL != null;
+            return this._supportCreateArrayBufferURL;
         }
         createBufferURL(data) {
             return Laya.PAL.g.createBufferURL(data);
@@ -704,13 +764,13 @@
         }
         onCaptureGlobalError(enabled, func) {
             if (enabled) {
-                if (Laya.PAL.g.onError)
+                if (Laya.PAL.hasAPI("onError"))
                     Laya.PAL.g.onError(func);
                 if (Laya.PAL.g.onUnhandledRejection)
                     Laya.PAL.g.onUnhandledRejection(func);
             }
             else {
-                if (Laya.PAL.g.offError)
+                if (Laya.PAL.hasAPI("offError"))
                     Laya.PAL.g.offError(func);
                 if (Laya.PAL.g.offUnhandledRejection)
                     Laya.PAL.g.offUnhandledRejection(func);
@@ -746,7 +806,7 @@
                         successCallback({
                             latitude: res.latitude,
                             longitude: res.longitude,
-                            timestamp: Date.now()
+                            timestamp: performance.now()
                         });
                     },
                     fail: (err) => {
@@ -763,7 +823,7 @@
                             speed: res.speed,
                             altitude: res.altitude,
                             accuracy: res.accuracy,
-                            timestamp: Date.now()
+                            timestamp: performance.now()
                         });
                     },
                     fail: (err) => {
@@ -816,14 +876,14 @@
             super();
             this.hasAccess = false;
             this.fs = Laya.PAL.g.getFileSystemManager();
-            this.hasAccess = typeof (this.fs.access) === "function";
+            this.hasAccess = Laya.PAL.hasAPI(this.fs, "access");
         }
         readFile(path, encoding) {
             return new Promise((resolve, reject) => {
                 var _a;
                 this.fs.readFile({
                     filePath: path,
-                    encoding: (_a = encoding) !== null && _a !== void 0 ? _a : "",
+                    encoding: (_a = encoding) !== null && _a !== void 0 ? _a : undefined,
                     success: (res) => resolve(res.data),
                     fail: (err) => reject(err)
                 });
@@ -831,10 +891,11 @@
         }
         writeFile(path, data, encoding) {
             return new Promise((resolve, reject) => {
+                var _a;
                 this.fs.writeFile({
                     filePath: path,
                     data: data,
-                    encoding: encoding,
+                    encoding: (_a = encoding) !== null && _a !== void 0 ? _a : undefined,
                     success: () => resolve(),
                     fail: (err) => reject(err)
                 });
@@ -1012,7 +1073,8 @@
             return Laya.PAL.g.createInnerAudioContext();
         }
         releaseContext() {
-            this._ctx.destroy();
+            var _a;
+            (_a = this._ctx) === null || _a === void 0 ? void 0 : _a.destroy();
             this._ctx = null;
         }
     }
@@ -1118,21 +1180,33 @@
                 this.audioCtx = Laya.PAL.g.getAudioContext();
             this.longAudioClass = MgInnerAudioChannel;
             this.shortAudioClass = MgWebAudioChannel;
-            this.videoPlayerClass = Laya.PAL.g.createVideo ? MgVideoPlayer : null;
+            this.videoPlayerClass = Laya.PAL.hasAPI("createVideo") ? MgVideoPlayer : null;
             this.videoTextureClass = null;
         }
     }
     Laya.PAL.register("media", MgMediaAdapter);
 
+    class MgStorageAdapter extends Laya.StorageAdapter {
+        checkSupport() {
+            return Laya.PAL.hasAPI("getStorageInfoSync");
+        }
+    }
+    Laya.PAL.register("storage", MgStorageAdapter);
+
     class MgTextInputAdapter extends Laya.TextInputAdapter {
         constructor() {
             super();
             this._editInline = false;
-            Laya.PAL.g.onKeyboardInput(this.onKeyboardInput.bind(this));
-            Laya.PAL.g.onKeyboardConfirm(this.onKeyboardConfirm.bind(this));
-            Laya.PAL.g.onKeyboardComplete(this.onKeyboardComplete.bind(this));
+            MgTextInputAdapter.enabled = Laya.PAL.hasAPI("onKeyboardInput");
+            if (MgTextInputAdapter.enabled) {
+                Laya.PAL.g.onKeyboardInput(this.onKeyboardInput.bind(this));
+                Laya.PAL.g.onKeyboardConfirm(this.onKeyboardConfirm.bind(this));
+                Laya.PAL.g.onKeyboardComplete(this.onKeyboardComplete.bind(this));
+            }
         }
         setText(value) {
+            if (!MgTextInputAdapter.enabled)
+                return;
             Laya.PAL.g.updateKeyboard({ value });
         }
         onBegin() {
@@ -1140,7 +1214,7 @@
         }
         onCanShowKeyboard() {
             let target = this.target;
-            if (!target.editable)
+            if (!target.editable || !MgTextInputAdapter.enabled)
                 return Promise.resolve();
             return new Promise((resolve, reject) => {
                 Laya.PAL.g.showKeyboard({
@@ -1149,13 +1223,14 @@
                     multiple: target.multiline,
                     confirmHold: true,
                     confirmType: target.confirmType,
+                    keyboardType: 'text',
                     success: resolve,
                     fail: reject
                 });
             });
         }
         onEnd(target, complete, switching) {
-            if (complete || switching)
+            if (complete || switching || !MgTextInputAdapter.enabled)
                 return Promise.resolve();
             return new Promise((resolve, reject) => {
                 Laya.PAL.g.hideKeyboard({ success: resolve, fail: reject });
@@ -1177,6 +1252,7 @@
             this.end(true);
         }
     }
+    MgTextInputAdapter.enabled = true;
     Laya.PAL.register("textInput", MgTextInputAdapter);
 
     class TbTextInputAdapter extends Laya.TextInputAdapter {
@@ -1233,6 +1309,7 @@
     exports.MgFontAdapter = MgFontAdapter;
     exports.MgInnerAudioChannel = MgInnerAudioChannel;
     exports.MgMediaAdapter = MgMediaAdapter;
+    exports.MgStorageAdapter = MgStorageAdapter;
     exports.MgTextInputAdapter = MgTextInputAdapter;
     exports.MgVideoPlayer = MgVideoPlayer;
     exports.MgWebAudioChannel = MgWebAudioChannel;

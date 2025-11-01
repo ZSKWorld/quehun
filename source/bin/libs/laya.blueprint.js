@@ -323,6 +323,18 @@
                     name: "then1",
                     type: "exec",
                 },
+                {
+                    name: "then2",
+                    type: "exec",
+                },
+                {
+                    name: "then3",
+                    type: "exec",
+                },
+                {
+                    name: "then4",
+                    type: "exec",
+                },
             ]
         },
         {
@@ -519,6 +531,198 @@
             ]
         },
         {
+            name: "equal",
+            type: exports.BPType.Pure,
+            menuPath: "system",
+            modifiers: {
+                isStatic: true,
+            },
+            properties: [
+                {
+                    name: "a",
+                    type: "any",
+                },
+                {
+                    name: "b",
+                    type: "any",
+                }
+            ],
+            output: [
+                {
+                    name: "result",
+                    type: "boolean",
+                }
+            ]
+        },
+        {
+            name: "and",
+            type: exports.BPType.Pure,
+            menuPath: "system",
+            modifiers: {
+                isStatic: true,
+            },
+            properties: [
+                {
+                    name: "a",
+                    type: "any",
+                },
+                {
+                    name: "b",
+                    type: "any",
+                }
+            ],
+            output: [
+                {
+                    name: "result",
+                    type: "boolean",
+                }
+            ]
+        },
+        {
+            name: "or",
+            type: exports.BPType.Pure,
+            menuPath: "system",
+            modifiers: {
+                isStatic: true,
+            },
+            properties: [
+                {
+                    name: "a",
+                    type: "any",
+                },
+                {
+                    name: "b",
+                    type: "any",
+                }
+            ],
+            output: [
+                {
+                    name: "result",
+                    type: "boolean",
+                }
+            ]
+        },
+        {
+            name: "not",
+            type: exports.BPType.Pure,
+            menuPath: "system",
+            modifiers: {
+                isStatic: true,
+            },
+            properties: [
+                {
+                    name: "a",
+                    type: "any",
+                },
+            ],
+            output: [
+                {
+                    name: "result",
+                    type: "boolean",
+                }
+            ]
+        },
+        {
+            name: "isUndefined",
+            type: exports.BPType.Pure,
+            menuPath: "system",
+            modifiers: {
+                isStatic: true,
+            },
+            properties: [
+                {
+                    name: "obj",
+                    type: "any",
+                },
+            ],
+            output: [
+                {
+                    name: "result",
+                    type: "boolean",
+                }
+            ]
+        },
+        {
+            name: "isNull",
+            type: exports.BPType.Pure,
+            menuPath: "system",
+            modifiers: {
+                isStatic: true,
+            },
+            properties: [
+                {
+                    name: "obj",
+                    type: "any",
+                },
+            ],
+            output: [
+                {
+                    name: "result",
+                    type: "boolean",
+                }
+            ]
+        },
+        {
+            name: "toString",
+            type: exports.BPType.Pure,
+            menuPath: "system",
+            modifiers: {
+                isStatic: true,
+            },
+            properties: [
+                {
+                    name: "obj",
+                    type: "any",
+                },
+            ],
+            output: [
+                {
+                    name: "result",
+                    type: "string",
+                }
+            ]
+        },
+        {
+            name: "toNumber",
+            type: exports.BPType.Pure,
+            menuPath: "system",
+            modifiers: {
+                isStatic: true,
+            },
+            properties: [
+                {
+                    name: "obj",
+                    type: "any",
+                },
+            ],
+            output: [
+                {
+                    name: "result",
+                    type: "number",
+                }
+            ]
+        },
+        {
+            name: "toBoolean",
+            type: exports.BPType.Pure,
+            menuPath: "system",
+            modifiers: {
+                isStatic: true,
+            },
+            properties: [
+                {
+                    name: "obj",
+                    type: "any",
+                },
+            ],
+            output: [
+                {
+                    name: "result",
+                    type: "boolean",
+                }
+            ]
+        },
+        {
             name: "forEach",
             type: exports.BPType.Block,
             menuPath: "system",
@@ -709,7 +913,7 @@
                     }
                 }
                 index = type.indexOf("[]");
-                if (0 <= index) {
+                if (0 <= index && type.indexOf("new(") < 0) {
                     return [type.substring(0, index)];
                 }
             }
@@ -726,6 +930,8 @@
             let list = BlueprintDataList;
             for (let i = list.length - 1; i >= 0; i--) {
                 let o = list[i];
+                if (null == o)
+                    continue;
                 if (null == o.id)
                     o.id = o.name;
                 if (null == o.bpType)
@@ -829,6 +1035,9 @@
             return null;
         }
         _getConstData(cid, target) {
+            if (("construct" == cid || cid.startsWith("construct_")) && target) {
+                cid = "construct_" + target;
+            }
             if (null == cid)
                 return null;
             if (null == target)
@@ -864,6 +1073,17 @@
                     let obj = _a.allDataMap.get(node.target);
                     if (obj) {
                         data = obj[node.dataId];
+                        if (!data) {
+                            let dataId = node.dataId;
+                            let findIndex = dataId.lastIndexOf("_");
+                            if (findIndex === dataId.length - 1) {
+                                dataId = dataId.substring(0, findIndex);
+                                data = obj[dataId];
+                                if (data) {
+                                    node.dataId = dataId;
+                                }
+                            }
+                        }
                     }
                 }
                 if (null == data) {
@@ -955,6 +1175,40 @@
             }
             arr.push(obj);
         }
+        _checkOverrideProp(o, overObj, property, ext) {
+            let arr = o[property];
+            const overArr = overObj[property];
+            if (overArr) {
+                if (null == arr) {
+                    arr = [];
+                    o[property] = arr;
+                }
+                for (let i = overArr.length; i--;) {
+                    const item = overArr[i];
+                    let isFind = false;
+                    for (let j = arr.length; j--;) {
+                        if (arr[j].name == item.name) {
+                            isFind = true;
+                            break;
+                        }
+                    }
+                    if (!isFind) {
+                        arr.push(Object.assign({}, item, { target: ext }));
+                    }
+                }
+            }
+        }
+        _initObject(o, ext, data) {
+            if (!ext)
+                return;
+            const extObj = data[ext];
+            if (extObj) {
+                this._checkOverrideProp(o, extObj, "funcs", ext);
+                this._checkOverrideProp(o, extObj, "props", ext);
+                this._checkOverrideProp(o, extObj, "events", ext);
+                this._initObject(o, extObj.extends, data);
+            }
+        }
         _createExtData(data, ext, cls) {
             if (this._getClass) {
                 cls = this._getClass(ext);
@@ -975,6 +1229,9 @@
                     this.constData[ext] = { data: {} };
                 }
                 return this.constData[ext];
+            }
+            else {
+                this._initObject(o, ext, data);
             }
             let exts = o.extends;
             if (exts) {
@@ -1013,6 +1270,11 @@
             if (o && "Interface" === o.type && (!o.funcs || 0 === o.funcs.length)) {
                 o.construct = {
                     params: o.props
+                };
+            }
+            if (!o.construct) {
+                o.construct = {
+                    params: []
                 };
             }
             if (o === null || o === void 0 ? void 0 : o.construct) {
@@ -1060,6 +1322,7 @@
                     if (modifiers.isPublic == null || modifiers.isPublic || modifiers.isProtected) {
                         let po = _a.createCData(fun);
                         po.target = ext;
+                        po.isAsync = fun.returnType && fun.returnType.indexOf("Promise<") !== -1;
                         if (this._regFunction && cls) {
                             let func = modifiers.isStatic ? cls[fun.name] : cls.prototype[fun.name];
                             this._regFunction(po.id, func, !modifiers.isStatic, cls, po.target);
@@ -1107,6 +1370,11 @@
             if (null == data.caption)
                 data.caption = data.name;
             data.name = ext;
+            if (null == data.construct) {
+                data.construct = {
+                    params: []
+                };
+            }
             delete this.constData[ext];
             delete this._extendsData[ext];
             this._extendsData[ext] = data;
@@ -1119,15 +1387,12 @@
             for (let ext in data) {
                 const setData = data[ext];
                 this._extendsData[ext] = setData;
-                let cls = null;
                 let isGetClass = true;
                 if (setData && "Interface" === setData.type && (!setData.funcs || 0 === setData.funcs.length)) {
                     isGetClass = false;
                 }
                 if (this._getClass && isGetClass) {
-                    cls = this._getClass(ext);
-                    if (!cls)
-                        continue;
+                    this._getClass(ext);
                 }
                 this._createExtData(data, ext, null);
             }
@@ -1388,6 +1653,15 @@
             this.onParseLinkData(node, manager);
             this._checkTarget(node);
             if (node.inputValue) {
+                if (node.cid === "set" && null == node.inputValue.set) {
+                    const data = BlueprintUtil.getConstDataById(node.target, node.dataId);
+                    if (data && Array.isArray(data.type)) {
+                        node.inputValue.set = [];
+                    }
+                    else {
+                        node.inputValue.set = {};
+                    }
+                }
                 for (const key in node.inputValue) {
                     let pin = this.getPinByName(key);
                     if (!pin) {
@@ -1405,17 +1679,29 @@
                                 pin.value = BlueprintUtil.getResByUUID(value);
                                 break;
                             default:
-                                let result = Laya.SerializeUtil.decodeObj(value);
-                                if (null == result) {
-                                    const item = this.getPropertyItem(key);
-                                    if (item && "string" === typeof item.type) {
-                                        const cls = Laya.ClassUtils.getClass(item.type);
+                                let result = null;
+                                if ("set" === key && node.dataId) {
+                                    const data = BlueprintUtil.getConstDataById(node.target, node.dataId);
+                                    if (data && "string" === typeof data.type) {
+                                        const cls = Laya.ClassUtils.getClass(data.type);
                                         if (cls) {
                                             result = Laya.SerializeUtil.decodeObj(value, new cls());
                                         }
                                     }
-                                    if (null == result)
-                                        result = value;
+                                }
+                                if (null == result) {
+                                    result = Laya.SerializeUtil.decodeObj(value);
+                                    if (null == result) {
+                                        const item = this.getPropertyItem(key);
+                                        if (item && "string" === typeof item.type) {
+                                            const cls = Laya.ClassUtils.getClass(item.type);
+                                            if (cls) {
+                                                result = Laya.SerializeUtil.decodeObj(value, new cls());
+                                            }
+                                        }
+                                        if (null == result)
+                                            result = value;
+                                    }
                                 }
                                 pin.value = result;
                                 break;
@@ -1653,6 +1939,7 @@
                 let caller = null;
                 if (this.isMember) {
                     let temp = _parmsArray.shift();
+                    this.checkTarget(temp);
                     caller = temp === undefined ? context.getSelf() : temp;
                 }
                 let result = this.executeFun(context, runtimeDataMgr, runner, caller, _parmsArray, runId, fromPin);
@@ -1677,6 +1964,14 @@
                 context.endExecute(this);
             }
             return this.next(context, runtimeDataMgr, _parmsArray, runner, true, runId, fromPin);
+        }
+        checkTarget(temp) {
+            if (temp === undefined) {
+                let pin = this.inPutParmPins.filter(pin => pin.nid == "-2" && pin.linkTo.length > 0)[0];
+                if (pin) {
+                    throw new Error(`target of '${this.name}' is null`);
+                }
+            }
         }
         next(context, runtimeDataMgr, parmsArray, runner, enableDebugPause, runId, fromPin) {
             return null;
@@ -1838,7 +2133,7 @@
             let c = function (node) {
                 let ret = BlueprintUtil.getConstNode(node);
                 if (null == ret && preload && node.target && !preload.includes(node.target)) {
-                    console.warn(`Missing blueprint data: ${node.target}`);
+                    console.warn(`Missing blueprint data: ${node.target} ${node.cid}`);
                 }
                 return ret;
             };
@@ -2462,9 +2757,6 @@
         static switchFun(outExecutes, input) {
             return outExecutes.find((item) => item.nid == input) || outExecutes.find((item) => item.nid == "default");
         }
-        static print(str) {
-            console.log(str);
-        }
         static getTempVar(name, runtimeDataMgr, runId) {
             return runtimeDataMgr.getVar(name, runId);
         }
@@ -2502,16 +2794,6 @@
                 }
             }
             return value;
-        }
-        static waitTime(second) {
-            return new Promise((resolve, rejects) => {
-                setTimeout(() => {
-                    resolve(true);
-                }, second * 1000);
-            });
-        }
-        static add(a, b) {
-            return a + b;
         }
         static expression() {
             return true;
@@ -2604,10 +2886,31 @@
                 return outExecutes[1].execute(context, runtimeDataMgr, runner, runId);
             }
         }
+        static print(str) {
+            console.log(str);
+        }
+        static waitTime(second) {
+            return new Promise((resolve, rejects) => {
+                setTimeout(() => {
+                    resolve(true);
+                }, second * 1000);
+            });
+        }
+        static sleep(time) {
+            return new Promise((resolve, rejects) => {
+                setTimeout(() => {
+                    resolve();
+                }, time);
+            });
+        }
         static runExpress(express, a, b, c) {
             let expressTree = ExpressParse.instance.parse(express);
             let context = { a: a, b: b, c: c, Math: Math };
             return expressTree.call(context);
+        }
+        static destroy(obj) {
+            if (obj)
+                obj.destroy();
         }
     }
     var ERunStat;
@@ -2702,6 +3005,10 @@
         executeFun(context, runtimeDataMgr, runner, caller, parmsArray, runId, fromPin) {
             if (caller && this.type == exports.BPType.Function) {
                 this.nativeFun = caller[this.name];
+            }
+            if (!this.nativeFun) {
+                console.warn(`failed to call '${this.name}'`);
+                return null;
             }
             return context.executeFun(this.nativeFun, this.returnValue, runtimeDataMgr, caller, parmsArray, runId);
         }
@@ -2999,6 +3306,7 @@
             let cfg = BlueprintUtil.getConstDataById(node.target, String(node.dataId));
             if (cfg) {
                 this._varKey = cfg.name;
+                this.name = this._varKey;
             }
         }
         step(context, runtimeDataMgr, fromExecute, runner, enableDebugPause, runId, fromPin, prePin) {
@@ -3006,6 +3314,7 @@
             context.parmFromCustom(_parmsArray, this._varKey, '"' + this._varKey + '"');
             context.parmFromCustom(_parmsArray, context, "context");
             if (this.nativeFun) {
+                this.checkTarget(_parmsArray[0]);
                 let result = context.executeFun(this.nativeFun, this.returnValue, runtimeDataMgr, BlueprintStaticFun, _parmsArray, runId);
                 if (result == undefined) {
                     runtimeDataMgr.setPinData(this.outPutParmPins[0], result, runId);
@@ -3129,12 +3438,14 @@
         onParseLinkData(node, manager) {
             let cfg = manager.dataMap[String(node.dataId)];
             this._varKey = cfg ? cfg.name : BlueprintUtil.getConstDataById(node.target, String(node.dataId)).name;
+            this.name = this._varKey;
         }
         step(context, runtimeDataMgr, fromExecute, runner, enableDebugPause, runId, fromPin, prePin) {
             let _parmsArray = this.collectParam(context, runtimeDataMgr, this.inPutParmPins, runner, runId, prePin);
             context.parmFromCustom(_parmsArray, this._varKey, '"' + this._varKey + '"');
             context.parmFromCustom(_parmsArray, context, "context");
             if (this.nativeFun) {
+                this.checkTarget(_parmsArray[0]);
                 context.executeFun(this.nativeFun, this.returnValue, runtimeDataMgr, BlueprintFunNode, _parmsArray, runId);
             }
             return this.next();
@@ -3758,20 +4069,30 @@
             }
         }
         onEventParse(eventName) {
-            let cls = this.cls;
-            let originFunc = cls.prototype[eventName];
+            let originFunc = this.cls.prototype[eventName];
             let _this = this;
-            cls.prototype[eventName] = function (...args) {
-                _this._onEventParse(eventName, originFunc, this, ...args);
+            this.cls.prototype[eventName] = function (...args) {
+                var _a;
+                const funcContext = this[BlueprintFactory.contextSymbol];
+                if ((_a = funcContext.debuggerManager) === null || _a === void 0 ? void 0 : _a.debugging)
+                    return null;
+                const eventNode = _this.eventMap.get(eventName);
+                if (eventNode.def.isAsync) {
+                    let p;
+                    if (originFunc)
+                        p = Promise.resolve(originFunc.apply(this, args));
+                    else
+                        p = Promise.resolve();
+                    return p.then(() => new Promise((resolve) => {
+                        this[BlueprintFactory.bpSymbol].run(funcContext, eventNode, args, resolve);
+                    }));
+                }
+                else {
+                    originFunc && originFunc.apply(this, args);
+                    this[BlueprintFactory.bpSymbol].run(funcContext, eventNode, args, null);
+                    return null;
+                }
             };
-        }
-        _onEventParse(...args) {
-            const eventName = args.shift();
-            const originFunc = args.shift();
-            const caller = args.shift();
-            const funcContext = caller[BlueprintFactory.contextSymbol];
-            originFunc && originFunc.apply(caller, args);
-            caller[BlueprintFactory.bpSymbol].run(funcContext, this.eventMap.get(eventName), args, null);
         }
         append(node, item) {
             super.append(node, item);
@@ -3907,9 +4228,13 @@
             const dy = y2 - y1;
             return Math.sqrt(dx * dx + dy * dy);
         }
-        static round(value, decimals = 0) {
-            const factor = Math.pow(10, decimals);
-            return Math.round(value * factor) / factor;
+        static round(value, decimals) {
+            if (decimals > 0) {
+                const factor = Math.pow(10, decimals);
+                return Math.round(value * factor) / factor;
+            }
+            else
+                return Math.round(value);
         }
         static floor(value) {
             return Math.floor(value);
@@ -3926,8 +4251,10 @@
         static max(a, b) {
             return Math.max(a, b);
         }
-        static random() {
-            return Math.random();
+        static random(min, max) {
+            min = min !== null && min !== void 0 ? min : 0;
+            max = max !== null && max !== void 0 ? max : 1;
+            return min + Math.random() * (max - min);
         }
         static greater(a, b) {
             return a > b;
@@ -3936,13 +4263,37 @@
             return a < b;
         }
         static equal(a, b) {
-            return a == b;
+            return a === b;
         }
         static greaterEqual(a, b) {
             return a >= b;
         }
         static lessEqual(a, b) {
             return a <= b;
+        }
+        static bitAnd(a, b) {
+            return a & b;
+        }
+        static bitOr(a, b) {
+            return a | b;
+        }
+        static bitXor(a, b) {
+            return a ^ b;
+        }
+        static bitNot(a) {
+            return ~a;
+        }
+        static bitAndNot(a, b) {
+            return a & ~b;
+        }
+        static bitLeftShift(a, b) {
+            return a << b;
+        }
+        static bitRightShift(a, b) {
+            return a >> b;
+        }
+        static bitUnsignedRightShift(a, b) {
+            return a >>> b;
         }
     }
 
@@ -3982,6 +4333,99 @@
     BPArray.prototype.unshift = Array.prototype.unshift;
     BPArray.prototype.join = Array.prototype.join;
     BPArray.prototype.concat = Array.prototype.concat;
+
+    class BPObject {
+        static getItem(obj, key) {
+            return obj[key];
+        }
+        static setItem(obj, key, value) {
+            obj[key] = value;
+        }
+        static deleteItem(obj, key) {
+            delete obj[key];
+        }
+    }
+
+    class BPString {
+        static concat(a, ...strs) {
+            return a + strs.join("");
+        }
+        static split(str, separator) {
+            return str.split(separator);
+        }
+        static toUpperCase(str) {
+            return str.toUpperCase();
+        }
+        static toLowerCase(str) {
+            return str.toLowerCase();
+        }
+        static trim(str) {
+            return str.trim();
+        }
+        static trimStart(str) {
+            return str.trimStart();
+        }
+        static trimEnd(str) {
+            return str.trimEnd();
+        }
+        static includes(str, searchString, position) {
+            return str.includes(searchString, position);
+        }
+        static startsWith(str, searchString) {
+            return str.startsWith(searchString);
+        }
+        static endsWith(str, searchString) {
+            return str.endsWith(searchString);
+        }
+        static replace(str, searchValue, newValue) {
+            return str.replace(searchValue, newValue);
+        }
+        static indexOf(str, searchValue, position) {
+            return str.indexOf(searchValue, position);
+        }
+        static lastIndexOf(str, searchValue, position) {
+            return str.lastIndexOf(searchValue, position);
+        }
+        static repeat(str, count) {
+            return str.repeat(count);
+        }
+        static charAt(str, index) {
+            return str.charAt(index);
+        }
+        static charCodeAt(str, index) {
+            return str.charCodeAt(index);
+        }
+        static substring(str, start, end) {
+            return str.substring(start, end);
+        }
+        static slice(str, start, end) {
+            return str.slice(start, end);
+        }
+        static getLength(str) {
+            return str.length;
+        }
+        static parseInt(str, radix) {
+            return parseInt(str, radix);
+        }
+        static parseFloat(str) {
+            return parseFloat(str);
+        }
+    }
+
+    class BPNumber {
+        static toFixed(num, fractionDigits) {
+            return num.toFixed(fractionDigits);
+        }
+        static toExponential(num, fractionDigits) {
+            return num.toExponential(fractionDigits);
+        }
+        static toPrecision(num, precision) {
+            return num.toPrecision(precision);
+        }
+        static toString(num, radix) {
+            return num.toString(radix);
+        }
+    }
 
     var ClassUtils = Laya.ClassUtils;
     var Browser = Laya.Browser;
@@ -4042,6 +4486,16 @@
             rc(exports.BPType.Assertion, BluePrintAsNode);
             BlueprintFactory.regBPContextData(exports.BPType.CustomFunReturn, BlueprintCustomFunReturnContext);
             const rf = BlueprintFactory.regFunction.bind(BlueprintFactory);
+            rf("equal", function (a, b) { return a == b; });
+            rf("and", function (a, b) { return !!a && !!b; });
+            rf("or", function (a, b) { return !!a || !!b; });
+            rf("not", function (a) { return !a; });
+            rf("isUndefined", function (a) { return a === undefined; });
+            rf("isNull", function (a) { return a == null; });
+            rf("isNaN", function (a) { return isNaN(a); });
+            rf("toString", function (a) { return String(a); });
+            rf("toNumber", function (a) { return Number(a); });
+            rf("toBoolean", function (a) { return !!a; });
             rf("branch", BlueprintStaticFun.branch);
             rf("forEach", BlueprintStaticFun.forEach);
             rf("forEachWithBreak", BlueprintStaticFun.forEachWithBreak);
@@ -4241,15 +4695,6 @@
     }
     function createBPEnum(name, members) {
         BlueprintDecorator.createBPEnum(name, members);
-    }
-
-    class BPObject {
-        static getItem(obj, key) {
-            return obj[key];
-        }
-        static setItem(obj, key, value) {
-            obj[key] = value;
-        }
     }
 
     class TestBluePrint {
@@ -4457,7 +4902,9 @@
 
     exports.BPArray = BPArray;
     exports.BPMathLib = BPMathLib;
+    exports.BPNumber = BPNumber;
     exports.BPObject = BPObject;
+    exports.BPString = BPString;
     exports.BluePrintAsNode = BluePrintAsNode;
     exports.BluePrintBlock = BluePrintBlock;
     exports.BluePrintBlockNode = BluePrintBlockNode;

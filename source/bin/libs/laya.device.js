@@ -71,17 +71,17 @@
                 this.lastX = accelerationIncludingGravity.x;
                 this.lastY = accelerationIncludingGravity.y;
                 this.lastZ = accelerationIncludingGravity.z;
-                this.lastMillSecond = Laya.Browser.now();
+                this.lastMillSecond = performance.now();
                 return;
             }
             let deltaX = Math.abs(this.lastX - accelerationIncludingGravity.x);
             let deltaY = Math.abs(this.lastY - accelerationIncludingGravity.y);
             let deltaZ = Math.abs(this.lastZ - accelerationIncludingGravity.z);
             if (this.isShaked(deltaX, deltaY, deltaZ)) {
-                let deltaMillSecond = Laya.Browser.now() - this.lastMillSecond;
+                let deltaMillSecond = performance.now() - this.lastMillSecond;
                 if (deltaMillSecond > this.shakeInterval) {
                     this.event(Laya.Event.CHANGE);
-                    this.lastMillSecond = Laya.Browser.now();
+                    this.lastMillSecond = performance.now();
                 }
             }
             this.lastX = accelerationIncludingGravity.x;

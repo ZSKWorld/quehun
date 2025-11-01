@@ -2007,51 +2007,249 @@
             uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.STRETCHEDBILLBOARDLENGTHSCALE, 'u_StretchedBillboardLengthScale', Laya.ShaderDataType.Float);
             uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.STRETCHEDBILLBOARDSPEEDSCALE, 'u_StretchedBillboardSpeedScale', Laya.ShaderDataType.Float);
             uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.SIMULATIONSPACE, 'u_SimulationSpace', Laya.ShaderDataType.Int);
-            uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.CURRENTTIME, 'u_CurrentTime', Laya.ShaderDataType.Vector2);
+            uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.CURRENTTIME, 'u_CurrentTime', Laya.ShaderDataType.Float);
             uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.SHAPE, 'u_Shape', Laya.ShaderDataType.Float);
-            uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.COLOROVERLIFEGRADIENTALPHAS, 'u_ColorOverLifeGradientAlphas', Laya.ShaderDataType.Buffer);
-            uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.COLOROVERLIFEGRADIENTCOLORS, 'u_ColorOverLifeGradientColors', Laya.ShaderDataType.Buffer);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.COLOROVERLIFEGRADIENTALPHAS, 'u_ColorOverLifeGradientAlphas', Laya.ShaderDataType.Vector4, 4);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.COLOROVERLIFEGRADIENTCOLORS, 'u_ColorOverLifeGradientColors', Laya.ShaderDataType.Vector4, 8);
             uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.COLOROVERLIFEGRADIENTRANGES, 'u_ColorOverLifeGradientRanges', Laya.ShaderDataType.Vector4);
-            uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.MAXCOLOROVERLIFEGRADIENTALPHAS, 'u_MaxColorOverLifeGradientAlphas', Laya.ShaderDataType.Buffer);
-            uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.MAXCOLOROVERLIFEGRADIENTCOLORS, 'u_MaxColorOverLifeGradientColors', Laya.ShaderDataType.Buffer);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.MAXCOLOROVERLIFEGRADIENTALPHAS, 'u_MaxColorOverLifeGradientAlphas', Laya.ShaderDataType.Vector4, 4);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.MAXCOLOROVERLIFEGRADIENTCOLORS, 'u_MaxColorOverLifeGradientColors', Laya.ShaderDataType.Vector4, 8);
             uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.MAXCOLOROVERLIFEGRADIENTRANGES, 'u_MaxColorOverLifeGradientRanges', Laya.ShaderDataType.Vector4);
             mulDefineMode && (uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.VOLVELOCITYCONST, 'u_VOLVelocityConst', Laya.ShaderDataType.Vector3));
-            uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.VOLVELOCITYGRADIENTX, 'u_VOLVelocityGradientX', Laya.ShaderDataType.Buffer);
-            uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.VOLVELOCITYGRADIENTY, 'u_VOLVelocityGradientY', Laya.ShaderDataType.Buffer);
-            uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.VOLVELOCITYGRADIENTZ, 'u_VOLVelocityGradientZ', Laya.ShaderDataType.Buffer);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.VOLVELOCITYGRADIENTX, 'u_VOLVelocityGradientX', Laya.ShaderDataType.Vector4, 2);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.VOLVELOCITYGRADIENTY, 'u_VOLVelocityGradientY', Laya.ShaderDataType.Vector4, 2);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.VOLVELOCITYGRADIENTZ, 'u_VOLVelocityGradientZ', Laya.ShaderDataType.Vector4, 2);
             mulDefineMode && (uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.VOLVELOCITYCONSTMAX, 'u_VOLVelocityConstMax', Laya.ShaderDataType.Vector3));
-            uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.VOLVELOCITYGRADIENTXMAX, 'u_VOLVelocityGradientMaxX', Laya.ShaderDataType.Buffer);
-            uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.VOLVELOCITYGRADIENTYMAX, 'u_VOLVelocityGradientMaxY', Laya.ShaderDataType.Buffer);
-            uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.VOLVELOCITYGRADIENTZMAX, 'u_VOLVelocityGradientMaxZ', Laya.ShaderDataType.Buffer);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.VOLVELOCITYGRADIENTXMAX, 'u_VOLVelocityGradientMaxX', Laya.ShaderDataType.Vector4, 2);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.VOLVELOCITYGRADIENTYMAX, 'u_VOLVelocityGradientMaxY', Laya.ShaderDataType.Vector4, 2);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.VOLVELOCITYGRADIENTZMAX, 'u_VOLVelocityGradientMaxZ', Laya.ShaderDataType.Vector4, 2);
             uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.VOLSPACETYPE, 'u_VOLSpaceType', Laya.ShaderDataType.Int);
-            uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.SOLSIZEGRADIENT, 'u_SOLSizeGradient', Laya.ShaderDataType.Buffer);
-            uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.SOLSIZEGRADIENTX, 'u_SOLSizeGradientX', Laya.ShaderDataType.Buffer);
-            uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.SOLSIZEGRADIENTY, 'u_SOLSizeGradientY', Laya.ShaderDataType.Buffer);
-            uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.SOLSizeGradientZ, 'u_SOLSizeGradientZ', Laya.ShaderDataType.Buffer);
-            uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.SOLSizeGradientMax, 'u_SOLSizeGradientMax', Laya.ShaderDataType.Buffer);
-            uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.SOLSIZEGRADIENTXMAX, 'u_SOLSizeGradientMaxX', Laya.ShaderDataType.Buffer);
-            uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.SOLSIZEGRADIENTYMAX, 'u_SOLSizeGradientMaxY', Laya.ShaderDataType.Buffer);
-            uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.SOLSizeGradientZMAX, 'u_SOLSizeGradientMaxZ', Laya.ShaderDataType.Buffer);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.SOLSIZEGRADIENT, 'u_SOLSizeGradient', Laya.ShaderDataType.Vector4, 2);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.SOLSIZEGRADIENTX, 'u_SOLSizeGradientX', Laya.ShaderDataType.Vector4, 2);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.SOLSIZEGRADIENTY, 'u_SOLSizeGradientY', Laya.ShaderDataType.Vector4, 2);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.SOLSizeGradientZ, 'u_SOLSizeGradientZ', Laya.ShaderDataType.Vector4, 2);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.SOLSizeGradientMax, 'u_SOLSizeGradientMax', Laya.ShaderDataType.Vector4, 2);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.SOLSIZEGRADIENTXMAX, 'u_SOLSizeGradientMaxX', Laya.ShaderDataType.Vector4, 2);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.SOLSIZEGRADIENTYMAX, 'u_SOLSizeGradientMaxY', Laya.ShaderDataType.Vector4, 2);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.SOLSizeGradientZMAX, 'u_SOLSizeGradientMaxZ', Laya.ShaderDataType.Vector4, 2);
             mulDefineMode && (uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYCONST, 'u_ROLAngularVelocityConst', Laya.ShaderDataType.Float));
             mulDefineMode && (uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYCONSTSEPRARATE, 'u_ROLAngularVelocityConstSeprarate', Laya.ShaderDataType.Vector3));
-            uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYGRADIENT, 'u_ROLAngularVelocityGradient', Laya.ShaderDataType.Buffer);
-            uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYGRADIENTX, 'u_ROLAngularVelocityGradientX', Laya.ShaderDataType.Buffer);
-            uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYGRADIENTY, 'u_ROLAngularVelocityGradientY', Laya.ShaderDataType.Buffer);
-            uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYGRADIENTZ, 'u_ROLAngularVelocityGradientZ', Laya.ShaderDataType.Buffer);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYGRADIENT, 'u_ROLAngularVelocityGradient', Laya.ShaderDataType.Vector4, 2);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYGRADIENTX, 'u_ROLAngularVelocityGradientX', Laya.ShaderDataType.Vector4, 2);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYGRADIENTY, 'u_ROLAngularVelocityGradientY', Laya.ShaderDataType.Vector4, 2);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYGRADIENTZ, 'u_ROLAngularVelocityGradientZ', Laya.ShaderDataType.Vector4, 2);
             mulDefineMode && (uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYCONSTMAX, 'u_ROLAngularVelocityConstMax', Laya.ShaderDataType.Float));
             mulDefineMode && (uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYCONSTMAXSEPRARATE, 'u_ROLAngularVelocityConstMaxSeprarate', Laya.ShaderDataType.Vector3));
-            uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYGRADIENTMAX, 'u_ROLAngularVelocityGradientMax', Laya.ShaderDataType.Buffer);
-            uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYGRADIENTXMAX, 'u_ROLAngularVelocityGradientMaxX', Laya.ShaderDataType.Buffer);
-            uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYGRADIENTYMAX, 'u_ROLAngularVelocityGradientMaxY', Laya.ShaderDataType.Buffer);
-            uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYGRADIENTZMAX, 'u_ROLAngularVelocityGradientMaxZ', Laya.ShaderDataType.Buffer);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYGRADIENTMAX, 'u_ROLAngularVelocityGradientMax', Laya.ShaderDataType.Vector4, 2);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYGRADIENTXMAX, 'u_ROLAngularVelocityGradientMaxX', Laya.ShaderDataType.Vector4, 2);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYGRADIENTYMAX, 'u_ROLAngularVelocityGradientMaxY', Laya.ShaderDataType.Vector4, 2);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYGRADIENTZMAX, 'u_ROLAngularVelocityGradientMaxZ', Laya.ShaderDataType.Vector4, 2);
             uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.TEXTURESHEETANIMATIONCYCLES, 'u_TSACycles', Laya.ShaderDataType.Float);
             uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.TEXTURESHEETANIMATIONSUBUVLENGTH, 'u_TSASubUVLength', Laya.ShaderDataType.Vector2);
-            uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.TEXTURESHEETANIMATIONGRADIENTUVS, 'u_TSAGradientUVs', Laya.ShaderDataType.Buffer);
-            uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.TEXTURESHEETANIMATIONGRADIENTMAXUVS, 'u_TSAMaxGradientUVs', Laya.ShaderDataType.Buffer);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.TEXTURESHEETANIMATIONGRADIENTUVS, 'u_TSAGradientUVs', Laya.ShaderDataType.Vector4, 2);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.TEXTURESHEETANIMATIONGRADIENTMAXUVS, 'u_TSAMaxGradientUVs', Laya.ShaderDataType.Vector4, 2);
             uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.DRAG, 'u_DragConstanct', Laya.ShaderDataType.Vector2);
         }
     }
     ShuriKenParticle3DShaderDeclaration.mulShaderDefineMode = true;
+
+    class ShurikenParticleMaterial extends Laya.Material {
+        static __initDefine__() {
+            ShurikenParticleMaterial.SHADERDEFINE_DIFFUSEMAP = Laya.Shader3D.getDefineByName("DIFFUSEMAP");
+            ShurikenParticleMaterial.SHADERDEFINE_TINTCOLOR = Laya.Shader3D.getDefineByName("TINTCOLOR");
+            ShurikenParticleMaterial.SHADERDEFINE_ADDTIVEFOG = Laya.Shader3D.getDefineByName("ADDTIVEFOG");
+            ShurikenParticleMaterial.DIFFUSETEXTURE = Laya.Shader3D.propertyNameToID("u_texture");
+            ShurikenParticleMaterial.TINTCOLOR = Laya.Shader3D.propertyNameToID("u_Tintcolor");
+            ShurikenParticleMaterial.TILINGOFFSET = Laya.Shader3D.propertyNameToID("u_TilingOffset");
+        }
+        get color() {
+            return this._shaderValues.getColor(ShurikenParticleMaterial.TINTCOLOR);
+        }
+        set color(value) {
+            if (value)
+                this._shaderValues.addDefine(ShurikenParticleMaterial.SHADERDEFINE_TINTCOLOR);
+            else
+                this._shaderValues.removeDefine(ShurikenParticleMaterial.SHADERDEFINE_TINTCOLOR);
+            this._shaderValues.setColor(ShurikenParticleMaterial.TINTCOLOR, value);
+        }
+        get tilingOffset() {
+            return this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET);
+        }
+        set tilingOffset(value) {
+            if (value) {
+                this._shaderValues.setVector(ShurikenParticleMaterial.TILINGOFFSET, value);
+            }
+            else {
+                this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET).setValue(1.0, 1.0, 0.0, 0.0);
+            }
+        }
+        get texture() {
+            return this._shaderValues.getTexture(ShurikenParticleMaterial.DIFFUSETEXTURE);
+        }
+        set texture(value) {
+            if (value)
+                this._shaderValues.addDefine(ShurikenParticleMaterial.SHADERDEFINE_DIFFUSEMAP);
+            else
+                this._shaderValues.removeDefine(ShurikenParticleMaterial.SHADERDEFINE_DIFFUSEMAP);
+            this._shaderValues.setTexture(ShurikenParticleMaterial.DIFFUSETEXTURE, value);
+        }
+        constructor() {
+            super();
+            this.setShaderName("PARTICLESHURIKEN");
+            this.renderMode = ShurikenParticleMaterial.RENDERMODE_ALPHABLENDED;
+        }
+        clone() {
+            var dest = new ShurikenParticleMaterial();
+            this.cloneTo(dest);
+            return dest;
+        }
+        set renderMode(value) {
+            switch (value) {
+                case ShurikenParticleMaterial.RENDERMODE_ADDTIVE:
+                    this.renderQueue = Laya.Material.RENDERQUEUE_TRANSPARENT;
+                    this.depthWrite = false;
+                    this.cull = Laya.RenderState.CULL_NONE;
+                    this.blend = Laya.RenderState.BLEND_ENABLE_ALL;
+                    this.blendSrc = Laya.RenderState.BLENDPARAM_SRC_ALPHA;
+                    this.blendDst = Laya.RenderState.BLENDPARAM_ONE;
+                    this.alphaTest = false;
+                    this._shaderValues.addDefine(ShurikenParticleMaterial.SHADERDEFINE_ADDTIVEFOG);
+                    break;
+                case ShurikenParticleMaterial.RENDERMODE_ALPHABLENDED:
+                    this.renderQueue = Laya.Material.RENDERQUEUE_TRANSPARENT;
+                    this.depthWrite = false;
+                    this.cull = Laya.RenderState.CULL_NONE;
+                    this.blend = Laya.RenderState.BLEND_ENABLE_ALL;
+                    this.blendSrc = Laya.RenderState.BLENDPARAM_SRC_ALPHA;
+                    this.blendDst = Laya.RenderState.BLENDPARAM_ONE_MINUS_SRC_ALPHA;
+                    this.alphaTest = false;
+                    this._shaderValues.removeDefine(ShurikenParticleMaterial.SHADERDEFINE_ADDTIVEFOG);
+                    break;
+                default:
+                    throw new Error("ShurikenParticleMaterial : renderMode value error.");
+            }
+        }
+        get tilingOffsetX() {
+            return this._MainTex_STX;
+        }
+        set tilingOffsetX(x) {
+            this._MainTex_STX = x;
+        }
+        get tilingOffsetY() {
+            return this._MainTex_STY;
+        }
+        set tilingOffsetY(y) {
+            this._MainTex_STY = y;
+        }
+        get tilingOffsetZ() {
+            return this._MainTex_STZ;
+        }
+        set tilingOffsetZ(z) {
+            this._MainTex_STZ = z;
+        }
+        get tilingOffsetW() {
+            return this._MainTex_STW;
+        }
+        set tilingOffsetW(w) {
+            this._MainTex_STW = w;
+        }
+        get _TintColor() {
+            return this.color;
+        }
+        set _TintColor(value) {
+            this.color = value;
+        }
+        get _TintColorR() {
+            return this.color.r;
+        }
+        set _TintColorR(value) {
+            this.color.r = value;
+        }
+        get _TintColorG() {
+            return this.color.g;
+        }
+        set _TintColorG(value) {
+            this.color.g = value;
+        }
+        get _TintColorB() {
+            return this.color.b;
+        }
+        set _TintColorB(value) {
+            this.color.b = value;
+        }
+        get _TintColorA() {
+            return this.color.a;
+        }
+        set _TintColorA(value) {
+            this.color.a = value;
+        }
+        get _MainTex_ST() {
+            return this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET);
+        }
+        set _MainTex_ST(value) {
+            var tilOff = this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET);
+            tilOff.setValue(value.x, value.y, value.z, value.w);
+            this.tilingOffset = tilOff;
+        }
+        get _MainTex_STX() {
+            return this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET).x;
+        }
+        set _MainTex_STX(x) {
+            var tilOff = this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET);
+            tilOff.x = x;
+            this.tilingOffset = tilOff;
+        }
+        get _MainTex_STY() {
+            return this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET).y;
+        }
+        set _MainTex_STY(y) {
+            var tilOff = this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET);
+            tilOff.y = y;
+            this.tilingOffset = tilOff;
+        }
+        get _MainTex_STZ() {
+            return this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET).z;
+        }
+        set _MainTex_STZ(z) {
+            var tilOff = this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET);
+            tilOff.z = z;
+            this.tilingOffset = tilOff;
+        }
+        get _MainTex_STW() {
+            return this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET).w;
+        }
+        set _MainTex_STW(w) {
+            var tilOff = this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET);
+            tilOff.w = w;
+            this.tilingOffset = tilOff;
+        }
+        get colorR() {
+            return this._TintColorR;
+        }
+        set colorR(value) {
+            this._TintColorR = value;
+        }
+        get colorG() {
+            return this._TintColorG;
+        }
+        set colorG(value) {
+            this._TintColorG = value;
+        }
+        get colorB() {
+            return this._TintColorB;
+        }
+        set colorB(value) {
+            this._TintColorB = value;
+        }
+        get colorA() {
+            return this._TintColorA;
+        }
+        set colorA(value) {
+            this._TintColorA = value;
+        }
+    }
+    ShurikenParticleMaterial.RENDERMODE_ALPHABLENDED = 0;
+    ShurikenParticleMaterial.RENDERMODE_ADDTIVE = 1;
 
     class ShurikenParticleData {
         constructor() {
@@ -4235,6 +4433,7 @@
             return ShurikenParticleSystem._type;
         }
         _prepareRender(state) {
+            let t = performance.now();
             if (this._updateMask != Laya.Stat.loopCount) {
                 this._updateMask = Laya.Stat.loopCount;
                 this._updateEmission();
@@ -4242,6 +4441,7 @@
                     this.addNewParticlesToVertexBuffer();
                 this._drawCounter++;
             }
+            Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_ShurikenUpdate, performance.now() - t);
             if (this._firstActiveElement != this._firstFreeElement)
                 return true;
             else
@@ -4408,6 +4608,304 @@
     const _tempVector37 = new Laya.Vector3();
     const _tempPosition = new Laya.Vector3();
     const _tempDirection = new Laya.Vector3();
+
+    class ShurikenParticleRenderer extends Laya.BaseRender {
+        get particleSystem() {
+            return this._particleSystem;
+        }
+        get renderMode() {
+            return this._renderMode;
+        }
+        set renderMode(value) {
+            if (this._renderMode !== value) {
+                var defineDatas = this._baseRenderNode.shaderData;
+                switch (this._renderMode) {
+                    case 0:
+                        defineDatas.removeDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_BILLBOARD);
+                        break;
+                    case 1:
+                        defineDatas.removeDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_STRETCHEDBILLBOARD);
+                        break;
+                    case 2:
+                        defineDatas.removeDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_HORIZONTALBILLBOARD);
+                        break;
+                    case 3:
+                        defineDatas.removeDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_VERTICALBILLBOARD);
+                        break;
+                    case 4:
+                        defineDatas.removeDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_MESH);
+                        break;
+                }
+                this._renderMode = value;
+                switch (value) {
+                    case 0:
+                        defineDatas.addDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_BILLBOARD);
+                        break;
+                    case 1:
+                        defineDatas.addDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_STRETCHEDBILLBOARD);
+                        break;
+                    case 2:
+                        defineDatas.addDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_HORIZONTALBILLBOARD);
+                        break;
+                    case 3:
+                        defineDatas.addDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_VERTICALBILLBOARD);
+                        break;
+                    case 4:
+                        defineDatas.addDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_MESH);
+                        break;
+                    default:
+                        throw new Error("ShurikenParticleRender: unknown renderMode Value.");
+                }
+                var parSys = this._particleSystem;
+                (parSys) && (parSys._initBufferDatas());
+            }
+        }
+        get mesh() {
+            return this._mesh;
+        }
+        set mesh(value) {
+            if (this._mesh !== value) {
+                (this._mesh) && (this._mesh._removeReference());
+                this._mesh = value;
+                (value) && (value._addReference());
+                this._particleSystem._initBufferDatas();
+            }
+        }
+        constructor() {
+            super();
+            this._finalGravity = new Laya.Vector3();
+            this._dragConstant = new Laya.Vector2();
+            this._mesh = null;
+            this.stretchedBillboardCameraSpeedScale = 0;
+            this.stretchedBillboardSpeedScale = 0;
+            this.stretchedBillboardLengthScale = 2;
+            this.renderMode = 0;
+            this._baseRenderNode.renderNodeType = Laya.BaseRenderType.ParticleRender;
+        }
+        _isMaterialVaild(value) {
+            return value.checkType(Laya.ShaderFeatureType.Effect);
+        }
+        _getcommonUniformMap() {
+            return ["Sprite3D", "ShurikenSprite3D"];
+        }
+        _onAdded() {
+            super._onAdded();
+            this._particleSystem = new ShurikenParticleSystem(this);
+            var elements = this._renderElements;
+            var element = elements[0] = new Laya.RenderElement();
+            element.setTransform(this.owner._transform);
+            element.render = this;
+            element.setGeometry(this._particleSystem);
+            element.material = ShurikenParticleMaterial.defaultMaterial;
+            this._setRenderElements();
+        }
+        _onEnable() {
+            super._onEnable();
+            (this._particleSystem.playOnAwake && Laya.LayaEnv.isPlaying) && (this._particleSystem.play());
+        }
+        _onDisable() {
+            super._onDisable();
+            (this._particleSystem.isAlive) && (this._particleSystem.simulate(0, true));
+        }
+        _calculateBoundingBox() {
+            var particleSystem = this._particleSystem;
+            var bounds;
+            if (particleSystem._useCustomBounds) {
+                bounds = particleSystem.customBounds;
+                bounds._tranform(this.owner.transform.worldMatrix, this._bounds);
+            }
+            else if (particleSystem._simulationSupported()) {
+                particleSystem._generateBounds();
+                bounds = particleSystem._bounds;
+                bounds._tranform(this.owner.transform.worldMatrix, this._bounds);
+                if (particleSystem.gravityModifier != 0) {
+                    var max = this._bounds.getMax();
+                    var min = this._bounds.getMin();
+                    var gravityOffset = particleSystem._gravityOffset;
+                    max.y -= gravityOffset.x;
+                    min.y -= gravityOffset.y;
+                    this._bounds.setMax(max);
+                    this._bounds.setMin(min);
+                }
+            }
+            else {
+                var min = this._bounds.getMin();
+                min.setValue(-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE);
+                this._bounds.setMin(min);
+                var max = this._bounds.getMax();
+                max.setValue(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
+                this._bounds.setMax(max);
+            }
+        }
+        _needRender(boundFrustum, context) {
+            if (!Laya.Stat.enableParticle)
+                return false;
+            if (boundFrustum) {
+                if (boundFrustum.intersects(this.bounds)) {
+                    if (this._particleSystem.isAlive)
+                        return true;
+                    else
+                        return false;
+                }
+                else {
+                    return false;
+                }
+            }
+            else {
+                return true;
+            }
+        }
+        _renderUpdate(context) {
+            var particleSystem = this._particleSystem;
+            var sv = this._baseRenderNode.shaderData;
+            var transform = this.owner.transform;
+            switch (particleSystem.simulationSpace) {
+                case 0:
+                    break;
+                case 1:
+                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.WORLDPOSITION, transform.position);
+                    sv.setShaderData(ShuriKenParticle3DShaderDeclaration.WORLDROTATION, Laya.ShaderDataType.Vector4, transform.rotation);
+                    break;
+                default:
+                    throw new Error("ShurikenParticleMaterial: SimulationSpace value is invalid.");
+            }
+            if (particleSystem.shape && particleSystem.shape.enable) {
+                sv.setBool(ShuriKenParticle3DShaderDeclaration.SHAPE, true);
+            }
+            else {
+                sv.setBool(ShuriKenParticle3DShaderDeclaration.SHAPE, false);
+            }
+            switch (particleSystem.scaleMode) {
+                case 0:
+                    var scale = transform.getWorldLossyScale();
+                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.POSITIONSCALE, scale);
+                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.SIZESCALE, scale);
+                    break;
+                case 1:
+                    var localScale = transform.localScale;
+                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.POSITIONSCALE, localScale);
+                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.SIZESCALE, localScale);
+                    break;
+                case 2:
+                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.POSITIONSCALE, transform.getWorldLossyScale());
+                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.SIZESCALE, Laya.Vector3.ONE);
+                    break;
+            }
+            switch (particleSystem.dragType) {
+                case 0:
+                    this._dragConstant.setValue(particleSystem.dragSpeedConstantMin, particleSystem.dragSpeedConstantMin);
+                    sv.setVector2(ShuriKenParticle3DShaderDeclaration.DRAG, this._dragConstant);
+                    break;
+                case 2:
+                    this._dragConstant.setValue(particleSystem.dragSpeedConstantMin, particleSystem.dragSpeedConstantMax);
+                    sv.setVector2(ShuriKenParticle3DShaderDeclaration.DRAG, this._dragConstant);
+                    break;
+                default:
+                    this._dragConstant.setValue(0, 0);
+                    break;
+            }
+            Laya.Vector3.scale(ShurikenParticleRenderer.gravity, particleSystem.gravityModifier, this._finalGravity);
+            sv.setVector3(ShuriKenParticle3DShaderDeclaration.GRAVITY, this._finalGravity);
+            sv.setInt(ShuriKenParticle3DShaderDeclaration.SIMULATIONSPACE, particleSystem.simulationSpace);
+            sv.setBool(ShuriKenParticle3DShaderDeclaration.THREEDSTARTROTATION, particleSystem.threeDStartRotation);
+            sv.setInt(ShuriKenParticle3DShaderDeclaration.SCALINGMODE, particleSystem.scaleMode);
+            sv.setNumber(ShuriKenParticle3DShaderDeclaration.STRETCHEDBILLBOARDLENGTHSCALE, this.stretchedBillboardLengthScale);
+            sv.setNumber(ShuriKenParticle3DShaderDeclaration.STRETCHEDBILLBOARDSPEEDSCALE, this.stretchedBillboardSpeedScale);
+            sv.setNumber(ShuriKenParticle3DShaderDeclaration.CURRENTTIME, particleSystem._currentTime);
+        }
+        renderUpdate(context) {
+            this._renderElements.forEach(element => {
+                element._renderElementOBJ.isRender = element._geometry._prepareRender(context);
+                element._geometry._prepareRender(context);
+                element._geometry._updateRenderParams(context);
+            });
+        }
+        get bounds() {
+            if (this.boundsChange) {
+                this._calculateBoundingBox();
+                this.boundsChange = false;
+            }
+            return this._bounds;
+        }
+        _cloneTo(dest) {
+            this._particleSystem.cloneTo(dest._particleSystem);
+            dest.sharedMaterial = this.sharedMaterial;
+            dest.renderMode = this.renderMode;
+            dest.mesh = this.mesh;
+            dest.stretchedBillboardCameraSpeedScale = this.stretchedBillboardCameraSpeedScale;
+            dest.stretchedBillboardSpeedScale = this.stretchedBillboardSpeedScale;
+            dest.stretchedBillboardLengthScale = this.stretchedBillboardLengthScale;
+            dest.sortingFudge = this.sortingFudge;
+        }
+        _onDestroy() {
+            (this._mesh) && (this._mesh._removeReference(), this._mesh = null);
+            this._particleSystem.destroy();
+            this._particleSystem = null;
+            super._onDestroy();
+        }
+        _statAdd() {
+            super._statAdd();
+            Laya.LayaGL.statAgent.recordCountData(Laya.StatElement.C_ShurikenParticleRenderCount, 1);
+        }
+        _statRemove() {
+            super._statRemove();
+            Laya.LayaGL.statAgent.recordCountData(Laya.StatElement.C_ShurikenParticleRenderCount, -1);
+        }
+    }
+    ShurikenParticleRenderer.gravity = new Laya.Vector3(0, -9.81, 0);
+    Laya.Laya.addInitCallback(() => {
+        ParticleShuriKenShaderInit.init();
+        VertexShurikenParticleBillboard.__init__();
+        VertexShurikenParticleMesh.__init__();
+        ShuriKenParticle3DShaderDeclaration.__init__();
+        ShuriKenParticle3D.__init__();
+        ShurikenParticleMaterial.__initDefine__();
+    });
+
+    class ShuriKenParticle3D extends Laya.RenderableSprite3D {
+        get particleSystem() {
+            return this._particleSystem;
+        }
+        get particleRenderer() {
+            return this._render;
+        }
+        constructor() {
+            super(null);
+            this._render = this.addComponent(ShurikenParticleRenderer);
+            this._particleSystem = this._render._particleSystem;
+        }
+        destroy(destroyChild = true) {
+            if (this._destroyed)
+                return;
+            super.destroy(destroyChild);
+        }
+    }
+
+    let c = Laya.ClassUtils.regClass;
+    c("ShurikenParticleMaterial", ShurikenParticleMaterial);
+    c("ShuriKenParticle3D", ShuriKenParticle3D);
+    c("ShurikenParticleRenderer", ShurikenParticleRenderer);
+    c("ShurikenParticleSystem", ShurikenParticleSystem);
+    c("Burst", Burst);
+    c("Emission", Emission);
+    c("BaseShape", BaseShape);
+    c("BoxShape", BoxShape);
+    c("CircleShape", CircleShape);
+    c("ConeShape", ConeShape);
+    c("HemisphereShape", HemisphereShape);
+    c("SphereShape", SphereShape);
+    c("FrameOverTime", FrameOverTime);
+    c("GradientAngularVelocity", GradientAngularVelocity);
+    c("GradientColor", GradientColor);
+    c("GradientDataInt", GradientDataInt);
+    c("GradientSize", GradientSize);
+    c("GradientVelocity", GradientVelocity);
+    c("StartFrame", StartFrame);
+    c("TextureSheetAnimation", TextureSheetAnimation);
+    c("ColorOverLifetime", ColorOverLifetime);
+    c("RotationOverLifetime", RotationOverLifetime);
+    c("SizeOverLifetime", SizeOverLifetime);
+    c("VelocityOverLifetime", VelocityOverLifetime);
 
     const tempV3 = new Laya.Vector3(0, 0, 0);
     class ShurikenParticleInstanceSystem extends ShurikenParticleSystem {
@@ -4829,505 +5327,6 @@
             this._meshFloatCountPreVertex = null;
         }
     }
-
-    class ShurikenParticleMaterial extends Laya.Material {
-        static __initDefine__() {
-            ShurikenParticleMaterial.SHADERDEFINE_DIFFUSEMAP = Laya.Shader3D.getDefineByName("DIFFUSEMAP");
-            ShurikenParticleMaterial.SHADERDEFINE_TINTCOLOR = Laya.Shader3D.getDefineByName("TINTCOLOR");
-            ShurikenParticleMaterial.SHADERDEFINE_ADDTIVEFOG = Laya.Shader3D.getDefineByName("ADDTIVEFOG");
-            ShurikenParticleMaterial.DIFFUSETEXTURE = Laya.Shader3D.propertyNameToID("u_texture");
-            ShurikenParticleMaterial.TINTCOLOR = Laya.Shader3D.propertyNameToID("u_Tintcolor");
-            ShurikenParticleMaterial.TILINGOFFSET = Laya.Shader3D.propertyNameToID("u_TilingOffset");
-        }
-        get color() {
-            return this._shaderValues.getColor(ShurikenParticleMaterial.TINTCOLOR);
-        }
-        set color(value) {
-            if (value)
-                this._shaderValues.addDefine(ShurikenParticleMaterial.SHADERDEFINE_TINTCOLOR);
-            else
-                this._shaderValues.removeDefine(ShurikenParticleMaterial.SHADERDEFINE_TINTCOLOR);
-            this._shaderValues.setColor(ShurikenParticleMaterial.TINTCOLOR, value);
-        }
-        get tilingOffset() {
-            return this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET);
-        }
-        set tilingOffset(value) {
-            if (value) {
-                this._shaderValues.setVector(ShurikenParticleMaterial.TILINGOFFSET, value);
-            }
-            else {
-                this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET).setValue(1.0, 1.0, 0.0, 0.0);
-            }
-        }
-        get texture() {
-            return this._shaderValues.getTexture(ShurikenParticleMaterial.DIFFUSETEXTURE);
-        }
-        set texture(value) {
-            if (value)
-                this._shaderValues.addDefine(ShurikenParticleMaterial.SHADERDEFINE_DIFFUSEMAP);
-            else
-                this._shaderValues.removeDefine(ShurikenParticleMaterial.SHADERDEFINE_DIFFUSEMAP);
-            this._shaderValues.setTexture(ShurikenParticleMaterial.DIFFUSETEXTURE, value);
-        }
-        constructor() {
-            super();
-            this.setShaderName("PARTICLESHURIKEN");
-            this.renderMode = ShurikenParticleMaterial.RENDERMODE_ALPHABLENDED;
-        }
-        clone() {
-            var dest = new ShurikenParticleMaterial();
-            this.cloneTo(dest);
-            return dest;
-        }
-        set renderMode(value) {
-            switch (value) {
-                case ShurikenParticleMaterial.RENDERMODE_ADDTIVE:
-                    this.renderQueue = Laya.Material.RENDERQUEUE_TRANSPARENT;
-                    this.depthWrite = false;
-                    this.cull = Laya.RenderState.CULL_NONE;
-                    this.blend = Laya.RenderState.BLEND_ENABLE_ALL;
-                    this.blendSrc = Laya.RenderState.BLENDPARAM_SRC_ALPHA;
-                    this.blendDst = Laya.RenderState.BLENDPARAM_ONE;
-                    this.alphaTest = false;
-                    this._shaderValues.addDefine(ShurikenParticleMaterial.SHADERDEFINE_ADDTIVEFOG);
-                    break;
-                case ShurikenParticleMaterial.RENDERMODE_ALPHABLENDED:
-                    this.renderQueue = Laya.Material.RENDERQUEUE_TRANSPARENT;
-                    this.depthWrite = false;
-                    this.cull = Laya.RenderState.CULL_NONE;
-                    this.blend = Laya.RenderState.BLEND_ENABLE_ALL;
-                    this.blendSrc = Laya.RenderState.BLENDPARAM_SRC_ALPHA;
-                    this.blendDst = Laya.RenderState.BLENDPARAM_ONE_MINUS_SRC_ALPHA;
-                    this.alphaTest = false;
-                    this._shaderValues.removeDefine(ShurikenParticleMaterial.SHADERDEFINE_ADDTIVEFOG);
-                    break;
-                default:
-                    throw new Error("ShurikenParticleMaterial : renderMode value error.");
-            }
-        }
-        get tilingOffsetX() {
-            return this._MainTex_STX;
-        }
-        set tilingOffsetX(x) {
-            this._MainTex_STX = x;
-        }
-        get tilingOffsetY() {
-            return this._MainTex_STY;
-        }
-        set tilingOffsetY(y) {
-            this._MainTex_STY = y;
-        }
-        get tilingOffsetZ() {
-            return this._MainTex_STZ;
-        }
-        set tilingOffsetZ(z) {
-            this._MainTex_STZ = z;
-        }
-        get tilingOffsetW() {
-            return this._MainTex_STW;
-        }
-        set tilingOffsetW(w) {
-            this._MainTex_STW = w;
-        }
-        get _TintColor() {
-            return this.color;
-        }
-        set _TintColor(value) {
-            this.color = value;
-        }
-        get _TintColorR() {
-            return this.color.r;
-        }
-        set _TintColorR(value) {
-            this.color.r = value;
-        }
-        get _TintColorG() {
-            return this.color.g;
-        }
-        set _TintColorG(value) {
-            this.color.g = value;
-        }
-        get _TintColorB() {
-            return this.color.b;
-        }
-        set _TintColorB(value) {
-            this.color.b = value;
-        }
-        get _TintColorA() {
-            return this.color.a;
-        }
-        set _TintColorA(value) {
-            this.color.a = value;
-        }
-        get _MainTex_ST() {
-            return this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET);
-        }
-        set _MainTex_ST(value) {
-            var tilOff = this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET);
-            tilOff.setValue(value.x, value.y, value.z, value.w);
-            this.tilingOffset = tilOff;
-        }
-        get _MainTex_STX() {
-            return this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET).x;
-        }
-        set _MainTex_STX(x) {
-            var tilOff = this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET);
-            tilOff.x = x;
-            this.tilingOffset = tilOff;
-        }
-        get _MainTex_STY() {
-            return this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET).y;
-        }
-        set _MainTex_STY(y) {
-            var tilOff = this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET);
-            tilOff.y = y;
-            this.tilingOffset = tilOff;
-        }
-        get _MainTex_STZ() {
-            return this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET).z;
-        }
-        set _MainTex_STZ(z) {
-            var tilOff = this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET);
-            tilOff.z = z;
-            this.tilingOffset = tilOff;
-        }
-        get _MainTex_STW() {
-            return this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET).w;
-        }
-        set _MainTex_STW(w) {
-            var tilOff = this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET);
-            tilOff.w = w;
-            this.tilingOffset = tilOff;
-        }
-        get colorR() {
-            return this._TintColorR;
-        }
-        set colorR(value) {
-            this._TintColorR = value;
-        }
-        get colorG() {
-            return this._TintColorG;
-        }
-        set colorG(value) {
-            this._TintColorG = value;
-        }
-        get colorB() {
-            return this._TintColorB;
-        }
-        set colorB(value) {
-            this._TintColorB = value;
-        }
-        get colorA() {
-            return this._TintColorA;
-        }
-        set colorA(value) {
-            this._TintColorA = value;
-        }
-    }
-    ShurikenParticleMaterial.RENDERMODE_ALPHABLENDED = 0;
-    ShurikenParticleMaterial.RENDERMODE_ADDTIVE = 1;
-
-    class ShurikenParticleRenderer extends Laya.BaseRender {
-        get particleSystem() {
-            return this._particleSystem;
-        }
-        get renderMode() {
-            return this._renderMode;
-        }
-        set renderMode(value) {
-            if (this._renderMode !== value) {
-                var defineDatas = this._baseRenderNode.shaderData;
-                switch (this._renderMode) {
-                    case 0:
-                        defineDatas.removeDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_BILLBOARD);
-                        break;
-                    case 1:
-                        defineDatas.removeDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_STRETCHEDBILLBOARD);
-                        break;
-                    case 2:
-                        defineDatas.removeDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_HORIZONTALBILLBOARD);
-                        break;
-                    case 3:
-                        defineDatas.removeDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_VERTICALBILLBOARD);
-                        break;
-                    case 4:
-                        defineDatas.removeDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_MESH);
-                        break;
-                }
-                this._renderMode = value;
-                switch (value) {
-                    case 0:
-                        defineDatas.addDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_BILLBOARD);
-                        break;
-                    case 1:
-                        defineDatas.addDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_STRETCHEDBILLBOARD);
-                        break;
-                    case 2:
-                        defineDatas.addDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_HORIZONTALBILLBOARD);
-                        break;
-                    case 3:
-                        defineDatas.addDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_VERTICALBILLBOARD);
-                        break;
-                    case 4:
-                        defineDatas.addDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_MESH);
-                        break;
-                    default:
-                        throw new Error("ShurikenParticleRender: unknown renderMode Value.");
-                }
-                var parSys = this._particleSystem;
-                (parSys) && (parSys._initBufferDatas());
-            }
-        }
-        get mesh() {
-            return this._mesh;
-        }
-        set mesh(value) {
-            if (this._mesh !== value) {
-                (this._mesh) && (this._mesh._removeReference());
-                this._mesh = value;
-                (value) && (value._addReference());
-                this._particleSystem._initBufferDatas();
-            }
-        }
-        constructor() {
-            super();
-            this._finalGravity = new Laya.Vector3();
-            this._dragConstant = new Laya.Vector2();
-            this._mesh = null;
-            this.stretchedBillboardCameraSpeedScale = 0;
-            this.stretchedBillboardSpeedScale = 0;
-            this.stretchedBillboardLengthScale = 2;
-            this.renderMode = 0;
-            this._baseRenderNode.renderNodeType = Laya.BaseRenderType.ParticleRender;
-        }
-        _getcommonUniformMap() {
-            return ["Sprite3D", "ShurikenSprite3D"];
-        }
-        _onAdded() {
-            super._onAdded();
-            if (!Laya.LayaGL.renderEngine.getCapable(Laya.RenderCapable.DrawElement_Instance)) {
-                this._particleSystem = new ShurikenParticleSystem(this);
-            }
-            else
-                this._particleSystem = new ShurikenParticleInstanceSystem(this);
-            var elements = this._renderElements;
-            var element = elements[0] = new Laya.RenderElement();
-            element.setTransform(this.owner._transform);
-            element.render = this;
-            element.setGeometry(this._particleSystem);
-            element.material = ShurikenParticleMaterial.defaultMaterial;
-            this._setRenderElements();
-        }
-        _onEnable() {
-            super._onEnable();
-            Laya.Stat.particleRenderNode++;
-            (this._particleSystem.playOnAwake && Laya.LayaEnv.isPlaying) && (this._particleSystem.play());
-        }
-        _onDisable() {
-            super._onDisable();
-            Laya.Stat.particleRenderNode--;
-            (this._particleSystem.isAlive) && (this._particleSystem.simulate(0, true));
-        }
-        _calculateBoundingBox() {
-            var particleSystem = this._particleSystem;
-            var bounds;
-            if (particleSystem._useCustomBounds) {
-                bounds = particleSystem.customBounds;
-                bounds._tranform(this.owner.transform.worldMatrix, this._bounds);
-            }
-            else if (particleSystem._simulationSupported()) {
-                particleSystem._generateBounds();
-                bounds = particleSystem._bounds;
-                bounds._tranform(this.owner.transform.worldMatrix, this._bounds);
-                if (particleSystem.gravityModifier != 0) {
-                    var max = this._bounds.getMax();
-                    var min = this._bounds.getMin();
-                    var gravityOffset = particleSystem._gravityOffset;
-                    max.y -= gravityOffset.x;
-                    min.y -= gravityOffset.y;
-                    this._bounds.setMax(max);
-                    this._bounds.setMin(min);
-                }
-            }
-            else {
-                var min = this._bounds.getMin();
-                min.setValue(-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE);
-                this._bounds.setMin(min);
-                var max = this._bounds.getMax();
-                max.setValue(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
-                this._bounds.setMax(max);
-            }
-        }
-        _needRender(boundFrustum, context) {
-            if (!Laya.Stat.enableParticle)
-                return false;
-            if (boundFrustum) {
-                if (boundFrustum.intersects(this.bounds)) {
-                    if (this._particleSystem.isAlive)
-                        return true;
-                    else
-                        return false;
-                }
-                else {
-                    return false;
-                }
-            }
-            else {
-                return true;
-            }
-        }
-        _renderUpdate(context) {
-            var particleSystem = this._particleSystem;
-            var sv = this._baseRenderNode.shaderData;
-            var transform = this.owner.transform;
-            switch (particleSystem.simulationSpace) {
-                case 0:
-                    break;
-                case 1:
-                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.WORLDPOSITION, transform.position);
-                    sv.setShaderData(ShuriKenParticle3DShaderDeclaration.WORLDROTATION, Laya.ShaderDataType.Vector4, transform.rotation);
-                    break;
-                default:
-                    throw new Error("ShurikenParticleMaterial: SimulationSpace value is invalid.");
-            }
-            if (particleSystem.shape && particleSystem.shape.enable) {
-                sv.setBool(ShuriKenParticle3DShaderDeclaration.SHAPE, true);
-            }
-            else {
-                sv.setBool(ShuriKenParticle3DShaderDeclaration.SHAPE, false);
-            }
-            switch (particleSystem.scaleMode) {
-                case 0:
-                    var scale = transform.getWorldLossyScale();
-                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.POSITIONSCALE, scale);
-                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.SIZESCALE, scale);
-                    break;
-                case 1:
-                    var localScale = transform.localScale;
-                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.POSITIONSCALE, localScale);
-                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.SIZESCALE, localScale);
-                    break;
-                case 2:
-                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.POSITIONSCALE, transform.getWorldLossyScale());
-                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.SIZESCALE, Laya.Vector3.ONE);
-                    break;
-            }
-            switch (particleSystem.dragType) {
-                case 0:
-                    this._dragConstant.setValue(particleSystem.dragSpeedConstantMin, particleSystem.dragSpeedConstantMin);
-                    sv.setVector2(ShuriKenParticle3DShaderDeclaration.DRAG, this._dragConstant);
-                    break;
-                case 2:
-                    this._dragConstant.setValue(particleSystem.dragSpeedConstantMin, particleSystem.dragSpeedConstantMax);
-                    sv.setVector2(ShuriKenParticle3DShaderDeclaration.DRAG, this._dragConstant);
-                    break;
-                default:
-                    this._dragConstant.setValue(0, 0);
-                    break;
-            }
-            Laya.Vector3.scale(ShurikenParticleRenderer.gravity, particleSystem.gravityModifier, this._finalGravity);
-            sv.setVector3(ShuriKenParticle3DShaderDeclaration.GRAVITY, this._finalGravity);
-            sv.setInt(ShuriKenParticle3DShaderDeclaration.SIMULATIONSPACE, particleSystem.simulationSpace);
-            sv.setBool(ShuriKenParticle3DShaderDeclaration.THREEDSTARTROTATION, particleSystem.threeDStartRotation);
-            sv.setInt(ShuriKenParticle3DShaderDeclaration.SCALINGMODE, particleSystem.scaleMode);
-            sv.setNumber(ShuriKenParticle3DShaderDeclaration.STRETCHEDBILLBOARDLENGTHSCALE, this.stretchedBillboardLengthScale);
-            sv.setNumber(ShuriKenParticle3DShaderDeclaration.STRETCHEDBILLBOARDSPEEDSCALE, this.stretchedBillboardSpeedScale);
-            sv.setNumber(ShuriKenParticle3DShaderDeclaration.CURRENTTIME, particleSystem._currentTime);
-        }
-        renderUpdate(context) {
-            this._renderElements.forEach(element => {
-                element._renderElementOBJ.isRender = element._geometry._prepareRender(context);
-                element._geometry._prepareRender(context);
-                element._geometry._updateRenderParams(context);
-            });
-        }
-        get bounds() {
-            if (this.boundsChange) {
-                this._calculateBoundingBox();
-                this.boundsChange = false;
-            }
-            return this._bounds;
-        }
-        _cloneTo(dest) {
-            this._particleSystem.cloneTo(dest._particleSystem);
-            dest.sharedMaterial = this.sharedMaterial;
-            dest.renderMode = this.renderMode;
-            dest.mesh = this.mesh;
-            dest.stretchedBillboardCameraSpeedScale = this.stretchedBillboardCameraSpeedScale;
-            dest.stretchedBillboardSpeedScale = this.stretchedBillboardSpeedScale;
-            dest.stretchedBillboardLengthScale = this.stretchedBillboardLengthScale;
-            dest.sortingFudge = this.sortingFudge;
-        }
-        _onDestroy() {
-            (this._mesh) && (this._mesh._removeReference(), this._mesh = null);
-            this._particleSystem.destroy();
-            this._particleSystem = null;
-            super._onDestroy();
-        }
-        _statAdd() {
-            Laya.Stat.renderNode++;
-            Laya.Stat.particleRenderNode++;
-        }
-        _statRemove() {
-            Laya.Stat.renderNode--;
-            Laya.Stat.particleRenderNode--;
-        }
-    }
-    ShurikenParticleRenderer.gravity = new Laya.Vector3(0, -9.81, 0);
-    Laya.Laya.addInitCallback(() => {
-        ParticleShuriKenShaderInit.init();
-        VertexShurikenParticleBillboard.__init__();
-        VertexShurikenParticleMesh.__init__();
-        ShuriKenParticle3DShaderDeclaration.__init__();
-        ShuriKenParticle3D.__init__();
-        ShurikenParticleMaterial.__initDefine__();
-    });
-
-    class ShuriKenParticle3D extends Laya.RenderableSprite3D {
-        get particleSystem() {
-            return this._particleSystem;
-        }
-        get particleRenderer() {
-            return this._render;
-        }
-        constructor() {
-            super(null);
-            this._render = this.addComponent(ShurikenParticleRenderer);
-            this._particleSystem = this._render._particleSystem;
-        }
-        destroy(destroyChild = true) {
-            if (this._destroyed)
-                return;
-            super.destroy(destroyChild);
-        }
-    }
-
-    let c = Laya.ClassUtils.regClass;
-    c("ShurikenParticleMaterial", ShurikenParticleMaterial);
-    c("ShuriKenParticle3D", ShuriKenParticle3D);
-    c("ShurikenParticleRenderer", ShurikenParticleRenderer);
-    c("ShurikenParticleSystem", ShurikenParticleSystem);
-    c("Burst", Burst);
-    c("Emission", Emission);
-    c("BaseShape", BaseShape);
-    c("BoxShape", BoxShape);
-    c("CircleShape", CircleShape);
-    c("ConeShape", ConeShape);
-    c("HemisphereShape", HemisphereShape);
-    c("SphereShape", SphereShape);
-    c("FrameOverTime", FrameOverTime);
-    c("GradientAngularVelocity", GradientAngularVelocity);
-    c("GradientColor", GradientColor);
-    c("GradientDataInt", GradientDataInt);
-    c("GradientSize", GradientSize);
-    c("GradientVelocity", GradientVelocity);
-    c("StartFrame", StartFrame);
-    c("TextureSheetAnimation", TextureSheetAnimation);
-    c("ColorOverLifetime", ColorOverLifetime);
-    c("RotationOverLifetime", RotationOverLifetime);
-    c("SizeOverLifetime", SizeOverLifetime);
-    c("VelocityOverLifetime", VelocityOverLifetime);
 
     class GradientDataVector2 {
         get gradientCount() {

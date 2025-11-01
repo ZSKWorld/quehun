@@ -114,9 +114,10 @@ declare interface ICommand {
 
 declare interface IFacade {
 
-	registerView(viewId: EViewID, viewType: EViewType, viewCls: IViewClass, mediatorCls: IMediatorClass): void;
+	registerView(viewId: EViewID, viewType: EViewType, viewCls: IViewClass, mediatorCls?: IMediatorClass): void;
 	hasMediator(viewId: EViewID): boolean;
 	getMediator(viewId: EViewID): IMediatorClass;
+	createView(viewId: EViewID, fullScreen: boolean = false): IView;
 	createMediator(viewId: EViewID, fullScreen: boolean = false): IMediator;
 
 	registerCommand(notifyName: string, cls: ICommandClass): void;

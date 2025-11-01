@@ -17,7 +17,7 @@ export class Facade extends Singleton<Facade>() implements IFacade {
 	}
 
 	//#region View
-	registerView(viewId: EViewID, viewType: EViewType, viewCls: IViewClass, mediatorCls: IMediatorClass) {
+	registerView(viewId: EViewID, viewType: EViewType, viewCls: IViewClass, mediatorCls?: IMediatorClass) {
 		this._viewMgr.register(viewId, viewType, viewCls, mediatorCls);
 	}
 
@@ -29,8 +29,12 @@ export class Facade extends Singleton<Facade>() implements IFacade {
 		return this._viewMgr.get(viewId);
 	}
 
+	createView(viewId: EViewID, fullScreen: boolean = false) {
+		return this._viewMgr.createView(viewId, fullScreen);
+	}
+
 	createMediator(viewId: EViewID, fullScreen: boolean = false) {
-		return this._viewMgr.create(viewId, fullScreen);
+		return this.createView(viewId, fullScreen).mediator;
 	}
 	//#endregion
 

@@ -4,13 +4,9 @@ import PkgEntranceBinder from "../core/ui/ui/PkgEntrance/PkgEntranceBinder";
 import PkgLoginBinder from "../core/ui/ui/PkgLogin/PkgLoginBinder";
 import PkgMainBinder from "../core/ui/ui/PkgMain/PkgMainBinder";
 import { BtnCheckView } from "../core/ui/view/PkgCommon/view/btns/BtnCheckView";
-import { BtnCheckMediator } from "../core/ui/view/PkgCommon/mediator/btns/BtnCheckMediator";
 import { BtnCheckRichTxtRightView } from "../core/ui/view/PkgCommon/view/btns/BtnCheckRichTxtRightView";
-import { BtnCheckRichTxtRightMediator } from "../core/ui/view/PkgCommon/mediator/btns/BtnCheckRichTxtRightMediator";
 import { BtnCheckTxtRightView } from "../core/ui/view/PkgCommon/view/btns/BtnCheckTxtRightView";
-import { BtnCheckTxtRightMediator } from "../core/ui/view/PkgCommon/mediator/btns/BtnCheckTxtRightMediator";
 import { BtnXunMiView } from "../core/ui/view/PkgMain/view/btns/BtnXunMiView";
-import { BtnXunMiMediator } from "../core/ui/view/PkgMain/mediator/btns/BtnXunMiMediator";
 import { ComMatchContentView } from "../core/ui/view/PkgMain/view/coms/ComMatchContentView";
 import { ComMatchContentMediator } from "../core/ui/view/PkgMain/mediator/coms/ComMatchContentMediator";
 import { ComMatchItemView } from "../core/ui/view/PkgMain/view/coms/ComMatchItemView";
@@ -46,10 +42,10 @@ export class InitViewCommand extends Command {
 
 		const register = $facade.registerView.bind($facade) as typeof $facade.registerView;
 		//Btns
-		register(EViewID.BtnCheckView, EViewType.Button, BtnCheckView, BtnCheckMediator);
-		register(EViewID.BtnCheckRichTxtRightView, EViewType.Button, BtnCheckRichTxtRightView, BtnCheckRichTxtRightMediator);
-		register(EViewID.BtnCheckTxtRightView, EViewType.Button, BtnCheckTxtRightView, BtnCheckTxtRightMediator);
-		register(EViewID.BtnXunMiView, EViewType.Button, BtnXunMiView, BtnXunMiMediator);
+		register(EViewID.BtnCheckView, EViewType.Button, BtnCheckView);
+		register(EViewID.BtnCheckRichTxtRightView, EViewType.Button, BtnCheckRichTxtRightView);
+		register(EViewID.BtnCheckTxtRightView, EViewType.Button, BtnCheckTxtRightView);
+		register(EViewID.BtnXunMiView, EViewType.Button, BtnXunMiView);
 
 		//Renders
 

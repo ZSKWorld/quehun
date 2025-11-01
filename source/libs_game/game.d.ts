@@ -59,7 +59,9 @@ declare function $showNetError(res: IError): void;
  */
 declare function ExtensionClass<E, T>(cls: Class<T>): Class<T & E>;
 
-declare const ExcuteAfterEngineInit: MethodDecorator;
+declare const BeforeEngineInit: MethodDecorator;
+
+declare const AfterEngineInit: MethodDecorator;
 
 declare interface Object {
 	/** 对象类名 */

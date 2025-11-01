@@ -1,5 +1,5 @@
 import { CommandQueue } from "../core/mvc/controller/CommandQueue";
-import { GamePreloadCommand } from "./GamePreloadCommand";
+import { GameInitCommand } from "./GameInitCommand";
 import { InitGlobalCommand } from "./InitGlobalCommand";
 import { InitSceneCommand } from "./InitSceneCommand";
 import { InitViewCommand } from "./InitViewCommand";
@@ -9,6 +9,6 @@ export class InitContextCommand extends CommandQueue {
 		this.addSubCommand(InitGlobalCommand);
 		this.addSubCommand(InitViewCommand);
 		this.addSubCommand(InitSceneCommand);
-		this.addSubCommand(GamePreloadCommand);
+		this.addSubCommand(GameInitCommand);
 	}
 }

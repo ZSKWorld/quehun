@@ -1,12 +1,14 @@
 import { Command } from "../core/mvc/controller/Command";
+import { ShaderManager } from "../core/shader/ShaderManager";
 
 interface IGameConfig {
 	readonly stat: boolean;
 	readonly released: boolean;
 }
 
-export class GamePreloadCommand extends Command {
+export class GameInitCommand extends Command {
 	override execute(notifyName: string, data?: any) {
+		ShaderManager.init();
 		$uiMgr.init();
 		$redDotMgr.init();
 		this.load();

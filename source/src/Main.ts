@@ -1,5 +1,3 @@
-import { FxBRDF } from "./core/shader/3d/FxBRDF/FxBRDF";
-import { SoftDissolveAtlasMaterial } from "./core/shader/3d/SoftDissolveAtlas/SoftDissolveAtlasMaterial";
 import { InitContextCommand } from "./contextCommand/InitContextCommand";
 import { ENotifyConst } from "./core/common/NotifyConst";
 import { ViewExtend } from "./core/ui/core/ViewExtend";
@@ -12,8 +10,8 @@ class Main {
 	constructor() {
 		this.init();
 	}
-	private async init() {
-		await Laya.init(1920, 1080);
+	private init() {
+		// await Laya.init(1920, 1080);
 		document.body.style.backgroundColor = "#000000";
 		document.body.style.backgroundImage = `url(${ ResPath.ETexturePath.JPG_Background })`;
 
@@ -38,8 +36,6 @@ class Main {
 			else $facade.dispatch(ENotifyConst.OnGameHide);
 		});
 		new InitContextCommand().execute("");
-		// new FxBRDF();
-		// new SoftDissolveAtlasMaterial();
 	}
 }
 

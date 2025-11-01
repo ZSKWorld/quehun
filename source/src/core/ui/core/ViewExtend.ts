@@ -30,11 +30,8 @@ export class ViewExtend {
 			_this.onCreate?.();
 			if (_this.viewId) {
 				const MediatorCls = $facade.getMediator(_this.viewId);
-				let mediator = _this.getComponent(MediatorCls);
-				if (!mediator && MediatorCls) {
-					mediator = _this.addComponent(MediatorCls);
-				}
-				_this.mediator = mediator;
+				if (MediatorCls)
+					_this.mediator = _this.getComponent(MediatorCls) || _this.addComponent(MediatorCls);
 			}
 		};
 

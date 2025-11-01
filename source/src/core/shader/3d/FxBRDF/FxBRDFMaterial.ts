@@ -1,6 +1,6 @@
-import { SoftDissolveAtlas_FS as fs, SoftDissolveAtlas_VS as vs } from "../Shader3DDefine";
+import { FxBRDF_FS as fs, FxBRDF_VS as vs } from "../Shader3DDefine";
 
-const ShaderName = "SoftDissolveAtlas";
+const ShaderName = "FxBRDF";
 
 const DEF_MainTex = Laya.Shader3D.getDefineByName("DEF_MainTex");
 const DEF_DissolveTex = Laya.Shader3D.getDefineByName("DEF_DissolveTex");
@@ -8,7 +8,7 @@ const DEF_DistortionTex = Laya.Shader3D.getDefineByName("DEF_DistortionTex");
 const DEF_AMBlightTex = Laya.Shader3D.getDefineByName("DEF_AMBlightTex");
 const DEF_MaskTex = Laya.Shader3D.getDefineByName("DEF_MaskTex");
 
-export class SoftDissolveAtlasMaterial extends Laya.Material {
+export class FxBRDFMaterial extends Laya.Material {
 	static init() {
 		const uniformMap = {
 			u_MainColor: Laya.ShaderDataType.Vector4,

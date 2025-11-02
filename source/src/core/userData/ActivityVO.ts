@@ -12,7 +12,6 @@ export class ActivityVO extends BaseVO implements VO.IActivityVO {
 
 	@InterestMessage(ENotify.NotifyAccountUpdate)
 	private onNotifyAccountUpdate(data: IAccountUpdate) {
-		if (!data) return;
 		this.activity = this.decodeProtoData(data.activity);
 		this.activity_task = this.decodeProtoData(data.activity_task);
 		this.activity_flip_task = this.decodeProtoData(data.activity_flip_task);

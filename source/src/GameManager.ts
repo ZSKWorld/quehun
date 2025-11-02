@@ -100,18 +100,13 @@ export class GameManager extends ObserverAll implements IGameManager {
 			if (res.error) return;
 			this._clientEndPoint = $decodeProtoData(res.client_endpoint);
 		});
-		$netMgr.requests.fetchClientValue();
-		$userData.announcement.fetchAnnouncement();
 
 		let lastHeatBeatTime = 0, lastMouseX = 0, lastMouseY = 0;
 		//每6分钟心跳一次，挂机超过1个小时会掉线
 		Laya.timer.loop(6 * 60 * 1000, this, () => {
 			if (!$netMgr.lobbyConnected) return;
 			//23/12/27新增，每6分钟同步服务器时间
-			$netMgr.requests.fetchServerTime().then(res => {
-				if (res.error) return;
-				$timeUtil.setServerTime(res.server_time);
-			});
+			$netMgr.requests.fetchServerTime();
 			const t = ($timeUtil.milliSecond - lastHeatBeatTime) / 1000;
 			$netMgr.requests.heatbeat({ no_operation_counter: t });
 			//客户端有能力断线的话，超过50分钟就断线
@@ -170,10 +165,5 @@ export class GameManager extends ObserverAll implements IGameManager {
 		if (data.type == EClientMessageType.RoomInvite) {
 			Logger.error("有邀请", data);
 		}
-	}
-
-	@InterestMessage(ENotify.NotifyVipLevelChange)
-	private onNotifyVipLevelChange(data: INotifyVipLevelChange) {
-		Logger.error("NotifyVipLevelChange", data);
 	}
 }

@@ -159,10 +159,9 @@ declare interface IGameUtil {
 declare interface ITimeUtil {
 	get milliSecond(): number;
 	get second(): number;
-	setServerTime(time: number): void;
 	milliSecond2YMDHMS(milliSecond: number): string;
-	timeFormat(seconds: number, keepHour: boolean = true): string;
-	timeFormatChinese(seconds: number): string;
+	timeFormat(second: number, keepHour: boolean = true): string;
+	timeFormatChinese(second: number): string;
 	wait(milSec: number): Promise<void>;
 }
 

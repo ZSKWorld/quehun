@@ -50,6 +50,7 @@ declare function $confirmMid(format: 0 | 1, title: string, content: string): Pro
 /** 小号弹窗 */
 declare function $confirmSma(format: 0 | 1 | 2 | 3, title: string, content: string): Promise<boolean>;
 
+/** 富文本 */
 declare function $richText(text: string = ""): IRichText;
 /** 本地化文本， str.str表 */
 declare function $lang(id: number, ...args: any[]): string;

@@ -30,7 +30,7 @@ export class UILoginQueueMediator extends MediatorBase<UILoginQueueView, IUILogi
 	}
 
 	@InterestMessage(ENotify.NotifyLoginQueueFinished)
-	private onNotifyLoginQueueFinished(res: INotifyLoginQueueFinished) {
+	private onNotifyLoginQueueFinished(data: INotifyLoginQueueFinished) {
 		this.closeSelf();
 	}
 

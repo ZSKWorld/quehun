@@ -1,6 +1,6 @@
 import { BaseVO } from "./BaseVO";
 
-export class RechargeVO extends BaseVO implements VO.ICharacterVO {
+export class RechargeVO extends BaseVO implements VO.IRechargeVO {
 
 	/** 欠款订单列表 */
 	orders: ProtoObject<IResFetchRefundOrder_OrderInfo>[];

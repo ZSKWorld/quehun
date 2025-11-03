@@ -10,10 +10,10 @@ export class RechargeVO extends BaseVO implements VO.IRechargeVO {
 	message: ProtoObject<II18nContext>[];
 
 	@InterestMessage(EMessageID.fetchRefundOrder)
-	private onFetchRefundOrder(data: IResFetchRefundOrder) {
-		if (!data || data.error) return;
-		this.orders = data.orders.map(v => this.decodeProtoData(v));
-		this.clear_deadline = data.clear_deadline;
-		this.message = data.message.map(v => this.decodeProtoData(v));
+	private onFetchRefundOrder(res: IResFetchRefundOrder) {
+		if (res.error) return;
+		this.orders = res.orders.map(v => this.decodeProtoData(v));
+		this.clear_deadline = res.clear_deadline;
+		this.message = res.message.map(v => this.decodeProtoData(v));
 	}
 }

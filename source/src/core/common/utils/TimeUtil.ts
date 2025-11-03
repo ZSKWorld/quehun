@@ -54,7 +54,7 @@ export class TimeUtil extends ObserverAll implements ITimeUtil {
 
 	@InterestMessage(EMessageID.fetchServerTime)
 	private onFetchServerTime(res: IResServerTime) {
-		if (!res || res.error) return;
+		if (res.error) return;
 		Logger.error(res)
 		this._serverDelta = res.server_time * 1000 - Date.now();
 	}

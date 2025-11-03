@@ -5,7 +5,7 @@ export class MailVO extends BaseVO implements VO.IMailVO {
 
 	@InterestMessage(EMessageID.fetchMailInfo)
 	private onFetchMailInfo(res: IResMailInfo) {
-		if (!res || res.error) return;
+		if (res.error) return;
 		this.mails = res.mails.map(this.decodeProtoData);
 	}
 

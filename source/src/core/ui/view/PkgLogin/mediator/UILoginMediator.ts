@@ -17,6 +17,7 @@ interface ILoginInfo {
 }
 
 export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
+	private _loggingIn: boolean = false;
 	private _loginInfo: ILoginInfo;
 	private _accountInput = { account: "", password: "" };
 	private _phoneInput = { account: "", password: "" };
@@ -139,16 +140,16 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 		if (_loginInfo.loginType == ELoginType.Account) {
 			view.ctrl_page.selectedIndex = 2;
 			if (!_loginInfo.access_token) {
-				this.loginAccount();
+				this.loginByAccount();
 			} else {
-				this.loginToken();
+				this.loginByToken();
 			}
 		} else {
 			this.cancelLogin();
 		}
 	}
 
-	private async loginAccount() {
+	private async loginByAccount() {
 		const { view, _loginInfo } = this;
 		const res = await $netMgr.requests.login({
 			account: _loginInfo.account,
@@ -186,7 +187,7 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 		this.afterLogin();
 	}
 
-	private async loginToken() {
+	private async loginByToken() {
 		const { _loginInfo } = this;
 		const res = await $netMgr.requests.oauth2Check({
 			type: _loginInfo.loginType,

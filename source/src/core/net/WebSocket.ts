@@ -117,8 +117,8 @@ export class WebSocket extends Laya.EventDispatcher {
 			const packet = $pbMgr.encodeRpc(method.fullName, method.resolvedRequestType.encode(data).finish());
 			this._waitList[rpcID] = { service: method.parent.fullName as EServiceType, method: methodName, callback: resolve };
 			const byte = new Laya.Byte();
-			byte.writeArrayBuffer(header);
-			byte.writeArrayBuffer(packet);
+			byte.writeArrayBuffer(header.buffer);
+			byte.writeArrayBuffer(packet.buffer);
 			this._socket.send(byte.buffer);
 		});
 

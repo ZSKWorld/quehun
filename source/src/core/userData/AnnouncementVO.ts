@@ -22,7 +22,6 @@ export class AnnouncementVO extends BaseVO implements VO.IAnnouncementVO {
 
 	@InterestMessage(EMessageID.fetchAnnouncement)
 	private onFetchAnnouncement(res: IResAnnouncement) {
-		if (res.error) return;
 		const decodeRes = this.decodeProtoData(res);
 		this._announcements = decodeRes.announcements;
 		this._sort = decodeRes.sort;

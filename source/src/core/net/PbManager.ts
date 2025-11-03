@@ -50,7 +50,7 @@ export class PbManager implements IPbManager {
 			name: name,
 			data: data
 		});
-		return wrapper.encode(msg).finish();
+		return new Uint8Array(wrapper.encode(msg).finish());
 	}
 
 	decodeRpc(data: Uint8Array) {

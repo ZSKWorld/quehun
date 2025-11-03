@@ -30,7 +30,6 @@ export class CharacterVO extends BaseVO implements VO.ICharacterVO {
 
 	@InterestMessage(EMessageID.fetchCharacterInfo)
 	private onFetchCharacterInfo(res: IResCharacterInfo) {
-		if (res.error) return;
 		this.character_id = res.main_character_id;
 		this.skin_id = res.characters.find(v => v.charid == this.character_id).skin;
 		this.characters = res.characters.map(this.decodeProtoData);

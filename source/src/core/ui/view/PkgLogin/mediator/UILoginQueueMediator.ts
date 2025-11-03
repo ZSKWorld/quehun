@@ -36,11 +36,7 @@ export class UILoginQueueMediator extends MediatorBase<UILoginQueueView, IUILogi
 
 	@InterestMessage(EMessageID.fetchQueueInfo)
 	private onFetchQueueInfo(res: IResFetchQueueInfo) {
-		if (res.error) {
-			this.closeSelf();
-		} else {
-			this.view.refresh(res);
-		}
+		this.view.refresh(res);
 	}
 
 	override onOpenAni() { return UIUtil.popAlphaIn(this.view); }

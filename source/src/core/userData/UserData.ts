@@ -40,7 +40,6 @@ export class UserData extends BaseVO implements VO.IUserDataVO {
 	@InterestMessage(EMessageID.login)
 	@InterestMessage(EMessageID.oauth2Login)
 	private onLogin(res: IResLogin) {
-		if (res.error) return;
 		this.game_info = this.decodeProtoData(res.game_info);
 		this.has_unread_announcement = res.has_unread_announcement;
 		this.access_token = res.access_token;
@@ -64,7 +63,6 @@ export class UserData extends BaseVO implements VO.IUserDataVO {
 
 	@InterestMessage(EMessageID.fetchInfo)
 	private onFetchInfo(res: IResFetchInfo) {
-		if (res.error) return;
 		res.server_time && $netMgr.event(EMessageID.fetchServerTime, res.server_time)
 		res.server_setting && $netMgr.event(EMessageID.fetchServerSettings, res.server_setting);
 		res.client_value && $netMgr.event(EMessageID.fetchClientValue, res.client_value);

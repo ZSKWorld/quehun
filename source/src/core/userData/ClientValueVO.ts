@@ -9,7 +9,6 @@ export class ClientValueVO extends BaseVO implements VO.IClientValueVO {
 
 	@InterestMessage(EMessageID.fetchClientValue)
 	private onFetchClientValue(res: IResClientValue) {
-		if (res.error) return;
 		const decodeRes = this.decodeProtoData(res);
 		this._data = decodeRes.datas;
 		this._rechargeCount = decodeRes.recharged_count;

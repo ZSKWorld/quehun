@@ -37,9 +37,9 @@ export class NetManager extends Laya.EventDispatcher implements INetManager {
 		this._lobbySocket.on(ESocketEvent.Connected, this, () => $facade.dispatch(ENotifyConst.LobbyConnected));
 		this._lobbySocket.on(ESocketEvent.Closed, this, () => $facade.dispatch(ENotifyConst.LobbyClosed));
 		this._lobbySocket.on(ESocketEvent.Response, this, (method: string, res: IResponse) => {
-			if (res.error && res.error.code == -1) {
-				$confirmSma(2, "", $lang(2061));
-			} else
+			if (res.error)
+				this.onResponseError(res.error);
+			else
 				this.event(method, res);
 		});
 		this._lobbySocket.on(ESocketEvent.Notify, this, this.event);
@@ -83,5 +83,20 @@ export class NetManager extends Laya.EventDispatcher implements INetManager {
 		}));
 		this._routes = routes.routes;
 		this._gateway = routes.url;
+	}
+
+	private onResponseError(err: IError) {
+		if (!err) return;
+		const { code, u32_params, str_params, json_param } = err;
+		if (code == -1) {
+			$confirmSma(2, "", $lang(2061));
+		} else if (code == 156) {
+			//排队
+		} else if (code == 503) {
+			//账号待删除
+		} else {
+			const errStr = $netLang(code) || $lang(2068);
+			$confirmSma(2, "", errStr);
+		}
 	}
 }

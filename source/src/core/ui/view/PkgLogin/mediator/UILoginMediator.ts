@@ -17,7 +17,6 @@ interface ILoginInfo {
 }
 
 export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
-	private _loggingIn: boolean = false;
 	private _loginInfo: ILoginInfo;
 	private _accountInput = { account: "", password: "" };
 	private _phoneInput = { account: "", password: "" };

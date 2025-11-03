@@ -12,19 +12,16 @@ export class FriendVO extends BaseVO implements VO.IFriendVO {
 
 	@InterestMessage(EMessageID.fetchFriendList)
 	private onFetchFriendList(res: IResFriendList) {
-		if (res.error) return;
 		this.friends = res.friends.map(this.decodeProtoData);
 		this.friend_max_count = res.friend_max_count;
 		this.friend_count = res.friend_count;
 	}
 	@InterestMessage(EMessageID.fetchFriendApplyList)
 	private onFetchFriendApplyList(res: IResFriendApplyList) {
-		if (res.error) return;
 		this.applies = res.applies.map(this.decodeProtoData);
 	}
 	@InterestMessage(EMessageID.fetchRecentFriend)
 	private onFetchRecentFriend(res: IResFetchrecentFriend) {
-		if (res.error) return;
 		this.account_list = [...res.account_list];
 	}
 

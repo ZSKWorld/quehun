@@ -107,7 +107,7 @@ export class WebSocket extends Laya.EventDispatcher {
 
 		const promise = new Promise<PartialAll<IResponse>>(resolve => {
 			if (!this.connected) {
-				this.eventResponse(methodName, { error: { code: -1 } }, resolve);
+				this.eventMessage(ESocketEvent.Response, methodName, { error: { code: -1 } }, resolve);
 				return;
 			}
 			this._rpcIndex = (this._rpcIndex + 1) % 60007;
@@ -140,21 +140,17 @@ export class WebSocket extends Laya.EventDispatcher {
 			case EHeaderType.Response:
 				const requestID = data[1] + (data[2] << 8);
 				const request = this._waitList[requestID];
-				if (!request) {
-					Logger.error(`收到不存在的requestID: ${ requestID }`);
-					return;
-				}
+				if (!request) return;
 				delete this._waitList[requestID];
 				delete this._rpcRepeatMap[request.method];
 				const wrapper = $pbMgr.decodeRpc(data.slice(3));
 				const res = $pbMgr.methodMap[request.method].resolvedResponseType.decode(wrapper.data);
-				this.eventResponse(request.method, res, request.callback);
+				this.eventMessage(ESocketEvent.Response, request.method, res, request.callback);
 				break;
 			case EHeaderType.Notify:
 				const msg = $pbMgr.decodeMessage(data.slice(1));
 				const msgName = msg.$type.name;
-				Logger.error(msgName, msg);
-				this.event(ESocketEvent.Notify, [msgName, msg]);
+				this.eventMessage(ESocketEvent.Notify, msgName, msg);
 				break;
 		}
 	}
@@ -163,7 +159,7 @@ export class WebSocket extends Laya.EventDispatcher {
 		if (this.state == ESocketState.Disconnect) return;
 		for (const key in this._waitList) {
 			const request = this._waitList[key];
-			this.eventResponse(request.method, { error: { code: -1 } }, request.callback);
+			this.eventMessage(ESocketEvent.Response, request.method, { error: { code: -1 } }, request.callback);
 		}
 		this._waitList = {};
 		this._rpcRepeatMap = {};
@@ -180,8 +176,9 @@ export class WebSocket extends Laya.EventDispatcher {
 		this._socket.connectByUrl(this.url);
 	}
 
-	private eventResponse(name: string, res: PartialAll<IResponse>, callback: (res: PartialAll<IResponse>) => void) {
-		this.event(ESocketEvent.Response, [name, res]);
-		callback(res);
+	private eventMessage(type: ESocketEvent.Response | ESocketEvent.Notify, name: string, data: PartialAll<IResponse>, callback?: Function) {
+		Logger.error(type, name, data);
+		this.event(type, [name, data]);
+		callback && callback(data);
 	}
 }

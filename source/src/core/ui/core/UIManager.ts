@@ -129,7 +129,7 @@ export class UIManager extends Observer implements IUIManager {
 		this._cache.cache(mediator);
 		mediator.view.removeFromParent();
 		this.lockMark--;
-		const nextViewId = this._openedStack[this._openedStack.length - 1];
+		const nextViewId = this._openedStack.last;
 		const topViewId = this._openedViews[0]?.viewId;
 		if (topViewId != nextViewId)
 			this.openView(this._openedStack.pop());

@@ -27,9 +27,9 @@ export class AccountVO extends BaseVO implements VO.IAccountVO {
 	/** 各平台钻石 */
 	platform_diamond: ProtoObject<IAccount_PlatformDiamond>[] = [];
 	/** 4麻段位 */
-	level: IAccountLevel;
+	level: ProtoObject<IAccountLevel>;
 	/** 3麻段位 */
-	level3: IAccountLevel;
+	level3: ProtoObject<IAccountLevel>;
 	avatar_frame: number = 0;
 	skin_ticket: number = 0;
 	platform_skin_ticket: ProtoObject<IAccount_PlatformSkinTicket>[] = [];

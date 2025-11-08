@@ -38,7 +38,7 @@ export class NetManager extends Laya.EventDispatcher implements INetManager {
 		this._lobbySocket.on(ESocketEvent.Closed, this, () => $facade.dispatch(ENotifyConst.LobbyClosed));
 		this._lobbySocket.on(ESocketEvent.Response, this, (method: string, res: IResponse) => {
 			if (res.error)
-				this.onResponseError(res.error);
+				this.onResponseError(method, res.error);
 			else
 				this.event(method, res);
 		});
@@ -85,8 +85,9 @@ export class NetManager extends Laya.EventDispatcher implements INetManager {
 		this._gateway = routes.url;
 	}
 
-	private onResponseError(err: IError) {
+	private onResponseError(method: string, err: IError) {
 		if (!err) return;
+		Logger.error(method, err);
 		const { code, u32_params, str_params, json_param } = err;
 		if (code == -1) {
 			$confirmSma(2, "", $lang(2061));

@@ -177,7 +177,6 @@ export class WebSocket extends Laya.EventDispatcher {
 	}
 
 	private eventMessage(type: ESocketEvent.Response | ESocketEvent.Notify, name: string, data: PartialAll<IResponse>, callback?: Function) {
-		Logger.error(type, name, data);
 		this.event(type, [name, data]);
 		callback && callback(data);
 	}

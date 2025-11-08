@@ -33,19 +33,6 @@
                 "close": true
             }
         },
-        { //执行所有工具
-            "label": "执行所有工具",
-            "type": "shell",
-            "dependsOn": [
-                "创建 View & ViewCtrl & ViewProxy",
-                "导出表配置",
-                "更新资源路径",
-                "用户数据事件",
-                "更新网络相关"
-            ],
-            "dependsOrder": "parallel",
-            "problemMatcher": []
-        },
         { //创建 View & Mediator
             "label": "创建 View & Mediator",
             "type": "shell",

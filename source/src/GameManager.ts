@@ -80,10 +80,13 @@ export class GameManager extends ObserverAll implements IGameManager {
 	get multiLogin() {
 		const stime = $localDataMgr.get<number>(ELocalDataKey.MultiLogin);
 		if (!stime) return false;
-		Logger.error($timeUtil.second, stime + 1.5, $timeUtil.second + 1800);
 		return $timeUtil.second < stime + 1.5 && stime < $timeUtil.second + 1800;
 	}
 	get p2() { return "DF2vkXCnfeXp4WoGSBGNcJBufZiMN3UP" + (window["pertinent3"] || ""); }
+
+	private _hangOutTime = 0;
+	private _lastHeatBeatTime = $timeUtil.second;
+	private _lastMousePoint = new Laya.Point();
 
 	async init() {
 		const version = await $loadMgr.fetch("https://game.maj-soul.com/1/version.json", "json", null, { ignoreCache: true });
@@ -96,41 +99,42 @@ export class GameManager extends ObserverAll implements IGameManager {
 
 	@InterestNotify(ENotifyConst.LoginSuccess)
 	private loginSuccess() {
-		$netMgr.requests.fetchConnectionInfo().then(res => {
-			if (res.error) return;
-			this._clientEndPoint = $decodeProtoData(res.client_endpoint);
-		});
+		$netMgr.requests.fetchConnectionInfo();
+		Laya.timer.loop(1000, this, this.secondCheckLoop);
+	}
 
-		let lastHeatBeatTime = 0, lastMouseX = 0, lastMouseY = 0;
-		//每6分钟心跳一次，挂机超过1个小时会掉线
-		Laya.timer.loop(6 * 60 * 1000, this, () => {
-			if (!$netMgr.lobbyConnected) return;
-			//23/12/27新增，每6分钟同步服务器时间
+	private secondCheckLoop() {
+		if (!$netMgr.lobbyConnected) return;
+		this._hangOutTime += 1;
+		const { _hangOutTime, _lastHeatBeatTime, _lastMousePoint } = this;
+		const t = $timeUtil.second - _lastHeatBeatTime;
+
+		//23/12/27新增，每6分钟同步服务器时间
+		if (_hangOutTime % 360 == 0) {
 			$netMgr.requests.fetchServerTime();
-			const t = ($timeUtil.milliSecond - lastHeatBeatTime) / 1000;
 			$netMgr.requests.heatbeat({ no_operation_counter: t });
 			//客户端有能力断线的话，超过50分钟就断线
-			if (t >= 50 * 60) {
+			if (t >= 3000) {
 				this.onNotifyAccountLogout();
 			}
-		});
-		Laya.timer.loop(1000, this, () => {
-			const _m = Laya.stage.getMousePoint();
-			if (_m.x != lastMouseX || _m.y != lastMouseY) {
-				const t = ($timeUtil.milliSecond - lastHeatBeatTime) / 1000;
-				//当玩家长时间不动，突然动了，通知一下服务器
-				if (t > 40 * 60) {
-					$netMgr.requests.heatbeat({ no_operation_counter: 0 });
-				}
-				lastHeatBeatTime = $timeUtil.milliSecond;
-				lastMouseX = _m.x;
-				lastMouseY = _m.y;
-			}
-		});
-		Laya.timer.loop(1000, this, () => {
-			$localDataMgr.set(ELocalDataKey.MultiLogin, $timeUtil.second)
-		});
+		}
 
+		const mousePoint = Laya.stage.getMousePoint();
+		if (mousePoint.x != _lastMousePoint.x || mousePoint.y != _lastMousePoint.y) {
+			//当玩家长时间不动，突然动了，通知一下服务器
+			if (t > 2400) {
+				$netMgr.requests.heatbeat({ no_operation_counter: 0 });
+			}
+			this._lastHeatBeatTime = $timeUtil.second;
+			_lastMousePoint.setTo(mousePoint.x, mousePoint.y);
+		}
+
+		$localDataMgr.set(ELocalDataKey.MultiLogin, $timeUtil.second);
+	}
+
+	@InterestMessage(EMessageID.fetchConnectionInfo)
+	private onFetchConnectionInfo(res: IResConnectionInfo) {
+		this._clientEndPoint = $decodeProtoData(res.client_endpoint);
 	}
 
 	@InterestMessage(EMessageID.login)

@@ -1,17 +1,13 @@
 import ComMatchContent from "../../../../ui/PkgMain/ComMatchContent";
 
 export const enum EComMatchContentMsg {
-	OnItemClick = "EComMatchContentMsg_OnItemClick",
+
 }
 
 export class ComMatchContentView extends ExtensionClass<IView, ComMatchContent>(ComMatchContent) implements IView {
 
 	override onCreate() {
-		const { com_item0, com_item1, com_item2, com_item3, com_item4 } = this;
-		const coms = [com_item0, com_item1, com_item2, com_item3, com_item4];
-		for (let i = 0; i < coms.length; i++) {
-			coms[i].btn_bg.onClick(this, this.sendEvent, [EComMatchContentMsg.OnItemClick, i]);
-		}
+
 	}
 
 	async transIn() {
@@ -43,6 +39,26 @@ export class ComMatchContentView extends ExtensionClass<IView, ComMatchContent>(
 		}
 		await $timeUtil.wait(167);
 		this.visible = false;
+	}
+
+	refreshRankMode1() {
+
+	}
+
+	refreshMatchMode1() {
+
+	}
+
+	refreshFriendMode() {
+
+	}
+
+	refreshRankMode2() {
+
+	}
+
+	refreshMatchMode2() {
+
 	}
 
 }

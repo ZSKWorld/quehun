@@ -134,22 +134,25 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 		$localDataMgr.remove(ELocalDataKey.AutoLogin);
 	}
 
-	private sendLogin() {
+	private async sendLogin() {
 		const { view, _loginInfo } = this;
+		let loginSuccess = false;
 		if (_loginInfo.loginType == ELoginType.Account) {
 			view.ctrl_page.selectedIndex = 2;
 			if (!_loginInfo.access_token) {
-				this.loginByAccount();
+				loginSuccess = await this.loginByAccount();
 			} else {
-				this.loginByToken();
+				loginSuccess = await this.loginByToken();
 			}
-		} else {
-			this.cancelLogin();
 		}
+		if (loginSuccess)
+			this.afterLogin();
+		else
+			this.cancelLogin();
 	}
 
 	private async loginByAccount() {
-		const { view, _loginInfo } = this;
+		const { _loginInfo } = this;
 		const res = await $netMgr.requests.login({
 			account: _loginInfo.account,
 			password: $gameUtil.HmacSHA256(_loginInfo.password),
@@ -167,23 +170,12 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 			tag: $gameMgr.reportClientType,
 			version: 0,
 		});
-		if (res.error) {
-			const code = res.error.code;
-			if (code == 156) {
-				//排队
-			} else if (code == 503) {
-				//账号待删除
-			} else {
-				$showNetError(res.error);
-			}
-			this.cancelLogin();
-			return;
-		}
+		if (res.error) return false;
 		//协议
 		if (res.access_token) {
 			_loginInfo.access_token = res.access_token;
 		}
-		this.afterLogin();
+		return true;
 	}
 
 	private async loginByToken() {
@@ -192,11 +184,7 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 			type: _loginInfo.loginType,
 			access_token: _loginInfo.access_token
 		});
-		if (res.error) {
-			$showNetError(res.error);
-			this.cancelLogin();
-			return;
-		}
+		if (res.error) return false;
 
 		if (!res.has_account) {
 			const res = await $netMgr.requests.oauth2Signup({
@@ -212,11 +200,7 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 				client_version_string: $gameMgr.clientVersion,
 				tag: $gameMgr.reportClientType
 			});
-			if (res.error) {
-				$showNetError(res.error);
-				this.cancelLogin();
-				return;
-			}
+			if (res.error) return false;
 		}
 		const res2 = await $netMgr.requests.oauth2Login({
 			type: _loginInfo.loginType,
@@ -234,23 +218,12 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 			client_version_string: $gameMgr.clientVersion,
 			tag: $gameMgr.reportClientType
 		});
-		if (res2.error) {
-			const code = res2.error.code;
-			if (code == 156) {
-				//排队
-			} else if (code == 503) {
-				//账号待删除
-			} else {
-				$showNetError(res2.error);
-			}
-			this.cancelLogin();
-			return;
-		}
+		if (res2.error) return false;
 		//协议
 		if (res2.access_token) {
 			_loginInfo.access_token = res2.access_token;
 		}
-		this.afterLogin();
+		return true;
 	}
 
 	private async afterLogin() {

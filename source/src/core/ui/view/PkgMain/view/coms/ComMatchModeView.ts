@@ -16,8 +16,6 @@ export const enum EComMatchModeMsg {
 }
 
 export class ComMatchModeView extends ExtensionClass<IView, ComMatchMode>(ComMatchMode) implements IView {
-	curMode: EComMatchModeShowType;
-	lastMode: EComMatchModeShowType;
 
 	override onCreate() {
 		const { btn_rankMode, btn_matchMode, btn_friendMode, btn_back } = this;
@@ -27,11 +25,7 @@ export class ComMatchModeView extends ExtensionClass<IView, ComMatchMode>(ComMat
 		btn_back.onClick(this, this.sendEvent, [EComMatchModeMsg.OnBtnBackClick]);
 	}
 
-	async setShowType(type: EComMatchModeShowType) {
-		if (this.curMode == type) return;
-		this.lastMode = EComMatchModeShowType.Mode;
-		const lastMode = this.curMode || this.lastMode;
-		this.curMode = type;
+	async setShowType(type: EComMatchModeShowType, lastType: EComMatchModeShowType) {
 		this.touchable = false;
 		const { txt_title, ctrl_type, trans_modeIn, trans_modeOut, trans_titleIn, trans_titleOut, com_content1, com_content2 } = this;
 		switch (type) {
@@ -45,9 +39,10 @@ export class ComMatchModeView extends ExtensionClass<IView, ComMatchMode>(ComMat
 			case EComMatchModeShowType.MatchMode1:
 			case EComMatchModeShowType.FriendMode:
 				txt_title.langText(TitleLang[type]);
-				if (lastMode == EComMatchModeShowType.Mode) {
+				if (lastType == EComMatchModeShowType.Mode) {
 					await UIUtil.playTrans(trans_modeOut);
 					UIUtil.playTrans(trans_titleIn);
+					com_content1.mediator.data = type;
 				} else {
 					await com_content2.transOut();
 				}
@@ -56,7 +51,6 @@ export class ComMatchModeView extends ExtensionClass<IView, ComMatchMode>(ComMat
 				break;
 			case EComMatchModeShowType.RankMode2:
 			case EComMatchModeShowType.MatchMode2:
-				this.lastMode = lastMode;
 				break;
 		}
 		this.touchable = true;

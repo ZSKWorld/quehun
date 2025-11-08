@@ -1,4 +1,5 @@
 import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
+import { UIUtil } from "../../../../tool/UIUtil";
 import { EComMatchModeShowType } from "../../event/MainDefine";
 import { ComMatchModeView, EComMatchModeMsg } from "../../view/coms/ComMatchModeView";
 
@@ -7,7 +8,7 @@ export interface IComMatchModeData {
 }
 
 export class ComMatchModeMediator extends MediatorBase<ComMatchModeView, IComMatchModeData> {
-
+	private _curMode = EComMatchModeShowType.Mode;
 
 	override onAwake() {
 		this.addEvent(EComMatchModeMsg.OnBtnBackClick, this.onBtnBackClick);
@@ -16,11 +17,27 @@ export class ComMatchModeMediator extends MediatorBase<ComMatchModeView, IComMat
 		this.addEvent(EComMatchModeMsg.OnBtnFriendModeClick, this.setShowType, [EComMatchModeShowType.FriendMode]);
 	}
 
-	private setShowType(type: EComMatchModeShowType) {
-		this.view.setShowType(type);
+	private onBtnBackClick() {
+		this.setShowType(this.getBackMode());
 	}
 
-	private onBtnBackClick() {
-		this.view.setShowType(this.view.lastMode);
+	private setShowType(type: EComMatchModeShowType) {
+		const lastType = this._curMode;
+		if (type == lastType) return;
+		this._curMode = type;
+		this.view.setShowType(type, lastType);
+	}
+
+	private getBackMode() {
+		const type = this._curMode;
+		switch (type) {
+			case EComMatchModeShowType.RankMode2: return EComMatchModeShowType.RankMode1;
+			case EComMatchModeShowType.MatchMode2: return EComMatchModeShowType.MatchMode2;
+			case EComMatchModeShowType.Mode:
+			case EComMatchModeShowType.RankMode1:
+			case EComMatchModeShowType.MatchMode1:
+			case EComMatchModeShowType.FriendMode:
+			default: return EComMatchModeShowType.Mode;
+		}
 	}
 }

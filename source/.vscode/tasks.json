@@ -109,6 +109,24 @@
             },
             "problemMatcher": []
         },
+        { //创建材质
+            "label": "创建材质",
+            "type": "shell",
+            "command": "node ../../../laya_framework_tool/bin/js/BatMain.js 11",
+            "presentation": {
+                "close": true
+            },
+            "problemMatcher": []
+        },
+        { //替换spine文件名
+            "label": "替换spine文件名",
+            "type": "shell",
+            "command": "node ../../../laya_framework_tool/bin/js/BatMain.js 12",
+            "presentation": {
+                "close": true
+            },
+            "problemMatcher": []
+        },
         { //tsc监视
             "label": "tsc监视",
             "type": "typescript",

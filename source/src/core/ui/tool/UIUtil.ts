@@ -1,13 +1,13 @@
 
 /** UI工具类 */
-export class UIUtil {
+export class UIUtil implements IUIUtil {
 	/**
 	 * 获取gui图集贴图
 	 * @param pkg 包名
 	 * @param name 贴图名字
 	 * @returns
 	 */
-	static getFGUITexture(pkg: string, name: string) {
+	getFGUITexture(pkg: string, name: string) {
 		let temp = fgui.UIPackage.getItemByURL(fgui.UIPackage.getItemURL(pkg, name)).getBranch();
 		temp = temp.getHighResolution();
 		temp.load();
@@ -22,7 +22,7 @@ export class UIUtil {
 	 * @param renderFunc 渲染回调
 	 * @param clickFunc 点击回调
 	 */
-	static setList(
+	setList(
 		list: fgui.GList,
 		virtual: boolean = true,
 		caller?: any,
@@ -47,7 +47,7 @@ export class UIUtil {
 	 * @param defaultValue 默认值
 	 * @param showItemCount 下拉显示数量
 	 */
-	static setCombox(
+	setCombox(
 		cmb: fgui.GComboBox,
 		items: string[],
 		values: any[],
@@ -64,7 +64,7 @@ export class UIUtil {
 		cmb.visibleItemCount = Math.floor(showItemCount) > 0 ? Math.floor(showItemCount) : items.length;
 	}
 
-	// static setInputCheck(input: fgui.GTextInput, onInput: Laya.Handler) {
+	// setInputCheck(input: fgui.GTextInput, onInput: Laya.Handler) {
 	// 	let duringComposition = false;
 	// 	const onCompositionStart = (event) => {
 	// 		// 输入中文开始
@@ -87,7 +87,7 @@ export class UIUtil {
 	// }
 
 
-	static popAlphaIn(panel: fgui.GObject) {
+	popAlphaIn(panel: fgui.GObject) {
 		return new Promise<void>(resolve => {
 			panel.alpha = 0;
 			panel.setScale(0, 0);
@@ -99,7 +99,7 @@ export class UIUtil {
 		});
 	}
 
-	static popAlphaOut(panel: fgui.GObject) {
+	popAlphaOut(panel: fgui.GObject) {
 		return new Promise<void>(resolve => {
 			Laya.Tween.killAll(panel);
 			Laya.Tween.create()
@@ -109,7 +109,7 @@ export class UIUtil {
 		});
 	}
 
-	static playTrans(trans: fgui.Transition, reverse?: boolean) {
+	playTrans(trans: fgui.Transition, reverse?: boolean) {
 		return new Promise<void>(resolve => {
 			if (!trans) return resolve();
 			if (reverse) trans.playReverse(Laya.Handler.create(null, resolve));

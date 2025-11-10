@@ -1,5 +1,4 @@
 import { MediatorBase } from "../../../../mvc/view/MediatorBase";
-import { UIUtil } from "../../../tool/UIUtil";
 
 interface IConfirmView extends IView {
 	ctrl_format: fgui.Controller;
@@ -20,8 +19,8 @@ export abstract class ConfirmBaseMediator<V extends IConfirmView = IConfirmView,
 
 	}
 
-	override onOpenAni() { return UIUtil.popAlphaIn(this.view); }
-	override onCloseAni() { return UIUtil.popAlphaOut(this.view); }
+	override onOpenAni() { return $uiUtil.popAlphaIn(this.view); }
+	override onCloseAni() { return $uiUtil.popAlphaOut(this.view); }
 
 	protected refreshView() {
 		const { data, view } = this;

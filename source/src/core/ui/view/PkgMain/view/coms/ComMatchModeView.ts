@@ -1,4 +1,3 @@
-import { UIUtil } from "../../../../tool/UIUtil";
 import ComMatchMode from "../../../../ui/PkgMain/ComMatchMode";
 import { EComMatchModeShowType } from "../../event/MainDefine";
 
@@ -30,18 +29,18 @@ export class ComMatchModeView extends ExtensionClass<IView, ComMatchMode>(ComMat
 		const { txt_title, ctrl_type, trans_modeIn, trans_modeOut, trans_titleIn, trans_titleOut, com_content1, com_content2 } = this;
 		switch (type) {
 			case EComMatchModeShowType.Mode:
-				UIUtil.playTrans(trans_titleOut);
+				$uiUtil.playTrans(trans_titleOut);
 				await com_content1.transOut();
 				ctrl_type.selectedIndex = 0;
-				await UIUtil.playTrans(trans_modeIn);
+				await $uiUtil.playTrans(trans_modeIn);
 				break;
 			case EComMatchModeShowType.RankMode1:
 			case EComMatchModeShowType.MatchMode1:
 			case EComMatchModeShowType.FriendMode:
 				txt_title.langText(TitleLang[type]);
 				if (lastType == EComMatchModeShowType.Mode) {
-					await UIUtil.playTrans(trans_modeOut);
-					UIUtil.playTrans(trans_titleIn);
+					await $uiUtil.playTrans(trans_modeOut);
+					$uiUtil.playTrans(trans_titleIn);
 					com_content1.mediator.data = type;
 				} else {
 					await com_content2.transOut();

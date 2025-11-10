@@ -82,6 +82,9 @@
     <component id="w29kob8e" name="BtnIconFitNoScale.xml" path="/Component/Button/" exported="true"/>
     <font id="gnjqob8f" name="HYWH.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
     <component id="z63pob8g" name="BtnEmpty.xml" path="/Component/Button/" exported="true"/>
+    <component id="p5uzob8h" name="ComBack.xml" path="/Component/Component/" exported="true"/>
+    <image id="p5uzob8i" name="img_2441.png" path="/Texture/" exported="true"/>
+    <image id="p5uzob8j" name="img_2988.png" path="/Texture/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

@@ -1,5 +1,4 @@
 import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
-import { UIUtil } from "../../../../tool/UIUtil";
 import { EComMatchModeShowType } from "../../event/MainDefine";
 import { ComMatchModeView, EComMatchModeMsg } from "../../view/coms/ComMatchModeView";
 

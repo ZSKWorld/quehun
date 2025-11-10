@@ -14,6 +14,7 @@ import { UIManager } from "../core/ui/core/UIManager";
 import { RedDotManager } from "../core/ui/redDot/RedDotManager";
 import { RichText } from "../core/ui/tool/RichText";
 import { TipManager } from "../core/ui/tool/TipManager";
+import { UIUtil } from "../core/ui/tool/UIUtil";
 import { UserData } from "../core/userData/UserData";
 import { GameManager } from "../GameManager";
 import { SceneManager } from "../scene/SceneManager";
@@ -21,6 +22,7 @@ import { SceneManager } from "../scene/SceneManager";
 export class InitGlobalCommand extends Command {
 	override execute(notifyName: string, data?: any) {
 		$windowImmit("$facade", Facade.Inst);
+		$windowImmit("$uiUtil", new UIUtil());
 		$windowImmit("$netMgr", new NetManager());
 		$windowImmit("$timeUtil", new TimeUtil());
 		$windowImmit("$uiMgr", new UIManager());

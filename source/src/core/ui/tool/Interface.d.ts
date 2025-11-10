@@ -32,3 +32,39 @@ declare interface ITipManager {
 	 */
 	showTip(text: string, color?: string): void;
 }
+
+declare interface IUIUtil {
+	/**
+	 * 获取gui图集贴图
+	 * @param pkg 包名
+	 * @param name 贴图名字
+	 * @returns
+	 */
+	getFGUITexture(pkg: string, name: string): Laya.Texture;
+
+	/**
+	 * 设置list
+	 * @param list {@link fgui.GList} list组件
+	 * @param virtual 虚拟列表?
+	 * @param caller 调用者
+	 * @param renderFunc 渲染回调
+	 * @param clickFunc 点击回调
+	 */
+	setList(list: fgui.GList, virtual: boolean = true, caller?: any, renderFunc?: (index?: number, item?: any) => void, clickFunc?: (item?: any, evt?: Laya.Event) => void): void;
+
+	/**
+	 * 设置下拉框
+	 * @param cmb {@link fgui.GComboBox} 下拉框组件
+	 * @param items item数组
+	 * @param values value数组
+	 * @param caller 调用者
+	 * @param changedFunc changed回调
+	 * @param defaultValue 默认值
+	 * @param showItemCount 下拉显示数量
+	 */
+	setCombox(cmb: fgui.GComboBox, items: string[], values: any[], caller?: any, changedFunc?: (evt?: Laya.Event) => void, defaultValue?: any, showItemCount?: number): void;
+
+	popAlphaIn(panel: fgui.GObject): Promise<void>;
+	popAlphaOut(panel: fgui.GObject): Promise<void>;
+	playTrans(trans: fgui.Transition, reverse?: boolean): Promise<void>;
+}

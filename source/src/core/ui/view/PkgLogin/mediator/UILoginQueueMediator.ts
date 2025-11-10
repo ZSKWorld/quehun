@@ -1,5 +1,4 @@
 import { MediatorBase } from "../../../../mvc/view/MediatorBase";
-import { UIUtil } from "../../../tool/UIUtil";
 import { EUILoginQueueMsg, UILoginQueueView } from "../view/UILoginQueueView";
 
 export interface IUILoginQueueData {
@@ -39,6 +38,6 @@ export class UILoginQueueMediator extends MediatorBase<UILoginQueueView, IUILogi
 		this.view.refresh(res);
 	}
 
-	override onOpenAni() { return UIUtil.popAlphaIn(this.view); }
-	override onCloseAni() { return UIUtil.popAlphaOut(this.view); }
+	override onOpenAni() { return $uiUtil.popAlphaIn(this.view); }
+	override onCloseAni() { return $uiUtil.popAlphaOut(this.view); }
 }

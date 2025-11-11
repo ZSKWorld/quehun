@@ -9,6 +9,7 @@ EViewID = {
 	/**Renders */
 
 	/**Coms */
+	ComBackView: "ComBackView",
 	ComMatchContentView: "ComMatchContentView",
 	ComMatchItemView: "ComMatchItemView",
 	ComMatchModeView: "ComMatchModeView",
@@ -22,5 +23,6 @@ EViewID = {
 	UIBindPhoneView: "UIBindPhoneView",
 	UILoginQueueView: "UILoginQueueView",
 	UILoginView: "UILoginView",
+	UILiaoSheView: "UILiaoSheView",
 	UIMainView: "UIMainView",
 }

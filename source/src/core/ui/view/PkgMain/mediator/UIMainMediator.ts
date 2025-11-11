@@ -27,7 +27,7 @@ export class UIMainMediator extends MediatorBase<UIMainView, IUIMainData> {
 	}
 
 	private onBtnLiaoSheClick() {
-
+		this.openView(EViewID.UILiaoSheView);
 	}
 
 	private onBtnFriendClick() {

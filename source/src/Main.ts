@@ -10,8 +10,9 @@ class Main {
 	constructor() {
 		this.init();
 	}
-	private init() {
-		// await Laya.init(1920, 1080);
+	private async init() {
+		Laya.Config.FPS = 100;
+		await Laya.init(1920, 1080);
 		document.body.style.backgroundColor = "#000000";
 		document.body.style.backgroundImage = `url(${ ResPath.ETexturePath.JPG_Background })`;
 
@@ -28,7 +29,6 @@ class Main {
 		Laya.stage.alignV = Laya.Stage.ALIGN_MIDDLE;
 		Laya.stage.alignH = Laya.Stage.ALIGN_CENTER;
 		Laya.Config.defaultFont = ResPath.EFontName.HYWH;
-		fgui.UIConfig.defaultFont = ResPath.EFontName.HYWH;
 		Laya.InputManager.multiTouchEnabled = false;
 
 		Laya.stage.on(Laya.Event.VISIBILITY_CHANGE, this, () => {

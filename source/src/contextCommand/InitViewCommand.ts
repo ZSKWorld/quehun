@@ -7,6 +7,8 @@ import { BtnCheckView } from "../core/ui/view/PkgCommon/view/btns/BtnCheckView";
 import { BtnCheckRichTxtRightView } from "../core/ui/view/PkgCommon/view/btns/BtnCheckRichTxtRightView";
 import { BtnCheckTxtRightView } from "../core/ui/view/PkgCommon/view/btns/BtnCheckTxtRightView";
 import { BtnXunMiView } from "../core/ui/view/PkgMain/view/btns/BtnXunMiView";
+import { ComBackView } from "../core/ui/view/PkgCommon/view/coms/ComBackView";
+import { ComBackMediator } from "../core/ui/view/PkgCommon/mediator/coms/ComBackMediator";
 import { ComMatchContentView } from "../core/ui/view/PkgMain/view/coms/ComMatchContentView";
 import { ComMatchContentMediator } from "../core/ui/view/PkgMain/mediator/coms/ComMatchContentMediator";
 import { ComMatchItemView } from "../core/ui/view/PkgMain/view/coms/ComMatchItemView";
@@ -29,6 +31,8 @@ import { UILoginView } from "../core/ui/view/PkgLogin/view/UILoginView";
 import { UILoginMediator } from "../core/ui/view/PkgLogin/mediator/UILoginMediator";
 import { UILoginQueueView } from "../core/ui/view/PkgLogin/view/UILoginQueueView";
 import { UILoginQueueMediator } from "../core/ui/view/PkgLogin/mediator/UILoginQueueMediator";
+import { UILiaoSheView } from "../core/ui/view/PkgMain/view/UILiaoSheView";
+import { UILiaoSheMediator } from "../core/ui/view/PkgMain/mediator/UILiaoSheMediator";
 import { UIMainView } from "../core/ui/view/PkgMain/view/UIMainView";
 import { UIMainMediator } from "../core/ui/view/PkgMain/mediator/UIMainMediator";
 import { Command } from "../core/mvc/controller/Command";
@@ -50,6 +54,7 @@ export class InitViewCommand extends Command {
 		//Renders
 
 		//Coms
+		register(EViewID.ComBackView, EViewType.Component, ComBackView, ComBackMediator);
 		register(EViewID.ComMatchContentView, EViewType.Component, ComMatchContentView, ComMatchContentMediator);
 		register(EViewID.ComMatchItemView, EViewType.Component, ComMatchItemView, ComMatchItemMediator);
 		register(EViewID.ComMatchModeView, EViewType.Component, ComMatchModeView, ComMatchModeMediator);
@@ -63,6 +68,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.UIBindPhoneView, EViewType.UI, UIBindPhoneView, UIBindPhoneMediator);
 		register(EViewID.UILoginView, EViewType.UI, UILoginView, UILoginMediator);
 		register(EViewID.UILoginQueueView, EViewType.UI, UILoginQueueView, UILoginQueueMediator);
+		register(EViewID.UILiaoSheView, EViewType.UI, UILiaoSheView, UILiaoSheMediator);
 		register(EViewID.UIMainView, EViewType.UI, UIMainView, UIMainMediator);
 	}
 }

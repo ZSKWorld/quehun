@@ -50,11 +50,5 @@ loadLib("libs_leb/proto.d.js");
 loadLib("libs_leb/respath.d.js");
 loadLib("libs_leb/viewid.d.js");
 
-(async function () {
-    while (!window.Laya) {
-        await new Promise(resolve => setTimeout(resolve, 50));
-    }
-    await Laya.init(1920, 1080);
-    loadLib("js/bundle.js");
-})();
+loadLib("js/bundle.js");
 

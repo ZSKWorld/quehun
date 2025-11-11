@@ -1,5 +1,7 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import UILiaoShe from "./UILiaoShe";
+import { UILiaoSheView } from "../../view/PkgMain/view/UILiaoSheView";
 import ComMatchItem from "./ComMatchItem";
 import { ComMatchItemView } from "../../view/PkgMain/view/coms/ComMatchItemView";
 import UIMain from "./UIMain";
@@ -13,6 +15,7 @@ import { ComMatchContentView } from "../../view/PkgMain/view/coms/ComMatchConten
 
 export default class PkgMainBinder {
 	public static bindAll(): void {
+		fgui.UIObjectFactory.setExtension(UILiaoShe.url, UILiaoSheView);
 		fgui.UIObjectFactory.setExtension(ComMatchItem.url, ComMatchItemView);
 		fgui.UIObjectFactory.setExtension(UIMain.url, UIMainView);
 		fgui.UIObjectFactory.setExtension(BtnXunMi.url, BtnXunMiView);

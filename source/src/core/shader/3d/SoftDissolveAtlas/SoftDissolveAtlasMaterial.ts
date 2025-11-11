@@ -1,15 +1,20 @@
 import { SoftDissolveAtlas_FS as fs, SoftDissolveAtlas_VS as vs } from "../Shader3DDefine";
 
-const ShaderName = "SoftDissolveAtlas";
-
-const DEF_MainTex = Laya.Shader3D.getDefineByName("DEF_MainTex");
-const DEF_DissolveTex = Laya.Shader3D.getDefineByName("DEF_DissolveTex");
-const DEF_DistortionTex = Laya.Shader3D.getDefineByName("DEF_DistortionTex");
-const DEF_AMBlightTex = Laya.Shader3D.getDefineByName("DEF_AMBlightTex");
-const DEF_MaskTex = Laya.Shader3D.getDefineByName("DEF_MaskTex");
-
 export class SoftDissolveAtlasMaterial extends Laya.Material {
+	private static readonly ShaderName = "SoftDissolveAtlas";
+	private static DEF_MainTex: Laya.ShaderDefine;
+	private static DEF_DissolveTex: Laya.ShaderDefine;
+	private static DEF_DistortionTex: Laya.ShaderDefine;
+	private static DEF_AMBlightTex: Laya.ShaderDefine;
+	private static DEF_MaskTex: Laya.ShaderDefine;
+
 	static init() {
+		SoftDissolveAtlasMaterial.DEF_MainTex = Laya.Shader3D.getDefineByName("DEF_MainTex");
+		SoftDissolveAtlasMaterial.DEF_DissolveTex = Laya.Shader3D.getDefineByName("DEF_DissolveTex");
+		SoftDissolveAtlasMaterial.DEF_DistortionTex = Laya.Shader3D.getDefineByName("DEF_DistortionTex");
+		SoftDissolveAtlasMaterial.DEF_AMBlightTex = Laya.Shader3D.getDefineByName("DEF_AMBlightTex");
+		SoftDissolveAtlasMaterial.DEF_MaskTex = Laya.Shader3D.getDefineByName("DEF_MaskTex");
+
 		const uniformMap = {
 			u_MainColor: Laya.ShaderDataType.Vector4,
 			u_MainColorMulti: Laya.ShaderDataType.Float,
@@ -69,7 +74,7 @@ export class SoftDissolveAtlasMaterial extends Laya.Material {
 			u_MaskTex_ST: new Laya.Vector4(0, 0, 0, 0),
 			u_MaskAnim: new Laya.Vector4(0, 0, 0, 0),
 		};
-		const shader = Laya.Shader3D.add(ShaderName);
+		const shader = Laya.Shader3D.add(SoftDissolveAtlasMaterial.ShaderName);
 		shader.shaderType = Laya.ShaderFeatureType.D3;
 		const subShader = new Laya.SubShader(Laya.SubShader.DefaultAttributeMap, uniformMap, defaultValue);
 		shader.addSubShader(subShader);
@@ -78,7 +83,7 @@ export class SoftDissolveAtlasMaterial extends Laya.Material {
 
 	constructor() {
 		super();
-		this.setShaderName(ShaderName);
+		this.setShaderName(SoftDissolveAtlasMaterial.ShaderName);
 	}
 
 	//#region 字段
@@ -90,7 +95,7 @@ export class SoftDissolveAtlasMaterial extends Laya.Material {
 	set u_Alpha(value) { this.setFloat("u_Alpha", value); }
 	get u_MainTex() { return this.getTexture("u_MainTex"); }
 	set u_MainTex(value) {
-		this.setDefine(DEF_MainTex, !!value);
+		this.setDefine(SoftDissolveAtlasMaterial.DEF_MainTex, !!value);
 		this.setTexture("u_MainTex", value);
 	}
 	get u_MainTex_ST() { return this.getVector4("u_MainTex_ST"); }
@@ -99,7 +104,7 @@ export class SoftDissolveAtlasMaterial extends Laya.Material {
 	set u_MainAnim(value) { this.setVector4("u_MainAnim", value); }
 	get u_DissolveTex() { return this.getTexture("u_DissolveTex"); }
 	set u_DissolveTex(value) {
-		this.setDefine(DEF_DissolveTex, !!value);
+		this.setDefine(SoftDissolveAtlasMaterial.DEF_DissolveTex, !!value);
 		this.setTexture("u_DissolveTex", value);
 	}
 	get u_DissolveTex_ST() { return this.getVector4("u_DissolveTex_ST"); }
@@ -122,7 +127,7 @@ export class SoftDissolveAtlasMaterial extends Laya.Material {
 	set u_InsideEdge(value) { this.setFloat("u_InsideEdge", value); }
 	get u_DistortionTex() { return this.getTexture("u_DistortionTex"); }
 	set u_DistortionTex(value) {
-		this.setDefine(DEF_DistortionTex, !!value);
+		this.setDefine(SoftDissolveAtlasMaterial.DEF_DistortionTex, !!value);
 		this.setTexture("u_DistortionTex", value);
 	}
 	get u_DistortionTex_ST() { return this.getVector4("u_DistortionTex_ST"); }
@@ -139,7 +144,7 @@ export class SoftDissolveAtlasMaterial extends Laya.Material {
 	set u_MaskTexDistortion(value) { this.setFloat("u_MaskTexDistortion", value); }
 	get u_AMBlightTex() { return this.getTexture("u_AMBlightTex"); }
 	set u_AMBlightTex(value) {
-		this.setDefine(DEF_AMBlightTex, !!value);
+		this.setDefine(SoftDissolveAtlasMaterial.DEF_AMBlightTex, !!value);
 		this.setTexture("u_AMBlightTex", value);
 	}
 	get u_AMBlightTex_ST() { return this.getVector4("u_AMBlightTex_ST"); }
@@ -150,7 +155,7 @@ export class SoftDissolveAtlasMaterial extends Laya.Material {
 	set u_AMBlightLerp(value) { this.setFloat("u_AMBlightLerp", value); }
 	get u_MaskTex() { return this.getTexture("u_MaskTex"); }
 	set u_MaskTex(value) {
-		this.setDefine(DEF_MaskTex, !!value);
+		this.setDefine(SoftDissolveAtlasMaterial.DEF_MaskTex, !!value);
 		this.setTexture("u_MaskTex", value);
 	}
 	get u_MaskTex_ST() { return this.getVector4("u_MaskTex_ST"); }

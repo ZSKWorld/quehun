@@ -9,6 +9,7 @@ declare enum EViewID {
 	/**Renders */
 
 	/**Coms */
+	ComBackView = "ComBackView",
 	ComMatchContentView = "ComMatchContentView",
 	ComMatchItemView = "ComMatchItemView",
 	ComMatchModeView = "ComMatchModeView",
@@ -22,5 +23,6 @@ declare enum EViewID {
 	UIBindPhoneView = "UIBindPhoneView",
 	UILoginQueueView = "UILoginQueueView",
 	UILoginView = "UILoginView",
+	UILiaoSheView = "UILiaoSheView",
 	UIMainView = "UIMainView",
 }

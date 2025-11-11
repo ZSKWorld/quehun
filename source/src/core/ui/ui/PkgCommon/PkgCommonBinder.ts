@@ -15,6 +15,8 @@ import BtnCheckTxtRight from "./BtnCheckTxtRight";
 import { BtnCheckTxtRightView } from "../../view/PkgCommon/view/btns/BtnCheckTxtRightView";
 import BtnCheckRichTxtRight from "./BtnCheckRichTxtRight";
 import { BtnCheckRichTxtRightView } from "../../view/PkgCommon/view/btns/BtnCheckRichTxtRightView";
+import ComBack from "./ComBack";
+import { ComBackView } from "../../view/PkgCommon/view/coms/ComBackView";
 import PbLoading2 from "./PbLoading2";
 
 export default class PkgCommonBinder {
@@ -27,6 +29,7 @@ export default class PkgCommonBinder {
 		fgui.UIObjectFactory.setExtension(BtnCheck.url, BtnCheckView);
 		fgui.UIObjectFactory.setExtension(BtnCheckTxtRight.url, BtnCheckTxtRightView);
 		fgui.UIObjectFactory.setExtension(BtnCheckRichTxtRight.url, BtnCheckRichTxtRightView);
+		fgui.UIObjectFactory.setExtension(ComBack.url, ComBackView);
 		fgui.UIObjectFactory.setExtension(PbLoading2.url, PbLoading2);
 	}
 }

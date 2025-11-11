@@ -90,7 +90,13 @@ export class UIMainMediator extends MediatorBase<UIMainView, IUIMainData> {
 
 	}
 
-	override onOpenAni() {
-		return $uiUtil.playTrans(this.view.com_matchMode.trans_modeIn);
+	override async onOpenAni() {
+		await $uiUtil.playTrans(this.view.trans_in);
+		await $uiUtil.playTrans(this.view.com_matchMode.trans_modeIn);
+	}
+
+	override async onCloseAni() {
+		await $uiUtil.playTrans(this.view.trans_out);
+		await $uiUtil.playTrans(this.view.com_matchMode.trans_modeOut);
 	}
 }

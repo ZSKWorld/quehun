@@ -2,26 +2,6 @@
 <component size="1920,1080" designImage="ui://ca43vz0ejdu67plngr" designImageAlpha="36">
   <displayList>
     <component id="n19_w29k" name="matchMode" src="w29kob8f" fileName="Component/UIMain/ComMatchMode.xml" xy="0,0"/>
-    <component id="n0_vwgm" name="liaoShe" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="869,953" size="134,112" group="n7_vwgm">
-      <Button icon="ui://vith2b66vwgma"/>
-    </component>
-    <component id="n1_vwgm" name="friend" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1013,946" size="148,117" group="n7_vwgm">
-      <Button icon="ui://vith2b66vwgm9"/>
-    </component>
-    <component id="n2_vwgm" name="observe" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1164,950" size="148,118" group="n7_vwgm">
-      <Button icon="ui://vith2b66vwgmb"/>
-    </component>
-    <component id="n3_vwgm" name="paiPu" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1318,956" size="128,112" group="n7_vwgm">
-      <Button icon="ui://vith2b66vwgm7"/>
-    </component>
-    <component id="n4_vwgm" name="cangKu" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1453,957" size="123,110" group="n7_vwgm">
-      <Button icon="ui://vith2b66vwgm6"/>
-    </component>
-    <component id="n5_vwgm" name="shop" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1589,952" size="129,113" group="n7_vwgm">
-      <Button icon="ui://vith2b66vwgm8"/>
-    </component>
-    <component id="n6_vwgm" name="xunMi" src="vwgmj" fileName="Component/BtnXunMi.xml" xy="1735,859" group="n7_vwgm"/>
-    <group id="n7_vwgm" name="rightBottom" xy="869,859" size="1049,209" advanced="true"/>
     <component id="n9_vwgm" name="setting" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1807,35" size="88,88" group="n18_vwgm">
       <Button icon="ui://vith2b66vwgm1"/>
     </component>
@@ -49,6 +29,60 @@
     <component id="n17_vwgm" name="announcement" src="vwgmob8d" fileName="Component/BtnDengLong.xml" xy="1679,-7" size="103,165" group="n18_vwgm" alpha="0.998">
       <Button title="公告" icon="ui://vith2b66vwgmk"/>
     </component>
-    <group id="n18_vwgm" name="rightTop" xy="1240,-9" size="655,555"/>
+    <group id="n18_vwgm" name="rightTop" xy="1240,-9" size="655,555" advanced="true"/>
+    <component id="n0_vwgm" name="liaoShe" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="869,953" size="134,112" group="n7_vwgm">
+      <Button icon="ui://vith2b66vwgma"/>
+    </component>
+    <component id="n1_vwgm" name="friend" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1013,946" size="148,117" group="n7_vwgm">
+      <Button icon="ui://vith2b66vwgm9"/>
+    </component>
+    <component id="n2_vwgm" name="observe" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1164,950" size="148,118" group="n7_vwgm">
+      <Button icon="ui://vith2b66vwgmb"/>
+    </component>
+    <component id="n3_vwgm" name="paiPu" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1318,956" size="128,112" group="n7_vwgm">
+      <Button icon="ui://vith2b66vwgm7"/>
+    </component>
+    <component id="n4_vwgm" name="cangKu" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1453,957" size="123,110" group="n7_vwgm">
+      <Button icon="ui://vith2b66vwgm6"/>
+    </component>
+    <component id="n5_vwgm" name="shop" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1589,952" size="129,113" group="n7_vwgm">
+      <Button icon="ui://vith2b66vwgm8"/>
+    </component>
+    <component id="n6_vwgm" name="xunMi" src="vwgmj" fileName="Component/BtnXunMi.xml" xy="1735,859" group="n7_vwgm"/>
+    <group id="n7_vwgm" name="rightBottom" xy="869,859" size="1049,209"/>
   </displayList>
+  <transition name="in" frameRate="30">
+    <item time="0" type="XY" target="n0_vwgm" tween="true" startValue="870,1103" endValue="869,953" duration="6" ease="Circ.Out"/>
+    <item time="0" type="XY" target="n18_vwgm" tween="true" startValue="-,-133" endValue="-,-9" duration="11" ease="Quint.Out"/>
+    <item time="0" type="XY" target="n1_vwgm" value="1013,1096"/>
+    <item time="0" type="XY" target="n2_vwgm" value="1164,1100"/>
+    <item time="0" type="XY" target="n3_vwgm" value="1318,1106"/>
+    <item time="0" type="XY" target="n4_vwgm" value="1453,1107"/>
+    <item time="0" type="XY" target="n5_vwgm" value="1589,1102"/>
+    <item time="0" type="XY" target="n6_vwgm" value="1735,1085"/>
+    <item time="1" type="XY" target="n1_vwgm" tween="true" startValue="1013,1096" endValue="1013,946" duration="6" ease="Circ.Out"/>
+    <item time="2" type="XY" target="n2_vwgm" tween="true" startValue="1164,1100" endValue="1164,950" duration="6" ease="Circ.Out"/>
+    <item time="4" type="XY" target="n3_vwgm" tween="true" startValue="1318,1106" endValue="1318,956" duration="6" ease="Circ.Out"/>
+    <item time="5" type="XY" target="n4_vwgm" tween="true" startValue="1453,1107" endValue="1453,957" duration="6" ease="Circ.Out"/>
+    <item time="6" type="XY" target="n5_vwgm" tween="true" startValue="1589,1102" endValue="1589,952" duration="6" ease="Circ.Out"/>
+    <item time="7" type="XY" target="n6_vwgm" tween="true" startValue="1735,1085" endValue="1735,859" duration="6" ease="Circ.Out"/>
+  </transition>
+  <transition name="out" frameRate="30">
+    <item time="0" type="XY" target="n0_vwgm" value="869,953"/>
+    <item time="0" type="XY" target="n18_vwgm" value="1240,-9"/>
+    <item time="0" type="XY" target="n1_vwgm" value="1013,946"/>
+    <item time="0" type="XY" target="n2_vwgm" value="1164,950"/>
+    <item time="0" type="XY" target="n3_vwgm" value="1318,956"/>
+    <item time="0" type="XY" target="n4_vwgm" value="1453,957"/>
+    <item time="0" type="XY" target="n5_vwgm" value="1589,952"/>
+    <item time="0" type="XY" target="n6_vwgm" value="1735,859"/>
+    <item time="1" type="XY" target="n0_vwgm" tween="true" startValue="870,953" endValue="869,1103" duration="5" ease="Linear"/>
+    <item time="1" type="XY" target="n18_vwgm" tween="true" startValue="-,-9" endValue="-,-133" duration="5" ease="Linear"/>
+    <item time="1" type="XY" target="n1_vwgm" tween="true" startValue="1013,946" endValue="1013,1096" duration="5" ease="Linear"/>
+    <item time="1" type="XY" target="n2_vwgm" tween="true" startValue="1164,950" endValue="1164,1100" duration="5" ease="Linear"/>
+    <item time="1" type="XY" target="n3_vwgm" tween="true" startValue="1318,956" endValue="1318,1106" duration="5" ease="Linear"/>
+    <item time="1" type="XY" target="n4_vwgm" tween="true" startValue="1453,957" endValue="1453,1107" duration="5" ease="Linear"/>
+    <item time="1" type="XY" target="n5_vwgm" tween="true" startValue="1589,952" endValue="1589,1102" duration="5" ease="Linear"/>
+    <item time="1" type="XY" target="n6_vwgm" tween="true" startValue="1735,859" endValue="1735,1085" duration="5" ease="Linear"/>
+  </transition>
 </component>

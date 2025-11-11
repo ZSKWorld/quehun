@@ -81,12 +81,12 @@ declare interface IUIManager {
 	 * @param viewId 页面id
 	 * @param data 传入参数
 	 */
-	openView<T = any>(viewId: EViewID, data?: T): void;
+	openView<T = any>(viewId: EViewID, data?: T): Promise<void>;
 
 	/** 移除页面
 	 * @param viewId 页面id
 	 */
-	closeView(viewId: EViewID): void;
+	closeView(viewId: EViewID): Promise<void>;
 
 	/** 移除所有页面 */
 	closeAllView(): void;

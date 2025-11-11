@@ -109,16 +109,6 @@ export class GameManager extends ObserverAll implements IGameManager {
 		const { _hangOutTime, _lastHeatBeatTime, _lastMousePoint } = this;
 		const t = $timeUtil.second - _lastHeatBeatTime;
 
-		//23/12/27新增，每6分钟同步服务器时间
-		if (_hangOutTime % 360 == 0) {
-			$netMgr.requests.fetchServerTime();
-			$netMgr.requests.heatbeat({ no_operation_counter: t });
-			//客户端有能力断线的话，超过50分钟就断线
-			if (t >= 3000) {
-				this.onNotifyAccountLogout();
-			}
-		}
-
 		const mousePoint = Laya.stage.getMousePoint();
 		if (mousePoint.x != _lastMousePoint.x || mousePoint.y != _lastMousePoint.y) {
 			//当玩家长时间不动，突然动了，通知一下服务器
@@ -130,6 +120,16 @@ export class GameManager extends ObserverAll implements IGameManager {
 		}
 
 		$localDataMgr.set(ELocalDataKey.MultiLogin, $timeUtil.second);
+
+		//23/12/27新增，每6分钟同步服务器时间
+		if (_hangOutTime % 360 == 0) {
+			$netMgr.requests.fetchServerTime();
+			$netMgr.requests.heatbeat({ no_operation_counter: t });
+			//客户端有能力断线的话，超过50分钟就断线
+			if (t >= 3000) {
+				this.onNotifyAccountLogout();
+			}
+		}
 	}
 
 	@InterestMessage(EMessageID.fetchConnectionInfo)

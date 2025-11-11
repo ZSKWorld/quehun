@@ -15,7 +15,7 @@ export class SceneManager extends Observer implements ISceneManager {
 		}
 	}
 
-	registerView(type: ESceneType, view: string) {
+	registerView(type: ESceneType, view: EViewID) {
 		const scene = this._sceneMap.get(type);
 		if (scene) scene.views.add(view);
 	}

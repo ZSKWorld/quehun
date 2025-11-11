@@ -1,4 +1,4 @@
-import { ERDTriggerType } from "./RedDotEnum";
+import { ERDTriggerType } from "./RedDotDefine";
 
 export class RedDotNode implements IRedDotNode {
 	private static _gid: number = 0;

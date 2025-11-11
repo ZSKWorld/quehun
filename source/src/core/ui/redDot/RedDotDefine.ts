@@ -1,15 +1,59 @@
-import { ERDName, ERDTriggerType } from "./RedDotEnum";
-import { RedDotNode } from "./RedDotNode";
-
-const map: { [key in ERDName]: IRedDotNode } = {} as any;
-
-const create = function (parent?: IRedDotNode, path?: string, triggers?: ERDTriggerType[]) {
-	return RedDotNode.create(parent, path, triggers);
+/** 红点检测类型枚举 */
+export const enum ERDTriggerType {
+	Test = "",
 }
 
-export const RDDefineInit = function () {
-	if (!map.Root) {
-		map.Root = create();
-	}
+export const enum ERDName {
+	Root = "Root",
 }
-export const RDMap = map;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

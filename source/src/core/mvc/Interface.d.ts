@@ -32,14 +32,6 @@ declare interface IObserver extends INotifier {
 
 }
 
-/** 页面类型 */
-declare enum EViewType {
-	UI = "UI",
-	Component = "Component",
-	Render = "Render",
-	Button = "Button",
-}
-
 /**页面扩展 */
 declare interface IViewExtend {
 	readonly viewId: EViewID;
@@ -65,8 +57,9 @@ declare interface IViewExtend {
 	 * 打开页面
 	 * @param viewId 页面id
 	 * @param data 传入参数
+	 * @param openType 页面打开对当前页面操作的类型
 	 */
-	openView<T = any>(viewId: EViewID, data?: T): Promise<void>;
+	openView<T = any>(viewId: EViewID, data?: T, openType = EViewOpenType.None): Promise<void>;
 
 	/** 移除当前页面，只有UI界面才能移除自身，其他Com，Btn，Render之类的无效 */
 	closeSelf(): Promise<void>;
@@ -74,7 +67,8 @@ declare interface IViewExtend {
 
 /**页面 */
 declare interface IView extends fgui.GComponent, IViewExtend {
-	readonly layer: ELayer;
+	readonly viewLayer: ELayer;
+	readonly viewCategory: EViewCategory;
 	mediator: IMediator;
 
 	/**

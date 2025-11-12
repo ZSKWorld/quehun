@@ -7,6 +7,7 @@ export const enum EUIConfirmSmallMsg {
 }
 
 export class UIConfirmSmallView extends ExtensionClass<IView, UIConfirmSmall>(UIConfirmSmall) implements IView {
+	override readonly viewCategory = EViewCategory.Popup;
 
 	override onCreate() {
 		const { btn_close, btn_confirm, btn_cancel } = this;

@@ -26,8 +26,8 @@ export class UIMainMediator extends MediatorBase<UIMainView, IUIMainData> {
 		this.addEvent(EUIMainMsg.OnBtnAnnouncementClick, this.onBtnAnnouncementClick);
 	}
 
-	private onBtnLiaoSheClick() {
-		this.openView(EViewID.UILiaoSheView);
+	private async onBtnLiaoSheClick() {
+		this.openView(EViewID.UILiaoSheView, null, EViewOpenType.Hide);
 	}
 
 	private onBtnFriendClick() {
@@ -91,12 +91,16 @@ export class UIMainMediator extends MediatorBase<UIMainView, IUIMainData> {
 	}
 
 	override async onOpenAni() {
-		await $uiUtil.playTrans(this.view.trans_in);
-		await $uiUtil.playTrans(this.view.com_matchMode.trans_modeIn);
+		await Promise.all([
+			$uiUtil.playTrans(this.view.trans_in),
+			$uiUtil.playTrans(this.view.com_matchMode.trans_modeIn),
+		]);
 	}
 
 	override async onCloseAni() {
-		await $uiUtil.playTrans(this.view.trans_out);
-		await $uiUtil.playTrans(this.view.com_matchMode.trans_modeOut);
+		await Promise.all([
+			$uiUtil.playTrans(this.view.trans_out),
+			$uiUtil.playTrans(this.view.com_matchMode.trans_modeOut),
+		]);
 	}
 }

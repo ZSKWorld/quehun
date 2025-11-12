@@ -7,6 +7,7 @@ export const enum EUIConfirmMiddleMsg {
 }
 
 export class UIConfirmMiddleView extends ExtensionClass<IView, UIConfirmMiddle>(UIConfirmMiddle) implements IView {
+	override readonly viewCategory = EViewCategory.Popup;
 
 	override onCreate() {
 		const { btn_close, btn_confirm, btn_cancel } = this;

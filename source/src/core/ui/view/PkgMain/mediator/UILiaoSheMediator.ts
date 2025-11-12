@@ -11,7 +11,7 @@ export class UILiaoSheMediator extends MediatorBase<UILiaoSheView, IUILiaoSheDat
 		this.addEvent(EUILiaoSheMsg.OnComBackClick, this.onComBackClick);
 	}
 
-	private onComBackClick() {
+	private async onComBackClick() {
 		this.closeSelf();
 	}
 

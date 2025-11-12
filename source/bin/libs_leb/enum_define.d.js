@@ -36,6 +36,21 @@ EViewType = {
 	Button: "Button",
 }
 
+/** 页面打开对当前页面操作的类型 */
+EViewOpenType = {
+	None: "None",
+	Hide: "Hide",
+	Close: "Close",
+}
+
+/** 页面种类 */
+EViewCategory = {
+	/** 全屏页面 */
+	FullScreen: "FullScreen",
+	/** 弹窗页面 */
+	Popup: "Popup",
+}
+
 /** UI层级 */
 ELayer = {
 	Scene: "Scene",

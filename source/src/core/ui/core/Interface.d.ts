@@ -50,6 +50,32 @@ declare enum EMouseEventType {
 	MouseDragEnd = "mousedragend",
 }
 
+/** 页面打开对当前页面操作的类型 */
+declare enum EViewOpenType {
+	/** 无操作 */
+	None = "None",
+	/** 隐藏当前页面 */
+	Hide = "Hide",
+	/** 关闭当前页面 */
+	Close = "Close",
+}
+
+/** 页面种类 */
+declare enum EViewCategory{
+	/** 全屏页面 */
+	FullScreen = "FullScreen",
+	/** 弹窗页面 */
+	Popup = "Popup",
+}
+
+/** 页面类型 */
+declare enum EViewType {
+	UI = "UI",
+	Component = "Component",
+	Render = "Render",
+	Button = "Button",
+}
+
 /** UI层级 */
 declare enum ELayer {
 	Scene = "Scene",
@@ -80,8 +106,9 @@ declare interface IUIManager {
 	 * 打开页面
 	 * @param viewId 页面id
 	 * @param data 传入参数
+	 * @param openType 页面打开对当前页面操作的类型
 	 */
-	openView<T = any>(viewId: EViewID, data?: T): Promise<void>;
+	openView<T = any>(viewId: EViewID, data?: T, openType: EViewOpenType = EViewOpenType.None): Promise<void>;
 
 	/** 移除页面
 	 * @param viewId 页面id

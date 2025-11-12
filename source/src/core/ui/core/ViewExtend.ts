@@ -54,10 +54,15 @@ export class ViewExtend {
 
 	private static viewExtend(prototype: IViewExtend) {
 		prototype.dispatch = function (...args) { $facade.dispatch(...args); };
-		prototype.openView = function (...args) { $uiMgr.openView(...args); };
+		prototype.openView = function (...args) {
+			return $uiMgr.openView(...args);
+		};
 		prototype.closeSelf = function () {
 			const { viewId, viewType } = (<IViewExtend>this);
-			(viewType == EViewType.UI) && $uiMgr.closeView(viewId);
+			if (viewType == EViewType.UI)
+				return $uiMgr.closeView(viewId);
+			else
+				return Promise.resolve();
 		};
 	}
 }

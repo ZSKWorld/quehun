@@ -73,7 +73,7 @@ export abstract class LogicSceneBase<T> extends Observer implements IScene<T> {
 	}
 
 	protected openView(viewId: EViewID, data?: any) {
-		$uiMgr.openView(viewId, data);
+		return $uiMgr.openView(viewId, data);
 	}
 
 	/**

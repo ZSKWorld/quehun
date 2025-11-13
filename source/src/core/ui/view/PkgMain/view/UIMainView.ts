@@ -5,9 +5,9 @@ export const enum EUIMainMsg {
 	OnBtnFriendClick = "UIMain_OnBtnFriendClick",
 	OnBtnObserveClick = "UIMain_OnBtnObserveClick",
 	OnBtnPaiPuClick = "UIMain_OnBtnPaiPuClick",
-	OnBtnCangKuClick = "UIMain_OnBtnCangKuClick",
+	OnBtnBagClick = "UIMain_OnBtnBagClick",
 	OnBtnShopClick = "UIMain_OnBtnShopClick",
-	OnBtnXunMiClick = "UIMain_OnBtnXunMiClick",
+	OnBtnTreasureClick = "UIMain_OnBtnTreasureClick",
 	OnBtnSettingClick = "UIMain_OnBtnSettingClick",
 	OnBtnHelpClick = "UIMain_OnBtnHelpClick",
 	OnBtnGuideClick = "UIMain_OnBtnGuideClick",
@@ -22,14 +22,14 @@ export const enum EUIMainMsg {
 export class UIMainView extends ExtensionClass<IView, UIMain>(UIMain) implements IView {
 
 	override onCreate() {
-		const { btn_liaoShe, btn_friend, btn_observe, btn_paiPu, btn_cangKu, btn_shop, btn_xunMi, btn_setting, btn_help, btn_guide, btn_camera, btn_achieve, btn_activity, btn_email, btn_rank, btn_announcement } = this;
+		const { btn_liaoShe, btn_friend, btn_observe, btn_paiPu, btn_bag, btn_shop, btn_treasure, btn_setting, btn_help, btn_guide, btn_camera, btn_achieve, btn_activity, btn_email, btn_rank, btn_announcement } = this;
 		btn_liaoShe.onClick(this, this.sendEvent, [EUIMainMsg.OnBtnLiaoSheClick]);
 		btn_friend.onClick(this, this.sendEvent, [EUIMainMsg.OnBtnFriendClick]);
 		btn_observe.onClick(this, this.sendEvent, [EUIMainMsg.OnBtnObserveClick]);
 		btn_paiPu.onClick(this, this.sendEvent, [EUIMainMsg.OnBtnPaiPuClick]);
-		btn_cangKu.onClick(this, this.sendEvent, [EUIMainMsg.OnBtnCangKuClick]);
+		btn_bag.onClick(this, this.sendEvent, [EUIMainMsg.OnBtnBagClick]);
 		btn_shop.onClick(this, this.sendEvent, [EUIMainMsg.OnBtnShopClick]);
-		btn_xunMi.onClick(this, this.sendEvent, [EUIMainMsg.OnBtnXunMiClick]);
+		btn_treasure.onClick(this, this.sendEvent, [EUIMainMsg.OnBtnTreasureClick]);
 		btn_setting.onClick(this, this.sendEvent, [EUIMainMsg.OnBtnSettingClick]);
 		btn_help.onClick(this, this.sendEvent, [EUIMainMsg.OnBtnHelpClick]);
 		btn_guide.onClick(this, this.sendEvent, [EUIMainMsg.OnBtnGuideClick]);

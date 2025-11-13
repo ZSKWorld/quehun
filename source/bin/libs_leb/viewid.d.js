@@ -23,6 +23,12 @@ EViewID = {
 	UIBindPhoneView: "UIBindPhoneView",
 	UILoginQueueView: "UILoginQueueView",
 	UILoginView: "UILoginView",
+	UIBagView: "UIBagView",
+	UIFriendView: "UIFriendView",
 	UILiaoSheView: "UILiaoSheView",
 	UIMainView: "UIMainView",
+	UIObserverView: "UIObserverView",
+	UIPaipuView: "UIPaipuView",
+	UIShopView: "UIShopView",
+	UITreasureView: "UITreasureView",
 }

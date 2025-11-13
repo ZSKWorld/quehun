@@ -20,9 +20,9 @@ export default class UIMain extends fgui.GComponent {
 	public btn_friend: fgui.GButton;
 	public btn_observe: fgui.GButton;
 	public btn_paiPu: fgui.GButton;
-	public btn_cangKu: fgui.GButton;
+	public btn_bag: fgui.GButton;
 	public btn_shop: fgui.GButton;
-	public btn_xunMi: BtnXunMiView;
+	public btn_treasure: BtnXunMiView;
 	public trans_in: fgui.Transition;
 	public trans_out: fgui.Transition;
 	public static url: string = "ui://vith2b66vwgm0";
@@ -47,9 +47,9 @@ export default class UIMain extends fgui.GComponent {
 		this.btn_friend = <fgui.GButton>(this.getChildAt(12));
 		this.btn_observe = <fgui.GButton>(this.getChildAt(13));
 		this.btn_paiPu = <fgui.GButton>(this.getChildAt(14));
-		this.btn_cangKu = <fgui.GButton>(this.getChildAt(15));
+		this.btn_bag = <fgui.GButton>(this.getChildAt(15));
 		this.btn_shop = <fgui.GButton>(this.getChildAt(16));
-		this.btn_xunMi = <BtnXunMiView>(this.getChildAt(17));
+		this.btn_treasure = <BtnXunMiView>(this.getChildAt(17));
 		this.trans_in = this.getTransitionAt(0);
 		this.trans_out = this.getTransitionAt(1);
 	}

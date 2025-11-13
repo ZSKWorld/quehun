@@ -12,9 +12,9 @@ export class UIMainMediator extends MediatorBase<UIMainView, IUIMainData> {
 		this.addEvent(EUIMainMsg.OnBtnFriendClick, this.onBtnFriendClick);
 		this.addEvent(EUIMainMsg.OnBtnObserveClick, this.onBtnObserveClick);
 		this.addEvent(EUIMainMsg.OnBtnPaiPuClick, this.onBtnPaiPuClick);
-		this.addEvent(EUIMainMsg.OnBtnCangKuClick, this.onBtnCangKuClick);
+		this.addEvent(EUIMainMsg.OnBtnBagClick, this.onBtnCangKuClick);
 		this.addEvent(EUIMainMsg.OnBtnShopClick, this.onBtnShopClick);
-		this.addEvent(EUIMainMsg.OnBtnXunMiClick, this.onBtnXunMiClick);
+		this.addEvent(EUIMainMsg.OnBtnTreasureClick, this.onBtnXunMiClick);
 		this.addEvent(EUIMainMsg.OnBtnSettingClick, this.onBtnSettingClick);
 		this.addEvent(EUIMainMsg.OnBtnHelpClick, this.onBtnHelpClick);
 		this.addEvent(EUIMainMsg.OnBtnGuideClick, this.onBtnGuideClick);
@@ -31,27 +31,27 @@ export class UIMainMediator extends MediatorBase<UIMainView, IUIMainData> {
 	}
 
 	private onBtnFriendClick() {
-
+		this.openView(EViewID.UIFriendView, null, EViewOpenType.Hide);
 	}
 
 	private onBtnObserveClick() {
-
+		this.openView(EViewID.UIObserverView, null, EViewOpenType.Hide);
 	}
 
 	private onBtnPaiPuClick() {
-
+		this.openView(EViewID.UIPaipuView, null, EViewOpenType.Hide);
 	}
 
 	private onBtnCangKuClick() {
-
+		this.openView(EViewID.UIBagView, null, EViewOpenType.Hide);
 	}
 
 	private onBtnShopClick() {
-
+		this.openView(EViewID.UIShopView, null, EViewOpenType.Hide);
 	}
 
 	private onBtnXunMiClick() {
-
+		this.openView(EViewID.UITreasureView, null, EViewOpenType.Hide);
 	}
 
 	private onBtnSettingClick() {

@@ -31,10 +31,22 @@ import { UILoginView } from "../core/ui/view/PkgLogin/view/UILoginView";
 import { UILoginMediator } from "../core/ui/view/PkgLogin/mediator/UILoginMediator";
 import { UILoginQueueView } from "../core/ui/view/PkgLogin/view/UILoginQueueView";
 import { UILoginQueueMediator } from "../core/ui/view/PkgLogin/mediator/UILoginQueueMediator";
+import { UIBagView } from "../core/ui/view/PkgMain/view/UIBagView";
+import { UIBagMediator } from "../core/ui/view/PkgMain/mediator/UIBagMediator";
+import { UIFriendView } from "../core/ui/view/PkgMain/view/UIFriendView";
+import { UIFriendMediator } from "../core/ui/view/PkgMain/mediator/UIFriendMediator";
 import { UILiaoSheView } from "../core/ui/view/PkgMain/view/UILiaoSheView";
 import { UILiaoSheMediator } from "../core/ui/view/PkgMain/mediator/UILiaoSheMediator";
 import { UIMainView } from "../core/ui/view/PkgMain/view/UIMainView";
 import { UIMainMediator } from "../core/ui/view/PkgMain/mediator/UIMainMediator";
+import { UIObserverView } from "../core/ui/view/PkgMain/view/UIObserverView";
+import { UIObserverMediator } from "../core/ui/view/PkgMain/mediator/UIObserverMediator";
+import { UIPaipuView } from "../core/ui/view/PkgMain/view/UIPaipuView";
+import { UIPaipuMediator } from "../core/ui/view/PkgMain/mediator/UIPaipuMediator";
+import { UIShopView } from "../core/ui/view/PkgMain/view/UIShopView";
+import { UIShopMediator } from "../core/ui/view/PkgMain/mediator/UIShopMediator";
+import { UITreasureView } from "../core/ui/view/PkgMain/view/UITreasureView";
+import { UITreasureMediator } from "../core/ui/view/PkgMain/mediator/UITreasureMediator";
 import { Command } from "../core/mvc/controller/Command";
 
 export class InitViewCommand extends Command {
@@ -68,7 +80,13 @@ export class InitViewCommand extends Command {
 		register(EViewID.UIBindPhoneView, EViewType.UI, UIBindPhoneView, UIBindPhoneMediator);
 		register(EViewID.UILoginView, EViewType.UI, UILoginView, UILoginMediator);
 		register(EViewID.UILoginQueueView, EViewType.UI, UILoginQueueView, UILoginQueueMediator);
+		register(EViewID.UIBagView, EViewType.UI, UIBagView, UIBagMediator);
+		register(EViewID.UIFriendView, EViewType.UI, UIFriendView, UIFriendMediator);
 		register(EViewID.UILiaoSheView, EViewType.UI, UILiaoSheView, UILiaoSheMediator);
 		register(EViewID.UIMainView, EViewType.UI, UIMainView, UIMainMediator);
+		register(EViewID.UIObserverView, EViewType.UI, UIObserverView, UIObserverMediator);
+		register(EViewID.UIPaipuView, EViewType.UI, UIPaipuView, UIPaipuMediator);
+		register(EViewID.UIShopView, EViewType.UI, UIShopView, UIShopMediator);
+		register(EViewID.UITreasureView, EViewType.UI, UITreasureView, UITreasureMediator);
 	}
 }

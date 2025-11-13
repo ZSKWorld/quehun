@@ -42,13 +42,13 @@
     <component id="n3_vwgm" name="paiPu" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1318,956" size="128,112" group="n7_vwgm">
       <Button icon="ui://vith2b66vwgm7"/>
     </component>
-    <component id="n4_vwgm" name="cangKu" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1453,957" size="123,110" group="n7_vwgm">
+    <component id="n4_vwgm" name="bag" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1453,957" size="123,110" group="n7_vwgm">
       <Button icon="ui://vith2b66vwgm6"/>
     </component>
     <component id="n5_vwgm" name="shop" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1589,952" size="129,113" group="n7_vwgm">
       <Button icon="ui://vith2b66vwgm8"/>
     </component>
-    <component id="n6_vwgm" name="xunMi" src="vwgmj" fileName="Component/BtnXunMi.xml" xy="1735,859" group="n7_vwgm"/>
+    <component id="n6_vwgm" name="treasure" src="vwgmj" fileName="Component/BtnXunMi.xml" xy="1735,859" group="n7_vwgm"/>
     <group id="n7_vwgm" name="rightBottom" xy="869,859" size="1049,209"/>
   </displayList>
   <transition name="in" frameRate="30">

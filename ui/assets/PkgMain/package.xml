@@ -68,6 +68,12 @@
     <component id="gnjqob9j" name="ComMatchItem.xml" path="/Component/UIMain/"/>
     <component id="z63pob9k" name="ComMatchContent.xml" path="/Component/UIMain/"/>
     <component id="co9gob9l" name="UILiaoShe.xml" path="/" exported="true"/>
+    <component id="qke2ob9m" name="UIFriend.xml" path="/" exported="true"/>
+    <component id="qke2ob9n" name="UIObserver.xml" path="/" exported="true"/>
+    <component id="qke2ob9o" name="UIPaipu.xml" path="/" exported="true"/>
+    <component id="qke2ob9p" name="UIBag.xml" path="/" exported="true"/>
+    <component id="qke2ob9q" name="UIShop.xml" path="/" exported="true"/>
+    <component id="qke2ob9r" name="UITreasure.xml" path="/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

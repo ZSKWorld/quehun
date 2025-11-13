@@ -3,13 +3,12 @@
 export class LayaExtend {
 	static extends() {
 		this.vector2Extend();
+		this.scriptExtend();
 	}
 
 	/** Laya.Vector2扩展 */
 	private static vector2Extend() {
-		if (!Laya.Vector2) return;
 		const prototype = Laya.Vector2.prototype;
-		if (prototype.add) return;
 		Object.defineProperties(prototype, {
 			length: {
 				get() { return Math.sqrt(this.lengthSquared); },
@@ -90,6 +89,19 @@ export class LayaExtend {
 					return this.scale(Math.cos(theta)).add(relativeVec.scale(Math.sin(theta)));
 				}
 			}
+		});
+	}
+
+	private static scriptExtend() {
+		const prototype = Laya.Script.prototype;
+		Object.defineProperties(prototype, {
+			gowner: {
+				get() {
+					if(this.owner)
+						return this.owner.$owner;
+					return null;
+				},
+			},
 		});
 	}
 }

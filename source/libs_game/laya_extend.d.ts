@@ -22,6 +22,9 @@ declare namespace Laya {
 		slerp(end: Vector2, t: number): Vector2;
 	}
 	interface Sprite {
-		$owner?: fgui.GObject;
+		readonly $owner?: fgui.GObject;
+	}
+	interface Script {
+		get gowner(): fgui.GComponent;
 	}
 }

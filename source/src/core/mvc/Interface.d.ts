@@ -82,7 +82,7 @@ declare interface IView extends fgui.GComponent, IViewExtend {
 
 /**中介类 */
 declare interface IMediator<V extends IView = IView, D = any> extends Laya.Script, IViewExtend {
-	override owner: Laya.Sprite;
+	readonly owner: Laya.Sprite;
 	/** 页面数据 */
 	data: D;
 	/** 控制器挂载的ui页面 */

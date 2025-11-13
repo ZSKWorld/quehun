@@ -57,7 +57,6 @@ declare interface ISkeletonManager {
 
 declare interface ISpineController extends Laya.Script {
 	override owner: Laya.Sprite;
-	get gowner(): fgui.GComponent;
 	get spineId(): number;
 	play(nameOrIndex: string | number, loop: boolean, force?: boolean, start?: number, end?: number, freshSkin?: boolean, playAudio?: boolean): void;
 }

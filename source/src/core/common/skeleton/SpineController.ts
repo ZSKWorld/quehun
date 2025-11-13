@@ -2,7 +2,6 @@ export class SpineController extends Laya.Script implements ISpineController {
 	override owner: Laya.Sprite;
 	private _spineId: number = 0;
 	private _spineNodes: Laya.Spine2DRenderNode[];
-	get gowner() { return this.owner.$owner as fgui.GComponent; }
 	get spineId() { return this._spineId; }
 	get spineNodes() {
 		if (!this._spineNodes && !this.destroyed) {

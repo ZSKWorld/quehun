@@ -1,7 +1,6 @@
 
-export class UIScriptBase<T> extends Laya.Script implements IObserver {
+export class UIScriptBase extends Laya.Script implements IObserver {
 	override owner: Laya.Sprite;
-	protected get gowner() { return this.owner.$owner as T; }
 
 	dispatch(eventName: string, data?: any): void {
 		$facade.dispatch(eventName, data);

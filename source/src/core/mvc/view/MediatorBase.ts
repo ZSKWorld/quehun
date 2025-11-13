@@ -17,7 +17,7 @@ export abstract class MediatorBase<V extends IView = IView, D = any> extends Ext
 		this._data = value;
 		this.onDataChanged(value);
 	}
-	override get view() { return this.owner.$owner as V; }
+	override get view() { return this.gowner as V; }
 	protected get parent() {
 		if (this.viewType == EViewType.UI) return null;
 		if (!this._parent) {

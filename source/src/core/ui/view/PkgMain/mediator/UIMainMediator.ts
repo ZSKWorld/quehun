@@ -75,11 +75,11 @@ export class UIMainMediator extends MediatorBase<UIMainView, IUIMainData> {
 	}
 
 	private onBtnActivityClick() {
-
+		this.openView(EViewID.UIActivityView);
 	}
 
 	private onBtnEmailClick() {
-
+		this.openView(EViewID.UIEmailView);
 	}
 
 	private onBtnRankClick() {

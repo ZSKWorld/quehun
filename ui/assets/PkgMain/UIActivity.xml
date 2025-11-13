@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" designImage="ui://ca43vz0ejdu67plnfc" designImageAlpha="36">
+<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0ejdu67plnov" designImageAlpha="100">
   <displayList>
-    <component id="n0_p5uz" name="back" src="p5uzob8h" fileName="Component/Component/ComBack.xml" pkg="vx9zwser" xy="10,22">
-      <property target="title" propertyId="0" value="好友"/>
+    <image id="n1_dwe0" name="n1" src="dwe0obap" fileName="Texture/img_4188.png" xy="9,39" size="1902,1034"/>
+    <component id="n2_dwe0" name="back" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1759,153" pivot="0.5,0" size="120,192">
+      <Button icon="ui://vith2b66dwe0oba7"/>
     </component>
+    <image id="n3_dwe0" name="n3" src="dwe0oba8" fileName="Texture/img_2919.png" xy="872,58"/>
+    <image id="n4_dwe0" name="n4" src="dwe0obaj" fileName="Texture/img_1703.png" pkg="vx9zwser" xy="1727,951" pivot="0.5,0.5" rotation="2"/>
+    <image id="n5_dwe0" name="n5" src="dwe0obaj" fileName="Texture/img_1703.png" pkg="vx9zwser" xy="119,961" pivot="0.5,0.5" size="67,49" aspect="true" scale="-1,1" rotation="-1"/>
   </displayList>
 </component>

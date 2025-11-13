@@ -2,6 +2,12 @@
   "objectStatus": {
     "n15_z63p": {
       "hidden": true
+    },
+    "n3_w29k": {
+      "collapsed": true
+    },
+    "n8_w29k": {
+      "collapsed": true
     }
   },
   "adaptiveTest": true,

@@ -85,6 +85,10 @@
     <component id="p5uzob8h" name="ComBack.xml" path="/Component/Component/" exported="true"/>
     <image id="p5uzob8i" name="img_2441.png" path="/Texture/" exported="true"/>
     <image id="p5uzob8j" name="img_2988.png" path="/Texture/" exported="true"/>
+    <image id="dwe0obaj" name="img_1703.png" path="/Texture/" exported="true"/>
+    <image id="dwe0obak" name="img_17.png" path="/Texture/" exported="true"/>
+    <image id="dwe0obav" name="img_2233.png" path="/Texture/" exported="true"/>
+    <image id="dwe0ob8k" name="img_2191.png" path="/Texture/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

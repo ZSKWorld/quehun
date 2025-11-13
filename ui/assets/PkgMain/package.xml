@@ -82,6 +82,35 @@
     <component id="ktwpob9x" name="UIHelp.xml" path="/" exported="true"/>
     <component id="ktwpob9y" name="UICamera.xml" path="/" exported="true"/>
     <component id="ktwpob9z" name="UIAchievement.xml" path="/" exported="true"/>
+    <image id="dwe0oba0" name="img_1031.png" path="/Texture/"/>
+    <image id="dwe0oba1" name="img_3661.png" path="/Texture/"/>
+    <image id="dwe0oba2" name="img_3596.png" path="/Texture/"/>
+    <image id="dwe0oba3" name="img_3595.png" path="/Texture/"/>
+    <image id="dwe0oba4" name="img_3594.png" path="/Texture/"/>
+    <image id="dwe0oba5" name="img_3593.png" path="/Texture/"/>
+    <image id="dwe0oba6" name="img_3356.png" path="/Texture/"/>
+    <image id="dwe0oba7" name="img_2985.png" path="/Texture/"/>
+    <image id="dwe0oba8" name="img_2919.png" path="/Texture/"/>
+    <image id="dwe0oba9" name="img_285.png" path="/Texture/"/>
+    <image id="dwe0obaa" name="img_2609.png" path="/Texture/"/>
+    <image id="dwe0obab" name="img_2504.png" path="/Texture/"/>
+    <image id="dwe0obac" name="img_2266.png" path="/Texture/"/>
+    <image id="dwe0obad" name="img_2080.png" path="/Texture/"/>
+    <image id="dwe0obae" name="img_2034.png" path="/Texture/"/>
+    <image id="dwe0obaf" name="img_2033.png" path="/Texture/"/>
+    <image id="dwe0obag" name="img_2032.png" path="/Texture/"/>
+    <image id="dwe0obah" name="img_2031.png" path="/Texture/"/>
+    <image id="dwe0obai" name="img_18.png" path="/Texture/"/>
+    <image id="dwe0obal" name="img_1676.png" path="/Texture/"/>
+    <image id="dwe0obam" name="img_1428.png" path="/Texture/"/>
+    <image id="dwe0oban" name="img_1072.png" path="/Texture/"/>
+    <image id="dwe0obao" name="img_4026.png" path="/Texture/"/>
+    <image id="dwe0obap" name="img_4188.png" path="/Texture/"/>
+    <image id="dwe0obaq" name="img_4209.png" path="/Texture/"/>
+    <image id="dwe0obar" name="img_1831.png" path="/Texture/"/>
+    <image id="dwe0obas" name="img_1832.png" path="/Texture/"/>
+    <image id="dwe0obat" name="img_2026.png" path="/Texture/"/>
+    <image id="dwe0obau" name="img_2027.png" path="/Texture/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" designImage="ui://ca43vz0ejdu67plnfc" designImageAlpha="36">
+<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0ejdu67plnlm" designImageAlpha="100">
+  <controller name="c1" pages="0,,1," selected="1"/>
   <displayList>
-    <component id="n0_p5uz" name="back" src="p5uzob8h" fileName="Component/Component/ComBack.xml" pkg="vx9zwser" xy="10,22">
-      <property target="title" propertyId="0" value="好友"/>
+    <image id="n1_dwe0" name="n1" src="dwe0obaq" fileName="Texture/img_4209.png" xy="109,20" size="1700,1034"/>
+    <loader id="n2_dwe0" name="n2" xy="900,84" pivot="0.5,0.5" size="120,70" url="ui://vith2b66dwe0obat" autoSize="true">
+      <gearIcon controller="c1" pages="0" values="ui://vith2b66dwe0obau" default="ui://vith2b66dwe0obat"/>
+    </loader>
+    <image id="n3_dwe0" name="n3" src="dwe0obav" fileName="Texture/img_2233.png" pkg="vx9zwser" xy="1073,540"/>
+    <component id="n4_dwe0" name="back" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1710,140">
+      <Button icon="ui://vx9zwserdwe0ob8k"/>
     </component>
+    <text id="n5_dwe0" name="n5" xy="364,567" pivot="0.5,0.5" size="132,44" fontSize="32" color="#696772" text="暂无邮件"/>
+    <text id="n6_dwe0" name="n6" xy="1067,603" pivot="0.5,0.5" size="188,44" fontSize="32" color="#696772" text="什么都没有~"/>
   </displayList>
 </component>

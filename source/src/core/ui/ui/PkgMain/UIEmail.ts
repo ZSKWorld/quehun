@@ -1,10 +1,9 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ComBackView } from "../../view/PkgCommon/view/coms/ComBackView";
-
 export default class UIEmail extends fgui.GComponent {
 
-	public com_back: ComBackView;
+	public ctrl_c1: fgui.Controller;
+	public btn_back: fgui.GButton;
 	public static url: string = "ui://vith2b66ktwpob9t";
 
 	public static createInstance(): UIEmail {
@@ -12,6 +11,7 @@ export default class UIEmail extends fgui.GComponent {
 	}
 
 	protected override onConstruct(): void {
-		this.com_back = <ComBackView>(this.getChildAt(0));
+		this.ctrl_c1 = this.getControllerAt(0);
+		this.btn_back = <fgui.GButton>(this.getChildAt(3));
 	}
 }

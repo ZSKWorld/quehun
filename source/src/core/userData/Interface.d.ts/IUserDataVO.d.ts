@@ -7,5 +7,7 @@ declare namespace VO {
 		announcement: IAnnouncementVO;
 		clientValue: IClientValueVO;
 		serverSetting: IServerSettingVO;
+		friend: IFriendVO;
+		mail: IMailVO;
 	}
 }

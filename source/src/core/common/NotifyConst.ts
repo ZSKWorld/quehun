@@ -41,4 +41,8 @@ export const enum ENotifyConst {
 	/** 退出场景 */
 	OnExitScene = "NotifyConst_OnExitScene",
 	//#endregion
+
+	//#region 邮件相关
+	OnMailDataChanged = "NotifyConst_OnMailDataChanged",
+	//#endregion
 }

@@ -13,6 +13,11 @@ export class GameManager extends ObserverAll implements IGameManager {
 	private _clientEndPoint: ProtoObject<INetworkEndpoint>;
 	get inDmm() { return this._inDmm; }
 	get language() { return ELanguage.CHS; }
+	get clientLanguage() { 
+		if (this.clientType == EClientType.EN && this.language == ELanguage.KR)
+			return ELanguage.US_KR;
+		return this.language;
+	 }
 	get clientType() { return EClientType.CHS; }
 	get version() { return this._version?.version || ""; }
 	get clientVersion() { return 'web-' + this.version.replace('.w', ''); }

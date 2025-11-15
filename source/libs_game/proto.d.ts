@@ -293,279 +293,279 @@ declare enum ENotify {
 declare enum EMessageID {
 	/**
 	 * * 获取连接相关信息
-	 * * req: {@link IReqCommon}, res: {@link IResConnectionInfo}, msgId: {@link EMessageID.fetchConnectionInfo}
+	 * * req: {@link IReqCommon}, res: {@link IResConnectionInfo}, method: {@link IReqMethod.fetchConnectionInfo}
 	 */
 	fetchConnectionInfo = "fetchConnectionInfo",
 	/**
 	 * * 获取排队信息
-	 * * req: {@link IReqCommon}, res: {@link IResFetchQueueInfo}, msgId: {@link EMessageID.fetchQueueInfo}
+	 * * req: {@link IReqCommon}, res: {@link IResFetchQueueInfo}, method: {@link IReqMethod.fetchQueueInfo}
 	 */
 	fetchQueueInfo = "fetchQueueInfo",
-	/** req: {@link IReqCommon}, res: {@link IResCommon}, msgId: {@link EMessageID.cancelQueue} */
+	/** req: {@link IReqCommon}, res: {@link IResCommon}, method: {@link IReqMethod.cancelQueue} */
 	cancelQueue = "cancelQueue",
-	/** req: {@link IReqOpenidCheck}, res: {@link IResOauth2Check}, msgId: {@link EMessageID.openidCheck} */
+	/** req: {@link IReqOpenidCheck}, res: {@link IResOauth2Check}, method: {@link IReqMethod.openidCheck} */
 	openidCheck = "openidCheck",
 	/**
 	 * * 注册账号
-	 * * req: {@link IReqSignupAccount}, res: {@link IResSignupAccount}, msgId: {@link EMessageID.signup}
+	 * * req: {@link IReqSignupAccount}, res: {@link IResSignupAccount}, method: {@link IReqMethod.signup}
 	 */
 	signup = "signup",
 	/**
 	 * * 登录账号
-	 * * req: {@link IReqLogin}, res: {@link IResLogin}, msgId: {@link EMessageID.login}
+	 * * req: {@link IReqLogin}, res: {@link IResLogin}, method: {@link IReqMethod.login}
 	 */
 	login = "login",
 	/**
 	 * * 备线半登录状态
-	 * * req: {@link IReqPrepareLogin}, res: {@link IResCommon}, msgId: {@link EMessageID.prepareLogin}
+	 * * req: {@link IReqPrepareLogin}, res: {@link IResCommon}, method: {@link IReqMethod.prepareLogin}
 	 */
 	prepareLogin = "prepareLogin",
 	/**
 	 * * 备线切换主线快速登录
-	 * * req: {@link IReqFastLogin}, res: {@link IResFastLogin}, msgId: {@link EMessageID.fastLogin}
+	 * * req: {@link IReqFastLogin}, res: {@link IResFastLogin}, method: {@link IReqMethod.fastLogin}
 	 */
 	fastLogin = "fastLogin",
 	/**
 	 * * 登录后获取信息
-	 * * req: {@link IReqCommon}, res: {@link IResFetchInfo}, msgId: {@link EMessageID.fetchInfo}
+	 * * req: {@link IReqCommon}, res: {@link IResFetchInfo}, method: {@link IReqMethod.fetchInfo}
 	 */
 	fetchInfo = "fetchInfo",
 	/**
 	 * * 登录成功后摇
-	 * * req: {@link IReqCommon}, res: {@link IResCommon}, msgId: {@link EMessageID.loginSuccess}
+	 * * req: {@link IReqCommon}, res: {@link IResCommon}, method: {@link IReqMethod.loginSuccess}
 	 */
 	loginSuccess = "loginSuccess",
 	/**
 	 * * 获取服务器维护信息
-	 * * req: {@link IReqCommon}, res: {@link IResFetchServerMaintenanceInfo}, msgId: {@link EMessageID.fetchServerMaintenanceInfo}
+	 * * req: {@link IReqCommon}, res: {@link IResFetchServerMaintenanceInfo}, method: {@link IReqMethod.fetchServerMaintenanceInfo}
 	 */
 	fetchServerMaintenanceInfo = "fetchServerMaintenanceInfo",
-	/** req: {@link IReqEmailLogin}, res: {@link IResLogin}, msgId: {@link EMessageID.emailLogin} */
+	/** req: {@link IReqEmailLogin}, res: {@link IResLogin}, method: {@link IReqMethod.emailLogin} */
 	emailLogin = "emailLogin",
 	/**
 	 * * oauth2 方式登录授权
-	 * * req: {@link IReqOauth2Auth}, res: {@link IResOauth2Auth}, msgId: {@link EMessageID.oauth2Auth}
+	 * * req: {@link IReqOauth2Auth}, res: {@link IResOauth2Auth}, method: {@link IReqMethod.oauth2Auth}
 	 */
 	oauth2Auth = "oauth2Auth",
 	/**
 	 * * oauth2 验证是否已经注册过账号
-	 * * req: {@link IReqOauth2Check}, res: {@link IResOauth2Check}, msgId: {@link EMessageID.oauth2Check}
+	 * * req: {@link IReqOauth2Check}, res: {@link IResOauth2Check}, method: {@link IReqMethod.oauth2Check}
 	 */
 	oauth2Check = "oauth2Check",
 	/**
 	 * * oauth2 注册
-	 * * req: {@link IReqOauth2Signup}, res: {@link IResOauth2Signup}, msgId: {@link EMessageID.oauth2Signup}
+	 * * req: {@link IReqOauth2Signup}, res: {@link IResOauth2Signup}, method: {@link IReqMethod.oauth2Signup}
 	 */
 	oauth2Signup = "oauth2Signup",
 	/**
 	 * * oauth2 登录
-	 * * req: {@link IReqOauth2Login}, res: {@link IResLogin}, msgId: {@link EMessageID.oauth2Login}
+	 * * req: {@link IReqOauth2Login}, res: {@link IResLogin}, method: {@link IReqMethod.oauth2Login}
 	 */
 	oauth2Login = "oauth2Login",
 	/**
 	 * * dmm 获取登录参数
-	 * * req: {@link IReqDMMPreLogin}, res: {@link IResDMMPreLogin}, msgId: {@link EMessageID.dmmPreLogin}
+	 * * req: {@link IReqDMMPreLogin}, res: {@link IResDMMPreLogin}, method: {@link IReqMethod.dmmPreLogin}
 	 */
 	dmmPreLogin = "dmmPreLogin",
 	/**
 	 * * 获取手机验证码（已登录的情况下）
-	 * * req: {@link IReqCreatePhoneVerifyCode}, res: {@link IResCommon}, msgId: {@link EMessageID.createPhoneVerifyCode}
+	 * * req: {@link IReqCreatePhoneVerifyCode}, res: {@link IResCommon}, method: {@link IReqMethod.createPhoneVerifyCode}
 	 */
 	createPhoneVerifyCode = "createPhoneVerifyCode",
 	/**
 	 * * 获取邮箱验证码
-	 * * req: {@link IReqCreateEmailVerifyCode}, res: {@link IResCommon}, msgId: {@link EMessageID.createEmailVerifyCode}
+	 * * req: {@link IReqCreateEmailVerifyCode}, res: {@link IResCommon}, method: {@link IReqMethod.createEmailVerifyCode}
 	 */
 	createEmailVerifyCode = "createEmailVerifyCode",
 	/**
 	 * * 验证码获取安全权限
-	 * * req: {@link IReqVerifyCodeForSecure}, res: {@link IResVerfiyCodeForSecure}, msgId: {@link EMessageID.verfifyCodeForSecure}
+	 * * req: {@link IReqVerifyCodeForSecure}, res: {@link IResVerfiyCodeForSecure}, method: {@link IReqMethod.verfifyCodeForSecure}
 	 */
 	verfifyCodeForSecure = "verfifyCodeForSecure",
 	/**
 	 * * 绑定手机号
-	 * * req: {@link IReqBindPhoneNumber}, res: {@link IResCommon}, msgId: {@link EMessageID.bindPhoneNumber}
+	 * * req: {@link IReqBindPhoneNumber}, res: {@link IResCommon}, method: {@link IReqMethod.bindPhoneNumber}
 	 */
 	bindPhoneNumber = "bindPhoneNumber",
 	/**
 	 * * 解绑手机号
-	 * * req: {@link IReqUnbindPhoneNumber}, res: {@link IResCommon}, msgId: {@link EMessageID.unbindPhoneNumber}
+	 * * req: {@link IReqUnbindPhoneNumber}, res: {@link IResCommon}, method: {@link IReqMethod.unbindPhoneNumber}
 	 */
 	unbindPhoneNumber = "unbindPhoneNumber",
 	/**
 	 * * 查询已绑定手机是否有登录绑定
-	 * * req: {@link IReqCommon}, res: {@link IResFetchPhoneLoginBind}, msgId: {@link EMessageID.fetchPhoneLoginBind}
+	 * * req: {@link IReqCommon}, res: {@link IResFetchPhoneLoginBind}, method: {@link IReqMethod.fetchPhoneLoginBind}
 	 */
 	fetchPhoneLoginBind = "fetchPhoneLoginBind",
 	/**
 	 * * 生成手机登录绑定
-	 * * req: {@link IReqCreatePhoneLoginBind}, res: {@link IResCommon}, msgId: {@link EMessageID.createPhoneLoginBind}
+	 * * req: {@link IReqCreatePhoneLoginBind}, res: {@link IResCommon}, method: {@link IReqMethod.createPhoneLoginBind}
 	 */
 	createPhoneLoginBind = "createPhoneLoginBind",
 	/**
 	 * * 绑定邮箱
-	 * * req: {@link IReqBindEmail}, res: {@link IResCommon}, msgId: {@link EMessageID.bindEmail}
+	 * * req: {@link IReqBindEmail}, res: {@link IResCommon}, method: {@link IReqMethod.bindEmail}
 	 */
 	bindEmail = "bindEmail",
 	/**
 	 * * 修改密码
-	 * * req: {@link IReqModifyPassword}, res: {@link IResCommon}, msgId: {@link EMessageID.modifyPassword}
+	 * * req: {@link IReqModifyPassword}, res: {@link IResCommon}, method: {@link IReqMethod.modifyPassword}
 	 */
 	modifyPassword = "modifyPassword",
 	/**
 	 * * 绑定账号密码（Oauth2注册的账号使用，只有一次机会）
-	 * * req: {@link IReqBindAccount}, res: {@link IResCommon}, msgId: {@link EMessageID.bindAccount}
+	 * * req: {@link IReqBindAccount}, res: {@link IResCommon}, method: {@link IReqMethod.bindAccount}
 	 */
 	bindAccount = "bindAccount",
 	/**
 	 * * 注销账号
-	 * * req: {@link IReqLogout}, res: {@link IResLogout}, msgId: {@link EMessageID.logout}
+	 * * req: {@link IReqLogout}, res: {@link IResLogout}, method: {@link IReqMethod.logout}
 	 */
 	logout = "logout",
 	/**
 	 * * 心跳
-	 * * req: {@link IReqHeatBeat}, res: {@link IResCommon}, msgId: {@link EMessageID.heatbeat}
+	 * * req: {@link IReqHeatBeat}, res: {@link IResCommon}, method: {@link IReqMethod.heatbeat}
 	 */
 	heatbeat = "heatbeat",
 	/**
 	 * * 通过Eid获取账号ID
-	 * * req: {@link IReqSearchAccountByEidLobby}, res: {@link IResSearchAccountbyEidLobby}, msgId: {@link EMessageID.searchAccountByEid}
+	 * * req: {@link IReqSearchAccountByEidLobby}, res: {@link IResSearchAccountbyEidLobby}, method: {@link IReqMethod.searchAccountByEid}
 	 */
 	searchAccountByEid = "searchAccountByEid",
 	/**
 	 * * 登录心跳（用于防止第三方客户端，登录后不调用该接口无法进行匹配游戏）
-	 * * req: {@link IReqLoginBeat}, res: {@link IResCommon}, msgId: {@link EMessageID.loginBeat}
+	 * * req: {@link IReqLoginBeat}, res: {@link IResCommon}, method: {@link IReqMethod.loginBeat}
 	 */
 	loginBeat = "loginBeat",
 	/**
 	 * * 创建昵称
-	 * * req: {@link IReqCreateNickname}, res: {@link IResCommon}, msgId: {@link EMessageID.createNickname}
+	 * * req: {@link IReqCreateNickname}, res: {@link IResCommon}, method: {@link IReqMethod.createNickname}
 	 */
 	createNickname = "createNickname",
 	/**
 	 * * 修改昵称
-	 * * req: {@link IReqModifyNickname}, res: {@link IResCommon}, msgId: {@link EMessageID.modifyNickname}
+	 * * req: {@link IReqModifyNickname}, res: {@link IResCommon}, method: {@link IReqMethod.modifyNickname}
 	 */
 	modifyNickname = "modifyNickname",
 	/**
 	 * * 修改生日
-	 * * req: {@link IReqModifyBirthday}, res: {@link IResCommon}, msgId: {@link EMessageID.modifyBirthday}
+	 * * req: {@link IReqModifyBirthday}, res: {@link IResCommon}, method: {@link IReqMethod.modifyBirthday}
 	 */
 	modifyBirthday = "modifyBirthday",
 	/**
 	 * * 请求自己的房间信息
-	 * * req: {@link IReqCommon}, res: {@link IResSelfRoom}, msgId: {@link EMessageID.fetchRoom}
+	 * * req: {@link IReqCommon}, res: {@link IResSelfRoom}, method: {@link IReqMethod.fetchRoom}
 	 */
 	fetchRoom = "fetchRoom",
 	/**
 	 * * 请求自己的对局信息
-	 * * req: {@link IReqCommon}, res: {@link IResFetchGamingInfo}, msgId: {@link EMessageID.fetchGamingInfo}
+	 * * req: {@link IReqCommon}, res: {@link IResFetchGamingInfo}, method: {@link IReqMethod.fetchGamingInfo}
 	 */
 	fetchGamingInfo = "fetchGamingInfo",
 	/**
 	 * * 创建房间
-	 * * req: {@link IReqCreateRoom}, res: {@link IResCreateRoom}, msgId: {@link EMessageID.createRoom}
+	 * * req: {@link IReqCreateRoom}, res: {@link IResCreateRoom}, method: {@link IReqMethod.createRoom}
 	 */
 	createRoom = "createRoom",
 	/**
 	 * * 加入房间
-	 * * req: {@link IReqJoinRoom}, res: {@link IResJoinRoom}, msgId: {@link EMessageID.joinRoom}
+	 * * req: {@link IReqJoinRoom}, res: {@link IResJoinRoom}, method: {@link IReqMethod.joinRoom}
 	 */
 	joinRoom = "joinRoom",
 	/**
 	 * * 离开房间
-	 * * req: {@link IReqCommon}, res: {@link IResCommon}, msgId: {@link EMessageID.leaveRoom}
+	 * * req: {@link IReqCommon}, res: {@link IResCommon}, method: {@link IReqMethod.leaveRoom}
 	 */
 	leaveRoom = "leaveRoom",
 	/**
 	 * * 准备
-	 * * req: {@link IReqRoomReady}, res: {@link IResCommon}, msgId: {@link EMessageID.readyPlay}
+	 * * req: {@link IReqRoomReady}, res: {@link IResCommon}, method: {@link IReqMethod.readyPlay}
 	 */
 	readyPlay = "readyPlay",
 	/**
 	 * * 切换装扮状态
-	 * * req: {@link IReqRoomDressing}, res: {@link IResCommon}, msgId: {@link EMessageID.dressingStatus}
+	 * * req: {@link IReqRoomDressing}, res: {@link IResCommon}, method: {@link IReqMethod.dressingStatus}
 	 */
 	dressingStatus = "dressingStatus",
 	/**
 	 * * 开始
-	 * * req: {@link IReqRoomStart}, res: {@link IResCommon}, msgId: {@link EMessageID.startRoom}
+	 * * req: {@link IReqRoomStart}, res: {@link IResCommon}, method: {@link IReqMethod.startRoom}
 	 */
 	startRoom = "startRoom",
 	/**
 	 * * 踢出玩家
-	 * * req: {@link IReqRoomKickPlayer}, res: {@link IResCommon}, msgId: {@link EMessageID.roomKickPlayer}
+	 * * req: {@link IReqRoomKickPlayer}, res: {@link IResCommon}, method: {@link IReqMethod.roomKickPlayer}
 	 */
 	roomKickPlayer = "roomKickPlayer",
 	/**
 	 * * 修改房间
-	 * * req: {@link IReqModifyRoom}, res: {@link IResCommon}, msgId: {@link EMessageID.modifyRoom}
+	 * * req: {@link IReqModifyRoom}, res: {@link IResCommon}, method: {@link IReqMethod.modifyRoom}
 	 */
 	modifyRoom = "modifyRoom",
 	/**
 	 * * 添加好友房机器人
-	 * * req: {@link IReqAddRoomRobot}, res: {@link IResCommon}, msgId: {@link EMessageID.addRoomRobot}
+	 * * req: {@link IReqAddRoomRobot}, res: {@link IResCommon}, method: {@link IReqMethod.addRoomRobot}
 	 */
 	addRoomRobot = "addRoomRobot",
 	/**
 	 * * 加入匹配
-	 * * req: {@link IReqJoinMatchQueue}, res: {@link IResCommon}, msgId: {@link EMessageID.matchGame}
+	 * * req: {@link IReqJoinMatchQueue}, res: {@link IResCommon}, method: {@link IReqMethod.matchGame}
 	 */
 	matchGame = "matchGame",
 	/**
 	 * * 取消匹配
-	 * * req: {@link IReqCancelMatchQueue}, res: {@link IResCommon}, msgId: {@link EMessageID.cancelMatch}
+	 * * req: {@link IReqCancelMatchQueue}, res: {@link IResCommon}, method: {@link IReqMethod.cancelMatch}
 	 */
 	cancelMatch = "cancelMatch",
 	/**
 	 * * 请求账号信息
-	 * * req: {@link IReqAccountInfo}, res: {@link IResAccountInfo}, msgId: {@link EMessageID.fetchAccountInfo}
+	 * * req: {@link IReqAccountInfo}, res: {@link IResAccountInfo}, method: {@link IReqMethod.fetchAccountInfo}
 	 */
 	fetchAccountInfo = "fetchAccountInfo",
 	/**
 	 * * 修改头像
-	 * * req: {@link IReqChangeAvatar}, res: {@link IResCommon}, msgId: {@link EMessageID.changeAvatar}
+	 * * req: {@link IReqChangeAvatar}, res: {@link IResCommon}, method: {@link IReqMethod.changeAvatar}
 	 */
 	changeAvatar = "changeAvatar",
 	/**
 	 * * 领取更新礼包
-	 * * req: {@link IReqCommon}, res: {@link IResCommon}, msgId: {@link EMessageID.receiveVersionReward}
+	 * * req: {@link IReqCommon}, res: {@link IResCommon}, method: {@link IReqMethod.receiveVersionReward}
 	 */
 	receiveVersionReward = "receiveVersionReward",
 	/**
 	 * * 请求账号统计信息
-	 * * req: {@link IReqAccountStatisticInfo}, res: {@link IResAccountStatisticInfo}, msgId: {@link EMessageID.fetchAccountStatisticInfo}
+	 * * req: {@link IReqAccountStatisticInfo}, res: {@link IResAccountStatisticInfo}, method: {@link IReqMethod.fetchAccountStatisticInfo}
 	 */
 	fetchAccountStatisticInfo = "fetchAccountStatisticInfo",
 	/**
 	 * * 获取试炼赛赛季排名信息
-	 * * req: {@link IReqAccountInfo}, res: {@link IResAccountChallengeRankInfo}, msgId: {@link EMessageID.fetchAccountChallengeRankInfo}
+	 * * req: {@link IReqAccountInfo}, res: {@link IResAccountChallengeRankInfo}, method: {@link IReqMethod.fetchAccountChallengeRankInfo}
 	 */
 	fetchAccountChallengeRankInfo = "fetchAccountChallengeRankInfo",
 	/**
 	 * * 获取账号人物信息
-	 * * req: {@link IReqCommon}, res: {@link IResAccountCharacterInfo}, msgId: {@link EMessageID.fetchAccountCharacterInfo}
+	 * * req: {@link IReqCommon}, res: {@link IResAccountCharacterInfo}, method: {@link IReqMethod.fetchAccountCharacterInfo}
 	 */
 	fetchAccountCharacterInfo = "fetchAccountCharacterInfo",
 	/**
 	 * * 商店购买
-	 * * req: {@link IReqShopPurchase}, res: {@link IResShopPurchase}, msgId: {@link EMessageID.shopPurchase}
+	 * * req: {@link IReqShopPurchase}, res: {@link IResShopPurchase}, method: {@link IReqMethod.shopPurchase}
 	 */
 	shopPurchase = "shopPurchase",
 	/**
 	 * * 获取单场牌谱记录
-	 * * req: {@link IReqGameRecord}, res: {@link IResGameRecord}, msgId: {@link EMessageID.fetchGameRecord}
+	 * * req: {@link IReqGameRecord}, res: {@link IResGameRecord}, method: {@link IReqMethod.fetchGameRecord}
 	 */
 	fetchGameRecord = "fetchGameRecord",
 	/**
 	 * * 添加查看牌谱记录
-	 * * req: {@link IReqGameRecord}, res: {@link IResCommon}, msgId: {@link EMessageID.readGameRecord}
+	 * * req: {@link IReqGameRecord}, res: {@link IResCommon}, method: {@link IReqMethod.readGameRecord}
 	 */
 	readGameRecord = "readGameRecord",
 	/**
 	 * * 获取牌谱列表
 	 * * 20240820更新之前的牌谱通过这个接口获取
-	 * * req: {@link IReqGameRecordList}, res: {@link IResGameRecordList}, msgId: {@link EMessageID.fetchGameRecordList}
+	 * * req: {@link IReqGameRecordList}, res: {@link IResGameRecordList}, method: {@link IReqMethod.fetchGameRecordList}
 	 */
 	fetchGameRecordList = "fetchGameRecordList",
 	/**
@@ -573,1608 +573,1608 @@ declare enum EMessageID {
 	 * * 202408新版牌谱功能使用（基于迭代器）
 	 * * 2024.08.20 06:33 停服  07:40 国服启动
 	 * * 只有 2024.08.20 07:30 (1724110200) 停服维护之后的牌谱可以通过这个接口获取列表
-	 * * req: {@link IReqGameRecordListV2}, res: {@link IResGameRecordListV2}, msgId: {@link EMessageID.fetchGameRecordListV2}
+	 * * req: {@link IReqGameRecordListV2}, res: {@link IResGameRecordListV2}, method: {@link IReqMethod.fetchGameRecordListV2}
 	 */
 	fetchGameRecordListV2 = "fetchGameRecordListV2",
 	/**
 	 * * 获取后续牌谱列表内容
 	 * * 基于 fetchGameRecordListV2 协议返回结果使用
 	 * * 只有 2024.08.20 07:30 (1724110200) 停服维护之后的牌谱可以通过这个接口获取列表
-	 * * req: {@link IReqNextGameRecordList}, res: {@link IResNextGameRecordList}, msgId: {@link EMessageID.fetchNextGameRecordList}
+	 * * req: {@link IReqNextGameRecordList}, res: {@link IResNextGameRecordList}, method: {@link IReqMethod.fetchNextGameRecordList}
 	 */
 	fetchNextGameRecordList = "fetchNextGameRecordList",
 	/**
 	 * * 获得收藏的牌谱列表（简要信息）
-	 * * req: {@link IReqCommon}, res: {@link IResCollectedGameRecordList}, msgId: {@link EMessageID.fetchCollectedGameRecordList}
+	 * * req: {@link IReqCommon}, res: {@link IResCollectedGameRecordList}, method: {@link IReqMethod.fetchCollectedGameRecordList}
 	 */
 	fetchCollectedGameRecordList = "fetchCollectedGameRecordList",
 	/**
 	 * * 获取牌谱列表的详细信息
-	 * * req: {@link IReqGameRecordsDetail}, res: {@link IResGameRecordsDetail}, msgId: {@link EMessageID.fetchGameRecordsDetail}
+	 * * req: {@link IReqGameRecordsDetail}, res: {@link IResGameRecordsDetail}, method: {@link IReqMethod.fetchGameRecordsDetail}
 	 */
 	fetchGameRecordsDetail = "fetchGameRecordsDetail",
 	/**
 	 * * 获取牌谱列表的详细信息 （新版）
-	 * * req: {@link IReqGameRecordsDetailV2}, res: {@link IResGameRecordsDetailV2}, msgId: {@link EMessageID.fetchGameRecordsDetailV2}
+	 * * req: {@link IReqGameRecordsDetailV2}, res: {@link IResGameRecordsDetailV2}, method: {@link IReqMethod.fetchGameRecordsDetailV2}
 	 */
 	fetchGameRecordsDetailV2 = "fetchGameRecordsDetailV2",
 	/**
 	 * * 添加牌谱收藏
-	 * * req: {@link IReqAddCollectedGameRecord}, res: {@link IResAddCollectedGameRecord}, msgId: {@link EMessageID.addCollectedGameRecord}
+	 * * req: {@link IReqAddCollectedGameRecord}, res: {@link IResAddCollectedGameRecord}, method: {@link IReqMethod.addCollectedGameRecord}
 	 */
 	addCollectedGameRecord = "addCollectedGameRecord",
 	/**
 	 * * 移除牌谱收藏
-	 * * req: {@link IReqRemoveCollectedGameRecord}, res: {@link IResRemoveCollectedGameRecord}, msgId: {@link EMessageID.removeCollectedGameRecord}
+	 * * req: {@link IReqRemoveCollectedGameRecord}, res: {@link IResRemoveCollectedGameRecord}, method: {@link IReqMethod.removeCollectedGameRecord}
 	 */
 	removeCollectedGameRecord = "removeCollectedGameRecord",
 	/**
 	 * * 修改牌谱备注
-	 * * req: {@link IReqChangeCollectedGameRecordRemarks}, res: {@link IResChangeCollectedGameRecordRemarks}, msgId: {@link EMessageID.changeCollectedGameRecordRemarks}
+	 * * req: {@link IReqChangeCollectedGameRecordRemarks}, res: {@link IResChangeCollectedGameRecordRemarks}, method: {@link IReqMethod.changeCollectedGameRecordRemarks}
 	 */
 	changeCollectedGameRecordRemarks = "changeCollectedGameRecordRemarks",
 	/**
 	 * * 获取排行榜
-	 * * req: {@link IReqLevelLeaderboard}, res: {@link IResLevelLeaderboard}, msgId: {@link EMessageID.fetchLevelLeaderboard}
+	 * * req: {@link IReqLevelLeaderboard}, res: {@link IResLevelLeaderboard}, method: {@link IReqMethod.fetchLevelLeaderboard}
 	 */
 	fetchLevelLeaderboard = "fetchLevelLeaderboard",
 	/**
 	 * * 获取试炼赛排行榜
-	 * * req: {@link IReqChallangeLeaderboard}, res: {@link IResChallengeLeaderboard}, msgId: {@link EMessageID.fetchChallengeLeaderboard}
+	 * * req: {@link IReqChallangeLeaderboard}, res: {@link IResChallengeLeaderboard}, method: {@link IReqMethod.fetchChallengeLeaderboard}
 	 */
 	fetchChallengeLeaderboard = "fetchChallengeLeaderboard",
 	/**
 	 * * 获取多人试炼赛等级信息
-	 * * req: {@link IReqMutiChallengeLevel}, res: {@link IResMutiChallengeLevel}, msgId: {@link EMessageID.fetchMutiChallengeLevel}
+	 * * req: {@link IReqMutiChallengeLevel}, res: {@link IResMutiChallengeLevel}, method: {@link IReqMethod.fetchMutiChallengeLevel}
 	 */
 	fetchMutiChallengeLevel = "fetchMutiChallengeLevel",
 	/**
 	 * * 获取多人简要信息
-	 * * req: {@link IReqMultiAccountId}, res: {@link IResMultiAccountBrief}, msgId: {@link EMessageID.fetchMultiAccountBrief}
+	 * * req: {@link IReqMultiAccountId}, res: {@link IResMultiAccountBrief}, method: {@link IReqMethod.fetchMultiAccountBrief}
 	 */
 	fetchMultiAccountBrief = "fetchMultiAccountBrief",
 	/**
 	 * * 获取好友列表
-	 * * req: {@link IReqCommon}, res: {@link IResFriendList}, msgId: {@link EMessageID.fetchFriendList}
+	 * * req: {@link IReqCommon}, res: {@link IResFriendList}, method: {@link IReqMethod.fetchFriendList}
 	 */
 	fetchFriendList = "fetchFriendList",
 	/**
 	 * * 获取好友申请列表
-	 * * req: {@link IReqCommon}, res: {@link IResFriendApplyList}, msgId: {@link EMessageID.fetchFriendApplyList}
+	 * * req: {@link IReqCommon}, res: {@link IResFriendApplyList}, method: {@link IReqMethod.fetchFriendApplyList}
 	 */
 	fetchFriendApplyList = "fetchFriendApplyList",
 	/**
 	 * * 申请好友
-	 * * req: {@link IReqApplyFriend}, res: {@link IResCommon}, msgId: {@link EMessageID.applyFriend}
+	 * * req: {@link IReqApplyFriend}, res: {@link IResCommon}, method: {@link IReqMethod.applyFriend}
 	 */
 	applyFriend = "applyFriend",
 	/**
 	 * * 处理好友申请
-	 * * req: {@link IReqHandleFriendApply}, res: {@link IResCommon}, msgId: {@link EMessageID.handleFriendApply}
+	 * * req: {@link IReqHandleFriendApply}, res: {@link IResCommon}, method: {@link IReqMethod.handleFriendApply}
 	 */
 	handleFriendApply = "handleFriendApply",
 	/**
 	 * * 删除好友
-	 * * req: {@link IReqRemoveFriend}, res: {@link IResCommon}, msgId: {@link EMessageID.removeFriend}
+	 * * req: {@link IReqRemoveFriend}, res: {@link IResCommon}, method: {@link IReqMethod.removeFriend}
 	 */
 	removeFriend = "removeFriend",
 	/**
 	 * * 查询单个玩家
-	 * * req: {@link IReqSearchAccountById}, res: {@link IResSearchAccountById}, msgId: {@link EMessageID.searchAccountById}
+	 * * req: {@link IReqSearchAccountById}, res: {@link IResSearchAccountById}, method: {@link IReqMethod.searchAccountById}
 	 */
 	searchAccountById = "searchAccountById",
 	/**
 	 * * 模糊查询玩家
-	 * * req: {@link IReqSearchAccountByPattern}, res: {@link IResSearchAccountByPattern}, msgId: {@link EMessageID.searchAccountByPattern}
+	 * * req: {@link IReqSearchAccountByPattern}, res: {@link IResSearchAccountByPattern}, method: {@link IReqMethod.searchAccountByPattern}
 	 */
 	searchAccountByPattern = "searchAccountByPattern",
 	/**
 	 * * 查询玩家状态
-	 * * req: {@link IReqAccountList}, res: {@link IResAccountStates}, msgId: {@link EMessageID.fetchAccountState}
+	 * * req: {@link IReqAccountList}, res: {@link IResAccountStates}, method: {@link IReqMethod.fetchAccountState}
 	 */
 	fetchAccountState = "fetchAccountState",
 	/**
 	 * * 请求背包信息
-	 * * req: {@link IReqCommon}, res: {@link IResBagInfo}, msgId: {@link EMessageID.fetchBagInfo}
+	 * * req: {@link IReqCommon}, res: {@link IResBagInfo}, method: {@link IReqMethod.fetchBagInfo}
 	 */
 	fetchBagInfo = "fetchBagInfo",
 	/**
 	 * * 使用背包道具
-	 * * req: {@link IReqUseBagItem}, res: {@link IResCommon}, msgId: {@link EMessageID.useBagItem}
+	 * * req: {@link IReqUseBagItem}, res: {@link IResCommon}, method: {@link IReqMethod.useBagItem}
 	 */
 	useBagItem = "useBagItem",
 	/**
 	 * * 使用手选道具物品
-	 * * req: {@link IReqOpenManualItem}, res: {@link IResCommon}, msgId: {@link EMessageID.openManualItem}
+	 * * req: {@link IReqOpenManualItem}, res: {@link IResCommon}, method: {@link IReqMethod.openManualItem}
 	 */
 	openManualItem = "openManualItem",
 	/**
 	 * * 使用随机道具物品
-	 * * req: {@link IReqOpenRandomRewardItem}, res: {@link IResOpenRandomRewardItem}, msgId: {@link EMessageID.openRandomRewardItem}
+	 * * req: {@link IReqOpenRandomRewardItem}, res: {@link IResOpenRandomRewardItem}, method: {@link IReqMethod.openRandomRewardItem}
 	 */
 	openRandomRewardItem = "openRandomRewardItem",
 	/**
 	 * * 使用全领礼包物品
-	 * * req: {@link IReqOpenAllRewardItem}, res: {@link IResOpenAllRewardItem}, msgId: {@link EMessageID.openAllRewardItem}
+	 * * req: {@link IReqOpenAllRewardItem}, res: {@link IResOpenAllRewardItem}, method: {@link IReqMethod.openAllRewardItem}
 	 */
 	openAllRewardItem = "openAllRewardItem",
 	/**
 	 * * 合成碎片
-	 * * req: {@link IReqComposeShard}, res: {@link IResCommon}, msgId: {@link EMessageID.composeShard}
+	 * * req: {@link IReqComposeShard}, res: {@link IResCommon}, method: {@link IReqMethod.composeShard}
 	 */
 	composeShard = "composeShard",
 	/**
 	 * * 获取公告
-	 * * req: {@link IReqFetchAnnouncement}, res: {@link IResAnnouncement}, msgId: {@link EMessageID.fetchAnnouncement}
+	 * * req: {@link IReqFetchAnnouncement}, res: {@link IResAnnouncement}, method: {@link IReqMethod.fetchAnnouncement}
 	 */
 	fetchAnnouncement = "fetchAnnouncement",
 	/**
 	 * * 阅读公告
-	 * * req: {@link IReqReadAnnouncement}, res: {@link IResCommon}, msgId: {@link EMessageID.readAnnouncement}
+	 * * req: {@link IReqReadAnnouncement}, res: {@link IResCommon}, method: {@link IReqMethod.readAnnouncement}
 	 */
 	readAnnouncement = "readAnnouncement",
 	/**
 	 * * 获取邮件列表
-	 * * req: {@link IReqCommon}, res: {@link IResMailInfo}, msgId: {@link EMessageID.fetchMailInfo}
+	 * * req: {@link IReqCommon}, res: {@link IResMailInfo}, method: {@link IReqMethod.fetchMailInfo}
 	 */
 	fetchMailInfo = "fetchMailInfo",
 	/**
 	 * * 阅读邮件
-	 * * req: {@link IReqReadMail}, res: {@link IResCommon}, msgId: {@link EMessageID.readMail}
+	 * * req: {@link IReqReadMail}, res: {@link IResCommon}, method: {@link IReqMethod.readMail}
 	 */
 	readMail = "readMail",
 	/**
 	 * * 删除邮件
-	 * * req: {@link IReqDeleteMail}, res: {@link IResCommon}, msgId: {@link EMessageID.deleteMail}
+	 * * req: {@link IReqDeleteMail}, res: {@link IResCommon}, method: {@link IReqMethod.deleteMail}
 	 */
 	deleteMail = "deleteMail",
 	/**
 	 * * 拿取邮件附件
-	 * * req: {@link IReqTakeAttachment}, res: {@link IResCommon}, msgId: {@link EMessageID.takeAttachmentFromMail}
+	 * * req: {@link IReqTakeAttachment}, res: {@link IResCommon}, method: {@link IReqMethod.takeAttachmentFromMail}
 	 */
 	takeAttachmentFromMail = "takeAttachmentFromMail",
 	/**
 	 * * 领取成就奖励
-	 * * req: {@link IReqReceiveAchievementReward}, res: {@link IResReceiveAchievementReward}, msgId: {@link EMessageID.receiveAchievementReward}
+	 * * req: {@link IReqReceiveAchievementReward}, res: {@link IResReceiveAchievementReward}, method: {@link IReqMethod.receiveAchievementReward}
 	 */
 	receiveAchievementReward = "receiveAchievementReward",
 	/**
 	 * * 领取成就大组奖励
-	 * * req: {@link IReqReceiveAchievementGroupReward}, res: {@link IResReceiveAchievementGroupReward}, msgId: {@link EMessageID.receiveAchievementGroupReward}
+	 * * req: {@link IReqReceiveAchievementGroupReward}, res: {@link IResReceiveAchievementGroupReward}, method: {@link IReqMethod.receiveAchievementGroupReward}
 	 */
 	receiveAchievementGroupReward = "receiveAchievementGroupReward",
 	/**
 	 * * 获取全服成就完成率
-	 * * req: {@link IReqCommon}, res: {@link IResFetchAchievementRate}, msgId: {@link EMessageID.fetchAchievementRate}
+	 * * req: {@link IReqCommon}, res: {@link IResFetchAchievementRate}, method: {@link IReqMethod.fetchAchievementRate}
 	 */
 	fetchAchievementRate = "fetchAchievementRate",
 	/**
 	 * * 获取成就
-	 * * req: {@link IReqCommon}, res: {@link IResAchievement}, msgId: {@link EMessageID.fetchAchievement}
+	 * * req: {@link IReqCommon}, res: {@link IResAchievement}, method: {@link IReqMethod.fetchAchievement}
 	 */
 	fetchAchievement = "fetchAchievement",
 	/**
 	 * * 购买试炼资格
-	 * * req: {@link IReqBuyShiLian}, res: {@link IResCommon}, msgId: {@link EMessageID.buyShiLian}
+	 * * req: {@link IReqBuyShiLian}, res: {@link IResCommon}, method: {@link IReqMethod.buyShiLian}
 	 */
 	buyShiLian = "buyShiLian",
 	/**
 	 * * 试炼匹配
-	 * * req: {@link IReqCommon}, res: {@link IResCommon}, msgId: {@link EMessageID.matchShiLian}
+	 * * req: {@link IReqCommon}, res: {@link IResCommon}, method: {@link IReqMethod.matchShiLian}
 	 */
 	matchShiLian = "matchShiLian",
 	/**
 	 * * 继续下一阶段试炼
-	 * * req: {@link IReqCommon}, res: {@link IResCommon}, msgId: {@link EMessageID.goNextShiLian}
+	 * * req: {@link IReqCommon}, res: {@link IResCommon}, method: {@link IReqMethod.goNextShiLian}
 	 */
 	goNextShiLian = "goNextShiLian",
 	/**
 	 * * 更新客户端数据
-	 * * req: {@link IReqUpdateClientValue}, res: {@link IResCommon}, msgId: {@link EMessageID.updateClientValue}
+	 * * req: {@link IReqUpdateClientValue}, res: {@link IResCommon}, method: {@link IReqMethod.updateClientValue}
 	 */
 	updateClientValue = "updateClientValue",
 	/**
 	 * * 获取客户端数据
-	 * * req: {@link IReqCommon}, res: {@link IResClientValue}, msgId: {@link EMessageID.fetchClientValue}
+	 * * req: {@link IReqCommon}, res: {@link IResClientValue}, method: {@link IReqMethod.fetchClientValue}
 	 */
 	fetchClientValue = "fetchClientValue",
 	/**
 	 * * 客户端信息
-	 * * req: {@link IReqClientMessage}, res: {@link IResCommon}, msgId: {@link EMessageID.clientMessage}
+	 * * req: {@link IReqClientMessage}, res: {@link IResCommon}, method: {@link IReqMethod.clientMessage}
 	 */
 	clientMessage = "clientMessage",
 	/**
 	 * * 请求当前匹配模式信息
-	 * * req: {@link IReqCurrentMatchInfo}, res: {@link IResCurrentMatchInfo}, msgId: {@link EMessageID.fetchCurrentMatchInfo}
+	 * * req: {@link IReqCurrentMatchInfo}, res: {@link IResCurrentMatchInfo}, method: {@link IReqMethod.fetchCurrentMatchInfo}
 	 */
 	fetchCurrentMatchInfo = "fetchCurrentMatchInfo",
 	/**
 	 * * 用户举报
-	 * * req: {@link IReqUserComplain}, res: {@link IResCommon}, msgId: {@link EMessageID.userComplain}
+	 * * req: {@link IReqUserComplain}, res: {@link IResCommon}, method: {@link IReqMethod.userComplain}
 	 */
 	userComplain = "userComplain",
 	/**
 	 * * ------ 复活币 -------- //
 	 * * 获取复活币信息
-	 * * req: {@link IReqCommon}, res: {@link IResReviveCoinInfo}, msgId: {@link EMessageID.fetchReviveCoinInfo}
+	 * * req: {@link IReqCommon}, res: {@link IResReviveCoinInfo}, method: {@link IReqMethod.fetchReviveCoinInfo}
 	 */
 	fetchReviveCoinInfo = "fetchReviveCoinInfo",
 	/**
 	 * * 领取复活币
-	 * * req: {@link IReqCommon}, res: {@link IResCommon}, msgId: {@link EMessageID.gainReviveCoin}
+	 * * req: {@link IReqCommon}, res: {@link IResCommon}, method: {@link IReqMethod.gainReviveCoin}
 	 */
 	gainReviveCoin = "gainReviveCoin",
 	/**
 	 * * 获取每日任务
-	 * * req: {@link IReqCommon}, res: {@link IResDailyTask}, msgId: {@link EMessageID.fetchDailyTask}
+	 * * req: {@link IReqCommon}, res: {@link IResDailyTask}, method: {@link IReqMethod.fetchDailyTask}
 	 */
 	fetchDailyTask = "fetchDailyTask",
 	/**
 	 * * 刷新每日任务
-	 * * req: {@link IReqRefreshDailyTask}, res: {@link IResRefreshDailyTask}, msgId: {@link EMessageID.refreshDailyTask}
+	 * * req: {@link IReqRefreshDailyTask}, res: {@link IResRefreshDailyTask}, method: {@link IReqMethod.refreshDailyTask}
 	 */
 	refreshDailyTask = "refreshDailyTask",
 	/**
 	 * * 使用礼品码
-	 * * req: {@link IReqUseGiftCode}, res: {@link IResUseGiftCode}, msgId: {@link EMessageID.useGiftCode}
+	 * * req: {@link IReqUseGiftCode}, res: {@link IResUseGiftCode}, method: {@link IReqMethod.useGiftCode}
 	 */
 	useGiftCode = "useGiftCode",
 	/**
 	 * * 使用特殊礼品码
-	 * * req: {@link IReqUseGiftCode}, res: {@link IResUseSpecialGiftCode}, msgId: {@link EMessageID.useSpecialGiftCode}
+	 * * req: {@link IReqUseGiftCode}, res: {@link IResUseSpecialGiftCode}, method: {@link IReqMethod.useSpecialGiftCode}
 	 */
 	useSpecialGiftCode = "useSpecialGiftCode",
 	/**
 	 * * 获取称号列表
-	 * * req: {@link IReqCommon}, res: {@link IResTitleList}, msgId: {@link EMessageID.fetchTitleList}
+	 * * req: {@link IReqCommon}, res: {@link IResTitleList}, method: {@link IReqMethod.fetchTitleList}
 	 */
 	fetchTitleList = "fetchTitleList",
 	/**
 	 * * 使用称号
-	 * * req: {@link IReqUseTitle}, res: {@link IResCommon}, msgId: {@link EMessageID.useTitle}
+	 * * req: {@link IReqUseTitle}, res: {@link IResCommon}, method: {@link IReqMethod.useTitle}
 	 */
 	useTitle = "useTitle",
 	/**
 	 * * 发送给其他玩家自定义消息
-	 * * req: {@link IReqSendClientMessage}, res: {@link IResCommon}, msgId: {@link EMessageID.sendClientMessage}
+	 * * req: {@link IReqSendClientMessage}, res: {@link IResCommon}, method: {@link IReqMethod.sendClientMessage}
 	 */
 	sendClientMessage = "sendClientMessage",
 	/**
 	 * * 获取游戏直播信息（全视角）
-	 * * req: {@link IReqGameLiveInfo}, res: {@link IResGameLiveInfo}, msgId: {@link EMessageID.fetchGameLiveInfo}
+	 * * req: {@link IReqGameLiveInfo}, res: {@link IResGameLiveInfo}, method: {@link IReqMethod.fetchGameLiveInfo}
 	 */
 	fetchGameLiveInfo = "fetchGameLiveInfo",
 	/**
 	 * * 获取游戏直播剩余分片信息（增量）
-	 * * req: {@link IReqGameLiveLeftSegment}, res: {@link IResGameLiveLeftSegment}, msgId: {@link EMessageID.fetchGameLiveLeftSegment}
+	 * * req: {@link IReqGameLiveLeftSegment}, res: {@link IResGameLiveLeftSegment}, method: {@link IReqMethod.fetchGameLiveLeftSegment}
 	 */
 	fetchGameLiveLeftSegment = "fetchGameLiveLeftSegment",
 	/**
 	 * * 获取正在直播的游戏列表
-	 * * req: {@link IReqGameLiveList}, res: {@link IResGameLiveList}, msgId: {@link EMessageID.fetchGameLiveList}
+	 * * req: {@link IReqGameLiveList}, res: {@link IResGameLiveList}, method: {@link IReqMethod.fetchGameLiveList}
 	 */
 	fetchGameLiveList = "fetchGameLiveList",
 	/**
 	 * * 留言板设置信息
-	 * * req: {@link IReqCommon}, res: {@link IResCommentSetting}, msgId: {@link EMessageID.fetchCommentSetting}
+	 * * req: {@link IReqCommon}, res: {@link IResCommentSetting}, method: {@link IReqMethod.fetchCommentSetting}
 	 */
 	fetchCommentSetting = "fetchCommentSetting",
 	/**
 	 * * 更新留言板设置
-	 * * req: {@link IReqUpdateCommentSetting}, res: {@link IResCommon}, msgId: {@link EMessageID.updateCommentSetting}
+	 * * req: {@link IReqUpdateCommentSetting}, res: {@link IResCommon}, method: {@link IReqMethod.updateCommentSetting}
 	 */
 	updateCommentSetting = "updateCommentSetting",
 	/**
 	 * * 获取留言板列表
-	 * * req: {@link IReqFetchCommentList}, res: {@link IResFetchCommentList}, msgId: {@link EMessageID.fetchCommentList}
+	 * * req: {@link IReqFetchCommentList}, res: {@link IResFetchCommentList}, method: {@link IReqMethod.fetchCommentList}
 	 */
 	fetchCommentList = "fetchCommentList",
 	/**
 	 * * 获取留言板内容
-	 * * req: {@link IReqFetchCommentContent}, res: {@link IResFetchCommentContent}, msgId: {@link EMessageID.fetchCommentContent}
+	 * * req: {@link IReqFetchCommentContent}, res: {@link IResFetchCommentContent}, method: {@link IReqMethod.fetchCommentContent}
 	 */
 	fetchCommentContent = "fetchCommentContent",
 	/**
 	 * * 发送留言
-	 * * req: {@link IReqLeaveComment}, res: {@link IResCommon}, msgId: {@link EMessageID.leaveComment}
+	 * * req: {@link IReqLeaveComment}, res: {@link IResCommon}, method: {@link IReqMethod.leaveComment}
 	 */
 	leaveComment = "leaveComment",
 	/**
 	 * * 删除留言
-	 * * req: {@link IReqDeleteComment}, res: {@link IResCommon}, msgId: {@link EMessageID.deleteComment}
+	 * * req: {@link IReqDeleteComment}, res: {@link IResCommon}, method: {@link IReqMethod.deleteComment}
 	 */
 	deleteComment = "deleteComment",
 	/**
 	 * * 更新留言阅读记录
-	 * * req: {@link IReqUpdateReadComment}, res: {@link IResCommon}, msgId: {@link EMessageID.updateReadComment}
+	 * * req: {@link IReqUpdateReadComment}, res: {@link IResCommon}, method: {@link IReqMethod.updateReadComment}
 	 */
 	updateReadComment = "updateReadComment",
 	/**
 	 * * 获取滚动公告
-	 * * req: {@link IReqFetchRollingNotice}, res: {@link IResFetchRollingNotice}, msgId: {@link EMessageID.fetchRollingNotice}
+	 * * req: {@link IReqFetchRollingNotice}, res: {@link IResFetchRollingNotice}, method: {@link IReqMethod.fetchRollingNotice}
 	 */
 	fetchRollingNotice = "fetchRollingNotice",
 	/**
 	 * * 获取维护公告
-	 * * req: {@link IReqCommon}, res: {@link IResFetchMaintainNotice}, msgId: {@link EMessageID.fetchMaintainNotice}
+	 * * req: {@link IReqCommon}, res: {@link IResFetchMaintainNotice}, method: {@link IReqMethod.fetchMaintainNotice}
 	 */
 	fetchMaintainNotice = "fetchMaintainNotice",
 	/**
 	 * * 获取服务器时间
-	 * * req: {@link IReqCommon}, res: {@link IResServerTime}, msgId: {@link EMessageID.fetchServerTime}
+	 * * req: {@link IReqCommon}, res: {@link IResServerTime}, method: {@link IReqMethod.fetchServerTime}
 	 */
 	fetchServerTime = "fetchServerTime",
 	/**
 	 * * 获取对应平台的商品列表
-	 * * req: {@link IReqPlatformBillingProducts}, res: {@link IResPlatformBillingProducts}, msgId: {@link EMessageID.fetchPlatformProducts}
+	 * * req: {@link IReqPlatformBillingProducts}, res: {@link IResPlatformBillingProducts}, method: {@link IReqMethod.fetchPlatformProducts}
 	 */
 	fetchPlatformProducts = "fetchPlatformProducts",
 	/**
 	 * * 获取角色随机池信息
-	 * * req: {@link IReqCommon}, res: {@link IResRandomCharacter}, msgId: {@link EMessageID.fetchRandomCharacter}
+	 * * req: {@link IReqCommon}, res: {@link IResRandomCharacter}, method: {@link IReqMethod.fetchRandomCharacter}
 	 */
 	fetchRandomCharacter = "fetchRandomCharacter",
 	/**
 	 * * 设置随机角色池
-	 * * req: {@link IReqRandomCharacter}, res: {@link IResCommon}, msgId: {@link EMessageID.setRandomCharacter}
+	 * * req: {@link IReqRandomCharacter}, res: {@link IResCommon}, method: {@link IReqMethod.setRandomCharacter}
 	 */
 	setRandomCharacter = "setRandomCharacter",
 	/**
 	 * * 取消 Google Play 订单
-	 * * req: {@link IReqCancelGooglePlayOrder}, res: {@link IResCommon}, msgId: {@link EMessageID.cancelGooglePlayOrder}
+	 * * req: {@link IReqCancelGooglePlayOrder}, res: {@link IResCommon}, method: {@link IReqMethod.cancelGooglePlayOrder}
 	 */
 	cancelGooglePlayOrder = "cancelGooglePlayOrder",
 	/**
 	 * * 抽宝箱
-	 * * req: {@link IReqOpenChest}, res: {@link IResOpenChest}, msgId: {@link EMessageID.openChest}
+	 * * req: {@link IReqOpenChest}, res: {@link IResOpenChest}, method: {@link IReqMethod.openChest}
 	 */
 	openChest = "openChest",
 	/**
 	 * * 宝箱商店购买商品
-	 * * req: {@link IReqBuyFromChestShop}, res: {@link IResBuyFromChestShop}, msgId: {@link EMessageID.buyFromChestShop}
+	 * * req: {@link IReqBuyFromChestShop}, res: {@link IResBuyFromChestShop}, method: {@link IReqMethod.buyFromChestShop}
 	 */
 	buyFromChestShop = "buyFromChestShop",
 	/**
 	 * * 获取每日签到信息
-	 * * req: {@link IReqCommon}, res: {@link IResDailySignInInfo}, msgId: {@link EMessageID.fetchDailySignInInfo}
+	 * * req: {@link IReqCommon}, res: {@link IResDailySignInInfo}, method: {@link IReqMethod.fetchDailySignInInfo}
 	 */
 	fetchDailySignInInfo = "fetchDailySignInInfo",
 	/**
 	 * * 签到
-	 * * req: {@link IReqCommon}, res: {@link IResCommon}, msgId: {@link EMessageID.doDailySignIn}
+	 * * req: {@link IReqCommon}, res: {@link IResCommon}, method: {@link IReqMethod.doDailySignIn}
 	 */
 	doDailySignIn = "doDailySignIn",
-	/** req: {@link IReqDoActivitySignIn}, res: {@link IResDoActivitySignIn}, msgId: {@link EMessageID.doActivitySignIn} */
+	/** req: {@link IReqDoActivitySignIn}, res: {@link IResDoActivitySignIn}, method: {@link IReqMethod.doActivitySignIn} */
 	doActivitySignIn = "doActivitySignIn",
 	/**
 	 * * 获取角色信息
-	 * * req: {@link IReqCommon}, res: {@link IResCharacterInfo}, msgId: {@link EMessageID.fetchCharacterInfo}
+	 * * req: {@link IReqCommon}, res: {@link IResCharacterInfo}, method: {@link IReqMethod.fetchCharacterInfo}
 	 */
 	fetchCharacterInfo = "fetchCharacterInfo",
 	/**
 	 * * 更新角色排序
-	 * * req: {@link IReqUpdateCharacterSort}, res: {@link IResCommon}, msgId: {@link EMessageID.updateCharacterSort}
+	 * * req: {@link IReqUpdateCharacterSort}, res: {@link IResCommon}, method: {@link IReqMethod.updateCharacterSort}
 	 */
 	updateCharacterSort = "updateCharacterSort",
 	/**
 	 * * 切换主角色
-	 * * req: {@link IReqChangeMainCharacter}, res: {@link IResCommon}, msgId: {@link EMessageID.changeMainCharacter}
+	 * * req: {@link IReqChangeMainCharacter}, res: {@link IResCommon}, method: {@link IReqMethod.changeMainCharacter}
 	 */
 	changeMainCharacter = "changeMainCharacter",
 	/**
 	 * * 切换角色皮肤
-	 * * req: {@link IReqChangeCharacterSkin}, res: {@link IResCommon}, msgId: {@link EMessageID.changeCharacterSkin}
+	 * * req: {@link IReqChangeCharacterSkin}, res: {@link IResCommon}, method: {@link IReqMethod.changeCharacterSkin}
 	 */
 	changeCharacterSkin = "changeCharacterSkin",
 	/**
 	 * * 设置角色外观
-	 * * req: {@link IReqChangeCharacterView}, res: {@link IResCommon}, msgId: {@link EMessageID.changeCharacterView}
+	 * * req: {@link IReqChangeCharacterView}, res: {@link IResCommon}, method: {@link IReqMethod.changeCharacterView}
 	 */
 	changeCharacterView = "changeCharacterView",
 	/**
 	 * * 设置隐藏角色
-	 * * req: {@link IReqSetHiddenCharacter}, res: {@link IResSetHiddenCharacter}, msgId: {@link EMessageID.setHiddenCharacter}
+	 * * req: {@link IReqSetHiddenCharacter}, res: {@link IResSetHiddenCharacter}, method: {@link IReqMethod.setHiddenCharacter}
 	 */
 	setHiddenCharacter = "setHiddenCharacter",
 	/**
 	 * * 赠送礼物给角色
-	 * * req: {@link IReqSendGiftToCharacter}, res: {@link IResSendGiftToCharacter}, msgId: {@link EMessageID.sendGiftToCharacter}
+	 * * req: {@link IReqSendGiftToCharacter}, res: {@link IResSendGiftToCharacter}, method: {@link IReqMethod.sendGiftToCharacter}
 	 */
 	sendGiftToCharacter = "sendGiftToCharacter",
 	/**
 	 * * 出售道具（目前只有礼物可以出售）
-	 * * req: {@link IReqSellItem}, res: {@link IResCommon}, msgId: {@link EMessageID.sellItem}
+	 * * req: {@link IReqSellItem}, res: {@link IResCommon}, method: {@link IReqMethod.sellItem}
 	 */
 	sellItem = "sellItem",
 	/**
 	 * * 获取通用外观
-	 * * req: {@link IReqCommon}, res: {@link IResCommonView}, msgId: {@link EMessageID.fetchCommonView}
+	 * * req: {@link IReqCommon}, res: {@link IResCommonView}, method: {@link IReqMethod.fetchCommonView}
 	 */
 	fetchCommonView = "fetchCommonView",
 	/**
 	 * * 切换通用外观（牌桌，牌背等）
-	 * * req: {@link IReqChangeCommonView}, res: {@link IResCommon}, msgId: {@link EMessageID.changeCommonView}
+	 * * req: {@link IReqChangeCommonView}, res: {@link IResCommon}, method: {@link IReqMethod.changeCommonView}
 	 */
 	changeCommonView = "changeCommonView",
 	/**
 	 * * 保存通用外观方案
-	 * * req: {@link IReqSaveCommonViews}, res: {@link IResCommon}, msgId: {@link EMessageID.saveCommonViews}
+	 * * req: {@link IReqSaveCommonViews}, res: {@link IResCommon}, method: {@link IReqMethod.saveCommonViews}
 	 */
 	saveCommonViews = "saveCommonViews",
 	/**
 	 * * 获取通用外观方案
-	 * * req: {@link IReqCommonViews}, res: {@link IResCommonViews}, msgId: {@link EMessageID.fetchCommonViews}
+	 * * req: {@link IReqCommonViews}, res: {@link IResCommonViews}, method: {@link IReqMethod.fetchCommonViews}
 	 */
 	fetchCommonViews = "fetchCommonViews",
 	/**
 	 * * 获取所有通用外观方案
-	 * * req: {@link IReqCommon}, res: {@link IResAllcommonViews}, msgId: {@link EMessageID.fetchAllCommonViews}
+	 * * req: {@link IReqCommon}, res: {@link IResAllcommonViews}, method: {@link IReqMethod.fetchAllCommonViews}
 	 */
 	fetchAllCommonViews = "fetchAllCommonViews",
-	/** req: {@link IReqUseCommonView}, res: {@link IResCommon}, msgId: {@link EMessageID.useCommonView} */
+	/** req: {@link IReqUseCommonView}, res: {@link IResCommon}, method: {@link IReqMethod.useCommonView} */
 	useCommonView = "useCommonView",
 	/**
 	 * * 突破角色
-	 * * req: {@link IReqUpgradeCharacter}, res: {@link IResUpgradeCharacter}, msgId: {@link EMessageID.upgradeCharacter}
+	 * * req: {@link IReqUpgradeCharacter}, res: {@link IResUpgradeCharacter}, method: {@link IReqMethod.upgradeCharacter}
 	 */
 	upgradeCharacter = "upgradeCharacter",
 	/**
 	 * * ====角色传记相关====
 	 * * 完成结局
-	 * * req: {@link IReqFinishedEnding}, res: {@link IResCommon}, msgId: {@link EMessageID.addFinishedEnding}
+	 * * req: {@link IReqFinishedEnding}, res: {@link IResCommon}, method: {@link IReqMethod.addFinishedEnding}
 	 */
 	addFinishedEnding = "addFinishedEnding",
 	/**
 	 * * 领取结局奖励
-	 * * req: {@link IReqFinishedEnding}, res: {@link IResCommon}, msgId: {@link EMessageID.receiveEndingReward}
+	 * * req: {@link IReqFinishedEnding}, res: {@link IResCommon}, method: {@link IReqMethod.receiveEndingReward}
 	 */
 	receiveEndingReward = "receiveEndingReward",
 	/**
 	 * * GM指令
-	 * * req: {@link IReqGMCommand}, res: {@link IResCommon}, msgId: {@link EMessageID.gameMasterCommand}
+	 * * req: {@link IReqGMCommand}, res: {@link IResCommon}, method: {@link IReqMethod.gameMasterCommand}
 	 */
 	gameMasterCommand = "gameMasterCommand",
 	/**
 	 * * 获取商店信息
-	 * * req: {@link IReqCommon}, res: {@link IResShopInfo}, msgId: {@link EMessageID.fetchShopInfo}
+	 * * req: {@link IReqCommon}, res: {@link IResShopInfo}, method: {@link IReqMethod.fetchShopInfo}
 	 */
 	fetchShopInfo = "fetchShopInfo",
 	/**
 	 * * 普通商店购买
-	 * * req: {@link IReqBuyFromShop}, res: {@link IResBuyFromShop}, msgId: {@link EMessageID.buyFromShop}
+	 * * req: {@link IReqBuyFromShop}, res: {@link IResBuyFromShop}, method: {@link IReqMethod.buyFromShop}
 	 */
 	buyFromShop = "buyFromShop",
 	/**
 	 * * 杂货铺购买
-	 * * req: {@link IReqBuyFromZHP}, res: {@link IResCommon}, msgId: {@link EMessageID.buyFromZHP}
+	 * * req: {@link IReqBuyFromZHP}, res: {@link IResCommon}, method: {@link IReqMethod.buyFromZHP}
 	 */
 	buyFromZHP = "buyFromZHP",
 	/**
 	 * * 刷新杂货铺商店
-	 * * req: {@link IReqReshZHPShop}, res: {@link IResRefreshZHPShop}, msgId: {@link EMessageID.refreshZHPShop}
+	 * * req: {@link IReqReshZHPShop}, res: {@link IResRefreshZHPShop}, method: {@link IReqMethod.refreshZHPShop}
 	 */
 	refreshZHPShop = "refreshZHPShop",
 	/**
 	 * * 获取账号月卡信息
-	 * * req: {@link IReqCommon}, res: {@link IResMonthTicketInfo}, msgId: {@link EMessageID.fetchMonthTicketInfo}
+	 * * req: {@link IReqCommon}, res: {@link IResMonthTicketInfo}, method: {@link IReqMethod.fetchMonthTicketInfo}
 	 */
 	fetchMonthTicketInfo = "fetchMonthTicketInfo",
 	/**
 	 * * 领取月卡工资
-	 * * req: {@link IReqCommon}, res: {@link IResPayMonthTicket}, msgId: {@link EMessageID.payMonthTicket}
+	 * * req: {@link IReqCommon}, res: {@link IResPayMonthTicket}, method: {@link IReqMethod.payMonthTicket}
 	 */
 	payMonthTicket = "payMonthTicket",
 	/**
 	 * * 兑换货币
-	 * * req: {@link IReqExchangeCurrency}, res: {@link IResCommon}, msgId: {@link EMessageID.exchangeCurrency}
+	 * * req: {@link IReqExchangeCurrency}, res: {@link IResCommon}, method: {@link IReqMethod.exchangeCurrency}
 	 */
 	exchangeCurrency = "exchangeCurrency",
 	/**
 	 * * 兑换寻觅石头
-	 * * req: {@link IReqExchangeCurrency}, res: {@link IResCommon}, msgId: {@link EMessageID.exchangeChestStone}
+	 * * req: {@link IReqExchangeCurrency}, res: {@link IResCommon}, method: {@link IReqMethod.exchangeChestStone}
 	 */
 	exchangeChestStone = "exchangeChestStone",
 	/**
 	 * * 皮肤券兑换辉玉
-	 * * req: {@link IReqExchangeCurrency}, res: {@link IResCommon}, msgId: {@link EMessageID.exchangeDiamond}
+	 * * req: {@link IReqExchangeCurrency}, res: {@link IResCommon}, method: {@link IReqMethod.exchangeDiamond}
 	 */
 	exchangeDiamond = "exchangeDiamond",
 	/**
 	 * * 获取服务器设置
-	 * * req: {@link IReqCommon}, res: {@link IResServerSettings}, msgId: {@link EMessageID.fetchServerSettings}
+	 * * req: {@link IReqCommon}, res: {@link IResServerSettings}, method: {@link IReqMethod.fetchServerSettings}
 	 */
 	fetchServerSettings = "fetchServerSettings",
 	/**
 	 * * 账户设置
-	 * * req: {@link IReqCommon}, res: {@link IResAccountSettings}, msgId: {@link EMessageID.fetchAccountSettings}
+	 * * req: {@link IReqCommon}, res: {@link IResAccountSettings}, method: {@link IReqMethod.fetchAccountSettings}
 	 */
 	fetchAccountSettings = "fetchAccountSettings",
 	/**
 	 * * 更新账号设置
-	 * * req: {@link IReqUpdateAccountSettings}, res: {@link IResCommon}, msgId: {@link EMessageID.updateAccountSettings}
+	 * * req: {@link IReqUpdateAccountSettings}, res: {@link IResCommon}, method: {@link IReqMethod.updateAccountSettings}
 	 */
 	updateAccountSettings = "updateAccountSettings",
 	/**
 	 * * 获取改名时间
-	 * * req: {@link IReqCommon}, res: {@link IResModNicknameTime}, msgId: {@link EMessageID.fetchModNicknameTime}
+	 * * req: {@link IReqCommon}, res: {@link IResModNicknameTime}, method: {@link IReqMethod.fetchModNicknameTime}
 	 */
 	fetchModNicknameTime = "fetchModNicknameTime",
 	/**
 	 * * 创建微信支付（扫码支付）订单
-	 * * req: {@link IReqCreateWechatNativeOrder}, res: {@link IResCreateWechatNativeOrder}, msgId: {@link EMessageID.createWechatNativeOrder}
+	 * * req: {@link IReqCreateWechatNativeOrder}, res: {@link IResCreateWechatNativeOrder}, method: {@link IReqMethod.createWechatNativeOrder}
 	 */
 	createWechatNativeOrder = "createWechatNativeOrder",
 	/**
 	 * * 创建微信支付（App支付）订单
-	 * * req: {@link IReqCreateWechatAppOrder}, res: {@link IResCreateWechatAppOrder}, msgId: {@link EMessageID.createWechatAppOrder}
+	 * * req: {@link IReqCreateWechatAppOrder}, res: {@link IResCreateWechatAppOrder}, method: {@link IReqMethod.createWechatAppOrder}
 	 */
 	createWechatAppOrder = "createWechatAppOrder",
 	/**
 	 * * 创建支付宝（链接地址）订单
-	 * * req: {@link IReqCreateAlipayOrder}, res: {@link IResCreateAlipayOrder}, msgId: {@link EMessageID.createAlipayOrder}
+	 * * req: {@link IReqCreateAlipayOrder}, res: {@link IResCreateAlipayOrder}, method: {@link IReqMethod.createAlipayOrder}
 	 */
 	createAlipayOrder = "createAlipayOrder",
 	/**
 	 * * 创建支付宝（扫码支付）订单
-	 * * req: {@link IReqCreateAlipayScanOrder}, res: {@link IResCreateAlipayScanOrder}, msgId: {@link EMessageID.createAlipayScanOrder}
+	 * * req: {@link IReqCreateAlipayScanOrder}, res: {@link IResCreateAlipayScanOrder}, method: {@link IReqMethod.createAlipayScanOrder}
 	 */
 	createAlipayScanOrder = "createAlipayScanOrder",
 	/**
 	 * * 创建支付宝（App支付）订单
-	 * * req: {@link IReqCreateAlipayAppOrder}, res: {@link IResCreateAlipayAppOrder}, msgId: {@link EMessageID.createAlipayAppOrder}
+	 * * req: {@link IReqCreateAlipayAppOrder}, res: {@link IResCreateAlipayAppOrder}, method: {@link IReqMethod.createAlipayAppOrder}
 	 */
 	createAlipayAppOrder = "createAlipayAppOrder",
 	/**
 	 * * 创建日服-CreditCard订单
-	 * * req: {@link IReqCreateJPCreditCardOrder}, res: {@link IResCreateJPCreditCardOrder}, msgId: {@link EMessageID.createJPCreditCardOrder}
+	 * * req: {@link IReqCreateJPCreditCardOrder}, res: {@link IResCreateJPCreditCardOrder}, method: {@link IReqMethod.createJPCreditCardOrder}
 	 */
 	createJPCreditCardOrder = "createJPCreditCardOrder",
 	/**
 	 * * 创建日服-Paypal订单
-	 * * req: {@link IReqCreateJPPaypalOrder}, res: {@link IResCreateJPPaypalOrder}, msgId: {@link EMessageID.createJPPaypalOrder}
+	 * * req: {@link IReqCreateJPPaypalOrder}, res: {@link IResCreateJPPaypalOrder}, method: {@link IReqMethod.createJPPaypalOrder}
 	 */
 	createJPPaypalOrder = "createJPPaypalOrder",
 	/**
 	 * * 创建日服-Au订单
-	 * * req: {@link IReqCreateJPAuOrder}, res: {@link IResCreateJPAuOrder}, msgId: {@link EMessageID.createJPAuOrder}
+	 * * req: {@link IReqCreateJPAuOrder}, res: {@link IResCreateJPAuOrder}, method: {@link IReqMethod.createJPAuOrder}
 	 */
 	createJPAuOrder = "createJPAuOrder",
 	/**
 	 * * 创建日服-Docomo订单
-	 * * req: {@link IReqCreateJPDocomoOrder}, res: {@link IResCreateJPDocomoOrder}, msgId: {@link EMessageID.createJPDocomoOrder}
+	 * * req: {@link IReqCreateJPDocomoOrder}, res: {@link IResCreateJPDocomoOrder}, method: {@link IReqMethod.createJPDocomoOrder}
 	 */
 	createJPDocomoOrder = "createJPDocomoOrder",
 	/**
 	 * * 创建日服-WebMoney订单
-	 * * req: {@link IReqCreateJPWebMoneyOrder}, res: {@link IResCreateJPWebMoneyOrder}, msgId: {@link EMessageID.createJPWebMoneyOrder}
+	 * * req: {@link IReqCreateJPWebMoneyOrder}, res: {@link IResCreateJPWebMoneyOrder}, method: {@link IReqMethod.createJPWebMoneyOrder}
 	 */
 	createJPWebMoneyOrder = "createJPWebMoneyOrder",
 	/**
 	 * * 创建日服-Softbank订单
-	 * * req: {@link IReqCreateJPSoftbankOrder}, res: {@link IResCreateJPSoftbankOrder}, msgId: {@link EMessageID.createJPSoftbankOrder}
+	 * * req: {@link IReqCreateJPSoftbankOrder}, res: {@link IResCreateJPSoftbankOrder}, method: {@link IReqMethod.createJPSoftbankOrder}
 	 */
 	createJPSoftbankOrder = "createJPSoftbankOrder",
 	/**
 	 * * 创建日服-Paypay订单
-	 * * req: {@link IReqCreateJPPayPayOrder}, res: {@link IResCreateJPPayPayOrder}, msgId: {@link EMessageID.createJPPayPayOrder}
+	 * * req: {@link IReqCreateJPPayPayOrder}, res: {@link IResCreateJPPayPayOrder}, method: {@link IReqMethod.createJPPayPayOrder}
 	 */
 	createJPPayPayOrder = "createJPPayPayOrder",
 	/**
 	 * * 获取日服信用卡订单信息
-	 * * req: {@link IReqFetchJPCommonCreditCardOrder}, res: {@link IResFetchJPCommonCreditCardOrder}, msgId: {@link EMessageID.fetchJPCommonCreditCardOrder}
+	 * * req: {@link IReqFetchJPCommonCreditCardOrder}, res: {@link IResFetchJPCommonCreditCardOrder}, method: {@link IReqMethod.fetchJPCommonCreditCardOrder}
 	 */
 	fetchJPCommonCreditCardOrder = "fetchJPCommonCreditCardOrder",
 	/**
 	 * * 创建日服-GMO订单
-	 * * req: {@link IReqCreateJPGMOOrder}, res: {@link IResCreateJPGMOOrder}, msgId: {@link EMessageID.createJPGMOOrder}
+	 * * req: {@link IReqCreateJPGMOOrder}, res: {@link IResCreateJPGMOOrder}, method: {@link IReqMethod.createJPGMOOrder}
 	 */
 	createJPGMOOrder = "createJPGMOOrder",
 	/**
 	 * * 创建美服-Paypal订单
-	 * * req: {@link IReqCreateENPaypalOrder}, res: {@link IResCreateENPaypalOrder}, msgId: {@link EMessageID.createENPaypalOrder}
+	 * * req: {@link IReqCreateENPaypalOrder}, res: {@link IResCreateENPaypalOrder}, method: {@link IReqMethod.createENPaypalOrder}
 	 */
 	createENPaypalOrder = "createENPaypalOrder",
 	/**
 	 * * 创建美服-MasterCard订单
-	 * * req: {@link IReqCreateENMasterCardOrder}, res: {@link IResCreateENMasterCardOrder}, msgId: {@link EMessageID.createENMasterCardOrder}
+	 * * req: {@link IReqCreateENMasterCardOrder}, res: {@link IResCreateENMasterCardOrder}, method: {@link IReqMethod.createENMasterCardOrder}
 	 */
 	createENMasterCardOrder = "createENMasterCardOrder",
 	/**
 	 * * 创建美服-Visa订单
-	 * * req: {@link IReqCreateENVisaOrder}, res: {@link IResCreateENVisaOrder}, msgId: {@link EMessageID.createENVisaOrder}
+	 * * req: {@link IReqCreateENVisaOrder}, res: {@link IResCreateENVisaOrder}, method: {@link IReqMethod.createENVisaOrder}
 	 */
 	createENVisaOrder = "createENVisaOrder",
 	/**
 	 * * 创建美服-JCB订单
-	 * * req: {@link IReqCreateENJCBOrder}, res: {@link IResCreateENJCBOrder}, msgId: {@link EMessageID.createENJCBOrder}
+	 * * req: {@link IReqCreateENJCBOrder}, res: {@link IResCreateENJCBOrder}, method: {@link IReqMethod.createENJCBOrder}
 	 */
 	createENJCBOrder = "createENJCBOrder",
 	/**
 	 * * 创建美服-Alipay订单
-	 * * req: {@link IReqCreateENAlipayOrder}, res: {@link IResCreateENAlipayOrder}, msgId: {@link EMessageID.createENAlipayOrder}
+	 * * req: {@link IReqCreateENAlipayOrder}, res: {@link IResCreateENAlipayOrder}, method: {@link IReqMethod.createENAlipayOrder}
 	 */
 	createENAlipayOrder = "createENAlipayOrder",
 	/**
 	 * * 创建韩服-Paypal订单
-	 * * req: {@link IReqCreateKRPaypalOrder}, res: {@link IResCreateKRPaypalOrder}, msgId: {@link EMessageID.createKRPaypalOrder}
+	 * * req: {@link IReqCreateKRPaypalOrder}, res: {@link IResCreateKRPaypalOrder}, method: {@link IReqMethod.createKRPaypalOrder}
 	 */
 	createKRPaypalOrder = "createKRPaypalOrder",
 	/**
 	 * * 创建韩服-MasterCard订单
-	 * * req: {@link IReqCreateKRMasterCardOrder}, res: {@link IResCreateKRMasterCardOrder}, msgId: {@link EMessageID.createKRMasterCardOrder}
+	 * * req: {@link IReqCreateKRMasterCardOrder}, res: {@link IResCreateKRMasterCardOrder}, method: {@link IReqMethod.createKRMasterCardOrder}
 	 */
 	createKRMasterCardOrder = "createKRMasterCardOrder",
 	/**
 	 * * 创建韩服-Visa订单
-	 * * req: {@link IReqCreateKRVisaOrder}, res: {@link IResCreateKRVisaOrder}, msgId: {@link EMessageID.createKRVisaOrder}
+	 * * req: {@link IReqCreateKRVisaOrder}, res: {@link IResCreateKRVisaOrder}, method: {@link IReqMethod.createKRVisaOrder}
 	 */
 	createKRVisaOrder = "createKRVisaOrder",
 	/**
 	 * * 创建韩服-JCB订单
-	 * * req: {@link IReqCreateKRJCBOrder}, res: {@link IResCreateKRJCBOrder}, msgId: {@link EMessageID.createKRJCBOrder}
+	 * * req: {@link IReqCreateKRJCBOrder}, res: {@link IResCreateKRJCBOrder}, method: {@link IReqMethod.createKRJCBOrder}
 	 */
 	createKRJCBOrder = "createKRJCBOrder",
 	/**
 	 * * 创建韩服-Alipay订单
-	 * * req: {@link IReqCreateKRAlipayOrder}, res: {@link IResCreateKRAlipayOrder}, msgId: {@link EMessageID.createKRAlipayOrder}
+	 * * req: {@link IReqCreateKRAlipayOrder}, res: {@link IResCreateKRAlipayOrder}, method: {@link IReqMethod.createKRAlipayOrder}
 	 */
 	createKRAlipayOrder = "createKRAlipayOrder",
 	/**
 	 * * 创建DMM订单
-	 * * req: {@link IReqCreateDMMOrder}, res: {@link IResCreateDmmOrder}, msgId: {@link EMessageID.createDMMOrder}
+	 * * req: {@link IReqCreateDMMOrder}, res: {@link IResCreateDmmOrder}, method: {@link IReqMethod.createDMMOrder}
 	 */
 	createDMMOrder = "createDMMOrder",
 	/**
 	 * * 创建苹果内购订单
-	 * * req: {@link IReqCreateIAPOrder}, res: {@link IResCreateIAPOrder}, msgId: {@link EMessageID.createIAPOrder}
+	 * * req: {@link IReqCreateIAPOrder}, res: {@link IResCreateIAPOrder}, method: {@link IReqMethod.createIAPOrder}
 	 */
 	createIAPOrder = "createIAPOrder",
 	/**
 	 * * 创建Steam订单
-	 * * req: {@link IReqCreateSteamOrder}, res: {@link IResCreateSteamOrder}, msgId: {@link EMessageID.createSteamOrder}
+	 * * req: {@link IReqCreateSteamOrder}, res: {@link IResCreateSteamOrder}, method: {@link IReqMethod.createSteamOrder}
 	 */
 	createSteamOrder = "createSteamOrder",
 	/**
 	 * * Steam验单
-	 * * req: {@link IReqVerifySteamOrder}, res: {@link IResCommon}, msgId: {@link EMessageID.verifySteamOrder}
+	 * * req: {@link IReqVerifySteamOrder}, res: {@link IResCommon}, method: {@link IReqMethod.verifySteamOrder}
 	 */
 	verifySteamOrder = "verifySteamOrder",
 	/**
 	 * * 创建MyCard Android订单
-	 * * req: {@link IReqCreateMyCardOrder}, res: {@link IResCreateMyCardOrder}, msgId: {@link EMessageID.createMyCardAndroidOrder}
+	 * * req: {@link IReqCreateMyCardOrder}, res: {@link IResCreateMyCardOrder}, method: {@link IReqMethod.createMyCardAndroidOrder}
 	 */
 	createMyCardAndroidOrder = "createMyCardAndroidOrder",
 	/**
 	 * * 创建MyCard Web订单
-	 * * req: {@link IReqCreateMyCardOrder}, res: {@link IResCreateMyCardOrder}, msgId: {@link EMessageID.createMyCardWebOrder}
+	 * * req: {@link IReqCreateMyCardOrder}, res: {@link IResCreateMyCardOrder}, method: {@link IReqMethod.createMyCardWebOrder}
 	 */
 	createMyCardWebOrder = "createMyCardWebOrder",
 	/**
 	 * * 创建Paypal订单
-	 * * req: {@link IReqCreatePaypalOrder}, res: {@link IResCreatePaypalOrder}, msgId: {@link EMessageID.createPaypalOrder}
+	 * * req: {@link IReqCreatePaypalOrder}, res: {@link IResCreatePaypalOrder}, method: {@link IReqMethod.createPaypalOrder}
 	 */
 	createPaypalOrder = "createPaypalOrder",
 	/**
 	 * * 创建Xsolla订单
-	 * * req: {@link IReqCreateXsollaOrder}, res: {@link IResCreateXsollaOrder}, msgId: {@link EMessageID.createXsollaOrder}
+	 * * req: {@link IReqCreateXsollaOrder}, res: {@link IResCreateXsollaOrder}, method: {@link IReqMethod.createXsollaOrder}
 	 */
 	createXsollaOrder = "createXsollaOrder",
 	/**
 	 * * 创建XsollaV4订单
-	 * * req: {@link IReqCreateXsollaOrder}, res: {@link IResCreateXsollaOrder}, msgId: {@link EMessageID.createXsollaV4Order}
+	 * * req: {@link IReqCreateXsollaOrder}, res: {@link IResCreateXsollaOrder}, method: {@link IReqMethod.createXsollaV4Order}
 	 */
 	createXsollaV4Order = "createXsollaV4Order",
 	/**
 	 * * MyCard验单
-	 * * req: {@link IReqVerifyMyCardOrder}, res: {@link IResCommon}, msgId: {@link EMessageID.verifyMyCardOrder}
+	 * * req: {@link IReqVerifyMyCardOrder}, res: {@link IResCommon}, method: {@link IReqMethod.verifyMyCardOrder}
 	 */
 	verifyMyCardOrder = "verifyMyCardOrder",
 	/**
 	 * * 验证苹果内购订单
-	 * * req: {@link IReqVerificationIAPOrder}, res: {@link IResVerificationIAPOrder}, msgId: {@link EMessageID.verificationIAPOrder}
+	 * * req: {@link IReqVerificationIAPOrder}, res: {@link IResVerificationIAPOrder}, method: {@link IReqMethod.verificationIAPOrder}
 	 */
 	verificationIAPOrder = "verificationIAPOrder",
 	/**
 	 * * 创建Yostar-SDK订单
-	 * * req: {@link IReqCreateYostarOrder}, res: {@link IResCreateYostarOrder}, msgId: {@link EMessageID.createYostarSDKOrder}
+	 * * req: {@link IReqCreateYostarOrder}, res: {@link IResCreateYostarOrder}, method: {@link IReqMethod.createYostarSDKOrder}
 	 */
 	createYostarSDKOrder = "createYostarSDKOrder",
 	/**
 	 * * 创建支付订单
-	 * * req: {@link IReqCreateBillingOrder}, res: {@link IResCreateBillingOrder}, msgId: {@link EMessageID.createBillingOrder}
+	 * * req: {@link IReqCreateBillingOrder}, res: {@link IResCreateBillingOrder}, method: {@link IReqMethod.createBillingOrder}
 	 */
 	createBillingOrder = "createBillingOrder",
 	/**
 	 * * 处理 Google Play 订单支付结果
-	 * * req: {@link IReqSolveGooglePlayOrder}, res: {@link IResCommon}, msgId: {@link EMessageID.solveGooglePlayOrder}
+	 * * req: {@link IReqSolveGooglePlayOrder}, res: {@link IResCommon}, method: {@link IReqMethod.solveGooglePlayOrder}
 	 */
 	solveGooglePlayOrder = "solveGooglePlayOrder",
-	/** req: {@link IReqSolveGooglePlayOrderV3}, res: {@link IResCommon}, msgId: {@link EMessageID.solveGooglePayOrderV3} */
+	/** req: {@link IReqSolveGooglePlayOrderV3}, res: {@link IResCommon}, method: {@link IReqMethod.solveGooglePayOrderV3} */
 	solveGooglePayOrderV3 = "solveGooglePayOrderV3",
 	/**
 	 * * 处理 AA32 订单
-	 * * req: {@link IReqDeliverAA32Order}, res: {@link IResCommon}, msgId: {@link EMessageID.deliverAA32Order}
+	 * * req: {@link IReqDeliverAA32Order}, res: {@link IResCommon}, method: {@link IReqMethod.deliverAA32Order}
 	 */
 	deliverAA32Order = "deliverAA32Order",
 	/**
 	 * * 获取账号杂七杂八的数据
-	 * * req: {@link IReqCommon}, res: {@link IResMisc}, msgId: {@link EMessageID.fetchMisc}
+	 * * req: {@link IReqCommon}, res: {@link IResMisc}, method: {@link IReqMethod.fetchMisc}
 	 */
 	fetchMisc = "fetchMisc",
 	/**
 	 * * 修改签名
-	 * * req: {@link IReqModifySignature}, res: {@link IResCommon}, msgId: {@link EMessageID.modifySignature}
+	 * * req: {@link IReqModifySignature}, res: {@link IResCommon}, method: {@link IReqMethod.modifySignature}
 	 */
 	modifySignature = "modifySignature",
 	/**
 	 * * 获取实名认证信息
-	 * * req: {@link IReqCommon}, res: {@link IResIDCardInfo}, msgId: {@link EMessageID.fetchIDCardInfo}
+	 * * req: {@link IReqCommon}, res: {@link IResIDCardInfo}, method: {@link IReqMethod.fetchIDCardInfo}
 	 */
 	fetchIDCardInfo = "fetchIDCardInfo",
 	/**
 	 * * 进行实名认证
-	 * * req: {@link IReqUpdateIDCardInfo}, res: {@link IResCommon}, msgId: {@link EMessageID.updateIDCardInfo}
+	 * * req: {@link IReqUpdateIDCardInfo}, res: {@link IResCommon}, method: {@link IReqMethod.updateIDCardInfo}
 	 */
 	updateIDCardInfo = "updateIDCardInfo",
 	/**
 	 * * 获取vip奖励领取状态
-	 * * req: {@link IReqCommon}, res: {@link IResVipReward}, msgId: {@link EMessageID.fetchVipReward}
+	 * * req: {@link IReqCommon}, res: {@link IResVipReward}, method: {@link IReqMethod.fetchVipReward}
 	 */
 	fetchVipReward = "fetchVipReward",
 	/**
 	 * * 领取vip奖励
-	 * * req: {@link IReqGainVipReward}, res: {@link IResCommon}, msgId: {@link EMessageID.gainVipReward}
+	 * * req: {@link IReqGainVipReward}, res: {@link IResCommon}, method: {@link IReqMethod.gainVipReward}
 	 */
 	gainVipReward = "gainVipReward",
 	/**
 	 * * 获取需要补单的订单信息
-	 * * req: {@link IReqCommon}, res: {@link IResFetchRefundOrder}, msgId: {@link EMessageID.fetchRefundOrder}
+	 * * req: {@link IReqCommon}, res: {@link IResFetchRefundOrder}, method: {@link IReqMethod.fetchRefundOrder}
 	 */
 	fetchRefundOrder = "fetchRefundOrder",
 	/**
 	 * * 获取赛事列表
-	 * * req: {@link IReqFetchCustomizedContestList}, res: {@link IResFetchCustomizedContestList}, msgId: {@link EMessageID.fetchCustomizedContestList}
+	 * * req: {@link IReqFetchCustomizedContestList}, res: {@link IResFetchCustomizedContestList}, method: {@link IReqMethod.fetchCustomizedContestList}
 	 */
 	fetchCustomizedContestList = "fetchCustomizedContestList",
 	/**
 	 * * 获取赛事权限相关信息
-	 * * req: {@link IReqFetchCustomizedContestAuthInfo}, res: {@link IResFetchCustomizedContestAuthInfo}, msgId: {@link EMessageID.fetchCustomizedContestAuthInfo}
+	 * * req: {@link IReqFetchCustomizedContestAuthInfo}, res: {@link IResFetchCustomizedContestAuthInfo}, method: {@link IReqMethod.fetchCustomizedContestAuthInfo}
 	 */
 	fetchCustomizedContestAuthInfo = "fetchCustomizedContestAuthInfo",
 	/**
 	 * * 进入赛事
-	 * * req: {@link IReqEnterCustomizedContest}, res: {@link IResEnterCustomizedContest}, msgId: {@link EMessageID.enterCustomizedContest}
+	 * * req: {@link IReqEnterCustomizedContest}, res: {@link IResEnterCustomizedContest}, method: {@link IReqMethod.enterCustomizedContest}
 	 */
 	enterCustomizedContest = "enterCustomizedContest",
 	/**
 	 * * 退出赛事
-	 * * req: {@link IReqCommon}, res: {@link IResCommon}, msgId: {@link EMessageID.leaveCustomizedContest}
+	 * * req: {@link IReqCommon}, res: {@link IResCommon}, method: {@link IReqMethod.leaveCustomizedContest}
 	 */
 	leaveCustomizedContest = "leaveCustomizedContest",
 	/**
 	 * * 请求比赛在线信息
-	 * * req: {@link IReqFetchCustomizedContestOnlineInfo}, res: {@link IResFetchCustomizedContestOnlineInfo}, msgId: {@link EMessageID.fetchCustomizedContestOnlineInfo}
+	 * * req: {@link IReqFetchCustomizedContestOnlineInfo}, res: {@link IResFetchCustomizedContestOnlineInfo}, method: {@link IReqMethod.fetchCustomizedContestOnlineInfo}
 	 */
 	fetchCustomizedContestOnlineInfo = "fetchCustomizedContestOnlineInfo",
 	/**
 	 * * 获取赛事基本信息（通过赛事ID）
-	 * * req: {@link IReqFetchCustomizedContestByContestId}, res: {@link IResFetchCustomizedContestByContestId}, msgId: {@link EMessageID.fetchCustomizedContestByContestId}
+	 * * req: {@link IReqFetchCustomizedContestByContestId}, res: {@link IResFetchCustomizedContestByContestId}, method: {@link IReqMethod.fetchCustomizedContestByContestId}
 	 */
 	fetchCustomizedContestByContestId = "fetchCustomizedContestByContestId",
 	/**
 	 * * 报名比赛
-	 * * req: {@link IReqSignupCustomizedContest}, res: {@link IResSignupCustomizedContest}, msgId: {@link EMessageID.signupCustomizedContest}
+	 * * req: {@link IReqSignupCustomizedContest}, res: {@link IResSignupCustomizedContest}, method: {@link IReqMethod.signupCustomizedContest}
 	 */
 	signupCustomizedContest = "signupCustomizedContest",
 	/**
 	 * * 开始比赛匹配
-	 * * req: {@link IReqStartCustomizedContest}, res: {@link IResCommon}, msgId: {@link EMessageID.startCustomizedContest}
+	 * * req: {@link IReqStartCustomizedContest}, res: {@link IResCommon}, method: {@link IReqMethod.startCustomizedContest}
 	 */
 	startCustomizedContest = "startCustomizedContest",
 	/**
 	 * * 停止比赛匹配
-	 * * req: {@link IReqStopCustomizedContest}, res: {@link IResCommon}, msgId: {@link EMessageID.stopCustomizedContest}
+	 * * req: {@link IReqStopCustomizedContest}, res: {@link IResCommon}, method: {@link IReqMethod.stopCustomizedContest}
 	 */
 	stopCustomizedContest = "stopCustomizedContest",
 	/**
 	 * * 进入比赛聊天室
-	 * * req: {@link IReqJoinCustomizedContestChatRoom}, res: {@link IResJoinCustomizedContestChatRoom}, msgId: {@link EMessageID.joinCustomizedContestChatRoom}
+	 * * req: {@link IReqJoinCustomizedContestChatRoom}, res: {@link IResJoinCustomizedContestChatRoom}, method: {@link IReqMethod.joinCustomizedContestChatRoom}
 	 */
 	joinCustomizedContestChatRoom = "joinCustomizedContestChatRoom",
 	/**
 	 * * 退出比赛聊天室
-	 * * req: {@link IReqCommon}, res: {@link IResCommon}, msgId: {@link EMessageID.leaveCustomizedContestChatRoom}
+	 * * req: {@link IReqCommon}, res: {@link IResCommon}, method: {@link IReqMethod.leaveCustomizedContestChatRoom}
 	 */
 	leaveCustomizedContestChatRoom = "leaveCustomizedContestChatRoom",
 	/**
 	 * * 发送聊天消息
-	 * * req: {@link IReqSayChatMessage}, res: {@link IResCommon}, msgId: {@link EMessageID.sayChatMessage}
+	 * * req: {@link IReqSayChatMessage}, res: {@link IResCommon}, method: {@link IReqMethod.sayChatMessage}
 	 */
 	sayChatMessage = "sayChatMessage",
 	/**
 	 * * 查询赛事牌谱列表
-	 * * req: {@link IReqFetchCustomizedContestGameRecords}, res: {@link IResFetchCustomizedContestGameRecords}, msgId: {@link EMessageID.fetchCustomizedContestGameRecords}
+	 * * req: {@link IReqFetchCustomizedContestGameRecords}, res: {@link IResFetchCustomizedContestGameRecords}, method: {@link IReqMethod.fetchCustomizedContestGameRecords}
 	 */
 	fetchCustomizedContestGameRecords = "fetchCustomizedContestGameRecords",
 	/**
 	 * * 获取正在直播的比赛游戏列表
-	 * * req: {@link IReqFetchCustomizedContestGameLiveList}, res: {@link IResFetchCustomizedContestGameLiveList}, msgId: {@link EMessageID.fetchCustomizedContestGameLiveList}
+	 * * req: {@link IReqFetchCustomizedContestGameLiveList}, res: {@link IResFetchCustomizedContestGameLiveList}, method: {@link IReqMethod.fetchCustomizedContestGameLiveList}
 	 */
 	fetchCustomizedContestGameLiveList = "fetchCustomizedContestGameLiveList",
 	/**
 	 * * 关注自定义比赛
-	 * * req: {@link IReqTargetCustomizedContest}, res: {@link IResCommon}, msgId: {@link EMessageID.followCustomizedContest}
+	 * * req: {@link IReqTargetCustomizedContest}, res: {@link IResCommon}, method: {@link IReqMethod.followCustomizedContest}
 	 */
 	followCustomizedContest = "followCustomizedContest",
 	/**
 	 * * 取消关注自定义比赛
-	 * * req: {@link IReqTargetCustomizedContest}, res: {@link IResCommon}, msgId: {@link EMessageID.unfollowCustomizedContest}
+	 * * req: {@link IReqTargetCustomizedContest}, res: {@link IResCommon}, method: {@link IReqMethod.unfollowCustomizedContest}
 	 */
 	unfollowCustomizedContest = "unfollowCustomizedContest",
 	/**
 	 * * 获取大会室队伍排名
-	 * * req: {@link IReqFetchContestTeamRank}, res: {@link IResFetchContestTeamRank}, msgId: {@link EMessageID.fetchContestTeamRank}
+	 * * req: {@link IReqFetchContestTeamRank}, res: {@link IResFetchContestTeamRank}, method: {@link IReqMethod.fetchContestTeamRank}
 	 */
 	fetchContestTeamRank = "fetchContestTeamRank",
 	/**
 	 * * 获取大会室队伍成员
-	 * * req: {@link IReqFetchContestTeamMember}, res: {@link IResFetchContestTeamMember}, msgId: {@link EMessageID.fetchContestTeamMember}
+	 * * req: {@link IReqFetchContestTeamMember}, res: {@link IResFetchContestTeamMember}, method: {@link IReqMethod.fetchContestTeamMember}
 	 */
 	fetchContestTeamMember = "fetchContestTeamMember",
 	/**
 	 * * 获取大会室队伍成员排名
-	 * * req: {@link IReqFetchContestTeamPlayerRank}, res: {@link IResFetchContestPlayerRank}, msgId: {@link EMessageID.fetchContestTeamPlayerRank}
+	 * * req: {@link IReqFetchContestTeamPlayerRank}, res: {@link IResFetchContestPlayerRank}, method: {@link IReqMethod.fetchContestTeamPlayerRank}
 	 */
 	fetchContestTeamPlayerRank = "fetchContestTeamPlayerRank",
 	/**
 	 * * 获取大会室玩家排名
-	 * * req: {@link IReqFetchContestPlayerRank}, res: {@link IResFetchContestPlayerRank}, msgId: {@link EMessageID.fetchContestPlayerRank}
+	 * * req: {@link IReqFetchContestPlayerRank}, res: {@link IResFetchContestPlayerRank}, method: {@link IReqMethod.fetchContestPlayerRank}
 	 */
 	fetchContestPlayerRank = "fetchContestPlayerRank",
 	/**
 	 * * 获取活动列表
-	 * * req: {@link IReqCommon}, res: {@link IResActivityList}, msgId: {@link EMessageID.fetchActivityList}
+	 * * req: {@link IReqCommon}, res: {@link IResActivityList}, method: {@link IReqMethod.fetchActivityList}
 	 */
 	fetchActivityList = "fetchActivityList",
 	/**
 	 * * 获取玩家活动数据
-	 * * req: {@link IReqCommon}, res: {@link IResAccountActivityData}, msgId: {@link EMessageID.fetchAccountActivityData}
+	 * * req: {@link IReqCommon}, res: {@link IResAccountActivityData}, method: {@link IReqMethod.fetchAccountActivityData}
 	 */
 	fetchAccountActivityData = "fetchAccountActivityData",
 	/**
 	 * * 兑换活动
-	 * * req: {@link IReqExchangeActivityItem}, res: {@link IResExchangeActivityItem}, msgId: {@link EMessageID.exchangeActivityItem}
+	 * * req: {@link IReqExchangeActivityItem}, res: {@link IResExchangeActivityItem}, method: {@link IReqMethod.exchangeActivityItem}
 	 */
 	exchangeActivityItem = "exchangeActivityItem",
 	/**
 	 * * 领取活动任务奖励
-	 * * req: {@link IReqCompleteActivityTask}, res: {@link IResCommon}, msgId: {@link EMessageID.completeActivityTask}
+	 * * req: {@link IReqCompleteActivityTask}, res: {@link IResCommon}, method: {@link IReqMethod.completeActivityTask}
 	 */
 	completeActivityTask = "completeActivityTask",
-	/** req: {@link IReqCompleteActivityTaskBatch}, res: {@link IResCommon}, msgId: {@link EMessageID.completeActivityTaskBatch} */
+	/** req: {@link IReqCompleteActivityTaskBatch}, res: {@link IResCommon}, method: {@link IReqMethod.completeActivityTaskBatch} */
 	completeActivityTaskBatch = "completeActivityTaskBatch",
 	/**
 	 * * 领取翻牌牌任务奖励
-	 * * req: {@link IReqCompleteActivityTask}, res: {@link IResCommon}, msgId: {@link EMessageID.completeActivityFlipTask}
+	 * * req: {@link IReqCompleteActivityTask}, res: {@link IResCommon}, method: {@link IReqMethod.completeActivityFlipTask}
 	 */
 	completeActivityFlipTask = "completeActivityFlipTask",
 	/**
 	 * * 领取长期任务奖励
-	 * * req: {@link IReqCompleteActivityTask}, res: {@link IResCommon}, msgId: {@link EMessageID.completePeriodActivityTask}
+	 * * req: {@link IReqCompleteActivityTask}, res: {@link IResCommon}, method: {@link IReqMethod.completePeriodActivityTask}
 	 */
 	completePeriodActivityTask = "completePeriodActivityTask",
-	/** req: {@link IReqCompletePeriodActivityTaskBatch}, res: {@link IResCommon}, msgId: {@link EMessageID.completePeriodActivityTaskBatch} */
+	/** req: {@link IReqCompletePeriodActivityTaskBatch}, res: {@link IResCommon}, method: {@link IReqMethod.completePeriodActivityTaskBatch} */
 	completePeriodActivityTaskBatch = "completePeriodActivityTaskBatch",
 	/**
 	 * * 领取随机任务奖励
-	 * * req: {@link IReqCompleteActivityTask}, res: {@link IResCommon}, msgId: {@link EMessageID.completeRandomActivityTask}
+	 * * req: {@link IReqCompleteActivityTask}, res: {@link IResCommon}, method: {@link IReqMethod.completeRandomActivityTask}
 	 */
 	completeRandomActivityTask = "completeRandomActivityTask",
-	/** req: {@link IReqCompleteActivityTaskBatch}, res: {@link IResCommon}, msgId: {@link EMessageID.completeRandomActivityTaskBatch} */
+	/** req: {@link IReqCompleteActivityTaskBatch}, res: {@link IResCommon}, method: {@link IReqMethod.completeRandomActivityTaskBatch} */
 	completeRandomActivityTaskBatch = "completeRandomActivityTaskBatch",
 	/**
 	 * * 翻牌牌领任务
-	 * * req: {@link IReqReceiveActivityFlipTask}, res: {@link IResReceiveActivityFlipTask}, msgId: {@link EMessageID.receiveActivityFlipTask}
+	 * * req: {@link IReqReceiveActivityFlipTask}, res: {@link IResReceiveActivityFlipTask}, method: {@link IReqMethod.receiveActivityFlipTask}
 	 */
 	receiveActivityFlipTask = "receiveActivityFlipTask",
 	/**
 	 * * 领取分段任务奖励
-	 * * req: {@link IReqCompleteSegmentTaskReward}, res: {@link IResCompleteSegmentTaskReward}, msgId: {@link EMessageID.completeSegmentTaskReward}
+	 * * req: {@link IReqCompleteSegmentTaskReward}, res: {@link IResCompleteSegmentTaskReward}, method: {@link IReqMethod.completeSegmentTaskReward}
 	 */
 	completeSegmentTaskReward = "completeSegmentTaskReward",
 	/**
 	 * * 获取翻牌牌任务信息
-	 * * req: {@link IReqFetchActivityFlipInfo}, res: {@link IResFetchActivityFlipInfo}, msgId: {@link EMessageID.fetchActivityFlipInfo}
+	 * * req: {@link IReqFetchActivityFlipInfo}, res: {@link IResFetchActivityFlipInfo}, method: {@link IReqMethod.fetchActivityFlipInfo}
 	 */
 	fetchActivityFlipInfo = "fetchActivityFlipInfo",
 	/**
 	 * * 领取得点活动奖励
-	 * * req: {@link IReqGainAccumulatedPointActivityReward}, res: {@link IResCommon}, msgId: {@link EMessageID.gainAccumulatedPointActivityReward}
+	 * * req: {@link IReqGainAccumulatedPointActivityReward}, res: {@link IResCommon}, method: {@link IReqMethod.gainAccumulatedPointActivityReward}
 	 */
 	gainAccumulatedPointActivityReward = "gainAccumulatedPointActivityReward",
 	/**
 	 * * 批量领取得点活动奖励
-	 * * req: {@link IReqGainMultiPointActivityReward}, res: {@link IResCommon}, msgId: {@link EMessageID.gainMultiPointActivityReward}
+	 * * req: {@link IReqGainMultiPointActivityReward}, res: {@link IResCommon}, method: {@link IReqMethod.gainMultiPointActivityReward}
 	 */
 	gainMultiPointActivityReward = "gainMultiPointActivityReward",
 	/**
 	 * * 获取得分排行榜数据
-	 * * req: {@link IReqFetchRankPointLeaderboard}, res: {@link IResFetchRankPointLeaderboard}, msgId: {@link EMessageID.fetchRankPointLeaderboard}
+	 * * req: {@link IReqFetchRankPointLeaderboard}, res: {@link IResFetchRankPointLeaderboard}, method: {@link IReqMethod.fetchRankPointLeaderboard}
 	 */
 	fetchRankPointLeaderboard = "fetchRankPointLeaderboard",
 	/**
 	 * * 领取得分排行奖励
-	 * * req: {@link IReqGainRankPointReward}, res: {@link IResCommon}, msgId: {@link EMessageID.gainRankPointReward}
+	 * * req: {@link IReqGainRankPointReward}, res: {@link IResCommon}, method: {@link IReqMethod.gainRankPointReward}
 	 */
 	gainRankPointReward = "gainRankPointReward",
 	/**
 	 * * 大富翁投骰子
-	 * * req: {@link IReqRichmanNextMove}, res: {@link IResRichmanNextMove}, msgId: {@link EMessageID.richmanActivityNextMove}
+	 * * req: {@link IReqRichmanNextMove}, res: {@link IResRichmanNextMove}, method: {@link IReqMethod.richmanActivityNextMove}
 	 */
 	richmanActivityNextMove = "richmanActivityNextMove",
 	/**
 	 * * 大富翁遥控骰子
-	 * * req: {@link IReqRichmanSpecialMove}, res: {@link IResRichmanNextMove}, msgId: {@link EMessageID.richmanAcitivitySpecialMove}
+	 * * req: {@link IReqRichmanSpecialMove}, res: {@link IResRichmanNextMove}, method: {@link IReqMethod.richmanAcitivitySpecialMove}
 	 */
 	richmanAcitivitySpecialMove = "richmanAcitivitySpecialMove",
 	/**
 	 * * 大富翁宝箱信息
-	 * * req: {@link IReqRichmanChestInfo}, res: {@link IResRichmanChestInfo}, msgId: {@link EMessageID.richmanActivityChestInfo}
+	 * * req: {@link IReqRichmanChestInfo}, res: {@link IResRichmanChestInfo}, method: {@link IReqMethod.richmanActivityChestInfo}
 	 */
 	richmanActivityChestInfo = "richmanActivityChestInfo",
 	/**
 	 * * 创建实时OB权限
-	 * * req: {@link IReqCreateGameObserveAuth}, res: {@link IResCreateGameObserveAuth}, msgId: {@link EMessageID.createGameObserveAuth}
+	 * * req: {@link IReqCreateGameObserveAuth}, res: {@link IResCreateGameObserveAuth}, method: {@link IReqMethod.createGameObserveAuth}
 	 */
 	createGameObserveAuth = "createGameObserveAuth",
 	/**
 	 * * 刷新实时OB权限时长
-	 * * req: {@link IReqRefreshGameObserveAuth}, res: {@link IResRefreshGameObserveAuth}, msgId: {@link EMessageID.refreshGameObserveAuth}
+	 * * req: {@link IReqRefreshGameObserveAuth}, res: {@link IResRefreshGameObserveAuth}, method: {@link IReqMethod.refreshGameObserveAuth}
 	 */
 	refreshGameObserveAuth = "refreshGameObserveAuth",
 	/**
 	 * * 获取活动buff信息
-	 * * req: {@link IReqCommon}, res: {@link IResActivityBuff}, msgId: {@link EMessageID.fetchActivityBuff}
+	 * * req: {@link IReqCommon}, res: {@link IResActivityBuff}, method: {@link IReqMethod.fetchActivityBuff}
 	 */
 	fetchActivityBuff = "fetchActivityBuff",
 	/**
 	 * * 升级活动buff
-	 * * req: {@link IReqUpgradeActivityBuff}, res: {@link IResActivityBuff}, msgId: {@link EMessageID.upgradeActivityBuff}
+	 * * req: {@link IReqUpgradeActivityBuff}, res: {@link IResActivityBuff}, method: {@link IReqMethod.upgradeActivityBuff}
 	 */
 	upgradeActivityBuff = "upgradeActivityBuff",
 	/**
 	 * * 升级活动升级
-	 * * req: {@link IReqUpgradeActivityLevel}, res: {@link IResUpgradeActivityLevel}, msgId: {@link EMessageID.upgradeActivityLevel}
+	 * * req: {@link IReqUpgradeActivityLevel}, res: {@link IResUpgradeActivityLevel}, method: {@link IReqMethod.upgradeActivityLevel}
 	 */
 	upgradeActivityLevel = "upgradeActivityLevel",
 	/**
 	 * * 获取总等级奖励
-	 * * req: {@link IReqReceiveUpgradeActivityReward}, res: {@link IResReceiveUpgradeActivityReward}, msgId: {@link EMessageID.receiveUpgradeActivityReward}
+	 * * req: {@link IReqReceiveUpgradeActivityReward}, res: {@link IResReceiveUpgradeActivityReward}, method: {@link IReqMethod.receiveUpgradeActivityReward}
 	 */
 	receiveUpgradeActivityReward = "receiveUpgradeActivityReward",
 	/**
 	 * * 试炼赛升级
-	 * * req: {@link IReqCommon}, res: {@link IResUpgradeChallenge}, msgId: {@link EMessageID.upgradeChallenge}
+	 * * req: {@link IReqCommon}, res: {@link IResUpgradeChallenge}, method: {@link IReqMethod.upgradeChallenge}
 	 */
 	upgradeChallenge = "upgradeChallenge",
 	/**
 	 * * 再发行
-	 * * req: {@link IReqCommon}, res: {@link IResRefreshChallenge}, msgId: {@link EMessageID.refreshChallenge}
+	 * * req: {@link IReqCommon}, res: {@link IResRefreshChallenge}, method: {@link IReqMethod.refreshChallenge}
 	 */
 	refreshChallenge = "refreshChallenge",
 	/**
 	 * * 获取试炼赛信息
-	 * * req: {@link IReqCommon}, res: {@link IResFetchChallengeInfo}, msgId: {@link EMessageID.fetchChallengeInfo}
+	 * * req: {@link IReqCommon}, res: {@link IResFetchChallengeInfo}, method: {@link IReqMethod.fetchChallengeInfo}
 	 */
 	fetchChallengeInfo = "fetchChallengeInfo",
 	/**
 	 * * 盖章完成试炼任务
-	 * * req: {@link IReqForceCompleteChallengeTask}, res: {@link IResCommon}, msgId: {@link EMessageID.forceCompleteChallengeTask}
+	 * * req: {@link IReqForceCompleteChallengeTask}, res: {@link IResCommon}, method: {@link IReqMethod.forceCompleteChallengeTask}
 	 */
 	forceCompleteChallengeTask = "forceCompleteChallengeTask",
 	/**
 	 * * 获取当前试炼赛信息
-	 * * req: {@link IReqCommon}, res: {@link IResChallengeSeasonInfo}, msgId: {@link EMessageID.fetchChallengeSeason}
+	 * * req: {@link IReqCommon}, res: {@link IResChallengeSeasonInfo}, method: {@link IReqMethod.fetchChallengeSeason}
 	 */
 	fetchChallengeSeason = "fetchChallengeSeason",
 	/**
 	 * * 获取试炼赛排名奖励
-	 * * req: {@link IReqReceiveChallengeRankReward}, res: {@link IResReceiveChallengeRankReward}, msgId: {@link EMessageID.receiveChallengeRankReward}
+	 * * req: {@link IReqReceiveChallengeRankReward}, res: {@link IResReceiveChallengeRankReward}, method: {@link IReqMethod.receiveChallengeRankReward}
 	 */
 	receiveChallengeRankReward = "receiveChallengeRankReward",
 	/**
 	 * * AB赛
-	 * * req: {@link IReqCommon}, res: {@link IResFetchABMatch}, msgId: {@link EMessageID.fetchABMatchInfo}
+	 * * req: {@link IReqCommon}, res: {@link IResFetchABMatch}, method: {@link IReqMethod.fetchABMatchInfo}
 	 */
 	fetchABMatchInfo = "fetchABMatchInfo",
-	/** req: {@link IReqBuyInABMatch}, res: {@link IResCommon}, msgId: {@link EMessageID.buyInABMatch} */
+	/** req: {@link IReqBuyInABMatch}, res: {@link IResCommon}, method: {@link IReqMethod.buyInABMatch} */
 	buyInABMatch = "buyInABMatch",
-	/** req: {@link IReqCommon}, res: {@link IResCommon}, msgId: {@link EMessageID.receiveABMatchReward} */
+	/** req: {@link IReqCommon}, res: {@link IResCommon}, method: {@link IReqMethod.receiveABMatchReward} */
 	receiveABMatchReward = "receiveABMatchReward",
-	/** req: {@link IReqCommon}, res: {@link IResCommon}, msgId: {@link EMessageID.quitABMatch} */
+	/** req: {@link IReqCommon}, res: {@link IResCommon}, method: {@link IReqMethod.quitABMatch} */
 	quitABMatch = "quitABMatch",
-	/** req: {@link IReqStartUnifiedMatch}, res: {@link IResCommon}, msgId: {@link EMessageID.startUnifiedMatch} */
+	/** req: {@link IReqStartUnifiedMatch}, res: {@link IResCommon}, method: {@link IReqMethod.startUnifiedMatch} */
 	startUnifiedMatch = "startUnifiedMatch",
-	/** req: {@link IReqCancelUnifiedMatch}, res: {@link IResCommon}, msgId: {@link EMessageID.cancelUnifiedMatch} */
+	/** req: {@link IReqCancelUnifiedMatch}, res: {@link IResCommon}, method: {@link IReqMethod.cancelUnifiedMatch} */
 	cancelUnifiedMatch = "cancelUnifiedMatch",
-	/** req: {@link IReqGamePointRank}, res: {@link IResGamePointRank}, msgId: {@link EMessageID.fetchGamePointRank} */
+	/** req: {@link IReqGamePointRank}, res: {@link IResGamePointRank}, method: {@link IReqMethod.fetchGamePointRank} */
 	fetchGamePointRank = "fetchGamePointRank",
-	/** req: {@link IReqGamePointRank}, res: {@link IResFetchSelfGamePointRank}, msgId: {@link EMessageID.fetchSelfGamePointRank} */
+	/** req: {@link IReqGamePointRank}, res: {@link IResFetchSelfGamePointRank}, method: {@link IReqMethod.fetchSelfGamePointRank} */
 	fetchSelfGamePointRank = "fetchSelfGamePointRank",
 	/**
 	 * * SNS活动
-	 * * req: {@link IReqReadSNS}, res: {@link IResReadSNS}, msgId: {@link EMessageID.readSNS}
+	 * * req: {@link IReqReadSNS}, res: {@link IResReadSNS}, method: {@link IReqMethod.readSNS}
 	 */
 	readSNS = "readSNS",
-	/** req: {@link IReqReplySNS}, res: {@link IResReplySNS}, msgId: {@link EMessageID.replySNS} */
+	/** req: {@link IReqReplySNS}, res: {@link IResReplySNS}, method: {@link IReqMethod.replySNS} */
 	replySNS = "replySNS",
-	/** req: {@link IReqLikeSNS}, res: {@link IResLikeSNS}, msgId: {@link EMessageID.likeSNS} */
+	/** req: {@link IReqLikeSNS}, res: {@link IResLikeSNS}, method: {@link IReqMethod.likeSNS} */
 	likeSNS = "likeSNS",
 	/**
 	 * * 挖矿活动
-	 * * req: {@link IReqDigMine}, res: {@link IResDigMine}, msgId: {@link EMessageID.digMine}
+	 * * req: {@link IReqDigMine}, res: {@link IResDigMine}, method: {@link IReqMethod.digMine}
 	 */
 	digMine = "digMine",
 	/**
 	 * * 用户协议
-	 * * req: {@link IReqFetchLastPrivacy}, res: {@link IResFetchLastPrivacy}, msgId: {@link EMessageID.fetchLastPrivacy}
+	 * * req: {@link IReqFetchLastPrivacy}, res: {@link IResFetchLastPrivacy}, method: {@link IReqMethod.fetchLastPrivacy}
 	 */
 	fetchLastPrivacy = "fetchLastPrivacy",
-	/** req: {@link IReqCheckPrivacy}, res: {@link IResCommon}, msgId: {@link EMessageID.checkPrivacy} */
+	/** req: {@link IReqCheckPrivacy}, res: {@link IResCommon}, method: {@link IReqMethod.checkPrivacy} */
 	checkPrivacy = "checkPrivacy",
 	/**
 	 * * rpg活动
-	 * * req: {@link IReqFetchRPGBattleHistory}, res: {@link IResFetchRPGBattleHistory}, msgId: {@link EMessageID.fetchRPGBattleHistory}
+	 * * req: {@link IReqFetchRPGBattleHistory}, res: {@link IResFetchRPGBattleHistory}, method: {@link IReqMethod.fetchRPGBattleHistory}
 	 */
 	fetchRPGBattleHistory = "fetchRPGBattleHistory",
-	/** req: {@link IReqFetchRPGBattleHistory}, res: {@link IResFetchRPGBattleHistoryV2}, msgId: {@link EMessageID.fetchRPGBattleHistoryV2} */
+	/** req: {@link IReqFetchRPGBattleHistory}, res: {@link IResFetchRPGBattleHistoryV2}, method: {@link IReqMethod.fetchRPGBattleHistoryV2} */
 	fetchRPGBattleHistoryV2 = "fetchRPGBattleHistoryV2",
-	/** req: {@link IReqReceiveRPGRewards}, res: {@link IResReceiveRPGRewards}, msgId: {@link EMessageID.receiveRPGRewards} */
+	/** req: {@link IReqReceiveRPGRewards}, res: {@link IResReceiveRPGRewards}, method: {@link IReqMethod.receiveRPGRewards} */
 	receiveRPGRewards = "receiveRPGRewards",
-	/** req: {@link IReqReceiveRPGReward}, res: {@link IResReceiveRPGRewards}, msgId: {@link EMessageID.receiveRPGReward} */
+	/** req: {@link IReqReceiveRPGReward}, res: {@link IResReceiveRPGRewards}, method: {@link IReqMethod.receiveRPGReward} */
 	receiveRPGReward = "receiveRPGReward",
 	/**
 	 * * 竞技场活动
-	 * * req: {@link IReqBuyArenaTicket}, res: {@link IResCommon}, msgId: {@link EMessageID.buyArenaTicket}
+	 * * req: {@link IReqBuyArenaTicket}, res: {@link IResCommon}, method: {@link IReqMethod.buyArenaTicket}
 	 */
 	buyArenaTicket = "buyArenaTicket",
-	/** req: {@link IReqEnterArena}, res: {@link IResCommon}, msgId: {@link EMessageID.enterArena} */
+	/** req: {@link IReqEnterArena}, res: {@link IResCommon}, method: {@link IReqMethod.enterArena} */
 	enterArena = "enterArena",
-	/** req: {@link IReqArenaReward}, res: {@link IResArenaReward}, msgId: {@link EMessageID.receiveArenaReward} */
+	/** req: {@link IReqArenaReward}, res: {@link IResArenaReward}, method: {@link IReqMethod.receiveArenaReward} */
 	receiveArenaReward = "receiveArenaReward",
 	/**
 	 * * 观战
-	 * * req: {@link IReqFetchOBToken}, res: {@link IResFetchOBToken}, msgId: {@link EMessageID.fetchOBToken}
+	 * * req: {@link IReqFetchOBToken}, res: {@link IResFetchOBToken}, method: {@link IReqMethod.fetchOBToken}
 	 */
 	fetchOBToken = "fetchOBToken",
 	/**
 	 * * 角色好感度
-	 * * req: {@link IReqReceiveCharacterRewards}, res: {@link IResReceiveCharacterRewards}, msgId: {@link EMessageID.receiveCharacterRewards}
+	 * * req: {@link IReqReceiveCharacterRewards}, res: {@link IResReceiveCharacterRewards}, method: {@link IReqMethod.receiveCharacterRewards}
 	 */
 	receiveCharacterRewards = "receiveCharacterRewards",
 	/**
 	 * * 喂年兽活动 -> 已经拆分成 friend-gift 与 upgrade 活动，这个协议不再使用
-	 * * req: {@link IReqFeedActivityFeed}, res: {@link IResFeedActivityFeed}, msgId: {@link EMessageID.feedActivityFeed}
+	 * * req: {@link IReqFeedActivityFeed}, res: {@link IResFeedActivityFeed}, method: {@link IReqMethod.feedActivityFeed}
 	 */
 	feedActivityFeed = "feedActivityFeed",
 	/**
 	 * * 送礼活动
-	 * * req: {@link IReqSendActivityGiftToFriend}, res: {@link IResSendActivityGiftToFriend}, msgId: {@link EMessageID.sendActivityGiftToFriend}
+	 * * req: {@link IReqSendActivityGiftToFriend}, res: {@link IResSendActivityGiftToFriend}, method: {@link IReqMethod.sendActivityGiftToFriend}
 	 */
 	sendActivityGiftToFriend = "sendActivityGiftToFriend",
-	/** req: {@link IReqReceiveActivityGift}, res: {@link IResCommon}, msgId: {@link EMessageID.receiveActivityGift} */
+	/** req: {@link IReqReceiveActivityGift}, res: {@link IResCommon}, method: {@link IReqMethod.receiveActivityGift} */
 	receiveActivityGift = "receiveActivityGift",
-	/** req: {@link IReqReceiveAllActivityGift}, res: {@link IResReceiveAllActivityGift}, msgId: {@link EMessageID.receiveAllActivityGift} */
+	/** req: {@link IReqReceiveAllActivityGift}, res: {@link IResReceiveAllActivityGift}, method: {@link IReqMethod.receiveAllActivityGift} */
 	receiveAllActivityGift = "receiveAllActivityGift",
-	/** req: {@link IReqFetchFriendGiftActivityData}, res: {@link IResFetchFriendGiftActivityData}, msgId: {@link EMessageID.fetchFriendGiftActivityData} */
+	/** req: {@link IReqFetchFriendGiftActivityData}, res: {@link IResFetchFriendGiftActivityData}, method: {@link IReqMethod.fetchFriendGiftActivityData} */
 	fetchFriendGiftActivityData = "fetchFriendGiftActivityData",
 	/**
 	 * * 自选卡池
-	 * * req: {@link IReqOpenPreChestItem}, res: {@link IResOpenPreChestItem}, msgId: {@link EMessageID.openPreChestItem}
+	 * * req: {@link IReqOpenPreChestItem}, res: {@link IResOpenPreChestItem}, method: {@link IReqMethod.openPreChestItem}
 	 */
 	openPreChestItem = "openPreChestItem",
 	/**
 	 * * 投票活动
-	 * * req: {@link IReqFetchVoteActivity}, res: {@link IResFetchVoteActivity}, msgId: {@link EMessageID.fetchVoteActivity}
+	 * * req: {@link IReqFetchVoteActivity}, res: {@link IResFetchVoteActivity}, method: {@link IReqMethod.fetchVoteActivity}
 	 */
 	fetchVoteActivity = "fetchVoteActivity",
-	/** req: {@link IReqVoteActivity}, res: {@link IResVoteActivity}, msgId: {@link EMessageID.voteActivity} */
+	/** req: {@link IReqVoteActivity}, res: {@link IResVoteActivity}, method: {@link IReqMethod.voteActivity} */
 	voteActivity = "voteActivity",
 	/**
 	 * * 剧情活动
-	 * * req: {@link IReqUnlockActivitySpot}, res: {@link IResCommon}, msgId: {@link EMessageID.unlockActivitySpot}
+	 * * req: {@link IReqUnlockActivitySpot}, res: {@link IResCommon}, method: {@link IReqMethod.unlockActivitySpot}
 	 */
 	unlockActivitySpot = "unlockActivitySpot",
-	/** req: {@link IReqUnlockActivitySpotEnding}, res: {@link IResCommon}, msgId: {@link EMessageID.unlockActivitySpotEnding} */
+	/** req: {@link IReqUnlockActivitySpotEnding}, res: {@link IResCommon}, method: {@link IReqMethod.unlockActivitySpotEnding} */
 	unlockActivitySpotEnding = "unlockActivitySpotEnding",
-	/** req: {@link IReqReceiveActivitySpotReward}, res: {@link IResReceiveActivitySpotReward}, msgId: {@link EMessageID.receiveActivitySpotReward} */
+	/** req: {@link IReqReceiveActivitySpotReward}, res: {@link IResReceiveActivitySpotReward}, method: {@link IReqMethod.receiveActivitySpotReward} */
 	receiveActivitySpotReward = "receiveActivitySpotReward",
 	/**
 	 * * 删除账号接口
-	 * * req: {@link IReqCommon}, res: {@link IResDeleteAccount}, msgId: {@link EMessageID.deleteAccount}
+	 * * req: {@link IReqCommon}, res: {@link IResDeleteAccount}, method: {@link IReqMethod.deleteAccount}
 	 */
 	deleteAccount = "deleteAccount",
-	/** req: {@link IReqCommon}, res: {@link IResCommon}, msgId: {@link EMessageID.cancelDeleteAccount} */
+	/** req: {@link IReqCommon}, res: {@link IResCommon}, method: {@link IReqMethod.cancelDeleteAccount} */
 	cancelDeleteAccount = "cancelDeleteAccount",
-	/** req: {@link IReqLogReport}, res: {@link IResCommon}, msgId: {@link EMessageID.logReport} */
+	/** req: {@link IReqLogReport}, res: {@link IResCommon}, method: {@link IReqMethod.logReport} */
 	logReport = "logReport",
 	/**
 	 * * oauth2
-	 * * req: {@link IReqBindOauth2}, res: {@link IResCommon}, msgId: {@link EMessageID.bindOauth2}
+	 * * req: {@link IReqBindOauth2}, res: {@link IResCommon}, method: {@link IReqMethod.bindOauth2}
 	 */
 	bindOauth2 = "bindOauth2",
-	/** req: {@link IReqFetchOauth2}, res: {@link IResFetchOauth2}, msgId: {@link EMessageID.fetchOauth2Info} */
+	/** req: {@link IReqFetchOauth2}, res: {@link IResFetchOauth2}, method: {@link IReqMethod.fetchOauth2Info} */
 	fetchOauth2Info = "fetchOauth2Info",
 	/**
 	 * * loading图
-	 * * req: {@link IReqSetLoadingImage}, res: {@link IResCommon}, msgId: {@link EMessageID.setLoadingImage}
+	 * * req: {@link IReqSetLoadingImage}, res: {@link IResCommon}, method: {@link IReqMethod.setLoadingImage}
 	 */
 	setLoadingImage = "setLoadingImage",
 	/**
 	 * * 获取商店信息
-	 * * req: {@link IReqCommon}, res: {@link IResFetchShopInterval}, msgId: {@link EMessageID.fetchShopInterval}
+	 * * req: {@link IReqCommon}, res: {@link IResFetchShopInterval}, method: {@link IReqMethod.fetchShopInterval}
 	 */
 	fetchShopInterval = "fetchShopInterval",
 	/**
 	 * * 获取活动轮换信息
-	 * * req: {@link IReqCommon}, res: {@link IResFetchActivityInterval}, msgId: {@link EMessageID.fetchActivityInterval}
+	 * * req: {@link IReqCommon}, res: {@link IResFetchActivityInterval}, method: {@link IReqMethod.fetchActivityInterval}
 	 */
 	fetchActivityInterval = "fetchActivityInterval",
 	/**
 	 * * 获取最近对战玩家
-	 * * req: {@link IReqCommon}, res: {@link IResFetchrecentFriend}, msgId: {@link EMessageID.fetchRecentFriend}
+	 * * req: {@link IReqCommon}, res: {@link IResFetchrecentFriend}, method: {@link IReqMethod.fetchRecentFriend}
 	 */
 	fetchRecentFriend = "fetchRecentFriend",
 	/**
 	 * * 扭蛋活动
-	 * * req: {@link IReqOpenGacha}, res: {@link IResOpenGacha}, msgId: {@link EMessageID.openGacha}
+	 * * req: {@link IReqOpenGacha}, res: {@link IResOpenGacha}, method: {@link IReqMethod.openGacha}
 	 */
 	openGacha = "openGacha",
 	/**
 	 * * 前端完成任务
-	 * * req: {@link IReqTaskRequest}, res: {@link IResCommon}, msgId: {@link EMessageID.taskRequest}
+	 * * req: {@link IReqTaskRequest}, res: {@link IResCommon}, method: {@link IReqMethod.taskRequest}
 	 */
 	taskRequest = "taskRequest",
 	/**
 	 * * 养成活动
-	 * * req: {@link IReqSimulationActivityTrain}, res: {@link IResSimulationActivityTrain}, msgId: {@link EMessageID.simulationActivityTrain}
+	 * * req: {@link IReqSimulationActivityTrain}, res: {@link IResSimulationActivityTrain}, method: {@link IReqMethod.simulationActivityTrain}
 	 */
 	simulationActivityTrain = "simulationActivityTrain",
-	/** req: {@link IReqFetchSimulationGameRecord}, res: {@link IResFetchSimulationGameRecord}, msgId: {@link EMessageID.fetchSimulationGameRecord} */
+	/** req: {@link IReqFetchSimulationGameRecord}, res: {@link IResFetchSimulationGameRecord}, method: {@link IReqMethod.fetchSimulationGameRecord} */
 	fetchSimulationGameRecord = "fetchSimulationGameRecord",
-	/** req: {@link IReqStartSimulationActivityGame}, res: {@link IResStartSimulationActivityGame}, msgId: {@link EMessageID.startSimulationActivityGame} */
+	/** req: {@link IReqStartSimulationActivityGame}, res: {@link IResStartSimulationActivityGame}, method: {@link IReqMethod.startSimulationActivityGame} */
 	startSimulationActivityGame = "startSimulationActivityGame",
-	/** req: {@link IReqFetchSimulationGameRank}, res: {@link IResFetchSimulationGameRank}, msgId: {@link EMessageID.fetchSimulationGameRank} */
+	/** req: {@link IReqFetchSimulationGameRank}, res: {@link IResFetchSimulationGameRank}, method: {@link IReqMethod.fetchSimulationGameRank} */
 	fetchSimulationGameRank = "fetchSimulationGameRank",
 	/**
 	 * * 合成活动
-	 * * req: {@link IReqGenerateCombiningCraft}, res: {@link IResGenerateCombiningCraft}, msgId: {@link EMessageID.generateCombiningCraft}
+	 * * req: {@link IReqGenerateCombiningCraft}, res: {@link IResGenerateCombiningCraft}, method: {@link IReqMethod.generateCombiningCraft}
 	 */
 	generateCombiningCraft = "generateCombiningCraft",
-	/** req: {@link IReqMoveCombiningCraft}, res: {@link IResMoveCombiningCraft}, msgId: {@link EMessageID.moveCombiningCraft} */
+	/** req: {@link IReqMoveCombiningCraft}, res: {@link IResMoveCombiningCraft}, method: {@link IReqMethod.moveCombiningCraft} */
 	moveCombiningCraft = "moveCombiningCraft",
-	/** req: {@link IReqCombiningRecycleCraft}, res: {@link IResCombiningRecycleCraft}, msgId: {@link EMessageID.combiningRecycleCraft} */
+	/** req: {@link IReqCombiningRecycleCraft}, res: {@link IResCombiningRecycleCraft}, method: {@link IReqMethod.combiningRecycleCraft} */
 	combiningRecycleCraft = "combiningRecycleCraft",
-	/** req: {@link IReqRecoverCombiningRecycle}, res: {@link IResRecoverCombiningRecycle}, msgId: {@link EMessageID.recoverCombiningRecycle} */
+	/** req: {@link IReqRecoverCombiningRecycle}, res: {@link IResRecoverCombiningRecycle}, method: {@link IReqMethod.recoverCombiningRecycle} */
 	recoverCombiningRecycle = "recoverCombiningRecycle",
-	/** req: {@link IReqFinishCombiningOrder}, res: {@link IResFinishCombiningOrder}, msgId: {@link EMessageID.finishCombiningOrder} */
+	/** req: {@link IReqFinishCombiningOrder}, res: {@link IResFinishCombiningOrder}, method: {@link IReqMethod.finishCombiningOrder} */
 	finishCombiningOrder = "finishCombiningOrder",
 	/**
 	 * * 小村活动
-	 * * req: {@link IReqUpgradeVillageBuilding}, res: {@link IResCommon}, msgId: {@link EMessageID.upgradeVillageBuilding}
+	 * * req: {@link IReqUpgradeVillageBuilding}, res: {@link IResCommon}, method: {@link IReqMethod.upgradeVillageBuilding}
 	 */
 	upgradeVillageBuilding = "upgradeVillageBuilding",
-	/** req: {@link IReqReceiveVillageBuildingReward}, res: {@link IResReceiveVillageBuildingReward}, msgId: {@link EMessageID.receiveVillageBuildingReward} */
+	/** req: {@link IReqReceiveVillageBuildingReward}, res: {@link IResReceiveVillageBuildingReward}, method: {@link IReqMethod.receiveVillageBuildingReward} */
 	receiveVillageBuildingReward = "receiveVillageBuildingReward",
-	/** req: {@link IReqStartVillageTrip}, res: {@link IResCommon}, msgId: {@link EMessageID.startVillageTrip} */
+	/** req: {@link IReqStartVillageTrip}, res: {@link IResCommon}, method: {@link IReqMethod.startVillageTrip} */
 	startVillageTrip = "startVillageTrip",
-	/** req: {@link IReqReceiveVillageTripReward}, res: {@link IResReceiveVillageTripReward}, msgId: {@link EMessageID.receiveVillageTripReward} */
+	/** req: {@link IReqReceiveVillageTripReward}, res: {@link IResReceiveVillageTripReward}, method: {@link IReqMethod.receiveVillageTripReward} */
 	receiveVillageTripReward = "receiveVillageTripReward",
-	/** req: {@link IReqCompleteVillageTask}, res: {@link IResCompleteVillageTask}, msgId: {@link EMessageID.completeVillageTask} */
+	/** req: {@link IReqCompleteVillageTask}, res: {@link IResCompleteVillageTask}, method: {@link IReqMethod.completeVillageTask} */
 	completeVillageTask = "completeVillageTask",
-	/** req: {@link IReqGetFriendVillageData}, res: {@link IResGetFriendVillageData}, msgId: {@link EMessageID.getFriendVillageData} */
+	/** req: {@link IReqGetFriendVillageData}, res: {@link IResGetFriendVillageData}, method: {@link IReqMethod.getFriendVillageData} */
 	getFriendVillageData = "getFriendVillageData",
-	/** req: {@link IReqSetVillageWorker}, res: {@link IResSetVillageWorker}, msgId: {@link EMessageID.setVillageWorker} */
+	/** req: {@link IReqSetVillageWorker}, res: {@link IResSetVillageWorker}, method: {@link IReqMethod.setVillageWorker} */
 	setVillageWorker = "setVillageWorker",
 	/**
 	 * * 下一个丰收季
-	 * * req: {@link IReqNextRoundVillage}, res: {@link IResNextRoundVillage}, msgId: {@link EMessageID.nextRoundVillage}
+	 * * req: {@link IReqNextRoundVillage}, res: {@link IResNextRoundVillage}, method: {@link IReqMethod.nextRoundVillage}
 	 */
 	nextRoundVillage = "nextRoundVillage",
 	/**
 	 * * 射击活动
-	 * * req: {@link IReqShootActivityAttackEnemies}, res: {@link IResShootActivityAttackEnemies}, msgId: {@link EMessageID.shootActivityAttackEnemies}
+	 * * req: {@link IReqShootActivityAttackEnemies}, res: {@link IResShootActivityAttackEnemies}, method: {@link IReqMethod.shootActivityAttackEnemies}
 	 */
 	shootActivityAttackEnemies = "shootActivityAttackEnemies",
 	/**
 	 * * 庆典活动
-	 * * req: {@link IReqResolveFestivalActivityProposal}, res: {@link IResResolveFestivalActivityProposal}, msgId: {@link EMessageID.resolveFestivalActivityProposal}
+	 * * req: {@link IReqResolveFestivalActivityProposal}, res: {@link IResResolveFestivalActivityProposal}, method: {@link IReqMethod.resolveFestivalActivityProposal}
 	 */
 	resolveFestivalActivityProposal = "resolveFestivalActivityProposal",
-	/** req: {@link IReqResolveFestivalActivityEvent}, res: {@link IResResolveFestivalActivityEvent}, msgId: {@link EMessageID.resolveFestivalActivityEvent} */
+	/** req: {@link IReqResolveFestivalActivityEvent}, res: {@link IResResolveFestivalActivityEvent}, method: {@link IReqMethod.resolveFestivalActivityEvent} */
 	resolveFestivalActivityEvent = "resolveFestivalActivityEvent",
-	/** req: {@link IReqBuyFestivalProposal}, res: {@link IResBuyFestivalProposal}, msgId: {@link EMessageID.buyFestivalProposal} */
+	/** req: {@link IReqBuyFestivalProposal}, res: {@link IResBuyFestivalProposal}, method: {@link IReqMethod.buyFestivalProposal} */
 	buyFestivalProposal = "buyFestivalProposal",
 	/**
 	 * * ==DevDebug Start==
 	 * * debug 协议在正式版本删除
-	 * * req: {@link IReqFestivalFetchDebug}, res: {@link IResFestivalFetchDebug}, msgId: {@link EMessageID.festivalActivityFetchDebug}
+	 * * req: {@link IReqFestivalFetchDebug}, res: {@link IResFestivalFetchDebug}, method: {@link IReqMethod.festivalActivityFetchDebug}
 	 */
 	festivalActivityFetchDebug = "festivalActivityFetchDebug",
-	/** req: {@link IReqFestivalDebug}, res: {@link IResCommon}, msgId: {@link EMessageID.festivalActivityDebug} */
+	/** req: {@link IReqFestivalDebug}, res: {@link IResCommon}, method: {@link IReqMethod.festivalActivityDebug} */
 	festivalActivityDebug = "festivalActivityDebug",
 	/**
 	 * * 海岛活动
-	 * * req: {@link IReqIslandActivityMove}, res: {@link IResCommon}, msgId: {@link EMessageID.islandActivityMove}
+	 * * req: {@link IReqIslandActivityMove}, res: {@link IResCommon}, method: {@link IReqMethod.islandActivityMove}
 	 */
 	islandActivityMove = "islandActivityMove",
-	/** req: {@link IReqIslandActivityBuy}, res: {@link IResCommon}, msgId: {@link EMessageID.islandActivityBuy} */
+	/** req: {@link IReqIslandActivityBuy}, res: {@link IResCommon}, method: {@link IReqMethod.islandActivityBuy} */
 	islandActivityBuy = "islandActivityBuy",
-	/** req: {@link IReqIslandActivitySell}, res: {@link IResCommon}, msgId: {@link EMessageID.islandActivitySell} */
+	/** req: {@link IReqIslandActivitySell}, res: {@link IResCommon}, method: {@link IReqMethod.islandActivitySell} */
 	islandActivitySell = "islandActivitySell",
-	/** req: {@link IReqIslandActivityTidyBag}, res: {@link IResCommon}, msgId: {@link EMessageID.islandActivityTidyBag} */
+	/** req: {@link IReqIslandActivityTidyBag}, res: {@link IResCommon}, method: {@link IReqMethod.islandActivityTidyBag} */
 	islandActivityTidyBag = "islandActivityTidyBag",
-	/** req: {@link IReqIslandActivityUnlockBagGrid}, res: {@link IResCommon}, msgId: {@link EMessageID.islandActivityUnlockBagGrid} */
+	/** req: {@link IReqIslandActivityUnlockBagGrid}, res: {@link IResCommon}, method: {@link IReqMethod.islandActivityUnlockBagGrid} */
 	islandActivityUnlockBagGrid = "islandActivityUnlockBagGrid",
 	/**
 	 * * 大会室管理相关
-	 * * req: {@link IReqCreateCustomizedContest}, res: {@link IResCreateCustomizedContest}, msgId: {@link EMessageID.createCustomizedContest}
+	 * * req: {@link IReqCreateCustomizedContest}, res: {@link IResCreateCustomizedContest}, method: {@link IReqMethod.createCustomizedContest}
 	 */
 	createCustomizedContest = "createCustomizedContest",
-	/** req: {@link IReqFetchmanagerCustomizedContestList}, res: {@link IResFetchManagerCustomizedContestList}, msgId: {@link EMessageID.fetchManagerCustomizedContestList} */
+	/** req: {@link IReqFetchmanagerCustomizedContestList}, res: {@link IResFetchManagerCustomizedContestList}, method: {@link IReqMethod.fetchManagerCustomizedContestList} */
 	fetchManagerCustomizedContestList = "fetchManagerCustomizedContestList",
-	/** req: {@link IReqFetchManagerCustomizedContest}, res: {@link IResFetchManagerCustomizedContest}, msgId: {@link EMessageID.fetchManagerCustomizedContest} */
+	/** req: {@link IReqFetchManagerCustomizedContest}, res: {@link IResFetchManagerCustomizedContest}, method: {@link IReqMethod.fetchManagerCustomizedContest} */
 	fetchManagerCustomizedContest = "fetchManagerCustomizedContest",
-	/** req: {@link IReqUpdateManagerCustomizedContest}, res: {@link IResCommon}, msgId: {@link EMessageID.updateManagerCustomizedContest} */
+	/** req: {@link IReqUpdateManagerCustomizedContest}, res: {@link IResCommon}, method: {@link IReqMethod.updateManagerCustomizedContest} */
 	updateManagerCustomizedContest = "updateManagerCustomizedContest",
-	/** req: {@link IReqFetchReadyPlayerList}, res: {@link IResFetchReadyPlayerList}, msgId: {@link EMessageID.fetchReadyPlayerList} */
+	/** req: {@link IReqFetchReadyPlayerList}, res: {@link IResFetchReadyPlayerList}, method: {@link IReqMethod.fetchReadyPlayerList} */
 	fetchReadyPlayerList = "fetchReadyPlayerList",
-	/** req: {@link IReqCreateGamePlan}, res: {@link IResCommon}, msgId: {@link EMessageID.createGamePlan} */
+	/** req: {@link IReqCreateGamePlan}, res: {@link IResCommon}, method: {@link IReqMethod.createGamePlan} */
 	createGamePlan = "createGamePlan",
-	/** req: {@link IReqCommon}, res: {@link IResGenerateContestManagerLoginCode}, msgId: {@link EMessageID.generateContestManagerLoginCode} */
+	/** req: {@link IReqCommon}, res: {@link IResGenerateContestManagerLoginCode}, method: {@link IReqMethod.generateContestManagerLoginCode} */
 	generateContestManagerLoginCode = "generateContestManagerLoginCode",
 	/**
 	 * * 获取青云之志活动数据
-	 * * req: {@link IReqFetchAmuletActivityData}, res: {@link IResFetchAmuletActivityData}, msgId: {@link EMessageID.fetchAmuletActivityData}
+	 * * req: {@link IReqFetchAmuletActivityData}, res: {@link IResFetchAmuletActivityData}, method: {@link IReqMethod.fetchAmuletActivityData}
 	 */
 	fetchAmuletActivityData = "fetchAmuletActivityData",
 	/**
 	 * * 获取挑战任务与收藏数据
-	 * * req: {@link IReqAmuletActivityFetchBrief}, res: {@link IResAmuletActivityFetchBrief}, msgId: {@link EMessageID.amuletActivityFetchBrief}
+	 * * req: {@link IReqAmuletActivityFetchBrief}, res: {@link IResAmuletActivityFetchBrief}, method: {@link IReqMethod.amuletActivityFetchBrief}
 	 */
 	amuletActivityFetchBrief = "amuletActivityFetchBrief",
 	/**
 	 * * 开始游戏
-	 * * req: {@link IReqAmuletActivityStartGame}, res: {@link IResAmuletEventResponse}, msgId: {@link EMessageID.amuletActivityStartGame}
+	 * * req: {@link IReqAmuletActivityStartGame}, res: {@link IResAmuletEventResponse}, method: {@link IReqMethod.amuletActivityStartGame}
 	 */
 	amuletActivityStartGame = "amuletActivityStartGame",
 	/**
 	 * * 换牌/打牌/开杠/和牌/模切/结束换牌 操作
-	 * * req: {@link IReqAmuletActivityOperate}, res: {@link IResAmuletEventResponse}, msgId: {@link EMessageID.amuletActivityOperate}
+	 * * req: {@link IReqAmuletActivityOperate}, res: {@link IResAmuletEventResponse}, method: {@link IReqMethod.amuletActivityOperate}
 	 */
 	amuletActivityOperate = "amuletActivityOperate",
 	/**
 	 * * 下一关
-	 * * req: {@link IReqAmuletActivityUpgrade}, res: {@link IResAmuletEventResponse}, msgId: {@link EMessageID.amuletActivityUpgrade}
+	 * * req: {@link IReqAmuletActivityUpgrade}, res: {@link IResAmuletEventResponse}, method: {@link IReqMethod.amuletActivityUpgrade}
 	 */
 	amuletActivityUpgrade = "amuletActivityUpgrade",
 	/**
 	 * * 购买卡包
-	 * * req: {@link IReqAmuletActivityBuy}, res: {@link IResAmuletEventResponse}, msgId: {@link EMessageID.amuletActivityBuy}
+	 * * req: {@link IReqAmuletActivityBuy}, res: {@link IResAmuletEventResponse}, method: {@link IReqMethod.amuletActivityBuy}
 	 */
 	amuletActivityBuy = "amuletActivityBuy",
 	/**
 	 * * 选择卡包护身符
-	 * * req: {@link IReqAmuletActivitySelectPack}, res: {@link IResAmuletEventResponse}, msgId: {@link EMessageID.amuletActivitySelectPack}
+	 * * req: {@link IReqAmuletActivitySelectPack}, res: {@link IResAmuletEventResponse}, method: {@link IReqMethod.amuletActivitySelectPack}
 	 */
 	amuletActivitySelectPack = "amuletActivitySelectPack",
 	/**
 	 * * 出售护身符
-	 * * req: {@link IReqAmuletActivitySellEffect}, res: {@link IResAmuletEventResponse}, msgId: {@link EMessageID.amuletActivitySellEffect}
+	 * * req: {@link IReqAmuletActivitySellEffect}, res: {@link IResAmuletEventResponse}, method: {@link IReqMethod.amuletActivitySellEffect}
 	 */
 	amuletActivitySellEffect = "amuletActivitySellEffect",
 	/**
 	 * * 护身符排序
-	 * * req: {@link IReqAmuletActivityEffectSort}, res: {@link IResAmuletEventResponse}, msgId: {@link EMessageID.amuletActivityEffectSort}
+	 * * req: {@link IReqAmuletActivityEffectSort}, res: {@link IResAmuletEventResponse}, method: {@link IReqMethod.amuletActivityEffectSort}
 	 */
 	amuletActivityEffectSort = "amuletActivityEffectSort",
 	/**
 	 * * 放弃当前对局
-	 * * req: {@link IReqAmuletActivityGiveup}, res: {@link IResCommon}, msgId: {@link EMessageID.amuletActivityGiveup}
+	 * * req: {@link IReqAmuletActivityGiveup}, res: {@link IResCommon}, method: {@link IReqMethod.amuletActivityGiveup}
 	 */
 	amuletActivityGiveup = "amuletActivityGiveup",
 	/**
 	 * * 刷新商店
-	 * * req: {@link IReqAmuletActivityRefreshShop}, res: {@link IResAmuletEventResponse}, msgId: {@link EMessageID.amuletActivityRefreshShop}
+	 * * req: {@link IReqAmuletActivityRefreshShop}, res: {@link IResAmuletEventResponse}, method: {@link IReqMethod.amuletActivityRefreshShop}
 	 */
 	amuletActivityRefreshShop = "amuletActivityRefreshShop",
 	/**
 	 * * 选择开局免费护身符
-	 * * req: {@link IReqAmuletActivitySelectFreeEffect}, res: {@link IResAmuletEventResponse}, msgId: {@link EMessageID.amuletActivitySelectFreeEffect}
+	 * * req: {@link IReqAmuletActivitySelectFreeEffect}, res: {@link IResAmuletEventResponse}, method: {@link IReqMethod.amuletActivitySelectFreeEffect}
 	 */
 	amuletActivitySelectFreeEffect = "amuletActivitySelectFreeEffect",
 	/**
 	 * * 商店升级buff
-	 * * req: {@link IReqAmuletActivityUpgradeShopBuff}, res: {@link IResAmuletEventResponse}, msgId: {@link EMessageID.amuletActivityUpgradeShopBuff}
+	 * * req: {@link IReqAmuletActivityUpgradeShopBuff}, res: {@link IResAmuletEventResponse}, method: {@link IReqMethod.amuletActivityUpgradeShopBuff}
 	 */
 	amuletActivityUpgradeShopBuff = "amuletActivityUpgradeShopBuff",
 	/**
 	 * * 退出商店，进入选关
-	 * * req: {@link IReqAmuletActivityEndShopping}, res: {@link IResAmuletEventResponse}, msgId: {@link EMessageID.amuletActivityEndShopping}
+	 * * req: {@link IReqAmuletActivityEndShopping}, res: {@link IResAmuletEventResponse}, method: {@link IReqMethod.amuletActivityEndShopping}
 	 */
 	amuletActivityEndShopping = "amuletActivityEndShopping",
 	/**
 	 * * 设置场外增强
-	 * * req: {@link IReqAmuletActivitySetSkillLevel}, res: {@link IResCommon}, msgId: {@link EMessageID.amuletActivitySetSkillLevel}
+	 * * req: {@link IReqAmuletActivitySetSkillLevel}, res: {@link IResCommon}, method: {@link IReqMethod.amuletActivitySetSkillLevel}
 	 */
 	amuletActivitySetSkillLevel = "amuletActivitySetSkillLevel",
 	/**
 	 * * 获取青云之志维护信息
-	 * * req: {@link IReqCommon}, res: {@link IResAmuletActivityMaintainInfo}, msgId: {@link EMessageID.amuletActivityMaintainInfo}
+	 * * req: {@link IReqCommon}, res: {@link IResAmuletActivityMaintainInfo}, method: {@link IReqMethod.amuletActivityMaintainInfo}
 	 */
 	amuletActivityMaintainInfo = "amuletActivityMaintainInfo",
-	/** req: {@link IReqAmuletActivitySelectRewardPack}, res: {@link IResAmuletEventResponse}, msgId: {@link EMessageID.amuletActivitySelectRewardPack} */
+	/** req: {@link IReqAmuletActivitySelectRewardPack}, res: {@link IResAmuletEventResponse}, method: {@link IReqMethod.amuletActivitySelectRewardPack} */
 	amuletActivitySelectRewardPack = "amuletActivitySelectRewardPack",
 	/**
 	 * * 设置青云之志钦定护身符
-	 * * req: {@link IReqAmuletActivitySelectBookEffect}, res: {@link IResCommon}, msgId: {@link EMessageID.amuletActivitySelectBookEffect}
+	 * * req: {@link IReqAmuletActivitySelectBookEffect}, res: {@link IResCommon}, method: {@link IReqMethod.amuletActivitySelectBookEffect}
 	 */
 	amuletActivitySelectBookEffect = "amuletActivitySelectBookEffect",
 	/**
 	 * * ==DevDebug Start==
 	 * * debug 协议在正式版本删除
-	 * * req: {@link IReqAmuletActivityDebug}, res: {@link IResCommon}, msgId: {@link EMessageID.amuletActivityDebug}
+	 * * req: {@link IReqAmuletActivityDebug}, res: {@link IResCommon}, method: {@link IReqMethod.amuletActivityDebug}
 	 */
 	amuletActivityDebug = "amuletActivityDebug",
-	/** req: {@link IReqAmuletActivityFetchDebug}, res: {@link IResFetchAmuletActivityDebug}, msgId: {@link EMessageID.amuletActivityFetchDebug} */
+	/** req: {@link IReqAmuletActivityFetchDebug}, res: {@link IResFetchAmuletActivityDebug}, method: {@link IReqMethod.amuletActivityFetchDebug} */
 	amuletActivityFetchDebug = "amuletActivityFetchDebug",
 	/**
 	 * * 解锁剧情
-	 * * req: {@link IReqStoryActivityUnlock}, res: {@link IResCommon}, msgId: {@link EMessageID.storyActivityUnlock}
+	 * * req: {@link IReqStoryActivityUnlock}, res: {@link IResCommon}, method: {@link IReqMethod.storyActivityUnlock}
 	 */
 	storyActivityUnlock = "storyActivityUnlock",
 	/**
 	 * * 解锁结局
-	 * * req: {@link IReqStoryActivityUnlockEnding}, res: {@link IResCommon}, msgId: {@link EMessageID.storyActivityUnlockEnding}
+	 * * req: {@link IReqStoryActivityUnlockEnding}, res: {@link IResCommon}, method: {@link IReqMethod.storyActivityUnlockEnding}
 	 */
 	storyActivityUnlockEnding = "storyActivityUnlockEnding",
 	/**
 	 * * 领取结局奖励
-	 * * req: {@link IReqStoryActivityReceiveEndingReward}, res: {@link IResStoryReward}, msgId: {@link EMessageID.storyActivityReceiveEndingReward}
+	 * * req: {@link IReqStoryActivityReceiveEndingReward}, res: {@link IResStoryReward}, method: {@link IReqMethod.storyActivityReceiveEndingReward}
 	 */
 	storyActivityReceiveEndingReward = "storyActivityReceiveEndingReward",
 	/**
 	 * * 领取剧情通关奖励（完成剧情任一结局）
-	 * * req: {@link IReqStoryActivityReceiveFinishReward}, res: {@link IResStoryReward}, msgId: {@link EMessageID.storyActivityReceiveFinishReward}
+	 * * req: {@link IReqStoryActivityReceiveFinishReward}, res: {@link IResStoryReward}, method: {@link IReqMethod.storyActivityReceiveFinishReward}
 	 */
 	storyActivityReceiveFinishReward = "storyActivityReceiveFinishReward",
 	/**
 	 * * 领取剧情全通奖励（完成所有结局）
-	 * * req: {@link IReqStoryActivityReceiveAllFinishReward}, res: {@link IResStoryReward}, msgId: {@link EMessageID.storyActivityReceiveAllFinishReward}
+	 * * req: {@link IReqStoryActivityReceiveAllFinishReward}, res: {@link IResStoryReward}, method: {@link IReqMethod.storyActivityReceiveAllFinishReward}
 	 */
 	storyActivityReceiveAllFinishReward = "storyActivityReceiveAllFinishReward",
 	/**
 	 * * 解锁结局并领取结局奖励
-	 * * req: {@link IReqStoryActivityUnlockEndingAndReceive}, res: {@link IResStoryActivityUnlockEndingAndReceive}, msgId: {@link EMessageID.storyActivityUnlockEndingAndReceive}
+	 * * req: {@link IReqStoryActivityUnlockEndingAndReceive}, res: {@link IResStoryActivityUnlockEndingAndReceive}, method: {@link IReqMethod.storyActivityUnlockEndingAndReceive}
 	 */
 	storyActivityUnlockEndingAndReceive = "storyActivityUnlockEndingAndReceive",
 	/**
 	 * * 获取活动排名
-	 * * req: {@link IReqFetchActivityRank}, res: {@link IResFetchActivityRank}, msgId: {@link EMessageID.fetchActivityRank}
+	 * * req: {@link IReqFetchActivityRank}, res: {@link IResFetchActivityRank}, method: {@link IReqMethod.fetchActivityRank}
 	 */
 	fetchActivityRank = "fetchActivityRank",
 	/**
 	 * * 玩家职业/主播标识开关
-	 * * req: {@link IReqSetVerifiedHidden}, res: {@link IResCommon}, msgId: {@link EMessageID.setVerifiedHidden}
+	 * * req: {@link IReqSetVerifiedHidden}, res: {@link IResCommon}, method: {@link IReqMethod.setVerifiedHidden}
 	 */
 	setVerifiedHidden = "setVerifiedHidden",
 	/**
 	 * * 获取问卷列表
-	 * * req: {@link IReqFetchQuestionnaireList}, res: {@link IResFetchQuestionnaireList}, msgId: {@link EMessageID.fetchQuestionnaireList}
+	 * * req: {@link IReqFetchQuestionnaireList}, res: {@link IResFetchQuestionnaireList}, method: {@link IReqMethod.fetchQuestionnaireList}
 	 */
 	fetchQuestionnaireList = "fetchQuestionnaireList",
 	/**
 	 * * 获取问卷详情
-	 * * req: {@link IReqFetchQuestionnaireDetail}, res: {@link IResFetchQuestionnaireDetail}, msgId: {@link EMessageID.fetchQuestionnaireDetail}
+	 * * req: {@link IReqFetchQuestionnaireDetail}, res: {@link IResFetchQuestionnaireDetail}, method: {@link IReqMethod.fetchQuestionnaireDetail}
 	 */
 	fetchQuestionnaireDetail = "fetchQuestionnaireDetail",
 	/**
 	 * * 提交调查问卷结果
-	 * * req: {@link IReqSubmitQuestionnaire}, res: {@link IResCommon}, msgId: {@link EMessageID.submitQuestionnaire}
+	 * * req: {@link IReqSubmitQuestionnaire}, res: {@link IResCommon}, method: {@link IReqMethod.submitQuestionnaire}
 	 */
 	submitQuestionnaire = "submitQuestionnaire",
 	/**
 	 * * 好友房随机机器人角色开关
-	 * * req: {@link IReqSetFriendRoomRandomBotChar}, res: {@link IResCommon}, msgId: {@link EMessageID.setFriendRoomRandomBotChar}
+	 * * req: {@link IReqSetFriendRoomRandomBotChar}, res: {@link IResCommon}, method: {@link IReqMethod.setFriendRoomRandomBotChar}
 	 */
 	setFriendRoomRandomBotChar = "setFriendRoomRandomBotChar",
-	/** req: {@link IReqFetchAccountGameHuRecords}, res: {@link IResFetchAccountGameHuRecords}, msgId: {@link EMessageID.fetchAccountGameHuRecords} */
+	/** req: {@link IReqFetchAccountGameHuRecords}, res: {@link IResFetchAccountGameHuRecords}, method: {@link IReqMethod.fetchAccountGameHuRecords} */
 	fetchAccountGameHuRecords = "fetchAccountGameHuRecords",
-	/** req: {@link IReqFetchAccountInfoExtra}, res: {@link IResFetchAccountInfoExtra}, msgId: {@link EMessageID.fetchAccountInfoExtra} */
+	/** req: {@link IReqFetchAccountInfoExtra}, res: {@link IResFetchAccountInfoExtra}, method: {@link IReqMethod.fetchAccountInfoExtra} */
 	fetchAccountInfoExtra = "fetchAccountInfoExtra",
-	/** req: {@link IReqSetAccountFavoriteHu}, res: {@link IResCommon}, msgId: {@link EMessageID.setAccountFavoriteHu} */
+	/** req: {@link IReqSetAccountFavoriteHu}, res: {@link IResCommon}, method: {@link IReqMethod.setAccountFavoriteHu} */
 	setAccountFavoriteHu = "setAccountFavoriteHu",
 	/**
 	 * * seer 报告
-	 * * req: {@link IReqFetchSeerReport}, res: {@link IResFetchSeerReport}, msgId: {@link EMessageID.fetchSeerReport}
+	 * * req: {@link IReqFetchSeerReport}, res: {@link IResFetchSeerReport}, method: {@link IReqMethod.fetchSeerReport}
 	 */
 	fetchSeerReport = "fetchSeerReport",
-	/** req: {@link IReqCreateSeerReport}, res: {@link IResCreateSeerReport}, msgId: {@link EMessageID.createSeerReport} */
+	/** req: {@link IReqCreateSeerReport}, res: {@link IResCreateSeerReport}, method: {@link IReqMethod.createSeerReport} */
 	createSeerReport = "createSeerReport",
 	/**
 	 * * 获取当前 seer 报告状态（只返回分析中和未过期的）
-	 * * req: {@link IReqCommon}, res: {@link IResFetchSeerReportList}, msgId: {@link EMessageID.fetchSeerReportList}
+	 * * req: {@link IReqCommon}, res: {@link IResFetchSeerReportList}, method: {@link IReqMethod.fetchSeerReportList}
 	 */
 	fetchSeerReportList = "fetchSeerReportList",
-	/** req: {@link IReqCommon}, res: {@link IResFetchSeerInfo}, msgId: {@link EMessageID.fetchSeerInfo} */
+	/** req: {@link IReqCommon}, res: {@link IResFetchSeerInfo}, method: {@link IReqMethod.fetchSeerInfo} */
 	fetchSeerInfo = "fetchSeerInfo",
 	/**
 	 * * 可选up卡池活动
-	 * * req: {@link IReqSelectChestChooseUp}, res: {@link IReqCommon}, msgId: {@link EMessageID.selectChestChooseUpActivity}
+	 * * req: {@link IReqSelectChestChooseUp}, res: {@link IReqCommon}, method: {@link IReqMethod.selectChestChooseUpActivity}
 	 */
 	selectChestChooseUpActivity = "selectChestChooseUpActivity",
 	/**
 	 * * 年度报告
-	 * * req: {@link IReqGenerateAnnualReportToken}, res: {@link IResGenerateAnnualReportToken}, msgId: {@link EMessageID.generateAnnualReportToken}
+	 * * req: {@link IReqGenerateAnnualReportToken}, res: {@link IResGenerateAnnualReportToken}, method: {@link IReqMethod.generateAnnualReportToken}
 	 */
 	generateAnnualReportToken = "generateAnnualReportToken",
-	/** req: {@link IReqCommon}, res: {@link IResFetchAnnualReportInfo}, msgId: {@link EMessageID.fetchAnnualReportInfo} */
+	/** req: {@link IReqCommon}, res: {@link IResFetchAnnualReportInfo}, method: {@link IReqMethod.fetchAnnualReportInfo} */
 	fetchAnnualReportInfo = "fetchAnnualReportInfo",
 	/**
 	 * * 好友备注
-	 * * req: {@link IReqRemarkFriend}, res: {@link IResCommon}, msgId: {@link EMessageID.remarkFriend}
+	 * * req: {@link IReqRemarkFriend}, res: {@link IResCommon}, method: {@link IReqMethod.remarkFriend}
 	 */
 	remarkFriend = "remarkFriend",
 	/**
 	 * * 雀斗大会
-	 * * req: {@link IReqSimV2ActivityFetchInfo}, res: {@link IResSimV2ActivityFetchInfo}, msgId: {@link EMessageID.simV2ActivityFetchInfo}
+	 * * req: {@link IReqSimV2ActivityFetchInfo}, res: {@link IResSimV2ActivityFetchInfo}, method: {@link IReqMethod.simV2ActivityFetchInfo}
 	 */
 	simV2ActivityFetchInfo = "simV2ActivityFetchInfo",
-	/** req: {@link IReqSimV2ActivityStartSeason}, res: {@link IResSimV2ActivityStartSeason}, msgId: {@link EMessageID.simV2ActivityStartSeason} */
+	/** req: {@link IReqSimV2ActivityStartSeason}, res: {@link IResSimV2ActivityStartSeason}, method: {@link IReqMethod.simV2ActivityStartSeason} */
 	simV2ActivityStartSeason = "simV2ActivityStartSeason",
-	/** req: {@link IReqSimV2ActivityTrain}, res: {@link IResSimV2ActivityTrain}, msgId: {@link EMessageID.simV2ActivityTrain} */
+	/** req: {@link IReqSimV2ActivityTrain}, res: {@link IResSimV2ActivityTrain}, method: {@link IReqMethod.simV2ActivityTrain} */
 	simV2ActivityTrain = "simV2ActivityTrain",
-	/** req: {@link IReqSimV2ActivitySelectEvent}, res: {@link IResSimV2ActivitySelectEvent}, msgId: {@link EMessageID.simV2ActivitySelectEvent} */
+	/** req: {@link IReqSimV2ActivitySelectEvent}, res: {@link IResSimV2ActivitySelectEvent}, method: {@link IReqMethod.simV2ActivitySelectEvent} */
 	simV2ActivitySelectEvent = "simV2ActivitySelectEvent",
-	/** req: {@link IReqSimV2ActivityStartMatch}, res: {@link IResSimV2ActivityStartMatch}, msgId: {@link EMessageID.simV2ActivityStartMatch} */
+	/** req: {@link IReqSimV2ActivityStartMatch}, res: {@link IResSimV2ActivityStartMatch}, method: {@link IReqMethod.simV2ActivityStartMatch} */
 	simV2ActivityStartMatch = "simV2ActivityStartMatch",
-	/** req: {@link IReqSimV2ActivityEndMatch}, res: {@link IResSimV2ActivityEndMatch}, msgId: {@link EMessageID.simV2ActivityEndMatch} */
+	/** req: {@link IReqSimV2ActivityEndMatch}, res: {@link IResSimV2ActivityEndMatch}, method: {@link IReqMethod.simV2ActivityEndMatch} */
 	simV2ActivityEndMatch = "simV2ActivityEndMatch",
-	/** req: {@link IReqSimV2ActivityGiveUp}, res: {@link IResCommon}, msgId: {@link EMessageID.simV2ActivityGiveUp} */
+	/** req: {@link IReqSimV2ActivityGiveUp}, res: {@link IResCommon}, method: {@link IReqMethod.simV2ActivityGiveUp} */
 	simV2ActivityGiveUp = "simV2ActivityGiveUp",
-	/** req: {@link IReqSimV2ActivitySetUpgrade}, res: {@link IResCommon}, msgId: {@link EMessageID.simV2ActivitySetUpgrade} */
+	/** req: {@link IReqSimV2ActivitySetUpgrade}, res: {@link IResCommon}, method: {@link IReqMethod.simV2ActivitySetUpgrade} */
 	simV2ActivitySetUpgrade = "simV2ActivitySetUpgrade",
 	/**
 	 * * ==DevDebug Start==
 	 * * debug 协议在正式版本删除
-	 * * req: {@link IReqSimV2ActivityDebug}, res: {@link IResCommon}, msgId: {@link EMessageID.simV2ActivityDebug}
+	 * * req: {@link IReqSimV2ActivityDebug}, res: {@link IResCommon}, method: {@link IReqMethod.simV2ActivityDebug}
 	 */
 	simV2ActivityDebug = "simV2ActivityDebug",
-	/** req: {@link IReqSimV2ActivityFetchDebug}, res: {@link IResSimV2ActivityFetchDebug}, msgId: {@link EMessageID.simV2ActivityFetchDebug} */
+	/** req: {@link IReqSimV2ActivityFetchDebug}, res: {@link IResSimV2ActivityFetchDebug}, method: {@link IReqMethod.simV2ActivityFetchDebug} */
 	simV2ActivityFetchDebug = "simV2ActivityFetchDebug",
 	/**
 	 * * 进度奖励活动
-	 * * req: {@link IReqProgressRewardActivityReceive}, res: {@link IResProgressRewardActivityReceive}, msgId: {@link EMessageID.progressRewardActivityReceive}
+	 * * req: {@link IReqProgressRewardActivityReceive}, res: {@link IResProgressRewardActivityReceive}, method: {@link IReqMethod.progressRewardActivityReceive}
 	 */
 	progressRewardActivityReceive = "progressRewardActivityReceive",
-	/** req: {@link IReqFetchProgressRewardActivityInfo}, res: {@link IResFetchProgressRewardActivityInfo}, msgId: {@link EMessageID.fetchProgressRewardActivityInfo} */
+	/** req: {@link IReqFetchProgressRewardActivityInfo}, res: {@link IResFetchProgressRewardActivityInfo}, method: {@link IReqMethod.fetchProgressRewardActivityInfo} */
 	fetchProgressRewardActivityInfo = "fetchProgressRewardActivityInfo",
 	/**
 	 * * 万事屋活动
-	 * * req: {@link IReqQuestCrewActivityStartQuest}, res: {@link IResQuestCrewActivityStartQuest}, msgId: {@link EMessageID.questCrewActivityStartQuest}
+	 * * req: {@link IReqQuestCrewActivityStartQuest}, res: {@link IResQuestCrewActivityStartQuest}, method: {@link IReqMethod.questCrewActivityStartQuest}
 	 */
 	questCrewActivityStartQuest = "questCrewActivityStartQuest",
-	/** req: {@link IReqQuestCrewActivityHire}, res: {@link IResQuestCrewActivityHire}, msgId: {@link EMessageID.questCrewActivityHire} */
+	/** req: {@link IReqQuestCrewActivityHire}, res: {@link IResQuestCrewActivityHire}, method: {@link IReqMethod.questCrewActivityHire} */
 	questCrewActivityHire = "questCrewActivityHire",
-	/** req: {@link IReqQuestCrewActivityFeed}, res: {@link IResQuestCrewActivityFeed}, msgId: {@link EMessageID.questCrewActivityFeed} */
+	/** req: {@link IReqQuestCrewActivityFeed}, res: {@link IResQuestCrewActivityFeed}, method: {@link IReqMethod.questCrewActivityFeed} */
 	questCrewActivityFeed = "questCrewActivityFeed",
-	/** req: {@link IReqQuestCrewActivityRefreshMarket}, res: {@link IResQuestCrewActivityRefreshMarket}, msgId: {@link EMessageID.questCrewActivityRefreshMarket} */
+	/** req: {@link IReqQuestCrewActivityRefreshMarket}, res: {@link IResQuestCrewActivityRefreshMarket}, method: {@link IReqMethod.questCrewActivityRefreshMarket} */
 	questCrewActivityRefreshMarket = "questCrewActivityRefreshMarket",
 	/**
 	 * * 雪球活动
-	 * * req: {@link IReqSnowballActivityStartBattle}, res: {@link IResSnowballActivityStartBattle}, msgId: {@link EMessageID.snowballActivityStartBattle}
+	 * * req: {@link IReqSnowballActivityStartBattle}, res: {@link IResSnowballActivityStartBattle}, method: {@link IReqMethod.snowballActivityStartBattle}
 	 */
 	snowballActivityStartBattle = "snowballActivityStartBattle",
-	/** req: {@link IReqSnowballActivityFinishBattle}, res: {@link IResSnowballActivityFinishBattle}, msgId: {@link EMessageID.snowballActivityFinishBattle} */
+	/** req: {@link IReqSnowballActivityFinishBattle}, res: {@link IResSnowballActivityFinishBattle}, method: {@link IReqMethod.snowballActivityFinishBattle} */
 	snowballActivityFinishBattle = "snowballActivityFinishBattle",
-	/** req: {@link IReqSnowballActivityUpgrade}, res: {@link IResSnowballActivityUpgrade}, msgId: {@link EMessageID.snowballActivityUpgrade} */
+	/** req: {@link IReqSnowballActivityUpgrade}, res: {@link IResSnowballActivityUpgrade}, method: {@link IReqMethod.snowballActivityUpgrade} */
 	snowballActivityUpgrade = "snowballActivityUpgrade",
-	/** req: {@link IReqSnowballActivityReceiveReward}, res: {@link IResSnowballActivityReceiveReward}, msgId: {@link EMessageID.snowballActivityReceiveReward} */
+	/** req: {@link IReqSnowballActivityReceiveReward}, res: {@link IResSnowballActivityReceiveReward}, method: {@link IReqMethod.snowballActivityReceiveReward} */
 	snowballActivityReceiveReward = "snowballActivityReceiveReward",
 	/**
 	 * * 验证游戏口令
-	 * * req: {@link IReqAuthGame}, res: {@link IResAuthGame}, msgId: {@link EMessageID.authGame}
+	 * * req: {@link IReqAuthGame}, res: {@link IResAuthGame}, method: {@link IReqMethod.authGame}
 	 */
 	authGame = "authGame",
 	/**
 	 * * 客户端资源加载完毕，可以进入游戏
-	 * * req: {@link IReqCommon}, res: {@link IResEnterGame}, msgId: {@link EMessageID.enterGame}
+	 * * req: {@link IReqCommon}, res: {@link IResEnterGame}, method: {@link IReqMethod.enterGame}
 	 */
 	enterGame = "enterGame",
 	/**
 	 * * 同步游戏
-	 * * req: {@link IReqSyncGame}, res: {@link IResSyncGame}, msgId: {@link EMessageID.syncGame}
+	 * * req: {@link IReqSyncGame}, res: {@link IResSyncGame}, method: {@link IReqMethod.syncGame}
 	 */
 	syncGame = "syncGame",
 	/**
 	 * * 完成同步游戏
-	 * * req: {@link IReqCommon}, res: {@link IResCommon}, msgId: {@link EMessageID.finishSyncGame}
+	 * * req: {@link IReqCommon}, res: {@link IResCommon}, method: {@link IReqMethod.finishSyncGame}
 	 */
 	finishSyncGame = "finishSyncGame",
 	/**
 	 * * 中断游戏（仅1个人模式有效）
-	 * * req: {@link IReqCommon}, res: {@link IResCommon}, msgId: {@link EMessageID.terminateGame}
+	 * * req: {@link IReqCommon}, res: {@link IResCommon}, method: {@link IReqMethod.terminateGame}
 	 */
 	terminateGame = "terminateGame",
 	/**
 	 * * 输入基本操作
-	 * * req: {@link IReqSelfOperation}, res: {@link IResCommon}, msgId: {@link EMessageID.inputOperation}
+	 * * req: {@link IReqSelfOperation}, res: {@link IResCommon}, method: {@link IReqMethod.inputOperation}
 	 */
 	inputOperation = "inputOperation",
 	/**
 	 * * 输入吃碰胡
-	 * * req: {@link IReqChiPengGang}, res: {@link IResCommon}, msgId: {@link EMessageID.inputChiPengGang}
+	 * * req: {@link IReqChiPengGang}, res: {@link IResCommon}, method: {@link IReqMethod.inputChiPengGang}
 	 */
 	inputChiPengGang = "inputChiPengGang",
 	/**
 	 * * 确认新的回合
-	 * * req: {@link IReqCommon}, res: {@link IResCommon}, msgId: {@link EMessageID.confirmNewRound}
+	 * * req: {@link IReqCommon}, res: {@link IResCommon}, method: {@link IReqMethod.confirmNewRound}
 	 */
 	confirmNewRound = "confirmNewRound",
 	/**
 	 * * 玩家游戏内广播
-	 * * req: {@link IReqBroadcastInGame}, res: {@link IResCommon}, msgId: {@link EMessageID.broadcastInGame}
+	 * * req: {@link IReqBroadcastInGame}, res: {@link IResCommon}, method: {@link IReqMethod.broadcastInGame}
 	 */
 	broadcastInGame = "broadcastInGame",
 	/**
 	 * * 玩家游戏内Gm指令
 	 * * deprecated
-	 * * req: {@link IReqGMCommandInGaming}, res: {@link IResCommon}, msgId: {@link EMessageID.inputGameGMCommand}
+	 * * req: {@link IReqGMCommandInGaming}, res: {@link IResCommon}, method: {@link IReqMethod.inputGameGMCommand}
 	 */
 	inputGameGMCommand = "inputGameGMCommand",
 	/**
 	 * * 获取对局玩家状态
-	 * * req: {@link IReqCommon}, res: {@link IResGamePlayerState}, msgId: {@link EMessageID.fetchGamePlayerState}
+	 * * req: {@link IReqCommon}, res: {@link IResGamePlayerState}, method: {@link IReqMethod.fetchGamePlayerState}
 	 */
 	fetchGamePlayerState = "fetchGamePlayerState",
 	/**
 	 * * 客户端定时刷新网络延迟
-	 * * req: {@link IReqCommon}, res: {@link IResCommon}, msgId: {@link EMessageID.checkNetworkDelay}
+	 * * req: {@link IReqCommon}, res: {@link IResCommon}, method: {@link IReqMethod.checkNetworkDelay}
 	 */
 	checkNetworkDelay = "checkNetworkDelay",
 	/**
 	 * * 清除玩家自身的离开状态
-	 * * req: {@link IReqCommon}, res: {@link IResCommon}, msgId: {@link EMessageID.clearLeaving}
+	 * * req: {@link IReqCommon}, res: {@link IResCommon}, method: {@link IReqMethod.clearLeaving}
 	 */
 	clearLeaving = "clearLeaving",
 	/**
 	 * * 开始投票退出游戏
-	 * * req: {@link IReqVoteGameEnd}, res: {@link IResGameEndVote}, msgId: {@link EMessageID.voteGameEnd}
+	 * * req: {@link IReqVoteGameEnd}, res: {@link IResGameEndVote}, method: {@link IReqMethod.voteGameEnd}
 	 */
 	voteGameEnd = "voteGameEnd",
 	/**
 	 * * 实时观战验证
-	 * * req: {@link IReqAuthObserve}, res: {@link IResCommon}, msgId: {@link EMessageID.authObserve}
+	 * * req: {@link IReqAuthObserve}, res: {@link IResCommon}, method: {@link IReqMethod.authObserve}
 	 */
 	authObserve = "authObserve",
 	/**
 	 * * 开始实时观战
-	 * * req: {@link IReqCommon}, res: {@link IResStartObserve}, msgId: {@link EMessageID.startObserve}
+	 * * req: {@link IReqCommon}, res: {@link IResStartObserve}, method: {@link IReqMethod.startObserve}
 	 */
 	startObserve = "startObserve",
 	/**
 	 * * 停止实时观战
-	 * * req: {@link IReqCommon}, res: {@link IResCommon}, msgId: {@link EMessageID.stopObserve}
+	 * * req: {@link IReqCommon}, res: {@link IResCommon}, method: {@link IReqMethod.stopObserve}
 	 */
 	stopObserve = "stopObserve",
 	/**
 	 * * 主备线路功能
-	 * * req: {@link IReqRequestConnection}, res: {@link IResRequestConnection}, msgId: {@link EMessageID.requestConnection}
+	 * * req: {@link IReqRequestConnection}, res: {@link IResRequestConnection}, method: {@link IReqMethod.requestConnection}
 	 */
 	requestConnection = "requestConnection",
-	/** req: {@link IReqRequestRouteChange}, res: {@link IResRequestRouteChange}, msgId: {@link EMessageID.requestRouteChange} */
+	/** req: {@link IReqRequestRouteChange}, res: {@link IResRequestRouteChange}, method: {@link IReqMethod.requestRouteChange} */
 	requestRouteChange = "requestRouteChange",
-	/** req: {@link IReqHeartbeat}, res: {@link IResHeartbeat}, msgId: {@link EMessageID.heartbeat} */
+	/** req: {@link IReqHeartbeat}, res: {@link IResHeartbeat}, method: {@link IReqMethod.heartbeat} */
 	heartbeat = "heartbeat",
 }
 

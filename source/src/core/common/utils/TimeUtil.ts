@@ -1,15 +1,15 @@
 import { ObserverAll } from "../../mvc/provider/ObserverAll";
 
+const MinSec = 60;
+const HourSec = MinSec * 60;
+const DaySec = HourSec * 24;
+const WeekSec = DaySec * 7;
+const MonthSec = WeekSec * 30;
+const YearSec = MonthSec * 12;
+
 export class TimeUtil extends ObserverAll implements ITimeUtil {
 	private _date = new Date();
 	private _serverDelta: number = 0;
-
-	readonly MinSec = 60;
-	readonly HourSec = this.MinSec * 60;
-	readonly DaySec = this.HourSec * 24;
-	readonly WeekSec = this.DaySec * 7;
-	readonly MonthSec = this.WeekSec * 30;
-	readonly YearSec = this.MonthSec * 12;
 
 	get milliSecond() {
 		return Date.now() + this._serverDelta;
@@ -19,31 +19,35 @@ export class TimeUtil extends ObserverAll implements ITimeUtil {
 		return Math.floor(this.milliSecond / 1000);
 	}
 
-	milliSecond2YMDHMS(milliSecond: number) {
-		this._date.setTime(milliSecond);
+	timeFormat1(timestamp: number) {
+		this._date.setTime(timestamp);
 		return this._date.toLocaleString();
 	}
 
-	timeFormat(second: number, keepHour: boolean = true) {
-		const hours = Math.floor(second / 3600);
-		const mins = Math.floor((second - hours * 3600) / 60);
-		const secs = second - hours * 3600 - mins * 60;
-		const hoursStr = hours > 9 ? hours : "0" + hours;
-		const minsStr = mins > 9 ? mins : "0" + mins;
-		const secsStr = secs > 9 ? secs : "0" + secs;
-		if (keepHour || hours > 0)
-			return hoursStr + ":" + minsStr + ":" + secsStr;
-		else if (mins > 0)
-			return minsStr + ":" + secsStr;
-		else
-			return "00:" + secsStr;
+	timeFormat2(second: number) {
+		const hours = Math.floor(second / HourSec);
+		const mins = Math.floor((second - hours * HourSec) / MinSec);
+		const secs = second - hours * HourSec - mins * MinSec;
+		return (hours ? `${ String(hours).padStart(2, "0") }:` : "")
+			+ ((hours || mins) ? `${ String(mins).padStart(2, "0") }:` : "")
+			+ `${ String(secs).padStart(2, "0") }`;
 	}
 
-	timeFormatChinese(second: number) {
-		const hours = Math.floor(second / 3600);
-		const mins = Math.floor((second - hours * 3600) / 60);
-		const secs = second - hours * 3600 - mins * 60;
-		return (hours ? `${ hours }小时` : "") + ((hours || mins) ? `${ mins }分钟` : "") + `${ secs }秒`;
+	timeFormat3(second: number) {
+		const hours = Math.floor(second / HourSec);
+		const mins = Math.floor((second - hours * HourSec) / MinSec);
+		const secs = second - hours * HourSec - mins * MinSec;
+		return (hours ? `${ hours }小时` : "") + ((hours || mins) ? `${ mins }分` : "") + `${ secs }秒`;
+	}
+
+	timeFormat4(second: number) {
+		const day = Math.floor(second / DaySec);
+		if (day > 0) return `${ day }天`;
+		const hours = Math.floor(second / HourSec);
+		if (hours > 0) return `${ hours }小时`;
+		const mins = Math.floor(second / MinSec);
+		if (mins > 0) return `${ mins }分`;
+		return `${ second }秒`;
 	}
 
 	wait(milSec: number) {

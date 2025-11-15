@@ -1,10 +1,16 @@
 {
   "objectStatus": {
-    "n1_dwe0": {
-      "hidden": true
+    "n21_hk7r": {
+      "collapsed": true
     }
   },
+  "adaptiveTest": true,
   "designImages": [
-    "ui://ca43vz0ejdu67plnlm"
-  ]
+    "ui://ca43vz0ejdu67plnlm",
+    "ui://ca43vz0ejdu67plnd8",
+    "ui://ca43vz0ejdu67plndp",
+    "ui://ca43vz0ejdu67plndq",
+    "ui://ca43vz0ejdu67plncn"
+  ],
+  "fitScreen": "FitSize"
 }

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="352,132" extention="Button" designImage="ui://ca43vz0ejdu67plnd8" designImageOffsetX="-254" designImageOffsetY="-190" designImageAlpha="0">
+  <controller name="button" exported="true" pages="0,up,1,down" selected="0"/>
+  <controller name="open" exported="true" pages="0,,1," selected="0"/>
+  <displayList>
+    <loader id="n3_pt3a" name="n3" xy="0,0" size="352,132" url="ui://vith2b66pt3aobay" vAlign="middle">
+      <gearIcon controller="button" pages="1" values="ui://vith2b66pt3aobaz" default="ui://vith2b66pt3aobay"/>
+    </loader>
+    <loader id="n4_pt3a" name="n4" xy="31,36" size="50,65" url="ui://vith2b66pt3aobaw">
+      <gearIcon controller="open" pages="0" values="ui://vith2b66pt3aobaw" default="ui://vith2b66pt3aobax"/>
+    </loader>
+    <image id="n5_pt3a" name="redDot" src="pt3aobaw" fileName="Texture/img_547.png" pkg="vx9zwser" xy="305,0"/>
+    <text id="n2_pt3a" name="title" xy="98,22" pivot="0.5,0.5" size="208,86" fontSize="32" color="#d4cfcf" align="center" vAlign="middle" autoSize="shrink" text="邮件标题一二三四五六七八"/>
+  </displayList>
+  <Button mode="Check"/>
+</component>

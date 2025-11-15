@@ -2,14 +2,33 @@ import UIEmail from "../../../ui/PkgMain/UIEmail";
 
 export const enum EUIEmailMsg {
 	OnBtnBackClick = "UIEmail_OnBtnBackClick",
+	OnBtnGetRewardClick = "UIEmail_OnBtnGetRewardClick",
+	OnBtnDeleteClick = "UIEmail_OnBtnDeleteClick",
 }
 
 export class UIEmailView extends ExtensionClass<IView, UIEmail>(UIEmail) implements IView {
 	override readonly viewCategory = EViewCategory.Popup;
 
 	override onCreate() {
-		const { btn_back } = this;
+		const { btn_back, btn_getReward, btn_delete, list_tab } = this;
 		btn_back.onClick(this, this.sendEvent, [EUIEmailMsg.OnBtnBackClick]);
+		btn_getReward.onClick(this, this.sendEvent, [EUIEmailMsg.OnBtnGetRewardClick]);
+		btn_delete.onClick(this, this.sendEvent, [EUIEmailMsg.OnBtnDeleteClick]);
+	}
+
+	refreshTab(tabCount: number, index: number) {
+		const { list_tab, ctrl_empty } = this;
+		ctrl_empty.selectedIndex = tabCount > 0 ? 0 : 1;
+		list_tab.numItems = tabCount;
+		list_tab.selectedIndex = index;
+	}
+
+	refreshContent(data: ProtoObject<IMail>) {
+		const { ctrl_body, txt_title, label_content, list_reward, txt_expire } = this;
+		ctrl_body.selectedIndex = data.attachments.length > 0 ? (data.take_attachment ? 2 : 1) : 0;
+		txt_title.text = $gameUtil.getI18nContext(data.title_i18n, data.title);
+		label_content.text = $gameUtil.getI18nContext(data.content_i18n, data.content);
+		list_reward.numItems = data.attachments.length;
 	}
 
 }

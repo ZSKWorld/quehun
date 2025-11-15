@@ -111,6 +111,13 @@
     <image id="dwe0obas" name="img_1832.png" path="/Texture/"/>
     <image id="dwe0obat" name="img_2026.png" path="/Texture/"/>
     <image id="dwe0obau" name="img_2027.png" path="/Texture/"/>
+    <image id="pt3aobav" name="img_439.png" path="/Texture/" scale="9grid" scale9grid="0,52,6,13"/>
+    <image id="pt3aobaw" name="img_1266.png" path="/Texture/"/>
+    <image id="pt3aobax" name="img_1267.png" path="/Texture/"/>
+    <image id="pt3aobay" name="img_3482.png" path="/Texture/"/>
+    <image id="pt3aobaz" name="img_3509.png" path="/Texture/"/>
+    <component id="pt3aobb0" name="BtnEmailTab.xml" path="/Component/UIEmail/"/>
+    <component id="hk7robb1" name="LabeEmaillContent.xml" path="/Component/UIEmail/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

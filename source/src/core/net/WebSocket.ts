@@ -3,6 +3,7 @@ import { EHeaderType, EServiceType } from "./NetDefine";
 interface IWaitRpcInfo {
 	service: EServiceType;
 	method: string;
+	reqData: any;
 	callback: (res: IResponse) => void;
 }
 
@@ -107,7 +108,7 @@ export class WebSocket extends Laya.EventDispatcher {
 
 		const promise = new Promise<PartialAll<IResponse>>(resolve => {
 			if (!this.connected) {
-				this.eventMessage(ESocketEvent.Response, methodName, { error: { code: -1 } }, resolve);
+				this.eventMessage(ESocketEvent.Response, methodName, { error: { code: -1 } }, data, resolve);
 				return;
 			}
 			this._rpcIndex = (this._rpcIndex + 1) % 60007;
@@ -115,7 +116,12 @@ export class WebSocket extends Laya.EventDispatcher {
 			const method = $pbMgr.methodMap[methodName];
 			const header = new Uint8Array([EHeaderType.Request, rpcID & 0xff, rpcID >> 8]);
 			const packet = $pbMgr.encodeRpc(method.fullName, method.resolvedRequestType.encode(data).finish());
-			this._waitList[rpcID] = { service: method.parent.fullName as EServiceType, method: methodName, callback: resolve };
+			this._waitList[rpcID] = {
+				service: method.parent.fullName as EServiceType,
+				method: methodName,
+				reqData: data,
+				callback: resolve
+			};
 			const byte = new Laya.Byte();
 			byte.writeArrayBuffer(header.buffer);
 			byte.writeArrayBuffer(packet.buffer);
@@ -145,7 +151,7 @@ export class WebSocket extends Laya.EventDispatcher {
 				delete this._rpcRepeatMap[request.method];
 				const wrapper = $pbMgr.decodeRpc(data.slice(3));
 				const res = $pbMgr.methodMap[request.method].resolvedResponseType.decode(wrapper.data);
-				this.eventMessage(ESocketEvent.Response, request.method, res, request.callback);
+				this.eventMessage(ESocketEvent.Response, request.method, res, request.reqData, request.callback);
 				break;
 			case EHeaderType.Notify:
 				const msg = $pbMgr.decodeMessage(data.slice(1));
@@ -159,7 +165,7 @@ export class WebSocket extends Laya.EventDispatcher {
 		if (this.state == ESocketState.Disconnect) return;
 		for (const key in this._waitList) {
 			const request = this._waitList[key];
-			this.eventMessage(ESocketEvent.Response, request.method, { error: { code: -1 } }, request.callback);
+			this.eventMessage(ESocketEvent.Response, request.method, { error: { code: -1 } }, request.reqData, request.callback);
 		}
 		this._waitList = {};
 		this._rpcRepeatMap = {};
@@ -176,8 +182,8 @@ export class WebSocket extends Laya.EventDispatcher {
 		this._socket.connectByUrl(this.url);
 	}
 
-	private eventMessage(type: ESocketEvent.Response | ESocketEvent.Notify, name: string, data: PartialAll<IResponse>, callback?: Function) {
-		this.event(type, [name, data]);
-		callback && callback(data);
+	private eventMessage(type: ESocketEvent.Response | ESocketEvent.Notify, name: string, res: PartialAll<IResponse>, req?: any, callback?: Function) {
+		this.event(type, [name, res, req]);
+		callback && callback(res);
 	}
 }

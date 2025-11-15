@@ -25,4 +25,16 @@ export class GameUtil implements IGameUtil {
 	HmacSHA256(msg: string) {
 		return String(CryptoJS.HmacSHA256(msg, "lailai"));
 	}
+
+	getI18nContext(i18n: ProtoObject<II18nContext>[], defValue?: string) {
+		if (!i18n) return defValue ?? "";
+		const lang = $gameMgr.clientLanguage;
+		const len = i18n.length;
+		for (let i = 0; i < len; i++) {
+			const e = i18n[i];
+			if (e.lang == lang)
+				return e.context;
+		}
+		return defValue ?? "";
+	}
 }

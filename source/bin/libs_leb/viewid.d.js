@@ -4,12 +4,14 @@ EViewID = {
 	BtnCheckRichTxtRightView: "BtnCheckRichTxtRightView",
 	BtnCheckTxtRightView: "BtnCheckTxtRightView",
 	BtnCheckView: "BtnCheckView",
+	BtnEmailTabView: "BtnEmailTabView",
 	BtnXunMiView: "BtnXunMiView",
 
 	/**Renders */
 
 	/**Coms */
 	ComBackView: "ComBackView",
+	ComItem1View: "ComItem1View",
 	ComMatchContentView: "ComMatchContentView",
 	ComMatchItemView: "ComMatchItemView",
 	ComMatchModeView: "ComMatchModeView",

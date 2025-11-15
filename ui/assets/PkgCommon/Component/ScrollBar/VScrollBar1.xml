@@ -7,7 +7,7 @@
     <image id="n0_j0dd" name="n0" src="j0ddob6z" fileName="Texture/img_235.png" xy="0,0" size="10,100">
       <relation target="" sidePair="width-width,height-height"/>
     </image>
-    <image id="n1_j0dd" name="grip" src="j0ddob79" fileName="Texture/img_479.png" xy="-5,-5"/>
+    <loader id="n1_j0dd" name="grip" xy="-5,-5" size="20,40" url="ui://vx9zwserj0ddob79" fill="scaleFree"/>
   </displayList>
   <ScrollBar/>
 </component>

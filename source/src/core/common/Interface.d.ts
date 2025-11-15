@@ -153,14 +153,23 @@ declare interface IGameUtil {
 	/** 随机颜色字符串 */
 	randomColor(): string;
 	HmacSHA256(msg: string): string;
+	getI18nContext(i18n: ProtoObject<II18nContext>[], defValue?: string): string;
 }
 
 declare interface ITimeUtil {
+	/** 当前时间，毫秒 */
 	get milliSecond(): number;
+	/** 当前时间，秒 */
 	get second(): number;
-	milliSecond2YMDHMS(milliSecond: number): string;
-	timeFormat(second: number, keepHour: boolean = true): string;
-	timeFormatChinese(second: number): string;
+	/** 将时间戳转化成 `1970/1/1 08:00:15` 的格式 */
+	timeFormat1(timestamp: number): string;
+	/** 将秒数转换成 `01:23:45` 的格式 */
+	timeFormat2(second: number): string;
+	/** 将秒数转换成 `1小时23分45秒` 的格式 */
+	timeFormat3(second: number): string;
+	/** 将秒数转换成 `x天` 或 `x小时` 或 `x分` 或 `x秒` 的格式 */
+	timeFormat4(second: number): string;
+	/** 等待 `milSec` 毫秒 */
 	wait(milSec: number): Promise<void>;
 }
 

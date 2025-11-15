@@ -1,5 +1,7 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import ComItem1 from "./ComItem1";
+import { ComItem1View } from "../../view/PkgCommon/view/coms/ComItem1View";
 import UILoading from "./UILoading";
 import { UILoadingView } from "../../view/PkgCommon/view/UILoadingView";
 import PbLoading1 from "./PbLoading1";
@@ -21,6 +23,7 @@ import PbLoading2 from "./PbLoading2";
 
 export default class PkgCommonBinder {
 	public static bindAll(): void {
+		fgui.UIObjectFactory.setExtension(ComItem1.url, ComItem1View);
 		fgui.UIObjectFactory.setExtension(UILoading.url, UILoadingView);
 		fgui.UIObjectFactory.setExtension(PbLoading1.url, PbLoading1);
 		fgui.UIObjectFactory.setExtension(UIConfirmBig.url, UIConfirmBigView);

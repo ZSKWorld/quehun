@@ -20,6 +20,8 @@ import UICamera from "./UICamera";
 import { UICameraView } from "../../view/PkgMain/view/UICameraView";
 import UIAchievement from "./UIAchievement";
 import { UIAchievementView } from "../../view/PkgMain/view/UIAchievementView";
+import BtnEmailTab from "./BtnEmailTab";
+import { BtnEmailTabView } from "../../view/PkgMain/view/btns/BtnEmailTabView";
 import UIFriend from "./UIFriend";
 import { UIFriendView } from "../../view/PkgMain/view/UIFriendView";
 import UIObserver from "./UIObserver";
@@ -53,6 +55,7 @@ export default class PkgMainBinder {
 		fgui.UIObjectFactory.setExtension(UIHelp.url, UIHelpView);
 		fgui.UIObjectFactory.setExtension(UICamera.url, UICameraView);
 		fgui.UIObjectFactory.setExtension(UIAchievement.url, UIAchievementView);
+		fgui.UIObjectFactory.setExtension(BtnEmailTab.url, BtnEmailTabView);
 		fgui.UIObjectFactory.setExtension(UIFriend.url, UIFriendView);
 		fgui.UIObjectFactory.setExtension(UIObserver.url, UIObserverView);
 		fgui.UIObjectFactory.setExtension(UIPaipu.url, UIPaipuView);

@@ -1,5 +1,13 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import ComHead1 from "./ComHead1";
+import { ComHead1View } from "../../view/PkgCommon/view/coms/ComHead1View";
+import ComTitle1 from "./ComTitle1";
+import { ComTitle1View } from "../../view/PkgCommon/view/coms/ComTitle1View";
+import ComName1 from "./ComName1";
+import { ComName1View } from "../../view/PkgCommon/view/coms/ComName1View";
+import ComLevel1 from "./ComLevel1";
+import { ComLevel1View } from "../../view/PkgCommon/view/coms/ComLevel1View";
 import ComItem1 from "./ComItem1";
 import { ComItem1View } from "../../view/PkgCommon/view/coms/ComItem1View";
 import UILoading from "./UILoading";
@@ -23,6 +31,10 @@ import PbLoading2 from "./PbLoading2";
 
 export default class PkgCommonBinder {
 	public static bindAll(): void {
+		fgui.UIObjectFactory.setExtension(ComHead1.url, ComHead1View);
+		fgui.UIObjectFactory.setExtension(ComTitle1.url, ComTitle1View);
+		fgui.UIObjectFactory.setExtension(ComName1.url, ComName1View);
+		fgui.UIObjectFactory.setExtension(ComLevel1.url, ComLevel1View);
 		fgui.UIObjectFactory.setExtension(ComItem1.url, ComItem1View);
 		fgui.UIObjectFactory.setExtension(UILoading.url, UILoadingView);
 		fgui.UIObjectFactory.setExtension(PbLoading1.url, PbLoading1);

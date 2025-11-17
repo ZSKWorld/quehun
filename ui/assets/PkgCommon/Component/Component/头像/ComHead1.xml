@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="125,125">
+  <displayList>
+    <image id="n2_hdeo" name="n2" src="hdeoobbm" fileName="Texture/img_3821.png" pkg="vith2b66" xy="0,0" size="125,125"/>
+    <loader id="n1_hdeo" name="head" xy="20,20" size="85,85" url="ui://ca43vz0ehk7r7plohv" fill="scaleFree"/>
+    <loader id="n3_hdeo" name="frame" xy="0,0" size="125,125" url="ui://ca43vz0ehk7r7plohq" fill="scaleFree"/>
+  </displayList>
+  <customProperty target="head" propertyId="1"/>
+  <customProperty target="frame" propertyId="1"/>
+</component>

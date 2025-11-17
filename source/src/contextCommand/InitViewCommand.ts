@@ -10,13 +10,18 @@ import { BtnEmailTabView } from "../core/ui/view/PkgMain/view/btns/BtnEmailTabVi
 import { BtnXunMiView } from "../core/ui/view/PkgMain/view/btns/BtnXunMiView";
 import { ComBackView } from "../core/ui/view/PkgCommon/view/coms/ComBackView";
 import { ComBackMediator } from "../core/ui/view/PkgCommon/mediator/coms/ComBackMediator";
+import { ComHead1View } from "../core/ui/view/PkgCommon/view/coms/ComHead1View";
 import { ComItem1View } from "../core/ui/view/PkgCommon/view/coms/ComItem1View";
+import { ComLevel1View } from "../core/ui/view/PkgCommon/view/coms/ComLevel1View";
+import { ComName1View } from "../core/ui/view/PkgCommon/view/coms/ComName1View";
+import { ComTitle1View } from "../core/ui/view/PkgCommon/view/coms/ComTitle1View";
 import { ComMatchContentView } from "../core/ui/view/PkgMain/view/coms/ComMatchContentView";
 import { ComMatchContentMediator } from "../core/ui/view/PkgMain/mediator/coms/ComMatchContentMediator";
 import { ComMatchItemView } from "../core/ui/view/PkgMain/view/coms/ComMatchItemView";
 import { ComMatchItemMediator } from "../core/ui/view/PkgMain/mediator/coms/ComMatchItemMediator";
 import { ComMatchModeView } from "../core/ui/view/PkgMain/view/coms/ComMatchModeView";
 import { ComMatchModeMediator } from "../core/ui/view/PkgMain/mediator/coms/ComMatchModeMediator";
+import { ComRankItemView } from "../core/ui/view/PkgMain/view/coms/ComRankItemView";
 import { UIConfirmBigView } from "../core/ui/view/PkgCommon/view/UIConfirmBigView";
 import { UIConfirmBigMediator } from "../core/ui/view/PkgCommon/mediator/UIConfirmBigMediator";
 import { UIConfirmMiddleView } from "../core/ui/view/PkgCommon/view/UIConfirmMiddleView";
@@ -86,10 +91,15 @@ export class InitViewCommand extends Command {
 
 		//Coms
 		register(EViewID.ComBackView, EViewType.Component, ComBackView, ComBackMediator);
+		register(EViewID.ComHead1View, EViewType.Component, ComHead1View);
 		register(EViewID.ComItem1View, EViewType.Component, ComItem1View);
+		register(EViewID.ComLevel1View, EViewType.Component, ComLevel1View);
+		register(EViewID.ComName1View, EViewType.Component, ComName1View);
+		register(EViewID.ComTitle1View, EViewType.Component, ComTitle1View);
 		register(EViewID.ComMatchContentView, EViewType.Component, ComMatchContentView, ComMatchContentMediator);
 		register(EViewID.ComMatchItemView, EViewType.Component, ComMatchItemView, ComMatchItemMediator);
 		register(EViewID.ComMatchModeView, EViewType.Component, ComMatchModeView, ComMatchModeMediator);
+		register(EViewID.ComRankItemView, EViewType.Component, ComRankItemView);
 
 		//UIs
 		register(EViewID.UIConfirmBigView, EViewType.UI, UIConfirmBigView, UIConfirmBigMediator);

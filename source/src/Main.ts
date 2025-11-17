@@ -11,7 +11,7 @@ class Main {
 		this.init();
 	}
 	private async init() {
-		Laya.Config.FPS = 100;
+		// Laya.Config.FPS = 100;
 		await Laya.init(1920, 1080);
 		document.body.style.backgroundColor = "#000000";
 		document.body.style.backgroundImage = `url(${ ResPath.ETexturePath.JPG_Background })`;

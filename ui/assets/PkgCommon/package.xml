@@ -91,10 +91,41 @@
     <image id="dwe0ob8k" name="img_2191.png" path="/Texture/" exported="true"/>
     <image id="pt3aobaw" name="img_547.png" path="/Texture/" exported="true"/>
     <image id="mde1b7e" name="img_544.png" path="/Texture/" exported="true" scale="9grid" scale9grid="12,12,6,6"/>
-    <component id="hk7robax" name="ComItem1.xml" path="/Component/Component/" exported="true"/>
+    <component id="hk7robax" name="ComItem1.xml" path="/Component/Component/物品/" exported="true"/>
     <image id="hk7robay" name="img_2297.png" path="/Texture/" exported="true"/>
     <image id="hk7robaz" name="img_3266.png" path="/Texture/" exported="true" scale="9grid" scale9grid="20,20,140,140"/>
     <image id="hk7robb0" name="img_402.png" path="/Texture/" exported="true"/>
+    <image id="mde1b74" name="img_2914.png" path="/Texture/" exported="true"/>
+    <image id="mde1b75" name="img_2915.png" path="/Texture/" exported="true"/>
+    <image id="mde1b81" name="img_1512.png" path="/Texture/" exported="true"/>
+    <image id="mde1b82" name="img_1513.png" path="/Texture/" exported="true"/>
+    <image id="hdeoobb1" name="img_1610.png" path="/Texture/" exported="true"/>
+    <image id="hdeoobb2" name="img_1689.png" path="/Texture/" exported="true"/>
+    <image id="hdeoobb3" name="img_1690.png" path="/Texture/" exported="true"/>
+    <image id="hdeoobb4" name="img_1691.png" path="/Texture/" exported="true"/>
+    <image id="hdeoobb5" name="img_343.png" path="/Texture/" exported="true"/>
+    <image id="hdeoobb6" name="img_3606.png" path="/Texture/" exported="true"/>
+    <image id="hdeoobb7" name="img_866.png" path="/Texture/" exported="true"/>
+    <font id="hdeoobb8" name="FontLevel.fnt" path="/Font/" exported="true"/>
+    <image id="hdeoobb9" name="img_564.png" path="/Texture/" exported="true"/>
+    <image id="hdeoobba" name="img_565.png" path="/Texture/" exported="true"/>
+    <image id="hdeoobbb" name="img_566.png" path="/Texture/" exported="true"/>
+    <image id="hdeoobbc" name="img_567.png" path="/Texture/" exported="true"/>
+    <image id="hdeoobbd" name="img_568.png" path="/Texture/" exported="true"/>
+    <image id="hdeoobbe" name="img_569.png" path="/Texture/" exported="true"/>
+    <image id="hdeoobbf" name="img_570.png" path="/Texture/" exported="true"/>
+    <image id="hdeoobbg" name="img_571.png" path="/Texture/" exported="true"/>
+    <image id="hdeoobbh" name="img_572.png" path="/Texture/" exported="true"/>
+    <image id="hdeoobbi" name="img_573.png" path="/Texture/" exported="true"/>
+    <component id="hdeoobbj" name="VScrollBar2.xml" path="/Component/ScrollBar/" exported="true"/>
+    <image id="hdeoobbk" name="img_677.png" path="/Texture/" exported="true"/>
+    <image id="hdeoobbl" name="img_70.png" path="/Texture/" exported="true" scale="9grid" scale9grid="0,4,6,2"/>
+    <component id="hdeoobbn" name="ComHead1.xml" path="/Component/Component/头像/" exported="true"/>
+    <component id="hdeoobbo" name="ComTitle1.xml" path="/Component/Component/称号/" exported="true"/>
+    <component id="hdeoobbp" name="ComName1.xml" path="/Component/Component/名字/" exported="true"/>
+    <component id="hdeoobbq" name="ComLevel1.xml" path="/Component/Component/段位/" exported="true"/>
+    <image id="hdeoobbr" name="img_784.png" path="/Texture/" exported="true"/>
+    <component id="hdeoobbt" name="BtnNormalNoScale.xml" path="/Component/Button/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

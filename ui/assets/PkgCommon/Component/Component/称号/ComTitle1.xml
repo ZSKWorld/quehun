@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="338,65" designImage="ui://ca43vz0ehdeo7plojg">
+  <displayList>
+    <loader id="n3_hdeo" name="icon" xy="0,0" size="338,65" aspect="true" url="ui://ca43vz0ehk7r7plofw" fill="scaleFree">
+      <relation target="" sidePair="width-width,height-height"/>
+    </loader>
+  </displayList>
+  <customProperty target="icon" propertyId="1"/>
+</component>

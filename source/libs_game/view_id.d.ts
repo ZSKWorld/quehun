@@ -11,10 +11,15 @@ declare enum EViewID {
 
 	/**Coms */
 	ComBackView = "ComBackView",
+	ComHead1View = "ComHead1View",
 	ComItem1View = "ComItem1View",
+	ComLevel1View = "ComLevel1View",
+	ComName1View = "ComName1View",
+	ComTitle1View = "ComTitle1View",
 	ComMatchContentView = "ComMatchContentView",
 	ComMatchItemView = "ComMatchItemView",
 	ComMatchModeView = "ComMatchModeView",
+	ComRankItemView = "ComRankItemView",
 
 	/**UIs */
 	UIConfirmBigView = "UIConfirmBigView",

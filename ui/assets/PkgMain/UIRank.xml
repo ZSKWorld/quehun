@@ -1,8 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" designImage="ui://ca43vz0ejdu67plnfc" designImageAlpha="36">
+<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0ehdeo7plojg" designImageAlpha="0" designImageLayer="1">
   <displayList>
-    <component id="n0_p5uz" name="back" src="p5uzob8h" fileName="Component/Component/ComBack.xml" pkg="vx9zwser" xy="10,22">
-      <property target="title" propertyId="0" value="好友"/>
+    <component id="n5_hdeo" name="n5" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" pkg="vx9zwser" xy="317,67" size="1439,965"/>
+    <list id="n4_hdeo" name="level" xy="343,192" size="1368,626" overflow="scroll" scrollBarFlags="4" margin="0,0,0,-30" scrollBarMargin="15,15,0,0" scrollBarRes="ui://vx9zwserhdeoobbj," defaultItem="ui://vith2b66hdeoobb2" autoItemSize="false" autoClearItems="true">
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+    </list>
+    <component id="n6_hdeo" name="close" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1631,95" size="70,70">
+      <Button icon="ui://vx9zwserj0ddob7b"/>
     </component>
+    <component id="n9_hdeo" name="siMa" src="hdeoobbt" fileName="Component/Button/BtnNormalNoScale.xml" pkg="vx9zwser" xy="130,185" size="235,89">
+      <Button title="四麻" titleColor="#e8af71" titleFontSize="40" icon="ui://vx9zwsermde1b75" selectedIcon="ui://vx9zwsermde1b74"/>
+    </component>
+    <component id="n10_hdeo" name="sanMa" src="hdeoobbt" fileName="Component/Button/BtnNormalNoScale.xml" pkg="vx9zwser" xy="130,299" size="235,89">
+      <Button title="三麻" titleColor="#e8af71" titleFontSize="40" icon="ui://vx9zwsermde1b75" selectedIcon="ui://vx9zwsermde1b74"/>
+    </component>
+    <text id="n11_hdeo" name="title" xy="930,93" pivot="0.5,0.5" size="212,54" fontSize="40" color="#e8af71" letterSpacing="2" singleLine="true" text="四麻排行榜"/>
   </displayList>
 </component>

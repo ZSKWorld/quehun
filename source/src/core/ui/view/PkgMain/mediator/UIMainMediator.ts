@@ -83,7 +83,7 @@ export class UIMainMediator extends MediatorBase<UIMainView, IUIMainData> {
 	}
 
 	private onBtnRankClick() {
-
+		this.openView(EViewID.UIRankView);
 	}
 
 	private onBtnAnnouncementClick() {

@@ -118,6 +118,9 @@
     <image id="pt3aobaz" name="img_3509.png" path="/Texture/"/>
     <component id="pt3aobb0" name="BtnEmailTab.xml" path="/Component/UIEmail/"/>
     <component id="hk7robb1" name="LabeEmaillContent.xml" path="/Component/UIEmail/" exported="true"/>
+    <component id="hdeoobb2" name="ComRankItem.xml" path="/Component/UIRank/"/>
+    <image id="hdeoobbm" name="img_3821.png" path="/Texture/" exported="true"/>
+    <image id="hdeoobb4" name="img_3866.png" path="/Texture/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

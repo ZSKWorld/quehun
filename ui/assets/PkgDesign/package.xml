@@ -1631,6 +1631,7 @@
     <image id="hk7r7plojd" name="sanma_quehao.png" path="/11/extendRes/level/"/>
     <image id="hk7r7ploje" name="sanma_quesheng.png" path="/11/extendRes/level/"/>
     <image id="hk7r7plojf" name="zuocangshayejia_item.jpg" path="/11/extendRes/title/"/>
+    <image id="hdeo7plojg" name="排行榜.png" path="/排队和支付弹窗/"/>
   </resources>
   <publish name=""/>
 </packageDescription>

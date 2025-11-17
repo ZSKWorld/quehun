@@ -29,8 +29,9 @@ export class UIEmailMediator extends MediatorBase<UIEmailView, IUIEmailData> {
 	private setTabIndex(index: number) {
 		const { view } = this;
 		index = index ?? view.list_tab.selectedIndex;
-		view.refreshTab($userData.mail.mails.length, 0);
-		const item = view.list_tab.getChildAt<BtnEmailTabView>(0);
+		view.refreshTab($userData.mail.mails.length, index);
+		const childIndex = view.list_tab.itemIndexToChildIndex(index);
+		const item = view.list_tab.getChildAt<BtnEmailTabView>(childIndex);
 		item && this.onListTabItemClick(item);
 	}
 

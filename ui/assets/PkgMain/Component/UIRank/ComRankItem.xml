@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1400,136" designImage="ui://ca43vz0ehdeo7plojg" designImageAlpha="0">
+  <displayList>
+    <image id="n10_hdeo" name="n10" src="hdeoobb4" fileName="Texture/img_3866.png" xy="0,0" size="1400,136"/>
+    <image id="n0_hdeo" name="n0" src="hdeoobb2" fileName="Texture/img_1689.png" pkg="vx9zwser" xy="43,25" pivot="0.5,0.5" size="91,85"/>
+    <component id="n2_hdeo" name="head" src="hdeoobbn" fileName="Component/Component/头像/ComHead1.xml" pkg="vx9zwser" xy="166,5">
+      <property target="frame" propertyId="1" value="ui://ca43vz0ehk7r7ploie"/>
+    </component>
+    <component id="n6_hdeo" name="name" src="hdeoobbp" fileName="Component/Component/名字/ComName1.xml" pkg="vx9zwser" xy="301,49"/>
+    <component id="n4_hdeo" name="title" src="hdeoobbo" fileName="Component/Component/称号/ComTitle1.xml" pkg="vx9zwser" xy="597,31" size="364,70" aspect="true">
+      <property target="icon" propertyId="1" value="ui://ca43vz0ehk7r7plog9"/>
+    </component>
+    <component id="n7_hdeo" name="level" src="hdeoobbq" fileName="Component/Component/段位/ComLevel1.xml" pkg="vx9zwser" xy="1055,3"/>
+    <image id="n8_hdeo" name="n8" src="hdeoobb5" fileName="Texture/img_343.png" pkg="vx9zwser" xy="1205,48"/>
+    <text id="n9_hdeo" name="score" xy="1241,39" size="49,42" fontSize="30" color="#6ec0bd" singleLine="true" text="5.9"/>
+  </displayList>
+</component>

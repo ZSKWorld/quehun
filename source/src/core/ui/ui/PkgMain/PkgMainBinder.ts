@@ -4,6 +4,8 @@ import UILiaoShe from "./UILiaoShe";
 import { UILiaoSheView } from "../../view/PkgMain/view/UILiaoSheView";
 import ComMatchItem from "./ComMatchItem";
 import { ComMatchItemView } from "../../view/PkgMain/view/coms/ComMatchItemView";
+import ComRankItem from "./ComRankItem";
+import { ComRankItemView } from "../../view/PkgMain/view/coms/ComRankItemView";
 import UIActivity from "./UIActivity";
 import { UIActivityView } from "../../view/PkgMain/view/UIActivityView";
 import UIEmail from "./UIEmail";
@@ -47,6 +49,7 @@ export default class PkgMainBinder {
 	public static bindAll(): void {
 		fgui.UIObjectFactory.setExtension(UILiaoShe.url, UILiaoSheView);
 		fgui.UIObjectFactory.setExtension(ComMatchItem.url, ComMatchItemView);
+		fgui.UIObjectFactory.setExtension(ComRankItem.url, ComRankItemView);
 		fgui.UIObjectFactory.setExtension(UIActivity.url, UIActivityView);
 		fgui.UIObjectFactory.setExtension(UIEmail.url, UIEmailView);
 		fgui.UIObjectFactory.setExtension(UIRank.url, UIRankView);

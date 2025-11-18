@@ -6,7 +6,7 @@ interface IGameConfig {
 	readonly released: boolean;
 }
 
-export class GameInitCommand extends Command {
+export class InitGameCommand extends Command {
 	override execute(notifyName: string, data?: any) {
 		ShaderManager.init();
 		$uiMgr.init();

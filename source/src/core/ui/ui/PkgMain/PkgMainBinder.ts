@@ -2,6 +2,8 @@
 
 import UILiaoShe from "./UILiaoShe";
 import { UILiaoSheView } from "../../view/PkgMain/view/UILiaoSheView";
+import ComRankPullUpRelease from "./ComRankPullUpRelease";
+import { ComRankPullUpReleaseView } from "../../view/PkgMain/view/coms/ComRankPullUpReleaseView";
 import ComMatchItem from "./ComMatchItem";
 import { ComMatchItemView } from "../../view/PkgMain/view/coms/ComMatchItemView";
 import ComRankItem from "./ComRankItem";
@@ -48,6 +50,7 @@ import { ComMatchContentView } from "../../view/PkgMain/view/coms/ComMatchConten
 export default class PkgMainBinder {
 	public static bindAll(): void {
 		fgui.UIObjectFactory.setExtension(UILiaoShe.url, UILiaoSheView);
+		fgui.UIObjectFactory.setExtension(ComRankPullUpRelease.url, ComRankPullUpReleaseView);
 		fgui.UIObjectFactory.setExtension(ComMatchItem.url, ComMatchItemView);
 		fgui.UIObjectFactory.setExtension(ComRankItem.url, ComRankItemView);
 		fgui.UIObjectFactory.setExtension(UIActivity.url, UIActivityView);

@@ -13,11 +13,11 @@ export class GameManager extends ObserverAll implements IGameManager {
 	private _clientEndPoint: ProtoObject<INetworkEndpoint>;
 	get inDmm() { return this._inDmm; }
 	get language() { return ELanguage.CHS; }
-	get clientLanguage() { 
+	get clientLanguage() {
 		if (this.clientType == EClientType.EN && this.language == ELanguage.KR)
 			return ELanguage.US_KR;
 		return this.language;
-	 }
+	}
 	get clientType() { return EClientType.CHS; }
 	get version() { return this._version?.version || ""; }
 	get clientVersion() { return 'web-' + this.version.replace('.w', ''); }
@@ -94,7 +94,7 @@ export class GameManager extends ObserverAll implements IGameManager {
 	private _lastMousePoint = new Laya.Point();
 
 	async init() {
-		const version = await $loadMgr.fetch("https://game.maj-soul.com/1/version.json", "json", null, { ignoreCache: true });
+		const version = await $loadMgr.fetch(`https://game.maj-soul.com/1/version.json?randv=${ $timeUtil.milliSecond }`, "json", null, { ignoreCache: true });
 		this._version = version;
 	}
 

@@ -126,6 +126,7 @@
     <component id="hdeoobbq" name="ComLevel1.xml" path="/Component/Component/段位/" exported="true"/>
     <image id="hdeoobbr" name="img_784.png" path="/Texture/" exported="true"/>
     <component id="hdeoobbt" name="BtnNormalNoScale.xml" path="/Component/Button/" exported="true"/>
+    <image id="gks8obbw" name="img_1659.png" path="/Texture/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

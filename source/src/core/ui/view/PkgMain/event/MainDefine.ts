@@ -12,3 +12,8 @@ export const enum EComMatchModeShowType {
 	/** 比赛场2 */
 	MatchMode2,
 }
+
+export const enum EUIRankType {
+	SiMa = 1,
+	SanMa = 2,
+}

@@ -154,6 +154,12 @@ declare interface IGameUtil {
 	randomColor(): string;
 	HmacSHA256(msg: string): string;
 	getI18nContext(i18n: ProtoObject<II18nContext>[], defValue?: string): string;
+	/** 是否是ai账号 */
+	isAI(accountId: number): boolean;
+	/** 获取账号区域id */
+	getZoneId(accoundId: number): number;
+	/** 是否是同区域(同服) */
+	isSameZone(accountId1: number, accountId2: number): boolean;
 }
 
 declare interface ITimeUtil {

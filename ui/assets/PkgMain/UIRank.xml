@@ -2,7 +2,7 @@
 <component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0ehdeo7plojg" designImageAlpha="0" designImageLayer="1">
   <displayList>
     <component id="n5_hdeo" name="n5" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" pkg="vx9zwser" xy="317,67" size="1439,965"/>
-    <list id="n4_hdeo" name="level" xy="343,192" size="1368,626" overflow="scroll" scrollBarFlags="4" margin="0,0,0,-30" scrollBarMargin="15,15,0,0" scrollBarRes="ui://vx9zwserhdeoobbj," ptrRes=",ui://vith2b66gks8obbn" defaultItem="ui://vith2b66hdeoobb2" autoItemSize="false" autoClearItems="true">
+    <list id="n4_hdeo" name="level" xy="343,192" size="1368,626" overflow="scroll" scrollBarFlags="4" margin="0,0,0,-30" scrollBarMargin="15,15,0,0" scrollBarRes="ui://vx9zwserhdeoobbj," defaultItem="ui://vith2b66hdeoobb2" autoItemSize="false" autoClearItems="true">
       <item/>
       <item/>
       <item/>

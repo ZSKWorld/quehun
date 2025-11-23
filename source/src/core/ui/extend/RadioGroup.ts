@@ -1,25 +1,46 @@
-const ValueChanged = "RadioGroup_ValueChanged";
-export class RadioGroup extends Laya.Script {
-	private _curSelectIndex = 0;
-	private _items: fgui.GObject[] = [];
+type RadioItem = fgui.GObject & { selected: boolean };
+export class RadioGroup {
+	private _selectIndex = -1;
+	private _items: RadioItem[] = [];
+	private _onValueChanged: Laya.Handler;
 
-	override onAdded() {
-
+	get selectIndex() {
+		return this._selectIndex;
+	}
+	set selectIndex(value: number) {
+		this._selectIndex = value;
+		this._items.forEach((item, index) => {
+			item.selected = index == value;
+		});
+		this._onValueChanged && this._onValueChanged.runWith(value);
 	}
 
-	initItems(items: fgui.GObject[]) {
-
+	init(items: RadioItem[], onValueChanged?: Laya.Handler) {
+		if (!items || items.length == 0) return;
+		items.forEach(item => {
+			const index = this._items.indexOf(item);
+			if (index != -1) return;
+			this._items.push(item);
+			item.onClick(this, this.onItemClick, [item]);
+		});
+		this.selectIndex = 0;
+		this._onValueChanged = onValueChanged;
 	}
 
-	onValueChanged(caller: any, listener: Function) {
-		this.owner.on(ValueChanged, caller, listener);
+	clear() {
+		this._items.forEach(item => {
+			item.offClick(this, this.onItemClick);
+		});
+		this._items.length = 0;
+		this._onValueChanged?.recover();
+		this._onValueChanged = null;
+		this._selectIndex = -1;
 	}
 
-	offValueChanged(caller: any, listener: Function) {
-		this.owner.off(ValueChanged, caller, listener);
-	}
-
-	private onItemClick() {
-
+	private onItemClick(item: RadioItem) {
+		const index = this._items.indexOf(item);
+		if (index == -1) return;
+		if (index == this.selectIndex) return;
+		this.selectIndex = index;
 	}
 }

@@ -121,7 +121,6 @@
     <component id="hdeoobb2" name="ComRankItem.xml" path="/Component/UIRank/"/>
     <image id="hdeoobbm" name="img_3821.png" path="/Texture/" exported="true"/>
     <image id="hdeoobb4" name="img_3866.png" path="/Texture/"/>
-    <component id="gks8obbn" name="ComRankPullUpRelease.xml" path="/Component/UIRank/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

@@ -1,6 +1,7 @@
 import { MediatorBase } from "../../../../mvc/view/MediatorBase";
+import { RadioGroup } from "../../../extend/RadioGroup";
+import { EUIRankType } from "../event/MainDefine";
 import { ComRankItemView } from "../view/coms/ComRankItemView";
-import { ComRankPullUpReleaseView } from "../view/coms/ComRankPullUpReleaseView";
 import { EUIRankMsg, UIRankView } from "../view/UIRankView";
 
 export interface IUIRankData {
@@ -8,54 +9,56 @@ export interface IUIRankData {
 }
 
 export class UIRankMediator extends MediatorBase<UIRankView, IUIRankData> {
-	private _curLevelType: number = -1;
+	private _tabRadioGroup = new RadioGroup();
+	private _rankInfo: { [key in EUIRankType]: IPlayerBaseView[] } = {
+		[EUIRankType.SiMa]: [],
+		[EUIRankType.SanMa]: [],
+	};
+	private get selectType() { return this._tabRadioGroup.selectIndex == 0 ? EUIRankType.SiMa : EUIRankType.SanMa; }
 
 	override onAwake() {
 		this.addEvent(EUIRankMsg.OnBtnCloseClick, this.onBtnCloseClick);
-		this.addEvent(EUIRankMsg.OnBtnSiMaClick, this.setLevelType, [4]);
-		this.addEvent(EUIRankMsg.OnBtnSanMaClick, this.setLevelType, [3]);
-		const { list_level } = this.view;
+		const { btn_siMa, btn_sanMa, list_level } = this.view;
+		this._tabRadioGroup.init([btn_siMa, btn_sanMa], Laya.Handler.create(this, this.refreshView, null, false));
 		$uiUtil.setList(list_level, true, this, this.onListLevelRender, this.onListLevelItemClick);
-		list_level.on(fgui.Events.PULL_UP_RELEASE, this, this.onListLevelPullUpRelease);
 	}
 
 	override onEnable() {
-		this.setLevelType(4);
+		this._tabRadioGroup.selectIndex = 0;
+		$netMgr.requests.fetchLevelLeaderboard({ type: EUIRankType.SiMa });
+		// $netMgr.requests.fetchLevelLeaderboard({ type: ERankTab.SanMa });
 	}
 
 	private onBtnCloseClick() {
 		this.closeSelf();
 	}
 
-	private setLevelType(type: 3 | 4) {
-		if (this._curLevelType == type) return;
-		this._curLevelType = type;
-		this.view.refreshLevelType(type);
-		this.view.refreshList([null, null, null, null, null, null, null, null, null, null, null, null]);
+	private refreshView() {
+		const type = this.selectType;
+		this.view.refreshView(type, this._rankInfo[type]);
 	}
 
 	private onListLevelRender(index: number, item: ComRankItemView) {
-		item.refresh();
+		const type = this.selectType;
+		item.refresh(index, type, this._rankInfo[type][index]);
 	}
 
 	private onListLevelItemClick(item: ComRankItemView) {
 
 	}
 
-	private async onListLevelPullUpRelease() {
-		const { list_level } = this.view;
-		const footer = list_level.scrollPane.footer as ComRankPullUpReleaseView;
-		if (!footer.readyToRefresh) return;
-		Logger.error("开始刷新");
-		footer.refreshStatus(2);
-		list_level.scrollPane.lockFooter(footer.sourceHeight);
-		$timeUtil.wait(2000)
-			.then(() => list_level.scrollPane.lockFooter(0))
-			.then(() => $timeUtil.wait(300))
-			.then(() => {
-				footer.refreshStatus(0);
-				Logger.error("刷新完毕");
-			});
+	@InterestMessage(EMessageID.fetchLevelLeaderboard)
+	private onFetchLevelLeaderboard(res: IResLevelLeaderboard, req: IReqLevelLeaderboard) {
+		Logger.error("Leaderboard Data:", res);
+		const account_id_list = res.items.map(v => v.account_id);
+		$netMgr.requests.fetchMultiAccountBrief({ account_id_list });
+	}
+
+	@InterestMessage(EMessageID.fetchMultiAccountBrief)
+	private onFetchMultiAccountBrief(res: IResMultiAccountBrief, req: IReqMultiAccountId) {
+		Logger.error("FetchMultiAccount Data:", res);
+		this._rankInfo[EUIRankType.SiMa] = res.players;
+		this.refreshView();
 	}
 
 	override onOpenAni() { return $uiUtil.popAlphaIn(this.view); }

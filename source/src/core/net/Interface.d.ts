@@ -14,6 +14,7 @@ declare interface IIPInfo {
 	prefix_url: string;
 	contest_chat_url: string;
 	dhs_url: string;
+	zone_ids?:number[];
 }
 declare interface IIPConfig {
 	ip: IIPInfo[];
@@ -40,6 +41,7 @@ declare interface IRouteInfo {
 }
 
 declare interface INetManager extends Laya.EventDispatcher {
+	get zoneIds(): number[];
 	get requests(): IReqMethod;
 	get lobbyConnected(): boolean;
 	get gameConnected(): boolean;

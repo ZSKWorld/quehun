@@ -11,6 +11,7 @@ export class NetManager extends Laya.EventDispatcher implements INetManager {
 	private _obSocket: WebSocket;
 
 	requests: IReqMethod;
+	get zoneIds() { return this._ipConfig?.ip[0]?.zone_ids || []; }
 
 	get lobbyConnected() { return this._lobbySocket?.connected; }
 	get gameConnected() { return this._gameSocket?.connected; }
@@ -76,6 +77,7 @@ export class NetManager extends Laya.EventDispatcher implements INetManager {
 	}
 
 	private async fetchRoutes() {
+		this._ipConfig.ip[0].zone_ids = this._ipConfig.ip[0].zone_ids || [];
 		const gateways = this._ipConfig.ip[0].gateways;
 		const routes = await Promise.race(gateways.map(v => {
 			const url = `${ v.url }/api/clientgate/routes?platform=Web&version=${ $gameMgr.version }&lang=chs`;

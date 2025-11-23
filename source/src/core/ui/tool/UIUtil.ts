@@ -116,4 +116,22 @@ export class UIUtil implements IUIUtil {
 			else trans.play(Laya.Handler.create(null, resolve));
 		});
 	}
+
+	refreshLevel(comp: {
+		ctrl_ht: fgui.Controller,
+		loader_icon: fgui.GLoader,
+		txt_htLevel?: fgui.GTextField,
+		txt_htScore?: fgui.GTextField,
+	}, data: IAccountLevel) {
+		let id = data?.id || 10101, score = data?.score || 0;
+		const { ctrl_ht, loader_icon, txt_htLevel, txt_htScore } = comp;
+		const levelCfg = $cfgMgr.level_definition.level_definition[id];
+		const { primary_icon, primary_level, secondary_level } = levelCfg;
+		const isHt = primary_level == 6;
+		ctrl_ht.selectedIndex = isHt ? 1 : 0;
+		loader_icon.icon = $langRes(primary_icon);
+
+		isHt && txt_htLevel && (txt_htLevel.text = String(secondary_level));
+		isHt && txt_htScore && (txt_htScore.text = (Math.floor((score / 100) * 10) / 10).toFixed(1));
+	}
 }

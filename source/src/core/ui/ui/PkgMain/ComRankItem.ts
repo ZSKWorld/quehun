@@ -7,11 +7,12 @@ import { ComLevel1View } from "../../view/PkgCommon/view/coms/ComLevel1View";
 
 export default class ComRankItem extends fgui.GComponent {
 
+	public loader_top3: fgui.GLoader;
 	public com_head: ComHead1View;
 	public com_name: ComName1View;
 	public com_title: ComTitle1View;
 	public com_level: ComLevel1View;
-	public txt_score: fgui.GTextField;
+	public txt_rank: fgui.GTextField;
 	public static url: string = "ui://vith2b66hdeoobb2";
 
 	public static createInstance(): ComRankItem {
@@ -19,10 +20,11 @@ export default class ComRankItem extends fgui.GComponent {
 	}
 
 	protected override onConstruct(): void {
+		this.loader_top3 = <fgui.GLoader>(this.getChildAt(1));
 		this.com_head = <ComHead1View>(this.getChildAt(2));
 		this.com_name = <ComName1View>(this.getChildAt(3));
 		this.com_title = <ComTitle1View>(this.getChildAt(4));
 		this.com_level = <ComLevel1View>(this.getChildAt(5));
-		this.txt_score = <fgui.GTextField>(this.getChildAt(7));
+		this.txt_rank = <fgui.GTextField>(this.getChildAt(6));
 	}
 }

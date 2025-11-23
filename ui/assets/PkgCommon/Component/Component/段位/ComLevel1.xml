@@ -1,10 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="110,110" designImage="ui://ca43vz0ehdeo7plojg" designImageOffsetX="-1324" designImageOffsetY="-353" designImageAlpha="0">
+<component size="235,110" designImage="ui://ca43vz0ehdeo7plojg" designImageOffsetX="-1398" designImageOffsetY="-195" designImageAlpha="42">
+  <controller name="ht" pages="0,,1," selected="1"/>
   <displayList>
-    <image id="n4_hdeo" name="n4" src="hdeoobb6" fileName="Texture/img_3606.png" xy="-70,-62" pivot="0.5,0.5" scale="0.55,0.55"/>
+    <image id="n4_hdeo" name="n4" src="hdeoobb6" fileName="Texture/img_3606.png" xy="-70,-62" pivot="0.5,0.5" scale="0.55,0.55">
+      <gearDisplay controller="ht" pages="1"/>
+    </image>
     <loader id="n3_hdeo" name="icon" xy="-70,-75" pivot="0.5,0.5" size="256,256" aspect="true" scale="0.34,0.34" url="ui://ca43vz0ehk7r7ploik" fill="scaleFree"/>
-    <image id="n6_hdeo" name="n6" src="hdeoobbr" fileName="Texture/img_784.png" xy="16,81" scale="0.53,0.53"/>
-    <text id="n7_hdeo" name="level" xy="34,80" size="109,82" scale="0.24,0.24" font="ui://vx9zwserhdeoobb8" fontSize="26" color="#fbfbfb" leading="0" letterSpacing="-7" text="19"/>
+    <image id="n6_hdeo" name="n6" src="hdeoobbr" fileName="Texture/img_784.png" xy="16,81" scale="0.53,0.53">
+      <gearDisplay controller="ht" pages="1"/>
+    </image>
+    <image id="n8_yuey" name="n8" src="hdeoobb5" fileName="Texture/img_343.png" xy="150,45">
+      <gearDisplay controller="ht" pages="1"/>
+    </image>
+    <text id="n7_hdeo" name="htLevel" xy="34,80" size="109,82" scale="0.24,0.24" font="ui://vx9zwserhdeoobb8" fontSize="26" color="#fbfbfb" leading="0" letterSpacing="-7" text="19">
+      <gearDisplay controller="ht" pages="1"/>
+    </text>
+    <text id="n9_yuey" name="htScore" xy="186,36" size="49,42" fontSize="30" color="#6ec0bd" singleLine="true" text="5.9">
+      <gearDisplay controller="ht" pages="1"/>
+    </text>
   </displayList>
   <customProperty target="icon" propertyId="1"/>
   <customProperty target="level" propertyId="0"/>

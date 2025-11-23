@@ -37,4 +37,36 @@ export class GameUtil implements IGameUtil {
 		}
 		return defValue ?? "";
 	}
+
+	isAI(accountId: number) {
+		return !accountId || accountId < 1000;
+	}
+
+	/** 获取账号区域id */
+	getZoneId(accoundId: number) {
+		if (this.isAI(accoundId)) return 0;
+		const z = accoundId >> 23;
+		const zoneIds = $netMgr.zoneIds;
+		if ($netMgr.zoneIds.length > 3) {
+			if (z >= zoneIds[0] && z < zoneIds[1]) return 1;
+			else if (z >= zoneIds[1] && z < zoneIds[2]) return 2;
+			else if (z >= zoneIds[2] && z < zoneIds[3]) return 3;
+			return -1;
+		} else {
+			if (z >= 0 && z <= 6) return 1;
+			else if (z >= 7 && z <= 12) return 2;
+			else if (z >= 13 && z <= 15) return 3;
+			return -1;
+		}
+	}
+
+	/** 是否是同区域(同服) */
+	isSameZone(accountId1: number, accountId2: number) {
+		if (this.isAI(accountId1) || this.isAI(accountId2)) return true;
+		const zoneId1 = this.getZoneId(accountId1);
+		if (zoneId1 == -1) return false;
+		const zoneId2 = this.getZoneId(accountId2);
+		if (zoneId2 == -1) return false;
+		return zoneId1 == zoneId2;
+	}
 }

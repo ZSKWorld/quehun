@@ -20,7 +20,6 @@ EViewID = {
 	ComMatchItemView: "ComMatchItemView",
 	ComMatchModeView: "ComMatchModeView",
 	ComRankItemView: "ComRankItemView",
-	ComRankPullUpReleaseView: "ComRankPullUpReleaseView",
 
 	/**UIs */
 	UIConfirmBigView: "UIConfirmBigView",

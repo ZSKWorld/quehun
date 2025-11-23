@@ -22,7 +22,6 @@ import { ComMatchItemMediator } from "../core/ui/view/PkgMain/mediator/coms/ComM
 import { ComMatchModeView } from "../core/ui/view/PkgMain/view/coms/ComMatchModeView";
 import { ComMatchModeMediator } from "../core/ui/view/PkgMain/mediator/coms/ComMatchModeMediator";
 import { ComRankItemView } from "../core/ui/view/PkgMain/view/coms/ComRankItemView";
-import { ComRankPullUpReleaseView } from "../core/ui/view/PkgMain/view/coms/ComRankPullUpReleaseView";
 import { UIConfirmBigView } from "../core/ui/view/PkgCommon/view/UIConfirmBigView";
 import { UIConfirmBigMediator } from "../core/ui/view/PkgCommon/mediator/UIConfirmBigMediator";
 import { UIConfirmMiddleView } from "../core/ui/view/PkgCommon/view/UIConfirmMiddleView";
@@ -101,7 +100,6 @@ export class InitViewCommand extends Command {
 		register(EViewID.ComMatchItemView, EViewType.Component, ComMatchItemView, ComMatchItemMediator);
 		register(EViewID.ComMatchModeView, EViewType.Component, ComMatchModeView, ComMatchModeMediator);
 		register(EViewID.ComRankItemView, EViewType.Component, ComRankItemView);
-		register(EViewID.ComRankPullUpReleaseView, EViewType.Component, ComRankPullUpReleaseView);
 
 		//UIs
 		register(EViewID.UIConfirmBigView, EViewType.UI, UIConfirmBigView, UIConfirmBigMediator);

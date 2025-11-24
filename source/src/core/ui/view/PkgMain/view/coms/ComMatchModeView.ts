@@ -1,5 +1,5 @@
 import ComMatchMode from "../../../../ui/PkgMain/ComMatchMode";
-import { EComMatchModeShowType } from "../../event/MainDefine";
+import { EComMatchModeShowType } from "../../define/MainDefine";
 
 const TitleLang = {
 	[EComMatchModeShowType.RankMode1]: 2079,

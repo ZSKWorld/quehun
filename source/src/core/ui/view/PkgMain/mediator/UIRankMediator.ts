@@ -1,6 +1,6 @@
 import { MediatorBase } from "../../../../mvc/view/MediatorBase";
 import { RadioGroup } from "../../../extend/RadioGroup";
-import { EUIRankType } from "../event/MainDefine";
+import { EUIRankType } from "../define/MainDefine";
 import { ComRankItemView } from "../view/coms/ComRankItemView";
 import { EUIRankMsg, UIRankView } from "../view/UIRankView";
 

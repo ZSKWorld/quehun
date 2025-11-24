@@ -1,7 +1,7 @@
 import { ESceneType } from "../../../../../scene/SceneDefine";
 import { ENotifyConst } from "../../../../common/NotifyConst";
 import { MediatorBase } from "../../../../mvc/view/MediatorBase";
-import { ELoginType } from "../event/UILoginEvent";
+import { ELoginType } from "../define/LoginDefine";
 import { EUILoginMsg, UILoginView } from "../view/UILoginView";
 
 export interface IUILoginData {

@@ -1,5 +1,5 @@
 import ComRankItem from "../../../../ui/PkgMain/ComRankItem";
-import { EUIRankType } from "../../event/MainDefine";
+import { EUIRankType } from "../../define/MainDefine";
 
 export const enum EComRankItemMsg {
 

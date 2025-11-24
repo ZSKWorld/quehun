@@ -96,8 +96,8 @@
             },
             "problemMatcher": []
         },
-        { //创建材质
-            "label": "创建材质",
+        { //创建Material
+            "label": "创建Material",
             "type": "shell",
             "command": "node ../../../laya_framework_tool/bin/js/BatMain.js 11",
             "presentation": {

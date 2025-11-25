@@ -10,32 +10,32 @@ export interface IUIRankData {
 
 export class UIRankMediator extends MediatorBase<UIRankView, IUIRankData> {
 	private _tabRadioGroup = new RadioGroup();
-	private _rankInfo: { [key in EUIRankType]: IPlayerBaseView[] } = {
-		[EUIRankType.SiMa]: [],
-		[EUIRankType.SanMa]: [],
-	};
+	private _rankItem: IResLevelLeaderboard_Item[] = [];
+	private _rankInfo: IPlayerBaseView[] = [];
+	private _itemReqInfo: { reqId: number, resId: number } = { reqId: 0, resId: 0 };
+	private _infoReqInfo: { reqId: number, resId: number } = { reqId: 0, resId: 0 };
 	private get selectType() { return this._tabRadioGroup.selectIndex == 0 ? EUIRankType.SiMa : EUIRankType.SanMa; }
 
 	override onAwake() {
 		this.addEvent(EUIRankMsg.OnBtnCloseClick, this.onBtnCloseClick);
+		this.addEvent(EUIRankMsg.OnListLevelScroll, this.onListLevelScroll);
 		const { btn_siMa, btn_sanMa, list_level } = this.view;
-		this._tabRadioGroup.init([btn_siMa, btn_sanMa], Laya.Handler.create(this, this.refreshView, null, false));
 		$uiUtil.setList(list_level, true, this, this.onListLevelRender, this.onListLevelItemClick);
+		this._tabRadioGroup.init([btn_siMa, btn_sanMa], Laya.Handler.create(this, this.refreshView, null, false));
 	}
 
 	override onEnable() {
-		this._tabRadioGroup.selectIndex = 0;
+		const { _tabRadioGroup, _itemReqInfo, _infoReqInfo } = this;
+		_itemReqInfo.reqId = _itemReqInfo.resId = 0;
+		_infoReqInfo.reqId = _infoReqInfo.resId = 0;
+		_tabRadioGroup.selectIndex = 0;
 		$netMgr.requests.fetchLevelLeaderboard({ type: EUIRankType.SiMa });
 		// $netMgr.requests.fetchLevelLeaderboard({ type: ERankTab.SanMa });
 	}
 
-	private onBtnCloseClick() {
-		this.closeSelf();
-	}
-
 	private refreshView() {
-		const type = this.selectType;
-		this.view.refreshView(type, this._rankInfo[type]);
+		const { view, selectType, } = this;
+		view.refreshView(selectType, this._rankInfo);
 	}
 
 	private onListLevelRender(index: number, item: ComRankItemView) {
@@ -45,6 +45,17 @@ export class UIRankMediator extends MediatorBase<UIRankView, IUIRankData> {
 
 	private onListLevelItemClick(item: ComRankItemView) {
 
+	}
+
+	private onBtnCloseClick() {
+		this.closeSelf();
+	}
+
+	private onListLevelScroll() {
+		// const { contentHeight, viewHeight, posY } = this.view.list_level.scrollPane;
+		// if (contentHeight - posY - viewHeight <= 136) {
+		// }
+		Logger.error(this.view.list_level.scrollPane.isBottomMost);
 	}
 
 	@InterestMessage(EMessageID.fetchLevelLeaderboard)

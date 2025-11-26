@@ -45,4 +45,10 @@ export const enum ENotifyConst {
 	//#region 邮件相关
 	OnMailDataChanged = "NotifyConst_OnMailDataChanged",
 	//#endregion
+
+	//#region 好友相关
+	OnFriendChanged = "NotifyConst_OnFriendChanged",
+	OnFriendApplyChanged = "NotifyConst_OnFriendApplyChanged",
+	OnFriendRecentChanged = "NotifyConst_OnFriendRecentChanged",
+	//#endregion
 }

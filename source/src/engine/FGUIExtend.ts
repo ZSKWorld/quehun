@@ -2,7 +2,6 @@
 export class FGUIExtend {
 	static extends() {
 		this.gobjectExtension();
-		this.addGUIObjectEventLockable();
 		this.addGTextLangText();
 	}
 
@@ -59,50 +58,6 @@ export class FGUIExtend {
 		};
 		prototype.offAllCaller = function (caller: any) {
 			return this._displayObject.offAllCaller(caller);
-		};
-	}
-
-	/**扩展添加ui节点事件锁 */
-	private static addGUIObjectEventLockable() {
-		const eventDispatchProto = Laya.EventDispatcher.prototype;
-		const oldEvent = eventDispatchProto.event;
-		//拦截事件，处理事件锁
-		eventDispatchProto.event = function (type: string, data?: any): boolean {
-			const eventLockMap = this.__eventLockMap;
-			if (eventLockMap && (eventLockMap["$LockAll"] || eventLockMap[type]))
-				return;
-			// if (type == "click" && this.$owner && this.$owner.getPath) Logger.Error(this.$owner.getPath());
-			return oldEvent.call(this, type, data);
-		};
-
-		const gobjProto = fgui.GObject.prototype;
-		gobjProto.addEventLock = function (type?: string, lockChild?: boolean) {
-			type = type == void 0 ? "$LockAll" : type;
-			lockChild = lockChild == void 0 ? true : lockChild;
-			if (this.isDisposed || type == "") return;
-			const eventLockMap = this.displayObject.__eventLockMap || (this.displayObject.__eventLockMap = {});
-			eventLockMap[type] = true;
-			eventLockMap[type + "_LockChild"] = lockChild;
-		};
-		gobjProto.hasEventLock = function (type?: string) {
-			type = type == void 0 ? "$LockAll" : type;
-			if (this.isDisposed || type == "") return false;
-			const eventLockMap = this.displayObject.__eventLockMap;
-			if (eventLockMap)
-				return !!eventLockMap[type];
-			return false;
-		};
-		gobjProto.removeEventLock = function (type?: string) {
-			type = type == void 0 ? "$LockAll" : type;
-			if (this.isDisposed || type == "") return;
-			const eventLockMap = this.displayObject.__eventLockMap;
-			if (eventLockMap) {
-				if (eventLockMap[type]) eventLockMap[type] = false;
-			}
-		};
-		gobjProto.removeAllEventLock = function () {
-			if (this.isDisposed) return;
-			this.displayObject.__eventLockMap = null;
 		};
 	}
 

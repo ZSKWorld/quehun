@@ -346,20 +346,12 @@
             }
             let elementLowType = elementType & 63;
             let elementTexId = elementType & (~63);
-            let elementOwner = element.owner;
-            let primitiveShaderData = element.primitiveShaderData;
-            let fillTexture = primitiveShaderData.hasDefine(Laya.ShaderDefines2D.FILLTEXTURE);
-            let range = primitiveShaderData.getVector(Laya.ShaderDefines2D.UNIFORM_TEXRANGE);
-            if ((!fillTexture && this.fillTexture)
-                || (fillTexture && (!this.fillTexture || range.equal(this.texRange)))) {
+            if (elementTexId !== 0 && elementTexId !== this.textureId && this.textureId !== 0)
                 return false;
-            }
             if (this.lowType !== elementLowType) {
                 return false;
             }
-            if (this.lowType & 16 && element.materialShaderData !== this.materialShaderData) {
-                return false;
-            }
+            let elementOwner = element.owner;
             if (this.globalAlpha !== elementOwner.globalAlpha) {
                 return false;
             }
@@ -369,14 +361,23 @@
                 elementOwner.globalRenderData !== this.globalRenderData) {
                 return false;
             }
-            if (this.textureId === 0) {
-                if (elementTexId !== 0) {
-                    this.textureId = elementTexId;
-                    this.primitiveShaderData = primitiveShaderData;
-                }
-                return true;
+            if ((this.lowType & 16) !== 0 && element.materialShaderData !== this.materialShaderData) {
+                return false;
             }
-            return elementTexId === 0 || elementTexId === this.textureId;
+            let fillTexture = element.primitiveShaderData.hasDefine(Laya.ShaderDefines2D.FILLTEXTURE);
+            if (fillTexture) {
+                if (!this.fillTexture)
+                    return false;
+                if (!element.primitiveShaderData.getVector(Laya.ShaderDefines2D.UNIFORM_TEXRANGE).equal(this.texRange))
+                    return false;
+            }
+            else if (this.fillTexture)
+                return false;
+            if (this.textureId === 0 && elementTexId !== 0) {
+                this.textureId = elementTexId;
+                this.primitiveShaderData = element.primitiveShaderData;
+            }
+            return true;
         }
         _isCompatibleWebgpu(element) {
             if (this.type & 32)
@@ -387,20 +388,12 @@
             }
             let elementLowType = elementType & 63;
             let elementTexId = elementType & (~63);
-            let elementOwner = element.owner;
-            let primitiveShaderData = element._primitiveShaderData;
-            let fillTexture = primitiveShaderData.hasDefine(Laya.ShaderDefines2D.FILLTEXTURE);
-            let range = primitiveShaderData.getVector(Laya.ShaderDefines2D.UNIFORM_TEXRANGE);
-            if ((!fillTexture && this.fillTexture)
-                || (fillTexture && (!this.fillTexture || range.equal(this.texRange)))) {
+            if (elementTexId !== 0 && elementTexId !== this.textureId && this.textureId !== 0)
                 return false;
-            }
             if (this.lowType !== elementLowType) {
                 return false;
             }
-            if (this.lowType & 16 && element._materialShaderData !== this.materialShaderData) {
-                return false;
-            }
+            let elementOwner = element.owner;
             if (this.globalAlpha !== elementOwner.globalAlpha) {
                 return false;
             }
@@ -410,14 +403,24 @@
                 elementOwner.globalRenderData !== this.globalRenderData) {
                 return false;
             }
-            if (this.textureId === 0) {
-                if (elementTexId !== 0) {
-                    this.textureId = elementTexId;
-                    this.primitiveShaderData = primitiveShaderData;
-                }
-                return true;
+            if (this.lowType & 16 && element._materialShaderData !== this.materialShaderData) {
+                return false;
             }
-            return elementTexId === 0 || elementTexId === this.textureId;
+            let primitiveShaderData = element._primitiveShaderData;
+            let fillTexture = primitiveShaderData.hasDefine(Laya.ShaderDefines2D.FILLTEXTURE);
+            if (fillTexture) {
+                if (!this.fillTexture)
+                    return false;
+                if (!primitiveShaderData.getVector(Laya.ShaderDefines2D.UNIFORM_TEXRANGE).equal(this.texRange))
+                    return false;
+            }
+            else if (this.fillTexture)
+                return false;
+            if (this.textureId === 0 && elementTexId !== 0) {
+                this.textureId = elementTexId;
+                this.primitiveShaderData = primitiveShaderData;
+            }
+            return true;
         }
         isCompatible(element) {
             return true;
@@ -441,56 +444,108 @@
             let elementArray = list.elements;
             let ctx = this._context;
             ctx.setHead(elementArray[start]);
-            let batchStart = start;
-            for (let i = start + 1; i <= end; i++) {
-                let element = elementArray[i];
-                if (ctx.isCompatible(element))
-                    continue;
-                if (allowReorder) {
-                    for (let j = i + 1; j <= end; j++) {
-                        let element2 = elementArray[j];
-                        if (ctx.isCompatible(element2)) {
-                            for (let k = j - 1; k >= i; k--) {
-                                if (element2.owner.rect.intersects(elementArray[k].owner.rect)) {
-                                    element2 = null;
-                                    break;
-                                }
-                            }
-                            if (element2 != null) {
-                                elementArray.splice(j, 1);
-                                elementArray.splice(i, 0, element2);
-                                element = elementArray[++i];
-                            }
+            let cnt = end - start + 1;
+            if (cnt > 1000)
+                allowReorder = false;
+            if (allowReorder) {
+                if (elementFlags == null)
+                    initCache(1000);
+                let headGroup = 0;
+                let maxGroup = 1;
+                let indiceLen = 1;
+                elementIndice[0] = start;
+                elementFlags[0] = 0;
+                for (let i = 1; i < cnt; i++) {
+                    let element = elementArray[start + i];
+                    elementFlags[i] = -1;
+                    let rect = element.owner.rect;
+                    rectLeftCache[i] = rect.x;
+                    rectTopCache[i] = rect.y;
+                    rectRightCache[i] = rect.x + rect.width;
+                    rectBottomCache[i] = rect.y + rect.height;
+                }
+                for (let i = 1; i < cnt; i++) {
+                    let element = elementArray[start + i];
+                    let group = elementFlags[i];
+                    if (group === -2) {
+                        continue;
+                    }
+                    if (group !== -1) {
+                        if (group === headGroup) {
+                            elementIndice[indiceLen++] = start + i;
+                            continue;
                         }
                     }
+                    else {
+                        if (ctx.isCompatible(element)) {
+                            elementIndice[indiceLen++] = start + i;
+                            continue;
+                        }
+                        elementFlags[i] = group = maxGroup++;
+                    }
+                    for (let j = i + 1; j < cnt; j++) {
+                        let element2 = elementArray[start + j];
+                        if (elementFlags[j] !== -1) {
+                            if (elementFlags[j] !== headGroup)
+                                continue;
+                        }
+                        else {
+                            if (!ctx.isCompatible(element2))
+                                continue;
+                        }
+                        for (let k = j - 1; k >= i; k--) {
+                            if (elementFlags[k] !== -2
+                                && rectLeftCache[j] < rectRightCache[k] && rectRightCache[j] > rectLeftCache[k]
+                                && rectTopCache[j] < rectBottomCache[k] && rectBottomCache[j] > rectTopCache[k]) {
+                                element2 = null;
+                                break;
+                            }
+                        }
+                        if (element2 != null) {
+                            elementIndice[indiceLen++] = start + j;
+                            elementFlags[j] = -2;
+                        }
+                        else
+                            elementFlags[j] = headGroup;
+                    }
+                    list.add(this.merge(elementArray, 0, indiceLen - 1, ctx, elementIndice));
+                    indiceLen = 1;
+                    elementIndice[0] = start + i;
+                    headGroup = group;
+                    ctx.setHead(element);
                 }
-                if (i - batchStart > 1)
-                    this.merge(list, batchStart, i - 1, ctx);
-                else
-                    this.addSingle(list, elementArray[batchStart]);
-                batchStart = i;
-                ctx.setHead(element);
+                list.add(this.merge(elementArray, 0, indiceLen - 1, ctx, elementIndice));
             }
-            if (end - batchStart > 0)
-                this.merge(list, batchStart, end, ctx);
-            else
-                this.addSingle(list, elementArray[batchStart]);
+            else {
+                let batchStart = start;
+                for (let i = start + 1; i <= end; i++) {
+                    let element = elementArray[i];
+                    if (!ctx.isCompatible(element)) {
+                        list.add(this.merge(elementArray, batchStart, i - 1, ctx));
+                        batchStart = i;
+                        ctx.setHead(element);
+                    }
+                }
+                list.add(this.merge(elementArray, batchStart, end, ctx));
+            }
         }
-        addSingle(list, element) {
-            this._buffer.add(element);
-            list.add(element);
-        }
-        merge(list, start, end, batchContext) {
-            let elementArray = list.elements;
+        merge(elementArray, start, end, batchContext, indice) {
+            if (start === end) {
+                let element = elementArray[indice !== undefined ? indice[start] : start];
+                this._buffer.add(element);
+                return element;
+            }
             let staticBatchRenderElement = WebGraphicsBatch._pool.take();
             this._merged.push(staticBatchRenderElement);
-            let drawArray = [];
-            let drawLengths = [];
+            let batchedGeometry = staticBatchRenderElement.geometry;
+            let currentOffset = 0;
+            let currentCount = 0;
+            let isFirst = true;
             for (let i = start; i <= end; i++) {
-                let element = elementArray[i];
+                let element = elementArray[indice !== undefined ? indice[i] : i];
                 let geometry = this._buffer.add(element) || element.geometry;
                 if (i === start) {
-                    staticBatchRenderElement.geometry.bufferState = geometry.bufferState;
+                    batchedGeometry.bufferState = geometry.bufferState;
                     staticBatchRenderElement.materialShaderData = element.materialShaderData;
                     staticBatchRenderElement.value2DShaderData = element.value2DShaderData;
                     staticBatchRenderElement.subShader = element.subShader;
@@ -498,18 +553,8 @@
                     staticBatchRenderElement.primitiveShaderData = batchContext.primitiveShaderData;
                     staticBatchRenderElement.owner = element.owner;
                 }
-                geometry.getDrawDataParams(TEMP_SINGLE_LIST);
-                drawArray.push(TEMP_SINGLE_LIST.elements.slice());
-                drawLengths.push(TEMP_SINGLE_LIST.length);
-            }
-            let geometry = staticBatchRenderElement.geometry;
-            let len = drawArray.length;
-            let currentOffset = 0;
-            let currentCount = 0;
-            let isFirst = true;
-            for (let i = 0; i < len; i++) {
-                let drawParam = drawArray[i];
-                let drawLength = drawLengths[i];
+                let drawParam = geometry.drawParams.elements;
+                let drawLength = geometry.drawParams.length;
                 for (let j = 0; j < drawLength; j += 2) {
                     let offset = drawParam[j];
                     let count = drawParam[j + 1];
@@ -523,16 +568,16 @@
                         currentCount += count;
                     }
                     else {
-                        geometry.setDrawElemenParams(currentCount, currentOffset);
+                        batchedGeometry.setDrawElemenParams(currentCount, currentOffset);
                         currentOffset = offset;
                         currentCount = count;
                     }
                 }
             }
             if (!isFirst) {
-                geometry.setDrawElemenParams(currentCount, currentOffset);
+                batchedGeometry.setDrawElemenParams(currentCount, currentOffset);
             }
-            list.add(staticBatchRenderElement);
+            return staticBatchRenderElement;
         }
     }
     WebGraphicsBatch._pool = Laya.Pool.createPool2(() => {
@@ -553,8 +598,21 @@
         element.renderStateIsBySprite = false;
         element.globalShaderData = null;
     });
-    const TEMP_SINGLE_LIST = new Laya.FastSinglelist();
     const _STEP_ = 1024;
+    var elementFlags;
+    var elementIndice;
+    var rectLeftCache;
+    var rectTopCache;
+    var rectRightCache;
+    var rectBottomCache;
+    function initCache(maxElements) {
+        elementFlags = new Int16Array(maxElements);
+        elementIndice = new Int16Array(maxElements);
+        rectLeftCache = new Float32Array(maxElements);
+        rectTopCache = new Float32Array(maxElements);
+        rectRightCache = new Float32Array(maxElements);
+        rectBottomCache = new Float32Array(maxElements);
+    }
 
     BatchManager.registerProvider(Laya.BaseRender2DType.graphics, WebGraphicsBatch);
     class SortedStructs {
@@ -573,7 +631,7 @@
             return list;
         }
         reset() {
-            this._indice.forEach(i => this.lists.get(i).clear());
+            this._indice.forEach(i => this.lists.get(i).length = 0);
             this._indice.clear();
             this._sortedIndice.length = 0;
         }
@@ -678,14 +736,14 @@
                 child._effectZ = child.zIndex + struct._effectZ;
                 this.cullAndSort(context2D, child);
             }
-            if (struct.dcOptimize) {
-                let last = list.length - 1;
-                struct.dcOptimizeEnd = list.elements[last];
-            }
             if (oldCol) {
                 this._pStructs.appendTo(list);
                 this._structsPool.recover(this._pStructs);
                 this._pStructs = oldCol;
+            }
+            if (struct.dcOptimize) {
+                let last = list.length - 1;
+                struct.dcOptimizeEnd = list.elements[last];
             }
         }
         _isRectIntersect(rect, cullRect) {
@@ -800,24 +858,6 @@
                     let struct = element.owner;
                     if (lastRenderType === struct.renderType)
                         continue;
-                    if (allowReorder) {
-                        for (let j = i + 1; j <= groupEnd; j++) {
-                            let element2 = elementArray[j];
-                            if (element2.owner.renderType === lastRenderType) {
-                                for (let k = j - 1; k >= i; k--) {
-                                    if (element2.owner.rect.intersects(elementArray[k].owner.rect)) {
-                                        element2 = null;
-                                        break;
-                                    }
-                                }
-                                if (element2 != null) {
-                                    elementArray.splice(j, 1);
-                                    elementArray.splice(i, 0, element2);
-                                    element = elementArray[++i];
-                                }
-                            }
-                        }
-                    }
                     if (i - batchStart > 1)
                         this.getBatchProvider(lastRenderType).batch(list, batchStart, i - 1, allowReorder);
                     else
@@ -875,12 +915,14 @@
             WebRender2DPass.buffers.add(buffer);
         }
         static uploadBuffer() {
-            if (WebRender2DPass.buffers.size > 0) {
-                WebRender2DPass.buffers.forEach(buffer => {
+            if (WebRender2DPass.buffers.length > 0) {
+                let elements = WebRender2DPass.buffers.elements;
+                for (let i = 0, n = WebRender2DPass.buffers.length; i < n; i++) {
+                    let buffer = elements[i];
                     buffer._upload();
                     buffer._inPass = false;
-                });
-                WebRender2DPass.buffers.clear();
+                }
+                WebRender2DPass.buffers.length = 0;
             }
         }
         _updateInvertMatrix() {
@@ -931,7 +973,7 @@
             this.shaderData = null;
         }
     }
-    WebRender2DPass.buffers = new Set();
+    WebRender2DPass.buffers = new Laya.FastSinglelist();
     class WebRender2DPassManager {
         constructor() {
             this._modify = false;
@@ -1257,6 +1299,7 @@
         constructor() {
             super(...arguments);
             this._baseColor = new Laya.Color(1, 1, 1, 1);
+            this._tilingOffset = new Laya.Vector4();
             this._renderAlpha = -1;
         }
         get baseColor() {
@@ -1290,6 +1333,15 @@
                     this._owner.spriteShaderData.removeDefine(Laya.ShaderDefines2D.GAMMATEXTURE);
                 }
             }
+        }
+        get tilingOffset() {
+            return this._tilingOffset;
+        }
+        set tilingOffset(value) {
+            if (!value)
+                return;
+            this._owner.spriteShaderData.setVector(Laya.BaseRenderNode2D.TILINGOFFSET, value);
+            value ? value.cloneTo(this._tilingOffset) : null;
         }
         get normal2DTexture() {
             return this._normal2DTexture;
@@ -1855,6 +1907,7 @@
             let childParentData = child._parentData;
             childParentData.clipInfo = this.getClipInfo();
             childParentData.blendMode = this.blendMode;
+            child._setBlendMode();
             child._updateGlobalAlpha(child.alpha, this.globalAlpha);
             let parentPass = this.pass;
             childParentData.pass = parentPass;
@@ -2433,6 +2486,11 @@
             this._glParam.format = null;
             this._glParam.type = null;
             switch (format) {
+                case Laya.TextureFormat.Alpha8:
+                    this._glParam.internalFormat = gl.ALPHA;
+                    this._glParam.format = gl.ALPHA;
+                    this._glParam.type = gl.UNSIGNED_BYTE;
+                    break;
                 case Laya.TextureFormat.R8G8B8:
                     this._glParam.internalFormat = useSRGB ? this._sRGB.SRGB_EXT : gl.RGB;
                     this._glParam.format = this._glParam.internalFormat;
@@ -2686,6 +2744,12 @@
                 typedSize: 1
             };
             switch (format) {
+                case Laya.TextureFormat.Alpha8:
+                    formatParams.channels = 1;
+                    formatParams.bytesPerPixel = 1;
+                    formatParams.dataTypedCons = Uint8Array;
+                    formatParams.typedSize = 1;
+                    return formatParams;
                 case Laya.TextureFormat.R8G8B8A8:
                     formatParams.channels = 4;
                     formatParams.bytesPerPixel = 4;
@@ -2740,6 +2804,9 @@
             let srgb = this._sRGB ? this._sRGB.SRGB_EXT : gl.RGB;
             let srgb_alpha = this._sRGB ? this._sRGB.SRGB_ALPHA_EXT : gl.RGBA;
             switch (tex.internalFormat) {
+                case gl.ALPHA:
+                    channels = 1;
+                    break;
                 case srgb:
                 case gl.RGB:
                     channels = 3;
@@ -3572,6 +3639,11 @@
             this._glParam.format = null;
             this._glParam.type = null;
             switch (format) {
+                case Laya.TextureFormat.Alpha8:
+                    this._glParam.internalFormat = gl.R8;
+                    this._glParam.format = gl.RED;
+                    this._glParam.type = gl.UNSIGNED_BYTE;
+                    break;
                 case Laya.TextureFormat.R8G8B8:
                     this._glParam.internalFormat = useSRGB ? gl.SRGB8 : gl.RGB8;
                     this._glParam.format = gl.RGB;
@@ -3763,6 +3835,10 @@
             let singlebyte = 0;
             let bytelength = 0;
             switch (tex.internalFormat) {
+                case gl.R8:
+                case gl.ALPHA:
+                    channels = 1;
+                    break;
                 case gl.SRGB8:
                 case gl.RGB8:
                 case gl.RGB565:
@@ -5864,30 +5940,14 @@
             this.event("endFrame", null);
         }
         getInnerWidth() {
-            if (Laya.LayaEnv.isConch) {
-                return window.getInnerWidth();
-            }
-            else
-                return this._globalWidth;
+            return this._globalWidth;
         }
         getInnerHeight() {
-            if (Laya.LayaEnv.isConch) {
-                return window.getInnerHeight();
-            }
-            else
-                return this._globalHeight;
+            return this._globalHeight;
         }
         resizeOffScreen(width, height) {
             this._globalWidth = width;
             this._globalHeight = height;
-            if (Laya.LayaEnv.isConch) {
-                if (WebGLEngine._lastFrameBuffer) {
-                    WebGLEngine._lastFrameBuffer.dispose();
-                    WebGLEngine._lastFrameBuffer_WebGLOBJ = null;
-                }
-                WebGLEngine._lastFrameBuffer = this.getTextureContext().createRenderTargetInternal(width, height, Laya.RenderTargetFormat.R8G8B8A8, Laya.RenderTargetFormat.None, false, false, 1, false);
-                WebGLEngine._lastFrameBuffer_WebGLOBJ = WebGLEngine._lastFrameBuffer._framebuffer;
-            }
         }
         addTexGammaDefine(key, value) {
             WebGLEngine._texGammaDefine[key] = value;
@@ -7246,7 +7306,7 @@
             this.value2DShaderData && shader.uploadUniforms(shader._sprite2DUniformParamsMap, this.value2DShaderData, true);
             this.materialShaderData && shader.uploadUniforms(shader._materialUniformParamsMap, this.materialShaderData, true);
             let encoder = shader._additionUniformParamsMaps.get("Sprite2DGraphics");
-            this.primitiveShaderData && shader.uploadUniforms(encoder, this.primitiveShaderData, true);
+            encoder && this.primitiveShaderData && shader.uploadUniforms(encoder, this.primitiveShaderData, true);
             let shaderData = this.value2DShaderData;
             if (!this.renderStateIsBySprite) {
                 if (this.materialShaderData) {
@@ -7397,145 +7457,12 @@
         }
     }
 
-    class WebGLVertexBuffer {
-        get vertexDeclaration() {
-            return this._vertexDeclaration;
-        }
-        set vertexDeclaration(value) {
-            this._vertexDeclaration = value;
-            this._shaderValues = this._vertexDeclaration._shaderValues;
-        }
-        constructor(targetType, bufferUsageType) {
-            this._glBuffer = WebGLEngine.instance.createBuffer(targetType, bufferUsageType);
-        }
-        setDataLength(byteLength) {
-            this._glBuffer.setDataLength(byteLength);
-        }
-        setData(buffer, bufferOffset, dataStartIndex, dataCount) {
-            this.bind();
-            var needSubData = dataStartIndex !== 0 || dataCount !== Number.MAX_SAFE_INTEGER;
-            if (needSubData) {
-                var subData = new Uint8Array(buffer, dataStartIndex, dataCount);
-                this._glBuffer.setData(subData, bufferOffset);
-            }
-            else {
-                this._glBuffer.setData(buffer, bufferOffset);
-            }
-            Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_GeometryBufferUploadCount, 1);
-        }
-        bind() {
-            return this._glBuffer.bindBuffer();
-        }
-        unbind() {
-            return this._glBuffer.unbindBuffer();
-        }
-        orphanStorage() {
-            this.bind();
-            this._glBuffer.setDataLength(this._glBuffer._byteLength);
-        }
-        destroy() {
-            this._glBuffer.destroy();
-            this._vertexDeclaration = null;
-        }
-    }
-
     class WebglRenderContext2D {
         constructor() {
             this._clearColor = new Laya.Color(0, 0, 0, 0);
             this.invertY = false;
             this.pipelineMode = "Forward";
             this._globalConfigShaderData = Laya.Shader3D._configDefineValues;
-            if (Laya.LayaEnv.isConch && !WebglRenderContext2D.isCreateBlitScreenELement) {
-                (!WebglRenderContext2D.isCreateBlitScreenELement) && this.setBlitScreenElement();
-                WebglRenderContext2D.blitContext = new WebglRenderContext2D();
-                let engine = Laya.LayaGL.renderEngine;
-                engine.on("endFrame", () => {
-                    let last_main_frame_buffer = WebGLEngine._lastFrameBuffer_WebGLOBJ;
-                    let last_main_frame = WebGLEngine._lastFrameBuffer;
-                    WebGLEngine._lastFrameBuffer_WebGLOBJ = null;
-                    WebGLEngine._lastFrameBuffer = null;
-                    WebglRenderContext2D.blitContext.setOffscreenView(engine.getInnerWidth(), engine.getInnerHeight());
-                    WebglRenderContext2D.blitContext.setRenderTarget(null, true, Laya.Color.BLACK);
-                    WebglRenderContext2D.blitScreenElement.materialShaderData._setInternalTexture(Laya.Shader3D.propertyNameToID("u_MainTex"), last_main_frame._textures[0]);
-                    WebglRenderContext2D.blitContext.drawRenderElementOne(WebglRenderContext2D.blitScreenElement);
-                    WebGLEngine._lastFrameBuffer_WebGLOBJ = last_main_frame_buffer;
-                    WebGLEngine._lastFrameBuffer = last_main_frame;
-                    WebGLEngine.instance.getTextureContext().bindRenderTarget(last_main_frame);
-                });
-            }
-        }
-        setBlitScreenElement() {
-            let blitScreenElement = Laya.LayaGL.render2DRenderPassFactory.createRenderElement2D();
-            let shaderData = Laya.LayaGL.renderDeviceFactory.createShaderData();
-            let _vertices = new Float32Array([
-                1, 1, 1, 1,
-                1, -1, 1, 0,
-                -1, 1, 0, 1,
-                -1, -1, 0, 0
-            ]);
-            let _vertexBuffer = new WebGLVertexBuffer(Laya.BufferTargetType.ARRAY_BUFFER, Laya.BufferUsage.Dynamic);
-            _vertexBuffer.setDataLength(64);
-            _vertexBuffer.setData(_vertices.buffer, 0, 0, _vertices.buffer.byteLength);
-            let declaration = new Laya.VertexDeclaration(16, [new Laya.VertexElement(0, Laya.VertexElementFormat.Vector4, 0)]);
-            _vertexBuffer.vertexDeclaration = declaration;
-            let geometry = Laya.LayaGL.renderDeviceFactory.createRenderGeometryElement(Laya.MeshTopology.TriangleStrip, Laya.DrawType.DrawArray);
-            geometry.setDrawArrayParams(0, 4);
-            let bufferState = Laya.LayaGL.renderDeviceFactory.createBufferState();
-            bufferState.applyState([_vertexBuffer], null);
-            geometry.bufferState = bufferState;
-            let attributeMap = {
-                'a_PositionTexcoord': [0, Laya.ShaderDataType.Vector4]
-            };
-            let uniformMap = {
-                "u_MainTex": Laya.ShaderDataType.Texture2D,
-            };
-            let shader = Laya.Shader3D.add("GLESblitScreen", false, false);
-            shader.shaderType = Laya.ShaderFeatureType.Default;
-            let subShader = new Laya.SubShader(attributeMap, uniformMap, {});
-            shader.addSubShader(subShader);
-            let vs = `
-            #define SHADER_NAME GLESblitScreenVS
-
-            varying vec2 v_Texcoord0;
-
-            void main()
-            {
-                gl_Position = vec4(- 1.0 + (a_PositionTexcoord.x + 1.0), (1.0 - ((- 1.0 + (-a_PositionTexcoord.y + 1.0)) + 1.0) / 2.0) * 2.0 - 1.0, 0.0, 1.0);
-
-                v_Texcoord0 = a_PositionTexcoord.zw;
-            }
-        `;
-            let fs = `
-            #define SHADER_NAME GLESblitScreenFS
-
-            #include "Color.glsl";
-
-            varying vec2 v_Texcoord0;
-
-            void main()
-            {
-                vec4 mainColor = texture2D(u_MainTex, v_Texcoord0);
-               
-                gl_FragColor = mainColor;
-            }
-        `;
-            let pass = subShader.addShaderPass(vs, fs);
-            pass.statefirst = true;
-            let blitState = pass.renderState;
-            blitState.depthTest = Laya.RenderState.DEPTHTEST_ALWAYS;
-            blitState.depthWrite = false;
-            blitState.cull = Laya.RenderState.CULL_NONE;
-            blitState.blend = Laya.RenderState.BLEND_DISABLE;
-            blitState.stencilRef = 1;
-            blitState.stencilTest = Laya.RenderState.STENCILTEST_OFF;
-            blitState.stencilWrite = false;
-            blitState.stencilOp = new Laya.Vector3(Laya.RenderState.STENCILOP_KEEP, Laya.RenderState.STENCILOP_KEEP, Laya.RenderState.STENCILOP_REPLACE);
-            blitScreenElement.geometry = geometry;
-            blitScreenElement.materialShaderData = shaderData;
-            blitScreenElement.subShader = subShader;
-            blitScreenElement.renderStateIsBySprite = false;
-            WebglRenderContext2D.isCreateBlitScreenELement = true;
-            WebglRenderContext2D.blitScreenElement = blitScreenElement;
         }
         drawRenderElementList(list) {
             let time = performance.now();
@@ -7590,7 +7517,6 @@
             });
         }
     }
-    WebglRenderContext2D.isCreateBlitScreenELement = false;
 
     class WebGLRender2DProcess {
         constructor() {
@@ -8184,6 +8110,48 @@
                     engineRenderState.setFrontFace(forntFace);
                     break;
             }
+        }
+    }
+
+    class WebGLVertexBuffer {
+        get vertexDeclaration() {
+            return this._vertexDeclaration;
+        }
+        set vertexDeclaration(value) {
+            this._vertexDeclaration = value;
+            this._shaderValues = this._vertexDeclaration._shaderValues;
+        }
+        constructor(targetType, bufferUsageType) {
+            this._glBuffer = WebGLEngine.instance.createBuffer(targetType, bufferUsageType);
+        }
+        setDataLength(byteLength) {
+            this._glBuffer.setDataLength(byteLength);
+        }
+        setData(buffer, bufferOffset, dataStartIndex, dataCount) {
+            this.bind();
+            var needSubData = dataStartIndex !== 0 || dataCount !== Number.MAX_SAFE_INTEGER;
+            if (needSubData) {
+                var subData = new Uint8Array(buffer, dataStartIndex, dataCount);
+                this._glBuffer.setData(subData, bufferOffset);
+            }
+            else {
+                this._glBuffer.setData(buffer, bufferOffset);
+            }
+            Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_GeometryBufferUploadCount, 1);
+        }
+        bind() {
+            return this._glBuffer.bindBuffer();
+        }
+        unbind() {
+            return this._glBuffer.unbindBuffer();
+        }
+        orphanStorage() {
+            this.bind();
+            this._glBuffer.setDataLength(this._glBuffer._byteLength);
+        }
+        destroy() {
+            this._glBuffer.destroy();
+            this._vertexDeclaration = null;
         }
     }
 

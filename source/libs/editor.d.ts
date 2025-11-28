@@ -6790,6 +6790,27 @@ declare global {
             Android = 1,
             IOS = 2,
         }
+        export interface IBuildSettingsPanel extends IEditorPanel {
+            /**
+             * Get all registered build targets.
+             * @return A record mapping build target names to their info.
+             */
+            getBuildTargets(): Record<string, Readonly<IBuildTargetInfo>>;
+
+            /**
+             * Get a build target info by its name.
+             * @param name The name of the build target.
+             * @return The build target info, or null if not found.
+             */
+            getBuildTarget(name: string): Readonly<IBuildTargetInfo> | null;
+
+            /**
+             * Show the catalog for a specific build target.
+             * @param catalog The name of the catalog to show.
+             * @param catalog2 An optional secondary catalog name.
+             */
+            showCatalog(catalog: string, catalog2?: string): void;
+        }
         /**
          * Tools for asset store
          */
@@ -8671,8 +8692,12 @@ declare global {
             private onDragOver;
             private onDrop;
             protected __click(evt: gui.Event): void;
+            protected __rightClick(evt: gui.Event): void;
             private onHotkey;
             private submit;
+            copy(): void;
+            paste(): Promise<void>;
+            private cloneMaterial;
         }
 
         export class ColorInput extends gui.Widget {
@@ -8869,6 +8894,7 @@ declare global {
             protected _lang: gui.Widget;
             protected _key: gui.TextField;
             protected _textInfo: gui.I18nTextInfo;
+            private _canceled;
             get text(): string;
             set text(value: string);
             get editable(): boolean;

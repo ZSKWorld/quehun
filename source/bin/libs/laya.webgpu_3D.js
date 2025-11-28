@@ -146,9 +146,9 @@
         }
         _batchQueue() {
             if (!this._isTransparent) {
-                let time = Laya.Browser.now();
+                let time = performance.now();
                 this._batch.batch(this._elements);
-                Laya.LayaGL.statAgent.recordTimeData(Laya.StatisticsElement.T_3DBatchTime, Laya.Browser.now() - time);
+                Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_3DBatchTime, performance.now() - time);
             }
         }
         renderQueue(context) {
@@ -156,7 +156,7 @@
             const count = this._elements.length;
             this._quickSort.sort(this._elements, this._isTransparent, 0, count - 1);
             context.drawRenderElementList(this._elements);
-            Laya.LayaGL.statAgent.recordCTData(this._isTransparent ? Laya.StatisticsElement.CT_TransDrawCall : Laya.StatisticsElement.CT_OpaqueDrawCall, this.elements.length);
+            Laya.LayaGL.statAgent.recordCTData(this._isTransparent ? Laya.StatElement.CT_TransDrawCall : Laya.StatElement.CT_OpaqueDrawCall, this.elements.length);
             this._batch.clearRenderData();
         }
         clear() {
@@ -216,19 +216,19 @@
         render(context, list, count) {
             context.cameraUpdateMask++;
             this._clearRenderList();
-            var time = Laya.Browser.now();
+            var time = performance.now();
             RenderCullUtil.cullByCameraCullInfo(this.cameraCullInfo, list, count, this._opaqueList, this._transparent, context);
-            Laya.LayaGL.statAgent.recordTimeData(Laya.StatisticsElement.T_CullMain, Laya.Browser.now() - time);
-            time = Laya.Browser.now();
+            Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_CullMain, performance.now() - time);
+            time = performance.now();
             if ((this.depthTextureMode & Laya.DepthTextureMode.Depth) != 0)
                 this._renderDepthPass(context);
             if ((this.depthTextureMode & Laya.DepthTextureMode.DepthNormals) != 0)
                 this._renderDepthNormalPass(context);
-            Laya.LayaGL.statAgent.recordTimeData(Laya.StatisticsElement.T_DepthPass, Laya.Browser.now() - time);
+            Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_DepthPass, performance.now() - time);
             this._cacheViewPortAndScissor();
-            time = Laya.Browser.now();
+            time = performance.now();
             this._mainPass(context);
-            Laya.LayaGL.statAgent.recordTimeData(Laya.StatisticsElement.T_3DMainPass, Laya.Browser.now() - time);
+            Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_3DMainPass, performance.now() - time);
             this._opaqueList._batch.recoverData();
         }
         _clearRenderList() {
@@ -252,7 +252,7 @@
             context.setRenderTarget(this.depthTarget, Laya.RenderClearFlag.Depth);
             context.setClearData(Laya.RenderClearFlag.Depth, Laya.Color.BLACK, 1, 0);
             this._opaqueList.renderQueue(context);
-            Laya.LayaGL.statAgent.recordCTData(Laya.StatisticsElement.CT_DepthCastDrawCall, this._opaqueList.elements.length);
+            Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_DepthCastDrawCall, this._opaqueList.elements.length);
             const far = this.camera.farPlane;
             const near = this.camera.nearPlane;
             this._zBufferParams.setValue(1.0 - far / near, far / near, (near - far) / (near * far), 1 / near);
@@ -272,7 +272,7 @@
             context.setClearData(Laya.RenderClearFlag.Color | Laya.RenderClearFlag.Depth, this._defaultNormalDepthColor, 1, 0);
             context.setRenderTarget(this.depthNormalTarget, Laya.RenderClearFlag.Color | Laya.RenderClearFlag.Depth);
             this._opaqueList.renderQueue(context);
-            Laya.LayaGL.statAgent.recordCTData(Laya.StatisticsElement.CT_DepthCastDrawCall, this._opaqueList.elements.length);
+            Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_DepthCastDrawCall, this._opaqueList.elements.length);
             Laya.Camera.depthPass._setupDepthModeShaderValue(Laya.DepthTextureMode.DepthNormals, this.camera);
         }
         _mainPass(context) {
@@ -280,9 +280,9 @@
             RenderPassUtil.renderCmd(this.beforeForwardCmds, context);
             RenderPassUtil.recoverRenderContext3D(context, this.destTarget);
             context.setClearData(this.clearFlag, this.clearColor, 1, 0);
-            var time = Laya.Browser.now();
+            var time = performance.now();
             this._opaqueList.renderQueue(context);
-            Laya.LayaGL.statAgent.recordTimeData(Laya.StatisticsElement.T_3DMainPass_Opaque, Laya.Browser.now() - time);
+            Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_3DMainPass_Opaque, performance.now() - time);
             RenderPassUtil.renderCmd(this.beforeSkyboxCmds, context);
             if (this.skyRenderNode) {
                 const skyRenderElement = this.skyRenderNode.renderelements[0];
@@ -293,9 +293,9 @@
                 this._opaqueTexturePass();
             RenderPassUtil.renderCmd(this.beforeTransparentCmds, context);
             RenderPassUtil.recoverRenderContext3D(context, this.destTarget);
-            time = Laya.Browser.now();
+            time = performance.now();
             this._transparent.renderQueue(context);
-            Laya.LayaGL.statAgent.recordTimeData(Laya.StatisticsElement.T_3DMainPass_Trans, Laya.Browser.now() - time);
+            Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_3DMainPass_Trans, performance.now() - time);
         }
         _opaqueTexturePass() {
         }
@@ -1129,6 +1129,7 @@
             if (len === 0)
                 return 0;
             this._setScreenRT();
+            let time = Laya.Browser.now();
             this._prepareContext();
             const elements = list.elements;
             let element;
@@ -1137,6 +1138,8 @@
                 element._preUpdatePre(this);
             }
             Laya.WebGPURenderEngine._instance.gpuBufferMgr.upload();
+            Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_3DContextPre, Laya.Browser.now() - time);
+            time = Laya.Browser.now();
             if (this._needStart) {
                 this._start();
                 this._needStart = false;
@@ -1148,7 +1151,8 @@
                 elements[i]._render(this, cmd);
             this._submit();
             this.rtNeedClear = false;
-            Laya.LayaGL.statAgent.recordCTData(Laya.StatisticsElement.CT_3DDrawCall, list.length);
+            Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_3DContextRender, Laya.Browser.now() - time);
+            Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_3DDrawCall, list.length);
             Laya.WebGPURenderEngine._instance._framePassCount++;
             return 0;
         }
@@ -1166,7 +1170,7 @@
             node._render(this, this._renderCommand);
             this._submit();
             this.rtNeedClear = false;
-            Laya.LayaGL.statAgent.recordCTData(Laya.StatisticsElement.CT_3DDrawCall, 1);
+            Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_3DDrawCall, 1);
             Laya.WebGPURenderEngine._instance._framePassCount++;
             return 0;
         }
@@ -1206,10 +1210,14 @@
             this._opaqueList.renderQueue(context);
             RenderPassUtil.renderCmd(this.beforeSkyboxCmds, context);
             RenderPassUtil.recoverRenderContext3D(context, this.destTarget);
-            if (this.skyRenderNode) {
+            let skyClear = this.skyRenderNode && this.skyRenderNode.renderelements[0].subShader;
+            if (skyClear) {
                 const skyRenderElement = this.skyRenderNode.renderelements[0];
-                if (skyRenderElement.subShader) {
-                    context.drawRenderElementOne(skyRenderElement);
+                context.drawRenderElementOne(skyRenderElement);
+            }
+            else {
+                if (this._opaqueList.elements.length == 0) {
+                    context.clearRenderTarget();
                 }
             }
             this.enableOpaque && this._opaqueTexturePass();
@@ -1305,6 +1313,7 @@
         render(context, list, count) {
             const sceneData = context.sceneData;
             const originCameraData = context.cameraData;
+            const originInvertY = context.invertY;
             const shadowMap = this.destTarget;
             context.pipelineMode = 'ShadowCaster';
             context.setRenderTarget(shadowMap, Laya.RenderClearFlag.Depth);
@@ -1326,10 +1335,11 @@
                 shadowCullInfo.direction = this._lightForward;
                 var time = Laya.Browser.now();
                 RenderCullUtil.cullDirectLightShadow(shadowCullInfo, list, count, this._renderQueue, context);
-                Laya.LayaGL.statAgent.recordTimeData(Laya.StatisticsElement.T_CullShadow, Laya.Browser.now() - time);
+                Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_CullShadow, Laya.Browser.now() - time);
                 let cameraDephtTex = context.cameraData.getTexture(Laya.DepthPass.DEPTHTEXTURE);
                 sliceData.cameraShaderValue.setTexture(Laya.DepthPass.DEPTHTEXTURE, cameraDephtTex);
                 context.cameraData = sliceData.cameraShaderValue;
+                context.invertY = false;
                 context.cameraUpdateMask++;
                 const resolution = sliceData.resolution;
                 const offsetX = sliceData.offsetX;
@@ -1346,8 +1356,13 @@
                     context.setViewPort(Laya.Viewport.TEMP);
                     context.setScissor(Laya.Vector4.TEMP);
                 }
-                this._renderQueue.renderQueue(context);
-                Laya.LayaGL.statAgent.recordCTData(Laya.StatisticsElement.CT_ShadowDrawCall, this._renderQueue.elements.length);
+                if (this._renderQueue.elements.length > 0) {
+                    this._renderQueue.renderQueue(context);
+                }
+                else {
+                    context.clearRenderTarget();
+                }
+                Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_ShadowDrawCall, this._renderQueue.elements.length);
                 this._applyCasterPassCommandBuffer(context);
                 context.setClearData(Laya.RenderClearFlag.Nothing, Laya.Color.BLACK, 1, 0);
             }
@@ -1355,6 +1370,7 @@
             this._renderQueue._batch.recoverData();
             context.restoreViewPortAndScissor();
             context.cameraData = originCameraData;
+            context.invertY = originInvertY;
             context.cameraUpdateMask++;
         }
         _applyRenderData(sceneData, cameraData) {
@@ -1445,7 +1461,7 @@
             this._setupShadowCasterShaderValues(shaderData, shadowSpotData, this._shadowBias);
             var time = Laya.Browser.now();
             RenderCullUtil.cullSpotShadow(shadowSpotData.cameraCullInfo, list, count, this._renderQueue, context);
-            Laya.LayaGL.statAgent.recordTimeData(Laya.StatisticsElement.T_CullShadow, Laya.Browser.now() - time);
+            Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_CullShadow, Laya.Browser.now() - time);
             let cameraDepthTex = context.cameraData.getTexture(Laya.DepthPass.DEPTHTEXTURE);
             shadowSpotData.cameraShaderValue.setTexture(Laya.DepthPass.DEPTHTEXTURE, cameraDepthTex);
             context.cameraData = shadowSpotData.cameraShaderValue;
@@ -1456,7 +1472,7 @@
             context.setScissor(Laya.Vector4.TEMP);
             context.setClearData(Laya.RenderClearFlag.Depth, Laya.Color.BLACK, 1, 0);
             this._renderQueue.renderQueue(context);
-            Laya.LayaGL.statAgent.recordCTData(Laya.StatisticsElement.CT_ShadowDrawCall, this._renderQueue.elements.length);
+            Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_ShadowDrawCall, this._renderQueue.elements.length);
             this._applyCasterPassCommandBuffer(context);
             this._applyRenderData(context.sceneData, context.cameraData);
             context.restoreViewPortAndScissor();
@@ -1714,13 +1730,13 @@
             else {
                 context.sceneData.removeDefine(Laya.Scene3DShaderDeclaration.SHADERDEFINE_SHADOW_SPOT);
             }
-            Laya.LayaGL.statAgent.recordTimeData(Laya.StatisticsElement.T_ShadowPass, Laya.Browser.now() - time);
+            Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_ShadowPass, Laya.Browser.now() - time);
             renderPass.renderPass.render(context, list, count);
             renderPass._beforeImageEffectCMDS && this._renderCmd(renderPass._beforeImageEffectCMDS, context);
             if (renderPass.enablePostProcess && renderPass.postProcess) {
                 time = Laya.Browser.now();
                 this._renderPostProcess(renderPass.postProcess, context);
-                Laya.LayaGL.statAgent.recordTimeData(Laya.StatisticsElement.T_Render_PostProcess, Laya.Browser.now() - time);
+                Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_Render_PostProcess, Laya.Browser.now() - time);
             }
             renderPass._afterAllRenderCMDS && this._renderCmd(renderPass._afterAllRenderCMDS, context);
             renderPass.finalize._apply(false);

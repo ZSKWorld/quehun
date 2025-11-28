@@ -825,6 +825,9 @@
         setClearData(clearFlag, color, depth, stencil) {
             return this._nativeObj.setClearData(clearFlag, color, depth, stencil);
         }
+        clearRenderTarget() {
+            this._nativeObj.clearRenderTarget();
+        }
         drawRenderElementList(list) {
             this._tempList.length = 0;
             let listelement = list.elements;

@@ -780,6 +780,24 @@
             }
             return keys.length > 0 ? keys[keys.length - 1] + 1 : 0;
         }
+        static tiledTLayer(tiledX, tiledY, out = new Laya.Vector2()) {
+            const tileMapY = tiledX + tiledY;
+            const parity = tileMapY & 1;
+            const tileMapX = (tiledX - tiledY - parity) >> 1;
+            out.x = tileMapX;
+            out.y = tileMapY;
+            return out;
+        }
+        static layerToTiled(tileMapX, tileMapY, out = new Laya.Vector2()) {
+            tileMapX = Math.floor(tileMapX);
+            tileMapY = Math.floor(tileMapY);
+            const parity = tileMapY & 1;
+            const tiledX = tileMapX + ((tileMapY + parity) >> 1);
+            const tiledY = tileMapY - tiledX;
+            out.x = tiledX;
+            out.y = tiledY;
+            return out;
+        }
     }
     TileMapUtils.CACHE_UVs = new Map();
 

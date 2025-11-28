@@ -1361,6 +1361,7 @@
             context.setRenderTarget(shadowMap, Laya.RenderClearFlag.Depth);
             context.setClearData(Laya.RenderClearFlag.Depth, Laya.Color.BLACK, 1, 0);
             let originCameraData = context.cameraData;
+            let originInvertY = context.invertY;
             for (var i = 0, n = this._cascadeCount; i < n; i++) {
                 var sliceData = this._shadowSliceDatas[i];
                 this.getShadowBias(sliceData.projectionMatrix, sliceData.resolution, this._shadowBias);
@@ -1375,6 +1376,7 @@
                 RenderCullUtil.cullDirectLightShadow(shadowCullInfo, list, count, this._renderQueue, context);
                 Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_CullShadow, performance.now() - time);
                 context.cameraData = sliceData.cameraShaderValue;
+                context.invertY = false;
                 context.cameraUpdateMask++;
                 var resolution = sliceData.resolution;
                 var offsetX = sliceData.offsetX;
@@ -1399,6 +1401,7 @@
             this._applyRenderData(context.sceneData, context.cameraData);
             this._renderQueue._batch.recoverData();
             context.cameraData = originCameraData;
+            context.invertY = originInvertY;
             context.cameraUpdateMask++;
         }
         _applyRenderData(scene, camera) {
@@ -1650,6 +1653,10 @@
             if (this._clearFlag != Laya.RenderClearFlag.Nothing)
                 Laya.WebGLEngine.instance.clearRenderTexture(this._clearFlag, this._clearColor, this._clearDepth, this._clearStencil);
             Laya.WebGLEngine.instance.scissor(this._scissor.x, this._scissor.y, this._scissor.z, this._scissor.w);
+        }
+        clearRenderTarget() {
+            this._bindRenderTarget();
+            this._start();
         }
     }
 

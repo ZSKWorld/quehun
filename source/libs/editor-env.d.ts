@@ -90,6 +90,12 @@ declare global {
             fadeOutEnable?: boolean;
 
             /**
+             * @zh 要生成的mipmap级别数量，如需限制，则值应为正数。例如5，只生成5个层级的MIP纹理（第0级到第4级）。默认值为-1，这意味着将根据纹理大小自动确定mipmap级别数量。
+             * @en The number of mipmap levels to generate. Default is -1, which means the number of mipmap levels will be automatically determined based on the texture size.
+            */
+            maxMipLevels?: number;
+
+            /**
              * Anisotropic filtering level. Range is 1-16. Default is 4.
              */
             anisoLevel?: number;
@@ -171,7 +177,6 @@ declare global {
              * 
              */
             fadeOutMipmap?: { x: number, y: number };
-
             /**
              * 
              */
@@ -671,16 +676,16 @@ declare global {
             OverrideTargetMissing = 2
         }
 
-        export interface IPrefabAnalyseResult<ProvidedOptions extends IPrefabAnalyseOptions> {
+        export interface IPrefabAnalyseResult {
             /**
              * Dependencies.
              */
-            deps: Array<IAssetLinkInfo> | (ProvidedOptions['getDeps'] extends false ? never : undefined);
+            deps: Array<IAssetLinkInfo>;
 
             /**
              * I18n strings.
              */
-            i18nStrings: Array<IPrefabI18nString> | (ProvidedOptions['getI18nStrings'] extends false ? never : undefined);
+            i18nStrings: Array<IPrefabI18nString>;
         }
 
         export interface IPrefabDataAnalyzer {
@@ -690,7 +695,7 @@ declare global {
              * @param options The options.
              * @returns The analysis result.
              */
-            analyse<T extends IPrefabAnalyseOptions>(asset: IAssetInfo, options: T): Promise<IPrefabAnalyseResult<T>>;
+            analyse(asset: IAssetInfo, options: IPrefabAnalyseOptions): Promise<IPrefabAnalyseResult>;
 
             /**
              * Analyse the raw data which is in lh format.
@@ -699,7 +704,7 @@ declare global {
              * @param options The options.
              * @returns The analysis result.
              */
-            analyseRaw<T extends IPrefabAnalyseOptions>(sourceData: any, isWidget: boolean, options: T): Promise<IPrefabAnalyseResult<T>>;
+            analyseRaw(sourceData: any, isWidget: boolean, options: IPrefabAnalyseOptions): Promise<IPrefabAnalyseResult>;
 
             /**
              * Get the raw data of an prefab asset.
@@ -711,6 +716,11 @@ declare global {
              */
             getNodeMap(asset: IAssetInfo): Promise<Record<string, any>>;
 
+            /**
+             * Delete unused data for release environment.
+             * @param content Prefab content data.
+             */
+            minifyPrefabData(content: any): any;
         }
         export interface IOffscreenRenderSubmit {
             /**
@@ -2353,16 +2363,49 @@ declare global {
         }
 
         export interface IJsPluginInfo {
+            /**
+             * The asset info of the js plugin.
+             */
             asset: IAssetInfo;
+            /**
+             * The type of the js plugin.
+             * 0 - Runtime only
+             * 1 - Editor extension only
+             * 2 - Both runtime and editor extension
+             */
             type: number;
+            /**
+             * Whether to allow loading in editor environment. Only applies to runtime js plugins. Default is false.
+             */
             allowLoadInEditor: boolean;
+            /**
+             * Whether to allow loading in runtime environment. Only applies to runtime js plugins. Default is true.
+             */
             allowLoadInRuntime: boolean;
+            /**
+             * Whether to auto load the js plugin. Only meansful when allowLoadInRuntime is true. Default is true.
+             */
             autoLoad: boolean;
-            scriptElement: HTMLElement;
-            loadOrder: number;
+            /**
+             * Whether to minify the js plugin on publish. Only applies to runtime js plugins. Default is false.
+             */
             minifyOnPublish: boolean;
+            /**
+             * Whether to keep class and function names when minifying.
+             */
             keepNames: boolean;
+            /**
+             * Whether to keep unused functions and variables when minifying.
+             */
             keepUnused: boolean;
+            /**
+             * References to other js plugins.
+             */
+            references: string[];
+            /**
+             * The limited platforms for the js plugin. Empty means all platforms.
+             */
+            limitedPlatforms: string[];
         }
 
         export interface IExtensionManager {
@@ -2427,6 +2470,14 @@ declare global {
              * How many tasks can be executed in parallel. Default is 100.
              */
             numParallelTasks?: number;
+
+            /**
+             * Called when the file is being written. Return that actual file content.
+             * @param owner Current asset export info.
+             * @param data Custom data. 
+             * @returns The actual file content. 
+             */
+            transformer?: (owner: IAssetExportInfo, data: any) => IFileContent;
         } & ({
             type: "text";
             data: string;
@@ -2457,13 +2508,6 @@ declare global {
              * Custom data to transfer to the transformer as the second parameter.
              */
             data?: any;
-            /**
-             * Called when the file is being written. Return that actual file content.
-             * @param owner Current asset export info.
-             * @param data Custom data. 
-             * @returns The actual file content. 
-             */
-            transformer: (owner: IAssetExportInfo, data: any) => IFileContent;
         });
 
         export enum AssetExportConfigType {
@@ -2541,6 +2585,11 @@ declare global {
              * Dependencies.
              */
             deps?: Array<IAssetExportDepInfo>;
+
+            /**
+             * Broken links found during the export process.
+             */
+            brokenLinks?: Array<IAssetLinkInfo>;
 
             /**
              * Configuration. e.g. Texture export configuration.
@@ -2720,6 +2769,11 @@ declare global {
              * A logger for writing logs.
              */
             logger?: ILogger;
+
+            /**
+             * If true, indicates that the export process is part of a build.
+             */
+            isBuilding?: boolean;
         }
 
         export interface IOutFileInfo {
@@ -2802,6 +2856,12 @@ declare global {
              * @returns A map of the export information of the assets. The key is the asset.
              */
             get items(): Map<IAssetInfo, IAssetExportInfo>;
+
+            /**
+             * Get the broken links found during the export process.
+             * @return A map where the key is the missing asset URL and the value is a set of assets that reference the missing asset.
+             */
+            getBrokenLinks(): Map<string, Set<IAssetInfo>>;
 
             /**
              * Write the output files to the specified folder.
@@ -4441,6 +4501,11 @@ declare global {
             getPossibleResourceDirs(path: string): Array<IAssetInfo>;
 
             /**
+             * Get all user assets in the project. User assets are assets in the `assets`, `src`, `packages` folders.
+             */
+            getUserAssets(): Array<IAssetInfo>;
+
+            /**
              * Get children assets of the specified folder.
              * @param folderAsset The folder asset.
              * @param types The types of assets to get. If not specified, all types of assets will be returned.
@@ -4882,6 +4947,30 @@ declare global {
              * Handle the export of the asset.
              */
             handleExport(): Promise<void>;
+        }
+        export interface IAssetDependencyTool {
+            /**
+             * Query the dependencies of the given assets.
+             * @param assets The assets to query. 
+             * @param includeIndirectLinks Whether to include indirect dependencies.
+             * @returns A promise that resolves to a tuple containing an array of asset info objects representing the dependencies and an array of asset IDs or paths that were not found.
+             */
+            queryDependency(assets: ReadonlyArray<IAssetInfo>, includeIndirectLinks?: boolean): Promise<[Array<IAssetInfo>, Array<string>]>;
+
+            /**
+             * Query the assets that reference the given asset IDs or paths.
+             * @param assetIdOrPaths The asset IDs or paths to query.
+             * @returns A promise that resolves to an array of asset info objects representing the referencing assets. 
+             */
+            queryReference(assets: ReadonlyArray<string>): Promise<Array<IAssetInfo>>;
+
+            /**
+             * Replace references in assets based on the given replacements mapping.
+             * @param replacements A mapping of original asset IDs or paths to new asset IDs or paths. 
+             * @param targetAssets An optional set of assets to limit the replacement operation to.
+             * @returns A promise that resolves to an array of asset info objects representing the assets that were modified.
+             */
+            replaceReference(replacements: Record<string, string>, targetAssets?: ReadonlySet<IAssetInfo>): Promise<Array<IAssetInfo>>;
         }
         export type FEnumDescriptor = {
             name: string,
@@ -8593,7 +8682,7 @@ declare global {
             get parentAsset(): IAssetInfo;
             handleExport(): Promise<void>;
             /**
-             * Pase the links, add referenced assets to the export queue, and then return the export dependency information.
+             * Parse the links, add referenced assets to the export queue, and then return the export dependency information.
              * @param links The links to be parsed.
              * @param basePath The base path of the links.
              * @returns The export dependency information.
@@ -8605,6 +8694,11 @@ declare global {
              * @returns The export information of the asset.
              */
             protected addQueue(asset: IAssetInfo): IAssetExportInfo;
+            /**
+             * Add a missing link record.
+             * @param link The link information.
+             */
+            protected addBrokenLink(link: IAssetLinkInfo): void;
             /**
              * If you want to share data between different exporters, you can use this method.
              * @param key The key of the shared data.
@@ -8707,6 +8801,7 @@ declare global {
             protected _lang: gui.Widget;
             protected _key: gui.TextField;
             protected _textInfo: gui.I18nTextInfo;
+            private _canceled;
             get text(): string;
             set text(value: string);
             get editable(): boolean;
@@ -8952,6 +9047,11 @@ declare global {
          * The `JsonBin` object is used to serialize and deserialize objects into binary data.
          */
         const JsonBin: IJsonBin;
+
+        /**
+         * The `AssetDependencyTool` object is used to query asset dependencies and references.
+         */
+        const AssetDependencyTool: IAssetDependencyTool;
         /**
          * References a commonjs module. You can import built-in Node.js modules such as: path, fs, child_process, etc. 
          * The IDE also includes some third-party modules, including: electron, @svgdotjs, sharp, glob, qrcode, typescript, etc.

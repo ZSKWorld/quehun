@@ -615,14 +615,12 @@
             const { system } = Laya.PAL.hasAPI("getDeviceInfo") ? Laya.PAL.g.getDeviceInfo() : systemInfo;
             const systemVersionArr = system ? system.split(' ') : [];
             Laya.Browser.systemVersion = systemVersionArr.length ? systemVersionArr[systemVersionArr.length - 1] : '';
-            Laya.TextRenderConfig.useImageData = false;
-            if (Laya.Browser.platform === Laya.Browser.PLATFORM_IOS && Laya.Utils.compareVersion(Laya.Browser.systemVersion, "10.1.1") === 0)
-                Laya.TextRenderConfig.useImageData = true;
-            if (Laya.Browser.onHWMiniGame && !Laya.WebGLEngine) {
-                Laya.TextRenderConfig.useImageData = true;
-            }
             if (Laya.Browser.onHWMiniGame) {
                 this._pixelRatio = 1;
+            }
+            else {
+                if (this._pixelRatio === 1 && Laya.Browser.onPC && !Laya.Browser.onDevTools)
+                    this._pixelRatio = 2;
             }
             Laya.PAL.g.onShow(() => {
                 this._visible = true;
@@ -1276,8 +1274,10 @@
             this.decoder.on("ended", () => {
                 if (this._loop)
                     this.decoder.stop().then(() => this.decoder.start(this._startOption));
-                else
+                else {
                     this._ended = true;
+                    this.event("ended");
+                }
             });
         }
         get readyState() {

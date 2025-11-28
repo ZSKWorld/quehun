@@ -1,6 +1,26 @@
 (function (exports, Laya) {
     'use strict';
 
+    class BatchManager {
+        static registerProvider(renderType, cls) {
+            if (BatchManager.registry[renderType])
+                throw new Error("Overlapping batch optimization");
+            BatchManager.registry[renderType] = cls;
+        }
+        static createProvider(renderType) {
+            return new (BatchManager.registry[renderType] || NullBatchProvider)();
+        }
+    }
+    BatchManager.registry = {};
+    class NullBatchProvider {
+        batch(list, start, end, allowReorder) {
+            for (let i = start; i <= end; i++)
+                list.add(list.elements[i]);
+        }
+        reset() { }
+        destroy() { }
+    }
+
     class Web2DGraphicWholeBuffer {
         constructor() {
             this._num = 0;
@@ -15,7 +35,6 @@
             view._prev = null;
             if (!this._first) {
                 this._first = view;
-                this._first.start = 0;
             }
             if (this._last) {
                 this._last._next = view;
@@ -138,6 +157,34 @@
         }
     }
     class Web2DGraphicsIndexBatchBuffer extends Web2DGraphicsIndexBuffer {
+        _upload() {
+            let view = this._first;
+            let uploadStart = this._needResetData ? 0 : this._updateRange.x;
+            while (view) {
+                if (this._needResetData || view.start >= uploadStart) {
+                    view._updateView(this._dataView);
+                }
+                view = view._next;
+            }
+            let len = this._last.start + this._last.length - uploadStart;
+            if (len == 0)
+                return;
+            let offset = uploadStart * 2;
+            offset = Math.floor(offset / 4) * 4;
+            let dataLength = len * 2 + (uploadStart * 2 - offset);
+            if (dataLength + offset > this.arrayBuffer.byteLength) {
+                offset -= (dataLength + offset - this.arrayBuffer.byteLength);
+            }
+            this.buffer.setData(this.arrayBuffer, offset, offset, dataLength);
+            this._needResetData = false;
+        }
+        _modifyOneView(view) {
+            super._modifyOneView(view);
+            if (view._geometry) {
+                view._geometry.clearRenderParams();
+                view._geometry.setDrawElemenParams(view.length, view.start * 2);
+            }
+        }
         clearBufferViews() {
             this._first = null;
             this._last = null;
@@ -149,21 +196,64 @@
         }
     }
 
-    const TEMP_SINGLE_LIST = new Laya.FastSinglelist();
     class BatchBuffer {
         constructor() {
             this.indexCount = 0;
             this.maxIndexCount = 0;
             this.bufferStates = new Map();
-            this.geometryList = [];
             this.indexBuffer = Laya.LayaGL.renderDeviceFactory.createIndexBuffer(Laya.BufferUsage.Dynamic);
             this.indexBuffer.indexType = Laya.IndexFormat.UInt16;
             this.wholeBuffer = new Web2DGraphicsIndexBatchBuffer();
             this.wholeBuffer.buffer = this.indexBuffer;
+            if (!!Laya.LayaGL.renderEngine.gl) {
+                this.add = this._addWebgl;
+            }
+            else {
+                this.add = this._addWebgpu;
+            }
+        }
+        _addWebgl(element) {
+            let handle = element.owner.renderDataHandler;
+            let blocks = handle._getBlocks();
+            if (!blocks)
+                return null;
+            let cview = handle.getCloneViews()[element._index];
+            let block = blocks[element._index];
+            let vertexBuffer = block.vertexBuffer;
+            let bufferState = this.bindBuffer(vertexBuffer);
+            this.indexCount += cview.length;
+            this.wholeBuffer._modifyOneView(cview);
+            if (cview._geometry.bufferState !== bufferState) {
+                cview._geometry.bufferState = bufferState;
+            }
+            WebRender2DPass.setBuffer(this.wholeBuffer);
+            this.updateBufLength();
+            return cview._geometry;
+        }
+        _addWebgpu(element) {
+            let handle = element.owner.renderDataHandler;
+            let blocks = handle._getBlocks();
+            if (!blocks)
+                return null;
+            let cview = handle.getCloneViews()[element._index];
+            let block = blocks[element._index];
+            let vertexBuffer = block.vertexBuffer;
+            let bufferState = this.bindBuffer(vertexBuffer);
+            this.indexCount += cview.length;
+            this.wholeBuffer._modifyOneView(cview);
+            if (cview._geometry._bufferState !== bufferState) {
+                cview._geometry.bufferState = bufferState;
+            }
+            WebRender2DPass.setBuffer(this.wholeBuffer);
+            this.updateBufLength();
+            return cview._geometry;
+        }
+        add(element) {
+            return null;
         }
         updateBufLength() {
             if (this.maxIndexCount <= this.indexCount) {
-                let nLength = Math.ceil(this.indexCount / BatchBuffer._STEP_) * BatchBuffer._STEP_;
+                let nLength = Math.ceil(this.indexCount / _STEP_) * _STEP_;
                 let byteLength = nLength * 2;
                 this.indexBuffer._setIndexDataLength(byteLength);
                 this.wholeBuffer._resetData(byteLength);
@@ -182,7 +272,6 @@
         clear() {
             this.indexCount = 0;
             this.wholeBuffer.clearBufferViews();
-            this.geometryList.length = 0;
         }
         destroy() {
             this.clear();
@@ -196,7 +285,6 @@
             this.wholeBuffer = null;
         }
     }
-    BatchBuffer._STEP_ = 1024;
     class BatchContext {
         constructor() {
             this.textureId = 0;
@@ -204,47 +292,66 @@
             this.clipInfo = null;
             this.subShader = null;
             this.bufferState = null;
-            this.shaderData = null;
+            this.primitiveShaderData = null;
+            this.materialShaderData = null;
             this.type = 0;
             this.lowType = 0;
             this.globalRenderData = null;
+            this.fillTexture = false;
+            let isWebgl = !!Laya.LayaGL.renderEngine.gl;
+            if (isWebgl) {
+                this.setHead = this._setHeadWebgl;
+                this.isCompatible = this._isCompatibleWebgl;
+            }
+            else {
+                this.setHead = this._setHeadWebgpu;
+                this.isCompatible = this._isCompatibleWebgpu;
+            }
         }
-        reset() {
-            this.textureId = 0;
-            this.globalAlpha = 1;
-            this.clipInfo = null;
-            this.subShader = null;
-            this.bufferState = null;
-            this.shaderData = null;
-            this.type = 0;
-            this.lowType = 0;
-            this.globalRenderData = null;
-        }
-        initFromElement(element) {
-            this.textureId = element.type & (~63);
-            this.shaderData = element.primitiveShaderData;
-            this.globalAlpha = element.owner.globalAlpha;
-            this.clipInfo = element.owner.getClipInfo();
+        _setHeadWebgl(element) {
+            this.primitiveShaderData = element.primitiveShaderData;
+            this.materialShaderData = element.materialShaderData;
             this.subShader = element.subShader;
             this.bufferState = element.geometry.bufferState;
+            this.textureId = element.type & (~63);
+            this.globalAlpha = element.owner.globalAlpha;
+            this.clipInfo = element.owner.getClipInfo();
             this.type = element.type;
             this.lowType = element.type & 63;
             this.globalRenderData = element.owner.globalRenderData;
+            this.fillTexture = this.primitiveShaderData.hasDefine(Laya.ShaderDefines2D.FILLTEXTURE);
+            this.texRange = this.primitiveShaderData.getVector(Laya.ShaderDefines2D.UNIFORM_TEXRANGE);
         }
-        isCompatible(element) {
+        _setHeadWebgpu(element) {
+            this.primitiveShaderData = element._primitiveShaderData;
+            this.materialShaderData = element._materialShaderData;
+            this.subShader = element._subShader;
+            this.bufferState = element.geometry._bufferState;
+            this.textureId = element.type & (~63);
+            this.globalAlpha = element.owner.globalAlpha;
+            this.clipInfo = element.owner.getClipInfo();
+            this.type = element.type;
+            this.lowType = element.type & 63;
+            this.globalRenderData = element.owner.globalRenderData;
+            this.fillTexture = this.primitiveShaderData.hasDefine(Laya.ShaderDefines2D.FILLTEXTURE);
+            this.texRange = this.primitiveShaderData.getVector(Laya.ShaderDefines2D.UNIFORM_TEXRANGE);
+        }
+        setHead(element) { }
+        _isCompatibleWebgl(element) {
+            if (this.type & 32)
+                return false;
             let elementType = element.type;
             if (elementType & 32) {
                 return false;
             }
             let elementLowType = elementType & 63;
             let elementTexId = elementType & (~63);
-            let elementOwner = element.owner;
-            if (element.primitiveShaderData.getVector(Laya.ShaderDefines2D.UNIFORM_TEXRANGE)) {
+            if (elementTexId !== 0 && elementTexId !== this.textureId && this.textureId !== 0)
                 return false;
-            }
             if (this.lowType !== elementLowType) {
                 return false;
             }
+            let elementOwner = element.owner;
             if (this.globalAlpha !== elementOwner.globalAlpha) {
                 return false;
             }
@@ -254,154 +361,200 @@
                 elementOwner.globalRenderData !== this.globalRenderData) {
                 return false;
             }
-            if (this.textureId === 0) {
-                if (elementTexId !== 0) {
-                    this.textureId = elementTexId;
-                    this.shaderData = element.primitiveShaderData;
-                }
-                return true;
+            if ((this.lowType & 16) !== 0 && element.materialShaderData !== this.materialShaderData) {
+                return false;
             }
-            return elementTexId === 0 || elementTexId === this.textureId;
+            let fillTexture = element.primitiveShaderData.hasDefine(Laya.ShaderDefines2D.FILLTEXTURE);
+            if (fillTexture) {
+                if (!this.fillTexture)
+                    return false;
+                if (!element.primitiveShaderData.getVector(Laya.ShaderDefines2D.UNIFORM_TEXRANGE).equal(this.texRange))
+                    return false;
+            }
+            else if (this.fillTexture)
+                return false;
+            if (this.textureId === 0 && elementTexId !== 0) {
+                this.textureId = elementTexId;
+                this.primitiveShaderData = element.primitiveShaderData;
+            }
+            return true;
         }
-    }
-    class WebGraphicsBatchContext {
-        constructor() {
-            this._batchBuffer = new BatchBuffer();
-            this._list = new Laya.FastSinglelist();
+        _isCompatibleWebgpu(element) {
+            if (this.type & 32)
+                return false;
+            let elementType = element.type;
+            if (elementType & 32) {
+                return false;
+            }
+            let elementLowType = elementType & 63;
+            let elementTexId = elementType & (~63);
+            if (elementTexId !== 0 && elementTexId !== this.textureId && this.textureId !== 0)
+                return false;
+            if (this.lowType !== elementLowType) {
+                return false;
+            }
+            let elementOwner = element.owner;
+            if (this.globalAlpha !== elementOwner.globalAlpha) {
+                return false;
+            }
+            if (this.subShader !== element.subShader ||
+                this.bufferState !== element.geometry.bufferState ||
+                this.clipInfo !== elementOwner.getClipInfo() ||
+                elementOwner.globalRenderData !== this.globalRenderData) {
+                return false;
+            }
+            if (this.lowType & 16 && element._materialShaderData !== this.materialShaderData) {
+                return false;
+            }
+            let primitiveShaderData = element._primitiveShaderData;
+            let fillTexture = primitiveShaderData.hasDefine(Laya.ShaderDefines2D.FILLTEXTURE);
+            if (fillTexture) {
+                if (!this.fillTexture)
+                    return false;
+                if (!primitiveShaderData.getVector(Laya.ShaderDefines2D.UNIFORM_TEXRANGE).equal(this.texRange))
+                    return false;
+            }
+            else if (this.fillTexture)
+                return false;
+            if (this.textureId === 0 && elementTexId !== 0) {
+                this.textureId = elementTexId;
+                this.primitiveShaderData = primitiveShaderData;
+            }
+            return true;
         }
-        reset() {
-            this._batchBuffer.clear();
-            let elements = this._list.elements;
-            let length = this._list.length;
-            let elementLength = elements.length;
-            for (let i = 0; i < elementLength; i++) {
-                let element = elements[i];
-                element.geometry.clearRenderParams();
-                if (i >= length) {
-                    WebGraphicsBatch._pool.recover(element);
-                }
-            }
-            this._list.clean();
-            this._list.length = 0;
-        }
-        getRenderElement() {
-            let elemetLength = this._list.elements.length;
-            let length = this._list.length;
-            let element = null;
-            if (elemetLength > length) {
-                element = this._list.elements[length];
-                this._list.length++;
-                return element;
-            }
-            else {
-                element = WebGraphicsBatch._pool.take();
-                this._list.add(element);
-            }
-            return element;
-        }
-        destroy() {
-            let elements = this._list.elements;
-            let elementLength = elements.length;
-            for (let i = 0; i < elementLength; i++) {
-                let element = elements[i];
-                WebGraphicsBatch._pool.recover(element);
-            }
-            this._list.destroy();
-            this._batchBuffer.destroy();
+        isCompatible(element) {
+            return true;
         }
     }
     class WebGraphicsBatch {
-        createBatchContext() {
-            return new WebGraphicsBatchContext();
+        constructor() {
+            this._buffer = new BatchBuffer();
+            this._merged = [];
+            this._context = new BatchContext();
         }
-        batchRenderElement(list, start, length, context) {
+        reset() {
+            this._buffer.clear();
+            WebGraphicsBatch._pool.recover(this._merged);
+        }
+        destroy() {
+            this._buffer.destroy();
+            WebGraphicsBatch._pool.recover(this._merged);
+        }
+        batch(list, start, end, allowReorder) {
             let elementArray = list.elements;
-            let batchStart = -1;
-            let count = 0;
-            let end = length - 1;
-            let batchContext = WebGraphicsBatch.batchCtx;
-            batchContext.reset();
-            for (let index = 0; index <= end; index++) {
-                let offset = start + index;
-                let element = elementArray[offset];
-                if (this.canAddToBatch(element, batchContext)) {
-                    if (batchStart == -1) {
-                        batchStart = index;
-                        count = 1;
-                        batchContext.initFromElement(element);
+            let ctx = this._context;
+            ctx.setHead(elementArray[start]);
+            let cnt = end - start + 1;
+            if (cnt > 1000)
+                allowReorder = false;
+            if (allowReorder) {
+                if (elementFlags == null)
+                    initCache(1000);
+                let headGroup = 0;
+                let maxGroup = 1;
+                let indiceLen = 1;
+                elementIndice[0] = start;
+                elementFlags[0] = 0;
+                for (let i = 1; i < cnt; i++) {
+                    let element = elementArray[start + i];
+                    elementFlags[i] = -1;
+                    let rect = element.owner.rect;
+                    rectLeftCache[i] = rect.x;
+                    rectTopCache[i] = rect.y;
+                    rectRightCache[i] = rect.x + rect.width;
+                    rectBottomCache[i] = rect.y + rect.height;
+                }
+                for (let i = 1; i < cnt; i++) {
+                    let element = elementArray[start + i];
+                    let group = elementFlags[i];
+                    if (group === -2) {
+                        continue;
+                    }
+                    if (group !== -1) {
+                        if (group === headGroup) {
+                            elementIndice[indiceLen++] = start + i;
+                            continue;
+                        }
                     }
                     else {
-                        count++;
+                        if (ctx.isCompatible(element)) {
+                            elementIndice[indiceLen++] = start + i;
+                            continue;
+                        }
+                        elementFlags[i] = group = maxGroup++;
+                    }
+                    for (let j = i + 1; j < cnt; j++) {
+                        let element2 = elementArray[start + j];
+                        if (elementFlags[j] !== -1) {
+                            if (elementFlags[j] !== headGroup)
+                                continue;
+                        }
+                        else {
+                            if (!ctx.isCompatible(element2))
+                                continue;
+                        }
+                        for (let k = j - 1; k >= i; k--) {
+                            if (elementFlags[k] !== -2
+                                && rectLeftCache[j] < rectRightCache[k] && rectRightCache[j] > rectLeftCache[k]
+                                && rectTopCache[j] < rectBottomCache[k] && rectBottomCache[j] > rectTopCache[k]) {
+                                element2 = null;
+                                break;
+                            }
+                        }
+                        if (element2 != null) {
+                            elementIndice[indiceLen++] = start + j;
+                            elementFlags[j] = -2;
+                        }
+                        else
+                            elementFlags[j] = headGroup;
+                    }
+                    list.add(this.merge(elementArray, 0, indiceLen - 1, ctx, elementIndice));
+                    indiceLen = 1;
+                    elementIndice[0] = start + i;
+                    headGroup = group;
+                    ctx.setHead(element);
+                }
+                list.add(this.merge(elementArray, 0, indiceLen - 1, ctx, elementIndice));
+            }
+            else {
+                let batchStart = start;
+                for (let i = start + 1; i <= end; i++) {
+                    let element = elementArray[i];
+                    if (!ctx.isCompatible(element)) {
+                        list.add(this.merge(elementArray, batchStart, i - 1, ctx));
+                        batchStart = i;
+                        ctx.setHead(element);
                     }
                 }
-                else {
-                    if (count > 1) {
-                        this.batch(list, batchStart + start, count, context, batchContext);
-                    }
-                    else if (count === 1) {
-                        list.add(elementArray[batchStart + start]);
-                    }
-                    batchContext.reset();
-                    batchStart = -1;
-                    count = 0;
-                    if (this.canAddToBatch(element, batchContext)) {
-                        batchStart = index;
-                        count = 1;
-                        batchContext.initFromElement(element);
-                    }
-                    else {
-                        list.add(element);
-                    }
-                }
-            }
-            if (count > 1) {
-                this.batch(list, batchStart + start, count, context, batchContext);
-            }
-            else if (count === 1) {
-                list.add(elementArray[batchStart + start]);
+                list.add(this.merge(elementArray, batchStart, end, ctx));
             }
         }
-        canAddToBatch(element, batchContext) {
-            if (batchContext.subShader === null) {
-                let elementType = element.type;
-                if (elementType & 32)
-                    return false;
-                return true;
+        merge(elementArray, start, end, batchContext, indice) {
+            if (start === end) {
+                let element = elementArray[indice !== undefined ? indice[start] : start];
+                this._buffer.add(element);
+                return element;
             }
-            return batchContext.isCompatible(element);
-        }
-        batch(list, start, length, context, batchContext) {
-            let elementArray = list.elements;
-            let staticBatchRenderElement = context.getRenderElement();
-            let drawArray = [];
-            let i = 0;
-            let drawLengths = [];
-            let buffer = context._batchBuffer;
-            for (i = 0; i < length; i++) {
-                let offset = start + i;
-                let element = elementArray[offset];
-                let geometry = buffer.geometryList[offset] || element.geometry;
-                if (!i) {
-                    staticBatchRenderElement.geometry.bufferState = geometry.bufferState;
+            let staticBatchRenderElement = WebGraphicsBatch._pool.take();
+            this._merged.push(staticBatchRenderElement);
+            let batchedGeometry = staticBatchRenderElement.geometry;
+            let currentOffset = 0;
+            let currentCount = 0;
+            let isFirst = true;
+            for (let i = start; i <= end; i++) {
+                let element = elementArray[indice !== undefined ? indice[i] : i];
+                let geometry = this._buffer.add(element) || element.geometry;
+                if (i === start) {
+                    batchedGeometry.bufferState = geometry.bufferState;
                     staticBatchRenderElement.materialShaderData = element.materialShaderData;
                     staticBatchRenderElement.value2DShaderData = element.value2DShaderData;
                     staticBatchRenderElement.subShader = element.subShader;
                     staticBatchRenderElement.renderStateIsBySprite = element.renderStateIsBySprite;
-                    staticBatchRenderElement.primitiveShaderData = batchContext.shaderData;
+                    staticBatchRenderElement.primitiveShaderData = batchContext.primitiveShaderData;
                     staticBatchRenderElement.owner = element.owner;
                 }
-                geometry.getDrawDataParams(TEMP_SINGLE_LIST);
-                drawArray.push(TEMP_SINGLE_LIST.elements.slice());
-                drawLengths.push(TEMP_SINGLE_LIST.length);
-            }
-            let geometry = staticBatchRenderElement.geometry;
-            let len = drawArray.length;
-            let currentOffset = 0;
-            let currentCount = 0;
-            let isFirst = true;
-            for (i = 0; i < len; i++) {
-                let drawParam = drawArray[i];
-                let drawLength = drawLengths[i];
+                let drawParam = geometry.drawParams.elements;
+                let drawLength = geometry.drawParams.length;
                 for (let j = 0; j < drawLength; j += 2) {
                     let offset = drawParam[j];
                     let count = drawParam[j + 1];
@@ -415,51 +568,18 @@
                         currentCount += count;
                     }
                     else {
-                        geometry.setDrawElemenParams(currentCount, currentOffset);
+                        batchedGeometry.setDrawElemenParams(currentCount, currentOffset);
                         currentOffset = offset;
                         currentCount = count;
                     }
                 }
             }
             if (!isFirst) {
-                geometry.setDrawElemenParams(currentCount, currentOffset);
+                batchedGeometry.setDrawElemenParams(currentCount, currentOffset);
             }
-            list.add(staticBatchRenderElement);
-        }
-        prepare(strcut, context, offset) {
-            let handle = strcut.renderDataHandler;
-            let blocks = handle._getBlocks();
-            if (!blocks)
-                return;
-            let buffer = context._batchBuffer;
-            let cviews = handle.getCloneViews();
-            for (let i = 0, n = blocks.length; i < n; i++) {
-                let cview = cviews[i];
-                let block = blocks[i];
-                let vertexBuffer = block.vertexBuffer;
-                let bufferState = buffer.bindBuffer(vertexBuffer);
-                buffer.indexCount += cview.length;
-                buffer.wholeBuffer._modifyOneView(cview);
-                if (cview._geometry.bufferState !== bufferState) {
-                    cview._geometry.bufferState = bufferState;
-                }
-                buffer.geometryList[offset + i] = cview._geometry;
-            }
-            WebRender2DPass.setBuffer(buffer.wholeBuffer);
-            buffer.updateBufLength();
-        }
-        recover(list) {
-            let length = list.length;
-            let recoverArray = list.elements;
-            for (let i = 0; i < length; i++) {
-                let info = recoverArray[i];
-                WebGraphicsBatch._pool.recover(info);
-            }
-            list.length = 0;
+            return staticBatchRenderElement;
         }
     }
-    WebGraphicsBatch.instance = null;
-    WebGraphicsBatch.batchCtx = new BatchContext();
     WebGraphicsBatch._pool = Laya.Pool.createPool2(() => {
         let element = Laya.LayaGL.render2DRenderPassFactory.createPrimitiveRenderElement2D();
         element.geometry = Laya.LayaGL.renderDeviceFactory.createRenderGeometryElement(Laya.MeshTopology.Triangles, Laya.DrawType.DrawElement);
@@ -467,7 +587,7 @@
         element.nodeCommonMap = ["Sprite2D"];
         element.renderStateIsBySprite = false;
         return element;
-    }, null, (element) => {
+    }, null, element => {
         element.geometry.clearRenderParams();
         element.geometry.bufferState = null;
         element.materialShaderData = null;
@@ -478,46 +598,75 @@
         element.renderStateIsBySprite = false;
         element.globalShaderData = null;
     });
+    const _STEP_ = 1024;
+    var elementFlags;
+    var elementIndice;
+    var rectLeftCache;
+    var rectTopCache;
+    var rectRightCache;
+    var rectBottomCache;
+    function initCache(maxElements) {
+        elementFlags = new Int16Array(maxElements);
+        elementIndice = new Int16Array(maxElements);
+        rectLeftCache = new Float32Array(maxElements);
+        rectTopCache = new Float32Array(maxElements);
+        rectRightCache = new Float32Array(maxElements);
+        rectBottomCache = new Float32Array(maxElements);
+    }
 
-    class Batch2DInfo {
+    BatchManager.registerProvider(Laya.BaseRender2DType.graphics, WebGraphicsBatch);
+    class SortedStructs {
         constructor() {
-            this.batchFun = null;
-            this.batchContext = null;
-            this.batch = false;
-            this.indexStart = -1;
-            this.elementLength = 0;
-            this.elementCount = 0;
+            this.lists = new Map();
+            this._indice = new Set;
+            this._sortedIndice = [];
+        }
+        add(struct, zIndex) {
+            let list = this.lists.get(zIndex);
+            if (!list)
+                this.lists.set(zIndex, list = new Laya.FastSinglelist());
+            list.add(struct);
+            if (list.length === 1)
+                this._indice.add(zIndex);
+            return list;
+        }
+        reset() {
+            this._indice.forEach(i => this.lists.get(i).length = 0);
+            this._indice.clear();
+            this._sortedIndice.length = 0;
+        }
+        get indice() {
+            let arr = this._sortedIndice;
+            if (arr.length === 0) {
+                for (let zIndex of this._indice) {
+                    arr.push(zIndex);
+                }
+                arr.sort((a, b) => a - b);
+            }
+            return arr;
+        }
+        appendTo(out) {
+            this.indice.forEach(zIndex => out.addList(this.lists.get(zIndex)));
         }
     }
-    Batch2DInfo._pool = Laya.Pool.createPool(Batch2DInfo);
-    class BatchManager {
-        static registerBatch(renderElementType, batch) {
-            if (BatchManager._batchMapManager[renderElementType])
-                throw new Error("Overlapping batch optimization");
-            else
-                BatchManager._batchMapManager[renderElementType] = batch;
-        }
-    }
-    BatchManager._batchMapManager = {};
-    const _TEMP_InvertMatrix = new Laya.Matrix();
     class WebRender2DPass {
         get priority() {
             return this._priority;
         }
         set priority(value) {
             this._priority = value;
-            if (this._mask && this._mask.pass) {
-                this._mask.pass._priority = value + 1;
-            }
+            if (this._mask)
+                this._mask.setMaskParentPass(this);
         }
         get mask() {
             return this._mask;
         }
         set mask(value) {
+            if (this._mask)
+                this._mask.setMaskParentPass(null);
             this._mask = value;
-            if (value && value.pass) {
-                value.pass.priority = this.priority + 1;
-            }
+            if (value)
+                value.setMaskParentPass(this);
         }
         get enableBatch() {
             return this._enableBatch;
@@ -530,7 +679,11 @@
             this._clearColor.setValue(r, g, b, a);
         }
         constructor() {
-            this._list = new PassRenderList();
+            this._renderElements = new Laya.FastSinglelist();
+            this._elementGroups = new Laya.FastSinglelist();
+            this._structs = new SortedStructs();
+            this._structsPool = Laya.Pool.createPool(SortedStructs, null, obj => obj.reset());
+            this._batchProviders = [];
             this._priority = 0;
             this.enable = true;
             this.isSupport = false;
@@ -554,74 +707,182 @@
                 && !this.isSupport
                 && (this.repaint || !this.renderTexture);
         }
-        addStruct(object) {
-            this._list.add(object, this._enableBatch);
-        }
-        removeStruct(object) {
-            this._list.remove(object);
-        }
         cullAndSort(context2D, struct) {
-            if (!struct || !struct.enabled)
+            if (!struct.enabled
+                || struct.globalAlpha < 0.01
+                || this._mask === struct)
                 return;
-            struct._handleInterData();
-            if (struct._parentGlobalRenderData
-                && (struct.renderLayer & struct._parentGlobalRenderData.renderLayerMask) === 0) {
-                return;
+            let renderStruct = (struct.subStruct && struct !== this.root) ? struct.subStruct : struct;
+            renderStruct._handleInterData();
+            let globalRenderData = struct.globalRenderData;
+            if (globalRenderData) {
+                if (struct._currentData.globalRenderData
+                    && (struct.renderLayer & globalRenderData.renderLayerMask) === 0) {
+                    return;
+                }
+                let cullRect = globalRenderData.cullRect;
+                if (struct.inheritedEnableCulling && cullRect && !this._isRectIntersect(struct.rect, cullRect)) {
+                    return;
+                }
             }
-            struct.renderUpdate(context2D);
-            this.addStruct(struct);
-            for (let i = 0; i < struct.children.length; i++) {
-                const child = struct.children[i];
+            renderStruct.renderUpdate(context2D);
+            let list = this._pStructs.add(renderStruct, struct._effectZ);
+            if (struct.stackingRoot) {
+                var oldCol = this._pStructs;
+                this._pStructs = this._structsPool.take();
+            }
+            for (let i = 0, n = renderStruct.children.length; i < n; i++) {
+                const child = renderStruct.children[i];
+                child._effectZ = child.zIndex + struct._effectZ;
                 this.cullAndSort(context2D, child);
             }
-        }
-        updateRenderQueue(context) {
-            let root = this.root;
-            if (!root) {
-                return;
+            if (oldCol) {
+                this._pStructs.appendTo(list);
+                this._structsPool.recover(this._pStructs);
+                this._pStructs = oldCol;
             }
-            this.cullAndSort(context, root);
+            if (struct.dcOptimize) {
+                let last = list.length - 1;
+                struct.dcOptimizeEnd = list.elements[last];
+            }
+        }
+        _isRectIntersect(rect, cullRect) {
+            let rect_minx = rect.x;
+            let rect_maxx = rect.x + rect.width;
+            let rect_miny = rect.y;
+            let rect_maxy = rect.y + rect.height;
+            return !(rect_maxx < cullRect.x || rect_minx > cullRect.y || rect_maxy < cullRect.z || rect_miny > cullRect.w);
         }
         fowardRender(context) {
-            this._initRenderProcess(context);
-            this.render(context);
-        }
-        render(context) {
+            var _a, _b;
+            let success = this._initRenderProcess(context);
+            if (!success)
+                return;
             if (this.repaint) {
-                this._list.reset();
-                this.updateRenderQueue(context);
-                this._list.updateRenderElements(this._enableBatch);
-                WebRender2DPass.uploadBuffer();
-                this._enableBatch && this._list.batch();
-                context.drawRenderElementList(this._list.renderElements);
-                if (this._mask) {
-                    this._mask._handleInterData();
-                    this._mask.renderUpdate(context);
-                    context.drawRenderElementOne(this._mask.renderElements[0]);
+                this._structs.reset();
+                this._renderElements.length = 0;
+                for (let i = 0, n = this._batchProviders.length; i < n; i++) {
+                    (_a = this._batchProviders[i]) === null || _a === void 0 ? void 0 : _a.reset();
                 }
-                if (this.postProcess && this.postProcess.enabled) {
-                    this.postProcess._context.command.apply(true);
+                if (this.root) {
+                    this._pStructs = this._structs;
+                    this.cullAndSort(context, this.root);
+                    this.fillRenderElements();
+                    this._enableBatch && Laya.LayaEnv.isPlaying && this.batch();
+                }
+                WebRender2DPass.uploadBuffer();
+                context.drawRenderElementList(this._renderElements);
+                if (this._mask) {
+                    let renderMask = this._mask.subStruct;
+                    renderMask._handleInterData();
+                    renderMask.renderUpdate(context);
+                    context.drawRenderElementOne(renderMask.renderElements[0]);
+                }
+                if ((_b = this.postProcess) === null || _b === void 0 ? void 0 : _b.enabled) {
+                    this.postProcess.apply();
                 }
             }
             else {
-                this._list.structs.forEach(list => {
-                    for (let i = 0, n = list.length; i < n; i++) {
+                this._structs.indice.forEach(index => {
+                    let list = this._structs.lists.get(index);
+                    for (let i = 0, cnt = list.length; i < cnt; i++) {
                         let struct = list.elements[i];
-                        if (struct) {
-                            struct._handleInterData();
-                            struct.renderUpdate(context);
-                        }
+                        struct._handleInterData();
+                        struct.renderUpdate(context);
                     }
                 });
                 WebRender2DPass.uploadBuffer();
-                context.drawRenderElementList(this._list.renderElements);
+                context.drawRenderElementList(this._renderElements);
             }
             this.repaint = false;
         }
+        fillRenderElements() {
+            this._elementGroups.length = 0;
+            let groupStart = 0;
+            let reorderRoot;
+            let renderElements = this._renderElements;
+            this._structs.indice.forEach(index => {
+                let list = this._structs.lists.get(index);
+                for (let i = 0, cnt = list.length; i < cnt; i++) {
+                    let struct = list.elements[i];
+                    let n = struct.renderElements ? struct.renderElements.length : 0;
+                    if (struct.owner._getBit(Laya.NodeFlags.HIDE_BY_EDITOR))
+                        n = 0;
+                    if (struct.dcOptimize && !reorderRoot && struct.dcOptimizeEnd !== struct) {
+                        reorderRoot = struct;
+                        if (groupStart !== renderElements.length) {
+                            this._elementGroups.add(groupStart);
+                            this._elementGroups.add(renderElements.length - 1);
+                            this._elementGroups.add(false);
+                            groupStart = renderElements.length;
+                        }
+                    }
+                    if (n > 0) {
+                        for (let i = 0; i < n; i++) {
+                            let element = struct.renderElements[i];
+                            element._index = i;
+                            renderElements.add(element);
+                        }
+                    }
+                    if ((reorderRoot === null || reorderRoot === void 0 ? void 0 : reorderRoot.dcOptimizeEnd) === struct) {
+                        reorderRoot = null;
+                        if (groupStart !== renderElements.length) {
+                            this._elementGroups.add(groupStart);
+                            this._elementGroups.add(renderElements.length - 1);
+                            this._elementGroups.add(true);
+                            groupStart = renderElements.length;
+                        }
+                    }
+                }
+            });
+            if (groupStart !== renderElements.length) {
+                this._elementGroups.add(groupStart);
+                this._elementGroups.add(renderElements.length - 1);
+                this._elementGroups.add(false);
+            }
+        }
+        batch() {
+            let list = this._renderElements;
+            let elementArray = list.elements;
+            let groups = this._elementGroups;
+            let groupsArray = groups.elements;
+            list.length = 0;
+            for (let gi = 0, gl = groups.length; gi < gl; gi += 3) {
+                let groupStart = groupsArray[gi];
+                let groupEnd = groupsArray[gi + 1];
+                let allowReorder = groupsArray[gi + 2];
+                let lastRenderType = elementArray[groupStart].owner.renderType;
+                let batchStart = groupStart;
+                for (let i = groupStart + 1; i <= groupEnd; i++) {
+                    let element = elementArray[i];
+                    let struct = element.owner;
+                    if (lastRenderType === struct.renderType)
+                        continue;
+                    if (i - batchStart > 1)
+                        this.getBatchProvider(lastRenderType).batch(list, batchStart, i - 1, allowReorder);
+                    else
+                        list.add(elementArray[batchStart]);
+                    batchStart = i;
+                    lastRenderType = struct.renderType;
+                }
+                if (groupEnd - batchStart > 0)
+                    this.getBatchProvider(lastRenderType).batch(list, batchStart, groupEnd, allowReorder);
+                else
+                    list.add(elementArray[batchStart]);
+            }
+        }
+        getBatchProvider(renderType) {
+            return this._batchProviders[renderType] || (this._batchProviders[renderType] = BatchManager.createProvider(renderType));
+        }
         _initRenderProcess(context) {
+            if (!this.root || this.root.globalAlpha < 0.01) {
+                return false;
+            }
             let sizeX, sizeY;
             let rt = this.renderTexture;
             if (rt) {
+                if (rt.width == 0 || rt.height == 0)
+                    return false;
                 context.invertY = rt._invertY;
                 context.setRenderTarget(rt._renderTarget, this.doClearColor, this._clearColor);
                 sizeX = rt.width;
@@ -630,30 +891,38 @@
                 this.shaderData.addDefine(Laya.ShaderDefines2D.RENDERTEXTURE);
             }
             else {
-                context.invertY = false;
                 sizeX = Laya.RenderState2D.width;
                 sizeY = Laya.RenderState2D.height;
+                if (sizeX === 0 || sizeY === 0)
+                    return false;
+                context.invertY = false;
                 context.setOffscreenView(sizeX, sizeY);
                 context.setRenderTarget(null, this.doClearColor, this._clearColor);
                 this._setInvertMatrix(1, 0, 0, 1, 0, 0);
                 this.shaderData.removeDefine(Laya.ShaderDefines2D.RENDERTEXTURE);
             }
             context.passData = this.shaderData;
-            this._setRenderSize(sizeX, sizeY);
+            if (sizeX !== this._rtsize.x || sizeY !== this._rtsize.y) {
+                this._rtsize.setValue(sizeX, sizeY);
+                this.shaderData.setVector2(Laya.ShaderDefines2D.UNIFORM_SIZE, this._rtsize);
+            }
+            return true;
         }
         static setBuffer(buffer) {
             if (buffer._inPass)
                 return;
             buffer._inPass = true;
-            this.buffers.add(buffer);
+            WebRender2DPass.buffers.add(buffer);
         }
         static uploadBuffer() {
-            if (WebRender2DPass.buffers.size > 0) {
-                WebRender2DPass.buffers.forEach(buffer => {
+            if (WebRender2DPass.buffers.length > 0) {
+                let elements = WebRender2DPass.buffers.elements;
+                for (let i = 0, n = WebRender2DPass.buffers.length; i < n; i++) {
+                    let buffer = elements[i];
                     buffer._upload();
                     buffer._inPass = false;
-                });
-                WebRender2DPass.buffers.clear();
+                }
+                WebRender2DPass.buffers.length = 0;
             }
         }
         _updateInvertMatrix() {
@@ -664,7 +933,7 @@
             let mask = this.mask;
             let offset = this.offsetMatrix;
             if (mask && mask.trans) {
-                let maskMatrix = mask.trans.matrix;
+                let maskMatrix = mask.renderMatrix;
                 maskMatrix.copyTo(temp);
             }
             else {
@@ -687,19 +956,16 @@
             this.shaderData.setVector3(Laya.ShaderDefines2D.UNIFORM_INVERTMAT_0, this._invertMat_0);
             this.shaderData.setVector3(Laya.ShaderDefines2D.UNIFORM_INVERTMAT_1, this._invertMat_1);
         }
-        _setRenderSize(x, y) {
-            if (x === this._rtsize.x && y === this._rtsize.y)
-                return;
-            this._rtsize.setValue(x, y);
-            this.shaderData.setVector2(Laya.ShaderDefines2D.UNIFORM_SIZE, this._rtsize);
-        }
         destroy() {
             if (this.destroyed) {
                 return;
             }
             this.destroyed = true;
-            this._list.destroy();
-            this._list = null;
+            this._renderElements.length = 0;
+            for (let i = 0, n = this._batchProviders.length; i < n; i++) {
+                this._batchProviders[i] && this._batchProviders[i].destroy();
+            }
+            this._batchProviders.length = 0;
             this.root = null;
             this.renderTexture = null;
             this.postProcess = null;
@@ -707,137 +973,7 @@
             this.shaderData = null;
         }
     }
-    WebRender2DPass.buffers = new Set();
-    class PassRenderList {
-        constructor() {
-            this._batchInfoList = new Laya.FastSinglelist;
-            this._currentType = -1;
-            this._currentBatch = null;
-            this.structs = [];
-            this.renderElements = null;
-            this.renderListType = -1;
-            this.zOrder = 0;
-            this._dirtyFlag = 0;
-            this._batchContexts = [];
-            this.renderElements = new Laya.FastSinglelist();
-        }
-        add(struct, isBatch = true) {
-            let zOrder = struct.zIndex;
-            if (!this.structs[zOrder]) {
-                this.structs[zOrder] = new Laya.FastSinglelist();
-            }
-            this.structs[zOrder].add(struct);
-        }
-        updateRenderElements(enableBatch) {
-            this.structs.forEach(structArray => {
-                for (let i = 0, n = structArray.length; i < n; i++) {
-                    let struct = structArray.elements[i];
-                    this._updateRenderElements(struct, enableBatch);
-                }
-            });
-        }
-        _updateRenderElements(struct, enableBatch) {
-            let n = struct.renderElements ? struct.renderElements.length : 0;
-            if (n == 0)
-                return;
-            if (n == 1) {
-                if (enableBatch) {
-                    this._batchStart(struct.renderType, 1);
-                    this.renderElements.add(struct.renderElements[0]);
-                }
-                else {
-                    this.renderElements.add(struct.renderElements[0]);
-                }
-            }
-            else {
-                if (enableBatch) {
-                    this._batchStart(struct.renderType, n);
-                    for (var i = 0; i < n; i++) {
-                        this.renderElements.add(struct.renderElements[i]);
-                    }
-                }
-                else {
-                    for (var i = 0; i < n; i++) {
-                        this.renderElements.add(struct.renderElements[i]);
-                    }
-                }
-            }
-            if (enableBatch && this._currentBatch.batchFun) {
-                let offset = this._currentBatch.indexStart + this._currentBatch.elementLength - n;
-                this._currentBatch.batchFun.prepare(struct, this._currentBatch.batchContext, offset);
-            }
-        }
-        _batchStart(type, elementLength) {
-            if (this._currentBatch && this._currentType == type) {
-                this._currentBatch.batch = !!(this._currentBatch.batchFun);
-                this._currentBatch.elementLength += elementLength;
-                return;
-            }
-            if (this._currentBatch) {
-                this._batchInfoList.add(this._currentBatch);
-            }
-            this._currentBatch = Batch2DInfo._pool.take();
-            this._currentBatch.batch = false;
-            this._currentBatch.batchFun = BatchManager._batchMapManager[type];
-            if (this._currentBatch.batchFun) {
-                let context = this._batchContexts[type];
-                if (!context) {
-                    context = this._currentBatch.batchFun.createBatchContext();
-                    this._batchContexts[type] = context;
-                }
-                this._currentBatch.batchContext = context;
-            }
-            this._currentBatch.indexStart = this.renderElements.length;
-            this._currentBatch.elementLength = elementLength;
-            this._currentType = type;
-        }
-        batch() {
-            if (this._currentBatch) {
-                this._batchInfoList.add(this._currentBatch);
-            }
-            this.renderElements.length = 0;
-            for (var i = 0, n = this._batchInfoList.length; i < n; i++) {
-                let info = this._batchInfoList.elements[i];
-                if (info.batch) {
-                    info.batchFun.batchRenderElement(this.renderElements, info.indexStart, info.elementLength, info.batchContext);
-                }
-                else {
-                    for (let j = info.indexStart, m = info.elementLength + info.indexStart; j < m; j++)
-                        this.renderElements.add(this.renderElements.elements[j]);
-                }
-            }
-        }
-        remove(struct) {
-            let zOrder = struct.zIndex;
-            if (this.structs[zOrder]) {
-                this.structs[zOrder].remove(struct);
-            }
-        }
-        destroy() {
-            this.structs.length = 0;
-            this.clearRenderElements();
-            for (let i = 0, n = this._batchContexts.length; i < n; i++) {
-                this._batchContexts[i] && this._batchContexts[i].destroy();
-            }
-            this._batchContexts.length = 0;
-        }
-        clearRenderElements() {
-            this.renderElements.clear();
-            this._batchInfoList.clear();
-        }
-        reset() {
-            this.structs.forEach(list => {
-                list.length = 0;
-            });
-            this.renderElements.length = 0;
-            for (let i = 0, n = this._batchContexts.length; i < n; i++) {
-                this._batchContexts[i] && this._batchContexts[i].reset();
-            }
-            this._batchInfoList.length = 0;
-            this._currentBatch = null;
-            this._currentType = -1;
-        }
-    }
+    WebRender2DPass.buffers = new Laya.FastSinglelist();
     class WebRender2DPassManager {
         constructor() {
             this._modify = false;
@@ -854,7 +990,7 @@
         apply(context) {
             if (this._modify) {
                 this._modify = false;
-                this._sortPassesByPriority();
+                this._passes.sort((a, b) => b._priority - a._priority);
             }
             for (const pass of this._passes) {
                 if (pass.needRender()) {
@@ -872,12 +1008,8 @@
             this._passes.push(pass);
             this._modify = true;
         }
-        _sortPassesByPriority() {
-            this._passes.sort((a, b) => b._priority - a._priority);
-        }
     }
-    WebGraphicsBatch.instance = new WebGraphicsBatch;
-    BatchManager.registerBatch(Laya.BaseRender2DType.graphics, WebGraphicsBatch.instance);
+    const _TEMP_InvertMatrix = new Laya.Matrix();
 
     class Web2DGraphicsBufferDataView {
     }
@@ -934,7 +1066,7 @@
         }
         _clone(cloneOwner = true, create = true) {
             let owner = cloneOwner ? this.owner : null;
-            let nview = new Web2DGraphic2DIndexDataView(owner, this.length, create);
+            let nview = new Web2DGraphic2DIndexCloneDataView(owner, this.length, create);
             if (!create) {
                 this._cloneView(nview);
             }
@@ -950,6 +1082,11 @@
             this.owner = null;
             this._next = null;
             this._prev = null;
+        }
+    }
+    class Web2DGraphic2DIndexCloneDataView extends Web2DGraphic2DIndexDataView {
+        destroy() {
+            super.destroy();
         }
     }
 
@@ -999,13 +1136,14 @@
     class WebPrimitiveDataHandle extends WebRender2DDataHandle {
         constructor() {
             super(...arguments);
+            this.logicMatrix = null;
             this.mask = null;
             this._bufferBlocks = null;
             this._needUpdateBuffer = false;
             this._modifiedFrame = -1;
         }
         applyVertexBufferBlock(blocks) {
-            this._bufferBlocks = blocks;
+            this._bufferBlocks = blocks.slice();
             this._needUpdateBuffer = blocks.length > 0;
             this.updateCloneView();
         }
@@ -1021,10 +1159,11 @@
                 || this._modifiedFrame < trans.modifiedFrame) {
                 let mat = trans.matrix;
                 if (!this._bufferBlocks || !this._bufferBlocks.length) {
-                    if (this.mask && this.mask.trans) {
-                        let maskMatrix = this.mask.renderMatrix;
-                        this._nMatrix_0.setValue(maskMatrix.a, maskMatrix.c, maskMatrix.tx);
-                        this._nMatrix_1.setValue(maskMatrix.b, maskMatrix.d, maskMatrix.ty);
+                    if (this.logicMatrix) {
+                        let temp = Laya.Matrix.TEMP;
+                        Laya.Matrix.mul(this.logicMatrix, mat.copyTo(temp), temp);
+                        this._nMatrix_0.setValue(temp.a, temp.c, temp.tx);
+                        this._nMatrix_1.setValue(temp.b, temp.d, temp.ty);
                     }
                     else {
                         this._nMatrix_0.setValue(mat.a, mat.c, mat.tx);
@@ -1160,6 +1299,7 @@
         constructor() {
             super(...arguments);
             this._baseColor = new Laya.Color(1, 1, 1, 1);
+            this._tilingOffset = new Laya.Vector4();
             this._renderAlpha = -1;
         }
         get baseColor() {
@@ -1193,6 +1333,15 @@
                     this._owner.spriteShaderData.removeDefine(Laya.ShaderDefines2D.GAMMATEXTURE);
                 }
             }
+        }
+        get tilingOffset() {
+            return this._tilingOffset;
+        }
+        set tilingOffset(value) {
+            if (!value)
+                return;
+            this._owner.spriteShaderData.setVector(Laya.BaseRenderNode2D.TILINGOFFSET, value);
+            value ? value.cloneTo(this._tilingOffset) : null;
         }
         get normal2DTexture() {
             return this._normal2DTexture;
@@ -1229,7 +1378,7 @@
             super.inheriteRenderData(context);
             if (this._renderAlpha != this._owner.globalAlpha) {
                 let a = this._owner.globalAlpha * this._baseColor.a;
-                _setRenderColor.setValue(this._baseColor.r * a, this._baseColor.g * a, this._baseColor.b * a, a);
+                _setRenderColor.setValue(this._baseColor.r, this._baseColor.g, this._baseColor.b, a);
                 this._owner.spriteShaderData.setColor(Laya.BaseRenderNode2D.BASERENDER2DCOLOR, _setRenderColor);
                 this._renderAlpha = this._owner.globalAlpha;
             }
@@ -1298,7 +1447,7 @@
             shaderData.setVector3(Laya.ShaderDefines2D.UNIFORM_NMATRIX_1, this._nMatrix_1);
             if (this._renderAlpha != this._owner.globalAlpha) {
                 let a = this._owner.globalAlpha * this._baseColor.a;
-                _setRenderColor.setValue(this._baseColor.r * a, this._baseColor.g * a, this._baseColor.b * a, a);
+                _setRenderColor.setValue(this._baseColor.r, this._baseColor.g, this._baseColor.b, a);
                 this._owner.spriteShaderData.setColor(Laya.BaseRenderNode2D.BASERENDER2DCOLOR, _setRenderColor);
                 this._renderAlpha = this._owner.globalAlpha;
             }
@@ -1316,13 +1465,45 @@
     var ChildrenUpdateType;
     (function (ChildrenUpdateType) {
         ChildrenUpdateType[ChildrenUpdateType["All"] = -1] = "All";
+        ChildrenUpdateType[ChildrenUpdateType["None"] = 0] = "None";
         ChildrenUpdateType[ChildrenUpdateType["Clip"] = 1] = "Clip";
         ChildrenUpdateType[ChildrenUpdateType["Blend"] = 2] = "Blend";
         ChildrenUpdateType[ChildrenUpdateType["Alpha"] = 4] = "Alpha";
         ChildrenUpdateType[ChildrenUpdateType["Pass"] = 8] = "Pass";
         ChildrenUpdateType[ChildrenUpdateType["Global"] = 16] = "Global";
+        ChildrenUpdateType[ChildrenUpdateType["Culling"] = 32] = "Culling";
+        ChildrenUpdateType[ChildrenUpdateType["DcOptimize"] = 64] = "DcOptimize";
     })(ChildrenUpdateType || (ChildrenUpdateType = {}));
+    const _DefaultParentData = {
+        clipInfo: _DefaultClipInfo,
+        blendMode: Laya.BlendMode.invalid,
+        globalRenderData: null,
+        pass: null,
+        enableCulling: false,
+        dcOptimize: false,
+        globalAlpha: 1,
+    };
     class WebRenderStruct2D {
+        get enableCulling() {
+            return this._enableCulling;
+        }
+        set enableCulling(value) {
+            this._enableCulling = value;
+            this.updateChildren(ChildrenUpdateType.Culling);
+        }
+        get inheritedEnableCulling() {
+            return this._enableCulling || this._parentData.enableCulling;
+        }
+        get dcOptimize() {
+            return this._dcOptimize;
+        }
+        set dcOptimize(value) {
+            this._dcOptimize = value;
+            this.updateChildren(ChildrenUpdateType.DcOptimize);
+        }
+        get inheritedDcOptimize() {
+            return this._dcOptimize || this._parentData.dcOptimize;
+        }
         get renderMatrix() {
             return this.trans.matrix;
         }
@@ -1335,24 +1516,26 @@
                 this.trans = { matrix: value, modifiedFrame: Laya.Stat.loopCount };
             }
         }
+        get globalAlpha() {
+            return this._currentData.globalAlpha;
+        }
+        set globalAlpha(value) {
+            this._parentData.globalAlpha = value;
+        }
         get alpha() {
             return this._alpha;
         }
         set alpha(value) {
             this._alpha = value;
-            if (this.parent) {
-                this.globalAlpha = this.parent.globalAlpha * value;
-            }
-            else
-                this.globalAlpha = value;
+            this._updateGlobalAlpha(value, this.parent ? this.parent.globalAlpha : 1);
             this.updateChildren(ChildrenUpdateType.Alpha);
         }
         get blendMode() {
-            return this._blendMode || this._parentBlendMode || Laya.BlendMode.normal;
+            return this._blendMode || this._currentData.blendMode || Laya.BlendMode.normal;
         }
         set blendMode(value) {
-            this._blendMode = value;
-            this._updateBlendMode();
+            this._updateBlendMode(value);
+            this._setBlendMode();
             this.updateChildren(ChildrenUpdateType.Blend);
         }
         get renderDataHandler() {
@@ -1364,42 +1547,121 @@
                 this._renderDataHandler.owner = this;
         }
         get globalRenderData() {
-            return this._globalRenderData || this._parentGlobalRenderData;
+            return this._globalRenderData || this._currentData.globalRenderData;
         }
         set globalRenderData(value) {
-            if (value) {
-                this._globalShaderData = value.globalShaderData;
+            this._globalRenderData = value;
+            this._updateGlobalShaderData();
+            this.updateChildren(ChildrenUpdateType.Global);
+        }
+        _updateGlobalShaderData() {
+            let renderData = this.globalRenderData;
+            if (renderData) {
+                this._globalShaderData = renderData.globalShaderData;
             }
             else {
                 this._globalShaderData = null;
             }
-            this._globalRenderData = value;
-            this.updateChildren(ChildrenUpdateType.Global);
+            if (this._subStruct) {
+                this._subStruct._updateGlobalShaderData();
+            }
+        }
+        _updatePriority() {
+            if (this._pass) {
+                if (this._maskParentPass) {
+                    this._pass.priority = this._maskParentPass.priority + 1;
+                }
+                else if (this._parentData.pass) {
+                    this._pass.priority = this._parentData.pass.priority + 1;
+                }
+                else {
+                    this._pass.priority = 0;
+                }
+            }
+        }
+        setMaskParentPass(pass) {
+            this._maskParentPass = pass;
+            this._updatePriority();
+            if (this._pass) {
+                this.updateChildren(ChildrenUpdateType.Pass);
+            }
         }
         get pass() {
-            return this._pass || this._parentPass;
+            return this._pass || this._currentData.pass;
         }
         set pass(value) {
             if (value !== this._pass) {
                 this._pass = value;
-                if (this._parentPass) {
-                    value.priority = this._parentPass.priority + 1;
-                }
+                this._updatePriority();
                 this.updateChildren(ChildrenUpdateType.Pass);
             }
         }
+        get subStruct() {
+            return this._subStruct;
+        }
+        set subStruct(value) {
+            if (value != this._subStruct) {
+                let updateFlag = 0;
+                if (value) {
+                    let parentData = this._parentData;
+                    value._blendMode = this._blendMode;
+                    value._currentData = parentData;
+                    value._maskParentPass = this._maskParentPass;
+                    if (parentData.globalAlpha !== 1) {
+                        updateFlag |= ChildrenUpdateType.Alpha;
+                    }
+                    if (!this._globalRenderData && parentData.globalRenderData) {
+                        updateFlag |= ChildrenUpdateType.Global;
+                    }
+                    if (!this._clipInfo && parentData.clipInfo) {
+                        updateFlag |= ChildrenUpdateType.Clip;
+                    }
+                    if (this._blendMode !== Laya.BlendMode.invalid || parentData.blendMode !== Laya.BlendMode.invalid) {
+                        updateFlag |= ChildrenUpdateType.Blend;
+                    }
+                    this._blendMode = Laya.BlendMode.invalid;
+                    this._currentData = _DefaultParentData;
+                }
+                else if (this._subStruct) {
+                    let parentData = this._parentData;
+                    this._subStruct._currentData = this._subStruct._parentData;
+                    this._blendMode = this._subStruct._blendMode;
+                    if (parentData.globalAlpha !== 1) {
+                        updateFlag |= ChildrenUpdateType.Alpha;
+                    }
+                    if (!this._clipInfo && parentData.clipInfo) {
+                        updateFlag |= ChildrenUpdateType.Clip;
+                    }
+                    if (!this._globalRenderData && parentData.globalRenderData) {
+                        updateFlag |= ChildrenUpdateType.Global;
+                    }
+                    if (this._blendMode !== Laya.BlendMode.invalid || parentData.blendMode !== Laya.BlendMode.invalid) {
+                        updateFlag |= ChildrenUpdateType.Blend;
+                    }
+                    this._subStruct._blendMode = Laya.BlendMode.invalid;
+                    this._subStruct._maskParentPass = null;
+                    this._currentData = parentData;
+                }
+                this._subStruct = value;
+                this._updateGlobalShaderData();
+                this.updateChildren(updateFlag);
+                this._setBlendMode();
+            }
+        }
         constructor() {
+            this._parentData = Object.assign({}, _DefaultParentData);
+            this._currentData = this._parentData;
             this.zIndex = 0;
-            this.rect = new Laya.Rectangle(0, 0, 0, 0);
+            this._effectZ = 0;
+            this.stackingRoot = false;
+            this.rect = new Laya.Rectangle();
+            this._enableCulling = false;
             this.renderLayer = 1;
             this.children = [];
             this.renderType = -1;
             this.renderUpdateMask = 0;
-            this.globalAlpha = 1.0;
             this._alpha = 1.0;
             this._blendMode = Laya.BlendMode.invalid;
-            this._parentBlendMode = Laya.BlendMode.invalid;
-            this._destroyed = false;
             this.needUploadClip = -1;
             this.needUploadAlpha = true;
             this.enabled = true;
@@ -1408,23 +1670,23 @@
             this.spriteShaderData = null;
             this._globalShaderData = null;
             this._globalRenderData = null;
-            this._parentGlobalRenderData = null;
             this._clipRect = null;
-            this._parentClipInfo = null;
             this._clipInfo = null;
-            this._rnUpdateCall = null;
             this._rnUpdateFun = null;
         }
-        set_renderNodeUpdateCall(call, renderUpdateFun) {
-            this._rnUpdateCall = call;
-            this._rnUpdateFun = renderUpdateFun;
+        get _parentClipInfo() {
+            return this._currentData.clipInfo;
+        }
+        setRenderUpdateCallback(func) {
+            this._rnUpdateFun = func;
         }
         _handleInterData() {
             let rect = this._clipRect;
             if (rect) {
                 let info = this._clipInfo;
                 let trans = this.trans;
-                let parentClipUpdateFrame = this._parentClipInfo && this._parentClipInfo !== _DefaultClipInfo ? this._parentClipInfo._updateFrame : -1;
+                let clipInfo = this._currentData.clipInfo;
+                let parentClipUpdateFrame = clipInfo && clipInfo !== _DefaultClipInfo ? clipInfo._updateFrame : -1;
                 if (trans) {
                     if (info._updateFrame < trans.modifiedFrame || info._updateFrame < parentClipUpdateFrame) {
                         let mat = trans.matrix;
@@ -1438,11 +1700,11 @@
                         cm.c = height * mat.c;
                         cm.d = height * mat.d;
                         if (parentClipUpdateFrame !== -1) {
-                            let parentClipPos = this._parentClipInfo.clipMatPos;
+                            let parentClipPos = clipInfo.clipMatPos;
                             let offsetx = parentClipPos.z - parentClipPos.x;
                             let offsety = parentClipPos.w - parentClipPos.y;
                             if (cm.a > 0 && cm.d > 0) {
-                                let parentMat = this._parentClipInfo.clipMatrix;
+                                let parentMat = clipInfo.clipMatrix;
                                 let parentMinX = parentMat.tx;
                                 let parentMinY = parentMat.ty;
                                 let parentMaxX = parentMinX + parentMat.a;
@@ -1497,10 +1759,13 @@
                 }
             }
         }
-        _updateBlendMode() {
+        _setBlendMode() {
             if (!this.spriteShaderData)
                 return;
             Laya.BlendModeHandler.setShaderData(this.blendMode, this.spriteShaderData);
+            if (this._subStruct) {
+                this._subStruct._setBlendMode();
+            }
         }
         setClipRect(rect) {
             this._clipRect = rect;
@@ -1519,17 +1784,33 @@
             else
                 this._clipInfo._updateFrame = -1;
         }
+        _updateGlobalAlpha(value, parentAlpha = 1) {
+            this._parentData.globalAlpha = parentAlpha * value;
+        }
+        _updateBlendMode(blendMode) {
+            if (this._subStruct && this._subStruct.enabled) {
+                this._subStruct._blendMode = blendMode;
+            }
+            else {
+                this._blendMode = blendMode;
+            }
+        }
         getClipInfo() {
-            return this._clipInfo || this._parentClipInfo || _DefaultClipInfo;
+            return this._clipInfo || this._currentData.clipInfo || _DefaultClipInfo;
         }
         updateChildren(type) {
+            if (type == ChildrenUpdateType.None)
+                return;
             let info, blendMode, alpha;
-            let priority = 0, pass = null;
-            let globalShaderData = null, globalRenderData = null;
-            let updateBlend = false, updateClip = false, updateAlpha = false, updatePass = false, updateGlobal = false;
+            let priority = 0, pass = null, enableCulling = false, dcOptimize = false;
+            let globalRenderData = null;
+            let updateBlend = false, updateClip = false, updateAlpha = false, updatePass = false, updateGlobal = false, updateCulling = false, updateDcOptimize = false;
             if (type & ChildrenUpdateType.Clip) {
                 info = this.getClipInfo();
                 this.needUploadClip = -1;
+                if (this._subStruct) {
+                    this._subStruct.needUploadClip = -1;
+                }
                 updateClip = true;
             }
             if (type & ChildrenUpdateType.Blend) {
@@ -1539,6 +1820,9 @@
             if (type & ChildrenUpdateType.Alpha) {
                 alpha = this.globalAlpha;
                 this.needUploadAlpha = true;
+                if (this._subStruct) {
+                    this._subStruct.needUploadAlpha = true;
+                }
                 updateAlpha = true;
             }
             if (type & ChildrenUpdateType.Pass) {
@@ -1548,41 +1832,64 @@
             }
             if (type & ChildrenUpdateType.Global) {
                 updateGlobal = true;
-                globalShaderData = this._globalShaderData;
-                globalRenderData = this._globalRenderData;
+                this._globalShaderData;
+                globalRenderData = this.globalRenderData;
+            }
+            if (type & ChildrenUpdateType.Culling) {
+                updateCulling = true;
+                enableCulling = this.inheritedEnableCulling;
+            }
+            if (type & ChildrenUpdateType.DcOptimize) {
+                updateDcOptimize = true;
+                dcOptimize = this.inheritedDcOptimize;
             }
             for (const child of this.children) {
                 let updateChild = false;
+                let childParentData = child._parentData;
                 if (updateClip) {
-                    child._parentClipInfo = info;
+                    childParentData.clipInfo = info;
                     if (!child._clipInfo) {
                         updateChild = true;
                     }
                 }
                 if (updateBlend) {
                     if (child._blendMode === Laya.BlendMode.invalid) {
-                        child._parentBlendMode = blendMode;
-                        child._updateBlendMode();
+                        childParentData.blendMode = blendMode;
+                        child._setBlendMode();
                         updateChild = true;
                     }
                 }
                 if (updateAlpha) {
-                    child.globalAlpha = alpha * child.alpha;
+                    child._updateGlobalAlpha(child.alpha, alpha);
                     updateChild = true;
                 }
                 if (updatePass) {
-                    child._parentPass = pass;
+                    childParentData.pass = pass;
                     if (child._pass && child._pass !== pass) {
                         child._pass.priority = priority;
                     }
                     updateChild = true;
                 }
                 if (updateGlobal) {
+                    childParentData.globalRenderData = globalRenderData;
+                    child._updateGlobalShaderData();
                     if (!child._globalRenderData) {
                         updateChild = true;
-                        child._globalShaderData = globalShaderData;
                     }
-                    child._parentGlobalRenderData = globalRenderData;
+                }
+                if (updateCulling) {
+                    childParentData.enableCulling = enableCulling;
+                    if (child._pass) {
+                        child._pass.repaint = true;
+                    }
+                    updateChild = true;
+                }
+                if (updateDcOptimize) {
+                    childParentData.dcOptimize = dcOptimize;
+                    if (child._pass) {
+                        child._pass.repaint = true;
+                    }
+                    updateChild = true;
                 }
                 if (updateChild) {
                     child.updateChildren(type);
@@ -1597,17 +1904,18 @@
         addChild(child, index) {
             child.parent = this;
             this.children.splice(index, 0, child);
-            child._parentClipInfo = this.getClipInfo();
-            child._parentBlendMode = this.blendMode;
-            child.globalAlpha = this.globalAlpha * child._alpha;
+            let childParentData = child._parentData;
+            childParentData.clipInfo = this.getClipInfo();
+            childParentData.blendMode = this.blendMode;
+            child._setBlendMode();
+            child._updateGlobalAlpha(child.alpha, this.globalAlpha);
             let parentPass = this.pass;
-            child._parentPass = parentPass;
-            if (child._pass && parentPass) {
-                child._pass.priority = parentPass.priority + 1;
-            }
-            child._parentGlobalRenderData = this.globalRenderData;
-            if (!child._globalRenderData)
-                child._globalShaderData = this._globalShaderData;
+            childParentData.pass = parentPass;
+            child._updatePriority();
+            childParentData.globalRenderData = this.globalRenderData;
+            child._updateGlobalShaderData();
+            childParentData.enableCulling = this.inheritedEnableCulling;
+            childParentData.dcOptimize = this.inheritedDcOptimize;
             child.updateChildren(ChildrenUpdateType.All);
             return;
         }
@@ -1627,16 +1935,16 @@
             if (index !== -1) {
                 child.parent = null;
                 this.children.splice(index, 1);
-                child._parentPass = null;
-                if (child._pass) {
-                    child._pass.priority = 0;
-                }
-                child._parentClipInfo = null;
-                child._parentBlendMode = Laya.BlendMode.invalid;
-                child.globalAlpha = child._alpha;
-                child._parentGlobalRenderData = null;
-                if (!child._globalRenderData)
-                    child._globalShaderData = null;
+                let childParentData = child._parentData;
+                childParentData.pass = null;
+                child._updatePriority();
+                childParentData.clipInfo = null;
+                childParentData.blendMode = Laya.BlendMode.invalid;
+                child._updateGlobalAlpha(child._alpha);
+                childParentData.globalRenderData = null;
+                child._updateGlobalShaderData();
+                childParentData.enableCulling = false;
+                childParentData.dcOptimize = false;
                 child.updateChildren(ChildrenUpdateType.All);
             }
         }
@@ -1645,15 +1953,14 @@
                 this.renderDataHandler.inheriteRenderData(context);
             }
             if (this._rnUpdateFun) {
-                this._rnUpdateFun.call(this._rnUpdateCall, context);
+                this._rnUpdateFun(context);
             }
         }
         destroy() {
-            this._destroyed = true;
             this._clipInfo = null;
-            this._parentClipInfo = null;
+            this._currentData = null;
+            this._parentData = null;
             this._clipRect = null;
-            this.renderElements.length = 0;
             this.renderElements = null;
             this.spriteShaderData = null;
             this.parent = null;
@@ -2402,24 +2709,24 @@
                 this._isIndirectDraw = true;
             }
             if (usage & GPUBufferUsage.INDEX) {
-                this._statistics_M_Buffer = Laya.StatisticsElement.M_IndexBuffer;
-                this._statistics_RC_Buffer = Laya.StatisticsElement.C_IndexBuffer;
-                this._statistics_BufferUpload = Laya.StatisticsElement.CT_GeometryBufferUploadCount;
+                this._statistics_M_Buffer = Laya.StatElement.M_IndexBuffer;
+                this._statistics_RC_Buffer = Laya.StatElement.C_IndexBuffer;
+                this._statistics_BufferUpload = Laya.StatElement.CT_GeometryBufferUploadCount;
             }
             else if (usage & GPUBufferUsage.UNIFORM) {
-                this._statistics_M_Buffer = Laya.StatisticsElement.M_UBOBuffer;
-                this._statistics_RC_Buffer = Laya.StatisticsElement.C_UBOBuffer;
-                this._statistics_BufferUpload = Laya.StatisticsElement.CT_UBOBufferUploadCount;
+                this._statistics_M_Buffer = Laya.StatElement.M_UBOBuffer;
+                this._statistics_RC_Buffer = Laya.StatElement.C_UBOBuffer;
+                this._statistics_BufferUpload = Laya.StatElement.CT_UBOBufferUploadCount;
             }
             else if (usage & GPUBufferUsage.VERTEX) {
-                this._statistics_M_Buffer = Laya.StatisticsElement.M_VertexBuffer;
-                this._statistics_RC_Buffer = Laya.StatisticsElement.C_VertexBuffer;
-                this._statistics_BufferUpload = Laya.StatisticsElement.CT_GeometryBufferUploadCount;
+                this._statistics_M_Buffer = Laya.StatElement.M_VertexBuffer;
+                this._statistics_RC_Buffer = Laya.StatElement.C_VertexBuffer;
+                this._statistics_BufferUpload = Laya.StatElement.CT_GeometryBufferUploadCount;
             }
         }
         _memorychange(bytelength) {
-            Laya.LayaGL.statAgent.recordMemoryData(Laya.StatisticsElement.M_GPUMemory, bytelength);
-            Laya.LayaGL.statAgent.recordMemoryData(Laya.StatisticsElement.M_GPUBuffer, bytelength);
+            Laya.LayaGL.statAgent.recordMemoryData(Laya.StatElement.M_GPUMemory, bytelength);
+            Laya.LayaGL.statAgent.recordMemoryData(Laya.StatElement.M_GPUBuffer, bytelength);
             Laya.LayaGL.statAgent.recordMemoryData(this._statistics_M_Buffer, bytelength);
         }
         setDataLength(length) {
@@ -2438,7 +2745,7 @@
             });
             this._isCreate = true;
             this._memorychange(this._size);
-            Laya.LayaGL.statAgent.recordCountData(Laya.StatisticsElement.C_GPUBuffer, 1);
+            Laya.LayaGL.statAgent.recordCountData(Laya.StatElement.C_GPUBuffer, 1);
             Laya.LayaGL.statAgent.recordCountData(this._statistics_RC_Buffer, 1);
         }
         setData(srcData, srcOffset) {
@@ -2480,10 +2787,10 @@
                     WebGPURenderEngine._instance.getDevice().queue.writeBuffer(this._source, 0, srcData, offset, size);
                 }
             }
-            Laya.LayaGL.statAgent.recordCTData(Laya.StatisticsElement.CT_BufferUploadCount, 1);
+            Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_BufferUploadCount, 1);
             Laya.LayaGL.statAgent.recordCTData(this._statistics_BufferUpload, 1);
-            if (this._statistics_BufferUpload == Laya.StatisticsElement.CT_UBOBufferUploadCount) {
-                Laya.LayaGL.statAgent.recordCTData(Laya.StatisticsElement.CT_UBOBufferUploadMemory, size / 1048576);
+            if (this._statistics_BufferUpload == Laya.StatElement.CT_UBOBufferUploadCount) {
+                Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_UBOBufferUploadMemory, size / 1048576);
             }
         }
         setDataEx(srcData, srcOffset, byteLength, dstOffset = 0) {
@@ -2523,7 +2830,7 @@
                 else
                     WebGPURenderEngine._instance.getDevice().queue.writeBuffer(this._source, dstOffset, srcData, offset, size);
             }
-            Laya.LayaGL.statAgent.recordCTData(Laya.StatisticsElement.CT_BufferUploadCount, 1);
+            Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_BufferUploadCount, 1);
             Laya.LayaGL.statAgent.recordCTData(this._statistics_BufferUpload, 1);
         }
         copyArrayBuffer(source, destination, sourceOffset = 0, destOffset = 0, length) {
@@ -2566,7 +2873,7 @@
                 this._source = null;
                 this._memorychange(-this._size);
                 this._size = 0;
-                Laya.LayaGL.statAgent.recordCountData(Laya.StatisticsElement.C_GPUBuffer, -1);
+                Laya.LayaGL.statAgent.recordCountData(Laya.StatElement.C_GPUBuffer, -1);
                 Laya.LayaGL.statAgent.recordCountData(this._statistics_RC_Buffer, -1);
             }
         }
@@ -2575,11 +2882,33 @@
         }
     }
 
+    class WebGPUGlobal {
+        static getUniformInfoId() {
+            return this._uniformInfoIdCounter++;
+        }
+        static getUniformBufferId() {
+            return this._uniformBufferIdCounter++;
+        }
+        static getId(object) {
+            return this._idCounter++;
+        }
+        static reset() {
+            this._idCounter = 0;
+        }
+        static get idCounter() {
+            return this._idCounter;
+        }
+    }
+    WebGPUGlobal._idCounter = 0;
+    WebGPUGlobal._uniformInfoIdCounter = 0;
+    WebGPUGlobal._uniformBufferIdCounter = 0;
+
     class WebGPUDeviceBuffer {
         constructor(type) {
             this._cacheShaderData = new Map();
             this._destroyed = false;
             this.objectName = "WebGPUDeviceBuffer";
+            this.globalId = WebGPUGlobal.getId(this);
             let usage = 0;
             usage |= (type & Laya.EDeviceBufferUsage.MAP_READ) ? GPUBufferUsage.MAP_READ : 0;
             usage |= (type & Laya.EDeviceBufferUsage.MAP_WRITE) ? GPUBufferUsage.MAP_WRITE : 0;
@@ -2588,7 +2917,7 @@
             usage |= (type & Laya.EDeviceBufferUsage.STORAGE) ? GPUBufferUsage.STORAGE : 0;
             usage |= (type & Laya.EDeviceBufferUsage.INDIRECT) ? GPUBufferUsage.INDIRECT : 0;
             this._buffer = new WebGPUBuffer(usage);
-            Laya.LayaGL.statAgent.recordCountData(Laya.StatisticsElement.C_DeviceBuffer, 1);
+            Laya.LayaGL.statAgent.recordCountData(Laya.StatElement.C_DeviceBuffer, 1);
         }
         _reSetBindGroupEntry() {
             this._GPUBindGroupEntry = {
@@ -2628,7 +2957,7 @@
         }
         setDataLength(byteLength) {
             if (byteLength != this._buffer._size) {
-                Laya.LayaGL.statAgent.recordMemoryData(Laya.StatisticsElement.M_DeviceBuffer, byteLength - this._buffer._size);
+                Laya.LayaGL.statAgent.recordMemoryData(Laya.StatElement.M_DeviceBuffer, byteLength - this._buffer._size);
                 this._buffer.setDataLength(byteLength);
                 this._reSetBindGroupEntry();
             }
@@ -2648,7 +2977,7 @@
             if (this._buffer) {
                 this._buffer.release();
                 this._buffer = null;
-                Laya.LayaGL.statAgent.recordCountData(Laya.StatisticsElement.C_DeviceBuffer, -1);
+                Laya.LayaGL.statAgent.recordCountData(Laya.StatElement.C_DeviceBuffer, -1);
             }
             this._cacheShaderData = null;
             this._destroyed = true;
@@ -3061,27 +3390,6 @@
         depthStencilParam.stencilReadMask = stencilReadMask;
         depthStencilParam.stencilWriteMask = stencilWriteMask;
     }
-
-    class WebGPUGlobal {
-        static getUniformInfoId() {
-            return this._uniformInfoIdCounter++;
-        }
-        static getUniformBufferId() {
-            return this._uniformBufferIdCounter++;
-        }
-        static getId(object) {
-            return this._idCounter++;
-        }
-        static reset() {
-            this._idCounter = 0;
-        }
-        static get idCounter() {
-            return this._idCounter;
-        }
-    }
-    WebGPUGlobal._idCounter = 0;
-    WebGPUGlobal._uniformInfoIdCounter = 0;
-    WebGPUGlobal._uniformBufferIdCounter = 0;
 
     var PrimitiveDataViewGet;
     (function (PrimitiveDataViewGet) {
@@ -3714,9 +4022,9 @@ ${Object.entries(struct)
             if (this.needUpload) {
                 WebGPUUniformBufferBase.device.queue.writeBuffer(this._gpuBuffer, 0, this._data, 0, this._data.length);
                 this.needUpload = false;
-                Laya.LayaGL.statAgent.recordCTData(Laya.StatisticsElement.CT_UBOBufferUploadCount, 1);
-                Laya.LayaGL.statAgent.recordCTData(Laya.StatisticsElement.CT_UBOBufferUploadMemory, this._data.length / 1048576);
-                Laya.LayaGL.statAgent.recordCTData(Laya.StatisticsElement.CT_BufferUploadCount, 1);
+                Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_UBOBufferUploadCount, 1);
+                Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_UBOBufferUploadMemory, this._data.length / 1048576);
+                Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_BufferUploadCount, 1);
             }
         }
         destroy() {
@@ -4092,8 +4400,8 @@ ${Object.entries(struct)
         setColor(index, value) {
             if (!value)
                 return;
-            if (this._data[index]) {
-                let gammaColor = this._gammaColorMap.get(index);
+            let gammaColor = this._gammaColorMap.get(index);
+            if (this._data[index] && gammaColor) {
                 if (gammaColor.equal(value))
                     return;
                 value.cloneTo(gammaColor);
@@ -4899,7 +5207,7 @@ ${Object.entries(struct)
             if (samples > 1)
                 this._texturesResolve = [];
             this._colorStates = [];
-            Laya.LayaGL.statAgent.recordCountData(Laya.StatisticsElement.C_RenderTexture, 1);
+            Laya.LayaGL.statAgent.recordCountData(Laya.StatElement.C_RenderTexture, 1);
         }
         _getCacheInfo() {
             let id = "";
@@ -4938,7 +5246,7 @@ ${Object.entries(struct)
                 this._depthTexture.dispose();
                 this._depthTexture = null;
             }
-            Laya.LayaGL.statAgent.recordCountData(Laya.StatisticsElement.C_RenderTexture, -1);
+            Laya.LayaGL.statAgent.recordCountData(Laya.StatElement.C_RenderTexture, -1);
         }
     }
     WebGPUInternalRT._formatCounter = new Map();
@@ -5070,7 +5378,7 @@ ${Object.entries(struct)
         set resource(value) {
             if (!this._resource) {
                 Laya.LayaGL.statAgent.recordCountData(this._statistics_RC_TextureX, 1);
-                Laya.LayaGL.statAgent.recordCountData(Laya.StatisticsElement.C_ALLTexture, 1);
+                Laya.LayaGL.statAgent.recordCountData(Laya.StatElement.C_AllTexture, 1);
             }
             this._resource = value;
             this._gpuView = null;
@@ -5178,6 +5486,7 @@ ${Object.entries(struct)
             this._gpuMemory = value;
         }
         constructor(width, height, depth, dimension, mipmap, multiSamples, useSRGBLoader, gammaCorrection) {
+            this.globalId = WebGPUInternalTex._idCounter++;
             this.objectName = 'WebGPUInternalTex';
             this.shaderDatas = new Map();
             this._webGPUSamplerParams = {
@@ -5213,20 +5522,20 @@ ${Object.entries(struct)
             this._webgpuSampler = WebGPUSampler.getWebGPUSampler(this._webGPUSamplerParams);
             switch (dimension) {
                 case Laya.TextureDimension.Tex2D:
-                    this._statistics_M_TextureX = Laya.StatisticsElement.M_Texture2D;
-                    this._statistics_RC_TextureX = Laya.StatisticsElement.C_Texture2D;
+                    this._statistics_M_TextureX = Laya.StatElement.M_Texture2D;
+                    this._statistics_RC_TextureX = Laya.StatElement.C_Texture2D;
                     break;
                 case Laya.TextureDimension.Tex3D:
-                    this._statistics_M_TextureX = Laya.StatisticsElement.M_Texture3D;
-                    this._statistics_RC_TextureX = Laya.StatisticsElement.C_Texture3D;
+                    this._statistics_M_TextureX = Laya.StatElement.M_Texture3D;
+                    this._statistics_RC_TextureX = Laya.StatElement.C_Texture3D;
                     break;
                 case Laya.TextureDimension.Cube:
-                    this._statistics_M_TextureX = Laya.StatisticsElement.M_TextureCube;
-                    this._statistics_RC_TextureX = Laya.StatisticsElement.C_TextureCube;
+                    this._statistics_M_TextureX = Laya.StatElement.M_TextureCube;
+                    this._statistics_RC_TextureX = Laya.StatElement.C_TextureCube;
                     break;
                 case Laya.TextureDimension.Texture2DArray:
-                    this._statistics_M_TextureX = Laya.StatisticsElement.M_Texture2DArray;
-                    this._statistics_RC_TextureX = Laya.StatisticsElement.C_Texture2DArray;
+                    this._statistics_M_TextureX = Laya.StatElement.M_Texture2DArray;
+                    this._statistics_RC_TextureX = Laya.StatElement.C_Texture2DArray;
                     break;
             }
         }
@@ -5294,7 +5603,7 @@ ${Object.entries(struct)
             }
         }
         statisAsRenderTexture() {
-            this._statistics_M_TextureA = Laya.StatisticsElement.M_RenderTexture;
+            this._statistics_M_TextureA = Laya.StatElement.M_RenderTexture;
         }
         getTextureView() {
             if (this._gpuView) {
@@ -5331,9 +5640,9 @@ ${Object.entries(struct)
             return this._gpuView;
         }
         _changeTexMemory(memory) {
-            Laya.LayaGL.statAgent.recordMemoryData(Laya.StatisticsElement.M_GPUMemory, -this._gpuMemory + memory);
-            Laya.LayaGL.statAgent.recordMemoryData(Laya.StatisticsElement.M_ALLTexture, -this._gpuMemory + memory);
-            if (this._statistics_M_TextureA == Laya.StatisticsElement.M_RenderTexture)
+            Laya.LayaGL.statAgent.recordMemoryData(Laya.StatElement.M_GPUMemory, -this._gpuMemory + memory);
+            Laya.LayaGL.statAgent.recordMemoryData(Laya.StatElement.M_AllTexture, -this._gpuMemory + memory);
+            if (this._statistics_M_TextureA == Laya.StatElement.M_RenderTexture)
                 Laya.LayaGL.statAgent.recordMemoryData(this._statistics_M_TextureA, -this._gpuMemory + memory);
             Laya.LayaGL.statAgent.recordMemoryData(this._statistics_M_TextureX, -this._gpuMemory + memory);
         }
@@ -5341,9 +5650,10 @@ ${Object.entries(struct)
             this.gpuMemory = 0;
             this.resource.destroy();
             Laya.LayaGL.statAgent.recordCountData(this._statistics_RC_TextureX, -1);
-            Laya.LayaGL.statAgent.recordCountData(Laya.StatisticsElement.C_ALLTexture, -1);
+            Laya.LayaGL.statAgent.recordCountData(Laya.StatElement.C_AllTexture, -1);
         }
     }
+    WebGPUInternalTex._idCounter = 0;
 
     const WebGPUCubeMap = [4, 5, 0, 1, 2, 3];
     exports.WebGPUTextureDimension = void 0;
@@ -5567,6 +5877,8 @@ ${Object.entries(struct)
         }
         _getGPUTexturePixelByteSize(format) {
             switch (format) {
+                case Laya.TextureFormat.Alpha8:
+                    return 1;
                 case Laya.TextureFormat.R5G6B5:
                     return 2;
                 case Laya.TextureFormat.R8G8B8:
@@ -5616,6 +5928,9 @@ ${Object.entries(struct)
         _getGPUTextureFormat(format, useSRGB) {
             let webgpuTextureFormat = exports.WebGPUTextureFormat.rgba8uint;
             switch (format) {
+                case Laya.TextureFormat.Alpha8:
+                    webgpuTextureFormat = exports.WebGPUTextureFormat.r8unorm;
+                    break;
                 case Laya.TextureFormat.R5G6B5:
                     return null;
                 case Laya.TextureFormat.R8G8B8:
@@ -5775,6 +6090,12 @@ ${Object.entries(struct)
                 typedSize: 1
             };
             switch (format) {
+                case Laya.TextureFormat.Alpha8:
+                    formatParams.channels = 1;
+                    formatParams.bytesPerPixel = 1;
+                    formatParams.dataTypedCons = Uint8Array;
+                    formatParams.typedSize = 1;
+                    return formatParams;
                 case Laya.TextureFormat.R8G8B8A8:
                     formatParams.channels = 4;
                     formatParams.bytesPerPixel = 4;
@@ -6685,9 +7006,9 @@ ${Object.entries(struct)
         }
         writeBuffer(buffer, data, offset, size) {
             WebGPURenderEngine._instance.getDevice().queue.writeBuffer(buffer, offset, data, offset, size);
-            Laya.LayaGL.statAgent.recordCTData(Laya.StatisticsElement.CT_UBOBufferUploadCount, 1);
-            Laya.LayaGL.statAgent.recordCTData(Laya.StatisticsElement.CT_UBOBufferUploadMemory, size / 1048576);
-            Laya.LayaGL.statAgent.recordCTData(Laya.StatisticsElement.CT_BufferUploadCount, 1);
+            Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_UBOBufferUploadCount, 1);
+            Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_UBOBufferUploadMemory, size / 1048576);
+            Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_BufferUploadCount, 1);
         }
         statisGPUMemory(bytes) {
             super.statisGPUMemory(bytes);
@@ -7658,6 +7979,16 @@ ${Object.entries(struct)
     class WebGPURenderGeometry {
         set drawType(v) {
             this._drawType = v;
+            switch (v) {
+                case Laya.DrawType.DrawArray:
+                case Laya.DrawType.DrawArrayInstance:
+                    (!this._drawArrayInfo) && (this._drawArrayInfo = new Laya.FastSinglelist());
+                    break;
+                case Laya.DrawType.DrawElement:
+                case Laya.DrawType.DrawElementInstance:
+                    (!this._drawElementInfo) && (this._drawElementInfo = new Laya.FastSinglelist());
+                    break;
+            }
         }
         get drawType() {
             return this._drawType;
@@ -7700,6 +8031,7 @@ ${Object.entries(struct)
         }
         constructor(mode, drawType) {
             this._id = ++WebGPURenderGeometry._idCounter;
+            this._drawElementInfo0 = false;
             this.gpuIndexFormat = 'uint16';
             this.gpuIndexByte = 2;
             this.stateCacheKey = '';
@@ -7707,6 +8039,7 @@ ${Object.entries(struct)
             this.drawType = drawType;
             this.indexFormat = Laya.IndexFormat.UInt16;
             this._instanceCount = 1;
+            this.drawParams = new Laya.FastSinglelist();
         }
         _getCacheInfo() {
             this.stateCacheKey = '';
@@ -7725,41 +8058,27 @@ ${Object.entries(struct)
             }
         }
         getDrawDataParams(out) {
+            out && this.drawParams.cloneTo(out);
             out.length = 0;
             if (this.drawType == Laya.DrawType.DrawArray || this.drawType == Laya.DrawType.DrawArrayInstance) {
-                this._drawArrayInfo.forEach(element => {
-                    out.add(element.start);
-                    out.add(element.count);
-                });
+                this._drawArrayInfo.cloneTo(out);
             }
             else {
-                this._drawElementInfo.forEach(element => {
-                    out.add(element.elementStart);
-                    out.add(element.elementCount);
-                });
+                this._drawElementInfo.cloneTo(out);
             }
         }
         setDrawArrayParams(first, count) {
-            (!this._drawArrayInfo) && (this._drawArrayInfo = []);
-            this._drawElementInfo = [];
-            this._drawElementInfo0 = null;
-            this._drawArrayInfo.push({
-                start: first,
-                count: count
-            });
+            this._drawArrayInfo.add(first);
+            this._drawArrayInfo.add(count);
+            this.drawParams.add(first);
+            this.drawParams.add(count);
         }
         setDrawElemenParams(count, offset) {
-            (!this._drawElementInfo) && (this._drawElementInfo = []);
-            this._drawElementInfo.push({
-                elementStart: offset,
-                elementCount: count
-            });
-            if (this._drawElementInfo.length == 1) {
-                this._drawElementInfo0 = this._drawElementInfo[0];
-            }
-            else {
-                this._drawElementInfo0 = null;
-            }
+            this._drawElementInfo.add(offset);
+            this._drawElementInfo.add(count);
+            this._drawElementInfo0 = (this._drawElementInfo.length == 2);
+            this.drawParams.add(offset);
+            this.drawParams.add(count);
         }
         setInstanceRenderOffset(offset, instanceCount) {
         }
@@ -7776,6 +8095,7 @@ ${Object.entries(struct)
             this._drawElementInfo0 = null;
             this._drawArrayInfo && (this._drawArrayInfo.length = 0);
             this._drawIndirectInfo && (this._drawIndirectInfo.length = 0);
+            this.drawParams.length = 0;
         }
         cloneTo(obj) {
             var _a, _b, _c;
@@ -7783,10 +8103,12 @@ ${Object.entries(struct)
             obj.drawType = this.drawType;
             obj.indexFormat = this.indexFormat;
             obj.instanceCount = this.instanceCount;
-            obj._drawArrayInfo = (_a = this._drawArrayInfo) === null || _a === void 0 ? void 0 : _a.slice();
-            obj._drawElementInfo = (_b = this._drawElementInfo) === null || _b === void 0 ? void 0 : _b.slice();
+            (_a = this._drawArrayInfo) === null || _a === void 0 ? void 0 : _a.cloneTo(obj._drawArrayInfo);
+            (_b = this._drawElementInfo) === null || _b === void 0 ? void 0 : _b.cloneTo(obj._drawElementInfo);
             obj._drawElementInfo0 = this._drawElementInfo0;
             obj._drawIndirectInfo = (_c = this._drawIndirectInfo) === null || _c === void 0 ? void 0 : _c.slice();
+            this.drawParams.elements = obj.drawParams.elements.slice();
+            this.drawParams.length = obj.drawParams.length;
         }
         applyToEncoder(encoder) {
             const bufferState = this.bufferState;
@@ -7817,64 +8139,62 @@ ${Object.entries(struct)
             switch (drawType) {
                 case Laya.DrawType.DrawArray:
                     {
-                        let _drawArrayInfo = this._drawArrayInfo;
-                        for (let i = _drawArrayInfo.length - 1; i > -1; i--) {
-                            count = _drawArrayInfo[i].count;
-                            start = _drawArrayInfo[i].start;
+                        let _drawArrayInfo = this._drawArrayInfo.elements;
+                        for (let i = 0; i < this._drawArrayInfo.length; i += 2) {
+                            count = _drawArrayInfo[i + 1];
+                            start = _drawArrayInfo[i];
                             triangles += count - 2;
                             enc.draw(count, 1, start, 0);
                         }
-                        drawCount = this._drawArrayInfo.length;
+                        drawCount = this._drawArrayInfo.length / 2;
                     }
                     break;
                 case Laya.DrawType.DrawElement:
                     {
                         let info0 = this._drawElementInfo0;
                         if (info0) {
-                            count = info0.elementCount;
-                            enc.drawIndexed(count, 1, info0.elementStart / indexByte, 0);
+                            count = this._drawElementInfo.elements[1];
+                            enc.drawIndexed(count, 1, this._drawElementInfo.elements[0] / indexByte, 0);
                             triangles += count / 3;
                             drawCount = 1;
                         }
                         else {
-                            let _drawElementInfo = this._drawElementInfo;
-                            for (let i = _drawElementInfo.length - 1; i > -1; i--) {
-                                let info = _drawElementInfo[i];
-                                count = info.elementCount;
-                                enc.drawIndexed(count, 1, info.elementStart / indexByte, 0);
+                            let element = this._drawElementInfo.elements;
+                            for (let i = 0; i < this._drawElementInfo.length; i += 2) {
+                                count = element[i + 1];
+                                enc.drawIndexed(count, 1, element[i] / indexByte, 0);
                                 triangles += count / 3;
                             }
-                            drawCount = _drawElementInfo.length;
+                            drawCount = this._drawElementInfo.length / 2;
                         }
                     }
                     break;
                 case Laya.DrawType.DrawArrayInstance:
                     {
-                        let _drawArrayInfo = this._drawArrayInfo;
+                        let _drawArrayInfo = this._drawArrayInfo.elements;
                         const instanceCount = this.instanceCount;
-                        for (let i = _drawArrayInfo.length - 1; i > -1; i--) {
-                            let info = _drawArrayInfo[i];
-                            count = info.count;
-                            start = info.start;
+                        for (let i = 0; i < this._drawArrayInfo.length; i += 2) {
+                            count = _drawArrayInfo[i + 1];
+                            start = _drawArrayInfo[i];
                             triangles += (count - 2) * instanceCount;
                             enc.draw(count, instanceCount, start, 0);
                         }
-                        Laya.LayaGL.statAgent.recordCTData(Laya.StatisticsElement.CT_Instancing_DrawCallCount, _drawArrayInfo.length);
-                        drawCount = _drawArrayInfo.length;
+                        Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_Instancing_DrawCall, _drawArrayInfo.length);
+                        drawCount = this._drawArrayInfo.length / 2;
                     }
                     break;
                 case Laya.DrawType.DrawElementInstance:
                     {
-                        let _drawElementInfo = this._drawElementInfo;
+                        let element = this._drawElementInfo.elements;
                         const instanceCount = this.instanceCount;
-                        for (let i = _drawElementInfo.length - 1; i > -1; i--) {
-                            count = _drawElementInfo[i].elementCount;
-                            start = _drawElementInfo[i].elementStart;
+                        for (let i = 0; i < this._drawElementInfo.length; i += 2) {
+                            count = element[i + 1];
+                            start = element[i];
                             triangles += count / 3 * instanceCount;
                             enc.drawIndexed(count, instanceCount, start / indexByte, 0);
                         }
-                        drawCount = _drawElementInfo.length;
-                        Laya.LayaGL.statAgent.recordCTData(Laya.StatisticsElement.CT_Instancing_DrawCallCount, _drawElementInfo.length);
+                        drawCount = this._drawElementInfo.length / 2;
+                        Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_Instancing_DrawCall, drawCount);
                     }
                     break;
                 case Laya.DrawType.DrawArrayIndirect:
@@ -7883,7 +8203,7 @@ ${Object.entries(struct)
                         for (let i = _drawIndirectInfo.length - 1; i > -1; i--) {
                             enc.drawIndirect(_drawIndirectInfo[i].buffer.getNativeBuffer()._source, _drawIndirectInfo[i].offset);
                         }
-                        Laya.LayaGL.statAgent.recordCTData(Laya.StatisticsElement.CT_IndirectDrawCall, _drawIndirectInfo.length);
+                        Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_IndirectDrawCall, _drawIndirectInfo.length);
                         drawCount = _drawIndirectInfo.length;
                     }
                     break;
@@ -7893,16 +8213,17 @@ ${Object.entries(struct)
                         for (let i = _drawIndirectInfo.length - 1; i > -1; i--) {
                             enc.drawIndexedIndirect(_drawIndirectInfo[i].buffer.getNativeBuffer()._source, _drawIndirectInfo[i].offset);
                         }
-                        Laya.LayaGL.statAgent.recordCTData(Laya.StatisticsElement.CT_IndirectDrawCall, _drawIndirectInfo.length);
+                        Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_IndirectDrawCall, _drawIndirectInfo.length);
                         drawCount = _drawIndirectInfo.length;
                     }
                     break;
             }
-            Laya.LayaGL.statAgent.recordCTData(Laya.StatisticsElement.CT_Triangle, triangles);
-            Laya.LayaGL.statAgent.recordCTData(Laya.StatisticsElement.CT_DrawCall, drawCount);
+            Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_Triangle, triangles);
+            Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_DrawCall, drawCount);
             return triangles;
         }
         destroy() {
+            delete this.drawParams;
         }
     }
     WebGPURenderGeometry._geometryConterMap = new Map();
@@ -8705,36 +9026,36 @@ layout(set=${set}, binding=${binding++}) uniform sampler ${uniform.propertyName}
             switch (drawType) {
                 case Laya.DrawType.DrawArray:
                     {
-                        let info = _drawArrayInfo[index];
-                        count = info.count;
-                        start = info.start;
+                        let info = _drawArrayInfo.elements;
+                        count = info[index * 2 + 1];
+                        start = info[index * 2];
                         triangles += count - 2;
                         this.encoder.draw(count, 1, start, 0);
                         break;
                     }
                 case Laya.DrawType.DrawElement:
                     {
-                        let info = _drawElementInfo[index];
-                        count = info.elementCount;
-                        start = info.elementStart;
+                        let info = _drawElementInfo.elements;
+                        count = info[index * 2 + 1];
+                        start = info[index * 2];
                         triangles += count / 3;
                         this.encoder.drawIndexed(count, 1, start / indexByte, 0);
                         break;
                     }
                 case Laya.DrawType.DrawArrayInstance:
                     {
-                        let info = _drawArrayInfo[index];
-                        count = info.count;
-                        start = info.start;
+                        let info = _drawArrayInfo.elements;
+                        count = info[index * 2 + 1];
+                        start = info[index * 2];
                         triangles += (count - 2) * instanceCount;
                         this.encoder.draw(count, instanceCount, start, 0);
                         break;
                     }
                 case Laya.DrawType.DrawElementInstance:
                     {
-                        let info = _drawElementInfo[index];
-                        count = info.elementCount;
-                        start = info.elementStart;
+                        let info = _drawElementInfo.elements;
+                        count = info[index * 2 + 1];
+                        start = info[index * 2];
                         triangles += count / 3 * instanceCount;
                         this.encoder.drawIndexed(count, instanceCount, start / indexByte, 0);
                         break;
@@ -9011,17 +9332,21 @@ layout(set=${set}, binding=${binding++}) uniform sampler ${uniform.propertyName}
                 this._start();
                 this._needStart = false;
             }
+            let time = Laya.Browser.now();
             this._prepareContext();
             const elements = list.elements;
             for (let i = 0, n = list.length; i < n; i++) {
                 elements[i]._prepare(this);
             }
             WebGPURenderEngine._instance.gpuBufferMgr.upload();
+            Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_2DContextPre, Laya.Browser.now() - time);
+            time = Laya.Browser.now();
             for (let i = 0, n = list.length; i < n; i++) {
                 elements[i]._render(this, this.renderCommand);
             }
             this._submit();
-            Laya.LayaGL.statAgent.recordCTData(Laya.StatisticsElement.CT_2DDrawCall, list.length);
+            Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_2DContextRender, Laya.Browser.now() - time);
+            Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_2DDrawCall, list.length);
             WebGPURenderEngine._instance._framePassCount++;
             return 0;
         }
@@ -9061,7 +9386,7 @@ layout(set=${set}, binding=${binding++}) uniform sampler ${uniform.propertyName}
             WebGPURenderEngine._instance.gpuBufferMgr.upload();
             node._render(this, this.renderCommand);
             this._submit();
-            Laya.LayaGL.statAgent.recordCTData(Laya.StatisticsElement.CT_2DDrawCall, 1);
+            Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_2DDrawCall, 1);
             WebGPURenderEngine._instance._framePassCount++;
         }
         runOneCMD(cmd) {
@@ -9159,7 +9484,6 @@ layout(set=${set}, binding=${binding++}) uniform sampler ${uniform.propertyName}
                     console.error(vertexSpvRes.info_log);
                 }
                 let vertexSpirv = new Uint8Array(vertexSpvRes.spirv.buffer, vertexSpvRes.spirv.byteOffset, vertexSpvRes.spirv.byteLength);
-                let vertexWgsl = engine.shaderCompiler.naga.spirv_to_wgsl(vertexSpirv, false);
                 let fragmentSpvRes = engine.shaderCompiler.glslang.glsl450_to_spirv(glslObj.fragment, "fragment");
                 if (!fragmentSpvRes.success) {
                     let subShader = this._shaderPass._owner;
@@ -9170,8 +9494,13 @@ layout(set=${set}, binding=${binding++}) uniform sampler ${uniform.propertyName}
                     console.error(fragmentSpvRes.info_log);
                 }
                 let fragmentSpv = new Uint8Array(fragmentSpvRes.spirv.buffer, fragmentSpvRes.spirv.byteOffset, fragmentSpvRes.spirv.byteLength);
-                let fragmentWgsl = engine.shaderCompiler.naga.spirv_to_wgsl(fragmentSpv, false);
-                this._vsShader = device.createShaderModule({ label: this.name, code: vertexWgsl });
+                if (!WebGPURenderEngine._instance.useSPRIV) {
+                    let vertexWgsl = engine.shaderCompiler.naga.spirv_to_wgsl(vertexSpirv, false);
+                    this._vsShader = device.createShaderModule({ label: this.name, code: vertexWgsl });
+                }
+                else {
+                    this._vsShader = device.createShaderModule({ label: this.name, spv: vertexSpirv.buffer });
+                }
                 this._vsShader.getCompilationInfo().then(info => {
                     if (info.messages.length > 0) {
                         let subShader = this._shaderPass._owner;
@@ -9186,7 +9515,13 @@ layout(set=${set}, binding=${binding++}) uniform sampler ${uniform.propertyName}
                         console.groupEnd();
                     }
                 });
-                this._fsShader = device.createShaderModule({ label: this.name, code: fragmentWgsl });
+                if (!WebGPURenderEngine._instance.useSPRIV) {
+                    let fragmentWgsl = engine.shaderCompiler.naga.spirv_to_wgsl(fragmentSpv, false);
+                    this._fsShader = device.createShaderModule({ label: this.name, code: fragmentWgsl });
+                }
+                else {
+                    this._fsShader = device.createShaderModule({ label: this.name, spv: fragmentSpv.buffer });
+                }
                 this._fsShader.getCompilationInfo().then(info => {
                     if (info.messages.length > 0) {
                         let subShader = this._shaderPass._owner;
@@ -13375,7 +13710,6 @@ layout(set=${set}, binding=${binding++}) uniform sampler ${uniform.propertyName}
         }
     }
 
-    exports.BatchBuffer = BatchBuffer;
     exports.BatchManager = BatchManager;
     exports.DepthStencilParam = DepthStencilParam;
     exports.GLSLForVulkanGenerator = GLSLForVulkanGenerator;
@@ -13383,6 +13717,7 @@ layout(set=${set}, binding=${binding++}) uniform sampler ${uniform.propertyName}
     exports.OneDrawCacheInfo = OneDrawCacheInfo;
     exports.OneDrawPassCacheInfo = OneDrawPassCacheInfo;
     exports.Web2DBaseRenderDataHandle = Web2DBaseRenderDataHandle;
+    exports.Web2DGraphic2DIndexCloneDataView = Web2DGraphic2DIndexCloneDataView;
     exports.Web2DGraphic2DIndexDataView = Web2DGraphic2DIndexDataView;
     exports.Web2DGraphic2DVertexDataView = Web2DGraphic2DVertexDataView;
     exports.Web2DGraphicWholeBuffer = Web2DGraphicWholeBuffer;
@@ -13460,7 +13795,6 @@ layout(set=${set}, binding=${binding++}) uniform sampler ${uniform.propertyName}
     exports.WebGraphics2DBufferBlock = WebGraphics2DBufferBlock;
     exports.WebGraphics2DVertexBlock = WebGraphics2DVertexBlock;
     exports.WebGraphicsBatch = WebGraphicsBatch;
-    exports.WebGraphicsBatchContext = WebGraphicsBatchContext;
     exports.WebMesh2DRenderDataHandle = WebMesh2DRenderDataHandle;
     exports.WebPrimitiveDataHandle = WebPrimitiveDataHandle;
     exports.WebRender2DDataHandle = WebRender2DDataHandle;

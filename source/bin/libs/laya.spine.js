@@ -493,7 +493,7 @@
             this.vertexArray = SpineVirtualMesh.vertexArray;
             this.indexArray = SpineVirtualMesh.indexArray;
         }
-        appendVerticesClip(vertices, indices) {
+        appendVerticesClip(vertices, indices, offsetX = 0, offsetY = 0) {
             let indicesLength = indices.length;
             let verticesLength = vertices.length;
             let vertexSize = SpineVirtualMesh.vertexSize_TwoColor;
@@ -508,8 +508,8 @@
                 vertexBuffer[vlen + 3] = vertices[j + 3];
                 vertexBuffer[vlen + 4] = vertices[j + 4];
                 vertexBuffer[vlen + 5] = vertices[j + 5];
-                vertexBuffer[vlen + 6] = vertices[j];
-                vertexBuffer[vlen + 7] = vertices[j + 1];
+                vertexBuffer[vlen + 6] = vertices[j] + offsetX;
+                vertexBuffer[vlen + 7] = vertices[j + 1] + offsetY;
                 vertexBuffer[vlen + 8] = vertices[j + 8];
                 vertexBuffer[vlen + 9] = vertices[j + 9];
                 vertexBuffer[vlen + 10] = vertices[j + 10];
@@ -524,7 +524,7 @@
         canAppend(verticesLength, indicesLength) {
             return this.verticesLength + verticesLength < SpineVirtualMesh.maxVertex * SpineVirtualMesh.vertexSize_TwoColor && this.indicesLength + indicesLength < SpineVirtualMesh.maxVertex * 3;
         }
-        appendVertices(vertices, verticesLength, indices, indicesLength, finalColor, darkColor, uvs) {
+        appendVertices(vertices, verticesLength, indices, indicesLength, finalColor, darkColor, uvs, offsetX = 0, offsetY = 0) {
             let vertexSize = SpineVirtualMesh.vertexSize_TwoColor;
             let indexStart = this.verticesLength / vertexSize;
             let vertexBuffer = this.vertexArray;
@@ -537,8 +537,8 @@
                 vertexBuffer[size + 3] = finalColor.g;
                 vertexBuffer[size + 4] = finalColor.b;
                 vertexBuffer[size + 5] = finalColor.a;
-                vertexBuffer[size + 6] = vertices[v];
-                vertexBuffer[size + 7] = vertices[v + 1];
+                vertexBuffer[size + 6] = vertices[v] + offsetX;
+                vertexBuffer[size + 7] = vertices[v + 1] + offsetY;
                 vertexBuffer[size + 8] = darkColor.r;
                 vertexBuffer[size + 9] = darkColor.g;
                 vertexBuffer[size + 10] = darkColor.b;
@@ -624,9 +624,11 @@
             let staticVetices = SpineSkeletonRenderer.vertices;
             let offsetX = -skeleton.x + this.templet.offsetX;
             let offsetY = -skeleton.y + this.templet.offsetY;
+            let premultipliedAlpha = renderNode.premultipliedAlpha;
             for (let i = 0, n = drawOrder.length; i < n; i++) {
                 let clippedVertexSize = clipper.isClipping() ? 2 : vertexSize;
                 let slot = drawOrder[i];
+                let boneOrSlot = this.templet.needSlot ? slot : slot.bone;
                 if (!slot.bone.active) {
                     clipper.clipEndWithSlot(slot);
                     continue;
@@ -650,7 +652,7 @@
                     renderable.numFloats = clippedVertexSize << 2;
                     if (attachment.sequence != null)
                         attachment.sequence.apply(slot, attachment);
-                    this.computeWorldVertices_RegionAttachment(region, slot.bone, renderable.vertices, 0, clippedVertexSize, offsetX, offsetY);
+                    region.computeWorldVertices(boneOrSlot, renderable.vertices, 0, clippedVertexSize);
                     triangles = QUAD_TRIANGLES$1;
                     uvs = region.uvs;
                     texture = region.region.page.texture;
@@ -664,9 +666,7 @@
                     if (renderable.numFloats > renderable.vertices.length) {
                         renderable.vertices = staticVetices = window.spine.Utils.newFloatArray(renderable.numFloats);
                     }
-                    if (attachment.sequence != null)
-                        attachment.sequence.apply(slot, attachment);
-                    this.computeWorldVertices_MeshAttachment(mesh, slot, 0, mesh.worldVerticesLength, renderable.vertices, 0, clippedVertexSize, offsetX, offsetY);
+                    mesh.computeWorldVertices(slot, 0, mesh.worldVerticesLength, renderable.vertices, 0, clippedVertexSize);
                     triangles = mesh.triangles;
                     texture = mesh.region.page.texture;
                     uvs = mesh.uvs;
@@ -674,7 +674,7 @@
                 }
                 else if (attachment instanceof window.spine.ClippingAttachment) {
                     let clip = (attachment);
-                    this.clipStart(this.clipper, slot, clip, offsetX, offsetY);
+                    clipper.clipStart(slot, clip);
                     continue;
                 }
                 else {
@@ -706,7 +706,7 @@
                     }
                     if (needNewMat) {
                         virtualMesh && virtualMesh.draw();
-                        let mat = renderNode.templet.getMaterial(texture.realTexture, blendMode);
+                        let mat = renderNode.templet.getMaterial(texture.realTexture, blendMode, premultipliedAlpha);
                         virtualMesh = this.nextBatch(mat, renderNode);
                         virtualMesh.clear();
                     }
@@ -717,7 +717,7 @@
                             virtualMesh = this.nextBatch(virtualMesh.material, renderNode);
                             virtualMesh.clear();
                         }
-                        virtualMesh.appendVerticesClip(clipper.clippedVertices, clipper.clippedTriangles);
+                        virtualMesh.appendVerticesClip(clipper.clippedVertices, clipper.clippedTriangles, offsetX, offsetY);
                     }
                     else {
                         if (!virtualMesh.canAppend(renderable.numFloats, triangles.length)) {
@@ -726,7 +726,7 @@
                             virtualMesh.clear();
                         }
                         if (finalColor.a != 0) {
-                            virtualMesh.appendVertices(renderable.vertices, renderable.numFloats, triangles, triangles.length, finalColor, darkColor, uvs);
+                            virtualMesh.appendVertices(renderable.vertices, renderable.numFloats, triangles, triangles.length, finalColor, darkColor, uvs, offsetX, offsetY);
                         }
                     }
                 }
@@ -734,108 +734,6 @@
             }
             clipper.clipEnd();
             virtualMesh && virtualMesh.draw();
-        }
-        clipStart(clipper, slot, clip, ofx, ofy) {
-            if (clipper.clipAttachment)
-                return 0;
-            clipper.clipAttachment = clip;
-            let n = clip.worldVerticesLength;
-            let vertices = spine.Utils.setArraySize(clipper.clippingPolygon, n);
-            this.computeWorldVertices_MeshAttachment(clip, slot, 0, n, vertices, 0, 2, ofx, ofy);
-            let clippingPolygon = clipper.clippingPolygon;
-            spine.SkeletonClipping.makeClockwise(clippingPolygon);
-            let clippingPolygons = clipper.clippingPolygons = clipper.triangulator.decompose(clippingPolygon, clipper.triangulator.triangulate(clippingPolygon));
-            for (let i = 0, n = clippingPolygons.length; i < n; i++) {
-                let polygon = clippingPolygons[i];
-                spine.SkeletonClipping.makeClockwise(polygon);
-                polygon.push(polygon[0]);
-                polygon.push(polygon[1]);
-            }
-            return clippingPolygons.length;
-        }
-        computeWorldVertices_RegionAttachment(attachment, bone, worldVertices, offset, stride, ofx, ofy) {
-            let vertexOffset = attachment.offset;
-            let x = bone.worldX + ofx, y = bone.worldY + ofy;
-            let a = bone.a, b = bone.b, c = bone.c, d = bone.d;
-            let offsetX = 0, offsetY = 0;
-            offsetX = vertexOffset[0];
-            offsetY = vertexOffset[1];
-            worldVertices[offset] = offsetX * a + offsetY * b + x;
-            worldVertices[offset + 1] = offsetX * c + offsetY * d + y;
-            offset += stride;
-            offsetX = vertexOffset[2];
-            offsetY = vertexOffset[3];
-            worldVertices[offset] = offsetX * a + offsetY * b + x;
-            worldVertices[offset + 1] = offsetX * c + offsetY * d + y;
-            offset += stride;
-            offsetX = vertexOffset[4];
-            offsetY = vertexOffset[5];
-            worldVertices[offset] = offsetX * a + offsetY * b + x;
-            worldVertices[offset + 1] = offsetX * c + offsetY * d + y;
-            offset += stride;
-            offsetX = vertexOffset[6];
-            offsetY = vertexOffset[7];
-            worldVertices[offset] = offsetX * a + offsetY * b + x;
-            worldVertices[offset + 1] = offsetX * c + offsetY * d + y;
-        }
-        computeWorldVertices_MeshAttachment(attachment, slot, start, count, worldVertices, offset, stride, ofx, ofy) {
-            count = offset + (count >> 1) * stride;
-            let skeleton = slot.bone.skeleton;
-            let deformArray = slot.deform || slot.attachmentVertices;
-            let vertices = attachment.vertices;
-            let bones = attachment.bones;
-            if (bones == null) {
-                if (deformArray.length > 0)
-                    vertices = deformArray;
-                let bone = slot.bone;
-                let x = bone.worldX + ofx;
-                let y = bone.worldY + ofy;
-                let a = bone.a, b = bone.b, c = bone.c, d = bone.d;
-                for (let v = start, w = offset; w < count; v += 2, w += stride) {
-                    let vx = vertices[v], vy = vertices[v + 1];
-                    worldVertices[w] = vx * a + vy * b + x;
-                    worldVertices[w + 1] = vx * c + vy * d + y;
-                }
-                return;
-            }
-            let v = 0, skip = 0;
-            for (let i = 0; i < start; i += 2) {
-                let n = bones[v];
-                v += n + 1;
-                skip += n;
-            }
-            let skeletonBones = skeleton.bones;
-            if (deformArray.length == 0) {
-                for (let w = offset, b = skip * 3; w < count; w += stride) {
-                    let wx = 0, wy = 0;
-                    let n = bones[v++];
-                    n += v;
-                    for (; v < n; v++, b += 3) {
-                        let bone = skeletonBones[bones[v]];
-                        let vx = vertices[b], vy = vertices[b + 1], weight = vertices[b + 2];
-                        wx += (vx * bone.a + vy * bone.b + bone.worldX + ofx) * weight;
-                        wy += (vx * bone.c + vy * bone.d + bone.worldY + ofy) * weight;
-                    }
-                    worldVertices[w] = wx;
-                    worldVertices[w + 1] = wy;
-                }
-            }
-            else {
-                let deform = deformArray;
-                for (let w = offset, b = skip * 3, f = skip << 1; w < count; w += stride) {
-                    let wx = 0, wy = 0;
-                    let n = bones[v++];
-                    n += v;
-                    for (; v < n; v++, b += 3, f += 2) {
-                        let bone = skeletonBones[bones[v]];
-                        let vx = vertices[b] + deform[f], vy = vertices[b + 1] + deform[f + 1], weight = vertices[b + 2];
-                        wx += (vx * bone.a + vy * bone.b + bone.worldX + ofx) * weight;
-                        wy += (vx * bone.c + vy * bone.d + bone.worldY + ofy) * weight;
-                    }
-                    worldVertices[w] = wx;
-                    worldVertices[w + 1] = wy;
-                }
-            }
         }
     }
 
@@ -1630,8 +1528,8 @@
             this.vertexBones = skinAttach.vertexBones;
             this.skinAttachType = skinAttach.type;
         }
-        getMaterialByName(name, blendMode) {
-            return this.templet.getMaterial(this.templet.getTexture(name), blendMode);
+        getMaterialByName(name, blendMode, premultipliedAlpha) {
+            return this.templet.getMaterial(this.templet.getTexture(name), blendMode, premultipliedAlpha);
         }
         renderUpdate(skindata, frame, lastFrame) {
             const renderNode = this.owner._nodeOwner;
@@ -1689,7 +1587,7 @@
             let needUpdate = false;
             let mulitRenderData = frameData.mulitRenderData;
             if (mulitRenderData) {
-                let mats = this.cacheMaterials[mulitRenderData.id] || this.createMaterials(mulitRenderData);
+                let mats = this.cacheMaterials[mulitRenderData.id] || this.createMaterials(mulitRenderData, renderNode);
                 if (this.currentMaterials !== mats) {
                     renderNode._updateMaterials(mats);
                     needUpdate = true;
@@ -1698,8 +1596,11 @@
             }
             return !renderNode._onMeshChange(mesh, forceUpdateMesh) || needUpdate;
         }
-        createMaterials(mulitRenderData) {
-            let mats = mulitRenderData.renderData.map(data => this.getMaterialByName(data.textureName, data.blendMode));
+        clearCacheMaterials() {
+            this.cacheMaterials.length = 0;
+        }
+        createMaterials(mulitRenderData, renderNode) {
+            let mats = mulitRenderData.renderData.map(data => this.getMaterialByName(data.textureName, data.blendMode, renderNode.premultipliedAlpha));
             this.cacheMaterials[mulitRenderData.id] = mats;
             return mats;
         }
@@ -1941,6 +1842,9 @@
                 this.endCache();
             }
         }
+        clearCacheMaterials() {
+            this.skinRenderArray.forEach(item => item.clearCacheMaterials());
+        }
         complete() {
             this.currentAnimation.currentFrameIndex = -1;
         }
@@ -1972,7 +1876,9 @@
         leave() {
         }
         render(curTime, boneMat) {
-            this.currentAnimation.render(this.bones, this.slots, this.skinUpdate, curTime, boneMat, -this._skeleton.x + this._templet.offsetX, -this._skeleton.y + this._templet.offsetY);
+            let offsetX = -this._skeleton.x + this._templet.offsetX;
+            let offsetY = -this._skeleton.y + this._templet.offsetY;
+            this.currentAnimation.render(this.bones, this.slots, this.skinUpdate, curTime, boneMat, offsetX, offsetY);
             this._renderNode._spriteShaderData.setBuffer(SpineShaderInit.BONEMAT, boneMat);
         }
     }
@@ -2641,6 +2547,38 @@
         }
     }
 
+    class SpineTexture {
+        constructor(tex) {
+            this.realTexture = tex;
+        }
+        getImage() {
+            var _a, _b, _c, _d;
+            return {
+                width: (_b = ((_a = this.realTexture) === null || _a === void 0 ? void 0 : _a.width)) !== null && _b !== void 0 ? _b : 16,
+                height: (_d = ((_c = this.realTexture) === null || _c === void 0 ? void 0 : _c.height)) !== null && _d !== void 0 ? _d : 16,
+            };
+        }
+        setFilters(minFilter, magFilter) {
+            if (!this.realTexture)
+                return;
+            let filterMode;
+            if (magFilter === window.spine.TextureFilter.Nearest)
+                filterMode = Laya.FilterMode.Point;
+            else
+                filterMode = Laya.FilterMode.Bilinear;
+            this.realTexture.filterMode = filterMode;
+        }
+        convertWrapMode(mode) {
+            return mode == spine.TextureWrap.ClampToEdge ? Laya.WrapMode.Clamp : (mode == spine.TextureWrap.MirroredRepeat ? Laya.WrapMode.Mirrored : Laya.WrapMode.Repeat);
+        }
+        setWraps(uWrap, vWrap) {
+            if (!this.realTexture)
+                return;
+            this.realTexture.wrapModeU = this.convertWrapMode(uWrap);
+            this.realTexture.wrapModeV = this.convertWrapMode(vWrap);
+        }
+    }
+
     class SpineTemplet extends Laya.Resource {
         constructor() {
             super();
@@ -2650,6 +2588,7 @@
             this.hasPhysics = false;
             this.mainBlendMode = 0;
             this._premultipliedAlpha = true;
+            this._registTextures = {};
             this._textures = {};
             this.sketonOptimise = new SketonOptimise();
         }
@@ -2673,7 +2612,7 @@
         get basePath() {
             return this._basePath;
         }
-        getMaterial(texture, blendMode) {
+        getMaterial(texture, blendMode, premultipliedAlpha) {
             if (!texture) {
                 console.error("SpineError:cant Find Main Texture");
                 texture = Laya.Texture2D.whiteTexture;
@@ -2691,8 +2630,8 @@
                 else {
                     mat.removeDefine(Laya.ShaderDefines2D.GAMMATEXTURE);
                 }
-                SpineShaderInit.SetSpineBlendMode(blendMode, mat, this._premultipliedAlpha);
-                if (this._premultipliedAlpha) {
+                SpineShaderInit.SetSpineBlendMode(blendMode, mat, premultipliedAlpha);
+                if (premultipliedAlpha) {
                     mat.addDefine(SpineShaderInit.SPINE_PREMULTIPLYALPHA);
                 }
                 else {
@@ -2701,6 +2640,9 @@
                 mat._addReference();
                 this.materialMap.set(key, mat);
             }
+            else if (blendMode == 0) {
+                SpineShaderInit.SetSpineBlendMode(blendMode, mat, premultipliedAlpha);
+            }
             return mat;
         }
         getTexture(name) {
@@ -2708,6 +2650,74 @@
         }
         setTexture(name, tex) {
             this._textures[name] = tex;
+        }
+        registerTexture(texture) {
+            if (!texture)
+                return null;
+            let tex2d = texture.bitmap;
+            if (!tex2d)
+                return null;
+            let bitmapUrl = tex2d.url;
+            let spineTexture = new SpineTexture(tex2d);
+            let page = this._registTextures[bitmapUrl];
+            if (!page) {
+                let urlFileName = bitmapUrl ? bitmapUrl.split('/').pop().split('\\').pop() : null;
+                if (!page) {
+                    page = new spine.TextureAtlasPage(urlFileName || bitmapUrl || "texture");
+                }
+                page.name = urlFileName;
+                page.texture = spineTexture;
+                page.width = tex2d.width;
+                page.height = tex2d.height;
+                this._registTextures[bitmapUrl] = page;
+                let pageName = page.name;
+                if (pageName) {
+                    this.setTexture(pageName, tex2d);
+                }
+            }
+            let textureName = texture.name;
+            if (!textureName) {
+                let textureURL = texture.url;
+                textureName = textureURL.split('/').pop().split('\\').pop();
+            }
+            let region = null;
+            if (!region) {
+                region = new spine.TextureAtlasRegion(page, textureName);
+                region.page = page;
+                region.name = textureName;
+            }
+            region.width = texture.width;
+            region.height = texture.height;
+            region.originalWidth = texture.sourceWidth;
+            region.originalHeight = texture.sourceHeight;
+            region.offsetX = texture.offsetX;
+            region.offsetY = texture.offsetY;
+            if (texture.uv && texture.uv.length >= 8) {
+                region.u = texture.uv[0];
+                region.v = texture.uv[1];
+                region.u2 = texture.uv[4];
+                region.v2 = texture.uv[5];
+            }
+            else {
+                region.u = 0;
+                region.v = 0;
+                region.u2 = 1.0;
+                region.v2 = 1.0;
+            }
+            region.texture = spineTexture;
+            return region;
+        }
+        checkPremultipliedAlpha() {
+            let premultipliedAlpha = true;
+            let pages = this._atlas.pages;
+            for (let i = 0, len = pages.length; i < len; i++) {
+                let page = pages[i];
+                if (page) {
+                    let tex = page.texture.realTexture;
+                    premultipliedAlpha = page.pma || (tex._premultiplyAlpha && premultipliedAlpha);
+                }
+            }
+            return premultipliedAlpha;
         }
         _parse(desc, atlas, textures, premultipliedAlpha = true) {
             var _a;
@@ -2729,28 +2739,25 @@
             this.sketonOptimise.canCache = this.sketonOptimise.canCache && !this.hasPhysics;
             this.sketonOptimise.checkMainAttach(this.skeletonData);
             let skeleton = this.sketonOptimise.sketon;
-            let offset = new spine.Vector2;
-            let size = new spine.Vector2;
-            skeleton.setToSetupPose();
-            skeleton.updateWorldTransform(0);
-            skeleton.getBounds(offset, size);
-            this.offsetX = offset.x + size.x;
-            this.offsetY = -(offset.y + size.y);
-            if (size.x !== Infinity
-                && size.y !== Infinity
-                && offset.x !== Infinity
-                && offset.y !== Infinity) {
+            if (this.skeletonData.x == undefined
+                || this.skeletonData.y == undefined
+                || this.skeletonData.width == undefined
+                || this.skeletonData.height == undefined) {
+                let offset = new spine.Vector2;
+                let size = new spine.Vector2;
+                skeleton.setToSetupPose();
+                skeleton.updateWorldTransform(0);
+                skeleton.getBounds(offset, size);
                 this.width = size.x;
                 this.height = size.y;
                 this.offsetX = offset.x + size.x;
                 this.offsetY = -(offset.y + size.y);
             }
             else {
-                let rootBone = skeleton.getRootBone();
                 this.width = this.skeletonData.width || 0;
                 this.height = this.skeletonData.height || 0;
-                this.offsetX = (this.skeletonData.x || 0) + this.width + rootBone.x;
-                this.offsetY = -((this.skeletonData.y || 0) + this.height - rootBone.y);
+                this.offsetX = (this.skeletonData.x || 0) + this.width;
+                this.offsetY = -((this.skeletonData.y || 0) + this.height);
             }
         }
         getAniNameByIndex(index) {
@@ -2814,7 +2821,7 @@
         draw(skeleton, renderNode, slotRangeStart, slotRangeEnd) {
             this.nextBatchIndex = 0;
             SpineAdapter.drawSkeleton((vbLen, ibLen, texturePath, blendMode) => {
-                let mat = renderNode.templet.getMaterial(this.templet.getTexture(texturePath), blendMode.value);
+                let mat = renderNode.templet.getMaterial(this.templet.getTexture(texturePath), blendMode.value, renderNode.premultipliedAlpha);
                 let mesh = this.nextBatch(mat, renderNode);
                 mesh.drawByData(SpineAdapter._vbArray, vbLen, SpineAdapter._ibArray, ibLen);
                 renderNode.owner._struct.renderElements = renderNode._renderElements;
@@ -3335,6 +3342,8 @@
         constructor() {
             this._skinIndex = 0;
         }
+        clearCacheMaterials() {
+        }
         getSpineColor() {
             return this._spineColor;
         }
@@ -3376,6 +3385,8 @@
     }
 
     class SpineEmptyRender {
+        clearCacheMaterials() {
+        }
         getSpineColor() {
             return Laya.Color.WHITE;
         }
@@ -3397,6 +3408,70 @@
         }
     }
     SpineEmptyRender.instance = new SpineEmptyRender();
+
+    class SlotUtils {
+        static checkAttachment(attachment) {
+            if (attachment == null)
+                return exports.ESpineRenderType.rigidBody;
+            if (attachment instanceof window.spine.RegionAttachment) {
+                return exports.ESpineRenderType.rigidBody;
+            }
+            else if (attachment instanceof window.spine.MeshAttachment) {
+                let mesh = attachment;
+                if (!mesh.bones) {
+                    return exports.ESpineRenderType.rigidBody;
+                }
+                else {
+                    return exports.ESpineRenderType.boneGPU;
+                }
+            }
+            else {
+                return exports.ESpineRenderType.normal;
+            }
+        }
+        static appendIndexArray(attachmentParse, indexArray, size, offset) {
+            if (!attachmentParse.attachment || !attachmentParse.indexArray)
+                return offset;
+            let slotindexArray = attachmentParse.indexArray;
+            for (let j = 0, n = slotindexArray.length; j < n; j++) {
+                indexArray[offset] = slotindexArray[j] + size;
+                offset++;
+            }
+            return offset;
+        }
+        static setSlotTexture(slot, texture, templet, createAttachment = false) {
+            let attachment = slot.getAttachment();
+            if (!attachment)
+                return;
+            if (createAttachment) {
+                attachment = attachment.copy();
+                slot.setAttachment(attachment);
+            }
+            let newRegion = templet.registerTexture(texture);
+            if (attachment instanceof spine.RegionAttachment) {
+                attachment.region = newRegion;
+                attachment.width = newRegion.width;
+                attachment.height = newRegion.height;
+                if (attachment.updateRegion) {
+                    attachment.updateRegion();
+                }
+                else if (attachment.updateOffset) {
+                    attachment.updateOffset();
+                }
+            }
+            else if (attachment instanceof spine.MeshAttachment) {
+                attachment.region = newRegion;
+                attachment.width = newRegion.width;
+                attachment.height = newRegion.height;
+                if (attachment.updateRegion) {
+                    attachment.updateRegion();
+                }
+                else if (attachment.updateUVs) {
+                    attachment.updateUVs();
+                }
+            }
+        }
+    }
 
     class Spine2DRenderNode extends Laya.BaseRenderNode2D {
         static createRenderElement2D() {
@@ -3429,6 +3504,8 @@
             this._skinName = "default";
             this._loop = true;
             this._offset = new Laya.Vector2();
+            this._setPreAlphaFlag = false;
+            this._premultipliedAlpha = true;
             this._useFastRender = true;
             this._autoAdjust = false;
             this._renderElements = [];
@@ -3467,6 +3544,17 @@
                 this._renderHandle.skeleton = this._skeleton;
                 this._flushExtSkin();
             }
+        }
+        get premultipliedAlpha() {
+            return !this._templet || this._setPreAlphaFlag ? this._premultipliedAlpha : this._templet.premultipliedAlpha;
+        }
+        set premultipliedAlpha(value) {
+            this._premultipliedAlpha = value;
+        }
+        setPremultipliedAlpha(value) {
+            this.spineItem.clearCacheMaterials();
+            this._premultipliedAlpha = value;
+            this._setPreAlphaFlag = true;
         }
         get source() {
             return this._source;
@@ -3590,6 +3678,9 @@
             this._offset = value;
             this._renderHandle.offset = this._offset;
             this.boundsChange = true;
+            if (this.playState !== Spine2DRenderNode.PLAYING) {
+                this.owner.repaint(Laya.RepaintFlag.UpdateRT);
+            }
         }
         get autoAdjust() {
             return this._autoAdjust;
@@ -3658,6 +3749,7 @@
             if (this._autoAdjust) {
                 this._doAutoAdjust();
             }
+            this.onTransformChanged();
             this.boundsChange = true;
             if (!this._useFastRender) {
                 let before = SketonOptimise.normalRenderSwitch;
@@ -3766,7 +3858,7 @@
             this._skeleton.update && this._skeleton.update(delta);
             this._skeleton.updateWorldTransform(this.physicsUpdate);
             this.spineItem.render(currentPlayTime);
-            this.owner.repaint();
+            this.owner.repaint(Laya.RepaintFlag.UpdateRT);
         }
         _flushExtSkin() {
             if (null == this._skeleton)
@@ -3874,6 +3966,22 @@
             }
             this._animationName = animationName;
             this._state.addAnimation(this.trackIndex, animationName, loop, delay);
+        }
+        setSlotTexture(slotName, texture, createAttachment = true) {
+            if (this._useFastRender) {
+                console.log("setSlotTexture: useFastRender is true, return");
+                return;
+            }
+            if (!this._skeleton) {
+                console.log("setSlotTexture: skeleton not found, return");
+                return;
+            }
+            let slot = this._skeleton.findSlot(slotName);
+            if (!slot) {
+                console.log("setSlotTexture: slot not found, slotName: " + slotName);
+                return;
+            }
+            SlotUtils.setSlotTexture(slot, texture, this._templet, createAttachment);
         }
         setMix(fromNameOrIndex, toNameOrIndex, duration) {
             duration /= 1000;
@@ -4010,8 +4118,14 @@
         }
         get rect() {
             if (this._boundsChange) {
-                this._rect.z = this._templet.width;
-                this._rect.w = this._templet.height;
+                if (this._templet) {
+                    this._rect.z = this._templet.width + this._offset.x;
+                    this._rect.w = this._templet.height + this._offset.y;
+                }
+                else {
+                    this._rect.z = this.owner.width + this._offset.x;
+                    this._rect.w = this.owner.height + this._offset.y;
+                }
                 this._rect.x = this._offset.x;
                 this._rect.y = this._offset.y;
                 this._boundsChange = false;
@@ -4151,38 +4265,6 @@
         ESpineRenderType[ESpineRenderType["rigidBody"] = 2] = "rigidBody";
     })(exports.ESpineRenderType || (exports.ESpineRenderType = {}));
 
-    class SpineTexture {
-        constructor(tex) {
-            this.realTexture = tex;
-        }
-        getImage() {
-            var _a, _b, _c, _d;
-            return {
-                width: (_b = ((_a = this.realTexture) === null || _a === void 0 ? void 0 : _a.width)) !== null && _b !== void 0 ? _b : 16,
-                height: (_d = ((_c = this.realTexture) === null || _c === void 0 ? void 0 : _c.height)) !== null && _d !== void 0 ? _d : 16,
-            };
-        }
-        setFilters(minFilter, magFilter) {
-            if (!this.realTexture)
-                return;
-            let filterMode;
-            if (magFilter === window.spine.TextureFilter.Nearest)
-                filterMode = Laya.FilterMode.Point;
-            else
-                filterMode = Laya.FilterMode.Bilinear;
-            this.realTexture.filterMode = filterMode;
-        }
-        convertWrapMode(mode) {
-            return mode == spine.TextureWrap.ClampToEdge ? Laya.WrapMode.Clamp : (mode == spine.TextureWrap.MirroredRepeat ? Laya.WrapMode.Mirrored : Laya.WrapMode.Repeat);
-        }
-        setWraps(uWrap, vWrap) {
-            if (!this.realTexture)
-                return;
-            this.realTexture.wrapModeU = this.convertWrapMode(uWrap);
-            this.realTexture.wrapModeV = this.convertWrapMode(vWrap);
-        }
-    }
-
     const _premultipliedAlpha = false;
     const _srgb = true;
     class SpineTempletLoader {
@@ -4296,38 +4378,6 @@
         if (Laya.PlayerConfig.spineVersion)
             SpineTemplet.RuntimeVersion = Laya.PlayerConfig.spineVersion;
     });
-
-    class SlotUtils {
-        static checkAttachment(attachment) {
-            if (attachment == null)
-                return exports.ESpineRenderType.rigidBody;
-            if (attachment instanceof window.spine.RegionAttachment) {
-                return exports.ESpineRenderType.rigidBody;
-            }
-            else if (attachment instanceof window.spine.MeshAttachment) {
-                let mesh = attachment;
-                if (!mesh.bones) {
-                    return exports.ESpineRenderType.rigidBody;
-                }
-                else {
-                    return exports.ESpineRenderType.boneGPU;
-                }
-            }
-            else {
-                return exports.ESpineRenderType.normal;
-            }
-        }
-        static appendIndexArray(attachmentParse, indexArray, size, offset) {
-            if (!attachmentParse.attachment || !attachmentParse.indexArray)
-                return offset;
-            let slotindexArray = attachmentParse.indexArray;
-            for (let j = 0, n = slotindexArray.length; j < n; j++) {
-                indexArray[offset] = slotindexArray[j] + size;
-                offset++;
-            }
-            return offset;
-        }
-    }
 
     class SpineBakeScript extends Laya.Script {
         constructor() {

@@ -1498,6 +1498,7 @@
             this.setTexture(this._tex);
         }
         createCmd() {
+            var _a;
             let drawClass;
             if (this._meshFactory)
                 drawClass = Laya.DrawTrianglesCmd;
@@ -1506,6 +1507,11 @@
             else
                 drawClass = Laya.DrawTextureCmd;
             if (this._drawCmd && this._drawCmd.cmdID === drawClass.ID) {
+                let oldTexture = this._drawCmd.texture;
+                if (oldTexture !== this._tex) {
+                    oldTexture === null || oldTexture === void 0 ? void 0 : oldTexture._removeReference();
+                    (_a = this._tex) === null || _a === void 0 ? void 0 : _a._addReference();
+                }
                 this._drawCmd.texture = this._tex;
                 if (drawClass === Laya.DrawTrianglesCmd)
                     this._drawCmd.mesh = this._meshFactory;
@@ -3646,8 +3652,8 @@
                 height = this._height;
             return super.size(width, height);
         }
-        typeset() {
-            this.textIns.typeset();
+        typeset(force) {
+            this.textIns.typeset(force);
             return this;
         }
         _transChanged(kind) {

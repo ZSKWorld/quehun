@@ -2649,7 +2649,10 @@
         destroy() {
             if (!this._renderElementOBJ)
                 return;
-            (this.transform) && this.transform.off(Laya.Event.TRANSFORM_CHANGED, this, this._onWorldMatrixChanged);
+            if (this._transform) {
+                this._transform.off(Laya.Event.TRANSFORM_CHANGED, this, this._onWorldMatrixChanged);
+                this._transform = null;
+            }
             super.destroy();
             this.instanceSubMesh = null;
             this.staticBatchElementList && this.staticBatchElementList.destroy();
@@ -2886,7 +2889,6 @@
                 this.boundsChange = true;
             }
             else if (!mesh) {
-                this._renderElements.forEach;
                 this._renderElements.forEach(element => {
                     element._renderElementOBJ.destroy();
                     element.destroy();
@@ -7318,8 +7320,8 @@
         set mesh(value) {
             if (this._mesh == value)
                 return;
+            this._meshRender._onMeshChange(value);
             this._mesh = value;
-            this._meshRender._onMeshChange(this._mesh);
             this._renderElemnts = this._meshRender._renderElements;
             this._renderElemnts.forEach(element => {
                 element.material = this._material;
@@ -7528,6 +7530,12 @@
             if (this._mesh == value)
                 return;
             BaseRender.changeVertexDefine(this._mesh, value, this._render._baseRenderNode.shaderData);
+            if (this._mesh) {
+                this._mesh._removeReference();
+            }
+            if (value) {
+                value._addReference();
+            }
             this._mesh = value;
             if (!this._mesh)
                 return;
@@ -7612,6 +7620,10 @@
         }
         renderUpdateElement(renderElement, context) {
             let renderObj = renderElement._renderElementOBJ;
+            renderObj.owner.probeReflection = context.scene.sceneReflectionProb._dataModule;
+            renderObj.owner.additionShaderData.set(ReflectionProbe.BlockName, context.scene.sceneReflectionProb.shaderData);
+            renderObj.owner.additionShaderData = renderObj.owner.additionShaderData;
+            renderObj.owner._applyReflection();
             renderObj.isRender = renderElement._geometry._prepareRender(context);
             renderElement._geometry._updateRenderParams(context);
             return renderObj;
@@ -12539,6 +12551,12 @@
         getPropertyByIndex(index) {
             return this._propertys[index];
         }
+        getMaterialPropertyId(index) {
+            if (null == this._materialId) {
+                this._materialId = Laya.Shader3D.propertyNameToID(this._propertys[index]);
+            }
+            return this._materialId;
+        }
         getKeyframeByIndex(index) {
             return this._keyFrames[index];
         }
@@ -12752,15 +12770,24 @@
             var pro = this.propertyOwner;
             if (pro) {
                 switch (this.type) {
-                    case 0:
+                    case exports.KeyFrameValueType.Float:
+                    case exports.KeyFrameValueType.Boolean:
                         this.crossFixedValue = this.value;
                         break;
-                    case 1:
-                    case 3:
-                    case 4:
+                    case exports.KeyFrameValueType.Position:
+                    case exports.KeyFrameValueType.Scale:
+                    case exports.KeyFrameValueType.RotationEuler:
+                    case exports.KeyFrameValueType.Vector3:
                         this.value.cloneTo(this.crossFixedValue);
                         break;
-                    case 2:
+                    case exports.KeyFrameValueType.Rotation:
+                        this.value.cloneTo(this.crossFixedValue);
+                        break;
+                    case exports.KeyFrameValueType.Vector2:
+                        this.value.cloneTo(this.crossFixedValue);
+                        break;
+                    case exports.KeyFrameValueType.Vector4:
+                    case exports.KeyFrameValueType.Color:
                         this.value.cloneTo(this.crossFixedValue);
                         break;
                     default:
@@ -15672,7 +15699,34 @@
             else {
                 var property = propertyOwner;
                 for (var i = 0, n = node.propertyCount; i < n; i++) {
-                    property = property[node.getPropertyByIndex(i)];
+                    if (mat) {
+                        const shaderPropId = node.getMaterialPropertyId(i);
+                        const type = node.type;
+                        switch (type) {
+                            case exports.KeyFrameValueType.Color:
+                                const color = property.shaderData.getColor(shaderPropId);
+                                property = new Laya.Vector4(color.r, color.g, color.b, color.a);
+                                break;
+                            case exports.KeyFrameValueType.Vector2:
+                                property = property.shaderData.getVector2(shaderPropId);
+                                break;
+                            case exports.KeyFrameValueType.Vector3:
+                                property = property.shaderData.getVector3(shaderPropId);
+                                break;
+                            case exports.KeyFrameValueType.Vector4:
+                                property = property.shaderData.getVector(shaderPropId);
+                                break;
+                            case exports.KeyFrameValueType.Float:
+                                property = property.shaderData.getNumber(shaderPropId);
+                                break;
+                            case exports.KeyFrameValueType.Boolean:
+                                property = property.shaderData.getBool(shaderPropId);
+                                break;
+                        }
+                    }
+                    else {
+                        property = property[node.getPropertyByIndex(i)];
+                    }
                     if (property instanceof Laya.Material) {
                         mat = true;
                     }
@@ -15706,10 +15760,6 @@
                         keyframeNodeOwner.value = new property.constructor();
                         keyframeNodeOwner.crossFixedValue = new property.constructor();
                     }
-                }
-                if (null == keyframeNodeOwner.value && node.type === exports.KeyFrameValueType.Color) {
-                    keyframeNodeOwner.value = new Laya.Vector4();
-                    keyframeNodeOwner.crossFixedValue = new Laya.Vector4();
                 }
                 this._keyframeNodeOwners.push(keyframeNodeOwner);
                 clipOwners[nodeIndex] = keyframeNodeOwner;
@@ -16015,7 +16065,7 @@
             if (!defaultValue)
                 return null;
             if (!nodeOwner.defaultValue)
-                nodeOwner.defaultValue = defaultValue.clone();
+                nodeOwner.defaultValue = new Laya.Vector4(defaultValue.r, defaultValue.g, defaultValue.b, defaultValue.a);
             if (nodeOwner.updateMark === this._updateMark) {
                 if (additive) {
                     defaultValue.r += weight * data.x;
@@ -16034,10 +16084,10 @@
             else {
                 if (isFirstLayer) {
                     if (additive) {
-                        defaultValue.r = nodeOwner.defaultValue.r + data.x;
-                        defaultValue.g = nodeOwner.defaultValue.g + data.y;
-                        defaultValue.b = nodeOwner.defaultValue.b + data.z;
-                        defaultValue.a = nodeOwner.defaultValue.a + data.w;
+                        defaultValue.r = nodeOwner.defaultValue.x + data.x;
+                        defaultValue.g = nodeOwner.defaultValue.y + data.y;
+                        defaultValue.b = nodeOwner.defaultValue.z + data.z;
+                        defaultValue.a = nodeOwner.defaultValue.w + data.w;
                     }
                     else {
                         defaultValue.setValue(data.x, data.y, data.z, data.w);
@@ -16045,17 +16095,17 @@
                 }
                 else {
                     if (additive) {
-                        defaultValue.r = nodeOwner.defaultValue.r + weight * (data.x);
-                        defaultValue.g = nodeOwner.defaultValue.g + weight * (data.y);
-                        defaultValue.b = nodeOwner.defaultValue.b + weight * (data.z);
-                        defaultValue.a = nodeOwner.defaultValue.a + weight * (data.w);
+                        defaultValue.r = nodeOwner.defaultValue.x + weight * (data.x);
+                        defaultValue.g = nodeOwner.defaultValue.y + weight * (data.y);
+                        defaultValue.b = nodeOwner.defaultValue.z + weight * (data.z);
+                        defaultValue.a = nodeOwner.defaultValue.w + weight * (data.w);
                     }
                     else {
                         var defValue = nodeOwner.defaultValue;
-                        defaultValue.r = defValue.r + weight * (data.x - defValue.r);
-                        defaultValue.g = defValue.g + weight * (data.y - defValue.g);
-                        defaultValue.b = defValue.b + weight * (data.z - defValue.b);
-                        defaultValue.a = defValue.a + weight * (data.w - defValue.a);
+                        defaultValue.r = defValue.x + weight * (data.x - defValue.x);
+                        defaultValue.g = defValue.y + weight * (data.y - defValue.y);
+                        defaultValue.b = defValue.z + weight * (data.z - defValue.z);
+                        defaultValue.a = defValue.w + weight * (data.w - defValue.w);
                     }
                 }
             }
@@ -16258,10 +16308,10 @@
                                 break;
                         }
                         let v44 = nodeOwner.value;
-                        v44.x = srcValue.r + crossWeight * (desValue.r - srcValue.r);
-                        v44.y = srcValue.g + crossWeight * (desValue.g - srcValue.g);
-                        v44.z = srcValue.b + crossWeight * (desValue.b - srcValue.b);
-                        v44.w = srcValue.a + crossWeight * (desValue.a - srcValue.a);
+                        v44.x = srcValue.x + crossWeight * (desValue.x - srcValue.x);
+                        v44.y = srcValue.y + crossWeight * (desValue.y - srcValue.y);
+                        v44.z = srcValue.z + crossWeight * (desValue.z - srcValue.z);
+                        v44.w = srcValue.w + crossWeight * (desValue.w - srcValue.w);
                         nodeOwner.value = v44;
                         lastpro = proPat[m];
                         if (!nodeOwner.isMaterial) {
@@ -16283,8 +16333,8 @@
                                 break;
                         }
                         let v2 = nodeOwner.value;
-                        v2.x = srcValue.r + crossWeight * (desValue.r - srcValue.r);
-                        v2.y = srcValue.g + crossWeight * (desValue.g - srcValue.g);
+                        v2.x = srcValue.x + crossWeight * (desValue.x - srcValue.x);
+                        v2.y = srcValue.y + crossWeight * (desValue.y - srcValue.y);
                         nodeOwner.value = v2;
                         lastpro = proPat[m];
                         if (!nodeOwner.isMaterial) {
@@ -16309,6 +16359,7 @@
                         v4.x = srcValue.x + crossWeight * (desValue.x - srcValue.x);
                         v4.y = srcValue.y + crossWeight * (desValue.y - srcValue.y);
                         v4.z = srcValue.z + crossWeight * (desValue.z - srcValue.z);
+                        v4.w = srcValue.w + crossWeight * (desValue.w - srcValue.w);
                         nodeOwner.value = v4;
                         lastpro = proPat[m];
                         if (!nodeOwner.isMaterial) {
@@ -16693,10 +16744,10 @@
                                 value = proPat[m];
                                 if (!nodeOwner.defaultValue)
                                     break;
-                                _tempColor.r = nodeOwner.defaultValue.r;
-                                _tempColor.g = nodeOwner.defaultValue.g;
-                                _tempColor.b = nodeOwner.defaultValue.b;
-                                _tempColor.a = nodeOwner.defaultValue.a;
+                                _tempColor.r = nodeOwner.defaultValue.x;
+                                _tempColor.g = nodeOwner.defaultValue.y;
+                                _tempColor.b = nodeOwner.defaultValue.z;
+                                _tempColor.a = nodeOwner.defaultValue.w;
                                 if (!nodeOwner.isMaterial) {
                                     pro && (pro[value] = _tempColor);
                                     if (nodeOwner.callbackFun) {

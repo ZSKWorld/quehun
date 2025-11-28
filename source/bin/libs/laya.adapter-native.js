@@ -27,15 +27,18 @@
                     }
                 });
             };
-            Laya.Laya.addAfterInitCallback(() => {
-                Laya.PAL.g.setGlobalRepaint(Laya.Render.setGlobalRepaint);
-            });
             super.init();
         }
         createMainCanvas() {
-            let canvas = this.createElement("canvas");
-            Laya.Browser.document.body.appendChild(canvas);
-            return canvas;
+            return Laya.PAL.g.createCanvas();
+        }
+        createElement(tagName) {
+            let ele;
+            if (tagName === "canvas" && typeof (Laya.PAL.g.createCanvas) === "function")
+                ele = Laya.PAL.g.createCanvas();
+            else
+                ele = super.createElement(tagName);
+            return ele;
         }
         get supportArrayBufferURL() {
             return true;
@@ -45,6 +48,20 @@
         }
         revokeBufferURL(url) {
             return window.wx.revokeBufferURL(url);
+        }
+        onCaptureGlobalError(enabled, func) {
+            if (enabled) {
+                if (Laya.PAL.hasAPI("onError"))
+                    Laya.PAL.g.onError(func);
+                if (Laya.PAL.g.onUnhandledRejection)
+                    Laya.PAL.g.onUnhandledRejection(func);
+            }
+            else {
+                if (Laya.PAL.hasAPI("offError"))
+                    Laya.PAL.g.offError(func);
+                if (Laya.PAL.g.offUnhandledRejection)
+                    Laya.PAL.g.offUnhandledRejection(func);
+            }
         }
     }
     Laya.PAL.register("browser", NativeBrowserAdapter);
@@ -163,8 +180,10 @@
             this.decoder.on("ended", () => {
                 if (this._loop)
                     this.decoder.stop().then(() => this.decoder.start(this._startOption));
-                else
+                else {
                     this._ended = true;
+                    this.event("ended");
+                }
             });
         }
         get readyState() {

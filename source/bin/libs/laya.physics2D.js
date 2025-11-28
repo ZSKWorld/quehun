@@ -16,9 +16,9 @@
     Physics2DOption.drawCenterOfMass = false;
     Physics2DOption.subStep = 1;
 
-    var PhysicsLineFs = "#define SHADER_NAME PhysicsLineFS\n#include \"Sprite2DFrag.glsl\"\nvarying vec2 v_position;varying vec4 v_linePionts;varying float v_lineLength;varying vec2 v_linedir;varying float v_lineWidth;uniform vec4 u_TilingOffset;vec2 dotToline(in vec2 a,vec2 b,in vec2 p){vec2 pa=p-a,ba=b-a;float h=clamp(dot(pa,ba)/dot(ba,ba),0.0,1.0);return ba*h+a;}void main(){vec2 p=dotToline(v_linePionts.xy,v_linePionts.zw,v_position);float d=v_lineWidth*0.5-length(p-v_position);vec2 left=v_linePionts.xy-v_linedir;vec2 p1=dotToline(left,v_linePionts.zw+v_linedir,v_position);vec2 uv=transformUV(v_texcoord.xy,u_TilingOffset);vec4 textureColor=texture2D(u_baseRender2DTexture,fract(uv));textureColor=transspaceColor(textureColor*u_baseRenderColor);gl_FragColor=vec4(u_baseRenderColor.rgb,textureColor.a*smoothstep(0.0,2.0,d));}";
+    var PhysicsLineFs = "#define SHADER_NAME PhysicsLineFS\n#include \"Sprite2DFrag.glsl\"\nvarying vec2 v_position;varying vec4 v_linePionts;varying float v_lineLength;varying vec2 v_linedir;varying float v_lineWidth;vec2 dotToline(in vec2 a,vec2 b,in vec2 p){vec2 pa=p-a,ba=b-a;float h=clamp(dot(pa,ba)/dot(ba,ba),0.0,1.0);return ba*h+a;}void main(){vec2 p=dotToline(v_linePionts.xy,v_linePionts.zw,v_position);float d=v_lineWidth*0.5-length(p-v_position);vec2 left=v_linePionts.xy-v_linedir;vec2 p1=dotToline(left,v_linePionts.zw+v_linedir,v_position);vec2 uv=transformUV(v_texcoord.xy,u_TilingOffset);vec4 textureColor=texture2D(u_baseRender2DTexture,fract(uv));textureColor=transspaceColor(textureColor*u_baseRenderColor);gl_FragColor=vec4(u_baseRenderColor.rgb,textureColor.a*smoothstep(0.0,2.0,d));}";
 
-    var PhysicsLineVs = "#define SHADER_NAME PhysicsLineVS\n#include \"Sprite2DVertex.glsl\"\nvarying vec2 v_position;varying vec4 v_linePionts;varying float v_lineLength;varying vec2 v_linedir;varying float v_lineWidth;uniform float u_lineWidth;void lineMat(in vec2 left,in vec2 right,inout vec3 xDir,inout vec3 yDir,float LineWidth){vec2 dir=right-left;float lineLength=length(dir)+LineWidth+2.0;dir=normalize(dir);xDir.x=dir.x*lineLength;yDir.x=dir.y*lineLength;float lineWidth=LineWidth+2.0;xDir.y=-dir.y*LineWidth;yDir.y=dir.x*LineWidth;xDir.z=(left.x+right.x)*0.5;yDir.z=(left.y+right.y)*0.5;}void main(){vec2 oriUV=(a_position.xy+vec2(0.5,0.5));oriUV.x=(oriUV.x*length(a_linePos.xy-a_linePos.zw)+a_linelength)/50.0;v_texcoord=oriUV;vec2 left,right;getGlobalPos(a_linePos.xy,left);getGlobalPos(a_linePos.zw,right);float lengthScale=length(right-left)/length(a_linePos.zw-a_linePos.xy);v_lineLength=a_linelength*lengthScale;v_linePionts=vec4(left,right);float lineWidth=u_lineWidth*lengthScale;v_lineWidth=lineWidth;v_linedir=normalize(right-left)*v_lineWidth*0.5;vec3 xDir;vec3 yDir;lineMat(left,right,xDir,yDir,v_lineWidth);transfrom(a_position.xy,xDir,yDir,v_position);vec2 viewPos;getViewPos(v_position,viewPos);clip(viewPos);vec4 pos;getProjectPos(viewPos,pos);gl_Position=pos;}";
+    var PhysicsLineVs = "#define SHADER_NAME PhysicsLineVS\n#include \"Sprite2DVertex.glsl\"\nvarying vec2 v_position;varying vec4 v_linePionts;varying float v_lineLength;varying vec2 v_linedir;varying float v_lineWidth;void lineMat(in vec2 left,in vec2 right,inout vec3 xDir,inout vec3 yDir,float LineWidth){vec2 dir=right-left;float lineLength=length(dir)+LineWidth+2.0;dir=normalize(dir);xDir.x=dir.x*lineLength;yDir.x=dir.y*lineLength;float lineWidth=LineWidth+2.0;xDir.y=-dir.y*LineWidth;yDir.y=dir.x*LineWidth;xDir.z=(left.x+right.x)*0.5;yDir.z=(left.y+right.y)*0.5;}void main(){vec2 oriUV=(a_position.xy+vec2(0.5,0.5));oriUV.x=(oriUV.x*length(a_linePos.xy-a_linePos.zw)+a_linelength)/50.0;v_texcoord=oriUV;vec2 left,right;getGlobalPos(a_linePos.xy,left);getGlobalPos(a_linePos.zw,right);float lengthScale=length(right-left)/length(a_linePos.zw-a_linePos.xy);v_lineLength=a_linelength*lengthScale;v_linePionts=vec4(left,right);float lineWidth=u_lineWidth*lengthScale;v_lineWidth=lineWidth;v_linedir=normalize(right-left)*v_lineWidth*0.5;vec3 xDir;vec3 yDir;lineMat(left,right,xDir,yDir,v_lineWidth);transfrom(a_position.xy,xDir,yDir,v_position);vec2 viewPos;getViewPos(v_position,viewPos);clip(viewPos);vec4 pos;getProjectPos(viewPos,pos);gl_Position=pos;}";
 
     class PhysicsLineShader {
         static __init__() {
@@ -30,7 +30,10 @@
                 'a_linePos': [2, Laya.ShaderDataType.Vector4],
                 "a_linelength": [3, Laya.ShaderDataType.Float],
             };
-            let uniformMap = {};
+            let uniformMap = {
+                u_lineWidth: Laya.ShaderDataType.Float,
+                u_TilingOffset: Laya.ShaderDataType.Vector4,
+            };
             let shader = Laya.Shader3D.add("PhysicsLineShader", true, false);
             shader.shaderType = Laya.ShaderFeatureType.Default;
             let subShader = new Laya.SubShader(attributeMap, uniformMap, {});
@@ -38,9 +41,6 @@
             subShader.addShaderPass(PhysicsLineVs, PhysicsLineFs);
             PhysicsLineShader.LINEWIDTH = Laya.Shader3D.propertyNameToID("u_lineWidth");
             PhysicsLineShader.TILINGOFFSET = Laya.Shader3D.propertyNameToID("u_TilingOffset");
-            const commandUniform = Laya.LayaGL.renderDeviceFactory.createGlobalUniformMap("PhysicsLineShader");
-            commandUniform.addShaderUniform(PhysicsLineShader.LINEWIDTH, "u_lineWidth", Laya.ShaderDataType.Float);
-            commandUniform.addShaderUniform(PhysicsLineShader.TILINGOFFSET, "u_TilingOffset", Laya.ShaderDataType.Vector4);
             let vertexs = new Float32Array([
                 -0.5, -0.5, 0,
                 0.5, -0.5, 0,

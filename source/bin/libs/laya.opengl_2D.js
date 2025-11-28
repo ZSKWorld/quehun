@@ -772,7 +772,17 @@
         constructor() {
             super(new window.conchRTMesh2DRenderDataHandle());
             this._baseColor = new Laya.Color(1, 1, 1, 1);
+            this._tilingOffset = new Laya.Vector4();
             this.baseColor = new Laya.Color(1, 1, 1, 1);
+        }
+        get tilingOffset() {
+            return this._tilingOffset;
+        }
+        set tilingOffset(value) {
+            if (!value)
+                return;
+            this._owner.spriteShaderData.setVector(Laya.BaseRenderNode2D.TILINGOFFSET, value);
+            value ? value.cloneTo(this._tilingOffset) : null;
         }
         get baseColor() {
             return this._baseColor;
@@ -1481,42 +1491,6 @@
         }
     }
 
-    class GLESVertexBuffer {
-        constructor(targetType, bufferUsageType) {
-            this._attributeMapTemp = new Map();
-            this._bufferRef = null;
-            this._nativeObj = new window.conchGLESVertexBuffer(targetType, bufferUsageType);
-        }
-        get vertexDeclaration() {
-            return this._vertexDeclaration;
-        }
-        set vertexDeclaration(value) {
-            this._vertexDeclaration = value;
-            this._shaderValues = this._vertexDeclaration._shaderValues;
-            this._nativeObj.clearVertexDeclaration();
-            for (var k in this._shaderValues) {
-                this._nativeObj.setVertexDeclaration(parseInt(k), this._shaderValues[k]);
-            }
-        }
-        get instanceBuffer() {
-            return this._nativeObj._instanceBuffer;
-        }
-        set instanceBuffer(value) {
-            this._nativeObj._instanceBuffer = value;
-        }
-        setData(buffer, bufferOffset, dataStartIndex, dataCount) {
-            this._bufferRef = buffer;
-            this._nativeObj.setData(buffer, bufferOffset, dataStartIndex, dataCount);
-        }
-        setDataLength(byteLength) {
-            this._nativeObj.setDataLength(byteLength);
-        }
-        destroy() {
-            this._nativeObj.destroy();
-            this._bufferRef = null;
-        }
-    }
-
     class GLESRenderContext2D {
         get invertY() {
             return this._nativeObj.invertY;
@@ -1537,7 +1511,6 @@
             this._nativeObj = new window.conchGLESRenderContext2D();
             this._nativeObj.setGlobalConfigShaderData(Laya.Shader3D._configDefineValues._nativeObj);
             this._nativeObj.pipelineMode = "Forward";
-            (!GLESRenderContext2D.isCreateBlitScreenELement) && this.setBlitScreenElement();
         }
         get passData() {
             this._passDataShell._nativeObj = this._nativeObj.passData;
@@ -1546,78 +1519,6 @@
         set passData(value) {
             this._passData = value;
             this._nativeObj.passData = value ? value._nativeObj : null;
-        }
-        setBlitScreenElement() {
-            let blitScreenElement = Laya.LayaGL.render2DRenderPassFactory.createRenderElement2D();
-            let shaderData = Laya.LayaGL.renderDeviceFactory.createShaderData();
-            let _vertices = new Float32Array([
-                1, 1, 1, 1,
-                1, -1, 1, 0,
-                -1, 1, 0, 1,
-                -1, -1, 0, 0
-            ]);
-            let _vertexBuffer = new GLESVertexBuffer(Laya.BufferTargetType.ARRAY_BUFFER, Laya.BufferUsage.Dynamic);
-            _vertexBuffer.setDataLength(64);
-            _vertexBuffer.setData(_vertices.buffer, 0, 0, _vertices.buffer.byteLength);
-            let declaration = new Laya.VertexDeclaration(16, [new Laya.VertexElement(0, Laya.VertexElementFormat.Vector4, 0)]);
-            _vertexBuffer.vertexDeclaration = declaration;
-            let geometry = Laya.LayaGL.renderDeviceFactory.createRenderGeometryElement(Laya.MeshTopology.TriangleStrip, Laya.DrawType.DrawArray);
-            geometry.setDrawArrayParams(0, 4);
-            let bufferState = Laya.LayaGL.renderDeviceFactory.createBufferState();
-            bufferState.applyState([_vertexBuffer], null);
-            geometry.bufferState = bufferState;
-            let attributeMap = {
-                'a_PositionTexcoord': [0, Laya.ShaderDataType.Vector4]
-            };
-            let uniformMap = {
-                "u_MainTex": Laya.ShaderDataType.Texture2D,
-            };
-            let shader = Laya.Shader3D.add("GLESblitScreen", false, false);
-            shader.shaderType = Laya.ShaderFeatureType.Default;
-            let subShader = new Laya.SubShader(attributeMap, uniformMap, {});
-            shader.addSubShader(subShader);
-            let vs = `
-            #define SHADER_NAME GLESblitScreenVS
-
-            varying vec2 v_Texcoord0;
-
-            void main()
-            {
-                gl_Position = vec4(- 1.0 + (a_PositionTexcoord.x + 1.0), (1.0 - ((- 1.0 + (-a_PositionTexcoord.y + 1.0)) + 1.0) / 2.0) * 2.0 - 1.0, 0.0, 1.0);
-
-                v_Texcoord0 = a_PositionTexcoord.zw;
-            }
-        `;
-            let fs = `
-            #define SHADER_NAME GLESblitScreenFS
-
-            varying vec2 v_Texcoord0;
-
-            void main()
-            {
-                vec4 mainColor = texture2D(u_MainTex, v_Texcoord0);
-               
-                gl_FragColor = mainColor;
-            }
-        `;
-            let pass = subShader.addShaderPass(vs, fs);
-            pass.statefirst = true;
-            let blitState = pass.renderState;
-            blitState.depthTest = Laya.RenderState.DEPTHTEST_ALWAYS;
-            blitState.depthWrite = false;
-            blitState.cull = Laya.RenderState.CULL_NONE;
-            blitState.blend = Laya.RenderState.BLEND_DISABLE;
-            blitState.stencilRef = 1;
-            blitState.stencilTest = Laya.RenderState.STENCILTEST_OFF;
-            blitState.stencilWrite = false;
-            blitState.stencilOp = new Laya.Vector3(Laya.RenderState.STENCILOP_KEEP, Laya.RenderState.STENCILOP_KEEP, Laya.RenderState.STENCILOP_REPLACE);
-            blitScreenElement.geometry = geometry;
-            blitScreenElement.materialShaderData = shaderData;
-            blitScreenElement.subShader = subShader;
-            blitScreenElement.renderStateIsBySprite = false;
-            this._nativeObj.setBlitScreenElement(blitScreenElement._nativeObj);
-            GLESRenderContext2D.isCreateBlitScreenELement = true;
-            GLESRenderContext2D.blitScreenElement = blitScreenElement;
         }
         drawRenderElementList(list) {
             this._tempList.length = 0;
@@ -2272,7 +2173,7 @@
             this._nativeObj.addTexGammaDefine(key, value);
         }
         initRenderEngine(canvas) {
-            this._nativeObj.initRenderEngine();
+            this._nativeObj.initRenderEngine(canvas._nativeObj);
             this._GLTextureContext = new GLESTextureContext(this._nativeObj.getTextureContext());
             Laya.Config._uniformBlock = Laya.Config.enableUniformBufferObject && this.getCapable(Laya.RenderCapable.UnifromBufferObject);
             Laya.Config.matUseUBO = Laya.Config.matUseUBO && this.getCapable(Laya.RenderCapable.UnifromBufferObject);
@@ -2421,6 +2322,42 @@
         }
         get indexFormat() {
             return this._nativeObj.indexFormat;
+        }
+    }
+
+    class GLESVertexBuffer {
+        constructor(targetType, bufferUsageType) {
+            this._attributeMapTemp = new Map();
+            this._bufferRef = null;
+            this._nativeObj = new window.conchGLESVertexBuffer(targetType, bufferUsageType);
+        }
+        get vertexDeclaration() {
+            return this._vertexDeclaration;
+        }
+        set vertexDeclaration(value) {
+            this._vertexDeclaration = value;
+            this._shaderValues = this._vertexDeclaration._shaderValues;
+            this._nativeObj.clearVertexDeclaration();
+            for (var k in this._shaderValues) {
+                this._nativeObj.setVertexDeclaration(parseInt(k), this._shaderValues[k]);
+            }
+        }
+        get instanceBuffer() {
+            return this._nativeObj._instanceBuffer;
+        }
+        set instanceBuffer(value) {
+            this._nativeObj._instanceBuffer = value;
+        }
+        setData(buffer, bufferOffset, dataStartIndex, dataCount) {
+            this._bufferRef = buffer;
+            this._nativeObj.setData(buffer, bufferOffset, dataStartIndex, dataCount);
+        }
+        setDataLength(byteLength) {
+            this._nativeObj.setDataLength(byteLength);
+        }
+        destroy() {
+            this._nativeObj.destroy();
+            this._bufferRef = null;
         }
     }
 

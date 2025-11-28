@@ -11,8 +11,8 @@ export class RechargeVO extends BaseVO implements VO.IRechargeVO {
 
 	@InterestMessage(EMessageID.fetchRefundOrder)
 	private onFetchRefundOrder(res: IResFetchRefundOrder) {
-		this.orders = res.orders.map(v => this.decodeProtoData(v));
+		this.orders = res.orders.map($decodeProtoData);
 		this.clear_deadline = res.clear_deadline;
-		this.message = res.message.map(v => this.decodeProtoData(v));
+		this.message = res.message.map($decodeProtoData);
 	}
 }

@@ -16,10 +16,10 @@ export class UIEmailView extends ExtensionClass<IView, UIEmail>(UIEmail) impleme
 		btn_delete.onClick(this, this.sendEvent, [EUIEmailMsg.OnBtnDeleteClick]);
 	}
 
-	refreshTab(tabCount: number, index: number) {
+	refreshTab(count: number, index: number) {
 		const { list_tab, ctrl_empty } = this;
-		ctrl_empty.selectedIndex = tabCount > 0 ? 0 : 1;
-		list_tab.numItems = tabCount;
+		ctrl_empty.selectedIndex = count > 0 ? 0 : 1;
+		list_tab.numItems = count;
 		list_tab.selectedIndex = index;
 	}
 

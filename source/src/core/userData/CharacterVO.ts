@@ -32,7 +32,7 @@ export class CharacterVO extends BaseVO implements VO.ICharacterVO {
 	private onFetchCharacterInfo(res: IResCharacterInfo) {
 		this.character_id = res.main_character_id;
 		this.skin_id = res.characters.find(v => v.charid == this.character_id).skin;
-		this.characters = res.characters.map(this.decodeProtoData);
+		this.characters = res.characters.map($decodeProtoData);
 		this.skins = [...res.skins];
 		this.finished_endings = [...res.finished_endings];
 		this.rewarded_endings = [...res.rewarded_endings];
@@ -53,7 +53,7 @@ export class CharacterVO extends BaseVO implements VO.ICharacterVO {
 		if (character) {
 			const { characters, skins, finished_endings, rewarded_endings } = character;
 			if (characters && characters.length) {
-				this.characters.push(...characters.map(v => this.decodeProtoData(v)));
+				this.characters.push(...characters.map($decodeProtoData));
 			}
 			if (skins && skins.length) {
 				this.skins.push(...skins);

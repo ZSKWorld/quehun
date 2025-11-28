@@ -1,5 +1,5 @@
-import { ENotifyConst } from "../../../../common/NotifyConst";
 import { MediatorBase } from "../../../../mvc/view/MediatorBase";
+import { EUserEvent } from "../../../../userData/UserDefine";
 import { ComItem1View } from "../../PkgCommon/view/coms/ComItem1View";
 import { BtnEmailTabView } from "../view/btns/BtnEmailTabView";
 import { EUIEmailMsg, UIEmailView } from "../view/UIEmailView";
@@ -25,7 +25,7 @@ export class UIEmailMediator extends MediatorBase<UIEmailView, IUIEmailData> {
 		this.setTabIndex(0);
 	}
 
-	@InterestNotify(ENotifyConst.OnMailDataChanged)
+	@InterestNotify(EUserEvent.OnMailChanged)
 	private setTabIndex(index: number) {
 		const { view } = this;
 		index = index ?? view.list_tab.selectedIndex;

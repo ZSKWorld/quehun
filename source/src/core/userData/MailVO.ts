@@ -1,5 +1,5 @@
-import { ENotifyConst } from "../common/NotifyConst";
 import { BaseVO } from "./BaseVO";
+import { EUserEvent } from "./UserDefine";
 
 export class MailVO extends BaseVO implements VO.IMailVO {
 	private _mails: ProtoObject<IMail>[] = [];
@@ -8,8 +8,8 @@ export class MailVO extends BaseVO implements VO.IMailVO {
 
 	@InterestMessage(EMessageID.fetchMailInfo)
 	private onFetchMailInfo(res: IResMailInfo) {
-		this._mails = res.mails.map(this.decodeProtoData);
-		this.dispatch(ENotifyConst.OnMailDataChanged);
+		this._mails = res.mails.map($decodeProtoData);
+		this.dispatch(EUserEvent.OnMailChanged);
 	}
 
 	@InterestMessage(EMessageID.readMail)
@@ -17,7 +17,7 @@ export class MailVO extends BaseVO implements VO.IMailVO {
 		const mail = this._mails.find(v => v.mail_id == req.mail_id);
 		if (!mail) return;
 		mail.state = 1;
-		this.dispatch(ENotifyConst.OnMailDataChanged);
+		this.dispatch(EUserEvent.OnMailChanged);
 	}
 
 	@InterestMessage(EMessageID.deleteMail)
@@ -25,7 +25,7 @@ export class MailVO extends BaseVO implements VO.IMailVO {
 		const index = this._mails.findIndex(v => v.mail_id == req.mail_id);
 		if (index < 0) return;
 		this._mails.splice(index, 1);
-		this.dispatch(ENotifyConst.OnMailDataChanged);
+		this.dispatch(EUserEvent.OnMailChanged);
 	}
 
 	@InterestMessage(EMessageID.takeAttachmentFromMail)
@@ -33,13 +33,13 @@ export class MailVO extends BaseVO implements VO.IMailVO {
 		const mail = this._mails.find(v => v.mail_id == req.mail_id);
 		if (!mail) return;
 		mail.take_attachment = true;
-		this.dispatch(ENotifyConst.OnMailDataChanged);
+		this.dispatch(EUserEvent.OnMailChanged);
 	}
 
 	@InterestMessage(ENotify.NotifyNewMail)
 	private onNotifyNewMail(data: INotifyNewMail) {
-		this._mails.push(this.decodeProtoData(data.mail));
-		this.dispatch(ENotifyConst.OnMailDataChanged);
+		this._mails.push($decodeProtoData(data.mail));
+		this.dispatch(EUserEvent.OnMailChanged);
 	}
 
 	@InterestMessage(ENotify.NotifyDeleteMail)
@@ -48,6 +48,6 @@ export class MailVO extends BaseVO implements VO.IMailVO {
 			const index = this._mails.findIndex(m => m.mail_id == v);
 			if (index >= 0) this._mails.splice(index, 1);
 		});
-		this.dispatch(ENotifyConst.OnMailDataChanged);
+		this.dispatch(EUserEvent.OnMailChanged);
 	}
 }

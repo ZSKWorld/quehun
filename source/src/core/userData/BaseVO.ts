@@ -1,8 +1,8 @@
-import { ObserverAll } from "../mvc/provider/ObserverAll";
+import { Notifier } from "../mvc/provider/Notifier";
 
-export class BaseVO extends ObserverAll {
-
-	protected decodeProtoData<T extends IProto>(data: T) {
-		return $decodeProtoData(data);
+export class BaseVO extends Notifier {
+	constructor() {
+		super();
+		$netMgr.interestMessage(this);
 	}
 }

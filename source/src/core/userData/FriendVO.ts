@@ -1,5 +1,5 @@
-import { ENotifyConst } from "../common/NotifyConst";
 import { BaseVO } from "./BaseVO";
+import { EUserEvent } from "./UserDefine";
 
 export class FriendVO extends BaseVO implements VO.IFriendVO {
 	private _friends: ProtoObject<IFriend>[] = [];
@@ -16,16 +16,17 @@ export class FriendVO extends BaseVO implements VO.IFriendVO {
 
 	@InterestMessage(EMessageID.fetchFriendList)
 	private onFetchFriendList(res: IResFriendList) {
-		this._friends = res.friends.map(this.decodeProtoData);
+		this._friends = res.friends.map($decodeProtoData);
 		this._friendMaxCount = res.friend_max_count;
 		this._friendCount = res.friend_count;
-		this.dispatch(ENotifyConst.OnFriendChanged);
+		this.dispatch(EUserEvent.OnFriendsChanged);
+		this.dispatch(EUserEvent.OnFriendMaxCountChanged);
 	}
 
 	@InterestMessage(EMessageID.fetchFriendApplyList)
 	private onFetchFriendApplyList(res: IResFriendApplyList) {
-		this._applies = res.applies.map(this.decodeProtoData);
-		this.dispatch(ENotifyConst.OnFriendApplyChanged);
+		this._applies = res.applies.map($decodeProtoData);
+		this.dispatch(EUserEvent.OnFriendApplyChanged);
 	}
 
 	@InterestMessage(EMessageID.fetchRecentFriend)
@@ -33,8 +34,8 @@ export class FriendVO extends BaseVO implements VO.IFriendVO {
 		$netMgr.requests.fetchMultiAccountBrief({ account_id_list: res.account_list })
 			.then(res2 => {
 				if (res2.error) return;
-				this._recentPlayers = res2.players.map(this.decodeProtoData);
-				this.dispatch(ENotifyConst.OnFriendRecentChanged);
+				this._recentPlayers = res2.players.map($decodeProtoData);
+				this.dispatch(EUserEvent.OnFriendRecentChanged);
 			});
 	}
 
@@ -42,29 +43,29 @@ export class FriendVO extends BaseVO implements VO.IFriendVO {
 	private onNotifyFriendViewChange(data: INotifyFriendViewChange) {
 		const friend = this._friends.find(v => v.base.account_id == data.target_id);
 		if (!friend) return;
-		friend.base = this.decodeProtoData(data.base);
-		this.dispatch(ENotifyConst.OnFriendChanged);
+		friend.base = $decodeProtoData(data.base);
+		this.dispatch(EUserEvent.OnFriendsChanged);
 	}
 
 	@InterestMessage(ENotify.NotifyFriendStateChange)
 	private onNotifyFriendStateChange(data: INotifyFriendStateChange) {
 		const friend = this._friends.find(v => v.base.account_id == data.target_id);
 		if (!friend) return;
-		friend.state = this.decodeProtoData(data.active_state);
-		this.dispatch(ENotifyConst.OnFriendChanged);
+		friend.state = $decodeProtoData(data.active_state);
+		this.dispatch(EUserEvent.OnFriendsChanged);
 	}
 
 	@InterestMessage(ENotify.NotifyFriendChange)
 	private onNotifyFriendChange(data: INotifyFriendChange) {
 		const { _friends: friends } = this;
 		if (data.type == 1) {
-			friends.push(this.decodeProtoData(data.friend));
+			friends.push($decodeProtoData(data.friend));
 		} else if (data.type == 2) {
 			const index = friends.findIndex(v => v.base.account_id == data.account_id);
 			if (index < 0) return;
 			friends.splice(index, 1);
 		}
-		this.dispatch(ENotifyConst.OnFriendChanged);
+		this.dispatch(EUserEvent.OnFriendsChanged);
 	}
 
 	@InterestMessage(ENotify.NotifyNewFriendApply)
@@ -77,6 +78,6 @@ export class FriendVO extends BaseVO implements VO.IFriendVO {
 			const index = applies.findIndex(v => v.account_id == data.removed_id);
 			if (index >= 0) applies.splice(index, 1);
 		}
-		this.dispatch(ENotifyConst.OnFriendApplyChanged);
+		this.dispatch(EUserEvent.OnFriendApplyChanged);
 	}
 }

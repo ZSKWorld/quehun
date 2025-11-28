@@ -1,5 +1,5 @@
 declare namespace VO {
-	declare interface IUserDataVO extends IObserver {
+	declare interface IUserDataVO {
 		account: IAccountVO;
 		character: ICharacterVO;
 		activity: IActivityVO;
@@ -9,5 +9,7 @@ declare namespace VO {
 		serverSetting: IServerSettingVO;
 		friend: IFriendVO;
 		mail: IMailVO;
+		bag: IBagVO;
+		achievement: IAchievementVO;
 	}
 }

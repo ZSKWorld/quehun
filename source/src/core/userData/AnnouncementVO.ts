@@ -2,7 +2,6 @@ import { BaseVO } from "./BaseVO";
 
 export class AnnouncementVO extends BaseVO implements VO.IAnnouncementVO {
 	private _announcements: ProtoObject<IAnnouncement>[] = [];
-	private _sort: number[] = [];
 	private _readList: number[] = [];
 
 	private get lang() {
@@ -10,7 +9,6 @@ export class AnnouncementVO extends BaseVO implements VO.IAnnouncementVO {
 	}
 	private get platform() { return $gameMgr.inDmm ? 'web_dmm' : 'web'; }
 	get announcements() { return this._announcements; }
-	get sort() { return this._sort; }
 	get readList() { return this._readList; }
 
 	fetchAnnouncement() {
@@ -22,9 +20,8 @@ export class AnnouncementVO extends BaseVO implements VO.IAnnouncementVO {
 
 	@InterestMessage(EMessageID.fetchAnnouncement)
 	private onFetchAnnouncement(res: IResAnnouncement) {
-		const decodeRes = this.decodeProtoData(res);
+		const decodeRes = $decodeProtoData(res);
 		this._announcements = decodeRes.announcements;
-		this._sort = decodeRes.sort;
 		this._readList = decodeRes.read_list;
 	}
 

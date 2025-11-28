@@ -97,7 +97,7 @@ export class InitGlobalCommand extends Command {
 			type.fieldsArray.forEach(v => {
 				const value = data[v.name];
 				if (Array.isArray(value))
-					result[v.name] = [...value.map(v1 => $decodeProtoData(v1))];
+					result[v.name] = [...value.map($decodeProtoData)];
 				else
 					result[v.name] = $decodeProtoData(value);
 			});

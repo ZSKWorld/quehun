@@ -12,11 +12,11 @@ export class ActivityVO extends BaseVO implements VO.IActivityVO {
 
 	@InterestMessage(ENotify.NotifyAccountUpdate)
 	private onNotifyAccountUpdate(data: IAccountUpdate) {
-		this.activity = this.decodeProtoData(data.activity);
-		this.activity_task = this.decodeProtoData(data.activity_task);
-		this.activity_flip_task = this.decodeProtoData(data.activity_flip_task);
-		this.activity_period_task = this.decodeProtoData(data.activity_period_task);
-		this.activity_random_task = this.decodeProtoData(data.activity_random_task);
-		this.activity_segment_task = this.decodeProtoData(data.activity_segment_task);
+		this.activity = $decodeProtoData(data.activity);
+		this.activity_task = $decodeProtoData(data.activity_task);
+		this.activity_flip_task = $decodeProtoData(data.activity_flip_task);
+		this.activity_period_task = $decodeProtoData(data.activity_period_task);
+		this.activity_random_task = $decodeProtoData(data.activity_random_task);
+		this.activity_segment_task = $decodeProtoData(data.activity_segment_task);
 	}
 }

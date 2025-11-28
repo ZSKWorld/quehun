@@ -47,7 +47,7 @@ export class AccountVO extends BaseVO implements VO.IAccountVO {
 	@InterestMessage(EMessageID.oauth2Login)
 	private onLogin(res: IResLogin) {
 		if (!res.account) return;
-		const decodeAcc = this.decodeProtoData(res.account);
+		const decodeAcc = $decodeProtoData(res.account);
 		res.account.$type.fieldsArray.forEach(v => {
 			this[v.name] = decodeAcc[v.name];
 		});

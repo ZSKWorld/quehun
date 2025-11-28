@@ -18,6 +18,14 @@ declare function InterestNotify(eventName: string, once?: boolean, args?: any[])
  */
 declare function InterestMessage(msgId: EMessageID | ENotify, once?: boolean, args?: any[]): MethodDecorator;
 
+/**
+ * 注入用户事件监听
+ * @param eventName 事件名，使用`EUserEvent`枚举
+ * @param once 是否只监听一次
+ * @param args 参数
+ */
+declare function InterestUserEvent(eventName: string, once?: boolean, args?: any[]): MethodDecorator;
+
 declare interface INotifier {
 	/**
 	 * 派发事件。

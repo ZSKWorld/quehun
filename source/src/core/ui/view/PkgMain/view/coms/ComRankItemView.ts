@@ -18,7 +18,7 @@ export class ComRankItemView extends ExtensionClass<IView, ComRankItem>(ComRankI
 		txt_rank.visible = !top3;
 		top3 && (loader_top3.icon = `ui://PkgCommon/img_${ 1689 + rank }`);
 		!top3 && (txt_rank.text = String(rank + 1));
-		// com_head.refresh(data.head_icon, data.head_frame);
+		com_head.refresh(data);
 		com_name.refresh(data);
 		com_title.refresh(data);
 		com_level.refresh(type == EUIRankType.SiMa ? data.level : data.level3);

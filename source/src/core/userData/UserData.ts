@@ -45,13 +45,13 @@ export class UserData extends BaseVO implements VO.IUserDataVO {
 	@InterestMessage(EMessageID.oauth2Login)
 	private onLogin(res: IResLogin) {
 		this.game_info = $decodeProtoData(res.game_info);
-		// this.has_unread_announcement = res.has_unread_announcement;
+		this.has_unread_announcement = res.has_unread_announcement;
 		this.access_token = res.access_token;
-		// this.signup_time = res.signup_time;
+		this.signup_time = res.signup_time;
 		this.is_id_card_authed = res.is_id_card_authed;
-		// this.country = res.country;
-		// this.logined_version = [...res.logined_version];
-		// this.rewarded_version = [...res.rewarded_version];
+		this.country = res.country;
+		this.logined_version = [...res.logined_version];
+		this.rewarded_version = [...res.rewarded_version];
 	}
 
 	@InterestMessage(ENotify.NotifyAccountUpdate)

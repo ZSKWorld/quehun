@@ -1,378 +1,378 @@
 Character_SQQHL_Summer.png
-	size: 2048, 2048
-	filter: Linear, Linear
-	scale: 0.4
+size:2048,2048
+filter:Linear,Linear
+scale:0.4
 light_02
-	bounds: 1119, 106, 205, 205
+bounds:1119,106,205,205
 light_sq_01
-	bounds: 1893, 112, 106, 115
-	rotate: 90
+bounds:1893,112,106,115
+rotate:90
 shidiao_2
-	bounds: 1098, 2, 102, 102
+bounds:1098,2,102,102
 shuidi
-	bounds: 2015, 560, 32, 31
-	rotate: 90
+bounds:2015,560,32,31
+rotate:90
 sqqhlbj__1
-	bounds: 600, 2, 76, 72
-	rotate: 90
+bounds:600,2,76,72
+rotate:90
 sqqhlbj__10
-	bounds: 892, 113, 198, 225
-	rotate: 90
+bounds:892,113,198,225
+rotate:90
 sqqhlbj__14
-	bounds: 2018, 596, 28, 34
+bounds:2018,596,28,34
 sqqhlbj__15
-	bounds: 2015, 478, 27, 38
+bounds:2015,478,27,38
 sqqhlbj__16
-	bounds: 2018, 632, 42, 28
-	rotate: 90
+bounds:2018,632,42,28
+rotate:90
 sqqhlbj__18
-	bounds: 1202, 2, 16, 75
-	rotate: 90
+bounds:1202,2,16,75
+rotate:90
 sqqhlbj__20
-	bounds: 1663, 112, 106, 228
-	rotate: 90
+bounds:1663,112,106,228
+rotate:90
 sqqhlbj__22
-	bounds: 1326, 85, 94, 226
+bounds:1326,85,94,226
 sqqhlbj__4
-	bounds: 505, 14, 29, 80
-	rotate: 90
+bounds:505,14,29,80
+rotate:90
 sqqhlbj__6
-	bounds: 2010, 182, 36, 36
+bounds:2010,182,36,36
 sqqhlbj__7
-	bounds: 1061, 1003, 49, 30
+bounds:1061,1003,49,30
 sqqhlbj__9
-	bounds: 1422, 2, 104, 146
-	rotate: 90
+bounds:1422,2,104,146
+rotate:90
 sqqlh__0
-	bounds: 1378, 523, 197, 320
-	rotate: 90
+bounds:1378,523,197,320
+rotate:90
 sqqlh__1
-	bounds: 1070, 313, 208, 358
-	rotate: 90
+bounds:1070,313,208,358
+rotate:90
 sqqlh__10
-	bounds: 1422, 108, 239, 128
+bounds:1422,108,239,128
 sqqlh__104
-	bounds: 1678, 795, 206, 363
-	rotate: 90
+bounds:1678,795,206,363
+rotate:90
 sqqlh__105
-	bounds: 820, 2, 87, 75
-	rotate: 90
+bounds:820,2,87,75
+rotate:90
 sqqlh__106
-	bounds: 1739, 1008, 64, 51
-	rotate: 90
+bounds:1739,1008,64,51
+rotate:90
 sqqlh__108
-	bounds: 936, 1004, 29, 123
-	rotate: 90
+bounds:936,1004,29,123
+rotate:90
 sqqlh__109
-	bounds: 731, 1251, 121, 389
-	rotate: 90
+bounds:731,1251,121,389
+rotate:90
 sqqlh__11
-	bounds: 702, 2, 87, 116
-	rotate: 90
+bounds:702,2,87,116
+rotate:90
 sqqlh__110
-	bounds: 2, 11, 32, 122
-	rotate: 90
+bounds:2,11,32,122
+rotate:90
 sqqlh__111
-	bounds: 2018, 676, 28, 117
+bounds:2018,676,28,117
 sqqlh__112
-	bounds: 808, 1004, 29, 126
-	rotate: 90
+bounds:808,1004,29,126
+rotate:90
 sqqlh__113
-	bounds: 1169, 1683, 713, 363
+bounds:1169,1683,713,363
 sqqlh__114
-	bounds: 1707, 406, 186, 306
-	rotate: 90
+bounds:1707,406,186,306
+rotate:90
 sqqlh__115
-	bounds: 364, 350, 826, 251
-	rotate: 90
+bounds:364,350,826,251
+rotate:90
 sqqlh__116
-	bounds: 1169, 1507, 732, 174
+bounds:1169,1507,732,174
 sqqlh__117
-	bounds: 2, 350, 826, 360
-	rotate: 90
+bounds:2,350,826,360
+rotate:90
 sqqlh__118
-	bounds: 617, 359, 817, 189
-	rotate: 90
+bounds:617,359,817,189
+rotate:90
 sqqlh__119
-	bounds: 1169, 1288, 621, 217
+bounds:1169,1288,621,217
 sqqlh__14_1
-	bounds: 1538, 1074, 252, 212
+bounds:1538,1074,252,212
 sqqlh__16
-	bounds: 1700, 594, 199, 316
-	rotate: 90
+bounds:1700,594,199,316
+rotate:90
 sqqlh__17
-	bounds: 894, 331, 117, 170
-	rotate: 90
+bounds:894,331,117,170
+rotate:90
 sqqlh__18
-	bounds: 1130, 1011, 68, 202
-	rotate: 90
+bounds:1130,1011,68,202
+rotate:90
 sqqlh__19
-	bounds: 2, 1178, 727, 868
+bounds:2,1178,727,868
 sqqlh__2
-	bounds: 1130, 1081, 205, 406
-	rotate: 90
+bounds:1130,1081,205,406
+rotate:90
 sqqlh__20
-	bounds: 808, 398, 84, 603
+bounds:808,398,84,603
 sqqlh__21
-	bounds: 731, 1374, 436, 672
+bounds:731,1374,436,672
 sqqlh__23
-	bounds: 1570, 40, 66, 91
-	rotate: 90
+bounds:1570,40,66,91
+rotate:90
 sqqlh__25
-	bounds: 326, 2, 14, 47
-	rotate: 90
+bounds:326,2,14,47
+rotate:90
 sqqlh__29
-	bounds: 423, 3, 18, 73
-	rotate: 90
+bounds:423,3,18,73
+rotate:90
 sqqlh__3
-	bounds: 1884, 1785, 161, 261
+bounds:1884,1785,161,261
 sqqlh__30
-	bounds: 416, 23, 20, 87
-	rotate: 90
+bounds:416,23,20,87
+rotate:90
 sqqlh__31
-	bounds: 326, 18, 25, 88
-	rotate: 90
+bounds:326,18,25,88
+rotate:90
 sqqlh__33
-	bounds: 1865, 2, 171, 108
+bounds:1865,2,171,108
 sqqlh__34
-	bounds: 1678, 726, 20, 15
+bounds:1678,726,20,15
 sqqlh__35
-	bounds: 1122, 1289, 32, 40
-	rotate: 90
+bounds:1122,1289,32,40
+rotate:90
 sqqlh__36
-	bounds: 1678, 743, 50, 18
-	rotate: 90
+bounds:1678,743,50,18
+rotate:90
 sqqlh__37
-	bounds: 1696, 298, 10, 9
-	rotate: 90
+bounds:1696,298,10,9
+rotate:90
 sqqlh__38
-	bounds: 1279, 4, 21, 14
+bounds:1279,4,21,14
 sqqlh__39
-	bounds: 498, 2, 25, 10
+bounds:498,2,25,10
 sqqlh__4
-	bounds: 702, 91, 266, 188
-	rotate: 90
+bounds:702,91,266,188
+rotate:90
 sqqlh__40
-	bounds: 1884, 1733, 50, 15
-	rotate: 90
+bounds:1884,1733,50,15
+rotate:90
 sqqlh__41
-	bounds: 1663, 220, 28, 16
+bounds:1663,220,28,16
 sqqlh__42
-	bounds: 1696, 310, 11, 9
-	rotate: 90
+bounds:1696,310,11,9
+rotate:90
 sqqlh__43
-	bounds: 1422, 284, 11, 6
-	rotate: 90
+bounds:1422,284,11,6
+rotate:90
 sqqlh__44
-	bounds: 1422, 274, 8, 6
-	rotate: 90
+bounds:1422,274,8,6
+rotate:90
 sqqlh__45
-	bounds: 731, 1178, 14, 8
+bounds:731,1178,14,8
 sqqlh__46
-	bounds: 375, 2, 46, 14
+bounds:375,2,46,14
 sqqlh__47
-	bounds: 1422, 297, 14, 6
-	rotate: 90
+bounds:1422,297,14,6
+rotate:90
 sqqlh__48
-	bounds: 674, 12, 26, 12
+bounds:674,12,26,12
 sqqlh__51
-	bounds: 617, 350, 7, 7
+bounds:617,350,7,7
 sqqlh__52
-	bounds: 1974, 1512, 21, 19
+bounds:1974,1512,21,19
 sqqlh__53
-	bounds: 1700, 586, 5, 6
+bounds:1700,586,5,6
 sqqlh__54
-	bounds: 1626, 23, 14, 15
+bounds:1626,23,14,15
 sqqlh__58
-	bounds: 731, 1188, 75, 61
+bounds:731,1188,75,61
 sqqlh__59
-	bounds: 126, 9, 100, 34
+bounds:126,9,100,34
 sqqlh__6
-	bounds: 1314, 21, 62, 106
-	rotate: 90
+bounds:1314,21,62,106
+rotate:90
 sqqlh__60
-	bounds: 228, 10, 96, 33
+bounds:228,10,96,33
 sqqlh__61
-	bounds: 808, 364, 81, 32
+bounds:808,364,81,32
 sqqlh__63
-	bounds: 600, 80, 100, 268
+bounds:600,80,100,268
 sqqlh__64
-	bounds: 1430, 238, 83, 264
-	rotate: 90
+bounds:1430,238,83,264
+rotate:90
 sqqlh__66
-	bounds: 1903, 1507, 24, 69
-	rotate: 90
+bounds:1903,1507,24,69
+rotate:90
 sqqlh__67
-	bounds: 1202, 20, 84, 110
-	rotate: 90
+bounds:1202,20,84,110
+rotate:90
 sqqlh__68
-	bounds: 894, 450, 174, 551
+bounds:894,450,174,551
 sqqlh__69
-	bounds: 1378, 722, 298, 350
+bounds:1378,722,298,350
 sqqlh__7
-	bounds: 2, 45, 303, 596
-	rotate: 90
+bounds:2,45,303,596
+rotate:90
 sqqlh__70
-	bounds: 1707, 220, 184, 308
-	rotate: 90
+bounds:1707,220,184,308
+rotate:90
 sqqlh__70_1
-	bounds: 808, 1035, 214, 320
-	rotate: 90
+bounds:808,1035,214,320
+rotate:90
 sqqlh__71
-	bounds: 1792, 1003, 254, 502
+bounds:1792,1003,254,502
 sqqlh__72
-	bounds: 1430, 323, 275, 198
+bounds:1430,323,275,198
 sqqlh__79
-	bounds: 897, 17, 199, 94
+bounds:897,17,199,94
 sqqlh__8
-	bounds: 2015, 518, 40, 30
-	rotate: 90
+bounds:2015,518,40,30
+rotate:90
 sqqlh__80_1
-	bounds: 1070, 523, 306, 478
+bounds:1070,523,306,478
 sqqlh__83
-	bounds: 674, 26, 52, 26
-	rotate: 90
+bounds:674,26,52,26
+rotate:90
 sqqlh__84
-	bounds: 1334, 1025, 54, 42
-	rotate: 90
+bounds:1334,1025,54,42
+rotate:90
 sqqlh__87
-	bounds: 1678, 1003, 59, 69
+bounds:1678,1003,59,69
 sqqlh__88_1
-	bounds: 1663, 2, 108, 200
-	rotate: 90
+bounds:1663,2,108,200
+rotate:90
 sqqlh__9
-	bounds: 1122, 1323, 49, 45
-	rotate: 90
+bounds:1122,1323,49,45
+rotate:90
 sqqlh__92
-	bounds: 1903, 1533, 137, 250
+bounds:1903,1533,137,250
 sqqlh__95
-	bounds: 2010, 116, 29, 64
+bounds:2010,116,29,64
 sqqlh__98
-	bounds: 1570, 2, 36, 54
-	rotate: 90
+bounds:1570,2,36,54
+rotate:90
 
 Character_SQQHL_Summer_2.png
-	size: 802, 802
-	filter: Linear, Linear
-	scale: 0.4
+size:802,802
+filter:Linear,Linear
+scale:0.4
 KWFX_03
-	bounds: 596, 530, 78, 114
+bounds:596,530,78,114
 sq_YANGAI
-	bounds: 588, 2, 82, 51
-	rotate: 90
+bounds:588,2,82,51
+rotate:90
 sqqhlbj__11
-	bounds: 2, 2, 115, 206
+bounds:2,2,115,206
 sqqhlbj__12
-	bounds: 648, 378, 72, 64
+bounds:648,378,72,64
 sqqhlbj__13
-	bounds: 641, 19, 53, 84
+bounds:641,19,53,84
 sqqhlbj__17
-	bounds: 752, 235, 60, 47
-	rotate: 90
+bounds:752,235,60,47
+rotate:90
 sqqhlbj__2
-	bounds: 676, 110, 34, 45
-	rotate: 90
+bounds:676,110,34,45
+rotate:90
 sqqhlbj__21 wyy_0
-	bounds: 2, 394, 176, 198
+bounds:2,394,176,198
 sqqhlbj__21 wyy_1
-	bounds: 2, 594, 178, 206
+bounds:2,594,178,206
 sqqhlbj__3
-	bounds: 631, 105, 109, 43
-	rotate: 90
+bounds:631,105,109,43
+rotate:90
 sqqhlbj__5
-	bounds: 750, 629, 50, 55
+bounds:750,629,50,55
 sqqhlbj__8
-	bounds: 182, 628, 190, 172
+bounds:182,628,190,172
 sqqlh__100
-	bounds: 558, 646, 154, 181
-	rotate: 90
+bounds:558,646,154,181
+rotate:90
 sqqlh__101
-	bounds: 676, 526, 72, 118
+bounds:676,526,72,118
 sqqlh__102
-	bounds: 371, 339, 133, 151
+bounds:371,339,133,151
 sqqlh__103
-	bounds: 533, 86, 128, 96
-	rotate: 90
+bounds:533,86,128,96
+rotate:90
 sqqlh__12
-	bounds: 333, 87, 129, 123
+bounds:333,87,129,123
 sqqlh__13
-	bounds: 180, 308, 189, 123
+bounds:180,308,189,123
 sqqlh__15
-	bounds: 177, 2, 58, 110
-	rotate: 90
+bounds:177,2,58,110
+rotate:90
 sqqlh__22
-	bounds: 750, 521, 106, 44
-	rotate: 90
+bounds:750,521,106,44
+rotate:90
 sqqlh__24
-	bounds: 119, 9, 56, 199
+bounds:119,9,56,199
 sqqlh__26
-	bounds: 487, 2, 99, 82
+bounds:487,2,99,82
 sqqlh__27
-	bounds: 430, 2, 55, 83
+bounds:430,2,55,83
 sqqlh__28
-	bounds: 542, 511, 52, 129
+bounds:542,511,52,129
 sqqlh__32
-	bounds: 741, 686, 32, 59
-	rotate: 90
+bounds:741,686,32,59
+rotate:90
 sqqlh__49
-	bounds: 177, 62, 154, 164
+bounds:177,62,154,164
 sqqlh__5
-	bounds: 180, 433, 186, 147
+bounds:180,433,186,147
 sqqlh__50
-	bounds: 374, 642, 158, 182
-	rotate: 90
+bounds:374,642,158,182
+rotate:90
 sqqlh__55
-	bounds: 676, 146, 82, 51
-	rotate: 90
+bounds:676,146,82,51
+rotate:90
 sqqlh__56
-	bounds: 741, 720, 80, 59
-	rotate: 90
+bounds:741,720,80,59
+rotate:90
 sqqlh__57
-	bounds: 333, 2, 83, 95
-	rotate: 90
+bounds:333,2,83,95
+rotate:90
 sqqlh__62
-	bounds: 729, 395, 71, 48
+bounds:729,395,71,48
 sqqlh__65
-	bounds: 182, 582, 44, 198
-	rotate: 90
+bounds:182,582,44,198
+rotate:90
 sqqlh__73
-	bounds: 289, 15, 42, 45
+bounds:289,15,42,45
 sqqlh__74
-	bounds: 752, 297, 48, 46
+bounds:752,297,48,46
 sqqlh__75
-	bounds: 328, 262, 38, 44
+bounds:328,262,38,44
 sqqlh__76
-	bounds: 706, 230, 43, 44
-	rotate: 90
+bounds:706,230,43,44
+rotate:90
 sqqlh__77
-	bounds: 382, 492, 158, 148
+bounds:382,492,158,148
 sqqlh__78
-	bounds: 371, 212, 125, 136
-	rotate: 90
+bounds:371,212,125,136
+rotate:90
 sqqlh__81
-	bounds: 727, 445, 51, 74
+bounds:727,445,51,74
 sqqlh__82
-	bounds: 328, 228, 40, 32
+bounds:328,228,40,32
 sqqlh__85
-	bounds: 706, 275, 44, 68
+bounds:706,275,44,68
 sqqlh__86
-	bounds: 635, 230, 69, 116
+bounds:635,230,69,116
 sqqlh__89
-	bounds: 729, 168, 44, 60
+bounds:729,168,44,60
 sqqlh__90
-	bounds: 464, 87, 67, 123
+bounds:464,87,67,123
 sqqlh__91
-	bounds: 2, 210, 164, 182
+bounds:2,210,164,182
 sqqlh__93
-	bounds: 648, 444, 77, 80
+bounds:648,444,77,80
 sqqlh__94_1
-	bounds: 506, 348, 142, 140
-	rotate: 90
+bounds:506,348,142,140
+rotate:90
 sqqlh__96
-	bounds: 168, 228, 78, 158
-	rotate: 90
+bounds:168,228,78,158
+rotate:90
 sqqlh__97
-	bounds: 722, 345, 48, 76
-	rotate: 90
+bounds:722,345,48,76
+rotate:90
 sqqlh__99
-	bounds: 509, 216, 124, 130
+bounds:509,216,124,130

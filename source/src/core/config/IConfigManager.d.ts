@@ -31,6 +31,7 @@ declare interface IConfigManager {
 	readonly shoot: ITable_Shoot;
 	readonly shops: ITable_Shops;
 	readonly simulation: ITable_Simulation;
+	readonly snowball: ITable_Snowball;
 	readonly spot: ITable_Spot;
 	readonly str: ITable_Str;
 	readonly tournament: ITable_Tournament;

@@ -512,6 +512,10 @@ declare interface ISheet_Info_Error {
 	26148: ISheetData_Info_Error;
 	26149: ISheetData_Info_Error;
 	26150: ISheetData_Info_Error;
+	26151: ISheetData_Info_Error;
+	26152: ISheetData_Info_Error;
+	26153: ISheetData_Info_Error;
+	26154: ISheetData_Info_Error;
 	26200: ISheetData_Info_Error;
 	26201: ISheetData_Info_Error;
 	26202: ISheetData_Info_Error;
@@ -520,6 +524,22 @@ declare interface ISheet_Info_Error {
 	26205: ISheetData_Info_Error;
 	26206: ISheetData_Info_Error;
 	26207: ISheetData_Info_Error;
+	26255: ISheetData_Info_Error;
+	26256: ISheetData_Info_Error;
+	26257: ISheetData_Info_Error;
+	26258: ISheetData_Info_Error;
+	26259: ISheetData_Info_Error;
+	26267: ISheetData_Info_Error;
+	26268: ISheetData_Info_Error;
+	26269: ISheetData_Info_Error;
+	26270: ISheetData_Info_Error;
+	26271: ISheetData_Info_Error;
+	26273: ISheetData_Info_Error;
+	26274: ISheetData_Info_Error;
+	26275: ISheetData_Info_Error;
+	26277: ISheetData_Info_Error;
+	26278: ISheetData_Info_Error;
+	26280: ISheetData_Info_Error;
 }
 declare interface ISheetData_Info_Error {
 	id: number;

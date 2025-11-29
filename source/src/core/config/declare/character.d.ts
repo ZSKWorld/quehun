@@ -124,6 +124,8 @@ declare interface ISheet_Character_Emoji {
 	20000114: ISheetData_Character_Emoji[];
 	20000115: ISheetData_Character_Emoji[];
 	20000116: ISheetData_Character_Emoji[];
+	20000117: ISheetData_Character_Emoji[];
+	20000118: ISheetData_Character_Emoji[];
 }
 declare interface ISheetData_Character_Emoji {
 	/** 角色ID */
@@ -192,6 +194,7 @@ declare interface ISheet_Character_Skin {
 	400305: ISheetData_Character_Skin;
 	400306: ISheetData_Character_Skin;
 	400506: ISheetData_Character_Skin;
+	400508: ISheetData_Character_Skin;
 	400709: ISheetData_Character_Skin;
 	400907: ISheetData_Character_Skin;
 	401709: ISheetData_Character_Skin;
@@ -207,12 +210,14 @@ declare interface ISheet_Character_Skin {
 	403805: ISheetData_Character_Skin;
 	404505: ISheetData_Character_Skin;
 	404805: ISheetData_Character_Skin;
+	404806: ISheetData_Character_Skin;
 	405905: ISheetData_Character_Skin;
 	405906: ISheetData_Character_Skin;
 	406004: ISheetData_Character_Skin;
 	406704: ISheetData_Character_Skin;
 	406804: ISheetData_Character_Skin;
 	407404: ISheetData_Character_Skin;
+	408404: ISheetData_Character_Skin;
 	409003: ISheetData_Character_Skin;
 	409502: ISheetData_Character_Skin;
 	40010703: ISheetData_Character_Skin;

@@ -133,6 +133,7 @@ declare interface ISheet_Spot_Rewards {
 	800063: ISheetData_Spot_Rewards;
 	900011: ISheetData_Spot_Rewards;
 	900012: ISheetData_Spot_Rewards;
+	900013: ISheetData_Spot_Rewards;
 	900021: ISheetData_Spot_Rewards;
 	900022: ISheetData_Spot_Rewards;
 	900031: ISheetData_Spot_Rewards;
@@ -223,7 +224,7 @@ declare interface ISheet_Spot_Rewards {
 declare interface ISheetData_Spot_Rewards {
 	/** 奖励ID */
 	id: number;
-	/** 结局种类1好 2普通 3坏 */
+	/** 结局种类 */
 	type: number;
 	/** 获得条件 */
 	content_chs: string;

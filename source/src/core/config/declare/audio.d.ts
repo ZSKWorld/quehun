@@ -427,6 +427,7 @@ declare interface ISheet_Audio_Bgm {
 	306107: ISheetData_Audio_Bgm;
 	30600001: ISheetData_Audio_Bgm;
 	30600002: ISheetData_Audio_Bgm;
+	30600003: ISheetData_Audio_Bgm;
 	30610001: ISheetData_Audio_Bgm;
 	30610002: ISheetData_Audio_Bgm;
 	30610003: ISheetData_Audio_Bgm;

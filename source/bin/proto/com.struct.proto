@@ -9,6 +9,8 @@ message Error {
   repeated uint32 u32_params = 2;
   repeated string str_params = 3;
   string json_param = 4; // json对象（内容根据code变化）
+
+  uint32 level = 5; // 报错等级，不会发送给客户端
 }
 
 message Wrapper {
@@ -986,7 +988,8 @@ message AccountActivityUpdate {
   repeated lq.SimulationV2Data simulation_v2_data = 16;
   repeated lq.ActivityQuestCrewChanges quest_crew_data = 17;
   repeated lq.ActivityShootData shoot_data = 18;
-  repeated lq.ActivitySnowballValueChanges snowball_data = 19;
+  repeated lq.ActivityBingoData bingo_data = 19;
+  repeated lq.ActivitySnowballValueChanges snowball_data = 20;
 }
 
 message ActivityCombiningWorkbench {
@@ -1873,6 +1876,9 @@ message CustomizedContestDetail {
   uint32 auto_match = 20; // 0=非自动匹配 1=自动匹配
   uint32 rank_type = 21; // 赛季模式 0：个人赛 1：团队赛
   bool show_team_rank = 22; // 是否公开团队排名
+  uint32 tied_rank = 23; // 是否使用并列排名模式 0 - 不并列 1 - 并列
+  uint32 match_start_time = 24; // 自动匹配开始时间
+  uint32 match_end_time = 25; // 自动匹配结束时间
 }
 
 // 自定义比赛参与报告（成绩）
@@ -2906,6 +2912,7 @@ message SimulationActionData {
   }
   ActionDealTileData deal_tile = 6;
 }
+
 message ActivityShootValueChange {
   message Uint32ValueDirty {
     uint32 value = 1;
@@ -2932,13 +2939,44 @@ message ActivityShootData {
   uint32 activity_id = 1;
   uint32 level = 2; // 当前关卡数
   repeated ActivityShootEnemyInfo enemies = 3; // 敌人信息
-  repeated uint32 rewarded_ids = 4; // 奖励获取进度，已经获得过的reward_id
+  repeated uint32 rewarded_ids = 4; // 已获取奖励id
+  bool ended = 5;
+  repeated ActivityShootRewardRecord rewarded_records = 6; // 奖励获取进度详情，已经获得过的奖励记录，用于GM后台统计，不会发给客户端
 }
 
 message ActivityShootEnemyInfo {
   uint32 group_id = 1; // 对应敌人组id
   uint32 enemy_id = 2;
   uint32 hp = 3;
+}
+
+message ActivityShootRewardRecord {
+  uint32 enemy_id = 1; // 击败敌人id
+  uint32 reward_id = 2; // 奖励id
+  uint32 rewarded_time = 3; // 奖励时间
+}
+
+message ActivityBingoCardData {
+  uint32 card_id = 1;
+  repeated uint32 achieved_pos = 2; // 已经完成的格子，同活动配置表中 bingo_card.pos，仅客户端使用
+  repeated uint32 rewarded_ids = 3; // 已经领取的奖励，同活动配置表中 bingo_reward.reward_id，仅客户端使用
+  uint32 state = 4; // 1-激活 2-未激活 3-未解锁 4-已完成
+
+  message BingoAchievedRecord {
+    uint32 pos = 1;
+    uint32 time = 2;
+  }
+  repeated BingoAchievedRecord achieved_records = 5; // 服务端用
+  message BingoRewardRecord {
+    uint32 id = 1;
+    uint32 time = 2;
+  }
+  repeated BingoRewardRecord reward_records = 6; // 服务端用
+}
+
+message ActivityBingoData {
+  uint32 activity_id = 1;
+  repeated ActivityBingoCardData cards = 2;
 }
 
 message ActivitySnowballData {
@@ -2950,6 +2988,10 @@ message ActivitySnowballData {
 
   // 服务端数据，不会发给客户端
   uint32 random_seed = 6;
+  string battle_id = 7;
+
+  uint32 level_finished_count = 8; // 回到初始关卡次数，通关一次后+1
+  uint32 player_combo = 9; // 连击次数
 }
 
 message ActivitySnowballUpgrade {
@@ -2966,20 +3008,20 @@ message ActivitySnowballValueChanges {
   ActivitySnowballUpgradeDirty upgrade = 2;
   UInt32ArrayDirty rewarded_level = 3;
   UInt32ArrayDirty finished_level = 4;
+  UInt32Dirty level_finished_count = 5;
+  UInt32Dirty player_combo = 6;
 }
 
 message ActivitySnowballPlayerAttackedInfo {
   uint32 target = 1; // 1-玩家 2-boss
-  uint32 ball_id = 2; // 雪球id
-  uint32 track = 3; // 轨道
-  uint32 damage = 4; // 伤害
+  uint32 track = 2; // 轨道
+  uint32 damage = 3; // 伤害
+  uint32 critia = 4; // 是否暴击
 }
 
-message ActivitySnowballPlayerActionInfo {
-  uint32 action_player = 1; // 1-玩家 2-boss
-  uint32 ball_id = 2; // 雪球id
-  uint32 critical = 3; // 是否暴击
-  uint32 track = 4; // 轨道
+message ActivitySnowballPlayerAction {
+  uint32 tick = 1;
+  uint32 track = 2; // 轨道
 }
 
 message ActivitySnowballPlayerState {
@@ -2988,22 +3030,21 @@ message ActivitySnowballPlayerState {
   uint32 mp = 3;
 }
 
-message ActivitySnowballBallActionInfo {
-  uint32 track = 1;
-  repeated uint32 balls_id = 2; // 相撞的雪球信息
-}
-
 message SnowballActivityBossAction {
   uint32 tick = 1;
-  uint32 track = 2;
-  uint32 damage = 3;
-}
+  uint32 type = 2; // 动作类型 1 - 耗蓝  2 - 雪球出手
+  uint32 track = 3;
 
-message ActivitySnowballEvent {
-  uint32 tick = 1;
-  uint32 type = 2; // 1-发射雪球 2-击中目标 3-雪球相撞
-  repeated ActivitySnowballPlayerAttackedInfo player_attacked = 3; // 受击信息
-  repeated ActivitySnowballPlayerActionInfo player_action = 4; // 操作信息
-  repeated ActivitySnowballPlayerState player_state = 5;
-  repeated ActivitySnowballBallActionInfo ball_action = 6; // 雪球信息
+  message SnowballActivityBossAttackInfo {
+    uint32 damage = 1;
+    uint32 is_con_attack = 2; // 是否是连续攻击生成的雪球
+  }
+  SnowballActivityBossAttackInfo attack_info = 4;
+
+  message SnowballActivityBossMPConsumeInfo {
+    uint32 mp_consume = 1;
+    uint32 before_delay = 2; // 前摇时长(tick)
+    uint32 after_delay = 3; // 后摇时长(tick)
+  }
+  SnowballActivityBossMPConsumeInfo mp_consume_info = 5;
 }

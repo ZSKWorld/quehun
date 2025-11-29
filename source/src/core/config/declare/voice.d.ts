@@ -124,6 +124,8 @@ declare interface ISheet_Voice_Sound {
 	114: ISheetData_Voice_Sound[];
 	115: ISheetData_Voice_Sound[];
 	116: ISheetData_Voice_Sound[];
+	117: ISheetData_Voice_Sound[];
+	118: ISheetData_Voice_Sound[];
 }
 declare interface ISheetData_Voice_Sound {
 	id: number;

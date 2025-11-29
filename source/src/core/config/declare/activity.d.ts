@@ -165,6 +165,12 @@ declare interface ITable_Activity {
 	choose_up_replace: CfgExtGroup<ISheet_Activity_ChooseUpReplace>;
 	/** 根据进度领奖  ---  group */
 	progress_reward: CfgExtGroup<ISheet_Activity_ProgressReward>;
+	/** group */
+	bingo_info: CfgExtGroup<ISheet_Activity_BingoInfo>;
+	/** group */
+	bingo_card: CfgExtGroup<ISheet_Activity_BingoCard>;
+	/** group */
+	bingo_reward: CfgExtGroup<ISheet_Activity_BingoReward>;
 }
 
 //#region activity
@@ -1246,6 +1252,29 @@ declare interface ISheet_Activity_Activity {
 	251131: ISheetData_Activity_Activity;
 	251132: ISheetData_Activity_Activity;
 	251133: ISheetData_Activity_Activity;
+	251190: ISheetData_Activity_Activity;
+	251201: ISheetData_Activity_Activity;
+	251202: ISheetData_Activity_Activity;
+	251210: ISheetData_Activity_Activity;
+	251211: ISheetData_Activity_Activity;
+	251212: ISheetData_Activity_Activity;
+	251213: ISheetData_Activity_Activity;
+	251220: ISheetData_Activity_Activity;
+	251221: ISheetData_Activity_Activity;
+	251222: ISheetData_Activity_Activity;
+	251223: ISheetData_Activity_Activity;
+	251224: ISheetData_Activity_Activity;
+	251225: ISheetData_Activity_Activity;
+	251226: ISheetData_Activity_Activity;
+	251227: ISheetData_Activity_Activity;
+	251230: ISheetData_Activity_Activity;
+	251231: ISheetData_Activity_Activity;
+	251232: ISheetData_Activity_Activity;
+	251233: ISheetData_Activity_Activity;
+	251234: ISheetData_Activity_Activity;
+	251235: ISheetData_Activity_Activity;
+	251236: ISheetData_Activity_Activity;
+	251237: ISheetData_Activity_Activity;
 }
 declare interface ISheetData_Activity_Activity {
 	/** 活动id */
@@ -2782,6 +2811,14 @@ declare interface ISheet_Activity_ChestUp {
 	251121: ISheetData_Activity_ChestUp[];
 	251122: ISheetData_Activity_ChestUp[];
 	251123: ISheetData_Activity_ChestUp[];
+	251220: ISheetData_Activity_ChestUp[];
+	251221: ISheetData_Activity_ChestUp[];
+	251222: ISheetData_Activity_ChestUp[];
+	251223: ISheetData_Activity_ChestUp[];
+	251224: ISheetData_Activity_ChestUp[];
+	251225: ISheetData_Activity_ChestUp[];
+	251226: ISheetData_Activity_ChestUp[];
+	251227: ISheetData_Activity_ChestUp[];
 }
 declare interface ISheetData_Activity_ChestUp {
 	/** 活动id */
@@ -6210,6 +6247,66 @@ declare interface ISheet_Activity_PeriodTask {
 	25110228: ISheetData_Activity_PeriodTask;
 	25110229: ISheetData_Activity_PeriodTask;
 	25110230: ISheetData_Activity_PeriodTask;
+	25120201: ISheetData_Activity_PeriodTask;
+	25120202: ISheetData_Activity_PeriodTask;
+	25120203: ISheetData_Activity_PeriodTask;
+	25120204: ISheetData_Activity_PeriodTask;
+	25120205: ISheetData_Activity_PeriodTask;
+	25120206: ISheetData_Activity_PeriodTask;
+	25120207: ISheetData_Activity_PeriodTask;
+	25120208: ISheetData_Activity_PeriodTask;
+	25120209: ISheetData_Activity_PeriodTask;
+	25120210: ISheetData_Activity_PeriodTask;
+	25120211: ISheetData_Activity_PeriodTask;
+	25120212: ISheetData_Activity_PeriodTask;
+	25120213: ISheetData_Activity_PeriodTask;
+	25120214: ISheetData_Activity_PeriodTask;
+	25120215: ISheetData_Activity_PeriodTask;
+	25120216: ISheetData_Activity_PeriodTask;
+	25120217: ISheetData_Activity_PeriodTask;
+	25120218: ISheetData_Activity_PeriodTask;
+	25120219: ISheetData_Activity_PeriodTask;
+	25120220: ISheetData_Activity_PeriodTask;
+	25120221: ISheetData_Activity_PeriodTask;
+	25120222: ISheetData_Activity_PeriodTask;
+	25120223: ISheetData_Activity_PeriodTask;
+	25120224: ISheetData_Activity_PeriodTask;
+	25120225: ISheetData_Activity_PeriodTask;
+	25120226: ISheetData_Activity_PeriodTask;
+	25120227: ISheetData_Activity_PeriodTask;
+	25120228: ISheetData_Activity_PeriodTask;
+	25120229: ISheetData_Activity_PeriodTask;
+	25120230: ISheetData_Activity_PeriodTask;
+	25120231: ISheetData_Activity_PeriodTask;
+	25120232: ISheetData_Activity_PeriodTask;
+	25120233: ISheetData_Activity_PeriodTask;
+	25120234: ISheetData_Activity_PeriodTask;
+	25120235: ISheetData_Activity_PeriodTask;
+	25120236: ISheetData_Activity_PeriodTask;
+	25120237: ISheetData_Activity_PeriodTask;
+	25120238: ISheetData_Activity_PeriodTask;
+	25120239: ISheetData_Activity_PeriodTask;
+	25120240: ISheetData_Activity_PeriodTask;
+	25120241: ISheetData_Activity_PeriodTask;
+	25120242: ISheetData_Activity_PeriodTask;
+	25120243: ISheetData_Activity_PeriodTask;
+	25120244: ISheetData_Activity_PeriodTask;
+	25120245: ISheetData_Activity_PeriodTask;
+	25120246: ISheetData_Activity_PeriodTask;
+	25120247: ISheetData_Activity_PeriodTask;
+	25120248: ISheetData_Activity_PeriodTask;
+	25120249: ISheetData_Activity_PeriodTask;
+	25120250: ISheetData_Activity_PeriodTask;
+	25120251: ISheetData_Activity_PeriodTask;
+	25120252: ISheetData_Activity_PeriodTask;
+	25120253: ISheetData_Activity_PeriodTask;
+	25120254: ISheetData_Activity_PeriodTask;
+	25120255: ISheetData_Activity_PeriodTask;
+	25120256: ISheetData_Activity_PeriodTask;
+	25120257: ISheetData_Activity_PeriodTask;
+	25120258: ISheetData_Activity_PeriodTask;
+	25120259: ISheetData_Activity_PeriodTask;
+	25120260: ISheetData_Activity_PeriodTask;
 }
 declare interface ISheetData_Activity_PeriodTask {
 	/** 活动任务id */
@@ -8990,6 +9087,363 @@ declare interface ISheet_Activity_SnsActivity {
 	25086241: ISheetData_Activity_SnsActivity;
 	25086242: ISheetData_Activity_SnsActivity;
 	25086243: ISheetData_Activity_SnsActivity;
+	25121301: ISheetData_Activity_SnsActivity;
+	25121302: ISheetData_Activity_SnsActivity;
+	25121303: ISheetData_Activity_SnsActivity;
+	25121304: ISheetData_Activity_SnsActivity;
+	25121305: ISheetData_Activity_SnsActivity;
+	25121306: ISheetData_Activity_SnsActivity;
+	25121307: ISheetData_Activity_SnsActivity;
+	25121308: ISheetData_Activity_SnsActivity;
+	25121309: ISheetData_Activity_SnsActivity;
+	25121310: ISheetData_Activity_SnsActivity;
+	25121311: ISheetData_Activity_SnsActivity;
+	25121312: ISheetData_Activity_SnsActivity;
+	25121313: ISheetData_Activity_SnsActivity;
+	25121314: ISheetData_Activity_SnsActivity;
+	25121315: ISheetData_Activity_SnsActivity;
+	25121316: ISheetData_Activity_SnsActivity;
+	25121317: ISheetData_Activity_SnsActivity;
+	25121318: ISheetData_Activity_SnsActivity;
+	25121319: ISheetData_Activity_SnsActivity;
+	25121320: ISheetData_Activity_SnsActivity;
+	25121321: ISheetData_Activity_SnsActivity;
+	25121322: ISheetData_Activity_SnsActivity;
+	25121323: ISheetData_Activity_SnsActivity;
+	25121324: ISheetData_Activity_SnsActivity;
+	25121325: ISheetData_Activity_SnsActivity;
+	25121326: ISheetData_Activity_SnsActivity;
+	25121327: ISheetData_Activity_SnsActivity;
+	25121328: ISheetData_Activity_SnsActivity;
+	25121329: ISheetData_Activity_SnsActivity;
+	25121330: ISheetData_Activity_SnsActivity;
+	25121331: ISheetData_Activity_SnsActivity;
+	25121332: ISheetData_Activity_SnsActivity;
+	25121333: ISheetData_Activity_SnsActivity;
+	25121334: ISheetData_Activity_SnsActivity;
+	25121335: ISheetData_Activity_SnsActivity;
+	25121336: ISheetData_Activity_SnsActivity;
+	25121337: ISheetData_Activity_SnsActivity;
+	25121338: ISheetData_Activity_SnsActivity;
+	25121339: ISheetData_Activity_SnsActivity;
+	25121340: ISheetData_Activity_SnsActivity;
+	25121341: ISheetData_Activity_SnsActivity;
+	25121342: ISheetData_Activity_SnsActivity;
+	25121343: ISheetData_Activity_SnsActivity;
+	25121344: ISheetData_Activity_SnsActivity;
+	25121345: ISheetData_Activity_SnsActivity;
+	25121346: ISheetData_Activity_SnsActivity;
+	25121347: ISheetData_Activity_SnsActivity;
+	25121348: ISheetData_Activity_SnsActivity;
+	25121349: ISheetData_Activity_SnsActivity;
+	25121350: ISheetData_Activity_SnsActivity;
+	25121351: ISheetData_Activity_SnsActivity;
+	25121352: ISheetData_Activity_SnsActivity;
+	25121353: ISheetData_Activity_SnsActivity;
+	25121354: ISheetData_Activity_SnsActivity;
+	25121355: ISheetData_Activity_SnsActivity;
+	25121356: ISheetData_Activity_SnsActivity;
+	25121357: ISheetData_Activity_SnsActivity;
+	25121358: ISheetData_Activity_SnsActivity;
+	25121359: ISheetData_Activity_SnsActivity;
+	25121360: ISheetData_Activity_SnsActivity;
+	25121361: ISheetData_Activity_SnsActivity;
+	25121362: ISheetData_Activity_SnsActivity;
+	25121363: ISheetData_Activity_SnsActivity;
+	25121364: ISheetData_Activity_SnsActivity;
+	25121365: ISheetData_Activity_SnsActivity;
+	25121366: ISheetData_Activity_SnsActivity;
+	25121367: ISheetData_Activity_SnsActivity;
+	25121368: ISheetData_Activity_SnsActivity;
+	25121369: ISheetData_Activity_SnsActivity;
+	25121370: ISheetData_Activity_SnsActivity;
+	25121371: ISheetData_Activity_SnsActivity;
+	25121372: ISheetData_Activity_SnsActivity;
+	25121373: ISheetData_Activity_SnsActivity;
+	25121374: ISheetData_Activity_SnsActivity;
+	25121375: ISheetData_Activity_SnsActivity;
+	25121376: ISheetData_Activity_SnsActivity;
+	25121377: ISheetData_Activity_SnsActivity;
+	25121378: ISheetData_Activity_SnsActivity;
+	25121379: ISheetData_Activity_SnsActivity;
+	25121380: ISheetData_Activity_SnsActivity;
+	25121381: ISheetData_Activity_SnsActivity;
+	25121382: ISheetData_Activity_SnsActivity;
+	25121383: ISheetData_Activity_SnsActivity;
+	25121384: ISheetData_Activity_SnsActivity;
+	25121385: ISheetData_Activity_SnsActivity;
+	25121386: ISheetData_Activity_SnsActivity;
+	25121387: ISheetData_Activity_SnsActivity;
+	25121388: ISheetData_Activity_SnsActivity;
+	25121389: ISheetData_Activity_SnsActivity;
+	25121390: ISheetData_Activity_SnsActivity;
+	25121391: ISheetData_Activity_SnsActivity;
+	25121392: ISheetData_Activity_SnsActivity;
+	25121393: ISheetData_Activity_SnsActivity;
+	25121394: ISheetData_Activity_SnsActivity;
+	25121395: ISheetData_Activity_SnsActivity;
+	25121396: ISheetData_Activity_SnsActivity;
+	25121397: ISheetData_Activity_SnsActivity;
+	25121398: ISheetData_Activity_SnsActivity;
+	25121399: ISheetData_Activity_SnsActivity;
+	25121400: ISheetData_Activity_SnsActivity;
+	25121401: ISheetData_Activity_SnsActivity;
+	25121402: ISheetData_Activity_SnsActivity;
+	25121403: ISheetData_Activity_SnsActivity;
+	25121404: ISheetData_Activity_SnsActivity;
+	25121405: ISheetData_Activity_SnsActivity;
+	25121406: ISheetData_Activity_SnsActivity;
+	25121407: ISheetData_Activity_SnsActivity;
+	25121408: ISheetData_Activity_SnsActivity;
+	25121409: ISheetData_Activity_SnsActivity;
+	25121410: ISheetData_Activity_SnsActivity;
+	25121411: ISheetData_Activity_SnsActivity;
+	25121412: ISheetData_Activity_SnsActivity;
+	25121413: ISheetData_Activity_SnsActivity;
+	25121414: ISheetData_Activity_SnsActivity;
+	25121415: ISheetData_Activity_SnsActivity;
+	25121416: ISheetData_Activity_SnsActivity;
+	25121417: ISheetData_Activity_SnsActivity;
+	25121418: ISheetData_Activity_SnsActivity;
+	25121419: ISheetData_Activity_SnsActivity;
+	25121420: ISheetData_Activity_SnsActivity;
+	25121421: ISheetData_Activity_SnsActivity;
+	25121422: ISheetData_Activity_SnsActivity;
+	25121423: ISheetData_Activity_SnsActivity;
+	25121424: ISheetData_Activity_SnsActivity;
+	25121425: ISheetData_Activity_SnsActivity;
+	25121426: ISheetData_Activity_SnsActivity;
+	25121427: ISheetData_Activity_SnsActivity;
+	25121428: ISheetData_Activity_SnsActivity;
+	25121429: ISheetData_Activity_SnsActivity;
+	25121430: ISheetData_Activity_SnsActivity;
+	25121431: ISheetData_Activity_SnsActivity;
+	25121432: ISheetData_Activity_SnsActivity;
+	25121433: ISheetData_Activity_SnsActivity;
+	25121434: ISheetData_Activity_SnsActivity;
+	25121435: ISheetData_Activity_SnsActivity;
+	25121436: ISheetData_Activity_SnsActivity;
+	25121437: ISheetData_Activity_SnsActivity;
+	25121438: ISheetData_Activity_SnsActivity;
+	25121439: ISheetData_Activity_SnsActivity;
+	25121440: ISheetData_Activity_SnsActivity;
+	25121441: ISheetData_Activity_SnsActivity;
+	25121442: ISheetData_Activity_SnsActivity;
+	25121443: ISheetData_Activity_SnsActivity;
+	25121444: ISheetData_Activity_SnsActivity;
+	25121445: ISheetData_Activity_SnsActivity;
+	25121446: ISheetData_Activity_SnsActivity;
+	25121447: ISheetData_Activity_SnsActivity;
+	25121448: ISheetData_Activity_SnsActivity;
+	25121449: ISheetData_Activity_SnsActivity;
+	25121450: ISheetData_Activity_SnsActivity;
+	25121451: ISheetData_Activity_SnsActivity;
+	25121452: ISheetData_Activity_SnsActivity;
+	25121453: ISheetData_Activity_SnsActivity;
+	25121454: ISheetData_Activity_SnsActivity;
+	25121455: ISheetData_Activity_SnsActivity;
+	25121456: ISheetData_Activity_SnsActivity;
+	25121457: ISheetData_Activity_SnsActivity;
+	25121458: ISheetData_Activity_SnsActivity;
+	25121459: ISheetData_Activity_SnsActivity;
+	25121460: ISheetData_Activity_SnsActivity;
+	25121461: ISheetData_Activity_SnsActivity;
+	25121462: ISheetData_Activity_SnsActivity;
+	25121463: ISheetData_Activity_SnsActivity;
+	25121464: ISheetData_Activity_SnsActivity;
+	25121465: ISheetData_Activity_SnsActivity;
+	25121466: ISheetData_Activity_SnsActivity;
+	25121467: ISheetData_Activity_SnsActivity;
+	25121468: ISheetData_Activity_SnsActivity;
+	25121469: ISheetData_Activity_SnsActivity;
+	25121470: ISheetData_Activity_SnsActivity;
+	25121471: ISheetData_Activity_SnsActivity;
+	25121472: ISheetData_Activity_SnsActivity;
+	25121473: ISheetData_Activity_SnsActivity;
+	25121474: ISheetData_Activity_SnsActivity;
+	25121475: ISheetData_Activity_SnsActivity;
+	25121476: ISheetData_Activity_SnsActivity;
+	25121477: ISheetData_Activity_SnsActivity;
+	25121478: ISheetData_Activity_SnsActivity;
+	25121479: ISheetData_Activity_SnsActivity;
+	25121480: ISheetData_Activity_SnsActivity;
+	25121481: ISheetData_Activity_SnsActivity;
+	25121482: ISheetData_Activity_SnsActivity;
+	25121483: ISheetData_Activity_SnsActivity;
+	25121484: ISheetData_Activity_SnsActivity;
+	25121485: ISheetData_Activity_SnsActivity;
+	25121486: ISheetData_Activity_SnsActivity;
+	25121487: ISheetData_Activity_SnsActivity;
+	25121488: ISheetData_Activity_SnsActivity;
+	25121489: ISheetData_Activity_SnsActivity;
+	25121490: ISheetData_Activity_SnsActivity;
+	25121491: ISheetData_Activity_SnsActivity;
+	25121492: ISheetData_Activity_SnsActivity;
+	25121493: ISheetData_Activity_SnsActivity;
+	25121494: ISheetData_Activity_SnsActivity;
+	25121495: ISheetData_Activity_SnsActivity;
+	25121496: ISheetData_Activity_SnsActivity;
+	25121497: ISheetData_Activity_SnsActivity;
+	25121498: ISheetData_Activity_SnsActivity;
+	25121499: ISheetData_Activity_SnsActivity;
+	25121500: ISheetData_Activity_SnsActivity;
+	25121501: ISheetData_Activity_SnsActivity;
+	25121502: ISheetData_Activity_SnsActivity;
+	25121503: ISheetData_Activity_SnsActivity;
+	25121504: ISheetData_Activity_SnsActivity;
+	25121505: ISheetData_Activity_SnsActivity;
+	25121506: ISheetData_Activity_SnsActivity;
+	25121507: ISheetData_Activity_SnsActivity;
+	25121508: ISheetData_Activity_SnsActivity;
+	25121509: ISheetData_Activity_SnsActivity;
+	25121510: ISheetData_Activity_SnsActivity;
+	25121511: ISheetData_Activity_SnsActivity;
+	25121512: ISheetData_Activity_SnsActivity;
+	25121513: ISheetData_Activity_SnsActivity;
+	25121514: ISheetData_Activity_SnsActivity;
+	25121515: ISheetData_Activity_SnsActivity;
+	25121516: ISheetData_Activity_SnsActivity;
+	25121517: ISheetData_Activity_SnsActivity;
+	25121518: ISheetData_Activity_SnsActivity;
+	25121519: ISheetData_Activity_SnsActivity;
+	25121520: ISheetData_Activity_SnsActivity;
+	25121521: ISheetData_Activity_SnsActivity;
+	25121522: ISheetData_Activity_SnsActivity;
+	25121523: ISheetData_Activity_SnsActivity;
+	25121524: ISheetData_Activity_SnsActivity;
+	25121525: ISheetData_Activity_SnsActivity;
+	25121526: ISheetData_Activity_SnsActivity;
+	25121527: ISheetData_Activity_SnsActivity;
+	25121528: ISheetData_Activity_SnsActivity;
+	25121529: ISheetData_Activity_SnsActivity;
+	25121530: ISheetData_Activity_SnsActivity;
+	25121531: ISheetData_Activity_SnsActivity;
+	25121532: ISheetData_Activity_SnsActivity;
+	25121533: ISheetData_Activity_SnsActivity;
+	25121534: ISheetData_Activity_SnsActivity;
+	25121535: ISheetData_Activity_SnsActivity;
+	25121536: ISheetData_Activity_SnsActivity;
+	25121537: ISheetData_Activity_SnsActivity;
+	25121538: ISheetData_Activity_SnsActivity;
+	25121539: ISheetData_Activity_SnsActivity;
+	25121540: ISheetData_Activity_SnsActivity;
+	25121541: ISheetData_Activity_SnsActivity;
+	25121542: ISheetData_Activity_SnsActivity;
+	25121543: ISheetData_Activity_SnsActivity;
+	25121544: ISheetData_Activity_SnsActivity;
+	25121545: ISheetData_Activity_SnsActivity;
+	25121546: ISheetData_Activity_SnsActivity;
+	25121547: ISheetData_Activity_SnsActivity;
+	25121548: ISheetData_Activity_SnsActivity;
+	25121549: ISheetData_Activity_SnsActivity;
+	25121550: ISheetData_Activity_SnsActivity;
+	25121551: ISheetData_Activity_SnsActivity;
+	25121552: ISheetData_Activity_SnsActivity;
+	25121553: ISheetData_Activity_SnsActivity;
+	25121554: ISheetData_Activity_SnsActivity;
+	25121555: ISheetData_Activity_SnsActivity;
+	25121556: ISheetData_Activity_SnsActivity;
+	25121557: ISheetData_Activity_SnsActivity;
+	25121558: ISheetData_Activity_SnsActivity;
+	25121559: ISheetData_Activity_SnsActivity;
+	25121560: ISheetData_Activity_SnsActivity;
+	25121561: ISheetData_Activity_SnsActivity;
+	25121562: ISheetData_Activity_SnsActivity;
+	25121563: ISheetData_Activity_SnsActivity;
+	25121564: ISheetData_Activity_SnsActivity;
+	25121565: ISheetData_Activity_SnsActivity;
+	25121566: ISheetData_Activity_SnsActivity;
+	25121567: ISheetData_Activity_SnsActivity;
+	25121568: ISheetData_Activity_SnsActivity;
+	25121569: ISheetData_Activity_SnsActivity;
+	25121570: ISheetData_Activity_SnsActivity;
+	25121571: ISheetData_Activity_SnsActivity;
+	25121572: ISheetData_Activity_SnsActivity;
+	25121573: ISheetData_Activity_SnsActivity;
+	25121574: ISheetData_Activity_SnsActivity;
+	25121575: ISheetData_Activity_SnsActivity;
+	25121576: ISheetData_Activity_SnsActivity;
+	25121577: ISheetData_Activity_SnsActivity;
+	25121578: ISheetData_Activity_SnsActivity;
+	25121579: ISheetData_Activity_SnsActivity;
+	25121580: ISheetData_Activity_SnsActivity;
+	25121581: ISheetData_Activity_SnsActivity;
+	25121582: ISheetData_Activity_SnsActivity;
+	25121583: ISheetData_Activity_SnsActivity;
+	25121584: ISheetData_Activity_SnsActivity;
+	25121585: ISheetData_Activity_SnsActivity;
+	25121586: ISheetData_Activity_SnsActivity;
+	25121587: ISheetData_Activity_SnsActivity;
+	25121588: ISheetData_Activity_SnsActivity;
+	25121589: ISheetData_Activity_SnsActivity;
+	25121590: ISheetData_Activity_SnsActivity;
+	25121591: ISheetData_Activity_SnsActivity;
+	25121592: ISheetData_Activity_SnsActivity;
+	25121593: ISheetData_Activity_SnsActivity;
+	25121594: ISheetData_Activity_SnsActivity;
+	25121595: ISheetData_Activity_SnsActivity;
+	25121596: ISheetData_Activity_SnsActivity;
+	25121597: ISheetData_Activity_SnsActivity;
+	25121598: ISheetData_Activity_SnsActivity;
+	25121599: ISheetData_Activity_SnsActivity;
+	25121600: ISheetData_Activity_SnsActivity;
+	25121601: ISheetData_Activity_SnsActivity;
+	25121602: ISheetData_Activity_SnsActivity;
+	25121603: ISheetData_Activity_SnsActivity;
+	25121604: ISheetData_Activity_SnsActivity;
+	25121605: ISheetData_Activity_SnsActivity;
+	25121606: ISheetData_Activity_SnsActivity;
+	25121607: ISheetData_Activity_SnsActivity;
+	25121608: ISheetData_Activity_SnsActivity;
+	25121609: ISheetData_Activity_SnsActivity;
+	25121610: ISheetData_Activity_SnsActivity;
+	25121611: ISheetData_Activity_SnsActivity;
+	25121612: ISheetData_Activity_SnsActivity;
+	25121613: ISheetData_Activity_SnsActivity;
+	25121614: ISheetData_Activity_SnsActivity;
+	25121615: ISheetData_Activity_SnsActivity;
+	25121616: ISheetData_Activity_SnsActivity;
+	25121617: ISheetData_Activity_SnsActivity;
+	25121618: ISheetData_Activity_SnsActivity;
+	25121619: ISheetData_Activity_SnsActivity;
+	25121620: ISheetData_Activity_SnsActivity;
+	25121621: ISheetData_Activity_SnsActivity;
+	25121622: ISheetData_Activity_SnsActivity;
+	25121623: ISheetData_Activity_SnsActivity;
+	25121624: ISheetData_Activity_SnsActivity;
+	25121625: ISheetData_Activity_SnsActivity;
+	25121626: ISheetData_Activity_SnsActivity;
+	25121627: ISheetData_Activity_SnsActivity;
+	25121628: ISheetData_Activity_SnsActivity;
+	25121629: ISheetData_Activity_SnsActivity;
+	25121630: ISheetData_Activity_SnsActivity;
+	25121631: ISheetData_Activity_SnsActivity;
+	25121632: ISheetData_Activity_SnsActivity;
+	25121633: ISheetData_Activity_SnsActivity;
+	25121634: ISheetData_Activity_SnsActivity;
+	25121635: ISheetData_Activity_SnsActivity;
+	25121636: ISheetData_Activity_SnsActivity;
+	25121637: ISheetData_Activity_SnsActivity;
+	25121638: ISheetData_Activity_SnsActivity;
+	25121639: ISheetData_Activity_SnsActivity;
+	25121640: ISheetData_Activity_SnsActivity;
+	25121641: ISheetData_Activity_SnsActivity;
+	25121642: ISheetData_Activity_SnsActivity;
+	25121643: ISheetData_Activity_SnsActivity;
+	25121644: ISheetData_Activity_SnsActivity;
+	25121645: ISheetData_Activity_SnsActivity;
+	25121646: ISheetData_Activity_SnsActivity;
+	25121647: ISheetData_Activity_SnsActivity;
+	25121648: ISheetData_Activity_SnsActivity;
+	25121649: ISheetData_Activity_SnsActivity;
+	25121650: ISheetData_Activity_SnsActivity;
+	25121651: ISheetData_Activity_SnsActivity;
+	25121652: ISheetData_Activity_SnsActivity;
+	25121653: ISheetData_Activity_SnsActivity;
+	25121654: ISheetData_Activity_SnsActivity;
+	25121655: ISheetData_Activity_SnsActivity;
+	25121656: ISheetData_Activity_SnsActivity;
+	25121657: ISheetData_Activity_SnsActivity;
 }
 declare interface ISheetData_Activity_SnsActivity {
 	/** snsID */
@@ -9451,6 +9905,7 @@ declare interface ISheet_Activity_ActivityItem {
 	250912: ISheetData_Activity_ActivityItem;
 	251022: ISheetData_Activity_ActivityItem;
 	251112: ISheetData_Activity_ActivityItem;
+	251212: ISheetData_Activity_ActivityItem;
 }
 declare interface ISheetData_Activity_ActivityItem {
 	/** 活动id */
@@ -9676,6 +10131,8 @@ declare interface ISheet_Activity_RewardMail {
 	250894: ISheetData_Activity_RewardMail;
 	250902: ISheetData_Activity_RewardMail;
 	251003: ISheetData_Activity_RewardMail;
+	251190: ISheetData_Activity_RewardMail;
+	251201: ISheetData_Activity_RewardMail;
 }
 declare interface ISheetData_Activity_RewardMail {
 	/** 活动ID */
@@ -10122,6 +10579,14 @@ declare interface ISheet_Activity_ChestReplaceUp {
 	251131: ISheetData_Activity_ChestReplaceUp[];
 	251132: ISheetData_Activity_ChestReplaceUp[];
 	251133: ISheetData_Activity_ChestReplaceUp[];
+	251230: ISheetData_Activity_ChestReplaceUp[];
+	251231: ISheetData_Activity_ChestReplaceUp[];
+	251232: ISheetData_Activity_ChestReplaceUp[];
+	251233: ISheetData_Activity_ChestReplaceUp[];
+	251234: ISheetData_Activity_ChestReplaceUp[];
+	251235: ISheetData_Activity_ChestReplaceUp[];
+	251236: ISheetData_Activity_ChestReplaceUp[];
+	251237: ISheetData_Activity_ChestReplaceUp[];
 }
 declare interface ISheetData_Activity_ChestReplaceUp {
 	/** 活动id */
@@ -10921,6 +11386,8 @@ declare interface ISheet_Activity_ActivityBanner {
 	250991: ISheetData_Activity_ActivityBanner;
 	251001: ISheetData_Activity_ActivityBanner;
 	251101: ISheetData_Activity_ActivityBanner;
+	251190: ISheetData_Activity_ActivityBanner;
+	251201: ISheetData_Activity_ActivityBanner;
 }
 declare interface ISheetData_Activity_ActivityBanner {
 	/** id */
@@ -11080,5 +11547,65 @@ declare interface ISheetData_Activity_ProgressReward {
 	progress: number;
 	/** 奖励 */
 	reward: string;
+}
+//#endregion
+
+//#region bingo_info
+declare interface ISheet_Activity_BingoInfo {
+	[key: string]: ISheetData_Activity_BingoInfo[];
+	251190: ISheetData_Activity_BingoInfo[];
+}
+declare interface ISheetData_Activity_BingoInfo {
+	activity_id: number;
+	card_id: number;
+	unlock_day: number;
+}
+//#endregion
+
+//#region bingo_card
+declare interface ISheet_Activity_BingoCard {
+	[key: string]: ISheetData_Activity_BingoCard[];
+	100001: ISheetData_Activity_BingoCard[];
+	100002: ISheetData_Activity_BingoCard[];
+	100003: ISheetData_Activity_BingoCard[];
+	100004: ISheetData_Activity_BingoCard[];
+	100005: ISheetData_Activity_BingoCard[];
+	100006: ISheetData_Activity_BingoCard[];
+	100007: ISheetData_Activity_BingoCard[];
+}
+declare interface ISheetData_Activity_BingoCard {
+	/** 冰果卡id */
+	card_id: number;
+	/** 冰菓格类型 */
+	type: string;
+	/** 任务id */
+	base_task_id: number;
+	/** 从左到右，从上到下1-9 */
+	pos: number;
+}
+//#endregion
+
+//#region bingo_reward
+declare interface ISheet_Activity_BingoReward {
+	[key: string]: ISheetData_Activity_BingoReward[];
+	100001: ISheetData_Activity_BingoReward[];
+	100002: ISheetData_Activity_BingoReward[];
+	100003: ISheetData_Activity_BingoReward[];
+	100004: ISheetData_Activity_BingoReward[];
+	100005: ISheetData_Activity_BingoReward[];
+	100006: ISheetData_Activity_BingoReward[];
+	100007: ISheetData_Activity_BingoReward[];
+}
+declare interface ISheetData_Activity_BingoReward {
+	card_id: number;
+	reward_id: number;
+	/** 奖励str */
+	reward: string;
+	/** 需要完成的三个position */
+	required_pos: number[];
+	/** 奖励图标种类 */
+	reward_type: number;
+	/** 0普通1突出 */
+	node_mark: number;
 }
 //#endregion

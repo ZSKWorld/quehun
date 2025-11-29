@@ -941,7 +941,6 @@ service Lobby {
 
   // 射击活动
   rpc shootActivityAttackEnemies(ReqShootActivityAttackEnemies) returns (ResShootActivityAttackEnemies);
-
   // 庆典活动
   rpc resolveFestivalActivityProposal(ReqResolveFestivalActivityProposal) returns (ResResolveFestivalActivityProposal);
   rpc resolveFestivalActivityEvent(ReqResolveFestivalActivityEvent) returns (ResResolveFestivalActivityEvent);
@@ -1069,11 +1068,20 @@ service Lobby {
   rpc questCrewActivityFeed(ReqQuestCrewActivityFeed) returns (ResQuestCrewActivityFeed);
   rpc questCrewActivityRefreshMarket(ReqQuestCrewActivityRefreshMarket) returns (ResQuestCrewActivityRefreshMarket);
 
+  // 冰菓活动
+  rpc bingoActivityReceiveReward(ReqBingoActivityReceiveReward) returns (ResBingoActivityReceiveReward);
+
   // 雪球活动
   rpc snowballActivityStartBattle(ReqSnowballActivityStartBattle) returns (ResSnowballActivityStartBattle);
   rpc snowballActivityFinishBattle(ReqSnowballActivityFinishBattle) returns (ResSnowballActivityFinishBattle);
   rpc snowballActivityUpgrade(ReqSnowballActivityUpgrade) returns (ResSnowballActivityUpgrade);
   rpc snowballActivityReceiveReward(ReqSnowballActivityReceiveReward) returns (ResSnowballActivityReceiveReward);
+
+  // ==DevDebug Start==
+  // debug 协议在正式版本删除
+  rpc snowballActivityDebug(ReqSnowballActivityDebug) returns (ResCommon);
+  rpc snowballActivityFetchDebug(ReqSnowballActivityFetchDebug) returns (ResSnowballActivityFetchDebug);
+  // ==DevDebug End==
 }
 
 // 获取客户端连接信息
@@ -3196,7 +3204,9 @@ message ResAccountActivityData {
 
   repeated lq.ActivityShootData shoot_data = 34;
 
-  repeated lq.ActivitySnowballData snowball_data = 35;
+  repeated lq.ActivityBingoData bingo_data = 35;
+
+  repeated lq.ActivitySnowballData snowball_data = 36;
 }
 
 message SNSBlog {
@@ -4246,8 +4256,9 @@ message ContestSetting {
   message LevelLimit {
     uint32 type = 1; // 类型 1=四人麻将 2=三人麻将
     uint32 value = 2; // 段位 10101=初心一星...
+    uint32 operate = 3; // 0或空-大于等于(旧数据) 1-大于等于 2-小于等于
   }
-  repeated LevelLimit level_limit = 1; // 报名玩家等级段位限制, or 关系
+  repeated LevelLimit level_limit = 1; // 报名玩家等级段位限制, and 关系，如果存在多个 type,operate 相同的情况（脏数据），使用后面的覆盖前面的
   uint32 game_limit = 2; // 对局数限制
   uint32 system_broadcast = 3; // 赛事系统消息推送 0=不推送 1=推送
 }
@@ -4287,14 +4298,25 @@ message ResFetchManagerCustomizedContest {
   string name = 2;
   uint32 open_show = 3;
   GameMode game_rule_setting = 4;
-  uint32 start_time = 5;
-  uint32 end_time = 6;
+  uint32 start_time = 5; // 已废弃，使用 season.start_time
+  uint32 end_time = 6; // 已废弃，使用 season.end_time
   uint32 auto_match = 7;
   uint32 rank_rule = 8;
   uint32 check_state = 9; // 审核状态 0-正常 1-正在审核中
   string checking_name = 10; // 审核中的名称
   ContestSetting contest_setting = 11;
   uint32 rank_type = 12; // 赛季模式 0-个人赛 1-团队赛
+  message SeasonInfo {
+    uint32 create_time = 1; // 当前赛季创建时间
+    uint32 start_time = 2; // 当前赛季开始时间
+    uint32 end_time = 3; // 当前赛季结束时间
+  }
+  /*
+  2025.10.29 dapeng:策划要求大会室时间根据当前赛季创建时间进行锚定，原协议只包含开始与结束时间，所以新增赛季信息字段，原字段暂时保留仅供兼容旧版本，后续版本会直接废弃
+  */
+  SeasonInfo season = 13;
+  uint32 match_start_time = 14; // 自动匹配开始时间
+  uint32 match_end_time = 15; // 自动匹配结束时间
 }
 
 message ReqUpdateManagerCustomizedContest {
@@ -4352,6 +4374,7 @@ message ReqFetchContestTeamRank {
   uint32 limit = 2;
   uint32 offset = 3;
 }
+
 
 // 团队赛排行榜返回信息
 message ResFetchContestTeamRank {
@@ -5031,8 +5054,29 @@ message ResQuestCrewActivityRefreshMarket {
   repeated ExecuteResult execute_result = 3;
 }
 
+message ReqBingoActivityReceiveReward {
+  uint32 activity_id = 1;
+
+  message BingoReward {
+    uint32 reward_id = 1;
+    uint32 card_id = 2;
+  }
+  repeated BingoReward rewards = 2;
+}
+
+message ResBingoActivityReceiveReward {
+  Error error = 1;
+  repeated ExecuteResult execute_result = 2;
+  repeated ActivityBingoCardData cards = 3; // 更新后的冰菓卡信息
+}
+
 message ReqSnowballActivityStartBattle {
   uint32 activity_id = 1;
+
+  // ==DevDebug Start==
+  // 雪球活动debug校验，仅在测试服上使用，正式环境下不做校验，并删除
+  uint32 random_seed_debug = 2; // debug字段，传入该字段时当前战斗直接使用当前随机种子，不传则后端随机，正式环境不使用
+  // ==DevDebug End==
 }
 
 message ResSnowballActivityStartBattle {
@@ -5042,13 +5086,45 @@ message ResSnowballActivityStartBattle {
   repeated SnowballActivityBossAction boss_action = 3;
   string battle_id = 4; // 对局id，5分钟内有效
   repeated ActivitySnowballPlayerState player_state = 5; // 对局开始时玩家与boss信息(tick=0)
+  repeated uint32 random_seq = 6; // 100 个暴击随机 [0, 100] 随机值，供 app 使用（ app随机算法运行有问题 ）
 }
 
 message ReqSnowballActivityFinishBattle {
   uint32 activity_id = 1;
-  repeated ActivitySnowballEvent events = 2;
+  repeated ActivitySnowballPlayerAction player_action = 2; // 只需要发玩家操作，连射的雪球只发第一个
   uint32 result = 3; // 1-过关 2-未过关
   string battle_id = 4;
+
+  // ==DevDebug Start==
+  // 雪球活动debug校验，仅在测试服上使用，正式环境下不做校验，并删除
+  message BattleFinishedDebug {
+    uint32 type = 1; // 校验类型（1 - hp校验， 2 - 相撞校验， 3 - mp校验）
+
+    // 雪球活动hp变化
+    message SnowballValueDebug {
+      uint32 before = 1; // 改变前数值
+      uint32 after = 2; // 改变后数值
+      uint32 tick = 3;
+      uint32 unit = 4; // 1-玩家 2-怪物
+      uint32 track = 5; // 轨道信息，hp校验表示收到哪个轨道攻击，mp校验表示发出了哪个轨道攻击
+    }
+
+    // 雪球相撞轨道校验
+    message SnowballHitDebug {
+      uint32 track = 1;
+      uint32 tick = 2;
+      uint32 critical = 3; // 本次攻击是否是暴击
+    }
+
+    SnowballValueDebug hp_change_info = 2;
+
+    SnowballHitDebug hit_info = 3;
+
+    SnowballValueDebug mp_change_info = 4;
+  }
+
+  repeated BattleFinishedDebug check_infos_debug = 5; // debug校验信息
+  // ==DevDebug End==
 }
 
 message ResSnowballActivityFinishBattle {
@@ -5076,6 +5152,22 @@ message ResSnowballActivityReceiveReward {
   ActivitySnowballValueChanges changes = 2;
   repeated ExecuteReward rewards = 3;
 }
+
+// ==DevDebug Start==
+// debug 协议在正式版本删除
+message ReqSnowballActivityDebug {
+  lq.ActivitySnowballData snowball_activity = 1;
+}
+
+message ReqSnowballActivityFetchDebug {
+  uint32 activity_id = 1;
+}
+
+message ResSnowballActivityFetchDebug {
+  lq.ActivitySnowballData snowball_activity = 1;
+}
+
+// ==DevDebug End==
 /*********************************************************************************************************************************
  ********************************************** next request & response **********************************************************
  *********************************************************************************************************************************/

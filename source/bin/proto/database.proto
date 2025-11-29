@@ -272,7 +272,9 @@ message BlobActivity {
 
   repeated lq.ActivityShootData shoot_activity = 22; // 射击活动数据
 
-  repeated lq.ActivitySnowballData snowball_activity = 23; // 雪球活动
+  repeated lq.ActivityBingoData bingo_activity = 23; // 冰菓活动
+
+  repeated lq.ActivitySnowballData snowball_activity = 24; // 雪球活动
 }
 
 message BlobAmuletActivity {

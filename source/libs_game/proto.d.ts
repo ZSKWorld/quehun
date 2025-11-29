@@ -227,6 +227,11 @@ declare enum ENotify {
 	 */
 	NotifyConnectionShutdown = "NotifyConnectionShutdown",
 	/**
+	 * * 通知大会室准备状态修改
+	 * * res: {@link INotifyCustomizedContestReady}
+	 */
+	NotifyCustomizedContestReady = "NotifyCustomizedContestReady",
+	/**
 	 * * 通知新的一场游戏开始了
 	 * * res: {@link INotifyNewGame}
 	 */
@@ -2071,6 +2076,11 @@ declare enum EMessageID {
 	/** req: {@link IReqQuestCrewActivityRefreshMarket}, res: {@link IResQuestCrewActivityRefreshMarket}, method: {@link IReqMethod.questCrewActivityRefreshMarket} */
 	questCrewActivityRefreshMarket = "questCrewActivityRefreshMarket",
 	/**
+	 * * 冰菓活动
+	 * * req: {@link IReqBingoActivityReceiveReward}, res: {@link IResBingoActivityReceiveReward}, method: {@link IReqMethod.bingoActivityReceiveReward}
+	 */
+	bingoActivityReceiveReward = "bingoActivityReceiveReward",
+	/**
 	 * * 雪球活动
 	 * * req: {@link IReqSnowballActivityStartBattle}, res: {@link IResSnowballActivityStartBattle}, method: {@link IReqMethod.snowballActivityStartBattle}
 	 */
@@ -2081,6 +2091,14 @@ declare enum EMessageID {
 	snowballActivityUpgrade = "snowballActivityUpgrade",
 	/** req: {@link IReqSnowballActivityReceiveReward}, res: {@link IResSnowballActivityReceiveReward}, method: {@link IReqMethod.snowballActivityReceiveReward} */
 	snowballActivityReceiveReward = "snowballActivityReceiveReward",
+	/**
+	 * * ==DevDebug Start==
+	 * * debug 协议在正式版本删除
+	 * * req: {@link IReqSnowballActivityDebug}, res: {@link IResCommon}, method: {@link IReqMethod.snowballActivityDebug}
+	 */
+	snowballActivityDebug = "snowballActivityDebug",
+	/** req: {@link IReqSnowballActivityFetchDebug}, res: {@link IResSnowballActivityFetchDebug}, method: {@link IReqMethod.snowballActivityFetchDebug} */
+	snowballActivityFetchDebug = "snowballActivityFetchDebug",
 	/**
 	 * * 验证游戏口令
 	 * * req: {@link IReqAuthGame}, res: {@link IResAuthGame}, method: {@link IReqMethod.authGame}
@@ -2758,6 +2776,18 @@ declare interface INotifyConnectionShutdown extends IProto {
 	close_at: number;
 }
 
+/**
+ * * .lq.NotifyCustomizedContestReady
+ * * 通知大会室准备状态修改
+ */
+declare interface INotifyCustomizedContestReady extends IProto {
+	unique_id: number;
+	/** 准备状态，1-准备 0-取消准备 （现在应该只会发0） */
+	ready: number;
+	/** 原因，1 - GM修改规则 */
+	reason: number;
+}
+
 /** .lq.Error */
 declare interface IError extends IProto {
 	code: number;
@@ -2765,6 +2795,8 @@ declare interface IError extends IProto {
 	str_params: string[];
 	/** json对象（内容根据code变化） */
 	json_param: string;
+	/** 报错等级，不会发送给客户端 */
+	level: number;
 }
 
 /** .lq.Wrapper */
@@ -4130,6 +4162,7 @@ declare interface IAccountActivityUpdate extends IProto {
 	simulation_v2_data: ISimulationV2Data[];
 	quest_crew_data: IActivityQuestCrewChanges[];
 	shoot_data: IActivityShootData[];
+	bingo_data: IActivityBingoData[];
 	snowball_data: IActivitySnowballValueChanges[];
 }
 
@@ -5109,6 +5142,12 @@ declare interface ICustomizedContestDetail extends IProto {
 	rank_type: number;
 	/** 是否公开团队排名 */
 	show_team_rank: boolean;
+	/** 是否使用并列排名模式 0 - 不并列 1 - 并列 */
+	tied_rank: number;
+	/** 自动匹配开始时间 */
+	match_start_time: number;
+	/** 自动匹配结束时间 */
+	match_end_time: number;
 }
 
 /**
@@ -6402,8 +6441,11 @@ declare interface IActivityShootData extends IProto {
 	level: number;
 	/** 敌人信息 */
 	enemies: IActivityShootEnemyInfo[];
-	/** 奖励获取进度，已经获得过的reward_id */
+	/** 已获取奖励id */
 	rewarded_ids: number[];
+	ended: boolean;
+	/** 奖励获取进度详情，已经获得过的奖励记录，用于GM后台统计，不会发给客户端 */
+	rewarded_records: IActivityShootRewardRecord[];
 }
 
 /** .lq.ActivityShootEnemyInfo */
@@ -6412,6 +6454,49 @@ declare interface IActivityShootEnemyInfo extends IProto {
 	group_id: number;
 	enemy_id: number;
 	hp: number;
+}
+
+/** .lq.ActivityShootRewardRecord */
+declare interface IActivityShootRewardRecord extends IProto {
+	/** 击败敌人id */
+	enemy_id: number;
+	/** 奖励id */
+	reward_id: number;
+	/** 奖励时间 */
+	rewarded_time: number;
+}
+
+/** .lq.ActivityBingoCardData */
+declare interface IActivityBingoCardData extends IProto {
+	card_id: number;
+	/** 已经完成的格子，同活动配置表中 bingo_card.pos，仅客户端使用 */
+	achieved_pos: number[];
+	/** 已经领取的奖励，同活动配置表中 bingo_reward.reward_id，仅客户端使用 */
+	rewarded_ids: number[];
+	/** 1-激活 2-未激活 3-未解锁 4-已完成 */
+	state: number;
+	/** 服务端用 */
+	achieved_records: IActivityBingoCardData_BingoAchievedRecord[];
+	/** 服务端用 */
+	reward_records: IActivityBingoCardData_BingoRewardRecord[];
+}
+
+/** .lq.ActivityBingoCardData.BingoAchievedRecord */
+declare interface IActivityBingoCardData_BingoAchievedRecord extends IProto {
+	pos: number;
+	time: number;
+}
+
+/** .lq.ActivityBingoCardData.BingoRewardRecord */
+declare interface IActivityBingoCardData_BingoRewardRecord extends IProto {
+	id: number;
+	time: number;
+}
+
+/** .lq.ActivityBingoData */
+declare interface IActivityBingoData extends IProto {
+	activity_id: number;
+	cards: IActivityBingoCardData[];
 }
 
 /** .lq.ActivitySnowballData */
@@ -6423,6 +6508,11 @@ declare interface IActivitySnowballData extends IProto {
 	finished_level: number[];
 	/** 服务端数据，不会发给客户端 */
 	random_seed: number;
+	battle_id: string;
+	/** 回到初始关卡次数，通关一次后+1 */
+	level_finished_count: number;
+	/** 连击次数 */
+	player_combo: number;
 }
 
 /** .lq.ActivitySnowballUpgrade */
@@ -6442,28 +6532,25 @@ declare interface IActivitySnowballValueChanges extends IProto {
 	upgrade: IActivitySnowballUpgradeDirty;
 	rewarded_level: IUInt32ArrayDirty;
 	finished_level: IUInt32ArrayDirty;
+	level_finished_count: IUInt32Dirty;
+	player_combo: IUInt32Dirty;
 }
 
 /** .lq.ActivitySnowballPlayerAttackedInfo */
 declare interface IActivitySnowballPlayerAttackedInfo extends IProto {
 	/** 1-玩家 2-boss */
 	target: number;
-	/** 雪球id */
-	ball_id: number;
 	/** 轨道 */
 	track: number;
 	/** 伤害 */
 	damage: number;
+	/** 是否暴击 */
+	critia: number;
 }
 
-/** .lq.ActivitySnowballPlayerActionInfo */
-declare interface IActivitySnowballPlayerActionInfo extends IProto {
-	/** 1-玩家 2-boss */
-	action_player: number;
-	/** 雪球id */
-	ball_id: number;
-	/** 是否暴击 */
-	critical: number;
+/** .lq.ActivitySnowballPlayerAction */
+declare interface IActivitySnowballPlayerAction extends IProto {
+	tick: number;
 	/** 轨道 */
 	track: number;
 }
@@ -6476,32 +6563,30 @@ declare interface IActivitySnowballPlayerState extends IProto {
 	mp: number;
 }
 
-/** .lq.ActivitySnowballBallActionInfo */
-declare interface IActivitySnowballBallActionInfo extends IProto {
-	track: number;
-	/** 相撞的雪球信息 */
-	balls_id: number[];
-}
-
 /** .lq.SnowballActivityBossAction */
 declare interface ISnowballActivityBossAction extends IProto {
 	tick: number;
+	/** 动作类型 1 - 耗蓝  2 - 雪球出手 */
+	type: number;
 	track: number;
-	damage: number;
+	attack_info: ISnowballActivityBossAction_SnowballActivityBossAttackInfo;
+	mp_consume_info: ISnowballActivityBossAction_SnowballActivityBossMPConsumeInfo;
 }
 
-/** .lq.ActivitySnowballEvent */
-declare interface IActivitySnowballEvent extends IProto {
-	tick: number;
-	/** 1-发射雪球 2-击中目标 3-雪球相撞 */
-	type: number;
-	/** 受击信息 */
-	player_attacked: IActivitySnowballPlayerAttackedInfo[];
-	/** 操作信息 */
-	player_action: IActivitySnowballPlayerActionInfo[];
-	player_state: IActivitySnowballPlayerState[];
-	/** 雪球信息 */
-	ball_action: IActivitySnowballBallActionInfo[];
+/** .lq.SnowballActivityBossAction.SnowballActivityBossAttackInfo */
+declare interface ISnowballActivityBossAction_SnowballActivityBossAttackInfo extends IProto {
+	damage: number;
+	/** 是否是连续攻击生成的雪球 */
+	is_con_attack: number;
+}
+
+/** .lq.SnowballActivityBossAction.SnowballActivityBossMPConsumeInfo */
+declare interface ISnowballActivityBossAction_SnowballActivityBossMPConsumeInfo extends IProto {
+	mp_consume: number;
+	/** 前摇时长(tick) */
+	before_delay: number;
+	/** 后摇时长(tick) */
+	after_delay: number;
 }
 
 /**
@@ -9570,6 +9655,7 @@ declare interface IResAccountActivityData extends IResponse {
 	progress_reward_data: IActivityProgressRewardData[];
 	quest_crew_data: IActivityQuestCrewData[];
 	shoot_data: IActivityShootData[];
+	bingo_data: IActivityBingoData[];
 	snowball_data: IActivitySnowballData[];
 }
 
@@ -10892,7 +10978,7 @@ declare interface IReqIslandActivityUnlockBagGrid extends IProto {
 
 /** .lq.ContestSetting */
 declare interface IContestSetting extends IProto {
-	/** 报名玩家等级段位限制, or 关系 */
+	/** 报名玩家等级段位限制, and 关系，如果存在多个 type,operate 相同的情况（脏数据），使用后面的覆盖前面的 */
 	level_limit: IContestSetting_LevelLimit[];
 	/** 对局数限制 */
 	game_limit: number;
@@ -10906,6 +10992,8 @@ declare interface IContestSetting_LevelLimit extends IProto {
 	type: number;
 	/** 段位 10101=初心一星... */
 	value: number;
+	/** 0或空-大于等于(旧数据) 1-大于等于 2-小于等于 */
+	operate: number;
 }
 
 /** .lq.ReqCreateCustomizedContest */
@@ -10950,7 +11038,9 @@ declare interface IResFetchManagerCustomizedContest extends IResponse {
 	name: string;
 	open_show: number;
 	game_rule_setting: IGameMode;
+	/** 已废弃，使用 season.start_time */
 	start_time: number;
+	/** 已废弃，使用 season.end_time */
 	end_time: number;
 	auto_match: number;
 	rank_rule: number;
@@ -10961,6 +11051,22 @@ declare interface IResFetchManagerCustomizedContest extends IResponse {
 	contest_setting: IContestSetting;
 	/** 赛季模式 0-个人赛 1-团队赛 */
 	rank_type: number;
+	/** 2025.10.29 dapeng:策划要求大会室时间根据当前赛季创建时间进行锚定，原协议只包含开始与结束时间，所以新增赛季信息字段，原字段暂时保留仅供兼容旧版本，后续版本会直接废弃 */
+	season: IResFetchManagerCustomizedContest_SeasonInfo;
+	/** 自动匹配开始时间 */
+	match_start_time: number;
+	/** 自动匹配结束时间 */
+	match_end_time: number;
+}
+
+/** .lq.ResFetchManagerCustomizedContest.SeasonInfo */
+declare interface IResFetchManagerCustomizedContest_SeasonInfo extends IProto {
+	/** 当前赛季创建时间 */
+	create_time: number;
+	/** 当前赛季开始时间 */
+	start_time: number;
+	/** 当前赛季结束时间 */
+	end_time: number;
 }
 
 /** .lq.ReqUpdateManagerCustomizedContest */
@@ -11875,9 +11981,30 @@ declare interface IResQuestCrewActivityRefreshMarket extends IResponse {
 	execute_result: IExecuteResult[];
 }
 
+/** .lq.ReqBingoActivityReceiveReward */
+declare interface IReqBingoActivityReceiveReward extends IProto {
+	activity_id: number;
+	rewards: IReqBingoActivityReceiveReward_BingoReward[];
+}
+
+/** .lq.ReqBingoActivityReceiveReward.BingoReward */
+declare interface IReqBingoActivityReceiveReward_BingoReward extends IProto {
+	reward_id: number;
+	card_id: number;
+}
+
+/** .lq.ResBingoActivityReceiveReward */
+declare interface IResBingoActivityReceiveReward extends IResponse {
+	execute_result: IExecuteResult[];
+	/** 更新后的冰菓卡信息 */
+	cards: IActivityBingoCardData[];
+}
+
 /** .lq.ReqSnowballActivityStartBattle */
 declare interface IReqSnowballActivityStartBattle extends IProto {
 	activity_id: number;
+	/** debug字段，传入该字段时当前战斗直接使用当前随机种子，不传则后端随机，正式环境不使用 */
+	random_seed_debug: number;
 }
 
 /** .lq.ResSnowballActivityStartBattle */
@@ -11889,15 +12016,60 @@ declare interface IResSnowballActivityStartBattle extends IResponse {
 	battle_id: string;
 	/** 对局开始时玩家与boss信息(tick=0) */
 	player_state: IActivitySnowballPlayerState[];
+	/** 100 个暴击随机 [0, 100] 随机值，供 app 使用（ app随机算法运行有问题 ） */
+	random_seq: number[];
 }
 
 /** .lq.ReqSnowballActivityFinishBattle */
 declare interface IReqSnowballActivityFinishBattle extends IProto {
 	activity_id: number;
-	events: IActivitySnowballEvent[];
+	/** 只需要发玩家操作，连射的雪球只发第一个 */
+	player_action: IActivitySnowballPlayerAction[];
 	/** 1-过关 2-未过关 */
 	result: number;
 	battle_id: string;
+	/** debug校验信息 */
+	check_infos_debug: IReqSnowballActivityFinishBattle_BattleFinishedDebug[];
+}
+
+/**
+ * * .lq.ReqSnowballActivityFinishBattle.BattleFinishedDebug
+ * * ==DevDebug Start==
+ * * 雪球活动debug校验，仅在测试服上使用，正式环境下不做校验，并删除
+ */
+declare interface IReqSnowballActivityFinishBattle_BattleFinishedDebug extends IProto {
+	/** 校验类型（1 - hp校验， 2 - 相撞校验， 3 - mp校验） */
+	type: number;
+	hp_change_info: IReqSnowballActivityFinishBattle_SnowballValueDebug;
+	hit_info: IReqSnowballActivityFinishBattle_SnowballHitDebug;
+	mp_change_info: IReqSnowballActivityFinishBattle_SnowballValueDebug;
+}
+
+/**
+ * * .lq.ReqSnowballActivityFinishBattle.BattleFinishedDebug.SnowballValueDebug
+ * * 雪球活动hp变化
+ */
+declare interface IReqSnowballActivityFinishBattle_SnowballValueDebug extends IProto {
+	/** 改变前数值 */
+	before: number;
+	/** 改变后数值 */
+	after: number;
+	tick: number;
+	/** 1-玩家 2-怪物 */
+	unit: number;
+	/** 轨道信息，hp校验表示收到哪个轨道攻击，mp校验表示发出了哪个轨道攻击 */
+	track: number;
+}
+
+/**
+ * * .lq.ReqSnowballActivityFinishBattle.BattleFinishedDebug.SnowballHitDebug
+ * * 雪球相撞轨道校验
+ */
+declare interface IReqSnowballActivityFinishBattle_SnowballHitDebug extends IProto {
+	track: number;
+	tick: number;
+	/** 本次攻击是否是暴击 */
+	critical: number;
 }
 
 /** .lq.ResSnowballActivityFinishBattle */
@@ -11926,6 +12098,25 @@ declare interface IReqSnowballActivityReceiveReward extends IProto {
 declare interface IResSnowballActivityReceiveReward extends IResponse {
 	changes: IActivitySnowballValueChanges;
 	rewards: IExecuteReward[];
+}
+
+/**
+ * * .lq.ReqSnowballActivityDebug
+ * * ==DevDebug Start==
+ * * debug 协议在正式版本删除
+ */
+declare interface IReqSnowballActivityDebug extends IProto {
+	snowball_activity: IActivitySnowballData;
+}
+
+/** .lq.ReqSnowballActivityFetchDebug */
+declare interface IReqSnowballActivityFetchDebug extends IProto {
+	activity_id: number;
+}
+
+/** .lq.ResSnowballActivityFetchDebug */
+declare interface IResSnowballActivityFetchDebug extends IResponse {
+	snowball_activity: IActivitySnowballData;
 }
 
 /** .lq.AmuletBadgeData */

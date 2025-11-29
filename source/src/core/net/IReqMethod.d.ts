@@ -1781,6 +1781,11 @@ declare interface IReqMethod {
 	/** req: {@link IReqQuestCrewActivityRefreshMarket}, res: {@link IResQuestCrewActivityRefreshMarket}, msgId: {@link EMessageID.questCrewActivityRefreshMarket} */
 	questCrewActivityRefreshMarket(data?: IReqQuestCrewActivityRefreshMarket): Promise<IResQuestCrewActivityRefreshMarket>;
 	/**
+	 * * 冰菓活动
+	 * * req: {@link IReqBingoActivityReceiveReward}, res: {@link IResBingoActivityReceiveReward}, msgId: {@link EMessageID.bingoActivityReceiveReward}
+	 */
+	bingoActivityReceiveReward(data?: IReqBingoActivityReceiveReward): Promise<IResBingoActivityReceiveReward>;
+	/**
 	 * * 雪球活动
 	 * * req: {@link IReqSnowballActivityStartBattle}, res: {@link IResSnowballActivityStartBattle}, msgId: {@link EMessageID.snowballActivityStartBattle}
 	 */
@@ -1791,6 +1796,14 @@ declare interface IReqMethod {
 	snowballActivityUpgrade(data?: IReqSnowballActivityUpgrade): Promise<IResSnowballActivityUpgrade>;
 	/** req: {@link IReqSnowballActivityReceiveReward}, res: {@link IResSnowballActivityReceiveReward}, msgId: {@link EMessageID.snowballActivityReceiveReward} */
 	snowballActivityReceiveReward(data?: IReqSnowballActivityReceiveReward): Promise<IResSnowballActivityReceiveReward>;
+	/**
+	 * * ==DevDebug Start==
+	 * * debug 协议在正式版本删除
+	 * * req: {@link IReqSnowballActivityDebug}, res: {@link IResCommon}, msgId: {@link EMessageID.snowballActivityDebug}
+	 */
+	snowballActivityDebug(data?: IReqSnowballActivityDebug): Promise<IResCommon>;
+	/** req: {@link IReqSnowballActivityFetchDebug}, res: {@link IResSnowballActivityFetchDebug}, msgId: {@link EMessageID.snowballActivityFetchDebug} */
+	snowballActivityFetchDebug(data?: IReqSnowballActivityFetchDebug): Promise<IResSnowballActivityFetchDebug>;
 	/**
 	 * * 验证游戏口令
 	 * * req: {@link IReqAuthGame}, res: {@link IResAuthGame}, msgId: {@link EMessageID.authGame}

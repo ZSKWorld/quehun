@@ -2287,6 +2287,11 @@ declare interface ISheet_Events_BaseTask {
 	23068: ISheetData_Events_BaseTask;
 	23069: ISheetData_Events_BaseTask;
 	23070: ISheetData_Events_BaseTask;
+	23091: ISheetData_Events_BaseTask;
+	23092: ISheetData_Events_BaseTask;
+	23093: ISheetData_Events_BaseTask;
+	23094: ISheetData_Events_BaseTask;
+	23095: ISheetData_Events_BaseTask;
 	90001: ISheetData_Events_BaseTask;
 	90002: ISheetData_Events_BaseTask;
 	90003: ISheetData_Events_BaseTask;
@@ -2833,6 +2838,10 @@ declare interface ISheet_Events_BaseTask {
 	99171: ISheetData_Events_BaseTask;
 	99172: ISheetData_Events_BaseTask;
 	99173: ISheetData_Events_BaseTask;
+	99174: ISheetData_Events_BaseTask;
+	99175: ISheetData_Events_BaseTask;
+	99176: ISheetData_Events_BaseTask;
+	99177: ISheetData_Events_BaseTask;
 	800001: ISheetData_Events_BaseTask;
 	800002: ISheetData_Events_BaseTask;
 	800003: ISheetData_Events_BaseTask;

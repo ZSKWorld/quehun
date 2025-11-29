@@ -38,6 +38,8 @@ declare interface ISheet_Mail_MailTemplate {
 	130: ISheetData_Mail_MailTemplate;
 	131: ISheetData_Mail_MailTemplate;
 	132: ISheetData_Mail_MailTemplate;
+	133: ISheetData_Mail_MailTemplate;
+	134: ISheetData_Mail_MailTemplate;
 }
 declare interface ISheetData_Mail_MailTemplate {
 	/** 邮件模板ID */

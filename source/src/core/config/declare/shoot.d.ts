@@ -88,6 +88,8 @@ declare interface ISheetData_Shoot_ShootReward {
 	reward: string;
 	/** 奖励等级，3最高1最低 */
 	reward_level: number;
+	/** 星星数 */
+	star_num: number;
 	/** 合并等级，同一level内数字小的靠前 */
 	reward_merge: number;
 	/** 活动id */

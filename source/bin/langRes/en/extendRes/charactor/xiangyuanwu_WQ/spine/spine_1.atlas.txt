@@ -1,0 +1,481 @@
+spine_1.png
+	size: 1667, 1667
+	filter: Linear, Linear
+	scale: 0.7
+EX_arm_ty
+	bounds: 924, 51, 52, 50
+Huaban
+	bounds: 1439, 1240, 18, 18
+NAIGAI
+	bounds: 1361, 169, 55, 82
+	offsets: 2, 1, 62, 86
+Naigai_huaban
+	bounds: 1514, 308, 13, 16
+arm_l_1
+	bounds: 1183, 617, 82, 207
+	offsets: 0, 0, 88, 207
+	rotate: 90
+arm_l_1_G
+	bounds: 1525, 670, 82, 207
+	offsets: 0, 0, 88, 207
+arm_l_2
+	bounds: 984, 254, 76, 123
+	offsets: 0, 0, 77, 123
+	rotate: 90
+arm_r_1
+	bounds: 1459, 1240, 108, 181
+	offsets: 2, 0, 111, 183
+	rotate: 90
+arm_r_2
+	bounds: 1525, 568, 114, 100
+	offsets: 1, 2, 118, 104
+arm_r_3
+	bounds: 1521, 188, 54, 54
+	offsets: 2, 3, 56, 57
+body
+	bounds: 2, 201, 180, 556
+	offsets: 28, 0, 209, 560
+	rotate: 90
+body_buliao_touming
+	bounds: 1177, 459, 144, 156
+	offsets: 0, 7, 189, 165
+body_wet_1
+	bounds: 2, 19, 180, 556
+	offsets: 28, 0, 209, 560
+	rotate: 90
+body_wet_2
+	bounds: 942, 1057, 180, 556
+	offsets: 28, 0, 209, 560
+	rotate: 90
+body_wet_3
+	bounds: 942, 875, 180, 556
+	offsets: 28, 0, 209, 560
+	rotate: 90
+cat_body
+	bounds: 1459, 246, 68, 60
+cat_eye_1
+	bounds: 1459, 442, 19, 6
+	offsets: 0, 0, 20, 6
+	rotate: 90
+cat_eye_2
+	bounds: 932, 515, 19, 6
+	offsets: 1, 0, 20, 6
+cat_eye_3
+	bounds: 1412, 1239, 19, 25
+	rotate: 90
+cat_huaban
+	bounds: 1496, 568, 25, 11
+cat_jiaojie
+	bounds: 671, 5, 91, 16
+cat_lianyi
+	bounds: 1192, 130, 113, 26
+cat_mouth
+	bounds: 1300, 110, 18, 5
+	rotate: 90
+cat_mouth_2
+	bounds: 1151, 319, 17, 13
+daoying_tiebian
+	bounds: 978, 91, 161, 62
+	rotate: 90
+diaozhui_1
+	bounds: 1363, 42, 34, 61
+	offsets: 0, 0, 34, 62
+diaozhui_2
+	bounds: 1496, 581, 27, 232
+diaozhui_3
+	bounds: 560, 4, 17, 109
+	rotate: 90
+diaozhui_4
+	bounds: 1569, 1350, 53, 44
+ear
+	bounds: 545, 423, 13, 33
+	offsets: 4, 0, 17, 33
+ex_hand/ex_daji
+	bounds: 1609, 732, 41, 98
+ex_hand/ex_hand_yijing3
+	bounds: 1496, 462, 118, 104
+	offsets: 0, 1, 118, 106
+ex_hand/ex_laowang_bd
+	bounds: 1418, 169, 77, 75
+ex_hand/ex_yijing1
+	bounds: 693, 464, 89, 345
+	offsets: 1, 6, 94, 359
+ex_hand/ex_yijing2
+	bounds: 897, 257, 85, 256
+ex_hand/exhand1_1
+	bounds: 1641, 578, 22, 57
+ex_hand/exhand1_2
+	bounds: 1642, 1297, 23, 52
+ex_hand/exhand1_3
+	bounds: 1422, 247, 35, 63
+	offsets: 0, 1, 35, 64
+ex_hand/exhand1_4
+	bounds: 846, 219, 24, 20
+	offsets: 0, 1, 24, 21
+ex_hand/exhand2_3
+	bounds: 1470, 126, 49, 41
+	offsets: 0, 0, 50, 41
+ex_hand/exhand2_4
+	bounds: 1042, 2, 90, 82
+	offsets: 0, 2, 93, 84
+	rotate: 90
+ex_hand/exhand3_1
+	bounds: 1285, 264, 34, 53
+ex_hand/exhand3_2
+	bounds: 1579, 882, 27, 53
+	rotate: 90
+ex_hand/exhand3_3
+	bounds: 1569, 59, 41, 37
+ex_hand/exhand3_4
+	bounds: 1327, 35, 34, 65
+	offsets: 0, 0, 34, 67
+ex_hand/exhand3_5
+	bounds: 1609, 840, 40, 21
+	rotate: 90
+ex_hand/exhand3_6
+	bounds: 1646, 1453, 24, 19
+	rotate: 90
+ex_hand/exhand4_1
+	bounds: 1132, 94, 53, 36
+ex_hand/exhand4_2
+	bounds: 1589, 379, 76, 81
+ex_naiziyy
+	bounds: 1192, 158, 104, 95
+	rotate: 90
+eyebrow_1
+	bounds: 1631, 144, 29, 11
+face
+	bounds: 1582, 1133, 83, 105
+	offsets: 0, 0, 84, 105
+face_G
+	bounds: 1582, 1026, 83, 105
+	offsets: 0, 0, 84, 105
+face_bd
+	bounds: 1497, 180, 22, 64
+fashi_1
+	bounds: 172, 2, 15, 40
+	rotate: 90
+fashi_2
+	bounds: 1624, 1351, 43, 41
+	rotate: 90
+fashi_3
+	bounds: 1609, 673, 52, 57
+	offsets: 0, 0, 52, 59
+fashi_3_G
+	bounds: 1307, 102, 52, 57
+	offsets: 0, 0, 52, 59
+finger_1
+	bounds: 1438, 49, 26, 54
+	offsets: 0, 1, 26, 55
+finger_2
+	bounds: 1327, 2, 27, 31
+finger_3
+	bounds: 1646, 1421, 30, 17
+	rotate: 90
+finger_4
+	bounds: 250, 2, 31, 15
+finger_5
+	bounds: 545, 407, 13, 14
+fx/Glow
+	bounds: 1529, 244, 55, 80
+fx/Glow_094_c
+	bounds: 1617, 106, 36, 36
+fx/circle_02
+	bounds: 1491, 8, 41, 36
+	rotate: 90
+fx/fx_guang
+	bounds: 981, 3, 50, 50
+fx/guangshu
+	bounds: 1646, 1479, 14, 114
+fx/huaxian
+	bounds: 1177, 319, 138, 155
+	rotate: 90
+fx/icefl2_2
+	bounds: 472, 385, 71, 71
+fx/shanguang
+	bounds: 1617, 68, 36, 36
+fx/shuihua
+	bounds: 1334, 312, 123, 149
+	offsets: 0, 0, 123, 150
+fx/smoker1
+	bounds: 560, 23, 184, 220
+	rotate: 90
+fx_daji/_0000s_0000_ex_daji_1
+	bounds: 1500, 1020, 80, 218
+fx_daji/_0000s_0001_ex_daji_2
+	bounds: 1092, 334, 83, 223
+fx_daji/_0000s_0002_ex_daji_3
+	bounds: 1579, 911, 53, 107
+fx_daji/_0000s_0003_ex_daji_4
+	bounds: 1589, 334, 76, 43
+fx_daji/_0000s_0004_ex_daji_5
+	bounds: 932, 559, 97, 238
+	rotate: 90
+fx_drop_idle/_0000
+	bounds: 1529, 5, 32, 26
+	offsets: 17, 17, 60, 53
+fx_drop_idle/_0001
+	bounds: 1466, 51, 40, 31
+	offsets: 12, 15, 60, 53
+fx_drop_idle/_0002
+	bounds: 1408, 2, 45, 36
+	offsets: 9, 12, 60, 53
+	rotate: 90
+fx_drop_idle/_0003
+	bounds: 1466, 84, 41, 40
+	offsets: 14, 10, 60, 53
+fx_drop_idle/_0004
+	bounds: 1446, 4, 43, 43
+	offsets: 14, 8, 60, 53
+fx_drop_idle/_0005
+	bounds: 1569, 144, 3, 4
+	offsets: 14, 5, 60, 53
+	rotate: 90
+fx_drop_idle/_0006
+	bounds: 1323, 459, 2, 3
+	offsets: 14, 2, 60, 53
+	rotate: 90
+fx_water_click/water_1
+	bounds: 2, 1239, 468, 426
+fx_water_click/water_2
+	bounds: 2, 811, 468, 426
+fx_water_click/water_3
+	bounds: 472, 1239, 468, 426
+fx_water_click/water_4
+	bounds: 2, 383, 468, 426
+fx_water_click/water_5
+	bounds: 472, 811, 468, 426
+fx_water_click/water_6
+	bounds: 942, 1239, 468, 426
+hair_1
+	bounds: 1126, 2, 74, 90
+hair_10
+	bounds: 1652, 798, 13, 13
+	offsets: 0, 1, 14, 15
+hair_11
+	bounds: 1569, 1396, 75, 269
+hair_12
+	bounds: 882, 63, 40, 176
+	offsets: 0, 0, 41, 176
+hair_13
+	bounds: 1412, 1260, 45, 405
+hair_13_s
+	bounds: 1361, 135, 32, 107
+	offsets: 3, 0, 35, 107
+	rotate: 90
+hair_14
+	bounds: 712, 219, 70, 243
+	offsets: 0, 1, 70, 244
+hair_15
+	bounds: 1586, 222, 77, 78
+	rotate: 90
+hair_16
+	bounds: 782, 17, 98, 200
+	offsets: 2, 0, 100, 200
+hair_17
+	bounds: 1202, 2, 12, 66
+	offsets: 0, 0, 12, 67
+	rotate: 90
+hair_18
+	bounds: 113, 2, 15, 57
+	rotate: 90
+hair_19
+	bounds: 1323, 463, 142, 136
+	offsets: 2, 6, 144, 142
+hair_2
+	bounds: 1634, 929, 31, 95
+	offsets: 3, 0, 38, 95
+hair_20
+	bounds: 1631, 157, 11, 24
+hair_21
+	bounds: 1648, 157, 17, 63
+hair_22
+	bounds: 1612, 38, 30, 28
+hair_2_G
+	bounds: 1634, 832, 31, 95
+	offsets: 3, 0, 38, 95
+hair_3
+	bounds: 1399, 49, 37, 54
+	offsets: 0, 0, 38, 55
+hair_3_G
+	bounds: 1521, 149, 37, 54
+	offsets: 0, 0, 38, 55
+	rotate: 90
+hair_4
+	bounds: 924, 103, 52, 152
+	offsets: 0, 0, 52, 155
+hair_4_G
+	bounds: 1042, 100, 52, 152
+	offsets: 0, 0, 52, 155
+hair_5
+	bounds: 1577, 183, 37, 69
+	offsets: 0, 0, 37, 70
+	rotate: 90
+hair_5_G
+	bounds: 1288, 26, 37, 69
+	offsets: 0, 0, 37, 70
+hair_6
+	bounds: 1321, 253, 57, 99
+	offsets: 0, 5, 64, 104
+	rotate: 90
+hair_7
+	bounds: 1646, 1595, 19, 70
+	offsets: 0, 0, 20, 73
+hair_8
+	bounds: 1109, 254, 40, 78
+	offsets: 1, 6, 46, 86
+hair_9
+	bounds: 1202, 16, 84, 79
+	offsets: 0, 0, 84, 81
+hair_naizi
+	bounds: 978, 55, 34, 62
+	offsets: 1, 0, 36, 62
+	rotate: 90
+hand_1
+	bounds: 882, 2, 32, 59
+	offsets: 0, 2, 34, 63
+hl
+	bounds: 1662, 1590, 3, 3
+hongda_touming
+	bounds: 942, 658, 239, 172
+	offsets: 2, 0, 242, 178
+hongdai
+	bounds: 560, 209, 247, 150
+	offsets: 2, 0, 251, 150
+	rotate: 90
+hongsheng_1
+	bounds: 932, 523, 50, 34
+hongsheng_2
+	bounds: 1500, 879, 77, 139
+	offsets: 13, 0, 90, 139
+hongsheng_3
+	bounds: 890, 515, 40, 294
+hongsheng_4_cut
+	bounds: 1529, 33, 36, 38
+	offsets: 2, 0, 38, 42
+	rotate: 90
+hongsheng_5
+	bounds: 951, 2, 47, 28
+	rotate: 90
+huaban_1
+	bounds: 1183, 815, 42, 15
+huaban_10
+	bounds: 1641, 637, 34, 24
+	rotate: 90
+huaban_2
+	bounds: 1609, 832, 15, 6
+huaban_3
+	bounds: 1577, 222, 20, 7
+	rotate: 90
+huaban_4
+	bounds: 1361, 105, 88, 28
+huaban_5
+	bounds: 784, 219, 60, 20
+huaban_6
+	bounds: 1172, 641, 15, 9
+	rotate: 90
+huaban_7
+	bounds: 214, 2, 34, 15
+huaban_8
+	bounds: 1033, 40, 13, 7
+	rotate: 90
+huaban_9
+	bounds: 1577, 144, 52, 37
+jm_l
+	bounds: 1642, 1275, 23, 20
+	offsets: 0, 0, 25, 20
+jm_l_G
+	bounds: 1642, 1253, 23, 20
+	offsets: 0, 0, 25, 20
+liushu_1
+	bounds: 2, 2, 15, 109
+	rotate: 90
+liushu_2_jiachang
+	bounds: 942, 832, 41, 295
+	rotate: 90
+liushu_3
+	bounds: 1183, 701, 112, 207
+	offsets: 17, 0, 129, 207
+	rotate: 90
+mouth
+	bounds: 916, 53, 8, 6
+	rotate: 90
+naizi_2
+	bounds: 1289, 161, 70, 90
+	offsets: 0, 7, 71, 97
+naizi_buding
+	bounds: 1589, 301, 31, 76
+	rotate: 90
+naizi_celebrateidle
+	bounds: 1521, 108, 39, 46
+	rotate: 90
+pigu_shuidi
+	bounds: 932, 771, 8, 38
+qunzi_1
+	bounds: 1187, 97, 31, 111
+	offsets: 1, 1, 32, 112
+	rotate: 90
+qunzi_2
+	bounds: 1616, 463, 46, 103
+	offsets: 1, 3, 50, 106
+qunzi_3_shui
+	bounds: 1392, 601, 212, 102
+	rotate: 90
+s1_hair_12
+	bounds: 1363, 2, 38, 43
+	offsets: 0, 1, 43, 51
+	rotate: 90
+s1_hair_13
+	bounds: 1569, 27, 41, 30
+s2_hair_12
+	bounds: 1509, 81, 10, 43
+s_diaozhui_2
+	bounds: 1467, 442, 27, 157
+	offsets: 0, 0, 27, 188
+s_fashi_2
+	bounds: 1569, 98, 46, 44
+shy
+	bounds: 1521, 71, 46, 35
+snow_2
+	bounds: 984, 332, 225, 106
+	rotate: 90
+t_liushu_2
+	bounds: 1096, 94, 34, 158
+t_liushu_3
+	bounds: 1132, 132, 120, 58
+	offsets: 0, 27, 120, 85
+	rotate: 90
+tk_1
+	bounds: 1652, 813, 13, 17
+	offsets: 0, 1, 13, 18
+white_1
+	bounds: 1288, 2, 22, 25
+	rotate: 90
+wuqi_ZHEDANG
+	bounds: 784, 241, 266, 111
+	rotate: 90
+xiuzi_l_1
+	bounds: 1459, 308, 53, 132
+	offsets: 0, 1, 55, 134
+xiuzi_l_1_G
+	bounds: 1151, 264, 53, 132
+	offsets: 0, 1, 55, 134
+	rotate: 90
+xiuzi_l_2
+	bounds: 784, 509, 104, 300
+xiuzi_l_2_bd
+	bounds: 916, 2, 33, 47
+	offsets: 0, 0, 34, 47
+xiuzi_r_1
+	bounds: 1459, 1350, 108, 315
+	offsets: 3, 1, 113, 325
+xiuzi_r_2
+	bounds: 1514, 326, 134, 73
+	offsets: 20, 0, 160, 73
+	rotate: 90
+yifu_1
+	bounds: 472, 458, 219, 351
+yifu_3
+	bounds: 1239, 815, 58, 273
+	offsets: 0, 92, 84, 365
+	rotate: 90

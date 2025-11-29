@@ -1,0 +1,255 @@
+spine.png
+	size: 1127, 1127
+	filter: Linear, Linear
+	scale: 0.5
+WSFX_03
+	bounds: 887, 25, 64, 64
+WSFX_05
+	bounds: 955, 57, 64, 64
+WSFX_06
+	bounds: 1094, 522, 30, 34
+	offsets: 34, 0, 64, 64
+WSFX_07
+	bounds: 617, 297, 135, 134
+XYWWS_10
+	bounds: 655, 604, 212, 141
+	rotate: 90
+XYWWS_11
+	bounds: 902, 91, 51, 48
+XYWWS_13
+	bounds: 279, 270, 173, 147
+XYWWS_14
+	bounds: 685, 206, 65, 89
+XYWWS_15
+	bounds: 457, 100, 90, 120
+	rotate: 90
+XYWWS_16
+	bounds: 754, 349, 72, 163
+	rotate: 90
+XYWWS_17
+	bounds: 679, 11, 69, 62
+XYWWS_18
+	bounds: 824, 25, 70, 61
+	rotate: 90
+XYWWS_19
+	bounds: 370, 100, 85, 168
+XYWWS_2
+	bounds: 1021, 65, 56, 31
+	rotate: 90
+XYWWS_20
+	bounds: 410, 818, 307, 386
+	rotate: 90
+XYWWS_21
+	bounds: 2, 321, 275, 428
+XYWWS_22
+	bounds: 524, 2, 28, 12
+XYWWS_23
+	bounds: 1094, 510, 23, 10
+	offsets: 1, 0, 24, 10
+XYWWS_24
+	bounds: 1038, 558, 79, 87
+	rotate: 90
+XYWWS_25
+	bounds: 850, 97, 50, 42
+XYWWS_26
+	bounds: 750, 23, 72, 72
+XYWWS_27
+	bounds: 798, 776, 276, 349
+XYWWS_28
+	bounds: 579, 132, 64, 110
+	rotate: 90
+XYWWS_29
+	bounds: 798, 632, 218, 142
+	offsets: 0, 0, 226, 142
+XYWWS_3
+	bounds: 441, 2, 46, 29
+XYWWS_30
+	bounds: 223, 125, 145, 143
+XYWWS_31
+	bounds: 469, 636, 184, 180
+XYWWS_32
+	bounds: 279, 419, 330, 188
+	offsets: 0, 3, 330, 191
+	rotate: 90
+XYWWS_33
+	bounds: 802, 510, 234, 120
+XYWWS_34
+	bounds: 802, 423, 85, 180
+	rotate: 90
+XYWWS_35
+	bounds: 357, 2, 96, 82
+	offsets: 0, 3, 96, 85
+	rotate: 90
+XYWWS_36
+	bounds: 1046, 136, 33, 48
+XYWWS_37
+	bounds: 223, 278, 41, 54
+	rotate: 90
+XYWWS_38
+	bounds: 748, 144, 99, 59
+XYWWS_39
+	bounds: 489, 16, 15, 50
+	rotate: 90
+XYWWS_4
+	bounds: 953, 24, 59, 31
+XYWWS_40
+	bounds: 886, 204, 32, 79
+	offsets: 0, 0, 32, 81
+	rotate: 90
+XYWWS_41
+	bounds: 95, 9, 32, 91
+	rotate: 90
+XYWWS_42
+	bounds: 919, 322, 61, 99
+XYWWS_43
+	bounds: 1076, 802, 49, 101
+XYWWS_44
+	bounds: 2, 2, 39, 91
+	offsets: 0, 1, 39, 92
+	rotate: 90
+XYWWS_45
+	bounds: 441, 33, 65, 123
+	rotate: 90
+XYWWS_46
+	bounds: 748, 97, 45, 100
+	rotate: 90
+XYWWS_47
+	bounds: 579, 79, 51, 124
+	rotate: 90
+XYWWS_48
+	bounds: 967, 186, 59, 88
+	rotate: 90
+XYWWS_49
+	bounds: 188, 2, 9, 10
+XYWWS_5
+	bounds: 357, 113, 11, 10
+XYWWS_50
+	bounds: 489, 2, 33, 12
+	offsets: 1, 0, 34, 12
+XYWWS_51
+	bounds: 95, 2, 20, 5
+	offsets: 0, 0, 20, 6
+XYWWS_52
+	bounds: 454, 343, 29, 13
+	rotate: 90
+XYWWS_53
+	bounds: 772, 423, 14, 8
+XYWWS_54
+	bounds: 223, 14, 132, 109
+	offsets: 0, 15, 132, 124
+XYWWS_55
+	bounds: 410, 751, 19, 4
+XYWWS_56
+	bounds: 223, 270, 21, 6
+XYWWS_57
+	bounds: 982, 321, 94, 71
+XYWWS_58
+	bounds: 754, 423, 16, 8
+XYWWS_59
+	bounds: 564, 198, 97, 119
+	rotate: 90
+XYWWS_6
+	bounds: 752, 238, 54, 125
+	rotate: 90
+XYWWS_60
+	bounds: 849, 145, 35, 58
+	offsets: 0, 0, 37, 58
+XYWWS_61
+	bounds: 207, 43, 3, 3
+XYWWS_62
+	bounds: 564, 192, 4, 4
+XYWWS_64
+	bounds: 685, 200, 4, 4
+XYWWS_65
+	bounds: 1018, 632, 5, 6
+	rotate: 90
+XYWWS_66
+	bounds: 1078, 321, 17, 19
+	offsets: 0, 2, 17, 21
+	rotate: 90
+XYWWS_67
+	bounds: 1099, 784, 26, 16
+XYWWS_68
+	bounds: 630, 618, 22, 16
+XYWWS_69
+	bounds: 705, 75, 40, 59
+XYWWS_7
+	bounds: 1078, 340, 52, 47
+	rotate: 90
+XYWWS_70
+	bounds: 984, 394, 141, 114
+	offsets: 0, 0, 144, 114
+XYWWS_71
+	bounds: 207, 48, 20, 14
+	rotate: 90
+XYWWS_73
+	bounds: 1058, 226, 36, 36
+XYWWS_74
+	bounds: 564, 297, 14, 22
+	rotate: 90
+XYWWS_75
+	bounds: 917, 294, 26, 37
+	rotate: 90
+XYWWS_76
+	bounds: 410, 757, 59, 56
+	rotate: 90
+XYWWS_77
+	bounds: 1038, 510, 46, 54
+	rotate: 90
+XYWWS_78
+	bounds: 1076, 1016, 109, 49
+	rotate: 90
+XYWWS_79
+	bounds: 961, 123, 61, 83
+	rotate: 90
+XYWWS_8
+	bounds: 469, 434, 200, 159
+	rotate: 90
+XYWWS_80
+	bounds: 752, 205, 31, 132
+	rotate: 90
+XYWWS_81
+	bounds: 1018, 639, 135, 107
+	offsets: 2, 0, 138, 108
+	rotate: 90
+XYWWS_82
+	bounds: 965, 247, 72, 91
+	offsets: 0, 2, 72, 93
+	rotate: 90
+XYWWS_83
+	bounds: 457, 192, 105, 119
+XYWWS_84
+	bounds: 691, 136, 55, 68
+XYWWS_85
+	bounds: 879, 238, 84, 54
+XYWWS_86
+	bounds: 2, 70, 219, 249
+	offsets: 0, 5, 219, 254
+XYWWS_87
+	bounds: 754, 294, 53, 161
+	rotate: 90
+XYWWS_88
+	bounds: 469, 313, 146, 119
+XYWWS_89
+	bounds: 886, 141, 73, 61
+XYWWS_9
+	bounds: 630, 433, 170, 169
+XYWWS_92
+	bounds: 454, 374, 13, 43
+XYWWS_93
+	bounds: 1058, 264, 55, 34
+	rotate: 90
+XYWWS_94
+	bounds: 188, 14, 33, 27
+XYWWS_95
+	bounds: 1076, 776, 24, 21
+	rotate: 90
+XYWWS_96_03
+	bounds: 2, 751, 406, 374
+XYWWS_97
+	bounds: 2, 43, 203, 25
+XYWWS_zxb
+	bounds: 566, 21, 111, 56
+XYWWS_zxb_11111
+	bounds: 1076, 905, 109, 49
+	rotate: 90

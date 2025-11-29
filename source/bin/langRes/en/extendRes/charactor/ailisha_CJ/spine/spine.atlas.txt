@@ -1,0 +1,385 @@
+ailisha.png
+	size: 2048, 2048
+	filter: Linear, Linear
+	scale: 0.4
+ALS_XNSKIN__0
+	bounds: 982, 3, 60, 123
+	rotate: 90
+ALS_XNSKIN__100
+	bounds: 2009, 1823, 35, 104
+	offsets: 0, 0, 35, 172
+ALS_XNSKIN__101
+	bounds: 2, 653, 690, 520
+	rotate: 90
+ALS_XNSKIN__102
+	bounds: 580, 1498, 657, 548
+ALS_XNSKIN__103
+	bounds: 2, 1345, 576, 701
+ALS_XNSKIN__105
+	bounds: 539, 2, 56, 71
+	rotate: 90
+ALS_XNSKIN__106
+	bounds: 1967, 11, 40, 42
+ALS_XNSKIN__107
+	bounds: 1329, 5, 92, 58
+ALS_XNSKIN__11
+	bounds: 1486, 55, 196, 520
+	rotate: 90
+ALS_XNSKIN__114
+	bounds: 982, 475, 67, 67
+	offsets: 41, 0, 108, 67
+ALS_XNSKIN__116
+	bounds: 1719, 690, 510, 304
+	rotate: 90
+ALS_XNSKIN__117
+	bounds: 1138, 475, 556, 341
+ALS_XNSKIN__123
+	bounds: 437, 60, 482, 543
+	offsets: 0, 0, 482, 563
+	rotate: 90
+ALS_XNSKIN__126
+	bounds: 1903, 1219, 196, 135
+	rotate: 90
+ALS_XNSKIN__13
+	bounds: 2009, 1929, 28, 117
+ALS_XNSKIN__135_1
+	bounds: 1114, 818, 603, 382
+ALS_XNSKIN__137
+	bounds: 524, 804, 588, 459
+ALS_XNSKIN__20
+	bounds: 1840, 2, 51, 23
+	offsets: 1, 0, 52, 23
+	rotate: 90
+ALS_XNSKIN__24
+	bounds: 1696, 762, 19, 24
+ALS_XNSKIN__27
+	bounds: 1929, 1202, 15, 20
+	rotate: 90
+ALS_XNSKIN__3
+	bounds: 1587, 21, 32, 81
+	rotate: 90
+ALS_XNSKIN__31
+	bounds: 1903, 1202, 24, 15
+ALS_XNSKIN__33
+	bounds: 982, 65, 408, 502
+	rotate: 90
+ALS_XNSKIN__37
+	bounds: 1239, 1564, 28, 48
+ALS_XNSKIN__39
+	bounds: 1452, 2, 40, 51
+ALS_XNSKIN__40
+	bounds: 1747, 6, 60, 47
+ALS_XNSKIN__42
+	bounds: 1423, 2, 61, 27
+	offsets: 0, 0, 62, 27
+	rotate: 90
+ALS_XNSKIN__43
+	bounds: 2009, 10, 22, 58
+ALS_XNSKIN__44
+	bounds: 1913, 17, 52, 36
+ALS_XNSKIN__48
+	bounds: 1239, 1516, 28, 46
+ALS_XNSKIN__50
+	bounds: 1865, 8, 46, 45
+ALS_XNSKIN__51
+	bounds: 1494, 3, 17, 29
+	rotate: 90
+ALS_XNSKIN__52
+	bounds: 1696, 737, 19, 23
+	offsets: 0, 1, 19, 24
+ALS_XNSKIN__53
+	bounds: 437, 2, 56, 100
+	rotate: 90
+ALS_XNSKIN__57
+	bounds: 2008, 70, 26, 56
+ALS_XNSKIN__59
+	bounds: 1696, 788, 20, 28
+ALS_XNSKIN__6
+	bounds: 2008, 128, 25, 123
+ALS_XNSKIN__62
+	bounds: 1107, 4, 16, 32
+	offsets: 1, 0, 17, 32
+	rotate: 90
+ALS_XNSKIN__63
+	bounds: 1051, 491, 51, 84
+	rotate: 90
+ALS_XNSKIN__66
+	bounds: 2009, 1614, 32, 19
+ALS_XNSKIN__67
+	bounds: 612, 3, 128, 55
+ALS_XNSKIN__69
+	bounds: 1114, 1203, 152, 60
+	offsets: 7, 7, 164, 67
+ALS_XNSKIN__72
+	bounds: 742, 10, 129, 48
+ALS_XNSKIN__76
+	bounds: 1903, 1417, 195, 143
+	offsets: 0, 1, 197, 144
+	rotate: 90
+ALS_XNSKIN__77
+	bounds: 437, 552, 78, 99
+ALS_XNSKIN__79
+	bounds: 1696, 490, 198, 335
+	rotate: 90
+ALS_XNSKIN__83
+	bounds: 1269, 1202, 632, 410
+ALS_XNSKIN__85
+	bounds: 524, 544, 258, 612
+	rotate: 90
+ALS_XNSKIN__88
+	bounds: 2, 18, 633, 433
+	rotate: 90
+ALS_XNSKIN__91
+	bounds: 873, 8, 102, 50
+	offsets: 0, 14, 102, 64
+ALS_XNSKIN__92
+	bounds: 1107, 22, 112, 41
+ALS_XNSKIN__95
+	bounds: 2009, 1727, 94, 35
+	rotate: 90
+ALS_XNSKIN__96
+	bounds: 580, 1265, 687, 231
+ALS_XNSKIN__97
+	bounds: 2009, 1635, 90, 32
+	rotate: 90
+ALS_XNSKIN__98
+	bounds: 524, 1271, 49, 72
+ALS_XNSKIN__99
+	bounds: 1494, 22, 31, 91
+	offsets: 15, 0, 46, 91
+	rotate: 90
+BG
+	bounds: 1239, 1614, 768, 432
+Line_139_c
+	bounds: 1809, 2, 29, 51
+	offsets: 11, 0, 51, 51
+bianpao_01
+	bounds: 1221, 21, 42, 106
+	rotate: 90
+xiangyun_01
+	bounds: 1486, 253, 560, 220
+zhipian
+	bounds: 1670, 18, 35, 75
+	rotate: 90
+
+ailisha_2.png
+	size: 1810, 1810
+	filter: Linear, Linear
+	scale: 0.4
+ALS_XNSKIN__1
+	bounds: 1688, 476, 102, 114
+	offsets: 0, 103, 102, 217
+ALS_XNSKIN__10
+	bounds: 784, 381, 111, 249
+	offsets: 0, 7, 111, 256
+	rotate: 90
+ALS_XNSKIN__104
+	bounds: 1537, 168, 110, 108
+	offsets: 0, 0, 110, 122
+	rotate: 90
+ALS_XNSKIN__108
+	bounds: 1470, 15, 130, 90
+ALS_XNSKIN__109
+	bounds: 450, 665, 383, 341
+	offsets: 0, 2, 383, 343
+	rotate: 90
+ALS_XNSKIN__110
+	bounds: 782, 2, 222, 105
+ALS_XNSKIN__111
+	bounds: 1465, 1105, 314, 335
+	rotate: 90
+ALS_XNSKIN__112
+	bounds: 1049, 1096, 290, 141
+	offsets: 0, 4, 290, 145
+ALS_XNSKIN__115
+	bounds: 1259, 389, 133, 76
+ALS_XNSKIN__119
+	bounds: 508, 1293, 406, 311
+	offsets: 0, 0, 406, 312
+ALS_XNSKIN__12
+	bounds: 383, 563, 62, 63
+ALS_XNSKIN__120
+	bounds: 1363, 559, 160, 124
+ALS_XNSKIN__121
+	bounds: 1525, 567, 154, 116
+ALS_XNSKIN__122
+	bounds: 1524, 1421, 387, 274
+	rotate: 90
+ALS_XNSKIN__124
+	bounds: 1625, 807, 183, 137
+	offsets: 0, 0, 183, 163
+ALS_XNSKIN__125
+	bounds: 1206, 196, 191, 146
+	offsets: 0, 0, 194, 146
+	rotate: 90
+ALS_XNSKIN__127
+	bounds: 1101, 1539, 421, 269
+	offsets: 0, 0, 422, 269
+ALS_XNSKIN__128
+	bounds: 1686, 395, 122, 74
+ALS_XNSKIN__129
+	bounds: 478, 131, 314, 205
+ALS_XNSKIN__130
+	bounds: 2, 531, 512, 261
+	rotate: 90
+ALS_XNSKIN__131
+	bounds: 223, 149, 380, 253
+	rotate: 90
+ALS_XNSKIN__139
+	bounds: 1422, 847, 90, 201
+	rotate: 90
+ALS_XNSKIN__14
+	bounds: 1394, 395, 70, 146
+	rotate: 90
+ALS_XNSKIN__140
+	bounds: 478, 338, 325, 304
+	rotate: 90
+ALS_XNSKIN__15
+	bounds: 793, 494, 301, 244
+	offsets: 0, 0, 310, 244
+ALS_XNSKIN__16
+	bounds: 1096, 467, 265, 311
+ALS_XNSKIN__18
+	bounds: 1470, 107, 136, 65
+	rotate: 90
+ALS_XNSKIN__19
+	bounds: 981, 109, 52, 22
+ALS_XNSKIN__2
+	bounds: 2, 1045, 442, 391
+ALS_XNSKIN__21
+	bounds: 450, 617, 46, 26
+	rotate: 90
+ALS_XNSKIN__22
+	bounds: 447, 576, 39, 29
+	rotate: 90
+ALS_XNSKIN__23
+	bounds: 265, 531, 116, 95
+ALS_XNSKIN__2333
+	bounds: 1624, 689, 41, 28
+ALS_XNSKIN__25
+	bounds: 1297, 2, 24, 28
+	rotate: 90
+ALS_XNSKIN__26
+	bounds: 1327, 2, 24, 25
+	rotate: 90
+ALS_XNSKIN__28
+	bounds: 1413, 817, 35, 28
+ALS_XNSKIN__29
+	bounds: 1072, 1573, 31, 27
+	rotate: 90
+ALS_XNSKIN__30
+	bounds: 383, 531, 30, 28
+	offsets: 0, 0, 30, 29
+	rotate: 90
+ALS_XNSKIN__32
+	bounds: 1527, 471, 159, 94
+ALS_XNSKIN__34
+	bounds: 1035, 389, 222, 76
+	offsets: 0, 0, 222, 85
+ALS_XNSKIN__35
+	bounds: 794, 109, 270, 185
+	offsets: 0, 0, 270, 240
+	rotate: 90
+ALS_XNSKIN__36
+	bounds: 477, 29, 100, 303
+	rotate: 90
+ALS_XNSKIN__38
+	bounds: 1212, 2, 48, 24
+ALS_XNSKIN__4
+	bounds: 1063, 2, 147, 169
+	offsets: 0, 104, 202, 273
+ALS_XNSKIN__41
+	bounds: 1465, 1493, 43, 44
+ALS_XNSKIN__45
+	bounds: 1341, 1132, 122, 105
+ALS_XNSKIN__46
+	bounds: 1534, 280, 107, 113
+	offsets: 0, 0, 107, 124
+ALS_XNSKIN__49
+	bounds: 1262, 2, 24, 33
+	rotate: 90
+ALS_XNSKIN__5
+	bounds: 916, 1294, 154, 310
+ALS_XNSKIN__54
+	bounds: 1322, 796, 89, 70
+ALS_XNSKIN__55
+	bounds: 446, 1324, 50, 36
+ALS_XNSKIN__56
+	bounds: 1035, 467, 25, 38
+	rotate: 90
+ALS_XNSKIN__58
+	bounds: 1341, 1097, 33, 41
+	offsets: 0, 1, 33, 42
+	rotate: 90
+ALS_XNSKIN__61
+	bounds: 446, 1050, 339, 241
+	offsets: 0, 1, 339, 242
+ALS_XNSKIN__64
+	bounds: 1450, 776, 172, 69
+ALS_XNSKIN__65
+	bounds: 1537, 130, 45, 36
+ALS_XNSKIN__68
+	bounds: 1354, 198, 189, 94
+	rotate: 90
+ALS_XNSKIN__7
+	bounds: 1063, 173, 141, 214
+	offsets: 0, 0, 222, 214
+ALS_XNSKIN__70
+	bounds: 1450, 685, 172, 89
+ALS_XNSKIN__71
+	bounds: 787, 1059, 232, 260
+	offsets: 0, 205, 232, 465
+	rotate: 90
+ALS_XNSKIN__73
+	bounds: 1450, 245, 148, 82
+	rotate: 90
+ALS_XNSKIN__74
+	bounds: 1363, 467, 162, 90
+ALS_XNSKIN__75
+	bounds: 1355, 12, 113, 184
+ALS_XNSKIN__78
+	bounds: 1072, 1239, 298, 391
+	offsets: 0, 14, 316, 405
+	rotate: 90
+ALS_XNSKIN__8
+	bounds: 1322, 868, 98, 226
+ALS_XNSKIN__80
+	bounds: 1542, 401, 68, 142
+	offsets: 26, 0, 94, 150
+	rotate: 90
+ALS_XNSKIN__81
+	bounds: 1681, 592, 107, 125
+	offsets: 0, 1, 107, 126
+ALS_XNSKIN__82
+	bounds: 2, 1438, 504, 370
+ALS_XNSKIN__84
+	bounds: 2, 9, 219, 520
+	offsets: 6, 0, 225, 520
+ALS_XNSKIN__86
+	bounds: 1620, 946, 161, 157
+ALS_XNSKIN__87
+	bounds: 223, 33, 114, 252
+	rotate: 90
+ALS_XNSKIN__89
+	bounds: 793, 740, 262, 317
+ALS_XNSKIN__9
+	bounds: 981, 133, 80, 246
+	offsets: 0, 0, 88, 246
+ALS_XNSKIN__90
+	bounds: 1624, 719, 181, 86
+ALS_XNSKIN__93
+	bounds: 1212, 28, 141, 166
+ALS_XNSKIN__94
+	bounds: 1422, 939, 196, 164
+	offsets: 0, 0, 202, 164
+YUYI_61
+	bounds: 1057, 755, 23, 23
+smoker1
+	bounds: 1057, 780, 263, 314
+xiangyun_02
+	bounds: 265, 628, 415, 183
+	rotate: 90
+xiangyun_03
+	bounds: 508, 1606, 591, 202
+xysTP_2
+	bounds: 446, 1362, 60, 74

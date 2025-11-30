@@ -2,8 +2,8 @@
 
 export default class ComName1 extends fgui.GComponent {
 
-	public txt_name: fgui.GTextField;
-	public img_vip: fgui.GImage;
+	protected txt_name: fgui.GTextField;
+	protected img_vip: fgui.GImage;
 	public static url: string = "ui://vx9zwserhdeoobbp";
 
 	public static createInstance(): ComName1 {

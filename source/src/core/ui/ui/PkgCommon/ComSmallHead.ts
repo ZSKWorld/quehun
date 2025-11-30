@@ -2,8 +2,8 @@
 
 export default class ComSmallHead extends fgui.GComponent {
 
-	public loader_head: fgui.GLoader;
-	public loader_frame: fgui.GLoader;
+	protected loader_head: fgui.GLoader;
+	protected loader_frame: fgui.GLoader;
 	public static url: string = "ui://vx9zwserhdeoobbn";
 
 	public static createInstance(): ComSmallHead {

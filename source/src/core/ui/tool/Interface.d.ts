@@ -69,6 +69,7 @@ declare interface IUIUtil {
 	playTrans(trans: fgui.Transition, reverse?: boolean): Promise<void>;
 	refreshLevel(comp: {
 		ctrl_ht: fgui.Controller,
+		ctrl_star: fgui.Controller,
 		loader_icon: fgui.GLoader,
 		txt_htLevel?: fgui.GTextField,
 		txt_htScore?: fgui.GTextField,

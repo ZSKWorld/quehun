@@ -37,7 +37,7 @@
       <item/>
       <item/>
     </list>
-    <list id="n16_hk7r" name="reward" xy="723,690" size="887,128" group="n22_hk7r" layout="row" overflow="scroll" scroll="horizontal" colGap="19" defaultItem="ui://vx9zwserhk7robax" autoClearItems="true">
+    <list id="n16_hk7r" name="reward" xy="723,690" size="887,128" group="n22_hk7r" layout="row" overflow="scroll" scroll="horizontal" colGap="19" defaultItem="ui://vith2b66hk7robax" autoClearItems="true">
       <gearDisplay controller="body" pages="2,3"/>
       <item/>
       <item/>

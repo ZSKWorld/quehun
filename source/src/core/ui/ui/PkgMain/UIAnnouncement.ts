@@ -4,7 +4,7 @@ import { ComBackView } from "../../view/PkgCommon/view/coms/ComBackView";
 
 export default class UIAnnouncement extends fgui.GComponent {
 
-	public com_back: ComBackView;
+	protected com_back: ComBackView;
 	public static url: string = "ui://vith2b66ktwpob9v";
 
 	public static createInstance(): UIAnnouncement {

@@ -61,7 +61,7 @@ declare enum EViewOpenType {
 }
 
 /** 页面种类 */
-declare enum EViewCategory{
+declare enum EViewCategory {
 	/** 全屏页面 */
 	FullScreen = "FullScreen",
 	/** 弹窗页面 */
@@ -85,6 +85,13 @@ declare enum ELayer {
 	Dialog = "Dialog",
 	Alert = "Alert",
 	Lock = "Lock",
+}
+
+declare interface IDynamicResManager {
+	add(path: string): void;
+	remove(path: string): void;
+	setLoader(loader: fgui.GLoader, path: string): void;
+	clearLoader(loader: fgui.GLoader): void;
 }
 
 declare interface IUIManager {

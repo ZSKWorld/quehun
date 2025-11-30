@@ -38,6 +38,7 @@ declare const $timeUtil: ITimeUtil;
 declare const $mathUtil: IMathUtil;
 declare const $spineMgr: ISpineManager;
 declare const $uiUtil: IUIUtil;
+declare const $dynamicResMgr: IDynamicResManager;
 
 /** 注入全局变量 */
 declare function $windowImmit(name: string, obj: any): void;

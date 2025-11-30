@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="266,266">
+  <controller name="type" exported="true" pages="0,,1,,2,,3," selected="2"/>
+  <displayList>
+    <loader id="n2_hdeo" name="bg" xy="4,4" size="258,258" url="ui://vx9zwserq5yiobc1" fill="scaleFree">
+      <gearDisplay controller="type" pages="1,3"/>
+      <relation target="" sidePair="width-width,height-height"/>
+    </loader>
+    <component id="n1_hdeo" name="head" src="q5yiobc3" fileName="Component/Component/头像/ComBigHead.xml" xy="4,4" size="258,258">
+      <relation target="" sidePair="width-width,height-height"/>
+    </component>
+    <loader id="n5_gsi2" name="mid" xy="4,4" size="258,258" alpha="0.7" url="ui://vx9zwserieavob7l" fill="scaleFree">
+      <gearDisplay controller="type" pages="2,3"/>
+      <relation target="" sidePair="width-width,height-height"/>
+    </loader>
+    <loader id="n4_q5yi" name="bound" xy="0,0" size="266,266" url="ui://vx9zwserhk7robaz" fill="scaleFree">
+      <relation target="" sidePair="width-width,height-height"/>
+    </loader>
+  </displayList>
+  <customProperty target="bg" propertyId="1"/>
+  <customProperty target="head" propertyId="1"/>
+  <customProperty target="mid" propertyId="1"/>
+  <customProperty target="bound" propertyId="1"/>
+</component>

@@ -16,10 +16,10 @@ export class UILiaoSheMediator extends MediatorBase<UILiaoSheView, IUILiaoSheDat
 	}
 
 	override onOpenAni() {
-		return this.view.com_back.mediator.onOpenAni();
+		return this.view.onOpenAni();
 	}
 
 	override onCloseAni() {
-		return this.view.com_back.mediator.onCloseAni();
+		return this.view.onCloseAni();
 	}
 }

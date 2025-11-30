@@ -171,7 +171,7 @@ function GenCode_TS_Self(handler) {
         let memberCnt = members.Count;
         for (let j = 0; j < memberCnt; j++) {
             let memberInfo = members.get_Item(j);
-            writer.writeln('public %s: %s;', customMemberVarName(memberInfo), memberInfo.type);
+            writer.writeln('protected %s: %s;', customMemberVarName(memberInfo), memberInfo.type);
         }
         writer.writeln('public static url: string = "ui://%s%s";', handler.pkg.id, classInfo.resId);
         writer.writeln();

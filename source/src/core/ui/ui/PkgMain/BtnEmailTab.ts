@@ -2,8 +2,8 @@
 
 export default class BtnEmailTab extends fgui.GButton {
 
-	public ctrl_open: fgui.Controller;
-	public img_redDot: fgui.GImage;
+	protected ctrl_open: fgui.Controller;
+	protected img_redDot: fgui.GImage;
 	public static url: string = "ui://vith2b66pt3aobb0";
 
 	public static createInstance(): BtnEmailTab {

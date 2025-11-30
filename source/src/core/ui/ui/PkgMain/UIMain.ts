@@ -5,26 +5,26 @@ import { BtnXunMiView } from "../../view/PkgMain/view/btns/BtnXunMiView";
 
 export default class UIMain extends fgui.GComponent {
 
-	public com_matchMode: ComMatchModeView;
-	public btn_setting: fgui.GButton;
-	public btn_help: fgui.GButton;
-	public btn_guide: fgui.GButton;
-	public btn_camera: fgui.GButton;
-	public btn_achieve: fgui.GButton;
-	public btn_activity: fgui.GButton;
-	public btn_email: fgui.GButton;
-	public btn_rank: fgui.GButton;
-	public btn_announcement: fgui.GButton;
-	public group_rightTop: fgui.GGroup;
-	public btn_liaoShe: fgui.GButton;
-	public btn_friend: fgui.GButton;
-	public btn_observe: fgui.GButton;
-	public btn_paiPu: fgui.GButton;
-	public btn_bag: fgui.GButton;
-	public btn_shop: fgui.GButton;
-	public btn_treasure: BtnXunMiView;
-	public trans_in: fgui.Transition;
-	public trans_out: fgui.Transition;
+	protected com_matchMode: ComMatchModeView;
+	protected btn_setting: fgui.GButton;
+	protected btn_help: fgui.GButton;
+	protected btn_guide: fgui.GButton;
+	protected btn_camera: fgui.GButton;
+	protected btn_achieve: fgui.GButton;
+	protected btn_activity: fgui.GButton;
+	protected btn_email: fgui.GButton;
+	protected btn_rank: fgui.GButton;
+	protected btn_announcement: fgui.GButton;
+	protected group_rightTop: fgui.GGroup;
+	protected btn_liaoShe: fgui.GButton;
+	protected btn_friend: fgui.GButton;
+	protected btn_observe: fgui.GButton;
+	protected btn_paiPu: fgui.GButton;
+	protected btn_bag: fgui.GButton;
+	protected btn_shop: fgui.GButton;
+	protected btn_treasure: BtnXunMiView;
+	protected trans_in: fgui.Transition;
+	protected trans_out: fgui.Transition;
 	public static url: string = "ui://vith2b66vwgm0";
 
 	public static createInstance(): UIMain {

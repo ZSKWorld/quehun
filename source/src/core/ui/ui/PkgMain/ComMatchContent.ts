@@ -4,13 +4,13 @@ import { ComMatchItemView } from "../../view/PkgMain/view/coms/ComMatchItemView"
 
 export default class ComMatchContent extends fgui.GComponent {
 
-	public com_item0: ComMatchItemView;
-	public com_item1: ComMatchItemView;
-	public com_item2: ComMatchItemView;
-	public com_item3: ComMatchItemView;
-	public com_item4: ComMatchItemView;
-	public trans_out: fgui.Transition;
-	public trans_in: fgui.Transition;
+	protected com_item0: ComMatchItemView;
+	protected com_item1: ComMatchItemView;
+	protected com_item2: ComMatchItemView;
+	protected com_item3: ComMatchItemView;
+	protected com_item4: ComMatchItemView;
+	protected trans_out: fgui.Transition;
+	protected trans_in: fgui.Transition;
 	public static url: string = "ui://vith2b66z63pob9k";
 
 	public static createInstance(): ComMatchContent {

@@ -2,7 +2,7 @@
 
 export default class ComTitle1 extends fgui.GComponent {
 
-	public loader_icon: fgui.GLoader;
+	protected loader_icon: fgui.GLoader;
 	public static url: string = "ui://vx9zwserhdeoobbo";
 
 	public static createInstance(): ComTitle1 {

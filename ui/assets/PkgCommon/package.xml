@@ -50,7 +50,7 @@
     <image id="mde1b7d" name="img_492.png" path="/Texture/" exported="true"/>
     <image id="mde1b7n" name="img_2455.png" path="/Texture/" exported="true"/>
     <image id="mde1b71" name="img_2800.png" path="/Texture/" exported="true"/>
-    <image id="ieavob7l" name="img_112.png" path="/Texture/" exported="true"/>
+    <image id="ieavob7l" name="img_112.png" path="/Texture/" exported="true" scale="9grid" scale9grid="4,4,2,2"/>
     <image id="ieavob7m" name="img_74.png" path="/Texture/" exported="true"/>
     <image id="ieavob7n" name="img_717.png" path="/Texture/" exported="true"/>
     <image id="ieavob7o" name="img_4138.png" path="/Texture/" exported="true"/>
@@ -75,7 +75,7 @@
     <image id="ieavob87" name="img_1453.png" path="/Texture/" exported="true"/>
     <image id="ieavob88" name="img_1285.png" path="/Texture/" exported="true"/>
     <image id="ieavob89" name="img_75.png" path="/Texture/" exported="true"/>
-    <image id="ieavob8a" name="img_811.png" path="/Texture/" exported="true"/>
+    <image id="ieavob8a" name="img_811.png" path="/Texture/" exported="true" scale="9grid" scale9grid="11,8,22,16"/>
     <component id="ieavob8b" name="UILoading.xml" path="/" exported="true"/>
     <component id="ieavob8c" name="PbLoading1.xml" path="/Component/PbBar/"/>
     <component id="vwgmob8d" name="PbLoading2.xml" path="/Component/PbBar/"/>
@@ -91,7 +91,6 @@
     <image id="dwe0ob8k" name="img_2191.png" path="/Texture/" exported="true"/>
     <image id="pt3aobaw" name="img_547.png" path="/Texture/" exported="true"/>
     <image id="mde1b7e" name="img_544.png" path="/Texture/" exported="true" scale="9grid" scale9grid="12,12,6,6"/>
-    <component id="hk7robax" name="ComItem1.xml" path="/Component/Component/物品/" exported="true"/>
     <image id="hk7robay" name="img_2297.png" path="/Texture/" exported="true"/>
     <image id="hk7robaz" name="img_3266.png" path="/Texture/" exported="true" scale="9grid" scale9grid="20,20,140,140"/>
     <image id="hk7robb0" name="img_402.png" path="/Texture/" exported="true"/>
@@ -127,6 +126,105 @@
     <image id="hdeoobbr" name="img_784.png" path="/Texture/" exported="true"/>
     <component id="hdeoobbt" name="BtnNormalNoScale.xml" path="/Component/Button/" exported="true"/>
     <image id="gks8obbw" name="img_1659.png" path="/Texture/" exported="true"/>
+    <image id="q5yiobbx" name="img_3260.png" path="/Texture/" exported="true"/>
+    <image id="q5yiobby" name="img_3262.png" path="/Texture/" exported="true"/>
+    <component id="q5yiobbz" name="BtnNormalFitNoScale.xml" path="/Component/Button/" exported="true"/>
+    <image id="q5yiobc0" name="img_3555.png" path="/Texture/" exported="true" scale="9grid" scale9grid="59,58,123,87"/>
+    <image id="q5yiobc1" name="img_125.png" path="/Texture/" exported="true" scale="9grid" scale9grid="4,4,2,2"/>
+    <component id="q5yiobc2" name="ComItem.xml" path="/Component/Component/物品/" exported="true"/>
+    <component id="q5yiobc3" name="ComBigHead.xml" path="/Component/Component/头像/" exported="true"/>
+    <image id="q5yiobc4" name="img_1137.png" path="/Texture/" exported="true"/>
+    <image id="q5yiobc5" name="img_1138.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obc6" name="img_1026.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obc7" name="img_3316.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obc8" name="img_33.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obc9" name="img_329.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obca" name="img_304.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obcb" name="img_303.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obcc" name="img_2938.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obcd" name="img_2924.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obce" name="img_3793.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obcf" name="img_2923.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obcg" name="img_2740.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obch" name="img_2739.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obci" name="img_269.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obcj" name="img_2617.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obck" name="img_25.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obcl" name="img_249.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obcm" name="img_248.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obcn" name="img_2801.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obco" name="img_3828.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obcp" name="img_4032.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obcq" name="img_4033.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obcr" name="img_986.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obcs" name="img_932.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obct" name="img_918.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obcu" name="img_841.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obcv" name="img_836.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obcw" name="img_764.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obcx" name="img_761.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obcy" name="img_760.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obcz" name="img_685.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obd0" name="img_650.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obd1" name="img_649.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obd2" name="img_561.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obd3" name="img_542.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obd4" name="img_541.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obd5" name="img_42.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obd6" name="img_407.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obd7" name="img_405.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obd8" name="img_2471.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obd9" name="img_2462.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obda" name="img_2424.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obdb" name="img_2423.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obdc" name="img_1795.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obdd" name="img_1794.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obde" name="img_1771.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obdf" name="img_177.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obdg" name="img_1677.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obdh" name="img_1606.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obdi" name="img_1506.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obdj" name="img_1434.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obdk" name="img_1429.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obdl" name="img_1303.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obdm" name="img_1302.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obdn" name="img_1301.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obdo" name="img_1261.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obdp" name="img_114.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obdq" name="img_1127.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obdr" name="img_1060.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obds" name="img_1027.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obdt" name="img_1796.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obdu" name="img_987.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obdv" name="img_1834.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obdw" name="img_1965.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obdx" name="img_2332.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obdy" name="img_2242.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obdz" name="img_2241.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obe0" name="img_2240.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obe1" name="img_2230.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obe2" name="img_2213.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obe3" name="img_2212.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obe4" name="img_2211.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obe5" name="img_2147.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obe6" name="img_2146.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obe7" name="img_2145.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obe8" name="img_2086.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obe9" name="img_2085.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obea" name="img_203.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obeb" name="img_202.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obec" name="img_201.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obed" name="img_200.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obee" name="img_1964.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obef" name="img_988.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obej" name="img_1441.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obek" name="img_1442.png" path="/Texture/" exported="true"/>
+    <component id="gsi2obel" name="CmbCommon1_item.xml" path="/Component/ComboBox/"/>
+    <component id="gsi2obem" name="CmbCommon1_popup.xml" path="/Component/ComboBox/"/>
+    <component id="gsi2oben" name="CmbCommon1.xml" path="/Component/ComboBox/" exported="true"/>
+    <image id="gsi2obeo" name="img_643.png" path="/Texture/" exported="true"/>
+    <component id="gsi2obeq" name="ComBigHead1.xml" path="/Component/Component/头像/" exported="true"/>
+    <image id="gsi2ober" name="img_755.png" path="/Texture/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

@@ -9,7 +9,7 @@ interface IConfirmView extends IView {
 	btn_confirm: fgui.GButton;
 	btn_cancel: fgui.GButton;
 }
-export abstract class ConfirmBaseMediator<V extends IConfirmView = IConfirmView, D extends IUIConfirmData = IUIConfirmData> extends MediatorBase<V, D> {
+export abstract class ConfirmBaseMediator<V extends IView, D extends IUIConfirmData = IUIConfirmData> extends MediatorBase<V, D> {
 	protected _datas: IUIConfirmData[] = [];
 	override onEnable() {
 		this.refreshView();
@@ -24,7 +24,7 @@ export abstract class ConfirmBaseMediator<V extends IConfirmView = IConfirmView,
 
 	protected refreshView() {
 		const { data, view } = this;
-		const { ctrl_format, txt_title, txt_content, label_content } = view;
+		const { ctrl_format, txt_title, txt_content, label_content } = view as unknown as IConfirmView;
 		ctrl_format.selectedIndex = data.format || 0;
 		txt_title.text = data.title || "";
 		txt_content && (txt_content.text = data.content || "");

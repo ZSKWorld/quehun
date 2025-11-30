@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1340,906">
+  <displayList>
+    <list id="n24_gsi2" name="item" xy="0,146" size="1340,760" layout="flow_hz" overflow="scroll" scrollBarFlags="4" scrollBarRes="ui://vx9zwserhdeoobbj," lineGap="22" colGap="44" lineItemCount="6" defaultItem="ui://vith2b66q5yiobbn" autoClearItems="true">
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+    </list>
+    <component id="n25_gsi2" name="type" src="gsi2oben" fileName="Component/ComboBox/CmbCommon1.xml" pkg="vx9zwser" xy="1008,0" size="320,72">
+      <ComboBox visibleItemCount="12">
+        <item title="1"/>
+        <item title="2"/>
+        <item title="3"/>
+        <item title="4"/>
+        <item title="5"/>
+        <item title="6"/>
+        <item title="7"/>
+        <item title="8"/>
+      </ComboBox>
+    </component>
+  </displayList>
+</component>

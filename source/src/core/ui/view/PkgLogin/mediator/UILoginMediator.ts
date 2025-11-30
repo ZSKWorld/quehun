@@ -56,8 +56,8 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 
 	private onBtnLoginClick() {
 		const { view, _loginInfo } = this;
-		const txtAccount = view.itxt_account.text;
-		const txtPassword = view.itxt_password.text;
+		const txtAccount = view.accountTxt;
+		const txtPassword = view.passwordTxt;
 		if (!txtAccount) return;
 		if (!txtPassword) return;
 		_loginInfo.account = txtAccount;
@@ -77,8 +77,8 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 		const { view, _loginInfo, _phoneInput } = this;
 		if (_loginInfo.loginType == ELoginType.Account && _loginInfo.accountType == 0) return;
 		_loginInfo.accountType = 0;
-		_phoneInput.account = view.itxt_account.text;
-		_phoneInput.password = view.itxt_password.text;
+		_phoneInput.account = view.accountTxt;
+		_phoneInput.password = view.passwordTxt;
 		this.setLoginType(ELoginType.Account);
 	}
 
@@ -86,8 +86,8 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 		const { view, _loginInfo, _accountInput } = this;
 		if (_loginInfo.loginType == ELoginType.Account && _loginInfo.accountType == 1) return;
 		_loginInfo.accountType = 1;
-		_accountInput.account = view.itxt_account.text;
-		_accountInput.password = view.itxt_password.text;
+		_accountInput.account = view.accountTxt;
+		_accountInput.password = view.passwordTxt;
 		this.setLoginType(ELoginType.Account);
 	}
 
@@ -123,13 +123,13 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 
 	private toLogin() {
 		const { view, _loginInfo } = this;
-		view.ctrl_page.selectedIndex = 1;
+		view.setCtrlPage(1);
 		Laya.timer.once(1000, this, this.sendLogin);
 	}
 
 	private cancelLogin() {
 		Laya.timer.clear(this, this.sendLogin);
-		this.view.ctrl_page.selectedIndex = 0;
+		this.view.setCtrlPage(0);
 		this._loginInfo.access_token = "";
 		$localDataMgr.remove(ELocalDataKey.AutoLogin);
 	}
@@ -138,7 +138,7 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 		const { view, _loginInfo } = this;
 		let loginSuccess = false;
 		if (_loginInfo.loginType == ELoginType.Account) {
-			view.ctrl_page.selectedIndex = 2;
+			view.setCtrlPage(2);
 			if (!_loginInfo.access_token) {
 				loginSuccess = await this.loginByAccount();
 			} else {

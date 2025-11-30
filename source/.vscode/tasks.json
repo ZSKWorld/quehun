@@ -137,7 +137,7 @@
         { //leb
             "label": "leb",
             "type": "shell",
-            "command": "leb",
+            "command": "leb -c leb_config@1-3-2.js",
             "problemMatcher": []
         },
         // 目录 D:\liqi\laya_liqi_new 作为你的根工作区被打开。

@@ -2,9 +2,9 @@
 
 export default class UILoginQueue extends fgui.GComponent {
 
-	public btn_quit: fgui.GButton;
-	public txt_pos: fgui.GTextField;
-	public txt_time: fgui.GTextField;
+	protected btn_quit: fgui.GButton;
+	protected txt_pos: fgui.GTextField;
+	protected txt_time: fgui.GTextField;
 	public static url: string = "ui://vs9845at6eqpb8d";
 
 	public static createInstance(): UILoginQueue {

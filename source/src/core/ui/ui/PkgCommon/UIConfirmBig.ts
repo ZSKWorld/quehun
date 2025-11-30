@@ -2,12 +2,12 @@
 
 export default class UIConfirmBig extends fgui.GComponent {
 
-	public ctrl_format: fgui.Controller;
-	public btn_close: fgui.GButton;
-	public btn_confirm: fgui.GButton;
-	public btn_cancel: fgui.GButton;
-	public txt_title: fgui.GTextField;
-	public label_content: fgui.GLabel;
+	protected ctrl_format: fgui.Controller;
+	protected btn_close: fgui.GButton;
+	protected btn_confirm: fgui.GButton;
+	protected btn_cancel: fgui.GButton;
+	protected txt_title: fgui.GTextField;
+	protected label_content: fgui.GLabel;
 	public static url: string = "ui://vx9zwserj0ddob7e";
 
 	public static createInstance(): UIConfirmBig {

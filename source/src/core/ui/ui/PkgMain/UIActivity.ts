@@ -2,7 +2,7 @@
 
 export default class UIActivity extends fgui.GComponent {
 
-	public btn_back: fgui.GButton;
+	protected btn_back: fgui.GButton;
 	public static url: string = "ui://vith2b66ktwpob9s";
 
 	public static createInstance(): UIActivity {

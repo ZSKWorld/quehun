@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="98,128" designImage="ui://ca43vz0ejdu67plndp" designImageOffsetX="-644" designImageOffsetY="-877" designImageAlpha="0">
+  <displayList>
+    <component id="n13_q5yi" name="item" src="q5yiobc2" fileName="Component/Component/物品/ComItem.xml" pkg="vx9zwser" xy="2,0" size="94,94"/>
+    <image id="n12_hk7r" name="gotReward" src="hk7robay" fileName="Texture/img_2297.png" pkg="vx9zwser" xy="11,30" pivot="0.5,0.5" size="96,75" aspect="true"/>
+    <text id="n11_hk7r" name="count" xy="0,92" pivot="0.5,0.5" size="98,36" fontSize="26" color="#edb26f" align="center" autoSize="shrink" singleLine="true" text="100000"/>
+  </displayList>
+  <customProperty target="title" propertyId="0"/>
+</component>

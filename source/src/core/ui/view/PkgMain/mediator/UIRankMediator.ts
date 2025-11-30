@@ -1,7 +1,7 @@
 import { MediatorBase } from "../../../../mvc/view/MediatorBase";
 import { RadioGroup } from "../../../extention/RadioGroup";
 import { EUIRankType } from "../define/MainDefine";
-import { ComRankItemView } from "../view/coms/ComRankItemView";
+import { RenderRankItemView } from "../view/renders/RenderRankItemView";
 import { EUIRankMsg, UIRankView } from "../view/UIRankView";
 
 export interface IUIRankData {
@@ -9,36 +9,35 @@ export interface IUIRankData {
 }
 
 export class UIRankMediator extends MediatorBase<UIRankView, IUIRankData> {
-	private _tabRadioGroup = new RadioGroup();
+	private _tabGroup = new RadioGroup();
 	private _leaderboard: { [key in EUIRankType]: IResLevelLeaderboard_Item[] } = {
 		[EUIRankType.SiMa]: [],
-		[EUIRankType.SanMa]: []
+		[EUIRankType.SanMa]: [],
 	};
 	private _accountBrief: { [key in EUIRankType]: IPlayerBaseView[] } = {
 		[EUIRankType.SiMa]: [],
-		[EUIRankType.SanMa]: []
+		[EUIRankType.SanMa]: [],
 	};
 	private _briefReqInfo: { [key in EUIRankType]: number } = {
 		[EUIRankType.SiMa]: 0,
-		[EUIRankType.SanMa]: 0
+		[EUIRankType.SanMa]: 0,
 	};
-	private get selectType() { return this._tabRadioGroup.selectIndex == 0 ? EUIRankType.SiMa : EUIRankType.SanMa; }
+	private get selectType() { return this._tabGroup.selectIndex == 0 ? EUIRankType.SiMa : EUIRankType.SanMa; }
 
 	override onAwake() {
 		this.addEvent(EUIRankMsg.OnBtnCloseClick, this.onBtnCloseClick);
-		this.addEvent(EUIRankMsg.OnListLevelScroll, this.onListLevelScroll);
-		const { btn_siMa, btn_sanMa, list_level } = this.view;
-		$uiUtil.setList(list_level, true, this, this.onListLevelRender, this.onListLevelItemClick);
-		this._tabRadioGroup.init([btn_siMa, btn_sanMa], Laya.Handler.create(this, () => {
+		this.addEvent(EUIRankMsg.OnListRankScroll, this.onListRankScroll);
+		const { tabBtns, listRank } = this.view;
+		$uiUtil.setList(listRank, true, this, this.onListLevelRender, this.onListRankItemClick);
+		this._tabGroup.init(tabBtns, new Laya.Handler(this, () => {
 			const { view, selectType, } = this;
-			view.refreshView(selectType, this._accountBrief[selectType]);
-			view.list_level.scrollPane.percY = 0;
-		}, null, false));
+			view.refreshView(selectType, this._accountBrief[selectType].length);
+			view.listRank.scrollPane.percY = 0;
+		}));
 	}
 
 	override onEnable() {
-		const { _tabRadioGroup } = this;
-		_tabRadioGroup.selectIndex = 0;
+		this._tabGroup.selectIndex = 0;
 		$netMgr.requests.fetchLevelLeaderboard({ type: EUIRankType.SiMa });
 		$netMgr.requests.fetchLevelLeaderboard({ type: EUIRankType.SanMa });
 	}
@@ -57,19 +56,19 @@ export class UIRankMediator extends MediatorBase<UIRankView, IUIRankData> {
 		this.closeSelf();
 	}
 
-	private onListLevelRender(index: number, item: ComRankItemView) {
+	private onListLevelRender(index: number, item: RenderRankItemView) {
 		const type = this.selectType;
 		item.refresh(index, type, this._accountBrief[type][index]);
 	}
 
-	private onListLevelItemClick(item: ComRankItemView) {
-		const list_level = this.view.list_level;
-		const index = list_level.childIndexToItemIndex(list_level.getChildIndex(item));
+	private onListRankItemClick(item: RenderRankItemView) {
+		const { listRank } = this.view;
+		const index = listRank.childIndexToItemIndex(listRank.getChildIndex(item));
 		Logger.error("Click rank item:", index + 1);
 	}
 
-	private onListLevelScroll() {
-		const { contentHeight, viewHeight, posY } = this.view.list_level.scrollPane;
+	private onListRankScroll() {
+		const { contentHeight, viewHeight, posY } = this.view.listRank.scrollPane;
 		if (contentHeight - posY - viewHeight <= 136) {
 			this.fetchMultiAccountBrief(this.selectType);
 		}
@@ -102,7 +101,7 @@ export class UIRankMediator extends MediatorBase<UIRankView, IUIRankData> {
 		_briefReqInfo[req.type]++;
 		_accountBrief[req.type].push(...res.players);
 		if (selectType == req.type)
-			view.refreshView(selectType, _accountBrief[selectType])
+			view.refreshView(selectType, _accountBrief[selectType].length)
 	}
 
 	override onOpenAni() { return $uiUtil.popAlphaIn(this.view); }

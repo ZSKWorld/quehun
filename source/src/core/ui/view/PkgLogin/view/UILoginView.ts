@@ -14,6 +14,9 @@ export const enum EUILoginMsg {
 
 export class UILoginView extends ExtensionClass<IView, UILogin>(UILogin) implements IView {
 
+	get accountTxt() { return this.itxt_account.text; }
+	get passwordTxt() { return this.itxt_password.text; }
+
 	override onCreate() {
 		const {
 			btn_login, btn_announce, btn_help, btn_loginByAccount, btn_loginBtnPhone,
@@ -28,6 +31,10 @@ export class UILoginView extends ExtensionClass<IView, UILogin>(UILogin) impleme
 		btn_forgotPassword.onClick(this, this.sendEvent, [EUILoginMsg.OnBtnForgotPasswordClick]);
 		btn_forgotAccount.onClick(this, this.sendEvent, [EUILoginMsg.OnBtnForgotAccountClick]);
 		btn_logout.onClick(this, this.sendEvent, [EUILoginMsg.OnBtnLogoutClick]);
+	}
+
+	setCtrlPage(index: 0 | 1 | 2) {
+		this.ctrl_page.selectedIndex = index;
 	}
 
 	refresh(loginAccountType: 0 | 1, account: string, password: string) {

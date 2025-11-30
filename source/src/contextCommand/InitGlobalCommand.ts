@@ -1,3 +1,4 @@
+import { ConstDefine } from "../core/common/ConstDefine";
 import { LoadManager } from "../core/common/manager/LoadManager";
 import { LocalDataManager } from "../core/common/manager/LocalDataManager";
 import { MathUtil } from "../core/common/math/MathUtil";
@@ -10,6 +11,7 @@ import { Command } from "../core/mvc/controller/Command";
 import { Facade } from "../core/mvc/Facade";
 import { NetManager } from "../core/net/NetManager";
 import { PbManager } from "../core/net/PbManager";
+import { DynamicResManager } from "../core/ui/core/DynamicResManager";
 import { UIManager } from "../core/ui/core/UIManager";
 import { RedDotManager } from "../core/ui/redDot/RedDotManager";
 import { RichText } from "../core/ui/tool/RichText";
@@ -39,6 +41,7 @@ export class InitGlobalCommand extends Command {
 		$windowImmit("$redDotMgr", new RedDotManager());
 		$windowImmit("$skeletonMgr", new SkeletonManager());
 		$windowImmit("$localDataMgr", new LocalDataManager());
+		$windowImmit("$dynamicResMgr", new DynamicResManager());
 
 		this.registerConfirm("$confirmBig", EViewID.UIConfirmBigView);
 		this.registerConfirm("$confirmMid", EViewID.UIConfirmMiddleView);
@@ -75,7 +78,7 @@ export class InitGlobalCommand extends Command {
 		});
 
 		$windowImmit("$langRes", function (url: string) {
-			return "langRes/" + $gameMgr.language + "/" + url;
+			return ConstDefine.LangResDir + $gameMgr.language + "/" + url;
 		});
 
 		$windowImmit("$showNetError", function (error: IError) {

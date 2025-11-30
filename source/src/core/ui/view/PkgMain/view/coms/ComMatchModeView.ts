@@ -15,6 +15,8 @@ export const enum EComMatchModeMsg {
 }
 
 export class ComMatchModeView extends ExtensionClass<IView, ComMatchMode>(ComMatchMode) implements IView {
+	get transModeIn() { return this.trans_modeIn; }
+	get transModeOut() { return this.trans_modeOut; }
 
 	override onCreate() {
 		const { btn_rankMode, btn_matchMode, btn_friendMode, btn_back } = this;

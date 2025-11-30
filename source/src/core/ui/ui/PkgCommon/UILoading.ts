@@ -5,17 +5,17 @@ import PbLoading2 from "./PbLoading2";
 
 export default class UILoading extends fgui.GComponent {
 
-	public ctrl_state: fgui.Controller;
-	public txt_tip: fgui.GTextField;
-	public pb_progress: PbLoading1;
-	public loader_tipIcon: fgui.GLoader;
-	public loader_mid: fgui.GLoader;
-	public loader_left: fgui.GLoader;
-	public loader_right: fgui.GLoader;
-	public loader_desk: fgui.GLoader;
-	public loader_cg: fgui.GLoader;
-	public loader_tipIcon2: fgui.GLoader;
-	public pb_progress2: PbLoading2;
+	protected ctrl_state: fgui.Controller;
+	protected txt_tip: fgui.GTextField;
+	protected pb_progress: PbLoading1;
+	protected loader_tipIcon: fgui.GLoader;
+	protected loader_mid: fgui.GLoader;
+	protected loader_left: fgui.GLoader;
+	protected loader_right: fgui.GLoader;
+	protected loader_desk: fgui.GLoader;
+	protected loader_cg: fgui.GLoader;
+	protected loader_tipIcon2: fgui.GLoader;
+	protected pb_progress2: PbLoading2;
 	public static url: string = "ui://vx9zwserieavob8b";
 
 	public static createInstance(): UILoading {

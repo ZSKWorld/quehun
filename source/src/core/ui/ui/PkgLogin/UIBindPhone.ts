@@ -2,7 +2,7 @@
 
 export default class UIBindPhone extends fgui.GComponent {
 
-	public txt_title: fgui.GTextField;
+	protected txt_title: fgui.GTextField;
 	public static url: string = "ui://vs9845atieavb8e";
 
 	public static createInstance(): UIBindPhone {

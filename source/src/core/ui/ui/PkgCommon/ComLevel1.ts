@@ -2,10 +2,11 @@
 
 export default class ComLevel1 extends fgui.GComponent {
 
-	public ctrl_ht: fgui.Controller;
-	public loader_icon: fgui.GLoader;
-	public txt_htLevel: fgui.GTextField;
-	public txt_htScore: fgui.GTextField;
+	protected ctrl_ht: fgui.Controller;
+	protected ctrl_star: fgui.Controller;
+	protected loader_icon: fgui.GLoader;
+	protected txt_htLevel: fgui.GTextField;
+	protected txt_htScore: fgui.GTextField;
 	public static url: string = "ui://vx9zwserhdeoobbq";
 
 	public static createInstance(): ComLevel1 {
@@ -14,6 +15,7 @@ export default class ComLevel1 extends fgui.GComponent {
 
 	protected override onConstruct(): void {
 		this.ctrl_ht = this.getControllerAt(0);
+		this.ctrl_star = this.getControllerAt(1);
 		this.loader_icon = <fgui.GLoader>(this.getChildAt(1));
 		this.txt_htLevel = <fgui.GTextField>(this.getChildAt(4));
 		this.txt_htScore = <fgui.GTextField>(this.getChildAt(5));

@@ -11,7 +11,7 @@ export class UIEntranceMediator extends MediatorBase<UIEntranceView, IUIEntrance
 	private _recordCnt = 0;
 
 	override onEnable() {
-		Laya.timer.once(this.view.trans_t0.totalDuration * 1000, this, this.check2Login);
+		Laya.timer.once(this.view.transT0Duration, this, this.check2Login);
 	}
 
 	@InterestNotify(ENotifyConst.LobbyConnected)

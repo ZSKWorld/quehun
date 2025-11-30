@@ -2,8 +2,8 @@
 
 export default class ComBack extends fgui.GComponent {
 
-	public btn_back: fgui.GButton;
-	public txt_title: fgui.GTextField;
+	protected btn_back: fgui.GButton;
+	protected txt_title: fgui.GTextField;
 	public static url: string = "ui://vx9zwserp5uzob8h";
 
 	public static createInstance(): ComBack {

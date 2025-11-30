@@ -1,7 +1,7 @@
 import { MediatorBase } from "../../../../mvc/view/MediatorBase";
 import { EUserEvent } from "../../../../userData/UserDefine";
-import { ComItem1View } from "../../PkgCommon/view/coms/ComItem1View";
 import { BtnEmailTabView } from "../view/btns/BtnEmailTabView";
+import { RenderEmailItemView } from "../view/renders/RenderEmailItemView";
 import { EUIEmailMsg, UIEmailView } from "../view/UIEmailView";
 
 export interface IUIEmailData {
@@ -11,14 +11,14 @@ export interface IUIEmailData {
 export class UIEmailMediator extends MediatorBase<UIEmailView, IUIEmailData> {
 	private _lastTabClickItem: BtnEmailTabView;
 
-	private get curMail() { return $userData.mail.mails[this.view.list_tab.selectedIndex]; }
+	private get curMail() { return $userData.mail.mails[this.view.listTab.selectedIndex]; }
 
 	override onAwake() {
 		this.addEvent(EUIEmailMsg.OnBtnBackClick, this.onBtnBackClick);
 		this.addEvent(EUIEmailMsg.OnBtnGetRewardClick, this.onBtnGetRewardClick);
 		this.addEvent(EUIEmailMsg.OnBtnDeleteClick, this.onBtnDeleteClick);
-		$uiUtil.setList(this.view.list_tab, true, this, this.onListTabRender, this.onListTabItemClick);
-		$uiUtil.setList(this.view.list_reward, true, this, this.onListRewardRender);
+		$uiUtil.setList(this.view.listTab, true, this, this.onListTabRender, this.onListTabItemClick);
+		$uiUtil.setList(this.view.listReward, true, this, this.onListRewardRender);
 	}
 
 	override onEnable() {
@@ -28,12 +28,12 @@ export class UIEmailMediator extends MediatorBase<UIEmailView, IUIEmailData> {
 	@InterestNotify(EUserEvent.OnMailChanged)
 	private setTabIndex(index: number) {
 		const { view } = this;
-		index = index ?? view.list_tab.selectedIndex;
+		index = index ?? view.listTab.selectedIndex;
 		const mailCount = $userData.mail.mails.length;
 		view.refreshTab(mailCount, index);
 		if (mailCount > 0) {
-			const childIndex = view.list_tab.itemIndexToChildIndex(index);
-			const item = view.list_tab.getChildAt<BtnEmailTabView>(childIndex);
+			const childIndex = view.listTab.itemIndexToChildIndex(index);
+			const item = view.listTab.getChildAt<BtnEmailTabView>(childIndex);
 			item && this.onListTabItemClick(item);
 		}
 	}
@@ -51,10 +51,10 @@ export class UIEmailMediator extends MediatorBase<UIEmailView, IUIEmailData> {
 			$netMgr.requests.readMail({ mail_id: curMail.mail_id });
 	}
 
-	private onListRewardRender(index: number, item: ComItem1View) {
+	private onListRewardRender(index: number, item: RenderEmailItemView) {
 		const data = this.curMail;
 		const reward = data.attachments[index];
-		item.refresh1(reward.id, reward.count, data.take_attachment, true);
+		item.refresh(reward.id, reward.count, data.take_attachment, true);
 	}
 
 	private onBtnBackClick() {

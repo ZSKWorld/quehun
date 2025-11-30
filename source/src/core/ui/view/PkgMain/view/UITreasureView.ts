@@ -8,7 +8,14 @@ export class UITreasureView extends ExtensionClass<IView, UITreasure>(UITreasure
 
 	override onCreate() {
 		const { com_back } = this;
-		com_back.btn_back.onClick(this, this.sendEvent, [EUITreasureMsg.OnComBackClick]);
+		com_back.onBackClick(this, this.sendEvent, [EUITreasureMsg.OnComBackClick]);
 	}
 
+	onOpenAni() {
+		return this.com_back.mediator.onOpenAni();
+	}
+
+	onCloseAni() {
+		return this.com_back.mediator.onCloseAni();
+	}
 }

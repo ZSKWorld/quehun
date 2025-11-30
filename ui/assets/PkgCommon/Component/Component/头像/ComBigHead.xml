@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="256,256" extention="Label">
+  <displayList>
+    <loader id="n1_hdeo" name="icon" xy="0,0" size="256,256" url="ui://ca43vz0ehk7r7ploia" fill="scaleFree" clearOnPublish="true">
+      <relation target="" sidePair="width-width,height-height"/>
+    </loader>
+  </displayList>
+  <customProperty target="head" propertyId="1"/>
+</component>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="235,110" designImage="ui://ca43vz0ehdeo7plojg" designImageOffsetX="-1400" designImageOffsetY="-834" designImageAlpha="42">
+<component size="235,110" designImage="ui://ca43vz0ehdeo7plojg" designImageOffsetX="-1400" designImageOffsetY="-834" designImageAlpha="0">
   <controller name="ht" pages="0,,1," selected="0"/>
+  <controller name="star" pages="0,,1,,2,,3," selected="3"/>
   <displayList>
     <image id="n4_hdeo" name="n4" src="hdeoobb6" fileName="Texture/img_3606.png" xy="-70,-62" pivot="0.5,0.5" scale="0.55,0.55"/>
     <loader id="n3_hdeo" name="icon" xy="-70,-75" pivot="0.5,0.5" size="256,256" aspect="true" scale="0.34,0.34" url="ui://ca43vz0ehk7r7ploij" fill="scaleFree"/>
@@ -19,10 +20,16 @@
     <image id="n10_q5yi" name="n10" src="mde1b81" fileName="Texture/img_1512.png" xy="-17,50" pivot="0.5,0.5" size="36,34" group="n16_q5yi" aspect="true"/>
     <image id="n11_q5yi" name="n11" src="mde1b81" fileName="Texture/img_1512.png" xy="5,82" pivot="0.5,0.5" size="26,24" group="n16_q5yi" aspect="true"/>
     <image id="n12_q5yi" name="n12" src="mde1b81" fileName="Texture/img_1512.png" xy="33,95" pivot="0.5,0.5" size="23,21" group="n16_q5yi" aspect="true"/>
-    <image id="n13_q5yi" name="n13" src="mde1b82" fileName="Texture/img_1513.png" xy="-17,50" pivot="0.5,0.5" size="36,34" group="n16_q5yi"/>
-    <image id="n14_q5yi" name="n14" src="mde1b82" fileName="Texture/img_1513.png" xy="5,82" pivot="0.5,0.5" size="26,24" group="n16_q5yi"/>
-    <image id="n15_q5yi" name="n15" src="mde1b82" fileName="Texture/img_1513.png" xy="34,96" pivot="0.5,0.5" size="23,21" group="n16_q5yi"/>
-    <group id="n16_q5yi" name="n16" xy="-17,50" size="74,67" advanced="true">
+    <image id="n13_q5yi" name="n13" src="mde1b82" fileName="Texture/img_1513.png" xy="-17,50" pivot="0.5,0.5" size="36,34" group="n16_q5yi">
+      <gearDisplay controller="star" pages="1,2,3"/>
+    </image>
+    <image id="n14_q5yi" name="n14" src="mde1b82" fileName="Texture/img_1513.png" xy="5,82" pivot="0.5,0.5" size="26,24" group="n16_q5yi">
+      <gearDisplay controller="star" pages="2,3"/>
+    </image>
+    <image id="n15_q5yi" name="n15" src="mde1b82" fileName="Texture/img_1513.png" xy="33,95" pivot="0.5,0.5" size="23,21" group="n16_q5yi">
+      <gearDisplay controller="star" pages="3"/>
+    </image>
+    <group id="n16_q5yi" name="n16" xy="-17,50" size="73,66" advanced="true">
       <gearDisplay controller="ht" pages="0"/>
     </group>
   </displayList>

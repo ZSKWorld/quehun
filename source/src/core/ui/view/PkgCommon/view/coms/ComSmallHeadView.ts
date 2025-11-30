@@ -6,16 +6,8 @@ export const enum EComHead1Msg {
 
 export class ComSmallHeadView extends ExtensionClass<IView, ComSmallHead>(ComSmallHead) implements IView {
 
-	set skinId(value: number) {
-
-	}
-
-	set frameId(value: number) {
-
-	}
-
 	override onCreate() {
-
+		this.displayObject.onDisable = this.onDisable.bind(this);
 	}
 
 	refresh(data: { account_id: number, avatar_id: number, avatar_frame?: number }) {
@@ -23,7 +15,7 @@ export class ComSmallHeadView extends ExtensionClass<IView, ComSmallHead>(ComSma
 		const { loader_head, loader_frame } = this;
 		const skinCfg = $cfgMgr.item_definition.skin[avatar_id];
 		const headPath = skinCfg ? $langRes(`${ skinCfg.path }/smallhead.png`) : "";
-		loader_head.icon = headPath;
+		$dynamicResMgr.setLoader(loader_head, headPath);
 
 		let frameId = avatar_frame;
 		const d_item = $cfgMgr.item_definition.item[frameId];
@@ -32,7 +24,11 @@ export class ComSmallHeadView extends ExtensionClass<IView, ComSmallHead>(ComSma
 
 		const viewCfg = $cfgMgr.item_definition.view[frameId];
 		const framePath = viewCfg ? $langRes(`extendRes/head_frame/${ viewCfg.res_name }.png`) : "";
-		loader_frame.icon = framePath;
-		Logger.error(headPath, framePath);
+		$dynamicResMgr.setLoader(loader_frame, framePath);
+	}
+
+	private onDisable() {
+		$dynamicResMgr.clearLoader(this.loader_head);
+		$dynamicResMgr.clearLoader(this.loader_frame);
 	}
 }

@@ -41,4 +41,17 @@ export class UIMainView extends ExtensionClass<IView, UIMain>(UIMain) implements
 		btn_announcement.onClick(this, this.sendEvent, [EUIMainMsg.OnBtnAnnouncementClick]);
 	}
 
+	onOpenAni() {
+		return Promise.all([
+			$uiUtil.playTrans(this.trans_in),
+			$uiUtil.playTrans(this.com_matchMode.transModeIn),
+		]) as unknown as Promise<void>;
+	}
+
+	onCloseAni() {
+		return Promise.all([
+			$uiUtil.playTrans(this.trans_out),
+			$uiUtil.playTrans(this.com_matchMode.transModeOut),
+		]) as unknown as Promise<void>;
+	}
 }

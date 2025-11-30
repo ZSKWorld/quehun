@@ -4,19 +4,19 @@ import { ComMatchContentView } from "../../view/PkgMain/view/coms/ComMatchConten
 
 export default class ComMatchMode extends fgui.GComponent {
 
-	public ctrl_type: fgui.Controller;
-	public btn_rankMode: fgui.GButton;
-	public btn_matchMode: fgui.GButton;
-	public btn_friendMode: fgui.GButton;
-	public btn_back: fgui.GButton;
-	public btn_rule: fgui.GButton;
-	public txt_title: fgui.GTextField;
-	public com_content1: ComMatchContentView;
-	public com_content2: ComMatchContentView;
-	public trans_modeIn: fgui.Transition;
-	public trans_modeOut: fgui.Transition;
-	public trans_titleIn: fgui.Transition;
-	public trans_titleOut: fgui.Transition;
+	protected ctrl_type: fgui.Controller;
+	protected btn_rankMode: fgui.GButton;
+	protected btn_matchMode: fgui.GButton;
+	protected btn_friendMode: fgui.GButton;
+	protected btn_back: fgui.GButton;
+	protected btn_rule: fgui.GButton;
+	protected txt_title: fgui.GTextField;
+	protected com_content1: ComMatchContentView;
+	protected com_content2: ComMatchContentView;
+	protected trans_modeIn: fgui.Transition;
+	protected trans_modeOut: fgui.Transition;
+	protected trans_titleIn: fgui.Transition;
+	protected trans_titleOut: fgui.Transition;
 	public static url: string = "ui://vith2b66w29kob8f";
 
 	public static createInstance(): ComMatchMode {

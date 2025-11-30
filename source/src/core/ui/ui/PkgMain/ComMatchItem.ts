@@ -2,16 +2,16 @@
 
 export default class ComMatchItem extends fgui.GComponent {
 
-	public btn_bg: fgui.GButton;
-	public loader_icon: fgui.GLoader;
-	public btn_info: fgui.GButton;
-	public txt_time: fgui.GTextField;
-	public txt_name: fgui.GTextField;
-	public img_delete: fgui.GImage;
-	public trans_modeIn: fgui.Transition;
-	public trans_modeOut: fgui.Transition;
-	public trans_titleIn: fgui.Transition;
-	public trans_titleOut: fgui.Transition;
+	protected btn_bg: fgui.GButton;
+	protected loader_icon: fgui.GLoader;
+	protected btn_info: fgui.GButton;
+	protected txt_time: fgui.GTextField;
+	protected txt_name: fgui.GTextField;
+	protected img_delete: fgui.GImage;
+	protected trans_modeIn: fgui.Transition;
+	protected trans_modeOut: fgui.Transition;
+	protected trans_titleIn: fgui.Transition;
+	protected trans_titleOut: fgui.Transition;
 	public static url: string = "ui://vith2b66gnjqob9j";
 
 	public static createInstance(): ComMatchItem {

@@ -9,6 +9,9 @@ export const enum EUIEmailMsg {
 export class UIEmailView extends ExtensionClass<IView, UIEmail>(UIEmail) implements IView {
 	override readonly viewCategory = EViewCategory.Popup;
 
+	get listTab() { return this.list_tab; }
+	get listReward() { return this.list_reward; }
+
 	override onCreate() {
 		const { btn_back, btn_getReward, btn_delete, list_tab } = this;
 		btn_back.onClick(this, this.sendEvent, [EUIEmailMsg.OnBtnBackClick]);

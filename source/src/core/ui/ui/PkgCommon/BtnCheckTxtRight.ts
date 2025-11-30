@@ -2,7 +2,7 @@
 
 export default class BtnCheckTxtRight extends fgui.GButton {
 
-	public loader_bg: fgui.GLoader;
+	protected loader_bg: fgui.GLoader;
 	public static url: string = "ui://vx9zwsermj5kb6q";
 
 	public static createInstance(): BtnCheckTxtRight {

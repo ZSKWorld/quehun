@@ -2,7 +2,7 @@
 
 export default class BtnXunMi extends fgui.GButton {
 
-	public trans_t0: fgui.Transition;
+	protected trans_t0: fgui.Transition;
 	public static url: string = "ui://vith2b66vwgmj";
 
 	public static createInstance(): BtnXunMi {

@@ -10,4 +10,8 @@ export class ComBackView extends ExtensionClass<IView, ComBack>(ComBack) impleme
 		const { btn_back } = this;
 	}
 
+	onBackClick(thisObj: any, listener: Function, args?: any[]) {
+		this.btn_back.onClick(thisObj, listener, args);
+	}
+
 }

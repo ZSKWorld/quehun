@@ -2,12 +2,12 @@
 
 export default class UIConfirmSmall extends fgui.GComponent {
 
-	public ctrl_format: fgui.Controller;
-	public btn_close: fgui.GButton;
-	public btn_confirm: fgui.GButton;
-	public btn_cancel: fgui.GButton;
-	public txt_title: fgui.GTextField;
-	public txt_content: fgui.GTextField;
+	protected ctrl_format: fgui.Controller;
+	protected btn_close: fgui.GButton;
+	protected btn_confirm: fgui.GButton;
+	protected btn_cancel: fgui.GButton;
+	protected txt_title: fgui.GTextField;
+	protected txt_content: fgui.GTextField;
 	public static url: string = "ui://vx9zwserj0ddob7k";
 
 	public static createInstance(): UIConfirmSmall {

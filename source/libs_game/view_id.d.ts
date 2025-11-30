@@ -8,18 +8,24 @@ declare enum EViewID {
 	BtnXunMiView = "BtnXunMiView",
 
 	/**Renders */
+	RenderBagGiftItemView = "RenderBagGiftItemView",
+	RenderBagItemView = "RenderBagItemView",
+	RenderEmailItemView = "RenderEmailItemView",
+	RenderRankItemView = "RenderRankItemView",
 
 	/**Coms */
 	ComBackView = "ComBackView",
-	ComItem1View = "ComItem1View",
+	ComBigHeadView = "ComBigHeadView",
+	ComItemView = "ComItemView",
 	ComLevel1View = "ComLevel1View",
 	ComName1View = "ComName1View",
 	ComSmallHeadView = "ComSmallHeadView",
 	ComTitle1View = "ComTitle1View",
+	ComBagDecoView = "ComBagDecoView",
+	ComBagGiftView = "ComBagGiftView",
 	ComMatchContentView = "ComMatchContentView",
 	ComMatchItemView = "ComMatchItemView",
 	ComMatchModeView = "ComMatchModeView",
-	ComRankItemView = "ComRankItemView",
 
 	/**UIs */
 	UIConfirmBigView = "UIConfirmBigView",

@@ -117,10 +117,23 @@
     <image id="pt3aobay" name="img_3482.png" path="/Texture/"/>
     <image id="pt3aobaz" name="img_3509.png" path="/Texture/"/>
     <component id="pt3aobb0" name="BtnEmailTab.xml" path="/Component/UIEmail/"/>
-    <component id="hk7robb1" name="LabeEmaillContent.xml" path="/Component/UIEmail/" exported="true"/>
-    <component id="hdeoobb2" name="ComRankItem.xml" path="/Component/UIRank/"/>
+    <component id="hk7robb1" name="LabeEmaillContent.xml" path="/Component/UIEmail/"/>
+    <component id="hdeoobb2" name="RenderRankItem.xml" path="/Component/UIRank/"/>
     <image id="hdeoobbm" name="img_3821.png" path="/Texture/" exported="true"/>
     <image id="hdeoobb4" name="img_3866.png" path="/Texture/"/>
+    <component id="hk7robax" name="RenderEmailItem.xml" path="/Component/UIEmail/"/>
+    <component id="q5yiobbn" name="RenderBagItem.xml" path="/Component/UIBag/"/>
+    <component id="q5yiobbp" name="RenderBagGiftItem.xml" path="/Component/UIBag/"/>
+    <component id="gsi2obbq" name="RenderBagSkinItem1.xml" path="/Component/UIBag/"/>
+    <component id="gsi2obbr" name="ComBagGift.xml" path="/Component/UIBag/"/>
+    <component id="gsi2obbs" name="ComBagDeco.xml" path="/Component/UIBag/"/>
+    <component id="gsi2obbt" name="ComBagItem.xml" path="/Component/UIBag/"/>
+    <image id="gsi2obbu" name="img_1176.png" path="/Texture/"/>
+    <image id="gsi2obbv" name="img_1611.png" path="/Texture/"/>
+    <image id="gsi2obbw" name="img_1612.png" path="/Texture/"/>
+    <image id="gsi2obbx" name="img_1743.png" path="/Texture/"/>
+    <image id="gsi2obby" name="img_1420.png" path="/Texture/"/>
+    <component id="gsi2obbz" name="RenderBagSkinItem2.xml" path="/Component/UIBag/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

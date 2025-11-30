@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="320,200">
+  <displayList>
+    <image id="n0_gsi2" name="n0" src="ieavob8a" fileName="Texture/img_811.png" xy="0,0" size="320,200">
+      <relation target="" sidePair="width-width,height-height"/>
+    </image>
+    <list id="n1_gsi2" name="list" xy="0,0" size="320,200" overflow="scroll" scrollBarFlags="128" defaultItem="ui://vx9zwsergsi2obel">
+      <relation target="" sidePair="width-width"/>
+      <item title="1"/>
+      <item title="2"/>
+      <item title="3"/>
+      <item title="4"/>
+      <item title="5"/>
+      <item title="6"/>
+      <item title="7"/>
+      <item title="8"/>
+    </list>
+  </displayList>
+  <relation target="n1_gsi2" sidePair="height-height"/>
+</component>

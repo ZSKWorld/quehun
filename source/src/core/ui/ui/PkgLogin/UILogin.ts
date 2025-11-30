@@ -2,22 +2,22 @@
 
 export default class UILogin extends fgui.GComponent {
 
-	public ctrl_page: fgui.Controller;
-	public graph_scene: fgui.GGraph;
-	public btn_login: fgui.GButton;
-	public btn_announce: fgui.GButton;
-	public btn_help: fgui.GButton;
-	public btn_loginByAccount: fgui.GButton;
-	public btn_loginBtnPhone: fgui.GButton;
-	public btn_register: fgui.GButton;
-	public btn_forgotPassword: fgui.GButton;
-	public btn_forgotAccount: fgui.GButton;
-	public txt_routeName: fgui.GTextField;
-	public txt_routeDelay: fgui.GTextField;
-	public itxt_account: fgui.GTextInput;
-	public itxt_password: fgui.GTextInput;
-	public btn_logout: fgui.GButton;
-	public trans_t0: fgui.Transition;
+	protected ctrl_page: fgui.Controller;
+	protected graph_scene: fgui.GGraph;
+	protected btn_login: fgui.GButton;
+	protected btn_announce: fgui.GButton;
+	protected btn_help: fgui.GButton;
+	protected btn_loginByAccount: fgui.GButton;
+	protected btn_loginBtnPhone: fgui.GButton;
+	protected btn_register: fgui.GButton;
+	protected btn_forgotPassword: fgui.GButton;
+	protected btn_forgotAccount: fgui.GButton;
+	protected txt_routeName: fgui.GTextField;
+	protected txt_routeDelay: fgui.GTextField;
+	protected itxt_account: fgui.GTextInput;
+	protected itxt_password: fgui.GTextInput;
+	protected btn_logout: fgui.GButton;
+	protected trans_t0: fgui.Transition;
 	public static url: string = "ui://vs9845atjdu6b6x";
 
 	public static createInstance(): UILogin {

@@ -2,17 +2,17 @@
 
 export default class UIEmail extends fgui.GComponent {
 
-	public ctrl_head: fgui.Controller;
-	public ctrl_body: fgui.Controller;
-	public ctrl_empty: fgui.Controller;
-	public btn_back: fgui.GButton;
-	public list_tab: fgui.GList;
-	public list_reward: fgui.GList;
-	public label_content: fgui.GLabel;
-	public btn_getReward: fgui.GButton;
-	public btn_delete: fgui.GButton;
-	public txt_title: fgui.GTextField;
-	public txt_expire: fgui.GTextField;
+	protected ctrl_head: fgui.Controller;
+	protected ctrl_body: fgui.Controller;
+	protected ctrl_empty: fgui.Controller;
+	protected btn_back: fgui.GButton;
+	protected list_tab: fgui.GList;
+	protected list_reward: fgui.GList;
+	protected label_content: fgui.GLabel;
+	protected btn_getReward: fgui.GButton;
+	protected btn_delete: fgui.GButton;
+	protected txt_title: fgui.GTextField;
+	protected txt_expire: fgui.GTextField;
 	public static url: string = "ui://vith2b66ktwpob9t";
 
 	public static createInstance(): UIEmail {

@@ -2,11 +2,11 @@
 
 export default class UIRank extends fgui.GComponent {
 
-	public list_level: fgui.GList;
-	public btn_close: fgui.GButton;
-	public btn_siMa: fgui.GButton;
-	public btn_sanMa: fgui.GButton;
-	public txt_title: fgui.GTextField;
+	protected list_rank: fgui.GList;
+	protected btn_close: fgui.GButton;
+	protected btn_siMa: fgui.GButton;
+	protected btn_sanMa: fgui.GButton;
+	protected txt_title: fgui.GTextField;
 	public static url: string = "ui://vith2b66ktwpob9u";
 
 	public static createInstance(): UIRank {
@@ -14,7 +14,7 @@ export default class UIRank extends fgui.GComponent {
 	}
 
 	protected override onConstruct(): void {
-		this.list_level = <fgui.GList>(this.getChildAt(1));
+		this.list_rank = <fgui.GList>(this.getChildAt(1));
 		this.btn_close = <fgui.GButton>(this.getChildAt(2));
 		this.btn_siMa = <fgui.GButton>(this.getChildAt(3));
 		this.btn_sanMa = <fgui.GButton>(this.getChildAt(4));

@@ -4,7 +4,7 @@ import { ComBackView } from "../../view/PkgCommon/view/coms/ComBackView";
 
 export default class UIShop extends fgui.GComponent {
 
-	public com_back: ComBackView;
+	protected com_back: ComBackView;
 	public static url: string = "ui://vith2b66qke2ob9q";
 
 	public static createInstance(): UIShop {

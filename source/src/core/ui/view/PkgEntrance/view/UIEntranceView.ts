@@ -6,6 +6,10 @@ export const enum EUIEntranceMsg {
 
 export class UIEntranceView extends ExtensionClass<IView, UIEntrance>(UIEntrance) implements IView {
 
+	get transT0Duration() {
+		return this.trans_t0.totalDuration * 1000;
+	}
+
 	override onCreate() {
 
 	}

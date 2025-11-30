@@ -4,7 +4,7 @@ import { ComBackView } from "../../view/PkgCommon/view/coms/ComBackView";
 
 export default class UICamera extends fgui.GComponent {
 
-	public com_back: ComBackView;
+	protected com_back: ComBackView;
 	public static url: string = "ui://vith2b66ktwpob9y";
 
 	public static createInstance(): UICamera {

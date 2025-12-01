@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="223,48" extention="Button" designImage="ui://ca43vz0eq5yi7ploji" designImageOffsetX="-1477" designImageOffsetY="-75" designImageAlpha="52">
+  <controller name="button" pages="0,up,1,down" selected="0"/>
+  <displayList>
+    <loader id="n3_mj5k" name="bg" xy="0,3" size="44,44" aspect="true" url="ui://vx9zwsermde1b7g" fill="scaleFree"/>
+    <loader id="n4_mj5k" name="icon" xy="0,3" size="44,44" aspect="true" fill="scaleFree">
+      <gearIcon controller="button" pages="1" values="ui://vx9zwsermde1b7f" default=""/>
+    </loader>
+    <text id="n6_rpak" name="title" xy="52,0" pivot="0,0.5" size="171,48" fontSize="35" color="#d1aa66" vAlign="middle" letterSpacing="-2" singleLine="true" text="显示已持有"/>
+  </displayList>
+  <Button mode="Check"/>
+  <customProperty target="bg" propertyId="1"/>
+</component>

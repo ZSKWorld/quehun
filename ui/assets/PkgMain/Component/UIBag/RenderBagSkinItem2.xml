@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="181,181" designImage="ui://ca43vz0eq5yi7plojj" designImageOffsetX="-603" designImageOffsetY="-510" designImageAlpha="0">
-  <controller name="lock" pages="0,,1," selected="0"/>
-  <controller name="dynamic" pages="0,,1," selected="0"/>
+  <controller name="lock" pages="0,,1," selected="1"/>
+  <controller name="dynamic" pages="0,,1," selected="1"/>
   <displayList>
     <image id="n5_gsi2" name="bg" src="q5yiobc1" fileName="Texture/img_125.png" pkg="vx9zwser" xy="4,4" size="173,173"/>
     <component id="n3_gsi2" name="n3" src="q5yiobc3" fileName="Component/Component/头像/ComBigHead.xml" pkg="vx9zwser" xy="4,4" size="173,173"/>
-    <loader id="n11_gsi2" name="n11" xy="4,107" size="70,70" url="ui://vith2b66gsi2obbv">
+    <image id="n10_gsi2" name="n10" src="gsi2obbu" fileName="Texture/img_1176.png" xy="8,8">
+      <gearDisplay controller="dynamic" pages="1"/>
+    </image>
+    <loader id="n11_gsi2" name="n11" xy="4,107" size="70,70" url="ui://vith2b66gsi2obbw">
       <gearIcon controller="dynamic" pages="1" values="ui://vith2b66gsi2obbw" default="ui://vith2b66gsi2obbv"/>
     </loader>
     <image id="n7_gsi2" name="n7" src="ieavob7l" fileName="Texture/img_112.png" pkg="vx9zwser" xy="4,4" size="173,173" alpha="0.7">
@@ -16,9 +19,6 @@
     </image>
     <image id="n8_gsi2" name="n8" src="gsi2obby" fileName="Texture/img_1420.png" xy="4,131" size="173,36">
       <gearDisplay controller="lock" pages="1"/>
-    </image>
-    <image id="n10_gsi2" name="n10" src="gsi2obbu" fileName="Texture/img_1176.png" xy="8,8">
-      <gearDisplay controller="dynamic" pages="1"/>
     </image>
     <image id="n4_gsi2" name="bound" src="hk7robaz" fileName="Texture/img_3266.png" pkg="vx9zwser" xy="0,0" size="181,181"/>
     <text id="n9_gsi2" name="n9" xy="26,128" pivot="0.5,0.5" size="124,42" fontSize="30" color="#040c11" align="center" vAlign="middle" leading="0" singleLine="true" text="活动限定">

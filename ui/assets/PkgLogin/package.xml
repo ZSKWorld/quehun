@@ -13,15 +13,12 @@
     <image id="mde1b79" name="img_3071.png" path="/Texture/" exported="true"/>
     <image id="mde1b7a" name="img_3080.png" path="/Texture/" exported="true"/>
     <image id="mde1b7b" name="img_450.png" path="/Texture/" exported="true"/>
-    <image id="mde1b7f" name="img_715.png" path="/Texture/" exported="true"/>
-    <image id="mde1b7g" name="img_716.png" path="/Texture/" exported="true" scale="9grid" scale9grid="15,15,6,5"/>
     <image id="mde1b7h" name="img_805.png" path="/Texture/" exported="true"/>
     <image id="mde1b7i" name="img_806.png" path="/Texture/" exported="true"/>
     <image id="mde1b7j" name="img_842.png" path="/Texture/" exported="true"/>
     <image id="mde1b7k" name="img_2751.png" path="/Texture/" exported="true"/>
     <image id="mde1b7l" name="img_843.png" path="/Texture/" exported="true"/>
     <image id="mde1b7m" name="img_2629.png" path="/Texture/" exported="true"/>
-    <image id="mde1b7o" name="img_1061.png" path="/Texture/" exported="true"/>
     <image id="mde1b7p" name="img_1063.png" path="/Texture/" exported="true"/>
     <image id="mde1b7q" name="img_1064.png" path="/Texture/" exported="true"/>
     <image id="mde1b7r" name="img_1065.png" path="/Texture/" exported="true" scale="9grid" scale9grid="12,12,24,24"/>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1407,919">
+  <displayList>
+    <list id="n26_gsi2" name="skin" xy="0,150" size="1370,769" layout="flow_hz" overflow="scroll" scrollBarRes="ui://vx9zwserhdeoobbj," lineGap="19" colGap="46" defaultItem="ui://vith2b66gsi2obbq" autoClearItems="true">
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+    </list>
+    <component id="n28_rpak" name="own" src="mj5kb6p" fileName="Component/UIBag/BtnBagSkinCheck.xml" xy="1066,16"/>
+    <component id="n29_rpak" name="filter" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1327,0" size="80,80">
+      <Button icon="ui://vx9zwserrpakobes"/>
+    </component>
+  </displayList>
+</component>

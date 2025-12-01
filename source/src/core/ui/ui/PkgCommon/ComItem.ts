@@ -3,13 +3,13 @@
 export default class ComItem extends fgui.GComponent {
 
 	protected loader_icon: fgui.GLoader;
-	public static url: string = "ui://vx9zwserq5yiobc2";
+	public static url: string = "ui://vx9zwserrpakobf5";
 
 	public static createInstance(): ComItem {
 		return <ComItem>(fgui.UIPackage.createObject("PkgCommon", "ComItem"));
 	}
 
 	protected override onConstruct(): void {
-		this.loader_icon = <fgui.GLoader>(this.getChildAt(1));
+		this.loader_icon = <fgui.GLoader>(this.getChildAt(0));
 	}
 }

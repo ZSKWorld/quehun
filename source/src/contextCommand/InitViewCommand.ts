@@ -3,25 +3,31 @@ import PkgCommonBinder from "../core/ui/ui/PkgCommon/PkgCommonBinder";
 import PkgEntranceBinder from "../core/ui/ui/PkgEntrance/PkgEntranceBinder";
 import PkgLoginBinder from "../core/ui/ui/PkgLogin/PkgLoginBinder";
 import PkgMainBinder from "../core/ui/ui/PkgMain/PkgMainBinder";
-import { BtnCheckView } from "../core/ui/view/PkgCommon/view/btns/BtnCheckView";
 import { BtnCheckRichTxtRightView } from "../core/ui/view/PkgCommon/view/btns/BtnCheckRichTxtRightView";
 import { BtnCheckTxtRightView } from "../core/ui/view/PkgCommon/view/btns/BtnCheckTxtRightView";
+import { BtnBagSkinCheckView } from "../core/ui/view/PkgMain/view/btns/BtnBagSkinCheckView";
 import { BtnEmailTabView } from "../core/ui/view/PkgMain/view/btns/BtnEmailTabView";
 import { BtnXunMiView } from "../core/ui/view/PkgMain/view/btns/BtnXunMiView";
 import { RenderBagGiftItemView } from "../core/ui/view/PkgMain/view/renders/RenderBagGiftItemView";
+import { RenderBagIllustItemView } from "../core/ui/view/PkgMain/view/renders/RenderBagIllustItemView";
 import { RenderBagItemView } from "../core/ui/view/PkgMain/view/renders/RenderBagItemView";
 import { RenderEmailItemView } from "../core/ui/view/PkgMain/view/renders/RenderEmailItemView";
 import { RenderRankItemView } from "../core/ui/view/PkgMain/view/renders/RenderRankItemView";
 import { ComBackView } from "../core/ui/view/PkgCommon/view/coms/ComBackView";
 import { ComBackMediator } from "../core/ui/view/PkgCommon/mediator/coms/ComBackMediator";
 import { ComBigHeadView } from "../core/ui/view/PkgCommon/view/coms/ComBigHeadView";
+import { ComBigHead1View } from "../core/ui/view/PkgCommon/view/coms/ComBigHead1View";
 import { ComItemView } from "../core/ui/view/PkgCommon/view/coms/ComItemView";
+import { ComItem1View } from "../core/ui/view/PkgCommon/view/coms/ComItem1View";
 import { ComLevel1View } from "../core/ui/view/PkgCommon/view/coms/ComLevel1View";
 import { ComName1View } from "../core/ui/view/PkgCommon/view/coms/ComName1View";
 import { ComSmallHeadView } from "../core/ui/view/PkgCommon/view/coms/ComSmallHeadView";
 import { ComTitle1View } from "../core/ui/view/PkgCommon/view/coms/ComTitle1View";
 import { ComBagDecoView } from "../core/ui/view/PkgMain/view/coms/ComBagDecoView";
 import { ComBagGiftView } from "../core/ui/view/PkgMain/view/coms/ComBagGiftView";
+import { ComBagIllustView } from "../core/ui/view/PkgMain/view/coms/ComBagIllustView";
+import { ComBagItemView } from "../core/ui/view/PkgMain/view/coms/ComBagItemView";
+import { ComBagSkinView } from "../core/ui/view/PkgMain/view/coms/ComBagSkinView";
 import { ComMatchContentView } from "../core/ui/view/PkgMain/view/coms/ComMatchContentView";
 import { ComMatchContentMediator } from "../core/ui/view/PkgMain/mediator/coms/ComMatchContentMediator";
 import { ComMatchItemView } from "../core/ui/view/PkgMain/view/coms/ComMatchItemView";
@@ -87,14 +93,15 @@ export class InitViewCommand extends Command {
 
 		const register = $facade.registerView.bind($facade) as typeof $facade.registerView;
 		//Btns
-		register(EViewID.BtnCheckView, EViewType.Button, BtnCheckView);
 		register(EViewID.BtnCheckRichTxtRightView, EViewType.Button, BtnCheckRichTxtRightView);
 		register(EViewID.BtnCheckTxtRightView, EViewType.Button, BtnCheckTxtRightView);
+		register(EViewID.BtnBagSkinCheckView, EViewType.Button, BtnBagSkinCheckView);
 		register(EViewID.BtnEmailTabView, EViewType.Button, BtnEmailTabView);
 		register(EViewID.BtnXunMiView, EViewType.Button, BtnXunMiView);
 
 		//Renders
 		register(EViewID.RenderBagGiftItemView, EViewType.Render, RenderBagGiftItemView);
+		register(EViewID.RenderBagIllustItemView, EViewType.Render, RenderBagIllustItemView);
 		register(EViewID.RenderBagItemView, EViewType.Render, RenderBagItemView);
 		register(EViewID.RenderEmailItemView, EViewType.Render, RenderEmailItemView);
 		register(EViewID.RenderRankItemView, EViewType.Render, RenderRankItemView);
@@ -102,13 +109,18 @@ export class InitViewCommand extends Command {
 		//Coms
 		register(EViewID.ComBackView, EViewType.Component, ComBackView, ComBackMediator);
 		register(EViewID.ComBigHeadView, EViewType.Component, ComBigHeadView);
+		register(EViewID.ComBigHead1View, EViewType.Component, ComBigHead1View);
 		register(EViewID.ComItemView, EViewType.Component, ComItemView);
+		register(EViewID.ComItem1View, EViewType.Component, ComItem1View);
 		register(EViewID.ComLevel1View, EViewType.Component, ComLevel1View);
 		register(EViewID.ComName1View, EViewType.Component, ComName1View);
 		register(EViewID.ComSmallHeadView, EViewType.Component, ComSmallHeadView);
 		register(EViewID.ComTitle1View, EViewType.Component, ComTitle1View);
 		register(EViewID.ComBagDecoView, EViewType.Component, ComBagDecoView);
 		register(EViewID.ComBagGiftView, EViewType.Component, ComBagGiftView);
+		register(EViewID.ComBagIllustView, EViewType.Component, ComBagIllustView);
+		register(EViewID.ComBagItemView, EViewType.Component, ComBagItemView);
+		register(EViewID.ComBagSkinView, EViewType.Component, ComBagSkinView);
 		register(EViewID.ComMatchContentView, EViewType.Component, ComMatchContentView, ComMatchContentMediator);
 		register(EViewID.ComMatchItemView, EViewType.Component, ComMatchItemView, ComMatchItemMediator);
 		register(EViewID.ComMatchModeView, EViewType.Component, ComMatchModeView, ComMatchModeMediator);

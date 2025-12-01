@@ -2,7 +2,7 @@
 
 export default class ComBigHead extends fgui.GComponent {
 
-	protected loader_head: fgui.GLoader;
+	protected loader_icon: fgui.GLoader;
 	public static url: string = "ui://vx9zwserq5yiobc3";
 
 	public static createInstance(): ComBigHead {
@@ -10,6 +10,6 @@ export default class ComBigHead extends fgui.GComponent {
 	}
 
 	protected override onConstruct(): void {
-		this.loader_head = <fgui.GLoader>(this.getChildAt(1));
+		this.loader_icon = <fgui.GLoader>(this.getChildAt(0));
 	}
 }

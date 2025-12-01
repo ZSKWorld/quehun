@@ -4,8 +4,8 @@
   <displayList>
     <graph id="n0_mde1" name="scene" xy="0,0" size="100,100" alpha="0" type="rect" lineSize="0"/>
     <image id="n8_h638" name="n8" src="mde1b7r" fileName="Texture/img_1065.png" xy="1189,237" size="620,476" group="n30_10mro"/>
-    <image id="n1_h638" name="n1" src="mde1b7g" fileName="Texture/img_716.png" xy="1228,269" size="393,85" group="n30_10mro"/>
-    <image id="n9_h638" name="n9" src="mde1b7g" fileName="Texture/img_716.png" xy="1228,386" size="393,85" group="n30_10mro"/>
+    <image id="n1_h638" name="n1" src="mde1b7g" fileName="Texture/img_716.png" xy="1228,269" size="393,85" group="n30_10mro" pkg="vx9zwser"/>
+    <image id="n9_h638" name="n9" src="mde1b7g" fileName="Texture/img_716.png" xy="1228,386" size="393,85" group="n30_10mro" pkg="vx9zwser"/>
     <image id="n12_h638" name="n12" src="mde1b78" fileName="Texture/img_3070.png" xy="1227,501" group="n30_10mro"/>
     <image id="n22_nxde" name="n22" src="mde1b88" fileName="Texture/img_228.png" xy="1321,529" group="n30_10mro"/>
     <component id="n13_nxde" name="login" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1224,590" size="402,94" group="n30_10mro" aspect="true">

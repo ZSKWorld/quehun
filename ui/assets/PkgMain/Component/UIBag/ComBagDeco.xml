@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="1340,906">
   <displayList>
-    <list id="n24_gsi2" name="item" xy="0,146" size="1340,760" layout="flow_hz" overflow="scroll" scrollBarFlags="4" scrollBarRes="ui://vx9zwserhdeoobbj," lineGap="22" colGap="44" lineItemCount="6" defaultItem="ui://vith2b66q5yiobbn" autoClearItems="true">
+    <list id="n24_gsi2" name="item" xy="0,146" size="1340,760" layout="flow_hz" overflow="scroll" scrollBarFlags="4" scrollBarRes="ui://vx9zwserhdeoobbj," lineGap="22" colGap="44" defaultItem="ui://vith2b66q5yiobbn" autoClearItems="true">
       <item/>
       <item/>
       <item/>

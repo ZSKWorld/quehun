@@ -134,6 +134,13 @@
     <image id="gsi2obbx" name="img_1743.png" path="/Texture/"/>
     <image id="gsi2obby" name="img_1420.png" path="/Texture/"/>
     <component id="gsi2obbz" name="RenderBagSkinItem2.xml" path="/Component/UIBag/"/>
+    <component id="mj5kb6p" name="BtnBagSkinCheck.xml" path="/Component/UIBag/"/>
+    <component id="rpakobc0" name="ComBagSkin.xml" path="/Component/UIBag/"/>
+    <image id="rpakobf3" name="img_1073.png" path="/Texture/"/>
+    <image id="rpakobf4" name="img_945.png" path="/Texture/"/>
+    <component id="rpakobc1" name="RenderBagIllustItem.xml" path="/Component/UIBag/"/>
+    <image id="rpakobf6" name="img_195.png" path="/Texture/" scale="9grid" scale9grid="10,0,32,4"/>
+    <component id="rpakobc2" name="ComBagIllust.xml" path="/Component/UIBag/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

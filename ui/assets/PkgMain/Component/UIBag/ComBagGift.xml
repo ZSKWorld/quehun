@@ -2,7 +2,7 @@
 <component size="1359,780">
   <controller name="type" exported="true" pages="0,,1,奉纳" selected="0"/>
   <displayList>
-    <list id="n12_gsi2" name="n12" xy="15,103" size="1344,677" layout="flow_hz" overflow="scroll" scrollBarRes="ui://vx9zwserhdeoobbj," lineGap="3" colGap="-21" lineItemCount="6" defaultItem="ui://vith2b66q5yiobbp" autoClearItems="true">
+    <list id="n12_gsi2" name="n12" xy="15,103" size="1344,677" layout="flow_hz" overflow="scroll" scrollBarRes="ui://vx9zwserhdeoobbj," lineGap="3" colGap="-21" defaultItem="ui://vith2b66q5yiobbp" autoClearItems="true">
       <item/>
       <item/>
       <item/>

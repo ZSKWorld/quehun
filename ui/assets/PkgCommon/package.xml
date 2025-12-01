@@ -1,22 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <packageDescription id="vx9zwser">
   <resources>
-    <font id="kyy064" name="Font01.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
-    <font id="kyy065" name="Font02.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
-    <font id="kyy066" name="Font03.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
-    <font id="kyy067" name="Font04.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
-    <font id="kyy068" name="Font05.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
-    <font id="kyy069" name="Font06.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
-    <font id="kyy06a" name="Font07.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
-    <font id="kyy06b" name="Font08.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
-    <font id="kyy06c" name="Font09.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
-    <font id="kyy06d" name="Font10.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
-    <font id="kyy06e" name="Font11.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
-    <font id="kyy06f" name="Font12.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
-    <font id="kyy06g" name="Font13.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
-    <font id="kyy06h" name="Font14.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
     <component id="108ab6i" name="BtnNormal.xml" path="/Component/Button/" exported="true"/>
-    <component id="mj5kb6p" name="BtnCheck.xml" path="/Component/Button/" exported="true"/>
     <component id="mj5kb6q" name="BtnCheckTxtRight.xml" path="/Component/Button/" exported="true"/>
     <component id="mj5kb6r" name="BtnNormalFit.xml" path="/Component/Button/" exported="true"/>
     <component id="mj5kb6t" name="BtnCheckRichTxtRight.xml" path="/Component/Button/" exported="true"/>
@@ -75,7 +60,7 @@
     <image id="ieavob87" name="img_1453.png" path="/Texture/" exported="true"/>
     <image id="ieavob88" name="img_1285.png" path="/Texture/" exported="true"/>
     <image id="ieavob89" name="img_75.png" path="/Texture/" exported="true"/>
-    <image id="ieavob8a" name="img_811.png" path="/Texture/" exported="true" scale="9grid" scale9grid="11,8,22,16"/>
+    <image id="ieavob8a" name="img_811.png" path="/Texture/" exported="true" scale9grid="11,8,22,16"/>
     <component id="ieavob8b" name="UILoading.xml" path="/" exported="true"/>
     <component id="ieavob8c" name="PbLoading1.xml" path="/Component/PbBar/"/>
     <component id="vwgmob8d" name="PbLoading2.xml" path="/Component/PbBar/"/>
@@ -131,7 +116,7 @@
     <component id="q5yiobbz" name="BtnNormalFitNoScale.xml" path="/Component/Button/" exported="true"/>
     <image id="q5yiobc0" name="img_3555.png" path="/Texture/" exported="true" scale="9grid" scale9grid="59,58,123,87"/>
     <image id="q5yiobc1" name="img_125.png" path="/Texture/" exported="true" scale="9grid" scale9grid="4,4,2,2"/>
-    <component id="q5yiobc2" name="ComItem.xml" path="/Component/Component/物品/" exported="true"/>
+    <component id="q5yiobc2" name="ComItem1.xml" path="/Component/Component/物品/" exported="true"/>
     <component id="q5yiobc3" name="ComBigHead.xml" path="/Component/Component/头像/" exported="true"/>
     <image id="q5yiobc4" name="img_1137.png" path="/Texture/" exported="true"/>
     <image id="q5yiobc5" name="img_1138.png" path="/Texture/" exported="true"/>
@@ -225,6 +210,21 @@
     <image id="gsi2obeo" name="img_643.png" path="/Texture/" exported="true"/>
     <component id="gsi2obeq" name="ComBigHead1.xml" path="/Component/Component/头像/" exported="true"/>
     <image id="gsi2ober" name="img_755.png" path="/Texture/" exported="true"/>
+    <image id="mde1b7o" name="img_1061.png" path="/Texture/" exported="true"/>
+    <image id="mde1b7f" name="img_715.png" path="/Texture/" exported="true"/>
+    <image id="mde1b7g" name="img_716.png" path="/Texture/" exported="true" scale="9grid" scale9grid="15,15,6,5"/>
+    <image id="rpakobes" name="img_1673.png" path="/Texture/" exported="true"/>
+    <image id="rpakobet" name="img_1674.png" path="/Texture/" exported="true"/>
+    <font id="rpakobeu" name="fengyu.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
+    <font id="rpakobev" name="hanyi.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
+    <font id="rpakobew" name="haolong.otf" path="/Font/" renderMode="" samplePointSize="16"/>
+    <font id="rpakobex" name="HYYANKAIW.TTF" path="/Font/" renderMode="" samplePointSize="16"/>
+    <font id="rpakobey" name="jiye.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
+    <font id="rpakobez" name="KswGoryuSouN.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
+    <font id="rpakobf0" name="shuhun.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
+    <font id="rpakobf1" name="solmoe kimdaegeon Medium.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
+    <font id="rpakobf2" name="youyuan.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
+    <component id="rpakobf5" name="ComItem.xml" path="/Component/Component/物品/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

@@ -1,15 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="180,180" designImage="ui://ca43vz0ejdu67plndp" designImageOffsetX="-644" designImageOffsetY="-877" designImageAlpha="0">
+<component size="170,170" designImage="ui://ca43vz0ejdu67plndp" designImageOffsetX="-644" designImageOffsetY="-877" designImageAlpha="0">
   <displayList>
-    <image id="n14_q5yi" name="n14" src="q5yiobc1" fileName="Texture/img_125.png" xy="4,4" size="172,172">
-      <relation target="" sidePair="width-width,height-height"/>
-    </image>
-    <loader id="n10_hk7r" name="icon" xy="4,4" pivot="0.5,0.5" size="172,172" url="ui://ca43vz0ehk7r7ploj4" fill="scaleFree">
+    <loader id="n10_hk7r" name="icon" xy="0,0" size="170,170" url="ui://ca43vz0ehk7r7ploj4" fill="scaleFree">
       <relation target="" sidePair="width-width,height-height"/>
     </loader>
-    <image id="n9_hk7r" name="n9" src="hk7robaz" fileName="Texture/img_3266.png" xy="0,0" size="180,180">
-      <relation target="" sidePair="width-width,height-height"/>
-    </image>
   </displayList>
-  <customProperty target="icon" propertyId="1"/>
 </component>

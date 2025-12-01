@@ -3,19 +3,22 @@ declare enum EViewID {
 	/**Btns */
 	BtnCheckRichTxtRightView = "BtnCheckRichTxtRightView",
 	BtnCheckTxtRightView = "BtnCheckTxtRightView",
-	BtnCheckView = "BtnCheckView",
+	BtnBagSkinCheckView = "BtnBagSkinCheckView",
 	BtnEmailTabView = "BtnEmailTabView",
 	BtnXunMiView = "BtnXunMiView",
 
 	/**Renders */
 	RenderBagGiftItemView = "RenderBagGiftItemView",
+	RenderBagIllustItemView = "RenderBagIllustItemView",
 	RenderBagItemView = "RenderBagItemView",
 	RenderEmailItemView = "RenderEmailItemView",
 	RenderRankItemView = "RenderRankItemView",
 
 	/**Coms */
 	ComBackView = "ComBackView",
+	ComBigHead1View = "ComBigHead1View",
 	ComBigHeadView = "ComBigHeadView",
+	ComItem1View = "ComItem1View",
 	ComItemView = "ComItemView",
 	ComLevel1View = "ComLevel1View",
 	ComName1View = "ComName1View",
@@ -23,6 +26,9 @@ declare enum EViewID {
 	ComTitle1View = "ComTitle1View",
 	ComBagDecoView = "ComBagDecoView",
 	ComBagGiftView = "ComBagGiftView",
+	ComBagIllustView = "ComBagIllustView",
+	ComBagItemView = "ComBagItemView",
+	ComBagSkinView = "ComBagSkinView",
 	ComMatchContentView = "ComMatchContentView",
 	ComMatchItemView = "ComMatchItemView",
 	ComMatchModeView = "ComMatchModeView",

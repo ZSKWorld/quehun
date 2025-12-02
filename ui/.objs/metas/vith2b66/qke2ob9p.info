@@ -1,9 +1,11 @@
 {
+  "adaptiveTest": true,
   "designImages": [
-    "ui://ca43vz0eq5yi7plojo",
-    "ui://ca43vz0eq5yi7plojl",
     "ui://ca43vz0eq5yi7plojm",
     "ui://ca43vz0eq5yi7ploji",
-    "ui://ca43vz0eq5yi7plojh"
-  ]
+    "ui://ca43vz0eq5yi7plojh",
+    "ui://ca43vz0eq5yi7plojo",
+    "ui://ca43vz0eq5yi7plojk"
+  ],
+  "fitScreen": "FitSize"
 }

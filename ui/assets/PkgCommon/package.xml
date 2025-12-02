@@ -60,7 +60,6 @@
     <image id="ieavob87" name="img_1453.png" path="/Texture/" exported="true"/>
     <image id="ieavob88" name="img_1285.png" path="/Texture/" exported="true"/>
     <image id="ieavob89" name="img_75.png" path="/Texture/" exported="true"/>
-    <image id="ieavob8a" name="img_811.png" path="/Texture/" exported="true" scale9grid="11,8,22,16"/>
     <component id="ieavob8b" name="UILoading.xml" path="/" exported="true"/>
     <component id="ieavob8c" name="PbLoading1.xml" path="/Component/PbBar/"/>
     <component id="vwgmob8d" name="PbLoading2.xml" path="/Component/PbBar/"/>

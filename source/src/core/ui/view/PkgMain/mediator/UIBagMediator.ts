@@ -11,7 +11,8 @@ export class UIBagMediator extends MediatorBase<UIBagView, IUIBagData> {
 
 	override onAwake() {
 		this.addEvent(EUIBagMsg.OnComBackClick, this.onComBackClick);
-		this._tabGroup.init(this.view.tabBtns, null);
+		const { view, _tabGroup} = this;
+		_tabGroup.init(view.tabBtns, new Laya.Handler(view, view.refreshPage));
 	}
 
 	override onEnable() {

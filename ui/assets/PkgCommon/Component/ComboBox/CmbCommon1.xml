@@ -2,7 +2,7 @@
 <component size="320,72" extention="ComboBox">
   <controller name="button" pages="0,up,1,down" selected="0"/>
   <displayList>
-    <image id="n3_gsi2" name="n3" src="ieavob8a" fileName="Texture/img_811.png" xy="0,0" size="320,72">
+    <image id="n3_gsi2" name="n3" src="mde1b7g" fileName="Texture/img_716.png" xy="0,0" size="320,72">
       <gearSize controller="button" pages="1" values="320,76,1,1" default="320,72,1,1"/>
       <relation target="" sidePair="width-width,height-height"/>
     </image>

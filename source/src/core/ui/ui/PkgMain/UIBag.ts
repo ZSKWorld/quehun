@@ -21,6 +21,8 @@ export default class UIBag extends fgui.GComponent {
 	protected com_deco: ComBagDecoView;
 	protected com_skin: ComBagSkinView;
 	protected com_illust: ComBagIllustView;
+	protected trans_t0: fgui.Transition;
+	protected trans_t1: fgui.Transition;
 	public static url: string = "ui://vith2b66qke2ob9p";
 
 	public static createInstance(): UIBag {
@@ -29,7 +31,7 @@ export default class UIBag extends fgui.GComponent {
 
 	protected override onConstruct(): void {
 		this.ctrl_type = this.getControllerAt(0);
-		this.com_back = <ComBackView>(this.getChildAt(1));
+		this.com_back = <ComBackView>(this.getChildAt(0));
 		this.btn_daoJu = <fgui.GButton>(this.getChildAt(2));
 		this.btn_liWu = <fgui.GButton>(this.getChildAt(3));
 		this.btn_zhuangBan = <fgui.GButton>(this.getChildAt(4));
@@ -40,5 +42,7 @@ export default class UIBag extends fgui.GComponent {
 		this.com_deco = <ComBagDecoView>(this.getChildAt(9));
 		this.com_skin = <ComBagSkinView>(this.getChildAt(10));
 		this.com_illust = <ComBagIllustView>(this.getChildAt(11));
+		this.trans_t0 = this.getTransitionAt(0);
+		this.trans_t1 = this.getTransitionAt(1);
 	}
 }

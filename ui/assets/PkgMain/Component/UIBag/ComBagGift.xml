@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1359,780">
+<component size="1359,780" designImage="ui://ca43vz0eq5yi7plojk" designImageOffsetX="-425" designImageOffsetY="-192" designImageAlpha="88">
   <controller name="type" exported="true" pages="0,,1,奉纳" selected="0"/>
   <displayList>
     <list id="n12_gsi2" name="n12" xy="15,103" size="1344,677" layout="flow_hz" overflow="scroll" scrollBarRes="ui://vx9zwserhdeoobbj," lineGap="3" colGap="-21" defaultItem="ui://vith2b66q5yiobbp" autoClearItems="true">
@@ -39,6 +39,7 @@
       <item/>
     </list>
     <loader id="n13_gsi2" name="n13" xy="0,11" size="46,46" aspect="true" url="ui://ca43vz0egsi27plojq" fill="scaleFree"/>
+    <image id="n24_mk4a" name="n24" src="rpakobf6" fileName="Texture/img_195.png" xy="26,84" size="1294,4"/>
     <component id="n19_gsi2" name="n19" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="1138,0" size="183,70">
       <gearDisplay controller="type" pages="0"/>
       <Button title="礼物奉纳" titleColor="#fcba72" titleFontSize="31" icon="ui://vx9zwsergsi2obee" controller="type" page="1"/>

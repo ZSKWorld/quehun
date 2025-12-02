@@ -20,10 +20,10 @@
     <image id="vwgmg" name="img_3867.png" path="/Texture/"/>
     <image id="vwgmh" name="img_1332.png" path="/Texture/"/>
     <image id="vwgmi" name="img_582.png" path="/Texture/"/>
-    <component id="vwgmj" name="BtnXunMi.xml" path="/Component/"/>
+    <component id="vwgmj" name="BtnXunMi.xml" path="/Component/UIMain/"/>
     <image id="vwgmk" name="img_2257.png" path="/Texture/"/>
     <image id="vwgml" name="img_2783.png" path="/Texture/"/>
-    <component id="vwgmob8d" name="BtnDengLong.xml" path="/Component/"/>
+    <component id="vwgmob8d" name="BtnDengLong.xml" path="/Component/UIMain/"/>
     <image id="w29kob8e" name="img_3862.png" path="/Texture/"/>
     <component id="w29kob8f" name="ComMatchMode.xml" path="/Component/UIMain/"/>
     <image id="w29kob8g" name="img_1554.png" path="/Texture/"/>

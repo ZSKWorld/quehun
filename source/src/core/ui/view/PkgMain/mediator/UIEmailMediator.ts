@@ -9,7 +9,7 @@ export interface IUIEmailData {
 }
 
 export class UIEmailMediator extends MediatorBase<UIEmailView, IUIEmailData> {
-	private _lastTabClickItem: BtnEmailTabView;
+	private _lastTabClickIndex: number;
 
 	private get curMail() { return $userData.mail.mails[this.view.listTab.selectedIndex]; }
 
@@ -32,9 +32,7 @@ export class UIEmailMediator extends MediatorBase<UIEmailView, IUIEmailData> {
 		const mailCount = $userData.mail.mails.length;
 		view.refreshTab(mailCount, index);
 		if (mailCount > 0) {
-			const childIndex = view.listTab.itemIndexToChildIndex(index);
-			const item = view.listTab.getChildAt<BtnEmailTabView>(childIndex);
-			item && this.onListTabItemClick(item);
+			this.onListTabItemClick(index);
 		}
 	}
 
@@ -42,9 +40,9 @@ export class UIEmailMediator extends MediatorBase<UIEmailView, IUIEmailData> {
 		item.refresh($userData.mail.mails[index]);
 	}
 
-	private onListTabItemClick(item: BtnEmailTabView) {
-		if (this._lastTabClickItem == item) return;
-		this._lastTabClickItem = item;
+	private onListTabItemClick(index:number) {
+		if (this._lastTabClickIndex == index) return;
+		this._lastTabClickIndex = index;
 		const { view, curMail } = this;
 		view.refreshContent(curMail);
 		if (curMail.state == 0)

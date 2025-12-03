@@ -3,7 +3,7 @@ import { RadioGroup } from "../../../extention/RadioGroup";
 import { EUIBagMsg, UIBagView } from "../view/UIBagView";
 
 export interface IUIBagData {
-
+	index?: number
 }
 
 export class UIBagMediator extends MediatorBase<UIBagView, IUIBagData> {
@@ -11,12 +11,12 @@ export class UIBagMediator extends MediatorBase<UIBagView, IUIBagData> {
 
 	override onAwake() {
 		this.addEvent(EUIBagMsg.OnComBackClick, this.onComBackClick);
-		const { view, _tabGroup} = this;
+		const { view, _tabGroup } = this;
 		_tabGroup.init(view.tabBtns, new Laya.Handler(view, view.refreshPage));
 	}
 
 	override onEnable() {
-		this._tabGroup.selectIndex = 0;
+		this._tabGroup.selectIndex = this.data.index || 0;
 	}
 
 	private async onComBackClick() {

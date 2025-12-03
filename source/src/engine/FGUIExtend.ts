@@ -3,6 +3,7 @@ export class FGUIExtend {
 	static extends() {
 		this.gobjectExtension();
 		this.addGTextLangText();
+		this.glistItemClick();
 	}
 
 	/** GObject扩展 */
@@ -71,5 +72,14 @@ export class FGUIExtend {
 		inputPrototype.langPrompt = function (id: number, ...args: any[]) {
 			this.promptText = $lang(id, ...args);
 		};
+	}
+
+	private static glistItemClick() {
+		const prototype = fgui.GList.prototype;
+		prototype["dispatchItemEvent"] = function (item, evt) {
+			const _this = this as fgui.GList;
+			const index = _this.childIndexToItemIndex(_this.getChildIndex(item));
+			_this.displayObject.event(fgui.Events.CLICK_ITEM, [index, item, evt]);
+		}
 	}
 }

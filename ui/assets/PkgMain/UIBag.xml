@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="1920,1080" designImage="ui://ca43vz0eq5yi7plojk" designImageAlpha="0">
-  <controller name="type" pages="0,道具,1,礼物,2,装扮,3,服饰,4,插画" selected="1"/>
+  <controller name="type" pages="0,道具,1,礼物,2,装扮,3,服饰,4,插画" selected="0"/>
   <displayList>
     <component id="n0_p5uz" name="back" src="p5uzob8h" fileName="Component/Component/ComBack.xml" pkg="vx9zwser" xy="10,22">
       <property target="title" propertyId="0" value="仓库"/>
     </component>
     <image id="n8_q5yi" name="n8" src="q5yiobc0" fileName="Texture/img_3555.png" pkg="vx9zwser" xy="331,155" size="1491,864" group="n39_mk4a"/>
-    <component id="n2_q5yi" name="daoJu" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="50,202" size="336,140" group="n39_mk4a" aspect="true">
+    <component id="n2_q5yi" name="daoJu" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="50,202" pivot="0.873,0.5" size="336,140" group="n39_mk4a" aspect="true">
       <Button title="道具" titleColor="#8cb65f" titleFontSize="55" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
     </component>
-    <component id="n3_q5yi" name="liWu" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="50,327" size="336,140" group="n39_mk4a" aspect="true">
+    <component id="n3_q5yi" name="liWu" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="50,327" pivot="0.873,0.5" size="336,140" group="n39_mk4a" aspect="true">
       <Button title="礼物" titleColor="#8cb65f" titleFontSize="55" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
     </component>
-    <component id="n4_q5yi" name="zhuangBan" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="50,451" size="336,140" group="n39_mk4a" aspect="true">
+    <component id="n4_q5yi" name="zhuangBan" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="50,451" pivot="0.873,0.5" size="336,140" group="n39_mk4a" aspect="true">
       <Button title="装扮" titleColor="#8cb65f" titleFontSize="55" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
     </component>
-    <component id="n5_q5yi" name="fuShi" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="50,574" size="336,140" group="n39_mk4a" aspect="true">
+    <component id="n5_q5yi" name="fuShi" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="50,574" pivot="0.873,0.5" size="336,140" group="n39_mk4a" aspect="true">
       <Button title="服饰" titleColor="#8cb65f" titleFontSize="55" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
     </component>
-    <component id="n6_q5yi" name="chaHua" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="50,697" size="336,140" group="n39_mk4a" aspect="true">
+    <component id="n6_q5yi" name="chaHua" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="50,697" pivot="0.873,0.5" size="336,140" group="n39_mk4a" aspect="true">
       <Button title="插画" titleColor="#8cb65f" titleFontSize="55" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
     </component>
     <component id="n11_gsi2" name="item" src="gsi2obbt" fileName="Component/UIBag/ComBagItem.xml" xy="442,207" group="n39_mk4a">
@@ -40,7 +40,17 @@
   </displayList>
   <transition name="t0" frameRate="60">
     <item time="0" type="Alpha" target="n39_mk4a" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
+    <item time="0" type="Scale" target="n2_q5yi" value="0,0"/>
+    <item time="0" type="Scale" target="n3_q5yi" value="0,0"/>
+    <item time="0" type="Scale" target="n4_q5yi" value="0,0"/>
+    <item time="0" type="Scale" target="n5_q5yi" value="0,0"/>
+    <item time="0" type="Scale" target="n6_q5yi" value="0,0"/>
     <item time="0" type="XY" target="n39_mk4a" tween="true" startValue="50,120" endValue="50,52" duration="12" ease="Linear"/>
+    <item time="9" type="Scale" target="n2_q5yi" tween="true" startValue="0,0" endValue="1,1" duration="6" ease="Back.Out"/>
+    <item time="12" type="Scale" target="n3_q5yi" tween="true" startValue="0,0" endValue="1,1" duration="6" ease="Back.Out"/>
+    <item time="15" type="Scale" target="n4_q5yi" tween="true" startValue="0,0" endValue="1,1" duration="6" ease="Back.Out"/>
+    <item time="18" type="Scale" target="n5_q5yi" tween="true" startValue="0,0" endValue="1,1" duration="6" ease="Back.Out"/>
+    <item time="21" type="Scale" target="n6_q5yi" tween="true" startValue="0,0" endValue="1,1" duration="6" ease="Back.Out"/>
   </transition>
   <transition name="t1" frameRate="60">
     <item time="0" type="Alpha" target="n39_mk4a" tween="true" startValue="1" endValue="0" duration="12" ease="Linear"/>

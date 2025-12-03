@@ -50,7 +50,13 @@ declare interface IUIUtil {
 	 * @param renderFunc 渲染回调
 	 * @param clickFunc 点击回调
 	 */
-	setList(list: fgui.GList, virtual: boolean = true, caller?: any, renderFunc?: (index?: number, item?: any) => void, clickFunc?: (item?: any, evt?: Laya.Event) => void): void;
+	setList(
+		list: fgui.GList,
+		virtual: boolean = true,
+		caller?: any,
+		renderFunc?: (index?: number, item?: any) => void,
+		clickFunc?: (index?:number, item?: any, evt?: Laya.Event) => void
+	): void;
 
 	/**
 	 * 设置下拉框

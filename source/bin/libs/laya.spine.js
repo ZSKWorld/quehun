@@ -4278,10 +4278,13 @@
                     return null;
                 let templet = new SpineTemplet();
                 let version = SpineTemplet.RuntimeVersion;
-                if (version == "4.1") {
+                let versionString = version.split('.');
+                let versionNumber = Math.floor(Number(versionString[0]));
+                let versionNumber2 = Math.floor(Number(versionString[1]));
+                if (versionNumber >= 4 && versionNumber2 >= 1) {
                     templet.needSlot = true;
                 }
-                if (version.startsWith('4.'))
+                if (versionNumber >= 4)
                     return this.parseAtlas4(res[0], res[1], task, templet);
                 else
                     return this.parseAtlas3(res[0], res[1], task, templet);

@@ -3683,6 +3683,7 @@
             this.textIns.hideFlags |= Laya.HideFlags.HideAndDontSave;
             this.textIns.overflow = "hidden";
             this.textIns.padding.fill(2);
+            this.textIns._onTranslate = (text, options, role) => role === 1 ? Translations.translate(text, options) : text;
             this.textIns.on(Laya.Event.INPUT, () => this.event(Laya.Event.INPUT));
             this.textIns.on(Laya.Event.ENTER, () => this.event(Laya.Event.ENTER));
             this.textIns.on(Laya.Event.CHANGE, () => this.event(Laya.Event.CHANGE));
@@ -5883,7 +5884,7 @@
             if (evt.button == 2 && !this.allowSelectByRightClick)
                 return;
             if (item.mode == exports.ButtonMode.Common) {
-                this._owner.event(exports.UIEvent.ClickItem, item);
+                this._owner.event(exports.UIEvent.ClickItem, [item, evt]);
                 return;
             }
             let dontChangeLastIndex = false;
@@ -5941,7 +5942,7 @@
                 this.syncController(index);
             if (evt.isDblClick && (evt.target instanceof Laya.Input))
                 return;
-            this._owner.event(exports.UIEvent.ClickItem, item);
+            this._owner.event(exports.UIEvent.ClickItem, [item, evt]);
         }
         enableArrowKeyNavigation(enabled, keySelectEvent) {
             if (enabled) {
@@ -5958,22 +5959,22 @@
             let index = -1;
             switch (evt.key) {
                 case "ArrowLeft":
-                    index = this.handleArrowKey(7);
+                    index = this.handleArrowKey(7, evt);
                     break;
                 case "ArrowRight":
-                    index = this.handleArrowKey(3);
+                    index = this.handleArrowKey(3, evt);
                     break;
                 case "ArrowUp":
-                    index = this.handleArrowKey(1);
+                    index = this.handleArrowKey(1, evt);
                     break;
                 case "ArrowDown":
-                    index = this.handleArrowKey(5);
+                    index = this.handleArrowKey(5, evt);
                     break;
             }
             if (index != -1)
                 evt.stopPropagation();
         }
-        handleArrowKey(dir) {
+        handleArrowKey(dir, evt) {
             var _a;
             let curIndex = this.index;
             if (curIndex == -1) {
@@ -5981,7 +5982,7 @@
                     this.clear();
                     this.add(0, true);
                     if (this._keyEvent)
-                        this._owner.event(this._keyEvent, this._owner.getChildAt(0));
+                        this._owner.event(this._keyEvent, [this._owner.getChildAt(0), evt]);
                     return 0;
                 }
                 else
@@ -6099,7 +6100,7 @@
                 this.clear();
                 this.add(index, true);
                 if (this._keyEvent) {
-                    this._owner.event(this._keyEvent, this._owner.getChildAt(index));
+                    this._owner.event(this._keyEvent, [this._owner.getChildAt(index), evt]);
                 }
                 return index;
             }
@@ -6286,7 +6287,7 @@
                 if (evt.button === 2 && !this.allowSelectByRightClick)
                     return;
                 if (item.mode == exports.ButtonMode.Common) {
-                    this._owner.event(exports.UIEvent.ClickItem, item);
+                    this._owner.event(exports.UIEvent.ClickItem, [item, evt]);
                     return;
                 }
                 let dontChangeLastIndex = false;
@@ -6341,12 +6342,12 @@
                     this._lastIndex = index;
                 if (evt.isDblClick && (evt.target instanceof Laya.Input))
                     return;
-                this._owner.event(exports.UIEvent.ClickItem, item);
+                this._owner.event(exports.UIEvent.ClickItem, [item, evt]);
             }
             else
                 super.handleClick(item, evt);
         }
-        handleArrowKey(dir) {
+        handleArrowKey(dir, evt) {
             if (this._layout._virtual) {
                 let curIndex = this.index;
                 if (curIndex == -1) {
@@ -6354,7 +6355,7 @@
                         this.clear();
                         this.add(0, true);
                         if (this._keyEvent)
-                            this._owner.event(this._keyEvent, this._owner.getChildAt(0));
+                            this._owner.event(this._keyEvent, [this._owner.getChildAt(0), evt]);
                         return 0;
                     }
                     else
@@ -6402,7 +6403,7 @@
                     if (this._keyEvent) {
                         let childIndex = this._layout.itemIndexToChildIndex(index);
                         if (childIndex != -1)
-                            this._owner.event(this._keyEvent, this._owner.getChildAt(childIndex));
+                            this._owner.event(this._keyEvent, [this._owner.getChildAt(childIndex), evt]);
                     }
                     return index;
                 }
@@ -6410,7 +6411,7 @@
                     return -1;
             }
             else
-                return super.handleArrowKey(dir);
+                return super.handleArrowKey(dir, evt);
         }
     }
 
@@ -7614,7 +7615,7 @@
             }
             super.handleClick(item, evt);
         }
-        handleArrowKey(dir) {
+        handleArrowKey(dir, evt) {
             if (dir == 3 || dir == 7) {
                 let i = this.index;
                 if (i != -1) {
@@ -7625,7 +7626,7 @@
                     }
                 }
             }
-            return super.handleArrowKey(dir);
+            return super.handleArrowKey(dir, evt);
         }
     }
     var s_list = [];

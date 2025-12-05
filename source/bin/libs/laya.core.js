@@ -793,7 +793,7 @@ window.Laya = (function (exports) {
 
     class LayaEnv {
     }
-    LayaEnv.version = "3.3.4";
+    LayaEnv.version = "3.3.5";
     LayaEnv.isPlaying = true;
     LayaEnv.isPreview = false;
     LayaEnv.isConch = window ? (window.conch != null) : false;
@@ -12119,11 +12119,6 @@ window.Laya = (function (exports) {
     TextRenderConfig.scaleFontWithCtx = true;
     TextRenderConfig.maxFontScale = 3;
     TextRenderConfig.fontScale = 1;
-    TextRenderConfig.destroyAtlasDt = 10;
-    TextRenderConfig.checkCleanTextureDt = 2000;
-    TextRenderConfig.destroyUnusedTextureDt = 10;
-    TextRenderConfig.cleanMem = 100 * 1024 * 1024;
-    TextRenderConfig.showLog = false;
 
     function measureFont(ctx, font, bold) {
         let size = TextRenderConfig.standardFontSize;
@@ -12155,6 +12150,8 @@ window.Laya = (function (exports) {
         ctx.fillText(char, margin, margin + fontSize / 2);
         let bmp = ctx.getImageData(0, 0, width, height);
         updateBbx(bmp, pixelBBX, onlyH);
+        if (pixelBBX[2] < margin + charWidth)
+            pixelBBX[2] = margin + charWidth;
     }
     function updateBbx(data, curbbx, onlyH) {
         let bmpData32 = new Uint32Array(data.data.buffer);
@@ -12414,7 +12411,7 @@ window.Laya = (function (exports) {
             let margin = height / 3 | 0 + lineWidth;
             let rectX = ((margin - fontSizeOffX - lineWidth) * fontScale | 0) - blockGap;
             let rectY = ((margin - fontSizeOffY - lineWidth) * fontScale | 0) - blockGap;
-            let rectW = Math.ceil((width + lineWidth * 2) * fontScale) + blockGap * 2;
+            let rectW = Math.ceil((width + fontSizeOffX + lineWidth * 2) * fontScale) + blockGap * 2;
             let rectH = Math.ceil((fontSizeH + lineWidth * 2) * fontScale) + blockGap * 2;
             let needCanvW = Math.min(rectW + Math.ceil(margin * 2 * fontScale), TextRenderConfig.maxCanvasWidth);
             let needCanvH = Math.min(rectH + Math.ceil(margin * 2 * fontScale), TextRenderConfig.maxCanvasWidth);
@@ -23349,10 +23346,11 @@ window.Laya = (function (exports) {
         }
         static set musicVolume(value) {
             value = MathUtil.clamp(value, 0, 1);
-            if (value !== mgr._musicVolume)
+            if (value !== mgr._musicVolume) {
                 mgr._musicVolume = value;
-            if (mgr._musicChannel)
-                mgr._musicChannel.volume = value;
+                if (mgr._musicChannel)
+                    mgr._musicChannel.volume = mgr._musicChannel.volume;
+            }
         }
         static get soundVolume() {
             return mgr._soundVolume;
@@ -23404,13 +23402,13 @@ window.Laya = (function (exports) {
             if (typeof (soundClass) === 'number')
                 startTime = soundClass;
             let channel = PAL.media.createSoundChannel(url, false);
+            channel._isMusic = false;
             channel.loops = loops !== null && loops !== void 0 ? loops : 1;
             channel.startTime = startTime !== null && startTime !== void 0 ? startTime : 0;
             channel.playbackRate = this.playbackRate;
-            channel.volume = mgr._soundVolume;
+            channel.volume = 1;
             channel.muted = mgr._soundMuted || mgr._muted;
             channel.completeHandler = complete;
-            channel._isMusic = false;
             channel.play();
             return channel;
         }
@@ -23422,13 +23420,13 @@ window.Laya = (function (exports) {
             if (!url)
                 return null;
             let channel = PAL.media.createSoundChannel(url, mgr.useAudioMusic);
+            channel._isMusic = true;
             channel.loops = loops !== null && loops !== void 0 ? loops : 1;
             channel.startTime = startTime !== null && startTime !== void 0 ? startTime : 0;
             channel.playbackRate = this.playbackRate;
-            channel.volume = mgr._musicVolume;
+            channel.volume = 1;
             channel.muted = mgr._musicMuted || mgr._muted;
             channel.completeHandler = complete;
-            channel._isMusic = true;
             channel.play();
             return channel;
         }
@@ -26198,6 +26196,8 @@ window.Laya = (function (exports) {
             let isPrompt;
             if (!text && this._prompt) {
                 text = this._prompt;
+                if (this._onTranslate)
+                    text = this._onTranslate(text, null, 1);
                 isPrompt = true;
             }
             if (!text) {
@@ -31568,6 +31568,10 @@ window.Laya = (function (exports) {
                             const c = getCompressTextureRenderCapable(f.format);
                             return LayaGL.renderEngine.getCapable(c);
                         });
+                        fileInfo = fallback || RGBA;
+                    }
+                    if (fileInfo.file == null) {
+                        const fallback = meta.files.find(f => f.ext === ext);
                         fileInfo = fallback || RGBA;
                     }
                 }
@@ -39755,7 +39759,7 @@ ${materialUniformGlsl}`;
         }
         updateSize() {
             let fontSize = Browser.onMobile ? 10 : 12;
-            fontSize = Math.max(fontSize, fontSize / (Laya.stage._canvasTransform.a * Laya.stage.clientScaleX));
+            fontSize = Math.max(fontSize, fontSize / (Laya.stage._canvasTransform.getScaleX() * Laya.stage.clientScaleX));
             this._txt.fontSize = fontSize;
             this._title.fontSize = fontSize;
             this._txt.x = this._title.textWidth + 10;

@@ -32576,7 +32576,7 @@ declare namespace Laya {
         /**
          * An callback to translate the text.
          */
-        _onTranslate: (text: string, options: any) => string;
+        _onTranslate: (text: string, options: any, role?: number) => string;
         /**
          * @en Constructor method of Text.
          * @zh 文本的构造方法
@@ -93026,7 +93026,7 @@ declare namespace Laya {
         /** @internal @blueprintEvent */
         GPanel_bpEvent: {
             [Event.CHANGED]: () => void;
-            [UIEvent.ClickItem]: (item: GButton) => void;
+            [UIEvent.ClickItem]: (item: GButton, evt: Event) => void;
             [UIEvent.Scroll]: () => void;
             [UIEvent.ScrollEnd]: () => void;
             [UIEvent.PullDownRelease]: () => void;
@@ -95778,7 +95778,7 @@ declare namespace Laya {
         /** @ignore @blueprintIgnore */
         handleClick(item: GWidget, evt: Event): void;
         /** @ignore @blueprintIgnore */
-        handleArrowKey(dir: number): number;
+        handleArrowKey(dir: number, evt?: Event): number;
         /** @internal */
         destroy(): void;
         /** @internal */
@@ -95836,7 +95836,7 @@ declare namespace Laya {
         selectAll(): void;
         selectReverse(): void;
         handleClick(item: GButton, evt: Event): void;
-        handleArrowKey(dir: number): number;
+        handleArrowKey(dir: number, evt?: Event): number;
     }
     class Selection implements ISelection {
         scrollItemToViewOnClick: boolean;
@@ -95866,7 +95866,7 @@ declare namespace Laya {
         handleClick(item: GButton, evt: Event): void;
         enableArrowKeyNavigation(enabled: boolean, keySelectEvent?: string): void;
         private _keydown;
-        handleArrowKey(dir: number): number;
+        handleArrowKey(dir: number, evt?: Event): number;
         private selectChanged;
         private syncController;
         _refresh(): void;
@@ -95884,7 +95884,7 @@ declare namespace Laya {
         selectNode(node: GTreeNode, scrollItToView?: boolean): void;
         unselectNode(node: GTreeNode): void;
         handleClick(item: GButton, evt: Event): void;
-        handleArrowKey(dir: number): number;
+        handleArrowKey(dir: number, evt?: Event): number;
     }
     /**
      * @en StretchParam is a class that defines stretch parameters for layout.
@@ -99434,24 +99434,60 @@ declare namespace Laya {
         ref: number;
     }
     /**
-     * @ignore
+     * @en Text rendering configuration
+     * @zh 文字渲染配置
      */
     class TextRenderConfig {
+        /**
+         * @en Maximum canvas size
+         * @zh canvas的最大值
+         */
         static maxCanvasWidth: number;
+        /**
+         * @en Width and height of each text atlas. A new atlas will be created when it is full.
+         * @zh 每张文字图集的宽度和高度。如果满了会创建新的图集。
+         */
         static atlasWidth: number;
+        /**
+         * @en Cell size of AtlasGrid
+         * @zh AtlasGrid的单元格大小
+         */
         static atlasGridW: number;
+        /**
+         * @en Standard font size used for measurement
+         * @zh 测量时使用的标准字体大小
+         */
         static standardFontSize: number;
+        /**
+         * @en If set to true, text will not use atlas and all texts will use independent textures. (Single character rendering mode excepted)
+         * @zh 设置为true则强制不使用图集，所有文本都用独立贴图。(单字渲染模式除外）
+         */
         static noAtlas: boolean;
+        /**
+         * @en Force single character rendering mode.
+         * @zh 强制使用单字渲染模式。
+         */
         static forceSplitRender: boolean;
+        /**
+         * @zh 强制整句渲染模式。
+         * @en Force whole sentence rendering mode.
+         */
         static forceWholeRender: boolean;
+        /**
+         * @zh 如果舞台有缩放，则修改渲染大小，以保证清晰度
+         * @en If the stage is scaled, modify the rendering size to ensure clarity
+         */
         static scaleFontWithCtx: boolean;
+        /**
+         * @en Maximum allowed scaling factor when scaleFontWithCtx is true
+         * @zh 当scaleFontWithCtx为true时，最大允许放大的倍数
+         */
         static maxFontScale: number;
+        /**
+         * @en Global font scaling factor. If scaleFontWithCtx is set, this value will be automatically set according to the stage scale.
+         * @zh 设定字体全局缩放，如果设置了scaleFontWithCtx，则这个值会根据舞台比例自动设置。
+         */
         static fontScale: number;
-        static destroyAtlasDt: number;
-        static checkCleanTextureDt: number;
-        static destroyUnusedTextureDt: number;
-        static cleanMem: number;
-        static showLog: boolean;
     }
     /**
      * BufferState类用于实现渲染所需的Buffer状态集合。

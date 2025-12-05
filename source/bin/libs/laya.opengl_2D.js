@@ -931,6 +931,9 @@
         }
         get inheritedDcOptimize() {
             var _a;
+            if (this._nativeObj.getInheritedDcOptimize) {
+                return this._nativeObj.getInheritedDcOptimize();
+            }
             return this._dcOptimize || ((_a = this._parent) === null || _a === void 0 ? void 0 : _a.dcOptimize);
         }
         set zIndex(value) {

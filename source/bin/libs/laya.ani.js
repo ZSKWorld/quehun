@@ -3583,7 +3583,13 @@
         }
         getGrahicsDataWithCache(aniIndex, frameIndex) {
             if (this._graphicsCache[aniIndex] && this._graphicsCache[aniIndex][frameIndex]) {
-                return this._graphicsCache[aniIndex][frameIndex];
+                let originalGraphics = this._graphicsCache[aniIndex][frameIndex];
+                let newGraphics = new Laya.Graphics();
+                for (let i = 0; i < originalGraphics.cmds.length; i++) {
+                    let originalCmd = originalGraphics.cmds[i];
+                    newGraphics.addCmd(originalCmd);
+                }
+                return newGraphics;
             }
             return null;
         }

@@ -8446,6 +8446,11 @@ declare global {
             play(currentOrStartup: boolean, player?: "browser" | "editor" | "emulator"): boolean;
 
             /**
+             * Stops playing the scene.
+             */
+            stop(): void;
+
+            /**
              * Gets the URL to play the scene.
              * @param currentOrStartup If true, get the URL to play the current scene. If false, get the URL to play the startup scene. 
              * @param additionParams Additional parameters to add to the URL.
@@ -9032,6 +9037,7 @@ declare global {
             copyData(): void;
             pasteData(data?: any): void;
             resetData(): void;
+            setNumValue(num: number): void;
             hasClipboardData(): boolean;
         }
 

@@ -140,7 +140,6 @@
     "workbench.tree.indent": 15,
     "window.zoomLevel": 1,
     "merge-conflict.codeLens.enabled": false,
-    "svn.path": "C:\\Program Files\\TortoiseSVN\\bin\\svn.exe",
     "scm.providerCountBadge": "auto",
     "scm.alwaysShowRepositories": true,
     "scm.defaultViewMode": "tree",

@@ -10,7 +10,7 @@ const enum EResGroupType {
 }
 
 /** 逻辑场景基类 */
-export abstract class LogicSceneBase<T> extends Observer implements IScene<T> {
+export abstract class SceneBase<T> extends Observer implements IScene<T> {
 	readonly type: ESceneType;
 	data: T;
 	readonly views = new Set<EViewID>();

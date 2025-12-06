@@ -1,11 +1,11 @@
-import { LogicSceneBase } from "../SceneBase";
+import { SceneBase } from "../SceneBase";
 
 export interface ISceneMainData {
 
 }
 
 /** 主页逻辑场景 */
-export class SceneMain extends LogicSceneBase<ISceneMainData> {
+export class SceneMain extends SceneBase<ISceneMainData> {
 	protected override loadViewId = EViewID.UILoadingView;
 	protected override getNormalResArray() {
 		return [

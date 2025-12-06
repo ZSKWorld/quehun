@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GenCode_TS_Self = GenCode_TS_Self;
 const CodeWriter_1 = require("./CodeWriter");
 const signArr = ["UI", "Com", "Btn", "Render"];
-const viewDirs = ["", "coms/", "btns/", "renders/"];
+const viewDirs = ["uis", "coms/", "btns/", "renders/"];
 function setMemberTypeName(info, clsInfo) {
     if (!info.res)
         return;
@@ -171,7 +171,7 @@ function GenCode_TS_Self(handler) {
         let memberCnt = members.Count;
         for (let j = 0; j < memberCnt; j++) {
             let memberInfo = members.get_Item(j);
-            writer.writeln('protected %s: %s;', customMemberVarName(memberInfo), memberInfo.type);
+            writer.writeln(`protected %s: %s;`, customMemberVarName(memberInfo), memberInfo.type);
         }
         writer.writeln('public static url: string = "ui://%s%s";', handler.pkg.id, classInfo.resId);
         writer.writeln();
@@ -215,8 +215,6 @@ function GenCode_TS_Self(handler) {
         const viewIndex = signArr.findIndex(v => classInfo.className.startsWith(v));
         if (viewIndex >= 0)
             writer.writeln('import { %sView } from "../../view/%s/view/%s%sView";', classInfo.className, classInfo.res.owner.name, viewDirs[viewIndex], classInfo.className);
-        // import { ComZhiZuoView } from "../../view/PkgMain/view/coms/ComZhiZuoView";
-        // const ref = `/../view/${ info.res.owner.name }/view/${ viewDirs[ viewIndex ] }${ info.type }`;
     }
     if (isThree) {
         writer.writeln('import * as fgui from "fairygui-three";');

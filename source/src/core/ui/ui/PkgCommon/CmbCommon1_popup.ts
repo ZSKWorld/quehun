@@ -2,7 +2,7 @@
 
 export default class CmbCommon1_popup extends fgui.GComponent {
 
-	protected list_list: fgui.GList;
+	public list_list: fgui.GList;
 	public static url: string = "ui://vx9zwsergsi2obem";
 
 	public static createInstance(): CmbCommon1_popup {

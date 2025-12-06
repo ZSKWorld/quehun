@@ -2,8 +2,8 @@
 
 export default class PbLoading2 extends fgui.GProgressBar {
 
-	protected img_block: fgui.GImage;
-	protected trans_t0: fgui.Transition;
+	public img_block: fgui.GImage;
+	public trans_t0: fgui.Transition;
 	public static url: string = "ui://vx9zwservwgmob8d";
 
 	public static createInstance(): PbLoading2 {

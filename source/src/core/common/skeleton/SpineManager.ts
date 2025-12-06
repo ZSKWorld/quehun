@@ -1,6 +1,6 @@
 import { SpineController } from "./SpineController";
 
-const enum SpineAnimation {
+const enum ESpineAnimation {
 	Celebrate_idle = "celebrate_idle",
 	Click = "click",
 	Click2 = "click2",
@@ -75,7 +75,7 @@ export class SpineManager implements ISpineManager {
 			const usingArr = this._usingPool.get(id);
 			if (usingArr) usingArr.push(spine);
 			else this._usingPool.set(id, [spine]);
-			spine.play(SpineAnimation.Idle, true);
+			spine.play(ESpineAnimation.Idle, true);
 		}
 		return spine;
 	}

@@ -1,38 +1,38 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import CmbCommon1_popup from "./CmbCommon1_popup";
-import ComBigHead1 from "./ComBigHead1";
-import { ComBigHead1View } from "../../view/PkgCommon/view/coms/ComBigHead1View";
-import ComSmallHead from "./ComSmallHead";
-import { ComSmallHeadView } from "../../view/PkgCommon/view/coms/ComSmallHeadView";
-import ComTitle1 from "./ComTitle1";
-import { ComTitle1View } from "../../view/PkgCommon/view/coms/ComTitle1View";
-import ComName1 from "./ComName1";
-import { ComName1View } from "../../view/PkgCommon/view/coms/ComName1View";
-import ComLevel1 from "./ComLevel1";
-import { ComLevel1View } from "../../view/PkgCommon/view/coms/ComLevel1View";
-import UILoading from "./UILoading";
-import { UILoadingView } from "../../view/PkgCommon/view/UILoadingView";
-import PbLoading1 from "./PbLoading1";
-import UIConfirmBig from "./UIConfirmBig";
-import { UIConfirmBigView } from "../../view/PkgCommon/view/UIConfirmBigView";
-import UIConfirmMiddle from "./UIConfirmMiddle";
-import { UIConfirmMiddleView } from "../../view/PkgCommon/view/UIConfirmMiddleView";
-import UIConfirmSmall from "./UIConfirmSmall";
-import { UIConfirmSmallView } from "../../view/PkgCommon/view/UIConfirmSmallView";
-import BtnCheckTxtRight from "./BtnCheckTxtRight";
-import { BtnCheckTxtRightView } from "../../view/PkgCommon/view/btns/BtnCheckTxtRightView";
-import BtnCheckRichTxtRight from "./BtnCheckRichTxtRight";
 import { BtnCheckRichTxtRightView } from "../../view/PkgCommon/view/btns/BtnCheckRichTxtRightView";
-import ComBack from "./ComBack";
+import { BtnCheckTxtRightView } from "../../view/PkgCommon/view/btns/BtnCheckTxtRightView";
 import { ComBackView } from "../../view/PkgCommon/view/coms/ComBackView";
-import ComItem1 from "./ComItem1";
-import { ComItem1View } from "../../view/PkgCommon/view/coms/ComItem1View";
-import ComBigHead from "./ComBigHead";
+import { ComBigHead1View } from "../../view/PkgCommon/view/coms/ComBigHead1View";
 import { ComBigHeadView } from "../../view/PkgCommon/view/coms/ComBigHeadView";
-import ComItem from "./ComItem";
+import { ComItem1View } from "../../view/PkgCommon/view/coms/ComItem1View";
 import { ComItemView } from "../../view/PkgCommon/view/coms/ComItemView";
+import { ComLevel1View } from "../../view/PkgCommon/view/coms/ComLevel1View";
+import { ComName1View } from "../../view/PkgCommon/view/coms/ComName1View";
+import { ComSmallHeadView } from "../../view/PkgCommon/view/coms/ComSmallHeadView";
+import { ComTitle1View } from "../../view/PkgCommon/view/coms/ComTitle1View";
+import { UIConfirmBigView } from "../../view/PkgCommon/view/uis/UIConfirmBigView";
+import { UIConfirmMiddleView } from "../../view/PkgCommon/view/uis/UIConfirmMiddleView";
+import { UIConfirmSmallView } from "../../view/PkgCommon/view/uis/UIConfirmSmallView";
+import { UILoadingView } from "../../view/PkgCommon/view/uis/UILoadingView";
+import BtnCheckRichTxtRight from "./BtnCheckRichTxtRight";
+import BtnCheckTxtRight from "./BtnCheckTxtRight";
+import CmbCommon1_popup from "./CmbCommon1_popup";
+import ComBack from "./ComBack";
+import ComBigHead from "./ComBigHead";
+import ComBigHead1 from "./ComBigHead1";
+import ComItem from "./ComItem";
+import ComItem1 from "./ComItem1";
+import ComLevel1 from "./ComLevel1";
+import ComName1 from "./ComName1";
+import ComSmallHead from "./ComSmallHead";
+import ComTitle1 from "./ComTitle1";
+import PbLoading1 from "./PbLoading1";
 import PbLoading2 from "./PbLoading2";
+import UIConfirmBig from "./UIConfirmBig";
+import UIConfirmMiddle from "./UIConfirmMiddle";
+import UIConfirmSmall from "./UIConfirmSmall";
+import UILoading from "./UILoading";
 
 export default class PkgCommonBinder {
 	public static bindAll(): void {

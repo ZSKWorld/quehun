@@ -1,11 +1,11 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { UIBindPhoneView } from "../../view/PkgLogin/view/uis/UIBindPhoneView";
-import { UILoginQueueView } from "../../view/PkgLogin/view/uis/UILoginQueueView";
-import { UILoginView } from "../../view/PkgLogin/view/uis/UILoginView";
+import UILoginQueue from "./UILoginQueue";
 import UIBindPhone from "./UIBindPhone";
 import UILogin from "./UILogin";
-import UILoginQueue from "./UILoginQueue";
+import { UILoginQueueView } from "../../view/PkgLogin/view/uis/UILoginQueueView";
+import { UIBindPhoneView } from "../../view/PkgLogin/view/uis/UIBindPhoneView";
+import { UILoginView } from "../../view/PkgLogin/view/uis/UILoginView";
 
 export default class PkgLoginBinder {
 	public static bindAll(): void {

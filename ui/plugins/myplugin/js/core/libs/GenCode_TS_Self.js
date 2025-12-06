@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GenCode_TS_Self = GenCode_TS_Self;
 const CodeWriter_1 = require("./CodeWriter");
 const signArr = ["UI", "Com", "Btn", "Render"];
-const viewDirs = ["uis", "coms/", "btns/", "renders/"];
+const viewDirs = ["uis/", "coms/", "btns/", "renders/"];
 function setMemberTypeName(info, clsInfo) {
     if (!info.res)
         return;
@@ -168,10 +168,11 @@ function GenCode_TS_Self(handler) {
         writer.writeln('export default class %s extends %s', classInfo.className, classInfo.superClassName);
         writer.startBlock();
         writer.writeln();
+        const protectedProperty = signArr.some(v => classInfo.className.startsWith(v));
         let memberCnt = members.Count;
         for (let j = 0; j < memberCnt; j++) {
             let memberInfo = members.get_Item(j);
-            writer.writeln(`protected %s: %s;`, customMemberVarName(memberInfo), memberInfo.type);
+            writer.writeln(`${protectedProperty ? "protected" : "public"} %s: %s;`, customMemberVarName(memberInfo), memberInfo.type);
         }
         writer.writeln('public static url: string = "ui://%s%s";', handler.pkg.id, classInfo.resId);
         writer.writeln();
@@ -212,6 +213,9 @@ function GenCode_TS_Self(handler) {
     for (let i = 0; i < classCnt; i++) {
         let classInfo = classes.get_Item(i);
         writer.writeln('import %s from "./%s";', classInfo.className, classInfo.className);
+    }
+    for (let i = 0; i < classCnt; i++) {
+        let classInfo = classes.get_Item(i);
         const viewIndex = signArr.findIndex(v => classInfo.className.startsWith(v));
         if (viewIndex >= 0)
             writer.writeln('import { %sView } from "../../view/%s/view/%s%sView";', classInfo.className, classInfo.res.owner.name, viewDirs[viewIndex], classInfo.className);

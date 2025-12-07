@@ -115,7 +115,7 @@
     <component id="q5yiobbz" name="BtnNormalFitNoScale.xml" path="/Component/Button/" exported="true"/>
     <image id="q5yiobc0" name="img_3555.png" path="/Texture/" exported="true" scale="9grid" scale9grid="59,58,123,87"/>
     <image id="q5yiobc1" name="img_125.png" path="/Texture/" exported="true" scale="9grid" scale9grid="4,4,2,2"/>
-    <component id="q5yiobc2" name="ComItem1.xml" path="/Component/Component/物品/" exported="true"/>
+    <component id="q5yiobc2" name="BtnItem1.xml" path="/Component/Button/物品/" exported="true"/>
     <component id="q5yiobc3" name="ComBigHead.xml" path="/Component/Component/头像/" exported="true"/>
     <image id="q5yiobc4" name="img_1137.png" path="/Texture/" exported="true"/>
     <image id="q5yiobc5" name="img_1138.png" path="/Texture/" exported="true"/>
@@ -154,7 +154,7 @@
     <image id="gsi2obd2" name="img_561.png" path="/Texture/" exported="true"/>
     <image id="gsi2obd3" name="img_542.png" path="/Texture/" exported="true"/>
     <image id="gsi2obd4" name="img_541.png" path="/Texture/" exported="true"/>
-    <image id="gsi2obd5" name="img_42.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obd5" name="img_42.png" path="/Texture/" exported="true" scale="9grid" scale9grid="3,0,4,3"/>
     <image id="gsi2obd6" name="img_407.png" path="/Texture/" exported="true"/>
     <image id="gsi2obd7" name="img_405.png" path="/Texture/" exported="true"/>
     <image id="gsi2obd8" name="img_2471.png" path="/Texture/" exported="true"/>
@@ -224,6 +224,7 @@
     <font id="rpakobf1" name="solmoe kimdaegeon Medium.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
     <font id="rpakobf2" name="youyuan.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
     <component id="rpakobf5" name="ComItem.xml" path="/Component/Component/物品/" exported="true"/>
+    <component id="si7robf6" name="UIItemDetail.xml" path="/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

@@ -5,6 +5,7 @@ import PkgLoginBinder from "../core/ui/ui/PkgLogin/PkgLoginBinder";
 import PkgMainBinder from "../core/ui/ui/PkgMain/PkgMainBinder";
 import { BtnCheckRichTxtRightView } from "../core/ui/view/PkgCommon/view/btns/BtnCheckRichTxtRightView";
 import { BtnCheckTxtRightView } from "../core/ui/view/PkgCommon/view/btns/BtnCheckTxtRightView";
+import { BtnItem1View } from "../core/ui/view/PkgCommon/view/btns/BtnItem1View";
 import { BtnBagSkinCheckView } from "../core/ui/view/PkgMain/view/btns/BtnBagSkinCheckView";
 import { BtnEmailTabView } from "../core/ui/view/PkgMain/view/btns/BtnEmailTabView";
 import { BtnXunMiView } from "../core/ui/view/PkgMain/view/btns/BtnXunMiView";
@@ -18,7 +19,6 @@ import { ComBackMediator } from "../core/ui/view/PkgCommon/mediator/coms/ComBack
 import { ComBigHeadView } from "../core/ui/view/PkgCommon/view/coms/ComBigHeadView";
 import { ComBigHead1View } from "../core/ui/view/PkgCommon/view/coms/ComBigHead1View";
 import { ComItemView } from "../core/ui/view/PkgCommon/view/coms/ComItemView";
-import { ComItem1View } from "../core/ui/view/PkgCommon/view/coms/ComItem1View";
 import { ComLevel1View } from "../core/ui/view/PkgCommon/view/coms/ComLevel1View";
 import { ComName1View } from "../core/ui/view/PkgCommon/view/coms/ComName1View";
 import { ComSmallHeadView } from "../core/ui/view/PkgCommon/view/coms/ComSmallHeadView";
@@ -40,6 +40,8 @@ import { UIConfirmMiddleView } from "../core/ui/view/PkgCommon/view/uis/UIConfir
 import { UIConfirmMiddleMediator } from "../core/ui/view/PkgCommon/mediator/uis/UIConfirmMiddleMediator";
 import { UIConfirmSmallView } from "../core/ui/view/PkgCommon/view/uis/UIConfirmSmallView";
 import { UIConfirmSmallMediator } from "../core/ui/view/PkgCommon/mediator/uis/UIConfirmSmallMediator";
+import { UIItemDetailView } from "../core/ui/view/PkgCommon/view/uis/UIItemDetailView";
+import { UIItemDetailMediator } from "../core/ui/view/PkgCommon/mediator/uis/UIItemDetailMediator";
 import { UILoadingView } from "../core/ui/view/PkgCommon/view/uis/UILoadingView";
 import { UILoadingMediator } from "../core/ui/view/PkgCommon/mediator/uis/UILoadingMediator";
 import { UIEntranceView } from "../core/ui/view/PkgEntrance/view/uis/UIEntranceView";
@@ -95,6 +97,7 @@ export class InitViewCommand extends Command {
 		//Btns
 		register(EViewID.BtnCheckRichTxtRightView, EViewType.Button, BtnCheckRichTxtRightView);
 		register(EViewID.BtnCheckTxtRightView, EViewType.Button, BtnCheckTxtRightView);
+		register(EViewID.BtnItem1View, EViewType.Button, BtnItem1View);
 		register(EViewID.BtnBagSkinCheckView, EViewType.Button, BtnBagSkinCheckView);
 		register(EViewID.BtnEmailTabView, EViewType.Button, BtnEmailTabView);
 		register(EViewID.BtnXunMiView, EViewType.Button, BtnXunMiView);
@@ -111,7 +114,6 @@ export class InitViewCommand extends Command {
 		register(EViewID.ComBigHeadView, EViewType.Component, ComBigHeadView);
 		register(EViewID.ComBigHead1View, EViewType.Component, ComBigHead1View);
 		register(EViewID.ComItemView, EViewType.Component, ComItemView);
-		register(EViewID.ComItem1View, EViewType.Component, ComItem1View);
 		register(EViewID.ComLevel1View, EViewType.Component, ComLevel1View);
 		register(EViewID.ComName1View, EViewType.Component, ComName1View);
 		register(EViewID.ComSmallHeadView, EViewType.Component, ComSmallHeadView);
@@ -129,6 +131,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.UIConfirmBigView, EViewType.UI, UIConfirmBigView, UIConfirmBigMediator);
 		register(EViewID.UIConfirmMiddleView, EViewType.UI, UIConfirmMiddleView, UIConfirmMiddleMediator);
 		register(EViewID.UIConfirmSmallView, EViewType.UI, UIConfirmSmallView, UIConfirmSmallMediator);
+		register(EViewID.UIItemDetailView, EViewType.UI, UIItemDetailView, UIItemDetailMediator);
 		register(EViewID.UILoadingView, EViewType.UI, UILoadingView, UILoadingMediator);
 		register(EViewID.UIEntranceView, EViewType.UI, UIEntranceView, UIEntranceMediator);
 		register(EViewID.UIBindPhoneView, EViewType.UI, UIBindPhoneView, UIBindPhoneMediator);

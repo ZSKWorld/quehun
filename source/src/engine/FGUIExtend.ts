@@ -4,6 +4,7 @@ export class FGUIExtend {
 		this.gobjectExtension();
 		this.addGTextLangText();
 		this.glistItemClick();
+		this.gbuttonDownEffect();
 	}
 
 	/** GObject扩展 */
@@ -81,5 +82,19 @@ export class FGUIExtend {
 			const index = _this.childIndexToItemIndex(_this.getChildIndex(item));
 			_this.displayObject.event(fgui.Events.CLICK_ITEM, [index, item, evt]);
 		}
+	}
+
+	private static gbuttonDownEffect() {
+		const prototype = fgui.GButton.prototype;
+		Object.defineProperties(prototype, {
+			downEffect: {
+				get() { return this._downEffect; },
+				set(v) { this._downEffect = v; },
+			},
+			downEffectValue: {
+				get() { return this._downEffectValue; },
+				set(v) { this._downEffectValue = v; },
+			},
+		});
 	}
 }

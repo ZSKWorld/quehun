@@ -2,16 +2,16 @@
 
 import { ComItemView } from "../../view/PkgCommon/view/coms/ComItemView";
 
-export default class ComItem1 extends fgui.GComponent {
+export default class BtnItem1 extends fgui.GButton {
 
-	protected com_icon: ComItemView;
+	protected com_item: ComItemView;
 	public static url: string = "ui://vx9zwserq5yiobc2";
 
-	public static createInstance(): ComItem1 {
-		return <ComItem1>(fgui.UIPackage.createObject("PkgCommon", "ComItem1"));
+	public static createInstance(): BtnItem1 {
+		return <BtnItem1>(fgui.UIPackage.createObject("PkgCommon", "BtnItem1"));
 	}
 
 	protected override onConstruct(): void {
-		this.com_icon = <ComItemView>(this.getChildAt(1));
+		this.com_item = <ComItemView>(this.getChildAt(1));
 	}
 }

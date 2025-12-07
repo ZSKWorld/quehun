@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0esi7r7plojr" designImageAlpha="100">
+  <displayList>
+    <graph id="n23_si7r" name="bg" xy="0,0" size="1920,1080" alpha="0" type="rect"/>
+    <component id="n0_j0dd" name="n0" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" xy="568,277" size="781,530"/>
+    <image id="n20_si7r" name="n20" src="gsi2obd5" fileName="Texture/img_42.png" xy="889,483" size="400,5">
+      <relation target="n13_j0dd" sidePair="bottom-bottom"/>
+    </image>
+    <component id="n10_j0dd" name="close" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" xy="1229,309" size="70,70">
+      <Button icon="ui://vx9zwserj0ddob7b"/>
+    </component>
+    <component id="n21_si7r" name="item" src="q5yiobc2" fileName="Component/Button/物品/BtnItem1.xml" xy="623,426" size="242,242" touchable="false"/>
+    <component id="n14_j0dd" name="confirm" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="855,683" size="209,90">
+      <Button title="确认" titleColor="#6d2e3a" titleFontSize="38" icon="ui://vx9zwserj0ddob73"/>
+    </component>
+    <text id="n12_j0dd" name="title" xy="885,315" pivot="0.5,0.5" size="139,60" fontSize="45" color="#edb26f" singleLine="true" text="星之石"/>
+    <text id="n13_j0dd" name="desc1" xy="887,427" size="416,42" fontSize="30" color="#d2d2d0" autoSize="height" text="用于在星之屋中兑换道具"/>
+    <text id="n19_si7r" name="desc2" xy="885,500" size="416,42" fontSize="30" color="#d2d2d0" autoSize="height" text="寄托思念的灵石">
+      <relation target="n20_si7r" sidePair="top-bottom"/>
+    </text>
+  </displayList>
+</component>

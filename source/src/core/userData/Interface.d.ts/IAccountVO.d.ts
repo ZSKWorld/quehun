@@ -13,13 +13,7 @@ declare namespace VO {
 		signature: string;
 		email: string;
 		email_verify: number;
-		/** 金币 */
-		gold: number;
-		/** 钻石 */
-		diamond: number;
 		avatar_id: number;
-		/** VIP经验 */
-		vip: number;
 		birthday: number;
 		phone: string;
 		phone_verify: number;

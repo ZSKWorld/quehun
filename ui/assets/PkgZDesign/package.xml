@@ -1642,6 +1642,7 @@
     <image id="q5yi7plojo" name="礼物2.png" path="/仓库/"/>
     <image id="q5yi7plojp" name="biscuit1.jpg" path="/11/extendRes/items/"/>
     <image id="gsi27plojq" name="stardust_0.png" path="/11/extendRes/items/"/>
+    <image id="si7r7plojr" name="物品详情.PNG" path="/11/"/>
   </resources>
   <publish name=""/>
 </packageDescription>

@@ -14,6 +14,10 @@ declare interface Array<T> {
 	pushUnique(value: T): void;
 }
 
+declare interface String {
+	split2Num(sign: string): number[];
+}
+
 declare interface StringConstructor {
 	format(template: string, ...args: any[]): string;
 }

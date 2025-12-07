@@ -1,3 +1,4 @@
+import { ENotifyConst } from "../core/common/NotifyConst";
 import { Command } from "../core/mvc/controller/Command";
 import { ShaderManager } from "../core/shader/ShaderManager";
 
@@ -11,7 +12,9 @@ export class InitGameCommand extends Command {
 		ShaderManager.init();
 		$uiMgr.init();
 		$redDotMgr.init();
-		this.load();
+		this.load().then(() => {
+			$facade.dispatch(ENotifyConst.OnInitGameCompleted);
+		});
 	}
 
 	private async load() {

@@ -8,6 +8,8 @@ export const enum ENotifyConst {
 	RedDotCompAwake = "NotifyConst_RedDotCompAwake",
 	/** 红点组件销毁 */
 	RedDotCompDestroy = "NotifyConst_RedDotCompDestroy",
+	/** 初始完成 */
+	OnInitGameCompleted = "NotifyConst_OnInitGameCompleted",
 
 	//#region 网络相关
 	LobbyConnecting = "NotifyConst_LobbyConnectting",

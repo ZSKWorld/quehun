@@ -1,8 +1,5 @@
-import { Notifier } from "../mvc/provider/Notifier";
+import { ObserverAll } from "../mvc/provider/ObserverAll";
 
-export class BaseVO extends Notifier {
-	constructor() {
-		super();
-		$netMgr.interestMessage(this);
-	}
+export class BaseVO extends ObserverAll {
+
 }

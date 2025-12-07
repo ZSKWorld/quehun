@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="180,180" designImage="ui://ca43vz0ejdu67plndp" designImageOffsetX="-644" designImageOffsetY="-877" designImageAlpha="0">
+<component size="180,180" pivot="0.5,0.5" extention="Button" designImage="ui://ca43vz0ejdu67plndp" designImageOffsetX="-644" designImageOffsetY="-877" designImageAlpha="0">
   <displayList>
     <image id="n14_q5yi" name="n14" src="q5yiobc1" fileName="Texture/img_125.png" xy="4,4" size="172,172">
       <relation target="" sidePair="width-width,height-height"/>
     </image>
-    <component id="n10_hk7r" name="icon" src="rpakobf5" fileName="Component/Component/物品/ComItem.xml" xy="4,4" size="172,172">
+    <component id="n10_hk7r" name="item" src="rpakobf5" fileName="Component/Component/物品/ComItem.xml" xy="4,4" size="172,172">
       <relation target="" sidePair="width-width,height-height"/>
     </component>
     <image id="n9_hk7r" name="n9" src="hk7robaz" fileName="Texture/img_3266.png" xy="0,0" size="180,180">
       <relation target="" sidePair="width-width,height-height"/>
     </image>
   </displayList>
+  <Button downEffect="scale" downEffectValue="0.8"/>
   <customProperty target="icon" propertyId="1"/>
 </component>

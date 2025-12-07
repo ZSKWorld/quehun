@@ -14,9 +14,10 @@ import UIConfirmSmall from "./UIConfirmSmall";
 import BtnCheckTxtRight from "./BtnCheckTxtRight";
 import BtnCheckRichTxtRight from "./BtnCheckRichTxtRight";
 import ComBack from "./ComBack";
-import ComItem1 from "./ComItem1";
+import BtnItem1 from "./BtnItem1";
 import ComBigHead from "./ComBigHead";
 import ComItem from "./ComItem";
+import UIItemDetail from "./UIItemDetail";
 import PbLoading2 from "./PbLoading2";
 import { ComBigHead1View } from "../../view/PkgCommon/view/coms/ComBigHead1View";
 import { ComSmallHeadView } from "../../view/PkgCommon/view/coms/ComSmallHeadView";
@@ -30,9 +31,10 @@ import { UIConfirmSmallView } from "../../view/PkgCommon/view/uis/UIConfirmSmall
 import { BtnCheckTxtRightView } from "../../view/PkgCommon/view/btns/BtnCheckTxtRightView";
 import { BtnCheckRichTxtRightView } from "../../view/PkgCommon/view/btns/BtnCheckRichTxtRightView";
 import { ComBackView } from "../../view/PkgCommon/view/coms/ComBackView";
-import { ComItem1View } from "../../view/PkgCommon/view/coms/ComItem1View";
+import { BtnItem1View } from "../../view/PkgCommon/view/btns/BtnItem1View";
 import { ComBigHeadView } from "../../view/PkgCommon/view/coms/ComBigHeadView";
 import { ComItemView } from "../../view/PkgCommon/view/coms/ComItemView";
+import { UIItemDetailView } from "../../view/PkgCommon/view/uis/UIItemDetailView";
 
 export default class PkgCommonBinder {
 	public static bindAll(): void {
@@ -50,9 +52,10 @@ export default class PkgCommonBinder {
 		fgui.UIObjectFactory.setExtension(BtnCheckTxtRight.url, BtnCheckTxtRightView);
 		fgui.UIObjectFactory.setExtension(BtnCheckRichTxtRight.url, BtnCheckRichTxtRightView);
 		fgui.UIObjectFactory.setExtension(ComBack.url, ComBackView);
-		fgui.UIObjectFactory.setExtension(ComItem1.url, ComItem1View);
+		fgui.UIObjectFactory.setExtension(BtnItem1.url, BtnItem1View);
 		fgui.UIObjectFactory.setExtension(ComBigHead.url, ComBigHeadView);
 		fgui.UIObjectFactory.setExtension(ComItem.url, ComItemView);
+		fgui.UIObjectFactory.setExtension(UIItemDetail.url, UIItemDetailView);
 		fgui.UIObjectFactory.setExtension(PbLoading2.url, PbLoading2);
 	}
 }

@@ -91,7 +91,6 @@ export class UIUtil implements IUIUtil {
 		return new Promise<void>(resolve => {
 			panel.alpha = 0;
 			panel.setScale(0.6, 0.6);
-			Laya.Tween.killAll(panel);
 			Laya.Tween.create()
 				.parallel(panel).duration(150).ease(Laya.Ease.backOut).to("alpha", 1)
 				.parallel(panel).duration(150).ease(Laya.Ease.backOut).to("scaleX", 1).to("scaleY", 1)
@@ -101,7 +100,6 @@ export class UIUtil implements IUIUtil {
 
 	popAlphaOut(panel: fgui.GObject) {
 		return new Promise<void>(resolve => {
-			Laya.Tween.killAll(panel);
 			Laya.Tween.create()
 				.parallel(panel).duration(150).ease(Laya.Ease.backIn).to("alpha", 0)
 				.parallel(panel).duration(150).ease(Laya.Ease.backIn).to("scaleX", 0.6).to("scaleY", 0.6)

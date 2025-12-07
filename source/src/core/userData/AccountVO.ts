@@ -14,13 +14,7 @@ export class AccountVO extends BaseVO implements VO.IAccountVO {
 	signature: string = "";
 	email: string = "";
 	email_verify: number = 0;
-	/** 金币 */
-	gold: number = 0;
-	/** 钻石 */
-	diamond: number = 0;
 	avatar_id: number = 0;
-	/** VIP经验 */
-	vip: number = 0;
 	birthday: number = 0;
 	phone: string;
 	phone_verify: number = 0;
@@ -43,6 +37,14 @@ export class AccountVO extends BaseVO implements VO.IAccountVO {
 	/** 勋章列表 */
 	badges: ProtoObject<IAccount_Badge>[] = [];
 
+	getRandomCgPath() {
+		const cgId = this.loading_image[$mathUtil.randomInt(0, this.loading_image.length)];
+		if (!cgId) return "";
+		const cfgInfo = $cfgMgr.item_definition.loading_image[cgId];
+		if (!cfgInfo) return "";
+		return $langRes(cfgInfo.img_path);
+	}
+
 	@InterestMessage(EMessageID.login)
 	@InterestMessage(EMessageID.oauth2Login)
 	private onLogin(res: IResLogin) {
@@ -51,13 +53,5 @@ export class AccountVO extends BaseVO implements VO.IAccountVO {
 		res.account.$type.fieldsArray.forEach(v => {
 			this[v.name] = decodeAcc[v.name];
 		});
-	}
-
-	getRandomCgPath() {
-		const cgId = this.loading_image[$mathUtil.randomInt(0, this.loading_image.length)];
-		if (!cgId) return "";
-		const cfgInfo = $cfgMgr.item_definition.loading_image[cgId];
-		if (!cfgInfo) return "";
-		return $langRes(cfgInfo.img_path);
 	}
 }

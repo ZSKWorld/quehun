@@ -50,7 +50,6 @@ export abstract class SceneBase<T> extends Observer implements IScene<T> {
 				return Promise.reject<void>();
 			}
 		).finally(() => {
-			Laya.Tween.killAll(this);
 			this._progressHandlers.forEach(v => v.recover());
 			this._progressHandlers.length = 0;
 			this.dispatch(ENotifyConst.OnSceneLoadEnd, this.type);

@@ -3,6 +3,7 @@ EViewID = {
 	/**Btns */
 	BtnCheckRichTxtRightView: "BtnCheckRichTxtRightView",
 	BtnCheckTxtRightView: "BtnCheckTxtRightView",
+	BtnItem1View: "BtnItem1View",
 	BtnBagSkinCheckView: "BtnBagSkinCheckView",
 	BtnEmailTabView: "BtnEmailTabView",
 	BtnXunMiView: "BtnXunMiView",
@@ -18,7 +19,6 @@ EViewID = {
 	ComBackView: "ComBackView",
 	ComBigHead1View: "ComBigHead1View",
 	ComBigHeadView: "ComBigHeadView",
-	ComItem1View: "ComItem1View",
 	ComItemView: "ComItemView",
 	ComLevel1View: "ComLevel1View",
 	ComName1View: "ComName1View",
@@ -37,6 +37,7 @@ EViewID = {
 	UIConfirmBigView: "UIConfirmBigView",
 	UIConfirmMiddleView: "UIConfirmMiddleView",
 	UIConfirmSmallView: "UIConfirmSmallView",
+	UIItemDetailView: "UIItemDetailView",
 	UILoadingView: "UILoadingView",
 	UIEntranceView: "UIEntranceView",
 	UIBindPhoneView: "UIBindPhoneView",

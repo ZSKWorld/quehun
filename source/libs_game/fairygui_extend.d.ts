@@ -33,4 +33,14 @@ declare namespace fgui {
 		/** 设置本地化提示文本 */
 		langPrompt(id: number, ...args: any[]): void;
 	}
+
+	interface GButton {
+		/**
+		 * 0 无效果
+		 * 1 变暗
+		 * 2 缩放
+		 */
+		downEffect: 0 | 1 | 2;
+		downEffectValue: number;
+	}
 }

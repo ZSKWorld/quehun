@@ -18,8 +18,16 @@ Object.defineProperties(String, {
 		},
 		enumerable: false,
 		configurable: false,
-	}
+	},
 });
+
+Object.defineProperties(String.prototype, {
+	"split2Num": {
+		value: function (sign) {
+			return this.split(sign).map(Number);
+		}
+	},
+})
 
 Object.defineProperties(Array.prototype, {
 	"last": {

@@ -9,82 +9,69 @@ export class BagVO extends BaseVO implements VO.IBagVO {
 	private readonly _newDecoItems = new Set<number>();
 	private readonly _newCgItems = new Set<number>();
 
-	private readonly _freeDiamonds: number[] = [];
-	private readonly _paidDiamonds: number[] = [];
-	private readonly _freeSkinTickets: number[] = [];
-	private readonly _paidSkinTickets: number[] = [];
+	private readonly _freeDiamondIds: number[] = [];
+	private readonly _paidDiamondIds: number[] = [];
+	private readonly _freeSkinTicketIds: number[] = [];
+	private readonly _paidSkinTicketIds: number[] = [];
 
+	get items() { return this._items; }
 	get freeDiamonds() {
 		let diamond = 0;
-
-		for (let id of GameMgr.Inst.free_diamonds) {
-			if (GameMgr.Inst.account_numerical_resource[id]) {
-				diamond += GameMgr.Inst.account_numerical_resource[id];
-			}
+		const { _items, _freeDiamondIds } = this;
+		for (const id of _freeDiamondIds) {
+			const item = _items.find(v => v.item_id == id);
+			if (item) diamond += item.stack;
 		}
-
 		return diamond;
 	}
 	get paidDiamonds() {
 		let diamond = 0;
-
-		for (let id of GameMgr.Inst.paid_diamonds) {
-			if (GameMgr.Inst.account_numerical_resource[id]) {
-				diamond += GameMgr.Inst.account_numerical_resource[id];
-			}
+		const { _items, _paidDiamondIds } = this;
+		for (const id of _paidDiamondIds) {
+			const item = _items.find(v => v.item_id == id);
+			if (item) diamond += item.stack;
 		}
-
 		return diamond;
 	}
 	get diamonds() { return this.freeDiamonds + this.paidDiamonds; }
 	get freeSkinTickets() {
-		return 0;
+		let tickets = 0;
+		const { _items, _freeSkinTicketIds } = this;
+		for (const id of _freeSkinTicketIds) {
+			const item = _items.find(v => v.item_id == id);
+			if (item) tickets += item.stack;
+		}
+		return tickets;
 	}
 	get paidSkinTickets() {
-		return 0;
+		let tickets = 0;
+		const { _items, _paidSkinTicketIds } = this;
+		for (const id of _paidSkinTicketIds) {
+			const item = _items.find(v => v.item_id == id);
+			if (item) tickets += item.stack;
+		}
+		return tickets;
 	}
 	get skinTickets() { return this.freeSkinTickets + this.paidSkinTickets; }
 
 	getItemCount(id: number) {
+		if (id == 100001) return this.diamonds;
+		if (id == 100004) return this.skinTickets;
 		const item = this._items.find(v => v.item_id == id);
 		if (item) return item.stack;
-
-		//////////////////////////////////
-		let _item_info: iItemInfo = this.find_item(item_id);
-		if (_item_info) return _item_info.count;
-		if (item_id == UI_Bag.diamondId) {
-			let diamond: number = 0;
-			for (let id of GameMgr.Inst.free_diamonds) {
-				if (GameMgr.Inst.account_numerical_resource[id]) {
-					diamond += GameMgr.Inst.account_numerical_resource[id];
-				}
-			}
-			for (let id of GameMgr.Inst.paid_diamonds) {
-				if (GameMgr.Inst.account_numerical_resource[id]) {
-					diamond += GameMgr.Inst.account_numerical_resource[id];
-				}
-			}
-
-			return diamond;
-		}
-		if (item_id == 100004) {
-			let val: number = 0;
-			for (let id of GameMgr.Inst.free_pifuquans) {
-				if (GameMgr.Inst.account_numerical_resource[id]) {
-					val += GameMgr.Inst.account_numerical_resource[id];
-				}
-			}
-			for (let id of GameMgr.Inst.paid_pifuquans) {
-				if (GameMgr.Inst.account_numerical_resource[id]) {
-					val += GameMgr.Inst.account_numerical_resource[id];
-				}
-			}
-			return val;
-		}
-		if (item_id == 100002) {
-			return GameMgr.Inst.account_data['gold'];
-		}
 		return 0;
+	}
+
+	getItemByCategory(category: EItemCategory, sort?: boolean) {
+		const items = this._items.filter(v => {
+			const cfgItem = $cfgMgr.item_definition.item[v.item_id];
+			if (!cfgItem) return false;
+			return cfgItem.category == category;
+		});
+		sort && items.sort((a, b) => {
+			return $cfgMgr.item_definition.item[a.item_id].sort - $cfgMgr.item_definition.item[b.item_id].sort;
+		});
+		return items;
 	}
 
 	@InterestMessage(EMessageID.login)
@@ -92,20 +79,14 @@ export class BagVO extends BaseVO implements VO.IBagVO {
 	private onLogin(res: IResLogin) {
 		if (!res.account) return;
 		const { gold, vip, platform_diamond, skin_ticket, platform_skin_ticket } = res.account;
-		const items: IItem[] = [
-			{ item_id: 100002, stack: gold },
-			{ item_id: 100099, stack: vip },
-		];
-		if (platform_diamond) {
-			platform_diamond.forEach(v => items.push({ item_id: v.id, stack: v.count }));
-		}
-		if (skin_ticket) {
-			items.push({ item_id: 100004, stack: this.skinTickets });
-		}
-		if (platform_skin_ticket) {
-			platform_skin_ticket.forEach(v => items.push({ item_id: v.id, stack: v.count }));
-		}
+		const items: IItem[] = [];
+		gold && items.push({ item_id: 100002, stack: gold });
+		vip && items.push({ item_id: 100099, stack: vip });
+		skin_ticket && items.push({ item_id: 100004, stack: skin_ticket });
+		platform_diamond.length && platform_diamond.forEach(v => v.count && items.push({ item_id: v.id, stack: v.count }));
+		platform_skin_ticket.length && platform_skin_ticket.forEach(v => v.count && items.push({ item_id: v.id, stack: v.count }));
 		this.modifyItems(items);
+		this.dispatch(EUserEvent.OnBagItemsChanged);
 	}
 
 	@InterestMessage(EMessageID.fetchBagInfo)
@@ -134,7 +115,7 @@ export class BagVO extends BaseVO implements VO.IBagVO {
 		this._items.forEach(v => {
 			const cfgItem = $cfgMgr.item_definition.item[v.item_id];
 			if (!cfgItem) return;
-			if (cfgItem.category == EItemCategory.Normal && cfgItem.type == EItemNormalType.GiftBagReward)
+			if (cfgItem.category == EItemCategory.Item && cfgItem.type == EItemNormalType.GiftBagReward)
 				$netMgr.requests.openAllRewardItem({ item_id: v.item_id });
 		});
 	}
@@ -179,13 +160,13 @@ export class BagVO extends BaseVO implements VO.IBagVO {
 		if (info) {
 			const { free_jade_ids, free_voucher_ids, paid_jade_ids, paid_voucher_ids } = info;
 			if (free_jade_ids)
-				this._freeDiamonds.push(...free_jade_ids.split2Num("-"));
+				this._freeDiamondIds.push(...free_jade_ids.split2Num("-"));
 			if (free_voucher_ids)
-				this._freeSkinTickets.push(...free_voucher_ids.split2Num("-"));
+				this._freeSkinTicketIds.push(...free_voucher_ids.split2Num("-"));
 			if (paid_jade_ids)
-				this._paidDiamonds.push(...paid_jade_ids.split2Num("-"));
+				this._paidDiamondIds.push(...paid_jade_ids.split2Num("-"));
 			if (paid_voucher_ids)
-				this._paidSkinTickets.push(...paid_voucher_ids.split2Num("-"));
+				this._paidSkinTicketIds.push(...paid_voucher_ids.split2Num("-"));
 		}
 	}
 } 

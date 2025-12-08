@@ -1,10 +1,10 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { BtnItem1View } from "../../view/PkgCommon/view/btns/BtnItem1View";
+import { ComItem1View } from "../../view/PkgCommon/view/coms/ComItem1View";
 
 export default class RenderBagGiftItem extends fgui.GComponent {
 
-	protected btn_item: BtnItem1View;
+	protected com_item: ComItem1View;
 	protected btn_delete: fgui.GButton;
 	protected btn_add: fgui.GButton;
 	protected txt_total: fgui.GTextField;
@@ -16,7 +16,7 @@ export default class RenderBagGiftItem extends fgui.GComponent {
 	}
 
 	protected override onConstruct(): void {
-		this.btn_item = <BtnItem1View>(this.getChildAt(0));
+		this.com_item = <ComItem1View>(this.getChildAt(0));
 		this.btn_delete = <fgui.GButton>(this.getChildAt(1));
 		this.btn_add = <fgui.GButton>(this.getChildAt(2));
 		this.txt_total = <fgui.GTextField>(this.getChildAt(3));

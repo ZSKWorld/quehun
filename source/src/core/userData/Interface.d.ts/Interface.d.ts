@@ -1,7 +1,7 @@
 /** 装扮类别 item.category */
 declare enum EItemCategory {
-	/** 普通 */
-	Normal = 1,
+	/** 道具 */
+	Item = 1,
 	/** 礼物 */
 	Gift = 2,
 	/** 福袋 */

@@ -17,22 +17,7 @@ export class UIBagView extends ExtensionClass<IView, UIBag>(UIBag) implements IV
 
 	refreshPage(index: number) {
 		this.ctrl_type.selectedIndex = index;
-		if (index == 0) this.refreshItem();
-		else if (index == 1) this.refreshGift();
-		else if (index == 2) this.refreshDeco();
-		else if (index == 3) this.refreshSkin();
-		else if (index == 4) this.refreshIllust();
 	}
-
-	refreshItem() { }
-
-	refreshGift() { }
-
-	refreshDeco() { }
-
-	refreshSkin() { }
-
-	refreshIllust() { }
 
 	onOpenAni() {
 		return Promise.all([

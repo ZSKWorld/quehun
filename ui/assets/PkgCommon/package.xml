@@ -115,7 +115,7 @@
     <component id="q5yiobbz" name="BtnNormalFitNoScale.xml" path="/Component/Button/" exported="true"/>
     <image id="q5yiobc0" name="img_3555.png" path="/Texture/" exported="true" scale="9grid" scale9grid="59,58,123,87"/>
     <image id="q5yiobc1" name="img_125.png" path="/Texture/" exported="true" scale="9grid" scale9grid="4,4,2,2"/>
-    <component id="q5yiobc2" name="BtnItem1.xml" path="/Component/Button/物品/" exported="true"/>
+    <component id="q5yiobc2" name="ComItem1.xml" path="/Component/Component/物品/" exported="true"/>
     <component id="q5yiobc3" name="ComBigHead.xml" path="/Component/Component/头像/" exported="true"/>
     <image id="q5yiobc4" name="img_1137.png" path="/Texture/" exported="true"/>
     <image id="q5yiobc5" name="img_1138.png" path="/Texture/" exported="true"/>

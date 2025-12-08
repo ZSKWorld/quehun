@@ -1,12 +1,12 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { BtnItem1View } from "../../view/PkgCommon/view/btns/BtnItem1View";
+import { ComItem1View } from "../../view/PkgCommon/view/coms/ComItem1View";
 
 export default class UIItemDetail extends fgui.GComponent {
 
 	protected graph_bg: fgui.GGraph;
 	protected btn_close: fgui.GButton;
-	protected btn_item: BtnItem1View;
+	protected com_item: ComItem1View;
 	protected btn_confirm: fgui.GButton;
 	protected txt_title: fgui.GTextField;
 	protected txt_desc1: fgui.GTextField;
@@ -20,7 +20,7 @@ export default class UIItemDetail extends fgui.GComponent {
 	protected override onConstruct(): void {
 		this.graph_bg = <fgui.GGraph>(this.getChildAt(0));
 		this.btn_close = <fgui.GButton>(this.getChildAt(3));
-		this.btn_item = <BtnItem1View>(this.getChildAt(4));
+		this.com_item = <ComItem1View>(this.getChildAt(4));
 		this.btn_confirm = <fgui.GButton>(this.getChildAt(5));
 		this.txt_title = <fgui.GTextField>(this.getChildAt(6));
 		this.txt_desc1 = <fgui.GTextField>(this.getChildAt(7));

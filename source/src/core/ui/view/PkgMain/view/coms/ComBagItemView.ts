@@ -19,7 +19,7 @@ export class ComBagItemView extends ExtensionClass<IView, ComBagItem>(ComBagItem
 
 	private onListItemRender(index: number, item: RenderBagItemView) {
 		const info = this._items[index];
-		item.refresh(info.item_id, info.stack);
+		item.refreshWithCount(info.item_id, info.stack);
 	}
 
 	private onListItemClick(index: number, item: RenderBagItemView) {

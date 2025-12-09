@@ -68,7 +68,15 @@ declare interface IUIUtil {
 	 * @param defaultValue 默认值
 	 * @param showItemCount 下拉显示数量
 	 */
-	setCombox(cmb: fgui.GComboBox, items: string[], values: any[], caller?: any, changedFunc?: (evt?: Laya.Event) => void, defaultValue?: any, showItemCount?: number): void;
+	setCombox(
+		cmb: fgui.GComboBox,
+		items: string[],
+		values: any[],
+		caller?: any,
+		changedFunc?: (evt?: Laya.Event) => void,
+		defaultValue?: any,
+		showItemCount?: number
+	): void;
 
 	popAlphaIn(panel: fgui.GObject): Promise<void>;
 	popAlphaOut(panel: fgui.GObject): Promise<void>;

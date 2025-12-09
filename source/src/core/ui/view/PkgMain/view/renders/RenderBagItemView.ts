@@ -10,8 +10,14 @@ export class RenderBagItemView extends ExtensionClass<IView, RenderBagItem>(Rend
 
 	}
 
-	refresh(id: number, count: number) {
+	refreshWithCount(id: number, count: number) {
 		this.com_item.refresh(id);
 		this.txt_count.text = String(count);
+		this.txt_count.visible = true;
+	}
+
+	refreshWithoutCount(id:number) {
+		this.com_item.refresh(id);
+		this.txt_count.visible = false;
 	}
 }

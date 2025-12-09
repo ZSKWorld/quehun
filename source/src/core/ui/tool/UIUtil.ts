@@ -54,7 +54,7 @@ export class UIUtil implements IUIUtil {
 		caller?: any,
 		changedFunc?: (evt?: Laya.Event) => void,
 		defaultValue?: any,
-		showItemCount?: number
+		showItemCount: number = 0,
 	) {
 		cmb.items = items;
 		cmb.values = values;

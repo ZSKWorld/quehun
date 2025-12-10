@@ -22,7 +22,7 @@ export class ComBagItemView extends ExtensionClass<IView, ComBagItem>(ComBagItem
 		item.refreshWithCount(info.item_id, info.stack);
 	}
 
-	private onListItemClick(index: number, item: RenderBagItemView) {
+	private onListItemClick(item: RenderBagItemView, _, index: number) {
 
 	}
 }

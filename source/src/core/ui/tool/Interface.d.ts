@@ -55,7 +55,7 @@ declare interface IUIUtil {
 		virtual: boolean = true,
 		caller?: any,
 		renderFunc?: (index?: number, item?: any) => void,
-		clickFunc?: (index?:number, item?: any, evt?: Laya.Event) => void
+		clickFunc?: (item?: any, evt?: Laya.Event, index?:number) => void
 	): void;
 
 	/**

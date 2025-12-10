@@ -28,50 +28,49 @@ export class ComBagDecoView extends ExtensionClass<IView, ComBagDeco>(ComBagDeco
 
 	private onEnable() {
 		const items = this._items = $userData.bag.getItemByCategory(EItemCategory.Common);
-		// items.sort((a, b) => {
-		// 	let sort_a = a.sort;
-		// 	let sort_b = b.sort;
-		// 	if (sort_a == sort_b) {
-		// 		let _data_a = cfg.item_definition.item.get(a.info.item_id);
-		// 		let _data_b = cfg.item_definition.item.get(b.info.item_id);
+		const { _showTypes, _typeSort } = this;
+		items.sort((a, b) => {
+			const cfgItemA = $cfgMgr.item_definition.item[a.item_id];
+			const cfgItemB = $cfgMgr.item_definition.item[b.item_id];
+			const itemTypeA = cfgItemA.type;
+			const itemTypeB = cfgItemB.type;
+			const sortA = _typeSort[_showTypes.indexOf(itemTypeA)];
+			const sortB = _typeSort[_showTypes.indexOf(itemTypeB)];
+			if (sortA != sortB) return sortA - sortB;
+			if (sortA != 11) return cfgItemA.sort - cfgItemB.sort;
+			if (itemTypeA != itemTypeB) return itemTypeA - itemTypeB;
+			if (itemTypeA != EItemCommonType.BeiJingYinYue) return cfgItemA.sort - cfgItemB.sort;
+			const typeA = $cfgMgr.audio.bgm[a.item_id].type == 'lobby' ? 1 : 0;
+			const typeB = $cfgMgr.audio.bgm[b.item_id].type == 'lobby' ? 1 : 0;
+			return typeB - typeA;
 
-		// 		if (sort_a == 10) {
-
-		// 			let _item_type_a = _data_a.type;
-		// 			let _item_type_b = _data_b.type;
-		// 			if (_item_type_a == _item_type_b && _item_type_b == 9) {
-		// 				let _type_a = cfg.audio.bgm.get(a.info.item_id).type == 'lobby' ? 1 : 0;
-		// 				let _type_b = cfg.audio.bgm.get(b.info.item_id).type == 'lobby' ? 1 : 0;
-		// 				return _type_b - _type_a;
-
-		// 			} else if (_item_type_a != _item_type_b) {
-		// 				return _item_type_b - _item_type_a;
-		// 			} else {
-		// 				return _data_a.sort - _data_b.sort;
-		// 			}
-
-		// 		} else {
-		// 			return _data_a.sort - _data_b.sort;
-		// 		}
-
-		// 	} else {
-		// 		return sort_a - sort_b;
-		// 	}
-
-		// })
-		this.list_item.numItems = this._items.length;
+		});
+		this.cmb_type.selectedIndex = 0;
+		this.onCmbTypeChanged();
 	}
 
 	private onCmbTypeChanged() {
-		Logger.error(this.cmb_type.value, this.cmb_type.selectedIndex)
+		const { _items, _showItems, cmb_type, list_item } = this;
+		_showItems.length = 0;
+		const selectType = cmb_type.value as unknown as number;
+		if (selectType == -1) _showItems.push(..._items);
+		else {
+			const isMusic = selectType == EItemCommonType.BeiJingYinYue;
+			_showItems.push(..._items.filter(v => {
+				const itemType = $cfgMgr.item_definition.item[v.item_id].type;
+				// return !isMusic ? itemType == selectType : (itemType == selectType || itemType == EItemCommonType.LiZhiMusic);
+				return itemType == selectType || (isMusic && itemType == EItemCommonType.LiZhiMusic);
+			}));
+		}
+		list_item.numItems = _showItems.length;
 	}
 
 	private onListItemRender(index: number, item: RenderBagItemView) {
-		const info = this._items[index];
+		const info = this._showItems[index];
 		item.refreshWithoutCount(info.item_id);
 	}
 
-	private onListItemClick(index: number, item: RenderBagItemView) {
+	private onListItemClick(item: RenderBagItemView, _, index: number) {
 
 	}
 }

@@ -80,7 +80,7 @@ export class FGUIExtend {
 		prototype["dispatchItemEvent"] = function (item, evt) {
 			const _this = this as fgui.GList;
 			const index = _this.childIndexToItemIndex(_this.getChildIndex(item));
-			_this.displayObject.event(fgui.Events.CLICK_ITEM, [index, item, evt]);
+			_this.displayObject.event(fgui.Events.CLICK_ITEM, [item, evt, index]);
 		}
 	}
 

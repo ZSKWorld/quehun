@@ -61,7 +61,7 @@ export class UIRankMediator extends MediatorBase<UIRankView, IUIRankData> {
 		item.refresh(index, type, this._accountBrief[type][index]);
 	}
 
-	private onListRankItemClick(index: number) {
+	private onListRankItemClick(_1, _2, index: number) {
 		Logger.error("Click rank item:", index + 1);
 	}
 

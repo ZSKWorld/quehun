@@ -40,6 +40,7 @@ declare interface IGameManager {
 	get reportClientType(): string;
 	/** 重复登陆 */
 	get multiLogin(): boolean;
+	get regionLimited(): boolean;
 	init(): Promise<void>;
 	showConfirm(msg: string): Promise<boolean>;
 }

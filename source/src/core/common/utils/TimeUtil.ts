@@ -19,6 +19,13 @@ export class TimeUtil extends ObserverAll implements ITimeUtil {
 		return Math.floor(this.milliSecond / 1000);
 	}
 
+	getTimeByString(timeStr: string) {
+		const regStr = timeStr.replace(/-/g, '/');
+		const result = new Date(regStr).getTime();
+		if (result) return result;
+		return new Date(regStr.replace('+', ' utc+')).getTime();
+	}
+
 	timeFormat1(timestamp: number) {
 		this._date.setTime(timestamp);
 		return this._date.toLocaleString();

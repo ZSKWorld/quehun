@@ -87,6 +87,7 @@ export class GameManager extends ObserverAll implements IGameManager {
 		if (!stime) return false;
 		return $timeUtil.second < stime + 1.5 && stime < $timeUtil.second + 1800;
 	}
+	get regionLimited() { return this.clientType == EClientType.KR; }
 	get p2() { return "DF2vkXCnfeXp4WoGSBGNcJBufZiMN3UP" + (window["pertinent3"] || ""); }
 
 	private _hangOutTime = 0;

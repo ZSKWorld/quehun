@@ -20,6 +20,7 @@ export class ComBagDecoView extends ExtensionClass<IView, ComBagDeco>(ComBagDeco
 	private _typeStr: string[] = [
 		3889, 3890, 3891, 3892, 3893, 3894, 3917, 3895, 3896, 3897, 3898, 3899
 	].map(v => $lang(v));
+
 	override onCreate() {
 		this.displayObject.onEnable = this.onEnable.bind(this);
 		$uiUtil.setList(this.list_item, true, this, this.onListItemRender, this.onListItemClick);
@@ -27,6 +28,11 @@ export class ComBagDecoView extends ExtensionClass<IView, ComBagDeco>(ComBagDeco
 	}
 
 	private onEnable() {
+		this.cmb_type.selectedIndex = 0;
+		this.updateShowItems();
+	}
+
+	private updateShowItems() {
 		const items = this._items = $userData.bag.getItemByCategory(EItemCategory.Common);
 		const { _showTypes, _typeSort } = this;
 		items.sort((a, b) => {
@@ -43,9 +49,7 @@ export class ComBagDecoView extends ExtensionClass<IView, ComBagDeco>(ComBagDeco
 			const typeA = $cfgMgr.audio.bgm[a.item_id].type == 'lobby' ? 1 : 0;
 			const typeB = $cfgMgr.audio.bgm[b.item_id].type == 'lobby' ? 1 : 0;
 			return typeB - typeA;
-
 		});
-		this.cmb_type.selectedIndex = 0;
 		this.onCmbTypeChanged();
 	}
 
@@ -58,7 +62,6 @@ export class ComBagDecoView extends ExtensionClass<IView, ComBagDeco>(ComBagDeco
 			const isMusic = selectType == EItemCommonType.BeiJingYinYue;
 			_showItems.push(..._items.filter(v => {
 				const itemType = $cfgMgr.item_definition.item[v.item_id].type;
-				// return !isMusic ? itemType == selectType : (itemType == selectType || itemType == EItemCommonType.LiZhiMusic);
 				return itemType == selectType || (isMusic && itemType == EItemCommonType.LiZhiMusic);
 			}));
 		}

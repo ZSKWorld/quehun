@@ -1,12 +1,12 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-export default class ComBigHead extends fgui.GComponent {
+export default class ComHead extends fgui.GComponent {
 
 	protected loader_icon: fgui.GLoader;
 	public static url: string = "ui://vx9zwserq5yiobc3";
 
-	public static createInstance(): ComBigHead {
-		return <ComBigHead>(fgui.UIPackage.createObject("PkgCommon", "ComBigHead"));
+	public static createInstance(): ComHead {
+		return <ComHead>(fgui.UIPackage.createObject("PkgCommon", "ComHead"));
 	}
 
 	protected override onConstruct(): void {

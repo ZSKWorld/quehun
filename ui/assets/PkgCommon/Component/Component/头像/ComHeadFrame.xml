@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="125,125">
+  <displayList>
+    <loader id="n0_c6l6" name="icon" xy="0,0" size="125,125" url="ui://ca43vz0ehk7r7plohq" fill="scaleFree">
+      <relation target="" sidePair="width-width,height-height"/>
+    </loader>
+  </displayList>
+  <customProperty target="icon" propertyId="1"/>
+</component>

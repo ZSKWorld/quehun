@@ -24,7 +24,7 @@ export class ComBagDecoView extends ExtensionClass<IView, ComBagDeco>(ComBagDeco
 	override onCreate() {
 		this.displayObject.onEnable = this.onEnable.bind(this);
 		$uiUtil.setList(this.list_item, true, this, this.onListItemRender, this.onListItemClick);
-		$uiUtil.setCombox(this.cmb_type, this._typeStr, this._showTypes, this, this.onCmbTypeChanged);
+		$uiUtil.setCombox(this.cmb_type, this._typeStr, this._showTypes, this, this.refreshListItem);
 	}
 
 	private onEnable() {
@@ -50,10 +50,10 @@ export class ComBagDecoView extends ExtensionClass<IView, ComBagDeco>(ComBagDeco
 			const typeB = $cfgMgr.audio.bgm[b.item_id].type == 'lobby' ? 1 : 0;
 			return typeB - typeA;
 		});
-		this.onCmbTypeChanged();
+		this.refreshListItem();
 	}
 
-	private onCmbTypeChanged() {
+	private refreshListItem() {
 		const { _items, _showItems, cmb_type, list_item } = this;
 		_showItems.length = 0;
 		const selectType = cmb_type.value as unknown as number;

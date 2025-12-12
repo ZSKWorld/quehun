@@ -1,4 +1,6 @@
 import ComBagSkin from "../../../../ui/PkgMain/ComBagSkin";
+import { RenderBagSkinItem1View } from "../renders/RenderBagSkinItem1View";
+import { RenderBagSkinItem2View } from "../renders/RenderBagSkinItem2View";
 
 export const enum EComBagSkinMsg {
 
@@ -9,8 +11,10 @@ export class ComBagSkinView extends ExtensionClass<IView, ComBagSkin>(ComBagSkin
 	private _charSkins: KeyMap<number[]> = {};
 	private _showChars: number[] = [];
 	private _showSkins: number[] = [];
+	private _showIndex: number = 0;
 	override onCreate() {
 		this.displayObject.onEnable = this.onEnable.bind(this);
+		this.btn_back.onClick(this, this.refreshListChar);
 		this._allChars = $cfgMgr.item_definition.character.slice();
 		this._allChars.sort((a, b) => a.sort - b.sort);
 		$cfgMgr.item_definition.skin.forEach(x => {
@@ -21,14 +25,16 @@ export class ComBagSkinView extends ExtensionClass<IView, ComBagSkin>(ComBagSkin
 			this._charSkins[charId] = this._charSkins[charId] || [];
 			this._charSkins[charId].push(x.id);
 		});
-		this.btn_own.on(fgui.Events.STATE_CHANGED, this, this.updateShowCharsAndSkins);
+		this.btn_own.on(fgui.Events.STATE_CHANGED, this, this.refreshListChar);
+		$uiUtil.setList(this.list_char, true, this, this.onListCharItemRenderer, this.onListCharItemClick);
+		$uiUtil.setList(this.list_skin, true, this, this.onListSkinItemRenderer, this.onListSkinItemClick);
 	}
 
 	private onEnable() {
-		this.updateShowCharsAndSkins();
+		this.refreshListChar();
 	}
 
-	private updateShowCharsAndSkins() {
+	private refreshListChar() {
 		const onlyOwn = this.btn_own.selected;
 		this._showChars = this._allChars.filter(v => {
 			// 23/12/08 添加起售时间
@@ -42,7 +48,29 @@ export class ComBagSkinView extends ExtensionClass<IView, ComBagSkin>(ComBagSkin
 			}
 			return true;
 		}).map(v => v.id);
-		Logger.error(this._showChars.length, this._showChars);
+		this.list_char.numItems = this._showChars.length;
+		this.ctrl_type.selectedIndex = 0;
 	}
 
+	private refreshListSkin() {
+		this.ctrl_type.selectedIndex = 1;
+	}
+
+	private onListCharItemRenderer(index: number, item: RenderBagSkinItem1View) {
+		const charId = this._showChars[index];
+		item.refresh(charId, $userData.character.hasChar(charId));
+	}
+
+	private onListCharItemClick(_, __, index: number) {
+		this._showIndex = index;
+		this.refreshListSkin();
+	}
+
+	private onListSkinItemRenderer(index: number, item: RenderBagSkinItem2View) {
+
+	}
+
+	private onListSkinItemClick(_, __, index: number) {
+
+	}
 }

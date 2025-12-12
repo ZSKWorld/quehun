@@ -2,9 +2,11 @@
 
 import UILiaoShe from "./UILiaoShe";
 import ComMatchItem from "./ComMatchItem";
+import RenderBagSkinItem1 from "./RenderBagSkinItem1";
 import ComBagGift from "./ComBagGift";
 import ComBagDeco from "./ComBagDeco";
 import ComBagItem from "./ComBagItem";
+import RenderBagSkinItem2 from "./RenderBagSkinItem2";
 import RenderRankItem from "./RenderRankItem";
 import RenderEmailItem from "./RenderEmailItem";
 import UIActivity from "./UIActivity";
@@ -34,9 +36,11 @@ import ComMatchMode from "./ComMatchMode";
 import ComMatchContent from "./ComMatchContent";
 import { UILiaoSheView } from "../../view/PkgMain/view/uis/UILiaoSheView";
 import { ComMatchItemView } from "../../view/PkgMain/view/coms/ComMatchItemView";
+import { RenderBagSkinItem1View } from "../../view/PkgMain/view/renders/RenderBagSkinItem1View";
 import { ComBagGiftView } from "../../view/PkgMain/view/coms/ComBagGiftView";
 import { ComBagDecoView } from "../../view/PkgMain/view/coms/ComBagDecoView";
 import { ComBagItemView } from "../../view/PkgMain/view/coms/ComBagItemView";
+import { RenderBagSkinItem2View } from "../../view/PkgMain/view/renders/RenderBagSkinItem2View";
 import { RenderRankItemView } from "../../view/PkgMain/view/renders/RenderRankItemView";
 import { RenderEmailItemView } from "../../view/PkgMain/view/renders/RenderEmailItemView";
 import { UIActivityView } from "../../view/PkgMain/view/uis/UIActivityView";
@@ -69,9 +73,11 @@ export default class PkgMainBinder {
 	public static bindAll(): void {
 		fgui.UIObjectFactory.setExtension(UILiaoShe.url, UILiaoSheView);
 		fgui.UIObjectFactory.setExtension(ComMatchItem.url, ComMatchItemView);
+		fgui.UIObjectFactory.setExtension(RenderBagSkinItem1.url, RenderBagSkinItem1View);
 		fgui.UIObjectFactory.setExtension(ComBagGift.url, ComBagGiftView);
 		fgui.UIObjectFactory.setExtension(ComBagDeco.url, ComBagDecoView);
 		fgui.UIObjectFactory.setExtension(ComBagItem.url, ComBagItemView);
+		fgui.UIObjectFactory.setExtension(RenderBagSkinItem2.url, RenderBagSkinItem2View);
 		fgui.UIObjectFactory.setExtension(RenderRankItem.url, RenderRankItemView);
 		fgui.UIObjectFactory.setExtension(RenderEmailItem.url, RenderEmailItemView);
 		fgui.UIObjectFactory.setExtension(UIActivity.url, UIActivityView);

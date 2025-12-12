@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="181,181" designImage="ui://ca43vz0eq5yi7plojj" designImageOffsetX="-603" designImageOffsetY="-510" designImageAlpha="0">
-  <controller name="lock" pages="0,,1," selected="1"/>
-  <controller name="dynamic" pages="0,,1," selected="1"/>
+<component size="181,181" pivot="0.5,0.5" extention="Button" designImage="ui://ca43vz0eq5yi7plojj" designImageOffsetX="-603" designImageOffsetY="-510" designImageAlpha="0">
+  <controller name="lock" pages="0,,1," selected="0"/>
+  <controller name="dynamic" pages="0,,1," selected="0"/>
   <displayList>
     <image id="n5_gsi2" name="bg" src="q5yiobc1" fileName="Texture/img_125.png" pkg="vx9zwser" xy="4,4" size="173,173"/>
-    <component id="n3_gsi2" name="n3" src="q5yiobc3" fileName="Component/Component/头像/ComBigHead.xml" pkg="vx9zwser" xy="4,4" size="173,173"/>
+    <component id="n3_gsi2" name="head" src="q5yiobc3" fileName="Component/Component/头像/ComBigHead.xml" pkg="vx9zwser" xy="4,4" size="173,173"/>
     <image id="n10_gsi2" name="n10" src="gsi2obbu" fileName="Texture/img_1176.png" xy="8,8">
       <gearDisplay controller="dynamic" pages="1"/>
     </image>
-    <loader id="n11_gsi2" name="n11" xy="4,107" size="70,70" url="ui://vith2b66gsi2obbw">
+    <loader id="n11_gsi2" name="n11" xy="4,107" size="70,70" url="ui://vith2b66gsi2obbv">
       <gearIcon controller="dynamic" pages="1" values="ui://vith2b66gsi2obbw" default="ui://vith2b66gsi2obbv"/>
     </loader>
     <image id="n7_gsi2" name="n7" src="ieavob7l" fileName="Texture/img_112.png" pkg="vx9zwser" xy="4,4" size="173,173" alpha="0.7">
@@ -25,4 +25,5 @@
       <gearDisplay controller="lock" pages="1"/>
     </text>
   </displayList>
+  <Button downEffect="scale" downEffectValue="0.9"/>
 </component>

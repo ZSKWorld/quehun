@@ -103,7 +103,7 @@
     <component id="hdeoobbj" name="VScrollBar2.xml" path="/Component/ScrollBar/" exported="true"/>
     <image id="hdeoobbk" name="img_677.png" path="/Texture/" exported="true"/>
     <image id="hdeoobbl" name="img_70.png" path="/Texture/" exported="true" scale="9grid" scale9grid="0,4,6,2"/>
-    <component id="hdeoobbn" name="ComSmallHead.xml" path="/Component/Component/头像/" exported="true"/>
+    <component id="hdeoobbn" name="ComHead2.xml" path="/Component/Component/头像/" exported="true"/>
     <component id="hdeoobbo" name="ComTitle1.xml" path="/Component/Component/称号/" exported="true"/>
     <component id="hdeoobbp" name="ComName1.xml" path="/Component/Component/名字/" exported="true"/>
     <component id="hdeoobbq" name="ComLevel1.xml" path="/Component/Component/段位/" exported="true"/>
@@ -116,7 +116,7 @@
     <image id="q5yiobc0" name="img_3555.png" path="/Texture/" exported="true" scale="9grid" scale9grid="59,58,123,87"/>
     <image id="q5yiobc1" name="img_125.png" path="/Texture/" exported="true" scale="9grid" scale9grid="4,4,2,2"/>
     <component id="q5yiobc2" name="ComItem1.xml" path="/Component/Component/物品/" exported="true"/>
-    <component id="q5yiobc3" name="ComBigHead.xml" path="/Component/Component/头像/" exported="true"/>
+    <component id="q5yiobc3" name="ComHead.xml" path="/Component/Component/头像/" exported="true"/>
     <image id="q5yiobc4" name="img_1137.png" path="/Texture/" exported="true"/>
     <image id="q5yiobc5" name="img_1138.png" path="/Texture/" exported="true"/>
     <image id="gsi2obc6" name="img_1026.png" path="/Texture/" exported="true"/>
@@ -207,7 +207,7 @@
     <component id="gsi2obem" name="CmbCommon1_popup.xml" path="/Component/ComboBox/"/>
     <component id="gsi2oben" name="CmbCommon1.xml" path="/Component/ComboBox/" exported="true"/>
     <image id="gsi2obeo" name="img_643.png" path="/Texture/" exported="true"/>
-    <component id="gsi2obeq" name="ComBigHead1.xml" path="/Component/Component/头像/" exported="true"/>
+    <component id="gsi2obeq" name="ComHead1.xml" path="/Component/Component/头像/" exported="true"/>
     <image id="gsi2ober" name="img_755.png" path="/Texture/" exported="true"/>
     <image id="mde1b7o" name="img_1061.png" path="/Texture/" exported="true"/>
     <image id="mde1b7f" name="img_715.png" path="/Texture/" exported="true"/>
@@ -225,6 +225,8 @@
     <font id="rpakobf2" name="youyuan.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
     <component id="rpakobf5" name="ComItem.xml" path="/Component/Component/物品/" exported="true"/>
     <component id="si7robf6" name="UIItemDetail.xml" path="/" exported="true"/>
+    <image id="c6l6obf7" name="img_658.png" path="/Texture/" exported="true"/>
+    <component id="c6l6obf8" name="ComHeadFrame.xml" path="/Component/Component/头像/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

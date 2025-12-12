@@ -1,7 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1407,919">
+<component size="1407,919" designImage="ui://ca43vz0eq5yi7plojj" designImageOffsetX="-411" designImageOffsetY="-58" designImageAlpha="0">
+  <controller name="type" pages="0,char,1,skin" selected="1"/>
   <displayList>
-    <list id="n26_gsi2" name="skin" xy="0,150" size="1370,769" layout="flow_hz" overflow="scroll" scrollBarRes="ui://vx9zwserhdeoobbj," lineGap="19" colGap="46" defaultItem="ui://vith2b66gsi2obbq" autoClearItems="true">
+    <image id="n36_c6l6" name="n36" src="rpakobf6" fileName="Texture/img_195.png" xy="52,420" size="1294,4">
+      <gearDisplay controller="type" pages="1"/>
+    </image>
+    <list id="n26_gsi2" name="char" xy="0,150" size="1370,769" layout="flow_hz" overflow="scroll" scrollBarFlags="4" scrollBarRes="ui://vx9zwserhdeoobbj," lineGap="19" colGap="46" defaultItem="ui://vith2b66gsi2obbq" autoClearItems="true">
+      <gearDisplay controller="type" pages="0"/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+    </list>
+    <list id="n30_c6l6" name="skin" xy="192,452" size="1034,464" layout="flow_hz" overflow="scroll" scrollBarFlags="4" scrollBarRes="ui://vx9zwserhdeoobbj," lineGap="19" colGap="22" defaultItem="ui://vith2b66gsi2obbz" autoClearItems="true">
+      <gearDisplay controller="type" pages="1"/>
       <item/>
       <item/>
       <item/>
@@ -44,5 +89,23 @@
     <component id="n29_rpak" name="filter" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1327,0" size="80,80">
       <Button icon="ui://vx9zwserrpakobes"/>
     </component>
+    <component id="n31_c6l6" name="choosedChar" src="gsi2obbq" fileName="Component/UIBag/RenderBagSkinItem1.xml" xy="598,212" touchable="false">
+      <gearDisplay controller="type" pages="1"/>
+    </component>
+    <component id="n33_c6l6" name="back" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="16,138" size="145,64" scale="0.85,0.85">
+      <gearDisplay controller="type" pages="1"/>
+      <Button icon="ui://vith2b66w29kob8g"/>
+    </component>
+    <component id="n34_c6l6" name="toRight" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="842,273" size="68,59" scale="1.2,1.2">
+      <gearDisplay controller="type" pages="1"/>
+      <Button icon="ui://vx9zwserc6l6obf7"/>
+    </component>
+    <component id="n35_c6l6" name="toLeft" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="464,275" size="68,59" scale="-1.2,1.2">
+      <gearDisplay controller="type" pages="1"/>
+      <Button icon="ui://vx9zwserc6l6obf7"/>
+    </component>
+    <text id="n32_c6l6" name="name" xy="620,143" pivot="0.5,0.5" size="138,52" fontSize="38" color="#deae7a" ubb="true" text="一姬 [size=30]2/7[/size]">
+      <gearDisplay controller="type" pages="1"/>
+    </text>
   </displayList>
 </component>

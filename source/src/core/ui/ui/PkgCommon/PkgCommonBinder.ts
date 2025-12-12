@@ -1,8 +1,9 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import ComHeadFrame from "./ComHeadFrame";
 import CmbCommon1_popup from "./CmbCommon1_popup";
-import ComBigHead1 from "./ComBigHead1";
-import ComSmallHead from "./ComSmallHead";
+import ComHead1 from "./ComHead1";
+import ComHead2 from "./ComHead2";
 import ComTitle1 from "./ComTitle1";
 import ComName1 from "./ComName1";
 import ComLevel1 from "./ComLevel1";
@@ -15,12 +16,13 @@ import BtnCheckTxtRight from "./BtnCheckTxtRight";
 import BtnCheckRichTxtRight from "./BtnCheckRichTxtRight";
 import ComBack from "./ComBack";
 import ComItem1 from "./ComItem1";
-import ComBigHead from "./ComBigHead";
+import ComHead from "./ComHead";
 import ComItem from "./ComItem";
 import UIItemDetail from "./UIItemDetail";
 import PbLoading2 from "./PbLoading2";
-import { ComBigHead1View } from "../../view/PkgCommon/view/coms/ComBigHead1View";
-import { ComSmallHeadView } from "../../view/PkgCommon/view/coms/ComSmallHeadView";
+import { ComHeadFrameView } from "../../view/PkgCommon/view/coms/ComHeadFrameView";
+import { ComHead1View } from "../../view/PkgCommon/view/coms/ComHead1View";
+import { ComHead2View } from "../../view/PkgCommon/view/coms/ComHead2View";
 import { ComTitle1View } from "../../view/PkgCommon/view/coms/ComTitle1View";
 import { ComName1View } from "../../view/PkgCommon/view/coms/ComName1View";
 import { ComLevel1View } from "../../view/PkgCommon/view/coms/ComLevel1View";
@@ -32,15 +34,16 @@ import { BtnCheckTxtRightView } from "../../view/PkgCommon/view/btns/BtnCheckTxt
 import { BtnCheckRichTxtRightView } from "../../view/PkgCommon/view/btns/BtnCheckRichTxtRightView";
 import { ComBackView } from "../../view/PkgCommon/view/coms/ComBackView";
 import { ComItem1View } from "../../view/PkgCommon/view/coms/ComItem1View";
-import { ComBigHeadView } from "../../view/PkgCommon/view/coms/ComBigHeadView";
+import { ComHeadView } from "../../view/PkgCommon/view/coms/ComHeadView";
 import { ComItemView } from "../../view/PkgCommon/view/coms/ComItemView";
 import { UIItemDetailView } from "../../view/PkgCommon/view/uis/UIItemDetailView";
 
 export default class PkgCommonBinder {
 	public static bindAll(): void {
+		fgui.UIObjectFactory.setExtension(ComHeadFrame.url, ComHeadFrameView);
 		fgui.UIObjectFactory.setExtension(CmbCommon1_popup.url, CmbCommon1_popup);
-		fgui.UIObjectFactory.setExtension(ComBigHead1.url, ComBigHead1View);
-		fgui.UIObjectFactory.setExtension(ComSmallHead.url, ComSmallHeadView);
+		fgui.UIObjectFactory.setExtension(ComHead1.url, ComHead1View);
+		fgui.UIObjectFactory.setExtension(ComHead2.url, ComHead2View);
 		fgui.UIObjectFactory.setExtension(ComTitle1.url, ComTitle1View);
 		fgui.UIObjectFactory.setExtension(ComName1.url, ComName1View);
 		fgui.UIObjectFactory.setExtension(ComLevel1.url, ComLevel1View);
@@ -53,7 +56,7 @@ export default class PkgCommonBinder {
 		fgui.UIObjectFactory.setExtension(BtnCheckRichTxtRight.url, BtnCheckRichTxtRightView);
 		fgui.UIObjectFactory.setExtension(ComBack.url, ComBackView);
 		fgui.UIObjectFactory.setExtension(ComItem1.url, ComItem1View);
-		fgui.UIObjectFactory.setExtension(ComBigHead.url, ComBigHeadView);
+		fgui.UIObjectFactory.setExtension(ComHead.url, ComHeadView);
 		fgui.UIObjectFactory.setExtension(ComItem.url, ComItemView);
 		fgui.UIObjectFactory.setExtension(UIItemDetail.url, UIItemDetailView);
 		fgui.UIObjectFactory.setExtension(PbLoading2.url, PbLoading2);

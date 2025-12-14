@@ -10,4 +10,16 @@ export class RenderBagSkinItem2View extends ExtensionClass<IView, RenderBagSkinI
 		
 	}
 
+	refresh(skinId: number, own: boolean) {
+		this.com_head.refreshBigHead(skinId);
+		const cfgSkin = $cfgMgr.item_definition.skin[skinId];
+		this.ctrl_lock.selectedIndex = own ? 0 : (cfgSkin.type ? 2 : 1);
+		this.ctrl_dynamic.selectedIndex = cfgSkin.spine_type ? 1 : 0;
+		if (!own) {
+			if ($gameMgr.language == ELanguage.EN)
+				this.txt_desc.text = cfgSkin.name_en;
+			else
+				this.txt_desc.text = $langCfg(cfgSkin, "lock_tips");
+		}
+	}
 }

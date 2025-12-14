@@ -81,6 +81,12 @@ export class InitGlobalCommand extends Command {
 			return ConstDefine.LangResDir + $gameMgr.language + "/" + url;
 		});
 
+		$windowImmit("$langCfg", function (obj: object, key: string) {
+			if (!obj) return "";
+			if (typeof obj != "object") return "";
+			return obj[key + "_" + $gameMgr.language];
+		});
+
 		$windowImmit("$showNetError", function (error: IError) {
 			if (!error) return;
 			const code = error.code;

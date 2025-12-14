@@ -9,6 +9,7 @@ export default class RenderBagSkinItem2 extends fgui.GButton {
 	protected img_bg: fgui.GImage;
 	protected com_head: ComHeadView;
 	protected img_bound: fgui.GImage;
+	protected txt_desc: fgui.GTextField;
 	public static url: string = "ui://vith2b66gsi2obbz";
 
 	public static createInstance(): RenderBagSkinItem2 {
@@ -21,5 +22,6 @@ export default class RenderBagSkinItem2 extends fgui.GButton {
 		this.img_bg = <fgui.GImage>(this.getChildAt(0));
 		this.com_head = <ComHeadView>(this.getChildAt(1));
 		this.img_bound = <fgui.GImage>(this.getChildAt(7));
+		this.txt_desc = <fgui.GTextField>(this.getChildAt(8));
 	}
 }

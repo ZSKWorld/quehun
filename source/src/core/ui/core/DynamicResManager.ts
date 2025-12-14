@@ -42,6 +42,7 @@ export class DynamicResManager implements IDynamicResManager {
                 Laya.loader.clearRes(path);
                 this._resMap.delete(path);
             }
-        });
+		});
+		Logger.error("清理动态资源");
     }
 }

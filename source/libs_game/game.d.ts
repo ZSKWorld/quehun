@@ -60,6 +60,8 @@ declare function $lang(id: number, ...args: any[]): string;
 declare function $netLang(id: number, ...args: any[]): string;
 /** 本地化资源，bin/langRes/xx/下的资源 */
 declare function $langRes(url: string): string;
+/** 本地化表字段 */
+declare function $langCfg(obj: object, key: string): string;
 /** 限时网络错误码弹窗 */
 declare function $showNetError(res: IError): void;
 

@@ -43,6 +43,8 @@ export class CharacterVO extends BaseVO implements VO.ICharacterVO {
 		this.characterSort = [...res.character_sort];
 		this.hiddenCharacters = [...res.hidden_characters];
 		this.otherCharacterSort = [...res.other_character_sort];
+
+		this.refreshCharDefaultSkin();
 	}
 
 	@InterestMessage(ENotify.NotifyAccountUpdate)
@@ -58,6 +60,16 @@ export class CharacterVO extends BaseVO implements VO.ICharacterVO {
 			skins.forEach(v => this.skins[v] = true);
 			finished_endings.forEach(v => this.finishedEndings[v] = true);
 			rewarded_endings.forEach(v => this.rewardedEndings[v] = true);
+			this.refreshCharDefaultSkin();
+		}
+	}
+
+	private refreshCharDefaultSkin() {
+		for (const key in this.characters) {
+			const e = this.characters[key];
+			const cfgChar = $cfgMgr.item_definition.character[e.charid];
+			if (!cfgChar) continue;
+			this.skins[cfgChar.init_skin] = true;
 		}
 	}
 }

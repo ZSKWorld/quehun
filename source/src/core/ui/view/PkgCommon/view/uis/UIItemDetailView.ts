@@ -15,4 +15,8 @@ export class UIItemDetailView extends ExtensionClass<IView, UIItemDetail>(UIItem
 		btn_confirm.onClick(this, this.sendEvent, [EUIItemDetailMsg.OnBtnConfirmClick]);
 	}
 
+	refresh(id: number) {
+
+	}
+
 }

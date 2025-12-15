@@ -148,6 +148,13 @@ declare interface IMathUtil {
 	symbol(num: number): -1 | 0 | 1;
 }
 
+declare interface IItemView {
+	name: string;
+	icon: string;
+	desc: string;
+	func?: string;
+}
+
 declare interface IGameUtil {
 	createUUID(): string;
 	/** 随机颜色字符串 */
@@ -200,4 +207,9 @@ declare interface ILocalDataManager {
 	remove(key: ELocalDataKey): void;
 
 	removeAll(): void;
+}
+
+declare interface IItemUtil {
+	getItemType(id: number): EItemType;
+	getItemView(id: number): IItemView;
 }

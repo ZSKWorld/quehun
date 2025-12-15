@@ -86,6 +86,22 @@ EMouseEventType = {
 	MouseDragEnd: "mousedragend",
 }
 
+/** 全局物品类型 */
+EItemType = {
+	/** 货币 */
+	Currency: 1,
+	/** 角色 */
+	Character: 2,
+	/** 道具 */
+	Item: 3,
+	/** 皮肤 */
+	Skin: 4,
+	/** 称号 */
+	Title: 5,
+	/** 可获得物品 */
+	FuncItem: 6,
+}
+
 /** 装扮类别 item.category */
 EItemCategory = {
 	/** 道具 */

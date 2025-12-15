@@ -23,6 +23,7 @@ export class ComBagItemView extends ExtensionClass<IView, ComBagItem>(ComBagItem
 	}
 
 	private onListItemClick(item: RenderBagItemView, _, index: number) {
-
+		const info = this._items[index];
+		this.openView(EViewID.UIItemDetailView, info.item_id);
 	}
 }

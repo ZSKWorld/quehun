@@ -25,7 +25,7 @@ import { ComItemView } from "../core/ui/view/PkgCommon/view/coms/ComItemView";
 import { ComItem1View } from "../core/ui/view/PkgCommon/view/coms/ComItem1View";
 import { ComLevel1View } from "../core/ui/view/PkgCommon/view/coms/ComLevel1View";
 import { ComName1View } from "../core/ui/view/PkgCommon/view/coms/ComName1View";
-import { ComTitle1View } from "../core/ui/view/PkgCommon/view/coms/ComTitle1View";
+import { ComTitleView } from "../core/ui/view/PkgCommon/view/coms/ComTitleView";
 import { ComBagDecoView } from "../core/ui/view/PkgMain/view/coms/ComBagDecoView";
 import { ComBagGiftView } from "../core/ui/view/PkgMain/view/coms/ComBagGiftView";
 import { ComBagIllustView } from "../core/ui/view/PkgMain/view/coms/ComBagIllustView";
@@ -123,7 +123,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.ComItem1View, EViewType.Component, ComItem1View);
 		register(EViewID.ComLevel1View, EViewType.Component, ComLevel1View);
 		register(EViewID.ComName1View, EViewType.Component, ComName1View);
-		register(EViewID.ComTitle1View, EViewType.Component, ComTitle1View);
+		register(EViewID.ComTitleView, EViewType.Component, ComTitleView);
 		register(EViewID.ComBagDecoView, EViewType.Component, ComBagDecoView);
 		register(EViewID.ComBagGiftView, EViewType.Component, ComBagGiftView);
 		register(EViewID.ComBagIllustView, EViewType.Component, ComBagIllustView);

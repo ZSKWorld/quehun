@@ -9,9 +9,14 @@ export class ComItemView extends ExtensionClass<IView, ComItem>(ComItem) impleme
 		this.displayObject.onDisable = this.onDisable.bind(this);
 	}
 
-	refresh(id: number) {
-		const cfgItem = $cfgMgr.item_definition.item[id];
-		$dynamicResMgr.setLoader(this.loader_icon, $langRes(cfgItem.icon));
+	refreshIcon(id: number) {
+		const iconPath = $itemUtil.getItemView(id).icon;
+		$dynamicResMgr.setLoader(this.loader_icon, iconPath);
+	}
+
+	refreshItemIcon(id: number) {
+		const iconPath = $itemUtil.getItemView(id).itemIcon;
+		$dynamicResMgr.setLoader(this.loader_icon, iconPath);
 	}
 
 	private onDisable() {

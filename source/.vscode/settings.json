@@ -38,7 +38,7 @@
     "typescript.inlayHints.variableTypes.enabled": true,
     "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
     "typescript.tsdk": "node_modules\\typescript\\lib",
-    // "typescript.experimental.useTsgo": true,
+    "typescript.experimental.useTsgo": false,
     "javascript.updateImportsOnFileMove.enabled": "always",
     "files.exclude": {
         ".laya": true,

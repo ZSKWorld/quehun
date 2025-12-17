@@ -18,6 +18,7 @@ export class UIItemDetailView extends ExtensionClass<IView, UIItemDetail>(UIItem
 	refresh(id: number) {
 		const { txt_name, com_item, txt_desc1, txt_desc2 } = this;
 		com_item.refresh(id);
+		Logger.error($cfgMgr.item_definition.item[id])
 	}
 
 }

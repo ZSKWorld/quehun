@@ -5,6 +5,7 @@ import { MathUtil } from "../core/common/math/MathUtil";
 import { SkeletonManager } from "../core/common/skeleton/SkeletonManager";
 import { SpineManager } from "../core/common/skeleton/SpineManager";
 import { GameUtil } from "../core/common/utils/GameUtil";
+import { ItemUtil } from "../core/common/utils/ItemUtil";
 import { TimeUtil } from "../core/common/utils/TimeUtil";
 import { ConfigManager } from "../core/config/ConfigManager";
 import { Command } from "../core/mvc/controller/Command";
@@ -25,6 +26,7 @@ export class InitGlobalCommand extends Command {
 	override execute(notifyName: string, data?: any) {
 		$windowImmit("$facade", Facade.Inst);
 		$windowImmit("$uiUtil", new UIUtil());
+		$windowImmit("$itemUtil", new ItemUtil());
 		$windowImmit("$netMgr", new NetManager());
 		$windowImmit("$timeUtil", new TimeUtil());
 		$windowImmit("$uiMgr", new UIManager());
@@ -78,6 +80,7 @@ export class InitGlobalCommand extends Command {
 		});
 
 		$windowImmit("$langRes", function (url: string) {
+			if (!url) return url;
 			return ConstDefine.LangResDir + $gameMgr.language + "/" + url;
 		});
 

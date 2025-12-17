@@ -10,12 +10,17 @@ export class ComHeadFrameView extends ExtensionClass<IView, ComHeadFrame>(ComHea
 		this.displayObject.onDisable = this.onDisable.bind(this);
 	}
 
-	refresh(frameId: number) {
+	refreshIcon(id: number) {
 		// const d_item = $cfgMgr.item_definition.item[frameId];
 		// if (!d_item || (!d_item.cross_view && !$gameUtil.isSameZone($userData.account.account_id, account_id)))
 		// 	frameId = 305501;
-		const viewCfg = $cfgMgr.item_definition.view[frameId];
-		const framePath = viewCfg ? $langRes(`extendRes/head_frame/${ viewCfg.res_name }.png`) : "";
+		const framePath = $itemUtil.getItemView(id).icon;
+		$dynamicResMgr.setLoader(this.loader_icon, framePath);
+	}
+
+
+	refreshItemIcon(id: number) {
+		const framePath = $itemUtil.getItemView(id).itemIcon;
 		$dynamicResMgr.setLoader(this.loader_icon, framePath);
 	}
 

@@ -13,7 +13,7 @@ export class ComHead2View extends ExtensionClass<IView, ComHead2>(ComHead2) impl
 	refresh(data: { account_id: number, avatar_id: number, avatar_frame?: number }) {
 		const { avatar_id, avatar_frame, account_id } = data;
 		this.com_head.refreshSmallHead(avatar_id);
-		this.com_frame.refresh(avatar_frame);
+		this.com_frame.refreshIcon(avatar_frame);
 	}
 
 }

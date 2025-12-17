@@ -20,7 +20,7 @@ export class RenderRankItemView extends ExtensionClass<IView, RenderRankItem>(Re
 		!top3 && (txt_rank.text = String(rank + 1));
 		com_head.refresh(data);
 		com_name.refresh(data);
-		com_title.refresh(data);
+		com_title.refreshIcon(data);
 		com_level.refresh(type == EUIRankType.SiMa ? data.level : data.level3);
 	}
 }

@@ -150,7 +150,10 @@ declare interface IMathUtil {
 
 declare interface IItemView {
 	name: string;
+	/** 正式使用的图标，半透明背景 */
 	icon: string;
+	/** 显示在物品详情的图标，非半透明背景 */
+	itemIcon: string;
 	desc: string;
 	func?: string;
 }

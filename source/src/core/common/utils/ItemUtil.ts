@@ -14,61 +14,70 @@ export class ItemUtil implements IItemUtil {
 	getItemView(id: number) {
 		if (this._itemView[id]) return this._itemView[id];
 		const idType = this.getItemType(id);
-		let name: string, icon: string, desc: string, func: string;
+		let name = "", icon = "", itemIcon = "", desc = "", func: string;
 		switch (idType) {
 			case EItemType.Currency:
-				const d_currency = $cfgMgr.item_definition.currency[id];
-				if (d_currency) {
-					name = $langCfg(d_currency, "name");
-					icon = d_currency.icon_jpg;
-					desc = $langCfg(d_currency, "desc");
+				const currencyCfg = $cfgMgr.item_definition.currency[id];
+				if (currencyCfg) {
+					name = $langCfg(currencyCfg, "name");
+					icon = currencyCfg.icon;
+					itemIcon = currencyCfg.icon_jpg;
+					desc = $langCfg(currencyCfg, "desc");
 				}
 				break;
 			case EItemType.Character:
-				const d_character = $cfgMgr.item_definition.character[id];
-				if (d_character) {
-					const d_skin = $cfgMgr.item_definition.skin[d_character.init_skin];
-					name = $langCfg(d_character, "name");
+				const characterCfg = $cfgMgr.item_definition.character[id];
+				if (characterCfg) {
+					const d_skin = $cfgMgr.item_definition.skin[characterCfg.init_skin];
+					name = $langCfg(characterCfg, "name");
 					icon = d_skin.path + '/bighead.png';
-					desc = $langCfg(d_character, "desc_item");
+					desc = $langCfg(characterCfg, "desc_item");
 				}
 				break;
 			case EItemType.Item:
-				const d_item = $cfgMgr.item_definition.item[id];
-				if (d_item) {
-					name = $langCfg(d_item, "name");
-					icon = d_item.icon;
-					desc = $langCfg(d_item, "desc");
-					func = $langCfg(d_item, "desc_func");
+				const itemCfg = $cfgMgr.item_definition.item[id];
+				if (itemCfg) {
+					name = $langCfg(itemCfg, "name");
+					icon = itemCfg.icon_transparent;
+					itemIcon = itemCfg.icon;
+					desc = $langCfg(itemCfg, "desc");
+					func = $langCfg(itemCfg, "desc_func");
+					if (itemCfg.category == EItemCategory.Common && itemCfg.type == EItemCommonType.HeadFrame) {
+						const viewCfg = $cfgMgr.item_definition.view[id];
+						icon = viewCfg ? `extendRes/head_frame/${ viewCfg.res_name }.png` : "";
+					}
 				}
 				break;
 			case EItemType.Skin:
-				const d_skin = $cfgMgr.item_definition.skin[id];
-				if (d_skin) {
-					name = $langCfg(d_skin, "name");
-					icon = d_skin.path + '/bighead.png';
-					desc = $langCfg(d_skin, "desc");
+				const skinCfg = $cfgMgr.item_definition.skin[id];
+				if (skinCfg) {
+					name = $langCfg(skinCfg, "name");
+					icon = skinCfg.path + '/bighead.png';
+					desc = $langCfg(skinCfg, "desc");
 				}
 				break;
 			case EItemType.Title:
-				const d_title = $cfgMgr.item_definition.title[id];
-				if (d_title) {
-					name = $langCfg(d_title, "name");
-					icon = d_title.icon_item;
-					desc = $langCfg(d_title, "desc");
+				const titleCfg = $cfgMgr.item_definition.title[id];
+				if (titleCfg) {
+					name = $langCfg(titleCfg, "name");
+					icon = titleCfg.icon;
+					itemIcon = titleCfg.icon_item;
+					desc = $langCfg(titleCfg, "desc");
 				}
+				icon = icon || "extendRes/title/notitle.png";
 				break;
 			case EItemType.FuncItem:
-				const d_function = $cfgMgr.item_definition.function_item[id];
-				if (d_function) {
-					name = $lang(d_function.name);
-					icon = d_function.icon;
-					desc = $lang(d_function.desc);
-					func = $lang(d_function.desc_func);
+				const funcItemCfg = $cfgMgr.item_definition.function_item[id];
+				if (funcItemCfg) {
+					name = $lang(funcItemCfg.name);
+					icon = funcItemCfg.icon_transparent;
+					itemIcon = funcItemCfg.icon;
+					desc = $lang(funcItemCfg.desc);
+					func = $lang(funcItemCfg.desc_func);
 				}
 				break;
 		}
-		this._itemView[id] = { name, icon, desc, func };
+		this._itemView[id] = { name, icon: $langRes(icon), itemIcon: $langRes(itemIcon), desc, func };
 		return this._itemView[id];
 	}
 }

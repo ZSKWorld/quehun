@@ -11,6 +11,6 @@ export class ComItem1View extends ExtensionClass<IView, ComItem1>(ComItem1) impl
 	}
 
 	refresh(id: number) {
-		this.com_item.refresh(id);
+		this.com_item.refreshItemIcon(id);
 	}
 }

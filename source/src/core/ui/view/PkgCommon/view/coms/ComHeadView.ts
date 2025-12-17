@@ -11,15 +11,13 @@ export class ComHeadView extends ExtensionClass<IView, ComHead>(ComHead) impleme
 	}
 
 	refreshBigHead(skinId: number) {
-		const skinCfg = $cfgMgr.item_definition.skin[skinId];
-		const headPath = skinCfg ? $langRes(`${ skinCfg.path }/bighead.png`) : "";
+		const headPath = $itemUtil.getItemView(skinId).icon;
 		$dynamicResMgr.setLoader(this.loader_icon, headPath);
 	}
 
 	refreshSmallHead(skinId: number) {
-		const skinCfg = $cfgMgr.item_definition.skin[skinId];
-		const headPath = skinCfg ? $langRes(`${ skinCfg.path }/smallhead.png`) : "";
-		$dynamicResMgr.setLoader(this.loader_icon, headPath);
+		const headPath = $itemUtil.getItemView(skinId).icon;
+		$dynamicResMgr.setLoader(this.loader_icon, headPath.replace("bighead", "smallhead"));
 	}
 
 	private onDisable() {

@@ -32,6 +32,7 @@ declare const $sceneMgr: ISceneManager;
 declare const $facade: IFacade;
 declare const $pbMgr: IPbManager;
 declare const $localDataMgr: ILocalDataManager;
+declare const $itemUtil: IItemUtil;
 declare const $gameUtil: IGameUtil;
 declare const $redDotMgr: IRedDotManager;
 declare const $timeUtil: ITimeUtil;

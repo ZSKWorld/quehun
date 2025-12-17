@@ -4,7 +4,7 @@ import ComHeadFrame from "./ComHeadFrame";
 import CmbCommon1_popup from "./CmbCommon1_popup";
 import ComHead1 from "./ComHead1";
 import ComHead2 from "./ComHead2";
-import ComTitle1 from "./ComTitle1";
+import ComTitle from "./ComTitle";
 import ComName1 from "./ComName1";
 import ComLevel1 from "./ComLevel1";
 import UILoading from "./UILoading";
@@ -23,7 +23,6 @@ import PbLoading2 from "./PbLoading2";
 import { ComHeadFrameView } from "../../view/PkgCommon/view/coms/ComHeadFrameView";
 import { ComHead1View } from "../../view/PkgCommon/view/coms/ComHead1View";
 import { ComHead2View } from "../../view/PkgCommon/view/coms/ComHead2View";
-import { ComTitle1View } from "../../view/PkgCommon/view/coms/ComTitle1View";
 import { ComName1View } from "../../view/PkgCommon/view/coms/ComName1View";
 import { ComLevel1View } from "../../view/PkgCommon/view/coms/ComLevel1View";
 import { UILoadingView } from "../../view/PkgCommon/view/uis/UILoadingView";
@@ -37,6 +36,7 @@ import { ComItem1View } from "../../view/PkgCommon/view/coms/ComItem1View";
 import { ComHeadView } from "../../view/PkgCommon/view/coms/ComHeadView";
 import { ComItemView } from "../../view/PkgCommon/view/coms/ComItemView";
 import { UIItemDetailView } from "../../view/PkgCommon/view/uis/UIItemDetailView";
+import { ComTitleView } from "../../view/PkgCommon/view/coms/ComTitleView";
 
 export default class PkgCommonBinder {
 	public static bindAll(): void {
@@ -44,7 +44,7 @@ export default class PkgCommonBinder {
 		fgui.UIObjectFactory.setExtension(CmbCommon1_popup.url, CmbCommon1_popup);
 		fgui.UIObjectFactory.setExtension(ComHead1.url, ComHead1View);
 		fgui.UIObjectFactory.setExtension(ComHead2.url, ComHead2View);
-		fgui.UIObjectFactory.setExtension(ComTitle1.url, ComTitle1View);
+		fgui.UIObjectFactory.setExtension(ComTitle.url, ComTitleView);
 		fgui.UIObjectFactory.setExtension(ComName1.url, ComName1View);
 		fgui.UIObjectFactory.setExtension(ComLevel1.url, ComLevel1View);
 		fgui.UIObjectFactory.setExtension(UILoading.url, UILoadingView);

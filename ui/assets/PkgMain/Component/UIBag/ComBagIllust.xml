@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1430,924">
-  <controller name="type" pages="0,道具,1,礼物,2,装扮,3,服饰,4,插画" selected="4"/>
+<component size="1430,924" designImage="ui://ca43vz0eq5yi7plojh" designImageOffsetX="-402" designImageOffsetY="-52" designImageAlpha="0" designImageLayer="1">
+  <controller name="type" pages="0,道具,1,礼物,2,装扮,3,服饰,4,插画" selected="0"/>
   <displayList>
-    <list id="n38_rpak" name="n38" xy="0,254" size="1371,670" layout="flow_hz" overflow="scroll" scrollBarFlags="4" scrollBarMargin="0,10,0,0" scrollBarRes="ui://vx9zwserhdeoobbj," lineGap="6" colGap="10" defaultItem="ui://vith2b66rpakobc1" autoClearItems="true">
+    <list id="n38_rpak" name="illust" xy="0,254" size="1371,670" layout="flow_hz" overflow="scroll" scrollBarFlags="4" scrollBarMargin="0,10,0,0" scrollBarRes="ui://vx9zwserhdeoobbj," lineGap="6" colGap="10" defaultItem="ui://vith2b66rpakobc1" autoClearItems="true">
       <item/>
       <item/>
       <item/>
@@ -12,7 +12,7 @@
       <item/>
       <item/>
     </list>
-    <component id="n39_rpak" name="n39" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="1161,0" size="269,70">
+    <component id="n39_rpak" name="cancel" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="1161,0" size="269,70">
       <gearDisplay controller="type" pages="0"/>
       <Button title="全部取消" titleColor="#fcba72" titleFontSize="31" icon="ui://vx9zwsergsi2obee"/>
     </component>

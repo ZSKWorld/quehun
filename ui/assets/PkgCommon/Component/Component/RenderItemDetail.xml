@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="607,67">
+  <displayList>
+    <text id="n26_xmej" name="desc" xy="0,14" size="124,42" fontSize="30" color="#95e735" text="商家购买"/>
+    <component id="n27_xmej" name="goto" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="437,0" size="170,67">
+      <Button title="前往" titleColor="#6d2e3a" titleFontSize="31" icon="ui://vx9zwserj0ddob73"/>
+    </component>
+  </displayList>
+</component>

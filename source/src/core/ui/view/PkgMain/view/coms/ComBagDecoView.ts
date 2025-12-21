@@ -75,7 +75,7 @@ export class ComBagDecoView extends ExtensionClass<IView, ComBagDeco>(ComBagDeco
 
 	private onListItemClick(item: RenderBagItemView, _, index: number) {
 		const info = this._showItems[index];
-		this.openView(EViewID.UIItemDetailView, info.item_id);
+		this.openView<IUIItemDetailData>(EViewID.UIItemDetailView, { id: info.item_id, from: 1 });
 	}
 }
 

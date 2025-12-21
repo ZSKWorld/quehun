@@ -23,6 +23,7 @@ import PbLoading2 from "./PbLoading2";
 import { ComHeadFrameView } from "../../view/PkgCommon/view/coms/ComHeadFrameView";
 import { ComHead1View } from "../../view/PkgCommon/view/coms/ComHead1View";
 import { ComHead2View } from "../../view/PkgCommon/view/coms/ComHead2View";
+import { ComTitleView } from "../../view/PkgCommon/view/coms/ComTitleView";
 import { ComName1View } from "../../view/PkgCommon/view/coms/ComName1View";
 import { ComLevel1View } from "../../view/PkgCommon/view/coms/ComLevel1View";
 import { UILoadingView } from "../../view/PkgCommon/view/uis/UILoadingView";
@@ -36,7 +37,6 @@ import { ComItem1View } from "../../view/PkgCommon/view/coms/ComItem1View";
 import { ComHeadView } from "../../view/PkgCommon/view/coms/ComHeadView";
 import { ComItemView } from "../../view/PkgCommon/view/coms/ComItemView";
 import { UIItemDetailView } from "../../view/PkgCommon/view/uis/UIItemDetailView";
-import { ComTitleView } from "../../view/PkgCommon/view/coms/ComTitleView";
 
 export default class PkgCommonBinder {
 	public static bindAll(): void {

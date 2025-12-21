@@ -35,7 +35,7 @@
     "typescript.inlayHints.enumMemberValues.enabled": true,
     "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
     "typescript.inlayHints.parameterTypes.enabled": true,
-    "typescript.inlayHints.variableTypes.enabled": true,
+    "typescript.inlayHints.variableTypes.enabled": false,
     "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
     "typescript.tsdk": "node_modules\\typescript\\lib",
     "typescript.experimental.useTsgo": false,

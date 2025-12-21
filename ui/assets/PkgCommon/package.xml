@@ -227,6 +227,7 @@
     <component id="si7robf6" name="UIItemDetail.xml" path="/" exported="true"/>
     <image id="c6l6obf7" name="img_658.png" path="/Texture/" exported="true"/>
     <component id="c6l6obf8" name="ComHeadFrame.xml" path="/Component/Component/头像/" exported="true"/>
+    <component id="xmejobf9" name="RenderItemDetail.xml" path="/Component/Component/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

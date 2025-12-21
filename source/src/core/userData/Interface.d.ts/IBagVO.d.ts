@@ -17,5 +17,6 @@ declare namespace VO {
 		getItemCount(id: number): number;
 		/** 根据类别获取物品列表 */
 		getItemByCategory(category: EItemCategory, sort?: boolean): ProtoObject<IItem>[];
+		getItemByCategoryType(category: EItemCategory, type: EItemNormalType | EItemGiftType | EItemCommonType, sort?: boolean): ProtoObject<IItem>[];
 	}
 }

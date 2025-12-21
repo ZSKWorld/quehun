@@ -1,22 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0esi7r7plojr" designImageAlpha="0">
+<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0exmej7plojs" designImageAlpha="0" designImageLayer="1">
+  <controller name="desc" pages="0,,1," selected="0"/>
+  <controller name="open" pages="0,,1,,2," selected="0"/>
+  <controller name="goto" pages="0,,1," selected="0"/>
   <displayList>
     <graph id="n23_si7r" name="bg" xy="0,0" size="1920,1080" alpha="0" type="rect"/>
-    <component id="n0_j0dd" name="n0" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" xy="568,277" size="781,530"/>
+    <component id="n0_j0dd" name="n0" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" xy="958,542" pivot="0.5,0.5" anchor="true" size="781,530">
+      <gearSize controller="goto" pages="1" values="781,610,1,1" default="781,530,1,1"/>
+    </component>
     <image id="n20_si7r" name="n20" src="gsi2obd5" fileName="Texture/img_42.png" xy="889,483" size="400,5">
+      <gearDisplay controller="desc" pages="0"/>
       <relation target="n13_j0dd" sidePair="bottom-bottom"/>
     </image>
+    <image id="n29_xmej" name="n29" src="gsi2obd5" fileName="Texture/img_42.png" xy="631,709" size="657,5">
+      <gearDisplay controller="goto" pages="1"/>
+    </image>
     <component id="n10_j0dd" name="close" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" xy="1229,309" size="70,70">
+      <relation target="n0_j0dd" sidePair="top-top"/>
       <Button icon="ui://vx9zwserj0ddob7b"/>
     </component>
-    <component id="n21_si7r" name="item" src="q5yiobc2" fileName="Component/Component/物品/ComItem1.xml" xy="623,426" size="242,242" touchable="false"/>
-    <component id="n14_j0dd" name="confirm" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="855,683" size="209,90" visible="false">
-      <Button title="确认" titleColor="#6d2e3a" titleFontSize="38" icon="ui://vx9zwserj0ddob73"/>
+    <component id="n21_si7r" name="item" src="q5yiobc2" fileName="Component/Component/物品/ComItem1.xml" xy="623,426" size="242,242" touchable="false">
+      <relation target="n0_j0dd" sidePair="top-top"/>
     </component>
-    <text id="n12_j0dd" name="name" xy="885,315" pivot="0.5,0.5" size="139,60" fontSize="45" color="#edb26f" singleLine="true" text="星之石"/>
-    <text id="n13_j0dd" name="desc1" xy="887,427" size="416,42" fontSize="30" color="#d2d2d0" autoSize="height" text="用于在星之屋中兑换道具"/>
-    <text id="n19_si7r" name="desc2" xy="885,500" size="416,42" fontSize="30" color="#d2d2d0" autoSize="height" text="寄托思念的灵石">
+    <component id="n14_j0dd" name="open1" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="855,683" size="209,90" visible="false">
+      <gearDisplay controller="open" pages="1,2"/>
+      <gearXY controller="open" pages="1,2" values="855,683|708,683" default="855,683"/>
+      <Button title="打开" titleColor="#6d2e3a" titleFontSize="38" icon="ui://vx9zwserj0ddob73"/>
+    </component>
+    <component id="n24_xmej" name="open10" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="1007,683" size="209,90" visible="false">
+      <gearDisplay controller="open" pages="2"/>
+      <Button title="打开x10" titleColor="#6d2e3a" titleFontSize="38" icon="ui://vx9zwserj0ddob73"/>
+    </component>
+    <component id="n31_xmej" name="goto" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="1089,726" size="170,67">
+      <gearDisplay controller="goto" pages="1"/>
+      <Button title="前往" titleColor="#6d2e3a" titleFontSize="31" icon="ui://vx9zwserj0ddob73"/>
+    </component>
+    <text id="n12_j0dd" name="name" xy="885,315" pivot="0.5,0.5" size="139,60" fontSize="45" color="#edb26f" singleLine="true" text="星之石">
+      <relation target="n0_j0dd" sidePair="top-top"/>
+    </text>
+    <text id="n13_j0dd" name="desc1" xy="887,427" size="416,42" fontSize="30" color="#d2d2d0" autoSize="height" text="用于在星之屋中兑换道具">
+      <relation target="n0_j0dd" sidePair="top-top"/>
+    </text>
+    <text id="n19_si7r" name="desc2" xy="885,500" size="416,42" fontSize="30" color="#8994aa" autoSize="height" text="寄托思念的灵石">
+      <gearDisplay controller="desc" pages="0"/>
       <relation target="n20_si7r" sidePair="top-bottom"/>
+    </text>
+    <text id="n28_xmej" name="n28" xy="630,665" size="154,42" fontSize="30" color="#c9c9c9" text="获取途径：">
+      <gearDisplay controller="goto" pages="1"/>
+    </text>
+    <text id="n30_xmej" name="goDesc" xy="652,740" size="124,42" fontSize="30" color="#95e735" text="商家购买">
+      <gearDisplay controller="goto" pages="1"/>
     </text>
   </displayList>
 </component>

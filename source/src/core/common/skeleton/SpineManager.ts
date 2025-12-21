@@ -119,11 +119,11 @@ export class SpineManager implements ISpineManager {
 		}
 	}
 
-	private getSpineUrls(v: number) {
+	private getSpineUrls(id: number) {
 		const urls: string[] = [];
-		const t1 = $cfgMgr.spot.skin_spot[v] || $cfgMgr.item_definition.skin[v];
+		const t1 = $cfgMgr.spot.skin_spot[id] || $cfgMgr.item_definition.skin[id];
 		if (!t1) return urls;
-		const t2 = $cfgMgr.character.skin[v];
+		const t2 = $cfgMgr.character.skin[id];
 		const layer = t2 ? t2.spine_layers : 1;
 		if (layer == 1)
 			urls.push($langRes(t1.path + "/spine/spine.skel"));

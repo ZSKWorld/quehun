@@ -14,7 +14,7 @@ export class ItemUtil implements IItemUtil {
 	getItemView(id: number) {
 		if (this._itemView[id]) return this._itemView[id];
 		const idType = this.getItemType(id);
-		let name = "", icon = "", itemIcon = "", desc = "", func: string;
+		let name = "", icon = "", itemIcon = "", desc = "", func = "";
 		switch (idType) {
 			case EItemType.Currency:
 				const currencyCfg = $cfgMgr.item_definition.currency[id];

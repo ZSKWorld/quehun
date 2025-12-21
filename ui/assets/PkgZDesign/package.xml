@@ -1643,6 +1643,8 @@
     <image id="q5yi7plojp" name="biscuit1.jpg" path="/11/extendRes/items/"/>
     <image id="gsi27plojq" name="stardust_0.png" path="/11/extendRes/items/"/>
     <image id="si7r7plojr" name="物品详情.PNG" path="/11/"/>
+    <image id="xmej7plojs" name="物品详情2.JPG" path="/11/"/>
+    <image id="xmej7plojt" name="251101_thumb.jpg" path="/11/"/>
   </resources>
   <publish name=""/>
 </packageDescription>

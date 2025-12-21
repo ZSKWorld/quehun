@@ -74,6 +74,18 @@ export class BagVO extends BaseVO implements VO.IBagVO {
 		return items;
 	}
 
+	getItemByCategoryType(category: EItemCategory, type: EItemNormalType | EItemGiftType | EItemCommonType, sort?: boolean) {
+		const items = this._items.filter(v => {
+			const cfgItem = $cfgMgr.item_definition.item[v.item_id];
+			if (!cfgItem) return false;
+			return cfgItem.category == category && cfgItem.type == type;
+		});
+		sort && items.sort((a, b) => {
+			return $cfgMgr.item_definition.item[a.item_id].sort - $cfgMgr.item_definition.item[b.item_id].sort;
+		});
+		return items;
+	}
+
 	@InterestMessage(EMessageID.login)
 	@InterestMessage(EMessageID.oauth2Login)
 	private onLogin(res: IResLogin) {

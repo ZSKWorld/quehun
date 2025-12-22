@@ -32,18 +32,9 @@ export class AccountVO extends BaseVO implements VO.IAccountVO {
 	challenge_levels: ProtoObject<IAccount_ChallengeLevel>[] = [];
 	frozen_state: number = 0;
 	achievement_count: ProtoObject<IAccount_AchievementCount>[] = [];
-	loading_image: number[] = [];
 	favorite_hu: ProtoObject<IFavoriteHu>[] = [];
 	/** 勋章列表 */
 	badges: ProtoObject<IAccount_Badge>[] = [];
-
-	getRandomCgPath() {
-		const cgId = this.loading_image[$mathUtil.randomInt(0, this.loading_image.length)];
-		if (!cgId) return "";
-		const cfgInfo = $cfgMgr.item_definition.loading_image[cgId];
-		if (!cfgInfo) return "";
-		return $langRes(cfgInfo.img_path);
-	}
 
 	@InterestMessage(EMessageID.login)
 	@InterestMessage(EMessageID.oauth2Login)

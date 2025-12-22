@@ -31,10 +31,8 @@ declare namespace VO {
 		challenge_levels: ProtoObject<IAccount_ChallengeLevel>[];
 		frozen_state: number;
 		achievement_count: ProtoObject<IAccount_AchievementCount>[];
-		loading_image: number[];
 		favorite_hu: ProtoObject<IFavoriteHu>[];
 		/** 勋章列表 */
 		badges: ProtoObject<IAccount_Badge>[];
-		getRandomCgPath(): string;
 	}
 }

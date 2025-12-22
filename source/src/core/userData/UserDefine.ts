@@ -15,5 +15,6 @@ export const enum EUserEvent {
 	//#region 背包相关
 	OnBagItemsChanged = "EUserEvent_OnBagItemsChanged",
 	OnBagDailyGainRecordChanged = "EUserEvent_OnBagDailyGainRecordChanged",
+	OnCGUsingChanged = "EUserEvent_OnCGUsingChanged",
 	//#endregion
 }

@@ -16,7 +16,7 @@ export class LoadingBgLoader extends SingletonExtend<LoadingBgLoader, Observer>(
 
 	randomLoad() {
 		const urls: string[] = [];
-		const cg = $userData.account.getRandomCgPath();
+		const cg = $userData.bag.getRandomCgPath();
 		if (cg) {
 			if (this._cg != cg) {
 				$loadMgr.clearRes(this._cg);

@@ -19,6 +19,12 @@ export class ComItemView extends ExtensionClass<IView, ComItem>(ComItem) impleme
 		$dynamicResMgr.setLoader(this.loader_icon, iconPath);
 	}
 
+	refreshLoadingImage(id: number) {
+		const cfgCg = $cfgMgr.item_definition.loading_image[id];
+		const iconPath = cfgCg ? cfgCg.thumb_path : "";
+		$dynamicResMgr.setLoader(this.loader_icon, $langRes(iconPath));
+	}
+
 	private onDisable() {
 		$dynamicResMgr.clearLoader(this.loader_icon);
 	}

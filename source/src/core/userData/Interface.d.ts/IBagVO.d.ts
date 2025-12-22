@@ -12,6 +12,9 @@ declare namespace VO {
 		get paidSkinTickets(): number;
 		/** 服饰券总数 */
 		get skinTickets(): number;
+		getRandomCgPath(): string;
+		isUsingCG(id: number): boolean;
+		changeCGUsing(id: number): void;
 
 		/** 获取物品数量 */
 		getItemCount(id: number): number;

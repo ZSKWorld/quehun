@@ -13,6 +13,7 @@ export class BagVO extends BaseVO implements VO.IBagVO {
 	private readonly _paidDiamondIds: number[] = [];
 	private readonly _freeSkinTicketIds: number[] = [];
 	private readonly _paidSkinTicketIds: number[] = [];
+	private _loadingImage: number[] = [];
 
 	get items() { return this._items; }
 	get freeDiamonds() {
@@ -54,6 +55,27 @@ export class BagVO extends BaseVO implements VO.IBagVO {
 	}
 	get skinTickets() { return this.freeSkinTickets + this.paidSkinTickets; }
 
+	getRandomCgPath() {
+		const cgId = this._loadingImage[$mathUtil.randomInt(0, this._loadingImage.length)];
+		if (!cgId) return "";
+		const cfgInfo = $cfgMgr.item_definition.loading_image[cgId];
+		if (!cfgInfo) return "";
+		return $langRes(cfgInfo.img_path);
+	}
+
+	isUsingCG(id: number) {
+		return this._loadingImage.indexOf(id) !== -1;
+	}
+
+	changeCGUsing(id: number) {
+		const images = this._loadingImage.slice();
+		if (this.isUsingCG(id))
+			images.remove(id);
+		else
+			images.push(id);
+		$netMgr.requests.setLoadingImage({ images });
+	}
+
 	getItemCount(id: number) {
 		if (id == 100001) return this.diamonds;
 		if (id == 100004) return this.skinTickets;
@@ -90,11 +112,12 @@ export class BagVO extends BaseVO implements VO.IBagVO {
 	@InterestMessage(EMessageID.oauth2Login)
 	private onLogin(res: IResLogin) {
 		if (!res.account) return;
-		const { gold, vip, platform_diamond, skin_ticket, platform_skin_ticket } = res.account;
+		const { gold, vip, platform_diamond, skin_ticket, platform_skin_ticket, loading_image } = res.account;
 		const items: IItem[] = [];
 		gold && items.push({ item_id: 100002, stack: gold });
 		vip && items.push({ item_id: 100099, stack: vip });
 		skin_ticket && items.push({ item_id: 100004, stack: skin_ticket });
+		this._loadingImage = loading_image;
 		platform_diamond.length && platform_diamond.forEach(v => v.count && items.push({ item_id: v.id, stack: v.count }));
 		platform_skin_ticket.length && platform_skin_ticket.forEach(v => v.count && items.push({ item_id: v.id, stack: v.count }));
 		this.modifyItems(items);
@@ -180,5 +203,11 @@ export class BagVO extends BaseVO implements VO.IBagVO {
 			if (paid_voucher_ids)
 				this._paidSkinTicketIds.push(...paid_voucher_ids.split2Num("-"));
 		}
+	}
+
+	@InterestMessage(EMessageID.setLoadingImage)
+	private onSetLoadingImageRes(_, req: IReqSetLoadingImage) {
+		this._loadingImage = req.images.slice();
+		this.dispatch(EUserEvent.OnCGUsingChanged);
 	}
 } 

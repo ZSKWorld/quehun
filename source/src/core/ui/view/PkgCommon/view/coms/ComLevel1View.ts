@@ -7,15 +7,12 @@ export const enum EComLevel1Msg {
 export class ComLevel1View extends ExtensionClass<IView, ComLevel1>(ComLevel1) implements IView {
 
 	override onCreate() {
-		this.displayObject.onDisable = this.onDisable.bind(this);
+
 	}
 
 	refresh(data: IAccountLevel) {
-		const { ctrl_ht, ctrl_star, loader_icon, txt_htLevel, txt_htScore } = this;
-		$uiUtil.refreshLevel({ ctrl_ht, ctrl_star, loader_icon, txt_htLevel, txt_htScore }, data);
-	}
-
-	private onDisable() {
-		$dynamicResMgr.clearLoader(this.loader_icon);
+		const { ctrl_ht, ctrl_star, txt_htScore, com_level } = this;
+		com_level.refresh(data);
+		$uiUtil.refreshLevel({ ctrl_ht, ctrl_star, txt_htScore }, data);
 	}
 }

@@ -82,9 +82,9 @@ declare interface IUIUtil {
 	popAlphaOut(panel: fgui.GObject): Promise<void>;
 	playTrans(trans: fgui.Transition, reverse?: boolean): Promise<void>;
 	refreshLevel(comp: {
-		ctrl_ht: fgui.Controller,
-		ctrl_star: fgui.Controller,
-		loader_icon: fgui.GLoader,
+		ctrl_ht?: fgui.Controller,
+		ctrl_star?: fgui.Controller,
+		loader_icon?: fgui.GLoader,
 		txt_htLevel?: fgui.GTextField,
 		txt_htScore?: fgui.GTextField,
 	}, data: IAccountLevel): void;

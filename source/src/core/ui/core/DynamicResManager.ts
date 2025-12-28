@@ -24,13 +24,16 @@ export class DynamicResManager implements IDynamicResManager {
         }
     }
 
-    setLoader(loader: fgui.GLoader, path: string) {
-        this.remove(loader.icon);
+	setLoader(loader: fgui.GLoader, path: string) {
+		if (!loader) return;
+		this.remove(loader.icon);
+		loader.icon = "";
         loader.icon = path;
         this.add(path);
     }
 
-    clearLoader(loader: fgui.GLoader) {
+	clearLoader(loader: fgui.GLoader) {
+		if (!loader) return;
         this.remove(loader.icon);
         loader.icon = "";
     }

@@ -14,6 +14,7 @@ EViewID = {
 	RenderBagSkinItem1View: "RenderBagSkinItem1View",
 	RenderBagSkinItem2View: "RenderBagSkinItem2View",
 	RenderEmailItemView: "RenderEmailItemView",
+	RenderFriendFriendView: "RenderFriendFriendView",
 	RenderRankItemView: "RenderRankItemView",
 
 	/**Coms */
@@ -25,7 +26,9 @@ EViewID = {
 	ComItem1View: "ComItem1View",
 	ComItemView: "ComItemView",
 	ComLevel1View: "ComLevel1View",
+	ComLevelView: "ComLevelView",
 	ComName1View: "ComName1View",
+	ComName2View: "ComName2View",
 	ComTitleView: "ComTitleView",
 	ComBagDecoView: "ComBagDecoView",
 	ComBagGiftView: "ComBagGiftView",

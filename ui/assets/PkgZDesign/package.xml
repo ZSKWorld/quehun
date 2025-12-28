@@ -1645,6 +1645,8 @@
     <image id="si7r7plojr" name="物品详情.PNG" path="/11/"/>
     <image id="xmej7plojs" name="物品详情2.JPG" path="/11/"/>
     <image id="xmej7plojt" name="251101_thumb.jpg" path="/11/"/>
+    <image id="puub7ploju" name="好友1.jpg" path="/11/"/>
+    <image id="puub7plojv" name="好友2.png" path="/11/"/>
   </resources>
   <publish name=""/>
 </packageDescription>

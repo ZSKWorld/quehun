@@ -14,6 +14,7 @@ import { RenderBagItemView } from "../core/ui/view/PkgMain/view/renders/RenderBa
 import { RenderBagSkinItem1View } from "../core/ui/view/PkgMain/view/renders/RenderBagSkinItem1View";
 import { RenderBagSkinItem2View } from "../core/ui/view/PkgMain/view/renders/RenderBagSkinItem2View";
 import { RenderEmailItemView } from "../core/ui/view/PkgMain/view/renders/RenderEmailItemView";
+import { RenderFriendFriendView } from "../core/ui/view/PkgMain/view/renders/RenderFriendFriendView";
 import { RenderRankItemView } from "../core/ui/view/PkgMain/view/renders/RenderRankItemView";
 import { ComBackView } from "../core/ui/view/PkgCommon/view/coms/ComBackView";
 import { ComBackMediator } from "../core/ui/view/PkgCommon/mediator/coms/ComBackMediator";
@@ -23,8 +24,10 @@ import { ComHead2View } from "../core/ui/view/PkgCommon/view/coms/ComHead2View";
 import { ComHeadFrameView } from "../core/ui/view/PkgCommon/view/coms/ComHeadFrameView";
 import { ComItemView } from "../core/ui/view/PkgCommon/view/coms/ComItemView";
 import { ComItem1View } from "../core/ui/view/PkgCommon/view/coms/ComItem1View";
+import { ComLevelView } from "../core/ui/view/PkgCommon/view/coms/ComLevelView";
 import { ComLevel1View } from "../core/ui/view/PkgCommon/view/coms/ComLevel1View";
 import { ComName1View } from "../core/ui/view/PkgCommon/view/coms/ComName1View";
+import { ComName2View } from "../core/ui/view/PkgCommon/view/coms/ComName2View";
 import { ComTitleView } from "../core/ui/view/PkgCommon/view/coms/ComTitleView";
 import { ComBagDecoView } from "../core/ui/view/PkgMain/view/coms/ComBagDecoView";
 import { ComBagGiftView } from "../core/ui/view/PkgMain/view/coms/ComBagGiftView";
@@ -111,6 +114,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.RenderBagSkinItem1View, EViewType.Render, RenderBagSkinItem1View);
 		register(EViewID.RenderBagSkinItem2View, EViewType.Render, RenderBagSkinItem2View);
 		register(EViewID.RenderEmailItemView, EViewType.Render, RenderEmailItemView);
+		register(EViewID.RenderFriendFriendView, EViewType.Render, RenderFriendFriendView);
 		register(EViewID.RenderRankItemView, EViewType.Render, RenderRankItemView);
 
 		//Coms
@@ -121,8 +125,10 @@ export class InitViewCommand extends Command {
 		register(EViewID.ComHeadFrameView, EViewType.Component, ComHeadFrameView);
 		register(EViewID.ComItemView, EViewType.Component, ComItemView);
 		register(EViewID.ComItem1View, EViewType.Component, ComItem1View);
+		register(EViewID.ComLevelView, EViewType.Component, ComLevelView);
 		register(EViewID.ComLevel1View, EViewType.Component, ComLevel1View);
 		register(EViewID.ComName1View, EViewType.Component, ComName1View);
+		register(EViewID.ComName2View, EViewType.Component, ComName2View);
 		register(EViewID.ComTitleView, EViewType.Component, ComTitleView);
 		register(EViewID.ComBagDecoView, EViewType.Component, ComBagDecoView);
 		register(EViewID.ComBagGiftView, EViewType.Component, ComBagGiftView);

@@ -141,6 +141,11 @@
     <component id="rpakobc1" name="RenderBagIllustItem.xml" path="/Component/UIBag/"/>
     <image id="rpakobf6" name="img_195.png" path="/Texture/" scale="9grid" scale9grid="10,0,32,4"/>
     <component id="rpakobc2" name="ComBagIllust.xml" path="/Component/UIBag/"/>
+    <image id="puubobf7" name="img_2845.png" path="/Texture/"/>
+    <image id="puubobf8" name="img_2302.png" path="/Texture/"/>
+    <image id="puubobf9" name="img_3885.png" path="/Texture/" scale="9grid" scale9grid="0,3,1024,122"/>
+    <component id="puubobfa" name="RenderFriendFriend.xml" path="/Component/UIFriend/"/>
+    <component id="puubobfb" name="RenderFriendApply.xml" path="/Component/UIFriend/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

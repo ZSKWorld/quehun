@@ -15,6 +15,8 @@ import UIConfirmSmall from "./UIConfirmSmall";
 import BtnCheckTxtRight from "./BtnCheckTxtRight";
 import BtnCheckRichTxtRight from "./BtnCheckRichTxtRight";
 import ComBack from "./ComBack";
+import ComName2 from "./ComName2";
+import ComLevel from "./ComLevel";
 import ComItem1 from "./ComItem1";
 import ComHead from "./ComHead";
 import ComItem from "./ComItem";
@@ -33,6 +35,8 @@ import { UIConfirmSmallView } from "../../view/PkgCommon/view/uis/UIConfirmSmall
 import { BtnCheckTxtRightView } from "../../view/PkgCommon/view/btns/BtnCheckTxtRightView";
 import { BtnCheckRichTxtRightView } from "../../view/PkgCommon/view/btns/BtnCheckRichTxtRightView";
 import { ComBackView } from "../../view/PkgCommon/view/coms/ComBackView";
+import { ComName2View } from "../../view/PkgCommon/view/coms/ComName2View";
+import { ComLevelView } from "../../view/PkgCommon/view/coms/ComLevelView";
 import { ComItem1View } from "../../view/PkgCommon/view/coms/ComItem1View";
 import { ComHeadView } from "../../view/PkgCommon/view/coms/ComHeadView";
 import { ComItemView } from "../../view/PkgCommon/view/coms/ComItemView";
@@ -55,6 +59,8 @@ export default class PkgCommonBinder {
 		fgui.UIObjectFactory.setExtension(BtnCheckTxtRight.url, BtnCheckTxtRightView);
 		fgui.UIObjectFactory.setExtension(BtnCheckRichTxtRight.url, BtnCheckRichTxtRightView);
 		fgui.UIObjectFactory.setExtension(ComBack.url, ComBackView);
+		fgui.UIObjectFactory.setExtension(ComName2.url, ComName2View);
+		fgui.UIObjectFactory.setExtension(ComLevel.url, ComLevelView);
 		fgui.UIObjectFactory.setExtension(ComItem1.url, ComItem1View);
 		fgui.UIObjectFactory.setExtension(ComHead.url, ComHeadView);
 		fgui.UIObjectFactory.setExtension(ComItem.url, ComItemView);

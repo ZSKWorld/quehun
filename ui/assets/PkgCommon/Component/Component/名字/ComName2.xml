@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="123,36" designImage="ui://ca43vz0ehdeo7plojg" designImageOffsetX="-490" designImageOffsetY="-330">
+  <displayList>
+    <text id="n4_hdeo" name="name" xy="0,0" size="86,36" fontSize="26" color="#fbfbfb" vAlign="middle" leading="0" letterSpacing="2" singleLine="true" text="混沌恶"/>
+    <image id="n5_hdeo" name="vip" src="hdeoobb7" fileName="Texture/img_866.png" xy="83,0">
+      <relation target="n4_hdeo" sidePair="right-right"/>
+      <relation target="" sidePair="middle-middle"/>
+    </image>
+  </displayList>
+  <relation target="n4_hdeo" sidePair="width-width,height-height"/>
+  <customProperty target="name" propertyId="0"/>
+</component>

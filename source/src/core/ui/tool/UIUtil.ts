@@ -127,13 +127,13 @@ export class UIUtil implements IUIUtil {
 		const levelCfg = $cfgMgr.level_definition.level_definition[id];
 		const { primary_icon, primary_level, secondary_level } = levelCfg;
 		const isHt = primary_level == 6;
-		ctrl_ht.selectedIndex = isHt ? 1 : 0;
+		ctrl_ht && (ctrl_ht.selectedIndex = isHt ? 1 : 0);
 		$dynamicResMgr.setLoader(loader_icon, $langRes(primary_icon));
 
 		isHt && txt_htLevel && (txt_htLevel.text = String(secondary_level));
 		isHt && txt_htScore && (txt_htScore.text = (Math.floor((score / 100) * 10) / 10).toFixed(1));
 		if (!isHt) {
-			ctrl_star.selectedIndex = 0;
+			ctrl_star && (ctrl_star.selectedIndex = 0);
 		}
 	}
 }

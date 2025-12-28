@@ -228,6 +228,12 @@
     <image id="c6l6obf7" name="img_658.png" path="/Texture/" exported="true"/>
     <component id="c6l6obf8" name="ComHeadFrame.xml" path="/Component/Component/头像/" exported="true"/>
     <component id="xmejobf9" name="RenderItemDetail.xml" path="/Component/Component/"/>
+    <component id="puubobfa" name="ComName2.xml" path="/Component/Component/名字/" exported="true"/>
+    <component id="puubobfb" name="ComLevel.xml" path="/Component/Component/段位/" exported="true"/>
+    <image id="puubobfc" name="img_178.png" path="/Texture/" exported="true" scale="9grid" scale9grid="0,2,6,28"/>
+    <image id="puubobfd" name="img_785.png" path="/Texture/" exported="true"/>
+    <component id="puubobfe" name="VScrollBar3.xml" path="/Component/ScrollBar/" exported="true"/>
+    <image id="puubobff" name="img_811.png" path="/Texture/" exported="true" scale="9grid" scale9grid="11,8,22,16"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

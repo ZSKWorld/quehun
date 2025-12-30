@@ -78,9 +78,10 @@ export class UIManager extends Observer implements IUIManager {
 	}
 
 	addToLayer(obj: fgui.GObject, layer: ELayer, index?: number) {
-		if (!obj || obj.isDisposed || !this._layerMap[layer]) return;
-		index = index ?? this._layerMap[layer].numChildren;
-		this._layerMap[layer].addChildAt(obj, index);
+		const targetLayer = this._layerMap[layer];
+		if (!obj || obj.isDisposed || !targetLayer) return;
+		const targetIndex = index ?? targetLayer.numChildren;
+		targetLayer.addChildAt(obj, targetIndex);
 	}
 
 	isTopView(view: IMediator | IView) {
@@ -103,7 +104,7 @@ export class UIManager extends Observer implements IUIManager {
 
 		if (this.isStackView(mediator.view))
 			this._openedStack.unshift(mediator.viewId);
-		data && (mediator.data = data);
+		data ?? (mediator.data = data);
 		openIndex >= 0 && this._openedViews.splice(openIndex, 1);
 		this._openedViews.unshift(mediator);
 		mediator.view.removeFromParent();

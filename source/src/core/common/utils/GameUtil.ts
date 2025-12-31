@@ -1,41 +1,86 @@
 
 
+const EncryptList: ReadonlyArray<string> = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+{}[]|\:;<>,.?/~".split("");
+const EncryptMap: Readonly<number> = EncryptList.reduce((pv, cv, i) => (pv[cv] = i, pv), {}) as Readonly<number>;
+
 export class GameUtil implements IGameUtil {
 
+	encrypt(str: string) {
+		if (!str) return str;
+		const strLen = str.length, listLen = EncryptList.length;
+
+		const result = new Array(strLen);
+
+		const startIndex = (Math.floor(strLen / 3) + 17) % strLen;
+
+		for (let i = 0; i < strLen; i++) {
+			const index = (startIndex - i + strLen * 2) % strLen;
+			const char = str[index];
+			const charIdx = EncryptMap[char];
+
+			if (charIdx == null) {
+				result[i] = char;
+			} else {
+				const offset = (2 + 3 * i) ^ 11;
+				result[i] = EncryptList[(charIdx + offset) % listLen];
+			}
+		}
+		return result.join("");
+	}
+
+	decrypt(str: string) {
+		if (!str) return str;
+		const strLen = str.length, listLen = EncryptList.length;
+		const startIndex = (Math.floor(strLen / 3) + 17) % strLen;
+
+		const decryptedChars = new Array(strLen);
+
+		for (let i = 0; i < strLen; i++) {
+			const char = str[i];
+			const charIdx = EncryptMap[char];
+
+			if (charIdx == null) {
+				decryptedChars[i] = char;
+			} else {
+				const offset = (2 + 3 * i) ^ 11;
+				const oldIdx = ((charIdx - offset) % listLen + listLen) % listLen;
+				decryptedChars[i] = EncryptList[oldIdx];
+			}
+		}
+
+		const part1 = decryptedChars.slice(0, startIndex + 1).reverse();
+		const part2 = decryptedChars.slice(startIndex + 1).reverse();
+
+		return part1.join("") + part2.join("");
+	}
+
 	createUUID() {
-		let d = $timeUtil.milliSecond;
-		const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-			const r = (d + Math.random() * 16) % 16 | 0;
-			d = Math.floor(d / 16);
-			return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+		// 现代浏览器和 Node.js 14.17+ 均支持
+		if (typeof crypto !== "undefined" && crypto.randomUUID) {
+			return crypto.randomUUID();
+		}
+		return (String([1e7]) + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c => {
+			const nc = +c;
+			return (nc ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> nc / 4).toString(16);
 		});
-		return uuid;
 	}
 
 	/** 随机颜色字符串 */
 	randomColor() {
-		const r = Math.floor(Math.random() * 256);
-		const g = Math.floor(Math.random() * 256);
-		const b = Math.floor(Math.random() * 256);
-		return "#" + r.toString(16).padStart(2, "0")
-			+ g.toString(16).padStart(2, "0")
-			+ b.toString(16).padStart(2, "0");
+		return `#${ Math.floor(Math.random() * 0xffffff).toString(16).padStart(6, "0") }`;
 	}
 
 	HmacSHA256(msg: string) {
 		return String(CryptoJS.HmacSHA256(msg, "lailai"));
 	}
 
-	getI18nContext(i18n: ProtoObject<II18nContext>[], defValue?: string) {
-		if (!i18n) return defValue ?? "";
+	getI18nContext(i18n: ProtoObject<II18nContext>[], defValue = "") {
+		if (!i18n || i18n.length == 0) return defValue;
+
 		const lang = $gameMgr.clientLanguage;
-		const len = i18n.length;
-		for (let i = 0; i < len; i++) {
-			const e = i18n[i];
-			if (e.lang == lang)
-				return e.context;
-		}
-		return defValue ?? "";
+		const match = i18n.find(v => v.lang == lang);
+
+		return match ? match.context : defValue;
 	}
 
 	isAI(accountId: number) {
@@ -63,10 +108,11 @@ export class GameUtil implements IGameUtil {
 	/** 是否是同区域(同服) */
 	isSameZone(accountId1: number, accountId2: number) {
 		if (this.isAI(accountId1) || this.isAI(accountId2)) return true;
+
 		const zoneId1 = this.getZoneId(accountId1);
 		if (zoneId1 == -1) return false;
+
 		const zoneId2 = this.getZoneId(accountId2);
-		if (zoneId2 == -1) return false;
 		return zoneId1 == zoneId2;
 	}
 }

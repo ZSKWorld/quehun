@@ -35,9 +35,11 @@ export class InitGameCommand extends Command {
 		]);
 		await $loadMgr.loadPackage(ResPath.EPkgPath.PkgEntrance);
 		$uiMgr.openView(EViewID.UIEntranceView);
-		await $gameMgr.init();
-		await $pbMgr.init();
-		await $cfgMgr.init();
+		await Promise.all([
+			$gameMgr.init(),
+			$pbMgr.init(),
+			$cfgMgr.init(),
+		]);
 		await $netMgr.init();
 	}
 }

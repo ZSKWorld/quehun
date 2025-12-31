@@ -8,16 +8,18 @@ export class RichText implements IRichText {
 		return this;
 	}
 
-	href(url: string) {
-		this._text = `[url=${ url }]${ this._text }[/url]`;
+	href(url: string, content?: string) {
+		if (content != null) {
+			this._text += `[url=${ url }]${ content }[/url]`;
+		} else {
+			this._text = `[url=${ url }]${ this._text }[/url]`;
+		}
 		return this;
 	}
 
 	img(url: string, width?: number, height?: number) {
-		if (width && height)
-			this._text += `<img src="${ url }" width="${ width }" height="${ height }">`;
-		else
-			this._text += `<img src="${ url }">`;
+		const size = (width && height) ? ` width="${ width }" height="${ height }"` : "";
+		this._text += `<img src="${ url }"${ size }>`;
 		return this;
 	}
 
@@ -37,14 +39,12 @@ export class RichText implements IRichText {
 	}
 
 	space(num: number = 1) {
-		if (num > 0)
-			this._text += new Array(num).fill("&nbsp;").join("");
+		if (num > 0) this._text += "&nbsp;".repeat(num)
 		return this;
 	}
 
 	break(num: number = 1) {
-		if (num > 0)
-			this._text += new Array(num).fill("<br/>").join("");
+		if (num > 0) this._text += "<br/>".repeat(num);
 		return this;
 	}
 
@@ -64,9 +64,9 @@ export class RichText implements IRichText {
 	}
 
 	end() {
-		Laya.Pool.recoverByClass(this);
-		const str = this._text;
+		const result = this._text;
 		this._text = "";
-		return str;
+		Laya.Pool.recoverByClass(this);
+		return result;
 	}
 }

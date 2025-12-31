@@ -30,7 +30,7 @@ export class RedDotManager extends Laya.EventDispatcher implements IRedDotManage
 	private getRDByComp(data: IRedDotNode, comp: fgui.GComponent) {
 		if (!data || !comp) return null;
 		if (data.comp == comp) return data;
-		const childs = data.childs;
+		const childs = data.children;
 		for (let i = 0, cnt = childs.length; i < cnt; i++) {
 			const result: IRedDotNode = this.getRDByComp(childs[i], comp);
 			if (result) return result;

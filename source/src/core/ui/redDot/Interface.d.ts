@@ -2,7 +2,7 @@ declare interface IRedDotNode {
 	readonly id: number;
 	enable: boolean;
 	parent: IRedDotNode;
-	readonly childs: IRedDotNode[];
+	children: ReadonlyArray<IRedDotNode>;
 	triggers: RDTriggerType[];
 	comp: fgui.GComponent;
 	refresh(): void;

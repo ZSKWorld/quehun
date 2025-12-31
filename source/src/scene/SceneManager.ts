@@ -5,6 +5,7 @@ import { ESceneType } from "./SceneDefine";
 export class SceneManager extends Observer implements ISceneManager {
 	private _currentType: ESceneType;
 	private _sceneMap = new Map<ESceneType, IScene>();
+	private _isTransitioning = false;
 
 	registerScene(type: ESceneType, sceneCls: Class<IScene>) {
 		if (this._sceneMap.has(type))
@@ -20,20 +21,33 @@ export class SceneManager extends Observer implements ISceneManager {
 		if (scene) scene.views.add(view);
 	}
 
-	enterScene(type: ESceneType, data?: any) {
-		if (this._currentType != type) {
-			const newScene = this._sceneMap.get(type);
-			newScene.load().then(() => {
-				const curScene = this._sceneMap.get(this._currentType);
-				curScene?.exit();
-				this._currentType = type;
-				newScene.enter(data);
-			}, () => {
-				$confirmSma(0, "提示", `${ type } 场景加载失败，是否重试?`).then(result => {
-					if (result) this.enterScene(type, data);
-					else newScene.exit();
-				});
-			});
+	async enterScene(type: ESceneType, data?: any) {
+		if (this._isTransitioning) return;
+		if (type == this._currentType) return;
+
+		const newScene = this._sceneMap.get(type);
+		if (!newScene) return;
+
+		this._isTransitioning = true;
+
+		try {
+			await newScene.load();
+
+			const curScene = this._sceneMap.get(this._currentType);
+			curScene?.exit();
+
+			this._currentType = type;
+			newScene.enter(data);
+
+		} catch (e) {
+			const retry = await $confirmSma(0, "提示", `${ type } 场景加载失败，是否重试?`);
+			if (retry) {
+				this._isTransitioning = false;
+				return this.enterScene(type, data);
+			} else
+				newScene.exit();
+		} finally {
+			this._isTransitioning = false;
 		}
 	}
 }

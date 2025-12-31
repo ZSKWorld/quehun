@@ -20,7 +20,7 @@ export class SceneLogin extends SceneBase<ISceneLoginData> {
 	}
 
 	protected override onEnter() {
-		this.openView(EViewID.UILoginView);
+		$uiMgr.openView(EViewID.UILoginView);
 	}
 
 	protected override onExit() {

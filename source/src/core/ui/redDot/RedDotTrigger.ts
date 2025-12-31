@@ -15,7 +15,7 @@ function RDTriggerEvent(eventName: ERDTriggerType) {
 
 export class RedDotTrigger extends SingletonExtend<RedDotTrigger, Observer>(Observer) {
 
-	private _triggers = new Map<ERDTriggerType, boolean>();
+	private _triggers = new Map<ERDTriggerType, boolean | number>();
 	private _triggerEventMap: KeyMap<Function[]>;
 
 	init() {
@@ -25,16 +25,16 @@ export class RedDotTrigger extends SingletonExtend<RedDotTrigger, Observer>(Obse
 		}
 	}
 
-	private setTriggered(type: ERDTriggerType, triggered: boolean) {
+	private setTriggered(type: ERDTriggerType, triggered: boolean | number) {
 		this._triggers.set(type, triggered);
 		Laya.timer.callLater(this, this.callTrigger);
 	}
 
 	private callTrigger() {
 		const { _triggers } = this;
-		_triggers.forEach((v, k) => {
+		for (const [k, v] of _triggers) {
 			$redDotMgr.event(k, [k, v]);
-		});
+		}
 		_triggers.clear();
 	}
 }

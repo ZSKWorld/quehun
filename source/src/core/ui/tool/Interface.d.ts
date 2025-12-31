@@ -1,7 +1,11 @@
 declare interface IRichText {
 	get text(): string;
-	/** 添加超链接 */
-	href(url: string): IRichText;
+	/** 
+	 * 将当前内容包装为超链接 
+	 * @param url 链接地址
+	 * @param content 可选：如果传入则直接追加带链接的内容，不传入则包装当前所有内容
+	 */
+	href(url: string, content?: string): IRichText;
 	/** 添加图片 */
 	img(url: string, width?: number, height?: number): IRichText;
 	/** 粗体 */
@@ -55,7 +59,7 @@ declare interface IUIUtil {
 		virtual: boolean = true,
 		caller?: any,
 		renderFunc?: (index?: number, item?: any) => void,
-		clickFunc?: (item?: any, evt?: Laya.Event, index?:number) => void
+		clickFunc?: (item?: any, evt?: Laya.Event, index?: number) => void
 	): void;
 
 	/**

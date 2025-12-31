@@ -159,6 +159,10 @@ declare interface IItemView {
 }
 
 declare interface IGameUtil {
+	/** 加密标准字符串，若出现不认识的字符，原样保留 */
+	encrypt(str: string): string;
+	/** 解密标准字符，与加密配合使用 */
+	decrypt(str: string): string;
 	createUUID(): string;
 	/** 随机颜色字符串 */
 	randomColor(): string;

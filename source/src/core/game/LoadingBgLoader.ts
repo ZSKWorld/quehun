@@ -16,12 +16,12 @@ export class LoadingBgLoader extends SingletonExtend<LoadingBgLoader, Observer>(
 
 	randomLoad() {
 		const urls: string[] = [];
-		const cg = $userData.bag.getRandomCgPath();
-		if (cg) {
-			if (this._cg != cg) {
+		const newCg = $userData.bag.getRandomCgPath();
+		if (newCg) {
+			if (this._cg != newCg) {
 				$loadMgr.clearRes(this._cg);
-				this._cg = cg;
-				urls.push(cg);
+				this._cg = newCg;
+				urls.push(newCg);
 			}
 		} else {
 			const left = $langRes(`myres2/loading_3que1/left_${ $mathUtil.randomInt(0, 18) }.png`);

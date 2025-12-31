@@ -92,6 +92,7 @@ export class UIManager extends Observer implements IUIManager {
 	}
 
 	async openView<T = any>(viewId: EViewID, data?: T, openType = EViewOpenType.None) {
+		if (!viewId) return;
 		this.lockMark++;
 		await this.dealTopViewOnOpenView(openType);
 		let mediator: IMediator;

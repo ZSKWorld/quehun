@@ -20,13 +20,16 @@ export abstract class MediatorBase<V extends IView = IView, D = any> extends Ext
 	override get view() { return this.gowner as V; }
 	protected get parent() {
 		if (this.viewType == EViewType.UI) return null;
-		if (!this._parent) {
-			let viewParent = this.view.parent;
-			while (!this._parent && viewParent) {
-				const parentMediator: MediatorBase = viewParent.getComponent(MediatorBase as any);
-				if (parentMediator) this._parent = parentMediator;
-				viewParent = viewParent.parent;
+		if (this._parent) return this._parent;
+
+		let curNode = this.view.parent;
+		while (curNode) {
+			const parentMediator: MediatorBase = curNode.getComponent(MediatorBase as any);
+			if (parentMediator) {
+				this._parent = parentMediator;
+				break;
 			}
+			curNode = curNode.parent;
 		}
 		return this._parent;
 	}
@@ -34,14 +37,16 @@ export abstract class MediatorBase<V extends IView = IView, D = any> extends Ext
 	override onOpenAni() { return Promise.resolve(); }
 	override onCloseAni() { return Promise.resolve(); }
 	override addEvent(type: string, listener: Function, args?: any[], once?: boolean) {
-		if (once) this.view.once(type, this, listener, args);
-		else this.view.on(type, this, listener, args);
+		const caller = this.view;
+		if (!caller) return;
+		if (once) caller.once(type, this, listener, args);
+		else caller.on(type, this, listener, args);
 	}
 	override removeEvent(type: string, listener: Function) {
-		this.view.off(type, this, listener);
+		this.view?.off(type, this, listener);
 	}
 	override sendEvent(type: string, data?: any) {
-		this.view.event(type, data);
+		this.view?.event(type, data);
 	}
 
 	override onReset() {
@@ -72,8 +77,9 @@ export abstract class MediatorBase<V extends IView = IView, D = any> extends Ext
 
 	/** 注册页面消息 */
 	private interestViewEvent() {
-		const { __viewEventMap: vem } = this;
+		const vem = this.__viewEventMap;
 		if (!vem) return;
+
 		for (const eventName in vem) {
 			const callbackMap = vem[eventName];
 			for (const k in callbackMap) {

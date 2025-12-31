@@ -2,46 +2,48 @@ export class SkeletonManager implements ISkeletonManager {
 	private _templetMap = new Map<string, Laya.Templet>();
 	private _skeletonPool = new Map<string, Laya.Skeleton[]>();
 
-	load(urls: string[], progress?: Laya.Handler) {
-		if (!urls) {
-			if (progress) progress.runWith(1);
-			return Promise.resolve<Laya.Templet[]>(null);
+	async load(urls: string[], progress?: Laya.Handler) {
+		if (!urls || urls.length == 0) {
+			progress?.runWith(1);
+			return [];
 		}
-		const loadUrl = urls.filter(v => !this._templetMap.get(v));
-		if (!loadUrl.length) {
-			if (progress) progress.runWith(1);
-			const templets = urls.map(v => this._templetMap.get(v));
-			return Promise.resolve<Laya.Templet[]>(templets);
+
+		const templetMap = this._templetMap;
+
+		const neededUrls = urls.filter(v => !templetMap.get(v));
+		if (neededUrls.length > 0) {
+			const loadedData = await $loadMgr.load<Laya.Templet, string[]>(neededUrls, null, progress);
+			loadedData?.forEach(v => v && templetMap.set(v.url, v));
+		} else {
+			progress?.runWith(1);
 		}
-		const promise = $loadMgr.load<Laya.Templet, string[]>(loadUrl, null, progress).then(data => {
-			data.forEach(v => this._templetMap.set(v.url, v));
-			return urls.map(v => this._templetMap.get(v));
-		});
-		return promise;
+
+		return urls.map(v => templetMap.get(v));
 	}
 
 	create(url: string, aniMode: 0 | 1 | 2 = 0) {
-		let ske: Laya.Skeleton;
 		const skeletonPool = this._skeletonPool.get(url);
 		if (skeletonPool && skeletonPool.length) {
-			ske = skeletonPool.pop();
+			const ske = skeletonPool.pop();
 			ske.aniMode = aniMode;
+			return ske;
 		}
-		else {
-			const templet = this._templetMap.get(url);
-			if (templet) {
-				ske = templet.buildArmature(aniMode);
-			}
-		}
-		return ske;
+		const templet = this._templetMap.get(url);
+		if (!templet) return;
+
+		return templet.buildArmature(aniMode);
 	}
 
 	recover(skeleton: Laya.Skeleton) {
-		if (!skeleton) return;
+		if (!skeleton || skeleton.destroyed) return;
+
 		const url = skeleton.templet.url;
 		const poolArr = this._skeletonPool.get(url);
 		if (poolArr && poolArr.includes(skeleton)) return;
+
+		skeleton.stop();
 		skeleton.removeSelf();
+
 		if (poolArr) poolArr.push(skeleton);
 		else this._skeletonPool.set(url, [skeleton]);
 	}
@@ -55,6 +57,7 @@ export class SkeletonManager implements ISkeletonManager {
 
 	dispose(url: string) {
 		this.clear(url);
+
 		const templet = this._templetMap.get(url);
 		if (!templet) return;
 		templet.destroy();

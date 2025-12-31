@@ -33,57 +33,62 @@ export const enum ESocketEvent {
 	Notify = "SocketEvent_Notify",
 }
 
+/** 状态转换触发的事件映射 */
+const StateTranslateMap: { [key in ESocketState]: { [key in ESocketState]?: ESocketEvent[] } } = {
+	[ESocketState.Disconnect]: {
+		[ESocketState.Connecting]: [ESocketEvent.Connecting],
+	},
+	[ESocketState.Connecting]: {
+		[ESocketState.Connected]: [ESocketEvent.Connected],
+		[ESocketState.Disconnect]: [ESocketEvent.Closed],
+	},
+	[ESocketState.Reconnecting]: {
+		[ESocketState.Connected]: [ESocketEvent.Connected],
+		[ESocketState.Disconnect]: [ESocketEvent.Closed],
+	},
+	[ESocketState.Connected]: {
+		[ESocketState.Reconnecting]: [ESocketEvent.Reconnecting],
+		[ESocketState.Disconnect]: [ESocketEvent.Closed],
+	},
+};
+
 export class WebSocket extends Laya.EventDispatcher {
 	private _socket: Laya.Socket;
 	private _routeInfo: IRouteInfo;
 	private _tail: string;
 	private _rpcIndex = 0;
 	private _state: ESocketState = ESocketState.Disconnect;
-	private _waitList: { [key: number]: IWaitRpcInfo } = {};
-	private _rpcRepeatMap: KeyMap<[string[], Promise<PartialAll<IResponse>>]> = {};
+	private _waitList = new Map<number, IWaitRpcInfo>();
+	private _rpcRepeatMap = new Map<string, Promise<PartialAll<IResponse>>>();
 	private _reconnectIndex: number = 0;
 	private _reconnectTime = [1000, 2000, 3000];
 
-	private _stateTranslateMap: { [key in ESocketState]: { [key in ESocketState]?: ESocketEvent[] } } = {
-		[ESocketState.Disconnect]: {
-			[ESocketState.Connecting]: [ESocketEvent.Connecting],
-		},
-		[ESocketState.Connecting]: {
-			[ESocketState.Connected]: [ESocketEvent.Connected],
-			[ESocketState.Disconnect]: [ESocketEvent.Closed],
-		},
-		[ESocketState.Reconnecting]: {
-			[ESocketState.Connected]: [ESocketEvent.Connected],
-			[ESocketState.Disconnect]: [ESocketEvent.Closed],
-		},
-		[ESocketState.Connected]: {
-			[ESocketState.Reconnecting]: [ESocketEvent.Reconnecting],
-			[ESocketState.Disconnect]: [ESocketEvent.Closed],
-		},
-	};
-	get url() { return `${ this._routeInfo.ssl ? "wss://" : "ws://" }${ this._routeInfo.domain }/${ this._tail }`; }
+	get url() {
+		const protocol = this._routeInfo.ssl ? "wss://" : "ws://";
+		return `${ protocol }${ this._routeInfo.domain }/${ this._tail }`;
+	}
 	get state() { return this._state; }
 	private set state(v) {
 		const lastState = this._state;
 		if (v == lastState) return;
 		this._state = v;
-		const events = this._stateTranslateMap[lastState][v];
-		if (events)
-			events.forEach(v => this.event(v));
+
+		const events = StateTranslateMap[lastState][v];
+		if (events) events.forEach(v => this.event(v));
 	}
 	get connected() { return this.state == ESocketState.Connected; }
 
 	constructor(routeInfo: IRouteInfo, tail: string) {
 		super();
+		this._routeInfo = routeInfo;
+		this._tail = tail;
+
 		this._socket = new Laya.Socket();
 		this._socket.endian = Laya.Byte.LITTLE_ENDIAN;
 		this._socket.on(Laya.Event.OPEN, this, this.onOpen);
 		this._socket.on(Laya.Event.MESSAGE, this, this.onMessage);
 		// this._socket.on(Laya.Event.ERROR, this, this.onError);
 		this._socket.on(Laya.Event.CLOSE, this, this.onClose);
-
-		this._routeInfo = routeInfo;
-		this._tail = tail;
 	}
 
 	connect() {
@@ -102,9 +107,11 @@ export class WebSocket extends Laya.EventDispatcher {
 
 	send(methodName: EMessageID, data: any) {
 		const dataStr = JSON.stringify(data);
+		const reqKey = methodName + ":" + dataStr;
+
 		const rpcRepeatMap = this._rpcRepeatMap;
-		if (rpcRepeatMap[methodName] && rpcRepeatMap[methodName][0].includes(dataStr))
-			return rpcRepeatMap[methodName][1];
+		if (rpcRepeatMap.has(reqKey))
+			return rpcRepeatMap.get(methodName);
 
 		const promise = new Promise<PartialAll<IResponse>>(resolve => {
 			if (!this.connected) {
@@ -114,22 +121,27 @@ export class WebSocket extends Laya.EventDispatcher {
 			this._rpcIndex = (this._rpcIndex + 1) % 60007;
 			const rpcID = this._rpcIndex;
 			const method = $pbMgr.methodMap[methodName];
-			const header = new Uint8Array([EHeaderType.Request, rpcID & 0xff, rpcID >> 8]);
-			const packet = $pbMgr.encodeRpc(method.fullName, method.resolvedRequestType.encode(data).finish());
-			this._waitList[rpcID] = {
+
+			this._waitList.set(rpcID, {
 				service: method.parent.fullName as EServiceType,
 				method: methodName,
 				reqData: data,
-				callback: resolve
-			};
+				callback: res => {
+					rpcRepeatMap.delete(reqKey);
+					resolve(res);
+				}
+			});
+
+			const header = new Uint8Array([EHeaderType.Request, rpcID & 0xff, rpcID >> 8]);
+			const packet = $pbMgr.encodeRpc(method.fullName, method.resolvedRequestType.encode(data).finish());
+
 			const byte = new Laya.Byte();
 			byte.writeArrayBuffer(header.buffer);
 			byte.writeArrayBuffer(packet.buffer);
 			this._socket.send(byte.buffer);
 		});
 
-		if (!rpcRepeatMap[methodName]) rpcRepeatMap[methodName] = [[dataStr], promise];
-		else rpcRepeatMap[methodName][0].push(dataStr);
+		rpcRepeatMap.set(reqKey, promise);
 
 		return promise;
 	}
@@ -144,11 +156,11 @@ export class WebSocket extends Laya.EventDispatcher {
 		const type = data[0];
 		switch (type) {
 			case EHeaderType.Response:
-				const requestID = data[1] + (data[2] << 8);
-				const request = this._waitList[requestID];
+				const rpcID = data[1] + (data[2] << 8);
+				const request = this._waitList.get(rpcID);
 				if (!request) return;
-				delete this._waitList[requestID];
-				delete this._rpcRepeatMap[request.method];
+
+				this._waitList.delete(rpcID);
 				const wrapper = $pbMgr.decodeRpc(data.slice(3));
 				const res = $pbMgr.methodMap[request.method].resolvedResponseType.decode(wrapper.data);
 				this.eventMessage(ESocketEvent.Response, request.method, res, request.reqData, request.callback);
@@ -163,16 +175,17 @@ export class WebSocket extends Laya.EventDispatcher {
 
 	private onClose(e: Event) {
 		if (this.state == ESocketState.Disconnect) return;
-		for (const key in this._waitList) {
-			const request = this._waitList[key];
-			this.eventMessage(ESocketEvent.Response, request.method, { error: { code: -1 } }, request.reqData, request.callback);
+		for (const [rpcID, req] of this._waitList) {
+			this.eventMessage(ESocketEvent.Response, req.method, { error: { code: -1 } }, req.reqData, req.callback);
 		}
-		this._waitList = {};
-		this._rpcRepeatMap = {};
+		this._waitList.clear();
+		this._rpcRepeatMap.clear();
 
-		if (this._reconnectTime[this._reconnectIndex]) {
+		const delay = this._reconnectTime[this._reconnectIndex];
+		if (delay) {
+			this._reconnectIndex++;
 			this.state = ESocketState.Reconnecting;
-			Laya.timer.once(this._reconnectTime[this._reconnectIndex++], this, this.reconnect);
+			Laya.timer.once(delay, this, this.reconnect);
 		} else {
 			this.state = ESocketState.Disconnect;
 		}

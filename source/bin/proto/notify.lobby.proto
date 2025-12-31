@@ -406,3 +406,10 @@ message NotifyCustomizedContestReady {
   uint32 ready = 2; // 准备状态，1-准备 0-取消准备 （现在应该只会发0）
   uint32 reason = 3; // 原因，1 - GM修改规则
 }
+
+// 通知大会室规则修改
+// 只会发送给大会室管理员
+message NotifyCustomizedContestRuleModify {
+  uint32 unique_id = 1;
+  uint32 auto_match = 2; // 自动匹配状态
+}

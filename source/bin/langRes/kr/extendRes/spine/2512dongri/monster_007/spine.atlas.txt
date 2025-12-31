@@ -1,0 +1,17 @@
+monster_007.png
+size:259,341
+filter:Linear,Linear
+b1
+bounds:194,17,55,63
+offsets:1,0,57,63
+rotate:90
+b2
+bounds:57,5,52,46
+b3
+bounds:2,2,53,49
+offsets:0,0,54,49
+b4
+bounds:2,53,190,286
+b6
+bounds:194,74,265,61
+rotate:90

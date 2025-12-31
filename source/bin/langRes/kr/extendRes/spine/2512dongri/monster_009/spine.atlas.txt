@@ -1,0 +1,8 @@
+monster_009.png
+size:356,281
+filter:Linear,Linear
+b1
+bounds:2,2,296,277
+b2
+bounds:300,9,270,54
+rotate:90

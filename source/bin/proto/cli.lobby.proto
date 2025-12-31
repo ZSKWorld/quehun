@@ -1070,6 +1070,7 @@ service Lobby {
 
   // 冰菓活动
   rpc bingoActivityReceiveReward(ReqBingoActivityReceiveReward) returns (ResBingoActivityReceiveReward);
+  rpc fetchBingoActivityData(ReqFetchBingoActivityData) returns (ResFetchBingoActivityData);
 
   // 雪球活动
   rpc snowballActivityStartBattle(ReqSnowballActivityStartBattle) returns (ResSnowballActivityStartBattle);
@@ -4082,6 +4083,13 @@ message ResFetchServerMaintenanceInfo {
     bool open = 2;
   }
   repeated ServerFunctionMaintenanceInfo function_maintenance = 1;
+
+  // 活动维护只会返回 open = true 的，注意判空
+  message ServerActivityMaintenanceInfo {
+    string activity_type = 1;
+    bool open = 2;
+  }
+  repeated ServerActivityMaintenanceInfo activity_maintenance = 2;
 }
 
 message ReqUpgradeVillageBuilding {
@@ -4357,11 +4365,13 @@ message ResFetchContestPlayerRank {
     string nickname = 2;
     ContestPlayerAccountData data = 3;
     string team_name = 4;
+    int32 modify_score = 5;
   }
   message PlayerData {
     uint32 rank = 1;
     ContestPlayerAccountData data = 2;
     string team_name = 3;
+    int32 modify_score = 4;
   }
   Error error = 1;
   uint32 total = 2;
@@ -5068,6 +5078,15 @@ message ResBingoActivityReceiveReward {
   Error error = 1;
   repeated ExecuteResult execute_result = 2;
   repeated ActivityBingoCardData cards = 3; // 更新后的冰菓卡信息
+}
+
+message ReqFetchBingoActivityData {
+  uint32 activity_id = 1;
+}
+
+message ResFetchBingoActivityData {
+  Error error = 1;
+  ActivityBingoData data = 2;
 }
 
 message ReqSnowballActivityStartBattle {

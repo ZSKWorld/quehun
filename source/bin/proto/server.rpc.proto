@@ -186,7 +186,7 @@ service ServerRpc {
   rpc fetchManagerCustomizedContestList(ReqSrvFetchManagerCustomizedContestList) returns (lq.ResFetchManagerCustomizedContestList);
   rpc fetchManagerCustomizedContest (ReqSrvFetchManagerCustomizedContest) returns (lq.ResFetchManagerCustomizedContest);
   rpc updateManagerCustomizedContest(ReqSrvUpdateManagerCusomizedContest) returns (ResCommon);
-  rpc fetchContestPlayerRank(ReqSrvFetchContestPlayerRank) returns (ResSrvFetchContestPlayerRank);
+  rpc fetchContestPlayerRank(ReqSrvFetchContestPlayerRank) returns (lq.ResFetchContestPlayerRank);
   rpc fetchReadyPlayerList(ReqSrvFetchReadyPlayerList) returns (ResSrvFetchReadyPlayerList);
   rpc createGamePlan(ReqSrvCreateGamePlan) returns (ResCommon);
   rpc fetchContestTeamRank(ReqSrvFetchContestTeamRank) returns (lq.ResFetchContestTeamRank);
@@ -281,6 +281,7 @@ service ServerRpc {
   rpc addFollowCustomizedContest(ReqAddFollowCustomizedContest) returns (ResCommon);
   rpc accountLeaveRoom(ReqSrvLeaveRoom) returns (ResCommon);
   rpc notifyContestReady(ReqSrvNotifyContestReady) returns(ResCommon);
+  rpc notifyContestRuleChange(ReqSrvNotifyContestRuleChange) returns (ResCommon);
 
   // => center-gift-code
   rpc createGiftCodeUsage(ReqCreateGiftCodeUsage) returns (ResCommon);
@@ -450,6 +451,12 @@ message ReqSrvNotifyContestReady {
   uint32 unique_id = 2;
   uint32 ready = 3;
   uint32 reason = 4;
+}
+
+message ReqSrvNotifyContestRuleChange {
+  uint32 account_id = 1;
+  uint32 unique_id = 2;
+  uint32 auto_match = 3;
 }
 
 message ReqForwardAccount {
@@ -1009,37 +1016,6 @@ message ReqSrvFetchContestPlayerRank {
   uint32 unique_id = 2;
   uint32 limit = 3;
   uint32 offset = 4;
-}
-
-message ResSrvFetchContestPlayerRank {
-  message ContestPlayerAccountData {
-    message ContestGameResult {
-      uint32 rank = 1;
-      int32 total_point = 2;
-    }
-    message ContestSeriesGameResult {
-      uint32 key = 1;
-      repeated ContestGameResult results = 2;
-    }
-    uint32 total_game_count = 1;
-    repeated ContestGameResult recent_games = 2;
-    repeated ContestSeriesGameResult highest_series_points = 3;
-    int32 accumulate_point = 4; // 带马点总分
-  }
-  message SeasonRank {
-    uint32 account_id = 1;
-    string nickname = 2;
-    ContestPlayerAccountData data = 3;
-    string team_name = 4;
-  }
-  message PlayerData {
-    uint32 rank = 1;
-    ContestPlayerAccountData data = 2;
-  }
-  Error error = 1;
-  uint32 total = 2;
-  repeated SeasonRank rank = 3;
-  PlayerData player_data = 4;
 }
 
 message ReqSrvFetchReadyPlayerList {

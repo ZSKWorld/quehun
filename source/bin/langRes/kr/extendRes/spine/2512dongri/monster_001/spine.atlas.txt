@@ -1,0 +1,12 @@
+monster_001.png
+size:394,394
+filter:Linear,Linear
+a1
+bounds:2,141,211,251
+offsets:0,0,211,266
+a2
+bounds:215,222,177,170
+offsets:1,1,179,171
+a3
+bounds:2,86,208,53
+offsets:1,1,210,55

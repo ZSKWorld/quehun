@@ -2979,6 +2979,11 @@ message ActivityBingoData {
   repeated ActivityBingoCardData cards = 2;
 }
 
+message ActivityIdTimeRecord {
+  uint32 id = 1;
+  uint32 time = 2;
+}
+
 message ActivitySnowballData {
   uint32 activity_id = 1;
   uint32 level = 2;
@@ -2992,6 +2997,9 @@ message ActivitySnowballData {
 
   uint32 level_finished_count = 8; // 回到初始关卡次数，通关一次后+1
   uint32 player_combo = 9; // 连击次数
+
+  repeated ActivityIdTimeRecord reward_records = 10; // 服务端奖励记录，不会发给客户端
+  repeated ActivityIdTimeRecord finish_records = 11; // 服务端通关记录，不会发给客户端
 }
 
 message ActivitySnowballUpgrade {

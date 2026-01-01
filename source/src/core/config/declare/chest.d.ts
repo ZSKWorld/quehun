@@ -1164,6 +1164,10 @@ declare interface ISheet_Chest_ChestShop {
 	1479: ISheetData_Chest_ChestShop;
 	1480: ISheetData_Chest_ChestShop;
 	1481: ISheetData_Chest_ChestShop;
+	1482: ISheetData_Chest_ChestShop;
+	1483: ISheetData_Chest_ChestShop;
+	1484: ISheetData_Chest_ChestShop;
+	1485: ISheetData_Chest_ChestShop;
 	1999: ISheetData_Chest_ChestShop;
 	3001: ISheetData_Chest_ChestShop;
 	3002: ISheetData_Chest_ChestShop;
@@ -1640,6 +1644,10 @@ declare interface ISheet_Chest_ChestShop {
 	3479: ISheetData_Chest_ChestShop;
 	3480: ISheetData_Chest_ChestShop;
 	3481: ISheetData_Chest_ChestShop;
+	3482: ISheetData_Chest_ChestShop;
+	3483: ISheetData_Chest_ChestShop;
+	3484: ISheetData_Chest_ChestShop;
+	3485: ISheetData_Chest_ChestShop;
 	3999: ISheetData_Chest_ChestShop;
 }
 declare interface ISheetData_Chest_ChestShop {

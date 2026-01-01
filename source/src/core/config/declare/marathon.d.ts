@@ -1,0 +1,133 @@
+declare interface ITable_Marathon {
+	/** 活动索引  ---  unique */
+	marathon_info: CfgExt<ISheet_Marathon_MarathonInfo>;
+	/** 活动分数  ---  group */
+	marathon_reward: CfgExtGroup<ISheet_Marathon_MarathonReward>;
+	/** 单张麻将牌出现的权重  ---  group */
+	marathon_tile_group: CfgExtGroup<ISheet_Marathon_MarathonTileGroup>;
+	/** 牌墙生成  ---  group */
+	marathon_wall_group: CfgExtGroup<ISheet_Marathon_MarathonWallGroup>;
+	/** 关卡内道具权重  ---  group */
+	marathon_item_group: CfgExtGroup<ISheet_Marathon_MarathonItemGroup>;
+}
+
+//#region marathon_info
+declare interface ISheet_Marathon_MarathonInfo {
+	[key: string]: ISheetData_Marathon_MarathonInfo;
+	260201: ISheetData_Marathon_MarathonInfo;
+}
+declare interface ISheetData_Marathon_MarathonInfo {
+	/** 活动id */
+	activity_id: number;
+	/** 一秒多少tick */
+	tick: number;
+	/** gameover的手牌数 */
+	hands_count: number;
+	/** 起始倒计时（tick） */
+	start_time: number;
+	/** fever time 期间速度（两面墙之间tick数） */
+	fever_speed: number;
+	/** fevertime期间的分数倍率，百分比 */
+	fever_time_bonus: number;
+	/** 持续墙的面数 */
+	fever_time_duration: number;
+	/** 一面墙有多少张牌 */
+	wall_tile_count: number;
+	/** 福牌额外权重 */
+	fever_weight_addition: number;
+	/** 福牌相邻牌额外权重 */
+	near_fever_weight_addition: number;
+	/** 一面墙最多能有多少张相同牌 */
+	wall_max_same_tile: number;
+	/** 关卡组 */
+	wall_group_id: number;
+	/** 牌组 */
+	tile_group: number;
+	/** 分数 */
+	reward_group: number;
+	/** 道具 */
+	item_group: number;
+}
+//#endregion
+
+//#region marathon_reward
+declare interface ISheet_Marathon_MarathonReward {
+	[key: string]: ISheetData_Marathon_MarathonReward[];
+	3001: ISheetData_Marathon_MarathonReward[];
+}
+declare interface ISheetData_Marathon_MarathonReward {
+	/** 分数组 */
+	group_id: number;
+	type: number;
+	point: number;
+	/** tick每秒30 */
+	time: number;
+}
+//#endregion
+
+//#region marathon_tile_group
+declare interface ISheet_Marathon_MarathonTileGroup {
+	[key: string]: ISheetData_Marathon_MarathonTileGroup[];
+	2001: ISheetData_Marathon_MarathonTileGroup[];
+}
+declare interface ISheetData_Marathon_MarathonTileGroup {
+	/** 牌组 */
+	group_id: number;
+	/** 牌 */
+	tile: string;
+	/** 基础权重 */
+	weight: number;
+	/** 福牌权重 */
+	fever_weight: number;
+}
+//#endregion
+
+//#region marathon_wall_group
+declare interface ISheet_Marathon_MarathonWallGroup {
+	[key: string]: ISheetData_Marathon_MarathonWallGroup[];
+	1001: ISheetData_Marathon_MarathonWallGroup[];
+}
+declare interface ISheetData_Marathon_MarathonWallGroup {
+	/** 牌墙组 */
+	group_id: number;
+	/** 下限(闭区间) */
+	lower: number;
+	/** 上限（闭区间，0表示无穷大） */
+	upper: number;
+	/** 速度（两面墙之间消耗几个tick） */
+	speed: number;
+	/** 期间的分数倍率，百分比 */
+	speed_bonus: number;
+	/** 福牌必定不会出现 */
+	ban_fever: number;
+	/** 必定出现福牌次数 */
+	must_fever_count: number;
+	/** 完成检查概率% */
+	finish_hands_check: number;
+	/** 强仓检概率% */
+	strong_hands_check: number;
+	/** 弱仓检概率% */
+	weak_hands_check: number;
+	/** 生成道具概率% */
+	item_rate: number;
+	/** 道具组 */
+	item_group_id: number;
+}
+//#endregion
+
+//#region marathon_item_group
+declare interface ISheet_Marathon_MarathonItemGroup {
+	[key: string]: ISheetData_Marathon_MarathonItemGroup[];
+	4001: ISheetData_Marathon_MarathonItemGroup[];
+	4002: ISheetData_Marathon_MarathonItemGroup[];
+	4003: ISheetData_Marathon_MarathonItemGroup[];
+}
+declare interface ISheetData_Marathon_MarathonItemGroup {
+	/** 道具组 */
+	group_id: number;
+	/** 道具类型 */
+	type: number;
+	/** 权重 */
+	weight: number;
+}
+//#endregion

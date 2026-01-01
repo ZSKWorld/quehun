@@ -1,572 +1,557 @@
 Charactor_ALS_SC.png
-	size: 2964, 2964
-	filter: Linear, Linear
-	scale: 0.5
+size:2048,2048
+filter:Linear,Linear
+scale:0.4
 arm_l_1
-	bounds: 2759, 956, 183, 202
-	rotate: 90
-arm_l_2
-	bounds: 1734, 818, 282, 224
-	offsets: 0, 5, 282, 229
-arm_l_shoulder_1
-	bounds: 2355, 778, 117, 183
-	offsets: 0, 4, 117, 187
-arm_r_1
-	bounds: 2815, 1339, 139, 244
-	offsets: 0, 3, 139, 248
-arm_r_2
-	bounds: 835, 2031, 108, 209
-	rotate: 90
+bounds:540,2,146,161
+rotate:90
 bg
-	bounds: 2, 133, 1000, 467
-	rotate: 90
+bounds:1215,1673,800,373
 bianzi_1
-	bounds: 471, 117, 298, 461
-	offsets: 3, 3, 303, 464
-bianzi_2
-	bounds: 1553, 91, 173, 272
-	offsets: 0, 7, 173, 279
-bianzi_3
-	bounds: 1399, 365, 264, 169
+bounds:831,38,239,368
+offsets:2,3,242,371
+rotate:90
 bianzi_4
-	bounds: 1408, 1076, 175, 336
-	offsets: 2, 2, 177, 338
-	rotate: 90
+bounds:1777,1531,140,269
+offsets:1,1,141,270
+rotate:90
 body
-	bounds: 2190, 2249, 396, 544
-	offsets: 35, 11, 538, 555
-	rotate: 90
+bounds:795,658,317,435
+offsets:28,9,430,444
+rotate:90
 coat_1
-	bounds: 2506, 1765, 482, 422
-	rotate: 90
+bounds:1215,1079,385,338
 coat_2
-	bounds: 1517, 1789, 501, 514
-	rotate: 90
+bounds:795,977,400,411
 daizi_1
-	bounds: 2504, 200, 51, 85
-	offsets: 0, 0, 53, 86
-	rotate: 90
-ear_l
-	bounds: 2930, 2157, 28, 56
-	offsets: 0, 0, 29, 56
+bounds:1358,2,41,68
+offsets:0,0,42,69
+rotate:90
 ear_r
-	bounds: 1468, 1789, 45, 36
-	offsets: 1, 0, 46, 38
+bounds:2017,1848,35,29
+offsets:1,0,36,30
+rotate:90
 ear_yang_1
-	bounds: 2861, 779, 175, 80
-	rotate: 90
-ear_yang_2
-	bounds: 2784, 506, 62, 115
-ex_arm_2_shouzhou
-	bounds: 653, 24, 109, 91
+bounds:1981,942,140,64
+rotate:90
 ex_arm_r_2
-	bounds: 1468, 1567, 220, 399
-	rotate: 90
-ex_celebrate_arm_l_1
-	bounds: 1746, 1044, 196, 291
-	rotate: 90
-ex_celebrate_hand1/_0000_ex_celebrate_hand6
-	bounds: 2930, 2215, 50, 32
-	offsets: 0, 2, 51, 34
-	rotate: 90
-ex_celebrate_hand1/_0000s_0000_buding_1-
-	bounds: 2666, 182, 64, 92
-	rotate: 90
-ex_celebrate_hand1/_0000s_0001_ex_arm_L_lingzi
-	bounds: 1850, 34, 86, 108
-ex_celebrate_hand1/_0000s_0002_ex_arm_L_2-
-	bounds: 2039, 1046, 194, 116
-	offsets: 2, 0, 196, 120
-	rotate: 90
-ex_celebrate_hand1/_0000s_0003_ex_arm_L_1-
-	bounds: 1869, 1612, 162, 175
-	offsets: 0, 3, 162, 178
-ex_celebrate_hand1/_0000s_0004_ex_shoulder-
-	bounds: 2792, 1141, 196, 167
-	offsets: 11, 21, 351, 193
-	rotate: 90
-ex_celebrate_hand1/_0000s_0005_ex_arm_L_lingzi2
-	bounds: 2243, 209, 81, 75
-	offsets: 3, 0, 84, 75
-ex_celebrate_hand1/_0000s_0006_ex_hand1-
-	bounds: 2848, 510, 110, 76
-	rotate: 90
+bounds:1551,758,176,319
 ex_celebrate_hand1/_0000s_0007_xiuzi_ins-
-	bounds: 2412, 295, 49, 90
-	rotate: 90
-ex_celebrate_hand1/_0001_ex_celebrate_hand5
-	bounds: 2736, 131, 45, 49
+bounds:1398,658,39,72
+rotate:90
 ex_celebrate_hand1/_0002_ex_celebrate_hand4
-	bounds: 2290, 77, 42, 56
-ex_celebrate_hand1/_0003_ex_celebrate_hand3
-	bounds: 2870, 230, 41, 40
+bounds:1126,3,33,44
+rotate:90
 ex_celebrate_hand1/_0004_ex_celebrate_hand2
-	bounds: 2135, 27, 68, 53
-ex_celebrate_hand1/_0005_ex_celebrate_hand1
-	bounds: 1154, 756, 89, 73
+bounds:260,2,54,42
 ex_celebrate_hand2/_0000_ex_celebrate_hand2_7
-	bounds: 2275, 378, 158, 78
-	offsets: 0, 1, 158, 79
+bounds:1981,814,126,62
+offsets:0,1,126,63
+rotate:90
 ex_celebrate_hand2/_0001_ex_celebrate_hand2_6
-	bounds: 2474, 742, 194, 52
-ex_celebrate_hand2/_0002_ex_celebrate_hand2_5
-	bounds: 2133, 219, 108, 65
-ex_celebrate_hand2/_0003_ex_celebrate_hand2_4
-	bounds: 2893, 2649, 69, 56
-	offsets: 0, 0, 78, 56
-ex_celebrate_hand2/_0004_ex_celebrate_hand2_3
-	bounds: 2877, 316, 57, 50
-	rotate: 90
-ex_celebrate_hand2/_0005_ex_celebrate_hand2_2
-	bounds: 2504, 253, 91, 75
-	offsets: 3, 0, 94, 75
-	rotate: 90
-ex_celebrate_hand2/_0006_ex_celebrate_hand2_1
-	bounds: 2435, 346, 145, 102
-	offsets: 0, 3, 153, 105
+bounds:1201,2,155,41
 ex_celebrate_hand3/_0000_ex_celebrate_hand3_6
-	bounds: 1006, 12, 37, 103
-	rotate: 90
-ex_celebrate_hand3/_0001_ex_celebrate_hand3_5
-	bounds: 2822, 316, 53, 57
+bounds:2003,500,30,82
 ex_celebrate_hand3/_0002_ex_celebrate_hand3_4
-	bounds: 1487, 7, 61, 42
+bounds:883,2,49,34
 ex_celebrate_hand3/_0003_ex_celebrate_hand3_3
-	bounds: 1850, 2, 56, 30
+bounds:2017,1691,44,24
+rotate:90
 ex_celebrate_hand3/_0004_ex_celebrate_hand3_2
-	bounds: 2649, 696, 44, 19
-	offsets: 1, 0, 45, 19
-	rotate: 90
-ex_celebrate_hand3/_0005_ex_celebrate_hand3_1
-	bounds: 2314, 292, 84, 96
-	offsets: 7, 8, 91, 104
-	rotate: 90
-ex_celebrate_hand4/_0000_ex_celebrate_hand4_5
-	bounds: 1468, 2055, 84, 47
-	rotate: 90
+bounds:1181,296,35,15
+offsets:1,0,36,15
+rotate:90
 ex_celebrate_hand4/_0001_ex_celebrate_hand4_4
-	bounds: 2033, 2249, 41, 155
-	rotate: 90
+bounds:134,12,32,124
+rotate:90
 ex_celebrate_hand4/_0002_ex_celebrate_hand4_3
-	bounds: 2839, 375, 71, 91
-	offsets: 0, 1, 74, 92
-	rotate: 90
-ex_celebrate_hand4/_0003_ex_celebrate_hand4_2
-	bounds: 2590, 431, 74, 144
-ex_celebrate_hand4/_0004_ex_celebrate_hand4_1
-	bounds: 287, 6, 125, 159
-	rotate: 90
-ex_celebrate_hand5/_0000_ex_celebrate_hand5_5
-	bounds: 2848, 448, 76, 60
-ex_celebrate_hand5/_0001_ex_celebrate_hand5_4
-	bounds: 2315, 137, 61, 97
-	rotate: 90
-ex_celebrate_hand5/_0002_ex_celebrate_hand5_3
-	bounds: 2904, 2267, 55, 169
+bounds:1551,699,57,73
+offsets:0,1,59,74
+rotate:90
 ex_celebrate_hand5/_0003_ex_celebrate_hand5_2
-	bounds: 1468, 1890, 40, 163
+bounds:2,12,32,130
+rotate:90
 ex_celebrate_hand5/_0004_ex_celebrate_hand5_1
-	bounds: 2447, 450, 125, 141
-	rotate: 90
-ex_click_hand1/_0000_ex_click_hand1_6
-	bounds: 2205, 30, 68, 50
-ex_click_hand1/_0001_ex_click_hand1_5
-	bounds: 1206, 3, 92, 46
-	offsets: 0, 0, 95, 46
-ex_click_hand1/_0002_ex_click_hand1_4
-	bounds: 1799, 1499, 92, 66
-ex_click_hand1/_0003_ex_click_hand1_3
-	bounds: 2582, 353, 76, 82
-	offsets: 4, 13, 80, 95
-	rotate: 90
+bounds:1845,1083,100,113
 ex_click_hand1/_0004_ex_click_hand1_2
-	bounds: 2788, 376, 49, 128
-ex_click_hand1/_0005_ex_click_hand1_1
-	bounds: 2815, 1585, 147, 178
-ex_coat_shoulder/coat_3_1
-	bounds: 2736, 2249, 166, 187
-	offsets: 0, 1, 166, 188
-ex_coat_shoulder/coat_3_2
-	bounds: 2671, 785, 169, 188
-	rotate: 90
+bounds:316,5,39,102
+rotate:90
 ex_coat_shoulder/ex_shoulder_r
-	bounds: 1728, 2, 140, 120
-	offsets: 0, 2, 153, 142
-	rotate: 90
+bounds:1947,1084,112,95
+offsets:0,2,122,113
+rotate:90
 ex_emoji/ex_emoji_1
-	bounds: 2157, 1220, 20, 20
+bounds:1197,1334,16,16
 ex_emoji/ex_emoji_2
-	bounds: 1711, 763, 21, 23
+bounds:1826,1442,17,18
 ex_eyes/ex_click_eye1
-	bounds: 706, 1135, 28, 25
+bounds:773,687,22,20
+rotate:90
 ex_eyes/ex_click_eye2
-	bounds: 1376, 800, 29, 28
-	rotate: 90
+bounds:749,2,23,22
 ex_eyes/ex_eye1
-	bounds: 2275, 23, 54, 52
-	offsets: 0, 0, 56, 52
-ex_eyes/ex_eye2
-	bounds: 2764, 310, 60, 56
-	rotate: 90
-ex_fx/aixin
-	bounds: 2133, 286, 99, 86
+bounds:2003,665,43,42
+offsets:0,0,45,42
 ex_fx2/boom_0000
-	bounds: 1104, 1190, 55, 48
-	offsets: 90, 80, 226, 194
-	rotate: 90
-ex_fx2/boom_0001
-	bounds: 1974, 367, 148, 139
-	offsets: 44, 32, 226, 194
-	rotate: 90
-ex_fx2/boom_0002
-	bounds: 2474, 796, 195, 182
-	offsets: 18, 12, 226, 194
-ex_fx2/boom_0003
-	bounds: 2154, 793, 199, 168
-	offsets: 13, 13, 226, 194
-ex_fx2/boom_0004
-	bounds: 2670, 623, 177, 160
-	offsets: 26, 17, 226, 194
+bounds:2003,584,43,38
+offsets:73,64,181,155
 ex_fx2/boom_0005
-	bounds: 2132, 460, 153, 158
-	offsets: 40, 14, 226, 194
-	rotate: 90
-ex_fx2/boom_0006
-	bounds: 2292, 458, 153, 153
-	offsets: 42, 15, 226, 194
-ex_fx2/boom_0007
-	bounds: 2666, 491, 116, 130
-	offsets: 51, 27, 226, 194
+bounds:703,26,122,126
+offsets:32,11,181,155
+rotate:90
 ex_greeting_hand1/_0000_ex_greeting_hand1_6
-	bounds: 2926, 535, 36, 85
-	offsets: 0, 1, 36, 86
+bounds:2017,1979,29,67
+offsets:0,1,29,68
 ex_greeting_hand1/_0001_ex_greeting_hand1_5
-	bounds: 2582, 279, 72, 82
-	offsets: 0, 2, 72, 84
-	rotate: 90
+bounds:1626,699,57,65
+offsets:0,2,57,67
+rotate:90
 ex_greeting_hand1/_0002_ex_greeting_hand1_4
-	bounds: 1069, 1593, 33, 72
+bounds:1693,699,26,57
 ex_greeting_hand1/_0003_ex_greeting_hand1_3
-	bounds: 1422, 6, 43, 63
-	rotate: 90
+bounds:831,2,34,50
+rotate:90
 ex_greeting_hand1/_0004_ex_greeting_hand1_2
-	bounds: 2390, 81, 49, 54
-ex_greeting_hand1/_0005_ex_greeting_hand1_1
-	bounds: 1390, 2, 47, 30
-	rotate: 90
-ex_greeting_hand2/_0000_ex_greeting_hand2_6
-	bounds: 2666, 131, 49, 68
-	rotate: 90
+bounds:2003,624,39,43
+rotate:90
 ex_greeting_hand2/_0001_ex_greeting_hand2_5
-	bounds: 2068, 811, 34, 56
-	rotate: 90
+bounds:1743,27,27,44
 ex_greeting_hand2/_0002_ex_greeting_hand2_4
-	bounds: 1069, 1534, 33, 57
+bounds:2017,1737,26,46
 ex_greeting_hand2/_0003_ex_greeting_hand2_3
-	bounds: 2930, 1993, 25, 51
-	offsets: 0, 1, 25, 52
+bounds:773,711,20,41
+offsets:0,1,20,42
 ex_greeting_hand2/_0004_ex_greeting_hand2_2
-	bounds: 1893, 1499, 17, 44
-	rotate: 90
+bounds:524,9,14,35
 ex_greeting_hand2/_0005_ex_greeting_hand2_1
-	bounds: 1245, 756, 14, 44
-	rotate: 90
-ex_greeting_hand3/_0000_ex_greeting_hand3_6
-	bounds: 2666, 248, 61, 95
-	rotate: 90
-ex_greeting_hand3/_0001_ex_greeting_hand3_5
-	bounds: 1300, 4, 88, 45
-	offsets: 0, 0, 91, 45
+bounds:2035,547,11,35
 ex_greeting_hand3/_0002_ex_greeting_hand3_4
-	bounds: 2091, 238, 40, 127
-ex_greeting_hand3/_0003_ex_greeting_hand3_3
-	bounds: 1245, 772, 57, 129
-	rotate: 90
-ex_greeting_hand3/_0004_ex_greeting_hand3_2
-	bounds: 1938, 15, 121, 133
-	rotate: 90
+bounds:420,12,32,102
+rotate:90
 ex_greeting_hand3/_0005_ex_greeting_hand3_1
-	bounds: 2591, 166, 54, 73
-	rotate: 90
+bounds:2003,754,43,58
 ex_hand_zz/1
-	bounds: 771, 365, 389, 312
-	rotate: 90
-ex_hand_zz/2
-	bounds: 2, 16, 115, 283
-	offsets: 155, 29, 389, 312
-	rotate: 90
+bounds:1729,770,311,250
+rotate:90
 ex_hand_zz/3
-	bounds: 771, 51, 389, 312
+bounds:1499,386,311,250
+rotate:90
 ex_hand_zz/4
-	bounds: 1085, 365, 389, 312
-	rotate: 90
+bounds:1520,73,311,250
+rotate:90
 ex_hand_zz/5
-	bounds: 1162, 51, 389, 312
+bounds:1751,457,311,250
+rotate:90
 ex_hand_zz/6
-	bounds: 1408, 1253, 389, 312
-ex_hand_zz/7
-	bounds: 2033, 1499, 389, 312
-ex_hand_zz/8
-	bounds: 2424, 1451, 389, 312
-ex_hat
-	bounds: 2420, 980, 337, 210
-	offsets: 0, 0, 337, 215
-ex_saihong
-	bounds: 1940, 138, 227, 149
-	rotate: 90
-ex_sheep/ex_sheep_0000_sheep_arm_1
-	bounds: 2666, 372, 120, 117
-ex_sheep/ex_sheep_0001_sheep_tail
-	bounds: 2591, 222, 73, 55
+bounds:1772,144,311,250
+rotate:90
 ex_sheep/ex_sheep_0002_sheep_body
-	bounds: 1104, 1247, 302, 418
-	offsets: 0, 0, 306, 418
+bounds:1602,1083,241,334
+offsets:0,0,244,334
 ex_sheep/ex_sheep_0003_sheep_arm_2
-	bounds: 1111, 7, 93, 42
-ex_sheep/ex_sheep_0004_camera
-	bounds: 1728, 144, 221, 210
-	rotate: 90
+bounds:1197,1003,74,33
+rotate:90
 ex_sheep_zz/sheep_0002
-	bounds: 756, 756, 404, 396
-	offsets: 416, 292, 1000, 1000
-	rotate: 90
-ex_sheep_zz/sheep_0003
-	bounds: 1406, 788, 286, 326
-	offsets: 435, 490, 1000, 1000
-	rotate: 90
-ex_sheep_zz/sheep_0004
-	bounds: 1799, 1242, 378, 255
-	offsets: 372, 592, 1000, 1000
-ex_sheep_zz/sheep_0005
-	bounds: 1399, 536, 310, 250
-	offsets: 243, 690, 1000, 1000
+bounds:1181,333,323,316
+offsets:333,234,800,800
+rotate:90
 ex_sheep_zz/sheep_0006
-	bounds: 706, 1162, 396, 357
-	offsets: 129, 568, 1000, 1000
-ex_xiukoubuding
-	bounds: 2893, 2707, 112, 69
-	rotate: 90
+bounds:1201,45,317,286
+offsets:103,454,800,800
 eyebrow_1
-	bounds: 1046, 2094, 21, 45
+bounds:1197,1352,16,36
 eyebrow_2
-	bounds: 2418, 171, 59, 37
-face
-	bounds: 2736, 2438, 207, 226
-	offsets: 0, 1, 214, 227
-	rotate: 90
+bounds:1028,6,47,30
 fashi_1
-	bounds: 2913, 230, 37, 40
+bounds:2017,1814,29,32
 fashi_2
-	bounds: 2877, 272, 42, 50
-	rotate: 90
-fashi_3
-	bounds: 2046, 753, 39, 56
+bounds:934,2,34,40
+rotate:90
 finger_1
-	bounds: 2006, 753, 63, 38
-	rotate: 90
+bounds:976,6,50,30
 finger_2
-	bounds: 2763, 249, 52, 59
-finger_3
-	bounds: 2087, 753, 37, 56
-	offsets: 0, 0, 37, 57
+bounds:1777,1419,41,47
+rotate:90
 finger_4
-	bounds: 2930, 2046, 25, 53
-	offsets: 0, 0, 25, 56
-fx_guang
-	bounds: 2326, 200, 90, 90
+bounds:1981,770,20,42
+offsets:0,0,20,44
 hair_1
-	bounds: 2849, 622, 106, 155
-	offsets: 0, 1, 106, 156
+bounds:669,1303,85,124
+rotate:90
 hair_10
-	bounds: 889, 14, 35, 115
-	offsets: 1, 0, 36, 115
-	rotate: 90
-hair_11
-	bounds: 2893, 2821, 69, 141
-	offsets: 0, 0, 71, 141
-hair_12
-	bounds: 1734, 711, 105, 270
-	offsets: 0, 5, 105, 275
-	rotate: 90
-hair_13
-	bounds: 2211, 82, 51, 77
-	offsets: 0, 0, 51, 81
-	rotate: 90
+bounds:2017,1885,28,92
 hair_14
-	bounds: 2375, 44, 34, 35
-	offsets: 0, 1, 34, 36
+bounds:2017,1785,27,29
+rotate:90
 hair_2
-	bounds: 764, 23, 26, 123
-	offsets: 1, 0, 30, 123
-	rotate: 90
-hair_3
-	bounds: 2212, 135, 72, 101
-	offsets: 0, 0, 73, 102
-	rotate: 90
+bounds:773,754,20,98
+offsets:1,0,24,98
 hair_4
-	bounds: 1408, 1571, 94, 48
-	rotate: 90
+bounds:1428,5,75,38
 hair_5
-	bounds: 2068, 847, 84, 197
-	offsets: 0, 6, 85, 203
-hair_6
-	bounds: 2115, 374, 84, 158
-	offsets: 0, 1, 84, 159
-	rotate: 90
-hair_7
-	bounds: 1904, 367, 68, 164
-	offsets: 0, 0, 69, 170
+bounds:1520,4,67,157
+offsets:0,5,68,162
+rotate:90
 hair_8
-	bounds: 2018, 838, 48, 204
-	offsets: 1, 1, 49, 205
-hair_9
-	bounds: 1553, 6, 83, 165
-	offsets: 1, 0, 84, 167
-	rotate: 90
+bounds:1232,658,39,164
+rotate:90
 hand_1
-	bounds: 2418, 210, 84, 83
-hat
-	bounds: 2179, 1158, 339, 239
-	rotate: 90
-head
-	bounds: 1665, 367, 237, 164
-	offsets: 13, 91, 254, 255
+bounds:1777,1462,67,66
+rotate:90
 hl_1
-	bounds: 2956, 1576, 7, 6
-	rotate: 90
+bounds:1751,450,5,5
 hl_2
-	bounds: 2315, 200, 7, 9
-	rotate: 90
+bounds:540,575,6,7
 hl_3
-	bounds: 2839, 496, 7, 8
+bounds:1499,378,5,6
 hl_4
-	bounds: 1720, 83, 6, 6
+bounds:1172,2,4,4
 houfa_1
-	bounds: 706, 1521, 361, 505
-	offsets: 0, 0, 364, 505
+bounds:540,150,289,404
+offsets:0,0,291,404
 houfa_2
-	bounds: 2033, 1813, 434, 471
-	offsets: 0, 0, 482, 702
-	rotate: 90
+bounds:831,279,348,377
+offsets:0,0,385,561
 houfa_3
-	bounds: 1154, 831, 250, 414
+bounds:1845,1198,200,331
 houfa_4
-	bounds: 471, 580, 283, 553
-	offsets: 3, 0, 289, 561
+bounds:566,854,227,443
+offsets:2,0,231,449
 houfa_5
-	bounds: 1069, 1667, 472, 397
-	rotate: 90
+bounds:1232,699,378,317
+rotate:90
 houfa_6
-	bounds: 2, 1135, 702, 891
+bounds:2,584,562,713
 jm_l_1
-	bounds: 2006, 711, 59, 40
-	offsets: 0, 0, 59, 45
+bounds:1077,4,47,32
+offsets:0,0,47,36
 jm_l_2
-	bounds: 448, 117, 20, 14
+bounds:2035,529,16,11
+rotate:90
 jm_r_1
-	bounds: 2817, 237, 34, 51
-	offsets: 9, 0, 43, 51
-	rotate: 90
+bounds:2003,457,27,41
+offsets:7,0,34,41
 jm_r_2
-	bounds: 2091, 219, 17, 17
-	offsets: 0, 0, 17, 18
+bounds:2032,484,14,14
 leg_l
-	bounds: 2, 2028, 831, 934
-	offsets: 0, 0, 843, 967
+bounds:2,1299,665,747
+offsets:0,0,674,773
 leg_r
-	bounds: 835, 2141, 680, 821
-leisi
-	bounds: 1711, 533, 264, 176
-	offsets: 10, 14, 314, 191
+bounds:669,1390,544,656
 luntai_1
-	bounds: 2190, 2647, 701, 315
+bounds:1215,1419,560,252
 luntai_2
-	bounds: 1517, 2292, 671, 670
+bounds:2,46,536,536
 mouth
-	bounds: 2334, 82, 54, 53
-	offsets: 1, 0, 55, 55
+bounds:2003,709,43,43
+offsets:1,0,44,44
 mouth_2
-	bounds: 756, 735, 19, 13
-	rotate: 90
+bounds:1729,758,15,10
 mouth_3
-	bounds: 2792, 1418, 31, 16
-	rotate: 90
-naizi_1
-	bounds: 1977, 517, 153, 192
-	offsets: 5, 1, 160, 196
-naizi_1_s
-	bounds: 1893, 1518, 131, 92
-naizi_2
-	bounds: 448, 22, 93, 203
-	offsets: 0, 0, 105, 204
-	rotate: 90
+bounds:1505,18,25,13
+rotate:90
 nose
-	bounds: 1104, 1162, 34, 26
-	offsets: 0, 0, 35, 27
+bounds:1743,4,27,21
+offsets:0,0,28,22
 pigu
-	bounds: 2420, 1192, 370, 257
-	offsets: 0, 2, 376, 259
+bounds:566,556,296,205
+offsets:0,2,300,207
+rotate:90
 pigu_hl
-	bounds: 2926, 476, 36, 57
-	offsets: 3, 9, 44, 73
+bounds:1721,710,28,46
+offsets:3,7,35,58
 pupil_l
-	bounds: 2471, 1775, 33, 36
-	offsets: 0, 6, 40, 46
+bounds:1172,8,26,28
+offsets:0,5,32,36
 pupil_l_2
-	bounds: 2297, 778, 13, 14
-	rotate: 90
+bounds:1472,658,10,11
 pupil_r
-	bounds: 2759, 1157, 31, 33
-	offsets: 7, 2, 38, 35
+bounds:1472,671,25,26
+offsets:5,2,30,28
 pupil_r_2
-	bounds: 2, 2, 12, 14
-	offsets: 0, 1, 14, 15
-	rotate: 90
-saihong_1
-	bounds: 2424, 1765, 45, 46
+bounds:2035,517,10,11
+offsets:0,1,11,12
+rotate:90
 saihong_2
-	bounds: 2234, 286, 86, 78
-	rotate: 90
+bounds:1679,2,69,62
+rotate:90
 sheep_1
-	bounds: 2297, 613, 163, 174
-	offsets: 0, 2, 163, 176
-	rotate: 90
-sheep_1_saihong
-	bounds: 2132, 615, 163, 176
-sheep_2
-	bounds: 2135, 82, 74, 69
-sheep_3
-	bounds: 2822, 273, 41, 53
-	offsets: 0, 1, 41, 54
-	rotate: 90
-sheep_4
-	bounds: 2067, 711, 42, 40
+bounds:1772,2,130,140
+offsets:0,1,130,141
 sheep_5
-	bounds: 2930, 2101, 54, 27
-	offsets: 0, 2, 57, 29
-	rotate: 90
+bounds:703,2,44,22
+offsets:0,1,45,23
 sheep_6
-	bounds: 2091, 153, 119, 64
-sheep_7
-	bounds: 2073, 50, 86, 60
-	rotate: 90
-sheep_8
-	bounds: 2157, 963, 247, 193
-sheep_9
-	bounds: 1468, 1827, 61, 47
-	offsets: 2, 0, 73, 47
-	rotate: 90
+bounds:773,561,95,51
+rotate:90
 sheep_emoji
-	bounds: 2473, 577, 163, 174
-	offsets: 0, 2, 163, 176
-	rotate: 90
+bounds:1904,2,130,140
+offsets:0,1,130,141
+
+Charactor_ALS_SC_2.png
+size:1193,1193
+filter:Linear,Linear
+scale:0.4
+arm_l_2
+bounds:870,1012,225,179
+offsets:0,4,225,183
+arm_l_shoulder_1
+bounds:792,658,93,147
+offsets:0,3,93,150
+arm_r_1
+bounds:546,301,111,196
+offsets:0,2,111,198
+arm_r_2
+bounds:659,333,86,167
+bianzi_2
+bounds:233,496,138,218
+offsets:0,5,138,223
+rotate:90
+bianzi_3
+bounds:409,283,211,135
+rotate:90
+ear_l
+bounds:1153,536,23,44
+ear_yang_2
+bounds:770,502,49,92
+rotate:90
+ex_arm_2_shouzhou
+bounds:484,194,87,73
+rotate:90
+ex_celebrate_arm_l_1
+bounds:315,636,156,233
+rotate:90
+ex_celebrate_hand1/_0000_ex_celebrate_hand6
+bounds:1153,494,40,26
+offsets:0,1,41,27
+rotate:90
+ex_celebrate_hand1/_0000s_0000_buding_1-
+bounds:233,636,51,73
+rotate:90
+ex_celebrate_hand1/_0000s_0001_ex_arm_L_lingzi
+bounds:659,263,68,86
+rotate:90
+ex_celebrate_hand1/_0000s_0002_ex_arm_L_2-
+bounds:697,640,154,93
+offsets:2,0,156,96
+rotate:90
+ex_celebrate_hand1/_0000s_0003_ex_arm_L_1-
+bounds:1030,582,129,140
+offsets:0,2,129,142
+rotate:90
+ex_celebrate_hand1/_0000s_0004_ex_shoulder-
+bounds:453,499,156,135
+offsets:9,16,281,154
+ex_celebrate_hand1/_0000s_0005_ex_arm_L_lingzi2
+bounds:1116,279,64,60
+offsets:3,0,67,60
+ex_celebrate_hand1/_0000s_0006_ex_hand1-
+bounds:739,200,88,61
+ex_celebrate_hand1/_0001_ex_celebrate_hand5
+bounds:1033,204,36,39
+ex_celebrate_hand1/_0003_ex_celebrate_hand3
+bounds:1153,460,32,32
+ex_celebrate_hand1/_0005_ex_celebrate_hand1
+bounds:922,298,71,58
+ex_celebrate_hand2/_0002_ex_celebrate_hand2_5
+bounds:798,112,86,52
+rotate:90
+ex_celebrate_hand2/_0003_ex_celebrate_hand2_4
+bounds:1115,182,55,45
+offsets:0,0,62,45
+ex_celebrate_hand2/_0004_ex_celebrate_hand2_3
+bounds:1073,244,45,40
+rotate:90
+ex_celebrate_hand2/_0005_ex_celebrate_hand2_2
+bounds:547,2,73,60
+offsets:2,0,75,60
+ex_celebrate_hand2/_0006_ex_celebrate_hand2_1
+bounds:473,76,116,82
+offsets:0,2,122,84
+rotate:90
+ex_celebrate_hand3/_0001_ex_celebrate_hand3_5
+bounds:1071,197,42,45
+ex_celebrate_hand3/_0005_ex_celebrate_hand3_1
+bounds:853,280,67,76
+offsets:5,7,72,83
+ex_celebrate_hand4/_0000_ex_celebrate_hand4_5
+bounds:274,2,67,37
+ex_celebrate_hand4/_0003_ex_celebrate_hand4_2
+bounds:1117,341,59,115
+ex_celebrate_hand4/_0004_ex_celebrate_hand4_1
+bounds:869,358,100,127
+rotate:90
+ex_celebrate_hand5/_0000_ex_celebrate_hand5_5
+bounds:1115,229,60,48
+ex_celebrate_hand5/_0001_ex_celebrate_hand5_4
+bounds:995,296,49,77
+rotate:90
+ex_celebrate_hand5/_0002_ex_celebrate_hand5_3
+bounds:823,365,44,135
+ex_click_hand1/_0000_ex_click_hand1_6
+bounds:1074,291,54,40
+rotate:90
+ex_click_hand1/_0001_ex_click_hand1_5
+bounds:172,159,74,36
+offsets:0,0,76,36
+ex_click_hand1/_0002_ex_click_hand1_4
+bounds:897,206,73,52
+ex_click_hand1/_0003_ex_click_hand1_3
+bounds:829,200,61,66
+offsets:3,10,64,76
+rotate:90
+ex_click_hand1/_0005_ex_click_hand1_1
+bounds:1073,713,117,142
+ex_coat_shoulder/coat_3_1
+bounds:139,2,133,150
+ex_coat_shoulder/coat_3_2
+bounds:2,2,135,150
+ex_eyes/ex_eye2
+bounds:798,66,48,44
+ex_fx/aixin
+bounds:658,193,79,68
+ex_fx2/boom_0001
+bounds:998,347,117,109
+offsets:36,27,181,155
+ex_fx2/boom_0002
+bounds:550,637,155,145
+offsets:15,10,181,155
+rotate:90
+ex_fx2/boom_0003
+bounds:611,502,157,133
+offsets:12,11,181,155
+ex_fx2/boom_0004
+bounds:887,460,140,127
+offsets:22,14,181,155
+ex_fx2/boom_0006
+bounds:1029,458,122,122
+offsets:34,12,181,155
+ex_fx2/boom_0007
+bounds:792,553,93,103
+offsets:41,22,181,155
+ex_greeting_hand1/_0005_ex_greeting_hand1_1
+bounds:248,158,37,24
+rotate:90
+ex_greeting_hand2/_0000_ex_greeting_hand2_6
+bounds:964,101,39,54
+rotate:90
+ex_greeting_hand3/_0000_ex_greeting_hand3_6
+bounds:995,245,49,76
+rotate:90
+ex_greeting_hand3/_0001_ex_greeting_hand3_5
+bounds:922,260,71,36
+offsets:0,0,72,36
+ex_greeting_hand3/_0003_ex_greeting_hand3_3
+bounds:750,95,46,103
+ex_greeting_hand3/_0004_ex_greeting_hand3_2
+bounds:559,193,97,106
+ex_hand_zz/2
+bounds:172,197,92,227
+offsets:124,23,311,250
+ex_hand_zz/7
+bounds:2,941,311,250
+ex_hand_zz/8
+bounds:2,689,311,250
+ex_hat
+bounds:2,154,270,168
+offsets:0,0,270,172
+rotate:90
+ex_saihong
+bounds:890,721,181,119
+ex_sheep/ex_sheep_0000_sheep_arm_1
+bounds:1097,1095,96,94
+rotate:90
+ex_sheep/ex_sheep_0001_sheep_tail
+bounds:971,142,58,44
+ex_sheep/ex_sheep_0004_camera
+bounds:890,842,176,168
+ex_sheep_zz/sheep_0003
+bounds:2,426,229,261
+offsets:348,392,800,800
+ex_sheep_zz/sheep_0004
+bounds:315,987,302,204
+offsets:298,474,800,800
+ex_sheep_zz/sheep_0005
+bounds:619,991,249,200
+offsets:194,552,800,800
+ex_xiukoubuding
+bounds:737,2,90,55
+face
+bounds:722,807,166,182
+offsets:0,0,171,182
+fashi_3
+bounds:233,449,31,45
+finger_3
+bounds:1157,1048,30,45
+fx_guang
+bounds:473,2,72,72
+hair_11
+bounds:622,2,55,113
+offsets:0,0,56,113
+rotate:90
+hair_12
+bounds:266,197,84,216
+offsets:0,4,84,220
+rotate:90
+hair_13
+bounds:901,114,40,61
+offsets:0,0,40,64
+rotate:90
+hair_3
+bounds:1097,1012,58,81
+offsets:0,0,58,82
+hair_6
+bounds:557,64,67,127
+hair_7
+bounds:626,59,54,132
+offsets:0,0,55,136
+hair_9
+bounds:682,59,66,132
+offsets:1,0,67,134
+hat
+bounds:315,794,271,191
+head
+bounds:588,796,189,132
+offsets:11,72,203,204
+rotate:90
+leisi
+bounds:266,283,211,141
+offsets:8,11,251,153
+rotate:90
+naizi_1
+bounds:1068,857,123,153
+offsets:4,1,128,156
+naizi_1_s
+bounds:747,263,104,73
+naizi_2
+bounds:747,338,74,162
+offsets:0,0,84,163
+saihong_1
+bounds:395,2,36,37
+sheep_1_saihong
+bounds:887,589,130,141
+rotate:90
+sheep_2
+bounds:972,188,59,55
+sheep_3
+bounds:750,60,33,42
+offsets:0,1,33,43
+rotate:90
+sheep_4
+bounds:1157,1013,33,32
+rotate:90
+sheep_7
+bounds:901,156,68,48
+sheep_8
+bounds:274,41,197,154
+sheep_9
+bounds:343,2,50,37
+offsets:1,0,58,37
 tail
-	bounds: 2666, 311, 59, 96
-	offsets: 0, 2, 59, 98
-	rotate: 90
+bounds:852,121,47,77
+offsets:0,1,47,78
 white_1
-	bounds: 2334, 43, 37, 39
-	rotate: 90
+bounds:1033,172,30,31
+rotate:90
 white_2
-	bounds: 2073, 2, 46, 40
-	rotate: 90
+bounds:433,7,36,32

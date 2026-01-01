@@ -208,6 +208,7 @@ declare interface ISheet_Character_Skin {
 	403206: ISheetData_Character_Skin;
 	403304: ISheetData_Character_Skin;
 	403805: ISheetData_Character_Skin;
+	403807: ISheetData_Character_Skin;
 	404505: ISheetData_Character_Skin;
 	404805: ISheetData_Character_Skin;
 	404806: ISheetData_Character_Skin;
@@ -217,9 +218,13 @@ declare interface ISheet_Character_Skin {
 	406704: ISheetData_Character_Skin;
 	406804: ISheetData_Character_Skin;
 	407404: ISheetData_Character_Skin;
+	408304: ISheetData_Character_Skin;
 	408404: ISheetData_Character_Skin;
 	409003: ISheetData_Character_Skin;
+	409203: ISheetData_Character_Skin;
 	409502: ISheetData_Character_Skin;
+	409803: ISheetData_Character_Skin;
+	409903: ISheetData_Character_Skin;
 	40010703: ISheetData_Character_Skin;
 	40010803: ISheetData_Character_Skin;
 	40010903: ISheetData_Character_Skin;

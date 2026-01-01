@@ -1392,6 +1392,34 @@ declare interface ISheet_Voice_Spot {
 	11643: ISheetData_Voice_Spot;
 	11644: ISheetData_Voice_Spot;
 	11645: ISheetData_Voice_Spot;
+	11701: ISheetData_Voice_Spot;
+	11702: ISheetData_Voice_Spot;
+	11703: ISheetData_Voice_Spot;
+	11704: ISheetData_Voice_Spot;
+	11705: ISheetData_Voice_Spot;
+	11706: ISheetData_Voice_Spot;
+	11707: ISheetData_Voice_Spot;
+	11708: ISheetData_Voice_Spot;
+	11709: ISheetData_Voice_Spot;
+	11710: ISheetData_Voice_Spot;
+	11711: ISheetData_Voice_Spot;
+	11712: ISheetData_Voice_Spot;
+	11713: ISheetData_Voice_Spot;
+	11714: ISheetData_Voice_Spot;
+	11801: ISheetData_Voice_Spot;
+	11802: ISheetData_Voice_Spot;
+	11803: ISheetData_Voice_Spot;
+	11804: ISheetData_Voice_Spot;
+	11805: ISheetData_Voice_Spot;
+	11806: ISheetData_Voice_Spot;
+	11807: ISheetData_Voice_Spot;
+	11808: ISheetData_Voice_Spot;
+	11809: ISheetData_Voice_Spot;
+	11810: ISheetData_Voice_Spot;
+	11811: ISheetData_Voice_Spot;
+	11812: ISheetData_Voice_Spot;
+	11813: ISheetData_Voice_Spot;
+	11814: ISheetData_Voice_Spot;
 }
 declare interface ISheetData_Voice_Spot {
 	id: number;

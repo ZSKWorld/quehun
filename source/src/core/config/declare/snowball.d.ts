@@ -49,6 +49,14 @@ declare interface ISheetData_Snowball_SnowballActivity {
 	player_attack_delay: number;
 	/** 玩家身高 */
 	player_height: number;
+	/** 玩家进场音效 */
+	audio_enter: string;
+	/** 玩家受击音效 */
+	audio_hit: string;
+	/** 玩家胜利音效 */
+	audio_win: string;
+	/** 玩家失败音效 */
+	audio_die: string;
 }
 //#endregion
 
@@ -110,10 +118,22 @@ declare interface ISheetData_Snowball_SnowballMonsterGroup {
 	enter_delay: number;
 	/** 攻击前摇 */
 	attack_delay: number;
+	/** 攻击罚站随机下限 */
+	attack_after_delay_range: number[];
 	/** 开局罚站随机下限 */
 	start_delay_range: number[];
 	/** 怪物身高 */
 	monster_height: number;
+	/** 死亡特效偏移 */
+	dead_offset: number;
+	/** 进场音效 */
+	audio_enter: string;
+	/** 受击音效 */
+	audio_hit: string;
+	/** 胜利音效 */
+	audio_win: string;
+	/** 失败音效 */
+	audio_die: string;
 }
 //#endregion
 

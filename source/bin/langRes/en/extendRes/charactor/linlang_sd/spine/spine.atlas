@@ -392,7 +392,7 @@ linl_bg_1
 bounds:938,252,43,55
 rotate:90
 linl_bg_11
-bounds:1218,60,12,12
+bounds:1218,62,12,12
 linl_bg_13
 bounds:1264,275,20,33
 rotate:90
@@ -444,7 +444,7 @@ bounds:1299,263,31,26
 linl_bg_31
 bounds:1263,616,68,67
 linl_bg_32
-bounds:1237,74,12,12
+bounds:1244,86,12,12
 linl_bg_33
 bounds:1176,8,13,13
 linl_bg_34
@@ -612,7 +612,7 @@ linl_lian_30
 bounds:749,318,19,24
 rotate:90
 linl_lian_31
-bounds:1244,88,10,10
+bounds:1232,64,10,10
 linl_lian_33
 bounds:1120,102,26,30
 rotate:90
@@ -641,9 +641,9 @@ bounds:1193,154,19,29
 linl_qjxue_15
 bounds:1130,207,20,42
 linl_qjxue_16
-bounds:1232,60,12,12
+bounds:1218,48,12,12
 linl_qjxue_19
-bounds:1227,48,10,10
+bounds:1232,52,10,10
 linl_qjxue_2
 bounds:1260,232,24,20
 linl_qjxue_21
@@ -659,7 +659,7 @@ linl_qjxue_8
 bounds:1194,132,20,12
 rotate:90
 linl_qjxue_9
-bounds:1239,48,10,10
+bounds:1193,25,10,10
 linl_shenti_1
 bounds:844,109,64,42
 linl_shenti_4
@@ -692,7 +692,7 @@ linl_shoubil_3
 bounds:1177,23,12,14
 rotate:90
 linl_shoubil_4
-bounds:1246,60,12,12
+bounds:1215,34,12,12
 linl_shoubil_5
 bounds:1286,242,10,11
 rotate:90
@@ -717,10 +717,8 @@ offsets:0,0,34,14
 linl_shoubir_16
 bounds:376,232,74,268
 offsets:0,0,74,270
-linl_shoubir_2
-bounds:1313,225,13,12
 linl_shoubir_3
-bounds:1222,74,13,12
+bounds:1313,225,13,12
 linl_shoubir_4
 bounds:1320,475,11,11
 linl_shoubir_5
@@ -738,8 +736,7 @@ linl_stshiping_1
 bounds:848,451,44,150
 rotate:90
 linl_stshiping_10
-bounds:1215,42,13,10
-rotate:90
+bounds:1222,76,13,10
 linl_stshiping_2
 bounds:713,653,37,197
 offsets:0,0,38,197

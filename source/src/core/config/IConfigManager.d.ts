@@ -22,6 +22,7 @@ declare interface IConfigManager {
 	readonly level_definition: ITable_LevelDefinition;
 	readonly mail: ITable_Mail;
 	readonly mall: ITable_Mall;
+	readonly marathon: ITable_Marathon;
 	readonly match_shilian: ITable_MatchShilian;
 	readonly misc_function: ITable_MiscFunction;
 	readonly outfit_config: ITable_OutfitConfig;

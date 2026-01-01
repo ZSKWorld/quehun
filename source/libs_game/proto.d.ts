@@ -232,6 +232,12 @@ declare enum ENotify {
 	 */
 	NotifyCustomizedContestReady = "NotifyCustomizedContestReady",
 	/**
+	 * * 通知大会室规则修改
+	 * * 只会发送给大会室管理员
+	 * * res: {@link INotifyCustomizedContestRuleModify}
+	 */
+	NotifyCustomizedContestRuleModify = "NotifyCustomizedContestRuleModify",
+	/**
 	 * * 通知新的一场游戏开始了
 	 * * res: {@link INotifyNewGame}
 	 */
@@ -3043,6 +3049,12 @@ declare enum EMessageID {
 	 */
 	bingoActivityReceiveReward = "bingoActivityReceiveReward",
 	/**
+	 * * req: {@link IReqFetchBingoActivityData}
+	 * * res: {@link IResFetchBingoActivityData}
+	 * * method: {@link IReqMethod.fetchBingoActivityData}
+	 */
+	fetchBingoActivityData = "fetchBingoActivityData",
+	/**
 	 * * 雪球活动
 	 * * req: {@link IReqSnowballActivityStartBattle}
 	 * * res: {@link IResSnowballActivityStartBattle}
@@ -3812,6 +3824,17 @@ declare interface INotifyCustomizedContestReady extends IProto {
 	ready: number;
 	/** 原因，1 - GM修改规则 */
 	reason: number;
+}
+
+/**
+ * * .lq.NotifyCustomizedContestRuleModify
+ * * 通知大会室规则修改
+ * * 只会发送给大会室管理员
+ */
+declare interface INotifyCustomizedContestRuleModify extends IProto {
+	unique_id: number;
+	/** 自动匹配状态 */
+	auto_match: number;
 }
 
 /** .lq.Error */
@@ -7525,6 +7548,12 @@ declare interface IActivityBingoData extends IProto {
 	cards: IActivityBingoCardData[];
 }
 
+/** .lq.ActivityIdTimeRecord */
+declare interface IActivityIdTimeRecord extends IProto {
+	id: number;
+	time: number;
+}
+
 /** .lq.ActivitySnowballData */
 declare interface IActivitySnowballData extends IProto {
 	activity_id: number;
@@ -7539,6 +7568,10 @@ declare interface IActivitySnowballData extends IProto {
 	level_finished_count: number;
 	/** 连击次数 */
 	player_combo: number;
+	/** 服务端奖励记录，不会发给客户端 */
+	reward_records: IActivityIdTimeRecord[];
+	/** 服务端通关记录，不会发给客户端 */
+	finish_records: IActivityIdTimeRecord[];
 }
 
 /** .lq.ActivitySnowballUpgrade */
@@ -11793,6 +11826,7 @@ declare interface IResFetchSeerInfo extends IResponse {
 /** .lq.ResFetchServerMaintenanceInfo */
 declare interface IResFetchServerMaintenanceInfo extends IResponse {
 	function_maintenance: IResFetchServerMaintenanceInfo_ServerFunctionMaintenanceInfo[];
+	activity_maintenance: IResFetchServerMaintenanceInfo_ServerActivityMaintenanceInfo[];
 }
 
 /** .lq.ResFetchServerMaintenanceInfo.ServerFunctionMaintenanceInfo */
@@ -11805,6 +11839,15 @@ declare interface IResFetchServerMaintenanceInfo_ServerFunctionMaintenanceInfo e
 	 * * }
 	 */
 	name: string;
+	open: boolean;
+}
+
+/**
+ * * .lq.ResFetchServerMaintenanceInfo.ServerActivityMaintenanceInfo
+ * * 活动维护只会返回 open = true 的，注意判空
+ */
+declare interface IResFetchServerMaintenanceInfo_ServerActivityMaintenanceInfo extends IProto {
+	activity_type: string;
 	open: boolean;
 }
 
@@ -12137,6 +12180,7 @@ declare interface IResFetchContestPlayerRank_SeasonRank extends IProto {
 	nickname: string;
 	data: IResFetchContestPlayerRank_ContestPlayerAccountData;
 	team_name: string;
+	modify_score: number;
 }
 
 /** .lq.ResFetchContestPlayerRank.PlayerData */
@@ -12144,6 +12188,7 @@ declare interface IResFetchContestPlayerRank_PlayerData extends IProto {
 	rank: number;
 	data: IResFetchContestPlayerRank_ContestPlayerAccountData;
 	team_name: string;
+	modify_score: number;
 }
 
 /** .lq.ResFetchContestPlayerRank.ContestPlayerAccountData.ContestGameResult */
@@ -13024,6 +13069,16 @@ declare interface IResBingoActivityReceiveReward extends IResponse {
 	execute_result: IExecuteResult[];
 	/** 更新后的冰菓卡信息 */
 	cards: IActivityBingoCardData[];
+}
+
+/** .lq.ReqFetchBingoActivityData */
+declare interface IReqFetchBingoActivityData extends IProto {
+	activity_id: number;
+}
+
+/** .lq.ResFetchBingoActivityData */
+declare interface IResFetchBingoActivityData extends IResponse {
+	data: IActivityBingoData;
 }
 
 /** .lq.ReqSnowballActivityStartBattle */

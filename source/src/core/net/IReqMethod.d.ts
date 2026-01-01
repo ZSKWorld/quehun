@@ -2748,6 +2748,12 @@ declare interface IReqMethod {
 	 */
 	bingoActivityReceiveReward(data?: IReqBingoActivityReceiveReward): Promise<IResBingoActivityReceiveReward>;
 	/**
+	 * * req: {@link IReqFetchBingoActivityData}
+	 * * res: {@link IResFetchBingoActivityData}
+	 * * msgId: {@link EMessageID.fetchBingoActivityData}
+	 */
+	fetchBingoActivityData(data?: IReqFetchBingoActivityData): Promise<IResFetchBingoActivityData>;
+	/**
 	 * * 雪球活动
 	 * * req: {@link IReqSnowballActivityStartBattle}
 	 * * res: {@link IResSnowballActivityStartBattle}

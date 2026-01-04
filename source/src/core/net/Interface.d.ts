@@ -54,5 +54,6 @@ declare interface INetManager extends Laya.EventDispatcher {
 	closeGame(): void;
 	connectOb(): void;
 	closeOb(): void;
+	closeAll(): void;
 	interestMessage(caller: any): void;
 }

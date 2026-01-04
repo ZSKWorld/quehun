@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="700,140" overflow="scroll" scrollBarFlags="4" scrollBarMargin="0,0,0,19" scrollBarRes="ui://vx9zwserj0ddob7h," extention="Label">
   <displayList>
-    <richtext id="n0_j0dd" name="title" xy="0,0" size="690,278" fontSize="35" color="#ffffff" ubb="true" autoSize="height" text="当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交">
+    <richtext id="n0_j0dd" name="title" xy="0,0" size="670,278" fontSize="35" color="#d4cfcf" ubb="true" autoSize="height" text="当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交当您在游戏中发现了不良信息，可以向魂天神社议事厅提交">
       <relation target="" sidePair="width-width"/>
     </richtext>
   </displayList>

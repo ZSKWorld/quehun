@@ -46,6 +46,5 @@ export class DynamicResManager implements IDynamicResManager {
                 this._resMap.delete(path);
             }
 		});
-		Logger.error("清理动态资源");
     }
 }

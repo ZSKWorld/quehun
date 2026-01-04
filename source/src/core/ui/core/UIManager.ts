@@ -105,7 +105,7 @@ export class UIManager extends Observer implements IUIManager {
 
 		if (this.isStackView(mediator.view))
 			this._openedStack.unshift(mediator.viewId);
-		data ?? (mediator.data = data);
+		data != null && (mediator.data = data);
 		openIndex >= 0 && this._openedViews.splice(openIndex, 1);
 		this._openedViews.unshift(mediator);
 		mediator.view.removeFromParent();

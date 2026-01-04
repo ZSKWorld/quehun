@@ -33,6 +33,12 @@ export class NetManager extends Laya.EventDispatcher implements INetManager {
 			reqs[key] = data => socket.send(EMessageID[key], data || {});
 		}
 
+		this.initLobby();
+		this.initGame();
+		this.initOb();
+	}
+
+	private initLobby() {
 		this._lobbySocket.on(ESocketEvent.Connecting, this, () => $facade.dispatch(ENotifyConst.LobbyConnecting));
 		this._lobbySocket.on(ESocketEvent.Reconnecting, this, () => $facade.dispatch(ENotifyConst.LobbyReconnecting));
 		this._lobbySocket.on(ESocketEvent.Connected, this, () => $facade.dispatch(ENotifyConst.LobbyConnected));
@@ -44,17 +50,23 @@ export class NetManager extends Laya.EventDispatcher implements INetManager {
 				this.event(method, [res, req]);
 		});
 		this._lobbySocket.on(ESocketEvent.Notify, this, this.event);
-		this._lobbySocket.connect();
 	}
-
 	connectLobby() { this._lobbySocket?.connect(); }
 	closeLobby() { this._lobbySocket?.close(); }
 
+	private initGame() { }
 	connectGame() { this._gameSocket?.connect(); }
 	closeGame() { this._gameSocket?.close(); }
-
+	
+	private initOb() { }
 	connectOb() { this._obSocket?.connect(); }
 	closeOb() { this._obSocket?.close(); }
+
+	closeAll() {
+		this.closeLobby();
+		this.closeGame();
+		this.closeOb();
+	}
 
 	interestMessage(caller: any) {
 		if (!caller) return;
@@ -89,6 +101,7 @@ export class NetManager extends Laya.EventDispatcher implements INetManager {
 
 	private onResponseError(method: string, err: IError) {
 		if (!err) return;
+		if (method == EMessageID.heatbeat) return;
 		Logger.error(method, err);
 		const { code, u32_params, str_params, json_param } = err;
 		if (code == -1) {

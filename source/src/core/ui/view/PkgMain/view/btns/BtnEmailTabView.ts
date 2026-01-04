@@ -11,7 +11,8 @@ export class BtnEmailTabView extends ExtensionClass<IView, BtnEmailTab>(BtnEmail
 	}
 
 	refresh(data: ProtoObject<IMail>) {
-		
+		this.title = $gameUtil.getI18nContext(data.title_i18n, data.title);
+		this.ctrl_open.selectedIndex = data.state ? 1 : 0;
 	}
 
 }

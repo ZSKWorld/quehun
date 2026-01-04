@@ -20,6 +20,7 @@ import UIAchievement from "./UIAchievement";
 import BtnBagSkinCheck from "./BtnBagSkinCheck";
 import BtnEmailTab from "./BtnEmailTab";
 import RenderFriendFriend from "./RenderFriendFriend";
+import RenderFriendApply from "./RenderFriendApply";
 import RenderBagItem from "./RenderBagItem";
 import RenderBagGiftItem from "./RenderBagGiftItem";
 import UIFriend from "./UIFriend";
@@ -55,6 +56,7 @@ import { UIAchievementView } from "../../view/PkgMain/view/uis/UIAchievementView
 import { BtnBagSkinCheckView } from "../../view/PkgMain/view/btns/BtnBagSkinCheckView";
 import { BtnEmailTabView } from "../../view/PkgMain/view/btns/BtnEmailTabView";
 import { RenderFriendFriendView } from "../../view/PkgMain/view/renders/RenderFriendFriendView";
+import { RenderFriendApplyView } from "../../view/PkgMain/view/renders/RenderFriendApplyView";
 import { RenderBagItemView } from "../../view/PkgMain/view/renders/RenderBagItemView";
 import { RenderBagGiftItemView } from "../../view/PkgMain/view/renders/RenderBagGiftItemView";
 import { UIFriendView } from "../../view/PkgMain/view/uis/UIFriendView";
@@ -93,6 +95,7 @@ export default class PkgMainBinder {
 		fgui.UIObjectFactory.setExtension(BtnBagSkinCheck.url, BtnBagSkinCheckView);
 		fgui.UIObjectFactory.setExtension(BtnEmailTab.url, BtnEmailTabView);
 		fgui.UIObjectFactory.setExtension(RenderFriendFriend.url, RenderFriendFriendView);
+		fgui.UIObjectFactory.setExtension(RenderFriendApply.url, RenderFriendApplyView);
 		fgui.UIObjectFactory.setExtension(RenderBagItem.url, RenderBagItemView);
 		fgui.UIObjectFactory.setExtension(RenderBagGiftItem.url, RenderBagGiftItemView);
 		fgui.UIObjectFactory.setExtension(UIFriend.url, UIFriendView);

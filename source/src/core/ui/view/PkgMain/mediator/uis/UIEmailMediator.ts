@@ -32,7 +32,7 @@ export class UIEmailMediator extends MediatorBase<UIEmailView, IUIEmailData> {
 		const mailCount = $userData.mail.mails.length;
 		view.refreshTab(mailCount, index);
 		if (mailCount > 0) {
-			this.onListTabItemClick(null, null, index);
+			this.onListTabItemClick(null, null, index, true);
 		}
 	}
 
@@ -40,8 +40,8 @@ export class UIEmailMediator extends MediatorBase<UIEmailView, IUIEmailData> {
 		item.refresh($userData.mail.mails[index]);
 	}
 
-	private onListTabItemClick(_1, _2, index: number) {
-		if (this._lastTabClickIndex == index) return;
+	private onListTabItemClick(_1, _2, index: number, force?: boolean) {
+		if (!force && this._lastTabClickIndex == index) return;
 		this._lastTabClickIndex = index;
 		const { view, curMail } = this;
 		view.refreshContent(curMail);

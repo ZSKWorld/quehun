@@ -10,13 +10,13 @@ export class ComTitleView extends ExtensionClass<IView, ComTitle>(ComTitle) impl
 		this.displayObject.onDisable = this.onDisable.bind(this);
 	}
 
-	refreshIcon(data: { account_id: number, title: number }) {
-		const titlePath = $itemUtil.getItemView(data.title).icon;
+	refreshIcon(id:number) {
+		const titlePath = $itemUtil.getItemView(id).icon;
 		$dynamicResMgr.setLoader(this.loader_icon, titlePath || $langRes("extendRes/title/notitle.png"));
 	}
 
-	refreshItemIcon(data: { account_id: number, title: number }) {
-		const titlePath = $itemUtil.getItemView(data.title).itemIcon;
+	refreshItemIcon(id:number) {
+		const titlePath = $itemUtil.getItemView(id).itemIcon;
 		$dynamicResMgr.setLoader(this.loader_icon, titlePath);
 	}
 

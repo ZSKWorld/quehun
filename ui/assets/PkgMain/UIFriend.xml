@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" designImage="ui://ca43vz0epuub7plojv" designImageAlpha="97">
+<component size="1920,1080" designImage="ui://ca43vz0epuub7plojv" designImageAlpha="0" bgColorEnabled="true" bgColor="#000000">
   <controller name="type" pages="0,,1,,2,,3," selected="0"/>
   <displayList>
     <component id="n0_p5uz" name="back" src="p5uzob8h" fileName="Component/Component/ComBack.xml" pkg="vx9zwser" xy="10,22">
       <property target="title" propertyId="0" value="好友"/>
     </component>
-    <image id="n1_puub" name="n1" src="puubobf7" fileName="Texture/img_2845.png" xy="1326,50"/>
-    <image id="n2_puub" name="n2" src="puubobf7" fileName="Texture/img_2845.png" xy="1794,50" scale="-1,1"/>
-    <component id="n5_puub" name="copy" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1766,39">
+    <image id="n1_puub" name="n1" src="puubobf7" fileName="Texture/img_2845.png" xy="1326,50" group="n36_xnfa"/>
+    <image id="n2_puub" name="n2" src="puubobf7" fileName="Texture/img_2845.png" xy="1794,50" group="n36_xnfa" scale="-1,1"/>
+    <component id="n5_puub" name="copy" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1766,39" group="n36_xnfa">
       <Button icon="ui://vith2b66puubobf8"/>
     </component>
-    <text id="n3_puub" name="myID" xy="1382,64" pivot="0.5,0.5" size="356,54" fontSize="40" color="#e2ba92" align="center" vAlign="middle" singleLine="true" text="我的ID：10474777"/>
+    <text id="n3_puub" name="myID" xy="1382,64" pivot="0.5,0.5" size="356,54" group="n36_xnfa" fontSize="40" color="#e2ba92" align="center" vAlign="middle" singleLine="true" text="我的ID：10474777"/>
+    <group id="n36_xnfa" name="n36" xy="1326,39" size="702,100" advanced="true"/>
+    <text id="n35_giyr" name="empty" xy="711,473" pivot="0.5,0.5" size="791,66" fontSize="50" color="#e6ba78" align="center" vAlign="middle" singleLine="true" text="你还没有好友，快去认识新朋友吧~"/>
     <image id="n6_puub" name="n6" src="q5yiobc0" fileName="Texture/img_3555.png" pkg="vx9zwser" xy="331,155" size="1531,866" group="n34_puub"/>
     <component id="n7_puub" name="friendList" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="50,206" pivot="0.873,0.5" size="336,140" group="n34_puub" aspect="true">
       <Button title="好友列表" titleColor="#eab65e" titleFontSize="50" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
@@ -38,7 +40,7 @@
     <group id="n25_puub" name="n25" xy="386,190" size="1430,796" advanced="true">
       <gearDisplay controller="type" pages="0"/>
     </group>
-    <list id="n26_puub" name="apply" xy="386,201" size="1430,781" group="n27_puub" overflow="scroll" scrollBarFlags="4" scrollBarRes="ui://vx9zwserpuubobfe," lineGap="11" defaultItem="ui://vith2b66puubobfa" autoClearItems="true">
+    <list id="n26_puub" name="apply" xy="386,201" size="1430,781" group="n27_puub" overflow="scroll" scrollBarFlags="4" scrollBarRes="ui://vx9zwserpuubobfe," lineGap="11" defaultItem="ui://vith2b66puubobfb" autoClearItems="true">
       <item/>
       <item/>
       <item/>
@@ -51,13 +53,22 @@
       <gearDisplay controller="type" pages="1"/>
     </group>
     <image id="n28_puub" name="n28" src="puubobff" fileName="Texture/img_811.png" pkg="vx9zwser" xy="460,214" size="1035,83" group="n33_puub"/>
-    <text id="n30_puub" name="n30" xy="471,221" size="1017,70" group="n33_puub" fontSize="50" color="#d0cdcd" align="center" vAlign="middle" leading="0" autoSize="none" singleLine="true" text="" input="true" prompt="请输入好友ID进行查找" restrict="0-9"/>
+    <text id="n30_puub" name="searchId" xy="471,221" size="1017,70" group="n33_puub" fontSize="50" color="#d0cdcd" align="center" vAlign="middle" leading="0" autoSize="none" singleLine="true" text="" input="true" prompt="请输入好友ID进行查找" restrict="0-9"/>
     <component id="n29_puub" name="look" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="1516,208" size="211,95" group="n33_puub" aspect="true">
       <Button title="查找" titleColor="#e6ba78" titleFontSize="40" icon="ui://vx9zwserieavob7x"/>
     </component>
-    <list id="n32_puub" name="n32" xy="467,326" size="1298,621" group="n33_puub" overflow="scroll" autoClearItems="true"/>
+    <list id="n32_puub" name="search" xy="467,326" size="1298,621" group="n33_puub" overflow="scroll" autoClearItems="true"/>
     <group id="n33_puub" name="n33" xy="460,208" size="1305,738" advanced="true">
       <gearDisplay controller="type" pages="2"/>
     </group>
   </displayList>
+  <transition name="show" frameRate="60">
+    <item time="0" type="Alpha" target="n25_puub" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
+    <item time="0" type="Alpha" target="n34_puub" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
+    <item time="0" type="Alpha" target="n35_giyr" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
+    <item time="0" type="XY" target="n25_puub" tween="true" startValue="-,240" endValue="386,190" duration="12" ease="Linear"/>
+    <item time="0" type="XY" target="n34_puub" tween="true" startValue="-,205" endValue="-,155" duration="12" ease="Linear"/>
+    <item time="0" type="XY" target="n35_giyr" tween="true" startValue="-,523" endValue="711,473" duration="12" ease="Linear"/>
+    <item time="0" type="XY" target="n36_xnfa" tween="true" startValue="-,-141" endValue="-,39" duration="12" ease="Linear"/>
+  </transition>
 </component>

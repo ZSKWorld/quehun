@@ -56,7 +56,7 @@ export class InitGlobalCommand extends Command {
 				s = d_excel[$gameMgr.language];
 				if (args) {
 					for (let i = 0; i < args.length; i++) {
-						const reg = new RegExp(`{${ i }}`, 'g');
+						const reg = new RegExp(`\\{${ i }\\}`, 'g');
 						s = s.replace(reg, args[i]);
 					}
 				}

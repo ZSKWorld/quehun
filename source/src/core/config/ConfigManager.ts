@@ -19,6 +19,11 @@ interface ISheetRawData {
 	rows: any[];
 }
 
+const ARRAY_METHODS = [
+	"forEach", "filter", "find", "every", "findIndex", "includes",
+	"indexOf", "lastIndexOf", "map", "reduce", "slice", "some",
+];
+
 export class ConfigManager implements IConfigManager {
 	//#region tables
 	readonly ab_match: ITable_AbMatch;
@@ -64,181 +69,118 @@ export class ConfigManager implements IConfigManager {
 	//#endregion
 
 	async init() {
-		const tblPbCfg = await $loadMgr.fetch(ResPath.EConfigPath.Tbl_pbConfig, "text");
-		const lqcBin = await $loadMgr.fetch(ResPath.EConfigPath.Lqc, "arraybuffer");
+		const [tblPbCfg, lqcBin] = await Promise.all([
+			$loadMgr.fetch(ResPath.EConfigPath.Tbl_pbConfig, "text"),
+			$loadMgr.fetch(ResPath.EConfigPath.Lqc, "arraybuffer")
+		]);
 
 		const bytes = new Laya.Byte(lqcBin);
-		const rawData = this.parseConfig(tblPbCfg, bytes.readUint8Array(0, bytes.length))
-		rawData.forEach(sheet => {
-			if (!this[sheet.table]) this[sheet.table] = {};
+		const rawData = this.parseConfig(tblPbCfg, bytes.readUint8Array(0, bytes.length));
 
-			const rows = [];
-			let groups: any[];
-			sheet.rows.forEach(row => {
-				const tsrow = {};
-				sheet.header.forEach(field => {
-					tsrow[field.field_name] = row[field.field_name];
-				});
-				rows.push(tsrow);
-			});
+		for (const sheet of rawData) {
+			const { table, sheet: sheetName, meta, rows } = sheet;
+			const { category, key } = meta;
 
-			const key = sheet.meta.key;
-			const category = sheet.meta.category;
+			// 确保表对象存在
+			const tableObj = this[table] || (this[table] = {});
 
-			const configSheet = {};
+			// 创建原型对象，承载 Array 方法和原始 rows
+			const proto: any = { rows };
+			const groups: any[][] = [];
+			if (category === 'group') proto.groups = groups;
+
+			// 定义代理方法：优先操作 groups 或 rows
+			for (const method of ARRAY_METHODS) {
+				proto[method] = function (...args: any[]) {
+					return (this.groups || this.rows)[method](...args);
+				};
+			}
+
+			// 使用 Object.create 提升性能，避免后续修改 __proto__
+			const configSheet = Object.create(proto);
+
+			// 索引逻辑优化
 			switch (category) {
 				case 'unique':
-					rows.sort((a, b) => a[key] - b[key]);
-					rows.forEach(row => (configSheet[row[key]] = row));
+					// 如果 key 是数字，排序后再索引
+					rows.sort((a, b) => (a[key] || 0) - (b[key] || 0));
+					for (const row of rows) configSheet[row[key]] = row;
 					break;
-				case 'nokey': break;
 				case 'group':
-					groups = [];
-					rows.forEach(row => {
-						const groupName = row[key];
-						let group = configSheet[groupName];
-						if (!group) {
-							group = configSheet[groupName] = [];
-							groups.push(group);
+					for (const row of rows) {
+						const groupKey = row[key];
+						if (!configSheet[groupKey]) {
+							configSheet[groupKey] = [];
+							groups.push(configSheet[groupKey]);
 						}
-						group.push(row);
-					});
+						configSheet[groupKey].push(row);
+					}
 					break;
 				case 'kv':
-					rows.forEach(row => (configSheet[row[key]] = row));
+				case 'nokey':
+					for (const row of rows) {
+						const rowKey = row[key];
+						if (rowKey !== undefined) configSheet[rowKey] = row;
+					}
 					break;
 			}
 
-			this[sheet.table][sheet.sheet] = configSheet;
-
-			const proto = configSheet["__proto__"] = { rows } as any;
-			if (groups) proto.groups = groups;
-			const defineFun = (funName: string) => {
-				Object.defineProperty(proto, funName, {
-					value: function (...args) {
-						if (this.groups) return this.groups[funName](...args);
-						return this.rows[funName](...args);
-					},
-					enumerable: false,
-					configurable: false,
-				});
-			};
-			[
-				"forEach", "filter", "find", "every", "findIndex", "includes",
-				"indexOf", "lastIndexOf", "map", "reduce", "slice", "some",
-			].forEach(v => defineFun(v));
-		});
+			tableObj[sheetName] = configSheet;
+		}
 	}
-
 
 	parseConfig(protoContent: string, bindata: Uint8Array) {
 		const root = protobuf.parse(protoContent, { keepCase: true }).root;
 		const ConfigTables = root.lookupType('lq.config.ConfigTables');
-		const configTables: any = ConfigTables.decode(bindata);
-		const tableSchemas: any = configTables.schemas;
-		const sheetSchemaByClassname: any = {};
-		for (const tableSchema of tableSchemas) {
-			const tablename = tableSchema.name;
+		const configTables = ConfigTables.decode(bindata) as any;
+
+		// 1. 建立数据查询 Map，避免嵌套循环查询
+		const dataMap = new Map<string, any[]>();
+		for (const d of configTables.datas) {
+			dataMap.set(`${ d.table }_${ d.sheet }`, d.data);
+		}
+
+		const result: ISheetRawData[] = [];
+
+		// 2. 遍历 Schema 一次性完成类型注册和解析
+		for (const tableSchema of configTables.schemas) {
+			const tableName = tableSchema.name;
+
 			for (const sheetSchema of tableSchema.sheets) {
-				const sheetname = sheetSchema.name;
-				const classname = `${ tablename }_${ sheetname }`;
-				sheetSchemaByClassname[classname] = sheetSchema;
-				const MessageClass = new protobuf.Type(classname);
+				const sheetName = sheetSchema.name;
+				const className = `${ tableName }_${ sheetName }`;
+
+				// 动态构建 Protobuf 类型
+				const MessageClass = new protobuf.Type(className);
 				for (const field of sheetSchema.fields) {
-					const rule = field.array_length > 0 ? 'repeated' : 'optional';
-					const FieldClass = new protobuf.Field(field.field_name, field.pb_index, field.pb_type, rule);
-					MessageClass.add(FieldClass);
+					MessageClass.add(new protobuf.Field(
+						field.field_name,
+						field.pb_index,
+						field.pb_type,
+						field.array_length > 0 ? 'repeated' : 'optional'
+					));
 				}
 				root.add(MessageClass);
-			}
-		}
 
-		const dataByClassname: any = {};
-		for (const sheetData of configTables.datas) {
-			const tablename = sheetData.table;
-			const sheetname = sheetData.sheet;
-			const classname = `${ tablename }_${ sheetname }`;
-			const MessageClass = root.lookupType(classname);
-			if (!MessageClass) continue;
-			const binSheetSchema = sheetSchemaByClassname[classname];
-			if (!binSheetSchema) continue;
-			if (!dataByClassname[classname]) dataByClassname[classname] = [];
-			for (const data of sheetData.data) {
-				dataByClassname[classname].push(MessageClass.decode(data));
-			}
-		}
+				// 解码数据
+				const rawBinRows = dataMap.get(className) || [];
+				const decodedRows = rawBinRows.map(bin => MessageClass.decode(bin));
 
-		const schemas = [];
-		for (const tableSchema of tableSchemas) {
-			const tablename = tableSchema.name;
-			const table = { name: tablename, sheets: [] };
-			schemas.push(table);
-			for (const sheetSchema of tableSchema.sheets) {
-				const sheetname = sheetSchema.name;
-				const classname = `${ tablename }_${ sheetname }`;
-				const sheet = {
-					table: tablename,
-					sheet: sheetname,
+				// 组装最终结构
+				result.push({
+					table: tableName,
+					sheet: sheetName,
 					meta: sheetSchema.meta,
-					fields: sheetSchema.fields.map(f => {
-						return {
-							field_name: f.field_name,
-							array_length: f.array_length,
-							pb_type: f.pb_type,
-							comment: null
-						};
-					}),
-					kvs: null,
-				};
-				if (sheet.meta.category === 'kv') {
-					const kvdata: any[] = dataByClassname[classname];
-					if (kvdata) {
-						sheet.kvs = kvdata.map(d => d[sheet.meta.key]);
-					}
-				}
-				table.sheets.push(sheet);
+					header: sheetSchema.fields.map((f: any) => ({
+						field_name: f.field_name,
+						array_length: f.array_length,
+						pb_type: f.pb_type
+					})),
+					rows: decodedRows
+				});
 			}
 		}
 
-		const datas = [];
-		for (const tableSchema of tableSchemas) {
-			const tablename = tableSchema.name;
-			const table = { name: tablename, sheets: null, };
-			datas.push(table);
-			for (const sheetSchema of tableSchema.sheets) {
-				const sheetname = sheetSchema.name;
-				const classname = `${ tablename }_${ sheetname }`;
-				table[sheetname] = dataByClassname[classname];
-			}
-		}
-
-
-		const schema = {};
-		const data = {};
-		schemas.forEach(t => { schema[t.name] = t; });
-		datas.forEach(d => { data[d.name] = d; });
-		const sheetRawData: ISheetRawData[] = [];
-		Object.keys(schema).forEach(name => {
-			const tableSchema = schema[name];
-			const tableData = data[name];
-			if (!tableData) return;
-			tableSchema.sheets.forEach(sheetSchema => {
-				const rawData = {
-					table: sheetSchema.table,
-					sheet: sheetSchema.sheet,
-					meta: sheetSchema.meta,
-					header: sheetSchema.fields.map(f => {
-						return {
-							field_name: f.field_name,
-							array_length: f.array_length,
-							pb_type: f.pb_type
-						}
-					}),
-					rows: tableData[sheetSchema.sheet]
-				};
-				sheetRawData.push(rawData);
-			});
-		});
-		return sheetRawData;
+		return result;
 	}
 }

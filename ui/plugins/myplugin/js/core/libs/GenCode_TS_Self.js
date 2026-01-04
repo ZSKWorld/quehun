@@ -29,9 +29,9 @@ function setMemberTypeName(info, clsInfo) {
 }
 /** 加入不同包的资源引入路径 */
 function CollectClasses(handler, stripMember, ns) {
-    let classes = handler.CollectClasses(stripMember, stripMember, ns);
+    const classes1 = handler.CollectClasses(stripMember, stripMember, ns);
     let hasOtherPkgRes = false;
-    classes.ForEach(clsInfo => {
+    classes1.ForEach(clsInfo => {
         clsInfo.members.ForEach(memberInfo => {
             if (memberInfo.res) {
                 if (memberInfo.res.owner.name != handler.pkg.name) {
@@ -40,40 +40,22 @@ function CollectClasses(handler, stripMember, ns) {
                         handler.items.Add(memberInfo.res);
                     }
                 }
-                const existRes = classes.Find(v => v.res == memberInfo.res) != null;
-                existRes && setMemberTypeName(memberInfo, clsInfo);
             }
         });
     });
-    if (hasOtherPkgRes) {
-        classes = handler.CollectClasses(stripMember, stripMember, ns);
-        classes.ForEach(clsInfo => {
-            if (clsInfo.res.owner.name == handler.pkg.name) {
-                clsInfo.members.ForEach(memberInfo => {
-                    if (memberInfo.res) {
-                        // if (memberInfo.res.owner.name != handler.pkg.name) {
-                        const existRes = classes.Find(v => v.res == memberInfo.res) != null;
-                        if (existRes && !setMemberTypeName(memberInfo, clsInfo) && memberInfo.res.owner.name != handler.pkg.name) {
-                            memberInfo.type = memberInfo.res.name;
-                            const ref = `//${memberInfo.res.owner.name}/${memberInfo.res.name}`;
-                            if (clsInfo.references.Contains(ref) == false)
-                                clsInfo.references.Add(ref);
-                        }
-                        // } else
-                        //     setMemberTypeName(memberInfo, clsInfo);
-                    }
-                });
+    const classes2 = hasOtherPkgRes ? handler.CollectClasses(stripMember, stripMember, ns) : classes1;
+    classes2.ForEach(clsInfo => {
+        const clsInfo2 = classes1.Find(v => v.className == clsInfo.className);
+        if (!clsInfo2)
+            return;
+        clsInfo2.members.ForEach(memberInfo => {
+            if (memberInfo.res) {
+                const existRes = classes2.Find(v => v.res == memberInfo.res) != null;
+                existRes && setMemberTypeName(memberInfo, clsInfo2);
             }
         });
-        const clsCnt = classes.Count;
-        for (let i = clsCnt - 1; i >= 0; i--) {
-            const cls = classes.get_Item(i);
-            if (cls.res.owner.name != handler.pkg.name) {
-                classes.RemoveAt(i);
-            }
-        }
-    }
-    return classes;
+    });
+    return classes1;
 }
 function genReferenceExt(writer, references) {
     let refCount = references.Count;
@@ -125,17 +107,12 @@ const MemberTypeMap = {
 function customMemberVarName(member) {
     var _a;
     const { varName, type, res } = member;
-    if (!MemberTypeMap[type]) {
-        const extType = (_a = res === null || res === void 0 ? void 0 : res.GetAsset()) === null || _a === void 0 ? void 0 : _a.extension;
-        if (MemberTypeMap[extType]) {
-            return MemberTypeMap[extType] + varName;
-        }
-        else {
-            console.error("未知的类型：", varName, extType);
-            return "com_" + varName;
-        }
-    }
-    return MemberTypeMap[type] + varName;
+    const extType = (_a = res === null || res === void 0 ? void 0 : res.GetAsset()) === null || _a === void 0 ? void 0 : _a.extension;
+    if (MemberTypeMap[type])
+        return MemberTypeMap[type] + varName;
+    if (MemberTypeMap[extType])
+        return MemberTypeMap[extType] + varName;
+    return "com_" + varName;
 }
 function GenCode_TS_Self(handler) {
     let settings = handler.project.GetSettings("Publish").codeGeneration;
@@ -172,7 +149,8 @@ function GenCode_TS_Self(handler) {
         let memberCnt = members.Count;
         for (let j = 0; j < memberCnt; j++) {
             let memberInfo = members.get_Item(j);
-            writer.writeln(`${protectedProperty ? "protected" : "public"} %s: %s;`, customMemberVarName(memberInfo), memberInfo.type);
+            let memberVarName = customMemberVarName(memberInfo);
+            writer.writeln(`${protectedProperty ? "protected" : "public"} %s: %s;`, memberVarName, memberInfo.type);
         }
         writer.writeln('public static url: string = "ui://%s%s";', handler.pkg.id, classInfo.resId);
         writer.writeln();
@@ -185,23 +163,24 @@ function GenCode_TS_Self(handler) {
         writer.startBlock();
         for (let j = 0; j < memberCnt; j++) {
             let memberInfo = members.get_Item(j);
+            let memberVarName = customMemberVarName(memberInfo);
             if (memberInfo.group == 0) {
                 if (getMemberByName)
-                    writer.writeln('this.%s = <%s>(this.getChild("%s"));', customMemberVarName(memberInfo), memberInfo.type, memberInfo.name);
+                    writer.writeln('this.%s = <%s>(this.getChild("%s"));', memberVarName, memberInfo.type, memberInfo.name);
                 else
-                    writer.writeln('this.%s = <%s>(this.getChildAt(%s));', customMemberVarName(memberInfo), memberInfo.type, memberInfo.index);
+                    writer.writeln('this.%s = <%s>(this.getChildAt(%s));', memberVarName, memberInfo.type, memberInfo.index);
             }
             else if (memberInfo.group == 1) {
                 if (getMemberByName)
-                    writer.writeln('this.%s = this.getController("%s");', customMemberVarName(memberInfo), memberInfo.name);
+                    writer.writeln('this.%s = this.getController("%s");', memberVarName, memberInfo.name);
                 else
-                    writer.writeln('this.%s = this.getControllerAt(%s);', customMemberVarName(memberInfo), memberInfo.index);
+                    writer.writeln('this.%s = this.getControllerAt(%s);', memberVarName, memberInfo.index);
             }
             else {
                 if (getMemberByName)
-                    writer.writeln('this.%s = this.getTransition("%s");', customMemberVarName(memberInfo), memberInfo.name);
+                    writer.writeln('this.%s = this.getTransition("%s");', memberVarName, memberInfo.name);
                 else
-                    writer.writeln('this.%s = this.getTransitionAt(%s);', customMemberVarName(memberInfo), memberInfo.index);
+                    writer.writeln('this.%s = this.getTransitionAt(%s);', memberVarName, memberInfo.index);
             }
         }
         writer.endBlock();

@@ -54,6 +54,39 @@ export class GameUtil implements IGameUtil {
 		return part1.join("") + part2.join("");
 	}
 
+	encodeAccountId(id: number) {
+		id ^= 6139246;
+
+		const a = id & ~0x3FFFFFF; // 高位部分
+		let b = id & 0x3FFFFFF;    // 低26位部分
+
+		// 合并位移：右移 19 位 (等同于左移 7 位)
+		// (b << 7) 取出被左移的低19位内容，(b >> 19) 取出被挤出的高7位内容
+		b = ((b << 7) & 0x3FFFFFF) | (b >> 19);
+
+		return b + a + 10000000;
+	}
+
+	decodeAccountId(encodedId: number) {
+		encodedId -= 10000000;
+
+		const a = encodedId & ~0x3FFFFFF;
+		let b = encodedId & 0x3FFFFFF;
+
+		// 合并位移：左移 19 位 (等同于右移 7 位)
+		b = ((b << 19) & 0x3FFFFFF) | (b >> 7);
+
+		return (a + b) ^ 6139246;
+	}
+
+	encryptAccountId(id: number) {
+		return ((id * 7 + 1117113) ^ 86216345) + 1358437;
+	}
+
+	decryptAccountId(encryptId: number) {
+		return (((encryptId - 1358437) ^ 86216345) - 1117113) / 7;
+	}
+
 	createUUID() {
 		// 现代浏览器和 Node.js 14.17+ 均支持
 		if (typeof crypto !== "undefined" && crypto.randomUUID) {
@@ -114,5 +147,34 @@ export class GameUtil implements IGameUtil {
 
 		const zoneId2 = this.getZoneId(accountId2);
 		return zoneId1 == zoneId2;
+	}
+
+	getPlayerPlayingInfo(data: { is_online: boolean; playing: IAccountPlayingGame; logout_time: number }) {
+		const info = { color: "", text: "" };
+		if (data.is_online) {
+			const inGaming = $gameUtil.getPlayerInGaming(data.playing);
+			if (inGaming) {
+				info.color = "#a9d94d";
+				info.text = $lang(2069, inGaming);
+			} else {
+				info.color = "#58c4db";
+				info.text = $lang(2071);
+			}
+		} else {
+			info.color = "#8c8c8c";
+			info.text = $timeUtil.timeFormat5(data.logout_time) + $lang(2072);
+		}
+		return info;
+	}
+
+	getPlayerInGaming(data: IAccountPlayingGame) {
+		if (!data || !data.game_uuid) return false;
+		if (data.category == 1) return true;
+		if (data.category == 2 && data.meta) {
+			const d = $cfgMgr.desktop.matchmode[data.meta.mode_id];
+			if (d) true;
+		}
+		if (data.category == 4) return true;
+		return false;
 	}
 }

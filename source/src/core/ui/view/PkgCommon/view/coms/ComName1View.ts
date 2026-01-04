@@ -10,7 +10,7 @@ export class ComName1View extends ExtensionClass<IView, ComName1>(ComName1) impl
 
 	}
 
-	refresh(data: { account_id: number, nickname: string, verified: number }) {
+	refresh(data: { nickname: string, verified: number }) {
 		const { txt_name, img_vip } = this;
 		txt_name.text = data.nickname;
 		const isVip = !!data.verified;

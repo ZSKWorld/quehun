@@ -133,7 +133,7 @@ export class UIUtil implements IUIUtil {
 		isHt && txt_htLevel && (txt_htLevel.text = String(secondary_level));
 		isHt && txt_htScore && (txt_htScore.text = (Math.floor((score / 100) * 10) / 10).toFixed(1));
 		if (!isHt) {
-			ctrl_star && (ctrl_star.selectedIndex = 0);
+			ctrl_star && (ctrl_star.selectedIndex = secondary_level);
 		}
 	}
 }

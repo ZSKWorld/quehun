@@ -8,16 +8,11 @@ interface IGameConfig {
 }
 
 export class InitGameCommand extends Command {
-	override execute(notifyName: string, data?: any) {
-		ShaderManager.init();
+	override async execute(notifyName: string, data?: any) {
 		$uiMgr.init();
 		$redDotMgr.init();
-		this.load().then(() => {
-			$facade.dispatch(ENotifyConst.OnInitGameCompleted);
-		});
-	}
+		ShaderManager.init();
 
-	private async load() {
 		const config: IGameConfig = await $loadMgr.fetch(ResPath.EUnclassifiedPath.Gameconfig, "json");
 		config.stat && Laya.Stat.show(0, 0, [
 			Laya.StatElement.CT_FPS,
@@ -33,13 +28,19 @@ export class InitGameCommand extends Command {
 			Laya.StatElement.M_GPUMemory,
 			Laya.StatElement.M_RenderTexture,
 		]);
+
 		await $loadMgr.loadPackage(ResPath.EPkgPath.PkgEntrance);
 		$uiMgr.openView(EViewID.UIEntranceView);
+
 		await Promise.all([
 			$gameMgr.init(),
 			$pbMgr.init(),
 			$cfgMgr.init(),
+			$netMgr.init(),
 		]);
-		await $netMgr.init();
+
+		$netMgr.connectLobby();
+
+		$facade.dispatch(ENotifyConst.OnInitGameCompleted);
 	}
 }

@@ -4,35 +4,49 @@ import { EUIRankType } from "../../define/MainDefine";
 import { RenderRankItemView } from "../../view/renders/RenderRankItemView";
 import { EUIRankMsg, UIRankView } from "../../view/uis/UIRankView";
 
-export interface IUIRankData {
+/** 排行榜单项数据状态 */
+class RankTypeState {
+	leaderboard: IResLevelLeaderboard_Item[] = [];
+	briefs: IPlayerBaseView[] = [];
+	isLoading: boolean = false;
+	lastReqId: number = 0;
+	isAllLoaded: boolean = false;
 
+	reset() {
+		this.leaderboard.length = 0;
+		this.briefs.length = 0;
+		this.isLoading = false;
+		this.lastReqId++;
+		this.isAllLoaded = false;
+	}
 }
 
-export class UIRankMediator extends MediatorBase<UIRankView, IUIRankData> {
+const Page_Size = 20; // 每页请求数量
+const Scroll_Threshold = 150; // 触底检查阈值
+
+export class UIRankMediator extends MediatorBase<UIRankView, any> {
 	private _tabGroup = new RadioGroup();
-	private _leaderboard: { [key in EUIRankType]: IResLevelLeaderboard_Item[] } = {
-		[EUIRankType.SiMa]: [],
-		[EUIRankType.SanMa]: [],
+
+	// 使用 Record 管理不同类型的状态
+	private _states: Record<EUIRankType, RankTypeState> = {
+		[EUIRankType.SiMa]: new RankTypeState(),
+		[EUIRankType.SanMa]: new RankTypeState(),
 	};
-	private _accountBrief: { [key in EUIRankType]: IPlayerBaseView[] } = {
-		[EUIRankType.SiMa]: [],
-		[EUIRankType.SanMa]: [],
-	};
-	private _briefReqInfo: { [key in EUIRankType]: number } = {
-		[EUIRankType.SiMa]: 0,
-		[EUIRankType.SanMa]: 0,
-	};
-	private get selectType() { return this._tabGroup.selectIndex == 0 ? EUIRankType.SiMa : EUIRankType.SanMa; }
+
+	private get selectType(): EUIRankType {
+		return this._tabGroup.selectIndex === 0 ? EUIRankType.SiMa : EUIRankType.SanMa;
+	}
 
 	override onAwake() {
-		this.addEvent(EUIRankMsg.OnBtnCloseClick, this.onBtnCloseClick);
+		this.addEvent(EUIRankMsg.OnBtnCloseClick, this.closeSelf);
 		this.addEvent(EUIRankMsg.OnListRankScroll, this.onListRankScroll);
+
 		const { tabBtns, listRank } = this.view;
 		$uiUtil.setList(listRank, true, this, this.onListLevelRender, this.onListRankItemClick);
+
 		this._tabGroup.init(tabBtns, new Laya.Handler(this, () => {
-			const { view, selectType, } = this;
-			view.refreshView(selectType, this._accountBrief[selectType].length);
-			view.listRank.scrollPane.percY = 0;
+			this.refreshCurrentView();
+			this.view.listRank.scrollPane.percY = 0;
 		}));
 	}
 
@@ -43,63 +57,90 @@ export class UIRankMediator extends MediatorBase<UIRankView, IUIRankData> {
 	}
 
 	override onDisable() {
-		const { _leaderboard, _accountBrief, _briefReqInfo } = this;
-		_briefReqInfo[EUIRankType.SiMa] += _briefReqInfo[EUIRankType.SiMa] % 2 == 0 ? 2 : 1;
-		_briefReqInfo[EUIRankType.SanMa] += _briefReqInfo[EUIRankType.SanMa] % 2 == 0 ? 2 : 1;
-		_leaderboard[EUIRankType.SiMa].length = 0;
-		_leaderboard[EUIRankType.SanMa].length = 0;
-		_accountBrief[EUIRankType.SiMa].length = 0;
-		_accountBrief[EUIRankType.SanMa].length = 0;
-	}
-
-	private onBtnCloseClick() {
-		this.closeSelf();
+		for (const key in this._states) {
+			this._states[key as unknown as EUIRankType].reset();
+		}
 	}
 
 	private onListLevelRender(index: number, item: RenderRankItemView) {
-		const type = this.selectType;
-		item.refresh(index, type, this._accountBrief[type][index]);
+		const state = this._states[this.selectType];
+		item.refresh(index, this.selectType, state.briefs[index]);
 	}
 
-	private onListRankItemClick(_1, _2, index: number) {
+	private onListRankItemClick(_, e: any, index: number) {
 		Logger.error("Click rank item:", index + 1);
 	}
 
 	private onListRankScroll() {
 		const { contentHeight, viewHeight, posY } = this.view.listRank.scrollPane;
-		if (contentHeight - posY - viewHeight <= 136) {
-			this.fetchMultiAccountBrief(this.selectType);
+		// 触底检测：当前位置 + 视口高度 >= 内容高度 - 阈值
+		if (contentHeight - posY - viewHeight <= Scroll_Threshold) {
+			this.fetchBriefBatch(this.selectType);
 		}
 	}
 
 	@InterestMessage(EMessageID.fetchLevelLeaderboard)
 	private onFetchLevelLeaderboard(res: IResLevelLeaderboard, req: IReqLevelLeaderboard) {
-		this._leaderboard[req.type] = res.items;
-		this.fetchMultiAccountBrief(req.type);
+		const state = this._states[req.type];
+		state.leaderboard = res.items;
+		this.fetchBriefBatch(req.type);
 	}
 
-	private fetchMultiAccountBrief(type: EUIRankType) {
-		if (this._briefReqInfo[type] % 2 != 0) return;
-		this._briefReqInfo[type]++;
-		const item = this._leaderboard[type];
-		const info = this._accountBrief[type];
-		const account_id_list: number[] = [];
-		for (let i = info.length; i < item.length && i < info.length + 20; i++) {
-			account_id_list.push(item[i].account_id);
+	/** 请求玩家详细信息（分段） */
+	private fetchBriefBatch(type: EUIRankType) {
+		const state = this._states[type];
+
+		// 如果正在加载、已全部加载完毕或基础数据为空，则返回
+		if (state.isLoading || state.isAllLoaded || state.leaderboard.length === 0) return;
+
+		const currentCount = state.briefs.length;
+		const totalCount = state.leaderboard.length;
+
+		if (currentCount >= totalCount) {
+			state.isAllLoaded = true;
+			return;
 		}
-		if (account_id_list.length > 0) {
-			$netMgr.requests.fetchMultiAccountBrief({ account_id_list, type, reqId: this._briefReqInfo[type] } as any);
+
+		// 截取下一批需要请求的 ID
+		const nextBatchIds = state.leaderboard
+			.slice(currentCount, currentCount + Page_Size)
+			.map(item => item.account_id);
+
+		if (nextBatchIds.length > 0) {
+			state.isLoading = true;
+			state.lastReqId++;
+			$netMgr.requests.fetchMultiAccountBrief({
+				account_id_list: nextBatchIds,
+				type: type,
+				reqId: state.lastReqId // 透传 reqId 用于回调校验
+			} as any);
 		}
 	}
 
 	@InterestMessage(EMessageID.fetchMultiAccountBrief)
 	private onFetchMultiAccountBrief(res: IResMultiAccountBrief, req: IReqMultiAccountId & { type: EUIRankType, reqId: number }) {
-		if (this._briefReqInfo[req.type] != req.reqId) return;
-		const { view, _accountBrief, _briefReqInfo, selectType } = this;
-		_briefReqInfo[req.type]++;
-		_accountBrief[req.type].push(...res.players);
-		if (selectType == req.type)
-			view.refreshView(selectType, _accountBrief[selectType].length)
+		const state = this._states[req.type];
+
+		// 校验请求 ID，防止过期回调覆盖
+		if (!state || state.lastReqId !== req.reqId) return;
+
+		state.isLoading = false;
+		state.briefs.push(...(res.players || []));
+
+		// 如果返回数量少于请求数量，说明后端也没数据了
+		if (!res.players || res.players.length < Page_Size) {
+			state.isAllLoaded = true;
+		}
+
+		// 仅当当前选中的 Tab 是该类型时才刷新 UI
+		if (this.selectType === req.type) {
+			this.refreshCurrentView();
+		}
+	}
+
+	private refreshCurrentView() {
+		const type = this.selectType;
+		this.view.refreshView(type, this._states[type].briefs.length);
 	}
 
 	override onOpenAni() { return $uiUtil.popAlphaIn(this.view); }

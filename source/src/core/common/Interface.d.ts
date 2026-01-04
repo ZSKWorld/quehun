@@ -163,6 +163,10 @@ declare interface IGameUtil {
 	encrypt(str: string): string;
 	/** 解密标准字符，与加密配合使用 */
 	decrypt(str: string): string;
+	encodeAccountId(id: number): number;
+	decodeAccountId(encodedId: number): number;
+	encryptAccountId(id: number): number;
+	decryptAccountId(encryptId: number): number;
 	createUUID(): string;
 	/** 随机颜色字符串 */
 	randomColor(): string;
@@ -174,6 +178,10 @@ declare interface IGameUtil {
 	getZoneId(accoundId: number): number;
 	/** 是否是同区域(同服) */
 	isSameZone(accountId1: number, accountId2: number): boolean;
+	/** 获取玩家游戏状态信息 */
+	getPlayerPlayingInfo(data: { is_online: boolean; playing: IAccountPlayingGame; logout_time: number }): { color: string, text: string };
+	/** 获取玩家是否在游戏中 */
+	getPlayerInGaming(data: IAccountPlayingGame): boolean;
 }
 
 declare interface ITimeUtil {
@@ -191,6 +199,8 @@ declare interface ITimeUtil {
 	timeFormat3(second: number): string;
 	/** 将秒数转换成 `x天` 或 `x小时` 或 `x分` 或 `x秒` 的格式 */
 	timeFormat4(second: number): string;
+	/** 把unix时间戳（秒）根据现在时间转化成“刚刚”、“10分钟前”这样的描述 */
+	timeFormat5(timestamp: number): string;
 	/** 等待 `milSec` 毫秒 */
 	wait(milSec: number): Promise<void>;
 }

@@ -5,7 +5,7 @@ import { ComTitleView } from "../../view/PkgCommon/view/coms/ComTitleView";
 import { ComName2View } from "../../view/PkgCommon/view/coms/ComName2View";
 import { ComLevelView } from "../../view/PkgCommon/view/coms/ComLevelView";
 
-export default class RenderFriendFriend extends fgui.GComponent {
+export default class RenderFriendApply extends fgui.GComponent {
 
 	protected txt_offlineTime: fgui.GTextField;
 	protected com_head: ComHead2View;
@@ -14,12 +14,12 @@ export default class RenderFriendFriend extends fgui.GComponent {
 	protected com_level4: ComLevelView;
 	protected com_level3: ComLevelView;
 	protected btn_look: fgui.GButton;
-	protected btn_ob: fgui.GButton;
-	protected btn_delete: fgui.GButton;
-	public static url: string = "ui://vith2b66puubobfa";
+	protected btn_agree: fgui.GButton;
+	protected btn_reject: fgui.GButton;
+	public static url: string = "ui://vith2b66puubobfb";
 
-	public static createInstance(): RenderFriendFriend {
-		return <RenderFriendFriend>(fgui.UIPackage.createObject("PkgMain", "RenderFriendFriend"));
+	public static createInstance(): RenderFriendApply {
+		return <RenderFriendApply>(fgui.UIPackage.createObject("PkgMain", "RenderFriendApply"));
 	}
 
 	protected override onConstruct(): void {
@@ -30,7 +30,7 @@ export default class RenderFriendFriend extends fgui.GComponent {
 		this.com_level4 = <ComLevelView>(this.getChildAt(5));
 		this.com_level3 = <ComLevelView>(this.getChildAt(6));
 		this.btn_look = <fgui.GButton>(this.getChildAt(7));
-		this.btn_ob = <fgui.GButton>(this.getChildAt(8));
-		this.btn_delete = <fgui.GButton>(this.getChildAt(9));
+		this.btn_agree = <fgui.GButton>(this.getChildAt(8));
+		this.btn_reject = <fgui.GButton>(this.getChildAt(9));
 	}
 }

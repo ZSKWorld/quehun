@@ -15,21 +15,17 @@ export class RenderFriendApplyView extends ExtensionClass<IView, RenderFriendApp
 		btn_reject.onClick(this, this.sendEvent, [ERenderFriendApplyMsg.OnBtnRejectClick]);
 	}
 
-	refresh(data: ProtoObject<IResFriendApplyList_FriendApply>) {
-		
+	refresh(applyTime: number, data: ProtoObject<IPlayerBaseView>) {
 		const {
 			txt_offlineTime, com_head, com_title, com_name, com_level4, com_level3
 		} = this;
-		// const { base, state } = data;
 
-		const playingInfo = $gameUtil.getPlayerPlayingInfo(state);
-		txt_offlineTime.color = playingInfo.color;
-		txt_offlineTime.text = playingInfo.text;
+		txt_offlineTime.text = $timeUtil.timeFormat5(applyTime);
 
-		com_head.refresh(base.avatar_id, base.avatar_frame);
-		com_title.refreshIcon(base.title);
-		com_name.refresh(base);
-		com_level4.refresh(base.level);
-		com_level3.refresh(base.level3);
+		com_head.refresh(data.avatar_id, data.avatar_frame);
+		com_title.refreshIcon(data.title);
+		com_name.refresh(data);
+		com_level4.refresh(data.level);
+		com_level3.refresh(data.level3);
 	}
 }

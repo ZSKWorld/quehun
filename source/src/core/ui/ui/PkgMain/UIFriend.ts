@@ -17,7 +17,7 @@ export default class UIFriend extends fgui.GComponent {
 	protected list_friend: fgui.GList;
 	protected list_apply: fgui.GList;
 	protected itxt_searchId: fgui.GTextInput;
-	protected btn_look: fgui.GButton;
+	protected btn_find: fgui.GButton;
 	protected list_search: fgui.GList;
 	protected trans_show: fgui.Transition;
 	public static url: string = "ui://vith2b66qke2ob9m";
@@ -40,7 +40,7 @@ export default class UIFriend extends fgui.GComponent {
 		this.list_friend = <fgui.GList>(this.getChildAt(14));
 		this.list_apply = <fgui.GList>(this.getChildAt(16));
 		this.itxt_searchId = <fgui.GTextInput>(this.getChildAt(19));
-		this.btn_look = <fgui.GButton>(this.getChildAt(20));
+		this.btn_find = <fgui.GButton>(this.getChildAt(20));
 		this.list_search = <fgui.GList>(this.getChildAt(21));
 		this.trans_show = this.getTransitionAt(0);
 	}

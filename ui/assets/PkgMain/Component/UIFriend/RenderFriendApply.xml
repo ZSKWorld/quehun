@@ -2,7 +2,7 @@
 <component size="1395,175">
   <displayList>
     <image id="n13_puub" name="n13" src="puubobf9" fileName="Texture/img_3885.png" xy="0,0" size="1395,175"/>
-    <text id="n14_puub" name="offlineTime" xy="18,68" pivot="0.5,0.5" size="179,39" fontSize="28" color="#e6ba78" align="center" vAlign="middle" leading="0" autoSize="height" text="1天前离线"/>
+    <text id="n14_puub" name="offlineTime" xy="18,68" pivot="0.5,0.5" size="179,39" fontSize="28" color="#55de50" align="center" vAlign="middle" leading="0" autoSize="height" text="1天前离线"/>
     <component id="n15_puub" name="head" src="hdeoobbn" fileName="Component/Component/头像/ComHead2.xml" pkg="vx9zwser" xy="226,23" pivot="0.5,0.5" size="125,125" scale="1.21,1.21">
       <property target="frame" propertyId="1" value="ui://ca43vz0ehk7r7ploie"/>
     </component>

@@ -1,25 +1,27 @@
 import UIFriend from "../../../../ui/PkgMain/UIFriend";
-import { RenderFriendApplyView } from "../renders/RenderFriendApplyView";
 import { RenderFriendFriendView } from "../renders/RenderFriendFriendView";
 
 export const enum EUIFriendMsg {
 	OnComBackClick = "EUILiaoSheMsg_OnComBackClick",
+	OnBtnFindClick = "EUILiaoSheMsg_OnBtnFindClick",
 }
 
 export class UIFriendView extends ExtensionClass<IView, UIFriend>(UIFriend) implements IView {
 	get tabBtns() {
 		return [this.btn_friendList, this.btn_friendApply, this.btn_searchFriend, this.btn_recentMatch];
 	}
-	
+
 	get listApply() { return this.list_apply; }
+	get findAccountId() { return +this.itxt_searchId.text; }
 
 	override onCreate() {
 		const {
 			com_back, btn_friendList, btn_friendApply, btn_searchFriend, btn_recentMatch,
-			list_friend, list_apply
+			list_friend, btn_find
 		} = this;
 		btn_friendList.mode = btn_friendApply.mode = btn_searchFriend.mode = btn_recentMatch.mode = fgui.ButtonMode.Radio;
 		com_back.onBackClick(this, this.sendEvent, [EUIFriendMsg.OnComBackClick]);
+		btn_find.onClick(this, this.sendEvent, [EUIFriendMsg.OnBtnFindClick]);
 		$uiUtil.setList(list_friend, true, this, this.onListFriendRender);
 	}
 
@@ -30,20 +32,18 @@ export class UIFriendView extends ExtensionClass<IView, UIFriend>(UIFriend) impl
 		txt_limit.text = $lang(2455) + friend.friends.length + "/" + friend.friendMaxCount;
 	}
 
-	refreshPage(index: number) {
+	refreshPage(index: number, listCount?: number) {
 		const { ctrl_type, txt_empty } = this;
 		txt_empty.visible = false;
 		switch (index) {
 			case 0:
-				const friendCount = $userData.friend.friends.length;
-				this.list_friend.numItems = friendCount;
-				txt_empty.visible = friendCount <= 0;
+				this.list_friend.numItems = listCount;
+				txt_empty.visible = listCount <= 0;
 				txt_empty.visible && (txt_empty.langText(2454));
 				break;
 			case 1:
-				const applyCount = $userData.friend.applies.length;
-				this.list_apply.numItems = applyCount;
-				txt_empty.visible = applyCount <= 0;
+				this.list_apply.numItems = listCount;
+				txt_empty.visible = listCount <= 0;
 				txt_empty.visible && (txt_empty.langText(2458));
 				break;
 			case 2: break;

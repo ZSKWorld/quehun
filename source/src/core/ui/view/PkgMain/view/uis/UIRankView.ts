@@ -3,7 +3,6 @@ import { EUIRankType } from "../../define/MainDefine";
 
 export const enum EUIRankMsg {
 	OnBtnCloseClick = "UIRank_OnBtnCloseClick",
-	OnListRankScroll = "UIRank_OnListRankScroll",
 }
 
 export class UIRankView extends ExtensionClass<IView, UIRank>(UIRank) implements IView {
@@ -17,7 +16,6 @@ export class UIRankView extends ExtensionClass<IView, UIRank>(UIRank) implements
 		const { btn_close, btn_siMa, btn_sanMa, list_rank } = this;
 		btn_siMa.mode = btn_sanMa.mode = fgui.ButtonMode.Radio;
 		btn_close.onClick(this, this.sendEvent, [EUIRankMsg.OnBtnCloseClick]);
-		list_rank.on(fgui.Events.SCROLL, this, this.sendEvent, [EUIRankMsg.OnListRankScroll]);
 	}
 
 	refreshView(type: EUIRankType, count: number) {

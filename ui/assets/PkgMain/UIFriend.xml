@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="1920,1080" designImage="ui://ca43vz0epuub7plojv" designImageAlpha="0" bgColorEnabled="true" bgColor="#000000">
-  <controller name="type" pages="0,,1,,2,,3," selected="0"/>
+  <controller name="type" pages="0,,1,,2,,3," selected="2"/>
   <displayList>
     <component id="n0_p5uz" name="back" src="p5uzob8h" fileName="Component/Component/ComBack.xml" pkg="vx9zwser" xy="10,22">
       <property target="title" propertyId="0" value="好友"/>
@@ -54,7 +54,7 @@
     </group>
     <image id="n28_puub" name="n28" src="puubobff" fileName="Texture/img_811.png" pkg="vx9zwser" xy="460,214" size="1035,83" group="n33_puub"/>
     <text id="n30_puub" name="searchId" xy="471,221" size="1017,70" group="n33_puub" fontSize="50" color="#d0cdcd" align="center" vAlign="middle" leading="0" autoSize="none" singleLine="true" text="" input="true" prompt="请输入好友ID进行查找" restrict="0-9"/>
-    <component id="n29_puub" name="look" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="1516,208" size="211,95" group="n33_puub" aspect="true">
+    <component id="n29_puub" name="find" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="1516,208" size="211,95" group="n33_puub" aspect="true">
       <Button title="查找" titleColor="#e6ba78" titleFontSize="40" icon="ui://vx9zwserieavob7x"/>
     </component>
     <list id="n32_puub" name="search" xy="467,326" size="1298,621" group="n33_puub" overflow="scroll" autoClearItems="true"/>

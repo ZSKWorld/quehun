@@ -3840,12 +3840,12 @@ declare interface INotifyCustomizedContestRuleModify extends IProto {
 /** .lq.Error */
 declare interface IError extends IProto {
 	code: number;
-	u32_params: number[];
-	str_params: string[];
+	u32_params?: number[];
+	str_params?: string[];
 	/** json对象（内容根据code变化） */
-	json_param: string;
+	json_param?: string;
 	/** 报错等级，不会发送给客户端 */
-	level: number;
+	level?: number;
 }
 
 /** .lq.Wrapper */

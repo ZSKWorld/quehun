@@ -59,7 +59,7 @@ export class WebSocket extends Laya.EventDispatcher {
 	private _rpcIndex = 0;
 	private _state: ESocketState = ESocketState.Disconnect;
 	private _waitList = new Map<number, IWaitRpcInfo>();
-	private _rpcRepeatMap = new Map<string, Promise<PartialAll<IResponse>>>();
+	private _rpcRepeatMap = new Map<string, Promise<IResponse>>();
 	private _reconnectIndex: number = 0;
 	private _reconnectTime = [1000, 2000, 3000];
 
@@ -113,7 +113,7 @@ export class WebSocket extends Laya.EventDispatcher {
 		if (rpcRepeatMap.has(reqKey))
 			return rpcRepeatMap.get(methodName);
 
-		const promise = new Promise<PartialAll<IResponse>>(resolve => {
+		const promise = new Promise<IResponse>(resolve => {
 			if (!this.connected) {
 				this.eventMessage(ESocketEvent.Response, methodName, { error: { code: -1 } }, data, resolve);
 				return;
@@ -195,7 +195,7 @@ export class WebSocket extends Laya.EventDispatcher {
 		this._socket.connectByUrl(this.url);
 	}
 
-	private eventMessage(type: ESocketEvent.Response | ESocketEvent.Notify, name: string, res: PartialAll<IResponse>, req?: any, callback?: Function) {
+	private eventMessage(type: ESocketEvent.Response | ESocketEvent.Notify, name: string, res: IResponse, req?: any, callback?: Function) {
 		this.event(type, [name, res, req]);
 		callback && callback(res);
 	}

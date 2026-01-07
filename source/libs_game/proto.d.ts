@@ -8336,7 +8336,6 @@ declare interface IReqGameRecordListV2 extends IProto {
 
 /** .lq.ResGameRecordListV2 */
 declare interface IResGameRecordListV2 extends IResponse {
-	/** 这里可能会返回创建迭代器过快的报错 */
 	/** 迭代器游标 */
 	iterator: string;
 	/** 迭代器游标过期时间戳 */

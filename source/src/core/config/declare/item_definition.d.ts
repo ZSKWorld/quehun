@@ -2639,7 +2639,6 @@ declare interface ISheetData_ItemDefinition_Skin {
 //#region item_recovery
 declare interface ISheet_ItemDefinition_ItemRecovery {
 	[key: string]: ISheetData_ItemDefinition_ItemRecovery[];
-	server: ISheetData_ItemDefinition_ItemRecovery[];
 }
 declare interface ISheetData_ItemDefinition_ItemRecovery {
 	/** 道具id */

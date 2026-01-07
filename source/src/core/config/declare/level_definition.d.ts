@@ -118,6 +118,7 @@ declare interface ISheetData_LevelDefinition_LevelDefinition {
 //#region character
 declare interface ISheet_LevelDefinition_Character {
 	[key: string]: ISheetData_LevelDefinition_Character[];
+	0: ISheetData_LevelDefinition_Character[];
 	200052: ISheetData_LevelDefinition_Character[];
 	200061: ISheetData_LevelDefinition_Character[];
 	200076: ISheetData_LevelDefinition_Character[];

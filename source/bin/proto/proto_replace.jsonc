@@ -2,9 +2,9 @@
     "enums":[
     ],
     ".lq.Error": {
-        "u32_params": { "omissible": true },
-        "str_params": { "omissible": true },
-        "json_param": { "omissible": true },
-        "level": { "omissible": true }
+        "u32_params": { "optional": true },
+        "str_params": { "optional": true },
+        "json_param": { "optional": true },
+        "level": { "optional": true }
     }
 }

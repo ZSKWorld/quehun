@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 declare interface ITable_AbMatch {
 	/** unique */
 	match_info: CfgExt<ISheet_AbMatch_MatchInfo>;

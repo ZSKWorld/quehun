@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 declare interface ITable_ItemDefinition {
 	/** unique */
 	currency: CfgExt<ISheet_ItemDefinition_Currency>;

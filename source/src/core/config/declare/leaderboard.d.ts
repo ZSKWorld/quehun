@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 declare interface ITable_Leaderboard {
 	/** 排行榜  ---  unique */
 	leaderboard: CfgExt<ISheet_Leaderboard_Leaderboard>;

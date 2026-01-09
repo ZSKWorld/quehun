@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 declare interface ITable_MatchShilian {
 	/** unique */
 	shilian: CfgExt<ISheet_MatchShilian_Shilian>;

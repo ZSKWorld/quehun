@@ -64,8 +64,8 @@ declare interface IViewExtend {
 	/**
 	 * 打开页面
 	 * @param viewId 页面id
-	 * @param data 传入参数
-	 * @param openType 页面打开对当前页面操作的类型
+	 * @param data 传入参数, default: null
+	 * @param openType 页面打开对当前页面操作的类型, default: {@link EViewOpenType.None}
 	 */
 	openView<T = any>(viewId: EViewID, data?: T, openType = EViewOpenType.None): Promise<void>;
 

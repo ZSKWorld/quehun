@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 declare interface ITable_Shops {
 	/** 杂货铺商品列表  ---  unique */
 	zhp_goods: CfgExt<ISheet_Shops_ZhpGoods>;

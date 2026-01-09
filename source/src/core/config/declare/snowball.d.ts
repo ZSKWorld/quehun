@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 declare interface ITable_Snowball {
 	/** 打雪仗活动信息  ---  unique */
 	snowball_activity: CfgExt<ISheet_Snowball_SnowballActivity>;

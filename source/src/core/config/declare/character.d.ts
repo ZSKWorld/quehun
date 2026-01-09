@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 declare interface ITable_Character {
 	/** 表情解锁表  ---  group */
 	emoji: CfgExtGroup<ISheet_Character_Emoji>;

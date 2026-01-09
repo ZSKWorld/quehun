@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 declare interface ITable_MiscFunction {
 	/** 每日签到  ---  unique */
 	daily_sign_in: CfgExt<ISheet_MiscFunction_DailySignIn>;

@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 declare interface ITable_Fan {
 	/** unique */
 	fan: CfgExt<ISheet_Fan_Fan>;

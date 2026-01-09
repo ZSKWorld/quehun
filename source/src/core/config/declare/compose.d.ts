@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 declare interface ITable_Compose {
 	/** unique */
 	characompose: CfgExt<ISheet_Compose_Characompose>;

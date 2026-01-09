@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 declare interface ITable_Info {
 	/** 错误码  ---  unique */
 	error: CfgExt<ISheet_Info_Error>;

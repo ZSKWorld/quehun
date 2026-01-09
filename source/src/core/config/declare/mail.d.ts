@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 declare interface ITable_Mail {
 	/** 邮件模板  ---  unique */
 	mail_template: CfgExt<ISheet_Mail_MailTemplate>;

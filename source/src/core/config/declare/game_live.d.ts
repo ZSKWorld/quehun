@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 declare interface ITable_GameLive {
 	/** 观战选项过滤  ---  unique */
 	select_filters: CfgExt<ISheet_GameLive_SelectFilters>;

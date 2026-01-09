@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 declare interface ITable_Global {
 	/** unique */
 	global: CfgExt<ISheet_Global_Global>;

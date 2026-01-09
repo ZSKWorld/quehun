@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 declare interface ITable_Spot {
 	/** 剧情表  ---  group */
 	spot: CfgExtGroup<ISheet_Spot_Spot>;

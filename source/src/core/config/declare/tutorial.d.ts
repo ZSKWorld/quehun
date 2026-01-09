@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 declare interface ITable_Tutorial {
 	/** unique */
 	init: CfgExt<ISheet_Tutorial_Init>;

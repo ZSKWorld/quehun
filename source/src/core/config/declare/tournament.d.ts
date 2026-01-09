@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 declare interface ITable_Tournament {
 	/** 联赛列表  ---  unique */
 	tournaments: CfgExt<ISheet_Tournament_Tournaments>;

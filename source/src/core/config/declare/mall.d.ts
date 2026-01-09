@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 declare interface ITable_Mall {
 	/** 商品表  ---  unique */
 	goods: CfgExt<ISheet_Mall_Goods>;

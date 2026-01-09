@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 declare interface ITable_Marathon {
 	/** 活动索引  ---  unique */
 	marathon_info: CfgExt<ISheet_Marathon_MarathonInfo>;

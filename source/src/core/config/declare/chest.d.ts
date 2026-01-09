@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 declare interface ITable_Chest {
 	/** 宝箱表  ---  unique */
 	chest: CfgExt<ISheet_Chest_Chest>;

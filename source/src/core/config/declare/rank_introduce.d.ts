@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 declare interface ITable_RankIntroduce {
 	/** unique */
 	rank: CfgExt<ISheet_RankIntroduce_Rank>;

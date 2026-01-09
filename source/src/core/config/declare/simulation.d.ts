@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 declare interface ITable_Simulation {
 	/** 主表  ---  unique */
 	sim_v2_info: CfgExt<ISheet_Simulation_SimV2Info>;

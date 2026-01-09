@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 declare interface ITable_Amulet {
 	/** 初始化状态6参数  ---  unique */
 	amulet_activity: CfgExt<ISheet_Amulet_AmuletActivity>;

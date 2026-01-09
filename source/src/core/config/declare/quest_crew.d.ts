@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 declare interface ITable_QuestCrew {
 	/** 任务小队活动信息  ---  unique */
 	qc_info: CfgExt<ISheet_QuestCrew_QcInfo>;

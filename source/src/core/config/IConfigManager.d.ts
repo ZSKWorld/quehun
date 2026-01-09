@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 declare interface IConfigManager {
 	readonly ab_match: ITable_AbMatch;
 	readonly achievement: ITable_Achievement;

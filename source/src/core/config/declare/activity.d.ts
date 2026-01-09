@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 declare interface ITable_Activity {
 	/** 活动定义表  ---  unique */
 	activity: CfgExt<ISheet_Activity_Activity>;

@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 declare interface ITable_Achievement {
 	/** 成就  ---  unique */
 	achievement: CfgExt<ISheet_Achievement_Achievement>;

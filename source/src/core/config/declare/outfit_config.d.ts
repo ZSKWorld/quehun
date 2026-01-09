@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 declare interface ITable_OutfitConfig {
 	/** 和牌特效  ---  unique */
 	ron: CfgExt<ISheet_OutfitConfig_Ron>;

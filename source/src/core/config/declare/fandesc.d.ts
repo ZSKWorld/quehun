@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 declare interface ITable_Fandesc {
 	/** unique */
 	fandesc: CfgExt<ISheet_Fandesc_Fandesc>;

@@ -26,7 +26,7 @@ export class UIMainMediator extends MediatorBase<UIMainView, IUIMainData> {
 		this.addEvent(EUIMainMsg.OnBtnAnnouncementClick, this.onBtnAnnouncementClick);
 	}
 
-	private async onBtnLiaoSheClick() {
+	private onBtnLiaoSheClick() {
 		this.openView(EViewID.UILiaoSheView, null, EViewOpenType.Hide);
 	}
 

@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 declare interface ITable_Events {
 	/** unique */
 	soscoin: CfgExt<ISheet_Events_Soscoin>;

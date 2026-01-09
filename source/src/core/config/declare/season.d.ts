@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 declare interface ITable_Season {
 	/** unique */
 	season: CfgExt<ISheet_Season_Season>;

@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 declare interface ITable_Voice {
 	/** 语音表  ---  group */
 	sound: CfgExtGroup<ISheet_Voice_Sound>;

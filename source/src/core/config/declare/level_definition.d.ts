@@ -1,3 +1,5 @@
+/** This script is generated automatically, Please do not any modify! */
+
 declare interface ITable_LevelDefinition {
 	/** unique */
 	level_definition: CfgExt<ISheet_LevelDefinition_LevelDefinition>;

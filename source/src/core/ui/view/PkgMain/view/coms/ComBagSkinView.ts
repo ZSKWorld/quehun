@@ -13,7 +13,6 @@ export class ComBagSkinView extends ExtensionClass<IView, ComBagSkin>(ComBagSkin
 	private _showSkins: number[] = [];
 	private _showIndex: number = 0;
 	override onCreate() {
-		this.displayObject.onEnable = this.onEnable.bind(this);
 		this.btn_back.onClick(this, this.backToCharList);
 		this.btn_toLeft.onClick(this, this.onBtnToLeftOrRight, [true]);
 		this.btn_toRight.onClick(this, this.onBtnToLeftOrRight, [false]);
@@ -33,7 +32,7 @@ export class ComBagSkinView extends ExtensionClass<IView, ComBagSkin>(ComBagSkin
 		});
 	}
 
-	private onEnable() {
+	override onEnable() {
 		this.backToCharList();
 	}
 

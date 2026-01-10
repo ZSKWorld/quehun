@@ -7,7 +7,7 @@ export const enum EComLevelMsg {
 export class ComLevelView extends ExtensionClass<IView, ComLevel>(ComLevel) implements IView {
 
 	override onCreate() {
-		this.displayObject.onDisable = this.onDisable.bind(this);
+
 	}
 
 	refresh(data: IAccountLevel) {
@@ -15,7 +15,7 @@ export class ComLevelView extends ExtensionClass<IView, ComLevel>(ComLevel) impl
 		$uiUtil.refreshLevel({ ctrl_ht, ctrl_star, loader_icon, txt_htLevel }, data);
 	}
 
-	private onDisable() {
+	override onDisable() {
 		$dynamicResMgr.clearLoader(this.loader_icon);
 	}
 }

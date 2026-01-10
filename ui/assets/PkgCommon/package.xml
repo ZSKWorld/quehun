@@ -234,6 +234,8 @@
     <image id="puubobfd" name="img_785.png" path="/Texture/" exported="true"/>
     <component id="puubobfe" name="VScrollBar3.xml" path="/Component/ScrollBar/" exported="true"/>
     <image id="puubobff" name="img_811.png" path="/Texture/" exported="true" scale="9grid" scale9grid="11,8,22,16"/>
+    <component id="ea8nobfg" name="ComRedDot1.xml" path="/Component/Component/红点/" exported="true"/>
+    <image id="ea8nobfh" name="img_1393.png" path="/Texture/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

@@ -80,10 +80,31 @@ declare interface IView extends fgui.GComponent, IViewExtend {
 	mediator: IMediator;
 
 	/**
-	 * 页面创建完毕之后执行，只执行一次。
-	 * 该方法为虚方法，使用时重写即可
+	 ** 页面创建完毕之后执行，只执行一次。
+	 ** 该方法为虚方法，使用时重写即可
 	 */
 	onCreate(): void;
+
+	/**
+	 ** 覆盖GObject.displayObject.onAwake(即Laya.Node.onAwake)函数
+	 ** 该方法为虚方法，使用时重写即可
+	 */
+	onAwake(): void;
+	/**
+	 ** 覆盖GObject.displayObject.onEnable(即Laya.Node.onEnable)函数
+	 ** 该方法为虚方法，使用时重写即可
+	 */
+	onEnable(): void;
+	/**
+	 ** 覆盖GObject.displayObject.onDisable(即Laya.Node.onDisable)函数
+	 ** 该方法为虚方法，使用时重写即可
+	 */
+	onDisable(): void;
+	/**
+	 ** 覆盖GObject.displayObject.onDestroy(即Laya.Node.onDestroy)函数
+	 ** 该方法为虚方法，使用时重写即可
+	 */
+	onDestroy(): void;
 
 	getPath(): string;
 }
@@ -97,14 +118,14 @@ declare interface IMediator<V extends IView = IView, D = any> extends Laya.Scrip
 	get view(): V;
 
 	/**
-	 * 页面打开动画
-	 * 该方法为虚方法，使用时重写即可
+	 ** 页面打开动画
+	 ** 该方法为虚方法，使用时重写即可
 	 */
 	onOpenAni(): Promise<void>;
 
 	/**
-	 * 页面关闭动画
-	 * 该方法为虚方法，使用时重写即可
+	 ** 页面关闭动画
+	 ** 该方法为虚方法，使用时重写即可
 	 */
 	onCloseAni(): Promise<void>;
 }

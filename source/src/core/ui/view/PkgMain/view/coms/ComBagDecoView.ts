@@ -22,12 +22,11 @@ export class ComBagDecoView extends ExtensionClass<IView, ComBagDeco>(ComBagDeco
 	].map(v => $lang(v));
 
 	override onCreate() {
-		this.displayObject.onEnable = this.onEnable.bind(this);
 		$uiUtil.setList(this.list_item, true, this, this.onListItemRender, this.onListItemClick);
 		$uiUtil.setCombox(this.cmb_type, this._typeStr, this._showTypes, this, this.refreshListItem);
 	}
 
-	private onEnable() {
+	override onEnable() {
 		this.cmb_type.selectedIndex = 0;
 		this.updateShowItems();
 	}

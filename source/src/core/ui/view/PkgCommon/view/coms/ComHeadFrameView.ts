@@ -7,7 +7,7 @@ export const enum EComHeadFrameMsg {
 export class ComHeadFrameView extends ExtensionClass<IView, ComHeadFrame>(ComHeadFrame) implements IView {
 
 	override onCreate() {
-		this.displayObject.onDisable = this.onDisable.bind(this);
+
 	}
 
 	refreshIcon(id: number) {
@@ -27,7 +27,7 @@ export class ComHeadFrameView extends ExtensionClass<IView, ComHeadFrame>(ComHea
 		$dynamicResMgr.setLoader(this.loader_icon, framePath);
 	}
 
-	private onDisable() {
+	override onDisable() {
 		$dynamicResMgr.clearLoader(this.loader_icon);
 	}
 }

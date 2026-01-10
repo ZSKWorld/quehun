@@ -14,7 +14,7 @@ export const enum EUIMainMsg {
 	OnBtnCameraClick = "UIMain_OnBtnCameraClick",
 	OnBtnAchieveClick = "UIMain_OnBtnAchieveClick",
 	OnBtnActivityClick = "UIMain_OnBtnActivityClick",
-	OnBtnEmailClick = "UIMain_OnBtnEmailClick",
+	OnBtnMailClick = "UIMain_OnBtnMailClick",
 	OnBtnRankClick = "UIMain_OnBtnRankClick",
 	OnBtnAnnouncementClick = "UIMain_OnBtnAnnouncementClick",
 }
@@ -22,7 +22,7 @@ export const enum EUIMainMsg {
 export class UIMainView extends ExtensionClass<IView, UIMain>(UIMain) implements IView {
 
 	override onCreate() {
-		const { btn_liaoShe, btn_friend, btn_observe, btn_paiPu, btn_bag, btn_shop, btn_treasure, btn_setting, btn_help, btn_guide, btn_camera, btn_achieve, btn_activity, btn_email, btn_rank, btn_announcement } = this;
+		const { btn_liaoShe, btn_friend, btn_observe, btn_paiPu, btn_bag, btn_shop, btn_treasure, btn_setting, btn_help, btn_guide, btn_camera, btn_achieve, btn_activity, btn_mail, btn_rank, btn_announcement } = this;
 		btn_liaoShe.onClick(this, this.sendEvent, [EUIMainMsg.OnBtnLiaoSheClick]);
 		btn_friend.onClick(this, this.sendEvent, [EUIMainMsg.OnBtnFriendClick]);
 		btn_observe.onClick(this, this.sendEvent, [EUIMainMsg.OnBtnObserveClick]);
@@ -36,7 +36,7 @@ export class UIMainView extends ExtensionClass<IView, UIMain>(UIMain) implements
 		btn_camera.onClick(this, this.sendEvent, [EUIMainMsg.OnBtnCameraClick]);
 		btn_achieve.onClick(this, this.sendEvent, [EUIMainMsg.OnBtnAchieveClick]);
 		btn_activity.onClick(this, this.sendEvent, [EUIMainMsg.OnBtnActivityClick]);
-		btn_email.onClick(this, this.sendEvent, [EUIMainMsg.OnBtnEmailClick]);
+		btn_mail.onClick(this, this.sendEvent, [EUIMainMsg.OnBtnMailClick]);
 		btn_rank.onClick(this, this.sendEvent, [EUIMainMsg.OnBtnRankClick]);
 		btn_announcement.onClick(this, this.sendEvent, [EUIMainMsg.OnBtnAnnouncementClick]);
 	}

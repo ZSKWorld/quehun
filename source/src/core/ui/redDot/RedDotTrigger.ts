@@ -1,5 +1,6 @@
 import { SingletonExtend } from "../../common/Singleton";
 import { Observer } from "../../mvc/provider/Observer";
+import { EUserEvent } from "../../userData/UserDefine";
 import { ERDTriggerType } from "./RedDotDefine";
 
 function RDTriggerEvent(eventName: ERDTriggerType) {
@@ -23,6 +24,13 @@ export class RedDotTrigger extends SingletonExtend<RedDotTrigger, Observer>(Obse
 		for (const key in triggerEventMap) {
 			triggerEventMap[key].forEach(func => $redDotMgr.on("Trigger" + key, this, func, [key]));
 		}
+	}
+
+	@InterestNotify(EUserEvent.OnMailChanged)
+	private checkMail() {
+		const mails = $userData.mail.mails;
+		this.setTriggered(ERDTriggerType.MailNotRead, mails.some(v => v.state == 0));
+		this.setTriggered(ERDTriggerType.MailHaveReward, mails.some(v => v.attachments.length && !v.take_attachment));
 	}
 
 	private setTriggered(type: ERDTriggerType, triggered: boolean | number) {

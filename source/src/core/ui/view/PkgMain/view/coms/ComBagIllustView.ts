@@ -9,13 +9,12 @@ export const enum EComBagIllustMsg {
 export class ComBagIllustView extends ExtensionClass<IView, ComBagIllust>(ComBagIllust) implements IView {
 	private _items: ISheetData_ItemDefinition_LoadingImage[];
 	override onCreate() {
-		const { displayObject, list_illust } = this;
-		displayObject.onEnable = this.onEnable.bind(this);
+		const { list_illust } = this;
 		$uiUtil.setList(list_illust, true, this, this.onListIllustItemRenderer, this.onListIllustItemClick);
 		$facade.on(EUserEvent.OnCGUsingChanged, this, this.refresh);
 	}
 
-	private onEnable() {
+	override onEnable() {
 		const items = $cfgMgr.item_definition.loading_image.filter(v => {
 			return v.unlock_items.some(id => id && $userData.bag.getItemCount(id) > 0);
 		});

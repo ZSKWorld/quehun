@@ -28,6 +28,10 @@ export class ViewExtend {
 			constructFromResource.call(this);
 			const _this = <IView>this;
 			_this.onCreate?.();
+			_this.onAwake && (_this.displayObject.onAwake = _this.onAwake.bind(_this));
+			_this.onEnable && (_this.displayObject.onEnable = _this.onEnable.bind(_this));
+			_this.onDisable && (_this.displayObject.onDisable = _this.onDisable.bind(_this));
+			_this.onDestroy && (_this.displayObject.onDestroy = _this.onDestroy.bind(_this));
 			if (_this.viewId) {
 				const MediatorCls = $facade.getMediator(_this.viewId);
 				if (MediatorCls)

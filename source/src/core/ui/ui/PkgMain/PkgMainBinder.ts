@@ -34,6 +34,7 @@ import RenderBagIllustItem from "./RenderBagIllustItem";
 import ComBagIllust from "./ComBagIllust";
 import UIMain from "./UIMain";
 import BtnXunMi from "./BtnXunMi";
+import BtnDengLong from "./BtnDengLong";
 import ComMatchMode from "./ComMatchMode";
 import ComMatchContent from "./ComMatchContent";
 import { UILiaoSheView } from "../../view/PkgMain/view/uis/UILiaoSheView";
@@ -70,6 +71,7 @@ import { RenderBagIllustItemView } from "../../view/PkgMain/view/renders/RenderB
 import { ComBagIllustView } from "../../view/PkgMain/view/coms/ComBagIllustView";
 import { UIMainView } from "../../view/PkgMain/view/uis/UIMainView";
 import { BtnXunMiView } from "../../view/PkgMain/view/btns/BtnXunMiView";
+import { BtnDengLongView } from "../../view/PkgMain/view/btns/BtnDengLongView";
 import { ComMatchModeView } from "../../view/PkgMain/view/coms/ComMatchModeView";
 import { ComMatchContentView } from "../../view/PkgMain/view/coms/ComMatchContentView";
 
@@ -109,6 +111,7 @@ export default class PkgMainBinder {
 		fgui.UIObjectFactory.setExtension(ComBagIllust.url, ComBagIllustView);
 		fgui.UIObjectFactory.setExtension(UIMain.url, UIMainView);
 		fgui.UIObjectFactory.setExtension(BtnXunMi.url, BtnXunMiView);
+		fgui.UIObjectFactory.setExtension(BtnDengLong.url, BtnDengLongView);
 		fgui.UIObjectFactory.setExtension(ComMatchMode.url, ComMatchModeView);
 		fgui.UIObjectFactory.setExtension(ComMatchContent.url, ComMatchContentView);
 	}

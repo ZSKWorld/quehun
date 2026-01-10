@@ -1,5 +1,5 @@
 import { ENotifyConst } from "../../common/NotifyConst";
-import { ERDName } from "./RedDotDefine";
+import { ERDName, ERDTriggerType } from "./RedDotDefine";
 import { RedDotNode } from "./RedDotNode";
 import { RedDotTrigger } from "./RedDotTrigger";
 
@@ -13,6 +13,7 @@ export class RedDotManager extends Laya.EventDispatcher implements IRedDotManage
 		this._rdMap = {} as any;
 		const rdMap = this._rdMap;
 		rdMap.Root = RedDotNode.create();
+		rdMap.Mail = RedDotNode.create(rdMap.Root, "UIBottom.UIMainView.mail", [ERDTriggerType.MailNotRead, ERDTriggerType.MailHaveReward]);
 	}
 
 	@InterestNotify(ENotifyConst.RedDotCompAwake)

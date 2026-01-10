@@ -1,6 +1,7 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
 import { ComMatchModeView } from "../../view/PkgMain/view/coms/ComMatchModeView";
+import { BtnDengLongView } from "../../view/PkgMain/view/btns/BtnDengLongView";
 import { BtnXunMiView } from "../../view/PkgMain/view/btns/BtnXunMiView";
 
 export default class UIMain extends fgui.GComponent {
@@ -12,9 +13,9 @@ export default class UIMain extends fgui.GComponent {
 	protected btn_camera: fgui.GButton;
 	protected btn_achieve: fgui.GButton;
 	protected btn_activity: fgui.GButton;
-	protected btn_email: fgui.GButton;
-	protected btn_rank: fgui.GButton;
-	protected btn_announcement: fgui.GButton;
+	protected btn_mail: BtnDengLongView;
+	protected btn_rank: BtnDengLongView;
+	protected btn_announcement: BtnDengLongView;
 	protected group_rightTop: fgui.GGroup;
 	protected btn_liaoShe: fgui.GButton;
 	protected btn_friend: fgui.GButton;
@@ -39,9 +40,9 @@ export default class UIMain extends fgui.GComponent {
 		this.btn_camera = <fgui.GButton>(this.getChildAt(4));
 		this.btn_achieve = <fgui.GButton>(this.getChildAt(5));
 		this.btn_activity = <fgui.GButton>(this.getChildAt(6));
-		this.btn_email = <fgui.GButton>(this.getChildAt(7));
-		this.btn_rank = <fgui.GButton>(this.getChildAt(8));
-		this.btn_announcement = <fgui.GButton>(this.getChildAt(9));
+		this.btn_mail = <BtnDengLongView>(this.getChildAt(7));
+		this.btn_rank = <BtnDengLongView>(this.getChildAt(8));
+		this.btn_announcement = <BtnDengLongView>(this.getChildAt(9));
 		this.group_rightTop = <fgui.GGroup>(this.getChildAt(10));
 		this.btn_liaoShe = <fgui.GButton>(this.getChildAt(11));
 		this.btn_friend = <fgui.GButton>(this.getChildAt(12));

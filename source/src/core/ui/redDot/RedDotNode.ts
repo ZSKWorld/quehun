@@ -56,7 +56,7 @@ export class RedDotNode implements IRedDotNode {
 			}
 
 			if (target instanceof fgui.GComponent) {
-				this._comp = <fgui.GComponent>target.getChild("com_redDot");
+				this._comp = <fgui.GComponent>target.getChild("redDot");
 			}
 		}
 		return this._comp;

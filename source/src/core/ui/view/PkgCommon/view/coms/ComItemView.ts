@@ -6,7 +6,7 @@ export const enum EComItemMsg {
 
 export class ComItemView extends ExtensionClass<IView, ComItem>(ComItem) implements IView {
 	override onCreate() {
-		this.displayObject.onDisable = this.onDisable.bind(this);
+
 	}
 
 	refreshIcon(id: number) {
@@ -25,7 +25,7 @@ export class ComItemView extends ExtensionClass<IView, ComItem>(ComItem) impleme
 		$dynamicResMgr.setLoader(this.loader_icon, $langRes(iconPath));
 	}
 
-	private onDisable() {
+	override onDisable() {
 		$dynamicResMgr.clearLoader(this.loader_icon);
 	}
 }

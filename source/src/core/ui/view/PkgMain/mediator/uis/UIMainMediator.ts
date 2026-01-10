@@ -21,7 +21,7 @@ export class UIMainMediator extends MediatorBase<UIMainView, IUIMainData> {
 		this.addEvent(EUIMainMsg.OnBtnCameraClick, this.onBtnCameraClick);
 		this.addEvent(EUIMainMsg.OnBtnAchieveClick, this.onBtnAchieveClick);
 		this.addEvent(EUIMainMsg.OnBtnActivityClick, this.onBtnActivityClick);
-		this.addEvent(EUIMainMsg.OnBtnEmailClick, this.onBtnEmailClick);
+		this.addEvent(EUIMainMsg.OnBtnMailClick, this.onBtnMailClick);
 		this.addEvent(EUIMainMsg.OnBtnRankClick, this.onBtnRankClick);
 		this.addEvent(EUIMainMsg.OnBtnAnnouncementClick, this.onBtnAnnouncementClick);
 	}
@@ -78,7 +78,7 @@ export class UIMainMediator extends MediatorBase<UIMainView, IUIMainData> {
 		this.openView(EViewID.UIActivityView);
 	}
 
-	private onBtnEmailClick() {
+	private onBtnMailClick() {
 		this.openView(EViewID.UIMailView);
 	}
 

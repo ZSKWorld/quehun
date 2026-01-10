@@ -20,13 +20,13 @@
     <component id="n14_vwgm" name="activity" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1240,-9" size="145,190" group="n18_vwgm">
       <Button icon="ui://vith2b66vwgml"/>
     </component>
-    <component id="n15_vwgm" name="email" src="vwgmob8d" fileName="Component/BtnDengLong.xml" xy="1423,-7" size="103,165" group="n18_vwgm" alpha="0.998">
+    <component id="n15_vwgm" name="mail" src="vwgmob8d" fileName="Component/UIMain/BtnDengLong.xml" xy="1423,-7" size="103,165" group="n18_vwgm" alpha="0.998">
       <Button title="邮件" icon="ui://vith2b66vwgmk"/>
     </component>
-    <component id="n16_vwgm" name="rank" src="vwgmob8d" fileName="Component/BtnDengLong.xml" xy="1552,-7" size="103,165" group="n18_vwgm" alpha="0.998">
+    <component id="n16_vwgm" name="rank" src="vwgmob8d" fileName="Component/UIMain/BtnDengLong.xml" xy="1552,-7" size="103,165" group="n18_vwgm" alpha="0.998">
       <Button title="排名" icon="ui://vith2b66vwgmk"/>
     </component>
-    <component id="n17_vwgm" name="announcement" src="vwgmob8d" fileName="Component/BtnDengLong.xml" xy="1679,-7" size="103,165" group="n18_vwgm" alpha="0.998">
+    <component id="n17_vwgm" name="announcement" src="vwgmob8d" fileName="Component/UIMain/BtnDengLong.xml" xy="1679,-7" size="103,165" group="n18_vwgm" alpha="0.998">
       <Button title="公告" icon="ui://vith2b66vwgmk"/>
     </component>
     <group id="n18_vwgm" name="rightTop" xy="1240,-9" size="655,555" advanced="true"/>
@@ -48,7 +48,7 @@
     <component id="n5_vwgm" name="shop" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1589,952" size="129,113" group="n7_vwgm">
       <Button icon="ui://vith2b66vwgm8"/>
     </component>
-    <component id="n6_vwgm" name="treasure" src="vwgmj" fileName="Component/BtnXunMi.xml" xy="1735,859" group="n7_vwgm"/>
+    <component id="n6_vwgm" name="treasure" src="vwgmj" fileName="Component/UIMain/BtnXunMi.xml" xy="1735,859" group="n7_vwgm"/>
     <group id="n7_vwgm" name="rightBottom" xy="869,859" size="1049,209"/>
   </displayList>
   <transition name="in" frameRate="30">

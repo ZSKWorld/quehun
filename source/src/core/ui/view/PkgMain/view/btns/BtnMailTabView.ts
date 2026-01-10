@@ -11,6 +11,7 @@ export class BtnMailTabView extends ExtensionClass<IView, BtnMailTab>(BtnMailTab
 	}
 
 	refresh(data: ProtoObject<IMail>) {
+		this.img_redDot.visible = data.state == 0 || (data.attachments.length > 0 && !data.take_attachment);
 		this.title = $gameUtil.getI18nContext(data.title_i18n, data.title);
 		this.ctrl_open.selectedIndex = data.state ? 1 : 0;
 	}

@@ -1,10 +1,10 @@
-import RenderEmailItem from "../../../../ui/PkgMain/RenderEmailItem";
+import RenderMailItem from "../../../../ui/PkgMain/RenderMailItem";
 
-export const enum ERenderEmailItemMsg {
+export const enum ERenderMailItemMsg {
 
 }
 
-export class RenderEmailItemView extends ExtensionClass<IView, RenderEmailItem>(RenderEmailItem) implements IView {
+export class RenderMailItemView extends ExtensionClass<IView, RenderMailItem>(RenderMailItem) implements IView {
 
 	override onCreate() {
 

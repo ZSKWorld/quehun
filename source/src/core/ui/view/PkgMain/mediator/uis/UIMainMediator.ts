@@ -79,7 +79,7 @@ export class UIMainMediator extends MediatorBase<UIMainView, IUIMainData> {
 	}
 
 	private onBtnEmailClick() {
-		this.openView(EViewID.UIEmailView);
+		this.openView(EViewID.UIMailView);
 	}
 
 	private onBtnRankClick() {

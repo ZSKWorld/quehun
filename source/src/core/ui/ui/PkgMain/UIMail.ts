@@ -1,6 +1,6 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-export default class UIEmail extends fgui.GComponent {
+export default class UIMail extends fgui.GComponent {
 
 	protected ctrl_head: fgui.Controller;
 	protected ctrl_body: fgui.Controller;
@@ -15,8 +15,8 @@ export default class UIEmail extends fgui.GComponent {
 	protected txt_expire: fgui.GTextField;
 	public static url: string = "ui://vith2b66ktwpob9t";
 
-	public static createInstance(): UIEmail {
-		return <UIEmail>(fgui.UIPackage.createObject("PkgMain", "UIEmail"));
+	public static createInstance(): UIMail {
+		return <UIMail>(fgui.UIPackage.createObject("PkgMain", "UIMail"));
 	}
 
 	protected override onConstruct(): void {

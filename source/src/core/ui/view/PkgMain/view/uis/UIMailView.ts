@@ -1,12 +1,12 @@
-import UIEmail from "../../../../ui/PkgMain/UIEmail";
+import UIMail from "../../../../ui/PkgMain/UIMail";
 
-export const enum EUIEmailMsg {
-	OnBtnBackClick = "UIEmail_OnBtnBackClick",
-	OnBtnGetRewardClick = "UIEmail_OnBtnGetRewardClick",
-	OnBtnDeleteClick = "UIEmail_OnBtnDeleteClick",
+export const enum EUIMailMsg {
+	OnBtnBackClick = "UIMail_OnBtnBackClick",
+	OnBtnGetRewardClick = "UIMail_OnBtnGetRewardClick",
+	OnBtnDeleteClick = "UIMail_OnBtnDeleteClick",
 }
 
-export class UIEmailView extends ExtensionClass<IView, UIEmail>(UIEmail) implements IView {
+export class UIMailView extends ExtensionClass<IView, UIMail>(UIMail) implements IView {
 	override readonly viewCategory = EViewCategory.Popup;
 
 	get listTab() { return this.list_tab; }
@@ -14,16 +14,15 @@ export class UIEmailView extends ExtensionClass<IView, UIEmail>(UIEmail) impleme
 
 	override onCreate() {
 		const { btn_back, btn_getReward, btn_delete, list_tab } = this;
-		btn_back.onClick(this, this.sendEvent, [EUIEmailMsg.OnBtnBackClick]);
-		btn_getReward.onClick(this, this.sendEvent, [EUIEmailMsg.OnBtnGetRewardClick]);
-		btn_delete.onClick(this, this.sendEvent, [EUIEmailMsg.OnBtnDeleteClick]);
+		btn_back.onClick(this, this.sendEvent, [EUIMailMsg.OnBtnBackClick]);
+		btn_getReward.onClick(this, this.sendEvent, [EUIMailMsg.OnBtnGetRewardClick]);
+		btn_delete.onClick(this, this.sendEvent, [EUIMailMsg.OnBtnDeleteClick]);
 	}
 
-	refreshTab(count: number, index: number) {
+	refreshEmail(count: number) {
 		const { list_tab, ctrl_empty } = this;
 		ctrl_empty.selectedIndex = count > 0 ? 0 : 1;
 		list_tab.numItems = count;
-		list_tab.selectedIndex = index;
 	}
 
 	refreshContent(data: ProtoObject<IMail>) {

@@ -75,7 +75,7 @@
     <component id="qke2ob9q" name="UIShop.xml" path="/" exported="true"/>
     <component id="qke2ob9r" name="UITreasure.xml" path="/" exported="true"/>
     <component id="ktwpob9s" name="UIActivity.xml" path="/" exported="true"/>
-    <component id="ktwpob9t" name="UIEmail.xml" path="/" exported="true"/>
+    <component id="ktwpob9t" name="UIMail.xml" path="/" exported="true"/>
     <component id="ktwpob9u" name="UIRank.xml" path="/" exported="true"/>
     <component id="ktwpob9v" name="UIAnnouncement.xml" path="/" exported="true"/>
     <component id="ktwpob9w" name="UISetting.xml" path="/" exported="true"/>
@@ -116,12 +116,12 @@
     <image id="pt3aobax" name="img_1267.png" path="/Texture/"/>
     <image id="pt3aobay" name="img_3482.png" path="/Texture/"/>
     <image id="pt3aobaz" name="img_3509.png" path="/Texture/"/>
-    <component id="pt3aobb0" name="BtnEmailTab.xml" path="/Component/UIEmail/"/>
-    <component id="hk7robb1" name="LabeEmaillContent.xml" path="/Component/UIEmail/"/>
+    <component id="pt3aobb0" name="BtnMailTab.xml" path="/Component/UIEmail/"/>
+    <component id="hk7robb1" name="LabeMaillContent.xml" path="/Component/UIEmail/"/>
     <component id="hdeoobb2" name="RenderRankItem.xml" path="/Component/UIRank/"/>
     <image id="hdeoobbm" name="img_3821.png" path="/Texture/" exported="true"/>
     <image id="hdeoobb4" name="img_3866.png" path="/Texture/"/>
-    <component id="hk7robax" name="RenderEmailItem.xml" path="/Component/UIEmail/"/>
+    <component id="hk7robax" name="RenderMailItem.xml" path="/Component/UIEmail/"/>
     <component id="q5yiobbn" name="RenderBagItem.xml" path="/Component/UIBag/"/>
     <component id="q5yiobbp" name="RenderBagGiftItem.xml" path="/Component/UIBag/"/>
     <component id="gsi2obbq" name="RenderBagSkinItem1.xml" path="/Component/UIBag/"/>

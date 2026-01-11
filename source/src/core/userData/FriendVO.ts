@@ -6,13 +6,11 @@ export class FriendVO extends BaseVO implements VO.IFriendVO {
 	private _friendMaxCount: number = 0;
 	private _friendCount: number = 0;
 	private _applies: ProtoObject<IResFriendApplyList_FriendApply>[] = [];
-	private _recentPlayers: ProtoObject<IPlayerBaseView>[] = [];
 
 	get friends() { return this._friends; }
 	get friendCount() { return this._friendCount; }
 	get friendMaxCount() { return this._friendMaxCount; }
 	get applies() { return this._applies; }
-	get recentPlayers() { return this._recentPlayers; }
 
 	getPlayingState() {
 
@@ -33,16 +31,6 @@ export class FriendVO extends BaseVO implements VO.IFriendVO {
 		this._applies = res.applies.map($decodeProtoData);
 		this.sortApply();
 		this.dispatch(EUserEvent.OnFriendApplyChanged);
-	}
-
-	@InterestMessage(EMessageID.fetchRecentFriend)
-	private onFetchRecentFriend(res: IResFetchrecentFriend) {
-		$netMgr.requests.fetchMultiAccountBrief({ account_id_list: res.account_list })
-			.then(res2 => {
-				if (res2.error) return;
-				this._recentPlayers = res2.players.map($decodeProtoData);
-				this.dispatch(EUserEvent.OnFriendRecentChanged);
-			});
 	}
 
 	@InterestMessage(ENotify.NotifyFriendViewChange)

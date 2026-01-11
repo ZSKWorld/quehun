@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="694,171" designImage="ui://ca43vz0ejcnm7plojw" designImageOffsetX="-397" designImageOffsetY="-317">
+  <displayList>
+    <image id="n37_jcnm" name="n37" src="jcnmobfc" fileName="Texture/img_3749.png" xy="0,0" size="694,171" group="n42_jcnm"/>
+    <component id="n38_jcnm" name="head" src="hdeoobbn" fileName="Component/Component/头像/ComHead2.xml" pkg="vx9zwser" xy="29,24" pivot="0.5,0.5" size="125,125" group="n42_jcnm" scale="1.35,1.35">
+      <property target="frame" propertyId="1" value="ui://ca43vz0ehk7r7ploie"/>
+    </component>
+    <component id="n39_jcnm" name="title" src="hdeoobbo" fileName="Component/Component/称号/ComTitle.xml" pkg="vx9zwser" xy="165,27" pivot="0.5,0.5" size="292,56" group="n42_jcnm" aspect="true">
+      <property target="icon" propertyId="1" value="ui://ca43vz0ehk7r7plogk"/>
+    </component>
+    <component id="n40_jcnm" name="name" src="puubobfa" fileName="Component/Component/名字/ComName2.xml" pkg="vx9zwser" xy="233,101" pivot="0.5,0.5" size="168,36" group="n42_jcnm">
+      <property target="name" propertyId="0" value="wang309"/>
+    </component>
+    <component id="n41_jcnm" name="add" src="108ab6i" fileName="Component/Button/BtnNormal.xml" pkg="vx9zwser" xy="509,53" size="156,70" group="n42_jcnm">
+      <Button title="添加" titleColor="#e6ba78" titleFontSize="40" icon="ui://vx9zwserieavob7x"/>
+    </component>
+    <group id="n42_jcnm" name="n42" xy="0,0" size="694,171"/>
+  </displayList>
+</component>

@@ -16,6 +16,7 @@ import { RenderBagSkinItem1View } from "../core/ui/view/PkgMain/view/renders/Ren
 import { RenderBagSkinItem2View } from "../core/ui/view/PkgMain/view/renders/RenderBagSkinItem2View";
 import { RenderFriendApplyView } from "../core/ui/view/PkgMain/view/renders/RenderFriendApplyView";
 import { RenderFriendFriendView } from "../core/ui/view/PkgMain/view/renders/RenderFriendFriendView";
+import { RenderFriendRecentView } from "../core/ui/view/PkgMain/view/renders/RenderFriendRecentView";
 import { RenderMailItemView } from "../core/ui/view/PkgMain/view/renders/RenderMailItemView";
 import { RenderRankItemView } from "../core/ui/view/PkgMain/view/renders/RenderRankItemView";
 import { ComBackView } from "../core/ui/view/PkgCommon/view/coms/ComBackView";
@@ -119,6 +120,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.RenderBagSkinItem2View, EViewType.Render, RenderBagSkinItem2View);
 		register(EViewID.RenderFriendApplyView, EViewType.Render, RenderFriendApplyView);
 		register(EViewID.RenderFriendFriendView, EViewType.Render, RenderFriendFriendView);
+		register(EViewID.RenderFriendRecentView, EViewType.Render, RenderFriendRecentView);
 		register(EViewID.RenderMailItemView, EViewType.Render, RenderMailItemView);
 		register(EViewID.RenderRankItemView, EViewType.Render, RenderRankItemView);
 

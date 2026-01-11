@@ -2,7 +2,8 @@ type RadioItem = fgui.GObject & { selected: boolean };
 export class RadioGroup {
 	private _selectIndex = -1;
 	private _items: RadioItem[] = [];
-	private _onValueChanged: Laya.Handler;
+	private _valueChangedCaller: any;
+	private _onValueChanged: (index: number) => void;
 
 	get selectIndex() {
 		return this._selectIndex;
@@ -12,10 +13,10 @@ export class RadioGroup {
 		this._items.forEach((item, index) => {
 			item.selected = index == value;
 		});
-		this._onValueChanged && this._onValueChanged.runWith(value);
+		this._onValueChanged && this._onValueChanged.apply(this._valueChangedCaller, [value]);
 	}
 
-	init(items: RadioItem[], onValueChanged?: Laya.Handler) {
+	init(items: RadioItem[], caller?: any, onValueChanged?: (index: number) => void) {
 		if (!items || items.length == 0) return;
 		items.forEach(item => {
 			const index = this._items.indexOf(item);
@@ -24,6 +25,7 @@ export class RadioGroup {
 			item.onClick(this, this.onItemClick, [item]);
 		});
 		this.selectIndex = 0;
+		this._valueChangedCaller = caller;
 		this._onValueChanged = onValueChanged;
 	}
 
@@ -32,7 +34,7 @@ export class RadioGroup {
 			item.offClick(this, this.onItemClick);
 		});
 		this._items.length = 0;
-		this._onValueChanged?.recover();
+		this._valueChangedCaller = null;
 		this._onValueChanged = null;
 		this._selectIndex = -1;
 	}

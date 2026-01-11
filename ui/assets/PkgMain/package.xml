@@ -146,6 +146,8 @@
     <image id="puubobf9" name="img_3885.png" path="/Texture/" scale="9grid" scale9grid="0,3,1024,122"/>
     <component id="puubobfa" name="RenderFriendFriend.xml" path="/Component/UIFriend/"/>
     <component id="puubobfb" name="RenderFriendApply.xml" path="/Component/UIFriend/"/>
+    <image id="jcnmobfc" name="img_3749.png" path="/Texture/"/>
+    <component id="jcnmobfd" name="RenderFriendRecent.xml" path="/Component/UIFriend/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

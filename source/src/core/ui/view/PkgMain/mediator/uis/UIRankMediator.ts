@@ -27,10 +27,10 @@ export class UIRankMediator extends MediatorBase<UIRankView, any> {
 		listRank.on(fgui.Events.SCROLL, this, this.onListRankScroll);
 		$uiUtil.setList(listRank, true, this, this.onListLevelRender, this.onListRankItemClick);
 
-		this._tabGroup.init(tabBtns, new Laya.Handler(this, () => {
+		this._tabGroup.init(tabBtns, this, () => {
 			this.refreshCurrentView();
 			this.view.listRank.scrollPane.percY = 0;
-		}));
+		});
 	}
 
 	override onEnable() {

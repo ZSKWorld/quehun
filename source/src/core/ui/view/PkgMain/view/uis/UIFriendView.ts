@@ -16,20 +16,51 @@ export class UIFriendView extends ExtensionClass<IView, UIFriend>(UIFriend) impl
 
 	override onCreate() {
 		const {
-			com_back, btn_friendList, btn_friendApply, btn_searchFriend, btn_recentMatch,
+			com_back, txt_myID, btn_friendList, btn_friendApply, btn_searchFriend, btn_recentMatch,
 			list_friend, btn_find
 		} = this;
 		btn_friendList.mode = btn_friendApply.mode = btn_searchFriend.mode = btn_recentMatch.mode = fgui.ButtonMode.Radio;
 		com_back.onBackClick(this, this.sendEvent, [EUIFriendMsg.OnComBackClick]);
 		btn_find.onClick(this, this.sendEvent, [EUIFriendMsg.OnBtnFindClick]);
 		$uiUtil.setList(list_friend, true, this, this.onListFriendRender);
+
+		txt_myID.text = $lang(2459) + $gameUtil.encodeAccountId($userData.account.account_id);
 	}
 
-	refreshView() {
-		const { account, friend } = $userData;
-		const { txt_myID, txt_limit } = this;
-		txt_myID.text = $lang(2459) + $gameUtil.encodeAccountId(account.account_id);
-		txt_limit.text = $lang(2455) + friend.friends.length + "/" + friend.friendMaxCount;
+	refreshFriends() {
+		const { friends, friendMaxCount } = $userData.friend;
+		const { ctrl_type, txt_limit, list_friend, txt_empty } = this;
+		txt_limit.text = $lang(2455) + friends.length + "/" + friendMaxCount;
+		list_friend.numItems = friends.length;
+		txt_empty.visible = friends.length <= 0;
+		txt_empty.visible && txt_empty.langText(2454);
+		ctrl_type.selectedIndex = 0;
+	}
+
+	refreshApply(loadedCount: number) {
+		const { ctrl_type, list_apply, txt_empty } = this;
+		list_apply.numItems = loadedCount;
+		txt_empty.visible = loadedCount <= 0;
+		txt_empty.visible && txt_empty.langText(2458);
+		ctrl_type.selectedIndex = 1;
+	}
+
+	refreshSearch(isSearch: boolean, searchPlayer?: IPlayerBaseView) {
+		const { ctrl_type, com_searchPlayer, txt_empty } = this;
+		com_searchPlayer.visible = !!(isSearch && searchPlayer);
+		com_searchPlayer.visible && com_searchPlayer.refresh(searchPlayer);
+		txt_empty.visible = isSearch && !searchPlayer;
+		txt_empty.visible && txt_empty.langText(3679);
+		ctrl_type.selectedIndex = 2;
+	}
+
+	refreshRecent(players?: IPlayerBaseView[]) {
+		const { ctrl_type, list_recent, txt_empty } = this;
+		const count = players ? players.length : 0;
+		list_recent.numItems = count;
+		txt_empty.visible = count <= 0;
+		txt_empty.visible && txt_empty.langText(3747);
+		ctrl_type.selectedIndex = 3;
 	}
 
 	refreshPage(index: number, listCount?: number) {
@@ -46,7 +77,11 @@ export class UIFriendView extends ExtensionClass<IView, UIFriend>(UIFriend) impl
 				txt_empty.visible = listCount <= 0;
 				txt_empty.visible && (txt_empty.langText(2458));
 				break;
-			case 2: break;
+			case 2:
+				this.list_search.numItems = listCount;
+				txt_empty.visible = listCount <= 0;
+				txt_empty.visible && (txt_empty.langText(3679));
+				break;
 			case 3: break;
 		}
 		ctrl_type.selectedIndex = index;

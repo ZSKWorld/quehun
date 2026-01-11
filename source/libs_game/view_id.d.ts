@@ -17,6 +17,7 @@ declare enum EViewID {
 	RenderBagSkinItem2View = "RenderBagSkinItem2View",
 	RenderFriendApplyView = "RenderFriendApplyView",
 	RenderFriendFriendView = "RenderFriendFriendView",
+	RenderFriendRecentView = "RenderFriendRecentView",
 	RenderMailItemView = "RenderMailItemView",
 	RenderRankItemView = "RenderRankItemView",
 

@@ -1,5 +1,11 @@
 {
   "objectStatus": {
+    "n25_puub": {
+      "collapsed": true
+    },
+    "n34_puub": {
+      "collapsed": true
+    },
     "n36_xnfa": {
       "collapsed": true
     }
@@ -7,7 +13,9 @@
   "adaptiveTest": true,
   "designImages": [
     "ui://ca43vz0epuub7ploju",
-    "ui://ca43vz0epuub7plojv"
+    "ui://ca43vz0epuub7plojv",
+    "ui://ca43vz0ejcnm7plojw",
+    "ui://ca43vz0ejcnm7plojx"
   ],
   "fitScreen": "FitSize"
 }

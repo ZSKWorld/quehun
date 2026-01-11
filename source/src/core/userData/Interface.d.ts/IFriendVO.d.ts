@@ -6,7 +6,5 @@ declare namespace VO {
 		get friendMaxCount(): number;
 		/** 申请列表 */
 		get applies(): ProtoObject<IResFriendApplyList_FriendApply>[];
-		/** 最近对战玩家列表 */
-		get recentPlayers(): ProtoObject<IPlayerBaseView>[];
 	}
 }

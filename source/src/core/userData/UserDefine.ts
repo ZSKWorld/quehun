@@ -9,7 +9,6 @@ export const enum EUserEvent {
 	OnFriendsChanged = "EUserEvent_OnFriendsChanged",
 	OnFriendMaxCountChanged = "EUserEvent_OnFriendMaxCountChanged",
 	OnFriendApplyChanged = "EUserEvent_OnFriendApplyChanged",
-	OnFriendRecentChanged = "EUserEvent_OnFriendRecentChanged",
 	//#endregion
 
 	//#region 背包相关

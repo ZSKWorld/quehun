@@ -20,12 +20,11 @@ export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> 
 		this.addEvent(EUIFriendMsg.OnBtnFindClick, this.onBtnFindClick);
 		this.view.listApply.on(fgui.Events.SCROLL, this, this.onListApplyScroll);
 		$uiUtil.setList(this.view.listApply, true, this, this.onListApplyRender);
-		this._tabGroup.init(this.view.tabBtns, new Laya.Handler(this, this.onTabChanged));
+		this._tabGroup.init(this.view.tabBtns, this, this.onTabChanged);
 	}
 
 	override onEnable() {
 		this._tabGroup.selectIndex = 0;
-		this.view.refreshView();
 		this._applyPlayerLoader.intro = [...$userData.friend.applies];
 	}
 
@@ -35,17 +34,16 @@ export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> 
 
 	private onTabChanged(index: number) {
 		index == null && (index = this._tabGroup.selectIndex);
-		let listCount = 0;
 		switch (index) {
-			case 0: listCount = $userData.friend.friends.length; break;
+			case 0: this.view.refreshFriends(); break;
 			case 1:
 				this._applyPlayerLoader.loadNext();
-				listCount = this._applyPlayerLoader.briefs.length;
+				const brifesLen = this._applyPlayerLoader.briefs.length;
+				this.view.refreshApply(brifesLen);
 				break;
-			case 2: break;
-			case 3: break;
+			case 2: this.view.refreshSearch(false); break;
+			case 3: this.view.refreshRecent(); break;
 		}
-		this.view.refreshPage(index, listCount);
 	}
 
 	private onComBackClick() {
@@ -54,8 +52,8 @@ export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> 
 
 	private onBtnFindClick() {
 		const accoundId = this.view.findAccountId;
-		if (!accoundId || accoundId == $userData.account.account_id) return;
-		$netMgr.requests.searchAccountByEid({ eid: accoundId });
+		// if (!accoundId || accoundId == $userData.account.account_id) return;
+		$netMgr.requests.searchAccountByEid({ eid: accoundId }).then(res => Logger.error("search", accoundId, res));
 	}
 
 	private onListApplyRender(index: number, item: RenderFriendApplyView) {

@@ -153,6 +153,11 @@ export class GameManager extends ObserverAll implements IGameManager {
 	private onNotifyAnotherLogin() {
 		$netMgr.closeAll();
 		$localDataMgr.set(ELocalDataKey.AutoLogin, 0);
+		const loginInfo = $localDataMgr.get<ILoginInfo>(ELocalDataKey.LastLoginData);
+		if (loginInfo) {
+			loginInfo.access_token = "";
+			$localDataMgr.set(ELocalDataKey.LastLoginData, loginInfo);
+		}
 		$confirmSma(2, "", $lang(2324)).then(v => {
 		    // window.location.reload();
 		});

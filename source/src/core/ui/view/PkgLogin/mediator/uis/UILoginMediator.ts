@@ -8,14 +8,6 @@ export interface IUILoginData {
 
 }
 
-interface ILoginInfo {
-	loginType: ELoginType;
-	accountType: 0 | 1;
-	account?: string;
-	password?: string;
-	access_token?: string;
-}
-
 export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 	private _loginInfo: ILoginInfo;
 	private _accountInput = { account: "", password: "" };

@@ -10,6 +10,7 @@ export default class RenderFriendRecent extends fgui.GComponent {
 	protected com_title: ComTitleView;
 	protected com_name: ComName2View;
 	protected btn_add: fgui.GButton;
+	protected txt_added: fgui.GTextField;
 	public static url: string = "ui://vith2b66jcnmobfd";
 
 	public static createInstance(): RenderFriendRecent {
@@ -21,5 +22,6 @@ export default class RenderFriendRecent extends fgui.GComponent {
 		this.com_title = <ComTitleView>(this.getChildAt(2));
 		this.com_name = <ComName2View>(this.getChildAt(3));
 		this.btn_add = <fgui.GButton>(this.getChildAt(4));
+		this.txt_added = <fgui.GTextField>(this.getChildAt(5));
 	}
 }

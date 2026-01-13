@@ -184,7 +184,7 @@ export class GameManager extends ObserverAll implements IGameManager {
 			loginInfo.access_token = "";
 			$localDataMgr.set(ELocalDataKey.LastLoginData, loginInfo);
 		}
-		$confirmSma(2, "", $lang(2324)).then(v => {
+		$confirmSma(2, $lang(2324)).then(v => {
 			// window.location.reload();
 		});
 	}
@@ -192,7 +192,7 @@ export class GameManager extends ObserverAll implements IGameManager {
 	@InterestMessage(ENotify.NotifyAccountLogout)
 	private onNotifyAccountLogout() {
 		$netMgr.closeAll();
-		$confirmSma(2, "", $lang(2329)).then(v => {
+		$confirmSma(2, $lang(2329)).then(v => {
 			window.location.reload();
 		});
 	}

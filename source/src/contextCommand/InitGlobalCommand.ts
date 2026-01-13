@@ -94,7 +94,7 @@ export class InitGlobalCommand extends Command {
 			if (!error) return;
 			const code = error.code;
 			const errStr = $netLang(code) || $lang(2068);
-			$confirmSma(2, "", errStr);
+			$confirmSma(2, errStr);
 		})
 
 		$windowImmit("$richText", function (text: string = "") {
@@ -118,11 +118,11 @@ export class InitGlobalCommand extends Command {
 	}
 
 	private registerConfirm(name: string, viewId: EViewID) {
-		$windowImmit(name, function (format: number, title: string, content: string) {
+		$windowImmit(name, function (format: number, content: string, title = "") {
 			if (!fgui.UIPackage.getByName(ResPath.EPkgName.PkgCommon))
 				return $gameMgr.showConfirm(content);
-			$windowImmit(name, (format: number, title: string, content: string) => new Promise<boolean>(resolve => {
-				$uiMgr.openView(viewId, {
+			$windowImmit(name, (format: 0 | 1 | 2 | 3, content: string, title = "") => new Promise<boolean>(resolve => {
+				$uiMgr.openView<IUIConfirmData>(viewId, {
 					format,
 					title,
 					content,
@@ -130,7 +130,7 @@ export class InitGlobalCommand extends Command {
 					onCancel: Laya.Handler.create(null, resolve, [false]),
 				});
 			}));
-			return window[name](format, title, content);
+			return window[name](format, content, title);
 		});
 	}
 }

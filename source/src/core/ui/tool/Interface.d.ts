@@ -31,10 +31,9 @@ declare interface IRichText {
 declare interface ITipManager {
 	/**
 	 * 显示文本提示
-	 * @param text 显示文本
-	 * @param color 文本颜色，默认："#ffffff"
+	 * @param text 显示的文本，支持富文本
 	 */
-	showTip(text: string, color?: string): void;
+	showTip(text: string): void;
 }
 
 declare interface IUIUtil {

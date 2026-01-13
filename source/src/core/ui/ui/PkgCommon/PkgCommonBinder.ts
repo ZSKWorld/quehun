@@ -18,6 +18,7 @@ import BtnCheckRichTxtRight from "./BtnCheckRichTxtRight";
 import ComBack from "./ComBack";
 import ComName2 from "./ComName2";
 import ComLevel from "./ComLevel";
+import ComTipInfo from "./ComTipInfo";
 import ComItem1 from "./ComItem1";
 import ComHead from "./ComHead";
 import ComItem from "./ComItem";
@@ -39,6 +40,7 @@ import { BtnCheckRichTxtRightView } from "../../view/PkgCommon/view/btns/BtnChec
 import { ComBackView } from "../../view/PkgCommon/view/coms/ComBackView";
 import { ComName2View } from "../../view/PkgCommon/view/coms/ComName2View";
 import { ComLevelView } from "../../view/PkgCommon/view/coms/ComLevelView";
+import { ComTipInfoView } from "../../view/PkgCommon/view/coms/ComTipInfoView";
 import { ComItem1View } from "../../view/PkgCommon/view/coms/ComItem1View";
 import { ComHeadView } from "../../view/PkgCommon/view/coms/ComHeadView";
 import { ComItemView } from "../../view/PkgCommon/view/coms/ComItemView";
@@ -64,6 +66,7 @@ export default class PkgCommonBinder {
 		fgui.UIObjectFactory.setExtension(ComBack.url, ComBackView);
 		fgui.UIObjectFactory.setExtension(ComName2.url, ComName2View);
 		fgui.UIObjectFactory.setExtension(ComLevel.url, ComLevelView);
+		fgui.UIObjectFactory.setExtension(ComTipInfo.url, ComTipInfoView);
 		fgui.UIObjectFactory.setExtension(ComItem1.url, ComItem1View);
 		fgui.UIObjectFactory.setExtension(ComHead.url, ComHeadView);
 		fgui.UIObjectFactory.setExtension(ComItem.url, ComItemView);

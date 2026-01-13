@@ -105,14 +105,14 @@ export class NetManager extends Laya.EventDispatcher implements INetManager {
 		Logger.error(method, err);
 		const { code, u32_params, str_params, json_param } = err;
 		if (code == -1) {
-			$confirmSma(2, "", $lang(2061));
+			$confirmSma(2, $lang(2061));
 		} else if (code == 156) {
 			//排队
 		} else if (code == 503) {
 			//账号待删除
 		} else {
 			const errStr = $netLang(code) || $lang(2068);
-			$confirmSma(2, "", errStr);
+			$confirmSma(2, errStr);
 		}
 	}
 }

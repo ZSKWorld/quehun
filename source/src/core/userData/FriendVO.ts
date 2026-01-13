@@ -33,6 +33,15 @@ export class FriendVO extends BaseVO implements VO.IFriendVO {
 		this.dispatch(EUserEvent.OnFriendApplyChanged);
 	}
 
+	@InterestMessage(EMessageID.handleFriendApply)
+	private onHandleFriendApply(_, req: IReqHandleFriendApply) {
+		const index = this._applies.findIndex(v => v.account_id == req.target_id);
+		if (index < 0) return;
+		this._applies.splice(index, 1);
+		this.sortApply();
+		this.dispatch(EUserEvent.OnFriendApplyChanged);
+	}
+
 	@InterestMessage(ENotify.NotifyFriendViewChange)
 	private onNotifyFriendViewChange(data: INotifyFriendViewChange) {
 		const friend = this._friends.find(v => v.base.account_id == data.target_id);

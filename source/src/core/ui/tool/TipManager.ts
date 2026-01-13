@@ -5,14 +5,9 @@ export class TipManager implements ITipManager {
 	private _cache: string[] = [];
 	private _inCD: boolean = false;
 
-	/**
-	 * 显示文本提示
-	 * @param text 显示文本
-	 * @param color 文本颜色，默认："#ffffff"
-	 */
-	showTip(text: string, color?: string) {
+	showTip(text: string) {
 		if (this._cache.includes(text)) return;
-		this._cache.push(text, color);
+		this._cache.push(text);
 		if (!this._inCD) this.showNext();
 	}
 
@@ -21,7 +16,7 @@ export class TipManager implements ITipManager {
 		if (!this._cache.length) return;
 		this._inCD = true;
 		const mediator = Laya.Pool.getItemByCreateFun(EUIPoolKey.TipInfo, () => $facade.createMediator(EViewID.ComTipInfoView));
-		mediator.data = { text: this._cache.shift(), color: this._cache.shift() };
+		mediator.data = this._cache.shift();
 		$uiMgr.addToLayer(mediator.view, ELayer.UITop);
 		Laya.timer.once(100, this, this.showNext);
 	}

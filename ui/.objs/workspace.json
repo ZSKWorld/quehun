@@ -2,11 +2,9 @@
   "libview.firstColumnWidth": 443,
   "libview.iconScale": 0,
   "doc.openedDocs": [
+    "ui://vx9zwserq4bcobfi",
     "ui://vith2b66qke2ob9m",
-    "ui://vith2b66jcnmobfd",
-    "ui://vx9zwser108ab6i",
-    "ui://vx9zwserpuubobfa",
-    "ui://vith2b66puubobfb"
+    "ui://vith2b66jcnmobfd"
   ],
   "packageGroup.mine": [
     "vx9zwser",
@@ -18,7 +16,7 @@
   "test.device": "iPhone 8 Plus",
   "canvasColor": 10066329,
   "auxline2": true,
-  "doc.activeDoc": "ui://vith2b66qke2ob9m",
+  "doc.activeDoc": "ui://vith2b66jcnmobfd",
   "libview.twoColumn": false,
   "libview.expandedNodes": [
     "vx9zwser",
@@ -26,11 +24,7 @@
     "vx9zwser",
     "/Component/",
     "vx9zwser",
-    "/Component/Button/",
-    "vx9zwser",
     "/Component/Component/",
-    "vx9zwser",
-    "/Component/Component/红点/",
     "vx9zwser",
     "/Component/Component/名字/",
     "vx9zwser",

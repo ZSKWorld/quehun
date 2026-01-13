@@ -125,7 +125,7 @@
     <image id="gsi2obc9" name="img_329.png" path="/Texture/" exported="true"/>
     <image id="gsi2obca" name="img_304.png" path="/Texture/" exported="true"/>
     <image id="gsi2obcb" name="img_303.png" path="/Texture/" exported="true"/>
-    <image id="gsi2obcc" name="img_2938.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obcc" name="img_2938.png" path="/Texture/" exported="true" scale="9grid" scale9grid="127,0,1,86"/>
     <image id="gsi2obcd" name="img_2924.png" path="/Texture/" exported="true"/>
     <image id="gsi2obce" name="img_3793.png" path="/Texture/" exported="true"/>
     <image id="gsi2obcf" name="img_2923.png" path="/Texture/" exported="true"/>
@@ -236,6 +236,7 @@
     <image id="puubobff" name="img_811.png" path="/Texture/" exported="true" scale="9grid" scale9grid="11,8,22,16"/>
     <component id="ea8nobfg" name="ComRedDot1.xml" path="/Component/Component/红点/" exported="true"/>
     <image id="ea8nobfh" name="img_1393.png" path="/Texture/" exported="true"/>
+    <component id="q4bcobfi" name="ComTipInfo.xml" path="/Component/Component/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

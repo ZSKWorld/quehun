@@ -3,6 +3,8 @@ import RenderFriendFriend from "../../../../ui/PkgMain/RenderFriendFriend";
 
 export class RenderFriendFriendView extends ExtensionClass<IView, RenderFriendFriend>(RenderFriendFriend) implements IView {
 
+	private _friendData: ProtoObject<IFriend>;
+
 	override onCreate() {
 		const { btn_look, btn_ob, btn_delete } = this;
 		btn_look.onClick(this, this.onBtnLookClick);
@@ -11,6 +13,7 @@ export class RenderFriendFriendView extends ExtensionClass<IView, RenderFriendFr
 	}
 
 	refresh(data: ProtoObject<IFriend>) {
+		this._friendData = data;
 		const {
 			txt_offlineTime, com_head, com_title, com_name, com_level4, com_level3, btn_ob
 		} = this;
@@ -31,15 +34,25 @@ export class RenderFriendFriendView extends ExtensionClass<IView, RenderFriendFr
 		com_level3.refresh(base.level3);
 	}
 
-	private onBtnLookClick() {
+	override onDisable() {
+		this._friendData = null;
+	}
 
+	private onBtnLookClick() {
+		const data = this._friendData;
+		if (!data) return;
 	}
 
 	private onBtnObClick() {
-
+		const data = this._friendData;
+		if (!data) return;
 	}
 
 	private onBtnDeleteClick() {
-
+		const data = this._friendData;
+		if (!data) return;
+		$confirmSma(3, $lang(2073, data.base.nickname)).then(v => {
+			v && $netMgr.requests.removeFriend({ target_id: data.base.account_id });
+		});
 	}
 }

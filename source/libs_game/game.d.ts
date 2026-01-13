@@ -46,12 +46,34 @@ declare function $windowImmit(name: string, obj: any): void;
 /** 把proto数据转成普通object对象 */
 declare function $decodeProtoData<T extends IProto>(data: T): ProtoObject<T>;
 
-/** 大号弹窗 */
-declare function $confirmBig(format: 0 | 1 | 2 | 3, title: string, content: string): Promise<boolean>;
-/** 中号弹窗 */
-declare function $confirmMid(format: 0 | 1, title: string, content: string): Promise<boolean>;
-/** 小号弹窗 */
-declare function $confirmSma(format: 0 | 1 | 2 | 3, title: string, content: string): Promise<boolean>;
+/**
+ * 大号弹窗
+ * @param format 0-标题、内容、确认按钮
+ * @param format 1-标题、内容
+ * @param format 2-内容、确认按钮
+ * @param format 3-内容、确认按钮、取消按钮
+ * @param content 内容
+ * @param title 标题
+ */
+declare function $confirmBig(format: 0 | 1 | 2 | 3, content: string, title?: string): Promise<boolean>;
+/**
+ * 中号弹窗
+ * @param format 0-标题、内容、确认按钮
+ * @param format 1-内容、确认按钮
+ * @param content 内容
+ * @param title 标题
+ */
+declare function $confirmMid(format: 0 | 1, content: string, title?: string): Promise<boolean>;
+/**
+ * 小号弹窗
+ * @param format 0-标题、内容、确认按钮、取消按钮
+ * @param format 1-内容
+ * @param format 2-内容、确认按钮
+ * @param format 3-内容、确认按钮、取消按钮
+ * @param content 内容
+ * @param title 标题
+ */
+declare function $confirmSma(format: 0 | 1 | 2 | 3, content: string, title?: string): Promise<boolean>;
 
 /** 富文本 */
 declare function $richText(text: string = ""): IRichText;

@@ -40,7 +40,7 @@ export class SceneManager extends Observer implements ISceneManager {
 			newScene.enter(data);
 
 		} catch (e) {
-			const retry = await $confirmSma(0, "提示", `${ type } 场景加载失败，是否重试?`);
+			const retry = await $confirmSma(0, `${ type } 场景加载失败，是否重试?`, "提示");
 			if (retry) {
 				this._isTransitioning = false;
 				return this.enterScene(type, data);

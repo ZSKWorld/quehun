@@ -1,11 +1,17 @@
 
 /** 玩家信息增量加载器，eg:排行榜玩家信息 */
 export class PlayerInfoIncrementLoader<T extends { account_id: number }> {
-	intro: T[];
+	private _intro: T[];
+
+	get intro() { return this._intro; }
+	set intro(v) {
+		this.reset();
+		this._intro = v;
+	}
 	private _briefs: IPlayerBaseView[] = [];
 	get briefs(): ReadonlyArray<IPlayerBaseView> { return this._briefs; }
 
-	private _curLoadId = 0;
+	private _loadId = 0;
 	private _isLoading = false;
 	private _loadedAll = false;
 	private _loadSize = 20;
@@ -17,10 +23,10 @@ export class PlayerInfoIncrementLoader<T extends { account_id: number }> {
 	}
 
 	loadNext() {
-		if (this._isLoading || this._loadedAll || !this.intro || this.intro.length === 0)
+		if (this._isLoading || this._loadedAll || !this._intro || this._intro.length === 0)
 			return;
 
-		const totalCount = this.intro.length;
+		const totalCount = this._intro.length;
 		const currentCount = this._briefs.length;
 
 		if (currentCount >= totalCount) {
@@ -28,23 +34,25 @@ export class PlayerInfoIncrementLoader<T extends { account_id: number }> {
 			return;
 		}
 
-		const nextBatchIds = this.intro
+		const nextBatchIds = this._intro
 			.slice(currentCount, currentCount + this._loadSize)
 			.map(item => item.account_id);
 
 		if (nextBatchIds.length > 0) {
 			this._isLoading = true;
-			this._curLoadId++;
-			const loadId = ++this._curLoadId;
+			this._loadId++;
+			const loadId = ++this._loadId;
 			$netMgr.requests.fetchMultiAccountBrief({ account_id_list: nextBatchIds } as any).then((res) => {
-				if (loadId != this._curLoadId) return;
+				if (loadId != this._loadId) return;
 
 				this._isLoading = false;
-				this._briefs.push(...(res.players || []));
+				if (!res.error) {
+					this._briefs.push(...(res.players || []));
 
-				// 如果返回数量少于请求数量，说明后端也没数据了
-				if (!res.players || res.players.length < this._loadSize)
-					this._loadedAll = true;
+					// 如果返回数量少于请求数量，说明后端也没数据了
+					if (!res.players || res.players.length < this._loadSize)
+						this._loadedAll = true;
+				}
 
 				this._onLoaded?.run();
 			});
@@ -52,10 +60,10 @@ export class PlayerInfoIncrementLoader<T extends { account_id: number }> {
 	}
 
 	reset() {
-		this.intro = null;
+		this._intro = null;
 		this._briefs.length = 0;
 		this._isLoading = false;
-		this._curLoadId++;
+		this._loadId++;
 		this._loadedAll = false;
 	}
 }

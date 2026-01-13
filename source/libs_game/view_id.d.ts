@@ -34,6 +34,7 @@ declare enum EViewID {
 	ComName1View = "ComName1View",
 	ComName2View = "ComName2View",
 	ComRedDot1View = "ComRedDot1View",
+	ComTipInfoView = "ComTipInfoView",
 	ComTitleView = "ComTitleView",
 	ComBagDecoView = "ComBagDecoView",
 	ComBagGiftView = "ComBagGiftView",

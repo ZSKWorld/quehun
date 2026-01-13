@@ -16,4 +16,6 @@ export class UIConfirmMiddleView extends ExtensionClass<IView, UIConfirmMiddle>(
 		btn_cancel.onClick(this, this.sendEvent, [EUIConfirmMiddleMsg.OnBtnCancelClick]);
 	}
 
+	override onOpenAni() { return $uiUtil.popAlphaIn(this); }
+	override onCloseAni() { return $uiUtil.popAlphaOut(this); }
 }

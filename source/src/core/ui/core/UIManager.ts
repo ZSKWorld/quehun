@@ -111,7 +111,7 @@ export class UIManager extends Observer implements IUIManager {
 		mediator.view.removeFromParent();
 		this.addToLayer(mediator.view, mediator.view.viewLayer || ELayer.UIBottom);
 		this._curMediator = mediator;
-		await mediator.onOpenAni();
+		await mediator.view.onOpenAni?.();
 		this.lockMark--;
 	}
 
@@ -123,7 +123,7 @@ export class UIManager extends Observer implements IUIManager {
 		const stackIndex = this._openedStack.indexOf(viewId);
 		if (stackIndex >= 0) this._openedStack.splice(stackIndex, 1);
 		this.lockMark++;
-		await mediator.onCloseAni();
+		await mediator.view.onCloseAni?.();
 		this._cache.cache(mediator);
 		mediator.view.removeFromParent();
 		if (this.isStackView(mediator.view) && openStack) {
@@ -164,7 +164,7 @@ export class UIManager extends Observer implements IUIManager {
 		switch (openType) {
 			case EViewOpenType.Hide:
 				this._openedViews.shift();
-				await topMediator.onCloseAni();
+				await topMediator.view.onCloseAni?.();
 				this._cache.cache(topMediator);
 				topMediator.view.removeFromParent();
 				break;

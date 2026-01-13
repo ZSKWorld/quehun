@@ -11,11 +11,7 @@ export class UILiaoSheView extends ExtensionClass<IView, UILiaoShe>(UILiaoShe) i
 		com_back.onBackClick(this, this.sendEvent, [EUILiaoSheMsg.OnComBackClick]);
 	}
 
-	onOpenAni() {
-		return this.com_back.mediator.onOpenAni();
-	}
+	override onOpenAni() { return this.com_back.onOpenAni(); }
 
-	onCloseAni() {
-		return this.com_back.mediator.onCloseAni();
-	}
+	override onCloseAni() { return this.com_back.onCloseAni(); }
 }

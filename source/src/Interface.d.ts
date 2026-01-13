@@ -18,6 +18,7 @@ declare enum EClientType {
 }
 
 declare interface IGameManager {
+	get released(): boolean;
 	get inDmm(): boolean;
 	/** 设备id */
 	get deviceId(): string;

@@ -19,16 +19,16 @@ export class UIBagView extends ExtensionClass<IView, UIBag>(UIBag) implements IV
 		this.ctrl_type.selectedIndex = index;
 	}
 
-	onOpenAni() {
+	override onOpenAni() {
 		return Promise.all([
-			this.com_back.mediator.onOpenAni(),
+			this.com_back.onOpenAni(),
 			$uiUtil.playTrans(this.trans_t0),
 		]) as unknown as Promise<void>;
 	}
 
-	onCloseAni() {
+	override onCloseAni() {
 		return Promise.all([
-			this.com_back.mediator.onCloseAni(),
+			this.com_back.onCloseAni(),
 			$uiUtil.playTrans(this.trans_t1),
 		]) as unknown as Promise<void>;
 	}

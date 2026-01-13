@@ -16,4 +16,6 @@ export class UIConfirmBigView extends ExtensionClass<IView, UIConfirmBig>(UIConf
 		btn_cancel.onClick(this, this.sendEvent, [EUIConfirmBigMsg.OnBtnCancelClick]);
 	}
 
+	override onOpenAni() { return $uiUtil.popAlphaIn(this); }
+	override onCloseAni() { return $uiUtil.popAlphaOut(this); }
 }

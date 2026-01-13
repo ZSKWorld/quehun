@@ -11,11 +11,7 @@ export class UIPaipuView extends ExtensionClass<IView, UIPaipu>(UIPaipu) impleme
 		com_back.onBackClick(this, this.sendEvent, [EUIPaipuMsg.OnComBackClick]);
 	}
 
-	onOpenAni() {
-		return this.com_back.mediator.onOpenAni();
-	}
+	override onOpenAni() { return this.com_back.onOpenAni(); }
 
-	onCloseAni() {
-		return this.com_back.mediator.onCloseAni();
-	}
+	override onCloseAni() { return this.com_back.onCloseAni(); }
 }

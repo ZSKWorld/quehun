@@ -34,8 +34,6 @@ export abstract class MediatorBase<V extends IView = IView, D = any> extends Ext
 		return this._parent;
 	}
 
-	override onOpenAni() { return Promise.resolve(); }
-	override onCloseAni() { return Promise.resolve(); }
 	override addEvent(type: string, listener: Function, args?: any[], once?: boolean) {
 		const caller = this.view;
 		if (!caller) return;

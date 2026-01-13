@@ -67,8 +67,4 @@ export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> 
 			this._applyPlayerLoader.loadNext();
 		}
 	}
-
-	override onOpenAni() { return this.view.onOpenAni(); }
-
-	override onCloseAni() { return this.view.onCloseAni(); }
 }

@@ -106,6 +106,17 @@ declare interface IView extends fgui.GComponent, IViewExtend {
 	 */
 	onDestroy(): void;
 
+	/**
+	 ** 页面打开动画
+	 ** 该方法为虚方法，使用时重写即可
+	 */
+	onOpenAni(): Promise<void>;
+	/**
+	 ** 页面关闭动画
+	 ** 该方法为虚方法，使用时重写即可
+	 */
+	onCloseAni(): Promise<void>;
+
 	getPath(): string;
 }
 
@@ -116,18 +127,6 @@ declare interface IMediator<V extends IView = IView, D = any> extends Laya.Scrip
 	data: D;
 	/** 控制器挂载的ui页面 */
 	get view(): V;
-
-	/**
-	 ** 页面打开动画
-	 ** 该方法为虚方法，使用时重写即可
-	 */
-	onOpenAni(): Promise<void>;
-
-	/**
-	 ** 页面关闭动画
-	 ** 该方法为虚方法，使用时重写即可
-	 */
-	onCloseAni(): Promise<void>;
 }
 
 /** 命令流 */

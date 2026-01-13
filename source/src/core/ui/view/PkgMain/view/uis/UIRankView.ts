@@ -25,4 +25,7 @@ export class UIRankView extends ExtensionClass<IView, UIRank>(UIRank) implements
 		txt_title.text = $lang(type == EUIRankType.SiMa ? 2796 : 2795);
 		list_rank.numItems = count;
 	}
+
+	override onOpenAni() { return $uiUtil.popAlphaIn(this); }
+	override onCloseAni() { return $uiUtil.popAlphaOut(this); }
 }

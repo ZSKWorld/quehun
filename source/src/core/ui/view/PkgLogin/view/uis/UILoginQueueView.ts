@@ -21,4 +21,7 @@ export class UILoginQueueView extends ExtensionClass<IView, UILoginQueue>(UILogi
 			this.txt_time.text = remain > 3600 ? "60+" : Math.floor(remain / 60).toString();
 		}
 	}
+
+	override onOpenAni() { return $uiUtil.popAlphaIn(this); }
+	override onCloseAni() { return $uiUtil.popAlphaOut(this); }
 }

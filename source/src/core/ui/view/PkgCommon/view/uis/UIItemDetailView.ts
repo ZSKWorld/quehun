@@ -27,4 +27,6 @@ export class UIItemDetailView extends ExtensionClass<IView, UIItemDetail>(UIItem
 		txt_desc2.text = itemView.desc;
 	}
 
+	override onOpenAni() { return $uiUtil.popAlphaIn(this); }
+	override onCloseAni() { return $uiUtil.popAlphaOut(this); }
 }

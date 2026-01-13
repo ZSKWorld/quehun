@@ -16,7 +16,4 @@ export class UIItemDetailMediator extends MediatorBase<UIItemDetailView, IUIItem
 	private onBtnOpen1Click() {
 
 	}
-
-	override onOpenAni() { return $uiUtil.popAlphaIn(this.view); }
-	override onCloseAni() { return $uiUtil.popAlphaOut(this.view); }
 }

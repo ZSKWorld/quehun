@@ -15,13 +15,6 @@ export abstract class ConfirmBaseMediator<V extends IView, D extends IUIConfirmD
 		this.refreshView();
 	}
 
-	override onDisable() {
-
-	}
-
-	override onOpenAni() { return $uiUtil.popAlphaIn(this.view); }
-	override onCloseAni() { return $uiUtil.popAlphaOut(this.view); }
-
 	protected refreshView() {
 		const { data, view } = this;
 		const { ctrl_format, txt_title, txt_content, label_content } = view as unknown as IConfirmView;

@@ -11,11 +11,7 @@ export class UIShopView extends ExtensionClass<IView, UIShop>(UIShop) implements
 		com_back.onBackClick(this, this.sendEvent, [EUIShopMsg.OnComBackClick]);
 	}
 
-	onOpenAni() {
-		return this.com_back.mediator.onOpenAni();
-	}
+	override onOpenAni() { return this.com_back.onOpenAni(); }
 
-	onCloseAni() {
-		return this.com_back.mediator.onCloseAni();
-	}
+	override onCloseAni() { return this.com_back.onCloseAni(); }
 }

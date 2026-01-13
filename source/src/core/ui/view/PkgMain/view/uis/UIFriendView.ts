@@ -63,38 +63,14 @@ export class UIFriendView extends ExtensionClass<IView, UIFriend>(UIFriend) impl
 		ctrl_type.selectedIndex = 3;
 	}
 
-	refreshPage(index: number, listCount?: number) {
-		const { ctrl_type, txt_empty } = this;
-		txt_empty.visible = false;
-		switch (index) {
-			case 0:
-				this.list_friend.numItems = listCount;
-				txt_empty.visible = listCount <= 0;
-				txt_empty.visible && (txt_empty.langText(2454));
-				break;
-			case 1:
-				this.list_apply.numItems = listCount;
-				txt_empty.visible = listCount <= 0;
-				txt_empty.visible && (txt_empty.langText(2458));
-				break;
-			case 2:
-				this.list_search.numItems = listCount;
-				txt_empty.visible = listCount <= 0;
-				txt_empty.visible && (txt_empty.langText(3679));
-				break;
-			case 3: break;
-		}
-		ctrl_type.selectedIndex = index;
-	}
-
-	onOpenAni() {
+	override onOpenAni() {
 		$uiUtil.playTrans(this.trans_show, false);
-		return this.com_back.mediator.onOpenAni();
+		return this.com_back.onOpenAni();
 	}
 
-	onCloseAni() {
+	override onCloseAni() {
 		$uiUtil.playTrans(this.trans_show, true);
-		return this.com_back.mediator.onCloseAni();
+		return this.com_back.onCloseAni();
 	}
 
 	private onListFriendRender(index: number, item: RenderFriendFriendView) {

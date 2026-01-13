@@ -33,4 +33,6 @@ export class UIMailView extends ExtensionClass<IView, UIMail>(UIMail) implements
 		list_reward.numItems = data.attachments.length;
 	}
 
+	override onOpenAni() { return $uiUtil.popAlphaIn(this); }
+	override onCloseAni() { return $uiUtil.popAlphaOut(this); }
 }

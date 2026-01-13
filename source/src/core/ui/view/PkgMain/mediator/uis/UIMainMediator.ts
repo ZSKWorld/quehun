@@ -89,12 +89,4 @@ export class UIMainMediator extends MediatorBase<UIMainView, IUIMainData> {
 	private onBtnAnnouncementClick() {
 
 	}
-
-	override onOpenAni() {
-		return this.view.onOpenAni();
-	}
-
-	override onCloseAni() {
-		return this.view.onCloseAni();
-	}
 }

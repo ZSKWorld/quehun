@@ -73,7 +73,4 @@ export class UIRankMediator extends MediatorBase<UIRankView, any> {
 		const type = this.selectType;
 		this.view.refreshView(type, this._states[type].briefs.length);
 	}
-
-	override onOpenAni() { return $uiUtil.popAlphaIn(this.view); }
-	override onCloseAni() { return $uiUtil.popAlphaOut(this.view); }
 }

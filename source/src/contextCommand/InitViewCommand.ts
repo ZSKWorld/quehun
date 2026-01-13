@@ -20,7 +20,6 @@ import { RenderFriendRecentView } from "../core/ui/view/PkgMain/view/renders/Ren
 import { RenderMailItemView } from "../core/ui/view/PkgMain/view/renders/RenderMailItemView";
 import { RenderRankItemView } from "../core/ui/view/PkgMain/view/renders/RenderRankItemView";
 import { ComBackView } from "../core/ui/view/PkgCommon/view/coms/ComBackView";
-import { ComBackMediator } from "../core/ui/view/PkgCommon/mediator/coms/ComBackMediator";
 import { ComHeadView } from "../core/ui/view/PkgCommon/view/coms/ComHeadView";
 import { ComHead1View } from "../core/ui/view/PkgCommon/view/coms/ComHead1View";
 import { ComHead2View } from "../core/ui/view/PkgCommon/view/coms/ComHead2View";
@@ -125,7 +124,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.RenderRankItemView, EViewType.Render, RenderRankItemView);
 
 		//Coms
-		register(EViewID.ComBackView, EViewType.Component, ComBackView, ComBackMediator);
+		register(EViewID.ComBackView, EViewType.Component, ComBackView);
 		register(EViewID.ComHeadView, EViewType.Component, ComHeadView);
 		register(EViewID.ComHead1View, EViewType.Component, ComHead1View);
 		register(EViewID.ComHead2View, EViewType.Component, ComHead2View);

@@ -14,12 +14,4 @@ export class UIShopMediator extends MediatorBase<UIShopView, IUIShopData> {
 	private async onComBackClick() {
 		this.closeSelf();
 	}
-
-	override onOpenAni() {
-		return this.view.onOpenAni();
-	}
-
-	override onCloseAni() {
-		return this.view.onCloseAni();
-	}
 }

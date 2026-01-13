@@ -37,7 +37,4 @@ export class UILoginQueueMediator extends MediatorBase<UILoginQueueView, IUILogi
 	private onFetchQueueInfo(res: IResFetchQueueInfo) {
 		this.view.refresh(res);
 	}
-
-	override onOpenAni() { return $uiUtil.popAlphaIn(this.view); }
-	override onCloseAni() { return $uiUtil.popAlphaOut(this.view); }
 }

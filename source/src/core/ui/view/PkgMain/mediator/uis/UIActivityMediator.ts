@@ -15,7 +15,4 @@ export class UIActivityMediator extends MediatorBase<UIActivityView, IUIActivity
 		this.closeSelf();
 	}
 
-	override onOpenAni() { return $uiUtil.popAlphaIn(this.view); }
-	override onCloseAni() { return $uiUtil.popAlphaOut(this.view); }
-
 }

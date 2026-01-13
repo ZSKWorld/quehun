@@ -12,4 +12,6 @@ export class UIActivityView extends ExtensionClass<IView, UIActivity>(UIActivity
 		btn_back.onClick(this, this.sendEvent, [EUIActivityMsg.OnBtnBackClick]);
 	}
 
+	override onOpenAni() { return $uiUtil.popAlphaIn(this); }
+	override onCloseAni() { return $uiUtil.popAlphaOut(this); }
 }

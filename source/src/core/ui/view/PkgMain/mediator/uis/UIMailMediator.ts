@@ -83,7 +83,4 @@ export class UIMailMediator extends MediatorBase<UIMailView, IUIMailData> {
 	private onBtnDeleteClick() {
 		$netMgr.requests.deleteMail({ mail_id: this._curMail.mail_id });
 	}
-
-	override onOpenAni() { return $uiUtil.popAlphaIn(this.view); }
-	override onCloseAni() { return $uiUtil.popAlphaOut(this.view); }
 }

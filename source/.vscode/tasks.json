@@ -42,37 +42,10 @@
             },
             "problemMatcher": []
         },
-        { //导出表配置
-            "label": "导出表配置",
-            "type": "shell",
-            "command": "node ../../../laya_framework_tool/bin/js/BatMain.js 10",
-            "presentation": {
-                "close": true
-            },
-            "problemMatcher": []
-        },
         { //更新资源路径
             "label": "更新资源路径",
             "type": "shell",
             "command": "node ../../../laya_framework_tool/bin/js/BatMain.js 2",
-            "presentation": {
-                "close": true
-            },
-            "problemMatcher": []
-        },
-        { //用户数据事件
-            "label": "用户数据事件",
-            "type": "shell",
-            "command": "node ../../../laya_framework_tool/bin/js/BatMain.js 3",
-            "presentation": {
-                "close": true
-            },
-            "problemMatcher": []
-        },
-        { //更新网络相关
-            "label": "更新网络相关",
-            "type": "shell",
-            "command": "node ../../../laya_framework_tool/bin/js/BatMain.js 4",
             "presentation": {
                 "close": true
             },
@@ -112,26 +85,6 @@
             "presentation": {
                 "close": true
             },
-            "problemMatcher": []
-        },
-        { //tsc监视
-            "label": "tsc监视",
-            "type": "typescript",
-            "tsconfig": "tsconfig.json",
-            "option": "watch",
-            "problemMatcher": [
-                "$tsc-watch"
-            ],
-            "group": "build",
-            "hide": true
-        },
-        { //监视&端口刷新
-            "label": "监视&端口刷新",
-            "type": "shell",
-            "command": "gulp",
-            "dependsOn": [
-                "tsc监视"
-            ],
             "problemMatcher": []
         },
         { //leb

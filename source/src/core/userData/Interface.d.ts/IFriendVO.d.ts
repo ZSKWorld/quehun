@@ -6,5 +6,9 @@ declare namespace VO {
 		get friendMaxCount(): number;
 		/** 申请列表 */
 		get applies(): ProtoObject<IResFriendApplyList_FriendApply>[];
+		/** 已申请的id */
+		get applied(): Set<number>;
+
+		isFriend(id: number): boolean;
 	}
 }

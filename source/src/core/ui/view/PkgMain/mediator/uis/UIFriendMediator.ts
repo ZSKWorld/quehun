@@ -3,13 +3,13 @@ import { EUserEvent } from "../../../../../userData/UserDefine";
 import { PlayerInfoIncrementLoader } from "../../../../extention/PlayerInfoIncrementLoader";
 import { RadioGroup } from "../../../../extention/RadioGroup";
 import { RenderFriendApplyView } from "../../view/renders/RenderFriendApplyView";
+import { RenderFriendRecentView } from "../../view/renders/RenderFriendRecentView";
 import { EUIFriendMsg, UIFriendView } from "../../view/uis/UIFriendView";
 
 export interface IUIFriendData {
 
 }
 
-const Page_Size = 20; // 每页请求数量
 const Scroll_Threshold = 150; // 触底检查阈值
 
 export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> {
@@ -22,12 +22,17 @@ export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> 
 		this.view.refreshSearch(true, this._searchPlayerLoader.briefs[0]);
 	}), 1);
 
+	private _loadRecent = false;
+	private _recentPlayerLoader = new PlayerInfoIncrementLoader(new Laya.Handler(this, this.tryToRefresh, [3]));
+
 	override onAwake() {
 		this.addEvent(EUIFriendMsg.OnComBackClick, this.onComBackClick);
 		this.addEvent(EUIFriendMsg.OnBtnCopyClick, this.onBtnCopyClick);
 		this.addEvent(EUIFriendMsg.OnBtnFindClick, this.onBtnFindClick);
 		this.view.listApply.on(fgui.Events.SCROLL, this, this.onListApplyScroll);
+		this.view.listRecent.on(fgui.Events.SCROLL, this, this.onListRecentScroll);
 		$uiUtil.setList(this.view.listApply, true, this, this.onListApplyRender);
+		$uiUtil.setList(this.view.listRecent, true, this, this.onListRecentRender);
 		this._tabGroup.init(this.view.tabBtns, this, this.onTabChanged);
 	}
 
@@ -37,6 +42,10 @@ export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> 
 
 	override onDisable() {
 		this._applyPlayerLoader.reset();
+		this._searchPlayerLoader.reset();
+		this._recentPlayerLoader.reset();
+		this._loadRecent = false;
+		$userData.friend.applied.clear();
 	}
 
 	private onTabChanged(index?: number) {
@@ -50,7 +59,15 @@ export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> 
 				this.view.refreshApply(brifesLen);
 				break;
 			case 2: this.view.refreshSearch(false); break;
-			case 3: this.view.refreshRecent(); break;
+			case 3:
+				if (!this._loadRecent) {
+					this._loadRecent = true;
+					$netMgr.requests.fetchRecentFriend();
+					this.view.refreshRecent(true, 0);
+				} else {
+					this.view.refreshRecent(false, this._recentPlayerLoader.briefs.length);
+				}
+				break;
 		}
 	}
 
@@ -76,17 +93,28 @@ export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> 
 		$netMgr.requests.searchAccountByEid({ eid: accoundId });
 	}
 
-	private onListApplyRender(index: number, item: RenderFriendApplyView) {
-		const { intro, briefs } = this._applyPlayerLoader;
-		item.refresh(intro[index].apply_time, briefs[index]);
-	}
-
 	private onListApplyScroll() {
 		const { contentHeight, viewHeight, posY } = this.view.listApply.scrollPane;
 		// 触底检测：当前位置 + 视口高度 >= 内容高度 - 阈值
 		if (contentHeight - posY - viewHeight <= Scroll_Threshold) {
 			this._applyPlayerLoader.loadNext();
 		}
+	}
+	private onListApplyRender(index: number, item: RenderFriendApplyView) {
+		const { intro, briefs } = this._applyPlayerLoader;
+		item.refresh(intro[index].apply_time, briefs[index]);
+	}
+
+	private onListRecentScroll() {
+		const { contentHeight, viewHeight, posY } = this.view.listRecent.scrollPane;
+		// 触底检测：当前位置 + 视口高度 >= 内容高度 - 阈值
+		if (contentHeight - posY - viewHeight <= Scroll_Threshold) {
+			this._recentPlayerLoader.loadNext();
+		}
+	}
+	private onListRecentRender(index: number, item: RenderFriendRecentView) {
+		const { briefs } = this._recentPlayerLoader;
+		item.refresh(briefs[index]);
 	}
 
 	@InterestMessage(EMessageID.searchAccountByEid)
@@ -101,8 +129,14 @@ export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> 
 	@InterestNotify(EUserEvent.OnFriendsChanged, false, [0])
 	@InterestNotify(EUserEvent.OnFriendMaxCountChanged, false, [0])
 	@InterestNotify(EUserEvent.OnFriendApplyChanged, false, [1])
-	private onFriendChanged(index: number) {
+	private tryToRefresh(index: number) {
 		if (index != this._tabGroup.selectIndex) return;
 		this.onTabChanged();
+	}
+
+	@InterestMessage(EMessageID.fetchRecentFriend)
+	private onFetchRecentFriend(res: IResFetchrecentFriend) {
+		this._recentPlayerLoader.intro = res.account_list.map(v => ({ account_id: v }));
+		this._recentPlayerLoader.loadNext();
 	}
 }

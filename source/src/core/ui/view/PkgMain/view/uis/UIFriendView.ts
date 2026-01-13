@@ -13,6 +13,7 @@ export class UIFriendView extends ExtensionClass<IView, UIFriend>(UIFriend) impl
 	}
 
 	get listApply() { return this.list_apply; }
+	get listRecent() { return this.list_recent; }
 	get findAccountId() { return +this.itxt_searchId.text; }
 
 	override onCreate() {
@@ -56,11 +57,10 @@ export class UIFriendView extends ExtensionClass<IView, UIFriend>(UIFriend) impl
 		ctrl_type.selectedIndex = 2;
 	}
 
-	refreshRecent(players?: IPlayerBaseView[]) {
+	refreshRecent(loading:boolean, loadedCount: number) {
 		const { ctrl_type, list_recent, txt_empty } = this;
-		const count = players ? players.length : 0;
-		list_recent.numItems = count;
-		txt_empty.visible = count <= 0;
+		list_recent.numItems = loadedCount;
+		txt_empty.visible = !loading && loadedCount <= 0;
 		txt_empty.visible && txt_empty.langText(3747);
 		ctrl_type.selectedIndex = 3;
 	}

@@ -16,8 +16,18 @@ export class RenderFriendRecentView extends ExtensionClass<IView, RenderFriendRe
 		com_head.refresh(data.avatar_id, data.avatar_frame);
 		com_title.refreshIcon(data.title);
 		com_name.refresh(data);
-		btn_add.visible = true;
-		txt_added.visible = false;
+		if($userData.friend.isFriend(data.account_id)){
+			btn_add.visible = false;
+			txt_added.langText(2075);
+			txt_added.visible = true;
+		} else if ($userData.friend.applied.has(data.account_id)) {
+			btn_add.visible = false;
+			txt_added.langText(2076);
+			txt_added.visible = true;
+		} else {
+			btn_add.visible = true;
+			txt_added.visible = false;
+		}
 	}
 
 	override onDisable() {

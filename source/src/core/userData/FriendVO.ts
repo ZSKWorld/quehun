@@ -6,14 +6,16 @@ export class FriendVO extends BaseVO implements VO.IFriendVO {
 	private _friendMaxCount: number = 0;
 	private _friendCount: number = 0;
 	private _applies: ProtoObject<IResFriendApplyList_FriendApply>[] = [];
+	private _applied = new Set<number>();
 
 	get friends() { return this._friends; }
 	get friendCount() { return this._friendCount; }
 	get friendMaxCount() { return this._friendMaxCount; }
 	get applies() { return this._applies; }
+	get applied() { return this._applied; }
 
-	getPlayingState() {
-
+	isFriend(id: number) {
+		return this._friends.find(v => v.base.account_id == id) != null;
 	}
 
 	@InterestMessage(EMessageID.fetchFriendList)
@@ -40,6 +42,11 @@ export class FriendVO extends BaseVO implements VO.IFriendVO {
 		this._applies.splice(index, 1);
 		this.sortApply();
 		this.dispatch(EUserEvent.OnFriendApplyChanged);
+	}
+
+	@InterestMessage(EMessageID.applyFriend)
+	private onApplyFriend(_, req: IReqApplyFriend) {
+		this._applied.add(req.target_id);
 	}
 
 	@InterestMessage(ENotify.NotifyFriendViewChange)

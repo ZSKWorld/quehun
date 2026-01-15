@@ -1,6 +1,6 @@
 
 /** 玩家信息增量加载器，eg:排行榜玩家信息 */
-export class PlayerInfoIncrementLoader<T extends { account_id: number }> {
+export class PlayerViewLoader<T extends { account_id: number }> {
 	private _intro: T[];
 
 	get intro() { return this._intro; }

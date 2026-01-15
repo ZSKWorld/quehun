@@ -1,6 +1,6 @@
 import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
-import { PlayerInfoIncrementLoader } from "../../../../extention/PlayerInfoIncrementLoader";
 import { RadioGroup } from "../../../../extention/RadioGroup";
+import { PlayerViewLoader } from "../../../../tool/PlayerViewLoader";
 import { EUIRankType } from "../../define/MainDefine";
 import { RenderRankItemView } from "../../view/renders/RenderRankItemView";
 import { EUIRankMsg, UIRankView } from "../../view/uis/UIRankView";
@@ -11,9 +11,9 @@ export class UIRankMediator extends MediatorBase<UIRankView, any> {
 	private _tabGroup = new RadioGroup();
 
 	// 使用 Record 管理不同类型的状态
-	private _states: KeyMap<PlayerInfoIncrementLoader<IResLevelLeaderboard_Item>> = {
-		[EUIRankType.SiMa]: new PlayerInfoIncrementLoader(new Laya.Handler(this, this.refreshCurrentView)),
-		[EUIRankType.SanMa]: new PlayerInfoIncrementLoader(new Laya.Handler(this, this.refreshCurrentView)),
+	private _states: KeyMap<PlayerViewLoader<IResLevelLeaderboard_Item>> = {
+		[EUIRankType.SiMa]: new PlayerViewLoader(new Laya.Handler(this, this.refreshCurrentView)),
+		[EUIRankType.SanMa]: new PlayerViewLoader(new Laya.Handler(this, this.refreshCurrentView)),
 	};
 
 	private get selectType() {

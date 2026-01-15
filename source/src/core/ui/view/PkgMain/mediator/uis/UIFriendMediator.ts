@@ -1,7 +1,7 @@
 import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
 import { EUserEvent } from "../../../../../userData/UserDefine";
-import { PlayerInfoIncrementLoader } from "../../../../extention/PlayerInfoIncrementLoader";
 import { RadioGroup } from "../../../../extention/RadioGroup";
+import { PlayerViewLoader } from "../../../../tool/PlayerViewLoader";
 import { RenderFriendApplyView } from "../../view/renders/RenderFriendApplyView";
 import { RenderFriendRecentView } from "../../view/renders/RenderFriendRecentView";
 import { EUIFriendMsg, UIFriendView } from "../../view/uis/UIFriendView";
@@ -14,16 +14,16 @@ const Scroll_Threshold = 150; // 触底检查阈值
 
 export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> {
 	private _tabGroup = new RadioGroup();
-	private _applyPlayerLoader = new PlayerInfoIncrementLoader<IResFriendApplyList_FriendApply>(new Laya.Handler(this, () => {
+	private _applyPlayerLoader = new PlayerViewLoader<IResFriendApplyList_FriendApply>(new Laya.Handler(this, () => {
 		const brifesLen = this._applyPlayerLoader.briefs.length;
 		this.view.refreshApply(brifesLen);
 	}));
-	private _searchPlayerLoader = new PlayerInfoIncrementLoader(new Laya.Handler(this, () => {
+	private _searchPlayerLoader = new PlayerViewLoader(new Laya.Handler(this, () => {
 		this.view.refreshSearch(true, this._searchPlayerLoader.briefs[0]);
 	}), 1);
 
 	private _loadRecent = false;
-	private _recentPlayerLoader = new PlayerInfoIncrementLoader(new Laya.Handler(this, this.tryToRefresh, [3]));
+	private _recentPlayerLoader = new PlayerViewLoader(new Laya.Handler(this, this.tryToRefresh, [3]));
 
 	override onAwake() {
 		this.addEvent(EUIFriendMsg.OnComBackClick, this.onComBackClick);

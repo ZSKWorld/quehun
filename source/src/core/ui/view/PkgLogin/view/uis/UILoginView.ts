@@ -10,6 +10,8 @@ export const enum EUILoginMsg {
 	OnBtnForgotPasswordClick = "UILogin_OnBtnForgotPasswordClick",
 	OnBtnForgotAccountClick = "UILogin_OnBtnForgotAccountClick",
 	OnBtnLogoutClick = "UILogin_OnBtnLogoutClick",
+
+	OnAccountInputEnter = "UILogin_OnAccountInputEnter",
 }
 
 export class UILoginView extends ExtensionClass<IView, UILogin>(UILogin) implements IView {
@@ -20,7 +22,7 @@ export class UILoginView extends ExtensionClass<IView, UILogin>(UILogin) impleme
 	override onCreate() {
 		const {
 			btn_login, btn_announce, btn_help, btn_loginByAccount, btn_loginBtnPhone,
-			btn_register, btn_forgotPassword, btn_forgotAccount,
+			btn_register, btn_forgotPassword, btn_forgotAccount, itxt_account, itxt_password,
 			btn_logout } = this;
 		btn_login.onClick(this, this.sendEvent, [EUILoginMsg.OnBtnLoginClick]);
 		btn_announce.onClick(this, this.sendEvent, [EUILoginMsg.OnBtnAnnounceClick]);
@@ -31,6 +33,8 @@ export class UILoginView extends ExtensionClass<IView, UILogin>(UILogin) impleme
 		btn_forgotPassword.onClick(this, this.sendEvent, [EUILoginMsg.OnBtnForgotPasswordClick]);
 		btn_forgotAccount.onClick(this, this.sendEvent, [EUILoginMsg.OnBtnForgotAccountClick]);
 		btn_logout.onClick(this, this.sendEvent, [EUILoginMsg.OnBtnLogoutClick]);
+		itxt_account.on(Laya.Event.ENTER, this, this.sendEvent, [EUILoginMsg.OnAccountInputEnter]);
+		itxt_password.on(Laya.Event.ENTER, this, this.sendEvent, [EUILoginMsg.OnAccountInputEnter]);
 	}
 
 	setCtrlPage(index: 0 | 1 | 2) {

@@ -28,7 +28,7 @@ export const enum ENotifyConst {
 
 	/**绑定手机号完成 */
 	BindPhoneCompleted = "NotifyConst_BindPhoneCompleted",
-
+	/** 登录成功 */
 	LoginSuccess = "NotifyConst_LoginSuccess",
 
 	//#region logicScene相关

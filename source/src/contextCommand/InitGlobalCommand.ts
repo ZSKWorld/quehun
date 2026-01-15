@@ -8,6 +8,7 @@ import { GameUtil } from "../core/common/utils/GameUtil";
 import { ItemUtil } from "../core/common/utils/ItemUtil";
 import { TimeUtil } from "../core/common/utils/TimeUtil";
 import { ConfigManager } from "../core/config/ConfigManager";
+import { GameManager } from "../core/game/GameManager";
 import { Command } from "../core/mvc/controller/Command";
 import { Facade } from "../core/mvc/Facade";
 import { NetManager } from "../core/net/NetManager";
@@ -19,7 +20,6 @@ import { RichText } from "../core/ui/tool/RichText";
 import { TipManager } from "../core/ui/tool/TipManager";
 import { UIUtil } from "../core/ui/tool/UIUtil";
 import { UserData } from "../core/userData/UserData";
-import { GameManager } from "../GameManager";
 import { SceneManager } from "../scene/SceneManager";
 
 export class InitGlobalCommand extends Command {

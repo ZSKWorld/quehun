@@ -1,5 +1,5 @@
-import { ENotifyConst } from "./core/common/NotifyConst";
-import { ObserverAll } from "./core/mvc/provider/ObserverAll";
+import { ENotifyConst } from "../common/NotifyConst";
+import { ObserverAll } from "../mvc/provider/ObserverAll";
 
 interface IGameConfig {
 	readonly stat: boolean;

@@ -103,7 +103,7 @@ export class GameManager extends ObserverAll implements IGameManager {
 
 	async init() {
 		const [gameConfig, version] = await Promise.all([
-			$loadMgr.fetch(ResPath.EUnclassifiedPath.Gameconfig, "json"),
+			$loadMgr.fetch(ResPath.EConfigPath.Gameconfig, "json"),
 			$loadMgr.fetch(`https://game.maj-soul.com/1/version.json?randv=${ $timeUtil.milliSecond }`, "json", null, { ignoreCache: true })
 		]);
 		this._gameConfig = gameConfig;

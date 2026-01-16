@@ -5,6 +5,8 @@ declare namespace ResPath {
 	}
 
 	enum EConfigPath {
+		Gameconfig = "res/config/gameconfig.json",
+		Gameconfig1 = "res/config/gameconfig1.json",
 		Ip_config = "res/config/ip_config.json",
 		Lqc = "res/config/lqc.bin",
 		Proto = "res/config/proto.json",

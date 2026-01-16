@@ -17,6 +17,31 @@ declare enum EClientType {
 	KR = "kr",
 }
 
+declare interface IIPInfo {
+	name: string;
+	gateways: { id: string, url: string }[];
+	system_email_url: string;
+	prefix_url: string;
+	contest_chat_url: string;
+	dhs_url: string;
+	zone_ids?:number[];
+}
+
+declare interface IIPConfig {
+	ip: IIPInfo[];
+	goods_sheleve_id: string;
+	emergency_url: string;
+	awsc_sdk_js: string;
+	nec_sdk_js: string;
+	tracker_url: string;
+	wapchat_url: string;
+	mycard_url: string;
+	homepage_url: string;
+	fb_oauth_url: string;
+	fb_sdk_js: string;
+	sgoogle_redirect_uri: string;
+}
+
 declare interface IGameManager {
 	get released(): boolean;
 	get inDmm(): boolean;

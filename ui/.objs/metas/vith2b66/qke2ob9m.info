@@ -1,9 +1,15 @@
 {
   "objectStatus": {
-    "n36_xnfa": {
+    "n33_puub": {
+      "collapsed": true
+    },
+    "n25_puub": {
       "collapsed": true
     },
     "n34_puub": {
+      "collapsed": true
+    },
+    "n36_xnfa": {
       "collapsed": true
     }
   },

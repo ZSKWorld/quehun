@@ -3,7 +3,6 @@ import { EServiceType } from "./NetDefine";
 import { ESocketEvent, WebSocket } from "./WebSocket";
 
 export class NetManager extends Laya.EventDispatcher implements INetManager {
-	private _ipConfig: IIPConfig;
 	private _gateway: string;
 	private _routes: IRouteInfo[];
 	private _lobbySocket: WebSocket;
@@ -11,14 +10,12 @@ export class NetManager extends Laya.EventDispatcher implements INetManager {
 	private _obSocket: WebSocket;
 
 	requests: IReqMethod;
-	get zoneIds() { return this._ipConfig?.ip[0]?.zone_ids || []; }
 
 	get lobbyConnected() { return this._lobbySocket?.connected; }
 	get gameConnected() { return this._gameSocket?.connected; }
 	get obConnected() { return this._obSocket?.connected; }
 
 	async init() {
-		this._ipConfig = await $loadMgr.fetch(ResPath.EConfigPath.Gameconfig, Laya.Loader.JSON);
 		await this.fetchRoutes();
 		this._lobbySocket = new WebSocket(this._routes[0], "gateway");
 
@@ -57,7 +54,7 @@ export class NetManager extends Laya.EventDispatcher implements INetManager {
 	private initGame() { }
 	connectGame() { this._gameSocket?.connect(); }
 	closeGame() { this._gameSocket?.close(); }
-	
+
 	private initOb() { }
 	connectOb() { this._obSocket?.connect(); }
 	closeOb() { this._obSocket?.close(); }
@@ -89,13 +86,12 @@ export class NetManager extends Laya.EventDispatcher implements INetManager {
 	}
 
 	private async fetchRoutes() {
-		this._ipConfig.ip[0].zone_ids = this._ipConfig.ip[0].zone_ids || [];
-		const gateways = this._ipConfig.ip[0].gateways;
+		const gateways = $gameMgr.ipInfo.gateways;
 		const routes = await Promise.race(gateways.map(v => {
 			const url = `${ v.url }/api/clientgate/routes?platform=Web&version=${ $gameMgr.version }&lang=chs`;
-			return $loadMgr.fetch(url, "json", null, { ignoreCache: true }).then(res => ({ routes: res?.data?.routes, url }));
+			return $loadMgr.fetch(url, Laya.Loader.JSON, null, { ignoreCache: true }).then(res => ({ routes: res?.data?.routes, url }));
 		}));
-		this._routes = routes.routes;
+		this._routes = routes.routes || [];
 		this._gateway = routes.url;
 	}
 
@@ -114,5 +110,10 @@ export class NetManager extends Laya.EventDispatcher implements INetManager {
 			const errStr = $netLang(code) || $lang(2068);
 			$confirmSma(2, errStr);
 		}
+	}
+
+	@InterestNotify(ENotifyConst.LobbyClosed)
+	private onLobbyClosed() {
+		$confirmSma(2, $lang(2061));
 	}
 }

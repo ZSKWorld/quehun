@@ -12,7 +12,7 @@ export class PbManager implements IPbManager {
 	get method2Service() { return this._method2Service; }
 
 	async init() {
-		const protoJson = await $loadMgr.fetch(ResPath.EConfigPath.Proto, "json");
+		const protoJson = await $loadMgr.fetch(ResPath.EConfigPath.Proto, Laya.Loader.JSON);
 		this._root = protobuf.Root.fromJSON(protoJson);
 		this._root.resolveAll();
 		const services: protobuf.Service[] = [];

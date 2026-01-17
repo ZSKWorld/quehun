@@ -5,15 +5,30 @@ import { ShaderManager } from "../core/shader/ShaderManager";
 
 export class InitGameCommand extends Command {
 	override async execute(notifyName: string, data?: any) {
+		Laya.Stat.show(0, 0, [
+			Laya.StatElement.CT_FPS,
+			Laya.StatElement.T_Frame_Time,
+			Laya.StatElement.CT_DrawCall,
+			Laya.StatElement.CT_OpaqueDrawCall,
+			Laya.StatElement.CT_TransDrawCall,
+			Laya.StatElement.CT_Triangle,
+			Laya.StatElement.C_Sprite2DCount,
+			Laya.StatElement.C_Sprite3DCount,
+			Laya.StatElement.M_AllTexture,
+			Laya.StatElement.M_GPUBuffer,
+			Laya.StatElement.M_GPUMemory,
+			Laya.StatElement.M_RenderTexture,
+		]);
 		$uiMgr.init();
 		$redDotMgr.init();
 		ShaderManager.init();
 
 		await $loadMgr.loadPackage(ResPath.EPkgPath.PkgEntrance);
+		await $gameMgr.init();
+
 		$uiMgr.openView(EViewID.UIEntranceView);
 
 		await Promise.all([
-			$gameMgr.init(),
 			$pbMgr.init(),
 			$cfgMgr.init(),
 			$netMgr.init(),

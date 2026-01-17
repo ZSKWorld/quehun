@@ -1,6 +1,40 @@
 {
     "ip": [
         {
+            "name": "玩家线上服",
+            "gateways": [
+                {
+                    "id": "route-2",
+                    "url": "https://route-2.maj-soul.com"
+                },
+                {
+                    "id": "route-3",
+                    "url": "https://route-3.maj-soul.com:8443"
+                },
+                {
+                    "id": "route-4",
+                    "url": "https://route-4.maj-soul.com"
+                },
+                {
+                    "id": "route-5",
+                    "url": "https://route-5.maj-soul.com"
+                },
+                {
+                    "id": "route-6",
+                    "url": "https://route-6.maj-soul.com"
+                }
+            ],
+            "zone_ids": [
+                0,
+                7,
+                13,
+                16
+            ],
+            "system_email_url": "https://common-v2.maj-soul.com",
+            "prefix_url": "https://record-old.maj-soul.com:9443/majsoul/game_record",
+            "dhs_url": "https://www.maj-soul.com/contest-login/"
+        },
+        {
             "name": "九条璃雨-主备",
             "gateways": [
                 {
@@ -353,40 +387,6 @@
                 16
             ],
             "system_email_url": "http://47.111.77.111:12317"
-        },
-        {
-            "name": "玩家线上服",
-            "gateways": [
-                {
-                    "id": "route-2",
-                    "url": "https://route-2.maj-soul.com"
-                },
-                {
-                    "id": "route-3",
-                    "url": "https://route-3.maj-soul.com:8443"
-                },
-                {
-                    "id": "route-4",
-                    "url": "https://route-4.maj-soul.com"
-                },
-                {
-                    "id": "route-5",
-                    "url": "https://route-5.maj-soul.com"
-                },
-                {
-                    "id": "route-6",
-                    "url": "https://route-6.maj-soul.com"
-                }
-            ],
-            "zone_ids": [
-                0,
-                7,
-                13,
-                16
-            ],
-            "system_email_url": "https://common-v2.maj-soul.com",
-            "prefix_url": "https://record-old.maj-soul.com:9443/majsoul/game_record",
-            "dhs_url": "https://www.maj-soul.com/contest-login/"
         },
         {
             "name": "韩服提审",

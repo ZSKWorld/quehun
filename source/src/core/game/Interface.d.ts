@@ -67,6 +67,9 @@ declare interface IGameManager {
 	/** 重复登陆 */
 	get multiLogin(): boolean;
 	get regionLimited(): boolean;
+	get ipConfig(): IIPConfig;
+	get ipInfo(): IIPInfo;
+	get zoneIds(): number[];
 	init(): Promise<void>;
 	showConfirm(msg: string): Promise<boolean>;
 }

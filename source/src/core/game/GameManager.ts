@@ -1,23 +1,22 @@
 import { ENotifyConst } from "../common/NotifyConst";
 import { ObserverAll } from "../mvc/provider/ObserverAll";
 
-interface IGameConfig {
-	readonly stat: boolean;
-	readonly released: boolean;
-}
-
 const enum EClientMessageType {
 	RoomInvite = 1,
 }
 
-export class GameManager extends ObserverAll implements IGameManager {
+interface IVersionInfo {
+	version: string;
+}
 
-	private _gameConfig: IGameConfig;
+export class GameManager extends ObserverAll implements IGameManager {
 	private _inDmm = false;
 	private _deviceId: string;
-	private _version: { version: string; };
+	private _version: IVersionInfo;
 	private _clientEndPoint: ProtoObject<INetworkEndpoint>;
-	get released() { return this._gameConfig.released; }
+	private _ipConfig: IIPConfig;
+	private _ipIndex: number;
+	get released() { return false; }
 	get inDmm() { return this._inDmm; }
 	get language() { return ELanguage.CHS; }
 	get clientLanguage() {
@@ -96,33 +95,27 @@ export class GameManager extends ObserverAll implements IGameManager {
 	}
 	get regionLimited() { return this.clientType == EClientType.KR; }
 	get p2() { return "DF2vkXCnfeXp4WoGSBGNcJBufZiMN3UP" + (window["pertinent3"] || ""); }
+	get ipConfig() { return this._ipConfig; }
+	get ipInfo() { return this._ipConfig.ip[this._ipIndex]; }
+	get zoneIds() { return this.ipInfo.zone_ids; }
 
 	private _hangOutTime = 0;
 	private _lastHeatBeatTime = $timeUtil.second;
 	private _lastMousePoint = new Laya.Point();
 
 	async init() {
-		const [gameConfig, version] = await Promise.all([
-			$loadMgr.fetch(ResPath.EConfigPath.Gameconfig, "json"),
-			$loadMgr.fetch(`https://game.maj-soul.com/1/version.json?randv=${ $timeUtil.milliSecond }`, "json", null, { ignoreCache: true })
+		const [ipConfig, version] = await Promise.all([
+			$loadMgr.fetch(ResPath.EConfigPath.IPConfig, Laya.Loader.JSON) as Promise<IIPConfig>,
+			$loadMgr.fetch(`https://game.maj-soul.com/1/version.json?randv=${ $timeUtil.milliSecond }`, Laya.Loader.JSON) as Promise<IVersionInfo>,
 		]);
-		this._gameConfig = gameConfig;
+		ipConfig.ip.forEach(v => (v.zone_ids = v.zone_ids || []));
+		this._ipConfig = ipConfig;
 		this._version = version;
-
-		gameConfig.stat && Laya.Stat.show(0, 0, [
-			Laya.StatElement.CT_FPS,
-			Laya.StatElement.T_Frame_Time,
-			Laya.StatElement.CT_DrawCall,
-			Laya.StatElement.CT_OpaqueDrawCall,
-			Laya.StatElement.CT_TransDrawCall,
-			Laya.StatElement.CT_Triangle,
-			Laya.StatElement.C_Sprite2DCount,
-			Laya.StatElement.C_Sprite3DCount,
-			Laya.StatElement.M_AllTexture,
-			Laya.StatElement.M_GPUBuffer,
-			Laya.StatElement.M_GPUMemory,
-			Laya.StatElement.M_RenderTexture,
-		]);
+		this._ipIndex = 0;
+		if (ipConfig.ip.length > 1)
+			this._ipIndex = await new Promise<number>(resolve => {
+				$uiMgr.openView(EViewID.UIChooseServerView, { callback: resolve });
+			});
 	}
 
 	showConfirm(msg: string) {

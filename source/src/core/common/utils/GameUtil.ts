@@ -124,8 +124,8 @@ export class GameUtil implements IGameUtil {
 	getZoneId(accoundId: number) {
 		if (this.isAI(accoundId)) return 0;
 		const z = accoundId >> 23;
-		const zoneIds = $netMgr.zoneIds;
-		if ($netMgr.zoneIds.length > 3) {
+		const zoneIds = $gameMgr.zoneIds;
+		if (zoneIds.length > 3) {
 			if (z >= zoneIds[0] && z < zoneIds[1]) return 1;
 			else if (z >= zoneIds[1] && z < zoneIds[2]) return 2;
 			else if (z >= zoneIds[2] && z < zoneIds[3]) return 3;

@@ -55,6 +55,8 @@ import { UIItemDetailView } from "../core/ui/view/PkgCommon/view/uis/UIItemDetai
 import { UIItemDetailMediator } from "../core/ui/view/PkgCommon/mediator/uis/UIItemDetailMediator";
 import { UILoadingView } from "../core/ui/view/PkgCommon/view/uis/UILoadingView";
 import { UILoadingMediator } from "../core/ui/view/PkgCommon/mediator/uis/UILoadingMediator";
+import { UIChooseServerView } from "../core/ui/view/PkgEntrance/view/uis/UIChooseServerView";
+import { UIChooseServerMediator } from "../core/ui/view/PkgEntrance/mediator/uis/UIChooseServerMediator";
 import { UIEntranceView } from "../core/ui/view/PkgEntrance/view/uis/UIEntranceView";
 import { UIEntranceMediator } from "../core/ui/view/PkgEntrance/mediator/uis/UIEntranceMediator";
 import { UIBindPhoneView } from "../core/ui/view/PkgLogin/view/uis/UIBindPhoneView";
@@ -155,6 +157,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.UIConfirmSmallView, EViewType.UI, UIConfirmSmallView, UIConfirmSmallMediator);
 		register(EViewID.UIItemDetailView, EViewType.UI, UIItemDetailView, UIItemDetailMediator);
 		register(EViewID.UILoadingView, EViewType.UI, UILoadingView, UILoadingMediator);
+		register(EViewID.UIChooseServerView, EViewType.UI, UIChooseServerView, UIChooseServerMediator);
 		register(EViewID.UIEntranceView, EViewType.UI, UIEntranceView, UIEntranceMediator);
 		register(EViewID.UIBindPhoneView, EViewType.UI, UIBindPhoneView, UIBindPhoneMediator);
 		register(EViewID.UILoginView, EViewType.UI, UILoginView, UILoginMediator);

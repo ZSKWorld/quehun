@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1920,1080" bgColorEnabled="true" bgColor="#000000">
+  <displayList>
+    <image id="n1_nrcf" name="n1" src="nrcf2" fileName="Texture/img_27.png" xy="0,0" size="1920,1080">
+      <relation target="" sidePair="width-width,height-height"/>
+    </image>
+    <list id="n9_hrq5" name="server" xy="710,124" size="500,831" overflow="scroll" defaultItem="ui://8tw6j59fffcv6" vAlign="middle" autoClearItems="true">
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+    </list>
+  </displayList>
+</component>

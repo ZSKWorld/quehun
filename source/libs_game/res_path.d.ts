@@ -1,19 +1,17 @@
 /** This script is generated automatically, Please do not any modify! */
 declare namespace ResPath {
-	enum EUnclassifiedPath {
-		Gameconfig = "res/gameconfig.json",
-	}
+	enum EUnclassifiedPath { }
 
 	enum EConfigPath {
-		Gameconfig = "res/config/gameconfig.json",
-		Gameconfig1 = "res/config/gameconfig1.json",
-		Ip_config = "res/config/ip_config.json",
+		IPConfig = "res/config/IPConfig.json",
+		IPConfig1 = "res/config/IPConfig1.json",
 		Lqc = "res/config/lqc.bin",
 		Proto = "res/config/proto.json",
 		Tbl_pbConfig = "res/config/tbl_pbConfig.proto",
 	}
 
 	enum EFontName {
+		Fengyu = "fengyu",
 		Font01 = "Font01",
 		Font02 = "Font02",
 		Font03 = "Font03",
@@ -41,11 +39,18 @@ declare namespace ResPath {
 		Font25 = "Font25",
 		Font26 = "Font26",
 		FZHT = "FZHT",
+		Hanyi = "hanyi",
 		HYWH = "HYWH",
+		Jiye = "jiye",
+		KswGoryuSouN = "KswGoryuSouN",
 		NotoSansKR = "NotoSansKR",
+		Shuhun = "shuhun",
+		SolmoeKimdaegeonMedium = "SolmoeKimdaegeonMedium",
+		Youyuan = "youyuan",
 	}
 
 	enum EFontPath {
+		Fengyu = "res/font/fengyu.ttf",
 		Font01 = "res/font/Font01.ttf",
 		Font02 = "res/font/Font02.ttf",
 		Font03 = "res/font/Font03.ttf",
@@ -73,8 +78,14 @@ declare namespace ResPath {
 		Font25 = "res/font/Font25.ttf",
 		Font26 = "res/font/Font26.ttf",
 		FZHT = "res/font/FZHT.ttf",
+		Hanyi = "res/font/hanyi.ttf",
 		HYWH = "res/font/HYWH.ttf",
+		Jiye = "res/font/jiye.ttf",
+		KswGoryuSouN = "res/font/KswGoryuSouN.ttf",
 		NotoSansKR = "res/font/NotoSansKR.ttf",
+		Shuhun = "res/font/shuhun.ttf",
+		SolmoeKimdaegeonMedium = "res/font/SolmoeKimdaegeonMedium.ttf",
+		Youyuan = "res/font/youyuan.ttf",
 	}
 
 	enum EScenePath { }
@@ -871,6 +882,7 @@ declare namespace ResPath {
 		PkgEntrance = "PkgEntrance",
 		PkgLogin = "PkgLogin",
 		PkgMain = "PkgMain",
+		PkgZDesign = "PkgZDesign",
 	}
 
 	enum EPkgPath {
@@ -879,5 +891,6 @@ declare namespace ResPath {
 		PkgEntrance = "res/ui/PkgEntrance",
 		PkgLogin = "res/ui/PkgLogin",
 		PkgMain = "res/ui/PkgMain",
+		PkgZDesign = "res/ui/PkgZDesign",
 	}
 }

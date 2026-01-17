@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="500,100" extention="Button">
+  <controller name="button" pages="0,up,4,down,2,over" selected="1"/>
+  <displayList>
+    <text id="n3_ffcv" name="title" xy="63,17" size="373,66" fontSize="50" color="#ff0000" text="三服测试服-台服">
+      <gearColor controller="button" pages="4,2" values="#ff0000,#000000|#ff0000,#000000" default="#ffffff,#000000"/>
+      <relation target="" sidePair="center-center,middle-middle"/>
+    </text>
+  </displayList>
+  <Button/>
+</component>

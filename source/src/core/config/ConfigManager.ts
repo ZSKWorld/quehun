@@ -70,8 +70,8 @@ export class ConfigManager implements IConfigManager {
 
 	async init() {
 		const [tblPbCfg, lqcBin] = await Promise.all([
-			$loadMgr.fetch(ResPath.EConfigPath.Tbl_pbConfig, "text"),
-			$loadMgr.fetch(ResPath.EConfigPath.Lqc, "arraybuffer")
+			$loadMgr.fetch(ResPath.EConfigPath.Tbl_pbConfig, Laya.Loader.TEXT),
+			$loadMgr.fetch(ResPath.EConfigPath.Lqc, Laya.Loader.BUFFER)
 		]);
 
 		const bytes = new Laya.Byte(lqcBin);

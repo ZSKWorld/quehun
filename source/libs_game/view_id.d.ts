@@ -51,6 +51,7 @@ declare enum EViewID {
 	UIConfirmSmallView = "UIConfirmSmallView",
 	UIItemDetailView = "UIItemDetailView",
 	UILoadingView = "UILoadingView",
+	UIChooseServerView = "UIChooseServerView",
 	UIEntranceView = "UIEntranceView",
 	UIBindPhoneView = "UIBindPhoneView",
 	UILoginQueueView = "UILoginQueueView",

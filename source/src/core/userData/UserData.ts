@@ -6,6 +6,7 @@ import { BagVO } from "./BagVO";
 import { BaseVO } from "./BaseVO";
 import { CharacterVO } from "./CharacterVO";
 import { ClientValueVO } from "./ClientValueVO";
+import { CommonViewVO } from "./CommonViewVO";
 import { FriendVO } from "./FriendVO";
 import { MailVO } from "./MailVO";
 import { RechargeVO } from "./RechargeVO";
@@ -33,6 +34,7 @@ export class UserData extends BaseVO implements VO.IUserDataVO {
 	character = new CharacterVO();
 	activity = new ActivityVO();
 	recharge = new RechargeVO();
+	commonView = new CommonViewVO();
 	announcement = new AnnouncementVO();
 	clientValue = new ClientValueVO();
 	serverSetting = new ServerSettingVO();

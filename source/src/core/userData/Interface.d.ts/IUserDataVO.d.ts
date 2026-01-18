@@ -4,6 +4,7 @@ declare namespace VO {
 		character: ICharacterVO;
 		activity: IActivityVO;
 		recharge: IRechargeVO;
+		commonView: ICommonViewVO;
 		announcement: IAnnouncementVO;
 		clientValue: IClientValueVO;
 		serverSetting: IServerSettingVO;

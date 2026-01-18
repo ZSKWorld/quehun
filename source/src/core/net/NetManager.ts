@@ -88,7 +88,7 @@ export class NetManager extends Laya.EventDispatcher implements INetManager {
 	private async fetchRoutes() {
 		const gateways = $gameMgr.ipInfo.gateways;
 		const routes = await Promise.race(gateways.map(v => {
-			const url = `${ v.url }/api/clientgate/routes?platform=Web&version=${ $gameMgr.version }&lang=chs`;
+			const url = `${ v.url }/api/clientgate/routes?platform=Web&version=${ $gameMgr.version }&lang=${ $gameMgr.clientType }`;
 			return $loadMgr.fetch(url, Laya.Loader.JSON, null, { ignoreCache: true }).then(res => ({ routes: res?.data?.routes, url }));
 		}));
 		this._routes = routes.routes || [];

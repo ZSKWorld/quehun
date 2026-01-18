@@ -1,5 +1,6 @@
 {
   "libview.firstColumnWidth": 443,
+  "gridSize": 10,
   "libview.iconScale": 0,
   "doc.openedDocs": [],
   "packageGroup.mine": [
@@ -14,12 +15,11 @@
   "auxline2": true,
   "libview.twoColumn": false,
   "libview.expandedNodes": [],
-  "auxline1": true,
   "showGrid": false,
   "snapToGrid": true,
   "test.orientation": "landscape",
   "backgroundColor": 6710886,
   "libview.currentGroup": "",
-  "gridSize": 10,
+  "auxline1": true,
   "gridColor": 42
 }

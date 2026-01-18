@@ -1,8 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" designImage="ui://ca43vz0ejdu67plnfc" designImageAlpha="36">
+<component size="1920,1080" designImage="ui://ca43vz0eik7b7plojz" designImageAlpha="100">
   <displayList>
     <component id="n0_p5uz" name="back" src="p5uzob8h" fileName="Component/Component/ComBack.xml" pkg="vx9zwser" xy="10,22">
       <property target="title" propertyId="0" value="寮舍"/>
     </component>
+    <image id="n4_ik7b" name="n4" src="ik7bobfh" fileName="Texture/img_3660.png" xy="290,146" size="1580,894"/>
+    <component id="n2_ik7b" name="char" src="ik7bobfg" fileName="Component/UILiaoShe/BtnTabTop.xml" xy="1293,66"/>
+    <component id="n3_ik7b" name="deco" src="ik7bobfg" fileName="Component/UILiaoShe/BtnTabTop.xml" xy="1541,66">
+      <Button checked="true" title="装扮"/>
+    </component>
+    <list id="n6_ik7b" name="tab" xy="102,196" size="238,784" overflow="scroll" lineGap="4" defaultItem="ui://vith2b66ik7bobfl" autoClearItems="true">
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+    </list>
   </displayList>
 </component>

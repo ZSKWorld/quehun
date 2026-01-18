@@ -237,6 +237,7 @@
     <component id="ea8nobfg" name="ComRedDot1.xml" path="/Component/Component/红点/" exported="true"/>
     <image id="ea8nobfh" name="img_1393.png" path="/Texture/" exported="true"/>
     <component id="q4bcobfi" name="ComTipInfo.xml" path="/Component/Component/" exported="true"/>
+    <image id="ik7bobfj" name="img_134.png" path="/Texture/" exported="true" scale="9grid" scale9grid="2,2,6,6"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

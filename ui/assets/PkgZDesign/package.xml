@@ -1650,6 +1650,12 @@
     <image id="jcnm7plojw" name="好友3.jpg" path="/11/"/>
     <image id="jcnm7plojx" name="好友4.jpg" path="/11/"/>
     <image id="ffcv7plojy" name="教程图1.jpg" path="/11/"/>
+    <image id="ik7b7plojz" name="寮舍1.jpg" path="/2503寮舍优化/寮舍/"/>
+    <image id="ik7b7plok0" name="寮舍2.jpg" path="/2503寮舍优化/寮舍/"/>
+    <image id="ik7b7plok1" name="寮舍3.jpg" path="/2503寮舍优化/寮舍/"/>
+    <image id="ik7b7plok2" name="寮舍4.jpg" path="/2503寮舍优化/寮舍/"/>
+    <image id="ik7b7plok3" name="寮舍5.jpg" path="/2503寮舍优化/寮舍/"/>
+    <image id="ik7b7plok4" name="寮舍6.jpg" path="/2503寮舍优化/寮舍/"/>
   </resources>
   <publish name=""/>
 </packageDescription>

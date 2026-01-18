@@ -148,6 +148,14 @@
     <component id="puubobfb" name="RenderFriendApply.xml" path="/Component/UIFriend/"/>
     <image id="jcnmobfc" name="img_3749.png" path="/Texture/"/>
     <component id="jcnmobfd" name="RenderFriendRecent.xml" path="/Component/UIFriend/"/>
+    <image id="ik7bobfe" name="img_3020.png" path="/Texture/"/>
+    <image id="ik7bobff" name="img_3021.png" path="/Texture/"/>
+    <component id="ik7bobfg" name="BtnTabTop.xml" path="/Component/UILiaoShe/" exported="true"/>
+    <image id="ik7bobfh" name="img_3660.png" path="/Texture/" scale="9grid" scale9grid="70,70,116,116"/>
+    <image id="ik7bobfi" name="img_1541.png" path="/Texture/"/>
+    <image id="ik7bobfj" name="img_2817.png" path="/Texture/" scale="9grid" scale9grid="50,45,62,12"/>
+    <image id="ik7bobfk" name="img_2818.png" path="/Texture/" scale="9grid" scale9grid="50,45,62,12"/>
+    <component id="ik7bobfl" name="BtnTabLeft.xml" path="/Component/UILiaoShe/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

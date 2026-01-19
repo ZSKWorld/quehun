@@ -9,6 +9,11 @@ export class MailVO extends BaseVO implements VO.IMailVO {
 	@InterestMessage(EMessageID.fetchMailInfo)
 	private onFetchMailInfo(res: IResMailInfo) {
 		this._mails = res.mails.map($decodeProtoData);
+		this._mails.sort((a,b)=>{
+			const ta = a.create_time || 0;
+			const tb = b.create_time || 0;
+			return tb - ta;
+		});
 		this.dispatch(EUserEvent.OnMailChanged);
 	}
 

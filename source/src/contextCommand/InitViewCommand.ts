@@ -8,6 +8,7 @@ import { BtnCheckTxtRightView } from "../core/ui/view/PkgCommon/view/btns/BtnChe
 import { BtnBagSkinCheckView } from "../core/ui/view/PkgMain/view/btns/BtnBagSkinCheckView";
 import { BtnDengLongView } from "../core/ui/view/PkgMain/view/btns/BtnDengLongView";
 import { BtnMailTabView } from "../core/ui/view/PkgMain/view/btns/BtnMailTabView";
+import { BtnTabLeftView } from "../core/ui/view/PkgMain/view/btns/BtnTabLeftView";
 import { BtnXunMiView } from "../core/ui/view/PkgMain/view/btns/BtnXunMiView";
 import { RenderBagGiftItemView } from "../core/ui/view/PkgMain/view/renders/RenderBagGiftItemView";
 import { RenderBagIllustItemView } from "../core/ui/view/PkgMain/view/renders/RenderBagIllustItemView";
@@ -113,6 +114,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.BtnBagSkinCheckView, EViewType.Button, BtnBagSkinCheckView);
 		register(EViewID.BtnDengLongView, EViewType.Button, BtnDengLongView);
 		register(EViewID.BtnMailTabView, EViewType.Button, BtnMailTabView);
+		register(EViewID.BtnTabLeftView, EViewType.Button, BtnTabLeftView);
 		register(EViewID.BtnXunMiView, EViewType.Button, BtnXunMiView);
 
 		//Renders

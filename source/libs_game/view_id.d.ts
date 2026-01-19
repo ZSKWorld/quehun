@@ -7,6 +7,7 @@ declare enum EViewID {
 	BtnBagSkinCheckView = "BtnBagSkinCheckView",
 	BtnDengLongView = "BtnDengLongView",
 	BtnMailTabView = "BtnMailTabView",
+	BtnTabLeftView = "BtnTabLeftView",
 	BtnXunMiView = "BtnXunMiView",
 
 	/**Renders */

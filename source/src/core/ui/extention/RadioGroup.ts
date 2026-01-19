@@ -5,9 +5,7 @@ export class RadioGroup {
 	private _valueChangedCaller: any;
 	private _onValueChanged: (index: number) => void;
 
-	get selectIndex() {
-		return this._selectIndex;
-	}
+	get selectIndex() { return this._selectIndex; }
 	set selectIndex(value: number) {
 		this._selectIndex = value;
 		this._items.forEach((item, index) => {

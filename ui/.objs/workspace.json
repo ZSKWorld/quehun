@@ -1,6 +1,6 @@
 {
   "libview.firstColumnWidth": 443,
-  "snapToGrid": true,
+  "auxline1": true,
   "libview.iconScale": 0,
   "doc.openedDocs": [
     "ui://vith2b66co9gob9l",
@@ -35,10 +35,10 @@
     "/Component/UILiaoShe/"
   ],
   "showGrid": false,
-  "gridSize": 10,
+  "snapToGrid": true,
   "test.orientation": "landscape",
   "backgroundColor": 6710886,
   "libview.currentGroup": "",
-  "auxline1": true,
+  "gridSize": 10,
   "gridColor": 42
 }

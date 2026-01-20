@@ -9,17 +9,6 @@
     <component id="n3_ik7b" name="deco" src="ik7bobfg" fileName="Component/UILiaoShe/BtnTabTop.xml" xy="1541,66">
       <Button checked="true" title="装扮"/>
     </component>
-    <list id="n6_ik7b" name="tab" xy="64,196" size="276,784" overflow="scroll" lineGap="4" defaultItem="ui://vith2b66ik7bobfl" autoItemSize="false" align="right" autoClearItems="true">
-      <item controllers="button,1"/>
-      <item/>
-      <item/>
-      <item/>
-      <item/>
-      <item/>
-      <item/>
-      <item/>
-      <item/>
-      <item/>
-    </list>
+    <component id="n6_ik7b" name="decorate" src="glpbobfu" fileName="Component/ComDecorate.xml" xy="64,194"/>
   </displayList>
 </component>

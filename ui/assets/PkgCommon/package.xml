@@ -238,6 +238,11 @@
     <image id="ea8nobfh" name="img_1393.png" path="/Texture/" exported="true"/>
     <component id="q4bcobfi" name="ComTipInfo.xml" path="/Component/Component/" exported="true"/>
     <image id="ik7bobfj" name="img_134.png" path="/Texture/" exported="true" scale="9grid" scale9grid="2,2,6,6"/>
+    <image id="glpbobfk" name="img_44.png" path="/Texture/" exported="true" scale="9grid" scale9grid="4,0,2,3"/>
+    <image id="glpbobfl" name="img_28.png" path="/Texture/" exported="true" scale="9grid"/>
+    <image id="glpbobfm" name="img_1282.png" path="/Texture/" exported="true"/>
+    <image id="glpbobfn" name="img_1527.png" path="/Texture/" exported="true" scale="9grid" scale9grid="35,0,40,40"/>
+    <component id="glpbobfo" name="BtnSwitchRandom.xml" path="/Component/Button/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

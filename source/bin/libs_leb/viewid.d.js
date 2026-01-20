@@ -4,10 +4,10 @@ EViewID = {
 	/**Btns */
 	BtnCheckRichTxtRightView: "BtnCheckRichTxtRightView",
 	BtnCheckTxtRightView: "BtnCheckTxtRightView",
+	BtnSwitchRandomView: "BtnSwitchRandomView",
 	BtnBagSkinCheckView: "BtnBagSkinCheckView",
 	BtnDengLongView: "BtnDengLongView",
 	BtnMailTabView: "BtnMailTabView",
-	BtnTabLeftView: "BtnTabLeftView",
 	BtnXunMiView: "BtnXunMiView",
 
 	/**Renders */
@@ -16,6 +16,7 @@ EViewID = {
 	RenderBagItemView: "RenderBagItemView",
 	RenderBagSkinItem1View: "RenderBagSkinItem1View",
 	RenderBagSkinItem2View: "RenderBagSkinItem2View",
+	RenderDecoSelectTabView: "RenderDecoSelectTabView",
 	RenderFriendApplyView: "RenderFriendApplyView",
 	RenderFriendFriendView: "RenderFriendFriendView",
 	RenderFriendRecentView: "RenderFriendRecentView",
@@ -42,6 +43,7 @@ EViewID = {
 	ComBagIllustView: "ComBagIllustView",
 	ComBagItemView: "ComBagItemView",
 	ComBagSkinView: "ComBagSkinView",
+	ComDecorateView: "ComDecorateView",
 	ComMatchContentView: "ComMatchContentView",
 	ComMatchItemView: "ComMatchItemView",
 	ComMatchModeView: "ComMatchModeView",

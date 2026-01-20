@@ -155,7 +155,16 @@
     <image id="ik7bobfi" name="img_1541.png" path="/Texture/"/>
     <image id="ik7bobfj" name="img_2817.png" path="/Texture/" scale="9grid" scale9grid="50,45,62,12"/>
     <image id="ik7bobfk" name="img_2818.png" path="/Texture/" scale="9grid" scale9grid="50,45,62,12"/>
-    <component id="ik7bobfl" name="BtnTabLeft.xml" path="/Component/UILiaoShe/" exported="true"/>
+    <component id="ik7bobfl" name="RenderDecoSelectTab.xml" path="/Component/UILiaoShe/" exported="true"/>
+    <image id="glpbobfm" name="img_860.png" path="/Texture/" scale="9grid" scale9grid="18,18,4,4"/>
+    <image id="glpbobfn" name="img_2406.png" path="/Texture/" scale="9grid" scale9grid="22,34,21,68"/>
+    <component id="glpbobfo" name="RenderDecoItem.xml" path="/Component/UILiaoShe/"/>
+    <image id="glpbobfp" name="img_859.png" path="/Texture/"/>
+    <image id="glpbobfq" name="img_1672.png" path="/Texture/"/>
+    <image id="glpbobfr" name="img_2849.png" path="/Texture/"/>
+    <image id="glpbobfs" name="img_682.png" path="/Texture/"/>
+    <image id="glpbobft" name="img_3418.png" path="/Texture/"/>
+    <component id="glpbobfu" name="ComDecorate.xml" path="/Component/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

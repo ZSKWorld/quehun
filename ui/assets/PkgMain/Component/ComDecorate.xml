@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1743,788">
+  <displayList>
+    <list id="n6_ik7b" name="tab" xy="0,2" size="276,784" overflow="scroll" lineGap="4" defaultItem="ui://vith2b66ik7bobfl" autoItemSize="false" align="right" autoClearItems="true">
+      <item controllers="button,1"/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+    </list>
+    <list id="n14_glpb" name="n14" xy="298,115" size="655,571" overflow="scroll" lineGap="-7" defaultItem="ui://vith2b66glpbobfo" autoClearItems="true">
+      <item controllers="button,1"/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+    </list>
+    <image id="n15_glpb" name="n15" src="glpbobfm" fileName="Texture/img_860.png" xy="979,0" size="764,784"/>
+    <component id="n18_glpb" name="n18" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1470,9" size="74,74">
+      <Button icon="ui://vith2b66glpbobfq"/>
+    </component>
+    <component id="n19_glpb" name="n19" src="glpbobfo" fileName="Component/Button/BtnSwitchRandom.xml" pkg="vx9zwser" xy="1556,27"/>
+    <text id="n20_glpb" name="n20" xy="1029,19" size="80,52" fontSize="38" color="#e7ab5d" text="桌布"/>
+    <image id="n16_glpb" name="n16" src="glpbobfl" fileName="Texture/img_28.png" pkg="vx9zwser" xy="984,84" size="755,695"/>
+    <component id="n21_glpb" name="close" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1639,93" size="70,70">
+      <Button icon="ui://vx9zwserj0ddob7b"/>
+    </component>
+    <component id="n23_glpb" name="n23" src="108ab6i" fileName="Component/Button/BtnNormal.xml" pkg="vx9zwser" xy="479,706" size="254,82">
+      <Button title="保存" titleColor="#613422" titleFontSize="40" icon="ui://vith2b66glpbobfr"/>
+    </component>
+    <text id="n24_glpb" name="n24" xy="574,24" pivot="0.5,0.5" size="26,49" fontSize="36" color="#f2c797" vAlign="middle" leading="0" singleLine="true" text="1"/>
+    <component id="n26_glpb" name="n26" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="607,32" size="35,35">
+      <relation target="n24_glpb" sidePair="right-right"/>
+      <Button icon="ui://vith2b66glpbobfs"/>
+    </component>
+    <image id="n27_glpb" name="n27" src="glpbobft" fileName="Texture/img_3418.png" xy="293,16"/>
+  </displayList>
+</component>

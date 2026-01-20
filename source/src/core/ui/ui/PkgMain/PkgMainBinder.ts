@@ -1,6 +1,7 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
 import UILiaoShe from "./UILiaoShe";
+import ComDecorate from "./ComDecorate";
 import ComMatchItem from "./ComMatchItem";
 import RenderBagSkinItem1 from "./RenderBagSkinItem1";
 import ComBagGift from "./ComBagGift";
@@ -9,7 +10,7 @@ import ComBagItem from "./ComBagItem";
 import RenderBagSkinItem2 from "./RenderBagSkinItem2";
 import RenderRankItem from "./RenderRankItem";
 import RenderMailItem from "./RenderMailItem";
-import BtnTabLeft from "./BtnTabLeft";
+import RenderDecoSelectTab from "./RenderDecoSelectTab";
 import RenderFriendRecent from "./RenderFriendRecent";
 import UIActivity from "./UIActivity";
 import UIMail from "./UIMail";
@@ -40,6 +41,7 @@ import BtnDengLong from "./BtnDengLong";
 import ComMatchMode from "./ComMatchMode";
 import ComMatchContent from "./ComMatchContent";
 import { UILiaoSheView } from "../../view/PkgMain/view/uis/UILiaoSheView";
+import { ComDecorateView } from "../../view/PkgMain/view/coms/ComDecorateView";
 import { ComMatchItemView } from "../../view/PkgMain/view/coms/ComMatchItemView";
 import { RenderBagSkinItem1View } from "../../view/PkgMain/view/renders/RenderBagSkinItem1View";
 import { ComBagGiftView } from "../../view/PkgMain/view/coms/ComBagGiftView";
@@ -48,7 +50,7 @@ import { ComBagItemView } from "../../view/PkgMain/view/coms/ComBagItemView";
 import { RenderBagSkinItem2View } from "../../view/PkgMain/view/renders/RenderBagSkinItem2View";
 import { RenderRankItemView } from "../../view/PkgMain/view/renders/RenderRankItemView";
 import { RenderMailItemView } from "../../view/PkgMain/view/renders/RenderMailItemView";
-import { BtnTabLeftView } from "../../view/PkgMain/view/btns/BtnTabLeftView";
+import { RenderDecoSelectTabView } from "../../view/PkgMain/view/renders/RenderDecoSelectTabView";
 import { RenderFriendRecentView } from "../../view/PkgMain/view/renders/RenderFriendRecentView";
 import { UIActivityView } from "../../view/PkgMain/view/uis/UIActivityView";
 import { UIMailView } from "../../view/PkgMain/view/uis/UIMailView";
@@ -82,6 +84,7 @@ import { ComMatchContentView } from "../../view/PkgMain/view/coms/ComMatchConten
 export default class PkgMainBinder {
 	public static bindAll(): void {
 		fgui.UIObjectFactory.setExtension(UILiaoShe.url, UILiaoSheView);
+		fgui.UIObjectFactory.setExtension(ComDecorate.url, ComDecorateView);
 		fgui.UIObjectFactory.setExtension(ComMatchItem.url, ComMatchItemView);
 		fgui.UIObjectFactory.setExtension(RenderBagSkinItem1.url, RenderBagSkinItem1View);
 		fgui.UIObjectFactory.setExtension(ComBagGift.url, ComBagGiftView);
@@ -90,7 +93,7 @@ export default class PkgMainBinder {
 		fgui.UIObjectFactory.setExtension(RenderBagSkinItem2.url, RenderBagSkinItem2View);
 		fgui.UIObjectFactory.setExtension(RenderRankItem.url, RenderRankItemView);
 		fgui.UIObjectFactory.setExtension(RenderMailItem.url, RenderMailItemView);
-		fgui.UIObjectFactory.setExtension(BtnTabLeft.url, BtnTabLeftView);
+		fgui.UIObjectFactory.setExtension(RenderDecoSelectTab.url, RenderDecoSelectTabView);
 		fgui.UIObjectFactory.setExtension(RenderFriendRecent.url, RenderFriendRecentView);
 		fgui.UIObjectFactory.setExtension(UIActivity.url, UIActivityView);
 		fgui.UIObjectFactory.setExtension(UIMail.url, UIMailView);

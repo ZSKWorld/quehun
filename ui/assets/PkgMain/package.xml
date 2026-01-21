@@ -165,6 +165,24 @@
     <image id="glpbobfs" name="img_682.png" path="/Texture/"/>
     <image id="glpbobft" name="img_3418.png" path="/Texture/"/>
     <component id="glpbobfu" name="ComDecorate.xml" path="/Component/"/>
+    <component id="s5z8obfv" name="RenderLiaoSheChar.xml" path="/Component/UILiaoShe/"/>
+    <image id="s5z8obfw" name="img_1740.png" path="/Texture/"/>
+    <image id="s5z8obfx" name="img_1753.png" path="/Texture/"/>
+    <image id="s5z8obfy" name="img_2755.png" path="/Texture/"/>
+    <image id="s5z8obfz" name="img_3244.jpg" path="/Texture/"/>
+    <image id="s5z8obg0" name="img_3430.png" path="/Texture/"/>
+    <image id="s5z8obg1" name="img_864.png" path="/Texture/"/>
+    <image id="s5z8obg2" name="img_895.png" path="/Texture/" scale="9grid" scale9grid="4,5,2,166"/>
+    <image id="s5z8obg3" name="img_1738.png" path="/Texture/"/>
+    <image id="s5z8obg4" name="img_1739.png" path="/Texture/"/>
+    <image id="s5z8obg5" name="img_1741.png" path="/Texture/"/>
+    <image id="s5z8obg6" name="img_1961.png" path="/Texture/"/>
+    <image id="s5z8obg7" name="img_1962.png" path="/Texture/"/>
+    <image id="s5z8obg8" name="img_3245.jpg" path="/Texture/"/>
+    <image id="s5z8obg9" name="img_3372.png" path="/Texture/"/>
+    <image id="s5z8obga" name="img_861.png" path="/Texture/"/>
+    <image id="s5z8obgb" name="img_862.png" path="/Texture/"/>
+    <image id="s5z8obgc" name="img_863.png" path="/Texture/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

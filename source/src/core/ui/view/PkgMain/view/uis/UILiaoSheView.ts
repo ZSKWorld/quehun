@@ -13,8 +13,13 @@ export class UILiaoSheView extends ExtensionClass<IView, UILiaoShe>(UILiaoShe) i
 		com_back.onBackClick(this, this.sendEvent, [EUILiaoSheMsg.OnComBackClick]);
 	}
 
-	playCharDecoAnim(showChar: boolean) {
-
+	refreshContent(index: number) {
+		const showChar = index == 0;
+		const { btn_char, btn_deco, ctrl_type, trans_showChar, trans_showDeco} = this;
+		btn_char.sortingOrder = +showChar;
+		btn_deco.sortingOrder = +!showChar;
+		ctrl_type.selectedIndex = +!showChar;
+		showChar ? trans_showChar.play() : trans_showDeco.play();
 	}
 
 	override onOpenAni() { return this.com_back.onOpenAni(); }

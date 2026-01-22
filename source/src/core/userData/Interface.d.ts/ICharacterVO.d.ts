@@ -1,5 +1,6 @@
 declare namespace VO {
 	declare interface ICharacterVO {
+		get chars(): ReadonlyArray<ProtoObject<ICharacter>>;
 		/** 是否拥有指定角色 */
 		hasChar(id: number): boolean;
 		/** 是否拥有指定皮肤 */

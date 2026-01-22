@@ -242,8 +242,10 @@
     <image id="glpbobfl" name="img_28.png" path="/Texture/" exported="true" scale="9grid"/>
     <image id="glpbobfm" name="img_1282.png" path="/Texture/" exported="true"/>
     <image id="glpbobfn" name="img_1527.png" path="/Texture/" exported="true" scale="9grid" scale9grid="35,0,40,40"/>
-    <component id="glpbobfo" name="BtnSwitchRandom.xml" path="/Component/Button/" exported="true"/>
+    <component id="glpbobfo" name="BtnSwitch1.xml" path="/Component/Button/" exported="true"/>
     <component id="s5z8obfp" name="VScrollBar4.xml" path="/Component/ScrollBar/" exported="true"/>
+    <image id="c90sobfq" name="img_2013.png" path="/Texture/"/>
+    <component id="c90sobfr" name="BtnSwitch2.xml" path="/Component/Button/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

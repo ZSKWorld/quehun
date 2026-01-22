@@ -1,16 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" designImage="ui://ca43vz0eglpb7plok5" designImageAlpha="100">
+<component size="1920,1080" designImage="ui://ca43vz0eik7b7plok4" designImageAlpha="0">
+  <controller name="type" pages="0,角色,1,装扮" selected="0"/>
   <displayList>
     <component id="n0_p5uz" name="back" src="p5uzob8h" fileName="Component/Component/ComBack.xml" pkg="vx9zwser" xy="10,22">
       <property target="title" propertyId="0" value="寮舍"/>
     </component>
-    <image id="n4_ik7b" name="n4" src="ik7bobfh" fileName="Texture/img_3660.png" xy="290,146" size="1580,894"/>
-    <component id="n2_ik7b" name="char" src="ik7bobfg" fileName="Component/UILiaoShe/BtnTabTop.xml" xy="1293,66"/>
-    <component id="n3_ik7b" name="deco" src="ik7bobfg" fileName="Component/UILiaoShe/BtnTabTop.xml" xy="1541,66">
-      <Button checked="true" title="装扮"/>
+    <image id="n13_c90s" name="n13" src="ieavob7l" fileName="Texture/img_112.png" pkg="vx9zwser" xy="1854,162" pivot="1,0" anchor="true" size="732,863" alpha="0.6">
+      <relation target="n4_ik7b" sidePair="width-width,height-height"/>
+    </image>
+    <image id="n4_ik7b" name="n4" src="ik7bobfh" fileName="Texture/img_3660.png" xy="1870,146" pivot="1,0" anchor="true" size="764,894">
+      <gearSize controller="type" pages="0" values="764,894,1,1" default="1580,894,1,1"/>
+    </image>
+    <component id="n2_ik7b" name="char" src="ik7bobfg" fileName="Component/UILiaoShe/BtnTabTop.xml" xy="1293,66">
+      <Button checked="true"/>
     </component>
-    <component id="n6_ik7b" name="decorate" src="glpbobfu" fileName="Component/ComDecorate.xml" xy="64,194"/>
-    <list id="n7_s5z8" name="n7" xy="1143,203" size="683,726" layout="flow_hz" overflow="scroll" scrollBarFlags="4" scrollBarMargin="9,0,0,0" scrollBarRes="ui://vx9zwsers5z8obfp," lineGap="1" colGap="5" defaultItem="ui://vith2b66s5z8obfv" autoClearItems="true">
+    <component id="n3_ik7b" name="deco" src="ik7bobfg" fileName="Component/UILiaoShe/BtnTabTop.xml" xy="1541,66">
+      <Button title="装扮"/>
+    </component>
+    <component id="n6_ik7b" name="decorate" src="glpbobfu" fileName="Component/ComDecorate.xml" xy="64,194">
+      <gearDisplay controller="type" pages="1"/>
+    </component>
+    <list id="n7_s5z8" name="chars" xy="1143,203" size="683,726" layout="flow_hz" overflow="scroll" scrollBarFlags="4" scrollBarMargin="9,0,0,0" scrollBarRes="ui://vx9zwsers5z8obfp," lineGap="1" colGap="5" defaultItem="ui://vith2b66s5z8obfv" autoClearItems="true">
+      <gearDisplay controller="type" pages="0"/>
       <item/>
       <item/>
       <item/>
@@ -26,6 +37,37 @@
       <item/>
       <item/>
     </list>
+    <component id="n8_c90s" name="sort" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1494,936" size="70,70">
+      <gearDisplay controller="type" pages="0"/>
+      <Button icon="ui://vith2b66c90sobgd"/>
+    </component>
+    <component id="n9_c90s" name="filter" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1580,936" size="70,70">
+      <gearDisplay controller="type" pages="0"/>
+      <Button icon="ui://vx9zwserrpakobes" selectedIcon="ui://vx9zwserrpakobet"/>
+    </component>
+    <component id="n11_c90s" name="star" src="c90sobfr" fileName="Component/Button/BtnSwitch2.xml" pkg="vx9zwser" xy="1657,945">
+      <gearDisplay controller="type" pages="0"/>
+    </component>
   </displayList>
-  <transition name="t0"/>
+  <transition name="showDeco" options="1" frameRate="60">
+    <item time="0" type="Alpha" target="n11_c90s" tween="true" startValue="1" endValue="0" duration="12" ease="Linear"/>
+    <item time="0" type="Alpha" target="n6_ik7b" value="0"/>
+    <item time="0" type="Alpha" target="n7_s5z8" tween="true" startValue="1" endValue="0" duration="12" ease="Linear"/>
+    <item time="0" type="Alpha" target="n8_c90s" tween="true" startValue="1" endValue="0" duration="12" ease="Linear"/>
+    <item time="0" type="Alpha" target="n9_c90s" tween="true" startValue="1" endValue="0" duration="12" ease="Linear"/>
+    <item time="0" type="Size" target="n4_ik7b" tween="true" startValue="764,-" endValue="1580,-" duration="12" ease="Linear"/>
+    <item time="12" type="Alpha" target="n6_ik7b" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
+  </transition>
+  <transition name="showChar" options="1" frameRate="60">
+    <item time="0" type="Alpha" target="n11_c90s" value="0"/>
+    <item time="0" type="Alpha" target="n6_ik7b" tween="true" startValue="1" endValue="0" duration="12" ease="Linear"/>
+    <item time="0" type="Alpha" target="n7_s5z8" value="0"/>
+    <item time="0" type="Alpha" target="n8_c90s" value="0"/>
+    <item time="0" type="Alpha" target="n9_c90s" value="0"/>
+    <item time="0" type="Size" target="n4_ik7b" tween="true" startValue="1580,-" endValue="764,-" duration="12" ease="Linear"/>
+    <item time="12" type="Alpha" target="n11_c90s" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
+    <item time="12" type="Alpha" target="n7_s5z8" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
+    <item time="12" type="Alpha" target="n8_c90s" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
+    <item time="12" type="Alpha" target="n9_c90s" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
+  </transition>
 </component>

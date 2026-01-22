@@ -1,13 +1,13 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-export default class BtnSwitchRandom extends fgui.GButton {
+export default class BtnSwitch1 extends fgui.GButton {
 
 	protected txt_title1: fgui.GTextField;
 	protected txt_title2: fgui.GTextField;
 	public static url: string = "ui://vx9zwserglpbobfo";
 
-	public static createInstance(): BtnSwitchRandom {
-		return <BtnSwitchRandom>(fgui.UIPackage.createObject("PkgCommon", "BtnSwitchRandom"));
+	public static createInstance(): BtnSwitch1 {
+		return <BtnSwitch1>(fgui.UIPackage.createObject("PkgCommon", "BtnSwitch1"));
 	}
 
 	protected override onConstruct(): void {

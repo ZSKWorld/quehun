@@ -20,8 +20,7 @@ export class UILiaoSheMediator extends MediatorBase<UILiaoSheView, IUILiaoSheDat
 	}
 
 	private onTypeTabChanged(index: number) {
-		this.view.btnChar.sortingOrder = index == 0 ? 1 : 0;
-		this.view.btnDeco.sortingOrder = index == 1 ? 1 : 0;
+		this.view.refreshContent(index);
 	}
 
 	private onComBackClick() {

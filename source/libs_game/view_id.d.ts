@@ -4,7 +4,7 @@ declare enum EViewID {
 	/**Btns */
 	BtnCheckRichTxtRightView = "BtnCheckRichTxtRightView",
 	BtnCheckTxtRightView = "BtnCheckTxtRightView",
-	BtnSwitchRandomView = "BtnSwitchRandomView",
+	BtnSwitch1View = "BtnSwitch1View",
 	BtnBagSkinCheckView = "BtnBagSkinCheckView",
 	BtnDengLongView = "BtnDengLongView",
 	BtnMailTabView = "BtnMailTabView",

@@ -183,6 +183,7 @@
     <image id="s5z8obga" name="img_861.png" path="/Texture/"/>
     <image id="s5z8obgb" name="img_862.png" path="/Texture/"/>
     <image id="s5z8obgc" name="img_863.png" path="/Texture/"/>
+    <image id="c90sobgd" name="img_1671.png" path="/Texture/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

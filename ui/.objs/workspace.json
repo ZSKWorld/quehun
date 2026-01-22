@@ -1,19 +1,11 @@
 {
-  "libview.firstColumnWidth": 443,
+  "libview.firstColumnWidth": 201,
+  "gridSize": 10,
   "libview.iconScale": 0,
   "doc.openedDocs": [
     "ui://vith2b66co9gob9l",
-    "ui://vx9zwsers5z8obfp",
-    "ui://vith2b66s5z8obfv",
-    "ui://vith2b66glpbobfo",
-    "ui://vith2b66ik7bobfl",
-    "ui://vith2b66ik7bobfg",
-    "ui://vith2b66qke2ob9m",
-    "ui://vith2b66ktwpob9u",
-    "ui://vx9zwserj0ddob7h",
-    "ui://vx9zwserhdeoobbj",
-    "ui://vx9zwserpuubobfe",
-    "ui://vx9zwser108ab6i"
+    "ui://vith2b66glpbobfu",
+    "ui://vx9zwserc90sobfr"
   ],
   "packageGroup.mine": [
     "vx9zwser",
@@ -26,35 +18,26 @@
   "canvasColor": 10066329,
   "auxline2": true,
   "doc.activeDoc": "ui://vith2b66co9gob9l",
-  "libview.twoColumn": false,
+  "libview.twoColumn": true,
   "libview.expandedNodes": [
     "vx9zwser",
     "/",
     "vx9zwser",
     "/Component/",
     "vx9zwser",
-    "/Component/ScrollBar/",
-    "vx9zwser",
-    "/Texture/",
+    "/Component/Button/",
     "vith2b66",
     "/",
     "vith2b66",
     "/Component/",
     "vith2b66",
-    "/Component/UILiaoShe/",
-    "ca43vz0e",
-    "/",
-    "ca43vz0e",
-    "/2503寮舍优化/",
-    "ca43vz0e",
-    "/2503寮舍优化/寮舍/"
+    "/Texture/"
   ],
-  "auxline1": true,
   "showGrid": false,
   "snapToGrid": true,
   "test.orientation": "landscape",
   "backgroundColor": 6710886,
   "libview.currentGroup": "",
-  "gridSize": 10,
+  "auxline1": true,
   "gridColor": 42
 }

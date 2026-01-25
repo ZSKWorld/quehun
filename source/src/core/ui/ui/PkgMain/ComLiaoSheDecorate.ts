@@ -2,7 +2,7 @@
 
 import { BtnSwitch1View } from "../../view/PkgCommon/view/btns/BtnSwitch1View";
 
-export default class ComDecorate extends fgui.GComponent {
+export default class ComLiaoSheDecorate extends fgui.GComponent {
 
 	protected list_tab: fgui.GList;
 	protected list_view: fgui.GList;
@@ -12,11 +12,11 @@ export default class ComDecorate extends fgui.GComponent {
 	protected btn_closePreview: fgui.GButton;
 	protected btn_editViewName: fgui.GButton;
 	protected txt_viewName: fgui.GTextField;
-	protected txt_name: fgui.GTextField;
+	protected txt_title: fgui.GTextField;
 	public static url: string = "ui://vith2b66glpbobfu";
 
-	public static createInstance(): ComDecorate {
-		return <ComDecorate>(fgui.UIPackage.createObject("PkgMain", "ComDecorate"));
+	public static createInstance(): ComLiaoSheDecorate {
+		return <ComLiaoSheDecorate>(fgui.UIPackage.createObject("PkgMain", "ComLiaoSheDecorate"));
 	}
 
 	protected override onConstruct(): void {
@@ -28,6 +28,6 @@ export default class ComDecorate extends fgui.GComponent {
 		this.btn_closePreview = <fgui.GButton>(this.getChildAt(8));
 		this.btn_editViewName = <fgui.GButton>(this.getChildAt(9));
 		this.txt_viewName = <fgui.GTextField>(this.getChildAt(10));
-		this.txt_name = <fgui.GTextField>(this.getChildAt(11));
+		this.txt_title = <fgui.GTextField>(this.getChildAt(11));
 	}
 }

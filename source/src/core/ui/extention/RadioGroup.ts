@@ -6,12 +6,12 @@ export class RadioGroup {
 	private _onValueChanged: (index: number) => void;
 
 	get selectIndex() { return this._selectIndex; }
-	set selectIndex(value: number) {
-		this._selectIndex = value;
-		this._items.forEach((item, index) => {
-			item.selected = index == value;
-		});
-		this._onValueChanged && this._onValueChanged.apply(this._valueChangedCaller, [value]);
+	set selectIndex(v) {
+		if (v == this._selectIndex) return;
+		const items = this._items;
+		if (v < 0 || v >= items.length) return;
+		this.setSelection(v);
+		this._onValueChanged?.apply(this._valueChangedCaller, [v]);
 	}
 
 	init(items: RadioItem[], caller?: any, onValueChanged?: (index: number) => void) {
@@ -27,20 +27,27 @@ export class RadioGroup {
 		this._onValueChanged = onValueChanged;
 	}
 
-	clear() {
-		this._items.forEach(item => {
-			item.offClick(this, this.onItemClick);
-		});
+	clearSelection() { this.setSelection(-1); }
+
+	reset() {
+		this._items.forEach(item => item.offClick(this, this.onItemClick));
 		this._items.length = 0;
 		this._valueChangedCaller = null;
 		this._onValueChanged = null;
 		this._selectIndex = -1;
 	}
 
+	private setSelection(v: number) {
+		this._selectIndex = v;
+		const items = this._items;
+		for (let i = items.length - 1; i >= 0; i--) {
+			items[i].selected = v == i;
+		}
+	}
+
 	private onItemClick(item: RadioItem) {
 		const index = this._items.indexOf(item);
 		if (index == -1) return;
-		if (index == this.selectIndex) return;
 		this.selectIndex = index;
 	}
 }

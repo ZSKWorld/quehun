@@ -150,21 +150,21 @@
     <component id="jcnmobfd" name="RenderFriendRecent.xml" path="/Component/UIFriend/"/>
     <image id="ik7bobfe" name="img_3020.png" path="/Texture/"/>
     <image id="ik7bobff" name="img_3021.png" path="/Texture/"/>
-    <component id="ik7bobfg" name="BtnTabTop.xml" path="/Component/UILiaoShe/" exported="true"/>
+    <component id="ik7bobfg" name="BtnLiaoSheTab.xml" path="/Component/UILiaoShe/"/>
     <image id="ik7bobfh" name="img_3660.png" path="/Texture/" scale="9grid" scale9grid="70,70,116,116"/>
     <image id="ik7bobfi" name="img_1541.png" path="/Texture/"/>
     <image id="ik7bobfj" name="img_2817.png" path="/Texture/" scale="9grid" scale9grid="50,45,62,12"/>
     <image id="ik7bobfk" name="img_2818.png" path="/Texture/" scale="9grid" scale9grid="50,45,62,12"/>
-    <component id="ik7bobfl" name="RenderDecoSelectTab.xml" path="/Component/UILiaoShe/" exported="true"/>
+    <component id="ik7bobfl" name="RenderLiaoSheDecoTab.xml" path="/Component/UILiaoShe/"/>
     <image id="glpbobfm" name="img_860.png" path="/Texture/" scale="9grid" scale9grid="18,18,4,4"/>
     <image id="glpbobfn" name="img_2406.png" path="/Texture/" scale="9grid" scale9grid="22,34,21,68"/>
-    <component id="glpbobfo" name="RenderDecoItem.xml" path="/Component/UILiaoShe/"/>
+    <component id="glpbobfo" name="RenderLiaoSheDecoItem.xml" path="/Component/UILiaoShe/"/>
     <image id="glpbobfp" name="img_859.png" path="/Texture/"/>
     <image id="glpbobfq" name="img_1672.png" path="/Texture/"/>
     <image id="glpbobfr" name="img_2849.png" path="/Texture/"/>
     <image id="glpbobfs" name="img_682.png" path="/Texture/"/>
     <image id="glpbobft" name="img_3418.png" path="/Texture/"/>
-    <component id="glpbobfu" name="ComDecorate.xml" path="/Component/"/>
+    <component id="glpbobfu" name="ComLiaoSheDecorate.xml" path="/Component/UILiaoShe/"/>
     <component id="s5z8obfv" name="RenderLiaoSheChar.xml" path="/Component/UILiaoShe/"/>
     <image id="s5z8obfw" name="img_1740.png" path="/Texture/"/>
     <image id="s5z8obfx" name="img_1753.png" path="/Texture/"/>
@@ -184,6 +184,17 @@
     <image id="s5z8obgb" name="img_862.png" path="/Texture/"/>
     <image id="s5z8obgc" name="img_863.png" path="/Texture/"/>
     <image id="c90sobgd" name="img_1671.png" path="/Texture/"/>
+    <component id="k5qeobge" name="ComLiaoSheChar.xml" path="/Component/UILiaoShe/"/>
+    <image id="k5qeobgf" name="img_1960.png" path="/Texture/"/>
+    <image id="k5qeobgg" name="img_1963.png" path="/Texture/"/>
+    <image id="kolmobgh" name="img_3198.jpg" path="/Texture/" exported="true"/>
+    <image id="kolmobgi" name="img_3199.jpg" path="/Texture/" exported="true"/>
+    <image id="kolmobgj" name="img_3200.jpg" path="/Texture/" exported="true"/>
+    <image id="kolmobgk" name="img_3201.jpg" path="/Texture/" exported="true"/>
+    <image id="kolmobgl" name="img_3202.jpg" path="/Texture/" exported="true"/>
+    <image id="kolmobgm" name="img_3203.jpg" path="/Texture/" exported="true"/>
+    <image id="kolmobgn" name="img_3204.jpg" path="/Texture/" exported="true"/>
+    <image id="kolmobgo" name="img_3205.jpg" path="/Texture/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

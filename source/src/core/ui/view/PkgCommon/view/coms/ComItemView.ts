@@ -9,6 +9,10 @@ export class ComItemView extends ExtensionClass<IView, ComItem>(ComItem) impleme
 
 	}
 
+	refreshSkin(url: string) {
+		this.loader_icon.icon = url;
+	}
+
 	refreshIcon(id: number) {
 		const iconPath = $itemUtil.getItemView(id).icon;
 		$dynamicResMgr.setLoader(this.loader_icon, iconPath);

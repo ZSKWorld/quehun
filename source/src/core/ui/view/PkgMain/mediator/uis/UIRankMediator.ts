@@ -43,6 +43,7 @@ export class UIRankMediator extends MediatorBase<UIRankView, any> {
 		for (const key in this._states) {
 			this._states[key as unknown as EUIRankType].reset();
 		}
+		this._tabGroup.clearSelection();
 	}
 
 	private onListLevelRender(index: number, item: RenderRankItemView) {

@@ -46,6 +46,7 @@ export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> 
 		this._recentPlayerLoader.reset();
 		this._loadRecent = false;
 		$userData.friend.applied.clear();
+		this._tabGroup.clearSelection();
 	}
 
 	private onTabChanged(index?: number) {

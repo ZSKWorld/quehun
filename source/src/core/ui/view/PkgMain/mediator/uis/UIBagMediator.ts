@@ -19,6 +19,10 @@ export class UIBagMediator extends MediatorBase<UIBagView, IUIBagData> {
 		this._tabGroup.selectIndex = this.data?.index || 0;
 	}
 
+	override onDisable() {
+		this._tabGroup.clearSelection();
+	}
+
 	private async onComBackClick() {
 		this.closeSelf();
 	}

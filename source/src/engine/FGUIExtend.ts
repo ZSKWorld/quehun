@@ -31,6 +31,12 @@ export class FGUIExtend {
 		prototype.tweenResize = function (endW: number, endH: number, duration: number) {
 			return fgui.GTween.to2(this.width, this.height, endW, endH, duration).setTarget(this, this.setSize);
 		};
+		prototype.tweenWidth = function (endW: number, duration: number) {
+			return fgui.GTween.to(this.width, endW, duration).setTarget(this, "width");
+		};
+		prototype.tweenHeight = function (endH: number, duration: number) {
+			return fgui.GTween.to(this.height, endH, duration).setTarget(this, "height");
+		};
 		prototype.tweenFade = function (endValue: number, duration: number) {
 			return fgui.GTween.to(this.alpha, endValue, duration).setTarget(this, "alpha");
 		};

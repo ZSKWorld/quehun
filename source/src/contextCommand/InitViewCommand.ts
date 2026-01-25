@@ -15,10 +15,11 @@ import { RenderBagIllustItemView } from "../core/ui/view/PkgMain/view/renders/Re
 import { RenderBagItemView } from "../core/ui/view/PkgMain/view/renders/RenderBagItemView";
 import { RenderBagSkinItem1View } from "../core/ui/view/PkgMain/view/renders/RenderBagSkinItem1View";
 import { RenderBagSkinItem2View } from "../core/ui/view/PkgMain/view/renders/RenderBagSkinItem2View";
-import { RenderDecoSelectTabView } from "../core/ui/view/PkgMain/view/renders/RenderDecoSelectTabView";
 import { RenderFriendApplyView } from "../core/ui/view/PkgMain/view/renders/RenderFriendApplyView";
 import { RenderFriendFriendView } from "../core/ui/view/PkgMain/view/renders/RenderFriendFriendView";
 import { RenderFriendRecentView } from "../core/ui/view/PkgMain/view/renders/RenderFriendRecentView";
+import { RenderLiaoSheDecoItemView } from "../core/ui/view/PkgMain/view/renders/RenderLiaoSheDecoItemView";
+import { RenderLiaoSheDecoTabView } from "../core/ui/view/PkgMain/view/renders/RenderLiaoSheDecoTabView";
 import { RenderMailItemView } from "../core/ui/view/PkgMain/view/renders/RenderMailItemView";
 import { RenderRankItemView } from "../core/ui/view/PkgMain/view/renders/RenderRankItemView";
 import { ComBackView } from "../core/ui/view/PkgCommon/view/coms/ComBackView";
@@ -41,7 +42,8 @@ import { ComBagGiftView } from "../core/ui/view/PkgMain/view/coms/ComBagGiftView
 import { ComBagIllustView } from "../core/ui/view/PkgMain/view/coms/ComBagIllustView";
 import { ComBagItemView } from "../core/ui/view/PkgMain/view/coms/ComBagItemView";
 import { ComBagSkinView } from "../core/ui/view/PkgMain/view/coms/ComBagSkinView";
-import { ComDecorateView } from "../core/ui/view/PkgMain/view/coms/ComDecorateView";
+import { ComLiaoSheCharView } from "../core/ui/view/PkgMain/view/coms/ComLiaoSheCharView";
+import { ComLiaoSheDecorateView } from "../core/ui/view/PkgMain/view/coms/ComLiaoSheDecorateView";
 import { ComMatchContentView } from "../core/ui/view/PkgMain/view/coms/ComMatchContentView";
 import { ComMatchContentMediator } from "../core/ui/view/PkgMain/mediator/coms/ComMatchContentMediator";
 import { ComMatchItemView } from "../core/ui/view/PkgMain/view/coms/ComMatchItemView";
@@ -125,10 +127,11 @@ export class InitViewCommand extends Command {
 		register(EViewID.RenderBagItemView, EViewType.Render, RenderBagItemView);
 		register(EViewID.RenderBagSkinItem1View, EViewType.Render, RenderBagSkinItem1View);
 		register(EViewID.RenderBagSkinItem2View, EViewType.Render, RenderBagSkinItem2View);
-		register(EViewID.RenderDecoSelectTabView, EViewType.Render, RenderDecoSelectTabView);
 		register(EViewID.RenderFriendApplyView, EViewType.Render, RenderFriendApplyView);
 		register(EViewID.RenderFriendFriendView, EViewType.Render, RenderFriendFriendView);
 		register(EViewID.RenderFriendRecentView, EViewType.Render, RenderFriendRecentView);
+		register(EViewID.RenderLiaoSheDecoItemView, EViewType.Render, RenderLiaoSheDecoItemView);
+		register(EViewID.RenderLiaoSheDecoTabView, EViewType.Render, RenderLiaoSheDecoTabView);
 		register(EViewID.RenderMailItemView, EViewType.Render, RenderMailItemView);
 		register(EViewID.RenderRankItemView, EViewType.Render, RenderRankItemView);
 
@@ -152,7 +155,8 @@ export class InitViewCommand extends Command {
 		register(EViewID.ComBagIllustView, EViewType.Component, ComBagIllustView);
 		register(EViewID.ComBagItemView, EViewType.Component, ComBagItemView);
 		register(EViewID.ComBagSkinView, EViewType.Component, ComBagSkinView);
-		register(EViewID.ComDecorateView, EViewType.Component, ComDecorateView);
+		register(EViewID.ComLiaoSheCharView, EViewType.Component, ComLiaoSheCharView);
+		register(EViewID.ComLiaoSheDecorateView, EViewType.Component, ComLiaoSheDecorateView);
 		register(EViewID.ComMatchContentView, EViewType.Component, ComMatchContentView, ComMatchContentMediator);
 		register(EViewID.ComMatchItemView, EViewType.Component, ComMatchItemView, ComMatchItemMediator);
 		register(EViewID.ComMatchModeView, EViewType.Component, ComMatchModeView, ComMatchModeMediator);

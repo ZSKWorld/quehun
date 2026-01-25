@@ -7,9 +7,9 @@
       <gearDisplay controller="button" pages="1"/>
     </image>
     <image id="n9_glpb" name="n9" src="glpbobfk" fileName="Texture/img_44.png" pkg="vx9zwser" xy="177,22" size="4,89"/>
-    <loader id="n10_glpb" name="n10" xy="518,20" size="93,93" url="ui://vx9zwsergsi2obd4" fill="scaleFree"/>
-    <text id="n12_glpb" name="n12" xy="65,44" pivot="0.5,0.5" size="64,42" fontSize="30" color="#b58c37" singleLine="true" text="桌布"/>
-    <text id="n13_glpb" name="n13" xy="191,47" size="170,36" fontSize="26" color="#b58c37" leading="0" singleLine="true" text="桌布-萤火之森"/>
+    <component id="n10_glpb" name="item" src="rpakobf5" fileName="Component/Component/物品/ComItem.xml" pkg="vx9zwser" xy="518,20" size="93,93"/>
+    <text id="n12_glpb" name="title" xy="65,44" pivot="0.5,0.5" size="64,42" fontSize="30" color="#b58c37" singleLine="true" text="桌布"/>
+    <text id="n13_glpb" name="name" xy="191,47" size="170,36" fontSize="26" color="#b58c37" leading="0" singleLine="true" text="桌布-萤火之森"/>
   </displayList>
   <Button mode="Radio"/>
 </component>

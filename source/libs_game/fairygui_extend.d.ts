@@ -10,6 +10,8 @@ declare namespace fgui {
 		tweenScaleX(endX: number, duration: number): GTweener;
 		tweenScaleY(endY: number, duration: number): GTweener;
 		tweenResize(endW: number, endH: number, duration: number): GTweener;
+		tweenWidth(endW: number, duration: number): GTweener;
+		tweenHeight(endH: number, duration: number): GTweener;
 		tweenFade(endValue: number, duration: number): GTweener;
 		tweenRotate(endValue: number, duration: number): GTweener;
 

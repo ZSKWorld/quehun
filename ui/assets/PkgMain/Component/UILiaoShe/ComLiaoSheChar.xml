@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="683,803">
+  <controller name="type" pages="0,角色,1,装扮" selected="0"/>
+  <displayList>
+    <list id="n7_s5z8" name="chars" xy="0,0" size="683,726" layout="flow_hz" overflow="scroll" scrollBarFlags="4" scrollBarMargin="9,0,0,0" scrollBarRes="ui://vx9zwsers5z8obfp," lineGap="1" colGap="5" defaultItem="ui://vith2b66s5z8obfv" autoClearItems="true">
+      <gearDisplay controller="type" pages="0"/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+    </list>
+    <component id="n8_c90s" name="sort" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="351,733" size="70,70">
+      <gearDisplay controller="type" pages="0"/>
+      <Button icon="ui://vith2b66c90sobgd"/>
+    </component>
+    <component id="n9_c90s" name="filter" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="437,733" size="70,70">
+      <gearDisplay controller="type" pages="0"/>
+      <Button icon="ui://vx9zwserrpakobes" selectedIcon="ui://vx9zwserrpakobet"/>
+    </component>
+    <component id="n11_c90s" name="star" src="c90sobfr" fileName="Component/Button/BtnSwitch2.xml" pkg="vx9zwser" xy="514,742">
+      <gearDisplay controller="type" pages="0"/>
+    </component>
+  </displayList>
+</component>

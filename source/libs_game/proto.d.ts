@@ -238,6 +238,16 @@ declare enum ENotify {
 	 */
 	NotifyCustomizedContestRuleModify = "NotifyCustomizedContestRuleModify",
 	/**
+	 ** 通知大会室预约对局玩家准备状态修改(预约赛事创建/玩家准备状态变化时发送给客户端)
+	 ** res: {@link INotifyCustomizedContestPlanReady}
+	 */
+	NotifyCustomizedContestPlanReady = "NotifyCustomizedContestPlanReady",
+	/**
+	 ** 通知当前大会室预约取消
+	 ** res: {@link INotifyCustomizedContestPlanCancel}
+	 */
+	NotifyCustomizedContestPlanCancel = "NotifyCustomizedContestPlanCancel",
+	/**
 	 ** 通知新的一场游戏开始了
 	 ** res: {@link INotifyNewGame}
 	 */
@@ -1956,6 +1966,12 @@ declare enum EMessageID {
 	 */
 	completeActivityFlipTask = "completeActivityFlipTask",
 	/**
+	 ** req: {@link IReqCompleteActivityFlipTaskBatch}
+	 ** res: {@link IResCompleteActivityFlipTaskBatch}
+	 ** method: {@link IReqMethod.completeActivityFlipTaskBatch}
+	 */
+	completeActivityFlipTaskBatch = "completeActivityFlipTaskBatch",
+	/**
 	 ** 领取长期任务奖励
 	 ** req: {@link IReqCompleteActivityTask}
 	 ** res: {@link IResCommon}
@@ -1988,6 +2004,12 @@ declare enum EMessageID {
 	 ** method: {@link IReqMethod.receiveActivityFlipTask}
 	 */
 	receiveActivityFlipTask = "receiveActivityFlipTask",
+	/**
+	 ** req: {@link IReqReceiveActivityFlipTaskBatch}
+	 ** res: {@link IResReceiveActivityFlipTaskBatch}
+	 ** method: {@link IReqMethod.receiveActivityFlipTaskBatch}
+	 */
+	receiveActivityFlipTaskBatch = "receiveActivityFlipTaskBatch",
 	/**
 	 ** 领取分段任务奖励
 	 ** req: {@link IReqCompleteSegmentTaskReward}
@@ -2916,10 +2938,17 @@ declare enum EMessageID {
 	/**
 	 ** 可选up卡池活动
 	 ** req: {@link IReqSelectChestChooseUp}
-	 ** res: {@link IReqCommon}
+	 ** res: {@link IResCommon}
 	 ** method: {@link IReqMethod.selectChestChooseUpActivity}
 	 */
 	selectChestChooseUpActivity = "selectChestChooseUpActivity",
+	/**
+	 ** 可选up组活动
+	 ** req: {@link IReqSelectChestChooseGroupActivity}
+	 ** res: {@link IResCommon}
+	 ** method: {@link IReqMethod.selectChestChooseGroupActivity}
+	 */
+	selectChestChooseGroupActivity = "selectChestChooseGroupActivity",
 	/**
 	 ** 年度报告
 	 ** req: {@link IReqGenerateAnnualReportToken}
@@ -3093,6 +3122,27 @@ declare enum EMessageID {
 	 ** method: {@link IReqMethod.snowballActivityFetchDebug}
 	 */
 	snowballActivityFetchDebug = "snowballActivityFetchDebug",
+	/**
+	 ** 马拉松活动
+	 ** req: {@link IReqMarathonActivityStartRace}
+	 ** res: {@link IResMarathonActivityStartRace}
+	 ** method: {@link IReqMethod.marathonActivityStartRace}
+	 */
+	marathonActivityStartRace = "marathonActivityStartRace",
+	/**
+	 ** req: {@link IReqMarathonActivityFinishRace}
+	 ** res: {@link IResMarathonActivityFinishRace}
+	 ** method: {@link IReqMethod.marathonActivityFinishRace}
+	 */
+	marathonActivityFinishRace = "marathonActivityFinishRace",
+	/**
+	 ** ==DevDebug Start==
+	 ** debug 协议在正式版本删除
+	 ** req: {@link IReqMarathonActivityTest}
+	 ** res: {@link IResMarathonActivityTest}
+	 ** method: {@link IReqMethod.marathonActivityTest}
+	 */
+	marathonActivityTest = "marathonActivityTest",
 	/**
 	 ** 验证游戏口令
 	 ** req: {@link IReqAuthGame}
@@ -3835,6 +3885,25 @@ declare interface INotifyCustomizedContestRuleModify extends IProto {
 	unique_id: number;
 	/** 自动匹配状态 */
 	auto_match: number;
+}
+
+/**
+ ** .lq.NotifyCustomizedContestPlanReady
+ ** 通知大会室预约对局玩家准备状态修改(预约赛事创建/玩家准备状态变化时发送给客户端)
+ */
+declare interface INotifyCustomizedContestPlanReady extends IProto {
+	game_plan: ICustomizedContestGamePlan;
+}
+
+/**
+ ** .lq.NotifyCustomizedContestPlanCancel
+ ** 通知当前大会室预约取消
+ */
+declare interface INotifyCustomizedContestPlanCancel extends IProto {
+	/** 大会室唯一id */
+	unique_id: number;
+	/** 对局uuid */
+	uuid: string;
 }
 
 /** .lq.Error */
@@ -5213,6 +5282,7 @@ declare interface IAccountActivityUpdate extends IProto {
 	shoot_data: IActivityShootData[];
 	bingo_data: IActivityBingoData[];
 	snowball_data: IActivitySnowballValueChanges[];
+	choose_group_up_data: IActivityChooseGroupData[];
 }
 
 /** .lq.ActivityCombiningWorkbench */
@@ -5550,6 +5620,13 @@ declare interface IActivityChooseUpData extends IProto {
 	selection: number;
 	/** 是否已经获得up标的结束活动 */
 	is_end: number;
+}
+
+/** .lq.ActivityChooseGroupData */
+declare interface IActivityChooseGroupData extends IProto {
+	activity_id: number;
+	chest_id: number;
+	selection_id: number;
 }
 
 /** .lq.ActivityFriendGiftData */
@@ -6163,7 +6240,7 @@ declare interface ICustomizedContestDetail extends IProto {
 	contest_id: number;
 	contest_name: string;
 	state: number;
-	creator_id: number;
+	/** uint32 creator_id = 5; // 避免暴露官方赛事账号id */
 	create_time: number;
 	start_time: number;
 	finish_time: number;
@@ -6197,6 +6274,25 @@ declare interface ICustomizedContestDetail extends IProto {
 	match_start_time: number;
 	/** 自动匹配结束时间 */
 	match_end_time: number;
+}
+
+/**
+ ** .lq.CustomizedContestGamePlan
+ ** 预约对局数据结构
+ */
+declare interface ICustomizedContestGamePlan extends IProto {
+	/** 大会室unique_id */
+	unique_id: number;
+	/** 预约对局uuid */
+	uuid: string;
+	/** 当前已准备玩家的account_id */
+	ready_players: number[];
+	/** 本次预约对局的所有玩家，数组内为预约赛事中所有玩家的account_id */
+	account_ids: number[];
+	/** 预约对局开始时间 */
+	game_start_time: number;
+	/** 预约对局过期时间 */
+	expired_time: number;
 }
 
 /**
@@ -7646,6 +7742,61 @@ declare interface ISnowballActivityBossAction_SnowballActivityBossMPConsumeInfo 
 	before_delay: number;
 	/** 后摇时长(tick) */
 	after_delay: number;
+}
+
+/** .lq.ClientDeviceInfoLog */
+declare interface IClientDeviceInfoLog extends IProto {
+	device_info: IClientDeviceInfo;
+	login_time: number;
+	account_id: number;
+}
+
+/** .lq.MarathonGameRecord */
+declare interface IMarathonGameRecord extends IProto {
+	point: number;
+	/** 距离，1round=10m，服务端不校验个位数 */
+	distance: number;
+	used_tick: number;
+}
+
+/** .lq.ActivityMarathonData */
+declare interface IActivityMarathonData extends IProto {
+	activity_id: number;
+	highest_record: IMarathonGameRecord;
+	/** 开始对局后有该数据 */
+	race_data: IActivityMarathonData_MarathonRaceData;
+	/** 游戏记录，保存最近5场，不会发给客户端 */
+	history: IActivityMarathonData_MarathonRaceHistory[];
+}
+
+/** .lq.ActivityMarathonData.MarathonRaceData */
+declare interface IActivityMarathonData_MarathonRaceData extends IProto {
+	id: string;
+	random_seed: number;
+	/** unix 时间戳 */
+	start_time: number;
+}
+
+/** .lq.ActivityMarathonData.MarathonRaceHistory */
+declare interface IActivityMarathonData_MarathonRaceHistory extends IProto {
+	race_data: IActivityMarathonData_MarathonRaceData;
+	record: IMarathonGameRecord;
+}
+
+/** .lq.ActivityMarathonCheckData */
+declare interface IActivityMarathonCheckData extends IProto {
+	/** 第几面墙，从1开始 */
+	round: number;
+	/** round-1 到 round 之间得到了什么道具 */
+	item: number[];
+	/** round 这面墙撞了什么牌 */
+	tile: string;
+	/** 撞完墙后还剩多少tick */
+	tick: number;
+	/** 撞完墙结算完麻将消消乐后的分数 */
+	point: number;
+	/** 是否是时间耗尽的结束 tick */
+	time_end: number;
 }
 
 /**
@@ -9986,6 +10137,8 @@ declare interface IReqOpenChest extends IProto {
 	use_ticket: boolean;
 	/** 可选up宝箱活动id */
 	choose_up_activity_id: number;
+	/** 可选up组活动id */
+	choose_group_activity_id: number;
 }
 
 /** .lq.ResOpenChest */
@@ -10552,6 +10705,8 @@ declare interface IResEnterCustomizedContest extends IResponse {
 	/** 0-未报名 1-已报名 2-可以参赛 */
 	state: number;
 	is_admin: boolean;
+	/** 预约对局（若玩家没有预约对局则不传） */
+	game_plan: ICustomizedContestGamePlan;
 }
 
 /**
@@ -10715,6 +10870,8 @@ declare interface IResAccountActivityData extends IResponse {
 	shoot_data: IActivityShootData[];
 	bingo_data: IActivityBingoData[];
 	snowball_data: IActivitySnowballData[];
+	marathon_data: IActivityMarathonData[];
+	choose_group_up_data: IActivityChooseGroupData[];
 }
 
 /** .lq.ResAccountActivityData.ActivitySignInData */
@@ -10821,6 +10978,22 @@ declare interface IResReceiveActivityFlipTask extends IResponse {
 }
 
 /**
+ ** .lq.ReqReceiveActivityFlipTaskBatch
+ ** 协议： 批量翻牌
+ ** dapeng 2025/12/05: 翻牌活动批量任务领取接口出现错误无法全部领取时，则为统一失败的状态，任务要么全部领取要么全都不领取
+ */
+declare interface IReqReceiveActivityFlipTaskBatch extends IProto {
+	/** 翻牌任务列表 */
+	task_list: number[];
+}
+
+/** .lq.ResReceiveActivityFlipTaskBatch */
+declare interface IResReceiveActivityFlipTaskBatch extends IResponse {
+	/** 当前用户还可以翻开卡牌的次数 */
+	count: number;
+}
+
+/**
  ** .lq.ReqCompleteSegmentTaskReward
  ** 协议：完成分段任务
  */
@@ -10846,6 +11019,22 @@ declare interface IReqFetchActivityFlipInfo extends IProto {
 declare interface IResFetchActivityFlipInfo extends IResponse {
 	rewards: number[];
 	count: number;
+}
+
+/**
+ ** .lq.ReqCompleteActivityFlipTaskBatch
+ ** 协议：翻牌活动批量领取奖励格
+ ** dapeng 2025/12/05: 翻牌活动批量接口出现错误无法全部领取时，则为统一失败的状态，传入参数中其他完成的任务也不会领取
+ */
+declare interface IReqCompleteActivityFlipTaskBatch extends IProto {
+	/** 翻牌任务列表 */
+	task_list: number[];
+}
+
+/** .lq.ResCompleteActivityFlipTaskBatch */
+declare interface IResCompleteActivityFlipTaskBatch extends IResponse {
+	/** 领取奖励记录 */
+	total_rewards: IExecuteReward[];
 }
 
 /**
@@ -12746,6 +12935,15 @@ declare interface IReqSelectChestChooseUp extends IProto {
 	chest_id: number;
 }
 
+/** .lq.ReqSelectChestChooseGroupActivity */
+declare interface IReqSelectChestChooseGroupActivity extends IProto {
+	activity_id: number;
+	/** 选择的组合id */
+	selection: number;
+	/** 选择的卡池id */
+	chest_id: number;
+}
+
 /**
  ** .lq.ReqFestivalDebug
  ** ==DevDebug Start==
@@ -13197,6 +13395,77 @@ declare interface IReqSnowballActivityFetchDebug extends IProto {
 /** .lq.ResSnowballActivityFetchDebug */
 declare interface IResSnowballActivityFetchDebug extends IResponse {
 	snowball_activity: IActivitySnowballData;
+}
+
+/** .lq.ReqMarathonActivityStartRace */
+declare interface IReqMarathonActivityStartRace extends IProto {
+	activity_id: number;
+}
+
+/** .lq.ResMarathonActivityStartRace */
+declare interface IResMarathonActivityStartRace extends IResponse {
+	random_seed: number;
+	race_id: string;
+}
+
+/** .lq.ReqMarathonActivityFinishRace */
+declare interface IReqMarathonActivityFinishRace extends IProto {
+	activity_id: number;
+	race_data: IActivityMarathonCheckData[];
+	record: IMarathonGameRecord;
+	race_id: string;
+}
+
+/** .lq.ResMarathonActivityFinishRace */
+declare interface IResMarathonActivityFinishRace extends IResponse {
+	highest_record: IMarathonGameRecord;
+	rewards: IExecuteReward[];
+}
+
+/**
+ ** .lq.ReqMarathonActivityTest
+ ** ==DevDebug Start==
+ ** debug 协议在正式版本删除
+ */
+declare interface IReqMarathonActivityTest extends IProto {
+	activity_id: number;
+	wall_tests: IReqMarathonActivityTest_MarathonWallTest[];
+}
+
+/** .lq.ReqMarathonActivityTest.MarathonWallTest */
+declare interface IReqMarathonActivityTest_MarathonWallTest extends IProto {
+	seed: number;
+	round: number;
+	fever_count: number;
+	fever_start_round: number;
+	hands: string[];
+	id: number;
+	wall: string[];
+}
+
+/** .lq.ResMarathonActivityTest */
+declare interface IResMarathonActivityTest extends IResponse {
+	/** 只会返回第一个出错的墙 */
+	result: IResMarathonActivityTest_MarathonWallResult;
+}
+
+/** .lq.ResMarathonActivityTest.MarathonWallResult */
+declare interface IResMarathonActivityTest_MarathonWallResult extends IProto {
+	id: number;
+	step_value: IResMarathonActivityTest_MarathonWallStepValue;
+}
+
+/** .lq.ResMarathonActivityTest.MarathonWallResult.MarathonWallStepValue */
+declare interface IResMarathonActivityTest_MarathonWallStepValue extends IProto {
+	wall_seed: number;
+	is_fever_time: boolean;
+	fever_tiles: string[];
+	must_fever_tiles: string[];
+	check_level: number;
+	check_candidate_tiles: string[];
+	check_final_tile: string;
+	before_shuffle_tiles: string[];
+	wall: string[];
 }
 
 /** .lq.AmuletBadgeData */
@@ -13939,9 +14208,8 @@ declare interface IReqAuthGame extends IProto {
 	token: string;
 	/** 游戏的uuid */
 	game_uuid: string;
-	session: string;
-	gift: string;
-	vs: number;
+	/** 客户端设备信息 */
+	device: IClientDeviceInfo;
 }
 
 /** .lq.ResAuthGame */

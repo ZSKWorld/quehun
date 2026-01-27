@@ -2578,6 +2578,9 @@ declare interface ISheet_Str_Str {
 	5026: ISheetData_Str_Str;
 	5027: ISheetData_Str_Str;
 	5028: ISheetData_Str_Str;
+	5029: ISheetData_Str_Str;
+	5030: ISheetData_Str_Str;
+	5031: ISheetData_Str_Str;
 	5040: ISheetData_Str_Str;
 	5041: ISheetData_Str_Str;
 	5042: ISheetData_Str_Str;
@@ -4367,6 +4370,17 @@ declare interface ISheet_Str_Str {
 	26010104: ISheetData_Str_Str;
 	26010105: ISheetData_Str_Str;
 	26010106: ISheetData_Str_Str;
+	26020001: ISheetData_Str_Str;
+	26020002: ISheetData_Str_Str;
+	26020003: ISheetData_Str_Str;
+	26020004: ISheetData_Str_Str;
+	26020005: ISheetData_Str_Str;
+	26020006: ISheetData_Str_Str;
+	26020007: ISheetData_Str_Str;
+	26020008: ISheetData_Str_Str;
+	26020009: ISheetData_Str_Str;
+	26020010: ISheetData_Str_Str;
+	26020011: ISheetData_Str_Str;
 	26022001: ISheetData_Str_Str;
 	26022002: ISheetData_Str_Str;
 	26022003: ISheetData_Str_Str;
@@ -12932,6 +12946,8 @@ declare interface ISheet_Str_Event {
 	26010438: ISheetData_Str_Event;
 	26010439: ISheetData_Str_Event;
 	26010440: ISheetData_Str_Event;
+	26022031: ISheetData_Str_Event;
+	26022032: ISheetData_Str_Event;
 }
 declare interface ISheetData_Str_Event {
 	id: number;

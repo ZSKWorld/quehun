@@ -198,7 +198,7 @@ service ServerRpc {
   // 获取赛事额外信息
   rpc fetchCustomizedContestExtendInfo (ReqSrvFetchCustomizedContestExtendInfo) returns (ResSrvFetchCustomizedContestExtendInfo);
   // 进入赛事
-  rpc enterCustomizedContest (ReqSrvEnterCustomizedContest) returns (ResSrvEnterCustomizedContest);
+  rpc enterCustomizedContest (ReqSrvEnterCustomizedContest) returns (lq.ResEnterCustomizedContest);
   // 退出赛事
   rpc leaveCustomizedContest (ReqSrvLeaveCustomizedContest) returns (ResCommon);
   // 请求比赛在线信息
@@ -263,6 +263,8 @@ service ServerRpc {
   rpc handleAccountGameTerminate (ReqHandleAccountGameTerminate) returns (ResHandleAccountGameTerminate);
   rpc fetchMultiAccountBrief(ReqMultiAccountId) returns (ResMultiAccountBrief);
   rpc changeMainCharacter(ReqChangeMainChar) returns (ResCommon);
+  rpc notifyCustomizedContestPlanReady(ReqNotifyCustomizedContestPlanReady) returns (ResCommon); // 通知客户端预约对局准备信息
+  rpc notifyCustomizedContestPlanCancel(ReqNotifyCustomizedContestPlanCancel) returns (ResCommon); // 通知客户端预约对局取消
 
   rpc fetchAccountNicknames (ReqAccountList) returns (ResAccountNicknames);
   rpc fetchAccountInfo (ReqAccountInfo) returns (ResAccountInfo);
@@ -359,6 +361,17 @@ message ReqChangeMainChar {
   uint32 account_id = 1; // 账户id
   uint32 char_id = 2; // 角色id
   uint32 skin = 3; // 皮肤id
+}
+
+message ReqNotifyCustomizedContestPlanReady {
+  repeated uint32 account_ids = 1; // 当前预约对局相同地区玩家账号id
+  lq.CustomizedContestGamePlan game_plan = 2; // 预约对局信息
+}
+
+message ReqNotifyCustomizedContestPlanCancel {
+  repeated uint32 account_ids = 1; // 当前预约对局相同地区玩家账号id
+  uint32 unique_id = 2; // 大会室唯一id
+  string uuid = 3; // 对局uuid
 }
 
 message CancelMatchQueue {
@@ -508,6 +521,7 @@ message ReqForwardAuthGame {
   string game_uuid = 3;
   string remote_address = 4;
   uint32 unique_id = 5; // 随机数值 （用于判断session的唯一性）
+  ClientDeviceInfo device = 6; // 客户端设备信息
 }
 
 message ReqPlayerDisconnect {
@@ -944,13 +958,15 @@ message ReqNotifyPlayerMatchTimeout {
   string sid = 2;
 }
 
-
 message ReqHandleGameFinished {
   GameFinalSnapshot snapshot = 1;
   bytes record = 2;
   GameEndResult result = 3;
   RecordAnalysisedData analysis_record = 4;
+
+  repeated ClientDeviceInfoLog user_client_info = 5;
 }
+
 message ResHandleGameFinished {
   Error error = 1;
 
@@ -1092,14 +1108,6 @@ message ReqSrvEnterCustomizedContest {
   uint32 unique_id = 1;
   uint32 account_id = 2;
   string lang = 3;
-}
-message ResSrvEnterCustomizedContest {
-  Error error = 1;
-  CustomizedContestDetail detail_info = 2;
-  CustomizedContestPlayerReport player_report = 3; // null 表示没有 参与
-  bool is_followed = 4;
-  uint32 state = 5;
-  bool is_admin = 6;
 }
 
 message ReqSrvLeaveCustomizedContest {

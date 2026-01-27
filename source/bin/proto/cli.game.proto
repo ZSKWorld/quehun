@@ -75,10 +75,13 @@ message ReqAuthGame {
   uint32 account_id = 1;
   string token = 2; // 口令
   string game_uuid = 3; // 游戏的uuid
-  string session = 4;
-  string gift = 5;
-  uint32 vs = 6;
+  // 2025.12.03 yaya: 原本用于第三方客户端检测，现在已经没在用了
+  // string session = 4;
+  // string gift = 5;
+  // uint32 vs = 6;
+  ClientDeviceInfo device = 7; // 客户端设备信息
 }
+
 message ResAuthGame {
   Error error = 1;
   repeated PlayerGameView players = 2;
@@ -88,7 +91,7 @@ message ResAuthGame {
   repeated uint32 ready_id_list = 6; // 已就绪Id列表
   repeated PlayerGameView robots = 7; // 机器人外观数据
 }
- 
+
 // 游戏对局还原
 message GameRestore {
   GameSnapshot snapshot = 1; // 快照

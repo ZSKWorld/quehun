@@ -497,6 +497,11 @@ declare interface ISheet_Achievement_Achievement {
 	100487: ISheetData_Achievement_Achievement;
 	100488: ISheetData_Achievement_Achievement;
 	100489: ISheetData_Achievement_Achievement;
+	100490: ISheetData_Achievement_Achievement;
+	100491: ISheetData_Achievement_Achievement;
+	100492: ISheetData_Achievement_Achievement;
+	100493: ISheetData_Achievement_Achievement;
+	100494: ISheetData_Achievement_Achievement;
 	800011: ISheetData_Achievement_Achievement;
 	800012: ISheetData_Achievement_Achievement;
 	800013: ISheetData_Achievement_Achievement;

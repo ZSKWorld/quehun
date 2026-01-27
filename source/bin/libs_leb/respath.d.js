@@ -88,8 +88,6 @@ ResPath = {
 		Youyuan: "res/font/youyuan.ttf",
 	},
 
-	EScenePath: { },
-
 	ESkeletonPath: {
 		Bianhua: "res/skeleton/bianhua.sk",
 		Biaoqing: "res/skeleton/biaoqing.sk",

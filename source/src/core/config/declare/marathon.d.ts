@@ -35,10 +35,6 @@ declare interface ISheetData_Marathon_MarathonInfo {
 	fever_time_duration: number;
 	/** 一面墙有多少张牌 */
 	wall_tile_count: number;
-	/** 福牌额外权重 */
-	fever_weight_addition: number;
-	/** 福牌相邻牌额外权重 */
-	near_fever_weight_addition: number;
 	/** 一面墙最多能有多少张相同牌 */
 	wall_max_same_tile: number;
 	/** 关卡组 */
@@ -49,6 +45,18 @@ declare interface ISheetData_Marathon_MarathonInfo {
 	reward_group: number;
 	/** 道具 */
 	item_group: number;
+	/** 胡萝卜id */
+	point_item_id: number;
+	/** fevertime期间的道具类型 */
+	fever_item_type: number;
+	/** 训练度id */
+	distance_item_id: number;
+	/** 单轮游戏每N距离获得1训练度 */
+	distance_reward_rate: number;
+	/** 单轮游戏获得训练度数量上限 */
+	max_distance_reward: number;
+	/** 无效牌位置 */
+	wall_empty_pos: number[];
 }
 //#endregion
 
@@ -100,8 +108,12 @@ declare interface ISheetData_Marathon_MarathonWallGroup {
 	speed: number;
 	/** 期间的分数倍率，百分比 */
 	speed_bonus: number;
-	/** 福牌必定不会出现 */
-	ban_fever: number;
+	/** 终局模式，福牌必定不会出现，不使用仓检 */
+	final_mode: number;
+	/** 福牌额外权重 */
+	fever_weight_addition: number;
+	/** 福牌相邻牌额外权重 */
+	near_fever_weight_addition: number;
 	/** 必定出现福牌次数 */
 	must_fever_count: number;
 	/** 完成检查概率% */

@@ -1,0 +1,312 @@
+spine.png
+	size: 1809, 1809
+	filter: Linear, Linear
+	scale: 0.5
+GUNG/blink
+	bounds: 1508, 377, 200, 200
+GUNG/sigong_light
+	bounds: 875, 763, 400, 400
+arm_l_1
+	bounds: 1574, 1625, 182, 233
+	rotate: 90
+arm_l_2
+	bounds: 1710, 361, 70, 226
+arm_l_3
+	bounds: 1023, 19, 84, 107
+	rotate: 90
+arm_r_1
+	bounds: 2, 2, 167, 216
+	rotate: 90
+arm_r_2
+	bounds: 659, 122, 66, 193
+	rotate: 90
+arm_r_3
+	bounds: 939, 5, 82, 98
+	offsets: 0, 0, 86, 98
+arm_r_4
+	bounds: 1782, 524, 25, 25
+	offsets: 0, 0, 26, 26
+ball
+	bounds: 690, 277, 182, 182
+bamgs4
+	bounds: 1024, 105, 47, 125
+	rotate: 90
+bangs1
+	bounds: 1054, 154, 67, 98
+	offsets: 0, 0, 70, 99
+	rotate: 90
+bangs2
+	bounds: 1132, 2, 38, 85
+	offsets: 0, 0, 40, 85
+	rotate: 90
+bangs3
+	bounds: 269, 87, 29, 82
+	offsets: 0, 1, 30, 84
+beach
+	bounds: 866, 1543, 706, 264
+belt
+	bounds: 1267, 441, 311, 239
+	offsets: 0, 4, 311, 243
+	rotate: 90
+bg1
+	bounds: 875, 507, 254, 390
+	rotate: 90
+bg2
+	bounds: 2, 1122, 862, 685
+bird/bird2_body
+	bounds: 1431, 200, 173, 75
+	rotate: 90
+bird/bird2_wing1
+	bounds: 1574, 1501, 228, 122
+bird/bird2_wing2
+	bounds: 1656, 834, 175, 125
+	rotate: 90
+bird/bird2_wing2_add
+	bounds: 1330, 9, 88, 40
+bird/bird2_wing3
+	bounds: 873, 178, 179, 43
+bird/bird3
+	bounds: 441, 126, 216, 123
+bird/bird_body
+	bounds: 690, 190, 181, 85
+bird/bird_eye1
+	bounds: 1654, 190, 6, 6
+bird/bird_head
+	bounds: 1424, 56, 58, 53
+	offsets: 7, 0, 65, 53
+	rotate: 90
+bird/bird_hip
+	bounds: 1761, 1166, 115, 46
+	rotate: 90
+bird/bird_leg1
+	bounds: 1245, 35, 83, 79
+bird/bird_leg2
+	bounds: 402, 2, 50, 84
+	rotate: 90
+bird/bird_wing1
+	bounds: 653, 50, 186, 70
+bird/mouth1
+	bounds: 1219, 6, 34, 19
+	rotate: 90
+bird/mouth2
+	bounds: 1630, 1220, 24, 20
+bird/shutiao
+	bounds: 1614, 79, 39, 20
+	rotate: 90
+bird/xl1
+	bounds: 1701, 589, 243, 81
+	rotate: 90
+bird/xl2
+	bounds: 1264, 375, 240, 64
+bird2
+	bounds: 1151, 42, 92, 79
+bird2_head
+	bounds: 616, 5, 34, 47
+bird2_wing1
+	bounds: 488, 4, 48, 126
+	rotate: 90
+bird2_wing2
+	bounds: 441, 54, 210, 70
+	offsets: 0, 0, 210, 79
+bird4
+	bounds: 1160, 178, 186, 107
+	rotate: 90
+body
+	bounds: 1277, 754, 228, 409
+	offsets: 18, 0, 246, 409
+bottle
+	bounds: 1654, 72, 133, 113
+	offsets: 0, 0, 133, 114
+bow1
+	bounds: 659, 200, 29, 49
+	offsets: 1, 0, 30, 50
+bow2
+	bounds: 751, 22, 26, 49
+	rotate: 90
+bow3
+	bounds: 1475, 120, 6, 11
+	rotate: 90
+bow4
+	bounds: 1479, 82, 36, 80
+	rotate: 90
+bow5
+	bounds: 1023, 2, 15, 87
+	rotate: 90
+brow_l
+	bounds: 1772, 1402, 35, 30
+brow_r
+	bounds: 1024, 154, 22, 11
+	rotate: 90
+dm1
+	bounds: 696, 22, 53, 26
+dm2
+	bounds: 220, 2, 32, 12
+dm3
+	bounds: 1783, 901, 19, 49
+dm4
+	bounds: 1772, 1341, 21, 59
+ear
+	bounds: 269, 2, 22, 44
+	rotate: 90
+eye_l
+	bounds: 652, 9, 42, 39
+	offsets: 0, 0, 42, 40
+eye_r
+	bounds: 1449, 26, 27, 28
+	offsets: 0, 0, 27, 29
+eyelash_l
+	bounds: 1783, 985, 33, 24
+	rotate: 90
+eyelash_l_2
+	bounds: 1654, 198, 6, 12
+eyelash_r_1
+	bounds: 1662, 364, 20, 11
+	offsets: 0, 0, 21, 11
+eyelash_r_2
+	bounds: 1249, 132, 11, 9
+eyelid_l
+	bounds: 1037, 155, 21, 15
+	offsets: 0, 0, 23, 15
+	rotate: 90
+eyelid_r
+	bounds: 854, 179, 13, 9
+finger1
+	bounds: 1249, 143, 33, 18
+	offsets: 0, 8, 33, 26
+	rotate: 90
+finger2
+	bounds: 402, 55, 37, 28
+	offsets: 0, 2, 37, 30
+finger3
+	bounds: 1782, 551, 36, 25
+	rotate: 90
+finger4
+	bounds: 1795, 1375, 25, 12
+	rotate: 90
+float
+	bounds: 866, 1165, 376, 570
+	offsets: 0, 0, 376, 594
+	rotate: 90
+hair
+	bounds: 1508, 120, 144, 90
+head
+	bounds: 1662, 187, 135, 172
+	offsets: 9, 0, 173, 172
+hip
+	bounds: 1508, 579, 251, 191
+	offsets: 0, 7, 251, 198
+	rotate: 90
+houfa
+	bounds: 269, 26, 57, 131
+	rotate: 90
+houfa1
+	bounds: 1420, 2, 47, 27
+	rotate: 90
+houfa2
+	bounds: 1561, 75, 43, 51
+	offsets: 0, 1, 43, 52
+	rotate: 90
+houfa3
+	bounds: 1479, 61, 19, 59
+	rotate: 90
+leg_l_1
+	bounds: 694, 461, 179, 659
+leg_r
+	bounds: 442, 515, 250, 605
+	offsets: 0, 7, 253, 612
+mouth
+	bounds: 1772, 1307, 32, 21
+	offsets: 0, 0, 33, 22
+	rotate: 90
+mouth2
+	bounds: 841, 107, 13, 11
+	offsets: 1, 1, 14, 12
+	rotate: 90
+mouth3
+	bounds: 866, 1154, 9, 7
+	rotate: 90
+nose
+	bounds: 802, 21, 27, 32
+	offsets: 0, 0, 28, 32
+	rotate: 90
+packet
+	bounds: 841, 2, 96, 101
+pants_l
+	bounds: 1508, 212, 152, 163
+	offsets: 0, 0, 152, 166
+pants_r
+	bounds: 1269, 200, 160, 173
+pupil_l
+	bounds: 1112, 2, 15, 16
+	rotate: 90
+pupil_r
+	bounds: 254, 2, 11, 12
+ring1
+	bounds: 1438, 1165, 45, 38
+	rotate: 90
+ring2
+	bounds: 1761, 1020, 46, 36
+sb
+	bounds: 1761, 1058, 42, 106
+shadow_bangs1
+	bounds: 1772, 1434, 28, 65
+	offsets: 0, 0, 30, 65
+shadow_bangs2
+	bounds: 315, 5, 19, 65
+	rotate: 90
+shadow_bangs3
+	bounds: 1154, 123, 53, 93
+	rotate: 90
+shadow_ring1
+	bounds: 1478, 1171, 39, 27
+	offsets: 0, 1, 39, 28
+	rotate: 90
+shadow_ring2
+	bounds: 1630, 1242, 39, 24
+	rotate: 90
+shadow_tower2
+	bounds: 220, 16, 47, 153
+stick
+	bounds: 1571, 1219, 57, 62
+tower1
+	bounds: 1269, 116, 82, 204
+	rotate: 90
+tower2
+	bounds: 1330, 51, 92, 63
+tower3
+	bounds: 854, 105, 71, 168
+	rotate: 90
+tree/leaf1
+	bounds: 1656, 1011, 103, 270
+tree/leaf2
+	bounds: 300, 85, 139, 217
+tree/leaf3
+	bounds: 442, 251, 262, 246
+	rotate: 90
+tree/leaf4
+	bounds: 1507, 832, 378, 147
+	rotate: 90
+tree/leaf5
+	bounds: 875, 366, 387, 139
+tree/leaf6
+	bounds: 1438, 1212, 329, 131
+	rotate: 90
+tree/leaf7
+	bounds: 874, 223, 284, 141
+tree/leaf8
+	bounds: 1571, 1283, 199, 216
+tree/tree
+	bounds: 300, 304, 140, 816
+water
+	bounds: 1475, 128, 70, 15
+	rotate: 90
+wave/wave
+	bounds: 2, 171, 949, 296
+	offsets: 16, 41, 980, 367
+	rotate: 90
+white_l
+	bounds: 1783, 952, 31, 24
+	rotate: 90
+white_r
+	bounds: 1132, 82, 21, 17
+	rotate: 90

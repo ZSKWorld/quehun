@@ -729,6 +729,7 @@ service Lobby {
 
   // 领取翻牌牌任务奖励
   rpc completeActivityFlipTask (ReqCompleteActivityTask) returns (ResCommon);
+  rpc completeActivityFlipTaskBatch (ReqCompleteActivityFlipTaskBatch) returns (ResCompleteActivityFlipTaskBatch);
 
   // 领取长期任务奖励
   rpc completePeriodActivityTask (ReqCompleteActivityTask) returns (ResCommon);
@@ -740,6 +741,7 @@ service Lobby {
 
   // 翻牌牌领任务
   rpc receiveActivityFlipTask (ReqReceiveActivityFlipTask) returns (ResReceiveActivityFlipTask);
+  rpc receiveActivityFlipTaskBatch (ReqReceiveActivityFlipTaskBatch) returns (ResReceiveActivityFlipTaskBatch);
 
   // 领取分段任务奖励
   rpc completeSegmentTaskReward (ReqCompleteSegmentTaskReward) returns (ResCompleteSegmentTaskReward);
@@ -1034,7 +1036,10 @@ service Lobby {
   rpc fetchSeerInfo(ReqCommon) returns (ResFetchSeerInfo);
 
   // 可选up卡池活动
-  rpc selectChestChooseUpActivity(ReqSelectChestChooseUp) returns (ReqCommon);
+  rpc selectChestChooseUpActivity(ReqSelectChestChooseUp) returns (ResCommon);
+
+  // 可选up组活动
+  rpc selectChestChooseGroupActivity(ReqSelectChestChooseGroupActivity) returns (ResCommon);
 
   // 年度报告
   rpc generateAnnualReportToken(ReqGenerateAnnualReportToken) returns (ResGenerateAnnualReportToken);
@@ -1082,6 +1087,14 @@ service Lobby {
   // debug 协议在正式版本删除
   rpc snowballActivityDebug(ReqSnowballActivityDebug) returns (ResCommon);
   rpc snowballActivityFetchDebug(ReqSnowballActivityFetchDebug) returns (ResSnowballActivityFetchDebug);
+  // ==DevDebug End==
+
+  // 马拉松活动
+  rpc marathonActivityStartRace(ReqMarathonActivityStartRace) returns (ResMarathonActivityStartRace);
+  rpc marathonActivityFinishRace(ReqMarathonActivityFinishRace) returns (ResMarathonActivityFinishRace);
+  // ==DevDebug Start==
+  // debug 协议在正式版本删除
+  rpc marathonActivityTest(ReqMarathonActivityTest) returns (ResMarathonActivityTest);
   // ==DevDebug End==
 }
 
@@ -2629,6 +2642,7 @@ message ReqOpenChest {
   uint32 count = 2; // 1 or 10
   bool use_ticket = 3; // 使用宝箱道具
   uint32 choose_up_activity_id = 4; // 可选up宝箱活动id
+  uint32 choose_group_activity_id = 5; // 可选up组活动id
 }
 message ResOpenChest {
   Error error = 1;
@@ -3015,6 +3029,8 @@ message ResEnterCustomizedContest {
   bool is_followed = 4;
   uint32 state = 5; // 0-未报名 1-已报名 2-可以参赛
   bool is_admin = 6;
+
+  CustomizedContestGamePlan game_plan = 7; // 预约对局（若玩家没有预约对局则不传）
 }
 
 // 协议：请求比赛在线信息
@@ -3208,6 +3224,10 @@ message ResAccountActivityData {
   repeated lq.ActivityBingoData bingo_data = 35;
 
   repeated lq.ActivitySnowballData snowball_data = 36;
+
+  repeated lq.ActivityMarathonData marathon_data = 37;
+
+  repeated lq.ActivityChooseGroupData choose_group_up_data = 38;
 }
 
 message SNSBlog {
@@ -3252,6 +3272,16 @@ message ResReceiveActivityFlipTask {
   Error error = 2;
 }
 
+// 协议： 批量翻牌
+// dapeng 2025/12/05: 翻牌活动批量任务领取接口出现错误无法全部领取时，则为统一失败的状态，任务要么全部领取要么全都不领取
+message ReqReceiveActivityFlipTaskBatch {
+  repeated uint32 task_list = 1; // 翻牌任务列表
+}
+message ResReceiveActivityFlipTaskBatch {
+  Error error = 1;
+  uint32 count = 2; // 当前用户还可以翻开卡牌的次数
+}
+
 // 协议：完成分段任务
 message ReqCompleteSegmentTaskReward {
   uint32 task_id = 1;
@@ -3271,6 +3301,16 @@ message ResFetchActivityFlipInfo {
   repeated uint32 rewards = 1;
   uint32 count = 2;
   Error error = 3;
+}
+
+// 协议：翻牌活动批量领取奖励格
+// dapeng 2025/12/05: 翻牌活动批量接口出现错误无法全部领取时，则为统一失败的状态，传入参数中其他完成的任务也不会领取
+message ReqCompleteActivityFlipTaskBatch {
+  repeated uint32 task_list = 1; // 翻牌任务列表
+}
+message ResCompleteActivityFlipTaskBatch {
+  Error error = 1;
+  repeated ExecuteReward total_rewards = 2; // 领取奖励记录
 }
 
 // 协议：领取得点活动奖励
@@ -4827,6 +4867,12 @@ message ReqSelectChestChooseUp {
   uint32 chest_id = 3; // 选择的卡池id
 }
 
+message ReqSelectChestChooseGroupActivity {
+  uint32 activity_id = 1;
+  uint32 selection = 2; // 选择的组合id
+  uint32 chest_id = 3; // 选择的卡池id
+}
+
 // ==DevDebug Start==
 // debug 协议在正式版本删除
 message ReqFestivalDebug {
@@ -5186,6 +5232,72 @@ message ResSnowballActivityFetchDebug {
   lq.ActivitySnowballData snowball_activity = 1;
 }
 
+// ==DevDebug End==
+
+message ReqMarathonActivityStartRace {
+  uint32 activity_id = 1;
+}
+
+message ResMarathonActivityStartRace {
+  Error error = 1;
+
+  uint32 random_seed = 2;
+  string race_id = 3;
+}
+
+message ReqMarathonActivityFinishRace {
+  uint32 activity_id = 1;
+  repeated ActivityMarathonCheckData race_data = 2;
+  MarathonGameRecord record = 3;
+  string race_id = 4;
+}
+
+message ResMarathonActivityFinishRace {
+  Error error = 1;
+  MarathonGameRecord highest_record = 2;
+  repeated ExecuteReward rewards = 3;
+}
+
+// ==DevDebug Start==
+// debug 协议在正式版本删除
+message ReqMarathonActivityTest {
+  uint32 activity_id = 1;
+
+  message MarathonWallTest {
+    uint32 seed = 1;
+    uint32 round = 2;
+    uint32 fever_count = 3;
+    uint32 fever_start_round = 4;
+    repeated string hands = 5;
+
+    uint32 id = 6;
+    repeated string wall = 7;
+  }
+  repeated MarathonWallTest wall_tests = 2;
+}
+
+message ResMarathonActivityTest {
+  Error error = 1;
+
+  message MarathonWallResult {
+    uint32 id = 1;
+
+    message MarathonWallStepValue {
+      uint32 wall_seed = 1;
+      bool is_fever_time = 2;
+      repeated string fever_tiles = 3;
+      repeated string must_fever_tiles = 4;
+      uint32 check_level = 5;
+      repeated string check_candidate_tiles = 6;
+      string check_final_tile = 7;
+      repeated string before_shuffle_tiles = 8;
+      repeated string wall = 9;
+    }
+    MarathonWallStepValue step_value = 3;
+  }
+
+  MarathonWallResult result = 2; // 只会返回第一个出错的墙
+}
 // ==DevDebug End==
 /*********************************************************************************************************************************
  ********************************************** next request & response **********************************************************

@@ -990,6 +990,7 @@ message AccountActivityUpdate {
   repeated lq.ActivityShootData shoot_data = 18;
   repeated lq.ActivityBingoData bingo_data = 19;
   repeated lq.ActivitySnowballValueChanges snowball_data = 20;
+  repeated lq.ActivityChooseGroupData choose_group_up_data = 21;
 }
 
 message ActivityCombiningWorkbench {
@@ -1441,6 +1442,12 @@ message ActivityChooseUpData {
   uint32 is_end = 4; // 是否已经获得up标的结束活动
 }
 
+message ActivityChooseGroupData {
+  uint32 activity_id = 1;
+  uint32 chest_id = 2;
+  uint32 selection_id = 3;
+}
+
 message ActivityFriendGiftData {
   message CountWithTimeData {
     uint32 count = 1;
@@ -1858,7 +1865,7 @@ message CustomizedContestDetail {
   uint32 contest_id = 2;
   string contest_name = 3;
   uint32 state = 4;
-  uint32 creator_id = 5;
+  // uint32 creator_id = 5; // 避免暴露官方赛事账号id
   uint32 create_time = 6;
   uint32 start_time = 7;
   uint32 finish_time = 8;
@@ -1879,6 +1886,16 @@ message CustomizedContestDetail {
   uint32 tied_rank = 23; // 是否使用并列排名模式 0 - 不并列 1 - 并列
   uint32 match_start_time = 24; // 自动匹配开始时间
   uint32 match_end_time = 25; // 自动匹配结束时间
+}
+
+// 预约对局数据结构
+message CustomizedContestGamePlan {
+  uint32 unique_id = 1; // 大会室unique_id
+  string uuid = 2; // 预约对局uuid
+  repeated uint32 ready_players = 3; // 当前已准备玩家的account_id
+  repeated uint32 account_ids = 4; // 本次预约对局的所有玩家，数组内为预约赛事中所有玩家的account_id
+  uint32 game_start_time = 5; // 预约对局开始时间
+  uint32 expired_time = 6; // 预约对局过期时间
 }
 
 // 自定义比赛参与报告（成绩）
@@ -3055,4 +3072,45 @@ message SnowballActivityBossAction {
     uint32 after_delay = 3; // 后摇时长(tick)
   }
   SnowballActivityBossMPConsumeInfo mp_consume_info = 5;
+}
+
+message ClientDeviceInfoLog {
+  lq.ClientDeviceInfo device_info = 1;
+  uint32 login_time = 2;
+  uint32 account_id = 3;
+}
+
+message MarathonGameRecord {
+  uint32 point = 1;
+  uint32 distance = 2; // 距离，1round=10m，服务端不校验个位数
+  uint32 used_tick = 3;
+}
+
+message ActivityMarathonData {
+  uint32 activity_id = 1;
+
+  MarathonGameRecord highest_record = 2;
+
+  message MarathonRaceData {
+    string id = 1;
+    uint32 random_seed = 2;
+    uint32 start_time = 3; // unix 时间戳
+  }
+  MarathonRaceData race_data = 3; // 开始对局后有该数据
+
+  message MarathonRaceHistory {
+    MarathonRaceData race_data = 1;
+    MarathonGameRecord record = 2;
+  }
+  repeated MarathonRaceHistory history = 4; // 游戏记录，保存最近5场，不会发给客户端
+}
+
+message ActivityMarathonCheckData {
+  uint32 round = 1; // 第几面墙，从1开始
+  repeated uint32 item = 2; // round-1 到 round 之间得到了什么道具
+  string tile = 3; // round 这面墙撞了什么牌
+
+  uint32 tick = 4; // 撞完墙后还剩多少tick
+  uint32 point = 5; // 撞完墙结算完麻将消消乐后的分数
+  uint32 time_end = 6; // 是否是时间耗尽的结束 tick
 }

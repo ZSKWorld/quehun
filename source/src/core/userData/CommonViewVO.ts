@@ -13,29 +13,22 @@ export class CommonViewVO extends BaseVO implements VO.ICommonViewVO {
 		const decodeRes = $decodeProtoData(res);
 		this._use = decodeRes.use;
 		this._views = decodeRes.views;
-		this.fillDefaultView();
-		this.fillDefaultSlot();
+		this.fillDefaultData();
 	}
 
-	private fillDefaultView() {
-		const { _views } = this;
-		for (let i = 0; i < 10; i++) {
-			const view = _views.find(v => v.index == i);
-			if (view) continue;
-			_views.push({
-				index: i,
-				name: String(i + 1),
-				values: [],
-			});
-		}
-		_views.sort((a, b) => a.index - b.index);
-	}
-
-	private fillDefaultSlot() {
+	/** 填充默认数据 */
+	private fillDefaultData() {
 		const defaultItems = [0, 0, 0, 0, 0, 0, 305501, 305044, 305045, 305725, 307001];
 		const slotIds = [0, 1, 2, 10, 3, 4, 5, 6, 7, 13, 8];
-		this._views.forEach(v => {
-			const slots = v.values;
+		const { _views } = this;
+		for (let i = 0; i < 10; i++) {
+			let view = _views.find(v => v.index == i);
+			if (!view) {
+				view = { index: i, name: String(i + 1), values: [], };
+				_views.push(view);
+			}
+			
+			const slots = view.values;
 			slotIds.forEach((sid, si) => {
 				const s = slots.find(s => s.slot == sid);
 				if (s) return;
@@ -47,6 +40,7 @@ export class CommonViewVO extends BaseVO implements VO.ICommonViewVO {
 				});
 			});
 			slots.sort((a, b) => slotIds.indexOf(a.slot) - slotIds.indexOf(b.slot));
-		});
+		}
+		_views.sort((a, b) => a.index - b.index);
 	}
-}
+} 

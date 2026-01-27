@@ -128,6 +128,8 @@ declare interface ISheet_Character_Emoji {
 	20000116: ISheetData_Character_Emoji[];
 	20000117: ISheetData_Character_Emoji[];
 	20000118: ISheetData_Character_Emoji[];
+	20000119: ISheetData_Character_Emoji[];
+	20000120: ISheetData_Character_Emoji[];
 }
 declare interface ISheetData_Character_Emoji {
 	/** 角色ID */

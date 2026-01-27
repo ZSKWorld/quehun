@@ -275,6 +275,10 @@ message BlobActivity {
   repeated lq.ActivityBingoData bingo_activity = 23; // 冰菓活动
 
   repeated lq.ActivitySnowballData snowball_activity = 24; // 雪球活动
+
+  repeated lq.ActivityMarathonData marathon_activity = 25; // 马拉松活动
+
+  repeated lq.ActivityChooseGroupData choose_group_up_activity = 26; // 自选组合活动
 }
 
 message BlobAmuletActivity {
@@ -857,5 +861,10 @@ message PlayerGameConfig {
 message GameSummaryV2Players {
   repeated lq.RecordPlayerResult players = 1;
 }
+
+message ClientDeviceInfoLogs {
+  repeated lq.ClientDeviceInfoLog logs = 1;
+}
+
 
 // 青云之志

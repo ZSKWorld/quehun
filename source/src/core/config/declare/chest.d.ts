@@ -53,7 +53,7 @@ declare interface ISheet_Chest_Chest {
 }
 declare interface ISheetData_Chest_Chest {
 	id: number;
-	/** 0常驻，1活动 */
+	/** 卡池类型 */
 	type: number;
 	name_chs: string;
 	name_jp: string;
@@ -1170,6 +1170,12 @@ declare interface ISheet_Chest_ChestShop {
 	1483: ISheetData_Chest_ChestShop;
 	1484: ISheetData_Chest_ChestShop;
 	1485: ISheetData_Chest_ChestShop;
+	1486: ISheetData_Chest_ChestShop;
+	1487: ISheetData_Chest_ChestShop;
+	1488: ISheetData_Chest_ChestShop;
+	1489: ISheetData_Chest_ChestShop;
+	1490: ISheetData_Chest_ChestShop;
+	1491: ISheetData_Chest_ChestShop;
 	1999: ISheetData_Chest_ChestShop;
 	3001: ISheetData_Chest_ChestShop;
 	3002: ISheetData_Chest_ChestShop;
@@ -1650,6 +1656,12 @@ declare interface ISheet_Chest_ChestShop {
 	3483: ISheetData_Chest_ChestShop;
 	3484: ISheetData_Chest_ChestShop;
 	3485: ISheetData_Chest_ChestShop;
+	3486: ISheetData_Chest_ChestShop;
+	3487: ISheetData_Chest_ChestShop;
+	3488: ISheetData_Chest_ChestShop;
+	3489: ISheetData_Chest_ChestShop;
+	3490: ISheetData_Chest_ChestShop;
+	3491: ISheetData_Chest_ChestShop;
 	3999: ISheetData_Chest_ChestShop;
 }
 declare interface ISheetData_Chest_ChestShop {

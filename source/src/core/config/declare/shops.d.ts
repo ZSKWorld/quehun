@@ -688,6 +688,7 @@ declare interface ISheet_Shops_Goods {
 	6009: ISheetData_Shops_Goods;
 	6010: ISheetData_Shops_Goods;
 	6011: ISheetData_Shops_Goods;
+	6012: ISheetData_Shops_Goods;
 	9001: ISheetData_Shops_Goods;
 	9002: ISheetData_Shops_Goods;
 	9003: ISheetData_Shops_Goods;
@@ -760,6 +761,8 @@ declare interface ISheet_Shops_Goods {
 	9073: ISheetData_Shops_Goods;
 	9074: ISheetData_Shops_Goods;
 	9075: ISheetData_Shops_Goods;
+	9076: ISheetData_Shops_Goods;
+	9077: ISheetData_Shops_Goods;
 }
 declare interface ISheetData_Shops_Goods {
 	id: number;

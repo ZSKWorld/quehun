@@ -413,3 +413,14 @@ message NotifyCustomizedContestRuleModify {
   uint32 unique_id = 1;
   uint32 auto_match = 2; // 自动匹配状态
 }
+
+// 通知大会室预约对局玩家准备状态修改(预约赛事创建/玩家准备状态变化时发送给客户端)
+message NotifyCustomizedContestPlanReady {
+  CustomizedContestGamePlan game_plan = 1;
+}
+
+// 通知当前大会室预约取消
+message NotifyCustomizedContestPlanCancel {
+  uint32 unique_id = 1; // 大会室唯一id
+  string uuid = 2; // 对局uuid
+}

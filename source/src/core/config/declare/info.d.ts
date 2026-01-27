@@ -542,6 +542,9 @@ declare interface ISheet_Info_Error {
 	26277: ISheetData_Info_Error;
 	26278: ISheetData_Info_Error;
 	26280: ISheetData_Info_Error;
+	26290: ISheetData_Info_Error;
+	26291: ISheetData_Info_Error;
+	26293: ISheetData_Info_Error;
 }
 declare interface ISheetData_Info_Error {
 	id: number;

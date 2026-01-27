@@ -1655,6 +1655,12 @@ declare interface IReqMethod {
 	 */
 	completeActivityFlipTask(data?: IReqCompleteActivityTask): Promise<IResCommon>;
 	/**
+	 ** req: {@link IReqCompleteActivityFlipTaskBatch}
+	 ** res: {@link IResCompleteActivityFlipTaskBatch}
+	 ** msgId: {@link EMessageID.completeActivityFlipTaskBatch}
+	 */
+	completeActivityFlipTaskBatch(data?: IReqCompleteActivityFlipTaskBatch): Promise<IResCompleteActivityFlipTaskBatch>;
+	/**
 	 ** 领取长期任务奖励
 	 ** req: {@link IReqCompleteActivityTask}
 	 ** res: {@link IResCommon}
@@ -1687,6 +1693,12 @@ declare interface IReqMethod {
 	 ** msgId: {@link EMessageID.receiveActivityFlipTask}
 	 */
 	receiveActivityFlipTask(data?: IReqReceiveActivityFlipTask): Promise<IResReceiveActivityFlipTask>;
+	/**
+	 ** req: {@link IReqReceiveActivityFlipTaskBatch}
+	 ** res: {@link IResReceiveActivityFlipTaskBatch}
+	 ** msgId: {@link EMessageID.receiveActivityFlipTaskBatch}
+	 */
+	receiveActivityFlipTaskBatch(data?: IReqReceiveActivityFlipTaskBatch): Promise<IResReceiveActivityFlipTaskBatch>;
 	/**
 	 ** 领取分段任务奖励
 	 ** req: {@link IReqCompleteSegmentTaskReward}
@@ -2615,10 +2627,17 @@ declare interface IReqMethod {
 	/**
 	 ** 可选up卡池活动
 	 ** req: {@link IReqSelectChestChooseUp}
-	 ** res: {@link IReqCommon}
+	 ** res: {@link IResCommon}
 	 ** msgId: {@link EMessageID.selectChestChooseUpActivity}
 	 */
-	selectChestChooseUpActivity(data?: IReqSelectChestChooseUp): Promise<IReqCommon>;
+	selectChestChooseUpActivity(data?: IReqSelectChestChooseUp): Promise<IResCommon>;
+	/**
+	 ** 可选up组活动
+	 ** req: {@link IReqSelectChestChooseGroupActivity}
+	 ** res: {@link IResCommon}
+	 ** msgId: {@link EMessageID.selectChestChooseGroupActivity}
+	 */
+	selectChestChooseGroupActivity(data?: IReqSelectChestChooseGroupActivity): Promise<IResCommon>;
 	/**
 	 ** 年度报告
 	 ** req: {@link IReqGenerateAnnualReportToken}
@@ -2792,6 +2811,27 @@ declare interface IReqMethod {
 	 ** msgId: {@link EMessageID.snowballActivityFetchDebug}
 	 */
 	snowballActivityFetchDebug(data?: IReqSnowballActivityFetchDebug): Promise<IResSnowballActivityFetchDebug>;
+	/**
+	 ** 马拉松活动
+	 ** req: {@link IReqMarathonActivityStartRace}
+	 ** res: {@link IResMarathonActivityStartRace}
+	 ** msgId: {@link EMessageID.marathonActivityStartRace}
+	 */
+	marathonActivityStartRace(data?: IReqMarathonActivityStartRace): Promise<IResMarathonActivityStartRace>;
+	/**
+	 ** req: {@link IReqMarathonActivityFinishRace}
+	 ** res: {@link IResMarathonActivityFinishRace}
+	 ** msgId: {@link EMessageID.marathonActivityFinishRace}
+	 */
+	marathonActivityFinishRace(data?: IReqMarathonActivityFinishRace): Promise<IResMarathonActivityFinishRace>;
+	/**
+	 ** ==DevDebug Start==
+	 ** debug 协议在正式版本删除
+	 ** req: {@link IReqMarathonActivityTest}
+	 ** res: {@link IResMarathonActivityTest}
+	 ** msgId: {@link EMessageID.marathonActivityTest}
+	 */
+	marathonActivityTest(data?: IReqMarathonActivityTest): Promise<IResMarathonActivityTest>;
 	/**
 	 ** 验证游戏口令
 	 ** req: {@link IReqAuthGame}

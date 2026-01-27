@@ -173,6 +173,10 @@ declare interface ITable_Activity {
 	bingo_card: CfgExtGroup<ISheet_Activity_BingoCard>;
 	/** group */
 	bingo_reward: CfgExtGroup<ISheet_Activity_BingoReward>;
+	/** 自选组合up卡池活动主表  ---  unique */
+	choose_group_up_activity: CfgExt<ISheet_Activity_ChooseGroupUpActivity>;
+	/** 自选组合up卡池可选组合  ---  group */
+	choose_group: CfgExtGroup<ISheet_Activity_ChooseGroup>;
 }
 
 //#region activity
@@ -1290,7 +1294,26 @@ declare interface ISheet_Activity_Activity {
 	260131: ISheetData_Activity_Activity;
 	260132: ISheetData_Activity_Activity;
 	260201: ISheetData_Activity_Activity;
+	260202: ISheetData_Activity_Activity;
+	260203: ISheetData_Activity_Activity;
+	260204: ISheetData_Activity_Activity;
+	260205: ISheetData_Activity_Activity;
 	260210: ISheetData_Activity_Activity;
+	260211: ISheetData_Activity_Activity;
+	260212: ISheetData_Activity_Activity;
+	260215: ISheetData_Activity_Activity;
+	260216: ISheetData_Activity_Activity;
+	260217: ISheetData_Activity_Activity;
+	260218: ISheetData_Activity_Activity;
+	260219: ISheetData_Activity_Activity;
+	260220: ISheetData_Activity_Activity;
+	260221: ISheetData_Activity_Activity;
+	260222: ISheetData_Activity_Activity;
+	260223: ISheetData_Activity_Activity;
+	260224: ISheetData_Activity_Activity;
+	260225: ISheetData_Activity_Activity;
+	260226: ISheetData_Activity_Activity;
+	260227: ISheetData_Activity_Activity;
 }
 declare interface ISheetData_Activity_Activity {
 	/** 活动id */
@@ -2842,6 +2865,8 @@ declare interface ISheet_Activity_ChestUp {
 	260120: ISheetData_Activity_ChestUp[];
 	260121: ISheetData_Activity_ChestUp[];
 	260122: ISheetData_Activity_ChestUp[];
+	260220: ISheetData_Activity_ChestUp[];
+	260221: ISheetData_Activity_ChestUp[];
 }
 declare interface ISheetData_Activity_ChestUp {
 	/** 活动id */
@@ -2864,7 +2889,7 @@ declare interface ISheetData_Activity_ChestUp {
 	title_img: string;
 	/** 卡池标题图2（左下，联动/ur） */
 	title_img_2: string;
-	/** 排版种类0常规 1普通轮换 2UR角色 3联动  4自选 */
+	/** 排版种类 */
 	typeset: number;
 	/** 进入动画 */
 	enter_animation: string;
@@ -6390,6 +6415,87 @@ declare interface ISheet_Activity_PeriodTask {
 	26010228: ISheetData_Activity_PeriodTask;
 	26010229: ISheetData_Activity_PeriodTask;
 	26010230: ISheetData_Activity_PeriodTask;
+	26020201: ISheetData_Activity_PeriodTask;
+	26020202: ISheetData_Activity_PeriodTask;
+	26020203: ISheetData_Activity_PeriodTask;
+	26020204: ISheetData_Activity_PeriodTask;
+	26020205: ISheetData_Activity_PeriodTask;
+	26020206: ISheetData_Activity_PeriodTask;
+	26020207: ISheetData_Activity_PeriodTask;
+	26020208: ISheetData_Activity_PeriodTask;
+	26020209: ISheetData_Activity_PeriodTask;
+	26020210: ISheetData_Activity_PeriodTask;
+	26020211: ISheetData_Activity_PeriodTask;
+	26020212: ISheetData_Activity_PeriodTask;
+	26020213: ISheetData_Activity_PeriodTask;
+	26020214: ISheetData_Activity_PeriodTask;
+	26020215: ISheetData_Activity_PeriodTask;
+	26020216: ISheetData_Activity_PeriodTask;
+	26020217: ISheetData_Activity_PeriodTask;
+	26020218: ISheetData_Activity_PeriodTask;
+	26020219: ISheetData_Activity_PeriodTask;
+	26020220: ISheetData_Activity_PeriodTask;
+	26020221: ISheetData_Activity_PeriodTask;
+	26020222: ISheetData_Activity_PeriodTask;
+	26020223: ISheetData_Activity_PeriodTask;
+	26020224: ISheetData_Activity_PeriodTask;
+	26020225: ISheetData_Activity_PeriodTask;
+	26020226: ISheetData_Activity_PeriodTask;
+	26020227: ISheetData_Activity_PeriodTask;
+	26020228: ISheetData_Activity_PeriodTask;
+	26020229: ISheetData_Activity_PeriodTask;
+	26020230: ISheetData_Activity_PeriodTask;
+	26020231: ISheetData_Activity_PeriodTask;
+	26020232: ISheetData_Activity_PeriodTask;
+	26020233: ISheetData_Activity_PeriodTask;
+	26020234: ISheetData_Activity_PeriodTask;
+	26020235: ISheetData_Activity_PeriodTask;
+	26020236: ISheetData_Activity_PeriodTask;
+	26020237: ISheetData_Activity_PeriodTask;
+	26020238: ISheetData_Activity_PeriodTask;
+	26020239: ISheetData_Activity_PeriodTask;
+	26020240: ISheetData_Activity_PeriodTask;
+	26020241: ISheetData_Activity_PeriodTask;
+	26020242: ISheetData_Activity_PeriodTask;
+	26020243: ISheetData_Activity_PeriodTask;
+	26020244: ISheetData_Activity_PeriodTask;
+	26020245: ISheetData_Activity_PeriodTask;
+	26020301: ISheetData_Activity_PeriodTask;
+	26020302: ISheetData_Activity_PeriodTask;
+	26020303: ISheetData_Activity_PeriodTask;
+	26020304: ISheetData_Activity_PeriodTask;
+	26020305: ISheetData_Activity_PeriodTask;
+	26020401: ISheetData_Activity_PeriodTask;
+	26020402: ISheetData_Activity_PeriodTask;
+	26020403: ISheetData_Activity_PeriodTask;
+	26020404: ISheetData_Activity_PeriodTask;
+	26020405: ISheetData_Activity_PeriodTask;
+	26020406: ISheetData_Activity_PeriodTask;
+	26020407: ISheetData_Activity_PeriodTask;
+	26020408: ISheetData_Activity_PeriodTask;
+	26020409: ISheetData_Activity_PeriodTask;
+	26020410: ISheetData_Activity_PeriodTask;
+	26020411: ISheetData_Activity_PeriodTask;
+	26020412: ISheetData_Activity_PeriodTask;
+	26020413: ISheetData_Activity_PeriodTask;
+	26020414: ISheetData_Activity_PeriodTask;
+	26020415: ISheetData_Activity_PeriodTask;
+	26020416: ISheetData_Activity_PeriodTask;
+	26020417: ISheetData_Activity_PeriodTask;
+	26020418: ISheetData_Activity_PeriodTask;
+	26020419: ISheetData_Activity_PeriodTask;
+	26020420: ISheetData_Activity_PeriodTask;
+	26020421: ISheetData_Activity_PeriodTask;
+	26020422: ISheetData_Activity_PeriodTask;
+	26020423: ISheetData_Activity_PeriodTask;
+	26020424: ISheetData_Activity_PeriodTask;
+	26020425: ISheetData_Activity_PeriodTask;
+	26020426: ISheetData_Activity_PeriodTask;
+	26020427: ISheetData_Activity_PeriodTask;
+	26020428: ISheetData_Activity_PeriodTask;
+	26020429: ISheetData_Activity_PeriodTask;
+	26020430: ISheetData_Activity_PeriodTask;
+	26020431: ISheetData_Activity_PeriodTask;
 }
 declare interface ISheetData_Activity_PeriodTask {
 	/** 活动任务id */
@@ -10000,6 +10106,7 @@ declare interface ISheet_Activity_ActivityItem {
 	251112: ISheetData_Activity_ActivityItem;
 	251212: ISheetData_Activity_ActivityItem;
 	260104: ISheetData_Activity_ActivityItem;
+	260212: ISheetData_Activity_ActivityItem;
 }
 declare interface ISheetData_Activity_ActivityItem {
 	/** 活动id */
@@ -10228,6 +10335,8 @@ declare interface ISheet_Activity_RewardMail {
 	251190: ISheetData_Activity_RewardMail;
 	251201: ISheetData_Activity_RewardMail;
 	260102: ISheetData_Activity_RewardMail;
+	260203: ISheetData_Activity_RewardMail;
+	260204: ISheetData_Activity_RewardMail;
 }
 declare interface ISheetData_Activity_RewardMail {
 	/** 活动ID */
@@ -10685,6 +10794,12 @@ declare interface ISheet_Activity_ChestReplaceUp {
 	260130: ISheetData_Activity_ChestReplaceUp[];
 	260131: ISheetData_Activity_ChestReplaceUp[];
 	260132: ISheetData_Activity_ChestReplaceUp[];
+	260218: ISheetData_Activity_ChestReplaceUp[];
+	260219: ISheetData_Activity_ChestReplaceUp[];
+	260222: ISheetData_Activity_ChestReplaceUp[];
+	260223: ISheetData_Activity_ChestReplaceUp[];
+	260226: ISheetData_Activity_ChestReplaceUp[];
+	260227: ISheetData_Activity_ChestReplaceUp[];
 }
 declare interface ISheetData_Activity_ChestReplaceUp {
 	/** 活动id */
@@ -11364,6 +11479,7 @@ declare interface ISheet_Activity_StoryActivity {
 	241107: ISheetData_Activity_StoryActivity[];
 	250405: ISheetData_Activity_StoryActivity[];
 	251004: ISheetData_Activity_StoryActivity[];
+	260205: ISheetData_Activity_StoryActivity[];
 }
 declare interface ISheetData_Activity_StoryActivity {
 	/** 活动id */
@@ -11406,6 +11522,8 @@ declare interface ISheet_Activity_StoryEnding {
 	2510043: ISheetData_Activity_StoryEnding[];
 	2510044: ISheetData_Activity_StoryEnding[];
 	2510045: ISheetData_Activity_StoryEnding[];
+	2602051: ISheetData_Activity_StoryEnding[];
+	2602052: ISheetData_Activity_StoryEnding[];
 	24081101: ISheetData_Activity_StoryEnding[];
 	24081102: ISheetData_Activity_StoryEnding[];
 	24081111: ISheetData_Activity_StoryEnding[];
@@ -11573,6 +11691,7 @@ declare interface ISheetData_Activity_SummerStoryReward {
 declare interface ISheet_Activity_ChooseUpActivity {
 	[key: string]: ISheetData_Activity_ChooseUpActivity;
 	250125: ISheetData_Activity_ChooseUpActivity;
+	260215: ISheetData_Activity_ChooseUpActivity;
 }
 declare interface ISheetData_Activity_ChooseUpActivity {
 	/** 活动id */
@@ -11581,6 +11700,8 @@ declare interface ISheetData_Activity_ChooseUpActivity {
 	replace_id: number;
 	/** 可选卡池,国女 */
 	base_chest_id: number[];
+	/** 不可选雀士1 */
+	ban_list: number[];
 	/** 可选类型 */
 	choose_type: string[];
 	/** 卡池排序大的靠上 */
@@ -11599,7 +11720,7 @@ declare interface ISheetData_Activity_ChooseUpActivity {
 	title_img: string;
 	/** 卡池标题图2（左下的） */
 	title_img_2: string;
-	/** 排版种类0常规 1普通轮换 2UR角色 3联动  4自选 */
+	/** 排版种类 */
 	typeset: number;
 	/** 进入动画 */
 	enter_animation: string;
@@ -11709,5 +11830,82 @@ declare interface ISheetData_Activity_BingoReward {
 	reward_type: number;
 	/** 0普通1突出 */
 	node_mark: number;
+}
+//#endregion
+
+//#region choose_group_up_activity
+declare interface ISheet_Activity_ChooseGroupUpActivity {
+	[key: string]: ISheetData_Activity_ChooseGroupUpActivity;
+	260224: ISheetData_Activity_ChooseGroupUpActivity;
+	260225: ISheetData_Activity_ChooseGroupUpActivity;
+}
+declare interface ISheetData_Activity_ChooseGroupUpActivity {
+	/** 活动id */
+	activity_id: number;
+	/** choose_group.group_id */
+	group_id: number;
+	/** 可选卡池，国 */
+	base_chest_id: number[];
+	/** 可选类型 */
+	choose_type: string[];
+	/** 樱花1竹林2 */
+	type: number;
+	/** 卡池排序大的靠上 */
+	sort: number;
+	/** 卡池短名 */
+	title_str_id: number;
+	/** 卡池说明文，高亮用[tag]区分[/tag] */
+	str_id: string;
+	/** 角色出率文本 */
+	chara_str_id: number;
+	/** 装扮出率文本 */
+	item_str_id: number;
+	/** 宣传图 */
+	img: string;
+	/** 卡池标题图 */
+	title_img: string;
+	/** 卡池标题图2（左下的） */
+	title_img_2: string;
+	/** 排版种类 */
+	typeset: number;
+	/** 进入动画 */
+	enter_animation: string;
+	/** 特效前 */
+	special_effect_front: string;
+	/** 特效后，常驻，特效替换樱花特效 */
+	special_effect_back: string;
+	/** audio表内音效 */
+	special_audio: number;
+	/** 0=无up装扮，1=新装扮，2=特定老装扮，3=常驻装扮 */
+	up_items_type: number;
+	/** UP的物品 */
+	up_items: number[];
+}
+//#endregion
+
+//#region choose_group
+declare interface ISheet_Activity_ChooseGroup {
+	[key: string]: ISheetData_Activity_ChooseGroup[];
+	1001: ISheetData_Activity_ChooseGroup[];
+	1002: ISheetData_Activity_ChooseGroup[];
+	2001: ISheetData_Activity_ChooseGroup[];
+	2002: ISheetData_Activity_ChooseGroup[];
+}
+declare interface ISheetData_Activity_ChooseGroup {
+	/** 组id */
+	group_id: number;
+	/** 选项id */
+	selection_id: number;
+	/** 道具id */
+	item_id: number;
+	/** 卡池站位 */
+	item_position: number;
+	/** 卡池id,国 */
+	chest_id: number[];
+	/** chest.item_pool.id（索引） */
+	item_pool_id: number[];
+	/** 替换权重 */
+	weight: number[];
+	worth: number;
 }
 //#endregion

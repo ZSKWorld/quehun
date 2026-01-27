@@ -1,0 +1,418 @@
+spine.png
+	size: 2048, 2048
+	filter: Linear, Linear
+	scale: 0.5
+RYCY_BC___0
+	bounds: 945, 1190, 150, 192
+	rotate: 90
+RYCY_BC___5
+	bounds: 658, 390, 240, 791
+RYCY_BC___5_2
+	bounds: 900, 390, 240, 791
+RYCY_BC___7
+	bounds: 1142, 542, 220, 798
+RYCY_SD__0
+	bounds: 1969, 438, 180, 28
+	rotate: 90
+RYCY_SD__1
+	bounds: 450, 1088, 134, 93
+RYCY_SD__11
+	bounds: 1800, 12, 117, 184
+	rotate: 90
+RYCY_SD__12
+	bounds: 1488, 458, 36, 59
+	offsets: 0, 0, 37, 59
+	rotate: 90
+RYCY_SD__15
+	bounds: 516, 25, 125, 251
+	offsets: 0, 0, 128, 251
+RYCY_SD__17
+	bounds: 1339, 458, 147, 36
+RYCY_SD__2
+	bounds: 1999, 599, 180, 37
+	rotate: 90
+RYCY_SD__20
+	bounds: 1073, 2, 142, 20
+	offsets: 0, 9, 142, 29
+RYCY_SD__21
+	bounds: 430, 272, 4, 4
+RYCY_SD__22
+	bounds: 643, 28, 152, 37
+RYCY_SD__24
+	bounds: 1539, 506, 120, 22
+RYCY_SD__26
+	bounds: 933, 2, 138, 25
+RYCY_SD__27
+	bounds: 1249, 458, 11, 23
+	offsets: 0, 1, 11, 24
+	rotate: 90
+RYCY_SD__28
+	bounds: 2035, 2014, 32, 11
+	rotate: 90
+RYCY_SD__29
+	bounds: 1142, 471, 195, 69
+	offsets: 1, 1, 196, 71
+RYCY_SD__3
+	bounds: 1966, 135, 109, 16
+	rotate: 90
+RYCY_SD__33
+	bounds: 1999, 781, 138, 47
+	rotate: 90
+RYCY_SD__34
+	bounds: 1118, 24, 60, 118
+	rotate: 90
+RYCY_SD__39
+	bounds: 1390, 1305, 376, 741
+	offsets: 7, 0, 383, 741
+RYCY_SD__39_1
+	bounds: 1364, 562, 376, 741
+	offsets: 7, 0, 383, 741
+RYCY_SD__42
+	bounds: 2, 271, 426, 815
+RYCY_SD__43
+	bounds: 430, 278, 226, 808
+RYCY_SD__44
+	bounds: 945, 1342, 443, 704
+RYCY_SD__47
+	bounds: 2018, 4, 41, 26
+	rotate: 90
+RYCY_SD__48
+	bounds: 1988, 246, 38, 31
+	rotate: 90
+RYCY_SD__49
+	bounds: 1986, 2, 43, 30
+	offsets: 0, 0, 44, 30
+	rotate: 90
+RYCY_SD__5
+	bounds: 1641, 532, 14, 26
+	rotate: 90
+RYCY_SD__53
+	bounds: 1742, 1253, 24, 50
+RYCY_SD__56
+	bounds: 817, 2, 63, 114
+	offsets: 3, 0, 66, 114
+	rotate: 90
+RYCY_SD__58
+	bounds: 1364, 1308, 21, 32
+RYCY_SD__6
+	bounds: 1230, 408, 17, 21
+RYCY_SD__63 - 1
+	bounds: 658, 86, 302, 589
+	offsets: 0, 5, 302, 594
+	rotate: 90
+RYCY_SD__69
+	bounds: 1988, 286, 58, 61
+RYCY_SD__7
+	bounds: 586, 1114, 67, 70
+	rotate: 90
+RYCY_SD__77
+	bounds: 2, 10, 259, 512
+	offsets: 0, 0, 268, 512
+	rotate: 90
+RYCY_SD__78
+	bounds: 450, 1183, 493, 863
+	offsets: 8, 1, 504, 864
+RYCY_SD__82
+	bounds: 1742, 458, 764, 225
+	rotate: 90
+rycy_BC_eyezd
+	bounds: 1663, 458, 74, 56
+rycy_bcssc__13
+	bounds: 1339, 496, 198, 32
+rycy_bcssc__2
+	bounds: 1230, 431, 17, 38
+	offsets: 0, 0, 17, 39
+rycy_bcssc__26
+	bounds: 2, 1088, 446, 958
+rycy_bcssc__5
+	bounds: 797, 46, 18, 19
+rycy_bcssc__6
+	bounds: 1549, 458, 46, 112
+	rotate: 90
+rycy_bcssc__7
+	bounds: 1339, 530, 10, 18
+	rotate: 90
+rycy_bcssc__8
+	bounds: 586, 1089, 23, 40
+	offsets: 0, 0, 23, 41
+	rotate: 90
+rycy_bcssc__9
+	bounds: 1988, 349, 58, 87
+rycy_czbc__0
+	bounds: 1249, 131, 325, 715
+	rotate: 90
+rycy_czbc__1
+	bounds: 2008, 923, 299, 26
+	rotate: 90
+rycy_czbc__10
+	bounds: 1966, 246, 190, 20
+	rotate: 90
+rycy_czbc__11
+	bounds: 1969, 921, 301, 37
+	rotate: 90
+rycy_czbc__12
+	bounds: 516, 2, 299, 21
+rycy_czbc__14
+	bounds: 1142, 402, 86, 67
+rycy_czbc__17
+	bounds: 1969, 620, 299, 28
+	rotate: 90
+rycy_czbc__18
+	bounds: 1364, 548, 303, 12
+rycy_czbc__2
+	bounds: 1999, 526, 71, 47
+	rotate: 90
+rycy_czbc__21
+	bounds: 1986, 47, 46, 60
+	rotate: 90
+rycy_czbc__25
+	bounds: 1364, 530, 275, 16
+rycy_czbc__26
+	bounds: 643, 67, 275, 17
+rycy_czbc__28
+	bounds: 1249, 8, 121, 549
+	rotate: 90
+rycy_czbc__3
+	bounds: 1999, 453, 71, 43
+	rotate: 90
+rycy_czbc__30
+	bounds: 933, 29, 183, 55
+rycy_czbc__31
+	bounds: 1768, 1224, 822, 265
+	rotate: 90
+rycy_czbc__6
+	bounds: 1669, 516, 71, 44
+water_0
+	bounds: 1986, 95, 60, 149
+	offsets: 0, 23, 60, 172
+
+spine_2.png
+	size: 1747, 1747
+	filter: Linear, Linear
+	scale: 0.5
+KWFX_05
+	bounds: 680, 7, 216, 239
+	offsets: 0, 0, 216, 240
+RYCY_BC___1
+	bounds: 650, 880, 378, 299
+	offsets: 0, 0, 378, 313
+	rotate: 90
+RYCY_BC___3
+	bounds: 1684, 169, 44, 37
+	offsets: 4, 0, 49, 38
+RYCY_BC___4
+	bounds: 981, 240, 148, 216
+RYCY_BC___6_new
+	bounds: 1385, 1439, 306, 356
+	offsets: 16, 8, 322, 393
+	rotate: 90
+RYCY_BC___8
+	bounds: 951, 724, 216, 281
+	rotate: 90
+RYCY_BC___9
+	bounds: 1217, 1505, 85, 148
+	offsets: 0, 1, 85, 149
+	rotate: 90
+RYCY_SD__10
+	bounds: 915, 601, 121, 316
+	rotate: 90
+RYCY_SD__13
+	bounds: 804, 248, 175, 183
+RYCY_SD__14
+	bounds: 558, 433, 198, 332
+	rotate: 90
+RYCY_SD__16
+	bounds: 1425, 715, 105, 233
+	rotate: 90
+RYCY_SD__19
+	bounds: 884, 1358, 125, 38
+	offsets: 0, 1, 125, 40
+	rotate: 90
+RYCY_SD__23
+	bounds: 2, 12, 136, 22
+	offsets: 3, 0, 139, 22
+RYCY_SD__25
+	bounds: 1367, 1474, 116, 16
+	rotate: 90
+RYCY_SD__30
+	bounds: 483, 2, 195, 244
+RYCY_SD__31
+	bounds: 924, 1390, 93, 25
+	rotate: 90
+RYCY_SD__32
+	bounds: 1534, 2, 42, 33
+	offsets: 0, 0, 113, 33
+	rotate: 90
+RYCY_SD__35
+	bounds: 1320, 362, 207, 167
+RYCY_SD__36
+	bounds: 1425, 822, 229, 186
+RYCY_SD__37
+	bounds: 885, 1485, 330, 105
+RYCY_SD__38
+	bounds: 183, 4, 189, 298
+	rotate: 90
+RYCY_SD__4
+	bounds: 183, 195, 297, 270
+RYCY_SD__40
+	bounds: 1463, 1010, 235, 192
+RYCY_SD__45_1
+	bounds: 258, 952, 390, 306
+	offsets: 0, 4, 390, 310
+RYCY_SD__46
+	bounds: 1224, 1205, 232, 266
+	rotate: 90
+RYCY_SD__50
+	bounds: 1019, 2, 40, 30
+	rotate: 90
+RYCY_SD__51
+	bounds: 192, 1061, 64, 110
+RYCY_SD__52
+	bounds: 1583, 215, 107, 146
+	offsets: 46, 0, 153, 146
+RYCY_SD__54
+	bounds: 1543, 57, 41, 44
+RYCY_SD__55
+	bounds: 192, 952, 62, 107
+RYCY_SD__57
+	bounds: 1716, 804, 30, 29
+	offsets: 0, 1, 31, 31
+	rotate: 90
+RYCY_SD__59
+	bounds: 951, 942, 258, 245
+RYCY_SD__61
+	bounds: 1162, 10, 169, 287
+	offsets: 10, 1, 179, 288
+RYCY_SD__62
+	bounds: 898, 44, 194, 262
+	offsets: 6, 50, 200, 312
+	rotate: 90
+RYCY_SD__64
+	bounds: 1333, 137, 99, 223
+RYCY_SD__65
+	bounds: 1131, 299, 187, 300
+RYCY_SD__66
+	bounds: 1554, 517, 136, 196
+RYCY_SD__67
+	bounds: 1434, 207, 153, 147
+	rotate: 90
+RYCY_SD__68
+	bounds: 1333, 531, 182, 219
+	rotate: 90
+RYCY_SD__70
+	bounds: 1692, 267, 46, 51
+RYCY_SD__71
+	bounds: 258, 1572, 173, 625
+	rotate: 90
+RYCY_SD__72
+	bounds: 2, 36, 179, 519
+RYCY_SD__73
+	bounds: 258, 1260, 115, 522
+	rotate: 90
+RYCY_SD__74
+	bounds: 885, 1592, 153, 498
+	rotate: 90
+RYCY_SD__75
+	bounds: 482, 248, 183, 320
+	rotate: 90
+RYCY_SD__79
+	bounds: 258, 1377, 193, 532
+	rotate: 90
+RYCY_SD__8
+	bounds: 1588, 147, 51, 66
+RYCY_SD__80
+	bounds: 2, 1173, 254, 572
+RYCY_SD__81
+	bounds: 2, 557, 614, 188
+	rotate: 90
+RYCY_SD__9
+	bounds: 1656, 836, 83, 172
+rycy_BC_eye
+	bounds: 946, 4, 71, 38
+	offsets: 0, 0, 72, 38
+rycy_BC_mouth
+	bounds: 1051, 2, 40, 27
+	offsets: 1, 0, 41, 27
+	rotate: 90
+rycy_bcssc__0
+	bounds: 1131, 252, 29, 45
+rycy_bcssc__1
+	bounds: 140, 18, 41, 16
+rycy_bcssc__10
+	bounds: 924, 1348, 25, 40
+rycy_bcssc__11
+	bounds: 1493, 2, 42, 39
+	rotate: 90
+rycy_bcssc__12
+	bounds: 792, 1345, 225, 90
+	rotate: 90
+rycy_bcssc__14
+	bounds: 898, 2, 40, 46
+	rotate: 90
+rycy_bcssc__15
+	bounds: 1529, 363, 175, 152
+rycy_bcssc__17
+	bounds: 558, 633, 355, 245
+	offsets: 0, 3, 355, 248
+rycy_bcssc__18
+	bounds: 1234, 730, 300, 189
+	offsets: 0, 6, 300, 195
+	rotate: 90
+rycy_bcssc__19
+	bounds: 1233, 601, 98, 121
+rycy_bcssc__20
+	bounds: 1224, 1032, 171, 237
+	offsets: 0, 1, 171, 238
+	rotate: 90
+rycy_bcssc__23
+	bounds: 951, 1189, 294, 271
+	rotate: 90
+rycy_bcssc__25
+	bounds: 192, 467, 135, 338
+	rotate: 90
+rycy_bcssc__3
+	bounds: 482, 433, 32, 62
+	rotate: 90
+rycy_czbc__13
+	bounds: 1333, 32, 99, 103
+rycy_czbc__15
+	bounds: 1434, 103, 101, 102
+rycy_czbc__16
+	bounds: 782, 1288, 55, 97
+	rotate: 90
+rycy_czbc__19
+	bounds: 1434, 46, 55, 107
+	rotate: 90
+rycy_czbc__20
+	bounds: 1660, 726, 54, 108
+rycy_czbc__22
+	bounds: 1434, 2, 42, 57
+	rotate: 90
+rycy_czbc__23
+	bounds: 1692, 320, 41, 53
+	rotate: 90
+rycy_czbc__24
+	bounds: 782, 1260, 38, 26
+rycy_czbc__27
+	bounds: 192, 604, 364, 346
+rycy_czbc__29
+	bounds: 892, 458, 234, 141
+	offsets: 0, 0, 234, 145
+rycy_czbc__4
+	bounds: 1641, 145, 68, 41
+	rotate: 90
+rycy_czbc__5
+	bounds: 1537, 136, 69, 49
+	rotate: 90
+rycy_czbc__7
+	bounds: 558, 891, 84, 59
+rycy_czbc__8
+	bounds: 1080, 3, 57, 39
+rycy_czbc__9
+	bounds: 1692, 208, 57, 39
+	rotate: 90
+rycy_fx
+	bounds: 1492, 1204, 233, 233
+	offsets: 13, 8, 263, 249
+shuizi
+	bounds: 1537, 103, 47, 31

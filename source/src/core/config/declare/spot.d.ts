@@ -27,6 +27,7 @@ declare interface ISheet_Spot_Spot {
 	200007: ISheetData_Spot_Spot[];
 	200008: ISheetData_Spot_Spot[];
 	200009: ISheetData_Spot_Spot[];
+	200011: ISheetData_Spot_Spot[];
 	200013: ISheetData_Spot_Spot[];
 	200014: ISheetData_Spot_Spot[];
 	200016: ISheetData_Spot_Spot[];
@@ -147,6 +148,13 @@ declare interface ISheet_Spot_Rewards {
 	1000052: ISheetData_Spot_Rewards;
 	1000061: ISheetData_Spot_Rewards;
 	1000062: ISheetData_Spot_Rewards;
+	1100011: ISheetData_Spot_Rewards;
+	1100012: ISheetData_Spot_Rewards;
+	1100021: ISheetData_Spot_Rewards;
+	1100022: ISheetData_Spot_Rewards;
+	1100023: ISheetData_Spot_Rewards;
+	1100031: ISheetData_Spot_Rewards;
+	1100032: ISheetData_Spot_Rewards;
 	1300041: ISheetData_Spot_Rewards;
 	1300042: ISheetData_Spot_Rewards;
 	1300043: ISheetData_Spot_Rewards;
@@ -316,6 +324,7 @@ declare interface ISheet_Spot_CharacterSpot {
 	[key: string]: ISheetData_Spot_CharacterSpot;
 	20000104: ISheetData_Spot_CharacterSpot;
 	20000105: ISheetData_Spot_CharacterSpot;
+	20000121: ISheetData_Spot_CharacterSpot;
 	20009998: ISheetData_Spot_CharacterSpot;
 	20009999: ISheetData_Spot_CharacterSpot;
 }
@@ -442,6 +451,7 @@ declare interface ISheet_Spot_SkinSpot {
 	40010401: ISheetData_Spot_SkinSpot;
 	40010501: ISheetData_Spot_SkinSpot;
 	40011499: ISheetData_Spot_SkinSpot;
+	40012101: ISheetData_Spot_SkinSpot;
 	40999801: ISheetData_Spot_SkinSpot;
 	40999901: ISheetData_Spot_SkinSpot;
 }
@@ -549,6 +559,8 @@ declare interface ISheetData_Spot_SkinSpot {
 	click2: number;
 	celebrate_idle: number;
 	illust_data: string;
+	/** 传记眨眼 */
+	blink: number;
 }
 //#endregion
 

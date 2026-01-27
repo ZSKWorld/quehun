@@ -88,8 +88,6 @@ declare namespace ResPath {
 		Youyuan = "res/font/youyuan.ttf",
 	}
 
-	enum EScenePath { }
-
 	enum ESkeletonPath {
 		Bianhua = "res/skeleton/bianhua.sk",
 		Biaoqing = "res/skeleton/biaoqing.sk",

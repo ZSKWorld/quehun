@@ -26,7 +26,6 @@ export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> 
 	private _recentPlayerLoader = new PlayerViewLoader(new Laya.Handler(this, this.tryToRefresh, [3]));
 
 	override onAwake() {
-		this.addEvent(EUIFriendMsg.OnComBackClick, this.onComBackClick);
 		this.addEvent(EUIFriendMsg.OnBtnCopyClick, this.onBtnCopyClick);
 		this.addEvent(EUIFriendMsg.OnBtnFindClick, this.onBtnFindClick);
 		this.view.listApply.on(fgui.Events.SCROLL, this, this.onListApplyScroll);
@@ -70,10 +69,6 @@ export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> 
 				}
 				break;
 		}
-	}
-
-	private onComBackClick() {
-		this.closeSelf();
 	}
 
 	private onBtnCopyClick() {

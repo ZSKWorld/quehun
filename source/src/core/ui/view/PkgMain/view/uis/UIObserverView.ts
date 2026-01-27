@@ -8,7 +8,7 @@ export class UIObserverView extends ExtensionClass<IView, UIObserver>(UIObserver
 
 	override onCreate() {
 		const { com_back } = this;
-		com_back.onBackClick(this, this.sendEvent, [EUIObserverMsg.OnComBackClick]);
+		com_back.onBackClick(this, this.closeSelf);
 	}
 
 	override onOpenAni() { return this.com_back.onOpenAni(); }

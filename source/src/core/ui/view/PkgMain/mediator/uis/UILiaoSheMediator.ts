@@ -9,15 +9,10 @@ export interface IUILiaoSheData {
 export class UILiaoSheMediator extends MediatorBase<UILiaoSheView, IUILiaoSheData> {
 
 	override onAwake() {
-		this.addEvent(EUILiaoSheMsg.OnComBackClick, this.onComBackClick);
 
 	}
 
 	override onEnable() {
 		this.view.refreshContent(0, false);
-	}
-
-	private onComBackClick() {
-		this.closeSelf();
 	}
 }

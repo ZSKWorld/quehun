@@ -8,10 +8,6 @@ export interface IUIShopData {
 export class UIShopMediator extends MediatorBase<UIShopView, IUIShopData> {
 
 	override onAwake() {
-		this.addEvent(EUIShopMsg.OnComBackClick, this.onComBackClick);
-	}
-
-	private async onComBackClick() {
-		this.closeSelf();
+		
 	}
 }

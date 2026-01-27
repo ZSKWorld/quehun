@@ -8,10 +8,6 @@ export interface IUIObserverData {
 export class UIObserverMediator extends MediatorBase<UIObserverView, IUIObserverData> {
 
 	override onAwake() {
-		this.addEvent(EUIObserverMsg.OnComBackClick, this.onComBackClick);
-	}
-
-	private async onComBackClick() {
-		this.closeSelf();
+		
 	}
 }

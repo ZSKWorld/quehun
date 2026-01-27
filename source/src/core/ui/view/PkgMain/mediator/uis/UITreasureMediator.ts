@@ -8,10 +8,6 @@ export interface IUITreasureData {
 export class UITreasureMediator extends MediatorBase<UITreasureView, IUITreasureData> {
 
 	override onAwake() {
-		this.addEvent(EUITreasureMsg.OnComBackClick, this.onComBackClick);
-	}
-
-	private async onComBackClick() {
-		this.closeSelf();
+		
 	}
 }

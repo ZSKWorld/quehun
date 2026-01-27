@@ -22,7 +22,7 @@ export class UIFriendView extends ExtensionClass<IView, UIFriend>(UIFriend) impl
 			list_friend, btn_copy, btn_find
 		} = this;
 		btn_friendList.mode = btn_friendApply.mode = btn_searchFriend.mode = btn_recentMatch.mode = fgui.ButtonMode.Radio;
-		com_back.onBackClick(this, this.sendEvent, [EUIFriendMsg.OnComBackClick]);
+		com_back.onBackClick(this, this.closeSelf);
 		btn_copy.onClick(this, this.sendEvent, [EUIFriendMsg.OnBtnCopyClick]);
 		btn_find.onClick(this, this.sendEvent, [EUIFriendMsg.OnBtnFindClick]);
 		$uiUtil.setList(list_friend, true, this, this.onListFriendRender);

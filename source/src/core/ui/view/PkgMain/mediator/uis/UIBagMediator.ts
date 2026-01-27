@@ -10,7 +10,6 @@ export class UIBagMediator extends MediatorBase<UIBagView, IUIBagData> {
 	private _tabGroup = new RadioGroup();
 
 	override onAwake() {
-		this.addEvent(EUIBagMsg.OnComBackClick, this.onComBackClick);
 		const { view, _tabGroup } = this;
 		_tabGroup.init(view.tabBtns, view, view.refreshPage);
 	}
@@ -21,9 +20,5 @@ export class UIBagMediator extends MediatorBase<UIBagView, IUIBagData> {
 
 	override onDisable() {
 		this._tabGroup.clearSelection();
-	}
-
-	private async onComBackClick() {
-		this.closeSelf();
 	}
 }

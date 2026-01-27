@@ -12,7 +12,7 @@ export class UIBagView extends ExtensionClass<IView, UIBag>(UIBag) implements IV
 	override onCreate() {
 		const { com_back, btn_daoJu, btn_liWu, btn_zhuangBan, btn_fuShi, btn_chaHua } = this;
 		btn_daoJu.mode = btn_liWu.mode = btn_zhuangBan.mode = btn_fuShi.mode = btn_chaHua.mode = fgui.ButtonMode.Radio;
-		com_back.onBackClick(this, this.sendEvent, [EUIBagMsg.OnComBackClick]);
+		com_back.onBackClick(this, this.closeSelf);
 	}
 
 	refreshPage(index: number) {

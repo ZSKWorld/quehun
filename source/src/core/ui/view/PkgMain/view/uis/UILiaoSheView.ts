@@ -8,7 +8,7 @@ export class UILiaoSheView extends ExtensionClass<IView, UILiaoShe>(UILiaoShe) i
 
 	override onCreate() {
 		const { com_back, btn_char, btn_deco } = this;
-		com_back.onBackClick(this, this.sendEvent, [EUILiaoSheMsg.OnComBackClick]);
+		com_back.onBackClick(this, this.closeSelf);
 		btn_char.onClick(this, this.refreshContent, [0, true]);
 		btn_deco.onClick(this, this.refreshContent, [1, true]);
 	}

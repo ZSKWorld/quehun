@@ -8,7 +8,7 @@ export class UIPaipuView extends ExtensionClass<IView, UIPaipu>(UIPaipu) impleme
 
 	override onCreate() {
 		const { com_back } = this;
-		com_back.onBackClick(this, this.sendEvent, [EUIPaipuMsg.OnComBackClick]);
+		com_back.onBackClick(this, this.closeSelf);
 	}
 
 	override onOpenAni() { return this.com_back.onOpenAni(); }

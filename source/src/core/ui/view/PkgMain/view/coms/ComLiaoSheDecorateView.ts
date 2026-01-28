@@ -26,7 +26,21 @@ const SlotIcons = [
 // slotHasPreivew = [false, false, false, false, false, false, true, true, true, true, true];
 // itemCanDiselect = [true, true, true, true, true, true, false, false, false, false, false];
 
+class DecoViewData implements ProtoObject<IResAllcommonViews_Views>{
+	name: string;
+	index: number;
+	values: IViewSlot[];
+	init(data: ProtoObject<IResAllcommonViews_Views>) {
+		const newData = structuredClone(data);
+		this.name = newData.name;
+		this.index = newData.index;
+		this.values = newData.values;
+	}
+}
+
 export class ComLiaoSheDecorateView extends ExtensionClass<IView, ComLiaoSheDecorate>(ComLiaoSheDecorate) implements IView {
+	private _originData = new DecoViewData();
+	private _curData = new DecoViewData();
 
 	override onCreate() {
 		const { btn_save, btn_preview, btn_random, btn_closePreview, btn_editViewName, list_tab, list_view } = this;
@@ -46,15 +60,21 @@ export class ComLiaoSheDecorateView extends ExtensionClass<IView, ComLiaoSheDeco
 		const index = views.findIndex(v => v.index == use);
 		list_tab.selectedIndex = index;
 		list_tab.scrollToView(index, false);
-		this.refreshContent(index);
+		this.refreshView(index);
 	}
 
-	private refreshContent(index: number) {
+	private refreshView(index: number) {
 		const { list_view, txt_viewName } = this;
-		const view = $userData.commonView.views[index];
-		list_view.numItems = view.values.length;
-		list_view.scrollToView(0, false);
-		txt_viewName.text = view.name;
+		const viewData = $userData.commonView.views[index];
+		list_view.numItems = viewData.values.length;
+		list_view.selectedIndex = 0;
+		list_view.scrollPane.posY = 0;
+		txt_viewName.text = viewData.name;
+		this.refreshItem(0);
+	}
+
+	private refreshItem(index: number) {
+
 	}
 
 	private onListTabRender(index: number, item: RenderLiaoSheDecoTabView) {
@@ -63,16 +83,15 @@ export class ComLiaoSheDecorateView extends ExtensionClass<IView, ComLiaoSheDeco
 	}
 
 	private onListTabClick(item, evt, index: number) {
-		this.refreshContent(index);
+		this.refreshView(index);
 	}
 
 	private onListViewRender(index: number, item: RenderLiaoSheDecoItemView) {
-		const { values } = $userData.commonView.views[this.list_tab.selectedIndex];
-		const slotData = values[index];
+		const slotData = $userData.commonView.views[this.list_tab.selectedIndex].values[index];
 		item.refresh(slotData, SlotTitles[index], SlotNames[index], slotData.type == 1 ? SlotIconRandom : SlotIcons[index]);
 	}
 
 	private onListViewClick(item, evt, index: number) {
-
+		this.refreshItem(index);
 	}
 }

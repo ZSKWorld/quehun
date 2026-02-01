@@ -5,7 +5,7 @@ export class CharacterVO extends BaseVO implements VO.ICharacterVO {
 	private _mainCharId: number = 0;
 	private _chars: ProtoObject<ICharacter>[] = [];
 	private _starChars: ProtoObject<ICharacter>[] = [];
-	private _otherChars: ProtoObject<ICharacter>[] = [];
+	private _showChars: ProtoObject<ICharacter>[] = [];
 	private _hiddenChars: ProtoObject<ICharacter>[] = [];
 	/** 皮肤 */
 	private _skins: KeyMap<boolean> = {};
@@ -36,7 +36,7 @@ export class CharacterVO extends BaseVO implements VO.ICharacterVO {
 	}
 	get chars() { return this._chars; }
 	get starChars() { return this._starChars; }
-	get otherChars() { return this._otherChars; }
+	get showChars() { return this._showChars; }
 	get hiddenChars() { return this._hiddenChars; }
 
 	hasChar(id: number) {
@@ -48,6 +48,7 @@ export class CharacterVO extends BaseVO implements VO.ICharacterVO {
 		}
 		return false;
 	}
+	getCharInfo(id: number) { return this._chars.find(v => v.charid == id); }
 	hasSkin(id: number) { return !!this._skins[id]; }
 	isStarChar(id: number) { return this._characterSort.includes(id); }
 	isHiddenChar(id: number) { return this._hiddenCharacters.includes(id); }
@@ -90,16 +91,15 @@ export class CharacterVO extends BaseVO implements VO.ICharacterVO {
 		this._sendGiftCount = res.send_gift_count;
 		this._sendGiftLimit = res.send_gift_limit;
 
-		this._characterSort = [...new Set(res.character_sort)];
-		this._otherCharacterSort = [...new Set(res.other_character_sort)];
 		this._hiddenCharacters = [...new Set(res.hidden_characters)];
+		this._characterSort = [...new Set(res.character_sort)].filter(v => !this.isHiddenChar(v) && this.hasChar(v));
+		this._otherCharacterSort = [...new Set(res.other_character_sort)].filter(v => !this.isHiddenChar(v) && this.hasChar(v));
 		this._chars.forEach(v => {
-			if (this._characterSort.includes(v.charid)) return;
+			if (this.isHiddenChar(v.charid)) return;
+			if (this.isStarChar(v.charid)) return;
 			if (this._otherCharacterSort.includes(v.charid)) return;
 			this._otherCharacterSort.push(v.charid);
 		});
-		this._characterSort = this._characterSort.filter(v => this.hasChar(v));
-		this._otherCharacterSort = this._otherCharacterSort.filter(v => this.hasChar(v));
 		this.updateKindOfChars();
 		this.updateCharDefaultSkin();
 		this.dispatch(EUserEvent.OnMainCharacterChanged);
@@ -131,7 +131,7 @@ export class CharacterVO extends BaseVO implements VO.ICharacterVO {
 	}
 
 	@InterestMessage(EMessageID.updateCharacterSort)
-	private onUpdateCharacterSort(res:IResCommon, req: IReqUpdateCharacterSort) {
+	private onUpdateCharacterSort(res: IResCommon, req: IReqUpdateCharacterSort) {
 		this._characterSort = req.sort;
 		this._otherCharacterSort = req.other_sort;
 		this._hiddenCharacters = req.hidden_characters;
@@ -140,9 +140,9 @@ export class CharacterVO extends BaseVO implements VO.ICharacterVO {
 	}
 
 	private updateKindOfChars() {
-		this._starChars = this._characterSort.map(v => this._chars.find(e => e.charid == v));
-		this._otherChars = this._otherCharacterSort.map(v => this._chars.find(e => e.charid == v));
-		this._hiddenChars = this._hiddenCharacters.map(v => this._chars.find(e => e.charid == v));
+		this._starChars = this._characterSort.map(v => this.getCharInfo(v));
+		this._showChars = [...this._characterSort, ...this._otherCharacterSort].map(v => this.getCharInfo(v));
+		this._hiddenChars = this._hiddenCharacters.map(v => this.getCharInfo(v));
 	}
 
 	private updateCharDefaultSkin() {

@@ -2,8 +2,9 @@
 
 import { ComHeadView } from "../../view/PkgCommon/view/coms/ComHeadView";
 
-export default class RenderLiaoSheChar extends fgui.GButton {
+export default class RenderLiaoSheChar extends fgui.GComponent {
 
+	protected img_selected: fgui.GImage;
 	protected loader_bg: fgui.GLoader;
 	protected com_head: ComHeadView;
 	protected loader_border: fgui.GLoader;
@@ -20,6 +21,7 @@ export default class RenderLiaoSheChar extends fgui.GButton {
 	}
 
 	protected override onConstruct(): void {
+		this.img_selected = <fgui.GImage>(this.getChildAt(0));
 		this.loader_bg = <fgui.GLoader>(this.getChildAt(1));
 		this.com_head = <ComHeadView>(this.getChildAt(2));
 		this.loader_border = <fgui.GLoader>(this.getChildAt(3));

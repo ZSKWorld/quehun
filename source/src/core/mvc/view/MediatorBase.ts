@@ -75,8 +75,6 @@ export abstract class MediatorBase<V extends IView = IView, D = any> extends Ext
 		super._onEnable();
 		$facade.interestNotify(this);
 		$netMgr.interestMessage(this);
-		$facade.interestNotify(this.view);
-		$netMgr.interestMessage(this.view);
 		MediatorDIExtend.registerDeviceEvent(this);
 	}
 
@@ -84,8 +82,6 @@ export abstract class MediatorBase<V extends IView = IView, D = any> extends Ext
 		super._onDisable();
 		$facade.offAllCaller(this);
 		$netMgr.offAllCaller(this);
-		$facade.offAllCaller(this.view);
-		$netMgr.offAllCaller(this.view);
 		MediatorDIExtend.offDeviceEvent(this);
 	}
 

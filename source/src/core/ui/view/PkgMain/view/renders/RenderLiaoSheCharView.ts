@@ -3,17 +3,16 @@ import RenderLiaoSheChar from "../../../../ui/PkgMain/RenderLiaoSheChar";
 export class RenderLiaoSheCharView extends ExtensionClass<IView, RenderLiaoSheChar>(RenderLiaoSheChar) implements IView {
 
 	override onCreate() {
-		const { btn_star } = this;
-		btn_star.onClick(this, this.onBtnStarClick);
+
 	}
 
-	refresh(data: ProtoObject<ICharacter>, using: boolean) {
+	refresh(data: ProtoObject<ICharacter>, using: boolean, selected: boolean) {
 		const { charid, level, exp, views, skin, is_upgraded } = data;
 		const charInfo = $itemUtil.getItemInfo(charid);
 		const cfgChar = $cfgMgr.item_definition.character[charid];
 		const {
 			loader_bg, com_head, loader_border, loader_nameBg, btn_star, img_using, img_redDot, img_new,
-			txt_name
+			txt_name, img_selected
 		} = this;
 		com_head.refreshBigHead(skin);
 		loader_bg.icon = is_upgraded ? "ui://PkgMain/img_3245" : "ui://PkgMain/img_3244";
@@ -24,19 +23,30 @@ export class RenderLiaoSheCharView extends ExtensionClass<IView, RenderLiaoSheCh
 		else
 			loader_nameBg.icon = is_upgraded ? "ui://PkgMain/img_1741" : "ui://PkgMain/img_1740";
 
+		txt_name.text = charInfo.name.split("").join("\n");
+		img_using.visible = using;
+		img_new.visible = false;
+		img_redDot.visible = false;
+
+		btn_star.offClick(this, this.onBtnStarClick);
+		btn_star.onClick(this, this.onBtnStarClick, [charid]);
 		const isStarChar = $userData.character.isStarChar(charid);
 		if (isStarChar)
 			btn_star.icon = is_upgraded ? "ui://PkgMain/img_862" : "ui://PkgMain/img_864";
 		else
 			btn_star.icon = is_upgraded ? "ui://PkgMain/img_861" : "ui://PkgMain/img_863";
-
-		txt_name.text = charInfo.name.split("").join("\n");
-		img_using.visible = using;
-		img_new.visible = false;
-		img_redDot.visible = false;
+		this.refreshSelected(selected, charid);
 	}
 
-	private onBtnStarClick(e: Laya.Event) {
-		e.stopPropagation();
+	refreshSelected(selected: boolean, charId: number) {
+		const { btn_star, img_selected } = this;
+		img_selected.visible = selected;
+		btn_star.visible = selected || $userData.character.isStarChar(charId);
+		btn_star.touchable = selected;
+	}
+
+	private onBtnStarClick(charId: number, evt: Laya.Event) {
+		evt.stopPropagation();
+		$userData.character.changeCharStar(charId);
 	}
 }

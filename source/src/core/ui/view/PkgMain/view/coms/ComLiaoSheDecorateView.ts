@@ -81,7 +81,6 @@ export class ComLiaoSheDecorateView extends ExtensionClass<IView, ComLiaoSheDeco
 		list_tab.selectedIndex = index;
 		list_tab.scrollToView(index, false);
 		this.refreshView(index);
-		Logger.error("deco refresh");
 	}
 
 	private refreshView(index: number) {

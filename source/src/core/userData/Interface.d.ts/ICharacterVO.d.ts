@@ -8,8 +8,8 @@ declare namespace VO {
 		get chars(): ReadonlyArray<ProtoObject<ICharacter>>;
 		/** 星标角色信息 */
 		get starChars(): ReadonlyArray<ProtoObject<ICharacter>>;
-		/** 非星标角色信息 */
-		get otherChars(): ReadonlyArray<ProtoObject<ICharacter>>;
+		/** 非隐藏角色 */
+		get showChars(): ReadonlyArray<ProtoObject<ICharacter>>;
 		/** 隐藏角色信息 */
 		get hiddenChars(): ReadonlyArray<ProtoObject<ICharacter>>;
 		/** 是否拥有指定角色 */

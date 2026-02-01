@@ -11,6 +11,7 @@ export class ComBagIllustView extends ExtensionClass<IView, ComBagIllust>(ComBag
 	override onCreate() {
 		const { list_illust } = this;
 		$uiUtil.setList(list_illust, true, this, this.onListIllustItemRenderer, this.onListIllustItemClick);
+		$facade.on(EUserEvent.OnCGUsingChanged, this, this.refresh);
 	}
 
 	override onEnable() {
@@ -22,7 +23,6 @@ export class ComBagIllustView extends ExtensionClass<IView, ComBagIllust>(ComBag
 		this.list_illust.numItems = this._items.length;
 	}
 
-	@InterestNotify(EUserEvent.OnCGUsingChanged)
 	private refresh() {
 		this.list_illust.refreshVirtualList();
 	}

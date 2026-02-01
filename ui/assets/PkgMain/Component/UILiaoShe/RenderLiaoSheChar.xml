@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="215,202" extention="Button" designImage="ui://ca43vz0eglpb7plok5" designImageOffsetX="-1191" designImageOffsetY="-203" designImageAlpha="0">
-  <controller name="button" exported="true" pages="0,up,1,down" selected="0"/>
+<component size="215,202" designImage="ui://ca43vz0eglpb7plok5" designImageOffsetX="-1191" designImageOffsetY="-203" designImageAlpha="0">
   <displayList>
-    <image id="n1_s5z8" name="n1" src="s5z8obg0" fileName="Texture/img_3430.png" xy="0,4">
-      <gearDisplay controller="button" pages="1"/>
-    </image>
+    <image id="n1_s5z8" name="selected" src="s5z8obg0" fileName="Texture/img_3430.png" xy="0,4"/>
     <loader id="n2_s5z8" name="bg" xy="27,12" size="176,176" url="ui://vith2b66s5z8obg8" fill="scaleFree"/>
     <component id="n10_s5z8" name="head" src="q5yiobc3" fileName="Component/Component/头像/ComHead.xml" pkg="vx9zwser" xy="29,14" size="172,172"/>
     <loader id="n3_s5z8" name="border" xy="27,12" size="176,176" url="ui://vith2b66s5z8obg2" fill="scaleFree"/>
     <loader id="n4_s5z8" name="nameBg" xy="9,21" size="40,152" url="ui://vith2b66s5z8obg5" fill="scaleFree"/>
     <component id="n5_s5z8" name="star" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="9,152" size="40,40">
-      <gearDisplay controller="button" pages="1"/>
       <Button icon="ui://vith2b66s5z8obgb"/>
     </component>
     <image id="n8_s5z8" name="using" src="s5z8obfy" fileName="Texture/img_2755.png" xy="163,8" size="80,126"/>
@@ -18,5 +14,4 @@
     <image id="n9_s5z8" name="new" src="s5z8obfx" fileName="Texture/img_1753.png" xy="126,4" pivot="0.5,0.5" size="90,41" aspect="true" rotation="15"/>
     <text id="n11_s5z8" name="name" xy="14,28" pivot="0.5,0.5" size="30,124" fontSize="20" color="#efab4e" align="center" vAlign="middle" leading="0" autoSize="shrink" text="二阶堂美树"/>
   </displayList>
-  <Button mode="Radio"/>
 </component>

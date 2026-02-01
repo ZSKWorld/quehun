@@ -18,5 +18,11 @@ declare namespace VO {
 		hasSkin(id: number): boolean;
 		/** 是否是星标角色 */
 		isStarChar(id: number): boolean;
+		/** 是否是隐藏角色 */
+		isHiddenChar(id: number): boolean;
+		/** 改变角色星标 */
+		changeCharStar(id: number): void;
+		/** 改变角色排序 */
+		changeCharSort(sort?: number[], otherSort?: number[], hidden?: number[]): void;
 	}
 }

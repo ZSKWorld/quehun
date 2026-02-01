@@ -54,13 +54,29 @@ export abstract class MediatorBase<V extends IView = IView, D = any> extends Ext
 
 	protected override _onAdded() {
 		super._onAdded();
-		this.interestViewEvent();
+
+		//注册页面消息
+		const vem = this.__viewEventMap;
+		if (vem) {
+			for (const eventName in vem) {
+				const callbackMap = vem[eventName];
+				for (const k in callbackMap) {
+					const callback = callbackMap[k];
+					const param = callback[eventName];
+					const once = param ? param.__once : false;
+					const args = param ? param.__args : null;
+					this.addEvent(eventName, callback, args, once);
+				}
+			}
+		}
 	}
 
 	protected override _onEnable() {
 		super._onEnable();
 		$facade.interestNotify(this);
 		$netMgr.interestMessage(this);
+		$facade.interestNotify(this.view);
+		$netMgr.interestMessage(this.view);
 		MediatorDIExtend.registerDeviceEvent(this);
 	}
 
@@ -68,25 +84,10 @@ export abstract class MediatorBase<V extends IView = IView, D = any> extends Ext
 		super._onDisable();
 		$facade.offAllCaller(this);
 		$netMgr.offAllCaller(this);
+		$facade.offAllCaller(this.view);
+		$netMgr.offAllCaller(this.view);
 		MediatorDIExtend.offDeviceEvent(this);
 	}
 
 	protected onDataChanged(data: D) { }
-
-	/** 注册页面消息 */
-	private interestViewEvent() {
-		const vem = this.__viewEventMap;
-		if (!vem) return;
-
-		for (const eventName in vem) {
-			const callbackMap = vem[eventName];
-			for (const k in callbackMap) {
-				const callback = callbackMap[k];
-				const param = callback[eventName];
-				const once = param ? param.__once : false;
-				const args = param ? param.__args : null;
-				this.addEvent(eventName, callback, args, once);
-			}
-		}
-	}
 }

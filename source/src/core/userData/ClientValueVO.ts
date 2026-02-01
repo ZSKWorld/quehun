@@ -14,7 +14,7 @@ export class ClientValueVO extends BaseVO implements VO.IClientValueVO {
 	setValue(key: EClientValueType, value: number) {
 		if (this._data[key] === value) return;
 		this._data[key] = value;
-		this.dispatch(EUserEvent.OnClientValueChanged);
+		this.dispatch(EUserEvent.OnClientValueChanged, key);
 		$netMgr.requests.updateClientValue({ key, value });
 	}
 
@@ -25,6 +25,5 @@ export class ClientValueVO extends BaseVO implements VO.IClientValueVO {
 			this._data[v.key] = v.value;
 		});
 		this._rechargeCount = decodeRes.recharged_count;
-		this.dispatch(EUserEvent.OnClientValueChanged);
 	}
 }

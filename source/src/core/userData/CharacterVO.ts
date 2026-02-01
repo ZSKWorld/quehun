@@ -48,7 +48,6 @@ export class CharacterVO extends BaseVO implements VO.ICharacterVO {
 		}
 		return false;
 	}
-
 	hasSkin(id: number) { return !!this._skins[id]; }
 	isStarChar(id: number) { return this._characterSort.includes(id); }
 	isHiddenChar(id: number) { return this._hiddenCharacters.includes(id); }

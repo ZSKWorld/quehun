@@ -19,6 +19,7 @@ EViewID = {
 	RenderFriendApplyView: "RenderFriendApplyView",
 	RenderFriendFriendView: "RenderFriendFriendView",
 	RenderFriendRecentView: "RenderFriendRecentView",
+	RenderLiaoSheCharView: "RenderLiaoSheCharView",
 	RenderLiaoSheDecoItemView: "RenderLiaoSheDecoItemView",
 	RenderLiaoSheDecoTabView: "RenderLiaoSheDecoTabView",
 	RenderMailItemView: "RenderMailItemView",

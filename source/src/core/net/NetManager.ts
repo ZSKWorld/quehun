@@ -95,9 +95,13 @@ export class NetManager extends Laya.EventDispatcher implements INetManager {
 		this._gateway = routes.url;
 	}
 
+	private _ignoreErrRequest = new Set<string>([
+		EMessageID.heatbeat,
+		EMessageID.updateClientValue,
+	]);
 	private onResponseError(method: string, err: IError) {
 		if (!err) return;
-		if (method == EMessageID.heatbeat) return;
+		if (this._ignoreErrRequest.has(method)) return;
 		Logger.error(method, err);
 		const { code, u32_params, str_params, json_param } = err;
 		if (code == -1) {

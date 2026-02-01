@@ -14,7 +14,7 @@ export class ComHeadFrameView extends ExtensionClass<IView, ComHeadFrame>(ComHea
 		const d_item = $cfgMgr.item_definition.item[id];
 		if (!d_item) id = 305501;
 
-		const framePath = $itemUtil.getItemView(id).icon;
+		const framePath = $itemUtil.getItemInfo(id).icon;
 		$dynamicResMgr.setLoader(this.loader_icon, framePath);
 	}
 
@@ -23,7 +23,7 @@ export class ComHeadFrameView extends ExtensionClass<IView, ComHeadFrame>(ComHea
 		const d_item = $cfgMgr.item_definition.item[id];
 		if (!d_item) id = 305501;
 
-		const framePath = $itemUtil.getItemView(id).itemIcon;
+		const framePath = $itemUtil.getItemInfo(id).itemIcon;
 		$dynamicResMgr.setLoader(this.loader_icon, framePath);
 	}
 

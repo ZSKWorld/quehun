@@ -26,20 +26,40 @@ const SlotIcons = [
 // slotHasPreivew = [false, false, false, false, false, false, true, true, true, true, true];
 // itemCanDiselect = [true, true, true, true, true, true, false, false, false, false, false];
 
-class DecoViewData implements ProtoObject<IResAllcommonViews_Views>{
+class DecoViewData implements IResAllcommonViews_Views {
 	name: string;
 	index: number;
 	values: IViewSlot[];
-	init(data: ProtoObject<IResAllcommonViews_Views>) {
+
+	init(data: IResAllcommonViews_Views) {
 		const newData = structuredClone(data);
 		this.name = newData.name;
 		this.index = newData.index;
 		this.values = newData.values;
 	}
+
+	equals(other: IResAllcommonViews_Views) {
+		if (this.index != other.index) return false;
+		if (this.name != other.name) return false;
+		const values = this.values;
+		const oValues = other.values;
+		if (values.length != oValues.length) return false;
+		for (let i = 0; i < values.length; i++) {
+			const v = values[i];
+			const ov = oValues[i];
+			if (v.slot != ov.slot) return false;
+			if (v.item_id != ov.item_id) return false;
+			if (v.type != ov.type) return false;
+			const vList = v.item_id_list;
+			const ovList = ov.item_id_list;
+			if (vList.length != ovList.length) return false;
+			if (vList.join() != ovList.join()) return false;
+		}
+		return true;
+	}
 }
 
 export class ComLiaoSheDecorateView extends ExtensionClass<IView, ComLiaoSheDecorate>(ComLiaoSheDecorate) implements IView {
-	private _originData = new DecoViewData();
 	private _curData = new DecoViewData();
 
 	override onCreate() {
@@ -53,7 +73,7 @@ export class ComLiaoSheDecorateView extends ExtensionClass<IView, ComLiaoSheDeco
 		$uiUtil.setList(list_view, false, this, this.onListViewRender, this.onListViewClick);
 	}
 
-	override onEnable() {
+	refresh() {
 		const { list_tab } = this;
 		const { use, views } = $userData.commonView;
 		list_tab.numItems = views.length;
@@ -61,15 +81,16 @@ export class ComLiaoSheDecorateView extends ExtensionClass<IView, ComLiaoSheDeco
 		list_tab.selectedIndex = index;
 		list_tab.scrollToView(index, false);
 		this.refreshView(index);
+		Logger.error("deco refresh");
 	}
 
 	private refreshView(index: number) {
-		const { list_view, txt_viewName } = this;
-		const viewData = $userData.commonView.views[index];
-		list_view.numItems = viewData.values.length;
+		const { list_view, txt_viewName, _curData } = this;
+		_curData.init($userData.commonView.views[index]);
+		list_view.numItems = _curData.values.length;
 		list_view.selectedIndex = 0;
 		list_view.scrollPane.posY = 0;
-		txt_viewName.text = viewData.name;
+		txt_viewName.text = _curData.name;
 		this.refreshItem(0);
 	}
 
@@ -87,7 +108,7 @@ export class ComLiaoSheDecorateView extends ExtensionClass<IView, ComLiaoSheDeco
 	}
 
 	private onListViewRender(index: number, item: RenderLiaoSheDecoItemView) {
-		const slotData = $userData.commonView.views[this.list_tab.selectedIndex].values[index];
+		const slotData = this._curData.values[index];
 		item.refresh(slotData, SlotTitles[index], SlotNames[index], slotData.type == 1 ? SlotIconRandom : SlotIcons[index]);
 	}
 

@@ -11,12 +11,12 @@ export class ComTitleView extends ExtensionClass<IView, ComTitle>(ComTitle) impl
 	}
 
 	refreshIcon(id: number) {
-		const titlePath = $itemUtil.getItemView(id).icon;
+		const titlePath = $itemUtil.getItemInfo(id).icon;
 		$dynamicResMgr.setLoader(this.loader_icon, titlePath || $langRes("extendRes/title/notitle.png"));
 	}
 
 	refreshItemIcon(id: number) {
-		const titlePath = $itemUtil.getItemView(id).itemIcon;
+		const titlePath = $itemUtil.getItemInfo(id).itemIcon;
 		$dynamicResMgr.setLoader(this.loader_icon, titlePath);
 	}
 

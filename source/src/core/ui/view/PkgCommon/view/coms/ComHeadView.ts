@@ -10,14 +10,40 @@ export class ComHeadView extends ExtensionClass<IView, ComHead>(ComHead) impleme
 
 	}
 
+	refreshFull(skinId: number) {
+		this.refresh($itemUtil.getItemInfo(skinId).skinInfo.full);
+	}
+
+	refreshHalf(skinId: number) {
+		this.refresh($itemUtil.getItemInfo(skinId).skinInfo.half);
+	}
+
 	refreshBigHead(skinId: number) {
-		const headPath = $itemUtil.getItemView(skinId).icon;
-		$dynamicResMgr.setLoader(this.loader_icon, headPath);
+		this.refresh($itemUtil.getItemInfo(skinId).skinInfo.bighead);
 	}
 
 	refreshSmallHead(skinId: number) {
-		const headPath = $itemUtil.getItemView(skinId).icon;
-		$dynamicResMgr.setLoader(this.loader_icon, headPath.replace("bighead", "smallhead"));
+		this.refresh($itemUtil.getItemInfo(skinId).skinInfo.smallhead);
+	}
+
+	refreshSmallHead1(skinId: number) {
+		this.refresh($itemUtil.getItemInfo(skinId).skinInfo.smallhead1);
+	}
+
+	refreshSmallHead2(skinId: number) {
+		this.refresh($itemUtil.getItemInfo(skinId).skinInfo.smallhead2);
+	}
+
+	refreshSmallHead3(skinId: number) {
+		this.refresh($itemUtil.getItemInfo(skinId).skinInfo.smallhead3);
+	}
+
+	refreshX(skinId: number) {
+		this.refresh($itemUtil.getItemInfo(skinId).skinInfo.x);
+	}
+
+	private refresh(skinPath: string) {
+		$dynamicResMgr.setLoader(this.loader_icon, skinPath);
 	}
 
 	override onDisable() {

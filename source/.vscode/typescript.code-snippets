@@ -83,4 +83,26 @@
 			"//#endregion",
 		],
 	},
+	"uisetlist": {
+		"prefix": "uisetlist",
+		"body": [
+			"\\$uiUtil.setList(${1:listName}, false, this, ${2:RenderFunction}, ${3:ClickFunction});${0}",
+		],
+	},
+	"onlistrender": {
+		"prefix": "onlistrender",
+		"body": [
+			"private onList${1:Name}Render(index: number, item: ${2:RenderView}) {",
+			"\t${0}",
+			"}",
+		],
+	},
+	"onlistclick": {
+		"prefix": "onlistclick",
+		"body": [
+			"private onList${1:Name}Click(item, evt, index: number) {",
+			"\t${0}",
+			"}",
+		],
+	},
 }

@@ -180,3 +180,72 @@ EItemCommonType = {
 	MaJiangPaiZhengMian: 13,
 }
 
+EClientValueType = {
+	None: 0,
+	CompleteRegistration: 1,
+	CompleteTutorial: 2,
+	Level_1: 3,
+	Level_2: 4,
+	Level_3: 5,
+	Get_The_Title1: 6,
+	Purchase_Click: 7,
+	Purchase: 8,
+	XinShouYinDao: 10,
+	G_Role_create: 1001, // 成功创建角色
+	G_Role_login: 1002, // 登录进所选服务器
+	G_Role_logout: 1003, // 角色离开服务器
+	G_tutorial_complete: 1004, // 完成新手引导
+	G_Purchase: 1005, // 成功充值
+	G_Purchase_click: 1006, // 点击充值相关按钮，辉玉，铜币等等
+	G_Purchase_first: 1007, // 历史上完成首次购买in-app purchase，排重
+	G_Role_level_1: 1008, // 初心1星
+	G_Role_level_2: 1009, // 初心2星
+	G_Role_level_3: 1010, // 初心3星
+	G_Role_level_4: 1011, // 雀士1星
+	G_Role_level_5: 1012, // 雀士2星
+	G_Role_level_6: 1013, // 雀士3星
+	G_Role_level_7: 1014, // 雀杰1星
+	G_Role_level_8: 1015, // 雀杰2星
+	G_Role_level_9: 1016, // 雀杰3星
+	G_Role_level_10: 1017, // 雀豪1星
+	G_Role_level_11: 1018, // 雀豪2星
+	G_Role_level_12: 1018, // 雀豪3星
+	G_Role_level_13: 1020, // 雀圣1星
+	G_Role_level_14: 1021, // 雀圣2星
+	G_Role_level_15: 1022, // 雀圣3星
+	G_Role_level_16: 1023, // 魂天
+	G_get_title_1: 1024, // 获得称号魂之契约者（充值6元）
+	G_get_title_2: 1025, // 获得称号魂之契约者（充值30元）
+	G_get_title_3: 1026, // 获得称号魂之契约者（充值60元）
+	G_get_title_4: 1027, // 获得称号魂之启迪者（充值100元）
+	G_get_title_5: 1028, // 获得称号魂之启迪者（充值250元）
+	G_get_title_6: 1029, // 获得称号魂之启迪者（充值500元）
+	G_get_title_7: 1030, // 获得称号魂之缔造者（充值1000元）
+	G_get_title_8: 1031, // 获得称号魂之缔造者（充值2000元）
+	G_get_title_9: 1032, // 获得称号魂之缔造者（充值3000元）
+	G_get_title_10: 1033, // 获得称号魂之超越者（充值4000元）
+	G_get_title_11: 1034, // 猫粮供应商（充值5000元）
+	G_tutorial_jump: 1035, // 跳过新手引导
+
+	TW_Purchase: 2001, // 付费
+	TW_Signup: 2002, // 注册
+	TW_Tutorial_Completed: 2003, // 新手引导结束
+
+	Shilian_Reward: 3001,
+	Chunjie_Anim_Point: 3002,
+
+	Chara_Show_Star: 3003, //寮舍是否只显示角色
+	Recharge_Xieyi_Checked: 3004, // 充值协议确认
+	Chunjie_Yindao_Checked: 3005, // 春节活动是否展示过新手引导
+	event2403_followed: 3006, // 2403主播活动是否已关注
+	BA_Yindao_Checked: 3008, // ba活动是否展示过新手引导
+	HaiDao_Yindao_Checked: 3009, // 2406海岛活动是否展示过新手引导
+	Spot_2408_Checked: 3010, // 2408剧情活动是否展示过新手引导
+	Imas_Yindao_Checked: 3011, // 2411偶像大师活动是否展示过新手引导
+	BA2501_Yindao_Checked: 3012, //2501春节庙会动是否展示过新手引导
+	BA2501_LastEvent_Checked: 3013, //2501春节庙会动是否已完成最后一个事件
+	BA2501_PlayCG_Checked: 3014, //2501春节庙会动是否展示过告别cg
+	HF_Yindao_Checked: 3015, // 2404天之杯活动是否展示过新手引导
+
+}
+

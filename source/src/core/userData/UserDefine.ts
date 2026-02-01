@@ -16,4 +16,14 @@ export const enum EUserEvent {
 	OnBagDailyGainRecordChanged = "EUserEvent_OnBagDailyGainRecordChanged",
 	OnCGUsingChanged = "EUserEvent_OnCGUsingChanged",
 	//#endregion
+
+	//#region 角色相关
+	OnMainCharacterChanged = "EUserEvent_OnMainCharacterChanged",
+	OnCharacterChanged = "EUserEvent_OnCharacterChanged",
+	OnCharacterSortChanged = "EUserEvent_OnCharacterSortChanged",
+	//#endregion
+
+	//#region client_value相关
+	OnClientValueChanged = "EUserEvent_OnClientValueChanged",
+	//#endregion
 }

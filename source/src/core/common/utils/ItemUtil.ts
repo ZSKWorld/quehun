@@ -10,11 +10,15 @@ export class ItemUtil implements IItemUtil {
 		if (n == 70) return EItemType.FuncItem;
 	}
 
-	private _itemView: KeyMap<IItemView> = {};
-	getItemView(id: number) {
+	private _itemView: KeyMap<IItemInfo> = {};
+	getItemInfo(id: number) {
 		if (this._itemView[id]) return this._itemView[id];
 		const idType = this.getItemType(id);
 		let name = "", icon = "", itemIcon = "", desc = "", func = "";
+		const skinInfo: IItemInfo_SkinInfo = {
+			bighead: "", full: "", half: "", smallhead: "", smallhead1: "", smallhead2: "",
+			smallhead3: "", waitingroom: "", x: ""
+		};
 		switch (idType) {
 			case EItemType.Currency:
 				const currencyCfg = $cfgMgr.item_definition.currency[id];
@@ -28,9 +32,7 @@ export class ItemUtil implements IItemUtil {
 			case EItemType.Character:
 				const characterCfg = $cfgMgr.item_definition.character[id];
 				if (characterCfg) {
-					const d_skin = $cfgMgr.item_definition.skin[characterCfg.init_skin];
 					name = $langCfg(characterCfg, "name");
-					icon = d_skin.path + '/bighead.png';
 					desc = $langCfg(characterCfg, "desc_item");
 				}
 				break;
@@ -51,8 +53,18 @@ export class ItemUtil implements IItemUtil {
 			case EItemType.Skin:
 				const skinCfg = $cfgMgr.item_definition.skin[id];
 				if (skinCfg) {
+					skinInfo.bighead = $langRes(skinCfg.path + "/bighead.png");
+					skinInfo.full = $langRes(skinCfg.path + "/full.png");
+					skinInfo.half = $langRes(skinCfg.path + "/half.png");
+					skinInfo.smallhead = $langRes(skinCfg.path + "/smallhead.png");
+					skinInfo.smallhead1 = $langRes(skinCfg.path + "/smallhead1.png");
+					skinInfo.smallhead2 = $langRes(skinCfg.path + "/smallhead2.png");
+					skinInfo.smallhead3 = $langRes(skinCfg.path + "/smallhead3.png");
+					skinInfo.waitingroom = $langRes(skinCfg.path + "/waitingroom.png");
+					skinInfo.x = $langRes(skinCfg.path + "/x.png");
+
 					name = $langCfg(skinCfg, "name");
-					icon = skinCfg.path + '/bighead.png';
+					icon = skinInfo.bighead;
 					desc = $langCfg(skinCfg, "desc");
 				}
 				break;
@@ -77,7 +89,7 @@ export class ItemUtil implements IItemUtil {
 				}
 				break;
 		}
-		this._itemView[id] = { name, icon: $langRes(icon), itemIcon: $langRes(itemIcon), desc, func };
+		this._itemView[id] = { name, icon: $langRes(icon), itemIcon: $langRes(itemIcon), desc, func, skinInfo };
 		return this._itemView[id];
 	}
 }

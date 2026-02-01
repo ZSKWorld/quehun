@@ -18,7 +18,7 @@ export class UIItemDetailView extends ExtensionClass<IView, UIItemDetail>(UIItem
 
 	refresh(id: number, from?: 1 | 2 | 3) {
 		const { ctrl_desc, txt_name, com_item, txt_desc1, txt_desc2 } = this;
-		const itemView = $itemUtil.getItemView(id);
+		const itemView = $itemUtil.getItemInfo(id);
 		const hasFunc = itemView.desc && itemView.func;
 		ctrl_desc.selectedIndex = hasFunc ? 0 : 1;
 		txt_name.text = itemView.name;

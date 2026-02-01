@@ -14,7 +14,7 @@ export class RenderLiaoSheDecoItemView extends ExtensionClass<IView, RenderLiaoS
 		const { item_id, type } = data;
 		const { com_item, txt_name } = this;
 		this.title = $lang(titleStrId);
-		txt_name.text = item_id ? $itemUtil.getItemView(item_id).name : $lang(defaultNameStrId);
+		txt_name.text = item_id ? $itemUtil.getItemInfo(item_id).name : $lang(defaultNameStrId);
 		if (type == 0 && item_id) com_item.refreshItemIcon(item_id);
 		else com_item.refreshSkin(defaultIcon);
 	}

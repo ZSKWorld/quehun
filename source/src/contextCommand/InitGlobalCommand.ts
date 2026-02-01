@@ -101,20 +101,19 @@ export class InitGlobalCommand extends Command {
 			return Laya.Pool.createByClass(RichText).start(text);
 		});
 
-		$windowImmit("$decodeProtoData", function (data: IProto) {
+		$windowImmit("$decodeProtoData", function (data: IProto | IProto[]) {
 			if (!data) return data;
+			if (Array.isArray(data))
+				return data.map($decodeProtoData);
 			const type = data.$type;
 			if (!type) return data;
 			const result: ProtoObject<IProto> = {};
 			type.fieldsArray.forEach(v => {
 				const value = data[v.name];
-				if (Array.isArray(value))
-					result[v.name] = [...value.map($decodeProtoData)];
-				else
-					result[v.name] = $decodeProtoData(value);
+				result[v.name] = $decodeProtoData(value);
 			});
 			return result;
-		})
+		});
 	}
 
 	private registerConfirm(name: string, viewId: EViewID) {

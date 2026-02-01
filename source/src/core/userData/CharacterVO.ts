@@ -1,10 +1,12 @@
 import { BaseVO } from "./BaseVO";
+import { EUserEvent } from "./UserDefine";
 
 export class CharacterVO extends BaseVO implements VO.ICharacterVO {
-	/** 主角色id */
 	private _mainCharId: number = 0;
-	/** 角色 */
 	private _chars: ProtoObject<ICharacter>[] = [];
+	private _starChars: ProtoObject<ICharacter>[] = [];
+	private _otherChars: ProtoObject<ICharacter>[] = [];
+	private _hiddenChars: ProtoObject<ICharacter>[] = [];
 	/** 皮肤 */
 	private _skins: KeyMap<boolean> = {};
 	/** 完成结局 */
@@ -17,14 +19,13 @@ export class CharacterVO extends BaseVO implements VO.ICharacterVO {
 	private _sendGiftLimit: number = 0;
 	/** 星标排序 */
 	private _characterSort: number[] = [];
-	/** 屏蔽的角色 */
-	private _hiddenCharacters: number[] = [];
 	/** 非星标排序 */
 	private _otherCharacterSort: number[] = [];
+	/** 屏蔽的角色 */
+	private _hiddenCharacters: number[] = [];
 
-	get chars() { return this._chars; }
-
-	private get mainChar() {
+	get mainCharId() { return this._mainCharId; }
+	get mainChar() {
 		const _chars = this._chars;
 		const _mainCharId = this._mainCharId;
 		const len = _chars.length;
@@ -33,6 +34,10 @@ export class CharacterVO extends BaseVO implements VO.ICharacterVO {
 				return _chars[i];
 		}
 	}
+	get chars() { return this._chars; }
+	get starChars() { return this._starChars; }
+	get otherChars() { return this._otherChars; }
+	get hiddenChars() { return this._hiddenChars; }
 
 	hasChar(id: number) {
 		const chars = this._chars;
@@ -45,6 +50,35 @@ export class CharacterVO extends BaseVO implements VO.ICharacterVO {
 	}
 
 	hasSkin(id: number) { return !!this._skins[id]; }
+	isStarChar(id: number) { return this._characterSort.includes(id); }
+	isHiddenChar(id: number) { return this._hiddenCharacters.includes(id); }
+
+	changeCharStar(id: number) {
+		if (!this.hasChar(id)) return;
+		if (this.isHiddenChar(id)) return;
+		const _characterSort = [...this._characterSort];
+		const _otherCharacterSort = [...this._otherCharacterSort];
+
+		const starIndex = _characterSort.indexOf(id);
+		if (starIndex > -1) {
+			_characterSort.splice(starIndex, 1);
+			_otherCharacterSort.push(id);
+		} else {
+			_characterSort.push(id);
+			const otherIndex = _otherCharacterSort.indexOf(id);
+			_otherCharacterSort.splice(otherIndex, 1);
+		}
+		this.changeCharSort(_characterSort, _otherCharacterSort);
+	}
+
+	changeCharSort(sort?: number[], otherSort?: number[], hidden?: number[]) {
+		const param: IReqUpdateCharacterSort = {
+			sort: sort || this._characterSort,
+			other_sort: otherSort || this._otherCharacterSort,
+			hidden_characters: hidden || this._hiddenCharacters,
+		};
+		$netMgr.requests.updateCharacterSort(param);
+	}
 
 	@InterestMessage(EMessageID.fetchCharacterInfo)
 	private onFetchCharacterInfo(res: IResCharacterInfo) {
@@ -56,11 +90,22 @@ export class CharacterVO extends BaseVO implements VO.ICharacterVO {
 
 		this._sendGiftCount = res.send_gift_count;
 		this._sendGiftLimit = res.send_gift_limit;
-		this._characterSort = [...res.character_sort];
-		this._hiddenCharacters = [...res.hidden_characters];
-		this._otherCharacterSort = [...res.other_character_sort];
 
-		this.refreshCharDefaultSkin();
+		this._characterSort = [...new Set(res.character_sort)];
+		this._otherCharacterSort = [...new Set(res.other_character_sort)];
+		this._hiddenCharacters = [...new Set(res.hidden_characters)];
+		this._chars.forEach(v => {
+			if (this._characterSort.includes(v.charid)) return;
+			if (this._otherCharacterSort.includes(v.charid)) return;
+			this._otherCharacterSort.push(v.charid);
+		});
+		this._characterSort = this._characterSort.filter(v => this.hasChar(v));
+		this._otherCharacterSort = this._otherCharacterSort.filter(v => this.hasChar(v));
+		this.updateKindOfChars();
+		this.updateCharDefaultSkin();
+		this.dispatch(EUserEvent.OnMainCharacterChanged);
+		this.dispatch(EUserEvent.OnCharacterChanged);
+		this.dispatch(EUserEvent.OnCharacterSortChanged);
 	}
 
 	@InterestMessage(ENotify.NotifyAccountUpdate)
@@ -69,6 +114,7 @@ export class CharacterVO extends BaseVO implements VO.ICharacterVO {
 		if (main_character) {
 			this._mainCharId = main_character.character_id;
 			this.mainChar.skin = main_character.skin_id;
+			this.dispatch(EUserEvent.OnMainCharacterChanged);
 		}
 		if (character) {
 			const { characters, skins, finished_endings, rewarded_endings } = character;
@@ -80,11 +126,27 @@ export class CharacterVO extends BaseVO implements VO.ICharacterVO {
 			skins.forEach(v => this._skins[v] = true);
 			finished_endings.forEach(v => this._finishedEndings[v] = true);
 			rewarded_endings.forEach(v => this._rewardedEndings[v] = true);
-			this.refreshCharDefaultSkin();
+			this.updateCharDefaultSkin();
+			this.dispatch(EUserEvent.OnCharacterChanged);
 		}
 	}
 
-	private refreshCharDefaultSkin() {
+	@InterestMessage(EMessageID.updateCharacterSort)
+	private onUpdateCharacterSort(res:IResCommon, req: IReqUpdateCharacterSort) {
+		this._characterSort = req.sort;
+		this._otherCharacterSort = req.other_sort;
+		this._hiddenCharacters = req.hidden_characters;
+		this.updateKindOfChars();
+		this.dispatch(EUserEvent.OnCharacterSortChanged);
+	}
+
+	private updateKindOfChars() {
+		this._starChars = this._characterSort.map(v => this._chars.find(e => e.charid == v));
+		this._otherChars = this._otherCharacterSort.map(v => this._chars.find(e => e.charid == v));
+		this._hiddenChars = this._hiddenCharacters.map(v => this._chars.find(e => e.charid == v));
+	}
+
+	private updateCharDefaultSkin() {
 		for (const e of this._chars) {
 			const cfgChar = $cfgMgr.item_definition.character[e.charid];
 			if (!cfgChar) continue;

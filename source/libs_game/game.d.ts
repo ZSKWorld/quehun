@@ -44,7 +44,7 @@ declare const $dynamicResMgr: IDynamicResManager;
 /** 注入全局变量 */
 declare function $windowImmit(name: string, obj: any): void;
 /** 把proto数据转成普通object对象 */
-declare function $decodeProtoData<T extends IProto>(data: T): ProtoObject<T>;
+declare function $decodeProtoData<T extends IProto | IProto[]>(data: T): ProtoObject<T>;
 
 /**
  * 大号弹窗

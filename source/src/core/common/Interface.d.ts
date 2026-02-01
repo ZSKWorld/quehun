@@ -148,14 +148,28 @@ declare interface IMathUtil {
 	symbol(num: number): -1 | 0 | 1;
 }
 
-declare interface IItemView {
+declare interface IItemInfo {
 	name: string;
 	/** 正式使用的图标，半透明背景 */
 	icon: string;
 	/** 显示在物品详情的图标，非半透明背景 */
 	itemIcon: string;
 	desc: string;
-	func?: string;
+	func: string;
+	/** 皮肤信息 */
+	skinInfo: IItemInfo_SkinInfo;
+}
+
+declare interface IItemInfo_SkinInfo {
+	full: string;
+	half: string;
+	bighead: string;
+	smallhead: string;
+	smallhead1: string;
+	smallhead2: string;
+	smallhead3: string;
+	waitingroom: string;
+	x: string;
 }
 
 declare interface IGameUtil {
@@ -228,5 +242,5 @@ declare interface ILocalDataManager {
 
 declare interface IItemUtil {
 	getItemType(id: number): EItemType;
-	getItemView(id: number): IItemView;
+	getItemInfo(id: number): IItemInfo;
 }

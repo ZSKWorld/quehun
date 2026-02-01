@@ -16,13 +16,13 @@ export class ComItemView extends ExtensionClass<IView, ComItem>(ComItem) impleme
 
 	/** 刷新半透明icon */
 	refreshIcon(id: number) {
-		const iconPath = $itemUtil.getItemView(id).icon;
+		const iconPath = $itemUtil.getItemInfo(id).icon;
 		$dynamicResMgr.setLoader(this.loader_icon, iconPath);
 	}
 
 	/** 刷新不透明icon */
 	refreshItemIcon(id: number) {
-		const iconPath = $itemUtil.getItemView(id).itemIcon;
+		const iconPath = $itemUtil.getItemInfo(id).itemIcon;
 		$dynamicResMgr.setLoader(this.loader_icon, iconPath);
 	}
 

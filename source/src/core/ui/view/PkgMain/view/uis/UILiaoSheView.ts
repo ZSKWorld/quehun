@@ -13,9 +13,10 @@ export class UILiaoSheView extends ExtensionClass<IView, UILiaoShe>(UILiaoShe) i
 		btn_deco.onClick(this, this.refreshContent, [1, true]);
 	}
 
-	refreshContent(type: 0 | 1, anim: boolean = true) {
+	refreshContent(type: 0 | 1, anim: boolean) {
+		if(anim && this.ctrl_type.selectedIndex == type) return;
 		const showChar = type == 0;
-		const { ctrl_type, img_bg, btn_char, btn_deco, trans_toChar, trans_toDeco } = this;
+		const { ctrl_type, img_bg, btn_char, btn_deco, trans_toChar, trans_toDeco, com_character, com_decorate } = this;
 		btn_char.selected = showChar;
 		btn_deco.selected = !showChar;
 		btn_char.sortingOrder = +showChar;
@@ -27,6 +28,7 @@ export class UILiaoSheView extends ExtensionClass<IView, UILiaoShe>(UILiaoShe) i
 		else img_bg.width = imgBgTargetWidth;
 		const trans = showChar ? trans_toChar : trans_toDeco;
 		trans.play(null, 1, 0, anim ? 0 : trans.totalDuration);
+		type == 0 ? com_character.refresh(!anim) : com_decorate.refresh();
 	}
 
 	override onOpenAni() {

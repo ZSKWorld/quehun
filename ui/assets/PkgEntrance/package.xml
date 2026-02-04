@@ -7,6 +7,8 @@
     <image id="nrcf3" name="img_3208.png" path="/Texture/"/>
     <component id="hrq54" name="UIChooseServer.xml" path="/" exported="true"/>
     <component id="ffcv6" name="RenderChooseServer.xml" path="/Component/UIChooseServer/"/>
+    <component id="qs6vobfs" name="BtnTxt.xml" path="/Component/UIChooseServer/"/>
+    <component id="qs6vobft" name="BtnTxtUnderline.xml" path="/Component/UIChooseServer/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

@@ -18,6 +18,8 @@ declare const enum EClientType {
 
 /** 本地保存数据类型 */
 declare const enum ELocalDataKey {
+	/** 上次登录的服务器 */
+	LastServer = "LocalDataKey_LastServer",
 	/** 自动登录 */
 	AutoLogin = "LocalDataKey_AutoLogin",
 	/** 上次登录账号 */

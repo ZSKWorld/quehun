@@ -17,6 +17,7 @@ EClientType = {
 }
 
 ELocalDataKey = {
+	LastServer: "LocalDataKey_LastServer",
 	AutoLogin: "LocalDataKey_AutoLogin",
 	LastLoginData: "LocalDataKey_LastLoginData",
 	DeviceId: "LocalDataKey_DeviceId",

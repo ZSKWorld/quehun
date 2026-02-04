@@ -222,7 +222,7 @@ declare interface ITimeUtil {
 declare interface ILocalDataManager {
 	set<T = any>(key: ELocalDataKey, value: T): void;
 
-	get<T = any>(key: ELocalDataKey): T;
+	get<T = any>(key: ELocalDataKey, defaultValue?: T): T;
 
 	remove(key: ELocalDataKey): void;
 

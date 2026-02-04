@@ -1,10 +1,11 @@
-export class LocalDataManager implements ILocalDataManager{
+export class LocalDataManager implements ILocalDataManager {
 	set<T>(key: string, value: T) {
 		Laya.LocalStorage.setJSON(key, value);
 	}
 
-	get<T = any>(key: string) {
-		return Laya.LocalStorage.getJSON(key) as T;
+	get<T = any>(key: string, defaultValue?: T) {
+		const value = Laya.LocalStorage.getJSON(key);
+		return (value == null ? defaultValue : value) as T;
 	}
 
 	remove(key: string) {

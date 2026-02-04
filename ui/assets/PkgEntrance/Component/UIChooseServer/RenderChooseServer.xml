@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="500,100" extention="Button">
-  <controller name="button" pages="0,up,4,down,2,over" selected="1"/>
+<component size="500,75" extention="Button" designImage="ui://ca43vz0eqs6v7plok6" designImageOffsetX="-668" designImageOffsetY="-264" designImageAlpha="0">
+  <controller name="button" pages="0,up,4,down,2,over" selected="0"/>
   <displayList>
-    <text id="n3_ffcv" name="title" xy="63,17" size="373,66" fontSize="50" color="#ff0000" text="三服测试服-台服">
-      <gearColor controller="button" pages="4,2" values="#ff0000,#000000|#ff0000,#000000" default="#ffffff,#000000"/>
+    <text id="n3_ffcv" name="title" xy="79,2" size="342,70" fontSize="53" color="#38546a" text="九条璃雨-主备">
+      <gearColor controller="button" pages="0,4,2" values="#38546a,#000000|#ff0000,#000000|#ff0000,#000000"/>
       <relation target="" sidePair="center-center,middle-middle"/>
     </text>
   </displayList>

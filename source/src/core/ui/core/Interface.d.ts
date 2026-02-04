@@ -26,67 +26,6 @@ declare function ViewMouseEvent(mouseEventType: EMouseEventType, once?: boolean,
  */
 declare function ViewEvent(name: string, once?: boolean, args?: any[]): MethodDecorator;
 
-/** 按键事件类型 */
-declare enum EKeyEventType {
-	KeyDown = "keydown",
-	KeyPress = "keypress",
-	KeyUp = "keyup",
-}
-
-/** 鼠标事件类型 */
-declare enum EMouseEventType {
-	MouseDown = "mousedown",
-	MouseUp = "mouseup",
-	MouseMove = "mousemove",
-	MouseClick = "click",
-	MouseDoubleClick = "doubleclick",
-	MouseRightClick = "rightclick",
-	RightMouseDown = "rightmousedown",
-	RightMouseUp = "rightmouseup",
-	MouseOver = "mouseover",
-	MouseOut = "mouseout",
-	MouseWheel = "mousewheel",
-	MouseDrag = "mousedrag",
-	MouseDragEnd = "mousedragend",
-}
-
-/** 页面打开对当前页面操作的类型 */
-declare enum EViewOpenType {
-	/** 无操作 */
-	None = "None",
-	/** 隐藏当前页面 */
-	Hide = "Hide",
-	/** 关闭当前页面 */
-	Close = "Close",
-}
-
-/** 页面种类 */
-declare enum EViewCategory {
-	/** 全屏页面 */
-	FullScreen = "FullScreen",
-	/** 弹窗页面 */
-	Popup = "Popup",
-}
-
-/** 页面类型 */
-declare enum EViewType {
-	UI = "UI",
-	Component = "Component",
-	Render = "Render",
-	Button = "Button",
-}
-
-/** UI层级 */
-declare enum ELayer {
-	Scene = "Scene",
-	UIBottom = "UIBottom",
-	UIMiddle = "UIMiddle",
-	UITop = "UITop",
-	Dialog = "Dialog",
-	Alert = "Alert",
-	Lock = "Lock",
-}
-
 declare interface IDynamicResManager {
 	add(path: string): void;
 	remove(path: string): void;

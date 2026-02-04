@@ -1,5 +1,4 @@
 import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
-import { EUserEvent } from "../../../../../userData/UserDefine";
 import { BtnMailTabView } from "../../view/btns/BtnMailTabView";
 import { RenderMailItemView } from "../../view/renders/RenderMailItemView";
 import { EUIMailMsg, UIMailView } from "../../view/uis/UIMailView";

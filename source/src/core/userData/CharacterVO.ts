@@ -1,5 +1,4 @@
 import { BaseVO } from "./BaseVO";
-import { EUserEvent } from "./UserDefine";
 
 export class CharacterVO extends BaseVO implements VO.ICharacterVO {
 	private _mainCharId: number = 0;

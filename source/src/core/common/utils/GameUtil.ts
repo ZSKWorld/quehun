@@ -110,7 +110,7 @@ export class GameUtil implements IGameUtil {
 	getI18nContext(i18n: ProtoObject<II18nContext>[], defValue = "") {
 		if (!i18n || i18n.length == 0) return defValue;
 
-		const lang = $gameMgr.clientLanguage;
+		const lang = $gameMgr.language;
 		const match = i18n.find(v => v.lang == lang);
 
 		return match ? match.context : defValue;

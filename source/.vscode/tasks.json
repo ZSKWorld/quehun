@@ -87,6 +87,15 @@
             },
             "problemMatcher": []
         },
+        { //创建leb enum
+            "label": "创建leb enum",
+            "type": "shell",
+            "command": "node ../../../laya_framework_tool/bin/js/BatMain.js 13",
+            "presentation": {
+                "close": true
+            },
+            "problemMatcher": []
+        },
         { //leb
             "label": "leb",
             "type": "shell",

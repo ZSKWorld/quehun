@@ -1,5 +1,4 @@
 import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
-import { EUserEvent } from "../../../../../userData/UserDefine";
 import { RadioGroup } from "../../../../extention/RadioGroup";
 import { PlayerViewLoader } from "../../../../tool/PlayerViewLoader";
 import { RenderFriendApplyView } from "../../view/renders/RenderFriendApplyView";

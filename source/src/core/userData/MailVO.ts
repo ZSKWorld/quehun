@@ -1,5 +1,4 @@
 import { BaseVO } from "./BaseVO";
-import { EUserEvent } from "./UserDefine";
 
 export class MailVO extends BaseVO implements VO.IMailVO {
 	private _mails: ProtoObject<IMail>[] = [];

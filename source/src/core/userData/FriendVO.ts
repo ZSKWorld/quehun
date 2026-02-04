@@ -1,5 +1,4 @@
 import { BaseVO } from "./BaseVO";
-import { EUserEvent } from "./UserDefine";
 
 export class FriendVO extends BaseVO implements VO.IFriendVO {
 	private _friends: ProtoObject<IFriend>[] = [];

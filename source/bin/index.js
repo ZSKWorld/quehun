@@ -45,7 +45,7 @@ loadLib("libs_game/mygame.js");
 loadLib("libs_game/protobuf.js");
 
 //libs leb
-loadLib("libs_leb/enum_define.d.js");
+loadLib("libs_leb/leb_enums.d.js");
 loadLib("libs_leb/proto.d.js");
 loadLib("libs_leb/respath.d.js");
 loadLib("libs_leb/viewid.d.js");

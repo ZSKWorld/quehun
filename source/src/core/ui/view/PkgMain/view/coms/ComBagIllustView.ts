@@ -1,4 +1,3 @@
-import { EUserEvent } from "../../../../../userData/UserDefine";
 import ComBagIllust from "../../../../ui/PkgMain/ComBagIllust";
 import { RenderBagIllustItemView } from "../renders/RenderBagIllustItemView";
 

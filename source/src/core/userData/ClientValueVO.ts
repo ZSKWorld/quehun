@@ -1,5 +1,4 @@
 import { BaseVO } from "./BaseVO";
-import { EUserEvent } from "./UserDefine";
 
 export class ClientValueVO extends BaseVO implements VO.IClientValueVO {
 	private _data: KeyMap<number> = {};

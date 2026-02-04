@@ -1,4 +1,3 @@
-import { EUserEvent } from "../../../../../userData/UserDefine";
 import ComLiaoSheChar from "../../../../ui/PkgMain/ComLiaoSheChar";
 import { RenderLiaoSheCharView } from "../renders/RenderLiaoSheCharView";
 

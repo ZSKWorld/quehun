@@ -1,6 +1,5 @@
 import { ENotifyConst } from "../common/NotifyConst";
 import { BaseVO } from "./BaseVO";
-import { EUserEvent } from "./UserDefine";
 
 export class BagVO extends BaseVO implements VO.IBagVO {
 	private readonly _items: ProtoObject<IItem>[] = [];

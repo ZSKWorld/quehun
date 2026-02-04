@@ -1,22 +1,3 @@
-/** 本地化语言 */
-declare enum ELanguage {
-	CHS = "chs",
-	CHST = "chs_t",
-	EN = "en",
-	JP = "jp",
-	KR = "kr",
-	US_KR = "us-kr",
-}
-
-/** 行政版本 */
-declare enum EClientType {
-	CHS = "chs",
-	CHST = "chs_t",
-	EN = "en",
-	JP = "jp",
-	KR = "kr",
-}
-
 declare interface IIPInfo {
 	name: string;
 	gateways: { id: string, url: string }[];
@@ -51,7 +32,6 @@ declare interface IGameManager {
 	get deviceInfo(): ProtoObject<IClientDeviceInfo>;
 	/** 客户端语言 */
 	get language(): ELanguage;
-	get clientLanguage(): ELanguage;
 	/** 客户端类型 */
 	get clientType(): EClientType;
 	/** 资源版本 */

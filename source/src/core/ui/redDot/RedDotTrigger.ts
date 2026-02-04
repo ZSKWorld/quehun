@@ -1,6 +1,5 @@
 import { SingletonExtend } from "../../common/Singleton";
 import { Observer } from "../../mvc/provider/Observer";
-import { EUserEvent } from "../../userData/UserDefine";
 import { ERDTriggerType } from "./RedDotDefine";
 
 function RDTriggerEvent(eventName: ERDTriggerType) {

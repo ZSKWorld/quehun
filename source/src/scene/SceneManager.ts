@@ -1,5 +1,4 @@
 import { Observer } from "../core/mvc/provider/Observer";
-import { ESceneType } from "./SceneDefine";
 
 /** 逻辑场景管理类 */
 export class SceneManager extends Observer implements ISceneManager {

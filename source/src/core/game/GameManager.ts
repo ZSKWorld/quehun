@@ -1,4 +1,3 @@
-import { ENotifyConst } from "../common/NotifyConst";
 import { ObserverAll } from "../mvc/provider/ObserverAll";
 
 const enum EClientMessageType {

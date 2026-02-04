@@ -1,4 +1,3 @@
-import { ENotifyConst } from "../core/common/NotifyConst";
 import { Command } from "../core/mvc/controller/Command";
 import { ShaderManager } from "../core/shader/ShaderManager";
 

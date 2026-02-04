@@ -1,5 +1,4 @@
 import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
-import { EUIPoolKey } from "../../../../tool/UIPoolKey";
 import { ComTipInfoView } from "../../view/coms/ComTipInfoView";
 
 export class ComTipInfoMediator extends MediatorBase<ComTipInfoView, string> {

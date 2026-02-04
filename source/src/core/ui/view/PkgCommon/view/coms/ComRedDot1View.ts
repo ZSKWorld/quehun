@@ -1,4 +1,3 @@
-import { ENotifyConst } from "../../../../../common/NotifyConst";
 import ComRedDot1 from "../../../../ui/PkgCommon/ComRedDot1";
 
 export const enum EComRedDotMsg {

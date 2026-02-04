@@ -251,3 +251,15 @@ declare const enum EClientValueType {
 	HF_Yindao_Checked = 3015, // 2404天之杯活动是否展示过新手引导
 
 }
+
+/** 逻辑场景类型枚举 */
+declare const enum ESceneType {
+	LoginScene = "LoginScene",
+	MainScene = "MainScene",
+}
+
+/**各种UI对象池标识 */
+declare const enum EUIPoolKey {
+	/** 文本提示 */
+	TipInfo = "TipInfo",
+}

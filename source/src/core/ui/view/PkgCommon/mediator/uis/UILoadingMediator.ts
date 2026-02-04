@@ -1,4 +1,3 @@
-import { ENotifyConst } from "../../../../../common/NotifyConst";
 import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
 import { UILoadingView } from "../../view/uis/UILoadingView";
 

@@ -1,4 +1,3 @@
-import { ENotifyConst } from "../common/NotifyConst";
 import { EServiceType } from "./NetDefine";
 import { ESocketEvent, WebSocket } from "./WebSocket";
 

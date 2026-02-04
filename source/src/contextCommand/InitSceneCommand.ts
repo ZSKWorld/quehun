@@ -1,7 +1,6 @@
 import { Command } from "../core/mvc/controller/Command";
 import { SceneLogin } from "../scene/scene/SceneLogin";
 import { SceneMain } from "../scene/scene/SceneMain";
-import { ESceneType } from "../scene/SceneDefine";
 
 export class InitSceneCommand extends Command {
 	override execute(notifyName: string, data?: any) {

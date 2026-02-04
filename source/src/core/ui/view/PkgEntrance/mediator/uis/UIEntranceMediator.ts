@@ -1,5 +1,3 @@
-import { ESceneType } from "../../../../../../scene/SceneDefine";
-import { ENotifyConst } from "../../../../../common/NotifyConst";
 import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
 import { UIEntranceView } from "../../view/uis/UIEntranceView";
 

@@ -1,6 +1,6 @@
 import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
 import { RadioGroup } from "../../../../extention/RadioGroup";
-import { EUIBagMsg, UIBagView } from "../../view/uis/UIBagView";
+import { UIBagView } from "../../view/uis/UIBagView";
 
 export interface IUIBagData {
 	index?: number

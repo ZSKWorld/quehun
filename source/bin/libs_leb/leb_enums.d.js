@@ -190,6 +190,42 @@ EClientValueType = {
 	HF_Yindao_Checked: 3015,
 }
 
+ESceneType = {
+	LoginScene: "LoginScene",
+	MainScene: "MainScene",
+}
+
+EUIPoolKey = {
+	TipInfo: "TipInfo",
+}
+
+ENotifyConst = {
+	OnGameShow: "NotifyConst_OnGameShow",
+	OnGameHide: "NotifyConst_OnGameHide",
+	RedDotCompAwake: "NotifyConst_RedDotCompAwake",
+	RedDotCompDestroy: "NotifyConst_RedDotCompDestroy",
+	OnInitGameCompleted: "NotifyConst_OnInitGameCompleted",
+	LobbyConnecting: "NotifyConst_LobbyConnectting",
+	LobbyReconnecting: "NotifyConst_LobbyReconnecting",
+	LobbyConnected: "NotifyConst_LobbyConnected",
+	LobbyClosed: "NotifyConst_LobbyClosed",
+	GameConnecting: "NotifyConst_GameConnecting",
+	GameReconnecting: "NotifyConst_GameReconnecting",
+	GameConnected: "NotifyConst_GameConnected",
+	GameClosed: "NotifyConst_GameClosed",
+	OBConnecting: "NotifyConst_OBConnecting",
+	OBReconnecting: "NotifyConst_OBReconnecting",
+	OBConnected: "NotifyConst_OBConnected",
+	OBClosed: "NotifyConst_OBClosed",
+	BindPhoneCompleted: "NotifyConst_BindPhoneCompleted",
+	LoginSuccess: "NotifyConst_LoginSuccess",
+	OnSceneLoadBegin: "NotifyConst_OnSceneLoadBegin",
+	OnSceneLoadProgress: "NotifyConst_OnSceneLoadProgress",
+	OnSceneLoadEnd: "NotifyConst_OnSceneLoadEnd",
+	OnEnterScene: "NotifyConst_OnEnterScene",
+	OnExitScene: "NotifyConst_OnExitScene",
+}
+
 EUserEvent = {
 	OnMailChanged: "EUserEvent_OnMailChanged",
 	OnFriendsChanged: "EUserEvent_OnFriendsChanged",

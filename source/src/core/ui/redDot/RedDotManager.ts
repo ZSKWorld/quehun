@@ -1,4 +1,3 @@
-import { ENotifyConst } from "../../common/NotifyConst";
 import { ERDName, ERDTriggerType } from "./RedDotDefine";
 import { RedDotNode } from "./RedDotNode";
 import { RedDotTrigger } from "./RedDotTrigger";

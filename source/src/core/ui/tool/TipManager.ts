@@ -1,5 +1,3 @@
-import { EUIPoolKey } from "./UIPoolKey";
-
 /** 文本提示管理器 */
 export class TipManager implements ITipManager {
 	private _cache: string[] = [];

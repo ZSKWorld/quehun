@@ -1,5 +1,4 @@
 import { InitContextCommand } from "./contextCommand/InitContextCommand";
-import { ENotifyConst } from "./core/common/NotifyConst";
 import { ViewExtend } from "./core/ui/core/ViewExtend";
 import { FGUIExtend } from "./engine/FGUIExtend";
 import { FGUIRepair } from "./engine/FGUIRepair";

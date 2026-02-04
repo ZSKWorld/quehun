@@ -5,10 +5,10 @@ export class MailVO extends BaseVO implements VO.IMailVO {
 
 	get mails() { return this._mails; }
 
-	@InterestMessage(EMessageID.fetchMailInfo)
+	@InterestMessage(ENetMessage.fetchMailInfo)
 	private onFetchMailInfo(res: IResMailInfo) {
 		this._mails = res.mails.map($decodeProtoData);
-		this._mails.sort((a,b)=>{
+		this._mails.sort((a, b) => {
 			const ta = a.create_time || 0;
 			const tb = b.create_time || 0;
 			return tb - ta;
@@ -16,7 +16,7 @@ export class MailVO extends BaseVO implements VO.IMailVO {
 		this.dispatch(EUserEvent.OnMailChanged);
 	}
 
-	@InterestMessage(EMessageID.readMail)
+	@InterestMessage(ENetMessage.readMail)
 	private onReadMail(_, req: IReqReadMail) {
 		const mail = this._mails.find(v => v.mail_id == req.mail_id);
 		if (!mail) return;
@@ -24,7 +24,7 @@ export class MailVO extends BaseVO implements VO.IMailVO {
 		this.dispatch(EUserEvent.OnMailChanged);
 	}
 
-	@InterestMessage(EMessageID.deleteMail)
+	@InterestMessage(ENetMessage.deleteMail)
 	private onDeleteMail(_, req: IReqDeleteMail) {
 		const index = this._mails.findIndex(v => v.mail_id == req.mail_id);
 		if (index < 0) return;
@@ -32,7 +32,7 @@ export class MailVO extends BaseVO implements VO.IMailVO {
 		this.dispatch(EUserEvent.OnMailChanged);
 	}
 
-	@InterestMessage(EMessageID.takeAttachmentFromMail)
+	@InterestMessage(ENetMessage.takeAttachmentFromMail)
 	private onTakeAttachmentFromMail(_, req: IReqTakeAttachment) {
 		const mail = this._mails.find(v => v.mail_id == req.mail_id);
 		if (!mail) return;
@@ -40,13 +40,13 @@ export class MailVO extends BaseVO implements VO.IMailVO {
 		this.dispatch(EUserEvent.OnMailChanged);
 	}
 
-	@InterestMessage(ENotify.NotifyNewMail)
+	@InterestMessage(ENetNotify.NotifyNewMail)
 	private onNotifyNewMail(data: INotifyNewMail) {
 		this._mails.push($decodeProtoData(data.mail));
 		this.dispatch(EUserEvent.OnMailChanged);
 	}
 
-	@InterestMessage(ENotify.NotifyDeleteMail)
+	@InterestMessage(ENetNotify.NotifyDeleteMail)
 	private onNotifyDeleteMail(data: INotifyDeleteMail) {
 		data.mail_id_list.forEach(v => {
 			const index = this._mails.findIndex(m => m.mail_id == v);

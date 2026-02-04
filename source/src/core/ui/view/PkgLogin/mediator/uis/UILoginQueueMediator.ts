@@ -28,12 +28,12 @@ export class UILoginQueueMediator extends MediatorBase<UILoginQueueView, IUILogi
 		this.closeSelf();
 	}
 
-	@InterestMessage(ENotify.NotifyLoginQueueFinished)
+	@InterestMessage(ENetNotify.NotifyLoginQueueFinished)
 	private onNotifyLoginQueueFinished(data: INotifyLoginQueueFinished) {
 		this.closeSelf();
 	}
 
-	@InterestMessage(EMessageID.fetchQueueInfo)
+	@InterestMessage(ENetMessage.fetchQueueInfo)
 	private onFetchQueueInfo(res: IResFetchQueueInfo) {
 		this.view.refresh(res);
 	}

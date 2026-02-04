@@ -105,7 +105,7 @@ export class WebSocket extends Laya.EventDispatcher {
 		this._socket.close();
 	}
 
-	send(methodName: EMessageID, data: any) {
+	send(methodName: ENetMessage, data: any) {
 		const dataStr = JSON.stringify(data);
 		const reqKey = methodName + ":" + dataStr;
 

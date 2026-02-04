@@ -17,7 +17,7 @@ export class ClientValueVO extends BaseVO implements VO.IClientValueVO {
 		$netMgr.requests.updateClientValue({ key, value });
 	}
 
-	@InterestMessage(EMessageID.fetchClientValue)
+	@InterestMessage(ENetMessage.fetchClientValue)
 	private onFetchClientValue(res: IResClientValue) {
 		const decodeRes = $decodeProtoData(res);
 		decodeRes.datas.forEach(v => {

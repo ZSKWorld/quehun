@@ -18,14 +18,14 @@ export class AnnouncementVO extends BaseVO implements VO.IAnnouncementVO {
 		});
 	}
 
-	@InterestMessage(EMessageID.fetchAnnouncement)
+	@InterestMessage(ENetMessage.fetchAnnouncement)
 	private onFetchAnnouncement(res: IResAnnouncement) {
 		const decodeRes = $decodeProtoData(res);
 		this._announcements = decodeRes.announcements;
 		this._readList = decodeRes.read_list;
 	}
 
-	@InterestMessage(ENotify.NotifyAnnouncementUpdate)
+	@InterestMessage(ENetNotify.NotifyAnnouncementUpdate)
 	private onAnnouncementUpdate(data: INotifyAnnouncementUpdate) {
 		for (let i = 0; i < data.update_list.length; i++) {
 			const e = data.update_list[i];

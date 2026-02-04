@@ -1,7 +1,7 @@
 /** This script is generated automatically, Please do not any modify! */
 
 /** 网络通知 */
-declare enum ENotify {
+declare enum ENetNotify {
 	/**
 	 ** 通知房间游戏开始了
 	 ** res: {@link INotifyRoomGameStart}
@@ -311,7 +311,7 @@ declare enum ENotify {
 }
 
 /** 网络请求协议 */
-declare enum EMessageID {
+declare enum ENetMessage {
 	/**
 	 ** 获取连接相关信息
 	 ** req: {@link IReqCommon}

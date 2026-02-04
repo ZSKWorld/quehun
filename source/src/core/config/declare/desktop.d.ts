@@ -246,8 +246,6 @@ declare interface ISheetData_Desktop_FieldSpell {
 	field: number;
 	/** id值，取值范围[1,5] */
 	id: number;
-	/** 随机权重 */
-	weight: number;
 	/** 前端用字段 */
 	cardname: string;
 	/** 前端排序用卡编号 */

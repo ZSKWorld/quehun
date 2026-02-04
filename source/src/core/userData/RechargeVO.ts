@@ -9,7 +9,7 @@ export class RechargeVO extends BaseVO implements VO.IRechargeVO {
 	/** 提示消息 */
 	message: ProtoObject<II18nContext>[];
 
-	@InterestMessage(EMessageID.fetchRefundOrder)
+	@InterestMessage(ENetMessage.fetchRefundOrder)
 	private onFetchRefundOrder(res: IResFetchRefundOrder) {
 		this.orders = res.orders.map($decodeProtoData);
 		this.clear_deadline = res.clear_deadline;

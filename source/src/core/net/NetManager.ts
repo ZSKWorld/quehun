@@ -19,14 +19,14 @@ export class NetManager extends Laya.EventDispatcher implements INetManager {
 		this._lobbySocket = new WebSocket(this._routes[0], "gateway");
 
 		const reqs = this.requests = {} as any;
-		for (const key in EMessageID) {
+		for (const key in ENetMessage) {
 			const service = $pbMgr.method2Service[key];
 			let socket: WebSocket;
 			if (service == EServiceType.Lobby) socket = this._lobbySocket;
 			else if (service == EServiceType.FastTest) socket = this._gameSocket;
 			else if (service == EServiceType.Route) socket = this._lobbySocket;
 			else continue;
-			reqs[key] = data => socket.send(EMessageID[key], data || {});
+			reqs[key] = data => socket.send(ENetMessage[key], data || {});
 		}
 
 		this.initLobby();
@@ -95,8 +95,8 @@ export class NetManager extends Laya.EventDispatcher implements INetManager {
 	}
 
 	private _ignoreErrRequest = new Set<string>([
-		EMessageID.heatbeat,
-		EMessageID.updateClientValue,
+		ENetMessage.heatbeat,
+		ENetMessage.updateClientValue,
 	]);
 	private onResponseError(method: string, err: IError) {
 		if (!err) return;

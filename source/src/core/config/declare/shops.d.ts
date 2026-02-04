@@ -67,10 +67,6 @@ declare interface ISheetData_Shops_ZhpGoods {
 	price: number;
 	/** 需要指定购买数量 */
 	need_amount: number;
-	/** 刷新组 */
-	refresh_group: number;
-	/** 刷新权重 */
-	refresh_weight: number;
 	/** 显示已拥有数量 */
 	show_has: number;
 }
@@ -84,10 +80,7 @@ declare interface ISheet_Shops_ZhpRefreshGroup {
 	3: ISheetData_Shops_ZhpRefreshGroup;
 }
 declare interface ISheetData_Shops_ZhpRefreshGroup {
-	/** 刷新组id */
-	id: number;
-	/** 刷新数量 */
-	refresh_count: number;
+
 }
 //#endregion
 

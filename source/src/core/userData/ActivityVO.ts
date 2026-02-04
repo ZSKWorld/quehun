@@ -10,7 +10,7 @@ export class ActivityVO extends BaseVO implements VO.IActivityVO {
 	activity_segment_task: ProtoObject<IAccountUpdate_SegmentTaskUpdate>;
 
 
-	@InterestMessage(ENotify.NotifyAccountUpdate)
+	@InterestMessage(ENetNotify.NotifyAccountUpdate)
 	private onNotifyAccountUpdate(data: IAccountUpdate) {
 		this.activity = $decodeProtoData(data.activity);
 		this.activity_task = $decodeProtoData(data.activity_task);

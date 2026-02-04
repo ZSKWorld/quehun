@@ -1324,16 +1324,10 @@ declare interface ISheetData_Activity_Activity {
 	name_jp: string;
 	name_en: string;
 	name_kr: string;
-	/** 开始时间 */
-	start_time: string;
-	/** 结束时间 */
-	end_time: string;
 	/** 活动类型 */
 	type: string;
 	/** 是否需要弹出来 */
 	need_popout: number;
-	/** 分服启用，1中文服 2日服 3美服 */
-	zone: string;
 }
 //#endregion
 
@@ -2873,8 +2867,6 @@ declare interface ISheetData_Activity_ChestUp {
 	activity_id: number;
 	/** 宝箱ID */
 	chest_id: number;
-	/** up编号 */
-	up_id: number;
 	/** 卡池短名 */
 	title_str_id: number;
 	/** 卡池说明文，高亮用[tag]区分[/tag] */
@@ -6733,10 +6725,7 @@ declare interface ISheet_Activity_BuffCondition {
 	25010203: ISheetData_Activity_BuffCondition[];
 }
 declare interface ISheetData_Activity_BuffCondition {
-	/** buffid */
-	buff_id: number;
-	/** 条件 */
-	args: number[];
+
 }
 //#endregion
 
@@ -10250,8 +10239,6 @@ declare interface ISheetData_Activity_GachaPool {
 	rare: number;
 	/** 奖品 */
 	item: string;
-	/** 单个奖品的权重 */
-	weight: number;
 }
 //#endregion
 
@@ -10264,12 +10251,7 @@ declare interface ISheet_Activity_GachaControl {
 	104: ISheetData_Activity_GachaControl[];
 }
 declare interface ISheetData_Activity_GachaControl {
-	id: number;
-	/** 稀有度 */
-	rare: number;
-	reward_count: number;
-	/** <=count，最多可以抽到reward_count个 */
-	count: number;
+
 }
 //#endregion
 
@@ -10363,10 +10345,6 @@ declare interface ISheetData_Activity_CombiningActivityInfo {
 	craft_bin_unlock: number[];
 	/** 积分道具id */
 	point_item: number;
-	/** 红包池 */
-	bonus_item_pool: number;
-	/** 红包生成概率百分比 */
-	bonus_rate: number;
 	/** 每日最大红包生成数 */
 	bonus_daily_limit: number;
 	/** 双订单价格倍率 */
@@ -10393,8 +10371,6 @@ declare interface ISheetData_Activity_CombiningCraftPool {
 	bin_id: number;
 	/** 素材id */
 	craft_id: number;
-	/** 随机权重（材料桶内） */
-	weight: number;
 }
 //#endregion
 
@@ -10451,16 +10427,7 @@ declare interface ISheet_Activity_CombiningOrder {
 	25060115: ISheetData_Activity_CombiningOrder;
 }
 declare interface ISheetData_Activity_CombiningOrder {
-	/** 订单组id */
-	id: number;
-	/** 活动id */
-	activity_id: number;
-	/** 该组素材等级-数量 */
-	order_items: string;
-	/** 双订单素材等级-数量 */
-	multi_order_items: string;
-	/** 解锁日 */
-	unlock_day: number;
+
 }
 //#endregion
 
@@ -10527,8 +10494,6 @@ declare interface ISheetData_Activity_CombiningCraft {
 	level: number;
 	/** 升级后素材id */
 	upgrade_craft_id: number;
-	/** 订单解锁积分 */
-	order_unlock_point: number;
 	/** 订单价格 */
 	order_price: string;
 	/** 是否为红包 */
@@ -10802,19 +10767,8 @@ declare interface ISheet_Activity_ChestReplaceUp {
 	260227: ISheetData_Activity_ChestReplaceUp[];
 }
 declare interface ISheetData_Activity_ChestReplaceUp {
-	/** 活动id */
-	activity_id: number;
 	/** 宝箱ID（索引） */
 	chest_id: number;
-	/** chest.item_pool.id（索引） */
-	item_pool_id: number;
-	/** 资源id（索引） */
-	resource_id: number;
-	/** 资源数量（索引） */
-	resource_count: number;
-	/** 替换权重（结果） */
-	weight: number;
-	worth: number;
 }
 //#endregion
 
@@ -10989,14 +10943,6 @@ declare interface ISheetData_Activity_FestivalActivity {
 	proposal_consume: number;
 	/** 提案每日购买上限 */
 	daily_buy_limit: number;
-	/** 大成功概率 */
-	success_rate: number;
-	/** 失败概率 */
-	fail_rate: number;
-	/** 大成功资源系数 */
-	success_coefficient: number;
-	/** 失败资源系数 */
-	fail_coefficient: number;
 	/** 指标单箭头代表的值 */
 	arrow_amount: number;
 	/** 指标上限 */
@@ -11748,11 +11694,6 @@ declare interface ISheetData_Activity_ChooseUpReplace {
 	id: number;
 	/** 卡池id,国 */
 	chest_id: number[];
-	/** chest.item_pool.id（索引） */
-	item_pool_id: number;
-	/** 替换权重（结果） */
-	weight: number;
-	worth: number;
 }
 //#endregion
 
@@ -11764,8 +11705,6 @@ declare interface ISheet_Activity_ProgressReward {
 declare interface ISheetData_Activity_ProgressReward {
 	/** 活动id */
 	activity_id: number;
-	/** 到达进度的时间 */
-	progress_time: string;
 	/** 进度（百分数*100） */
 	progress: number;
 	/** 奖励 */
@@ -11902,10 +11841,5 @@ declare interface ISheetData_Activity_ChooseGroup {
 	item_position: number;
 	/** 卡池id,国 */
 	chest_id: number[];
-	/** chest.item_pool.id（索引） */
-	item_pool_id: number[];
-	/** 替换权重 */
-	weight: number[];
-	worth: number;
 }
 //#endregion

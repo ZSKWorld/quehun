@@ -112,7 +112,7 @@ export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> 
 		item.refresh(briefs[index]);
 	}
 
-	@InterestMessage(EMessageID.searchAccountByEid)
+	@InterestMessage(ENetMessage.searchAccountByEid)
 	private onSearchAccountByEid(res: IResSearchAccountbyEidLobby) {
 		const accoundId = res.account_id;
 		if (!accoundId || accoundId == $userData.account.account_id)
@@ -129,7 +129,7 @@ export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> 
 		this.onTabChanged();
 	}
 
-	@InterestMessage(EMessageID.fetchRecentFriend)
+	@InterestMessage(ENetMessage.fetchRecentFriend)
 	private onFetchRecentFriend(res: IResFetchrecentFriend) {
 		this._recentPlayerLoader.intro = res.account_list.map(v => ({ account_id: v }));
 		this._recentPlayerLoader.loadNext();

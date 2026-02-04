@@ -149,18 +149,18 @@ export class GameManager extends ObserverAll implements IGameManager {
 		}
 	}
 
-	@InterestMessage(EMessageID.fetchConnectionInfo)
+	@InterestMessage(ENetMessage.fetchConnectionInfo)
 	private onFetchConnectionInfo(res: IResConnectionInfo) {
 		this._clientEndPoint = $decodeProtoData(res.client_endpoint);
 	}
 
-	@InterestMessage(EMessageID.login)
-	@InterestMessage(EMessageID.oauth2Login)
+	@InterestMessage(ENetMessage.login)
+	@InterestMessage(ENetMessage.oauth2Login)
 	private onLogin() {
 		$netMgr.requests.loginBeat({ contract: this.p2 });
 	}
 
-	@InterestMessage(ENotify.NotifyAnotherLogin)
+	@InterestMessage(ENetNotify.NotifyAnotherLogin)
 	private onNotifyAnotherLogin() {
 		$netMgr.closeAll();
 		$localDataMgr.set(ELocalDataKey.AutoLogin, 0);
@@ -174,7 +174,7 @@ export class GameManager extends ObserverAll implements IGameManager {
 		});
 	}
 
-	@InterestMessage(ENotify.NotifyAccountLogout)
+	@InterestMessage(ENetNotify.NotifyAccountLogout)
 	private onNotifyAccountLogout() {
 		$netMgr.closeAll();
 		$confirmSma(2, $lang(2329)).then(v => {
@@ -182,7 +182,7 @@ export class GameManager extends ObserverAll implements IGameManager {
 		});
 	}
 
-	@InterestMessage(ENotify.NotifyClientMessage)
+	@InterestMessage(ENetNotify.NotifyClientMessage)
 	private onNotifyClientMessage(data: INotifyClientMessage) {
 		if (data.type == EClientMessageType.RoomInvite) {
 			Logger.error("有邀请", data);

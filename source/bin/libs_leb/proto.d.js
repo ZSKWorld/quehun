@@ -1,6 +1,6 @@
 /** This script is generated automatically, Please do not any modify! */
 
-ENotify = {
+ENetNotify = {
 	NotifyRoomGameStart: "NotifyRoomGameStart",
 	NotifyMatchGameStart: "NotifyMatchGameStart",
 	NotifyRoomPlayerReady: "NotifyRoomPlayerReady",
@@ -69,7 +69,7 @@ ENotify = {
 	NotifyObserveData: "NotifyObserveData",
 }
 
-EMessageID = {
+ENetMessage = {
 	fetchConnectionInfo: "fetchConnectionInfo",
 	fetchQueueInfo: "fetchQueueInfo",
 	cancelQueue: "cancelQueue",

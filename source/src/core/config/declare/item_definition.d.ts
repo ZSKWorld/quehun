@@ -1175,8 +1175,6 @@ declare interface ISheetData_ItemDefinition_Item {
 	sell_reward_id: number;
 	/** 出售获得数量 */
 	sell_reward_count: number;
-	/** 道具版本 */
-	item_version: number;
 	/** 过期时间 */
 	item_expire: string;
 	/** 过期时间描述 */
@@ -2662,10 +2660,7 @@ declare interface ISheet_ItemDefinition_ItemRecovery {
 	[key: string]: ISheetData_ItemDefinition_ItemRecovery[];
 }
 declare interface ISheetData_ItemDefinition_ItemRecovery {
-	/** 道具id */
-	id: number;
-	/** 恢复版本 */
-	version: number;
+
 }
 //#endregion
 

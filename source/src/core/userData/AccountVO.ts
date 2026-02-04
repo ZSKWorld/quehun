@@ -36,8 +36,8 @@ export class AccountVO extends BaseVO implements VO.IAccountVO {
 	/** 勋章列表 */
 	badges: ProtoObject<IAccount_Badge>[] = [];
 
-	@InterestMessage(EMessageID.login)
-	@InterestMessage(EMessageID.oauth2Login)
+	@InterestMessage(ENetMessage.login)
+	@InterestMessage(ENetMessage.oauth2Login)
 	private onLogin(res: IResLogin) {
 		if (!res.account) return;
 		const decodeAcc = $decodeProtoData(res.account);

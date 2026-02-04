@@ -16,7 +16,7 @@ declare function InterestNotify(eventName: string, once?: boolean, args?: any[])
  * @param once 是否只监听一次
  * @param args 参数
  */
-declare function InterestMessage(msgId: EMessageID | ENotify, once?: boolean, args?: any[]): MethodDecorator;
+declare function InterestMessage(msgId: ENetMessage | ENetNotify, once?: boolean, args?: any[]): MethodDecorator;
 
 /**
  * 注入用户事件监听

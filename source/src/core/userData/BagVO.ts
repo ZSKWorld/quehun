@@ -106,8 +106,8 @@ export class BagVO extends BaseVO implements VO.IBagVO {
 		return items;
 	}
 
-	@InterestMessage(EMessageID.login)
-	@InterestMessage(EMessageID.oauth2Login)
+	@InterestMessage(ENetMessage.login)
+	@InterestMessage(ENetMessage.oauth2Login)
 	private onLogin(res: IResLogin) {
 		if (!res.account) return;
 		const { gold, vip, platform_diamond, skin_ticket, platform_skin_ticket, loading_image } = res.account;
@@ -122,7 +122,7 @@ export class BagVO extends BaseVO implements VO.IBagVO {
 		this.dispatch(EUserEvent.OnBagItemsChanged);
 	}
 
-	@InterestMessage(EMessageID.fetchBagInfo)
+	@InterestMessage(ENetMessage.fetchBagInfo)
 	private onFetchBagInfo(res: IResBagInfo) {
 		const { items, daily_gain_record } = $decodeProtoData(res.bag);
 		this.modifyItems(items);
@@ -132,7 +132,7 @@ export class BagVO extends BaseVO implements VO.IBagVO {
 		this.dispatch(EUserEvent.OnBagDailyGainRecordChanged);
 	}
 
-	@InterestMessage(ENotify.NotifyAccountUpdate)
+	@InterestMessage(ENetNotify.NotifyAccountUpdate)
 	private onNotifyAccountUpdate(data: IAccountUpdate) {
 		const bagInfo = $decodeProtoData(data.bag);
 		if (!bagInfo) return;
@@ -203,7 +203,7 @@ export class BagVO extends BaseVO implements VO.IBagVO {
 		}
 	}
 
-	@InterestMessage(EMessageID.setLoadingImage)
+	@InterestMessage(ENetMessage.setLoadingImage)
 	private onSetLoadingImageRes(_, req: IReqSetLoadingImage) {
 		this._loadingImage = req.images.slice();
 		this.dispatch(EUserEvent.OnCGUsingChanged);

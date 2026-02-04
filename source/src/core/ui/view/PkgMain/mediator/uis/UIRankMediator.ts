@@ -63,7 +63,7 @@ export class UIRankMediator extends MediatorBase<UIRankView, any> {
 		}
 	}
 
-	@InterestMessage(EMessageID.fetchLevelLeaderboard)
+	@InterestMessage(ENetMessage.fetchLevelLeaderboard)
 	private onFetchLevelLeaderboard(res: IResLevelLeaderboard, req: IReqLevelLeaderboard) {
 		const state = this._states[req.type];
 		state.intro = res.items;

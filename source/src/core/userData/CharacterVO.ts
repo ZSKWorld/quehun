@@ -79,7 +79,7 @@ export class CharacterVO extends BaseVO implements VO.ICharacterVO {
 		$netMgr.requests.updateCharacterSort(param);
 	}
 
-	@InterestMessage(EMessageID.fetchCharacterInfo)
+	@InterestMessage(ENetMessage.fetchCharacterInfo)
 	private onFetchCharacterInfo(res: IResCharacterInfo) {
 		this._mainCharId = res.main_character_id;
 		this._chars = res.characters.map($decodeProtoData);
@@ -106,7 +106,7 @@ export class CharacterVO extends BaseVO implements VO.ICharacterVO {
 		this.dispatch(EUserEvent.OnCharacterSortChanged);
 	}
 
-	@InterestMessage(ENotify.NotifyAccountUpdate)
+	@InterestMessage(ENetNotify.NotifyAccountUpdate)
 	private onNotifyAccountUpdate(data: IAccountUpdate) {
 		const { main_character, character } = data;
 		if (main_character) {
@@ -129,7 +129,7 @@ export class CharacterVO extends BaseVO implements VO.ICharacterVO {
 		}
 	}
 
-	@InterestMessage(EMessageID.updateCharacterSort)
+	@InterestMessage(ENetMessage.updateCharacterSort)
 	private onUpdateCharacterSort(res: IResCommon, req: IReqUpdateCharacterSort) {
 		this._characterSort = req.sort;
 		this._otherCharacterSort = req.other_sort;

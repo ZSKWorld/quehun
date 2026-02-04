@@ -77,16 +77,6 @@ declare interface ISheetData_Chest_Chest {
 	ticket_id: number;
 	/** 十连抽道具 */
 	ticket_10_id: number;
-	/** 奖池序列id */
-	pool_seq_id: number;
-	/** 奖池序列id */
-	ticket_pool_seq_id: number;
-	/** 正常奖池Id */
-	normal_pool_id: number;
-	/** 保底奖池Id */
-	guarantee_pool_id: number;
-	/** 使用单抽券的奖池ID */
-	ticket_pool_id: number;
 	faith_id: number;
 	/** 0国服，1外服 */
 	zone: number;
@@ -539,11 +529,7 @@ declare interface ISheet_Chest_Pool {
 	80520: ISheetData_Chest_Pool[];
 }
 declare interface ISheetData_Chest_Pool {
-	id: number;
-	/** 子类Id */
-	item_pool_id: number;
-	/** 随机权重 */
-	weight: number;
+
 }
 //#endregion
 
@@ -577,12 +563,7 @@ declare interface ISheet_Chest_PoolSeq {
 	9002: ISheetData_Chest_PoolSeq[];
 }
 declare interface ISheetData_Chest_PoolSeq {
-	/** 序列Id */
-	id: number;
-	/** 次数判断边界 */
-	end: number;
-	/** 奖池id */
-	pool_id: number;
+
 }
 //#endregion
 
@@ -676,15 +657,7 @@ declare interface ISheet_Chest_ItemPool {
 	190003: ISheetData_Chest_ItemPool[];
 }
 declare interface ISheetData_Chest_ItemPool {
-	id: number;
-	/** 资源Id */
-	resource_id: number;
-	/** 资源数量 */
-	resource_count: number;
-	/** 随机权重 */
-	weight: number;
-	/** 是否有价值 */
-	worth: number;
+
 }
 //#endregion
 
@@ -1777,12 +1750,7 @@ declare interface ISheet_Chest_Up {
 	3034: ISheetData_Chest_Up[];
 }
 declare interface ISheetData_Chest_Up {
-	/** 替换组 */
-	up_id: number;
-	/** 卡池ID */
-	case_id: number;
-	/** 替换后卡池ID */
-	replace_id: number;
+
 }
 //#endregion
 
@@ -1792,11 +1760,7 @@ declare interface ISheet_Chest_ItemPrice {
 	1064: ISheetData_Chest_ItemPrice[];
 }
 declare interface ISheetData_Chest_ItemPrice {
-	group_id: number;
-	/** 资源Id */
-	resource_id: number;
-	/** 资源价值 */
-	worth: number;
+
 }
 //#endregion
 
@@ -1812,8 +1776,6 @@ declare interface ISheetData_Chest_ReplaceUp {
 	replace_pool_id: number;
 	/** 触发保底次数 */
 	count: number;
-	/** up池id */
-	up_id: number;
 	/** 活动ID */
 	activity_id: number;
 	/** 计数id */
@@ -1833,8 +1795,6 @@ declare interface ISheetData_Chest_ReplacePool {
 	id: number;
 	/** 资源Id */
 	resource_id: number;
-	/** 随机权重 */
-	weight: number;
 	/** 是否是当期替换up */
 	is_replace: number;
 	/** 增加计数量 */

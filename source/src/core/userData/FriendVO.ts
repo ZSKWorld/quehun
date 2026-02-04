@@ -17,7 +17,7 @@ export class FriendVO extends BaseVO implements VO.IFriendVO {
 		return this._friends.find(v => v.base.account_id == id) != null;
 	}
 
-	@InterestMessage(EMessageID.fetchFriendList)
+	@InterestMessage(ENetMessage.fetchFriendList)
 	private onFetchFriendList(res: IResFriendList) {
 		this._friends = res.friends.map($decodeProtoData);
 		this._friendMaxCount = res.friend_max_count;
@@ -27,14 +27,14 @@ export class FriendVO extends BaseVO implements VO.IFriendVO {
 		this.dispatch(EUserEvent.OnFriendMaxCountChanged);
 	}
 
-	@InterestMessage(EMessageID.fetchFriendApplyList)
+	@InterestMessage(ENetMessage.fetchFriendApplyList)
 	private onFetchFriendApplyList(res: IResFriendApplyList) {
 		this._applies = res.applies.map($decodeProtoData);
 		this.sortApply();
 		this.dispatch(EUserEvent.OnFriendApplyChanged);
 	}
 
-	@InterestMessage(EMessageID.handleFriendApply)
+	@InterestMessage(ENetMessage.handleFriendApply)
 	private onHandleFriendApply(_, req: IReqHandleFriendApply) {
 		const index = this._applies.findIndex(v => v.account_id == req.target_id);
 		if (index < 0) return;
@@ -43,12 +43,12 @@ export class FriendVO extends BaseVO implements VO.IFriendVO {
 		this.dispatch(EUserEvent.OnFriendApplyChanged);
 	}
 
-	@InterestMessage(EMessageID.applyFriend)
+	@InterestMessage(ENetMessage.applyFriend)
 	private onApplyFriend(_, req: IReqApplyFriend) {
 		this._applied.add(req.target_id);
 	}
 
-	@InterestMessage(ENotify.NotifyFriendViewChange)
+	@InterestMessage(ENetNotify.NotifyFriendViewChange)
 	private onNotifyFriendViewChange(data: INotifyFriendViewChange) {
 		const friend = this._friends.find(v => v.base.account_id == data.target_id);
 		if (!friend) return;
@@ -56,7 +56,7 @@ export class FriendVO extends BaseVO implements VO.IFriendVO {
 		this.dispatch(EUserEvent.OnFriendsChanged);
 	}
 
-	@InterestMessage(ENotify.NotifyFriendStateChange)
+	@InterestMessage(ENetNotify.NotifyFriendStateChange)
 	private onNotifyFriendStateChange(data: INotifyFriendStateChange) {
 		const friend = this._friends.find(v => v.base.account_id == data.target_id);
 		if (!friend) return;
@@ -65,7 +65,7 @@ export class FriendVO extends BaseVO implements VO.IFriendVO {
 		this.dispatch(EUserEvent.OnFriendsChanged);
 	}
 
-	@InterestMessage(ENotify.NotifyFriendChange)
+	@InterestMessage(ENetNotify.NotifyFriendChange)
 	private onNotifyFriendChange(data: INotifyFriendChange) {
 		const { _friends } = this;
 		if (data.type == 1) {
@@ -79,7 +79,7 @@ export class FriendVO extends BaseVO implements VO.IFriendVO {
 		this.dispatch(EUserEvent.OnFriendsChanged);
 	}
 
-	@InterestMessage(ENotify.NotifyNewFriendApply)
+	@InterestMessage(ENetNotify.NotifyNewFriendApply)
 	private onNotifyNewFriendApply(data: INotifyNewFriendApply) {
 		const { _applies } = this;
 		const exists = _applies.find(v => v.account_id == data.account_id);

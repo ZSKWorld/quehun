@@ -9,7 +9,7 @@ export class ServerSettingVO extends BaseVO implements VO.IServerSettingVO {
 	get payment_setting_v2() { return this._payment_setting_v2; }
 	get nickname_setting() { return this._nickname_setting; }
 
-	@InterestMessage(ENotify.NotifyServerSetting)
+	@InterestMessage(ENetNotify.NotifyServerSetting)
 	private onNotifyServerSetting(data: INotifyServerSetting) {
 		if (!data.settings) return;
 		const setting = $decodeProtoData(data.settings);

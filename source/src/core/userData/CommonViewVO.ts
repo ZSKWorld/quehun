@@ -8,7 +8,7 @@ export class CommonViewVO extends BaseVO implements VO.ICommonViewVO {
 	get views() { return this._views; }
 	get curView() { return this._views.find(v => v.index == this._use); }
 
-	@InterestMessage(EMessageID.fetchAllCommonViews)
+	@InterestMessage(ENetMessage.fetchAllCommonViews)
 	private onFetchClientValue(res: IResAllcommonViews) {
 		const decodeRes = $decodeProtoData(res);
 		this._use = decodeRes.use;
@@ -27,7 +27,7 @@ export class CommonViewVO extends BaseVO implements VO.ICommonViewVO {
 				view = { index: i, name: String(i + 1), values: [], };
 				_views.push(view);
 			}
-			
+
 			const slots = view.values;
 			slotIds.forEach((sid, si) => {
 				const s = slots.find(s => s.slot == sid);

@@ -110,20 +110,12 @@ declare interface ISheetData_Snowball_SnowballMonsterGroup {
 	name_str_id: number;
 	/** 回合时长（tick） */
 	round_time: number;
-	/** 雪球下等级 */
-	buff_id: number[];
-	/** 雪球下权重 */
-	track_weight: number[];
 	/** 解锁日期 */
 	unlock_day: number;
 	/** 入场前摇 */
 	enter_delay: number;
 	/** 攻击前摇 */
 	attack_delay: number;
-	/** 攻击罚站随机下限 */
-	attack_after_delay_range: number[];
-	/** 开局罚站随机下限 */
-	start_delay_range: number[];
 	/** 怪物身高 */
 	monster_height: number;
 	/** 死亡特效偏移 */
@@ -174,12 +166,6 @@ declare interface ISheet_Snowball_MonsterSnowballBuff {
 declare interface ISheetData_Snowball_MonsterSnowballBuff {
 	/** 活动id */
 	activity_id: number;
-	/** buffid */
-	buff_id: number;
-	/** 下0中1上2血量3 */
-	type: number;
-	/** 血量增加的值，上中下雪球填attack_level_id */
-	effect: number;
 }
 //#endregion
 

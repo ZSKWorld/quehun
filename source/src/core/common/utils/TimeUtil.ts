@@ -101,7 +101,7 @@ export class TimeUtil extends ObserverAll implements ITimeUtil {
 		});
 	}
 
-	@InterestMessage(EMessageID.fetchServerTime)
+	@InterestMessage(ENetMessage.fetchServerTime)
 	private onFetchServerTime(res: IResServerTime) {
 		this._serverDelta = res.server_time * 1000 - Date.now();
 	}

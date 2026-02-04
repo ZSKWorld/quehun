@@ -357,17 +357,5 @@ declare interface ISheet_Mall_MonthTicketInfo {
 }
 declare interface ISheetData_Mall_MonthTicketInfo {
 	id: number;
-	/** 资源ID */
-	resource_id: number;
-	/** 每日交付资源种类 */
-	resource_id_daily: number;
-	/** 每日交付资源数量 */
-	resource_count_daily: number;
-	/** 每日多刷新任务数量 */
-	extra_event: number;
-	/** 增加任务刷新次数 */
-	extra_refresh_count: number;
-	/** 增加任务上限数量 */
-	extra_event_limit: number;
 }
 //#endregion

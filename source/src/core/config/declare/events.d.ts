@@ -298,8 +298,6 @@ declare interface ISheetData_Events_Dailyevent {
 	desc_kr: string;
 	/** 活动类型 */
 	active_type: number;
-	/** 权重 */
-	weight: number;
 	/** 任务类型 */
 	type: number;
 	/** 完成次数 */

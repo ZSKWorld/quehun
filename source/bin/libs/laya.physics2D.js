@@ -1375,10 +1375,12 @@
             if (!this._box2DBody)
                 return;
             var factory = Physics2D.I._factory;
-            let rotateValue = Laya.Utils.toAngle(factory.get_RigidBody_Angle(this._box2DBody));
+            let rotateValue = factory.get_RigidBody_Angle(this._box2DBody);
             _tempP0.x = pos.x;
             _tempP0.y = pos.y;
             let globalPos = this.owner.parent.localToGlobal(_tempP0);
+            globalPos.x = globalPos.x * Laya.ILaya.stage.clientScaleX;
+            globalPos.y = globalPos.y * Laya.ILaya.stage.clientScaleY;
             factory.set_RigibBody_Transform(this._box2DBody, globalPos.x, globalPos.y, rotateValue);
             factory.set_rigidBody_Awake(this._box2DBody, true);
             Physics2D.I._addRigidBody(this);
@@ -1405,7 +1407,7 @@
             var pos = Laya.Vector2.TEMP;
             factory.get_RigidBody_Position(this._box2DBody, pos);
             pos.setValue(pos.x, pos.y);
-            factory.set_RigibBody_Transform(this._box2DBody, pos.x, pos.y, number);
+            factory.set_RigibBody_Transform(this._box2DBody, pos.x, pos.y, Laya.Utils.toRadian(number));
             factory.set_rigidBody_Awake(this._box2DBody, true);
             Physics2D.I._addRigidBody(this);
         }
@@ -1601,7 +1603,7 @@
             if (!this._box2DBody)
                 return;
             var factory = Physics2D.I._factory;
-            factory.set_RigibBody_Transform(this._box2DBody, this.owner.globalTrans.x, this.owner.globalTrans.y, value);
+            factory.set_RigibBody_Transform(this._box2DBody, this.owner.globalTrans.x, this.owner.globalTrans.y, Laya.Utils.toRadian(value));
             factory.set_rigidBody_Awake(this._box2DBody, true);
         }
         getMass() {

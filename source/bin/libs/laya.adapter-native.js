@@ -2,11 +2,16 @@
     'use strict';
 
     class NativeBrowserAdapter extends Laya.BrowserAdapter {
+        constructor() {
+            super(...arguments);
+            this._visible = true;
+        }
         init() {
             Laya.Config.fixedFrames = false;
             Laya.Browser.onLayaRuntime = true;
             Laya.Browser.isDomSupported = false;
             Laya.PAL.g = window.conch;
+            Laya.PAL.g.setPreferredFramesPerSecond(Laya.Config.FPS);
             if (window.conchConfig.getOS() == "Conch-ios") {
                 Laya.Config.enableUniformBufferObject = false;
                 Laya.Config.matUseUBO = false;
@@ -27,10 +32,34 @@
                     }
                 });
             };
-            super.init();
+            let windowInfo = Laya.PAL.g.getWindowInfo();
+            this._pixelRatio = windowInfo.pixelRatio;
+            let deviceInfo = Laya.PAL.g.getDeviceInfo();
+            let platform = deviceInfo.platform || "";
+            this.setPlatform("", platform);
+            Laya.PAL.g.onShow(() => {
+                this._visible = true;
+                this.event(Laya.Event.VISIBILITY_CHANGE, true);
+                this.event(Laya.Event.FOCUS);
+            });
+            Laya.PAL.g.onHide(() => {
+                this._visible = false;
+                this.event(Laya.Event.VISIBILITY_CHANGE, false);
+                this.event(Laya.Event.BLUR);
+            });
+            if (Laya.PAL.hasAPI("onWindowResize")) {
+                Laya.PAL.g.onWindowResize(result => {
+                    this.event(Laya.Event.RESIZE);
+                });
+            }
+        }
+        getVisibility() {
+            return this._visible;
         }
         createMainCanvas() {
-            return Laya.PAL.g.createCanvas();
+            this._canvas = Laya.PAL.g.createCanvas();
+            this._canvas.id = "layaCanvas";
+            return this._canvas;
         }
         createElement(tagName) {
             let ele;
@@ -40,14 +69,22 @@
                 ele = super.createElement(tagName);
             return ele;
         }
+        getElementById(id) {
+            if (id === this._canvas.id) {
+                return this._canvas;
+            }
+            return null;
+        }
+        removeElement(ele) {
+        }
         get supportArrayBufferURL() {
             return true;
         }
         createBufferURL(data) {
-            return window.wx.createBufferURL(data);
+            return Laya.PAL.g.createBufferURL(data);
         }
         revokeBufferURL(url) {
-            return window.wx.revokeBufferURL(url);
+            return Laya.PAL.g.revokeBufferURL(url);
         }
         onCaptureGlobalError(enabled, func) {
             if (enabled) {
@@ -78,7 +115,7 @@
     }
     Laya.PAL.register("font", NativeFontAdapter);
 
-    class NativeVideoPlayer extends Laya.VideoPlayer {
+    class NativeVideoPlayer extends Laya.VideoPlayerBackend {
         constructor() {
             super(...arguments);
             this._loop = false;

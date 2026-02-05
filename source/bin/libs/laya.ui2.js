@@ -2782,6 +2782,7 @@
             let stretchX = this._stretchX === exports.StretchMode.Stretch;
             let stretchY = this._stretchY === exports.StretchMode.Stretch;
             let align = stretchX ? 0 : this._align;
+            let valign = stretchY ? 0 : this._valign;
             let data = tempDataPool.take();
             let cnt = this.getLayoutChildren(data);
             let children = data.children;
@@ -2814,7 +2815,7 @@
                 if (cx > cw)
                     cw = cx;
                 if (align === 1)
-                    cx = (vw - cx) * 0.5;
+                    cx = Math.floor((vw - cx) / 2);
                 else if (align === 2)
                     cx = vw - cx;
                 else
@@ -2829,7 +2830,7 @@
                 }
                 for (let j = i - ci; j < i; j++) {
                     data.posx[j] += px + cx;
-                    data.posy[j] = py + cy;
+                    data.posy[j] += py + cy;
                 }
                 cx = 0;
                 cy += mh;
@@ -2850,6 +2851,13 @@
                     if (cx !== 0)
                         cx += colGap;
                     data.posx[i] = cx;
+                    data.posy[i] = 0;
+                    if (singleRow) {
+                        if (valign === 1)
+                            data.posy[i] = Math.floor((vh - child.height) / 2);
+                        else if (valign === 2)
+                            data.posy[i] = vh - child.height;
+                    }
                     cx += sw;
                     if (child.height > mh)
                         mh = child.height;
@@ -2878,25 +2886,24 @@
                 cx = cy = px = py = ci = ri = cw = ch = mh = 0;
             }
             cy = 0;
-            if (ch < vh && this._stretchY !== exports.StretchMode.ResizeToFit) {
-                if (this._valign === 1)
-                    cy = (vh - ch) / 2;
-                else if (this._valign === 2)
+            if (ch < vh && this._stretchY !== exports.StretchMode.ResizeToFit && !singleRow) {
+                if (valign === 1)
+                    cy = Math.floor((vh - ch) / 2);
+                else if (valign === 2)
                     cy = vh - ch;
             }
             cx = 0;
-            if (this._stretchX === exports.StretchMode.ResizeToFit) {
-                if (align === 1 || align === 2) {
+            if (this._stretchX === exports.StretchMode.ResizeToFit && cw < vw) {
+                if (align === 1)
                     cx = Math.floor((cw - vw) / 2);
-                    if (cx > 0)
-                        cx = 0;
-                }
+                else if (align === 2)
+                    cx = cw - vw;
             }
             if (!this._owner.scroller) {
                 cx += this._padding[3];
                 cy += this._padding[0];
             }
-            if (singleRow && !stretchY && this._valign === 3) {
+            if (singleRow && !stretchY && valign === 3) {
                 for (let i = 0; i < cnt; i++)
                     children[i].left = data.posx[i] + cx;
             }
@@ -2923,6 +2930,7 @@
             let colGap = this._columnGap;
             let stretchX = this._stretchX === exports.StretchMode.Stretch;
             let stretchY = this._stretchY === exports.StretchMode.Stretch;
+            let align = stretchX ? 0 : this._align;
             let valign = stretchY ? 0 : this._valign;
             let data = tempDataPool.take();
             let cnt = this.getLayoutChildren(data);
@@ -2956,7 +2964,7 @@
                 if (cy > ch)
                     ch = cy;
                 if (valign === 1)
-                    cy = (vh - cy) * 0.5;
+                    cy = Math.floor((vh - cy) / 2);
                 else if (valign === 2)
                     cy = vh - cy;
                 else
@@ -2970,7 +2978,7 @@
                     }
                 }
                 for (let j = i - ri; j < i; j++) {
-                    data.posx[j] = px + cx;
+                    data.posx[j] += px + cx;
                     data.posy[j] += py + cy;
                 }
                 cy = 0;
@@ -2991,7 +2999,14 @@
                     }
                     if (cy !== 0)
                         cy += rowGap;
+                    data.posx[i] = 0;
                     data.posy[i] = cy;
+                    if (singleColumn) {
+                        if (align === 1)
+                            data.posx[i] = Math.floor((vw - child.width) / 2);
+                        else if (align === 2)
+                            data.posx[i] = vw - child.width;
+                    }
                     cy += sh;
                     if (child.width > mw)
                         mw = child.width;
@@ -3020,27 +3035,24 @@
                 cx = cy = px = py = ci = ri = cw = ch = mw = 0;
             }
             cx = 0;
-            if (cw < vw && this._stretchX !== exports.StretchMode.ResizeToFit) {
-                if (this._align === 1)
-                    cx = (vw - cw) / 2;
-                else if (this._align === 2)
+            if (cw < vw && this._stretchX !== exports.StretchMode.ResizeToFit && !singleColumn) {
+                if (align === 1)
+                    cx = Math.floor((vw - cw) / 2);
+                else if (align === 2)
                     cx = vw - cw;
-                else
-                    cx = 0;
             }
             cy = 0;
-            if (this._stretchY === exports.StretchMode.ResizeToFit) {
-                if (valign === 1 || valign === 2) {
+            if (this._stretchY === exports.StretchMode.ResizeToFit && ch < vh) {
+                if (valign === 1)
                     cy = Math.floor((ch - vh) / 2);
-                    if (cy > 0)
-                        cy = 0;
-                }
+                else if (valign === 2)
+                    cy = ch - vh;
             }
             if (!this._owner.scroller) {
                 cx += this._padding[3];
                 cy += this._padding[0];
             }
-            if (singleColumn && !stretchX && this._align === 3) {
+            if (singleColumn && !stretchX && align === 3) {
                 for (let i = 0; i < cnt; i++)
                     children[i].top = data.posy[i] + cy;
             }
@@ -3561,6 +3573,12 @@
         set leading(value) {
             this.textIns.leading = value;
         }
+        get letterSpacing() {
+            return this.textIns.letterSpacing;
+        }
+        set letterSpacing(value) {
+            this.textIns.letterSpacing = value;
+        }
         get padding() {
             return this.textIns.padding;
         }
@@ -3578,6 +3596,30 @@
         }
         set strokeColor(value) {
             this.textIns.strokeColor = value;
+        }
+        get shadowOffsetX() {
+            return this.textIns.shadowOffsetX;
+        }
+        set shadowOffsetX(value) {
+            this.textIns.shadowOffsetX = value;
+        }
+        get shadowOffsetY() {
+            return this.textIns.shadowOffsetY;
+        }
+        set shadowOffsetY(value) {
+            this.textIns.shadowOffsetY = value;
+        }
+        get shadowBlur() {
+            return this.textIns.shadowBlur;
+        }
+        set shadowBlur(value) {
+            this.textIns.shadowBlur = value;
+        }
+        get shadowColor() {
+            return this.textIns.shadowColor;
+        }
+        set shadowColor(value) {
+            this.textIns.shadowColor = value;
         }
         get overflow() {
             return this.textIns.overflow;
@@ -4400,8 +4442,11 @@
             if (value)
                 arr.push(...value);
             this._itemsUpdated = true;
-            if (Laya.SerializeUtil.isDeserializing)
+            if (Laya.SerializeUtil.isDeserializing) {
+                if (arr.length > 0)
+                    this._selectedIndex = 0;
                 return;
+            }
             if (arr.length > 0) {
                 if (this._selectedIndex >= arr.length)
                     this._selectedIndex = arr.length - 1;
@@ -4446,7 +4491,7 @@
         }
         set selectedIndex(val) {
             var _a;
-            if (this._selectedIndex == val)
+            if (this._selectedIndex === val && !this._itemsUpdated)
                 return;
             this._selectedIndex = val;
             if (val >= 0 && val < this._items.length) {
@@ -5023,7 +5068,7 @@
                 this._offsetY = 0;
                 if (cw < vw) {
                     if (this._align === 1)
-                        this._offsetX = (vw - cw) / 2;
+                        this._offsetX = Math.floor((vw - cw) / 2);
                     else if (this._align === 2)
                         this._offsetX = vw - cw;
                     if (!this._owner.scroller)
@@ -5031,7 +5076,7 @@
                 }
                 if (ch < vh) {
                     if (this._valign === 1)
-                        this._offsetY = (vh - ch) / 2;
+                        this._offsetY = Math.floor((vh - ch) / 2);
                     else if (this._valign === 2)
                         this._offsetY = vh - ch;
                     if (!this._owner.scroller)
@@ -6726,8 +6771,6 @@
             this._value = 0;
             this._titleType = 0;
             this._reverse = false;
-            this._barMaxWidth = 0;
-            this._barMaxHeight = 0;
             this._barMaxWidthDelta = 0;
             this._barMaxHeightDelta = 0;
             this._barStartX = 0;
@@ -6741,7 +6784,7 @@
         set titleType(value) {
             if (this._titleType != value) {
                 this._titleType = value;
-                Laya.ILaya.timer.callLater(this, this.update);
+                this.update(null, true);
             }
         }
         get min() {
@@ -6750,7 +6793,7 @@
         set min(value) {
             if (this._min != value) {
                 this._min = value;
-                Laya.ILaya.timer.callLater(this, this.update);
+                this.update(null, true);
             }
         }
         get max() {
@@ -6759,7 +6802,7 @@
         set max(value) {
             if (this._max != value) {
                 this._max = value;
-                Laya.ILaya.timer.callLater(this, this.update);
+                this.update(null, true);
             }
         }
         get value() {
@@ -6772,8 +6815,40 @@
                     this._tween = null;
                 }
                 this._value = value;
-                Laya.ILaya.timer.callLater(this, this.update);
+                this.update(null, true);
             }
+        }
+        get hBar() {
+            return this._hBar;
+        }
+        set hBar(value) {
+            this._hBar = value;
+            this._value = this._max;
+            this._barStartX = 0;
+            this.update(null, false);
+        }
+        get vBar() {
+            return this._vBar;
+        }
+        set vBar(value) {
+            this._vBar = value;
+            this._value = this._max;
+            this._barStartY = 0;
+            this.update(null, false);
+        }
+        get titleWidget() {
+            return this._titleWidget;
+        }
+        set titleWidget(value) {
+            this._titleWidget = value;
+            this.update(null, false);
+        }
+        get reverse() {
+            return this._reverse;
+        }
+        set reverse(value) {
+            this._reverse = value;
+            this.update(null, false);
         }
         tweenValue(value, duration) {
             let oldValule;
@@ -6791,9 +6866,13 @@
             return Laya.Tween.create(this).name("progress").go(null, oldValule, this._value).duration(duration).ease("linear")
                 .onUpdate(tweener => this.update(tweener.value.get(null)));
         }
-        update(newValue) {
+        update(newValue, delay) {
             if (this._getBit(Laya.NodeFlags.EDITING_ROOT_NODE)) {
                 this.updateTitle(this._max, this._max, 1);
+                return;
+            }
+            if (newValue == null && delay === true) {
+                Laya.ILaya.timer.callLater(this, this.update);
                 return;
             }
             if (newValue == null)
@@ -6858,33 +6937,19 @@
         }
         _onConstruct(inPrefab) {
             if (this._hBar) {
-                this._barMaxWidth = this._hBar.width;
-                this._barMaxWidthDelta = this.width - this._barMaxWidth;
+                this._barMaxWidthDelta = this.width - this._hBar.width;
                 this._barStartX = this._hBar.x;
             }
             if (this._vBar) {
-                this._barMaxHeight = this._vBar.height;
-                this._barMaxHeightDelta = this.height - this._barMaxHeight;
+                this._barMaxHeightDelta = this.height - this._vBar.height;
                 this._barStartY = this._vBar.y;
             }
-            Laya.ILaya.timer.runCallLater(this, this.update);
+            Laya.ILaya.timer.runCallLater(this, this.update, true);
             super._onConstruct(inPrefab);
-        }
-        _setup(hBar, vBar, titleWidget, reverse) {
-            this._hBar = hBar;
-            this._vBar = vBar;
-            this._titleWidget = titleWidget;
-            this._reverse = reverse;
-            this._value = this._max;
-            this._onConstruct();
         }
         _sizeChanged() {
             super._sizeChanged();
-            if (this._hBar)
-                this._barMaxWidth = this.width - this._barMaxWidthDelta;
-            if (this._vBar)
-                this._barMaxHeight = this.height - this._barMaxHeightDelta;
-            Laya.ILaya.timer.callLater(this, this.update);
+            this.update(null, true);
         }
     }
 
@@ -6947,13 +7012,6 @@
             if (this._arrowButton2)
                 this._arrowButton2.on(Laya.Event.MOUSE_DOWN, this, this._arrowButton2Click);
             super._onConstruct(inPrefab);
-        }
-        _setup(arrowButton1, arrowButton2, bar, grip) {
-            this._arrowButton1 = arrowButton1;
-            this._arrowButton2 = arrowButton2;
-            this._bar = bar;
-            this._gripButton = grip;
-            this._onConstruct();
         }
         _gripTouchBegin(evt) {
             if (!this._bar || !this._target)
@@ -7042,8 +7100,6 @@
             this._titleType = 0;
             this._reverse = false;
             this._wholeNumbers = false;
-            this._barMaxWidth = 0;
-            this._barMaxHeight = 0;
             this._barMaxWidthDelta = 0;
             this._barMaxHeightDelta = 0;
             this._clickPercent = 0;
@@ -7060,7 +7116,7 @@
         set titleType(value) {
             if (this._titleType != value) {
                 this._titleType = value;
-                Laya.ILaya.timer.callLater(this, this.update);
+                this.update(true);
             }
         }
         get wholeNumbers() {
@@ -7069,7 +7125,7 @@
         set wholeNumbers(value) {
             if (this._wholeNumbers != value) {
                 this._wholeNumbers = value;
-                Laya.ILaya.timer.callLater(this, this.update);
+                this.update(true);
             }
         }
         get min() {
@@ -7078,7 +7134,7 @@
         set min(value) {
             if (this._min != value) {
                 this._min = value;
-                Laya.ILaya.timer.callLater(this, this.update);
+                this.update(true);
             }
         }
         get max() {
@@ -7087,7 +7143,7 @@
         set max(value) {
             if (this._max != value) {
                 this._max = value;
-                Laya.ILaya.timer.callLater(this, this.update);
+                this.update(true);
             }
         }
         get value() {
@@ -7096,11 +7152,54 @@
         set value(value) {
             if (this._value != value) {
                 this._value = value;
-                Laya.ILaya.timer.callLater(this, this.update);
+                this.update(true);
             }
         }
-        update() {
-            this.updateWithPercent((this._value - this._min) / (this._max - this._min), false);
+        get hBar() {
+            return this._hBar;
+        }
+        set hBar(value) {
+            this._hBar = value;
+            this._value = this._max;
+            this._barStartX = 0;
+            this.update(false);
+        }
+        get vBar() {
+            return this._vBar;
+        }
+        set vBar(value) {
+            this._vBar = value;
+            this._value = this._max;
+            this._barStartY = 0;
+            this.update(false);
+        }
+        get gripButton() {
+            return this._gripButton;
+        }
+        set gripButton(value) {
+            this.setupEvents(false);
+            this._gripButton = value;
+            this.setupEvents(true);
+        }
+        get titleWidget() {
+            return this._titleWidget;
+        }
+        set titleWidget(value) {
+            this._titleWidget = value;
+            this.update(false);
+        }
+        get reverse() {
+            return this._reverse;
+        }
+        set reverse(value) {
+            this._reverse = value;
+            this.update(false);
+        }
+        update(delay) {
+            if (delay === true)
+                Laya.ILaya.timer.callLater(this, this.update);
+            else
+                this.updateWithPercent((this._value - this._min) / (this._max - this._min), false);
         }
         updateWithPercent(percent, manual) {
             if (this._getBit(Laya.NodeFlags.EDITING_ROOT_NODE)) {
@@ -7162,38 +7261,34 @@
         }
         _onConstruct(inPrefab) {
             if (this._hBar) {
-                this._barMaxWidth = this._hBar.width;
-                this._barMaxWidthDelta = this.width - this._barMaxWidth;
+                this._barMaxWidthDelta = this.width - this._hBar.width;
                 this._barStartX = this._hBar.x;
             }
             if (this._vBar) {
-                this._barMaxHeight = this._vBar.height;
-                this._barMaxHeightDelta = this.height - this._barMaxHeight;
+                this._barMaxHeightDelta = this.height - this._vBar.height;
                 this._barStartY = this._vBar.y;
             }
-            if (this._gripButton) {
-                this._gripButton.on(Laya.Event.MOUSE_DOWN, this, this._gripTouchBegin);
-                this._gripButton.on(Laya.Event.MOUSE_DRAG, this, this._gripTouchMove);
-            }
-            this.update();
+            this.setupEvents(true);
+            Laya.ILaya.timer.runCallLater(this, this.update, true);
             super._onConstruct(inPrefab);
         }
-        _setup(hBar, vBar, grip, title, reverse) {
-            this._hBar = hBar;
-            this._vBar = vBar;
-            this._gripButton = grip;
-            this._titleWidget = title;
-            this._reverse = reverse;
-            this._value = this._max;
-            this._onConstruct();
+        setupEvents(add) {
+            if (!Laya.LayaEnv.isPlaying)
+                return;
+            if (this._gripButton) {
+                if (add) {
+                    this._gripButton.on(Laya.Event.MOUSE_DOWN, this, this._gripTouchBegin);
+                    this._gripButton.on(Laya.Event.MOUSE_DRAG, this, this._gripTouchMove);
+                }
+                else {
+                    this._gripButton.off(Laya.Event.MOUSE_DOWN, this, this._gripTouchBegin);
+                    this._gripButton.off(Laya.Event.MOUSE_DRAG, this, this._gripTouchMove);
+                }
+            }
         }
         _sizeChanged() {
             super._sizeChanged();
-            if (this._hBar)
-                this._barMaxWidth = this.width - this._barMaxWidthDelta;
-            if (this._vBar)
-                this._barMaxHeight = this.height - this._barMaxHeightDelta;
-            Laya.ILaya.timer.callLater(this, this.update);
+            this.update(true);
         }
         _gripTouchBegin(evt) {
             if (evt.button != 0)
@@ -7215,9 +7310,9 @@
             }
             let percent;
             if (this._hBar)
-                percent = this._clickPercent + deltaX / this._barMaxWidth;
+                percent = this._clickPercent + deltaX / (this.width - this._barMaxWidthDelta);
             else
-                percent = this._clickPercent + deltaY / this._barMaxHeight;
+                percent = this._clickPercent + deltaY / (this.height - this._barMaxHeightDelta);
             this.updateWithPercent(percent, true);
         }
         _barTouchBegin(evt) {
@@ -7227,14 +7322,18 @@
             let percent = Laya.MathUtil.clamp01((this._value - this._min) / (this._max - this._min));
             let delta = 0;
             if (this._hBar)
-                delta = (pt.x - this._gripButton.width / 2) / this._barMaxWidth;
+                delta = (pt.x - this._gripButton.width / 2) / (this.width - this._barMaxWidthDelta);
             if (this._vBar)
-                delta = (pt.y - this._gripButton.height / 2) / this._barMaxHeight;
+                delta = (pt.y - this._gripButton.height / 2) / (this.height - this._barMaxHeightDelta);
             if (this._reverse)
                 percent -= delta;
             else
                 percent += delta;
             this.updateWithPercent(percent, true);
+        }
+        onAfterDeserialize() {
+            if (Laya.SerializeUtil.hasProp("_gripButton"))
+                this.setupEvents(true);
         }
     }
     const s_vec2 = new Laya.Point();
@@ -9043,7 +9142,7 @@
             this.startTween(2);
         }
         _mouseWheel(evt) {
-            if (this._mouseWheelDisabled || this._barDisplay === exports.ScrollBarDisplay.Hidden)
+            if (this._mouseWheelDisabled)
                 return;
             let delta = evt.delta;
             if (this._snapToItem && Math.abs(delta) < 1)
@@ -9627,7 +9726,7 @@
         get list() {
             return this._list;
         }
-        show(target, dir, parentMenu) {
+        show(target, dir) {
             if (GRoot.inst.popupMgr.isPopupJustClosed(this._content))
                 return;
             this.event(exports.UIEvent.Popup);

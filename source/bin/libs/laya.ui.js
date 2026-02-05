@@ -1331,6 +1331,12 @@
         set leading(value) {
             this._tf.leading = value;
         }
+        get letterSpacing() {
+            return this._tf.letterSpacing;
+        }
+        set letterSpacing(value) {
+            this._tf.letterSpacing = value;
+        }
         get fontSize() {
             return this._tf.fontSize;
         }
@@ -1366,6 +1372,30 @@
         }
         set strokeColor(value) {
             this._tf.strokeColor = value;
+        }
+        get shadowOffsetX() {
+            return this._tf.shadowOffsetX;
+        }
+        set shadowOffsetX(value) {
+            this._tf.shadowOffsetX = value;
+        }
+        get shadowOffsetY() {
+            return this._tf.shadowOffsetY;
+        }
+        set shadowOffsetY(value) {
+            this._tf.shadowOffsetY = value;
+        }
+        get shadowBlur() {
+            return this._tf.shadowBlur;
+        }
+        set shadowBlur(value) {
+            this._tf.shadowBlur = value;
+        }
+        get shadowColor() {
+            return this._tf.shadowColor;
+        }
+        set shadowColor(value) {
+            this._tf.shadowColor = value;
         }
         get html() {
             return this._tf.html;
@@ -3647,19 +3677,50 @@
             super();
             this.maskLayer = new Laya.Sprite();
             this.popupEffect = (dialog) => {
-                dialog.scale(1, 1);
                 if (dialog._effectTween != null)
                     Laya.Tween.kill(dialog._effectTween);
-                dialog._effectTween = Laya.Tween.from(dialog, { x: Laya.ILaya.stage.width / 2, y: Laya.ILaya.stage.height / 2, scaleX: 0, scaleY: 0 }, 300, Laya.Ease.backOut, Laya.Handler.create(this, this.doOpen, [dialog]));
+                const tx = dialog.x;
+                const ty = dialog.y;
+                const tsx = dialog.scaleX;
+                const tsy = dialog.scaleY;
+                dialog.pos(Math.round(Laya.ILaya.stage.width * 0.5), Math.round(Laya.ILaya.stage.height * 0.5));
+                dialog.scale(0, 0);
+                dialog._effectTween = Laya.Tween.create(dialog)
+                    .duration(300)
+                    .ease(Laya.Ease.backOut)
+                    .to("x", tx)
+                    .to("y", ty)
+                    .to("scaleX", tsx)
+                    .to("scaleY", tsy)
+                    .then(() => {
+                    this.doOpen(dialog);
+                });
             };
             this.closeEffect = (dialog) => {
                 if (dialog._effectTween != null)
                     Laya.Tween.kill(dialog._effectTween);
-                dialog._effectTween = Laya.Tween.to(dialog, { x: Laya.ILaya.stage.width / 2, y: Laya.ILaya.stage.height / 2, scaleX: 0, scaleY: 0 }, 300, Laya.Ease.strongOut, Laya.Handler.create(this, this.doClose, [dialog]));
+                const tx = dialog.x;
+                const ty = dialog.y;
+                const tsx = dialog.scaleX;
+                const tsy = dialog.scaleY;
+                dialog._effectTween = Laya.Tween.create(dialog)
+                    .duration(300)
+                    .ease(Laya.Ease.strongOut)
+                    .to("x", Math.round(Laya.ILaya.stage.width * 0.5))
+                    .to("y", Math.round(Laya.ILaya.stage.height * 0.5))
+                    .to("scaleX", 0)
+                    .to("scaleY", 0)
+                    .then(() => {
+                    dialog.pos(tx, ty);
+                    dialog.scale(tsx, tsy);
+                    this.doClose(dialog);
+                });
             };
             this.popupEffectHandler = new Laya.Handler(this, this.popupEffect);
             this.closeEffectHandler = new Laya.Handler(this, this.closeEffect);
-            this.mouseEnabled = this.maskLayer.mouseEnabled = true;
+            this.mouseEnabled = true;
+            this.mouseThrough = true;
+            this.maskLayer.mouseEnabled = true;
             this.zOrder = 1000;
             Laya.ILaya.stage.addChild(this);
             Laya.ILaya.stage.on(Laya.Event.RESIZE, this, this._onResize);
@@ -3668,23 +3729,34 @@
             this._onResize(null);
         }
         _closeOnSide() {
+            if (this.numChildren <= 0)
+                return;
             var dialog = this.getChildAt(this.numChildren - 1);
             if (dialog instanceof Dialog)
                 dialog.close("side");
         }
         _onResize(e = null) {
-            var width = this.maskLayer.width = Laya.ILaya.stage.width;
-            var height = this.maskLayer.height = Laya.ILaya.stage.height;
+            var width = Laya.ILaya.stage.width;
+            var height = Laya.ILaya.stage.height;
+            this.size(width, height);
+            this.maskLayer.size(width, height);
             if (this.lockLayer)
                 this.lockLayer.size(width, height);
             this.maskLayer.graphics.clear(true);
             this.maskLayer.graphics.drawRect(0, 0, width, height, UIConfig.popupBgColor);
             this.maskLayer.alpha = UIConfig.popupBgAlpha;
+            this.event(Laya.Event.RESIZE);
             for (var i = this.numChildren - 1; i > -1; i--) {
                 var item = this.getChildAt(i);
-                if (item.isPopupCenter)
+                if (item.isPopupCenter && !this._hasLayout(item))
                     this._centerDialog(item);
             }
+        }
+        _hasLayout(item) {
+            const w = item._widget;
+            if (!w || w === Laya.Widget.EMPTY)
+                return false;
+            return w.left != null || w.right != null || w.top != null || w.bottom != null || w.centerX != null || w.centerY != null;
         }
         _centerDialog(dialog) {
             dialog.x = Math.round(((Laya.ILaya.stage.width - dialog.width) >> 1) + dialog.pivotX);
@@ -4295,7 +4367,7 @@
             content.width = width;
             content.height = height;
             content._scrollRect || (content.scrollRect = new Laya.Rectangle());
-            content._scrollRect.setTo(0, 0, width, height);
+            content._scrollRect.setTo(content._scrollRect.x, content._scrollRect.y, width, height);
             content.scrollRect = content.scrollRect;
         }
         _transChanged(kind) {

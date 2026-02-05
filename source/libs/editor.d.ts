@@ -22,6 +22,11 @@ declare global {
             excludeNames: Array<string>;
 
             /**
+             * Additional command line options for the zip tool.
+             */
+            additionalOptions: Array<string>;
+
+            /**
              * Add a file to the zip file.
              * @param realPath Path to the file in the file system.
              * @param entryPath Path in the zip file. If not specified, the entry path will use the relative path from realPath to the basePath value of this object.
@@ -122,6 +127,11 @@ declare global {
         }
         export interface IWebview extends IWebFrameBase {
             /**
+             * HTML element of the webview.
+             */
+            readonly element: WebviewTag;
+
+            /**
              * Communication port to the process running in the webview.
              */
             readonly port: IMyMessagePort;
@@ -212,6 +222,26 @@ declare global {
 
             /**
              * Attach the frame to a placeholder widget. The frame will be visible when attached.
+             * 
+             * When using this method, the panel where the frame is located needs special settings, that is:
+             * ```
+             * ＠IEditor.panel("XXX", { transparent: true })
+             * class XXXPanel extends IEditor.EditorPanel {
+             *     async create() {
+             *        ...
+             *         this._panel.touchThrough = true;
+             *    }
+             * }
+             * ```
+             * 
+             * If the frame is a WebIFrame, this method is optional. You can directly add the element to the DOM. For example:
+             * ```
+             * anyWidget.element.appendChild(anInstance.element);
+             * ```
+             * In this case, the iframe will not be managed by WebFrameBase. It will usually refresh when the panel is switched, which is suitable for general display purposes. The advantage is that there is no need to set the panel to be transparent.
+             * 
+             * }
+             * 
              * @param placeHolder The placeholder widget to attach the frame to.
              */
             show(placeHolder: gui.Widget): void;
@@ -708,6 +738,12 @@ declare global {
              * @returns The filtered list of top-level items. 
              */
             filterTopLevels<T extends { parent: any }>(items: ReadonlyArray<T>): ReadonlyArray<T>;
+
+            /**
+             * Get the file path from a dropped file.
+             * @param file The dropped file, from the drag-and-drop event. 
+             */
+            getDropFilePath(file: File): string;
         }
         export interface IUUIDUtils {
             /**
@@ -769,8 +805,9 @@ declare global {
          * A callback function that is used to determine whether a value is equal to the default value.
          * @param value The value to compare.
          * @param overridedDefaultValue By default, the `default` property of the property descriptor is used as the default value. You can override it by passing in this parameter.
+         * @param looseMode In loose mode, empty data (i.e. {}) is allowed to match non-empty default values.
          */
-        export type DefaultValueComparator = (value: any, overridedDefaultValue?: any) => boolean;
+        export type DefaultValueComparator = (value: any, overridedDefaultValue?: any, looseMode?: boolean) => boolean;
         export type TypeMenuItem = { type: FTypeDescriptor, label: string, icon: string, order: number };
         export type TypeMenuItems = Array<TypeMenuItem> & { menuLabel: string };
         export type PropertyTestFunctions = { hiddenTest: Function, readonlyTest: Function, validator: Function, requiredTest: Function };
@@ -906,6 +943,14 @@ declare global {
              * @returns The base type name or null.
              */
             getNodeBaseType(type: string): string;
+
+            /**
+             * Check whether two types share the same base type.
+             * @param type1 The first type name.
+             * @param type2 The second type name.
+             * @returns Whether the two types share the same base type. 
+             */
+            hasSameBase(type1: string, type2: string): boolean
 
             /**
              * Whether a type is deprecated. If an new type descriptor is registered with the same name, the original type descriptor will be marked as deprecated.
@@ -1478,6 +1523,11 @@ declare global {
             readonly sceneView: IWebview;
 
             /**
+             * Preview process is running in a webview. This is the webview instance.
+             */
+            readonly gameView: IWebview;
+
+            /**
              * Triggered when properties of a node is changed.
              */
             readonly onNodeChanged: IDelegate<(node: IMyNode, datapath: ReadonlyArray<string>, value: any, oldValue: any) => void>;
@@ -1536,9 +1586,12 @@ declare global {
             /**
              * Start playing the scene. 
              * 
-             * Dont call this method directly, use the play button in the editor or `Editor.panelManager.postMessage("GamePanel", "startGame")`
+             * Dont call this method directly, use the play button in the editor or `SceneEditor.playControls.play()`
+             * 
+             * @param playing Whether to start or stop playing.
+             * @return Whether the operation is successful.
              */
-            setPlaying(playing: boolean): boolean;
+            setPlaying(playing: boolean): Promise<boolean>;
 
             /**
              * Whether any scene is playing.
@@ -1843,6 +1896,11 @@ declare global {
              * The difference between watchProps and affectProps is that watchProps is used to listen to the change of the property, while memberProps is used to display overriden hint of the property.
              */
             memberProps: Array<FPropertyDescriptor>;
+
+            /**
+             * Tag of the property field. If a field has a tag, you can find it by the tag, and if it is changed, you will be notified.
+             */
+            tag: string;
 
             /**
              * In this method, you should create the widget of the property field.
@@ -2965,9 +3023,10 @@ declare global {
             /**
              * Paste the copied nodes.
              * @param inPlace If true, the nodes will be pasted in place, which means the position of the nodes will not change. Default is false.
+             * @param asChild If true, the nodes will be pasted as children of the first selected node. Default is false.
              * @return The new nodes.
              */
-            pasteNodes(inPlace?: boolean): Promise<Array<IMyNode>>;
+            pasteNodes(inPlace?: boolean, asChild?: boolean): Promise<Array<IMyNode>>;
 
             /**
              * Duplicate the selected nodes.
@@ -3038,6 +3097,7 @@ declare global {
             HideByEditor = 1024,
             LockByEditor = 2048,
             PrefabMissing = 4096,
+            HasScript = 8192,
         }
 
         export interface IMyNode {
@@ -3631,7 +3691,7 @@ declare global {
              */
             getItemLabel(itemId: string): string;
             /**
-             * Update the menu.
+             * Update the menu. The ownership of the template array is transferred to the menu, dont use it after calling this method.
              * @param template Menu template.
              */
             setItems(template: Array<IMenuItem>): void;
@@ -4130,11 +4190,12 @@ declare global {
             getInspectors(): ReadonlyArray<IDataInspector>;
 
             /**
-             * Handy method to get all AssetField objects.
+             * Handy method to get all property fields with the specified tag.
+             * @param tag The tag.
              * @param result If provided, the result will be added to this array. Otherwise, a new array will be created.
-             * @returns All AssetField objects.
+             * @returns The array of property fields with the specified tag.
              */
-            getAllResourceInspectors(result?: Array<IPropertyField>): Array<IPropertyField>;
+            getFieldsByTag(tag: string, result?: Array<IPropertyField>): Array<IPropertyField>;
 
             /**
              * Display all inspectors.
@@ -4242,25 +4303,24 @@ declare global {
             initKeyMap(): void;
 
             /**
+             * Register a key combination.
+             * @param combo The key combination to register.
+             * @param func The function name associated with the key combination. 
+             */
+            enableKey(combo: string, func?: string): void;
+
+            /**
              * Check if a key combination is registered.
              * @param combo The key combination to check.
              * @returns True if the key combination is registered, false otherwise. 
              */
             isComboRegistered(combo: string): boolean;
-
-            /**
-             * Manually invoke the underlying keyboard event handler to produce a specific key combination effect.
-             * @param character The actual character that was pressed.
-             * @param modifiers An array of modifiers that were held down when the key was pressed.
-             * @param eventType The type of the event (e.g., keydown, keyup).
-             */
-            handleKey(character: string, modifiers: string[], eventType: string): void;
-
             /**
              * Manually trigger a key combination
              * @param combo The key combination to trigger.
+             * @param groot The groot to dispatch the hotkey event to. Defaults to groot of the main window.
              */
-            emit(combo: string): void;
+            emit(combo: string, groot?: gui.GRoot): void;
         }
         /**
          * Interface for the hierarchy panel
@@ -5147,6 +5207,11 @@ declare global {
             showErrorTips(widget: gui.Widget, str: string): void;
 
             /**
+             * Clear all error message tooltips.
+             */
+            clearErrorTips(): void;
+
+            /**
              * Open a file for editing. Depending on the file type, different editors will be opened. For example, opening a xx.ls file will open the scene editor, and opening a **.bp will open the blueprint editor.
              * @param filePath The file path relative to the project's assets directory. Specifically, "?.ls" can open a new unnamed scene.
              */
@@ -5357,7 +5422,7 @@ declare global {
             /**
              * Console message event.
              */
-            readonly onConsoleMessage: IDelegate<(message: string, level: number, group: string) => void>;
+            readonly onConsoleMessage: IDelegate<(message: string, level: number, group: string, line?: number, sourceId?: string) => void>;
         }
 
         /**
@@ -5426,6 +5491,10 @@ declare global {
              * Whether to show the menu item to open this panel in the Panel menu. Default is true.
              */
             showInMenu?: boolean;
+            /**
+             * Menu items with the same menuGroup will be grouped together in the Panel menu. Default is empty.
+             */
+            menuGroup?: string;
             /**
              * Whether the panel can be displayed in a popup window. Default is true.
              */
@@ -6397,6 +6466,11 @@ declare global {
             readonly typeName: string;
 
             /**
+             * The type descriptor of the component. It could be null if the type is not registered.
+             */
+            readonly typeDef: FTypeDescriptor | null;
+
+            /**
              * Update the data of the component.
              * @param data The new data.
              */
@@ -7172,6 +7246,31 @@ declare global {
              */
             limit?: number;
         }
+        export interface IAssetDependencyTool {
+            /**
+             * Query the dependencies of the given assets.
+             * @param assetIds The asset IDs or paths to query.
+             * @param includeIndirectLinks Whether to include indirect dependencies.
+             * @param noSubAsset Whether to exclude sub-assets and only return their parent assets.
+             * @returns A promise that resolves to a tuple containing an array of asset info objects representing the dependencies and an array of asset IDs or paths that were not found.
+             */
+            queryDependency(assetIds: ReadonlyArray<string>, includeIndirectLinks?: boolean, noSubAsset?: boolean): Promise<[Array<IAssetInfo>, Array<string>]>;
+
+            /**
+             * Query the assets that reference the given asset IDs or paths.
+             * @param assetIdOrPaths The asset IDs or paths to query.
+             * @returns A promise that resolves to an array of asset info objects representing the referencing assets. 
+             */
+            queryReference(assets: ReadonlyArray<string>): Promise<Array<IAssetInfo>>;
+
+            /**
+             * Replace references in assets based on the given replacements mapping.
+             * @param replacements A mapping of original asset IDs or paths to new asset IDs or paths. 
+             * @param targetAssets An optional set of assets to limit the replacement operation to.
+             * @returns A promise that resolves to an array of asset ids representing the assets that were modified.
+             */
+            replaceReference(replacements: Record<string, string>, targetAssets?: ReadonlySet<IAssetInfo>): Promise<Array<string>>;
+        }
         /**
          * Interface for an asset database.
          */
@@ -7572,6 +7671,11 @@ declare global {
             readonly storeToken: string;
 
             /**
+             * The main login token.
+             */
+            readonly token: string;
+
+            /**
              * Log in.
              */
             login(): Promise<void>;
@@ -7763,6 +7867,10 @@ declare global {
              * This is usually used to determine whether the prefab property is overridden.
              */
             affectBy?: string;
+            /**
+             * The property is only effective in the editor and will not be stripped in the build.
+             */
+            stripInBuild?: boolean;
 
             /**
              * Whether the text input is multiline. Default is false.
@@ -8379,6 +8487,11 @@ declare global {
             runNodeScript?: string;
 
             /**
+             * If this is defined, a panel will be focused when the button is clicked.
+             */
+            focusPanel?: string;
+
+            /**
              * Bind a hotkey to the button.
              */
             sceneHotkey?: string;
@@ -8411,6 +8524,11 @@ declare global {
              * Save all scenes.
              */
             saveAll(): void;
+
+            /**
+             * Discard changes of the current scene.
+             */
+            discardChanges(): void;
 
             /**
              * Save all scenes with confirmation.
@@ -8451,6 +8569,21 @@ declare global {
             stop(): void;
 
             /**
+             * Pauses playing the scene.
+             */
+            pause(): void;
+
+            /**
+             * Resumes playing the scene.
+             */
+            resume(): void;
+
+            /**
+             * Steps to the next frame when the scene is paused.
+             */
+            stepNextFrame(): void;
+
+            /**
              * Gets the URL to play the scene.
              * @param currentOrStartup If true, get the URL to play the current scene. If false, get the URL to play the startup scene. 
              * @param additionParams Additional parameters to add to the URL.
@@ -8480,6 +8613,7 @@ declare global {
             protected result: any;
             private _contentPane;
             private _popupOwner;
+            private _popupOwnerDialogId;
             private _x;
             private _y;
             private _width;
@@ -8521,6 +8655,9 @@ declare global {
             private fixSize;
             private fixResize;
         }
+        export declare function getDialog<T extends IDialog>(cls: gui.Constructor<T>): Promise<T>;
+        export declare function getDialogSync<T extends IDialog>(cls: gui.Constructor<T>): T;
+        export declare function destroyAllDialogs(): void;
 
         export class EditorPanel implements IEditorPanel {
             panelOptions: IPanelOptions;
@@ -8593,6 +8730,10 @@ declare global {
             private _suffix;
             private _prevTabStop;
             private _savedText;
+            private _isPointerLocked;
+            private _onPointerMoveHandler;
+            private _accumulatedMovement;
+            private _enablePointerLock;
             constructor();
             /**
              * Number of decimal places. Default is 3;
@@ -8616,6 +8757,12 @@ declare global {
              */
             get suffix(): string;
             set suffix(value: string);
+            /**
+             * Whether to enable pointer lock when dragging. Default is true.
+             * When enabled, the mouse cursor will be locked and hidden during dragging for better UX.
+             */
+            get enablePointerLock(): boolean;
+            set enablePointerLock(value: boolean);
             get value(): number;
             set value(val: number);
             get text(): string;
@@ -8625,6 +8772,7 @@ declare global {
             private _holderDragStart;
             private _holderDragEnd;
             private _holderDragMove;
+            private _handlePointerMove;
             private __click;
             private __focusIn;
             private __focusOut;
@@ -8635,11 +8783,18 @@ declare global {
         export class NumericInputWithSlider extends gui.Label {
             private _slider;
             private _input;
+            private _centeredAtOne;
             constructor();
             get min(): number;
             set min(value: number);
             get max(): number;
             set max(value: number);
+            /**
+             * If true, the center of the slider represents the value 1.0, with the left side representing values between min and 1.0,
+             * and the right side representing values between 1.0 and max.
+             */
+            get centeredAtOne(): boolean;
+            set centeredAtOne(value: boolean);
             get fractionDigits(): number;
             set fractionDigits(value: number);
             get step(): number;
@@ -8653,6 +8808,7 @@ declare global {
             get text(): string;
             set text(value: string);
             onConstruct(): void;
+            private syncInputToSlider;
         }
 
         export class ResourceInput extends gui.Label {
@@ -9016,6 +9172,7 @@ declare global {
             target: IInspectingTarget;
             watchProps: Array<string>;
             memberProps: Array<FPropertyDescriptor>;
+            tag: string;
             get parent(): IPropertyField;
             create(): IPropertyFieldCreateResult;
             makeReadonly(value: boolean): void;
@@ -9036,7 +9193,8 @@ declare global {
             private doResetData;
             copyData(): void;
             pasteData(data?: any): void;
-            resetData(): void;
+            resetData(): Promise<void>;
+            private fetchScriptDefaults;
             setNumValue(num: number): void;
             hasClipboardData(): boolean;
         }
@@ -9143,7 +9301,6 @@ declare global {
             onClickSetNull(): void;
             setupCatalogBar(isComponent: boolean, removable?: boolean): void;
             setCatalogBarStyle(style: CatalogBarStyle): void;
-            resetComponentDefault(): Promise<void>;
             removeComponent(): void;
             moveUp(): void;
             moveDown(): void;
@@ -9390,6 +9547,8 @@ declare global {
          * The `DataComponent` class is used to create a data component.
          * @param type The type of the data component.
          * @param data The data of the component.
+         * @param noInitialLoading Whether to skip the initial loading of data. Defaults to false.
+         * @param hasTypeField Whether the object includes a type field, ie. "_$type". Defaults to false.
          * @example
          * ```
          * ＠IEditor.regClass()
@@ -9411,7 +9570,7 @@ declare global {
          * dc.props.name = "Test"; //Output: Set name: Test
          * ```
          */
-        const DataComponent: new (type: string | Function, data?: any) => IDataComponent;
+        const DataComponent: new (type: string | Function, data?: any, noInitialLoading?: boolean, hasTypeField?: boolean) => IDataComponent;
 
         /**
          * The `InspectorRegistry` class is used to register inspector fields.
@@ -9490,6 +9649,11 @@ declare global {
         const JsonBin: IJsonBin;
 
         /**
+         * The `AssetDependencyTool` object is used to query asset dependencies and references.
+         */
+        const AssetDependencyTool: IAssetDependencyTool;
+
+        /**
          * References a commonjs module. You can import built-in Node.js modules such as: path, fs, child_process, etc. 
          * The IDE also includes some third-party modules, including: electron, @svgdotjs, sharp, glob, qrcode, typescript, etc.
          * @param id The identifier of the module. For example: "path", "fs", "electron", etc.
@@ -9558,6 +9722,8 @@ declare global {
          */
         function classInfo(info?: Partial<FTypeDescriptor>): Function;
 
+        type FPropertyTypeExt = string | Function | [FPropertyTypeExt] | ["Record", FPropertyTypeExt];
+
         /**
          * Decorator function for registering a property. 
          * 
@@ -9591,10 +9757,13 @@ declare global {
          * 
          *     ＠IEditor.property({ type: String, enumSource: [ { name: "A", value: "a" }, { name: "B", value: "b" } ] })
          *     enumName: string = "a";
+         * 
+         *    ＠IEditor.property({ type: CustomClass }) //CustomClass must have been registered using IEditor.regClass()
+         *    custom: CustomClass = new CustomClass();
          * }
          * ```
          */
-        function property(info: FPropertyType | Function | Partial<FPropertyDescriptor | { type: Function }>): Function;
+        function property(info: FPropertyType | Function | Partial<FPropertyDescriptor | { type: FPropertyTypeExt }>): Function;
 
         /**
          * Decorator function for registering a field. 

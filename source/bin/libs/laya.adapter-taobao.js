@@ -649,8 +649,12 @@
                 return Promise.resolve();
         }
         onInitRender() {
-            if (Laya.Browser.onAlipayMiniGame || Laya.Browser.onTBMiniGame) {
+            if (Laya.Browser.onTBMiniGame) {
                 Laya.LayaGL.renderEngine._supportCapatable.turnOffSRGB();
+            }
+            if (Laya.Browser.onAlipayMiniGame) {
+                Laya.LayaGL.renderEngine._supportCapatable.turnOffSRGB();
+                Laya.LayaGL.renderEngine._supportCapatable.turnOffCapableAndExtension(Laya.RenderCapable.MSAA, null);
             }
             if (Laya.Browser.onTBMiniGame) {
                 if (!Laya.PAL.g.isIDE) {
@@ -708,12 +712,16 @@
             return this._orientation;
         }
         createMainCanvas() {
+            let canvas;
             if (Laya.Browser.onTBMiniGame) {
-                return window.screencanvas
+                canvas = window.screencanvas
                     || window.canvas.getRealCanvas();
             }
-            else
-                return window.canvas || window.__canvas;
+            else {
+                canvas = window.canvas || window.__canvas;
+            }
+            canvas.id = "layaCanvas";
+            return canvas;
         }
         createElement(tagName) {
             var _a;
@@ -727,6 +735,26 @@
             else if (ele.style === ((_a = window.canvas) === null || _a === void 0 ? void 0 : _a.style))
                 ele.style = {};
             return ele;
+        }
+        getElementById(id) {
+            if (window.document.getElementById) {
+                return window.document.getElementById(id);
+            }
+            else {
+                Laya.PAL.warnIncompatibility("getElementById");
+                return null;
+            }
+        }
+        removeElement(ele) {
+            if (ele.remove) {
+                ele.remove();
+            }
+            else if (ele.dispose) {
+                ele.dispose();
+            }
+            else {
+                ele = null;
+            }
         }
         setCursor(cursor) {
             if (!this._supportSetCursor)
@@ -1077,7 +1105,7 @@
         }
     }
 
-    class MgVideoPlayer extends Laya.VideoPlayer {
+    class MgVideoPlayer extends Laya.VideoPlayerBackend {
         constructor() {
             super(...arguments);
             this._loop = false;
@@ -1235,6 +1263,8 @@
             });
         }
         onKeyboardInput(ev) {
+            if (!this.target)
+                return;
             let str = this.validateText(ev.value);
             if (this.updateTargetText(str))
                 this.target.event(Laya.Event.INPUT);

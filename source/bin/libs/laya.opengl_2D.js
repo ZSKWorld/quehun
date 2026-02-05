@@ -703,6 +703,7 @@
             this._mask = null;
             this._logicMatrix = null;
             this._blocks = null;
+            this._blocksNative = null;
         }
         get mask() {
             return this._mask;
@@ -729,10 +730,19 @@
             for (var i = 0; i < blocks.length; i++) {
                 nativeBlocks.push(blocks[i]._nativeObj);
             }
-            this._nativeObj.applyVertexBufferBlock(nativeBlocks);
+            this._blocksNative = nativeBlocks;
+            this._nativeObj.applyVertexBufferBlock(this._blocksNative);
+        }
+        skipBufferUpdate() {
+            this._nativeObj.skipBufferUpdate();
         }
         inheriteRenderData(context) {
             this._nativeObj.inheriteRenderData(context._nativeObj);
+        }
+        destroy() {
+            super.destroy();
+            this._blocks = null;
+            this._blocksNative = null;
         }
     }
     class RTBaseRenderDataHandle extends RTRender2DDataHandle {
@@ -922,6 +932,9 @@
         }
     }
     class RTRenderStruct2D {
+        get globalAlpha() {
+            return this._nativeObj.getGlobalAlpha();
+        }
         get dcOptimize() {
             return this._dcOptimize;
         }
@@ -951,15 +964,13 @@
             return this._stackingRoot;
         }
         get enableCulling() {
-            return this._enableCulling;
+            return this._nativeObj.getEnableCulling();
         }
         set enableCulling(value) {
-            this._enableCulling = value;
             this._nativeObj.setEnableCulling(value);
         }
         get inheritedEnableCulling() {
-            var _a;
-            return this._enableCulling || ((_a = this._parent) === null || _a === void 0 ? void 0 : _a.enableCulling);
+            return this._nativeObj.getInheritedEnableCulling();
         }
         set rect(value) {
             value.cloneTo(this._rect);
@@ -1106,11 +1117,10 @@
             this._nativeObj.setPass(value ? value._nativeObj : null);
         }
         constructor() {
-            this.globalAlpha = 1.0;
+            this._clipRect = new Laya.Rectangle(0, 0, 0, 0);
             this._dcOptimize = false;
             this._zIndex = 0;
             this._stackingRoot = false;
-            this._enableCulling = false;
             this._rect = new Laya.Rectangle(0, 0, 0, 0);
             this._renderLayer = 1;
             this._parent = null;
@@ -1126,7 +1136,6 @@
             this.renderLayer = 1;
             this.renderType = -1;
             this.renderUpdateMask = 0;
-            this.globalAlpha = 1.0;
             this.alpha = 1.0;
             this.blendMode = Laya.BlendMode.invalid;
             this.enabled = true;
@@ -1139,7 +1148,15 @@
                 this._nativeObj.setRenderUpdate(null);
         }
         setClipRect(rect) {
-            this._nativeObj.setClipRect(rect);
+            if (rect) {
+                rect.cloneTo(this._clipRect);
+                this._clipRect.width = Math.max(this._clipRect.width, 0.0001);
+                this._clipRect.height = Math.max(this._clipRect.height, 0.0001);
+                this._nativeObj.setClipRect(this._clipRect);
+            }
+            else {
+                this._nativeObj.setClipRect(null);
+            }
         }
         setRepaint() {
             this._nativeObj.setRepaint();
@@ -1311,6 +1328,7 @@
             }
             this._textureData = {};
             this._bufferData = {};
+            this._deviceBufferData = {};
         }
         getDefineData() {
             return this._defineDatas;
@@ -1450,6 +1468,10 @@
             this._bufferData[index] = value;
             this._nativeObj.setBuffer(index, value);
         }
+        setDeviceBuffer(index, value) {
+            this._deviceBufferData[index] = value;
+            this._nativeObj.setDeviceBuffer(index, value._nativeObj);
+        }
         setTexture(index, value) {
             var lastValue = this._textureData[index];
             if (value && value.bitmap)
@@ -1469,6 +1491,9 @@
         }
         getTexture(index) {
             return this._textureData[index];
+        }
+        update(name) {
+            this._nativeObj.update(name);
         }
         cloneTo(destObject) {
             this._nativeObj.cloneTo(destObject._nativeObj);
@@ -1682,8 +1707,9 @@
         resetData(byteLength) {
             this._nativeObj.resetData(byteLength);
         }
-        _addDataView(dataView) {
+        addDataView(dataView) {
             this._views.add(dataView);
+            this._nativeObj.addDataView(dataView ? dataView._nativeObj : null);
         }
         removeDataView(dataView) {
             if (this._views.has(dataView)) {
@@ -1728,7 +1754,6 @@
             this._owner = owner;
             this._length = length;
             this._nativeObj = new window.conchRT2DGraphic2DIndexDataView(owner ? owner._nativeObj : null, length);
-            this._owner && this._owner._addDataView(this);
             this._memoryData = new NativeMemory(this.length * 2, false);
             this._nativeObj.setIndexShareMemory(this._memoryData._buffer);
         }
@@ -1818,6 +1843,27 @@
             Laya.LayaGL.render2DRenderPassFactory = new GLESRender2DProcess();
     });
 
+    class GLESMeshRenderBatchAgent {
+        constructor() {
+            this._nativeObj = new window.conchGLESMeshRenderBatchAgent();
+        }
+        create() {
+            this._nativeObj.create();
+        }
+        addRenderNode(object) {
+            return this._nativeObj.addRenderNode(object._baseRenderNode._nativeObj);
+        }
+        removeRenderNode(object) {
+            return this._nativeObj.removeRenderNode(object._baseRenderNode._nativeObj);
+        }
+        updateProperty(object, property) {
+            this._nativeObj.updateProperty(object._baseRenderNode._nativeObj, property);
+        }
+        release() {
+            this._nativeObj.release();
+        }
+    }
+
     class GLESBufferState {
         constructor() {
             this._nativeObj = new window.conchGLESBufferState();
@@ -1839,13 +1885,20 @@
     class GLESCommandUniformMap extends Laya.CommandUniformMap {
         constructor(stateName) {
             super(stateName);
+            this._idata = new Map();
+            this._stateName = stateName;
             this._nativeObj = new window.conchGLESCommandUniformMap.create(stateName);
         }
-        addShaderUniform(propertyID, propertyKey, uniformtype) {
+        addShaderUniform(propertyID, propertyKey, uniformtype, options) {
             this._nativeObj.addShaderUniform(propertyID, propertyKey, uniformtype);
+            let uniform = { id: propertyID, uniformtype: uniformtype, propertyName: propertyKey, arrayLength: 0, format: options === null || options === void 0 ? void 0 : options.format, access: options === null || options === void 0 ? void 0 : options.access };
+            this._idata.set(propertyID, uniform);
         }
         addShaderUniformArray(propertyID, propertyName, uniformtype, arrayLength) {
             this._nativeObj.addShaderUniformArray(propertyID, propertyName, uniformtype, arrayLength);
+            this._idata.set(propertyID, { id: propertyID, uniformtype: uniformtype, propertyName: propertyName, arrayLength: arrayLength });
+        }
+        setDefaultTextureData(key, defaultTex) {
         }
     }
 
@@ -2025,6 +2078,9 @@
             this._native = native;
             this.needBitmap = false;
         }
+        createRenderTargetFromArrayLayer(arrayTex, layer, colorFormat, depthStencilFormat, sRGB) {
+            throw new Error("Method not implemented.");
+        }
         createTextureInternal(dimension, width, height, format, generateMipmap, sRGB, premultipliedAlpha) {
             var tex = new GLESInternalTex(this._native.createTextureInternal(dimension, width, height, format, generateMipmap, sRGB, premultipliedAlpha));
             return tex;
@@ -2155,10 +2211,11 @@
             this._nativeObj._framePassCount = value;
         }
         endFrame() {
-            this._nativeObj.startFrame();
+            this._nativeObj.endFrame();
         }
         startFrame() {
-            this._nativeObj.endFrame();
+            this._nativeObj.loopCount = Laya.Stat.loopCount;
+            this._nativeObj.startFrame();
         }
         resizeOffScreen(width, height) {
             this._nativeObj.resizeOffScreen(width, height);
@@ -2372,11 +2429,524 @@
             this._nativeObj.setTimeShareBuffer(this._timeArrayMemory._buffer);
         }
         _createStatBuffer() {
-            debugger;
             this._stateArrayMemory = new NativeMemory(Laya.StatElement.StatEnd * 4, false);
             this._statArray = this._stateArrayMemory.float32Array;
             this._timeArrayMemory = new NativeMemory(Laya.StatElement.StatEnd * 4, false);
             this._timeArray = this._timeArrayMemory.float32Array;
+        }
+    }
+
+    const _defineStrings = [];
+    function _getTextureType(uniformType) {
+        switch (uniformType) {
+            case Laya.ShaderDataType.Texture2D:
+                return '2d';
+            case Laya.ShaderDataType.Texture3D:
+                return '3d';
+            case Laya.ShaderDataType.TextureCube:
+                return 'cube';
+            case Laya.ShaderDataType.Texture2DArray:
+                return '2d-array';
+            default:
+                return '2d';
+        }
+    }
+    function getSamplerTextureType(dimension) {
+        if (dimension == "2d") {
+            return "sampler2D";
+        }
+        else if (dimension == "cube") {
+            return "samplerCube";
+        }
+        else if (dimension == "2d-array") {
+            return "sampler2DArray";
+        }
+        else if (dimension == "3d") {
+            return "sampler3D";
+        }
+        else if (dimension == "cube-array") {
+            return "samplerCubeArray";
+        }
+        else if (dimension == "1d") {
+            return "sampler1D";
+        }
+        else {
+            return "sampler2D";
+        }
+    }
+    const ssboRegexCompat = /((?:layout\s*\([^)]*\)\s*)*)\s*((?:(?:readonly|writeonly|coherent|volatile|restrict)\s+)*)buffer\s+([A-Za-z_]\w*)\s*\{([\s\S]*?)\}\s*([A-Za-z_]\w*)?\s*;/g;
+    function ssboStrings(ssboBindingMap, code) {
+        code = code.replace(ssboRegexCompat, (match, layoutStr, readonlyStr, blockName, body, instanceName) => {
+            let binding = instanceName ? ssboBindingMap.get(instanceName) : undefined;
+            if (binding === undefined) {
+                binding = ssboBindingMap.get(blockName);
+            }
+            if (binding !== undefined) {
+                let newLayoutStr = `layout(std430, binding=${binding}) `;
+                if (readonlyStr && readonlyStr.trim().startsWith("writeonly")) {
+                    readonlyStr = " ";
+                }
+                return `${newLayoutStr}${readonlyStr}buffer ${blockName} {${body}} ${instanceName || ""};\n`;
+            }
+            else {
+                return "";
+            }
+        });
+        return code;
+    }
+    class GLESComputeShaderInstance {
+        constructor(name) {
+            this.compilete = false;
+            this.uniformMap = new Map();
+            this.name = name;
+            this._nativeObj = new window.conchGLESComputeShaderInstance();
+        }
+        glslUniformString(uniformsMap, useUniformBlock, blockName, binding, ssboBindingMap) {
+            if (uniformsMap.size == 0) {
+                return { code: "", binding: binding };
+            }
+            if (useUniformBlock) {
+                return { code: "", binding: binding };
+            }
+            else {
+                let uniformsStr = "";
+                let currentBinding = binding;
+                uniformsMap.forEach((uniform, id) => {
+                    if (uniform.uniformtype == Laya.ShaderDataType.DeviceBuffer) {
+                        if (ssboBindingMap) {
+                            ssboBindingMap.set(uniform.propertyName, currentBinding++);
+                        }
+                    }
+                    else if (uniform.uniformtype == Laya.ShaderDataType.ReadOnlyDeviceBuffer) {
+                        if (ssboBindingMap) {
+                            ssboBindingMap.set(uniform.propertyName, currentBinding++);
+                        }
+                    }
+                    else if (uniform.uniformtype == Laya.ShaderDataType.StorageTexture2D) {
+                        let access = uniform.access;
+                        uniformsStr = `${uniformsStr}layout(${uniform.format ? uniform.format : "rgba8"}, binding=${currentBinding++}) uniform ${access} image2D ${uniform.propertyName};\n`;
+                    }
+                    else if (uniform.uniformtype == Laya.ShaderDataType.Buffer) ;
+                    else if (uniform.uniformtype >= Laya.ShaderDataType.Texture2D) {
+                        const viewDimension = _getTextureType(uniform.uniformtype);
+                        const textureType = getSamplerTextureType(viewDimension);
+                        uniformsStr = `${uniformsStr}layout(binding=${currentBinding++}) uniform ${textureType} ${uniform.propertyName};\n`;
+                    }
+                    else {
+                        let typeStr = Laya.GLSLCodeGenerator.getAttributeType(uniform.uniformtype);
+                        if (typeStr != "") {
+                            uniformsStr += `layout(binding=${currentBinding++}) uniform ${typeStr} ${uniform.propertyName};\n`;
+                        }
+                    }
+                });
+                return { code: uniformsStr, binding: currentBinding };
+            }
+        }
+        proccessComputeShader(defineString, uniformMaps, CS) {
+            var computeHead;
+            var defMap = {};
+            var defineStr = "";
+            let useUniformBlock = false;
+            let materialUniformGlsl = "";
+            let binding = 0;
+            const ssboBindingMap = new Map();
+            for (const uniformMap of uniformMaps) {
+                let result = this.glslUniformString(uniformMap._idata, useUniformBlock, uniformMap._stateName, binding, ssboBindingMap);
+                materialUniformGlsl += result.code;
+                binding = result.binding;
+                materialUniformGlsl += "\n";
+            }
+            if (defineString.indexOf("GRAPHICS_API_GLES3") === -1) {
+                defineString.push("GRAPHICS_API_GLES3");
+            }
+            computeHead =
+                `#version 310 es
+             #if defined(GL_FRAGMENT_PRECISION_HIGH)
+                precision highp float;
+                precision highp int;
+                precision highp sampler2DArray;
+                precision highp sampler3D;
+                precision highp image2D;
+            #else
+                precision mediump float;
+                precision mediump int;
+                precision mediump sampler2DArray;
+                precision mediump sampler3D;
+                precision mediump image2D;
+            #endif
+            layout(std140, column_major) uniform;
+            layout(std430, column_major) buffer;
+            ${materialUniformGlsl}
+        `;
+            for (var i = 0, n = defineString.length; i < n; i++) {
+                var def = defineString[i];
+                defineStr += "#define " + def + "\n";
+                defMap[def] = true;
+            }
+            var vs = CS.toscript(defMap, []);
+            var vsVersion = '';
+            if (vs[0].indexOf('#version') == 0) {
+                vsVersion = vs[0] + '\n';
+                vs.shift();
+            }
+            let computeCode = vs.join('\n');
+            let dstCS = vsVersion + computeHead + defineStr + computeCode;
+            debugger;
+            let preprocessRes = this._nativeObj.preprocess(dstCS, 'compute');
+            if (!preprocessRes.success) {
+                console.error(`GLESComputeShaderInstance ${this.name} preprocess error:`, preprocessRes.info_log);
+                return {};
+            }
+            if (preprocessRes.ssbos && preprocessRes.ssbos.length > 0) {
+                const exists = new Map();
+                for (const uniformMap of uniformMaps) {
+                    uniformMap._idata.forEach((uniform, id) => {
+                        exists.set(id, uniform);
+                    });
+                }
+                if (uniformMaps.length === 0) {
+                    console.error(`GLESComputeShaderInstance ${this.name} uniformMaps is empty`);
+                    return {};
+                }
+                let additionMaps = uniformMaps[0];
+                let addNewSSBO = false;
+                let ssboNames = preprocessRes.ssbos.keys();
+                for (let name of ssboNames) {
+                    let propertyId = Laya.Shader3D.propertyNameToID(name);
+                    if (!exists.has(propertyId)) {
+                        let shaderType = Laya.ShaderDataType.DeviceBuffer;
+                        const access = preprocessRes.ssbos.get(name);
+                        if (access == "readonly") {
+                            shaderType = Laya.ShaderDataType.ReadOnlyDeviceBuffer;
+                        }
+                        additionMaps.addShaderUniform(propertyId, name, shaderType, { access });
+                        addNewSSBO = true;
+                    }
+                    else {
+                        let uniform = exists.get(propertyId);
+                        const access = preprocessRes.ssbos.get(name);
+                        if (uniform.uniformtype == Laya.ShaderDataType.DeviceBuffer) {
+                            if (access == "readonly") {
+                                console.warn(`Shader ${this.name} ssbo access type mismatch for ${name}`);
+                            }
+                        }
+                        else if (uniform.uniformtype == Laya.ShaderDataType.ReadOnlyDeviceBuffer) {
+                            if (access != "readonly") {
+                                console.warn(`Shader ${this.name} ssbo access type mismatch for ${name}`);
+                            }
+                        }
+                    }
+                }
+                if (addNewSSBO) {
+                    materialUniformGlsl = "";
+                    binding = 0;
+                    ssboBindingMap.clear();
+                    for (const uniformMap of uniformMaps) {
+                        let result = this.glslUniformString(uniformMap._idata, useUniformBlock, uniformMap._stateName, binding, ssboBindingMap);
+                        materialUniformGlsl += result.code;
+                        binding = result.binding;
+                        materialUniformGlsl += "\n";
+                    }
+                    computeHead =
+                        `#version 310 es
+                     #if defined(GL_FRAGMENT_PRECISION_HIGH)
+                        precision highp float;
+                        precision highp int;
+                        precision highp sampler2DArray;
+                        precision highp sampler3D;
+                        precision highp image2D;
+                    #else
+                        precision mediump float;
+                        precision mediump int;
+                        precision mediump sampler2DArray;
+                        precision mediump sampler3D;
+                        precision mediump image2D;
+                    #endif
+                    layout(std140, column_major) uniform;
+                    layout(std430, column_major) buffer;
+                    ${materialUniformGlsl}
+                `;
+                    dstCS = vsVersion + computeHead + defineStr + computeCode;
+                }
+            }
+            computeCode = ssboStrings(ssboBindingMap, computeCode);
+            dstCS = vsVersion + computeHead + defineStr + computeCode;
+            return dstCS;
+        }
+        compile(info) {
+            let compileDefine = info.defineData;
+            _defineStrings.length = 0;
+            Laya.Shader3D._getNamesByDefineData(compileDefine, _defineStrings);
+            const code = this.proccessComputeShader(_defineStrings, info.uniformMaps, info.node);
+            let uniformMaps = [];
+            for (const uniformMap of info.uniformMaps) {
+                uniformMaps.push(uniformMap._nativeObj);
+            }
+            const success = this._nativeObj.compile(code, uniformMaps);
+            if (success) {
+                this.compilete = true;
+            }
+            else {
+                throw new Error(`Failed to compile compute shader: ${this.name}`);
+            }
+        }
+        _disposeResource() {
+            this._nativeObj.destroy();
+        }
+    }
+
+    class GLESDeviceBuffer {
+        constructor(usage) {
+            this._size = 0;
+            this._cacheShaderData = new Map();
+            this._destroyed = false;
+            this._usage = usage;
+            this._nativeObj = new window.conchGLESDeviceBuffer(this._convertUsage(usage));
+        }
+        _convertUsage(usage) {
+            let glUsage = 0;
+            if (usage & Laya.EDeviceBufferUsage.MAP_READ) {
+                glUsage |= 1;
+            }
+            if (usage & Laya.EDeviceBufferUsage.MAP_WRITE) {
+                glUsage |= 2;
+            }
+            if (usage & Laya.EDeviceBufferUsage.COPY_SRC) {
+                glUsage |= 4;
+            }
+            if (usage & Laya.EDeviceBufferUsage.COPY_DST) {
+                glUsage |= 8;
+            }
+            if (usage & Laya.EDeviceBufferUsage.STORAGE) {
+                glUsage |= 16;
+            }
+            if (usage & Laya.EDeviceBufferUsage.INDIRECT) {
+                glUsage |= 32;
+            }
+            return glUsage;
+        }
+        getNativeBuffer() {
+            return this._nativeObj;
+        }
+        setData(buffer, bufferOffset, dataStartIndex, dataCount) {
+            this._nativeObj.setData(buffer, bufferOffset, dataStartIndex, dataCount);
+        }
+        setDataLength(byteLength) {
+            if (byteLength !== this._size) {
+                this._size = byteLength;
+                this._nativeObj.setDataLength(byteLength);
+            }
+        }
+        copyToBuffer(buffer, sourceOffset, destOffset, byteLength) {
+            if (buffer instanceof GLESVertexBuffer) {
+                buffer = buffer;
+                this._nativeObj.copyToVertexBuffer(buffer._nativeObj, sourceOffset, destOffset, byteLength);
+            }
+            else if (buffer instanceof GLESDeviceBuffer) {
+                buffer = buffer;
+                this._nativeObj.copyToDeviceBuffer(buffer._nativeObj, sourceOffset, destOffset, byteLength);
+            }
+            else {
+                throw new Error("GLESDeviceBuffer.copyToBuffer() invalid buffer type");
+            }
+        }
+        copyToTexture() {
+            console.warn("GLESDeviceBuffer.copyToTexture() is not implemented yet");
+        }
+        readData(dest, destOffset, srcOffset, byteLength) {
+            return new Promise((resolve, reject) => {
+                const result = this._nativeObj.readData(dest, destOffset, srcOffset, byteLength);
+                if (result) {
+                    resolve();
+                }
+                else {
+                    reject(new Error("GLESDeviceBuffer.readData failed: native readData returned false."));
+                }
+            });
+        }
+        destroy() {
+            var _a;
+            if (!this._destroyed) {
+                if (this._nativeObj) {
+                    this._nativeObj.destroy();
+                }
+                (_a = this._cacheShaderData) === null || _a === void 0 ? void 0 : _a.clear();
+                this._cacheShaderData = null;
+                this._destroyed = true;
+            }
+        }
+        get destroyed() {
+            return this._destroyed;
+        }
+        get size() {
+            return this._size;
+        }
+        get usage() {
+            return this._usage;
+        }
+    }
+
+    var CommandType;
+    (function (CommandType) {
+        CommandType[CommandType["Dispatch"] = 0] = "Dispatch";
+        CommandType[CommandType["SetShaderData"] = 1] = "SetShaderData";
+        CommandType[CommandType["ClearBuffer"] = 2] = "ClearBuffer";
+        CommandType[CommandType["BufferToBuffer"] = 3] = "BufferToBuffer";
+        CommandType[CommandType["BufferToTexture"] = 4] = "BufferToTexture";
+        CommandType[CommandType["TextureToBuffer"] = 5] = "TextureToBuffer";
+        CommandType[CommandType["TextureToTexture"] = 6] = "TextureToTexture";
+    })(CommandType || (CommandType = {}));
+    class IDispatchCommand {
+        set shader(value) {
+            this._shader = value;
+            this._nativeObj.setShader(value._nativeObj);
+        }
+        set shaderData(value) {
+            this._shaderData = value;
+            let shaderData = this._shaderData.map(item => item._nativeObj);
+            this._nativeObj.setShaderData(shaderData);
+        }
+        set dispatchParams(value) {
+            this._nativeObj.setDispatchParams(value);
+        }
+        constructor() {
+            this._nativeObj = new window.conchGLESComputeDispatchCommand();
+        }
+    }
+    class ISetShaderDataCommand {
+        set shaderData(value) {
+            this._shaderData = value;
+            this._nativeObj.setShaderData(value._nativeObj);
+        }
+        set propertyID(value) {
+            this._nativeObj.setPropertyID(value);
+        }
+        set shaderDataType(value) {
+            this._nativeObj.setShaderDataType(value);
+        }
+        set value(value) {
+            this._shaderDataItem = value;
+            this._nativeObj.setShaderDataItem(value);
+        }
+        constructor() {
+            this._nativeObj = new window.conchGLESComputeSetShaderDataCommand();
+        }
+    }
+    class IBufferToBufferCommand {
+        set src(value) {
+            this._src = value;
+            this._nativeObj.setSrc(value._nativeObj);
+        }
+        set dest(value) {
+            this._dest = value;
+            this._nativeObj.setDest(value._nativeObj);
+        }
+        set sourceOffset(value) {
+            this._nativeObj.setSourceOffset(value);
+        }
+        set destinationOffset(value) {
+            this._nativeObj.setDestinationOffset(value);
+        }
+        set size(value) {
+            this._nativeObj.setSize(value);
+        }
+        constructor() {
+            this._nativeObj = new window.conchGLESComputeBufferToBufferCommand();
+        }
+    }
+    class IBufferClearCommand {
+        set dest(value) {
+            this._dest = value;
+            this._nativeObj.setDest(value._nativeObj);
+        }
+        set destinationOffset(value) {
+            this._nativeObj.setDestinationOffset(value);
+        }
+        set size(value) {
+            this._nativeObj.setSize(value);
+        }
+        constructor() {
+            this._nativeObj = new window.conchGLESComputeClearBufferCommand();
+        }
+    }
+    class ITextureToTextureCommand {
+        set srcTextureInfo(value) {
+            this._nativeObj.setSrcTextureInfo(value);
+        }
+        set destTextureInfo(value) {
+            this._nativeObj.setDestTextureInfo(value);
+        }
+        set copySize(value) {
+            this._nativeObj.setCopySize(value);
+        }
+        constructor() {
+            this._nativeObj = new window.conchGLESComputeTextureToTextureCommand();
+        }
+    }
+    class GLESComputeContext {
+        constructor() {
+            this.commands = [];
+            this._nativeObj = new window.conchGLESComputeContext();
+        }
+        clearCMDs() {
+            this.commands = [];
+            this._nativeObj.clearCMDs();
+        }
+        addDispatchCommand(cmd) {
+            let cmdInfo = new IDispatchCommand();
+            cmdInfo.shader = cmd.shader;
+            cmdInfo.shaderData = cmd.shaderData;
+            cmdInfo.dispatchParams = cmd.dispatchParams;
+            this.commands.push(cmdInfo);
+            this._nativeObj.addCMD(cmdInfo._nativeObj);
+        }
+        addSetShaderDataCommand(shaderData, propertyID, shaderDataType, value) {
+            let cmdInfo = new ISetShaderDataCommand();
+            cmdInfo.shaderData = shaderData;
+            cmdInfo.propertyID = propertyID;
+            cmdInfo.shaderDataType = shaderDataType;
+            cmdInfo.value = value;
+            this.commands.push(cmdInfo);
+            this._nativeObj.addCMD(cmdInfo._nativeObj);
+        }
+        addBufferToBufferCommand(src, dest, sourceOffset = 0, destinationOffset = 0, size) {
+            let cmdInfo = new IBufferToBufferCommand();
+            cmdInfo.src = src;
+            cmdInfo.dest = dest;
+            cmdInfo.sourceOffset = sourceOffset;
+            cmdInfo.destinationOffset = destinationOffset;
+            cmdInfo.size = size || 0;
+            this.commands.push(cmdInfo);
+            this._nativeObj.addCMD(cmdInfo._nativeObj);
+        }
+        addBufferToTextureCommand(src, srcTextureInfo, destTextureInfo, copySize) {
+        }
+        addTextureToBufferCommand(srcTextureInfo, dest, destTextureInfo, copySize) {
+        }
+        addTextureToTextureCommand(srcTextureInfo, destTextureInfo, copySize) {
+            let cmdInfo = new ITextureToTextureCommand();
+            cmdInfo.srcTextureInfo = srcTextureInfo;
+            cmdInfo.destTextureInfo = destTextureInfo;
+            cmdInfo.copySize = copySize;
+            this.commands.push(cmdInfo);
+            this._nativeObj.addCMD(cmdInfo._nativeObj);
+        }
+        addClearBufferCommand(dest, destOffset, destCount) {
+            let cmdInfo = new IBufferClearCommand();
+            cmdInfo.dest = dest;
+            cmdInfo.destinationOffset = destOffset;
+            cmdInfo.size = destCount;
+            this.commands.push(cmdInfo);
+            this._nativeObj.addCMD(cmdInfo._nativeObj);
+        }
+        executeCMDs() {
+            this._nativeObj.executeCMDs();
+        }
+        destroy() {
+            this.clearCMDs();
+            if (this._nativeObj) {
+                this._nativeObj.destroy();
+            }
         }
     }
 
@@ -2415,6 +2985,17 @@
         createRenderGeometryElement(mode, drawType) {
             return new GLESRenderGeometryElement(mode, drawType);
         }
+        createComputeContext() {
+            return new GLESComputeContext();
+        }
+        createComputeShader(info) {
+            let shader = new GLESComputeShaderInstance(info.name);
+            shader.compile(info);
+            return shader;
+        }
+        createDeviceBuffer(type) {
+            return new GLESDeviceBuffer(type);
+        }
         createEngine(config, canvas) {
             let engine;
             let glConfig = { stencil: Laya.Config.isStencil, alpha: Laya.Config.isAlpha, antialias: Laya.Config.isAntialias, premultipliedAlpha: Laya.Config.premultipliedAlpha, preserveDrawingBuffer: Laya.Config.preserveDrawingBuffer, depth: Laya.Config.isDepth, failIfMajorPerformanceCaveat: Laya.Config.isfailIfMajorPerformanceCaveat, powerPreference: Laya.Config.powerPreference };
@@ -2448,475 +3029,6 @@
             Laya.LayaGL.statAgent = statisticsContext;
         }
     });
-
-    var CommandType;
-    (function (CommandType) {
-        CommandType[CommandType["Dispatch"] = 0] = "Dispatch";
-        CommandType[CommandType["SetShaderData"] = 1] = "SetShaderData";
-        CommandType[CommandType["ClearBuffer"] = 2] = "ClearBuffer";
-        CommandType[CommandType["BufferToBuffer"] = 3] = "BufferToBuffer";
-        CommandType[CommandType["BufferToTexture"] = 4] = "BufferToTexture";
-        CommandType[CommandType["TextureToBuffer"] = 5] = "TextureToBuffer";
-        CommandType[CommandType["TextureToTexture"] = 6] = "TextureToTexture";
-    })(CommandType || (CommandType = {}));
-    class GLESComputeContext {
-        constructor() {
-            this.commands = [];
-            this._currentShader = null;
-            this._isExecuting = false;
-            this._nativeObj = new window.conchGLESComputeContext();
-        }
-        clearCMDs() {
-            this.commands = [];
-        }
-        addDispatchCommand(cmd) {
-            const cmdInfo = {
-                type: CommandType.Dispatch,
-                cmd
-            };
-            this.commands.push(cmdInfo);
-        }
-        addSetShaderDataCommand(shaderData, propertyID, shaderDataType, value) {
-            const cmdInfo = {
-                type: CommandType.SetShaderData,
-                shaderData,
-                propertyID,
-                shaderDataType,
-                value
-            };
-            this.commands.push(cmdInfo);
-        }
-        addBufferToBufferCommand(src, dest, sourceOffset = 0, destinationOffset = 0, size) {
-            const cmdInfo = {
-                type: CommandType.BufferToBuffer,
-                src,
-                dest,
-                sourceOffset,
-                destinationOffset,
-                size: size || 0
-            };
-            this.commands.push(cmdInfo);
-        }
-        addBufferToTextureCommand(src, srcTextureInfo, destTextureInfo, copySize) {
-            const cmdInfo = {
-                type: CommandType.BufferToTexture,
-                src,
-                srcTextureInfo,
-                destTextureInfo,
-                copySize
-            };
-            this.commands.push(cmdInfo);
-        }
-        addTextureToBufferCommand(srcTextureInfo, dest, destTextureInfo, copySize) {
-            const cmdInfo = {
-                type: CommandType.TextureToBuffer,
-                srcTextureInfo,
-                dest,
-                destTextureInfo,
-                copySize
-            };
-            this.commands.push(cmdInfo);
-        }
-        addTextureToTextureCommand(srcTextureInfo, destTextureInfo, copySize) {
-            const cmdInfo = {
-                type: CommandType.TextureToTexture,
-                srcTextureInfo,
-                destTextureInfo,
-                copySize
-            };
-            this.commands.push(cmdInfo);
-        }
-        addClearBufferCommand(dest, destOffset, destCount) {
-            const cmdInfo = {
-                type: CommandType.ClearBuffer,
-                dest: dest,
-                destinationOffset: destOffset,
-                size: destCount
-            };
-            this.commands.push(cmdInfo);
-        }
-        _bindShaderData(shader, shaderData) {
-            for (let i = 0, n = shaderData.length; i < n; i++) {
-                const data = shaderData[i];
-                const uniformCommandMap = shader.uniformCommandMap[i];
-                if (uniformCommandMap) {
-                    this._nativeObj.bindShaderData(i, data._nativeObj);
-                }
-            }
-        }
-        executeCMDs() {
-            if (this.commands.length === 0) {
-                return;
-            }
-            if (this._isExecuting) {
-                console.warn("GLESComputeContext is already executing commands");
-                return;
-            }
-            this._isExecuting = true;
-            try {
-                this._nativeObj.beginCommands();
-                for (const cmd of this.commands) {
-                    switch (cmd.type) {
-                        case CommandType.Dispatch:
-                            this._executeDispatchCommand(cmd);
-                            break;
-                        case CommandType.SetShaderData:
-                            this._executeSetShaderDataCommand(cmd);
-                            break;
-                        case CommandType.BufferToBuffer:
-                            this._executeBufferToBufferCommand(cmd);
-                            break;
-                        case CommandType.ClearBuffer:
-                            this._executeClearBufferCommand(cmd);
-                            break;
-                        case CommandType.BufferToTexture:
-                            this._executeBufferToTextureCommand(cmd);
-                            break;
-                        case CommandType.TextureToBuffer:
-                            this._executeTextureToBufferCommand(cmd);
-                            break;
-                        case CommandType.TextureToTexture:
-                            this._executeTextureToTextureCommand(cmd);
-                            break;
-                    }
-                }
-                this._nativeObj.endCommands();
-            }
-            catch (error) {
-                console.error("Error executing compute commands:", error);
-            }
-            finally {
-                this._isExecuting = false;
-            }
-        }
-        _executeDispatchCommand(cmd) {
-            const dispatchInfo = cmd.cmd;
-            const shader = dispatchInfo.shader;
-            const shaderData = dispatchInfo.shaderData;
-            const dispatchParams = dispatchInfo.dispatchParams;
-            shader.bind(dispatchInfo.Kernel);
-            this._currentShader = shader;
-            this._bindShaderData(shader, shaderData);
-            this._nativeObj.dispatchCompute(dispatchParams.x, dispatchParams.y || 1, dispatchParams.z || 1);
-        }
-        _executeSetShaderDataCommand(cmd) {
-            const { shaderData, propertyID, shaderDataType, value } = cmd;
-            switch (shaderDataType) {
-                case Laya.ShaderDataType.Int:
-                    shaderData.setInt(propertyID, value);
-                    break;
-                case Laya.ShaderDataType.Float:
-                    shaderData.setNumber(propertyID, value);
-                    break;
-                case Laya.ShaderDataType.Bool:
-                    shaderData.setBool(propertyID, value);
-                    break;
-                case Laya.ShaderDataType.Matrix3x3:
-                    shaderData.setMatrix3x3(propertyID, value);
-                    break;
-                case Laya.ShaderDataType.Matrix4x4:
-                    shaderData.setMatrix4x4(propertyID, value);
-                    break;
-                case Laya.ShaderDataType.Color:
-                    shaderData.setColor(propertyID, value);
-                    break;
-                case Laya.ShaderDataType.Texture2D:
-                    shaderData.setTexture(propertyID, value);
-                    break;
-                case Laya.ShaderDataType.Vector2:
-                    shaderData.setVector2(propertyID, value);
-                    break;
-                case Laya.ShaderDataType.Vector3:
-                    shaderData.setVector3(propertyID, value);
-                    break;
-                case Laya.ShaderDataType.Vector4:
-                    shaderData.setVector(propertyID, value);
-                    break;
-                case Laya.ShaderDataType.Buffer:
-                    shaderData.setBuffer(propertyID, value);
-                    break;
-                case Laya.ShaderDataType.DeviceBuffer:
-                case Laya.ShaderDataType.ReadOnlyDeviceBuffer:
-                    const deviceBuffer = value;
-                    shaderData.setDeviceBuffer(propertyID, deviceBuffer);
-                    break;
-                default:
-                    console.warn(`Unsupported shader data type: ${shaderDataType}`);
-                    break;
-            }
-        }
-        _executeBufferToBufferCommand(cmd) {
-            const { src, dest, sourceOffset, destinationOffset, size } = cmd;
-            this._nativeObj.copyBufferToBuffer(src.getNativeBuffer(), dest.getNativeBuffer(), sourceOffset, destinationOffset, size);
-        }
-        _executeClearBufferCommand(cmd) {
-            const { dest, destinationOffset, size } = cmd;
-            this._nativeObj.clearBuffer(dest.getNativeBuffer(), destinationOffset, size);
-        }
-        _executeBufferToTextureCommand(cmd) {
-            console.warn("BufferToTexture command is not implemented yet");
-        }
-        _executeTextureToBufferCommand(cmd) {
-            console.warn("TextureToBuffer command is not implemented yet");
-        }
-        _executeTextureToTextureCommand(cmd) {
-            console.warn("TextureToTexture command is not implemented yet");
-        }
-        executeAndWait() {
-            return new Promise((resolve, reject) => {
-                try {
-                    this.executeCMDs();
-                    this._nativeObj.finish(() => {
-                        resolve();
-                    }, (error) => {
-                        reject(error);
-                    });
-                }
-                catch (error) {
-                    reject(error);
-                }
-            });
-        }
-        get isExecuting() {
-            return this._isExecuting;
-        }
-        get currentShader() {
-            return this._currentShader;
-        }
-        destroy() {
-            this.clearCMDs();
-            if (this._currentShader) {
-                this._currentShader.unbind();
-                this._currentShader = null;
-            }
-            if (this._nativeObj) {
-                this._nativeObj.release();
-            }
-        }
-    }
-
-    class GLESComputeShader {
-        constructor(name) {
-            this._id = GLESComputeShader.idCounter++;
-            this.compilete = false;
-            this._kernels = new Set();
-            this.uniformCommandMap = [];
-            this.uniformBindingMap = new Map();
-            this.name = name;
-            this._nativeObj = new window.conchGLESComputeShader(this.name);
-        }
-        HasKernel(kernel) {
-            return this._kernels.has(kernel);
-        }
-        addKernel(kernel) {
-            this._kernels.add(kernel);
-        }
-        removeKernel(kernel) {
-            this._kernels.delete(kernel);
-        }
-        getKernels() {
-            return Array.from(this._kernels);
-        }
-        compile(info) {
-            try {
-                const code = info.code;
-                const defineData = info.defineData;
-                const other = info.other;
-                if (other && Array.isArray(other)) {
-                    this.uniformCommandMap = other;
-                    for (let i = 0, n = this.uniformCommandMap.length; i < n; i++) {
-                        const commandMap = this.uniformCommandMap[i];
-                        this.uniformBindingMap.set(i, {
-                            stateName: commandMap.constructor.name,
-                            hasUniformBuffer: true,
-                            bindingPoint: i
-                        });
-                    }
-                }
-                const success = this._nativeObj.compile(code, defineData);
-                if (success) {
-                    this._extractKernelsFromShader(code);
-                    this.compilete = true;
-                }
-                else {
-                    throw new Error(`Failed to compile compute shader: ${this.name}`);
-                }
-            }
-            catch (error) {
-                console.error(`GLESComputeShader compile error:`, error);
-                this.compilete = false;
-                throw error;
-            }
-        }
-        _extractKernelsFromShader(code) {
-            const kernelRegex = /^\s*void\s+(\w+)\s*\(/gm;
-            let match;
-            while ((match = kernelRegex.exec(code)) !== null) {
-                const kernelName = match[1];
-                if (kernelName === 'main' || kernelName.startsWith('cs_') || kernelName.startsWith('compute_')) {
-                    this.addKernel(kernelName);
-                }
-            }
-            if (this._kernels.size === 0) {
-                this.addKernel('main');
-            }
-        }
-        getProgram(kernel) {
-            if (!this.HasKernel(kernel)) {
-                throw new Error(`Kernel '${kernel}' not found in compute shader '${this.name}'`);
-            }
-            return this._nativeObj.getProgram(kernel);
-        }
-        bind(kernel = 'main') {
-            if (!this.compilete) {
-                throw new Error(`Compute shader '${this.name}' is not compiled`);
-            }
-            if (!this.HasKernel(kernel)) {
-                throw new Error(`Kernel '${kernel}' not found in compute shader '${this.name}'`);
-            }
-            this._nativeObj.bind(kernel);
-        }
-        unbind() {
-            this._nativeObj.unbind();
-        }
-        setUniform(location, value) {
-            this._nativeObj.setUniform(location, value);
-        }
-        getUniformLocation(name) {
-            return this._nativeObj.getUniformLocation(name);
-        }
-        get id() {
-            return this._id;
-        }
-        get nativeObj() {
-            return this._nativeObj;
-        }
-        destroy() {
-            if (this._nativeObj) {
-                this._nativeObj.release();
-            }
-            this._kernels.clear();
-            this.uniformCommandMap = [];
-            this.uniformBindingMap.clear();
-            this.compilete = false;
-        }
-    }
-    GLESComputeShader.idCounter = 0;
-
-    class GLESDeviceBuffer {
-        constructor(usage) {
-            this._size = 0;
-            this._cacheShaderData = new Map();
-            this._destroyed = false;
-            this._usage = usage;
-            this._nativeObj = new window.conchGLESDeviceBuffer(this._convertUsage(usage));
-        }
-        _convertUsage(usage) {
-            let glUsage = 0;
-            if (usage & Laya.EDeviceBufferUsage.MAP_READ) {
-                glUsage |= 1;
-            }
-            if (usage & Laya.EDeviceBufferUsage.MAP_WRITE) {
-                glUsage |= 2;
-            }
-            if (usage & Laya.EDeviceBufferUsage.COPY_SRC) {
-                glUsage |= 4;
-            }
-            if (usage & Laya.EDeviceBufferUsage.COPY_DST) {
-                glUsage |= 8;
-            }
-            if (usage & Laya.EDeviceBufferUsage.STORAGE) {
-                glUsage |= 16;
-            }
-            if (usage & Laya.EDeviceBufferUsage.INDIRECT) {
-                glUsage |= 32;
-            }
-            return glUsage;
-        }
-        _addCacheShaderData(shaderData, propertyID) {
-            if (!this._cacheShaderData.has(shaderData)) {
-                this._cacheShaderData.set(shaderData, propertyID);
-            }
-        }
-        _removeCacheShaderData(shaderData) {
-            if (this._cacheShaderData.has(shaderData)) {
-                this._cacheShaderData.delete(shaderData);
-            }
-        }
-        getNativeBuffer() {
-            return this._nativeObj;
-        }
-        getBindInfo(binding) {
-            return {
-                binding: binding,
-                buffer: this._nativeObj,
-                offset: 0,
-                size: this._size
-            };
-        }
-        setData(buffer, bufferOffset, dataStartIndex, dataCount) {
-            const needSubData = dataStartIndex !== 0 || dataCount !== Number.MAX_SAFE_INTEGER;
-            if (needSubData) {
-                this._nativeObj.setDataEx(buffer, dataStartIndex, dataCount, bufferOffset);
-            }
-            else {
-                this._nativeObj.setData(buffer, bufferOffset);
-            }
-        }
-        setDataLength(byteLength) {
-            if (byteLength !== this._size) {
-                this._size = byteLength;
-                this._nativeObj.setDataLength(byteLength);
-            }
-        }
-        copyToBuffer(buffer, sourceOffset, destOffset, byteLength) {
-            let destBuffer;
-            if ('getNativeBuffer' in buffer && typeof buffer.getNativeBuffer === 'function') {
-                destBuffer = buffer.getNativeBuffer();
-            }
-            else {
-                destBuffer = buffer._nativeObj || buffer;
-            }
-            this._nativeObj.copyToBuffer(destBuffer, sourceOffset, destOffset, byteLength);
-        }
-        copyToTexture() {
-            console.warn("GLESDeviceBuffer.copyToTexture() is not implemented yet");
-        }
-        readData(dest, destOffset, srcOffset, byteLength) {
-            return new Promise((resolve, reject) => {
-                try {
-                    this._nativeObj.readData(dest, destOffset, srcOffset, byteLength, () => {
-                        resolve();
-                    }, (error) => {
-                        reject(error);
-                    });
-                }
-                catch (error) {
-                    reject(error);
-                }
-            });
-        }
-        destroy() {
-            var _a;
-            if (!this._destroyed) {
-                if (this._nativeObj) {
-                    this._nativeObj.release();
-                }
-                (_a = this._cacheShaderData) === null || _a === void 0 ? void 0 : _a.clear();
-                this._cacheShaderData = null;
-                this._destroyed = true;
-            }
-        }
-        get destroyed() {
-            return this._destroyed;
-        }
-        get size() {
-            return this._size;
-        }
-        get usage() {
-            return this._usage;
-        }
-    }
 
     class RTSubShader {
         constructor() {
@@ -2972,13 +3084,14 @@
     exports.GLESBufferState = GLESBufferState;
     exports.GLESCommandUniformMap = GLESCommandUniformMap;
     exports.GLESComputeContext = GLESComputeContext;
-    exports.GLESComputeShader = GLESComputeShader;
+    exports.GLESComputeShaderInstance = GLESComputeShaderInstance;
     exports.GLESDeviceBuffer = GLESDeviceBuffer;
     exports.GLESDraw2DElementCMD = GLESDraw2DElementCMD;
     exports.GLESEngine = GLESEngine;
     exports.GLESIndexBuffer = GLESIndexBuffer;
     exports.GLESInternalRT = GLESInternalRT;
     exports.GLESInternalTex = GLESInternalTex;
+    exports.GLESMeshRenderBatchAgent = GLESMeshRenderBatchAgent;
     exports.GLESPrimitiveRenderElement2D = GLESPrimitiveRenderElement2D;
     exports.GLESRender2DProcess = GLESRender2DProcess;
     exports.GLESRenderContext2D = GLESRenderContext2D;

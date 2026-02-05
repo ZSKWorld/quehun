@@ -130,6 +130,7 @@
             this.owner.globalTrans.getPos(globalPos);
             let curPosV3 = Laya.Vector3.TEMP;
             curPosV3.set(globalPos.x, globalPos.y, 0);
+            let globalScale = Math.max(Math.abs(this.owner.globalTrans.scaleX), Math.abs(this.owner.globalTrans.scaleY)) || 1;
             trailGeometry._updateDisappear(curtime, this.time);
             if (!Laya.Vector3.equals(this._trailFilter._lastPosition, curPosV3)) {
                 if ((trailGeometry._endIndex - trailGeometry._activeIndex) === 0) {
@@ -143,9 +144,9 @@
                     forward.setValue(0, 0, 1);
                     Laya.Vector3.cross(delVector3, forward, pointAtoBVector3);
                     Laya.Vector3.normalize(pointAtoBVector3, pointAtoBVector3);
-                    Laya.Vector3.scale(pointAtoBVector3, this.widthMultiplier / 2, pointAtoBVector3);
+                    Laya.Vector3.scale(pointAtoBVector3, this.widthMultiplier * globalScale / 2, pointAtoBVector3);
                     var delLength = Laya.Vector3.scalarLength(delVector3);
-                    trailGeometry._addTrailByNextPosition(curPosV3, curtime, this.minVertexDistance, pointAtoBVector3, delLength);
+                    trailGeometry._addTrailByNextPosition(curPosV3, curtime, this.minVertexDistance * globalScale, pointAtoBVector3, delLength);
                 }
             }
             trailGeometry._updateVertexBufferUV(this.colorGradient, this.textureMode, 50);
@@ -168,10 +169,12 @@
             this._color = new Laya.Color(1, 1, 1, 1);
             this._renderElements = [];
             this._materials = [];
-            if (!Trail2DRender.defaultTrail2DMaterial)
-                Trail2DShaderInit.init();
         }
     }
+    Laya.Laya.addAfterInitCallback(() => {
+        if (!Trail2DRender.defaultTrail2DMaterial)
+            Trail2DShaderInit.init();
+    });
 
     let c = Laya.ClassUtils.regClass;
     c("Trail2DRender", Trail2DRender);

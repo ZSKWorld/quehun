@@ -64,6 +64,8 @@ declare global {
 
             SendMessageToPanel = 'SendMessageToPanel',
             PostMessageToPanel = 'PostMessageToPanel',
+
+            Hotkey = 'Hotkey',
         }
         export interface IMyScene {
             readonly allNodes: Map<string, WeakRef<IMyNode>>;

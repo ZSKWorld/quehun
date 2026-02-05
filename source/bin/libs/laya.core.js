@@ -26,6 +26,8 @@ window.Laya = (function (exports) {
     Config.fixedFrames = true;
     Config.destroyResourceImmediatelyDefault = true;
     Config.audioBufferCacheMaxSize = 5 * 1024 * 1024;
+    Config.uvClipMode = "cpu";
+    Config.useTextureArray = false;
     const PlayerConfig = {};
 
     class MathUtils3D {
@@ -793,7 +795,7 @@ window.Laya = (function (exports) {
 
     class LayaEnv {
     }
-    LayaEnv.version = "3.3.5";
+    LayaEnv.version = "3.4.0-beta.1";
     LayaEnv.isPlaying = true;
     LayaEnv.isPreview = false;
     LayaEnv.isConch = window ? (window.conch != null) : false;
@@ -1904,12 +1906,13 @@ window.Laya = (function (exports) {
             let n = RenderTexture._pool.length;
             for (let index = 0; index < n; index++) {
                 let rt = RenderTexture._pool[index];
-                if (rt.width == width && rt.height == height && rt.colorFormat == colorFormat && rt.depthStencilFormat == depthFormat && rt._generateMipmap == mipmap && rt.multiSamples == multiSamples && rt.generateDepthTexture == depthTexture && rt._gammaSpace == sRGB && rt._storage == storage) {
+                if (rt.width == width && rt.height == height && rt.colorFormat == colorFormat && rt.depthStencilFormat == depthFormat && rt._generateMipmap == mipmap && rt.multiSamples == multiSamples && rt._gammaSpace == sRGB && rt._storage == storage) {
                     rt._inPool = false;
                     let end = RenderTexture._pool[n - 1];
                     RenderTexture._pool[index] = end;
                     RenderTexture._pool.length -= 1;
                     RenderTexture._poolMemory -= (rt._renderTarget.gpuMemory / 1024 / 1024);
+                    rt.generateDepthTexture = depthTexture;
                     return rt;
                 }
             }
@@ -2069,11 +2072,10 @@ window.Laya = (function (exports) {
             return PAL.browser.createElement(tagName);
         }
         static getElementById(id) {
-            return Browser.document.getElementById(id);
+            return PAL.browser.getElementById(id);
         }
         static removeElement(ele) {
-            if (ele && ele.parentNode)
-                ele.parentNode.removeChild(ele);
+            PAL.browser.removeElement(ele);
         }
         static now() {
             return performance.now();
@@ -2295,7 +2297,7 @@ window.Laya = (function (exports) {
             imgdata.data.set(new Uint8ClampedArray(pixels));
             ctx2d.putImageData(imgdata, 0, 0);
             const base64String = canvas.toDataURL();
-            canvas.remove();
+            Browser.removeElement(canvas);
             return base64String;
         }
         static uint8ArrayToArrayBufferAsync(rendertexture) {
@@ -2333,7 +2335,7 @@ window.Laya = (function (exports) {
                 imgdata.data.set(new Uint8ClampedArray(pixels));
                 ctx2d.putImageData(imgdata, 0, 0);
                 const base64String = canvas.toDataURL();
-                canvas.remove();
+                Browser.removeElement(canvas);
                 return Promise.resolve(base64String);
             });
         }
@@ -2772,7 +2774,8 @@ window.Laya = (function (exports) {
         "skel": "skel.bin",
         "lavm": "lavm.json",
         "bp": "bp.json",
-        "tres": "tres.json"
+        "tres": "tres.json",
+        "lensflare": "lensflare.json"
     };
 
     class Rectangle {
@@ -2955,10 +2958,10 @@ window.Laya = (function (exports) {
     const _rect1 = new Rectangle();
     const _rect2 = new Rectangle();
     class Texture extends Resource {
-        static create(source, x, y, width, height, offsetX = 0, offsetY = 0, sourceWidth = 0, sourceHeight = 0) {
-            return Texture._create(source, x, y, width, height, offsetX, offsetY, sourceWidth, sourceHeight);
+        static create(source, x, y, width, height, offsetX = 0, offsetY = 0, sourceWidth = 0, sourceHeight = 0, rotate = false) {
+            return Texture._create(source, x, y, width, height, offsetX, offsetY, sourceWidth, sourceHeight, rotate);
         }
-        static _create(source, x, y, width, height, offsetX = 0, offsetY = 0, sourceWidth = 0, sourceHeight = 0, outTexture = null) {
+        static _create(source, x, y, width, height, offsetX = 0, offsetY = 0, sourceWidth = 0, sourceHeight = 0, rotate = false, outTexture = null) {
             var btex = source instanceof Texture;
             var uv = btex ? source.uv : Texture.DEF_UV;
             var bitmap = btex ? source.bitmap : source;
@@ -3003,6 +3006,10 @@ window.Laya = (function (exports) {
             }
             else {
                 tex.scaleRate = 1;
+            }
+            if (rotate) {
+                tex._rotate = true;
+                tex._rotateTexture(true);
             }
             return tex;
         }
@@ -3067,6 +3074,42 @@ window.Laya = (function (exports) {
             this._bitmap = value;
             value && (value._addReference(this._referenceCount));
         }
+        get rotate() {
+            return this._rotate;
+        }
+        set rotate(value) {
+            if (value != this._rotate) {
+                this._rotateTexture(value);
+            }
+            this._rotate = value;
+        }
+        _rotateTexture(rotate) {
+            let uv = new Float32Array(8);
+            if (rotate) {
+                uv[0] = this._uv[2];
+                uv[1] = this._uv[3];
+                uv[2] = this._uv[4];
+                uv[3] = this._uv[5];
+                uv[4] = this._uv[6];
+                uv[5] = this._uv[7];
+                uv[6] = this._uv[0];
+                uv[7] = this._uv[1];
+            }
+            else {
+                uv[2] = this._uv[0];
+                uv[3] = this._uv[1];
+                uv[4] = this._uv[2];
+                uv[5] = this._uv[3];
+                uv[6] = this._uv[4];
+                uv[7] = this._uv[5];
+                uv[0] = this._uv[6];
+                uv[1] = this._uv[7];
+            }
+            this.uv = uv;
+            let height = this._h;
+            this._h = this._w;
+            this._w = height;
+        }
         constructor(source = null, uv = null, sourceWidth = 0, sourceHeight = 0) {
             super(false);
             this.uvrect = [0, 0, 1, 1];
@@ -3077,6 +3120,8 @@ window.Laya = (function (exports) {
             this.sourceWidth = 0;
             this.sourceHeight = 0;
             this.scaleRate = 1;
+            this._dynamic = null;
+            this._rotate = false;
             let bitmap = (source instanceof Texture) ? source.bitmap : source;
             this.setTo(bitmap, uv, sourceWidth, sourceHeight);
         }
@@ -3189,10 +3234,19 @@ window.Laya = (function (exports) {
             }
         }
         disposeBitmap() {
-            if (!this._destroyed && this._bitmap) {
-                this._bitmap.destroy();
-                this.event("dispose");
+            if (this.destroyed)
+                return;
+            if (this._dynamic) {
+                let source = this._dynamic.source;
+                this._dynamic.recover();
+                if (source) {
+                    source.destroy();
+                }
             }
+            else if (this._bitmap) {
+                this._bitmap.destroy();
+            }
+            this.event(Event.CHANGE);
         }
         get valid() {
             return !this._destroyed && this._bitmap && !this._bitmap.destroyed;
@@ -5645,6 +5699,7 @@ window.Laya = (function (exports) {
         BaseRender2DType[BaseRender2DType["particle"] = 2] = "particle";
         BaseRender2DType[BaseRender2DType["spineSimple"] = 3] = "spineSimple";
         BaseRender2DType[BaseRender2DType["graphics"] = 4] = "graphics";
+        BaseRender2DType[BaseRender2DType["spinenormal"] = 5] = "spinenormal";
     })(exports.BaseRender2DType || (exports.BaseRender2DType = {}));
     exports.SubPassFlag = void 0;
     (function (SubPassFlag) {
@@ -6139,6 +6194,761 @@ window.Laya = (function (exports) {
     }
     VertexStream.pool = Pool.createPool(VertexStream, (e, mainTex) => e.init(mainTex));
 
+    class EarcutNode {
+        constructor(i, x, y) {
+            this.i = i;
+            this.x = x;
+            this.y = y;
+            this.prev = null;
+            this.next = null;
+            this.z = null;
+            this.prevZ = null;
+            this.nextZ = null;
+            this.steiner = false;
+        }
+    }
+
+    class Earcut {
+        static earcut(data, holeIndices, dim) {
+            dim = dim || 2;
+            var hasHoles = holeIndices && holeIndices.length, outerLen = hasHoles ? holeIndices[0] * dim : data.length, outerNode = Earcut.linkedList(data, 0, outerLen, dim, true), triangles = [];
+            if (!outerNode)
+                return triangles;
+            var minX, minY, maxX, maxY, x, y, invSize;
+            if (hasHoles)
+                outerNode = Earcut.eliminateHoles(data, holeIndices, outerNode, dim);
+            if (data.length > 80 * dim) {
+                minX = maxX = data[0];
+                minY = maxY = data[1];
+                for (var i = dim; i < outerLen; i += dim) {
+                    x = data[i];
+                    y = data[i + 1];
+                    if (x < minX)
+                        minX = x;
+                    if (y < minY)
+                        minY = y;
+                    if (x > maxX)
+                        maxX = x;
+                    if (y > maxY)
+                        maxY = y;
+                }
+                invSize = Math.max(maxX - minX, maxY - minY);
+                invSize = invSize !== 0 ? 1 / invSize : 0;
+            }
+            Earcut.earcutLinked(outerNode, triangles, dim, minX, minY, invSize);
+            return triangles;
+        }
+        static linkedList(data, start, end, dim, clockwise) {
+            var i, last;
+            if (clockwise === (Earcut.signedArea(data, start, end, dim) > 0)) {
+                for (i = start; i < end; i += dim)
+                    last = Earcut.insertNode(i, data[i], data[i + 1], last);
+            }
+            else {
+                for (i = end - dim; i >= start; i -= dim)
+                    last = Earcut.insertNode(i, data[i], data[i + 1], last);
+            }
+            if (last && Earcut.equals(last, last.next)) {
+                Earcut.removeNode(last);
+                last = last.next;
+            }
+            return last;
+        }
+        static filterPoints(start, end) {
+            if (!start)
+                return start;
+            if (!end)
+                end = start;
+            var p = start, again;
+            do {
+                again = false;
+                if (!p.steiner && (Earcut.equals(p, p.next) || Earcut.area(p.prev, p, p.next) === 0)) {
+                    Earcut.removeNode(p);
+                    p = end = p.prev;
+                    if (p === p.next)
+                        break;
+                    again = true;
+                }
+                else {
+                    p = p.next;
+                }
+            } while (again || p !== end);
+            return end;
+        }
+        static earcutLinked(ear, triangles, dim, minX, minY, invSize, pass = null) {
+            if (!ear)
+                return;
+            if (!pass && invSize)
+                Earcut.indexCurve(ear, minX, minY, invSize);
+            var stop = ear, prev, next;
+            while (ear.prev !== ear.next) {
+                prev = ear.prev;
+                next = ear.next;
+                if (invSize ? Earcut.isEarHashed(ear, minX, minY, invSize) : Earcut.isEar(ear)) {
+                    triangles.push(prev.i / dim);
+                    triangles.push(ear.i / dim);
+                    triangles.push(next.i / dim);
+                    Earcut.removeNode(ear);
+                    ear = next.next;
+                    stop = next.next;
+                    continue;
+                }
+                ear = next;
+                if (ear === stop) {
+                    if (!pass) {
+                        Earcut.earcutLinked(Earcut.filterPoints(ear, null), triangles, dim, minX, minY, invSize, 1);
+                    }
+                    else if (pass === 1) {
+                        ear = Earcut.cureLocalIntersections(ear, triangles, dim);
+                        Earcut.earcutLinked(ear, triangles, dim, minX, minY, invSize, 2);
+                    }
+                    else if (pass === 2) {
+                        Earcut.splitEarcut(ear, triangles, dim, minX, minY, invSize);
+                    }
+                    break;
+                }
+            }
+        }
+        static isEar(ear) {
+            var a = ear.prev, b = ear, c = ear.next;
+            if (Earcut.area(a, b, c) >= 0)
+                return false;
+            var p = ear.next.next;
+            while (p !== ear.prev) {
+                if (Earcut.pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) &&
+                    Earcut.area(p.prev, p, p.next) >= 0)
+                    return false;
+                p = p.next;
+            }
+            return true;
+        }
+        static isEarHashed(ear, minX, minY, invSize) {
+            var a = ear.prev, b = ear, c = ear.next;
+            if (Earcut.area(a, b, c) >= 0)
+                return false;
+            var minTX = a.x < b.x ? (a.x < c.x ? a.x : c.x) : (b.x < c.x ? b.x : c.x), minTY = a.y < b.y ? (a.y < c.y ? a.y : c.y) : (b.y < c.y ? b.y : c.y), maxTX = a.x > b.x ? (a.x > c.x ? a.x : c.x) : (b.x > c.x ? b.x : c.x), maxTY = a.y > b.y ? (a.y > c.y ? a.y : c.y) : (b.y > c.y ? b.y : c.y);
+            var minZ = Earcut.zOrder(minTX, minTY, minX, minY, invSize), maxZ = Earcut.zOrder(maxTX, maxTY, minX, minY, invSize);
+            var p = ear.nextZ;
+            while (p && p.z <= maxZ) {
+                if (p !== ear.prev && p !== ear.next &&
+                    Earcut.pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) &&
+                    Earcut.area(p.prev, p, p.next) >= 0)
+                    return false;
+                p = p.nextZ;
+            }
+            p = ear.prevZ;
+            while (p && p.z >= minZ) {
+                if (p !== ear.prev && p !== ear.next &&
+                    Earcut.pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) &&
+                    Earcut.area(p.prev, p, p.next) >= 0)
+                    return false;
+                p = p.prevZ;
+            }
+            return true;
+        }
+        static cureLocalIntersections(start, triangles, dim) {
+            var p = start;
+            do {
+                var a = p.prev, b = p.next.next;
+                if (!Earcut.equals(a, b) && Earcut.intersects(a, p, p.next, b) && Earcut.locallyInside(a, b) && Earcut.locallyInside(b, a)) {
+                    triangles.push(a.i / dim);
+                    triangles.push(p.i / dim);
+                    triangles.push(b.i / dim);
+                    Earcut.removeNode(p);
+                    Earcut.removeNode(p.next);
+                    p = start = b;
+                }
+                p = p.next;
+            } while (p !== start);
+            return p;
+        }
+        static splitEarcut(start, triangles, dim, minX, minY, invSize) {
+            var a = start;
+            do {
+                var b = a.next.next;
+                while (b !== a.prev) {
+                    if (a.i !== b.i && Earcut.isValidDiagonal(a, b)) {
+                        var c = Earcut.splitPolygon(a, b);
+                        a = Earcut.filterPoints(a, a.next);
+                        c = Earcut.filterPoints(c, c.next);
+                        Earcut.earcutLinked(a, triangles, dim, minX, minY, invSize);
+                        Earcut.earcutLinked(c, triangles, dim, minX, minY, invSize);
+                        return;
+                    }
+                    b = b.next;
+                }
+                a = a.next;
+            } while (a !== start);
+        }
+        static eliminateHoles(data, holeIndices, outerNode, dim) {
+            var queue = [], i, len, start, end, list;
+            for (i = 0, len = holeIndices.length; i < len; i++) {
+                start = holeIndices[i] * dim;
+                end = i < len - 1 ? holeIndices[i + 1] * dim : data.length;
+                list = Earcut.linkedList(data, start, end, dim, false);
+                if (list === list.next)
+                    list.steiner = true;
+                queue.push(Earcut.getLeftmost(list));
+            }
+            queue.sort(Earcut.compareX);
+            for (i = 0; i < queue.length; i++) {
+                Earcut.eliminateHole(queue[i], outerNode);
+                outerNode = Earcut.filterPoints(outerNode, outerNode.next);
+            }
+            return outerNode;
+        }
+        static compareX(a, b) {
+            return a.x - b.x;
+        }
+        static eliminateHole(hole, outerNode) {
+            outerNode = Earcut.findHoleBridge(hole, outerNode);
+            if (outerNode) {
+                var b = Earcut.splitPolygon(outerNode, hole);
+                Earcut.filterPoints(b, b.next);
+            }
+        }
+        static findHoleBridge(hole, outerNode) {
+            var p = outerNode, hx = hole.x, hy = hole.y, qx = -Infinity, m;
+            do {
+                if (hy <= p.y && hy >= p.next.y && p.next.y !== p.y) {
+                    var x = p.x + (hy - p.y) * (p.next.x - p.x) / (p.next.y - p.y);
+                    if (x <= hx && x > qx) {
+                        qx = x;
+                        if (x === hx) {
+                            if (hy === p.y)
+                                return p;
+                            if (hy === p.next.y)
+                                return p.next;
+                        }
+                        m = p.x < p.next.x ? p : p.next;
+                    }
+                }
+                p = p.next;
+            } while (p !== outerNode);
+            if (!m)
+                return null;
+            if (hx === qx)
+                return m.prev;
+            var stop = m, mx = m.x, my = m.y, tanMin = Infinity, tan;
+            p = m.next;
+            while (p !== stop) {
+                if (hx >= p.x && p.x >= mx && hx !== p.x &&
+                    Earcut.pointInTriangle(hy < my ? hx : qx, hy, mx, my, hy < my ? qx : hx, hy, p.x, p.y)) {
+                    tan = Math.abs(hy - p.y) / (hx - p.x);
+                    if ((tan < tanMin || (tan === tanMin && p.x > m.x)) && Earcut.locallyInside(p, hole)) {
+                        m = p;
+                        tanMin = tan;
+                    }
+                }
+                p = p.next;
+            }
+            return m;
+        }
+        static indexCurve(start, minX, minY, invSize) {
+            var p = start;
+            do {
+                if (p.z === null)
+                    p.z = Earcut.zOrder(p.x, p.y, minX, minY, invSize);
+                p.prevZ = p.prev;
+                p.nextZ = p.next;
+                p = p.next;
+            } while (p !== start);
+            p.prevZ.nextZ = null;
+            p.prevZ = null;
+            Earcut.sortLinked(p);
+        }
+        static sortLinked(list) {
+            var i, p, q, e, tail, numMerges, pSize, qSize, inSize = 1;
+            do {
+                p = list;
+                list = null;
+                tail = null;
+                numMerges = 0;
+                while (p) {
+                    numMerges++;
+                    q = p;
+                    pSize = 0;
+                    for (i = 0; i < inSize; i++) {
+                        pSize++;
+                        q = q.nextZ;
+                        if (!q)
+                            break;
+                    }
+                    qSize = inSize;
+                    while (pSize > 0 || (qSize > 0 && q)) {
+                        if (pSize !== 0 && (qSize === 0 || !q || p.z <= q.z)) {
+                            e = p;
+                            p = p.nextZ;
+                            pSize--;
+                        }
+                        else {
+                            e = q;
+                            q = q.nextZ;
+                            qSize--;
+                        }
+                        if (tail)
+                            tail.nextZ = e;
+                        else
+                            list = e;
+                        e.prevZ = tail;
+                        tail = e;
+                    }
+                    p = q;
+                }
+                tail.nextZ = null;
+                inSize *= 2;
+            } while (numMerges > 1);
+            return list;
+        }
+        static zOrder(x, y, minX, minY, invSize) {
+            x = 32767 * (x - minX) * invSize;
+            y = 32767 * (y - minY) * invSize;
+            x = (x | (x << 8)) & 0x00FF00FF;
+            x = (x | (x << 4)) & 0x0F0F0F0F;
+            x = (x | (x << 2)) & 0x33333333;
+            x = (x | (x << 1)) & 0x55555555;
+            y = (y | (y << 8)) & 0x00FF00FF;
+            y = (y | (y << 4)) & 0x0F0F0F0F;
+            y = (y | (y << 2)) & 0x33333333;
+            y = (y | (y << 1)) & 0x55555555;
+            return x | (y << 1);
+        }
+        static getLeftmost(start) {
+            var p = start, leftmost = start;
+            do {
+                if (p.x < leftmost.x)
+                    leftmost = p;
+                p = p.next;
+            } while (p !== start);
+            return leftmost;
+        }
+        static pointInTriangle(ax, ay, bx, by, cx, cy, px, py) {
+            return (cx - px) * (ay - py) - (ax - px) * (cy - py) >= 0 &&
+                (ax - px) * (by - py) - (bx - px) * (ay - py) >= 0 &&
+                (bx - px) * (cy - py) - (cx - px) * (by - py) >= 0;
+        }
+        static isValidDiagonal(a, b) {
+            return a.next.i !== b.i && a.prev.i !== b.i && !Earcut.intersectsPolygon(a, b) &&
+                Earcut.locallyInside(a, b) && Earcut.locallyInside(b, a) && Earcut.middleInside(a, b);
+        }
+        static area(p, q, r) {
+            return (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
+        }
+        static equals(p1, p2) {
+            return p1.x === p2.x && p1.y === p2.y;
+        }
+        static intersects(p1, q1, p2, q2) {
+            if ((Earcut.equals(p1, q1) && Earcut.equals(p2, q2)) ||
+                (Earcut.equals(p1, q2) && Earcut.equals(p2, q1)))
+                return true;
+            return Earcut.area(p1, q1, p2) > 0 !== Earcut.area(p1, q1, q2) > 0 &&
+                Earcut.area(p2, q2, p1) > 0 !== Earcut.area(p2, q2, q1) > 0;
+        }
+        static intersectsPolygon(a, b) {
+            var p = a;
+            do {
+                if (p.i !== a.i && p.next.i !== a.i && p.i !== b.i && p.next.i !== b.i &&
+                    Earcut.intersects(p, p.next, a, b))
+                    return true;
+                p = p.next;
+            } while (p !== a);
+            return false;
+        }
+        static locallyInside(a, b) {
+            return Earcut.area(a.prev, a, a.next) < 0 ?
+                Earcut.area(a, b, a.next) >= 0 && Earcut.area(a, a.prev, b) >= 0 :
+                Earcut.area(a, b, a.prev) < 0 || Earcut.area(a, a.next, b) < 0;
+        }
+        static middleInside(a, b) {
+            var p = a, inside = false, px = (a.x + b.x) / 2, py = (a.y + b.y) / 2;
+            do {
+                if (((p.y > py) !== (p.next.y > py)) && p.next.y !== p.y &&
+                    (px < (p.next.x - p.x) * (py - p.y) / (p.next.y - p.y) + p.x))
+                    inside = !inside;
+                p = p.next;
+            } while (p !== a);
+            return inside;
+        }
+        static splitPolygon(a, b) {
+            var a2 = new EarcutNode(a.i, a.x, a.y), b2 = new EarcutNode(b.i, b.x, b.y), an = a.next, bp = b.prev;
+            a.next = b;
+            b.prev = a;
+            a2.next = an;
+            an.prev = a2;
+            b2.next = a2;
+            a2.prev = b2;
+            bp.next = b2;
+            b2.prev = bp;
+            return b2;
+        }
+        static insertNode(i, x, y, last) {
+            var p = new EarcutNode(i, x, y);
+            if (!last) {
+                p.prev = p;
+                p.next = p;
+            }
+            else {
+                p.next = last.next;
+                p.prev = last;
+                last.next.prev = p;
+                last.next = p;
+            }
+            return p;
+        }
+        static removeNode(p) {
+            p.next.prev = p.prev;
+            p.prev.next = p.next;
+            if (p.prevZ)
+                p.prevZ.nextZ = p.nextZ;
+            if (p.nextZ)
+                p.nextZ.prevZ = p.prevZ;
+        }
+        static signedArea(data, start, end, dim) {
+            var sum = 0;
+            for (var i = start, j = end - dim; i < end; i += dim) {
+                sum += (data[j] - data[i]) * (data[i + 1] + data[j + 1]);
+                j = i;
+            }
+            return sum;
+        }
+    }
+
+    const _ClipTriangle = [
+        { x: 0, y: 0, u: 0, v: 0, r: 0, g: 0, b: 0, a: 0, index: 0 },
+        { x: 0, y: 0, u: 0, v: 0, r: 0, g: 0, b: 0, a: 0, index: 0 },
+        { x: 0, y: 0, u: 0, v: 0, r: 0, g: 0, b: 0, a: 0, index: 0 }
+    ];
+    const tempVec4 = new Vector4();
+    class UVClippingUtils {
+        static _resetBuffers() {
+            const ctx = UVClippingUtils._threadLocalContext;
+            ctx.outVerticesLength = 0;
+            ctx.outIndicesLength = 0;
+            ctx.outUVsLength = 0;
+            ctx.outColorsLength = 0;
+            ctx.clipBuffer1Length = 0;
+            ctx.clipBuffer2Length = 0;
+        }
+        static _ensureBufferCapacity(buffer, requiredLength, constructor) {
+            if (buffer.length >= requiredLength) {
+                return buffer;
+            }
+            const newLength = Math.max(requiredLength, Math.ceil(buffer.length * 1.5));
+            return new constructor(newLength);
+        }
+        static clipTrianglesByUVRange(vertices, indices, uvs, uvRange, colors, reuseBuffer = true) {
+            UVClippingUtils._resetBuffers();
+            const ctx = UVClippingUtils._threadLocalContext;
+            const EPSILON = UVClippingUtils.EPSILON;
+            const minU = uvRange[0];
+            const minV = uvRange[1];
+            const maxU = uvRange[0] + uvRange[2];
+            const maxV = uvRange[1] + uvRange[3];
+            let epsilon_edge = tempVec4;
+            epsilon_edge.x = minU - EPSILON;
+            epsilon_edge.y = minV - EPSILON;
+            epsilon_edge.z = maxU + EPSILON;
+            epsilon_edge.w = maxV + EPSILON;
+            const vertexCount = uvs.length / 2;
+            const vertexInsideFlags = new Uint8Array(vertexCount);
+            let allUVsInside = true;
+            for (let i = 0; i < vertexCount; i++) {
+                const u = uvs[i * 2];
+                const v = uvs[i * 2 + 1];
+                let flags = 0;
+                if (u >= epsilon_edge.x)
+                    flags |= 0x01;
+                if (u <= epsilon_edge.z)
+                    flags |= 0x02;
+                if (v >= epsilon_edge.y)
+                    flags |= 0x04;
+                if (v <= epsilon_edge.w)
+                    flags |= 0x08;
+                vertexInsideFlags[i] = flags;
+                if (flags !== 0x0F) {
+                    allUVsInside = false;
+                }
+            }
+            if (allUVsInside) {
+                return {
+                    vertices,
+                    indices,
+                    uvs,
+                    colors,
+                };
+            }
+            const outVertices = ctx.outVertices;
+            const outIndices = ctx.outIndices;
+            const outUVs = ctx.outUVs;
+            const outColors = ctx.outColors;
+            let nextVertexIndex = 0;
+            const addVertex = (vert) => {
+                const index = nextVertexIndex++;
+                const baseIdx = ctx.outVerticesLength;
+                const colorIdx = ctx.outColorsLength;
+                outVertices[baseIdx] = vert.x;
+                outVertices[baseIdx + 1] = vert.y;
+                outUVs[baseIdx] = vert.u;
+                outUVs[baseIdx + 1] = vert.v;
+                outColors[colorIdx] = vert.r;
+                outColors[colorIdx + 1] = vert.g;
+                outColors[colorIdx + 2] = vert.b;
+                outColors[colorIdx + 3] = vert.a;
+                ctx.outVerticesLength = baseIdx + 2;
+                ctx.outUVsLength = baseIdx + 2;
+                ctx.outColorsLength = colorIdx + 4;
+                return index;
+            };
+            const isInside = (vert, edge) => {
+                switch (edge) {
+                    case 0: return vert.u >= epsilon_edge.x;
+                    case 1: return vert.u <= epsilon_edge.z;
+                    case 2: return vert.v >= epsilon_edge.y;
+                    case 3: return vert.v <= epsilon_edge.w;
+                }
+                return false;
+            };
+            const setClipVertex = (buffer, id, x, y, u, v, r, g, b, a, index) => {
+                if (!buffer[id]) {
+                    buffer[id] = { x, y, u, v, r, g, b, a, index };
+                }
+                else {
+                    let vertex = buffer[id];
+                    vertex.x = x;
+                    vertex.y = y;
+                    vertex.u = u;
+                    vertex.v = v;
+                    vertex.r = r;
+                    vertex.g = g;
+                    vertex.b = b;
+                    vertex.a = a;
+                    vertex.index = index;
+                }
+            };
+            const computeIntersection = (v1, v2, edge, output, outputLen) => {
+                let t;
+                switch (edge) {
+                    case 0:
+                        if (Math.abs(v2.u - v1.u) < EPSILON)
+                            return false;
+                        t = (minU - v1.u) / (v2.u - v1.u);
+                        break;
+                    case 1:
+                        if (Math.abs(v2.u - v1.u) < EPSILON)
+                            return false;
+                        t = (maxU - v1.u) / (v2.u - v1.u);
+                        break;
+                    case 2:
+                        if (Math.abs(v2.v - v1.v) < EPSILON)
+                            return false;
+                        t = (minV - v1.v) / (v2.v - v1.v);
+                        break;
+                    case 3:
+                        if (Math.abs(v2.v - v1.v) < EPSILON)
+                            return false;
+                        t = (maxV - v1.v) / (v2.v - v1.v);
+                        break;
+                    default:
+                        return false;
+                }
+                if (t < -EPSILON || t > 1 + EPSILON)
+                    return false;
+                setClipVertex(output, outputLen, v1.x + t * (v2.x - v1.x), v1.y + t * (v2.y - v1.y), v1.u + t * (v2.u - v1.u), v1.v + t * (v2.v - v1.v), v1.r + t * (v2.r - v1.r), v1.g + t * (v2.g - v1.g), v1.b + t * (v2.b - v1.b), v1.a + t * (v2.a - v1.a), -1);
+                return true;
+            };
+            const clipPolygon = (inputVertices, inputLength) => {
+                let input = inputVertices;
+                let inputLen = inputLength;
+                let outputBuffer = ctx.clipBuffer1;
+                for (let edge = 0; edge < 4; edge++) {
+                    const output = (edge % 2 === 0) ? ctx.clipBuffer1 : ctx.clipBuffer2;
+                    let outputLen = 0;
+                    if (inputLen === 0)
+                        return { length: 0, buffer: output };
+                    const edgeMask = 1 << edge;
+                    for (let i = 0; i < inputLen; i++) {
+                        const current = input[i];
+                        const next = input[(i + 1) % inputLen];
+                        const currentInside = current.index >= 0
+                            ? (vertexInsideFlags[current.index] & edgeMask) !== 0
+                            : isInside(current, edge);
+                        const nextInside = next.index >= 0
+                            ? (vertexInsideFlags[next.index] & edgeMask) !== 0
+                            : isInside(next, edge);
+                        if (currentInside) {
+                            setClipVertex(output, outputLen++, current.x, current.y, current.u, current.v, current.r, current.g, current.b, current.a, current.index);
+                            if (!nextInside) {
+                                if (computeIntersection(current, next, edge, output, outputLen)) {
+                                    outputLen++;
+                                }
+                            }
+                        }
+                        else if (nextInside) {
+                            if (computeIntersection(current, next, edge, output, outputLen)) {
+                                outputLen++;
+                            }
+                        }
+                    }
+                    if (outputLen === 0)
+                        return { length: 0, buffer: output };
+                    input = output;
+                    inputLen = outputLen;
+                    outputBuffer = output;
+                    if (edge % 2 === 0) {
+                        ctx.clipBuffer1Length = outputLen;
+                    }
+                    else {
+                        ctx.clipBuffer2Length = outputLen;
+                    }
+                }
+                return { length: inputLen, buffer: outputBuffer };
+            };
+            const buildVertex = (index, vertexIndex) => {
+                let vertex = _ClipTriangle[index];
+                vertex.x = vertices[vertexIndex * 2];
+                vertex.y = vertices[vertexIndex * 2 + 1];
+                vertex.u = uvs[vertexIndex * 2];
+                vertex.v = uvs[vertexIndex * 2 + 1];
+                vertex.r = colors[vertexIndex * 4];
+                vertex.g = colors[vertexIndex * 4 + 1];
+                vertex.b = colors[vertexIndex * 4 + 2];
+                vertex.a = colors[vertexIndex * 4 + 3];
+                vertex.index = vertexIndex;
+                return vertex;
+            };
+            const triangleCount = indices.length / 3;
+            let triangle = _ClipTriangle;
+            for (let t = 0; t < triangleCount; t++) {
+                buildVertex(0, indices[t * 3]);
+                buildVertex(1, indices[t * 3 + 1]);
+                buildVertex(2, indices[t * 3 + 2]);
+                const flags0 = vertexInsideFlags[triangle[0].index];
+                const flags1 = vertexInsideFlags[triangle[1].index];
+                const flags2 = vertexInsideFlags[triangle[2].index];
+                if (flags0 === 0x0F && flags1 === 0x0F && flags2 === 0x0F) {
+                    const idx0 = addVertex(triangle[0]);
+                    const idx1 = addVertex(triangle[1]);
+                    const idx2 = addVertex(triangle[2]);
+                    outIndices[ctx.outIndicesLength++] = idx0;
+                    outIndices[ctx.outIndicesLength++] = idx1;
+                    outIndices[ctx.outIndicesLength++] = idx2;
+                    continue;
+                }
+                const combinedFlags = flags0 | flags1 | flags2;
+                if (!(combinedFlags & 0x01) ||
+                    !(combinedFlags & 0x02) ||
+                    !(combinedFlags & 0x04) ||
+                    !(combinedFlags & 0x08)) {
+                    continue;
+                }
+                const clippedResult = clipPolygon(triangle, 3);
+                const clippedPolygonLen = clippedResult.length;
+                const clippedPolygon = clippedResult.buffer;
+                if (clippedPolygonLen < 3) {
+                    continue;
+                }
+                if (clippedPolygonLen === 3) {
+                    const idx0 = addVertex(clippedPolygon[0]);
+                    const idx1 = addVertex(clippedPolygon[1]);
+                    const idx2 = addVertex(clippedPolygon[2]);
+                    outIndices[ctx.outIndicesLength++] = idx0;
+                    outIndices[ctx.outIndicesLength++] = idx1;
+                    outIndices[ctx.outIndicesLength++] = idx2;
+                }
+                else {
+                    const earcutData = ctx.earcutData;
+                    let earcutLen = 0;
+                    for (let i = 0; i < clippedPolygonLen; i++) {
+                        earcutData[earcutLen++] = clippedPolygon[i].x;
+                        earcutData[earcutLen++] = clippedPolygon[i].y;
+                    }
+                    earcutData.length = earcutLen;
+                    const triangulated = Earcut.earcut(earcutData, null, 2);
+                    if (triangulated.length > 0) {
+                        const vertexIndices = ctx.vertexIndices;
+                        for (let i = 0; i < clippedPolygonLen; i++) {
+                            vertexIndices[i] = addVertex(clippedPolygon[i]);
+                        }
+                        for (let i = 0; i < triangulated.length; i += 3) {
+                            outIndices[ctx.outIndicesLength++] = vertexIndices[triangulated[i]];
+                            outIndices[ctx.outIndicesLength++] = vertexIndices[triangulated[i + 1]];
+                            outIndices[ctx.outIndicesLength++] = vertexIndices[triangulated[i + 2]];
+                        }
+                    }
+                }
+            }
+            if (reuseBuffer) {
+                ctx.verticesBuffer = UVClippingUtils._ensureBufferCapacity(ctx.verticesBuffer, ctx.outVerticesLength, Float32Array);
+                ctx.indicesBuffer = UVClippingUtils._ensureBufferCapacity(ctx.indicesBuffer, ctx.outIndicesLength, Uint16Array);
+                ctx.uvsBuffer = UVClippingUtils._ensureBufferCapacity(ctx.uvsBuffer, ctx.outUVsLength, Float32Array);
+                ctx.colorsBuffer = UVClippingUtils._ensureBufferCapacity(ctx.colorsBuffer, ctx.outColorsLength, Float32Array);
+                for (let i = 0; i < ctx.outVerticesLength; i++) {
+                    ctx.verticesBuffer[i] = outVertices[i];
+                }
+                for (let i = 0; i < ctx.outIndicesLength; i++) {
+                    ctx.indicesBuffer[i] = outIndices[i];
+                }
+                for (let i = 0; i < ctx.outUVsLength; i++) {
+                    ctx.uvsBuffer[i] = outUVs[i];
+                }
+                for (let i = 0; i < ctx.outColorsLength; i++) {
+                    ctx.colorsBuffer[i] = outColors[i];
+                }
+                return {
+                    vertices: ctx.verticesBuffer.subarray(0, ctx.outVerticesLength),
+                    indices: ctx.indicesBuffer.subarray(0, ctx.outIndicesLength),
+                    uvs: ctx.uvsBuffer.subarray(0, ctx.outUVsLength),
+                    colors: ctx.colorsBuffer.subarray(0, ctx.outColorsLength)
+                };
+            }
+            else {
+                const newVertices = new Float32Array(ctx.outVerticesLength);
+                const newIndices = new Uint16Array(ctx.outIndicesLength);
+                const newUVs = new Float32Array(ctx.outUVsLength);
+                const newColors = new Float32Array(ctx.outColorsLength);
+                for (let i = 0; i < ctx.outVerticesLength; i++) {
+                    newVertices[i] = outVertices[i];
+                }
+                for (let i = 0; i < ctx.outIndicesLength; i++) {
+                    newIndices[i] = outIndices[i];
+                }
+                for (let i = 0; i < ctx.outUVsLength; i++) {
+                    newUVs[i] = outUVs[i];
+                }
+                for (let i = 0; i < ctx.outColorsLength; i++) {
+                    newColors[i] = outColors[i];
+                }
+                return {
+                    vertices: newVertices,
+                    indices: newIndices,
+                    uvs: newUVs,
+                    colors: newColors
+                };
+            }
+        }
+    }
+    UVClippingUtils.EPSILON = 1e-7;
+    UVClippingUtils._threadLocalContext = {
+        outVertices: [],
+        outIndices: [],
+        outUVs: [],
+        outColors: [],
+        clipBuffer1: [],
+        clipBuffer2: [],
+        earcutData: [],
+        vertexIndices: [],
+        outVerticesLength: 0,
+        outIndicesLength: 0,
+        outUVsLength: 0,
+        outColorsLength: 0,
+        clipBuffer1Length: 0,
+        clipBuffer2Length: 0,
+        verticesBuffer: new Float32Array(0),
+        indicesBuffer: new Uint16Array(0),
+        uvsBuffer: new Float32Array(0),
+        colorsBuffer: new Float32Array(0),
+    };
+
     const className$k = "Draw9GridTextureCmd";
     class Draw9GridTextureCmd {
         constructor() {
@@ -6190,12 +7000,26 @@ window.Laya = (function (exports) {
                 let sourceHeight = vb.mainTex.sourceHeight;
                 gridRect.setTo(sizeGrid[3], sizeGrid[0], sourceWidth - sizeGrid[1] - sizeGrid[3], sourceHeight - sizeGrid[0] - sizeGrid[2]);
                 genSliceMesh(vb, vb.contentRect, vb.uvRect, gridRect, sizeGrid[4] === 1 ? 0xff : 0);
-                runner.drawTriangles(this.texture, x + gx, y + gy, vb.getVertices(), vb.getUVs(), vb.getIndices(), null, 1, null, null, vb.getColors(), this.texture.uvrect);
+                if (this.texture.uvrect) {
+                    if (Config.uvClipMode === "cpu") {
+                        const clippedData = UVClippingUtils.clipTrianglesByUVRange(vb.getVertices(), vb.getIndices(), vb.getUVs(), this.texture.uvrect, vb.getColors());
+                        runner.drawTriangles(this.texture, x + gx, y + gy, clippedData.vertices, clippedData.uvs, clippedData.indices, null, 1, null, null, clippedData.colors, null);
+                    }
+                    else {
+                        runner.drawTriangles(this.texture, x + gx, y + gy, vb.getVertices(), vb.getUVs(), vb.getIndices(), null, 1, null, null, vb.getColors(), this.texture.uvrect);
+                    }
+                }
+                else {
+                    runner.drawTriangles(this.texture, x + gx, y + gy, vb.getVertices(), vb.getUVs(), vb.getIndices(), null, 1, null, null, vb.getColors(), null);
+                }
                 VertexStream.pool.recover(vb);
             }
         }
         get cmdID() {
             return Draw9GridTextureCmd.ID;
+        }
+        needsLayoutRepaint() {
+            return this.percent ? 1 : 0;
         }
         getBounds(assembler) {
             let rect = Rectangle.TEMP.setTo(this.x, this.y, this.width, this.height);
@@ -6242,6 +7066,9 @@ window.Laya = (function (exports) {
         }
         get cmdID() {
             return DrawCircleCmd.ID;
+        }
+        needsLayoutRepaint() {
+            return 1;
         }
         getBounds(assembler) {
             let rect = Rectangle.TEMP.setTo(this.x - this.radius, this.y - this.radius, this.radius + this.radius, this.radius + this.radius);
@@ -6370,6 +7197,9 @@ window.Laya = (function (exports) {
         get cmdID() {
             return DrawCurvesCmd.ID;
         }
+        needsLayoutRepaint() {
+            return 1;
+        }
         getBounds(assembler) {
             Bezier.getPoints(this.points, 5, 2, assembler.points);
             assembler.flushPoints(this.x, this.y);
@@ -6397,6 +7227,7 @@ window.Laya = (function (exports) {
         recover() {
             this.texture && this.texture._removeReference();
             this.texture = null;
+            this._cacheData = null;
             Pool.recover(className$h, this);
         }
         run(runner, gx, gy) {
@@ -6452,6 +7283,9 @@ window.Laya = (function (exports) {
         }
         get cmdID() {
             return DrawLineCmd.ID;
+        }
+        needsLayoutRepaint() {
+            return this.percent ? 1 : 0;
         }
         getBounds(assembler) {
             let lineWidth;
@@ -6583,6 +7417,9 @@ window.Laya = (function (exports) {
         get cmdID() {
             return DrawPieCmd.ID;
         }
+        needsLayoutRepaint() {
+            return 1;
+        }
         get startAngle() {
             return this._startAngle * 180 / Math.PI;
         }
@@ -6702,6 +7539,9 @@ window.Laya = (function (exports) {
         get cmdID() {
             return DrawRectCmd.ID;
         }
+        needsLayoutRepaint() {
+            return this.percent ? 1 : 0;
+        }
         getBounds(assembler) {
             let rect = Rectangle.TEMP.setTo(this.x, this.y, this.width, this.height);
             if (this.percent) {
@@ -6745,6 +7585,7 @@ window.Laya = (function (exports) {
             this.texture && this.texture._removeReference();
             this.texture = null;
             this.matrix = null;
+            this._cacheData = null;
             Pool.recover(className$a, this);
         }
         run(runner, gx, gy) {
@@ -6776,6 +7617,9 @@ window.Laya = (function (exports) {
         get cmdID() {
             return DrawTextureCmd.ID;
         }
+        needsLayoutRepaint() {
+            return this.percent ? 1 : 0;
+        }
     }
     DrawTextureCmd.ID = className$a;
     ClassUtils.regClass(className$a, DrawTextureCmd);
@@ -6794,6 +7638,7 @@ window.Laya = (function (exports) {
             this.texture._removeReference();
             this.texture = null;
             this.pos = null;
+            this._cacheData = null;
             Pool.recover(className$9, this);
         }
         run(runner, gx, gy) {
@@ -6821,8 +7666,11 @@ window.Laya = (function (exports) {
         constructor() {
             this.x = 0;
             this.y = 0;
+            this._dynamic = null;
+            this._tempUVs = null;
         }
         static create(texture, x, y, vertices, uvs, indices, matrix, alpha, color, blendMode) {
+            var _a;
             var cmd = Pool.getItemByClass(className$8, DrawTrianglesCmd);
             cmd.texture = texture;
             texture === null || texture === void 0 ? void 0 : texture._addReference();
@@ -6835,9 +7683,11 @@ window.Laya = (function (exports) {
             cmd.alpha = alpha !== null && alpha !== void 0 ? alpha : 1;
             cmd.color = color != null ? ColorUtils.create(color).numColor : 0xffffffff;
             cmd.blendMode = blendMode;
+            cmd._dynamic = (_a = texture._dynamic) === null || _a === void 0 ? void 0 : _a.uv;
             return cmd;
         }
         static create2(texture, mesh, color) {
+            var _a;
             var cmd = Pool.getItemByClass(className$8, DrawTrianglesCmd);
             cmd.texture = texture;
             texture === null || texture === void 0 ? void 0 : texture._addReference();
@@ -6845,6 +7695,7 @@ window.Laya = (function (exports) {
             cmd.y = 0;
             cmd.mesh = mesh;
             cmd.color = color != null ? ColorUtils.create(color).numColor : 0xffffffff;
+            cmd._dynamic = (_a = texture._dynamic) === null || _a === void 0 ? void 0 : _a.uv;
             return cmd;
         }
         recover() {
@@ -6856,6 +7707,9 @@ window.Laya = (function (exports) {
             this.indices = null;
             this.matrix = null;
             this.mesh = null;
+            this._cacheData = null;
+            this._dynamic = null;
+            this._tempUVs = null;
             Pool.recover(className$8, this);
         }
         run(runner, gx, gy) {
@@ -6871,7 +7725,18 @@ window.Laya = (function (exports) {
                 catch (e) {
                     console.error(e);
                 }
-                runner.drawTriangles(this.texture, this.x + gx, this.y + gy, vb.getVertices(), vb.getUVs(), vb.getIndices(), this.matrix, this.alpha, this.blendMode, null, vb.getColors(), (_a = this.texture) === null || _a === void 0 ? void 0 : _a.uvrect);
+                if ((_a = this.texture) === null || _a === void 0 ? void 0 : _a.uvrect) {
+                    if (Config.uvClipMode === "cpu") {
+                        const clippedData = UVClippingUtils.clipTrianglesByUVRange(vb.getVertices(), vb.getIndices(), vb.getUVs(), this.texture.uvrect, vb.getColors());
+                        runner.drawTriangles(this.texture, this.x + gx, this.y + gy, clippedData.vertices, clippedData.uvs, clippedData.indices, this.matrix, this.alpha, this.blendMode, null, clippedData.colors, null);
+                    }
+                    else {
+                        runner.drawTriangles(this.texture, this.x + gx, this.y + gy, vb.getVertices(), vb.getUVs(), vb.getIndices(), this.matrix, this.alpha, this.blendMode, null, vb.getColors(), this.texture.uvrect);
+                    }
+                }
+                else {
+                    runner.drawTriangles(this.texture, this.x + gx, this.y + gy, vb.getVertices(), vb.getUVs(), vb.getIndices(), this.matrix, this.alpha, this.blendMode, null, vb.getColors(), null);
+                }
                 VertexStream.pool.recover(vb);
             }
             else if (this.vertices && this.uvs && this.indices) {
@@ -7777,18 +8642,20 @@ window.Laya = (function (exports) {
             let sRGB = constructParams ? constructParams[5] : false;
             let texture = new Texture2D(ddsInfo.width, ddsInfo.height, ddsInfo.format, ddsInfo.mipmapCount > 1, false, sRGB);
             texture.setDDSData(ddsInfo);
-            if (propertyParams)
+            if (propertyParams) {
                 texture.setProperties(propertyParams);
-            texture._premultiplyAlpha = propertyParams.premultiplyAlpha;
+                texture._premultiplyAlpha = propertyParams.premultiplyAlpha;
+            }
             return texture;
         }
         static _parseKTX(data, propertyParams = null, constructParams = null) {
             let ktxInfo = KTXTextureInfo.getKTXTextureInfo(data);
             let texture = new Texture2D(ktxInfo.width, ktxInfo.height, ktxInfo.format, ktxInfo.mipmapCount > 1, false, ktxInfo.sRGB);
             texture.setKTXData(ktxInfo);
-            if (propertyParams)
+            if (propertyParams) {
                 texture.setProperties(propertyParams);
-            texture._premultiplyAlpha = propertyParams.premultiplyAlpha;
+                texture._premultiplyAlpha = propertyParams.premultiplyAlpha;
+            }
             return texture;
         }
         static _parsePVR(data, propertyParams = null, constructParams = null) {
@@ -8471,6 +9338,34 @@ window.Laya = (function (exports) {
             ShaderCompile._compileToTree(result.psNode, ps, result.defs, includes, basePath);
             return this._loadIncludesDeep(result, includes, 0);
         }
+        static compileCompute(code, basePath) {
+            let result = {
+                node: new ShaderNode([]),
+                includeNames: new Set(),
+                defs: new Set()
+            };
+            let includes = [];
+            code = code.replace(_clearCR, "");
+            ShaderCompile._compileToTree(result.node, code, result.defs, includes, basePath);
+            for (let inc of includes) {
+                if (inc.file)
+                    result.includeNames.add(inc.name);
+                else
+                    console.warn(`ShaderCompile missing file ${inc.name}`);
+            }
+            return result;
+        }
+        static compileComputeAsync(code, basePath) {
+            let result = {
+                node: new ShaderNode([]),
+                includeNames: new Set(),
+                defs: new Set()
+            };
+            let includes = [];
+            code = code.replace(_clearCR, "");
+            ShaderCompile._compileToTree(result.node, code, result.defs, includes, basePath);
+            return this._loadIncludesDeep(result, includes, 0);
+        }
         static _loadIncludesDeep(result, includes, index) {
             let toLoad;
             let includesCnt = includes.length;
@@ -8685,9 +9580,11 @@ window.Laya = (function (exports) {
             let stencilFail = stencilOp ? stencilOp[0] : null;
             let stencilZFail = stencilOp ? stencilOp[1] : null;
             let stencilZPass = stencilOp ? stencilOp[2] : null;
-            renderState.stencilOp.x = StencilOperationMap[stencilFail];
-            renderState.stencilOp.y = StencilOperationMap[stencilZFail];
-            renderState.stencilOp.z = StencilOperationMap[stencilZPass];
+            let tempVec = renderState.stencilOp;
+            tempVec.x = StencilOperationMap[stencilFail];
+            tempVec.y = StencilOperationMap[stencilZFail];
+            tempVec.z = StencilOperationMap[stencilZPass];
+            renderState.stencilOp = tempVec;
             renderState.depthBias = obj.depthBias;
             renderState.depthBiasConstant = obj.depthBiasConstant;
             renderState.depthBiasSlopeScale = obj.depthBiasSlopeScale;
@@ -9938,17 +10835,18 @@ window.Laya = (function (exports) {
         ShaderDataType[ShaderDataType["Vector2"] = 4] = "Vector2";
         ShaderDataType[ShaderDataType["Vector3"] = 5] = "Vector3";
         ShaderDataType[ShaderDataType["Vector4"] = 6] = "Vector4";
-        ShaderDataType[ShaderDataType["Color"] = 7] = "Color";
-        ShaderDataType[ShaderDataType["Matrix4x4"] = 8] = "Matrix4x4";
-        ShaderDataType[ShaderDataType["Buffer"] = 9] = "Buffer";
-        ShaderDataType[ShaderDataType["Matrix3x3"] = 10] = "Matrix3x3";
-        ShaderDataType[ShaderDataType["ReadOnlyDeviceBuffer"] = 11] = "ReadOnlyDeviceBuffer";
-        ShaderDataType[ShaderDataType["DeviceBuffer"] = 12] = "DeviceBuffer";
-        ShaderDataType[ShaderDataType["StorageTexture2D"] = 13] = "StorageTexture2D";
-        ShaderDataType[ShaderDataType["Texture2D"] = 14] = "Texture2D";
-        ShaderDataType[ShaderDataType["Texture3D"] = 15] = "Texture3D";
-        ShaderDataType[ShaderDataType["TextureCube"] = 16] = "TextureCube";
-        ShaderDataType[ShaderDataType["Texture2DArray"] = 17] = "Texture2DArray";
+        ShaderDataType[ShaderDataType["Vector4u"] = 7] = "Vector4u";
+        ShaderDataType[ShaderDataType["Color"] = 8] = "Color";
+        ShaderDataType[ShaderDataType["Matrix4x4"] = 9] = "Matrix4x4";
+        ShaderDataType[ShaderDataType["Buffer"] = 10] = "Buffer";
+        ShaderDataType[ShaderDataType["Matrix3x3"] = 11] = "Matrix3x3";
+        ShaderDataType[ShaderDataType["ReadOnlyDeviceBuffer"] = 12] = "ReadOnlyDeviceBuffer";
+        ShaderDataType[ShaderDataType["DeviceBuffer"] = 13] = "DeviceBuffer";
+        ShaderDataType[ShaderDataType["StorageTexture2D"] = 14] = "StorageTexture2D";
+        ShaderDataType[ShaderDataType["Texture2D"] = 15] = "Texture2D";
+        ShaderDataType[ShaderDataType["Texture3D"] = 16] = "Texture3D";
+        ShaderDataType[ShaderDataType["TextureCube"] = 17] = "TextureCube";
+        ShaderDataType[ShaderDataType["Texture2DArray"] = 18] = "Texture2DArray";
     })(exports.ShaderDataType || (exports.ShaderDataType = {}));
     function isUboBufferShaderType(type) {
         return !(type === exports.ShaderDataType.ReadOnlyDeviceBuffer ||
@@ -9958,6 +10856,43 @@ window.Laya = (function (exports) {
             type === exports.ShaderDataType.Texture3D ||
             type === exports.ShaderDataType.TextureCube ||
             type === exports.ShaderDataType.Texture2DArray);
+    }
+    function isBlendProperty(index) {
+        return index == Shader3D.BLEND ||
+            index == Shader3D.BLEND_SRC ||
+            index == Shader3D.BLEND_DST ||
+            index == Shader3D.BLEND_SRC_RGB ||
+            index == Shader3D.BLEND_DST_RGB ||
+            index == Shader3D.BLEND_SRC_ALPHA ||
+            index == Shader3D.BLEND_DST_ALPHA ||
+            index == Shader3D.BLEND_EQUATION ||
+            index == Shader3D.BLEND_EQUATION_RGB ||
+            index == Shader3D.BLEND_EQUATION_ALPHA;
+    }
+    function isDephtProperty(index) {
+        return index == Shader3D.DEPTH_TEST ||
+            index == Shader3D.DEPTH_WRITE ||
+            index == Shader3D.DEPTH_BIAS ||
+            index == Shader3D.DEPTH_BIAS_CONSTANT ||
+            index == Shader3D.DEPTH_BIAS_SLOPESCALE ||
+            index == Shader3D.DEPTH_BIAS_CLAMP;
+    }
+    function isStencilProperty(index) {
+        return index == Shader3D.STENCIL_TEST ||
+            index == Shader3D.STENCIL_WRITE ||
+            index == Shader3D.STENCIL_WRITE_MASK ||
+            index == Shader3D.STENCIL_READ_MASK ||
+            index == Shader3D.STENCIL_Ref ||
+            index == Shader3D.STENCIL_Op;
+    }
+    function isDepthStencilProperty(index) {
+        return isDephtProperty(index) || isStencilProperty(index);
+    }
+    function isCullProperty(index) {
+        return index == Shader3D.CULL;
+    }
+    function isRenderStateProperty(index) {
+        return isBlendProperty(index) || isDepthStencilProperty(index) || isCullProperty(index);
     }
     function checkShaderDataValueLegal(value, shaderType) {
         let legal = false;
@@ -10199,6 +11134,9 @@ window.Laya = (function (exports) {
         _setInternalTexture(index, value) {
             throw new NotImplementedError();
         }
+        update(name) {
+            throw new NotImplementedError();
+        }
         cloneTo(destObject) {
             throw new NotImplementedError();
         }
@@ -10332,6 +11270,7 @@ window.Laya = (function (exports) {
         RenderParams[RenderParams["UNSIGNED_BYTE"] = 7] = "UNSIGNED_BYTE";
         RenderParams[RenderParams["BYTE"] = 8] = "BYTE";
         RenderParams[RenderParams["UNSIGNED_SHORT"] = 9] = "UNSIGNED_SHORT";
+        RenderParams[RenderParams["MaxComputeElement"] = 10] = "MaxComputeElement";
     })(exports.RenderParams || (exports.RenderParams = {}));
 
     class VertexElementFormat {
@@ -10557,7 +11496,7 @@ window.Laya = (function (exports) {
         }
         addUniform(name, type) {
             let uniformName = name;
-            let arrayLength = getArrayLength(name);
+            let arrayLength = getArrayLength$1(name);
             if (arrayLength > 0) {
                 uniformName = name.substring(0, name.lastIndexOf('['));
             }
@@ -10619,7 +11558,7 @@ window.Laya = (function (exports) {
         'a_LightmapScaleOffset': [VertexMesh.MESH_LIGHTMAPSCALEOFFSET, exports.ShaderDataType.Vector4],
         "a_WorldInvertFront": [VertexMesh.MESH_CUSTOME2, exports.ShaderDataType.Vector4],
     };
-    function getArrayLength(name) {
+    function getArrayLength$1(name) {
         let endPos = name.lastIndexOf(']');
         let startPos = name.lastIndexOf('[');
         if (startPos != -1 && endPos == name.length - 1) {
@@ -10784,11 +11723,15 @@ window.Laya = (function (exports) {
             ShaderDefines2D.FILLTEXTURE = Shader3D.getDefineByName("FILLTEXTURE");
             ShaderDefines2D.RENDERTEXTURE = Shader3D.getDefineByName('RENDERTEXTURE');
             ShaderDefines2D.MATERIALCLIP = Shader3D.getDefineByName('MATERIALCLIP');
+            ShaderDefines2D.UNIFORMCLIP = Shader3D.getDefineByName('UNIFORMCLIP');
+            ShaderDefines2D.UV_CLIP_GPU = Shader3D.getDefineByName('UV_CLIP_GPU');
             ShaderDefines2D.GAMMASPACE = Shader3D.getDefineByName('GAMMASPACE');
             ShaderDefines2D.INVERTY = Shader3D.getDefineByName('INVERTY');
             ShaderDefines2D.GAMMATEXTURE = Shader3D.getDefineByName('GAMMATEXTURE');
             ShaderDefines2D.TEXTURESHADER = Shader3D.getDefineByName("TEXTUREVS");
             ShaderDefines2D.PRIMITIVESHADER = Shader3D.getDefineByName("PRIMITIVEMESH");
+            ShaderDefines2D.VERTEXALPHA = Shader3D.getDefineByName("VERTEXALPHA");
+            ShaderDefines2D.USE_TEX_ARRAY = Shader3D.getDefineByName('USE_TEX_ARRAY');
             ShaderDefines2D.initSprite2DCommandEncoder();
         }
         static initSprite2DCommandEncoder() {
@@ -10815,12 +11758,14 @@ window.Laya = (function (exports) {
             ShaderDefines2D.UNIFORM_VERTEX_SIZE = Shader3D.propertyNameToID("u_vertexSize");
             ShaderDefines2D.UNIFORM_TEXRANGE = Shader3D.propertyNameToID("u_TexRange");
             ShaderDefines2D.UNIFORM_SPRITETEXTURE = Shader3D.propertyNameToID("u_spriteTexture");
+            ShaderDefines2D.UNIFORM_SPRITETEXTURE_ARRAY = Shader3D.propertyNameToID("u_spriteTextureArray");
             const graphicsUniformMap = LayaGL.renderDeviceFactory.createGlobalUniformMap("Sprite2DGraphics");
             graphicsUniformMap.addShaderUniform(ShaderDefines2D.UNIFORM_MATERIAL_CLIPMATDIR, "u_mClipMatDir", exports.ShaderDataType.Vector4);
             graphicsUniformMap.addShaderUniform(ShaderDefines2D.UNIFORM_MATERIAL_CLIPMATPOS, "u_mClipMatPos", exports.ShaderDataType.Vector4);
             graphicsUniformMap.addShaderUniform(ShaderDefines2D.UNIFORM_VERTEX_SIZE, "u_vertexSize", exports.ShaderDataType.Vector4);
             graphicsUniformMap.addShaderUniform(ShaderDefines2D.UNIFORM_TEXRANGE, "u_TexRange", exports.ShaderDataType.Vector4);
             graphicsUniformMap.addShaderUniform(ShaderDefines2D.UNIFORM_SPRITETEXTURE, "u_spriteTexture", exports.ShaderDataType.Texture2D);
+            graphicsUniformMap.addShaderUniform(ShaderDefines2D.UNIFORM_SPRITETEXTURE_ARRAY, "u_spriteTextureArray", exports.ShaderDataType.Texture2DArray);
         }
     }
 
@@ -11469,438 +12414,216 @@ window.Laya = (function (exports) {
         }
     }
 
-    class EarcutNode {
-        constructor(i, x, y) {
-            this.i = i;
-            this.x = x;
-            this.y = y;
-            this.prev = null;
-            this.next = null;
-            this.z = null;
-            this.prevZ = null;
-            this.nextZ = null;
-            this.steiner = false;
+    exports.DrawType = void 0;
+    (function (DrawType) {
+        DrawType[DrawType["DrawArray"] = 0] = "DrawArray";
+        DrawType[DrawType["DrawArrayInstance"] = 1] = "DrawArrayInstance";
+        DrawType[DrawType["DrawArrayIndirect"] = 2] = "DrawArrayIndirect";
+        DrawType[DrawType["DrawElement"] = 3] = "DrawElement";
+        DrawType[DrawType["DrawElementInstance"] = 4] = "DrawElementInstance";
+        DrawType[DrawType["DrawElementIndirect"] = 5] = "DrawElementIndirect";
+    })(exports.DrawType || (exports.DrawType = {}));
+
+    exports.IndexFormat = void 0;
+    (function (IndexFormat) {
+        IndexFormat[IndexFormat["UInt8"] = 0] = "UInt8";
+        IndexFormat[IndexFormat["UInt16"] = 1] = "UInt16";
+        IndexFormat[IndexFormat["UInt32"] = 2] = "UInt32";
+    })(exports.IndexFormat || (exports.IndexFormat = {}));
+
+    exports.MeshTopology = void 0;
+    (function (MeshTopology) {
+        MeshTopology[MeshTopology["Points"] = 0] = "Points";
+        MeshTopology[MeshTopology["Lines"] = 1] = "Lines";
+        MeshTopology[MeshTopology["LineLoop"] = 2] = "LineLoop";
+        MeshTopology[MeshTopology["LineStrip"] = 3] = "LineStrip";
+        MeshTopology[MeshTopology["Triangles"] = 4] = "Triangles";
+        MeshTopology[MeshTopology["TriangleStrip"] = 5] = "TriangleStrip";
+        MeshTopology[MeshTopology["TriangleFan"] = 6] = "TriangleFan";
+    })(exports.MeshTopology || (exports.MeshTopology = {}));
+
+    class SingletonList {
+        constructor() {
+            this.elements = [];
+            this.length = 0;
+        }
+        add(element) {
+            let index = this.elements.indexOf(element);
+            if (index != -1 && index < this.length)
+                return;
+            this.elements[this.length++] = element;
+        }
+        addList(list) {
+            let len = this.length;
+            let len2 = list.length;
+            this.length = len + len2;
+            let arr1 = this.elements;
+            let arr2 = list.elements;
+            if (arr1.length < this.length)
+                arr1.length = this.length;
+            for (let i = 0; i < len2; i++) {
+                arr1[len + i] = arr2[i];
+            }
+        }
+        indexof(element) {
+            let index = this.elements.indexOf(element);
+            if (index != -1 && index < this.length)
+                return index;
+            return -1;
+        }
+        remove(element) {
+            let index = this.elements.indexOf(element);
+            if (index != -1 && index < this.length) {
+                this.elements[index] = this.elements[this.length - 1];
+                this.elements[this.length - 1] = null;
+                this.length--;
+            }
+        }
+        clear() {
+            this.elements.length = 0;
+            this.length = 0;
+        }
+        clean() {
+            this.elements.length = this.length;
+        }
+        cloneTo(out) {
+            out.length = this.length;
+            out.elements = this.elements.slice();
+        }
+        destroy() {
+            this.elements = null;
+        }
+    }
+    class FastSinglelist extends SingletonList {
+        add(element) {
+            this.elements[this.length++] = element;
         }
     }
 
-    class Earcut {
-        static earcut(data, holeIndices, dim) {
-            dim = dim || 2;
-            var hasHoles = holeIndices && holeIndices.length, outerLen = hasHoles ? holeIndices[0] * dim : data.length, outerNode = Earcut.linkedList(data, 0, outerLen, dim, true), triangles = [];
-            if (!outerNode)
-                return triangles;
-            var minX, minY, maxX, maxY, x, y, invSize;
-            if (hasHoles)
-                outerNode = Earcut.eliminateHoles(data, holeIndices, outerNode, dim);
-            if (data.length > 80 * dim) {
-                minX = maxX = data[0];
-                minY = maxY = data[1];
-                for (var i = dim; i < outerLen; i += dim) {
-                    x = data[i];
-                    y = data[i + 1];
-                    if (x < minX)
-                        minX = x;
-                    if (y < minY)
-                        minY = y;
-                    if (x > maxX)
-                        maxX = x;
-                    if (y > maxY)
-                        maxY = y;
-                }
-                invSize = Math.max(maxX - minX, maxY - minY);
-                invSize = invSize !== 0 ? 1 / invSize : 0;
-            }
-            Earcut.earcutLinked(outerNode, triangles, dim, minX, minY, invSize);
-            return triangles;
+    var texture_ps = "#define SHADER_NAME TextureFS2D\n#if defined(GL_FRAGMENT_PRECISION_HIGH)\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n#include \"Sprite2DFrag.glsl\";\nvoid main(){clip();vec4 color=getSpriteTextureColor();setglColor(color);}";
+
+    var texture_vs = "#define SHADER_NAME TextureVS2D\n#include \"Sprite2DVertex.glsl\";\nvoid main(){vertexInfo info;getVertexInfo(info);v_texcoordAlpha=info.texcoordAlpha;v_color=info.color;v_useTex=info.useTex;v_useClip=info.useClip;v_customs=info.customs;\n#ifdef USE_TEX_ARRAY\nv_texLayer=a_attribFlags.w;\n#endif\ngl_Position=getPosition(info.pos);}";
+
+    var baseRender2D_vs = "#define SHADER_NAME BaseRender2DVS\n#include \"Sprite2DVertex.glsl\";\nvoid main(){vertexInfo info;getVertexInfo(info);v_texcoord=info.uv;v_color=info.color;\n#ifdef LIGHT2D_ENABLE\nlightAndShadow(info);\n#endif\ngl_Position=getPosition(info.pos);}";
+
+    var baseRender2D_ps = "#define SHADER_NAME BaseRender2DPS\n#if defined(GL_FRAGMENT_PRECISION_HIGH)\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n#include \"Sprite2DFrag.glsl\";\nvoid main(){clip();vec2 texcoord=v_texcoord.xy*u_tilingOffset.zw+u_tilingOffset.xy;vec4 textureColor=texture2D(u_baseRender2DTexture,texcoord);\n#ifdef LIGHT2D_ENABLE\nlightAndShadow(textureColor);\n#endif\ntextureColor=transspaceColor(textureColor);setglColor(textureColor);}";
+
+    var ColorGLSL = "#if !defined(Color_lib)\n#define Color_lib\n#include \"Math.glsl\";\nvec3 linearToGamma(in vec3 value){return pow(value,vec3(1.0/2.2));}vec4 linearToGamma(in vec4 value){return vec4(linearToGamma(value.rgb),value.a);}vec3 gammaToLinear(in vec3 value){return pow(value,vec3(2.2));}vec4 gammaToLinear(in vec4 value){return vec4(gammaToLinear(value.rgb),value.a);}const float c_RGBDMaxRange=255.0;vec4 encodeRGBD(in vec3 color){float maxRGB=max(vecmax(color),FLT_EPS);float d=max(1.0,c_RGBDMaxRange/maxRGB);d=saturate(d/255.0);vec3 rgb=color.rgb*d;rgb=saturate(rgb);return vec4(rgb,d);}vec3 decodeRGBD(in vec4 rgbd){vec3 color=rgbd.rgb*(1.0/rgbd.a);return color;}vec4 encodeRGBM(in vec3 color,float range){color*=1.0/range;float maxRGB=max(vecmax(color),FLT_EPS);float m=ceil(maxRGB*255.0)/255.0;vec3 rgb=color.rgb*1.0/m;vec4 rgbm=vec4(rgb,m);return rgbm;}vec3 decodeRGBM(in vec4 rgbm,float range){return range*rgbm.rgb*rgbm.a;}\n#include \"OutputTransform.glsl\";\n#endif\n";
+
+    var MathGLSL = "#if !defined(Math_lib)\n#define Math_lib\n#ifndef GRAPHICS_API_GLES3\nmat2 inverse(mat2 m){return mat2(m[1][1],-m[0][1],-m[1][0],m[0][0])/(m[0][0]*m[1][1]-m[0][1]*m[1][0]);}mat3 inverse(mat3 m){float a00=m[0][0],a01=m[0][1],a02=m[0][2];float a10=m[1][0],a11=m[1][1],a12=m[1][2];float a20=m[2][0],a21=m[2][1],a22=m[2][2];float b01=a22*a11-a12*a21;float b11=-a22*a10+a12*a20;float b21=a21*a10-a11*a20;float det=a00*b01+a01*b11+a02*b21;return mat3(b01,(-a22*a01+a02*a21),(a12*a01-a02*a11),b11,(a22*a00-a02*a20),(-a12*a00+a02*a10),b21,(-a21*a00+a01*a20),(a11*a00-a01*a10))/det;}mat4 inverse(mat4 m){float a00=m[0][0],a01=m[0][1],a02=m[0][2],a03=m[0][3],a10=m[1][0],a11=m[1][1],a12=m[1][2],a13=m[1][3],a20=m[2][0],a21=m[2][1],a22=m[2][2],a23=m[2][3],a30=m[3][0],a31=m[3][1],a32=m[3][2],a33=m[3][3],b00=a00*a11-a01*a10,b01=a00*a12-a02*a10,b02=a00*a13-a03*a10,b03=a01*a12-a02*a11,b04=a01*a13-a03*a11,b05=a02*a13-a03*a12,b06=a20*a31-a21*a30,b07=a20*a32-a22*a30,b08=a20*a33-a23*a30,b09=a21*a32-a22*a31,b10=a21*a33-a23*a31,b11=a22*a33-a23*a32,det=b00*b11-b01*b10+b02*b09+b03*b08-b04*b07+b05*b06;return mat4(a11*b11-a12*b10+a13*b09,a02*b10-a01*b11-a03*b09,a31*b05-a32*b04+a33*b03,a22*b04-a21*b05-a23*b03,a12*b08-a10*b11-a13*b07,a00*b11-a02*b08+a03*b07,a32*b02-a30*b05-a33*b01,a20*b05-a22*b02+a23*b01,a10*b10-a11*b08+a13*b06,a01*b08-a00*b10-a03*b06,a30*b04-a31*b02+a33*b00,a21*b02-a20*b04-a23*b00,a11*b07-a10*b09-a12*b06,a00*b09-a01*b07+a02*b06,a31*b01-a30*b03-a32*b00,a20*b03-a21*b01+a22*b00)/det;}mat4 transpose(mat4 m){return mat4(m[0][0],m[1][0],m[2][0],m[3][0],m[0][1],m[1][1],m[2][1],m[3][1],m[0][2],m[1][2],m[2][2],m[3][2],m[0][3],m[1][3],m[2][3],m[3][3]);}mat3 transpose(mat3 m){return mat3(m[0][0],m[1][0],m[2][0],m[0][1],m[1][1],m[2][1],m[0][2],m[1][2],m[2][2]);}\n#endif\n#define PI 3.14159265359\n#define INVERT_PI 0.31830988618\n#define HALF_PI 1.570796327\n#define MEDIUMP_FLT_MAX 65504.0\n#define MEDIUMP_FLT_MIN 0.00006103515625\n#if defined(GL_FRAGMENT_PRECISION_HIGH)\n#define FLT_EPS 1e-5\n#define saturateMediump(x) x\n#else\n#define FLT_EPS MEDIUMP_FLT_MIN\n#define saturateMediump(x) min(x, MEDIUMP_FLT_MAX)\n#endif\n#define saturate(x) clamp(x, 0.0, 1.0)\nfloat pow2(float x){return x*x;}vec3 pow2(vec3 x){return x*x;}float pow5(float x){float x2=x*x;return x2*x2*x;}const float INVERT_LOG10=0.43429448190325176;float log10(float x){return log(x)*INVERT_LOG10;}float vecmax(const vec2 v){return max(v.x,v.y);}float vecmax(const vec3 v){return max(v.x,max(v.y,v.z));}float vecmax(const vec4 v){return max(max(v.x,v.y),max(v.z,v.w));}float vecmin(const vec2 v){return min(v.x,v.y);}float vecmin(const vec3 v){return min(v.x,min(v.y,v.z));}float vecmin(const vec4 v){return min(min(v.x,v.y),min(v.z,v.w));}vec3 SafeNormalize(in vec3 inVec){float dp3=max(0.001,dot(inVec,inVec));return inVec*inversesqrt(dp3);}vec3 normalScale(in vec3 normal,in float scale){normal*=vec3(scale,scale,1.0);return normalize(normal);}float acosFast(float x){float y=abs(x);float p=-0.1565827*y+1.570796;p*=sqrt(1.0-y);return x>=0.0 ? p : PI-p;}float acosFastPositive(float x){float p=-0.1565827*x+1.570796;return p*sqrt(1.0-x);}float interleavedGradientNoise(const highp vec2 w){const vec3 m=vec3(0.06711056,0.00583715,52.9829189);return fract(m.z*fract(dot(w,m.xy)));}vec3 rotationByEuler(in vec3 vector,in vec3 rot){float halfRoll=rot.z*0.5;float halfPitch=rot.x*0.5;float halfYaw=rot.y*0.5;float sinRoll=sin(halfRoll);float cosRoll=cos(halfRoll);float sinPitch=sin(halfPitch);float cosPitch=cos(halfPitch);float sinYaw=sin(halfYaw);float cosYaw=cos(halfYaw);float quaX=(cosYaw*sinPitch*cosRoll)+(sinYaw*cosPitch*sinRoll);float quaY=(sinYaw*cosPitch*cosRoll)-(cosYaw*sinPitch*sinRoll);float quaZ=(cosYaw*cosPitch*sinRoll)-(sinYaw*sinPitch*cosRoll);float quaW=(cosYaw*cosPitch*cosRoll)+(sinYaw*sinPitch*sinRoll);float x=quaX+quaX;float y=quaY+quaY;float z=quaZ+quaZ;float wx=quaW*x;float wy=quaW*y;float wz=quaW*z;float xx=quaX*x;float xy=quaX*y;float xz=quaX*z;float yy=quaY*y;float yz=quaY*z;float zz=quaZ*z;return vec3(((vector.x*((1.0-yy)-zz))+(vector.y*(xy-wz)))+(vector.z*(xz+wy)),((vector.x*(xy+wz))+(vector.y*((1.0-xx)-zz)))+(vector.z*(yz-wx)),((vector.x*(xz-wy))+(vector.y*(yz+wx)))+(vector.z*((1.0-xx)-yy)));}vec3 rotationByAxis(in vec3 vector,in vec3 axis,in float angle){float halfAngle=angle*0.5;float sinf=sin(halfAngle);float quaX=axis.x*sinf;float quaY=axis.y*sinf;float quaZ=axis.z*sinf;float quaW=cos(halfAngle);float x=quaX+quaX;float y=quaY+quaY;float z=quaZ+quaZ;float wx=quaW*x;float wy=quaW*y;float wz=quaW*z;float xx=quaX*x;float xy=quaX*y;float xz=quaX*z;float yy=quaY*y;float yz=quaY*z;float zz=quaZ*z;return vec3(((vector.x*((1.0-yy)-zz))+(vector.y*(xy-wz)))+(vector.z*(xz+wy)),((vector.x*(xy+wz))+(vector.y*((1.0-xx)-zz)))+(vector.z*(yz-wx)),((vector.x*(xz-wy))+(vector.y*(yz+wx)))+(vector.z*((1.0-xx)-yy)));}vec3 rotationByQuaternions(in vec3 v,in vec4 q){return v+2.0*cross(q.xyz,cross(q.xyz,v)+q.w*v);}\n#endif\n";
+
+    var Sprite2DFrag = "#include \"ClipFrag.glsl\";\nvec3 gammaToLinear(in vec3 value){return pow((value+0.055)/1.055,vec3(2.4));}vec4 gammaToLinear(in vec4 value){return vec4(gammaToLinear(value.rgb),value.a);}vec3 linearToGamma(in vec3 value){return vec3(mix(pow(value.rgb,vec3(0.41666))*1.055-vec3(0.055),value.rgb*12.92,vec3(lessThanEqual(value.rgb,vec3(0.0031308)))));}vec4 linearToGamma(in vec4 value){return vec4(linearToGamma(value.rgb),value.a);}vec4 transspaceColor(vec4 color){\n#ifndef GAMMATEXTURE\n#ifdef GAMMASPACE\ncolor.xyz=linearToGamma(color.xyz);\n#endif\n#else\n#ifndef GAMMASPACE\ncolor.xyz=gammaToLinear(color.xyz);\n#endif\n#endif\nreturn color;}\n#ifdef TEXTUREVS\nvarying vec4 v_texcoordAlpha;varying vec4 v_color;varying float v_useTex;varying float v_useClip;varying vec4 v_customs;\n#ifdef USE_TEX_ARRAY\nvarying float v_texLayer;uniform sampler2DArray u_spriteTextureArray;\n#else\nuniform sampler2D u_spriteTexture;\n#endif\n#ifdef FILLTEXTURE\nuniform vec4 u_TexRange;\n#endif\nvec4 getSpriteTextureColor(){vec2 uv;\n#ifdef FILLTEXTURE\nuv=fract(v_texcoordAlpha.xy)*u_TexRange.zw+u_TexRange.xy;\n#else\nuv=v_texcoordAlpha.xy;\n#endif\n#ifdef USE_TEX_ARRAY\nvec4 color=texture(u_spriteTextureArray,vec3(uv,v_texLayer));\n#else\nvec4 color=texture2D(u_spriteTexture,uv);\n#endif\nreturn transspaceColor(color);}void setglColor(in vec4 color){float useTex=step(1.0,v_useTex);color=color*useTex+(1.0-useTex);\n#ifdef UV_CLIP_GPU\nif(v_useClip>=1.0){vec2 uv=v_texcoordAlpha.xy;vec4 c=v_customs;if(uv.x<c.x||uv.x>c.x+c.z||uv.y<c.y||uv.y>c.y+c.w)discard;}\n#endif\ncolor.a*=v_color.w;vec4 transColor=v_color;\n#ifndef GAMMASPACE\ntransColor=gammaToLinear(v_color);\n#endif\ncolor.rgb*=transColor.rgb;gl_FragColor=color;}\n#endif\n#ifdef BASERENDER2D\nvarying vec2 v_texcoord;varying vec4 v_color;uniform sampler2D u_baseRender2DTexture;uniform vec4 u_baseRenderColor;uniform vec4 u_tilingOffset;\n#ifdef LIGHT2D_ENABLE\nvarying vec2 v_lightUV;uniform vec3 u_LightDirection;uniform vec4 u_LightAndShadow2DParam;uniform vec4 u_LightAndShadow2DAmbient;uniform sampler2D u_LightAndShadow2D;\n#ifdef LIGHT2D_SCENEMODE_ADD\nuniform sampler2D u_LightAndShadow2D_AddMode;\n#endif\n#ifdef LIGHT2D_SCENEMODE_SUB\nuniform sampler2D u_LightAndShadow2D_SubMode;\n#endif\n#ifdef LIGHT2D_NORMAL_PARAM\nuniform sampler2D u_normal2DTexture;uniform float u_normal2DStrength;\n#endif\nvoid lightAndShadow(inout vec4 color){\n#ifdef LIGHT2D_EMPTY\ncolor.rgb*=u_LightAndShadow2DAmbient.rgb;\n#else\nvec2 uv=v_lightUV;vec2 tt=step(vec2(0.0),uv)*step(uv,vec2(1.0));float side=tt.x*tt.y;vec3 ambient=color.rgb*u_LightAndShadow2DAmbient.rgb;color.rgb=color.rgb*texture2D(u_LightAndShadow2D,uv).rgb*side;side*=color.a;\n#ifdef LIGHT2D_SCENEMODE_ADD\ncolor.rgb=min(vec3(1.0),color.rgb+texture2D(u_LightAndShadow2D_AddMode,uv).rgb*side);\n#endif\n#ifdef LIGHT2D_SCENEMODE_SUB\ncolor.rgb=max(vec3(0.0),color.rgb-texture2D(u_LightAndShadow2D_SubMode,uv).rgb*side);\n#endif\n#ifdef LIGHT2D_NORMAL_PARAM\nvec3 dr=normalize(u_LightDirection);vec3 normal=normalize(texture2D(u_normal2DTexture,v_texcoord).rgb*2.0-1.0);color.rgb=color.rgb*((1.0-u_normal2DStrength)+abs(dot(dr,normal.rgb))*u_normal2DStrength);\n#endif\ncolor.rgb=min(vec3(1.0),color.rgb+ambient);\n#endif\n}\n#endif\nvoid setglColor(in vec4 color){color.a*=v_color.w;vec4 transColor=v_color;\n#ifndef GAMMASPACE\ntransColor=gammaToLinear(v_color);\n#endif\ncolor.rgb*=transColor.rgb;gl_FragColor=color;}vec2 transformUV(in vec2 texcoord,in vec4 tilingOffset){vec2 uv=texcoord*tilingOffset.zw+tilingOffset.xy;return uv;}\n#endif\n";
+
+    var ClipFrag = "#if !defined(ClipFrag_lib)\n#define ClipFrag_lib\nvarying vec2 v_cliped;void clip(){\n#ifdef UNIFORMCLIP\nif(v_cliped.x<0.)discard;if(v_cliped.x>1.)discard;if(v_cliped.y<0.)discard;if(v_cliped.y>1.)discard;\n#endif\n}\n#endif\n";
+
+    var ClipVertex = "#if !defined(ClipVertex_lib)\n#define ClipVertex_lib\n#ifdef MATERIALCLIP\nuniform vec4 u_mClipMatDir;uniform vec4 u_mClipMatPos;\n#endif\nvarying vec2 v_cliped;\n#ifdef UNIFORMCLIP\nuniform vec4 u_clipMatDir;uniform vec4 u_clipMatPos;\n#endif\nvoid clip(inout vec2 globalPos){\n#ifdef UNIFORMCLIP\nvec4 clipMatDir;vec4 clipMatPos;\n#ifdef MATERIALCLIP\nclipMatDir=u_mClipMatDir;clipMatPos=u_mClipMatPos;float tx=clipMatPos.z;float ty=clipMatPos.w;float cmaxx=tx+clipMatDir.x;float cmaxy=ty+clipMatDir.w;float parentMinX=u_clipMatPos.x;float parentMinY=u_clipMatPos.y;float offsetx=u_clipMatPos.z-parentMinX;float offsety=u_clipMatPos.w-parentMinY;float parentMaxX=parentMinX+u_clipMatDir.x;float parentMaxY=parentMinY+u_clipMatDir.w;if(tx<parentMinX){clipMatDir.x-=(parentMinX-tx);tx=clipMatPos.x=parentMinX;}if(cmaxx>parentMaxX){clipMatDir.x-=(cmaxx-parentMaxX);}if(ty<parentMinY){clipMatDir.w-=(parentMinY-ty);ty=clipMatPos.y=parentMinY;}if(cmaxy>parentMaxY){clipMatDir.w-=(cmaxy-parentMaxY);}clipMatPos.zw=vec2(tx+offsetx,ty+offsety);\n#else\nclipMatDir=u_clipMatDir;clipMatPos=u_clipMatPos;\n#endif\nvec2 cliped;float clipw=length(clipMatDir.xy);float cliph=length(clipMatDir.zw);vec2 clippos=globalPos-clipMatPos.xy;if(clipw>20000.&&cliph>20000.)cliped=vec2(0.5,0.5);else{cliped=vec2(dot(clippos,clipMatDir.xy)/clipw/clipw,dot(clippos,clipMatDir.zw)/cliph/cliph);}globalPos=clippos+clipMatPos.zw;v_cliped=cliped;\n#endif\n}\n#endif\n";
+
+    var Sprite2DVertex = "\n#include \"ClipVertex.glsl\";\n#ifdef CAMERA2D\nuniform mat3 u_view2D;\n#endif\n#ifdef SPRITE2DGLOBAL\n#endif\n#ifdef RENDERTEXTURE\nuniform vec3 u_InvertMat_0;uniform vec3 u_InvertMat_1;\n#endif\n#ifdef VERTEX_SIZE\nuniform vec4 u_vertexSize;\n#endif\nuniform vec3 u_NMatrix_0;uniform vec3 u_NMatrix_1;uniform vec2 u_size;varying vec4 v_color;void transfrom(vec2 pos,vec3 xDir,vec3 yDir,out vec2 outPos){outPos.x=xDir.x*pos.x+xDir.y*pos.y+xDir.z;outPos.y=yDir.x*pos.x+yDir.y*pos.y+yDir.z;}void getGlobalPos(in vec2 localPos,out vec2 globalPos){transfrom(localPos,u_NMatrix_0,u_NMatrix_1,globalPos);}void getProjectPos(in vec2 viewPos,out vec4 projectPos){projectPos=vec4((viewPos.x/u_size.x-0.5)*2.0,(0.5-viewPos.y/u_size.y)*2.0,0.,1.0);\n#ifdef INVERTY\nprojectPos.y=-projectPos.y;\n#endif\n}void getViewPos(in vec2 globalPos,out vec2 viewPos){\n#ifdef RENDERTEXTURE\nvec2 tempPos;transfrom(globalPos,u_InvertMat_0,u_InvertMat_1,tempPos);\n#ifdef CAMERA2D\nviewPos.xy=(u_view2D*vec3(tempPos,1.0)).xy+u_size/2.;\n#else\nviewPos.xy=tempPos;\n#endif\n#else\n#ifdef CAMERA2D\nviewPos.xy=(u_view2D*vec3(globalPos,1.0)).xy+u_size/2.;\n#else\nviewPos.xy=globalPos;\n#endif\n#endif\n}\n#ifdef TEXTUREVS\nstruct vertexInfo{vec2 pos;vec4 color;vec2 cliped;vec4 texcoordAlpha;float useTex;float useClip;vec4 customs;};uniform float u_VertAlpha;varying vec4 v_texcoordAlpha;varying float v_useTex;varying float v_useClip;varying vec4 v_customs;\n#ifdef USE_TEX_ARRAY\nvarying float v_texLayer;\n#endif\nvoid getVertexInfo(inout vertexInfo info){info.texcoordAlpha.xy=a_posuv.zw;info.color=a_attribColor;\n#ifdef VERTEXALPHA\ninfo.color.a*=a_attribFlags.z;\n#else\ninfo.color.a*=u_VertAlpha;\n#endif\ninfo.color.xyz*=info.color.a;info.useTex=a_attribFlags.r;info.useClip=a_attribFlags.g;info.customs=a_customs;vec2 pos;\n#ifdef VERTEX_SIZE\npos=(a_posuv.xy*u_vertexSize.zw)+u_vertexSize.xy;\n#else\npos=a_posuv.xy;\n#endif\ninfo.pos=pos;}vec4 getPosition(in vec2 positionOS){vec2 globalPos;\n#ifdef VERTEX_SIZE\ngetGlobalPos(positionOS,globalPos);\n#else\nglobalPos=positionOS;\n#endif\nclip(globalPos);vec2 viewPos;getViewPos(globalPos,viewPos);vec4 pos;getProjectPos(viewPos,pos);return pos;}\n#endif\n#ifdef BASERENDER2D\nvarying vec2 v_texcoord;uniform vec4 u_baseRenderColor;struct vertexInfo{vec4 color;vec2 uv;vec2 pos;vec2 lightUV;};\n#ifdef LIGHT2D_ENABLE\nvarying vec2 v_lightUV;uniform vec4 u_LightAndShadow2DParam;void lightAndShadow(vertexInfo info){v_lightUV=info.lightUV;}void invertMat(inout vec3 v1,inout vec3 v2){float a1=v1.x;float b1=v2.x;float c1=v1.y;float d1=v2.y;float tx1=v1.z;float ty1=v2.z;float n=a1*d1-b1*c1;v1.x=d1/n;v2.x=-b1/n;v1.y=-c1/n;v2.y=a1/n;v1.z=(c1*ty1-d1*tx1)/n;v2.z=-(a1*ty1-b1*tx1)/n;}\n#endif\nvec4 linearToGamma(in vec4 value){return vec4(mix(pow(value.rgb,vec3(0.41666))*1.055-vec3(0.055),value.rgb*12.92,vec3(lessThanEqual(value.rgb,vec3(0.0031308)))),value.a);}void getVertexInfo(inout vertexInfo info){info.pos=a_position.xy;info.color=vec4(1.0,1.0,1.0,1.0);\n#ifdef COLOR\ninfo.color=a_color;info.color.rgb*=a_color.a;\n#endif\ninfo.color*=linearToGamma(u_baseRenderColor);\n#ifdef UV\ninfo.uv=a_uv;\n#endif\n#ifdef LIGHT2D_ENABLE\nvec2 global;getGlobalPos(info.pos,global);info.lightUV.x=(global.x-u_LightAndShadow2DParam.x)/u_LightAndShadow2DParam.z;info.lightUV.y=1.0-(global.y-u_LightAndShadow2DParam.y)/u_LightAndShadow2DParam.w;\n#endif\n}vec4 getPosition(in vec2 positionOS){vec2 globalPos;getGlobalPos(positionOS,globalPos);clip(globalPos);vec2 viewPos;getViewPos(globalPos,viewPos);vec4 pos;getProjectPos(viewPos,pos);return pos;}\n#endif\n";
+
+    var OutputTransformGLSL = "#if !defined(OutputTransform_lib)\n#define OutputTransform_lib\nvec3 gammaCorrect(in vec3 color,float gammaValue){return pow(color,vec3(gammaValue));}vec4 gammaCorrect(in vec4 color){float gammaValue=1.0/2.2;return vec4(gammaCorrect(color.rgb,gammaValue),color.a);}vec4 outputTransform(in vec4 color){\n#ifdef GAMMACORRECT\nreturn gammaCorrect(color);\n#else\nreturn color;\n#endif\n}\n#endif\n";
+
+    class Shader2D {
+        destroy() {
         }
-        static linkedList(data, start, end, dim, clockwise) {
-            var i, last;
-            if (clockwise === (Earcut.signedArea(data, start, end, dim) > 0)) {
-                for (i = start; i < end; i += dim)
-                    last = Earcut.insertNode(i, data[i], data[i + 1], last);
-            }
-            else {
-                for (i = end - dim; i >= start; i -= dim)
-                    last = Earcut.insertNode(i, data[i], data[i + 1], last);
-            }
-            if (last && Earcut.equals(last, last.next)) {
-                Earcut.removeNode(last);
-                last = last.next;
-            }
-            return last;
+        static __init__() {
+            Shader3D.addInclude("ClipFrag.glsl", ClipFrag);
+            Shader3D.addInclude("ClipVertex.glsl", ClipVertex);
+            Shader3D.addInclude("Sprite2DFrag.glsl", Sprite2DFrag);
+            Shader3D.addInclude("Sprite2DVertex.glsl", Sprite2DVertex);
+            Shader3D.addInclude("Color.glsl", ColorGLSL);
+            Shader3D.addInclude("Math.glsl", MathGLSL);
+            Shader3D.addInclude("OutputTransform.glsl", OutputTransformGLSL);
+            Shader2D.graphicsShader = Shader3D.add("Sprite2DTexture", false, false);
+            Shader2D.graphicsShader.shaderType = exports.ShaderFeatureType.D2_TextureSV;
+            let subShader = new SubShader(Shader2D.graphicsAttribute, {}, {});
+            Shader2D.graphicsShader.addSubShader(subShader);
+            subShader.addShaderPass(texture_vs, texture_ps);
+            Shader2D.render2DNodeShader = Shader3D.add("baseRender2D", false, false);
+            Shader2D.render2DNodeShader.shaderType = exports.ShaderFeatureType.D2_BaseRenderNode2D;
+            subShader = new SubShader(Shader2D.Render2DNodeAttribute, {}, {});
+            Shader2D.render2DNodeShader.addSubShader(subShader);
+            subShader.addShaderPass(baseRender2D_vs, baseRender2D_ps);
         }
-        static filterPoints(start, end) {
-            if (!start)
-                return start;
-            if (!end)
-                end = start;
-            var p = start, again;
-            do {
-                again = false;
-                if (!p.steiner && (Earcut.equals(p, p.next) || Earcut.area(p.prev, p, p.next) === 0)) {
-                    Earcut.removeNode(p);
-                    p = end = p.prev;
-                    if (p === p.next)
-                        break;
-                    again = true;
-                }
-                else {
-                    p = p.next;
-                }
-            } while (again || p !== end);
-            return end;
+    }
+    Shader2D.graphicsAttribute = {
+        'a_posuv': [0, exports.ShaderDataType.Vector4],
+        'a_attribColor': [1, exports.ShaderDataType.Vector4],
+        'a_attribFlags': [2, exports.ShaderDataType.Vector4],
+        'a_customs': [3, exports.ShaderDataType.Vector4]
+    };
+    Shader2D.Render2DNodeAttribute = {
+        'a_position': [0, exports.ShaderDataType.Vector4],
+        'a_color': [1, exports.ShaderDataType.Vector4],
+        'a_uv': [2, exports.ShaderDataType.Vector2]
+    };
+
+    class Texture2DArray extends BaseTexture {
+        static get defaultTexture() {
+            return this._defaultTexture;
         }
-        static earcutLinked(ear, triangles, dim, minX, minY, invSize, pass = null) {
-            if (!ear)
-                return;
-            if (!pass && invSize)
-                Earcut.indexCurve(ear, minX, minY, invSize);
-            var stop = ear, prev, next;
-            while (ear.prev !== ear.next) {
-                prev = ear.prev;
-                next = ear.next;
-                if (invSize ? Earcut.isEarHashed(ear, minX, minY, invSize) : Earcut.isEar(ear)) {
-                    triangles.push(prev.i / dim);
-                    triangles.push(ear.i / dim);
-                    triangles.push(next.i / dim);
-                    Earcut.removeNode(ear);
-                    ear = next.next;
-                    stop = next.next;
-                    continue;
-                }
-                ear = next;
-                if (ear === stop) {
-                    if (!pass) {
-                        Earcut.earcutLinked(Earcut.filterPoints(ear, null), triangles, dim, minX, minY, invSize, 1);
-                    }
-                    else if (pass === 1) {
-                        ear = Earcut.cureLocalIntersections(ear, triangles, dim);
-                        Earcut.earcutLinked(ear, triangles, dim, minX, minY, invSize, 2);
-                    }
-                    else if (pass === 2) {
-                        Earcut.splitEarcut(ear, triangles, dim, minX, minY, invSize);
-                    }
-                    break;
-                }
+        static __init__() {
+            if (LayaGL.renderEngine.getCapable(exports.RenderCapable.Texture3D)) {
+                this._defaultTexture = new Texture2DArray(1, 1, 1, exports.TextureFormat.R8G8B8A8, false, false, false);
+                this._defaultTexture.lock = true;
+                this._defaultTexture.setPixelsData(new Uint8Array([255, 255, 255, 255]), false, false);
             }
         }
-        static isEar(ear) {
-            var a = ear.prev, b = ear, c = ear.next;
-            if (Earcut.area(a, b, c) >= 0)
-                return false;
-            var p = ear.next.next;
-            while (p !== ear.prev) {
-                if (Earcut.pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) &&
-                    Earcut.area(p.prev, p, p.next) >= 0)
-                    return false;
-                p = p.next;
-            }
-            return true;
+        constructor(width, height, depth, format, mipmap = true, canRead, sRGB = false) {
+            super(width, height, format);
+            this._dimension = exports.TextureDimension.Texture2DArray;
+            this._gammaSpace = sRGB;
+            this.depth = depth;
+            let context = LayaGL.textureContext;
+            this._texture = context.createTexture3DInternal(this._dimension, width, height, depth, format, mipmap, sRGB, false);
+            return;
         }
-        static isEarHashed(ear, minX, minY, invSize) {
-            var a = ear.prev, b = ear, c = ear.next;
-            if (Earcut.area(a, b, c) >= 0)
-                return false;
-            var minTX = a.x < b.x ? (a.x < c.x ? a.x : c.x) : (b.x < c.x ? b.x : c.x), minTY = a.y < b.y ? (a.y < c.y ? a.y : c.y) : (b.y < c.y ? b.y : c.y), maxTX = a.x > b.x ? (a.x > c.x ? a.x : c.x) : (b.x > c.x ? b.x : c.x), maxTY = a.y > b.y ? (a.y > c.y ? a.y : c.y) : (b.y > c.y ? b.y : c.y);
-            var minZ = Earcut.zOrder(minTX, minTY, minX, minY, invSize), maxZ = Earcut.zOrder(maxTX, maxTY, minX, minY, invSize);
-            var p = ear.nextZ;
-            while (p && p.z <= maxZ) {
-                if (p !== ear.prev && p !== ear.next &&
-                    Earcut.pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) &&
-                    Earcut.area(p.prev, p, p.next) >= 0)
-                    return false;
-                p = p.nextZ;
-            }
-            p = ear.prevZ;
-            while (p && p.z >= minZ) {
-                if (p !== ear.prev && p !== ear.next &&
-                    Earcut.pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) &&
-                    Earcut.area(p.prev, p, p.next) >= 0)
-                    return false;
-                p = p.prevZ;
-            }
-            return true;
+        setImageData(sources, premultiplyAlpha, invertY) {
+            let texture = this._texture;
+            let context = LayaGL.textureContext;
+            context.setTexture3DImageData(texture, sources, this.depth, premultiplyAlpha, invertY);
         }
-        static cureLocalIntersections(start, triangles, dim) {
-            var p = start;
-            do {
-                var a = p.prev, b = p.next.next;
-                if (!Earcut.equals(a, b) && Earcut.intersects(a, p, p.next, b) && Earcut.locallyInside(a, b) && Earcut.locallyInside(b, a)) {
-                    triangles.push(a.i / dim);
-                    triangles.push(p.i / dim);
-                    triangles.push(b.i / dim);
-                    Earcut.removeNode(p);
-                    Earcut.removeNode(p.next);
-                    p = start = b;
-                }
-                p = p.next;
-            } while (p !== start);
-            return p;
+        setPixelsData(source, premultiplyAlpha, invertY) {
+            let texture = this._texture;
+            let context = LayaGL.textureContext;
+            context.setTexture3DPixelsData(texture, source, this.depth, premultiplyAlpha, invertY);
         }
-        static splitEarcut(start, triangles, dim, minX, minY, invSize) {
-            var a = start;
-            do {
-                var b = a.next.next;
-                while (b !== a.prev) {
-                    if (a.i !== b.i && Earcut.isValidDiagonal(a, b)) {
-                        var c = Earcut.splitPolygon(a, b);
-                        a = Earcut.filterPoints(a, a.next);
-                        c = Earcut.filterPoints(c, c.next);
-                        Earcut.earcutLinked(a, triangles, dim, minX, minY, invSize);
-                        Earcut.earcutLinked(c, triangles, dim, minX, minY, invSize);
-                        return;
-                    }
-                    b = b.next;
-                }
-                a = a.next;
-            } while (a !== start);
-        }
-        static eliminateHoles(data, holeIndices, outerNode, dim) {
-            var queue = [], i, len, start, end, list;
-            for (i = 0, len = holeIndices.length; i < len; i++) {
-                start = holeIndices[i] * dim;
-                end = i < len - 1 ? holeIndices[i + 1] * dim : data.length;
-                list = Earcut.linkedList(data, start, end, dim, false);
-                if (list === list.next)
-                    list.steiner = true;
-                queue.push(Earcut.getLeftmost(list));
-            }
-            queue.sort(Earcut.compareX);
-            for (i = 0; i < queue.length; i++) {
-                Earcut.eliminateHole(queue[i], outerNode);
-                outerNode = Earcut.filterPoints(outerNode, outerNode.next);
-            }
-            return outerNode;
-        }
-        static compareX(a, b) {
-            return a.x - b.x;
-        }
-        static eliminateHole(hole, outerNode) {
-            outerNode = Earcut.findHoleBridge(hole, outerNode);
-            if (outerNode) {
-                var b = Earcut.splitPolygon(outerNode, hole);
-                Earcut.filterPoints(b, b.next);
-            }
-        }
-        static findHoleBridge(hole, outerNode) {
-            var p = outerNode, hx = hole.x, hy = hole.y, qx = -Infinity, m;
-            do {
-                if (hy <= p.y && hy >= p.next.y && p.next.y !== p.y) {
-                    var x = p.x + (hy - p.y) * (p.next.x - p.x) / (p.next.y - p.y);
-                    if (x <= hx && x > qx) {
-                        qx = x;
-                        if (x === hx) {
-                            if (hy === p.y)
-                                return p;
-                            if (hy === p.next.y)
-                                return p.next;
-                        }
-                        m = p.x < p.next.x ? p : p.next;
-                    }
-                }
-                p = p.next;
-            } while (p !== outerNode);
-            if (!m)
-                return null;
-            if (hx === qx)
-                return m.prev;
-            var stop = m, mx = m.x, my = m.y, tanMin = Infinity, tan;
-            p = m.next;
-            while (p !== stop) {
-                if (hx >= p.x && p.x >= mx && hx !== p.x &&
-                    Earcut.pointInTriangle(hy < my ? hx : qx, hy, mx, my, hy < my ? qx : hx, hy, p.x, p.y)) {
-                    tan = Math.abs(hy - p.y) / (hx - p.x);
-                    if ((tan < tanMin || (tan === tanMin && p.x > m.x)) && Earcut.locallyInside(p, hole)) {
-                        m = p;
-                        tanMin = tan;
-                    }
-                }
-                p = p.next;
-            }
-            return m;
-        }
-        static indexCurve(start, minX, minY, invSize) {
-            var p = start;
-            do {
-                if (p.z === null)
-                    p.z = Earcut.zOrder(p.x, p.y, minX, minY, invSize);
-                p.prevZ = p.prev;
-                p.nextZ = p.next;
-                p = p.next;
-            } while (p !== start);
-            p.prevZ.nextZ = null;
-            p.prevZ = null;
-            Earcut.sortLinked(p);
-        }
-        static sortLinked(list) {
-            var i, p, q, e, tail, numMerges, pSize, qSize, inSize = 1;
-            do {
-                p = list;
-                list = null;
-                tail = null;
-                numMerges = 0;
-                while (p) {
-                    numMerges++;
-                    q = p;
-                    pSize = 0;
-                    for (i = 0; i < inSize; i++) {
-                        pSize++;
-                        q = q.nextZ;
-                        if (!q)
-                            break;
-                    }
-                    qSize = inSize;
-                    while (pSize > 0 || (qSize > 0 && q)) {
-                        if (pSize !== 0 && (qSize === 0 || !q || p.z <= q.z)) {
-                            e = p;
-                            p = p.nextZ;
-                            pSize--;
-                        }
-                        else {
-                            e = q;
-                            q = q.nextZ;
-                            qSize--;
-                        }
-                        if (tail)
-                            tail.nextZ = e;
-                        else
-                            list = e;
-                        e.prevZ = tail;
-                        tail = e;
-                    }
-                    p = q;
-                }
-                tail.nextZ = null;
-                inSize *= 2;
-            } while (numMerges > 1);
-            return list;
-        }
-        static zOrder(x, y, minX, minY, invSize) {
-            x = 32767 * (x - minX) * invSize;
-            y = 32767 * (y - minY) * invSize;
-            x = (x | (x << 8)) & 0x00FF00FF;
-            x = (x | (x << 4)) & 0x0F0F0F0F;
-            x = (x | (x << 2)) & 0x33333333;
-            x = (x | (x << 1)) & 0x55555555;
-            y = (y | (y << 8)) & 0x00FF00FF;
-            y = (y | (y << 4)) & 0x0F0F0F0F;
-            y = (y | (y << 2)) & 0x33333333;
-            y = (y | (y << 1)) & 0x55555555;
-            return x | (y << 1);
-        }
-        static getLeftmost(start) {
-            var p = start, leftmost = start;
-            do {
-                if (p.x < leftmost.x)
-                    leftmost = p;
-                p = p.next;
-            } while (p !== start);
-            return leftmost;
-        }
-        static pointInTriangle(ax, ay, bx, by, cx, cy, px, py) {
-            return (cx - px) * (ay - py) - (ax - px) * (cy - py) >= 0 &&
-                (ax - px) * (by - py) - (bx - px) * (ay - py) >= 0 &&
-                (bx - px) * (cy - py) - (cx - px) * (by - py) >= 0;
-        }
-        static isValidDiagonal(a, b) {
-            return a.next.i !== b.i && a.prev.i !== b.i && !Earcut.intersectsPolygon(a, b) &&
-                Earcut.locallyInside(a, b) && Earcut.locallyInside(b, a) && Earcut.middleInside(a, b);
-        }
-        static area(p, q, r) {
-            return (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
-        }
-        static equals(p1, p2) {
-            return p1.x === p2.x && p1.y === p2.y;
-        }
-        static intersects(p1, q1, p2, q2) {
-            if ((Earcut.equals(p1, q1) && Earcut.equals(p2, q2)) ||
-                (Earcut.equals(p1, q2) && Earcut.equals(p2, q1)))
-                return true;
-            return Earcut.area(p1, q1, p2) > 0 !== Earcut.area(p1, q1, q2) > 0 &&
-                Earcut.area(p2, q2, p1) > 0 !== Earcut.area(p2, q2, q1) > 0;
-        }
-        static intersectsPolygon(a, b) {
-            var p = a;
-            do {
-                if (p.i !== a.i && p.next.i !== a.i && p.i !== b.i && p.next.i !== b.i &&
-                    Earcut.intersects(p, p.next, a, b))
-                    return true;
-                p = p.next;
-            } while (p !== a);
-            return false;
-        }
-        static locallyInside(a, b) {
-            return Earcut.area(a.prev, a, a.next) < 0 ?
-                Earcut.area(a, b, a.next) >= 0 && Earcut.area(a, a.prev, b) >= 0 :
-                Earcut.area(a, b, a.prev) < 0 || Earcut.area(a, a.next, b) < 0;
-        }
-        static middleInside(a, b) {
-            var p = a, inside = false, px = (a.x + b.x) / 2, py = (a.y + b.y) / 2;
-            do {
-                if (((p.y > py) !== (p.next.y > py)) && p.next.y !== p.y &&
-                    (px < (p.next.x - p.x) * (py - p.y) / (p.next.y - p.y) + p.x))
-                    inside = !inside;
-                p = p.next;
-            } while (p !== a);
-            return inside;
-        }
-        static splitPolygon(a, b) {
-            var a2 = new EarcutNode(a.i, a.x, a.y), b2 = new EarcutNode(b.i, b.x, b.y), an = a.next, bp = b.prev;
-            a.next = b;
-            b.prev = a;
-            a2.next = an;
-            an.prev = a2;
-            b2.next = a2;
-            a2.prev = b2;
-            bp.next = b2;
-            b2.prev = bp;
-            return b2;
-        }
-        static insertNode(i, x, y, last) {
-            var p = new EarcutNode(i, x, y);
-            if (!last) {
-                p.prev = p;
-                p.next = p;
-            }
-            else {
-                p.next = last.next;
-                p.prev = last;
-                last.next.prev = p;
-                last.next = p;
-            }
-            return p;
-        }
-        static removeNode(p) {
-            p.next.prev = p.prev;
-            p.prev.next = p.next;
-            if (p.prevZ)
-                p.prevZ.nextZ = p.nextZ;
-            if (p.nextZ)
-                p.nextZ.prevZ = p.prevZ;
-        }
-        static signedArea(data, start, end, dim) {
-            var sum = 0;
-            for (var i = start, j = end - dim; i < end; i += dim) {
-                sum += (data[j] - data[i]) * (data[i + 1] + data[j + 1]);
-                j = i;
-            }
-            return sum;
+        setSubPixelsData(xOffset, yOffset, zOffset, width, height, depth, pixels, mipmapLevel, generateMipmap, premultiplyAlpha, invertY) {
+            let texture = this._texture;
+            let context = LayaGL.textureContext;
+            context.setTexture3DSubPixelsData(texture, pixels, mipmapLevel, generateMipmap, xOffset, yOffset, zOffset, width, height, depth, premultiplyAlpha, invertY);
         }
     }
 
     const _TEMP_CLIPDIR = new Vector4(Const.MAX_CLIP_SIZE, 0, 0, Const.MAX_CLIP_SIZE);
     class GraphicsShaderInfo {
         constructor() {
+            this._enableVertexSize = false;
+            this._materialClip = false;
+            this._fillTexture = false;
+            this._clipMatDir = null;
+            this._clipMatPos = null;
+            this._texRange = null;
+            this._vertexSize = null;
+            this._isTextrueReadGamma = false;
+            this.texArrayLayer = 0;
+            this._blend = null;
             this.shaderData = LayaGL.renderDeviceFactory.createShaderData();
+            this.shaderData.addDefine(ShaderDefines2D.TEXTURESHADER);
+            this.shaderData.addDefine(ShaderDefines2D.VERTEXALPHA);
+            if (Config.uvClipMode === "gpu") {
+                this.shaderData.addDefine(ShaderDefines2D.UV_CLIP_GPU);
+            }
             this.toDefault();
+            BlendModeHandler.initBlendMode(this.shaderData);
         }
         toDefault() {
-            this.clipMatDir = _TEMP_CLIPDIR;
-            this.clipMatPos = Vector4.ZERO;
-            this.vertexSize = Vector4.ZERO;
-            BlendModeHandler.initBlendMode(this.shaderData);
-            this.shaderData.addDefine(ShaderDefines2D.TEXTURESHADER);
-            this.textureHost = null;
+            if (this._clipMatDir !== _TEMP_CLIPDIR) {
+                this.clipMatDir = _TEMP_CLIPDIR;
+            }
+            if (this._clipMatPos !== Vector4.ZERO) {
+                this.clipMatPos = Vector4.ZERO;
+            }
+            this._textureHost = null;
             this.enableVertexSize = false;
             this.materialClip = false;
             this.fillTexture = false;
@@ -11911,19 +12634,22 @@ window.Laya = (function (exports) {
         set textureHost(value) {
             this._textureHost = value;
             let textrueReadGamma = false;
-            if (this.textureHost) {
-                if (this.textureHost instanceof BaseTexture) {
+            if (value) {
+                if (value instanceof BaseTexture) {
                     textrueReadGamma = this.textureHost.gammaCorrection != 1;
                 }
-                else if (this.textureHost instanceof Texture && this.textureHost.bitmap) {
-                    textrueReadGamma = this.textureHost.bitmap.gammaCorrection != 1;
+                else if (value instanceof Texture && value.bitmap) {
+                    textrueReadGamma = value.bitmap.gammaCorrection != 1;
                 }
             }
-            if (textrueReadGamma) {
-                this.shaderData.addDefine(ShaderDefines2D.GAMMATEXTURE);
-            }
-            else {
-                this.shaderData.removeDefine(ShaderDefines2D.GAMMATEXTURE);
+            if (textrueReadGamma != this._isTextrueReadGamma) {
+                this._isTextrueReadGamma = textrueReadGamma;
+                if (textrueReadGamma) {
+                    this.shaderData.addDefine(ShaderDefines2D.GAMMATEXTURE);
+                }
+                else {
+                    this.shaderData.removeDefine(ShaderDefines2D.GAMMATEXTURE);
+                }
             }
             let tex;
             if (value instanceof Texture) {
@@ -11935,26 +12661,46 @@ window.Laya = (function (exports) {
             if (!tex) {
                 tex = Texture2D.whiteTexture;
             }
-            this.shaderData.setTexture(ShaderDefines2D.UNIFORM_SPRITETEXTURE, tex);
-        }
-        set enableVertexSize(value) {
-            if (value) {
-                this.shaderData.addDefine(ShaderDefines2D.VERTEX_SIZE);
+            if (tex instanceof Texture2DArray) {
+                this.shaderData.addDefine(ShaderDefines2D.USE_TEX_ARRAY);
+                this.shaderData.setTexture(ShaderDefines2D.UNIFORM_SPRITETEXTURE_ARRAY, tex);
             }
             else {
+                this.shaderData.removeDefine(ShaderDefines2D.USE_TEX_ARRAY);
+                this.shaderData.setTexture(ShaderDefines2D.UNIFORM_SPRITETEXTURE, tex);
+            }
+            if (this._bitmap != tex) {
+                this._bitmap = tex;
+                this.shaderData.setTexture(ShaderDefines2D.UNIFORM_SPRITETEXTURE, this._bitmap);
+            }
+        }
+        set enableVertexSize(value) {
+            if (value == this._enableVertexSize)
+                return;
+            this._enableVertexSize = value;
+            if (value) {
+                this.shaderData.addDefine(ShaderDefines2D.VERTEX_SIZE);
+                this.shaderData.removeDefine(ShaderDefines2D.VERTEXALPHA);
+            }
+            else {
+                this.shaderData.addDefine(ShaderDefines2D.VERTEXALPHA);
                 this.shaderData.removeDefine(ShaderDefines2D.VERTEX_SIZE);
             }
         }
         get enableVertexSize() {
-            return this.shaderData.hasDefine(ShaderDefines2D.VERTEX_SIZE);
+            return this._enableVertexSize;
         }
         set vertexSize(value) {
+            this._vertexSize = value;
             this.shaderData.setVector(ShaderDefines2D.UNIFORM_VERTEX_SIZE, value);
         }
         get vertexSize() {
-            return this.shaderData.getVector(ShaderDefines2D.UNIFORM_VERTEX_SIZE);
+            return this._vertexSize;
         }
         set materialClip(value) {
+            if (value == this._materialClip)
+                return;
+            this._materialClip = value;
             if (value) {
                 this.shaderData.addDefine(ShaderDefines2D.MATERIALCLIP);
             }
@@ -11963,27 +12709,33 @@ window.Laya = (function (exports) {
             }
         }
         get materialClip() {
-            return this.shaderData.hasDefine(ShaderDefines2D.MATERIALCLIP);
+            return this._materialClip;
         }
         set clipMatDir(value) {
+            this._clipMatDir = value;
             this.shaderData.setVector(ShaderDefines2D.UNIFORM_MATERIAL_CLIPMATDIR, value);
         }
         get clipMatDir() {
-            return this.shaderData.getVector(ShaderDefines2D.UNIFORM_MATERIAL_CLIPMATDIR);
+            return this._clipMatDir;
         }
         set clipMatPos(value) {
+            this._clipMatPos = value;
             this.shaderData.setVector(ShaderDefines2D.UNIFORM_MATERIAL_CLIPMATPOS, value);
         }
         get clipMatPos() {
-            return this.shaderData.getVector(ShaderDefines2D.UNIFORM_MATERIAL_CLIPMATPOS);
+            return this._clipMatPos;
         }
         get u_TexRange() {
-            return this.shaderData.getVector(ShaderDefines2D.UNIFORM_TEXRANGE);
+            return this._texRange;
         }
         set u_TexRange(value) {
+            this._texRange = value;
             this.shaderData.setVector(ShaderDefines2D.UNIFORM_TEXRANGE, value);
         }
         set fillTexture(value) {
+            if (value == this._fillTexture)
+                return;
+            this._fillTexture = value;
             if (value) {
                 this.shaderData.addDefine(ShaderDefines2D.FILLTEXTURE);
             }
@@ -11992,7 +12744,7 @@ window.Laya = (function (exports) {
             }
         }
         get fillTexture() {
-            return this.shaderData.hasDefine(ShaderDefines2D.FILLTEXTURE);
+            return this._fillTexture;
         }
         cloneTo(shaderData) {
             if (this.enableVertexSize) {
@@ -12023,9 +12775,20 @@ window.Laya = (function (exports) {
             else {
                 shaderData.removeDefine(ShaderDefines2D.FILLTEXTURE);
             }
-            shaderData.setTexture(ShaderDefines2D.UNIFORM_SPRITETEXTURE, tex);
+            if (tex instanceof Texture2DArray) {
+                shaderData.addDefine(ShaderDefines2D.USE_TEX_ARRAY);
+                shaderData.setTexture(ShaderDefines2D.UNIFORM_SPRITETEXTURE_ARRAY, tex);
+            }
+            else {
+                shaderData.removeDefine(ShaderDefines2D.USE_TEX_ARRAY);
+                shaderData.setTexture(ShaderDefines2D.UNIFORM_SPRITETEXTURE, tex);
+            }
         }
         clear() {
+            if (this._blend) {
+                BlendModeHandler.initBlendMode(this.shaderData);
+                this._blend = null;
+            }
             this.toDefault();
         }
         destroy() {
@@ -12044,66 +12807,216 @@ window.Laya = (function (exports) {
     }
 
     class SubmitBase {
+        get mesh() {
+            return this._mesh;
+        }
+        set mesh(value) {
+            if (this._mesh == value)
+                return;
+            if (this.indexView && this._mesh) {
+                this._mesh.clearIndexView(this.indexView);
+                this.indexView = null;
+            }
+            this._mesh = value;
+            if (value) {
+                this.renderElement.geometry.bufferState = value.bufferState;
+                this._bufferBlock.vertexBuffer = value._buffer.vertexBuffer;
+                this._bufferBlockDirty = true;
+            }
+        }
+        get material() {
+            return this._material;
+        }
+        set material(value) {
+            if (this._material == value)
+                return;
+            if (this._material) {
+                this._material._removeOwnerElement(this.renderElement);
+            }
+            this._material = value;
+            if (value) {
+                this.renderElement.subShader = value.shader.getSubShaderAt(0);
+                this.renderElement.materialShaderData = value.shaderData;
+                value._setOwner2DElement(this.renderElement);
+            }
+            else {
+                this.renderElement.subShader = Shader2D.graphicsShader.getSubShaderAt(0);
+                this.renderElement.materialShaderData = null;
+            }
+        }
         constructor() {
             this.clipInfoID = -1;
             this._id = 0;
             this._renderType = 0;
             this._key = new SubmitKey();
-            this.vertexs = [];
-            this.blockIndexs = [];
             this.indexCount = 0;
             this.indices = [];
             this._internalInfo = null;
             this.renderStateIsBySprite = true;
+            this.vertexs = new FastSinglelist;
+            this.renderElement = null;
+            this._bufferBlock = null;
+            this._currentVertexBlocks = new FastSinglelist;
+            this._lastVertexBlocks = new FastSinglelist;
+            this._bufferBlockDirty = true;
+            this._cacheInfo = null;
             this._id = ++SubmitBase.ID;
+        }
+        _getCacheInfo() {
+            if (!this._cacheInfo) {
+                this._cacheInfo = {
+                    chunks: [],
+                    vertexCount: 0,
+                };
+            }
+            return this._cacheInfo;
         }
         clear() {
             this._key.clear();
             this._internalInfo.clear();
-            this.material = null;
-            if (this.mesh) {
-                this.mesh.clearBlocks(this.blockIndexs);
-                this.mesh.clearIndexView(this.indexView);
-                this.vertexs.length = 0;
-                this.blockIndexs.length = 0;
-                this.mesh = null;
+            this.indexCount = 0;
+            this.vertexs.length = 0;
+            this._currentVertexBlocks.length = 0;
+            this._cacheInfo = null;
+        }
+        appendData(info) {
+            let originLength = this._currentVertexBlocks.length;
+            for (let i = 0, n = info.vertexBlocks.length; i < n; i++) {
+                this._currentVertexBlocks.add(info.vertexBlocks[i]);
+                if (info.vertexBlocks[i] !== this._lastVertexBlocks.elements[i + originLength]) {
+                    this._bufferBlockDirty = true;
+                }
             }
+        }
+        getVertexBlock() {
+            let vertexBlock;
+            if (this.vertexs.elements.length > this.vertexs.length) {
+                vertexBlock = this.vertexs.elements[this.vertexs.length];
+                this.vertexs.length++;
+            }
+            else {
+                vertexBlock = LayaGL.render2DRenderPassFactory.createGraphic2DVertexBlock();
+                this.vertexs.add(vertexBlock);
+            }
+            return vertexBlock;
+        }
+        prepare() {
+            let element = this.renderElement;
+            this.vertexs.clean();
+            let indexView = this.indexView;
+            let indexViewChanged = false;
+            if (!indexView || indexView.length !== this.indexCount) {
+                if (indexView) {
+                    this.mesh.clearIndexView(indexView);
+                }
+                indexView = this.mesh.checkIndex(this.indexCount);
+                this.indexView = indexView;
+                this._bufferBlock.indexView = indexView;
+                indexView.setGeometry(element.geometry);
+                indexViewChanged = true;
+            }
+            let vertexBlocksChanged = this._currentVertexBlocks.length !== this._lastVertexBlocks.length || this._bufferBlockDirty;
+            let needUpdateIndexData = indexViewChanged || vertexBlocksChanged;
+            if (this.indices.length !== this.indexCount) {
+                this.indices.length = this.indexCount;
+            }
+            indexView.setData(this.indices);
+            if (vertexBlocksChanged && Browser.onLayaRuntime) {
+                this._bufferBlock.vertexs = this.vertexs.elements;
+            }
+            this._bufferBlockDirty = needUpdateIndexData;
+            let useCustomMaterial = this.material ? 1 : 0;
+            let mc = (useCustomMaterial === 0 && this._internalInfo.materialClip) ? 1 : 0;
+            let texture;
+            let textureHost = this._internalInfo.textureHost;
+            if (textureHost)
+                texture = textureHost.bitmap || textureHost;
+            element.type = this._key.blendShader
+                | (useCustomMaterial << 4)
+                | (mc << 5)
+                | ((texture ? texture.id : 0) << 6);
+            if (this._cacheInfo) {
+                this._cacheInfo.texture = texture;
+                this._cacheInfo.blendShader = this._key.blendShader;
+            }
+            this._lastVertexBlocks.length = 0;
+            for (let i = 0, n = this._currentVertexBlocks.length; i < n; i++) {
+                this._lastVertexBlocks.add(this._currentVertexBlocks.elements[i]);
+            }
+            this._currentVertexBlocks.length = 0;
+            return this._bufferBlock;
         }
         destroy() {
             this.clear();
-            if (this.indexView) {
-                this.indexView.destroy();
-                this.indexView = null;
-            }
+            this.material = null;
+            this.mesh = null;
             this._internalInfo.destroy();
             this._internalInfo = null;
+            this._bufferBlock = null;
+            this.vertexs.destroy();
+            this.vertexs = null;
+            this._lastVertexBlocks.destroy();
+            this._lastVertexBlocks = null;
+            this._currentVertexBlocks.destroy();
+            this._currentVertexBlocks = null;
+            if (this.renderElement) {
+                SubmitBase._pool.recover(this.renderElement);
+            }
+            this.renderElement = null;
         }
-        appendData(info) {
-            this.blockIndexs.push(...info.vertexBlocks);
-            let vertexBlock = LayaGL.render2DRenderPassFactory.createGraphic2DVertexBlock();
-            vertexBlock.positions = info.positions;
-            vertexBlock.vertexViews = info.vertexViews;
-            this.vertexs.push(vertexBlock);
-        }
-        update(runner, mesh, material) {
+        update(runner) {
+            let sBlendMode = runner.sprite._struct.blendMode;
             var blendType = runner._nBlendType;
-            let struct = runner.sprite._struct;
-            let sBlendMode = struct.blendMode;
             this._key.blendShader = blendType;
             if (runner.globalCompositeOperation != sBlendMode) {
                 BlendModeHandler.setShaderData(blendType, this._internalInfo.shaderData);
+                this._internalInfo._blend = blendType;
                 this.renderStateIsBySprite = false;
             }
-            this.mesh = mesh;
-            this.material = material;
         }
-        static create(runner, mesh, material) {
+        static create(runner) {
             var o = new SubmitBase();
             o._internalInfo = new GraphicsShaderInfo();
-            o.update(runner, mesh, material);
+            o.renderElement = SubmitBase._pool.take();
+            o.renderElement.primitiveShaderData = o._internalInfo.shaderData;
+            o._bufferBlock = LayaGL.render2DRenderPassFactory.createGraphic2DBufferBlock();
+            o._bufferBlock.vertexs = o.vertexs.elements;
+            o.renderElement.subShader = Shader2D.graphicsShader.getSubShaderAt(0);
+            o.renderElement.materialShaderData = null;
+            o.update(runner);
             return o;
         }
     }
+    SubmitBase._pool = Pool.createPool2(() => {
+        let element = LayaGL.render2DRenderPassFactory.createPrimitiveRenderElement2D();
+        element.renderStateIsBySprite = false;
+        element.nodeCommonMap = ["Sprite2D"];
+        return element;
+    }, (element, needGeometry) => {
+        if (needGeometry || needGeometry == null) {
+            element.geometry = LayaGL.renderDeviceFactory.createRenderGeometryElement(exports.MeshTopology.Triangles, exports.DrawType.DrawElement);
+            element.geometry.indexFormat = exports.IndexFormat.UInt16;
+        }
+        else {
+            if (element.geometry) {
+                element.geometry.destroy();
+                element.geometry = null;
+            }
+        }
+    }, (element) => {
+        if (element.geometry) {
+            element.geometry.clearRenderParams();
+            element.geometry.bufferState = null;
+        }
+        element.materialShaderData = null;
+        element.value2DShaderData = null;
+        element.primitiveShaderData = null;
+        element.globalShaderData = null;
+        element.owner = null;
+        element.subShader = null;
+        element.renderStateIsBySprite = false;
+        element.type = 0;
+    });
     SubmitBase.ID = 1;
     SubmitBase.RENDERBASE = new SubmitBase();
 
@@ -12119,6 +13032,7 @@ window.Laya = (function (exports) {
     TextRenderConfig.scaleFontWithCtx = true;
     TextRenderConfig.maxFontScale = 3;
     TextRenderConfig.fontScale = 1;
+    TextRenderConfig.useTextureArray = true;
 
     function measureFont(ctx, font, bold) {
         let size = TextRenderConfig.standardFontSize;
@@ -12135,12 +13049,14 @@ window.Laya = (function (exports) {
         pixelBBX[3] = size;
         drawTestChar(ctx, 'g', size, margin, pixelBBX);
         drawTestChar(ctx, '有', size, margin, pixelBBX);
-        drawTestChar(ctx, '🤡', size, margin, pixelBBX, true);
         let xoff = Math.max(margin - pixelBBX[0], 0);
         let yoff = Math.max(margin - pixelBBX[1], 0);
-        let bbxw = pixelBBX[2] - pixelBBX[0];
-        let bbxh = pixelBBX[3] - pixelBBX[1];
-        return { xoff, yoff, bbxw, bbxh };
+        let bbxw = pixelBBX[2] - pixelBBX[0] + 1;
+        let bbxh = pixelBBX[3] - pixelBBX[1] + 1;
+        drawTestChar(ctx, '🤡', size, margin, pixelBBX, true);
+        let eoff = Math.max(margin - pixelBBX[1], 0) - yoff;
+        let ebbxh = pixelBBX[3] - pixelBBX[1] + 1;
+        return { xoff, yoff, bbxw, bbxh, eoff, ebbxh };
     }
     function drawTestChar(ctx, char, fontSize, margin, pixelBBX, onlyH) {
         let charWidth = ctx.measureText(char).width;
@@ -12150,8 +13066,6 @@ window.Laya = (function (exports) {
         ctx.fillText(char, margin, margin + fontSize / 2);
         let bmp = ctx.getImageData(0, 0, width, height);
         updateBbx(bmp, pixelBBX, onlyH);
-        if (pixelBBX[2] < margin + charWidth)
-            pixelBBX[2] = margin + charWidth;
     }
     function updateBbx(data, curbbx, onlyH) {
         let bmpData32 = new Uint32Array(data.data.buffer);
@@ -12310,6 +13224,64 @@ window.Laya = (function (exports) {
         }
     }
 
+    class TextureArrayRegistry2D {
+        static clear() {
+            this._idToRecord.clear();
+        }
+        static register(source, array, layer) {
+            const id = this._getTexId(source);
+            if (id == null)
+                return;
+            this._idToRecord.set(id, { array, layer });
+        }
+        static unregister(source) {
+            const id = this._getTexId(source);
+            if (id == null)
+                return;
+            this._idToRecord.delete(id);
+        }
+        static resolve(source) {
+            const id = this._getTexId(source);
+            if (id == null)
+                return null;
+            return this._idToRecord.get(id) || null;
+        }
+        static allocateLayerAsTexture(width, height, format = exports.TextureFormat.R8G8B8A8, capacity = 64, sRGB = false) {
+            const key = `${width}x${height}_${format}_${sRGB ? 1 : 0}`;
+            let group = this._groupKeyToArray.get(key);
+            if (!group) {
+                const array = new Texture2DArray(width, height, capacity, format, false, false, sRGB);
+                group = { array, nextLayer: 0, capacity };
+                this._groupKeyToArray.set(key, group);
+            }
+            if (group.nextLayer >= group.capacity)
+                return null;
+            const layer = group.nextLayer++;
+            const virtualTex = new Texture(group.array);
+            this.register(virtualTex, group.array, layer);
+            const uploadSubPixels = (x, y, w, h, pixels, mipLevel = 0) => {
+                group.array.setSubPixelsData(x, y, layer, w, h, 1, pixels, mipLevel, false, false, false);
+            };
+            return { texture: virtualTex, array: group.array, layer, uploadSubPixels };
+        }
+        static _getTexId(source) {
+            if (!source)
+                return null;
+            if (source instanceof Texture) {
+                const bmp = source.bitmap;
+                return bmp._id;
+            }
+            if (typeof source.id === 'number')
+                return source.id;
+            if ((source === null || source === void 0 ? void 0 : source._texture) && typeof source._texture.id === 'number') {
+                return source._texture.id;
+            }
+            return null;
+        }
+    }
+    TextureArrayRegistry2D._idToRecord = new Map();
+    TextureArrayRegistry2D._groupKeyToArray = new Map();
+
     class TextRender {
         constructor(owner) {
             this.fontMap = new Map();
@@ -12331,22 +13303,29 @@ window.Laya = (function (exports) {
             this.ctx = canvas.getContext('2d', { willReadFrequently: true });
             ILaya.systemTimer.loop(5000, this, this.GC);
         }
-        draw(text, x, y, font, fontSize, bold, italic, color, stroke, strokeColor, charMode, preMeasuredWidth, renderInfo) {
+        draw(text, x, y, font, fontSize, bold, italic, color, stroke, strokeColor, letterSpacing, shadowOffsetX, shadowOffsetY, shadowBlur, shadowColor, charMode, preMeasuredWidth, renderInfo) {
+            let hasEmoji = emojiTest$1.test(text);
             let curFont = this.getFont(font);
             let info = bold ? curFont.bold : curFont.normal;
             let k = fontSize / TextRenderConfig.standardFontSize;
             fontSizeOffX = Math.ceil(info.xoff * k);
-            fontSizeOffY = Math.ceil(info.yoff * k);
-            fontSizeH = Math.ceil(info.bbxh * k);
+            emojiAdjustY = hasEmoji ? Math.ceil(info.eoff * k) : 0;
+            fontSizeOffY = Math.ceil(info.yoff * k) + emojiAdjustY;
+            fontSizeH = Math.ceil((hasEmoji ? info.ebbxh : info.bbxh) * k);
             fontScale = TextRenderConfig.fontScale;
-            italicDeg = italic ? 13 : 0;
+            let italicDeg = italic ? 13 : 0;
             let cacheKey = (curFont.id * 10000) + fontSize + (bold ? "b_" : "_");
             let colorNum = ColorUtils.create(color).numColor;
-            let tint = stroke > 0 || !charMode && emojiTest$1.test(text);
+            if (letterSpacing > 0)
+                charMode = true;
+            let shadow = shadowOffsetX !== 0 || shadowOffsetY !== 0;
+            let tint = stroke > 0 || !charMode && hasEmoji || shadow;
             if (tint)
                 cacheKey += colorNum + "_";
             if (stroke > 0)
                 cacheKey += ColorUtils.create(strokeColor).numColor + "_" + stroke + "_";
+            if (shadow)
+                cacheKey += "shd_" + shadowOffsetX + "_" + shadowOffsetY + "_" + shadowBlur + "_" + ColorUtils.create(shadowColor).numColor + "_";
             let ctx = this.ctx;
             ctx.font = (bold ? "bold " : "") + fontSize + "px " + font;
             ctx.setTransform(fontScale, 0, 0, fontScale, 0, 0);
@@ -12357,8 +13336,16 @@ window.Laya = (function (exports) {
                 ctx.strokeStyle = strokeColor;
                 ctx.lineWidth = stroke;
             }
+            if (shadow) {
+                ctx.shadowOffsetX = shadowOffsetX;
+                ctx.shadowOffsetY = shadowOffsetY;
+                ctx.shadowBlur = shadowBlur;
+                ctx.shadowColor = shadowColor;
+            }
             else {
-                ctx.lineWidth = 0;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+                ctx.shadowBlur = 0;
             }
             if (!renderInfo)
                 renderInfo = [];
@@ -12383,7 +13370,7 @@ window.Laya = (function (exports) {
                     ri.ref++;
                     renderInfo.push(ri);
                     this.owner._inner_drawTexture(ri.tex, ri.tex.id, x + ri.x, y + ri.y, ri.w, ri.h, mat, ri.uv, 1.0, cc.length > 1 ? 0xffffffff : drawColor, italicDeg, true);
-                    x += ri.advance;
+                    x += ri.advance + letterSpacing;
                 }
             }
             else {
@@ -12408,11 +13395,21 @@ window.Laya = (function (exports) {
             return renderInfo;
         }
         drawOffscreen(ctx, text, width, height, lineWidth, charMode) {
-            let margin = height / 3 | 0 + lineWidth;
-            let rectX = ((margin - fontSizeOffX - lineWidth) * fontScale | 0) - blockGap;
-            let rectY = ((margin - fontSizeOffY - lineWidth) * fontScale | 0) - blockGap;
-            let rectW = Math.ceil((width + fontSizeOffX + lineWidth * 2) * fontScale) + blockGap * 2;
-            let rectH = Math.ceil((fontSizeH + lineWidth * 2) * fontScale) + blockGap * 2;
+            let offsetLeft = 0, offsetTop = 0, offsetRight = 0, offsetBottom = 0;
+            if (ctx.shadowOffsetX > 0)
+                offsetRight = ctx.shadowOffsetX;
+            else if (ctx.shadowOffsetX < 0)
+                offsetLeft = -ctx.shadowOffsetX;
+            if (ctx.shadowOffsetY > 0)
+                offsetBottom = ctx.shadowOffsetY;
+            else if (ctx.shadowOffsetY < 0)
+                offsetTop = -ctx.shadowOffsetY;
+            let margin = height / 3 | 0 + lineWidth + Math.max(offsetLeft, offsetTop);
+            let rectX = ((margin - fontSizeOffX - lineWidth - offsetLeft) * fontScale | 0) - blockGap;
+            let rectY = ((margin - fontSizeOffY - lineWidth - offsetTop) * fontScale | 0) - blockGap;
+            let correctionW = height * 0.08;
+            let rectW = Math.ceil((width + fontSizeOffX + lineWidth * 2 + offsetLeft + offsetRight + correctionW) * fontScale) + blockGap * 2;
+            let rectH = Math.ceil((fontSizeH + lineWidth * 2 + offsetTop + offsetBottom) * fontScale) + blockGap * 2;
             let needCanvW = Math.min(rectW + Math.ceil(margin * 2 * fontScale), TextRenderConfig.maxCanvasWidth);
             let needCanvH = Math.min(rectH + Math.ceil(margin * 2 * fontScale), TextRenderConfig.maxCanvasWidth);
             if (needCanvW > this.canvas.width || needCanvH > this.canvas.height)
@@ -12422,8 +13419,8 @@ window.Laya = (function (exports) {
             ctx.fillText(text, margin, margin + height / 2);
             let imgdt = ctx.getImageData(rectX, rectY, rectW, rectH);
             let ri = {
-                x: -(fontSizeOffX + lineWidth),
-                y: -lineWidth,
+                x: -fontSizeOffX - lineWidth - offsetLeft,
+                y: -emojiAdjustY - lineWidth - offsetTop,
                 w: (imgdt.width - blockGap * 2) / fontScale,
                 h: (imgdt.height - blockGap * 2) / fontScale,
                 advance: width,
@@ -12451,6 +13448,10 @@ window.Laya = (function (exports) {
             let fillStyle = ctx.fillStyle;
             let strokeStyle = ctx.strokeStyle;
             let lineWidth = ctx.lineWidth;
+            let shadowOffsetX = ctx.shadowOffsetX;
+            let shadowOffsetY = ctx.shadowOffsetY;
+            let shadowBlur = ctx.shadowBlur;
+            let shadowColor = ctx.shadowColor;
             this.canvas.width = newWidth;
             this.canvas.height = newHeight;
             ctx.setTransform(fontScale, 0, 0, fontScale, 0, 0);
@@ -12460,6 +13461,10 @@ window.Laya = (function (exports) {
             ctx.fillStyle = fillStyle;
             ctx.strokeStyle = strokeStyle;
             ctx.lineWidth = lineWidth;
+            ctx.shadowOffsetX = shadowOffsetX;
+            ctx.shadowOffsetY = shadowOffsetY;
+            ctx.shadowBlur = shadowBlur;
+            ctx.shadowColor = shadowColor;
         }
         createIsoTexture(w, h) {
             let i = this.freeIsoTextures.findIndex(t => t != null && t.width >= w && t.width <= w + h && t.height >= h && t.height <= h + h);
@@ -12514,13 +13519,25 @@ window.Laya = (function (exports) {
             tex.filterMode = exports.FilterMode.Bilinear;
             tex.wrapModeU = exports.WrapMode.Clamp;
             tex.wrapModeV = exports.WrapMode.Clamp;
+            if (Config.useTextureArray && TextRenderConfig.useTextureArray) {
+                const alloc = TextureArrayRegistry2D.allocateLayerAsTexture(width, height, exports.TextureFormat.R8G8B8A8, 64, false);
+                if (alloc) {
+                    TextureArrayRegistry2D.register(tex, alloc.array, alloc.layer);
+                }
+            }
             return tex;
         }
         setPixelsToTexture(imgdt, tex, x, y, outUv) {
             let data = imgdt.data;
             if (data instanceof Uint8ClampedArray)
                 data = new Uint8Array(data.buffer);
-            LayaGL.textureContext.setTextureSubPixelsData(tex._texture, data, 0, false, x, y, imgdt.width, imgdt.height, true, false);
+            const reg = TextureArrayRegistry2D.resolve(tex);
+            if (reg) {
+                reg.array.setSubPixelsData(x, y, reg.layer, imgdt.width, imgdt.height, 1, data, 0, false, false, false);
+            }
+            else {
+                LayaGL.textureContext.setTextureSubPixelsData(tex._texture, data, 0, false, x, y, imgdt.width, imgdt.height, true, false);
+            }
             let u0 = (x + blockGap) / tex.width;
             let v0 = (y + blockGap) / tex.height;
             let u1 = (x + imgdt.width - blockGap) / tex.width;
@@ -12626,19 +13643,19 @@ window.Laya = (function (exports) {
     var fontSizeH = 0;
     var fontSizeOffX = 0;
     var fontSizeOffY = 0;
-    var italicDeg = 0;
+    var emojiAdjustY = 0;
     var freeRegionNullCnt = 0;
     var freeIsoTextureNullCnt = 0;
     var toClearChars = [];
 
     exports.BufferTargetType = void 0;
     (function (BufferTargetType) {
-        BufferTargetType[BufferTargetType["ARRAY_BUFFER"] = 0] = "ARRAY_BUFFER";
-        BufferTargetType[BufferTargetType["ELEMENT_ARRAY_BUFFER"] = 1] = "ELEMENT_ARRAY_BUFFER";
-        BufferTargetType[BufferTargetType["UNIFORM_BUFFER"] = 2] = "UNIFORM_BUFFER";
-        BufferTargetType[BufferTargetType["COPY_READ_BUFFER"] = 3] = "COPY_READ_BUFFER";
-        BufferTargetType[BufferTargetType["COPY_WRITE_BUFFER"] = 4] = "COPY_WRITE_BUFFER";
-        BufferTargetType[BufferTargetType["TRANSFORM_FEEDBACK_BUFFER"] = 5] = "TRANSFORM_FEEDBACK_BUFFER";
+        BufferTargetType[BufferTargetType["ARRAY_BUFFER"] = 1] = "ARRAY_BUFFER";
+        BufferTargetType[BufferTargetType["ELEMENT_ARRAY_BUFFER"] = 2] = "ELEMENT_ARRAY_BUFFER";
+        BufferTargetType[BufferTargetType["UNIFORM_BUFFER"] = 4] = "UNIFORM_BUFFER";
+        BufferTargetType[BufferTargetType["COPY_READ_BUFFER"] = 8] = "COPY_READ_BUFFER";
+        BufferTargetType[BufferTargetType["COPY_WRITE_BUFFER"] = 16] = "COPY_WRITE_BUFFER";
+        BufferTargetType[BufferTargetType["TRANSFORM_FEEDBACK_BUFFER"] = 32] = "TRANSFORM_FEEDBACK_BUFFER";
     })(exports.BufferTargetType || (exports.BufferTargetType = {}));
     exports.BufferUsage = void 0;
     (function (BufferUsage) {
@@ -12646,13 +13663,6 @@ window.Laya = (function (exports) {
         BufferUsage[BufferUsage["Dynamic"] = 1] = "Dynamic";
         BufferUsage[BufferUsage["Stream"] = 2] = "Stream";
     })(exports.BufferUsage || (exports.BufferUsage = {}));
-
-    exports.IndexFormat = void 0;
-    (function (IndexFormat) {
-        IndexFormat[IndexFormat["UInt8"] = 0] = "UInt8";
-        IndexFormat[IndexFormat["UInt16"] = 1] = "UInt16";
-        IndexFormat[IndexFormat["UInt32"] = 2] = "UInt32";
-    })(exports.IndexFormat || (exports.IndexFormat = {}));
 
     class Graphic2DDynamicVIBuffer {
         get vertexBuffer() {
@@ -12729,7 +13739,7 @@ window.Laya = (function (exports) {
                 usedViews.push(view);
                 remainingBlocks--;
             }
-            return { buffer: this, vertexViews: usedViews, vertexBlocks: usedBlocks };
+            return { vertexViews: usedViews, vertexBlocks: usedBlocks };
         }
         checkIndexBuffer(length) {
             let view;
@@ -12737,6 +13747,7 @@ window.Laya = (function (exports) {
                 this.indexExtendBlock(length);
             }
             view = LayaGL.render2DRenderPassFactory.create2DGraphicIndexDataView(this._wholeIndex, length);
+            this._wholeIndex.addDataView(view);
             this._indexBufferLength += length;
             return view;
         }
@@ -12778,18 +13789,16 @@ window.Laya = (function (exports) {
         get bufferState() {
             return this._buffer.bufferState;
         }
-        constructor() {
-            this._buffer = new Graphic2DDynamicVIBuffer(4, GraphicsMesh.vertexDeclarition);
+        constructor(vertexBlockSize) {
+            this.id = GraphicsMesh.IDCounter++;
+            this._buffer = new Graphic2DDynamicVIBuffer(vertexBlockSize, GraphicsMesh.vertexDeclarition);
         }
         checkVertex(vertexCount) {
             let vbResult = this._buffer.checkVertexBuffer(vertexCount);
             if (!vbResult)
                 return null;
-            return {
-                mesh: this,
-                vertexBlocks: vbResult.vertexBlocks,
-                vertexViews: vbResult.vertexViews
-            };
+            vbResult.mesh = this;
+            return vbResult;
         }
         checkIndex(indexCount) {
             return this._buffer.checkIndexBuffer(indexCount);
@@ -12808,37 +13817,31 @@ window.Laya = (function (exports) {
             this._buffer = null;
         }
     }
+    GraphicsMesh.IDCounter = 0;
     GraphicsMesh.stride = 0;
 
-    exports.MeshTopology = void 0;
-    (function (MeshTopology) {
-        MeshTopology[MeshTopology["Points"] = 0] = "Points";
-        MeshTopology[MeshTopology["Lines"] = 1] = "Lines";
-        MeshTopology[MeshTopology["LineLoop"] = 2] = "LineLoop";
-        MeshTopology[MeshTopology["LineStrip"] = 3] = "LineStrip";
-        MeshTopology[MeshTopology["Triangles"] = 4] = "Triangles";
-        MeshTopology[MeshTopology["TriangleStrip"] = 5] = "TriangleStrip";
-        MeshTopology[MeshTopology["TriangleFan"] = 6] = "TriangleFan";
-    })(exports.MeshTopology || (exports.MeshTopology = {}));
-
-    exports.DrawType = void 0;
-    (function (DrawType) {
-        DrawType[DrawType["DrawArray"] = 0] = "DrawArray";
-        DrawType[DrawType["DrawArrayInstance"] = 1] = "DrawArrayInstance";
-        DrawType[DrawType["DrawArrayIndirect"] = 2] = "DrawArrayIndirect";
-        DrawType[DrawType["DrawElement"] = 3] = "DrawElement";
-        DrawType[DrawType["DrawElementInstance"] = 4] = "DrawElementInstance";
-        DrawType[DrawType["DrawElementIndirect"] = 5] = "DrawElementIndirect";
-    })(exports.DrawType || (exports.DrawType = {}));
+    class EmptyTextureProcessor {
+        addTexture(texture) {
+        }
+        onUpdate() {
+        }
+        shouldAddToDynamicAtlas(texture) {
+            return false;
+        }
+        cleanupUnused() {
+        }
+    }
 
     const defaultClipMatrix = new Matrix(Const.MAX_CLIP_SIZE, 0, 0, Const.MAX_CLIP_SIZE, 0, 0);
     const tmpMat = new Matrix();
     const _drawTexToDrawTri_Vert = new Float32Array(8);
     const _drawTexToDrawTri_Index = new Uint16Array([0, 1, 2, 0, 2, 3]);
     const _drawTexToQuad_Index = new Uint16Array([0, 2, 1, 0, 3, 2]);
+    const _tempCache = { mesh: null, vertexViews: [], vertexBlocks: [] };
     class GraphicsRunner {
         constructor() {
             this._alpha = 1.0;
+            this._vertexBlockSize = 4;
             this._material = null;
             this._fillStyle = DrawStyle.DEFAULT;
             this._strokeStyle = DrawStyle.DEFAULT;
@@ -12848,9 +13851,12 @@ window.Laya = (function (exports) {
             this._path = null;
             this._curSubmit = null;
             this._submitKey = new SubmitKey();
-            this._graphicsData = null;
+            this._renderer = null;
+            this._global = null;
+            this._enableCache = false;
             this._transedPoints = new Array(8);
             this._temp4Points = new Array(8);
+            this._textureProcessor = new EmptyTextureProcessor();
             this._clipRect = SaveClipRect.MAX;
             this._globalClipMatrix = defaultClipMatrix.clone();
             this._clip_x = 0;
@@ -12869,6 +13875,7 @@ window.Laya = (function (exports) {
             this._nBlendType = exports.BlendMode.normal;
             this._save = null;
             this._saveMark = null;
+            this._currentSubmitCache = null;
             this.sprite = null;
             this._lastTex = null;
             this._defTexture = null;
@@ -13158,6 +14165,8 @@ window.Laya = (function (exports) {
             this._lastTex = null;
             this._saveMark = this._save[0];
             this._save._length = 1;
+            this._currentSubmitCache = null;
+            this._global = null;
         }
         getCurrentScaleX() {
             let scaleX = this.getMatScaleX();
@@ -13293,11 +14302,15 @@ window.Laya = (function (exports) {
                     material.textureHost = this._lastTex;
                     submit._key.other = (this._lastTex && this._lastTex.bitmap) ? this._lastTex.bitmap.id : -1;
                 }
-                this.appendData(this._transedPoints, _drawTexToQuad_Index, vertexResult, submit, null, rgba, null, null, false);
-                this._appendBlockInfo(vertexResult);
+                let positions = this.appendData(this._transedPoints, _drawTexToQuad_Index, vertexResult, submit, null, rgba, null, null, false);
+                this._appendBlockInfo(vertexResult, positions);
             }
         }
-        _appendBlockInfo(info) {
+        _appendBlockInfo(info, positions) {
+            this._renderer.take(info);
+            let vertexBlock = this._curSubmit.getVertexBlock();
+            vertexBlock.positions = positions;
+            vertexBlock.vertexViews = info.vertexViews;
             this._curSubmit.appendData(info);
         }
         fillRect(x, y, width, height, fillStyle = null) {
@@ -13309,7 +14322,7 @@ window.Laya = (function (exports) {
             if (!this._getImageSource(texture)) {
                 return;
             }
-            this._graphicsData.addResRef(texture);
+            this._renderer.addResRef(texture);
             this._fillTexture(texture, texture.width, texture.height, texture.uvrect, x, y, width, height, type, offset.x, offset.y, color);
         }
         _fillTexture(texture, texw, texh, texuvRect, x, y, width, height, type, offsetx, offsety, color) {
@@ -13378,13 +14391,19 @@ window.Laya = (function (exports) {
                 submit.clipInfoID = this._clipInfoID;
                 submit._internalInfo.textureHost = texture;
                 var rgba = this._mixRGBandAlpha(color, this._alpha);
-                this.appendData(this._transedPoints, _drawTexToQuad_Index, vertexResult, submit, uv, rgba, null, null, true);
-                this._appendBlockInfo(vertexResult);
+                let positions = this.appendData(this._transedPoints, _drawTexToQuad_Index, vertexResult, submit, uv, rgba, null, null, true);
+                this._appendBlockInfo(vertexResult, positions);
             }
             this.breakNextMerge();
         }
         createSubmit(mesh) {
-            return this._graphicsData.createSubmit(this, mesh, this._material);
+            let submit = this._renderer.createSubmit(this);
+            submit.mesh = mesh;
+            submit.material = this._material;
+            if (this._enableCache) {
+                this._currentSubmitCache = submit._getCacheInfo();
+            }
+            return submit;
         }
         drawTexture(tex, x, y, width, height, color = 0xffffffff) {
             this._drawTextureM(tex, x, y, width, height, null, 1, null, color);
@@ -13393,7 +14412,7 @@ window.Laya = (function (exports) {
             if (!this._getImageSource(tex)) {
                 return;
             }
-            this._graphicsData.addResRef(tex);
+            this._renderer.addResRef(tex);
             var n = pos.length / 2;
             var ipos = 0;
             var bmpid = tex.bitmap.id;
@@ -13406,7 +14425,7 @@ window.Laya = (function (exports) {
             if (!this._getImageSource(tex)) {
                 return false;
             }
-            this._graphicsData.addResRef(tex);
+            this._renderer.addResRef(tex);
             return this._inner_drawTexture(tex, tex.bitmap.id, x, y, width, height, m, uv, alpha, color);
         }
         _setClipInfo(material) {
@@ -13431,6 +14450,7 @@ window.Laya = (function (exports) {
             return submit.clipInfoID !== this._clipInfoID;
         }
         _inner_drawTexture(tex, imgid, x, y, width, height, m, uv, alpha, color, italicDeg, pixelSnap) {
+            var _a, _b;
             if (width <= 0 || height <= 0) {
                 return false;
             }
@@ -13487,12 +14507,20 @@ window.Laya = (function (exports) {
                 this._curSubmit = submit = this.createSubmit(mesh);
                 let material = submit._internalInfo;
                 this._setClipInfo(material);
-                material.textureHost = tex;
-                submit._key.other = imgid;
+                let reg = TextureArrayRegistry2D.resolve(tex);
+                if (reg && reg.array instanceof Texture2DArray) {
+                    material.textureHost = reg.array;
+                    material.texArrayLayer = reg.layer | 0;
+                    submit._key.other = (_b = (_a = reg.array._texture) === null || _a === void 0 ? void 0 : _a.id) !== null && _b !== void 0 ? _b : imgid;
+                }
+                else {
+                    material.textureHost = tex;
+                    submit._key.other = imgid;
+                }
                 submit.clipInfoID = this._clipInfoID;
             }
-            this.appendData(ops, _drawTexToQuad_Index, vertexResult, submit, uv, rgba, null, null, true);
-            this._appendBlockInfo(vertexResult);
+            let positions = this.appendData(ops, _drawTexToQuad_Index, vertexResult, submit, uv, rgba, null, null, true);
+            this._appendBlockInfo(vertexResult, positions);
             return true;
         }
         clipedOff(pt) {
@@ -13597,12 +14625,12 @@ window.Laya = (function (exports) {
                 this.globalCompositeOperation = oldcomp;
         }
         drawTriangles(tex, x, y, vertices, uvs, indices, matrix, alpha, blendMode, colorNum, colors, uvRange) {
-            var _a;
+            var _a, _b, _c, _d, _e;
             if (tex) {
                 if (!this._getImageSource(tex)) {
                     return;
                 }
-                this._graphicsData.addResRef(tex);
+                this._renderer.addResRef(tex);
             }
             if (alpha == null)
                 alpha = 1.0;
@@ -13626,12 +14654,20 @@ window.Laya = (function (exports) {
             let submit = this._curSubmit;
             if (!sameKey) {
                 submit = this._curSubmit = this.createSubmit(mesh);
-                submit._internalInfo.textureHost = tex;
+                let reg = TextureArrayRegistry2D.resolve(tex);
+                if (reg && reg.array instanceof Texture2DArray) {
+                    submit._internalInfo.textureHost = reg.array;
+                    submit._internalInfo.texArrayLayer = reg.layer | 0;
+                }
+                else {
+                    submit._internalInfo.textureHost = tex;
+                }
                 this._setClipInfo(submit._internalInfo);
-                submit._key.other = webGLImg ? webGLImg.id : -1;
+                submit._key.other = (_d = (_c = (_b = reg === null || reg === void 0 ? void 0 : reg.array) === null || _b === void 0 ? void 0 : _b._texture) === null || _c === void 0 ? void 0 : _c.id) !== null && _d !== void 0 ? _d : ((_e = webGLImg === null || webGLImg === void 0 ? void 0 : webGLImg.id) !== null && _e !== void 0 ? _e : -1);
                 submit.clipInfoID = this._clipInfoID;
             }
             var rgba = this._mixRGBandAlpha(colorNum, this._alpha * alpha);
+            let positions;
             if (!this._drawTriUseAbsMatrix) {
                 if (!matrix) {
                     tmpMat.a = 1;
@@ -13650,13 +14686,13 @@ window.Laya = (function (exports) {
                     tmpMat.ty = matrix.ty + y;
                 }
                 Matrix.mul(tmpMat, this._curMat, tmpMat);
-                this.appendData(vertices, indices, vertexResult, submit, uvs, rgba, tmpMat, null, !!tex, colors, uvRange);
+                positions = this.appendData(vertices, indices, vertexResult, submit, uvs, rgba, tmpMat, null, !!tex, colors, uvRange);
             }
             else {
                 let m = this._curMat == matrix ? (this._matrixChanged ? this._curMat : null) : matrix;
-                this.appendData(vertices, indices, vertexResult, submit, uvs, rgba, m, null, !!tex, colors, uvRange);
+                positions = this.appendData(vertices, indices, vertexResult, submit, uvs, rgba, m, null, !!tex, colors, uvRange);
             }
-            this._appendBlockInfo(vertexResult);
+            this._appendBlockInfo(vertexResult, positions);
             if (blendMode != null) {
                 this.globalCompositeOperation = oldcomp;
             }
@@ -13837,9 +14873,9 @@ window.Laya = (function (exports) {
                         }
                     }
                 }
-                this.appendData(cpath, idx, vertexResult, submit, null, rgba, null, null, false);
+                let positions = this.appendData(cpath, idx, vertexResult, submit, null, rgba, null, null, false);
                 curEleNum += idx.length;
-                this._appendBlockInfo(vertexResult);
+                this._appendBlockInfo(vertexResult, positions);
             }
         }
         addVGSubmit(mesh) {
@@ -13856,7 +14892,7 @@ window.Laya = (function (exports) {
             var submit = this._curSubmit;
             var sameKey = (submit._key.blendShader === this._nBlendType)
                 && !this.isSameClipInfo(submit);
-            let mesh = this._meshPool[this._currentMeshIndex];
+            let mesh = this._curSubmit.mesh || this._meshPool[this._currentMeshIndex];
             var curEleNum = 0;
             let m = this._curMat;
             for (var i = 0, sz = tPath.paths.length; i < sz; i++) {
@@ -13909,9 +14945,9 @@ window.Laya = (function (exports) {
                         }
                     }
                 }
-                this.appendData(vertex, idx, vertexResult, submit, null, rgba, null, null, false);
+                let positions = this.appendData(vertex, idx, vertexResult, submit, null, rgba, null, null, false);
                 curEleNum += idx.length;
-                this._appendBlockInfo(vertexResult);
+                this._appendBlockInfo(vertexResult, positions);
             }
         }
         moveTo(x, y) {
@@ -14089,6 +15125,9 @@ window.Laya = (function (exports) {
             });
         }
         acquire(vertexCount) {
+            let reused = this._reuseBlocks(vertexCount);
+            if (reused)
+                return reused;
             let meshes = this._meshPool;
             for (let i = 0; i < meshes.length; i++) {
                 let mesh = meshes[i];
@@ -14098,11 +15137,29 @@ window.Laya = (function (exports) {
                     return result;
                 }
             }
-            let mesh = new GraphicsMesh();
+            let mesh = new GraphicsMesh(this._vertexBlockSize);
             this._meshPool.push(mesh);
             this._currentMeshIndex = this._meshPool.length - 1;
             let result = mesh.checkVertex(vertexCount);
             return result;
+        }
+        _reuseBlocks(vertexCount) {
+            if (!this._renderer)
+                return null;
+            let cachedBuckets = this._renderer._cachedBuckets;
+            let needBlocks = Math.ceil(vertexCount / this._vertexBlockSize);
+            for (let i = 0; i < cachedBuckets.length; i++) {
+                let bucket = cachedBuckets[i];
+                if (!bucket || bucket.indexs.length * this._vertexBlockSize < vertexCount)
+                    continue;
+                let reuseBlocks = bucket.indexs.splice(0, needBlocks);
+                return {
+                    mesh: bucket.mesh,
+                    vertexBlocks: reuseBlocks,
+                    vertexViews: reuseBlocks.map(b => bucket.blocks[b]),
+                };
+            }
+            return null;
         }
         appendData(vertices, indices, result, submit, uvs, rgba, matrix, uvrect, useTex, colors, uvRange) {
             let vertexCount = vertices.length / 2;
@@ -14117,6 +15174,7 @@ window.Laya = (function (exports) {
                 uvv = uvrect[3];
             }
             let m00, m01, m10, m11, tx, ty;
+            let globalMatrix = this._global;
             if (matrix) {
                 m00 = matrix.a;
                 m01 = matrix.b;
@@ -14139,6 +15197,13 @@ window.Laya = (function (exports) {
             let positions = [];
             let vbdata = result.mesh._buffer._tempVertexData;
             let vertexLength = GraphicsMesh.stride;
+            let cachedVbdata = null, localX, localY;
+            if (this._currentSubmitCache) {
+                let count = Math.ceil(vertexCount / this._vertexBlockSize) * this._vertexBlockSize;
+                cachedVbdata = new Float32Array(count * vertexLength);
+            }
+            let globalAlpha = this._renderer._struct.globalAlpha;
+            let cachedVi = 0;
             for (let i = 0, pi = 0, ci = 0, vi = 0; i < vertexCount; i++) {
                 if (!dataView || dataView.length <= vi) {
                     if (dataView) {
@@ -14148,22 +15213,26 @@ window.Laya = (function (exports) {
                     dataViewIndex++;
                     vi = 0;
                     offset = dataView.start / dataView.stride;
+                    if (cachedVbdata) {
+                        cachedVbdata.set(vbdata, cachedVi);
+                        cachedVi = i * vertexLength;
+                    }
                 }
-                let x = vertices[pi], y = vertices[pi + 1];
+                localX = vertices[pi], localY = vertices[pi + 1];
                 if (matrix) {
                     if (matrix._bTransform) {
-                        vbdata[vi] = positions[pi] = x * m00 + y * m10 + tx;
-                        vbdata[vi + 1] = positions[pi + 1] = x * m01 + y * m11 + ty;
+                        localX = vertices[pi] * m00 + vertices[pi + 1] * m10 + tx;
+                        localY = vertices[pi] * m01 + vertices[pi + 1] * m11 + ty;
                     }
                     else {
-                        vbdata[vi] = positions[pi] = x + tx;
-                        vbdata[vi + 1] = positions[pi + 1] = y + ty;
+                        localX += tx;
+                        localY += ty;
                     }
                 }
-                else {
-                    vbdata[vi] = positions[pi] = x;
-                    vbdata[vi + 1] = positions[pi + 1] = y;
-                }
+                positions[pi] = localX;
+                positions[pi + 1] = localY;
+                vbdata[vi] = localX * globalMatrix.a + localY * globalMatrix.c + globalMatrix.tx;
+                vbdata[vi + 1] = localX * globalMatrix.b + localY * globalMatrix.d + globalMatrix.ty;
                 if (uvs) {
                     vbdata[vi + 2] = uvminx + uvs[pi] * uvu;
                     vbdata[vi + 3] = uvminy + uvs[pi + 1] * uvv;
@@ -14182,6 +15251,8 @@ window.Laya = (function (exports) {
                 }
                 vbdata[vi + 8] = useTexByte;
                 vbdata[vi + 9] = useClipByte;
+                vbdata[vi + 10] = globalAlpha;
+                vbdata[vi + 11] = (submit && submit._internalInfo && submit._internalInfo.texArrayLayer) ? submit._internalInfo.texArrayLayer : 0;
                 if (uvRange) {
                     vbdata[vi + 12] = uvRange[0];
                     vbdata[vi + 13] = uvRange[1];
@@ -14196,7 +15267,9 @@ window.Laya = (function (exports) {
             if (dataView) {
                 dataView.setData(vbdata);
             }
-            result.positions = positions;
+            if (cachedVbdata) {
+                cachedVbdata.set(vbdata, cachedVi);
+            }
             let indexOffset = submit.indexCount;
             let indexCount = indices.length;
             let ibdata = submit.indices;
@@ -14204,6 +15277,88 @@ window.Laya = (function (exports) {
                 ibdata[i + indexOffset] = indexsMap[indices[i]];
             }
             submit.indexCount += indexCount;
+            if (this._currentSubmitCache && cachedVbdata) {
+                this._currentSubmitCache.vertexCount += vertexViews.length * 4;
+                this._currentSubmitCache.chunks.push({
+                    vbdata: cachedVbdata,
+                    vertexCount: vertexCount,
+                    indices: indices,
+                    positions: positions,
+                });
+            }
+            return positions;
+        }
+        applyCachedSubmitInfo(submitInfo) {
+            let vertexResult = this.acquire(submitInfo.vertexCount);
+            let submit = this.createSubmit(vertexResult.mesh);
+            submit._internalInfo.textureHost = submitInfo.texture;
+            submit._key.blendShader = submitInfo.blendShader;
+            this._curSubmit = submit;
+            let dataViewIndex = 0;
+            submitInfo.chunks.forEach(chunk => {
+                dataViewIndex = this._applyCachedChunk(this._global, vertexResult, submit, chunk, dataViewIndex);
+            });
+        }
+        _applyCachedChunk(matrix, total, submit, chunk, dataViewIndex) {
+            let vertexBlock = this._curSubmit.getVertexBlock();
+            if (!vertexBlock.vertexViews) {
+                vertexBlock.vertexViews = [];
+            }
+            _tempCache.mesh = total.mesh;
+            let views = _tempCache.vertexViews = vertexBlock.vertexViews;
+            let indexs = _tempCache.vertexBlocks;
+            let positions = chunk.positions;
+            vertexBlock.positions = positions;
+            let dataView;
+            let offset = 0;
+            let vertexLength = GraphicsMesh.stride;
+            let vertexCount = chunk.vertexCount;
+            let cachedVbdata = chunk.vbdata;
+            let vbdata;
+            let indexsMap = [];
+            let _localIndex = 0, localX, localY;
+            for (let i = 0, vi = 0, pi = 0; i < vertexCount; i++) {
+                if (!dataView || dataView.length <= vi) {
+                    if (dataView)
+                        dataView.setData(vbdata);
+                    dataView = views[_localIndex] = total.vertexViews[dataViewIndex];
+                    indexs[_localIndex] = total.vertexBlocks[dataViewIndex];
+                    vi = 0;
+                    offset = dataView.start / dataView.stride;
+                    dataViewIndex++;
+                    if (dataView.length == cachedVbdata.length) {
+                        vbdata = cachedVbdata;
+                    }
+                    else {
+                        vbdata = new Float32Array(cachedVbdata.buffer, _localIndex * dataView.length * 4, dataView.length);
+                    }
+                    _localIndex++;
+                }
+                localX = positions[pi];
+                localY = positions[pi + 1];
+                vbdata[vi] = localX * matrix.a + localY * matrix.c + matrix.tx;
+                vbdata[vi + 1] = localX * matrix.b + localY * matrix.d + matrix.ty;
+                vi += vertexLength;
+                pi += 2;
+                indexsMap[i] = offset++;
+            }
+            if (dataView)
+                dataView.setData(vbdata);
+            let indexOffset = submit.indexCount;
+            let ibdata = submit.indices;
+            for (let i = 0; i < chunk.indices.length; i++) {
+                ibdata[i + indexOffset] = indexsMap[chunk.indices[i]];
+            }
+            submit.indexCount += chunk.indices.length;
+            if (views.length > _localIndex) {
+                views.length = _localIndex;
+            }
+            if (indexs.length > _localIndex) {
+                indexs.length = _localIndex;
+            }
+            this._renderer.take(_tempCache);
+            this._curSubmit.appendData(_tempCache);
+            return dataViewIndex;
         }
         initDefalutMesh() {
             if (!this.def_geometry) {
@@ -14314,6 +15469,11 @@ window.Laya = (function (exports) {
             this.stroke = 0;
             this.align = 'left';
             this.fontSize = 20;
+            this.letterSpacing = 0;
+            this.shadowOffsetX = 0;
+            this.shadowOffsetY = 0;
+            this.shadowBlur = 0;
+            this.shadowColor = '#000000';
         }
         static create(text, x, y, font, color, align, stroke, strokeColor) {
             let cmd = Pool.getItemByClass(className$7, FillTextCmd);
@@ -14328,6 +15488,11 @@ window.Laya = (function (exports) {
             cmd.align = align !== null && align !== void 0 ? align : 'left';
             cmd.singleCharRender = false;
             cmd._preMeasuredWidth = null;
+            cmd.letterSpacing = 0;
+            cmd.shadowOffsetX = 0;
+            cmd.shadowOffsetY = 0;
+            cmd.shadowBlur = 0;
+            cmd.shadowColor = '#000000';
             return cmd;
         }
         get font() {
@@ -14399,7 +15564,7 @@ window.Laya = (function (exports) {
                     gx -= tw;
                     break;
             }
-            this._renderInfo = runner._textRender.draw(this.text, this.x + gx, this.y + gy, this.fontFamily ? this.fontFamily : Config.defaultFont, this.fontSize, this.bold, this.italic, this.color, this.stroke, this.strokeColor, this.singleCharRender, tw, this._renderInfo);
+            this._renderInfo = runner._textRender.draw(this.text, this.x + gx, this.y + gy, this.fontFamily ? this.fontFamily : Config.defaultFont, this.fontSize, this.bold, this.italic, this.color, this.stroke, this.strokeColor, this.letterSpacing, this.shadowOffsetX, this.shadowOffsetY, this.shadowBlur, this.shadowColor, this.singleCharRender, tw, this._renderInfo);
         }
         getTextWidth() {
             if (this._preMeasuredWidth != null)
@@ -14483,6 +15648,9 @@ window.Laya = (function (exports) {
         }
         get cmdID() {
             return FillTextureCmd.ID;
+        }
+        needsLayoutRepaint() {
+            return this.percent ? 1 : 0;
         }
     }
     FillTextureCmd.ID = className$6;
@@ -14639,6 +15807,9 @@ window.Laya = (function (exports) {
         get cmdID() {
             return DrawEllipseCmd.ID;
         }
+        needsLayoutRepaint() {
+            return 1;
+        }
         getBounds(assembler) {
             let rect = Rectangle.TEMP.setTo(this.x - this.width, this.y - this.height, this.width * 2, this.height * 2);
             if (this.percent) {
@@ -14700,6 +15871,9 @@ window.Laya = (function (exports) {
         get cmdID() {
             return DrawRoundRectCmd.ID;
         }
+        needsLayoutRepaint() {
+            return 1;
+        }
         getBounds(assembler) {
             let rect = Rectangle.TEMP.setTo(this.x, this.y, this.width, this.height);
             if (this) {
@@ -14710,6 +15884,91 @@ window.Laya = (function (exports) {
     }
     DrawRoundRectCmd.ID = className;
     ClassUtils.regClass(className, DrawRoundRectCmd);
+
+    class Stat {
+        static get FPS() {
+            return LayaGL.statAgent.getElementData(exports.StatElement.CT_FPS);
+        }
+        static show(x, y, views) {
+            if (!Stat._statUI)
+                Stat._statUI = new Stat._statUIClass();
+            this.hide();
+            if (views) {
+                Stat.elements.length = 0;
+                Stat.elements.push(...views);
+            }
+            if (Stat.elements.length === 0) {
+                const statEnum = PlayerConfig.statEnum;
+                if (statEnum) {
+                    for (let k in statEnum) {
+                        if (statEnum[k]) {
+                            Stat.elements.push(exports.StatElement[k]);
+                        }
+                    }
+                    Stat.elements.sort();
+                }
+            }
+            if (Stat.elements.length === 0) {
+                Stat.elements.push(...defaultElements);
+            }
+            Stat._show = true;
+            Stat._statUI.show(x, y);
+            ILaya.systemTimer.frameLoop(1, null, Stat.loop);
+        }
+        static hide() {
+            if (!Stat._show)
+                return;
+            Stat._show = false;
+            Stat._statUI.hide();
+            ILaya.systemTimer.clear(null, Stat.loop);
+        }
+        static loop() {
+            if (Stat._show) {
+                Stat._statUI.update();
+            }
+        }
+        static render() {
+            if (Stat._show)
+                Stat._statUI.render();
+        }
+    }
+    Stat.elements = [];
+    Stat.loopCount = 0;
+    Stat.render2DCount = 0;
+    Stat.enableShadow = true;
+    Stat.enableMulLight = true;
+    Stat.enableLight = true;
+    Stat.enableCameraCMD = true;
+    Stat.enablePostprocess = true;
+    Stat.enableSkin = true;
+    Stat.enableTransparent = true;
+    Stat.enableParticle = true;
+    Stat.enableAnimatorUpdate = true;
+    Stat.enablePhysicsUpdate = true;
+    Stat.enablemsaa = true;
+    Stat.enableOpaque = true;
+    const defaultElements = [
+        exports.StatElement.CT_FPS,
+        exports.StatElement.T_Frame_Time,
+        exports.StatElement.C_Sprite2DCount,
+        exports.StatElement.C_Sprite3DCount,
+        exports.StatElement.CT_DrawCall,
+        exports.StatElement.CT_Triangle,
+        exports.StatElement.C_BaseRenderCount,
+        exports.StatElement.C_SkinnedMeshRenderCount,
+        exports.StatElement.C_ShurikenParticleRenderCount,
+        exports.StatElement.T_CullMain,
+        exports.StatElement.CT_OpaqueDrawCall,
+        exports.StatElement.CT_TransDrawCall,
+        exports.StatElement.CT_ShadowDrawCall,
+        exports.StatElement.CT_DepthCastDrawCall,
+        exports.StatElement.CT_Instancing_DrawCall,
+        exports.StatElement.M_GPUMemory,
+        exports.StatElement.M_AllTexture,
+        exports.StatElement.M_RenderTexture,
+        exports.StatElement.M_GPUBuffer
+    ];
+    window.Stat = Stat;
 
     class Graphics {
         static add2DGlobalUniformData(propertyID, propertyKey, uniformtype) {
@@ -14731,9 +15990,9 @@ window.Laya = (function (exports) {
             this._useSpriteRect = false;
             this._cmds = [];
             this._graphicBounds = null;
-            this._modified = false;
-            this._display = false;
-            this._renderDataHandle = LayaGL.render2DRenderPassFactory.create2D2DPrimitiveDataHandle();
+            this._modified = -1;
+            this._layoutRepaintCount = 0;
+            this.needCache = false;
         }
         destroy() {
             if (this.owner && this.owner._graphics === this)
@@ -14749,8 +16008,6 @@ window.Laya = (function (exports) {
             }
             this._graphicBounds && this._graphicBounds.destroy();
             this._graphicBounds = null;
-            this._renderDataHandle && this._renderDataHandle.destroy();
-            this._data = null;
             this.owner = null;
         }
         clear(recoverCmds, exclude) {
@@ -14765,11 +16022,14 @@ window.Laya = (function (exports) {
             if (exclude) {
                 this._cmds[0] = exclude;
                 this._cmds.length = 1;
+                this._layoutRepaintCount = 0;
+                if (exclude.needsLayoutRepaint) {
+                    this._layoutRepaintCount = exclude.needsLayoutRepaint();
+                }
             }
-            else
+            else {
                 this._cmds.length = 0;
-            if (this._data) {
-                this._data.clear();
+                this._layoutRepaintCount = 0;
             }
             this.repaint();
         }
@@ -14777,11 +16037,16 @@ window.Laya = (function (exports) {
             this.repaint();
         }
         repaint() {
-            var _a, _b;
-            this._modified = true;
+            var _a;
+            this._modified = Stat.loopCount;
             (_a = this._graphicBounds) === null || _a === void 0 ? void 0 : _a.reset();
-            this._checkDisplay();
-            (_b = this.owner) === null || _b === void 0 ? void 0 : _b.repaint(exports.RepaintFlag.Graphics);
+            if (this.owner) {
+                this.owner._graphicsRenderer._checkDisplay();
+                this.owner.repaint(exports.RepaintFlag.Graphics);
+            }
+        }
+        getLayoutRepaintCount() {
+            return this._layoutRepaintCount;
         }
         get cmds() {
             return this._cmds;
@@ -14793,6 +16058,12 @@ window.Laya = (function (exports) {
                         cmd.recover();
                 });
             }
+            this._layoutRepaintCount = 0;
+            for (let cmd of value) {
+                if (cmd.needsLayoutRepaint) {
+                    this._layoutRepaintCount += cmd.needsLayoutRepaint();
+                }
+            }
             this._cmds = value;
             this.repaint();
         }
@@ -14803,6 +16074,9 @@ window.Laya = (function (exports) {
                 this._cmds.push(cmd);
             else
                 this._cmds.splice(index, 0, cmd);
+            if (cmd.needsLayoutRepaint) {
+                this._layoutRepaintCount += cmd.needsLayoutRepaint();
+            }
             this.repaint();
             return cmd;
         }
@@ -14810,6 +16084,9 @@ window.Laya = (function (exports) {
             let i = this.cmds.indexOf(cmd);
             if (i != -1) {
                 this._cmds.splice(i, 1);
+                if (cmd.needsLayoutRepaint) {
+                    this._layoutRepaintCount -= cmd.needsLayoutRepaint();
+                }
                 this.repaint();
             }
             if (recover) {
@@ -14819,11 +16096,17 @@ window.Laya = (function (exports) {
         }
         replaceCmd(oldCmd, newCmd, recover) {
             let index = this._cmds.indexOf(oldCmd);
+            if (oldCmd && oldCmd.needsLayoutRepaint) {
+                this._layoutRepaintCount -= oldCmd.needsLayoutRepaint();
+            }
             if (newCmd != null) {
                 if (index !== -1)
                     this._cmds[index] = newCmd;
                 else
                     this._cmds.push(newCmd);
+                if (newCmd.needsLayoutRepaint) {
+                    this._layoutRepaintCount += newCmd.needsLayoutRepaint();
+                }
                 this.repaint();
             }
             else if (index != -1) {
@@ -14835,37 +16118,6 @@ window.Laya = (function (exports) {
                 oldCmd.recover();
             }
             return newCmd;
-        }
-        _checkDisplay() {
-            if (!this.owner || this.owner.destroyed) {
-                this._display = false;
-                return;
-            }
-            let value = !this.owner._renderNode && (this._cmds.length > 0 || this.owner._texture != null);
-            if (this._display === value)
-                return;
-            this._display = value;
-            let struct = this.owner._struct;
-            if (value) {
-                this._modified = true;
-                this.owner._initShaderData();
-                this.owner._renderType |= SpriteConst.GRAPHICS;
-                struct.renderType = exports.BaseRender2DType.graphics;
-                struct.renderDataHandler = this._renderDataHandle;
-                struct.renderElements = this._data._renderElements;
-                this.owner._updateStruct();
-            }
-            else {
-                this.owner._renderType &= ~SpriteConst.GRAPHICS;
-                if (struct.renderElements === this._data._renderElements) {
-                    struct.renderElements = [];
-                }
-                if (this._data) {
-                    this._data.clear();
-                }
-                struct.renderType = -1;
-                struct.renderDataHandler = null;
-            }
         }
         getBounds() {
             if (!this._graphicBounds)
@@ -14979,68 +16231,6 @@ window.Laya = (function (exports) {
                     this.drawImage(tex, x, y, width, height);
                     complete && complete.call(this.owner);
                 });
-            }
-        }
-        _render(runner, x = 0, y = 0) {
-            if (!this.owner || this.owner.destroyed || this.owner._struct.renderType !== exports.BaseRender2DType.graphics)
-                return;
-            if (!this._modified
-                && this._check()) {
-                this._data.setRenderElement(this.owner._struct, this._renderDataHandle);
-                return;
-            }
-            this._data.clear();
-            runner.clear();
-            runner.sprite = this.owner;
-            runner._graphicsData = this._data;
-            runner._material = this._material;
-            let oldBlendMode = runner.globalCompositeOperation;
-            runner.globalCompositeOperation = this.owner._struct.blendMode;
-            var cmds = this._cmds;
-            for (let i = 0, n = cmds.length; i < n; i++) {
-                cmds[i].run(runner, x, y);
-            }
-            this._renderSpriteTexture(runner, x, y);
-            this._data.updateRenderElement(this, this.owner._struct, this._renderDataHandle);
-            runner.globalCompositeOperation = oldBlendMode;
-            runner._material = null;
-            runner._graphicsData = null;
-            runner.sprite = null;
-            this._modified = false;
-        }
-        _check() {
-            let len = this._data._submits.length;
-            for (let i = 0; i < len; i++) {
-                let submit = this._data._submits.elements[i];
-                let texture = submit._internalInfo.textureHost;
-                if (!texture)
-                    continue;
-                let bitmap = texture.bitmap;
-                if (bitmap && bitmap.destroyed) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        _renderSpriteTexture(runner, x, y) {
-            let sprite = this.owner;
-            let tex = sprite._texture;
-            if (!tex)
-                return;
-            if (tex._getSource(() => {
-                this.owner.graphics.repaint();
-            })) {
-                var width = sprite._isWidthSet ? sprite._width : tex.sourceWidth;
-                var height = sprite._isHeightSet ? sprite._height : tex.sourceHeight;
-                var wRate = width / tex.sourceWidth;
-                var hRate = height / tex.sourceHeight;
-                width = tex.width * wRate;
-                height = tex.height * hRate;
-                if (width > 0 && height > 0) {
-                    let px = x + tex.offsetX * wRate;
-                    let py = y + tex.offsetY * hRate;
-                    runner.drawTexture(tex, px, py, width, height, 0xffffffff);
-                }
             }
         }
         drawLine(fromX, fromY, toX, toY, lineColor, lineWidth = 1) {
@@ -15244,7 +16434,7 @@ window.Laya = (function (exports) {
                     node._parent && node._parent.removeChild(node);
                     this._$children.splice(index, 0, node);
                     node._$parent = this;
-                    node._setParent(this._$container);
+                    node._setParent(this._$container, index);
                 }
                 return node;
             }
@@ -15393,7 +16583,7 @@ window.Laya = (function (exports) {
                     node._parent && node._parent.removeChild(node);
                     children.splice(index, 0, node);
                     node._$parent = this;
-                    node._setParent(this);
+                    node._setParent(this, index);
                 }
                 return node;
             }
@@ -15426,7 +16616,7 @@ window.Laya = (function (exports) {
             }
             return false;
         }
-        _setParent(value) {
+        _setParent(value, index = -1) {
             if (value) {
                 this._parent = value;
                 this._onAdded();
@@ -15735,91 +16925,6 @@ window.Laya = (function (exports) {
         onAfterDeserialize() { }
     }
 
-    class Stat {
-        static get FPS() {
-            return LayaGL.statAgent.getElementData(exports.StatElement.CT_FPS);
-        }
-        static show(x, y, views) {
-            if (!Stat._statUI)
-                Stat._statUI = new Stat._statUIClass();
-            this.hide();
-            if (views) {
-                Stat.elements.length = 0;
-                Stat.elements.push(...views);
-            }
-            if (Stat.elements.length === 0) {
-                const statEnum = PlayerConfig.statEnum;
-                if (statEnum) {
-                    for (let k in statEnum) {
-                        if (statEnum[k]) {
-                            Stat.elements.push(exports.StatElement[k]);
-                        }
-                    }
-                    Stat.elements.sort();
-                }
-            }
-            if (Stat.elements.length === 0) {
-                Stat.elements.push(...defaultElements);
-            }
-            Stat._show = true;
-            Stat._statUI.show(x, y);
-            ILaya.systemTimer.frameLoop(1, null, Stat.loop);
-        }
-        static hide() {
-            if (!Stat._show)
-                return;
-            Stat._show = false;
-            Stat._statUI.hide();
-            ILaya.systemTimer.clear(null, Stat.loop);
-        }
-        static loop() {
-            if (Stat._show) {
-                Stat._statUI.update();
-            }
-        }
-        static render() {
-            if (Stat._show)
-                Stat._statUI.render();
-        }
-    }
-    Stat.elements = [];
-    Stat.loopCount = 0;
-    Stat.render2DCount = 0;
-    Stat.enableShadow = true;
-    Stat.enableMulLight = true;
-    Stat.enableLight = true;
-    Stat.enableCameraCMD = true;
-    Stat.enablePostprocess = true;
-    Stat.enableSkin = true;
-    Stat.enableTransparent = true;
-    Stat.enableParticle = true;
-    Stat.enableAnimatorUpdate = true;
-    Stat.enablePhysicsUpdate = true;
-    Stat.enablemsaa = true;
-    Stat.enableOpaque = true;
-    const defaultElements = [
-        exports.StatElement.CT_FPS,
-        exports.StatElement.T_Frame_Time,
-        exports.StatElement.C_Sprite2DCount,
-        exports.StatElement.C_Sprite3DCount,
-        exports.StatElement.CT_DrawCall,
-        exports.StatElement.CT_Triangle,
-        exports.StatElement.C_BaseRenderCount,
-        exports.StatElement.C_SkinnedMeshRenderCount,
-        exports.StatElement.C_ShurikenParticleRenderCount,
-        exports.StatElement.T_CullMain,
-        exports.StatElement.CT_OpaqueDrawCall,
-        exports.StatElement.CT_TransDrawCall,
-        exports.StatElement.CT_ShadowDrawCall,
-        exports.StatElement.CT_DepthCastDrawCall,
-        exports.StatElement.CT_Instancing_DrawCall,
-        exports.StatElement.M_GPUMemory,
-        exports.StatElement.M_AllTexture,
-        exports.StatElement.M_RenderTexture,
-        exports.StatElement.M_GPUBuffer
-    ];
-    window.Stat = Stat;
-
     class RenderTexture2D extends BaseTexture {
         static __init__() {
             RenderTexture2D._empty = new RenderTexture2D(1, 1, exports.RenderTargetFormat.R8G8B8, exports.RenderTargetFormat.None);
@@ -15827,7 +16932,7 @@ window.Laya = (function (exports) {
             RenderTexture2D._empty.height = 0;
             RenderTexture2D._empty.lock = true;
         }
-        static createFromPool(width, height, colorFormat, depthFormat) {
+        static createFromPool(width, height, colorFormat, depthFormat, multiSampler = 1) {
             for (let i = RenderTexture2D._pool.length - 1; i >= 0; i--) {
                 let rt = RenderTexture2D._pool[i];
                 if (rt.destroyed) {
@@ -15837,7 +16942,7 @@ window.Laya = (function (exports) {
                     RenderTexture2D._poolTimeouts.delete(rt._id);
                     continue;
                 }
-                if (rt.width == width && rt.height == height && rt.getColorFormat() == colorFormat && rt.depthStencilFormat == depthFormat) {
+                if (rt.width == width && rt.height == height && rt.getColorFormat() == colorFormat && rt.depthStencilFormat == depthFormat && rt._multiSamples == multiSampler) {
                     rt._inPool = false;
                     RenderTexture2D._pool.splice(i, 1);
                     RenderTexture2D._poolMemory -= (rt._renderTarget.gpuMemory / 1024 / 1024);
@@ -15845,7 +16950,7 @@ window.Laya = (function (exports) {
                     return rt;
                 }
             }
-            let rt = new RenderTexture2D(width, height, colorFormat, depthFormat);
+            let rt = new RenderTexture2D(width, height, colorFormat, depthFormat, multiSampler);
             rt.lock = true;
             return rt;
         }
@@ -15856,6 +16961,7 @@ window.Laya = (function (exports) {
             RenderTexture2D._poolMemory += (rt._renderTarget.gpuMemory / 1024 / 1024);
             rt._inPool = true;
             RenderTexture2D._poolTimeouts.set(rt.id, performance.now());
+            RenderTexture2D._cleanupExcess();
         }
         static clearPool() {
             if (RenderTexture2D._poolMemory < 256) {
@@ -15890,6 +16996,35 @@ window.Laya = (function (exports) {
             }
             return cleanedCount;
         }
+        static _cleanupExcess() {
+            if (RenderTexture2D._poolMemory <= RenderTexture2D.maxPoolMemory) {
+                return;
+            }
+            let objectsWithTime = [];
+            for (let i = 0; i < RenderTexture2D._pool.length; i++) {
+                let rt = RenderTexture2D._pool[i];
+                let poolTime = RenderTexture2D._poolTimeouts.get(rt.id);
+                if (poolTime !== undefined) {
+                    objectsWithTime.push({ rt: rt, time: poolTime });
+                }
+            }
+            objectsWithTime.sort((a, b) => a.time - b.time);
+            for (let i = 0; i < objectsWithTime.length; i++) {
+                let item = objectsWithTime[i];
+                let rt = item.rt;
+                if (RenderTexture2D._poolMemory <= RenderTexture2D.maxPoolMemory) {
+                    break;
+                }
+                let index = RenderTexture2D._pool.indexOf(rt);
+                if (index >= 0) {
+                    RenderTexture2D._pool.splice(index, 1);
+                    let gpuMem = rt._renderTarget ? (rt._renderTarget.gpuMemory / 1024 / 1024) : 0;
+                    RenderTexture2D._poolMemory -= gpuMem;
+                    RenderTexture2D._poolTimeouts.delete(rt.id);
+                    rt.destroy();
+                }
+            }
+        }
         static get currentActive() {
             return RenderTexture2D._currentActive;
         }
@@ -15917,13 +17052,14 @@ window.Laya = (function (exports) {
         get offsetY() {
             return 0;
         }
-        constructor(width, height, format = exports.RenderTargetFormat.R8G8B8, depthStencilFormat = exports.RenderTargetFormat.None) {
+        constructor(width, height, format = exports.RenderTargetFormat.R8G8B8, depthStencilFormat = exports.RenderTargetFormat.None, multiSampler = 1) {
             super(width, height, format);
             this._mgrKey = 0;
             this._invertY = false;
             this._inPool = false;
             this._colorFormat = format;
             this._depthStencilFormat = depthStencilFormat;
+            this._multiSamples = multiSampler;
             if (width != 0 && height != 0) {
                 this._create();
             }
@@ -15945,7 +17081,7 @@ window.Laya = (function (exports) {
             throw new NotImplementedError();
         }
         _create() {
-            this._renderTarget = LayaGL.textureContext.createRenderTargetInternal(this.width, this.height, this._colorFormat, this.depthStencilFormat, false, false, 1, false);
+            this._renderTarget = LayaGL.textureContext.createRenderTargetInternal(this.width, this.height, this._colorFormat, this.depthStencilFormat, false, false, this._multiSamples, false);
             this._texture = this._renderTarget._textures[0];
             this._texture.gammaCorrection = 2.2;
         }
@@ -15987,6 +17123,7 @@ window.Laya = (function (exports) {
     RenderTexture2D._poolTimeouts = new Map();
     RenderTexture2D.cleanupTimeout = 30000;
     RenderTexture2D.cleanupFrameInterval = 360;
+    RenderTexture2D.maxPoolMemory = 128;
     RenderTexture2D._lastCleanupFrame = 0;
     RenderTexture2D._clearColor = new Color(0, 0, 0, 0);
     RenderTexture2D._clear = false;
@@ -17761,6 +18898,9 @@ window.Laya = (function (exports) {
                 }
             }
         }
+        get lightReceive() {
+            return this._lightReceive;
+        }
         set lightReceive(value) {
             if (value === this._lightReceive)
                 return;
@@ -17773,9 +18913,6 @@ window.Laya = (function (exports) {
             }
             this._renderHandle.lightReceive = value;
             this._resetUpdateMark();
-        }
-        get lightReceive() {
-            return this._lightReceive;
         }
         _resetUpdateMark() {
             this._lightUpdateMark = 0;
@@ -18098,301 +19235,265 @@ window.Laya = (function (exports) {
     const tmpPoint$1 = new Point();
     const tmpMarix = new Matrix();
 
-    class SingletonList {
-        constructor() {
-            this.elements = [];
-            this.length = 0;
-        }
-        add(element) {
-            let index = this.elements.indexOf(element);
-            if (index != -1 && index < this.length)
-                return;
-            this.elements[this.length++] = element;
-        }
-        addList(list) {
-            let len = this.length;
-            let len2 = list.length;
-            this.length = len + len2;
-            let arr1 = this.elements;
-            let arr2 = list.elements;
-            if (arr1.length < this.length)
-                arr1.length = this.length;
-            for (let i = 0; i < len2; i++) {
-                arr1[len + i] = arr2[i];
-            }
-        }
-        indexof(element) {
-            let index = this.elements.indexOf(element);
-            if (index != -1 && index < this.length)
-                return index;
-            return -1;
-        }
-        remove(element) {
-            let index = this.elements.indexOf(element);
-            if (index != -1 && index < this.length) {
-                this.elements[index] = this.elements[this.length - 1];
-                this.elements[this.length - 1] = null;
-                this.length--;
-            }
-        }
-        clear() {
-            this.elements.length = 0;
-            this.length = 0;
-        }
-        clean() {
-            this.elements.length = this.length;
-        }
-        cloneTo(out) {
-            out.length = this.length;
-            out.elements = this.elements.slice();
-        }
-        destroy() {
-            this.elements = null;
-        }
-    }
-    class FastSinglelist extends SingletonList {
-        add(element) {
-            this.elements[this.length++] = element;
-        }
-    }
-
-    var texture_ps = "#define SHADER_NAME TextureFS2D\n#if defined(GL_FRAGMENT_PRECISION_HIGH)\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n#include \"Sprite2DFrag.glsl\";\nvoid main(){clip();vec4 color=getSpriteTextureColor();setglColor(color);}";
-
-    var texture_vs = "#define SHADER_NAME TextureVS2D\n#include \"Sprite2DVertex.glsl\";\nvoid main(){vertexInfo info;getVertexInfo(info);v_texcoordAlpha=info.texcoordAlpha;v_color=info.color;v_useTex=info.useTex;v_useClip=info.useClip;v_customs=info.customs;gl_Position=getPosition(info.pos);}";
-
-    var baseRender2D_vs = "#define SHADER_NAME BaseRender2DVS\n#include \"Sprite2DVertex.glsl\";\nvoid main(){vertexInfo info;getVertexInfo(info);v_texcoord=info.uv;v_color=info.color;\n#ifdef LIGHT2D_ENABLE\nlightAndShadow(info);\n#endif\ngl_Position=getPosition(info.pos);}";
-
-    var baseRender2D_ps = "#define SHADER_NAME BaseRender2DPS\n#if defined(GL_FRAGMENT_PRECISION_HIGH)\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n#include \"Sprite2DFrag.glsl\";\nvoid main(){clip();vec2 texcoord=v_texcoord.xy*u_tilingOffset.zw+u_tilingOffset.xy;vec4 textureColor=texture2D(u_baseRender2DTexture,texcoord);\n#ifdef LIGHT2D_ENABLE\nlightAndShadow(textureColor);\n#endif\ntextureColor=transspaceColor(textureColor);setglColor(textureColor);}";
-
-    var ColorGLSL = "#if !defined(Color_lib)\n#define Color_lib\n#include \"Math.glsl\";\nvec3 linearToGamma(in vec3 value){return pow(value,vec3(1.0/2.2));}vec4 linearToGamma(in vec4 value){return vec4(linearToGamma(value.rgb),value.a);}vec3 gammaToLinear(in vec3 value){return pow(value,vec3(2.2));}vec4 gammaToLinear(in vec4 value){return vec4(gammaToLinear(value.rgb),value.a);}const float c_RGBDMaxRange=255.0;vec4 encodeRGBD(in vec3 color){float maxRGB=max(vecmax(color),FLT_EPS);float d=max(1.0,c_RGBDMaxRange/maxRGB);d=saturate(d/255.0);vec3 rgb=color.rgb*d;rgb=saturate(rgb);return vec4(rgb,d);}vec3 decodeRGBD(in vec4 rgbd){vec3 color=rgbd.rgb*(1.0/rgbd.a);return color;}vec4 encodeRGBM(in vec3 color,float range){color*=1.0/range;float maxRGB=max(vecmax(color),FLT_EPS);float m=ceil(maxRGB*255.0)/255.0;vec3 rgb=color.rgb*1.0/m;vec4 rgbm=vec4(rgb,m);return rgbm;}vec3 decodeRGBM(in vec4 rgbm,float range){return range*rgbm.rgb*rgbm.a;}\n#include \"OutputTransform.glsl\";\n#endif\n";
-
-    var MathGLSL = "#if !defined(Math_lib)\n#define Math_lib\n#ifndef GRAPHICS_API_GLES3\nmat2 inverse(mat2 m){return mat2(m[1][1],-m[0][1],-m[1][0],m[0][0])/(m[0][0]*m[1][1]-m[0][1]*m[1][0]);}mat3 inverse(mat3 m){float a00=m[0][0],a01=m[0][1],a02=m[0][2];float a10=m[1][0],a11=m[1][1],a12=m[1][2];float a20=m[2][0],a21=m[2][1],a22=m[2][2];float b01=a22*a11-a12*a21;float b11=-a22*a10+a12*a20;float b21=a21*a10-a11*a20;float det=a00*b01+a01*b11+a02*b21;return mat3(b01,(-a22*a01+a02*a21),(a12*a01-a02*a11),b11,(a22*a00-a02*a20),(-a12*a00+a02*a10),b21,(-a21*a00+a01*a20),(a11*a00-a01*a10))/det;}mat4 inverse(mat4 m){float a00=m[0][0],a01=m[0][1],a02=m[0][2],a03=m[0][3],a10=m[1][0],a11=m[1][1],a12=m[1][2],a13=m[1][3],a20=m[2][0],a21=m[2][1],a22=m[2][2],a23=m[2][3],a30=m[3][0],a31=m[3][1],a32=m[3][2],a33=m[3][3],b00=a00*a11-a01*a10,b01=a00*a12-a02*a10,b02=a00*a13-a03*a10,b03=a01*a12-a02*a11,b04=a01*a13-a03*a11,b05=a02*a13-a03*a12,b06=a20*a31-a21*a30,b07=a20*a32-a22*a30,b08=a20*a33-a23*a30,b09=a21*a32-a22*a31,b10=a21*a33-a23*a31,b11=a22*a33-a23*a32,det=b00*b11-b01*b10+b02*b09+b03*b08-b04*b07+b05*b06;return mat4(a11*b11-a12*b10+a13*b09,a02*b10-a01*b11-a03*b09,a31*b05-a32*b04+a33*b03,a22*b04-a21*b05-a23*b03,a12*b08-a10*b11-a13*b07,a00*b11-a02*b08+a03*b07,a32*b02-a30*b05-a33*b01,a20*b05-a22*b02+a23*b01,a10*b10-a11*b08+a13*b06,a01*b08-a00*b10-a03*b06,a30*b04-a31*b02+a33*b00,a21*b02-a20*b04-a23*b00,a11*b07-a10*b09-a12*b06,a00*b09-a01*b07+a02*b06,a31*b01-a30*b03-a32*b00,a20*b03-a21*b01+a22*b00)/det;}mat4 transpose(mat4 m){return mat4(m[0][0],m[1][0],m[2][0],m[3][0],m[0][1],m[1][1],m[2][1],m[3][1],m[0][2],m[1][2],m[2][2],m[3][2],m[0][3],m[1][3],m[2][3],m[3][3]);}mat3 transpose(mat3 m){return mat3(m[0][0],m[1][0],m[2][0],m[0][1],m[1][1],m[2][1],m[0][2],m[1][2],m[2][2]);}\n#endif\n#define PI 3.14159265359\n#define INVERT_PI 0.31830988618\n#define HALF_PI 1.570796327\n#define MEDIUMP_FLT_MAX 65504.0\n#define MEDIUMP_FLT_MIN 0.00006103515625\n#if defined(GL_FRAGMENT_PRECISION_HIGH)\n#define FLT_EPS 1e-5\n#define saturateMediump(x) x\n#else\n#define FLT_EPS MEDIUMP_FLT_MIN\n#define saturateMediump(x) min(x, MEDIUMP_FLT_MAX)\n#endif\n#define saturate(x) clamp(x, 0.0, 1.0)\nfloat pow2(float x){return x*x;}vec3 pow2(vec3 x){return x*x;}float pow5(float x){float x2=x*x;return x2*x2*x;}const float INVERT_LOG10=0.43429448190325176;float log10(float x){return log(x)*INVERT_LOG10;}float vecmax(const vec2 v){return max(v.x,v.y);}float vecmax(const vec3 v){return max(v.x,max(v.y,v.z));}float vecmax(const vec4 v){return max(max(v.x,v.y),max(v.z,v.w));}float vecmin(const vec2 v){return min(v.x,v.y);}float vecmin(const vec3 v){return min(v.x,min(v.y,v.z));}float vecmin(const vec4 v){return min(min(v.x,v.y),min(v.z,v.w));}vec3 SafeNormalize(in vec3 inVec){float dp3=max(0.001,dot(inVec,inVec));return inVec*inversesqrt(dp3);}vec3 normalScale(in vec3 normal,in float scale){normal*=vec3(scale,scale,1.0);return normalize(normal);}float acosFast(float x){float y=abs(x);float p=-0.1565827*y+1.570796;p*=sqrt(1.0-y);return x>=0.0 ? p : PI-p;}float acosFastPositive(float x){float p=-0.1565827*x+1.570796;return p*sqrt(1.0-x);}float interleavedGradientNoise(const highp vec2 w){const vec3 m=vec3(0.06711056,0.00583715,52.9829189);return fract(m.z*fract(dot(w,m.xy)));}vec3 rotationByEuler(in vec3 vector,in vec3 rot){float halfRoll=rot.z*0.5;float halfPitch=rot.x*0.5;float halfYaw=rot.y*0.5;float sinRoll=sin(halfRoll);float cosRoll=cos(halfRoll);float sinPitch=sin(halfPitch);float cosPitch=cos(halfPitch);float sinYaw=sin(halfYaw);float cosYaw=cos(halfYaw);float quaX=(cosYaw*sinPitch*cosRoll)+(sinYaw*cosPitch*sinRoll);float quaY=(sinYaw*cosPitch*cosRoll)-(cosYaw*sinPitch*sinRoll);float quaZ=(cosYaw*cosPitch*sinRoll)-(sinYaw*sinPitch*cosRoll);float quaW=(cosYaw*cosPitch*cosRoll)+(sinYaw*sinPitch*sinRoll);float x=quaX+quaX;float y=quaY+quaY;float z=quaZ+quaZ;float wx=quaW*x;float wy=quaW*y;float wz=quaW*z;float xx=quaX*x;float xy=quaX*y;float xz=quaX*z;float yy=quaY*y;float yz=quaY*z;float zz=quaZ*z;return vec3(((vector.x*((1.0-yy)-zz))+(vector.y*(xy-wz)))+(vector.z*(xz+wy)),((vector.x*(xy+wz))+(vector.y*((1.0-xx)-zz)))+(vector.z*(yz-wx)),((vector.x*(xz-wy))+(vector.y*(yz+wx)))+(vector.z*((1.0-xx)-yy)));}vec3 rotationByAxis(in vec3 vector,in vec3 axis,in float angle){float halfAngle=angle*0.5;float sinf=sin(halfAngle);float quaX=axis.x*sinf;float quaY=axis.y*sinf;float quaZ=axis.z*sinf;float quaW=cos(halfAngle);float x=quaX+quaX;float y=quaY+quaY;float z=quaZ+quaZ;float wx=quaW*x;float wy=quaW*y;float wz=quaW*z;float xx=quaX*x;float xy=quaX*y;float xz=quaX*z;float yy=quaY*y;float yz=quaY*z;float zz=quaZ*z;return vec3(((vector.x*((1.0-yy)-zz))+(vector.y*(xy-wz)))+(vector.z*(xz+wy)),((vector.x*(xy+wz))+(vector.y*((1.0-xx)-zz)))+(vector.z*(yz-wx)),((vector.x*(xz-wy))+(vector.y*(yz+wx)))+(vector.z*((1.0-xx)-yy)));}vec3 rotationByQuaternions(in vec3 v,in vec4 q){return v+2.0*cross(q.xyz,cross(q.xyz,v)+q.w*v);}\n#endif\n";
-
-    var Sprite2DFrag = "vec3 gammaToLinear(in vec3 value){return pow((value+0.055)/1.055,vec3(2.4));}vec4 gammaToLinear(in vec4 value){return vec4(gammaToLinear(value.rgb),value.a);}vec3 linearToGamma(in vec3 value){return vec3(mix(pow(value.rgb,vec3(0.41666))*1.055-vec3(0.055),value.rgb*12.92,vec3(lessThanEqual(value.rgb,vec3(0.0031308)))));}vec4 linearToGamma(in vec4 value){return vec4(linearToGamma(value.rgb),value.a);}vec4 transspaceColor(vec4 color){\n#ifndef GAMMATEXTURE\n#ifdef GAMMASPACE\ncolor.xyz=linearToGamma(color.xyz);\n#endif\n#else\n#ifndef GAMMASPACE\ncolor.xyz=gammaToLinear(color.xyz);\n#endif\n#endif\nreturn color;}varying vec2 v_cliped;\n#ifdef TEXTUREVS\nvarying vec4 v_texcoordAlpha;varying vec4 v_color;varying float v_useTex;varying float v_useClip;varying vec4 v_customs;uniform sampler2D u_spriteTexture;\n#ifdef FILLTEXTURE\nuniform vec4 u_TexRange;\n#endif\nvec4 getSpriteTextureColor(){\n#ifdef FILLTEXTURE\nvec4 color=texture2D(u_spriteTexture,fract(v_texcoordAlpha.xy)*u_TexRange.zw+u_TexRange.xy);\n#else\nvec4 color=texture2D(u_spriteTexture,v_texcoordAlpha.xy);\n#endif\nreturn transspaceColor(color);}void setglColor(in vec4 color){float useTex=step(1.0,v_useTex);color=mix(vec4(1.,1.,1.,1.),color,useTex);vec4 clampedRange=v_customs;clampedRange.xy=max(v_customs.xy,vec2(0.0,0.0));clampedRange.zw=min(v_customs.xy+v_customs.zw,vec2(1.0,1.0));vec2 inRange=step(clampedRange.xy,v_texcoordAlpha.xy)*step(v_texcoordAlpha.xy,clampedRange.zw);float useTexture=inRange.x*inRange.y;float useClip=step(1.0,v_useClip);float clipAlpha=mix(1.0,useTexture,useClip);color*=clipAlpha;color.a*=v_color.w;vec4 transColor=v_color;\n#ifndef GAMMASPACE\ntransColor=gammaToLinear(v_color);\n#endif\ncolor.rgb*=transColor.rgb;gl_FragColor=color;}\n#endif\n#ifdef BASERENDER2D\nvarying vec2 v_texcoord;varying vec4 v_color;uniform sampler2D u_baseRender2DTexture;uniform vec4 u_baseRenderColor;uniform vec4 u_tilingOffset;\n#ifdef LIGHT2D_ENABLE\nvarying vec2 v_lightUV;uniform vec3 u_LightDirection;uniform vec4 u_LightAndShadow2DParam;uniform vec4 u_LightAndShadow2DAmbient;uniform sampler2D u_LightAndShadow2D;\n#ifdef LIGHT2D_SCENEMODE_ADD\nuniform sampler2D u_LightAndShadow2D_AddMode;\n#endif\n#ifdef LIGHT2D_SCENEMODE_SUB\nuniform sampler2D u_LightAndShadow2D_SubMode;\n#endif\n#ifdef LIGHT2D_NORMAL_PARAM\nuniform sampler2D u_normal2DTexture;uniform float u_normal2DStrength;\n#endif\nvoid lightAndShadow(inout vec4 color){\n#ifdef LIGHT2D_EMPTY\ncolor.rgb*=u_LightAndShadow2DAmbient.rgb;\n#else\nvec2 uv=v_lightUV;vec2 tt=step(vec2(0.0),uv)*step(uv,vec2(1.0));float side=tt.x*tt.y;vec3 ambient=color.rgb*u_LightAndShadow2DAmbient.rgb;color.rgb=color.rgb*texture2D(u_LightAndShadow2D,uv).rgb*side;side*=color.a;\n#ifdef LIGHT2D_SCENEMODE_ADD\ncolor.rgb=min(vec3(1.0),color.rgb+texture2D(u_LightAndShadow2D_AddMode,uv).rgb*side);\n#endif\n#ifdef LIGHT2D_SCENEMODE_SUB\ncolor.rgb=max(vec3(0.0),color.rgb-texture2D(u_LightAndShadow2D_SubMode,uv).rgb*side);\n#endif\n#ifdef LIGHT2D_NORMAL_PARAM\nvec3 dr=normalize(u_LightDirection);vec3 normal=normalize(texture2D(u_normal2DTexture,v_texcoord).rgb*2.0-1.0);color.rgb=color.rgb*((1.0-u_normal2DStrength)+abs(dot(dr,normal.rgb))*u_normal2DStrength);\n#endif\ncolor.rgb=min(vec3(1.0),color.rgb+ambient);\n#endif\n}\n#endif\nvoid setglColor(in vec4 color){color.a*=v_color.w;vec4 transColor=v_color;\n#ifndef GAMMASPACE\ntransColor=gammaToLinear(v_color);\n#endif\ncolor.rgb*=transColor.rgb;gl_FragColor=color;}vec2 transformUV(in vec2 texcoord,in vec4 tilingOffset){vec2 uv=texcoord*tilingOffset.zw+tilingOffset.xy;return uv;}\n#endif\nvoid clip(){if(v_cliped.x<0.)discard;if(v_cliped.x>1.)discard;if(v_cliped.y<0.)discard;if(v_cliped.y>1.)discard;}";
-
-    var Sprite2DVertex = "#ifdef CAMERA2D\nuniform mat3 u_view2D;\n#endif\n#ifdef SPRITE2DGLOBAL\n#endif\n#ifdef RENDERTEXTURE\nuniform vec3 u_InvertMat_0;uniform vec3 u_InvertMat_1;\n#endif\n#ifdef VERTEX_SIZE\nuniform vec4 u_vertexSize;\n#endif\nuniform vec3 u_NMatrix_0;uniform vec3 u_NMatrix_1;uniform vec2 u_size;\n#ifdef MATERIALCLIP\nuniform vec4 u_mClipMatDir;uniform vec4 u_mClipMatPos;\n#endif\nuniform vec4 u_clipMatDir;uniform vec4 u_clipMatPos;varying vec2 v_cliped;varying vec4 v_color;void transfrom(vec2 pos,vec3 xDir,vec3 yDir,out vec2 outPos){outPos.x=xDir.x*pos.x+xDir.y*pos.y+xDir.z;outPos.y=yDir.x*pos.x+yDir.y*pos.y+yDir.z;}void clip(inout vec2 globalPos){vec4 clipMatDir;vec4 clipMatPos;\n#ifdef MATERIALCLIP\nclipMatDir=u_mClipMatDir;clipMatPos=u_mClipMatPos;float tx=clipMatPos.z;float ty=clipMatPos.w;float cmaxx=tx+clipMatDir.x;float cmaxy=ty+clipMatDir.w;float parentMinX=u_clipMatPos.x;float parentMinY=u_clipMatPos.y;float offsetx=u_clipMatPos.z-parentMinX;float offsety=u_clipMatPos.w-parentMinY;float parentMaxX=parentMinX+u_clipMatDir.x;float parentMaxY=parentMinY+u_clipMatDir.w;if(tx<parentMinX){clipMatDir.x-=(parentMinX-tx);tx=clipMatPos.x=parentMinX;}if(cmaxx>parentMaxX){clipMatDir.x-=(cmaxx-parentMaxX);}if(ty<parentMinY){clipMatDir.w-=(parentMinY-ty);ty=clipMatPos.y=parentMinY;}if(cmaxy>parentMaxY){clipMatDir.w-=(cmaxy-parentMaxY);}clipMatPos.zw=vec2(tx+offsetx,ty+offsety);\n#else\nclipMatDir=u_clipMatDir;clipMatPos=u_clipMatPos;\n#endif\nvec2 cliped;float clipw=length(clipMatDir.xy);float cliph=length(clipMatDir.zw);vec2 clippos=globalPos-clipMatPos.xy;if(clipw>20000.&&cliph>20000.)cliped=vec2(0.5,0.5);else{cliped=vec2(dot(clippos,clipMatDir.xy)/clipw/clipw,dot(clippos,clipMatDir.zw)/cliph/cliph);}globalPos=clippos+clipMatPos.zw;v_cliped=cliped;}void getGlobalPos(in vec2 localPos,out vec2 globalPos){transfrom(localPos,u_NMatrix_0,u_NMatrix_1,globalPos);}void getProjectPos(in vec2 viewPos,out vec4 projectPos){projectPos=vec4((viewPos.x/u_size.x-0.5)*2.0,(0.5-viewPos.y/u_size.y)*2.0,0.,1.0);\n#ifdef INVERTY\nprojectPos.y=-projectPos.y;\n#endif\n}void getViewPos(in vec2 globalPos,out vec2 viewPos){\n#ifdef RENDERTEXTURE\nvec2 tempPos;transfrom(globalPos,u_InvertMat_0,u_InvertMat_1,tempPos);\n#ifdef CAMERA2D\nviewPos.xy=(u_view2D*vec3(tempPos,1.0)).xy+u_size/2.;\n#else\nviewPos.xy=tempPos;\n#endif\n#else\n#ifdef CAMERA2D\nviewPos.xy=(u_view2D*vec3(globalPos,1.0)).xy+u_size/2.;\n#else\nviewPos.xy=globalPos;\n#endif\n#endif\n}\n#ifdef TEXTUREVS\nstruct vertexInfo{vec2 pos;vec4 color;vec2 cliped;vec4 texcoordAlpha;float useTex;float useClip;vec4 customs;};uniform float u_VertAlpha;varying vec4 v_texcoordAlpha;varying float v_useTex;varying float v_useClip;varying vec4 v_customs;void getVertexInfo(inout vertexInfo info){info.texcoordAlpha.xy=a_posuv.zw;info.color=a_attribColor;info.color.a*=u_VertAlpha;info.color.xyz*=info.color.w;info.useTex=a_attribFlags.r;info.useClip=a_attribFlags.g;info.customs=a_customs;vec2 pos;\n#ifdef VERTEX_SIZE\npos=(a_posuv.xy*u_vertexSize.zw)+u_vertexSize.xy;\n#else\npos=a_posuv.xy;\n#endif\ninfo.pos=pos;}vec4 getPosition(in vec2 positionOS){vec2 globalPos;\n#ifdef VERTEX_SIZE\ngetGlobalPos(positionOS,globalPos);\n#else\nglobalPos=positionOS;\n#endif\nclip(globalPos);vec2 viewPos;getViewPos(globalPos,viewPos);vec4 pos;getProjectPos(viewPos,pos);return pos;}\n#endif\n#ifdef BASERENDER2D\nvarying vec2 v_texcoord;uniform vec4 u_baseRenderColor;struct vertexInfo{vec4 color;vec2 uv;vec2 pos;vec2 lightUV;};\n#ifdef LIGHT2D_ENABLE\nvarying vec2 v_lightUV;uniform vec4 u_LightAndShadow2DParam;void lightAndShadow(vertexInfo info){v_lightUV=info.lightUV;}void invertMat(inout vec3 v1,inout vec3 v2){float a1=v1.x;float b1=v2.x;float c1=v1.y;float d1=v2.y;float tx1=v1.z;float ty1=v2.z;float n=a1*d1-b1*c1;v1.x=d1/n;v2.x=-b1/n;v1.y=-c1/n;v2.y=a1/n;v1.z=(c1*ty1-d1*tx1)/n;v2.z=-(a1*ty1-b1*tx1)/n;}\n#endif\nvec4 linearToGamma(in vec4 value){return vec4(mix(pow(value.rgb,vec3(0.41666))*1.055-vec3(0.055),value.rgb*12.92,vec3(lessThanEqual(value.rgb,vec3(0.0031308)))),value.a);}void getVertexInfo(inout vertexInfo info){info.pos=a_position.xy;info.color=vec4(1.0,1.0,1.0,1.0);\n#ifdef COLOR\ninfo.color=a_color;info.color.rgb*=a_color.a;\n#endif\ninfo.color*=linearToGamma(u_baseRenderColor);\n#ifdef UV\ninfo.uv=a_uv;\n#endif\n#ifdef LIGHT2D_ENABLE\nvec2 global;getGlobalPos(info.pos,global);info.lightUV.x=(global.x-u_LightAndShadow2DParam.x)/u_LightAndShadow2DParam.z;info.lightUV.y=1.0-(global.y-u_LightAndShadow2DParam.y)/u_LightAndShadow2DParam.w;\n#endif\n}vec4 getPosition(in vec2 positionOS){vec2 globalPos;getGlobalPos(positionOS,globalPos);clip(globalPos);vec2 viewPos;getViewPos(globalPos,viewPos);vec4 pos;getProjectPos(viewPos,pos);return pos;}\n#endif\n";
-
-    var OutputTransformGLSL = "#if !defined(OutputTransform_lib)\n#define OutputTransform_lib\nvec3 gammaCorrect(in vec3 color,float gammaValue){return pow(color,vec3(gammaValue));}vec4 gammaCorrect(in vec4 color){float gammaValue=1.0/2.2;return vec4(gammaCorrect(color.rgb,gammaValue),color.a);}vec4 outputTransform(in vec4 color){\n#ifdef GAMMACORRECT\nreturn gammaCorrect(color);\n#else\nreturn color;\n#endif\n}\n#endif\n";
-
-    class Shader2D {
-        destroy() {
-        }
-        static __init__() {
-            Shader3D.addInclude("Sprite2DFrag.glsl", Sprite2DFrag);
-            Shader3D.addInclude("Sprite2DVertex.glsl", Sprite2DVertex);
-            Shader3D.addInclude("Color.glsl", ColorGLSL);
-            Shader3D.addInclude("Math.glsl", MathGLSL);
-            Shader3D.addInclude("OutputTransform.glsl", OutputTransformGLSL);
-            Shader2D.graphicsShader = Shader3D.add("Sprite2DTexture", false, false);
-            Shader2D.graphicsShader.shaderType = exports.ShaderFeatureType.D2_TextureSV;
-            let subShader = new SubShader(Shader2D.graphicsAttribute, {}, {});
-            Shader2D.graphicsShader.addSubShader(subShader);
-            subShader.addShaderPass(texture_vs, texture_ps);
-            Shader2D.render2DNodeShader = Shader3D.add("baseRender2D", false, false);
-            Shader2D.render2DNodeShader.shaderType = exports.ShaderFeatureType.D2_BaseRenderNode2D;
-            subShader = new SubShader(Shader2D.Render2DNodeAttribute, {}, {});
-            Shader2D.render2DNodeShader.addSubShader(subShader);
-            subShader.addShaderPass(baseRender2D_vs, baseRender2D_ps);
-        }
-    }
-    Shader2D.graphicsAttribute = {
-        'a_posuv': [0, exports.ShaderDataType.Vector4],
-        'a_attribColor': [1, exports.ShaderDataType.Vector4],
-        'a_attribFlags': [2, exports.ShaderDataType.Vector4],
-        'a_customs': [3, exports.ShaderDataType.Vector4]
-    };
-    Shader2D.Render2DNodeAttribute = {
-        'a_position': [0, exports.ShaderDataType.Vector4],
-        'a_color': [1, exports.ShaderDataType.Vector4],
-        'a_uv': [2, exports.ShaderDataType.Vector2]
-    };
-
-    class GraphicsRenderData {
+    class GraphicsRenderer {
         constructor(owner) {
             this._renderElements = [];
             this._submits = new FastSinglelist;
             this._bufferBlocks = [];
             this.texturesMap = new Map();
+            this._display = false;
+            this.graphics = null;
+            this.modified = -1;
+            this._blockBuckets = [];
+            this._cachedBuckets = [];
             this.owner = owner;
+            this._struct = owner._struct;
+            this._renderDataHandle = LayaGL.render2DRenderPassFactory.create2D2DPrimitiveDataHandle();
+            this.owner.on(SpriteGlobalTransform.CHANGED, this, this._onOwnerTransformChanged);
+        }
+        _onOwnerTransformChanged(type) {
+            if (type & exports.TransformKind.Layout && this._display) {
+                if (this.graphics && this.graphics.getLayoutRepaintCount() > 0) {
+                    this.graphics.repaint();
+                }
+            }
+        }
+        setGraphics(graphics) {
+            this.graphics = graphics;
+            this._checkDisplay();
+        }
+        _render(runner, x = 0, y = 0) {
+            if (!this.owner || !this.graphics || this.owner.destroyed || this.owner._struct.renderType !== exports.BaseRender2DType.graphics)
+                return;
+            if (this.modified >= this.graphics._modified) {
+                this.setRenderElement();
+                return;
+            }
+            this.modified = this.graphics._modified;
+            this.clear();
+            runner.clear();
+            runner.sprite = this.owner;
+            runner._renderer = this;
+            runner._global = this.owner._globalTrans.getMatrix();
+            let oldCache = runner._enableCache;
+            let enableCache = runner._enableCache = this.graphics.needCache;
+            let needSkipBufferUpdate = false;
+            runner._material = this.graphics.material;
+            let oldBlendMode = runner.globalCompositeOperation;
+            runner.globalCompositeOperation = this.owner._struct.blendMode;
+            let cmdsLength = this.graphics.cmds.length;
+            let prevSubmitInfo = null;
+            let cmd;
+            for (let i = 0; i < cmdsLength; i++) {
+                cmd = this.graphics.cmds[i];
+                if (enableCache) {
+                    if (cmd._cacheData) {
+                        if (prevSubmitInfo !== cmd._cacheData) {
+                            runner.applyCachedSubmitInfo(cmd._cacheData);
+                            prevSubmitInfo = cmd._cacheData;
+                            needSkipBufferUpdate = true;
+                        }
+                    }
+                    else {
+                        cmd.run(runner, x, y);
+                        cmd._cacheData = runner._currentSubmitCache;
+                    }
+                }
+                else {
+                    cmd.run(runner, x, y);
+                }
+            }
+            let tex = this.owner._texture;
+            if (tex) {
+                if (tex._getSource(() => {
+                    this.owner._graphics.repaint();
+                })) {
+                    var width = this.owner._isWidthSet ? this.owner._width : tex.sourceWidth;
+                    var height = this.owner._isHeightSet ? this.owner._height : tex.sourceHeight;
+                    var wRate = width / tex.sourceWidth;
+                    var hRate = height / tex.sourceHeight;
+                    width = tex.width * wRate;
+                    height = tex.height * hRate;
+                    if (width > 0 && height > 0) {
+                        let px = x + tex.offsetX * wRate;
+                        let py = y + tex.offsetY * hRate;
+                        runner.drawTexture(tex, px, py, width, height, 0xffffffff);
+                    }
+                }
+            }
+            this.updateRenderElement(needSkipBufferUpdate);
+            runner._enableCache = oldCache;
+            runner.globalCompositeOperation = oldBlendMode;
+            runner._material = null;
+            runner._renderer = null;
+            runner.sprite = null;
+        }
+        onModified() {
+            this.modified = -1;
+        }
+        _checkDisplay() {
+            if (!this.owner || this.owner.destroyed) {
+                this._display = false;
+                return;
+            }
+            let cmd = this.graphics && this.graphics.cmds && this.graphics.cmds.length > 0;
+            let value = !this.owner._renderNode && (cmd || this.owner._texture != null);
+            if (this._display === value)
+                return;
+            this._display = value;
+            let struct = this.owner._struct;
+            if (value) {
+                this.owner._initShaderData();
+                this.owner._renderType |= SpriteConst.GRAPHICS;
+                struct.renderType = exports.BaseRender2DType.graphics;
+                struct.renderDataHandler = this._renderDataHandle;
+                struct.renderElements = this._renderElements;
+                this.owner._updateStruct();
+            }
+            else {
+                this.owner._renderType &= ~SpriteConst.GRAPHICS;
+                if (struct.renderElements === this._renderElements) {
+                    struct.renderElements = GraphicsRenderer._emptyList;
+                }
+                this.modified = -1;
+                struct.renderType = -1;
+                struct.renderDataHandler = null;
+            }
+        }
+        take(info) {
+            for (let i = 0; i < info.vertexBlocks.length; i++) {
+                let id = info.mesh.id;
+                let bucket = this._blockBuckets[id];
+                if (!bucket) {
+                    bucket = { mesh: info.mesh, blocks: [], indexs: [] };
+                    this._blockBuckets[id] = bucket;
+                }
+                bucket.blocks[info.vertexBlocks[i]] = info.vertexViews[i];
+                bucket.indexs.push(info.vertexBlocks[i]);
+            }
         }
         clear() {
+            for (const bucket of this._cachedBuckets) {
+                if (bucket) {
+                    bucket.mesh.clearBlocks(bucket.indexs);
+                }
+            }
+            this._cachedBuckets = this._blockBuckets;
+            this._blockBuckets = [];
             let len = this._submits.length;
-            let i = 0;
-            for (i = 0; i < len; i++) {
+            for (let i = 0; i < len; i++) {
                 this._submits.elements[i].clear();
             }
-            this._bufferBlocks.length = 0;
             this._submits.length = 0;
         }
         destroy() {
             this.clear();
-            let material = this.owner.material;
-            let elements = this._renderElements;
-            for (let i = 0; i < elements.length; i++) {
-                if (material) {
-                    material._removeOwnerElement(elements[i]);
+            for (const bucket of this._cachedBuckets) {
+                if (bucket) {
+                    bucket.mesh.clearBlocks(bucket.indexs);
                 }
-                GraphicsRenderData._pool.recover(elements[i]);
             }
-            elements.length = 0;
-            this.texturesMap.forEach(res => {
-                res.off(Event.CHANGE, this, this._resourceRepaint);
+            this._cachedBuckets = null;
+            this._blockBuckets = null;
+            this._renderElements.length = 0;
+            this._submits.elements.forEach(submit => {
+                submit.destroy();
+            });
+            this._submits.destroy();
+            this.texturesMap.forEach(inf => {
+                inf.texture.off("dispose", this, this._resourceRepaint);
             });
             this.texturesMap.clear();
-            let submits = this._submits.elements;
-            for (let i = 0; i < this._submits.length; i++) {
-                submits[i].destroy();
-            }
-            this._submits.destroy();
-            this._submits = null;
+            this.graphics = null;
+            this._renderDataHandle.destroy();
+            this._renderDataHandle = null;
             this.owner = null;
         }
-        _check() {
-            let result = true;
-            this.texturesMap.forEach(texture => {
-                result = texture._getSource() && result;
-            });
-            return result;
-        }
-        updateRenderElement(graphics, struct, handle) {
-            let originLen = this._renderElements.length;
+        updateRenderElement(needSkipBufferUpdate) {
+            let elements = this._renderElements;
             let submits = this._submits;
-            let submitLength = submits.length;
-            let needUpdate = originLen !== submitLength;
-            let flength = Math.max(originLen, submitLength);
-            let blocks = this._bufferBlocks;
+            let needUpdate = elements.length !== submits.length;
+            let bufferDirty = needUpdate;
+            let flength = submits.length;
+            let submit, element;
             for (let i = 0; i < flength; i++) {
-                let submit = submits.elements[i];
-                let element = this._renderElements[i];
-                if (i < submitLength) {
-                    if (!element) {
-                        element = GraphicsRenderData._pool.take();
-                        element.value2DShaderData = struct.spriteShaderData;
-                        element.owner = struct;
-                        this._renderElements[i] = element;
-                    }
-                    element.primitiveShaderData = submit._internalInfo.shaderData;
-                    element.renderStateIsBySprite = submit.renderStateIsBySprite && graphics._useSpriteState;
-                    if (submit.material) {
-                        element.subShader = submit.material.shader.getSubShaderAt(0);
-                        element.materialShaderData = submit.material.shaderData;
-                        submit.material._setOwner2DElement(element);
-                    }
-                    else {
-                        element.subShader = Shader2D.graphicsShader.getSubShaderAt(0);
-                    }
-                    let geometry = element.geometry;
-                    geometry.bufferState = submit.mesh.bufferState;
-                    geometry.clearRenderParams();
-                    let indexView = this._updateIndexViews(submit, geometry);
-                    let vertexBuffer = submit.mesh._buffer.vertexBuffer;
-                    {
-                        let vertexBlock = LayaGL.render2DRenderPassFactory.createGraphic2DBufferBlock();
-                        vertexBlock.vertexs = submit.vertexs;
-                        vertexBlock.indexView = indexView;
-                        vertexBlock.vertexBuffer = vertexBuffer;
-                        blocks.push(vertexBlock);
-                    }
-                    this._updateGraphicsKeys(element, submit);
+                submit = submits.elements[i];
+                element = submit.renderElement;
+                if (!element.owner) {
+                    element.value2DShaderData = this._struct.spriteShaderData;
+                    element.owner = this._struct;
                 }
-                else {
-                    graphics.material && (graphics.material._removeOwnerElement(element));
-                    GraphicsRenderData._pool.recover(element);
-                }
+                element.renderStateIsBySprite = submit.renderStateIsBySprite && this.graphics._useSpriteState;
+                submit.prepare();
+                this._bufferBlocks[i] = submit._bufferBlock;
+                bufferDirty = bufferDirty || submit._bufferBlockDirty;
+                elements[i] = element;
             }
-            this._renderElements.length = submitLength;
             if (needUpdate) {
-                struct.renderElements = this._renderElements;
+                this._bufferBlocks.length = submits.length;
+                elements.length = submits.length;
+                this._struct.renderElements = elements;
             }
-            handle.applyVertexBufferBlock(blocks);
+            if (bufferDirty) {
+                this._renderDataHandle.applyVertexBufferBlock(this._bufferBlocks);
+                for (let i = 0; i < flength; i++) {
+                    submits.elements[i]._bufferBlockDirty = false;
+                }
+            }
+            else if (needSkipBufferUpdate) {
+                this._renderDataHandle.skipBufferUpdate();
+            }
         }
-        _updateIndexViews(submit, geometry) {
-            let indexView = submit.mesh.checkIndex(submit.indexCount);
-            indexView.setGeometry(geometry);
-            submit.indexView = indexView;
-            indexView.setData(submit.indices);
-            submit.indexCount = 0;
-            submit.indices.length = 0;
-            return indexView;
+        setRenderElement() {
+            this._struct.renderElements = this._renderElements;
         }
-        _updateGraphicsKeys(element, submit) {
-            let useCustomMaterial = submit.material ? 1 : 0;
-            let mc = (useCustomMaterial === 0 && submit._internalInfo.materialClip) ? 1 : 0;
-            let texture;
-            let textureHost = submit._internalInfo.textureHost;
-            if (textureHost)
-                texture = textureHost.bitmap || textureHost;
-            element.type = submit._key.blendShader
-                | (useCustomMaterial << 4)
-                | (mc << 5)
-                | ((texture ? texture.id : 0) << 6);
-        }
-        setRenderElement(struct, handle) {
-            struct.renderElements = this._renderElements;
-            handle.applyVertexBufferBlock(this._bufferBlocks);
-        }
-        createSubmit(runner, mesh, material) {
+        createSubmit(runner) {
             let elements = this._submits.elements;
             let submit = null;
             if (elements.length > this._submits.length) {
                 submit = elements[this._submits.length];
-                submit.update(runner, mesh, material);
+                submit.update(runner);
                 this._submits.length++;
             }
             else {
-                submit = SubmitBase.create(runner, mesh, material);
+                submit = SubmitBase.create(runner);
                 this._submits.add(submit);
             }
             return submit;
         }
         addResRef(res) {
             if (res instanceof Texture) {
-                let old = this.texturesMap.get(res.id);
-                if (!old) {
-                    res.on("dispose", this, this._resourceRepaint);
-                    this.texturesMap.set(res.id, res);
+                let inf = this.texturesMap.get(res.id);
+                if (!inf) {
+                    res.on(Event.CHANGE, this, this._resourceRepaint, [res.id]);
+                    this.texturesMap.set(res.id, {
+                        texture: res,
+                        time: this.modified
+                    });
                 }
+                else
+                    inf.time = this.modified;
             }
         }
-        _resourceRepaint() {
+        _resourceRepaint(id) {
+            let inf = this.texturesMap.get(id);
+            if (inf.time !== this.modified) {
+                this.texturesMap.delete(id);
+                inf.texture.off(Event.CHANGE, this, this._resourceRepaint);
+                return;
+            }
+            let graphics = this.graphics;
             if (this.owner._needGraphicsUpdate()) {
-                this.owner._graphics.repaint();
+                graphics.repaint();
             }
             else {
-                this.owner._graphics._modified = true;
+                graphics._modified = Stat.loopCount;
             }
+        }
+        _saveCache() {
         }
     }
-    GraphicsRenderData._pool = Pool.createPool2(() => {
-        let element = LayaGL.render2DRenderPassFactory.createPrimitiveRenderElement2D();
-        element.renderStateIsBySprite = false;
-        element.nodeCommonMap = ["Sprite2D"];
-        return element;
-    }, (element, needGeometry) => {
-        if (needGeometry || needGeometry == null) {
-            element.geometry = LayaGL.renderDeviceFactory.createRenderGeometryElement(exports.MeshTopology.Triangles, exports.DrawType.DrawElement);
-            element.geometry.indexFormat = exports.IndexFormat.UInt16;
-        }
-        else {
-            if (element.geometry) {
-                element.geometry.destroy();
-                element.geometry = null;
-            }
-        }
-    }, (element) => {
-        if (element.geometry) {
-            element.geometry.clearRenderParams();
-            element.geometry.bufferState = null;
-        }
-        element.materialShaderData = null;
-        element.value2DShaderData = null;
-        element.primitiveShaderData = null;
-        element.globalShaderData = null;
-        element.owner = null;
-        element.subShader = null;
-        element.renderStateIsBySprite = false;
-        element.type = 0;
-    });
+    GraphicsRenderer._emptyList = [];
     class SubStructRender {
         constructor() {
             this._renderElement = null;
@@ -18403,6 +19504,7 @@ window.Laya = (function (exports) {
             this._rtRect = new Rectangle();
             this._oriRect = new Rectangle();
             this._needUpdateVertexSize = true;
+            this._renderElements = [];
             this._scaleX = 1;
             this._scaleY = 1;
             this._shaderData = LayaGL.renderDeviceFactory.createShaderData();
@@ -18410,7 +19512,7 @@ window.Laya = (function (exports) {
             this._submit = new SubmitBase;
             this._internalInfo = new GraphicsShaderInfo();
             this._submit._internalInfo = this._internalInfo;
-            this._renderElement = GraphicsRenderData._pool.take();
+            this._renderElement = SubmitBase._pool.take();
             this._renderElement.value2DShaderData = this._shaderData;
             this._renderElement.subShader = Shader2D.graphicsShader.getSubShaderAt(0);
             this._renderElement.primitiveShaderData = this._submit._internalInfo.shaderData;
@@ -18418,6 +19520,7 @@ window.Laya = (function (exports) {
             this._renderElement.geometry = Render2DProcessor.runner.inv_geometry;
             BlendModeHandler.initBlendMode(this._shaderData);
             this._internalInfo.enableVertexSize = true;
+            this._renderElements = [this._renderElement];
         }
         bind(sprite, subRenderPass, subStruct) {
             this._sprite = sprite;
@@ -18428,7 +19531,7 @@ window.Laya = (function (exports) {
             this._submit.material = sprite.material;
             subStruct.renderDataHandler = this._handle;
             subStruct.renderMatrix = sprite.globalTrans.getMatrix();
-            subStruct.renderElements = [this._renderElement];
+            subStruct.renderElements = this._renderElements;
             this._renderElement.owner = this._subStruct;
             this._renderElement.type = this._subStruct.blendMode;
         }
@@ -18516,7 +19619,7 @@ window.Laya = (function (exports) {
         }
         destroy() {
             this._renderElement.geometry = null;
-            GraphicsRenderData._pool.recover(this._renderElement);
+            SubmitBase._pool.recover(this._renderElement);
             this._submit.destroy();
             this._submit = null;
             this._internalInfo = null;
@@ -19528,16 +20631,48 @@ window.Laya = (function (exports) {
             return this._renderHandle.baseColor;
         }
         set tilingOffset(value) {
-            this._renderHandle.tilingOffset = value;
+            this._tilingOffset = value;
+            this._updateTilingOffset();
         }
         get tilingOffset() {
-            return this._renderHandle.tilingOffset;
+            return this._tilingOffset;
+        }
+        _updateTilingOffset() {
+            let tilingOffset = this._renderHandle.tilingOffset;
+            if (this._tilingOffset == null) {
+                tilingOffset.setValue(this._textureTilingOffset.x, this._textureTilingOffset.y, this._textureTilingOffset.z, this._textureTilingOffset.w);
+            }
+            else {
+                tilingOffset.setValue(this._tilingOffset.x * this._textureTilingOffset.z + this._textureTilingOffset.x, this._tilingOffset.y * this._textureTilingOffset.w + this._textureTilingOffset.y, this._tilingOffset.z * this._textureTilingOffset.z, this._tilingOffset.w * this._textureTilingOffset.w);
+            }
+            this._renderHandle.tilingOffset = tilingOffset;
         }
         set texture(value) {
+            if (this._texture instanceof Texture) {
+                this._texture._removeReference();
+            }
+            this._texture = value;
+            if (value instanceof Texture) {
+                value._addReference();
+                if (value.uv !== Texture.DEF_UV) {
+                    console.warn("Texture uv is not default, it will affect the tiling offset.");
+                    let sx = value.uvrect[2] / value.width;
+                    let sy = value.uvrect[3] / value.height;
+                    this._textureTilingOffset.setValue(value.uvrect[0] - value.offsetX * sx, value.uvrect[1] - value.offsetY * sy, value.sourceWidth * sx, value.sourceHeight * sy);
+                }
+                else {
+                    this._textureTilingOffset.setValue(0, 0, 1, 1);
+                }
+                value = value.bitmap;
+            }
+            else {
+                this._textureTilingOffset.setValue(0, 0, 1, 1);
+            }
+            this._updateTilingOffset();
             this._renderHandle.baseTexture = value;
         }
         get texture() {
-            return this._renderHandle.baseTexture;
+            return this._texture;
         }
         set normalTexture(value) {
             this._renderHandle.normal2DTexture = value;
@@ -19582,6 +20717,7 @@ window.Laya = (function (exports) {
         }
         constructor() {
             super();
+            this._textureTilingOffset = new Vector4(0, 0, 1, 1);
             this._renderElements = [];
             this._materials = [];
         }
@@ -19721,7 +20857,7 @@ window.Laya = (function (exports) {
             this._renderElement = LayaGL.render2DRenderPassFactory.createRenderElement2D();
             this._blitQuadCMDData = LayaGL.render2DRenderPassFactory.createBlit2DQuadCMDData();
             this._blitQuadCMDData.element = this._renderElement;
-            this._renderElement.geometry = Blit2DCMD.QuadGeometry;
+            this._renderElement.geometry = !LayaGL.renderEngine._screenInvertY ? Blit2DCMD.QuadGeometry : Blit2DCMD.InvertQuadGeometry;
             this._renderElement.nodeCommonMap = null;
             this._renderElement.renderStateIsBySprite = false;
         }
@@ -19784,6 +20920,7 @@ window.Laya = (function (exports) {
             super();
             this._renderElements = [];
             this._renderColor = new Color(1, 1, 1, 1);
+            this._tilingOffset = new Vector4(0, 0, 1, 1);
             this._drawElementData = LayaGL.render2DRenderPassFactory.createDraw2DElementCMDData();
             this._shaderData = LayaGL.renderDeviceFactory.createShaderData();
             this._shaderData.addDefine(BaseRenderNode2D.SHADERDEFINE_BASERENDER2D);
@@ -19848,6 +20985,7 @@ window.Laya = (function (exports) {
                 this._shaderData.removeDefine(ShaderDefines2D.GAMMATEXTURE);
             }
             this._texture = value;
+            this._shaderData.setVector(BaseRenderNode2D.TILINGOFFSET, this._tilingOffset);
             this._shaderData.setTexture(BaseRenderNode2D.BASERENDER2DTEXTURE, value);
         }
         get texture() {
@@ -20305,6 +21443,9 @@ window.Laya = (function (exports) {
             this._hasCleanRT = false;
         }
         clear() {
+            for (let i = 0; i < this._effects.length; i++) {
+                this._effects[i].destroy();
+            }
             this._effects.length = 0;
             this._onChangeRender();
         }
@@ -20386,6 +21527,7 @@ window.Laya = (function (exports) {
             this._sizeFlag = 0;
             this._cacheAsBmp = false;
             this._layer = 0;
+            this._ownPostProcess = false;
             this._struct = LayaGL.render2DRenderPassFactory.createRenderStruct2D();
             this._struct.owner = this;
             this._globalTrans = new SpriteGlobalTransform(this);
@@ -20417,6 +21559,10 @@ window.Laya = (function (exports) {
             if (this._subStructRender) {
                 this._subStructRender.destroy();
                 this._subStructRender = null;
+            }
+            if (this._graphicsRenderer) {
+                this._graphicsRenderer.destroy();
+                this._graphicsRenderer = null;
             }
             if (this._drawOriRT) {
                 if (this._drawOriRT !== RenderTexture2D._empty) {
@@ -20660,26 +21806,21 @@ window.Laya = (function (exports) {
                 if (this._ownGraphics)
                     g.destroy();
                 else {
-                    g._data = null;
                     g.owner = null;
-                    g._checkDisplay();
                 }
             }
             this._ownGraphics = transferOwnership;
             this._graphics = value;
             if (value) {
-                if (!this._graphicsData)
-                    this._graphicsData = new GraphicsRenderData(this);
-                else
-                    this._graphicsData.clear();
-                value._data = this._graphicsData;
+                if (!this._graphicsRenderer)
+                    this._graphicsRenderer = new GraphicsRenderer(this);
                 value.owner = this;
-                value._checkDisplay();
+                this._graphicsRenderer.setGraphics(value);
             }
             else {
-                if (this._graphicsData) {
-                    this._graphicsData.destroy();
-                    this._graphicsData = null;
+                if (this._graphicsRenderer) {
+                    this._graphicsRenderer.destroy();
+                    this._graphicsRenderer = null;
                 }
                 this._renderType &= ~SpriteConst.GRAPHICS;
             }
@@ -20689,6 +21830,8 @@ window.Laya = (function (exports) {
             return this._filterArr;
         }
         set filters(value) {
+            if (value === this._filterArr)
+                return;
             value && value.length === 0 && (value = null);
             this._filterArr = value;
             if (value) {
@@ -20706,6 +21849,7 @@ window.Laya = (function (exports) {
             if (!this._oriRenderPass || !this._oriRenderPass.postProcess) {
                 if (create) {
                     this.postProcess = new PostProcess2D();
+                    this._ownPostProcess = true;
                 }
                 else {
                     return null;
@@ -20721,7 +21865,13 @@ window.Laya = (function (exports) {
             if ((_a = this._oriRenderPass) === null || _a === void 0 ? void 0 : _a.postProcess) {
                 if (this._oriRenderPass.postProcess === value)
                     return;
-                this._oriRenderPass.postProcess.owner = null;
+                if (this._ownPostProcess) {
+                    this._oriRenderPass.postProcess.destroy();
+                    this._ownPostProcess = false;
+                }
+                else {
+                    this._oriRenderPass.postProcess.owner = null;
+                }
                 this._oriRenderPass.postProcess = null;
                 this.setSubpassFlag(exports.SubPassFlag.PostProcess);
             }
@@ -21174,7 +22324,7 @@ window.Laya = (function (exports) {
                         passSet.add(sprite._struct.pass);
                 }
                 if (sprite._graphics) {
-                    sprite._graphics._render(runner, 0, 0);
+                    sprite._graphicsRenderer._render(runner, 0, 0);
                 }
                 for (let i = 0, len = sprite._children.length; i < len; i++)
                     updateSprites(sprite._children[i]);
@@ -21387,8 +22537,8 @@ window.Laya = (function (exports) {
                 }
                 if (this._renderType & SpriteConst.GRAPHICS) {
                     if (flag & exports.RepaintFlag.Graphics) {
-                        if (this._graphics)
-                            this._graphics._modified = true;
+                        if (this._graphicsRenderer)
+                            this._graphicsRenderer.onModified();
                     }
                     this._globalTrans._notifyRenderSpriteTransChange();
                 }
@@ -21399,7 +22549,10 @@ window.Laya = (function (exports) {
             }
         }
         _needGraphicsUpdate() {
-            return !this._destroyed && this._struct.enabled && this._graphics && this._graphics._display && !!(this.displayedInStage || this._maskParent);
+            return !this._destroyed
+                && this._struct.enabled
+                && this._renderType & SpriteConst.GRAPHICS
+                && !!(this.displayedInStage || this._maskParent);
         }
         clearRepaint() {
             this._repaint = -1;
@@ -21519,14 +22672,13 @@ window.Laya = (function (exports) {
                 ele = ele._parent;
             }
         }
-        _setStructParent(value) {
+        _setStructParent(value, index) {
             let struct = this._struct;
             if (struct && struct.parent) {
                 struct.parent.removeChild(struct);
                 struct.parent = null;
             }
             if (value && value._struct) {
-                let index = value._children.indexOf(this);
                 value._struct.addChild(struct, index);
             }
         }
@@ -21592,7 +22744,8 @@ window.Laya = (function (exports) {
                 this._drawOriRT = RenderTexture2D._empty;
             }
             else {
-                let renderTexture = RenderTexture2D.createFromPool(rect.width, rect.height, exports.RenderTargetFormat.R8G8B8A8, exports.RenderTargetFormat.None);
+                let multiSamples = this._maskParent && LayaGL.renderEngine.getCapable(exports.RenderCapable.MSAA) ? 4 : 1;
+                let renderTexture = RenderTexture2D.createFromPool(rect.width, rect.height, exports.RenderTargetFormat.R8G8B8A8, exports.RenderTargetFormat.None, multiSamples);
                 renderTexture._invertY = LayaGL.renderEngine._screenInvertY;
                 this._drawOriRT = renderTexture;
             }
@@ -21650,10 +22803,10 @@ window.Laya = (function (exports) {
             this._oriRenderPass.enable = enable;
             this._refreshRenderPass();
         }
-        _setParent(value) {
+        _setParent(value, index = -1) {
             this._globalTrans._spTransChanged(exports.TransformKind.TRS);
-            super._setParent(value);
-            this._setStructParent(value);
+            super._setParent(value, index);
+            this._setStructParent(value, index);
             if (value && (this._mouseState === 2 || this._mouseState === 0 && this._getBit(NodeFlags.CHECK_INPUT))
                 && !value._getBit(NodeFlags.CHECK_INPUT)) {
                 this.setMouseEnabledUp();
@@ -21702,8 +22855,8 @@ window.Laya = (function (exports) {
         _setDisplay(value) {
             super._setDisplay(value);
             if (this._needGraphicsUpdate()) {
-                if (this._graphics)
-                    this._graphics._modified = true;
+                if (this._graphicsRenderer)
+                    this._graphicsRenderer.onModified();
                 this.stage._graphicUpdateList.add(this);
                 this._globalTrans._notifyRenderSpriteTransChange();
             }
@@ -22653,7 +23806,91 @@ window.Laya = (function (exports) {
         }
     }
 
+    var _renderCount = 0;
+    class Render {
+        static __init__() {
+            Render.frameInterval = 1000 / Config.FPS;
+            let timeId = 0;
+            PAL.browser.on("visibilitychange", (visible) => {
+                if (!visible)
+                    timeId = window.setInterval(Render.loop, 1000);
+                else if (timeId != 0)
+                    window.clearInterval(timeId);
+            });
+            Render.startLoop();
+        }
+        static startLoop() {
+            let lastTime = null;
+            let first = true;
+            let startTm = 0;
+            let leftTime = 0;
+            function loop(timestamp) {
+                if (timestamp == null || PAL.g !== null)
+                    timestamp = performance.now();
+                let interval = Render.frameInterval;
+                if (first) {
+                    startTm = Math.floor(timestamp / interval) * interval;
+                    first = false;
+                }
+                let delta = leftTime + timestamp - lastTime;
+                if (delta + 1 >= interval || !Config.fixedFrames) {
+                    leftTime = Math.min(delta - interval, interval);
+                    lastTime = timestamp;
+                    Render.lastFrame = Math.floor((timestamp - startTm) / interval);
+                    Render.loop(timestamp);
+                }
+                window.requestAnimationFrame(loop);
+            }
+            window.requestAnimationFrame(loop);
+        }
+        static loop(timestamp) {
+            _renderCount++;
+            if (!Render.forceOnce) {
+                if (Render.paused)
+                    return;
+                let shouldUpdate = true;
+                if (Render.predicate != null)
+                    shouldUpdate = Render.predicate(timestamp);
+                else {
+                    switch (Render.throttleMode) {
+                        case 1:
+                            shouldUpdate = (_renderCount % (ILaya.stage._visible ? 2 : 5) === 0);
+                            break;
+                        case 2:
+                            shouldUpdate = (timestamp - InputManager.lastMouseTime) < 2000 || (_renderCount % (ILaya.stage._visible ? 2 : 5) === 0);
+                            break;
+                        case 3:
+                            shouldUpdate = timestamp - Render.frameStartTime >= 1000;
+                            break;
+                    }
+                }
+                if (!shouldUpdate)
+                    return;
+            }
+            else
+                Render.forceOnce = false;
+            Render.frameStartTime = timestamp;
+            LayaGL.statAgent.startFrameLogic(timestamp);
+            ILaya.stage.render(timestamp);
+            LayaGL.statAgent.endFrameLogic(timestamp);
+        }
+        static vsyncTime() {
+            return Render.lastFrame * Render.frameInterval;
+        }
+        static get canvas() {
+            return Browser.mainCanvas.source;
+        }
+    }
+    Render.frameInterval = 1000 / 60;
+    Render.lastFrame = 0;
+    Render.frameStartTime = 0;
+    Render.throttleMode = 0;
+    Render.predicate = null;
+    Render.paused = false;
+    Render.forceOnce = false;
+
     class Stage extends Sprite {
+        ;
         constructor() {
             super();
             this.offset = new Point();
@@ -22666,14 +23903,11 @@ window.Laya = (function (exports) {
             this._canvasTransform = new Matrix();
             this._scene3Ds = [];
             this._scene2Ds = [];
-            this._frameRate = "fast";
             this._screenMode = "none";
             this._scaleMode = "noscale";
             this._alignV = "top";
             this._alignH = "left";
             this._bgColor = "gray";
-            this._renderCount = 0;
-            this._frameStartTime = 0;
             this._wgColor = new Color(0, 0, 0, 0);
             this._needUpdateCanvasSize = false;
             this._graphicUpdateList = new Set();
@@ -22959,7 +24193,7 @@ window.Laya = (function (exports) {
             this._screenMode = value;
         }
         getTimeFromFrameStart() {
-            return performance.now() - this._frameStartTime;
+            return performance.now() - Render.frameStartTime;
         }
         get visible() {
             return super.visible;
@@ -22970,30 +24204,13 @@ window.Laya = (function (exports) {
                 Browser.mainCanvas.source.style.visibility = value ? "visible" : "hidden";
         }
         render(timestamp) {
-            if (this._frameRate === Stage.FRAME_SLEEP) {
-                if (timestamp - this._frameStartTime < 1000)
-                    return;
-                this._frameStartTime = timestamp;
-            }
-            else {
-                if (!this._visible) {
-                    this._renderCount++;
-                    if (this._renderCount % 5 === 0) {
-                        Timer.callLaters._update(timestamp);
-                        Stat.loopCount++;
-                        this._runComponents();
-                        this._updateTimers(timestamp);
-                    }
-                    return;
-                }
-                this._frameStartTime = timestamp;
-            }
-            this._renderCount++;
-            let frameMode = this._frameRate === Stage.FRAME_MOUSE ? (((timestamp - InputManager.lastMouseTime) < 2000) ? Stage.FRAME_FAST : Stage.FRAME_SLOW) : this._frameRate;
-            let isFastMode = (frameMode !== Stage.FRAME_SLOW);
-            let isDoubleLoop = (this._renderCount % 2 === 0);
-            if (!isFastMode && !isDoubleLoop)
+            if (!this._visible) {
+                Timer.callLaters._update(timestamp);
+                Stat.loopCount++;
+                this._runComponents();
+                this._updateTimers(timestamp);
                 return;
+            }
             Timer.callLaters._update(timestamp);
             Stat.loopCount++;
             LayaGL.renderEngine.startFrame();
@@ -23068,7 +24285,7 @@ window.Laya = (function (exports) {
             this._updateMatrixList(this._tranMatrixUpdateList, Stat.loopCount);
             for (let sprite of this._graphicUpdateList) {
                 if (sprite._needGraphicsUpdate()) {
-                    sprite._graphics._render(Render2DProcessor.runner);
+                    sprite._graphicsRenderer._render(Render2DProcessor.runner);
                 }
             }
             this.passManager.apply(Render2DProcessor.rendercontext2D);
@@ -23115,10 +24332,10 @@ window.Laya = (function (exports) {
             PAL.browser.exitFullscreen();
         }
         get frameRate() {
-            return this._frameRate;
+            return Render.throttleMode === 0 ? "fast" : Render.throttleMode === 1 ? "slow" : Render.throttleMode === 2 ? "mouse" : "sleep";
         }
         set frameRate(value) {
-            this._frameRate = value;
+            Render.throttleMode = value === "slow" ? 1 : value === "mouse" ? 2 : value === "sleep" ? 3 : 0;
         }
     }
     Stage.SCALE_NOSCALE = "noscale";
@@ -23153,95 +24370,6 @@ window.Laya = (function (exports) {
         if (Math.abs(1 - value) < 0.001)
             return value > 0 ? 1 : -1;
         return value;
-    }
-
-    class Render {
-        static __init__() {
-            Render.frameInterval = 1000 / Config.FPS;
-            let timeId = 0;
-            PAL.browser.on("visibilitychange", (visible) => {
-                if (!visible)
-                    timeId = window.setInterval(Render.loop, 1000);
-                else if (timeId != 0)
-                    window.clearInterval(timeId);
-            });
-            Render.startLoop();
-        }
-        static startLoop() {
-            let requestFrame = PAL.browser.requestFrame;
-            let lastTime = null;
-            let first = true;
-            let startTm = 0;
-            let leftTime = 0;
-            function loop(timestamp) {
-                if (timestamp == null || PAL.g !== null)
-                    timestamp = performance.now();
-                let interval = Render.frameInterval;
-                if (first) {
-                    startTm = Math.floor(timestamp / interval) * interval;
-                    first = false;
-                }
-                let delta = leftTime + timestamp - lastTime;
-                if (delta + 1 >= interval || !Config.fixedFrames) {
-                    leftTime = Math.min(delta - interval, interval);
-                    lastTime = timestamp;
-                    Render.lastFrame = Math.floor((timestamp - startTm) / interval);
-                    Render.loop(timestamp);
-                }
-                requestFrame(loop);
-            }
-            requestFrame(loop);
-        }
-        static loop(timestamp) {
-            LayaGL.statAgent.startFrameLogic(timestamp);
-            ILaya.stage.render(timestamp);
-            LayaGL.statAgent.endFrameLogic(timestamp);
-        }
-        static vsyncTime() {
-            return Render.lastFrame * Render.frameInterval;
-        }
-        static get canvas() {
-            return Browser.mainCanvas.source;
-        }
-    }
-    Render.frameInterval = 1000 / 60;
-    Render.lastFrame = 0;
-
-    class Texture2DArray extends BaseTexture {
-        static get defaultTexture() {
-            return this._defaultTexture;
-        }
-        static __init__() {
-            if (LayaGL.renderEngine.getCapable(exports.RenderCapable.Texture3D)) {
-                this._defaultTexture = new Texture2DArray(1, 1, 1, exports.TextureFormat.R8G8B8A8, false, false, false);
-                this._defaultTexture.lock = true;
-                this._defaultTexture.setPixelsData(new Uint8Array([255, 255, 255, 255]), false, false);
-            }
-        }
-        constructor(width, height, depth, format, mipmap = true, canRead, sRGB = false) {
-            super(width, height, format);
-            this._dimension = exports.TextureDimension.Texture2DArray;
-            this._gammaSpace = sRGB;
-            this.depth = depth;
-            let context = LayaGL.textureContext;
-            this._texture = context.createTexture3DInternal(this._dimension, width, height, depth, format, mipmap, sRGB, false);
-            return;
-        }
-        setImageData(sources, premultiplyAlpha, invertY) {
-            let texture = this._texture;
-            let context = LayaGL.textureContext;
-            context.setTexture3DImageData(texture, sources, this.depth, premultiplyAlpha, invertY);
-        }
-        setPixelsData(source, premultiplyAlpha, invertY) {
-            let texture = this._texture;
-            let context = LayaGL.textureContext;
-            context.setTexture3DPixelsData(texture, source, this.depth, premultiplyAlpha, invertY);
-        }
-        setSubPixelsData(xOffset, yOffset, zOffset, width, height, depth, pixels, mipmapLevel, generateMipmap, premultiplyAlpha, invertY) {
-            let texture = this._texture;
-            let context = LayaGL.textureContext;
-            context.setTexture3DSubPixelsData(texture, pixels, mipmapLevel, generateMipmap, xOffset, yOffset, zOffset, width, height, depth, premultiplyAlpha, invertY);
-        }
     }
 
     exports.TextureCubeFace = void 0;
@@ -23842,15 +24970,15 @@ window.Laya = (function (exports) {
             this._ignoreRotation = true;
             this.visiableLayer = -1;
             this._viewRect = new Vector2();
-            this.limit_Left = -10000000;
-            this.limit_Right = 10000000;
-            this.limit_Top = -10000000;
-            this.limit_Bottom = 10000000;
-            this.drag_Left = 0.2;
-            this.drag_Right = 0.2;
-            this.drag_Top = 0.2;
-            this.drag_Bottom = 0.2;
-            this.positionSmooth = false;
+            this._limit_Left = -10000000;
+            this._limit_Right = 10000000;
+            this._limit_Top = -10000000;
+            this._limit_Bottom = 10000000;
+            this._drag_Left = 0.2;
+            this._drag_Right = 0.2;
+            this._drag_Top = 0.2;
+            this._drag_Bottom = 0.2;
+            this._positionSmooth = false;
             this._rect = new Vector4();
             this._zoom = new Vector2(1, 1);
         }
@@ -23875,16 +25003,16 @@ window.Laya = (function (exports) {
             let extendHorizental = viewport.x * 0.5 * this._zoom.x;
             let extendVertical = viewport.y * 0.5 * this._zoom.y;
             if (!this._firstUpdate) {
-                if (this.dragHorizontalEnable) {
-                    this._cameraPos.x = Math.min(this._cameraPos.x, curPosPoint.x + extendHorizental * this.drag_Left);
-                    this._cameraPos.x = Math.max(this._cameraPos.x, curPosPoint.x - extendHorizental * this.drag_Right);
+                if (this._dragHorizontalEnable) {
+                    this._cameraPos.x = Math.min(this._cameraPos.x, curPosPoint.x + extendHorizental * this._drag_Left);
+                    this._cameraPos.x = Math.max(this._cameraPos.x, curPosPoint.x - extendHorizental * this._drag_Right);
                 }
                 else {
                     this._cameraPos.x = curPosPoint.x;
                 }
-                if (this.dragVerticalEnable) {
-                    this._cameraPos.y = Math.min(this._cameraPos.y, curPosPoint.y + extendVertical * this.drag_Top);
-                    this._cameraPos.y = Math.max(this._cameraPos.y, curPosPoint.y - extendVertical * this.drag_Bottom);
+                if (this._dragVerticalEnable) {
+                    this._cameraPos.y = Math.min(this._cameraPos.y, curPosPoint.y + extendVertical * this._drag_Top);
+                    this._cameraPos.y = Math.max(this._cameraPos.y, curPosPoint.y - extendVertical * this._drag_Bottom);
                 }
                 else {
                     this._cameraPos.y = curPosPoint.y;
@@ -23893,21 +25021,21 @@ window.Laya = (function (exports) {
                 let sceneRect_right = sceneRect_left + viewport.x;
                 let sceneRect_top = this._cameraPos.y - extendVertical;
                 let sceneRect_bottom = sceneRect_top + viewport.y;
-                if (sceneRect_left < this.limit_Left) {
-                    this._cameraPos.x -= sceneRect_left - this.limit_Left;
+                if (sceneRect_left < this._limit_Left) {
+                    this._cameraPos.x -= sceneRect_left - this._limit_Left;
                 }
-                if (sceneRect_right > this.limit_Right) {
-                    this._cameraPos.x -= sceneRect_right - this.limit_Right;
+                if (sceneRect_right > this._limit_Right) {
+                    this._cameraPos.x -= sceneRect_right - this._limit_Right;
                 }
-                if (sceneRect_bottom > this.limit_Bottom) {
-                    this._cameraPos.y -= sceneRect_bottom - this.limit_Bottom;
+                if (sceneRect_bottom > this._limit_Bottom) {
+                    this._cameraPos.y -= sceneRect_bottom - this._limit_Bottom;
                 }
-                if (sceneRect_top < this.limit_Top) {
-                    this._cameraPos.y -= sceneRect_top - this.limit_Top;
+                if (sceneRect_top < this._limit_Top) {
+                    this._cameraPos.y -= sceneRect_top - this._limit_Top;
                 }
-                if (this.positionSmooth) {
+                if (this._positionSmooth) {
                     let epsilon = 0.01;
-                    let speed = Math.max(epsilon, Math.min(1.0, this.positionSpeed * 0.16));
+                    let speed = Math.max(epsilon, Math.min(1.0, this._positionSpeed * 0.16));
                     let deltaX = this._cameraPos.x - this._cameraSmoothPos.x;
                     let deltaY = this._cameraPos.y - this._cameraSmoothPos.y;
                     let transX = deltaX * speed;
@@ -23975,14 +25103,14 @@ window.Laya = (function (exports) {
             this._struct.spriteShaderData = this._shaderData;
             BlendModeHandler.initBlendMode(this._shaderData);
         }
+        get componentElementDatasMap() {
+            return this._componentElementDatasMap;
+        }
         set componentElementDatasMap(value) {
             this._componentElementDatasMap = value;
             this._specialManager.componentElementMap.forEach((value, key) => {
                 this._componentElementDatasMap[key] && value.Init(this._componentElementDatasMap[key]);
             });
-        }
-        get componentElementDatasMap() {
-            return this._componentElementDatasMap;
         }
         _update() {
             var delta = ILaya.timer.delta * 0.001;
@@ -24431,6 +25559,900 @@ window.Laya = (function (exports) {
     var addAfterInitCallback = Laya.addAfterInitCallback;
     var importNative = Laya.importNative;
 
+    const excludeKeys = new Set(["x", "y", "width", "height", "controllers", "relations", "gears"]);
+    class HierarchyParser {
+        static parse(data, options, errors) {
+            let printErrors = errors == null;
+            errors = errors || [];
+            let nodeMap = {};
+            let dataList = [];
+            let allNodes = [];
+            let outNodes = [];
+            let toDestroy = [];
+            let scene;
+            let inPrefab;
+            let prefabNodeDict;
+            let skinBaseUrl;
+            let overrideData;
+            let hasRuntime;
+            let hasUI;
+            if (options) {
+                inPrefab = options.inPrefab;
+                if (inPrefab)
+                    prefabNodeDict = options.prefabNodeDict;
+                skinBaseUrl = options.skinBaseUrl;
+                overrideData = options.overrideData;
+            }
+            function createChildren(data, prefab) {
+                for (let child of data._$child) {
+                    if (child._$child) {
+                        let node = createNode(child, prefab);
+                        createChildren(child, child._$prefab ? node : prefab);
+                        dataList.push(child);
+                        allNodes.push(node);
+                    }
+                    else {
+                        let node = createNode(child, prefab);
+                        dataList.push(child);
+                        allNodes.push(node);
+                    }
+                }
+            }
+            function createNode(nodeData, prefab) {
+                let node;
+                let pstr;
+                if (pstr = nodeData._$override) {
+                    if (prefab && prefabNodeDict) {
+                        if (Array.isArray(pstr)) {
+                            node = prefab;
+                            for (let i = 0, n = pstr.length; i < n; i++) {
+                                let map = prefabNodeDict.get(node);
+                                node = map === null || map === void 0 ? void 0 : map[pstr[i]];
+                                if (!node)
+                                    break;
+                                if (node == prefab) {
+                                    node = null;
+                                    break;
+                                }
+                            }
+                        }
+                        else {
+                            let map = prefabNodeDict.get(prefab);
+                            if (map) {
+                                node = map[nodeData._$override];
+                                if (node == prefab)
+                                    node = null;
+                            }
+                        }
+                    }
+                }
+                else {
+                    if (pstr = nodeData._$prefab) {
+                        let res = Loader.getRes(URL.getResURLByUUID(pstr), Loader.HIERARCHY);
+                        if (res) {
+                            if (!prefabNodeDict)
+                                prefabNodeDict = new Map();
+                            let overrideData2 = [];
+                            let testId = nodeData._$id;
+                            if (overrideData) {
+                                for (let i = 0, n = overrideData.length; i < n; i++) {
+                                    let arr = overrideData[i];
+                                    if (arr && arr.length > 0) {
+                                        overrideData2[i] = arr.filter(d => {
+                                            let od = d._$override || d._$parent;
+                                            return Array.isArray(od) && od.length > n - i && od[n - i - 1] == testId;
+                                        });
+                                    }
+                                    else
+                                        overrideData2[i] = arr;
+                                }
+                            }
+                            overrideData2.push(nodeData._$child);
+                            node = res.create({ inPrefab: true, prefabNodeDict: prefabNodeDict, overrideData: overrideData2 }, errors);
+                        }
+                    }
+                    else if (pstr = nodeData._$type) {
+                        let cls = ClassUtils.getClass(pstr);
+                        if (cls) {
+                            try {
+                                node = new cls();
+                            }
+                            catch (err) {
+                                errors.push(err);
+                            }
+                        }
+                        else {
+                            errors.push(new Error(`missing node type '${pstr}' (in ${nodeData.name || 'noname'})`));
+                        }
+                    }
+                    if (node) {
+                        nodeMap[nodeData._$id] = node;
+                        if (node._nodeType === 2)
+                            hasUI = true;
+                    }
+                }
+                return node;
+            }
+            function getNodeByRef(idPath) {
+                if (Array.isArray(idPath)) {
+                    let prefab = nodeMap[idPath[0]];
+                    if (prefab && idPath.length > 1)
+                        return findNodeInPrefab(prefab, idPath, 1);
+                    else
+                        return prefab;
+                }
+                else
+                    return nodeMap[idPath];
+            }
+            function findNodeInPrefab(prefab, idPath, startIndex = 0) {
+                if (!idPath)
+                    return prefab;
+                let map = prefabNodeDict === null || prefabNodeDict === void 0 ? void 0 : prefabNodeDict.get(prefab);
+                if (!map)
+                    return null;
+                if (Array.isArray(idPath)) {
+                    let node;
+                    for (let i = startIndex, n = idPath.length; i < n; i++) {
+                        if (!map)
+                            return null;
+                        node = map[idPath[i]];
+                        if (!node)
+                            break;
+                        map = prefabNodeDict.get(node);
+                    }
+                    return node;
+                }
+                else
+                    return map[idPath];
+            }
+            let bakedOverrideData;
+            function getNodeData(node) {
+                let i = allNodes.indexOf(node);
+                let nodeData = dataList[i];
+                node.removeSelf();
+                toDestroy.push(nodeData._$id);
+                allNodes[i] = null;
+                if (!overrideData)
+                    return nodeData;
+                if (bakedOverrideData === undefined)
+                    bakedOverrideData = SerializeUtil.bakeOverrideData(overrideData);
+                if (bakedOverrideData)
+                    return SerializeUtil.applyOverrideData(nodeData, bakedOverrideData);
+                else
+                    return nodeData;
+            }
+            if (data._$type || data._$prefab) {
+                let runtime = data._$runtime;
+                if (runtime) {
+                    hasRuntime = true;
+                    if (runtime.startsWith("res://"))
+                        runtime = runtime.substring(6);
+                    runtime = ClassUtils.getClass(runtime);
+                    if (!runtime)
+                        errors.push(new Error(`missing runtime class '${data._$runtime}'`));
+                }
+                if (options && options.runtime)
+                    runtime = options.runtime;
+                let node;
+                if (runtime) {
+                    node = new runtime();
+                    if (!(node instanceof Node)) {
+                        errors.push(new Error(`runtime class invalid - '${runtime}', must derive from Node`));
+                        node = null;
+                    }
+                    nodeMap[data._$id] = node;
+                }
+                else
+                    node = createNode(data, null);
+                if (node) {
+                    if (data._$child)
+                        createChildren(data, data._$prefab ? node : null);
+                    dataList.push(data);
+                    allNodes.push(node);
+                    if (node instanceof Scene)
+                        scene = node;
+                }
+            }
+            else {
+                if (data._$child)
+                    createChildren(data, null);
+            }
+            let nodeCnt = dataList.length;
+            let k = 0;
+            let outNodeData = [];
+            for (let i = 0; i < nodeCnt; i++) {
+                let nodeData = dataList[i];
+                let node = allNodes[i];
+                let children = nodeData._$child;
+                if (children) {
+                    let num = children.length;
+                    if (node) {
+                        if (nodeData._$prefab) {
+                            for (let j = 0; j < num; j++) {
+                                let m = k - num + j;
+                                let n = outNodes[m];
+                                if (n && !n.parent) {
+                                    let nodeData2 = outNodeData[m];
+                                    let parentNode = findNodeInPrefab(node, nodeData2._$parent);
+                                    if (parentNode) {
+                                        let pos = nodeData2._$index;
+                                        if (pos != null && pos < parentNode.numChildren)
+                                            parentNode.addChildAt(n, pos);
+                                        else
+                                            parentNode.addChild(n);
+                                    }
+                                    else {
+                                        node.addChildAt(n, 0);
+                                    }
+                                }
+                            }
+                        }
+                        else {
+                            for (let j = 0; j < num; j++) {
+                                let n = outNodes[k - num + j];
+                                if (n) {
+                                    if (node === scene && n.is3D)
+                                        scene._scene3D = n;
+                                    else
+                                        node.addChild(n);
+                                }
+                            }
+                        }
+                    }
+                    k -= num;
+                }
+                outNodes[k] = node;
+                outNodeData[k] = nodeData;
+                k++;
+            }
+            outNodes.length = k;
+            outNodes = outNodes.filter(n => n != null);
+            let topNode = outNodes[0];
+            let compInitList = [];
+            for (let i = 0; i < nodeCnt; i++) {
+                let components = dataList[i]._$comp;
+                if (!components)
+                    continue;
+                let node = allNodes[i];
+                if (!node)
+                    continue;
+                for (let compData of components) {
+                    let comp;
+                    let typeOrId = compData._$override;
+                    if (compData._$override) {
+                        let cls = ClassUtils.getClass(typeOrId);
+                        if (cls)
+                            comp = node.getComponent(cls);
+                        else
+                            comp = node.components.find(comp => comp._extra.storeId == typeOrId);
+                    }
+                    else {
+                        let cls = ClassUtils.getClass(compData._$type);
+                        if (cls) {
+                            if (!compData._$id)
+                                comp = node.getComponent(cls);
+                            if (!comp) {
+                                try {
+                                    comp = node.addComponent(cls);
+                                    comp._extra.storeId = compData._$id;
+                                }
+                                catch (err) {
+                                    errors.push(err);
+                                }
+                            }
+                        }
+                        else
+                            errors.push(new Error(`missing component type '${compData._$type}' (in ${dataList[i].name || 'noname'})`));
+                    }
+                    if (comp)
+                        compInitList.push(compData, comp);
+                }
+            }
+            const decoder = new ObjDecoder();
+            decoder.errors = errors;
+            decoder.getNodeByRef = getNodeByRef;
+            decoder.getNodeData = getNodeData;
+            for (let i = 0; i < nodeCnt; i++) {
+                let nodeData = dataList[i];
+                let node = allNodes[i];
+                if (node && (node._nodeType === 2 || node === scene))
+                    decoder.decodeObjBounds(nodeData, node);
+            }
+            if (hasUI) {
+                if (topNode._nodeType === 2) {
+                    topNode.sourceWidth = topNode.width;
+                    topNode.sourceHeight = topNode.height;
+                }
+                for (let i = 0; i < nodeCnt; i++) {
+                    let nodeData = dataList[i];
+                    let node = allNodes[i];
+                    if (node && node._nodeType === 2) {
+                        let v = nodeData["relations"];
+                        if (v != null) {
+                            if (nodeData._$prefab != null)
+                                node._addRelations(decoder.decodeObj(v));
+                            else
+                                node.relations = decoder.decodeObj(v);
+                        }
+                    }
+                }
+            }
+            for (let i = 0; i < nodeCnt; i++) {
+                let nodeData = dataList[i];
+                let node = allNodes[i];
+                if (node) {
+                    if (skinBaseUrl != null && node._nodeType === 0)
+                        node._skinBaseUrl = skinBaseUrl;
+                    decoder.decodeObj(nodeData, node, (node._nodeType === 2 || node === scene) ? excludeKeys : null);
+                    if (hasRuntime && nodeData._$var && node.name) {
+                        try {
+                            topNode[node.name] = node;
+                        }
+                        catch (err) {
+                            errors.push(err);
+                        }
+                    }
+                }
+            }
+            let compCnt = compInitList.length;
+            for (let i = 0; i < compCnt; i += 2) {
+                let compData = compInitList[i];
+                let comp = compInitList[i + 1];
+                decoder.decodeObj(compData, comp);
+            }
+            if (hasUI) {
+                for (let i = 0; i < nodeCnt; i++) {
+                    let nodeData = dataList[i];
+                    let node = allNodes[i];
+                    if (node && node._nodeType === 2) {
+                        let v = nodeData["gears"];
+                        if (v != null) {
+                            if (nodeData._$prefab != null)
+                                node._addGears(decoder.decodeObj(v));
+                            else
+                                node.gears = decoder.decodeObj(v);
+                        }
+                    }
+                }
+                if (topNode._nodeType === 2 && (!prefabNodeDict || !prefabNodeDict.has(topNode))) {
+                    try {
+                        topNode._onConstruct(inPrefab);
+                    }
+                    catch (error) {
+                        errors.push(error);
+                    }
+                }
+            }
+            for (let nodeId of toDestroy) {
+                let node = nodeMap[nodeId];
+                if (!node._destroyed)
+                    node.destroy();
+                delete nodeMap[nodeId];
+            }
+            if (inPrefab && prefabNodeDict && topNode)
+                prefabNodeDict.set(topNode, nodeMap);
+            if (printErrors && errors.length > 0)
+                errors.forEach(err => console.error(err));
+            return outNodes;
+        }
+        static collectResourceLinks(data, basePath) {
+            let test = {};
+            let innerUrls = [];
+            function addInnerUrl(url, type, absolutePath) {
+                if (!url)
+                    return "";
+                type = type || undefined;
+                if (Utils.isUUID(url))
+                    url = "res://" + url;
+                else if (!absolutePath)
+                    url = URL.join(basePath, url);
+                let entry = test[url];
+                if (entry === undefined) {
+                    innerUrls.push({ url, type });
+                    test[url] = [type];
+                }
+                else if (entry.indexOf(type) === -1) {
+                    innerUrls.push({ url, type });
+                    entry.push(type);
+                }
+                return url;
+            }
+            let type;
+            function checkData(data) {
+                if (data._$uuid != null) {
+                    data._$uuid = addInnerUrl(data._$uuid, Loader.assetTypeToLoadType[data._$type]);
+                    return;
+                }
+                if (data._$prefab != null)
+                    data._$prefab = addInnerUrl(data._$prefab, Loader.HIERARCHY);
+                else if ((type = data._$type) != null) {
+                    if (type.endsWith(".bp"))
+                        addInnerUrl(type, null, true);
+                    else if (LayaEnv.isPreview && Utils.isUUID(type)) {
+                        let cls = ClassUtils.getClass(type);
+                        if (cls == null || cls._$loadable)
+                            addInnerUrl("res://" + type, null);
+                    }
+                }
+                check(data);
+            }
+            function check(data) {
+                for (let key in data) {
+                    let child = data[key];
+                    if (child == null)
+                        continue;
+                    if (Array.isArray(child)) {
+                        for (let item of child) {
+                            if (item == null)
+                                continue;
+                            if (typeof (item) === "object") {
+                                checkData(item);
+                            }
+                            else if (typeof (item) === "string" && item.startsWith("i18n:")) {
+                                let i = item.indexOf(":", 5);
+                                if (i != -1)
+                                    addInnerUrl(AssetDb.inst.getI18nSettingsURL(item.substring(5, i)), null);
+                            }
+                        }
+                    }
+                    else if (typeof (child) === "object") {
+                        checkData(child);
+                    }
+                    else if (typeof (child) === "string" && child.startsWith("i18n:")) {
+                        let i = child.indexOf(":", 5);
+                        if (i != -1)
+                            addInnerUrl(AssetDb.inst.getI18nSettingsURL(child.substring(5, i)), null);
+                    }
+                }
+            }
+            check(data);
+            if (data._$preloads) {
+                let types = data._$preloadTypes;
+                let pi = 0;
+                for (let url of data._$preloads) {
+                    if (types && types[pi])
+                        addInnerUrl(url, Loader.assetTypeToLoadType[types[pi]], true);
+                    else
+                        addInnerUrl(url, null, true);
+                    pi++;
+                }
+            }
+            return innerUrls;
+        }
+    }
+
+    class Prefab extends Resource {
+        constructor() {
+            super(false);
+            this.fromDCC = false;
+            this._traceDeps = true;
+        }
+        onLoad() {
+            Resource._idResourcesMap[this._id] = this;
+            return this;
+        }
+        create(options, errors) {
+            return null;
+        }
+        static instantiate(url, classType) {
+            return ILaya.loader.load(url, Loader.HIERARCHY).then((res) => {
+                return res.create();
+            });
+        }
+    }
+    var HierarchyResource = Prefab;
+
+    class PrefabImpl extends Prefab {
+        constructor(api, data) {
+            super();
+            this.api = api || PrefabImpl.v3;
+            this.data = data;
+        }
+        create(options, errors) {
+            let runtime = ClassUtils.getRuntime(this.url);
+            if (runtime) {
+                if (!options)
+                    options = { runtime };
+                else if (!options.runtime)
+                    options = Object.assign({ runtime }, options);
+            }
+            let ret = this.api.parse(this.data, options, errors);
+            if (Array.isArray(ret)) {
+                if (ret.length == 1) {
+                    ret[0].url = this.url;
+                }
+                return ret[0];
+            }
+            else {
+                ret.url = this.url;
+                return ret;
+            }
+        }
+    }
+    PrefabImpl.v3 = HierarchyParser;
+    PrefabImpl.v2 = null;
+
+    class ObjDecoder {
+        constructor() {
+            this.getNodeByRef = dummy;
+            this.getNodeData = dummy;
+        }
+        static decodeObj(data, obj) {
+            decoder.errors = null;
+            decoder.getNodeByRef = dummy;
+            decoder.getNodeData = dummy;
+            return decoder.decodeObj(data, obj);
+        }
+        decodeObj(data, obj, excludeKeys) {
+            SerializeUtil.isDeserializing = true;
+            try {
+                return this._decode(data, obj, excludeKeys);
+            }
+            finally {
+                SerializeUtil.isDeserializing = false;
+            }
+        }
+        decodeObjBounds(data, obj) {
+            SerializeUtil.isDeserializing = true;
+            try {
+                let v0 = data["x"];
+                let v1 = data["y"];
+                if (v0 !== undefined && v1 !== undefined)
+                    obj.pos(v0, v1);
+                else if (v0 !== undefined)
+                    obj.x = v0;
+                else if (v1 !== undefined)
+                    obj.y = v1;
+                v0 = data["width"];
+                v1 = data["height"];
+                if (v0 !== undefined && v1 !== undefined)
+                    obj.size(v0, v1);
+                else if (v0 !== undefined)
+                    obj.width = v0;
+                else if (v1 !== undefined)
+                    obj.height = v1;
+                v0 = data["controllers"];
+                if (v0 !== undefined)
+                    obj.controllers = this._decode(v0);
+            }
+            finally {
+                SerializeUtil.isDeserializing = false;
+            }
+        }
+        _decode(data, obj, excludeKeys) {
+            if (data == null)
+                return null;
+            else if (Array.isArray(data)) {
+                let arr = [];
+                for (let i = 0; i < data.length; i++) {
+                    let v = data[i];
+                    if (v != null) {
+                        try {
+                            arr[i] = this._decode(v);
+                        }
+                        catch (error) {
+                            if (this.errors)
+                                this.errors.push(error);
+                            else
+                                console.error(error);
+                            arr[i] = null;
+                        }
+                    }
+                    else
+                        arr[i] = null;
+                }
+                return arr;
+            }
+            else if (typeof (data) === "object") {
+                if (data._$uuid != null) {
+                    let url = URL.getResURLByUUID(data._$uuid);
+                    return ILaya.loader.getRes(url, Loader.assetTypeToLoadType[data._$type]);
+                }
+                if (data._$ref != null) {
+                    let node = this.getNodeByRef(data._$ref);
+                    if (!node)
+                        return null;
+                    if (data._$type) {
+                        let cls = ClassUtils.getClass(data._$type);
+                        if (cls)
+                            return node.getComponent(cls);
+                        else
+                            return null;
+                    }
+                    else if (data._$ctrl !== undefined) {
+                        let cls = crefClass || (crefClass = ClassUtils.getClass("ControllerRef"));
+                        if (cls)
+                            return new cls(node, data._$ctrl);
+                        else
+                            return null;
+                    }
+                    else
+                        return node;
+                }
+                let type = data._$type;
+                if (type === "any") {
+                    if (data._$type)
+                        return data.value;
+                    else
+                        return data;
+                }
+                let typedArray = TypedArrayClasses[type];
+                if (typedArray != null) {
+                    if (data._$type)
+                        return new typedArray(data.value);
+                    else
+                        return new typedArray(data);
+                }
+                if (!obj) {
+                    let cls = ClassUtils.getClass(type);
+                    if (!cls) {
+                        return null;
+                    }
+                    obj = new cls();
+                }
+                for (let key in data) {
+                    if (key.startsWith("_$") || excludeKeys && excludeKeys.has(key))
+                        continue;
+                    let v = data[key];
+                    if (v == null || typeof (v) !== "object" || Array.isArray(v)
+                        || v._$type || v._$uuid || v._$ref) {
+                        try {
+                            let v2 = this._decode(v);
+                            obj[key] = v2;
+                            if (v2 != null && v != null && v._$tmpl)
+                                obj[v._$tmpl] = new PrefabImpl(null, this.getNodeData(v2));
+                        }
+                        catch (error) {
+                            if (this.errors)
+                                this.errors.push(error);
+                            else
+                                console.error(error);
+                        }
+                    }
+                    else {
+                        let childObj = obj[key];
+                        if (childObj) {
+                            try {
+                                this._decode(v, childObj);
+                            }
+                            catch (error) {
+                                if (this.errors)
+                                    this.errors.push(error);
+                                else
+                                    console.error(error);
+                            }
+                        }
+                    }
+                }
+                if (obj.onAfterDeserialize) {
+                    try {
+                        SerializeUtil._data = data;
+                        obj.onAfterDeserialize();
+                    }
+                    catch (error) {
+                        if (this.errors)
+                            this.errors.push(error);
+                        else
+                            console.error(error);
+                    }
+                }
+                return obj;
+            }
+            else
+                return data;
+        }
+    }
+    function dummy(...args) { return null; }
+    var crefClass;
+    const decoder = new ObjDecoder();
+
+    const TypedArrayClasses = {
+        "Int8Array": Int8Array,
+        "Uint8Array": Uint8Array,
+        "Int16Array": Int16Array,
+        "Uint16Array": Uint16Array,
+        "Int32Array": Int32Array,
+        "Uint32Array": Uint32Array,
+        "Float32Array": Float32Array,
+        "Float64Array": Float64Array
+    };
+    class SerializeUtil {
+        static hasProp(...keys) {
+            for (let k of keys) {
+                if (SerializeUtil._data[k] !== undefined)
+                    return true;
+            }
+            return false;
+        }
+        static decodeObj(data, obj) {
+            return ObjDecoder.decodeObj(data, obj);
+        }
+        static getLoadTypeByEngineType(type) {
+            return Loader.assetTypeToLoadType[type];
+        }
+        static bakeOverrideData(overrideData) {
+            let dataMap = null;
+            for (let n = overrideData.length, i = n - 1; i >= 0; i--) {
+                let arr = overrideData[i];
+                if (arr && arr.length > 0) {
+                    for (let d of arr) {
+                        let od = d._$override || d._$parent;
+                        let k;
+                        if (Array.isArray(od))
+                            k = od[n - i - 1];
+                        else if (i === n - 1)
+                            k = od;
+                        if (k != null) {
+                            if (!dataMap)
+                                dataMap = {};
+                            let arr2 = dataMap[k];
+                            if (!arr2)
+                                dataMap[k] = arr2 = [];
+                            arr2.push(n - i, d);
+                        }
+                    }
+                }
+            }
+            return dataMap;
+        }
+        static applyOverrideData(nodeData, overrideDataMap) {
+            function test(obj) {
+                if (overrideDataMap[obj._$id])
+                    return true;
+                let children = obj._$child;
+                if (children && children.find(child => test(child)))
+                    return true;
+                return false;
+            }
+            function cloneTree(obj) {
+                let ret = Object.assign({}, obj);
+                let children = ret._$child;
+                if (children)
+                    ret._$child = children.map(c => cloneTree(c));
+                let comps = ret._$comp;
+                if (comps)
+                    ret._$comp = comps.map(c => Object.assign({}, c));
+                return ret;
+            }
+            function visit(data) {
+                let children = data._$child;
+                if (children) {
+                    for (let child of children) {
+                        if (child._$id)
+                            visit(child);
+                    }
+                }
+                let od = overrideDataMap[data._$id];
+                if (od) {
+                    for (let i = 0; i < od.length; i += 2) {
+                        let j = od[i];
+                        let e = od[i + 1];
+                        let idPath;
+                        if (idPath = e._$override) {
+                            let toWrite;
+                            if (Array.isArray(idPath)) {
+                                if (j === idPath.length - 1) {
+                                    let k = idPath[j];
+                                    if (!children)
+                                        data._$child = children = [];
+                                    else
+                                        toWrite = children.find(c => c._$override == k);
+                                    if (!toWrite) {
+                                        toWrite = { _$override: k };
+                                        children.push(toWrite);
+                                    }
+                                }
+                                else if (j < idPath.length - 1) {
+                                    let k = idPath.slice(j);
+                                    if (!children)
+                                        data._$child = children = [];
+                                    else {
+                                        toWrite = children.find(c => {
+                                            let o = c._$override;
+                                            return Array.isArray(o) && arrayEquals(o, k);
+                                        });
+                                    }
+                                    if (!toWrite) {
+                                        toWrite = { _$override: k };
+                                        children.push(toWrite);
+                                    }
+                                }
+                                else
+                                    toWrite = data;
+                            }
+                            else
+                                toWrite = data;
+                            mergeData(toWrite, e);
+                            if (e._$comp) {
+                                let comps = toWrite._$comp;
+                                if (!comps)
+                                    toWrite._$comp = comps = [];
+                                for (let comp of e._$comp) {
+                                    let typeOrId = comp._$type || comp._$override;
+                                    let c = comps.find(c => c._$override == typeOrId || c._$type == typeOrId || c._$id == typeOrId);
+                                    if (!c) {
+                                        c = {};
+                                        if (comp._$type)
+                                            c._$type = typeOrId;
+                                        else
+                                            c._$override = typeOrId;
+                                        comps.push(c);
+                                    }
+                                    mergeData(c, comp);
+                                }
+                            }
+                        }
+                        else if (idPath = e._$parent) {
+                            if (!children)
+                                data._$child = children = [];
+                            let k;
+                            if (j < idPath.length) {
+                                if (j === idPath.length - 1)
+                                    k = idPath[j];
+                                else
+                                    k = idPath.slice(j);
+                                let toWrite = Object.assign({}, e);
+                                toWrite._$parent = k;
+                                children.push(toWrite);
+                            }
+                            else {
+                                let toWrite = Object.assign({}, e);
+                                delete toWrite._$parent;
+                                if (data._$prefab) {
+                                    children.push(toWrite);
+                                }
+                                else {
+                                    delete toWrite._$index;
+                                    if (e._$index < children.length)
+                                        children.splice(e._$index, 0, toWrite);
+                                    else
+                                        children.push(toWrite);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (test(nodeData)) {
+                nodeData = cloneTree(nodeData);
+                visit(nodeData);
+            }
+            return nodeData;
+        }
+    }
+    SerializeUtil.isDeserializing = false;
+    function mergeData(target, overrided) {
+        for (let k in overrided) {
+            if (k.startsWith("_$"))
+                continue;
+            let v = overrided[k];
+            if (v != null && typeof (v) === "object" && !Array.isArray(v) && !(v._$type || v._$uuid || v._$ref)) {
+                let v2 = target[k];
+                if (v2 != null && typeof (v2) === "object") {
+                    target[k] = v2 = Object.assign({}, v2);
+                    mergeData(v2, v);
+                }
+                else
+                    target[k] = v;
+            }
+            else
+                target[k] = v;
+        }
+    }
+    function arrayEquals(a, b) {
+        if (a.length === b.length) {
+            for (var i = 0; i < a.length; i++) {
+                if (a[i] !== b[i]) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
     exports.AnimationWrapMode = void 0;
     (function (AnimationWrapMode) {
         AnimationWrapMode[AnimationWrapMode["Positive"] = 0] = "Positive";
@@ -24797,7 +26819,7 @@ window.Laya = (function (exports) {
         }
         loadAtlas(url) {
             let loadId = ++this._loadId;
-            let atlas = Loader.getRes(url, Loader.ATLAS);
+            let atlas = SerializeUtil.isDeserializing ? null : Loader.getRes(url, Loader.ATLAS);
             if (atlas)
                 this.onLoaded(atlas, loadId);
             else
@@ -25073,8 +27095,13 @@ window.Laya = (function (exports) {
             this.valign = 'top';
             this.alignItems = "middle";
             this.leading = 2;
+            this.letterSpacing = 0;
             this.stroke = 0;
             this.strokeColor = '#000000';
+            this.shadowOffsetX = 0;
+            this.shadowOffsetY = 0;
+            this.shadowBlur = 0;
+            this.shadowColor = '#000000';
         }
     }
 
@@ -25949,6 +27976,51 @@ window.Laya = (function (exports) {
                 this.markChanged();
             }
         }
+        get letterSpacing() {
+            return this._textStyle.letterSpacing;
+        }
+        set letterSpacing(value) {
+            if (this._textStyle.letterSpacing != value) {
+                this._textStyle.letterSpacing = value;
+                this.markChanged();
+            }
+        }
+        get shadowOffsetX() {
+            return this._textStyle.shadowOffsetX;
+        }
+        set shadowOffsetX(value) {
+            if (this._textStyle.shadowOffsetX !== value) {
+                this._textStyle.shadowOffsetX = value;
+                this.markChanged();
+            }
+        }
+        get shadowOffsetY() {
+            return this._textStyle.shadowOffsetY;
+        }
+        set shadowOffsetY(value) {
+            if (this._textStyle.shadowOffsetY !== value) {
+                this._textStyle.shadowOffsetY = value;
+                this.markChanged();
+            }
+        }
+        get shadowBlur() {
+            return this._textStyle.shadowBlur;
+        }
+        set shadowBlur(value) {
+            if (this._textStyle.shadowBlur !== value) {
+                this._textStyle.shadowBlur = value;
+                this.markChanged();
+            }
+        }
+        get shadowColor() {
+            return this._textStyle.shadowColor;
+        }
+        set shadowColor(value) {
+            if (this._textStyle.shadowColor != value) {
+                this._textStyle.shadowColor = value;
+                this.markChanged();
+            }
+        }
         get padding() {
             return this._padding;
         }
@@ -26248,6 +28320,7 @@ window.Laya = (function (exports) {
             let wordWrap = this._wordWrap || this._overflow == Text.ELLIPSIS;
             let noBreakWord = this._wordWrap;
             let padding = this._padding;
+            let spacing = this._textStyle.letterSpacing;
             let rectWidth;
             if (this._isWidthSet)
                 rectWidth = this._width - padding[3] - padding[1];
@@ -26271,22 +28344,20 @@ window.Laya = (function (exports) {
             let textRender = Render2DProcessor.runner._textRender;
             let getTextWidth = (text) => {
                 if (bfont)
-                    return bfont.getTextWidth(text, fontSize);
-                else {
-                    let ret = Browser.context.measureText(text);
-                    return ret ? ret.width : 100;
-                }
+                    return bfont.getTextWidth(text, fontSize) + spacing * text.length;
+                else
+                    return Browser.context.measureText(text).width + spacing * text.length;
             };
             let getTextWidth2 = (text, font, fontSize) => {
                 if (bfont) {
-                    return bfont.getTextWidth(text, fontSize);
+                    return bfont.getTextWidth(text, fontSize) + spacing * text.length;
                 }
                 else {
                     let t = Browser.context.font;
                     Browser.context.font = font;
-                    let ret = Browser.context.measureText(text);
+                    let ret = Browser.context.measureText(text).width + spacing * text.length;
                     Browser.context.font = t;
-                    return ret ? ret.width : 100;
+                    return ret;
                 }
             };
             let buildLines = (text, style) => {
@@ -26790,6 +28861,8 @@ window.Laya = (function (exports) {
             let rectHeight = this._isHeightSet ? this._height : this._textHeight;
             let bottom = rectHeight - padding[2];
             let clipped = this._overflow == Text.HIDDEN || this._overflow == Text.SCROLL;
+            let letterSpacing = this._textStyle.letterSpacing;
+            let shadow = this._textStyle.shadowOffsetX !== 0 || this._textStyle.shadowOffsetY !== 0;
             rectWidth -= (padding[3] + padding[1]);
             rectHeight -= (padding[0] + padding[2]);
             let x = 0, y = 0;
@@ -26834,7 +28907,7 @@ window.Laya = (function (exports) {
                                 if (g) {
                                     if (g.texture)
                                         graphics.drawImage(g.texture, x + cmd.x + tx + g.x * scale, y + cmd.y + g.y * scale, g.width * scale, g.height * scale, color);
-                                    tx += Math.round(g.advance * scale);
+                                    tx += Math.round(g.advance * scale) + letterSpacing;
                                 }
                             }
                         }
@@ -26844,6 +28917,13 @@ window.Laya = (function (exports) {
                             gcmd.fontSize = cmd.fontSize;
                             gcmd.bold = cmd.style.bold;
                             gcmd.italic = cmd.style.italic;
+                            gcmd.letterSpacing = letterSpacing;
+                            if (shadow) {
+                                gcmd.shadowOffsetX = this._textStyle.shadowOffsetX;
+                                gcmd.shadowOffsetY = this._textStyle.shadowOffsetY;
+                                gcmd.shadowColor = this._textStyle.shadowColor;
+                                gcmd.shadowBlur = this._textStyle.shadowBlur;
+                            }
                             gcmd.singleCharRender = this._singleCharRender;
                             gcmd._preMeasuredWidth = cmd.width;
                             graphics.addCmd(gcmd);
@@ -26903,8 +28983,8 @@ window.Laya = (function (exports) {
                 this._bgDrawCmd = null;
             }
         }
-        _setParent(value) {
-            super._setParent(value);
+        _setParent(value, index = -1) {
+            super._setParent(value, index);
             if (value && this._fontGlobalScale != null && this._fontGlobalScale !== TextRenderConfig.fontScale) {
                 this.repaint();
             }
@@ -27074,24 +29154,19 @@ window.Laya = (function (exports) {
     Input.TYPE_DATE_TIME_LOCAL = "datetime-local";
     Input.TYPE_SEARCH = "search";
 
-    class SoundNode extends Sprite {
+    class SoundPlayer extends Component {
         constructor() {
             super();
             this._loop = 1;
-            if (LayaEnv.isPlaying) {
-                this.on(Event.ADDED, () => { this.target = this.parent; });
-                this.on(Event.REMOVED, () => { this.target = null; });
-                this.on(Event.DISPLAY, this, this.onDisplay);
-                this.on(Event.UNDISPLAY, this, this.onUndisplay);
-            }
         }
         get source() {
             return this._source;
         }
         set source(value) {
+            var _a;
             this._source = value;
             if (value) {
-                if (this.activeInHierarchy && (this._autoPlay || this._channel) && LayaEnv.isPlaying)
+                if (((_a = this.owner) === null || _a === void 0 ? void 0 : _a.activeInHierarchy) && (this._autoPlay || this._channel) && LayaEnv.isPlaying)
                     this.play(this._loop);
             }
             else
@@ -27113,8 +29188,9 @@ window.Laya = (function (exports) {
             return this._autoPlay;
         }
         set autoPlay(value) {
+            var _a;
             this._autoPlay = value;
-            if (this.activeInHierarchy && value && !this._channel && LayaEnv.isPlaying)
+            if (((_a = this.owner) === null || _a === void 0 ? void 0 : _a.activeInHierarchy) && value && !this._channel && LayaEnv.isPlaying)
                 this.play(this._loop);
         }
         play(loops, complete, startTime) {
@@ -27132,6 +29208,57 @@ window.Laya = (function (exports) {
             if (this._channel)
                 this._channel.stop();
             this._channel = null;
+        }
+        _onEnable() {
+            if (this._autoPlay && !this._channel)
+                this.play(this._loop);
+            super._onEnable();
+        }
+        _onDisable() {
+            this.stop();
+            super._onDisable();
+        }
+    }
+
+    class SoundNode extends Sprite {
+        constructor() {
+            super();
+            this._comp = this.addComponent(SoundPlayer);
+            this._comp.hideFlags |= HideFlags.HideAndDontSave;
+            if (LayaEnv.isPlaying) {
+                this.on(Event.ADDED, () => { this.target = this.parent; });
+                this.on(Event.REMOVED, () => { this.target = null; });
+            }
+        }
+        get source() {
+            return this._comp.source;
+        }
+        set source(value) {
+            this._comp.source = value;
+        }
+        get isMusic() {
+            return this._comp.isMusic;
+        }
+        set isMusic(value) {
+            this._comp.isMusic = value;
+        }
+        get loop() {
+            return this._comp.loop;
+        }
+        set loop(value) {
+            this._comp.loop = value;
+        }
+        get autoPlay() {
+            return this._comp.autoPlay;
+        }
+        set autoPlay(value) {
+            this._comp.autoPlay = value;
+        }
+        play(loops, complete, startTime) {
+            this._comp.play(loops, complete, startTime);
+        }
+        stop() {
+            this._comp.stop();
         }
         _setPlayAction(tar, event, action, add = true) {
             if (!this[action])
@@ -27183,16 +29310,9 @@ window.Laya = (function (exports) {
                 this._setPlayActions(this._tar, events, "stop");
             }
         }
-        onDisplay() {
-            if (this._autoPlay && !this._channel)
-                this.play(this._loop);
-        }
-        onUndisplay() {
-            this.stop();
-        }
     }
 
-    class VideoNode extends Sprite {
+    class VideoPlayer extends Component {
         constructor() {
             super();
             this.options = { controls: false, objectFit: "contain" };
@@ -27204,8 +29324,7 @@ window.Laya = (function (exports) {
             this._playbackRate = 1;
             this._allowBackground = false;
             this._paused = false;
-            this.on(Event.DISPLAY, this, this.onDisplay);
-            this.on(Event.UNDISPLAY, this, this.onUndisplay);
+            this.runInEditor = true;
         }
         get player() {
             return this._api;
@@ -27214,9 +29333,10 @@ window.Laya = (function (exports) {
             return this._source;
         }
         set source(value) {
+            var _a;
             this._source = value;
             if (value) {
-                if (this.activeInHierarchy)
+                if ((_a = this.owner) === null || _a === void 0 ? void 0 : _a.activeInHierarchy)
                     this._load();
             }
             else
@@ -27302,8 +29422,8 @@ window.Laya = (function (exports) {
         get paused() {
             return this._paused;
         }
-        load(url) {
-            this.source = url;
+        get videoTexture() {
+            return this._vtex;
         }
         play() {
             if (!this._api)
@@ -27314,12 +29434,6 @@ window.Laya = (function (exports) {
             this._paused = true;
             if (this._api)
                 this._api.pause();
-        }
-        reload() {
-            this.source = this._source;
-        }
-        canPlayType(type) {
-            return PAL.media.canPlayType(type);
         }
         _load() {
             let player;
@@ -27338,22 +29452,26 @@ window.Laya = (function (exports) {
             if (player) {
                 if (this._player !== player) {
                     this._player = player;
-                    this._player.attachTo(this);
+                    this._player.attachTo(this.owner);
                     this._player.options = this.options;
                 }
                 if (this._vtex) {
                     this._vtex.destroy();
                     this._vtex = null;
-                    this.texture = null;
+                    this.owner.graphics.removeCmd(this._textureCmd, true);
+                    this._textureCmd = null;
                 }
             }
             else {
                 if (this._vtex !== vt) {
                     this._vtex = vt;
                     this._vtex.on(Event.READY, this, this._vtReady);
-                    this._vtex.on("videoUpdate", this, this.reCache);
-                    if (!this._tex)
-                        this.texture = this._tex = new Texture();
+                    this._vtex.on("videoUpdate", this.owner, this.owner.reCache);
+                    if (!this._textureCmd) {
+                        this._textureCmd = DrawTextureCmd.create(new Texture(), 0, 0, 1, 1, null, null, null, null, null, true);
+                        this._textureCmd.lock = true;
+                        this.owner.graphics.addCmd(this._textureCmd);
+                    }
                 }
                 if (this._player) {
                     this._player.destroy();
@@ -27373,43 +29491,435 @@ window.Laya = (function (exports) {
             this._api.load(this._source);
         }
         _vtReady() {
-            this._tex.setTo(this._vtex);
-            this.graphics.repaint();
+            var _a;
+            this._textureCmd.texture.setTo(this._vtex);
+            (_a = this.owner) === null || _a === void 0 ? void 0 : _a.graphics.repaint();
         }
         _unload() {
             var _a;
             if (this._vtex) {
                 this._vtex.off(Event.READY, this, this._vtReady);
-                this._vtex.off("videoUpdate", this, this.reCache);
+                this._vtex.off("videoUpdate", this.owner, this.owner.reCache);
                 this._vtex.destroy();
                 this._vtex = null;
+                this.owner.graphics.removeCmd(this._textureCmd, true);
+                this._textureCmd = null;
             }
             (_a = this._player) === null || _a === void 0 ? void 0 : _a.destroy();
             this._player = null;
             this._api = null;
         }
-        onDisplay() {
+        _onEnable() {
             if (!this._api && this._source)
                 this._load();
+            super._onEnable();
         }
-        onUndisplay() {
+        _onDisable() {
             this._unload();
+            super._onDisable();
         }
-        destroy(detroyChildren = true) {
+        _onDestroy() {
             this._unload();
-            super.destroy(detroyChildren);
+            super._onDestroy();
+        }
+    }
+
+    class VideoNode extends Sprite {
+        constructor() {
+            super();
+            this._comp = this.addComponent(VideoPlayer);
+            this._comp.hideFlags |= HideFlags.HideAndDontSave;
+        }
+        get options() {
+            return this._comp.options;
+        }
+        get mode() {
+            return this._comp.mode;
+        }
+        set mode(value) {
+            this._comp.mode = value;
+        }
+        get player() {
+            return this._comp.player;
+        }
+        get source() {
+            return this._comp.source;
+        }
+        set source(value) {
+            this._comp.source = value;
+        }
+        get autoPlay() {
+            return this._comp.autoPlay;
+        }
+        set autoPlay(value) {
+            this._comp.autoPlay = value;
+        }
+        get allowBackground() {
+            return this._comp.allowBackground;
+        }
+        set allowBackground(value) {
+            this._comp.allowBackground = value;
+        }
+        get currentTime() {
+            return this._comp.currentTime;
+        }
+        set currentTime(value) {
+            this._comp.currentTime = value;
+        }
+        get readyState() {
+            return this._comp.readyState;
+        }
+        get videoWidth() {
+            return this._comp.videoWidth;
+        }
+        get videoHeight() {
+            return this._comp.videoHeight;
+        }
+        get duration() {
+            return this._comp.duration;
+        }
+        get ended() {
+            return this._comp.ended;
+        }
+        get loop() {
+            return this._comp.loop;
+        }
+        set loop(value) {
+            this._comp.loop = value;
+        }
+        get playbackRate() {
+            return this._comp.playbackRate;
+        }
+        set playbackRate(value) {
+            this._comp.playbackRate = value;
+        }
+        get volume() {
+            return this._comp.volume;
+        }
+        set volume(value) {
+            this._comp.volume = value;
+        }
+        get muted() {
+            return this._comp.muted;
+        }
+        set muted(value) {
+            this._comp.muted = value;
+        }
+        get paused() {
+            return this._comp.paused;
+        }
+        load(url) {
+            this._comp.source = url;
+        }
+        play() {
+            this._comp.play();
+        }
+        pause() {
+            this._comp.pause();
+        }
+        reload() {
+            this._comp.source = this._comp.source;
+        }
+        canPlayType(type) {
+            return PAL.media.canPlayType(type);
         }
         get currentSrc() {
-            return this._source;
+            return this._comp.source;
         }
         get videoTexture() {
-            return this._vtex;
+            return this._comp.videoTexture;
         }
         set videoTexture(value) {
             if (value)
                 this.source = value.source;
             else
                 this.source = null;
+        }
+    }
+
+    exports.AnimatorUpdateMode = void 0;
+    (function (AnimatorUpdateMode) {
+        AnimatorUpdateMode[AnimatorUpdateMode["Normal"] = 0] = "Normal";
+        AnimatorUpdateMode[AnimatorUpdateMode["LowFrame"] = 1] = "LowFrame";
+        AnimatorUpdateMode[AnimatorUpdateMode["UnScaleTime"] = 2] = "UnScaleTime";
+    })(exports.AnimatorUpdateMode || (exports.AnimatorUpdateMode = {}));
+
+    class Animator2DBase extends Component {
+        constructor() {
+            super();
+            this._speed = 1;
+            this._updateMode = exports.AnimatorUpdateMode.Normal;
+            this._lowUpdateDelty = 20;
+            this._isPlaying = true;
+            this._isPlayBack = false;
+            this._ownerMap = null;
+        }
+        get speed() {
+            return this._speed;
+        }
+        set speed(num) {
+            this._speed = num;
+        }
+        get isPlaying() {
+            return this._isPlaying;
+        }
+        _setClipDatasToNode(stateInfo, additive, weight) {
+            var realtimeDatas = stateInfo._realtimeDatas;
+            var nodes = stateInfo._clip._nodes;
+            for (var i = 0, n = nodes.count; i < n; i++) {
+                if (null == realtimeDatas[i])
+                    continue;
+                var node = nodes.getNodeByIndex(i);
+                var o = this.getOwner(node);
+                o && this._applyAniData(o, additive, weight, realtimeDatas[i]);
+            }
+        }
+        _applyAniData(o, additive, weight, data) {
+            var pro = o.pro;
+            if (pro && pro.ower) {
+                if (additive && "number" === typeof data) {
+                    pro.ower[pro.key] = pro.defVal + weight * data;
+                }
+                else if ("number" === typeof data) {
+                    pro.ower[pro.key] = weight * data;
+                }
+                else if ("object" === typeof data) {
+                    if (data.pos) {
+                        pro.ower.x = data.pos.x;
+                        pro.ower.y = data.pos.y;
+                    }
+                    if (null != data.rotation) {
+                        pro.ower.rotation = data.rotation.z;
+                    }
+                }
+                else {
+                    if ("string" === typeof data) {
+                        if (data.startsWith("tres://")) {
+                            let url = data.replace("tres://", "");
+                            let source = Loader.getRes(url, Loader.IMAGE);
+                            if (source) {
+                                data = source;
+                            }
+                            else {
+                                ILaya.loader.load(url, { type: Loader.IMAGE }).then(tex => {
+                                    if (!this.destroyed) {
+                                        pro.ower[pro.key] = tex;
+                                    }
+                                });
+                                return;
+                            }
+                        }
+                    }
+                    pro.ower[pro.key] = data;
+                }
+            }
+        }
+        _updateDefVal() {
+            if (!this._ownerMap)
+                return;
+            this._ownerMap.forEach((ownerData) => {
+                if (ownerData.pro && ownerData.pro.ower) {
+                    ownerData.pro.defVal = ownerData.pro.ower[ownerData.pro.key];
+                }
+            });
+        }
+        getOwner(node) {
+            var ret;
+            if (this._ownerMap) {
+                ret = this._ownerMap.get(node);
+                if (ret)
+                    return ret;
+            }
+            var property = this.owner;
+            for (var j = 0, m = node.ownerPathCount; j < m; j++) {
+                var ownPat = node.getOwnerPathByIndex(j);
+                if ("" == ownPat)
+                    continue;
+                property = property.getChild(ownPat);
+                if (!property)
+                    break;
+            }
+            ret = { ower: property };
+            if (property) {
+                var pobj = property;
+                var propertyCount = node.propertyCount;
+                if (1 == propertyCount) {
+                    var pname = node.getPropertyByIndex(0);
+                    ret.pro = { ower: property, key: pname, defVal: property[pname] };
+                }
+                else {
+                    for (var i = 0; i < propertyCount; i++) {
+                        var pname = node.getPropertyByIndex(i);
+                        if (i == propertyCount - 1 || null == pobj) {
+                            ret.pro = { ower: pobj, key: pname, defVal: pobj ? pobj[pname] : null };
+                            break;
+                        }
+                        if ('_gcmds' === pname && null == pobj[pname] && pobj.graphics) {
+                            pobj = pobj.graphics;
+                            pname = "cmds";
+                        }
+                        if (null == pobj[pname] && property == pobj) {
+                            pobj = null;
+                            var classObj = ClassUtils.getClass(pname);
+                            if (classObj)
+                                pobj = property.getComponent(classObj);
+                        }
+                        else {
+                            pobj = pobj[pname];
+                        }
+                    }
+                }
+            }
+            if (null == this._ownerMap)
+                this._ownerMap = new Map();
+            this._ownerMap.set(node, ret);
+            return ret;
+        }
+        _updateClipDatas(animatorState, addtive, playStateInfo) {
+            var clip = animatorState._clip;
+            var clipDuration = clip._duration;
+            var curPlayTime = animatorState.clipStart * clipDuration + playStateInfo._normalizedPlayTime * playStateInfo._duration;
+            var currentFrameIndices = animatorState._currentFrameIndices;
+            let frontPlay = playStateInfo._frontPlay;
+            clip._evaluateClipDatasRealTime(curPlayTime, currentFrameIndices, addtive, frontPlay, animatorState._realtimeDatas);
+        }
+        _updatePlayerTime(animatorState, playState, elapsedTime, loop) {
+            playState._playAllTime += Math.abs(elapsedTime);
+            const clipDuration = animatorState.clipEnd - animatorState.clipStart;
+            var clipDurationTime = animatorState._clip._duration * clipDuration;
+            var lastElapsedTime = playState._elapsedTime;
+            var elapsedPlaybackTime = lastElapsedTime + elapsedTime;
+            playState._lastElapsedTime = lastElapsedTime;
+            playState._elapsedTime = elapsedPlaybackTime;
+            var normalizedTime = elapsedPlaybackTime / clipDurationTime;
+            var playTime = normalizedTime % 1.0;
+            const normalizedPlayTime = playTime < 0 ? playTime + 1.0 : playTime;
+            playState._normalizedPlayTime = normalizedPlayTime;
+            playState._duration = clipDurationTime;
+            let parentPlayNum = Math.floor(Math.abs(lastElapsedTime) / clipDurationTime);
+            let playNum = Math.floor(Math.abs(elapsedPlaybackTime) / clipDurationTime);
+            if (animatorState.yoyo) {
+                this._isPlayBack = 0 != Math.floor(playNum) % 2;
+                if (this._isPlayBack)
+                    playState._normalizedPlayTime = 1 - playState._normalizedPlayTime;
+                parentPlayNum = Math.floor(parentPlayNum / 2);
+                playNum = Math.floor(playNum / 2);
+            }
+            if (0 < loop && loop <= playNum) {
+                playState._finish = true;
+                if (animatorState.yoyo)
+                    playState._normalizedPlayTime = 0;
+                else
+                    playState._normalizedPlayTime = 1;
+            }
+            const isReplay = parentPlayNum != playNum;
+            if (isReplay) {
+                this._updateDefVal();
+                animatorState._eventLoop();
+            }
+            animatorState._eventStateUpdate(playState._normalizedPlayTime);
+            return isReplay;
+        }
+        _updateStateFinish(animatorState, playState) {
+            if (playState._finish) {
+                animatorState._eventExit();
+            }
+        }
+        _eventScript(events, parentPlayTime, currPlayTime, frontPlay) {
+            let scripts = this.owner.components;
+            if (frontPlay) {
+                for (let i = 0, len = events.length; i < len; i++) {
+                    let e = events[i];
+                    if (e.time > parentPlayTime && e.time <= currPlayTime) {
+                        for (let j = 0, m = scripts.length; j < m; j++) {
+                            let script = scripts[j];
+                            if (script._isScript()) {
+                                let fun = script[e.eventName];
+                                (fun) && (fun.apply(script, e.params));
+                            }
+                        }
+                    }
+                    else if (e.time > currPlayTime)
+                        break;
+                }
+            }
+            else {
+                for (let i = events.length - 1; i >= 0; i--) {
+                    let e = events[i];
+                    if (e.time < parentPlayTime && e.time >= currPlayTime) {
+                        for (let j = 0, m = scripts.length; j < m; j++) {
+                            let script = scripts[j];
+                            if (script._isScript()) {
+                                let fun = script[e.eventName];
+                                (fun) && (fun.apply(script, e.params));
+                            }
+                        }
+                    }
+                    else if (e.time < currPlayTime)
+                        break;
+                }
+            }
+        }
+        _updateEventScript(stateInfo, playStateInfo) {
+            let clip = stateInfo._clip;
+            let events = clip._animationEvents;
+            if (!events || 0 == events.length)
+                return;
+            let clipDuration = clip._duration;
+            var curPlayTime = playStateInfo.animatorState.clipStart * clipDuration + playStateInfo._normalizedPlayTime * playStateInfo._duration;
+            let frontPlay = playStateInfo._frontPlay;
+            const speed = playStateInfo._currentState.speed;
+            if (0 > speed)
+                frontPlay = !frontPlay;
+            if (this._isPlayBack)
+                frontPlay = !frontPlay;
+            let pTime = playStateInfo._parentPlayTime;
+            let parentPlayTime = playStateInfo._parentPlayTime;
+            if (null == parentPlayTime) {
+                if (frontPlay)
+                    parentPlayTime = clipDuration * playStateInfo.animatorState.clipStart;
+                else
+                    parentPlayTime = clipDuration * playStateInfo.animatorState.clipEnd;
+            }
+            if (frontPlay) {
+                if (curPlayTime < parentPlayTime) {
+                    const cpt = playStateInfo.animatorState.clipStart * clipDuration + playStateInfo._duration;
+                    this._eventScript(events, parentPlayTime, cpt, true);
+                    parentPlayTime = playStateInfo.animatorState.clipStart * clipDuration;
+                }
+            }
+            else {
+                if (curPlayTime > parentPlayTime) {
+                    const cpt = playStateInfo.animatorState.clipStart * clipDuration;
+                    this._eventScript(events, parentPlayTime, cpt, false);
+                    parentPlayTime = playStateInfo.animatorState.clipStart * clipDuration + playStateInfo._duration;
+                }
+            }
+            this._eventScript(events, parentPlayTime, curPlayTime, frontPlay);
+            if (pTime == playStateInfo._parentPlayTime) {
+                playStateInfo._parentPlayTime = curPlayTime;
+            }
+        }
+        _applyUpdateMode(delta) {
+            let ret;
+            switch (this._updateMode) {
+                case exports.AnimatorUpdateMode.Normal:
+                    ret = delta;
+                    break;
+                case exports.AnimatorUpdateMode.LowFrame:
+                    ret = (Stat.loopCount % this._lowUpdateDelty == 0) ? delta * this._lowUpdateDelty : 0;
+                    break;
+                case exports.AnimatorUpdateMode.UnScaleTime:
+                    ret = 0;
+                    break;
+                default:
+                    ret = delta;
+            }
+            return ret;
+        }
+        resetAdditiveBaseValues() {
+            if (this._ownerMap)
+                this._ownerMap.clear();
         }
     }
 
@@ -27750,21 +30260,9 @@ window.Laya = (function (exports) {
         }
     }
 
-    exports.AnimatorUpdateMode = void 0;
-    (function (AnimatorUpdateMode) {
-        AnimatorUpdateMode[AnimatorUpdateMode["Normal"] = 0] = "Normal";
-        AnimatorUpdateMode[AnimatorUpdateMode["LowFrame"] = 1] = "LowFrame";
-        AnimatorUpdateMode[AnimatorUpdateMode["UnScaleTime"] = 2] = "UnScaleTime";
-    })(exports.AnimatorUpdateMode || (exports.AnimatorUpdateMode = {}));
-
-    class Animator2D extends Component {
+    class Animator2D extends Animator2DBase {
         constructor() {
             super();
-            this._speed = 1;
-            this._updateMode = exports.AnimatorUpdateMode.Normal;
-            this._lowUpdateDelty = 20;
-            this._isPlaying = true;
-            this._isPlayBack = false;
             this._controllerLayers = [];
             this._parameters = {};
         }
@@ -27786,274 +30284,19 @@ window.Laya = (function (exports) {
         set parameters(val) {
             this._parameters = val;
         }
-        get speed() {
-            return this._speed;
-        }
-        set speed(num) {
-            this._speed = num;
-        }
-        get isPlaying() {
-            return this._isPlaying;
-        }
-        _updateStateFinish(animatorState, playState) {
-            if (playState._finish) {
-                if (this.owner._renderType & SpriteConst.GRAPHICS) {
-                    this.owner.graphics.repaint();
-                }
-                animatorState._eventExit();
-            }
-        }
         _switchState(parentState, currentState) {
             if (parentState) {
                 parentState._eventSwitch(currentState);
             }
         }
-        _setClipDatasToNode(stateInfo, additive, weight, controllerLayer = null) {
-            var realtimeDatas = stateInfo._realtimeDatas;
-            var nodes = stateInfo._clip._nodes;
-            for (var i = 0, n = nodes.count; i < n; i++) {
-                if (null == realtimeDatas[i])
-                    continue;
-                var node = nodes.getNodeByIndex(i);
-                var o = this.getOwner(node);
-                o && this._applyFloat(o, additive, weight, realtimeDatas[i]);
-            }
-        }
-        _applyFloat(o, additive, weight, data) {
-            var pro = o.pro;
-            if (pro && pro.ower) {
-                if (additive && "number" === typeof data) {
-                    pro.ower[pro.key] = pro.defVal + weight * data;
-                }
-                else if ("number" === typeof data) {
-                    pro.ower[pro.key] = weight * data;
-                }
-                else {
-                    if ("string" === typeof data) {
-                        if (data.startsWith("tres://")) {
-                            let url = data.replace("tres://", "");
-                            let source = Loader.getRes(url, Loader.IMAGE);
-                            if (source) {
-                                data = source;
-                            }
-                            else {
-                                ILaya.loader.load(url, { type: Loader.IMAGE }).then(tex => {
-                                    if (!this.destroyed) {
-                                        pro.ower[pro.key] = tex;
-                                    }
-                                });
-                                return;
-                            }
-                        }
-                    }
-                    pro.ower[pro.key] = data;
-                }
-            }
-        }
-        getOwner(node) {
-            var ret;
-            if (this._ownerMap) {
-                ret = this._ownerMap.get(node);
-                if (ret) {
-                    return ret;
-                }
-            }
-            var property = this.owner;
-            for (var j = 0, m = node.ownerPathCount; j < m; j++) {
-                var ownPat = node.getOwnerPathByIndex(j);
-                if ("" == ownPat) {
-                    continue;
-                }
-                else {
-                    property = property.getChild(ownPat);
-                    if (!property)
-                        break;
-                }
-            }
-            ret = { ower: property };
-            if (property) {
-                var pobj = property;
-                var propertyCount = node.propertyCount;
-                if (1 == propertyCount) {
-                    var pname = node.getPropertyByIndex(0);
-                    ret.pro = { ower: property, key: pname, defVal: property[pname] };
-                }
-                else {
-                    for (var i = 0; i < propertyCount; i++) {
-                        var pname = node.getPropertyByIndex(i);
-                        if (i == propertyCount - 1 || null == pobj) {
-                            ret.pro = { ower: pobj, key: pname, defVal: pobj ? pobj[pname] : null };
-                            break;
-                        }
-                        if ('_gcmds' === pname && null == pobj[pname] && pobj.graphics) {
-                            pobj = pobj.graphics;
-                            pname = "cmds";
-                        }
-                        if (null == pobj[pname] && property == pobj) {
-                            pobj = null;
-                            var classObj = ClassUtils.getClass(pname);
-                            if (classObj) {
-                                pobj = property.getComponent(classObj);
-                            }
-                        }
-                        else {
-                            pobj = pobj[pname];
-                        }
-                    }
-                }
-            }
-            if (null == this._ownerMap) {
-                this._ownerMap = new Map();
-            }
-            this._ownerMap.set(node, ret);
-            return ret;
-        }
-        _updateClipDatas(animatorState, addtive, playStateInfo) {
-            var clip = animatorState._clip;
-            var clipDuration = clip._duration;
-            var curPlayTime = animatorState.clipStart * clipDuration + playStateInfo._normalizedPlayTime * playStateInfo._duration;
-            var currentFrameIndices = animatorState._currentFrameIndices;
-            let frontPlay = playStateInfo._frontPlay;
-            clip._evaluateClipDatasRealTime(curPlayTime, currentFrameIndices, addtive, frontPlay, animatorState._realtimeDatas);
-        }
         _updatePlayer(animatorState, playState, elapsedTime, loop, layerIndex) {
-            playState._playAllTime += Math.abs(elapsedTime);
-            const clipDuration = animatorState.clipEnd - animatorState.clipStart;
-            var clipDurationTime = animatorState._clip._duration * clipDuration;
-            var lastElapsedTime = playState._elapsedTime;
-            var elapsedPlaybackTime = lastElapsedTime + elapsedTime;
-            playState._lastElapsedTime = lastElapsedTime;
-            playState._elapsedTime = elapsedPlaybackTime;
-            var normalizedTime = elapsedPlaybackTime / clipDurationTime;
-            var playTime = normalizedTime % 1.0;
-            const normalizedPlayTime = playTime < 0 ? playTime + 1.0 : playTime;
-            playState._normalizedPlayTime = normalizedPlayTime;
-            playState._duration = clipDurationTime;
-            let parentPlayNum = Math.floor(Math.abs(lastElapsedTime) / clipDurationTime);
-            let playNum = Math.floor(Math.abs(elapsedPlaybackTime) / clipDurationTime);
-            if (animatorState.yoyo) {
-                this._isPlayBack = 0 != Math.floor(playNum) % 2;
-                if (this._isPlayBack) {
-                    playState._normalizedPlayTime = 1 - playState._normalizedPlayTime;
-                }
-                parentPlayNum = Math.floor(parentPlayNum / 2);
-                playNum = Math.floor(playNum / 2);
-            }
-            if (0 < loop && loop <= playNum) {
-                playState._finish = true;
-                if (animatorState.yoyo) {
-                    playState._normalizedPlayTime = 0;
-                }
-                else {
-                    playState._normalizedPlayTime = 1;
-                }
-            }
-            const isReplay = parentPlayNum != playNum;
-            if (isReplay) {
-                animatorState._eventLoop();
-            }
-            animatorState._eventStateUpdate(playState._normalizedPlayTime);
-            this._applyTransition(layerIndex, animatorState._eventtransition(normalizedPlayTime, this.parameters, isReplay));
-        }
-        _updateEventScript(stateInfo, playStateInfo) {
-            let clip = stateInfo._clip;
-            let events = clip._animationEvents;
-            if (!events || 0 == events.length)
-                return;
-            let clipDuration = clip._duration;
-            var curPlayTime = playStateInfo.animatorState.clipStart * clipDuration + playStateInfo._normalizedPlayTime * playStateInfo._duration;
-            let frontPlay = playStateInfo._frontPlay;
-            const speed = playStateInfo._currentState.speed;
-            if (0 > speed)
-                frontPlay = !frontPlay;
-            if (this._isPlayBack) {
-                frontPlay = !frontPlay;
-            }
-            let pTime = playStateInfo._parentPlayTime;
-            let parentPlayTime = playStateInfo._parentPlayTime;
-            if (null == parentPlayTime) {
-                if (frontPlay) {
-                    parentPlayTime = clipDuration * playStateInfo.animatorState.clipStart;
-                }
-                else {
-                    parentPlayTime = clipDuration * playStateInfo.animatorState.clipEnd;
-                }
-            }
-            if (frontPlay) {
-                if (curPlayTime < parentPlayTime) {
-                    const cpt = playStateInfo.animatorState.clipStart * clipDuration + playStateInfo._duration;
-                    this._eventScript(events, parentPlayTime, cpt, true);
-                    parentPlayTime = playStateInfo.animatorState.clipStart * clipDuration;
-                }
-            }
-            else {
-                if (curPlayTime > parentPlayTime) {
-                    const cpt = playStateInfo.animatorState.clipStart * clipDuration;
-                    this._eventScript(events, parentPlayTime, cpt, false);
-                    parentPlayTime = playStateInfo.animatorState.clipStart * clipDuration + playStateInfo._duration;
-                }
-            }
-            this._eventScript(events, parentPlayTime, curPlayTime, frontPlay);
-            if (pTime == playStateInfo._parentPlayTime) {
-                playStateInfo._parentPlayTime = curPlayTime;
-            }
-        }
-        _eventScript(events, parentPlayTime, currPlayTime, frontPlay) {
-            let scripts = this.owner.components;
-            if (frontPlay) {
-                for (let i = 0, len = events.length; i < len; i++) {
-                    let e = events[i];
-                    if (e.time > parentPlayTime && e.time <= currPlayTime) {
-                        for (let j = 0, m = scripts.length; j < m; j++) {
-                            let script = scripts[j];
-                            if (script._isScript()) {
-                                let fun = script[e.eventName];
-                                (fun) && (fun.apply(script, e.params));
-                            }
-                        }
-                    }
-                    else if (e.time > currPlayTime) {
-                        break;
-                    }
-                }
-            }
-            else {
-                for (let i = events.length - 1; i >= 0; i--) {
-                    let e = events[i];
-                    if (e.time < parentPlayTime && e.time >= currPlayTime) {
-                        for (let j = 0, m = scripts.length; j < m; j++) {
-                            let script = scripts[j];
-                            if (script._isScript()) {
-                                let fun = script[e.eventName];
-                                (fun) && (fun.apply(script, e.params));
-                            }
-                        }
-                    }
-                    else if (e.time < currPlayTime) {
-                        break;
-                    }
-                }
-            }
+            const isReplay = this._updatePlayerTime(animatorState, playState, elapsedTime, loop);
+            this._applyTransition(layerIndex, animatorState._eventtransition(playState._normalizedPlayTime, this.parameters, isReplay));
         }
         _applyTransition(layerindex, transition) {
             if (!transition)
                 return false;
             return this.crossFade(transition.destState.name, layerindex, transition.transstartoffset, transition.transduration);
-        }
-        _applyUpdateMode(delta) {
-            let ret;
-            switch (this._updateMode) {
-                case exports.AnimatorUpdateMode.Normal:
-                    ret = delta;
-                    break;
-                case exports.AnimatorUpdateMode.LowFrame:
-                    ret = (Stat.loopCount % this._lowUpdateDelty == 0) ? delta * this._lowUpdateDelty : 0;
-                    break;
-                case exports.AnimatorUpdateMode.UnScaleTime:
-                    ret = 0;
-                    break;
-            }
-            return ret;
         }
         gotoAndStopByFrame(name, layerIndex, frame) {
             var controllerLayer = this._controllerLayers[layerIndex];
@@ -28081,6 +30324,7 @@ window.Laya = (function (exports) {
                 var curPlayState = playStateInfo._currentState;
                 var clipDuration = animatorState._clip._duration;
                 var calclipduration = animatorState._clip._duration * (animatorState.clipEnd - animatorState.clipStart);
+                this._updateDefVal();
                 playStateInfo._resetPlayState(clipDuration * normalizedTime, calclipduration);
                 playStateInfo._normalizedPlayTime = normalizedTime;
                 controllerLayer._playType = 0;
@@ -28091,7 +30335,7 @@ window.Laya = (function (exports) {
                 animatorState._eventStart(this, layerIndex);
                 let addtive = controllerLayer.blendingMode != AnimatorControllerLayer2D.BLENDINGMODE_OVERRIDE;
                 this._updateClipDatas(animatorState, addtive, playStateInfo);
-                this._setClipDatasToNode(animatorState, addtive, controllerLayer.defaultWeight, controllerLayer);
+                this._setClipDatasToNode(animatorState, addtive, controllerLayer.defaultWeight);
                 this.stop();
             }
         }
@@ -28115,6 +30359,7 @@ window.Laya = (function (exports) {
                     return;
                 var clipDuration = animatorState._clip._duration;
                 var calclipduration = animatorState._clip._duration * (animatorState.clipEnd - animatorState.clipStart);
+                this._updateDefVal();
                 if (curPlayState !== animatorState) {
                     if (normalizedTime !== Number.NEGATIVE_INFINITY)
                         playStateInfo._resetPlayState(clipDuration * normalizedTime, calclipduration);
@@ -28181,13 +30426,18 @@ window.Laya = (function (exports) {
                         if (!playStateInfo._frontPlay) {
                             dir = -1;
                         }
-                        finish || this._updatePlayer(animatorState, playStateInfo, delta * speed * dir, loop, i);
+                        if (finish) {
+                            this._applyTransition(i, animatorState._eventtransition(playStateInfo._normalizedPlayTime, this.parameters, false));
+                        }
+                        else {
+                            this._updatePlayer(animatorState, playStateInfo, delta * speed * dir, loop, i);
+                        }
                         playStateInfo = controllerLayer._playStateInfo;
                         animatorState = playStateInfo._currentState;
                         {
                             this._updateClipDatas(animatorState, addtive, playStateInfo);
                             if (!finish) {
-                                this._setClipDatasToNode(animatorState, addtive, controllerLayer.defaultWeight, controllerLayer);
+                                this._setClipDatasToNode(animatorState, addtive, controllerLayer.defaultWeight);
                                 this._updateEventScript(animatorState, playStateInfo);
                             }
                         }
@@ -28535,6 +30785,12 @@ window.Laya = (function (exports) {
         CurveType[CurveType["CubicBezier"] = 2] = "CubicBezier";
         CurveType[CurveType["Straight"] = 3] = "Straight";
     })(exports.CurveType || (exports.CurveType = {}));
+    exports.RotationType = void 0;
+    (function (RotationType) {
+        RotationType[RotationType["NoRotation"] = 0] = "NoRotation";
+        RotationType[RotationType["RotateAlongPathCurve"] = 1] = "RotateAlongPathCurve";
+        RotationType[RotationType["RotateAlongMotionPath"] = 2] = "RotateAlongMotionPath";
+    })(exports.RotationType || (exports.RotationType = {}));
     class PathPoint {
         constructor() {
             this.pos = new Vector3();
@@ -28573,6 +30829,7 @@ window.Laya = (function (exports) {
             this._segments = [];
             this._points = [];
             this._curPt = new Vector3();
+            this._parPosCatch = new Vector3();
         }
         get length() {
             return this._fullLength;
@@ -28583,11 +30840,14 @@ window.Laya = (function (exports) {
             pool.recover(this._points);
             this._fullLength = 0;
             this._cacheT = null;
+            this.rotationType = null;
+            this._parPos = null;
             let cnt = points.length;
             if (cnt == 0)
                 return;
             let splinePoints = [];
             let prev = points[0];
+            this.rotationType = prev.rotationType;
             if (prev.curve == exports.CurveType.CRSpline)
                 splinePoints.push(prev.pos.cloneTo(pool.take()));
             for (let i = 1; i < cnt; i++) {
@@ -28600,12 +30860,14 @@ window.Laya = (function (exports) {
                         seg.ptCount = 2;
                         pts.push(prev.pos.cloneTo(pool.take()));
                         pts.push(current.pos.cloneTo(pool.take()));
+                        seg.length = Vector3.distance(prev.pos, current.pos);
                     }
                     else if (prev.curve == exports.CurveType.Bezier) {
                         seg.ptCount = 3;
                         pts.push(prev.pos.cloneTo(pool.take()));
                         pts.push(current.pos.cloneTo(pool.take()));
                         pts.push(prev.c1.cloneTo(pool.take()));
+                        seg.length = this.estimateBezierLength(seg.ptStart, seg.ptCount);
                     }
                     else if (prev.curve == exports.CurveType.CubicBezier) {
                         seg.ptCount = 4;
@@ -28613,8 +30875,8 @@ window.Laya = (function (exports) {
                         pts.push(current.pos.cloneTo(pool.take()));
                         pts.push(prev.c1.cloneTo(pool.take()));
                         pts.push(prev.c2.cloneTo(pool.take()));
+                        seg.length = this.estimateBezierLength(seg.ptStart, seg.ptCount);
                     }
-                    seg.length = Vector3.distance(prev.pos, current.pos);
                     this._fullLength += seg.length;
                     this._segments.push(seg);
                 }
@@ -28630,6 +30892,20 @@ window.Laya = (function (exports) {
             }
             if (splinePoints.length > 1)
                 this.createSplineSegment(splinePoints);
+            this.is2D = this._points.every(pt => Math.abs(pt.z) < 0.0001);
+        }
+        estimateBezierLength(ptStart, ptCount, samples = 10) {
+            let length = 0;
+            let prevPt = new Vector3();
+            let curPt = new Vector3();
+            this.onBezierCurve(ptStart, ptCount, 0, prevPt);
+            for (let i = 1; i <= samples; i++) {
+                let t = i / samples;
+                this.onBezierCurve(ptStart, ptCount, t, curPt);
+                length += Vector3.distance(prevPt, curPt);
+                curPt.cloneTo(prevPt);
+            }
+            return length;
         }
         createSplineSegment(splinePoints) {
             let cnt = splinePoints.length;
@@ -28654,6 +30930,122 @@ window.Laya = (function (exports) {
             this._segments.length = 0;
             this._points.length = 0;
         }
+        getRotationAt(t, out) {
+            if (!this.rotationType)
+                return null;
+            if (exports.RotationType.RotateAlongMotionPath === this.rotationType) {
+                const ret = CurvePath.getRotation(this._parPos, this._curPt);
+                if (!this._parPos) {
+                    this._parPos = this._parPosCatch;
+                }
+                this._curPt.cloneTo(this._parPos);
+                return ret;
+            }
+            if (!out) {
+                out = new Vector3();
+            }
+            let tangent = new Vector3();
+            t = MathUtil.clamp01(t);
+            let cnt = this._segments.length;
+            if (cnt == 0) {
+                out.set(0, 0, 0);
+                return out;
+            }
+            if (t == 0) {
+                let seg = this._segments[0];
+                this.getTangentAtSegment(seg, 0, tangent);
+            }
+            else if (t == 1) {
+                let seg = this._segments[cnt - 1];
+                this.getTangentAtSegment(seg, 1, tangent);
+            }
+            else {
+                for (let i = 0, len = t * this._fullLength; i < cnt; i++) {
+                    let seg = this._segments[i];
+                    len -= seg.length;
+                    if (len < 0) {
+                        let segmentT = 1 + len / seg.length;
+                        this.getTangentAtSegment(seg, segmentT, tangent);
+                        break;
+                    }
+                }
+            }
+            this.tangentToEulerAngles(tangent, out);
+            return out;
+        }
+        tangentToEulerAngles(tangent, out) {
+            if (this.is2D) {
+                let rotationAngle = Math.atan2(tangent.y, tangent.x) * 180 / Math.PI;
+                out.set(0, 0, rotationAngle);
+            }
+            else {
+                let yaw = Math.atan2(tangent.x, tangent.z) * 180 / Math.PI;
+                let horizontalLength = Math.sqrt(tangent.x * tangent.x + tangent.z * tangent.z);
+                let pitch = Math.atan2(-tangent.y, horizontalLength) * 180 / Math.PI;
+                let roll = 0;
+                out.set(pitch, yaw, roll);
+            }
+        }
+        getTangentAtSegment(seg, t, out) {
+            let pts = this._points;
+            if (seg.type == exports.CurveType.Straight) {
+                Vector3.subtract(pts[seg.ptStart + 1], pts[seg.ptStart], out);
+                Vector3.normalize(out, out);
+            }
+            else if (seg.type == exports.CurveType.Bezier) {
+                this.getBezierTangent(seg.ptStart, seg.ptCount, t, out);
+            }
+            else if (seg.type == exports.CurveType.CubicBezier) {
+                this.getBezierTangent(seg.ptStart, seg.ptCount, t, out);
+            }
+            else if (seg.type == exports.CurveType.CRSpline) {
+                this.getCRSplineTangent(seg.ptStart, seg.ptCount, t, out);
+            }
+        }
+        getBezierTangent(ptStart, ptCount, t, out) {
+            let pts = this._points;
+            let p0 = pts[ptStart];
+            let p1 = pts[ptStart + 1];
+            let cp0 = pts[ptStart + 2];
+            if (ptCount == 4) {
+                let cp1 = pts[ptStart + 3];
+                let t2 = 1 - t;
+                Vector3.subtract(cp0, p0, tmpVec3);
+                Vector3.scale(tmpVec3, 3 * t2 * t2, tmpVec3);
+                Vector3.subtract(cp1, cp0, tmpVec31);
+                Vector3.scale(tmpVec31, 6 * t2 * t, tmpVec31);
+                Vector3.subtract(p1, cp1, tmpVec32);
+                Vector3.scale(tmpVec32, 3 * t * t, tmpVec32);
+                Vector3.add(tmpVec3, tmpVec31, out);
+                Vector3.add(out, tmpVec32, out);
+            }
+            else {
+                let t2 = 1 - t;
+                Vector3.subtract(cp0, p0, tmpVec3);
+                Vector3.scale(tmpVec3, 2 * t2, tmpVec3);
+                Vector3.subtract(p1, cp0, tmpVec31);
+                Vector3.scale(tmpVec31, 2 * t, tmpVec31);
+                Vector3.add(tmpVec3, tmpVec31, out);
+            }
+            Vector3.normalize(out, out);
+        }
+        getCRSplineTangent(ptStart, ptCount, t, out) {
+            let adjustedIndex = Math.floor(t * (ptCount - 4)) + ptStart;
+            let pts = this._points;
+            let p0 = pts[adjustedIndex];
+            let p1 = pts[adjustedIndex + 1];
+            let p2 = pts[adjustedIndex + 2];
+            let p3 = pts[adjustedIndex + 3];
+            let adjustedT = (t == 1) ? 1 : MathUtil.repeat(t * (ptCount - 4), 1);
+            let dt0 = (-3 * adjustedT * adjustedT + 4 * adjustedT - 1) * 0.5;
+            let dt1 = (9 * adjustedT * adjustedT - 10 * adjustedT) * 0.5;
+            let dt2 = (-9 * adjustedT * adjustedT + 8 * adjustedT + 1) * 0.5;
+            let dt3 = (3 * adjustedT * adjustedT - 2 * adjustedT) * 0.5;
+            out.x = p0.x * dt0 + p1.x * dt1 + p2.x * dt2 + p3.x * dt3;
+            out.y = p0.y * dt0 + p1.y * dt1 + p2.y * dt2 + p3.y * dt3;
+            out.z = p0.z * dt0 + p1.z * dt1 + p2.z * dt2 + p3.z * dt3;
+            Vector3.normalize(out, out);
+        }
         getPointAt(t) {
             let out = this._curPt;
             t = MathUtil.clamp01(t);
@@ -28668,25 +31060,15 @@ window.Laya = (function (exports) {
             let pts = this._points;
             if (t == 1) {
                 let seg = this._segments[cnt - 1];
-                if (seg.type == exports.CurveType.Straight)
-                    Vector3.lerp(pts[seg.ptStart], pts[seg.ptStart + 1], t, out);
-                else if (seg.type == exports.CurveType.Bezier || seg.type == exports.CurveType.CubicBezier)
-                    this.onBezierCurve(seg.ptStart, seg.ptCount, t, out);
-                else
-                    this.onCRSplineCurve(seg.ptStart, seg.ptCount, t, out);
+                this.getPointOnSegment(seg, 1, pts, out);
                 return out;
             }
             for (let i = 0, len = t * this._fullLength; i < cnt; i++) {
                 let seg = this._segments[i];
                 len -= seg.length;
                 if (len < 0) {
-                    t = 1 + len / seg.length;
-                    if (seg.type == exports.CurveType.Straight)
-                        Vector3.lerp(pts[seg.ptStart], pts[seg.ptStart + 1], t, out);
-                    else if (seg.type == exports.CurveType.Bezier || seg.type == exports.CurveType.CubicBezier)
-                        this.onBezierCurve(seg.ptStart, seg.ptCount, t, out);
-                    else
-                        this.onCRSplineCurve(seg.ptStart, seg.ptCount, t, out);
+                    let segmentT = 1 + len / seg.length;
+                    this.getPointOnSegment(seg, segmentT, pts, out);
                     break;
                 }
             }
@@ -28752,6 +31134,14 @@ window.Laya = (function (exports) {
                 this.getPointsInSegment(i, 0, 1, out, outTs, pointDensity);
             return out;
         }
+        getPointOnSegment(seg, t, pts, out) {
+            if (seg.type == exports.CurveType.Straight)
+                Vector3.lerp(pts[seg.ptStart], pts[seg.ptStart + 1], t, out);
+            else if (seg.type == exports.CurveType.Bezier || seg.type == exports.CurveType.CubicBezier)
+                this.onBezierCurve(seg.ptStart, seg.ptCount, t, out);
+            else
+                this.onCRSplineCurve(seg.ptStart, seg.ptCount, t, out);
+        }
         onCRSplineCurve(ptStart, ptCount, t, out) {
             let adjustedIndex = Math.floor(t * (ptCount - 4)) + ptStart;
             let pts = this._points;
@@ -28786,6 +31176,26 @@ window.Laya = (function (exports) {
                 Vector3.add(tmpVec3, p1.scale(t * t, tmpVec31), out);
             }
             return out;
+        }
+        static getRotation(parPos, currPos) {
+            if (!parPos)
+                return null;
+            let direction = new Vector3();
+            Vector3.subtract(currPos, parPos, direction);
+            const epsilon = 0.0001;
+            const is2D = Math.abs(direction.z) < epsilon;
+            if (is2D) {
+                let rotationAngle = Math.atan2(direction.y, direction.x) * 180 / Math.PI;
+                return new Vector3(0, 0, rotationAngle);
+            }
+            else {
+                Vector3.normalize(direction, direction);
+                let yaw = Math.atan2(direction.x, direction.z) * 180 / Math.PI;
+                let horizontalLength = Math.sqrt(direction.x * direction.x + direction.z * direction.z);
+                let pitch = Math.atan2(-direction.y, horizontalLength) * 180 / Math.PI;
+                let roll = 0;
+                return new Vector3(pitch, yaw, roll);
+            }
         }
     }
     const tmpVec3 = new Vector3();
@@ -28856,6 +31266,7 @@ window.Laya = (function (exports) {
                 point.c2.y = data.c2.y;
                 point.c2.z = data.c2.z;
                 point.curve = data.curve;
+                point.rotationType = data.rotationType;
                 result.push(point);
             }
             return result;
@@ -28934,6 +31345,7 @@ window.Laya = (function (exports) {
                         const jsonData = JSON.parse(reader.readUTFString());
                         if (Array.isArray(jsonData)) {
                             const curvePath = new CurvePath();
+                            curvePath.is2D = true;
                             k.data.val = curvePath;
                             curvePath._$data = jsonData;
                             curvePath.create(...this.createPathPoints(jsonData));
@@ -29070,7 +31482,7 @@ window.Laya = (function (exports) {
                     var frame = keyFrames[frameIndex];
                     if (isEnd) {
                         if (frame.data.val instanceof CurvePath) {
-                            outDatas[i] = frame.data.val.getPointAt(0);
+                            outDatas[i] = { pos: frame.data.val.getPointAt(0), rotation: frame.data.val.getRotationAt(0) };
                         }
                         else {
                             outDatas[i] = frame.data.val;
@@ -29089,7 +31501,7 @@ window.Laya = (function (exports) {
                 }
                 else {
                     if (keyFrames[0].data.val instanceof CurvePath) {
-                        outDatas[i] = keyFrames[0].data.val.getPointAt(0);
+                        outDatas[i] = { pos: keyFrames[0].data.val.getPointAt(0), rotation: keyFrames[0].data.val.getRotationAt(0) };
                     }
                     else {
                         outDatas[i] = keyFrames[0].data.val;
@@ -29104,7 +31516,9 @@ window.Laya = (function (exports) {
             var start = frame.data;
             var end = nextFrame.data;
             if (start.val instanceof CurvePath) {
-                return start.val.getPointAt(t);
+                return {
+                    pos: start.val.getPointAt(t), rotation: start.val.getRotationAt(t)
+                };
             }
             if ("number" != typeof start.val || "number" != typeof end.val) {
                 return start.val;
@@ -29263,27 +31677,6 @@ window.Laya = (function (exports) {
     })(exports.AniConditionType || (exports.AniConditionType = {}));
     class Animation2DCondition {
     }
-
-    class Prefab extends Resource {
-        constructor() {
-            super(false);
-            this.fromDCC = false;
-            this._traceDeps = true;
-        }
-        onLoad() {
-            Resource._idResourcesMap[this._id] = this;
-            return this;
-        }
-        create(options, errors) {
-            return null;
-        }
-        static instantiate(url, classType) {
-            return ILaya.loader.load(url, Loader.HIERARCHY).then((res) => {
-                return res.create();
-            });
-        }
-    }
-    var HierarchyResource = Prefab;
 
     class AnimatorStateCondition {
         static conditionNameToID(name) {
@@ -30086,881 +32479,6 @@ window.Laya = (function (exports) {
         }
     }
     Loader.registerLoader(["atlas"], AtlasLoader, Loader.ATLAS, true);
-
-    const TypedArrayClasses = {
-        "Int8Array": Int8Array,
-        "Uint8Array": Uint8Array,
-        "Int16Array": Int16Array,
-        "Uint16Array": Uint16Array,
-        "Int32Array": Int32Array,
-        "Uint32Array": Uint32Array,
-        "Float32Array": Float32Array,
-        "Float64Array": Float64Array
-    };
-    class SerializeUtil {
-        static hasProp(...keys) {
-            for (let k of keys) {
-                if (SerializeUtil._data[k] !== undefined)
-                    return true;
-            }
-            return false;
-        }
-        static decodeObj(data, obj) {
-            return ObjDecoder.decodeObj(data, obj);
-        }
-        static getLoadTypeByEngineType(type) {
-            return Loader.assetTypeToLoadType[type];
-        }
-        static bakeOverrideData(overrideData) {
-            let dataMap = null;
-            for (let n = overrideData.length, i = n - 1; i >= 0; i--) {
-                let arr = overrideData[i];
-                if (arr && arr.length > 0) {
-                    for (let d of arr) {
-                        let od = d._$override || d._$parent;
-                        let k;
-                        if (Array.isArray(od))
-                            k = od[n - i - 1];
-                        else if (i === n - 1)
-                            k = od;
-                        if (k != null) {
-                            if (!dataMap)
-                                dataMap = {};
-                            let arr2 = dataMap[k];
-                            if (!arr2)
-                                dataMap[k] = arr2 = [];
-                            arr2.push(n - i, d);
-                        }
-                    }
-                }
-            }
-            return dataMap;
-        }
-        static applyOverrideData(nodeData, overrideDataMap) {
-            function test(obj) {
-                if (overrideDataMap[obj._$id])
-                    return true;
-                let children = obj._$child;
-                if (children && children.find(child => test(child)))
-                    return true;
-                return false;
-            }
-            function cloneTree(obj) {
-                let ret = Object.assign({}, obj);
-                let children = ret._$child;
-                if (children)
-                    ret._$child = children.map(c => cloneTree(c));
-                let comps = ret._$comp;
-                if (comps)
-                    ret._$comp = comps.map(c => Object.assign({}, c));
-                return ret;
-            }
-            function visit(data) {
-                let children = data._$child;
-                if (children) {
-                    for (let child of children) {
-                        if (child._$id)
-                            visit(child);
-                    }
-                }
-                let od = overrideDataMap[data._$id];
-                if (od) {
-                    for (let i = 0; i < od.length; i += 2) {
-                        let j = od[i];
-                        let e = od[i + 1];
-                        let idPath;
-                        if (idPath = e._$override) {
-                            let toWrite;
-                            if (Array.isArray(idPath)) {
-                                if (j === idPath.length - 1) {
-                                    let k = idPath[j];
-                                    if (!children)
-                                        data._$child = children = [];
-                                    else
-                                        toWrite = children.find(c => c._$override == k);
-                                    if (!toWrite) {
-                                        toWrite = { _$override: k };
-                                        children.push(toWrite);
-                                    }
-                                }
-                                else if (j < idPath.length - 1) {
-                                    let k = idPath.slice(j);
-                                    if (!children)
-                                        data._$child = children = [];
-                                    else {
-                                        toWrite = children.find(c => {
-                                            let o = c._$override;
-                                            return Array.isArray(o) && arrayEquals(o, k);
-                                        });
-                                    }
-                                    if (!toWrite) {
-                                        toWrite = { _$override: k };
-                                        children.push(toWrite);
-                                    }
-                                }
-                                else
-                                    toWrite = data;
-                            }
-                            else
-                                toWrite = data;
-                            mergeData(toWrite, e);
-                            if (e._$comp) {
-                                let comps = toWrite._$comp;
-                                if (!comps)
-                                    toWrite._$comp = comps = [];
-                                for (let comp of e._$comp) {
-                                    let typeOrId = comp._$type || comp._$override;
-                                    let c = comps.find(c => c._$override == typeOrId || c._$type == typeOrId || c._$id == typeOrId);
-                                    if (!c) {
-                                        c = {};
-                                        if (comp._$type)
-                                            c._$type = typeOrId;
-                                        else
-                                            c._$override = typeOrId;
-                                        comps.push(c);
-                                    }
-                                    mergeData(c, comp);
-                                }
-                            }
-                        }
-                        else if (idPath = e._$parent) {
-                            if (!children)
-                                data._$child = children = [];
-                            let k;
-                            if (j < idPath.length) {
-                                if (j === idPath.length - 1)
-                                    k = idPath[j];
-                                else
-                                    k = idPath.slice(j);
-                                let toWrite = Object.assign({}, e);
-                                toWrite._$parent = k;
-                                children.push(toWrite);
-                            }
-                            else {
-                                let toWrite = Object.assign({}, e);
-                                delete toWrite._$parent;
-                                if (data._$prefab) {
-                                    children.push(toWrite);
-                                }
-                                else {
-                                    delete toWrite._$index;
-                                    if (e._$index < children.length)
-                                        children.splice(e._$index, 0, toWrite);
-                                    else
-                                        children.push(toWrite);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            if (test(nodeData)) {
-                nodeData = cloneTree(nodeData);
-                visit(nodeData);
-            }
-            return nodeData;
-        }
-    }
-    SerializeUtil.isDeserializing = false;
-    function mergeData(target, overrided) {
-        for (let k in overrided) {
-            if (k.startsWith("_$"))
-                continue;
-            let v = overrided[k];
-            if (v != null && typeof (v) === "object" && !Array.isArray(v) && !(v._$type || v._$uuid || v._$ref)) {
-                let v2 = target[k];
-                if (v2 != null && typeof (v2) === "object") {
-                    target[k] = v2 = Object.assign({}, v2);
-                    mergeData(v2, v);
-                }
-                else
-                    target[k] = v;
-            }
-            else
-                target[k] = v;
-        }
-    }
-    function arrayEquals(a, b) {
-        if (a.length === b.length) {
-            for (var i = 0; i < a.length; i++) {
-                if (a[i] !== b[i]) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-
-    class ObjDecoder {
-        constructor() {
-            this.getNodeByRef = dummy;
-            this.getNodeData = dummy;
-        }
-        static decodeObj(data, obj) {
-            decoder.errors = null;
-            decoder.getNodeByRef = dummy;
-            decoder.getNodeData = dummy;
-            return decoder.decodeObj(data, obj);
-        }
-        decodeObj(data, obj, excludeKeys) {
-            SerializeUtil.isDeserializing = true;
-            try {
-                return this._decode(data, obj, excludeKeys);
-            }
-            finally {
-                SerializeUtil.isDeserializing = false;
-            }
-        }
-        decodeObjBounds(data, obj) {
-            SerializeUtil.isDeserializing = true;
-            try {
-                let v0 = data["x"];
-                let v1 = data["y"];
-                if (v0 !== undefined && v1 !== undefined)
-                    obj.pos(v0, v1);
-                else if (v0 !== undefined)
-                    obj.x = v0;
-                else if (v1 !== undefined)
-                    obj.y = v1;
-                v0 = data["width"];
-                v1 = data["height"];
-                if (v0 !== undefined && v1 !== undefined)
-                    obj.size(v0, v1);
-                else if (v0 !== undefined)
-                    obj.width = v0;
-                else if (v1 !== undefined)
-                    obj.height = v1;
-                v0 = data["controllers"];
-                if (v0 !== undefined)
-                    obj.controllers = this._decode(v0);
-            }
-            finally {
-                SerializeUtil.isDeserializing = false;
-            }
-        }
-        _decode(data, obj, excludeKeys) {
-            if (data == null)
-                return null;
-            else if (Array.isArray(data)) {
-                let arr = [];
-                for (let i = 0; i < data.length; i++) {
-                    let v = data[i];
-                    if (v != null) {
-                        try {
-                            arr[i] = this._decode(v);
-                        }
-                        catch (error) {
-                            if (this.errors)
-                                this.errors.push(error);
-                            else
-                                console.error(error);
-                            arr[i] = null;
-                        }
-                    }
-                    else
-                        arr[i] = null;
-                }
-                return arr;
-            }
-            else if (typeof (data) === "object") {
-                if (data._$uuid != null) {
-                    let url = URL.getResURLByUUID(data._$uuid);
-                    return ILaya.loader.getRes(url, Loader.assetTypeToLoadType[data._$type]);
-                }
-                if (data._$ref != null) {
-                    let node = this.getNodeByRef(data._$ref);
-                    if (!node)
-                        return null;
-                    if (data._$type) {
-                        let cls = ClassUtils.getClass(data._$type);
-                        if (cls)
-                            return node.getComponent(cls);
-                        else
-                            return null;
-                    }
-                    else if (data._$ctrl !== undefined) {
-                        let cls = crefClass || (crefClass = ClassUtils.getClass("ControllerRef"));
-                        if (cls)
-                            return new cls(node, data._$ctrl);
-                        else
-                            return null;
-                    }
-                    else
-                        return node;
-                }
-                let type = data._$type;
-                if (type === "any") {
-                    if (data._$type)
-                        return data.value;
-                    else
-                        return data;
-                }
-                let typedArray = TypedArrayClasses[type];
-                if (typedArray != null) {
-                    if (data._$type)
-                        return new typedArray(data.value);
-                    else
-                        return new typedArray(data);
-                }
-                if (!obj) {
-                    let cls = ClassUtils.getClass(type);
-                    if (!cls) {
-                        return null;
-                    }
-                    obj = new cls();
-                }
-                for (let key in data) {
-                    if (key.startsWith("_$") || excludeKeys && excludeKeys.has(key))
-                        continue;
-                    let v = data[key];
-                    if (v == null || typeof (v) !== "object" || Array.isArray(v)
-                        || v._$type || v._$uuid || v._$ref) {
-                        try {
-                            let v2 = this._decode(v);
-                            obj[key] = v2;
-                            if (v2 != null && v != null && v._$tmpl)
-                                obj[v._$tmpl] = new PrefabImpl(null, this.getNodeData(v2));
-                        }
-                        catch (error) {
-                            if (this.errors)
-                                this.errors.push(error);
-                            else
-                                console.error(error);
-                        }
-                    }
-                    else {
-                        let childObj = obj[key];
-                        if (childObj) {
-                            try {
-                                this._decode(v, childObj);
-                            }
-                            catch (error) {
-                                if (this.errors)
-                                    this.errors.push(error);
-                                else
-                                    console.error(error);
-                            }
-                        }
-                    }
-                }
-                if (obj.onAfterDeserialize) {
-                    try {
-                        SerializeUtil._data = data;
-                        obj.onAfterDeserialize();
-                    }
-                    catch (error) {
-                        if (this.errors)
-                            this.errors.push(error);
-                        else
-                            console.error(error);
-                    }
-                }
-                return obj;
-            }
-            else
-                return data;
-        }
-    }
-    function dummy(...args) { return null; }
-    var crefClass;
-    const decoder = new ObjDecoder();
-
-    const excludeKeys = new Set(["x", "y", "width", "height", "controllers", "relations", "gears"]);
-    class HierarchyParser {
-        static parse(data, options, errors) {
-            let printErrors = errors == null;
-            errors = errors || [];
-            let nodeMap = {};
-            let dataList = [];
-            let allNodes = [];
-            let outNodes = [];
-            let toDestroy = [];
-            let scene;
-            let inPrefab;
-            let prefabNodeDict;
-            let skinBaseUrl;
-            let overrideData;
-            let hasRuntime;
-            let hasUI;
-            if (options) {
-                inPrefab = options.inPrefab;
-                if (inPrefab)
-                    prefabNodeDict = options.prefabNodeDict;
-                skinBaseUrl = options.skinBaseUrl;
-                overrideData = options.overrideData;
-            }
-            function createChildren(data, prefab) {
-                for (let child of data._$child) {
-                    if (child._$child) {
-                        let node = createNode(child, prefab);
-                        createChildren(child, child._$prefab ? node : prefab);
-                        dataList.push(child);
-                        allNodes.push(node);
-                    }
-                    else {
-                        let node = createNode(child, prefab);
-                        dataList.push(child);
-                        allNodes.push(node);
-                    }
-                }
-            }
-            function createNode(nodeData, prefab) {
-                let node;
-                let pstr;
-                if (pstr = nodeData._$override) {
-                    if (prefab && prefabNodeDict) {
-                        if (Array.isArray(pstr)) {
-                            node = prefab;
-                            for (let i = 0, n = pstr.length; i < n; i++) {
-                                let map = prefabNodeDict.get(node);
-                                node = map === null || map === void 0 ? void 0 : map[pstr[i]];
-                                if (!node)
-                                    break;
-                                if (node == prefab) {
-                                    node = null;
-                                    break;
-                                }
-                            }
-                        }
-                        else {
-                            let map = prefabNodeDict.get(prefab);
-                            if (map) {
-                                node = map[nodeData._$override];
-                                if (node == prefab)
-                                    node = null;
-                            }
-                        }
-                    }
-                }
-                else {
-                    if (pstr = nodeData._$prefab) {
-                        let res = Loader.getRes(URL.getResURLByUUID(pstr), Loader.HIERARCHY);
-                        if (res) {
-                            if (!prefabNodeDict)
-                                prefabNodeDict = new Map();
-                            let overrideData2 = [];
-                            let testId = nodeData._$id;
-                            if (overrideData) {
-                                for (let i = 0, n = overrideData.length; i < n; i++) {
-                                    let arr = overrideData[i];
-                                    if (arr && arr.length > 0) {
-                                        overrideData2[i] = arr.filter(d => {
-                                            let od = d._$override || d._$parent;
-                                            return Array.isArray(od) && od.length > n - i && od[n - i - 1] == testId;
-                                        });
-                                    }
-                                    else
-                                        overrideData2[i] = arr;
-                                }
-                            }
-                            overrideData2.push(nodeData._$child);
-                            node = res.create({ inPrefab: true, prefabNodeDict: prefabNodeDict, overrideData: overrideData2 }, errors);
-                        }
-                    }
-                    else if (pstr = nodeData._$type) {
-                        let cls = ClassUtils.getClass(pstr);
-                        if (cls) {
-                            try {
-                                node = new cls();
-                            }
-                            catch (err) {
-                                errors.push(err);
-                            }
-                        }
-                        else {
-                            errors.push(new Error(`missing node type '${pstr}' (in ${nodeData.name || 'noname'})`));
-                        }
-                    }
-                    if (node) {
-                        nodeMap[nodeData._$id] = node;
-                        if (node._nodeType === 2)
-                            hasUI = true;
-                    }
-                }
-                return node;
-            }
-            function getNodeByRef(idPath) {
-                if (Array.isArray(idPath)) {
-                    let prefab = nodeMap[idPath[0]];
-                    if (prefab && idPath.length > 1)
-                        return findNodeInPrefab(prefab, idPath, 1);
-                    else
-                        return prefab;
-                }
-                else
-                    return nodeMap[idPath];
-            }
-            function findNodeInPrefab(prefab, idPath, startIndex = 0) {
-                if (!idPath)
-                    return prefab;
-                let map = prefabNodeDict === null || prefabNodeDict === void 0 ? void 0 : prefabNodeDict.get(prefab);
-                if (!map)
-                    return null;
-                if (Array.isArray(idPath)) {
-                    let node;
-                    for (let i = startIndex, n = idPath.length; i < n; i++) {
-                        if (!map)
-                            return null;
-                        node = map[idPath[i]];
-                        if (!node)
-                            break;
-                        map = prefabNodeDict.get(node);
-                    }
-                    return node;
-                }
-                else
-                    return map[idPath];
-            }
-            let bakedOverrideData;
-            function getNodeData(node) {
-                let i = allNodes.indexOf(node);
-                let nodeData = dataList[i];
-                node.removeSelf();
-                toDestroy.push(nodeData._$id);
-                allNodes[i] = null;
-                if (!overrideData)
-                    return nodeData;
-                if (bakedOverrideData === undefined)
-                    bakedOverrideData = SerializeUtil.bakeOverrideData(overrideData);
-                if (bakedOverrideData)
-                    return SerializeUtil.applyOverrideData(nodeData, bakedOverrideData);
-                else
-                    return nodeData;
-            }
-            if (data._$type || data._$prefab) {
-                let runtime = data._$runtime;
-                if (runtime) {
-                    hasRuntime = true;
-                    if (runtime.startsWith("res://"))
-                        runtime = runtime.substring(6);
-                    runtime = ClassUtils.getClass(runtime);
-                    if (!runtime)
-                        errors.push(new Error(`missing runtime class '${data._$runtime}'`));
-                }
-                if (options && options.runtime)
-                    runtime = options.runtime;
-                let node;
-                if (runtime) {
-                    node = new runtime();
-                    if (!(node instanceof Node)) {
-                        errors.push(new Error(`runtime class invalid - '${runtime}', must derive from Node`));
-                        node = null;
-                    }
-                    nodeMap[data._$id] = node;
-                }
-                else
-                    node = createNode(data, null);
-                if (node) {
-                    if (data._$child)
-                        createChildren(data, data._$prefab ? node : null);
-                    dataList.push(data);
-                    allNodes.push(node);
-                    if (node instanceof Scene)
-                        scene = node;
-                }
-            }
-            else {
-                if (data._$child)
-                    createChildren(data, null);
-            }
-            let nodeCnt = dataList.length;
-            let k = 0;
-            let outNodeData = [];
-            for (let i = 0; i < nodeCnt; i++) {
-                let nodeData = dataList[i];
-                let node = allNodes[i];
-                let children = nodeData._$child;
-                if (children) {
-                    let num = children.length;
-                    if (node) {
-                        if (nodeData._$prefab) {
-                            for (let j = 0; j < num; j++) {
-                                let m = k - num + j;
-                                let n = outNodes[m];
-                                if (n && !n.parent) {
-                                    let nodeData2 = outNodeData[m];
-                                    let parentNode = findNodeInPrefab(node, nodeData2._$parent);
-                                    if (parentNode) {
-                                        let pos = nodeData2._$index;
-                                        if (pos != null && pos < parentNode.numChildren)
-                                            parentNode.addChildAt(n, pos);
-                                        else
-                                            parentNode.addChild(n);
-                                    }
-                                    else {
-                                        node.addChildAt(n, 0);
-                                    }
-                                }
-                            }
-                        }
-                        else {
-                            for (let j = 0; j < num; j++) {
-                                let n = outNodes[k - num + j];
-                                if (n) {
-                                    if (node === scene && n.is3D)
-                                        scene._scene3D = n;
-                                    else
-                                        node.addChild(n);
-                                }
-                            }
-                        }
-                    }
-                    k -= num;
-                }
-                outNodes[k] = node;
-                outNodeData[k] = nodeData;
-                k++;
-            }
-            outNodes.length = k;
-            outNodes = outNodes.filter(n => n != null);
-            let topNode = outNodes[0];
-            let compInitList = [];
-            for (let i = 0; i < nodeCnt; i++) {
-                let components = dataList[i]._$comp;
-                if (!components)
-                    continue;
-                let node = allNodes[i];
-                if (!node)
-                    continue;
-                for (let compData of components) {
-                    let comp;
-                    let typeOrId = compData._$override;
-                    if (compData._$override) {
-                        let cls = ClassUtils.getClass(typeOrId);
-                        if (cls)
-                            comp = node.getComponent(cls);
-                        else
-                            comp = node.components.find(comp => comp._extra.storeId == typeOrId);
-                    }
-                    else {
-                        let cls = ClassUtils.getClass(compData._$type);
-                        if (cls) {
-                            if (!compData._$id)
-                                comp = node.getComponent(cls);
-                            if (!comp) {
-                                try {
-                                    comp = node.addComponent(cls);
-                                    comp._extra.storeId = compData._$id;
-                                }
-                                catch (err) {
-                                    errors.push(err);
-                                }
-                            }
-                        }
-                        else
-                            errors.push(new Error(`missing component type '${compData._$type}' (in ${dataList[i].name || 'noname'})`));
-                    }
-                    if (comp)
-                        compInitList.push(compData, comp);
-                }
-            }
-            const decoder = new ObjDecoder();
-            decoder.errors = errors;
-            decoder.getNodeByRef = getNodeByRef;
-            decoder.getNodeData = getNodeData;
-            for (let i = 0; i < nodeCnt; i++) {
-                let nodeData = dataList[i];
-                let node = allNodes[i];
-                if (node && (node._nodeType === 2 || node === scene))
-                    decoder.decodeObjBounds(nodeData, node);
-            }
-            if (hasUI) {
-                if (topNode._nodeType === 2) {
-                    topNode.sourceWidth = topNode.width;
-                    topNode.sourceHeight = topNode.height;
-                }
-                for (let i = 0; i < nodeCnt; i++) {
-                    let nodeData = dataList[i];
-                    let node = allNodes[i];
-                    if (node && node._nodeType === 2) {
-                        let v = nodeData["relations"];
-                        if (v != null) {
-                            if (nodeData._$prefab != null)
-                                node._addRelations(decoder.decodeObj(v));
-                            else
-                                node.relations = decoder.decodeObj(v);
-                        }
-                    }
-                }
-            }
-            for (let i = 0; i < nodeCnt; i++) {
-                let nodeData = dataList[i];
-                let node = allNodes[i];
-                if (node) {
-                    if (skinBaseUrl != null && node._nodeType === 0)
-                        node._skinBaseUrl = skinBaseUrl;
-                    decoder.decodeObj(nodeData, node, (node._nodeType === 2 || node === scene) ? excludeKeys : null);
-                    if (hasRuntime && nodeData._$var && node.name) {
-                        try {
-                            topNode[node.name] = node;
-                        }
-                        catch (err) {
-                            errors.push(err);
-                        }
-                    }
-                }
-            }
-            let compCnt = compInitList.length;
-            for (let i = 0; i < compCnt; i += 2) {
-                let compData = compInitList[i];
-                let comp = compInitList[i + 1];
-                decoder.decodeObj(compData, comp);
-            }
-            if (hasUI) {
-                for (let i = 0; i < nodeCnt; i++) {
-                    let nodeData = dataList[i];
-                    let node = allNodes[i];
-                    if (node && node._nodeType === 2) {
-                        let v = nodeData["gears"];
-                        if (v != null) {
-                            if (nodeData._$prefab != null)
-                                node._addGears(decoder.decodeObj(v));
-                            else
-                                node.gears = decoder.decodeObj(v);
-                        }
-                    }
-                }
-                if (topNode._nodeType === 2 && (!prefabNodeDict || !prefabNodeDict.has(topNode))) {
-                    try {
-                        topNode._onConstruct(inPrefab);
-                    }
-                    catch (error) {
-                        errors.push(error);
-                    }
-                }
-            }
-            for (let nodeId of toDestroy) {
-                let node = nodeMap[nodeId];
-                if (!node._destroyed)
-                    node.destroy();
-                delete nodeMap[nodeId];
-            }
-            if (inPrefab && prefabNodeDict && topNode)
-                prefabNodeDict.set(topNode, nodeMap);
-            if (printErrors && errors.length > 0)
-                errors.forEach(err => console.error(err));
-            return outNodes;
-        }
-        static collectResourceLinks(data, basePath) {
-            let test = {};
-            let innerUrls = [];
-            function addInnerUrl(url, type, absolutePath) {
-                if (!url)
-                    return "";
-                let entry = test[url];
-                if (entry === undefined) {
-                    let url2;
-                    if (Utils.isUUID(url))
-                        url2 = "res://" + url;
-                    else if (absolutePath)
-                        url2 = url;
-                    else
-                        url2 = URL.join(basePath, url);
-                    innerUrls.push({ url: url2, type: type });
-                    test[url] = entry = [url2, type];
-                }
-                else if (entry.indexOf(type, 1) == -1) {
-                    entry.push(type);
-                    innerUrls.push({ url: entry[0], type: type });
-                }
-                return entry[0];
-            }
-            let type;
-            function checkData(data) {
-                if (data._$uuid != null) {
-                    data._$uuid = addInnerUrl(data._$uuid, Loader.assetTypeToLoadType[data._$type]);
-                    return;
-                }
-                if (data._$prefab != null)
-                    data._$prefab = addInnerUrl(data._$prefab, Loader.HIERARCHY);
-                else if ((type = data._$type) != null) {
-                    if (type.endsWith(".bp"))
-                        addInnerUrl(type, null, true);
-                    else if (LayaEnv.isPreview && Utils.isUUID(type)) {
-                        let cls = ClassUtils.getClass(type);
-                        if (cls == null || cls._$loadable)
-                            addInnerUrl("res://" + type, null);
-                    }
-                }
-                check(data);
-            }
-            function check(data) {
-                for (let key in data) {
-                    let child = data[key];
-                    if (child == null)
-                        continue;
-                    if (Array.isArray(child)) {
-                        for (let item of child) {
-                            if (item == null)
-                                continue;
-                            if (typeof (item) === "object") {
-                                checkData(item);
-                            }
-                            else if (typeof (item) === "string" && item.startsWith("i18n:")) {
-                                let i = item.indexOf(":", 5);
-                                if (i != -1)
-                                    addInnerUrl(AssetDb.inst.getI18nSettingsURL(item.substring(5, i)), null);
-                            }
-                        }
-                    }
-                    else if (typeof (child) === "object") {
-                        checkData(child);
-                    }
-                    else if (typeof (child) === "string" && child.startsWith("i18n:")) {
-                        let i = child.indexOf(":", 5);
-                        if (i != -1)
-                            addInnerUrl(AssetDb.inst.getI18nSettingsURL(child.substring(5, i)), null);
-                    }
-                }
-            }
-            check(data);
-            if (data._$preloads) {
-                let types = data._$preloadTypes;
-                let pi = 0;
-                for (let url of data._$preloads) {
-                    if (types && types[pi])
-                        addInnerUrl(url, Loader.assetTypeToLoadType[types[pi]]);
-                    else
-                        innerUrls.push(url);
-                    pi++;
-                }
-            }
-            return innerUrls;
-        }
-    }
-
-    class PrefabImpl extends Prefab {
-        constructor(api, data) {
-            super();
-            this.api = api || PrefabImpl.v3;
-            this.data = data;
-        }
-        create(options, errors) {
-            let runtime = ClassUtils.getRuntime(this.url);
-            if (runtime) {
-                if (!options)
-                    options = { runtime };
-                else if (!options.runtime)
-                    options = Object.assign({ runtime }, options);
-            }
-            let ret = this.api.parse(this.data, options, errors);
-            if (Array.isArray(ret)) {
-                if (ret.length == 1) {
-                    ret[0].url = this.url;
-                }
-                return ret[0];
-            }
-            else {
-                ret.url = this.url;
-                return ret;
-            }
-        }
-    }
-    PrefabImpl.v3 = HierarchyParser;
-    PrefabImpl.v2 = null;
 
     class HierarchyLoader {
         load(task) {
@@ -32575,6 +34093,8 @@ window.Laya = (function (exports) {
         "TextureCube": exports.ShaderDataType.TextureCube,
         "Texture2DArray": exports.ShaderDataType.Texture2DArray,
         "Texture3D": exports.ShaderDataType.Texture3D,
+        "StorageTexture2D": exports.ShaderDataType.StorageTexture2D,
+        "StorageBuffer": exports.ShaderDataType.DeviceBuffer,
     };
     class ShaderParser {
         static parse(data, basePath) {
@@ -32820,6 +34340,193 @@ window.Laya = (function (exports) {
         }
     }
     Loader.registerLoader(["glsl", "vs", "fs"], GLSLLoader);
+
+    class ComputeShader {
+        static createComputeShader(name, code, other) {
+            if (!ComputeShader._CompileShader[name]) {
+                return new ComputeShader(name, ShaderCompile.compileCompute(code), other);
+            }
+            else
+                return ComputeShader._CompileShader[name];
+        }
+        constructor(name, node, uniformMaps) {
+            this._cacheSharders = {};
+            this._cacheShaderHierarchy = 1;
+            this.name = name;
+            this.node = node.node;
+            this.uniformMaps = uniformMaps.slice();
+        }
+        setCacheShader(compileDefine, shader) {
+            var cacheShaders = this._cacheSharders;
+            var mask = compileDefine._mask;
+            var endIndex = compileDefine._length - 1;
+            var maxEndIndex = this._cacheShaderHierarchy - 1;
+            for (var i = 0; i < maxEndIndex; i++) {
+                var subMask = endIndex < i ? 0 : mask[i];
+                var subCacheShaders = cacheShaders[subMask];
+                (subCacheShaders) || (cacheShaders[subMask] = subCacheShaders = {});
+                cacheShaders = subCacheShaders;
+            }
+            var cacheKey = endIndex < maxEndIndex ? 0 : mask[maxEndIndex];
+            cacheShaders[cacheKey] = shader;
+        }
+        getCacheShader(compileDefine) {
+            var cacheShaders = this._cacheSharders;
+            var maskLength = compileDefine._length;
+            if (maskLength > this._cacheShaderHierarchy) {
+                this._resizeCacheShaderMap(cacheShaders, 0, maskLength);
+                this._cacheShaderHierarchy = maskLength;
+            }
+            var mask = compileDefine._mask;
+            var endIndex = compileDefine._length - 1;
+            var maxEndIndex = this._cacheShaderHierarchy - 1;
+            for (var i = 0; i < maxEndIndex; i++) {
+                var subMask = endIndex < i ? 0 : mask[i];
+                var subCacheShaders = cacheShaders[subMask];
+                (subCacheShaders) || (cacheShaders[subMask] = subCacheShaders = {});
+                cacheShaders = subCacheShaders;
+            }
+            var cacheKey = endIndex < maxEndIndex ? 0 : mask[maxEndIndex];
+            var shader = cacheShaders[cacheKey];
+            if (!shader) {
+                shader = LayaGL.renderDeviceFactory.createComputeShader({
+                    name: this.name,
+                    node: this.node,
+                    uniformMaps: this.uniformMaps,
+                    defineData: compileDefine
+                });
+                this.setCacheShader(compileDefine, shader);
+            }
+            return shader;
+        }
+        _resizeCacheShaderMap(cacheMap, hierarchy, resizeLength) {
+            var end = this._cacheShaderHierarchy - 1;
+            if (hierarchy == end) {
+                for (var k in cacheMap) {
+                    var shader = cacheMap[k];
+                    for (var i = 0, n = resizeLength - end; i < n; i++) {
+                        if (i === n - 1)
+                            cacheMap[0] = shader;
+                        else
+                            cacheMap = cacheMap[i == 0 ? k : 0] = {};
+                    }
+                }
+            }
+            else {
+                ++hierarchy;
+                for (var k in cacheMap)
+                    this._resizeCacheShaderMap(cacheMap[k], hierarchy, resizeLength);
+            }
+        }
+    }
+    ComputeShader._CompileShader = {};
+
+    class ComputeShaderParser {
+        static parse(data, basePath) {
+            let obj = ShaderParser.getShaderBlock(data);
+            let glslMap = ShaderParser.getCGBlock(data);
+            if (obj.code) {
+                obj.code = glslMap[obj.code];
+            }
+            if (obj.uniformMaps) {
+                let uniformMaps = obj.uniformMaps;
+                let defaultMap = {};
+                obj.defaultValue = defaultMap;
+                let newUniformMaps = [];
+                obj.uniformMaps = newUniformMaps;
+                uniformMaps.forEach((uniformMap, index) => {
+                    let newUniformMap = {};
+                    newUniformMaps[index] = newUniformMap;
+                    for (let k in uniformMap) {
+                        let entry = uniformMap[k];
+                        if (entry.serializable === false) {
+                            continue;
+                        }
+                        let dataType = ShaderParser.getShaderDataType(entry.type);
+                        if (dataType == null) {
+                            console.warn(`${obj.name}: unkown uniform type '${entry.type}'`);
+                            continue;
+                        }
+                        if (entry.default != null) {
+                            defaultMap[k] = ShaderParser.getDefaultData(dataType, entry.default);
+                        }
+                        newUniformMap[k] = {
+                            type: dataType,
+                        };
+                        if (dataType == exports.ShaderDataType.StorageTexture2D) {
+                            let format = entry.format ? entry.format : "rgba8";
+                            let access = entry.access ? entry.access : "writeonly";
+                            newUniformMap[k].format = format;
+                            newUniformMap[k].access = access;
+                        }
+                        else if (dataType == exports.ShaderDataType.DeviceBuffer) {
+                            let access = entry.access ? entry.access : "readwrite";
+                            if (access == "readonly") {
+                                newUniformMap[k].type = exports.ShaderDataType.ReadOnlyDeviceBuffer;
+                            }
+                            newUniformMap[k].access = access;
+                        }
+                    }
+                });
+            }
+            if (!obj.name || !obj.code) {
+                return null;
+            }
+            return ShaderCompile.compileComputeAsync(obj.code, basePath).then(compileObjs => {
+                let shaderName = obj.name;
+                let uniformsArray = obj.uniformMaps;
+                let uniformMaps = [];
+                uniformsArray.forEach((uniforms, index) => {
+                    let uniformMap = LayaGL.renderDeviceFactory.createGlobalUniformMap(`${shaderName}_u${index}`);
+                    uniformMaps.push(uniformMap);
+                    for (let k in uniforms) {
+                        let uniformName = k;
+                        let arrayLength = getArrayLength(uniformName);
+                        if (arrayLength > 0) {
+                            uniformName = k.substring(0, k.lastIndexOf('['));
+                        }
+                        let propertyID = Shader3D.propertyNameToID(uniformName);
+                        let shaderDataType = uniforms[k];
+                        if (arrayLength > 0) {
+                            uniformMap.addShaderUniformArray(propertyID, uniformName, shaderDataType.type, arrayLength);
+                        }
+                        else {
+                            uniformMap.addShaderUniform(propertyID, k, shaderDataType.type, { format: shaderDataType.format, access: shaderDataType.access });
+                        }
+                    }
+                });
+                compileObjs.node;
+                compileObjs.defs;
+                let computeShader = new ComputeShader(shaderName, compileObjs, uniformMaps);
+                return computeShader;
+            });
+        }
+    }
+    function getArrayLength(name) {
+        let endPos = name.lastIndexOf(']');
+        let startPos = name.lastIndexOf('[');
+        if (startPos != -1 && endPos == name.length - 1) {
+            let arrayLengthStr = name.slice(startPos + 1, endPos);
+            let arrayLength = parseInt(arrayLengthStr);
+            if (!isNaN(arrayLength) && arrayLength > 0) {
+                return arrayLength;
+            }
+        }
+        return 0;
+    }
+
+    class ComputeShaderLoader {
+        load(task) {
+            let url = task.url;
+            return task.loader.fetch(url, "text", task.progress.createCallback(), task.options).then(data => {
+                if (!data) {
+                    return null;
+                }
+                return ComputeShaderParser.parse(data, URL.getPath(task.url));
+            });
+        }
+    }
+    Loader.registerLoader(["computeshader"], ComputeShaderLoader, "COMPUTESHADER");
 
     class WebAudioLoader {
         load(task) {
@@ -33288,6 +34995,7 @@ window.Laya = (function (exports) {
             this._initShaderData();
             this._globalRenderData = LayaGL.render2DRenderPassFactory.create2DGlobalRenderDataHandle();
             this._globalRenderData.globalShaderData = this._globalShaderData = LayaGL.renderDeviceFactory.createShaderData(null);
+            this._globalShaderData.addDefine(Scene2DSpecialManager.SPRITE2DGLOBAL);
             this._globalRenderData.renderLayerMask = -1;
             this._struct.globalRenderData = this._globalRenderData;
         }
@@ -33510,6 +35218,152 @@ window.Laya = (function (exports) {
         }
     }
 
+    class AnimatorClip2D extends Animator2DBase {
+        constructor() {
+            super();
+            this._clip = null;
+            this._playStateInfo = new AnimatorPlayState2D();
+            this._clipState = new AnimatorState2D();
+            this._defaultWeight = 1;
+            this._additive = false;
+            this._autoPlay = true;
+            this._clipState.name = "ClipState";
+            this._clipState.clipStart = 0;
+            this._clipState.clipEnd = 1;
+            this._playStateInfo._currentState = this._clipState;
+        }
+        get clip() {
+            return this._clip;
+        }
+        set clip(value) {
+            if (this._clip === value)
+                return;
+            if (this._clip) {
+                this._clip._removeReference(1);
+                this._clipState.clip = null;
+            }
+            this._clip = value;
+            if (value) {
+                value._addReference(1);
+                this._clipState.clip = value;
+                const clipDuration = value._duration * (this._clipState.clipEnd - this._clipState.clipStart);
+                this._playStateInfo._resetPlayState(0, clipDuration);
+            }
+        }
+        get defaultWeight() {
+            return this._defaultWeight;
+        }
+        set defaultWeight(v) {
+            this._defaultWeight = v;
+        }
+        get additive() {
+            return this._additive;
+        }
+        set additive(v) {
+            this._additive = v;
+        }
+        get autoPlay() {
+            return this._autoPlay;
+        }
+        set autoPlay(v) {
+            this._autoPlay = v;
+        }
+        get loop() {
+            return this._clipState.loop;
+        }
+        set loop(v) {
+            this._clipState.loop = v;
+        }
+        get yoyo() {
+            return this._clipState.yoyo;
+        }
+        set yoyo(v) {
+            this._clipState.yoyo = v;
+        }
+        play(normalizedTime) {
+            if (!this._clip)
+                return;
+            const clipDuration = this._clip._duration;
+            const calclipduration = clipDuration * (this._clipState.clipEnd - this._clipState.clipStart);
+            this._updateDefVal();
+            const startTime = normalizedTime != null ? clipDuration * normalizedTime : 0;
+            this._playStateInfo._resetPlayState(startTime, calclipduration);
+            if (normalizedTime != null) {
+                this._playStateInfo._normalizedPlayTime = normalizedTime;
+            }
+            this._isPlaying = true;
+            this._clipState._eventStart(this, 0);
+        }
+        stop() {
+            this._isPlaying = false;
+        }
+        gotoAndStop(normalizedTime) {
+            if (!this._clip)
+                return;
+            const clipDuration = this._clip._duration;
+            const calclipduration = clipDuration * (this._clipState.clipEnd - this._clipState.clipStart);
+            this._updateDefVal();
+            this._playStateInfo._resetPlayState(clipDuration * normalizedTime, calclipduration);
+            this._playStateInfo._normalizedPlayTime = normalizedTime;
+            this._isPlaying = false;
+            this._updateClipDatas(this._clipState, this._additive, this._playStateInfo);
+            this._setClipDatasToNode(this._clipState, this._additive, this._defaultWeight);
+        }
+        gotoAndStopByFrame(frame) {
+            if (!this._clip)
+                return;
+            const allFrame = this._clip._duration * this._clip._frameRate;
+            let normalizedTime = frame / allFrame;
+            if (normalizedTime > 1)
+                normalizedTime = 1;
+            this.gotoAndStop(normalizedTime);
+        }
+        onEnable() {
+            if (this._autoPlay && this._clip) {
+                this.play();
+            }
+        }
+        onUpdate() {
+            if (!this._isPlaying || !this._clip)
+                return;
+            const delta = this.owner.timer.delta / 1000.0;
+            const appliedDelta = this._applyUpdateMode(delta);
+            if (this.speed === 0 || appliedDelta === 0)
+                return;
+            const animatorState = this._clipState;
+            const playStateInfo = this._playStateInfo;
+            const speed = this.speed * animatorState.speed;
+            const finish = playStateInfo._finish;
+            let loop = animatorState.loop;
+            if (loop <= -1) {
+                if (this._clip.islooping)
+                    loop = 0;
+                else
+                    loop = 1;
+            }
+            const dir = playStateInfo._frontPlay ? 1 : -1;
+            const elapsed = appliedDelta * speed * dir;
+            if (finish) {
+                this._updateStateFinish(animatorState, playStateInfo);
+            }
+            else {
+                this._updatePlayerTime(animatorState, playStateInfo, elapsed, loop);
+            }
+            this._updateClipDatas(animatorState, this._additive, playStateInfo);
+            if (!finish) {
+                this._setClipDatasToNode(animatorState, this._additive, this._defaultWeight);
+                this._updateEventScript(animatorState, playStateInfo);
+            }
+            this._updateStateFinish(animatorState, playStateInfo);
+        }
+        onDestroy() {
+            this.clip = null;
+            this._playStateInfo._currentState = null;
+            this._clipState.destroy();
+            super.onDestroy();
+        }
+    }
+
     let c = ClassUtils.regClass;
     c("Record", Object);
     c("Node", Node);
@@ -33519,7 +35373,9 @@ window.Laya = (function (exports) {
     c("Input", Input);
     c("Animation", Animation);
     c("SoundNode", SoundNode);
+    c("SoundPlayer", SoundPlayer);
     c("VideoNode", VideoNode);
+    c("VideoPlayer", VideoPlayer);
     c("Area2D", Area2D);
     c("OpenDataContextView", OpenDataContextView);
     c("Scene", Scene);
@@ -33533,6 +35389,7 @@ window.Laya = (function (exports) {
     c("Texture2D", Texture2D);
     c("Prefab", Prefab);
     c("Animator2D", Animator2D);
+    c("AnimatorClip2D", AnimatorClip2D);
     c("AnimatorControllerLayer2D", AnimatorControllerLayer2D);
     c("AnimatorState2D", AnimatorState2D);
     c("AnimationClip2D", AnimationClip2D);
@@ -33630,10 +35487,13 @@ window.Laya = (function (exports) {
     class CommandUniformMap {
         constructor(stateName) {
         }
-        addShaderUniform(propertyID, propertyKey, uniformtype) {
+        addShaderUniform(propertyID, propertyKey, uniformtype, options) {
             throw "need override it";
         }
         addShaderUniformArray(propertyID, propertyName, uniformtype, arrayLength) {
+            throw "need override it";
+        }
+        setDefaultTextureData(key, defaultTex) {
             throw "need override it";
         }
     }
@@ -33650,10 +35510,9 @@ window.Laya = (function (exports) {
         clearCMDs() {
             this._context.clearCMDs();
         }
-        addDispatchCommand(computeshader, kernel, shaderDefine, datas, dispatchParams) {
+        addDispatchCommand(computeshader, shaderDefine, datas, dispatchParams) {
             let cmd = {
                 shader: computeshader.getCacheShader(shaderDefine),
-                Kernel: kernel,
                 shaderData: datas,
                 dispatchParams: dispatchParams.clone()
             };
@@ -33691,86 +35550,6 @@ window.Laya = (function (exports) {
         ;
     }
 
-    class ComputeShader {
-        static createComputeShader(name, code, other) {
-            if (!ComputeShader._CompileShader[name]) {
-                return new ComputeShader(name, code, other);
-            }
-            else
-                return ComputeShader._CompileShader[name];
-        }
-        constructor(name, code, other) {
-            this._cacheSharders = {};
-            this._cacheShaderHierarchy = 1;
-            this.name = name;
-            this.code = code;
-            this.other = other;
-        }
-        setCacheShader(compileDefine, shader) {
-            var cacheShaders = this._cacheSharders;
-            var mask = compileDefine._mask;
-            var endIndex = compileDefine._length - 1;
-            var maxEndIndex = this._cacheShaderHierarchy - 1;
-            for (var i = 0; i < maxEndIndex; i++) {
-                var subMask = endIndex < i ? 0 : mask[i];
-                var subCacheShaders = cacheShaders[subMask];
-                (subCacheShaders) || (cacheShaders[subMask] = subCacheShaders = {});
-                cacheShaders = subCacheShaders;
-            }
-            var cacheKey = endIndex < maxEndIndex ? 0 : mask[maxEndIndex];
-            cacheShaders[cacheKey] = shader;
-        }
-        getCacheShader(compileDefine) {
-            var cacheShaders = this._cacheSharders;
-            var maskLength = compileDefine._length;
-            if (maskLength > this._cacheShaderHierarchy) {
-                this._resizeCacheShaderMap(cacheShaders, 0, maskLength);
-                this._cacheShaderHierarchy = maskLength;
-            }
-            var mask = compileDefine._mask;
-            var endIndex = compileDefine._length - 1;
-            var maxEndIndex = this._cacheShaderHierarchy - 1;
-            for (var i = 0; i < maxEndIndex; i++) {
-                var subMask = endIndex < i ? 0 : mask[i];
-                var subCacheShaders = cacheShaders[subMask];
-                (subCacheShaders) || (cacheShaders[subMask] = subCacheShaders = {});
-                cacheShaders = subCacheShaders;
-            }
-            var cacheKey = endIndex < maxEndIndex ? 0 : mask[maxEndIndex];
-            var shader = cacheShaders[cacheKey];
-            if (!shader) {
-                shader = LayaGL.renderDeviceFactory.createComputeShader({
-                    name: this.name,
-                    code: this.code,
-                    other: this.other,
-                    defineData: compileDefine
-                });
-                this.setCacheShader(compileDefine, shader);
-            }
-            return shader;
-        }
-        _resizeCacheShaderMap(cacheMap, hierarchy, resizeLength) {
-            var end = this._cacheShaderHierarchy - 1;
-            if (hierarchy == end) {
-                for (var k in cacheMap) {
-                    var shader = cacheMap[k];
-                    for (var i = 0, n = resizeLength - end; i < n; i++) {
-                        if (i === n - 1)
-                            cacheMap[0] = shader;
-                        else
-                            cacheMap = cacheMap[i == 0 ? k : 0] = {};
-                    }
-                }
-            }
-            else {
-                ++hierarchy;
-                for (var k in cacheMap)
-                    this._resizeCacheShaderMap(cacheMap[k], hierarchy, resizeLength);
-            }
-        }
-    }
-    ComputeShader._CompileShader = {};
-
     exports.ComputeCommandType = void 0;
     (function (ComputeCommandType) {
         ComputeCommandType[ComputeCommandType["DispatchCompute"] = 0] = "DispatchCompute";
@@ -33804,6 +35583,7 @@ window.Laya = (function (exports) {
         EDeviceBufferUsage[EDeviceBufferUsage["COPY_DST"] = 8] = "COPY_DST";
         EDeviceBufferUsage[EDeviceBufferUsage["STORAGE"] = 16] = "STORAGE";
         EDeviceBufferUsage[EDeviceBufferUsage["INDIRECT"] = 32] = "INDIRECT";
+        EDeviceBufferUsage[EDeviceBufferUsage["VERTEX"] = 64] = "VERTEX";
     })(exports.EDeviceBufferUsage || (exports.EDeviceBufferUsage = {}));
 
     exports.RenderCMDType = void 0;
@@ -34777,7 +36557,7 @@ window.Laya = (function (exports) {
         static glslAttributeString(attributeMap) {
             let res = "";
             for (const key in attributeMap) {
-                let type = getAttributeType(attributeMap[key][1]);
+                let type = GLSLCodeGenerator.getAttributeType(attributeMap[key][1]);
                 if (type != "") {
                     res = `${res}attribute ${type} ${key};\n`;
                 }
@@ -34798,7 +36578,7 @@ window.Laya = (function (exports) {
                     if (uniform.arrayLength > 0) {
                         uniformName = `${uniformName}[${uniform.arrayLength}]`;
                     }
-                    let typeStr = getAttributeType(dataType);
+                    let typeStr = GLSLCodeGenerator.getAttributeType(dataType);
                     if (typeStr != "") {
                         if (supportUniformBlock(dataType)) {
                             blockStr += `${typeStr} ${uniformName};\n`;
@@ -34823,7 +36603,7 @@ window.Laya = (function (exports) {
                     let dataType = uniform.uniformtype;
                     let uniformName = uniform.propertyName;
                     if (uniform.arrayLength > 0) ;
-                    let typeStr = getAttributeType(dataType);
+                    let typeStr = GLSLCodeGenerator.getAttributeType(dataType);
                     if (typeStr != "") {
                         uniformsStr += `uniform ${typeStr} ${uniformName};\n`;
                     }
@@ -34961,46 +36741,67 @@ ${materialUniformGlsl}`;
             let detFS = psVersion + fragmentHead + defineStr + ps.join('\n');
             return { vs: dstVS, fs: detFS };
         }
-    }
-    function getAttributeType(type) {
-        switch (type) {
-            case exports.ShaderDataType.Int:
-                return "int";
-            case exports.ShaderDataType.Bool:
-                return "bool";
-            case exports.ShaderDataType.Float:
-                return "float";
-            case exports.ShaderDataType.Vector2:
-                return "vec2";
-            case exports.ShaderDataType.Vector3:
-                return "vec3";
-            case exports.ShaderDataType.Vector4:
-            case exports.ShaderDataType.Color:
-                return "vec4";
-            case exports.ShaderDataType.Matrix4x4:
-                return "mat4";
-            case exports.ShaderDataType.Matrix3x3:
-                return "mat3";
-            case exports.ShaderDataType.Texture2D:
-                return "sampler2D";
-            case exports.ShaderDataType.TextureCube:
-                return "samplerCube";
-            case exports.ShaderDataType.Texture2DArray:
-                if (LayaGL.renderEngine.getCapable(exports.RenderCapable.Texture3D)) {
-                    return "sampler2DArray";
-                }
-                else {
+        static getAttributeType(type) {
+            switch (type) {
+                case exports.ShaderDataType.Int:
+                    return "int";
+                case exports.ShaderDataType.Bool:
+                    return "bool";
+                case exports.ShaderDataType.Float:
+                    return "float";
+                case exports.ShaderDataType.Vector2:
+                    return "vec2";
+                case exports.ShaderDataType.Vector3:
+                    return "vec3";
+                case exports.ShaderDataType.Vector4:
+                case exports.ShaderDataType.Color:
+                    return "vec4";
+                case exports.ShaderDataType.Matrix4x4:
+                    return "mat4";
+                case exports.ShaderDataType.Matrix3x3:
+                    return "mat3";
+                case exports.ShaderDataType.Texture2D:
+                    return "sampler2D";
+                case exports.ShaderDataType.TextureCube:
+                    return "samplerCube";
+                case exports.ShaderDataType.Texture2DArray:
+                    if (LayaGL.renderEngine.getCapable(exports.RenderCapable.Texture3D)) {
+                        return "sampler2DArray";
+                    }
+                    else {
+                        return "";
+                    }
+                case exports.ShaderDataType.Texture3D:
+                    if (LayaGL.renderEngine.getCapable(exports.RenderCapable.Texture3D)) {
+                        return "sampler3D";
+                    }
+                    else {
+                        return "";
+                    }
+                case exports.ShaderDataType.StorageTexture2D:
+                    if (LayaGL.renderEngine.getCapable(exports.RenderCapable.ComputeShader)) {
+                        return "image2D";
+                    }
+                    else {
+                        return "";
+                    }
+                case exports.ShaderDataType.DeviceBuffer:
+                    if (LayaGL.renderEngine.getCapable(exports.RenderCapable.StorageBuffer)) {
+                        return "buffer";
+                    }
+                    else {
+                        return "";
+                    }
+                case exports.ShaderDataType.ReadOnlyDeviceBuffer:
+                    if (LayaGL.renderEngine.getCapable(exports.RenderCapable.StorageBuffer)) {
+                        return "buffer";
+                    }
+                    else {
+                        return "";
+                    }
+                default:
                     return "";
-                }
-            case exports.ShaderDataType.Texture3D:
-                if (LayaGL.renderEngine.getCapable(exports.RenderCapable.Texture3D)) {
-                    return "sampler3D";
-                }
-                else {
-                    return "";
-                }
-            default:
-                return "";
+            }
         }
     }
     function supportUniformBlock(type) {
@@ -36591,6 +38392,1514 @@ ${materialUniformGlsl}`;
     }
     ClassUtils.regClass("GlowFilter", GlowFilter);
 
+    class AutoTextureConfig {
+    }
+    AutoTextureConfig.enableAutoDynamicAtlas = false;
+    AutoTextureConfig.limitDynamicAtlasSize = 1024;
+
+    var TexMergeVS = "#define SHADER_NAME TexMergeVS\nvarying vec2 v_Texcoord0;void main(){gl_Position=vec4(u_OffsetScale.x*2.0-1.0+(a_PositionTexcoord.x+1.0)*u_OffsetScale.z,(1.0-((u_OffsetScale.y*2.0-1.0+(-a_PositionTexcoord.y+1.0)*u_OffsetScale.w)+1.0)/2.0)*2.0-1.0,0.0,1.0);v_Texcoord0=a_PositionTexcoord.zw;\n#ifdef INVERTY\ngl_Position.y=-gl_Position.y;\n#endif\n}";
+
+    var TexMergeFS = "#define SHADER_NAME TexMergeFS\n#include \"Color.glsl\";\nvarying vec2 v_Texcoord0;void main(){vec4 color=texture2D(u_MainTex,v_Texcoord0);\n#ifdef LINEAR_TO_GAMMA\ncolor.rgb=linearToGamma(color.rgb);\n#endif\n#ifdef GAMMA_TO_LINEAR\ncolor.rgb=gammaToLinear(color.rgb);\n#endif\ngl_FragColor=color;}";
+
+    class TextureMergeShaderInit {
+        static init() {
+            const attributeMap = {
+                "a_PositionTexcoord": [VertexMesh.MESH_POSITION0, exports.ShaderDataType.Vector4]
+            };
+            const uniformMap = {
+                "u_MainTex": exports.ShaderDataType.Texture2D,
+                "u_OffsetScale": exports.ShaderDataType.Vector4,
+            };
+            this.LINEAR_TO_GAMMA = Shader3D.getDefineByName("LINEAR_TO_GAMMA");
+            this.GAMMA_TO_LINEAR = Shader3D.getDefineByName("GAMMA_TO_LINEAR");
+            this._sdNotChange = LayaGL.renderDeviceFactory.createShaderData(null);
+            this._sdGammaToLinear = LayaGL.renderDeviceFactory.createShaderData(null);
+            this._sdGammaToLinear.addDefine(this.GAMMA_TO_LINEAR);
+            this._sdLinearToGamma = LayaGL.renderDeviceFactory.createShaderData(null);
+            this._sdLinearToGamma.addDefine(this.LINEAR_TO_GAMMA);
+            const shader = Shader3D.add("TexMerge");
+            const subShader = new SubShader(attributeMap, uniformMap);
+            shader.addSubShader(subShader);
+            const blitPass = subShader.addShaderPass(TexMergeVS, TexMergeFS);
+            const blitState = blitPass.renderState;
+            blitState.depthTest = RenderState.DEPTHTEST_ALWAYS;
+            blitState.depthWrite = false;
+            blitState.cull = RenderState.CULL_NONE;
+            blitState.blend = RenderState.BLEND_DISABLE;
+        }
+    }
+
+    class LargeTex extends RenderTexture {
+        constructor(width, height, format = exports.RenderTargetFormat.R8G8B8A8, depthStencilFormat = null, mipmap = false, limitMipmap = -1, sRGB = true, gammaCorrection = 1.0) {
+            super(width, height, format, depthStencilFormat, mipmap, 1, false, sRGB);
+            this._limitMipmap = -1;
+            this._willDestroyTex = [];
+            this.immediately = false;
+            this.commands = new Set();
+            this._waitMergeIds = new Set();
+            this._limitMipmap = limitMipmap;
+            this.anisoLevel = 1;
+            if (this._limitMipmap >= 0) {
+                if (this.mipmapCount > this._limitMipmap)
+                    this._setMaxMipmapLevel(this._limitMipmap);
+            }
+            this._shader = Shader3D.find("TexMerge");
+            if (Config.useTextureArray) {
+                const alloc = TextureArrayRegistry2D.allocateLayerAsTexture(width, height, exports.TextureFormat.R8G8B8A8, 64, sRGB);
+                const tc = LayaGL.textureContext;
+                if (alloc && tc) {
+                    this._disposeResource();
+                    const internalArrayTex = alloc.array._texture;
+                    this._renderTarget = tc.createRenderTargetFromArrayLayer(internalArrayTex, alloc.layer, format, depthStencilFormat, sRGB);
+                    this._texture = this._renderTarget._textures[0];
+                    TextureArrayRegistry2D.register(this, alloc.array, alloc.layer);
+                }
+            }
+            this._texture.gammaCorrection = gammaCorrection;
+        }
+        onUpdate(force = false) {
+            if (!this.cmdBuffer || !this.commands.size)
+                return null;
+            let values = this.commands.values();
+            let cmd = values.next().value;
+            let ids = [];
+            while (cmd && (force || Laya.stage.getTimeFromFrameStart() < 30)) {
+                this.cmdBuffer.addCacheCommand(cmd);
+                this.cmdBuffer.applyOne(true);
+                this.commands.delete(cmd);
+                this._waitMergeIds.delete(cmd.source.id);
+                ids.push(cmd.source.id);
+                cmd = values.next().value;
+            }
+            this.commands.size || this._doDestoryTex();
+            return ids;
+        }
+        hasWaitMerge(id) {
+            return this._waitMergeIds.has(id);
+        }
+        _setMaxMipmapLevel(count) {
+            this.baseMipmapLevel = 0;
+            this.maxMipmapLevel = count;
+        }
+        addTexture(x, y, w, h, expand, smallTex, needRemove) {
+            let cmd = null;
+            if (expand > 0)
+                cmd = this._drawTex(x, y, w, h, expand, smallTex);
+            cmd = this._drawTex(x, y, w, h, 0, smallTex);
+            if (needRemove)
+                this._willDestroyTex.push(smallTex);
+            return cmd;
+        }
+        addColor(x, y, w, h, color, format) {
+            let cf;
+            let smallTex;
+            if (format == exports.TextureFormat.R8G8B8) {
+                const r = color.x * 255;
+                const g = color.y * 255;
+                const b = color.z * 255;
+                cf = new Uint8Array(w * h * 3);
+                for (let i = 0; i < h; i++) {
+                    for (let j = 0; j < w; j++) {
+                        let index = i * w * 3 + j * 3;
+                        cf[index] = r;
+                        cf[index + 1] = g;
+                        cf[index + 2] = b;
+                    }
+                }
+            }
+            else if (format == exports.TextureFormat.R8G8B8A8) {
+                const r = color.x * 255;
+                const g = color.y * 255;
+                const b = color.z * 255;
+                const a = color.w * 255;
+                cf = new Uint8Array(w * h * 4);
+                for (let i = 0; i < h; i++) {
+                    for (let j = 0; j < w; j++) {
+                        let index = i * w * 4 + j * 4;
+                        cf[index] = r;
+                        cf[index + 1] = g;
+                        cf[index + 2] = b;
+                        cf[index + 3] = a;
+                    }
+                }
+            }
+            smallTex = this._createSmallTex(w, h, cf);
+            let cmd = this._drawTex(x, y, w, h, 0, smallTex);
+            this._willDestroyTex.push(smallTex);
+            return cmd;
+        }
+        fillColor(color, format) {
+            const x = 0, y = 0, w = 4, h = 4;
+            let cf;
+            let smallTex;
+            if (format == exports.TextureFormat.R8G8B8) {
+                const r = color.x * 255;
+                const g = color.y * 255;
+                const b = color.z * 255;
+                cf = new Uint8Array(w * h * 3);
+                for (let i = 0; i < h; i++) {
+                    for (let j = 0; j < w; j++) {
+                        let index = i * w * 3 + j * 3;
+                        cf[index] = r;
+                        cf[index + 1] = g;
+                        cf[index + 2] = b;
+                    }
+                }
+            }
+            else if (format == exports.TextureFormat.R8G8B8A8) {
+                const r = color.x * 255;
+                const g = color.y * 255;
+                const b = color.z * 255;
+                const a = color.w * 255;
+                cf = new Uint8Array(w * h * 4);
+                for (let i = 0; i < h; i++) {
+                    for (let j = 0; j < w; j++) {
+                        const index = i * w * 4 + j * 4;
+                        cf[index] = r;
+                        cf[index + 1] = g;
+                        cf[index + 2] = b;
+                        cf[index + 3] = a;
+                    }
+                }
+            }
+            smallTex = this._createSmallTex(w, h, cf);
+            this._drawTex(x, y, this.width, this.height, 0, smallTex);
+            this._willDestroyTex.push(smallTex);
+        }
+        destroy() {
+            super.destroy();
+            this.cmdBuffer && this.cmdBuffer.clear();
+            this.cmdBuffer = null;
+            this._doDestoryTex();
+            this._willDestroyTex = null;
+        }
+        _createSmallTex(w, h, pixelArray) {
+            const smallTex = new Texture2D(w, h, this.format, false, false, false);
+            smallTex.setPixelsData(pixelArray, false, false);
+            smallTex.filterMode = exports.FilterMode.Point;
+            return smallTex;
+        }
+        _doDestoryTex() {
+            if (this._willDestroyTex)
+                while (this._willDestroyTex.length)
+                    this._willDestroyTex.pop().destroy();
+        }
+        _drawTex(x, y, w, h, expand, smallTex) {
+            const width = this.width;
+            const height = this.height;
+            const offsetScale = new Vector4();
+            offsetScale.x = Math.max(0, x - expand) / width;
+            if (LayaGL.renderEngine._screenInvertY) {
+                offsetScale.y = Math.max(0, y - expand) / height;
+            }
+            else {
+                offsetScale.y = Math.max(0, height - y - h - expand) / height;
+            }
+            offsetScale.z = (w + expand * 2) / width;
+            offsetScale.w = (h + expand * 2) / height;
+            let sd = TextureMergeShaderInit._sdNotChange;
+            if (this.gammaSpace) {
+                if (smallTex.gammaSpace) {
+                    sd = TextureMergeShaderInit._sdNotChange;
+                }
+                else {
+                    sd = TextureMergeShaderInit._sdLinearToGamma;
+                }
+            }
+            else {
+                if (smallTex.gammaSpace) {
+                    sd = TextureMergeShaderInit._sdGammaToLinear;
+                }
+                else {
+                    sd = TextureMergeShaderInit._sdNotChange;
+                }
+            }
+            let cmd = Blit2DCMD.create(smallTex, this, offsetScale, this._shader, sd);
+            this.commands.add(cmd);
+            if (this.immediately) {
+                this.onUpdate(true);
+            }
+            else {
+                this._waitMergeIds.add(smallTex.id);
+            }
+            return cmd;
+        }
+    }
+
+    class TextureProcessorAdapter {
+        constructor() {
+            this._dynamicAtlas = null;
+            if (AutoTextureConfig.enableAutoDynamicAtlas) {
+                this._dynamicAtlas = new DynamicAtlasManager(undefined, true);
+            }
+        }
+        addTexture(texture) {
+            var _a;
+            if (this.shouldAddToDynamicAtlas(texture)) {
+                (_a = this._dynamicAtlas) === null || _a === void 0 ? void 0 : _a.addTexture(texture);
+            }
+        }
+        shouldAddToDynamicAtlas(texture) {
+            if (!AutoTextureConfig.enableAutoDynamicAtlas) {
+                return false;
+            }
+            const bitmap = texture.bitmap;
+            if (!(bitmap instanceof Texture2D)) {
+                return false;
+            }
+            return bitmap.width < AutoTextureConfig.limitDynamicAtlasSize &&
+                bitmap.height < AutoTextureConfig.limitDynamicAtlasSize;
+        }
+        onUpdate() {
+            var _a;
+            (_a = this._dynamicAtlas) === null || _a === void 0 ? void 0 : _a.onUpdate();
+        }
+        cleanupUnused() {
+            var _a;
+            (_a = this._dynamicAtlas) === null || _a === void 0 ? void 0 : _a.cleanupUnusedTextures();
+        }
+    }
+    class LargeTexProcessor {
+        constructor() {
+            this.mgrs = [];
+        }
+        static addMgr(mgr) {
+            this._instance.addManager(mgr);
+        }
+        static removeMgr(mgr) {
+            this._instance.removeManager(mgr);
+        }
+        static cleanupUnused() {
+            this._instance._textureProcessor.cleanupUnused();
+        }
+        get textureProcessor() {
+            return this._textureProcessor;
+        }
+        setTextureProcessor(processor) {
+            this._textureProcessor = processor;
+        }
+        addManager(mgr) {
+            this.mgrs.push(mgr);
+            if (this.mgrs.length === 1) {
+                Laya.stage.timer.loop(200, this, this.update);
+            }
+        }
+        removeManager(mgr) {
+            this.mgrs.splice(this.mgrs.indexOf(mgr), 1);
+            if (this.mgrs.length === 0) {
+                Laya.stage.timer.clear(this, this.update);
+            }
+        }
+        update(force = false) {
+            if (!force && Laya.stage.getTimeFromFrameStart() > 100)
+                return;
+            const ary = this.mgrs;
+            let n = ary.length;
+            for (let i = 0; i < n; i++) {
+                const o = ary[i];
+                if (!o)
+                    continue;
+                o.onUpdate();
+                if (!force && Laya.stage.getTimeFromFrameStart() > 30)
+                    break;
+            }
+            if (ary.length != n)
+                ary.length = n;
+        }
+    }
+    Laya.addAfterInitCallback(() => {
+        let objectName = LayaGL.renderEngine.objectName ? LayaGL.renderEngine.objectName : '';
+        let isWebGPU = !!objectName.includes('GPU');
+        if (isWebGPU) {
+            AutoTextureConfig.enableAutoDynamicAtlas = true;
+        }
+        TextureMergeShaderInit.init();
+        let processor = LargeTexProcessor._instance = new LargeTexProcessor();
+        let textureProcessor = new TextureProcessorAdapter();
+        processor.setTextureProcessor(textureProcessor);
+        Render2DProcessor.runner._textureProcessor = textureProcessor;
+    });
+
+    class TextureItem {
+        constructor() {
+            this.id = 0;
+            this.x = 0;
+            this.y = 0;
+            this.w = 0;
+            this.h = 0;
+            this.pos = new Vector4();
+            this.largeTextureIndex = 0;
+            this.scale = 1;
+            this.token = false;
+            this.partId = [];
+        }
+        cloneTo(ti) {
+            ti.id = this.id;
+            ti.url = this.url;
+            ti.x = this.x;
+            ti.y = this.y;
+            ti.w = this.w;
+            ti.h = this.h;
+            ti.largeTextureIndex = this.largeTextureIndex;
+            ti.scale = this.scale;
+            ti.token = this.token;
+            this.pos.cloneTo(ti.pos);
+            ti.partId.length = this.partId.length;
+            for (let i = 0; i < this.partId.length; i++)
+                ti.partId[i] = this.partId[i];
+        }
+        isSelf(iu) {
+            return (this.id === iu || this.url === iu);
+        }
+    }
+    class LargeTexBase {
+        constructor(largeTexsize, ltn, tsm = 16, exs = 0, texFormat = exports.RenderTargetFormat.R8G8B8A8) {
+            this.EXTEND_SIZE = 0;
+            this.TEX_SIZE_MIN = 16;
+            this.TEX_SIZE_MAX = 1024;
+            this.mipMap = true;
+            this.texWrap = exports.WrapMode.Clamp;
+            this.texMode = exports.FilterMode.Trilinear;
+            this.texAnisoLevel = 1;
+            this.texFormat = exports.RenderTargetFormat.R8G8B8A8;
+            this.backColor = new Vector4(90, 90, 90, 255);
+            this.LARGE_TEX_W = 2048;
+            this.LARGE_TEX_H = 2048;
+            this.LARGE_TEX_N = 32;
+            this.delay = 30;
+            this.totalCapacity = 0;
+            this.usedCapacity = 0;
+            this.sRGB = false;
+            this.gammaCorrection = 1.0;
+            this.checkDup = true;
+            this.autoExtend = false;
+            this.immediately = false;
+            this._texItems = [];
+            this._texMaps = [];
+            this._tempMaps = [];
+            this.largeTexs = [];
+            this._cmdBuffer = new CommandBuffer2D();
+            this.destroyed = false;
+            this.gpuMemory = 0;
+            this.updateHook = null;
+            if (largeTexsize[0]) {
+                this.LARGE_TEX_W = largeTexsize[0];
+                if (largeTexsize[1])
+                    this.LARGE_TEX_H = largeTexsize[1];
+                else
+                    this.LARGE_TEX_H = largeTexsize[0];
+            }
+            this.EXTEND_SIZE = exs;
+            this.LARGE_TEX_N = ltn;
+            this.TEX_SIZE_MIN = tsm;
+            this.texFormat = texFormat;
+            const nw = this.LARGE_TEX_W / this.TEX_SIZE_MIN | 0;
+            const nh = this.LARGE_TEX_H / this.TEX_SIZE_MIN | 0;
+            this.totalCapacity = nw * nh * ltn;
+            for (let i = 0; i < ltn; i++) {
+                this._texItems[i] = [];
+                this._texMaps[i] = new Array(nw * nh).fill(0);
+            }
+            this._tempMaps = new Array(nw * nh).fill(0);
+        }
+        onUpdate(force = false) {
+            var _a;
+            if (!this.largeTexs)
+                return false;
+            for (let i = 0, len = this.largeTexs.length; i < len; i++) {
+                const o = this.largeTexs[i];
+                if (!o)
+                    continue;
+                let completedIds = o.onUpdate(force);
+                (_a = this.updateHook) === null || _a === void 0 ? void 0 : _a.call(this, i, completedIds);
+                if (!force && ILaya.stage.getTimeFromFrameStart() > this.delay)
+                    break;
+            }
+            return true;
+        }
+        adjustLtn(add = 1) {
+            if (add > 0) {
+                const nw = this.LARGE_TEX_W / this.TEX_SIZE_MIN | 0;
+                const nh = this.LARGE_TEX_H / this.TEX_SIZE_MIN | 0;
+                const ltn = this.LARGE_TEX_N + add;
+                this.totalCapacity = nw * nh * ltn;
+                for (let i = this.LARGE_TEX_N; i < ltn; i++) {
+                    this._texItems[i] = [];
+                    this._texMaps[i] = new Array(nw * nh).fill(0);
+                }
+                this.LARGE_TEX_N += add;
+            }
+        }
+        calculateGpuMemory() {
+            this.gpuMemory = 0;
+            for (let i = this.largeTexs.length - 1; i > -1; i--)
+                this.gpuMemory += this.largeTexs[i]._renderTarget.gpuMemory;
+            return this.gpuMemory;
+        }
+        getLoadUsageRate() {
+            return this.usedCapacity / this.totalCapacity;
+        }
+        fillWithColor(largeTextureIndex, x, y, w, h, r, g, b, a = 255) {
+            if (largeTextureIndex < this.LARGE_TEX_N && this.largeTexs[largeTextureIndex]) {
+                const tex = new Texture2D(1, 1, exports.TextureFormat.R8G8B8A8, false, false);
+                const data = new Uint8Array([r, g, b, a]);
+                tex.setPixelsData(data, false, false);
+                this.largeTexs[largeTextureIndex].addTexture(x, y, w, h, 0, tex, true);
+            }
+        }
+        static calcFitTexSize(tex, scale, tsm, exs, tp) {
+            if (!tex || tex.length == 0)
+                return [0];
+            const size = LargeTexBase._largeTexSize;
+            for (let i = 0, len = size.length; i < len; i++) {
+                if (tp)
+                    tp.length = 0;
+                let sum = 0;
+                let count = 0;
+                const nw = (size[i][0] / tsm) | 0;
+                const nh = (size[i][1] / tsm) | 0;
+                const texMap = new Array(nw * nh).fill(0);
+                for (let j = 0, len = tex.length; j < len; j++) {
+                    const ss = LargeTexBase.calcTexSize(tex[j].width, tex[j].height, scale, tsm, exs);
+                    const sx = ss[2], sy = ss[3];
+                    let find = false;
+                    for (let k = 0; k < nh - sy + 1 && !find; k++) {
+                        for (let l = 0; l < nw - sx + 1 && !find; l++) {
+                            if (texMap[k * nw + l] > 0)
+                                continue;
+                            let fail = false;
+                            for (let m = k; m < k + sy && !fail; m++)
+                                for (let n = l; n < l + sx && !fail; n++)
+                                    if (texMap[m * nw + n] > 0)
+                                        fail = true;
+                            if (!fail) {
+                                for (let m = k; m < k + sy; m++) {
+                                    for (let n = l; n < l + sx; n++) {
+                                        texMap[m * nw + n] = 1;
+                                        count++;
+                                    }
+                                }
+                                sum++;
+                                find = true;
+                                if (tp)
+                                    tp.push([l, k, sx, sy]);
+                            }
+                        }
+                    }
+                    if (!find)
+                        break;
+                }
+                if (sum == tex.length)
+                    return [size[i][0], size[i][1], count * 100 / nw / nh | 0];
+            }
+            return [0];
+        }
+        areTextureMerged(ui, largeTextureIndex = -1) {
+            let result = false;
+            if (largeTextureIndex >= 0) {
+                let ti = this._findTexture(ui, largeTextureIndex);
+                if (ti) {
+                    let lt = this.largeTexs[largeTextureIndex];
+                    return lt.hasWaitMerge(ti.id);
+                }
+            }
+            else {
+                for (let i = 0; i < this.LARGE_TEX_N; i++) {
+                    if (this.areTextureMerged(ui, i)) {
+                        result = true;
+                        break;
+                    }
+                }
+            }
+            return result;
+        }
+        areAllTexturesIncluded(texs) {
+            if (texs) {
+                for (let i = texs.length - 1; i > -1; i--) {
+                    let find = false;
+                    for (let j = 0; j < this.LARGE_TEX_N; j += 2) {
+                        if (this._findTexture(texs[i].id, j)) {
+                            find = true;
+                            break;
+                        }
+                    }
+                    if (!find)
+                        return false;
+                }
+                return true;
+            }
+            return false;
+        }
+        hasEnoughSpace(tex, scale, largeTextureIndex) {
+            if (!tex || tex.length == 0 || this._texMaps.length == 0
+                || largeTextureIndex < 0 || largeTextureIndex >= this.LARGE_TEX_N)
+                return false;
+            const texMap = this._tempMaps;
+            const nw = (this.LARGE_TEX_W / this.TEX_SIZE_MIN) | 0;
+            const nh = (this.LARGE_TEX_H / this.TEX_SIZE_MIN) | 0;
+            for (let j = 0; j < nh; j++)
+                for (let i = 0; i < nw; i++)
+                    texMap[j * nw + i] = this._texMaps[largeTextureIndex][j * nw + i];
+            for (let i = 0, len = tex.length; i < len; i++) {
+                if (!tex[i])
+                    continue;
+                const ti = this._findTexture(tex[i].id, largeTextureIndex);
+                if (ti)
+                    continue;
+                const ss = LargeTexBase.calcTexSize(tex[i].width, tex[i].height, scale, this.TEX_SIZE_MIN, this.EXTEND_SIZE);
+                if (!this._takeRoomInMap(ss[2], ss[3], texMap))
+                    return false;
+            }
+            return true;
+        }
+        findAvailableLargeTextureCode(tex, scale) {
+            for (let i = 0; i < this.LARGE_TEX_N; i++)
+                if (this.hasEnoughSpace(tex, scale, i))
+                    return i;
+            return -1;
+        }
+        addTexturesToLargeTexture(texs, scale, largeTextureIndex, needRemove = false) {
+            const space = this.hasEnoughSpace(texs, scale, largeTextureIndex);
+            if (!space)
+                return false;
+            for (let i = 0, len = texs.length; i < len; i++)
+                this.addTexture(texs[i], scale, largeTextureIndex, null, needRemove);
+            return true;
+        }
+        addTexture(tex, scale = 1, largeTextureIndex = -1, url = null, needRemove = false) {
+            if (!tex)
+                return -1;
+            const w = tex.width * scale | 0;
+            const h = tex.height * scale | 0;
+            if (w > this.LARGE_TEX_W - this.EXTEND_SIZE * 2
+                || h > this.LARGE_TEX_H - this.EXTEND_SIZE * 2) {
+                console.warn("LargeTexManager: the texture is too large1!");
+                return -1;
+            }
+            if (w > this.TEX_SIZE_MAX || h > this.TEX_SIZE_MAX) {
+                console.warn("LargeTexManager: the texture is too large2!");
+                return -1;
+            }
+            const ti = this._addTexture(tex, scale, largeTextureIndex, url, needRemove);
+            if (!ti) {
+                console.warn("LargeTexManager: have not enough room!");
+                return -1;
+            }
+            return ti.largeTextureIndex;
+        }
+        addPlaceholder(url, w, h, scale = 1, largeTextureIndex = -1) {
+            let w1 = w * scale | 0;
+            let h1 = h * scale | 0;
+            if (w1 > this.LARGE_TEX_W - this.EXTEND_SIZE * 2
+                || h1 > this.LARGE_TEX_H - this.EXTEND_SIZE * 2) {
+                console.warn("LargeTexManager: the texture is too large1!");
+                return -1;
+            }
+            if (w1 > this.TEX_SIZE_MAX || h1 > this.TEX_SIZE_MAX) {
+                console.warn("LargeTexManager: the texture is too large2!");
+                return -1;
+            }
+            const ti = this._addPlaceholder(url, w, h, scale, largeTextureIndex);
+            if (!ti) {
+                console.warn("LargeTexManager: have not enough room!");
+                return -1;
+            }
+            return ti.largeTextureIndex;
+        }
+        updateTexture(tex, scale = 1, largeTextureIndex = -1, url, needRemove = false) {
+            if (tex) {
+                const ti = this._updateTexture(tex, scale, largeTextureIndex, url, needRemove);
+                if (!ti) {
+                    console.warn("LargeTexManager: not found texture to update!");
+                    return -1;
+                }
+                return ti.largeTextureIndex;
+            }
+            return -1;
+        }
+        getTexture(iu, largeTextureIndex = -1) {
+            const ti = this._findTexture(iu, largeTextureIndex);
+            if (ti) {
+                const to = {};
+                to.texItem = ti;
+                to.texture = this.largeTexs[ti.largeTextureIndex];
+                to.texCode = ti.largeTextureIndex;
+                return to;
+            }
+            return null;
+        }
+        getTextureByRef(tex, largeTextureIndex = -1) {
+            return this.getTexture(tex.id, largeTextureIndex);
+        }
+        getLargeTex(largeTextureIndex) {
+            return this.largeTexs[largeTextureIndex];
+        }
+        removeTexture(iu, largeTextureIndex = -1) {
+            if (!this._texItems)
+                return;
+            const nw = this.LARGE_TEX_W / this.TEX_SIZE_MIN;
+            let sx = 0, sy = 0, ex = 0, ey = 0;
+            if (largeTextureIndex >= 0) {
+                if (largeTextureIndex < this.LARGE_TEX_N) {
+                    const texItems = this._texItems[largeTextureIndex];
+                    let texMaps = this._texMaps[largeTextureIndex];
+                    for (let i = texItems.length - 1; i > -1; i--) {
+                        if (texItems[i].isSelf(iu)) {
+                            const ti = texItems[i];
+                            const currentLargeTextureIndex = ti.largeTextureIndex;
+                            sx = ti.pos.x;
+                            sy = ti.pos.y;
+                            ex = ti.pos.z + sx;
+                            ey = ti.pos.w + sy;
+                            texMaps = this._texMaps[currentLargeTextureIndex];
+                            for (let j = sy; j < ey; j++)
+                                for (let k = sx; k < ex; k++)
+                                    texMaps[j * nw + k] = 0;
+                            this.fillWithColor(currentLargeTextureIndex, sx * this.TEX_SIZE_MIN, sy * this.TEX_SIZE_MIN, ti.pos.z * this.TEX_SIZE_MIN, ti.pos.w * this.TEX_SIZE_MIN, this.backColor.x, this.backColor.y, this.backColor.z, this.backColor.w);
+                            texItems.splice(i, 1);
+                            this.usedCapacity -= ti.pos.z * ti.pos.w;
+                        }
+                    }
+                }
+            }
+            else {
+                for (let i = 0; i < this.LARGE_TEX_N; i++)
+                    this.removeTexture(iu, i);
+            }
+        }
+        clear() {
+            for (let i = this.largeTexs.length - 1; i > -1; i--)
+                if (this.largeTexs[i])
+                    this.largeTexs[i].destroy();
+            this.largeTexs.length = 0;
+            const nw = this.LARGE_TEX_W / this.TEX_SIZE_MIN | 0;
+            const nh = this.LARGE_TEX_H / this.TEX_SIZE_MIN | 0;
+            for (let i = 0; i < this.LARGE_TEX_N; i++) {
+                this._texItems[i].length = 0;
+                this._texMaps[i] = new Array(nw * nh).fill(0);
+            }
+            this.usedCapacity = 0;
+            this._cmdBuffer.clear();
+        }
+        destroy(keepRes = false) {
+            if (this.destroyed)
+                return;
+            for (let i = 0; i < this.largeTexs.length; i++)
+                if (this.largeTexs[i]) {
+                    if (!keepRes)
+                        this.largeTexs[i].destroy();
+                    else
+                        this.largeTexs[i].lock = false;
+                }
+            this.largeTexs = null;
+            this._texMaps = null;
+            this._texItems = null;
+            this.updateHook = null;
+            this._cmdBuffer.clear();
+            this._cmdBuffer = null;
+            this.destroyed = true;
+        }
+        _findTexture(iu, largeTextureIndex = -1) {
+            if (largeTextureIndex >= 0) {
+                if (largeTextureIndex < this.LARGE_TEX_N) {
+                    const texItems = this._texItems[largeTextureIndex];
+                    const len = texItems.length;
+                    for (let i = 0; i < len; i++)
+                        if (texItems[i].isSelf(iu))
+                            return texItems[i];
+                }
+            }
+            else {
+                for (let j = 0; j < this.LARGE_TEX_N; j++) {
+                    const texItems = this._texItems[j];
+                    const len = texItems.length;
+                    for (let i = 0; i < len; i++)
+                        if (texItems[i].isSelf(iu))
+                            return texItems[i];
+                }
+            }
+            return null;
+        }
+        removeAllTextures() {
+            const nw = this.LARGE_TEX_W / this.TEX_SIZE_MIN;
+            const nh = this.LARGE_TEX_H / this.TEX_SIZE_MIN;
+            for (let i = 0; i < this.LARGE_TEX_N; i++) {
+                for (let j = 0; j < nh; j++)
+                    for (let k = 0; k < nw; k++)
+                        this._texMaps[i][j * nw + k] = 0;
+                this.largeTexs[i] = null;
+                this._texItems[i].length = 0;
+            }
+            this.usedCapacity = 0;
+        }
+        createLargeTex(largeTextureIndex, sRGB, gammaCorrection) {
+            const mipMap = this.mipMap;
+            const texMode = this.texMode;
+            const anisoLevel = this.texAnisoLevel;
+            sRGB = sRGB ? sRGB : this.sRGB;
+            gammaCorrection = gammaCorrection ? gammaCorrection : this.gammaCorrection;
+            if (largeTextureIndex >= 0 && largeTextureIndex < this.LARGE_TEX_N) {
+                if (!this.largeTexs[largeTextureIndex]) {
+                    const lt = new LargeTex(this.LARGE_TEX_W, this.LARGE_TEX_H, this.texFormat, null, mipMap, 4, sRGB, this.gammaCorrection);
+                    lt.lock = true;
+                    lt.filterMode = texMode;
+                    lt.anisoLevel = anisoLevel;
+                    lt.wrapModeU = this.texWrap;
+                    lt.wrapModeV = this.texWrap;
+                    lt.cmdBuffer = this._cmdBuffer;
+                    lt.immediately = this.immediately;
+                    lt.name = this.name;
+                    this.largeTexs[largeTextureIndex] = lt;
+                    if (this.backColor.x > 0 || this.backColor.y > 0 || this.backColor.z > 0 || this.backColor.w > 0)
+                        this.fillWithColor(largeTextureIndex, 0, 0, this.LARGE_TEX_W, this.LARGE_TEX_H, this.backColor.x, this.backColor.y, this.backColor.z, this.backColor.w);
+                }
+            }
+        }
+        static calcTexSize(tw, th, scale, tsm, exs) {
+            const w = (tw * scale) | 0;
+            const h = (th * scale) | 0;
+            let sx = (w + exs * 2) / tsm;
+            let sy = (h + exs * 2) / tsm;
+            if (sx != (sx | 0))
+                sx = (sx | 0) + 1;
+            if (sy != (sy | 0))
+                sy = (sy | 0) + 1;
+            return [w, h, sx, sy];
+        }
+        _addTexture(tex, scale, largeTextureIndex = -1, url = null, needRemove = false) {
+            if (!tex || tex instanceof Texture2D == false)
+                return null;
+            let ti;
+            if (this.checkDup) {
+                ti = this._findTexture(tex.id, largeTextureIndex);
+                if (ti && !ti.token)
+                    return ti;
+            }
+            const nw = this.LARGE_TEX_W / this.TEX_SIZE_MIN | 0;
+            if (ti && ti.token) {
+                ti.token = false;
+                ti.id = tex.id;
+                const x1 = ti.pos.x + ti.pos.z;
+                const y1 = ti.pos.y + ti.pos.w;
+                const tw = ti.w * this.LARGE_TEX_W;
+                const th = ti.h * this.LARGE_TEX_H;
+                for (let j = ti.pos.y; j < y1; j++)
+                    for (let k = ti.pos.x; k < x1; k++)
+                        this._texMaps[ti.largeTextureIndex][j * nw + k] = ti.id;
+                if (!this.largeTexs[ti.largeTextureIndex])
+                    this.createLargeTex(ti.largeTextureIndex);
+                this.largeTexs[ti.largeTextureIndex].addTexture(this.TEX_SIZE_MIN * ti.pos.x + this.EXTEND_SIZE, this.TEX_SIZE_MIN * ti.pos.y + this.EXTEND_SIZE, tw, th, this.EXTEND_SIZE, tex, needRemove);
+                return ti;
+            }
+            else {
+                const ss = LargeTexBase.calcTexSize(tex.width, tex.height, scale, this.TEX_SIZE_MIN, this.EXTEND_SIZE);
+                let room = this._findRoom(ss[2], ss[3], largeTextureIndex);
+                if (room[0] < 0 && this.autoExtend) {
+                    this.adjustLtn();
+                    room = this._findRoom(ss[2], ss[3], largeTextureIndex);
+                }
+                if (room[0] >= 0) {
+                    const ti = new TextureItem();
+                    ti.id = tex.id;
+                    ti.largeTextureIndex = room[0];
+                    ti.x = (room[2] * this.TEX_SIZE_MIN + this.EXTEND_SIZE) / this.LARGE_TEX_W;
+                    ti.y = (room[1] * this.TEX_SIZE_MIN + this.EXTEND_SIZE) / this.LARGE_TEX_H;
+                    ti.w = ss[0] / this.LARGE_TEX_W;
+                    ti.h = ss[1] / this.LARGE_TEX_H;
+                    ti.pos.x = room[2];
+                    ti.pos.y = room[1];
+                    ti.pos.z = ss[2];
+                    ti.pos.w = ss[3];
+                    ti.scale = scale;
+                    if (url)
+                        ti.url = url;
+                    else
+                        ti.url = tex.url;
+                    this._addToTextureItem(ti);
+                    this.usedCapacity += ss[2] * ss[3];
+                    const x1 = room[2] + ss[2];
+                    const y1 = room[1] + ss[3];
+                    for (let j = room[1]; j < y1; j++)
+                        for (let k = room[2]; k < x1; k++)
+                            this._texMaps[ti.largeTextureIndex][j * nw + k] = ti.id;
+                    if (!this.largeTexs[ti.largeTextureIndex])
+                        this.createLargeTex(ti.largeTextureIndex);
+                    this.largeTexs[ti.largeTextureIndex].addTexture(this.TEX_SIZE_MIN * room[2] + this.EXTEND_SIZE, this.TEX_SIZE_MIN * room[1] + this.EXTEND_SIZE, ss[0], ss[1], this.EXTEND_SIZE, tex, needRemove);
+                    return ti;
+                }
+            }
+            return null;
+        }
+        _addPlaceholder(url, w, h, scale = 1, largeTextureIndex = -1) {
+            const ti = this._findTexture(url, largeTextureIndex);
+            if (ti)
+                return ti;
+            const ss = LargeTexBase.calcTexSize(w, h, scale, this.TEX_SIZE_MIN, this.EXTEND_SIZE);
+            let room = this._findRoom(ss[2], ss[3], largeTextureIndex);
+            if (room[0] < 0 && this.autoExtend) {
+                this.adjustLtn();
+                room = this._findRoom(ss[2], ss[3], largeTextureIndex);
+            }
+            if (room[0] >= 0) {
+                const ti = new TextureItem();
+                ti.largeTextureIndex = room[0];
+                ti.x = (room[2] * this.TEX_SIZE_MIN + this.EXTEND_SIZE) / this.LARGE_TEX_W;
+                ti.y = (room[1] * this.TEX_SIZE_MIN + this.EXTEND_SIZE) / this.LARGE_TEX_H;
+                ti.w = ss[0] / this.LARGE_TEX_W;
+                ti.h = ss[1] / this.LARGE_TEX_H;
+                ti.pos.x = room[2];
+                ti.pos.y = room[1];
+                ti.pos.z = ss[2];
+                ti.pos.w = ss[3];
+                ti.scale = scale;
+                ti.token = true;
+                if (url)
+                    ti.url = url;
+                this._addToTextureItem(ti);
+                this.usedCapacity += ss[2] * ss[3];
+                const nw = this.LARGE_TEX_W / this.TEX_SIZE_MIN | 0;
+                const largeTextureIndex = ti.largeTextureIndex;
+                const x1 = room[2] + ss[2];
+                const y1 = room[1] + ss[3];
+                for (let j = room[1]; j < y1; j++)
+                    for (let k = room[2]; k < x1; k++)
+                        this._texMaps[largeTextureIndex][j * nw + k] = 0x7fffffff;
+                return ti;
+            }
+            return null;
+        }
+        _updateTexture(tex, scale, largeTextureIndex = -1, url = null, needRemove = false) {
+            if (!tex)
+                return null;
+            const ti = this._findTexture(tex.id, largeTextureIndex);
+            if (!ti || ti.scale != scale)
+                return null;
+            const w = tex.width;
+            const h = tex.height;
+            const ss = LargeTexBase.calcTexSize(w, h, scale, this.TEX_SIZE_MIN, this.EXTEND_SIZE);
+            if (ti.pos.z != ss[2] || ti.pos.w != ss[3])
+                return null;
+            const nw = this.LARGE_TEX_W / this.TEX_SIZE_MIN | 0;
+            if (ti.token) {
+                ti.token = false;
+                ti.id = tex.id;
+                const x1 = ti.pos.x + ti.pos.z;
+                const y1 = ti.pos.y + ti.pos.w;
+                const tw = ti.w * this.LARGE_TEX_W;
+                const th = ti.h * this.LARGE_TEX_H;
+                for (let j = ti.pos.y; j < y1; j++)
+                    for (let k = ti.pos.x; k < x1; k++)
+                        this._texMaps[ti.largeTextureIndex][j * nw + k] = ti.id;
+                if (!this.largeTexs[ti.largeTextureIndex])
+                    this.createLargeTex(ti.largeTextureIndex);
+                this.largeTexs[ti.largeTextureIndex].addTexture(this.TEX_SIZE_MIN * ti.pos.x + this.EXTEND_SIZE, this.TEX_SIZE_MIN * ti.pos.y + this.EXTEND_SIZE, tw, th, this.EXTEND_SIZE, tex, needRemove);
+                return ti;
+            }
+            else {
+                ti.id = tex.id;
+                if (url)
+                    ti.url = url;
+                if (!this.largeTexs[ti.largeTextureIndex])
+                    this.createLargeTex(ti.largeTextureIndex);
+                this.largeTexs[ti.largeTextureIndex].addTexture(this.TEX_SIZE_MIN * ti.pos.x + this.EXTEND_SIZE, this.TEX_SIZE_MIN * ti.pos.y + this.EXTEND_SIZE, ss[0], ss[1], this.EXTEND_SIZE, tex, needRemove);
+                return ti;
+            }
+        }
+        _takeRoomInMap(x, y, texMap) {
+            const nw = this.LARGE_TEX_W / this.TEX_SIZE_MIN | 0;
+            const room = this._peekRoomInMap(x, y, texMap);
+            if (room[0] < 0)
+                return false;
+            const i0 = room[1];
+            const j0 = room[0];
+            const i1 = x + room[1];
+            const j1 = y + room[0];
+            for (let j = j0; j < j1; j++)
+                for (let i = i0; i < i1; i++)
+                    texMap[j * nw + i] = 0x7fffffff;
+            return true;
+        }
+        _peekRoomInMap(x, y, texMap) {
+            const nw = this.LARGE_TEX_W / this.TEX_SIZE_MIN | 0;
+            const nh = this.LARGE_TEX_H / this.TEX_SIZE_MIN | 0;
+            for (let j = 0; j < nh - y + 1; j++) {
+                for (let i = 0; i < nw - x + 1; i++) {
+                    let fail = false;
+                    if (texMap[j * nw + i] > 0)
+                        fail = true;
+                    if (fail)
+                        continue;
+                    for (let m = j; m < j + y && !fail; m++) {
+                        for (let l = i; l < i + x && !fail; l++) {
+                            if (texMap[m * nw + l] > 0)
+                                fail = true;
+                        }
+                    }
+                    if (!fail)
+                        return [j, i];
+                }
+            }
+            return [-1, -1];
+        }
+        _findRoom(x, y, largeTextureIndex = -1) {
+            if (largeTextureIndex >= 0) {
+                if (largeTextureIndex < this.LARGE_TEX_N) {
+                    const room = this._peekRoomInMap(x, y, this._texMaps[largeTextureIndex]);
+                    return [largeTextureIndex, room[0], room[1]];
+                }
+                return [-1, -1, -1];
+            }
+            for (let i = 0; i < this.LARGE_TEX_N; i++) {
+                const room = this._peekRoomInMap(x, y, this._texMaps[i]);
+                if (room[0] >= 0)
+                    return [i, room[0], room[1]];
+            }
+            return [-1, -1, -1];
+        }
+        _addToTextureItem(ti, sort = false) {
+            const texItems = this._texItems[ti.largeTextureIndex];
+            if (sort) {
+                const len = texItems.length;
+                for (let i = 0; i < len; i++) {
+                    if (ti.w * ti.h > texItems[i].w * texItems[i].h) {
+                        texItems.splice(i, 0, ti);
+                        return;
+                    }
+                }
+            }
+            texItems.push(ti);
+        }
+    }
+    LargeTexBase._largeTexSize = [
+        [8, 8],
+        [16, 8],
+        [8, 16],
+        [16, 16],
+        [32, 16],
+        [16, 32],
+        [32, 32],
+        [64, 32],
+        [32, 64],
+        [64, 64],
+        [128, 64],
+        [64, 128],
+        [128, 128],
+        [256, 128],
+        [128, 256],
+        [256, 256],
+        [512, 256],
+        [256, 512],
+        [512, 512],
+        [1024, 512],
+        [512, 1024],
+        [1024, 1024],
+        [2048, 1024],
+        [1024, 2048],
+        [2048, 2048],
+    ];
+    class LargeTexManager extends LargeTexBase {
+        constructor(lts, ltn, tsm = 16, exs = 0, texFormat = exports.RenderTargetFormat.R8G8B8A8) {
+            super(lts, ltn, tsm, exs, texFormat);
+            this.COLOR_ITEM_SIZE = 4;
+            this._curColor = [];
+            this._curColorUV = new Vector2();
+            this._curColorMap = [];
+            this._largeTexCode = 0;
+            this._reserve = false;
+            this.active = true;
+            LargeTexProcessor.addMgr(this);
+            for (let i = 0; i < this.LARGE_TEX_N; i++) {
+                this._curColor[i] = new Vector3(0, 0, -1);
+                this._curColorMap[i] = [];
+            }
+        }
+        addDummySideTexture(largeTextureIndex = -1) {
+            this.addTexture(Texture2D.blackTexture, 64, largeTextureIndex, null, true);
+        }
+        addColor(color, largeTextureIndex = -1) {
+            return this._addColor(color.x, color.y, color.z, color.w, largeTextureIndex);
+        }
+        getColor(color, uv, largeTextureIndex = -1) {
+            let i = this._largeTexCode;
+            if (largeTextureIndex && largeTextureIndex >= 0 && largeTextureIndex < this.LARGE_TEX_N)
+                i = largeTextureIndex;
+            const ci = this._findColor(color.x, color.y, color.z, color.w, i);
+            if (ci) {
+                if (uv) {
+                    uv.x = ci.u;
+                    uv.y = ci.v;
+                    uv.z = 1 / this.LARGE_TEX_W;
+                    uv.w = 1 / this.LARGE_TEX_H;
+                }
+                return this.largeTexs[i];
+            }
+            return null;
+        }
+        getReserve() {
+            return this._reserve;
+        }
+        setReserve(rv) {
+            this._reserve = rv;
+        }
+        destroy(keepRes = false) {
+            LargeTexProcessor.removeMgr(this);
+            super.destroy(keepRes);
+            this.active = false;
+        }
+        _findColor(r, g, b, a, largeTextureIndex) {
+            if (largeTextureIndex >= 0 && largeTextureIndex < this.LARGE_TEX_N) {
+                const len = this._curColorMap[largeTextureIndex].length;
+                if (this.texFormat == exports.RenderTargetFormat.R8G8B8) {
+                    for (let i = 0; i < len; i++) {
+                        if (this._curColorMap[largeTextureIndex][i]
+                            && this._curColorMap[largeTextureIndex][i].r == r
+                            && this._curColorMap[largeTextureIndex][i].g == g
+                            && this._curColorMap[largeTextureIndex][i].b == b) {
+                            return this._curColorMap[largeTextureIndex][i];
+                        }
+                    }
+                }
+                else if (this.texFormat == exports.RenderTargetFormat.R8G8B8A8) {
+                    for (let i = 0; i < len; i++) {
+                        if (this._curColorMap[largeTextureIndex][i]
+                            && this._curColorMap[largeTextureIndex][i].r == r
+                            && this._curColorMap[largeTextureIndex][i].g == g
+                            && this._curColorMap[largeTextureIndex][i].b == b
+                            && this._curColorMap[largeTextureIndex][i].a == a) {
+                            return this._curColorMap[largeTextureIndex][i];
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+        removeAllTextures() {
+            super.removeAllTextures();
+            for (let i = 0; i < this.LARGE_TEX_N; i++) {
+                this._curColor[i].setValue(0, 0, 0);
+                this._curColorMap[i].length = 0;
+            }
+            this._largeTexCode = 0;
+        }
+        _addColor(r, g, b, a, largeTextureIndex) {
+            let i = this._largeTexCode;
+            if (largeTextureIndex && largeTextureIndex >= 0 && largeTextureIndex < this.LARGE_TEX_N)
+                i = largeTextureIndex;
+            let cti = this._findColor(r, g, b, a, i);
+            if (cti) {
+                this._curColorUV.x = cti.u;
+                this._curColorUV.y = cti.v;
+                return i;
+            }
+            cti = {};
+            let add = -1;
+            const nc = (this.TEX_SIZE_MIN / this.COLOR_ITEM_SIZE) | 0;
+            if (this._curColor[i].z >= 0 && this._curColor[i].z < nc * nc)
+                add = i;
+            else {
+                const room = this._findRoom(1, 1, 1);
+                if (room[0] != -1) {
+                    const ti = new TextureItem();
+                    ti.id = 1;
+                    this._addToTextureItem(ti);
+                    const nw = this.LARGE_TEX_W / this.TEX_SIZE_MIN;
+                    const i1 = room[0];
+                    const j1 = room[1];
+                    const k1 = room[2];
+                    const index = j1 * nw + k1;
+                    this._texMaps[i1][index] = 1;
+                    this._curColor[i1].x = k1;
+                    this._curColor[i1].y = j1;
+                    this._curColor[i1].z = 0;
+                    this._largeTexCode = i1;
+                    add = this._largeTexCode;
+                    if (!this.largeTexs[i1])
+                        this.createLargeTex(i1);
+                }
+            }
+            if (add >= 0) {
+                let x = this._curColor[add].z % nc;
+                let y = (this._curColor[add].z / nc) | 0;
+                x = this._curColor[add].x * this.TEX_SIZE_MIN + (x + 0.5) * this.COLOR_ITEM_SIZE;
+                y = this._curColor[add].y * this.TEX_SIZE_MIN + (y + 0.5) * this.COLOR_ITEM_SIZE;
+                this._curColorUV.x = x / this.LARGE_TEX_W;
+                this._curColorUV.y = y / this.LARGE_TEX_H;
+                cti.r = r;
+                cti.g = g;
+                cti.b = b;
+                cti.a = a;
+                cti.u = this._curColorUV.x;
+                cti.v = this._curColorUV.y;
+                cti.largeTextureIndex = add;
+                this._curColorMap[add].push(cti);
+                this._curColor[add].z++;
+                this.largeTexs[add].addColor(x - this.COLOR_ITEM_SIZE * 0.5, y - this.COLOR_ITEM_SIZE * 0.5, this.COLOR_ITEM_SIZE, this.COLOR_ITEM_SIZE, new Vector4(r, g, b, a), this.texFormat);
+                return add;
+            }
+            return -1;
+        }
+        _peekRoomInMap(x, y, texMap) {
+            const nw = this.LARGE_TEX_W / this.TEX_SIZE_MIN | 0;
+            const nh = this.LARGE_TEX_H / this.TEX_SIZE_MIN | 0;
+            const nw2 = (nw / 2) | 0;
+            const nh2 = (nh / 2) | 0;
+            for (let j = 0; j < nh - y + 1; j++) {
+                for (let i = 0; i < nw - x + 1; i++) {
+                    let fail = false;
+                    if (texMap[j * nw + i] > 0)
+                        fail = true;
+                    if (fail)
+                        continue;
+                    for (let m = j; m < j + y && !fail; m++) {
+                        for (let l = i; l < i + x && !fail; l++) {
+                            if (this._reserve) {
+                                if (m > nh2 && l > nw2) {
+                                    fail = true;
+                                    continue;
+                                }
+                            }
+                            if (texMap[m * nw + l] > 0)
+                                fail = true;
+                        }
+                    }
+                    if (!fail)
+                        return [j, i];
+                }
+            }
+            return [-1, -1];
+        }
+        getBase64() {
+            let promises = [];
+            this.largeTexs.forEach(v => {
+                promises.push(Utils.uint8ArrayToArrayBufferAsync(v));
+            });
+            return Promise.all(promises);
+        }
+    }
+
+    class TextureInfo {
+        recover() {
+            this.owner.removeTexture(this.source.id, -1, false);
+        }
+    }
+    class DynamicAtlasManager {
+        constructor(config, autoReplace = true) {
+            this._textureMap = new Map();
+            this._isDestroyed = false;
+            this._autoReplace = false;
+            this._totalDrawCount = 1;
+            this._waitReplace = new Set();
+            this._config = Object.assign({ largeTextureSize: [1024, 1024], maxLargeTextures: 4, textureUnitSize: 16, extendSize: 1, textureFormat: exports.RenderTargetFormat.R8G8B8A8, immediately: false, autoExtend: true, checkDuplicate: true }, config);
+            this._largeTexManager = new LargeTexManager(this._config.largeTextureSize, this._config.maxLargeTextures, this._config.textureUnitSize, this._config.extendSize, this._config.textureFormat);
+            this._largeTexManager.gammaCorrection = 2.2;
+            this._largeTexManager.sRGB = false;
+            this._largeTexManager.immediately = this._config.immediately;
+            this._largeTexManager.autoExtend = this._config.autoExtend;
+            this._largeTexManager.checkDup = this._config.checkDuplicate;
+            this._largeTexManager.name = "DynamicAtlas";
+            this._autoReplace = autoReplace;
+            if (autoReplace) {
+                this._largeTexManager.updateHook = this.afterUpdate.bind(this);
+            }
+            this._totalDrawCount = this._config.extendSize > 0 ? 2 : 1;
+        }
+        _findSmallTexture(tex, info) {
+            let out = info.textureMap;
+            let ot = tex.bitmap;
+            const _find = (texture) => {
+                let atlas = texture._atlas;
+                if (atlas) {
+                    atlas.frames.forEach(_t => {
+                        if (_t.bitmap == ot) {
+                            _t._dynamic = info;
+                            out.set(_t.id, { texture: _t, uv: _t.uv });
+                        }
+                    });
+                    atlas.textures.forEach(_t => {
+                        if (_t.bitmap == ot) {
+                            _t._dynamic = info;
+                            out.set(_t.id, { texture: _t, uv: _t.uv });
+                        }
+                    });
+                }
+            };
+            _find(tex);
+            if (tex._dynamic != info) {
+                out.set(tex.id, { texture: tex, uv: tex.uv });
+                tex._dynamic = info;
+            }
+        }
+        addTexture(texture, scale = 1.0, largeTextureIndex = -1) {
+            if (this._isDestroyed
+                || !texture
+                || !texture.bitmap) {
+                return false;
+            }
+            let texture2D = texture.bitmap;
+            let textureId = texture2D.id;
+            let textureInfo = this._textureMap.get(textureId);
+            if (textureInfo) {
+                let textureMap = textureInfo.textureMap;
+                if (textureMap.has(texture.id)) {
+                    return true;
+                }
+                textureMap.set(texture.id, {
+                    texture, uv: texture.uv
+                });
+                if (this._autoReplace && textureInfo.merged) {
+                    this._waitReplace.add(textureId);
+                    Laya.timer.callLater(this, this.onUpdate);
+                }
+                return true;
+            }
+            let result = this._largeTexManager.addTexture(texture2D, scale, largeTextureIndex, texture.url, false);
+            if (result < 0) {
+                console.warn(`DynamicAtlasManager: 纹理 ${textureId} 添加失败，空间不足`);
+                return false;
+            }
+            let textureOut = this._largeTexManager.getTexture(textureId, result);
+            textureInfo = new TextureInfo();
+            textureInfo.textureMap = new Map();
+            textureInfo.source = texture2D;
+            textureInfo.textureId = textureId;
+            textureInfo.url = texture2D.url || "";
+            textureInfo.uv = new Vector4(textureOut.texItem.x, textureOut.texItem.y, textureOut.texItem.w, textureOut.texItem.h);
+            textureInfo.largeTextureIndex = result;
+            textureInfo.isInAtlas = true;
+            textureInfo.merged = false;
+            textureInfo.drawCompletedCount = 0;
+            textureInfo.referenceCount = 0;
+            textureInfo.owner = this;
+            this._findSmallTexture(texture, textureInfo);
+            this._textureMap.set(textureId, textureInfo);
+            return true;
+        }
+        onUpdate() {
+            if (this._waitReplace.size > 0) {
+                for (const textureId of this._waitReplace) {
+                    let textureInfo = this._textureMap.get(textureId);
+                    if (textureInfo) {
+                        this._replaceTexture(textureInfo, this._largeTexManager.getTexture(textureId, textureInfo.largeTextureIndex));
+                    }
+                }
+            }
+            this._waitReplace.clear();
+        }
+        afterUpdate(index, completedIds) {
+            if (this._isDestroyed || !completedIds || completedIds.length === 0)
+                return;
+            for (const id of completedIds) {
+                let textureInfo = this._textureMap.get(id);
+                if (!textureInfo || !textureInfo.isInAtlas) {
+                    continue;
+                }
+                if (textureInfo.merged) {
+                    continue;
+                }
+                textureInfo.drawCompletedCount++;
+                if (textureInfo.drawCompletedCount < this._totalDrawCount) {
+                    continue;
+                }
+                const textureOut = this._largeTexManager.getTexture(id, index);
+                if (!textureOut || !textureOut.texture || !textureOut.texItem) {
+                    continue;
+                }
+                this._replaceTexture(textureInfo, textureOut);
+            }
+        }
+        addTextureByUrl(url, scale = 1.0, largeTextureIndex = -1) {
+            if (this._isDestroyed
+                || !url) {
+                return false;
+            }
+            let texture = ILaya.loader.getRes(url, Loader.IMAGE);
+            if (!texture) {
+                console.warn(`DynamicAtlasManager: 纹理 ${url} 未加载，请先加载纹理`);
+                return false;
+            }
+            return this.addTexture(texture, scale, largeTextureIndex);
+        }
+        addTextures(textures, scale = 1.0, largeTextureIndex = -1) {
+            let successCount = 0;
+            for (const texture of textures) {
+                if (this.addTexture(texture, scale, largeTextureIndex)) {
+                    successCount++;
+                }
+            }
+            return successCount;
+        }
+        addTexturesByUrl(urls, scale = 1.0, largeTextureIndex = -1) {
+            let successCount = 0;
+            for (const url of urls) {
+                if (this.addTextureByUrl(url, scale, largeTextureIndex)) {
+                    successCount++;
+                }
+            }
+            return successCount;
+        }
+        removeTexture(textureId, largeTextureIndex = -1, event = true) {
+            if (this._isDestroyed)
+                return false;
+            let textureInfo = this._textureMap.get(textureId);
+            if (!textureInfo)
+                return false;
+            this._largeTexManager.removeTexture(textureId, largeTextureIndex);
+            this._textureMap.delete(textureId);
+            let otexture2d = Laya.loader.getRes(textureInfo.url, Loader.TEXTURE2D) || textureInfo.source;
+            if (otexture2d.destroyed) {
+                return true;
+            }
+            textureInfo.textureMap.forEach(({ texture, uv }, id) => {
+                texture.bitmap = otexture2d;
+                texture.uv = uv;
+                texture._dynamic = null;
+                if (event) {
+                    texture.event(Event.CHANGE);
+                }
+            });
+            return true;
+        }
+        removeTextureByUrl(url, largeTextureIndex = -1) {
+            let texture = Laya.loader.getRes(url, Loader.IMAGE);
+            if (!texture)
+                return false;
+            return this.removeTexture(texture.id, largeTextureIndex);
+        }
+        _replaceTexture(textureInfo, textureOut) {
+            textureInfo.merged = true;
+            let textureMap = textureInfo.textureMap;
+            let rt = textureOut.texture;
+            let x = textureOut.texItem.x;
+            let y = textureOut.texItem.y;
+            let w = textureOut.texItem.w;
+            let h = textureOut.texItem.h;
+            textureMap.forEach(({ texture, uv }, id) => {
+                if (texture.bitmap !== rt) {
+                    let oSWidth = texture.sourceWidth;
+                    let oSHeight = texture.sourceHeight;
+                    let oWidth = texture.width;
+                    let oHeight = texture.height;
+                    let nuv;
+                    if (uv === Texture.DEF_UV) {
+                        nuv = Float32Array.from([
+                            x, y,
+                            x + w, y,
+                            x + w, y + h,
+                            x, y + h
+                        ]);
+                    }
+                    else {
+                        let ox = uv[0];
+                        let oy = uv[1];
+                        let owidth = uv[2] - ox;
+                        let oheight = uv[5] - oy;
+                        let nx = x + ox * w;
+                        let ny = y + oy * h;
+                        let nwidth = owidth * w;
+                        let nheight = oheight * h;
+                        nuv = Float32Array.from([
+                            nx, ny,
+                            nx + nwidth, ny,
+                            nx + nwidth, ny + nheight,
+                            nx, ny + nheight
+                        ]);
+                    }
+                    texture.setTo(rt, nuv, oSWidth, oSHeight);
+                    texture.event(Event.CHANGE);
+                    texture.width = oWidth;
+                    texture.height = oHeight;
+                    texture._dynamic = textureInfo;
+                }
+            });
+            return true;
+        }
+        replaceOriginalTexture(textureId) {
+            if (this._isDestroyed)
+                return false;
+            let textureInfo = this._textureMap.get(textureId);
+            if (!textureInfo || !textureInfo.isInAtlas) {
+                return false;
+            }
+            const textureOut = this._largeTexManager.getTexture(textureId, textureInfo.largeTextureIndex);
+            if (!textureOut || !textureOut.texture || !textureOut.texItem) {
+                console.warn(`DynamicAtlasManager: 无法获取纹理 ${textureId} 的图集信息`);
+                return false;
+            }
+            this._replaceTexture(textureInfo, textureOut);
+            return true;
+        }
+        replaceOriginalTextures(textureIds) {
+            let successCount = 0;
+            if (textureIds && textureIds.length > 0) {
+                for (const textureId of textureIds) {
+                    if (this.replaceOriginalTexture(textureId)) {
+                        successCount++;
+                    }
+                }
+            }
+            else {
+                for (const [textureId, textureInfo] of this._textureMap) {
+                    if (textureInfo.isInAtlas && this.replaceOriginalTexture(textureId)) {
+                        successCount++;
+                    }
+                }
+            }
+            return successCount;
+        }
+        getTextureInfo(textureId) {
+            return this._textureMap.get(textureId) || null;
+        }
+        getTextureInfoByUrl(url) {
+            return this.getTextureInfo(Laya.loader.getRes(url, Loader.TEXTURE2D).id) || null;
+        }
+        getLargeTexture(largeTextureIndex) {
+            return this._largeTexManager.getLargeTex(largeTextureIndex);
+        }
+        getAllLargeTextures() {
+            return this._largeTexManager.largeTexs;
+        }
+        getTextureCount() {
+            return this._textureMap.size;
+        }
+        clear() {
+            this._largeTexManager.clear();
+            this._textureMap.clear();
+        }
+        destroy() {
+            if (this._isDestroyed) {
+                return;
+            }
+            this.clear();
+            this._isDestroyed = true;
+        }
+        getStatistics() {
+            return {
+                textureCount: this.getTextureCount(),
+                usageRate: this._largeTexManager.getLoadUsageRate(),
+                gpuMemoryUsage: this._largeTexManager.calculateGpuMemory(),
+                largeTextureCount: this._largeTexManager.largeTexs.length,
+                config: this._config
+            };
+        }
+        cleanupUnusedTextures(forceClean = false) {
+            if (this._isDestroyed)
+                return 0;
+            let cleanedCount = 0;
+            const textureIdsToRemove = [];
+            for (const [textureId, textureInfo] of this._textureMap) {
+                if (forceClean || textureInfo.referenceCount <= 0) {
+                    textureIdsToRemove.push(textureId);
+                }
+            }
+            for (const textureId of textureIdsToRemove) {
+                if (this.removeTexture(textureId)) {
+                    cleanedCount++;
+                }
+            }
+            return cleanedCount;
+        }
+    }
+
     class CommandEncoder {
         constructor() {
             this._idata = [];
@@ -36613,6 +39922,22 @@ ${materialUniformGlsl}`;
         }
         clone() {
             let f = new BooleanKeyframe();
+            this.cloneTo(f);
+            return f;
+        }
+    }
+
+    class PathPointKeyframe extends Keyframe {
+        cloneTo(destObject) {
+            super.cloneTo(destObject);
+            if (!destObject.value) {
+                destObject.value = new CurvePath();
+            }
+            destObject.value.is2D = this.value.is2D;
+            console.warn("暂时不支持PathPointKeyframe的数据克隆");
+        }
+        clone() {
+            let f = new PathPointKeyframe();
             this.cloneTo(f);
             return f;
         }
@@ -37042,7 +40367,7 @@ ${materialUniformGlsl}`;
         ele.oncanplaythrough = null;
     }
 
-    class VideoPlayer {
+    class VideoPlayerBackend {
         constructor() {
             this.options = {};
             this.allowBackground = false;
@@ -37160,7 +40485,7 @@ ${materialUniformGlsl}`;
         }
     }
 
-    class HTMLVideoPlayer extends VideoPlayer {
+    class HTMLVideoPlayer extends VideoPlayerBackend {
         constructor() {
             super();
             this.element = HTMLVideoPlayer.createElement();
@@ -37299,6 +40624,7 @@ ${materialUniformGlsl}`;
             let ele = this.element = HTMLVideoPlayer.createElement();
             ele.addEventListener("loadedmetadata", () => this.setLoaded(this.element.videoWidth, this.element.videoHeight, Browser.onLayaRuntime));
             ele.addEventListener("canplay", () => {
+                this.event("canplay");
                 if (!this._playing)
                     this.render(true);
             });
@@ -37812,15 +41138,15 @@ ${materialUniformGlsl}`;
                 this._pixelRatio = 2;
         }
         initRequestFrameFunction() {
-            this.requestFrame = window.requestAnimationFrame
-                || window.webkitRequestAnimationFrame
-                || window.mozRequestAnimationFrame
-                || window.oRequestAnimationFrame
-                || window.msRequestAnimationFrame;
-            if (!this.requestFrame)
-                this.requestFrame = function (fun) {
-                    return setTimeout(fun, 1000 / 60);
-                };
+            if (!window.requestAnimationFrame) {
+                window.requestAnimationFrame = window.webkitRequestAnimationFrame
+                    || window.mozRequestAnimationFrame
+                    || window.oRequestAnimationFrame
+                    || window.msRequestAnimationFrame
+                    || function (fun) {
+                        return setTimeout(fun, 1000 / 60);
+                    };
+            }
         }
         start() {
             return Promise.resolve();
@@ -37884,6 +41210,12 @@ ${materialUniformGlsl}`;
         }
         createElement(tagName) {
             return Browser.document.createElement(tagName);
+        }
+        getElementById(id) {
+            return Browser.document.getElementById(id);
+        }
+        removeElement(ele) {
+            ele && ele.remove();
         }
         createMainCanvas() {
             let canvas = this.createElement("canvas");
@@ -38102,7 +41434,7 @@ ${materialUniformGlsl}`;
         createVideoPlayer() {
             if (this.videoPlayerClass == null) {
                 PAL.warnIncompatibility("VideoPlayer");
-                return new VideoPlayer();
+                return new VideoPlayerBackend();
             }
             else
                 return new this.videoPlayerClass();
@@ -39966,6 +43298,8 @@ ${materialUniformGlsl}`;
     exports.AnimationClip2D = AnimationClip2D;
     exports.AnimationClip2DParse01 = AnimationClip2DParse01;
     exports.Animator2D = Animator2D;
+    exports.Animator2DBase = Animator2DBase;
+    exports.AnimatorClip2D = AnimatorClip2D;
     exports.AnimatorController2D = AnimatorController2D;
     exports.AnimatorControllerLayer2D = AnimatorControllerLayer2D;
     exports.AnimatorControllerParse = AnimatorControllerParse;
@@ -39983,6 +43317,7 @@ ${materialUniformGlsl}`;
     exports.AtlasInfoManager = AtlasInfoManager;
     exports.AtlasResource = AtlasResource;
     exports.AudioDataCache = AudioDataCache;
+    exports.AutoTextureConfig = AutoTextureConfig;
     exports.Base64Tool = Base64Tool;
     exports.BasePoly = BasePoly;
     exports.BaseRenderNode2D = BaseRenderNode2D;
@@ -40021,6 +43356,7 @@ ${materialUniformGlsl}`;
     exports.ComputeCommandAppatchCMD = ComputeCommandAppatchCMD;
     exports.ComputeCommandBuffer = ComputeCommandBuffer;
     exports.ComputeShader = ComputeShader;
+    exports.ComputeShaderParser = ComputeShaderParser;
     exports.Config = Config;
     exports.Config3D = Config3D;
     exports.Const = Const;
@@ -40051,11 +43387,13 @@ ${materialUniformGlsl}`;
     exports.DrawTextureCmd = DrawTextureCmd;
     exports.DrawTexturesCmd = DrawTexturesCmd;
     exports.DrawTrianglesCmd = DrawTrianglesCmd;
+    exports.DynamicAtlasManager = DynamicAtlasManager;
     exports.Earcut = Earcut;
     exports.EarcutNode = EarcutNode;
     exports.Ease = Ease;
     exports.Effect2DShaderInit = Effect2DShaderInit;
     exports.EffectBase = EffectBase;
+    exports.EmptyTextureProcessor = EmptyTextureProcessor;
     exports.Event = Event;
     exports.EventDispatcher = EventDispatcher;
     exports.FadeIn = FadeIn;
@@ -40079,7 +43417,7 @@ ${materialUniformGlsl}`;
     exports.Graphics = Graphics;
     exports.GraphicsBounds = GraphicsBounds;
     exports.GraphicsMesh = GraphicsMesh;
-    exports.GraphicsRenderData = GraphicsRenderData;
+    exports.GraphicsRenderer = GraphicsRenderer;
     exports.GraphicsRunner = GraphicsRunner;
     exports.GraphicsShaderInfo = GraphicsShaderInfo;
     exports.GrayscaleEffect2D = GrayscaleEffect2D;
@@ -40116,6 +43454,10 @@ ${materialUniformGlsl}`;
     exports.Keyframe2D = Keyframe2D;
     exports.KeyframeNode2D = KeyframeNode2D;
     exports.KeyframeNodeList2D = KeyframeNodeList2D;
+    exports.LargeTex = LargeTex;
+    exports.LargeTexBase = LargeTexBase;
+    exports.LargeTexManager = LargeTexManager;
+    exports.LargeTexProcessor = LargeTexProcessor;
     exports.Laya = Laya;
     exports.LayaEnv = LayaEnv;
     exports.LayaGL = LayaGL;
@@ -40148,6 +43490,7 @@ ${materialUniformGlsl}`;
     exports.ParseJSON = ParseJSON;
     exports.Path = Path;
     exports.PathPoint = PathPoint;
+    exports.PathPointKeyframe = PathPointKeyframe;
     exports.PlayerConfig = PlayerConfig;
     exports.Point = Point;
     exports.Pool = Pool;
@@ -40209,6 +43552,7 @@ ${materialUniformGlsl}`;
     exports.SoundChannel = SoundChannel;
     exports.SoundManager = SoundManager;
     exports.SoundNode = SoundNode;
+    exports.SoundPlayer = SoundPlayer;
     exports.Sprite = Sprite;
     exports.SpriteConst = SpriteConst;
     exports.SpriteGlobalTransform = SpriteGlobalTransform;
@@ -40233,8 +43577,13 @@ ${materialUniformGlsl}`;
     exports.Texture2DArray = Texture2DArray;
     exports.Texture2DLoader = Texture2DLoader;
     exports.Texture3D = Texture3D;
+    exports.TextureArrayRegistry2D = TextureArrayRegistry2D;
     exports.TextureCube = TextureCube;
+    exports.TextureInfo = TextureInfo;
+    exports.TextureItem = TextureItem;
     exports.TextureLoader = TextureLoader;
+    exports.TextureMergeShaderInit = TextureMergeShaderInit;
+    exports.TextureProcessorAdapter = TextureProcessorAdapter;
     exports.TileMesh = TileMesh;
     exports.TimeLine = TimeLine;
     exports.Timer = Timer;
@@ -40247,6 +43596,7 @@ ${materialUniformGlsl}`;
     exports.TypedArrayClasses = TypedArrayClasses;
     exports.UBBParser = UBBParser;
     exports.URL = URL;
+    exports.UVClippingUtils = UVClippingUtils;
     exports.UniformBufferAlone = UniformBufferAlone;
     exports.UniformBufferBlock = UniformBufferBlock;
     exports.UniformBufferCluster = UniformBufferCluster;
@@ -40270,6 +43620,7 @@ ${materialUniformGlsl}`;
     exports.VertexStream = VertexStream;
     exports.VideoNode = VideoNode;
     exports.VideoPlayer = VideoPlayer;
+    exports.VideoPlayerBackend = VideoPlayerBackend;
     exports.VideoTexture = VideoTexture;
     exports.VideoTextureLoader = VideoTextureLoader;
     exports.Viewport = Viewport;
@@ -40296,6 +43647,10 @@ ${materialUniformGlsl}`;
     exports.getErrorMsg = getErrorMsg;
     exports.importNative = importNative;
     exports.init = init;
+    exports.isBlendProperty = isBlendProperty;
+    exports.isCullProperty = isCullProperty;
+    exports.isDepthStencilProperty = isDepthStencilProperty;
+    exports.isRenderStateProperty = isRenderStateProperty;
     exports.isUboBufferShaderType = isUboBufferShaderType;
     exports.measureFont = measureFont;
     exports.property = property;

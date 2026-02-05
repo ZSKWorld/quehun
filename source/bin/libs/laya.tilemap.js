@@ -453,7 +453,7 @@
             let temp_vec2 = TileMapTerrainUtil.temp_vec2;
             if (data == 1) {
                 outs.set(vec2Map.get(x, y, true), exports.TileMapCellNeighbor.RIGHT_SIDE);
-                TileMapTerrainUtil.getNeighborGird_Square(x, y, exports.TileMapCellNeighbor.LEFT_SIDE, temp_vec2);
+                TileMapTerrainUtil.getNeighborGird_Square(x, y, exports.TileMapCellNeighbor.RIGHT_SIDE, temp_vec2);
                 outs.set(vec2Map.get(temp_vec2.x, temp_vec2.y, true), exports.TileMapCellNeighbor.LEFT_SIDE);
             }
             else if (data == 2) {
@@ -547,10 +547,10 @@
     TileMapTerrainUtil.temp_vec3 = new Laya.Vector3();
     class TileMapTerrainRule {
         constructor(x, y, terrain, neighborObject) {
-            this.data = 0;
+            this.data = -1;
             this.x = 0;
             this.y = 0;
-            this.terrain = 0;
+            this.terrain = -1;
             this.priority = 1;
             this.x = x;
             this.y = y;
@@ -798,6 +798,33 @@
             out.y = tiledY;
             return out;
         }
+        static compareYSort(a, b) {
+            if (a.sortY !== b.sortY)
+                return a.sortY - b.sortY;
+            if (a.zOrderValue !== b.zOrderValue)
+                return a.zOrderValue - b.zOrderValue;
+            if (a.cellx !== b.cellx)
+                return a.cellx - b.cellx;
+            return a.chuckLocalindex - b.chuckLocalindex;
+        }
+        static compareZSort(a, b) {
+            if (a.zOrderValue !== b.zOrderValue)
+                return a.zOrderValue - b.zOrderValue;
+            if (a.sortY !== b.sortY)
+                return a.sortY - b.sortY;
+            if (a.cellx !== b.cellx)
+                return a.cellx - b.cellx;
+            return a.chuckLocalindex - b.chuckLocalindex;
+        }
+        static compareXSort(a, b) {
+            if (a.cellx !== b.cellx)
+                return a.cellx - b.cellx;
+            if (a.sortY !== b.sortY)
+                return a.sortY - b.sortY;
+            if (a.zOrderValue !== b.zOrderValue)
+                return a.zOrderValue - b.zOrderValue;
+            return a.chuckLocalindex - b.chuckLocalindex;
+        }
     }
     TileMapUtils.CACHE_UVs = new Map();
 
@@ -909,8 +936,8 @@
                 let mark = [];
                 let outs = new Map;
                 neighborObject.getOverlap(rule.x, rule.y, rule.data, vec2Map, outs);
-                let nCell;
                 outs.forEach((neighbor, vec2) => {
+                    let nCell = null;
                     let chunkCellInfo = TileMapTerrainUtil.getChunkCellInfo(tileMapLayer, vec2);
                     if (chunkCellInfo) {
                         let cellData = chunkCellInfo.cell;
@@ -959,6 +986,9 @@
             let out = new Map();
             allSet.list.forEach(vec2 => {
                 let params = this._getBestTerrainParams(tileMapLayer, vec2, terrainSetId, neighborObject, ruleSet);
+                out.set(vec2, params);
+            });
+            out.forEach((params, vec2) => {
                 let nRuleSet = this._getRulesByParams(tileMapLayer, params, vec2, terrainSetId, neighborObject);
                 for (let i = 0, len = nRuleSet.list.length; i < len; i++) {
                     let nRule = nRuleSet.list[i];
@@ -966,7 +996,6 @@
                     nRule.priority = 5;
                     ruleSet.add(nRule);
                 }
-                out.set(vec2, params);
             });
             return out;
         }
@@ -1172,13 +1201,19 @@
             return this._z_index;
         }
         set z_index(value) {
+            if (this._z_index == value)
+                return;
             this._z_index = value;
+            this._refreshCellSort();
         }
         get y_sort_origin() {
             return this._y_sort_origin;
         }
         set y_sort_origin(value) {
+            if (this._y_sort_origin == value)
+                return;
             this._y_sort_origin = value;
+            this._refreshCellSort();
         }
         get terrainSet() {
             return this._terrainSet;
@@ -1260,6 +1295,13 @@
                 element._modifyData();
             });
         }
+        _refreshCellSort() {
+            if (!this.cellowner)
+                return;
+            this._notiveRenderTile.forEach(element => {
+                element._refreshCellSort(this);
+            });
+        }
         _removeNoticeRenderTile(layerRenderTile) {
             let index = this._notiveRenderTile.indexOf(layerRenderTile);
             if (index != -1)
@@ -1278,6 +1320,7 @@
         }
         set_terrainPeeringBit(index, terrainIndex) {
             this._terrain_peering_bits[index] = terrainIndex;
+            this._cellowner.owner._owner._terrainsDirty = true;
         }
         get_terrainPeeringBit(index) {
             return this._terrain_peering_bits[index];
@@ -1605,6 +1648,7 @@
             this._tileSize = new Laya.Vector2();
             this._oriCellIndex = new Laya.Vector2(0, 0);
             this._renderElementArray = [];
+            this._sortMode = exports.TileLayerSortMode.ZINDEXSORT;
             for (let i = 0; i < DIRTY_TYPES; i++)
                 this._dirtyFlags[i] = new Map;
         }
@@ -1684,6 +1728,7 @@
                             chuckCellInfo.celly = localPos.y;
                             chuckCellInfo.cell = cellData;
                             chuckCellInfo._transFlag = this._transFlags[index] || 0;
+                            chuckCellInfo.sortY = localPos.y + cellData.y_sort_origin;
                             this._cellDataMap[index] = chuckCellInfo;
                             this._chuckCellList.push(chuckCellInfo);
                         }
@@ -1785,33 +1830,22 @@
                 this._clearRenderElement();
                 if (this._chuckCellList.length == 0)
                     return;
-                switch (this._tileLayer.sortMode) {
+                let compareFunc;
+                switch (this._sortMode) {
                     case exports.TileLayerSortMode.YSort:
-                        this._chuckCellList.sort((a, b) => {
-                            if (a.celly == b.celly)
-                                return a.cellx - b.cellx;
-                            return a.celly - b.celly;
-                        });
-                        break;
-                    case exports.TileLayerSortMode.XSort:
-                        this._chuckCellList.sort((a, b) => {
-                            if (a.cellx - b.cellx) {
-                                return a.celly - b.celly;
-                            }
-                            return a.cellx - b.cellx;
-                        });
+                        compareFunc = TileMapUtils.compareYSort;
                         break;
                     case exports.TileLayerSortMode.ZINDEXSORT:
-                        this._chuckCellList.sort((a, b) => {
-                            if (a.zOrderValue == b.zOrderValue) {
-                                return a.chuckLocalindex - b.chuckLocalindex;
-                            }
-                            else {
-                                return a.zOrderValue - b.zOrderValue;
-                            }
-                        });
+                        compareFunc = TileMapUtils.compareZSort;
+                        break;
+                    case exports.TileLayerSortMode.XSort:
+                        compareFunc = TileMapUtils.compareXSort;
+                        break;
+                    default:
+                        compareFunc = TileMapUtils.compareZSort;
                         break;
                 }
+                this._chuckCellList.sort(compareFunc);
                 let lastCell;
                 let tempCellIndexArray = [];
                 this._animatorAlterArray.clear();
@@ -2182,6 +2216,7 @@
                 chuckCellInfo.celly = localPos.y;
                 chuckCellInfo.cell = cellData;
                 chuckCellInfo._transFlag = transFlag;
+                chuckCellInfo.sortY = localPos.y + cellData.y_sort_origin;
                 this._cellDataRefMap[gid].push(index);
                 this._cellDataMap[index] = chuckCellInfo;
                 this._chuckCellList.push(chuckCellInfo);
@@ -2199,6 +2234,7 @@
                 }
                 chunkCellInfo.cell = cellData;
                 chunkCellInfo.zOrderValue = cellData.z_index;
+                chunkCellInfo.sortY = chunkCellInfo.celly + cellData.y_sort_origin;
                 localIndexArray = this._cellDataRefMap[gid];
                 localIndexArray.push(chunkCellInfo.chuckLocalindex);
                 chunkCellInfo._transFlag = transFlag;
@@ -2320,6 +2356,25 @@
         }
         getCell(index) {
             return this._cellDataMap[index];
+        }
+        _refreshCellSort(cellData) {
+            if (!cellData)
+                return;
+            let gid = cellData.gid;
+            if (gid < 0)
+                return;
+            let indexList = this._cellDataRefMap[gid];
+            if (!indexList || !indexList.length)
+                return;
+            for (let i = 0, len = indexList.length; i < len; i++) {
+                const cellIndex = indexList[i];
+                const info = this._cellDataMap[cellIndex];
+                if (!info)
+                    continue;
+                info.sortY = info.celly + cellData.y_sort_origin;
+                info.zOrderValue = cellData.z_index;
+            }
+            this._modifyData();
         }
         _clearOneCell(cell) {
             let gid = cell.gid;
@@ -3979,7 +4034,7 @@
             this._cliper = new RectClipper();
             this._renderElements = [];
             this._materials = [];
-            this.sortMode = exports.TileLayerSortMode.YSort;
+            this.sortMode = exports.TileLayerSortMode.ZINDEXSORT;
         }
         _isMaterialVaild(value) {
             return value.checkType(Laya.ShaderFeatureType.Effect);
@@ -4041,7 +4096,7 @@
             if (this._tileMapDatas == null || !this._tileMapDatas.length) {
                 return;
             }
-            let chunks = TileMapDatasParse.read(this._tileMapDatas);
+            let chunks = TileMapDatasParse.read(this._tileMapDatas.buffer);
             for (var i = 0, len = chunks.length; i < len; i++) {
                 let data = new TileMapChunkData();
                 data._tileLayer = this;
@@ -4216,6 +4271,7 @@
                 this._needUpdateDirtys[exports.DirtyFlagType.PHYSICS] = false;
             }
             this.owner._struct.renderElements = this._renderElements;
+            this._updateLight();
         }
         setCellData(x, y, cellData, isPixel = true, rotateCount = 0, flipH = false, flipV = false, transpose = false) {
             this._setCellData(x, y, cellData, TileMapUtils.getTransFlag(rotateCount, flipH, flipV, transpose), isPixel);

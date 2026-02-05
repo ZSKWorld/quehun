@@ -115,6 +115,7 @@
             let subShader = new Laya.SubShader(attributeMap, uniformMap);
             shader.addSubShader(subShader);
             let shaderPass = subShader.addShaderPass(CompositeVS, CompositePS);
+            shaderPass.statefirst = true;
             let renderState = shaderPass.renderState;
             renderState.depthTest = Laya.RenderState.DEPTHTEST_ALWAYS;
             renderState.depthWrite = false;
@@ -195,6 +196,7 @@
             super();
             this._shader = null;
             this._shaderData = Laya.LayaGL.renderDeviceFactory.createShaderData(null);
+            this._compositeShaderData = Laya.LayaGL.renderDeviceFactory.createShaderData(null);
             this._linearColor = new Laya.Color();
             this._bloomTextureTexelSize = new Laya.Vector4();
             this._shaderThreshold = new Laya.Vector4();
@@ -236,7 +238,8 @@
         render(context) {
             var cmd = context.command;
             var viewport = context.camera.viewport;
-            this._shaderData.setTexture(BloomEffect.SHADERVALUE_AUTOEXPOSURETEX, Laya.Texture2D.whiteTexture);
+            const shaderData = this._shaderData;
+            shaderData.setTexture(BloomEffect.SHADERVALUE_AUTOEXPOSURETEX, Laya.Texture2D.whiteTexture);
             var ratio = this._anamorphicRatio;
             var rw = ratio < 0 ? -ratio : 0;
             var rh = ratio > 0 ? ratio : 0;
@@ -248,29 +251,30 @@
             var logsInt = Math.floor(logs);
             var iterations = Math.min(Math.max(logsInt, 1), BloomEffect.MAXPYRAMIDSIZE);
             var sampleScale = 0.5 + logs - logsInt;
-            this._shaderData.setNumber(BloomEffect.SHADERVALUE_SAMPLESCALE, sampleScale);
+            shaderData.setNumber(BloomEffect.SHADERVALUE_SAMPLESCALE, sampleScale);
             var lthresh = Laya.Color.gammaToLinearSpace(this.threshold);
             var knee = lthresh * this._softKnee + 1e-5;
             this._shaderThreshold.setValue(lthresh, lthresh - knee, knee * 2, 0.25 / knee);
-            this._shaderData.setVector(BloomEffect.SHADERVALUE_THRESHOLD, this._shaderThreshold);
+            shaderData.setVector(BloomEffect.SHADERVALUE_THRESHOLD, this._shaderThreshold);
             var lclamp = Laya.Color.gammaToLinearSpace(this.clamp);
             this._shaderParams.setValue(lclamp, 0, 0, 0);
-            this._shaderData.setVector(BloomEffect.SHADERVALUE_PARAMS, this._shaderParams);
+            shaderData.setVector(BloomEffect.SHADERVALUE_PARAMS, this._shaderParams);
             var qualityOffset = this.fastMode ? 1 : 0;
             var lastDownTexture = context.indirectTarget;
+            let format = lastDownTexture.format;
             for (var i = 0; i < iterations; i++) {
                 var downIndex = i * 2;
                 var upIndex = downIndex + 1;
                 var subShader = i == 0 ? BloomEffect.SUBSHADER_PREFILTER13 + qualityOffset : BloomEffect.SUBSHADER_DOWNSAMPLE13 + qualityOffset;
-                var mipDownTexture = Laya.RenderTexture.createFromPool(tw, th, Laya.RenderTargetFormat.R8G8B8A8, Laya.RenderTargetFormat.None, false, 1, false, true);
+                var mipDownTexture = Laya.RenderTexture.createFromPool(tw, th, format, Laya.RenderTargetFormat.None, false, 1, false, true);
                 mipDownTexture.filterMode = Laya.FilterMode.Bilinear;
                 this._pyramid[downIndex] = mipDownTexture;
                 if (i !== iterations - 1) {
-                    var mipUpTexture = Laya.RenderTexture.createFromPool(tw, th, Laya.RenderTargetFormat.R8G8B8A8, Laya.RenderTargetFormat.None, false, 1, false, true);
+                    var mipUpTexture = Laya.RenderTexture.createFromPool(tw, th, format, Laya.RenderTargetFormat.None, false, 1, false, true);
                     mipUpTexture.filterMode = Laya.FilterMode.Bilinear;
                     this._pyramid[upIndex] = mipUpTexture;
                 }
-                cmd.blitScreenTriangle(lastDownTexture, mipDownTexture, null, this._shader, this._shaderData, subShader);
+                cmd.blitScreenTriangle(lastDownTexture, mipDownTexture, null, this._shader, shaderData, subShader);
                 lastDownTexture = mipDownTexture;
                 tw = Math.max(Math.floor(tw / 2), 1);
                 th = Math.max(Math.floor(th / 2), 1);
@@ -281,8 +285,8 @@
                 upIndex = downIndex + 1;
                 mipDownTexture = this._pyramid[downIndex];
                 mipUpTexture = this._pyramid[upIndex];
-                cmd.setShaderDataTexture(this._shaderData, BloomEffect.SHADERVALUE_BLOOMTEX, mipDownTexture);
-                cmd.blitScreenTriangle(lastUpTexture, mipUpTexture, null, this._shader, this._shaderData, BloomEffect.SUBSHADER_UPSAMPLETENT + qualityOffset);
+                cmd.setShaderDataTexture(shaderData, BloomEffect.SHADERVALUE_BLOOMTEX, mipDownTexture);
+                cmd.blitScreenTriangle(lastUpTexture, mipUpTexture, null, this._shader, shaderData, BloomEffect.SUBSHADER_UPSAMPLETENT + qualityOffset);
                 lastUpTexture = mipUpTexture;
             }
             var linearColor = this._linearColor;
@@ -298,7 +302,7 @@
                 dirtTileOffset.setValue(screenRatio / dirtRatio, 1.0, (1.0 - dirtTileOffset.x) * 0.5, 0.0);
             else if (dirtRatio < screenRatio)
                 dirtTileOffset.setValue(1.0, dirtRatio / screenRatio, 0.0, (1.0 - dirtTileOffset.y) * 0.5);
-            var compositeShaderData = context.compositeShaderData;
+            var compositeShaderData = this._compositeShaderData;
             if (this.fastMode)
                 compositeShaderData.addDefine(Laya.PostProcess.SHADERDEFINE_BLOOM_LOW);
             else
@@ -308,6 +312,7 @@
             compositeShaderData.setVector(Laya.PostProcess.SHADERVALUE_BLOOM_SETTINGS, shaderSettings);
             compositeShaderData.setColor(Laya.PostProcess.SHADERVALUE_BLOOM_COLOR, linearColor);
             compositeShaderData.setTexture(Laya.PostProcess.SHADERVALUE_BLOOM_DIRTTEX, usedirtTexture);
+            compositeShaderData.setTexture(BloomEffect.SHADERVALUE_AUTOEXPOSURETEX, Laya.Texture2D.whiteTexture);
             compositeShaderData.setTexture(Laya.PostProcess.SHADERVALUE_BLOOMTEX, lastUpTexture);
             compositeShaderData.setVector(Laya.PostProcess.SHADERVALUE_BLOOMTEX_TEXELSIZE, this._bloomTextureTexelSize);
             let _compositeShader = Laya.Shader3D.find("PostProcessComposite");
@@ -1033,6 +1038,9 @@
         set rotate(value) {
             this._materials.setFloat("u_rotate", value);
         }
+        set edgeFade(value) {
+            this._materials.setFloat("u_EdgeFade", value);
+        }
         get lensFlareElement() {
             return this._lensFlareElementData;
         }
@@ -1071,7 +1079,7 @@
 
     var LensFlareVS = "#define SHADER_NAME LENSFLARESVS\nvarying vec2 v_Texcoord0;vec2 rotateVector(vec2 pos,vec2 center,float angle){float cosAngle=cos(angle);float sinAngle=sin(angle);vec2 offset=pos-center;vec2 rotatedOffset=vec2(offset.x*cosAngle-offset.y*sinAngle,offset.x*sinAngle+offset.y*cosAngle);return center+rotatedOffset;}vec2 rotateVec2(float rad,vec2 pos){float s=sin(rad);float c=cos(rad);float x=pos.x*c-pos.y*s;float y=pos.x*s+c*pos.y;return vec2(x,y);}vec2 scaleVec2(vec2 scale,vec2 pos){float x=scale.x*pos.x;float y=scale.y*pos.y;return vec2(x,y);}vec2 transVec2(vec2 trans,vec2 pos){float x=pos.x+trans.x;float y=pos.y+trans.y;return vec2(x,y);}void main(){vec2 center=u_FlareCenter;vec2 deltaPos=-2.0*center;vec2 lenFlarePosition=vec2(a_PositionTexcoord.x,a_PositionTexcoord.y);vec2 aspectRadio=vec2(u_aspectRatio,1.0);vec2 scale=vec2(a_DistanceRotationScale.z,a_DistanceRotationScale.w);lenFlarePosition=scaleVec2(scale,lenFlarePosition);\n#ifdef LENSFLAREAUTOROTATE\nlenFlarePosition=rotateVec2(u_rotate,lenFlarePosition);float texRotate=a_DistanceRotationScale.y;lenFlarePosition=rotateVec2(texRotate,lenFlarePosition);\n#endif\nfloat angularoffset=u_Angularoffset;lenFlarePosition=rotateVector(lenFlarePosition,center,angularoffset);lenFlarePosition=scaleVec2(aspectRadio,lenFlarePosition);lenFlarePosition=center+deltaPos*a_DistanceRotationScale.x+lenFlarePosition+u_Postionoffset;gl_Position=vec4(lenFlarePosition.x,lenFlarePosition.y,0.0,1.0);v_Texcoord0=a_PositionTexcoord.zw;}";
 
-    var LensFlareFS = "#define SHADER_NAME LENSFLARESFS\nvarying vec2 v_Texcoord0;void main(){gl_FragColor=texture2D(u_FlareTexture,v_Texcoord0)*u_Tint*u_TintIntensity;}";
+    var LensFlareFS = "#define SHADER_NAME LENSFLARESFS\nvarying vec2 v_Texcoord0;void main(){gl_FragColor=texture2D(u_FlareTexture,v_Texcoord0)*u_Tint*u_TintIntensity*u_EdgeFade;}";
 
     class LensFlareShaderInit {
         static init() {
@@ -1088,10 +1096,12 @@
                 "u_rotate": Laya.ShaderDataType.Float,
                 "u_Postionoffset": Laya.ShaderDataType.Vector2,
                 "u_Angularoffset": Laya.ShaderDataType.Float,
+                "u_EdgeFade": Laya.ShaderDataType.Float,
             };
             let defaultValue = {
                 "u_Tint": Laya.Color.WHITE,
-                "u_aspectRatio": 1
+                "u_aspectRatio": 1,
+                "u_EdgeFade": 1.0
             };
             let shader = Laya.Shader3D.add("LensFlare", true, false);
             shader.shaderType = Laya.ShaderFeatureType.PostProcess;
@@ -1238,6 +1248,7 @@
         }
         constructor() {
             super();
+            this._edgeFade = 0;
             this._effectIntensity = 1;
             this._effectScale = 1;
             this._needUpdate = false;
@@ -1246,12 +1257,13 @@
             this._flareCMDS.push(new LensFlareCMD());
             this._center = new Laya.Vector2();
         }
-        _updateEffectData(cmd) {
+        _updateEffectData(cmd, edgeFade = 1.0) {
             if (this._flareCMDS.length == 0)
                 return;
             for (let i = 0; i < this._flareCMDS.length; i++) {
                 this._flareCMDS[i].center = this._center;
                 this._flareCMDS[i].rotate = this._rotate;
+                this._flareCMDS[i].edgeFade = edgeFade;
                 if (this._needUpdate) {
                     let cmdEle = this._flareCMDS[i].lensFlareElement;
                     if (!cmdEle)
@@ -1271,11 +1283,27 @@
             Laya.Vector3.scale(_tempV3, -10, _tempV3);
             Laya.Vector3.add(camera.transform.position, _tempV3, _tempV3);
             Laya.Vector3.transformV3ToV4(_tempV3, camera.projectionViewMatrix, _tempV4);
-            this._center.setValue(_tempV4.x / _tempV4.w, _tempV4.y / _tempV4.w);
-            var angle = Laya.Utils.toAngle(Math.atan2(this._center.x, this._center.y));
+            if (_tempV4.w <= 0) {
+                this._edgeFade = 0;
+                return;
+            }
+            let centerX = _tempV4.x / _tempV4.w;
+            let centerY = _tempV4.y / _tempV4.w;
+            this._center.setValue(centerX, centerY);
+            let maxDist = Math.abs(centerX) > Math.abs(centerY) ? Math.abs(centerX) : Math.abs(centerY);
+            if (maxDist <= 0.8) {
+                this._edgeFade = 1.0;
+            }
+            else if (maxDist >= 1.5) {
+                this._edgeFade = 0;
+                return;
+            }
+            else {
+                this._edgeFade = 1.0 - (maxDist - 0.8) / 0.7;
+            }
+            var angle = Laya.Utils.toAngle(Math.atan2(centerX, centerY));
             angle = (angle < 0) ? angle + 360 : angle;
-            angle = Math.round(angle);
-            this._rotate = Math.PI * 2.0 - Math.PI / 180 * angle;
+            this._rotate = Math.PI * 2.0 - Math.PI / 180 * Math.round(angle);
         }
         caculatePointCenter(camera) {
             this._needUpdate = true;
@@ -1284,11 +1312,12 @@
             this._needUpdate = true;
         }
         render(context) {
+            if (!this._light) {
+                return;
+            }
             var cmd = context.command;
             let source = context.indirectTarget;
             cmd.setRenderTarget(source, false, false);
-            if (!this._light)
-                return;
             switch (this._light.lightType) {
                 case Laya.LightType.Directional:
                     this.caculateDirCenter(context.camera);
@@ -1298,9 +1327,9 @@
                 case Laya.LightType.Spot:
                     break;
             }
-            if (Math.abs(this._center.x) > 1.0 || Math.abs(this._center.y) > 1.0)
-                return;
-            this._updateEffectData(cmd);
+            if (this._edgeFade > 0) {
+                this._updateEffectData(cmd, this._edgeFade);
+            }
             cmd.blitScreenQuad(source, context.destination);
         }
         release(postprocess) {
@@ -1317,32 +1346,19 @@
                 if (!data)
                     return null;
                 let ret = new LensFlareData();
-                let basePath = Laya.URL.getPath(task.url);
-                let promises = [];
                 let elements = data.elements;
-                if (elements)
-                    for (let i = elements.length - 1; i >= 0; i--) {
-                        let e = elements[i];
-                        if (e.texture && e.texture._$uuid && '' != e.texture._$uuid) {
-                            let url = Laya.URL.getResURLByUUID(e.texture._$uuid);
-                            if (!url.startsWith("res://"))
-                                url = Laya.URL.join(basePath, url);
-                            promises.push(task.loader.load(url).then((t) => {
-                                e.texture = t;
-                            }));
-                        }
-                        if (e.tint) {
-                            e.tint = new Laya.Color(e.tint.r, e.tint.g, e.tint.b, e.tint.a);
-                        }
-                        if (e.positionOffset) {
-                            e.positionOffset = new Laya.Vector2(e.positionOffset.x, e.positionOffset.y);
-                        }
-                        if (e.scale) {
-                            e.scale = new Laya.Vector2(e.scale.x, e.scale.y);
-                        }
-                    }
-                return Promise.all(promises).then(() => {
-                    ret.elements = elements;
+                if (!elements)
+                    return ret;
+                let basePath = Laya.URL.getPath(task.url);
+                let textures = elements.map((e) => {
+                    var _a;
+                    let url = Laya.URL.join(basePath, Laya.URL.getResURLByUUID((_a = e.texture) === null || _a === void 0 ? void 0 : _a._$uuid));
+                    if (url)
+                        e.texture._$uuid = url;
+                    return url;
+                }).filter((url) => url != "");
+                return Promise.all(textures.map(url => task.loader.load(url, task.options))).then(() => {
+                    ret.elements = new Laya.ObjDecoder().decodeObj(elements);
                     return ret;
                 });
             });

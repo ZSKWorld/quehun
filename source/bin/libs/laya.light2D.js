@@ -3,10 +3,50 @@
 
     class Light2DConfig {
         constructor() {
-            this.lightDirection = new Laya.Vector3(-1, 0, 1);
-            this.ambientColor = new Laya.Color(0.2, 0.2, 0.2, 0);
-            this.ambientLayerMask = -1;
-            this.multiSamples = 4;
+            this.changeCount = 0;
+            this._lightDirection = new Laya.Vector3(-1, 0, 1);
+            this._ambientColor = new Laya.Color(0.2, 0.2, 0.2, 0);
+            this._ambientLayerMask = -1;
+            this._multiSamples = 4;
+        }
+        notifyChange() {
+            this.changeCount++;
+        }
+        get lightDirection() {
+            return this._lightDirection;
+        }
+        set lightDirection(value) {
+            if (this._lightDirection !== value) {
+                this._lightDirection = value;
+                this.notifyChange();
+            }
+        }
+        get ambientColor() {
+            return this._ambientColor;
+        }
+        set ambientColor(value) {
+            if (this._ambientColor !== value) {
+                this._ambientColor = value;
+            }
+            this.notifyChange();
+        }
+        get ambientLayerMask() {
+            return this._ambientLayerMask;
+        }
+        set ambientLayerMask(value) {
+            if (this._ambientLayerMask !== value) {
+                this._ambientLayerMask = value;
+                this.notifyChange();
+            }
+        }
+        get multiSamples() {
+            return this._multiSamples;
+        }
+        set multiSamples(value) {
+            if (this._multiSamples !== value) {
+                this._multiSamples = value;
+                this.notifyChange();
+            }
         }
     }
 
@@ -1134,6 +1174,7 @@
             this._works = 0;
             this._updateMark = new Array(Light2DManager.MAX_LAYER).fill(1);
             this._updateLayerLight = new Array(Light2DManager.MAX_LAYER).fill(false);
+            this._configChangeCount = 0;
             this._spriteLayer = [];
             this._spriteNumInLayer = new Array(Light2DManager.MAX_LAYER).fill(0);
             this._lightLayer = [];
@@ -1161,7 +1202,12 @@
                 Light2DManager._config = new Light2DConfig();
                 Light2DManager._config.ambientColor = new Laya.Color(light2DConfig.ambientColor.r, light2DConfig.ambientColor.g, light2DConfig.ambientColor.b, light2DConfig.ambientColor.a);
                 Light2DManager._config.ambientLayerMask = light2DConfig.ambientLayerMask;
-                Light2DManager._config.lightDirection = new Laya.Vector3(light2DConfig.lightDirection.x, light2DConfig.lightDirection.y, light2DConfig.lightDirection.z);
+                if (light2DConfig.lightDirection) {
+                    Light2DManager._config.lightDirection = new Laya.Vector3(light2DConfig.lightDirection.x, light2DConfig.lightDirection.y, light2DConfig.lightDirection.z);
+                }
+                else {
+                    Light2DManager._config.lightDirection = new Laya.Vector3(-1, 0, 1);
+                }
                 Light2DManager._config.multiSamples = light2DConfig.multiSamples;
             }
             this._scene = scene;
@@ -1171,6 +1217,7 @@
             this._screenSchmitt = new Laya.Rectangle();
             this._screenSchmittChange = false;
             this.occluderAgent = new Occluder2DAgent(this);
+            this._configChangeCount = this.config.changeCount;
             Laya.ILaya.stage.on(Laya.Event.RESIZE, this, this._onScreenResize);
             this._PCF = [
                 new Laya.Vector2(0, 0),
@@ -1329,6 +1376,8 @@
                         if (this._lightsInLayerAll[layer].length === 0)
                             this._lightLayerAll.splice(this._lightLayerAll.indexOf(layer), 1);
                         this._collectLightInScreenByLayer(layer);
+                        if (this.lsTarget[layer])
+                            this._updateLayerLight[layer] = true;
                     }
                 }
                 this._lightsNeedCheckRange.splice(this._lightsNeedCheckRange.indexOf(light), 1);
@@ -1582,6 +1631,12 @@
             }
         }
         preRenderUpdate() {
+            const currentChangeCount = this.config.changeCount;
+            if (this._configChangeCount !== currentChangeCount) {
+                this._configChangeCount = currentChangeCount;
+                for (let i = this._updateMark.length - 1; i > -1; i--)
+                    this._updateMark[i]++;
+            }
             this._sceneTransformChange();
             const _isLightUpdate = (light) => {
                 return light._needUpdateLightAndShadow;
@@ -1626,6 +1681,7 @@
                 this._checkLightRange(this._lightsNeedCheckRange[i]);
             this._lightsNeedCheckRange.length = 0;
             let works = 0;
+            let processedLayerMask = 0;
             for (let i = this._lightLayer.length - 1; i > -1; i--) {
                 let needRender = false;
                 const layer = this._lightLayer[i];
@@ -1636,6 +1692,7 @@
                 const y = this._screenSchmitt.y;
                 if (this._spriteNumInLayer[layer] === 0)
                     continue;
+                processedLayerMask |= layerMask;
                 if (occluders)
                     for (let j = occluders.length - 1; j > -1; j--)
                         occluders[j]._getRange();
@@ -1698,18 +1755,43 @@
                     renderRes.render(this.lsTarget[layer], this.lsTargetAdd[layer], this.lsTargetSub[layer]);
                 }
             }
+            let clearedLayerMask = 0;
+            for (let layer = 0; layer < Light2DManager.MAX_LAYER; layer++) {
+                if (this._updateLayerLight[layer] && this._lightLayer.indexOf(layer) === -1) {
+                    const renderRes = this._lightRenderRes[layer];
+                    if (renderRes) {
+                        if (this._needUpdateLightRes & (1 << layer) || renderRes.lights.length > 0) {
+                            renderRes.addLights([], this._needToRecover);
+                            if (Light2DManager.REUSE_CMD) {
+                                renderRes.setRenderTargetCMD(this.lsTarget[layer], this.lsTargetAdd[layer], this.lsTargetSub[layer]);
+                                renderRes.buildRenderMeshCMD();
+                            }
+                        }
+                        renderRes.render(this.lsTarget[layer], this.lsTargetAdd[layer], this.lsTargetSub[layer]);
+                        this._updateMark[layer]++;
+                        clearedLayerMask |= (1 << layer);
+                    }
+                    this._updateLayerLight[layer] = false;
+                }
+            }
             for (let i = this._lightLayer.length - 1; i > -1; i--) {
                 const layer = this._lightLayer[i];
-                const lights = this._lightsInLayer[layer];
-                for (let j = 0, len = lights.length; j < len; j++)
-                    lights[j]._needUpdateLightAndShadow = false;
-                for (let j = 0, len = this._occluders.length; j < len; j++)
-                    this._occluders[j].needUpdate = false;
+                const layerMask = (1 << layer);
+                if (processedLayerMask & layerMask) {
+                    const lights = this._lightsInLayer[layer];
+                    for (let j = 0, len = lights.length; j < len; j++)
+                        lights[j]._needUpdateLightAndShadow = false;
+                }
+            }
+            for (let j = 0, len = this._occluders.length; j < len; j++) {
+                const occluder = this._occluders[j];
+                if (occluder.layerMask & processedLayerMask)
+                    occluder.needUpdate = false;
             }
             this._screenSchmittChange = false;
-            this._needUpdateLightRes = 0;
-            this._needCollectLightInLayer = 0;
-            this._needCollectOccluderInLight = 0;
+            this._needUpdateLightRes &= ~(processedLayerMask | clearedLayerMask);
+            this._needCollectLightInLayer &= ~(processedLayerMask | clearedLayerMask);
+            this._needCollectOccluderInLight &= ~(processedLayerMask | clearedLayerMask);
             if (Light2DManager.DEBUG) {
                 if (this._works !== works) {
                     this._works = works;

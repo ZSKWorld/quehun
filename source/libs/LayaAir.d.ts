@@ -233,8 +233,8 @@ declare namespace Laya {
         */
         static enableUniformBufferObject: boolean;
         /**
-         * @en FPS limit
-         * @zh 限制FPS
+         * @en FPS limit, the maximum frame rate of the engine, the default is 60. If the developer does not want to fix the logic frame rate limit, set `Config.fixedFrames` to `false` to close the fixed frame mode, so that the logic update follows the frequency of the platform's `requestAnimationFrame` call as much as possible.
+         * @zh 定义了引擎全局的目标帧率上限（默认为 60）。如果开发者不希望固定逻辑帧率上限，可以将 `Config.fixedFrames` 设置为 `false`，关闭固定帧模式，使逻辑更新尽可能跟随平台的 `requestAnimationFrame` 调用频率执行。
          */
         static FPS: number;
         /**
@@ -332,6 +332,20 @@ declare namespace Laya {
          * @zh 声音缓冲区缓存的最大大小（字节）。超出后将清除缓存中最久未使用的音频数据。
          */
         static audioBufferCacheMaxSize: number;
+        /**
+         * @en UV clipping mode for 2D rendering.
+         * - "gpu": Use GPU fragment shader to clip triangles (default, lower CPU overhead)
+         * - "cpu": Use CPU Sutherland-Hodgman algorithm to clip triangles (higher CPU overhead, precise clipping)
+         * @zh 2D渲染的UV裁剪模式。
+         * - "gpu": 使用GPU片元着色器裁剪三角形（默认，CPU开销低）
+         * - "cpu": 使用CPU Sutherland-Hodgman算法裁剪三角形（CPU开销高，精确裁剪）
+         */
+        static uvClipMode: "gpu" | "cpu";
+        /**
+         * @en Whether to use TextureArray
+         * @zh 是否使用TextureArray: 文字和自动图集使用TextureArray来优化
+         */
+        static useTextureArray: boolean;
     }
     const PlayerConfig: {
         physics2D?: any;
@@ -395,7 +409,7 @@ declare namespace Laya {
         static lightClusterCount: Vector3;
         /**
          * @en Maximum number of morph targets
-         * @zh 最大形变数量
+         * @zh 最大变形目标数量
          */
         static maxMorphTargetCount: number;
         /**
@@ -3588,7 +3602,10 @@ declare namespace Laya {
          * @param frontPlay
          * @param outDatas
          */
-        _evaluateClipDatasRealTime(playCurTime: number, realTimeCurrentFrameIndexes: Int16Array, addtive: boolean, frontPlay: boolean, outDatas: Array<number | string | boolean | Vector3>): void;
+        _evaluateClipDatasRealTime(playCurTime: number, realTimeCurrentFrameIndexes: Int16Array, addtive: boolean, frontPlay: boolean, outDatas: Array<number | string | boolean | {
+            pos: Vector3;
+            rotation: Vector3;
+        }>): void;
         /**
          * @internal
          * @param frame
@@ -3695,17 +3712,7 @@ declare namespace Laya {
      * @en 2D animation components
      * @zh 2D动画组件
      */
-    class Animator2D extends Component {
-        /**@internal */
-        private _speed;
-        /**@internal 更新模式*/
-        private _updateMode;
-        /**@internal 降低更新频率调整值*/
-        private _lowUpdateDelty;
-        /**@internal */
-        private _isPlaying;
-        /**@internal */
-        private _ownerMap;
+    class Animator2D extends Animator2DBase {
         /**@internal */
         _parameters: Record<string, Animation2DParm>;
         /**@internal */
@@ -3714,8 +3721,6 @@ declare namespace Laya {
         _controller: AnimatorController2D;
         /**@internal */
         _checkEnterIndex: number[];
-        /**@internal */
-        _isPlayBack: boolean;
         /**
          * @en Constructor method of Animator2D Component.
          * @zh 2D动画组件构造方法。
@@ -3734,84 +3739,15 @@ declare namespace Laya {
         get parameters(): Record<string, Animation2DParm>;
         set parameters(val: Record<string, Animation2DParm>);
         /**
-         * @en The playback speed of the animation.
-         * @zh 播放速度
-         */
-        get speed(): number;
-        set speed(num: number);
-        /**
-         * @en If the animation is currently playing.
-         * @zh 动画是否正在播放。
-         */
-        get isPlaying(): boolean;
-        /**
-         * @internal
-         * @param animatorState
-         * @param playState
-         */
-        private _updateStateFinish;
-        /**
          * @internal
          * @param parentState
          * @param currentState
          */
         private _switchState;
         /**
-         * @en Assigns data to a Node.
-         * @param stateInfo The animation state information.
-         * @param additive Indicates if it is additive.
-         * @param weight The weight of the state.
-         * @param isFirstLayer Indicates if it is the first layer.
-         * @zh 赋值Node数据。
-         * @param stateInfo 动画状态信息。
-         * @param additive 是否为加法。
-         * @param weight 状态的权重。
-         * @param isFirstLayer 是否是第一层。
-         */
-        private _setClipDatasToNode;
-        /**
          * @internal
-         * @param o
-         * @param additive
-         * @param weight
-         * @param isFirstLayer
-         * @param data
-         */
-        private _applyFloat;
-        /**
-         * @internal
-         * @param node
-         * @returns
-         */
-        private getOwner;
-        /**
-         * 更新clip数据
-         * @internal
-         */
-        private _updateClipDatas;
-        /**
-         * @internal
-         * @param animatorState
-         * @param playState
-         * @param elapsedTime
-         * @param loop
-         * @param layerIndex
-         * @returns
          */
         private _updatePlayer;
-        /**
-         * @internal
-         * @param stateInfo
-         * @param playStateInfo
-         */
-        private _updateEventScript;
-        /**
-        * @internal
-        */
-        private _eventScript;
-        /**
-         * @internal
-         */
         /**
          * 启用过渡
          * @param layerindex
@@ -3819,12 +3755,6 @@ declare namespace Laya {
          * @returns
          */
         private _applyTransition;
-        /**
-         * @internal
-         * @param delta
-         * @returns
-         */
-        private _applyUpdateMode;
         /**
          * @en Jump to the specified frame and stop playing the animation.
          * @param name The name of the animation.
@@ -3959,6 +3889,189 @@ declare namespace Laya {
         /**
          * @internal
          */
+        onDestroy(): void;
+    }
+    /**
+     * @en Base class for 2D animator components, provides shared clip playback logic.
+     * @zh 2D 动画组件基类，提供共用的 clip 播放逻辑。
+     * @internal
+     */
+    class Animator2DBase extends Component {
+        /**@internal */
+        protected _speed: number;
+        /**@internal 更新模式*/
+        protected _updateMode: AnimatorUpdateMode;
+        /**@internal 降低更新频率调整值*/
+        protected _lowUpdateDelty: number;
+        /**@internal */
+        protected _isPlaying: boolean;
+        /**@internal */
+        protected _ownerMap: Map<KeyframeNode2D, {
+            ower: Node;
+            pro?: {
+                ower: any;
+                key: string;
+                defVal: any;
+            };
+        }>;
+        /**@internal */
+        protected _isPlayBack: boolean;
+        constructor();
+        /**
+         * @en The playback speed of the animation.
+         * @zh 播放速度
+         */
+        get speed(): number;
+        set speed(num: number);
+        /**
+         * @en If the animation is currently playing.
+         * @zh 动画是否正在播放。
+         */
+        get isPlaying(): boolean;
+        /**
+         * @en Assigns data to a Node.
+         * @internal
+         */
+        protected _setClipDatasToNode(stateInfo: AnimatorState2D, additive: boolean, weight: number): void;
+        /**
+         * @internal
+         */
+        protected _applyAniData(o: {
+            ower: Node;
+            pro?: {
+                ower: any;
+                key: string;
+                defVal: any;
+            };
+        }, additive: boolean, weight: number, data: string | number | boolean | {
+            pos: Vector3;
+            rotation: Vector3;
+        }): void;
+        /**
+         * @internal 更新所有已缓存的owner的defVal为当前属性值
+         */
+        protected _updateDefVal(): void;
+        /**
+         * @internal
+         */
+        protected getOwner(node: KeyframeNode2D): {
+            ower: Node;
+            pro?: {
+                ower: any;
+                key: string;
+                defVal: any;
+            };
+        };
+        /**
+         * @internal 更新clip数据
+         */
+        protected _updateClipDatas(animatorState: AnimatorState2D, addtive: boolean, playStateInfo: AnimatorPlayState2D): void;
+        /**
+         * @internal 仅更新时间与循环，不处理状态机过渡。供 Animator2D/AnimatorClip2D 共用。
+         * @returns isReplay 本帧是否发生循环
+         */
+        protected _updatePlayerTime(animatorState: AnimatorState2D, playState: AnimatorPlayState2D, elapsedTime: number, loop: number): boolean;
+        /**
+         * @internal
+         */
+        protected _updateStateFinish(animatorState: AnimatorState2D, playState: AnimatorPlayState2D): void;
+        /**
+         * @internal
+         */
+        protected _eventScript(events: Animation2DEvent[], parentPlayTime: number, currPlayTime: number, frontPlay: boolean): void;
+        /**
+         * @internal
+         */
+        protected _updateEventScript(stateInfo: AnimatorState2D, playStateInfo: AnimatorPlayState2D): void;
+        /**
+         * @internal
+         */
+        protected _applyUpdateMode(delta: number): number;
+        /**
+         * @en Reset the base values for additive animations.
+         * @zh 重置additive动画的基础值。
+         */
+        resetAdditiveBaseValues(): void;
+    }
+    /**
+     * @en 2D animator component that plays a single AnimationClip2D directly, without a state machine.
+     * @zh 直接播放单个 2D 动画片段的组件，无需状态机。
+     */
+    class AnimatorClip2D extends Animator2DBase {
+        /**@internal */
+        private _clip;
+        /**@internal */
+        private _playStateInfo;
+        /**@internal 用于复用的单 clip 状态，与 Animator2D 共用 _updateClipDatas 等逻辑 */
+        private _clipState;
+        /**@internal */
+        private _defaultWeight;
+        /**@internal */
+        private _additive;
+        /**@internal */
+        private _autoPlay;
+        constructor();
+        /**
+         * @en The animation clip to play.
+         * @zh 要播放的动画片段。
+         */
+        get clip(): AnimationClip2D | null;
+        set clip(value: AnimationClip2D | null);
+        /**
+         * @en Apply weight when writing to node (default 1).
+         * @zh 写入节点时的权重，默认 1。
+         */
+        get defaultWeight(): number;
+        set defaultWeight(v: number);
+        /**
+         * @en Whether to blend additively.
+         * @zh 是否叠加混合。
+         */
+        get additive(): boolean;
+        set additive(v: boolean);
+        /**
+         * @en If true, automatically call play() when the component is enabled and clip is set.
+         * @zh 为 true 时，组件启用且已设置 clip 时自动播放。
+         */
+        get autoPlay(): boolean;
+        set autoPlay(v: boolean);
+        /**
+         * @en Number of loops: -1 use clip's islooping, 0 infinite, 1 once, 2 twice, etc.
+         * @zh 循环次数：-1 使用 clip 的 islooping，0 无限，1 一次，2 两次等。
+         */
+        get loop(): number;
+        set loop(v: number);
+        /**
+         * @en Whether to play forward then backward (yoyo).
+         * @zh 是否往返播放（先正向后反向）。
+         */
+        get yoyo(): boolean;
+        set yoyo(v: boolean);
+        /**
+         * @en Play the clip from start or from the given normalized time.
+         * @zh 播放片段，可从开头或指定归一化时间开始。
+         * @param normalizedTime 0~1, omit to start from 0
+         */
+        play(normalizedTime?: number): void;
+        /**
+         * @en Stop playing.
+         * @zh 停止播放。
+         */
+        stop(): void;
+        /**
+         * @en Go to the given normalized time and stop.
+         * @zh 跳转到指定归一化时间并停止。
+         * @param normalizedTime 0~1
+         */
+        gotoAndStop(normalizedTime: number): void;
+        /**
+         * @en Jump to the given frame and stop.
+         * @zh 跳转到指定帧并停止。
+         * @param frame Frame index
+         */
+        gotoAndStopByFrame(frame: number): void;
+        onEnable(): void;
+        onUpdate(): void;
         onDestroy(): void;
     }
     /**
@@ -4468,7 +4581,6 @@ declare namespace Laya {
          */
         transitions: AnimatorTransition2D[];
         /**
-         * @internal
          * @en Priority Transition List.
          * @zh 优先过渡列表。
          */
@@ -4476,7 +4588,10 @@ declare namespace Laya {
         /**@internal */
         _scripts: AnimatorState2DScript[] | null;
         /**@internal */
-        _realtimeDatas: Array<number | string | boolean | Vector3>;
+        _realtimeDatas: Array<number | string | boolean | {
+            pos: Vector3;
+            rotation: Vector3;
+        }>;
         /**
          * @en Animation Clip
          * @zh 动画剪辑
@@ -5993,7 +6108,10 @@ declare namespace Laya {
          * @param frontPlay 是否是前向播放。
          * @param outDatas 计算好的动画数据。
          */
-        _evaluateClipDatasRealTime(nodes: KeyframeNodeList, playCurTime: number, realTimeCurrentFrameIndexes: Int16Array, addtive: boolean, frontPlay: boolean, outDatas: Array<boolean | number | Vector3 | Quaternion | Vector4 | Vector2>, avatarMask: AvatarMask): void;
+        _evaluateClipDatasRealTime(nodes: KeyframeNodeList, playCurTime: number, realTimeCurrentFrameIndexes: Int16Array, addtive: boolean, frontPlay: boolean, outDatas: Array<boolean | number | Vector3 | Quaternion | Vector4 | Vector2 | {
+            pos: Vector3;
+            rotation: Vector3;
+        }>, avatarMask: AvatarMask): void;
         private _evaluateFrameNodeVector3DatasRealTime;
         private _evaluateFrameNodeVector2DatasRealTime;
         private _evaluateFrameNodeVector4DatasRealTime;
@@ -6076,6 +6194,7 @@ declare namespace Laya {
          * @param version 动画数据格式的版本字符串。
          */
         static parse(clip: AnimationClip, reader: Byte, version: string): void;
+        static createPathPoints(arr: any[]): PathPoint[];
         /**
          * @internal
          * @en Parse the various components of the AnimationClip from binary data and assemble them into a complete AnimationClip object for subsequent animation playback and processing.
@@ -6494,6 +6613,16 @@ declare namespace Laya {
          */
         _cloneTo(dest: Animator): void;
         /**
+         * @internal
+         * 更新所有已缓存的keyframe owner的defaultValue为当前属性值
+         */
+        private _updateDefaultValues;
+        /**
+         * @en Reset the base values for additive animations. Call this when you manually modify animated properties and want the additive animation to use the new values as base.
+         * @zh 重置additive动画的基础值。当手动修改了被动画控制的属性，并希望additive动画基于新值叠加时调用此方法。
+         */
+        resetAdditiveBaseValues(): void;
+        /**
          * @en Gets the default animation state.
          * @param layerIndex The layer index.
          * @returns The default animation state.
@@ -6733,7 +6862,6 @@ declare namespace Laya {
         get avatarMask(): AvatarMask;
         set avatarMask(value: AvatarMask);
         /**
-         * @internal
          * @en The name of the default animation state machine for this layer.
          * @zh 此层的默认动画状态机的名称。
          */
@@ -7265,7 +7393,6 @@ declare namespace Laya {
      * @zh 用来描述动画层遮罩。
      */
     class AvatarMask {
-        /**@internal */
         private _avatarPathMap;
         /**
          * @en Constructor, initialize mask information.
@@ -7325,7 +7452,8 @@ declare namespace Laya {
         Vector3 = 6,
         Vector4 = 7,
         Color = 8,
-        Boolean = 9
+        Boolean = 9,
+        PathPoint = 10
     }
     /**
      * @internal
@@ -7739,6 +7867,8 @@ declare namespace Laya {
          */
         get mincullRate(): number;
         set mincullRate(value: number);
+        set maxVisibalDistance(value: number);
+        set minVisibalDistance(value: number);
         /**
          * @internal
          * @en Sets the LOD group
@@ -7816,6 +7946,7 @@ declare namespace Laya {
          * @zh LOD节点比例
          */
         private _nowRate;
+        private _needChangeLODVisibal;
         readonly owner: Sprite3D;
         /**
          * @en Constructor method of LODGroup.
@@ -7857,22 +7988,6 @@ declare namespace Laya {
          */
         protected _onDisable(): void;
         /**
-         * 设置显示隐藏组
-         * @param rate
-         * @returns
-         */
-        private _applyVisibleRate;
-        /**
-         * 设置某一级LOD显示
-         * @param index
-         */
-        private _setLODvisible;
-        /**
-         * 设置某一级LOD不显示
-         * @param index
-         */
-        private _setLODinvisible;
-        /**
          * @internal
          * @en Called when the object is being destroyed to perform cleanup operations.
          * @zh 在对象被销毁时调用，以执行清理操作。
@@ -7893,6 +8008,8 @@ declare namespace Laya {
          * @zh 重新计算包围盒
          */
         recalculateBounds(): void;
+        _notifyChangeLODVisibal(): void;
+        _changeLODVisibal(): void;
         /**
          * @internal
          * @en Update before rendering
@@ -8226,357 +8343,6 @@ declare namespace Laya {
          * @zh 销毁此批次并释放其资源。
          */
         destroy(): void;
-    }
-    /**
-     * @en Class used to describe batched rendering nodes.
-     * @zh 类用来描述合批的渲染节点。
-     * @blueprintIgnore @blueprintIgnoreSubclasses
-     */
-    class BatchRender extends BaseRender {
-        /**@internal */
-        protected _checkLOD: boolean;
-        /**@internal */
-        protected _lodCount: number;
-        /**@internal */
-        protected _lodRateArray: number[];
-        /**@internal*/
-        protected _batchList: FastSinglelist<BaseRender>;
-        /**@internal*/
-        protected _batchbit: RenderBitFlag;
-        /**@internal*/
-        protected _RenderBitFlag: RenderBitFlag;
-        /**@internal*/
-        protected _lodInstanceRenderElement: {
-            [key: number]: InstanceRenderElement[];
-        };
-        /**@internal*/
-        protected _lodsize: number;
-        /**@internal*/
-        private _cacheLod;
-        /**
-         * @en constructor, initialize the batch rendering node.
-         * @zh 构造方法, 初始化合批渲染节点。
-         */
-        constructor();
-        /**
-         * @en Whether to batch based on LOD (Level of Detail).
-         * @zh 是否根据 LOD（细节层次）来进行合批。
-         */
-        get checkLOD(): boolean;
-        set checkLOD(value: boolean);
-        /**
-         * @en Sets the LOD culling rate array for filtering.
-         * @zh 设置 LOD 裁剪率数组用于过滤。
-         */
-        get lodCullRateArray(): number[];
-        set lodCullRateArray(value: number[]);
-        /**
-         * @internal
-         * Overrid it
-         *  是否满足batch条件
-         */
-        protected _canBatch(render: BaseRender): boolean;
-        /**
-         * @internal
-         */
-        protected _onEnable(): void;
-        /**
-         * @internal
-         */
-        protected _onDisable(): void;
-        /**
-         * @internal
-         * 根据lod的改变
-         */
-        protected _changeLOD(lod: number): void;
-        /**
-         * @en Called before rendering. Handles LOD (Level of Detail) calculations and changes.
-         * @zh 渲染前调用。处理 LOD（细节级别）计算和变更。
-         */
-        onPreRender(): void;
-        /**
-         * @internal
-         * @param render
-         */
-        _batchOneRender(render: BaseRender): boolean;
-        /**
-         * @internal
-         * @param render
-         */
-        _removeOneRender(render: BaseRender): void;
-        /**
-         * @internal
-         * @param render
-         */
-        _updateOneRender(render: BaseRender): void;
-        /**
-         * @en Adds a list of render nodes to the batch queue.
-         * @param renderNode An array of BaseRender objects to be added to the batch.
-         * @zh 将渲染节点队列添加到合批队列中。
-         * @param renderNode 要添加到合批的 BaseRender 对象数组。
-         */
-        addList(renderNode: BaseRender[]): void;
-        /**
-         * @en Performs batching based on the _batchList.
-         * This method iterates through the _batchList and batches each render node.
-         * @zh 根据 _batchList 执行合批操作。
-         * 此方法遍历 _batchList 并对每个渲染节点进行合批。
-         */
-        reBatch(): void;
-        /**
-         * @internal
-         * @en Restoring the Batch Render State
-         * @zh 恢复批处理渲染状态
-         */
-        _restorRenderNode(): void;
-        /**
-         * @internal
-         */
-        _clear(): void;
-    }
-    /**
-     * @en Class used to describe the volume of a mergeable render node.
-     * @zh 用来描述一个可合并渲染节点的体积。
-     */
-    class StaticBatchVolume extends Volume {
-        /** 缓存可以合并的*/
-        private _cacheRender;
-        /** 已经合并了的BaseRender */
-        private _batchRender;
-        /** 是否根据LOD属性优化 */
-        private _checkLOD;
-        /** StaticInstanceBatch */
-        /** 是否开启静态物体Instance的合批 */
-        private _enableStaticInstanceBatch;
-        /** 内置静态物体Instance合批 */
-        private _instanceBatchRender;
-        /**StaticVertexMergeBatch */
-        /** 是否开启顶点静态合批 TODO */
-        private _enableStaticVertexMergeBatch;
-        /** 顶点静态合批  TODO*/
-        private _vertexMergeBatchRender;
-        /** CustomBatch自定义的batch流程*/
-        private _enableCustomBatch;
-        private _customBatchs;
-        private _getStaticInstanceBatchRender;
-        private _getStatiVertexMergeBatchRender;
-        /**
-         * @en Whether LOD (Level of Detail) is considered in batching.
-         * @zh 合批是否考虑 LOD（细节层次）。
-         */
-        get checkLOD(): boolean;
-        set checkLOD(value: boolean);
-        /**
-         * @en Whether static instance batching is enabled.
-         * @zh 是否启用静态实例合批渲染。
-         */
-        get enableStaticInstanceBatchRender(): boolean;
-        set enableStaticInstanceBatchRender(value: boolean);
-        /**
-         * @en Whether static vertex merge batching is enabled.
-         * @zh 是否启用静态顶点合并合批。
-         */
-        get enableMergeBatchRender(): boolean;
-        set enableMergeBatchRender(value: boolean);
-        /**
-         * @en Whether custom batching is enabled.
-         * @zh 是否启用自定义合批。
-         */
-        get enableCustomBatchRender(): boolean;
-        set enableCustomBatchRender(value: boolean);
-        /**
-         * @en The custom batch renderers.
-         * @zh 自定义的合批渲染器。
-         */
-        get customBatchRenders(): BatchRender[];
-        set customBatchRenders(value: BatchRender[]);
-        /**
-         * @ignore
-         * @en Constructor method，initialize rendering related settings.
-         * @zh 构造方法，初始化渲染相关的设置。
-         */
-        constructor();
-        /**
-         * Restoring the Batch Render State
-         */
-        private _restorRenderNode;
-        /**
-         * add one RenderNode
-         * @param renderNode
-         * @returns
-         */
-        private __addRenderNodeToBatch;
-        /**
-         * remove one RenderNode
-         * @param renderNode
-         */
-        private __removeRenderNodeFromBatch;
-        protected _onEnable(): void;
-        protected _onDisable(): void;
-        /**
-         * @internal
-         * @en Adds a render node to the volume when it enters.
-         * This method handles the addition of static batch render nodes.
-         * @param renderNode The render node to be added.
-         * @zh 当一个渲染节点进入体积时添加该节点。
-         * 此方法处理静态批次渲染节点的添加。
-         * @param renderNode 要添加的渲染节点。
-         */
-        _addRenderNode?(renderNode: BaseRender): void;
-        /**
-         * @internal
-         * @en Removes a render node from the volume when it exits.
-         * This method handles the removal of static batch render nodes.
-         * @param renderNode The render node to be removed.
-         * @zh 当一个渲染节点移出体积时移除该节点。
-         * 此方法处理静态批次渲染节点的移除。
-         * @param renderNode 要移除的渲染节点。
-         */
-        _removeRenderNode(renderNode: BaseRender): void;
-        /**
-         * @internal
-         * @en Volume change
-         * @zh 体积变化
-         */
-        _VolumeChange(): void;
-        /**
-         * @internal
-         * @en Called when the component starts.
-         * Initiates the rebatching process.
-         * @zh 当组件启动时调用。
-         * 启动重新合批过程。
-         */
-        onStart(): void;
-        /**
-         * @en Rebatches the render nodes, clearing previous states.
-         * This method should be called manually when necessary. Performs batching based on the values in the Volume.
-         * @zh 重新合批渲染节点，清理先前的状态。
-         * 必要时需要手动调用此方法。根据 Volume 中的值执行合批。
-         */
-        reBatch(): void;
-    }
-    /**
-     * @en used to create static instance batch rendering.
-     * @zh 用于创建静态实例批处理渲染。
-     */
-    class StaticInstanceBatchRender extends BatchRender {
-        /** instanceBatchManager*/
-        private _batchManager;
-        /** 记录每个BatchMask对应的Instance的数量*/
-        private _insBatchMarksNums;
-        private _insElementMarksArray;
-        /** batch rule:Batch min count*/
-        private _instanceBatchminNums;
-        /** cache udpate element*/
-        private _updateChangeElement;
-        /**
-         * @en constructor, initialize static instance batch rendering.
-         * @zh 构造方法, 初始化静态实例批处理渲染。
-         */
-        constructor();
-        /**
-         * @en Determines whether this render supports instance batching.
-         * @param render The render object to be checked.
-         * @returns A boolean value indicating whether instance batching is supported.
-         * @zh 判断这个 Render 是否支持 InstanceBatch。
-         * @param render 要检查的渲染对象。
-         * @returns 一个布尔值，指示是否支持实例批处理。
-         */
-        private _isRenderNodeAllCanInstanceBatch;
-        /**
-         * @en Calculates the number of instances to be batched.
-         * @param render The render object containing the elements to be batched.
-         * @zh 计算实例合并的数量。
-         * @param render 包含要合并元素的渲染对象。
-         */
-        private _sumInstanceBatch;
-        /**
-         * batch one element
-         * @param element
-         * @param render
-         * @returns
-         */
-        private _batchOneElement;
-        /**
-         * remove one element
-         * @param element
-         * @param render
-         * @returns
-         */
-        private _removeOneElement;
-        /**
-         * update one element
-         * @param element
-         * @param render
-         * @returns
-         */
-        private _updateOneElement;
-        /**
-         * create instanceElement
-         * @param element
-         * @param render
-         * @param batchMark
-         * @returns
-         */
-        private _createInstanceElement;
-        /**
-         * @en Determines whether the render instance meets the batch conditions.
-         * @param render The base render object to check for batching conditions.
-         * @returns boolean True if the render instance meets the batching conditions; otherwise, false.
-         * @zh 判断渲染实例是否满足批处理条件。
-         * @param render 要检查批处理条件的基础渲染对象。
-         * @returns boolean 如果渲染实例满足批处理条件，则返回 true；否则返回 false。
-         */
-        protected _canBatch(render: BaseRender): boolean;
-        /**
-         *
-         * @en Recalculate the bounding box
-         * @zh 重新计算包围盒
-         */
-        _calculateBoundingBox(): Bounds;
-        protected _onDestroy(): void;
-        /**
-         * 添加合批到render
-         * @param render
-         * @returns
-         */
-        _batchOneRender(render: BaseRender): boolean;
-        /**
-         * 删除合批
-         * @param render
-         * @returns
-         */
-        _removeOneRender(render: BaseRender): void;
-        /**
-         * 合批过的更新数据
-         * @param render
-         * @returns
-         */
-        _updateOneRender(render: BaseRender): void;
-        /**
-         * @en Clean up all renderings
-         * @zh 清理所有渲染
-         */
-        _clear(): void;
-        /**
-         * @en Add a list of renders to the batch queue
-         * @param renderNodes  The render queue to be added
-         * @zh 将渲染队列添加到批处理队列
-         * @param renderNodes  要添加的渲染队列
-         */
-        addList(renderNodes: BaseRender[]): void;
-        /**
-         * @en Rebatch based on the _batchList
-         * @zh 根据_batchList重新进行批处理
-         */
-        reBatch(): void;
-    }
-    /**
-     * @en The batch rendering of the static vertex merge.
-     * @zh 静态顶点合并的批量渲染。
-     */
-    class StatiVertexMergeBatchRender extends BatchRender {
-        _addList(renderNodes: BaseRender[]): void;
     }
     /**
      * @en The `VolumeManager` class is used to manage volume components.
@@ -10328,7 +10094,6 @@ declare namespace Laya {
     class DirectionLightCom extends Light {
         /**@internal */
         _dataModule: IDirectLightData;
-        /** @internal */
         private _direction;
         /** @internal */
         _shadowTwoCascadeSplits: number;
@@ -10392,11 +10157,9 @@ declare namespace Laya {
      * @zh LightSprite 类用于创建灯光的父类。
      */
     class Light extends Component {
-        /**@internal 下沉数据集合 */
+        /**下沉数据集合 */
         protected _dataModule: IDirectLightData | ISpotLightData | IPointLightData;
-        /** @internal */
         protected _shadowMode: ShadowMode;
-        /** @internal */
         private _isAlternate;
         /** @internal */
         _intensityColor: Vector3;
@@ -10505,7 +10268,7 @@ declare namespace Laya {
         protected _onDisable(): void;
     }
     /**
-     * @internal
+     * @ignore
      * @en The `LightQueue` class manages a queue of lights.
      * @zh `LightQueue` 类管理一个灯光队列
      */
@@ -12106,12 +11869,10 @@ declare namespace Laya {
         protected _changeVertexDefine(mesh: Mesh): void;
         private _morphTargetValues;
         /**
-         * @internal
+         * @en The morph target values.
+         * @zh 变形目标值。
          */
         get morphTargetValues(): Record<string, number>;
-        /**
-         * @internal
-         */
         set morphTargetValues(value: Record<string, number>);
         /**
          * @internal
@@ -12657,16 +12418,36 @@ declare namespace Laya {
         constructor();
     }
     enum RenderBitFlag {
-        RenderBitFlag_CullFlag = 0,
-        RenderBitFlag_Batch = 1,
-        RenderBitFlag_Editor = 2,
-        RenderBitFlag_InstanceBatch = 3,
-        RenderBitFlag_VertexMergeBatch = 4
+        RenderBitFlag_Batch = 0,
+        RenderBitFlag_Editor = 1,
+        RenderBitFlag_InstanceBatch = 2,
+        RenderBitFlag_VertexMergeBatch = 3
+    }
+    enum VisibalRangeFlag {
+        None = 0,
+        BASERENDERSET = 1,
+        LOD = 2
     }
     enum IrradianceMode {
         LightMap = 0,
         VolumetricGI = 1,
         Common = 2
+    }
+    enum propertyChangeFlag {
+        material = 0,
+        renderELement = 1,
+        geometry = 2,
+        lightmap = 3,
+        invertY = 4,
+        reflection = 5,
+        volumGI = 6,
+        castShadow = 7,
+        receiveShadow = 8,
+        transform = 9,
+        lightmapData = 10,
+        RenderCustomData = 11,
+        VisibalRange = 12,
+        SimpleSkineParam = 13
     }
     /**
      * @en The `BaseRender` class is the parent class for renderers and is an abstract class that should not be instantiated.
@@ -12718,10 +12499,6 @@ declare namespace Laya {
         _sharedMaterials: Material[];
         /** @internal */
         _scene: any;
-        /** @internal */
-        _sceneUpdateMark: number;
-        /** @internal 属于相机的标记*/
-        _updateMark: number;
         /** @internal 是否需要反射探针*/
         _probReflection: ReflectionProbe;
         /** @internal 材质是否支持反射探针*/
@@ -12730,12 +12507,8 @@ declare namespace Laya {
         _lightProb: VolumetricGI;
         /**@internal */
         _supportVolumetricGI: boolean;
-        /**@internal motion list index，not motion is -1*/
-        _motionIndexList: number;
         /**@internal TODO*/
-        _LOD: number;
-        /**@internal TODO*/
-        _batchRender: BatchRender;
+        _batchRender: IBatchModuleAgent;
         /**@interface */
         _receiveShadow: boolean;
         /**@internal */
@@ -12744,9 +12517,7 @@ declare namespace Laya {
         protected _transform: Transform3D;
         /** 如果这个值不是0,说明有一些条件使他不能加入渲染队列，例如如果是1，证明此节点被lod淘汰*/
         private _volume;
-        protected _asynNative: boolean;
         private _materialsInstance;
-        private _renderid;
         private _lightmapScaleOffset;
         _renderElements: RenderElement[];
         readonly owner: Sprite3D;
@@ -12756,6 +12527,10 @@ declare namespace Laya {
          */
         get enabled(): boolean;
         set enabled(value: boolean);
+        set visibalMin(value: number);
+        get visibalMin(): number;
+        set visibalMax(value: number);
+        get visibalMax(): number;
         /**
          * @en The sorting fudge value.
          * @zh 排序矫正值。
@@ -12778,12 +12553,6 @@ declare namespace Laya {
          * @zh 渲染节点。
          */
         get renderNode(): IBaseRenderNode;
-        /**
-         * @en The distance used for sorting.
-         * @zh 排序距离。
-         */
-        get distanceForSort(): number;
-        set distanceForSort(value: number);
         /**
          * @en The Geometry Bounds.
          * If this bounds is set, the render bounding box will be updated based on geometryBounds and transform, and the native layer will be sunk.
@@ -12972,6 +12741,13 @@ declare namespace Laya {
         set material(value: Material);
         get materials(): Material[];
         set materials(value: Material[]);
+        /**
+         * @deprecated 会在底层计算
+         * @en The distance used for sorting.
+         * @zh 排序距离。
+         */
+        get distanceForSort(): number;
+        set distanceForSort(value: number);
     }
     /**
      * @internal
@@ -15470,6 +15246,8 @@ declare namespace Laya {
     class SceneRenderManager {
         /**@internal */
         _sceneManagerOBJ: ISceneRenderManager;
+        /** @internal */
+        _list: SingletonList<BaseRender>;
         /**
          * @ignore
          * @en Creates an instance of SceneRenderManager.
@@ -15533,18 +15311,17 @@ declare namespace Laya {
         private _simpleAnimatorTextureSize;
         /**  x simpleAnimation offset,y simpleFrameOffset*/
         private _simpleAnimatorOffset;
-        /**@internal */
+        /**
+         * @en The number of bones.
+         * @zh 骨骼数量
+         */
         _bonesNums: number;
         private _ownerSimpleRenderNode;
         /**
-         * @internal
          * @en The animator texture
          * @zh 动画帧贴图
          */
         get simpleAnimatorTexture(): Texture2D;
-        /**
-         * @internal
-         */
         set simpleAnimatorTexture(value: Texture2D);
         /**
          * @internal
@@ -16002,6 +15779,7 @@ declare namespace Laya {
          * @zh 获取是否前向顺时针面。
          */
         getFrontFaceValue(): number;
+        getScaleChangeFlag(): boolean;
         /**
          * @en The sprite to which this transform belongs.
          * @zh 所属精灵。
@@ -16656,23 +16434,6 @@ declare namespace Laya {
     }
     /**
      * @internal
-     */
-    class InstanceBatchManager {
-        /** @internal */
-        static instance: InstanceBatchManager;
-        /**@internal */
-        private _instanceBatchOpaqueMarks;
-        /**@internal [只读]*/
-        updateCountMark: number;
-        constructor();
-        /**
-         * get batch index
-         */
-        private _getData;
-        getInstanceBatchOpaquaMark(element: RenderElement): BatchMark;
-    }
-    /**
-     * @internal
      * @en The `FrustumCulling` class is used for performing frustum culling calculations to determine visibility of objects within the camera's view.
      * @zh `FrustumCulling` 类用于执行视锥体剔除计算，以确定对象是否在相机视图中可见。
      */
@@ -16818,7 +16579,6 @@ declare namespace Laya {
     class SphericalHarmonicsL2 {
         /** @internal */
         static _default: SphericalHarmonicsL2;
-        /** @internal */
         private _coefficients;
         /**
          * @en Gets the coefficient for a specific color channel.
@@ -19980,38 +19740,38 @@ declare namespace Laya {
         _cloneTo(dest: PhysicsColliderComponent): void;
     }
     /**
-     * @en The PhysicsSettings class is used to create physics configuration information.
      * @zh PhysicsSettings 类用于创建物理配置信息。
+     * @en The PhysicsSettings class is used to create physics configuration information.
      */
     class PhysicsSettings {
         /**
-         * @en Flags that determine the behavior of the physics engine.
          * @zh 标志位，用于确定物理引擎的行为。
+         * @en Flags that determine the behavior of the physics engine.
          */
         flags: number;
         /**
-         * @en Used in the physics engine to specify the maximum number of substeps allowed per frame to improve the accuracy and stability of the physics simulation.
-         * @zh 最大子步数,在物理引擎中用于指定每一帧允许的最大子步骤数，以提高物理模拟的精度和稳定性。
+         * @zh 单帧最大追帧步数限制一帧内最多执行的物理步数量，用于在掉帧时控制 CPU 峰值并防止物理追赶过度。数值越大，物理跟随时间越准确，但负载也越高。
+         * @en maxSubSteps limits the maximum number of physics steps executed in a single frame. It helps control CPU spikes during frame drops. Higher values keep physics closer to real time but increase computational load.
          */
         maxSubSteps: number;
         /**
-         * @en The time step of the physics simulation.
-         * @zh 固定时间步长，物理模拟器帧的间隔时间。
+         * @zh 固定模拟步长用于定义物理世界中每个模拟步（Step）的时间长度（秒），保证物理计算在不同帧率下具有一致性和稳定性。步长越小，物理精度越高，但 CPU 开销增加。
+         * @en fixedTimeStep defines the duration of a single physics simulation step (in seconds), ensuring consistent and stable physics results across different frame rates. Smaller values increase simulation accuracy at the cost of higher CPU usage.
          */
         fixedTimeStep: number;
         /**
-         * @en Whether to enable continuous collision detection.
-         * @zh 是否开启连续碰撞检测
+         * @zh 连续碰撞检测全局开关用于指示物理系统是否允许使用 CCD 机制，以减少高速物体穿透。开启表示允许 CCD，但是否生效还需结合刚体模式及 CCD 相关参数。
+         * @en enableCCD specifies whether the physics system allows the use of Continuous Collision Detection (CCD) to reduce high-speed object penetration. Enabling it permits CCD, but actual effect depends on rigid body settings and CCD parameters.
          */
         enableCCD: boolean;
         /**
-         * @en The threshold for Continuous Collision Detection (CCD).
-         * @zh 连续碰撞检测的阈值。
+         * @zh CCD 启动位移阈值定义物体在单个物理步内位移超过多少时触发 CCD，从而降低不必要的高成本计算。建议根据物体尺寸和速度设置。
+         * @en ccdThreshold defines the displacement within a single physics step that triggers CCD. It prevents unnecessary high-cost calculations. Recommended to set based on object size and velocity.
          */
         ccdThreshold: number;
         /**
-         * @en The radius of the sphere used for Continuous Collision Detection.
-         * @zh 连续碰撞检测的球体半径。
+         * @zh CCD 扫掠球半径用于近似物体在单步运动路径上的体积，用于检测高速穿透。半径应接近物体最小厚度或有效半径，以保证碰撞检测可靠性。
+         * @en ccdSphereRadius approximates the object’s volume along its motion path in a single physics step, used to detect high-speed penetration. The radius should be close to the object’s minimum thickness or effective radius for reliable collision detection.
          */
         ccdSphereRadius: number;
     }
@@ -20849,6 +20609,7 @@ declare namespace Laya {
         private _shader;
         /**@internal */
         private _shaderData;
+        private _compositeShaderData;
         /**@internal */
         private _linearColor;
         /**@internal */
@@ -21182,7 +20943,7 @@ declare namespace Laya {
         private _CIExyToLMS;
         private _ColorBalanceToLMSCoeffs;
         /**
-         * @zh Wheather to enable white balance.
+         * @en Wheather to enable white balance.
          * @zh 白平衡是否开启
          */
         get enableBalance(): boolean;
@@ -21420,6 +21181,12 @@ declare namespace Laya {
         set rotate(value: number);
         /**
          * @internal
+         * @en The edge fade factor for smooth fade out at screen edges.
+         * @zh 边缘渐变系数，用于在屏幕边缘平滑淡出。
+         */
+        set edgeFade(value: number);
+        /**
+         * @internal
          * @en The lens flare element data.
          * @zh 镜头光晕元素数据
          */
@@ -21573,6 +21340,7 @@ declare namespace Laya {
         private _flareCMDS;
         private _center;
         private _rotate;
+        private _edgeFade;
         private _light;
         private _effectIntensity;
         private _effectScale;
@@ -21606,8 +21374,10 @@ declare namespace Laya {
         /**
          * @internal
          * 更新后处理数据
+         * @param cmd 命令缓冲
+         * @param edgeFade 边缘渐变系数 [0, 1]
          */
-        _updateEffectData(cmd: CommandBuffer): void;
+        _updateEffectData(cmd: CommandBuffer, edgeFade?: number): void;
         /**
          * @en Calculate the center point of directional light
          * @param camera The camera
@@ -22572,10 +22342,12 @@ declare namespace Laya {
          */
         get mesh(): GeometryElement;
         set mesh(value: GeometryElement);
-        /** @internal */
-        private get meshType();
-        /** @internal */
-        private set meshType(value);
+        /**
+         * @en The type of sky mesh.
+         * @zh 天空网格的类型。
+         */
+        get meshType(): "box" | "dome" | "";
+        set meshType(value: "box" | "dome" | "");
         /**
          * @ignore
          * @en Creates an instance of SkyRenderer.
@@ -22817,7 +22589,7 @@ declare namespace Laya {
          * @param light 方向光组件。
          * @returns 方向光的阴影贴图纹理。
          */
-        getDirectLightShadowMap(light: DirectionLightCom): RenderTexture;
+        getDirectLightShadowMap(light: IDirectLightData): RenderTexture;
         /**
          * @en Retrieve the shadow pass data for a spot light.
          * @param light The spot light component.
@@ -22826,7 +22598,7 @@ declare namespace Laya {
          * @param light 聚光灯组件。
          * @returns 聚光灯的阴影贴图纹理。
          */
-        getSpotLightShadowPassData(light: SpotLightCom): RenderTexture;
+        getSpotLightShadowPassData(light: ISpotLightData): RenderTexture;
         /**
          * @en Retrieve the shadow pass data for a point light.
          * @zh 获取点光源的阴影通道数据。
@@ -22901,6 +22673,7 @@ declare namespace Laya {
      * @zh 阴影裁剪信息
      */
     class ShadowCullInfo {
+        cameraPosition: Vector3;
         /**
          * @en Position.
          * @zh 位置。
@@ -25201,8 +24974,8 @@ declare namespace Laya {
          */
         sizeGrid: number[];
         /**
-         * @en Color tint for the texture (default: 0xffffffff)
-         * @zh 纹理的颜色色调（默认值：0xffffffff）
+         * @en Color tint for the texture (default: 0xffffffff). The format is ABGR.
+         * @zh 纹理的颜色色调（默认值：0xffffffff）。格式是ABGR。
          */
         color: number;
         /**
@@ -25254,6 +25027,10 @@ declare namespace Laya {
          * @zh 绘制带九宫格信息的图片命令的标识符
          */
         get cmdID(): string;
+        /**
+         * @ignore @blueprintIgnore
+         */
+        needsLayoutRepaint(): number;
         /**
          * @ignore
          */
@@ -25346,6 +25123,10 @@ declare namespace Laya {
          */
         get cmdID(): string;
         /**
+         * @ignore @blueprintIgnore
+         */
+        needsLayoutRepaint(): number;
+        /**
          * @ignore
          */
         getBounds(assembler: IGraphicsBoundsAssembler): void;
@@ -25423,6 +25204,10 @@ declare namespace Laya {
          * @zh 绘制曲线命令的标识符
          */
         get cmdID(): string;
+        /**
+         * @ignore @blueprintIgnore
+         */
+        needsLayoutRepaint(): number;
         /**
          * @ignore
          */
@@ -25523,6 +25308,10 @@ declare namespace Laya {
          */
         get cmdID(): string;
         /**
+         * @ignore @blueprintIgnore
+         */
+        needsLayoutRepaint(): number;
+        /**
          * @ignore
          */
         getBounds(assembler: IGraphicsBoundsAssembler): void;
@@ -25532,6 +25321,8 @@ declare namespace Laya {
      * @zh 绘制图片命令
      */
     class DrawImageCmd implements IGraphicsCmd {
+        /** @internal */
+        _cacheData: any;
         /**
          * @en Identifier for the DrawImageCmd
          * @zh 绘制图片命令的标识符
@@ -25697,6 +25488,10 @@ declare namespace Laya {
          * @zh 绘制单条曲线命令的标识符
          */
         get cmdID(): string;
+        /**
+         * @ignore @blueprintIgnore
+         */
+        needsLayoutRepaint(): number;
         /**
          * @ignore
          */
@@ -25945,6 +25740,10 @@ declare namespace Laya {
          */
         get cmdID(): string;
         /**
+         * @ignore @blueprintIgnore
+         */
+        needsLayoutRepaint(): number;
+        /**
          * @en The start angle of the pie chart in degrees.
          * @zh 开始角度（以度为单位）。
          */
@@ -26077,7 +25876,7 @@ declare namespace Laya {
         height: number;
         /**
          * @en The fill color
-         * @zh 填充颜色
+         * @zh 填充颜色.
          */
         fillColor: any;
         /**
@@ -26139,6 +25938,10 @@ declare namespace Laya {
          * @zh 绘制矩形命令的标识符
          */
         get cmdID(): string;
+        /**
+         * @ignore @blueprintIgnore
+         */
+        needsLayoutRepaint(): number;
         /**
          * @ignore
          */
@@ -26267,6 +26070,10 @@ declare namespace Laya {
          */
         get cmdID(): string;
         /**
+         * @ignore @blueprintIgnore
+         */
+        needsLayoutRepaint(): number;
+        /**
          * @ignore
          */
         getBounds(assembler: IGraphicsBoundsAssembler): void;
@@ -26276,6 +26083,8 @@ declare namespace Laya {
      * @zh 绘制单个贴图
      */
     class DrawTextureCmd implements IGraphicsCmd {
+        /** @internal */
+        _cacheData: any;
         /**
          * @en Identifier for the DrawTextureCmd
          * @zh 绘制单个贴图命令的标识符
@@ -26322,8 +26131,8 @@ declare namespace Laya {
          */
         alpha: number;
         /**
-         * @en (Optional) Color filter.
-         * @zh （可选）颜色滤镜。
+         * @en (Optional) Color filter. The format is ABGR.
+         * @zh （可选）颜色滤镜。格式是ABGR。
          */
         color: number;
         /**
@@ -26388,12 +26197,18 @@ declare namespace Laya {
          * @zh 绘制单个贴图命令的标识符
          */
         get cmdID(): string;
+        /**
+         * @ignore @blueprintIgnore
+         */
+        needsLayoutRepaint(): number;
     }
     /**
      * @en Draw multiple textures based on coordinate sets
      * @zh 根据坐标集合绘制多个贴图
      */
     class DrawTexturesCmd implements IGraphicsCmd {
+        /** @internal */
+        _cacheData: any;
         /**
          * @en Identifier for the DrawTexturesCmd
          * @zh 根据坐标集合绘制多个贴图命令的标识符
@@ -26458,6 +26273,8 @@ declare namespace Laya {
      * @zh 绘制三角形命令
      */
     class DrawTrianglesCmd implements IGraphicsCmd {
+        /** @internal */
+        _cacheData: any;
         /**
          * @en Identifier for the DrawTrianglesCmd
          * @zh 绘制三角形命令的标识符
@@ -26518,6 +26335,9 @@ declare namespace Laya {
          * @zh 用于创建网格的工厂。
          */
         mesh: IMeshFactory;
+        /** @internal 标记 */
+        _dynamic: Vector4;
+        private _tempUVs;
         /**
          * @en Create a DrawTrianglesCmd instance
          * @param texture The texture to be drawn
@@ -26655,6 +26475,31 @@ declare namespace Laya {
          */
         singleCharRender: boolean;
         /**
+         * @en Letter spacing
+         * @zh 字间距
+         */
+        letterSpacing: number;
+        /**
+         * @en Shadow offset in the x direction
+         * @zh 阴影在x方向的偏移量
+         */
+        shadowOffsetX: number;
+        /**
+         * @en Shadow offset in the y direction
+         * @zh 阴影在y方向的偏移量
+         */
+        shadowOffsetY: number;
+        /**
+         * @en Shadow blur radius
+         * @zh 阴影模糊半径
+         */
+        shadowBlur: number;
+        /**
+         * @en Shadow color
+         * @zh 阴影颜色
+         */
+        shadowColor: string;
+        /**
          * @internal
          * Text组件已经将宽度计算好了，这里传入可以减少重复测量
          */
@@ -26769,8 +26614,8 @@ declare namespace Laya {
          */
         percent: boolean;
         /**
-         * @en (Optional) Drawing color
-         * @zh （可选）绘图颜色
+         * @en (Optional) Drawing color. The format is ABGR.
+         * @zh （可选）绘图颜色。格式是ABGR。
          */
         color: number;
         /**
@@ -26821,6 +26666,10 @@ declare namespace Laya {
          * @zh 填充贴图命令的标识符
          */
         get cmdID(): string;
+        /**
+         * @ignore @blueprintIgnore
+         */
+        needsLayoutRepaint(): number;
     }
     /**
      * @en Restore command, used in conjunction with save
@@ -27222,6 +27071,11 @@ declare namespace Laya {
          */
         leading: number;
         /**
+         * @en Letter spacing
+         * @zh 字间距
+         */
+        letterSpacing: number;
+        /**
          * @en Stroke width (in pixels). Default is 0, meaning no stroke
          * @zh 描边宽度（以像素为单位）。默认值0，表示不描边
          */
@@ -27231,6 +27085,26 @@ declare namespace Laya {
          * @zh 描边颜色，以字符串表示
          */
         strokeColor: string;
+        /**
+         * @en Shadow offset in the x direction
+         * @zh 阴影在x方向的偏移量
+         */
+        shadowOffsetX: number;
+        /**
+         * @en Shadow offset in the y direction
+         * @zh 阴影在y方向的偏移量
+         */
+        shadowOffsetY: number;
+        /**
+         * @en Shadow blur radius
+         * @zh 阴影模糊半径
+         */
+        shadowBlur: number;
+        /**
+         * @en Shadow color
+         * @zh 阴影颜色
+         */
+        shadowColor: string;
     }
     class BlurEffect2D extends PostProcess2DEffect {
         private _renderElement;
@@ -27273,11 +27147,25 @@ declare namespace Laya {
         private _alphaArray;
         private _matrix;
         constructor(matrix?: number[]);
+        /**
+         * @en The color matrix.
+         * @zh 颜色矩阵。
+         */
         get colorMat(): Matrix4x4;
         set colorMat(value: Matrix4x4);
+        /**
+         * @en Sets the filter to a grayscale filter.
+         * @zh 将滤镜设置为灰度滤镜。
+         * @returns The current ColorEffect2D instance.
+         */
         gray(): ColorEffect2D;
+        /**
+         * @en The alpha value.
+         * @zh Alpha 值。
+         */
         get alpha(): Vector4;
         set alpha(value: Vector4);
+        /** @ignore */
         effectInit(postprocess: PostProcess2D): void;
         /**
          * @en Sets the matrix data.
@@ -27481,8 +27369,6 @@ declare namespace Laya {
         static add2DGlobalUniformData(propertyID: number, propertyKey: string, uniformtype: ShaderDataType): void;
         /** @readonly */
         owner: Sprite | null;
-        /** @internal */
-        _data: GraphicsRenderData;
         /** @internal 是否优先使用精灵状态 */
         _useSpriteState: boolean;
         /**
@@ -27494,11 +27380,10 @@ declare namespace Laya {
         private _cmds;
         private _graphicBounds;
         private _material;
-        private _renderDataHandle;
         /** @internal */
-        _modified: boolean;
-        /** @internal */
-        _display: boolean;
+        _modified: number;
+        /** @internal 需要响应布局变化的cmd计数 */
+        private _layoutRepaintCount;
         /**
         * @en Whether to use sprite state.
         * @zh graphics是否优先使用精灵状态。
@@ -27506,6 +27391,8 @@ declare namespace Laya {
         */
         get useSpriteState(): boolean;
         set useSpriteState(value: boolean);
+        /** @internal 是否需要缓存 */
+        needCache: boolean;
         /**@ignore @blueprintIgnore */
         constructor();
         /**
@@ -27529,6 +27416,13 @@ declare namespace Laya {
          * @zh 重绘此对象。
          */
         repaint(): void;
+        /**
+         * @internal
+         * @en Get the count of commands that need to respond to layout changes.
+         * @zh 获取需要响应布局变化的命令数量。
+         * @returns The count of commands that need layout repaint.
+         */
+        getLayoutRepaintCount(): number;
         /**
          * @en Command flow. All drawing commands are stored.
          * @zh 命令流。存储了所有绘制命令。
@@ -27564,8 +27458,6 @@ declare namespace Laya {
          * @param recover （可选）是否回收旧命令。默认为false。
          */
         replaceCmd<T extends IGraphicsCmd>(oldCmd: IGraphicsCmd, newCmd: T, recover?: boolean): T;
-        /** @internal */
-        _checkDisplay(): void;
         /**
          * @en Get the position and size information matrix (CPU-intensive, frequent use may cause lag, use sparingly).
          * @returns A Rectangle object composed of position and size.
@@ -27844,12 +27736,6 @@ declare namespace Laya {
          */
         loadImage(url: string, x?: number, y?: number, width?: number, height?: number, complete?: Function | null): void;
         /**
-         * @internal
-         */
-        _render(runner: GraphicsRunner, x?: number, y?: number): void;
-        private _check;
-        private _renderSpriteTexture;
-        /**
          * @en Draw a line.
          * @param fromX X-axis starting position
          * @param fromY Y-axis starting position
@@ -28111,6 +27997,8 @@ declare namespace Laya {
          * @zh 如果为true，则不自动回收
          */
         lock?: boolean;
+        /** @internal */
+        _cacheData?: any;
         /**
          *
          * @param runner
@@ -28131,6 +28019,13 @@ declare namespace Laya {
          *
          */
         get cmdID(): string;
+        /**
+         * @en Returns 1 if this command needs to respond to layout changes (e.g., percentage-based or arc drawing), otherwise returns 0.
+         * @zh 如果此命令需要响应布局变化（例如百分比显示或画弧线），返回1，否则返回0。
+         * @returns 0 or 1
+         * @blueprintIgnore
+         */
+        needsLayoutRepaint?(): number;
     }
     /**
      * @blueprintIgnore
@@ -28352,7 +28247,15 @@ declare namespace Laya {
         onPopulateMesh(vb: VertexStream): void;
     }
     class FlipMesh implements IMeshFactory {
+        /**
+         * @en Whether to flip horizontally.
+         * @zh 是否水平翻转。
+         */
         flipX: boolean;
+        /**
+         * @en Whether to flip vertically.
+         * @zh 是否垂直翻转。
+         */
         flipY: boolean;
         onPopulateMesh(vb: VertexStream): void;
     }
@@ -28381,33 +28284,112 @@ declare namespace Laya {
         BottomRight = 3
     }
     class ProgressMesh implements IMeshFactory {
+        /**
+         * @en The origin point for filling. Its meaning varies depending on the method.
+         * - When the method is Horizontal, use FillOrigin.Left and FillOrigin.Right to indicate the starting point;
+         * - When the method is Vertical, use FillOrigin.Top and FillOrigin.Bottom to indicate the starting point;
+         * - When the method is Radial90, use FillOrigin.TopLeft, FillOrigin.TopRight, FillOrigin.BottomLeft, and FillOrigin.BottomRight to indicate the four corners;
+         * - When the method is Radial180, use FillOrigin.Top, FillOrigin.Bottom, FillOrigin.Left, and FillOrigin.Right to indicate the four sides, starting from the center of the corresponding side;
+         * - When the method is Radial360, use FillOrigin.Top, FillOrigin.Bottom, FillOrigin.Left, and FillOrigin.Right to indicate the four sides, starting from the center of the corresponding side;
+         *
+         * @zh 填充的起始点。method不同，值的含义也不同。
+         * - 当method为Horizontal时，使用FillOrigin.Left和FillOrign.Right表示起始点；
+         * - 当method为Vertical时，使用FillOrigin.Top和FillOrigin.Bottom表示起始点；
+         * - 当method为Radial90时，使用FillOrigin.TopLeft、FillOrigin.TopRight、FillOrigin.BottomLeft、FillOrigin.BottomRight四个值表示四个角；
+         * - 当method为Radial180时，使用FillOrigin.Top、FillOrigin.Bottom、FillOrigin.Left、FillOrigin.Right四个值表示四个边，从对应边的中心开始填充；
+         * - 当method为Radial360时，使用FillOrigin.Top、FillOrigin.Bottom、FillOrigin.Left、FillOrigin.Right四个值表示四个边，从对应边的中心开始填充；
+         */
         origin: number;
+        /**
+         * @en The amount of fill, ranging from 0 to 1.
+         * @zh 填充的数量，范围从0到1。
+         */
         amount: number;
+        /**
+         * @en Whether the filling is done in a clockwise direction. Only applicable for Radial90, Radial180, and Radial360 methods.
+         * @zh 填充是否按顺时针方向进行。仅对Radial90、Radial180和Radial360方法适用。
+         */
         clockwise: boolean;
         private _method;
+        /**
+         * @en The filling method.
+         * @zh 填充的方法。
+         */
         get method(): FillMethod;
         set method(value: FillMethod);
         onPopulateMesh(vb: VertexStream): void;
     }
     class RegularPolygonMesh implements IMeshFactory {
+        /**
+         * @en The number of sides of the regular polygon.
+         * @zh 正多边形的边数。
+         */
         sides: number;
+        /**
+         * @en An array of distances from the center to each vertex, expressed as a fraction of the radius. If null, all vertices are at the radius distance.
+         * @zh 从中心到每个顶点的距离数组，以半径的分数表示。如果为null，则所有顶点都在半径距离处。
+         */
         distances: number[];
+        /**
+         * @en The rotation angle of the polygon in degrees.
+         * @zh 多边形的旋转角度，单位为度。
+         */
         rotation: number;
+        /**
+         * @en The width of the outline line.
+         * @zh 轮廓线的宽度。
+         */
         lineWidth: number;
+        /**
+         * @en The color of the outline line.
+         * @zh 轮廓线的颜色。
+         */
         lineColor: Color;
+        /**
+         * @en The color of the center vertex.
+         * @zh 中心顶点的颜色。
+         */
         centerColor: Color;
+        /**
+         * @en The fill color of the polygon.
+         * @zh 多边形的填充颜色。
+         */
         fillColor: Color;
         onPopulateMesh(vb: VertexStream): void;
     }
     class RoundedRectMesh implements IMeshFactory {
+        /**
+         * @en The radius of the top-left corner.
+         * @zh 左上角的半径。
+         */
         lt: number;
+        /**
+         * @en The radius of the top-right corner.
+         * @zh 右上角的半径。
+         */
         rt: number;
+        /**
+         * @en The radius of the bottom-left corner.
+         * @zh 左下角的半径。
+         */
         lb: number;
+        /**
+         * @en The radius of the bottom-right corner.
+         * @zh 右下角的半径。
+         */
         rb: number;
         onPopulateMesh(vb: VertexStream): void;
     }
     class TileMesh implements IMeshFactory {
+        /**
+         * @en Whether to repeat in the X direction.
+         * @zh 是否在X方向重复。
+         */
         repeatX: boolean;
+        /**
+         * @en Whether to repeat in the Y direction.
+         * @zh 是否在Y方向重复。
+         */
         repeatY: boolean;
         onPopulateMesh(vb: VertexStream): void;
     }
@@ -28838,7 +28820,7 @@ declare namespace Laya {
          * @zh 设置当前节点的父节点。
          * @param value 新的父节点。
          */
-        protected _setParent(value: Node): void;
+        protected _setParent(value: Node, index?: number): void;
         /**
          * @en Indicates whether the node is displayed in the scene.
          * @zh 表示是否在显示列表中显示。
@@ -29280,6 +29262,10 @@ declare namespace Laya {
         _hasCleanRT: boolean;
         /**@internal */
         static init(): void;
+        /**
+         * @en Whether the post-processing effect is enabled.
+         * @zh 是否启用后期处理效果。
+         */
         get enabled(): boolean;
         set enabled(value: boolean);
         constructor();
@@ -29558,10 +29544,12 @@ declare namespace Laya {
         /**@internal */
         _globalRenderData: I2DGlobalRenderData;
         constructor();
-        /** @internal */
-        set componentElementDatasMap(value: any);
-        /** @internal */
+        /**
+         * @en The data map of component elements in the scene.
+         * @zh 场景中组件元素的数据映射表。
+         */
         get componentElementDatasMap(): any;
+        set componentElementDatasMap(value: any);
         _update(): void;
         /**
          * 获得某个组件的管理器
@@ -29866,34 +29854,94 @@ declare namespace Laya {
         _setUnBelongScene(): void;
         protected _findOwnerArea(): void;
         private _zoom;
+        /**
+         * @en Zoom factor of the camera
+         * @zh 相机的缩放系数
+         */
         get zoom(): Vector2;
         set zoom(value: Vector2);
         /** @internal min_x max_x min_y max_y */
         _rect: Vector4;
+        /**
+         * @en The left boundary of the camera position limit range
+         * @zh 相机位置的限制范围的左边界
+         */
         get limit_Left(): number;
         set limit_Left(value: number);
+        /**
+         * @en The right boundary of the camera position limit range
+         * @zh 相机位置的限制范围的右边界
+         */
         get limit_Right(): number;
         set limit_Right(value: number);
+        /**
+         * @en The bottom boundary of the camera position limit range
+         * @zh 相机位置的限制范围的下边界
+         */
         get limit_Bottom(): number;
         set limit_Bottom(value: number);
+        /**
+         * @en The top boundary of the camera position limit range
+         * @zh 相机位置的限制范围的上边界
+         */
         get limit_Top(): number;
         set limit_Top(value: number);
+        /**
+         * @en Whether to enable position smoothing
+         * @zh 是否启用位置平滑
+         */
         get positionSmooth(): boolean;
         set positionSmooth(value: boolean);
+        /**
+         * @en The speed of position smoothing, the larger the value, the faster the speed
+         * @zh 位置平滑的速度，值越大，速度越快
+         */
         get positionSpeed(): number;
         set positionSpeed(value: number);
+        /**
+         * @en Whether to enable rotation smoothing
+         * @zh 是否启用旋转平滑
+         */
         rotationSmooth: boolean;
+        /**
+         * @en The speed of rotation smoothing, the larger the value, the faster the speed. The value range is 0-1
+         * @zh 旋转平滑的速度，值越大，速度越快。取值范围0-1
+         */
         rotationSpeed: number;
+        /**
+         * @en Whether to enable horizontal drag
+         * @zh 是否启用水平拖拽
+         */
         get dragHorizontalEnable(): boolean;
         set dragHorizontalEnable(value: boolean);
+        /**
+         * @en Whether to enable vertical drag
+         * @zh 是否启用垂直拖拽
+         */
         get dragVerticalEnable(): boolean;
         set dragVerticalEnable(value: boolean);
+        /**
+         * @en Left drag boundary. The value range is 0-1
+         * @zh 左拖拽边界。取值范围0-1
+         */
         get drag_Left(): number;
         set drag_Left(value: number);
+        /**
+         * @en Right drag boundary. The value range is 0-1
+         * @zh 右拖拽边界。取值范围0-1
+         */
         get drag_Right(): number;
         set drag_Right(value: number);
+        /**
+         * @en Top drag boundary. The value range is 0-1
+         * @zh 上拖拽边界。取值范围0-1
+         */
         get drag_Top(): number;
         set drag_Top(value: number);
+        /**
+         * @en Bottom drag boundary. The value range is 0-1
+         * @zh 下拖拽边界。取值范围0-1
+         */
         get drag_Bottom(): number;
         set drag_Bottom(value: number);
         /**
@@ -29997,6 +30045,7 @@ declare namespace Laya {
     /** @ignore @blueprintIgnore */
     class GraphicsRunner {
         private _alpha;
+        private _vertexBlockSize;
         _material: Material;
         private _fillStyle;
         private _strokeStyle;
@@ -30007,9 +30056,12 @@ declare namespace Laya {
         private _path;
         _curSubmit: SubmitBase;
         _submitKey: SubmitKey;
-        _graphicsData: GraphicsRenderData;
+        _renderer: GraphicsRenderer;
+        _global: Matrix;
+        _enableCache: boolean;
         private _transedPoints;
         private _temp4Points;
+        _textureProcessor: ITextureProcessor;
         _clipRect: Rectangle;
         _globalClipMatrix: Matrix;
         _clip_x: number;
@@ -30031,6 +30083,7 @@ declare namespace Laya {
             _length?: number;
         };
         _saveMark: SaveMark | null;
+        _currentSubmitCache: SubmitCacheInfo | null;
         /**
          * 所cacheAs精灵
          * 对于cacheas bitmap的情况，如果图片还没准备好，需要有机会重画，所以要保存sprite。例如在图片
@@ -30220,7 +30273,16 @@ declare namespace Laya {
         * @returns 可用的 Mesh
         */
         acquire(vertexCount: number): MeshBlockInfo;
-        appendData(vertices: ArrayLike<number>, indices: ArrayLike<number>, result: MeshBlockInfo, submit: SubmitBase, uvs: ArrayLike<number>, rgba: number, matrix: Matrix, uvrect: ArrayLike<number>, useTex: boolean, colors?: ArrayLike<number>, uvRange?: ArrayLike<number>): void;
+        /**
+         * 尝试复用上一帧缓存的顶点块
+         * 放在 runner 内部方便直接复用当前的 blockSize 逻辑
+         */
+        private _reuseBlocks;
+        appendData(vertices: ArrayLike<number>, indices: ArrayLike<number>, result: MeshBlockInfo, submit: SubmitBase, uvs: ArrayLike<number>, rgba: number, matrix: Matrix, uvrect: ArrayLike<number>, useTex: boolean, colors?: ArrayLike<number>, uvRange?: ArrayLike<number>): number[];
+        /**@internal 使用已缓存的 submit 信息应用缓存 */
+        applyCachedSubmitInfo(submitInfo: SubmitCacheInfo): void;
+        /**@internal */
+        _applyCachedChunk(matrix: Matrix, total: MeshBlockInfo, submit: SubmitBase, chunk: GraphicsRunnerCacheChunk, dataViewIndex: number): number;
         /**
          * @en Default geometry
          * @zh 默认的geometry
@@ -30233,34 +30295,63 @@ declare namespace Laya {
         inv_geometry: IRenderGeometryElement;
         initDefalutMesh(): void;
     }
+    type GraphicBlockBucket = {
+        mesh: GraphicsMesh;
+        blocks: Record<number, I2DGraphicVertexDataView>;
+        indexs: number[];
+    };
     /** @internal */
-    class GraphicsRenderData {
-        static readonly _pool: IPool<IPrimitiveRenderElement2D>;
+    class GraphicsRenderer {
+        static _emptyList: IPrimitiveRenderElement2D[];
         /** @internal */
         _renderElements: IPrimitiveRenderElement2D[];
         /**@internal */
         _submits: FastSinglelist<SubmitBase>;
         private _bufferBlocks;
         owner: Sprite;
-        texturesMap: Map<number, Texture>;
+        _struct: IRenderStruct2D;
+        texturesMap: Map<number, {
+            texture: Texture;
+            time: number;
+        }>;
+        _display: boolean;
+        private _renderDataHandle;
+        graphics: Graphics;
+        modified: number;
+        /** @internal 当前帧记录的块按 mesh 分组 */
+        _blockBuckets: GraphicBlockBucket[];
+        /** @internal 上一帧保留用于复用的块 */
+        _cachedBuckets: GraphicBlockBucket[];
         constructor(owner: Sprite);
+        /** @internal */
+        private _onOwnerTransformChanged;
+        /**
+         * 设置Graphics对象
+         * @param graphics Graphics对象
+         */
+        setGraphics(graphics: Graphics): void;
+        /**
+          * @internal
+          */
+        _render(runner: GraphicsRunner, x?: number, y?: number): void;
+        /**
+         * @internal
+         */
+        onModified(): void;
+        /** @internal */
+        _checkDisplay(): void;
+        take(info: MeshBlockInfo): void;
         clear(): void;
         destroy(): void;
-        /** @internal */
-        _check(): boolean;
-        /**
-         * 提交所有mesh的数据
-         * @param graphics 图形
-         * @param struct 渲染结构
-         * @param handle 渲染句柄
-         */
-        updateRenderElement(graphics: Graphics, struct: IRenderStruct2D, handle: I2DPrimitiveDataHandle): void;
-        private _updateIndexViews;
-        private _updateGraphicsKeys;
-        setRenderElement(struct: IRenderStruct2D, handle: I2DPrimitiveDataHandle): void;
-        createSubmit(runner: GraphicsRunner, mesh: GraphicsMesh, material: Material): SubmitBase;
+        updateRenderElement(needSkipBufferUpdate: boolean): void;
+        setRenderElement(): void;
+        createSubmit(runner: GraphicsRunner): SubmitBase;
         addResRef(res: Resource): void;
         private _resourceRepaint;
+        /**
+         * @internal
+         */
+        protected _saveCache(): void;
     }
     /** @internal */
     class SubStructRender {
@@ -30278,6 +30369,7 @@ declare namespace Laya {
         _oriRect: Rectangle;
         _logicMatrix: Matrix;
         private _needUpdateVertexSize;
+        private _renderElements;
         private _scaleX;
         private _scaleY;
         constructor();
@@ -30310,6 +30402,9 @@ declare namespace Laya {
         static __init__(): void;
         private _sharedMesh;
         _renderHandle: IMesh2DRenderDataHandle;
+        private _textureTilingOffset;
+        private _tilingOffset;
+        private _texture;
         protected _createRenderHandle(): IMesh2DRenderDataHandle;
         protected _initDefaultRenderData(): void;
         protected _isMaterialVaild(value: Material): boolean;
@@ -30332,12 +30427,13 @@ declare namespace Laya {
          */
         set tilingOffset(value: Vector4);
         get tilingOffset(): Vector4;
+        private _updateTilingOffset;
         /**
          * @en Rendering textures will not take effect if there is no UV in 2dmesh
          * @zh 渲染纹理，如果2DMesh中没有uv，则不会生效
          */
-        set texture(value: BaseTexture);
-        get texture(): BaseTexture;
+        set texture(value: BaseTexture | Texture);
+        get texture(): BaseTexture | Texture;
         /**
          * @en Rendering textures will not take effect if there is no UV in 2dmesh
          * @zh 渲染纹理，如果2DMesh中没有uv，则不会生效
@@ -30614,6 +30710,7 @@ declare namespace Laya {
         private _color;
         private _renderColor;
         private _texture;
+        private _tilingOffset;
         constructor();
         _setMatrix(value: Matrix): void;
         set material(value: Material);
@@ -30949,6 +31046,8 @@ declare namespace Laya {
         _ownerArea: Sprite;
         /** @internal */
         _subStructRender: SubStructRender;
+        /** @internal */
+        _ownPostProcess: boolean;
         /** @internal 渲染真实spritet的pass，在启用后处理，cacheAsBitmap和mask的时候生效 */
         _oriRenderPass: IRender2DPass;
         /** @internal 渲染真实sprite所需的rt大小 */
@@ -31097,8 +31196,8 @@ declare namespace Laya {
         get pivotY(): number;
         set pivotY(value: number);
         /**
-         * @en The anchor point's x-coordinate, ranging from 0 to 1. Setting anchorX will ultimately change the node's pivot point through the pivotX value.
-         * @zh X 轴锚点,值为 0-1。设置 anchorX 值最终会通过 pivotX 值来改变节点的轴心点。
+         * @en The anchor point's x-coordinate, ranging from 0 to 1. Setting anchorX will ultimately change the node's pivot point through the pivotX value. The anchor point affects the object's position, scaling center, and rotation center. The object's position calculation within the parent element is based on the anchor point. However, the position calculation of the object's child nodes is still based on the top-left corner.
+         * @zh X 轴锚点,值为 0-1。设置 anchorX 值最终会通过 pivotX 值来改变节点的轴心点。锚点会影响对象的位置、缩放中心和旋转中心。对象在父元件中的位置计算是基于锚点的。但对象的子节点位置计算仍然是基于左上角。
          */
         get anchorX(): number;
         set anchorX(value: number);
@@ -31133,7 +31232,7 @@ declare namespace Laya {
         get layer(): number;
         set layer(value: number);
         /** @internal */
-        _graphicsData: GraphicsRenderData;
+        _graphicsRenderer: GraphicsRenderer;
         /**
          * @en The drawing object, which encapsulates the interfaces for drawing bitmaps and vector graphics. All drawing operations of Sprite are implemented through Graphics.
          * @zh 绘图对象。封装了绘制位图和矢量图的接口,Sprite 的所有绘图操作都是通过 Graphics 实现的。
@@ -31158,6 +31257,10 @@ declare namespace Laya {
         /** @deprecated */
         set filters(value: Filter[]);
         protected getPostProcess(create?: boolean): PostProcess2D;
+        /**
+         * @en The post-processing effect of the sprite.
+         * @zh 精灵的后处理效果。
+         */
         get postProcess(): PostProcess2D;
         set postProcess(value: PostProcess2D);
         /**
@@ -31745,7 +31848,7 @@ declare namespace Laya {
          */
         _setBelongScene(scene: Node): void;
         protected _findOwnerArea(): void;
-        protected _setStructParent(value: Sprite): void;
+        protected _setStructParent(value: Sprite, index: number): void;
         private createSubRenderPass;
         /** @internal */
         updateRenderTexture(): boolean;
@@ -31763,7 +31866,7 @@ declare namespace Laya {
         /**
          * @ignore
          */
-        protected _setParent(value: Node): void;
+        protected _setParent(value: Node, index?: number): void;
         private _checkSubRenderPass;
         private _refreshRenderPass;
         /** @ignore */
@@ -31843,7 +31946,8 @@ declare namespace Laya {
         spine = 1,
         particle = 2,
         spineSimple = 3,
-        graphics = 4
+        graphics = 4,
+        spinenormal = 5
     }
     enum SubPassFlag {
         PostProcess = 1,
@@ -32192,14 +32296,11 @@ declare namespace Laya {
         readonly _scene3Ds: Scene3D[];
         /** @internal */
         readonly _scene2Ds: Scene[];
-        private _frameRate;
         private _screenMode;
         private _scaleMode;
         private _alignV;
         private _alignH;
         private _bgColor;
-        private _renderCount;
-        private _frameStartTime;
         private _isFocused;
         private _wgColor;
         private _needUpdateCanvasSize;
@@ -32396,6 +32497,7 @@ declare namespace Laya {
          */
         exitFullscreen(): void;
         /**
+         * @deprecated Use Render.throttleMode instead.
          * @en Frame rate types:fast (default, full frame rate),slow (half of the full frame rate),mouse (full frame rate after mouse activity, switches to half frame rate if the mouse is idle for 2 seconds),sleep (1 frame per second)
          * @zh 当前帧率类型：fast(默认，满帧)，slow（满帧减半），mouse（鼠标活动后满帧，鼠标不动2秒后满帧减半），sleep（每秒1帧）。
          */
@@ -32740,6 +32842,36 @@ declare namespace Laya {
         get leading(): number;
         set leading(value: number);
         /**
+         * @en Letter spacing (in pixels).
+         * @zh 字间距（以像素为单位）。
+         */
+        get letterSpacing(): number;
+        set letterSpacing(value: number);
+        /**
+         * @en Shadow offset X (in pixels).
+         * @zh 阴影偏移X（以像素为单位）。
+         */
+        get shadowOffsetX(): number;
+        set shadowOffsetX(value: number);
+        /**
+         * @en Shadow offset Y (in pixels).
+         * @zh 阴影偏移Y（以像素为单位）。
+         */
+        get shadowOffsetY(): number;
+        set shadowOffsetY(value: number);
+        /**
+         * @en Shadow blur (in pixels).
+         * @zh 阴影模糊度（以像素为单位）。
+         */
+        get shadowBlur(): number;
+        set shadowBlur(value: number);
+        /**
+         * @en Shadow color, represented as a string.
+         * @zh 阴影颜色，以字符串表示。
+         */
+        get shadowColor(): string;
+        set shadowColor(value: string);
+        /**
          * @en Margin information.
          * Data format: [top margin, right margin, bottom margin, left margin] (margins in pixels).
          * @zh 边距信息。
@@ -32944,7 +33076,7 @@ declare namespace Laya {
          */
         protected drawBg(): void;
         /** @ignore */
-        protected _setParent(value: Node): void;
+        protected _setParent(value: Node, index?: number): void;
         /** @internal @blueprintEvent */
         Text_bpEvent: {
             [Event.CHANGE]: () => void;
@@ -36838,6 +36970,1580 @@ declare namespace Laya {
          */
         static getBool(attrs: any, attrName: string, defValue?: boolean): boolean;
     }
+    class BoneConstraints extends Script {
+        static DATACHANGE: string;
+        private _constraintDatas;
+        set constraints(cs: IK_ConstraintData[]);
+        get constraints(): IK_ConstraintData[];
+        onConstraintDataChange(idx: number): void;
+        onAwake(): void;
+        onDestroy(): void;
+    }
+    class IK_AnimLayer {
+        roations: Quaternion[];
+        positions: Vector3[];
+        constructor(n?: number);
+        set length(n: number);
+        get length(): number;
+        captureBonePose(joints: IK_Joint[]): this;
+        captureIKResult(joints: IK_Joint[]): this;
+        copy(layer: IK_AnimLayer): void;
+        /**
+         *
+         * @param b
+         * @param weight b的权重
+         * @param out
+         */
+        blend(b: IK_AnimLayer, weight: number, joints: IK_Joint[], out?: IK_AnimLayer): void;
+        /**
+         * 把当前的旋转给关节
+         * 需要第一个关节的位置
+         * @param joints
+         */
+        applyToBone(joints: IK_Joint[]): void;
+    }
+    class IK_LayerMgr {
+        private finalLayer;
+        private lastSet;
+        private fadeSrc;
+        private fadeTarget;
+        private fadeStart;
+        private fadeTm;
+        constructor();
+        getCurrent(): IK_AnimLayer;
+        set(layer: IK_AnimLayer): void;
+        /**
+         * 从当前的结果过度到指定的结果
+         * @param layer
+         * @param tm
+         */
+        fadeTo(layer: IK_AnimLayer, tm: number): void;
+        stopFade(): void;
+        isFading(): boolean;
+        apply(joints: IK_Joint[]): void;
+    }
+    interface IK_JointDebugSnapshot {
+        name: string;
+        pos: Vector3;
+        rot: Quaternion;
+    }
+    interface IK_ChainDebugSnapshot {
+        chainName: string;
+        targetPos?: Vector3;
+        poleTargetPos?: Vector3;
+        poleTargetDir?: Vector3;
+        joints: IK_JointDebugSnapshot[];
+    }
+    /**
+     * 从IK_pose1可以方便的绑定到某个骨骼上，随着动画动
+     */
+    class IK_Chain extends IK_ChainBase {
+        private _showDbg;
+        solver: IK_ISolver;
+        poleTarget: IK_Target;
+        _endAlign: 'no' | 'y' | 'all';
+        private _isEndAlign;
+        private _parentInEnd;
+        private lastBoneDir;
+        private lastQuat;
+        constructor(name: string, mgr: IK_Comp);
+        isCollinear(target: Vector3, epsilon?: number): boolean;
+        visualize(line: ILinerender): void;
+        set showDbg(b: boolean);
+        get showDbg(): boolean;
+        set endAlign(v: 'no' | 'y' | 'all');
+        get endAlign(): 'no' | 'y' | 'all';
+        private _firstGetParentInEnd;
+        solve(comp: IK_Comp): void;
+        /**
+         * 根据关节的位置计算关节的朝向。
+         * 为了避免扭的效果，按照从根到末端计算，并且都按照相对parent的来计算，而不是按照Z
+         */
+        updateRotations(): void;
+        getDebugSnapshot(): IK_ChainDebugSnapshot;
+        applyDebugSnapshot(snapshot: IK_ChainDebugSnapshot): void;
+    }
+    class IK_ChainBase {
+        name: string;
+        joints: IK_Joint[];
+        protected _target: IK_Target;
+        layerMgr: IK_LayerMgr;
+        staticLayer: IK_AnimLayer;
+        animLayer: IK_AnimLayer;
+        ik_result: IK_AnimLayer;
+        private _isRunning;
+        enable: boolean;
+        protected _jointMgr: IK_JointManager;
+        protected _end_effector: IK_Joint;
+        totalLength: number;
+        blendWeight: number;
+        maxError: number;
+        private _weightSmooth;
+        wSmoother: NumberSmooth;
+        constructor(mgr: IK_Comp);
+        get weightSmooth(): number;
+        set weightSmooth(v: number);
+        set isRunning(v: boolean);
+        get isRunning(): boolean;
+        set target(tar: IK_Target);
+        get target(): IK_Target;
+        set endFixed(v: boolean);
+        get endFixed(): boolean;
+        visualize(line: ILinerender): void;
+        get end_effector(): IK_Joint;
+        addJoint(joint: IK_Joint): void;
+        getJoint(name: string): IK_Joint;
+        rotateJoint(jointId: number, deltaQuat: Quaternion): void;
+        copyCurPoseAsInitPose(): void;
+        copyInitPose(): void;
+        captureStaticPose(): void;
+        resetStaticPose(): void;
+        captureAnimPose(): void;
+        fadeToAnim(): void;
+        isFading(): boolean;
+        applyResult(): void;
+        solve(comp: IK_Comp): void;
+        applyIKResult(comp: IK_Comp): void;
+        onLinkEnd(): void;
+    }
+    class BoneData {
+        data: Sprite3D;
+        disabled: boolean;
+    }
+    class IK_ChainData {
+        name: string;
+        type: string;
+        end: Sprite3D;
+        root: Sprite3D;
+        bones: BoneData[];
+        fixedEnd: boolean;
+        alignTarget: 'no' | 'y' | 'all';
+        target: Sprite3D;
+        enablePoleTarget: boolean;
+        PoleTarget: Sprite3D;
+        jointCount: number;
+        blendWeight: number;
+        smoothBlendWeight: number;
+        enable: boolean;
+        maxError: number;
+    }
+    class IK_Comp extends Script {
+        private _ik_sys;
+        private _needRebuild;
+        private _constraintsMap;
+        private _showDbg;
+        private _visualSp;
+        private _visualInPlay;
+        private _chainDatas;
+        current_iteration: number;
+        current_error: number;
+        pole_rot: number;
+        targetChange: number;
+        blendW: number;
+        private _recordIkFrames;
+        private _frameRecordDepth;
+        private _frameReplayOffset;
+        set chainDatas(v: IK_ChainData[]);
+        get chainDatas(): IK_ChainData[];
+        private _solverIteration;
+        set solverIteration(v: number);
+        get solverIteration(): number;
+        private _dirsolverIteration;
+        set dirSolverIteration(v: number);
+        get dirSolverIteration(): number;
+        set dampingFactor(v: number);
+        get dampingFactor(): number;
+        private _constraintDatas;
+        set constraints(cs: IK_ConstraintData[]);
+        get constraints(): IK_ConstraintData[];
+        onConstraintDataChange(idx: number): void;
+        set showGizmos(v: boolean);
+        get showGizmos(): boolean;
+        set 显示约束(v: boolean);
+        get 显示约束(): boolean;
+        set 显约束轴(v: boolean);
+        get 显约束轴(): boolean;
+        private _runInEditor;
+        get RunInEditor(): boolean;
+        set RunInEditor(b: boolean);
+        set useAnimLayer(b: boolean);
+        get useAnimLayer(): boolean;
+        constructor();
+        protected _onAdded(): void;
+        onAfterDeserialize(): void;
+        onChainDataChange(data: IK_ChainData, key: string, value: any, oldvalue: any): void;
+        setTarget(name: string | IK_Chain, target: IK_Target): void;
+        get chains(): IK_Chain[];
+        getChain(name: string): IK_Chain;
+        /**
+         * 在动画开始之前，用来记录、恢复静态姿态
+         */
+        beforeOwnerAnim(): void;
+        onAwake(): void;
+        onDestroy(): void;
+        onUpdate(): void;
+        private _createConstraintInstanceFromData;
+        private _updateConstraintSpace;
+        visualize(v: ILinerender): void;
+    }
+    /**
+     * 从0度开始，0度对应父joint
+     * 实际使用的时候，需要放到一个指定的空间，主要是指定转轴
+     */
+    class IK_Constraint_Euler implements IK_Constraint1 {
+        xmin: number;
+        xmax: number;
+        ymin: number;
+        ymax: number;
+        zmin: number;
+        zmax: number;
+        rotation: Quaternion;
+        cur: number;
+        constructor(xmin?: number, xmax?: number, ymin?: number, ymax?: number, zmin?: number, zmax?: number);
+        constraintMat(mat: Matrix4x4, outQ: Quaternion): Quaternion;
+        constraintQ(q: Quaternion): Quaternion;
+        visualize(liner: ILinerender, mat: Matrix4x4): void;
+    }
+    /**
+     * 从0度开始，0度对应父joint
+     * 实际使用的时候，需要放到一个指定的空间，主要是指定转轴
+     */
+    class IK_Constraint_SwingTwist implements IK_Constraint1 {
+        xmax: number;
+        ymax: number;
+        zmin: number;
+        zmax: number;
+        rotation: Quaternion;
+        cur: number;
+        visual_height: number;
+        visual_zheight: number;
+        constructor(xmax?: number, ymax?: number, zmin?: number, zmax?: number);
+        constraintMat(mat: Matrix4x4, outQ: Quaternion): Quaternion;
+        constraintQ(q: Quaternion): Quaternion;
+        visualize(liner: ILinerender, mat: Matrix4x4): void;
+    }
+    interface IK_Constraint1 {
+        constraintMat(mat: Matrix4x4, outQ: Quaternion): Quaternion;
+        constraintQ(q: Quaternion): Quaternion;
+        visualize(liner: ILinerender, mat: Matrix4x4): void;
+        rotation: Quaternion;
+    }
+    /**
+     * 这个必须是ik链已经连好了再调用，因为需要用到父关节
+     */
+    class IK_ConstraintInstance {
+        constraint: IK_Constraint1;
+        constraintBone: boolean;
+        inParent: Matrix4x4;
+        inChild: Matrix4x4;
+        enable: boolean;
+        data: IK_ConstraintData | null;
+        constructor(constraint: IK_Constraint1, matInParent: Matrix4x4, //父bone空间,
+        constraintBone: boolean);
+        /**
+         *
+         * @param joint
+         */
+        doConsraint(joint: IK_Joint): void;
+        visualize(joint: IK_Joint, line: ILinerender): void;
+    }
+    class IK_ConstraintData {
+        private _xmin;
+        private _xmax;
+        private _ymin;
+        private _ymax;
+        private _zmin;
+        private _zmax;
+        enable: boolean;
+        bone: Sprite3D;
+        type: string;
+        space: Sprite3D;
+        constraintBone: boolean;
+        set xmin(v: number);
+        get xmin(): number;
+        set xmax(v: number);
+        get xmax(): number;
+        set ymin(v: number);
+        get ymin(): number;
+        set ymax(v: number);
+        get ymax(): number;
+        set zmin(v: number);
+        get zmin(): number;
+        set zmax(v: number);
+        get zmax(): number;
+        visualHeight: number;
+    }
+    interface IK_DebugFrameSnapshot {
+        frameId: number;
+        timestamp: number;
+        chainStates: IK_ChainDebugSnapshot[];
+    }
+    class IK_DebugRecorder {
+        maxFrames: number;
+        enabled: boolean;
+        private _frames;
+        private _replayIndex;
+        canRecordFrame(): boolean;
+        recordFrame(chainStates: IK_ChainDebugSnapshot[]): void;
+        clear(): void;
+        isReplaying(): boolean;
+        startReplay(offset?: number): boolean;
+        stopReplay(): void;
+        step(delta: number): void;
+        getReplayFrame(): IK_DebugFrameSnapshot | null;
+        get replayInfo(): {
+            index: number;
+            total: number;
+            frameId: number;
+            timestamp: number;
+        };
+    }
+    interface IK_ISolver {
+        solve(comp: IK_Comp, chain: IK_Chain, targetPos: Vector3, endOffline: boolean): boolean;
+        maxIterations: number;
+        dampingFactor: number;
+        poleTarget: IK_Target;
+    }
+    class IK_Joint {
+        transform: Transform3D;
+        constraint: IK_ConstraintInstance;
+        type: "revolute" | "prismatic";
+        length: number;
+        private _parent;
+        name: string;
+        bone: Sprite3D;
+        childDirOff: Matrix4x4;
+        relPos: Vector3;
+        fixed: boolean;
+        constructor(bone?: Sprite3D);
+        copyTransform(): void;
+        applyTransform(weight: number): void;
+        set rotationQuat(q: Quaternion);
+        get rotationQuat(): Quaternion;
+        set position(p: Vector3);
+        get position(): Vector3;
+        get worldMatrix(): Matrix4x4;
+        set parent(p: IK_Joint);
+        get parent(): IK_Joint;
+        visualize(line: ILinerender): void;
+        random(axis: Vector3, baseVec: Vector3, childVec: Vector3): Vector3;
+        /**
+         * 扰动关节以跳出共线状态
+         * @returns 如果成功扰动返回true，如果无法扰动返回false
+         */
+        perturbJoint(): boolean;
+    }
+    function getJointMgr(sp: Sprite3D): IK_JointManager;
+    class IK_JointManager {
+        private _mapBoneJoint;
+        getJoint(name: string): IK_Joint;
+        addJoint(name: string, joint: IK_Joint): void;
+    }
+    class IK_Lookat extends IK_ChainBase {
+        private _chainLength;
+        private _end;
+        private _hasOff;
+        static dirIt: number;
+        alignWithTarget: boolean;
+        constructor(joints: IK_Joint[], mgr: IK_Comp);
+        visualize(line: ILinerender): void;
+        solve(): void;
+    }
+    class IK_Lookat1 extends IK_ChainBase {
+        private _chainLength;
+        private _end;
+        private _hasOff;
+        static dirIt: number;
+        alignWithTarget: boolean;
+        constructor(joints: IK_Joint[], mgr: IK_Comp);
+        visualize(line: ILinerender): void;
+        solve(): void;
+    }
+    class SHOW_DBG {
+        static CONSTRAINT: number;
+        static CONSTRAINT_AXIS: number;
+        static BONE: number;
+        static BONE_AXIS: number;
+        static ALL: number;
+        static showdbg: number;
+        static none(): typeof SHOW_DBG;
+        static all(): typeof SHOW_DBG;
+        static add(flag: number): typeof SHOW_DBG;
+        static sub(flag: number): typeof SHOW_DBG;
+        static has(flag: number): boolean;
+    }
+    class IK_System {
+        static version: string;
+        private solver;
+        chains: IK_Chain[];
+        lookats: IK_Lookat[];
+        private rootSprite;
+        private _showDbg;
+        constraintsMap: Map<Sprite3D, IK_ConstraintInstance>;
+        enableSolver: boolean;
+        ikcomp: IK_Comp;
+        useAnimLayer: boolean;
+        private _debugRecorder;
+        constructor(comp: IK_Comp);
+        setRoot(r: Sprite3D): void;
+        setMaxIterations(v: number): void;
+        setDampingFactor(v: number): void;
+        getDampingFactor(): number;
+        set showDbg(b: boolean);
+        get showDbg(): boolean;
+        visualize(liner: ILinerender): void;
+        /**
+         * 可以包含多个chain
+         * @param chain
+         */
+        addChain(chain: IK_Chain): void;
+        clear(): void;
+        private _getChildByName;
+        /**
+         * 根据给定的id或者名字找到一条链
+         * @param name
+         * @param length 链的长度
+         * 返回的骨骼的顺序是从末端到根
+         */
+        getBoneChain(name: string, length: number): Sprite3D[];
+        getBoneChainBySprite(end: Sprite3D, length: number): Sprite3D[];
+        chreateChainByBoneName(nameOrSp3d: string | Sprite3D, length: number): IK_Chain;
+        chreateLookatByEndSprite(end: Sprite3D, length: number): IK_Lookat;
+        private _findChainByName;
+        setTarget(endEffectorName: string | IK_Chain, target: IK_Target): void;
+        resetPose(): void;
+        onUpdate(): Promise<void>;
+        setFrameRecorderEnabled(enabled: boolean): void;
+        setFrameRecorderDepth(count: number): void;
+        startFrameDebugReplay(offset?: number): void;
+        stopFrameDebugReplay(): void;
+        stepFrameDebugReplay(delta: number): void;
+        getFrameReplayInfo(): {
+            index: number;
+            total: number;
+            frameId: number;
+            timestamp: number;
+        };
+    }
+    class IK_Target {
+        targetSprite: Sprite3D;
+        _pos: Vector3;
+        _dir: Vector3;
+        constructor(pos?: Vector3 | Sprite3D | null, dir?: Vector3 | null);
+        getPose(mat: Matrix4x4): Matrix4x4;
+        get pos(): Vector3;
+        set pos(p: Vector3);
+        get dir(): Vector3;
+        set dir(v: Vector3);
+    }
+    class IK_TwoBoneChain {
+        root: IK_Joint;
+        kee: IK_Joint;
+        end: IK_Joint;
+        solve(target: Matrix4x4, poleTarget?: Matrix4x4): void;
+    }
+    function quaternionFromTo(from: Vector3, to: Vector3, out: Quaternion): boolean;
+    function delay(time: number): Promise<unknown>;
+    function isCollinear(p1: Vector3, p2: Vector3, p3: Vector3, epsilon?: number): boolean;
+    function solveLambdaForNormEquality(v1: Vector3, v2: Vector3, v3: Vector3): number;
+    /**
+     *
+     * @param target 目标位置
+     * @param endPose 末端的位置和朝向。
+     * @param deltaQ 输出 旋转四元数，可以把末端的z指向target
+     */
+    function solveLookat(target: Vector3, endPose: Matrix4x4, deltaQ: Quaternion): boolean;
+    function ripMatScale(mat: Matrix4x4): Matrix4x4;
+    function getVecAngInPlane(axisPos: Vector3, axis: Vector3, zero: Vector3, vec: Vector3): number;
+    class NumberSmooth {
+        k: number;
+        lastv: number;
+        constructor(k?: number);
+        in(v: number): number;
+    }
+    class Vec3Smooth {
+        k: number;
+        lastV: Vector3;
+        constructor(k?: number);
+        in(v: Vector3): Vector3;
+    }
+    class IK_CCDSolver implements IK_ISolver {
+        dampingFactor: number;
+        maxIterations: number;
+        poleTarget: IK_Target;
+        private _targetPos;
+        private _currentEndPos;
+        private _jointToEndVec;
+        private _jointToTargetVec;
+        private _pivotPos;
+        private _rotationDelta;
+        private _calcVecA;
+        private _calcVecB;
+        private _calcVecC;
+        private _calcQuat;
+        constructor(maxIterations?: number);
+        /**
+         * IK 求解入口
+         */
+        solve(comp: IK_Comp, chain: IK_Chain, target: Vector3, endOffline: boolean): boolean;
+        /**
+         * 预旋转：将骨骼链平面旋转对齐到 Pole Target 平面 (纯 Twist 版 + 权重淡出)
+         */
+        private preRotateToPole;
+        /**
+         * 单次 CCD 迭代
+         */
+        private solveOneIteration;
+        /**
+         * FK 更新所有关节位置
+         */
+        private updateAllJointPositions;
+        private calculateTotalLength;
+        /**
+         * 极向量处理 (后处理)
+         */
+        private solvePoleVector;
+    }
+    class IK_FABRIK_Solver implements IK_ISolver {
+        maxIterations: number;
+        tolerance: number;
+        debugProc: boolean;
+        poleTarget: IK_Target;
+        constructor(maxIterations?: number, tolerance?: number);
+        dampingFactor: number;
+        solve(comp: IK_Comp, chain: IK_Chain, targetPos: Vector3, endOffline: boolean): boolean;
+        private applyConstraints;
+        private stretchToTarget;
+        /**
+         * 这个虽然叫做forward，其实是从末端到根，其实更符合传统骨骼动画的backward的定义。
+         * @param currentJoint 当前关节
+         * @param nextJoint  下一个关节，更接近末端
+         */
+        private forwardStep;
+        private backwardStep;
+    }
+    interface ILinerender {
+        addLine(start: Vector3, end: Vector3, c1: Color, c2: Color): void;
+        destroy(): void;
+        clear(): void;
+    }
+    class Bone3D {
+        name: string;
+        parent: Sprite3D;
+        child: Sprite3D;
+        boneLength: number;
+        pickDist: number;
+        constructor(name: string, parent: Sprite3D, child: Sprite3D);
+    }
+    function drawAxis(lines: ILinerender, mat: Matrix4x4, length: number, color?: Color[]): void;
+    function drawEulerRange1(liner: ILinerender, mat: Matrix4x4, xmin: number, xmax: number, ymin: number, ymax: number, zmin: number, zmax: number): void;
+    function drawEulerRange(liner: ILinerender, mat: Matrix4x4, xmin: number, xmax: number, ymin: number, ymax: number, zmin: number, zmax: number): void;
+    function drawCircle(liner: ILinerender, pos: Vector3, dir: Vector3, radius: number, color: Color): void;
+    function drawEllipse(liner: ILinerender, pos: Vector3, dir: Vector3, radiusA: number, radiusB: number, color: Color, axisHint?: Vector3): void;
+    class Skeleton3D {
+        private _visualSp;
+        showBone: boolean;
+        private _bones;
+        private _bounds;
+        private _editorCamera;
+        enablePick: boolean;
+        private _curPickedBone;
+        private _lastMouseX;
+        private _lastMouseY;
+        private _useGizmo;
+        owner: Sprite3D;
+        get pickedParent(): Sprite3D;
+        get pickedChild(): Sprite3D;
+        get pickdName(): string;
+        showAxis: boolean;
+        axisLength: number;
+        onAwake(owner: Sprite3D): void;
+        visualize(liner: ILinerender): void;
+        private _addLine;
+        traverseChildren(parent: Sprite3D, f: (parent: Sprite3D, child: Sprite3D) => void): void;
+    }
+    /**
+     * @en Texture processor configuration manager
+     * @zh 纹理处理器配置管理器
+     */
+    class AutoTextureConfig {
+        static enableAutoDynamicAtlas: boolean;
+        static limitDynamicAtlasSize: number;
+    }
+    /** @internal */
+    type _$TextureData = {
+        texture: Texture;
+        uv: ArrayLike<number>;
+    };
+    /**
+     * 纹理信息接口
+     */
+    class TextureInfo implements DynamicTexInfo {
+        recover(): void;
+        owner: DynamicAtlasManager;
+        /** 原始纹理对象 */
+        textureMap: Map<number, _$TextureData>;
+        /** 原始texture2d */
+        source: Texture2D;
+        /** 纹理ID */
+        textureId: number;
+        /** 纹理URL */
+        url: string;
+        /** 在大图集中的UV坐标 */
+        uv: Vector4;
+        /** 大纹理索引 */
+        largeTextureIndex: number;
+        /** 是否已添加到图集 */
+        isInAtlas: boolean;
+        /** 是否已合并 */
+        merged: boolean;
+        /** 绘制完成次数（用于扩边框情况） */
+        drawCompletedCount: number;
+        /** 引用计数 */
+        referenceCount: number;
+    }
+    /**
+     * 动态图集管理器配置
+     */
+    interface DynamicAtlasConfig {
+        /** 大纹理尺寸 [宽度, 高度] */
+        largeTextureSize: [
+            number,
+            number
+        ];
+        /** 大纹理最大数量 */
+        maxLargeTextures: number;
+        /** 小纹理单元尺寸 */
+        textureUnitSize: number;
+        /** 纹理扩边尺寸 */
+        extendSize: number;
+        /** 纹理格式 */
+        textureFormat: RenderTargetFormat;
+        /** 是否立即执行合并 */
+        immediately: boolean;
+        /** 是否自动扩展大纹理数量 */
+        autoExtend: boolean;
+        /** 是否查重 */
+        checkDuplicate: boolean;
+    }
+    /**
+     * 动态图集管理器
+     * 提供便捷的图集管理功能，封装LargeTexManager的复杂操作
+     * todo:
+     * 1. 用户new texture(texture2d), 此时texture2d 已经被合并到大图集，且已经被自动释放。会导致 texture2d 被重新加载。
+     */
+    class DynamicAtlasManager {
+        private _largeTexManager;
+        private _textureMap;
+        private _config;
+        private _isDestroyed;
+        private _autoReplace;
+        private _totalDrawCount;
+        private _waitReplace;
+        constructor(config?: Partial<DynamicAtlasConfig>, autoReplace?: boolean);
+        private _findSmallTexture;
+        /**
+         * @en Add texture to atlas
+         * @param texture texture to add
+         * @param scale scale to add
+         * @param largeTextureIndex largeTextureIndex to add
+         * @returns boolean whether add texture to atlas successfully
+         * @zh 添加纹理到图集
+         * @param texture 要添加的纹理
+         * @param scale 缩放系数，默认1.0
+         * @param largeTextureIndex 指定大纹理索引，-1表示自动分配
+         * @returns 是否添加成功
+         */
+        addTexture(texture: Texture, scale?: number, largeTextureIndex?: number): boolean;
+        onUpdate(): void;
+        private afterUpdate;
+        /**
+         * @en Add texture to atlas by url
+         * @param url url of texture to add
+         * @param scale scale to add
+         * @param largeTextureIndex largeTextureIndex to add
+         * @returns boolean whether add texture to atlas successfully
+         * @zh 通过URL添加纹理到图集
+         * @param url 纹理URL
+         * @param scale 缩放系数，默认1.0
+         * @param largeTextureIndex 指定大纹理索引，-1表示自动分配
+         * @returns 是否添加成功
+         */
+        addTextureByUrl(url: string, scale?: number, largeTextureIndex?: number): boolean;
+        /**
+         * @en Add textures to atlas
+         * @param textures textures to add
+         * @param scale scale to add
+         * @param largeTextureIndex largeTextureIndex to add
+         * @returns number of textures added successfully
+         * @zh 批量添加纹理到图集
+         * @param textures 纹理数组
+         * @param scale 缩放系数，默认1.0
+         * @param largeTextureIndex 指定大纹理索引，-1表示自动分配
+         * @returns 成功添加的纹理数量
+         */
+        addTextures(textures: Texture[], scale?: number, largeTextureIndex?: number): number;
+        /**
+         * @en Add textures to atlas by urls
+         * @param urls urls to add
+         * @param scale scale to add
+         * @param largeTextureIndex largeTextureIndex to add
+         * @returns number of textures added successfully
+         * @zh 批量通过URL添加纹理到图集
+         * @param urls URL数组
+         * @param scale 缩放系数，默认1.0
+         * @param largeTextureIndex 指定大纹理索引，-1表示自动分配
+         * @returns 成功添加的纹理数量
+         */
+        addTexturesByUrl(urls: string[], scale?: number, largeTextureIndex?: number): number;
+        /**
+         * @en Remove texture from atlas
+         * @param textureId textureId to remove
+         * @param largeTextureIndex largeTextureIndex to remove
+         * @param event event to remove
+         * @returns boolean whether remove texture from atlas successfully
+         * @zh 从图集中移除纹理
+         * @param textureId 纹理ID
+         * @param largeTextureIndex 大纹理索引，-1表示从所有大纹理中移除
+         * @param event 是否触发事件，默认true
+         * @returns 是否移除成功
+         */
+        removeTexture(textureId: number, largeTextureIndex?: number, event?: boolean): boolean;
+        /**
+         * @en Remove texture from atlas by url
+         * @param url url of texture to remove
+         * @param largeTextureIndex largeTextureIndex to remove
+         * @returns boolean whether remove texture from atlas successfully
+         * @zh 通过URL从图集中移除纹理
+         * @param url 纹理URL
+         * @param largeTextureIndex 大纹理索引，-1表示从所有大纹理中移除
+         * @returns 是否移除成功
+         */
+        removeTextureByUrl(url: string, largeTextureIndex?: number): boolean;
+        private _replaceTexture;
+        /**
+         * @en Replace original texture object,使其使用图集中的纹理
+         * @param textureId textureId to replace
+         * @returns boolean whether replace original texture object successfully
+         * @zh 替换原始纹理对象，使其使用图集中的纹理
+         * @param textureId 纹理ID
+         * @returns 是否替换成功
+         */
+        replaceOriginalTexture(textureId: number): boolean;
+        /**
+         * @en Replace original texture objects
+         * @param textureIds textureIds to replace
+         * @returns number of textures replaced successfully
+         * @zh 批量替换原始纹理对象
+         * @param textureIds 纹理ID数组，如果为空则替换所有纹理
+         * @returns 成功替换的纹理数量
+         */
+        replaceOriginalTextures(textureIds?: number[]): number;
+        /**
+         * @en Get texture info
+         * @param textureId textureId to get
+         * @returns texture info, if not exists return null
+         * @zh 获取纹理信息
+         * @param textureId 纹理ID
+         * @returns 纹理信息，如果不存在返回null
+         */
+        getTextureInfo(textureId: number): TextureInfo | null;
+        /**
+         * @en Get texture info by url
+         * @param url url of texture to get
+         * @returns texture info, if not exists return null
+         * @zh 通过URL获取纹理信息
+         * @param url 纹理URL
+         * @returns 纹理信息，如果不存在返回null
+         */
+        getTextureInfoByUrl(url: string): TextureInfo | null;
+        /**
+         * @en Get large texture object
+         * @param largeTextureIndex largeTextureIndex to get
+         * @returns large texture object
+         * @zh 获取大纹理对象
+         * @param largeTextureIndex 大纹理索引
+         * @returns 大纹理对象
+         */
+        getLargeTexture(largeTextureIndex: number): import("./LargeTex").LargeTex;
+        /**
+         * @en Get all large texture objects
+         * @returns all large texture objects
+         * @zh 获取所有大纹理对象
+         * @returns 大纹理对象数组
+         */
+        getAllLargeTextures(): import("./LargeTex").LargeTex[];
+        /**
+         * @en Get texture count in atlas
+         * @returns texture count in atlas
+         * @zh 获取图集中的纹理数量
+         * @returns 纹理数量
+         */
+        getTextureCount(): number;
+        /**
+         * @en Clear atlas
+         * @zh 清空图集，会清理rt注意引用关系
+         */
+        clear(): void;
+        /**
+         * @en Destroy manager
+         * @zh 销毁管理器
+         */
+        destroy(): void;
+        /**
+         * @en Get statistics info
+         * @returns statistics info object
+         * @zh 获取统计信息
+         * @returns 统计信息对象
+         */
+        getStatistics(): {
+            textureCount: number;
+            usageRate: number;
+            gpuMemoryUsage: number;
+            largeTextureCount: number;
+            config: DynamicAtlasConfig;
+        };
+        /**
+         * @en Clean up unused texture info
+         * @param forceClean if true, clean all textures regardless of reference count
+         * @returns number of textures cleaned up
+         * @zh 清理未使用的纹理信息
+         * @param forceClean 如果为true，则清理所有纹理，不管引用计数
+         * @returns 清理的纹理数量
+         */
+        cleanupUnusedTextures(forceClean?: boolean): number;
+    }
+    /**
+     * @en Texture processor interface for dynamic atlas management
+     * @zh 动态图集管理的纹理处理器接口
+     */
+    interface ITextureProcessor {
+        /**
+         * @en Add texture to dynamic atlas
+         * @zh 添加纹理到动态图集
+         * @param texture Texture to add
+         */
+        addTexture(texture: Texture): void;
+        /**
+         * @en Check if texture should be added to dynamic atlas
+         * @zh 检查纹理是否应该添加到动态图集
+         * @param texture Texture to check
+         * @returns true if should be added
+         */
+        shouldAddToDynamicAtlas(texture: Texture): boolean;
+        /**
+         * @en Update dynamic atlas
+         * @zh 更新动态图集
+         */
+        onUpdate(): void;
+        /**
+         * @en
+         */
+        cleanupUnused(): void;
+    }
+    class EmptyTextureProcessor implements ITextureProcessor {
+        addTexture(texture: Texture): void;
+        onUpdate(): void;
+        shouldAddToDynamicAtlas(texture: Texture): boolean;
+        cleanupUnused(): void;
+    }
+    class LargeTex extends RenderTexture {
+        cmdBuffer: CommandBuffer2D;
+        private _limitMipmap;
+        private _willDestroyTex;
+        private _shader;
+        /**
+         * @en Whether to immediately execute the merge
+         * @zh 是否立即执行合并
+         */
+        immediately: boolean;
+        /**
+         * @en Commands
+         * @zh 命令
+         */
+        commands: Set<Blit2DCMD>;
+        /**
+         * @en Wait merge ids
+         * @zh 等待合并的纹理ID
+         */
+        private _waitMergeIds;
+        constructor(width: number, height: number, format?: RenderTargetFormat, depthStencilFormat?: RenderTargetFormat, mipmap?: boolean, limitMipmap?: number, sRGB?: boolean, gammaCorrection?: number);
+        /**
+         * 分帧调用的Update函数
+         * @param force 是否强制更新
+         * @returns 完成绘制的纹理ID列表
+         */
+        onUpdate(force?: boolean): number[];
+        /**
+         * 是否等待合并
+         * @param id 纹理ID
+         * @returns 是否等待合并
+         */
+        hasWaitMerge(id: number): boolean;
+        /**
+         * 设置Mipmap最大层次
+         * @param count
+         */
+        private _setMaxMipmapLevel;
+        /**
+         * 绘制小贴图到大贴图上，带扩边功能
+         * @param x 绘制到大贴图的位置x
+         * @param y 绘制到大贴图的位置y
+         * @param w 绘制到大贴图的宽度
+         * @param h 绘制到大贴图的高度
+         * @param expand 扩边像素数
+         * @param smallTex 小贴图
+         */
+        addTexture(x: number, y: number, w: number, h: number, expand: number, smallTex: Texture2D, needRemove: boolean): Blit2DCMD;
+        /**
+         * 向大贴图指定的位置和尺寸填充颜色
+         * @param x 填充的位置x
+         * @param y 填充的位置y
+         * @param w 填充的宽度
+         * @param h 填充的高度
+         * @param color 填充的颜色
+         * @param format 贴图格式
+         */
+        addColor(x: number, y: number, w: number, h: number, color: Vector4, format: number): Blit2DCMD;
+        /**
+         * 向大贴图填充颜色
+         * @param color 填充的颜色
+         * @param format 贴图格式
+         */
+        fillColor(color: Vector4, format: number): void;
+        /**
+         * 销毁对象，清理内存
+         */
+        destroy(): void;
+        /**
+         * 创建小贴图
+         * @param w 宽度
+         * @param h 高度
+         * @param pixelArray 像素数据
+         * @returns 贴图对象
+         */
+        private _createSmallTex;
+        /**
+         * 删除小贴图
+         */
+        private _doDestoryTex;
+        /**
+         * 绘制小贴图到大贴图上，包含扩边功能
+         * @param x 绘制到大贴图的位置x
+         * @param y 绘制到大贴图的位置y
+         * @param w 绘制到大贴图的宽度
+         * @param h 绘制到大贴图的高度
+         * @param expand 扩边像素数
+         * @param smallTex 小贴图
+         */
+        private _drawTex;
+    }
+    class TextureItem {
+        /**
+         * @en Texture unique ID (0 is empty, 1 is color block, >1 is texture block)
+         * @zh 纹理唯一编号（0是空位，1是颜色块，>1是纹理块）
+         * */
+        id: number;
+        /**
+         * @en Texture URL (optional)
+         * @zh 纹理URL（可选）
+         * */
+        url?: string;
+        /**
+         * @en Texture offset parameters
+         * @zh 纹理偏移参数
+         * */
+        x: number;
+        /**
+         * @en Texture offset parameters
+         * @zh 纹理偏移参数
+         * */
+        y: number;
+        /**
+         * @en Texture scale parameters
+         * @zh 纹理缩放参数
+         * */
+        w: number;
+        /**
+         * @en Texture scale parameters
+         * @zh 纹理缩放参数
+         * */
+        h: number;
+        /**
+         * @en Texture position and size in large texture set (block coordinates, not pixel coordinates)
+         * @zh 纹理所处大图合集位置和宽高（块坐标，非像素坐标）
+         * */
+        pos: Vector4;
+        /**
+         * @en Large texture index
+         * @zh 大纹理序号
+         * */
+        largeTextureIndex: number;
+        /**
+         * @en Scale factor
+         * @zh 放缩系数
+         * */
+        scale: number;
+        /**
+         * @en Whether only a placeholder (needs to be replaced with actual texture)
+         * @zh 是否仅是占位（需要用实际纹理替换）
+         * */
+        token: boolean;
+        /**
+         * @en Companion texture ID
+         * @zh 伴随纹理ID
+         * */
+        partId: number[];
+        /**
+         * @en Command
+         * @zh 命令
+         * */
+        cloneTo(ti: TextureItem): void;
+        /**
+         * @en Whether it is itself
+         * @param iu id or url
+         * @zh 是否是自身
+         * @param iu id或url
+         */
+        isSelf(iu: number | string): boolean;
+    }
+    type TextureOut = {
+        texItem?: TextureItem;
+        texture?: LargeTex;
+        texCode?: number;
+    };
+    class LargeTexBase {
+        /**
+         * @en The texture expansion size (can reduce black edges)
+         * @zh 纹理扩边量（可减少黑边）
+         * */
+        EXTEND_SIZE: number;
+        /**
+         * @en The minimum size of small textures that can be merged, beyond which they will not be merged
+         * @zh 参与合并的小纹理最小允许尺寸，超过这个尺寸将不参与合并
+         * */
+        TEX_SIZE_MIN: number;
+        /**
+         * @en The maximum allowed size of small textures that can be merged, beyond which they will not be merged
+         * @zh 参与合并的小纹理最大允许尺寸，超过这个尺寸将不参与合并
+         * */
+        TEX_SIZE_MAX: number;
+        /**
+         * @en Whether to enable MipMap
+         * @zh 是否启用MipMap
+         * */
+        mipMap: boolean;
+        /**
+         * @en Texture repeat mode
+         * @zh 纹理重复模式
+         * */
+        texWrap: WrapMode;
+        /**
+         * @en Texture sampling mode
+         * @zh 纹理采样模式
+         * */
+        texMode: FilterMode;
+        /**
+         * @en Anisotropic value
+         * @zh 各向异性值
+         * */
+        texAnisoLevel: number;
+        /**
+         * @en Large texture pixel format
+         * @zh 大纹理像素格式
+         * */
+        texFormat: RenderTargetFormat;
+        /**
+         * @en Background color
+         * @zh 背景色
+         * */
+        backColor: Vector4;
+        /**
+         * @en Large texture width
+         * @zh 大纹理宽度
+         * */
+        LARGE_TEX_W: number;
+        /**
+         * @en Large texture height
+         * @zh 大纹理高度
+         * */
+        LARGE_TEX_H: number;
+        /**
+         * @en Large texture maximum number
+         * @zh 大纹理最大数量
+         * */
+        LARGE_TEX_N: number;
+        /**
+         * @en Delay time 30ms
+         * @zh 延迟时间 30ms
+         * */
+        delay: number;
+        /**
+         * @en Total capacity
+         * @zh 总容量
+         * */
+        totalCapacity: number;
+        /**
+         * @en Used capacity
+         * @zh 已经使用的容量
+         * */
+        usedCapacity: number;
+        /**
+         * @en Whether sRGB space
+         * @zh 是否sRGB空间
+         * */
+        sRGB: boolean;
+        /**
+         * @en The gamma correction value of the texture. If set to 1.0, texture sampling will be linear without any correction.
+         * @zh 纹理的伽马校正值。如果设置为1.0，则纹理采样将为线性，不进行任何校正。
+         */
+        gammaCorrection: number;
+        /**
+         * @en Whether to check duplicates
+         * @zh 是否查重
+         * */
+        checkDup: boolean;
+        /**
+         * @en Whether to automatically extend the number of large textures
+         * @zh 是否自动扩展大图数量
+         * */
+        autoExtend: boolean;
+        /**
+         * @en Whether to immediately execute merging
+         * @zh 是否立即执行合并
+         * */
+        immediately: boolean;
+        /** 参与合并的纹理对象数组 */
+        protected _texItems: TextureItem[][];
+        /** 大纹理中位置占用情况的Map，尺寸为 (LARGE_TEX_SIZE / TEX_SIZE_MIN) ^ 2，默认为0，占用的位置放纹理id */
+        protected _texMaps: number[][];
+        /** 临时空间占用图 */
+        protected _tempMaps: number[];
+        /**
+         * @en Merged large texture objects
+         * @zh 合并的大纹理对象
+         * */
+        largeTexs: LargeTex[];
+        /** 命令缓冲区 */
+        protected _cmdBuffer: CommandBuffer2D;
+        /**
+         * @en Whether destroyed
+         * @zh 是否已销毁
+         * */
+        destroyed: boolean;
+        /**
+         * @en GPU memory usage
+         * @zh 显存使用量
+         * */
+        gpuMemory: number;
+        id: number;
+        /**
+         * @en Large texture set name
+         * @zh 大图合集名称
+         * */
+        name: string;
+        /**
+         * @en Update hook
+         * @zh 更新钩子
+         * */
+        updateHook: (index: number, completedIds: number[]) => void;
+        protected static _largeTexSize: number[][];
+        /**
+         * @en
+         * @param largeTexsize large texture size(size must be a power of 2)
+         * @param ltn large texture number limit
+         * @param tsm small texture unit size (small texture minimum size)
+         * @param exs small texture extend size
+         * @zh
+         * @param largeTexsize 大纹理像素尺寸（尺寸要符合2次幂）
+         * @param ltn 大纹理数量上限
+         * @param tsm 小纹理单元尺寸（小纹理最小尺寸）
+         * @param exs 小纹理扩边尺寸
+         */
+        constructor(largeTexsize: number[], ltn: number, tsm?: number, exs?: number, texFormat?: RenderTargetFormat);
+        /**
+         * @en Response update
+         * @param force force update
+         * @zh 响应更新
+         * @param force 强制更新
+         */
+        onUpdate(force?: boolean): boolean;
+        /**
+         * @en Adjust the maximum number of large textures
+         * @param add add amount
+         * @zh 调整大纹理数量上限
+         * @param add 增加量
+         */
+        adjustLtn(add?: number): void;
+        /**
+         * @en Calculate the GPU memory usage
+         * @zh 统计显存使用量
+         */
+        calculateGpuMemory(): number;
+        /**
+         * @en Get the current usage rate (percentage)
+         * @zh 获取当前使用率（百分比）
+         * @returns
+         */
+        getLoadUsageRate(): number;
+        /**
+         * 大图指定位置用颜色填充
+         * @param largeTextureIndex 大纹理序号
+         * @param x 位置x
+         * @param y 位置y
+         * @param w 宽度
+         * @param h 高度
+         * @param r 红色成分（0~255）
+         * @param g 绿色成分（0~255）
+         * @param b 蓝色成分（0~255）
+         * @param a Alpha（0~255）
+         */
+        fillWithColor(largeTextureIndex: number, x: number, y: number, w: number, h: number, r: number, g: number, b: number, a?: number): void;
+        /**
+         * 根据一批小纹理计算大纹理尺寸和高宽
+         * @param tex
+         * @param scale
+         * @param tsm
+         * @param exs
+         * @param tp 合并情况
+         * @returns [宽，高，利用率]
+         */
+        static calcFitTexSize(tex: Texture2D[], scale: number, tsm: number, exs: number, tp?: any): number[];
+        /**
+         * 指定的贴图是否都已经在大图合集上
+         * @param ui 贴图id或url
+         * @param largeTextureIndex 大纹理序号
+         * @returns 是否都已经在大图合集上
+         */
+        areTextureMerged(ui: number | string, largeTextureIndex?: number): boolean;
+        /**
+         * 指定的贴图是否都已经在大图合集上
+         * @param texs 贴图组
+         */
+        areAllTexturesIncluded(texs: Texture2D[]): boolean;
+        /**
+         * 大图合集指定纹理空间是否够用
+         * @param tex 小纹理数组
+         * @param scale 放缩系数
+         * @param largeTextureIndex 大纹理序号
+         * @return 够用true，不够用false
+         */
+        hasEnoughSpace(tex: Texture2D[], scale: number, largeTextureIndex: number): boolean;
+        /**
+         * 获取具有足够空间的大纹理编号
+         * @param tex 小纹理数组
+         * @param scale 放缩系数
+         * @return 成功大纹理编号，失败-1
+         */
+        findAvailableLargeTextureCode(tex: Texture2D[], scale: number): number;
+        /**
+         * 将一组小纹理合并到指定的大纹理中
+         * @param texs 小纹理数组
+         * @param scale 放缩系数
+         * @param largeTextureIndex 大纹理编号
+         * @param needRemove 小纹理用完后是否需要删除
+         * @return 成功true，失败false，如果失败，所有的小纹理都没有合并进大纹理中
+         */
+        addTexturesToLargeTexture(texs: Texture2D[], scale: number, largeTextureIndex: number, needRemove?: boolean): boolean;
+        /**
+         * 添加小纹理
+         * @param tex 纹理对象
+         * @param scale 放缩系数（0.1~10.0）
+         * @param largeTextureIndex 指定大图纹理编号（-1：不指定）
+         * @param url 纹理URL
+         * @param needRemove 小纹理用完后是否需要删除
+         * @returns 成功大纹理编号，失败-1
+         */
+        addTexture(tex: Texture2D, scale?: number, largeTextureIndex?: number, url?: string, needRemove?: boolean): number;
+        /**
+         * 添加纹理占位符
+         * @param url 纹理资源
+         * @param w 纹理宽度
+         * @param h 纹理高度
+         * @param scale 放缩系数（0.1~10.0）
+         * @param largeTextureIndex 指定大图纹理编号（-1：不指定）
+         * @returns
+         */
+        addPlaceholder(url: string, w: number, h: number, scale?: number, largeTextureIndex?: number): number;
+        /**
+         * 更新小纹理
+         * @param tex 纹理对象
+         * @param scale 放缩系数（0.1~10.0）
+         * @param largeTextureIndex 指定大图纹理编号（-1：不指定）
+         * @param url 纹理URL
+         * @param needRemove 小纹理用完后是否需要删除
+         * @returns 成功大纹理编号，失败-1
+         */
+        updateTexture(tex: Texture2D, scale?: number, largeTextureIndex?: number, url?: string, needRemove?: boolean): number;
+        /**
+         * 获取纹理和UV
+         * @param iu 小纹理id或url
+         * @param largeTextureIndex 大纹理编号
+         * @returns 纹理对象
+         */
+        getTexture(iu: number | string, largeTextureIndex?: number): TextureOut;
+        /**
+         * 获取纹理和UV
+         * @param tex 纹理对象
+         * @param largeTextureIndex 大纹理编号
+         * @returns 纹理对象
+         */
+        getTextureByRef(tex: Texture2D, largeTextureIndex?: number): TextureOut;
+        /**
+         * 根据大图纹理序号获取大纹理
+         * @param largeTextureIndex 大纹理编号
+         * @returns 大纹理或null
+         */
+        getLargeTex(largeTextureIndex: number): LargeTex;
+        /**
+         * 删除小纹理
+         * @param iu 小纹理id或url
+         * @param largeTextureIndex 大纹理编号(-1: 不指定)
+         */
+        removeTexture(iu: number | string, largeTextureIndex?: number): void;
+        /**
+         * 清空，重用对象
+         */
+        clear(): void;
+        /**
+         * 销毁对象，清理内存
+         * @param keepRes
+         */
+        destroy(keepRes?: boolean): void;
+        /**
+         * 查找小纹理参数/占位
+         * @param iu 小纹理id或url
+         * @param largeTextureIndex 大纹理编号（-1：不指定）
+         * @returns 小纹理信息
+         */
+        protected _findTexture(iu: number | string, largeTextureIndex?: number): TextureItem;
+        /**
+         * 清除所有纹理
+         */
+        removeAllTextures(): void;
+        /**
+         * 创建大纹理
+         * @param largeTextureIndex 大纹理编号
+         * @param sRGB 大图是否sRGB格式
+         */
+        createLargeTex(largeTextureIndex: number, sRGB?: boolean, gammaCorrection?: number): void;
+        /**
+         * 计算纹理分块尺寸
+         * @param tw 纹理宽度
+         * @param th 纹理高度
+         * @param scale 放缩系数
+         * @param tsm 最小尺寸
+         * @param exs 边缘扩展
+         * @returns [宽，高，水平块数，垂直块数]
+         */
+        static calcTexSize(tw: number, th: number, scale: number, tsm: number, exs: number): number[];
+        /**
+         * 添加小纹理，合成大纹理
+         * @param tex 小纹理
+         * @param scale 放缩系数
+         * @param largeTextureIndex 指定大纹理序号（-1：不指定）
+         * @param url 纹理URL
+         * @param needRemove 小纹理用完后是否需要删除
+         * @returns
+         */
+        protected _addTexture(tex: Texture2D, scale: number, largeTextureIndex?: number, url?: string, needRemove?: boolean): TextureItem;
+        /**
+         * 添加纹理占位符
+         * @param url 纹理资源
+         * @param w 纹理宽度
+         * @param h 纹理高度
+         * @param scale 放缩系数（0.1~10.0）
+         * @param largeTextureIndex 指定大图纹理编号（-1：不指定）
+         * @returns 纹理占位对象
+         */
+        protected _addPlaceholder(url: string, w: number, h: number, scale?: number, largeTextureIndex?: number): TextureItem;
+        /**
+         * 更新小纹理，合成大纹理
+         * @param tex 小纹理
+         * @param scale 放缩系数
+         * @param largeTextureIndex 指定大纹理序号（-1：不指定）
+         * @param url 纹理URL
+         * @param needRemove 小纹理用完后是否需要删除
+         * @returns
+         */
+        protected _updateTexture(tex: Texture2D, scale: number, largeTextureIndex?: number, url?: string, needRemove?: boolean): TextureItem;
+        /**
+         * 查询并占据单张纹理的空间（指定Map）
+         * @param x 纹理的尺寸x方向
+         * @param y 纹理的尺寸y方向
+         * @param texMap 空间占用图
+         * @returns 成功true，失败false
+         */
+        protected _takeRoomInMap(x: number, y: number, texMap: number[]): boolean;
+        /**
+         * 查询单张纹理的空间（指定Map）
+         * @param x 纹理的尺寸x方向
+         * @param y 纹理的尺寸y方向
+         * @param texMap 空间占用图
+         * @returns 空间位置[垂值位置，水平位置]
+         */
+        protected _peekRoomInMap(x: number, y: number, texMap: number[]): number[];
+        /**
+         * 查询纹理的空间
+         * @param x 纹理的尺寸x方向
+         * @param y 纹理的尺寸y方向
+         * @param largeTextureIndex 指定大图编号（-1：不指定）
+         * @returns [大图编号，垂直位置，水平位置]
+         */
+        protected _findRoom(x: number, y: number, largeTextureIndex?: number): number[];
+        /**
+         * 将纹理加入（可排序，面积大的排前面）
+         * @param ti 纹理参数
+         * @param sort 是否排序
+         */
+        protected _addToTextureItem(ti: TextureItem, sort?: boolean): void;
+    }
+    /**
+     * @en Large texture manager class (general)
+     * @zh 大图合集类（通用）
+     * */
+    class LargeTexManager extends LargeTexBase {
+        COLOR_ITEM_SIZE: number;
+        private _curColor;
+        private _curColorUV;
+        private _curColorMap;
+        private _largeTexCode;
+        private _reserve;
+        active: boolean;
+        /**
+         * 构造函数
+         * @param lts 大纹理像素尺寸
+         * @param ltn 大纹理数量上限
+         * @param tsm 小纹理单元尺寸
+         * @param exs 小纹理扩边尺寸
+         * @param qds 大纹理观察尺寸
+         */
+        constructor(lts: number[], ltn: number, tsm?: number, exs?: number, texFormat?: RenderTargetFormat);
+        /**
+         * 添加空白边框纹理
+         * @param largeTextureIndex 大纹理序号
+         */
+        addDummySideTexture(largeTextureIndex?: number): void;
+        /**
+         * 添加颜色
+         * @param color 颜色
+         * @param largeTextureIndex 大图纹理编号（-1:不指定）
+         * @returns 成功大纹理编号，失败-1
+         */
+        addColor(color: Vector4, largeTextureIndex?: number): number;
+        /**
+         * 获取颜色所在的大纹理
+         * @param color 颜色
+         * @param uv 纹理坐标（不输入表示不获取）
+         * @param largeTextureIndex 大纹理编号（-1:不指定）
+         * @returns 大纹理或null
+         */
+        getColor(color: Vector4, uv?: Vector4, largeTextureIndex?: number): LargeTex;
+        /**
+         * 获得大图合集是否有保留空间
+         * @returns
+         */
+        getReserve(): boolean;
+        /**
+         * 设置大图合集是否要保留空间
+         * @param rv 是否保留
+         */
+        setReserve(rv: boolean): void;
+        /**
+         * 销毁对象，清理内存
+         * @param keepRes
+         */
+        destroy(keepRes?: boolean): void;
+        /**
+         * 查找颜色
+         * @param r 颜色值
+         * @param g
+         * @param b
+         * @param a
+         * @param largeTextureIndex 大纹理编号
+         * @returns
+         */
+        private _findColor;
+        /**
+         * 清除所有纹理
+         */
+        removeAllTextures(): void;
+        /**
+         * 将颜色加入，颜色写入大纹理中
+         * @param r 颜色值
+         * @param g
+         * @param b
+         * @param a
+         * @param largeTextureIndex 大纹理编号
+         * @returns
+         */
+        private _addColor;
+        /**
+         * 查询纹理的空间（指定Map）
+         * @param x 纹理的尺寸x方向
+         * @param y 纹理的尺寸y方向
+         * @param texMap 空间占用图
+         * @returns 空间位置[垂值位置，水平位置]
+         */
+        protected _peekRoomInMap(x: number, y: number, texMap: number[]): number[];
+        /**
+         * 获取大图的Base64编码
+         * @returns
+         */
+        getBase64(): Promise<string[]>;
+    }
+    /**
+     * @en Texture processor adapter that implements ITextureProcessor
+     * @zh 实现 ITextureProcessor 的纹理处理器适配器
+     */
+    class TextureProcessorAdapter implements ITextureProcessor {
+        private _dynamicAtlas;
+        constructor();
+        addTexture(texture: Texture): void;
+        shouldAddToDynamicAtlas(texture: Texture): boolean;
+        onUpdate(): void;
+        cleanupUnused(): void;
+    }
+    /**
+     * @internal
+     */
+    class LargeTexProcessor {
+        static _instance: LargeTexProcessor;
+        mgrs: LargeTexManager[];
+        private _textureProcessor;
+        static addMgr(mgr: LargeTexManager): void;
+        static removeMgr(mgr: LargeTexManager): void;
+        static cleanupUnused(): void;
+        /**
+         * @en Get texture processor instance
+         * @zh 获取纹理处理器实例
+         */
+        get textureProcessor(): ITextureProcessor;
+        /**
+         * @en Set texture processor instance
+         * @zh 设置纹理处理器实例
+         * @param processor Texture processor instance
+         */
+        setTextureProcessor(processor: ITextureProcessor): void;
+        addManager(mgr: LargeTexManager): void;
+        removeManager(mgr: LargeTexManager): void;
+        /**
+         * 分帧更新大图
+         * @param force 强制更新
+         */
+        update(force?: boolean): void;
+    }
+    class TextureMergeShaderInit {
+        /** @internal */
+        static _sdNotChange: ShaderData;
+        /** @internal */
+        static _sdGammaToLinear: ShaderData;
+        /** @internal */
+        static _sdLinearToGamma: ShaderData;
+        private static LINEAR_TO_GAMMA;
+        private static GAMMA_TO_LINEAR;
+        static init(): void;
+    }
     /**
      * @private
      * @en CommandEncoder Shader variable collection
@@ -38891,25 +40597,38 @@ declare namespace Laya {
      */
     class Light2DConfig {
         /**
+         * 配置变更计数器，用于检测配置是否发生变化
+         */
+        changeCount: number;
+        notifyChange(): void;
+        private _lightDirection;
+        /**
          * @en Light direction vector (affects normal effect)
          * @zh 灯光方向矢量（影响法线效果）
          */
-        lightDirection: Vector3;
+        get lightDirection(): Vector3;
+        set lightDirection(value: Vector3);
+        private _ambientColor;
         /**
-         * @en ambient light color
-         * @zh 环境光颜色
+         * @en ambient light color，provide basic lighting without direction and shadow, when there is no light, set the color can ensure the lowest visibility, when there is light, it can be superimposed to enhance the brightness and darkness, and at the same time, through the adjustment of color and intensity to unify the scene tone and create different atmosphere effects.
+         * @zh 环境光颜色，提供无方向、无阴影的基础照明，没有灯光时设置颜色可保证最低可见度，存在灯光时与其叠加以增强明暗层次，同时通过调整颜色和强度来统一场景色调并营造不同的氛围效果。
          */
-        ambientColor: Color;
+        get ambientColor(): Color;
+        set ambientColor(value: Color);
+        private _ambientLayerMask;
         /**
          * @en Layers affected by ambient light (affects all layers by default)
          * @zh 环境光影响的层（默认影响所有层）
          */
-        ambientLayerMask: number;
+        get ambientLayerMask(): number;
+        set ambientLayerMask(value: number);
+        private _multiSamples;
         /**
          * @en Light and shadow map multisampling number (1 or 4, affects jagged shadow edges)
          * @zh 光影图多重采样数（1或4，影响阴影边缘锯齿）
          */
-        multiSamples: number;
+        get multiSamples(): number;
+        set multiSamples(value: number);
     }
     /**
      * 生成2D光影图的渲染流程
@@ -38949,6 +40668,7 @@ declare namespace Laya {
         private _works;
         private _updateMark;
         private _updateLayerLight;
+        private _configChangeCount;
         private _spriteLayer;
         private _spriteNumInLayer;
         private _lightLayer;
@@ -40252,13 +41972,16 @@ declare namespace Laya {
         private static _isInit;
         static __init__(): void;
     }
+    class ComputeShaderParser {
+        static parse(data: string, basePath?: string): Promise<ComputeShader>;
+    }
     class HierarchyLoader implements IResourceLoader {
         load(task: ILoadTask): Promise<Prefab>;
         protected _load(api: IHierarchyParserAPI, task: ILoadTask, data: any, fromDCC: boolean): Promise<Prefab>;
     }
     class HierarchyParser {
         static parse(data: any, options?: Record<string, any>, errors?: Array<any>): Array<Node>;
-        static collectResourceLinks(data: any, basePath: string): (string | ILoadURL)[];
+        static collectResourceLinks(data: any, basePath: string): ILoadURL[];
     }
     class LoadModel2DV01 {
         /**@internal */
@@ -40799,43 +42522,35 @@ declare namespace Laya {
         get maxColorRGBKeysCount(): number;
         private _colorRGBKeysCount;
         /**
-         * @en Get the count of color RGB keys.
-         * @returns The count of color RGB keys.
-         * @zh 获取颜色 RGB 数量。
-         * @returns 颜色 RGB 数量。
+         * @en The count of color RGB keys.
+         * @zh 颜色 RGB 数量。
          */
         get colorRGBKeysCount(): number;
         /**@internal */
         _rgbElementDatas: Float32Array;
         /**
-         * @internal
-         * rgb 数据 保存设置值
+         * @ignore
+         * @en RGB data storage settings. The first is the key, and the second, third, and fourth are the R, G, and B values, forming a group, and so on.
+         * @zh RGB数据 保存设置值。第一个为键，第二、第三、第四为R、G、B值，组成一组，以此类推。
          */
         get _rgbElements(): Float32Array;
-        /**
-         * @internal
-         * rgb 数据 保存设置值
-         */
         set _rgbElements(value: Float32Array);
         private _maxColorAlphaKeysCount;
         get maxColorAlphaKeysCount(): number;
         private _colorAlphaKeysCount;
         /**
-         * 获取颜色Alpha数量。
-         * @return 颜色Alpha数量。
+         * @en The count of color Alpha keys.
+         * @zh 颜色 Alpha 数量。
          */
         get colorAlphaKeysCount(): number;
-        /**@internal */
+        /** @internal */
         _alphaElementDatas: Float32Array;
         /**
-         * @internal
-         * alpha 保存设置值
+         * @ignore
+         * @en Alpha data storage settings. The first is the key, and the second is the value, forming a pair, and so on.
+         * @zh 透明度数据 保存设置值。第一个为键，第二个为值，组成一对，以此类推。
          */
         get _alphaElements(): Float32Array;
-        /**
-         * @internal
-         * alpha 保存设置值
-         */
         set _alphaElements(value: Float32Array);
         get maxColorKeysCount(): number;
         /**
@@ -40853,18 +42568,10 @@ declare namespace Laya {
          */
         _keyRanges: Vector4;
         /**
-         * @en Get the gradient mode.
-         * @returns The gradient mode.
-         * @zh 获取梯度模式。
-         * @returns 梯度模式。
+         * @en Gradient mode. 0: Blend mode, 1: Fixed mode.
+         * @zh 渐变模式。0：混合模式，1：固定模式。
          */
         get mode(): number;
-        /**
-         * @en Set the gradient mode.
-         * @param value The gradient mode.
-         * @zh 设置梯度模式。
-         * @param value 梯度模式。
-         */
         set mode(value: number);
         /**
          * @ignore
@@ -42238,6 +43945,27 @@ declare namespace Laya {
          * @returns 如果矩阵是反向的返回true，否则返回false
          */
         getInvertFront(): boolean;
+    }
+    class PathPointKeyframe extends Keyframe {
+        /**
+         * @en The value of the keyframe.
+         * @zh 关键帧的值。
+         */
+        value: CurvePath;
+        /**
+         * @inheritDoc
+         * @override
+         * @en Clones the data to another object.
+         * @param destObject The target object to clone to.
+         * @zh 克隆数据到目标对象。
+         * @param destObject 拷贝数据结构
+         */
+        cloneTo(destObject: PathPointKeyframe): void;
+        /**
+         * @en Clones.
+         * @zh 克隆
+         */
+        clone(): PathPointKeyframe;
     }
     /**
      * @en The `Point` object represents a location in a two-dimensional coordinate system, where x represents the horizontal axis and y represents the vertical axis.
@@ -44203,7 +45931,7 @@ declare namespace Laya {
     /**
      * @ignore
      */
-    class HTMLVideoPlayer extends VideoPlayer {
+    class HTMLVideoPlayer extends VideoPlayerBackend {
         readonly element: HTMLVideoElement;
         constructor();
         get currentTime(): number;
@@ -44513,18 +46241,14 @@ declare namespace Laya {
         static removeChannel(channel: SoundChannel): void;
     }
     /**
-     * @en Nodes used for playing background music or sound effects
+     * @en Node used for playing background music or sound effects
      * @zh 用于播放背景音乐或者音效的节点
      */
     class SoundNode extends Sprite {
-        private _channel;
+        private _comp;
         private _tar;
         private _playEvents;
         private _stopEvents;
-        private _source;
-        private _isMusic;
-        private _autoPlay;
-        private _loop;
         constructor();
         /**
          * @en Audio source
@@ -44585,8 +46309,60 @@ declare namespace Laya {
          * @zh 设置触发停止的事件字符串
          */
         set stopEvent(events: string);
-        private onDisplay;
-        private onUndisplay;
+    }
+    /**
+     * @en Component used for playing background music or sound effects
+     * @zh 用于播放背景音乐或者音效的组件
+     */
+    class SoundPlayer extends Component {
+        private _channel;
+        private _source;
+        private _isMusic;
+        private _autoPlay;
+        private _loop;
+        constructor();
+        /**
+         * @en Audio source
+         * @zh 音频源
+         */
+        get source(): string;
+        set source(value: string);
+        /**
+         * @en Determines if the audio type is background music. If true, it's background music; otherwise, it's a sound effect.
+         * @zh 确定音频类型是否为背景音乐。如果为true，音乐类型为背景音乐，否则为音效
+         */
+        get isMusic(): boolean;
+        set isMusic(value: boolean);
+        /**
+         * @en The number of times the audio should loop
+         * @zh 循环次数
+         */
+        get loop(): number;
+        set loop(value: number);
+        /**
+         * @en Determines if the audio should auto-play
+         * @zh 是否自动播放
+         */
+        get autoPlay(): boolean;
+        set autoPlay(value: boolean);
+        /**
+         * @en Play the audio
+         * @param loops The number of times to loop the audio
+         * @param complete The callback function to be called when playback is complete
+         * @param startTime The time to start playing the audio from
+         * @zh 播放音频
+         * @param loops 循环次数
+         * @param complete 完成回调函数
+         * @param startTime 播放开始时间
+         */
+        play(loops?: number, complete?: (success: boolean) => void, startTime?: number): void;
+        /**
+         * @en Stop playing the audio
+         * @zh 停止播放音频
+         */
+        stop(): void;
+        protected _onEnable(): void;
+        protected _onDisable(): void;
     }
     /**
      * @en VideoNode displays video on Canvas. Video may not be effective in all platforms.
@@ -44597,11 +46373,14 @@ declare namespace Laya {
      * 但是在移动端，只有在用户第一次触碰屏幕后才可以调用play()，所以移动端不可能在程序开始运行时就自动开始播放Video。
      */
     class VideoNode extends Sprite {
+        private _comp;
+        /** @ignore */
+        constructor();
         /**
          * @en Video player options. These options need to be set before setting the source, and if you change the settings, you need to reset the source.
          * @zh 视频播放器选项。这些选项需要在设置source前设置好，如果更改设置，需要重新设置source。
          */
-        readonly options: IVideoPlayerOptions;
+        get options(): IVideoPlayerOptions;
         /**
          * @zh 视频播放模式。如果设置的模式不支持，会尝试使用另外一种模式。
          * -- player: 使用播放器。这时播放器是浮动在主画布上面（或下面）的，不能与嵌套在UI层级中。
@@ -44610,26 +46389,13 @@ declare namespace Laya {
          * -- player: Use the player. The player is floating above (or below) the main canvas and cannot be nested in the UI hierarchy.
          * -- decoder: Use the decoder. The video is captured to a Texture and then displayed, so it can be nested in the UI hierarchy.
          */
-        mode: "player" | "decoder";
-        private _tex;
-        private _vtex;
-        private _player;
-        private _api;
-        private _source;
-        private _autoPlay;
-        private _loop;
-        private _volume;
-        private _muted;
-        private _playbackRate;
-        private _allowBackground;
-        private _paused;
-        /** @ignore */
-        constructor();
+        get mode(): "player" | "decoder";
+        set mode(value: "player" | "decoder");
         /**
          * @en Video player
          * @zh 视频播放器
          */
-        get player(): VideoPlayer | VideoTexture | null;
+        get player(): VideoPlayerBackend | VideoTexture | null;
         /**
          * @en Video source
          * @zh 视频源
@@ -44767,21 +46533,179 @@ declare namespace Laya {
          * - ""：（空字符串）浏览器不支持该音频/视频类型
          */
         canPlayType(type: string): CanPlayTypeResult;
-        private _load;
-        private _vtReady;
-        private _unload;
-        private onDisplay;
-        private onUndisplay;
-        /**
-         * @ignore
-         */
-        destroy(detroyChildren?: boolean): void;
         /** @deprecated */
         get currentSrc(): string;
         /** @deprecated */
         get videoTexture(): VideoTexture | null;
         /** @deprecated */
         set videoTexture(value: VideoTexture);
+    }
+    class VideoPlayer extends Component {
+        /**
+         * @en Video player options. These options need to be set before setting the source, and if you change the settings, you need to reset the source.
+         * @zh 视频播放器选项。这些选项需要在设置source前设置好，如果更改设置，需要重新设置source。
+         */
+        readonly options: IVideoPlayerOptions;
+        /**
+         * @zh 视频播放模式。如果设置的模式不支持，会尝试使用另外一种模式。
+         * -- player: 使用播放器。这时播放器是浮动在主画布上面（或下面）的，不能与嵌套在UI层级中。
+         * -- decoder: 使用解码器。视频会被捕获到Texture再显示，因此可以嵌套在UI层级中。
+         * @en Video playback mode. If the set mode is not supported, it will try to use another mode.
+         * -- player: Use the player. The player is floating above (or below) the main canvas and cannot be nested in the UI hierarchy.
+         * -- decoder: Use the decoder. The video is captured to a Texture and then displayed, so it can be nested in the UI hierarchy.
+         */
+        mode: "player" | "decoder";
+        private _vtex;
+        private _player;
+        private _api;
+        private _source;
+        private _autoPlay;
+        private _loop;
+        private _volume;
+        private _muted;
+        private _playbackRate;
+        private _allowBackground;
+        private _paused;
+        private _textureCmd;
+        /** @ignore */
+        owner: Sprite;
+        /** @ignore */
+        constructor();
+        /**
+         * @en Video player
+         * @zh 视频播放器
+         */
+        get player(): VideoPlayerBackend | VideoTexture | null;
+        /**
+         * @en Video source
+         * @zh 视频源
+         */
+        get source(): string;
+        set source(value: string);
+        /**
+         * @en Whether to automatically play the video after loading. Default is true.
+         * @zh 视频加载完成后是否自动播放。默认值为true。
+         */
+        get autoPlay(): boolean;
+        set autoPlay(value: boolean);
+        /**
+         * @en Whether to allow background playback. Default is false.
+         * @zh 是否允许后台播放。默认值为false。
+         */
+        get allowBackground(): boolean;
+        set allowBackground(value: boolean);
+        /**
+         * @en The current playback position in seconds.
+         * @zh 当前播放头位置（以秒为单位）。
+         */
+        get currentTime(): number;
+        set currentTime(value: number);
+        /**
+         * @en The ready state of the video element:
+         * - 0 = HAVE_NOTHING - No information is available about the audio/video readiness
+         * - 1 = HAVE_METADATA - Metadata about the audio/video is ready
+         * - 2 = HAVE_CURRENT_DATA - Data for the current playback position is available, but not enough to play the next frame/millisecond
+         * - 3 = HAVE_FUTURE_DATA - Data for the current and at least the next frame is available
+         * - 4 = HAVE_ENOUGH_DATA - Enough data is available to begin playback
+         * @zh 视频元素的就绪状态：
+         * - 0 = HAVE_NOTHING - 没有关于音频/视频是否就绪的信息
+         * - 1 = HAVE_METADATA - 关于音频/视频就绪的元数据
+         * - 2 = HAVE_CURRENT_DATA - 关于当前播放位置的数据是可用的，但没有足够的数据来播放下一帧/毫秒
+         * - 3 = HAVE_FUTURE_DATA - 当前及至少下一帧的数据是可用的
+         * - 4 = HAVE_ENOUGH_DATA - 可用数据足以开始播放
+         */
+        get readyState(): number;
+        /**
+         * @en The video source width. Available after the ready event is triggered.
+         * @zh 视频源宽度。ready 事件触发后可用。
+         */
+        get videoWidth(): number;
+        /**
+         * @en The video source height. Available after the ready event is triggered.
+         * @zh 视频源高度。ready 事件触发后可用。
+         */
+        get videoHeight(): number;
+        /**
+         * @en The video duration in seconds. Available after the ready event is triggered.
+         * @zh 视频长度（秒）。ready 事件触发后可用。
+         */
+        get duration(): number;
+        /**
+         * @en Returns whether the playback of the audio/video has ended.
+         * @zh 返回音频/视频的播放是否已结束。
+         */
+        get ended(): boolean;
+        /**
+         * @en Whether the video should loop when it ends.
+         * @zh 视频是否应在结束时重新播放。
+         */
+        get loop(): boolean;
+        set loop(value: boolean);
+        /**
+         * @en The current playback speed of the video. For example:
+         * - 1.0: Normal speed
+         * - 0.5: Half speed (slower)
+         * - 2.0: Double speed (faster)
+         * - -1.0: Backwards, normal speed
+         * - -0.5: Backwards, half speed
+         * Note: Only Google Chrome and Safari support the playbackRate property.
+         * @zh 视频的当前播放速度。例如：
+         * - 1.0：正常速度
+         * - 0.5：半速（更慢）
+         * - 2.0：倍速（更快）
+         * - -1.0：向后，正常速度
+         * - -0.5：向后，半速
+         * 注意：只有 Google Chrome 和 Safari 支持 playbackRate 属性。
+         */
+        get playbackRate(): number;
+        set playbackRate(value: number);
+        /**
+         * @en The current volume level.
+         * @zh 当前音量。
+         */
+        get volume(): number;
+        set volume(value: number);
+        /**
+         * @en The muted state of the video.
+         * @zh 视频的静音状态。
+         */
+        get muted(): boolean;
+        set muted(value: boolean);
+        /**
+         * @en If the video is paused.
+         * @zh 视频是否暂停。
+         */
+        get paused(): boolean;
+        /**
+         * @en Get the video texture
+         * @zh 获取视频纹理
+         */
+        get videoTexture(): VideoTexture | null;
+        /**
+         * @en Start playing the video
+         * @zh 开始播放视频
+         */
+        play(): void;
+        /**
+         * @en Pause video playback
+         * @zh 暂停视频播放
+         */
+        pause(): void;
+        private _load;
+        private _vtReady;
+        private _unload;
+        /**
+         * @ignore
+         */
+        protected _onEnable(): void;
+        /**
+         * @ignore
+         */
+        protected _onDisable(): void;
+        /**
+         * @ignore
+         */
+        protected _onDestroy(): void;
     }
     interface IVideoPlayerOptions {
         /**
@@ -44826,10 +46750,10 @@ declare namespace Laya {
         obeyMuteSwitch?: boolean;
     }
     /**
-     * @en Video player class
-     * @zh 视频播放器类
+     * @en Video player backend class
+     * @zh 视频播放器底层
      */
-    class VideoPlayer {
+    class VideoPlayerBackend {
         /**
          * @en Video player options
          * @zh 视频播放器选项
@@ -48990,8 +50914,12 @@ declare namespace Laya {
          */
         get layer(): number;
         set layer(value: number);
-        set lightReceive(value: boolean);
+        /**
+         * @en Whether to receive light
+         * @zh 是否接受灯光。
+         */
         get lightReceive(): boolean;
+        set lightReceive(value: boolean);
         _resetUpdateMark(): void;
         _updateLight(): void;
         /**
@@ -49036,22 +50964,28 @@ declare namespace Laya {
          * @returns 包含常数值的 GradientDataNumber 实例。
          */
         static createConstantData(constantValue: number): GradientDataNumber;
-        private _currentLength;
         /**
-         * @internal
+         * @en The current length of the gradient data.
+         * @zh 渐变数据的当前长度。
          */
+        _currentLength: number;
+        /** @internal */
         _dataBuffer: Float32Array;
         /**
-         * @internal
+         * @en The gradient elements.
+         * @zh 渐变元素。
          */
         get _elements(): Float32Array;
-        /**
-         * @internal
-         */
         set _elements(value: Float32Array);
-        /**@internal 曲线编辑范围*/
+        /**
+         * @en Curve editing range
+         * @zh 曲线编辑范围
+         */
         _curveMin: number;
-        /**@internal 曲线编辑范围*/
+        /**
+         * @en Curve editing range
+         * @zh 曲线编辑范围
+         */
         _curveMax: number;
         /**
          * @en The number of gradient floats.
@@ -50404,21 +52338,22 @@ declare namespace Laya {
      * @zh GradientDataInt 类用于创建整形渐变。
      */
     class GradientDataInt implements IClone {
-        private _currentLength;
         /**
-         * @internal
+         * @en The current length of the gradient data.
+         * @zh 渐变数据的当前长度。
+         */
+        _currentLength: number;
+        /**
          * @en Developers are prohibited from modifying this.
          * @zh 开发者禁止修改。
          */
         _elements: Float32Array;
         /**
-         * @internal
          * @en Curve editing range (minimum).
          * @zh 曲线编辑范围（最小值）。
          */
         _curveMin: number;
         /**
-         * @internal
          * @en Curve editing range (maximum).
          * @zh 曲线编辑范围（最大值）。
          */
@@ -55676,68 +57611,72 @@ declare namespace Laya {
         destroy(): void;
     }
     /**
-     * @en Physics2DOption is used to configure default parameters for 2D physics
      * @zh Physics2DOption 用于配置2D物理的默认参数
+     * @en Physics2DOption is used to configure default parameters for 2D physics
      */
     class Physics2DOption {
         /**
-         * @en Sets whether sleeping is allowed. Allowing sleep can improve stability and performance, but it usually comes at the cost of accuracy.The default is false.
          * @zh 设置是否允许休眠。允许休眠可以提高稳定性和性能，但通常会牺牲准确性。默认为否。
+         * @en Sets whether sleeping is allowed. Allowing sleep can improve stability and performance, but it usually comes at the cost of accuracy.The default is false.
          */
         static allowSleeping: boolean;
         /**
-         * @en Gravity acceleration, with a default value of 9.8, corresponding to 9.8 meters per second squared (m/s²) in the real world.
          * @zh 重力加速度，默认的重力加速度值为 9.8，对应于现实世界中的 9.8米/秒²（m/s²） 。
+         * @en Gravity acceleration, with a default value of 9.8, corresponding to 9.8 meters per second squared (m/s²) in the real world.
          */
         static gravity: {
             x: number;
             y: number;
         };
         /**
-         * @en Indicates whether the update is performed externally.The default is false.
          * @zh 表示更新是否由外部执行。默认为否。
+         * @en Indicates whether the update is performed externally.The default is false.
          */
         static customUpdate: boolean;
         /**
-         * @en The number of velocity iterations. Increasing this number will improve accuracy but reduce performance.The default is 8.
-         * @zh 旋转迭代次数。增大此数字会提高精度，但会降低性能。默认为8。
+         * @zh 速度迭代次数，用于控制每个物理时间步中，速度约束求解阶段的迭代次数。该参数影响碰撞响应、摩擦效果以及关节稳定性，数值越高，物理结果越稳定，但计算开销也越大。通常推荐使用默认值 8，在性能受限场景可适当降低，在高精度需求场景可适当提高。
+         * @en Specifies the number of iterations used to solve velocity constraints in each physics step. This parameter affects collision response, friction behavior, and joint stability. Higher values improve simulation stability at the cost of performance. A default value of 8 is commonly recommended, with lower values for performance-critical scenarios and higher values for accuracy-critical cases.
          */
         static velocityIterations: number;
         /**
-         * @en The number of position iterations. Increasing this number will improve accuracy but reduce performance.The default is 3.
-         * @zh 位置迭代次数。增大此数字会提高精度，但会降低性能。默认为3。
+         * @zh 位置迭代次数，用于控制 2D 物理系统在每个模拟步中，对碰撞、堆叠和关节约束所产生的位置误差进行修正的迭代次数。数值越高，位置约束收敛越充分，通常可减少穿透与下陷、提升堆叠和关节稳定性，但会增加 CPU 开销。该参数应与时间步、子步（subStep）及速度迭代次数（velocityIterations）配合调整，默认值 3 在多数场景下能兼顾性能与效果。
+         * @en Specifies the number of iterations used to correct positional constraint errors caused by collisions, stacking, and joints in each physics step. Higher values improve positional stability (less penetration and sinking, more stable stacks and joints) at the cost of performance. This parameter should be tuned together with the time step, sub-steps, and velocity iterations. A default value of 3 provides a good balance for most scenarios.
          */
         static positionIterations: number;
         /**
-         * @en The conversion ratio between rendering pixels and physical units. By default, 1 length unit in the physics engine corresponds to 50 pixels. Modifying this value changes the number of pixels that correspond to 1 length unit in the physics engine.
          * @zh 渲染像素和物理单位的转换比率，物理引擎中的1长度单位默认转换为50个像素，修改此处可改变物理引擎1长度单位对应的渲染像素值。
+         * @en The conversion ratio between rendering pixels and physical units. By default, 1 length unit in the physics engine corresponds to 50 pixels. Modifying this value changes the number of pixels that correspond to 1 length unit in the physics engine.
          */
         static pixelRatio: number;
         /**
-         * @en Whether to enable physics drawing.The default is true.
          * @zh 是否开启物理绘制。默认为是。
+         * @en Whether to enable physics drawing.The default is true.
          */
         static debugDraw: boolean;
         /**
-         * @en Whether to draw shapes.The default is true.
          * @zh 是否绘制形状。默认为是。
+         * @en Whether to draw shapes.The default is true.
          */
         static drawShape: boolean;
         /**
-         * @en Whether to draw joints.The default is true.
          * @zh 是否绘制关节。默认为是。
+         * @en Whether to draw joints.The default is true.
          */
         static drawJoint: boolean;
         /**
-         * @en Whether to draw the Bounding Box.The default is false.
          * @zh 是否绘制包围盒。默认为否。
+         * @en Whether to draw the Bounding Box.The default is false.
          */
         static drawAABB: boolean;
         /**
-         * @en Whether to draw the center of mass.The default is false.
          * @zh 是否绘制质心。默认为否。
+         * @en Whether to draw the center of mass.The default is false.
          */
         static drawCenterOfMass: boolean;
+        /**
+         * @zh 子步数，用于定义物理世界中每个模拟步（Step）的时间长度（秒），保证物理计算在不同帧率下具有一致性和稳定性。步长越小，物理精度越高，但 CPU 开销增加。
+         * @en Specifies the duration of a single physics simulation step (in seconds), ensuring consistent and stable physics results across different frame rates. Smaller values increase simulation accuracy at the cost of higher CPU usage.
+         */
         static subStep: number;
     }
     /**
@@ -56239,8 +58178,8 @@ declare namespace Laya {
          */
         get position(): Point;
         /**
-         * @zh 强制设置刚体的旋转（弧度）
-         * @en Force the rotation of the rigidbody (in radians)
+         * @zh 强制设置刚体的旋转（角度）
+         * @en Force the rotation of the rigidbody (in degrees)
          */
         set rotation(number: number);
         /**
@@ -64178,7 +66117,6 @@ declare namespace Laya {
      * @ignore
      */
     class BrowserAdapter extends EventDispatcher {
-        requestFrame: Function;
         webSocketClass: new () => IWebSocket;
         protected _visibilityStateKey: string;
         protected _pixelRatio: number;
@@ -64198,6 +66136,8 @@ declare namespace Laya {
         requestFullscreen(): void;
         exitFullscreen(): void;
         createElement<K extends keyof HTMLElementTagNameMap>(tagName: K): HTMLElementTagNameMap[K];
+        getElementById(id: string): HTMLElement;
+        removeElement(ele: HTMLElement): void;
         createMainCanvas(): HTMLCanvasElement;
         setCursor(cursor: string): void;
         get supportArrayBufferURL(): boolean;
@@ -64349,20 +66289,20 @@ declare namespace Laya {
         shortAudioClass: new (url: string) => SoundChannel;
         longAudioClass: new (url: string) => SoundChannel;
         videoTextureClass: new () => VideoTexture;
-        videoPlayerClass: new () => VideoPlayer;
-        protected suspendedMedias: Set<SoundChannel | VideoTexture | VideoPlayer>;
+        videoPlayerClass: new () => VideoPlayerBackend;
+        protected suspendedMedias: Set<SoundChannel | VideoTexture | VideoPlayerBackend>;
         private _testElement;
         private _firstTouch;
         constructor();
         protected init(): void;
         createSoundChannel(url: string, longAudioUsage?: boolean): SoundChannel;
         createVideoTexture(): VideoTexture;
-        createVideoPlayer(): VideoPlayer;
+        createVideoPlayer(): VideoPlayerBackend;
         decodeAudioData(data: ArrayBuffer): Promise<any>;
-        resumeUntilGotFocus(media: SoundChannel | VideoTexture | VideoPlayer): void;
+        resumeUntilGotFocus(media: SoundChannel | VideoTexture | VideoPlayerBackend): void;
         canPlayType(type: string): CanPlayTypeResult;
         protected onGotFocus(): void;
-        protected beforeResumeMedias(medias: ReadonlyArray<SoundChannel | VideoTexture | VideoPlayer>): Promise<void>;
+        protected beforeResumeMedias(medias: ReadonlyArray<SoundChannel | VideoTexture | VideoPlayerBackend>): Promise<void>;
     }
     const PlatformAdapterNames: readonly [
         "browser",
@@ -64535,92 +66475,6 @@ declare namespace Laya {
         protected onKeyDown(e: KeyboardEvent): void;
     }
     /**
-     * 前向渲染流程通用类
-     */
-    class ForwardAddClusterRP {
-        pipelineMode: PipelineMode;
-        depthPipelineMode: PipelineMode;
-        depthNormalPipelineMode: PipelineMode;
-        depthTarget: InternalRenderTarget;
-        destTarget: InternalRenderTarget;
-        camera: Camera;
-        cameraCullInfo: CameraCullInfo;
-        depthTextureMode: DepthTextureMode;
-        depthNormalTarget: InternalRenderTarget;
-        beforeForwardCmds: CommandBuffer[];
-        beforeSkyboxCmds: CommandBuffer[];
-        beforeTransparentCmds: CommandBuffer[];
-        skyRenderNode: WebBaseRenderNode;
-        clearColor: Color;
-        clearFlag: number;
-        enableCMD: boolean;
-        enableOpaque: boolean;
-        enableTransparent: boolean;
-        protected _opaqueList: RenderListQueue;
-        protected _transparent: RenderListQueue;
-        protected _zBufferParams: Vector4;
-        protected _defaultNormalDepthColor: Color;
-        protected _viewPort: Viewport;
-        setViewPort(value: Viewport): void;
-        protected _scissor: Vector4;
-        setScissor(value: Vector4): void;
-        constructor();
-        /**
-         * 设置相机裁剪信息
-         * @param camera
-         */
-        setCameraCullInfo(camera: Camera): void;
-        /**
-         * 设置渲染命令（前向渲染之前）
-         * @param value
-         */
-        setBeforeForwardCmds(value: CommandBuffer[]): void;
-        /**
-         * 设置渲染命令（天空渲染之前）
-         * @param value
-         */
-        setBeforeSkyboxCmds(value: CommandBuffer[]): void;
-        /**
-         * 设置渲染命令（透明物体渲染之前）
-         * @param value
-         */
-        setBeforeTransparentCmds(value: CommandBuffer[]): void;
-        /**
-         * 渲染流程（TODO:其他两个pass合并MulTargetRT）
-         * @param context
-         * @param list
-         * @param count
-         */
-        render(context: IRenderContext3D, list: WebBaseRenderNode[], count: number): void;
-        /**
-         * 清除渲染队列
-         */
-        protected _clearRenderList(): void;
-        /**
-         * 缓存视口和裁剪
-         */
-        protected _cacheViewPortAndScissor(): void;
-        /**
-         * 渲染深度流程
-         * @param context
-         */
-        protected _renderDepthPass(context: IRenderContext3D): void;
-        /**
-         * 渲染法线深度流程
-         * @param context
-         */
-        protected _renderDepthNormalPass(context: IRenderContext3D): void;
-        /**
-         * 主渲染流程
-         * @param context
-         */
-        protected _mainPass(context: IRenderContext3D): void;
-        /**
-         * 渲染不透明贴图流程
-         */
-        protected _opaqueTexturePass(): void;
-    }
-    /**
      * 裁剪通用工具类
      */
     class RenderCullUtil {
@@ -64658,25 +66512,25 @@ declare namespace Laya {
      */
     class RenderListQueue {
         private _elements;
+        private batchModule;
         get elements(): FastSinglelist<IRenderElement3D>;
         private _quickSort;
         private _isTransparent;
-        _batch: IInstanceRenderBatch;
         constructor(isTransParent: boolean);
         /**
          * 添加渲染元素
          * @param renderelement
          */
         addRenderElement(renderelement: IRenderElement3D): void;
-        /**
-         * 合并渲染队列
-         */
-        private _batchQueue;
+        addBatchAgent(agent: IModuleAgentResource): void;
         /**
          * 渲染队列
          * @param context
          */
         renderQueue(context: IRenderContext3D): void;
+        mergeQueue(): void;
+        renderQueueOnly(context: IRenderContext3D): void;
+        sort(): void;
         /**
          * 清空队列
          */
@@ -64884,6 +66738,69 @@ declare namespace Laya {
         fowardRender(context: IRenderContext3D, camera: Camera): void;
         destroy(): void;
     }
+    interface IMain3DRP {
+        pipelineMode: PipelineMode;
+        depthPipelineMode: PipelineMode;
+        depthNormalPipelineMode: PipelineMode;
+        depthTextureMode: DepthTextureMode;
+        blitOpaqueBuffer: CommandBuffer;
+        depthTarget: InternalRenderTarget;
+        destTarget: InternalRenderTarget;
+        depthNormalTarget: InternalRenderTarget;
+        enableCMD: boolean;
+        enableOpaque: boolean;
+        enableTransparent: boolean;
+        clearFlag: number;
+        skyRenderNode: IBaseRenderNode;
+        camera: Camera;
+        clearColor: Color;
+        setViewPort(value: Viewport): void;
+        setScissor(value: Vector4): void;
+        setBeforeForwardCmds(value: CommandBuffer[]): void;
+        setBeforeSkyboxCmds(value: CommandBuffer[]): void;
+        setBeforeTransparentCmds(value: CommandBuffer[]): void;
+        setCameraCullInfo(sceneManager: ISceneRenderManager): void;
+        render(context: IRenderContext3D, renderManager: ISceneRenderManager): void;
+        destory(): void;
+    }
+    interface IDirShadowRP {
+        setShadowCasterCommanBuffer(cmd: CommandBuffer[]): void;
+        setRPData(dirLight: IDirectLightData, camera: ICameraNodeData, context: IRenderContext3D, renderManager: ISceneRenderManager): void;
+        setCameraCullInfo(sceneManager: ISceneRenderManager): void;
+        update(context: IRenderContext3D): void;
+        render(context: IRenderContext3D, manager: ISceneRenderManager): void;
+        useRPResource(context: IRenderContext3D): void;
+        unuseRPResource(context: IRenderContext3D): void;
+        destory(): void;
+    }
+    interface ISpotShadowRP {
+        setRPData(spotLight: ISpotLightData, context: IRenderContext3D, renderManager: ISceneRenderManager): void;
+        setCameraCullInfo(sceneManager: ISceneRenderManager): void;
+        update(context: IRenderContext3D): void;
+        render(context: IRenderContext3D, manager: ISceneRenderManager): void;
+        useRPResource(context: IRenderContext3D): void;
+        unuseRPResource(context: IRenderContext3D): void;
+        destory(): void;
+    }
+    /**
+     * 渲染数据
+     */
+    interface IForwardAddRP {
+        shadowCastPass: boolean;
+        enableDirectLightShadow: boolean;
+        enableSpotLightShadowPass: boolean;
+        enablePostProcess: boolean;
+        mainRenderpass: IMain3DRP;
+        dirShadowRenderPass: IDirShadowRP;
+        spotShadowRenderPass: ISpotShadowRP;
+        postProcess: CommandBuffer;
+        finalize: CommandBuffer;
+        setBeforeImageEffect(value: CommandBuffer[]): void;
+        setAfterEventCmd(value: CommandBuffer[]): void;
+        runBeforeImageEffectCMD(context: IRenderContext3D): void;
+        runAfterEventCMD(context: IRenderContext3D): void;
+        destroy(): void;
+    }
     type PipelineMode = "Forward" | "ShadowCaster" | "DepthNormal" | string;
     /**
      * @blueprintIgnore @blueprintIgnoreSubclasses
@@ -64894,10 +66811,11 @@ declare namespace Laya {
         sceneModuleData: ISceneNodeData;
         cameraModuleData: ICameraNodeData;
         cameraData: ShaderData;
-        sceneUpdataMask: number;
+        sceneUpdateMask: number;
         cameraUpdateMask: number;
         pipelineMode: PipelineMode;
         invertY: boolean;
+        preDrawUniformMaps: Set<string>;
         setRenderTarget(value: InternalRenderTarget, clearFlag: RenderClearFlag): void;
         setViewPort(value: Viewport): void;
         setScissor(value: Vector4): void;
@@ -64927,23 +66845,6 @@ declare namespace Laya {
     /**
      * @blueprintIgnore @blueprintIgnoreSubclasses
      */
-    interface IInstanceRenderBatch {
-        batch(elements: SingletonList<IRenderElement3D>): void;
-        clearRenderData(): void;
-        recoverData(): void;
-    }
-    /**
-     * @blueprintIgnore @blueprintIgnoreSubclasses
-     */
-    interface IInstanceRenderElement3D extends IRenderElement3D {
-        instanceElementList: SingletonList<IRenderElement3D>;
-        setGeometry(geometry: IRenderGeometryElement): void;
-        clearRenderData(): void;
-        recover(): void;
-    }
-    /**
-     * @blueprintIgnore @blueprintIgnoreSubclasses
-     */
     interface ISkinRenderElement3D {
         skinnedData: Float32Array[];
     }
@@ -64951,10 +66852,10 @@ declare namespace Laya {
         createRender3DProcess(): IRender3DProcess;
         createRenderContext3D(): IRenderContext3D;
         createRenderElement3D(): IRenderElement3D;
-        createInstanceBatch(): IInstanceRenderBatch;
-        createInstanceRenderElement3D(): IInstanceRenderElement3D;
         createSkinRenderElement(): ISkinRenderElement3D;
         createSceneRenderManager(): ISceneRenderManager;
+        createMeshRenderBatchModule?(): IBatchModuleAgent;
+        createSimpleSkinRenderBatchModule?(): IBatchModuleAgent;
         createDrawNodeCMDData(): DrawNodeCMDData;
         createBlitQuadCMDData(): BlitQuadCMDData;
         createDrawElementCMDData(): DrawElementCMDData;
@@ -64963,6 +66864,62 @@ declare namespace Laya {
         createSetRenderDataCMD(): SetRenderDataCMD;
         createSetShaderDefineCMD(): SetShaderDefineCMD;
         createComputeCommandAppatchCMD?(): ComputeCommandAppatchCMD;
+    }
+    enum BatchCullMode {
+        None = 0,
+        Camera = 1,
+        DirectLight = 2,
+        Spot = 3
+    }
+    interface IModuleAgentResource {
+        opaqueList: SingletonList<IRenderElement3D>;
+        transparentList: SingletonList<IRenderElement3D>;
+        opaqueCustomSort: boolean;
+        transCustomSort: boolean;
+    }
+    interface IBatchModuleAgent {
+        /**
+         * 创建
+         */
+        create(): void;
+        /**
+         * 尝试添加渲染节点
+         * @param object
+         * @returns
+         */
+        addRenderNode(object: BaseRender): boolean;
+        /**
+         * 尝试移除渲染节点
+         * @param object
+         * @returns
+         */
+        removeRenderNode(object: BaseRender): boolean;
+        /**
+         * 更新属性
+         * @param object
+         * @param property
+         */
+        updateProperty(object: BaseRender, property: string | number): void;
+        /**
+         * 设置相机裁剪信息
+         */
+        setCullCamera?(cameraCullInfo: CameraCullInfo[]): void;
+        /**
+         * 设置方向光裁剪信息
+         */
+        setDirLightCullInfo?(directLightCullInfo: ShadowCullInfo[]): void;
+        /**
+         * 设置点光源裁剪信息
+         */
+        setSpotCullingDir?(directLightCullInfo: CameraCullInfo[]): void;
+        /**
+         * 添加渲染元素
+         */
+        appendRenderElement?(cullMode: BatchCullMode, cullInfoIndex: number, context: IRenderContext3D): IModuleAgentResource;
+        /**
+         * 释放
+         */
+        release(): void;
     }
     interface IRender3DCMD extends IRenderCMD {
         apply(context: IRenderContext3D): void;
@@ -65081,6 +67038,13 @@ declare namespace Laya {
      */
     interface ISceneRenderManager {
         list: FastSinglelist<BaseRender>;
+        baseRenderList: SingletonList<IBaseRenderNode>;
+        batchAgentList: Map<number, IBatchModuleAgent>;
+        /**
+         * 注册批处理模块
+         * @param agent
+         */
+        registerBatchModuleAgent(renderNodeType: number | BaseRenderType, agent: IBatchModuleAgent): void;
         /**
          * add one BaseRender
          * @param object
@@ -65105,6 +67069,12 @@ declare namespace Laya {
          * 更新运动物体
          */
         updateMotionObjects(): void;
+        /**
+         * 更新属性
+         * @param object
+         * @param property
+         */
+        updateProperty(object: BaseRender, property: string | number): void;
         /**
          * release Manager Node
          */
@@ -65137,6 +67107,12 @@ declare namespace Laya {
         propertyName: string;
         uniformtype: ShaderDataType;
         arrayLength: number;
+        format?: string;
+        access?: 'readonly' | 'writeonly' | 'readwrite';
+    };
+    type UniformOptions = {
+        format?: string;
+        access?: 'readonly' | 'writeonly' | 'readwrite';
     };
     /**
      * @blueprintIgnore
@@ -65148,11 +67124,15 @@ declare namespace Laya {
          * @param propertyID
          * @param propertyKey
          */
-        addShaderUniform(propertyID: number, propertyKey: string, uniformtype: ShaderDataType): void;
+        addShaderUniform(propertyID: number, propertyKey: string, uniformtype: ShaderDataType, options?: UniformOptions): void;
         /**
          * 增加一个UniformArray参数
          */
         addShaderUniformArray(propertyID: number, propertyName: string, uniformtype: ShaderDataType, arrayLength: number): void;
+        /**
+         * 设置默认值
+         */
+        setDefaultTextureData(key: number, defaultTex: BaseTexture): void;
     }
     class ComputeCommandBuffer {
         private _context;
@@ -65179,7 +67159,7 @@ declare namespace Laya {
          * @param datas 需要传递给着色器的数据列表
          * @param dispatchParams 调度参数，通常是一个Vector3，表示计算的工作组大小。
          */
-        addDispatchCommand(computeshader: ComputeShader, kernel: string, shaderDefine: IDefineDatas, datas: ShaderData[], dispatchParams: Vector3): void;
+        addDispatchCommand(computeshader: ComputeShader, shaderDefine: IDefineDatas, datas: ShaderData[], dispatchParams: Vector3): void;
         /**
          * 添加修改ShaderData值的命令
          * @param shaderData 要修改的ShaderData
@@ -65244,10 +67224,10 @@ declare namespace Laya {
         protected _cacheSharders: any;
         /** @internal */
         protected _cacheShaderHierarchy: number;
-        code: string;
         name: string;
-        other: any;
-        constructor(name: string, code: string, other: any);
+        node: ShaderNode;
+        uniformMaps: CommandUniformMap[];
+        constructor(name: string, node: IComputeShaderCompileObj, uniformMaps: CommandUniformMap[]);
         private setCacheShader;
         getCacheShader(compileDefine: IDefineDatas): IComputeShader;
         /**
@@ -65282,7 +67262,6 @@ declare namespace Laya {
     }
     interface IComputeCMD_Dispatch {
         shader: IComputeShader;
-        Kernel: string;
         shaderData: ShaderData[];
         dispatchParams: Vector3;
     }
@@ -65359,13 +67338,12 @@ declare namespace Laya {
     }
     interface ComputeShaderProcessInfo {
         name: string;
-        code: string;
-        other: any;
+        node: ShaderNode;
+        uniformMaps: CommandUniformMap[];
         defineData: IDefineDatas;
     }
     interface IComputeShader {
         name: string;
-        HasKernel(kernel: string): boolean;
         compilete: boolean;
     }
     interface IBufferState {
@@ -65380,7 +67358,8 @@ declare namespace Laya {
         COPY_SRC = 4,
         COPY_DST = 8,
         STORAGE = 16,
-        INDIRECT = 32
+        INDIRECT = 32,
+        VERTEX = 64
     }
     /**
      * 存储缓冲区接口,在GPU中创建各种各样的Buffer
@@ -65632,6 +67611,7 @@ declare namespace Laya {
         createRenderTargetInternal(width: number, height: number, format: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, generateMipmap: boolean, sRGB: boolean, multiSamples: number, storage: boolean): InternalRenderTarget;
         createRenderTargetCubeInternal(size: number, colorFormat: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, generateMipmap: boolean, sRGB: boolean, multiSamples: number): InternalRenderTarget;
         createRenderTargetDepthTexture(renderTarget: InternalRenderTarget, dimension: TextureDimension, width: number, height: number): InternalTexture;
+        createRenderTargetFromArrayLayer(arrayTex: InternalTexture, layer: number, colorFormat: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, sRGB: boolean): InternalRenderTarget;
         bindRenderTarget(renderTarget: InternalRenderTarget, faceIndex?: number): void;
         bindoutScreenTarget(): void;
         unbindRenderTarget(renderTarget: InternalRenderTarget): void;
@@ -65658,7 +67638,7 @@ declare namespace Laya {
     interface IVertexBuffer {
         vertexDeclaration: VertexDeclaration;
         instanceBuffer: boolean;
-        setData(buffer: ArrayBuffer, bufferOffset: number, dataStartIndex: number, dataCount: number): void;
+        setData(buffer: ArrayBufferLike, bufferOffset: number, dataStartIndex: number, dataCount: number): void;
         setDataLength(byteLength: number): void;
         destroy(): void;
     }
@@ -65670,20 +67650,25 @@ declare namespace Laya {
         Vector2 = 4,
         Vector3 = 5,
         Vector4 = 6,
-        Color = 7,
-        Matrix4x4 = 8,
-        Buffer = 9,
-        Matrix3x3 = 10,
-        ReadOnlyDeviceBuffer = 11,
-        DeviceBuffer = 12,
-        StorageTexture2D = 13,
-        Texture2D = 14,
-        Texture3D = 15,
-        TextureCube = 16,
-        Texture2DArray = 17
+        Vector4u = 7,
+        Color = 8,
+        Matrix4x4 = 9,
+        Buffer = 10,
+        Matrix3x3 = 11,
+        ReadOnlyDeviceBuffer = 12,
+        DeviceBuffer = 13,
+        StorageTexture2D = 14,
+        Texture2D = 15,
+        Texture3D = 16,
+        TextureCube = 17,
+        Texture2DArray = 18
     }
     type ShaderDataItem = number | boolean | Vector2 | Vector3 | Vector4 | Color | Matrix4x4 | BaseTexture | Float32Array | Matrix3x3 | IDeviceBuffer;
     function isUboBufferShaderType(type: ShaderDataType): boolean;
+    function isBlendProperty(index: number): boolean;
+    function isDepthStencilProperty(index: number): boolean;
+    function isCullProperty(index: number): boolean;
+    function isRenderStateProperty(index: number): boolean;
     function checkShaderDataValueLegal(value: any, shaderType: ShaderDataType): boolean;
     function ShaderDataDefaultValue(type: ShaderDataType): false | Readonly<Vector2> | 0 | Readonly<Matrix3x3> | Readonly<Vector3> | Readonly<Matrix4x4> | Readonly<Vector4> | Readonly<Color>;
     /**
@@ -65864,7 +67849,11 @@ declare namespace Laya {
         /**
          * @private
          */
-        _setInternalTexture(index: number, value: InternalTexture): void;
+        _setInternalTexture(index: number, value: InternalTexture | InternalRenderTarget): void;
+        /**
+         * @private
+         */
+        update(name: string): void;
         /**
          * 克隆。
          * @param destObject 克隆源。
@@ -66417,11 +68406,11 @@ declare namespace Laya {
         apply(context: IRenderContext2D): void;
     }
     class NoRender3DRenderPassFactory implements I3DRenderPassFactory {
+        createMeshRenderBatchModule(): IBatchModuleAgent;
+        createComputeCommandAppatchCMD?(): ComputeCommandAppatchCMD;
         createRender3DProcess(): IRender3DProcess;
         createRenderContext3D(): IRenderContext3D;
         createRenderElement3D(): IRenderElement3D;
-        createInstanceBatch(): IInstanceRenderBatch;
-        createInstanceRenderElement3D(): IInstanceRenderElement3D;
         createSkinRenderElement(): ISkinRenderElement3D;
         createSceneRenderManager(): ISceneRenderManager;
         createDrawNodeCMDData(): DrawNodeCMDData;
@@ -66438,6 +68427,9 @@ declare namespace Laya {
         fowardRender(context: IRenderContext3D, camera: Camera): void;
     }
     class NoRenderSceneRenderManager implements ISceneRenderManager {
+        batchAgentList: Map<number, IBatchModuleAgent>;
+        registerBatchModuleAgent(renderNodeType: number | BaseRenderType, agent: IBatchModuleAgent): void;
+        updateProperty(object: BaseRender, property: string): void;
         addRenderObject(object: BaseRender): void;
         removeRenderObject(object: BaseRender): void;
         removeMotionObject(object: BaseRender): void;
@@ -66448,12 +68440,13 @@ declare namespace Laya {
         baseRenderList: FastSinglelist<IBaseRenderNode>;
     }
     class NoRenderRenderContext3D implements IRenderContext3D {
+        preDrawUniformMaps: Set<string>;
         globalShaderData: ShaderData;
         sceneData: ShaderData;
         sceneModuleData: ISceneNodeData;
         cameraModuleData: ICameraNodeData;
         cameraData: ShaderData;
-        sceneUpdataMask: number;
+        sceneUpdateMask: number;
         cameraUpdateMask: number;
         pipelineMode: string;
         invertY: boolean;
@@ -66468,28 +68461,6 @@ declare namespace Laya {
         clearRenderTarget(): void;
     }
     class NoRenderRenderElement3D implements IRenderElement3D {
-        geometry: IRenderGeometryElement;
-        materialShaderData: ShaderData;
-        materialRenderQueue: number;
-        renderShaderData: ShaderData;
-        transform: Transform3D;
-        canDynamicBatch: boolean;
-        isRender: boolean;
-        owner: IBaseRenderNode;
-        subShader: SubShader;
-        materialId: number;
-        destroy(): void;
-    }
-    class NoRenderInstanceRenderBatch implements IInstanceRenderBatch {
-        batch(elements: SingletonList<IRenderElement3D>): void;
-        clearRenderData(): void;
-        recoverData(): void;
-    }
-    class NoRenderInstanceRenderElement3D implements IInstanceRenderElement3D {
-        instanceElementList: SingletonList<IRenderElement3D>;
-        setGeometry(geometry: IRenderGeometryElement): void;
-        clearRenderData(): void;
-        recover(): void;
         geometry: IRenderGeometryElement;
         materialShaderData: ShaderData;
         materialRenderQueue: number;
@@ -66601,7 +68572,7 @@ declare namespace Laya {
          * @param propertyID
          * @param propertyKey
          */
-        addShaderUniform(propertyID: number, propertyKey: string, uniformtype: ShaderDataType, block?: string): void;
+        addShaderUniform(propertyID: number, propertyKey: string, uniformtype: ShaderDataType, options?: UniformOptions): void;
         /**
          * 增加一个UniformArray参数
          */
@@ -66933,6 +68904,7 @@ declare namespace Laya {
         dispose(): void;
     }
     class NoTextureContext implements ITextureContext {
+        createRenderTargetFromArrayLayer(arrayTex: InternalTexture, layer: number, colorFormat: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, sRGB: boolean): InternalRenderTarget;
         needBitmap: boolean;
         createTextureInternal(dimension: TextureDimension, width: number, height: number, format: TextureFormat, generateMipmap: boolean, sRGB: boolean, premultipliedAlpha: boolean): InternalTexture;
         setTextureImageData(texture: InternalTexture, source: HTMLImageElement | HTMLCanvasElement | ImageBitmap | ImageData, premultiplyAlpha: boolean, invertY: boolean): void;
@@ -67118,7 +69090,8 @@ declare namespace Laya {
         destroy(): void;
     }
     class GLES3DRenderPassFactory implements I3DRenderPassFactory {
-        createInstanceBatch(): IInstanceRenderBatch;
+        createMeshRenderBatchModule(): IBatchModuleAgent;
+        createComputeCommandAppatchCMD?(): ComputeCommandAppatchCMD;
         createRender3DProcess(): IRender3DProcess;
         createRenderContext3D(): IRenderContext3D;
         createSetRenderDataCMD(): SetRenderDataCMD;
@@ -67130,138 +69103,7 @@ declare namespace Laya {
         createSetRenderTargetCMD(): SetRenderTargetCMD;
         createSceneRenderManager(): ISceneRenderManager;
         createSkinRenderElement(): GLESSkinRenderElement3D;
-        createInstanceRenderElement3D(): IInstanceRenderElement3D;
-        createDirectLightShadowRP(): GLESDirectLightShadowRP;
-        createSpotLightShadowRP(): GLESSpotLightShadowRP;
-        createForwardAddRP(): GLESForwardAddRP;
-        createForwardAddCluster(): GLESForwardAddClusterRP;
         createRenderElement3D(): GLESRenderElement3D;
-    }
-    class GLESDirectLightShadowRP {
-        private _light;
-        private _camera;
-        private _destTarget;
-        private _shadowCasterCommanBuffer;
-        _nativeObj: any;
-        get light(): RTDirectLight;
-        set light(value: RTDirectLight);
-        get camera(): RTCameraNodeData;
-        set camera(value: RTCameraNodeData);
-        get destTarget(): GLESInternalRT;
-        set destTarget(value: GLESInternalRT);
-        constructor();
-        destroy(): void;
-        get shadowCasterCommanBuffer(): CommandBuffer[];
-        set shadowCasterCommanBuffer(value: CommandBuffer[]);
-        private _setCmd;
-    }
-    class GLESForwardAddClusterRP {
-        get enableOpaque(): boolean;
-        set enableOpaque(value: boolean);
-        get enableCMD(): boolean;
-        set enableCMD(value: boolean);
-        get enableTransparent(): boolean;
-        set enableTransparent(value: boolean);
-        get enableOpaqueTexture(): boolean;
-        set enableOpaqueTexture(value: boolean);
-        private _destTarget;
-        get destTarget(): GLESInternalRT;
-        set destTarget(value: GLESInternalRT);
-        get pipelineMode(): string;
-        set pipelineMode(value: string);
-        private _depthTarget;
-        get depthTarget(): GLESInternalRT;
-        set depthTarget(value: GLESInternalRT);
-        get depthPipelineMode(): string;
-        set depthPipelineMode(value: string);
-        private _depthNormalTarget;
-        get depthNormalTarget(): GLESInternalRT;
-        set depthNormalTarget(value: GLESInternalRT);
-        get depthNormalPipelineMode(): string;
-        set depthNormalPipelineMode(value: string);
-        private _skyRenderNode;
-        get skyRenderNode(): RTBaseRenderNode;
-        set skyRenderNode(value: RTBaseRenderNode);
-        get depthTextureMode(): DepthTextureMode;
-        set depthTextureMode(value: DepthTextureMode);
-        private _opaqueTexture;
-        get opaqueTexture(): GLESInternalRT;
-        set opaqueTexture(value: GLESInternalRT);
-        private _camera;
-        get camera(): RTCameraNodeData;
-        set camera(value: RTCameraNodeData);
-        private _clearColor;
-        get clearColor(): Color;
-        set clearColor(value: Color);
-        get clearFlag(): number;
-        set clearFlag(value: number);
-        /**@internal */
-        _cameraCullInfo: CameraCullInfo;
-        setCameraCullInfo(value: Camera): void;
-        setViewPort(value: Viewport): void;
-        setScissor(value: Vector4): void;
-        private _getRenderCMDArray;
-        /**
-        * @internal
-        * OpaqueTexture CommandBuffer
-        */
-        private _opaquePassCommandBuffer;
-        get opaquePassCommandBuffer(): CommandBuffer;
-        set opaquePassCommandBuffer(value: CommandBuffer);
-        setBeforeForwardCmds(value: CommandBuffer[]): void;
-        setBeforeSkyboxCmds(value: CommandBuffer[]): void;
-        setBeforeTransparentCmds(value: CommandBuffer[]): void;
-        _nativeObj: any;
-        constructor();
-        destroy(): void;
-    }
-    class GLESForwardAddRP {
-        get shadowCastPass(): boolean;
-        set shadowCastPass(value: boolean);
-        private _directLightShadowPass;
-        get directLightShadowPass(): GLESDirectLightShadowRP;
-        set directLightShadowPass(value: GLESDirectLightShadowRP);
-        get enableDirectLightShadow(): boolean;
-        set enableDirectLightShadow(value: boolean);
-        private _spotLightShadowPass;
-        get spotLightShadowPass(): GLESSpotLightShadowRP;
-        set spotLightShadowPass(value: GLESSpotLightShadowRP);
-        get enableSpotLightShadowPass(): boolean;
-        set enableSpotLightShadowPass(value: boolean);
-        private _renderpass;
-        get renderpass(): GLESForwardAddClusterRP;
-        set renderpass(value: GLESForwardAddClusterRP);
-        private _enablePostProcess;
-        get enablePostProcess(): boolean;
-        set enablePostProcess(value: boolean);
-        /**@internal */
-        private _postProcess;
-        get postProcess(): CommandBuffer;
-        set postProcess(value: CommandBuffer);
-        /**@internal */
-        private _finalize;
-        get finalize(): CommandBuffer;
-        set finalize(value: CommandBuffer);
-        _nativeObj: any;
-        constructor();
-        private _getRenderCMDArray;
-        setAfterEventCmd(value: CommandBuffer[]): void;
-        setBeforeImageEffect(value: CommandBuffer[]): void;
-        destroy(): void;
-    }
-    class GLESRender3DProcess implements IRender3DProcess {
-        private _nativeObj;
-        private _tempList;
-        private renderpass;
-        constructor();
-        private _render3DManager;
-        get render3DManager(): RTScene3DRenderManager;
-        set render3DManager(value: RTScene3DRenderManager);
-        destroy(): void;
-        initRenderpass(camera: Camera, context: GLESRenderContext3D): void;
-        renderDepth(camera: Camera): void;
-        fowardRender(context: GLESRenderContext3D, camera: Camera): void;
-        renderFowarAddCameraPass(context: GLESRenderContext3D, renderpass: GLESForwardAddRP): void;
     }
     class GLESDrawNodeCMDData extends DrawNodeCMDData {
         type: RenderCMDType;
@@ -67362,8 +69204,8 @@ declare namespace Laya {
         private _cameraData;
         get cameraData(): GLESShaderData;
         set cameraData(value: GLESShaderData);
-        get sceneUpdataMask(): number;
-        set sceneUpdataMask(value: number);
+        get sceneUpdateMask(): number;
+        set sceneUpdateMask(value: number);
         get cameraUpdateMask(): number;
         set cameraUpdateMask(value: number);
         get pipelineMode(): string;
@@ -67372,6 +69214,7 @@ declare namespace Laya {
         set invertY(value: boolean);
         _nativeObj: any;
         constructor();
+        preDrawUniformMaps: Set<string>;
         setRenderTarget(value: GLESInternalRT, clearFlag: RenderClearFlag): void;
         setViewPort(value: Viewport): void;
         setScissor(value: Vector4): void;
@@ -67427,16 +69270,14 @@ declare namespace Laya {
         set skinnedData(data: Float32Array[]);
         init(): void;
     }
-    class GLESSpotLightShadowRP {
-        private _light;
-        get light(): SpotLightCom;
-        set light(value: SpotLightCom);
-        private _destTarget;
-        get destTarget(): GLESInternalRT;
-        set destTarget(value: GLESInternalRT);
+    class GLESMeshRenderBatchAgent implements IBatchModuleAgent {
         _nativeObj: any;
         constructor();
-        destroy(): void;
+        create(): void;
+        addRenderNode(object: BaseRender): boolean;
+        removeRenderNode(object: BaseRender): boolean;
+        updateProperty(object: BaseRender, property: string | number): void;
+        release(): void;
     }
     /**
      * OpenGL ES计算上下文，用于缓存和管理一系列计算命令
@@ -67444,8 +69285,6 @@ declare namespace Laya {
     class GLESComputeContext implements IComputeContext {
         private _nativeObj;
         private commands;
-        private _currentShader;
-        private _isExecuting;
         constructor();
         /**
          * 清空所有命令
@@ -67463,7 +69302,7 @@ declare namespace Laya {
          * @param shaderDataType 着色器数据类型
          * @param value 数据值
          */
-        addSetShaderDataCommand(shaderData: ShaderData, propertyID: number, shaderDataType: ShaderDataType, value: ShaderDataItem): void;
+        addSetShaderDataCommand(shaderData: GLESShaderData, propertyID: number, shaderDataType: ShaderDataType, value: ShaderDataItem): void;
         /**
          * 添加缓冲区到缓冲区的复制命令
          * @param src 源缓冲区
@@ -67504,159 +69343,38 @@ declare namespace Laya {
          */
         addClearBufferCommand(dest: GLESDeviceBuffer, destOffset: number, destCount: number): void;
         /**
-         * 绑定着色器数据到计算着色器
-         * @param shader 计算着色器
-         * @param shaderData 着色器数据数组
-         */
-        private _bindShaderData;
-        /**
          * 执行所有缓存的命令
          */
         executeCMDs(): void;
-        /**
-         * 执行调度命令
-         */
-        private _executeDispatchCommand;
-        /**
-         * 执行设置着色器数据命令
-         */
-        private _executeSetShaderDataCommand;
-        /**
-         * 执行缓冲区到缓冲区复制命令
-         */
-        private _executeBufferToBufferCommand;
-        /**
-         * 执行清理缓冲区命令
-         */
-        private _executeClearBufferCommand;
-        /**
-         * 执行缓冲区到纹理复制命令
-         */
-        private _executeBufferToTextureCommand;
-        /**
-         * 执行纹理到缓冲区复制命令
-         */
-        private _executeTextureToBufferCommand;
-        /**
-         * 执行纹理到纹理复制命令
-         */
-        private _executeTextureToTextureCommand;
-        /**
-         * 同步执行命令并等待完成
-         */
-        executeAndWait(): Promise<void>;
-        /**
-         * 检查是否正在执行命令
-         */
-        get isExecuting(): boolean;
-        /**
-         * 获取当前绑定的着色器
-         */
-        get currentShader(): GLESComputeShader | null;
         /**
          * 销毁计算上下文，清空所有命令
          */
         destroy(): void;
     }
-    /**
-     * OpenGL ES计算着色器实现
-     * 管理计算着色器的编译、内核函数和uniform映射
-     */
-    class GLESComputeShader implements IComputeShader {
-        /** ID计数器 */
-        static idCounter: number;
-        /** 着色器唯一ID */
-        private _id;
+    class GLESComputeShaderInstance implements IComputeShader {
         /** 原生着色器对象 */
-        private _nativeObj;
+        _nativeObj: any;
         /** 着色器名称 */
         name: string;
         /** 是否编译完成 */
         compilete: boolean;
-        /** 内核函数集合 */
-        private _kernels;
-        /** uniform命令映射 */
-        uniformCommandMap: GLESCommandUniformMap[];
-        /** uniform绑定信息映射 */
-        uniformBindingMap: Map<number, any>;
+        uniformMap: Map<number, UniformProperty>;
         constructor(name: string);
-        /**
-         * 检查是否包含指定的内核函数
-         * @param kernel 内核函数名称
-         * @returns 是否包含该内核
-         */
-        HasKernel(kernel: string): boolean;
-        /**
-         * 添加内核函数
-         * @param kernel 内核函数名称
-         */
-        addKernel(kernel: string): void;
-        /**
-         * 移除内核函数
-         * @param kernel 内核函数名称
-         */
-        removeKernel(kernel: string): void;
-        /**
-         * 获取所有内核函数
-         * @returns 内核函数数组
-         */
-        getKernels(): string[];
+        private glslUniformString;
+        proccessComputeShader(defineString: string[], uniformMaps: GLESCommandUniformMap[], CS: ShaderNode): {};
         /**
          * 编译计算着色器
          * @param info 着色器编译信息
          */
         compile(info: ComputeShaderProcessInfo): void;
-        /**
-         * 从着色器代码中提取内核函数
-         * @param code 着色器代码
-         */
-        private _extractKernelsFromShader;
-        /**
-         * 获取计算着色器程序对象
-         * @param kernel 内核函数名称
-         * @returns 着色器程序对象
-         */
-        getProgram(kernel: string): any;
-        /**
-         * 绑定计算着色器到OpenGL上下文
-         * @param kernel 使用的内核函数名称
-         */
-        bind(kernel?: string): void;
-        /**
-         * 解绑计算着色器
-         */
-        unbind(): void;
-        /**
-         * 设置uniform值
-         * @param location uniform位置
-         * @param value 值
-         */
-        setUniform(location: number, value: any): void;
-        /**
-         * 获取uniform位置
-         * @param name uniform名称
-         * @returns uniform位置
-         */
-        getUniformLocation(name: string): number;
-        /**
-         * 获取着色器ID
-         */
-        get id(): number;
-        /**
-         * 获取原生着色器对象
-         */
-        get nativeObj(): any;
-        /**
-         * 销毁计算着色器
-         */
-        destroy(): void;
+        _disposeResource(): void;
     }
     /**
      * OpenGL ES设备缓冲区实现
      * 用于在GPU中创建各种各样的Buffer，支持计算着色器和间接渲染
      */
     class GLESDeviceBuffer implements IDeviceBuffer, IGPUBuffer {
-        private _nativeObj;
+        _nativeObj: any;
         private _usage;
         private _size;
         private _cacheShaderData;
@@ -67669,27 +69387,10 @@ declare namespace Laya {
          */
         private _convertUsage;
         /**
-         * 添加缓存的着色器数据
-         * @param shaderData 着色器数据
-         * @param propertyID 属性ID
-         */
-        _addCacheShaderData(shaderData: GLESShaderData, propertyID: number): void;
-        /**
-         * 移除缓存的着色器数据
-         * @param shaderData 着色器数据
-         */
-        _removeCacheShaderData(shaderData: GLESShaderData): void;
-        /**
          * 获取原生缓冲区对象
          * @returns 原生缓冲区对象
          */
         getNativeBuffer(): any;
-        /**
-         * 获取缓冲区绑定信息
-         * @param binding 绑定点
-         * @returns 绑定信息
-         */
-        getBindInfo(binding: number): any;
         /**
          * 设置缓冲区数据
          * @param buffer 源数据缓冲区
@@ -67710,7 +69411,7 @@ declare namespace Laya {
          * @param destOffset 目标偏移量（字节）
          * @param byteLength 复制长度（字节）
          */
-        copyToBuffer(buffer: IVertexBuffer | IDeviceBuffer, sourceOffset: number, destOffset: number, byteLength: number): void;
+        copyToBuffer(buffer: GLESVertexBuffer | GLESDeviceBuffer, sourceOffset: number, destOffset: number, byteLength: number): void;
         /**
          * 复制数据到纹理（未实现）
          */
@@ -67751,6 +69452,9 @@ declare namespace Laya {
     }
     class GLESCommandUniformMap extends CommandUniformMap {
         _nativeObj: any;
+        /**@internal */
+        _idata: Map<number, UniformProperty>;
+        _stateName: string;
         constructor(stateName: string);
         /**
          * 增加一个Uniform参数，如果Uniform属性是Array，请使用addShaderUniformArray
@@ -67758,11 +69462,15 @@ declare namespace Laya {
          * @param propertyID
          * @param propertyKey
          */
-        addShaderUniform(propertyID: number, propertyKey: string, uniformtype: ShaderDataType): void;
+        addShaderUniform(propertyID: number, propertyKey: string, uniformtype: ShaderDataType, options?: UniformOptions): void;
         /**
          * 增加一个UniformArray参数
          */
         addShaderUniformArray(propertyID: number, propertyName: string, uniformtype: ShaderDataType, arrayLength: number): void;
+        /**
+         * 设置默认值
+         */
+        setDefaultTextureData(key: number, defaultTex: BaseTexture): void;
     }
     /**
      * WebGL mode.
@@ -67925,6 +69633,9 @@ declare namespace Laya {
         createVertexBuffer(bufferUsageType: BufferUsage): IVertexBuffer;
         createBufferState(): IBufferState;
         createRenderGeometryElement(mode: MeshTopology, drawType: DrawType): IRenderGeometryElement;
+        createComputeContext(): GLESComputeContext;
+        createComputeShader(info: ComputeShaderProcessInfo): GLESComputeShaderInstance;
+        createDeviceBuffer(type: EDeviceBufferUsage): IDeviceBuffer;
         createEngine(config: Config, canvas: HTMLCanvas): Promise<void>;
         afterInit(): void;
         private static _setVertexDec;
@@ -67961,6 +69672,9 @@ declare namespace Laya {
         };
         _bufferData: {
             [key: number]: Float32Array;
+        };
+        _deviceBufferData: {
+            [key: number]: IDeviceBuffer;
         };
         /**
          * @internal
@@ -68112,6 +69826,7 @@ declare namespace Laya {
          * @param value  buffer数据。
          */
         setBuffer(index: number, value: Float32Array): void;
+        setDeviceBuffer(index: number, value: GLESDeviceBuffer): void;
         /**
          * 设置纹理。
          * @param index shader索引。
@@ -68126,6 +69841,7 @@ declare namespace Laya {
          * @return  纹理。
          */
         getTexture(index: number): BaseTexture;
+        update(name: string): void;
         cloneTo(destObject: GLESShaderData): void;
         /**
          * 克隆。
@@ -68158,6 +69874,7 @@ declare namespace Laya {
         needBitmap: boolean;
         protected _native: any;
         constructor(native: any);
+        createRenderTargetFromArrayLayer(arrayTex: InternalTexture, layer: number, colorFormat: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, sRGB: boolean): InternalRenderTarget;
         createTextureInternal(dimension: TextureDimension, width: number, height: number, format: TextureFormat, generateMipmap: boolean, sRGB: boolean, premultipliedAlpha: boolean): GLESInternalTex;
         setTextureImageData(texture: GLESInternalTex, source: HTMLImageElement | HTMLCanvasElement | ImageBitmap, premultiplyAlpha: boolean, invertY: boolean): void;
         setTexturePixelsData(texture: GLESInternalTex, source: ArrayBufferView, premultiplyAlpha: boolean, invertY: boolean): void;
@@ -68271,6 +69988,7 @@ declare namespace Laya {
         vertexs: IGraphics2DVertexBlock[];
         indexView: I2DGraphicIndexDataView;
         vertexBuffer: IVertexBuffer;
+        textureArrayIndex: number;
     }
     /**
      * primitive渲染数据处理
@@ -68280,6 +69998,7 @@ declare namespace Laya {
         mask: IRenderStruct2D | null;
         logicMatrix: Matrix | null;
         applyVertexBufferBlock(views: IGraphics2DBufferBlock[]): void;
+        skipBufferUpdate(): void;
     }
     /**
      * 基础组件数据处理
@@ -68361,7 +70080,7 @@ declare namespace Laya {
         renderUpdateMask: number;
         renderMatrix: Matrix;
         /** 非即时数据 */
-        globalAlpha: number;
+        readonly globalAlpha: number;
         alpha: number;
         blendMode: BlendMode;
         /** 是否启动 */
@@ -68412,6 +70131,9 @@ declare namespace Laya {
         receiveShadow: boolean;
         enable: boolean;
         renderbitFlag: number;
+        visibalRangeBit: number;
+        visibalMin: number;
+        visibalMax: number;
         layer: number;
         bounds: Bounds;
         baseGeometryBounds: Bounds;
@@ -68845,6 +70567,11 @@ declare namespace Laya {
         set depthBiasClamp(value: number);
         protected createObj(): void;
         /**
+         * @internal
+         * 表示渲染状态 hash 值，
+         */
+        hash: string;
+        /**
          * 创建一个 <code>RenderState</code> 实例。
          */
         constructor();
@@ -68911,7 +70638,7 @@ declare namespace Laya {
         set buffer(value: IIndexBuffer);
         constructor();
         resetData(byteLength: number): void;
-        _addDataView(dataView: RT2DGraphic2DIndexDataView): void;
+        addDataView(dataView: RT2DGraphic2DIndexDataView): void;
         removeDataView(dataView: RT2DGraphic2DIndexDataView): void;
         destroy(): void;
     }
@@ -69018,6 +70745,7 @@ declare namespace Laya {
         set vertexBuffer(value: IVertexBuffer);
         _nativeObj: any;
         constructor();
+        textureArrayIndex: number;
     }
     class RTGraphics2DVertexBlock implements IGraphics2DVertexBlock {
         private _positions;
@@ -69038,8 +70766,11 @@ declare namespace Laya {
         get logicMatrix(): Matrix | null;
         set logicMatrix(value: Matrix | null);
         private _blocks;
+        private _blocksNative;
         applyVertexBufferBlock(blocks: RTGraphics2DBufferBlock[]): void;
+        skipBufferUpdate(): void;
         inheriteRenderData(context: GLESRenderContext2D): void;
+        destroy(): void;
     }
     class RTBaseRenderDataHandle extends RTRender2DDataHandle implements I2DBaseRenderDataHandle {
         constructor(nativeObj?: any);
@@ -69095,7 +70826,8 @@ declare namespace Laya {
     class RTRenderStruct2D implements IRenderStruct2D {
         _nativeObj: any;
         owner: Sprite;
-        globalAlpha: number;
+        get globalAlpha(): number;
+        private _clipRect;
         private _dcOptimize;
         get dcOptimize(): boolean;
         set dcOptimize(value: boolean);
@@ -69106,7 +70838,6 @@ declare namespace Laya {
         private _stackingRoot;
         set stackingRoot(value: boolean);
         get stackingRoot(): boolean;
-        private _enableCulling;
         get enableCulling(): boolean;
         set enableCulling(value: boolean);
         get inheritedEnableCulling(): boolean;
@@ -69170,9 +70901,134 @@ declare namespace Laya {
         removeChild(child: RTRenderStruct2D): void;
         destroy(): void;
     }
+    class RTBaseSpotRP {
+        _nativeObj: any;
+        private _destShadowRT;
+        constructor();
+        setShadowCasterCommanBuffer(cmd: CommandBuffer[]): void;
+        setCameraCullInfo(sceneManager: ISceneRenderManager): void;
+        setRPData(spotLight: RTSpotLight, context: IRenderContext3D): void;
+        destroy(): void;
+    }
+    class RTDirCascadeShadowRP {
+        _nativeObj: any;
+        private _destShadowRT;
+        constructor();
+        setShadowCasterCommanBuffer(cmd: CommandBuffer[]): void;
+        private _setCmd;
+        setRPData(dirLight: RTDirectLight, camera: RTCameraNodeData, context: IRenderContext3D): void;
+        setCameraCullInfo(sceneManager: ISceneRenderManager): void;
+        destroy(): void;
+    }
+    class RTForwardAddClusterRP {
+        get pipelineMode(): string;
+        set pipelineMode(value: string);
+        get depthPipelineMode(): string;
+        set depthPipelineMode(value: string);
+        get depthNormalPipelineMode(): string;
+        set depthNormalPipelineMode(value: string);
+        get depthTextureMode(): DepthTextureMode;
+        set depthTextureMode(value: DepthTextureMode);
+        blitOpaqueBuffer: CommandBuffer;
+        private _depthTarget;
+        get depthTarget(): InternalRenderTarget;
+        set depthTarget(value: InternalRenderTarget);
+        private _destTarget;
+        get destTarget(): InternalRenderTarget;
+        set destTarget(value: InternalRenderTarget);
+        private _depthNormalTarget;
+        get depthNormalTarget(): InternalRenderTarget;
+        set depthNormalTarget(value: InternalRenderTarget);
+        get enableCMD(): boolean;
+        set enableCMD(value: boolean);
+        get enableOpaque(): boolean;
+        set enableOpaque(value: boolean);
+        get enableTransparent(): boolean;
+        set enableTransparent(value: boolean);
+        private _skyRenderNode;
+        get skyRenderNode(): RTBaseRenderNode;
+        set skyRenderNode(value: RTBaseRenderNode);
+        private _camera;
+        get camera(): RTCameraNodeData;
+        set camera(value: RTCameraNodeData);
+        private _clearColor;
+        get clearColor(): Color;
+        set clearColor(value: Color);
+        private _clearFlag;
+        get clearFlag(): number;
+        set clearFlag(value: number);
+        /**@internal */
+        private _cameraCullInfo;
+        setCameraCullInfo(value: Camera, sceneManager: ISceneRenderManager): void;
+        setViewPort(value: Viewport): void;
+        setScissor(value: Vector4): void;
+        private _getRenderCMDArray;
+        setBeforeForwardCmds(value: CommandBuffer[]): void;
+        setBeforeSkyboxCmds(value: CommandBuffer[]): void;
+        setBeforeTransparentCmds(value: CommandBuffer[]): void;
+        _nativeObj: any;
+        constructor();
+        destroy(): void;
+    }
+    class RTForwardAddRP {
+        get shadowCastPass(): boolean;
+        set shadowCastPass(value: boolean);
+        get enableDirectLightShadow(): boolean;
+        set enableDirectLightShadow(value: boolean);
+        get enableSpotLightShadowPass(): boolean;
+        set enableSpotLightShadowPass(value: boolean);
+        get enablePostProcess(): boolean;
+        set enablePostProcess(value: boolean);
+        /**@internal */
+        private _postProcess;
+        get postProcess(): CommandBuffer;
+        set postProcess(value: CommandBuffer);
+        /**@internal */
+        private _finalize;
+        get finalize(): CommandBuffer;
+        set finalize(value: CommandBuffer);
+        private _dirLightShadowPass;
+        get dirShadowRenderPass(): RTDirCascadeShadowRP;
+        set dirShadowRenderPass(value: RTDirCascadeShadowRP);
+        private _spotShadowRenderPass;
+        get spotShadowRenderPass(): RTBaseSpotRP;
+        set spotShadowRenderPass(value: RTBaseSpotRP);
+        private _mainRenderpass;
+        get mainRenderpass(): RTForwardAddClusterRP;
+        set mainRenderpass(value: RTForwardAddClusterRP);
+        _nativeObj: any;
+        constructor();
+        private _getRenderCMDArray;
+        setAfterEventCmd(value: CommandBuffer[]): void;
+        setBeforeImageEffect(value: CommandBuffer[]): void;
+        destroy(): void;
+    }
+    class RTRender3DProcess implements IRender3DProcess {
+        private _nativeObj;
+        private _renderPass;
+        protected _defaultDepthTex: RenderTexture;
+        protected _defaultShadowMap: RenderTexture;
+        constructor();
+        private _render3DManager;
+        get render3DManager(): RTScene3DRenderManager;
+        set render3DManager(value: RTScene3DRenderManager);
+        destroy(): void;
+        initRenderpass(camera: Camera, context: IRenderContext3D): void;
+        renderDepth(camera: Camera): void;
+        fowardRender(context: IRenderContext3D, camera: Camera): void;
+        renderFowarAddCameraPass(context: IRenderContext3D, renderpass: RTForwardAddRP): void;
+    }
     class NativeBounds implements IClone {
-        /**native Share Memory */
-        static MemoryBlock_size: number;
+        /**@internal */
+        static BOUNDS_MIN_DATAOFFSET: number;
+        /**@internal */
+        static BOUNDS_MAX_DATAOFFSET: number;
+        /**@internal */
+        static BOUNDS_CENTER_DATAOFFSET: number;
+        /**@internal */
+        static BOUNDS_EXTENT_DATAOFFSET: number;
+        /**@internal */
+        static BOUNDS_SHARE_MEMORY_SIZE: number;
         /**@internal	*/
         nativeMemory: NativeMemory;
         /**@internal	*/
@@ -69367,7 +71223,15 @@ declare namespace Laya {
         get additionShaderData(): Map<string, ShaderData>;
         set additionShaderData(value: Map<string, ShaderData>);
         constructor();
-        ismoved: Vector2;
+        get visibalRangeBit(): number;
+        set visibalRangeBit(value: number);
+        get visibalMin(): number;
+        set visibalMin(value: number);
+        get visibalMax(): number;
+        set visibalMax(value: number);
+        get ismoved(): Vector2;
+        set ismoved(value: Vector2);
+        private _ismoved;
         private _worldParams;
         setNodeCustomData(dataSlot: ENodeCustomData, data: number): void;
         get renderNodeType(): number;
@@ -69488,6 +71352,9 @@ declare namespace Laya {
         _nativeObj: any;
         /** @internal */
         _list: SingletonList<BaseRender>;
+        /**@internal 合批队列 */
+        batchAgentList: Map<number, IBatchModuleAgent>;
+        baseRenderList: SingletonList<IBaseRenderNode>;
         /**
         * @en The list of render objects.
         * @zh 渲染对象列表。
@@ -69504,6 +71371,8 @@ declare namespace Laya {
         updateMotionObjects(): void;
         destroy(): void;
         constructor();
+        registerBatchModuleAgent(renderNodeType: number | BaseRenderType, agent: IBatchModuleAgent): void;
+        updateProperty(object: BaseRender, property: string): void;
     }
     class RTSimpleSkinRenderNode extends RTBaseRenderNode implements ISimpleSkinRenderNode {
         private _nativeMemory;
@@ -70146,7 +72015,7 @@ declare namespace Laya {
         clear(): void;
         destroy(): void;
     }
-    class BatchContext {
+    abstract class BaseBatchContext {
         /** 批次使用的贴图ID */
         textureId: number;
         /** 批次的透明度 */
@@ -70164,25 +72033,14 @@ declare namespace Laya {
         globalRenderData: any;
         fillTexture: boolean;
         texRange: Vector4;
-        constructor();
-        _setHeadWebgl(element: IPrimitiveRenderElement2D): void;
-        _setHeadWebgpu(element: IPrimitiveRenderElement2D): void;
         /**
          * 从渲染元素初始化批次上下文
          */
-        setHead(element: IPrimitiveRenderElement2D): void;
-        /**
-         * @internal WebGL 检查元素是否与批次兼容
-         */
-        _isCompatibleWebgl(element: IPrimitiveRenderElement2D): boolean;
-        /**
-         * @internal WebGPU 检查元素是否与批次兼容
-         */
-        _isCompatibleWebgpu(element: IPrimitiveRenderElement2D): boolean;
+        abstract setHead(element: IPrimitiveRenderElement2D): void;
         /**
          * 检查元素是否与批次兼容
          */
-        isCompatible(element: IPrimitiveRenderElement2D): boolean;
+        abstract isCompatible(element: IPrimitiveRenderElement2D): boolean;
     }
     /**
      * @ignore
@@ -70190,7 +72048,7 @@ declare namespace Laya {
     class WebGraphicsBatch implements IBatch2DProvider {
         _buffer: BatchBuffer;
         _merged: Array<IPrimitiveRenderElement2D>;
-        _context: BatchContext;
+        _context: BaseBatchContext;
         static readonly _pool: IPool<IPrimitiveRenderElement2D>;
         constructor();
         reset(): void;
@@ -70288,6 +72146,7 @@ declare namespace Laya {
         vertexs: IGraphics2DVertexBlock[];
         indexView: I2DGraphicIndexDataView;
         vertexBuffer: IVertexBuffer;
+        textureArrayIndex: number;
     }
     class WebGraphics2DVertexBlock implements IGraphics2DVertexBlock {
         positions: number[];
@@ -70297,13 +72156,15 @@ declare namespace Laya {
         logicMatrix: Matrix | null;
         mask: WebRenderStruct2D | null;
         private _bufferBlocks;
-        private _needUpdateBuffer;
         private _modifiedFrame;
         private _clonesViews;
+        private _globalAlpha;
         applyVertexBufferBlock(blocks: IGraphics2DBufferBlock[]): void;
+        skipBufferUpdate(): void;
         /** @internal */
         _getBlocks(): IGraphics2DBufferBlock[];
         inheriteRenderData(context: IRenderContext2D): void;
+        private _updateVertexData;
         getCloneViews(): Web2DGraphic2DIndexCloneDataView[];
         updateCloneView(): void;
         private _cloneView;
@@ -70341,6 +72202,7 @@ declare namespace Laya {
         get baseColor(): Color;
         set baseColor(value: Color);
         skeleton: spine.Skeleton;
+        normalUpdater: any;
         private _offset;
         get owner(): WebRenderStruct2D;
         set owner(value: WebRenderStruct2D);
@@ -70440,6 +72302,7 @@ declare namespace Laya {
         _clipRect: Rectangle;
         /** @internal */
         _clipInfo: IClipInfo;
+        private _uniformClip;
         /**@deprecated 使用_currentData.clipInfo代替 */
         get _parentClipInfo(): IClipInfo;
         private _rnUpdateFun;
@@ -70481,7 +72344,7 @@ declare namespace Laya {
     }
     class WebBaseRenderNode implements IBaseRenderNode {
         static BaseRenderNodeClass: DynamicBaseRenderClass;
-        renderNodeType: number;
+        renderNodeType: BaseRenderType;
         boundsChange: boolean;
         distanceForSort: number;
         sortingFudge: number;
@@ -70503,12 +72366,16 @@ declare namespace Laya {
         lightmap: WebLightmap;
         probeReflection: WebReflectionProbe;
         volumetricGI: WebVolumetricGI;
+        visibalRangeBit: number;
+        visibalMin: number;
+        visibalMax: number;
         baseGeometryBounds: Bounds;
         transform: Transform3D;
         _worldParams: Vector4;
         _commonUniformMap: string[];
         _additionShaderDataKeys: string[];
         ismoved: Vector2;
+        defineDataChangeFlag: Vector2;
         private _bounds;
         private _caculateBoundingBoxCall;
         private _caculateBoundingBoxFun;
@@ -70616,6 +72483,147 @@ declare namespace Laya {
         setShadowFourCascadeSplits(value: Vector3): void;
         setDirection(value: Vector3): void;
     }
+    /**
+     * render Main pass,Depth Pass
+     */
+    class WebForwardAddClusterRP implements IMain3DRP {
+        protected _opaqueList: RenderListQueue;
+        protected _transparent: RenderListQueue;
+        protected _cameraCullInfo: CameraCullInfo & {
+            id?: number;
+        };
+        protected _zBufferParams: Vector4;
+        protected _viewPort: Viewport;
+        protected _scissor: Vector4;
+        protected _defaultNormalDepthColor: Color;
+        protected _camera: Camera;
+        protected _clearColor: Color;
+        private _beforeForwardCmds;
+        private _beforeSkyboxCmds;
+        private _beforeTransparentCmds;
+        pipelineMode: PipelineMode;
+        depthPipelineMode: PipelineMode;
+        depthNormalPipelineMode: PipelineMode;
+        depthTextureMode: DepthTextureMode;
+        blitOpaqueBuffer: CommandBuffer;
+        depthTarget: InternalRenderTarget;
+        destTarget: InternalRenderTarget;
+        depthNormalTarget: InternalRenderTarget;
+        enableCMD: boolean;
+        enableOpaque: boolean;
+        enableTransparent: boolean;
+        clearFlag: number;
+        skyRenderNode: WebBaseRenderNode;
+        get camera(): Camera;
+        set camera(value: Camera);
+        get clearColor(): Color;
+        set clearColor(value: Color);
+        private _setCameraCullInfo;
+        protected _clearRenderList(): void;
+        setCameraCullInfo(sceneManager: ISceneRenderManager): void;
+        constructor();
+        setViewPort(value: Viewport): void;
+        setScissor(value: Vector4): void;
+        /**
+         * 设置渲染命令（前向渲染之前）
+         * @param value
+         */
+        setBeforeForwardCmds(value: CommandBuffer[]): void;
+        /**
+         * 设置渲染命令（天空渲染之前）
+         * @param value
+         */
+        setBeforeSkyboxCmds(value: CommandBuffer[]): void;
+        /**
+         * 设置渲染命令（透明物体渲染之前）
+         * @param value
+         */
+        setBeforeTransparentCmds(value: CommandBuffer[]): void;
+        render(context: IRenderContext3D, renderManager: ISceneRenderManager): void;
+        /**
+         * 渲染法线深度流程
+         * @param context
+         */
+        protected _renderDepthNormalPass(context: IRenderContext3D): void;
+        /**
+        * 渲染深度流程
+        * @param context
+        */
+        protected _renderDepthPass(context: IRenderContext3D): void;
+        protected _mainPass(context: IRenderContext3D): void;
+        /**
+        * 渲染不透明贴图流程
+        */
+        protected _opaqueTexturePass(context: IRenderContext3D): void;
+        protected _recoverRenderContext3D(context: IRenderContext3D, renderTarget: InternalRenderTarget): void;
+        destory(): void;
+    }
+    class WebForwardAddRP implements IForwardAddRP {
+        /**@internal */
+        protected _afterAllRenderCMDS: Array<CommandBuffer>;
+        /**@internal */
+        protected _beforeImageEffectCMDS: Array<CommandBuffer>;
+        shadowCastPass: boolean;
+        enableDirectLightShadow: boolean;
+        enableSpotLightShadowPass: boolean;
+        enablePostProcess: boolean;
+        postProcess: CommandBuffer;
+        finalize: CommandBuffer;
+        mainRenderpass: IMain3DRP;
+        dirShadowRenderPass: IDirShadowRP;
+        spotShadowRenderPass: ISpotShadowRP;
+        constructor();
+        /**
+         * 设置后处理之前绘制的渲染命令
+         * @param value
+         */
+        setBeforeImageEffect(value: CommandBuffer[]): void;
+        runBeforeImageEffectCMD(context: IRenderContext3D): void;
+        /**
+         * 设置所有渲染都结束后绘制的渲染命令
+         * @param value
+         */
+        setAfterEventCmd(value: CommandBuffer[]): void;
+        runAfterEventCMD(context: IRenderContext3D): void;
+        /**
+        * 渲染命令
+        * @param cmds
+        * @param context
+        */
+        protected _renderCmd(cmds: CommandBuffer[], context: IRenderContext3D): void;
+        destroy(): void;
+    }
+    class WebRender3DProcess implements IRender3DProcess {
+        render3DManager: WebSceneRenderManager;
+        _renderPass: IForwardAddRP;
+        protected _defaultDepthTex: RenderTexture;
+        protected _defaultShadowMap: RenderTexture;
+        constructor();
+        /**
+        * 渲染命令
+        * @param cmds
+        * @param context
+        */
+        protected _renderCmd(cmds: CommandBuffer[], context: IRenderContext3D): void;
+        /**
+         * 渲染后处理效果
+         * @param postprocessCMD
+         * @param context
+         */
+        protected _renderPostProcess(postprocessCMD: CommandBuffer, context: IRenderContext3D): void;
+        protected _initRenderPass(camera: Camera, context: IRenderContext3D): void;
+        protected _renderDepth(camera: Camera): void;
+        /**
+         * 前向渲染流程
+         * @param context
+         * @param renderPass
+         * @param list
+         * @param count
+         */
+        protected _renderForwardAddCameraPass(context: IRenderContext3D, renderPass: IForwardAddRP): void;
+        fowardRender(context: IRenderContext3D, camera: Camera): void;
+        destroy(): void;
+    }
     class WebLightmap implements ILightMapData {
         /**@internal */
         lightmapColor: InternalTexture;
@@ -70714,13 +72722,17 @@ declare namespace Laya {
     class WebSceneRenderManager implements ISceneRenderManager {
         /** @internal */
         _list: SingletonList<BaseRender>;
-        /** @ignore */
-        constructor();
+        /**@internal 合批队列 */
+        batchAgentList: Map<number, IBatchModuleAgent>;
         /**
          * @en The base render list.
          * @zh 基础渲染节点列表。
          */
         baseRenderList: SingletonList<WebBaseRenderNode>;
+        /** @ignore */
+        constructor();
+        registerBatchModuleAgent(renderNodeType: number | BaseRenderType, agent: IBatchModuleAgent): void;
+        updateProperty(object: BaseRender, property: string | number): void;
         /**
          * @en The list of render objects.
          * @zh 渲染对象列表。
@@ -70765,6 +72777,125 @@ declare namespace Laya {
          * @zh 销毁渲染对象并清理资源。
          */
         destroy(): void;
+    }
+    class WebBaseSpotRP implements ISpotShadowRP {
+        /**light */
+        private _light;
+        private _lightPos;
+        private _lightWorldMatrix;
+        private _shadowResolution;
+        private _spotAngle;
+        private _spotRange;
+        private _shadowStrength;
+        private _shadowMode;
+        private _shadowCasterCommanBuffer;
+        private _shadowSpotData;
+        private _shadowSpotMatrices;
+        private _shadowSpotMapSize;
+        private _destShadowRT;
+        private _shadowBias;
+        private _renderQueue;
+        constructor();
+        private _setLight;
+        /**
+         * 应用阴影渲染命令
+         * @param context
+         */
+        private _applyCasterPassCommandBuffer;
+        /**
+        * @internal
+        */
+        private _getSpotLightShadowData;
+        /**
+       * get shadow bias
+       * @param shadowResolution
+       * @param out
+       */
+        private _getShadowBias;
+        private _setupShadowCasterShaderValues;
+        /**
+         * 设置聚光接受阴影的模式
+         * @internal
+         * @param shaderValues 渲染数据
+         */
+        private _applyRenderData;
+        setShadowCasterCommanBuffer(cmd: CommandBuffer[]): void;
+        setCameraCullInfo(sceneManager: ISceneRenderManager): void;
+        setRPData(spotLight: WebSpotLight, context: IRenderContext3D): void;
+        update(context: IRenderContext3D): void;
+        render(context: IRenderContext3D, manager: ISceneRenderManager): void;
+        useRPResource(context: IRenderContext3D): void;
+        unuseRPResource(context: IRenderContext3D): void;
+        destory(): void;
+    }
+    class WebDirCascadeShadowRP implements IDirShadowRP {
+        /** @internal 最大cascade*/
+        private static _maxCascades;
+        private _light;
+        /**@internal */
+        private _lightup;
+        /**@internal */
+        private _lightSide;
+        /**@internal */
+        private _lightForward;
+        /**@internal 分割distance*/
+        private _cascadesSplitDistance;
+        /** @internal */
+        private _frustumPlanes;
+        /** @internal */
+        private _shadowMatrices;
+        /**@internal */
+        private _splitBoundSpheres;
+        /** @internal */
+        private _shadowSliceDatas;
+        /** @internal */
+        private _shadowMapSize;
+        /** @internal */
+        private _shadowBias;
+        /** @internal */
+        private _cascadeCount;
+        /** @internal */
+        private _shadowMapWidth;
+        /** @internal */
+        private _shadowMapHeight;
+        /** @internal */
+        private _shadowTileResolution;
+        /** @internal */
+        private _shadowCullInfo;
+        private _shadowCastMode;
+        private _camera;
+        private _destShadowRT;
+        /**@internal */
+        private _renderQueue;
+        private _shadowCasterCommanBuffer;
+        private _defaultShadowMap;
+        constructor();
+        private _setLight;
+        private _getShadowBias;
+        /**
+        * 设置阴影级联数据模式
+        * @internal
+        */
+        private _setupShadowCasterShaderValues;
+        /**
+         * set shaderData after Render shadow
+         * @param scene
+         * @param camera
+         */
+        private _applyRenderData;
+        /**
+         * apply shadowCast cmd array
+         */
+        private _applyCasterPassCommandBuffer;
+        setShadowCasterCommanBuffer(cmd: CommandBuffer[]): void;
+        private _caculateDirCullInfo;
+        setCameraCullInfo(sceneManager: ISceneRenderManager): void;
+        setRPData(dirLight: WebDirectLight, camera: WebCameraNodeData, context: IRenderContext3D): void;
+        update(context: IRenderContext3D): void;
+        render(context: IRenderContext3D, manager: ISceneRenderManager): void;
+        useRPResource(context: IRenderContext3D): void;
+        unuseRPResource(context: IRenderContext3D): void;
+        destory(): void;
     }
     function WebSimpleSkinRenderNode(): any;
     function WebSkinRenderNode(): any;
@@ -70879,12 +73010,14 @@ declare namespace Laya {
      * 着色器数据类。
      */
     class WebGLShaderData extends ShaderData {
+        private static pointerCount;
         /**@internal */
         protected _gammaColorMap: Map<number, Color>;
         /**@internal */
         _data: any;
         /** @internal */
         _defineDatas: WebDefineDatas;
+        _id: number;
         /** @internal */
         private _uniformBuffers;
         /** @internal */
@@ -70894,6 +73027,14 @@ declare namespace Laya {
         private _needCacheData;
         private _updateCacheArray;
         private _subUboBufferNumber;
+        private _renderStateChanged;
+        /** @internal */
+        get renderStateChanged(): boolean;
+        /** @internal */
+        renderState: RenderState;
+        /** @internal */
+        updateRenderState(): void;
+        private _checkRenderState;
         /**
          * @internal
          */
@@ -70907,8 +73048,8 @@ declare namespace Laya {
          * @param uniformMap
          * @returns
          */
-        createUniformBuffer(name: string, uniformMap: Map<number, UniformProperty>): WebGLUniformBuffer;
-        updateUBOBuffer(name: string): void;
+        createUniformBuffer(name: string, uniformMap: Map<number, UniformProperty>, needUpdata?: boolean): WebGLUniformBuffer;
+        private _updateUBOBuffer;
         createSubUniformBuffer(name: string, cacheName: string, uniformMap: Map<number, UniformProperty>): WebGLSubUniformBuffer;
         /**
          * 注意!!!!!! 不要获得data之后直接设置值，设置值请使用set函数
@@ -71066,6 +73207,8 @@ declare namespace Laya {
          */
         setTexture(index: number, value: BaseTexture): void;
         _setInternalTexture(index: number, value: InternalTexture): void;
+        uploadCache(): void;
+        update(name: string): void;
         /**
          * 获取纹理。
          * @param	index shader索引。
@@ -71155,6 +73298,7 @@ declare namespace Laya {
         apply(context: WebglRenderContext2D): void;
     }
     class WebGLPrimitiveRenderElement2D extends WebGLRenderElement2D implements IPrimitiveRenderElement2D {
+        private static _additionShaderData;
         primitiveShaderData: WebGLShaderData;
         protected _compileShader(context: WebglRenderContext2D): void;
         renderByShaderInstance(shader: WebGLShaderInstance, context: WebglRenderContext2D): void;
@@ -71223,261 +73367,28 @@ declare namespace Laya {
         renderByShaderInstance(shader: WebGLShaderInstance, context: WebglRenderContext2D): void;
         destroy(): void;
     }
-    class WebGL3DRenderPassFactory implements I3DRenderPassFactory {
-        createInstanceBatch(): IInstanceRenderBatch;
-        createSetRenderDataCMD(): WebGLSetRenderData;
-        createSetShaderDefineCMD(): WebGLSetShaderDefine;
-        createDrawNodeCMDData(): WebGLDrawNodeCMDData;
-        createBlitQuadCMDData(): WebGLBlitQuadCMDData;
-        createDrawElementCMDData(): WebGLDrawElementCMDData;
-        createSetViewportCMD(): WebGLSetViewportCMD;
-        createSetRenderTargetCMD(): WebGLSetRenderTargetCMD;
-        createSceneRenderManager(): WebSceneRenderManager;
-        createSkinRenderElement(): WebGLSkinRenderElement3D;
-        createRenderContext3D(): WebGLRenderContext3D;
-        createRenderElement3D(): WebGLRenderElement3D;
-        createInstanceRenderElement3D(): WebGLInstanceRenderElement3D;
-        createRender3DProcess(): WebGLRender3DProcess;
-    }
-    class WebGLDirectLightShadowRP {
-        /** @internal 最大cascade*/
-        private static _maxCascades;
-        /**@internal */
-        shadowCastMode: ShadowCascadesMode;
-        camera: WebCameraNodeData;
-        destTarget: WebGLInternalRT;
-        private _shadowCasterCommanBuffer;
-        get shadowCasterCommanBuffer(): CommandBuffer[];
-        set shadowCasterCommanBuffer(value: CommandBuffer[]);
-        /**light */
-        private _light;
-        /**@internal */
-        private _lightup;
-        /**@internal */
-        private _lightSide;
-        /**@internal */
-        private _lightForward;
-        /**@internal 分割distance*/
-        private _cascadesSplitDistance;
-        /** @internal */
-        private _frustumPlanes;
-        /** @internal */
-        private _shadowMatrices;
-        /**@internal */
-        private _splitBoundSpheres;
-        /** @internal */
-        private _shadowSliceDatas;
-        /** @internal */
-        private _shadowMapSize;
-        /** @internal */
-        private _shadowBias;
-        /** @internal */
-        private _cascadeCount;
-        /** @internal */
-        private _shadowMapWidth;
-        /** @internal */
-        private _shadowMapHeight;
-        /** @internal */
-        private _shadowTileResolution;
-        /** @internal */
-        private _shadowCullInfo;
-        /**@internal */
-        private _renderQueue;
-        set light(value: WebDirectLight);
-        get light(): WebDirectLight;
-        constructor();
-        /**
-         * @param context
-         */
-        update(context: WebGLRenderContext3D): void;
-        /**
-         * @param context
-         * @param list
-         * @param count
-         */
-        render(context: WebGLRenderContext3D, list: WebBaseRenderNode[], count: number): void;
-        /**
-         * set shaderData after Render shadow
-         * @param scene
-         * @param camera
-         */
-        private _applyRenderData;
-        /**
-         * apply shadowCast cmd array
-         */
-        private _applyCasterPassCommandBuffer;
-        private getShadowBias;
-        /**
-        * 设置阴影级联数据模式
-        * @internal
-        */
-        private _setupShadowCasterShaderValues;
-        destroy(): void;
-    }
-    class WebGLForwardAddClusterRP {
-        /** @internal*/
-        static _context3DViewPortCatch: Viewport;
-        /** @internal*/
-        static _contextScissorPortCatch: Vector4;
-        /**@internal */
-        cameraCullInfo: CameraCullInfo;
-        /**@internal */
-        beforeForwardCmds: Array<CommandBuffer>;
-        /**@internal */
-        beforeSkyboxCmds: Array<CommandBuffer>;
-        /**@internal */
-        beforeTransparentCmds: Array<CommandBuffer>;
-        /**enable */
-        enableOpaque: boolean;
-        enableCMD: boolean;
-        enableTransparent: boolean;
-        /**@internal */
-        destTarget: InternalRenderTarget;
-        /**@internal */
-        pipelineMode: PipelineMode;
-        /**@internal */
-        depthTarget: InternalRenderTarget;
-        /**@internal */
-        depthPipelineMode: PipelineMode;
-        /**@internal */
-        depthNormalTarget: InternalRenderTarget;
-        /**@internal */
-        depthNormalPipelineMode: PipelineMode;
-        /**@internal sky TODO*/
-        skyRenderNode: WebBaseRenderNode;
-        /**@internal */
-        depthTextureMode: DepthTextureMode;
-        opaqueTexture: InternalRenderTarget;
-        blitOpaqueBuffer: CommandBuffer;
-        private _enableOpaqueTexture;
-        get enableOpaqueTexture(): boolean;
-        set enableOpaqueTexture(value: boolean);
-        clearColor: Color;
-        clearFlag: number;
-        /**@internal */
-        camera: WebCameraNodeData;
-        private _viewPort;
-        setViewPort(value: Viewport): void;
-        private _scissor;
-        setScissor(value: Vector4): void;
-        private opaqueList;
-        private transparent;
-        private _zBufferParams;
-        private _defaultNormalDepthColor;
-        constructor();
-        setCameraCullInfo(value: Camera): void;
-        setBeforeForwardCmds(value: CommandBuffer[]): void;
-        setBeforeSkyboxCmds(value: CommandBuffer[]): void;
-        setBeforeTransparentCmds(value: CommandBuffer[]): void;
-        /**
-         * 渲染主流程（TODO:其他两个pass合并MulTargetRT）
-         * @param context
-         * @param list
-         */
-        render(context: WebGLRenderContext3D, list: WebBaseRenderNode[], count: number): void;
-        /**
-         * 渲染深度Pass
-         * @param context
-         * @param list
-         */
-        private _renderDepthPass;
-        /**
-         * @param context
-         * @private
-         */
-        private _transparentListRender;
-        /**
-         * 渲染非透明物体Pass
-         * @param context
-         * @param list
-         */
-        private _opaqueListRender;
-        /**
-         * 渲染法线深度Pass
-         * @param context
-         * @param list
-         */
-        private _renderDepthNormalPass;
-        private opaqueTexturePass;
-        private _mainPass;
-        /**
-         * @param cmds
-         * @param context
-         * @private
-         */
-        private _rendercmd;
-        private _recoverRenderContext3D;
-        destroy(): void;
-    }
-    class WebGLForwardAddRP {
-        /**是否开启阴影 */
-        shadowCastPass: boolean;
-        /**directlight shadow */
-        directLightShadowPass: WebGLDirectLightShadowRP;
-        /**enable directlight */
-        enableDirectLightShadow: boolean;
-        /**spot shadow */
-        spotLightShadowPass: WebGLSpotLightShadowRP;
-        /**enable spot */
-        enableSpotLightShadowPass: boolean;
-        shadowParams: Vector4;
-        /**Render end commanbuffer */
-        /**@internal */
-        _afterAllRenderCMDS: Array<CommandBuffer>;
-        /**@internal */
-        _beforeImageEffectCMDS: Array<CommandBuffer>;
-        enablePostProcess: boolean;
-        /**@internal */
-        postProcess: CommandBuffer;
-        /**main pass */
-        renderpass: WebGLForwardAddClusterRP;
-        finalize: CommandBuffer;
-        constructor();
-        setBeforeImageEffect(value: CommandBuffer[]): void;
-        setAfterEventCmd(value: CommandBuffer[]): void;
-        destroy(): void;
-    }
-    /**
-     * 动态合批通用类（目前由WebGPU专用）
-     */
-    class WebGLInstanceRenderBatch {
-        static MaxInstanceCount: number;
-        private recoverList;
-        private _batchOpaqueMarks;
-        private _updateCountMark;
-        constructor();
-        getBatchMark(element: IRenderElement3D): any;
-        batch(elements: SingletonList<IRenderElement3D>): void;
-        clearRenderData(): void;
-        recoverData(): void;
-    }
     interface WebGLInstanceStateInfo {
         state: WebGLBufferState;
         worldInstanceVB?: WebGLVertexBuffer;
         lightmapScaleOffsetVB?: WebGLVertexBuffer;
         simpleAnimatorVB?: WebGLVertexBuffer;
     }
-    class WebGLInstanceRenderElement3D extends WebGLRenderElement3D implements IInstanceRenderElement3D {
+    class WebGLInstanceRenderElement3D extends WebGLRenderElement3D {
         /**
          * get Instance BufferState
          */
-        private static _instanceBufferStateMap;
+        static _instanceBufferStateMap: Map<number, WebGLInstanceStateInfo>;
         static getInstanceBufferState(geometry: WebGLRenderGeometryElement, renderType: number, spriteDefine: WebDefineDatas): WebGLInstanceStateInfo;
         /**
          * max instance count
          */
         static readonly MaxInstanceCount: number;
         /**
-         * @internal
-         */
-        private static _pool;
-        static create(): WebGLInstanceRenderElement3D;
-        /**
          * pool of Buffer
          * @internal
          */
-        private static _bufferPool;
-        static _instanceBufferCreate(length: number): Float32Array;
+        private _bufferPool;
+        _instanceBufferCreate(length: number): Float32Array;
         instanceElementList: FastSinglelist<WebGLRenderElement3D>;
         private _vertexBuffers;
         private _updateData;
@@ -71488,6 +73399,7 @@ declare namespace Laya {
         constructor();
         addUpdateData(vb: WebGLVertexBuffer, elementLength: number, maxInstanceCount: number): Float32Array;
         protected _compileShader(context: WebGLRenderContext3D): void;
+        _preUpdatePre(context: WebGLRenderContext3D): void;
         private _updateInstanceData;
         /**
          * get correct geometry
@@ -71504,32 +73416,74 @@ declare namespace Laya {
          * 清理单次渲染生成的数据
          */
         clearRenderData(): void;
-        /**
-         * 回收
-         */
-        recover(): void;
         destroy(): void;
     }
-    class WebGLRender3DProcess implements IRender3DProcess {
-        render3DManager: WebSceneRenderManager;
-        private renderpass;
-        initRenderpass(camera: Camera, context: WebGLRenderContext3D): void;
-        renderDepth(camera: Camera): void;
-        fowardRender(context: WebGLRenderContext3D, camera: Camera): void;
-        renderFowarAddCameraPass(context: WebGLRenderContext3D, renderpass: WebGLForwardAddRP, list: WebBaseRenderNode[], count: number): void;
-        /**
-         * @param cmds
-         * @param context
-         * @private
-         */
-        private _rendercmd;
-        /**
-         * @param postprocessCMD
-         * @param context
-         * @private
-         */
-        private _renderPostProcess;
-        destroy(): void;
+    class BatchMark {
+        /**@internal */
+        updateMark: number;
+        /**@internal */
+        indexInList: number;
+        /**@internal */
+        batched: boolean;
+        /**@internal */
+        _curBindElementIndex: number;
+        _cacheRenderElement: WebGLInstanceRenderElement3D[];
+        constructor();
+        release(): void;
+    }
+    class WebGLBatchQueue implements IModuleAgentResource {
+        opaqueQueue: RenderListQueue;
+        opaqueList: FastSinglelist<WebGLRenderElement3D>;
+        transparentQueue: RenderListQueue;
+        transparentList: FastSinglelist<IRenderElement3D>;
+        opaqueCustomSort: boolean;
+        transCustomSort: boolean;
+        constructor(createTransList: boolean);
+        clearList(): void;
+        release(): void;
+    }
+    class WebGLMeshRenderBatchAgent implements IBatchModuleAgent {
+        protected _list: SingletonList<BaseRender>;
+        protected _baseRenderList: SingletonList<WebBaseRenderNode>;
+        protected _batchOpaqueMarks: any[];
+        private _cameraCullInfo;
+        _mainBatchQueue: FastSinglelist<WebGLBatchQueue>;
+        private _dirShadowCullInfo;
+        _shadowBatchQueue: FastSinglelist<WebGLBatchQueue>;
+        private _spotCullInfo;
+        _spotBatchQueue: FastSinglelist<WebGLBatchQueue>;
+        private _updateCountMark;
+        constructor();
+        protected _canBatch(element: WebGLRenderElement3D): boolean;
+        protected _getBatchMark(element: WebGLRenderElement3D): any;
+        protected _changeBatchMark(renderNode: WebBaseRenderNode): void;
+        protected _opaqueInstanceBatch(elements: SingletonList<WebGLRenderElement3D>): void;
+        protected _transparentInstanceBatch(element: SingletonList<WebGLRenderElement3D>): void;
+        create(): void;
+        addRenderNode(object: BaseRender): boolean;
+        removeRenderNode(object: BaseRender): boolean;
+        updateProperty(object: BaseRender, property: string | number): void;
+        setCullCamera(cameraCullInfo: CameraCullInfo[]): void;
+        setDirLightCullInfo(directLightCullInfo: ShadowCullInfo[]): void;
+        setSpotCullingDir(spotCullInfo: CameraCullInfo[]): void;
+        appendRenderElement(cullMode: BatchCullMode, cullInfoIndex: number, context: WebGLRenderContext3D): IModuleAgentResource;
+        release(): void;
+    }
+    class WebGL3DRenderPassFactory implements I3DRenderPassFactory {
+        createMeshRenderBatchModule(): IBatchModuleAgent;
+        createSimpleSkinRenderBatchModule(): IBatchModuleAgent;
+        createSetRenderDataCMD(): WebGLSetRenderData;
+        createSetShaderDefineCMD(): WebGLSetShaderDefine;
+        createDrawNodeCMDData(): WebGLDrawNodeCMDData;
+        createBlitQuadCMDData(): WebGLBlitQuadCMDData;
+        createDrawElementCMDData(): WebGLDrawElementCMDData;
+        createSetViewportCMD(): WebGLSetViewportCMD;
+        createSetRenderTargetCMD(): WebGLSetRenderTargetCMD;
+        createSceneRenderManager(): WebSceneRenderManager;
+        createSkinRenderElement(): WebGLSkinRenderElement3D;
+        createRenderContext3D(): WebGLRenderContext3D;
+        createRenderElement3D(): WebGLRenderElement3D;
+        createRender3DProcess(): IRender3DProcess;
     }
     class WebGLDrawNodeCMDData extends DrawNodeCMDData {
         type: RenderCMDType;
@@ -71615,7 +73569,7 @@ declare namespace Laya {
         /**
          * @internal
         */
-        _preDrawUniformMaps: Set<string>;
+        preDrawUniformMaps: Set<string>;
         /** @internal */
         _cacheGlobalDefines: WebDefineDatas;
         _globalConfigShaderData: WebDefineDatas;
@@ -71634,7 +73588,7 @@ declare namespace Laya {
         /**@internal */
         private _scissor;
         /**@internal */
-        private _sceneUpdataMask;
+        private _sceneUpdateMask;
         /**@internal */
         private _cameraUpdateMask;
         /**@internal */
@@ -71661,6 +73615,16 @@ declare namespace Laya {
         set cameraModuleData(value: WebCameraNodeData);
         get globalShaderData(): WebGLShaderData;
         set globalShaderData(value: WebGLShaderData);
+        /**@internal */
+        _curRenderGlobalKey: number;
+        /**@internal */
+        _curDefineChangeFlag: Vector2;
+        private _globalComkeyNameMap;
+        private _globalComkeyCounter;
+        private _globalRendercacheInfoMap;
+        _curRenderCacheInfo: WebGLGlobalPipeLineCacheInfo;
+        private globalComkeyToID;
+        private _getSceneCameraCacheKey;
         /**
          * @internal
          * @returns
@@ -71675,8 +73639,8 @@ declare namespace Laya {
         setRenderTarget(value: InternalRenderTarget, clearFlag: RenderClearFlag): void;
         setViewPort(value: Viewport): void;
         setScissor(value: Vector4): void;
-        get sceneUpdataMask(): number;
-        set sceneUpdataMask(value: number);
+        get sceneUpdateMask(): number;
+        set sceneUpdateMask(value: number);
         get cameraUpdateMask(): number;
         set cameraUpdateMask(value: number);
         get pipelineMode(): PipelineMode;
@@ -71699,23 +73663,40 @@ declare namespace Laya {
     class WebGLRenderElement3D implements IRenderElement3D {
         /** @internal */
         static _compileDefine: WebDefineDatas;
-        protected _shaderInstances: FastSinglelist<WebGLShaderInstance>;
         geometry: WebGLRenderGeometryElement;
-        subShader: SubShader;
+        private subShaderChange;
+        protected _subShader: SubShader;
+        get subShader(): SubShader;
+        set subShader(value: SubShader);
+        private _matChangeFlagMap;
         materialId: number;
         canDynamicBatch: boolean;
-        materialShaderData: WebGLShaderData;
+        _materialShaderData: WebGLShaderData;
         materialRenderQueue: number;
-        renderShaderData: WebGLShaderData;
+        _renderShaderData: WebGLShaderData;
         transform: Transform3D;
         isRender: boolean;
         owner: WebBaseRenderNode;
+        customData: any;
+        get materialShaderData(): WebGLShaderData;
+        set materialShaderData(value: WebGLShaderData);
+        private modifyedMaterialShaderData;
+        get renderShaderData(): WebGLShaderData;
+        set renderShaderData(value: WebGLShaderData);
         protected _invertFront: boolean;
+        protected _passRenderInfo: Map<number, OneDrawPassCacheInfo>;
+        protected _curDrawCacheInfo: OneDrawPassCacheInfo;
+        protected _materialRenderDataChange: boolean;
+        protected _spriteRenderDataChange: boolean;
+        protected _matChangeFlag: Vector2;
+        protected _matDefChangeFlag: Vector2;
+        protected _renderNodeChangeFlag: Vector2;
+        protected materialUBO: WebGLUniformBufferBase;
         constructor();
-        _addShaderInstance(shader: WebGLShaderInstance): void;
-        _clearShaderInstance(): void;
         _preUpdatePre(context: WebGLRenderContext3D): void;
         protected _getInvertFront(): boolean;
+        protected _updateMatChangeFlag(): void;
+        protected _handleMaterialChange(): void;
         /**
          * render RenderElement
          * context:GLESRenderContext3D
@@ -71732,70 +73713,6 @@ declare namespace Laya {
         constructor();
         /** 更新数据并且 */
         drawGeometry(shaderIns: WebGLShaderInstance): void;
-    }
-    class WebGLSpotLightShadowRP {
-        destTarget: InternalRenderTarget;
-        /**@internal */
-        shadowCasterCommanBuffer: CommandBuffer[];
-        /**light */
-        /**@internal */
-        private _light;
-        /**@internal */
-        private _lightPos;
-        /**@internal */
-        private _lightWorldMatrix;
-        /**@internal */
-        private _shadowResolution;
-        /**@internal */
-        private _spotAngle;
-        /**@internal */
-        private _spotRange;
-        /**@internal */
-        private _shadowMode;
-        /** @internal */
-        private _shadowSpotData;
-        /** @internal */
-        private _shadowSpotMapSize;
-        /** @internal */
-        private _shadowSpotMatrices;
-        /**@internal */
-        private _shadowBias;
-        private _renderQueue;
-        set light(value: WebSpotLight);
-        get light(): WebSpotLight;
-        constructor();
-        /**
-        * 更新阴影数据
-        */
-        update(context: WebGLRenderContext3D): void;
-        /**
-         * render
-         * @param context
-         * @param list
-         */
-        render(context: WebGLRenderContext3D, list: WebBaseRenderNode[], count: number): void;
-        /**
-        * @internal
-        */
-        private _getSpotLightShadowData;
-        /**
-         * get shadow bias
-         * @param shadowResolution
-         * @param out
-         */
-        private _getShadowBias;
-        private _setupShadowCasterShaderValues;
-        /**
-         * apply shadowCast cmd array
-         */
-        private _applyCasterPassCommandBuffer;
-        /**
-         * 设置聚光接受阴影的模式
-         * @internal
-         * @param shaderValues 渲染数据
-         */
-        private _applyRenderData;
-        destroy(): void;
     }
     /**
      * 将继承修改为类似 WebGLRenderingContextBase, WebGLRenderingContextOverloads 多继承 ?
@@ -71853,6 +73770,7 @@ declare namespace Laya {
         protected _webgl_depth_texture: any;
         needBitmap: boolean;
         constructor(engine: WebGLEngine);
+        createRenderTargetFromArrayLayer(arrayTex: InternalTexture, layer: number, colorFormat: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, sRGB: boolean): InternalRenderTarget;
         createTexture3DInternal(dimension: TextureDimension, width: number, height: number, depth: number, format: TextureFormat, generateMipmap: boolean, sRGB: boolean, premultipliedAlpha: boolean): InternalTexture;
         setTexture3DImageData(texture: InternalTexture, source: HTMLImageElement[] | HTMLCanvasElement[] | ImageBitmap[], depth: number, premultiplyAlpha: boolean, invertY: boolean): void;
         setTexture3DPixelsData(texture: InternalTexture, source: ArrayBufferView, depth: number, premultiplyAlpha: boolean, invertY: boolean): void;
@@ -71976,12 +73894,13 @@ declare namespace Laya {
          * @param propertyID
          * @param propertyKey
          */
-        addShaderUniform(propertyID: number, propertyKey: string, uniformtype: ShaderDataType): void;
+        addShaderUniform(propertyID: number, propertyKey: string, uniformtype: ShaderDataType, options?: UniformOptions): void;
         /**
          * 增加一个UniformArray参数
          * @internal
          */
         addShaderUniformArray(propertyID: number, propertyName: string, uniformtype: ShaderDataType, arrayLength: number, block?: string): void;
+        setDefaultTextureData(key: number, defaultTex: BaseTexture): void;
     }
     /**
      * 封装Webgl
@@ -72132,6 +74051,11 @@ declare namespace Laya {
          */
         uploadOneUniforms(shader: GLShaderInstance, shaderVariable: ShaderVariable, data: any): void;
         unbindVertexState(): void;
+        /**
+         *
+         * @param renderState
+         */
+        hashRenderState(renderState: RenderState): string;
     }
     class GLBuffer extends GLObject {
         _glBuffer: WebGLBuffer;
@@ -72167,6 +74091,7 @@ declare namespace Laya {
         getCapable(type: RenderCapable): boolean;
         getExtension(type: WebGLExtension): any;
         turnOffSRGB(): void;
+        turnOffCapableAndExtension(type?: RenderCapable, extension?: WebGLExtension): void;
     }
     enum WebGLExtension {
         OES_vertex_array_object = 0,
@@ -72327,6 +74252,9 @@ declare namespace Laya {
         private _cullFace;
         /**@internal */
         private _frontFace;
+        private renderStateCache;
+        private isTargetCache;
+        private invertFrontCache;
         /**@internal */
         _engine: WebGLEngine;
         /**@internal */
@@ -72405,7 +74333,7 @@ declare namespace Laya {
         /**
         * @internal
         */
-        setstencilOp(fail: number, zfail: number, zpass: number): void;
+        setStencilOp(fail: number, zfail: number, zpass: number): void;
         /**
          * @internal
          * 设置深度偏移
@@ -72448,6 +74376,16 @@ declare namespace Laya {
          * @internal
          */
         setFrontFace(value: number): void;
+        /**
+         * @internal
+         * 清理渲染状态缓存
+         */
+        clearRenderStateCache(): void;
+        /**
+         * @internal
+         * @param renderState
+         */
+        setRenderState(renderState: RenderState, isTarget: boolean, invertFront: boolean): void;
     }
     class GLShaderInstance extends GLObject {
         _engine: WebGLEngine;
@@ -72684,6 +74622,7 @@ declare namespace Laya {
         set gpuMemory(value: number);
         private _changeTexMemory;
         constructor(engine: WebGLEngine, colorFormat: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, isCube: boolean, generateMipmap: boolean, samples: number);
+        _getSource(): any;
         dispose(): void;
     }
     /** @internal */
@@ -72788,6 +74727,20 @@ declare namespace Laya {
         constructor();
         apply(context: any): void;
     }
+    class WebGLGlobalPipeLineCacheInfo {
+        globalDefineData: WebDefineDatas;
+        globalPipelineCacheKey: string;
+        globalDefineChangeFlag: Vector2;
+        constructor();
+    }
+    class OneDrawPassCacheInfo {
+        matCacheFlag: Vector2;
+        nodeCacheFlag: Vector2;
+        passDefineCacheFlag: Vector2;
+        shaderInss: WebGLShaderInstance[];
+    }
+    function compareCahceFlag(changeFlag: Vector2, cacheFlag: Vector2): boolean;
+    function coverCahceFlag(coverFlag: Vector2, oldFlag: Vector2): void;
     class WebGLRenderDeviceFactory implements IRenderDeviceFactory {
         createShaderData(ownerResource?: Resource): ShaderData;
         createShaderInstance(shaderProcessInfo: ShaderProcessInfo, shaderPass: ShaderPass): IShaderInstance;
@@ -72869,6 +74822,13 @@ declare namespace Laya {
         _uploadScene: ShaderData;
         /** @internal 缓存数据 用来优化一些*/
         _additionShaderData: Map<string, ShaderData>;
+        renderState: RenderState;
+        /**
+      * shader pass statefirst 为 true 时
+      * 优先使用 shader pass 中的状态， 并与 material 中的状态进行合并
+      * 此属性记录当前被合并的 material 状态
+      */
+        private matRenderStateCache;
         /**
          * 创建一个 <code>ShaderInstance</code> 实例。
          */
@@ -72907,6 +74867,8 @@ declare namespace Laya {
          * @param uploadUnTexture
          */
         uploadUniforms(shaderUniform: CommandEncoder, shaderDatas: WebGLShaderData, uploadUnTexture: boolean): void;
+        updateRenderState(renderState: RenderState): void;
+        uploadRenderState(renderState: RenderState, isTarget: boolean, invertFront: boolean): void;
         /**
          * set blend depth stencil RenderState
          * @param shaderDatas
@@ -72916,12 +74878,12 @@ declare namespace Laya {
          * set blend depth stencil RenderState frome Shader
          * @param shaderDatas
          */
-        uploadRenderStateBlendDepthByShader(shaderDatas: WebGLShaderData): void;
+        private uploadRenderStateBlendDepthByShader;
         /**
          * set blend depth stencil RenderState frome Material
          * @param shaderDatas
          */
-        uploadRenderStateBlendDepthByMaterial(shaderDatas: ShaderData): void;
+        private uploadRenderStateBlendDepthByMaterial;
         /**
          * @internal
          */
@@ -72976,6 +74938,7 @@ declare namespace Laya {
     abstract class WebGLUniformBufferBase {
         descriptor: WebGLUniformBufferDescriptor;
         needUpload: boolean;
+        destroyed: boolean;
         abstract upload(): void;
         abstract bind(location: number): void;
         abstract destroy(): void;
@@ -73292,63 +75255,359 @@ declare namespace Laya {
          */
         destroy(): void;
     }
-    class WebGPU3DRenderPass implements IRender3DProcess {
-        private _renderPass;
-        private _defaultShadowMap;
-        private _defaultDepthTex;
+    class BatchCullPass {
+        static CULLING_WORKGROUP_SIZE: number;
+        oneBatchMarks: SingleLeakList<OneBatchMark>;
+        renderNodes: SingleLeakList<WebGPUBaseRenderNode>;
+        renderOneBatchs: SingletonList<OneBatchMark>;
+        deviceBuffer_CullInfos: WebGPUDeviceBuffer;
+        bufferUpdate_CullNodes: Vector2;
+        buffer_CullNodes: Float32Array;
+        buffer_CullNodes_uint32: Uint32Array;
+        deviceBuffer_InstanceData: WebGPUDeviceBuffer;
+        bufferUpdate_InstanceData: Vector2;
+        buffer_InstanceData: Float32Array;
+        deviceBuffer_CullResourse: WebGPUDeviceBuffer;
+        deviceBuffer_IndirectDrawBuffer: WebGPUDeviceBuffer;
+        bufferUpdate_IndirectDrawBuffer: Vector2;
+        buffer_IndirectDrawBuffer: Uint32Array;
+        deviceBuffer_renderElementsInfo: WebGPUDeviceBuffer;
+        bufferUpdate_renderElementsInfo: Vector2;
+        buffer_renderElementsInfo: Uint32Array;
+        deviceBuffer_batchPosBuffer: WebGPUDeviceBuffer;
+        batchPosBuffer: Uint32Array;
+        deviceBuffer_worldInstance: WebGPUDeviceBuffer;
+        vertexBuffer_worldInstance: WebGPUVertexBuffer;
+        worldInstanceStride: number;
+        deviceBuffer_LightmapScaleOffset: WebGPUDeviceBuffer;
+        vertexBuffer_LightmapScaleOffset: WebGPUVertexBuffer;
+        LightmapScaleOffsetStride: number;
+        deviceBuffer_simpleSkinInstance: WebGPUDeviceBuffer;
+        vertexBuffer_simpleSkinInstance: WebGPUVertexBuffer;
+        simpleSkinInstanceStride: number;
+        private _worldParamsOffset;
+        private _wholeInsStride;
+        private _wholeCullStride;
+        needUpdateElemenetIndex: boolean;
+        private _cullElementCount;
+        private _cullPlaneData;
+        private _cullPlaneData_Uint32;
+        private maxCullPlane;
+        static TotleCullNeedV4Count: number;
+        static oneCullNeedFloatCount: number;
+        private _cullShaderList;
+        private _getResoultShaderList;
+        private _cullShaderData;
+        private _deviceBufferShaderData;
+        private _computeShader;
+        private _computeCommandBuffer;
+        private _shaderDefine;
+        private _dispartchParams;
+        private _getCullInfoCommandBuffer;
+        private _getCullResoultShader;
+        private _clearCullResShader;
+        private _getResoultShaderData;
+        private _maxRenderNodeCount;
+        private _extendRenderNodeCount;
+        private _maxRenderElementCount;
+        private _extendELementNodeCount;
+        private _maxBatchCount;
+        private _extendBatchCount;
+        _deviceBufferChange: number;
+        _IndirectDrawBufferChange: number;
+        private _quickSortList;
+        _cacheCameraPreCullList: SingletonList<WebGPUBaseRenderNode>;
+        _cacheDirPreCullList: SingletonList<WebGPUBaseRenderNode>;
+        _cacheSpotPreCullList: SingletonList<WebGPUBaseRenderNode>;
+        private _renderType;
+        get renderType(): BaseRenderType;
+        constructor(renderType: BaseRenderType);
+        private _createBufferAndData;
+        private _extendRenderNodeBuffer;
+        private _extendBatchCountBuffer;
+        private _extendRenderElementCountBuffer;
+        private _initComputeShader;
+        private _setDeviceBuffer;
+        private _configStructDataOffset;
+        addNode(insCullInfo: WebGPUBaseRenderNode): number;
+        removeNode(insCullInfo: WebGPUBaseRenderNode): void;
+        hasNode(insCullInfo: WebGPUBaseRenderNode): boolean;
+        updateData(nodes: SingletonList<WebGPUBaseRenderNode>): void;
+        _needCreateRenderElementBatch: SingletonList<OneBatchMark>;
+        private _renderUpdatePre;
+        setCullingCamera(cameraCullInfo: CameraCullInfo[], directLightCullInfo: ShadowCullInfo[], spotCullInfo: CameraCullInfo[]): void;
+        applyComputeCull(): void;
+        applyGetResoultCull(cullMode: BatchCullMode, cullInfoIndex: number, agent: WebGPUMeshRenderBatchAgent): void;
+        private _getResultParamsArray;
+        appendRenderELement(cullMode: BatchCullMode, cullInfoIndex: number, batchQueue: WebGPUBatchQueue, cullData: any, context: WebGPURenderContext3D, agnet: WebGPUMeshRenderBatchAgent): void;
+        addOneBatchMark(oneBathMark: OneBatchMark): void;
+        removeOneBatchMark(oneBathMark: OneBatchMark): void;
+        release(): void;
+    }
+    interface WebGPUInstanceStateInfo {
+        state: WebGPUBufferState;
+        worldInstanceVB?: WebGPUVertexBuffer;
+        simpleAnimatorVB?: WebGPUVertexBuffer;
+        lightmapScaleOffsetVB?: WebGPUVertexBuffer;
+    }
+    class WebGPUMeshInstanceUtil {
+        static mergeBigBuffer: boolean;
+        static getInstanceBufferState(stateInfo: WebGPUInstanceStateInfo, renderType: number, oriGeometry: WebGPURenderGeometry, newGeometry: WebGPURenderGeometry, oneBatchMark: OneBatchMark): void;
+    }
+    class SingleLeakList<T> {
+        elements: Array<T>;
+        leakIndexList: Array<number>;
+        add(element: T): number;
+        remove(element: T): void;
+        indexof(element: T): number;
+        release(): void;
+    }
+    class WebGPUBatchQueue implements IModuleAgentResource {
+        opaqueQueue: RenderListQueue;
+        opaqueList: FastSinglelist<WebGPURenderElement3D>;
+        transparentQueue: RenderListQueue;
+        transparentList: FastSinglelist<WebGPURenderElement3D>;
+        opaqueCustomSort: boolean;
+        transCustomSort: boolean;
+        constructor(createTransList: boolean);
+        clearList(): void;
+        release(): void;
+    }
+    class renderNodeCustomData {
+        allBatch: boolean;
+        hasBatch: boolean;
+        cullPassIndex: number;
+        batchRecoards: batchRecoard[];
+        cullMask: number;
         constructor();
-        render3DManager: WebSceneRenderManager;
+        _initData(): void;
+        needCull(updateMark: number): boolean;
+    }
+    class batchRecoard {
+        canBatch: boolean;
+        batchMark: OneBatchMark;
+        renderElement: WebGPURenderElement3D;
+    }
+    class WebGPUBatch_CullDataSet {
+        static fillPlaneCullData(plane: Plane, index: number, data: Float32Array): void;
+        static fillCameraCullData(cameraCullInfo: CameraCullInfo, index: number, data: Float32Array, dataUint32: Uint32Array): void;
+        static fillDirCullData(cullInfo: ShadowCullInfo, index: number, data: Float32Array, dataUint32: Uint32Array): void;
+        static fillNOCullData(index: number, dataUint32: Uint32Array): void;
+        static fillSpotCullData(spotCullInfo: CameraCullInfo, index: number, data: Float32Array, dataUint32: Uint32Array): void;
+        static _commonCullByCameraCullInfo(cameraCullInfo: CameraCullInfo, count: number, context: IRenderContext3D, list: SingletonList<WebGPUBaseRenderNode>, opaqueList: SingletonList<WebGPURenderElement3D>, transparent: SingletonList<WebGPURenderElement3D>, cullOutResoult: WebGPUMeshBatchCPUCullResult): void;
         /**
-         * 初始化渲染流程
-         * @param camera
+         * @param cameraCullInfo
+         * @param lists
+         * @param opaqueList
+         * @param transparent
          * @param context
          */
-        private _initRenderPass;
+        static cullByCameraCullInfo2(cameraCullInfo: CameraCullInfo, cullNodeManager: WebGPUMeshBatchCPUCullNodeList, cullOutResoult: WebGPUMeshBatchCPUCullResult, transparent: RenderListQueue, context: IRenderContext3D): void;
+        static _commonCullByDirectLightShadow(shadowCullInfo: ShadowCullInfo, list: SingletonList<WebGPUBaseRenderNode>, count: number, opaqueList: SingletonList<WebGPURenderElement3D>, context: IRenderContext3D, cullOutResoult: WebGPUMeshBatchCPUCullResult): void;
         /**
-         * 渲染深度图设置
-         * @param camera
-         */
-        private _renderDepth;
+          * 方向光源裁剪
+          * @param shadowCullInfo
+          * @param lists
+          * @param opaqueList
+          * @param context
+          */
+        static cullDirectLightShadow2(shadowCullInfo: ShadowCullInfo, cullNodeManager: WebGPUMeshBatchCPUCullNodeList, cullOutResoult: WebGPUMeshBatchCPUCullResult, context: IRenderContext3D): void;
+        static cullSpotLightShadow2(spotCullInfo: CameraCullInfo, cullNodeManager: WebGPUMeshBatchCPUCullNodeList, cullOutResoult: WebGPUMeshBatchCPUCullResult, context: IRenderContext3D): void;
+        static quickOneMarkBatchCull(batch: OneBatchMark, cullMode: BatchCullMode, cullData: any, cullMask: number, cullInfoIndex: number): boolean;
         /**
-         * 前向渲染流程
-         * @param context
-         * @param renderPass
+         * 聚光灯裁剪
+         * @param cameraCullInfo
          * @param list
          * @param count
-         */
-        private _renderForwardAddCameraPass;
-        /**
-         * 渲染命令
-         * @param cmds
+         * @param opaqueList
          * @param context
          */
-        private _renderCmd;
+        static cullSpotShadow(cameraCullInfo: CameraCullInfo, list: SingletonList<WebGPUBaseRenderNode>, count: number, opaqueList: FastSinglelist<WebGPURenderElement3D>, context: IRenderContext3D, cullOutResoult: WebGPUMeshBatchCPUCullResult): void;
+    }
+    class BatchMergeVertexInfo {
+        static VertexBufferExtendCount: number;
+        static IndexBufferExtendCount: number;
+        static indexFormat: IndexFormat;
+        private _cacheVertexInfo;
+        private _cacheIndexInfo;
+        private _curVertexCount;
+        private _curIndexCount;
+        private _curMaxVertexCount;
+        private _curMaxIndexCount;
+        private _vertexData;
+        private _indexData;
+        vertexBuffer: WebGPUVertexBuffer;
+        indexBuffer: WebGPUIndexBuffer;
+        vertexStride: number;
+        constructor(vertexLength: number, indexLength: number, oriVertex: WebGPUVertexBuffer);
+        private _extendIndexBuffer;
+        private _extendVertexBuffer;
+        addMesh(MergVertexBuffer: WebGPUVertexBuffer, MergeIndexBuffer: WebGPUIndexBuffer, indexOffsetCount: Vector2): void;
+    }
+    class MergeMeshUtil {
+        static vertexStateMap: Map<number, BatchMergeVertexInfo>;
+        static getMergeInfo(mergeGeometry: WebGPURenderGeometry, newGeoemtty: WebGPURenderGeometry, outIndexOffsetCount: Vector2): BatchMergeVertexInfo;
+        static getMergeInfoNoIns(mergeGeometry: WebGPURenderGeometry, outIndexOffsetCount: Vector2): BatchMergeVertexInfo;
+    }
+    class BatchAgentSortUtil {
         /**
-         * 渲染后处理效果
-         * @param postprocessCMD
-         * @param context
+         * 原地快速排序 - 更节省内存，时间复杂度O(n log n)
          */
-        private _renderPostProcess;
+        static quickSortInPlace(arr: WebGPURenderElement3D[], low?: number, high?: number): void;
+        private static partition;
         /**
-         * 前向渲染
-         * @param context
-         * @param camera
-         */
-        fowardRender(context: WebGPURenderContext3D, camera: Camera): void;
+        * 原地快速排序 - 更节省内存，时间复杂度O(n log n)
+        */
+        static quickSortInPlace2(arr: WebGPURenderElement3D[], low?: number, high?: number): void;
+        private static partition2;
+        private static getPivot2;
+    }
+    class CullAdditionalInfo {
+        camCullRes: boolean;
+        preCameraCullNode: WebGPUBaseRenderNode;
+        dirCullRes: boolean;
+        preDirCullNode: WebGPUBaseRenderNode;
+        spotCullRes: boolean;
+        preSpotCullNode: WebGPUBaseRenderNode;
+    }
+    class OneBatchMark {
+        private _instanceStateInfo;
+        _needCreateRenderElement: boolean;
+        private _elementInfoArray;
+        owner: BatchCullPass;
+        agent: WebGPUMeshRenderBatchAgent;
+        elementCount: number;
+        indexOfCullPass: number;
+        canBatch: boolean;
+        batchRenderList: SingletonList<WebGPURenderElement3D>;
+        renderElement: WebGPUMeshInstanceRenderElement;
+        renderGeometry: WebGPURenderGeometry;
+        _Geo_IndexCount: number;
+        _Geo_IndexOffset: number;
+        _Geo_IndexOriOffset: number;
+        renderNode: WebGPUBaseRenderNode;
+        changeFlag: number;
+        changeOnCreate: boolean;
+        needReSetElementIndexBuffer: boolean;
+        renderLayer: number;
+        castShadow: boolean;
+        cullUpdateMark: number;
+        stateChangeMask: number;
+        cullAdditionalInfo: CullAdditionalInfo;
+        private _cacheUseNode;
+        notifyChange(): void;
+        constructor(owner: BatchCullPass, agent: WebGPUMeshRenderBatchAgent);
+        _createRenderElement(): void;
+        private _changeBufferState;
+        private _changeFlag;
+        cullInsert(cullMode: BatchCullMode, cullData: any, isShadow: boolean): boolean;
+        _updateElementBuffer(count: number): void;
+        addElement(element: WebGPURenderElement3D): void;
+        removeElement(element: WebGPURenderElement3D): void;
+        release(): void;
+    }
+    class WebGPUMeshBathShaderInit {
+        static inited: boolean;
+        static renderCommandMap: string;
+        static cullComputeShader: ComputeShader;
+        static getCullResoultComputeShader: ComputeShader;
+        static clearCullResourceShader: ComputeShader;
         /**
-         * 销毁
+         * @en Using instance
+         * @zh instance调用宏
          */
-        destroy(): void;
+        static SHADERDEFINE_GPU_INSTANCE: ShaderDefine;
+        static init(): void;
+        static _createComputeShader(): void;
+        static _createClearCoumputeShader(): void;
+        static _initRenderMap(): void;
+    }
+    class WebGPUMeshInstanceRenderElement extends WebGPURenderElement3D {
+        protected _getShaderInstanceDefines(context: WebGPURenderContext3D): import("../../../../RenderModuleData/WebModuleData/WebDefineDatas").WebDefineDatas;
+    }
+    class WebGPUMeshBatchCPUCullNodeList {
+        _dynamicCullList: SingletonList<WebGPUBaseRenderNode>;
+        _staticCullList: SingletonList<WebGPUBaseRenderNode>;
+        _staticChangeMask: number;
+        _oneBatchCullList: SingletonList<WebGPUBaseRenderNode>;
+        _tempCullList: SingletonList<WebGPUBaseRenderNode>;
+        constructor();
+        add(node: WebGPUBaseRenderNode): void;
+        remove(node: WebGPUBaseRenderNode): void;
+        clear(): void;
+    }
+    class WebGPUMeshBatchCPUCullResult {
+        _dynamicCullResult: FastSinglelist<WebGPURenderElement3D>;
+        _staticOpaqueCullResult: FastSinglelist<WebGPURenderElement3D>;
+        _staticTransCullResult: FastSinglelist<WebGPURenderElement3D>;
+        _tempList: FastSinglelist<WebGPURenderElement3D>;
+        forwardNeedUpdateNode: FastSinglelist<WebGPUBaseRenderNode>;
+        needCullStatic: boolean;
+        mergeResoult(queue: RenderListQueue, trans: RenderListQueue): void;
+        clear(): void;
+    }
+    class WebGPUMeshRenderBatchAgent implements IBatchModuleAgent {
+        static mergeBigBuffer: boolean;
+        protected _list: SingletonList<BaseRender>;
+        protected _baseRenderList: SingletonList<WebGPUBaseRenderNode>;
+        protected _batchOpaqueMarks: Map<number, any>;
+        private _cameraCullInfo;
+        _mainBatchQueue: FastSinglelist<WebGPUBatchQueue>;
+        private _dirShadowCullInfo;
+        _shadowBatchQueue: FastSinglelist<WebGPUBatchQueue>;
+        private _spotCullInfo;
+        _spotBatchQueue: FastSinglelist<WebGPUBatchQueue>;
+        _cpuCullList: WebGPUMeshBatchCPUCullNodeList;
+        private _cpuCameraCullResult;
+        private _cpuDirCullResoult;
+        _gpuCUllPass: BatchCullPass;
+        private _cpuSpotCullResoult;
+        protected _changeElementBatchMark: SingletonList<WebGPUBaseRenderNode>;
+        protected _changeInstanceData: FastSinglelist<WebGPUBaseRenderNode>;
+        private _updateMark;
+        private _renderType;
+        constructor(renderType?: BaseRenderType);
+        protected _getBatchMark(element: WebGPURenderElement3D): OneBatchMark;
+        protected _canBatch(element: WebGPURenderElement3D): boolean;
+        protected _addBatchMark(renderNode: WebGPUBaseRenderNode): void;
+        protected _removeBatchMark(renderNode: WebGPUBaseRenderNode): void;
+        protected _changeBatchMark(renderNode: WebGPUBaseRenderNode): void;
+        _checkCPUCullList: SingletonList<WebGPUBaseRenderNode>;
+        _checkBaseRenderNodeCullMode(): void;
+        protected _cullpassRun(context: WebGPURenderContext3D): void;
+        create(): void;
+        addRenderNode(object: BaseRender): boolean;
+        removeRenderNode(object: BaseRender): boolean;
+        updateProperty(object: BaseRender, property: string | number): void;
+        private _cacheInfo;
+        _cameraChangeMask: number;
+        private _isCameraChange;
+        private _cacheDirCullInfo;
+        _dirCullChangeMask: number;
+        private _isDirCullChange;
+        private _cacheSpotCullInfo;
+        _spotCullChangeMask: number;
+        private _isSpotCullChange;
+        setCullCamera(cameraCullInfo: Array<CameraCullInfo & {
+            id: number;
+        }>): void;
+        setDirLightCullInfo(directLightCullInfo: ShadowCullInfo[]): void;
+        setSpotCullingDir(spotCullInfo: CameraCullInfo[]): void;
+        private _kipCullCount;
+        private _canKipCull;
+        appendRenderElement(cullMode: BatchCullMode, cullInfoIndex: number, context: WebGPURenderContext3D): IModuleAgentResource;
+        appendRenderElementUseForward(cullMode: BatchCullMode, cullInfoIndex: number, context: WebGPURenderContext3D): IModuleAgentResource;
+        release(): void;
     }
     /**
      * WebGPU渲染工厂类
      */
     class WebGPU3DRenderPassFactory implements I3DRenderPassFactory {
-        createInstanceBatch(): IInstanceRenderBatch;
+        createMeshRenderBatchModule(): IBatchModuleAgent;
+        createSimpleSkinRenderBatchModule(): IBatchModuleAgent;
         createRender3DProcess(): IRender3DProcess;
         createRenderContext3D(): IRenderContext3D;
         createRenderElement3D(): IRenderElement3D;
-        createInstanceRenderElement3D(): WebGPUInstanceRenderElement3D;
         createSkinRenderElement(): ISkinRenderElement3D;
         createSceneRenderManager(): ISceneRenderManager;
         createDrawNodeCMDData(): DrawNodeCMDData;
@@ -73366,219 +75625,14 @@ declare namespace Laya {
         defineDataChangeFlag: Vector2;
         spriteUBOs: WebGPUUniformBufferBase[];
         spriteUBO0: WebGPUUniformBufferBase;
-        additionalUBOs: WebGPUUniformBufferBase[];
-        additionalUBO0: WebGPUUniformBufferBase;
         protected _shaderData: WebGPUShaderData;
         protected _additionShaderData: Map<string, WebGPUShaderData>;
+        customData: any;
         get shaderData(): WebGPUShaderData;
         set shaderData(value: WebGPUShaderData);
         set additionShaderData(value: Map<string, WebGPUShaderData>);
         get additionShaderData(): Map<string, WebGPUShaderData>;
         setCommonUniformMap(value: string[]): void;
-    }
-    /**
-     * 线性光源阴影渲染流程
-     */
-    class WebGPUDirectLightShadowRP {
-        /**@internal 最大cascade*/
-        private static _maxCascades;
-        /**@internal */
-        shadowCastMode: ShadowCascadesMode;
-        camera: WebCameraNodeData;
-        destTarget: InternalRenderTarget;
-        private _shadowCasterCommanBuffer;
-        get shadowCasterCommanBuffer(): CommandBuffer[];
-        set shadowCasterCommanBuffer(value: CommandBuffer[]);
-        /**@internal */
-        private _light;
-        /**@internal */
-        private _lightUp;
-        /**@internal */
-        private _lightSide;
-        /**@internal */
-        private _lightForward;
-        /** @internal 分割distance*/
-        private _cascadesSplitDistance;
-        /** @internal */
-        private _frustumPlanes;
-        /** @internal */
-        private _shadowMatrices;
-        /**@internal */
-        private _splitBoundSpheres;
-        /** @internal */
-        private _shadowSliceDatas;
-        /** @internal */
-        private _shadowMapSize;
-        /** @internal */
-        private _shadowBias;
-        /** @internal */
-        private _cascadeCount;
-        /** @internal */
-        private _shadowMapWidth;
-        /** @internal */
-        private _shadowMapHeight;
-        /** @internal */
-        private _shadowTileResolution;
-        /** @internal */
-        private _shadowCullInfo;
-        /** @internal */
-        private _renderQueue;
-        set light(value: WebDirectLight);
-        get light(): WebDirectLight;
-        constructor();
-        /**
-         * 更新
-         * @param context
-         */
-        update(context: WebGPURenderContext3D): void;
-        /**
-         * 渲染
-         * @param context
-         * @param list
-         * @param count
-         */
-        render(context: WebGPURenderContext3D, list: WebBaseRenderNode[], count: number): void;
-        /**
-         * 设置渲染数据
-         * @param sceneData
-         * @param cameraData
-         */
-        private _applyRenderData;
-        /**
-         * 应用阴影渲染命令
-         * @param context
-         */
-        private _applyCasterPassCommandBuffer;
-        /**
-         * 获取阴影偏移
-         * @param shadowProjectionMatrix
-         * @param shadowResolution
-         * @param out
-         */
-        private _getShadowBias;
-        /**
-         * 设置阴影级联数据模式
-         * @param shaderData
-         * @param shadowSliceData
-         * @param lightParam
-         * @param shadowBias
-         */
-        private _setupShadowCasterShaderValues;
-    }
-    /**
-     * WebGPU前向渲染流程
-     */
-    class WebGPUForwardAddClusterRP extends ForwardAddClusterRP {
-        constructor();
-        /**
-         * 主渲染流程
-         * @param context
-         */
-        protected _mainPass(context: IRenderContext3D): void;
-    }
-    class WebGPUForwardAddRP {
-        /**是否开启阴影 */
-        shadowCastPass: boolean;
-        /**@internal */
-        _afterAllRenderCMDS: Array<CommandBuffer>;
-        /**@internal */
-        _beforeImageEffectCMDS: Array<CommandBuffer>;
-        enablePostProcess: boolean;
-        /**@internal */
-        postProcess: CommandBuffer;
-        /**main pass */
-        renderPass: WebGPUForwardAddClusterRP;
-        /**directlight shadow */
-        directLightShadowPass: WebGPUDirectLightShadowRP;
-        shadowMap: RenderTexture;
-        /**enable directlight */
-        enableDirectLightShadow: boolean;
-        /**spot shadow */
-        spotLightShadowPass: WebGPUSpotLightShadowRP;
-        spotShadowMap: RenderTexture;
-        /**enable spot */
-        enableSpotLightShadowPass: boolean;
-        shadowParams: Vector4;
-        finalize: CommandBuffer;
-        constructor();
-        /**
-         * 设置后处理之前绘制的渲染命令
-         * @param value
-         */
-        setBeforeImageEffect(value: CommandBuffer[]): void;
-        /**
-         * 设置所有渲染都结束后绘制的渲染命令
-         * @param value
-         */
-        setAfterEventCmd(value: CommandBuffer[]): void;
-    }
-    /**
-     * 动态合批
-     */
-    class WebGPUInstanceRenderBatch implements IInstanceRenderBatch {
-        static MAX_INSTANCE_COUNT: number;
-        private _recoverList;
-        private _batchOpaqueMarks;
-        private _updateCountMark;
-        /**
-         * @ignore
-         */
-        constructor();
-        getBatchMark(element: IRenderElement3D): BatchMark;
-        batch(elements: SingletonList<IRenderElement3D>): void;
-        clearRenderData(): void;
-        recoverData(): void;
-    }
-    interface WebGPUInstanceStateInfo {
-        state: WebGPUBufferState;
-        worldInstanceVB?: WebGPUVertexBuffer;
-        simpleAnimatorVB?: WebGPUVertexBuffer;
-        lightmapScaleOffsetVB?: WebGPUVertexBuffer;
-    }
-    class WebGPUInstanceRenderElement3D extends WebGPURenderElement3D implements IInstanceRenderElement3D {
-        static getInstanceBufferState(stateinfo: WebGPUInstanceStateInfo, geometry: WebGPURenderGeometry, renderType: number, spriteDefine: WebDefineDatas): WebGPUInstanceStateInfo;
-        static MaxInstanceCount: number;
-        private static _pool;
-        static create(): WebGPUInstanceRenderElement3D;
-        private static _bufferPool;
-        static _instanceBufferCreate(length: number): Float32Array;
-        instanceElementList: SingletonList<IRenderElement3D>;
-        private _vertexBuffers;
-        private _updateData;
-        private _updateDataNum;
-        private _instanceStateInfo;
-        drawCount: number;
-        updateNums: number;
-        constructor();
-        addUpdateBuffer(vb: WebGPUVertexBuffer, length: number): void;
-        getUpdateData(index: number, length: number): Float32Array;
-        /**
-         * 着色器数据是否改变
-         * @param context
-         */
-        protected _isShaderDataChange(context: WebGPURenderContext3D): boolean;
-        protected _compileShader(context: WebGPURenderContext3D): void;
-        _preUpdatePre(context: WebGPURenderContext3D): void;
-        private _updateInstanceData;
-        oriBufferStateCacheID: number;
-        /**
-         * 设置几何对象
-         * @param value
-         */
-        setGeometry(value: WebGPURenderGeometry): void;
-        /**
-         * 上传几何数据
-         * @param command
-         */
-        protected _uploadGeometry(command: WebGPURenderCommandEncoder | WebGPURenderBundle): number;
-        /**
-         * 清理单次渲染生成的数据
-         */
-        clearRenderData(): void;
-        /**
-         * 回收
-         */
-        recover(): void;
     }
     class WebGPUBlitQuadCMDData extends BlitQuadCMDData {
         type: RenderCMDType;
@@ -73674,7 +75728,7 @@ declare namespace Laya {
         private _cameraData;
         private _viewPort;
         private _scissor;
-        private _sceneUpdataMask;
+        private _sceneUpdateMask;
         private _cameraUpdateMask;
         private _pipelineMode;
         private _invertY;
@@ -73691,7 +75745,7 @@ declare namespace Laya {
         private _renderCommand;
         _cacheGlobalDefines: WebDefineDatas;
         _globalConfigShaderData: WebDefineDatas;
-        _preDrawUniformMaps: Set<string>;
+        preDrawUniformMaps: Set<string>;
         _cameraBindGroup: WebGPUBindGroup;
         _sceneBindGroup: WebGPUBindGroup;
         _curRenderCacheInfo: WebGPUGlobalPipeLineCacheInfo;
@@ -73710,8 +75764,8 @@ declare namespace Laya {
         set cameraModuleData(value: WebCameraNodeData);
         get globalShaderData(): WebGPUShaderData;
         set globalShaderData(value: WebGPUShaderData);
-        get sceneUpdataMask(): number;
-        set sceneUpdataMask(value: number);
+        get sceneUpdateMask(): number;
+        set sceneUpdateMask(value: number);
         get cameraUpdateMask(): number;
         set cameraUpdateMask(value: number);
         get pipelineMode(): PipelineMode;
@@ -73839,6 +75893,7 @@ declare namespace Laya {
         protected _cacheMatBlendStateID: number;
         protected _cacheMatDepthStencilID: string;
         protected _cacheMatCullMode: CullMode;
+        customData: any;
         get materialShaderData(): WebGPUShaderData;
         set materialShaderData(value: WebGPUShaderData);
         get renderShaderData(): WebGPUShaderData;
@@ -73861,6 +75916,7 @@ declare namespace Laya {
         protected _updateMatChangeFlag(): void;
         protected _handleMaterialChange(): void;
         protected _updateNodeUBO(): void;
+        protected _uploadUBODataMask: number;
         /**
          * 渲染前更新,更新所有Buffer
          * @param context
@@ -73903,11 +75959,6 @@ declare namespace Laya {
          * @param command
          */
         protected _bindGroup(context: WebGPURenderContext3D, info: OneDrawCacheInfo, command: WebGPURenderCommandEncoder | WebGPURenderBundle): void;
-        /**
-         * 上传几何数据
-         * @param command
-         */
-        protected _uploadGeometry(command: WebGPURenderCommandEncoder | WebGPURenderBundle): number;
         protected _uploadGeometryIndex(command: WebGPURenderCommandEncoder | WebGPURenderBundle, index: number): number;
         /**
          * 销毁
@@ -73935,89 +75986,6 @@ declare namespace Laya {
          */
         _render(context: WebGPURenderContext3D, command: WebGPURenderCommandEncoder | WebGPURenderBundle): 1 | 0;
         destroy(): void;
-    }
-    /**
-     * 聚光灯阴影渲染流程
-     */
-    class WebGPUSpotLightShadowRP {
-        protected static _invertYScaleMatrix: Matrix4x4;
-        destTarget: InternalRenderTarget;
-        /**@internal */
-        shadowCasterCommanBuffer: CommandBuffer[];
-        /**@internal */
-        private _light;
-        /**@internal */
-        private _lightPos;
-        /**@internal */
-        private _lightWorldMatrix;
-        /**@internal */
-        private _shadowResolution;
-        /**@internal */
-        private _spotAngle;
-        /**@internal */
-        private _spotRange;
-        /**@internal */
-        private _shadowStrength;
-        /**@internal */
-        private _shadowDepthBias;
-        /**@internal */
-        private _shadowNormalBias;
-        /**@internal */
-        private _shadowMode;
-        /** @internal */
-        private _shadowSpotData;
-        /** @internal */
-        private _shadowSpotMapSize;
-        /** @internal */
-        private _shadowSpotMatrices;
-        /** @internal */
-        private _shadowBias;
-        /** @internal */
-        private _renderQueue;
-        set light(value: WebSpotLight);
-        get light(): WebSpotLight;
-        constructor();
-        /**
-         * 更新阴影数据
-         * @param context
-         */
-        update(context: WebGPURenderContext3D): void;
-        /**
-         * 渲染
-         * @param context
-         * @param list
-         * @param count
-         */
-        render(context: WebGPURenderContext3D, list: WebBaseRenderNode[], count: number): void;
-        /**
-         * @internal
-         */
-        private _getSpotLightShadowData;
-        /**
-         * get shadow bias
-         * @param shadowResolution
-         * @param out
-         */
-        private _getShadowBias;
-        /**
-         * 设置阴影级联数据模式
-         * @param shaderData
-         * @param shadowSliceData
-         * @param shadowParams
-         * @param shadowBias
-         */
-        private _setupShadowCasterShaderValues;
-        /**
-         * 应用阴影渲染命令
-         * @param context
-         */
-        private _applyCasterPassCommandBuffer;
-        /**
-         * 设置聚光接受阴影的模式
-         * @param shaderData 渲染数据
-         * @param cameraData 相机数据
-         */
-        private _applyRenderData;
     }
     /**
      * WebGPU计算上下文，用于缓存和管理一系列计算命令
@@ -74111,7 +76079,6 @@ declare namespace Laya {
         uniformCommandMap: WebGPUCommandUniformMap[];
         compilete: boolean;
         constructor(name: string);
-        HasKernel(kernel: string): boolean;
         /**
          * 序列化着色器
          * @returns 序列化后的着色器
@@ -74135,19 +76102,19 @@ declare namespace Laya {
         propertyID: number;
     }
     class WebGPUDeviceBuffer implements IDeviceBuffer, IGPUBuffer {
-        private _buffer;
+        _buffer: WebGPUBuffer;
         private _GPUBindGroupEntry;
         private _cacheShaderData;
         _destroyed: boolean;
         objectName: string;
         globalId: number;
-        constructor(type: EDeviceBufferUsage);
+        constructor(type: EDeviceBufferUsage, usages?: number);
         private _reSetBindGroupEntry;
         _addCacheShaderData(shaderData: WebGPUShaderData, propertyID: number): void;
         _removeCacheShaderData(shaderData: WebGPUShaderData): void;
         getNativeBuffer(): WebGPUBuffer;
         getBindGroupEntry(binding: number): GPUBindGroupEntry;
-        setData(buffer: ArrayBuffer, bufferOffset: number, dataStartIndex: number, dataCount: number): void;
+        setData(buffer: ArrayBuffer | ArrayBufferView, bufferOffset: number, dataStartIndex: number, dataCount: number): void;
         setDataLength(byteLength: number): void;
         copyToBuffer(buffer: WebGPUVertexBuffer | WebGPUDeviceBuffer, sourceOffset: number, destoffset: number, bytelength: number): void;
         copyToTexture(): void;
@@ -74187,9 +76154,16 @@ declare namespace Laya {
             fragment: string;
             appendNewUniform: boolean;
         };
+        static proccessCompute(defines: string[], uniformCommandMaps: WebGPUCommandUniformMap[], uniformMaps: Map<number, WebGPUUniformPropertyBindingInfo[]>, node: ShaderNode, shaderName: string): {
+            code?: undefined;
+            hasSampler?: undefined;
+        } | {
+            code: string;
+            hasSampler: boolean;
+        };
     }
     /** @internal */
-    function getTypeString(type: ShaderDataType): "" | "int" | "bool" | "float" | "vec2" | "vec3" | "vec4" | "mat4" | "mat3" | "sampler2D" | "samplerCube" | "sampler2DArray" | "sampler3D";
+    function getTypeString(type: ShaderDataType): "" | "int" | "bool" | "float" | "vec2" | "vec3" | "vec4" | "mat4" | "mat3" | "sampler2D" | "samplerCube" | "sampler2DArray" | "sampler3D" | "uvec4";
     /** @internal */
     function getTypeDefaultString(type: ShaderDataType): "" | "0" | "false" | "0.0" | "vec2(0.0)" | "vec3(0.0)" | "vec4(0.0)";
     /** @internal */
@@ -74451,6 +76425,7 @@ declare namespace Laya {
         private _parse;
     }
     interface GlslangCompiler {
+        getVersion(): string;
         glsl450_to_spirv(glslSource: string, stage: "vertex" | "fragment" | "compute"): {
             spirv: Uint32Array;
             info_log: string;
@@ -74458,6 +76433,26 @@ declare namespace Laya {
         };
         glsl300es_preprocess(glslSource: string, stage: "vertex" | "fragment" | "compute"): {
             preprocessed_code: string;
+            info_log: string;
+            success: boolean;
+        };
+        preprocess_compute(glslSource: string, stage: "compute"): {
+            success: boolean;
+            preprocessed_code: string;
+            info_log: string;
+            uniforms: Map<string, {
+                type: string;
+                format?: string;
+                access?: "readonly" | "writeonly" | "readwrite";
+            }>;
+            ssbos: Map<string, "readonly" | "writeonly" | "readwrite">;
+            ubos: Map<string, string>;
+            samplers: Map<string, {
+                type: string;
+            }>;
+        };
+        glsl450_combine_to_spirv(glslSource: string, stage: "vertex" | "fragment" | "compute", splitSampler: boolean): {
+            spirv: Uint32Array;
             info_log: string;
             success: boolean;
         };
@@ -74574,11 +76569,12 @@ declare namespace Laya {
         texture?: GPUTextureBindingLayout;
         sampler?: GPUSamplerBindingLayout;
         storageTexture?: GPUStorageTextureBindingLayout;
+        format?: string;
     }
     class WebGPUBindGroupHelper {
         private static BindGroupPropertyInfoMap;
         /** internal */
-        static CacheBindGroupPropertyInfo(key: string, infos: WebGPUUniformPropertyBindingInfo[]): void;
+        static CacheBindGroupPropertyInfo(key: string, infos: WebGPUUniformPropertyBindingInfo[], force?: boolean): void;
         private static _getBindGroupID;
         static _getBindGroupPropertyID(bindGroupID: number, array: string[]): string;
         /**
@@ -74591,9 +76587,11 @@ declare namespace Laya {
          * 根据unfiformCommandMapArray获得绑定信息
          * @param groupID
          * @param unifromCommandMapArray
+         * @param isComputeShader
+         * @param force 强制重新创建
          * @returns
          */
-        static createBindPropertyInfoArrayByCommandMap(groupID: number, unifromCommandMapArray: string[], isComputeShader?: boolean): WebGPUUniformPropertyBindingInfo[];
+        static createBindPropertyInfoArrayByCommandMap(groupID: number, unifromCommandMapArray: string[], isComputeShader?: boolean, force?: boolean): WebGPUUniformPropertyBindingInfo[];
         static createBindGroupInfosByUniformMap(groupID: number, name: string, cacheName: string, uniformMap: Map<number, UniformProperty>): WebGPUUniformPropertyBindingInfo[];
     }
     class WebGPUBuffer {
@@ -74770,8 +76768,12 @@ declare namespace Laya {
          * 增加一个Uniform参数，如果Uniform属性是Array，请使用addShaderUniformArray
          * @internal
          */
-        addShaderUniform(propertyID: number, propertyName: string, uniformtype: ShaderDataType): void;
+        addShaderUniform(propertyID: number, propertyName: string, uniformtype: ShaderDataType, options?: UniformOptions): void;
         addShaderUniformArray(propertyID: number, propertyName: string, uniformtype: ShaderDataType, arrayLength: number): void;
+        /**
+         * 设置默认值
+         */
+        setDefaultTextureData(key: number, defaultTex: BaseTexture): void;
     }
     type OffsetAndSize = {
         offset: number;
@@ -74791,6 +76793,8 @@ declare namespace Laya {
         indexCount: number;
         globalId: number;
         objectName: string;
+        buffer: ArrayBuffer;
+        bufferoffset: number;
         constructor(targetType: BufferTargetType, bufferUsageType: BufferUsage);
         getNativeBuffer(): WebGPUBuffer;
         _setIndexDataLength(length: number): void;
@@ -74816,6 +76820,7 @@ declare namespace Laya {
         _colorStates: GPUColorTargetState[];
         _depthState: GPUColorTargetState;
         _renderPassDescriptor: GPURenderPassDescriptor;
+        _arrayLayerIndex: number;
         constructor(colorFormat: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, isCube: boolean, generateMipmap: boolean, samples: number, sRGB: boolean);
         /**
          * @internal
@@ -74884,8 +76889,15 @@ declare namespace Laya {
         _getSampleBindingLayout(layout: GPUSamplerBindingLayout): void;
         _getStorageBindingLayout(layout: GPUStorageTextureBindingLayout): void;
         statisAsRenderTexture(): void;
-        _gpuView: GPUTextureView;
-        getTextureView(): GPUTextureView;
+        private samplerView;
+        private attachmentView;
+        private getSamplerView;
+        private getAttachmentView;
+        getTextureView(attachment?: boolean): GPUTextureView;
+        /**
+         * 获取用于渲染附件的数组层视图（不缓存）。
+         */
+        getTextureViewForArrayLayer(layer: number, mipLevel?: number): GPUTextureView;
         private _changeTexMemory;
         dispose(): void;
     }
@@ -74927,12 +76939,17 @@ declare namespace Laya {
         encoder: IGPURenderEncoder;
         protected currentBindGroups: Map<number, BindGroupBindingInfo>;
         protected currentPipeline: GPURenderPipeline;
+        protected currentBindVertexBuffer: WebGPUBuffer[];
+        protected currentBindIndexBuffer: GPUBuffer;
         constructor(isBundle?: boolean);
         /**
         * 设置渲染管线
         * @param pipeline
         */
         setPipeline(pipeline: GPURenderPipeline): void;
+        setVertexBuffer(slot: number, buffer: WebGPUBuffer): void;
+        setIndexBuffer(buffer: WebGPUBuffer, indexFormat: GPUIndexFormat): void;
+        setVertexBufferWithOffset(slot: number, buffer: WebGPUBuffer, offset: number, size: number): void;
         /**
         * 设置绑定组
         * @param index
@@ -74992,7 +77009,6 @@ declare namespace Laya {
         pipeline: GPURenderPipeline;
         shaderChange: boolean;
         pipeLineCacheFlag: Vector2;
-        defineCacheFlag: Vector2;
         nodeBindGroup: WebGPUBindGroup;
         renderNodeBindGroupCacheFlag: Vector2;
         matBindGroup: WebGPUBindGroup;
@@ -75075,6 +77091,7 @@ declare namespace Laya {
         private _textureContext;
         private _adapterSupportedExtensions;
         private _deviceEnabledExtensions;
+        readonly wgslLanguageFeatures: WGSLLanguageFeatures;
         gpuBufferMgr: WebGPUBufferManager;
         useSPRIV: boolean;
         globalId: number;
@@ -75198,9 +77215,9 @@ declare namespace Laya {
         private _instanceCount;
         _bufferState: WebGPUBufferState;
         /**@internal WebGPUDrawArrayInfo array  1 start 2 count*/
-        _drawArrayInfo: SingletonList<number>;
+        _drawArrayInfo: FastSinglelist<number>;
         /**@internal  WebGPUDrawElementInfo array 1 elementStart 2 elementStart 2 elementCount*/
-        _drawElementInfo: SingletonList<number>;
+        _drawElementInfo: FastSinglelist<number>;
         /**@internal */
         _drawElementInfo0: boolean;
         /**@internal */
@@ -75213,6 +77230,7 @@ declare namespace Laya {
         stateCacheKey: string;
         private stateCacheID;
         private _cacheBufferStateID;
+        drawParams: FastSinglelist<number>;
         isNeedReCreateCacheInfo(): boolean;
         getStateCacheID(): number;
         get instanceCount(): number;
@@ -75225,7 +77243,6 @@ declare namespace Laya {
         set indexFormat(value: IndexFormat);
         /**@internal */
         constructor(mode: MeshTopology, drawType: DrawType);
-        drawParams: FastSinglelist<number>;
         private _getCacheInfo;
         getDrawDataParams(out: FastSinglelist<number>): void;
         setDrawArrayParams(first: number, count: number): void;
@@ -75234,7 +77251,7 @@ declare namespace Laya {
         setIndirectDrawBuffer(buffer: WebGPUDeviceBuffer, offset: number): void;
         clearRenderParams(): void;
         cloneTo(obj: WebGPURenderGeometry): void;
-        applyToEncoder(encoder: IGPURenderEncoder): number;
+        applyToEncoder(encoder: WebGPURenderCommandEncoder | WebGPURenderBundle): number;
         destroy(): void;
     }
     class WebGPURenderPassHelper {
@@ -75336,6 +77353,7 @@ declare namespace Laya {
         anisoLevel: number;
     }
     class WebGPUSampler {
+        static _idCounter: number;
         static pointer_wrapU: number;
         static pointer_wrapV: number;
         static pointer_wrapW: number;
@@ -75634,6 +77652,7 @@ declare namespace Laya {
          * @param value 纹理
          */
         _setInternalTexture(index: number, value: WebGPUInternalTex): void;
+        update(name: string): void;
         setDeviceBuffer(index: number, value: WebGPUDeviceBuffer): void;
         /**
          * 获取纹理
@@ -75865,6 +77884,10 @@ declare namespace Laya {
         private _isSRGBFormat;
         private _supportSRGB;
         createRenderTargetInternal(width: number, height: number, colorFormat: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, generateMipmap: boolean, sRGB: boolean, multiSamples: number, storage: boolean): InternalRenderTarget;
+        /**
+         * 从 Texture2DArray 的某一层创建渲染目标（仅 color）。
+         */
+        createRenderTargetFromArrayLayer(arrayTex: WebGPUInternalTex, layer: number, colorFormat: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, sRGB: boolean): InternalRenderTarget;
         createRenderTargetDepthTexture(renderTarget: WebGPUInternalRT, dimension: TextureDimension, width: number, height: number): WebGPUInternalTex;
         createRenderTargetCubeInternal(size: number, colorFormat: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, generateMipmap: boolean, sRGB: boolean, multiSamples: number): InternalRenderTarget;
         bindRenderTarget(renderTarget: InternalRenderTarget, faceIndex?: number): void;
@@ -76078,6 +78101,7 @@ declare namespace Laya {
         private static _bufferLayoutIDConter;
         private _vertexDeclaration;
         source: WebGPUBuffer;
+        globalId: number;
         private _instanceBuffer;
         get instanceBuffer(): boolean;
         set instanceBuffer(value: boolean);
@@ -76085,6 +78109,8 @@ declare namespace Laya {
         verteBufferLayout: GPUVertexBufferLayout;
         stateCacheKey: string;
         stateCacheID: number;
+        private _webGPUDeviceBuffer;
+        getStorageBuffer(): WebGPUDeviceBuffer;
         constructor(targetType: BufferTargetType, bufferUsageType: BufferUsage);
         getNativeBuffer(): WebGPUBuffer;
         get vertexDeclaration(): VertexDeclaration;
@@ -76471,12 +78497,12 @@ declare namespace Laya {
         BLEND_ENABLE_SEPERATE = 2
     }
     enum BufferTargetType {
-        ARRAY_BUFFER = 0,
-        ELEMENT_ARRAY_BUFFER = 1,
-        UNIFORM_BUFFER = 2,
-        COPY_READ_BUFFER = 3,
-        COPY_WRITE_BUFFER = 4,
-        TRANSFORM_FEEDBACK_BUFFER = 5
+        ARRAY_BUFFER = 1,
+        ELEMENT_ARRAY_BUFFER = 2,
+        UNIFORM_BUFFER = 4,
+        COPY_READ_BUFFER = 8,
+        COPY_WRITE_BUFFER = 16,
+        TRANSFORM_FEEDBACK_BUFFER = 32
     }
     /**
      * Buffer usage.
@@ -76610,7 +78636,8 @@ declare namespace Laya {
         FLOAT = 6,
         UNSIGNED_BYTE = 7,
         BYTE = 8,
-        UNSIGNED_SHORT = 9
+        UNSIGNED_SHORT = 9,
+        MaxComputeElement = 10
     }
     /**
      * Mesh topology.
@@ -76814,6 +78841,7 @@ declare namespace Laya {
             vs: string;
             fs: string;
         };
+        static getAttributeType(type: ShaderDataType): "" | "int" | "bool" | "float" | "vec2" | "vec3" | "vec4" | "mat4" | "mat3" | "sampler2D" | "samplerCube" | "sampler2DArray" | "sampler3D" | "image2D" | "buffer";
     }
     interface IShaderObjStructor {
         name: string;
@@ -77370,6 +79398,31 @@ declare namespace Laya {
          * @zh 最近一次运行的帧号。
          */
         static lastFrame: number;
+        /**
+         * @en The start time of the current frame in milliseconds.
+         * @zh 当前帧的开始时间，单位为毫秒。
+         */
+        static frameStartTime: number;
+        /**
+         * @en Throttle mode: 0 - none, normal frame rate; 1 - half frame rate; 2 - full frame after mouse activity, half frame rate after 2 seconds of mouse inactivity; 3 - fixed 1 frame per second;
+         * @zh 限能模式：0-无，正常帧率运行; 1-帧率减半; 2-鼠标活动后满帧，鼠标不动2秒后满帧减半; 3-固定每秒1帧;
+         */
+        static throttleMode: 0 | 1 | 2 | 3;
+        /**
+         * @en Custom frame update predicate function. The function signature is: function(timestamp:number):boolean;
+         * @zh 自定义帧更新条件函数，函数签名为：function(timestamp:number):boolean;
+         */
+        static predicate: (timestamp: number) => boolean;
+        /**
+         * @en Pauses or resumes the rendering loop.
+         * @zh 暂停或恢复渲染循环。
+         */
+        static paused: boolean;
+        /**
+         * @en Force the next frame to be rendered. This flag is automatically cleared after rendering.
+         * @zh 强制渲染下一帧。渲染后该标记会自动清除。
+         */
+        static forceOnce: boolean;
         /**
          * @internal
          */
@@ -79230,6 +81283,12 @@ declare namespace Laya {
          * @default 360
          */
         static cleanupFrameInterval: number;
+        /**
+         * @en The maximum memory limit for the pool (in MB).
+         * @zh 对象池的最大内存限制（单位：MB）。
+         * @default 128
+         */
+        static maxPoolMemory: number;
         private static _lastCleanupFrame;
         /**
          * @en Creates a RenderTexture instance from the pool.
@@ -79237,15 +81296,17 @@ declare namespace Laya {
          * @param height Height of the RenderTexture.
          * @param colorFormat Color format of the RenderTexture.
          * @param depthFormat Depth format of the RenderTexture.
+         * @param multiSampler Multi sampler times.
          * @returns A RenderTexture instance.
          * @zh 从对象池中创建一个RenderTexture实例。
          * @param width 宽度。
          * @param height 高度。
          * @param colorFormat 颜色格式。
          * @param depthFormat 深度格式。
+         * @param multiSampler 多采样次数。
          * @returns RenderTexture实例。
          */
-        static createFromPool(width: number, height: number, colorFormat: RenderTargetFormat, depthFormat: RenderTargetFormat): RenderTexture2D;
+        static createFromPool(width: number, height: number, colorFormat: RenderTargetFormat, depthFormat: RenderTargetFormat, multiSampler?: number): RenderTexture2D;
         /**
          * @en Recovers the RenderTexture2D to the pool for reuse.
          * @param rt The RenderTexture2D to recover.
@@ -79265,6 +81326,12 @@ declare namespace Laya {
          * @returns 清理的实例数量。
          */
         static cleanupExpired(): number;
+        /**
+         * @internal
+         * @en Cleans up excess objects from the pool when memory limit is exceeded.
+         * @zh 当对象池超过内存限制时清理多余的对象。
+         */
+        private static _cleanupExcess;
         /** @internal */
         static _clearColor: Color;
         /** @internal */
@@ -79338,19 +81405,22 @@ declare namespace Laya {
          * @zh 是否是CameraTarget
          */
         _isCameraTarget: boolean;
+        protected _multiSamples: number;
         /**
          * @en Creates an instance of RenderTexture2D.
          * @param width The width.
          * @param height The height.
          * @param format The texture format.
          * @param depthStencilFormat The depth format.
+         * @param multiSampler Multi sampler times.
          * @zh 创建 RenderTexture2D 类的实例。
          * @param width  宽度。
          * @param height 高度。
          * @param format 纹理格式。
          * @param depthStencilFormat 深度格式。
+         * @param multiSampler 多采样次数。
          */
-        constructor(width: number, height: number, format?: RenderTargetFormat, depthStencilFormat?: RenderTargetFormat);
+        constructor(width: number, height: number, format?: RenderTargetFormat, depthStencilFormat?: RenderTargetFormat, multiSampler?: number);
         /**
          * @en Whether the render target is a cube render target.
          * @zh 渲染目标是否是立方体贴图渲染目标。
@@ -79711,6 +81781,12 @@ declare namespace Laya {
          */
         constructor(data: any, format: TextResourceFormat);
     }
+    interface DynamicTexInfo {
+        referenceCount: number;
+        uv: Vector4;
+        source: Texture2D;
+        recover: () => void;
+    }
     /**
      * @en The Texture is a texture processing class.
      * @zh Texture 是一个纹理处理类。
@@ -79795,6 +81871,13 @@ declare namespace Laya {
          * 如果是图集中的小图，记录了图集的引用
          */
         _atlas: AtlasResource;
+        /** @internal 动态图集的信息 */
+        _dynamic: DynamicTexInfo;
+        /**
+         * @internal
+         * 是否旋转。
+         */
+        _rotate: boolean;
         /**
          * @en Creates a `Texture` object based on the specified source, coordinates, dimensions, and offsets.
          * @param source The source texture, either a `Texture2D` or a `Texture` object.
@@ -79819,7 +81902,7 @@ declare namespace Laya {
          * @param sourceHeight 原始高度，包括被裁剪的透明区域（可选）。
          * @return `Texture` 对象。
          */
-        static create(source: Texture | BaseTexture, x: number, y: number, width: number, height: number, offsetX?: number, offsetY?: number, sourceWidth?: number, sourceHeight?: number): Texture;
+        static create(source: Texture | BaseTexture, x: number, y: number, width: number, height: number, offsetX?: number, offsetY?: number, sourceWidth?: number, sourceHeight?: number, rotate?: boolean): Texture;
         /**
          * @internal
          * 根据指定资源和坐标、宽高、偏移量等创建 <code>Texture</code> 对象。
@@ -79832,10 +81915,11 @@ declare namespace Laya {
          * @param offsetY Y 轴偏移量（可选）。
          * @param sourceWidth 原始宽度，包括被裁剪的透明区域（可选）。
          * @param sourceHeight 原始高度，包括被裁剪的透明区域（可选）。
+         * @param rotate 是否旋转。
          * @param outTexture 返回的Texture对象。
          * @return  <code>Texture</code> 对象。
          */
-        static _create(source: Texture | BaseTexture, x: number, y: number, width: number, height: number, offsetX?: number, offsetY?: number, sourceWidth?: number, sourceHeight?: number, outTexture?: Texture): Texture;
+        static _create(source: Texture | BaseTexture, x: number, y: number, width: number, height: number, offsetX?: number, offsetY?: number, sourceWidth?: number, sourceHeight?: number, rotate?: boolean, outTexture?: Texture): Texture;
         /**
          * @en Creates a new `Texture` by cropping a part of an existing `Texture`. If the two areas do not intersect, it returns null.
          * @param texture The target `Texture` to crop.
@@ -79877,6 +81961,9 @@ declare namespace Laya {
          */
         get bitmap(): BaseTexture;
         set bitmap(value: BaseTexture);
+        get rotate(): boolean;
+        set rotate(value: boolean);
+        _rotateTexture(rotate: boolean): void;
         /**
          * @en Creates an instance of Texture class.
          * @param source Bitmap resource.
@@ -80557,7 +82644,6 @@ declare namespace Laya {
          * @zh 目标 Spine 骨骼。
          */
         target: Spine2DRenderNode;
-        normal: boolean;
         /**
          * @en The source of the external skin Spine.
          * @zh 外部皮肤spine的源。
@@ -80615,8 +82701,519 @@ declare namespace Laya {
         get attachment(): string;
         set attachment(value: string);
     }
+    interface ISpineFactory {
+        createSpineTempletParser(): ISpineTempletParser;
+        /**
+         * @zh 创建Spine2D渲染器
+         * @param owner 渲染节点
+         * @en Create Spine renderer
+         * @param owner Render node
+         */
+        createSpineRender2D(owner: Spine2DRenderNode): ISpineRender;
+        /**
+         * @zh 创建Spine3D渲染器
+         * @param owner 渲染节点
+         * @en Create Spine renderer
+         * @param owner Render node
+         */
+        createSpineRender3D(owner: IBaseRenderNode): ISpineRender;
+    }
+    interface ISkeletonOptimise {
+        data: any;
+        getAniNameByIndex(index: number): string | null;
+        findAnimation(name: string): any | null;
+        hasAnimation(name: string): boolean;
+        getSkinIndexByName(skinName: string): number;
+        getAnimationCount(): number;
+        getAllSkinNames(): string[];
+        checkMainAttach(skeleton: spine.Skeleton, data: spine.SkeletonData): void;
+        destroy(): void;
+    }
+    interface ISpineTempletParser {
+        collectTextures(atlasText: string, task: ILoadTask): ILoadURL[];
+        create(desc: string | ArrayBuffer, textures: Texture2D[]): SpineTemplet;
+        destroy(): void;
+    }
+    /**
+     * @zh 骨骼信息接口，用于封装骨骼数据，不直接暴露原生spine对象
+     * @en Bone information interface, used to encapsulate bone data without exposing native spine objects
+     */
+    interface IBoneInfo {
+        worldX: number;
+        worldY: number;
+        /** 变换矩阵参数 */
+        a: number;
+        b: number;
+        c: number;
+        d: number;
+        data: {
+            name: string;
+            length: number;
+        };
+    }
+    /**
+     * @zh 插槽信息接口
+     * @en Slot information interface
+     */
+    interface ISlotInfo {
+        name: string;
+    }
+    /**
+     * @zh 动画轨道信息接口
+     * @en Animation track information interface
+     */
+    interface ITrackEntry {
+        animationStart: number;
+        animationEnd: number;
+        animation: {
+            duration: number;
+        };
+        trackIndex: number;
+        loop: boolean;
+    }
     interface ISpineRender {
-        draw(skeleton: spine.Skeleton, renderNode: Spine2DRenderNode, slotRangeStart?: number, slotRangeEnd?: number): void;
+        /** 是否启用透明预乘 */
+        premultipliedAlpha: boolean;
+        /** 当前渲染模式 */
+        mode: ESpineRenderMode;
+        /** 当前渲染状态 */
+        state: ESpineRenderState;
+        /** 当前播放时间（秒） */
+        currentTime: number;
+        trackEntry: ITrackEntry;
+        getSkeleton(): spine.Skeleton;
+        /**
+         * @zh 初始化渲染器
+         * @param templet Spine模板，可选参数，如果实现类在构造函数中已经获取了templet，可以不传
+         * @en Initialize the renderer
+         * @param templet Spine template, optional parameter. If the implementation class already gets templet in constructor, it can be omitted
+         */
+        init(templet: SpineTemplet): void;
+        /**
+         * @zh 播放动画
+         * @param animationName 动画名称
+         * @param loop 是否循环
+         * @param trackIndex 轨道索引
+         * @param start 起始时间（秒）
+         * @param end 结束时间（秒），0表示到结尾
+         * @returns 轨道信息
+         */
+        play(animationName: string, loop?: boolean, trackIndex?: number, start?: number, end?: number): void;
+        /**
+         * @zh 添加动画到队列
+         * @param animationName 动画名称
+         * @param loop 是否循环
+         * @param delay 延迟时间（秒）
+         * @param trackIndex 轨道索引
+         */
+        addAnimation(animationName: string, loop?: boolean, delay?: number, trackIndex?: number): void;
+        /**
+         * @zh 设置动画混合
+         * @param fromAnimation 源动画名称
+         * @param toAnimation 目标动画名称
+         * @param duration 混合持续时间（秒）
+         */
+        setMix(fromAnimation: string, toAnimation: string, duration: number): void;
+        /**
+         * @zh 更新动画
+         * @param delta 时间增量（秒）
+         */
+        update(delta: number): void;
+        /**
+         * @en Render the animation.
+         * @param time The time to render the animation at.
+         * @zh 渲染动画。
+         * @param time 渲染动画的时间。
+         */
+        render(time: number, physicsUpdate: number): void;
+        /**
+         * @zh 通过名称显示皮肤
+         * @param name 皮肤名称
+         */
+        showSkinByIndex(skinIndex: number): void;
+        /**
+         * @zh 设置插槽附件
+         * @param slotName 插槽名称
+         * @param attachmentName 附件名称
+         */
+        setAttachment(slotName: string, attachmentName: string): void;
+        /**
+         * @zh 通过名称查找骨骼
+         * @param boneName 骨骼名称
+         * @returns 骨骼信息，如果不存在返回null
+         */
+        findBone(boneName: string): IBoneInfo | null;
+        /**
+         * @deprecated only WEB
+         * @zh 通过名称查找插槽
+         * @param slotName 插槽名称
+         * @returns 插槽信息，如果不存在返回null
+         */
+        findSlot(slotName: string): ISlotInfo | null;
+        /**
+         * @zh 设置骨骼位置（用于transform更新）
+         * @param x X坐标
+         * @param y Y坐标
+         */
+        setSkeletonPosition(x: number, y: number): void;
+        /**
+         * @zh 物理移动（支持Spine物理时有效）
+         * @param x X轴偏移
+         * @param y Y轴偏移
+         */
+        physicsTranslate(x: number, y: number): void;
+        /**
+         * @zh 获取骨骼列表（用于创建骨骼可视化）
+         * @returns 骨骼信息数组
+         */
+        getBones(): IBoneInfo[];
+        /**
+         * @zh 获取骨骼位置
+         * @returns 包含x, y的向量
+         */
+        getSkeletonTransform(): Vector2;
+        /**
+         * @zh 重置外部皮肤
+         */
+        resetExternalSkin(): void;
+        /**
+         * @zh 重置渲染器
+         */
+        reset(): void;
+        /**
+         * @zh 完成动画
+         */
+        complete(): void;
+        /**
+         * @zh 初始化烘焙数据
+         * @param obj 烘焙数据
+         */
+        initBake(obj: TSpineBakeData): void;
+        /**
+         * @zh 设置动画事件监听器
+         * @param listeners 事件监听器对象
+         */
+        setEventListener(listeners: {
+            start?: (entry: any) => void;
+            interrupt?: (entry: any) => void;
+            end?: (entry: any) => void;
+            dispose?: (entry: any) => void;
+            complete?: (entry: any) => void;
+            event?: (entry: any, event: any) => void;
+        }): void;
+        /**
+         * @zh 销毁渲染器
+         */
+        destroy(): void;
+        /**
+         * @zh 启用缓存。启用后，Spine动画的渲染数据会自动缓存，提高重复播放的性能。
+         * @en Enable cache. When enabled, the Spine animation's render data will be automatically cached, improving performance for repeated playback.
+         */
+        enableCache(): void;
+        /**
+         * @zh 禁用缓存。
+         * @en Disable cache.
+         */
+        disableCache(): void;
+        /**
+         * 设置插槽纹理
+         * @param slotName
+         * @param texture
+         * @param createAttachment
+         */
+        setSlotTexture(slotName: string, texture: Texture, createAttachment: boolean): void;
+        /**
+         * @zh 设置插槽附件
+         * @param templet Spine模板
+         * @param targetSlotName 目标插槽名称
+         * @param skinName 皮肤名称
+         * @param attachmentName 附件名称
+         */
+        setTempletAttachment(templet: SpineTemplet, targetSlotName: string, skinName: string, attachmentName: string): void;
+    }
+    /**
+     * @en Native SkeletonOptimise wrapper class for accessing lightweight properties.
+     * @zh Native SkeletonOptimise 封装类，用于访问轻量级属性。
+     */
+    class NativeSkeletonOptimise implements ISkeletonOptimise {
+        private _nativeOptimise;
+        private _registTextures;
+        static __init__(): void;
+        data: any;
+        private _animationNames;
+        private _skinNames;
+        private _materials;
+        _templet: SpineTemplet;
+        /**
+         * @en Set vertex declaration for a vertex flag (static method).
+         * @param vertexFlag Vertex flag string (e.g., "UV,COLOR,POSITION,BONE").
+         * @param shaderLocation Shader location for the vertex attribute.
+         * @param context Vertex state context to add.
+         * @zh 为顶点标志设置顶点声明（静态方法）。
+         * @param vertexFlag 顶点标志字符串（例如 "UV,COLOR,POSITION,BONE"）。
+         * @param shaderLocation 顶点属性的着色器位置。
+         * @param context 要添加的顶点状态上下文。
+         */
+        static SetVertexDeclaration(vertexFlag: string, shaderLocation: number, context: any): void;
+        constructor();
+        init(): void;
+        /**
+         * @en Get animation count.
+         * @returns Animation count.
+         * @zh 获取动画数量。
+         * @returns 动画数量。
+         */
+        getAnimationCount(): number;
+        /**
+         * @en Get animation name by index.
+         * @param index Animation index.
+         * @returns Animation name or null.
+         * @zh 根据索引获取动画名称。
+         * @param index 动画索引。
+         * @returns 动画名称或 null。
+         */
+        getAniNameByIndex(index: number): string | null;
+        /**
+         * @en Get all animation names.
+         * @returns Array of animation names.
+         * @zh 获取所有动画名称。
+         * @returns 动画名称数组。
+         */
+        getAllAnimationNames(): string[];
+        /**
+         * @deprecated
+         */
+        findAnimation(name: string): any | null;
+        hasAnimation(name: string): boolean;
+        /**
+         * @en Get skin index by name.
+         * @param skinName Skin name.
+         * @returns Skin index or -1 if not found.
+         * @zh 根据名称获取皮肤索引。
+         * @param skinName 皮肤名称。
+         * @returns 皮肤索引，如果未找到则返回 -1。
+         */
+        getSkinIndexByName(skinName: string): number;
+        /**
+         * @en Get skin count.
+         * @returns Skin count.
+         * @zh 获取皮肤数量。
+         * @returns 皮肤数量。
+         */
+        getSkinCount(): number;
+        /**
+         * @en Get skin name by index.
+         * @param index Skin index.
+         * @returns Skin name or null.
+         * @zh 根据索引获取皮肤名称。
+         * @param index 皮肤索引。
+         * @returns 皮肤名称或 null。
+         */
+        getSkinNameByIndex(index: number): string | null;
+        /**
+         * @en Get all skin names.
+         * @returns Array of skin names.
+         * @zh 获取所有皮肤名称。
+         * @returns 皮肤名称数组。
+         */
+        getAllSkinNames(): string[];
+        /**
+         * @en Check and initialize the main attachment.
+         * @param skeleton The skeleton object.
+         * @param skeletonData The skeleton data.
+         * @zh 检查并初始化主附件。
+         * @param skeleton 骨骼对象。
+         * @param skeletonData 骨骼数据。
+         * @note This method is typically called internally by the parser.
+         */
+        checkMainAttach(skeleton: spine.Skeleton, skeletonData: spine.SkeletonData): void;
+        registerTexture(texture: Texture | Texture2D): void;
+        /**
+         * @en Initialize materials for textures and cache them for cleanup.
+         * @param textureUrls Array of texture URLs.
+         * @param textures Array of Texture2D objects.
+         * @zh 为纹理初始化材质并缓存以便清理。
+         * @param textureUrls 纹理 URL 数组。
+         * @param textures Texture2D 对象数组。
+         */
+        initMaterials(textureUrls: string[], textures: Texture2D[]): void;
+        private nativeCreateMaterialTemplet;
+        private _createMaterial;
+        /**
+         * @en Destroy the optimize instance and clean up all cached materials.
+         * @zh 销毁优化实例并清理所有缓存的材质。
+         */
+        destroy(): void;
+        /**
+         * @en Get the native optimize instance (for internal use).
+         * @returns Native optimize instance.
+         * @zh 获取 native optimize 实例（内部使用）。
+         * @returns native optimize 实例。
+         */
+        _getNativeOptimise(): any;
+    }
+    /**
+     * @en Native Spine Factory for creating parsers and renderers.
+     * @zh Native Spine 工厂，用于创建解析器和渲染器。
+     */
+    class NativeSpineFactory implements ISpineFactory {
+        private _nativeFactory;
+        constructor();
+        /**
+         * @en Create Spine templet parser.
+         * @returns Parser instance.
+         * @zh 创建 Spine 模板解析器。
+         */
+        createSpineTempletParser(): ISpineTempletParser;
+        /**
+         * @en Create Spine 2D renderer.
+         * @param owner Render node.
+         * @returns Renderer instance.
+         * @zh 创建 Spine 2D 渲染器。
+         */
+        createSpineRender2D(owner: Spine2DRenderNode): ISpineRender;
+        /**
+         * @en Create Spine 3D renderer.
+         * @param owner Render node (provides shader data internally).
+         * @returns Renderer instance.
+         * @zh 创建 Spine 3D 渲染器。
+         * @param owner 渲染节点（内部提供 shader data）。
+         */
+        createSpineRender3D(owner: IBaseRenderNode): ISpineRender;
+    }
+    /**
+     * @en Native Spine Optimize Render 2D wrapper class.
+     * @zh Native Spine 优化渲染 2D 封装类。
+     */
+    class NativeSpineOptimizeRender2D extends NativeSpineOptimizeRenderBase {
+        private _handle;
+        _owner: Spine2DRenderNode;
+        constructor(owner: Spine2DRenderNode, nativeRender: any);
+        protected _onInit(): void;
+        initBake(obj: TSpineBakeData): void;
+    }
+    /**
+     * @en Native Spine Optimize Render 3D wrapper class.
+     * @zh Native Spine 优化渲染 3D 封装类。
+     */
+    class NativeSpineOptimizeRender3D extends NativeSpineOptimizeRenderBase {
+        protected _owner: IBaseRenderNode;
+        constructor(owner: IBaseRenderNode, nativeRender: any);
+        initBake(obj: TSpineBakeData): void;
+    }
+    /**
+     * @en Base class for Native Spine Optimize Render implementations.
+     * @zh Native Spine 优化渲染基类。
+     */
+    abstract class NativeSpineOptimizeRenderBase implements ISpineRender {
+        protected _nativeRender: any;
+        protected _owner: any;
+        protected _templet: SpineTemplet;
+        protected _listeners: any;
+        protected _sharedBoneBuffer: Float32Array | null;
+        protected _sharedTrackEntryBuffer: Float32Array;
+        protected _boneNames: string[];
+        protected _skeletonVec2: Vector2;
+        protected _premultipliedAlpha: boolean;
+        protected _mode: ESpineRenderMode;
+        state: ESpineRenderState;
+        currentTime: number;
+        trackEntry: ITrackEntry;
+        protected bones: IBoneInfo[];
+        constructor(owner: any, nativeRender: any);
+        setSlotTexture(slotName: string, texture: Texture, createAttachment: boolean): void;
+        setTempletAttachment(templet: SpineTemplet, targetSlotName: string, skinName: string, attachmentName: string): void;
+        getSkeleton(): spine.Skeleton;
+        init(templet: SpineTemplet): void;
+        /**
+         * @en Initialize bone data and shared buffers
+         * @zh 初始化骨骼数据和共享缓冲区
+         */
+        protected _initializeBoneData(): void;
+        /**
+         * @en Subclass-specific initialization hook
+         * @zh 子类特定的初始化钩子
+         */
+        protected _onInit(): void;
+        play(animationName: string, loop?: boolean, trackIndex?: number, start?: number, end?: number): void;
+        addAnimation(animationName: string, loop?: boolean, delay?: number, trackIndex?: number): void;
+        setMix(fromAnimation: string, toAnimation: string, duration: number): void;
+        update(delta: number): void;
+        private _updateTrackEntry;
+        render(time: number, physicsUpdate?: number): void;
+        showSkinByIndex(skinIndex: number): void;
+        setAttachment(slotName: string, attachmentName: string): void;
+        findBone(boneName: string): IBoneInfo | null;
+        findSlot(slotName: string): ISlotInfo | null;
+        setSkeletonPosition(x: number, y: number): void;
+        physicsTranslate(x: number, y: number): void;
+        getBones(): IBoneInfo[];
+        getSkeletonTransform(): Vector2;
+        resetExternalSkin(): void;
+        reset(): void;
+        getSpineColor(): Color;
+        get premultipliedAlpha(): boolean;
+        set premultipliedAlpha(value: boolean);
+        get mode(): ESpineRenderMode;
+        set mode(value: ESpineRenderMode);
+        complete(): void;
+        initBake(obj: TSpineBakeData): void;
+        setEventListener(listeners: {
+            start?: (entry: any) => void;
+            interrupt?: (entry: any) => void;
+            end?: (entry: any) => void;
+            dispose?: (entry: any) => void;
+            complete?: (entry: any) => void;
+            event?: (entry: any, event: any) => void;
+        }): void;
+        destroy(): void;
+        stop(): void;
+        pause(): void;
+        resume(): void;
+        setPlaybackRate(rate: number): void;
+        getPlaybackRate(): number;
+        /**
+         * @zh 启用缓存。启用后，Spine动画的渲染数据会自动缓存，提高重复播放的性能。
+         * @en Enable cache. When enabled, the Spine animation's render data will be automatically cached, improving performance for repeated playback.
+         */
+        enableCache(): void;
+        /**
+         * @zh 禁用缓存。
+         * @en Disable cache.
+         */
+        disableCache(): void;
+    }
+    /**
+     * @en Native Spine Templet Parser for parsing Spine skeleton and atlas data.
+     * @zh Native Spine 模板解析器，用于解析 Spine 骨骼和 atlas 数据。
+     */
+    class NativeSpineTempletParser implements ISpineTempletParser {
+        private _nativeParser;
+        private _cachedTextureUrls;
+        private _premultipliedAlpha;
+        private _atlasTextContent;
+        constructor();
+        /**
+         * @en Collect texture paths from atlas text.
+         * @param atlasText Atlas text content.
+         * @param task Load task.
+         * @returns Array of load URLs.
+         * @zh 从 atlas 文本收集纹理路径。
+         */
+        collectTextures(atlasText: string, task: ILoadTask): ILoadURL[];
+        /**
+         * @en Parse skeleton data and create SpineTemplet.
+         * @param desc Skeleton data (JSON string or ArrayBuffer).
+         * @param textures Array of loaded texture objects.
+         * @param atlasText Atlas text content (optional, for texture mapping).
+         * @returns SpineTemplet instance.
+         * @zh 解析骨骼数据并创建 SpineTemplet。
+         */
+        create(desc: string | ArrayBuffer, textures: Texture2D[]): SpineTemplet;
+        /**
+         * @en Destroy the parser.
+         * @zh 销毁解析器。
+         */
         destroy(): void;
     }
     /**
@@ -80624,6 +83221,7 @@ declare namespace Laya {
      * @zh SpineShaderInit 类用于处理 Spine 着色器相关组件的初始化和管理。
      */
     class SpineShaderInit {
+        private static _vertexDeclarationMap;
         /**
          * @en Vertex declaration for normal Spine rendering.
          * @zh 用于普通 Spine 渲染的顶点声明。
@@ -80681,10 +83279,27 @@ declare namespace Laya {
          */
         static SIMPLE_SIMPLEANIMATORTEXTURESIZE: number;
         /**
+         * @internal
+         * @en Bone matrix 0.
+         * @zh Rigidbody骨骼矩阵0。
+         */
+        static BONEMAT_0: number;
+        /**
+         * @internal
+         * @en Bone matrix 1.
+         * @zh Rigidbody骨骼矩阵1。
+         */
+        static BONEMAT_1: number;
+        /**
          * @en Property ID for Spine texture.
          * @zh Spine 纹理的属性 ID。
          */
         static SpineTexture: number;
+        /**
+         * @en Property ID for render size (width, height).
+         * @zh 渲染尺寸的属性 ID (宽度, 高度)。
+         */
+        static SPINE_RENDER_SIZE: number;
         /**
          * @en Shader define for fast Spine rendering.
          * @zh 快速 Spine 渲染的着色器定义。
@@ -80695,6 +83310,7 @@ declare namespace Laya {
          * @zh 运行时混合 Spine 渲染的着色器定义。
          */
         static SPINE_RB: ShaderDefine;
+        static SPINE_NORMAL_2D: ShaderDefine;
         static SPINE_UV: ShaderDefine;
         static SPINE_COLOR: ShaderDefine;
         static SPINE_SIMPLE: ShaderDefine;
@@ -80707,12 +83323,15 @@ declare namespace Laya {
         static SPINE_GPU_INSTANCE: ShaderDefine;
         static SPINE_PREMULTIPLYALPHA: ShaderDefine;
         /**
-         * @en Change the vertex define for the mesh.
-         * @zh 更改网格的顶点定义。
-         * @param shaderData 着色器数据。
-         * @param mesh 网格。
+         * @en Shader define for Spine billboard rendering (always face camera).
+         * @zh Spine 广告牌渲染的着色器定义（始终面向相机）。
          */
-        static changeVertexDefine(shaderData: ShaderData, mesh: Mesh2D): void;
+        static SPINE_BILLBOARD: ShaderDefine;
+        /**
+         * @en Property ID for Spine billboard world matrix.
+         * @zh Spine 广告牌世界矩阵的属性 ID。
+         */
+        static SPINE_BILLBOARD_MATRIX: number;
         /**
          * @en TextureSV Mesh Descript.
          * @zh 纹理 Spine 顶点属性描述。
@@ -80728,397 +83347,2284 @@ declare namespace Laya {
          * @zh 初始化 Spine 着色器相关组件。
          */
         static init(): void;
-    }
-    /**
-     * @en Abstract base class for Spine mesh rendering.
-     * @zh Spine 网格渲染的抽象基类。
-     */
-    abstract class SpineMeshBase {
-        /**
-         * @en Maximum number of vertices. Limited by 64K indexbuffer constraint.
-         * @zh 最大顶点数。受64K索引缓冲区限制。
-         */
-        static maxVertex: number;
-        /**
-         * @en Render element for 2D rendering.
-         * @zh 用于2D渲染的渲染元素。
-         */
-        element: IRenderElement2D;
-        /**
-         * @en Geometry element for rendering.
-         * @zh 用于渲染的几何元素。
-         */
-        geo: IRenderGeometryElement;
-        private _material;
-        /**
-         * @en The material of the mesh.
-         * @zh 网格的材质。
-         */
-        get material(): Material;
-        set material(value: Material);
-        /**
-         * @en Vertex buffer interface.
-         * @zh 顶点缓冲区接口。
-         */
-        protected vb: IVertexBuffer;
-        /**
-         * @en Index buffer interface.
-         * @zh 索引缓冲区接口。
-         */
-        protected ib: IIndexBuffer;
-        /**
-         * @en Vertex array.
-         * @zh 顶点数组。
-         */
-        protected vertexArray: Float32Array;
-        /**
-         * @en Index array.
-         * @zh 索引数组。
-         */
-        protected indexArray: Uint16Array;
-        /**
-         * @en Vertex array length.
-         * @zh 顶点数组中顶点的数量。
-         */
-        protected verticesLength: number;
-        /**
-         * @en Index array length.
-         * @zh 索引数组中索引的数量。
-         */
-        protected indicesLength: number;
-        /**
-         * @en Vertex Buffer length.
-         * @zh 顶点缓冲区大小。
-         */
-        protected vertexBufferLength: number;
-        /**
-         * @en Index Buffer length.
-         * @zh 索引缓冲区大小。
-         */
-        protected indexBufferLength: number;
-        /**
-         * @en Create a new instance of SpineMeshBase.
-         * @param material The material to use for this mesh.
-         * @zh 创建 SpineMeshBase 类的新实例。
-         * @param material 网格使用的材质。
-         */
-        constructor(material: Material);
-        /**
-         * @en Initialize the mesh.
-         * @zh 初始化网格。
-         */
-        init(): void;
-        /**
-         * @en The vertex declaration for the mesh.
-         * @zh 网格的顶点声明。
-         */
-        get vertexDeclarition(): VertexDeclaration;
-        /**
-         * @en Add the mesh to the rendering queue.
-         * @zh 添加到渲染队列。
-         */
-        draw(): void;
-        /**
-         * @en Draw the mesh using provided vertex and index data.
-         * @param vertices Vertex data array.
-         * @param vblength Number of vertices.
-         * @param indices Index data array.
-         * @param iblength Number of indices.
-         * @zh 使用提供的顶点和索引数据绘制网格。
-         * @param vertices 顶点数据数组。
-         * @param vblength 顶点数量。
-         * @param indices 索引数据数组。
-         * @param iblength 索引数量。
-         */
-        drawByData(vertices: Float32Array, vblength: number, indices: Uint16Array, iblength: number): void;
-        /**
-         * @en Clear the mesh data.
-         * @zh 清空网格数据。
-         */
-        clear(): void;
-        /**
-         * @en Destroy the mesh.
-         * @zh 销毁网格。
-         */
-        destroy(): void;
-        /** @internal */
-        _cloneTo(target: SpineMeshBase): void;
-    }
-    class SpineMeshUtils {
-        /**
-         * @en Creates a Mesh2D object for Spine rendering
-         * @param type The Spine render type
-         * @param vbCreator Vertex buffer creator
-         * @param ibCreator Index buffer creator
-         * @param isDynamic Whether the mesh is dynamic
-         * @param uploadBuffer Whether to upload buffer data
-         * @returns The created Mesh2D object
-         * @zh 创建用于 Spine 渲染的 Mesh2D 对象
-         * @param type Spine 渲染类型
-         * @param vbCreator 顶点缓冲区创建器
-         * @param ibCreator 索引缓冲区创建器
-         * @param isDynamic 是否为动态网格
-         * @param uploadBuffer 是否上传缓冲区数据
-         * @returns 创建的 Mesh2D 对象
-         */
-        static createMesh(type: ESpineRenderType, vbCreator: VBCreator, ibCreator: IBCreator, isDynamic?: boolean, uploadBuffer?: boolean): Mesh2D;
-        /**
-         * @en Creates a dynamic mesh based on the given vertex declaration.
-         * This method is used to generate a Mesh2D object with dynamic vertex data.
-         * @param vertexDeclaration The vertex declaration that defines the structure of vertex data.
-         * @returns A new Mesh2D object configured for dynamic rendering.
-         * @zh 根据给定的顶点声明创建一个动态网格。
-         * 此方法用于生成一个具有动态顶点数据的 Mesh2D 对象。
-         * @param vertexDeclaration 定义顶点数据结构的顶点声明。
-         * @returns 一个配置为动态渲染的新 Mesh2D 对象。
-         */
-        static createMeshDynamic(vertexDeclaration: VertexDeclaration): Mesh2D;
-        static _updateSpineSubMesh(mesh: Mesh2D, frameData: FrameRenderData): boolean;
-        private static _vertexDeclarationMap;
         static getVertexDeclaration(vertexFlag: string): VertexDeclaration;
+        private static _declarations;
+        static getAllVertexDeclarations(): Record<string, VertexDeclaration>;
         static getIndexFormat(vertexCount: number): IndexFormat;
     }
     /**
-     * @en SpineVirtualMesh class for handling Spine skeleton mesh rendering.
-     * @zh SpineVirtualMesh 类用于处理 Spine 骨骼网格渲染。
+     * @zh Spine动画渲染节点。
+     * - Event.PLAYED:动画开始播放调度。
+     * - Event.STOPPED:动画停止播放调度。
+     * - Event.PAUSED:动画暂停播放调度。
+     * - Event.LABEL:自定义事件。
+     * @en spine render node.
+     * - Event.PLAYED:Animation start play dispatch.
+     * - Event.STOPPED:Animation stop play dispatch.
+     * - Event.PAUSED:Animation pause play dispatch.
+     * - Event.LABEL:Custom event.
      */
-    class SpineVirtualMesh extends SpineMeshBase {
+    class Spine2DRenderNode extends BaseRenderNode2D {
+        private _createBone;
+        /** @internal */
+        _spineRender: ISpineRender;
+        /**
+         * @zh 物理更新模式。
+         * @en The physics update mode.
+         **/
+        physicsUpdate: number;
+        /** @deprecated 状态-停止 */
+        static readonly STOPPED: number;
+        /** @deprecated 状态-暂停 */
+        static readonly PAUSED: number;
+        /** @deprecated 状态-播放中 */
+        static readonly PLAYING: number;
+        protected _renderHandle: ISpineRenderDataHandle;
+        protected _source: string;
+        protected _templet: SpineTemplet;
+        protected _maxDeltaTime: number;
+        private _pause;
+        private _needUpdate;
+        /** 动画播放的起始时间位置*/
+        private _playStart;
+        /** 动画播放的结束时间位置*/
+        private _playEnd;
+        /** 动画的总时间*/
+        private _duration;
+        /** 播放速率*/
+        private _playbackRate;
+        private _playAudio;
+        private _soundChannelArr;
+        private trackIndex;
+        private _skinName;
+        private _animationName;
+        private _loop;
+        private _externalSkins;
+        private _skin;
+        private _renderOffset;
+        private _offset;
+        private _setPreAlphaFlag;
+        private _premultipliedAlpha;
+        protected _bones: Sprite[];
+        protected _boneMap: Map<string, Sprite>;
+        /**
+         * @zh 骨骼映射
+         * @en Bone mapping
+         */
+        get boneMap(): Map<string, Sprite>;
+        private _rootBone;
+        /** @ignore */
+        constructor();
+        protected _isMaterialVaild(value: Material): boolean;
+        protected _getcommonUniformMap(): Array<string>;
+        protected _createRenderHandle(): ISpineRenderDataHandle;
+        /**
+         * @zh 是否创建骨骼
+         * @en Whether to create bones
+         */
+        get createBone(): boolean;
+        set createBone(value: boolean);
+        private _createBones;
+        /**
+         * @zh 获取骨骼
+         * @param boneName 骨骼名称
+         * @returns 骨骼节点
+         * @en Get bone
+         * @param boneName The name of the bone.
+         * @returns The bone node.
+         */
+        getBone(boneName: string): Sprite;
+        /**
+         * @zh 外部皮肤，用于根据不同皮肤，替换对应插槽的附件。
+         * @en External skins, used to replace the attachments of corresponding slots according to different skins.
+         */
+        get externalSkins(): ExternalSkin[];
+        set externalSkins(value: ExternalSkin[]);
+        /** @ignore @blueprintIgnore */
+        renderUpdate(context: IRenderContext2D): void;
+        /**
+         * @zh 重置外部加载的皮肤数据。更换附件或皮肤数据后，需要调用此方法，否则不会生效。
+         * @en Resets the external loaded skin data. After replacing attachments or skin data, this method needs to be called, otherwise it will not take effect.
+         */
+        resetExternalSkin(): void;
+        /**
+         * @zh 是否启用透明预乘。设置属性需要使用setPremultipliedAlpha方法。
+         * @en Whether to enable transparent premultiplied. The attribute needs to be set using the setPremultipliedAlpha method.
+         */
+        get premultipliedAlpha(): boolean;
+        /** @internal */
+        set premultipliedAlpha(value: boolean);
+        /**
+         * @en Set the transparent premultiplied.
+         * @zh 设置透明预乘。
+         * @param value Whether to enable transparent premultiplied.
+         * @param value 是否启用透明预乘。
+         */
+        setPremultipliedAlpha(value: boolean): void;
+        /**
+         * @zh 动画源文件路径
+         * @en Spine source file path.
+         */
+        get source(): string;
+        set source(value: string);
+        /**
+         * @zh 当前的Spine动画皮肤名称。
+         * @en The current spine animation skin name.
+         */
+        get skinName(): string;
+        set skinName(value: string);
+        /**
+         * @zh 当前的Spine动画名称
+         * @en The current spine animation name.
+         */
+        get animationName(): string;
+        set animationName(value: string);
+        /**
+         * @zh 最大播放间隔
+         * @en The current spine animation state.
+         */
+        get maxDetlaTime(): number;
+        set maxDetlaTime(value: number);
+        /**
+         * @zh 是否循环播放Spine动画
+         * @en Whether to loop spine animation.
+         */
+        get loop(): boolean;
+        set loop(value: boolean);
+        /** @deprecated */
+        get url(): string;
+        /** @deprecated */
+        set url(value: string);
+        /**
+         * @zh 是否启用双色着色（Two-Color Tinting）的渲染效果
+         * @en Whether to use two color tint.
+         */
+        get twoColorTint(): boolean;
+        set twoColorTint(value: boolean);
+        /**
+         * @zh Spine动画模板的引用
+         * @en The Spine template reference.
+         */
+        get templet(): SpineTemplet;
+        set templet(value: SpineTemplet);
+        /**
+         * @zh 设置当前播放位置
+         * @param value 当前时间
+         * @en Set the current play time.
+         * @param value The current play time.
+         */
+        set currentTime(value: number);
+        get currentTime(): number;
+        /**
+         * @zh 获取当前播放状态
+         * @en Get the current play time.
+         */
+        get playState(): ESpineRenderState;
+        private _useFastRender;
+        /**
+         * @zh 是否使用快速渲染，默认开启，某些复杂的Spine开启此值会渲染错误，比如spine资源中某个顶点的骨骼控制数大于4
+         * @en Whether to use fast rendering. It is enabled by default. When some complex spines are enabled, this value will render errors. For example, the number of bone controls of a vertex in the spine resource is greater than 4.
+         */
+        get useFastRender(): boolean;
+        set useFastRender(value: boolean);
+        get offset(): Vector2;
+        set offset(value: Vector2);
+        private _autoAdjust;
+        get autoAdjust(): boolean;
+        set autoAdjust(value: boolean);
+        private _enableCache;
+        /**
+         * @zh 是否启用缓存。启用后，Spine动画的渲染数据会自动缓存，提高重复播放的性能。
+         * @en Whether to enable cache. When enabled, the Spine animation's render data will be automatically cached, improving performance for repeated playback.
+         */
+        get enableCache(): boolean;
+        set enableCache(value: boolean);
+        private _doAutoAdjust;
+        /** @ignore @blueprintIgnore */
+        onEnable(): void;
+        /** @ignore @blueprintIgnore */
+        onDisable(): void;
+        /**
+         * @zh 初始化渲染器。
+         * @param templet Spine 模板
+         * @en Initializes the renderer.
+         * @param templet The Spine template.
+         */
+        protected init(templet: SpineTemplet): void;
+        /**
+         * @zh 播放动画
+         * @param nameOrIndex	Spine动画名字或者索引
+         * @param loop		    是否循环播放
+         * @param force		    false,如果要播的动画跟上一个相同就不生效,true,强制生效
+         * @param start		    起始时间
+         * @param end			结束时间
+         * @param freshSkin	    是否刷新皮肤数据
+         * @param playAudio	    是否播放音频
+         * @en Play Spine animation.
+         * @param nameOrIndex	Spine animation name or index.
+         * @param loop			Whether to loop play.
+         * @param force			false, if the animation to play is the same as the last one then it won't be played again. true, force playing even if the animation is the same.
+         * @param start			Start time.
+         * @param end			End time.
+         * @param freshSkin		Whether to refresh skin data.
+         * @param playAudio		Whether to play audio.
+         */
+        play(nameOrIndex: string | number, loop: boolean, force?: boolean, start?: number, end?: number, freshSkin?: boolean, playAudio?: boolean): void;
+        private _update;
+        private _updateBones;
+        private _flushExtSkin;
+        /**
+         * @zh 得到当前动画的数量
+         * @en Get the number of current animations.
+         */
+        getAnimNum(): number;
+        /**
+         * @zh 得到指定动画的名字
+         * @param index	动画的索引
+         * @en Get the name of the specified animation.
+         * @param index The index of the animation.
+         */
+        getAniNameByIndex(index: number): string;
+        /**
+         * @deprecated only WEB
+         * @zh 通过名字得到插槽的引用
+         * @param slotName 插槽的名字
+         * @en Get the reference to the slot by name.
+         * @param slotName The name of the slot.
+         */
+        getSlotByName(slotName: string): import("./interface/ISpineRender").ISlotInfo;
+        /**
+         * @zh 设置动画播放速率
+         * @param value	速率值，1为标准速率
+         * @en Set the animation playback rate.
+         * @param value The playback rate.
+         */
+        playbackRate(value: number): void;
+        /**
+         * @zh 通过名字显示一套皮肤
+         * @param name	皮肤的名字
+         * @en Show a set of skins by name.
+         * @param name The name of the skin.
+         */
+        showSkinByName(name: string): void;
+        /**
+         * @zh 通过索引显示一套皮肤
+         * @param skinIndex	皮肤索引
+         * @en Show a set of skins by index.
+         * @param skinIndex The index of the skin.
+         */
+        showSkinByIndex(skinIndex: number): void;
+        /**
+         * @zh 停止动画
+         * @en Stop the animation.
+         */
+        stop(): void;
+        /** @ignore @blueprintIgnore */
+        onUpdate(): void;
+        /**
+         * @zh 暂停动画的播放
+         * @en Pause the animation playback.
+         */
+        paused(): void;
+        /**
+         * @zh 恢复动画的播放
+         * @en Resume the animation playback.
+         */
+        resume(): void;
+        /**
+         * @zh 清掉播放完成的音频
+         * @param force 是否强制删掉所有的声音channel
+         * @en Clear the finished audio.
+         * @param force Whether to force delete all audio channels.
+         */
+        private _onAniSoundStoped;
+        /** @internal */
+        reset(): void;
+        /**
+         * @zh 添加一个动画
+         * @param nameOrIndex   动画名字或者索引
+         * @param loop          是否循环播放
+         * @param delay         延迟调用，可以为负数
+         * @en Add an animation
+         * @param nameOrIndex   Animation name or index
+         * @param loop          Whether to play in a loop
+         * @param delay         Delay call, can be negative
+         */
+        addAnimation(nameOrIndex: string | number, loop?: boolean, delay?: number): void;
+        /**
+         * @zh 设置插槽纹理
+         * @param slotName 插槽名称
+         * @param texture 纹理对象
+         * @param createAttachment 是否创建新的附件副本
+         * @en Set slot texture
+         * @param slotName Slot name
+         * @param texture Texture object
+         * @param createAttachment Whether to create a new attachment copy
+         */
+        setSlotTexture(slotName: string, texture: Texture, createAttachment?: boolean): void;
+        /**
+         * @zh 设置模板附件
+         * @param templet Spine模板
+         * @param targetSlotName 目标插槽名称
+         * @param skinName 皮肤名称
+         * @param attachmentName 附件名称
+         * @en Set the template attachment.
+         * @param templet Spine template.
+         * @param targetSlotName Target slot name.
+         * @param skinName Skin name.
+         * @param attachmentName Attachment name.
+         */
+        setTempletAttachment(templet: SpineTemplet, targetSlotName: string, skinName: string, attachmentName: string): void;
+        /**
+         * @zh 设置当动画被改变时，存储混合(交叉淡出)的持续时间
+         * @param fromNameOrIndex 原来的动画名字或者索引
+         * @param toNameOrIndex   目标的动画名字或者索引
+         * @param duration 混合(交叉淡出)的持续时间
+         * @en Set the duration of mixing (cross-fade) when an animation is changed.
+         * @param fromNameOrIndex The name or index of the original animation.
+         * @param toNameOrIndex The name or index of the target animation.
+         * @param duration The duration of mixing (cross-fade).
+         */
+        setMix(fromNameOrIndex: any, toNameOrIndex: any, duration: number): void;
+        /**
+         * @zh 获取骨骼信息(spine.Bone)
+         * - 注意: 获取到的是spine运行时的骨骼信息(spine.Bone)，不适用引擎的方法
+         * @param boneName  骨骼名称
+         * @en Get the bone information (spine.Bone)
+         * - Note: Get the spine runtime bone information (spine.Bone), not the engine method.
+         * @param boneName The name of the bone.
+         */
+        getBoneByName(boneName: string): import("./interface/ISpineRender").IBoneInfo;
+        /**
+         * @zh 获取骨骼信息（已废弃，只有 Web 运行时有准确对象）
+         * @deprecated 不再直接暴露原生spine对象，只有 Web 运行时有准确对象
+         * @en Get skeleton information (deprecated, only accurate object in Web)
+         */
+        getSkeleton(): any;
+        /**
+         * @zh 根据给定的坐标移动物体,支持Spine物理时有效（不能低于Spine4.2版本）
+         * @param x X轴坐标
+         * @param y Y轴坐标
+         * @en Move the object according to the given coordinates, effective when Spine physics is enabled (cannot be lower than version 4.2 of Spine)
+         * @param x X-axis coordinate
+         * @param y Y-axis coordinate
+         */
+        physicsTranslate(x: number, y: number): void;
+        /**
+         * @zh 当transform改变时，更新骨骼的位置
+         * @en Transform changed, update the skeleton position.
+         */
+        private onTransformChanged;
+        /**
+         * @zh 替换插槽皮肤
+         * @param slotName 插槽名称
+         * @param attachmentName 附件名称
+         * @en Replace the slot skin.
+         * @param slotName Slot name.
+         * @param attachmentName Attachment name.
+         */
+        setSlotAttachment(slotName: string, attachmentName: string): void;
+        /**
+         * @zh 清除方法，用于释放和重置相关资源。
+         * @en Clear method, used to release and reset related resources.
+         */
+        clear(): void;
+        /**
+         * @ignore @blueprintIgnore
+         * @zh 销毁当前对象
+         * @en Destroy the current object.
+         */
+        onDestroy(): void;
+        get rect(): Vector4;
+    }
+    /**
+     * @zh Spine动画3D渲染节点。
+     * @en Spine animation 3D render node.
+     */
+    class Spine3DRenderer extends BaseRender {
+        private static _tempCameraUp;
+        private static _tempCameraForward;
+        protected _spineRender: ISpineRender;
+        protected _source: string;
+        protected _templet: SpineTemplet;
+        protected _maxDeltaTime: number;
+        private _pause;
+        private _needUpdate;
+        /** 动画播放的起始时间位置*/
+        private _playStart;
+        /** 动画播放的结束时间位置*/
+        private _playEnd;
+        /** 动画的总时间*/
+        private _duration;
+        /** 播放速率*/
+        private _playbackRate;
+        private trackIndex;
+        private _skinName;
+        private _animationName;
+        private _loop;
+        private _useFastRender;
+        /**
+         * @zh 是否启用面向相机渲染（Billboard）
+         * @en Whether to enable billboard rendering (always face camera)
+         */
+        private _billboard;
+        private _enableCache;
+        /**
+         * @zh 渲染尺寸 (宽度, 高度)
+         * @en Render size (width, height)
+         */
+        private _renderSize;
+        private _billboardMatrix;
+        private _cacheMoved;
+        private _worldParams;
+        private _playAudio;
+        get renderSize(): Vector2;
+        set renderSize(value: Vector2);
+        /**
+         * @zh 是否启用面向相机渲染（Billboard）。启用后，Spine动画将始终面向相机。
+         * @en Whether to enable billboard rendering. When enabled, the Spine animation will always face the camera.
+         */
+        get billboard(): boolean;
+        set billboard(value: boolean);
+        readonly owner: Sprite3D;
+        private _geometryBounds;
+        /** @ignore */
+        constructor();
+        protected _createBaseRenderNode(): IBaseRenderNode;
+        protected _isMaterialVaild(value: Material): boolean;
+        protected _getcommonUniformMap(): Array<string>;
+        private _premultipliedAlpha;
+        /** @internal */
+        _setPreAlphaFlag: boolean;
+        /**
+         * @zh 是否启用透明预乘。设置属性需要使用setPremultipliedAlpha方法。
+         * @en Whether to enable transparent premultiplied. The attribute needs to be set using the setPremultipliedAlpha method.
+         */
+        get premultipliedAlpha(): boolean;
+        /** @internal */
+        set premultipliedAlpha(value: boolean);
+        /**
+         * @en Set the transparent premultiplied.
+         * @zh 设置透明预乘。
+         * @param value Whether to enable transparent premultiplied.
+         * @param value 是否启用透明预乘。
+         */
+        setPremultipliedAlpha(value: boolean): void;
+        _renderUpdate(context3D: IRenderContext3D): void;
+        private _updateBillboardMatrix;
+        /**
+         * @internal
+         * BaseRender motion
+         */
+        protected _onWorldMatNeedChange(flag: number): void;
+        /**
+         * @zh 动画源文件路径
+         * @en Spine source file path.
+         */
+        get source(): string;
+        set source(value: string);
+        /**
+         * @zh 当前的Spine动画皮肤名称。
+         * @en The current spine animation skin name.
+         */
+        get skinName(): string;
+        set skinName(value: string);
+        /**
+         * @zh 当前的Spine动画名称
+         * @en The current spine animation name.
+         */
+        get animationName(): string;
+        set animationName(value: string);
+        /**
+         * @zh 最大播放间隔
+         * @en The current spine animation state.
+         */
+        get maxDetlaTime(): number;
+        set maxDetlaTime(value: number);
+        /**
+         * @zh 是否循环播放Spine动画
+         * @en Whether to loop spine animation.
+         */
+        get loop(): boolean;
+        set loop(value: boolean);
+        /**
+         * @zh Spine动画模板的引用
+         * @en The Spine template reference.
+         */
+        get templet(): SpineTemplet;
+        set templet(value: SpineTemplet);
+        /**
+         * @zh 设置当前播放位置
+         * @param value 当前时间
+         * @en Set the current play time.
+         * @param value The current play time.
+         */
+        set currentTime(value: number);
+        get currentTime(): number;
+        /**
+         * @zh 获取当前播放状态
+         * @en Get the current play time.
+         */
+        get playState(): ESpineRenderState;
+        /**
+         * @zh 是否使用快速渲染，默认开启，某些复杂的Spine开启此值会渲染错误，比如spine资源中某个顶点的骨骼控制数大于4
+         * @en Whether to use fast rendering. It is enabled by default. When some complex spines are enabled, this value will render errors. For example, the number of bone controls of a vertex in the spine resource is greater than 4.
+         */
+        get useFastRender(): boolean;
+        set useFastRender(value: boolean);
+        /**
+         * @zh 是否启用缓存。启用后，Spine动画的渲染数据会自动缓存，提高重复播放的性能。
+         * @en Whether to enable cache. When enabled, the Spine animation's render data will be automatically cached, improving performance for repeated playback.
+         */
+        get enableCache(): boolean;
+        set enableCache(value: boolean);
+        /** @ignore @blueprintIgnore */
+        onEnable(): void;
+        /** @ignore @blueprintIgnore */
+        onDisable(): void;
+        /**
+         * @zh 初始化渲染器。
+         * @param templet Spine 模板
+         * @en Initializes the renderer.
+         * @param templet The Spine template.
+         */
+        protected init(templet: SpineTemplet): void;
+        private _initBounds;
+        /**
+         * @zh 播放动画
+         * @param nameOrIndex	Spine动画名字或者索引
+         * @param loop		    是否循环播放
+         * @param force		    false,如果要播的动画跟上一个相同就不生效,true,强制生效
+         * @param start		    起始时间
+         * @param end			结束时间
+         * @param playAudio		Whether to play audio.
+         * @en Play Spine animation.
+         * @param nameOrIndex	Spine animation name or index.
+         * @param loop			Whether to loop play.
+         * @param force			false, if the animation to play is the same as the last one then it won't be played again. true, force playing even if the animation is the same.
+         * @param start			Start time.
+         * @param end			End time.
+         * @param playAudio		Whether to play audio.
+         */
+        play(nameOrIndex: string | number, loop: boolean, force?: boolean, start?: number, end?: number, playAudio?: boolean): void;
+        private _update;
+        /**
+         * @zh 得到当前动画的数量
+         * @en Get the number of current animations.
+         */
+        getAnimNum(): number;
+        /**
+         * @zh 得到指定动画的名字
+         * @param index	动画的索引
+         * @en Get the name of the specified animation.
+         * @param index The index of the animation.
+         */
+        getAniNameByIndex(index: number): string;
+        /**
+         * @deprecated only WEB
+         * @zh 通过名字得到插槽的引用
+         * @param slotName 插槽的名字
+         * @en Get the reference to the slot by name.
+         * @param slotName The name of the slot.
+         */
+        getSlotByName(slotName: string): import("./interface/ISpineRender").ISlotInfo;
+        /**
+         * @zh 设置动画播放速率
+         * @param value	速率值，1为标准速率
+         * @en Set the animation playback rate.
+         * @param value The playback rate.
+         */
+        playbackRate(value: number): void;
+        /**
+         * @zh 通过名字显示一套皮肤
+         * @param name	皮肤的名字
+         * @en Show a set of skins by name.
+         * @param name The name of the skin.
+         */
+        showSkinByName(name: string): void;
+        /**
+         * @zh 通过索引显示一套皮肤
+         * @param skinIndex	皮肤索引
+         * @en Show a set of skins by index.
+         * @param skinIndex The index of the skin.
+         */
+        showSkinByIndex(skinIndex: number): void;
+        /**
+         * @zh 停止动画
+         * @en Stop the animation.
+         */
+        stop(): void;
+        /** @ignore @blueprintIgnore */
+        onUpdate(): void;
+        /**
+         * @zh 暂停动画的播放
+         * @en Pause the animation playback.
+         */
+        paused(): void;
+        /**
+         * @zh 恢复动画的播放
+         * @en Resume the animation playback.
+         */
+        resume(): void;
+        /**
+         * @zh 当transform改变时，更新骨骼的位置
+         * @en Transform changed, update the skeleton position.
+         */
+        private onTransformChanged;
+        /**
+         * @zh 替换插槽皮肤
+         * @param slotName 插槽名称
+         * @param attachmentName 附件名称
+         * @en Replace the slot skin.
+         * @param slotName Slot name.
+         * @param attachmentName Attachment name.
+         */
+        setSlotAttachment(slotName: string, attachmentName: string): void;
+        /**
+         * @zh 清除方法，用于释放和重置相关资源。
+         * @en Clear method, used to release and reset related resources.
+         */
+        clear(): void;
+        /** @internal */
+        reset(): void;
+        /**
+         * @ignore @blueprintIgnore
+         * @zh 销毁当前对象
+         * @en Destroy the current object.
+         */
+        protected _onDestroy(): void;
+        /**
+         * @zh 添加一个动画
+         * @param nameOrIndex   动画名字或者索引
+         * @param loop          是否循环播放
+         * @param delay         延迟调用，可以为负数
+         * @en Add an animation
+         * @param nameOrIndex   Animation name or index
+         * @param loop          Whether to play in a loop
+         * @param delay         Delay call, can be negative
+         */
+        addAnimation(nameOrIndex: string | number, loop?: boolean, delay?: number): void;
+        /**
+         * @zh 设置当动画被改变时，存储混合(交叉淡出)的持续时间
+         * @param fromNameOrIndex 原来的动画名字或者索引
+         * @param toNameOrIndex   目标的动画名字或者索引
+         * @param duration 混合(交叉淡出)的持续时间
+         * @en Set the duration of mixing (cross-fade) when an animation is changed.
+         * @param fromNameOrIndex The name or index of the original animation.
+         * @param toNameOrIndex The name or index of the target animation.
+         * @param duration The duration of mixing (cross-fade).
+         */
+        setMix(fromNameOrIndex: any, toNameOrIndex: any, duration: number): void;
+        /**
+         * @zh 获取骨骼信息(spine.Bone)
+         * - 注意: 获取到的是spine运行时的骨骼信息(spine.Bone)，不适用引擎的方法
+         * @param boneName  骨骼名称
+         * @en Get the bone information (spine.Bone)
+         * - Note: Get the spine runtime bone information (spine.Bone), not the engine method.
+         * @param boneName The name of the bone.
+         */
+        getBoneByName(boneName: string): import("./interface/ISpineRender").IBoneInfo;
+        /**
+         * @zh 获取骨骼信息（已废弃，只有 Web 运行时有准确对象）
+         * @deprecated 不再直接暴露原生spine对象，只有 Web 运行时有准确对象
+         * @en Get skeleton information (deprecated, only accurate object in Web)
+         */
+        getSkeleton(): any;
+        /**
+         * @zh 根据给定的坐标移动物体,支持Spine物理时有效（不能低于Spine4.2版本）
+         * @param x X轴坐标
+         * @param y Y轴坐标
+         * @en Move the object according to the given coordinates, effective when Spine physics is enabled (cannot be lower than version 4.2 of Spine)
+         * @param x X-axis coordinate
+         * @param y Y-axis coordinate
+         */
+        physicsTranslate(x: number, y: number): void;
+    }
+    /**
+     * @en Script class for baking Spine animations.
+     * @zh 用于烘焙 Spine 动画的脚本类。
+     */
+    class SpineBakeScript extends Script {
+        /**
+         * @en URL of the data.
+         * @zh 数据的地址。
+         */
+        url: string;
+        /**
+         * @en Bake data in string format.
+         * @zh 字符串格式的烘焙数据。
+         */
+        bakeData: string;
+        /** @ignore */
+        constructor();
+        /**
+         * @en Called when the script is enabled.
+         * @zh 当脚本被启用时调用。
+         */
+        onEnable(): void;
+        /**
+         * @en Called when the script is disabled.
+         * @zh 当脚本被禁用时调用。
+         */
+        onDisable(): void;
+        initBake(data: TSpineBakeData): Promise<void>;
+    }
+    class SpineConst {
+        /** @internal */
+        static SPLIT_REGEX: RegExp;
+        /** @internal */
+        static PMA_REGEX: RegExp;
+        /**
+         * @en Image defalut premultiplied alpha
+         * @zh 图片默认预乘
+         */
+        static PREMULTIPLIED_ALPHA_DEFAULT: boolean;
+        /**
+         * @en Spine runtime version.
+         * @zh Spine 运行时版本。
+         */
+        static VERSION: string;
+        /**
+         * @en Version first of Spine
+         * @zh Spine版本号
+         */
+        static VersionFirst: number;
+        /**
+         * @en Version second of Spine
+         * @zh Spine版本号小数位
+         */
+        static VersionSecond: number;
+        /**
+         * @en Switch for normal rendering mode.
+         * @zh 普通渲染模式的开关。
+         */
+        static normalRenderSwitch: boolean;
+        /** optimise render的最大骨骼数 */
+        static MAX_BONES: number;
+        /**
+         * @en Switch for caching mode.
+         * @zh 缓存模式的开关。
+         */
+        static cacheSwitch: boolean;
+        /**
+         * @en Spine factory.
+         * @zh Spine 工厂。
+         */
+        static factory: ISpineFactory;
         /**
          * @en Size of each vertex in the vertex array.
          * @zh 顶点数组中每个顶点的大小。
          */
-        static vertexSize: number;
+        static VERTEXSIZE: number;
         /**
          * @en Size of each vertex in the vertex array with Two Color.
          * @zh 双顶点色模式顶点数组中每个顶点的大小。
          */
-        static vertexSize_TwoColor: number;
+        static VERTEX_TWOCOLOR: number;
         /**
-         * @en Shared vertex array for all instances.
-         * @zh 所有实例共享的顶点数组。
+         * @en Initial capacity of the vertex array.
+         * @zh 顶点数组的初始容量。
          */
-        static vertexArray: Float32Array;
+        static VERTEX_INITIAL_CAPACITY: number;
         /**
-         * @en Shared index array for all instances.
-         * @zh 所有实例共享的索引数组。
+         * @en The number of vertices for normal rendering.
+         * @zh 普通渲染中顶点的数量。
          */
-        static indexArray: Uint16Array;
+        static NORMAL_VERTEX_LENGTH: number;
         /**
-         * @en Create a SpineVirtualMesh instance.
-         * @param material Material to be used for rendering.
-         * @zh 创建 SpineVirtualMesh 实例。
-         * @param material 用于渲染的材质。
+         * @en Maximum number of vertices. Limited by 64K indexbuffer constraint.
+         * @zh 最大顶点数。
          */
-        constructor(material: Material);
+        static NORMAL_MAX_VERTEX: number;
         /**
-         * @en Append clipped vertices and indices.
-         * @param vertices Array of vertex data.
-         * @param indices Array of index data.
-         * @param offsetX Axis offset X.
-         * @param offsetY Axis offset Y.
-         * @zh 裁剪后的顶点和索引。
-         * @param vertices 顶点数据数组。
-         * @param indices 索引数据数组。
-         * @param offsetX X 轴偏移量。
-         * @param offsetY Y 轴偏移量。
+         * @en The number of vertices for a bone in the optimized Spine rendering.
+         * @zh 优化后的 Spine 渲染中，一个骨骼的顶点数。
          */
-        appendVerticesClip(vertices: ArrayLike<number>, indices: ArrayLike<number>, offsetX?: number, offsetY?: number): void;
+        static VERTEX_BONE: number;
         /**
-         * @en Check if the mesh can append more vertices and indices.
-         * @param verticesLength Number of vertices to be appended.
-         * @param indicesLength Number of indices to be appended.
-         * @returns True if the mesh can append, false otherwise.
-         * @zh 检查网格是否能够添加更多的顶点和索引。
-         * @param verticesLength 要添加的顶点数量。
-         * @param indicesLength 要添加的索引数量。
-         * @returns 如果网格可以添加则返回 true，否则返回 false。
+         * @en The number of vertices for a rigid body in the optimized Spine rendering.
+         * @zh 优化后的 Spine 渲染中，一个刚体的顶点数。
          */
-        canAppend(verticesLength: number, indicesLength: number): boolean;
+        static VERTEX_RIGIDBODY: number;
         /**
-         * @en Append vertices to the mesh.
-         * @param vertices Array of vertex positions.
-         * @param verticesLength Number of vertices to append.
-         * @param indices Array of indices.
-         * @param indicesLength Number of indices to append.
-         * @param finalColor Color to apply to vertices.
-         * @param darkColor Color to apply to vertices.
-         * @param uvs Array of UV coordinates.
-         * @param offsetX Axis offset X.
-         * @param offsetY Axis offset Y.
-         * @zh 向网格添加顶点。
-         * @param vertices 顶点位置数组。
-         * @param verticesLength 要添加的顶点数量。
-         * @param indices 索引数组。
-         * @param indicesLength 要添加的索引数量。
-         * @param finalColor 应用于顶点的颜色。
-         * @param darkColor 应用于顶点的暗色。
-         * @param uvs UV 坐标数组。
-         * @param offsetX X 轴偏移量。
-         * @param offsetY Y 轴偏移量。
+         * @en The step of the spine animation.
+         * @zh Spine 动画的步长。
          */
-        appendVertices(vertices: ArrayLike<number>, verticesLength: number, indices: number[], indicesLength: number, finalColor: spine.Color, darkColor: spine.Color, uvs: ArrayLike<number>, offsetX?: number, offsetY?: number): void;
+        static SPINE_STEP: number;
+        /**
+         * @en Indicates if slot is needed
+         * @zh 是否需要插槽
+         */
+        static NEED_SLOT: boolean;
+        static ENABLE_WEB_BATCH: boolean;
+    }
+    enum ESpineRenderMode {
+        None = 0,
+        /** 普通渲染模式 */
+        Normal = 1,
+        /** 优化渲染模式 */
+        Optimize = 2,
+        /** 烘焙渲染模式 */
+        Bake = 3
+    }
+    enum ESpineRenderState {
+        Stopped = 0,
+        Paused = 1,
+        Playing = 2
+    }
+    type TSpineBakeData = {
+        bonesNums: number;
+        aniOffsetMap: {
+            [key: string]: number;
+        };
+        texture2d?: Texture2D;
+        simpPath?: string;
+    };
+    /**
+     * @deprecated 请使用Sprite+Spine2DRenderNode组件
+     * spine动画由<code>SpineTemplet</code>，<code>SpineSkeletonRender</code>，<code>SpineSkeleton</code>三部分组成。
+     */
+    class SpineSkeleton extends Sprite {
+        private _spineComponent;
+        constructor();
+        /**
+         * 外部皮肤
+         */
+        get externalSkins(): ExternalSkin[];
+        set externalSkins(value: ExternalSkin[]);
+        /**
+         * 重置外部加载的皮肤的样式
+         */
+        resetExternalSkin(): void;
+        /**
+         * 动画源
+         */
+        get source(): string;
+        set source(value: string);
+        /**
+         * 皮肤名
+         */
+        get skinName(): string;
+        set skinName(value: string);
+        /**
+         * 动画名
+         */
+        get animationName(): string;
+        set animationName(value: string);
+        /**
+         * 是否循环
+         */
+        get loop(): boolean;
+        set loop(value: boolean);
+        /**
+         * 得到动画模板的引用
+         * @return templet
+         */
+        get templet(): SpineTemplet;
+        /**
+         * 设置动画模板的引用
+         */
+        set templet(value: SpineTemplet);
+        /**
+         * 设置当前播放位置
+         * @param value 当前时间
+         */
+        set currentTime(value: number);
+        /**
+         * 获取当前播放状态
+         * @return	当前播放状态
+         */
+        get playState(): number;
+        /**
+         * 播放动画
+         *
+         * @param nameOrIndex	动画名字或者索引
+         * @param loop		是否循环播放
+         * @param force		false,如果要播的动画跟上一个相同就不生效,true,强制生效
+         * @param start		起始时间
+         * @param end			结束时间
+         * @param freshSkin	是否刷新皮肤数据
+         * @param playAudio	是否播放音频
+         */
+        play(nameOrIndex: any, loop: boolean, force?: boolean, start?: number, end?: number, freshSkin?: boolean, playAudio?: boolean): void;
+        /**
+         * 得到当前动画的数量
+         * @return 当前动画的数量
+         */
+        getAnimNum(): number;
+        /**
+         * 得到指定动画的名字
+         * @param index	动画的索引
+         */
+        getAniNameByIndex(index: number): string;
+        /**
+         * 通过名字得到插槽的引用
+         * @param slotName
+         */
+        getSlotByName(slotName: string): import("./interface/ISpineRender").ISlotInfo;
+        /**
+         * 设置动画播放速率
+         * @param value	1为标准速率
+         */
+        playbackRate(value: number): void;
+        /**
+         * 通过名字显示一套皮肤
+         * @param name	皮肤的名字
+         */
+        showSkinByName(name: string): void;
+        /**
+         * 通过索引显示一套皮肤
+         * @param skinIndex	皮肤索引
+         */
+        showSkinByIndex(skinIndex: number): void;
+        /**
+         * 停止动画
+         */
+        stop(): void;
+        /**
+         * 暂停动画的播放
+         */
+        paused(): void;
+        /**
+         * 恢复动画的播放
+         */
+        resume(): void;
+        /**
+         * 销毁当前动画
+         * @override
+         */
+        destroy(destroyChild?: boolean): void;
+        /**
+         * 添加一个动画
+         * @param nameOrIndex   动画名字或者索引
+         * @param loop          是否循环播放
+         * @param delay         延迟调用，可以为负数
+         */
+        addAnimation(nameOrIndex: any, loop?: boolean, delay?: number): void;
+        /**
+         * 设置当动画被改变时，存储混合(交叉淡出)的持续时间
+         * @param fromNameOrIndex
+         * @param toNameOrIndex
+         * @param duration
+         */
+        setMix(fromNameOrIndex: any, toNameOrIndex: any, duration: number): void;
+        /**
+         * 获取骨骼信息(spine.Bone)
+         * 注意: 获取到的是spine运行时的骨骼信息(spine.Bone)，不适用引擎的方法
+         * @param boneName
+         */
+        getBoneByName(boneName: string): import("./interface/ISpineRender").IBoneInfo;
+        /**
+         * @zh 获取Skeleton(spine.Skeleton)
+         * @deprecated 不再直接暴露原生spine对象，只有 Web 运行时有准确对象
+         * @en Get Skeleton(spine.Skeleton)
+         * @deprecated Do not directly expose the native spine object, only accurate objects in Web
+         */
+        getSkeleton(): null | spine.Skeleton;
+        /**
+         * 替换插槽皮肤
+         * @param slotName
+         * @param attachmentName
+         */
+        setSlotAttachment(slotName: string, attachmentName: string): void;
+    }
+    enum ESpineRenderType {
+        boneGPU = 0,
+        normal = 1,
+        rigidBody = 2
     }
     /**
-     * @en SpineWasmVirturalMesh class for handling Spine skeleton mesh rendering using WebAssembly.
-     * @zh SpineWasmVirturalMesh 类用于使用 WebAssembly 处理 Spine 骨骼网格渲染。
+     * @en Base class for Spine animation template
+     * @zh Spine动画模板基类
      */
-    class SpineWasmVirturalMesh extends SpineMeshBase {
-        private _renderElement2D;
+    class SpineTemplet extends Resource {
         /**
-         * @en Create a SpineWasmVirturalMesh instance.
-         * @param material Material to be used for rendering.
-         * @zh 创建 SpineWasmVirturalMesh 实例。
-         * @param material 用于渲染的材质。
+         * @en Map of materials used in the Spine animation
+         * @zh Spine动画中使用的材质映射
          */
-        constructor(material: Material);
+        materialMap: Map<string, Material>;
+        /** @internal */
+        _textures: Record<string, Texture2D>;
         /**
-         * @en Destroy the mesh.
-         * @zh 销毁网格。
+         * @en X of spine data
+         * @zh spine 数据 x
+         */
+        x: number;
+        /**
+         * @en Y of spine animation
+         * @zh spine 数据 y
+         */
+        y: number;
+        /**
+         * @en Base width of spine animation
+         * @zh spine 动画基础宽度
+         */
+        width: number;
+        /**
+         * @en Base height of spine animation
+         * @zh spine 动画基础高度
+         */
+        height: number;
+        /**
+         * @en X-axis offset of spine animation
+         * @zh spine 动画X轴偏移
+         */
+        offsetX: number;
+        /**
+         * @en Y-axis offset of spine animation
+         * @zh spine 动画Y轴偏移
+         */
+        offsetY: number;
+        /** @internal */
+        _parser: ISpineTempletParser;
+        optimize: ISkeletonOptimise;
+        /** @ignore */
+        constructor();
+        /** @internal */
+        _premultipliedAlpha: boolean;
+        /**
+         * @en Switch for premultipliedAlpha.
+         * @zh 透明预乘的开关。
+         */
+        get premultipliedAlpha(): boolean;
+        /**
+         * @en Get or create a material for the given texture and blend mode
+         * @param texture The texture to use
+         * @param blendMode The blend mode to use
+         * @param premultipliedAlpha Whether to enable transparent premultiplied
+         * @param is3D Whether this is for 3D rendering (default: false for 2D)
+         * @zh 获取或创建给定纹理和混合模式的材质
+         * @param texture 要使用的纹理
+         * @param blendMode 要使用的混合模式
+         * @param premultipliedAlpha 是否启用透明预乘
+         * @param is3D 是否用于3D渲染 (默认: false 表示2D)
+         */
+        getMaterial(texture: Texture2D, blendMode: number, premultipliedAlpha: boolean, is3D?: boolean): Material;
+        /**
+         * @en Get a texture by its name
+         * @param name The name of the texture
+         * @zh 通过名称获取纹理
+         * @param name 纹理的名称
+         */
+        getTexture(name: string): Texture2D;
+        setTexture(name: string, tex: Texture2D): void;
+        /**
+         * @zh 注册纹理，将 Texture 对象与 Spine 的 TextureRegion 和 AtlasPage 建立对应关系
+         * @param texture Texture 对象，对应 TextureRegion
+         * @en Register texture, establish correspondence between Texture object and Spine's TextureRegion and AtlasPage
+         * @param texture Texture object, corresponding to TextureRegion
+         */
+        registerTexture(texture: Texture): void;
+        /**
+         * @en Get the animation name by its index
+         * @param index The index of the animation
+         * @zh 通过索引获取动画名称
+         * @param index 动画的索引
+         */
+        getAniNameByIndex(index: number): string;
+        getAnimationCount(): number;
+        /**
+         * @deprecated only web
+         * @en Find the animation by its name
+         * @param name The name of the animation to find
+         * @returns The found animation index, or -1 if not found
+         * @zh 通过动画名称查找动画
+         * @param name 要查找的动画名称
+         * @returns 找到的动画索引，如果未找到则返回-1
+         */
+        findAnimation(name: string): any;
+        /**
+         * @en Check if the animation exists
+         * @param name The name of the animation to check
+         * @returns boolean
+         * @zh 检查动画是否存在
+         * @param name 要检查的动画名称
+         * @returns boolean
+         */
+        hasAnimation(name: string): boolean;
+        /**
+         * @en Get the skin index by its name
+         * @param skinName The name of the skin
+         * @zh 通过皮肤名称获取皮肤索引
+         * @param skinName 皮肤名称
+         */
+        getSkinIndexByName(skinName: string): number;
+        /**
+         * @en Check if Templet needs transparent premultiplied
+         * @zh 检查Templet是否需要透明预乘
+         */
+        checkPremultipliedAlpha(): boolean;
+        /**
+         * @en Release textures and materials
+         * @zh 释放纹理和材质
+         */
+        protected _disposeResource(): void;
+    }
+    /**
+     * @en Unified Spine buffer view that holds its own vertex and index data
+     * @zh 统一的 Spine 缓冲区视图，持有自己的顶点和索引数据
+     */
+    class SpineBufferView implements I2DGraphicBufferDataView {
+        /**
+         * @en Step size for growing vertex array (in floats)
+         * @zh 顶点数组增长的步长（float 数量）
+         */
+        private static readonly ARRAY_GROWTH_STEP_VERTEX;
+        /**
+         * @en Step size for growing index array (in indices)
+         * @zh 索引数组增长的步长（索引数量）
+         */
+        private static readonly ARRAY_GROWTH_STEP_INDEX;
+        /**
+         * @en Own vertex data buffer (no offset, direct write)
+         * @zh 自己的顶点数据缓冲区（无偏移，直接写入）
+         */
+        vertexData: Float32Array;
+        /**
+         * @en Own index data buffer (no offset, direct write)
+         * @zh 自己的索引数据缓冲区（无偏移，直接写入）
+         */
+        indexData: Uint16Array;
+        /**
+         * @en Vertex capacity in floats
+         * @zh 顶点容量（float 数量）
+         */
+        vertexCapacity: number;
+        /**
+         * @en Index capacity
+         * @zh 索引容量
+         */
+        indexCapacity: number;
+        /**
+         * @en Current used vertex count (actual number of vertices)
+         * @zh 当前已使用的顶点个数（实际顶点数量）
+         */
+        vertexCount: number;
+        /**
+         * @en Current used vertex buffer length in floats (vertexCount × stride)
+         * @zh 当前已使用的顶点缓冲区长度（floats 数量 = vertexCount × stride）
+         */
+        vertexBufferLength: number;
+        /**
+         * @en Current used index count (actual number of indices)
+         * @zh 当前已使用的索引个数（实际索引数量）
+         */
+        indexCount: number;
+        /**
+         * @en Current used index buffer length (same as indexCount for index data)
+         * @zh 当前已使用的索引缓冲区长度（等于 indexCount）
+         */
+        indexBufferLength: number;
+        /**
+         * @en Owner buffer that manages this view
+         * @zh 管理此视图的所有者缓冲区
+         */
+        owner: SpineWholeBuffer;
+        /**
+         * @en Geometry element for rendering
+         * @zh 用于渲染的几何元素
+         */
+        geometry: IRenderGeometryElement;
+        /**
+         * @en Cached raw vertex data (before matrix transformation)
+         * @zh 缓存的原始顶点数据（矩阵变换前）
+         */
+        cacheVertex: Float32Array;
+        /**
+         * @en Cached raw index data
+         * @zh 缓存的原始索引数据
+         */
+        cacheIndex: Uint16Array;
+        /**
+         * @en Transformation matrix for this view
+         * @zh 此视图的变换矩阵
+         */
+        matrix: Matrix;
+        /**
+         * @en X offset for transformation
+         * @zh X 轴偏移
+         */
+        offsetX: number;
+        /**
+         * @en Y offset for transformation
+         * @zh Y 轴偏移
+         */
+        offsetY: number;
+        /** @internal */
+        _next: SpineBufferView;
+        /** @internal */
+        _prev: SpineBufferView;
+        constructor(vertexCapacity: number, indexCapacity: number);
+        /**
+         * @en Get direct access to vertex data for writing
+         * @zh 获取顶点数据以供写入
+         */
+        getVertexData(): Float32Array;
+        /**
+         * @en Get direct access to index data for writing
+         * @zh 获取索引数据以供写入
+         */
+        getIndexData(): Uint16Array;
+        /**
+         * @en Mark this view as modified and register with render pass
+         * @zh 标记此视图为已修改并注册到渲染通道
+         */
+        markModified(): void;
+        /**
+         * @en Reset usage counters and remove from owner buffer for reuse
+         * @zh 重置使用计数器并从所有者缓冲区移除以供重用
+         */
+        reset(): void;
+        /**
+         * @en Transfer this view to a different buffer
+         * @zh 将此视图转移到不同的缓冲区
+         * @param targetBuffer The target buffer to transfer to
+         */
+        transferToBuffer(targetBuffer: SpineWholeBuffer): void;
+        /**
+         * @en Ensure vertex capacity, expand if needed with fixed step size
+         * @zh 确保顶点容量，必要时按固定步长扩展
+         */
+        ensureVertexCapacity(requiredFloats: number): void;
+        /**
+         * @en Ensure index capacity, expand if needed with fixed step size
+         * @zh 确保索引容量，必要时按固定步长扩展
+         */
+        ensureIndexCapacity(requiredIndices: number): void;
+        /**
+         * @en Destroy this view and release resources
+         * @zh 销毁此视图并释放资源
+         */
+        destroy(): void;
+        setData(_data: ArrayLike<number>): void;
+    }
+    /**
+     * @en SpineInstanceBatch used for efficient rendering Spine instances.
+     * @zh SpineInstanceBatch 用于高效渲染 Spine 实例。
+     */
+    class SpineInstanceBatch implements IBatch2DProvider {
+        _recoverList: FastSinglelist<SpineInstanceInfo>;
+        /**
+         * @en Batch render elements according to IBatch2DProvider interface.
+         * @param list The list of render elements.
+         * @param start The starting index in the list.
+         * @param end The ending index in the list (inclusive).
+         * @param allowReorder Whether to allow reordering elements for better batching.
+         * @zh 根据 IBatch2DProvider 接口批量渲染元素。
+         * @param list 渲染元素列表。
+         * @param start 列表中的起始索引。
+         * @param end 列表中的结束索引（包含）。
+         * @param allowReorder 是否允许重新排序元素以获得更好的批处理效果。
+         */
+        batch(list: FastSinglelist<IRenderElement2D>, start: number, end: number, allowReorder?: boolean): void;
+        /**
+         * @en Reset the batch state and recover resources.
+         * @zh 重置批处理状态并回收资源。
+         */
+        reset(): void;
+        /**
+         * @en Destroy the batch provider and clean up all resources.
+         * @zh 销毁批处理提供者并清理所有资源。
+         */
+        destroy(): void;
+        /**
+         * @en Check if two render elements can be merged.
+         * @param left The left render element to compare.
+         * @param right The right render element to compare.
+         * @returns True if the elements can be merged, false otherwise.
+         * @zh 检测两个渲染元素是否可以合并。
+         * @param left 要比较的左侧渲染元素。
+         * @param right 要比较的右侧渲染元素。
+         * @returns 如果元素可以合并则返回 true，否则返回 false。
+         */
+        check(left: IRenderElement2D, right: IRenderElement2D): boolean;
+        /**
+         * @en Batch render elements.
+         * @param list The list of render elements.
+         * @param start The starting index in the list.
+         * @param length The number of elements to process.
+         * @zh 批量渲染元素。
+         * @param list 渲染元素列表。
+         * @param start 列表中的起始索引。
+         * @param length 要处理的元素数量。
+         */
+        batchRenderElement(list: FastSinglelist<IRenderElement2D>, start: number, length: number, elementCount?: number): void;
+        /**
+         * @en Update the instance buffer with new data.
+         * @param info The SpineInstanceInfo object.
+         * @param nMatrixData The new matrix data.
+         * @param simpleAnimatorData The new animator data.
+         * @param instanceCount The number of instances.
+         * @zh 使用新数据更新实例缓冲区。
+         * @param info SpineInstanceInfo 对象。
+         * @param nMatrixData 新的矩阵数据。
+         * @param simpleAnimatorData 新的动画器数据。
+         * @param instanceCount 实例数量。
+         */
+        updateBuffer(info: SpineInstanceInfo, nMatrixData: Float32Array, simpleAnimatorData: Float32Array, instanceCount: number): void;
+        /**
+         * @en Organize instance data for batching (internal method).
+         * @param list The list of render elements.
+         * @param start The starting index in the list.
+         * @param length The number of elements to process.
+         * @zh 组织实例数据以进行批处理（内部方法）。
+         * @param list 渲染元素列表。
+         * @param start 列表中的起始索引。
+         * @param length 要处理的元素数量。
+         */
+        _batchInternal(list: FastSinglelist<IRenderElement2D>, start: number, length: number): void;
+        /**
+         * @en Recover instance data.
+         * @zh 回收实例数据。
+         */
+        recover(): void;
+    }
+    interface SpineInstanceInfo {
+        element: IRenderElement2D;
+        state: IBufferState;
+        nMatrixInstanceVB: IVertexBuffer;
+        simpleAnimatorVB: IVertexBuffer;
+    }
+    /**
+     * @en Tool class for managing Spine instance elements in 2D rendering.
+     * @zh 用于管理 2D 渲染中的 Spine 实例元素的工具类。
+     */
+    class SpineInstanceElement2DTool {
+        /**
+         * @en Maximum number of instances that can be batched.
+         * @zh 可以批处理的最大实例数量。
+         */
+        static MaxInstanceCount: number;
+        /**
+         * 统一的 InstanceInfo 池，不再按 geometry 分割
+         */
+        private static _instanceInfoPool;
+        /**
+         * @en Get or create a unified SpineInstanceInfo (not bound to specific geometry).
+         * @zh 获取或创建统一的 SpineInstanceInfo（不绑定特定几何体）。
+         */
+        static getInstanceInfo(): SpineInstanceInfo;
+        /**
+         * @en Create a new unified SpineInstanceInfo.
+         * @zh 创建一个新的统一 SpineInstanceInfo。
+         */
+        static createInstanceInfo(): SpineInstanceInfo;
+        /**
+         * @en Recover a SpineInstanceInfo object to the pool.
+         * @param info The SpineInstanceInfo to recover.
+         * @zh 回收一个 SpineInstanceInfo 对象到池中。
+         * @param info 要回收的 SpineInstanceInfo。
+         */
+        static recover(info: SpineInstanceInfo): void;
+        /**
+         * pool of Buffer
+         */
+        private static _bufferPool;
+        static _instanceBufferCreate(length: number): Float32Array;
+        static _instanceBufferRecover(float32: Float32Array): void;
+    }
+    /**
+     * @en SpineNormalBatch - Refactored to use Context pattern to avoid GC.
+     * Uses View's dual-buffer architecture for efficient batching.
+     * Process:
+     * 1. RenderUpdate stage: Views are allocated to original buffers
+     * 2. Batch stage: Compatible views are transferred to batch buffers with calculated offsets
+     * 3. Upload stage: Both original and batch buffers upload their views
+     * @zh SpineNormalBatch - 重构使用 Context 模式避免 GC。
+     * 使用 View 的双缓冲区架构实现高效合批。
+     * 流程：
+     * 1. RenderUpdate 阶段：Views 分配到原始 buffers
+     * 2. Batch 阶段：兼容的 views 转移到批次 buffers 并计算偏移
+     * 3. Upload 阶段：原始和批次 buffers 都上传各自的 views
+     */
+    class SpineNormalBatch implements IBatch2DProvider {
+        /**
+         * @en Maximum vertices per batch (Uint16 index limit)
+         * @zh 每个批次的最大顶点数（Uint16 索引限制）
+         */
+        private static readonly MAX_VERTICES_PER_BATCH;
+        /**
+         * @en Static pool for reusable batch elements (like WebGraphicsBatch._pool)
+         * @zh 静态对象池，用于复用批次元素（类似 WebGraphicsBatch._pool）
+         */
+        private static readonly _pool;
+        /**
+         * @en Pool of batch buffers for reuse
+         * @zh 批次缓冲区池，用于重用
+         */
+        private _batchBufferPool;
+        /**
+         * @en Active batch buffers in current frame
+         * @zh 当前帧中活跃的批次缓冲区
+         */
+        private _activeBatchBuffers;
+        /**
+         * @en Batch context to avoid GC from temporary objects
+         * @zh 批次上下文，避免临时对象产生的 GC
+         */
+        private _context;
+        /**
+         * @en Merged elements in current frame (to be recovered in reset)
+         * @zh 当前帧中合并的元素（在 reset 时回收）
+         */
+        private _merged;
+        /**
+         * @en Batch render elements according to IBatch2DProvider interface
+         * @zh 根据 IBatch2DProvider 接口批量渲染元素
+         */
+        batch(list: FastSinglelist<IRenderElement2D>, start: number, end: number, _allowReorder?: boolean): void;
+        /**
+         * @en Create a batched element from element range (simplified for 1:1 view-geometry)
+         * @zh 从元素范围创建批次元素（简化为 1:1 view-geometry 关系）
+         */
+        private _createBatchedElement;
+        /**
+         * @en Get or create a batch buffer
+         * @zh 获取或创建批次缓冲区
+         */
+        private _getBatchBuffer;
+        /**
+         * @en Reset batch state for new frame
+         * @zh 为新帧重置批次状态
+         */
+        reset(): void;
+        /**
+         * @en Destroy batch provider and clean up resources
+         * @zh 销毁批处理提供者并清理资源
          */
         destroy(): void;
     }
     /**
-     * @en Abstract base class for Spine normal rendering.
-     * @zh Spine 普通渲染的抽象基类。
+     * @en Unified Spine whole buffer that manages both vertex and index buffers
+     * @zh 统一的 Spine 完整缓冲区，管理顶点和索引缓冲区
      */
-    abstract class SpineNormalRenderBase {
+    class SpineWholeBuffer implements I2DGraphicWholeBuffer {
         /**
-         * @en Array of SpineMeshBase objects.
-         * @zh SpineMeshBase 对象数组。
+         * @en Maximum vertices allowed per buffer
+         * @zh 每个缓冲区允许的最大顶点数
          */
-        protected vmeshs: SpineMeshBase[];
+        private static readonly MAX_VERTICES;
         /**
-         * @en Index for the next batch.
-         * @zh 下一批次的索引。
+         * @en Step size for growing global temporary arrays (in floats for vertex, in indices for index)
+         * @zh 全局临时数组增长的步长（顶点以 float 为单位，索引以索引为单位）
          */
-        protected nextBatchIndex: number;
+        private static readonly ARRAY_GROWTH_STEP_VERTEX;
+        private static readonly ARRAY_GROWTH_STEP_INDEX;
         /**
-         * @en Clears all batches by resetting meshes and batch index.
-         * @zh 通过重置网格和批次索引来清除所有批次。
+         * @en Global temporary vertex data array shared by all instances (grows as needed)
+         * @zh 所有实例共享的全局临时顶点数据数组（按需增长）
          */
-        protected clearBatch(): void;
+        private static _globalTempVertexData;
         /**
-         * @en Abstract method to create a mesh with the given material.
-         * @param material The material to be used for the mesh.
-         * @zh 创建具有给定材质的网格的抽象方法。
-         * @param material 用于网格的材质。
+         * @en Global temporary index data array shared by all instances (grows as needed)
+         * @zh 所有实例共享的全局临时索引数据数组（按需增长）
          */
-        abstract createMesh(material: Material): SpineMeshBase;
+        private static _globalTempIndexData;
         /**
-         * @en Prepares the next batch for rendering.
-         * @param material The material to be used for the batch.
-         * @param spineRenderNode The Spine2DRenderNode to be rendered.
-         * @zh 准备下一批次用于渲染。
-         * @param material 用于批次的材质。
-         * @param spineRenderNode 要渲染的 Spine2DRenderNode。
+        * @en Grow global arrays dynamically during traversal if needed
+        * @zh 在遍历过程中如果需要则动态增长全局数组
+        */
+        private static _growGlobalArraysIfNeeded;
+        /**
+         * @en Vertex buffer on GPU (also serves as the main buffer for I2DGraphicWholeBuffer interface)
+         * @zh GPU 上的顶点缓冲区（同时作为 I2DGraphicWholeBuffer 接口的主缓冲区）
          */
-        protected nextBatch(material: Material, spineRenderNode: Spine2DRenderNode): SpineMeshBase;
+        vertexBuffer: IVertexBuffer;
         /**
-         * @en Destroy the render.
-         * @zh 销毁渲染。
+         * @en Index buffer on GPU
+         * @zh GPU 上的索引缓冲区
+         */
+        indexBuffer: IIndexBuffer;
+        /**
+         * @en Buffer state for rendering (replaces Mesh2D wrapper)
+         * @zh 用于渲染的缓冲区状态（替代 Mesh2D 包装）
+         */
+        bufferState: IBufferState;
+        /**
+         * @en Current vertex count for 65535 limit tracking
+         * @zh 当前顶点数，用于 65535 限制跟踪
+         */
+        currentVertexCount: number;
+        /**
+         * @en Compatibility property for I2DGraphicWholeBuffer interface
+         * @zh I2DGraphicWholeBuffer 接口的兼容属性
+         */
+        get buffer(): IVertexBuffer | IIndexBuffer;
+        /**
+         * @en Current allocated vertex capacity in floats
+         * @zh 当前分配的顶点容量（float 数量）
+         */
+        private _vertexCapacity;
+        /**
+         * @en Current allocated index capacity
+         * @zh 当前分配的索引容量
+         */
+        private _indexCapacity;
+        /**
+         * @en Flag indicating if buffer needs to be reuploaded
+         * @zh 标志指示缓冲区是否需要重新上传
+         */
+        _needResetData: boolean;
+        /**
+         * @en Flag indicating if currently in render pass
+         * @zh 标志指示当前是否在渲染通道中
+         */
+        _inPass: boolean;
+        /**
+         * @en Number of views managed by this buffer
+         * @zh 此缓冲区管理的视图数量
+         */
+        private _num;
+        /** @internal */
+        _first: SpineBufferView;
+        /** @internal */
+        _last: SpineBufferView;
+        constructor(vertexBuffer: IVertexBuffer, indexBuffer: IIndexBuffer);
+        /**
+         * @en Reset buffer capacity
+         * @zh 重置缓冲区容量
+         */
+        resetCapacity(vertexFloats: number, indexCount: number): void;
+        /**
+         * @en Compatibility method for I2DGraphicWholeBuffer interface
+         * @zh I2DGraphicWholeBuffer 接口的兼容方法
+         */
+        resetData(byteLength: number): void;
+        /**
+         * @en Add a view to the linked list
+         * @zh 将视图添加到链表中
+         */
+        addDataView(view: SpineBufferView): void;
+        /**
+         * @en Remove a view from the linked list
+         * @zh 从链表中移除视图
+         */
+        removeDataView(view: SpineBufferView): void;
+        /**
+         * @en Check if buffer has space for more vertices
+         * @zh 检查缓冲区是否有空间容纳更多顶点
+         * @param vertexCount Number of vertices to add
+         */
+        canFit(vertexCount: number): boolean;
+        /**
+         * @en Mark a view as modified
+         * @zh 标记视图为已修改
+         */
+        _modifyOneView(_view: SpineBufferView): void;
+        /**
+         * @en Upload data to GPU by reassembling all views with proper offsets
+         * @zh 通过重组所有视图并应用正确的偏移将数据上传到 GPU
+         * Optimized: single pass through linked list, using global shared arrays with dynamic growth
+         */
+        _upload(): void;
+        /**
+         * @en Destroy this buffer and release resources
+         * @zh 销毁此缓冲区并释放资源
          */
         destroy(): void;
     }
     /**
-     * @en SpineSkeletonRenderer class for rendering Spine skeletons.
-     * @zh SpineSkeletonRenderer 类用于渲染 Spine 骨骼。
+     * @en Render batch structure - unified management of geometry, view and material.
+     * @zh 渲染批次结构 - 统一管理 geometry、view 和 material。
      */
-    class SpineSkeletonRenderer extends SpineNormalRenderBase implements ISpineRender {
-        /**
-         * @en Indicates if alpha should be premultiplied.
-         * @zh 指示是否应预乘 alpha。
-         */
-        premultipliedAlpha: boolean;
-        /**
-         * @en Spine templet associated with this renderer.
-         * @zh 与此渲染器关联的 Spine 模板。
-         */
-        templet: SpineTemplet;
-        private tempColor;
-        private tempColor2;
-        private static vertices;
-        private renderable;
+    interface Spine2DRenderBatch extends IRenderBatch {
+        view: SpineBufferView;
+    }
+    /**
+     * @en Spine normal render updater - refactored version using unified buffer view
+     * @zh Spine normal 渲染更新器 - 使用统一缓冲区视图的重构版本
+     */
+    class Spine2DNormalRenderUpdater implements ISpineNormalUpdater {
         private clipper;
+        private _internalMaterials;
+        materials: Material[];
+        /** @internal */
+        _materialIndex: number;
+        needUpdate: boolean;
         /**
-         * @en Create a mesh with the given material.
-         * @param material The material to be used for the mesh.
-         * @returns A SpineMeshBase object.
-         * @zh 创建具有给定材质的网格。
-         * @param material 用于网格的材质。
-         * @returns SpineMeshBase 对象。
+         * @en Output array for subMeshes - only used for rendering output, populated from batches
+         * @zh 子网格输出数组 - 仅用于渲染输出，从 batches 中填充
          */
-        createMesh(material: Material): SpineMeshBase;
+        subMeshes: IRenderGeometryElement[];
+        autoCacheEnabled: boolean;
         /**
-         * @en Create a new instance of the SpineSkeletonRenderer class.
-         * @param templet The Spine templet to use.
-         * @zh 创建 SpineSkeletonRenderer 类的新实例。
-         * @param templet 要使用的 Spine 模板。
+         * @en Render batches array - internal management structure containing geometry, view and material.
+         * @zh 渲染批次数组 - 内部管理结构，包含 geometry、view 和 material。
          */
-        constructor(templet: SpineTemplet);
+        batches: Spine2DRenderBatch[];
         /**
-         * @en Draw the skeleton.
-         * @param skeleton The skeleton to draw.
-         * @param renderNode The render node.
-         * @param slotRangeStart The starting slot index.
-         * @param slotRangeEnd The ending slot index.
-         * @zh 绘制骨骼。
-         * @param skeleton 要绘制的骨骼。
-         * @param renderNode 渲染节点。
-         * @param slotRangeStart 起始插槽索引。
-         * @param slotRangeEnd 结束插槽索引。
+         * @en Current batch index being built.
+         * @zh 当前正在构建的批次索引。
          */
-        draw(skeleton: spine.Skeleton, renderNode: Spine2DRenderNode, slotRangeStart?: number, slotRangeEnd?: number): void;
+        private _currentBatchIndex;
+        /**
+         * @en Track current geometry's vertex count for uint16 limit checking
+         * @zh 跟踪当前 geometry 的顶点数，用于 uint16 限制检查
+         */
+        private _currentGeometryVertexCount;
+        /**
+         * @en Pool of reusable SpineBufferView objects to avoid GC
+         * @zh 可复用的 SpineBufferView 对象池，避免 GC
+         */
+        private _viewPool;
+        /**
+         * @en Views allocated in current frame (for cleanup)
+         * @zh 当前帧分配的 views（用于清理）
+         */
+        private _allocatedViewsThisFrame;
+        matrix: Matrix;
+        renderUpdate(time: number, skeleton: spine.Skeleton, updater: SpineRenderUpdater, slotRangeStart?: number, slotRangeEnd?: number, offsetX?: number, offsetY?: number): void;
+        private _generateCacheData;
+        private addMaterial;
+        private createBatch;
+        /**
+         * @en Append clipped vertices and indices (cache raw data, apply matrix on upload)
+         * @zh 附加裁剪后的顶点和索引（缓存原始数据，上传时应用矩阵）
+         */
+        appendVerticesClip(vertices: ArrayLike<number>, indices: ArrayLike<number>, stride: number, offsetX: number, offsetY: number): void;
+        /**
+         * @en Append vertices and indices (cache raw data, apply matrix on upload)
+         * @zh 附加顶点和索引（缓存原始数据，上传时应用矩阵）
+         */
+        appendVertices(positions: spine.NumberArrayLike, uvs: spine.NumberArrayLike, finalColor: spine.Color, darkColor: spine.Color, verticesLength: number, indices: spine.NumberArrayLike, indicesLength: number, stride: number, offsetX: number, offsetY: number): void;
+        /**
+         * @internal
+         * @en Bind all views to buffers (Phase 2: Post-processing)
+         * @zh 将所有 views 绑定到 buffers（阶段 2：后处理）
+         */
+        private _bindViewsToBuffers;
+        /**
+         * @en Get the view associated with a geometry (for batching)
+         * @zh 获取与 geometry 关联的 view（用于合批）
+         */
+        getViewForGeometry(geometry: IRenderGeometryElement): SpineBufferView | undefined;
+        destroy(): void;
+        /**
+         * @en Restore rendering data from cache (Spine2D version).
+         * @param cache Cached frame data.
+         * @param offsetX X axis offset.
+         * @param offsetY Y axis offset.
+         * @zh 从缓存恢复渲染数据（Spine2D 版本）。
+         * @param cache 缓存的帧数据。
+         * @param offsetX X轴偏移。
+         * @param offsetY Y轴偏移。
+         */
+        restoreFromCache(cache: FrameRenderCache, offsetX?: number, offsetY?: number): void;
+        private _hasMatrixTransform;
     }
     /**
-     * @en SpineWasmRender class for rendering Spine skeletons using WebAssembly.
-     * @zh SpineWasmRender 类用于使用 WebAssembly 渲染 Spine 骨骼。
+     * @en Global mesh manager for Spine normal rendering.
+     * Manages a pool of buffers with automatic allocation when exceeding uint16 vertex limit.
+     * @zh Spine normal 渲染的全局 buffer 管理器。
+     * 管理 buffer 池,超过 uint16 顶点限制时自动分配新的 buffer。
      */
-    class SpineWasmRender extends SpineNormalRenderBase implements ISpineRender {
+    class SpineGlobalMeshManager {
+        private static _instance;
+        private static readonly INITIAL_VERTEX_CAPACITY;
+        private static readonly INITIAL_INDEX_CAPACITY;
+        static get instance(): SpineGlobalMeshManager;
+        private _buffers;
+        outBufferIndex: number;
+        outView: SpineBufferView;
+        outBufferState: IBufferState;
         /**
-         * @en Spine templet associated with this renderer.
-         * @zh 与此渲染器关联的 Spine 模板。
+         * @en Assign a view to an appropriate buffer
+         * Results are stored in output fields: outBufferState, outBufferIndex
+         * @param view The view to assign
+         * @param vertexCount Number of vertices in the view
+         * @zh 将 view 分配到合适的 buffer
+         * 结果存储在输出字段中: outBufferState, outBufferIndex
+         * @param view 要分配的 view
+         * @param vertexCount view 中的顶点数
          */
-        templet: SpineTemplet;
+        assignViewToBuffer(view: SpineBufferView, vertexCount: number): void;
         /**
-         * @en Graphics object for rendering.
-         * @zh 用于渲染的图形对象。
+         * @internal
+         * @en Find existing buffer with available space or create new one
+         * @param vertexCount Number of vertices needed
+         * @zh 查找有可用空间的现有缓冲区或创建新缓冲区
+         * @param vertexCount 需要的顶点数
          */
-        graphics: Graphics;
+        private _findOrCreateBuffer;
         /**
-         * @en Spine render object.
-         * @zh Spine 渲染对象。
+         * @en Allocate a buffer view, automatically selecting or creating a suitable buffer.
+         * Results are stored in output fields: outView, outBufferState, outBufferIndex
+         * @param vertexCount Number of vertices needed (in vertices, not float count)
+         * @param indexCount Number of indices needed
+         * @zh 申请 buffer view,自动选择或创建合适的 buffer。
+         * 结果存储在输出字段中: outView, outBufferState, outBufferIndex
+         * @param vertexCount 需要的顶点数 (以顶点为单位,不是 float 数量)
+         * @param indexCount 需要的索引数
          */
-        spineRender: any;
+        allocateView(vertexCount: number, indexCount: number): void;
         /**
-         * @en Creates a new SpineWasmRender instance.
-         * @param templet The Spine templet to use.
-         * @zh 创建 SpineWasmRender 类的新实例。
-         * @param templet 要使用的 Spine 模板。
+         * @en Release a view (called during reset)
+         * @param view The view to release
+         * @zh 释放 view (重置时调用)
+         * @param view 要释放的视图
          */
-        constructor(templet: SpineTemplet);
+        releaseView(view: SpineBufferView): void;
         /**
-         * @en Create a mesh with the given material.
-         * @param material The material to be used for the mesh.
-         * @returns A SpineMeshBase object.
-         * @zh 创建具有给定材质的网格。
-         * @param material 用于网格的材质。
-         * @returns SpineMeshBase 对象。
+         * @internal
+         * @en Create a new buffer with bufferState
+         * @zh 创建新的 buffer 及其 bufferState
          */
-        createMesh(material: Material): SpineMeshBase;
+        private _createBuffer;
         /**
-         * @en Draw the skeleton.
-         * @param skeleton The skeleton to draw.
-         * @param renderNode The render node.
-         * @param slotRangeStart The starting slot index.
-         * @param slotRangeEnd The ending slot index.
-         * @zh 绘制骨骼。
-         * @param skeleton 要绘制的骨骼。
-         * @param renderNode 渲染节点。
-         * @param slotRangeStart 起始插槽索引。
-         * @param slotRangeEnd 结束插槽索引。
+         * @en Clear all buffers (used for hot reload or resource cleanup)
+         * @zh 清理所有 buffers (用于热重载或资源清理)
          */
-        draw(skeleton: spine.Skeleton, renderNode: Spine2DRenderNode, slotRangeStart?: number, slotRangeEnd?: number): void;
+        clear(): void;
     }
+    /**
+     * @en SpineOptimizeRender2D used for optimized rendering of Spine animations in 2D.
+     * @zh SpineOptimizeRender2D 类用于优化 2D 空间中的 Spine 动画渲染。
+     */
+    class SpineOptimizeRender2D extends BaseOptimizeRender {
+        private static _emptyList;
+        static _NODE_COMMONMAP_: string[];
+        /** @ignore @blueprintIgnore */
+        static _pool: IRenderElement2D[];
+        /** @ignore @blueprintIgnore */
+        static createRenderElement2D(): IRenderElement2D;
+        /** @ignore @blueprintIgnore */
+        static recoverRenderElement2D(value: IRenderElement2D): void;
+        /** @internal */
+        protected readonly is3D: boolean;
+        /** @internal */
+        private _renderElements;
+        /** @internal */
+        _owner: Spine2DRenderNode;
+        /** @internal */
+        private _handle;
+        /** @ignore */
+        constructor(owner: Spine2DRenderNode);
+        init(templet: SpineTemplet): void;
+        protected _createRenderProxies(): void;
+        protected _createBakedRenderer(): IRender;
+        protected _updateSkinShaderDefines(): void;
+        changeSkeleton(skeleton: spine.Skeleton): void;
+        /**
+         * @en Update render elements from subMeshes and materials.
+         * This method is called from renderProxy.afterRender().
+         * @param subMeshes Array of sub meshes.
+         * @param materials Array of materials.
+         * @zh 根据子网格和材质数组更新渲染元素。
+         * 此方法由 renderProxy.afterRender() 调用。
+         * @param subMeshes 子网格数组。
+         * @param materials 材质数组。
+         */
+        _updateRenderElements(subMeshes: IRenderGeometryElement[], materials: Material[]): void;
+        /**
+         * @en Update render elements from subMeshes and materials arrays.
+         * Updates internal _renderElements first, then syncs to struct.renderElements.
+         * @param struct The render struct to set renderElements.
+         * @param shaderData The shader data for render elements.
+         * @param subMeshes Array of sub meshes.
+         * @param materials Array of materials.
+         * @zh 根据子网格和材质数组更新渲染元素。
+         * 先更新内部的 _renderElements，然后同步到 struct.renderElements。
+         * @param struct 要设置 renderElements 的渲染结构。
+         * @param shaderData 渲染元素的着色器数据。
+         * @param subMeshes 子网格数组。
+         * @param materials 材质数组。
+         */
+        private _updateRenderElementsFromData;
+        /**
+         * @en Clear all render elements.
+         * @zh 清除所有渲染元素。
+         */
+        _clearRenderElements(): void;
+        /** @internal */
+        _getMaterialByName(name: string, blendMode: number): Material;
+        /** @internal */
+        _getMaterial(texture: Texture2D, blendMode: number): Material;
+        _getRenderHandle(): any;
+    }
+    class BakedSpine2DRenderer extends BakedSpineRenderer {
+        /** @internal */
+        protected _struct: IRenderStruct2D;
+        /**
+         * @en Create a new instance of SpineBaseRenderer.
+         * @param struct The render struct.
+         * @zh 创建 SpineBaseRenderer 的新实例。
+         * @param struct 渲染结构。
+         */
+        constructor(struct: IRenderStruct2D);
+        change(): void;
+        leave(): void;
+    }
+    class StandardSpine2DRenderer extends StandardSpineRenderer {
+        /** @internal */
+        protected _struct: IRenderStruct2D;
+        private _updateFrame;
+        normalUpdater: Spine2DNormalRenderUpdater;
+        /**
+         * @en Create a new instance of SpineBaseRenderer.
+         * @param struct The render struct.
+         * @zh 创建 SpineBaseRenderer 的新实例。
+         * @param struct 渲染结构。
+         */
+        constructor(struct: IRenderStruct2D);
+        change(): void;
+        leave(): void;
+        /**
+         * @en Render the current animation with matrix transformation.
+         * Overrides parent to set renderMatrix from struct before calling renderUpdate.
+         * @param curTime The current time for rendering.
+         * @param offsetX X axis offset.
+         * @param offsetY Y axis offset.
+         * @zh 使用矩阵变换渲染当前动画。
+         * 重写父类方法，在调用 renderUpdate 前从 struct 设置 renderMatrix。
+         * @param curTime 渲染的当前时间。
+         * @param offsetX X轴偏移。
+         * @param offsetY Y轴偏移。
+         */
+        render(curTime: number, offsetX?: number, offsetY?: number): void;
+        /**
+         * @en Called after render to update render elements.
+         * @param optimizeRender The BaseOptimizeRender instance.
+         * @zh 渲染后调用，更新渲染元素。
+         * @param optimizeRender BaseOptimizeRender 实例。
+         */
+        afterRender(optimizeRender: SpineOptimizeRender2D): void;
+        destroy(): void;
+    }
+    /**
+     * @en SpineOptimizeRender3D used for optimized rendering of Spine animations in 3D.
+     * @zh SpineOptimizeRender3D 类用于优化 3D 空间中的 Spine 动画渲染。
+     */
+    class SpineOptimizeRender3D extends BaseOptimizeRender {
+        private static _emptyList;
+        /** @ignore @blueprintIgnore */
+        static _pool: IRenderElement3D[];
+        /** @ignore @blueprintIgnore */
+        static createRenderElement3D(): IRenderElement3D;
+        /** @ignore @blueprintIgnore */
+        static recoverRenderElement3D(value: IRenderElement3D): void;
+        /** @internal */
+        protected readonly is3D: boolean;
+        /** @internal */
+        private _renderElements;
+        /** @internal */
+        _owner: IBaseRenderNode;
+        /** @ignore */
+        constructor(owner: IBaseRenderNode);
+        protected _createRenderProxies(): void;
+        protected _createBakedRenderer(): IRender;
+        protected _updateSkinShaderDefines(): void;
+        /**
+         * @en Update render elements from subMeshes and materials .
+         * @param subMeshes Array of sub meshes.
+         * @param materials Array of materials.
+         * @zh 根据子网格和材质数组更新渲染元素（兼容性方法）。
+         * @param subMeshes 子网格数组。
+         * @param materials 材质数组。
+         */
+        _updateRenderElements(subMeshes: IRenderGeometryElement[], materials: Material[]): void;
+        /**
+         * @en Update render elements from subMeshes and materials arrays
+         * @param shaderData The shader data for render elements.
+         * @param subMeshes Array of sub meshes.
+         * @param materials Array of materials.
+         * @zh 根据子网格和材质数组更新渲染元素（兼容性方法）。
+         * @param shaderData 渲染元素的着色器数据。
+         * @param subMeshes 子网格数组。
+         * @param materials 材质数组。
+         */
+        private _updateRenderElementsFromData;
+        /**
+         * @en Clear all render elements.
+         * @zh 清除所有渲染元素。
+         */
+        _clearRenderElements(): void;
+        /** @internal */
+        _getMaterialByName(name: string, blendMode: number): Material;
+        /** @internal */
+        _getMaterial(texture: Texture2D, blendMode: number): Material;
+    }
+    /**
+     * @en Creator class for index buffer (IB) in spine rendering.
+     * @zh Spine渲染中用于创建索引缓冲区（IB）的类。
+     * @blueprintIgnore
+     */
+    class IBCreator {
+        /**
+         * @en The index type.
+         * @zh 索引类型。
+         */
+        type: IndexFormat;
+        /**
+         * @en The byte count of the index type.
+         * @zh 索引类型字节数量。
+         */
+        size: number;
+        /**
+         * @en The index buffer array.
+         * @zh 索引缓冲区数组。
+         */
+        ib: Uint16Array | Uint32Array | Uint8Array;
+        /**
+         * @en The actual length of the index buffer.
+         * @zh 索引缓冲区的实际长度。
+         */
+        ibLength: number;
+        /**
+         * @en The Max length of the index buffer.
+         * @zh 索引缓冲区的最大长度。
+         */
+        maxIndexCount: number;
+        /**
+         * @en The output render data for multiple renders.
+         * @zh 用于多重渲染的输出渲染数据。
+         */
+        outRenderData: MultiRenderData;
+        /** @ignore */
+        constructor();
+        /**
+         *
+         * @zh 根据顶点长度设置索引类型
+         * @param vertexCount 顶点数目
+         */
+        updateFormat(vertexCount: number): void;
+        /**
+         * @en set index buffer length.
+         * @param maxIndexCount The Max length of Index count.
+         * @zh 设置索引缓冲长度。
+         * @param maxIndexCount 索引最大个数。
+         */
+        setBufferLength(maxIndexCount: number): void;
+        private _updateBuffer;
+        /**
+         * @en Create index buffer for attachments.
+         * @param attachs Array of attachment parse data.
+         * @param vbCreator Vertex buffer creator.
+         * @param order Optional draw order array.
+         * @zh 为附件创建索引缓冲区。
+         * @param attachs 附件解析数据数组。
+         * @param vbCreator 顶点缓冲区创建器。
+         * @param order 可选的绘制顺序数组。
+         */
+        createIB(attachs: AttachmentParse[], vbCreator: VBCreator, order?: number[]): void;
+    }
+    type RenderData = {
+        attachment: string;
+        material?: Material;
+        textureName: string;
+        blendMode: number;
+        offset: number;
+        length: number;
+    };
+    /**
+     * @en Represents a collection of multiple render data.
+     * @zh 表示多个渲染数据的集合。
+     */
+    class MultiRenderData {
+        /**
+         * @en Unique identifier for MultiRenderData instances.
+         * @zh MultiRenderData 实例的唯一标识符。
+         */
+        static ID: number;
+        id: number;
+        /**
+         * @en Render data array.
+         * @zh 渲染数据数组。
+         */
+        renderData: RenderData[];
+        /**
+         * @en The current RenderData being processed.
+         * @zh 当前正在处理的 RenderData。
+         */
+        currentData: RenderData;
+        /** @ignore */
+        constructor();
+        /**
+         * @en Adds new render data to the collection.
+         * @param textureName The name of the texture.
+         * @param blendMode The blend mode for rendering.
+         * @param offset The starting offset in the vertex buffer.
+         * @param length The initial length of data.
+         * @zh 向集合中添加新的渲染数据。
+         * @param textureName 纹理的名称。
+         * @param blendMode 渲染的混合模式。
+         * @param offset 顶点缓冲区中的起始偏移量。
+         * @param length 数据的初始长度。
+         */
+        addData(textureName: string, blendMode: number, offset: number, length: number, attachment: string): void;
+        /**
+         * @en Finalizes the current render data by updating its length.
+         * @param length The final length of the data.
+         * @zh 通过更新长度来完成当前渲染数据的处理。
+         * @param length 数据的最终长度。
+         */
+        endData(length: number): void;
+    }
+    /**
+     * @en Shared bone mapping registry for a Spine skeleton.
+     * Maintains a unified mapping of bone indices to IDs across all VBCreators of a SpineTemplet.
+     * @zh Spine骨架的共享骨骼映射注册表。
+     * 在一个SpineTemplet的所有VBCreator之间维护统一的骨骼索引到ID的映射。
+     */
+    class SpineBoneRegistry {
+        /**
+         * @en Current maximum bone ID assigned.
+         * @zh 当前分配的最大骨骼ID。
+         */
+        private _nextBoneId;
+        /**
+         * @en Map of bone index to assigned bone ID.
+         * @zh 骨骼索引到分配的骨骼ID的映射。
+         */
+        private _boneIndexToId;
+        /**
+         * @en Flattened array storing [boneId, boneIndex, boneId, boneIndex, ...] pairs.
+         * @zh 扁平化数组，存储 [骨骼ID, 骨骼索引, 骨骼ID, 骨骼索引, ...] 对。
+         */
+        private _boneIdIndexPairs;
+        constructor();
+        /**
+         * @en Get or register a bone ID for the given bone index.
+         * If the bone index hasn't been registered, assigns a new ID.
+         * @param boneIndex The bone index from spine skeleton.
+         * @returns The assigned bone ID.
+         * @zh 获取或注册给定骨骼索引的骨骼ID。
+         * 如果骨骼索引尚未注册，则分配一个新的ID。
+         * @param boneIndex 来自spine骨架的骨骼索引。
+         * @returns 分配的骨骼ID。
+         */
+        getOrRegisterBoneId(boneIndex: number): number;
+        /**
+         * @en Get the bone ID for a registered bone index.
+         * @param boneIndex The bone index to look up.
+         * @returns The bone ID if registered, undefined otherwise.
+         * @zh 获取已注册骨骼索引的骨骼ID。
+         * @param boneIndex 要查找的骨骼索引。
+         * @returns 如果已注册则返回骨骼ID，否则返回undefined。
+         */
+        getBoneId(boneIndex: number): number | undefined;
+        /**
+         * @en Get total number of registered bones.
+         * @returns The count of unique bones registered.
+         * @zh 获取已注册的骨骼总数。
+         * @returns 已注册的唯一骨骼数量。
+         */
+        get boneCount(): number;
+        /**
+         * @en Get the flattened array of bone ID and index pairs.
+         * Format: [boneId0, boneIndex0, boneId1, boneIndex1, ...]
+         * @returns Array of bone ID-index pairs.
+         * @zh 获取扁平化的骨骼ID和索引对数组。
+         * 格式：[骨骼ID0, 骨骼索引0, 骨骼ID1, 骨骼索引1, ...]
+         * @returns 骨骼ID-索引对数组。
+         */
+        get boneIdIndexPairs(): number[];
+        /**
+         * @en Get the map of bone index to bone ID.
+         * @returns Map from bone index to bone ID.
+         * @zh 获取骨骼索引到骨骼ID的映射。
+         * @returns 从骨骼索引到骨骼ID的映射。
+         */
+        get boneIndexToIdMap(): Map<number, number>;
+        /**
+         * @en Clear all registered bone data.
+         * @zh 清除所有已注册的骨骼数据。
+         */
+        clear(): void;
+    }
+    /**
+     * @en Abstract class for creating vertex buffers in a spine skeleton animation system.
+     * @zh 用于在spine骨骼动画系统中创建顶点缓冲区的抽象类。
+     * @blueprintIgnore
+     */
+    abstract class VBCreator {
+        /**
+         * @en Shared bone registry for managing bone index to ID mappings across all VBCreators of a SpineTemplet.
+         * @zh 共享骨骼注册表，用于管理一个SpineTemplet的所有VBCreator之间的骨骼索引到ID映射。
+         */
+        boneRegistry: SpineBoneRegistry;
+        /**
+         * @en Local map of bone index to bone ID used by this VBCreator. (Subset of boneRegistry)
+         * @zh 此VBCreator使用的骨骼索引到骨骼ID的本地映射。(boneRegistry的子集)
+         */
+        localBoneIndexToId: Map<number, number>;
+        /**
+         * @en Local array of bone ID-index pairs used by this VBCreator.
+         * Format: [boneId, boneIndex, boneId, boneIndex, ...]
+         * @zh 此VBCreator使用的骨骼ID-索引对的本地数组。
+         * 格式：[骨骼ID, 骨骼索引, 骨骼ID, 骨骼索引, ...]
+         */
+        localBoneIdIndexPairs: number[];
+        /**
+         * @en Vertex buffer data.
+         * @zh 顶点缓冲区数据。
+         */
+        vb: Float32Array;
+        /**
+         * @en Length of the vertex buffer.
+         * @zh 顶点缓冲区的长度。
+         */
+        vbLength: number;
+        /**
+         * @en The Max Length of the vertex buffer.
+         * @zh 顶点缓冲区的最大长度。
+         */
+        maxVertexCount: number;
+        /**
+         * @en Map of slot ID to attachment position data.
+         * @zh 插槽ID到附件位置数据的映射。
+         */
+        slotVBMap: Map<number, Map<string, TAttamentPos>>;
+        /** @internal */
+        _vertexSize: number;
+        /** @internal 没有骨骼的顶点数 */
+        _baseVtxCount: number;
+        _boneVtxCount: number;
+        /** @internal TODO 双顶点色模式 */
+        twoColorTint: boolean;
+        private _vertexDeclaration;
+        /**
+         * @en Vertex flag string defining the vertex format.
+         * @zh 定义顶点格式的顶点标志字符串。
+         */
+        vertexFlag: string;
+        constructor(vertexFlag: string, maxVertexCount?: number, auto?: boolean, boneRegistry?: SpineBoneRegistry);
+        /**
+         * @en set vertex buffer length.
+         * @param maxVertexCount The Max length of Vertex count.
+         * @zh 设置顶点缓冲长度。
+         * @param maxVertexCount 顶点缓存区最大个数。
+         */
+        setBufferLength(maxVertexCount: number): void;
+        protected _updateBuffer(): void;
+        get vertexSize(): number;
+        get vertexDeclaration(): VertexDeclaration;
+        abstract appendVertexArray(attachmentParse: AttachmentParse, vertexArray: Float32Array, offset: number, creator: VBCreator): number;
+        /**
+         * @en Append deform data to the output array.
+         * @param attachmentParse Attachment parse data.
+         * @param deform Deform data array.
+         * @param offset Offset in the output array.
+         * @param out Output array.
+         * @zh 将变形数据追加到输出数组。
+         * @param attachmentParse 附件解析数据。
+         * @param deform 变形数据数组。
+         * @param offset 输出数组中的偏移量。
+         * @param out 输出数组。
+         */
+        abstract appendDeform(attachmentParse: AttachmentParse, deform: Array<number>, offset: number, out: Float32Array): void;
+        /**
+         * @en Append vertex buffer and create index buffer for an attachment.
+         * @param attach Attachment parse data.
+         * @zh 为附件追加顶点缓冲区并创建索引缓冲区。
+         * @param attach 附件解析数据。
+         */
+        appendAndCreateIB(attach: AttachmentParse): void;
+        /**
+         * @en Get or register the bone ID for a given bone index.
+         * Registers the bone in both the shared registry and local tracking.
+         * @param boneIndex Bone index from spine skeleton.
+         * @returns Bone ID.
+         * @zh 获取或注册给定骨骼索引的骨骼ID。
+         * 在共享注册表和本地跟踪中都注册该骨骼。
+         * @param boneIndex 来自spine骨架的骨骼索引。
+         * @returns 骨骼ID。
+         */
+        getBoneId(boneIndex: number): number;
+        /**
+         * @en Append vertex buffer data for an attachment.
+         * @param attach Attachment parse data.
+         * @returns Offset in the vertex buffer.
+         * @zh 为附件追加顶点缓冲区数据。
+         * @param attach 附件解析数据。
+         * @returns 顶点缓冲区中的偏移量。
+         */
+        appendVB(attach: AttachmentParse): number | TAttamentPos;
+        /**
+         * @en Reset the vertex buffer.
+         * @param attach Attachment parse data.
+         * @zh 重置顶点缓冲区。
+         * @param attach 附件解析数据。
+         */
+        resetVB(attach: AttachmentParse): void;
+        _cloneTo(target: VBCreator): void;
+        abstract _create(): VBCreator;
+        /**
+         * @en Clone this VBCreator.
+         * @zh 克隆此VBCreator。
+         */
+        clone(): VBCreator;
+    }
+    /**
+     * @en VBBoneCreator class used to handle bone-specific vertex buffer creation.
+     * @zh VBBoneCreator 类用于处理骨骼特定的顶点缓冲区创建。
+     */
+    class VBBoneCreator extends VBCreator {
+        _create(): VBCreator;
+        /**
+         * @en Appends vertex array data for an attachment.
+         * @param attachmentParse The attachment parse data.
+         * @param vertexArray The vertex array to append to.
+         * @param offset The current offset in the vertex array.
+         * @param creator The creator.
+         * @zh 为附件追加顶点数组数据。
+         * @param attachmentParse 附件解析数据。
+         * @param vertexArray 要追加到的顶点数组。
+         * @param offset 顶点数组中的当前偏移量。
+         * @param creator 创建器。
+         */
+        appendVertexArray(attachmentParse: AttachmentParse, vertexArray: Float32Array, offset: number, creator: VBCreator): number;
+        /**
+         * @en Appends deform data to the output array.
+         * @param attachmentParse The attachment parse data.
+         * @param deform The deform data array.
+         * @param offset The current offset in the output array.
+         * @param out The output array to append to.
+         * @zh 将变形数据追加到输出数组。
+         * @param attachmentParse 附件解析数据。
+         * @param deform 变形数据数组。
+         * @param offset 输出数组中的当前偏移量。
+         * @param out 要追加到的输出数组。
+         */
+        appendDeform(attachmentParse: AttachmentParse, deform: Array<number>, offset: number, out: Float32Array): void;
+    }
+    /**
+     * @en VBRigBodyCreator class used to handle rigid body specific vertex buffer creation.
+     * @zh VBRigBodyCreator 类用于处理刚体特定的顶点缓冲区创建。
+     */
+    class VBRigBodyCreator extends VBCreator {
+        /** @internal */
+        _create(): VBCreator;
+        /**
+         * @en Appends vertex array data for an attachment.
+         * @param attachmentParse The attachment parse data.
+         * @param vertexArray The vertex array to append to.
+         * @param offset The current offset in the vertex array.
+         * @param creator The creator.
+         * @zh 为附件追加顶点数组数据。
+         * @param attachmentParse 附件解析数据。
+         * @param vertexArray 要追加到的顶点数组。
+         * @param offset 顶点数组中的当前偏移量。
+         * @param creator 创建器。
+         */
+        appendVertexArray(attachmentParse: AttachmentParse, vertexArray: Float32Array, offset: number, creator: VBCreator): number;
+        /**
+         * @en Appends deform data to the output array.
+         * @param attachmentParse The attachment parse data.
+         * @param deform The deform data array.
+         * @param offset The current offset in the output array.
+         * @param out The output array to append to.
+         * @zh 将变形数据追加到输出数组。
+         * @param attachmentParse 附件解析数据。
+         * @param deform 变形数据数组。
+         * @param offset 输出数组中的当前偏移量。
+         * @param out 要追加到的输出数组。
+         */
+        appendDeform(attachmentParse: AttachmentParse, deform: Array<number>, offset: number, out: Float32Array): void;
+    }
+    type TAttamentPos = {
+        offset: number;
+        attachment: AttachmentParse;
+    };
     type FrameRenderData = {
         ib?: Uint16Array | Uint32Array | Uint8Array;
         vChanges?: IVBChange[];
@@ -81129,6 +85635,20 @@ declare namespace Laya {
     type FrameChanges = {
         iChanges?: IChange[];
         vChanges?: IVBChange[];
+    };
+    interface RenderDataBlock {
+        vertexData: Float32Array;
+        vertexLength: number;
+        indexData?: Uint16Array;
+        indexLength?: number;
+        vertexCount?: number;
+        indexCount?: number;
+        vertexBufferLength?: number;
+        indexBufferLength?: number;
+    }
+    type FrameRenderCache = {
+        renderBlocks: RenderDataBlock[];
+        materials: Material[];
     };
     /**
      * @en Represents an animation renderer for spine animations.
@@ -81175,18 +85695,22 @@ declare namespace Laya {
          * @zh 每帧的事件数组。
          */
         eventsFrames: spine.Event[][];
+        hasEvent: boolean;
         /**
          * @en Indicates if the animation is cached.
          * @zh 指示动画是否已缓存。
          */
         isCache: boolean;
         /**
-         * @en Creates a Float32Array representing a bone's transform.
-         * @param bone The spine bone to get the transform from.
-         * @zh 创建表示骨骼变换的Float32Array。
-         * @param bone 要获取变换的spine骨骼。
+         * @en Indicates if the animation contains clipped attachments.
+         * @zh 指示动画是否包含剪辑附件。
          */
-        static getFloat32Array(bone: spine.Bone): Float32Array;
+        hasClip: boolean;
+        /**
+         * @en Indicates if the animation has render cache (vertices, indices, submeshes).
+         * @zh 指示动画是否有渲染缓存（顶点、索引、submesh）。
+         */
+        hasRenderCache: boolean;
         /** @ignore */
         constructor();
         /**
@@ -81199,21 +85723,14 @@ declare namespace Laya {
          */
         getFrameIndex(time: number, frameIndex: number): number;
         /**
-         * @en Caches bone transforms for the animation.
-         * @param preRender The pre-renderer to use for caching.
-         * @zh 缓存动画的骨骼变换。
-         * @param preRender 用于缓存的预渲染器。
-         */
-        cacheBones(preRender: SketonOptimise): void;
-        /**
          * @en Checks and prepares the animation data.
          * @param animation The spine animation to check.
-         * @param preRender The pre-renderer to use.
+         * @param optimise The optimizer to use.
          * @zh 检查并准备动画数据。
          * @param animation 要检查的spine动画。
-         * @param preRender 要使用的预渲染器。
+         * @param optimise 要使用的优化器。
          */
-        check(animation: spine.Animation, preRender: SketonOptimise): void;
+        check(animation: spine.Animation, optimise: SkeletonOptimise): void;
         /**
          * @en Creates skin animation render data.
          * @param mainVB The main vertex buffer creator.
@@ -81292,59 +85809,19 @@ declare namespace Laya {
          */
         isNormalRender: boolean;
         /**
-         * @en Function to update bone matrices.
-         * @zh 更新骨骼矩阵的函数。
+         * @en Render cache for each frame (vertices, indices, submeshes, materials).
+         * @zh 每帧的渲染缓存（顶点、索引、submesh、材质）。
          */
-        updateBoneMat: (delta: number, animation: AnimationRender, bones: spine.Bone[], state: spine.AnimationState, boneMat: Float32Array, ofx: number, ofy: number) => void;
+        renderCache: FrameRenderCache[];
+        /**
+         * @en Indicates if the skin animation has render cache.
+         * @zh 指示皮肤动画是否有渲染缓存。
+         */
+        hasRenderCache: boolean;
         /** @ignore */
         constructor();
         getMesh(): Mesh2D;
         getFrameData(frameIndex: number): FrameRenderData;
-        /**
-         * @en Updates bone matrices using cached data.
-         * @param delta Time delta.
-         * @param animation Animation render data.
-         * @param bones Spine bones.
-         * @param state Spine animation state.
-         * @param boneMat Bone matrix array.
-         * @zh 使用缓存数据更新骨骼矩阵。
-         * @param delta 时间增量。
-         * @param animation 动画渲染数据。
-         * @param bones 骨骼数组。
-         * @param state 骨骼动画状态。
-         * @param boneMat 骨骼矩阵数组。
-         */
-        updateBoneMatCache(delta: number, animation: AnimationRender, bones: spine.Bone[], state: spine.AnimationState, boneMat: Float32Array, ofx?: number, ofy?: number): void;
-        /**
-         * @en Updates bone matrices using cached data and handles events.
-         * @param delta Time delta.
-         * @param animation Animation render data.
-         * @param bones Spine bones.
-         * @param state Spine animation state.
-         * @param boneMat Bone matrix array.
-         * @zh 使用缓存数据更新骨骼矩阵并处理事件。
-         * @param delta 时间增量。
-         * @param animation 动画渲染数据。
-         * @param bones 骨骼数组。
-         * @param state 骨骼动画状态。
-         * @param boneMat 骨骼矩阵数组。
-         */
-        updateBoneMatCacheEvent(delta: number, animation: AnimationRender, bones: spine.Bone[], state: spine.AnimationState, boneMat: Float32Array): void;
-        /**
-         * @en Updates bone matrices using individual bone data.
-         * @param delta Time delta.
-         * @param animation Animation render data.
-         * @param bones Spine bones.
-         * @param state Spine animation state.
-         * @param boneMat Bone matrix array.
-         * @zh 使用单个骨骼数据更新骨骼矩阵。
-         * @param delta 时间增量。
-         * @param animation 动画渲染数据。
-         * @param bones 骨骼数组。
-         * @param state 骨骼动画状态。
-         * @param boneMat 骨骼矩阵数组。
-         */
-        updateBoneMatByBone(delta: number, animation: AnimationRender, bones: spine.Bone[], state: spine.AnimationState, boneMat: Float32Array, ofx?: number, ofy?: number): void;
         /**
          * @en Initializes the skin animation render data.
          * @param changeMap Map of frame changes.
@@ -81371,93 +85848,6 @@ declare namespace Laya {
          * @zh 销毁当前Render。
          */
         destroy(): void;
-    }
-    /**
-     * @en Animation rendering proxy class for managing animation state and rendering.
-     * @zh 动画渲染代理类，用于管理动画状态和渲染。
-     */
-    class AnimationRenderProxy {
-        /**
-         * @en The animation state.
-         * @zh 动画状态。
-         */
-        state: spine.AnimationState;
-        /**
-         * @en The current animation time.
-         * @zh 当前动画时间。
-         */
-        currentTime: number;
-        /**
-         * @en The current frame index.
-         * @zh 当前帧索引。
-         */
-        currentFrameIndex: number;
-        /**
-         * @en The animation renderer.
-         * @zh 动画渲染器。
-         */
-        animator: AnimationRender;
-        /**
-         * @en The current skin animation render data.
-         * @zh 当前皮肤动画渲染数据。
-         */
-        currentSKin: SkinAniRenderData;
-        /**
-         * @en Creates an instance of AnimationRenderProxy.
-         * @param animator The animation renderer.
-         * @zh 创建 AnimationRenderProxy 的实例。
-         * @param animator 动画渲染器。
-         */
-        constructor(animator: AnimationRender);
-        /**
-         * @en Sets the skin index.
-         * @param value The skin index to set.
-         * @zh 设置皮肤索引。
-         * @param value 要设置的皮肤索引。
-         */
-        set skinIndex(value: number);
-        /**
-         * @en Gets the name of the animator.
-         * @returns The name of the animator.
-         * @zh 获取动画器的名称。
-         * @returns 动画器的名称。
-         */
-        get name(): string;
-        /**
-         * @en Resets the animation state.
-         * @zh 重置动画状态。
-         */
-        reset(): void;
-        /**
-         * @en Renders the animation without matrix transformation.
-         * @param slots The slots to render.
-         * @param updator The VB/IB updater.
-         * @param curTime The current animation time.
-         * @zh 不进行矩阵变换的动画渲染。
-         * @param slots 要渲染的插槽。
-         * @param updator VB/IB 更新器。
-         * @param curTime 当前动画时间。
-         */
-        renderWithOutMat(slots: spine.Slot[], updator: SkinRenderUpdate, curTime: number): void;
-        /**
-         * @en Renders the animation with matrix transformation.
-         * @param bones The bones to render.
-         * @param slots The slots to render.
-         * @param updator The VB/IB updater.
-         * @param curTime The current animation time.
-         * @param boneMat The bone matrix.
-         * @param ofx 偏移x。
-         * @param ofy 偏移y。
-         * @zh 进行矩阵变换的动画渲染。
-         * @param bones 要渲染的骨骼。
-         * @param slots 要渲染的插槽。
-         * @param updator VB/IB 更新器。
-         * @param curTime 当前动画时间。
-         * @param boneMat 骨骼矩阵。
-         * @param ofx 偏移x。
-         * @param ofy 偏移y。
-         */
-        render(bones: spine.Bone[], slots: spine.Slot[], updator: SkinRenderUpdate, curTime: number, boneMat: Float32Array, ofx: number, ofy: number): void;
     }
     /**
      * @en Represents a parser for spine attachments.
@@ -81580,6 +85970,226 @@ declare namespace Laya {
         b: number;
         a: number;
     };
+    enum ERenderProxyType {
+        RenderNormal = 0,
+        RenderRigidBody = 1,
+        RenderOptimize = 2,
+        RenderBake = 3
+    }
+    /**
+     * @en Base class for Spine optimize render, supporting both 2D and 3D rendering.
+     * @zh Spine优化渲染基类,支持2D和3D渲染。
+     */
+    abstract class BaseOptimizeRender implements ISpineRender {
+        /** @internal */
+        updater: SpineRenderUpdater;
+        /** @internal */
+        _skinIndex: number;
+        /** @internal */
+        _curAnimationName: string;
+        /** @internal */
+        _dynamicMap: Map<number, Mesh2D[]>;
+        /**
+         * @en Color of the Spine object.
+         * @zh Spine 对象的颜色。
+         */
+        spineColor: Color;
+        /** @internal */
+        _optimize: SkeletonOptimise;
+        /** @internal */
+        _skeleton: spine.Skeleton;
+        /** @internal */
+        protected _state: spine.AnimationState;
+        /** @internal */
+        protected _stateData: spine.AnimationStateData;
+        /** @internal */
+        protected _skinAttach: SkinAttach;
+        /** @internal */
+        protected _currentAnimator: AnimationRender;
+        /**
+         * @en Current render proxy.
+         * @zh 当前渲染代理。
+         */
+        renderProxy: IRender;
+        /**
+         * @en Map of ERenderProxyType to IRender objects.
+         * @zh ERenderProxyType 到 IRender 对象的映射。
+         */
+        renderProxyMap: Map<ERenderProxyType, IRender>;
+        /** @internal */
+        _templet: SpineTemplet;
+        /**
+         * @en Bake data for the Spine animation.
+         * @zh Spine 动画的烘焙数据。
+         */
+        bakeData: TSpineBakeData;
+        private _transform;
+        /** @internal */
+        _enableCache: boolean;
+        /**
+         * @en Current render mode.
+         * @zh 当前渲染模式。
+         */
+        protected _mode: ESpineRenderMode;
+        get mode(): ESpineRenderMode;
+        set mode(value: ESpineRenderMode);
+        state: ESpineRenderState;
+        currentTime: number;
+        trackEntry: spine.TrackEntry;
+        private _listeners;
+        /** @internal */
+        _premultipliedAlpha: boolean;
+        get premultipliedAlpha(): boolean;
+        set premultipliedAlpha(value: boolean);
+        /**
+         * @en Whether this is for 3D rendering.
+         * @zh 是否用于3D渲染。
+         */
+        protected abstract readonly is3D: boolean;
+        /** @ignore */
+        constructor();
+        /**
+         * @en Initialize the renderer.
+         * @param templet The Spine template. Optional, subclasses can get it from owner if not provided.
+         * @zh 初始化渲染器。
+         * @param templet Spine 模板。可选，子类可以从owner获取如果未提供。
+         */
+        init(templet: SpineTemplet): void;
+        /**
+         * @en Update render elements from subMeshes and materials.
+         * @param subMeshes Array of sub meshes.
+         * @param materials Array of materials.
+         * @zh 根据子网格和材质数组更新渲染元素。
+         * @param subMeshes 子网格数组。
+         * @param materials 材质数组。
+         */
+        abstract _updateRenderElements(subMeshes: IRenderGeometryElement[], materials: Material[]): void;
+        /**
+         * @en Clear all render elements.
+         * @zh 清除所有渲染元素。
+         */
+        abstract _clearRenderElements(): void;
+        /**
+         * @en Get material by name and blend mode.
+         * @param name Texture name.
+         * @param blendMode Blend mode.
+         * @zh 通过名称和混合模式获取材质。
+         * @param name 纹理名称。
+         * @param blendMode 混合模式。
+         */
+        abstract _getMaterialByName(name: string, blendMode: number): Material;
+        /**
+         * @en Get material by texture and blend mode.
+         * @param texture Texture.
+         * @param blendMode Blend mode.
+         * @zh 通过纹理和混合模式获取材质。
+         * @param texture 纹理。
+         * @param blendMode 混合模式。
+         */
+        abstract _getMaterial(texture: Texture2D, blendMode: number): Material;
+        getSkeleton(): spine.Skeleton;
+        showSkinByIndex(skinIndex: number): void;
+        setAttachment(slotName: string, attachmentName: string): void;
+        update(delta: number): void;
+        _updateCacheEvent(delta: number): void;
+        /**
+         * @en Render the current animation at a specific time.
+         * @param time The time to render the animation at.
+         * @zh 在特定时间渲染当前动画。
+         * @param time 要渲染动画的时间。
+         */
+        render(time: number, physicsUpdate: number): void;
+        getSpineColor(): Color;
+        /**
+         * @en Initialize render proxies.
+         * @zh 初始化渲染代理。
+         */
+        protected initRenderProxies(): void;
+        /**
+         * @en Create render proxies. Subclasses should implement this.
+         * @zh 创建渲染代理。子类应该实现此方法。
+         */
+        protected abstract _createRenderProxies(): void;
+        /**
+         * @en Destroy the BaseOptimizeRender instance.
+         * @zh 销毁 BaseOptimizeRender 实例。
+         */
+        destroy(): void;
+        /**
+         * @en Initialize bake data for the Spine animation.
+         * @param obj Bake data object.
+         * @zh 初始化 Spine 动画的烘焙数据。
+         * @param obj 烘焙数据对象。
+         */
+        initBake(obj: TSpineBakeData): void;
+        /**
+         * @en Create baked renderer. Subclasses should implement this.
+         * @zh 创建烘焙渲染器。子类应该实现此方法。
+         */
+        protected abstract _createBakedRenderer(): IRender;
+        /**
+         * @en Change the current skeleton.
+         * @param skeleton The new spine skeleton to use.
+         * @zh 更改当前骨骼。
+         * @param skeleton 要使用的新 spine 骨骼。
+         */
+        changeSkeleton(skeleton: spine.Skeleton): void;
+        /**
+         * @en Set the skin index for rendering.
+         * @param index The index of the skin to set.
+         * @zh 设置用于渲染的皮肤索引。
+         * @param index 要设置的皮肤索引。
+         */
+        setSkinIndex(index: number): void;
+        /**
+         * @en Update shader defines based on skin. Subclasses should implement this.
+         * @zh 根据皮肤更新着色器定义。子类应该实现此方法。
+         */
+        protected abstract _updateSkinShaderDefines(): void;
+        /**
+         * 获取对应类型的 Dynamic mesh
+         * @param vertexDeclaration
+         * @param create
+         * @param index [index=0]
+         * @returns
+         */
+        getDynamicMesh(vertexDeclaration: VertexDeclaration, create?: boolean, index?: number): Mesh2D;
+        reset(): void;
+        /**
+         * @en Play a specific animation.
+         * @param animationName The name of the animation to play.
+         * @param loop Whether to loop
+         * @param trackIndex Track index
+         * @param start Start time (seconds)
+         * @param end End time (seconds), 0 means to end
+         * @zh 播放特定的动画。
+         * @param animationName 要播放的动画名称。
+         */
+        play(animationName: string, loop?: boolean, trackIndex?: number, start?: number, end?: number): void;
+        addAnimation(animationName: string, loop?: boolean, delay?: number, trackIndex?: number): void;
+        setMix(fromAnimation: string, toAnimation: string, duration: number): void;
+        findBone(boneName: string): IBoneInfo | null;
+        findSlot(slotName: string): ISlotInfo | null;
+        setSkeletonPosition(x: number, y: number): void;
+        physicsTranslate(x: number, y: number): void;
+        getBones(): IBoneInfo[];
+        getSkeletonTransform(): Vector2;
+        resetExternalSkin(): void;
+        setEventListener(listeners: {
+            start?: (entry: any) => void;
+            interrupt?: (entry: any) => void;
+            end?: (entry: any) => void;
+            dispose?: (entry: any) => void;
+            complete?: (entry: any) => void;
+            event?: (entry: any, event: any) => void;
+        }): void;
+        dispatchEvent(entry: spine.TrackEntry, type: string, event: any): void;
+        complete(): void;
+        enableCache(): void;
+        disableCache(): void;
+        setSlotTexture(slotName: string, texture: Texture, createAttachment: boolean): void;
+        setTempletAttachment(templet: SpineTemplet, targetSlotName: string, skinName: string, attachmentName: string): void;
+    }
     /**
      * @en Represents a change in deformation for a slot in a spine animation.
      * @zh 表示骨骼动画中一个插槽的变形变化。
@@ -81765,168 +86375,18 @@ declare namespace Laya {
         changeOrder(attachMap: AttachmentParse[]): number[] | null;
     }
     /**
-     * @en Creator class for index buffer (IB) in spine rendering.
-     * @zh Spine渲染中用于创建索引缓冲区（IB）的类。
-     * @blueprintIgnore
-     */
-    class IBCreator {
-        /**
-         * @en The index type.
-         * @zh 索引类型。
-         */
-        type: IndexFormat;
-        /**
-         * @en The byte count of the index type.
-         * @zh 索引类型字节数量。
-         */
-        size: number;
-        /**
-         * @en The index buffer array.
-         * @zh 索引缓冲区数组。
-         */
-        ib: Uint16Array | Uint32Array | Uint8Array;
-        /**
-         * @en The actual length of the index buffer.
-         * @zh 索引缓冲区的实际长度。
-         */
-        ibLength: number;
-        /**
-         * @en The Max length of the index buffer.
-         * @zh 索引缓冲区的最大长度。
-         */
-        maxIndexCount: number;
-        /**
-         * @en The output render data for multiple renders.
-         * @zh 用于多重渲染的输出渲染数据。
-         */
-        outRenderData: MultiRenderData;
-        /** @ignore */
-        constructor();
-        /**
-         *
-         * @zh 根据顶点长度设置索引类型
-         * @param vertexCount 顶点数目
-         */
-        updateFormat(vertexCount: number): void;
-        /**
-         * @en set index buffer length.
-         * @param maxIndexCount The Max length of Index count.
-         * @zh 设置索引缓冲长度。
-         * @param maxIndexCount 索引最大个数。
-         */
-        setBufferLength(maxIndexCount: number): void;
-        private _updateBuffer;
-        /**
-         * @en Create index buffer for attachments.
-         * @param attachs Array of attachment parse data.
-         * @param vbCreator Vertex buffer creator.
-         * @param order Optional draw order array.
-         * @zh 为附件创建索引缓冲区。
-         * @param attachs 附件解析数据数组。
-         * @param vbCreator 顶点缓冲区创建器。
-         * @param order 可选的绘制顺序数组。
-         */
-        createIB(attachs: AttachmentParse[], vbCreator: VBCreator, order?: number[]): void;
-    }
-    interface IChange {
-        change(vb: VBCreator, slotAttachMap: Map<number, Map<string, AttachmentParse>>): boolean;
-        changeOrder(attachMap: AttachmentParse[]): number[] | null;
-    }
-    interface IGetBone {
-        getBoneId(boneIndex: number): number;
-    }
-    /**
-     * @blueprintIgnore
-     */
-    interface ISpineOptimizeRender {
-        init(skeleton: spine.Skeleton, templet: SpineTemplet, renderNode: BaseRenderNode2D, state: spine.AnimationState): void;
-        play(animationName: string): void;
-        render(time: number): void;
-        setSkinIndex(index: number): void;
-        initBake(obj: TSpineBakeData): void;
-        changeSkeleton(skeleton: spine.Skeleton): void;
-        clearCacheMaterials(): void;
-        getSpineColor(): Color;
-        complete(): void;
-        destroy(): void;
-    }
-    interface IVBChange {
-        slotId: number;
-        startFrame: number;
-        endFrame: number;
-        apply(frame: number, vb: VBCreator, slots: spine.Slot[]): boolean;
-        initChange(vb: VBCreator): boolean;
-        clone(): IVBChange;
-    }
-    type RenderData = {
-        attachment: string;
-        material?: Material;
-        textureName: string;
-        blendMode: number;
-        offset: number;
-        length: number;
-    };
-    /**
-     * @en Represents a collection of multiple render data.
-     * @zh 表示多个渲染数据的集合。
-     */
-    class MultiRenderData {
-        /**
-         * @en Unique identifier for MultiRenderData instances.
-         * @zh MultiRenderData 实例的唯一标识符。
-         */
-        static ID: number;
-        id: number;
-        /**
-         * @en Render data array.
-         * @zh 渲染数据数组。
-         */
-        renderData: RenderData[];
-        /**
-         * @en The current RenderData being processed.
-         * @zh 当前正在处理的 RenderData。
-         */
-        currentData: RenderData;
-        /** @ignore */
-        constructor();
-        /**
-         * @en Adds new render data to the collection.
-         * @param textureName The name of the texture.
-         * @param blendMode The blend mode for rendering.
-         * @param offset The starting offset in the vertex buffer.
-         * @param length The initial length of data.
-         * @zh 向集合中添加新的渲染数据。
-         * @param textureName 纹理的名称。
-         * @param blendMode 渲染的混合模式。
-         * @param offset 顶点缓冲区中的起始偏移量。
-         * @param length 数据的初始长度。
-         */
-        addData(textureName: string, blendMode: number, offset: number, length: number, attachment: string): void;
-        /**
-         * @en Finalizes the current render data by updating its length.
-         * @param length The final length of the data.
-         * @zh 通过更新长度来完成当前渲染数据的处理。
-         * @param length 数据的最终长度。
-         */
-        endData(length: number): void;
-    }
-    /**
      * @en SketonOptimise class used for skeleton optimization.
      * @zh SketonOptimise 类用于骨骼优化。
      */
-    class SketonOptimise {
+    class SkeletonOptimise implements ISkeletonOptimise {
+        private static emptyBounds;
+        private _registTextures;
         /**
-         * @en Switch for normal rendering mode.
-         * @zh 普通渲染模式的开关。
+         * 4.2版本以上支持物理
+         * @en Indicates if physics is needed
+         * @zh 是否需要物理
          */
-        static normalRenderSwitch: boolean;
-        /** optimise render的最大骨骼数 */
-        static MAX_BONES: number;
-        /**
-         * @en Switch for caching mode.
-         * @zh 缓存模式的开关。
-         */
-        static cacheSwitch: boolean;
+        hasPhysics: boolean;
         /**
          * @en Indicates whether caching is possible.
          * @zh 表示是否可以缓存。
@@ -81936,7 +86396,12 @@ declare namespace Laya {
          * @en The spine skeleton object.
          * @zh spine骨骼对象。
          */
-        sketon: spine.Skeleton;
+        skeleton: spine.Skeleton;
+        /**
+         * @en The spine skeleton data.
+         * @zh spine骨骼数据。
+         */
+        data: spine.SkeletonData;
         _stateData: spine.AnimationStateData;
         _state: spine.AnimationState;
         /**
@@ -81970,21 +86435,36 @@ declare namespace Laya {
          * @zh 烘焙的spine数据。
          */
         bakeData: TSpineBakeData;
+        private _bones;
+        private _skinNames;
         /** @ignore */
         constructor();
-        /** @internal */
-        _initSpineRender(skeleton: spine.Skeleton, templet: SpineTemplet, renderNode: Spine2DRenderNode, state: spine.AnimationState): ISpineOptimizeRender;
+        getAllSkinNames(): string[];
+        getAnimationCount(): number;
+        getAniNameByIndex(index: number): string | null;
+        findAnimation(name: string): any | null;
+        hasAnimation(name: string): boolean;
+        getSkinIndexByName(skinName: string): number;
+        _getBounds(): {
+            x: number;
+            y: number;
+            width: number;
+            height: number;
+        };
+        getSkin(index: number): spine.Skin;
         /** @internal */
         _updateState(delta: number): spine.Bone[];
         /** @internal */
         _play(animationName: string): number;
         /**
          * @en Check and initialize the main attachment.
+         * @param skeleton The skeleton
          * @param skeletonData The skeleton data to check.
          * @zh 检查并初始化主附件。
+         * @param skeleton 骨骼对象。
          * @param skeletonData 要检查的骨骼数据。
          */
-        checkMainAttach(skeletonData: spine.SkeletonData): void;
+        checkMainAttach(skeleton: spine.Skeleton, data: spine.SkeletonData): void;
         /**
          * @en Parse attachments from skeleton data.
          * @param skeletonData The skeleton data to parse.
@@ -81992,6 +86472,8 @@ declare namespace Laya {
          * @param skeletonData 要解析的骨骼数据。
          */
         attachMentParse(skeletonData: spine.SkeletonData): void;
+        registerTexture(texture: Texture): void;
+        getTextureRegion(pageName: string, textureName: string): spine.TextureAtlasRegion;
         /**
          * @en Initialize animations from the skeleton data.
          * @param animations Array of animations to initialize.
@@ -81999,25 +86481,30 @@ declare namespace Laya {
          * @param animations 要初始化的动画数组。
          */
         initAnimation(animations: spine.Animation[]): void;
+        private _initBoneFrame;
         /**
          * @en Cache bone data for optimization.
          * @zh 缓存骨骼数据以进行优化。
          */
         cacheBone(): void;
-        destroy(): void;
         /**
-         * @en Initialize the skeleton with given slots.
-         * @param slots Array of spine slots.
-         * @zh 使用给定的插槽初始化骨骼。
-         * @param slots spine插槽数组。
+         * @en Cache normal mode render data (vertices, indices, submesh, materials).
+         * @zh 缓存 Normal 模式的渲染数据（顶点、索引、submesh、材质）。
          */
-        init(slots: spine.Slot[]): void;
+        cacheRender(): void;
+        private _cacheRenderForSkin;
+        destroy(): void;
     }
     /**
      * @en SkinAttach class represents skin attachment.
      * @zh SkinAttach类表示皮肤附件。
      */
     class SkinAttach {
+        /**
+         * @en Index of the skin attachment.
+         * @zh 皮肤附件的索引。
+         */
+        index: number;
         /**
          * @en Name of the skin attachment.
          * @zh 皮肤附件的名称。
@@ -82054,11 +86541,6 @@ declare namespace Laya {
          */
         _tempIbCreate: IBCreator;
         /**
-         * @en Indicates if there's any normal rendering.
-         * @zh 表示是否存在任何普通渲染。
-         */
-        hasNormalRender: boolean;
-        /**
          * @en Type of spine rendering.
          * @zh spine渲染的类型。
          */
@@ -82068,6 +86550,16 @@ declare namespace Laya {
          * @zh 影响一个顶点的最大骨骼数。
          */
         vertexBones: number;
+        /**
+         * @en The index of the rigid body bone.
+         * @zh 刚体骨骼的索引。
+         */
+        rbBoneIndex: number;
+        /**
+         * @en Indicates if two color tint is used.
+         * @zh 表示是否使用双色着色。
+         */
+        twoColorTint: boolean;
         /** @ignore */
         constructor();
         /**
@@ -82085,7 +86577,7 @@ declare namespace Laya {
          * @param skinData spine皮肤数据。
          * @param slots spine插槽数据数组。
          */
-        attachMentParse(skinData: spine.Skin, slots: spine.SlotData[]): void;
+        attachMentParse(skinData: spine.Skin, slots: spine.SlotData[], boneRegistry: SpineBoneRegistry): void;
         /**
          * @en Initialize the skin attachment.
          * @param slots Array of spine slot data.
@@ -82099,50 +86591,378 @@ declare namespace Laya {
          * @zh 使用此皮肤附件初始化动画器。
          * @param animator 要初始化的动画渲染器。
          */
-        initAnimator(animator: AnimationRender): void;
+        initAnimator(animator: AnimationRender): SkinAniRenderData;
     }
-    type TSpineBakeData = {
-        bonesNums: number;
-        aniOffsetMap: {
-            [key: string]: number;
-        };
-        texture2d?: Texture2D;
-        simpPath?: string;
-    };
-    type SketonDynamicInfo = {
-        /** 所有皮肤动画的最大顶点数 */
-        maxVertexCount: number;
-        /** 所有皮肤动画的最大索引数 */
-        maxIndexCount: number;
-    };
     /**
-     * @en SkinRenderUpdate used for rendering Spine skins.
-     * @zh SkinRenderUpdate 类用于渲染 Spine 皮肤。
+     * @en Buffer info for a single submesh (vertices + indices).
+     * @zh 单个 submesh 的缓冲区信息（顶点 + 索引）。
      */
-    class SkinRenderUpdate {
+    interface SubMeshBuffer {
+        vertexData: Float32Array;
+        indexData: Uint16Array;
+        vertexLength: number;
+        indexLength: number;
+        bufferState: IBufferState;
+        cacheVertex: Float32Array;
+        cacheIndex: Uint16Array;
+        offsetX: number;
+        offsetY: number;
+    }
+    /**
+     * @en Render batch structure - unified management of geometry, buffer and material.
+     * @zh 渲染批次结构 - 统一管理 geometry、buffer 和 material。
+     */
+    interface SpineRenderBatch extends IRenderBatch {
+        buffer: SubMeshBuffer;
+        materialIndex: number;
+    }
+    class SpineNormalRenderUpdater implements ISpineNormalUpdater {
+        /** @internal */
+        static _TEMP_COLOR: spine.Color;
+        /** @internal */
+        static _TEMP_COLOR2: spine.Color;
+        static positions: Float32Array;
+        static __init__(): void;
+        private clipper;
         /**
-         * @en The owner of this SkinRender.
-         * @zh 此 SkinRender 的所有者。
+         * @en Render batches array - each batch contains geometry, buffer and material.
+         * @zh 渲染批次数组 - 每个批次包含 geometry、buffer 和 material。
          */
-        owner: SpineOptimizeRender;
+        batches: SpineRenderBatch[];
         /**
-         * @en The name of the skin.
-         * @zh 皮肤的名称。
+         * @en Current batch index being built.
+         * @zh 当前正在构建的批次索引。
+         */
+        private _currentBatchIndex;
+        /**
+         * @en Maximum vertices per buffer (Uint16 max index value + 1).
+         * @zh 每个缓冲区的最大顶点数（Uint16 最大索引值 + 1）。
+         */
+        private static readonly MAX_VERTICES_PER_BUFFER;
+        _internalMaterials: Material[];
+        materials: Material[];
+        /** @internal */
+        _materialIndex: number;
+        needUpdate: boolean;
+        subMeshes: IRenderGeometryElement[];
+        autoCacheEnabled: boolean;
+        /**
+         * @en Restore rendering data from cache.
+         * @param cache Cached frame data.
+         * @param offsetX X axis offset.
+         * @param offsetY Y axis offset.
+         * @zh 从缓存恢复渲染数据。
+         * @param cache 缓存的帧数据。
+         * @param offsetX X轴偏移。
+         * @param offsetY Y轴偏移。
+         */
+        restoreFromCache(cache: FrameRenderCache, offsetX?: number, offsetY?: number): void;
+        /**
+         * @en Get or create current render batch.
+         * @zh 获取或创建当前渲染批次。
+         */
+        private getCurrentBatch;
+        /**
+         * @en Get current submesh buffer (for compatibility).
+         * @zh 获取当前 submesh 缓冲区（用于兼容性）。
+         */
+        private getCurrentSubMeshBuffer;
+        private ensureVerticesCapacity;
+        private ensureIndicesCapacity;
+        renderUpdate(time: number, skeleton: spine.Skeleton, updater: SpineRenderUpdater, slotRangeStart?: number, slotRangeEnd?: number, offsetX?: number, offsetY?: number): void;
+        private destroyBatch;
+        private addMaterial;
+        /**
+         * @en Check if the current submesh can append more vertices.
+         * @param verticesLength Number of vertices to be appended.
+         * @returns True if can append, false otherwise.
+         * @zh 检查当前 submesh 是否能够添加更多的顶点。
+         * @param verticesLength 要添加的顶点数量。
+         * @returns 如果可以添加则返回 true，否则返回 false。
+         */
+        canAppend(verticesLength: number): boolean;
+        private uploadBuffer;
+        /**
+         * @en Append clipped vertices and indices (cache raw data, apply offset on upload)
+         * @param vertices Array of vertex data.
+         * @param indices Array of index data.
+         * @param stride Vertex stride.
+         * @param offsetX Offset X.
+         * @param offsetY Offset Y.
+         * @zh 裁剪后的顶点和索引（缓存原始数据，上传时应用偏移）。
+         * @param vertices 顶点数据数组。
+         * @param indices 索引数据数组。
+         * @param stride 顶点步长。
+         * @param offsetX 偏移X。
+         * @param offsetY 偏移Y。
+         */
+        appendVerticesClip(vertices: ArrayLike<number>, indices: ArrayLike<number>, stride: number, offsetX: number, offsetY: number): void;
+        appendVertices(positions: spine.NumberArrayLike, uvs: spine.NumberArrayLike, finalColor: spine.Color, darkColor: spine.Color, verticesLength: number, indices: spine.NumberArrayLike, indicesLength: number, stride: number, offsetX: number, offsetY: number): void;
+        /**
+         * @en Export current render data to cache format.
+         * @returns Frame cache data.
+         * @zh 导出当前渲染数据为缓存格式。
+         * @returns 帧缓存数据。
+         */
+        exportToCache(): FrameRenderCache;
+        destroy(): void;
+    }
+    /**
+     * @en Base class for all Spine renderers.
+     * @zh 所有 Spine 渲染器的基础类。
+     */
+    abstract class SpineBaseRenderer implements IRender {
+        type: ESpineRenderMode;
+        /** @internal */
+        protected _shaderData: ShaderData;
+        /** @internal */
+        protected _skeleton: spine.Skeleton;
+        /**
+         * @en Array of Spine bones.
+         * @zh Spine 骨骼数组。
+         */
+        bones: spine.Bone[];
+        /**
+         * @en Array of Spine slots.
+         * @zh Spine 插槽数组。
+         */
+        slots: spine.Slot[];
+        /**
+         * @en The current updater.
+         * @zh 当前更新器
+         */
+        updater: SpineRenderUpdater | null;
+        /**
+         * @en Create a new instance of SpineBaseRenderer.
+         * @param shaderData The shader data.
+         * @zh 创建 SpineBaseRenderer 的新实例。
+         * @param shaderData 着色器数据。
+         */
+        constructor(shaderData: ShaderData);
+        destroy(): void;
+        /**
+         * @en Change the current skeleton.
+         * @param skeleton The new skeleton to use.
+         * @zh 更改当前骨骼。
+         * @param skeleton 要使用的新骨骼。
+         */
+        bind(updater: SpineRenderUpdater, skeleton: spine.Skeleton): void;
+        /**
+         * @en Abstract method to change the current render context.
+         * @param context The render context containing skin and animation updaters.
+         * @zh 更改当前渲染上下文的抽象方法。
+         * @param context 包含皮肤和动画更新器的渲染上下文。
+         */
+        abstract change(): void;
+        /**
+         * @en Abstract method called when leaving the current render state.
+         * @zh 离开当前渲染状态时调用的抽象方法。
+         */
+        abstract leave(): void;
+        /**
+         * @en Abstract method to render the current animation at a specific time.
+         * @param curTime The current time for rendering.
+         * @param boneMat The bone matrix for rendering.
+         * @zh 在特定时间渲染当前动画的抽象方法。
+         * @param curTime 渲染的当前时间。
+         * @param boneMat 用于渲染的骨骼矩阵。
+         */
+        abstract render(curTime: number, offsetX?: number, offsetY?: number): void;
+        /**
+         * @en Called after render to update render elements if needed.
+         * Subclasses can override this to handle render element updates.
+         * @param optimizeRender The BaseOptimizeRender instance.
+         * @zh 渲染后调用，用于更新渲染元素（如果需要）。
+         * 子类可以重写此方法以处理渲染元素更新。
+         * @param optimizeRender BaseOptimizeRender 实例。
+         */
+        abstract afterRender?(optimizeRender: BaseOptimizeRender): void;
+    }
+    /**
+     * @en RigidBodySpineRenderer used for rigid body rendering of Spine animations.
+     * @zh RigidBodySpineRenderer 类用于刚体渲染的 Spine 动画。
+     */
+    class RigidBodySpineRenderer extends SpineBaseRenderer {
+        private _matrix_0;
+        private _matrix_1;
+        leave(): void;
+        change(): void;
+        render(curTime: number, offsetX?: number, offsetY?: number): void;
+        /**
+         * @en Called after render to update render elements.
+         * @param optimizeRender The BaseOptimizeRender instance.
+         * @zh 渲染后调用，更新渲染元素。
+         * @param optimizeRender BaseOptimizeRender 实例。
+         */
+        afterRender(optimizeRender: BaseOptimizeRender): void;
+    }
+    /**
+     * @en OptimizedSpineRenderer used for optimized rendering of Spine animations.
+     * @zh OptimizedSpineRenderer 类用于优化 Spine 动画的渲染。
+     */
+    class OptimizedSpineRenderer extends SpineBaseRenderer {
+        private _boneMat;
+        constructor(shaderData: ShaderData);
+        /**
+         * @en Change the current render context.
+         * @param context The render context containing skin and animation updaters.
+         * @zh 更改当前渲染上下文。
+         * @param context 包含皮肤和动画更新器的渲染上下文。
+         */
+        change(): void;
+        /**
+         * @en Called when leaving the current render state.
+         * @zh 离开当前渲染状态时调用。
+         */
+        leave(): void;
+        /**
+         * @en Render the current animation at a specific time.
+         * @param curTime The current time for rendering.
+         * @param offsetX X轴偏移。
+         * @param offsetY Y轴偏移。
+         * @zh 在特定时间渲染当前动画。
+         * @param curTime 渲染的当前时间。
+         * @param offsetX X轴偏移。
+         * @param offsetY Y轴偏移。
+         */
+        render(curTime: number, offsetX?: number, offsetY?: number): void;
+        /**
+         * @en Called after render to update render elements.
+         * @param optimizeRender The BaseOptimizeRender instance.
+         * @zh 渲染后调用，更新渲染元素。
+         * @param optimizeRender BaseOptimizeRender 实例。
+         */
+        afterRender(optimizeRender: BaseOptimizeRender): void;
+    }
+    /**
+     * @en StandardSpineRenderer used for standard rendering of Spine animations (optimize mode).
+     * @zh StandardSpineRenderer 类用于优化模式下的标准 Spine 动画渲染。
+     */
+    class StandardSpineRenderer extends SpineBaseRenderer {
+        type: ESpineRenderMode;
+        normalUpdater: ISpineNormalUpdater;
+        /** @ignore @blueprintIgnore */
+        constructor(shaderData: ShaderData);
+        /**
+         * @en Called when leaving the current render state.
+         * @zh 离开当前渲染状态时调用。
+         */
+        leave(): void;
+        /**
+         * @en Change the current render context.
+         * @param context The render context containing skin and animation updaters.
+         * @zh 更改当前渲染上下文。
+         * @param context 包含皮肤和动画更新器的渲染上下文。
+         */
+        change(): void;
+        /**
+         * @en Render the current animation at a specific time.
+         * @param curTime The current time for rendering.
+         * @zh 在特定时间渲染当前动画。
+         * @param curTime 渲染的当前时间。
+         */
+        render(curTime: number, offsetX?: number, offsetY?: number): void;
+        /**
+         * @en Called after render to update render elements.
+         * @param optimizeRender The BaseOptimizeRender instance.
+         * @zh 渲染后调用，更新渲染元素。
+         * @param optimizeRender BaseOptimizeRender 实例。
+         */
+        afterRender(optimizeRender: BaseOptimizeRender): void;
+    }
+    /**
+     * @en BakedSpineRenderer used for baked Spine animation rendering.
+     * @zh BakedSpineRenderer 类用于烘焙 Spine 动画的渲染。
+     */
+    class BakedSpineRenderer extends SpineBaseRenderer {
+        type: ESpineRenderMode;
+        /** @internal */
+        private _simpleAnimatorParams;
+        private _simpleAnimatorTextureSize;
+        private _simpleAnimatorTexture;
+        /** x simpleAnimation offset,y simpleFrameOffset*/
+        private _simpleAnimatorOffset;
+        /** @internal */
+        _bonesNums: number;
+        /**
+         * @en Map of animation offsets.
+         * @zh 动画偏移量映射。
+         */
+        aniOffsetMap: Record<string, number>;
+        /**
+         * @en Animatioin frame texture.
+         * @zh 动画帧贴图。
+         */
+        get simpleAnimatorTexture(): Texture2D;
+        set simpleAnimatorTexture(value: Texture2D);
+        /**
+         * @en The simple animator offset.
+         * @zh 简单动画偏移量
+         */
+        get simpleAnimatorOffset(): Vector2;
+        set simpleAnimatorOffset(value: Vector2);
+        /**
+         * @en The time step for animation.
+         * @zh 动画的时间步长。
+         */
+        step: number;
+        /**
+         * @en Called when leaving the current render state.
+         * @zh 离开当前渲染状态时调用。
+         */
+        leave(): void;
+        /**
+         * @en Change the current render context.
+         * @param context The render context containing skin and animation updaters.
+         * @zh 更改当前渲染上下文。
+         * @param context 包含皮肤和动画更新器的渲染上下文。
+         */
+        change(): void;
+        /**
+         * @internal
+         */
+        _computeAnimatorParamsData(): void;
+        /**
+         * @en Set custom data for the animator.
+         * @param value1 First custom value.
+         * @param value2 Second custom value.
+         * @zh 为动画器设置自定义数据。
+         * @param value1 自定义数据1。
+         * @param value2 自定义数据2。
+         */
+        setCustomData(value1: number, value2?: number): void;
+        /**
+         * @en Render the current animation at a specific time.
+         * @param curTime The current time for rendering.
+         * @param boneMat The bone matrix for rendering.
+         * @zh 在特定时间渲染当前动画。
+         * @param curTime 渲染的当前时间。
+         * @param boneMat 用于渲染的骨骼矩阵。
+         */
+        render(curTime: number, offsetX?: number, offsetY?: number): void;
+        /**
+         * @en Called after render to update render elements.
+         * @param optimizeRender The BaseOptimizeRender instance.
+         * @zh 渲染后调用，更新渲染元素。
+         * @param optimizeRender BaseOptimizeRender 实例。
+         */
+        afterRender(optimizeRender: BaseOptimizeRender): void;
+    }
+    /**
+     * @en SpineRenderUpdater used for updating animation render data and skin rendering.
+     * @zh SpineRenderUpdater 类用于更新动画渲染数据和皮肤渲染。
+     */
+    class SpineRenderUpdater {
+        /**
+         * @en The owner of this SpineRenderUpdater.
+         * @zh 此 SpineRenderUpdater 的所有者。
+         */
+        owner: BaseOptimizeRender;
+        /**
+         * @en The name of the animation.
+         * @zh 动画的名称。
          */
         name: string;
-        private hasNormalRender;
-        /** @internal */
-        _renderer: ISpineRender;
-        /**
-         * @en The Spine template.
-         * @zh Spine 模板。
-         */
-        templet: SpineTemplet;
-        /**
-         * @en The type of skin attachment.
-         * @zh 皮肤附件的类型。
-         */
-        skinAttachType: ESpineRenderType;
         /**
          * @en Array of current materials.
          * @zh 当前材质数组。
@@ -82156,40 +86976,72 @@ declare namespace Laya {
          */
         cacheMaterials: Material[][];
         vChanges: IVBChange[];
+        private _animator;
+        /** @internal */
+        cacheFrameIndex: number;
         /**
-         * @en The number of bones that affect a vertex.
-         * @zh 影响一个顶点的最大骨骼数。
+         * @en The current key frame index.
+         * @zh 当前关键帧索引。
          */
-        vertexBones: number;
+        currentFrameIndex: number;
         /**
-         * @en Create a new instance of SkinRender.
-         * @param owner The SpineOptimizeRender that owns this SkinRender.
-         * @param skinAttach The SkinAttach data.
-         * @zh 创建 SkinRender 的新实例。
-         * @param owner 拥有此 SkinRender 的 SpineOptimizeRender。
-         * @param skinAttach SkinAttach 数据。
+         * @en The current skin animation render data.
+         * @zh 当前皮肤动画渲染数据。
          */
-        constructor(owner: SpineOptimizeRender, skinAttach: any);
+        currentData: SkinAniRenderData;
         /**
-         * @en Get material by name and blend mode.
-         * @param name The name of the texture.
-         * @param blendMode The blend mode.
-         * @zh 通过名称和混合模式获取材质。
-         * @param name 纹理的名称。
-         * @param blendMode 混合模式。
+         * @en The animation state.
+         * @zh 动画状态。
          */
-        getMaterialByName(name: string, blendMode: number, premultipliedAlpha: boolean): Material;
+        state: spine.AnimationState;
+        /** @internal */
+        _skinAttach: SkinAttach;
+        updateBones: (delta: number, bones: spine.Bone[], boneMat: Float32Array, ofx: number, ofy: number) => void;
+        /** @internal */
+        _mesh: Mesh2D;
+        getSubMeshes(): import("../../../../RenderDriver/DriverDesign/RenderDevice/IRenderGeometryElement").IRenderGeometryElement[];
+        needUpdate: boolean;
+        /**
+         * @en Create a new instance of SpineRenderUpdater.
+         * @param owner The BaseOptimizeRender that owns this SpineRenderUpdater.
+         * @zh 创建 SpineRenderUpdater 的新实例。
+         * @param owner 拥有此 SpineRenderUpdater 的 BaseOptimizeRender。
+         */
+        constructor(owner: BaseOptimizeRender);
+        set skinAttach(value: SkinAttach);
+        get skinAttach(): SkinAttach;
+        /**
+        * @en The animation renderer.
+        * @zh 动画渲染器。
+        */
+        set animator(value: AnimationRender);
+        get animator(): AnimationRender;
+        private _updateData;
+        /**
+         * @en Gets the animation name if this is an animation-specific updater.
+         * @returns The name of the animator, or the skin name if no animator.
+         * @zh 获取动画名称（如果这是特定动画的更新器）。
+         * @returns 动画器的名称，如果没有动画器则返回皮肤名称。
+         */
+        get animationName(): string;
+        /**
+         * @en Resets the animation state.
+         * @zh 重置动画状态。
+         */
+        reset(): void;
+        clear(): void;
         /**
          * 渲染更新
+         * @param slots 插槽
          * @param skindata 动画渲染数据
          * @param frame 当前帧
          * @param lastFrame 上一帧
          */
-        renderUpdate(skindata: SkinAniRenderData, frame: number, lastFrame: number): void;
+        renderUpdate(slots: spine.Slot[], skindata: SkinAniRenderData, frame: number, lastFrame: number): void;
         private updateDynamicRender;
         private handleRender;
-        clearCacheMaterials(): void;
         private createMaterials;
+        getDynamicMesh(vertexDeclaration: VertexDeclaration, index?: number): Mesh2D;
         /**
          * @en Submit IndexData.
          * @param frameData Frame rendering data.
@@ -82209,653 +87061,62 @@ declare namespace Laya {
          */
         uploadVertexBuffer(vbCreator: VBCreator, mesh: Mesh2D): void;
         /**
-         * @en Initialize renderer
-         * @param skeleton spine.skeleton instance
-         * @param templet Engine spine animation template
-         * @param renderNode Rendering component
-         * @zh 初始化渲染器
-         * @param skeleton spine.skeleton 实例
-         * @param templet 引擎spine动画模板
-         * @param renderNode 渲染组件
-         */
-        init(skeleton: spine.Skeleton, templet: SpineTemplet, renderNode: Spine2DRenderNode): void;
-        /**
-         * @en Render the skin at a specific time.
-         * @param time The time to render at.
-         * @zh 在特定时间渲染皮肤。
-         * @param time 要渲染的时间。
-         */
-        render(time: number): void;
-        private _resetVertexBuffset;
-        /**
-         * @en Destroy the SkinRenderUpdate instance.
-         * @zh 销毁 SkinRenderUpdate 实例。
-         */
-        destroy(): void;
-    }
-    /**
-     * @en Utility class for Spine slot operations.
-     * @zh Spine 插槽操作的实用工具类。
-     */
-    class SlotUtils {
-        /**
-         * @en Check the type of attachment and determine the appropriate render type.
-         * @param attachment The spine attachment to check.
-         * @zh 检查附件的类型并确定适当的渲染类型。
-         * @param attachment 要检查的 Spine 附件。
-         */
-        static checkAttachment(attachment: spine.Attachment): ESpineRenderType;
-        /**
-         * @en Append index array from attachment parse to the target index array.
-         * @param attachmentParse The attachment parse containing the source index array.
-         * @param indexArray The target index array to append to.
-         * @param size The size to offset each index by.
-         * @param offset The starting offset in the target index array.
-         * @zh 将附件解析中的索引数组追加到目标索引数组。
-         * @param attachmentParse 包含源索引数组的附件解析。
-         * @param indexArray 要追加到的目标索引数组。
-         * @param size 每个索引的偏移量。
-         * @param offset 目标索引数组中的起始偏移量。
-         */
-        static appendIndexArray(attachmentParse: AttachmentParse, indexArray: Uint16Array | Uint8Array | Uint32Array, size: number, offset: number): number;
-        static setSlotTexture(slot: spine.Slot, texture: Texture, templet: SpineTemplet, createAttachment?: boolean): void;
-    }
-    /**
-     * @en Script class for baking Spine animations.
-     * @zh 用于烘焙 Spine 动画的脚本类。
-     */
-    class SpineBakeScript extends Script {
-        /**
-         * @en URL of the data.
-         * @zh 数据的地址。
-         */
-        url: string;
-        /**
-         * @en Bake data in string format.
-         * @zh 字符串格式的烘焙数据。
-         */
-        bakeData: string;
-        /** @ignore */
-        constructor();
-        /**
-         * @en Called when the script is enabled.
-         * @zh 当脚本被启用时调用。
-         */
-        onEnable(): void;
-        /**
-         * @en Called when the script is disabled.
-         * @zh 当脚本被禁用时调用。
-         */
-        onDisable(): void;
-        /**
-         * @en Attaches bake data to the spine renderer.
-         * @param spine The spine optimizer renderer interface.
-         * @zh 将烘焙数据附加到 Spine 渲染器。
-         * @param spine Spine 优化渲染器接口。
-         */
-        attach(spine: ISpineOptimizeRender): Promise<void>;
-        private initBake;
-    }
-    /**
-     * @en Empty implementation of the renderer for optimizing Spine animations.
-     * @zh 空实现的渲染器，用于优化 Spine 动画的渲染。
-     */
-    class SpineEmptyRender implements ISpineOptimizeRender {
-        clearCacheMaterials(): void;
-        getSpineColor(): Color;
-        /**
-         * @en Changes the skeleton.
-         * @param skeleton The new spine skeleton.
-         * @zh 更改骨骼。
-         * @param skeleton 新的 Spine 骨骼。
-         */
-        changeSkeleton(skeleton: spine.Skeleton): void;
-        /**
-         * @en Singleton instance of SpineEmptyRender.
-         * @zh SpineEmptyRender 的单例实例。
-         */
-        static instance: SpineEmptyRender;
-        /**
-         * @en Initializes the renderer.
-         * @param skeleton The spine skeleton.
-         * @param templet The spine templet.
-         * @param renderNode The base render node.
-         * @param state The spine animation state.
-         * @zh 初始化渲染器。
-         * @param skeleton Spine 骨骼。
-         * @param templet Spine 模板。
-         * @param renderNode 基础渲染节点。
-         * @param state Spine 动画状态。
-         */
-        init(skeleton: spine.Skeleton, templet: SpineTemplet, renderNode: BaseRenderNode2D, state: spine.AnimationState): void;
-        /**
-         * @en Plays the specified animation.
-         * @param animationName The name of the animation to play.
-         * @zh 播放指定的动画。
-         * @param animationName 要播放的动画名称。
-         */
-        play(animationName: string): void;
-        /**
-         * @en Renders the spine animation.
-         * @param time The current time for rendering.
-         * @zh 渲染 Spine 动画。
-         * @param time 当前渲染时间。
-         */
-        render(time: number): void;
-        /**
-         * @en Sets the skin index.
-         * @param index The index of the skin to set.
-         * @zh 设置皮肤索引。
-         * @param index 要设置的皮肤索引。
-         */
-        setSkinIndex(index: number): void;
-        /**
-         * @en Initializes bake data.
-         * @param obj The spine bake data.
-         * @zh 初始化烘焙数据。
-         * @param obj Spine 烘焙数据。
-         */
-        initBake(obj: TSpineBakeData): void;
-        /**
-         * @en Destroys the renderer.
-         * @zh 销毁渲染器。
-         */
-        destroy(): void;
-        /**
-         * @en Completes the animation.
-         * @zh 完成动画。
-         */
-        complete(): void;
-    }
-    /**
-     * @en SpineInstanceBatch used for efficient rendering Spine instances.
-     * @zh SpineInstanceBatch 用于高效渲染 Spine 实例。
-     */
-    class SpineInstanceBatch {
-        /**
-         * @en The instance of SpineInstanceBatch.
-         * @zh SpineInstanceBatch 的实例。
-         */
-        static instance: SpineInstanceBatch;
-        _recoverList: FastSinglelist<SpineInstanceInfo>;
-        /**
-         * @en Check if two render elements can be merged.
-         * @param left The left render element to compare.
-         * @param right The right render element to compare.
-         * @returns True if the elements can be merged, false otherwise.
-         * @zh 检测两个渲染元素是否可以合并。
-         * @param left 要比较的左侧渲染元素。
-         * @param right 要比较的右侧渲染元素。
-         * @returns 如果元素可以合并则返回 true，否则返回 false。
-         */
-        check(left: IRenderElement2D, right: IRenderElement2D): boolean;
-        /**
-         * @en Batch render elements.
-         * @param list The list of render elements.
-         * @param start The starting index in the list.
-         * @param length The number of elements to process.
-         * @zh 批量渲染元素。
-         * @param list 渲染元素列表。
-         * @param start 列表中的起始索引。
-         * @param length 要处理的元素数量。
-         */
-        batchRenderElement(list: FastSinglelist<IRenderElement2D>, start: number, length: number, elementCount?: number): void;
-        /**
-         * @en Update the instance buffer with new data.
-         * @param info The SpineInstanceInfo object.
-         * @param nMatrixData The new matrix data.
-         * @param simpleAnimatorData The new animator data.
-         * @param instanceCount The number of instances.
-         * @zh 使用新数据更新实例缓冲区。
-         * @param info SpineInstanceInfo 对象。
-         * @param nMatrixData 新的矩阵数据。
-         * @param simpleAnimatorData 新的动画器数据。
-         * @param instanceCount 实例数量。
-         */
-        updateBuffer(info: SpineInstanceInfo, nMatrixData: Float32Array, simpleAnimatorData: Float32Array, instanceCount: number): void;
-        /**
-         * @en Organize instance data for batching.
-         * @param list The list of render elements.
-         * @param start The starting index in the list.
-         * @param length The number of elements to process.
-         * @zh 组织实例数据以进行批处理。
-         * @param list 渲染元素列表。
-         * @param start 列表中的起始索引。
-         * @param length 要处理的元素数量。
-         */
-        batch(list: FastSinglelist<IRenderElement2D>, start: number, length: number): void;
-        /**
-         * @en Recover instance data.
-         * @zh 回收实例数据。
-         */
-        recover(): void;
-    }
-    interface SpineInstanceInfo {
-        element: IRenderElement2D;
-        source: IRenderGeometryElement;
-        state: IBufferState;
-        nMatrixInstanceVB?: IVertexBuffer;
-        simpleAnimatorVB?: IVertexBuffer;
-    }
-    /**
-     * @en Tool class for managing Spine instance elements in 2D rendering.
-     * @zh 用于管理 2D 渲染中的 Spine 实例元素的工具类。
-     */
-    class SpineInstanceElement2DTool {
-        /**
-         * @en Maximum number of instances that can be batched.
-         * @zh 可以批处理的最大实例数量。
-         */
-        static MaxInstanceCount: number;
-        /**
-         * get Instance BufferState
-         */
-        private static _instanceBufferInfoMap;
-        /**
-         * @en Get or create a SpineInstanceInfo for a given geometry.
-         * @param geometry The render geometry element.
-         * @zh 获取或创建给定几何体的 SpineInstanceInfo。
-         * @param geometry 渲染几何体元素。
-         */
-        static getInstanceInfo(geometry: IRenderGeometryElement): SpineInstanceInfo;
-        /**
-         * @en Create a new SpineInstanceInfo for a given geometry.
-         * @param geometry The render geometry element.
-         * @zh 为给定的几何体创建一个新的 SpineInstanceInfo。
-         * @param geometry 渲染几何体元素。
-         */
-        static createInstanceInfo(geometry: IRenderGeometryElement): SpineInstanceInfo;
-        /**
-         * @en Recover a SpineInstanceInfo object.
-         * @param info The SpineInstanceInfo to recover.
-         * @zh 回收一个 SpineInstanceInfo 对象。
-         * @param info 要回收的 SpineInstanceInfo。
-         */
-        static recover(info: SpineInstanceInfo): void;
-        /**
-         * pool of Buffer
-         */
-        private static _bufferPool;
-        static _instanceBufferCreate(length: number): Float32Array;
-        static _instanceBufferRecover(float32: Float32Array): void;
-    }
-    /**
-     * @en Class for normal Spine rendering implementation.
-     * @zh 普通 Spine 渲染实现类。
-     */
-    class SpineNormalRender implements ISpineOptimizeRender {
-        clearCacheMaterials(): void;
-        getSpineColor(): Color;
-        /**
-         * @en Destroys the renderer.
-         * @zh 销毁渲染器。
-         */
-        destroy(): void;
-        /**
-         * @en Initializes bake data.
-         * @param obj The spine bake data.
-         * @zh 初始化烘焙数据。
-         * @param obj Spine 烘焙数据。
-         */
-        initBake(obj: TSpineBakeData): void;
-        /** @internal */
-        _owner: Spine2DRenderNode;
-        /** @internal */
-        _renderer: ISpineRender;
-        /** @internal */
-        _skeleton: spine.Skeleton;
-        /**@internal */
-        _spineColor: Color;
-        /** @internal */
-        _skinIndex: number;
-        /**
-         * @en Initializes the renderer.
-         * @param skeleton The spine skeleton.
-         * @param templet The spine templet.
-         * @param renderNode The Spine2DRenderNode.
-         * @param state The spine animation state.
-         * @zh 初始化渲染器。
-         * @param skeleton Spine 骨骼。
-         * @param templet Spine 模板。
-         * @param renderNode Spine2DRenderNode。
-         * @param state Spine 动画状态。
-         */
-        init(skeleton: spine.Skeleton, templet: SpineTemplet, renderNode: Spine2DRenderNode, state: spine.AnimationState): void;
-        /**
-         * @en Plays the specified animation.
-         * @param animationName The name of the animation to play.
-         * @zh 播放指定的动画。
-         * @param animationName 要播放的动画名称。
-         */
-        play(animationName: string): void;
-        /**
-         * @en Sets the skin index.
-         * @param index The index of the skin to set.
-         * @zh 设置皮肤索引。
-         * @param index 要设置的皮肤索引。
-         */
-        setSkinIndex(index: number): void;
-        /**
-         * @en Changes the skeleton.
-         * @param skeleton The new spine skeleton.
-         * @zh 更改骨骼。
-         * @param skeleton 新的 Spine 骨骼。
-         */
-        changeSkeleton(skeleton: spine.Skeleton): void;
-        /**
-         * @en Renders the spine animation.
-         * @param time The current time for rendering.
-         * @zh 渲染 Spine 动画。
-         * @param time 当前渲染时间。
-         */
-        render(time: number): void;
-        /**
-         * @en Completes the animation.
-         * @zh 完成动画。
-         */
-        complete(): void;
-    }
-    /**
-     * @en Constants used in Spine optimization.
-     * @zh Spine 优化中使用的常量。
-     */
-    class SpineOptimizeConst {
-        /**
-         * @en The number of vertices for a bone in the optimized Spine rendering.
-         * @zh 优化后的 Spine 渲染中，一个骨骼的顶点数。
-         */
-        static BONEVERTEX: number;
-        /**
-         * @en The number of vertices for a rigid body in the optimized Spine rendering.
-         * @zh 优化后的 Spine 渲染中，一个刚体的顶点数。
-         */
-        static RIGIDBODYVERTEX: number;
-    }
-    /**
-     * @en SpineOptimizeRender used for optimized rendering of Spine animations.
-     * @zh SpineOptimizeRender 类用于优化 Spine 动画的渲染。
-     */
-    class SpineOptimizeRender implements ISpineOptimizeRender {
-        /**
-         * @en Map of animation names to AnimationRenderProxy objects.
-         * @zh 动画名称到 AnimationRenderProxy 对象的映射。
-         */
-        animatorMap: Map<string, AnimationRenderProxy>;
-        /**
-         * @en Current animation being rendered.
-         * @zh 当前正在渲染的动画。
-         */
-        currentAnimation: AnimationRenderProxy;
-        /**
-         * @en Array of SkinRender objects.
-         * @zh SkinRender 对象数组。
-         */
-        skinRenderArray: SkinRenderUpdate[];
-        /**
-         * @en Current SkinRender being used.
-         * @zh 当前使用的 SkinRender。
-         */
-        currentRender: SkinRenderUpdate;
-        /** @internal */
-        _skinIndex: number;
-        /** @internal */
-        _curAnimationName: string;
-        /** @internal */
-        _dynamicMap: Map<number, Mesh2D>;
-        private _isRender;
-        /**
-         * @en Color of the Spine object.
-         * @zh Spine 对象的颜色。
-         */
-        spineColor: Color;
-        /** @internal */
-        _skeleton: spine.Skeleton;
-        /** @internal */
-        _state: spine.AnimationState;
-        /**
-         * @en Current render proxy.
-         * @zh 当前渲染代理。
-         */
-        renderProxy: IRender;
-        /**
-         * @en Map of ERenderProxyType to IRender objects.
-         * @zh ERenderProxyType 到 IRender 对象的映射。
-         */
-        renderProxyMap: Map<ERenderProxyType, IRender>;
-        /** @internal */
-        _nodeOwner: Spine2DRenderNode;
-        /**
-         * @en Float32Array for bone matrices.
-         * @zh 用于骨骼矩阵的 Float32Array。
-         */
-        boneMat: Float32Array;
-        /**
-         * @en Indicates if the animation is baked.
-         * @zh 指示动画是否被烘焙。
-         */
-        isBake: boolean;
-        /**
-         * @en Bake data for the Spine animation.
-         * @zh Spine 动画的烘焙数据。
-         */
-        bakeData: TSpineBakeData;
-        private _renderProxytype;
-        /**
-         * @en Create a new SpineOptimizeRender instance.
-         * @param spineOptimize SketonOptimise object containing optimization data.
-         * @zh 创建 SpineOptimizeRender 的新实例。
-         * @param spineOptimize 包含优化数据的 SketonOptimise 对象。
-         */
-        constructor(spineOptimize: SketonOptimise);
-        getSpineColor(): Color;
-        /**
-         * @en Destroy the SpineOptimizeRender instance.
-         * @zh 销毁 SpineOptimizeRender 实例。
-         */
-        destroy(): void;
-        /**
-         * @en Initialize bake data for the Spine animation.
-         * @param obj Bake data object.
-         * @zh 初始化 Spine 动画的烘焙数据。
-         * @param obj 烘焙数据对象。
-         */
-        initBake(obj: TSpineBakeData): void;
-        /**
-         * @en Change the current skeleton.
-         * @param skeleton The new spine skeleton to use.
-         * @zh 更改当前骨骼。
-         * @param skeleton 要使用的新 spine 骨骼。
-         */
-        changeSkeleton(skeleton: spine.Skeleton): void;
-        /**
-         * @en Initialize the SpineOptimizeRender with necessary components.
-         * @param skeleton The spine skeleton.
-         * @param templet The spine templet.
-         * @param renderNode The Spine2DRenderNode.
-         * @param state The spine animation state.
-         * @zh 使用必要的组件初始化 SpineOptimizeRender。
-         * @param skeleton Spine 骨骼。
-         * @param templet Spine 模板。
-         * @param renderNode Spine2DRenderNode。
-         * @param state Spine 动画状态。
-         */
-        init(skeleton: spine.Skeleton, templet: SpineTemplet, renderNode: Spine2DRenderNode, state: spine.AnimationState): void;
-        /**
-         * @en The current render proxy type.
-         * @zh 当前渲染代理类型。
-         */
-        get renderProxytype(): ERenderProxyType;
-        set renderProxytype(value: ERenderProxyType);
-        /**
-         * @en Begin caching the animation.
-         * @zh 开始缓存动画。
-         */
-        beginCache(): void;
-        /**
-         * @en End caching the animation.
-         * @zh 结束缓存动画。
-         */
-        endCache(): void;
-        /**
-         * @en Set the skin index for rendering.
-         * @param index The index of the skin to set.
-         * @zh 设置用于渲染的皮肤索引。
-         * @param index 要设置的皮肤索引。
-         */
-        setSkinIndex(index: number): void;
-        /**
-         * 获取对应类型的 Dynamic mesh
-         * @param vertexDeclaration
-         * @param create
-         * @returns
-         */
-        getDynamicMesh(vertexDeclaration: VertexDeclaration, create?: boolean): Mesh2D;
-        private _clear;
-        /**
-         * @en Play a specific animation.
-         * @param animationName The name of the animation to play.
-         * @zh 播放特定的动画。
-         * @param animationName 要播放的动画名称。
-         */
-        play(animationName: string): void;
-        clearCacheMaterials(): void;
-        complete(): void;
-        /**
-         * @en Render the current animation at a specific time.
-         * @param time The time to render the animation at.
-         * @zh 在特定时间渲染当前动画。
-         * @param time 要渲染动画的时间。
-         */
-        render(time: number): void;
-    }
-    enum ERenderProxyType {
-        RenderNormal = 0,
-        RenderOptimize = 1,
-        RenderBake = 2
-    }
-    interface IRender {
-        changeSkeleton(skeleton: spine.Skeleton): void;
-        change(skinRender: SkinRenderUpdate, currentAnimation: AnimationRenderProxy): void;
-        leave(): void;
-        render(curTime: number, boneMat: Float32Array): void;
-    }
-    /**
-     * @en Abstract class for creating vertex buffers in a spine skeleton animation system.
-     * @zh 用于在spine骨骼动画系统中创建顶点缓冲区的抽象类。
-     * @blueprintIgnore
-     */
-    abstract class VBCreator implements IGetBone {
-        /**
-         * @en Map of bone index to bone ID.
-         * @zh 骨骼索引到骨骼ID的映射。
-         */
-        mapIndex: Map<number, number>;
-        /**
-         * @en Array of bone IDs and indices.
-         * @zh 骨骼ID和索引的数组。
-         */
-        boneArray: number[];
-        /**
-         * @en Vertex buffer data.
-         * @zh 顶点缓冲区数据。
-         */
-        vb: Float32Array;
-        /**
-         * @en Length of the vertex buffer.
-         * @zh 顶点缓冲区的长度。
-         */
-        vbLength: number;
-        /**
-         * @en The Max Length of the vertex buffer.
-         * @zh 顶点缓冲区的最大长度。
-         */
-        maxVertexCount: number;
-        /**
-         * @en Map of slot ID to attachment position data.
-         * @zh 插槽ID到附件位置数据的映射。
-         */
-        slotVBMap: Map<number, Map<string, TAttamentPos>>;
-        /**
-         * @en Bone matrix data.
-         * @zh 骨骼矩阵数据。
-         */
-        boneMat: Float32Array;
-        /** @internal */
-        _vertexSize: number;
-        /** @internal 没有骨骼的顶点数 */
-        _baseVtxCount: number;
-        _boneVtxCount: number;
-        /** @internal TODO 双顶点色模式 */
-        twoColorTint: boolean;
-        private boneMaxId;
-        private _vertexDeclaration;
-        /**
-         * @en
-         * @zh
-         */
-        vertexFlag: string;
-        constructor(vertexFlag: string, maxVertexCount?: number, auto?: boolean);
-        /**
-         * @en set vertex buffer length.
-         * @param maxVertexCount The Max length of Vertex count.
-         * @zh 设置顶点缓冲长度。
-         * @param maxVertexCount 顶点缓存区最大个数。
-         */
-        setBufferLength(maxVertexCount: number): void;
-        protected _updateBuffer(): void;
-        get vertexSize(): number;
-        get vertexDeclaration(): VertexDeclaration;
-        abstract appendVertexArray(attachmentParse: AttachmentParse, vertexArray: Float32Array, offset: number, boneGet: IGetBone): number;
-        /**
-         * @en Append deform data to the output array.
-         * @param attachmentParse Attachment parse data.
-         * @param deform Deform data array.
-         * @param offset Offset in the output array.
-         * @param out Output array.
-         * @zh 将变形数据追加到输出数组。
-         * @param attachmentParse 附件解析数据。
-         * @param deform 变形数据数组。
-         * @param offset 输出数组中的偏移量。
-         * @param out 输出数组。
-         */
-        abstract appendDeform(attachmentParse: AttachmentParse, deform: Array<number>, offset: number, out: Float32Array): void;
-        /**
-         * @en Append vertex buffer and create index buffer for an attachment.
-         * @param attach Attachment parse data.
-         * @zh 为附件追加顶点缓冲区并创建索引缓冲区。
-         * @param attach 附件解析数据。
-         */
-        appendAndCreateIB(attach: AttachmentParse): void;
-        /**
-         * @en Get the bone ID for a given bone index.
-         * @param boneIndex Bone index.
-         * @returns Bone ID.
-         * @zh 获取给定骨骼索引的骨骼ID。
-         * @param boneIndex 骨骼索引。
-         * @returns 骨骼ID。
-         */
-        getBoneId(boneIndex: number): number;
-        /**
-         * @en Initialize the bone matrix.
-         * @zh 初始化骨骼矩阵。
-         */
-        initBoneMat(): void;
-        /**
-         * @en Append vertex buffer data for an attachment.
-         * @param attach Attachment parse data.
-         * @returns Offset in the vertex buffer.
-         * @zh 为附件追加顶点缓冲区数据。
-         * @param attach 附件解析数据。
-         * @returns 顶点缓冲区中的偏移量。
-         */
-        appendVB(attach: AttachmentParse): number | TAttamentPos;
-        /**
-         * @en Reset the vertex buffer.
-         * @param attach Attachment parse data.
-         * @zh 重置顶点缓冲区。
-         * @param attach 附件解析数据。
-         */
-        resetVB(attach: AttachmentParse): void;
+         * @en Renders the animation without matrix transformation.
+         * @param slots The slots to render.
+         * @param curTime The current animation time.
+         * @zh 不进行矩阵变换的动画渲染。
+         * @param slots 要渲染的插槽。
+         * @param curTime 当前动画时间。
+         */
+        renderWithOutMat(slots: spine.Slot[], curTime: number): void;
+        /**
+         * @en Renders the animation with matrix transformation.
+         * @param bones The bones to render.
+         * @param slots The slots to render.
+         * @param curTime The current animation time.
+         * @param boneMat The bone matrix.
+         * @param ofx 偏移x。
+         * @param ofy 偏移y。
+         * @zh 进行矩阵变换的动画渲染。
+         * @param bones 要渲染的骨骼。
+         * @param slots 要渲染的插槽。
+         * @param curTime 当前动画时间。
+         * @param boneMat 骨骼矩阵。
+         * @param ofx 偏移x。
+         * @param ofy 偏移y。
+         */
+        renderWithMat(bones: spine.Bone[], slots: spine.Slot[], curTime: number, boneMat: Float32Array, ofx: number, ofy: number): void;
+        private _resetVertexBuffers;
+        /**
+         * @en Updates bone matrices using cached data.
+         * @param delta Time delta.
+         * @param animation Animation render data.
+         * @param bones Spine bones.
+         * @param state Spine animation state.
+         * @param boneMat Bone matrix array.
+         * @zh 使用缓存数据更新骨骼矩阵。
+         * @param delta 时间增量。
+         * @param animation 动画渲染数据。
+         * @param bones 骨骼数组。
+         * @param state 骨骼动画状态。
+         * @param boneMat 骨骼矩阵数组。
+         */
+        updateBoneMatrix(delta: number, bones: spine.Bone[], boneMat: Float32Array, ofx?: number, ofy?: number): void;
+        /**
+         * @en Updates bone matrices using cached data.
+         * @param delta Time delta.
+         * @param animation Animation render data.
+         * @param bones Spine bones.
+         * @param state Spine animation state.
+         * @param boneMat Bone matrix array.
+         * @zh 使用缓存数据更新骨骼矩阵。
+         * @param delta 时间增量。
+         * @param animation 动画渲染数据。
+         * @param bones 骨骼数组。
+         * @param state 骨骼动画状态。
+         * @param boneMat 骨骼矩阵数组。
+         */
+        updateBoneMatrixCache(delta: number, bones: spine.Bone[], boneMat: Float32Array, ofx?: number, ofy?: number): void;
         /**
          * @en Update bone matrices.
          * @param bones Array of bones.
@@ -82868,7 +87129,7 @@ declare namespace Laya {
          * @param ofx 偏移x。
          * @param ofy 偏移y。
          */
-        updateBone(bones: spine.Bone[], boneMat: Float32Array, ofx?: number, ofy?: number): void;
+        writeBoneBuffer(bones: spine.Bone[], boneMat: Float32Array, ofx?: number, ofy?: number): void;
         /**
          * @en Update bone cache.
          * @param boneFrames Array of bone frame data.
@@ -82879,832 +87140,113 @@ declare namespace Laya {
          * @param frames 帧数。
          * @param boneMat 骨骼矩阵数组。
          */
-        updateBoneCache(boneFrames: Float32Array[][], frames: number, boneMat: Float32Array, ofx?: number, ofy?: number): void;
-        _cloneTo(target: VBCreator): void;
-        abstract _create(): VBCreator;
-        /**
-         * @en Clone this VBCreator.
-         * @zh 克隆此VBCreator。
-         */
-        clone(): VBCreator;
-    }
-    /**
-     * @en VBBoneCreator class used to handle bone-specific vertex buffer creation.
-     * @zh VBBoneCreator 类用于处理骨骼特定的顶点缓冲区创建。
-     */
-    class VBBoneCreator extends VBCreator {
-        _create(): VBCreator;
-        /**
-         * @en Appends vertex array data for an attachment.
-         * @param attachmentParse The attachment parse data.
-         * @param vertexArray The vertex array to append to.
-         * @param offset The current offset in the vertex array.
-         * @param boneGet The interface for getting bone IDs.
-         * @zh 为附件追加顶点数组数据。
-         * @param attachmentParse 附件解析数据。
-         * @param vertexArray 要追加到的顶点数组。
-         * @param offset 顶点数组中的当前偏移量。
-         * @param boneGet 获取骨骼ID的接口。
-         */
-        appendVertexArray(attachmentParse: AttachmentParse, vertexArray: Float32Array, offset: number, boneGet: IGetBone): number;
-        /**
-         * @en Appends deform data to the output array.
-         * @param attachmentParse The attachment parse data.
-         * @param deform The deform data array.
-         * @param offset The current offset in the output array.
-         * @param out The output array to append to.
-         * @zh 将变形数据追加到输出数组。
-         * @param attachmentParse 附件解析数据。
-         * @param deform 变形数据数组。
-         * @param offset 输出数组中的当前偏移量。
-         * @param out 要追加到的输出数组。
-         */
-        appendDeform(attachmentParse: AttachmentParse, deform: Array<number>, offset: number, out: Float32Array): void;
-    }
-    /**
-     * @en VBRigBodyCreator class used to handle rigid body specific vertex buffer creation.
-     * @zh VBRigBodyCreator 类用于处理刚体特定的顶点缓冲区创建。
-     */
-    class VBRigBodyCreator extends VBCreator {
-        /** @internal */
-        _create(): VBCreator;
-        /**
-         * @en Appends vertex array data for an attachment.
-         * @param attachmentParse The attachment parse data.
-         * @param vertexArray The vertex array to append to.
-         * @param offset The current offset in the vertex array.
-         * @param boneGet The interface for getting bone IDs.
-         * @zh 为附件追加顶点数组数据。
-         * @param attachmentParse 附件解析数据。
-         * @param vertexArray 要追加到的顶点数组。
-         * @param offset 顶点数组中的当前偏移量。
-         * @param boneGet 获取骨骼ID的接口。
-         */
-        appendVertexArray(attachmentParse: AttachmentParse, vertexArray: Float32Array, offset: number, boneGet: IGetBone): number;
-        /**
-         * @en Appends deform data to the output array.
-         * @param attachmentParse The attachment parse data.
-         * @param deform The deform data array.
-         * @param offset The current offset in the output array.
-         * @param out The output array to append to.
-         * @zh 将变形数据追加到输出数组。
-         * @param attachmentParse 附件解析数据。
-         * @param deform 变形数据数组。
-         * @param offset 输出数组中的当前偏移量。
-         * @param out 要追加到的输出数组。
-         */
-        appendDeform(attachmentParse: AttachmentParse, deform: Array<number>, offset: number, out: Float32Array): void;
-    }
-    type TAttamentPos = {
-        offset: number;
-        attachment: AttachmentParse;
-    };
-    /**
-     * @zh Spine动画渲染节点。
-     * - Event.PLAYED:动画开始播放调度。
-     * - Event.STOPPED:动画停止播放调度。
-     * - Event.PAUSED:动画暂停播放调度。
-     * - Event.LABEL:自定义事件。
-     * @en spine render node.
-     * - Event.PLAYED:Animation start play dispatch.
-     * - Event.STOPPED:Animation stop play dispatch.
-     * - Event.PAUSED:Animation pause play dispatch.
-     * - Event.LABEL:Custom event.
-     */
-    class Spine2DRenderNode extends BaseRenderNode2D {
-        /** @ignore @blueprintIgnore */
-        static _pool: IRenderElement2D[];
-        /** @ignore @blueprintIgnore */
-        static createRenderElement2D(): IRenderElement2D;
-        /** @ignore @blueprintIgnore */
-        static recoverRenderElement2D(value: IRenderElement2D): void;
-        /** @ignore */
-        spineItem: ISpineOptimizeRender;
-        /** @internal */
-        _mesh: Mesh2D;
-        /**
-         * @zh 物理更新模式。
-         * @en The physics update mode.
-         **/
-        physicsUpdate: number;
-        /**状态-停止 */
-        static readonly STOPPED: number;
-        /**状态-暂停 */
-        static readonly PAUSED: number;
-        /**状态-播放中 */
-        static readonly PLAYING: number;
-        protected _renderHandle: ISpineRenderDataHandle;
-        protected _source: string;
-        protected _templet: SpineTemplet;
-        protected _timeKeeper: TimeKeeper;
-        protected _skeleton: spine.Skeleton;
-        protected _state: spine.AnimationState;
-        protected _stateData: spine.AnimationStateData;
-        protected _currentPlayTime: number;
-        private _pause;
-        private _needUpdate;
-        /** 动画播放的起始时间位置*/
-        private _playStart;
-        /** 动画播放的结束时间位置*/
-        private _playEnd;
-        /** 动画的总时间*/
-        private _duration;
-        /** 播放速率*/
-        private _playbackRate;
-        private _playAudio;
-        private _soundChannelArr;
-        private trackIndex;
-        private _skinName;
-        private _animationName;
-        private _loop;
-        private _externalSkins;
-        private _skin;
-        private _offset;
-        /** @internal */
-        _setPreAlphaFlag: boolean;
-        private _premultipliedAlpha;
-        /** @ignore */
-        constructor();
-        protected _isMaterialVaild(value: Material): boolean;
-        protected _getcommonUniformMap(): Array<string>;
-        protected _createRenderHandle(): ISpineRenderDataHandle;
-        /**
-         * @zh 外部皮肤，用于根据不同皮肤，替换对应插槽的附件。
-         * @en External skins, used to replace the attachments of corresponding slots according to different skins.
-         */
-        get externalSkins(): ExternalSkin[];
-        set externalSkins(value: ExternalSkin[]);
-        /** @ignore @blueprintIgnore */
-        renderUpdate(context: IRenderContext2D): void;
-        /**
-         * @zh 重置外部加载的皮肤数据。更换附件或皮肤数据后，需要调用此方法，否则不会生效。
-         * @en Resets the external loaded skin data. After replacing attachments or skin data, this method needs to be called, otherwise it will not take effect.
-         */
-        resetExternalSkin(): void;
-        /**
-         * @zh 是否启用透明预乘。设置属性需要使用setPremultipliedAlpha方法。
-         * @en Whether to enable transparent premultiplied. Set the attribute needs to use the setPremultipliedAlpha method.
-         */
-        get premultipliedAlpha(): boolean;
-        set premultipliedAlpha(value: boolean);
-        /**
-         * @en Set the transparent premultiplied.
-         * @zh 设置透明预乘。
-         * @param value Whether to enable transparent premultiplied.
-         * @param value 是否启用透明预乘。
-         */
-        setPremultipliedAlpha(value: boolean): void;
-        /**
-         * @zh 动画源文件路径
-         * @en Spine source file path.
-         */
-        get source(): string;
-        set source(value: string);
-        /**
-         * @zh 当前的Spine动画皮肤名称。
-         * @en The current spine animation skin name.
-         */
-        get skinName(): string;
-        set skinName(value: string);
-        /**
-         * @zh 当前的Spine动画名称
-         * @en The current spine animation name.
-         */
-        get animationName(): string;
-        set animationName(value: string);
-        /**
-         * @zh 最大播放间隔
-         * @en The current spine animation state.
-         */
-        get maxDetlaTime(): number;
-        set maxDetlaTime(value: number);
-        /**
-         * @zh 是否循环播放Spine动画
-         * @en Whether to loop spine animation.
-         */
-        get loop(): boolean;
-        set loop(value: boolean);
-        /** @deprecated */
-        get url(): string;
-        /** @deprecated */
-        set url(value: string);
-        /**
-         * @zh 是否启用双色着色（Two-Color Tinting）的渲染效果
-         * @en Whether to use two color tint.
-         */
-        get twoColorTint(): boolean;
-        set twoColorTint(value: boolean);
-        /**
-         * @zh Spine动画模板的引用
-         * @en The Spine template reference.
-         */
-        get templet(): SpineTemplet;
-        set templet(value: SpineTemplet);
-        /**
-         * @zh 设置当前播放位置
-         * @param value 当前时间
-         * @en Set the current play time.
-         * @param value The current play time.
-         */
-        set currentTime(value: number);
-        /**
-         * @zh 获取当前播放状态
-         * @en Get the current play time.
-         */
-        get playState(): number;
-        private _useFastRender;
-        /**
-         * @zh 是否使用快速渲染，默认开启，某些复杂的Spine开启此值会渲染错误，比如spine资源中某个顶点的骨骼控制数大于4
-         * @en Whether to use fast rendering. It is enabled by default. When some complex spines are enabled, this value will render errors. For example, the number of bone controls of a vertex in the spine resource is greater than 4.
-         */
-        get useFastRender(): boolean;
-        set useFastRender(value: boolean);
-        get offset(): Vector2;
-        set offset(value: Vector2);
-        private _autoAdjust;
-        get autoAdjust(): boolean;
-        set autoAdjust(value: boolean);
-        private _doAutoAdjust;
-        /** @ignore @blueprintIgnore */
-        onEnable(): void;
-        /** @ignore @blueprintIgnore */
-        onDisable(): void;
-        /**
-         * @zh 初始化渲染器。
-         * @param templet Spine 模板
-         * @en Initializes the renderer.
-         * @param templet The Spine template.
-         */
-        protected init(templet: SpineTemplet): void;
-        /**
-         * @zh 播放动画
-         * @param nameOrIndex	Spine动画名字或者索引
-         * @param loop		    是否循环播放
-         * @param force		    false,如果要播的动画跟上一个相同就不生效,true,强制生效
-         * @param start		    起始时间
-         * @param end			结束时间
-         * @param freshSkin	    是否刷新皮肤数据
-         * @param playAudio	    是否播放音频
-         * @en Play Spine animation.
-         * @param nameOrIndex	Spine animation name or index.
-         * @param loop			Whether to loop play.
-         * @param force			false, if the animation to play is the same as the last one then it won't be played again. true, force playing even if the animation is the same.
-         * @param start			Start time.
-         * @param end			End time.
-         * @param freshSkin		Whether to refresh skin data.
-         * @param playAudio		Whether to play audio.
-         */
-        play(nameOrIndex: string | number, loop: boolean, force?: boolean, start?: number, end?: number, freshSkin?: boolean, playAudio?: boolean): void;
-        private _update;
-        private _flushExtSkin;
-        /**
-         * @zh 得到当前动画的数量
-         * @en Get the number of current animations.
-         */
-        getAnimNum(): number;
-        /**
-         * @zh 得到指定动画的名字
-         * @param index	动画的索引
-         * @en Get the name of the specified animation.
-         * @param index The index of the animation.
-         */
-        getAniNameByIndex(index: number): string;
-        /**
-    
-         * @zh 通过名字得到插槽的引用
-         * @param slotName 插槽的名字
-         * @en Get the reference to the slot by name.
-         * @param slotName The name of the slot.
-         */
-        getSlotByName(slotName: string): spine.Slot;
-        /**
-         * @zh 设置动画播放速率
-         * @param value	速率值，1为标准速率
-         * @en Set the animation playback rate.
-         * @param value The playback rate.
-         */
-        playbackRate(value: number): void;
-        /**
-         * @zh 通过名字显示一套皮肤
-         * @param name	皮肤的名字
-         * @en Show a set of skins by name.
-         * @param name The name of the skin.
-         */
-        showSkinByName(name: string): void;
-        /**
-         * @zh 通过索引显示一套皮肤
-         * @param skinIndex	皮肤索引
-         * @en Show a set of skins by index.
-         * @param skinIndex The index of the skin.
-         */
-        showSkinByIndex(skinIndex: number): void;
-        /**
-         * @zh 停止动画
-         * @en Stop the animation.
-         */
-        stop(): void;
-        /** @ignore @blueprintIgnore */
-        onUpdate(): void;
-        /**
-         * @zh 暂停动画的播放
-         * @en Pause the animation playback.
-         */
-        paused(): void;
-        /**
-         * @zh 恢复动画的播放
-         * @en Resume the animation playback.
-         */
-        resume(): void;
-        /**
-         * @zh 清掉播放完成的音频
-         * @param force 是否强制删掉所有的声音channel
-         * @en Clear the finished audio.
-         * @param force Whether to force delete all audio channels.
-         */
-        private _onAniSoundStoped;
-        /** @internal */
-        reset(): void;
-        /**
-         * @zh 添加一个动画
-         * @param nameOrIndex   动画名字或者索引
-         * @param loop          是否循环播放
-         * @param delay         延迟调用，可以为负数
-         * @en Add an animation
-         * @param nameOrIndex   Animation name or index
-         * @param loop          Whether to play in a loop
-         * @param delay         Delay call, can be negative
-         */
-        addAnimation(nameOrIndex: string | number, loop?: boolean, delay?: number): void;
-        /**
-         * @zh 设置插槽纹理
-         * @param slotName 插槽名称
-         * @param texture 纹理对象
-         * @param createAttachment 是否创建新的附件副本
-         * @en Set slot texture
-         * @param slotName Slot name
-         * @param texture Texture object
-         * @param createAttachment Whether to create a new attachment copy
-         */
-        setSlotTexture(slotName: string, texture: Texture, createAttachment?: boolean): void;
-        /**
-         * @zh 设置当动画被改变时，存储混合(交叉淡出)的持续时间
-         * @param fromNameOrIndex 原来的动画名字或者索引
-         * @param toNameOrIndex   目标的动画名字或者索引
-         * @param duration 混合(交叉淡出)的持续时间
-         * @en Set the duration of mixing (cross-fade) when an animation is changed.
-         * @param fromNameOrIndex The name or index of the original animation.
-         * @param toNameOrIndex The name or index of the target animation.
-         * @param duration The duration of mixing (cross-fade).
-         */
-        setMix(fromNameOrIndex: any, toNameOrIndex: any, duration: number): void;
-        /**
-         * @zh 获取骨骼信息(spine.Bone)
-         * - 注意: 获取到的是spine运行时的骨骼信息(spine.Bone)，不适用引擎的方法
-         * @param boneName  骨骼名称
-         * @en Get the bone information (spine.Bone)
-         * - Note: Get the spine runtime bone information (spine.Bone), not the engine method.
-         * @param boneName The name of the bone.
-         */
-        getBoneByName(boneName: string): spine.Bone;
-        /**
-         * @zh 获取骨骼(spine.Skeleton)
-         * @en Get the Skeleton(spine.Skeleton)
-         */
-        getSkeleton(): spine.Skeleton;
-        /**
-         * @zh 根据给定的坐标移动物体,支持Spine物理时有效（不能低于Spine4.2版本）
-         * @param x X轴坐标
-         * @param y Y轴坐标
-         * @en Move the object according to the given coordinates, effective when Spine physics is enabled (cannot be lower than version 4.2 of Spine)
-         * @param x X-axis coordinate
-         * @param y Y-axis coordinate
-         */
-        physicsTranslate(x: number, y: number): void;
-        /**
-         * @zh 当transform改变时，更新骨骼的位置
-         * @en Transform changed, update the skeleton position.
-         */
-        private onTransformChanged;
-        /**
-         * @zh 替换插槽皮肤
-         * @param slotName 插槽名称
-         * @param attachmentName 附件名称
-         * @en Replace the slot skin.
-         * @param slotName Slot name.
-         * @param attachmentName Attachment name.
-         */
-        setSlotAttachment(slotName: string, attachmentName: string): void;
-        /**
-         * @zh 清除方法，用于释放和重置相关资源。
-         * @en Clear method, used to release and reset related resources.
-         */
-        clear(): void;
-        /** @internal */
-        clearRenderElement(): void;
-        /**
-         * @zh 切换至快速渲染模式，开启后可以大幅度提升渲染性能，但是有骨骼顶点限制，比如spine资源中某个顶点的骨骼控制数不能大于4
-         * @en Use fast rendering mode, which can greatly improve rendering performance but has limitations on bone vertices. For example, the number of bones controlling a vertex in spine resources cannot be greater than 4
-         */
-        changeFast(): void;
-        /**
-         * @zh 切换至普通渲染模式，采用未优化过的Spine运行时，性能不如快速渲染模式，但没有骨骼顶点限制
-         * @en Switch to normal rendering mode, which uses the unoptimized Spine runtime and has no bone vertex limitations. Performance is not as good as fast rendering mode.
-         */
-        changeNormal(): void;
-        /**
-         * @ignore @blueprintIgnore
-         * @zh 销毁当前对象
-         * @en Destroy the current object.
-         */
-        onDestroy(): void;
+        writeBoneBufferCache(boneFrames: Float32Array[][], frames: number, boneMat: Float32Array, ofx?: number, ofy?: number): void;
         /** @internal */
         _updateMaterials(elements: Material[]): void;
-        /** @internal */
-        _updateRenderElements(): void;
-        /** @internal */
-        _onMeshChange(mesh: Mesh2D, force?: boolean): boolean;
-        get rect(): Vector4;
+        _clearCacheMaterials(): void;
+        /**
+         * @en Destroy the SpineRenderUpdater instance.
+         * @zh 销毁 SpineRenderUpdater 实例。
+         */
+        destroy(): void;
     }
-    class TimeKeeper {
-        maxDelta: number;
-        framesPerSecond: number;
-        delta: number;
-        totalTime: number;
-        lastTime: number;
-        frameCount: number;
-        frameTime: number;
-        timer: Timer;
-        constructor(timer: Timer);
-        update(): void;
+    class SpineMeshUtils {
+        /**
+         * @en Creates a Mesh2D object for Spine rendering
+         * @param type The Spine render type
+         * @param vbCreator Vertex buffer creator
+         * @param ibCreator Index buffer creator
+         * @param isDynamic Whether the mesh is dynamic
+         * @param uploadBuffer Whether to upload buffer data
+         * @returns The created Mesh2D object
+         * @zh 创建用于 Spine 渲染的 Mesh2D 对象
+         * @param type Spine 渲染类型
+         * @param vbCreator 顶点缓冲区创建器
+         * @param ibCreator 索引缓冲区创建器
+         * @param isDynamic 是否为动态网格
+         * @param uploadBuffer 是否上传缓冲区数据
+         * @returns 创建的 Mesh2D 对象
+         */
+        static createMesh(type: ESpineRenderType, vbCreator: VBCreator, ibCreator: IBCreator, isDynamic?: boolean, uploadBuffer?: boolean): Mesh2D;
+        /**
+         * @en Creates a dynamic mesh based on the given vertex declaration.
+         * This method is used to generate a Mesh2D object with dynamic vertex data.
+         * @param vertexDeclaration The vertex declaration that defines the structure of vertex data.
+         * @returns A new Mesh2D object configured for dynamic rendering.
+         * @zh 根据给定的顶点声明创建一个动态网格。
+         * 此方法用于生成一个具有动态顶点数据的 Mesh2D 对象。
+         * @param vertexDeclaration 定义顶点数据结构的顶点声明。
+         * @returns 一个配置为动态渲染的新 Mesh2D 对象。
+         */
+        static createMeshDynamic(vertexDeclaration: VertexDeclaration): Mesh2D;
+        static _updateSpineSubMesh(mesh: Mesh2D, frameData: FrameRenderData): boolean;
+    }
+    interface IVBChange {
+        slotId: number;
+        startFrame: number;
+        endFrame: number;
+        apply(frame: number, vb: VBCreator, slots: spine.Slot[]): boolean;
+        initChange(vb: VBCreator): boolean;
+        clone(): IVBChange;
+    }
+    interface IChange {
+        change(vb: VBCreator, slotAttachMap: Map<number, Map<string, AttachmentParse>>): boolean;
+        changeOrder(attachMap: AttachmentParse[]): number[] | null;
+    }
+    interface IRender {
+        type: ESpineRenderMode;
+        bind(updater: SpineRenderUpdater, skeleton: spine.Skeleton): void;
+        change(): void;
+        leave(): void;
+        render(curTime: number, offsetX?: number, offsetY?: number): void;
+        afterRender?(optimizeRender: BaseOptimizeRender): void;
+        destroy(): void;
+    }
+    interface IRenderBatch {
+        geometry: IRenderGeometryElement;
+        material: Material;
+        materialIndex: number;
+    }
+    interface ISpineNormalUpdater {
+        batches: IRenderBatch[];
+        renderUpdate(time: number, skeleton: spine.Skeleton, updater: SpineRenderUpdater, slotRangeStart?: number, slotRangeEnd?: number, offsetX?: number, offsetY?: number): void;
+        autoCacheEnabled: boolean;
+        needUpdate: boolean;
+        subMeshes: IRenderGeometryElement[];
+        materials: Material[];
+        restoreFromCache(cache: FrameRenderCache, offsetX?: number, offsetY?: number): void;
+        destroy(): void;
+    }
+    enum ERenderProxyType {
+        RenderNormal = 0,
+        RenderRigidBody = 1,
+        RenderOptimize = 2,
+        RenderBake = 3
+    }
+    class JSSpineFactory implements ISpineFactory {
+        createSpineTempletParser(): ISpineTempletParser;
+        /**
+         * @zh 创建Spine渲染器，统一使用SpineOptimizeRender2D，通过mode属性切换不同实现
+         * @en Create Spine renderer, unified using SpineOptimizeRender2D, switch different implementations via mode property
+         */
+        createSpineRender2D(owner: Spine2DRenderNode): ISpineRender;
+        createSpineRender3D(owner: IBaseRenderNode): ISpineRender;
     }
     /**
      * @en SpineAdapter is an adapter class for integrating the Spine animation system.
      * @zh SpineAdapter 是一个适配器类，用于集成 Spine 动画系统。
      */
     class SpineAdapter {
-        static _vbArray: Float32Array;
-        static _ibArray: Uint16Array;
-        static _spine: any;
-        /**
-         * @en Indicates whether the Spine system is using WebAssembly.
-         * @zh 指示 Spine 系统是否使用 WebAssembly。
-         */
-        static isWasm: boolean;
         /**
          * @en Map of state values to their corresponding string representations.
          * @zh 状态值到其对应字符串表示的映射。
          */
         static stateMap: any;
         /**
-         * @internal
-         * @en Initialize the system, called internally by the system.
-         * @zh 初始化系统，由系统内部调用。
-        */
-        static initialize(): any;
-        /**
-         * @en Create a normal render object for Spine animation.
-         * @param templet The Spine template.
-         * @zh 为 Spine 动画创建一个普通渲染对象。
-         * @param templet Spine 模板。
-         */
-        static createNormalRender(templet: SpineTemplet): SpineSkeletonRenderer | SpineWasmRender;
-        /**
-         * @en Perform all necessary adaptations for Spine integration.
-         * @zh 执行所有必要的 Spine 集成适配。
-         */
-        static allAdpat(): void;
-        /**
          * @en Adapt the JavaScript version of Spine.
          * @zh 适配 JavaScript 版本的 Spine。
          */
         static adaptJS(): void;
-        /**
-         * @en Initialize and extend the Spine animation library's AnimationState prototype.
-         * @zh 初始化并扩展Spine动画库的AnimationState原型。
-         */
-        static initClass(): void;
-        /**
-         * @en Bind vertex and index buffers for Spine rendering.
-         * @param maxNumVertices Maximum number of vertices.
-         * @param maxNumIndices Maximum number of indices.
-         * @zh 为 Spine 渲染绑定顶点和索引缓冲区。
-         * @param maxNumVertices 最大顶点数量。
-         * @param maxNumIndices 最大索引数量。
-         */
-        static bindBuffer(maxNumVertices: number, maxNumIndices: number): void;
-        /**
-         * @en Draw a Spine skeleton.
-         * @param fun The drawing function.
-         * @param skeleton The Spine skeleton to draw.
-         * @param twoColorTint Whether to use two-color tinting.
-         * @param slotRangeStart The starting slot index.
-         * @param slotRangeEnd The ending slot index.
-         * @zh 绘制 Spine 骨骼。
-         * @param fun 绘制函数。
-         * @param skeleton 要绘制的 Spine 骨骼。
-         * @param twoColorTint 是否使用两色混色。
-         * @param slotRangeStart 起始插槽索引。
-         * @param slotRangeEnd 结束插槽索引。
-         */
-        static drawSkeleton(fun: Function, skeleton: any, twoColorTint: boolean, slotRangeStart: number, slotRangeEnd: number): void;
-    }
-    /**
-     * @deprecated 请使用Sprite+Spine2DRenderNode组件
-     * spine动画由<code>SpineTemplet</code>，<code>SpineSkeletonRender</code>，<code>SpineSkeleton</code>三部分组成。
-     */
-    class SpineSkeleton extends Sprite {
-        private _spineComponent;
-        constructor();
-        /**
-         * 外部皮肤
-         */
-        get externalSkins(): ExternalSkin[];
-        set externalSkins(value: ExternalSkin[]);
-        /**
-         * 重置外部加载的皮肤的样式
-         */
-        resetExternalSkin(): void;
-        /**
-         * 动画源
-         */
-        get source(): string;
-        set source(value: string);
-        /**
-         * 皮肤名
-         */
-        get skinName(): string;
-        set skinName(value: string);
-        /**
-         * 动画名
-         */
-        get animationName(): string;
-        set animationName(value: string);
-        /**
-         * 是否循环
-         */
-        get loop(): boolean;
-        set loop(value: boolean);
-        /**
-         * 得到动画模板的引用
-         * @return templet
-         */
-        get templet(): SpineTemplet;
-        /**
-         * 设置动画模板的引用
-         */
-        set templet(value: SpineTemplet);
-        /**
-         * 设置当前播放位置
-         * @param value 当前时间
-         */
-        set currentTime(value: number);
-        /**
-         * 获取当前播放状态
-         * @return	当前播放状态
-         */
-        get playState(): number;
-        get spineItem(): ISpineOptimizeRender;
-        set spineItem(value: ISpineOptimizeRender);
-        /**
-         * 播放动画
-         *
-         * @param nameOrIndex	动画名字或者索引
-         * @param loop		是否循环播放
-         * @param force		false,如果要播的动画跟上一个相同就不生效,true,强制生效
-         * @param start		起始时间
-         * @param end			结束时间
-         * @param freshSkin	是否刷新皮肤数据
-         * @param playAudio	是否播放音频
-         */
-        play(nameOrIndex: any, loop: boolean, force?: boolean, start?: number, end?: number, freshSkin?: boolean, playAudio?: boolean): void;
-        /**
-         * 得到当前动画的数量
-         * @return 当前动画的数量
-         */
-        getAnimNum(): number;
-        /**
-         * 得到指定动画的名字
-         * @param index	动画的索引
-         */
-        getAniNameByIndex(index: number): string;
-        /**
-         * 通过名字得到插槽的引用
-         * @param slotName
-         */
-        getSlotByName(slotName: string): spine.Slot;
-        /**
-         * 设置动画播放速率
-         * @param value	1为标准速率
-         */
-        playbackRate(value: number): void;
-        /**
-         * 通过名字显示一套皮肤
-         * @param name	皮肤的名字
-         */
-        showSkinByName(name: string): void;
-        /**
-         * 通过索引显示一套皮肤
-         * @param skinIndex	皮肤索引
-         */
-        showSkinByIndex(skinIndex: number): void;
-        /**
-         * 停止动画
-         */
-        stop(): void;
-        /**
-         * 暂停动画的播放
-         */
-        paused(): void;
-        /**
-         * 恢复动画的播放
-         */
-        resume(): void;
-        /**
-         * 销毁当前动画
-         * @override
-         */
-        destroy(destroyChild?: boolean): void;
-        /**
-         * 添加一个动画
-         * @param nameOrIndex   动画名字或者索引
-         * @param loop          是否循环播放
-         * @param delay         延迟调用，可以为负数
-         */
-        addAnimation(nameOrIndex: any, loop?: boolean, delay?: number): void;
-        /**
-         * 设置当动画被改变时，存储混合(交叉淡出)的持续时间
-         * @param fromNameOrIndex
-         * @param toNameOrIndex
-         * @param duration
-         */
-        setMix(fromNameOrIndex: any, toNameOrIndex: any, duration: number): void;
-        /**
-         * 获取骨骼信息(spine.Bone)
-         * 注意: 获取到的是spine运行时的骨骼信息(spine.Bone)，不适用引擎的方法
-         * @param boneName
-         */
-        getBoneByName(boneName: string): spine.Bone;
-        /**
-         * 获取Skeleton(spine.Skeleton)
-         */
-        getSkeleton(): spine.Skeleton;
-        /**
-         * 替换插槽皮肤
-         * @param slotName
-         * @param attachmentName
-         */
-        setSlotAttachment(slotName: string, attachmentName: string): void;
-    }
-    enum ESpineRenderType {
-        boneGPU = 0,
-        normal = 1,
-        rigidBody = 2
-    }
-    /**
-     * @en Base class for Spine animation template
-     * @zh Spine动画模板基类
-     */
-    class SpineTemplet extends Resource {
-        /**
-         * @en Runtime version of Spine
-         * @zh Spine运行时版本
-         */
-        static RuntimeVersion: string;
-        /**
-         * @en Skeleton data for the Spine animation
-         * @zh Spine动画的骨骼数据
-         */
-        skeletonData: spine.SkeletonData;
-        /**
-         * @en Map of materials used in the Spine animation
-         * @zh Spine动画中使用的材质映射
-         */
-        materialMap: Map<string, Material>;
-        private _textures;
-        private _atlas;
-        private _basePath;
-        /**
-         * @en Base width of spine animation
-         * @zh spine 动画基础宽度
-         */
-        width: number;
-        /**
-         * @en Base height of spine animation
-         * @zh spine 动画基础高度
-         */
-        height: number;
-        /**
-         * @en X-axis offset of spine animation
-         * @zh spine 动画X轴偏移
-         */
-        offsetX: number;
-        /**
-         * @en Y-axis offset of spine animation
-         * @zh spine 动画Y轴偏移
-         */
-        offsetY: number;
-        /**
-         * @en Indicates if slot is needed
-         * @zh 是否需要插槽
-         */
-        needSlot: boolean;
-        /**
-         * @en Skeleton optimization object
-         * @zh 骨骼优化对象
-         */
-        sketonOptimise: SketonOptimise;
-        /**
-         * 4.2版本以上支持物理
-         * @en Indicates if physics is needed
-         * @zh 是否需要物理
-         */
-        hasPhysics: boolean;
-        /** @ignore */
-        constructor();
-        /** @internal */
-        get _mainTexture(): Texture2D;
-        /**
-         * @en The main texture of the Spine animation
-         * @zh Spine动画的主纹理
-         */
-        mainTexture: Texture2D;
-        /**
-         * @en The main blend mode of the Spine animation
-         * @zh Spine动画的主混合模式
-         */
-        mainBlendMode: number;
-        /** @internal */
-        _premultipliedAlpha: boolean;
-        /**
-         * @en Switch for premultipliedAlpha.
-         * @zh 透明预乘的开关。
-         */
-        get premultipliedAlpha(): boolean;
-        /**
-         * @en The base path of the Spine animation resources
-         * @zh Spine动画资源的基础路径
-         */
-        get basePath(): string;
-        /**
-         * @en Get or create a material for the given texture and blend mode
-         * @param texture The texture to use
-         * @param blendMode The blend mode to use
-         * @zh 获取或创建给定纹理和混合模式的材质
-         * @param texture 要使用的纹理
-         * @param blendMode 要使用的混合模式
-         */
-        getMaterial(texture: Texture2D, blendMode: number, premultipliedAlpha: boolean): Material;
-        /**
-         * @en Get a texture by its name
-         * @param name The name of the texture
-         * @zh 通过名称获取纹理
-         * @param name 纹理的名称
-         */
-        getTexture(name: string): Texture2D;
-        setTexture(name: string, tex: Texture2D): void;
-        private _registTextures;
-        /**
-         * @zh 注册纹理，将 Texture 对象与 Spine 的 TextureRegion 和 AtlasPage 建立对应关系
-         * @param texture Texture 对象，对应 TextureRegion
-         * @en Register texture, establish correspondence between Texture object and Spine's TextureRegion and AtlasPage
-         * @param texture Texture object, corresponding to TextureRegion
-         */
-        registerTexture(texture: any): spine.TextureAtlasRegion;
-        /**
-         * @en Check if Templet needs transparent premultiplied
-         * @zh 检查Templet是否需要透明预乘
-         */
-        checkPremultipliedAlpha(): boolean;
-        /** @internal */
-        _parse(desc: string | ArrayBuffer, atlas: spine.TextureAtlas, textures: Record<string, Texture2D>, premultipliedAlpha?: boolean): void;
-        /**
-         * @en Get the animation name by its index
-         * @param index The index of the animation
-         * @zh 通过索引获取动画名称
-         * @param index 动画的索引
-         */
-        getAniNameByIndex(index: number): string;
-        /**
-         * @en Find the animation by its name
-         * @param name The name of the animation to find
-         * @returns The found animation index, or -1 if not found
-         * @zh 通过动画名称查找动画
-         * @param name 要查找的动画名称
-         * @returns 找到的动画索引，如果未找到则返回-1
-         */
-        findAnimation(name: string): spine.Animation;
-        /**
-         * @en Get the skin index by its name
-         * @param skinName The name of the skin
-         * @zh 通过皮肤名称获取皮肤索引
-         * @param skinName 皮肤名称
-         */
-        getSkinIndexByName(skinName: string): number;
-        /**
-         * @en Release textures and materials
-         * @zh 释放纹理和材质
-         */
-        protected _disposeResource(): void;
     }
     /**
      * @en Used for adaptation to version 3.8
@@ -83753,6 +87295,16 @@ declare namespace Laya {
          * @param vWrap 垂直包裹模式
          */
         setWraps(uWrap: spine.TextureWrap, vWrap: spine.TextureWrap): void;
+    }
+    class WebSpineTempletParser implements ISpineTempletParser {
+        private _atlas;
+        private _premultipliedAlpha;
+        private _cachedAtlasText;
+        private _basePath;
+        parse(data: string | ArrayBuffer, textures: Record<string, Texture2D>): SpineTemplet;
+        collectTextures(atlasText: string, task: ILoadTask): ILoadURL[];
+        create(desc: string | ArrayBuffer, textures: Texture2D[]): SpineTemplet;
+        destroy(): void;
     }
     class BaseSheet {
         protected _origMatix: Matrix;
@@ -84383,6 +87935,7 @@ declare namespace Laya {
         zOrderValue: number;
         cellx: number;
         celly: number;
+        sortY: number;
         _physicsDatas: any[];
         _occluderDatas: TileMapOccluder[];
         _renderElementIndex: number;
@@ -84542,6 +88095,12 @@ declare namespace Laya {
          */
         getCell(index: number): ChunkCellInfo;
         /**
+         * @internal
+         * 当某个 TileSetCellData 的 y_sort_origin 发生变化时，
+         * 刷新当前 Chunk 中所有引用该 cell 的 sortY。
+         */
+        _refreshCellSort(cellData: TileSetCellData): void;
+        /**
          * tileSetCellData 删除或者无效
          * @internal
          */
@@ -84665,7 +88224,8 @@ declare namespace Laya {
          */
         _cliper: RectClipper;
         private _layerColor;
-        private _sortMode;
+        /** @internal */
+        _sortMode: TileLayerSortMode;
         private _renderTileSize;
         private _navigationEnable;
         private _physicsEnable;
@@ -84959,6 +88519,18 @@ declare namespace Laya {
          * @param out      复用输出
          */
         static layerToTiled(tileMapX: number, tileMapY: number, out?: Vector2): Vector2;
+        /**
+         * Y优先排序比较：先 sortY，再 zOrderValue，再 cellx
+         */
+        static compareYSort(a: ChunkCellInfo, b: ChunkCellInfo): number;
+        /**
+         * Z优先排序比较：先 zOrderValue，再 sortY，再 cellx
+         */
+        static compareZSort(a: ChunkCellInfo, b: ChunkCellInfo): number;
+        /**
+         * X优先排序比较：先 cellx，再 sortY，再 zOrderValue
+         */
+        static compareXSort(a: ChunkCellInfo, b: ChunkCellInfo): number;
     }
     class TileSet extends Resource {
         private _tileShape;
@@ -84972,7 +88544,8 @@ declare namespace Laya {
         private _groupIds;
         private _defalutMaterials;
         private _ownerList;
-        private _terrainsDirty;
+        /** @internal */
+        _terrainsDirty: boolean;
         private _paramsLists;
         constructor();
         /**
@@ -85169,6 +88742,7 @@ declare namespace Laya {
         __init(owner: TileAlternativesData, index: number): void;
         _notifyDataChange(data: TileMapDirtyFlag, type: DirtyFlagType): void;
         _noticeRenderChange(): void;
+        _refreshCellSort(): void;
         _removeNoticeRenderTile(layerRenderTile: TileMapChunkData): void;
         _addNoticeRenderTile(layerRenderTile: TileMapChunkData): void;
         set_lightOccluder(layerIndex: number, data: TileSetCellOcclusionInfo): void;
@@ -85424,7 +88998,10 @@ declare namespace Laya {
      * @zh `TrailRenderer` 类用于创建拖尾渲染器。
      */
     class TrailRenderer extends BaseRender {
-        /**@internal */
+        /**
+         * @en The trail filter.
+         * @zh 拖尾过滤器。
+         */
         _trailFilter: TrailFilter;
         /** @ignore */
         constructor();
@@ -85799,12 +89376,19 @@ declare namespace Laya {
         private _fullLength;
         private _cacheT;
         private _curPt;
+        private _parPos;
+        private _parPosCatch;
+        /**
+        * 0或者null为不旋转，1为沿路径曲线路径旋转，2为沿运动路径旋转
+        */
+        rotationType: RotationType;
         constructor();
         /**
          * @en The total length of the curve.
          * @zh 曲线的总长度。
          */
         get length(): number;
+        is2D: boolean;
         /**
          * @en Create a curve.
          * @param points Point list.
@@ -85812,12 +89396,94 @@ declare namespace Laya {
          * @param points 点列表。
          */
         create(...points: ReadonlyArray<PathPoint>): void;
+        /**
+         * @en Estimate the arc length of a Bezier curve by sampling.
+         * @param ptStart Starting point index in the points array.
+         * @param ptCount Number of control points.
+         * @param samples Number of samples for estimation.
+         * @returns Estimated arc length.
+         * @zh 通过采样估算贝塞尔曲线的弧长。
+         * @param ptStart 点数组中的起始点索引。
+         * @param ptCount 控制点数量。
+         * @param samples 估算的采样数量。
+         * @returns 估算的弧长。
+         */
+        private estimateBezierLength;
         private createSplineSegment;
         /**
          * @en Clear the curve.
          * @zh 清空曲线。
          */
         clear(): void;
+        /**
+         * @en Get the rotation (tangent direction) on the curve at the specified distance.
+         * Automatically detects 2D/3D data and returns appropriate rotation format.
+         * For 2D data (z=0), returns Vector3(0, 0, rotationAngle).
+         * For 3D data, returns Vector3(pitch, yaw, roll).
+         * @param t Distance value. It should be a value between 0 and 1.
+         * @param out Optional output Vector3 to store the result. If not provided, a new Vector3 will be created.
+         * @returns The rotation angles in degrees representing the tangent direction at the specified point.
+         * @zh 获取曲线上指定距离点的旋转角度（切线方向）。
+         * 自动检测2D/3D数据并返回相应的旋转格式。
+         * 对于2D数据（z=0），返回Vector3(0, 0, 旋转角度)。
+         * 对于3D数据，返回Vector3(俯仰角, 偏航角, 滚转角)。
+         * @param t 距离值，它应该是0到1之间的值。
+         * @param out 可选的输出Vector3用于存储结果。如果未提供，将创建新的Vector3。
+         * @returns 表示指定点切线方向的旋转角度（度）。
+         */
+        getRotationAt(t: number, out?: Vector3): Vector3;
+        /**
+         * @en Convert a tangent vector to Euler angles in degrees.
+         * Automatically detects if the curve is 2D (z=0) or 3D and returns appropriate rotation format.
+         * For 2D curves, returns Vector3(0, 0, rotationAngle).
+         * For 3D curves, returns Vector3(pitch, yaw, roll).
+         * @param tangent The normalized tangent vector.
+         * @param out The output Vector3 to store the Euler angles (x, y, z) in degrees.
+         * @zh 将切线向量转换为欧拉角（度）。
+         * 自动检测曲线是2D（z=0）还是3D，并返回相应的旋转格式。
+         * 对于2D曲线，返回Vector3(0, 0, 旋转角度)。
+         * 对于3D曲线，返回Vector3(俯仰角, 偏航角, 滚转角)。
+         * @param tangent 归一化的切线向量。
+         * @param out 输出Vector3存储欧拉角（x, y, z），单位为度。
+         */
+        private tangentToEulerAngles;
+        /**
+         * @en Calculate the tangent vector at a specific point within a curve segment.
+         * @param seg The curve segment.
+         * @param t The parameter value within the segment (0-1).
+         * @param out The output tangent vector.
+         * @zh 计算曲线段内指定点的切线向量。
+         * @param seg 曲线段。
+         * @param t 段内的参数值（0-1）。
+         * @param out 输出的切线向量。
+         */
+        private getTangentAtSegment;
+        /**
+         * @en Calculate the tangent vector for a Bezier curve at parameter t.
+         * @param ptStart Starting point index in the points array.
+         * @param ptCount Number of control points (3 for quadratic, 4 for cubic).
+         * @param t Parameter value (0-1).
+         * @param out Output tangent vector.
+         * @zh 计算贝塞尔曲线在参数t处的切线向量。
+         * @param ptStart 点数组中的起始点索引。
+         * @param ptCount 控制点数量（二次贝塞尔为3，三次贝塞尔为4）。
+         * @param t 参数值（0-1）。
+         * @param out 输出切线向量。
+         */
+        private getBezierTangent;
+        /**
+         * @en Calculate the tangent vector for a CR Spline curve at parameter t.
+         * @param ptStart Starting point index in the points array.
+         * @param ptCount Number of control points.
+         * @param t Parameter value (0-1).
+         * @param out Output tangent vector.
+         * @zh 计算CR样条曲线在参数t处的切线向量。
+         * @param ptStart 点数组中的起始点索引。
+         * @param ptCount 控制点数量。
+         * @param t 参数值（0-1）。
+         * @param out 输出切线向量。
+         */
+        private getCRSplineTangent;
         /**
          * @en Get the point on the curve at the specified distance.
          * @param t Distance value. It should be a value between 0 and 1.
@@ -85875,8 +89541,22 @@ declare namespace Laya {
          * @returns 曲线上的所有点。
          */
         getAllPoints(out?: Array<Vector3>, outTs?: Array<number>, pointDensity?: number): Array<Vector3>;
+        /**
+         * @en Get the point on a specific segment at parameter t.
+         * @param seg The curve segment.
+         * @param t The parameter value within the segment (0-1).
+         * @param pts The points array.
+         * @param out The output Vector3.
+         * @zh 获取指定段在参数t处的点。
+         * @param seg 曲线段。
+         * @param t 段内的参数值（0-1）。
+         * @param pts 点数组。
+         * @param out 输出的Vector3。
+         */
+        private getPointOnSegment;
         private onCRSplineCurve;
         private onBezierCurve;
+        static getRotation(parPos: Vector3, currPos: Vector3): Vector3;
     }
     /**
      * @en The `Ease` class defines easing functions for Tween animations to achieve various transition effects.
@@ -86432,6 +90112,23 @@ declare namespace Laya {
          */
         Straight = 3
     }
+    enum RotationType {
+        /**
+         * @en No rotation.
+         * @zh 不旋转。
+         */
+        NoRotation = 0,
+        /**
+         * @en Rotate along the path curve.
+         * @zh 沿路径曲线旋转。
+         */
+        RotateAlongPathCurve = 1,
+        /**
+         * @en Rotate along the motion path.
+         * @zh 沿运动路径旋转。
+         */
+        RotateAlongMotionPath = 2
+    }
     class PathPoint {
         /**
          * @en Position.
@@ -86453,6 +90150,10 @@ declare namespace Laya {
          * @zh 曲线类型。
          */
         curve: CurveType;
+        /**
+         * 0或者null为不旋转，1为沿路径曲线路径旋转，2为沿运动路径旋转
+         */
+        rotationType?: RotationType;
         /**
          * @en Create a cardinalspline curve point.
          * @zh 创建一个 PathPoint 的实例。
@@ -88513,132 +92214,125 @@ declare namespace Laya {
         protected _open(modal: boolean, closeOther: boolean, showEffect: boolean): void;
     }
     /**
-     * @en The `DialogManager` is a container for managing all dialog boxes, which are managed by the manager.
-     * Opening and closing any dialog will trigger the manager's open and close events.
-     * open event is used for any window after dispatching, and close event is used to dispatch events when closing any dialog.
-     * The background transparency of the popup, whether the modal window closes when the edge is clicked, and whether the layer changes when the window is clicked can be set in UIConfig.
-     * The layer of the popup can be changed by setting the dialog's zOrder property.
-     * @zh DialogManager 对话框管理容器，所有的对话框都在该容器内，并且受管理器管理。
-     * 任意对话框打开和关闭，都会触发管理类的 open 和 close 事件。
-     * open事件用于任意窗口后调度，close事件用于关闭任意对话框时调度的事件。
-     * 可以通过 UIConfig 设置弹出框背景透明度，模式窗口点击边缘是否关闭，点击窗口是否切换层次等。
-     * 通过设置对话框的 zOrder 属性，可以更改弹出的层次。
+     * @zh DialogManager 对话框管理容器，统一管理弹窗；打开/关闭会触发 open/close 事件。可通过 UIConfig 设置弹出背景透明度、是否点边关闭、是否点击切层等；调整 dialog.zOrder 改变层级。
+     * @en DialogManager manages all dialogs; open/close dispatch open/close events. UIConfig controls popup bg alpha, edge-close, layer switch; dialog.zOrder sets popup order.
      */
     class DialogManager extends Sprite {
         /**
-         * @en Mask layer
          * @zh 遮罩层。
+         * @en Mask layer.
          */
         maskLayer: Sprite;
         /**
-         * @en Lock screen layer.
          * @zh 锁屏层。
+         * @en Lock screen layer.
          */
         lockLayer: Sprite;
         /**
-         * @en The global default popup effect for dialogs. You can set an effect to replace the default popup effect.
-         * If you do not want any effect, you can assign it to null.
-         * @zh 全局默认弹出对话框效果，可以设置一个效果代替默认的弹出效果，如果不想有任何效果，可以赋值为 null。
+         * @zh 全局默认弹出效果；可替换或置 null 关闭。
+         * @en Global default popup effect; replace or set null to disable.
          */
         popupEffect: (dialog: Dialog) => void;
         /**
-         * @en The global default close effect for dialogs. You can set an effect to replace the default close effect.
-         * If you do not want any effect, you can assign it to null.
-         * @zh 全局默认关闭对话框效果，可以设置一个效果代替默认的关闭效果，如果不想有任何效果，可以赋值为 null。
+         * @zh 全局默认关闭效果；可替换或置 null 关闭。
+         * @en Global default close effect; replace or set null to disable.
          */
         closeEffect: (dialog: Dialog) => void;
         /**
-         * @en Sets the global default opening effect for the dialog. You can specify an effect to replace the default opening effect.
-         * If you do not want any effect, it can be set to null.
-         * @zh 设置全局默认的对话框打开效果。可以指定一个效果来替代默认的打开效果，如果不想有任何效果，可以设置为 null。
+         * @zh 全局默认打开效果 Handler，可替换或置 null。
+         * @en Handler for global default open effect; replace or set null.
          */
         popupEffectHandler: Handler;
         /**
-         * @en Sets the global default closing effect for the dialog. You can specify an effect to replace the default closing effect.
-         * If you do not want any effect, it can be set to null.
-         * @zh 设置全局默认的对话框关闭效果。可以指定一个效果来替代默认的关闭效果，如果不想有任何效果，可以设置为 null。
+         * @zh 全局默认关闭效果 Handler，可替换或置 null。
+         * @en Handler for global default close effect; replace or set null.
          */
         closeEffectHandler: Handler;
         /** @ignore */
         constructor();
         private _closeOnSide;
         private _onResize;
+        /**
+         * @zh 检查是否设置相对布局（left/right/top/bottom/centerX/centerY）。
+         * @en Check whether relative layout is set (left/right/top/bottom/centerX/centerY).
+         */
+        private _hasLayout;
         private _centerDialog;
         private _clearDialogEffect;
         private _closeAll;
         /**
          * @internal
-         * @en Checks and readjusts the mask layer after a change in the z-order of dialogs.
-         * @zh 发生层次改变后，重新检查遮罩层是否正确
+         * @zh 重新检查遮罩层位置（z 变更后）。
+         * @en Re-check mask layer after z-order changes.
          */
         _checkMask(): void;
         /**
-         * @en Sets the lock view. If no value is provided, the lock layer will be empty and won't display anything.
-         * @param value The UIComponent to display on the lock layer, or null for an empty lock layer.
-         * @zh 设置锁定界面，如果参数为空则什么都不显示。
-         * @param value 要在锁定层上显示的UI组件，空锁定层为null。
+         * @zh 设置锁定界面，value 为空则不显示。
+         * @param value 要显示在锁定层的 UIComponent，空则不显示。
+         * @en Set lock view; shows nothing when value is null.
+         * @param value UIComponent to show on lock layer, null to show nothing.
          */
         setLockView(value: UIComponent): void;
         /**
-         * @en Opens a dialog.
-         * @param dialog The Dialog instance to be displayed.
-         * @param closeOther Whether to close other dialogs. If true, other dialogs will be closed.
-         * @param showEffect Whether to show the popup effect.
          * @zh 打开对话框。
-         * @param dialog 需要显示的对话框 Dialog 实例。
-         * @param closeOther 是否关闭其他对话框。若为 true，则关闭其他对话框。
+         * @param dialog 需要显示的对话框实例。
+         * @param closeOther 是否关闭其他对话框，默认 false。
          * @param showEffect 是否显示弹出效果。
+         * @en Open a dialog.
+         * @param dialog Dialog instance to display.
+         * @param closeOther Whether to close other dialogs; default false.
+         * @param showEffect Whether to show popup effect.
          */
         open(dialog: Dialog, closeOther?: boolean, showEffect?: boolean): void;
         /**
-         * @en Executes the opening of a dialog.
-         * @param dialog The Dialog instance that needs to be opened.
-         * @zh 执行打开对话框操作。
-         * @param dialog 需要打开的对话框 Dialog 实例。
+         * @zh 执行打开逻辑。
+         * @param dialog 需要打开的对话框。
+         * @en Execute dialog open.
+         * @param dialog Dialog instance.
          */
         doOpen(dialog: Dialog): void;
         /**
-         * @en Locks all layers, displays loading information, and prevents double-clicking.
-         * @param value If true, the lock layer is shown, otherwise it is hidden.
          * @zh 锁定所有层，显示加载信息，防止双击。
          * @param value 如果为true，则显示锁定层，否则隐藏锁定层。
+         * @en Locks all layers, displays loading information, and prevents double-clicking.
+         * @param value If true, the lock layer is shown, otherwise it is hidden.
          */
         lock(value: boolean): void;
         /**
-         * @en Closes the dialog.
-         * @param dialog The Dialog instance that needs to be closed.
          * @zh 关闭对话框。
          * @param dialog 需要关闭的对话框 Dialog 实例。
+         * @en Closes the dialog.
+         * @param dialog The Dialog instance that needs to be closed.
          */
         close(dialog: Dialog): void;
         /**
-         * @en Executes the closing of a dialog.
-         * @param dialog The Dialog instance that needs to be closed.
          * @zh 执行关闭对话框操作。
          * @param dialog 需要关闭的对话框 Dialog 实例。
+         * @en Executes the closing of a dialog.
+         * @param dialog The Dialog instance that needs to be closed.
          */
         doClose(dialog: Dialog): void;
         /**
-         * @en Closes all dialogs.
          * @zh 关闭所有对话框。
+         * @en Closes all dialogs.
          */
         closeAll(): void;
         /**
-         * @en Gets all dialogs by group name.
-         * @param group The name of the group.
-         * @returns An array of dialogs that belong to the specified group.
          * @zh 根据组名获取所有对话框。
          * @param group 组名。
          * @returns 属于指定组的对话框数组。
+         * @en Gets all dialogs by group name.
+         * @param group The name of the group.
+         * @returns An array of dialogs that belong to the specified group.
          */
         getDialogsByGroup(group: string): any[];
         /**
-         * @en Closes all popups by group name.
-         * @param group The name of the group to close.
-         * @returns An array of dialogs that have been closed.
          * @zh 根据组名关闭所有弹出框。
          * @param group 需要关闭的组名。
          * @returns 已关闭的对话框数组。
+         * @en Closes all popups by group name.
+         * @param group The name of the group to close.
+         * @returns An array of dialogs that have been closed.
          */
         closeByGroup(group: string): any[];
     }
@@ -89068,6 +92762,12 @@ declare namespace Laya {
         get leading(): number;
         set leading(value: number);
         /**
+         * @en Letter spacing
+         * @zh 字间距
+         */
+        get letterSpacing(): number;
+        set letterSpacing(value: number);
+        /**
          * @en Font size of the text.
          * @zh 文本的字号大小。
          */
@@ -89105,6 +92805,30 @@ declare namespace Laya {
          */
         get strokeColor(): string;
         set strokeColor(value: string);
+        /**
+         * @en Shadow offset X (in pixels).
+         * @zh 阴影偏移X（以像素为单位）。
+         */
+        get shadowOffsetX(): number;
+        set shadowOffsetX(value: number);
+        /**
+         * @en Shadow offset Y (in pixels).
+         * @zh 阴影偏移Y（以像素为单位）。
+         */
+        get shadowOffsetY(): number;
+        set shadowOffsetY(value: number);
+        /**
+         * @en Shadow blur (in pixels).
+         * @zh 阴影模糊度（以像素为单位）。
+         */
+        get shadowBlur(): number;
+        set shadowBlur(value: number);
+        /**
+         * @en Shadow color, represented as a string.
+         * @zh 阴影颜色，以字符串表示。
+         */
+        get shadowColor(): string;
+        set shadowColor(value: string);
         /**
          * @en Supporting html syntax.
          * @zh 是否富文本，支持html语法
@@ -92064,8 +95788,8 @@ declare namespace Laya {
         CenterAndMiddle = 102
     }
     /**
-     * @en Controller class manages a set of pages, allowing for selection and change notifications.
-     * @zh 控制器类管理一组页面，允许选择和更改通知。
+     * @en A controller defines a set of pages, which can be used in conjunction with Gears to switch the properties of nodes between different pages.
+     * @zh 控制器定义了一组页面，通过与齿轮(Gears)配合使用，可以实现节点的属性在不同页面间切换。
      */
     class Controller extends EventDispatcher {
         private _selectedIndex;
@@ -92258,7 +95982,15 @@ declare namespace Laya {
     const ButtonPageAlternatives: Record<number, ButtonStatus>;
     /**
      * @en GButton is a button widget that can display a title and an icon, and supports different modes such as common, check, and radio.
+     * The button itself does not have any visual effects. If you want to display a title, you need to bind a child node (usually a GTextField) through the titleWidget; if you want to display an icon, you bind a child node (usually a GImage or GLoader) through the iconWidget.
+     * If the button needs to have a press-down effect, you can set the effect when pressed through the downEffect property. Currently, three effects are supported: darken, scale down, and scale up.
+     * The button can also achieve advanced visual effects by switching 3-state images. The specific method is to add a controller named "button" to the button. The controller needs to have the following pages: up, over, down, selectedOver.
+     * Then the image can be linked with the controller by GearDisplay, setting which pages the image is displayed on, thereby achieving visual effects in different states.
      * @zh GButton 是一个按钮小部件，可以显示标题和图标，并支持不同的模式，如常规、复选和单选。
+     * 按钮自身不带有任何视觉效果，如果需要显示标题，需要通过titleWidget绑定一个孩子节点（通常是GTextField），如果需要显示图标，则通过iconWidget绑定孩子节点（通常是GImage或者GLoader）。
+     * 如果按钮需要有按下效果，可以通过downEffect属性设置按下时的效果，目前支持变暗、向下缩放和向上缩放三种效果。
+     * 按钮也可以通过切换3态图实现高级视觉效果，具体做法是给按钮添加一个名称为button的控制器，控制器需要有如下页面：up、over、down、selectedOver。
+     * 然后图片可以通过GearDisplay与控制器联动，设置图片在哪些页面下显示，从而实现不同状态下的视觉效果。
      * @blueprintInheritable
      */
     class GButton extends GLabel {
@@ -92482,6 +96214,10 @@ declare namespace Laya {
             [UIEvent.Popup]: () => void;
         };
     }
+    /**
+     * @en Base class for gears that manage property changes based on controller pages.
+     * @zh 管理基于控制器页面的属性更改的齿轮基类。
+     */
     class Gear {
         protected _owner: GWidget;
         protected _controller: ControllerRef;
@@ -92491,15 +96227,35 @@ declare namespace Laya {
         _tween: Tween;
         /** @internal */
         _propPathArr: string[];
+        /**
+         * @en The values associated with different pages.
+         * @zh 与不同页面关联的值。
+         */
         values: Record<number, any>;
         static disableAllTweenEffect: boolean;
         constructor();
+        /**
+         * @en The owner widget of this gear.
+         * @zh 此齿轮的拥有者小部件。
+         */
         get owner(): GWidget;
         set owner(value: GWidget);
+        /**
+         * @en The controller associated with this gear.
+         * @zh 与此齿轮关联的控制器。
+         */
         get controller(): ControllerRef;
         set controller(value: ControllerRef);
+        /**
+         * @en The property path controlled by this gear. Each dot in the path represents a level of hierarchy.
+         * @zh 此齿轮控制的属性路径。路径中的每个点表示一个层级关系。
+         */
         get propPath(): string;
         set propPath(value: string);
+        /**
+         * @en The tween configuration for this gear.
+         * @zh 此齿轮的缓动配置。
+         */
         get tween(): GearTweenConfig;
         set tween(value: GearTweenConfig);
         protected onChanged(initiator: Controller): void;
@@ -92508,17 +96264,41 @@ declare namespace Laya {
         protected doTween(obj: any, key: string, oldValue: any, newValue: any): void;
         protected runGear(initiator: Controller): void;
     }
+    /**
+     * @en Gear class for managing number properties.
+     * @zh 管理数字属性的齿轮类。
+     */
     class GearNumber extends Gear {
     }
+    /**
+     * @en Gear class for managing string properties.
+     * @zh 管理字符串属性的齿轮类。
+     */
     class GearString extends Gear {
     }
+    /**
+     * @en Gear class for managing boolean properties.
+     * @zh 管理布尔属性的齿轮类。
+     */
     class GearBool extends Gear {
     }
+    /**
+     * @en Gear class for managing color properties. The data type is Color object.
+     * @zh 管理颜色属性的齿轮类。数据类型是Color对象。
+     */
     class GearColor extends Gear {
     }
+    /**
+     * @en Gear class for managing string color properties.
+     * @zh 管理字符串颜色属性的齿轮类。
+     */
     class GearStrColor extends Gear {
         protected doTween(obj: any, key: string, oldValue: string, newValue: string): void;
     }
+    /**
+     * @en Gear class for managing hexadecimal color properties. The data type is number.
+     * @zh 管理十六进制颜色属性的齿轮类。数据类型是数字。
+     */
     class GearHexColor extends Gear {
         protected doTween(obj: any, key: string, oldValue: number, newValue: number): void;
     }
@@ -92527,8 +96307,16 @@ declare namespace Laya {
         private _flag;
         private _condition;
         constructor();
+        /**
+         * @en Sets an array of page indices where the object is visible. If the array is empty, the object is visible on all pages.
+         * @zh 设定一个页面索引数组，对象只在这些页面中可见。如果数组为空，则表示在所有页面中都可见。
+         */
         get pages(): Array<number>;
         set pages(value: Array<number>);
+        /**
+         * @en The interaction of this gear with other GearDisplays of the object. 0 means AND condition, 1 means OR condition.
+         * @zh 本齿轮与物体的其他GearDisplay的相互作用。0表示与条件，1表示或条件。
+         */
         get condition(): number;
         set condition(value: number);
         protected runGear(initiator: Controller): void;
@@ -92536,14 +96324,30 @@ declare namespace Laya {
         static checkAll(cc: Controller): void;
     }
     class GearTweenConfig {
+        /**
+         * @en Whether to enable tweening.
+         * @zh 是否启用缓动。
+         */
         enabled: boolean;
+        /**
+         * @en The type of easing function to use.
+         * @zh 使用的缓动函数类型。
+         */
         easeType: EaseType;
+        /**
+         * @en The duration of the tween in milliseconds.
+         * @zh 缓动的持续时间，单位为毫秒。
+         */
         duration: number;
+        /**
+         * @en The delay before the tween starts in milliseconds.
+         * @zh 缓动开始前的延迟时间，单位为毫秒。
+         */
         delay: number;
     }
     /**
-     * @en GImage is a widget that displays an image resource.
-     * @zh GImage 是一个显示图像资源的小部件。
+     * @en GImage is a widget that displays an image resource. Set the image resource URL using the src property. By default, the autoSize property is true, so the node will automatically adjust to the original size of the image when the src is changed; if you want the node size not to change with the image size, you can set the autoSize property to false.
+     * @zh GImage 是一个显示图像资源的小部件。 使用src属性设置图像资源的URL。默认情况下，autoSize属性为true，所以更改src后，节点会自动调整为图像的原始大小；如果希望节点大小不跟随图像大小变化，可以将autoSize属性设置为false。
      * @blueprintInheritable
      */
     class GImage extends GWidget {
@@ -93047,8 +96851,6 @@ declare namespace Laya {
         private _value;
         private _titleType;
         private _reverse;
-        private _barMaxWidth;
-        private _barMaxHeight;
         private _barMaxWidthDelta;
         private _barMaxHeightDelta;
         private _barStartX;
@@ -93080,6 +96882,30 @@ declare namespace Laya {
         get value(): number;
         set value(value: number);
         /**
+         * @en The horizontal bar component of the progress bar.
+         * @zh 进度条的水平条组件。
+         */
+        get hBar(): GWidget;
+        set hBar(value: GWidget);
+        /**
+         * @en The vertical bar component of the progress bar.
+         * @zh 进度条的垂直条组件。
+         */
+        get vBar(): GWidget;
+        set vBar(value: GWidget);
+        /**
+         * @en The title component of the progress bar.
+         * @zh 进度条的标题组件。
+         */
+        get titleWidget(): GWidget;
+        set titleWidget(value: GWidget);
+        /**
+         * @en Indicates whether the progress bar is reversed.
+         * @zh 指示进度条是否为反向。
+         */
+        get reverse(): boolean;
+        set reverse(value: boolean);
+        /**
          * @en Tweens the value of the progress bar to a target value over a specified duration.
          * @param value The target value to tween to.
          * @param duration The duration of the tween in milliseconds.
@@ -93090,13 +96916,11 @@ declare namespace Laya {
          * @return 返回一个 Tween 实例，可以用于控制缓动动画。
          */
         tweenValue(value: number, duration: number): Tween;
-        protected update(newValue: number): void;
+        protected update(newValue: number, delay?: boolean): void;
         private updateTitle;
         private setFillAmount;
         /** @internal */
         _onConstruct(inPrefab?: boolean): void;
-        /** @ignore */
-        _setup(hBar: GWidget, vBar: GWidget, titleWidget: GWidget, reverse: boolean): void;
         protected _sizeChanged(): void;
     }
     /**
@@ -93241,10 +97065,14 @@ declare namespace Laya {
      * @blueprintInheritable
      */
     class GScrollBar extends GWidget {
-        private _gripButton;
-        private _arrowButton1;
-        private _arrowButton2;
-        private _bar;
+        /** @ignore @blueprintIgnore */
+        _gripButton: GWidget;
+        /** @ignore @blueprintIgnore */
+        _arrowButton1: GWidget;
+        /** @ignore @blueprintIgnore */
+        _arrowButton2: GWidget;
+        /** @ignore @blueprintIgnore */
+        _bar: GWidget;
         private _target;
         private _vertical;
         private _scrollPerc;
@@ -93254,16 +97082,22 @@ declare namespace Laya {
         constructor();
         /** @ignore */
         setOwner(target: IScroller, vertical: boolean): void;
+        /** @ignore */
         setDisplayPerc(value: number): void;
+        /** @ignore */
         setScrollPerc(val: number): void;
+        /** @ignore */
         get minSize(): number;
+        /** @ignore */
         get gripDragging(): boolean;
+        /**
+         * @en Indicates whether the grip size is fixed.
+         * @zh 指示握把大小是否固定。
+         */
         get fixedGripSize(): boolean;
         set fixedGripSize(value: boolean);
         /** @internal */
         _onConstruct(inPrefab?: boolean): void;
-        /** @ignore */
-        _setup(arrowButton1: GWidget, arrowButton2: GWidget, bar: GWidget, grip: GWidget): void;
         private _gripTouchBegin;
         private _gripTouchMove;
         private _gripTouchEnd;
@@ -93297,8 +97131,6 @@ declare namespace Laya {
         private _titleType;
         private _reverse;
         private _wholeNumbers;
-        private _barMaxWidth;
-        private _barMaxHeight;
         private _barMaxWidthDelta;
         private _barMaxHeightDelta;
         private _clickPos;
@@ -93336,17 +97168,48 @@ declare namespace Laya {
          */
         get value(): number;
         set value(value: number);
-        protected update(): void;
+        /**
+         * @en The horizontal bar component of the slider.
+         * @zh 滑动条的水平条组件。
+         */
+        get hBar(): GWidget;
+        set hBar(value: GWidget);
+        /**
+         * @en The vertical bar component of the slider.
+         * @zh 滑动条的垂直条组件。
+         */
+        get vBar(): GWidget;
+        set vBar(value: GWidget);
+        /**
+         * @en The grip button component of the slider.
+         * @zh 滑动条的握把按钮组件。
+         */
+        get gripButton(): GWidget;
+        set gripButton(value: GWidget);
+        /**
+         * @en The title component of the slider.
+         * @zh 滑动条的标题组件。
+         */
+        get titleWidget(): GWidget;
+        set titleWidget(value: GWidget);
+        /**
+         * @en Indicates whether the slider is reversed.
+         * @zh 指示滑动条是否为反向。
+         */
+        get reverse(): boolean;
+        set reverse(value: boolean);
+        protected update(delay?: boolean): void;
         private updateWithPercent;
         private updateTitle;
         /** @internal */
         _onConstruct(inPrefab?: boolean): void;
-        /** @ignore */
-        _setup(hBar: GWidget, vBar: GWidget, grip: GWidget, title: GWidget, reverse: boolean): void;
+        private setupEvents;
         protected _sizeChanged(): void;
         private _gripTouchBegin;
         private _gripTouchMove;
         private _barTouchBegin;
+        /** @ignore */
+        onAfterDeserialize(): void;
         /** @internal @blueprintEvent */
         GSlider_bpEvent: {
             [Event.CHANGED]: (e: Event) => void;
@@ -93479,6 +97342,12 @@ declare namespace Laya {
         get leading(): number;
         set leading(value: number);
         /**
+         * @en Letter spacing
+         * @zh 字间距
+         */
+        get letterSpacing(): number;
+        set letterSpacing(value: number);
+        /**
          * @en Margin information.
          * Data format: [top margin, right margin, bottom margin, left margin] (margins in pixels).
          * @zh 边距信息。
@@ -93502,6 +97371,30 @@ declare namespace Laya {
          */
         get strokeColor(): string;
         set strokeColor(value: string);
+        /**
+         * @en Shadow offset X (in pixels).
+         * @zh 阴影偏移X（以像素为单位）。
+         */
+        get shadowOffsetX(): number;
+        set shadowOffsetX(value: number);
+        /**
+         * @en Shadow offset Y (in pixels).
+         * @zh 阴影偏移Y（以像素为单位）。
+         */
+        get shadowOffsetY(): number;
+        set shadowOffsetY(value: number);
+        /**
+         * @en Shadow blur (in pixels).
+         * @zh 阴影模糊度（以像素为单位）。
+         */
+        get shadowBlur(): number;
+        set shadowBlur(value: number);
+        /**
+         * @en Shadow color, represented as a string.
+         * @zh 阴影颜色，以字符串表示。
+         */
+        get shadowColor(): string;
+        set shadowColor(value: string);
         /**
          * @en Specifies the behavior when text exceeds the text area.
          * Values: visible, hidden, scroll, shrink, ellipsis.
@@ -95428,17 +99321,98 @@ declare namespace Laya {
         private _tooltipWin;
         private _defaultTooltipWin;
         constructor(owner: GRoot);
+        /**
+         * @zh Shows a widget that automatically hides when clicking outside the widget on the stage.
+         * @param popup The widget to be displayed as a popup.
+         * @param target The target widget relative to which the popup will be positioned.
+         * @param dir The direction in which the popup should appear relative to the target.
+         * @en 显示一个界面，并且点击舞台其他区域时自动隐藏该组件。
+         * @param popup 要显示的弹出界面。
+         * @param target 弹出界面相对于此目标组件定位。
+         * @param dir 弹出界面相对于目标组件出现的方向。
+         */
         showPopup(popup: GWidget, target?: GWidget, dir?: PopupDirection): void;
+        /**
+         * @en Validates and adjusts the position of the popup widget.
+         * The popup will be positioned relative to the target widget, considering the specified direction and offsets. The popup won’t overflow the stage boundaries.
+         * @param popup The popup widget to be positioned.
+         * @param target The target widget relative to which the popup will be positioned.
+         * @param dir The direction in which the popup should appear relative to the target.
+         * @param offsetX Additional horizontal offset for the popup position.
+         * @param offsetY Additional vertical offset for the popup position.
+         * @zh 验证并调整弹出组件的位置。
+         * 弹出组件将相对于目标组件定位，考虑指定的方向和偏移量。弹出组件不会超出舞台边界。
+         * @param popup 要定位的弹出组件。
+         * @param target 弹出组件相对于此目标组件定位。
+         * @param dir 弹出组件相对于目标组件出现的方向。
+         * @param offsetX 额外的水平偏移量，用于调整弹出组件的位置。
+         * @param offsetY 额外的垂直偏移量，用于调整弹出组件的位置。
+         */
         validatePopupPosition(popup: GWidget, target: GWidget, dir: PopupDirection, offsetX?: number, offsetY?: number): void;
+        /**
+         * @en Toggles the visibility of a popup widget.
+         * If the popup is already open, it will be closed. If it is closed, it will be shown.
+         * @param popup The popup widget to be toggled.
+         * @param target The target widget relative to which the popup will be positioned.
+         * @param dir The direction in which the popup should appear relative to the target.
+         * @return Returns true if the popup was shown, false if it was closed.
+         * @zh 切换弹出组件的可见性。
+         * 如果弹出组件已经打开，则将其关闭；如果它是关闭的，则将其显示。
+         * @param popup 要切换的弹出组件。
+         * @param target 弹出组件相对于此目标组件定位。
+         * @param dir 弹出组件相对于目标组件出现的方向。
+         * @returns 如果弹出组件被显示则返回 true，如果被关闭则返回 false。
+         */
         togglePopup(popup: GWidget, target?: GWidget, dir?: PopupDirection): boolean;
+        /**
+         * @en Hides a specific popup widget or all popups if no widget is specified.
+         * @param popup The popup widget to be hidden. If not provided, all popups will be hidden.
+         * @zh 隐藏特定的弹出组件，或者如果未指定组件则隐藏所有弹出组件。
+         * @param popup 要隐藏的弹出组件。如果未提供，则隐藏所有弹出组件。
+         */
         hidePopup(popup?: GWidget): void;
+        /**
+         * @en Indicates whether there are any popups currently displayed.
+         * @zh 指示当前是否有任何弹出组件被显示。
+         */
         get hasAnyPopup(): boolean;
+        /**
+         * @en Checks if a specific popup widget was just closed.
+         * @param popup The popup widget to check.
+         * @return Returns true if the popup was just closed, false otherwise.
+         * @zh 检查特定的弹出组件是否刚刚被关闭。
+         * @param popup 要检查的弹出组件。
+         * @returns 如果弹出组件刚刚被关闭则返回 true，否则返回 false。
+         */
         isPopupJustClosed(popup: GWidget): boolean;
         private closePopup;
+        /**
+         * @en Shows a tooltip with the specified message after an optional delay.
+         * @param msg The message to be displayed in the tooltip.
+         * @param delay The delay in milliseconds before showing the tooltip.
+         * @returns Returns the default tooltip widget used for displaying the message.
+         * @zh 显示一个工具提示，显示指定的消息，并可选择延迟显示。
+         * @param msg 要在工具提示中显示的消息。
+         * @param delay 显示工具提示前的延迟时间（毫秒）。
+         * @returns 返回用于显示消息的默认工具提示组件。
+         */
         showTooltips(msg: string, delay?: number): void;
+        /**
+         * @en Shows a specified tooltip widget after an optional delay.
+         * @param tooltipWin The tooltip widget to be displayed.
+         * @param delay The delay in milliseconds before showing the tooltip.
+         * @zh 显示一个指定的工具提示组件，并可选择延迟显示。
+         * @param tooltipWin 要显示的工具提示组件。
+         * @param delay 显示工具提示前的延迟时间（毫秒）。
+         */
         showTooltipsWin(tooltipWin: GWidget, delay?: number): void;
         private _doShowTooltips;
+        /**
+         * @en Hides the currently displayed tooltip, if any.
+         * @zh 隐藏当前显示的工具提示（如果有的话）。
+         */
         hideTooltips(): void;
+        /** @ignore @blueprintIgnore */
         checkPopups(): void;
         private _touchBegin;
     }
@@ -95453,25 +99427,161 @@ declare namespace Laya {
         protected _list: GList;
         protected _initWidth: number;
         protected _seperatorRes: string;
+        /**
+         * @en Create a popup menu.
+         * @param res The resource URL of the popup menu. If not defined, the default internal resource will be used.
+         * @param seperatorRes The resource URL of the seperator. If not defined, the default internal resource will be used.
+         * @zh 创建一个弹出菜单。
+         * @param res 弹出菜单的资源地址，如果未定义，则使用默认的内部资源。
+         * @param seperatorRes 分隔符的资源地址，如果未定义，则使用默认的内部资源。
+         */
         constructor(res?: string, seperatorRes?: string);
+        /**
+         * @en Destroy the popup menu.
+         * @zh 销毁弹出菜单。
+         */
         destroy(): void;
+        /**
+         * @en Add an item to the popup menu.
+         * @param caption The caption of the item.
+         * @param callback The callback function when the item is clicked.
+         * @param target The callback function's this object.
+         * @returns The created item.
+         * @zh 向弹出菜单中添加一个菜单项。
+         * @param caption 菜单项的标题。
+         * @param callback 菜单项被点击时的回调函数。
+         * @param target 回调函数的 this 对象。
+         * @returns 创建的菜单项。
+         */
         addItem(caption: string, callback?: Function, target?: any): GWidget;
+        /**
+         * @en Add an item to the popup menu at a specified index.
+         * @param caption The caption of the item.
+         * @param index The index to add the item.
+         * @param callback The callback function when the item is clicked.
+         * @param target The callback function's this object.
+         * @returns The created item.
+         * @zh 在指定索引处向弹出菜单中添加一个菜单项。
+         * @param caption 菜单项的标题。
+         * @param index 要添加菜单项的索引。
+         * @param callback 菜单项被点击时的回调函数。
+         * @param target 回调函数的 this 对象。
+         * @returns 创建的菜单项。
+         */
         addItemAt(caption: string, index: number, callback?: Function, target?: any): GWidget;
         private createItem;
+        /**
+         * @en Add a seperator to the popup menu.
+         * @param index The index to add the seperator.
+         * @zh 向弹出菜单中添加一个分隔符。
+         * @param index 要添加分隔符的索引。
+         */
         addSeperator(index?: number): void;
+        /**
+         * @en Get the name of the item at a specified index.
+         * @param index The index of the item.
+         * @returns The name of the item.
+         * @zh 获取指定索引处菜单项的名称。
+         * @param index 菜单项的索引。
+         * @returns 菜单项的名称。
+         */
         getItemName(index: number): string;
+        /**
+         * @en Set the text of the item with the specified name.
+         * @param name The name of the item.
+         * @param caption The caption to set.
+         * @zh 设置指定名称菜单项的文本。
+         * @param name 菜单项的名称。
+         * @param caption 要设置的标题。
+         */
         setItemText(name: string, caption: string): void;
+        /**
+         * @en Set the visibility of the item with the specified name.
+         * @param name The name of the item.
+         * @param visible The visibility to set.
+         * @zh 设置指定名称菜单项的可见性。
+         * @param name 菜单项的名称。
+         * @param visible 要设置的可见性。
+         */
         setItemVisible(name: string, visible: boolean): void;
+        /**
+         * @en Set the grayed state of the item with the specified name.
+         * @param name The name of the item.
+         * @param grayed The grayed state to set.
+         * @zh 设置指定名称菜单项的灰显状态。
+         * @param name 菜单项的名称。
+         * @param grayed 要设置的灰显状态。
+         */
         setItemGrayed(name: string, grayed: boolean): void;
+        /**
+         * @en Set the checkable state of the item with the specified name.
+         * @param name The name of the item.
+         * @param checkable The checkable state to set.
+         * @zh 设置指定名称菜单项的可选中状态。
+         * @param name 菜单项的名称。
+         * @param checkable 要设置的可选中状态。
+         */
         setItemCheckable(name: string, checkable: boolean): void;
+        /**
+         * @en Set the checked state of the item with the specified name.
+         * @param name The name of the item.
+         * @param checked The checked state to set.
+         * @zh 设置指定名称菜单项的选中状态。
+         * @param name 菜单项的名称。
+         * @param checked 要设置的选中状态。
+         */
         setItemChecked(name: string, checked: boolean): void;
+        /**
+         * @en Get the checked state of the item with the specified name.
+         * @param name The name of the item.
+         * @returns The checked state of the item.
+         * @zh 获取指定名称菜单项的选中状态。
+         * @param name 菜单项的名称。
+         * @returns 菜单项的选中状态。
+         */
         isItemChecked(name: string): boolean;
+        /**
+         * @en Remove the item with the specified name.
+         * @param name The name of the item.
+         * @returns Whether the item is removed successfully.
+         * @zh 移除指定名称的菜单项。
+         * @param name 菜单项的名称。
+         * @returns 菜单项是否移除成功。
+         */
         removeItem(name: string): boolean;
+        /**
+         * @en Clear all items in the popup menu.
+         * @zh 清除弹出菜单中的所有菜单项。
+         */
         clearItems(): void;
+        /**
+         * @en Get the number of items in the popup menu.
+         * @zh 获取弹出菜单中的菜单项数量。
+         */
         get itemCount(): number;
+        /**
+         * @en Get the content pane of the popup menu.
+         * @zh 获取弹出菜单的内容面板。
+         */
         get contentPane(): GWidget;
+        /**
+         * @en Get the list component of the popup menu.
+         * @zh 获取弹出菜单的列表组件。
+         */
         get list(): GList;
-        show(target?: GWidget, dir?: PopupDirection, parentMenu?: PopupMenu): void;
+        /**
+         * @en Show the popup menu.
+         * @param target The target widget where the popup menu is displayed.
+         * @param dir The direction where the popup menu is displayed.
+         * @zh 显示弹出菜单。
+         * @param target 弹出菜单显示的目标组件。
+         * @param dir 弹出菜单显示的方向。
+         */
+        show(target?: GWidget, dir?: PopupDirection): void;
+        /**
+         * @en Hide the popup menu.
+         * @zh 隐藏菜单。
+         */
         hide(): void;
         private _clickItem;
         /** @internal @blueprintEvent */
@@ -95494,10 +99604,22 @@ declare namespace Laya {
         /** @internal */
         _isDisabled: boolean;
         constructor();
+        /**
+         * @en The owner widget of this relation.
+         * @zh 此关联的拥有者小部件。
+         */
         get owner(): GWidget;
         set owner(value: GWidget);
+        /**
+         * @en The target widget of the relation.
+         * @zh 关联的目标小部件。
+         */
         set target(value: GWidget | Scene);
         get target(): GWidget | Scene;
+        /**
+         * @zh 数据数组。数组中每两个元素表示一组关联关系，第一个元素表示关联类型，第二个元素表示是否以百分比形式关联，1表示是，0表示否。
+         * @en The data array. Every two elements in the array represent a set of relation types, the first element represents the relation type, and the second element represents whether to associate in percentage form, 1 means yes, 0 means no.
+         */
         get data(): Array<number>;
         set data(value: Array<number>);
         add(type: RelationType, percent: boolean): void;
@@ -95719,6 +99841,12 @@ declare namespace Laya {
          */
         get index(): number;
         set index(value: number);
+        /**
+         * @en The controller associated with the selection.
+         * @zh 与选择关联的控制器。
+         */
+        get controller(): ControllerRef;
+        set controller(value: ControllerRef);
         /**
          * @en The currently selected items.
          * @param out An optional array to store the selected items.
@@ -96227,14 +100355,68 @@ declare namespace Laya {
      * @ignore @blueprintable
      */
     class UIPackage {
+        /**
+         * @en Create a button by using the default internal resource.
+         * @returns GButton
+         * @zh 使用默认的内部资源创建一个按钮。
+         * @returns GButton
+         */
         static createButton(): GButton;
+        /**
+         * @en Create a radio button by using the default internal resource.
+         * @returns GButton
+         * @zh 使用默认的内部资源创建一个单选按钮。
+         * @returns GButton
+         */
         static createRadio(): GButton;
+        /**
+         * @en Create a checkbox by using the default internal resource.
+         * @returns GButton
+         * @zh 使用默认的内部资源创建一个复选框。
+         * @returns GButton
+         */
         static createCheckBox(): GButton;
+        /**
+         * @en Create a progress bar by using the default internal resource.
+         * @returns GProgressBar
+         * @zh 使用默认的内部资源创建一个进度条。
+         * @returns GProgressBar
+         */
         static createProgressBar(): GProgressBar;
+        /**
+         * @en Create a horizontal slider by using the default internal resource.
+         * @returns GSlider
+         * @zh 使用默认的内部资源创建一个水平滑动条。
+         * @returns GSlider
+         */
         static createSliderH(): GSlider;
+        /**
+         * @en Create a vertical slider by using the default internal resource.
+         * @returns GSlider
+         * @zh 使用默认的内部资源创建一个垂直滑动条。
+         * @returns GSlider
+         */
         static createSliderV(): GSlider;
+        /**
+         * @en Create a text input by using the default internal resource.
+         * @returns GTextInput
+         * @zh 使用默认的内部资源创建一个文本输入框。
+         * @returns GTextInput
+         */
         static createTextInput(): GTextInput;
+        /**
+         * @en Create a text area by using the default internal resource.
+         * @returns GTextInput
+         * @zh 使用默认的内部资源创建一个文本区域。
+         * @returns GTextInput
+         */
         static createTextArea(): GTextInput;
+        /**
+         * @en Create a combo box by using the default internal resource.
+         * @returns GComboBox
+         * @zh 使用默认的内部资源创建一个下拉列表框。
+         * @returns GComboBox
+         */
         static createComboBox(): GComboBox;
         /** @internal */
         static _init(): Promise<void>;
@@ -96318,104 +100500,104 @@ declare namespace Laya {
         static decode(base64: string): ArrayBuffer;
     }
     /**
-     * @en Browser is a browser proxy class. Encapsulate some of the features provided by the browser and native JavaScript.
      * @zh Browser 是浏览器代理类。封装浏览器及原生 js 提供的一些功能。
+     * @en Browser is a browser proxy class. Encapsulate some of the features provided by the browser and native JavaScript.
      * @blueprintable
      */
     class Browser {
         /**
-         * @en Browser proxy information.
          * @zh 浏览器代理信息。
+         * @en Browser proxy information.
          * @readonly
          */
         static userAgent: string;
         /**
-         * @en Indicates whether the current environment is a mobile device, including iOS and Android devices.
          * @zh 表示当前环境是否为移动设备，包括 iOS 和 Android 设备。
+         * @en Indicates whether the current environment is a mobile device, including iOS and Android devices.
          * @readonly
          */
         static onMobile: boolean;
         /**
-         * @en Indicates whether the current environment is within an iOS device.
          * @zh 表示当前环境是否在 IOS 设备内。
+         * @en Indicates whether the current environment is within an iOS device.
          * @readonly
          */
         static onIOS: boolean;
         /**
-         * @en Indicates whether the current environment is a Mac device.
          * @zh 表示当前环境是否为 Mac 设备。
+         * @en Indicates whether the current environment is a Mac device.
          * @readonly
          */
         static onMac: boolean;
         /**
-         * @en Indicates whether the current environment is within an iPhone.
          * @zh 表示当前环境是否在 iPhone 内。
+         * @en Indicates whether the current environment is within an iPhone.
          * @readonly
          */
         static onIPhone: boolean;
         /**
-         * @en Indicates whether the current environment is within an iPad.
          * @zh 表示当前环境是否在 iPad 内。
+         * @en Indicates whether the current environment is within an iPad.
          * @readonly
          */
         static onIPad: boolean;
         /**
-         * @en Indicates whether the current environment is within an Android device.
          * @zh 表示当前环境是否在 Android 设备内。
+         * @en Indicates whether the current environment is within an Android device.
          * @readonly
          */
         static onAndroid: boolean;
         /**
-         * @en Indicates whether the current environment is within an OpenHarmonyOS device.
          * @zh 表示当前环境是否在 OpenHarmonyOS 设备内。
+         * @en Indicates whether the current environment is within an OpenHarmonyOS device.
          * @readonly
          */
         static onOpenHarmonyOS: boolean;
         /**
-         * @en Indicates whether the current environment is within a Windows Phone device.
          * @zh 表示当前环境是否在 Windows Phone 设备内。
+         * @en Indicates whether the current environment is within a Windows Phone device.
          * @readonly
          */
         static onWP: boolean;
         /**
-         * @en Indicates whether the current environment is within the QQ browser.
          * @zh 表示当前环境是否在 QQ 浏览器内。
+         * @en Indicates whether the current environment is within the QQ browser.
          * @readonly
          */
         static onQQBrowser: boolean;
         /**
-         * @en Indicates whether the current environment is within the mobile QQ or QQ browser.
          * @zh 表示当前环境是否在移动 QQ 或 QQ 浏览器内。
+         * @en Indicates whether the current environment is within the mobile QQ or QQ browser.
          * @readonly
          */
         static onMQQBrowser: boolean;
         /**
-         * @en Indicates whether the current environment is within Safari.
          * @zh 表示当前环境是否在 Safari 内。
+         * @en Indicates whether the current environment is within Safari.
          * @readonly
          */
         static onSafari: boolean;
         /**
-         * @en Indicates whether the current environment is within Chrome.
          * @zh 表示当前环境是否在 Chrome 内。
+         * @en Indicates whether the current environment is within Chrome.
          * @readonly
          */
         static onChrome: boolean;
         /**
-         * @en Indicates whether the current environment is within the Internet Explorer browser.
          * @zh 表示当前环境是否在 Internet Explorer 浏览器内。
+         * @en Indicates whether the current environment is within the Internet Explorer browser.
          * @readonly
          */
         static onIE: boolean;
         /**
-         * @en Indicates whether the current environment is within WeChat.
          * @zh 表示当前环境是否在微信内。
+         * @en Indicates whether the current environment is within WeChat.
          * @readonly
          */
         static onWeiXin: boolean;
         /**
-         * @en Indicates whether the current environment is a PC.
          * @zh 表示当前环境是否为 PC。
+         * @en Indicates whether the current environment is a PC.
          * @readonly
          */
         static onPC: boolean;
@@ -96424,277 +100606,297 @@ declare namespace Laya {
          */
         static onMiniGame: boolean;
         /**
-         * @en Indicates whether the current environment is a WeChat mini-game.
          * @zh 表示当前环境是否是微信小游戏。
+         * @en Indicates whether the current environment is a WeChat mini-game.
          * @readonly
          */
         static onWXMiniGame: boolean;
         /**
-         * @en Indicates whether the current environment is a Baidu mini-game.
          * @zh 表示当前环境是否是百度小游戏。
+         * @en Indicates whether the current environment is a Baidu mini-game.
          * @readonly
          */
         static onBDMiniGame: boolean;
         /**
-         * @en Indicates whether the current environment is a Xiaomi mini-game.
          * @zh 表示当前环境是否是小米小游戏。
+         * @en Indicates whether the current environment is a Xiaomi mini-game.
          * @readonly
          */
         static onKGMiniGame: boolean;
         /**
-         * @en Indicates whether the current environment is an OPPO mini-game.
          * @zh 表示当前环境是否是 OPPO 小游戏。
+         * @en Indicates whether the current environment is an OPPO mini-game.
          * @readonly
          */
         static onQGMiniGame: boolean;
         /**
-         * @en Indicates whether the current environment is a VIVO mini-game.
          * @zh 表示当前环境是否是 vivo 小游戏。
+         * @en Indicates whether the current environment is a VIVO mini-game.
          * @readonly
          */
         static onVVMiniGame: boolean;
         /**
-         * @en Indicates whether the current environment is an Alipay mini-game.
          * @zh 表示当前环境是否是支付宝小游戏。
+         * @en Indicates whether the current environment is an Alipay mini-game.
          * @readonly
          */
         static onAlipayMiniGame: boolean;
         /**
-         * @en Indicates whether the current environment is a QQ mini-game on mobile.
          * @zh 表示当前环境是否是手机 QQ 小游戏。
+         * @en Indicates whether the current environment is a QQ mini-game on mobile.
          * @readonly
          */
         static onQQMiniGame: boolean;
         /**
-         * @en Indicates whether the current environment is a BILIBILI mini-game.
          * @zh 表示当前环境是否是 BILIBILI 小游戏。
+         * @en Indicates whether the current environment is a BILIBILI mini-game.
          * @readonly
          */
         static onBLMiniGame: boolean;
         /**
-         * @en Indicates whether the current environment is a TikTok (Douyin) mini-game.
          * @zh 表示当前环境是否是抖音小游戏。
+         * @en Indicates whether the current environment is a TikTok (Douyin) mini-game.
          * @readonly
          */
         static onTTMiniGame: boolean;
         /**
-         * @en Indicates whether the current environment is a Huawei mini-game.
          * @zh 表示当前环境是否是华为快游戏。
+         * @en Indicates whether the current environment is a Huawei mini-game.
          * @readonly
          */
         static onHWMiniGame: boolean;
         /**
-         * @en Indicates whether the current environment is a Taobao mini-game.
          * @zh 表示当前环境是否是淘宝小游戏。
+         * @en Indicates whether the current environment is a Taobao mini-game.
          * @readonly
          */
         static onTBMiniGame: boolean;
         /**
-         * @en Indicates whether the current environment is the Firefox browser.
          * @zh 表示当前环境是否是 Firefox 浏览器。
+         * @en Indicates whether the current environment is the Firefox browser.
          * @readonly
          */
         static onFirefox: boolean;
         /**
-         * @en Indicates whether the current environment is the Edge browser.
          * @zh 表示当前环境是否是 Edge 浏览器。
+         * @en Indicates whether the current environment is the Edge browser.
          * @readonly
          */
         static onEdge: boolean;
         /**
-         * @en Indicates whether the current environment is running on LayaAir Native Runtime.
          * @zh 表示当前环境是否运行在 LayaAir Native Runtime。
+         * @en Indicates whether the current environment is running on LayaAir Native Runtime.
          * @readonly
          */
         static onLayaRuntime: boolean;
         /**
-         * @en Indicates whether the current environment is running in a development tool.
          * @zh 表示当前环境是否运行在开发工具中。
+         * @en Indicates whether the current environment is running in a development tool.
          * @readonly
          */
         static onDevTools: boolean;
         /**
-         * @en The actual platform type, OnMobile and others are determined through UserAgent, which may be faked.
          * @zh 真实平台类型，onMobile等是通过UserAgent判断，可能具有欺骗性
+         * @en The actual platform type, OnMobile and others are determined through UserAgent, which may be faked.
          * @readonly
          */
         static platform: number;
         /**
-         * @en The readable name of the platform.
          * @zh 平台的可读名称。
+         * @en The readable name of the platform.
          * @readonly
          */
         static platformName: string;
         /**
-         * @en PC platform.
          * @zh PC 平台。
+         * @en PC platform.
          */
         static readonly PLATFORM_PC = 0;
         /**
-         * @en Android platform.
          * @zh Android 平台。
+         * @en Android platform.
          */
         static readonly PLATFORM_ANDROID = 1;
         /**
-         * @en iOS platform.
          * @zh iOS 平台。
+         * @en iOS platform.
          */
         static readonly PLATFORM_IOS = 2;
         /**
-         * @en Indicates whether the environment supports touch input.
          * @zh 表示环境是否支持触摸输入。
+         * @en Indicates whether the environment supports touch input.
          * @readonly
          */
         static isTouchDevice: boolean;
         /**
-         * @en Indicates whether the environment supports high-performance mode on iOS devices.
          * @zh 表示环境是否支持 iOS 设备的高性能模式。
+         * @en Indicates whether the environment supports high-performance mode on iOS devices.
          * @readonly
          */
         static isIOSHighPerformanceMode: boolean;
         /**
-         * @en Indicates whether the environment supports high-performance+ mode on iOS devices.
          * @zh 表示环境是否支持 iOS 设备的高性能+模式。
+         * @en Indicates whether the environment supports high-performance+ mode on iOS devices.
          * @readonly
          */
         static isIOSHighPerformanceModePlus: boolean;
         /**
-         * @en Indicates whether the environment supports DOM.
          * @zh 表示环境是否支持 DOM。
+         * @en Indicates whether the environment supports DOM.
          * @readonly
          */
         static isDomSupported: boolean;
         /**
-         * @en The version of the system.
          * @zh 系统版本。
+         * @en The version of the system.
          * @readonly
          */
         static systemVersion: string;
         /**
-         * @en The version of the Platform SDK.
          * @zh 平台 SDK 版本。
+         * @en The version of the Platform SDK.
          * @readonly
          */
         static SDKVersion: string;
         /**
-         * @en The global canvas.
          * @zh 全局画布。
+         * @en The global canvas.
          * @readonly
          */
         static mainCanvas: HTMLCanvas;
         /**
-         * @en The global offscreen canvas, used primarily for measuring text and obtaining image data.
          * @zh 全局离屏画布，主要用来测量文本和获取图像数据。
+         * @en The global offscreen canvas, used primarily for measuring text and obtaining image data.
          * @readonly
          */
         static canvas: HTMLCanvas;
         /**
-         * @en The rendering context of the global offscreen canvas.
          * @zh 全局离屏画布上绘图的环境。
+         * @en The rendering context of the global offscreen canvas.
          * @readonly
          */
         static context: CanvasRenderingContext2D;
         /**
-         * @en The loaded bundles.
          * @zh 已载入的脚本集。
+         * @en The loaded bundles.
          * @blueprintIgnore
          */
         static readonly bundles: Map<string, any>;
         /**
+         * @zh 全局 window 对象。
+         * @en The global window object.
          * @readonly
          */
         static window: Window & typeof globalThis;
         /**
+         * @zh 全局 document 对象。
+         * @en The global document object.
          * @readonly
          */
         static document: Document;
+        /**
+         * @en Internal storage for client width.
+         * @zh 内部存储的客户端宽度。
+         */
         private static _clientWidth;
+        /**
+         * @en Internal storage for client height.
+         * @zh 内部存储的客户端高度。
+         */
         private static _clientHeight;
         /**
-         * @en Creates a native browser element of the specified type.
-         * @param tagName The type of node to create.
-         * @return A reference to the created node object.
          * @zh 创建指定类型的浏览器原生节点。
          * @param tagName 要创建的节点类型。
          * @return 创建的节点对象的引用。
+         * @en Creates a native browser element of the specified type.
+         * @param tagName The type of node to create.
+         * @return A reference to the created node object.
          * @blueprintIgnore
          */
         static createElement<K extends keyof HTMLElementTagNameMap>(tagName: K): HTMLElementTagNameMap[K];
         /**
-         * @deprecated
+         * @zh 通过id获取HTMLElement。
+         * @param id 元素的id。
+         * @return 获取到的元素。
+         * @en Get the HTMLElement by its ID.
+         * @param id The element's ID.
+         * @return The element that was obtained.
          */
-        static getElementById(id: string): any;
+        static getElementById(id: string): HTMLElement;
         /**
-         * @deprecated
+         * @zh 移除指定HTMLElement元素。
+         * @param ele 要移除的元素。
+         * @en Removes the specified HTMLElement.
+         * @param ele element to remove.
          */
-        static removeElement(ele: any): void;
+        static removeElement(ele: HTMLElement): void;
         /**
-         * @en Gets the current timestamp in milliseconds since the epoch. It is equivalent to `performance.now()`.
-         * @zh 获取浏览器当前时间戳，单位为毫秒。等同于 `performance.now()`。
+         * @zh 获取从页面加载开始的高精度时间，单位为毫秒。等同于 `performance.now()`。
+         * @en Gets the high-resolution time in milliseconds since the page started loading or since the navigation start time. It is equivalent to `performance.now()`.
          */
         static now(): number;
         /**
-         * @en The viewport width of the browser window.
-         * The method analyzes the browser information to determine the width, with a priority given to `window.innerWidth` (includes scrollbar width) > `document.body.clientWidth` (does not include scrollbar width).
-         * If the former is 0 or undefined, the latter is chosen.
          * @zh 浏览器窗口的可视宽度。
          * 通过分析浏览器信息获得。浏览器多个属性值优先级为：window.innerWidth(包含滚动条宽度) > document.body.clientWidth(不包含滚动条宽度)，
          * 如果前者为 0 或未定义，则选择后者。
+         * @en The viewport width of the browser window.
+         * The method analyzes the browser information to determine the width, with a priority given to `window.innerWidth` (includes scrollbar width) > `document.body.clientWidth` (does not include scrollbar width).
+         * If the former is 0 or undefined, the latter is chosen.
          */
         static get clientWidth(): number;
         /**
-         * @en Sets the viewport width of the browser window.
          * @zh 设置浏览器窗口的可视宽度。
+         * @en Sets the viewport width of the browser window.
          * @blueprintIgnore
          */
         static set clientWidth(value: number);
         /**
-         * @en The viewport height of the browser window.
-         * The method analyzes the browser information to determine the height, with a priority given to `window.innerHeight` (includes scrollbar height) > `document.body.clientHeight` (excluding scrollbar height) > `document.documentElement.clientHeight` (both do not include scrollbar height).
-         * If the former is 0 or undefined, it falls back to the latter.
          * @zh 浏览器窗口的可视高度。
          * 通过分析浏览器信息获得。浏览器多个属性值优先级为：window.innerHeight(包含滚动条高度) > document.body.clientHeight(不包含滚动条高度) > document.documentElement.clientHeight，
          * 如果前者为 0 或未定义，则选择后者。
+         * @en The viewport height of the browser window.
+         * The method analyzes the browser information to determine the height, with a priority given to `window.innerHeight` (includes scrollbar height) > `document.body.clientHeight` (excluding scrollbar height) > `document.documentElement.clientHeight` (both do not include scrollbar height).
+         * If the former is 0 or undefined, it falls back to the latter.
          */
         static get clientHeight(): number;
         /**
-         * @en Sets the viewport height of the browser window.
          * @zh 设置浏览器窗口的可视高度。
+         * @en Sets the viewport height of the browser window.
          * @blueprintIgnore
          */
         static set clientHeight(value: number);
         /**
-         * @en The physical width of the browser window, taking into account the device pixel ratio.
          * @zh 浏览器窗口的物理宽度，考虑了设备像素比。
+         * @en The physical width of the browser window, taking into account the device pixel ratio.
          */
         static get width(): number;
         /**
-         * @en The physical height of the browser window, taking into account the device pixel ratio.
          * @zh 浏览器窗口的物理高度，考虑了设备像素比。
+         * @en The physical height of the browser window, taking into account the device pixel ratio.
          */
         static get height(): number;
         /**
-         * @en The device pixel ratio of the current environment.
          * @zh 当前环境的设备像素比。
+         * @en The device pixel ratio of the current environment.
          */
         static get pixelRatio(): number;
         /**
-         * @en The canvas container that holds the canvas element, facilitating control over the canvas.
          * @zh 用来存放画布元素的容器，方便对画布进行控制。
+         * @en The canvas container that holds the canvas element, facilitating control over the canvas.
          */
         static get container(): HTMLElement;
         /**
-         * @en Gets the value of a URL parameter.
-         * @param name The name of the parameter.
-         * @return The value of the parameter.
          * @zh 获取 URL 参数的值。
          * @param name 参数的名称。
          * @return 参数的值。
+         * @en Gets the value of a URL parameter.
+         * @param name The name of the parameter.
+         * @return The value of the parameter.
          */
         static getQueryString(name: string): string;
         /**
-         * @en Dynamically loads a JavaScript library from the specified source.
          * @zh 从指定源动态加载 JavaScript 库。
+         * @en Dynamically loads a JavaScript library from the specified source.
          */
         static loadLib(src: string, async?: boolean): Promise<void>;
     }
@@ -99103,15 +103305,24 @@ declare namespace Laya {
         static INVERTY: ShaderDefine;
         /**@internal */
         static GAMMATEXTURE: ShaderDefine;
+        /** @internal */
         static VERTEX_SIZE: ShaderDefine;
+        /** @internal */
+        static VERTEXALPHA: ShaderDefine;
         /**@internal */
         static TEXTURESHADER: ShaderDefine;
         /**@internal */
         static PRIMITIVESHADER: ShaderDefine;
+        /**@internal */
+        static USE_TEX_ARRAY: ShaderDefine;
         /** @internal */
         static RENDERTEXTURE: ShaderDefine;
         /**@internal */
         static MATERIALCLIP: ShaderDefine;
+        /** @internal */
+        static UNIFORMCLIP: ShaderDefine;
+        /** @internal */
+        static UV_CLIP_GPU: ShaderDefine;
         /**@internal */
         static UNIFORM_CLIPMATDIR: number;
         static UNIFORM_CLIPMATPOS: number;
@@ -99120,6 +103331,7 @@ declare namespace Laya {
         static UNIFORM_SIZE: number;
         static UNIFORM_VERTALPHA: number;
         static UNIFORM_SPRITETEXTURE: number;
+        static UNIFORM_SPRITETEXTURE_ARRAY: number;
         static UNIFORM_VERTEX_SIZE: number;
         static UNIFORM_TEXRANGE: number;
         /**
@@ -99139,6 +103351,17 @@ declare namespace Laya {
     }
     class GraphicsShaderInfo {
         shaderData: ShaderData;
+        private _enableVertexSize;
+        private _materialClip;
+        private _fillTexture;
+        private _clipMatDir;
+        private _clipMatPos;
+        private _texRange;
+        private _vertexSize;
+        private _isTextrueReadGamma;
+        private _bitmap;
+        texArrayLayer: number;
+        _blend: BlendMode | null;
         constructor();
         toDefault(): void;
         private _textureHost;
@@ -99286,7 +103509,20 @@ declare namespace Laya {
         steiner: any;
         constructor(i: any, x: any, y: any);
     }
+    type GraphicsRunnerCacheChunk = {
+        vbdata: Float32Array;
+        vertexCount: number;
+        indices: number[];
+        positions: number[];
+    };
+    interface SubmitCacheInfo {
+        chunks: GraphicsRunnerCacheChunk[];
+        blendShader?: number;
+        texture?: BaseTexture | null;
+        vertexCount: number;
+    }
     class SubmitBase {
+        static readonly _pool: IPool<IPrimitiveRenderElement2D>;
         static RENDERBASE: SubmitBase;
         static ID: number;
         clipInfoID: number;
@@ -99295,22 +103531,42 @@ declare namespace Laya {
         _renderType: number;
         /**@internal */
         _key: SubmitKey;
-        mesh: GraphicsMesh;
-        material: Material;
-        vertexs: IGraphics2DVertexBlock[];
-        blockIndexs: number[];
+        private _mesh;
+        get mesh(): GraphicsMesh;
+        set mesh(value: GraphicsMesh);
+        private _material;
+        get material(): Material;
+        set material(value: Material);
         indexCount: number;
         indices: number[];
         indexView: I2DGraphicIndexDataView;
         /** @internal */
         _internalInfo: GraphicsShaderInfo;
         renderStateIsBySprite: boolean;
+        vertexs: FastSinglelist<IGraphics2DVertexBlock>;
+        renderElement: IPrimitiveRenderElement2D;
+        _bufferBlock: IGraphics2DBufferBlock;
+        /** @internal 本帧使用的顶点块标识 */
+        private _currentVertexBlocks;
+        /** @internal 上一帧使用的顶点块标识 */
+        private _lastVertexBlocks;
+        /** @internal 标记 bufferBlock 是否需要重新应用 */
+        _bufferBlockDirty: boolean;
+        /** @internal submit 的缓存信息，可以从这里获取 */
+        _cacheInfo: SubmitCacheInfo | null;
         constructor();
+        /** @internal 获取或创建 cache 信息 */
+        _getCacheInfo(): SubmitCacheInfo;
         clear(): void;
-        destroy(): void;
+        /**
+         * @param info 添加顶点数据到submit
+         */
         appendData(info: MeshBlockInfo): void;
-        update(runner: GraphicsRunner, mesh: GraphicsMesh, material: Material): void;
-        static create(runner: GraphicsRunner, mesh: GraphicsMesh, material: Material): SubmitBase;
+        getVertexBlock(): IGraphics2DVertexBlock;
+        prepare(): IGraphics2DBufferBlock;
+        destroy(): void;
+        update(runner: GraphicsRunner): void;
+        static create(runner: GraphicsRunner): SubmitBase;
     }
     /**
      * ...
@@ -99370,6 +103626,8 @@ declare namespace Laya {
         yoff: number;
         bbxw: number;
         bbxh: number;
+        eoff: number;
+        ebbxh: number;
     };
     /** @ignore @blueprintIgnore */
     class TextRender {
@@ -99383,7 +103641,7 @@ declare namespace Laya {
         private freeRegions;
         private freeIsoTextures;
         constructor(owner: GraphicsRunner);
-        draw(text: string, x: number, y: number, font: string, fontSize: number, bold: boolean, italic: boolean, color: string, stroke: number, strokeColor: string, charMode: boolean, preMeasuredWidth: number, renderInfo?: ITextRenderInfo[]): ITextRenderInfo[];
+        draw(text: string, x: number, y: number, font: string, fontSize: number, bold: boolean, italic: boolean, color: string, stroke: number, strokeColor: string, letterSpacing: number, shadowOffsetX: number, shadowOffsetY: number, shadowBlur: number, shadowColor: string, charMode: boolean, preMeasuredWidth: number, renderInfo?: ITextRenderInfo[]): ITextRenderInfo[];
         private drawOffscreen;
         private resizeCanvas;
         private createIsoTexture;
@@ -99405,12 +103663,16 @@ declare namespace Laya {
             yoff: number;
             bbxw: number;
             bbxh: number;
+            eoff: number;
+            ebbxh: number;
         };
         bold: {
             xoff: number;
             yoff: number;
             bbxw: number;
             bbxh: number;
+            eoff: number;
+            ebbxh: number;
         };
     }
     interface ITextRenderInfo {
@@ -99488,6 +103750,11 @@ declare namespace Laya {
          * @zh 设定字体全局缩放，如果设置了scaleFontWithCtx，则这个值会根据舞台比例自动设置。
          */
         static fontScale: number;
+        /**
+         * @en Whether to use texture array for text rendering
+         * @zh 是否使用纹理数组进行文字渲染
+         */
+        static useTextureArray: boolean;
     }
     /**
      * BufferState类用于实现渲染所需的Buffer状态集合。
@@ -99513,19 +103780,20 @@ declare namespace Laya {
     }
     type MeshBlockInfo = {
         mesh: GraphicsMesh;
-        positions?: number[];
         vertexViews?: I2DGraphicVertexDataView[];
         vertexBlocks?: number[];
     };
     /** @ignore */
     class GraphicsMesh {
+        static IDCounter: number;
+        id: number;
         static stride: number;
         static vertexDeclarition: VertexDeclaration;
         static __init__(): void;
         /** @internal */
         _buffer: Graphic2DDynamicVIBuffer;
         get bufferState(): IBufferState;
-        constructor();
+        constructor(vertexBlockSize: number);
         /**
          * @en Check vertex buffer
          * @param vertexCount vertex count
@@ -99598,6 +103866,11 @@ declare namespace Laya {
         includeNames: Set<string>;
         defs: Set<string>;
     }
+    interface IComputeShaderCompileObj {
+        node: ShaderNode;
+        includeNames: Set<string>;
+        defs: Set<string>;
+    }
     /**
      * @ignore
      * <code>ShaderCompile</code> 类用于实现Shader编译。
@@ -99612,6 +103885,8 @@ declare namespace Laya {
         static addInclude(fileName: string, txt: string, allowReplace?: boolean): IncludeFile;
         static compile(vs: string, ps: string, basePath?: string): IShaderCompiledObj;
         static compileAsync(vs: string, ps: string, basePath: string): Promise<IShaderCompiledObj>;
+        static compileCompute(code: string, basePath?: string): IComputeShaderCompileObj;
+        static compileComputeAsync(code: string, basePath?: string): Promise<IComputeShaderCompileObj>;
         private static _loadIncludesDeep;
         private static _compileToTree;
         static getRenderState(obj: Record<string, string | boolean | number | string[]>, renderState: RenderState): void;
@@ -99659,6 +103934,90 @@ declare namespace Laya {
         setCondition(condition: string, type: number): void;
         toscript(def: any, out: any[]): any[];
         private _toscript;
+    }
+    /**
+     * @en Minimal registry to map a 2D texture to a Texture2DArray layer.
+     * @zh 最小注册表：将单张纹理映射到 Texture2DArray 的某一层。
+     */
+    class TextureArrayRegistry2D {
+        private static _idToRecord;
+        private static _groupKeyToArray;
+        static clear(): void;
+        static register(source: Texture | BaseTexture | Texture2D, array: Texture2DArray, layer: number): void;
+        static unregister(source: Texture | BaseTexture | Texture2D): void;
+        static resolve(source: Texture | BaseTexture | Texture2D): {
+            array: Texture2DArray;
+            layer: number;
+        };
+        /**
+         * @en Allocate a layer from a Texture2DArray bucket and return a Texture facade bound to that layer.
+         * @zh 从 Texture2DArray 分组中分配一层，并返回一个绑定该层的 Texture 句柄（已登记映射）。
+         */
+        static allocateLayerAsTexture(width: number, height: number, format?: TextureFormat, capacity?: number, sRGB?: boolean): {
+            texture: Texture;
+            array: Texture2DArray;
+            layer: number;
+            uploadSubPixels: (x: number, y: number, w: number, h: number, pixels: ArrayBufferView, mipLevel?: number) => void;
+        };
+        private static _getTexId;
+    }
+    /**
+     * @en UV-based triangle clipping utilities for 2D rendering
+     * @zh 用于2D渲染的UV三角形裁剪工具类
+     */
+    class UVClippingUtils {
+        /** @internal */
+        private static readonly EPSILON;
+        /** @internal */
+        private static _threadLocalContext;
+        /**
+         * @internal 重置缓冲区 - 只重置长度计数器,保持数组容量避免GC
+         */
+        private static _resetBuffers;
+        /**
+         * @internal 确保TypedArray缓冲区容量足够,不足时扩容
+         * @param buffer 当前缓冲区
+         * @param requiredLength 所需长度
+         * @param constructor TypedArray构造函数
+         * @returns 足够容量的缓冲区(可能是原缓冲区或新创建的)
+         */
+        private static _ensureBufferCapacity;
+        /**
+         * @en CPU-side UV vertex clipping. Clips triangles based on UV range and outputs clipped vertices, indices, UVs, and color data.
+         * @param vertices Vertex position array (x, y pairs)
+         * @param indices Index array (groups of 3 for each triangle)
+         * @param uvs UV coordinate array (u, v pairs)
+         * @param uvRange Clipping range [minU, minV, width, height]
+         * @param colors Vertex color array (r, g, b, a groups of 4)
+         * @param reuseBuffer Whether to reuse internal buffers (default: true). When true, returns views of reusable buffers for better performance. When false, returns newly created arrays.
+         * @returns Clipped data {vertices, indices, uvs, colors}
+         *
+         * @zh CPU端UV顶点裁剪。根据UV范围裁剪三角形，输出裁剪后的顶点、索引、UV和颜色数据。
+         * @param vertices 顶点位置数组 (x, y 成对)
+         * @param indices 索引数组 (每3个一组表示一个三角形)
+         * @param uvs UV坐标数组 (u, v 成对)
+         * @param uvRange 裁剪范围 [minU, minV, width, height]
+         * @param colors 顶点颜色数组 (r, g, b, a 四个一组)
+         * @param reuseBuffer 是否复用内部缓冲区（默认：true）。为true时返回可复用缓冲区的视图以获得更好的性能，为false时返回新创建的数组。
+         * @returns 裁剪后的数据 {vertices, indices, uvs, colors}
+         *
+         * @important
+         * @en When reuseBuffer=true (default): The returned TypedArrays are views of reusable internal buffers.
+         * The data is only valid until the next call to this method. If you need to persist the data,
+         * either set reuseBuffer=false or copy it yourself (e.g., new Float32Array(result.vertices)).
+         * Using reuseBuffer=true reduces GC pressure in high-frequency rendering loops.
+         *
+         * @zh 当reuseBuffer=true（默认）时：返回的TypedArray是可复用内部缓冲区的视图。
+         * 数据仅在下次调用此方法前有效。如果需要持久化数据，
+         * 可以设置reuseBuffer=false或自行复制（例如：new Float32Array(result.vertices)）。
+         * 使用reuseBuffer=true可减少高频渲染循环中的GC压力。
+         */
+        static clipTrianglesByUVRange(vertices: Float32Array, indices: Uint16Array, uvs: Float32Array, uvRange: ArrayLike<number>, colors: Float32Array, reuseBuffer?: boolean): {
+            vertices: Float32Array;
+            indices: Uint16Array;
+            uvs: Float32Array;
+            colors: Float32Array;
+        };
     }
     /**
      * @blueprintable
@@ -99746,6 +104105,8 @@ declare namespace Laya {
         getScreenOrientation(): OrientationType;
         createMainCanvas(): HTMLCanvasElement;
         createElement<K extends keyof HTMLElementTagNameMap>(tagName: K): HTMLElementTagNameMap[K];
+        getElementById(id: string): HTMLElement;
+        removeElement(ele: HTMLElement): void;
         setCursor(cursor: string): void;
         get supportArrayBufferURL(): boolean;
         createBufferURL(data: ArrayBuffer): string;
@@ -99933,7 +104294,7 @@ declare namespace Laya {
     /**
      * @ignore
      */
-    class MgVideoPlayer extends VideoPlayer {
+    class MgVideoPlayer extends VideoPlayerBackend {
         readonly video: WechatMinigame.Video;
         private _loop;
         private _currentTime;
@@ -99970,9 +104331,14 @@ declare namespace Laya {
         send(data: string | ArrayBuffer): Promise<void>;
     }
     class NativeBrowserAdapter extends BrowserAdapter {
+        protected _visible: boolean;
+        protected _canvas: any;
         init(): void;
+        getVisibility(): boolean;
         createMainCanvas(): any;
         createElement<K extends keyof HTMLElementTagNameMap>(tagName: K): HTMLElementTagNameMap[K];
+        getElementById(id: string): HTMLElement;
+        removeElement(ele: HTMLElement): void;
         get supportArrayBufferURL(): boolean;
         createBufferURL(data: ArrayBuffer): string;
         revokeBufferURL(url: string): void;
@@ -100002,7 +104368,7 @@ declare namespace Laya {
     /**
      * @ignore
      */
-    class NativeVideoPlayer extends VideoPlayer {
+    class NativeVideoPlayer extends VideoPlayerBackend {
         readonly video: any;
         private _loop;
         private _ended;

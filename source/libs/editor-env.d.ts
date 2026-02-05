@@ -882,17 +882,47 @@ declare global {
             destroy(): void;
         }
         export interface INavigationManager {
-            readonly allGizmos: Array<IGizmosManager>;
+            /**
+             * All gizmos managers.
+             */
+            readonly allGizmos: ReadonlyArray<IGizmosManager>;
+            /**
+             * Whether the mouse is down.
+             */
             readonly isMouseDown: boolean;
+            /**
+             * The scroller of the navigation view.
+             */
             readonly scroller: gui.IScroller;
+            /**
+             * Whether to hide gizmos.
+             */
             hideGizmos: boolean;
+            /**
+             * The view scale of the navigation view.
+             */
             viewScale: number;
+            /**
+             * Get or set whether it is in 2D mode.
+             */
             mode2d: boolean;
 
+            /**
+             * Change the current tool type.
+             * @param toolType The tool type. 
+             * @param notifyHost Whether to notify the ui process. 
+             * @param isTemp Whether it is a temporary change. 
+             */
             changeToolType(toolType: SceneNavToolType, notifyHost?: boolean, isTemp?: boolean): void;
+            /**
+             * Focus on the specified node.
+             * @param node The node to focus on. 
+             */
             focusNode(node: IMyNode): void;
-
-            drawGizmos(): void;
+            /**
+             * Prevent the context menu from appearing. It is usually called when the mouse is down.
+             */
+            preventContextMenu(): void;
         }
         export type SceneNavToolType = "move" | "orbit" | "orbit_focus" | "zoom" | "obj_move" | "obj_rotate" | "obj_scale" | "obj_transform";
 
@@ -1365,11 +1395,6 @@ declare global {
             readonly expressApp: express.Express;
 
             /**
-             * The instance of the express application with web socket support.
-             */
-            readonly expressWsApp: expressWs.Application;
-
-            /**
              * Start a web server to serve the specified directory.
              * @param webRootPath The root path of the web server. It is a absolute path.
              * @param secure Whether to use secure connection. Default is false.
@@ -1443,6 +1468,11 @@ declare global {
              * If true, additional actions will be performed according to the `forInstanceOnly` flag.
              */
             creatingPrefab?: boolean;
+
+            /**
+             * If true, children nodes will be ignored.
+             */
+            ignoreChildren?: boolean;
         }
 
         export namespace IHierarchyWriter {
@@ -1469,6 +1499,24 @@ declare global {
              * @returns The output set.
              */
             function collectResources(node: Laya.Node, out?: Set<any>): Set<any>;
+        }
+        export interface ValidationError {
+            /**
+             * RFC 6902 JSON Pointer 格式的错误位置路径
+             * 例如: /root/child/items/0/position
+             */
+            path: string;
+            errorType: 'undefined-property' | 'type-mismatch' | 'invalid-type' | 'prefab-conflict' | 'invalid-prefab-format' | 'invalid-override' | 'override-position-error' | 'prefab-missing' | 'override-node-missing' | 'parent-node-missing';
+            errorMessage: string;
+        }
+
+        export interface IHierarchyValidator {
+            /**
+             * Validate the hierarchy data.
+             * @param data The hierarchy data.
+             * @returns The list of validation errors.
+             */
+            validate(data: any): ValidationError[];
         }
         export interface IHandle {
             get valueChanged(): boolean;
@@ -1939,17 +1987,37 @@ declare global {
              * @param color The color of the lines. Default is white. 
              * @param lineWidth The pixel width of the lines. Default is 3. 
              */
-            function drawLines(pintNums: number[], mat?: Laya.Matrix, color?: Laya.Color, lineWidth?: number): void;
+            function drawLines(pintNums: number[], mat: Laya.Matrix, color?: Laya.Color, lineWidth?: number): void;
+
+            /**
+             * Draw icon at given matrix.
+             * @param iconUrl Icon url 
+             * @param mat The matrix to transform the icon 
+             * @param scale Scale of the icon 
+             * @param tillingOffset UV transform value.xy is offset of texture(0-1),zw is scale of uv 
+             * @param color The color of the icon. Default is white. 
+             */
+            function drawIcon(iconUrl: string, mat: Laya.Matrix, scale?: number, tillingOffset?: Laya.Vector4, color?: Laya.Color): void;
+
+            /**
+             * Draw icon for a node. The node will be selected when the icon is clicked.
+             * @param node The node
+             * @param iconUrl Icon url 
+             * @param scale Scale of the icon 
+             * @param color The color of the icon. Default is white. 
+             */
+            function drawNodeIcon(node: Laya.Sprite, iconUrl: string, color?: Laya.Color): void;
+
             /**
              * Draw quad of texture
              * @param texture texutre resource 
              * @param scale the scale of the quad mesh.defalut 1 pixel;
-             * @param offsettilling uv transform value.xy is offset of texture(0-1),zw is scale of uv
+             * @param tillingOffset uv transform value.xy is offset of texture(0-1),zw is scale of uv
              * @param mat The matrix to transform the quad
              * @param material The material to the quad
              * @param color The color of the quad. Default is white.
              */
-            function draw2DQuad(texture: Laya.BaseTexture, scale?: Laya.Vector2, offsettilling?: Laya.Vector4, mat?: Laya.Matrix, material?: Laya.Material, color?: Laya.Color): void;
+            function draw2DQuad(texture: Laya.BaseTexture, scale?: Laya.Vector2, tillingOffset?: Laya.Vector4, mat?: Laya.Matrix, material?: Laya.Material, color?: Laya.Color): void;
 
             /**
              * Add a cache command.
@@ -2026,8 +2094,11 @@ declare global {
              * @param fill Fill style of the handle. 
              * @param stroke Stroke style of the handle. Default is no stroke. 
              * @param cursor Optional cursor style of the handle, e.g. "default", "pointer", "grab", etc. Default is "pointer". 
+             * @param buttonSkin Optional button skin for the handle. If provided, the handle will have different styles for normal, hover, and down states.
              */
-            createHandle(shape: "rect" | "circle", size: number, fill: FillData | string, stroke?: StrokeData | string, cursor?: string): IGizmoHandle;
+            createHandle(shape: "rect" | "circle", size: number, fill: FillData | string, stroke?: StrokeData | string, cursor?: string,
+                buttonSkin?: { over?: { fill: FillData | string, stroke?: StrokeData | string }, down?: { fill: FillData | string, stroke?: StrokeData | string } }
+            ): IGizmoHandle;
 
             /**
              * Create a handle group. Handle Group uses caching and can be used to retrieve and recycle handles with the same style each frame.
@@ -2035,9 +2106,28 @@ declare global {
              * @param size Size of the handle.
              * @param fill Fill style of the handle.
              * @param stroke Stroke style of the handle. Default is no stroke.
+             * @param cursor Optional cursor style of the handle, e.g. "default", "pointer", "grab", etc. Default is "pointer".
+             * @param offset Optional offset of the handle.
+             * @param buttonSkin Optional button skin for the handle. If provided, the handle will have different styles for normal, hover, and down states. 
+             */
+            createHandleGroup(shape: "rect" | "circle", size: number, fill: FillData | string, stroke?: StrokeData | string, cursor?: string,
+                offset?: gui.Vec2, buttonSkin?: { over?: { fill: FillData | string, stroke?: StrokeData | string }, down?: { fill: FillData | string, stroke?: StrokeData | string } }
+            ): IGizmoHandleGroup;
+
+            /**
+             * Create an icon handle. An icon handle is a handle that uses images for different button states.
+             * @param normal Normal state image URL.
+             * @param over Over state image URL. 
+             * @param down Down state image URL. 
              * @param cursor Optional cursor style of the handle, e.g. "default", "pointer", "grab", etc. Default is "pointer". 
              */
-            createHandleGroup(shape: "rect" | "circle", size: number, fill: FillData | string, stroke?: StrokeData | string, cursor?: string): IGizmoHandleGroup;
+            createIconHandle(normal: string, over?: string, down?: string, cursor?: string): IGizmoIconHandle;
+
+            /**
+             * Add an element to the manager.
+             * @param ele The element to add. 
+             */
+            addElement<T extends IGizmoElement>(ele: T): T;
 
             /**
              * Convert local coordinates to global coordinates.
@@ -2066,6 +2156,11 @@ declare global {
              * Owner manager.
              */
             readonly owner: IGizmosManager;
+
+            /**
+             * SVG element of the gizmo.
+             */
+            readonly element: Element;
 
             /**
              * Owner node.
@@ -2101,6 +2196,11 @@ declare global {
              * Triggered when the user double clicks the element.
              */
             readonly onDblClick: IDelegate<(evt: MouseEvent) => void>;
+
+            /**
+             * Triggered when the user right clicks the element. Users can pop up their own menu in the callback event. To prevent the default menu from appearing, call evt.preventDefault().
+             */
+            readonly onContextMenu: IDelegate<(evt: MouseEvent) => void>;
 
             /**
              * X position of the element. It's in global coordinates.
@@ -2159,6 +2259,18 @@ declare global {
             setPos(x: number, y: number): this;
 
             /**
+             * Reposition the element to its stored local coordinates. Useful for group elements that need to reposition after the content changes.
+             */
+            reposition(): this;
+
+            /**
+             * Set the offset of the element. The offset will be added to the position when setting the position.
+             * @param offsetX X offset. 
+             * @param offsetY Y offset. 
+             */
+            setOffset(offsetX: number, offsetY: number): this;
+
+            /**
              * Set the size of the element.
              * @param width Width.
              * @param height Height.
@@ -2190,9 +2302,18 @@ declare global {
              * @returns The value of the data.
              */
             getData(name: string): any;
+
+            /**
+             * Set the button status of the element. Only works when the element is set up as a button.
+             * @param status Button status. Can be "normal", "over", or "down". 
+             */
+            setButtonStatus(status: "normal" | "over" | "down"): void;
         }
 
         export interface IGizmoHandle extends IGizmoElement {
+        }
+
+        export interface IGizmoIconHandle extends IGizmoElement {
         }
 
         export interface IGizmoHandleGroup extends IGizmoElement {
@@ -2220,6 +2341,11 @@ declare global {
              * Triggered when the user double clicks a handle.
              */
             readonly onHandleDblClick: IDelegate<(handle: IGizmoHandle, evt: MouseEvent) => void>;
+
+            /**
+             * Triggered when the user right clicks the handle. Users can pop up their own menu in the callback event. To prevent the default menu from appearing, call evt.preventDefault().
+             */
+            readonly onHandleContextMenu: IDelegate<(handle: IGizmoHandle, evt: MouseEvent) => void>;
 
             /**
              * Get all visible handles.
@@ -2349,6 +2475,7 @@ declare global {
             getNodeRef?: (node: gui.Widget) => string | string[];
             noHeader?: boolean;
             creatingPrefab?: boolean;
+            ignoreChildren?: boolean;
         }
 
         export namespace IGUIPrefabWriter {
@@ -2708,6 +2835,11 @@ declare global {
              * Whether to load the subpackage on startup.
              */
             autoLoad?: boolean;
+
+            /**
+             * If true, add all assets in the specified folder to this subpackage.
+             */
+            packAllAssets?: boolean;
         }
 
         export interface IExportAssetToolOptions {
@@ -3541,16 +3673,6 @@ declare global {
 
         export interface ICameraControls {
             /**
-             * Zoom scale factor
-             */
-            zoomScale: number;
-
-            /**
-             * Transform scale factor
-             */
-            transformScale: number;
-
-            /**
              * Get the camera instance
              */
             get camera(): Laya.Camera;
@@ -3696,9 +3818,8 @@ declare global {
              * @param distanceX The distance to move along the X axis
              * @param distanceY The distance to move along the Y axis
              * @param distanceZ The distance to move along the Z axis
-             * @param isshift Whether the shift key is pressed
              */
-            flyMove(distanceX: number, distanceY: number, distanceZ: number, isshift: boolean): void;
+            flyMove(distanceX: number, distanceY: number, distanceZ: number): void;
 
             /**
              * Reset the camera motion
@@ -4726,6 +4847,12 @@ declare global {
             get busy(): boolean;
 
             /**
+             * Wait until the specified assets are ready (imported). An error will be thrown if any of the assets fail to import.
+             * @param paths The paths of the assets to wait. The paths are relative to the assets folder.
+             */
+            waitForAssetsReady(paths: string[]): Promise<void>;
+
+            /**
              * If there is an ongoing import task, wait for the import task to complete.
              */
             flushChanges(): Promise<void>;
@@ -5130,6 +5257,10 @@ declare global {
              * This is usually used to determine whether the prefab property is overridden.
              */
             affectBy?: string;
+            /**
+             * The property is only effective in the editor and will not be stripped in the build.
+             */
+            stripInBuild?: boolean;
 
             /**
              * Whether the text input is multiline. Default is false.
@@ -5744,6 +5875,11 @@ declare global {
              * The script is executed by Editor.scene.runnNodeScript.
              */
             runNodeScript?: string;
+
+            /**
+             * If this is defined, a panel will be focused when the button is clicked.
+             */
+            focusPanel?: string;
 
             /**
              * Bind a hotkey to the button.
@@ -6927,8 +7063,9 @@ declare global {
          * A callback function that is used to determine whether a value is equal to the default value.
          * @param value The value to compare.
          * @param overridedDefaultValue By default, the `default` property of the property descriptor is used as the default value. You can override it by passing in this parameter.
+         * @param looseMode In loose mode, empty data (i.e. {}) is allowed to match non-empty default values.
          */
-        export type DefaultValueComparator = (value: any, overridedDefaultValue?: any) => boolean;
+        export type DefaultValueComparator = (value: any, overridedDefaultValue?: any, looseMode?: boolean) => boolean;
         export type TypeMenuItem = { type: FTypeDescriptor, label: string, icon: string, order: number };
         export type TypeMenuItems = Array<TypeMenuItem> & { menuLabel: string };
         export type PropertyTestFunctions = { hiddenTest: Function, readonlyTest: Function, validator: Function, requiredTest: Function };
@@ -7064,6 +7201,14 @@ declare global {
              * @returns The base type name or null.
              */
             getNodeBaseType(type: string): string;
+
+            /**
+             * Check whether two types share the same base type.
+             * @param type1 The first type name.
+             * @param type2 The second type name.
+             * @returns Whether the two types share the same base type. 
+             */
+            hasSameBase(type1: string, type2: string): boolean
 
             /**
              * Whether a type is deprecated. If an new type descriptor is registered with the same name, the original type descriptor will be marked as deprecated.
@@ -7679,6 +7824,12 @@ declare global {
              * @returns The filtered list of top-level items. 
              */
             filterTopLevels<T extends { parent: any }>(items: ReadonlyArray<T>): ReadonlyArray<T>;
+
+            /**
+             * Get the file path from a dropped file.
+             * @param file The dropped file, from the drag-and-drop event. 
+             */
+            getDropFilePath(file: File): string;
         }
         export interface IUUIDUtils {
             /**
@@ -7749,6 +7900,11 @@ declare global {
              * ```
              */
             excludeNames: Array<string>;
+
+            /**
+             * Additional command line options for the zip tool.
+             */
+            additionalOptions: Array<string>;
 
             /**
              * Add a file to the zip file.
@@ -8618,9 +8774,6 @@ declare global {
             destroy(): void;
         }
 
-        /// <reference types="node" />
-        /// <reference types="node" />
-
         export class AssetThumbnail implements IAssetThumbnail {
             /**
              * Suggestions for the size of the thumbnail.
@@ -8732,6 +8885,10 @@ declare global {
             private _suffix;
             private _prevTabStop;
             private _savedText;
+            private _isPointerLocked;
+            private _onPointerMoveHandler;
+            private _accumulatedMovement;
+            private _enablePointerLock;
             constructor();
             /**
              * Number of decimal places. Default is 3;
@@ -8755,6 +8912,12 @@ declare global {
              */
             get suffix(): string;
             set suffix(value: string);
+            /**
+             * Whether to enable pointer lock when dragging. Default is true.
+             * When enabled, the mouse cursor will be locked and hidden during dragging for better UX.
+             */
+            get enablePointerLock(): boolean;
+            set enablePointerLock(value: boolean);
             get value(): number;
             set value(val: number);
             get text(): string;
@@ -8764,6 +8927,7 @@ declare global {
             private _holderDragStart;
             private _holderDragEnd;
             private _holderDragMove;
+            private _handlePointerMove;
             private __click;
             private __focusIn;
             private __focusOut;
@@ -8774,11 +8938,18 @@ declare global {
         export class NumericInputWithSlider extends gui.Label {
             private _slider;
             private _input;
+            private _centeredAtOne;
             constructor();
             get min(): number;
             set min(value: number);
             get max(): number;
             set max(value: number);
+            /**
+             * If true, the center of the slider represents the value 1.0, with the left side representing values between min and 1.0,
+             * and the right side representing values between 1.0 and max.
+             */
+            get centeredAtOne(): boolean;
+            set centeredAtOne(value: boolean);
             get fractionDigits(): number;
             set fractionDigits(value: number);
             get step(): number;
@@ -8792,6 +8963,7 @@ declare global {
             get text(): string;
             set text(value: string);
             onConstruct(): void;
+            private syncInputToSlider;
         }
 
         export class TextInput extends gui.Label {
@@ -8951,6 +9123,11 @@ declare global {
          * `HierarchyWriter` is a helper class for serializing nodes and components.
          */
         const HierarchyWriter: typeof IHierarchyWriter;
+
+        /**
+         * `HierarchyValidator` is a helper class for validating hierarchy data.
+         */
+        const HierarchyValidator: new () => IHierarchyValidator;
 
         /**
          * `SerializeUtil` is a helper class for serializing and deserializing objects.

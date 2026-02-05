@@ -1100,7 +1100,8 @@
             this._transform = Laya3DRender.Render3DModuleDataFactory.createTransform(this);
             this._isStatic = isStatic ? exports.StaticFlag.StaticBatch : exports.StaticFlag.Normal;
             this.layer = 0;
-            this.name = name ? name : "New Sprite3D";
+            if (name != null)
+                this.name = name;
         }
         _onActive() {
             super._onActive();
@@ -1248,10 +1249,10 @@
 
     class Bounds {
         static merge(box1, box2, out) {
-            Laya.Vector3.min(box1.min, box2.min, out.min);
-            Laya.Vector3.max(box1.max, box2.max, out.max);
-            out.min = out.min;
-            out.max = out.max;
+            Laya.Vector3.min(box1.min, box2.min, _tempVector30$5);
+            Laya.Vector3.max(box1.max, box2.max, _tempVector31$5);
+            out.min = _tempVector30$5;
+            out.max = _tempVector31$5;
         }
         static containPoint(box, point) {
             let max = box._imp.getMax();
@@ -1357,6 +1358,8 @@
     Bounds._UPDATE_MAX = 0x02;
     Bounds._UPDATE_CENTER = 0x04;
     Bounds._UPDATE_EXTENT = 0x08;
+    const _tempVector30$5 = new Laya.Vector3();
+    const _tempVector31$5 = new Laya.Vector3();
 
     exports.volumeIntersectType = void 0;
     (function (volumeIntersectType) {
@@ -2036,18 +2039,40 @@
 
     exports.RenderBitFlag = void 0;
     (function (RenderBitFlag) {
-        RenderBitFlag[RenderBitFlag["RenderBitFlag_CullFlag"] = 0] = "RenderBitFlag_CullFlag";
-        RenderBitFlag[RenderBitFlag["RenderBitFlag_Batch"] = 1] = "RenderBitFlag_Batch";
-        RenderBitFlag[RenderBitFlag["RenderBitFlag_Editor"] = 2] = "RenderBitFlag_Editor";
-        RenderBitFlag[RenderBitFlag["RenderBitFlag_InstanceBatch"] = 3] = "RenderBitFlag_InstanceBatch";
-        RenderBitFlag[RenderBitFlag["RenderBitFlag_VertexMergeBatch"] = 4] = "RenderBitFlag_VertexMergeBatch";
+        RenderBitFlag[RenderBitFlag["RenderBitFlag_Batch"] = 0] = "RenderBitFlag_Batch";
+        RenderBitFlag[RenderBitFlag["RenderBitFlag_Editor"] = 1] = "RenderBitFlag_Editor";
+        RenderBitFlag[RenderBitFlag["RenderBitFlag_InstanceBatch"] = 2] = "RenderBitFlag_InstanceBatch";
+        RenderBitFlag[RenderBitFlag["RenderBitFlag_VertexMergeBatch"] = 3] = "RenderBitFlag_VertexMergeBatch";
     })(exports.RenderBitFlag || (exports.RenderBitFlag = {}));
+    exports.VisibalRangeFlag = void 0;
+    (function (VisibalRangeFlag) {
+        VisibalRangeFlag[VisibalRangeFlag["None"] = 0] = "None";
+        VisibalRangeFlag[VisibalRangeFlag["BASERENDERSET"] = 1] = "BASERENDERSET";
+        VisibalRangeFlag[VisibalRangeFlag["LOD"] = 2] = "LOD";
+    })(exports.VisibalRangeFlag || (exports.VisibalRangeFlag = {}));
     exports.IrradianceMode = void 0;
     (function (IrradianceMode) {
         IrradianceMode[IrradianceMode["LightMap"] = 0] = "LightMap";
         IrradianceMode[IrradianceMode["VolumetricGI"] = 1] = "VolumetricGI";
         IrradianceMode[IrradianceMode["Common"] = 2] = "Common";
     })(exports.IrradianceMode || (exports.IrradianceMode = {}));
+    exports.propertyChangeFlag = void 0;
+    (function (propertyChangeFlag) {
+        propertyChangeFlag[propertyChangeFlag["material"] = 0] = "material";
+        propertyChangeFlag[propertyChangeFlag["renderELement"] = 1] = "renderELement";
+        propertyChangeFlag[propertyChangeFlag["geometry"] = 2] = "geometry";
+        propertyChangeFlag[propertyChangeFlag["lightmap"] = 3] = "lightmap";
+        propertyChangeFlag[propertyChangeFlag["invertY"] = 4] = "invertY";
+        propertyChangeFlag[propertyChangeFlag["reflection"] = 5] = "reflection";
+        propertyChangeFlag[propertyChangeFlag["volumGI"] = 6] = "volumGI";
+        propertyChangeFlag[propertyChangeFlag["castShadow"] = 7] = "castShadow";
+        propertyChangeFlag[propertyChangeFlag["receiveShadow"] = 8] = "receiveShadow";
+        propertyChangeFlag[propertyChangeFlag["transform"] = 9] = "transform";
+        propertyChangeFlag[propertyChangeFlag["lightmapData"] = 10] = "lightmapData";
+        propertyChangeFlag[propertyChangeFlag["RenderCustomData"] = 11] = "RenderCustomData";
+        propertyChangeFlag[propertyChangeFlag["VisibalRange"] = 12] = "VisibalRange";
+        propertyChangeFlag[propertyChangeFlag["SimpleSkineParam"] = 13] = "SimpleSkineParam";
+    })(exports.propertyChangeFlag || (exports.propertyChangeFlag = {}));
     class BaseRender extends Laya.Component {
         static __init__() {
             BaseRender.shaderValueInit();
@@ -2110,6 +2135,24 @@
             super.enabled = value;
             this._baseRenderNode.enable = value;
         }
+        set visibalMin(value) {
+            if (exports.VisibalRangeFlag.BASERENDERSET >= this._baseRenderNode.visibalRangeBit) {
+                this._baseRenderNode.visibalMin = value;
+                this._batchRender && this._batchRender.updateProperty(this, exports.propertyChangeFlag.VisibalRange);
+            }
+        }
+        get visibalMin() {
+            return this._baseRenderNode.visibalMin;
+        }
+        set visibalMax(value) {
+            if (exports.VisibalRangeFlag.BASERENDERSET >= this._baseRenderNode.visibalRangeBit) {
+                this._baseRenderNode.visibalMax = value;
+                this._batchRender && this._batchRender.updateProperty(this, exports.propertyChangeFlag.VisibalRange);
+            }
+        }
+        get visibalMax() {
+            return this._baseRenderNode.visibalMax;
+        }
         get sortingFudge() {
             return this._baseRenderNode.sortingFudge;
         }
@@ -2127,12 +2170,6 @@
         }
         get renderNode() {
             return this._baseRenderNode;
-        }
-        get distanceForSort() {
-            return this._baseRenderNode.distanceForSort;
-        }
-        set distanceForSort(value) {
-            this._baseRenderNode.distanceForSort = value;
         }
         get geometryBounds() {
             return this._baseRenderNode.baseGeometryBounds;
@@ -2155,6 +2192,7 @@
                 this._baseRenderNode.lightmap = null;
             }
             this._getIrradientMode();
+            this._batchRender && this._batchRender.updateProperty(this, exports.propertyChangeFlag.lightmap);
         }
         get irradientMode() {
             return this._baseRenderNode.irradientMode;
@@ -2182,6 +2220,7 @@
                 element.material = value;
             }
             this._isSupportRenderFeature();
+            this._batchRender && this._batchRender.updateProperty(this, exports.propertyChangeFlag.material);
         }
         get sharedMaterials() {
             return this._sharedMaterials.slice();
@@ -2236,6 +2275,7 @@
                     this._baseRenderNode.shaderData.addDefine(RenderableSprite3D.SHADERDEFINE_RECEIVE_SHADOW);
                 else
                     this._baseRenderNode.shaderData.removeDefine(RenderableSprite3D.SHADERDEFINE_RECEIVE_SHADOW);
+                this._batchRender && this._batchRender.updateProperty(this, exports.propertyChangeFlag.receiveShadow);
             }
             this._baseRenderNode.receiveShadow = value;
         }
@@ -2244,6 +2284,7 @@
         }
         set castShadow(value) {
             this._baseRenderNode.castShadow = value;
+            this._batchRender && this._batchRender.updateProperty(this, exports.propertyChangeFlag.castShadow);
         }
         get reflectionMode() {
             return this._baseRenderNode.reflectionMode;
@@ -2288,6 +2329,7 @@
                 this._baseRenderNode.additionShaderData.delete(ReflectionProbeBlockName);
             }
             this._baseRenderNode.additionShaderData = this._baseRenderNode.additionShaderData;
+            this._batchRender && this._batchRender.updateProperty(this, exports.propertyChangeFlag.reflection);
             this._getIrradientMode();
         }
         get lightProbe() {
@@ -2309,6 +2351,7 @@
                 this._baseRenderNode.additionShaderData.delete(VolumeGIBlockName);
             }
             this._baseRenderNode.additionShaderData = this._baseRenderNode.additionShaderData;
+            this._batchRender && this._batchRender.updateProperty(this, exports.propertyChangeFlag.volumGI);
             this._getIrradientMode();
         }
         setNodeCustomData(dataSlot, data) {
@@ -2317,18 +2360,14 @@
         constructor() {
             super();
             this._sharedMaterials = [];
-            this._sceneUpdateMark = -1;
-            this._updateMark = -1;
             this._surportReflectionProbe = false;
             this._supportVolumetricGI = false;
-            this._motionIndexList = -1;
-            this._LOD = -1;
             this._lightmapScaleOffset = new Laya.Vector4();
             this._renderElements = [];
             this._baseRenderNode = this._createBaseRenderNode();
-            this._baseRenderNode.setCommonUniformMap(this._getcommonUniformMap());
+            this._baseRenderNode.visibalRangeBit = 0;
             this._baseRenderNode.shaderData = Laya.LayaGL.renderDeviceFactory.createShaderData(null);
-            this._renderid = ++BaseRender._uniqueIDCounter;
+            this._baseRenderNode.setCommonUniformMap(this._getcommonUniformMap());
             this._baseRenderNode.bounds = this._bounds = new Bounds(Laya.Vector3.ZERO, Laya.Vector3.ZERO);
             this._enabled = true;
             this._baseRenderNode.enable = true;
@@ -2344,7 +2383,6 @@
                 this._baseRenderNode.set_renderUpdatePreCall(this, this._renderUpdate);
             }
             this.runInEditor = true;
-            this._asynNative = true;
             this.boundsChange = true;
             this._baseRenderNode.renderbitFlag = 0;
             this._baseRenderNode.staticMask = 1;
@@ -2363,11 +2401,15 @@
                 arrayElement.push(element._renderElementOBJ);
             });
             this._baseRenderNode.setRenderelements(arrayElement);
+            this._batchRender && this._batchRender.updateProperty(this, exports.propertyChangeFlag.renderELement);
         }
         _onWorldMatNeedChange(flag) {
             this.boundsChange = true;
             this._addReflectionProbeUpdate();
-            this._batchRender && this._batchRender._updateOneRender(this);
+            if (this._batchRender) {
+                this._transform.getScaleChangeFlag() && this._batchRender.updateProperty(this, exports.propertyChangeFlag.invertY);
+                this._batchRender.updateProperty(this, exports.propertyChangeFlag.transform);
+            }
         }
         _getcommonUniformMap() {
             return ["Sprite3D"];
@@ -2406,7 +2448,6 @@
         _onDestroy() {
             if (this.owner)
                 this.owner._isRenderNode--;
-            (this._motionIndexList !== -1) && (this._scene._sceneRenderManager.removeMotionObject(this));
             (this._scene) && this._scene.sceneRenderableManager.removeRenderObject(this);
             this._baseRenderNode.destroy();
             this._baseRenderNode = null;
@@ -2475,7 +2516,6 @@
             this._scene = scene;
             this._onWorldMatNeedChange(1);
             this._isSupportRenderFeature();
-            this._batchRender && this._batchRender._batchOneRender(this);
             this.setLightmapIndex(this.lightmapIndex);
             this._statAdd();
         }
@@ -2489,7 +2529,6 @@
             this._statRemove();
             this._scene._volumeManager.removeMotionObject(this);
             let batch = this._batchRender;
-            this._batchRender && this._batchRender._removeOneRender(this);
             this._batchRender = batch;
             this._scene = null;
         }
@@ -2544,6 +2583,12 @@
         set materials(value) {
             this.sharedMaterials = value;
             this._isSupportRenderFeature();
+        }
+        get distanceForSort() {
+            return this._baseRenderNode.sortingFudge;
+        }
+        set distanceForSort(value) {
+            this._baseRenderNode.sortingFudge = value;
         }
     }
     BaseRender._meshVerticeDefine = [];
@@ -2772,6 +2817,7 @@
                     shaderData.setInt(RenderableSprite3D.MorphActiveCount, this.morphTargetActiveCount);
                     shaderData.setBuffer(RenderableSprite3D.MorphActiceTargets, this.morphTargetActiveData);
                 }
+                shaderData.update("MorphTarget");
                 this._morphWeightChange = false;
             }
         }
@@ -2914,7 +2960,7 @@
             if (!this._mesh) {
                 return;
             }
-            if (Laya.LayaGL.renderEngine.getCapable(Laya.RenderCapable.Texture3D) && this._mesh.morphTargetData) {
+            if (this._mesh.morphTargetData && Laya.LayaGL.renderEngine.getCapable(Laya.RenderCapable.Texture3D)) {
                 this._applyMorphdata();
             }
             if (!this._meshChange) {
@@ -4069,6 +4115,9 @@
                 this._isFrontFaceInvert;
             }
             return this._frontFaceValue;
+        }
+        getScaleChangeFlag() {
+            return this._getTransformFlag(Transform3D.TRANSFORM_WORLDSCALE);
         }
         get owner() {
             return this._owner;
@@ -7292,6 +7341,7 @@
             cmd.material = material;
             cmd.subMeshIndex = subMeshIndex;
             cmd._subShaderIndex = subShaderIndex;
+            cmd._meshRender.probReflection = RenderContext3D._instance.scene.sceneReflectionProb;
             cmd.mesh = mesh;
             cmd._commandBuffer = commandBuffer;
             return cmd;
@@ -7338,7 +7388,6 @@
             this._meshRender._baseRenderNode.transform = this._transform;
             this._meshRender._baseRenderNode.ismoved.setValue(Laya.Stat.loopCount, Laya.LayaGL.renderEngine._framePassCount);
             this._meshRender.renderUpdate(RenderContext3D._instance);
-            this._meshRender.probReflection = RenderContext3D._instance.scene.sceneReflectionProb;
             this._drawRenderCMDDData.destSubShader = this.material.shader.getSubShaderAt(this._subShaderIndex);
             this._drawRenderCMDDData.destShaderData = this.material.shaderData;
             this._drawRenderCMDDData.node = this._meshRender._baseRenderNode;
@@ -8954,18 +9003,28 @@
 
     class SceneRenderManager {
         constructor() {
+            this._list = new Laya.SingletonList();
             this._sceneManagerOBJ = Laya3DRender.Render3DPassFactory.createSceneRenderManager();
+            if (Laya3DRender.Render3DPassFactory.createMeshRenderBatchModule) {
+                this._sceneManagerOBJ.registerBatchModuleAgent(Laya.BaseRenderType.MeshRender, Laya3DRender.Render3DPassFactory.createMeshRenderBatchModule());
+            }
+            if (Laya3DRender.Render3DPassFactory.createSimpleSkinRenderBatchModule) {
+                this._sceneManagerOBJ.registerBatchModuleAgent(Laya.BaseRenderType.SimpleSkinRender, Laya3DRender.Render3DPassFactory.createSimpleSkinRenderBatchModule());
+            }
         }
         get list() {
-            return this._sceneManagerOBJ.list;
+            return this._list;
         }
         set list(value) {
+            this._list = value;
             this._sceneManagerOBJ.list = value;
         }
         addRenderObject(object) {
+            this._list.add(object);
             this._sceneManagerOBJ.addRenderObject(object);
         }
         removeRenderObject(object) {
+            this._list.remove(object);
             this._sceneManagerOBJ.removeRenderObject(object);
         }
         removeMotionObject(object) {
@@ -8976,15 +9035,17 @@
         }
         renderUpdate() {
             var context = RenderContext3D._instance;
-            let lists = this._sceneManagerOBJ.list.elements;
-            for (let i = 0, n = this.list.length; i < n; i++) {
-                lists[i].renderUpdate(context);
+            let elemnts = this._list.elements;
+            for (let i = 0, n = this._list.length; i < n; i++) {
+                elemnts[i].renderUpdate(context);
             }
         }
         addMotionObject(object) {
             this._sceneManagerOBJ.addMotionObject(object);
         }
         destroy() {
+            this._list.clear();
+            this.list = null;
             this._sceneManagerOBJ.destroy();
         }
     }
@@ -9033,10 +9094,10 @@
     })(exports.FogMode || (exports.FogMode = {}));
     class Scene3D extends Laya.Sprite {
         static get _updateMark() {
-            return RenderContext3D._instance._contextOBJ.cameraUpdateMask;
+            return RenderContext3D._instance._contextOBJ.sceneUpdateMask;
         }
         static set _updateMark(value) {
-            RenderContext3D._instance._contextOBJ.cameraUpdateMask = value;
+            RenderContext3D._instance._contextOBJ.sceneUpdateMask = value;
         }
         static regManager(type, cla) {
             Scene3D.componentManagerMap.set(type, cla);
@@ -10999,7 +11060,7 @@
 
     var ShadowSampleTentGLSL = "float sampleShadowGetIRTriangleTexelArea(float triangleHeight){return triangleHeight-0.5;}void sampleShadowGetTexelAreasTent3x3(float offset,out vec4 computedArea,out vec4 computedAreaUncut){float a=offset+0.5;float offsetSquaredHalved=a*a*0.5;computedAreaUncut.x=computedArea.x=offsetSquaredHalved-offset;computedAreaUncut.w=computedArea.w=offsetSquaredHalved;computedAreaUncut.y=sampleShadowGetIRTriangleTexelArea(1.5-offset);float clampedOffsetLeft=min(offset,0.0);float areaOfSmallLeftTriangle=clampedOffsetLeft*clampedOffsetLeft;computedArea.y=computedAreaUncut.y-areaOfSmallLeftTriangle;computedAreaUncut.z=sampleShadowGetIRTriangleTexelArea(1.5+offset);float clampedOffsetRight=max(offset,0.0);float areaOfSmallRightTriangle=clampedOffsetRight*clampedOffsetRight;computedArea.z=computedAreaUncut.z-areaOfSmallRightTriangle;}void sampleShadowGetTexelWeightsTent5x5(float offset,out vec3 texelsWeightsA,out vec3 texelsWeightsB){vec4 areaFrom3texelTriangle;vec4 areaUncutFrom3texelTriangle;sampleShadowGetTexelAreasTent3x3(offset,areaFrom3texelTriangle,areaUncutFrom3texelTriangle);texelsWeightsA.x=0.16*(areaFrom3texelTriangle.x);texelsWeightsA.y=0.16*(areaUncutFrom3texelTriangle.y);texelsWeightsA.z=0.16*(areaFrom3texelTriangle.y+1.0);texelsWeightsB.x=0.16*(areaFrom3texelTriangle.z+1.0);texelsWeightsB.y=0.16*(areaUncutFrom3texelTriangle.z);texelsWeightsB.z=0.16*(areaFrom3texelTriangle.w);}void sampleShadowComputeSamplesTent5x5(vec4 shadowMapTextureTexelSize,vec2 coord,out float fetchesWeights[9],out vec2 fetchesUV[9]){vec2 tentCenterInTexelSpace=coord.xy*shadowMapTextureTexelSize.zw;vec2 centerOfFetchesInTexelSpace=floor(tentCenterInTexelSpace+0.5);vec2 offsetFromTentCenterToCenterOfFetches=tentCenterInTexelSpace-centerOfFetchesInTexelSpace;vec3 texelsWeightsUA,texelsWeightsUB;vec3 texelsWeightsVA,texelsWeightsVB;sampleShadowGetTexelWeightsTent5x5(offsetFromTentCenterToCenterOfFetches.x,texelsWeightsUA,texelsWeightsUB);sampleShadowGetTexelWeightsTent5x5(offsetFromTentCenterToCenterOfFetches.y,texelsWeightsVA,texelsWeightsVB);vec3 fetchesWeightsU=vec3(texelsWeightsUA.xz,texelsWeightsUB.y)+vec3(texelsWeightsUA.y,texelsWeightsUB.xz);vec3 fetchesWeightsV=vec3(texelsWeightsVA.xz,texelsWeightsVB.y)+vec3(texelsWeightsVA.y,texelsWeightsVB.xz);vec3 fetchesOffsetsU=vec3(texelsWeightsUA.y,texelsWeightsUB.xz)/fetchesWeightsU.xyz+vec3(-2.5,-0.5,1.5);vec3 fetchesOffsetsV=vec3(texelsWeightsVA.y,texelsWeightsVB.xz)/fetchesWeightsV.xyz+vec3(-2.5,-0.5,1.5);fetchesOffsetsU*=shadowMapTextureTexelSize.xxx;fetchesOffsetsV*=shadowMapTextureTexelSize.yyy;vec2 bilinearFetchOrigin=centerOfFetchesInTexelSpace*shadowMapTextureTexelSize.xy;fetchesUV[0]=bilinearFetchOrigin+vec2(fetchesOffsetsU.x,fetchesOffsetsV.x);fetchesUV[1]=bilinearFetchOrigin+vec2(fetchesOffsetsU.y,fetchesOffsetsV.x);fetchesUV[2]=bilinearFetchOrigin+vec2(fetchesOffsetsU.z,fetchesOffsetsV.x);fetchesUV[3]=bilinearFetchOrigin+vec2(fetchesOffsetsU.x,fetchesOffsetsV.y);fetchesUV[4]=bilinearFetchOrigin+vec2(fetchesOffsetsU.y,fetchesOffsetsV.y);fetchesUV[5]=bilinearFetchOrigin+vec2(fetchesOffsetsU.z,fetchesOffsetsV.y);fetchesUV[6]=bilinearFetchOrigin+vec2(fetchesOffsetsU.x,fetchesOffsetsV.z);fetchesUV[7]=bilinearFetchOrigin+vec2(fetchesOffsetsU.y,fetchesOffsetsV.z);fetchesUV[8]=bilinearFetchOrigin+vec2(fetchesOffsetsU.z,fetchesOffsetsV.z);fetchesWeights[0]=fetchesWeightsU.x*fetchesWeightsV.x;fetchesWeights[1]=fetchesWeightsU.y*fetchesWeightsV.x;fetchesWeights[2]=fetchesWeightsU.z*fetchesWeightsV.x;fetchesWeights[3]=fetchesWeightsU.x*fetchesWeightsV.y;fetchesWeights[4]=fetchesWeightsU.y*fetchesWeightsV.y;fetchesWeights[5]=fetchesWeightsU.z*fetchesWeightsV.y;fetchesWeights[6]=fetchesWeightsU.x*fetchesWeightsV.z;fetchesWeights[7]=fetchesWeightsU.y*fetchesWeightsV.z;fetchesWeights[8]=fetchesWeightsU.z*fetchesWeightsV.z;}";
 
-    var ShadowSamplerGLSL = "\n#if !defined(ShadowSampler_lib)\n#define ShadowSampler_lib\n#ifdef RECEIVESHADOW\n#include \"ShadowSampleTent.glsl\";\n#include \"ShadowCommon.glsl\"\n#define ShadowStrength u_ShadowParams.x\n#define SpotShadowStrength u_ShadowParams.y\n#ifdef SHADOW\n#define CALCULATE_SHADOWS\nvarying vec4 v_ShadowCoord;float sampleShdowMapFiltered4(vec3 shadowCoord,vec4 shadowMapSize){float attenuation;vec4 attenuation4;vec2 offset=shadowMapSize.xy/2.0;vec3 shadowCoord0=shadowCoord+vec3(-offset,0.0);vec3 shadowCoord1=shadowCoord+vec3(offset.x,-offset.y,0.0);vec3 shadowCoord2=shadowCoord+vec3(-offset.x,offset.y,0.0);vec3 shadowCoord3=shadowCoord+vec3(offset,0.0);attenuation4.x=SAMPLE_TEXTURE2D_SHADOW(u_ShadowMap,shadowCoord0);attenuation4.y=SAMPLE_TEXTURE2D_SHADOW(u_ShadowMap,shadowCoord1);attenuation4.z=SAMPLE_TEXTURE2D_SHADOW(u_ShadowMap,shadowCoord2);attenuation4.w=SAMPLE_TEXTURE2D_SHADOW(u_ShadowMap,shadowCoord3);attenuation=dot(attenuation4,vec4(0.25));return attenuation;}float sampleShdowMapFiltered9(vec3 shadowCoord,vec4 shadowmapSize){float attenuation;float fetchesWeights[9];vec2 fetchesUV[9];sampleShadowComputeSamplesTent5x5(shadowmapSize,shadowCoord.xy,fetchesWeights,fetchesUV);attenuation=fetchesWeights[0]*SAMPLE_TEXTURE2D_SHADOW(u_ShadowMap,vec3(fetchesUV[0].xy,shadowCoord.z));attenuation+=fetchesWeights[1]*SAMPLE_TEXTURE2D_SHADOW(u_ShadowMap,vec3(fetchesUV[1].xy,shadowCoord.z));attenuation+=fetchesWeights[2]*SAMPLE_TEXTURE2D_SHADOW(u_ShadowMap,vec3(fetchesUV[2].xy,shadowCoord.z));attenuation+=fetchesWeights[3]*SAMPLE_TEXTURE2D_SHADOW(u_ShadowMap,vec3(fetchesUV[3].xy,shadowCoord.z));attenuation+=fetchesWeights[4]*SAMPLE_TEXTURE2D_SHADOW(u_ShadowMap,vec3(fetchesUV[4].xy,shadowCoord.z));attenuation+=fetchesWeights[5]*SAMPLE_TEXTURE2D_SHADOW(u_ShadowMap,vec3(fetchesUV[5].xy,shadowCoord.z));attenuation+=fetchesWeights[6]*SAMPLE_TEXTURE2D_SHADOW(u_ShadowMap,vec3(fetchesUV[6].xy,shadowCoord.z));attenuation+=fetchesWeights[7]*SAMPLE_TEXTURE2D_SHADOW(u_ShadowMap,vec3(fetchesUV[7].xy,shadowCoord.z));attenuation+=fetchesWeights[8]*SAMPLE_TEXTURE2D_SHADOW(u_ShadowMap,vec3(fetchesUV[8].xy,shadowCoord.z));return attenuation;}\n#endif\n#ifdef SHADOW_SPOT\n#define CALCULATE_SPOTSHADOWS\nvarying vec4 v_SpotShadowCoord;float sampleSpotShdowMapFiltered4(vec3 shadowCoord,vec4 shadowMapSize){float attenuation;vec4 attenuation4;vec2 offset=shadowMapSize.xy/2.0;vec3 shadowCoord0=shadowCoord+vec3(-offset,0.0);vec3 shadowCoord1=shadowCoord+vec3(offset.x,-offset.y,0.0);vec3 shadowCoord2=shadowCoord+vec3(-offset.x,offset.y,0.0);vec3 shadowCoord3=shadowCoord+vec3(offset,0.0);attenuation4.x=SAMPLE_TEXTURE2D_SHADOW(u_SpotShadowMap,shadowCoord0);attenuation4.y=SAMPLE_TEXTURE2D_SHADOW(u_SpotShadowMap,shadowCoord1);attenuation4.z=SAMPLE_TEXTURE2D_SHADOW(u_SpotShadowMap,shadowCoord2);attenuation4.w=SAMPLE_TEXTURE2D_SHADOW(u_SpotShadowMap,shadowCoord3);attenuation=dot(attenuation4,vec4(0.25));return attenuation;}float sampleSpotShdowMapFiltered9(vec3 shadowCoord,vec4 shadowmapSize){float attenuation;float fetchesWeights[9];vec2 fetchesUV[9];sampleShadowComputeSamplesTent5x5(shadowmapSize,shadowCoord.xy,fetchesWeights,fetchesUV);attenuation=fetchesWeights[0]*SAMPLE_TEXTURE2D_SHADOW(u_SpotShadowMap,vec3(fetchesUV[0].xy,shadowCoord.z));attenuation+=fetchesWeights[1]*SAMPLE_TEXTURE2D_SHADOW(u_SpotShadowMap,vec3(fetchesUV[1].xy,shadowCoord.z));attenuation+=fetchesWeights[2]*SAMPLE_TEXTURE2D_SHADOW(u_SpotShadowMap,vec3(fetchesUV[2].xy,shadowCoord.z));attenuation+=fetchesWeights[3]*SAMPLE_TEXTURE2D_SHADOW(u_SpotShadowMap,vec3(fetchesUV[3].xy,shadowCoord.z));attenuation+=fetchesWeights[4]*SAMPLE_TEXTURE2D_SHADOW(u_SpotShadowMap,vec3(fetchesUV[4].xy,shadowCoord.z));attenuation+=fetchesWeights[5]*SAMPLE_TEXTURE2D_SHADOW(u_SpotShadowMap,vec3(fetchesUV[5].xy,shadowCoord.z));attenuation+=fetchesWeights[6]*SAMPLE_TEXTURE2D_SHADOW(u_SpotShadowMap,vec3(fetchesUV[6].xy,shadowCoord.z));attenuation+=fetchesWeights[7]*SAMPLE_TEXTURE2D_SHADOW(u_SpotShadowMap,vec3(fetchesUV[7].xy,shadowCoord.z));attenuation+=fetchesWeights[8]*SAMPLE_TEXTURE2D_SHADOW(u_SpotShadowMap,vec3(fetchesUV[8].xy,shadowCoord.z));return attenuation;}\n#endif\n#endif\n#if defined(CALCULATE_SHADOWS)\n#ifdef SHADOW_CASCADE\nmediump int computeCascadeIndex(in vec3 positionWS){vec3 fromCenter0=positionWS-u_ShadowSplitSpheres[0].xyz;vec3 fromCenter1=positionWS-u_ShadowSplitSpheres[1].xyz;vec3 fromCenter2=positionWS-u_ShadowSplitSpheres[2].xyz;vec3 fromCenter3=positionWS-u_ShadowSplitSpheres[3].xyz;mediump vec4 comparison=vec4(dot(fromCenter0,fromCenter0)<u_ShadowSplitSpheres[0].w,dot(fromCenter1,fromCenter1)<u_ShadowSplitSpheres[1].w,dot(fromCenter2,fromCenter2)<u_ShadowSplitSpheres[2].w,dot(fromCenter3,fromCenter3)<u_ShadowSplitSpheres[3].w);comparison.yzw=clamp(comparison.yzw-comparison.xyz,0.0,1.0);mediump vec4 indexCoefficient=vec4(4.0,3.0,2.0,1.0);mediump int index=4-int(dot(comparison,indexCoefficient));return index;}\n#endif\nvec4 getShadowCoord(in vec3 positionWS){\n#ifdef SHADOW_CASCADE\nmediump int cascadeIndex=computeCascadeIndex(positionWS);\n#ifdef GRAPHICS_API_GLES3\nmat4 shadowMat=u_ShadowMatrices[cascadeIndex];\n#else\nmat4 shadowMat;if(cascadeIndex==0){shadowMat=u_ShadowMatrices[0];}else if(cascadeIndex==1){shadowMat=u_ShadowMatrices[1];}else if(cascadeIndex==2){shadowMat=u_ShadowMatrices[2];}else{shadowMat=u_ShadowMatrices[3];}\n#endif\nreturn shadowMat*vec4(positionWS,1.0);\n#else\nreturn u_ShadowMatrices[0]*vec4(positionWS,1.0);\n#endif\n}float sampleShadowmap(in vec4 shadowCoord){float attenuation=1.0;vec3 coord=shadowCoord.xyz/shadowCoord.w;vec4 shadowmapSize=u_ShadowMapSize;{\n#if defined(SHADOW_SOFT_SHADOW_HIGH)\nattenuation=sampleShdowMapFiltered9(coord,shadowmapSize);\n#elif defined(SHADOW_SOFT_SHADOW_LOW)\nattenuation=sampleShdowMapFiltered4(coord,shadowmapSize);\n#else\nattenuation=SAMPLE_TEXTURE2D_SHADOW(u_ShadowMap,coord);\n#endif\nattenuation=mix(1.0,attenuation,ShadowStrength);}if(coord.z>0.0&&coord.z<1.0)return attenuation;return 1.0;}\n#endif\n#if defined(CALCULATE_SPOTSHADOWS)\nvec4 getSpotShadowCoord(in vec3 positionWS){vec4 coordinate=u_SpotViewProjectMatrix*vec4(positionWS,1.0);return coordinate;}float sampleSpotShadowmap(vec4 shadowCoord){float attenuation=1.0;vec3 coord=shadowCoord.xyz/shadowCoord.w;coord.xy=coord.xy*0.5+0.5;vec4 shadowmapSize=u_SpotShadowMapSize;\n#if defined(SHADOW_SPOT_SOFT_SHADOW_HIGH)\nattenuation=sampleSpotShdowMapFiltered9(coord,shadowmapSize);\n#elif defined(SHADOW_SPOT_SOFT_SHADOW_LOW)\nattenuation=sampleSpotShdowMapFiltered4(coord,shadowmapSize);\n#else\nattenuation=SAMPLE_TEXTURE2D_SHADOW(u_SpotShadowMap,coord);\n#endif\nattenuation=mix(1.0,attenuation,SpotShadowStrength);if(coord.z>0.0&&coord.z<1.0)return attenuation;return 1.0;}\n#endif\n#endif\n";
+    var ShadowSamplerGLSL = "\n#if !defined(ShadowSampler_lib)\n#define ShadowSampler_lib\n#ifdef RECEIVESHADOW\n#include \"ShadowSampleTent.glsl\";\n#include \"ShadowCommon.glsl\"\n#define ShadowStrength u_ShadowParams.x\n#define SpotShadowStrength u_ShadowParams.y\n#ifdef SHADOW\n#define CALCULATE_SHADOWS\nvarying vec4 v_ShadowCoord;float sampleShdowMapFiltered4(vec3 shadowCoord,vec4 shadowMapSize){float attenuation;vec4 attenuation4;vec2 offset=shadowMapSize.xy/2.0;vec3 shadowCoord0=shadowCoord+vec3(-offset,0.0);vec3 shadowCoord1=shadowCoord+vec3(offset.x,-offset.y,0.0);vec3 shadowCoord2=shadowCoord+vec3(-offset.x,offset.y,0.0);vec3 shadowCoord3=shadowCoord+vec3(offset,0.0);attenuation4.x=SAMPLE_TEXTURE2D_SHADOW(u_ShadowMap,shadowCoord0);attenuation4.y=SAMPLE_TEXTURE2D_SHADOW(u_ShadowMap,shadowCoord1);attenuation4.z=SAMPLE_TEXTURE2D_SHADOW(u_ShadowMap,shadowCoord2);attenuation4.w=SAMPLE_TEXTURE2D_SHADOW(u_ShadowMap,shadowCoord3);attenuation=dot(attenuation4,vec4(0.25));return attenuation;}float sampleShdowMapFiltered9(vec3 shadowCoord,vec4 shadowmapSize){float attenuation;float fetchesWeights[9];vec2 fetchesUV[9];sampleShadowComputeSamplesTent5x5(shadowmapSize,shadowCoord.xy,fetchesWeights,fetchesUV);attenuation=fetchesWeights[0]*SAMPLE_TEXTURE2D_SHADOW(u_ShadowMap,vec3(fetchesUV[0].xy,shadowCoord.z));attenuation+=fetchesWeights[1]*SAMPLE_TEXTURE2D_SHADOW(u_ShadowMap,vec3(fetchesUV[1].xy,shadowCoord.z));attenuation+=fetchesWeights[2]*SAMPLE_TEXTURE2D_SHADOW(u_ShadowMap,vec3(fetchesUV[2].xy,shadowCoord.z));attenuation+=fetchesWeights[3]*SAMPLE_TEXTURE2D_SHADOW(u_ShadowMap,vec3(fetchesUV[3].xy,shadowCoord.z));attenuation+=fetchesWeights[4]*SAMPLE_TEXTURE2D_SHADOW(u_ShadowMap,vec3(fetchesUV[4].xy,shadowCoord.z));attenuation+=fetchesWeights[5]*SAMPLE_TEXTURE2D_SHADOW(u_ShadowMap,vec3(fetchesUV[5].xy,shadowCoord.z));attenuation+=fetchesWeights[6]*SAMPLE_TEXTURE2D_SHADOW(u_ShadowMap,vec3(fetchesUV[6].xy,shadowCoord.z));attenuation+=fetchesWeights[7]*SAMPLE_TEXTURE2D_SHADOW(u_ShadowMap,vec3(fetchesUV[7].xy,shadowCoord.z));attenuation+=fetchesWeights[8]*SAMPLE_TEXTURE2D_SHADOW(u_ShadowMap,vec3(fetchesUV[8].xy,shadowCoord.z));return attenuation;}\n#endif\n#ifdef SHADOW_SPOT\n#define CALCULATE_SPOTSHADOWS\nvarying vec4 v_SpotShadowCoord;float sampleSpotShdowMapFiltered4(vec3 shadowCoord,vec4 shadowMapSize){float attenuation;vec4 attenuation4;vec2 offset=shadowMapSize.xy/2.0;vec3 shadowCoord0=shadowCoord+vec3(-offset,0.0);vec3 shadowCoord1=shadowCoord+vec3(offset.x,-offset.y,0.0);vec3 shadowCoord2=shadowCoord+vec3(-offset.x,offset.y,0.0);vec3 shadowCoord3=shadowCoord+vec3(offset,0.0);attenuation4.x=SAMPLE_TEXTURE2D_SHADOW(u_SpotShadowMap,shadowCoord0);attenuation4.y=SAMPLE_TEXTURE2D_SHADOW(u_SpotShadowMap,shadowCoord1);attenuation4.z=SAMPLE_TEXTURE2D_SHADOW(u_SpotShadowMap,shadowCoord2);attenuation4.w=SAMPLE_TEXTURE2D_SHADOW(u_SpotShadowMap,shadowCoord3);attenuation=dot(attenuation4,vec4(0.25));return attenuation;}float sampleSpotShdowMapFiltered9(vec3 shadowCoord,vec4 shadowmapSize){float attenuation;float fetchesWeights[9];vec2 fetchesUV[9];sampleShadowComputeSamplesTent5x5(shadowmapSize,shadowCoord.xy,fetchesWeights,fetchesUV);attenuation=fetchesWeights[0]*SAMPLE_TEXTURE2D_SHADOW(u_SpotShadowMap,vec3(fetchesUV[0].xy,shadowCoord.z));attenuation+=fetchesWeights[1]*SAMPLE_TEXTURE2D_SHADOW(u_SpotShadowMap,vec3(fetchesUV[1].xy,shadowCoord.z));attenuation+=fetchesWeights[2]*SAMPLE_TEXTURE2D_SHADOW(u_SpotShadowMap,vec3(fetchesUV[2].xy,shadowCoord.z));attenuation+=fetchesWeights[3]*SAMPLE_TEXTURE2D_SHADOW(u_SpotShadowMap,vec3(fetchesUV[3].xy,shadowCoord.z));attenuation+=fetchesWeights[4]*SAMPLE_TEXTURE2D_SHADOW(u_SpotShadowMap,vec3(fetchesUV[4].xy,shadowCoord.z));attenuation+=fetchesWeights[5]*SAMPLE_TEXTURE2D_SHADOW(u_SpotShadowMap,vec3(fetchesUV[5].xy,shadowCoord.z));attenuation+=fetchesWeights[6]*SAMPLE_TEXTURE2D_SHADOW(u_SpotShadowMap,vec3(fetchesUV[6].xy,shadowCoord.z));attenuation+=fetchesWeights[7]*SAMPLE_TEXTURE2D_SHADOW(u_SpotShadowMap,vec3(fetchesUV[7].xy,shadowCoord.z));attenuation+=fetchesWeights[8]*SAMPLE_TEXTURE2D_SHADOW(u_SpotShadowMap,vec3(fetchesUV[8].xy,shadowCoord.z));return attenuation;}\n#endif\n#endif\n#if defined(CALCULATE_SHADOWS)\n#ifdef SHADOW_CASCADE\nmediump int computeCascadeIndex(in vec3 positionWS){vec3 fromCenter0=positionWS-u_ShadowSplitSpheres[0].xyz;vec3 fromCenter1=positionWS-u_ShadowSplitSpheres[1].xyz;vec3 fromCenter2=positionWS-u_ShadowSplitSpheres[2].xyz;vec3 fromCenter3=positionWS-u_ShadowSplitSpheres[3].xyz;mediump vec4 comparison=vec4(dot(fromCenter0,fromCenter0)<u_ShadowSplitSpheres[0].w,dot(fromCenter1,fromCenter1)<u_ShadowSplitSpheres[1].w,dot(fromCenter2,fromCenter2)<u_ShadowSplitSpheres[2].w,dot(fromCenter3,fromCenter3)<u_ShadowSplitSpheres[3].w);comparison.yzw=clamp(comparison.yzw-comparison.xyz,0.0,1.0);mediump vec4 indexCoefficient=vec4(4.0,3.0,2.0,1.0);mediump int index=4-int(dot(comparison,indexCoefficient));return int(clamp(float(index),0.0,3.0));}\n#endif\nvec4 getShadowCoord(in vec3 positionWS){\n#ifdef SHADOW_CASCADE\nmediump int cascadeIndex=computeCascadeIndex(positionWS);\n#ifdef GRAPHICS_API_GLES3\nmat4 shadowMat=u_ShadowMatrices[cascadeIndex];\n#else\nmat4 shadowMat;if(cascadeIndex==0){shadowMat=u_ShadowMatrices[0];}else if(cascadeIndex==1){shadowMat=u_ShadowMatrices[1];}else if(cascadeIndex==2){shadowMat=u_ShadowMatrices[2];}else{shadowMat=u_ShadowMatrices[3];}\n#endif\nreturn shadowMat*vec4(positionWS,1.0);\n#else\nreturn u_ShadowMatrices[0]*vec4(positionWS,1.0);\n#endif\n}float sampleShadowmap(in vec4 shadowCoord){float attenuation=1.0;vec3 coord=shadowCoord.xyz/shadowCoord.w;if(coord.z<=0.0||coord.z>=1.0){return 1.0;}vec4 shadowmapSize=u_ShadowMapSize;{\n#if defined(SHADOW_SOFT_SHADOW_HIGH)\nattenuation=sampleShdowMapFiltered9(coord,shadowmapSize);\n#elif defined(SHADOW_SOFT_SHADOW_LOW)\nattenuation=sampleShdowMapFiltered4(coord,shadowmapSize);\n#else\nattenuation=SAMPLE_TEXTURE2D_SHADOW(u_ShadowMap,coord);\n#endif\nattenuation=mix(1.0,attenuation,ShadowStrength);}return attenuation;}\n#endif\n#if defined(CALCULATE_SPOTSHADOWS)\nvec4 getSpotShadowCoord(in vec3 positionWS){vec4 coordinate=u_SpotViewProjectMatrix*vec4(positionWS,1.0);return coordinate;}float sampleSpotShadowmap(vec4 shadowCoord){float attenuation=1.0;vec3 coord=shadowCoord.xyz/shadowCoord.w;coord.xy=coord.xy*0.5+0.5;vec4 shadowmapSize=u_SpotShadowMapSize;\n#if defined(SHADOW_SPOT_SOFT_SHADOW_HIGH)\nattenuation=sampleSpotShdowMapFiltered9(coord,shadowmapSize);\n#elif defined(SHADOW_SPOT_SOFT_SHADOW_LOW)\nattenuation=sampleSpotShdowMapFiltered4(coord,shadowmapSize);\n#else\nattenuation=SAMPLE_TEXTURE2D_SHADOW(u_SpotShadowMap,coord);\n#endif\nattenuation=mix(1.0,attenuation,SpotShadowStrength);if(coord.z>0.0&&coord.z<1.0)return attenuation;return 1.0;}\n#endif\n#endif\n";
 
     var SceneFogGLSL = "#if !defined(SceneFog_lib)\n#define SceneFog_lib\n#ifdef FOG\nvarying float v_fogFactor;float getFogFactor(){return v_fogFactor;}vec3 scenUnlitFog(in vec3 color){float lerpFact=getFogFactor();\n#ifdef ADDTIVEFOG\nlerpFact=clamp(lerpFact,0.0,1.0);return mix(vec3(0.0),color,lerpFact);\n#else\nlerpFact=clamp(lerpFact,0.0,1.0);return mix(u_FogColor.rgb,color,lerpFact);\n#endif\n}vec3 sceneLitFog(in vec3 color){float lerpFact=getFogFactor();lerpFact=clamp(lerpFact,0.0,1.0);return mix(u_FogColor.rgb,color,lerpFact);}\n#endif\n#endif\n";
 
@@ -11650,6 +11711,9 @@
                 this._simpleAnimatorParams.x = this._simpleAnimatorOffset.x;
                 this._simpleAnimatorParams.y = Math.round(this._simpleAnimatorOffset.y) * this._bonesNums * 4;
                 this._ownerSimpleRenderNode.setSimpleAnimatorParams(this._simpleAnimatorParams);
+                if (this._batchRender) {
+                    this._batchRender.updateProperty(this, exports.propertyChangeFlag.SimpleSkineParam);
+                }
             }
         }
         setCustomData(value1, value2 = 0) {
@@ -11935,17 +11999,15 @@
                 this._ColorGradEffect._buildLUT();
             }
             let runIndex = 0;
-            let hasActiveEffects = false;
             for (let i = 0, n = this._effects.length; i < n; i++) {
                 if (this._effects[i].active) {
                     this._effects[i].render(context);
-                    hasActiveEffects = true;
                     context.indirectTarget = context.destination;
                     runIndex++;
                     context.destination = Indirect[runIndex % 2];
                 }
             }
-            if (hasActiveEffects) {
+            if (context.indirectTarget !== cameraTarget) {
                 context.command.blitScreenTriangle(context.indirectTarget, cameraTarget);
             }
             this._compositeShaderData.addDefine(PostProcess.SHADERDEFINE_FINALPASS);
@@ -12199,6 +12261,14 @@
         EJointCapable[EJointCapable["Joint_Anchor"] = 0] = "Joint_Anchor";
         EJointCapable[EJointCapable["Joint_ConnectAnchor"] = 1] = "Joint_ConnectAnchor";
     })(exports.EJointCapable || (exports.EJointCapable = {}));
+
+    exports.BatchCullMode = void 0;
+    (function (BatchCullMode) {
+        BatchCullMode[BatchCullMode["None"] = 0] = "None";
+        BatchCullMode[BatchCullMode["Camera"] = 1] = "Camera";
+        BatchCullMode[BatchCullMode["DirectLight"] = 2] = "DirectLight";
+        BatchCullMode[BatchCullMode["Spot"] = 3] = "Spot";
+    })(exports.BatchCullMode || (exports.BatchCullMode = {}));
 
     class DrawNodeCMDData {
         get node() {
@@ -12750,6 +12820,7 @@
         KeyFrameValueType[KeyFrameValueType["Vector4"] = 7] = "Vector4";
         KeyFrameValueType[KeyFrameValueType["Color"] = 8] = "Color";
         KeyFrameValueType[KeyFrameValueType["Boolean"] = 9] = "Boolean";
+        KeyFrameValueType[KeyFrameValueType["PathPoint"] = 10] = "PathPoint";
     })(exports.KeyFrameValueType || (exports.KeyFrameValueType = {}));
     class KeyframeNodeOwner {
         constructor() {
@@ -12853,6 +12924,26 @@
             AnimationClipParser04._version = null;
             AnimationClipParser04._reader = null;
             AnimationClipParser04._animationClip = null;
+        }
+        static createPathPoints(arr) {
+            const result = [];
+            for (var i = 0, len = arr.length; i < len; i++) {
+                const data = arr[i];
+                const point = new Laya.PathPoint();
+                point.pos.x = data.pos.x;
+                point.pos.y = data.pos.y;
+                point.pos.z = data.pos.z;
+                point.c1.x = data.c1.x;
+                point.c1.y = data.c1.y;
+                point.c1.z = data.c1.z;
+                point.c2.x = data.c2.x;
+                point.c2.y = data.c2.y;
+                point.c2.z = data.c2.z;
+                point.curve = data.curve;
+                point.rotationType = data.rotationType;
+                result.push(point);
+            }
+            return result;
         }
         static READ_ANIMATIONS() {
             var i, j;
@@ -13011,6 +13102,16 @@
                         for (j = 0; j < keyframeCount; j++) {
                             let isWeight = 1;
                             switch (type) {
+                                case exports.KeyFrameValueType.PathPoint:
+                                    const pathPointKeyframe = new Laya.PathPointKeyframe();
+                                    node._setKeyframeByIndex(j, pathPointKeyframe);
+                                    pathPointKeyframe.time = startTimeTypes[reader.readUint16()];
+                                    const jsonData = JSON.parse(reader.readUTFString());
+                                    const curvePath = new Laya.CurvePath();
+                                    pathPointKeyframe.value = curvePath;
+                                    curvePath._$data = jsonData;
+                                    curvePath.create(...AnimationClipParser04.createPathPoints(jsonData));
+                                    break;
                                 case exports.KeyFrameValueType.Boolean:
                                     let booleanKeyframe = new Laya.BooleanKeyframe();
                                     node._setKeyframeByIndex(j, booleanKeyframe);
@@ -13655,6 +13756,26 @@
                 }
                 var isEnd = nextFrameIndex === keyFramesCount;
                 switch (type) {
+                    case exports.KeyFrameValueType.PathPoint:
+                        var frame = keyFrames[frameIndex];
+                        let frameVal = keyFrames[0].value;
+                        if (frameIndex !== -1) {
+                            frameVal = keyFrames[frameIndex].value;
+                        }
+                        if (isEnd) {
+                            outDatas[i] = { pos: frameVal.getPointAt(1), rotation: frameVal.getRotationAt(1) };
+                        }
+                        else {
+                            var nextFarme = keyFrames[nextFrameIndex];
+                            var d = nextFarme.time - frame.time;
+                            var t;
+                            if (d !== 0)
+                                t = (playCurTime - frame.time) / d;
+                            else
+                                t = 0;
+                            outDatas[i] = { pos: frameVal.getPointAt(t), rotation: frameVal.getRotationAt(t) };
+                        }
+                        break;
                     case exports.KeyFrameValueType.Boolean:
                         if (frameIndex !== -1) {
                             outDatas[i] = keyFrames[frameIndex].value;
@@ -14509,7 +14630,6 @@
             value.cloneTo(this.direction);
             this._dataModule.setDirection(this._direction);
         }
-        ;
         get shadowCascadesMode() {
             return this._dataModule.shadowCascadesMode;
         }
@@ -14696,7 +14816,7 @@
         }
     }
 
-    const tempVec$3 = new Laya.Vector3();
+    const tempVec$2 = new Laya.Vector3();
     class LODInfo {
         constructor(mincullRate) {
             this._mincullRate = mincullRate;
@@ -14709,6 +14829,20 @@
         set mincullRate(value) {
             this._mincullRate = value;
         }
+        set maxVisibalDistance(value) {
+            for (var i = 0; i < this._renders.length; i++) {
+                let render = this._renders[i];
+                render._baseRenderNode.visibalMax = value;
+                render._batchRender && render._batchRender.updateProperty(render, exports.propertyChangeFlag.VisibalRange);
+            }
+        }
+        set minVisibalDistance(value) {
+            for (var i = 0; i < this._renders.length; i++) {
+                let render = this._renders[i];
+                render._baseRenderNode.visibalMin = value;
+                render._batchRender && render._batchRender.updateProperty(render, exports.propertyChangeFlag.VisibalRange);
+            }
+        }
         set group(value) {
             if (value == this._group)
                 return;
@@ -14716,14 +14850,12 @@
                 for (let i = 0, n = this._renders.length; i < n; i++) {
                     let element = this._renders[i];
                     element.owner.transform.off(Laya.Event.TRANSFORM_CHANGED, this._group._updateRecaculateFlag);
-                    element._LOD = -1;
                 }
             }
             this._group = value;
             for (let i = 0, n = this._renders.length; i < n; i++) {
                 let element = this._renders[i];
                 element.owner.transform.on(Laya.Event.TRANSFORM_CHANGED, this._group, this._group._updateRecaculateFlag);
-                element._LOD = this._lodIndex;
             }
         }
         get renders() {
@@ -14742,8 +14874,10 @@
             if (ren._isRenderNode > 0) {
                 let components = ren.components;
                 for (let comp of components) {
-                    if ((comp instanceof BaseRender) && this._renders.indexOf(comp) == -1)
+                    if ((comp instanceof BaseRender) && this._renders.indexOf(comp) == -1) {
                         this._renders.push(comp);
+                        comp._baseRenderNode.visibalRangeBit = exports.VisibalRangeFlag.LOD;
+                    }
                 }
                 this._group && node.transform.on(Laya.Event.TRANSFORM_CHANGED, this._group, this._group._updateRecaculateFlag);
             }
@@ -14759,7 +14893,7 @@
                 for (let comp of components) {
                     if ((comp instanceof BaseRender) && (index = this._renders.indexOf(comp)) == -1) {
                         this._renders.splice(index, 1);
-                        comp.setRenderbitFlag(exports.RenderBitFlag.RenderBitFlag_CullFlag, false);
+                        comp._baseRenderNode.visibalRangeBit = exports.VisibalRangeFlag.None;
                         this._group && node.transform.off(Laya.Event.TRANSFORM_CHANGED, this._group._updateRecaculateFlag);
                     }
                 }
@@ -14770,7 +14904,7 @@
         }
         removeAllRender() {
             this._renders.forEach(element => {
-                element.setRenderbitFlag(exports.RenderBitFlag.RenderBitFlag_CullFlag, false);
+                element._baseRenderNode.visibalRangeBit = exports.VisibalRangeFlag.None;
             });
         }
     }
@@ -14780,6 +14914,7 @@
             this._needcaculateBounds = false;
             this._lods = [];
             this._visialIndex = -1;
+            this._needChangeLODVisibal = false;
             this._bounds = new Bounds();
             this._lodPosition = new Laya.Vector3();
             this.runInEditor = true;
@@ -14801,6 +14936,7 @@
                 element.group = this;
             }
             this._updateRecaculateFlag();
+            this._notifyChangeLODVisibal();
             this._lodCount = this._lods.length;
         }
         get nowRate() {
@@ -14812,53 +14948,13 @@
         }
         _onEnable() {
             super._onEnable();
-            for (var i = 0, n = this._lods.length; i < n; i++) {
-                this._setLODinvisible(i);
-            }
-            this._visialIndex = -1;
-            this._applyVisibleRate(1);
+            this._notifyChangeLODVisibal();
         }
         _onDisable() {
             super._onDisable();
             this._lods.forEach(element => {
                 element.removeAllRender();
             });
-        }
-        _applyVisibleRate(rate) {
-            for (var i = 0; i < this._lodCount; i++) {
-                let lod = this._lods[i];
-                if (rate > lod.mincullRate) {
-                    if (i == -1) {
-                        this._setLODvisible(i);
-                        this._visialIndex = i;
-                        return;
-                    }
-                    if (i == this._visialIndex)
-                        return;
-                    else {
-                        (this._visialIndex != -1) && this._setLODinvisible(this._visialIndex);
-                        this._setLODvisible(i);
-                        this._visialIndex = i;
-                        return;
-                    }
-                }
-            }
-            if (this._visialIndex != -1) {
-                this._setLODinvisible(this._visialIndex);
-                this._visialIndex = -1;
-            }
-        }
-        _setLODvisible(index) {
-            let lod = this._lods[index];
-            for (var i = 0, n = lod._renders.length; i < n; i++) {
-                lod._renders[i].setRenderbitFlag(exports.RenderBitFlag.RenderBitFlag_CullFlag, false);
-            }
-        }
-        _setLODinvisible(index) {
-            let lod = this._lods[index];
-            for (var i = 0, n = lod._renders.length; i < n; i++) {
-                lod._renders[i].setRenderbitFlag(exports.RenderBitFlag.RenderBitFlag_CullFlag, true);
-            }
         }
         onDestroy() {
             this._lods.forEach(element => {
@@ -14933,21 +15029,52 @@
             let extend = this._bounds.getExtent();
             this._size = 2 * Math.max(extend.x, extend.y, extend.z);
             this._needcaculateBounds = false;
+            this._notifyChangeLODVisibal();
+        }
+        _notifyChangeLODVisibal() {
+            this._needChangeLODVisibal = true;
+        }
+        _changeLODVisibal() {
+            let cullCameraInfo = this.owner.scene.cullInfoCamera;
+            let cameraFarLength = cullCameraInfo.farPlane;
+            let maxYDistance = cullCameraInfo.maxlocalYDistance;
+            cullCameraInfo.boundFrustum;
+            let preLODLength;
+            for (var i = 0; i < this._lods.length; i++) {
+                let lod = this._lods[i];
+                if (i == 0) {
+                    lod.minVisibalDistance = 0;
+                }
+                else {
+                    lod.minVisibalDistance = preLODLength;
+                }
+                preLODLength = (this._size / lod.mincullRate) / maxYDistance * cameraFarLength;
+                preLODLength *= preLODLength;
+                lod.maxVisibalDistance = preLODLength;
+                if (i == this.lods.length - 1) {
+                    lod.maxVisibalDistance = cameraFarLength * cameraFarLength;
+                }
+            }
         }
         onPreRender() {
             this.recalculateBounds();
-            let checkCamera = this.owner.scene.cullInfoCamera;
-            let maxYDistance = checkCamera.maxlocalYDistance;
-            let cameraFrustum = checkCamera.boundFrustum;
-            Laya.Vector3.subtract(this._lodPosition, checkCamera.transform.position, tempVec$3);
-            let length = tempVec$3.length();
-            if (length > checkCamera.farPlane || cameraFrustum.containsPoint(this._lodPosition) == 0) {
-                return;
+            if (this._needChangeLODVisibal) {
+                this._needChangeLODVisibal = false;
+                this._changeLODVisibal();
             }
-            let rateYDistance = length / checkCamera.farPlane * maxYDistance;
-            let rate = (this._size / rateYDistance);
-            this._nowRate = rate;
-            this._applyVisibleRate(rate);
+            if (Laya.LayaEnv.isEditor) {
+                let checkCamera = this.owner.scene.cullInfoCamera;
+                let maxYDistance = checkCamera.maxlocalYDistance;
+                let cameraFrustum = checkCamera.boundFrustum;
+                Laya.Vector3.subtract(this._lodPosition, checkCamera.transform.position, tempVec$2);
+                let length = tempVec$2.length();
+                if (length > checkCamera.farPlane || cameraFrustum.containsPoint(this._lodPosition) == 0) {
+                    return;
+                }
+                let rateYDistance = length / checkCamera.farPlane * maxYDistance;
+                let rate = (this._size / rateYDistance);
+                this._nowRate = rate;
+            }
         }
     }
 
@@ -15262,7 +15389,7 @@
                 var _a, _b;
                 element._renderElementOBJ.isRender = element._geometry._prepareRender(context);
                 element._geometry._updateRenderParams(context);
-                let material = (_a = this.sharedMaterial) !== null && _a !== void 0 ? _a : UnlitMaterial.defaultMaterial;
+                let material = (_a = this.sharedMaterial) !== null && _a !== void 0 ? _a : PixelLineMaterial.defaultMaterial;
                 material = (_b = this.sharedMaterials[index]) !== null && _b !== void 0 ? _b : material;
                 element.material = material;
                 element._renderElementOBJ.materialRenderQueue = material.renderQueue;
@@ -15750,7 +15877,7 @@
                 keyframeNodeOwner.property = propertys;
                 keyframeNodeOwner.type = node.type;
                 if (property) {
-                    if (node.type === exports.KeyFrameValueType.Float || node.type === exports.KeyFrameValueType.Boolean) {
+                    if (node.type === exports.KeyFrameValueType.Float || node.type === exports.KeyFrameValueType.Boolean || node.type === exports.KeyFrameValueType.PathPoint) {
                         keyframeNodeOwner.defaultValue = property;
                     }
                     else {
@@ -15831,6 +15958,7 @@
                     let loopNum = Math.floor(elapsedPlaybackTime / clipDuration);
                     let pLoopNum = Math.floor(lastElapsedTime / clipDuration);
                     if (pLoopNum != loopNum) {
+                        this._updateDefaultValues();
                         animatorState._eventLoop();
                     }
                 }
@@ -16241,6 +16369,9 @@
             let lastpro;
             if (pro) {
                 switch (nodeOwner.type) {
+                    case exports.KeyFrameValueType.PathPoint:
+                        console.log("Animator:PathPoint not support3");
+                        break;
                     case exports.KeyFrameValueType.Boolean:
                         console.log("Animator:Boolean not support3");
                         break;
@@ -16415,6 +16546,23 @@
                     let value;
                     if (pro) {
                         switch (nodeOwner.type) {
+                            case exports.KeyFrameValueType.PathPoint:
+                                const realData = realtimeDatas[i];
+                                const pos = realData.pos;
+                                const rotation = realData.rotation;
+                                if (rotation) {
+                                    const ro = pro.transform.localRotationEuler;
+                                    ro.x = rotation.x;
+                                    ro.y = rotation.y;
+                                    ro.z = rotation.z;
+                                    pro.transform.localRotationEuler = ro;
+                                }
+                                const position = pro.transform.position;
+                                position.x = pos.x;
+                                position.y = pos.y;
+                                position.z = pos.z;
+                                pro.transform.position = position;
+                                break;
                             case exports.KeyFrameValueType.Boolean:
                                 var proPat = nodeOwner.property;
                                 var m = proPat.length - 1;
@@ -16621,6 +16769,9 @@
                     let value;
                     if (pro) {
                         switch (nodeOwner.type) {
+                            case exports.KeyFrameValueType.PathPoint:
+                                console.log("Animator:PathPoint not support2");
+                                break;
                             case exports.KeyFrameValueType.Boolean:
                                 console.log("Animator:Boolean not support2");
                                 break;
@@ -16829,7 +16980,7 @@
             }
         }
         onUpdate() {
-            let t = performance.now();
+            performance.now();
             let timer = this.owner._scene.timer;
             let delta = timer.delta / 1000.0;
             delta = this._applyUpdateMode(delta);
@@ -16855,7 +17006,12 @@
                         animatorState._clip;
                         var speed = this._speed * animatorState.speed;
                         var finish = playStateInfo._finish;
-                        finish || this._updatePlayer(animatorState, playStateInfo, delta * speed, animatorState.islooping, i);
+                        if (finish) {
+                            this._applyTransition(animatorState, i, animatorState._eventtransition(playStateInfo._normalizedPlayTime, this.animatorParams));
+                        }
+                        else {
+                            this._updatePlayer(animatorState, playStateInfo, delta * speed, animatorState.islooping, i);
+                        }
                         {
                             var addtive = controllerLayer.blendingMode !== AnimatorControllerLayer.BLENDINGMODE_OVERRIDE;
                             this._updateClipDatas(animatorState, addtive, playStateInfo, controllerLayer.avatarMask);
@@ -16937,7 +17093,6 @@
             }
             this._LateUpdateEvents.invoke();
             this._LateUpdateEvents.clear();
-            Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_AnimatorUpdate, performance.now() - t);
         }
         _cloneTo(dest) {
             dest.cullingMode = this.cullingMode;
@@ -16953,6 +17108,70 @@
                 }
             }
             dest.controller = this._controller;
+        }
+        _updateDefaultValues() {
+            for (let i = 0, n = this._keyframeNodeOwners.length; i < n; i++) {
+                let nodeOwner = this._keyframeNodeOwners[i];
+                if (!nodeOwner || !nodeOwner.propertyOwner || !nodeOwner.property)
+                    continue;
+                let pro = nodeOwner.propertyOwner;
+                switch (nodeOwner.type) {
+                    case exports.KeyFrameValueType.Float:
+                    case exports.KeyFrameValueType.Boolean:
+                        var proPat = nodeOwner.property;
+                        var m = proPat.length - 1;
+                        for (var j = 0; j < m; j++) {
+                            pro = pro[proPat[j]];
+                            if (!pro)
+                                break;
+                        }
+                        if (pro && !nodeOwner.isMaterial) {
+                            nodeOwner.defaultValue = pro[proPat[m]];
+                        }
+                        break;
+                    case exports.KeyFrameValueType.Position:
+                        if (pro.localPosition && nodeOwner.defaultValue) {
+                            pro.localPosition.cloneTo(nodeOwner.defaultValue);
+                        }
+                        break;
+                    case exports.KeyFrameValueType.Rotation:
+                        if (pro.localRotation && nodeOwner.defaultValue) {
+                            pro.localRotation.cloneTo(nodeOwner.defaultValue);
+                        }
+                        break;
+                    case exports.KeyFrameValueType.Scale:
+                        if (pro.localScale && nodeOwner.defaultValue) {
+                            pro.localScale.cloneTo(nodeOwner.defaultValue);
+                        }
+                        break;
+                    case exports.KeyFrameValueType.RotationEuler:
+                        if (pro.localRotationEuler && nodeOwner.defaultValue) {
+                            pro.localRotationEuler.cloneTo(nodeOwner.defaultValue);
+                        }
+                        break;
+                    case exports.KeyFrameValueType.Vector2:
+                    case exports.KeyFrameValueType.Vector3:
+                    case exports.KeyFrameValueType.Vector4:
+                    case exports.KeyFrameValueType.Color:
+                        proPat = nodeOwner.property;
+                        m = proPat.length - 1;
+                        for (j = 0; j < m; j++) {
+                            pro = pro[proPat[j]];
+                            if (!pro)
+                                break;
+                        }
+                        if (pro && !nodeOwner.isMaterial && nodeOwner.defaultValue) {
+                            let value = pro[proPat[m]];
+                            if (value && value.cloneTo) {
+                                value.cloneTo(nodeOwner.defaultValue);
+                            }
+                        }
+                        break;
+                }
+            }
+        }
+        resetAdditiveBaseValues() {
+            this._updateDefaultValues();
         }
         getDefaultState(layerIndex = 0) {
             var controllerLayer = this._controllerLayers[layerIndex];
@@ -16991,6 +17210,7 @@
                 if (!animatorState || !animatorState._clip) {
                     throw new Error("Animator:must have clip value,please set clip property.");
                 }
+                this._updateDefaultValues();
                 var clipDuration = animatorState._clip._duration;
                 var calclipduration = animatorState._clip._duration * (animatorState.clipEnd - animatorState.clipStart);
                 if (curPlayState !== animatorState) {
@@ -17032,6 +17252,7 @@
                         this.play(name, layerIndex, normalizedTime);
                         return;
                     }
+                    this._updateDefaultValues();
                     var crossPlayStateInfo = controllerLayer._crossPlayStateInfo;
                     var crossNodeOwners = controllerLayer._crossNodesOwners;
                     var crossNodeOwnerIndicesMap = controllerLayer._crossNodesOwnersIndicesMap;
@@ -17212,6 +17433,8 @@
                             case exports.KeyFrameValueType.Vector4:
                             case exports.KeyFrameValueType.Color:
                                 realtimeDatas[i] = new Laya.Vector4();
+                                break;
+                            case exports.KeyFrameValueType.PathPoint:
                                 break;
                             default:
                                 throw new Error("AnimationClipParser04:unknown type.");
@@ -17863,565 +18086,6 @@
                     c = t;
                 }
                 ato.addCondition(c);
-            }
-        }
-    }
-
-    class BatchMark {
-        constructor() {
-            this.updateMark = -1;
-            this.indexInList = -1;
-            this.batched = false;
-            this._curBindElementIndex = 0;
-            this._cacheRenderElement = [];
-        }
-    }
-
-    class InstanceBatchManager {
-        constructor() {
-            this._instanceBatchOpaqueMarks = [];
-            this.updateCountMark = 0;
-        }
-        _getData(key, data, cls) {
-            if (null == cls) {
-                cls = Array;
-            }
-            if ("boolean" == typeof key) {
-                return (data[key ? 0 : 1]) || (data[key ? 0 : 1] = new cls());
-            }
-            else {
-                return data[key] || (data[key] = new cls());
-            }
-        }
-        getInstanceBatchOpaquaMark(element) {
-            let invertFrontFace = element._transform ? element._transform._isFrontFaceInvert : false;
-            let receiveShadow = element._baseRender._receiveShadow;
-            let matID_geometry = (element._material._id << 17) + (element._geometry._id << 2) + (Number(invertFrontFace) << 1) + Number(receiveShadow);
-            let reflectid = (element._baseRender._probReflection ? element._baseRender._probReflection._reflectionProbeID : -1) + 1;
-            let lightmapid = (element._baseRender.lightmapIndex) + 1;
-            let lightprobid = (element._baseRender._lightProb ? element._baseRender._lightProb._volumetricProbeID : -1) + 1;
-            let giID = (reflectid << 10) + (lightmapid << 20) + lightprobid;
-            var data = this._getData(matID_geometry, this._instanceBatchOpaqueMarks);
-            return this._getData(giID, data, BatchMark);
-        }
-    }
-    InstanceBatchManager.instance = new InstanceBatchManager();
-
-    class BatchRender extends BaseRender {
-        constructor() {
-            super();
-            this._lodInstanceRenderElement = {};
-            this._RenderBitFlag = exports.RenderBitFlag.RenderBitFlag_Batch;
-            this._renderElements = [];
-            this._lodInstanceRenderElement[-1] = [];
-            this._batchList = new Laya.SingletonList();
-        }
-        get checkLOD() {
-            return this._checkLOD;
-        }
-        set checkLOD(value) {
-            this._checkLOD = value;
-        }
-        get lodCullRateArray() {
-            return this._lodRateArray;
-        }
-        set lodCullRateArray(value) {
-            if (!this._checkLOD) {
-                return;
-            }
-            value.sort((a, b) => b - a);
-            this._lodRateArray = value;
-        }
-        _canBatch(render) {
-            if (render._batchRender) {
-                return false;
-            }
-            return false;
-        }
-        _onEnable() {
-            super._onEnable();
-            if (this._batchList) {
-                for (let i = 0, n = this._batchList.length; i < n; i++) {
-                    this._batchList.elements[i].setRenderbitFlag(this._RenderBitFlag, true);
-                }
-            }
-        }
-        _onDisable() {
-            super._onDisable();
-            if (this._batchList) {
-                for (let i = 0, n = this._batchList.length; i < n; i++) {
-                    this._batchList.elements[i].setRenderbitFlag(this._RenderBitFlag, false);
-                }
-            }
-        }
-        _changeLOD(lod) {
-            if (this._cacheLod == lod) {
-                return;
-            }
-            if (this._cacheLod == this.lodCullRateArray.length - 1) {
-                lod = -1;
-            }
-            this._renderElements = this._lodInstanceRenderElement[lod];
-            if (this._lodInstanceRenderElement[lod] && lod != -1) {
-                this._renderElements || (this._renderElements = []);
-                this._renderElements = this._renderElements.concat(this._lodInstanceRenderElement[-1]);
-            }
-            else {
-                this._renderElements = this._lodInstanceRenderElement[-1];
-            }
-        }
-        onPreRender() {
-            if (!this.checkLOD || !this._lodRateArray || this._lodRateArray.length < 1) {
-                this._changeLOD(0);
-            }
-            else {
-                let checkCamera = this.owner.scene.cullInfoCamera;
-                let maxYDistance = checkCamera.maxlocalYDistance;
-                Laya.Vector3.subtract(this._bounds._imp.getCenter(), checkCamera.transform.position, tempVec$2);
-                let length = tempVec$2.length();
-                let rateYDistance = length / checkCamera.farPlane * maxYDistance;
-                let rate = (this._lodsize / rateYDistance);
-                for (let i = 0; i < this._lodRateArray.length; i++) {
-                    if (rate < this._lodRateArray[i])
-                        continue;
-                    this._changeLOD(i);
-                    break;
-                }
-            }
-        }
-        _batchOneRender(render) {
-            return false;
-        }
-        _removeOneRender(render) {
-        }
-        _updateOneRender(render) {
-        }
-        addList(renderNode) {
-            for (var i = 0, n = renderNode.length; i < n; i++) {
-                let baseRender = renderNode[i];
-                if (this._canBatch(baseRender)) {
-                    this._batchList.add(baseRender);
-                }
-            }
-        }
-        reBatch() {
-            let renderNums = this._batchList.length;
-            let renders = this._batchList.elements;
-            for (var i = 0; i < renderNums; i++) {
-                let render = renders[i];
-                this._batchOneRender(render);
-            }
-        }
-        _restorRenderNode() {
-            for (let i = 0, n = this._batchList.length; i < n; i++) {
-                this._removeOneRender(this._batchList.elements[i]);
-            }
-        }
-        _clear() {
-            this._restorRenderNode();
-            this._renderElements = [];
-            this._batchList.destroy();
-            this._batchList = new Laya.SingletonList();
-            this._lodInstanceRenderElement = {};
-            this._lodInstanceRenderElement[-1] = [];
-        }
-    }
-    const tempVec$2 = new Laya.Vector3();
-
-    class StaticInstanceBatchRender extends BatchRender {
-        constructor() {
-            super();
-            this._insBatchMarksNums = [];
-            this._insElementMarksArray = [];
-            this._instanceBatchminNums = 10;
-            this._updateChangeElement = [];
-            this.checkLOD = true;
-            this._batchManager = new InstanceBatchManager();
-            this._RenderBitFlag = exports.RenderBitFlag.RenderBitFlag_InstanceBatch;
-        }
-        _isRenderNodeAllCanInstanceBatch(render) {
-            let elements = render._renderElements;
-            for (var i = 0, n = elements.length; i < n; i++) {
-                let element = elements[i];
-                if (!element.material._shader._enableInstancing) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        _sumInstanceBatch(render) {
-            let elements = render._renderElements;
-            for (var i = 0, n = elements.length; i < n; i++) {
-                let element = elements[i];
-                var insBatchMarks = this._batchManager.getInstanceBatchOpaquaMark(element);
-                if (insBatchMarks.indexInList == -1) {
-                    insBatchMarks.indexInList = this._insBatchMarksNums.length;
-                    this._insBatchMarksNums.push(0);
-                }
-                this._insBatchMarksNums[insBatchMarks.indexInList] += 1;
-            }
-        }
-        _batchOneElement(element, render) {
-            var insBatchMarks = this._batchManager.getInstanceBatchOpaquaMark(element);
-            if (insBatchMarks.indexInList == -1)
-                return;
-            let instanceelement = this._insElementMarksArray[insBatchMarks.indexInList];
-            if (!instanceelement) {
-                instanceelement = this._createInstanceElement(element, render, insBatchMarks);
-            }
-            let list = instanceelement._instanceBatchElementList;
-            if (list.length == InstanceRenderElement.maxInstanceCount) {
-                this._insBatchMarksNums.push(this._insBatchMarksNums[insBatchMarks.indexInList]);
-                insBatchMarks.indexInList = this._insBatchMarksNums.length - 1;
-                instanceelement = this._createInstanceElement(element, render, insBatchMarks);
-                list = instanceelement._instanceBatchElementList;
-            }
-            if (list.indexof(element) == -1) {
-                list.add(element);
-                instanceelement._isUpdataData = true;
-                (this._updateChangeElement.indexOf(instanceelement) == -1) && this._updateChangeElement.push(instanceelement);
-            }
-        }
-        _removeOneElement(element, render) {
-            var insBatchMarks = this._batchManager.getInstanceBatchOpaquaMark(element);
-            if (insBatchMarks.indexInList == -1)
-                return;
-        }
-        _updateOneElement(element, render) {
-        }
-        _createInstanceElement(element, render, batchMark) {
-            let instanceRenderElement = new InstanceRenderElement();
-            instanceRenderElement.render = render;
-            instanceRenderElement._geometry.subMesh = element._geometry;
-            instanceRenderElement.material = element.material;
-            instanceRenderElement.setTransform(null);
-            instanceRenderElement.renderSubShader = element.renderSubShader;
-            let list = instanceRenderElement._instanceBatchElementList;
-            list.length = 0;
-            list.add(element);
-            this._insElementMarksArray[batchMark.indexInList] = instanceRenderElement;
-            batchMark.batched = true;
-            if (!this._lodInstanceRenderElement[render._LOD]) {
-                this._lodInstanceRenderElement[render._LOD] = [];
-            }
-            this._lodInstanceRenderElement[render._LOD].push(instanceRenderElement);
-            return instanceRenderElement;
-        }
-        _canBatch(render) {
-            let elements = render._renderElements;
-            for (var i = 0, n = elements.length; i < n; i++) {
-                let element = elements[i];
-                var insBatchMarks = this._batchManager.getInstanceBatchOpaquaMark(element);
-                if (this._insBatchMarksNums[insBatchMarks.indexInList] < this._instanceBatchminNums || element.material.renderQueue >= 3000) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        _calculateBoundingBox() {
-            let bound = this._bounds;
-            for (let i = 0, n = this._batchList.length; i < n; i++) {
-                if (i === 0) {
-                    this._batchList.elements[i].bounds.cloneTo(bound);
-                }
-                else {
-                    Bounds.merge(bound, this._batchList.elements[i].bounds, bound);
-                }
-            }
-            let extend = this._bounds.getExtent();
-            this._lodsize = 2 * Math.max(extend.x, extend.y, extend.z);
-            return this._bounds;
-        }
-        _onDestroy() {
-            super._onDestroy();
-        }
-        _batchOneRender(render) {
-            if (!this._canBatch(render))
-                return false;
-            this.boundsChange = true;
-            let elements = render._renderElements;
-            for (let i = 0, n = elements.length; i < n; i++) {
-                let renderelement = elements[i];
-                this._batchOneElement(renderelement, render);
-            }
-            render._batchRender = this;
-            render.setRenderbitFlag(exports.RenderBitFlag.RenderBitFlag_InstanceBatch, true);
-            return true;
-        }
-        _removeOneRender(render) {
-            if (!this._canBatch(render))
-                return;
-            if (this._batchList.indexof(render) != -1) {
-                this.boundsChange = true;
-                let elements = render._renderElements;
-                for (let i = 0, n = elements.length; i < n; i++) {
-                    let renderelement = elements[i];
-                    this._removeOneElement(renderelement, render);
-                }
-                render._batchRender = null;
-                render.setRenderbitFlag(exports.RenderBitFlag.RenderBitFlag_InstanceBatch, false);
-            }
-        }
-        _updateOneRender(render) {
-            if (!this._canBatch(render))
-                return;
-            if (this._batchList.indexof(render) != -1) {
-                this.boundsChange = true;
-                let elements = render._renderElements;
-                for (let i = 0, n = elements.length; i < n; i++) {
-                    let renderelement = elements[i];
-                    this._updateOneElement(renderelement, render);
-                }
-            }
-        }
-        _clear() {
-            super._clear();
-            this._insElementMarksArray.forEach(element => {
-                element && element.destroy();
-            });
-            this._insElementMarksArray = [];
-            this._updateChangeElement = [];
-            this._insBatchMarksNums = [];
-        }
-        addList(renderNodes) {
-            if (!this._batchList) {
-                this._batchList = new Laya.SingletonList();
-            }
-            let renders = [];
-            for (var i = 0; i < renderNodes.length; i++) {
-                let baseRender = renderNodes[i];
-                if (baseRender._batchRender) {
-                    continue;
-                }
-                if (this._isRenderNodeAllCanInstanceBatch(baseRender)) {
-                    renders.push(baseRender);
-                    this._sumInstanceBatch(baseRender);
-                }
-            }
-            for (var i = 0, n = renders.length; i < n; i++) {
-                let baseRender = renders[i];
-                if (this._canBatch(baseRender)) {
-                    this._batchList.add(baseRender);
-                }
-            }
-        }
-        reBatch() {
-            let renderNums = this._batchList.length;
-            let renders = this._batchList.elements;
-            for (var i = 0; i < renderNums; i++) {
-                let render = renders[i];
-                this._batchOneRender(render);
-            }
-        }
-    }
-
-    class StatiVertexMergeBatchRender extends BatchRender {
-        _addList(renderNodes) {
-        }
-    }
-
-    class StaticBatchVolume extends Volume {
-        _getStaticInstanceBatchRender() {
-            let render = this.owner.getComponent(StaticInstanceBatchRender);
-            if (!render) {
-                render = this.owner.addComponent(StaticInstanceBatchRender);
-            }
-            return render;
-        }
-        _getStatiVertexMergeBatchRender() {
-            let render = this.owner.getComponent(StatiVertexMergeBatchRender);
-            if (!render) {
-                render = this.owner.addComponent(StatiVertexMergeBatchRender);
-            }
-            return render;
-        }
-        get checkLOD() {
-            return this._checkLOD;
-        }
-        set checkLOD(value) {
-            this._checkLOD = value;
-            if (this._enableStaticInstanceBatch) {
-                this._instanceBatchRender.checkLOD = value;
-            }
-            if (this._enableStaticVertexMergeBatch) {
-                this._vertexMergeBatchRender.checkLOD = value;
-            }
-            if (this._enableCustomBatch) {
-                this._customBatchs.forEach(element => {
-                    element.checkLOD = value;
-                });
-            }
-        }
-        get enableStaticInstanceBatchRender() {
-            return this._enableStaticInstanceBatch;
-        }
-        set enableStaticInstanceBatchRender(value) {
-            if (!this._instanceBatchRender && value) {
-                this._instanceBatchRender = this._getStaticInstanceBatchRender();
-            }
-            if (value == this._enableStaticInstanceBatch)
-                return;
-            if (value) {
-                this._instanceBatchRender.enabled = true;
-            }
-            else {
-                this._instanceBatchRender.enabled = false;
-            }
-            this._enableStaticInstanceBatch = value;
-        }
-        get enableMergeBatchRender() {
-            return this._enableStaticVertexMergeBatch;
-        }
-        set enableMergeBatchRender(value) {
-            if (!this._vertexMergeBatchRender && value) {
-                this._vertexMergeBatchRender = this._getStatiVertexMergeBatchRender();
-            }
-            if (value == this._enableStaticVertexMergeBatch)
-                return;
-            if (value) {
-                this._vertexMergeBatchRender.enabled = true;
-            }
-            else {
-                this._vertexMergeBatchRender.enabled = false;
-            }
-            this._enableStaticVertexMergeBatch = value;
-        }
-        get enableCustomBatchRender() {
-            return this._enableCustomBatch;
-        }
-        set enableCustomBatchRender(value) {
-            this._enableCustomBatch = value;
-            this._customBatchs.forEach(element => {
-                element.enabled = value;
-            });
-        }
-        get customBatchRenders() {
-            return this._customBatchs;
-        }
-        set customBatchRenders(value) {
-            if (this._customBatchs) {
-                this._customBatchs.forEach(element => {
-                    this.owner._destroyComponent(element);
-                });
-            }
-            this._customBatchs = value;
-            this._customBatchs.forEach(element => {
-                this.owner.addComponentInstance(element);
-            });
-            this.enableCustomBatchRender = this._enableCustomBatch;
-        }
-        constructor() {
-            super();
-            this._customBatchs = [];
-            this.checkLOD = true;
-            this._enableStaticInstanceBatch = false;
-            this._enableStaticVertexMergeBatch = false;
-            this._cacheRender = new Laya.SingletonList();
-            this._batchRender = new Laya.SingletonList();
-            this._enableCustomBatch = false;
-        }
-        _restorRenderNode() {
-            if (this.enableCustomBatchRender) {
-                this._customBatchs.forEach(element => {
-                    element._clear();
-                });
-            }
-            if (this._enableStaticInstanceBatch) {
-                this._instanceBatchRender._clear();
-            }
-            if (this.enableCustomBatchRender) {
-                this._vertexMergeBatchRender._clear();
-            }
-        }
-        __addRenderNodeToBatch(renderNode) {
-            if (this.enableCustomBatchRender) {
-                this._customBatchs.forEach(element => {
-                    if (element._batchOneRender(renderNode))
-                        return;
-                });
-            }
-            if (this._enableStaticInstanceBatch) {
-                if (this._instanceBatchRender._batchOneRender(renderNode))
-                    return;
-            }
-            if (this.enableCustomBatchRender) {
-                if (this._vertexMergeBatchRender._batchOneRender(renderNode))
-                    return;
-            }
-        }
-        __removeRenderNodeFromBatch(renderNode) {
-            renderNode._batchRender._removeOneRender(renderNode);
-        }
-        _onEnable() {
-            super._onEnable();
-            if (this._enableStaticInstanceBatch)
-                this._instanceBatchRender && (this._instanceBatchRender.enabled = true);
-            if (this._enableStaticVertexMergeBatch)
-                this._vertexMergeBatchRender && (this._vertexMergeBatchRender.enabled = true);
-            if (this.enableCustomBatchRender) {
-                this._customBatchs.forEach(element => {
-                    element.enabled = true;
-                });
-            }
-        }
-        _onDisable() {
-            super._onDisable();
-            if (this._enableStaticInstanceBatch)
-                this._instanceBatchRender && (this._instanceBatchRender.enabled = false);
-            if (this._enableStaticVertexMergeBatch)
-                this._vertexMergeBatchRender && (this._vertexMergeBatchRender.enabled = false);
-            if (this.enableCustomBatchRender) {
-                this._customBatchs.forEach(element => {
-                    element.enabled = false;
-                });
-            }
-        }
-        _addRenderNode(renderNode) {
-            if (renderNode.renderNode.staticMask == exports.StaticFlag.StaticBatch) {
-                if (this._cacheRender.indexof(renderNode) != -1) {
-                    return;
-                }
-                this._cacheRender.add(renderNode);
-                if (this._batchRender.length > 0) {
-                    this.__addRenderNodeToBatch(renderNode);
-                }
-            }
-        }
-        _removeRenderNode(renderNode) {
-            if (renderNode.renderNode.staticMask == exports.StaticFlag.StaticBatch) {
-                if (this._batchRender.indexof(renderNode) != -1) {
-                    this.__removeRenderNodeFromBatch(renderNode);
-                    this._batchRender.remove(renderNode);
-                }
-            }
-        }
-        _VolumeChange() {
-            super._VolumeChange();
-            this._cacheRender.clear();
-        }
-        onStart() {
-            this.reBatch();
-        }
-        reBatch() {
-            this._cacheRender.elements.length = this._cacheRender.length;
-            this._batchRender.clear();
-            this._restorRenderNode();
-            if (this.enableCustomBatchRender) {
-                this._customBatchs.forEach(element => {
-                    element.addList(this._cacheRender.elements);
-                    element.reBatch();
-                });
-            }
-            if (this._enableStaticInstanceBatch) {
-                this._instanceBatchRender.addList(this._cacheRender.elements);
-                this._instanceBatchRender.reBatch();
-            }
-            if (this.enableCustomBatchRender) {
-                this._vertexMergeBatchRender.addList(this._cacheRender.elements);
-                this._vertexMergeBatchRender.reBatch();
-            }
-            for (var i = 0, n = this._cacheRender.length; i < n; i++) {
-                (this._cacheRender.elements[i]._batchRender) && this._batchRender.add(this._cacheRender.elements[i]);
             }
         }
     }
@@ -19876,8 +19540,6 @@
     c("Lightmap", Lightmap);
     c("ReflectionProbe", ReflectionProbe);
     c("VolumetricGI", VolumetricGI);
-    c("StaticBatchVolume", StaticBatchVolume);
-    c("StaticInstanceBatchRender", StaticInstanceBatchRender);
     c("SphericalHarmonicsL2", SphericalHarmonicsL2);
     c("Viewport", Laya.Viewport);
     c("Bounds", Bounds);
@@ -21294,6 +20956,16 @@
         }
     }
 
+    class BatchMark {
+        constructor() {
+            this.updateMark = -1;
+            this.indexInList = -1;
+            this.batched = false;
+            this._curBindElementIndex = 0;
+            this._cacheRenderElement = [];
+        }
+    }
+
     class MaterialInstanceProperty {
         constructor() {
             this._isNeedUpdate = false;
@@ -21954,7 +21626,6 @@
     exports.BaseCamera = BaseCamera;
     exports.BaseRender = BaseRender;
     exports.BatchMark = BatchMark;
-    exports.BatchRender = BatchRender;
     exports.BlinnPhongMaterial = BlinnPhongMaterial;
     exports.BlinnPhongShaderInit = BlinnPhongShaderInit;
     exports.BlitFrameBufferCMD = BlitFrameBufferCMD;
@@ -21999,7 +21670,6 @@
     exports.HLODResourceGroup = HLODResourceGroup;
     exports.HitResult = HitResult;
     exports.IndexBuffer3D = IndexBuffer3D;
-    exports.InstanceBatchManager = InstanceBatchManager;
     exports.InstanceRenderElement = InstanceRenderElement;
     exports.KeyframeNode = KeyframeNode;
     exports.KeyframeNodeList = KeyframeNodeList;
@@ -22096,14 +21766,11 @@
     exports.SpotLightCom = SpotLightCom;
     exports.Sprite3D = Sprite3D;
     exports.Sprite3DRenderDeclaration = Sprite3DRenderDeclaration;
-    exports.StatiVertexMergeBatchRender = StatiVertexMergeBatchRender;
     exports.StaticBatchMesh = StaticBatchMesh;
     exports.StaticBatchMeshRender = StaticBatchMeshRender;
     exports.StaticBatchMeshRenderElement = StaticBatchMeshRenderElement;
     exports.StaticBatchSubInfo = StaticBatchSubInfo;
     exports.StaticBatchSubMesh = StaticBatchSubMesh;
-    exports.StaticBatchVolume = StaticBatchVolume;
-    exports.StaticInstanceBatchRender = StaticInstanceBatchRender;
     exports.StaticMeshBatchManager = StaticMeshBatchManager;
     exports.StaticMeshMergeInfo = StaticMeshMergeInfo;
     exports.SubMesh = SubMesh;

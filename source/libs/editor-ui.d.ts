@@ -767,6 +767,7 @@ declare namespace gui {
         commandKey: boolean;
         keyCode: string;
         key: string;
+        repeat: boolean;
         keyTimestamp: number;
         get isDblClick(): boolean;
         get isRightButton(): boolean;
@@ -1402,6 +1403,7 @@ declare namespace gui {
         private _onChanged;
     }
     class DragSupport {
+        enablePointerCapture: boolean;
         private _owner;
         private _dragStartPos;
         private _dragTesting;
@@ -1492,6 +1494,8 @@ declare namespace gui {
         set mouseWheelDisabled(value: boolean);
         get decelerationRate(): number;
         set decelerationRate(value: number);
+        get fixedGripSize(): boolean;
+        set fixedGripSize(value: boolean);
         get percX(): number;
         set percX(value: number);
         setPercX(value: number, ani?: boolean): void;
@@ -1734,8 +1738,6 @@ declare namespace gui {
         private _value;
         private _titleType;
         private _reverse;
-        private _barMaxWidth;
-        private _barMaxHeight;
         private _barMaxWidthDelta;
         private _barMaxHeightDelta;
         private _barStartX;
@@ -1749,11 +1751,18 @@ declare namespace gui {
         set max(value: number);
         get value(): number;
         set value(value: number);
+        get hBar(): Widget;
+        set hBar(value: Widget);
+        get vBar(): Widget;
+        set vBar(value: Widget);
+        get titleWidget(): Widget;
+        set titleWidget(value: Widget);
+        get reverse(): boolean;
+        set reverse(value: boolean);
         tweenValue(value: number, duration: number): Tweener;
-        update(newValue: number): void;
+        update(newValue: number, delay?: boolean): void;
         private updateTitle;
         private setFillAmount;
-        _setup(hBar: Widget, vBar: Widget, titleWidget: Widget, reverse: boolean): void;
         protected _sizeChanged(): void;
     }
     class Relation {
@@ -1783,16 +1792,17 @@ declare namespace gui {
         private instReload;
     }
     class ScrollBar extends Widget {
-        private _gripButton;
-        private _arrowButton1;
-        private _arrowButton2;
-        private _bar;
+        _gripButton: Widget;
+        _arrowButton1: Widget;
+        _arrowButton2: Widget;
+        _bar: Widget;
         private _target;
         private _vertical;
         private _scrollPerc;
         private _fixedGripSize;
         private _dragOffset;
         private _gripDragging;
+        private _scrollingDir;
         constructor();
         setOwner(target: IScroller, vertical: boolean): void;
         setDisplayPerc(value: number): void;
@@ -1801,13 +1811,15 @@ declare namespace gui {
         get gripDragging(): boolean;
         get fixedGripSize(): boolean;
         set fixedGripSize(value: boolean);
-        _setup(arrowButton1: Widget, arrowButton2: Widget, bar: Widget, grip: Widget): void;
         private _gripTouchBegin;
+        private startDragGrip;
         private _gripTouchMove;
         private _gripTouchEnd;
         private _arrowButton1Click;
         private _arrowButton2Click;
         private _barTouchBegin;
+        private doBarScroll;
+        private _barTouchEnd;
     }
     class Scroller implements IScroller {
         static draggingInst: Scroller;
@@ -1837,6 +1849,7 @@ declare namespace gui {
         private _vScrollBarRes;
         private _footerRes;
         private _headerRes;
+        private _fixedGripSize;
         private _vScrollNone;
         private _hScrollNone;
         private _needRefresh;
@@ -1918,6 +1931,8 @@ declare namespace gui {
         set mouseWheelDisabled(value: boolean);
         get decelerationRate(): number;
         set decelerationRate(value: number);
+        get fixedGripSize(): boolean;
+        set fixedGripSize(value: boolean);
         get isDragged(): boolean;
         get percX(): number;
         set percX(value: number);
@@ -2026,8 +2041,6 @@ declare namespace gui {
         private _titleType;
         private _reverse;
         private _wholeNumbers;
-        private _barMaxWidth;
-        private _barMaxHeight;
         private _barMaxWidthDelta;
         private _barMaxHeightDelta;
         private _clickPos;
@@ -2045,14 +2058,27 @@ declare namespace gui {
         set max(value: number);
         get value(): number;
         set value(value: number);
-        update(): void;
+        get hBar(): Widget;
+        set hBar(value: Widget);
+        get vBar(): Widget;
+        set vBar(value: Widget);
+        get gripButton(): Widget;
+        set gripButton(value: Widget);
+        get titleWidget(): Widget;
+        set titleWidget(value: Widget);
+        get reverse(): boolean;
+        set reverse(value: boolean);
+        update(delay?: boolean): void;
         private updateWithPercent;
         private updateTitle;
+        private setupEvents;
         _setup(hBar: Widget, vBar: Widget, grip: Widget, title: Widget, reverse: boolean): void;
         protected _sizeChanged(): void;
         private _gripTouchBegin;
+        private startDragGrip;
         private _gripTouchMove;
         private _barTouchBegin;
+        onAfterDeserialize(): void;
     }
     class TextField extends Widget {
         protected _style: TextStyle;
@@ -2383,6 +2409,7 @@ declare namespace gui {
         get destroyed(): boolean;
         get draggable(): boolean;
         set draggable(value: boolean);
+        get dragSupport(): DragSupport;
         get nativeDraggable(): boolean;
         set nativeDraggable(value: boolean);
         get dragBounds(): Rect;

@@ -1,90 +1,13 @@
 (function (exports, Laya) {
     'use strict';
 
-    class RTScene3DRenderManager {
-        get list() {
-            return this._list;
-        }
-        set list(value) {
-            this._list = value;
-            let elemnt = this._list.elements;
-            for (let i = 0; i < this._list.length; i++) {
-                this._addBaseRenderNode(elemnt[i]._baseRenderNode);
-            }
-        }
-        _addBaseRenderNode(object) {
-            this._nativeObj.addBaseRenderNode(object._nativeObj);
-        }
-        _removeBaseRenderNode(object) {
-            this._nativeObj.removeBaseRenderNode(object._nativeObj);
-        }
-        _clearBaseRenderNode() {
-            this._nativeObj.clearBaseRenderNode();
-        }
-        addRenderObject(object) {
-            this._list.add(object);
-            this._addBaseRenderNode(object._baseRenderNode);
-        }
-        removeRenderObject(object) {
-            this._list.remove(object);
-            this._removeBaseRenderNode(object._baseRenderNode);
-        }
-        removeMotionObject(object) {
-        }
-        addMotionObject(object) {
-        }
-        updateMotionObjects() {
-        }
-        destroy() {
-            this._list.destroy();
-            this._clearBaseRenderNode();
-            this._list = null;
-        }
+    class RTDirCascadeShadowRP {
         constructor() {
-            this._list = new Laya.SingletonList();
-            this._nativeObj = new window.conchRTScene3DRenderManager();
+            this._nativeObj = new window.conchRTDirCascadeShadowRP();
         }
-    }
-
-    class GLESDirectLightShadowRP {
-        get light() {
-            return this._light;
-        }
-        set light(value) {
-            this._light = value;
-            this._nativeObj.setLight(value._nativeObj);
-        }
-        get camera() {
-            return this._camera;
-        }
-        set camera(value) {
-            this._camera = value;
-            this._nativeObj.setCameraNodeData(value._nativeObj);
-        }
-        get destTarget() {
-            return this._destTarget;
-        }
-        set destTarget(value) {
-            this._destTarget = value;
-            this._nativeObj.setRenderTarget(value._nativeObj, Laya.RenderClearFlag.Nothing);
-        }
-        constructor() {
-            this._nativeObj = new window.conchGLESDirectLightShadowCastRP();
-        }
-        destroy() {
-            this._shadowCasterCommanBuffer && (this._shadowCasterCommanBuffer.length = 0);
-            this._shadowCasterCommanBuffer = null;
-            this._destTarget = null;
-            this._camera = null;
-            this._light = null;
-        }
-        get shadowCasterCommanBuffer() {
-            return this._shadowCasterCommanBuffer;
-        }
-        set shadowCasterCommanBuffer(value) {
-            this._shadowCasterCommanBuffer = value;
+        setShadowCasterCommanBuffer(cmd) {
             this._nativeObj.clearShadowCasterCommandBuffer();
-            value.forEach(element => {
+            cmd.forEach(element => {
                 this._setCmd(element);
             });
         }
@@ -97,45 +20,41 @@
             });
             this._nativeObj.addShadowCasterCommandBuffers(nativeobCMDs);
         }
+        setRPData(dirLight, camera, context) {
+            this._destShadowRT = Laya.Scene3D._shadowCasterPass.getDirectLightShadowMap(dirLight);
+            this._nativeObj.setRPData(dirLight._nativeObj, camera._nativeObj, context._nativeObj, this._destShadowRT._renderTarget._nativeObj);
+        }
+        setCameraCullInfo(sceneManager) {
+            this._nativeObj.setCameraCullInfo(sceneManager._nativeObj);
+        }
+        destroy() {
+        }
     }
 
-    class GLESForwardAddClusterRP {
-        get enableOpaque() {
-            return this._nativeObj._enableOpaque;
-        }
-        set enableOpaque(value) {
-            this._nativeObj._enableOpaque = value;
-        }
-        get enableCMD() {
-            return this._nativeObj._enableCMD;
-        }
-        set enableCMD(value) {
-            this._nativeObj._enableCMD = value;
-        }
-        get enableTransparent() {
-            return this._nativeObj._enableTransparent;
-        }
-        set enableTransparent(value) {
-            this._nativeObj._enableTransparent = value;
-        }
-        get enableOpaqueTexture() {
-            return this._nativeObj._enableOpaqueTexture;
-        }
-        set enableOpaqueTexture(value) {
-            this._nativeObj._enableOpaqueTexture = value;
-        }
-        get destTarget() {
-            return this._destTarget;
-        }
-        set destTarget(value) {
-            this._destTarget = value;
-            this._nativeObj.setDestTarget(value._nativeObj);
-        }
+    class RTForwardAddClusterRP {
         get pipelineMode() {
-            return this._nativeObj._pipelineMode;
+            return this._nativeObj.pipelineMode;
         }
         set pipelineMode(value) {
-            this._nativeObj._pipelineMode = value;
+            this._nativeObj.pipelineMode = value;
+        }
+        get depthPipelineMode() {
+            return this._nativeObj.depthPipelineMode;
+        }
+        set depthPipelineMode(value) {
+            this._nativeObj.depthPipelineMode = value;
+        }
+        get depthNormalPipelineMode() {
+            return this._nativeObj.depthNormalPipelineMode;
+        }
+        set depthNormalPipelineMode(value) {
+            this._nativeObj.depthNormalPipelineMode = value;
+        }
+        get depthTextureMode() {
+            return this._nativeObj.depthTextureMode;
+        }
+        set depthTextureMode(value) {
+            this._nativeObj.depthTextureMode = value;
         }
         get depthTarget() {
             return this._depthTarget;
@@ -144,11 +63,12 @@
             this._depthTarget = value;
             this._nativeObj.setDepthTarget(value._nativeObj);
         }
-        get depthPipelineMode() {
-            return this._nativeObj._depthPipelineMode;
+        get destTarget() {
+            return this._destTarget;
         }
-        set depthPipelineMode(value) {
-            this._nativeObj._depthPipelineMode = value;
+        set destTarget(value) {
+            this._destTarget = value;
+            this._nativeObj.setDestTarget(value._nativeObj);
         }
         get depthNormalTarget() {
             return this._depthNormalTarget;
@@ -157,11 +77,23 @@
             this._depthNormalTarget = value;
             this._nativeObj.setDepthNormalTarget(value._nativeObj);
         }
-        get depthNormalPipelineMode() {
-            return this._nativeObj._depthNormalPipelineMode;
+        get enableCMD() {
+            return this._nativeObj.enableCMD;
         }
-        set depthNormalPipelineMode(value) {
-            this._nativeObj._depthNormalPipelineMode = value;
+        set enableCMD(value) {
+            this._nativeObj.enableCMD = value;
+        }
+        get enableOpaque() {
+            return this._nativeObj.enableOpaque;
+        }
+        set enableOpaque(value) {
+            this._nativeObj.enableOpaque = value;
+        }
+        get enableTransparent() {
+            return this._nativeObj.enableTransparent;
+        }
+        set enableTransparent(value) {
+            this._nativeObj.enableTransparent = value;
         }
         get skyRenderNode() {
             return this._skyRenderNode;
@@ -169,19 +101,6 @@
         set skyRenderNode(value) {
             this._skyRenderNode = value;
             this._nativeObj.setSkyRenderNode(value ? value._nativeObj : null);
-        }
-        get depthTextureMode() {
-            return this._nativeObj._depthTextureMode;
-        }
-        set depthTextureMode(value) {
-            this._nativeObj._depthTextureMode = value;
-        }
-        get opaqueTexture() {
-            return this._opaqueTexture;
-        }
-        set opaqueTexture(value) {
-            this._opaqueTexture = value;
-            this._nativeObj.setOpaqueTexture(value._nativeObj);
         }
         get camera() {
             return this._camera;
@@ -198,21 +117,22 @@
             this._nativeObj.setClearColor(value);
         }
         get clearFlag() {
-            return this._nativeObj._clearFlag;
+            return this._clearFlag;
         }
         set clearFlag(value) {
-            this._nativeObj._clearFlag = value;
+            this._clearFlag = value;
+            this._nativeObj.setClearFlag(value);
         }
-        setCameraCullInfo(value) {
+        setCameraCullInfo(value, sceneManager) {
             this._cameraCullInfo.position = value._transform.position;
             this._cameraCullInfo.cullingMask = value.cullingMask;
             this._cameraCullInfo.staticMask = value.staticMask;
             this._cameraCullInfo.boundFrustum = value.boundFrustum;
             this._cameraCullInfo.useOcclusionCulling = value.useOcclusionCulling;
-            this._nativeObj.setCameraCullInfo(this._cameraCullInfo);
+            this._nativeObj.setCameraCullInfo(this._cameraCullInfo, sceneManager._nativeObj);
         }
         setViewPort(value) {
-            this._nativeObj.setViewport(value);
+            this._nativeObj.setViewPort(value);
         }
         setScissor(value) {
             this._nativeObj.setScissor(value);
@@ -223,14 +143,6 @@
                 nativeobCMDs.push(element._nativeObj);
             });
             return nativeobCMDs;
-        }
-        get opaquePassCommandBuffer() {
-            return this._opaquePassCommandBuffer;
-        }
-        set opaquePassCommandBuffer(value) {
-            this._opaquePassCommandBuffer = value;
-            value._apply(false);
-            this._nativeObj.setOpaqueCMD(this._getRenderCMDArray(value._renderCMDs));
         }
         setBeforeForwardCmds(value) {
             if (value && value.length > 0) {
@@ -269,49 +181,37 @@
             }
         }
         constructor() {
-            this._opaquePassCommandBuffer = new Laya.CommandBuffer();
             this._cameraCullInfo = new Laya.CameraCullInfo();
-            this._nativeObj = new window.conchGLESForwardAddClusterRP();
+            this._nativeObj = new window.conchRTForwardAddClusterRP();
         }
         destroy() {
+            this._nativeObj = null;
         }
     }
 
-    class GLESSpotLightShadowRP {
-        get light() {
-            return this._light;
-        }
-        set light(value) {
-            this._light = value;
-            this._nativeObj.setLight(value._dataModule._nativeObj);
-        }
-        get destTarget() {
-            return this._destTarget;
-        }
-        set destTarget(value) {
-            this._destTarget = value;
-            this._nativeObj.setRenderTarget(value._nativeObj, Laya.RenderClearFlag.Nothing);
-        }
+    class RTBaseSpotRP {
         constructor() {
-            this._nativeObj = new window.conchGLESSpotLightShadowRP();
+            this._nativeObj = new window.conchRPBaseSpotRP();
+        }
+        setShadowCasterCommanBuffer(cmd) {
+        }
+        setCameraCullInfo(sceneManager) {
+            this._nativeObj.setCameraCullInfo(sceneManager._nativeObj);
+        }
+        setRPData(spotLight, context) {
+            this._destShadowRT = Laya.Scene3D._shadowCasterPass.getSpotLightShadowPassData(spotLight);
+            this._nativeObj.setRPData(spotLight._nativeObj, context._nativeObj, this._destShadowRT._renderTarget._nativeObj);
         }
         destroy() {
         }
     }
 
-    class GLESForwardAddRP {
+    class RTForwardAddRP {
         get shadowCastPass() {
             return this._nativeObj.shadowCastPass;
         }
         set shadowCastPass(value) {
             this._nativeObj.shadowCastPass = value;
-        }
-        get directLightShadowPass() {
-            return this._directLightShadowPass;
-        }
-        set directLightShadowPass(value) {
-            this._directLightShadowPass = value;
-            this._nativeObj.setDirectLightShadowPass(value._nativeObj);
         }
         get enableDirectLightShadow() {
             return this._nativeObj.enableDirectLightShadow;
@@ -319,31 +219,16 @@
         set enableDirectLightShadow(value) {
             this._nativeObj.enableDirectLightShadow = value;
         }
-        get spotLightShadowPass() {
-            return this._spotLightShadowPass;
-        }
-        set spotLightShadowPass(value) {
-            this._spotLightShadowPass = value;
-            this._nativeObj.setSpotLightShadowPass(value._nativeObj);
-        }
         get enableSpotLightShadowPass() {
             return this._nativeObj.enableSpotLightShadowPass;
         }
         set enableSpotLightShadowPass(value) {
             this._nativeObj.enableSpotLightShadowPass = value;
         }
-        get renderpass() {
-            return this._renderpass;
-        }
-        set renderpass(value) {
-            this._renderpass = value;
-            this._nativeObj.setForwardAddClusterRP(value._nativeObj);
-        }
         get enablePostProcess() {
             return this._nativeObj.enablePostProcess;
         }
         set enablePostProcess(value) {
-            this._enablePostProcess = value;
             this._nativeObj.enablePostProcess = value;
         }
         get postProcess() {
@@ -362,15 +247,36 @@
             value._apply(false);
             this._nativeObj.setfinalize(this._getRenderCMDArray(value._renderCMDs));
         }
+        get dirShadowRenderPass() {
+            return this._dirLightShadowPass;
+        }
+        set dirShadowRenderPass(value) {
+            this._dirLightShadowPass = value;
+            this._nativeObj.setDirectLightShadowPass(value._nativeObj);
+        }
+        get spotShadowRenderPass() {
+            return this._spotShadowRenderPass;
+        }
+        set spotShadowRenderPass(value) {
+            this._spotShadowRenderPass = value;
+            this._nativeObj.setSpotLightShadowPass(value._nativeObj);
+        }
+        get mainRenderpass() {
+            return this._mainRenderpass;
+        }
+        set mainRenderpass(value) {
+            this._mainRenderpass = value;
+            this._nativeObj.setMainPass(value._nativeObj);
+        }
         constructor() {
             this._finalize = new Laya.CommandBuffer();
-            this._nativeObj = new window.conchGLESForwardAddRP();
+            this._nativeObj = new window.conchRTForwardAddRP();
             this.shadowCastPass = false;
             this.enableDirectLightShadow = false;
             this.enableSpotLightShadowPass = false;
-            this.directLightShadowPass = new GLESDirectLightShadowRP();
-            this.spotLightShadowPass = new GLESSpotLightShadowRP();
-            this.renderpass = new GLESForwardAddClusterRP();
+            this.dirShadowRenderPass = new RTDirCascadeShadowRP();
+            this.spotShadowRenderPass = new RTBaseSpotRP();
+            this.mainRenderpass = new RTForwardAddClusterRP();
         }
         _getRenderCMDArray(cmds) {
             let nativeobCMDs = [];
@@ -404,23 +310,22 @@
             }
         }
         destroy() {
-            this.directLightShadowPass.destroy();
-            this._directLightShadowPass = null;
-            this.spotLightShadowPass.destroy();
-            this._spotLightShadowPass = null;
-            this.renderpass.destroy();
-            this._renderpass = null;
         }
     }
 
     const viewport = new Laya.Viewport(0, 0, 0, 0);
     const offsetScale = new Laya.Vector4();
-    const shadowParams = new Laya.Vector4();
-    class GLESRender3DProcess {
+    new Laya.Vector4();
+    class RTRender3DProcess {
         constructor() {
-            this._tempList = [];
-            this.renderpass = new GLESForwardAddRP();
-            this._nativeObj = new window.conchGLESRender3DProcess();
+            this._renderPass = new RTForwardAddRP();
+            this._nativeObj = new window.conchRT3DRenderProcess();
+            this._defaultDepthTex = Laya.RenderTexture.createFromPool(1, 1, Laya.RenderTargetFormat.DEPTH_32, Laya.RenderTargetFormat.None, false, 1);
+            this._defaultShadowMap = Laya.ShadowUtils.getTemporaryShadowTexture(1, 1, Laya.ShadowMapFormat.bit16);
+            this._nativeObj.setDefaultShadowMap(this._defaultShadowMap._renderTarget._nativeObj);
+            let shadowMap = Laya.LayaGL.renderDeviceFactory.createGlobalUniformMap("Shadow");
+            shadowMap.setDefaultTextureData(Laya.ShadowCasterPass.SHADOW_MAP, this._defaultShadowMap);
+            shadowMap.setDefaultTextureData(Laya.ShadowCasterPass.SHADOW_SPOTMAP, this._defaultShadowMap);
         }
         get render3DManager() {
             return this._render3DManager;
@@ -430,11 +335,10 @@
             this._nativeObj.renderManager = value._nativeObj;
         }
         destroy() {
-            this._tempList = null;
-            this.renderpass.destroy();
+            this._renderPass = null;
         }
         initRenderpass(camera, context) {
-            let renderpass = this.renderpass.renderpass;
+            let renderpass = this._renderPass.mainRenderpass;
             let renderRT = camera._getRenderTexture();
             let clearConst = 0;
             let clearFlag = camera.clearFlag;
@@ -466,6 +370,7 @@
             renderpass.clearFlag = clearConst;
             renderpass.clearColor = clearValue;
             let needInternalRT = camera._needInternalRenderTexture();
+            renderpass.setCameraCullInfo(camera, this.render3DManager);
             if (needInternalRT) {
                 viewport.set(0, 0, renderRT.width, renderRT.height);
             }
@@ -482,9 +387,8 @@
             renderpass.setBeforeSkyboxCmds(camera._cameraEventCommandBuffer[Laya.CameraEventFlags.BeforeSkyBox]);
             renderpass.setBeforeForwardCmds(camera._cameraEventCommandBuffer[Laya.CameraEventFlags.BeforeForwardOpaque]);
             renderpass.setBeforeTransparentCmds(camera._cameraEventCommandBuffer[Laya.CameraEventFlags.BeforeTransparent]);
-            this.renderpass.setBeforeImageEffect(camera._cameraEventCommandBuffer[Laya.CameraEventFlags.BeforeImageEffect]);
-            this.renderpass.setAfterEventCmd(camera._cameraEventCommandBuffer[Laya.CameraEventFlags.AfterEveryThing]);
-            renderpass.setCameraCullInfo(camera);
+            this._renderPass.setBeforeImageEffect(camera._cameraEventCommandBuffer[Laya.CameraEventFlags.BeforeImageEffect]);
+            this._renderPass.setAfterEventCmd(camera._cameraEventCommandBuffer[Laya.CameraEventFlags.AfterEveryThing]);
             if (clearFlag == Laya.CameraClearFlags.Sky) {
                 renderpass.skyRenderNode = camera.scene.skyRenderer._baseRenderNode;
             }
@@ -493,56 +397,48 @@
             }
             renderpass.pipelineMode = Laya.RenderContext3D._instance.configPipeLineMode;
             let enableShadow = Laya.Scene3D._updateMark % camera.scene._ShadowMapupdateFrequency == 0 && Laya.Stat.enableShadow;
-            this.renderpass.shadowCastPass = enableShadow;
-            shadowParams.setValue(0, 0, 0, 0);
+            this._renderPass.shadowCastPass = enableShadow;
+            window.conchRT3DRenderProcess._addPreDrawUniformMap("Scene3D", context._nativeObj);
+            window.conchRT3DRenderProcess._addPreDrawUniformMap("Global", context._nativeObj);
+            context.preDrawUniformMaps = context.preDrawUniformMaps;
             if (enableShadow) {
-                let sceneShaderData = context.sceneData;
                 let mainDirectionLight = camera.scene._mainDirectionLight;
                 let needDirectionShadow = mainDirectionLight && mainDirectionLight.shadowMode != Laya.ShadowMode.None;
-                this.renderpass.enableDirectLightShadow = needDirectionShadow;
+                this._renderPass.enableDirectLightShadow = needDirectionShadow;
                 if (needDirectionShadow) {
-                    this.renderpass.directLightShadowPass.camera = camera._renderDataModule;
-                    this.renderpass.directLightShadowPass.light = mainDirectionLight._dataModule;
-                    let directionShadowMap = Laya.Scene3D._shadowCasterPass.getDirectLightShadowMap(mainDirectionLight);
-                    this.renderpass.directLightShadowPass.destTarget = directionShadowMap._renderTarget;
-                    shadowParams.x = this.renderpass.directLightShadowPass.light.shadowStrength;
-                    sceneShaderData.setTexture(Laya.ShadowCasterPass.SHADOW_MAP, directionShadowMap);
+                    this._renderPass.dirShadowRenderPass.setRPData(mainDirectionLight._dataModule, camera._renderDataModule, context);
+                    this._renderPass.dirShadowRenderPass.setCameraCullInfo(this._render3DManager);
                 }
                 let mainSpotLight = camera.scene._mainSpotLight;
                 let needSpotShadow = mainSpotLight && mainSpotLight.shadowMode != Laya.ShadowMode.None;
-                this.renderpass.enableSpotLightShadowPass = needSpotShadow;
+                this._renderPass.enableSpotLightShadowPass = needSpotShadow;
                 if (needSpotShadow) {
-                    this.renderpass.spotLightShadowPass.light = mainSpotLight;
-                    let spotShadowMap = Laya.Scene3D._shadowCasterPass.getSpotLightShadowPassData(mainSpotLight);
-                    this.renderpass.spotLightShadowPass.destTarget = spotShadowMap._renderTarget;
-                    shadowParams.y = this.renderpass.spotLightShadowPass.light.shadowStrength;
-                    sceneShaderData.setTexture(Laya.ShadowCasterPass.SHADOW_SPOTMAP, spotShadowMap);
+                    this._renderPass.spotShadowRenderPass.setRPData(mainSpotLight._dataModule, context);
+                    this._renderPass.spotShadowRenderPass.setCameraCullInfo(this.render3DManager);
                 }
-                sceneShaderData.setVector(Laya.ShadowCasterPass.SHADOW_PARAMS, shadowParams);
-                let needBlitOpaque = camera.opaquePass;
-                renderpass.enableOpaqueTexture = needBlitOpaque;
-                if (needBlitOpaque) {
-                    let rt = camera._opaqueTexture;
-                    renderpass.opaquePassCommandBuffer.clear();
-                    renderpass.opaquePassCommandBuffer.blitScreenQuad(renderRT, rt);
-                    renderpass.opaquePassCommandBuffer = renderpass.opaquePassCommandBuffer;
+                if (needDirectionShadow || needSpotShadow) {
+                    window.conchRT3DRenderProcess._addPreDrawUniformMap("Shadow", context._nativeObj);
                 }
-                if (Laya.Stat.enablePostprocess && camera.postProcess && camera.postProcess.enable && camera.postProcess.effects.length > 0) {
-                    this.renderpass.enablePostProcess = camera.postProcess.enable;
-                    camera.postProcess._render(camera);
-                    this.renderpass.postProcess = camera.postProcess._context.command;
-                }
-                else {
-                    this.renderpass.enablePostProcess = false;
-                }
-                this.renderpass.finalize.clear();
-                if (!this.renderpass.enablePostProcess && needInternalRT && camera._offScreenRenderTexture) {
-                    let dst = camera._offScreenRenderTexture;
-                    offsetScale.setValue(camera.normalizedViewport.x, 1.0 - camera.normalizedViewport.y, renderRT.width / dst.width, -renderRT.height / dst.height);
-                    this.renderpass.finalize.blitScreenQuad(renderRT, camera._offScreenRenderTexture, offsetScale);
-                }
-                this.renderpass.finalize = this.renderpass.finalize;
             }
+            else {
+                window.conchRT3DRenderProcess._removePreDrawUniformMap("Shadow", context._nativeObj);
+            }
+            context.preDrawUniformMaps = context.preDrawUniformMaps;
+            if (Laya.Stat.enablePostprocess && camera.postProcess && camera.postProcess.enable && camera.postProcess.effects.length > 0) {
+                this._renderPass.enablePostProcess = camera.postProcess.enable;
+                camera.postProcess._render(camera);
+                this._renderPass.postProcess = camera.postProcess._context.command;
+            }
+            else {
+                this._renderPass.enablePostProcess = false;
+            }
+            this._renderPass.finalize.clear();
+            if (!this._renderPass.enablePostProcess && needInternalRT && camera._offScreenRenderTexture) {
+                let dst = camera._offScreenRenderTexture;
+                offsetScale.setValue(camera.normalizedViewport.x, 1.0 - camera.normalizedViewport.y, renderRT.width / dst.width, -renderRT.height / dst.height);
+                this._renderPass.finalize.blitScreenQuad(renderRT, camera._offScreenRenderTexture, offsetScale);
+            }
+            this._renderPass.finalize = this._renderPass.finalize;
         }
         renderDepth(camera) {
             let depthMode = camera.depthTextureMode;
@@ -551,26 +447,106 @@
             }
             if ((depthMode & Laya.DepthTextureMode.Depth) != 0) {
                 Laya.Camera.depthPass.getTarget(camera, Laya.DepthTextureMode.Depth, camera.depthTextureFormat);
-                this.renderpass.renderpass.depthTarget = camera.depthTexture._renderTarget;
+                this._renderPass.mainRenderpass.depthTarget = camera.depthTexture._renderTarget;
                 Laya.Camera.depthPass._setupDepthModeShaderValue(Laya.DepthTextureMode.Depth, camera);
             }
             if ((depthMode & Laya.DepthTextureMode.DepthNormals) != 0) {
                 Laya.Camera.depthPass.getTarget(camera, Laya.DepthTextureMode.DepthNormals, camera.depthTextureFormat);
-                this.renderpass.renderpass.depthNormalTarget = camera.depthNormalTexture._renderTarget;
+                this._renderPass.mainRenderpass.depthNormalTarget = camera.depthNormalTexture._renderTarget;
                 camera._shaderValues.setTexture(Laya.DepthPass.DEPTHNORMALSTEXTURE, camera.depthNormalTexture);
                 Laya.Camera.depthPass._setupDepthModeShaderValue(Laya.DepthTextureMode.DepthNormals, camera);
             }
-            this.renderpass.renderpass.depthTextureMode = depthMode;
+            this._renderPass.mainRenderpass.depthTextureMode = depthMode;
         }
         fowardRender(context, camera) {
             Laya.Camera.depthPass.cleanUp(camera);
             this.renderDepth(camera);
             this.initRenderpass(camera, context);
-            this.renderFowarAddCameraPass(context, this.renderpass);
+            this.renderFowarAddCameraPass(context, this._renderPass);
         }
         renderFowarAddCameraPass(context, renderpass) {
-            this._tempList.length = 0;
-            this._nativeObj.renderFowarAddCameraPass(context._nativeObj, renderpass._nativeObj);
+            this._nativeObj.renderForwardAddCameraPass(context._nativeObj, renderpass._nativeObj);
+        }
+    }
+
+    class RTScene3DRenderManager {
+        get list() {
+            return this._list;
+        }
+        set list(value) {
+            this._list = value;
+            if (value) {
+                let elemnt = this._list.elements;
+                for (let i = 0; i < this._list.length; i++) {
+                    this.removeRenderObject(elemnt[i]);
+                }
+                elemnt = value.elements;
+                for (let i = 0; i < value.length; i++) {
+                    this.addRenderObject(elemnt[i]);
+                }
+            }
+        }
+        _addBaseRenderNode(object) {
+            this._nativeObj.addBaseRenderNode(object._nativeObj);
+        }
+        _removeBaseRenderNode(object) {
+            this._nativeObj.removeBaseRenderNode(object._nativeObj);
+        }
+        _clearBaseRenderNode() {
+            this._nativeObj.clearBaseRenderNode();
+        }
+        addRenderObject(object) {
+            let agent = this.batchAgentList.get(object._baseRenderNode.renderNodeType);
+            if (agent) {
+                agent.addRenderNode(object);
+                object._batchRender = agent;
+            }
+            else {
+                this._addBaseRenderNode(object._baseRenderNode);
+            }
+        }
+        removeRenderObject(object) {
+            let agent = this.batchAgentList.get(object._baseRenderNode.renderNodeType);
+            if (agent) {
+                agent.removeRenderNode(object);
+                object._batchRender = null;
+            }
+            else {
+                this._removeBaseRenderNode(object._baseRenderNode);
+            }
+        }
+        removeMotionObject(object) {
+        }
+        addMotionObject(object) {
+        }
+        updateMotionObjects() {
+        }
+        destroy() {
+            var _a;
+            (_a = this._list) === null || _a === void 0 ? void 0 : _a.destroy();
+            this._clearBaseRenderNode();
+            this._list = null;
+        }
+        constructor() {
+            this._list = new Laya.SingletonList();
+            this.batchAgentList = new Map();
+            this._nativeObj = new window.conchRTScene3DRenderManager();
+        }
+        registerBatchModuleAgent(renderNodeType, agent) {
+            if (!this.batchAgentList.has(renderNodeType)) {
+                this.batchAgentList.set(renderNodeType, agent);
+                this._nativeObj.registerBatchModuleAgent(renderNodeType, agent._nativeObj);
+                for (let i = 0; i < this._list.length; i++) {
+                    if (this._list.elements[i].renderNode.renderNodeType == renderNodeType) {
+                        agent.addRenderNode(this._list.elements[i]);
+                        this._list.elements[i]._batchRender = agent;
+                    }
+                }
+            }
+        }
+        updateProperty(object, property) {
+            let agent = this.batchAgentList.get(object._baseRenderNode.renderNodeType);
+            agent && agent.updateProperty(object, property);
         }
     }
 
@@ -783,11 +759,11 @@
             this._cameraData = value;
             this._nativeObj.setCameraData(value ? value._nativeObj : null);
         }
-        get sceneUpdataMask() {
-            return this._nativeObj._sceneUpdataMask;
+        get sceneUpdateMask() {
+            return this._nativeObj._sceneUpdateMask;
         }
-        set sceneUpdataMask(value) {
-            this._nativeObj._sceneUpdataMask = value;
+        set sceneUpdateMask(value) {
+            this._nativeObj._sceneUpdateMask = value;
         }
         get cameraUpdateMask() {
             return this._nativeObj._cameraUpdateMask;
@@ -959,11 +935,15 @@
     }
 
     class GLES3DRenderPassFactory {
-        createInstanceBatch() {
-            throw new Laya.NotImplementedError();
+        createMeshRenderBatchModule() {
+            return new Laya.GLESMeshRenderBatchAgent();
+        }
+        createComputeCommandAppatchCMD() {
+            throw new Laya.NotImplementedError;
         }
         createRender3DProcess() {
-            return new GLESRender3DProcess();
+            let renderpass = new RTRender3DProcess();
+            return renderpass;
         }
         createRenderContext3D() {
             return new GLESRenderContext3D();
@@ -995,21 +975,6 @@
         createSkinRenderElement() {
             return new GLESSkinRenderElement3D();
         }
-        createInstanceRenderElement3D() {
-            throw new Laya.NotImplementedError();
-        }
-        createDirectLightShadowRP() {
-            return new GLESDirectLightShadowRP();
-        }
-        createSpotLightShadowRP() {
-            return new GLESSpotLightShadowRP();
-        }
-        createForwardAddRP() {
-            return new GLESForwardAddRP();
-        }
-        createForwardAddCluster() {
-            return new GLESForwardAddClusterRP();
-        }
         createRenderElement3D() {
             return new GLESRenderElement3D();
         }
@@ -1033,83 +998,92 @@
             this.setMax(value);
         }
         setMin(value) {
-            this.float32Array[0] = value.x;
-            this.float32Array[1] = value.y;
-            this.float32Array[2] = value.z;
+            let index = NativeBounds.BOUNDS_MIN_DATAOFFSET;
+            this.float32Array[index] = value.x;
+            this.float32Array[index + 1] = value.y;
+            this.float32Array[index + 2] = value.z;
             this._nativeObj.setMin();
         }
         getMin() {
             var min = this._boundBox.min;
             this._nativeObj.getMin();
-            min.x = this.float32Array[0];
-            min.y = this.float32Array[1];
-            min.z = this.float32Array[2];
+            let index = NativeBounds.BOUNDS_MIN_DATAOFFSET;
+            min.x = this.float32Array[index];
+            min.y = this.float32Array[index + 1];
+            min.z = this.float32Array[index + 2];
             return min;
         }
         setMax(value) {
-            this.float32Array[0] = value.x;
-            this.float32Array[1] = value.y;
-            this.float32Array[2] = value.z;
+            let index = NativeBounds.BOUNDS_MAX_DATAOFFSET;
+            this.float32Array[index] = value.x;
+            this.float32Array[index + 1] = value.y;
+            this.float32Array[index + 2] = value.z;
             this._nativeObj.setMax();
         }
         getMax() {
             var max = this._boundBox.max;
             this._nativeObj.getMax();
-            max.x = this.float32Array[0];
-            max.y = this.float32Array[1];
-            max.z = this.float32Array[2];
+            let index = NativeBounds.BOUNDS_MAX_DATAOFFSET;
+            max.x = this.float32Array[index];
+            max.y = this.float32Array[index + 1];
+            max.z = this.float32Array[index + 2];
             return max;
         }
         setCenter(value) {
-            this.float32Array[0] = value.x;
-            this.float32Array[1] = value.y;
-            this.float32Array[2] = value.z;
+            let index = NativeBounds.BOUNDS_CENTER_DATAOFFSET;
+            this.float32Array[index] = value.x;
+            this.float32Array[index + 1] = value.y;
+            this.float32Array[index + 2] = value.z;
             this._nativeObj.setCenter();
         }
         getCenter() {
             var center = this._center;
             this._nativeObj.getCenter();
-            center.x = this.float32Array[0];
-            center.y = this.float32Array[1];
-            center.z = this.float32Array[2];
+            let index = NativeBounds.BOUNDS_CENTER_DATAOFFSET;
+            center.x = this.float32Array[index];
+            center.y = this.float32Array[index + 1];
+            center.z = this.float32Array[index + 2];
             return center;
         }
         setExtent(value) {
-            this.float32Array[0] = value.x;
-            this.float32Array[1] = value.y;
-            this.float32Array[2] = value.z;
+            let index = NativeBounds.BOUNDS_EXTENT_DATAOFFSET;
+            this.float32Array[index] = value.x;
+            this.float32Array[index + 1] = value.y;
+            this.float32Array[index + 2] = value.z;
             this._nativeObj.setExtent();
         }
         getExtent() {
             var extent = this._extent;
             this._nativeObj.getExtent();
-            extent.x = this.float32Array[0];
-            extent.y = this.float32Array[1];
-            extent.z = this.float32Array[2];
+            let index = NativeBounds.BOUNDS_EXTENT_DATAOFFSET;
+            extent.x = this.float32Array[index];
+            extent.y = this.float32Array[index + 1];
+            extent.z = this.float32Array[index + 2];
             return extent;
         }
         constructor(min, max) {
             this._center = new Laya.Vector3();
             this._extent = new Laya.Vector3();
             this._boundBox = new Laya.BoundBox(new Laya.Vector3(), new Laya.Vector3());
-            this.nativeMemory = new Laya.NativeMemory(NativeBounds.MemoryBlock_size, true);
+            this.nativeMemory = new Laya.NativeMemory(NativeBounds.BOUNDS_SHARE_MEMORY_SIZE * 4, true);
             this.float32Array = this.nativeMemory.float32Array;
             this._nativeObj = new window.conchBounds(this.nativeMemory._buffer);
             min && this.setMin(min);
             max && this.setMax(max);
         }
         _tranform(matrix, out) {
-            this.float32Array.set(matrix.elements);
-            this._nativeObj._tranform(matrix, out._nativeObj);
+            this._nativeObj._tranform(matrix.elements, out._nativeObj);
         }
         _getBoundBox() {
             this._nativeObj._getBoundBox();
-            this._boundBox.min.x = this.float32Array[0];
-            this._boundBox.min.y = this.float32Array[1];
-            this._boundBox.min.z = this.float32Array[2];
-            this._boundBox.max.x = this.float32Array[3];
-            this._boundBox.max.y = this.float32Array[4];
-            this._boundBox.max.z = this.float32Array[5];
+            let minIndex = NativeBounds.BOUNDS_MIN_DATAOFFSET;
+            let maxIndex = NativeBounds.BOUNDS_MAX_DATAOFFSET;
+            this._boundBox.min.x = this.float32Array[minIndex];
+            this._boundBox.min.y = this.float32Array[minIndex + 1];
+            this._boundBox.min.z = this.float32Array[minIndex + 2];
+            this._boundBox.max.x = this.float32Array[maxIndex];
+            this._boundBox.max.y = this.float32Array[maxIndex + 1];
+            this._boundBox.max.z = this.float32Array[maxIndex + 2];
             return this._boundBox;
         }
         calculateBoundsintersection(bounds) {
@@ -1140,7 +1114,11 @@
             return dest;
         }
     }
-    NativeBounds.MemoryBlock_size = Math.max(6 * 8, 16 * 4);
+    NativeBounds.BOUNDS_MIN_DATAOFFSET = 0;
+    NativeBounds.BOUNDS_MAX_DATAOFFSET = 3;
+    NativeBounds.BOUNDS_CENTER_DATAOFFSET = 6;
+    NativeBounds.BOUNDS_EXTENT_DATAOFFSET = 9;
+    NativeBounds.BOUNDS_SHARE_MEMORY_SIZE = 12;
     const TEMP_VECTOR3_MAX0 = new Laya.Vector3();
     const TEMP_VECTOR3_MAX1 = new Laya.Vector3();
 
@@ -1754,12 +1732,40 @@
         }
         constructor() {
             this._additionShaderData = new Map();
-            this.ismoved = new Laya.Vector2();
+            this._ismoved = new Laya.Vector2();
             this._worldParams = new Laya.Vector4();
             this._getNativeObj();
             this._defaultBaseGeometryBounds = new Laya.Bounds();
             this.baseGeometryBounds = this._defaultBaseGeometryBounds;
             this.renderelements = [];
+        }
+        get visibalRangeBit() {
+            return this._nativeObj.visibalRangeBit;
+        }
+        set visibalRangeBit(value) {
+            this._nativeObj.visibalRangeBit = value;
+        }
+        get visibalMin() {
+            return this._nativeObj.visibalMin;
+        }
+        set visibalMin(value) {
+            this._nativeObj.visibalMin = value;
+        }
+        get visibalMax() {
+            return this._nativeObj.visibalMax;
+        }
+        set visibalMax(value) {
+            this._nativeObj.visibalMax = value;
+        }
+        get ismoved() {
+            let value = this._nativeObj.ismoved;
+            this._ismoved.x = value.x;
+            this._ismoved.y = value.y;
+            return this._ismoved;
+        }
+        set ismoved(value) {
+            this._ismoved = value;
+            this._nativeObj.ismoved = value;
         }
         setNodeCustomData(dataSlot, data) {
             switch (dataSlot) {
@@ -2345,27 +2351,27 @@
 
     exports.GLES3DRenderPassFactory = GLES3DRenderPassFactory;
     exports.GLESBlitQuadCMDData = GLESBlitQuadCMDData;
-    exports.GLESDirectLightShadowRP = GLESDirectLightShadowRP;
     exports.GLESDrawElementCMDData = GLESDrawElementCMDData;
     exports.GLESDrawNodeCMDData = GLESDrawNodeCMDData;
-    exports.GLESForwardAddClusterRP = GLESForwardAddClusterRP;
-    exports.GLESForwardAddRP = GLESForwardAddRP;
-    exports.GLESRender3DProcess = GLESRender3DProcess;
     exports.GLESRenderContext3D = GLESRenderContext3D;
     exports.GLESRenderElement3D = GLESRenderElement3D;
     exports.GLESSetRenderTargetCMD = GLESSetRenderTargetCMD;
     exports.GLESSetViewportCMD = GLESSetViewportCMD;
     exports.GLESSkinRenderElement3D = GLESSkinRenderElement3D;
-    exports.GLESSpotLightShadowRP = GLESSpotLightShadowRP;
     exports.NativeBounds = NativeBounds;
     exports.RT3DRenderModuleFactory = RT3DRenderModuleFactory;
     exports.RTBaseRenderNode = RTBaseRenderNode;
+    exports.RTBaseSpotRP = RTBaseSpotRP;
     exports.RTCameraNodeData = RTCameraNodeData;
+    exports.RTDirCascadeShadowRP = RTDirCascadeShadowRP;
     exports.RTDirectLight = RTDirectLight;
+    exports.RTForwardAddClusterRP = RTForwardAddClusterRP;
+    exports.RTForwardAddRP = RTForwardAddRP;
     exports.RTLightmapData = RTLightmapData;
     exports.RTMeshRenderNode = RTMeshRenderNode;
     exports.RTPointLight = RTPointLight;
     exports.RTReflectionProb = RTReflectionProb;
+    exports.RTRender3DProcess = RTRender3DProcess;
     exports.RTScene3DRenderManager = RTScene3DRenderManager;
     exports.RTSceneNodeData = RTSceneNodeData;
     exports.RTSimpleSkinRenderNode = RTSimpleSkinRenderNode;

@@ -25,7 +25,7 @@ export class RedDotTrigger extends SingletonExtend<RedDotTrigger, Observer>(Obse
 		}
 	}
 
-	@InterestNotify(EUserEvent.OnMailChanged)
+	@InterestUserEvent(EUserEvent.OnMailChanged)
 	private checkMail() {
 		const mails = $userData.mail.mails;
 		this.setTriggered(ERDTriggerType.MailNotRead, mails.some(v => v.state == 0));

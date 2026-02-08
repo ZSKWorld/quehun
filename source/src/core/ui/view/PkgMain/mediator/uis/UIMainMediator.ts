@@ -24,10 +24,11 @@ export class UIMainMediator extends MediatorBase<UIMainView, IUIMainData> {
 		this.addEvent(EUIMainMsg.OnBtnMailClick, this.onBtnMailClick);
 		this.addEvent(EUIMainMsg.OnBtnRankClick, this.onBtnRankClick);
 		this.addEvent(EUIMainMsg.OnBtnAnnouncementClick, this.onBtnAnnouncementClick);
+		$windowImmit("aaa", 0);
 	}
 
 	private onBtnLiaoSheClick() {
-		this.openView(EViewID.UILiaoSheView, null, EViewOpenType.Hide);
+		this.openView(EViewID.UILiaoSheView, {type:window["aaa"]}, EViewOpenType.Hide);
 	}
 
 	private onBtnFriendClick() {

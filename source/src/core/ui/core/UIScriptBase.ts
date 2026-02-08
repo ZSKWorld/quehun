@@ -8,12 +8,12 @@ export class UIScriptBase extends Laya.Script implements IObserver {
 
 	override onReset() {
 		super.onReset();
-		$facade.offAllCaller(this);
+		$facade.setNotifyDecoaratorEnable(this, false);
 	}
 
 	protected override _onAdded() {
 		super._onAdded();
-		$facade.interestNotify(this);
+		$facade.setNotifyDecoaratorEnable(this, true);
 
 	}
 }

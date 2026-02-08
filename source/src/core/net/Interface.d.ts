@@ -17,7 +17,7 @@ declare interface IRouteInfo {
 	state: ERouteState,
 }
 
-declare interface INetManager extends Laya.EventDispatcher {
+declare interface INetManager {
 	get requests(): IReqMethod;
 	get lobbyConnected(): boolean;
 	get gameConnected(): boolean;
@@ -31,5 +31,4 @@ declare interface INetManager extends Laya.EventDispatcher {
 	connectOb(): void;
 	closeOb(): void;
 	closeAll(): void;
-	interestMessage(caller: any): void;
 }

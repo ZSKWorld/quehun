@@ -26,7 +26,7 @@ export class UIMailMediator extends MediatorBase<UIMailView, IUIMailData> {
 		this._curMail = null;
 	}
 
-	@InterestNotify(EUserEvent.OnMailChanged)
+	@InterestUserEvent(EUserEvent.OnMailChanged)
 	private refreshMail() {
 		const mails = $userData.mail.mails;
 		const view = this.view;

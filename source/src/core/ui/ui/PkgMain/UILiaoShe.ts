@@ -12,9 +12,10 @@ export default class UILiaoShe extends fgui.GComponent {
 	protected btn_look: fgui.GButton;
 	protected btn_dynamic: fgui.GButton;
 	protected group_left: fgui.GGroup;
-	protected img_bg: fgui.GImage;
 	protected btn_char: fgui.GButton;
 	protected btn_deco: fgui.GButton;
+	protected img_rightBg1: fgui.GImage;
+	protected img_rightBg2: fgui.GImage;
 	protected com_character: ComLiaoSheCharView;
 	protected com_decorate: ComLiaoSheDecorateView;
 	protected group_right: fgui.GGroup;
@@ -33,13 +34,14 @@ export default class UILiaoShe extends fgui.GComponent {
 	protected override onConstruct(): void {
 		this.ctrl_type = this.getControllerAt(0);
 		this.com_back = <ComBackView>(this.getChildAt(0));
-		this.btn_skin = <fgui.GButton>(this.getChildAt(2));
-		this.btn_look = <fgui.GButton>(this.getChildAt(3));
-		this.btn_dynamic = <fgui.GButton>(this.getChildAt(4));
-		this.group_left = <fgui.GGroup>(this.getChildAt(5));
-		this.img_bg = <fgui.GImage>(this.getChildAt(6));
-		this.btn_char = <fgui.GButton>(this.getChildAt(7));
-		this.btn_deco = <fgui.GButton>(this.getChildAt(8));
+		this.btn_skin = <fgui.GButton>(this.getChildAt(1));
+		this.btn_look = <fgui.GButton>(this.getChildAt(2));
+		this.btn_dynamic = <fgui.GButton>(this.getChildAt(3));
+		this.group_left = <fgui.GGroup>(this.getChildAt(4));
+		this.btn_char = <fgui.GButton>(this.getChildAt(5));
+		this.btn_deco = <fgui.GButton>(this.getChildAt(6));
+		this.img_rightBg1 = <fgui.GImage>(this.getChildAt(7));
+		this.img_rightBg2 = <fgui.GImage>(this.getChildAt(8));
 		this.com_character = <ComLiaoSheCharView>(this.getChildAt(9));
 		this.com_decorate = <ComLiaoSheDecorateView>(this.getChildAt(10));
 		this.group_right = <fgui.GGroup>(this.getChildAt(11));

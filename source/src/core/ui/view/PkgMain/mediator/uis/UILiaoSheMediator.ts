@@ -13,6 +13,7 @@ export class UILiaoSheMediator extends MediatorBase<UILiaoSheView, IUILiaoSheDat
 	}
 
 	override onEnable() {
-		this.view.refreshContent(0, false);
+		const index = this.data?.type || 0;
+		this.view.refreshContent(index, false);
 	}
 }

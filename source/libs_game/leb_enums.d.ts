@@ -81,7 +81,7 @@ declare const enum EViewType {
 }
 
 /** UI层级 */
-declare const enum ELayer {
+declare enum ELayer {
 	Scene = "Scene",
 	UIBottom = "UIBottom",
 	UIMiddle = "UIMiddle",

@@ -1,7 +1,7 @@
 import { EServiceType } from "./NetDefine";
 import { ESocketEvent, WebSocket } from "./WebSocket";
 
-export class NetManager extends Laya.EventDispatcher implements INetManager {
+export class NetManager implements INetManager {
 	private _gateway: string;
 	private _routes: IRouteInfo[];
 	private _lobbySocket: WebSocket;
@@ -43,9 +43,9 @@ export class NetManager extends Laya.EventDispatcher implements INetManager {
 			if (res.error)
 				this.onResponseError(method, res.error);
 			else
-				this.event(method, [res, req]);
+				$facade.dispatch(method, [res, req]);
 		});
-		this._lobbySocket.on(ESocketEvent.Notify, this, this.event);
+		this._lobbySocket.on(ESocketEvent.Notify, $facade, $facade.dispatch);
 	}
 	connectLobby() { this._lobbySocket?.connect(); }
 	closeLobby() { this._lobbySocket?.close(); }
@@ -62,26 +62,6 @@ export class NetManager extends Laya.EventDispatcher implements INetManager {
 		this.closeLobby();
 		this.closeGame();
 		this.closeOb();
-	}
-
-	interestMessage(caller: any) {
-		if (!caller) return;
-		const eventList = caller["__messageMap"];
-		if (!eventList) return;
-		for (const eventName in eventList) {
-			const callbackList = eventList[eventName];
-			for (const k in callbackList) {
-				const callback: any = callbackList[k];
-				const param = callback[eventName];
-				const once = param ? param.__once : false;
-				const args = param ? param.__args : null;
-				if (once) {
-					this.once(eventName, caller, callback, args);
-				} else {
-					this.on(eventName, caller, callback, args);
-				}
-			}
-		}
 	}
 
 	private async fetchRoutes() {

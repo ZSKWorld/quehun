@@ -14,7 +14,7 @@ export class UILiaoSheView extends ExtensionClass<IView, UILiaoShe>(UILiaoShe) i
 	}
 
 	refreshContent(type: 0 | 1, anim: boolean) {
-		if(anim && this.ctrl_type.selectedIndex == type) return;
+		if (anim && this.ctrl_type.selectedIndex == type) return;
 		const showChar = type == 0;
 		const { ctrl_type, img_bg, btn_char, btn_deco, trans_toChar, trans_toDeco, com_character, com_decorate } = this;
 		btn_char.selected = showChar;
@@ -33,8 +33,10 @@ export class UILiaoSheView extends ExtensionClass<IView, UILiaoShe>(UILiaoShe) i
 
 	override onOpenAni() {
 		if (this.ctrl_type.selectedIndex == 0) {
+			this.com_character.alpha = 0;
 			this.trans_show1.play();
 		} else {
+			this.com_decorate.alpha = 0;
 			this.trans_show2.play();
 		}
 		return this.com_back.onOpenAni();
@@ -47,5 +49,29 @@ export class UILiaoSheView extends ExtensionClass<IView, UILiaoShe>(UILiaoShe) i
 			this.trans_close2.play();
 		}
 		return this.com_back.onCloseAni();
+	}
+
+	private playShow1(anim: boolean) {
+
+	}
+
+	private playShow2(anim: boolean) {
+
+	}
+
+	private playClose1(anim: boolean) {
+
+	}
+
+	private playClose2(anim: boolean) {
+
+	}
+
+	private playToChar(anim: boolean) {
+
+	}
+
+	private playToDeco(anim: boolean) {
+
 	}
 }

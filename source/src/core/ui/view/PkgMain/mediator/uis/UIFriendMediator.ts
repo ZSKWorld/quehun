@@ -121,9 +121,9 @@ export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> 
 		this._searchPlayerLoader.loadNext();
 	}
 
-	@InterestNotify(EUserEvent.OnFriendsChanged, false, [0])
-	@InterestNotify(EUserEvent.OnFriendMaxCountChanged, false, [0])
-	@InterestNotify(EUserEvent.OnFriendApplyChanged, false, [1])
+	@InterestUserEvent(EUserEvent.OnFriendsChanged, false, [0])
+	@InterestUserEvent(EUserEvent.OnFriendMaxCountChanged, false, [0])
+	@InterestUserEvent(EUserEvent.OnFriendApplyChanged, false, [1])
 	private tryToRefresh(index: number) {
 		if (index != this._tabGroup.selectIndex) return;
 		this.onTabChanged();

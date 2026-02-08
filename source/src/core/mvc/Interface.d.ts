@@ -3,28 +3,64 @@ declare type IMediatorClass = Class<IMediator>;
 declare type ICommandClass = Class<ICommand>;
 
 /**
+ * 注册装饰器事件映射
+ * @param caller 
+ * @param dispatcher 
+ * @param eventMapName 
+ */
+declare function RegisterDecoraterEventMap(caller: any, dispatcher: { on: Function, once: Function }, eventMapName: string): void;
+
+/**
  * 注入全局事件监听
  * @param eventName 事件名
  * @param once 是否只监听一次
  * @param args 参数
  */
-declare function InterestNotify(eventName: string, once?: boolean, args?: any[]): MethodDecorator;
+declare function InterestNotify(eventName: ENotifyConst, once?: boolean, args?: any[]): MethodDecorator;
 
 /**
- * 注入网络回包事件监听
- * @param msgId 回包id
+ * 注入网络消息事件监听
+ * @param msgName 事件名
  * @param once 是否只监听一次
  * @param args 参数
  */
-declare function InterestMessage(msgId: ENetMessage | ENetNotify, once?: boolean, args?: any[]): MethodDecorator;
+declare function InterestMessage(msgName: ENetMessage | ENetNotify, once?: boolean, args?: any[]): MethodDecorator;
 
 /**
- * 注入用户事件监听
- * @param eventName 事件名，使用`EUserEvent`枚举
+ * 注入用户数据事件监听
+ * @param eventName 事件名
  * @param once 是否只监听一次
  * @param args 参数
  */
-declare function InterestUserEvent(eventName: string, once?: boolean, args?: any[]): MethodDecorator;
+declare function InterestUserEvent(eventName: EUserEvent, once?: boolean, args?: any[]): MethodDecorator;
+
+/**
+ * 注入页面键盘事件
+ * @param keyEventType 事件类型
+ * @param key 触发事件的键值，-1 所有键都可以触发，默认-1
+ * @param once 是否只监听一次
+ * @param args 参数
+ * @return MethodDecorator
+ */
+declare function ViewKeyEvent(keyEventType: EKeyEventType, key?: number, once?: boolean, args?: any[]): MethodDecorator;
+
+/**
+ * 注入页面鼠标事件
+ * @param mouseEventType 事件类型
+ * @param once 是否只监听一次
+ * @param args 参数
+ * @return MethodDecorator
+ */
+declare function ViewMouseEvent(mouseEventType: EMouseEventType, once?: boolean, args?: any[]): MethodDecorator;
+
+/**
+ * 注入页面自定义事件
+ * @param name 事件名称
+ * @param once 是否只监听一次
+ * @param args  参数
+ * @returns MethodDecorator
+ */
+declare function ViewEvent(name: string, once?: boolean, args?: any[]): MethodDecorator;
 
 declare interface INotifier {
 	/**
@@ -151,5 +187,10 @@ declare interface IFacade {
 	offAll(type: string): void;
 	offAllCaller(caller: any): void;
 	dispatch(eventName: string, data?: any): void;
-	interestNotify(caller: any): void;
+	/** 设置caller是否激活{@link InterestNotify}注册的事件 */
+	setNotifyDecoaratorEnable(caller: any, enable: boolean);
+	/** 设置caller是否激活{@link InterestMessage}注册的事件 */
+	setMessageDecoaratorenable(caller: any, enable: boolean);
+	/** 设置caller是否激活{@link InterestUserEvent}注册的事件 */
+	setUserEventDecoaratorenable(caller: any, enable: boolean);
 }

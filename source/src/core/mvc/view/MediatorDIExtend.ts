@@ -18,29 +18,29 @@ export class MediatorDIExtend {
 	 */
 	static registerDeviceEvent(mediator: DIMediator) {
 		if (!mediator) return;
-		const { __viewKeyEventMap, __viewMouseEventMap } = mediator;
-		if (__viewKeyEventMap) {
+		const { __viewKeyEventMap: vkem, __viewMouseEventMap: vmem } = mediator;
+		if (vkem) {
 			const func = this.doKeyEvent;
-			__viewKeyEventMap.keydown && Laya.stage.on(EKeyEventType.KeyDown, mediator, func);
-			__viewKeyEventMap.keypress && Laya.stage.on(EKeyEventType.KeyPress, mediator, func);
-			__viewKeyEventMap.keyup && Laya.stage.on(EKeyEventType.KeyUp, mediator, func);
+			vkem.keydown && Laya.stage.on(EKeyEventType.KeyDown, mediator, func);
+			vkem.keypress && Laya.stage.on(EKeyEventType.KeyPress, mediator, func);
+			vkem.keyup && Laya.stage.on(EKeyEventType.KeyUp, mediator, func);
 		}
-		if (__viewMouseEventMap) {
+		if (vmem) {
 			const mouseFunc = this.doMouseEvent;
 			const owner = mediator.owner;
-			__viewMouseEventMap.mousedown && owner.on(EMouseEventType.MouseDown, mediator, mouseFunc);
-			__viewMouseEventMap.mouseup && owner.on(EMouseEventType.MouseUp, mediator, mouseFunc);
-			__viewMouseEventMap.mousemove && owner.on(EMouseEventType.MouseMove, mediator, mouseFunc);
-			__viewMouseEventMap.click && owner.on(EMouseEventType.MouseClick, mediator, mouseFunc);
-			__viewMouseEventMap.doubleclick && owner.on(EMouseEventType.MouseDoubleClick, mediator, mouseFunc);
-			__viewMouseEventMap.rightclick && owner.on(EMouseEventType.MouseRightClick, mediator, mouseFunc);
-			__viewMouseEventMap.rightmousedown && owner.on(EMouseEventType.RightMouseDown, mediator, mouseFunc);
-			__viewMouseEventMap.rightmouseup && owner.on(EMouseEventType.RightMouseUp, mediator, mouseFunc);
-			__viewMouseEventMap.mouseover && owner.on(EMouseEventType.MouseOver, mediator, mouseFunc);
-			__viewMouseEventMap.mouseout && owner.on(EMouseEventType.MouseOut, mediator, mouseFunc);
-			__viewMouseEventMap.mousewheel && owner.on(EMouseEventType.MouseWheel, mediator, mouseFunc);
-			__viewMouseEventMap.mousedrag && owner.on(EMouseEventType.MouseDrag, mediator, mouseFunc);
-			__viewMouseEventMap.mousedragend && owner.on(EMouseEventType.MouseDragEnd, mediator, mouseFunc);
+			vmem.mousedown && owner.on(EMouseEventType.MouseDown, mediator, mouseFunc);
+			vmem.mouseup && owner.on(EMouseEventType.MouseUp, mediator, mouseFunc);
+			vmem.mousemove && owner.on(EMouseEventType.MouseMove, mediator, mouseFunc);
+			vmem.click && owner.on(EMouseEventType.MouseClick, mediator, mouseFunc);
+			vmem.doubleclick && owner.on(EMouseEventType.MouseDoubleClick, mediator, mouseFunc);
+			vmem.rightclick && owner.on(EMouseEventType.MouseRightClick, mediator, mouseFunc);
+			vmem.rightmousedown && owner.on(EMouseEventType.RightMouseDown, mediator, mouseFunc);
+			vmem.rightmouseup && owner.on(EMouseEventType.RightMouseUp, mediator, mouseFunc);
+			vmem.mouseover && owner.on(EMouseEventType.MouseOver, mediator, mouseFunc);
+			vmem.mouseout && owner.on(EMouseEventType.MouseOut, mediator, mouseFunc);
+			vmem.mousewheel && owner.on(EMouseEventType.MouseWheel, mediator, mouseFunc);
+			vmem.mousedrag && owner.on(EMouseEventType.MouseDrag, mediator, mouseFunc);
+			vmem.mousedragend && owner.on(EMouseEventType.MouseDragEnd, mediator, mouseFunc);
 		}
 
 		this.resetOnceEvent(mediator);

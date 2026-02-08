@@ -62,13 +62,24 @@ const InterestNotify = function (eventName, once, args) {
 	};
 }
 
-const InterestMessage = function (msgId, once, args) {
+const InterestMessage = function (msgName, once, args) {
 	return function (target, propertyKey, descriptor) {
 		target.__messageMap ||= {};
-		target.__messageMap[msgId] ||= [];
+		target.__messageMap[msgName] ||= [];
 
 		const func = descriptor.value;
-		const list = target.__messageMap[msgId];
-		setEvent(msgId, list, func, once, args);
+		const list = target.__messageMap[msgName];
+		setEvent(msgName, list, func, once, args);
+	};
+}
+
+const InterestUserEvent = function (eventName, once, args) {
+	return function (target, propertyKey, descriptor) {
+		target.__userEventMap ||= {};
+		target.__userEventMap[eventName] ||= [];
+
+		const func = descriptor.value;
+		const list = target.__userEventMap[eventName];
+		setEvent(eventName, list, func, once, args);
 	};
 }

@@ -7,7 +7,7 @@ export class RedDotManager extends Laya.EventDispatcher implements IRedDotManage
 
 	init() {
 		RedDotTrigger.Inst.init();
-		$facade.interestNotify(this);
+		$facade.setNotifyDecoaratorEnable(this, true);
 
 		this._rdMap = {} as any;
 		const rdMap = this._rdMap;

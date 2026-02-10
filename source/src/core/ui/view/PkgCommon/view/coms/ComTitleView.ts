@@ -6,13 +6,9 @@ export const enum EComTitle1Msg {
 
 export class ComTitleView extends ExtensionClass<IView, ComTitle>(ComTitle) implements IView {
 
-	override onCreate() {
-
-	}
-
 	refreshIcon(id: number) {
-		const titlePath = $itemUtil.getItemInfo(id).icon;
-		$dynamicResMgr.setLoader(this.loader_icon, titlePath || $langRes("extendRes/title/notitle.png"));
+		const titlePath = $itemUtil.getItemInfo(id).titleIcon;
+		$dynamicResMgr.setLoader(this.loader_icon, titlePath);
 	}
 
 	refreshItemIcon(id: number) {
@@ -20,7 +16,15 @@ export class ComTitleView extends ExtensionClass<IView, ComTitle>(ComTitle) impl
 		$dynamicResMgr.setLoader(this.loader_icon, titlePath);
 	}
 
+	override onEnable() {
+		Laya.timer.clear(this, this.clearLoader);
+	}
+
 	override onDisable() {
+		Laya.timer.frameOnce(1, this, this.clearLoader);
+	}
+
+	private clearLoader() {
 		$dynamicResMgr.clearLoader(this.loader_icon);
 	}
 }

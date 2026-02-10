@@ -14,7 +14,7 @@ export class ItemUtil implements IItemUtil {
 	getItemInfo(id: number) {
 		if (this._itemView[id]) return this._itemView[id];
 		const idType = this.getItemType(id);
-		let name = "", icon = "", itemIcon = "", desc = "", func = "";
+		let name = "", icon = "", itemIcon = "", desc = "", func = "", titleIcon = "";
 		const skinInfo: IItemInfo_SkinInfo = {
 			bighead: "", full: "", half: "", smallhead: "", smallhead1: "", smallhead2: "",
 			smallhead3: "", waitingroom: "", x: ""
@@ -76,7 +76,6 @@ export class ItemUtil implements IItemUtil {
 					itemIcon = titleCfg.icon_item;
 					desc = $langCfg(titleCfg, "desc");
 				}
-				icon = icon || "extendRes/title/notitle.png";
 				break;
 			case EItemType.FuncItem:
 				const funcItemCfg = $cfgMgr.item_definition.function_item[id];
@@ -89,7 +88,17 @@ export class ItemUtil implements IItemUtil {
 				}
 				break;
 		}
-		this._itemView[id] = { name, icon: $langRes(icon), itemIcon: $langRes(itemIcon), desc, func, skinInfo };
+		titleIcon = icon || "extendRes/title/notitle.png";
+
+		this._itemView[id] = {
+			name,
+			icon: $langRes(icon),
+			itemIcon: $langRes(itemIcon),
+			desc,
+			func,
+			titleIcon: $langRes(titleIcon),
+			skinInfo
+		};
 		return this._itemView[id];
 	}
 }

@@ -7,21 +7,21 @@ export class RenderLiaoSheCharView extends ExtensionClass<IView, RenderLiaoSheCh
 	}
 
 	refresh(data: ProtoObject<ICharacter>, using: boolean, selected: boolean) {
-		const { charid, level, exp, views, skin, is_upgraded } = data;
+		const { charid, skin, is_upgraded } = data;
 		const charInfo = $itemUtil.getItemInfo(charid);
 		const cfgChar = $cfgMgr.item_definition.character[charid];
 		const {
 			loader_bg, com_head, loader_border, loader_nameBg, btn_star, img_using, img_redDot, img_new,
-			txt_name, img_selected
+			txt_name
 		} = this;
 		com_head.refreshBigHead(skin);
-		loader_bg.icon = is_upgraded ? "ui://PkgMain/img_3245" : "ui://PkgMain/img_3244";
-		loader_border.icon = cfgChar.ur ? "ui://PkgMain/img_3372" : "ui://PkgMain/img_895";
+		loader_bg.icon = `ui://PkgMain/img_${ is_upgraded ? 3245 : 3244 }`;
+		loader_border.icon = `ui://PkgMain/img_${ cfgChar.ur ? 3372 : 895 }`;
 
 		if (cfgChar.ur)
-			loader_nameBg.icon = is_upgraded ? "ui://PkgMain/img_1739" : "ui://PkgMain/img_1738";
+			loader_nameBg.icon = `ui://PkgMain/img_${ is_upgraded ? 1739 : 1738 }`;
 		else
-			loader_nameBg.icon = is_upgraded ? "ui://PkgMain/img_1741" : "ui://PkgMain/img_1740";
+			loader_nameBg.icon = `ui://PkgMain/img_${ is_upgraded ? 1741 : 1740 }`;
 
 		txt_name.text = charInfo.name.split("").join("\n");
 		img_using.visible = using;
@@ -32,9 +32,9 @@ export class RenderLiaoSheCharView extends ExtensionClass<IView, RenderLiaoSheCh
 		btn_star.onClick(this, this.onBtnStarClick, [charid]);
 		const isStarChar = $userData.character.isStarChar(charid);
 		if (isStarChar)
-			btn_star.icon = is_upgraded ? "ui://PkgMain/img_862" : "ui://PkgMain/img_864";
+			btn_star.icon = `ui://PkgMain/img_${ is_upgraded ? 862 : 864 }`;
 		else
-			btn_star.icon = is_upgraded ? "ui://PkgMain/img_861" : "ui://PkgMain/img_863";
+			btn_star.icon = `ui://PkgMain/img_${ is_upgraded ? 861 : 863 }`;
 		this.refreshSelected(selected, charid);
 	}
 

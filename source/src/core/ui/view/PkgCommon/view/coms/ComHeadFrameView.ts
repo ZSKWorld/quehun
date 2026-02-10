@@ -6,10 +6,6 @@ export const enum EComHeadFrameMsg {
 
 export class ComHeadFrameView extends ExtensionClass<IView, ComHeadFrame>(ComHeadFrame) implements IView {
 
-	override onCreate() {
-
-	}
-
 	refreshIcon(id: number) {
 		const d_item = $cfgMgr.item_definition.item[id];
 		if (!d_item) id = 305501;
@@ -27,7 +23,15 @@ export class ComHeadFrameView extends ExtensionClass<IView, ComHeadFrame>(ComHea
 		$dynamicResMgr.setLoader(this.loader_icon, framePath);
 	}
 
+	override onEnable() {
+		Laya.timer.clear(this, this.clearLoader);
+	}
+
 	override onDisable() {
+		Laya.timer.frameOnce(1, this, this.clearLoader);
+	}
+
+	private clearLoader() {
 		$dynamicResMgr.clearLoader(this.loader_icon);
 	}
 }

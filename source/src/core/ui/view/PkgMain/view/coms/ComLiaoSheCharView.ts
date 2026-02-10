@@ -41,7 +41,7 @@ export class ComLiaoSheCharView extends ExtensionClass<IView, ComLiaoSheChar>(Co
 		const childIndex = list_chars.itemIndexToChildIndex(selectedIndex);
 		this._selectedItem = childIndex == -1 ? null : list_chars.getChildAt(childIndex) as RenderLiaoSheCharView;
 		list_chars.refreshVirtualList();
-		if (resetSelect && selectedIndex != -1)
+		if (selectedIndex != -1)
 			list_chars.scrollToView(selectedIndex, false);
 	}
 
@@ -58,6 +58,9 @@ export class ComLiaoSheCharView extends ExtensionClass<IView, ComLiaoSheChar>(Co
 		this._selectedData = data;
 		this._selectedItem = item;
 		item.refreshSelected(true, data.charid);
+		if (_selectedData == data && data.charid != $userData.character.mainCharId) {
+			$netMgr.requests.changeMainCharacter({ character_id: data.charid });
+		}
 	}
 
 	private onBtnStarClick() {

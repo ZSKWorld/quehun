@@ -5,9 +5,6 @@ export const enum EComItemMsg {
 }
 
 export class ComItemView extends ExtensionClass<IView, ComItem>(ComItem) implements IView {
-	override onCreate() {
-
-	}
 
 	/** 刷新指定路径icon */
 	refreshSkin(url: string) {
@@ -33,7 +30,15 @@ export class ComItemView extends ExtensionClass<IView, ComItem>(ComItem) impleme
 		$dynamicResMgr.setLoader(this.loader_icon, $langRes(iconPath));
 	}
 
+	override onEnable() {
+		Laya.timer.clear(this, this.clearLoader);
+	}
+
 	override onDisable() {
+		Laya.timer.frameOnce(1, this, this.clearLoader);
+	}
+
+	private clearLoader() {
 		$dynamicResMgr.clearLoader(this.loader_icon);
 	}
 }

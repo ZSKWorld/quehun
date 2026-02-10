@@ -34,6 +34,7 @@ export class UIFriendView extends ExtensionClass<IView, UIFriend>(UIFriend) impl
 		const { friends, friendMaxCount } = $userData.friend;
 		const { ctrl_type, txt_limit, list_friend, txt_empty } = this;
 		txt_limit.text = $lang(2455) + friends.length + "/" + friendMaxCount;
+		list_friend.scrollPane.percY = 0;
 		list_friend.numItems = friends.length;
 		txt_empty.visible = friends.length <= 0;
 		txt_empty.visible && txt_empty.langText(2454);

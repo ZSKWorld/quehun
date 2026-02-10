@@ -156,6 +156,7 @@ declare interface IItemInfo {
 	itemIcon: string;
 	desc: string;
 	func: string;
+	titleIcon: string;
 	/** 皮肤信息 */
 	skinInfo: IItemInfo_SkinInfo;
 }

@@ -129,6 +129,12 @@ export class CharacterVO extends BaseVO implements VO.ICharacterVO {
 		}
 	}
 
+	@InterestMessage(ENetMessage.changeMainCharacter)
+	private onChangeMainCharacter(_, req: IReqChangeMainCharacter) {
+		this._mainCharId = req.character_id;
+		this.dispatch(EUserEvent.OnMainCharacterChanged);
+	}
+
 	@InterestMessage(ENetMessage.updateCharacterSort)
 	private onUpdateCharacterSort(res: IResCommon, req: IReqUpdateCharacterSort) {
 		this._characterSort = req.sort;

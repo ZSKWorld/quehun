@@ -6,10 +6,6 @@ export const enum EComBigHeadMsg {
 
 export class ComHeadView extends ExtensionClass<IView, ComHead>(ComHead) implements IView {
 
-	override onCreate() {
-
-	}
-
 	refreshFull(skinId: number) {
 		this.refresh($itemUtil.getItemInfo(skinId).skinInfo.full);
 	}
@@ -42,11 +38,19 @@ export class ComHeadView extends ExtensionClass<IView, ComHead>(ComHead) impleme
 		this.refresh($itemUtil.getItemInfo(skinId).skinInfo.x);
 	}
 
-	private refresh(skinPath: string) {
-		$dynamicResMgr.setLoader(this.loader_icon, skinPath);
+	override onEnable() {
+		Laya.timer.clear(this, this.clearLoader);
 	}
 
 	override onDisable() {
+		Laya.timer.frameOnce(1, this, this.clearLoader);
+	}
+
+	private clearLoader() {
 		$dynamicResMgr.clearLoader(this.loader_icon);
+	}
+
+	private refresh(skinPath: string) {
+		$dynamicResMgr.setLoader(this.loader_icon, skinPath);
 	}
 }

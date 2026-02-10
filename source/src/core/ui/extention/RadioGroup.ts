@@ -22,9 +22,9 @@ export class RadioGroup {
 			this._items.push(item);
 			item.onClick(this, this.onItemClick, [item]);
 		});
-		this.selectIndex = 0;
 		this._valueChangedCaller = caller;
 		this._onValueChanged = onValueChanged;
+		this.clearSelection();
 	}
 
 	clearSelection() { this.setSelection(-1); }

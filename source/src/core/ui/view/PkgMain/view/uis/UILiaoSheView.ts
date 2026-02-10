@@ -16,16 +16,12 @@ export class UILiaoSheView extends ExtensionClass<IView, UILiaoShe>(UILiaoShe) i
 	refreshContent(type: 0 | 1, anim: boolean) {
 		if (anim && this.ctrl_type.selectedIndex == type) return;
 		const showChar = type == 0;
-		const { ctrl_type, img_bg, btn_char, btn_deco, trans_toChar, trans_toDeco, com_character, com_decorate } = this;
+		const { ctrl_type, btn_char, btn_deco, trans_toChar, trans_toDeco, com_character, com_decorate } = this;
 		btn_char.selected = showChar;
 		btn_deco.selected = !showChar;
 		btn_char.sortingOrder = +showChar;
 		btn_deco.sortingOrder = +!showChar;
 		ctrl_type.selectedIndex = type;
-		fgui.GTween.kill(img_bg);
-		const imgBgTargetWidth = showChar ? 764 : 1580;
-		if (anim) img_bg.tweenWidth(imgBgTargetWidth, 0.2);
-		else img_bg.width = imgBgTargetWidth;
 		const trans = showChar ? trans_toChar : trans_toDeco;
 		trans.play(null, 1, 0, anim ? 0 : trans.totalDuration);
 		type == 0 ? com_character.refresh(!anim) : com_decorate.refresh();
@@ -49,29 +45,5 @@ export class UILiaoSheView extends ExtensionClass<IView, UILiaoShe>(UILiaoShe) i
 			this.trans_close2.play();
 		}
 		return this.com_back.onCloseAni();
-	}
-
-	private playShow1(anim: boolean) {
-
-	}
-
-	private playShow2(anim: boolean) {
-
-	}
-
-	private playClose1(anim: boolean) {
-
-	}
-
-	private playClose2(anim: boolean) {
-
-	}
-
-	private playToChar(anim: boolean) {
-
-	}
-
-	private playToDeco(anim: boolean) {
-
 	}
 }

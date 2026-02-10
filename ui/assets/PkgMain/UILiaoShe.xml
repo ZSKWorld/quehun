@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="1920,1080" designImage="ui://ca43vz0eglpb7plok5" designImageAlpha="0">
-  <controller name="type" pages="0,角色,1,装扮" selected="0"/>
+  <controller name="type" pages="0,角色,1,装扮" selected="1"/>
   <displayList>
     <component id="n0_p5uz" name="back" src="p5uzob8h" fileName="Component/Component/ComBack.xml" pkg="vx9zwser" xy="10,22">
       <property target="title" propertyId="0" value="寮舍"/>
     </component>
+    <image id="n13_c90s" name="n13" src="ieavob7l" fileName="Texture/img_112.png" pkg="vx9zwser" xy="1854,162" pivot="1,0" anchor="true" size="732,863" alpha="0.6">
+      <relation target="n4_ik7b" sidePair="width-width,height-height,right-right,top-top"/>
+    </image>
     <component id="n14_k5qe" name="skin" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="28,232" size="100,100" group="n17_k5qe">
       <Button icon="ui://vith2b66k5qeobgg"/>
     </component>
@@ -14,7 +17,7 @@
     <component id="n16_k5qe" name="dynamic" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="28,494" size="100,100" group="n17_k5qe">
       <Button icon="ui://vith2b66s5z8obg6" selectedIcon="ui://vith2b66s5z8obg7"/>
     </component>
-    <group id="n17_k5qe" name="left" xy="28,232" size="100,362" advanced="true">
+    <group id="n17_k5qe" name="n17" xy="28,232" size="100,362" advanced="true">
       <gearDisplay controller="type" pages="0"/>
     </group>
     <component id="n2_ik7b" name="char" src="ik7bobfg" fileName="Component/UILiaoShe/BtnLiaoSheTab.xml" xy="1293,66" group="n18_k5qe">
@@ -23,17 +26,14 @@
     <component id="n3_ik7b" name="deco" src="ik7bobfg" fileName="Component/UILiaoShe/BtnLiaoSheTab.xml" xy="1541,66" group="n18_k5qe">
       <Button title="装扮"/>
     </component>
-    <image id="n13_c90s" name="rightBg1" src="ieavob7l" fileName="Texture/img_112.png" pkg="vx9zwser" xy="1854,162" pivot="1,0" anchor="true" size="732,863" group="n18_k5qe" alpha="0.6">
-      <relation target="n4_ik7b" sidePair="width-width,height-height,right-right,top-top"/>
-    </image>
-    <image id="n4_ik7b" name="rightBg2" src="ik7bobfh" fileName="Texture/img_3660.png" xy="1870,146" pivot="1,0" anchor="true" size="764,894" group="n18_k5qe"/>
+    <image id="n4_ik7b" name="n4" src="ik7bobfh" fileName="Texture/img_3660.png" xy="1870,146" pivot="1,0" anchor="true" size="764,894" group="n18_k5qe"/>
     <component id="n7_s5z8" name="character" src="k5qeobge" fileName="Component/UILiaoShe/ComLiaoSheChar.xml" xy="1143,203" group="n18_k5qe">
       <gearDisplay controller="type" pages="0"/>
     </component>
     <component id="n6_ik7b" name="decorate" src="glpbobfu" fileName="Component/UILiaoShe/ComLiaoSheDecorate.xml" xy="64,194" group="n18_k5qe">
       <gearDisplay controller="type" pages="1"/>
     </component>
-    <group id="n18_k5qe" name="right" xy="64,66" size="1806,974" advanced="true"/>
+    <group id="n18_k5qe" name="n18" xy="64,66" size="1806,974" advanced="true"/>
   </displayList>
   <transition name="show1" options="4" frameRate="60">
     <item time="0" type="Alpha" target="n13_c90s" tween="true" startValue="0" endValue="0.6" duration="12" ease="Linear"/>
@@ -64,6 +64,7 @@
     <item time="0" type="Alpha" target="n6_ik7b" tween="true" startValue="1" endValue="0" duration="12" ease="Linear"/>
     <item time="0" type="Alpha" target="n7_s5z8" value="0"/>
     <item time="0" type="Size" target="n4_ik7b" tween="true" startValue="1580,-" endValue="764,-" duration="12" ease="Linear"/>
+    <item time="0" type="XY" target="n17_k5qe" value="28,232"/>
     <item time="12" type="Alpha" target="n17_k5qe" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
     <item time="12" type="Alpha" target="n7_s5z8" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
   </transition>

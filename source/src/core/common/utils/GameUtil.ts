@@ -152,14 +152,9 @@ export class GameUtil implements IGameUtil {
 	getPlayerPlayingInfo(data: { is_online: boolean; playing: IAccountPlayingGame; logout_time: number }) {
 		const info = { color: "", text: "" };
 		if (data.is_online) {
-			const inGaming = $gameUtil.getPlayerInGaming(data.playing);
-			if (inGaming) {
-				info.color = "#a9d94d";
-				info.text = $lang(2069, inGaming);
-			} else {
-				info.color = "#58c4db";
-				info.text = $lang(2071);
-			}
+			const gamingName = this.getGamingName(data.playing);
+			info.color = gamingName ? "#a9d94d" : "#58c4db";
+			info.text = $lang(gamingName ? 2069 : 2071, gamingName);
 		} else {
 			info.color = "#8c8c8c";
 			info.text = $timeUtil.timeFormat5(data.logout_time) + $lang(2072);
@@ -176,5 +171,20 @@ export class GameUtil implements IGameUtil {
 		}
 		if (data.category == 4) return true;
 		return false;
+	}
+
+	getGamingName(data: IAccountPlayingGame) {
+		if (!data || !data.game_uuid) return "";
+
+		if (data.category == 1) return $lang(2023);
+
+		if (data.category == 2 && data.meta) {
+			const d = $cfgMgr.desktop.matchmode[data.meta.mode_id];
+			if (d) return $langCfg(d, "room_name");
+		}
+
+		if (data.category == 4)
+			return $lang(2025);
+		return "";
 	}
 }

@@ -190,7 +190,7 @@ declare interface IFacade {
 	/** 设置caller是否激活{@link InterestNotify}注册的事件 */
 	setNotifyDecoaratorEnable(caller: any, enable: boolean);
 	/** 设置caller是否激活{@link InterestMessage}注册的事件 */
-	setMessageDecoaratorenable(caller: any, enable: boolean);
+	setMessageDecoaratorEnable(caller: any, enable: boolean);
 	/** 设置caller是否激活{@link InterestUserEvent}注册的事件 */
-	setUserEventDecoaratorenable(caller: any, enable: boolean);
+	setUserEventDecoaratorEnable(caller: any, enable: boolean);
 }

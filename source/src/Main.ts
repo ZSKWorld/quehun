@@ -21,7 +21,7 @@ class Main {
 		FGUIExtend.extends();
 		ViewExtend.extends();
 		fgui.UIConfig.packageFileExtension = "zip";
-		Laya.SpineTemplet.RuntimeVersion = "4.2";
+		Laya.SpineConst.VERSION = "4.2";
 
 		Laya.stage.scaleMode = Laya.Stage.SCALE_SHOWALL;
 		Laya.stage.screenMode = Laya.Stage.SCREEN_NONE;

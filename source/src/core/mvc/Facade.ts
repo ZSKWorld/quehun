@@ -83,10 +83,10 @@ export class Facade extends Singleton<Facade>() implements IFacade {
 	setNotifyDecoaratorEnable(caller: any, enable: boolean) {
 		this.setDecoratorEnable(caller, "__notifyMap", this._notifyListener, enable);
 	}
-	setMessageDecoaratorenable(caller: any, enable: boolean) {
+	setMessageDecoaratorEnable(caller: any, enable: boolean) {
 		this.setDecoratorEnable(caller, "__messageMap", this._messageListener, enable);
 	}
-	setUserEventDecoaratorenable(caller: any, enable: boolean) {
+	setUserEventDecoaratorEnable(caller: any, enable: boolean) {
 		this.setDecoratorEnable(caller, "__userEventMap", this._userEventListener, enable);
 	}
 	private setDecoratorEnable(caller: any, eventMapName: string, listener: Laya.EventDispatcher, enable: boolean) {

@@ -1,8 +1,0 @@
-spine_2.png
-size:781,781
-filter:Linear,Linear
-scale:0.5
-snow_1
-bounds:2,166,566,184
-stone_1
-bounds:2,352,777,427

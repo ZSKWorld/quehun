@@ -9,6 +9,9 @@ interface IVersionInfo {
 }
 
 export class GameManager extends Observer implements IGameManager {
+	private static _inst: GameManager;
+	static get Inst() { return this._inst || (this._inst = new GameManager()); }
+
 	private _inDmm = false;
 	private _deviceId: string;
 	private _version: IVersionInfo;
@@ -96,6 +99,8 @@ export class GameManager extends Observer implements IGameManager {
 	private _hangOutTime = 0;
 	private _lastHeatBeatTime = $timeUtil.second;
 	private _lastMousePoint = new Laya.Point();
+
+	protected constructor() { super(); }
 
 	async init() {
 		this._ipConfig = await $loadMgr.fetch(ResPath.EConfigPath.IPConfig, Laya.Loader.JSON);
@@ -187,5 +192,10 @@ export class GameManager extends Observer implements IGameManager {
 		if (data.type == EClientMessageType.RoomInvite) {
 			Logger.error("有邀请", data);
 		}
+	}
+
+	@InterestMessage(ENetMessage.fetchServerTime)
+	private onFetchServerTime(res: IResServerTime) {
+		$timeUtil.setServerTime(res.server_time * 1000);
 	}
 }

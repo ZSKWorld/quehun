@@ -1,4 +1,4 @@
-export class LocalDataManager implements ILocalDataManager {
+export class LocalDataManager extends Singleton<LocalDataManager>() implements ILocalDataManager {
 	set<T>(key: string, value: T) {
 		Laya.LocalStorage.setJSON(key, value);
 	}

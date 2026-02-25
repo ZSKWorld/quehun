@@ -1,5 +1,3 @@
-import { Singleton } from "../../common/Singleton";
-
 export class ViewManager extends Singleton<ViewManager>() {
 	private _viewClsMap: { [viewId in EViewID]?: IViewClass; } = {};
 	private _mediatorlClsMap: { [viewId in EViewID]?: IMediatorClass; } = {};

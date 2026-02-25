@@ -1,5 +1,5 @@
 /** 文本提示管理器 */
-export class TipManager implements ITipManager {
+export class TipManager extends Singleton<TipManager>() implements ITipManager {
 	private _cache: string[] = [];
 	private _inCD: boolean = false;
 

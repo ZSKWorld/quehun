@@ -1,5 +1,3 @@
-import { Observer } from "../../mvc/provider/Observer";
-
 const MinSec = 60;
 const HourSec = MinSec * 60;
 const DaySec = HourSec * 24;
@@ -7,7 +5,7 @@ const WeekSec = DaySec * 7;
 const MonthSec = WeekSec * 30;
 const YearSec = MonthSec * 12;
 
-export class TimeUtil extends Observer implements ITimeUtil {
+export class TimeUtil extends Singleton<TimeUtil>() implements ITimeUtil {
 	private _date = new Date();
 	private _serverDelta: number = 0;
 
@@ -17,6 +15,10 @@ export class TimeUtil extends Observer implements ITimeUtil {
 
 	get second() {
 		return Math.floor(this.milliSecond / 1000);
+	}
+
+	setServerTime(time: number) {
+		this._serverDelta = time - Date.now();
 	}
 
 	getTimeByString(timeStr: string) {
@@ -99,10 +101,5 @@ export class TimeUtil extends Observer implements ITimeUtil {
 		return new Promise<void>(resolve => {
 			Laya.timer.once(milSec, null, resolve);
 		});
-	}
-
-	@InterestMessage(ENetMessage.fetchServerTime)
-	private onFetchServerTime(res: IResServerTime) {
-		this._serverDelta = res.server_time * 1000 - Date.now();
 	}
 }

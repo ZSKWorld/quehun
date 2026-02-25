@@ -1,7 +1,7 @@
 import { EServiceType } from "./NetDefine";
 import { ESocketEvent, WebSocket } from "./WebSocket";
 
-export class NetManager implements INetManager {
+export class NetManager extends Singleton<NetManager>() implements INetManager {
 	private _gateway: string;
 	private _routes: IRouteInfo[];
 	private _lobbySocket: WebSocket;

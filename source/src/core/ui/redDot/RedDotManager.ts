@@ -4,6 +4,9 @@ import { RedDotNode } from "./RedDotNode";
 import { RedDotTrigger } from "./RedDotTrigger";
 
 export class RedDotManager extends Observer implements IRedDotManager {
+	private static _inst: RedDotManager;
+	static get Inst() { return this._inst || (this._inst = new RedDotManager()); }
+
 	private _trigger: RedDotTrigger;
 	private _checkListener = new Laya.EventDispatcher();
 	private _triggerListener = new Laya.EventDispatcher();
@@ -11,6 +14,8 @@ export class RedDotManager extends Observer implements IRedDotManager {
 
 	get checkListener() { return this._checkListener; }
 	get triggerListener() { return this._triggerListener; }
+
+	protected constructor() { super(); }
 
 	@InterestNotify(ENotifyConst.OnInitGameCompleted)
 	private onInitGameCompleted() {

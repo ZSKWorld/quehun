@@ -4,6 +4,15 @@ const $windowImmit = function (name, obj) { window[name] = obj; }
 //用于扩展类字段，在外部定义的字段在内部可读，扩展的字段或方法不能在构造期间调用
 const ExtensionClass = function (cls) { return cls; }
 
+function Singleton() {
+	return class Singleton {
+		constructor() { }
+		static get Inst() {
+			return this._inst || (this._inst = new this());
+		}
+	};
+}
+
 const setEvent = function (name, list, func, once, args) {
 	if (list.indexOf(func) >= 0) return;
 	list.push(func);

@@ -1,4 +1,3 @@
-import { Singleton } from "../common/Singleton";
 import { Controller } from "./controller/Controller";
 import { ViewManager } from "./view/ViewManager";
 

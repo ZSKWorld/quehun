@@ -1,4 +1,4 @@
-export class SkeletonManager implements ISkeletonManager {
+export class SkeletonManager extends Singleton<SkeletonManager>() implements ISkeletonManager {
 	private _templetMap = new Map<string, Laya.Templet>();
 	private _skeletonPool = new Map<string, Laya.Skeleton[]>();
 

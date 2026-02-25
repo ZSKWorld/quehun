@@ -1,5 +1,5 @@
 /** 资源加载管理 */
-export class LoadManager implements ILoadManager {
+export class LoadManager extends Singleton<LoadManager>() implements ILoadManager {
 	fetch<K extends keyof Laya.ContentTypeMap>(url: string, contentType: K, onProgress?: Laya.ProgressCallback, options?: Readonly<Laya.ILoadOptions>) {
 		return Laya.loader.fetch(url, contentType, onProgress, options);
 	}

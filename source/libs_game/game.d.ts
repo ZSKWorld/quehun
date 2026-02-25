@@ -43,6 +43,23 @@ declare const $dynamicResMgr: IDynamicResManager;
 
 /** 注入全局变量 */
 declare function $windowImmit(name: string, obj: any): void;
+
+/**
+ * 扩展类字段，用于在外部定义的字段在内部可读，扩展的字段或方法不能在构造期间调用
+ * @param cls 要扩展的类
+ * @returns 扩展后的类
+ */
+declare function ExtensionClass<E, T>(cls: Class<T>): Class<T & E>;
+
+/** 不可使用，只在Singleton返回值中当作类构造约束使用，无具体实现 */
+class ProtectedClass { protected constructor() { } }
+declare function Singleton<T>(): typeof ProtectedClass & { get Inst(): T; };
+
+declare class BBB<T> {
+	static i: T;
+	a: T;
+}
+
 /** 把proto数据转成普通object对象 */
 declare function $decodeProtoData<T extends IProto | IProto[]>(data: T): ProtoObject<T>;
 
@@ -87,13 +104,6 @@ declare function $langRes(url: string): string;
 declare function $langCfg(obj: object, key: string): string;
 /** 显示网络错误码弹窗 */
 declare function $showNetError(res: IError): void;
-
-/**
- * 扩展类字段，用于在外部定义的字段在内部可读，扩展的字段或方法不能在构造期间调用
- * @param cls 要扩展的类
- * @returns 扩展后的类
- */
-declare function ExtensionClass<E, T>(cls: Class<T>): Class<T & E>;
 
 declare namespace CryptoJS {
 	class AES {

@@ -1,5 +1,3 @@
-import { Singleton } from "../../common/Singleton";
-
 export class Controller extends Singleton<Controller>() {
 	private _commandMap: { [key: string]: ICommandClass[]; } = {};
 

@@ -204,6 +204,8 @@ declare interface ITimeUtil {
 	get milliSecond(): number;
 	/** 当前时间，秒 */
 	get second(): number;
+	/** 设置服务器时间，ms */
+	setServerTime(time: number): void;
 	/** 将yyyy-mm-dd转换成时间戳 */
 	getTimeByString(timeStr: string): number;
 	/** 将时间戳转化成 `1970/1/1 08:00:15` 的格式 */

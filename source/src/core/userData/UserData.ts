@@ -13,6 +13,9 @@ import { RechargeVO } from "./RechargeVO";
 import { ServerSettingVO } from "./ServerSettingVO";
 
 export class UserData extends BaseVO implements VO.IUserDataVO {
+	private static _inst: UserData;
+	static get Inst() { return this._inst || (this._inst = new UserData()); }
+
 	/** 正在进行的游戏信息 */
 	game_info: IGameConnectInfo;
 	/** 有未读公告 */
@@ -42,6 +45,8 @@ export class UserData extends BaseVO implements VO.IUserDataVO {
 	mail = new MailVO();
 	bag = new BagVO();
 	achievement = new AchievementVO();
+
+	protected constructor() { super(); }
 
 	@InterestMessage(ENetMessage.login)
 	@InterestMessage(ENetMessage.oauth2Login)

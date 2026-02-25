@@ -3,14 +3,6 @@ declare type IMediatorClass = Class<IMediator>;
 declare type ICommandClass = Class<ICommand>;
 
 /**
- * 注册装饰器事件映射
- * @param caller 
- * @param dispatcher 
- * @param eventMapName 
- */
-declare function RegisterDecoraterEventMap(caller: any, dispatcher: { on: Function, once: Function }, eventMapName: string): void;
-
-/**
  * 注入全局事件监听
  * @param eventName 事件名
  * @param once 是否只监听一次

@@ -1,5 +1,3 @@
-import { Observer } from "../../mvc/provider/Observer";
-
 /** 页面缓存 */
 class UICache {
 
@@ -24,7 +22,7 @@ class UICache {
 }
 
 /** UI管理类 */
-export class UIManager extends Observer implements IUIManager {
+export class UIManager extends Singleton<UIManager>() implements IUIManager {
 	private _layerMap: { [key in ELayer]: fgui.GComponent };
 
 	/** 缓存池 */
@@ -45,7 +43,7 @@ export class UIManager extends Observer implements IUIManager {
 
 	private _curMediator: IMediator<IView, any>;
 
-	constructor() {
+	protected constructor() {
 		super();
 		this._layerMap = {} as any;
 		const gRoot = fgui.GRoot.inst;

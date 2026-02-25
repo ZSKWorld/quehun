@@ -1,7 +1,6 @@
-import { Observer } from "../core/mvc/provider/Observer";
 
 /** 逻辑场景管理类 */
-export class SceneManager extends Observer implements ISceneManager {
+export class SceneManager extends Singleton<SceneManager>() implements ISceneManager {
 	private _currentType: ESceneType;
 	private _sceneMap = new Map<ESceneType, IScene>();
 	private _isSwitching = false;

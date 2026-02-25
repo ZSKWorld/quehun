@@ -1,10 +1,4 @@
-import { Observer } from "../mvc/provider/Observer";
-
-export class LoadingBgLoader extends Observer {
-	private static _inst: LoadingBgLoader;
-	static get Inst() { return this._inst || (this._inst = new LoadingBgLoader()); }
-	protected constructor() { super(); }
-
+export class LoadingBgLoader extends Singleton<LoadingBgLoader>() {
 	private _cg: string;
 	private _left: string;
 	private _mid: string;

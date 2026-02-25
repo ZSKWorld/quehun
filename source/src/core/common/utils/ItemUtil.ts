@@ -1,4 +1,4 @@
-export class ItemUtil implements IItemUtil {
+export class ItemUtil extends Singleton<ItemUtil>() implements IItemUtil {
 
 	getItemType(id: number) {
 		const n = id > 1000000 ? Math.floor(id / 1000000) : Math.floor(id / 10000);

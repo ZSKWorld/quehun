@@ -1,5 +1,5 @@
-import { ObserverAll } from "../mvc/provider/ObserverAll";
+import { Observer } from "../mvc/provider/Observer";
 
-export class AFKManager extends ObserverAll {
+export class AFKManager extends Observer {
 
 }

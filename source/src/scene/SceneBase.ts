@@ -31,11 +31,16 @@ export abstract class SceneBase<T> extends Observer implements IScene<T> {
 			this.dispatch(ENotifyConst.OnSceneLoadBegin, this.type);
 
 			await LoadingBgLoader.Inst.randomLoad();
-
-			this.initLoadingTrackers();
+			
+			const count = this.loadViewId ? 4 : 3;
+			for (let i = 0; i < count; i++) {
+				this._progresses.push(0);
+				this._progressHandlers.push(Laya.Handler.create(this, this.updateProgress, [i], false));
+			}
+			this.updateProgress(0, 0);
 
 			const resGroup = this.getResGroup(EResGroupType.All);
-			const tasks: Promise<any>[] = [
+			const tasks = [
 				$loadMgr.loadPackage(resGroup.ui, this._progressHandlers[0]),
 				$skeletonMgr.load(resGroup.skeleton, this._progressHandlers[1]),
 				$loadMgr.load(resGroup.others, null, this._progressHandlers[2]),
@@ -62,9 +67,9 @@ export abstract class SceneBase<T> extends Observer implements IScene<T> {
 			this._progressHandlers.forEach(v => v.recover());
 			this._progressHandlers.length = 0;
 			this._progresses.length = 0;
-			this.dispatch(ENotifyConst.OnSceneLoadEnd, this.type);
 			$uiMgr.closeAllView();
 			LoadingBgLoader.Inst.clear();
+			this.dispatch(ENotifyConst.OnSceneLoadEnd, this.type);
 		}
 	}
 
@@ -81,24 +86,15 @@ export abstract class SceneBase<T> extends Observer implements IScene<T> {
 		this.dispatch(ENotifyConst.OnExitScene, this.type);
 	}
 
+	protected onEnter() { }
+
+	protected onExit() { }
+
 	/** 可卸载资源，场景退出时卸载 */
 	protected getNormalResArray() { return [] as string[]; }
 
 	/** 不可卸载资源，加载后不会卸载，只能手动卸载 */
 	protected getConstResArray() { return [] as string[]; }
-
-	protected onEnter() { }
-
-	protected onExit() { }
-
-	private initLoadingTrackers() {
-		const count = this.loadViewId ? 4 : 3;
-		for (let i = 0; i < count; i++) {
-			this._progresses.push(0);
-			this._progressHandlers.push(Laya.Handler.create(this, this.updateProgress, [i], false));
-		}
-		this.updateProgress(0, 0);
-	}
 
 	private updateProgress(index: number, progress: number) {
 		const _progresses = this._progresses;

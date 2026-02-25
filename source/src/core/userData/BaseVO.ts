@@ -1,5 +1,5 @@
-import { ObserverAll } from "../mvc/provider/ObserverAll";
+import { Observer } from "../mvc/provider/Observer";
 
-export class BaseVO extends ObserverAll {
+export class BaseVO extends Observer {
 
 }

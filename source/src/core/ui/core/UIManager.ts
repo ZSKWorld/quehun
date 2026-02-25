@@ -21,10 +21,6 @@ class UICache {
 		mediator && mediator.view.dispose();
 	}
 
-	onResize() {
-		this._mediators.forEach(v => v.view.makeFullScreen());
-	}
-
 }
 
 /** UI管理类 */
@@ -49,8 +45,8 @@ export class UIManager extends Observer implements IUIManager {
 
 	private _curMediator: IMediator<IView, any>;
 
-	init() {
-		if (this._layerMap) return;
+	constructor() {
+		super();
 		this._layerMap = {} as any;
 		const gRoot = fgui.GRoot.inst;
 		Laya.stage.addChild(gRoot.displayObject);
@@ -73,8 +69,6 @@ export class UIManager extends Observer implements IUIManager {
 		mask.drawRect(0, "", "#00000000");
 		mask.makeFullScreen();
 		mask.addRelation(mask.parent, fgui.RelationType.Size);
-		//延迟100防止频繁触发
-		Laya.stage.on(Laya.Event.RESIZE, this, () => Laya.timer.callLater(this, this.onResize));
 	}
 
 	addToLayer(obj: fgui.GObject, layer: ELayer, index?: number) {
@@ -172,10 +166,5 @@ export class UIManager extends Observer implements IUIManager {
 				await this.closeView(topMediator.viewId, false);
 				break;
 		}
-	}
-
-	private onResize() {
-		this._openedViews.forEach(v => v.view.makeFullScreen());
-		this._cache.onResize();
 	}
 }

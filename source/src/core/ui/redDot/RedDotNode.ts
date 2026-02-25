@@ -31,14 +31,14 @@ export class RedDotNode implements IRedDotNode {
 
 	get triggers() { return this._triggers; }
 	set triggers(value) {
-		$redDotMgr.offAllCaller(this);
+		$redDotMgr.triggerListener.offAllCaller(this);
 		this._triggeredMap.clear();
 
 		this._triggers = value;
 		if (this.hasTrigger && value)
 			for (const v of value) {
 				this._triggeredMap.set(v, 0);
-				$redDotMgr.on(v, this, this.onTrigger);
+				$redDotMgr.triggerListener.on(v, this, this.onTrigger);
 			}
 		this.trigger();
 	}
@@ -87,7 +87,7 @@ export class RedDotNode implements IRedDotNode {
 	trigger() {
 		if (this.hasTrigger) {
 			for (const v of this.triggers) {
-				$redDotMgr.event("Trigger" + v);
+				$redDotMgr.checkListener.event(v);
 			}
 		} else {
 			this.calculateCountLater();
@@ -134,7 +134,7 @@ export class RedDotNode implements IRedDotNode {
 
 	recover() {
 		this.removeSelf();
-		$redDotMgr.offAllCaller(this);
+		$redDotMgr.triggerListener.offAllCaller(this);
 		Laya.timer.clearAll(this);
 
 		this._rdCount = 0;

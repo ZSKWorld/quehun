@@ -1,4 +1,3 @@
-import { SingletonExtend } from "../../common/Singleton";
 import { Observer } from "../../mvc/provider/Observer";
 import { ERDTriggerType } from "./RedDotDefine";
 
@@ -13,15 +12,16 @@ function RDTriggerEvent(eventName: ERDTriggerType) {
 	};
 }
 
-export class RedDotTrigger extends SingletonExtend<RedDotTrigger, Observer>(Observer) {
+export class RedDotTrigger extends Observer {
 
 	private _triggers = new Map<ERDTriggerType, boolean | number>();
 	private _triggerEventMap: KeyMap<Function[]>;
 
-	init() {
+	constructor() {
+		super();
 		const triggerEventMap = this._triggerEventMap;
 		for (const key in triggerEventMap) {
-			triggerEventMap[key].forEach(func => $redDotMgr.on("Trigger" + key, this, func, [key]));
+			triggerEventMap[key].forEach(func => $redDotMgr.checkListener.on(key, this, func, [key]));
 		}
 	}
 
@@ -40,7 +40,7 @@ export class RedDotTrigger extends SingletonExtend<RedDotTrigger, Observer>(Obse
 	private callTrigger() {
 		const { _triggers } = this;
 		for (const [k, v] of _triggers) {
-			$redDotMgr.event(k, [k, v]);
+			$redDotMgr.triggerListener.event(k, [k, v]);
 		}
 		_triggers.clear();
 	}

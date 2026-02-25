@@ -6,8 +6,6 @@ declare interface IDynamicResManager {
 }
 
 declare interface IUIManager {
-	init(): void;
-
 	/**
 	 * 添加对象
 	 * @param obj 要添加的对象

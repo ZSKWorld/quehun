@@ -1,4 +1,4 @@
-import { ObserverAll } from "../mvc/provider/ObserverAll";
+import { Observer } from "../mvc/provider/Observer";
 
 const enum EClientMessageType {
 	RoomInvite = 1,
@@ -8,7 +8,7 @@ interface IVersionInfo {
 	version: string;
 }
 
-export class GameManager extends ObserverAll implements IGameManager {
+export class GameManager extends Observer implements IGameManager {
 	private _inDmm = false;
 	private _deviceId: string;
 	private _version: IVersionInfo;

@@ -18,6 +18,13 @@ export class CommonViewVO extends BaseVO implements VO.ICommonViewVO {
 
 	/** 填充默认数据 */
 	private fillDefaultData() {
+		for (const key in this.views) {
+			if (!Object.hasOwn(this.views, key)) continue;
+			
+			const element = this.views[key];
+			
+			
+		}
 		const defaultItems = [0, 0, 0, 0, 0, 0, 305501, 305044, 305045, 305725, 307001];
 		const slotIds = [0, 1, 2, 10, 3, 4, 5, 6, 7, 13, 8];
 		const { _views } = this;

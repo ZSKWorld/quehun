@@ -14,6 +14,9 @@ declare interface IRedDotNode {
 	recover(): void;
 }
 
-declare interface IRedDotManager extends Laya.EventDispatcher {
-	init(): void;
+declare interface IRedDotManager {
+	/** 红点检测事件监听器 */
+	get checkListener(): Laya.EventDispatcher;
+	/** 红点刷新事件监听器 */
+	get triggerListener(): Laya.EventDispatcher;
 }

@@ -18,8 +18,6 @@ export class InitGameCommand extends Command {
 			Laya.StatElement.M_GPUMemory,
 			Laya.StatElement.M_RenderTexture,
 		]);
-		$uiMgr.init();
-		$redDotMgr.init();
 		ShaderManager.init();
 
 		await $loadMgr.loadPackage(ResPath.EPkgPath.PkgEntrance);

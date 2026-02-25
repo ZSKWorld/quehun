@@ -1,4 +1,4 @@
-import { ObserverAll } from "../../mvc/provider/ObserverAll";
+import { Observer } from "../../mvc/provider/Observer";
 
 const MinSec = 60;
 const HourSec = MinSec * 60;
@@ -7,7 +7,7 @@ const WeekSec = DaySec * 7;
 const MonthSec = WeekSec * 30;
 const YearSec = MonthSec * 12;
 
-export class TimeUtil extends ObserverAll implements ITimeUtil {
+export class TimeUtil extends Observer implements ITimeUtil {
 	private _date = new Date();
 	private _serverDelta: number = 0;
 
@@ -105,42 +105,4 @@ export class TimeUtil extends ObserverAll implements ITimeUtil {
 	private onFetchServerTime(res: IResServerTime) {
 		this._serverDelta = res.server_time * 1000 - Date.now();
 	}
-}
-
-/**
- * 格式化相对时间
- * @param time 目标时间戳（秒）
- */
-function timeFormat5(time: number) {
-	const curTime = Math.floor(Date.now() / 1000);
-	const delta = Math.max(0, curTime - time); // 防止服务器时间差导致负数
-
-	// 10分钟以内：刚刚
-	if (delta < 10 * MinSec) {
-		return $lang(2013);
-	}
-
-	// 1小时以内：10, 20...50分钟前
-	if (delta < HourSec) {
-		const tensOfMinutes = Math.floor(delta / (10 * MinSec));
-		return `${ tensOfMinutes }0${ $lang(2014) }`;
-	}
-
-	// 24小时以内：X小时前
-	if (delta < DaySec) {
-		return Math.floor(delta / HourSec) + $lang(2015);
-	}
-
-	// 7天以内：X天前
-	if (delta < WeekSec) {
-		return Math.floor(delta / DaySec) + $lang(2016);
-	}
-
-	// 4周以内：X周前
-	if (delta < MonthSec) {
-		return Math.floor(delta / WeekSec) + $lang(2017);
-	}
-
-	// 超过4周：1个月前
-	return "1" + $lang(2018);
 }

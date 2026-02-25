@@ -11,8 +11,8 @@
     "outDir": "bin/js",
     "lib": [
       "ES2018",
-      "ES2024",
-      "DOM"
+      "ES2023",
+      "DOM",
     ],
     "types": [
       "minigame-api-typings",

@@ -1,7 +1,10 @@
-import { SingletonExtend } from "../common/Singleton";
 import { Observer } from "../mvc/provider/Observer";
 
-export class LoadingBgLoader extends SingletonExtend<LoadingBgLoader, Observer>(Observer) {
+export class LoadingBgLoader extends Observer {
+	private static _inst: LoadingBgLoader;
+	static get Inst() { return this._inst || (this._inst = new LoadingBgLoader()); }
+	protected constructor() { super(); }
+
 	private _cg: string;
 	private _left: string;
 	private _mid: string;

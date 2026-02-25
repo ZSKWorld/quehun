@@ -4,7 +4,24 @@ import { Observer } from "../core/mvc/provider/Observer";
 export class SceneManager extends Observer implements ISceneManager {
 	private _currentType: ESceneType;
 	private _sceneMap = new Map<ESceneType, IScene>();
-	private _isTransitioning = false;
+	private _isSwitching = false;
+	private _switchLockMask: fgui.GGraph;
+
+	private get isSwitching() { return this._isSwitching; }
+	private set isSwitching(v) {
+		this._isSwitching = v;
+		if (!this._switchLockMask) {
+			const mask = this._switchLockMask = new fgui.GGraph();
+			mask.visible = false;
+			mask.sortingOrder = 9999;
+			mask.name = "SceneManager_Mask";
+			$uiMgr.addToLayer(mask, ELayer.Lock);
+			mask.drawRect(0, "", "#00000000");
+			mask.makeFullScreen();
+			mask.addRelation(mask.parent, fgui.RelationType.Size);
+		}
+		this._switchLockMask.visible = v;
+	}
 
 	registerScene(type: ESceneType, sceneCls: Class<IScene>) {
 		if (this._sceneMap.has(type))
@@ -21,13 +38,13 @@ export class SceneManager extends Observer implements ISceneManager {
 	}
 
 	async enterScene(type: ESceneType, data?: any) {
-		if (this._isTransitioning) return;
+		if (this.isSwitching) return;
 		if (type == this._currentType) return;
 
 		const newScene = this._sceneMap.get(type);
 		if (!newScene) return;
 
-		this._isTransitioning = true;
+		this.isSwitching = true;
 
 		try {
 			await newScene.load();
@@ -41,12 +58,12 @@ export class SceneManager extends Observer implements ISceneManager {
 		} catch (e) {
 			const retry = await $confirmSma(0, `${ type } 场景加载失败，是否重试?`, "提示");
 			if (retry) {
-				this._isTransitioning = false;
-				return this.enterScene(type, data);
+				this.isSwitching = false;
+				this.enterScene(type, data);
 			} else
 				newScene.exit();
 		} finally {
-			this._isTransitioning = false;
+			this.isSwitching = false;
 		}
 	}
 }

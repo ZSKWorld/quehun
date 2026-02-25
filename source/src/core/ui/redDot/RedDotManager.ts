@@ -1,13 +1,20 @@
+import { Observer } from "../../mvc/provider/Observer";
 import { ERDName, ERDTriggerType } from "./RedDotDefine";
 import { RedDotNode } from "./RedDotNode";
 import { RedDotTrigger } from "./RedDotTrigger";
 
-export class RedDotManager extends Laya.EventDispatcher implements IRedDotManager {
+export class RedDotManager extends Observer implements IRedDotManager {
+	private _trigger: RedDotTrigger;
+	private _checkListener = new Laya.EventDispatcher();
+	private _triggerListener = new Laya.EventDispatcher();
 	private _rdMap: { [key in ERDName]: IRedDotNode };
 
-	init() {
-		RedDotTrigger.Inst.init();
-		$facade.setNotifyDecoaratorEnable(this, true);
+	get checkListener() { return this._checkListener; }
+	get triggerListener() { return this._triggerListener; }
+
+	@InterestNotify(ENotifyConst.OnInitGameCompleted)
+	private onInitGameCompleted() {
+		this._trigger = new RedDotTrigger();
 
 		this._rdMap = {} as any;
 		const rdMap = this._rdMap;

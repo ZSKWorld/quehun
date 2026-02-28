@@ -1096,6 +1096,13 @@ service Lobby {
   // debug 协议在正式版本删除
   rpc marathonActivityTest(ReqMarathonActivityTest) returns (ResMarathonActivityTest);
   // ==DevDebug End==
+
+  // mmo活动
+  rpc mmoActivityEquipFusion(ReqMMOActivityEquipFusion) returns (ResMMOActivityEquipFusion);
+  rpc mmoActivitySetCharacter(ReqMMOActivitySetCharacter) returns (ResMMOActivitySetCharacter);
+  rpc mmoActivitySetTeamMember(ReqMMOActivitySetTeamMember) returns (ResMMOActivitySetTeamMember);
+  rpc mmoActivityStartBattle(ReqMMOActivityStartBattle) returns (ResMMOActivityStartBattle);
+  rpc mmoActivitySetEquip(ReqMMOActivitySetEquip) returns (ResMMOActivitySetEquip);
 }
 
 // 获取客户端连接信息
@@ -3228,6 +3235,8 @@ message ResAccountActivityData {
   repeated lq.ActivityMarathonData marathon_data = 37;
 
   repeated lq.ActivityChooseGroupData choose_group_up_data = 38;
+
+  repeated lq.ActivityMMOData mmo_data = 39;
 }
 
 message SNSBlog {
@@ -5299,6 +5308,75 @@ message ResMarathonActivityTest {
   MarathonWallResult result = 2; // 只会返回第一个出错的墙
 }
 // ==DevDebug End==
+
+message ReqMMOActivityEquipFusion {
+  uint32 activity_id = 1;
+  repeated uint32 equip_list = 2;
+  uint32 target_type = 3;
+}
+
+message ResMMOActivityEquipFusion {
+  Error error = 1;
+  uint32 result = 2; // 生成的装备id
+}
+
+message ReqMMOActivitySetCharacter {
+  uint32 activity_id = 1;
+  uint32 character_id = 2;
+}
+
+message ResMMOActivitySetCharacter {
+  Error error = 1;
+}
+
+message ReqMMOActivitySetTeamMember {
+  uint32 activity_id = 1;
+
+  message MMOActivityTeamMember {
+    uint32 character_id = 1;
+    uint32 account_id = 2;
+    uint32 profession = 3;
+  }
+  repeated MMOActivityTeamMember members = 2;
+}
+
+message ResMMOActivitySetTeamMember {
+  Error error = 1;
+}
+
+message ReqMMOActivityStartBattle {
+  uint32 activity_id = 1;
+}
+
+message ResMMOActivityStartBattle {
+  Error error = 1;
+
+  message MMOActivityBattleInfo {
+    uint32 type = 1; // 1-攻击 2-治疗
+    uint32 target = 2; // 目标
+    uint32 from = 3; // 来源
+    uint32 value = 4; // 数值
+    uint32 tick = 5; // 时间
+    uint32 critical = 6; // 是否暴击
+  }
+  repeated MMOActivityBattleInfo actions= 2;
+
+  message MMOActivityBattleUnit {
+    uint32 id = 1; // 玩家阵营：角色id，敌方阵营：怪物id
+    uint32 hp = 2; // 血量
+    repeated uint32 equipment = 3; // 装备
+  }
+  repeated MMOActivityBattleUnit units = 3; // 参战单位初始数值
+}
+
+message ReqMMOActivitySetEquip {
+  uint32 activity_id = 1;
+  repeated uint32 equipments = 2;
+}
+
+message ResMMOActivitySetEquip {
+  Error error = 1;
+}
 /*********************************************************************************************************************************
  ********************************************** next request & response **********************************************************
  *********************************************************************************************************************************/

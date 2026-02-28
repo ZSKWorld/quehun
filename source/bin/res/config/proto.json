@@ -1,7 +1,4 @@
 {
-  "options": {
-    "syntax": "proto3"
-  },
   "nested": {
     "lq": {
       "options": {
@@ -882,6 +879,26 @@
             },
             "auto_match": {
               "type": "uint32",
+              "id": 2
+            }
+          }
+        },
+        "NotifyCustomizedContestPlanReady": {
+          "fields": {
+            "game_plan": {
+              "type": "CustomizedContestGamePlan",
+              "id": 1
+            }
+          }
+        },
+        "NotifyCustomizedContestPlanCancel": {
+          "fields": {
+            "unique_id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "uuid": {
+              "type": "string",
               "id": 2
             }
           }
@@ -3463,6 +3480,11 @@
               "rule": "repeated",
               "type": "lq.ActivitySnowballValueChanges",
               "id": 20
+            },
+            "choose_group_up_data": {
+              "rule": "repeated",
+              "type": "lq.ActivityChooseGroupData",
+              "id": 21
             }
           }
         },
@@ -4251,6 +4273,22 @@
             "is_end": {
               "type": "uint32",
               "id": 4
+            }
+          }
+        },
+        "ActivityChooseGroupData": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "chest_id": {
+              "type": "uint32",
+              "id": 2
+            },
+            "selection_id": {
+              "type": "uint32",
+              "id": 3
             }
           }
         },
@@ -5360,10 +5398,6 @@
               "type": "uint32",
               "id": 4
             },
-            "creator_id": {
-              "type": "uint32",
-              "id": 5
-            },
             "create_time": {
               "type": "uint32",
               "id": 6
@@ -5443,6 +5477,36 @@
             "match_end_time": {
               "type": "uint32",
               "id": 25
+            }
+          }
+        },
+        "CustomizedContestGamePlan": {
+          "fields": {
+            "unique_id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "uuid": {
+              "type": "string",
+              "id": 2
+            },
+            "ready_players": {
+              "rule": "repeated",
+              "type": "uint32",
+              "id": 3
+            },
+            "account_ids": {
+              "rule": "repeated",
+              "type": "uint32",
+              "id": 4
+            },
+            "game_start_time": {
+              "type": "uint32",
+              "id": 5
+            },
+            "expired_time": {
+              "type": "uint32",
+              "id": 6
             }
           }
         },
@@ -8599,6 +8663,118 @@
             }
           }
         },
+        "ClientDeviceInfoLog": {
+          "fields": {
+            "device_info": {
+              "type": "lq.ClientDeviceInfo",
+              "id": 1
+            },
+            "login_time": {
+              "type": "uint32",
+              "id": 2
+            },
+            "account_id": {
+              "type": "uint32",
+              "id": 3
+            }
+          }
+        },
+        "MarathonGameRecord": {
+          "fields": {
+            "point": {
+              "type": "uint32",
+              "id": 1
+            },
+            "distance": {
+              "type": "uint32",
+              "id": 2
+            },
+            "used_tick": {
+              "type": "uint32",
+              "id": 3
+            }
+          }
+        },
+        "ActivityMarathonData": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "highest_record": {
+              "type": "MarathonGameRecord",
+              "id": 2
+            },
+            "race_data": {
+              "type": "MarathonRaceData",
+              "id": 3
+            },
+            "history": {
+              "rule": "repeated",
+              "type": "MarathonRaceHistory",
+              "id": 4
+            }
+          },
+          "nested": {
+            "MarathonRaceData": {
+              "fields": {
+                "id": {
+                  "type": "string",
+                  "id": 1
+                },
+                "random_seed": {
+                  "type": "uint32",
+                  "id": 2
+                },
+                "start_time": {
+                  "type": "uint32",
+                  "id": 3
+                }
+              }
+            },
+            "MarathonRaceHistory": {
+              "fields": {
+                "race_data": {
+                  "type": "MarathonRaceData",
+                  "id": 1
+                },
+                "record": {
+                  "type": "MarathonGameRecord",
+                  "id": 2
+                }
+              }
+            }
+          }
+        },
+        "ActivityMarathonCheckData": {
+          "fields": {
+            "round": {
+              "type": "uint32",
+              "id": 1
+            },
+            "item": {
+              "rule": "repeated",
+              "type": "uint32",
+              "id": 2
+            },
+            "tile": {
+              "type": "string",
+              "id": 3
+            },
+            "tick": {
+              "type": "uint32",
+              "id": 4
+            },
+            "point": {
+              "type": "uint32",
+              "id": 5
+            },
+            "time_end": {
+              "type": "uint32",
+              "id": 6
+            }
+          }
+        },
         "Lobby": {
           "methods": {
             "fetchConnectionInfo": {
@@ -9545,6 +9721,10 @@
               "requestType": "ReqCompleteActivityTask",
               "responseType": "ResCommon"
             },
+            "completeActivityFlipTaskBatch": {
+              "requestType": "ReqCompleteActivityFlipTaskBatch",
+              "responseType": "ResCompleteActivityFlipTaskBatch"
+            },
             "completePeriodActivityTask": {
               "requestType": "ReqCompleteActivityTask",
               "responseType": "ResCommon"
@@ -9564,6 +9744,10 @@
             "receiveActivityFlipTask": {
               "requestType": "ReqReceiveActivityFlipTask",
               "responseType": "ResReceiveActivityFlipTask"
+            },
+            "receiveActivityFlipTaskBatch": {
+              "requestType": "ReqReceiveActivityFlipTaskBatch",
+              "responseType": "ResReceiveActivityFlipTaskBatch"
             },
             "completeSegmentTaskReward": {
               "requestType": "ReqCompleteSegmentTaskReward",
@@ -10127,7 +10311,11 @@
             },
             "selectChestChooseUpActivity": {
               "requestType": "ReqSelectChestChooseUp",
-              "responseType": "ReqCommon"
+              "responseType": "ResCommon"
+            },
+            "selectChestChooseGroupActivity": {
+              "requestType": "ReqSelectChestChooseGroupActivity",
+              "responseType": "ResCommon"
             },
             "generateAnnualReportToken": {
               "requestType": "ReqGenerateAnnualReportToken",
@@ -10236,6 +10424,18 @@
             "snowballActivityFetchDebug": {
               "requestType": "ReqSnowballActivityFetchDebug",
               "responseType": "ResSnowballActivityFetchDebug"
+            },
+            "marathonActivityStartRace": {
+              "requestType": "ReqMarathonActivityStartRace",
+              "responseType": "ResMarathonActivityStartRace"
+            },
+            "marathonActivityFinishRace": {
+              "requestType": "ReqMarathonActivityFinishRace",
+              "responseType": "ResMarathonActivityFinishRace"
+            },
+            "marathonActivityTest": {
+              "requestType": "ReqMarathonActivityTest",
+              "responseType": "ResMarathonActivityTest"
             }
           }
         },
@@ -14016,6 +14216,10 @@
             "choose_up_activity_id": {
               "type": "uint32",
               "id": 4
+            },
+            "choose_group_activity_id": {
+              "type": "uint32",
+              "id": 5
             }
           }
         },
@@ -14944,6 +15148,10 @@
             "is_admin": {
               "type": "bool",
               "id": 6
+            },
+            "game_plan": {
+              "type": "CustomizedContestGamePlan",
+              "id": 7
             }
           }
         },
@@ -15311,6 +15519,16 @@
               "rule": "repeated",
               "type": "lq.ActivitySnowballData",
               "id": 36
+            },
+            "marathon_data": {
+              "rule": "repeated",
+              "type": "lq.ActivityMarathonData",
+              "id": 37
+            },
+            "choose_group_up_data": {
+              "rule": "repeated",
+              "type": "lq.ActivityChooseGroupData",
+              "id": 38
             }
           },
           "nested": {
@@ -15507,6 +15725,27 @@
             }
           }
         },
+        "ReqReceiveActivityFlipTaskBatch": {
+          "fields": {
+            "task_list": {
+              "rule": "repeated",
+              "type": "uint32",
+              "id": 1
+            }
+          }
+        },
+        "ResReceiveActivityFlipTaskBatch": {
+          "fields": {
+            "error": {
+              "type": "Error",
+              "id": 1
+            },
+            "count": {
+              "type": "uint32",
+              "id": 2
+            }
+          }
+        },
         "ReqCompleteSegmentTaskReward": {
           "fields": {
             "task_id": {
@@ -15554,6 +15793,28 @@
             "error": {
               "type": "Error",
               "id": 3
+            }
+          }
+        },
+        "ReqCompleteActivityFlipTaskBatch": {
+          "fields": {
+            "task_list": {
+              "rule": "repeated",
+              "type": "uint32",
+              "id": 1
+            }
+          }
+        },
+        "ResCompleteActivityFlipTaskBatch": {
+          "fields": {
+            "error": {
+              "type": "Error",
+              "id": 1
+            },
+            "total_rewards": {
+              "rule": "repeated",
+              "type": "ExecuteReward",
+              "id": 2
             }
           }
         },
@@ -19658,6 +19919,22 @@
             }
           }
         },
+        "ReqSelectChestChooseGroupActivity": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "selection": {
+              "type": "uint32",
+              "id": 2
+            },
+            "chest_id": {
+              "type": "uint32",
+              "id": 3
+            }
+          }
+        },
         "ReqFestivalDebug": {
           "fields": {
             "festival_activity": {
@@ -20569,6 +20846,190 @@
             "snowball_activity": {
               "type": "lq.ActivitySnowballData",
               "id": 1
+            }
+          }
+        },
+        "ReqMarathonActivityStartRace": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            }
+          }
+        },
+        "ResMarathonActivityStartRace": {
+          "fields": {
+            "error": {
+              "type": "Error",
+              "id": 1
+            },
+            "random_seed": {
+              "type": "uint32",
+              "id": 2
+            },
+            "race_id": {
+              "type": "string",
+              "id": 3
+            }
+          }
+        },
+        "ReqMarathonActivityFinishRace": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "race_data": {
+              "rule": "repeated",
+              "type": "ActivityMarathonCheckData",
+              "id": 2
+            },
+            "record": {
+              "type": "MarathonGameRecord",
+              "id": 3
+            },
+            "race_id": {
+              "type": "string",
+              "id": 4
+            }
+          }
+        },
+        "ResMarathonActivityFinishRace": {
+          "fields": {
+            "error": {
+              "type": "Error",
+              "id": 1
+            },
+            "highest_record": {
+              "type": "MarathonGameRecord",
+              "id": 2
+            },
+            "rewards": {
+              "rule": "repeated",
+              "type": "ExecuteReward",
+              "id": 3
+            }
+          }
+        },
+        "ReqMarathonActivityTest": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "wall_tests": {
+              "rule": "repeated",
+              "type": "MarathonWallTest",
+              "id": 2
+            }
+          },
+          "nested": {
+            "MarathonWallTest": {
+              "fields": {
+                "seed": {
+                  "type": "uint32",
+                  "id": 1
+                },
+                "round": {
+                  "type": "uint32",
+                  "id": 2
+                },
+                "fever_count": {
+                  "type": "uint32",
+                  "id": 3
+                },
+                "fever_start_round": {
+                  "type": "uint32",
+                  "id": 4
+                },
+                "hands": {
+                  "rule": "repeated",
+                  "type": "string",
+                  "id": 5
+                },
+                "id": {
+                  "type": "uint32",
+                  "id": 6
+                },
+                "wall": {
+                  "rule": "repeated",
+                  "type": "string",
+                  "id": 7
+                }
+              }
+            }
+          }
+        },
+        "ResMarathonActivityTest": {
+          "fields": {
+            "error": {
+              "type": "Error",
+              "id": 1
+            },
+            "result": {
+              "type": "MarathonWallResult",
+              "id": 2
+            }
+          },
+          "nested": {
+            "MarathonWallResult": {
+              "fields": {
+                "id": {
+                  "type": "uint32",
+                  "id": 1
+                },
+                "step_value": {
+                  "type": "MarathonWallStepValue",
+                  "id": 3
+                }
+              },
+              "nested": {
+                "MarathonWallStepValue": {
+                  "fields": {
+                    "wall_seed": {
+                      "type": "uint32",
+                      "id": 1
+                    },
+                    "is_fever_time": {
+                      "type": "bool",
+                      "id": 2
+                    },
+                    "fever_tiles": {
+                      "rule": "repeated",
+                      "type": "string",
+                      "id": 3
+                    },
+                    "must_fever_tiles": {
+                      "rule": "repeated",
+                      "type": "string",
+                      "id": 4
+                    },
+                    "check_level": {
+                      "type": "uint32",
+                      "id": 5
+                    },
+                    "check_candidate_tiles": {
+                      "rule": "repeated",
+                      "type": "string",
+                      "id": 6
+                    },
+                    "check_final_tile": {
+                      "type": "string",
+                      "id": 7
+                    },
+                    "before_shuffle_tiles": {
+                      "rule": "repeated",
+                      "type": "string",
+                      "id": 8
+                    },
+                    "wall": {
+                      "rule": "repeated",
+                      "type": "string",
+                      "id": 9
+                    }
+                  }
+                }
+              }
             }
           }
         },
@@ -22376,17 +22837,9 @@
               "type": "string",
               "id": 3
             },
-            "session": {
-              "type": "string",
-              "id": 4
-            },
-            "gift": {
-              "type": "string",
-              "id": 5
-            },
-            "vs": {
-              "type": "uint32",
-              "id": 6
+            "device": {
+              "type": "ClientDeviceInfo",
+              "id": 7
             }
           }
         },

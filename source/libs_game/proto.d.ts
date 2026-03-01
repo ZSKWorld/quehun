@@ -3144,6 +3144,37 @@ declare enum ENetMessage {
 	 */
 	marathonActivityTest = "marathonActivityTest",
 	/**
+	 ** mmo活动
+	 ** req: {@link IReqMMOActivityEquipFusion}
+	 ** res: {@link IResMMOActivityEquipFusion}
+	 ** method: {@link IReqMethod.mmoActivityEquipFusion}
+	 */
+	mmoActivityEquipFusion = "mmoActivityEquipFusion",
+	/**
+	 ** req: {@link IReqMMOActivitySetCharacter}
+	 ** res: {@link IResMMOActivitySetCharacter}
+	 ** method: {@link IReqMethod.mmoActivitySetCharacter}
+	 */
+	mmoActivitySetCharacter = "mmoActivitySetCharacter",
+	/**
+	 ** req: {@link IReqMMOActivitySetTeamMember}
+	 ** res: {@link IResMMOActivitySetTeamMember}
+	 ** method: {@link IReqMethod.mmoActivitySetTeamMember}
+	 */
+	mmoActivitySetTeamMember = "mmoActivitySetTeamMember",
+	/**
+	 ** req: {@link IReqMMOActivityStartBattle}
+	 ** res: {@link IResMMOActivityStartBattle}
+	 ** method: {@link IReqMethod.mmoActivityStartBattle}
+	 */
+	mmoActivityStartBattle = "mmoActivityStartBattle",
+	/**
+	 ** req: {@link IReqMMOActivitySetEquip}
+	 ** res: {@link IResMMOActivitySetEquip}
+	 ** method: {@link IReqMethod.mmoActivitySetEquip}
+	 */
+	mmoActivitySetEquip = "mmoActivitySetEquip",
+	/**
 	 ** 验证游戏口令
 	 ** req: {@link IReqAuthGame}
 	 ** res: {@link IResAuthGame}
@@ -5283,6 +5314,7 @@ declare interface IAccountActivityUpdate extends IProto {
 	bingo_data: IActivityBingoData[];
 	snowball_data: IActivitySnowballValueChanges[];
 	choose_group_up_data: IActivityChooseGroupData[];
+	mmo_data: IActivityMMOData[];
 }
 
 /** .lq.ActivityCombiningWorkbench */
@@ -5627,6 +5659,43 @@ declare interface IActivityChooseGroupData extends IProto {
 	activity_id: number;
 	chest_id: number;
 	selection_id: number;
+}
+
+/** .lq.ActivityMMOData */
+declare interface IActivityMMOData extends IProto {
+	activity_id: number;
+	character: IActivityMMOData_ActivityMMOCharacterData;
+	team: IActivityMMOData_ActivityMMOTeamMemberData[];
+	bag: IActivityMMOData_ActivityMMOEquipmentData[];
+	map: IActivityMMOData_ActivityMMOMapData;
+}
+
+/** .lq.ActivityMMOData.ActivityMMOCharacterData */
+declare interface IActivityMMOData_ActivityMMOCharacterData extends IProto {
+	character_id: number;
+	profession: number;
+	equipments: number[];
+}
+
+/** .lq.ActivityMMOData.ActivityMMOTeamMemberData */
+declare interface IActivityMMOData_ActivityMMOTeamMemberData extends IProto {
+	character_id: number;
+	profession: number;
+	equipments: number[];
+	account_id: number;
+}
+
+/** .lq.ActivityMMOData.ActivityMMOEquipmentData */
+declare interface IActivityMMOData_ActivityMMOEquipmentData extends IProto {
+	id: number;
+	/** 拥有数量 */
+	stack: number;
+}
+
+/** .lq.ActivityMMOData.ActivityMMOMapData */
+declare interface IActivityMMOData_ActivityMMOMapData extends IProto {
+	level: number;
+	random_seed: number;
 }
 
 /** .lq.ActivityFriendGiftData */
@@ -10872,6 +10941,7 @@ declare interface IResAccountActivityData extends IResponse {
 	snowball_data: IActivitySnowballData[];
 	marathon_data: IActivityMarathonData[];
 	choose_group_up_data: IActivityChooseGroupData[];
+	mmo_data: IActivityMMOData[];
 }
 
 /** .lq.ResAccountActivityData.ActivitySignInData */
@@ -13466,6 +13536,94 @@ declare interface IResMarathonActivityTest_MarathonWallStepValue extends IProto 
 	check_final_tile: string;
 	before_shuffle_tiles: string[];
 	wall: string[];
+}
+
+/** .lq.ReqMMOActivityEquipFusion */
+declare interface IReqMMOActivityEquipFusion extends IProto {
+	activity_id: number;
+	equip_list: number[];
+	target_type: number;
+}
+
+/** .lq.ResMMOActivityEquipFusion */
+declare interface IResMMOActivityEquipFusion extends IResponse {
+	/** 生成的装备id */
+	result: number;
+}
+
+/** .lq.ReqMMOActivitySetCharacter */
+declare interface IReqMMOActivitySetCharacter extends IProto {
+	activity_id: number;
+	character_id: number;
+}
+
+/** .lq.ResMMOActivitySetCharacter */
+declare interface IResMMOActivitySetCharacter extends IResponse {
+}
+
+/** .lq.ReqMMOActivitySetTeamMember */
+declare interface IReqMMOActivitySetTeamMember extends IProto {
+	activity_id: number;
+	members: IReqMMOActivitySetTeamMember_MMOActivityTeamMember[];
+}
+
+/** .lq.ReqMMOActivitySetTeamMember.MMOActivityTeamMember */
+declare interface IReqMMOActivitySetTeamMember_MMOActivityTeamMember extends IProto {
+	character_id: number;
+	account_id: number;
+	profession: number;
+}
+
+/** .lq.ResMMOActivitySetTeamMember */
+declare interface IResMMOActivitySetTeamMember extends IResponse {
+}
+
+/** .lq.ReqMMOActivityStartBattle */
+declare interface IReqMMOActivityStartBattle extends IProto {
+	activity_id: number;
+}
+
+/** .lq.ResMMOActivityStartBattle */
+declare interface IResMMOActivityStartBattle extends IResponse {
+	actions: IResMMOActivityStartBattle_MMOActivityBattleInfo[];
+	/** 参战单位初始数值 */
+	units: IResMMOActivityStartBattle_MMOActivityBattleUnit[];
+}
+
+/** .lq.ResMMOActivityStartBattle.MMOActivityBattleInfo */
+declare interface IResMMOActivityStartBattle_MMOActivityBattleInfo extends IProto {
+	/** 1-攻击 2-治疗 */
+	type: number;
+	/** 目标 */
+	target: number;
+	/** 来源 */
+	from: number;
+	/** 数值 */
+	value: number;
+	/** 时间 */
+	tick: number;
+	/** 是否暴击 */
+	critical: number;
+}
+
+/** .lq.ResMMOActivityStartBattle.MMOActivityBattleUnit */
+declare interface IResMMOActivityStartBattle_MMOActivityBattleUnit extends IProto {
+	/** 玩家阵营：角色id，敌方阵营：怪物id */
+	id: number;
+	/** 血量 */
+	hp: number;
+	/** 装备 */
+	equipment: number[];
+}
+
+/** .lq.ReqMMOActivitySetEquip */
+declare interface IReqMMOActivitySetEquip extends IProto {
+	activity_id: number;
+	equipments: number[];
+}
+
+/** .lq.ResMMOActivitySetEquip */
+declare interface IResMMOActivitySetEquip extends IResponse {
 }
 
 /** .lq.AmuletBadgeData */

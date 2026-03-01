@@ -2833,6 +2833,37 @@ declare interface IReqMethod {
 	 */
 	marathonActivityTest(data?: IReqMarathonActivityTest): Promise<IResMarathonActivityTest>;
 	/**
+	 ** mmo活动
+	 ** req: {@link IReqMMOActivityEquipFusion}
+	 ** res: {@link IResMMOActivityEquipFusion}
+	 ** msgId: {@link ENetMessage.mmoActivityEquipFusion}
+	 */
+	mmoActivityEquipFusion(data?: IReqMMOActivityEquipFusion): Promise<IResMMOActivityEquipFusion>;
+	/**
+	 ** req: {@link IReqMMOActivitySetCharacter}
+	 ** res: {@link IResMMOActivitySetCharacter}
+	 ** msgId: {@link ENetMessage.mmoActivitySetCharacter}
+	 */
+	mmoActivitySetCharacter(data?: IReqMMOActivitySetCharacter): Promise<IResMMOActivitySetCharacter>;
+	/**
+	 ** req: {@link IReqMMOActivitySetTeamMember}
+	 ** res: {@link IResMMOActivitySetTeamMember}
+	 ** msgId: {@link ENetMessage.mmoActivitySetTeamMember}
+	 */
+	mmoActivitySetTeamMember(data?: IReqMMOActivitySetTeamMember): Promise<IResMMOActivitySetTeamMember>;
+	/**
+	 ** req: {@link IReqMMOActivityStartBattle}
+	 ** res: {@link IResMMOActivityStartBattle}
+	 ** msgId: {@link ENetMessage.mmoActivityStartBattle}
+	 */
+	mmoActivityStartBattle(data?: IReqMMOActivityStartBattle): Promise<IResMMOActivityStartBattle>;
+	/**
+	 ** req: {@link IReqMMOActivitySetEquip}
+	 ** res: {@link IResMMOActivitySetEquip}
+	 ** msgId: {@link ENetMessage.mmoActivitySetEquip}
+	 */
+	mmoActivitySetEquip(data?: IReqMMOActivitySetEquip): Promise<IResMMOActivitySetEquip>;
+	/**
 	 ** 验证游戏口令
 	 ** req: {@link IReqAuthGame}
 	 ** res: {@link IResAuthGame}

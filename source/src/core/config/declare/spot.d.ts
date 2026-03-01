@@ -655,6 +655,8 @@ declare interface ISheet_Spot_AudioSpot {
 	6003: ISheetData_Spot_AudioSpot;
 	6004: ISheetData_Spot_AudioSpot;
 	6005: ISheetData_Spot_AudioSpot;
+	6006: ISheetData_Spot_AudioSpot;
+	6007: ISheetData_Spot_AudioSpot;
 	10001: ISheetData_Spot_AudioSpot;
 	10002: ISheetData_Spot_AudioSpot;
 	10003: ISheetData_Spot_AudioSpot;

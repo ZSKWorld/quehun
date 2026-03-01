@@ -177,6 +177,8 @@ declare interface ITable_Activity {
 	choose_group_up_activity: CfgExt<ISheet_Activity_ChooseGroupUpActivity>;
 	/** 自选组合up卡池可选组合  ---  group */
 	choose_group: CfgExtGroup<ISheet_Activity_ChooseGroup>;
+	/** 任务页签  ---  unique */
+	task_tab: CfgExt<ISheet_Activity_TaskTab>;
 }
 
 //#region activity
@@ -1293,6 +1295,7 @@ declare interface ISheet_Activity_Activity {
 	260130: ISheetData_Activity_Activity;
 	260131: ISheetData_Activity_Activity;
 	260132: ISheetData_Activity_Activity;
+	260190: ISheetData_Activity_Activity;
 	260201: ISheetData_Activity_Activity;
 	260202: ISheetData_Activity_Activity;
 	260203: ISheetData_Activity_Activity;
@@ -1314,6 +1317,12 @@ declare interface ISheet_Activity_Activity {
 	260225: ISheetData_Activity_Activity;
 	260226: ISheetData_Activity_Activity;
 	260227: ISheetData_Activity_Activity;
+	260401: ISheetData_Activity_Activity;
+	260402: ISheetData_Activity_Activity;
+	260403: ISheetData_Activity_Activity;
+	260404: ISheetData_Activity_Activity;
+	260450: ISheetData_Activity_Activity;
+	260451: ISheetData_Activity_Activity;
 }
 declare interface ISheetData_Activity_Activity {
 	/** 活动id */
@@ -4322,6 +4331,42 @@ declare interface ISheet_Activity_FlipTask {
 	25079034: ISheetData_Activity_FlipTask;
 	25079035: ISheetData_Activity_FlipTask;
 	25079036: ISheetData_Activity_FlipTask;
+	26019001: ISheetData_Activity_FlipTask;
+	26019002: ISheetData_Activity_FlipTask;
+	26019003: ISheetData_Activity_FlipTask;
+	26019004: ISheetData_Activity_FlipTask;
+	26019005: ISheetData_Activity_FlipTask;
+	26019006: ISheetData_Activity_FlipTask;
+	26019007: ISheetData_Activity_FlipTask;
+	26019008: ISheetData_Activity_FlipTask;
+	26019009: ISheetData_Activity_FlipTask;
+	26019010: ISheetData_Activity_FlipTask;
+	26019011: ISheetData_Activity_FlipTask;
+	26019012: ISheetData_Activity_FlipTask;
+	26019013: ISheetData_Activity_FlipTask;
+	26019014: ISheetData_Activity_FlipTask;
+	26019015: ISheetData_Activity_FlipTask;
+	26019016: ISheetData_Activity_FlipTask;
+	26019017: ISheetData_Activity_FlipTask;
+	26019018: ISheetData_Activity_FlipTask;
+	26019019: ISheetData_Activity_FlipTask;
+	26019020: ISheetData_Activity_FlipTask;
+	26019021: ISheetData_Activity_FlipTask;
+	26019022: ISheetData_Activity_FlipTask;
+	26019023: ISheetData_Activity_FlipTask;
+	26019024: ISheetData_Activity_FlipTask;
+	26019025: ISheetData_Activity_FlipTask;
+	26019026: ISheetData_Activity_FlipTask;
+	26019027: ISheetData_Activity_FlipTask;
+	26019028: ISheetData_Activity_FlipTask;
+	26019029: ISheetData_Activity_FlipTask;
+	26019030: ISheetData_Activity_FlipTask;
+	26019031: ISheetData_Activity_FlipTask;
+	26019032: ISheetData_Activity_FlipTask;
+	26019033: ISheetData_Activity_FlipTask;
+	26019034: ISheetData_Activity_FlipTask;
+	26019035: ISheetData_Activity_FlipTask;
+	26019036: ISheetData_Activity_FlipTask;
 	220501001: ISheetData_Activity_FlipTask;
 	220501002: ISheetData_Activity_FlipTask;
 	220501003: ISheetData_Activity_FlipTask;
@@ -4392,6 +4437,7 @@ declare interface ISheet_Activity_FlipInfo {
 	231252: ISheetData_Activity_FlipInfo;
 	240860: ISheetData_Activity_FlipInfo;
 	250790: ISheetData_Activity_FlipInfo;
+	260190: ISheetData_Activity_FlipInfo;
 }
 declare interface ISheetData_Activity_FlipInfo {
 	/** 活动ID */
@@ -6452,6 +6498,15 @@ declare interface ISheet_Activity_PeriodTask {
 	26020243: ISheetData_Activity_PeriodTask;
 	26020244: ISheetData_Activity_PeriodTask;
 	26020245: ISheetData_Activity_PeriodTask;
+	26020246: ISheetData_Activity_PeriodTask;
+	26020247: ISheetData_Activity_PeriodTask;
+	26020248: ISheetData_Activity_PeriodTask;
+	26020249: ISheetData_Activity_PeriodTask;
+	26020250: ISheetData_Activity_PeriodTask;
+	26020251: ISheetData_Activity_PeriodTask;
+	26020252: ISheetData_Activity_PeriodTask;
+	26020253: ISheetData_Activity_PeriodTask;
+	26020254: ISheetData_Activity_PeriodTask;
 	26020301: ISheetData_Activity_PeriodTask;
 	26020302: ISheetData_Activity_PeriodTask;
 	26020303: ISheetData_Activity_PeriodTask;
@@ -6488,6 +6543,84 @@ declare interface ISheet_Activity_PeriodTask {
 	26020429: ISheetData_Activity_PeriodTask;
 	26020430: ISheetData_Activity_PeriodTask;
 	26020431: ISheetData_Activity_PeriodTask;
+	26040201: ISheetData_Activity_PeriodTask;
+	26040202: ISheetData_Activity_PeriodTask;
+	26040203: ISheetData_Activity_PeriodTask;
+	26040204: ISheetData_Activity_PeriodTask;
+	26040205: ISheetData_Activity_PeriodTask;
+	26040206: ISheetData_Activity_PeriodTask;
+	26040207: ISheetData_Activity_PeriodTask;
+	26040208: ISheetData_Activity_PeriodTask;
+	26040209: ISheetData_Activity_PeriodTask;
+	26040210: ISheetData_Activity_PeriodTask;
+	26040211: ISheetData_Activity_PeriodTask;
+	26040212: ISheetData_Activity_PeriodTask;
+	26040213: ISheetData_Activity_PeriodTask;
+	26040214: ISheetData_Activity_PeriodTask;
+	26040215: ISheetData_Activity_PeriodTask;
+	26040216: ISheetData_Activity_PeriodTask;
+	26040217: ISheetData_Activity_PeriodTask;
+	26040218: ISheetData_Activity_PeriodTask;
+	26040219: ISheetData_Activity_PeriodTask;
+	26040220: ISheetData_Activity_PeriodTask;
+	26040221: ISheetData_Activity_PeriodTask;
+	26040222: ISheetData_Activity_PeriodTask;
+	26040223: ISheetData_Activity_PeriodTask;
+	26040224: ISheetData_Activity_PeriodTask;
+	26040225: ISheetData_Activity_PeriodTask;
+	26040226: ISheetData_Activity_PeriodTask;
+	26040227: ISheetData_Activity_PeriodTask;
+	26040228: ISheetData_Activity_PeriodTask;
+	26040229: ISheetData_Activity_PeriodTask;
+	26040230: ISheetData_Activity_PeriodTask;
+	26040231: ISheetData_Activity_PeriodTask;
+	26040232: ISheetData_Activity_PeriodTask;
+	26040233: ISheetData_Activity_PeriodTask;
+	26040234: ISheetData_Activity_PeriodTask;
+	26040235: ISheetData_Activity_PeriodTask;
+	26040236: ISheetData_Activity_PeriodTask;
+	26040237: ISheetData_Activity_PeriodTask;
+	26040238: ISheetData_Activity_PeriodTask;
+	26040239: ISheetData_Activity_PeriodTask;
+	26040240: ISheetData_Activity_PeriodTask;
+	26040241: ISheetData_Activity_PeriodTask;
+	26040242: ISheetData_Activity_PeriodTask;
+	26040301: ISheetData_Activity_PeriodTask;
+	26040302: ISheetData_Activity_PeriodTask;
+	26040303: ISheetData_Activity_PeriodTask;
+	26040304: ISheetData_Activity_PeriodTask;
+	26040305: ISheetData_Activity_PeriodTask;
+	26040306: ISheetData_Activity_PeriodTask;
+	26040307: ISheetData_Activity_PeriodTask;
+	26040308: ISheetData_Activity_PeriodTask;
+	26040309: ISheetData_Activity_PeriodTask;
+	26040310: ISheetData_Activity_PeriodTask;
+	26040311: ISheetData_Activity_PeriodTask;
+	26040312: ISheetData_Activity_PeriodTask;
+	26040313: ISheetData_Activity_PeriodTask;
+	26040314: ISheetData_Activity_PeriodTask;
+	26040315: ISheetData_Activity_PeriodTask;
+	26040316: ISheetData_Activity_PeriodTask;
+	26040317: ISheetData_Activity_PeriodTask;
+	26040318: ISheetData_Activity_PeriodTask;
+	26040319: ISheetData_Activity_PeriodTask;
+	26040320: ISheetData_Activity_PeriodTask;
+	26040321: ISheetData_Activity_PeriodTask;
+	26040322: ISheetData_Activity_PeriodTask;
+	26040323: ISheetData_Activity_PeriodTask;
+	26040324: ISheetData_Activity_PeriodTask;
+	26040325: ISheetData_Activity_PeriodTask;
+	26040326: ISheetData_Activity_PeriodTask;
+	26040327: ISheetData_Activity_PeriodTask;
+	26040328: ISheetData_Activity_PeriodTask;
+	26040329: ISheetData_Activity_PeriodTask;
+	26040330: ISheetData_Activity_PeriodTask;
+	26040331: ISheetData_Activity_PeriodTask;
+	26040332: ISheetData_Activity_PeriodTask;
+	26040333: ISheetData_Activity_PeriodTask;
+	26040334: ISheetData_Activity_PeriodTask;
+	26040335: ISheetData_Activity_PeriodTask;
+	26040336: ISheetData_Activity_PeriodTask;
 }
 declare interface ISheetData_Activity_PeriodTask {
 	/** 活动任务id */
@@ -6665,6 +6798,19 @@ declare interface ISheet_Activity_ActivityBuff {
 	25010201: ISheetData_Activity_ActivityBuff[];
 	25010202: ISheetData_Activity_ActivityBuff[];
 	25010203: ISheetData_Activity_ActivityBuff[];
+	26040401: ISheetData_Activity_ActivityBuff[];
+	26040402: ISheetData_Activity_ActivityBuff[];
+	26040403: ISheetData_Activity_ActivityBuff[];
+	26040411: ISheetData_Activity_ActivityBuff[];
+	26040412: ISheetData_Activity_ActivityBuff[];
+	26040413: ISheetData_Activity_ActivityBuff[];
+	26040421: ISheetData_Activity_ActivityBuff[];
+	26040422: ISheetData_Activity_ActivityBuff[];
+	26040423: ISheetData_Activity_ActivityBuff[];
+	26040431: ISheetData_Activity_ActivityBuff[];
+	26040432: ISheetData_Activity_ActivityBuff[];
+	26040433: ISheetData_Activity_ActivityBuff[];
+	26040434: ISheetData_Activity_ActivityBuff[];
 }
 declare interface ISheetData_Activity_ActivityBuff {
 	/** buffid */
@@ -6807,6 +6953,7 @@ declare interface ISheet_Activity_ActivityRoom {
 	241141: ISheetData_Activity_ActivityRoom;
 	250412: ISheetData_Activity_ActivityRoom;
 	251050: ISheetData_Activity_ActivityRoom;
+	260451: ISheetData_Activity_ActivityRoom;
 }
 declare interface ISheetData_Activity_ActivityRoom {
 	/** 友人房活动ID */
@@ -6843,6 +6990,7 @@ declare interface ISheetData_Activity_ActivityRoom {
 	wanxiangxiuluo_mode: number;
 	beishuizhizhan_mode: number;
 	xiakeshang_mode: number;
+	qiangduozhizhan_mode: number;
 }
 //#endregion
 
@@ -11553,7 +11701,9 @@ declare interface ISheet_Activity_ActivityBanner {
 	251190: ISheetData_Activity_ActivityBanner;
 	251201: ISheetData_Activity_ActivityBanner;
 	260101: ISheetData_Activity_ActivityBanner;
+	260190: ISheetData_Activity_ActivityBanner;
 	260201: ISheetData_Activity_ActivityBanner;
+	260401: ISheetData_Activity_ActivityBanner;
 }
 declare interface ISheetData_Activity_ActivityBanner {
 	/** id */
@@ -11841,5 +11991,55 @@ declare interface ISheetData_Activity_ChooseGroup {
 	item_position: number;
 	/** 卡池id,国 */
 	chest_id: number[];
+}
+//#endregion
+
+//#region task_tab
+declare interface ISheet_Activity_TaskTab {
+	[key: string]: ISheetData_Activity_TaskTab;
+	26040301: ISheetData_Activity_TaskTab;
+	26040302: ISheetData_Activity_TaskTab;
+	26040303: ISheetData_Activity_TaskTab;
+	26040304: ISheetData_Activity_TaskTab;
+	26040305: ISheetData_Activity_TaskTab;
+	26040306: ISheetData_Activity_TaskTab;
+	26040307: ISheetData_Activity_TaskTab;
+	26040308: ISheetData_Activity_TaskTab;
+	26040309: ISheetData_Activity_TaskTab;
+	26040310: ISheetData_Activity_TaskTab;
+	26040311: ISheetData_Activity_TaskTab;
+	26040312: ISheetData_Activity_TaskTab;
+	26040313: ISheetData_Activity_TaskTab;
+	26040314: ISheetData_Activity_TaskTab;
+	26040315: ISheetData_Activity_TaskTab;
+	26040316: ISheetData_Activity_TaskTab;
+	26040317: ISheetData_Activity_TaskTab;
+	26040318: ISheetData_Activity_TaskTab;
+	26040319: ISheetData_Activity_TaskTab;
+	26040320: ISheetData_Activity_TaskTab;
+	26040321: ISheetData_Activity_TaskTab;
+	26040322: ISheetData_Activity_TaskTab;
+	26040323: ISheetData_Activity_TaskTab;
+	26040324: ISheetData_Activity_TaskTab;
+	26040325: ISheetData_Activity_TaskTab;
+	26040326: ISheetData_Activity_TaskTab;
+	26040327: ISheetData_Activity_TaskTab;
+	26040328: ISheetData_Activity_TaskTab;
+	26040329: ISheetData_Activity_TaskTab;
+	26040330: ISheetData_Activity_TaskTab;
+	26040331: ISheetData_Activity_TaskTab;
+	26040332: ISheetData_Activity_TaskTab;
+	26040333: ISheetData_Activity_TaskTab;
+	26040334: ISheetData_Activity_TaskTab;
+	26040335: ISheetData_Activity_TaskTab;
+	26040336: ISheetData_Activity_TaskTab;
+}
+declare interface ISheetData_Activity_TaskTab {
+	/** 活动任务id */
+	id: number;
+	/** 活动id */
+	activity_id: number;
+	/** 页签编号（小的在前） */
+	tab_id: number;
 }
 //#endregion

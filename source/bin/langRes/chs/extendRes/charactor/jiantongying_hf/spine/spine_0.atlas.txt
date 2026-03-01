@@ -1,0 +1,10 @@
+jiantongying_1_0.png
+size:854,854
+filter:Linear,Linear
+scale:0.4
+heidaizi5
+bounds:2,2,727,850
+offsets:35,26,786,942
+heidaizi6
+bounds:731,732,52,120
+offsets:13,0,76,128

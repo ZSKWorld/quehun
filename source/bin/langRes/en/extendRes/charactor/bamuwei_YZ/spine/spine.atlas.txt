@@ -1,0 +1,301 @@
+spine.png
+	size: 2048, 2048
+	filter: Linear, Linear
+	scale: 0.5
+BG1
+	bounds: 2, 343, 781, 725
+BG2
+	bounds: 1681, 630, 572, 142
+	rotate: 90
+BG_WAVE
+	bounds: 1170, 371, 805, 67
+	rotate: 90
+BG_greeting
+	bounds: 1239, 576, 600, 172
+	rotate: 90
+BODY
+	bounds: 1355, 1443, 436, 603
+BODY_s
+	bounds: 1239, 469, 105, 183
+	offsets: 6, 0, 111, 183
+	rotate: 90
+JM_L1
+	bounds: 2010, 1863, 46, 24
+	rotate: 90
+JM_L2
+	bounds: 2036, 1859, 18, 10
+	offsets: 0, 0, 20, 10
+	rotate: 90
+JM_L3
+	bounds: 2036, 1879, 30, 10
+	rotate: 90
+JM_R1
+	bounds: 1355, 1178, 54, 24
+	offsets: 2, 0, 57, 25
+JM_R2
+	bounds: 1462, 2, 27, 19
+JM_R3
+	bounds: 1867, 147, 15, 10
+SAIHONG
+	bounds: 931, 1089, 178, 87
+YP_L
+	bounds: 2016, 361, 43, 20
+	rotate: 90
+YP_R
+	bounds: 2010, 1911, 60, 25
+	rotate: 90
+arm_l_1
+	bounds: 1867, 218, 147, 287
+	offsets: 0, 3, 147, 290
+arm_l_2
+	bounds: 1735, 15, 150, 119
+	offsets: 0, 3, 150, 128
+arm_r_1
+	bounds: 1424, 23, 111, 309
+	rotate: 90
+arm_r_2
+	bounds: 1918, 930, 79, 296
+bjn1
+	bounds: 1710, 1228, 273, 211
+	offsets: 0, 0, 273, 214
+brow_l
+	bounds: 186, 2, 43, 16
+	offsets: 3, 0, 46, 16
+brow_r
+	bounds: 1867, 159, 57, 15
+	rotate: 90
+cefa_r_1(gai)
+	bounds: 1825, 872, 91, 354
+coap_arm_r_pd
+	bounds: 2, 59, 282, 663
+	rotate: 90
+coap_bck_1_yehua
+	bounds: 1121, 14, 301, 355
+coap_bck_3
+	bounds: 1424, 136, 441, 492
+coap_bck_4
+	bounds: 1239, 405, 176, 62
+	offsets: 0, 86, 176, 148
+coap_pd1
+	bounds: 667, 2, 281, 339
+daimao
+	bounds: 2, 7, 91, 50
+guang1
+	bounds: 931, 1178, 422, 868
+	offsets: 8, 39, 480, 916
+guang2
+	bounds: 1413, 641, 266, 561
+	offsets: 0, 22, 307, 583
+hand_l_1
+	bounds: 277, 16, 41, 82
+	offsets: 0, 2, 41, 84
+	rotate: 90
+hand_l_2
+	bounds: 950, 5, 35, 91
+	rotate: 90
+hand_l_3
+	bounds: 186, 20, 37, 89
+	rotate: 90
+hand_l_4
+	bounds: 929, 354, 19, 58
+	offsets: 0, 0, 19, 60
+hand_r_0
+	bounds: 95, 8, 89, 49
+hand_r_1
+	bounds: 480, 7, 46, 50
+hand_r_2
+	bounds: 2016, 431, 29, 74
+	offsets: 0, 0, 29, 75
+hand_r_3
+	bounds: 1121, 378, 39, 34
+	offsets: 0, 1, 43, 35
+hand_r_4
+	bounds: 2010, 1973, 34, 73
+hand_r_5
+	bounds: 2010, 1826, 35, 22
+	offsets: 1, 0, 36, 23
+	rotate: 90
+hand_r_6
+	bounds: 1321, 374, 29, 63
+	offsets: 0, 0, 30, 63
+	rotate: 90
+hand_r_7
+	bounds: 528, 9, 23, 48
+	offsets: 0, 0, 24, 49
+hand_r_8
+	bounds: 583, 28, 27, 29
+head
+	bounds: 1825, 653, 190, 217
+hl_l
+	bounds: 1162, 403, 9, 6
+	rotate: 90
+hl_r
+	bounds: 1162, 1167, 9, 6
+	rotate: 90
+hua3
+	bounds: 1985, 1327, 60, 112
+hua4
+	bounds: 424, 4, 53, 54
+	offsets: 0, 1, 54, 55
+	rotate: 90
+hudie_body
+	bounds: 1710, 1208, 18, 86
+	rotate: 90
+leg_l_1
+	bounds: 950, 42, 169, 370
+	offsets: 0, 0, 173, 370
+leg_l_2
+	bounds: 1793, 1441, 215, 605
+leg_r_2
+	bounds: 785, 414, 383, 654
+liuhai2
+	bounds: 785, 346, 66, 142
+	rotate: 90
+liuhai4
+	bounds: 1887, 17, 142, 199
+majiang
+	bounds: 1985, 1229, 43, 50
+	offsets: 0, 1, 43, 51
+	rotate: 90
+mao2
+	bounds: 1043, 17, 23, 67
+	rotate: 90
+mao3
+	bounds: 931, 1070, 32, 17
+mouth1
+	bounds: 1491, 2, 19, 14
+	rotate: 90
+mouth2
+	bounds: 231, 7, 15, 11
+mouth3
+	bounds: 1825, 636, 26, 15
+nose
+	bounds: 1798, 1215, 11, 25
+	rotate: 90
+plant1
+	bounds: 1355, 1204, 353, 237
+px_arm1
+	bounds: 965, 1070, 17, 18
+	rotate: 90
+px_arm2
+	bounds: 1148, 1073, 20, 24
+px_arm3
+	bounds: 553, 23, 28, 34
+	offsets: 0, 0, 29, 36
+px_arm4
+	bounds: 1065, 2, 13, 15
+	rotate: 90
+px_arm5
+	bounds: 1043, 2, 13, 20
+	rotate: 90
+px_eye
+	bounds: 1424, 2, 36, 19
+px_leg
+	bounds: 361, 7, 61, 50
+px_leg2
+	bounds: 1111, 1070, 27, 35
+	rotate: 90
+shadow_hair
+	bounds: 1867, 507, 179, 144
+ss1
+	bounds: 1985, 1274, 51, 61
+	rotate: 90
+ss2
+	bounds: 1239, 371, 80, 32
+ss3
+	bounds: 1111, 1099, 77, 49
+	rotate: 90
+ss4
+	bounds: 1918, 872, 78, 56
+tk_l
+	bounds: 2016, 406, 23, 30
+	rotate: 90
+tk_r
+	bounds: 1386, 371, 27, 32
+yg_zc
+	bounds: 2, 1070, 927, 976
+	offsets: 0, 24, 1000, 1000
+
+spine_2.png
+	size: 973, 973
+	filter: Linear, Linear
+	scale: 0.5
+128_glow_texture
+	bounds: 911, 840, 56, 56
+	offsets: 4, 6, 64, 64
+Glow
+	bounds: 828, 341, 98, 143
+	rotate: 90
+aixin
+	bounds: 378, 249, 198, 171
+bianzi
+	bounds: 389, 422, 214, 249
+	offsets: 0, 2, 214, 251
+	rotate: 90
+cefa_l(gai)
+	bounds: 274, 9, 102, 248
+coap_arm_l
+	bounds: 378, 66, 168, 181
+	offsets: 0, 0, 171, 181
+coap_bck_1
+	bounds: 2, 259, 374, 287
+coap_bck_2
+	bounds: 2, 548, 385, 423
+coap_chest
+	bounds: 389, 638, 311, 333
+coap_hdj1
+	bounds: 684, 130, 72, 124
+coap_hdj2
+	bounds: 832, 44, 91, 65
+eye_l
+	bounds: 774, 62, 66, 56
+	rotate: 90
+eye_r
+	bounds: 758, 130, 73, 73
+	offsets: 0, 1, 73, 74
+face
+	bounds: 702, 709, 207, 262
+guang
+	bounds: 897, 565, 64, 64
+hand_l_0
+	bounds: 687, 37, 85, 91
+hua1
+	bounds: 911, 898, 59, 73
+hua2
+	bounds: 758, 205, 59, 68
+	rotate: 90
+hua5
+	bounds: 806, 441, 116, 116
+leg_r_1
+	bounds: 2, 50, 207, 270
+	rotate: 90
+leg_r_1_s
+	bounds: 828, 208, 131, 140
+	offsets: 0, 13, 131, 153
+	rotate: 90
+liuhai
+	bounds: 548, 26, 72, 137
+	offsets: 4, 0, 76, 137
+	rotate: 90
+liuhai3
+	bounds: 833, 111, 95, 104
+	rotate: 90
+liuhai5
+	bounds: 548, 100, 147, 134
+	rotate: 90
+mao
+	bounds: 897, 631, 76, 71
+	rotate: 90
+plant2
+	bounds: 702, 559, 148, 193
+	rotate: 90
+px_body
+	bounds: 640, 560, 76, 58
+	rotate: 90
+wing1
+	bounds: 640, 431, 126, 164
+	rotate: 90
+wing2
+	bounds: 706, 266, 120, 163
+wing3
+	bounds: 578, 256, 126, 164

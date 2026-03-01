@@ -1,0 +1,346 @@
+spine.png
+	size: 2048, 2048
+	filter: Linear, Linear
+	scale: 0.5
+A37shou_11
+	bounds: 901, 255, 283, 1004
+	offsets: 0, 0, 397, 1050
+A37shou_12
+	bounds: 1954, 1528, 101, 76
+	rotate: 90
+A37shou_13
+	bounds: 2034, 1733, 12, 66
+A37shou_7
+	bounds: 816, 2, 157, 58
+A37shou_8
+	bounds: 1954, 1398, 128, 49
+	rotate: 90
+A37shou_9
+	bounds: 2003, 1966, 80, 41
+	rotate: 90
+XZJS_shizhi
+	bounds: 1202, 25, 35, 145
+	offsets: 1, 1, 37, 146
+	rotate: 90
+XZZB_wumingxiaozhi
+	bounds: 1954, 1301, 85, 95
+	offsets: 1, 0, 86, 95
+YUYI_0
+	bounds: 1491, 493, 394, 806
+YUYI_1
+	bounds: 1186, 281, 51, 257
+	rotate: 90
+YUYI_11
+	bounds: 553, 7, 258, 261
+	rotate: 90
+YUYI_12
+	bounds: 975, 11, 225, 49
+YUYI_13
+	bounds: 1256, 264, 15, 72
+	offsets: 0, 0, 16, 73
+	rotate: 90
+YUYI_15
+	bounds: 1518, 12, 33, 66
+	rotate: 90
+YUYI_16
+	bounds: 1186, 255, 24, 68
+	rotate: 90
+YUYI_18
+	bounds: 1886, 61, 149, 335
+YUYI_19
+	bounds: 2005, 1426, 41, 100
+YUYI_2
+	bounds: 2003, 1801, 33, 77
+YUYI_22
+	bounds: 1755, 2, 158, 63
+	rotate: 90
+YUYI_25
+	bounds: 1365, 61, 123, 218
+YUYI_26
+	bounds: 1954, 1631, 137, 78
+	rotate: 90
+YUYI_28
+	bounds: 1885, 5, 109, 54
+YUYI_3
+	bounds: 2034, 1665, 12, 66
+YUYI_31
+	bounds: 816, 255, 36, 10
+YUYI_32
+	bounds: 2003, 1880, 84, 28
+	offsets: 1, 0, 85, 28
+	rotate: 90
+YUYI_33
+	bounds: 1443, 13, 73, 32
+	offsets: 0, 0, 73, 33
+YUYI_34
+	bounds: 504, 260, 6, 5
+YUYI_35
+	bounds: 1445, 281, 51, 32
+	offsets: 0, 1, 51, 33
+	rotate: 90
+YUYI_36
+	bounds: 1996, 37, 31, 22
+	offsets: 0, 0, 32, 22
+YUYI_37
+	bounds: 1436, 1274, 48, 25
+	offsets: 0, 0, 58, 25
+YUYI_38
+	bounds: 2005, 1408, 38, 16
+YUYI_39
+	bounds: 1330, 255, 24, 18
+	offsets: 1, 0, 25, 18
+	rotate: 90
+YUYI_40
+	bounds: 504, 253, 5, 4
+	rotate: 90
+YUYI_41
+	bounds: 2032, 1611, 18, 14
+	rotate: 90
+YUYI_42
+	bounds: 2033, 1941, 23, 13
+	rotate: 90
+YUYI_49
+	bounds: 1820, 4, 32, 62
+	rotate: 90
+YUYI_50
+	bounds: 1490, 47, 113, 263
+	rotate: 90
+YUYI_55
+	bounds: 2, 7, 244, 549
+	rotate: 90
+YUYI_56
+	bounds: 1887, 398, 157, 901
+YUYI_6
+	bounds: 504, 267, 395, 876
+	offsets: 0, 0, 395, 884
+YUYI_61
+	bounds: 2003, 1770, 29, 29
+YUYI_62
+	bounds: 1586, 25, 20, 20
+	offsets: 1758, 300, 1836, 1045
+YUYI_63
+	bounds: 1820, 38, 63, 122
+YUYI_64
+	bounds: 2037, 387, 9, 9
+YUYI_68
+	bounds: 899, 1261, 535, 785
+YUYI_75
+	bounds: 816, 62, 191, 547
+	rotate: 90
+YUYI_76
+	bounds: 1186, 334, 303, 925
+	offsets: 8, 0, 316, 925
+YUYI_78
+	bounds: 2, 253, 500, 890
+YUYI_79
+	bounds: 2, 1145, 895, 901
+YUYI_7_2
+	bounds: 1349, 12, 92, 47
+YUYI_8
+	bounds: 1436, 1301, 516, 745
+	offsets: 0, 0, 516, 774
+light_01
+	bounds: 1954, 1770, 47, 276
+	offsets: 31, 0, 112, 276
+smoker1
+	bounds: 1491, 162, 329, 393
+	rotate: 90
+
+spine_2.png
+	size: 2048, 2048
+	filter: Linear, Linear
+	scale: 0.5
+A37_hand_02
+	bounds: 1978, 1854, 65, 89
+A37shou_14
+	bounds: 771, 53, 184, 576
+	rotate: 90
+DTBJ_60
+	bounds: 2, 490, 293, 711
+UI_zhangchang_9
+	bounds: 1807, 639, 216, 239
+	offsets: 0, 0, 216, 240
+	rotate: 90
+XZJS_muzhi
+	bounds: 1959, 1397, 77, 90
+XZJS_wumingxiaozhi
+	bounds: 1978, 1766, 86, 63
+	offsets: 0, 1, 86, 64
+	rotate: 90
+XZJS_zhingzhi
+	bounds: 1959, 1589, 82, 98
+XZZB_damuzhi
+	bounds: 1807, 587, 76, 50
+	offsets: 0, 0, 76, 51
+XZZB_zhongzhi
+	bounds: 1959, 1489, 98, 72
+	rotate: 90
+YUYI_10
+	bounds: 1978, 1689, 75, 67
+	offsets: 0, 0, 76, 67
+	rotate: 90
+YUYI_14
+	bounds: 1481, 1112, 279, 547
+	rotate: 90
+YUYI_20
+	bounds: 771, 2, 49, 85
+	rotate: 90
+YUYI_23
+	bounds: 1978, 1945, 65, 101
+YUYI_24
+	bounds: 344, 1227, 127, 191
+	offsets: 2, 0, 131, 191
+YUYI_4
+	bounds: 1572, 62, 315, 268
+	rotate: 90
+YUYI_43
+	bounds: 1923, 419, 218, 114
+	rotate: 90
+YUYI_44
+	bounds: 1349, 28, 221, 209
+YUYI_46
+	bounds: 343, 418, 112, 122
+	rotate: 90
+YUYI_5
+	bounds: 2, 21, 339, 467
+	offsets: 0, 0, 419, 467
+YUYI_51
+	bounds: 477, 776, 378, 642
+YUYI_52
+	bounds: 857, 781, 283, 611
+	rotate: 90
+YUYI_53
+	bounds: 2, 1203, 340, 843
+YUYI_57
+	bounds: 771, 239, 134, 775
+	offsets: 0, 16, 134, 791
+	rotate: 90
+YUYI_58
+	bounds: 1520, 1393, 303, 437
+	rotate: 90
+YUYI_65
+	bounds: 857, 1066, 622, 353
+YUYI_66
+	bounds: 477, 410, 364, 399
+	rotate: 90
+YUYI_67
+	bounds: 1486, 1698, 490, 348
+	offsets: 1, 0, 491, 348
+YUYI_70
+	bounds: 878, 375, 570, 404
+YUYI_71
+	bounds: 1470, 585, 270, 335
+	offsets: 0, 0, 270, 376
+	rotate: 90
+YUYI_72
+	bounds: 1726, 383, 200, 195
+	offsets: 0, 39, 200, 234
+	rotate: 90
+YUYI_73
+	bounds: 344, 1420, 472, 626
+YUYI_74
+	bounds: 1481, 857, 253, 543
+	rotate: 90
+YUYI_77
+	bounds: 818, 1421, 213, 700
+	offsets: 8, 0, 221, 700
+	rotate: 90
+YUYI_9
+	bounds: 297, 532, 178, 669
+handframe/LhandCon2
+	bounds: 818, 1636, 410, 666
+	rotate: 90
+handframe/SZ1
+	bounds: 1842, 2, 133, 181
+	offsets: 7, 0, 140, 184
+	rotate: 90
+handframe/SZ4
+	bounds: 343, 42, 366, 426
+	rotate: 90
+handframe/SZ6
+	bounds: 1450, 379, 204, 274
+	offsets: 2, 0, 206, 284
+	rotate: 90
+shenshe
+	bounds: 1842, 137, 244, 181
+	offsets: 33, 17, 320, 231
+	rotate: 90
+
+spine_3.png
+	size: 856, 856
+	filter: Linear, Linear
+	scale: 0.5
+A37HUA_03
+	bounds: 731, 213, 85, 71
+	offsets: 0, 0, 86, 72
+A37shou_10
+	bounds: 260, 359, 189, 154
+A37shou_6
+	bounds: 474, 485, 145, 102
+	offsets: 0, 0, 145, 103
+	rotate: 90
+Glow
+	bounds: 487, 96, 98, 143
+Line_240
+	bounds: 2, 321, 256, 256
+XZJS_shouzhang
+	bounds: 732, 528, 122, 137
+	offsets: 14, 6, 136, 143
+XZZB_shouzhang
+	bounds: 440, 241, 112, 133
+	offsets: 1, 0, 113, 133
+	rotate: 90
+YHC_01
+	bounds: 732, 286, 104, 104
+	offsets: 1, 1, 106, 106
+YHC_02
+	bounds: 705, 126, 85, 85
+YUYI_17
+	bounds: 260, 228, 178, 129
+	offsets: 0, 0, 187, 129
+YUYI_21
+	bounds: 228, 67, 153, 159
+YUYI_27
+	bounds: 451, 355, 130, 128
+YUYI_29
+	bounds: 279, 515, 115, 193
+	rotate: 90
+YUYI_30
+	bounds: 578, 517, 152, 152
+	offsets: 0, 0, 152, 155
+YUYI_45
+	bounds: 587, 109, 116, 110
+YUYI_47
+	bounds: 734, 667, 116, 187
+	offsets: 0, 10, 116, 197
+YUYI_48
+	bounds: 571, 671, 161, 183
+YUYI_54
+	bounds: 587, 221, 142, 140
+	offsets: 0, 0, 142, 167
+YUYI_59
+	bounds: 705, 53, 74, 71
+a37muzhi
+	bounds: 487, 35, 59, 88
+	offsets: 0, 1, 59, 89
+	rotate: 90
+handframe/LhandCon
+	bounds: 2, 51, 268, 224
+	rotate: 90
+handframe/LhandCon_2
+	bounds: 732, 392, 134, 112
+	rotate: 90
+handframe/SZ2
+	bounds: 583, 363, 152, 147
+	offsets: 0, 0, 152, 212
+	rotate: 90
+handframe/SZ3
+	bounds: 383, 52, 174, 102
+	offsets: 16, 0, 190, 176
+	rotate: 90
+handframe/SZ5
+	bounds: 279, 632, 222, 290
+	offsets: 2, 0, 224, 290
+	rotate: 90
+moon
+	bounds: 2, 579, 275, 275

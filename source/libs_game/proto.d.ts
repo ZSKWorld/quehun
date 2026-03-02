@@ -3175,6 +3175,18 @@ declare enum ENetMessage {
 	 */
 	mmoActivitySetEquip = "mmoActivitySetEquip",
 	/**
+	 ** req: {@link IReqMMOActivityFetchFriendList}
+	 ** res: {@link IResMMOActivityFetchFriendList}
+	 ** method: {@link IReqMethod.mmoActivityFetchFriendList}
+	 */
+	mmoActivityFetchFriendList = "mmoActivityFetchFriendList",
+	/**
+	 ** req: {@link IReqMMOActivityReceiveSupportReward}
+	 ** res: {@link IResMMOActivityReceiveSupportReward}
+	 ** method: {@link IReqMethod.mmoActivityReceiveSupportReward}
+	 */
+	mmoActivityReceiveSupportReward = "mmoActivityReceiveSupportReward",
+	/**
 	 ** 验证游戏口令
 	 ** req: {@link IReqAuthGame}
 	 ** res: {@link IResAuthGame}
@@ -5661,41 +5673,122 @@ declare interface IActivityChooseGroupData extends IProto {
 	selection_id: number;
 }
 
+/** .lq.ActivityMMODataChanges */
+declare interface IActivityMMODataChanges extends IProto {
+	activity_id: number;
+	character: IActivityMMODataChanges_ActivityMMOCharacterDataChanges;
+	team: IActivityMMODataChanges_ActivityMMOTeamDataChanges;
+	bag: IActivityMMODataChanges_ActivityMMOBagDataChanges;
+	map: IActivityMMODataChanges_ActivityMMOMapDataChanges;
+	support: IActivityMMODataChanges_ActivityMMOSupportDataChanges;
+}
+
+/** .lq.ActivityMMODataChanges.ActivityMMOCharacterDataChanges */
+declare interface IActivityMMODataChanges_ActivityMMOCharacterDataChanges extends IProto {
+	character_id: Uint32ValueDirty;
+	equipments: IUInt32ArrayDirty;
+}
+
+/** .lq.ActivityMMODataChanges.ActivityMMOTeamMemberArrayDirty */
+declare interface IActivityMMODataChanges_ActivityMMOTeamMemberArrayDirty extends IProto {
+	dirty: boolean;
+	value: IActivityMMOTeamMember[];
+}
+
+/** .lq.ActivityMMODataChanges.ActivityMMOTeamDataChanges */
+declare interface IActivityMMODataChanges_ActivityMMOTeamDataChanges extends IProto {
+	members: IActivityMMODataChanges_ActivityMMOTeamMemberArrayDirty;
+}
+
+/** .lq.ActivityMMODataChanges.ActivityMMOBagDataChanges */
+declare interface IActivityMMODataChanges_ActivityMMOBagDataChanges extends IProto {
+	dirty: boolean;
+	value: IActivityMMOEquipmentData[];
+}
+
+/** .lq.ActivityMMODataChanges.ActivityMMOMapDataChanges */
+declare interface IActivityMMODataChanges_ActivityMMOMapDataChanges extends IProto {
+	level: IUInt32Dirty;
+	random_seed: IUInt32Dirty;
+}
+
+/** .lq.ActivityMMODataChanges.ActivityMMOSupportDataChanges */
+declare interface IActivityMMODataChanges_ActivityMMOSupportDataChanges extends IProto {
+	/** 上次领取支援奖励的时间，如果时间是本日的话说明今天已经领取过了 */
+	last_receive_time: IUInt32Dirty;
+	/** 待领取支援次数 */
+	support_count: IUInt32Dirty;
+}
+
+/** .lq.ActivityMMOTeamMember */
+declare interface IActivityMMOTeamMember extends IProto {
+	character_id: number;
+	equipments: number[];
+	account_id: number;
+}
+
+/** .lq.ActivityMMOEquipmentData */
+declare interface IActivityMMOEquipmentData extends IProto {
+	id: number;
+	/** 拥有数量 */
+	stack: number;
+}
+
+/** .lq.MMOActivityFriendData */
+declare interface IMMOActivityFriendData extends IProto {
+	character_id: number;
+	equipments: number[];
+	account_id: number;
+	/** 仅全服随机玩家有该字段 */
+	nickname: string;
+}
+
 /** .lq.ActivityMMOData */
 declare interface IActivityMMOData extends IProto {
 	activity_id: number;
 	character: IActivityMMOData_ActivityMMOCharacterData;
-	team: IActivityMMOData_ActivityMMOTeamMemberData[];
-	bag: IActivityMMOData_ActivityMMOEquipmentData[];
+	team: IActivityMMOData_ActivityMMOTeamData;
+	bag: IActivityMMOData_ActivityMMOBagData;
 	map: IActivityMMOData_ActivityMMOMapData;
+	support: IActivityMMOData_ActivityMMOSupportData;
 }
 
 /** .lq.ActivityMMOData.ActivityMMOCharacterData */
 declare interface IActivityMMOData_ActivityMMOCharacterData extends IProto {
 	character_id: number;
-	profession: number;
 	equipments: number[];
 }
 
-/** .lq.ActivityMMOData.ActivityMMOTeamMemberData */
-declare interface IActivityMMOData_ActivityMMOTeamMemberData extends IProto {
-	character_id: number;
-	profession: number;
-	equipments: number[];
-	account_id: number;
+/** .lq.ActivityMMOData.ActivityMMOTeamData */
+declare interface IActivityMMOData_ActivityMMOTeamData extends IProto {
+	members: IActivityMMOTeamMember[];
+	/** 缓存的好友列表 */
+	friend_list: IMMOActivityFriendData[];
+	/** 好友列表缓存过期时间 */
+	friend_list_expire: number;
+	/** 助战玩家缓存 */
+	random_friends: IMMOActivityFriendData[];
+	/** 助战玩家刷新时间 */
+	random_friends_update: number;
 }
 
-/** .lq.ActivityMMOData.ActivityMMOEquipmentData */
-declare interface IActivityMMOData_ActivityMMOEquipmentData extends IProto {
-	id: number;
-	/** 拥有数量 */
-	stack: number;
+/** .lq.ActivityMMOData.ActivityMMOBagData */
+declare interface IActivityMMOData_ActivityMMOBagData extends IProto {
+	equipments: IActivityMMOEquipmentData[];
 }
 
 /** .lq.ActivityMMOData.ActivityMMOMapData */
 declare interface IActivityMMOData_ActivityMMOMapData extends IProto {
 	level: number;
 	random_seed: number;
+}
+
+/** .lq.ActivityMMOData.ActivityMMOSupportData */
+declare interface IActivityMMOData_ActivityMMOSupportData extends IProto {
+	/** 上次领取支援奖励的时间，如果时间是本日的话说明今天已经领取过了 */
+	last_receive_time: number;
+	/** 待领取支援次数 */
+	support_count: number;
 }
 
 /** .lq.ActivityFriendGiftData */
@@ -13542,6 +13635,7 @@ declare interface IResMarathonActivityTest_MarathonWallStepValue extends IProto 
 declare interface IReqMMOActivityEquipFusion extends IProto {
 	activity_id: number;
 	equip_list: number[];
+	/** 0-随机合成 1-剑武 2-战武 3-法武 4-头饰 5-防具 */
 	target_type: number;
 }
 
@@ -13549,6 +13643,7 @@ declare interface IReqMMOActivityEquipFusion extends IProto {
 declare interface IResMMOActivityEquipFusion extends IResponse {
 	/** 生成的装备id */
 	result: number;
+	changes: IActivityMMODataChanges;
 }
 
 /** .lq.ReqMMOActivitySetCharacter */
@@ -13559,6 +13654,7 @@ declare interface IReqMMOActivitySetCharacter extends IProto {
 
 /** .lq.ResMMOActivitySetCharacter */
 declare interface IResMMOActivitySetCharacter extends IResponse {
+	changes: IActivityMMODataChanges;
 }
 
 /** .lq.ReqMMOActivitySetTeamMember */
@@ -13571,11 +13667,11 @@ declare interface IReqMMOActivitySetTeamMember extends IProto {
 declare interface IReqMMOActivitySetTeamMember_MMOActivityTeamMember extends IProto {
 	character_id: number;
 	account_id: number;
-	profession: number;
 }
 
 /** .lq.ResMMOActivitySetTeamMember */
 declare interface IResMMOActivitySetTeamMember extends IResponse {
+	changes: IActivityMMODataChanges;
 }
 
 /** .lq.ReqMMOActivityStartBattle */
@@ -13588,6 +13684,7 @@ declare interface IResMMOActivityStartBattle extends IResponse {
 	actions: IResMMOActivityStartBattle_MMOActivityBattleInfo[];
 	/** 参战单位初始数值 */
 	units: IResMMOActivityStartBattle_MMOActivityBattleUnit[];
+	changes: IActivityMMODataChanges;
 }
 
 /** .lq.ResMMOActivityStartBattle.MMOActivityBattleInfo */
@@ -13624,6 +13721,35 @@ declare interface IReqMMOActivitySetEquip extends IProto {
 
 /** .lq.ResMMOActivitySetEquip */
 declare interface IResMMOActivitySetEquip extends IResponse {
+	changes: IActivityMMODataChanges;
+}
+
+/** .lq.ReqMMOActivityFetchFriendList */
+declare interface IReqMMOActivityFetchFriendList extends IProto {
+	activity_id: number;
+}
+
+/** .lq.ResMMOActivityFetchFriendList */
+declare interface IResMMOActivityFetchFriendList extends IResponse {
+	friend_list: IMMOActivityFriendData[];
+	/** 全服随机助战玩家，一天内不会变 */
+	random_friends: IMMOActivityFriendData[];
+	/** NPC 玩家，一天内不会变 */
+	npc_list: IMMOActivityFriendData[];
+	/** 过期时间，在过期时间内 friend_list 内容不会变 */
+	expire_time: number;
+	changes: IActivityMMODataChanges;
+}
+
+/** .lq.ReqMMOActivityReceiveSupportReward */
+declare interface IReqMMOActivityReceiveSupportReward extends IProto {
+	activity_id: number;
+}
+
+/** .lq.ResMMOActivityReceiveSupportReward */
+declare interface IResMMOActivityReceiveSupportReward extends IResponse {
+	rewards: IExecuteReward[];
+	changes: IActivityMMODataChanges;
 }
 
 /** .lq.AmuletBadgeData */

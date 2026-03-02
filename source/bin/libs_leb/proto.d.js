@@ -490,6 +490,8 @@ ENetMessage = {
 	mmoActivitySetTeamMember: "mmoActivitySetTeamMember",
 	mmoActivityStartBattle: "mmoActivityStartBattle",
 	mmoActivitySetEquip: "mmoActivitySetEquip",
+	mmoActivityFetchFriendList: "mmoActivityFetchFriendList",
+	mmoActivityReceiveSupportReward: "mmoActivityReceiveSupportReward",
 	authGame: "authGame",
 	enterGame: "enterGame",
 	syncGame: "syncGame",

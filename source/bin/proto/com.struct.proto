@@ -1449,35 +1449,99 @@ message ActivityChooseGroupData {
   uint32 selection_id = 3;
 }
 
+message ActivityMMODataChanges {
+  uint32 activity_id = 1;
+
+  message ActivityMMOCharacterDataChanges {
+    Uint32ValueDirty character_id = 1;
+    UInt32ArrayDirty equipments = 2;
+  }
+
+  ActivityMMOCharacterDataChanges character = 2;
+
+  message ActivityMMOTeamMemberArrayDirty {
+    bool dirty = 1;
+    repeated ActivityMMOTeamMember value = 2;
+  }
+
+  message ActivityMMOTeamDataChanges {
+    ActivityMMOTeamMemberArrayDirty members = 1;
+  }
+  ActivityMMOTeamDataChanges team = 3;
+
+  message ActivityMMOBagDataChanges {
+    bool dirty = 1;
+    repeated ActivityMMOEquipmentData value = 2;
+  }
+  ActivityMMOBagDataChanges bag = 4;
+
+  message ActivityMMOMapDataChanges {
+    UInt32Dirty level = 1;
+    UInt32Dirty random_seed = 2;
+  }
+  ActivityMMOMapDataChanges map = 5;
+
+  message ActivityMMOSupportDataChanges {
+    UInt32Dirty last_receive_time = 1; // 上次领取支援奖励的时间，如果时间是本日的话说明今天已经领取过了
+    UInt32Dirty support_count = 2; // 待领取支援次数
+  }
+  ActivityMMOSupportDataChanges support = 6;
+}
+
+message ActivityMMOTeamMember {
+  uint32 character_id = 1;
+  repeated uint32 equipments = 2;
+  uint32 account_id = 3;
+}
+
+message ActivityMMOEquipmentData {
+  uint32 id = 1;
+  uint32 stack = 2; // 拥有数量
+}
+
+message MMOActivityFriendData {
+  uint32 character_id = 1;
+  repeated uint32 equipments = 2;
+  uint32 account_id = 3;
+  string nickname = 4; // 仅全服随机玩家有该字段
+}
+
 message ActivityMMOData {
   uint32 activity_id = 1;
 
   message ActivityMMOCharacterData {
     uint32 character_id = 1;
-    uint32 profession = 2;
-    repeated uint32 equipments = 3;
+    repeated uint32 equipments = 2;
   }
   ActivityMMOCharacterData character = 2;
 
-  message ActivityMMOTeamMemberData {
-    uint32 character_id = 1;
-    uint32 profession = 2;
-    repeated uint32 equipments = 3;
-    uint32 account_id = 4;
-  }
-  repeated ActivityMMOTeamMemberData team = 3;
+  message ActivityMMOTeamData {
+    repeated ActivityMMOTeamMember members = 1;
 
-  message ActivityMMOEquipmentData {
-    uint32 id = 1;
-    uint32 stack = 2; // 拥有数量
+    // 服务端数据，不会发送给客户端
+    repeated MMOActivityFriendData friend_list = 100; // 缓存的好友列表
+    uint32 friend_list_expire = 101; // 好友列表缓存过期时间
+    repeated MMOActivityFriendData random_friends = 102; // 助战玩家缓存
+    uint32 random_friends_update = 103; // 助战玩家刷新时间
   }
-  repeated ActivityMMOEquipmentData bag = 4;
+  ActivityMMOTeamData team = 3;
+
+  message ActivityMMOBagData {
+    repeated ActivityMMOEquipmentData equipments = 1;
+  }
+  ActivityMMOBagData bag = 4;
 
   message ActivityMMOMapData {
     uint32 level = 1;
     uint32 random_seed = 2;
   }
   ActivityMMOMapData map = 5;
+
+  message ActivityMMOSupportData {
+    uint32 last_receive_time = 1; // 上次领取支援奖励的时间，如果时间是本日的话说明今天已经领取过了
+    uint32 support_count = 2; // 待领取支援次数
+  }
+  ActivityMMOSupportData support = 6;
 }
 
 message ActivityFriendGiftData {

@@ -2864,6 +2864,18 @@ declare interface IReqMethod {
 	 */
 	mmoActivitySetEquip(data?: IReqMMOActivitySetEquip): Promise<IResMMOActivitySetEquip>;
 	/**
+	 ** req: {@link IReqMMOActivityFetchFriendList}
+	 ** res: {@link IResMMOActivityFetchFriendList}
+	 ** msgId: {@link ENetMessage.mmoActivityFetchFriendList}
+	 */
+	mmoActivityFetchFriendList(data?: IReqMMOActivityFetchFriendList): Promise<IResMMOActivityFetchFriendList>;
+	/**
+	 ** req: {@link IReqMMOActivityReceiveSupportReward}
+	 ** res: {@link IResMMOActivityReceiveSupportReward}
+	 ** msgId: {@link ENetMessage.mmoActivityReceiveSupportReward}
+	 */
+	mmoActivityReceiveSupportReward(data?: IReqMMOActivityReceiveSupportReward): Promise<IResMMOActivityReceiveSupportReward>;
+	/**
 	 ** 验证游戏口令
 	 ** req: {@link IReqAuthGame}
 	 ** res: {@link IResAuthGame}

@@ -1103,6 +1103,8 @@ service Lobby {
   rpc mmoActivitySetTeamMember(ReqMMOActivitySetTeamMember) returns (ResMMOActivitySetTeamMember);
   rpc mmoActivityStartBattle(ReqMMOActivityStartBattle) returns (ResMMOActivityStartBattle);
   rpc mmoActivitySetEquip(ReqMMOActivitySetEquip) returns (ResMMOActivitySetEquip);
+  rpc mmoActivityFetchFriendList(ReqMMOActivityFetchFriendList) returns (ResMMOActivityFetchFriendList);
+  rpc mmoActivityReceiveSupportReward(ReqMMOActivityReceiveSupportReward) returns (ResMMOActivityReceiveSupportReward);
 }
 
 // 获取客户端连接信息
@@ -5312,12 +5314,13 @@ message ResMarathonActivityTest {
 message ReqMMOActivityEquipFusion {
   uint32 activity_id = 1;
   repeated uint32 equip_list = 2;
-  uint32 target_type = 3;
+  uint32 target_type = 3; // 0-随机合成 1-剑武 2-战武 3-法武 4-头饰 5-防具
 }
 
 message ResMMOActivityEquipFusion {
   Error error = 1;
   uint32 result = 2; // 生成的装备id
+  ActivityMMODataChanges changes = 3;
 }
 
 message ReqMMOActivitySetCharacter {
@@ -5327,6 +5330,7 @@ message ReqMMOActivitySetCharacter {
 
 message ResMMOActivitySetCharacter {
   Error error = 1;
+  ActivityMMODataChanges changes = 2;
 }
 
 message ReqMMOActivitySetTeamMember {
@@ -5335,13 +5339,13 @@ message ReqMMOActivitySetTeamMember {
   message MMOActivityTeamMember {
     uint32 character_id = 1;
     uint32 account_id = 2;
-    uint32 profession = 3;
   }
   repeated MMOActivityTeamMember members = 2;
 }
 
 message ResMMOActivitySetTeamMember {
   Error error = 1;
+  ActivityMMODataChanges changes = 2;
 }
 
 message ReqMMOActivityStartBattle {
@@ -5367,6 +5371,8 @@ message ResMMOActivityStartBattle {
     repeated uint32 equipment = 3; // 装备
   }
   repeated MMOActivityBattleUnit units = 3; // 参战单位初始数值
+
+  ActivityMMODataChanges changes = 4;
 }
 
 message ReqMMOActivitySetEquip {
@@ -5376,6 +5382,30 @@ message ReqMMOActivitySetEquip {
 
 message ResMMOActivitySetEquip {
   Error error = 1;
+  ActivityMMODataChanges changes = 5;
+}
+
+message ReqMMOActivityFetchFriendList {
+  uint32 activity_id = 1;
+}
+
+message ResMMOActivityFetchFriendList {
+  Error error = 1;
+  repeated MMOActivityFriendData friend_list = 2;
+  repeated MMOActivityFriendData random_friends = 3; // 全服随机助战玩家，一天内不会变
+  repeated MMOActivityFriendData npc_list = 4; // NPC 玩家，一天内不会变
+  uint32 expire_time = 5; // 过期时间，在过期时间内 friend_list 内容不会变
+  ActivityMMODataChanges changes = 6;
+}
+
+message ReqMMOActivityReceiveSupportReward {
+  uint32 activity_id = 1;
+}
+
+message ResMMOActivityReceiveSupportReward {
+  Error error = 1;
+  repeated ExecuteReward rewards = 2;
+  ActivityMMODataChanges changes = 3;
 }
 /*********************************************************************************************************************************
  ********************************************** next request & response **********************************************************

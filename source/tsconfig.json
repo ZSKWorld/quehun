@@ -7,7 +7,6 @@
     "experimentalDecorators": true,
     "noImplicitOverride": true,
     "removeComments": false,
-    "skipLibCheck": true,
     "outDir": "bin/js",
     "lib": [
       "ES2018",

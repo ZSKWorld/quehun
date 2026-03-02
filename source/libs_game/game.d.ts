@@ -18,7 +18,6 @@ declare type ReadonlyAll<T> = { readonly [P in keyof T]: T[P] extends Function ?
 declare type PartialAll<T> = { [P in keyof T]?: Partial<T[P]>; };
 declare type KeyMap<T> = { [key: string]: T; };
 declare type Class<T> = new (...args: any[]) => T;
-declare type LoadURL = string | Laya.ILoadURL | (string | Readonly<Laya.ILoadURL>)[];
 
 declare const $gameMgr: IGameManager;
 declare const $netMgr: INetManager;
@@ -52,13 +51,8 @@ declare function $windowImmit(name: string, obj: any): void;
 declare function ExtensionClass<E, T>(cls: Class<T>): Class<T & E>;
 
 /** 不可使用，只在Singleton返回值中当作类构造约束使用，无具体实现 */
-class ProtectedClass { protected constructor() { } }
+declare class ProtectedClass { protected constructor(); }
 declare function Singleton<T>(): typeof ProtectedClass & { get Inst(): T; };
-
-declare class BBB<T> {
-	static i: T;
-	a: T;
-}
 
 /** 把proto数据转成普通object对象 */
 declare function $decodeProtoData<T extends IProto | IProto[]>(data: T): ProtoObject<T>;
@@ -93,7 +87,7 @@ declare function $confirmMid(format: 0 | 1, content: string, title?: string): Pr
 declare function $confirmSma(format: 0 | 1 | 2 | 3, content: string, title?: string): Promise<boolean>;
 
 /** 富文本 */
-declare function $richText(text: string = ""): IRichText;
+declare function $richText(text?: string): IRichText;
 /** 本地化文本， str.str表 */
 declare function $lang(id: number, ...args: any[]): string;
 /** 本地化网络文本，info.error表 */

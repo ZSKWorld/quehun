@@ -1,9 +1,10 @@
+declare type LoadURL = string | Laya.ILoadURL | (string | Readonly<Laya.ILoadURL>)[];
 declare interface ILoadManager {
 	fetch<K extends keyof Laya.ContentTypeMap>(url: string, contentType: K, onProgress?: Laya.ProgressCallback, options?: Readonly<Laya.ILoadOptions>): Promise<Laya.ContentTypeMap[K]>;
 
-	load<D = any, T extends LoadURL>(url: T, type?: string, onProgress?: Laya.ProgressCallback): Promise<T extends Array<any> ? D[] : D>;
-	load<D = any, T extends LoadURL>(url: T, options?: Readonly<Laya.ILoadOptions>, onProgress?: Laya.ProgressCallback): Promise<T extends Array<any> ? D[] : D>;
-	load<D = any, T extends LoadURL>(url: T, complete?: Laya.Handler, progress?: Laya.Handler, type?: string, priority?: number, cache?: boolean, group?: string, ignoreCache?: boolean, useWorkerLoader?: boolean): Promise<T extends Array<any> ? D[] : D>;
+	load<D extends Object, T extends LoadURL>(url: T, type?: string, onProgress?: Laya.ProgressCallback): Promise<T extends Array<any> ? D[] : D>;
+	load<D extends Object, T extends LoadURL>(url: T, options?: Readonly<Laya.ILoadOptions>, onProgress?: Laya.ProgressCallback): Promise<T extends Array<any> ? D[] : D>;
+	load<D extends Object, T extends LoadURL>(url: T, complete?: Laya.Handler, progress?: Laya.Handler, type?: string, priority?: number, cache?: boolean, group?: string, ignoreCache?: boolean, useWorkerLoader?: boolean): Promise<T extends Array<any> ? D[] : D>;
 
 	loadPackage(resKey: string | string[], progressHandler?: Laya.Handler | ((progress: number) => void)): Promise<fgui.UIPackage[]>;
 
@@ -34,12 +35,16 @@ declare interface ISkeletonManager {
 	 * @param urls 动画路径 {@link ResPath.ESkeletonPath}[]
 	 */
 	load(urls: string[], progress?: Laya.Handler): Promise<Laya.Templet[]>;
+
 	/**
 	 * 获取一个骨骼动画
 	 * @param url 动画路径 {@link ResPath.ESkeletonPath}
-	 * @param enableSkin 是否开启换装
+	 * @param aniMode 动画类型及其描述 default 0
+	 * - 模式 0: 使用模板缓冲数据，不允许修改。（内存开销小，计算开销小，不支持换装）
+	 * - 模式 1: 使用动画自己的缓冲区，每个动画都有自己的缓冲区，相当耗费内存。（内存开销大，计算开销小，支持换装）
+	 * - 模式 2: 使用动态方式进行实时绘制。（内存开销小，计算开销大，支持换装，不建议使用）
 	 */
-	create(url: string, aniMode: 0 | 1 | 2 = 0): Laya.Skeleton;
+	create(url: string, aniMode?: 0 | 1 | 2): Laya.Skeleton;
 	/**
 	 * 回收骨骼动画到对象池
 	 */
@@ -56,7 +61,7 @@ declare interface ISkeletonManager {
 }
 
 declare interface ISpineController extends Laya.Script {
-	override owner: Laya.Sprite;
+	owner: Laya.Sprite;
 	get spineId(): number;
 	play(nameOrIndex: string | number, loop: boolean, force?: boolean, start?: number, end?: number, freshSkin?: boolean, playAudio?: boolean): void;
 }
@@ -100,10 +105,19 @@ declare interface IMathUtil {
 	/**数字转中文数字 */
 	chineseNum(num: number): string;
 
-	/**数字转组合数字 */
-	groupNumber(num: number, fixed: number = 2): string;
+	/**
+	 * 数字转组合数字
+	 * @param num 
+	 * @param fixed default 2
+	 */
+	groupNumber(num: number, fixed?: number): string;
 
-	num2Letter(num: number, dp: number = 3): string;
+	/**
+	 * 
+	 * @param num 
+	 * @param dp default 3
+	 */
+	num2Letter(num: number, dp?: number): string;
 
 	letter2Num(str: string): number;
 

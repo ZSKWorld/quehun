@@ -397,6 +397,8 @@ declare interface ISheet_Audio_Audio {
 	308042: ISheetData_Audio_Audio;
 	308046: ISheetData_Audio_Audio;
 	308047: ISheetData_Audio_Audio;
+	308048: ISheetData_Audio_Audio;
+	308049: ISheetData_Audio_Audio;
 	309205: ISheetData_Audio_Audio;
 	30520001: ISheetData_Audio_Audio;
 	30520002: ISheetData_Audio_Audio;

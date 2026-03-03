@@ -130,6 +130,10 @@ declare interface ISheet_Character_Emoji {
 	20000118: ISheetData_Character_Emoji[];
 	20000119: ISheetData_Character_Emoji[];
 	20000120: ISheetData_Character_Emoji[];
+	20000122: ISheetData_Character_Emoji[];
+	20000123: ISheetData_Character_Emoji[];
+	20000124: ISheetData_Character_Emoji[];
+	20000125: ISheetData_Character_Emoji[];
 }
 declare interface ISheetData_Character_Emoji {
 	/** 角色ID */
@@ -236,6 +240,10 @@ declare interface ISheet_Character_Skin {
 	40011103: ISheetData_Character_Skin;
 	40011202: ISheetData_Character_Skin;
 	40011203: ISheetData_Character_Skin;
+	40012203: ISheetData_Character_Skin;
+	40012303: ISheetData_Character_Skin;
+	40012403: ISheetData_Character_Skin;
+	40012503: ISheetData_Character_Skin;
 }
 declare interface ISheetData_Character_Skin {
 	/** 皮肤ID */

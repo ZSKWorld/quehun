@@ -1321,6 +1321,11 @@ declare interface ISheet_Activity_Activity {
 	260402: ISheetData_Activity_Activity;
 	260403: ISheetData_Activity_Activity;
 	260404: ISheetData_Activity_Activity;
+	260405: ISheetData_Activity_Activity;
+	260406: ISheetData_Activity_Activity;
+	260410: ISheetData_Activity_Activity;
+	260411: ISheetData_Activity_Activity;
+	260412: ISheetData_Activity_Activity;
 	260450: ISheetData_Activity_Activity;
 	260451: ISheetData_Activity_Activity;
 }
@@ -3691,6 +3696,7 @@ declare interface ISheet_Activity_GameTask {
 	25100608: ISheetData_Activity_GameTask;
 	25100609: ISheetData_Activity_GameTask;
 	25100610: ISheetData_Activity_GameTask;
+	26040601: ISheetData_Activity_GameTask;
 }
 declare interface ISheetData_Activity_GameTask {
 	/** 活动任务id */
@@ -3700,9 +3706,7 @@ declare interface ISheetData_Activity_GameTask {
 	/** 基础任务id */
 	base_task_id: number;
 	/** 奖励id */
-	reward_id: number;
-	/** 奖励数量 */
-	reward_count: number;
+	reward: string;
 	/** 隐藏奖励 */
 	hidden_reward: string;
 	/** 限制ID source_limit表 */
@@ -6811,6 +6815,20 @@ declare interface ISheet_Activity_ActivityBuff {
 	26040432: ISheetData_Activity_ActivityBuff[];
 	26040433: ISheetData_Activity_ActivityBuff[];
 	26040434: ISheetData_Activity_ActivityBuff[];
+	26040501: ISheetData_Activity_ActivityBuff[];
+	26040502: ISheetData_Activity_ActivityBuff[];
+	26040503: ISheetData_Activity_ActivityBuff[];
+	26040504: ISheetData_Activity_ActivityBuff[];
+	26040505: ISheetData_Activity_ActivityBuff[];
+	26040506: ISheetData_Activity_ActivityBuff[];
+	26040507: ISheetData_Activity_ActivityBuff[];
+	26040508: ISheetData_Activity_ActivityBuff[];
+	26040509: ISheetData_Activity_ActivityBuff[];
+	26040510: ISheetData_Activity_ActivityBuff[];
+	26040511: ISheetData_Activity_ActivityBuff[];
+	26040512: ISheetData_Activity_ActivityBuff[];
+	26040513: ISheetData_Activity_ActivityBuff[];
+	26040514: ISheetData_Activity_ActivityBuff[];
 }
 declare interface ISheetData_Activity_ActivityBuff {
 	/** buffid */
@@ -6819,6 +6837,8 @@ declare interface ISheetData_Activity_ActivityBuff {
 	activity_id: number;
 	/** buff等级 */
 	buff_level: number;
+	/** buff组 */
+	buff_group: number;
 	/** buff类型 */
 	buff_type: number;
 	/** 升级资源ID */
@@ -6869,6 +6889,20 @@ declare interface ISheet_Activity_BuffCondition {
 	25010201: ISheetData_Activity_BuffCondition[];
 	25010202: ISheetData_Activity_BuffCondition[];
 	25010203: ISheetData_Activity_BuffCondition[];
+	26040501: ISheetData_Activity_BuffCondition[];
+	26040502: ISheetData_Activity_BuffCondition[];
+	26040503: ISheetData_Activity_BuffCondition[];
+	26040504: ISheetData_Activity_BuffCondition[];
+	26040505: ISheetData_Activity_BuffCondition[];
+	26040506: ISheetData_Activity_BuffCondition[];
+	26040507: ISheetData_Activity_BuffCondition[];
+	26040508: ISheetData_Activity_BuffCondition[];
+	26040509: ISheetData_Activity_BuffCondition[];
+	26040510: ISheetData_Activity_BuffCondition[];
+	26040511: ISheetData_Activity_BuffCondition[];
+	26040512: ISheetData_Activity_BuffCondition[];
+	26040513: ISheetData_Activity_BuffCondition[];
+	26040514: ISheetData_Activity_BuffCondition[];
 }
 declare interface ISheetData_Activity_BuffCondition {
 
@@ -10244,6 +10278,7 @@ declare interface ISheet_Activity_ActivityItem {
 	251212: ISheetData_Activity_ActivityItem;
 	260104: ISheetData_Activity_ActivityItem;
 	260212: ISheetData_Activity_ActivityItem;
+	260412: ISheetData_Activity_ActivityItem;
 }
 declare interface ISheetData_Activity_ActivityItem {
 	/** 活动id */

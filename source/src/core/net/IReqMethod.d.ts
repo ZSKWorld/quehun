@@ -2864,17 +2864,25 @@ declare interface IReqMethod {
 	 */
 	mmoActivitySetEquip(data?: IReqMMOActivitySetEquip): Promise<IResMMOActivitySetEquip>;
 	/**
-	 ** req: {@link IReqMMOActivityFetchFriendList}
-	 ** res: {@link IResMMOActivityFetchFriendList}
-	 ** msgId: {@link ENetMessage.mmoActivityFetchFriendList}
+	 ** req: {@link IReqMMOActivityUpdatehFriendList}
+	 ** res: {@link IResMMOActivityUpdatehFriendList}
+	 ** msgId: {@link ENetMessage.mmoActivityUpdateFriendList}
 	 */
-	mmoActivityFetchFriendList(data?: IReqMMOActivityFetchFriendList): Promise<IResMMOActivityFetchFriendList>;
+	mmoActivityUpdateFriendList(data?: IReqMMOActivityUpdatehFriendList): Promise<IResMMOActivityUpdatehFriendList>;
 	/**
 	 ** req: {@link IReqMMOActivityReceiveSupportReward}
 	 ** res: {@link IResMMOActivityReceiveSupportReward}
 	 ** msgId: {@link ENetMessage.mmoActivityReceiveSupportReward}
 	 */
 	mmoActivityReceiveSupportReward(data?: IReqMMOActivityReceiveSupportReward): Promise<IResMMOActivityReceiveSupportReward>;
+	/**
+	 ** ==DevDebug Start==
+	 ** debug 协议在正式版本删除
+	 ** req: {@link IReqMMOActivityDebugSetTeamCandidate}
+	 ** res: {@link IResCommon}
+	 ** msgId: {@link ENetMessage.mmoActivityDebugSetTeamCandidate}
+	 */
+	mmoActivityDebugSetTeamCandidate(data?: IReqMMOActivityDebugSetTeamCandidate): Promise<IResCommon>;
 	/**
 	 ** 验证游戏口令
 	 ** req: {@link IReqAuthGame}

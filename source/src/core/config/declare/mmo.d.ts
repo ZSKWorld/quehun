@@ -13,6 +13,8 @@ declare interface ITable_Mmo {
 	mmo_equipment_buff: CfgExt<ISheet_Mmo_MmoEquipmentBuff>;
 	/** mmo关卡  ---  group */
 	mmo_level: CfgExtGroup<ISheet_Mmo_MmoLevel>;
+	/** mmonpc  ---  group */
+	mmo_npc: CfgExtGroup<ISheet_Mmo_MmoNpc>;
 }
 
 //#region mmo_activity
@@ -182,5 +184,26 @@ declare interface ISheetData_Mmo_MmoLevel {
 	team_max_count: number;
 	/** 背景素材 */
 	background: string;
+}
+//#endregion
+
+//#region mmo_npc
+declare interface ISheet_Mmo_MmoNpc {
+	[key: string]: ISheetData_Mmo_MmoNpc[];
+	260401: ISheetData_Mmo_MmoNpc[];
+}
+declare interface ISheetData_Mmo_MmoNpc {
+	/** 活动id */
+	activity_id: number;
+	/** npcid */
+	npc_id: number;
+	/** 职业 */
+	character_id: number;
+	/** 装备列表 */
+	equipment_list: string;
+	/** 随机时段 */
+	accessible_days: string;
+	/** npc名称,str/event */
+	npc_name: number;
 }
 //#endregion

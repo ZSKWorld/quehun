@@ -2376,6 +2376,7 @@ declare interface ISheet_Events_BaseTask {
 	23181: ISheetData_Events_BaseTask;
 	23182: ISheetData_Events_BaseTask;
 	23183: ISheetData_Events_BaseTask;
+	23184: ISheetData_Events_BaseTask;
 	90001: ISheetData_Events_BaseTask;
 	90002: ISheetData_Events_BaseTask;
 	90003: ISheetData_Events_BaseTask;

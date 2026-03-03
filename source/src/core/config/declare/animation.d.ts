@@ -123,6 +123,26 @@ declare interface ISheet_Animation_Animation {
 	1002303: ISheetData_Animation_Animation;
 	1002304: ISheetData_Animation_Animation;
 	1002305: ISheetData_Animation_Animation;
+	1002401: ISheetData_Animation_Animation;
+	1002402: ISheetData_Animation_Animation;
+	1002403: ISheetData_Animation_Animation;
+	1002404: ISheetData_Animation_Animation;
+	1002405: ISheetData_Animation_Animation;
+	1002501: ISheetData_Animation_Animation;
+	1002502: ISheetData_Animation_Animation;
+	1002503: ISheetData_Animation_Animation;
+	1002504: ISheetData_Animation_Animation;
+	1002505: ISheetData_Animation_Animation;
+	1002601: ISheetData_Animation_Animation;
+	1002602: ISheetData_Animation_Animation;
+	1002603: ISheetData_Animation_Animation;
+	1002604: ISheetData_Animation_Animation;
+	1002605: ISheetData_Animation_Animation;
+	1002701: ISheetData_Animation_Animation;
+	1002702: ISheetData_Animation_Animation;
+	1002703: ISheetData_Animation_Animation;
+	1002704: ISheetData_Animation_Animation;
+	1002705: ISheetData_Animation_Animation;
 }
 declare interface ISheetData_Animation_Animation {
 	id: number;

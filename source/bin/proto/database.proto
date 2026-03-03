@@ -279,6 +279,8 @@ message BlobActivity {
   repeated lq.ActivityMarathonData marathon_activity = 25; // 马拉松活动
 
   repeated lq.ActivityChooseGroupData choose_group_up_activity = 26; // 自选组合活动
+
+  repeated lq.ActivityMMOData mmo_activity = 27; // mmo 活动
 }
 
 message BlobAmuletActivity {

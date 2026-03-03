@@ -1453,7 +1453,7 @@ message ActivityMMODataChanges {
   uint32 activity_id = 1;
 
   message ActivityMMOCharacterDataChanges {
-    Uint32ValueDirty character_id = 1;
+    UInt32Dirty character_id = 1;
     UInt32ArrayDirty equipments = 2;
   }
 
@@ -1491,7 +1491,8 @@ message ActivityMMODataChanges {
 message ActivityMMOTeamMember {
   uint32 character_id = 1;
   repeated uint32 equipments = 2;
-  uint32 account_id = 3;
+  uint32 id = 3;
+  uint32 type = 4; // 1-真人 2-npc 3-助战玩家
 }
 
 message ActivityMMOEquipmentData {
@@ -1499,11 +1500,10 @@ message ActivityMMOEquipmentData {
   uint32 stack = 2; // 拥有数量
 }
 
-message MMOActivityFriendData {
+message MMOActivityTeamCandidateData {
   uint32 character_id = 1;
   repeated uint32 equipments = 2;
-  uint32 account_id = 3;
-  string nickname = 4; // 仅全服随机玩家有该字段
+  uint32 id = 3;
 }
 
 message ActivityMMOData {
@@ -1519,10 +1519,11 @@ message ActivityMMOData {
     repeated ActivityMMOTeamMember members = 1;
 
     // 服务端数据，不会发送给客户端
-    repeated MMOActivityFriendData friend_list = 100; // 缓存的好友列表
+    repeated MMOActivityTeamCandidateData friend_list = 100; // 缓存的好友列表
     uint32 friend_list_expire = 101; // 好友列表缓存过期时间
-    repeated MMOActivityFriendData random_friends = 102; // 助战玩家缓存
-    uint32 random_friends_update = 103; // 助战玩家刷新时间
+    repeated MMOActivityTeamCandidateData random_friends = 102; // 助战玩家缓存
+    uint32 daily_update_time = 103; // 每日玩家（助战、npc）刷新时间
+    repeated MMOActivityTeamCandidateData npc_list = 104;
   }
   ActivityMMOTeamData team = 3;
 

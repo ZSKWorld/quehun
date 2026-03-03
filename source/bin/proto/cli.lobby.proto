@@ -1103,8 +1103,13 @@ service Lobby {
   rpc mmoActivitySetTeamMember(ReqMMOActivitySetTeamMember) returns (ResMMOActivitySetTeamMember);
   rpc mmoActivityStartBattle(ReqMMOActivityStartBattle) returns (ResMMOActivityStartBattle);
   rpc mmoActivitySetEquip(ReqMMOActivitySetEquip) returns (ResMMOActivitySetEquip);
-  rpc mmoActivityFetchFriendList(ReqMMOActivityFetchFriendList) returns (ResMMOActivityFetchFriendList);
+  rpc mmoActivityUpdateFriendList(ReqMMOActivityUpdatehFriendList) returns (ResMMOActivityUpdatehFriendList);
   rpc mmoActivityReceiveSupportReward(ReqMMOActivityReceiveSupportReward) returns (ResMMOActivityReceiveSupportReward);
+
+  // ==DevDebug Start==
+  // debug 协议在正式版本删除
+  rpc mmoActivityDebugSetTeamCandidate(ReqMMOActivityDebugSetTeamCandidate) returns (ResCommon);
+  // ==DevDebug End==
 }
 
 // 获取客户端连接信息
@@ -5338,7 +5343,8 @@ message ReqMMOActivitySetTeamMember {
 
   message MMOActivityTeamMember {
     uint32 character_id = 1;
-    uint32 account_id = 2;
+    uint32 id = 2; // 好友账号id，npc id，助战玩家账号id
+    uint32 type = 3; // 1-好友 2-npc 3-助战玩家 4-原队友
   }
   repeated MMOActivityTeamMember members = 2;
 }
@@ -5385,15 +5391,15 @@ message ResMMOActivitySetEquip {
   ActivityMMODataChanges changes = 5;
 }
 
-message ReqMMOActivityFetchFriendList {
+message ReqMMOActivityUpdatehFriendList {
   uint32 activity_id = 1;
 }
 
-message ResMMOActivityFetchFriendList {
+message ResMMOActivityUpdatehFriendList {
   Error error = 1;
-  repeated MMOActivityFriendData friend_list = 2;
-  repeated MMOActivityFriendData random_friends = 3; // 全服随机助战玩家，一天内不会变
-  repeated MMOActivityFriendData npc_list = 4; // NPC 玩家，一天内不会变
+  repeated MMOActivityTeamCandidateData friend_list = 2;
+  repeated MMOActivityTeamCandidateData random_friends = 3; // 全服随机助战玩家，一天内不会变
+  repeated MMOActivityTeamCandidateData npc_list = 4; // NPC 玩家，一天内不会变
   uint32 expire_time = 5; // 过期时间，在过期时间内 friend_list 内容不会变
   ActivityMMODataChanges changes = 6;
 }
@@ -5406,6 +5412,13 @@ message ResMMOActivityReceiveSupportReward {
   Error error = 1;
   repeated ExecuteReward rewards = 2;
   ActivityMMODataChanges changes = 3;
+}
+
+message ReqMMOActivityDebugSetTeamCandidate {
+  uint32 activity_id = 1;
+  repeated MMOActivityTeamCandidateData friend_list = 2;
+  repeated MMOActivityTeamCandidateData random_friends = 3;
+  repeated MMOActivityTeamCandidateData npc_list = 4;
 }
 /*********************************************************************************************************************************
  ********************************************** next request & response **********************************************************

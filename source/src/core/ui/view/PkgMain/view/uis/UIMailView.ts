@@ -31,6 +31,22 @@ export class UIMailView extends ExtensionClass<IView, UIMail>(UIMail) implements
 		txt_title.text = $gameUtil.getI18nContext(data.title_i18n, data.title);
 		label_content.text = $gameUtil.getI18nContext(data.content_i18n, data.content);
 		list_reward.numItems = data.attachments.length;
+		txt_expire.visible = data.expire_time > 0;
+		txt_expire.text = this.getExpireDesc(data.expire_time - $timeUtil.second);
+	}
+
+	private getExpireDesc(second: number) {
+		if (second <= 0) return $lang(3755);
+		const { MinSec, HourSec, DaySec } = $timeUtil;
+		const d = Math.floor(second / $timeUtil.DaySec);
+		const h = Math.floor(second % DaySec / HourSec);
+		const m = Math.floor(second % HourSec / MinSec);
+
+		let str = "";
+		if (d) str += d + $lang(2022);
+		if (h) str += h + $lang(2021);
+		if (m) str += m + $lang(2020);
+		return str;
 	}
 
 	override onOpenAni() { return $uiUtil.popAlphaIn(this); }

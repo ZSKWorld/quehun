@@ -246,6 +246,9 @@
     <component id="s5z8obfp" name="VScrollBar4.xml" path="/Component/ScrollBar/" exported="true"/>
     <image id="c90sobfq" name="img_2013.png" path="/Texture/"/>
     <component id="c90sobfr" name="BtnSwitch2.xml" path="/Component/Button/" exported="true"/>
+    <component id="qs7jobfs" name="ComGold.xml" path="/Component/Component/货币/" exported="true"/>
+    <component id="qs7jobft" name="ComDiamond.xml" path="/Component/Component/货币/" exported="true"/>
+    <component id="qs7jobfu" name="ComSkinTicket.xml" path="/Component/Component/货币/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

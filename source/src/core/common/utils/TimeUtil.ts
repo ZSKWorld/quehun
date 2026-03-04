@@ -9,6 +9,13 @@ export class TimeUtil extends Singleton<TimeUtil>() implements ITimeUtil {
 	private _date = new Date();
 	private _serverDelta: number = 0;
 
+	readonly MinSec = MinSec;
+	readonly HourSec = HourSec;
+	readonly DaySec = DaySec;
+	readonly WeekSec = WeekSec;
+	readonly MonthSec = MonthSec;
+	readonly YearSec = YearSec;
+
 	get milliSecond() {
 		return Date.now() + this._serverDelta;
 	}
@@ -51,21 +58,21 @@ export class TimeUtil extends Singleton<TimeUtil>() implements ITimeUtil {
 		const s = second % MinSec;
 
 		let str = "";
-		if (h) str += `${ h }小时`;
-		if (h || m) str += `${ m }分`;
-		if (s) str += `${ s }秒`;
+		if (h) str += h + $lang(2021);
+		if (h || m) str += m + $lang(2020);
+		if (s) str += s + $lang(2019);
 		return str;
 	}
 
 	timeFormat4(second: number) {
-		if (second >= DaySec) return `${ Math.floor(second / DaySec) }天`;
-		if (second >= HourSec) return `${ Math.floor(second / HourSec) }小时`;
-		if (second >= MinSec) return `${ Math.floor(second / MinSec) }分`;
-		return `${ Math.floor(second) }秒`;
+		if (second >= DaySec) return Math.floor(second / DaySec) + $lang(2022);
+		if (second >= HourSec) return Math.floor(second / HourSec) + $lang(2021);
+		if (second >= MinSec) return Math.floor(second / MinSec) + $lang(2020);
+		return Math.floor(second) + $lang(2019)
 	}
 
-	timeFormat5(time: number) {
-		const delta = this.second - time; // 防止服务器时间差导致负数
+	timeFormat5(second: number) {
+		const delta = this.second - second; // 防止服务器时间差导致负数
 
 		// 10分钟以内：刚刚
 		if (delta < 10 * MinSec) {
@@ -93,8 +100,8 @@ export class TimeUtil extends Singleton<TimeUtil>() implements ITimeUtil {
 			return Math.floor(delta / WeekSec) + $lang(2017);
 		}
 
-		// 超过4周：1个月前
-		return "1" + $lang(2018);
+		// 超过4周：x个月前
+		return Math.floor(delta / MonthSec) + $lang(2018);
 	}
 
 	wait(milSec: number) {

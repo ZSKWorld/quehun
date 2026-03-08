@@ -1,5 +1,5 @@
 declare namespace VO {
-	declare interface ICharacterVO {
+	interface ICharacterVO {
 		/** 主角色ID */
 		get mainCharId(): number;
 		/** 主角色信息 */

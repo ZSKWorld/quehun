@@ -1,5 +1,5 @@
 declare namespace VO {
-	declare interface IBagVO {
+	interface IBagVO {
 		/** 无偿辉玉 */
 		get freeDiamonds(): number;
 		/** 有偿辉玉 */

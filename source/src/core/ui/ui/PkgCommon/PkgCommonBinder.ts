@@ -22,6 +22,7 @@ import ComLevel from "./ComLevel";
 import ComTipInfo from "./ComTipInfo";
 import ComItem1 from "./ComItem1";
 import ComHead from "./ComHead";
+import ComCurrency from "./ComCurrency";
 import ComItem from "./ComItem";
 import UIItemDetail from "./UIItemDetail";
 import PbLoading2 from "./PbLoading2";
@@ -45,6 +46,7 @@ import { ComLevelView } from "../../view/PkgCommon/view/coms/ComLevelView";
 import { ComTipInfoView } from "../../view/PkgCommon/view/coms/ComTipInfoView";
 import { ComItem1View } from "../../view/PkgCommon/view/coms/ComItem1View";
 import { ComHeadView } from "../../view/PkgCommon/view/coms/ComHeadView";
+import { ComCurrencyView } from "../../view/PkgCommon/view/coms/ComCurrencyView";
 import { ComItemView } from "../../view/PkgCommon/view/coms/ComItemView";
 import { UIItemDetailView } from "../../view/PkgCommon/view/uis/UIItemDetailView";
 
@@ -72,6 +74,7 @@ export default class PkgCommonBinder {
 		fgui.UIObjectFactory.setExtension(ComTipInfo.url, ComTipInfoView);
 		fgui.UIObjectFactory.setExtension(ComItem1.url, ComItem1View);
 		fgui.UIObjectFactory.setExtension(ComHead.url, ComHeadView);
+		fgui.UIObjectFactory.setExtension(ComCurrency.url, ComCurrencyView);
 		fgui.UIObjectFactory.setExtension(ComItem.url, ComItemView);
 		fgui.UIObjectFactory.setExtension(UIItemDetail.url, UIItemDetailView);
 		fgui.UIObjectFactory.setExtension(PbLoading2.url, PbLoading2);

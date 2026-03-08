@@ -1658,6 +1658,17 @@
     <image id="ik7b7plok4" name="寮舍6.jpg" path="/2503寮舍优化/寮舍/"/>
     <image id="glpb7plok5" name="寮舍7.jpg" path="/2503寮舍优化/寮舍/"/>
     <image id="qs6v7plok6" name="选服.png" path="/11/"/>
+    <image id="gva37plok7" name="主界面.png" path="/11/"/>
+    <image id="gva37plok8" name="商店.png" path="/11/"/>
+    <image id="gva37plok9" name="coupon_0.png" path="/11/extendRes/items/"/>
+    <image id="gva37ploka" name="fushiquan_0.png" path="/11/extendRes/items/"/>
+    <image id="gva37plokb" name="gold0.png" path="/11/extendRes/items/"/>
+    <image id="gva37plokc" name="gold1.png" path="/11/extendRes/items/"/>
+    <image id="hpko7plokd" name="currency0.png" path="/11/extendRes/items/"/>
+    <image id="hpko7ploke" name="currency1.png" path="/11/extendRes/items/"/>
+    <image id="hpko7plokf" name="currency3.png" path="/11/extendRes/items/"/>
+    <image id="hpko7plokg" name="currency4.png" path="/11/extendRes/items/"/>
+    <image id="hpko7plokh" name="currency5.png" path="/11/extendRes/items/"/>
   </resources>
   <publish name=""/>
 </packageDescription>

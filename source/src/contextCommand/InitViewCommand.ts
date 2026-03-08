@@ -24,6 +24,7 @@ import { RenderLiaoSheDecoTabView } from "../core/ui/view/PkgMain/view/renders/R
 import { RenderMailItemView } from "../core/ui/view/PkgMain/view/renders/RenderMailItemView";
 import { RenderRankItemView } from "../core/ui/view/PkgMain/view/renders/RenderRankItemView";
 import { ComBackView } from "../core/ui/view/PkgCommon/view/coms/ComBackView";
+import { ComCurrencyView } from "../core/ui/view/PkgCommon/view/coms/ComCurrencyView";
 import { ComHeadView } from "../core/ui/view/PkgCommon/view/coms/ComHeadView";
 import { ComHead1View } from "../core/ui/view/PkgCommon/view/coms/ComHead1View";
 import { ComHead2View } from "../core/ui/view/PkgCommon/view/coms/ComHead2View";
@@ -139,6 +140,7 @@ export class InitViewCommand extends Command {
 
 		//Coms
 		register(EViewID.ComBackView, EViewType.Component, ComBackView);
+		register(EViewID.ComCurrencyView, EViewType.Component, ComCurrencyView);
 		register(EViewID.ComHeadView, EViewType.Component, ComHeadView);
 		register(EViewID.ComHead1View, EViewType.Component, ComHead1View);
 		register(EViewID.ComHead2View, EViewType.Component, ComHead2View);

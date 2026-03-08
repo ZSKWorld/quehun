@@ -1,5 +1,5 @@
 declare namespace VO {
-	declare interface ICommonViewVO {
+	interface ICommonViewVO {
 		
 		get use(): number;
 		get views(): ProtoObject<IResAllcommonViews_Views>[];

@@ -1,5 +1,5 @@
 declare namespace VO {
-	declare interface IFriendVO {
+	interface IFriendVO {
 		/** 好友列表 */
 		get friends(): ProtoObject<IFriend>[];
 		/** 好友数量上限 */

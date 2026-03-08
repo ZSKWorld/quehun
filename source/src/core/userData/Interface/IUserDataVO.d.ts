@@ -1,5 +1,5 @@
 declare namespace VO {
-	declare interface IUserDataVO {
+	interface IUserDataVO {
 		account: IAccountVO;
 		character: ICharacterVO;
 		activity: IActivityVO;

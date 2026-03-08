@@ -1,5 +1,5 @@
 declare namespace VO {
-	declare interface IActivityVO {
+	interface IActivityVO {
 
 	}
 }

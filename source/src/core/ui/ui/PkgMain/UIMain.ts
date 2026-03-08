@@ -3,6 +3,7 @@
 import { ComMatchModeView } from "../../view/PkgMain/view/coms/ComMatchModeView";
 import { BtnDengLongView } from "../../view/PkgMain/view/btns/BtnDengLongView";
 import { BtnXunMiView } from "../../view/PkgMain/view/btns/BtnXunMiView";
+import { ComCurrencyView } from "../../view/PkgCommon/view/coms/ComCurrencyView";
 
 export default class UIMain extends fgui.GComponent {
 
@@ -12,6 +13,8 @@ export default class UIMain extends fgui.GComponent {
 	protected btn_guide: fgui.GButton;
 	protected btn_camera: fgui.GButton;
 	protected btn_achieve: fgui.GButton;
+	protected com_currency0: ComCurrencyView;
+	protected com_currency1: ComCurrencyView;
 	protected btn_activity: fgui.GButton;
 	protected btn_mail: BtnDengLongView;
 	protected btn_rank: BtnDengLongView;
@@ -39,18 +42,20 @@ export default class UIMain extends fgui.GComponent {
 		this.btn_guide = <fgui.GButton>(this.getChildAt(3));
 		this.btn_camera = <fgui.GButton>(this.getChildAt(4));
 		this.btn_achieve = <fgui.GButton>(this.getChildAt(5));
-		this.btn_activity = <fgui.GButton>(this.getChildAt(6));
-		this.btn_mail = <BtnDengLongView>(this.getChildAt(7));
-		this.btn_rank = <BtnDengLongView>(this.getChildAt(8));
-		this.btn_announcement = <BtnDengLongView>(this.getChildAt(9));
-		this.group_rightTop = <fgui.GGroup>(this.getChildAt(10));
-		this.btn_liaoShe = <fgui.GButton>(this.getChildAt(11));
-		this.btn_friend = <fgui.GButton>(this.getChildAt(12));
-		this.btn_observe = <fgui.GButton>(this.getChildAt(13));
-		this.btn_paiPu = <fgui.GButton>(this.getChildAt(14));
-		this.btn_bag = <fgui.GButton>(this.getChildAt(15));
-		this.btn_shop = <fgui.GButton>(this.getChildAt(16));
-		this.btn_treasure = <BtnXunMiView>(this.getChildAt(17));
+		this.com_currency0 = <ComCurrencyView>(this.getChildAt(6));
+		this.com_currency1 = <ComCurrencyView>(this.getChildAt(7));
+		this.btn_activity = <fgui.GButton>(this.getChildAt(8));
+		this.btn_mail = <BtnDengLongView>(this.getChildAt(9));
+		this.btn_rank = <BtnDengLongView>(this.getChildAt(10));
+		this.btn_announcement = <BtnDengLongView>(this.getChildAt(11));
+		this.group_rightTop = <fgui.GGroup>(this.getChildAt(12));
+		this.btn_liaoShe = <fgui.GButton>(this.getChildAt(13));
+		this.btn_friend = <fgui.GButton>(this.getChildAt(14));
+		this.btn_observe = <fgui.GButton>(this.getChildAt(15));
+		this.btn_paiPu = <fgui.GButton>(this.getChildAt(16));
+		this.btn_bag = <fgui.GButton>(this.getChildAt(17));
+		this.btn_shop = <fgui.GButton>(this.getChildAt(18));
+		this.btn_treasure = <BtnXunMiView>(this.getChildAt(19));
 		this.trans_in = this.getTransitionAt(0);
 		this.trans_out = this.getTransitionAt(1);
 	}

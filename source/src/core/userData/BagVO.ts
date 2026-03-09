@@ -54,7 +54,7 @@ export class BagVO extends BaseVO implements VO.IBagVO {
 	get skinTickets() { return this.freeSkinTickets + this.paidSkinTickets; }
 
 	getRandomCgPath() {
-		const cgId = this._loadingImage[$mathUtil.randomInt(0, this._loadingImage.length)];
+		const cgId = this._loadingImage.random();
 		if (!cgId) return "";
 		const cfgInfo = $cfgMgr.item_definition.loading_image[cgId];
 		if (!cfgInfo) return "";
@@ -110,16 +110,23 @@ export class BagVO extends BaseVO implements VO.IBagVO {
 	@InterestMessage(ENetMessage.oauth2Login)
 	private onLogin(res: IResLogin) {
 		if (!res.account) return;
-		const { gold, vip, platform_diamond, skin_ticket, platform_skin_ticket, loading_image } = res.account;
+		Logger.error(res);
+		const { gold, vip, diamond, platform_diamond, skin_ticket, platform_skin_ticket, loading_image } = res.account;
 		const items: IItem[] = [];
 		gold && items.push({ item_id: 100002, stack: gold });
 		vip && items.push({ item_id: 100099, stack: vip });
+		diamond && items.push({ item_id: 100001, stack: diamond });
 		skin_ticket && items.push({ item_id: 100004, stack: skin_ticket });
-		this._loadingImage = loading_image;
+		this._loadingImage = loading_image.slice();
 		platform_diamond.length && platform_diamond.forEach(v => v.count && items.push({ item_id: v.id, stack: v.count }));
 		platform_skin_ticket.length && platform_skin_ticket.forEach(v => v.count && items.push({ item_id: v.id, stack: v.count }));
 		this.modifyItems(items);
 		this.dispatch(EUserEvent.OnBagItemsChanged);
+	}
+
+	@InterestMessage(ENetMessage.fetchMisc)
+	private onFetchMisc(res: IResMisc) {
+
 	}
 
 	@InterestMessage(ENetMessage.fetchBagInfo)

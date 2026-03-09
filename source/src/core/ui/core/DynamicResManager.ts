@@ -1,5 +1,3 @@
-import { ConstDefine } from "../../common/ConstDefine";
-
 /** 动态资源管理，负责引用计数和卸载 */
 export class DynamicResManager extends Singleton<DynamicResManager>() implements IDynamicResManager {
 	private _resMap: Map<string, number> = new Map();
@@ -11,14 +9,14 @@ export class DynamicResManager extends Singleton<DynamicResManager>() implements
 
 	add(path: string) {
 		if (!path) return;
-		if (!path.startsWith(ConstDefine.LangResDir)) return;
+		if (!path.startsWith(EConstDefine.LangResDir)) return;
 		const count = this._resMap.get(path) || 0;
 		this._resMap.set(path, count + 1);
 	}
 
 	remove(path: string) {
 		if (!path) return;
-		if (!path.startsWith(ConstDefine.LangResDir)) return;
+		if (!path.startsWith(EConstDefine.LangResDir)) return;
 		const count = this._resMap.get(path);
 		if (count) {
 			this._resMap.set(path, count - 1);

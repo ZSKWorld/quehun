@@ -260,8 +260,93 @@ declare const enum ESceneType {
 	MainScene = "MainScene",
 }
 
-/**各种UI对象池标识 */
+/** 各种UI对象池标识 */
 declare const enum EUIPoolKey {
 	/** 文本提示 */
 	TipInfo = "TipInfo",
 }
+
+declare const enum EConstDefine {
+	/** 本地化资源根目录 */
+	LangResDir = "langRes/",
+}
+
+/** 全局事件枚举 */
+declare const enum ENotifyConst {
+	/** 游戏回到前台事件 */
+	OnGameShow = "NotifyConst_OnGameShow",
+	/** 游戏隐藏后台事件 */
+	OnGameHide = "NotifyConst_OnGameHide",
+
+	/** 红点组件唤醒 */
+	RedDotCompAwake = "NotifyConst_RedDotCompAwake",
+	/** 红点组件销毁 */
+	RedDotCompDestroy = "NotifyConst_RedDotCompDestroy",
+	/** 初始完成 */
+	OnInitGameCompleted = "NotifyConst_OnInitGameCompleted",
+
+	//#region 网络相关
+	LobbyConnecting = "NotifyConst_LobbyConnectting",
+	LobbyReconnecting = "NotifyConst_LobbyReconnecting",
+	LobbyConnected = "NotifyConst_LobbyConnected",
+	LobbyClosed = "NotifyConst_LobbyClosed",
+	GameConnecting = "NotifyConst_GameConnecting",
+	GameReconnecting = "NotifyConst_GameReconnecting",
+	GameConnected = "NotifyConst_GameConnected",
+	GameClosed = "NotifyConst_GameClosed",
+	OBConnecting = "NotifyConst_OBConnecting",
+	OBReconnecting = "NotifyConst_OBReconnecting",
+	OBConnected = "NotifyConst_OBConnected",
+	OBClosed = "NotifyConst_OBClosed",
+	//#endregion
+
+	/**绑定手机号完成 */
+	BindPhoneCompleted = "NotifyConst_BindPhoneCompleted",
+	/** 登录成功 */
+	LoginSuccess = "NotifyConst_LoginSuccess",
+
+	//#region logicScene相关
+	/** 场景开始加载 */
+	OnSceneLoadBegin = "NotifyConst_OnSceneLoadBegin",
+	/** 场景加载进度 */
+	OnSceneLoadProgress = "NotifyConst_OnSceneLoadProgress",
+	/** 场景加载结束 */
+	OnSceneLoadEnd = "NotifyConst_OnSceneLoadEnd",
+	/** 进入场景 */
+	OnEnterScene = "NotifyConst_OnEnterScene",
+	/** 退出场景 */
+	OnExitScene = "NotifyConst_OnExitScene",
+	//#endregion
+
+}
+
+/** 用户数据变化事件 */
+declare const enum EUserEvent {
+	//#region 邮件相关
+	OnMailChanged = "EUserEvent_OnMailChanged",
+	//#endregion
+
+
+	//#region 好友相关
+	OnFriendsChanged = "EUserEvent_OnFriendsChanged",
+	OnFriendMaxCountChanged = "EUserEvent_OnFriendMaxCountChanged",
+	OnFriendApplyChanged = "EUserEvent_OnFriendApplyChanged",
+	//#endregion
+
+	//#region 背包相关
+	OnBagItemsChanged = "EUserEvent_OnBagItemsChanged",
+	OnBagDailyGainRecordChanged = "EUserEvent_OnBagDailyGainRecordChanged",
+	OnCGUsingChanged = "EUserEvent_OnCGUsingChanged",
+	//#endregion
+
+	//#region 角色相关
+	OnMainCharacterChanged = "EUserEvent_OnMainCharacterChanged",
+	OnCharacterChanged = "EUserEvent_OnCharacterChanged",
+	OnCharacterSortChanged = "EUserEvent_OnCharacterSortChanged",
+	//#endregion
+
+	//#region client_value相关
+	OnClientValueChanged = "EUserEvent_OnClientValueChanged",
+	//#endregion
+}
+

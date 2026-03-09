@@ -8,6 +8,8 @@ declare interface Array<T> {
 	get last(): T;
 	/** 打乱数组 */
 	upset(): this;
+	/** 随机一个元素 */
+	random(): T;
 	/** 删除元素 */
 	remove(value: T): void;
 	/** 添加唯一值 */

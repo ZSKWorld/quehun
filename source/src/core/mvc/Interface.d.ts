@@ -95,7 +95,7 @@ declare interface IViewExtend {
 	 * @param data 传入参数, default: null
 	 * @param openType 页面打开对当前页面操作的类型, default: {@link EViewOpenType.None}
 	 */
-	openView<T = any>(viewId: EViewID, data?: T, openType = EViewOpenType.None): Promise<void>;
+	openView<T = any>(viewId: EViewID, data?: T, openType?: EViewOpenType): Promise<void>;
 
 	/** 移除当前页面，只有UI界面才能移除自身，其他Com，Btn，Render之类的无效 */
 	closeSelf(): Promise<void>;
@@ -167,8 +167,18 @@ declare interface IFacade {
 	registerView(viewId: EViewID, viewType: EViewType, viewCls: IViewClass, mediatorCls?: IMediatorClass): void;
 	hasMediator(viewId: EViewID): boolean;
 	getMediator(viewId: EViewID): IMediatorClass;
-	createView(viewId: EViewID, fullScreen: boolean = false): IView;
-	createMediator(viewId: EViewID, fullScreen: boolean = false): IMediator;
+	/**
+	 * 
+	 * @param viewId 
+	 * @param fullScreen default false
+	 */
+	createView(viewId: EViewID, fullScreen?: boolean): IView;
+	/**
+	 * 
+	 * @param viewId 
+	 * @param fullScreen default false
+	 */
+	createMediator(viewId: EViewID, fullScreen?: boolean): IMediator;
 
 	registerCommand(notifyName: string, cls: ICommandClass): void;
 	hasCommand(notifyName: string): boolean;
@@ -180,9 +190,9 @@ declare interface IFacade {
 	offAllCaller(caller: any): void;
 	dispatch(eventName: string, data?: any): void;
 	/** 设置caller是否激活{@link InterestNotify}注册的事件 */
-	setNotifyDecoaratorEnable(caller: any, enable: boolean);
+	setNotifyDecoaratorEnable(caller: any, enable: boolean): void;
 	/** 设置caller是否激活{@link InterestMessage}注册的事件 */
-	setMessageDecoaratorEnable(caller: any, enable: boolean);
+	setMessageDecoaratorEnable(caller: any, enable: boolean): void;
 	/** 设置caller是否激活{@link InterestUserEvent}注册的事件 */
-	setUserEventDecoaratorEnable(caller: any, enable: boolean);
+	setUserEventDecoaratorEnable(caller: any, enable: boolean): void;
 }

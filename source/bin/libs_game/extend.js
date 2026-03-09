@@ -50,6 +50,11 @@ Object.defineProperties(Array.prototype, {
 		enumerable: false,
 		configurable: false,
 	},
+	"random": {
+		value: function () {
+			return this[Math.floor(Math.random() * this.length)];
+		}
+	},
 	"remove": {
 		value: function (value) {
 			const index = this.indexOf(value);

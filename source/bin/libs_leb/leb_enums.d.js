@@ -200,6 +200,10 @@ EUIPoolKey = {
 	TipInfo: "TipInfo",
 }
 
+EConstDefine = {
+	LangResDir: "langRes/",
+}
+
 ENotifyConst = {
 	OnGameShow: "NotifyConst_OnGameShow",
 	OnGameHide: "NotifyConst_OnGameHide",

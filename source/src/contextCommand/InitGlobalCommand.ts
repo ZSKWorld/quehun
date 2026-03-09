@@ -1,4 +1,3 @@
-import { ConstDefine } from "../core/common/ConstDefine";
 import { LoadManager } from "../core/common/manager/LoadManager";
 import { LocalDataManager } from "../core/common/manager/LocalDataManager";
 import { MathUtil } from "../core/common/math/MathUtil";
@@ -81,7 +80,7 @@ export class InitGlobalCommand extends Command {
 
 		$windowImmit("$langRes", function (url: string) {
 			if (!url) return url;
-			return ConstDefine.LangResDir + $gameMgr.language + "/" + url;
+			return EConstDefine.LangResDir + $gameMgr.language + "/" + url;
 		});
 
 		$windowImmit("$langCfg", function (obj: object, key: string) {

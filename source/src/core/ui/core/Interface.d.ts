@@ -22,9 +22,9 @@ declare interface IUIManager {
 	 * 打开页面
 	 * @param viewId 页面id
 	 * @param data 传入参数
-	 * @param openType 页面打开对当前页面操作的类型
+	 * @param openType 页面打开对当前页面操作的类型 default {@link EViewOpenType.None}
 	 */
-	openView<T = any>(viewId: EViewID, data?: T, openType: EViewOpenType = EViewOpenType.None): Promise<void>;
+	openView<T = any>(viewId: EViewID, data?: T, openType?: EViewOpenType): Promise<void>;
 
 	/** 移除页面
 	 * @param viewId 页面id

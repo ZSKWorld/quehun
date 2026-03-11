@@ -14,10 +14,16 @@ declare interface IRichText {
 	italic(): IRichText;
 	/** 下划线 */
 	underline(): IRichText;
-	/** 添加空格 */
-	space(count: number = 1): IRichText;
-	/** 添加换行 */
-	break(count: number = 1): IRichText;
+	/**
+	 * 添加空格
+	 * @param count default 1
+	 */
+	space(count?: number): IRichText;
+	/**
+	 * 添加换行
+	 * @param count default 1
+	 */
+	break(count?: number): IRichText;
 	/** 设置大小 */
 	size(size: number): IRichText;
 	/** 设置颜色 */
@@ -48,14 +54,14 @@ declare interface IUIUtil {
 	/**
 	 * 设置list
 	 * @param list {@link fgui.GList} list组件
-	 * @param virtual 虚拟列表?
+	 * @param virtual 虚拟列表 default true
 	 * @param caller 调用者
 	 * @param renderFunc 渲染回调
 	 * @param clickFunc 点击回调
 	 */
 	setList(
 		list: fgui.GList,
-		virtual: boolean = true,
+		virtual?: boolean,
 		caller?: any,
 		renderFunc?: (index?: number, item?: any) => void,
 		clickFunc?: (item?: any, evt?: Laya.Event, index?: number) => void

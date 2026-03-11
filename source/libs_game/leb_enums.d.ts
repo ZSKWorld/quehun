@@ -1,5 +1,5 @@
 /** 本地化语言 */
-declare const enum ELanguage {
+declare enum ELanguage {
 	CHS = "chs",
 	CHST = "chs_t",
 	EN = "en",
@@ -8,7 +8,7 @@ declare const enum ELanguage {
 }
 
 /** 行政版本 */
-declare const enum EClientType {
+declare enum EClientType {
 	CHS = "chs",
 	CHST = "chs_t",
 	EN = "en",
@@ -17,7 +17,7 @@ declare const enum EClientType {
 }
 
 /** 本地保存数据类型 */
-declare const enum ELocalDataKey {
+declare enum ELocalDataKey {
 	/** 上次登录的服务器 */
 	LastServer = "LocalDataKey_LastServer",
 	/** 自动登录 */
@@ -31,14 +31,14 @@ declare const enum ELocalDataKey {
 }
 
 /** 按键事件类型 */
-declare const enum EKeyEventType {
+declare enum EKeyEventType {
 	KeyDown = "keydown",
 	KeyPress = "keypress",
 	KeyUp = "keyup",
 }
 
 /** 鼠标事件类型 */
-declare const enum EMouseEventType {
+declare enum EMouseEventType {
 	MouseDown = "mousedown",
 	MouseUp = "mouseup",
 	MouseMove = "mousemove",
@@ -55,7 +55,7 @@ declare const enum EMouseEventType {
 }
 
 /** 页面打开对当前页面操作的类型 */
-declare const enum EViewOpenType {
+declare enum EViewOpenType {
 	/** 无操作 */
 	None = "None",
 	/** 隐藏当前页面 */
@@ -65,7 +65,7 @@ declare const enum EViewOpenType {
 }
 
 /** 页面种类 */
-declare const enum EViewCategory {
+declare enum EViewCategory {
 	/** 全屏页面 */
 	FullScreen = "FullScreen",
 	/** 弹窗页面 */
@@ -73,7 +73,7 @@ declare const enum EViewCategory {
 }
 
 /** 页面类型 */
-declare const enum EViewType {
+declare enum EViewType {
 	UI = "UI",
 	Component = "Component",
 	Render = "Render",
@@ -92,7 +92,7 @@ declare enum ELayer {
 }
 
 /** 全局物品类型 */
-declare const enum EItemType {
+declare enum EItemType {
 	/** 货币 */
 	Currency = 1,
 	/** 角色 */
@@ -108,7 +108,7 @@ declare const enum EItemType {
 }
 
 /** 装扮类别 item.category */
-declare const enum EItemCategory {
+declare enum EItemCategory {
 	/** 道具 */
 	Item = 1,
 	/** 礼物 */
@@ -128,7 +128,7 @@ declare const enum EItemCategory {
 }
 
 /** 普通category 子类型 */
-declare const enum EItemNormalType {
+declare enum EItemNormalType {
 	/** 无 */
 	None = 0,
 	/** 手动选择的奖励道具 */
@@ -144,7 +144,7 @@ declare const enum EItemNormalType {
 }
 
 /** 礼物category 子类型 */
-declare const enum EItemGiftType {
+declare enum EItemGiftType {
 	/** 食物 */
 	Food = 1,
 	/** 酒 */
@@ -154,7 +154,7 @@ declare const enum EItemGiftType {
 }
 
 /** 通用装扮category 子类型 */
-declare const enum EItemCommonType {
+declare enum EItemCommonType {
 	/** 立直棒 */
 	LiZhiBang = 0,
 	/** 和牌特效 */
@@ -185,7 +185,7 @@ declare const enum EItemCommonType {
 	MaJiangPaiZhengMian = 13,
 }
 
-declare const enum EClientValueType {
+declare enum EClientValueType {
 	None = 0,
 	CompleteRegistration = 1,
 	CompleteTutorial = 2,
@@ -255,24 +255,24 @@ declare const enum EClientValueType {
 }
 
 /** 逻辑场景类型枚举 */
-declare const enum ESceneType {
+declare enum ESceneType {
 	LoginScene = "LoginScene",
 	MainScene = "MainScene",
 }
 
 /** 各种UI对象池标识 */
-declare const enum EUIPoolKey {
+declare enum EUIPoolKey {
 	/** 文本提示 */
 	TipInfo = "TipInfo",
 }
 
-declare const enum EConstDefine {
+declare enum EConstDefine {
 	/** 本地化资源根目录 */
 	LangResDir = "langRes/",
 }
 
 /** 全局事件枚举 */
-declare const enum ENotifyConst {
+declare enum ENotifyConst {
 	/** 游戏回到前台事件 */
 	OnGameShow = "NotifyConst_OnGameShow",
 	/** 游戏隐藏后台事件 */
@@ -321,7 +321,7 @@ declare const enum ENotifyConst {
 }
 
 /** 用户数据变化事件 */
-declare const enum EUserEvent {
+declare enum EUserEvent {
 	//#region 邮件相关
 	OnMailChanged = "EUserEvent_OnMailChanged",
 	//#endregion

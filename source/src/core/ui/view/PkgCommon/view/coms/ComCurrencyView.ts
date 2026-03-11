@@ -1,16 +1,11 @@
 import ComCurrency from "../../../../ui/PkgCommon/ComCurrency";
 
-export const enum EComCurrencyMsg {
-	OnBtnAddClick = "ComCurrency_OnBtnAddClick",
-	OnBtnCurrencyClick = "ComCurrency_OnBtnCurrencyClick",
-}
-
 export class ComCurrencyView extends ExtensionClass<IView, ComCurrency>(ComCurrency) implements IView {
 
 	override onCreate() {
 		const { btn_add, btn_currency } = this;
-		btn_add.onClick(this, this.sendEvent, [EComCurrencyMsg.OnBtnAddClick]);
-		btn_currency.onClick(this, this.sendEvent, [EComCurrencyMsg.OnBtnCurrencyClick]);
+		btn_add.onClick(this, this.onBtnAddClick);
+		btn_currency.onClick(this, this.onBtnCurrencyClick);
 	}
 
 	override onEnable() {
@@ -35,5 +30,13 @@ export class ComCurrencyView extends ExtensionClass<IView, ComCurrency>(ComCurre
 			// 信仰值
 			case 4: this.txt_count.text = $userData.bag.getItemCount(100001).toString();break;
 		}
+	}
+
+	private onBtnAddClick() {
+		this.openView(EViewID.UIShopView, null, EViewOpenType.Hide);
+	}
+
+	private onBtnCurrencyClick() {
+		
 	}
 }

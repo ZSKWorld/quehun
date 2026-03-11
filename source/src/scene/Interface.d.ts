@@ -1,6 +1,6 @@
 /** 逻辑场景 */
 declare interface IScene<T = any> extends IObserver {
-	readonly type: SceneType;
+	readonly type: ESceneType;
 	/** 场景打开数据 */
 	readonly data: T;
 	readonly views: Set<EViewID>;

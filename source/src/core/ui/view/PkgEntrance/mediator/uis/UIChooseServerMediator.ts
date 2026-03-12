@@ -1,10 +1,6 @@
 import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
 import { EUIChooseServerMsg, UIChooseServerView } from "../../view/uis/UIChooseServerView";
 
-export interface IUIChooseServerData {
-	callback: (index: number) => void;
-}
-
 export class UIChooseServerMediator extends MediatorBase<UIChooseServerView, IUIChooseServerData> {
 	private _lastServer: number;
 

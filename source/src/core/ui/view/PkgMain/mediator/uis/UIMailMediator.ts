@@ -3,10 +3,6 @@ import { BtnMailTabView } from "../../view/btns/BtnMailTabView";
 import { RenderMailItemView } from "../../view/renders/RenderMailItemView";
 import { EUIMailMsg, UIMailView } from "../../view/uis/UIMailView";
 
-export interface IUIMailData {
-
-}
-
 export class UIMailMediator extends MediatorBase<UIMailView, IUIMailData> {
 	private _curMail: ProtoObject<IMail>;
 

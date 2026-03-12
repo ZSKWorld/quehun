@@ -1,7 +1,7 @@
 import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
 import { ComTipInfoView } from "../../view/coms/ComTipInfoView";
 
-export class ComTipInfoMediator extends MediatorBase<ComTipInfoView, string> {
+export class ComTipInfoMediator extends MediatorBase<ComTipInfoView, IComTipInfoData> {
 	private static _displayTips: ComTipInfoMediator[] = [];
 	private static readonly _showTime: number = 2000;
 	private static readonly _moveUpSpeed: number = 10;

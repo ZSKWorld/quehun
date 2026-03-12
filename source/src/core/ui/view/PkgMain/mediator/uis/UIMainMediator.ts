@@ -1,10 +1,6 @@
 import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
 import { EUIMainMsg, UIMainView } from "../../view/uis/UIMainView";
 
-export interface IUIMainData {
-
-}
-
 export class UIMainMediator extends MediatorBase<UIMainView, IUIMainData> {
 
 	override onAwake() {

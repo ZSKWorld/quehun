@@ -1,10 +1,6 @@
 import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
 import { UILoadingView } from "../../view/uis/UILoadingView";
 
-export interface IUILoadingData {
-
-}
-
 export class UILoadingMediator extends MediatorBase<UILoadingView, IUILoadingData> {
 
 	override onEnable() {

@@ -1,10 +1,6 @@
 import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
 import { EComMatchItemMsg, ComMatchItemView } from "../../view/coms/ComMatchItemView";
 
-export interface IComMatchItemData {
-
-}
-
 export class ComMatchItemMediator extends MediatorBase<ComMatchItemView, IComMatchItemData> {
 
 	override onAwake() {

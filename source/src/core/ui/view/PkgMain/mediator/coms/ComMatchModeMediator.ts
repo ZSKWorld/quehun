@@ -1,10 +1,6 @@
 import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
-import { EComMatchModeShowType } from "../../define/MainDefine";
+import { EComMatchModeShowType } from "../../MainDefine";
 import { ComMatchModeView, EComMatchModeMsg } from "../../view/coms/ComMatchModeView";
-
-export interface IComMatchModeData {
-
-}
 
 export class ComMatchModeMediator extends MediatorBase<ComMatchModeView, IComMatchModeData> {
 	private _curMode = EComMatchModeShowType.Mode;

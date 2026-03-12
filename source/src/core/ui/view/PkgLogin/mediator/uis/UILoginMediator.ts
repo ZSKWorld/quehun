@@ -1,10 +1,6 @@
 import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
-import { ELoginType } from "../../define/LoginDefine";
+import { ELoginType } from "../../LoginDefine";
 import { EUILoginMsg, UILoginView } from "../../view/uis/UILoginView";
-
-export interface IUILoginData {
-
-}
 
 export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 	private _loginInfo: ILoginInfo;
@@ -62,21 +58,21 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 
 	private onBtnHelpClick() {
 		
-		let url:string = GameMgr.config_data['wapchat_url'] + '?';
-		url += 'fromUrl=' + game.Tools.getFinalUrl(GameMgr.config_data['homepage_url']);
-		url += '&urlTitle=' + '网页';
-		if (GameMgr.client_language == 'chs') {
-			url += '&accessId=4eb5a8b0-aafc-11ea-b418-397d5a9a3f68'
-			url += '&language=' + 'ZHCN';
-		} else {
-			url += '&accessId=4184be70-95b1-11ea-b027-616616b0ded6'
-			url += '&language=' + 'EN';
-		}
+		// let url:string = GameMgr.config_data['wapchat_url'] + '?';
+		// url += 'fromUrl=' + game.Tools.getFinalUrl(GameMgr.config_data['homepage_url']);
+		// url += '&urlTitle=' + '网页';
+		// if (GameMgr.client_language == 'chs') {
+		// 	url += '&accessId=4eb5a8b0-aafc-11ea-b418-397d5a9a3f68'
+		// 	url += '&language=' + 'ZHCN';
+		// } else {
+		// 	url += '&accessId=4184be70-95b1-11ea-b027-616616b0ded6'
+		// 	url += '&language=' + 'EN';
+		// }
 		
-		let d_customField = {};
-		d_customField['登陆状态'] = '未登录';
-		url += '&customField=' + JSON.stringify(d_customField);
-		game.Tools.open_link(url);
+		// let d_customField = {};
+		// d_customField['登陆状态'] = '未登录';
+		// url += '&customField=' + JSON.stringify(d_customField);
+		// game.Tools.open_link(url);
 	}
 
 	private onBtnLoginByAccountClick() {

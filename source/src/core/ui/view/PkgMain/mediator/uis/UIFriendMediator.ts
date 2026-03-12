@@ -5,10 +5,6 @@ import { RenderFriendApplyView } from "../../view/renders/RenderFriendApplyView"
 import { RenderFriendRecentView } from "../../view/renders/RenderFriendRecentView";
 import { EUIFriendMsg, UIFriendView } from "../../view/uis/UIFriendView";
 
-export interface IUIFriendData {
-
-}
-
 const Scroll_Threshold = 150; // 触底检查阈值
 
 export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> {

@@ -1,10 +1,6 @@
 import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
 import { EUILoginQueueMsg, UILoginQueueView } from "../../view/uis/UILoginQueueView";
 
-export interface IUILoginQueueData {
-
-}
-
 export class UILoginQueueMediator extends MediatorBase<UILoginQueueView, IUILoginQueueData> {
 	private _time = 0;
 	override onAwake() {

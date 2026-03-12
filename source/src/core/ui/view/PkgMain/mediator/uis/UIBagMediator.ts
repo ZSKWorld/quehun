@@ -2,10 +2,6 @@ import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
 import { RadioGroup } from "../../../../extention/RadioGroup";
 import { UIBagView } from "../../view/uis/UIBagView";
 
-export interface IUIBagData {
-	index?: number
-}
-
 export class UIBagMediator extends MediatorBase<UIBagView, IUIBagData> {
 	private _tabGroup = new RadioGroup();
 

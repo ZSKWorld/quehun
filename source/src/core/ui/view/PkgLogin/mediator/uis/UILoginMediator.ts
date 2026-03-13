@@ -1,5 +1,5 @@
 import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
-import { ELoginType } from "../../LoginDefine";
+import { ELoginType } from "../../Definition";
 import { EUILoginMsg, UILoginView } from "../../view/uis/UILoginView";
 
 export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {

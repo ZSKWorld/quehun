@@ -1,5 +1,5 @@
 import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
-import { EComMatchModeShowType } from "../../MainDefine";
+import { EComMatchModeShowType } from "../../Definition";
 import { ComMatchModeView, EComMatchModeMsg } from "../../view/coms/ComMatchModeView";
 
 export class ComMatchModeMediator extends MediatorBase<ComMatchModeView, IComMatchModeData> {

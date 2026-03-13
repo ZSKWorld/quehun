@@ -1,5 +1,5 @@
 import UIRank from "../../../../ui/PkgMain/UIRank";
-import { EUIRankType } from "../../MainDefine";
+import { EUIRankType } from "../../Definition";
 
 export const enum EUIRankMsg {
 	OnBtnCloseClick = "UIRank_OnBtnCloseClick",

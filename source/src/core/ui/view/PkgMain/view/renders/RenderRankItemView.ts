@@ -1,5 +1,5 @@
 import RenderRankItem from "../../../../ui/PkgMain/RenderRankItem";
-import { EUIRankType } from "../../MainDefine";
+import { EUIRankType } from "../../Definition";
 
 export const enum ERenderRankItemMsg {
 

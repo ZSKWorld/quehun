@@ -15,12 +15,11 @@ export class RadioGroup {
 	}
 
 	init(items: RadioItem[], caller?: any, onValueChanged?: (index: number) => void) {
-		if (!items || items.length == 0) return;
-		items.forEach(item => {
-			const index = this._items.indexOf(item);
-			if (index != -1) return;
-			this._items.push(item);
-			item.onClick(this, this.onItemClick, [item]);
+		this.reset();
+		items = items || [];
+		this._items = [...items];
+		items.forEach((v, index) => {
+			v.onClick(this, this.onItemClick, [index]);
 		});
 		this._valueChangedCaller = caller;
 		this._onValueChanged = onValueChanged;
@@ -30,11 +29,11 @@ export class RadioGroup {
 	clearSelection() { this.setSelection(-1); }
 
 	reset() {
+		this.clearSelection();
 		this._items.forEach(item => item.offClick(this, this.onItemClick));
 		this._items.length = 0;
 		this._valueChangedCaller = null;
 		this._onValueChanged = null;
-		this._selectIndex = -1;
 	}
 
 	private setSelection(v: number) {
@@ -45,9 +44,7 @@ export class RadioGroup {
 		}
 	}
 
-	private onItemClick(item: RadioItem) {
-		const index = this._items.indexOf(item);
-		if (index == -1) return;
+	private onItemClick(index: number) {
 		this.selectIndex = index;
 	}
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0ejdu67plnov" designImageAlpha="100">
   <displayList>
-    <image id="n1_dwe0" name="n1" src="dwe0obap" fileName="Texture/img_4188.png" xy="9,39" size="1902,1034"/>
+    <loader id="n1_dwe0" name="bg" xy="9,39" size="1902,1034" url="ui://ca43vz0edwe0obap" fill="scaleFree"/>
     <component id="n2_dwe0" name="back" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1759,153" pivot="0.5,0" size="120,192">
       <Button icon="ui://vith2b66dwe0oba7"/>
     </component>

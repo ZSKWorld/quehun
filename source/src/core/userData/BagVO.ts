@@ -110,7 +110,6 @@ export class BagVO extends BaseVO implements VO.IBagVO {
 	@InterestMessage(ENetMessage.oauth2Login)
 	private onLogin(res: IResLogin) {
 		if (!res.account) return;
-		Logger.error(res);
 		const { gold, vip, diamond, platform_diamond, skin_ticket, platform_skin_ticket, loading_image } = res.account;
 		const items: IItem[] = [];
 		gold && items.push({ item_id: 100002, stack: gold });

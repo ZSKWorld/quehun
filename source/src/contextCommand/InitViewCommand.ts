@@ -3,12 +3,14 @@ import PkgCommonBinder from "../core/ui/ui/PkgCommon/PkgCommonBinder";
 import PkgEntranceBinder from "../core/ui/ui/PkgEntrance/PkgEntranceBinder";
 import PkgLoginBinder from "../core/ui/ui/PkgLogin/PkgLoginBinder";
 import PkgMainBinder from "../core/ui/ui/PkgMain/PkgMainBinder";
+import { BtnBuyView } from "../core/ui/view/PkgCommon/view/btns/BtnBuyView";
 import { BtnCheckRichTxtRightView } from "../core/ui/view/PkgCommon/view/btns/BtnCheckRichTxtRightView";
 import { BtnCheckTxtRightView } from "../core/ui/view/PkgCommon/view/btns/BtnCheckTxtRightView";
 import { BtnSwitch1View } from "../core/ui/view/PkgCommon/view/btns/BtnSwitch1View";
 import { BtnBagSkinCheckView } from "../core/ui/view/PkgMain/view/btns/BtnBagSkinCheckView";
 import { BtnDengLongView } from "../core/ui/view/PkgMain/view/btns/BtnDengLongView";
 import { BtnMailTabView } from "../core/ui/view/PkgMain/view/btns/BtnMailTabView";
+import { BtnShopRefreshView } from "../core/ui/view/PkgMain/view/btns/BtnShopRefreshView";
 import { BtnXunMiView } from "../core/ui/view/PkgMain/view/btns/BtnXunMiView";
 import { RenderBagGiftItemView } from "../core/ui/view/PkgMain/view/renders/RenderBagGiftItemView";
 import { RenderBagIllustItemView } from "../core/ui/view/PkgMain/view/renders/RenderBagIllustItemView";
@@ -23,6 +25,9 @@ import { RenderLiaoSheDecoItemView } from "../core/ui/view/PkgMain/view/renders/
 import { RenderLiaoSheDecoTabView } from "../core/ui/view/PkgMain/view/renders/RenderLiaoSheDecoTabView";
 import { RenderMailItemView } from "../core/ui/view/PkgMain/view/renders/RenderMailItemView";
 import { RenderRankItemView } from "../core/ui/view/PkgMain/view/renders/RenderRankItemView";
+import { RenderShopCGView } from "../core/ui/view/PkgMain/view/renders/RenderShopCGView";
+import { RenderShopItemView } from "../core/ui/view/PkgMain/view/renders/RenderShopItemView";
+import { RenderShopSkinView } from "../core/ui/view/PkgMain/view/renders/RenderShopSkinView";
 import { ComBackView } from "../core/ui/view/PkgCommon/view/coms/ComBackView";
 import { ComCurrencyView } from "../core/ui/view/PkgCommon/view/coms/ComCurrencyView";
 import { ComHeadView } from "../core/ui/view/PkgCommon/view/coms/ComHeadView";
@@ -98,12 +103,16 @@ import { UIPaipuView } from "../core/ui/view/PkgMain/view/uis/UIPaipuView";
 import { UIPaipuMediator } from "../core/ui/view/PkgMain/mediator/uis/UIPaipuMediator";
 import { UIRankView } from "../core/ui/view/PkgMain/view/uis/UIRankView";
 import { UIRankMediator } from "../core/ui/view/PkgMain/mediator/uis/UIRankMediator";
+import { UIRechargeView } from "../core/ui/view/PkgMain/view/uis/UIRechargeView";
+import { UIRechargeMediator } from "../core/ui/view/PkgMain/mediator/uis/UIRechargeMediator";
 import { UISettingView } from "../core/ui/view/PkgMain/view/uis/UISettingView";
 import { UISettingMediator } from "../core/ui/view/PkgMain/mediator/uis/UISettingMediator";
 import { UIShopView } from "../core/ui/view/PkgMain/view/uis/UIShopView";
 import { UIShopMediator } from "../core/ui/view/PkgMain/mediator/uis/UIShopMediator";
 import { UITreasureView } from "../core/ui/view/PkgMain/view/uis/UITreasureView";
 import { UITreasureMediator } from "../core/ui/view/PkgMain/mediator/uis/UITreasureMediator";
+import { UIVideoView } from "../core/ui/view/PkgMain/view/uis/UIVideoView";
+import { UIVideoMediator } from "../core/ui/view/PkgMain/mediator/uis/UIVideoMediator";
 import { Command } from "../core/mvc/controller/Command";
 
 export class InitViewCommand extends Command {
@@ -115,12 +124,14 @@ export class InitViewCommand extends Command {
 
 		const register = $facade.registerView.bind($facade) as typeof $facade.registerView;
 		//Btns
+		register(EViewID.BtnBuyView, EViewType.Button, BtnBuyView);
 		register(EViewID.BtnCheckRichTxtRightView, EViewType.Button, BtnCheckRichTxtRightView);
 		register(EViewID.BtnCheckTxtRightView, EViewType.Button, BtnCheckTxtRightView);
 		register(EViewID.BtnSwitch1View, EViewType.Button, BtnSwitch1View);
 		register(EViewID.BtnBagSkinCheckView, EViewType.Button, BtnBagSkinCheckView);
 		register(EViewID.BtnDengLongView, EViewType.Button, BtnDengLongView);
 		register(EViewID.BtnMailTabView, EViewType.Button, BtnMailTabView);
+		register(EViewID.BtnShopRefreshView, EViewType.Button, BtnShopRefreshView);
 		register(EViewID.BtnXunMiView, EViewType.Button, BtnXunMiView);
 
 		//Renders
@@ -137,6 +148,9 @@ export class InitViewCommand extends Command {
 		register(EViewID.RenderLiaoSheDecoTabView, EViewType.Render, RenderLiaoSheDecoTabView);
 		register(EViewID.RenderMailItemView, EViewType.Render, RenderMailItemView);
 		register(EViewID.RenderRankItemView, EViewType.Render, RenderRankItemView);
+		register(EViewID.RenderShopCGView, EViewType.Render, RenderShopCGView);
+		register(EViewID.RenderShopItemView, EViewType.Render, RenderShopItemView);
+		register(EViewID.RenderShopSkinView, EViewType.Render, RenderShopSkinView);
 
 		//Coms
 		register(EViewID.ComBackView, EViewType.Component, ComBackView);
@@ -189,8 +203,10 @@ export class InitViewCommand extends Command {
 		register(EViewID.UIObserverView, EViewType.UI, UIObserverView, UIObserverMediator);
 		register(EViewID.UIPaipuView, EViewType.UI, UIPaipuView, UIPaipuMediator);
 		register(EViewID.UIRankView, EViewType.UI, UIRankView, UIRankMediator);
+		register(EViewID.UIRechargeView, EViewType.UI, UIRechargeView, UIRechargeMediator);
 		register(EViewID.UISettingView, EViewType.UI, UISettingView, UISettingMediator);
 		register(EViewID.UIShopView, EViewType.UI, UIShopView, UIShopMediator);
 		register(EViewID.UITreasureView, EViewType.UI, UITreasureView, UITreasureMediator);
+		register(EViewID.UIVideoView, EViewType.UI, UIVideoView, UIVideoMediator);
 	}
 }

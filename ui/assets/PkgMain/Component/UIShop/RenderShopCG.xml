@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="620,531" pivot="0.5,0.5" designImage="ui://ca43vz0efpd27plokn" designImageOffsetX="-452" designImageOffsetY="-290" designImageAlpha="0">
+  <displayList>
+    <component id="n22_fpd2" name="item" src="rpakobf5" fileName="Component/Component/物品/ComItem.xml" pkg="vx9zwser" xy="10,31" size="600,338">
+      <property target="icon" propertyId="1" value="ui://ca43vz0exmej7plojt"/>
+    </component>
+    <image id="n21_fpd2" name="n21" src="fpd2obgx" fileName="Texture/img_4023.png" xy="0,0" size="620,531"/>
+    <image id="n27_fpd2" name="n27" src="fpd2obgy" fileName="Texture/img_2439.png" xy="387,375" size="204,156"/>
+    <image id="n28_fpd2" name="n28" src="rpakobf3" fileName="Texture/img_1073.png" xy="540,321"/>
+    <image id="n29_fpd2" name="n29" src="fpd2obgz" fileName="Texture/img_2566.png" xy="-11,34"/>
+    <component id="n31_fpd2" name="n31" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="327,426" size="273,88">
+      <Button title="购买" titleColor="#1f0b15" titleFontSize="40" icon="ui://vx9zwsergsi2obcn"/>
+    </component>
+    <text id="n24_fpd2" name="n24" xy="200,32" pivot="0.5,0.5" size="220,42" fontSize="30" color="#ffffff" align="center" vAlign="middle" singleLine="true" text="14天后结束销售"/>
+    <text id="n30_fpd2" name="n30" xy="48,46" pivot="0.5,0.5" size="104,54" rotation="-3" fontSize="40" color="#e4ffc4" align="center" vAlign="middle" singleLine="true" text="-50%"/>
+    <text id="n25_fpd2" name="name" xy="189,372" pivot="0.5,0.5" size="241,48" fontSize="35" color="#deae7a" align="center" vAlign="middle" singleLine="true" text="锦筏题春-2026"/>
+  </displayList>
+</component>

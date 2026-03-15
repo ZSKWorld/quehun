@@ -101,9 +101,9 @@ export class FGUIRepair {
 				var pi = this._items[i];
 				if (pi.type == fgui.PackageItemType.Atlas) {
 					if (pi.texture)
-						Laya.loader.clearTextureRes(pi.texture.url);
+						$loadMgr.clearTextureRes(pi.texture.url);
 					else
-						Laya.loader.clearTextureRes(pi.file);
+						$loadMgr.clearTextureRes(pi.file);
 				}
 			}
 		};
@@ -116,7 +116,7 @@ export class FGUIRepair {
 						pi.texture.destroy();
 						pi.texture = null;
 					} else
-						Laya.loader.clearRes(pi.file);
+						$loadMgr.clearRes(pi.file);
 				}
 				else if (pi.type == fgui.PackageItemType.Sound) {
 					// Laya.SoundManager.destroySound(pi.file);
@@ -125,7 +125,7 @@ export class FGUIRepair {
 				else if (pi.templet)
 					pi.templet.destroy();
 			}
-			Laya.loader.clearRes(this._resKey + "." + fgui.UIConfig.packageFileExtension);
+			$loadMgr.clearRes(this._resKey + "." + fgui.UIConfig.packageFileExtension);
 		};
 	}
 

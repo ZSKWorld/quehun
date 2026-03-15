@@ -5,6 +5,7 @@ export default class UIMail extends fgui.GComponent {
 	protected ctrl_head: fgui.Controller;
 	protected ctrl_body: fgui.Controller;
 	protected ctrl_empty: fgui.Controller;
+	protected loader_bg: fgui.GLoader;
 	protected btn_back: fgui.GButton;
 	protected list_tab: fgui.GList;
 	protected list_reward: fgui.GList;
@@ -23,6 +24,7 @@ export default class UIMail extends fgui.GComponent {
 		this.ctrl_head = this.getControllerAt(0);
 		this.ctrl_body = this.getControllerAt(1);
 		this.ctrl_empty = this.getControllerAt(2);
+		this.loader_bg = <fgui.GLoader>(this.getChildAt(0));
 		this.btn_back = <fgui.GButton>(this.getChildAt(3));
 		this.list_tab = <fgui.GList>(this.getChildAt(11));
 		this.list_reward = <fgui.GList>(this.getChildAt(12));

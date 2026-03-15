@@ -14,7 +14,6 @@ export class UIRankView extends ExtensionClass<IView, UIRank>(UIRank) implements
 
 	override onCreate() {
 		const { btn_close, btn_siMa, btn_sanMa, list_rank } = this;
-		btn_siMa.mode = btn_sanMa.mode = fgui.ButtonMode.Radio;
 		btn_close.onClick(this, this.sendEvent, [EUIRankMsg.OnBtnCloseClick]);
 	}
 

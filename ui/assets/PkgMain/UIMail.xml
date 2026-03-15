@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0ejdu67plncn" designImageAlpha="0" designImageLayer="1">
-  <controller name="head" pages="0,,1," selected="1"/>
-  <controller name="body" pages="1,无奖励,2,奖励未领取,3,奖励已领取" selected="1"/>
+  <controller name="head" pages="0,,1," selected="0"/>
+  <controller name="body" pages="1,无奖励,2,奖励未领取,3,奖励已领取" selected="0"/>
   <controller name="empty" pages="0,,1," selected="0"/>
   <displayList>
-    <image id="n1_dwe0" name="n1" src="dwe0obaq" fileName="Texture/img_4209.png" xy="109,20" size="1700,1034"/>
+    <loader id="n1_dwe0" name="bg" xy="109,20" size="1700,1034" url="ui://ca43vz0edwe0obaq" fill="scaleFree"/>
     <image id="n7_pt3a" name="n7" src="pt3aobav" fileName="Texture/img_439.png" xy="627,193" size="6,798"/>
-    <loader id="n2_dwe0" name="n2" xy="900,84" pivot="0.5,0.5" size="120,70" url="ui://vith2b66dwe0obat" autoSize="true">
+    <loader id="n2_dwe0" name="n2" xy="900,84" pivot="0.5,0.5" size="120,70" url="ui://vith2b66dwe0obau" autoSize="true">
       <gearIcon controller="head" pages="0" values="ui://vith2b66dwe0obau" default="ui://vith2b66dwe0obat"/>
     </loader>
     <component id="n4_dwe0" name="back" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1710,140">
@@ -18,7 +18,7 @@
     <group id="n21_hk7r" name="n21" xy="364,540" size="891,107" advanced="true">
       <gearDisplay controller="empty" pages="1"/>
     </group>
-    <image id="n11_hk7r" name="n11" src="mde1b7e" fileName="Texture/img_544.png" pkg="vx9zwser" xy="680,270" size="960,380" group="n22_hk7r">
+    <image id="n11_hk7r" name="n11" src="mde1b7e" fileName="Texture/img_544.png" pkg="vx9zwser" xy="680,270" size="960,559" group="n22_hk7r">
       <gearDisplay controller="body" pages="1,2,3"/>
       <gearSize controller="body" pages="1" values="960,559,1,1" default="960,380,1,1"/>
     </image>
@@ -54,7 +54,7 @@
       <item/>
       <item/>
     </list>
-    <component id="n15_hk7r" name="content" src="hk7robb1" fileName="Component/UIEmail/LabeEmaillContent.xml" xy="708,293" size="912,338" group="n22_hk7r">
+    <component id="n15_hk7r" name="content" src="hk7robb1" fileName="Component/UIEmail/LabeMaillContent.xml" xy="708,293" size="912,517" group="n22_hk7r">
       <relation target="n11_hk7r" sidePair="height-height"/>
       <Label title="前言：&#xA;《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》《雀魂麻将许可及服务协议》" titleFontSize="32"/>
     </component>

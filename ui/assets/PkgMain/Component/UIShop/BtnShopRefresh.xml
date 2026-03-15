@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="268,68" pivot="0.5,0.5" extention="Button" designImage="ui://ca43vz0efpd27ploki" designImageOffsetX="-1551" designImageOffsetY="-227">
+  <controller name="button" pages="0,up,1,down" selected="0"/>
+  <displayList>
+    <image id="n3_108ab" name="n3" src="gsi2obee" fileName="Texture/img_1964.png" pkg="vx9zwser" xy="0,0" pivot="0.5,0" size="268,68"/>
+    <image id="n6_fpd2" name="currency" src="hpkoobfz" fileName="Texture/currency1.png" pkg="vx9zwser" xy="124,18" size="33,33"/>
+    <text id="n4_fpd2" name="refresh" xy="27,12" pivot="1,0.5" size="86,44" fontSize="32" color="#fcba72" align="right" vAlign="middle" autoSize="shrink" singleLine="true" text="刷新"/>
+    <text id="n7_fpd2" name="count" xy="166,12" pivot="0,0.5" size="74,44" fontSize="32" color="#fcba72" vAlign="middle" autoSize="shrink" singleLine="true" text="x10"/>
+    <text id="n5_fpd2" name="refreshNow" xy="11,12" pivot="0.5,0.5" size="246,44" visible="false" fontSize="32" color="#fcba72" align="center" vAlign="middle" autoSize="shrink" singleLine="true" text="立即刷新"/>
+  </displayList>
+  <Button downEffect="scale" downEffectValue="0.9"/>
+</component>

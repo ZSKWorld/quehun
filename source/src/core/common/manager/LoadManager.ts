@@ -34,6 +34,10 @@ export class LoadManager extends Singleton<LoadManager>() implements ILoadManage
 		return Laya.loader.getRes(url, type) as T;
 	}
 
+	cancelLoadByUrl(url: string) {
+		Laya.loader.cancelLoadByUrl(url);
+	}
+
 	clearRes(url: string, checkObj?: any) {
 		Laya.loader.clearRes(url, checkObj);
 	}

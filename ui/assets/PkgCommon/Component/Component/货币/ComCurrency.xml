@@ -11,6 +11,6 @@
       <gearIcon controller="type" pages="1,2,3,4" values="ui://vx9zwserhpkoobfz|ui://vx9zwserhpkoobg0|ui://vx9zwserhpkoobg1|ui://vx9zwserhpkoobg2" default="ui://vx9zwserhpkoobfy"/>
       <Button icon="ui://vx9zwserhpkoobfy"/>
     </component>
-    <text id="n4_hpko" name="count" xy="88,16" pivot="1,0.5" size="112,48" font="SimHei" fontSize="35" color="#ffffff" leading="0" singleLine="true" text="160000"/>
+    <text id="n4_hpko" name="count" xy="85,16" pivot="1,0.5" size="112,48" font="SimHei" fontSize="35" color="#ffffff" leading="0" singleLine="true" text="160000"/>
   </displayList>
 </component>

@@ -27,7 +27,7 @@ export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> 
 		this.view.listRecent.on(fgui.Events.SCROLL, this, this.onListRecentScroll);
 		$uiUtil.setList(this.view.listApply, true, this, this.onListApplyRender);
 		$uiUtil.setList(this.view.listRecent, true, this, this.onListRecentRender);
-		this._tabGroup.init(this.view.tabBtns, this, this.onTabChanged);
+		this._tabGroup.init(this.view.tabBtns, this, this.onTabChanged, "#EAB65E", "#EAB65E");
 	}
 
 	override onEnable() {
@@ -44,7 +44,7 @@ export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> 
 	}
 
 	private onTabChanged(index?: number) {
-		index == null && (index = this._tabGroup.selectIndex);
+		index = index ?? this._tabGroup.selectIndex;
 		switch (index) {
 			case 0: this.view.refreshFriends(); break;
 			case 1:

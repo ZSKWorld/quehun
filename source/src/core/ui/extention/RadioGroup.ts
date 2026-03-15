@@ -1,9 +1,10 @@
-type RadioItem = fgui.GObject & { selected: boolean };
 export class RadioGroup {
 	private _selectIndex = -1;
-	private _items: RadioItem[] = [];
+	private _items: fgui.GButton[] = [];
 	private _valueChangedCaller: any;
 	private _onValueChanged: (index: number) => void;
+	private _selectedColor: string;
+	private _deselectedColor: string;
 
 	get selectIndex() { return this._selectIndex; }
 	set selectIndex(v) {
@@ -14,15 +15,24 @@ export class RadioGroup {
 		this._onValueChanged?.apply(this._valueChangedCaller, [v]);
 	}
 
-	init(items: RadioItem[], caller?: any, onValueChanged?: (index: number) => void) {
+	init(
+		items: fgui.GButton[],
+		caller?: any,
+		onValueChanged?: (index: number) => void,
+		selectedColor: string = "#EBB661",
+		deselectedColor: string = "#8CB65F"
+	) {
 		this.reset();
 		items = items || [];
 		this._items = [...items];
 		items.forEach((v, index) => {
+			v.mode = fgui.ButtonMode.Radio;
 			v.onClick(this, this.onItemClick, [index]);
 		});
 		this._valueChangedCaller = caller;
 		this._onValueChanged = onValueChanged;
+		this._selectedColor = selectedColor;
+		this._deselectedColor = deselectedColor;
 		this.clearSelection();
 	}
 
@@ -40,7 +50,9 @@ export class RadioGroup {
 		this._selectIndex = v;
 		const items = this._items;
 		for (let i = items.length - 1; i >= 0; i--) {
-			items[i].selected = v == i;
+			const selected = v == i;
+			items[i].selected = selected;
+			items[i].titleColor = selected ? this._selectedColor : this._deselectedColor;
 		}
 	}
 

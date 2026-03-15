@@ -9,7 +9,7 @@ declare interface ILoadManager {
 	loadPackage(resKey: string | string[], progressHandler?: Laya.Handler | ((progress: number) => void)): Promise<fgui.UIPackage[]>;
 
 	getRes<T = any>(url: string, type?: string): T;
-
+	cancelLoadByUrl(url: string): void;
 	clearRes(url: string, checkObj?: any): void;
 
 	clearTextureRes(url: string): void;

@@ -9,14 +9,12 @@ export class DynamicResManager extends Singleton<DynamicResManager>() implements
 
 	add(path: string) {
 		if (!path) return;
-		if (!path.startsWith(EConstDefine.LangResDir)) return;
 		const count = this._resMap.get(path) || 0;
 		this._resMap.set(path, count + 1);
 	}
 
 	remove(path: string) {
 		if (!path) return;
-		if (!path.startsWith(EConstDefine.LangResDir)) return;
 		const count = this._resMap.get(path);
 		if (count) {
 			this._resMap.set(path, count - 1);
@@ -40,8 +38,8 @@ export class DynamicResManager extends Singleton<DynamicResManager>() implements
 	private checkUnload() {
 		this._resMap.forEach((count, path) => {
 			if (count <= 0) {
-				Laya.loader.cancelLoadByUrl(path);
-				Laya.loader.clearRes(path);
+				$loadMgr.cancelLoadByUrl(path);
+				$loadMgr.clearRes(path);
 				this._resMap.delete(path);
 			}
 		});

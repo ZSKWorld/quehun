@@ -1,6 +1,11 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
 import UILiaoShe from "./UILiaoShe";
+import UIRecharge from "./UIRecharge";
+import BtnShopRefresh from "./BtnShopRefresh";
+import RenderShopItem from "./RenderShopItem";
+import RenderShopSkin from "./RenderShopSkin";
+import RenderShopCG from "./RenderShopCG";
 import RenderLiaoSheDecoItem from "./RenderLiaoSheDecoItem";
 import ComLiaoSheDecorate from "./ComLiaoSheDecorate";
 import ComMatchItem from "./ComMatchItem";
@@ -34,6 +39,7 @@ import UIPaipu from "./UIPaipu";
 import UIBag from "./UIBag";
 import UIShop from "./UIShop";
 import UITreasure from "./UITreasure";
+import UIVideo from "./UIVideo";
 import ComBagSkin from "./ComBagSkin";
 import RenderBagIllustItem from "./RenderBagIllustItem";
 import ComBagIllust from "./ComBagIllust";
@@ -44,6 +50,11 @@ import BtnDengLong from "./BtnDengLong";
 import ComMatchMode from "./ComMatchMode";
 import ComMatchContent from "./ComMatchContent";
 import { UILiaoSheView } from "../../view/PkgMain/view/uis/UILiaoSheView";
+import { UIRechargeView } from "../../view/PkgMain/view/uis/UIRechargeView";
+import { BtnShopRefreshView } from "../../view/PkgMain/view/btns/BtnShopRefreshView";
+import { RenderShopItemView } from "../../view/PkgMain/view/renders/RenderShopItemView";
+import { RenderShopSkinView } from "../../view/PkgMain/view/renders/RenderShopSkinView";
+import { RenderShopCGView } from "../../view/PkgMain/view/renders/RenderShopCGView";
 import { RenderLiaoSheDecoItemView } from "../../view/PkgMain/view/renders/RenderLiaoSheDecoItemView";
 import { ComLiaoSheDecorateView } from "../../view/PkgMain/view/coms/ComLiaoSheDecorateView";
 import { ComMatchItemView } from "../../view/PkgMain/view/coms/ComMatchItemView";
@@ -77,6 +88,7 @@ import { UIPaipuView } from "../../view/PkgMain/view/uis/UIPaipuView";
 import { UIBagView } from "../../view/PkgMain/view/uis/UIBagView";
 import { UIShopView } from "../../view/PkgMain/view/uis/UIShopView";
 import { UITreasureView } from "../../view/PkgMain/view/uis/UITreasureView";
+import { UIVideoView } from "../../view/PkgMain/view/uis/UIVideoView";
 import { ComBagSkinView } from "../../view/PkgMain/view/coms/ComBagSkinView";
 import { RenderBagIllustItemView } from "../../view/PkgMain/view/renders/RenderBagIllustItemView";
 import { ComBagIllustView } from "../../view/PkgMain/view/coms/ComBagIllustView";
@@ -90,6 +102,11 @@ import { ComMatchContentView } from "../../view/PkgMain/view/coms/ComMatchConten
 export default class PkgMainBinder {
 	public static bindAll(): void {
 		fgui.UIObjectFactory.setExtension(UILiaoShe.url, UILiaoSheView);
+		fgui.UIObjectFactory.setExtension(UIRecharge.url, UIRechargeView);
+		fgui.UIObjectFactory.setExtension(BtnShopRefresh.url, BtnShopRefreshView);
+		fgui.UIObjectFactory.setExtension(RenderShopItem.url, RenderShopItemView);
+		fgui.UIObjectFactory.setExtension(RenderShopSkin.url, RenderShopSkinView);
+		fgui.UIObjectFactory.setExtension(RenderShopCG.url, RenderShopCGView);
 		fgui.UIObjectFactory.setExtension(RenderLiaoSheDecoItem.url, RenderLiaoSheDecoItemView);
 		fgui.UIObjectFactory.setExtension(ComLiaoSheDecorate.url, ComLiaoSheDecorateView);
 		fgui.UIObjectFactory.setExtension(ComMatchItem.url, ComMatchItemView);
@@ -123,6 +140,7 @@ export default class PkgMainBinder {
 		fgui.UIObjectFactory.setExtension(UIBag.url, UIBagView);
 		fgui.UIObjectFactory.setExtension(UIShop.url, UIShopView);
 		fgui.UIObjectFactory.setExtension(UITreasure.url, UITreasureView);
+		fgui.UIObjectFactory.setExtension(UIVideo.url, UIVideoView);
 		fgui.UIObjectFactory.setExtension(ComBagSkin.url, ComBagSkinView);
 		fgui.UIObjectFactory.setExtension(RenderBagIllustItem.url, RenderBagIllustItemView);
 		fgui.UIObjectFactory.setExtension(ComBagIllust.url, ComBagIllustView);

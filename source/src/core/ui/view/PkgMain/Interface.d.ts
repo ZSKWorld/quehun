@@ -66,6 +66,10 @@ declare interface IUIShopData {
 
 }
 
+declare interface IUIShopData {
+
+}
+
 declare interface IUITreasureData {
 
 }

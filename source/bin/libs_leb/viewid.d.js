@@ -2,12 +2,14 @@
 
 EViewID = {
 	/**Btns */
+	BtnBuyView: "BtnBuyView",
 	BtnCheckRichTxtRightView: "BtnCheckRichTxtRightView",
 	BtnCheckTxtRightView: "BtnCheckTxtRightView",
 	BtnSwitch1View: "BtnSwitch1View",
 	BtnBagSkinCheckView: "BtnBagSkinCheckView",
 	BtnDengLongView: "BtnDengLongView",
 	BtnMailTabView: "BtnMailTabView",
+	BtnShopRefreshView: "BtnShopRefreshView",
 	BtnXunMiView: "BtnXunMiView",
 
 	/**Renders */
@@ -24,6 +26,9 @@ EViewID = {
 	RenderLiaoSheDecoTabView: "RenderLiaoSheDecoTabView",
 	RenderMailItemView: "RenderMailItemView",
 	RenderRankItemView: "RenderRankItemView",
+	RenderShopCGView: "RenderShopCGView",
+	RenderShopItemView: "RenderShopItemView",
+	RenderShopSkinView: "RenderShopSkinView",
 
 	/**Coms */
 	ComBackView: "ComBackView",
@@ -76,7 +81,9 @@ EViewID = {
 	UIObserverView: "UIObserverView",
 	UIPaipuView: "UIPaipuView",
 	UIRankView: "UIRankView",
+	UIRechargeView: "UIRechargeView",
 	UISettingView: "UISettingView",
 	UIShopView: "UIShopView",
 	UITreasureView: "UITreasureView",
+	UIVideoView: "UIVideoView",
 }

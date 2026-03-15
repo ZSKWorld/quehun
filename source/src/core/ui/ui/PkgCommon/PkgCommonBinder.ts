@@ -2,6 +2,7 @@
 
 import ComHeadFrame from "./ComHeadFrame";
 import ComRedDot1 from "./ComRedDot1";
+import BtnBuy from "./BtnBuy";
 import BtnSwitch1 from "./BtnSwitch1";
 import CmbCommon1_popup from "./CmbCommon1_popup";
 import ComHead1 from "./ComHead1";
@@ -28,6 +29,7 @@ import UIItemDetail from "./UIItemDetail";
 import PbLoading2 from "./PbLoading2";
 import { ComHeadFrameView } from "../../view/PkgCommon/view/coms/ComHeadFrameView";
 import { ComRedDot1View } from "../../view/PkgCommon/view/coms/ComRedDot1View";
+import { BtnBuyView } from "../../view/PkgCommon/view/btns/BtnBuyView";
 import { BtnSwitch1View } from "../../view/PkgCommon/view/btns/BtnSwitch1View";
 import { ComHead1View } from "../../view/PkgCommon/view/coms/ComHead1View";
 import { ComHead2View } from "../../view/PkgCommon/view/coms/ComHead2View";
@@ -54,6 +56,7 @@ export default class PkgCommonBinder {
 	public static bindAll(): void {
 		fgui.UIObjectFactory.setExtension(ComHeadFrame.url, ComHeadFrameView);
 		fgui.UIObjectFactory.setExtension(ComRedDot1.url, ComRedDot1View);
+		fgui.UIObjectFactory.setExtension(BtnBuy.url, BtnBuyView);
 		fgui.UIObjectFactory.setExtension(BtnSwitch1.url, BtnSwitch1View);
 		fgui.UIObjectFactory.setExtension(CmbCommon1_popup.url, CmbCommon1_popup);
 		fgui.UIObjectFactory.setExtension(ComHead1.url, ComHead1View);

@@ -1,8 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" designImage="ui://ca43vz0ejdu67plnfc" designImageAlpha="36">
+<component size="1920,1080" designImage="ui://ca43vz0efpd27ploki" designImageAlpha="45">
+  <controller name="c1" pages="0,杂货屋,1,背景屋,2,祈愿屋,3,星之屋,4,插画屋,5,福袋屋" selected="0"/>
   <displayList>
     <component id="n0_p5uz" name="back" src="p5uzob8h" fileName="Component/Component/ComBack.xml" pkg="vx9zwser" xy="10,22">
       <property target="title" propertyId="0" value="商家"/>
     </component>
+    <component id="n1_fpd2" name="n1" src="qs7jobft" fileName="Component/Component/货币/ComCurrency.xml" pkg="vx9zwser" xy="912,57" group="n30_ffpy" controller="type,2"/>
+    <component id="n2_fpd2" name="n2" src="qs7jobft" fileName="Component/Component/货币/ComCurrency.xml" pkg="vx9zwser" xy="1203,57" group="n30_ffpy"/>
+    <component id="n3_fpd2" name="n3" src="qs7jobft" fileName="Component/Component/货币/ComCurrency.xml" pkg="vx9zwser" xy="1493,57" group="n30_ffpy" controller="type,1"/>
+    <group id="n30_ffpy" name="n30" xy="912,57" size="856,80" advanced="true"/>
+    <image id="n4_fpd2" name="n4" src="q5yiobc0" fileName="Texture/img_3555.png" pkg="vx9zwser" xy="362,154" size="1461,857" group="n9_fpd2"/>
+    <image id="n12_fpd2" name="n12" src="rpakobf6" fileName="Texture/img_195.png" xy="450,276" size="1294,4" group="n9_fpd2">
+      <gearDisplay controller="c1" pages="0,2,3,4,5"/>
+    </image>
+    <component id="n5_fpd2" name="item0" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="81,163" pivot="0.873,0.5" size="336,130" group="n9_fpd2">
+      <Button title="杂货屋" titleColor="#d9b263" titleFontSize="50" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
+    </component>
+    <component id="n6_fpd2" name="item1" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="81,279" pivot="0.873,0.5" size="336,130" group="n9_fpd2">
+      <Button title="背景屋" titleColor="#8cb65f" titleFontSize="50" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
+    </component>
+    <component id="n7_fpd2" name="item2" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="81,397" pivot="0.873,0.5" size="336,130" group="n9_fpd2">
+      <Button title="祈愿屋" titleColor="#d9b263" titleFontSize="50" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
+    </component>
+    <component id="n8_fpd2" name="item3" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="81,513" pivot="0.873,0.5" size="336,130" group="n9_fpd2">
+      <Button title="星之屋" titleColor="#d9b263" titleFontSize="50" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
+    </component>
+    <component id="n10_fpd2" name="item4" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="81,630" pivot="0.873,0.5" size="336,130" group="n9_fpd2">
+      <Button title="插画屋" titleColor="#d9b263" titleFontSize="50" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
+    </component>
+    <component id="n11_fpd2" name="item5" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="81,748" pivot="0.873,0.5" size="336,130" group="n9_fpd2">
+      <Button title="福袋屋" titleColor="#d9b263" titleFontSize="50" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
+    </component>
+    <group id="n9_fpd2" name="n9" xy="81,154" size="1742,857" group="n31_ffpy" advanced="true"/>
+    <component id="n17_fpd2" name="zhwRefresh" src="fpd2obgq" fileName="Component/UIShop/BtnShopRefresh.xml" xy="1468,193" group="n18_fpd2"/>
+    <text id="n13_fpd2" name="zhwRefreshTime" xy="488,209" size="292,44" group="n18_fpd2" font="SimHei" fontSize="32" color="#fcba72" singleLine="true" text="距离刷新还剩:9小时"/>
+    <text id="n15_fpd2" name="zhwRefreshCount" xy="1224,209" pivot="1,0" size="228,44" group="n18_fpd2" font="SimHei" fontSize="32" color="#fcba72" singleLine="true" text="剩余刷新次数:5"/>
+    <text id="n16_fpd2" name="zhwRefreshAll" xy="1406,209" pivot="1,0" size="324,44" group="n18_fpd2" font="SimHei" fontSize="32" color="#fcba72" singleLine="true" text="今日刷新次数已经用完"/>
+    <group id="n18_fpd2" name="n18" xy="488,193" size="1248,68" group="n31_ffpy" advanced="true">
+      <gearDisplay controller="c1" pages="0"/>
+    </group>
+    <loader id="n20_fpd2" name="currency" xy="450,204" size="46,46" group="n24_fpd2" url="ui://ca43vz0egsi27plojq" fill="scaleFree"/>
+    <text id="n21_fpd2" name="currencyCount" xy="503,204" size="62,44" group="n24_fpd2" fontSize="32" color="#e4b777" vAlign="middle" singleLine="true" text="×10"/>
+    <text id="n22_fpd2" name="tip" xy="705,212" size="354,35" group="n24_fpd2" fontSize="25" color="#81b3c2" vAlign="middle" singleLine="true" text="可以通过奉纳礼物获得星之粉尘"/>
+    <text id="n23_fpd2" name="refreshTime" xy="1452,203" pivot="1,0" size="276,44" group="n24_fpd2" fontSize="32" color="#fcba72" vAlign="middle" singleLine="true" text="距离刷新还剩:18天"/>
+    <group id="n24_fpd2" name="n24" xy="450,203" size="1278,47" group="n31_ffpy" advanced="true">
+      <gearDisplay controller="c1" pages="2,3,5"/>
+    </group>
+    <list id="n19_fpd2" name="item" xy="476,310" size="1265,651" group="n31_ffpy" layout="flow_hz" overflow="scroll" scrollBarFlags="4" scrollBarRes="ui://vx9zwserfpd2obg5," lineGap="38" colGap="51" defaultItem="ui://vith2b66fpd2obgr" autoClearItems="true">
+      <gearDisplay controller="c1" pages="0,2,3,5"/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+    </list>
+    <list id="n29_ffpy" name="skin" xy="438,207" size="1334,780" group="n31_ffpy" layout="row" overflow="scroll" scroll="horizontal" scrollBarFlags="4" scrollBarRes=",ui://vx9zwserffpyobg6" colGap="28" defaultItem="ui://vith2b66fpd2obgv" autoClearItems="true">
+      <gearDisplay controller="c1" pages="1"/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+    </list>
+    <list id="n25_fpd2" name="cg" xy="452,290" size="1320,676" group="n31_ffpy" layout="flow_hz" overflow="scroll" scrollBarFlags="4" scrollBarRes="ui://vx9zwserfpd2obg5," lineGap="10" colGap="34" lineItemCount="2" defaultItem="ui://vith2b66fpd2obgw" autoClearItems="true">
+      <gearDisplay controller="c1" pages="4"/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+    </list>
+    <text id="n26_ffpy" name="cgSellAll" xy="871,420" pivot="0.5,0.5" size="504,66" group="n31_ffpy" visible="false" fontSize="50" color="#fab766" align="center" vAlign="middle" singleLine="true" text="已售罄，新品敬请期待">
+      <gearDisplay controller="c1" pages="4"/>
+    </text>
+    <text id="n27_ffpy" name="cgRefreshTime" xy="488,210" size="257,44" group="n31_ffpy" fontSize="32" color="#fab766" vAlign="middle" singleLine="true" text="距离刷新还剩:2天">
+      <gearDisplay controller="c1" pages="4"/>
+    </text>
+    <text id="n28_ffpy" name="n28" xy="817,216" size="638,35" group="n31_ffpy" fontSize="25" color="#81b3c2" text="每周一随机刷新往期插画，插画可在仓库-插画中设置展示">
+      <gearDisplay controller="c1" pages="4"/>
+    </text>
+    <group id="n31_ffpy" name="n31" xy="81,154" size="1742,857" advanced="true"/>
   </displayList>
+  <transition name="show" frameRate="60">
+    <item time="0" type="Alpha" target="n30_ffpy" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
+    <item time="0" type="Alpha" target="n31_ffpy" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
+    <item time="0" type="XY" target="n30_ffpy" tween="true" startValue="-,-38" endValue="-,57" duration="12" ease="Linear"/>
+    <item time="0" type="XY" target="n31_ffpy" tween="true" startValue="-,204" endValue="-,154" duration="12" ease="Linear"/>
+  </transition>
 </component>

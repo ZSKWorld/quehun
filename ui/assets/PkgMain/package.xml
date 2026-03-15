@@ -105,8 +105,6 @@
     <image id="dwe0obam" name="img_1428.png" path="/Texture/"/>
     <image id="dwe0oban" name="img_1072.png" path="/Texture/"/>
     <image id="dwe0obao" name="img_4026.png" path="/Texture/"/>
-    <image id="dwe0obap" name="img_4188.png" path="/Texture/"/>
-    <image id="dwe0obaq" name="img_4209.png" path="/Texture/"/>
     <image id="dwe0obar" name="img_1831.png" path="/Texture/"/>
     <image id="dwe0obas" name="img_1832.png" path="/Texture/"/>
     <image id="dwe0obat" name="img_2026.png" path="/Texture/"/>
@@ -195,6 +193,22 @@
     <image id="kolmobgm" name="img_3203.jpg" path="/Texture/" exported="true"/>
     <image id="kolmobgn" name="img_3204.jpg" path="/Texture/" exported="true"/>
     <image id="kolmobgo" name="img_3205.jpg" path="/Texture/" exported="true"/>
+    <component id="fpd2obgp" name="UIRecharge.xml" path="/" exported="true"/>
+    <component id="fpd2obgq" name="BtnShopRefresh.xml" path="/Component/UIShop/"/>
+    <component id="fpd2obgr" name="RenderShopItem.xml" path="/Component/UIShop/"/>
+    <image id="fpd2obgs" name="img_3675.png" path="/Texture/"/>
+    <image id="fpd2obgt" name="img_2920.png" path="/Texture/"/>
+    <image id="fpd2obgu" name="img_2921.png" path="/Texture/"/>
+    <component id="fpd2obgv" name="RenderShopSkin.xml" path="/Component/UIShop/"/>
+    <component id="fpd2obgw" name="RenderShopCG.xml" path="/Component/UIShop/"/>
+    <image id="fpd2obgx" name="img_4023.png" path="/Texture/" scale="9grid" scale9grid="0,70,620,40"/>
+    <image id="fpd2obgy" name="img_2439.png" path="/Texture/"/>
+    <image id="fpd2obgz" name="img_2566.png" path="/Texture/"/>
+    <image id="ffpyobh0" name="img_3848.png" path="/Texture/" scale="9grid" scale9grid="0,46,328,17"/>
+    <image id="ffpyobh1" name="img_802.png" path="/Texture/" scale="9grid" scale9grid="22,0,6,30"/>
+    <image id="ffpyobh2" name="img_1750.png" path="/Texture/"/>
+    <component id="rmm9obh3" name="UIVideo.xml" path="/" exported="true"/>
+    <image id="rmm9obh4" name="img_2487.png" path="/Texture/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

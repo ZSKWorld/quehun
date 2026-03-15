@@ -22,7 +22,6 @@ export default class UIBag extends fgui.GComponent {
 	protected com_skin: ComBagSkinView;
 	protected com_illust: ComBagIllustView;
 	protected trans_t0: fgui.Transition;
-	protected trans_t1: fgui.Transition;
 	public static url: string = "ui://vith2b66qke2ob9p";
 
 	public static createInstance(): UIBag {
@@ -43,6 +42,5 @@ export default class UIBag extends fgui.GComponent {
 		this.com_skin = <ComBagSkinView>(this.getChildAt(10));
 		this.com_illust = <ComBagIllustView>(this.getChildAt(11));
 		this.trans_t0 = this.getTransitionAt(0);
-		this.trans_t1 = this.getTransitionAt(1);
 	}
 }

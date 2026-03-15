@@ -17,3 +17,18 @@ export const enum EUIRankType {
 	SiMa = 1,
 	SanMa = 2,
 }
+
+export const enum EUIShopTabType {
+	/** 杂货屋 */
+	ZHW,
+	/** 背景屋 */
+	BJW,
+	/** 祈愿屋 */
+	QYW,
+	/** 星之屋 */
+	XZW,
+	/** 插画屋 */
+	CHW,
+	/** 福袋屋 */
+	FDW,
+}

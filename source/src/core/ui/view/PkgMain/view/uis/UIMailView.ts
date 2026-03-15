@@ -19,6 +19,14 @@ export class UIMailView extends ExtensionClass<IView, UIMail>(UIMail) implements
 		btn_delete.onClick(this, this.sendEvent, [EUIMailMsg.OnBtnDeleteClick]);
 	}
 
+	override onEnable() {
+		$dynamicResMgr.setLoader(this.loader_bg, ResPath.ETexturePath.PNG_Img_4209);
+	}
+
+	override onDisable() {
+		$dynamicResMgr.clearLoader(this.loader_bg);
+	}
+
 	refreshEmail(count: number) {
 		const { list_tab, ctrl_empty } = this;
 		ctrl_empty.selectedIndex = count > 0 ? 0 : 1;

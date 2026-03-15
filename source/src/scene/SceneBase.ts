@@ -135,6 +135,6 @@ export abstract class SceneBase<T> extends Observer implements IScene<T> {
 			res && fgui.UIPackage.removePackage(v);
 		});
 		resGroup.skeleton.forEach(v => $skeletonMgr.dispose(v));
-		resGroup.others.forEach(v => Laya.loader.clearRes(v));
+		resGroup.others.forEach(v => $loadMgr.clearRes(v));
 	}
 }

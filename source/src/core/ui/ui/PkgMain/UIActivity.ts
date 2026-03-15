@@ -2,6 +2,7 @@
 
 export default class UIActivity extends fgui.GComponent {
 
+	protected loader_bg: fgui.GLoader;
 	protected btn_back: fgui.GButton;
 	public static url: string = "ui://vith2b66ktwpob9s";
 
@@ -10,6 +11,7 @@ export default class UIActivity extends fgui.GComponent {
 	}
 
 	protected override onConstruct(): void {
+		this.loader_bg = <fgui.GLoader>(this.getChildAt(0));
 		this.btn_back = <fgui.GButton>(this.getChildAt(1));
 	}
 }

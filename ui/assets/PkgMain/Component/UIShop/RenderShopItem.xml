@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="269,370" pivot="0.5,0.5" designImage="ui://ca43vz0efpd27ploki" designImageOffsetX="-411" designImageOffsetY="-208" designImageAlpha="0">
+  <displayList>
+    <image id="n13_fpd2" name="n13" src="fpd2obgs" fileName="Texture/img_3675.png" xy="0,0" size="269,370"/>
+    <component id="n15_fpd2" name="item" src="q5yiobc2" fileName="Component/Component/物品/ComItem1.xml" pkg="vx9zwser" xy="50,79" size="170,170" aspect="true">
+      <property target="icon" propertyId="1" value="ui://ca43vz0eq5yi7plojn"/>
+    </component>
+    <component id="n18_fpd2" name="bug" src="fpd2obg3" fileName="Component/Button/BtnBuy.xml" pkg="vx9zwser" xy="19,289" size="228,65">
+      <Button titleColor="#3a2138" titleFontSize="38"/>
+      <property target="bg" propertyId="1" value="ui://vx9zwserfpd2obg4"/>
+    </component>
+    <text id="n14_fpd2" name="name" xy="18,15" pivot="0.5,0.5" size="234,44" fontSize="32" color="#eeeae6" align="center" vAlign="middle" autoSize="shrink" singleLine="true" text="同人小册子"/>
+    <text id="n16_fpd2" name="last" xy="18,240" pivot="0.5,0.5" size="234,50" fontSize="37" color="#bac6cc" align="center" vAlign="middle" autoSize="shrink" singleLine="true" text="剩余:4"/>
+    <image id="n19_fpd2" name="owned1" src="fpd2obgt" fileName="Texture/img_2920.png" xy="29,79" pivot="0.5,0" size="211,169"/>
+    <image id="n20_fpd2" name="owned2" src="fpd2obgu" fileName="Texture/img_2921.png" xy="29,79" pivot="0.5,0" size="211,169"/>
+  </displayList>
+</component>

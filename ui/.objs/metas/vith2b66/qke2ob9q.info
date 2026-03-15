@@ -1,0 +1,17 @@
+{
+  "objectStatus": {
+    "n24_fpd2": {
+      "collapsed": true
+    },
+    "n9_fpd2": {
+      "hidden": true,
+      "collapsed": true
+    }
+  },
+  "designImages": [
+    "ui://ca43vz0efpd27plokj",
+    "ui://ca43vz0efpd27plokn",
+    "ui://ca43vz0efpd27plokm",
+    "ui://ca43vz0efpd27ploki"
+  ]
+}

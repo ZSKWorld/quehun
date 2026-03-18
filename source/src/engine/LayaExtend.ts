@@ -4,6 +4,7 @@ export class LayaExtend {
 	static extends() {
 		this.vector2Extend();
 		this.scriptExtend();
+		this.videoPlayerExtend();
 	}
 
 	/** Laya.Vector2扩展 */
@@ -97,11 +98,44 @@ export class LayaExtend {
 		Object.defineProperties(prototype, {
 			gowner: {
 				get() {
-					if(this.owner)
+					if (this.owner)
 						return this.owner.$owner;
 					return null;
 				},
 			},
+		});
+	}
+
+	private static videoPlayerExtend() {
+		const prototype = Laya.VideoPlayer.prototype;
+		const oldFunc: Function = prototype["_load"];
+		Object.defineProperty(prototype, "_load", {
+			value: function () {
+				const _this:Laya.VideoPlayer = this;
+				oldFunc.call(_this);
+				const owner = _this.owner;
+				if (!owner) return;
+				const ele = (_this.player as Laya.HTMLVideoTexture).element;
+				ele.addEventListener(EVideoLoadEvent.LoadStart, () => owner.event(EVideoLoadEvent.LoadStart));
+				ele.addEventListener(EVideoLoadEvent.LoadedMetadata, () => owner.event(EVideoLoadEvent.LoadedMetadata));
+				ele.addEventListener(EVideoLoadEvent.LoadedData, () => owner.event(EVideoLoadEvent.LoadedData));
+				ele.addEventListener(EVideoLoadEvent.Progress, () => owner.event(EVideoLoadEvent.Progress));
+				ele.addEventListener(EVideoLoadEvent.CanPlay, () => owner.event(EVideoLoadEvent.CanPlay));
+				ele.addEventListener(EVideoLoadEvent.CanPlayThrough, () => owner.event(EVideoLoadEvent.CanPlayThrough));
+				ele.addEventListener(EVideoPlaybackEvent.Play, () => owner.event(EVideoPlaybackEvent.Play));
+				ele.addEventListener(EVideoPlaybackEvent.Playing, () => owner.event(EVideoPlaybackEvent.Playing));
+				ele.addEventListener(EVideoPlaybackEvent.Pause, () => owner.event(EVideoPlaybackEvent.Pause));
+				ele.addEventListener(EVideoPlaybackEvent.Ended, () => owner.event(EVideoPlaybackEvent.Ended));
+				ele.addEventListener(EVideoPlaybackEvent.Waiting, () => owner.event(EVideoPlaybackEvent.Waiting));
+				ele.addEventListener(EVideoPlaybackEvent.Stalled, () => owner.event(EVideoPlaybackEvent.Stalled));
+				ele.addEventListener(EVideoProgressAndInteractionEvent.TimeUpdate, () => owner.event(EVideoProgressAndInteractionEvent.TimeUpdate));
+				ele.addEventListener(EVideoProgressAndInteractionEvent.Seeking, () => owner.event(EVideoProgressAndInteractionEvent.Seeking));
+				ele.addEventListener(EVideoProgressAndInteractionEvent.Seeked, () => owner.event(EVideoProgressAndInteractionEvent.Seeked));
+				ele.addEventListener(EVideoProgressAndInteractionEvent.VolumeChange, () => owner.event(EVideoProgressAndInteractionEvent.VolumeChange));
+				ele.addEventListener(EVideoProgressAndInteractionEvent.RateChange, () => owner.event(EVideoProgressAndInteractionEvent.RateChange));
+				ele.addEventListener(EVideoErrorEvent.Error, () => owner.event(EVideoErrorEvent.Error));
+				ele.addEventListener(EVideoErrorEvent.Abort, () => owner.event(EVideoErrorEvent.Abort));
+			}
 		});
 	}
 }

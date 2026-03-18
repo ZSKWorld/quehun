@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="135,135">
+  <displayList>
+    <image id="n0_ghrr" name="n0" src="ieavob7w" fileName="Texture/img_2420.png" xy="0,0" pivot="0.5,0.5" size="135,135" aspect="true"/>
+    <image id="n1_ghrr" name="n1" src="ieavob7v" fileName="Texture/img_2421.png" xy="0,0" pivot="0.5,0.5" size="135,135" aspect="true"/>
+    <image id="n2_ghrr" name="n2" src="10mrob6y" fileName="Texture/img_2422.png" xy="0,0" pivot="0.5,0.5" size="135,135" aspect="true"/>
+  </displayList>
+  <transition name="t0" options="4" autoPlay="true" autoPlayRepeat="-1" frameRate="60">
+    <item time="0" type="Alpha" target="n1_ghrr" tween="true" startValue="0" endValue="1" duration="60" ease="Linear"/>
+    <item time="0" type="Rotation" target="n2_ghrr" tween="true" startValue="0" endValue="360" duration="120" ease="Linear"/>
+    <item time="60" type="Alpha" target="n1_ghrr" tween="true" startValue="1" endValue="0" duration="60" ease="Linear"/>
+  </transition>
+</component>

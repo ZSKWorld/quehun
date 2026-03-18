@@ -1,16 +1,6 @@
 import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
 import { EUIVideoMsg, UIVideoView } from "../../view/uis/UIVideoView";
 
-const enum EVideoTextureEvent {
-	LoadStart = "loadstart", //浏览器开始寻找媒体数据时。
-	LoadedMetadata = "loadedmetadata", //视频的时长、尺寸、字幕等元数据加载完成。
-	LoadedData = "loadeddata", //当前帧的数据加载完成（视频首帧已就绪）。
-	Progress = "progress", //浏览器正在下载视频数据。
-	CanPlay = "canplay", //浏览器认为已经加载了足够的数据，可以开始播放。
-	CanPlayThrough = "canplaythrough", //预计在不断网的情况下可以顺畅播放直至结束。
-	Error = "error", //发生错误（如视频格式不支持、404）。可通过 video.error 获取详情。
-	Abort = "abort", //视频加载被中止（非错误原因，通常是用户操作）。
-}
 
 export class UIVideoMediator extends MediatorBase<UIVideoView, IUIVideoData> {
 
@@ -21,32 +11,36 @@ export class UIVideoMediator extends MediatorBase<UIVideoView, IUIVideoData> {
 	}
 
 	override onEnable() {
-		this._video = new Laya.VideoNode();
-		this.view.displayObject.addChild(this._video);
-		this._video.autoPlay = false;
-		this._video.loop = true;
-		this._video.allowBackground = true;
-		this._video.options.objectFit = "fill";
-		this._video.size(Laya.stage.width, Laya.stage.height);
-		this._video.source = ResPath.EUnclassifiedPath[400107];
-		const player = this._video.player as Laya.VideoTexture;
-		player.on(Laya.Event.READY, this, () => {
-			Logger.error("ready", Laya.timer.currFrame);
-		});
-		player.on("canplay", this, () => {
-			Logger.error("canplay", Laya.timer.currFrame);
-		});
-		player.on("ended", this, () => {
-			Logger.error("ended", Laya.timer.currFrame);
-		});
-		this._video.play();
-		Logger.error("play", Laya.timer.currFrame);
+		const video = this._video = new Laya.VideoNode();
+		this.view.displayObject.addChild(video);
+		video.autoPlay = false;
+		video.loop = false;
+		video.allowBackground = true;
+		video.options.objectFit = "fill";
+		video.size(Laya.stage.width, Laya.stage.height);
+		video.source = ResPath.EUnclassifiedPath[400107];
+		// video.play();
+		video.on(EVideoLoadEvent.LoadStart, this, () => Logger.error("LoadStart"))
+		video.on(EVideoLoadEvent.LoadedMetadata, this, () => Logger.error("LoadedMetadata"))
+		video.on(EVideoLoadEvent.LoadedData, this, () => Logger.error("LoadedData"))
+		video.on(EVideoLoadEvent.Progress, this, () => Logger.error("Progress"))
+		video.on(EVideoLoadEvent.CanPlay, this, () => Logger.error("CanPlay"))
+		video.on(EVideoLoadEvent.CanPlayThrough, this, () => Logger.error("CanPlayThrough"))
+		video.on(EVideoPlaybackEvent.Play, this, () => Logger.error("Play"))
+		video.on(EVideoPlaybackEvent.Playing, this, () => Logger.error("Playing"))
+		video.on(EVideoPlaybackEvent.Pause, this, () => Logger.error("Pause"))
+		video.on(EVideoPlaybackEvent.Ended, this, () => Logger.error("Ended"))
+		video.on(EVideoPlaybackEvent.Waiting, this, () => Logger.error("Waiting"))
+		video.on(EVideoPlaybackEvent.Stalled, this, () => Logger.error("Stalled"))
+		video.on(EVideoProgressAndInteractionEvent.TimeUpdate, this, () => Logger.error("TimeUpdate"))
+		video.on(EVideoProgressAndInteractionEvent.Seeking, this, () => Logger.error("Seeking"))
+		video.on(EVideoProgressAndInteractionEvent.Seeked, this, () => Logger.error("Seeked"))
+		video.on(EVideoProgressAndInteractionEvent.VolumeChange, this, () => Logger.error("VolumeChange"))
+		video.on(EVideoProgressAndInteractionEvent.RateChange, this, () => Logger.error("RateChange"))
+		video.on(EVideoErrorEvent.Error, this, () => Logger.error("Error"))
+		video.on(EVideoErrorEvent.Abort, this, () => Logger.error("Abort"))
 	}
 
-	// override onUpdate() {
-	// 	if (this._video.readyState == 4) return;
-	// 	Logger.error(this._video.readyState);
-	// }
 
 	override onDisable() {
 		this._video.destroy();

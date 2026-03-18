@@ -350,3 +350,60 @@ declare enum EUserEvent {
 	//#endregion
 }
 
+//#region 视频事件
+
+/** 视频加载事件 */
+declare enum EVideoLoadEvent {
+	/** 浏览器开始寻找媒体数据时。 */
+	LoadStart = "loadstart",
+	/** 视频的时长、尺寸、字幕等元数据加载完成。 */
+	LoadedMetadata = "loadedmetadata",
+	/** 当前帧的数据加载完成（视频首帧已就绪）。 */
+	LoadedData = "loadeddata",
+	/** 浏览器正在下载视频数据。 */
+	Progress = "progress",
+	/** 浏览器认为已经加载了足够的数据，可以开始播放。 */
+	CanPlay = "canplay",
+	/** 预计在不断网的情况下可以顺畅播放直至结束。 */
+	CanPlayThrough = "canplaythrough",
+}
+
+/** 视频播放状态事件 */
+declare enum EVideoPlaybackEvent {
+	/** 当 play() 方法被调用或 autoplay 生效 */
+	Play = "play",
+	/** 视频真正开始运行（从暂停或缓冲状态恢复） */
+	Playing = "playing",
+	/** 视频暂停 */
+	Pause = "pause",
+	/** 视频播放到末尾 */
+	Ended = "ended",
+	/** 播放因缓冲而停止（网络跟不上） */
+	Waiting = "waiting",
+	/** 浏览器尝试获取数据但数据不可用 */
+	Stalled = "stalled",
+}
+
+/** 视频互动与进度事件 */
+declare enum EVideoProgressAndInteractionEvent {
+	/** 播放位置改变（每秒触发约 4-66 次） */
+	TimeUpdate = "timeupdate",
+	/** 用户开始拖动进度条 */
+	Seeking = "seeking",
+	/** 用户完成拖动，新的位置已定位 */
+	Seeked = "seeked",
+	/** 音量改变或静音状态切换 */
+	VolumeChange = "volumechange",
+	/** 播放速率改变（如切换 2x */
+	RateChange = "ratechange",
+}
+
+/** 视频错误处理事件 */
+declare enum EVideoErrorEvent {
+	/** 发生错误（如视频格式不支持、404）。可通过 video.error 获取详情。 */
+	Error = "error",
+	/** 视频加载被中止（非错误原因，通常是用户操作）。 */
+	Abort = "abort",
+}
+//#endregion
+

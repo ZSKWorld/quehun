@@ -1,4 +1,12 @@
 {
+  "objectStatus": {
+    "n11_vwgm": {
+      "collapsed": true
+    },
+    "n14_vwgm": {
+      "collapsed": true
+    }
+  },
   "adaptiveTest": true,
   "fitScreen": "FitSize"
 }

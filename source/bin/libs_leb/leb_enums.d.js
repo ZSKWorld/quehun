@@ -244,3 +244,34 @@ EUserEvent = {
 	OnCharacterSortChanged: "EUserEvent_OnCharacterSortChanged",
 	OnClientValueChanged: "EUserEvent_OnClientValueChanged",
 }
+
+EVideoLoadEvent = {
+	LoadStart: "loadstart",
+	LoadedMetadata: "loadedmetadata",
+	LoadedData: "loadeddata",
+	Progress: "progress",
+	CanPlay: "canplay",
+	CanPlayThrough: "canplaythrough",
+}
+
+EVideoPlaybackEvent = {
+	Play: "play",
+	Playing: "playing",
+	Pause: "pause",
+	Ended: "ended",
+	Waiting: "waiting",
+	Stalled: "stalled",
+}
+
+EVideoProgressAndInteractionEvent = {
+	TimeUpdate: "timeupdate",
+	Seeking: "seeking",
+	Seeked: "seeked",
+	VolumeChange: "volumechange",
+	RateChange: "ratechange",
+}
+
+EVideoErrorEvent = {
+	Error: "error",
+	Abort: "abort",
+}

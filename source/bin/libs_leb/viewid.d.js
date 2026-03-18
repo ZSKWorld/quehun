@@ -33,6 +33,7 @@ EViewID = {
 	/**Coms */
 	ComBackView: "ComBackView",
 	ComCurrencyView: "ComCurrencyView",
+	ComFlowerLoadingView: "ComFlowerLoadingView",
 	ComHead1View: "ComHead1View",
 	ComHead2View: "ComHead2View",
 	ComHeadFrameView: "ComHeadFrameView",
@@ -62,6 +63,7 @@ EViewID = {
 	UIConfirmMiddleView: "UIConfirmMiddleView",
 	UIConfirmSmallView: "UIConfirmSmallView",
 	UIItemDetailView: "UIItemDetailView",
+	UILoading2View: "UILoading2View",
 	UILoadingView: "UILoadingView",
 	UIChooseServerView: "UIChooseServerView",
 	UIEntranceView: "UIEntranceView",

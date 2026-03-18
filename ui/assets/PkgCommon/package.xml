@@ -260,6 +260,8 @@
     <component id="fpd2obg5" name="VScrollBar5.xml" path="/Component/ScrollBar/" exported="true"/>
     <component id="ffpyobg6" name="HScrollBar1.xml" path="/Component/ScrollBar/" exported="true"/>
     <image id="ffpyobg7" name="img_312.png" path="/Texture/" exported="true" scale="9grid" scale9grid="7,7,6,6"/>
+    <component id="ghrrobg8" name="ComFlowerLoading.xml" path="/Component/" exported="true"/>
+    <component id="ghrrobg9" name="UILoading2.xml" path="/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

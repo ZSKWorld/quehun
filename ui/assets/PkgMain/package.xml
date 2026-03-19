@@ -209,6 +209,7 @@
     <image id="ffpyobh2" name="img_1750.png" path="/Texture/"/>
     <component id="rmm9obh3" name="UIVideo.xml" path="/" exported="true"/>
     <image id="rmm9obh4" name="img_2487.png" path="/Texture/"/>
+    <image id="ziglobh5" name="img_4024.png" path="/Texture/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

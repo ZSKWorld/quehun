@@ -1,8 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="1920,1080" designImage="ui://ca43vz0ejdu67plnfc" designImageAlpha="36">
   <displayList>
+    <image id="n2_zigl" name="n2" src="ieavob7l" fileName="Texture/img_112.png" pkg="vx9zwser" xy="0,0" size="1920,1080"/>
+    <component id="n3_zigl" name="videoRoot" src="ziglobga" fileName="Component/Component/ComEmpty.xml" pkg="vx9zwser" xy="0,0" size="1920,1080"/>
+    <image id="n4_zigl" name="n4" src="ziglobh5" fileName="Texture/img_4024.png" xy="307,-2" pivot="0.5,0.5" size="1306,1084" scale="0.9,0.9" alpha="0"/>
+    <image id="n5_zigl" name="n5" src="ziglobgb" fileName="Texture/img_172.png" pkg="vx9zwser" xy="0,0" size="1920,1080" alpha="0"/>
     <component id="n1_rmm9" name="jump" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1747,82" pivot="0.5,0.5" anchor="true" size="170,80">
       <Button icon="ui://vith2b66rmm9obh4"/>
     </component>
   </displayList>
+  <transition name="show" options="4" frameRate="60">
+    <item time="0" type="Alpha" target="n4_zigl" tween="true" startValue="0" endValue="1" duration="8" ease="Quart.Out"/>
+    <item time="0" type="Alpha" target="n5_zigl" value="0"/>
+    <item time="0" type="Rotation" target="n4_zigl" value="0"/>
+    <item time="0" type="Scale" target="n4_zigl" tween="true" startValue="0.9,0.9" endValue="1,1" duration="8" ease="Linear"/>
+    <item time="8" type="Rotation" target="n4_zigl" tween="true" startValue="0" endValue="100" duration="45" ease="Quart.In"/>
+    <item time="8" type="Scale" target="n4_zigl" tween="true" startValue="1,1" endValue="4,4" duration="45" ease="Quart.In"/>
+    <item time="40" type="Alpha" target="n5_zigl" tween="true" startValue="0" endValue="1" duration="38" ease="Linear"/>
+    <item time="120" type="Alpha" target="n4_zigl" tween="true" startValue="1" endValue="0" duration="25" ease="Linear"/>
+  </transition>
+  <transition name="hide" options="4" frameRate="60">
+    <item time="0" type="Alpha" target="n5_zigl" tween="true" startValue="1" endValue="0" duration="30" ease="Linear"/>
+  </transition>
 </component>

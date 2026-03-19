@@ -262,6 +262,8 @@
     <image id="ffpyobg7" name="img_312.png" path="/Texture/" exported="true" scale="9grid" scale9grid="7,7,6,6"/>
     <component id="ghrrobg8" name="ComFlowerLoading.xml" path="/Component/" exported="true"/>
     <component id="ghrrobg9" name="UILoading2.xml" path="/" exported="true"/>
+    <component id="ziglobga" name="ComEmpty.xml" path="/Component/Component/" exported="true"/>
+    <image id="ziglobgb" name="img_172.png" path="/Texture/" exported="true" scale="9grid" scale9grid="3,3,6,6"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

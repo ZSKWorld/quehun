@@ -1,3 +1,5 @@
+type LayaTarget = { layaTarget: Laya.Node };
+type VideoEvent = Event & { target: LayaTarget };
 
 /** Laya扩展 */
 export class LayaExtend {
@@ -107,34 +109,55 @@ export class LayaExtend {
 	}
 
 	private static videoPlayerExtend() {
+		const loadStart = (e: VideoEvent) => e.target.layaTarget.event(EVideoLoadEvent.LoadStart);
+		const loadedMetadata = (e: VideoEvent) => e.target.layaTarget.event(EVideoLoadEvent.LoadedMetadata);
+		const loadedData = (e: VideoEvent) => e.target.layaTarget.event(EVideoLoadEvent.LoadedData);
+		const progress = (e: VideoEvent) => e.target.layaTarget.event(EVideoLoadEvent.Progress);
+		const canplay = (e: VideoEvent) => e.target.layaTarget.event(EVideoLoadEvent.CanPlay);
+		const canplaythrough = (e: VideoEvent) => e.target.layaTarget.event(EVideoLoadEvent.CanPlayThrough);
+		const play = (e: VideoEvent) => e.target.layaTarget.event(EVideoPlaybackEvent.Play);
+		const playing = (e: VideoEvent) => e.target.layaTarget.event(EVideoPlaybackEvent.Playing);
+		const pause = (e: VideoEvent) => e.target.layaTarget.event(EVideoPlaybackEvent.Pause);
+		const ended = (e: VideoEvent) => e.target.layaTarget.event(EVideoPlaybackEvent.Ended);
+		const waiting = (e: VideoEvent) => e.target.layaTarget.event(EVideoPlaybackEvent.Waiting);
+		const stalled = (e: VideoEvent) => e.target.layaTarget.event(EVideoPlaybackEvent.Stalled);
+		const timeUpdate = (e: VideoEvent) => e.target.layaTarget.event(EVideoProgressAndInteractionEvent.TimeUpdate);
+		const seeking = (e: VideoEvent) => e.target.layaTarget.event(EVideoProgressAndInteractionEvent.Seeking);
+		const seeked = (e: VideoEvent) => e.target.layaTarget.event(EVideoProgressAndInteractionEvent.Seeked);
+		const volumeChange = (e: VideoEvent) => e.target.layaTarget.event(EVideoProgressAndInteractionEvent.VolumeChange);
+		const rateChange = (e: VideoEvent) => e.target.layaTarget.event(EVideoProgressAndInteractionEvent.RateChange);
+		const error = (e: VideoEvent) => e.target.layaTarget.event(EVideoErrorEvent.Error);
+		const abort = (e: VideoEvent) => e.target.layaTarget.event(EVideoErrorEvent.Abort);
+
 		const prototype = Laya.VideoPlayer.prototype;
 		const oldFunc: Function = prototype["_load"];
 		Object.defineProperty(prototype, "_load", {
 			value: function () {
-				const _this:Laya.VideoPlayer = this;
+				const _this: Laya.VideoPlayer = this;
 				oldFunc.call(_this);
 				const owner = _this.owner;
 				if (!owner) return;
-				const ele = (_this.player as Laya.HTMLVideoTexture).element;
-				ele.addEventListener(EVideoLoadEvent.LoadStart, () => owner.event(EVideoLoadEvent.LoadStart));
-				ele.addEventListener(EVideoLoadEvent.LoadedMetadata, () => owner.event(EVideoLoadEvent.LoadedMetadata));
-				ele.addEventListener(EVideoLoadEvent.LoadedData, () => owner.event(EVideoLoadEvent.LoadedData));
-				ele.addEventListener(EVideoLoadEvent.Progress, () => owner.event(EVideoLoadEvent.Progress));
-				ele.addEventListener(EVideoLoadEvent.CanPlay, () => owner.event(EVideoLoadEvent.CanPlay));
-				ele.addEventListener(EVideoLoadEvent.CanPlayThrough, () => owner.event(EVideoLoadEvent.CanPlayThrough));
-				ele.addEventListener(EVideoPlaybackEvent.Play, () => owner.event(EVideoPlaybackEvent.Play));
-				ele.addEventListener(EVideoPlaybackEvent.Playing, () => owner.event(EVideoPlaybackEvent.Playing));
-				ele.addEventListener(EVideoPlaybackEvent.Pause, () => owner.event(EVideoPlaybackEvent.Pause));
-				ele.addEventListener(EVideoPlaybackEvent.Ended, () => owner.event(EVideoPlaybackEvent.Ended));
-				ele.addEventListener(EVideoPlaybackEvent.Waiting, () => owner.event(EVideoPlaybackEvent.Waiting));
-				ele.addEventListener(EVideoPlaybackEvent.Stalled, () => owner.event(EVideoPlaybackEvent.Stalled));
-				ele.addEventListener(EVideoProgressAndInteractionEvent.TimeUpdate, () => owner.event(EVideoProgressAndInteractionEvent.TimeUpdate));
-				ele.addEventListener(EVideoProgressAndInteractionEvent.Seeking, () => owner.event(EVideoProgressAndInteractionEvent.Seeking));
-				ele.addEventListener(EVideoProgressAndInteractionEvent.Seeked, () => owner.event(EVideoProgressAndInteractionEvent.Seeked));
-				ele.addEventListener(EVideoProgressAndInteractionEvent.VolumeChange, () => owner.event(EVideoProgressAndInteractionEvent.VolumeChange));
-				ele.addEventListener(EVideoProgressAndInteractionEvent.RateChange, () => owner.event(EVideoProgressAndInteractionEvent.RateChange));
-				ele.addEventListener(EVideoErrorEvent.Error, () => owner.event(EVideoErrorEvent.Error));
-				ele.addEventListener(EVideoErrorEvent.Abort, () => owner.event(EVideoErrorEvent.Abort));
+				const ele = (_this.player as Laya.HTMLVideoTexture).element as HTMLVideoElement & LayaTarget;
+				ele.layaTarget = owner;
+				ele.addEventListener(EVideoLoadEvent.LoadStart, loadStart);
+				ele.addEventListener(EVideoLoadEvent.LoadedMetadata, loadedMetadata);
+				ele.addEventListener(EVideoLoadEvent.LoadedData, loadedData);
+				ele.addEventListener(EVideoLoadEvent.Progress, progress);
+				ele.addEventListener(EVideoLoadEvent.CanPlay, canplay);
+				ele.addEventListener(EVideoLoadEvent.CanPlayThrough, canplaythrough);
+				ele.addEventListener(EVideoPlaybackEvent.Play, play);
+				ele.addEventListener(EVideoPlaybackEvent.Playing, playing);
+				ele.addEventListener(EVideoPlaybackEvent.Pause, pause);
+				ele.addEventListener(EVideoPlaybackEvent.Ended, ended);
+				ele.addEventListener(EVideoPlaybackEvent.Waiting, waiting);
+				ele.addEventListener(EVideoPlaybackEvent.Stalled, stalled);
+				ele.addEventListener(EVideoProgressAndInteractionEvent.TimeUpdate, timeUpdate);
+				ele.addEventListener(EVideoProgressAndInteractionEvent.Seeking, seeking);
+				ele.addEventListener(EVideoProgressAndInteractionEvent.Seeked, seeked);
+				ele.addEventListener(EVideoProgressAndInteractionEvent.VolumeChange, volumeChange);
+				ele.addEventListener(EVideoProgressAndInteractionEvent.RateChange, rateChange);
+				ele.addEventListener(EVideoErrorEvent.Error, error);
+				ele.addEventListener(EVideoErrorEvent.Abort, abort);
 			}
 		});
 	}

@@ -148,4 +148,5 @@
     "commentTranslate.hover.string": true,
     "commentTranslate.hover.variable": true,
     "commentTranslate.multiLineMerge": true,
+    "js/ts.format.semicolons": "insert",
 }

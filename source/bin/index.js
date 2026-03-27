@@ -37,6 +37,7 @@ loadLib("libs/laya.device.js");
 
 //libs game
 loadLib("libs_game/crypto-js.js");
+loadLib("libs_game/rawinflate.min.js");
 loadLib("libs_game/fairygui.js");
 // loadLib("libs_game/howler.js");
 loadLib("libs_game/extend.js");

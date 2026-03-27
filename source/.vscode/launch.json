@@ -2,6 +2,13 @@
 	"version": "0.2.0",
 	"configurations": [ 
 		{
+			"name": "VSCode调试",
+			"request": "launch",
+			"type": "editor-browser",
+			"url": "http://localhost:8080",
+			"webRoot": "${workspaceFolder}/bin"
+		},
+		{
 			"name": "chrome调试",
 			"type": "chrome",
 			"request": "launch",

@@ -12,6 +12,11 @@ export class UIVideoView extends ExtensionClass<IView, UIVideo>(UIVideo) impleme
 	}
 
 	override onOpenAni() {
-		(this.mediator.data as IUIVideoData).showIn
+		const data = this.mediator.data as IUIVideoData;
+		this.img_bg.alpha = (data.showIn || data.showOut) ? 0 : 1;
+		if (data.showIn)
+			return $uiUtil.playTrans(this.trans_show);
+		else
+			return $timeUtil.wait(1000);
 	}
 }

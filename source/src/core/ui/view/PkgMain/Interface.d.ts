@@ -19,7 +19,7 @@ declare interface IUIAnnouncementData {
 }
 
 declare interface IUIBagData {
-	index?: number
+	index?: number;
 }
 
 declare interface IUICameraData {
@@ -74,6 +74,10 @@ declare interface IUITreasureData {
 
 }
 declare interface IUIVideoData {
-
+	skinId: number;
+	characterId?: number;
+	callback?: SimpleHandler;
+	showIn?: boolean;
+	showOut?: boolean;
 }
 

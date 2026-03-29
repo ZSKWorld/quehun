@@ -12,6 +12,7 @@ declare type OriginData<T> = Pick<T, OriginDataKeys<T>>;
 /** 获取对象上所有非方法和非readonly字段名 */
 declare type OriginDataKeys<T> = NonReadonlyKeys<T> & NonMethodKeys<T>;
 
+declare type SimpleHandler = Laya.Handler | (() => void);
 /** 设置对象上所有字段只读 */
 declare type ReadonlyAll<T> = { readonly [P in keyof T]: T[P] extends Function ? T[P] : ReadonlyAll<T[P]>; };
 /** 设置对象上所有字段可选 */

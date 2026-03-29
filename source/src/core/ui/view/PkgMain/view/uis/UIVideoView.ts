@@ -11,4 +11,7 @@ export class UIVideoView extends ExtensionClass<IView, UIVideo>(UIVideo) impleme
 		btn_jump.onClick(this, this.sendEvent, [EUIVideoMsg.OnBtnJumpClick]);
 	}
 
+	override onOpenAni() {
+		(this.mediator.data as IUIVideoData).showIn
+	}
 }

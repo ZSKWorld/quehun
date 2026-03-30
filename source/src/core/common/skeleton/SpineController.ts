@@ -23,6 +23,10 @@ export class SpineController extends Laya.Script implements ISpineController {
 		}
 	}
 
+	recover() {
+		$spineMgr.recover(this);
+	}
+
 	override onDestroy() {
 		this._spineId = 0;
 		this._spineNodes.length = 0;

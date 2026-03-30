@@ -64,6 +64,7 @@ declare interface ISpineController extends Laya.Script {
 	owner: Laya.Sprite;
 	get spineId(): number;
 	play(nameOrIndex: string | number, loop: boolean, force?: boolean, start?: number, end?: number, freshSkin?: boolean, playAudio?: boolean): void;
+	recover(): void;
 }
 
 declare interface ISpineManager {

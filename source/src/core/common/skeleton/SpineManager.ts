@@ -11,25 +11,27 @@ const enum ESpineAnimation {
 
 export class SpineManager extends Singleton<SpineManager>() implements ISpineManager {
 	private _templetMap = new Map<string, Laya.SpineTemplet>();
-	private _unusedPool = new Map<number, ISpineController[]>();
-	private _usingPool = new Map<number, ISpineController[]>();
-	async load(ids: number[], progress?: Laya.Handler) {
-		if (!ids || ids.length == 0) {
-			progress?.runWith(1);
-			return [];
-		}
+	private _unusedPool = new Map<string, ISpineController[]>();
+	private _usingPool = new Map<string, ISpineController[]>();
+	async loadById(ids: number[], progress?: Laya.Handler) {
+		if (!ids) return null;
+		if (!ids.length) return (progress?.runWith(1), []);
+
+		const loadUrls = ids.map(v => this.getSpineUrls(v)).flat();
+		await this.loadByUrl(loadUrls, progress);
+
+		return ids.map(id => {
+			const urls = this.getSpineUrls(id);
+			return urls.map(u => this._templetMap.get(u));
+		});
+	}
+
+	async loadByUrl(urls: string[], progress?: Laya.Handler) {
+		if (!urls) return null;
+		if (!urls.length) return (progress?.runWith(1), []);
 
 		const templetMap = this._templetMap;
-
-		const loadUrls: string[] = [];
-		ids.forEach(id => {
-			const urls = this.getSpineUrls(id);
-			if (!urls.length) return;
-			for (let i = 0; i < urls.length; i++) {
-				if (templetMap.get(urls[i])) continue;
-				loadUrls.push(urls[i]);
-			}
-		});
+		const loadUrls = [...new Set(urls)].filter(v => !templetMap.get(v));
 
 		if (loadUrls.length > 0) {
 			const data = await $loadMgr.load<Laya.SpineTemplet, string[]>(loadUrls, null, progress, Laya.Loader.SPINE);
@@ -38,13 +40,10 @@ export class SpineManager extends Singleton<SpineManager>() implements ISpineMan
 			progress?.runWith(1);
 		}
 
-		return ids.map(id => {
-			const urls = this.getSpineUrls(id);
-			return urls.map(u => templetMap.get(u));
-		});
+		return urls.map(v => templetMap.get(v));
 	}
 
-	create(id: number, parent?: fgui.GComponent) {
+	createById(id: number, parent?: fgui.GComponent) {
 		let spine: ISpineController;
 		const unusedArr = this._unusedPool.get(id);
 		if (unusedArr && unusedArr.length) {
@@ -76,22 +75,10 @@ export class SpineManager extends Singleton<SpineManager>() implements ISpineMan
 		return spine;
 	}
 
-	recover(spine: ISpineController) {
-		if (!spine) return;
-		const id = spine.spineId;
-		const usingArr = this._usingPool.get(id);
-		usingArr && usingArr.remove(spine);
-		const unusedArr = this._unusedPool.get(id);
-		if (spine.destroyed)
-			unusedArr && unusedArr.remove(spine);
-		else {
-			if (unusedArr) unusedArr.pushUnique(spine);
-			else this._unusedPool.set(id, [spine]);
-			spine.gowner.removeFromParent();
-		}
+	createByUrl(url: string, parent?: fgui.GComponent) {
+		return null;
 	}
-
-	clear(id: number) {
+	clearById(id: number) {
 		const unusedArr = this._unusedPool.get(id);
 		const usingArr = this._usingPool.get(id);
 		if (unusedArr) {
@@ -104,8 +91,12 @@ export class SpineManager extends Singleton<SpineManager>() implements ISpineMan
 		}
 	}
 
-	dispose(id: number) {
-		this.clear(id);
+	clearByUrl(url: string) {
+
+	}
+
+	disposeById(id: number) {
+		this.clearById(id);
 		const urls = this.getSpineUrls(id);
 		for (let i = 0; i < urls.length; i++) {
 			const templet = this._templetMap.get(urls[i]);
@@ -114,6 +105,26 @@ export class SpineManager extends Singleton<SpineManager>() implements ISpineMan
 			Laya.timer.frameOnce(0, this, () => templet.destroy());
 		}
 	}
+
+	disposeByUrl(url: string) {
+
+	}
+
+	recover(spine: ISpineController) {
+		if (!spine) return;
+		const id = spine.url;
+		const usingArr = this._usingPool.get(id);
+		usingArr && usingArr.remove(spine);
+		const unusedArr = this._unusedPool.get(id);
+		if (spine.destroyed)
+			unusedArr && unusedArr.remove(spine);
+		else {
+			if (unusedArr) unusedArr.pushUnique(spine);
+			else this._unusedPool.set(id, [spine]);
+			spine.gowner.removeFromParent();
+		}
+	}
+
 
 	private getSpineUrls(id: number) {
 		const urls: string[] = [];

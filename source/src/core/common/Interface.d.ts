@@ -62,7 +62,7 @@ declare interface ISkeletonManager {
 
 declare interface ISpineController extends Laya.Script {
 	owner: Laya.Sprite;
-	get spineId(): number;
+	get url(): string;
 	play(nameOrIndex: string | number, loop: boolean, force?: boolean, start?: number, end?: number, freshSkin?: boolean, playAudio?: boolean): void;
 	recover(): void;
 }
@@ -72,26 +72,46 @@ declare interface ISpineManager {
 	 * 加载spine动画模板
 	 * @param ids spine id
 	 */
-	load(ids: number[], progress?: Laya.Handler): Promise<Laya.SpineTemplet[][]>;
+	loadById(ids: number[], progress?: Laya.Handler): Promise<Laya.SpineTemplet[][]>;
+	/**
+	 * 加载spine动画模板
+	 * @param urls spine url
+	 */
+	loadByUrl(urls: string[], progress?: Laya.Handler): Promise<Laya.SpineTemplet[]>;
 	/**
 	 * 获取一个spine动画
 	 * @param id spine id
 	 * @param parent 父节点
 	 */
-	create(id: number, parent?: fgui.GComponent): ISpineController;
+	createById(id: number, parent?: fgui.GComponent): ISpineController;
+	/**
+	 * 获取一个spine动画
+	 * @param url spine url
+	 * @param parent 父节点
+	 */
+	createByUrl(url: string, parent?: fgui.GComponent): ISpineController;
+	/**
+	 * 清除动画对象池
+	 * @param id spine id
+	 */
+	clearById(id: number): void;
+	/**
+	 * 清除动画对象池
+	 * @param url spine url
+	 */
+	clearByUrl(url: string): void;
+	/**
+	 * 销毁动画并释放内存
+	 */
+	disposeById(id: number): void;
+	/**
+	 * 销毁动画并释放内存
+	 */
+	disposeByUrl(url: string): void;
 	/**
 	 * 回收spin动画到对象池
 	 */
 	recover(spine: ISpineController): void;
-	/**
-	 * 清除动画对象池
-	 * @param url
-	 */
-	clear(id: number): void;
-	/**
-	 * 销毁动画并释放内存
-	 */
-	dispose(id: number): void;
 }
 
 declare interface IMathUtil {
@@ -209,7 +229,7 @@ declare interface IGameUtil {
 	/** 是否是同区域(同服) */
 	isSameZone(accountId1: number, accountId2: number): boolean;
 	/** 获取玩家游戏状态信息 */
-	getPlayerPlayingInfo(data: { is_online: boolean; playing: IAccountPlayingGame; logout_time: number }): { color: string, text: string };
+	getPlayerPlayingInfo(data: { is_online: boolean; playing: IAccountPlayingGame; logout_time: number; }): { color: string, text: string; };
 	/** 获取玩家是否在游戏中 */
 	getPlayerInGaming(data: IAccountPlayingGame): boolean;
 }

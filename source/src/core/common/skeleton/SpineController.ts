@@ -1,12 +1,12 @@
 export class SpineController extends Laya.Script implements ISpineController {
 	override owner: Laya.Sprite;
-	private _spineId: number = 0;
+	private _url: string;
 	private _spineNodes: Laya.Spine2DRenderNode[] = [];
-	get spineId() { return this._spineId; }
+	get url() { return this._url; }
 	get spineNodes() { return this._spineNodes; }
 
-	init(id: number) {
-		this._spineId = id;
+	init(url: string) {
+		this._url = url;
 		const childs = this.gowner._children;
 		for (let i = 0; i < childs.length; i++) {
 			const node = childs[i].getComponent(Laya.Spine2DRenderNode);
@@ -28,7 +28,6 @@ export class SpineController extends Laya.Script implements ISpineController {
 	}
 
 	override onDestroy() {
-		this._spineId = 0;
 		this._spineNodes.length = 0;
 	}
 

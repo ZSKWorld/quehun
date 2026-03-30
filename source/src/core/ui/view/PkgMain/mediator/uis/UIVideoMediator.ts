@@ -11,7 +11,7 @@ export class UIVideoMediator extends MediatorBase<UIVideoView, IUIVideoData> {
 	}
 
 	override onEnable() {
-		const { skinId, characterId} = this.data;
+		const { skinId, characterId } = this.data;
 		let targetSkinId = skinId;
 		if (!skinId) {
 			const cfgChar = $cfgMgr.item_definition.character[characterId];
@@ -34,15 +34,14 @@ export class UIVideoMediator extends MediatorBase<UIVideoView, IUIVideoData> {
 		video.allowBackground = true;
 		video.options.objectFit = "fill";
 		video.size(Laya.stage.width, Laya.stage.height);
-		video.source = ResPath.EUnclassifiedPath[targetSkinId];
-		// video.play();
+		video.source = ResPath.ESpineVideoPath[targetSkinId];
 		video.on(EVideoLoadEvent.CanPlay, this, this.onCanPlay);
 		video.on(EVideoErrorEvent.Error, this, this.closeSelf);
 		video.on(EVideoErrorEvent.Abort, this, this.closeSelf);
 	}
 
 	private onCanPlay() {
-		
+		this._video.play();
 	}
 
 

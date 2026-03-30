@@ -2,7 +2,6 @@
 
 export default class UIVideo extends fgui.GComponent {
 
-	protected img_bg: fgui.GImage;
 	protected com_videoRoot: fgui.GComponent;
 	protected img_aniItem1: fgui.GImage;
 	protected img_aniItem2: fgui.GImage;
@@ -16,11 +15,10 @@ export default class UIVideo extends fgui.GComponent {
 	}
 
 	protected override onConstruct(): void {
-		this.img_bg = <fgui.GImage>(this.getChildAt(0));
-		this.com_videoRoot = <fgui.GComponent>(this.getChildAt(1));
-		this.img_aniItem1 = <fgui.GImage>(this.getChildAt(2));
-		this.img_aniItem2 = <fgui.GImage>(this.getChildAt(3));
-		this.btn_jump = <fgui.GButton>(this.getChildAt(4));
+		this.com_videoRoot = <fgui.GComponent>(this.getChildAt(0));
+		this.img_aniItem1 = <fgui.GImage>(this.getChildAt(1));
+		this.img_aniItem2 = <fgui.GImage>(this.getChildAt(2));
+		this.btn_jump = <fgui.GButton>(this.getChildAt(3));
 		this.trans_show = this.getTransitionAt(0);
 		this.trans_hide = this.getTransitionAt(1);
 	}

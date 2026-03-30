@@ -97,6 +97,11 @@ declare interface IViewExtend {
 	 */
 	openView<T = any>(viewId: EViewID, data?: T, openType?: EViewOpenType): Promise<void>;
 
+	/** 移除页面
+	 * @param viewId 页面id
+	 */
+	closeView(viewId: EViewID): Promise<void>;
+
 	/** 移除当前页面，只有UI界面才能移除自身，其他Com，Btn，Render之类的无效 */
 	closeSelf(): Promise<void>;
 }
@@ -155,6 +160,8 @@ declare interface IMediator<V extends IView = IView, D = any> extends Laya.Scrip
 	data: D;
 	/** 控制器挂载的ui页面 */
 	get view(): V;
+	/** 打开动画播放完毕后调用 */
+	onAfterOpenAni(): void;
 }
 
 /** 命令流 */

@@ -77,7 +77,5 @@ declare interface IUIVideoData {
 	skinId: number;
 	characterId?: number;
 	callback?: SimpleHandler;
-	showIn?: boolean;
-	showOut?: boolean;
 }
 

@@ -5,6 +5,9 @@ export const enum EUIVideoMsg {
 }
 
 export class UIVideoView extends ExtensionClass<IView, UIVideo>(UIVideo) implements IView {
+	get transShow() { return this.trans_show; }
+	get transHide() { return this.trans_hide; }
+	get videoRoot() { return this.com_videoRoot; }
 
 	override onCreate() {
 		const { btn_jump } = this;
@@ -12,11 +15,6 @@ export class UIVideoView extends ExtensionClass<IView, UIVideo>(UIVideo) impleme
 	}
 
 	override onOpenAni() {
-		const data = this.mediator.data as IUIVideoData;
-		this.img_bg.alpha = (data.showIn || data.showOut) ? 0 : 1;
-		if (data.showIn)
-			return $uiUtil.playTrans(this.trans_show);
-		else
-			return $timeUtil.wait(1000);
+		return $uiUtil.playTrans(this.trans_show);
 	}
 }

@@ -61,6 +61,9 @@ export class ViewExtend {
 		prototype.openView = function (...args) {
 			return $uiMgr.openView(...args);
 		};
+		prototype.closeView = function (...args) {
+			return $uiMgr.closeView(...args);
+		};
 		prototype.closeSelf = function () {
 			const { viewId, viewType } = (<IViewExtend>this);
 			if (viewType == EViewType.UI)

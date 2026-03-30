@@ -18756,7 +18756,8 @@ window.Laya = (function (exports) {
         }
         onEnable() {
         }
-        onDisable() {
+        
+		onDisable() {
         }
         onDestroy() {
         }

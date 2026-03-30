@@ -32,7 +32,7 @@ export class UIMainMediator extends MediatorBase<UIMainView, IUIMainData> {
 
 	private onBtnObserveClick() {
 		// this.openView(EViewID.UIObserverView, null, EViewOpenType.Hide);
-		this.openView(EViewID.UIVideoView, null, EViewOpenType.Hide);
+		this.openView<IUIVideoData>(EViewID.UIVideoView, { skinId: 400305 });
 	}
 
 	private onBtnPaiPuClick() {

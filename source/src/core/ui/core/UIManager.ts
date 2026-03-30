@@ -104,6 +104,7 @@ export class UIManager extends Singleton<UIManager>() implements IUIManager {
 		this.addToLayer(mediator.view, mediator.view.viewLayer || ELayer.UIBottom);
 		this._curMediator = mediator;
 		await mediator.view.onOpenAni?.();
+		mediator.onAfterOpenAni?.();
 		this.lockMark--;
 	}
 

@@ -209,7 +209,7 @@ declare interface IGameUtil {
 	/** 是否是同区域(同服) */
 	isSameZone(accountId1: number, accountId2: number): boolean;
 	/** 获取玩家游戏状态信息 */
-	getPlayerPlayingInfo(data: { is_online: boolean; playing: IAccountPlayingGame; logout_time: number }): { color: string, text: string };
+	getPlayerPlayingInfo(data: { is_online: boolean; playing: IAccountPlayingGame; logout_time: number; }): { color: string, text: string; };
 	/** 获取玩家是否在游戏中 */
 	getPlayerInGaming(data: IAccountPlayingGame): boolean;
 }

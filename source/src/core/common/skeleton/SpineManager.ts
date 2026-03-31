@@ -11,27 +11,25 @@ const enum ESpineAnimation {
 
 export class SpineManager extends Singleton<SpineManager>() implements ISpineManager {
 	private _templetMap = new Map<string, Laya.SpineTemplet>();
-	private _unusedPool = new Map<string, ISpineController[]>();
-	private _usingPool = new Map<string, ISpineController[]>();
-	async loadById(ids: number[], progress?: Laya.Handler) {
-		if (!ids) return null;
-		if (!ids.length) return (progress?.runWith(1), []);
-
-		const loadUrls = ids.map(v => this.getSpineUrls(v)).flat();
-		await this.loadByUrl(loadUrls, progress);
-
-		return ids.map(id => {
-			const urls = this.getSpineUrls(id);
-			return urls.map(u => this._templetMap.get(u));
-		});
-	}
-
-	async loadByUrl(urls: string[], progress?: Laya.Handler) {
-		if (!urls) return null;
-		if (!urls.length) return (progress?.runWith(1), []);
+	private _unusedPool = new Map<number, ISpineController[]>();
+	private _usingPool = new Map<number, ISpineController[]>();
+	async load(ids: number[], progress?: Laya.Handler) {
+		if (!ids || ids.length == 0) {
+			progress?.runWith(1);
+			return [];
+		}
 
 		const templetMap = this._templetMap;
-		const loadUrls = [...new Set(urls)].filter(v => !templetMap.get(v));
+
+		const loadUrls: string[] = [];
+		ids.forEach(id => {
+			const urls = this.getSpineUrls(id);
+			if (!urls.length) return;
+			for (let i = 0; i < urls.length; i++) {
+				if (templetMap.get(urls[i])) continue;
+				loadUrls.push(urls[i]);
+			}
+		});
 
 		if (loadUrls.length > 0) {
 			const data = await $loadMgr.load<Laya.SpineTemplet, string[]>(loadUrls, null, progress, Laya.Loader.SPINE);
@@ -40,10 +38,13 @@ export class SpineManager extends Singleton<SpineManager>() implements ISpineMan
 			progress?.runWith(1);
 		}
 
-		return urls.map(v => templetMap.get(v));
+		return ids.map(id => {
+			const urls = this.getSpineUrls(id);
+			return urls.map(u => templetMap.get(u));
+		});
 	}
 
-	createById(id: number, parent?: fgui.GComponent) {
+	create(id: number, parent?: fgui.GComponent) {
 		let spine: ISpineController;
 		const unusedArr = this._unusedPool.get(id);
 		if (unusedArr && unusedArr.length) {
@@ -75,44 +76,9 @@ export class SpineManager extends Singleton<SpineManager>() implements ISpineMan
 		return spine;
 	}
 
-	createByUrl(url: string, parent?: fgui.GComponent) {
-		return null;
-	}
-	clearById(id: number) {
-		const unusedArr = this._unusedPool.get(id);
-		const usingArr = this._usingPool.get(id);
-		if (unusedArr) {
-			unusedArr.forEach(v => v.gowner.dispose());
-			unusedArr.length = 0;
-		}
-		if (usingArr) {
-			usingArr.forEach(v => v.gowner.dispose());
-			usingArr.length = 0;
-		}
-	}
-
-	clearByUrl(url: string) {
-
-	}
-
-	disposeById(id: number) {
-		this.clearById(id);
-		const urls = this.getSpineUrls(id);
-		for (let i = 0; i < urls.length; i++) {
-			const templet = this._templetMap.get(urls[i]);
-			if (!templet) continue;
-			this._templetMap.delete(urls[i]);
-			Laya.timer.frameOnce(0, this, () => templet.destroy());
-		}
-	}
-
-	disposeByUrl(url: string) {
-
-	}
-
 	recover(spine: ISpineController) {
 		if (!spine) return;
-		const id = spine.url;
+		const id = spine.spineId;
 		const usingArr = this._usingPool.get(id);
 		usingArr && usingArr.remove(spine);
 		const unusedArr = this._unusedPool.get(id);
@@ -125,6 +91,29 @@ export class SpineManager extends Singleton<SpineManager>() implements ISpineMan
 		}
 	}
 
+	clear(id: number) {
+		const unusedArr = this._unusedPool.get(id);
+		const usingArr = this._usingPool.get(id);
+		if (unusedArr) {
+			unusedArr.forEach(v => v.gowner.dispose());
+			unusedArr.length = 0;
+		}
+		if (usingArr) {
+			usingArr.forEach(v => v.gowner.dispose());
+			usingArr.length = 0;
+		}
+	}
+
+	dispose(id: number) {
+		this.clear(id);
+		const urls = this.getSpineUrls(id);
+		for (let i = 0; i < urls.length; i++) {
+			const templet = this._templetMap.get(urls[i]);
+			if (!templet) continue;
+			this._templetMap.delete(urls[i]);
+			Laya.timer.frameOnce(0, this, () => templet.destroy());
+		}
+	}
 
 	private getSpineUrls(id: number) {
 		const urls: string[] = [];

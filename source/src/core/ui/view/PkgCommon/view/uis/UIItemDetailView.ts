@@ -7,7 +7,6 @@ export const enum EUIItemDetailMsg {
 }
 
 export class UIItemDetailView extends ExtensionClass<IView, UIItemDetail>(UIItemDetail) implements IView {
-	override readonly viewCategory = EViewCategory.Popup;
 
 	override onCreate() {
 		const { graph_bg, btn_close, btn_open1 } = this;

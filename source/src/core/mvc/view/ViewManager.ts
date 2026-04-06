@@ -11,19 +11,50 @@ export class ViewManager extends Singleton<ViewManager>() {
 			Logger.error("重复注册view", viewId);
 			return;
 		}
-		viewCls.prototype.viewId = viewId;
-		viewCls.prototype.viewType = viewType;
-		mediatorCls && (mediatorCls.prototype.viewId = viewId);
-		mediatorCls && (mediatorCls.prototype.viewType = viewType);
+		(<IViewExtend>viewCls.prototype).viewId = viewId;
+		(<IViewExtend>viewCls.prototype).viewType = viewType;
+		mediatorCls && ((<IViewExtend>mediatorCls.prototype).viewId = viewId);
+		mediatorCls && ((<IViewExtend>mediatorCls.prototype).viewType = viewType);
 		this._viewClsMap[viewId] = viewCls;
 		this._mediatorlClsMap[viewId] = mediatorCls;
 	}
 
-	has(viewId: EViewID) {
+	registerInfo(viewId: EViewID, layer = ELayer.UIBottom, category = EViewCategory.FullScreen) {
+		const ViewCls = this._viewClsMap[viewId];
+		const mediatorCls = this._mediatorlClsMap[viewId];
+		if (ViewCls) {
+			(<IViewExtend>ViewCls.prototype).viewLayer = layer;
+			(<IViewExtend>ViewCls.prototype).viewCategory = category;
+		}
+		if (mediatorCls) {
+			(<IViewExtend>mediatorCls.prototype).viewLayer = layer;
+			(<IViewExtend>mediatorCls.prototype).viewCategory = category;
+		}
+	}
+
+	getViewType(viewId: EViewID) {
+		const ViewCls = this._viewClsMap[viewId];
+		if (!ViewCls) return;
+		return (<IViewExtend>ViewCls.prototype).viewType;
+	}
+
+	getViewLayer(viewId: EViewID) {
+		const ViewCls = this._viewClsMap[viewId];
+		if (!ViewCls) return;
+		return (<IViewExtend>ViewCls.prototype).viewLayer;
+	}
+
+	getViewCategory(viewId: EViewID) {
+		const ViewCls = this._viewClsMap[viewId];
+		if (!ViewCls) return;
+		return (<IViewExtend>ViewCls.prototype).viewCategory;
+	}
+
+	hasMediator(viewId: EViewID) {
 		return !!this._mediatorlClsMap[viewId];
 	}
 
-	get(viewId: EViewID) {
+	getMediatorClass(viewId: EViewID) {
 		return this._mediatorlClsMap[viewId];
 	}
 
@@ -35,7 +66,7 @@ export class ViewManager extends Singleton<ViewManager>() {
 	}
 
 	createMediator(viewId: EViewID, fullScreen: boolean = false) {
-		const viewInst = this.createView(viewId, fullScreen	);
+		const viewInst = this.createView(viewId, fullScreen);
 		return viewInst.mediator;
 	}
 }

@@ -1,3 +1,33 @@
+class UIStack {
+	private _data: EViewID[] = [];
+	get count() { return this._data.length; }
+
+	push(item: EViewID) {
+		const index = this._data.indexOf(item);
+		if (index > -1)
+			this._data.splice(index, 1);
+		this._data.unshift(item);
+	}
+
+	pop() {
+		return this._data.shift();
+	}
+
+	peek() {
+		return this._data[0];
+	}
+
+	remove(item: EViewID) {
+		const index = this._data.indexOf(item);
+		if (index > -1) {
+			this._data.splice(index, 1);
+		}
+	}
+
+	clear() {
+		this._data.length = 0;
+	}
+}
 /** 页面缓存 */
 class UICache {
 
@@ -33,15 +63,13 @@ export class UIManager extends Singleton<UIManager>() implements IUIManager {
 	private _lockMask: fgui.GGraph;
 	/** 已打开页面 */
 	private _openedViews: IMediator[] = [];
-	private _openedStack: EViewID[] = [];
+	private _openedStack = new UIStack();
 
 	private get lockMark() { return this._lockMark; }
 	private set lockMark(value: number) {
 		this._lockMark = value;
 		this._lockMask.visible = value != 0;
 	}
-
-	private _curMediator: IMediator<IView, any>;
 
 	protected constructor() {
 		super();
@@ -85,45 +113,24 @@ export class UIManager extends Singleton<UIManager>() implements IUIManager {
 
 	async openView<T = any>(viewId: EViewID, data?: T, openType = EViewOpenType.None) {
 		if (!viewId) return;
-		this.lockMark++;
-		await this.dealTopViewOnOpenView(openType);
-		let mediator: IMediator;
-		const openIndex = this._openedViews.findIndex(v => v.viewId == viewId);
-		if (openIndex == -1) {
-			mediator = this._cache.get(viewId) || $facade.createMediator(viewId, true);
-		} else {
-			mediator = this._openedViews[openIndex];
-		}
+		if (!$facade.hasMediator(viewId)) return;
 
-		if (this.isStackView(mediator.view))
-			this._openedStack.unshift(mediator.viewId);
-		data != null && (mediator.data = data);
-		openIndex >= 0 && this._openedViews.splice(openIndex, 1);
-		this._openedViews.unshift(mediator);
-		mediator.view.removeFromParent();
-		this.addToLayer(mediator.view, mediator.view.viewLayer || ELayer.UIBottom);
-		this._curMediator = mediator;
-		await mediator.view.onOpenAni?.();
-		mediator.onAfterOpenAni?.();
+		this.lockMark++;
+		await this.dealTopView(openType);
+		const mediator = this.getOrCreateMediator(viewId);
+		await this.addToView(mediator, data);
 		this.lockMark--;
 	}
 
 	async closeView(viewId: EViewID, openStack = true) {
-		const index = this._openedViews.findIndex(v => v.viewId == viewId);
-		if (index <= -1) return;
-		const mediator = this._openedViews[index];
-		this._openedViews.splice(index, 1);
-		const stackIndex = this._openedStack.indexOf(viewId);
-		if (stackIndex >= 0) this._openedStack.splice(stackIndex, 1);
+		if (!viewId) return;
 		this.lockMark++;
-		await mediator.view.onCloseAni?.();
-		this._cache.cache(mediator);
-		mediator.view.removeFromParent();
-		if (this.isStackView(mediator.view) && openStack) {
-			const nextViewId = this._openedStack[0];
+		const success = await this.removeFromView(viewId, true);
+		if (success && this.isStackView(viewId) && openStack) {
+			const nextViewId = this._openedStack.peek();
 			const topViewId = this._openedViews[0]?.viewId;
 			if (nextViewId && nextViewId != topViewId)
-				await this.openView(this._openedStack.shift());
+				await this.openView(this._openedStack.pop());
 		}
 		this.lockMark--;
 	}
@@ -134,36 +141,68 @@ export class UIManager extends Singleton<UIManager>() implements IUIManager {
 			this._cache.cache(v);
 		});
 		this._openedViews.length = 0;
-		this._openedStack.length = 0;
+		this._openedStack.clear();
 	}
 
 	destroyView(viewId: EViewID) {
 		this._cache.destroy(viewId);
 		const index = this._openedViews.findIndex(v => v.viewId == viewId);
-		if (index >= 0) {
-			const mediator = this._openedViews[index];
-			this._openedViews.splice(index, 1);
-			mediator.view.dispose();
-		}
+		if (index == -1) return;
+		const mediator = this._openedViews[index];
+		this._openedViews.splice(index, 1);
+		mediator.view.dispose();
 	}
 
-	private isStackView(view: IView) {
-		return view.viewCategory != EViewCategory.Popup;
+	private isStackView(viewId: EViewID) {
+		const category = $facade.getViewCategory(viewId);
+		return category == EViewCategory.FullScreen;
 	}
 
-	private async dealTopViewOnOpenView(openType: EViewOpenType) {
-		const topMediator = this._openedViews[0];
-		if (!topMediator) return;
+	private async dealTopView(openType: EViewOpenType) {
+		const viewId = this._openedViews[0]?.viewId;
+		if (!viewId) return;
 		switch (openType) {
 			case EViewOpenType.Hide:
-				this._openedViews.shift();
-				await topMediator.view.onCloseAni?.();
-				this._cache.cache(topMediator);
-				topMediator.view.removeFromParent();
+				await this.removeFromView(viewId);
 				break;
 			case EViewOpenType.Close:
-				await this.closeView(topMediator.viewId, false);
+				await this.closeView(viewId, false);
 				break;
 		}
+	}
+
+	private getOrCreateMediator(viewId: EViewID) {
+		let mediator: IMediator;
+		const openIndex = this._openedViews.findIndex(v => v.viewId == viewId);
+		if (openIndex == -1) {
+			mediator = this._cache.get(viewId) || $facade.createMediator(viewId, true);
+		} else {
+			mediator = this._openedViews[openIndex];
+			this._openedViews.splice(openIndex, 1);
+		}
+		return mediator;
+	}
+
+	private async addToView(mediator: IMediator, data?: any) {
+		if (!mediator) return;
+		if (this.isStackView(mediator.viewId))
+			this._openedStack.push(mediator.viewId);
+		this._openedViews.unshift(mediator);
+		mediator.view.removeFromParent();
+		data !== void 0 && (mediator.data = data);
+		this.addToLayer(mediator.view, mediator.view.viewLayer || ELayer.UIBottom);
+		await mediator.view.onOpenAni?.();
+	}
+
+	private async removeFromView(viewId: EViewID, removeStack?: boolean) {
+		const index = this._openedViews.findIndex(v => v.viewId == viewId);
+		if (index <= -1) return false;
+		const mediator = this._openedViews[index];
+		this._openedViews.splice(index, 1);
+		removeStack && this._openedStack.remove(viewId);
+		await mediator.view.onCloseAni?.();
+		this._cache.cache(mediator);
+		mediator.view.removeFromParent();
+		return true;
 	}
 }

@@ -6,7 +6,6 @@ export const enum EUIRankMsg {
 }
 
 export class UIRankView extends ExtensionClass<IView, UIRank>(UIRank) implements IView {
-	override readonly viewCategory = EViewCategory.Popup;
 	get listRank() { return this.list_rank; }
 	get btnSiMa() { return this.btn_siMa; }
 	get btnSanMa() { return this.btn_sanMa; }

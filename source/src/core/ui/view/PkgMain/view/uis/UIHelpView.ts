@@ -5,7 +5,6 @@ export const enum EUIHelpMsg {
 }
 
 export class UIHelpView extends ExtensionClass<IView, UIHelp>(UIHelp) implements IView {
-	override readonly viewCategory = EViewCategory.Popup;
 
 	override onCreate() {
 

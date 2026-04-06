@@ -23,19 +23,35 @@ export class Facade extends Singleton<Facade>() implements IFacade {
 		this._viewMgr.register(viewId, viewType, viewCls, mediatorCls);
 	}
 
+	registerViewInfo(viewId: EViewID, layer = ELayer.UIBottom, category = EViewCategory.FullScreen) {
+		this._viewMgr.registerInfo(viewId, layer, category);
+	}
+
 	hasMediator(viewId: EViewID) {
-		return this._viewMgr.has(viewId);
+		return this._viewMgr.hasMediator(viewId);
 	}
 
-	getMediator(viewId: EViewID) {
-		return this._viewMgr.get(viewId);
+	getMediatorClass(viewId: EViewID) {
+		return this._viewMgr.getMediatorClass(viewId);
 	}
 
-	createView(viewId: EViewID, fullScreen: boolean = false) {
+	getViewType(viewId: EViewID) {
+		return this._viewMgr.getViewType(viewId);
+	}
+
+	getViewLayer(viewId: EViewID) {
+		return this._viewMgr.getViewLayer(viewId);
+	}
+
+	getViewCategory(viewId: EViewID) {
+		return this._viewMgr.getViewCategory(viewId);
+	}
+
+	createView(viewId: EViewID, fullScreen = false) {
 		return this._viewMgr.createView(viewId, fullScreen);
 	}
 
-	createMediator(viewId: EViewID, fullScreen: boolean = false) {
+	createMediator(viewId: EViewID, fullScreen = false) {
 		return this.createView(viewId, fullScreen).mediator;
 	}
 	//#endregion

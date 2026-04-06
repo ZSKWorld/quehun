@@ -131,7 +131,6 @@ export class MediatorDIExtend {
 	private static doMouseEvent(e: Laya.Event) {
 		//这里的this是MediatorBase
 		const caller = this as unknown as DIMediator;
-		if (!$uiMgr.isTopView(caller)) return;
 		const vmem = caller.__viewMouseEventMap;
 		if (!vmem) return;
 		const list: CfgFunction[] = vmem[e.type];

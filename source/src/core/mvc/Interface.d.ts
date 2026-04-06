@@ -72,6 +72,8 @@ declare interface IObserver extends INotifier {
 declare interface IViewExtend {
 	readonly viewId: EViewID;
 	readonly viewType: EViewType;
+	readonly viewLayer: ELayer;
+	readonly viewCategory: EViewCategory;
 
 	/**
 	 * 派发全局事件
@@ -108,8 +110,6 @@ declare interface IViewExtend {
 
 /**页面 */
 declare interface IView extends fgui.GComponent, IViewExtend {
-	readonly viewLayer: ELayer;
-	readonly viewCategory: EViewCategory;
 	mediator: IMediator;
 
 	/**
@@ -160,8 +160,6 @@ declare interface IMediator<V extends IView = IView, D = any> extends Laya.Scrip
 	data: D;
 	/** 控制器挂载的ui页面 */
 	get view(): V;
-	/** 打开动画播放完毕后调用 */
-	onAfterOpenAni(): void;
 }
 
 /** 命令流 */
@@ -172,8 +170,12 @@ declare interface ICommand {
 declare interface IFacade {
 
 	registerView(viewId: EViewID, viewType: EViewType, viewCls: IViewClass, mediatorCls?: IMediatorClass): void;
+	registerViewInfo(viewId: EViewID, layer?: ELayer, category?: EViewCategory): void;
 	hasMediator(viewId: EViewID): boolean;
-	getMediator(viewId: EViewID): IMediatorClass;
+	getMediatorClass(viewId: EViewID): IMediatorClass;
+	getViewType(viewId: EViewID): EViewType;
+	getViewLayer(viewId: EViewID): ELayer;
+	getViewCategory(viewId: EViewID): EViewCategory;
 	/**
 	 * 
 	 * @param viewId 

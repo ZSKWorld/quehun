@@ -7,7 +7,6 @@ export const enum EUIMailMsg {
 }
 
 export class UIMailView extends ExtensionClass<IView, UIMail>(UIMail) implements IView {
-	override readonly viewCategory = EViewCategory.Popup;
 
 	get listTab() { return this.list_tab; }
 	get listReward() { return this.list_reward; }

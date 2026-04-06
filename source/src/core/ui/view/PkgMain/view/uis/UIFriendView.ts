@@ -75,6 +75,13 @@ export class UIFriendView extends ExtensionClass<IView, UIFriend>(UIFriend) impl
 		return this.com_back.onCloseAni();
 	}
 
+	override onDisable() {
+		const anis = [this.trans_show];
+		anis.forEach(v => {
+			v.playing && v.stop(true, true);
+		});
+	}
+
 	private onListFriendRender(index: number, item: RenderFriendFriendView) {
 		item.refresh($userData.friend.friends[index]);
 	}

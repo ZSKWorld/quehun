@@ -49,4 +49,11 @@ export class UIShopView extends ExtensionClass<IView, UIShop>(UIShop) implements
 		$uiUtil.playTrans(this.trans_show, true);
 		return this.com_back.onCloseAni();
 	}
+
+	override onDisable() {
+		const anis = [this.trans_show];
+		anis.forEach(v => {
+			v.playing && v.stop(true, true);
+		});
+	}
 }

@@ -54,4 +54,11 @@ export class UIMainView extends ExtensionClass<IView, UIMain>(UIMain) implements
 			$uiUtil.playTrans(this.com_matchMode.transModeOut),
 		]) as unknown as Promise<void>;
 	}
+
+	override onDisable() {
+		const anis = [this.trans_in, this.com_matchMode.transModeIn];
+		anis.forEach(v => {
+			v.playing && v.stop(true, true);
+		});
+	}
 }

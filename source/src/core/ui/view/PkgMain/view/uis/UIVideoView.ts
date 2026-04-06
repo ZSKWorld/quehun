@@ -18,7 +18,9 @@ export class UIVideoView extends ExtensionClass<IView, UIVideo>(UIVideo) impleme
 	}
 
 	override onDisable() {
-		if (this.trans_show.playing)
-			this.trans_show.stop(true, true);
+		const anis = [this.trans_show];
+		anis.forEach(v => {
+			v.playing && v.stop(true, true);
+		});
 	}
 }

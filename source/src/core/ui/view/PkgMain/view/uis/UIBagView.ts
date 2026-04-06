@@ -28,4 +28,10 @@ export class UIBagView extends ExtensionClass<IView, UIBag>(UIBag) implements IV
 		return this.com_back.onCloseAni();
 	}
 
+	override onDisable() {
+		const anis = [this.trans_t0];
+		anis.forEach(v => {
+			v.playing && v.stop(true, true);
+		});
+	}
 }

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="415,714" mask="n10_ojz4" designImage="ui://ca43vz0eojz47plokq" designImageOffsetX="-265" designImageOffsetY="-225" designImageAlpha="93">
+  <displayList>
+    <image id="n8_ojz4" name="n8" src="ojz4obh8" fileName="Texture/img_3494.png" xy="269,229"/>
+    <image id="n9_ojz4" name="n9" src="ojz4obh7" fileName="Texture/img_3493.png" xy="263,354"/>
+    <image id="n10_ojz4" name="n10" src="ojz4obh9" fileName="Texture/img_1355.png" xy="-1,-1" size="415,714"/>
+  </displayList>
+</component>

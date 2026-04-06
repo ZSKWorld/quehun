@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" designImage="ui://ca43vz0ejdu67plnfc" designImageAlpha="36">
+<component size="1920,1080" designImage="ui://ca43vz0eojz47plokq" designImageAlpha="93">
   <displayList>
-    <component id="n0_p5uz" name="back" src="p5uzob8h" fileName="Component/Component/ComBack.xml" pkg="vx9zwser" xy="10,22">
-      <property target="title" propertyId="0" value="好友"/>
+    <loader id="n1_ojz4" name="n1" xy="187,68" size="1549,949" url="ui://ca43vz0eojz47plokp" fill="scaleFree"/>
+    <component id="n3_ojz4" name="n3" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1590,150" size="78,78" aspect="true">
+      <Button icon="ui://vx9zwsergsi2obdi"/>
     </component>
+    <text id="n5_ojz4" name="n5" xy="894,165" pivot="0.5,0.5" size="133,58" font="ui://vx9zwserrpakobeu" fontSize="43" color="#591d2d" align="center" vAlign="middle" singleLine="true" text="公告栏"/>
+    <text id="n6_ojz4" name="n6" xy="1064,530" pivot="0.5,0.5" size="204,46" visible="false" fontSize="34" color="#8994a8" align="center" text="什么都没有..."/>
+    <text id="n7_ojz4" name="n7" xy="285,530" pivot="0.5,0.5" size="381,48" fontSize="35" color="#eac18b" align="center" autoSize="shrink" text="正在读取公告..."/>
+    <image id="n8_ojz4" name="n8" src="ojz4obh8" fileName="Texture/img_3494.png" xy="269,229"/>
+    <image id="n9_ojz4" name="n9" src="ojz4obh7" fileName="Texture/img_3493.png" xy="265,354"/>
   </displayList>
 </component>

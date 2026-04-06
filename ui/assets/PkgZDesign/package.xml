@@ -1674,6 +1674,9 @@
     <image id="fpd27plokn" name="商店4.jpg" path="/2503寮舍优化/商店/"/>
     <image id="dwe0obap" name="img_4188.png" path="/11/texture/"/>
     <image id="dwe0obaq" name="img_4209.png" path="/11/texture/"/>
+    <image id="ojz47ploko" name="公告.jpg" path="/公告/"/>
+    <image id="ojz47plokp" name="img_4140.png" path="/公告/"/>
+    <image id="ojz47plokq" name="公告2.jpg" path="/公告/"/>
   </resources>
   <publish name=""/>
 </packageDescription>

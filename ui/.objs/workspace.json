@@ -4,6 +4,9 @@
   "doc.openedDocs": [
     "ui://vith2b66glpbobfu",
     "ui://vith2b66qke2ob9q",
+    "ui://vith2b66ktwpob9v",
+    "ui://vith2b66ojz4obha",
+    "ui://vith2b66ktwpob9z",
     "ui://vith2b66ktwpob9s",
     "ui://vith2b66rmm9obh3",
     "ui://vx9zwserziglobga",
@@ -13,8 +16,6 @@
     "ui://vith2b66co9gob9l",
     "ui://vith2b66s5z8obfv",
     "ui://vx9zwserqs7jobft",
-    "ui://vx9zwsermj5kb6v",
-    "ui://vx9zwsermj5kb6u",
     "ui://8tw6j59fqs6vobft",
     "ui://vith2b66k5qeobge"
   ],
@@ -28,7 +29,7 @@
   "test.device": "iPhone 8",
   "canvasColor": 10066329,
   "auxline2": true,
-  "doc.activeDoc": "ui://vith2b66rmm9obh3",
+  "doc.activeDoc": "ui://vith2b66ojz4obha",
   "libview.twoColumn": true,
   "libview.expandedNodes": [
     "vx9zwser",
@@ -43,12 +44,12 @@
     "/",
     "vith2b66",
     "/Component/",
+    "vith2b66",
+    "/Component/UIAnnouncement/",
     "ca43vz0e",
     "/",
     "ca43vz0e",
-    "/11/",
-    "ca43vz0e",
-    "/11/texture/"
+    "/公告/"
   ],
   "auxline1": true,
   "showGrid": false,

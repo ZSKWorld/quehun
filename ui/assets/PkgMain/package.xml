@@ -213,7 +213,9 @@
     <image id="ojz4obh7" name="img_3493.png" path="/Texture/"/>
     <image id="ojz4obh8" name="img_3494.png" path="/Texture/"/>
     <image id="ojz4obh9" name="img_1355.png" path="/Texture/" scale="9grid" scale9grid="40,5,15,15"/>
-    <component id="ojz4obha" name="ComAnnounceLeft.xml" path="/Component/UIAnnouncement/" exported="true"/>
+    <component id="ojz4obha" name="ComAnnounceLeft.xml" path="/Component/UIAnnouncement/"/>
+    <component id="jmhgobhb" name="RenderAnnounceTab.xml" path="/Component/UIAnnouncement/"/>
+    <component id="wu0dobhd" name="ComAnnounceContent.xml" path="/Component/UIAnnouncement/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

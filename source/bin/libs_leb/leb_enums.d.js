@@ -233,6 +233,7 @@ ENotifyConst = {
 
 EUserEvent = {
 	OnMailChanged: "EUserEvent_OnMailChanged",
+	OnAnnouncementChanged: "EUserEvent_OnAnnouncementChanged",
 	OnFriendsChanged: "EUserEvent_OnFriendsChanged",
 	OnFriendMaxCountChanged: "EUserEvent_OnFriendMaxCountChanged",
 	OnFriendApplyChanged: "EUserEvent_OnFriendApplyChanged",

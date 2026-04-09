@@ -1,7 +1,7 @@
 declare namespace VO {
 	interface IAnnouncementVO {
 		announcements: ProtoObject<IAnnouncement>[];
-		readList: number[];
+		isRead(id: number): boolean;
 		fetchAnnouncement(): void;
 	}
 }

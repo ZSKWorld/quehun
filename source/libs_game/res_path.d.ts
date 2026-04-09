@@ -872,6 +872,8 @@ declare namespace ResPath {
 		WAV_Button9 = "res/sound/Button9.wav",
 	}
 
+	enum ESpinePath { }
+
 	enum ESpineVideoPath {
 		400107 = "res/spine_video/400107.mp4",
 		40010703 = "res/spine_video/40010703.mp4",
@@ -891,6 +893,7 @@ declare namespace ResPath {
 		400709 = "res/spine_video/400709.mp4",
 		400905 = "res/spine_video/400905.mp4",
 		400907 = "res/spine_video/400907.mp4",
+		400908 = "res/spine_video/400908.mp4",
 		401004 = "res/spine_video/401004.mp4",
 		401105 = "res/spine_video/401105.mp4",
 		401305 = "res/spine_video/401305.mp4",
@@ -940,6 +943,7 @@ declare namespace ResPath {
 	}
 
 	enum ETexturePath {
+		PNG_Img_4140 = "res/texture/img_4140.png",
 		PNG_Img_4188 = "res/texture/img_4188.png",
 		PNG_Img_4209 = "res/texture/img_4209.png",
 		JPG_Background = "res/texture/background.jpg",

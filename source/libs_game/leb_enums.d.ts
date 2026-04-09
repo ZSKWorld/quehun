@@ -326,6 +326,9 @@ declare enum EUserEvent {
 	OnMailChanged = "EUserEvent_OnMailChanged",
 	//#endregion
 
+	//#region 公告相关
+	OnAnnouncementChanged = "EUserEvent_OnAnnouncementChanged",
+	//#endregion
 
 	//#region 好友相关
 	OnFriendsChanged = "EUserEvent_OnFriendsChanged",

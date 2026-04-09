@@ -19,8 +19,11 @@ declare namespace fgui {
 		addComponent<T extends Laya.Component>(componentType: Class<T>): T;
 		getComponent<T extends Laya.Component>(componentType: Class<T>): T;
 		getComponents<T extends Laya.Component>(componentType: Class<T>): T[];
+
 		event(type: string, data?: any): boolean;
+		on(type: string, caller: any, listener: Function, args?: any[]): Laya.EventDispatcher;
 		once(type: string, caller: any, listener: Function, args?: any[]): Laya.EventDispatcher;
+		off(type: string, caller: any, listener?: Function): Laya.EventDispatcher;
 		offAll(type?: string): Laya.EventDispatcher;
 		offAllCaller(caller: any): Laya.EventDispatcher;
 	}

@@ -149,7 +149,7 @@ export class GameUtil extends Singleton<GameUtil>() implements IGameUtil {
 		return zoneId1 == zoneId2;
 	}
 
-	getPlayerPlayingInfo(data: { is_online: boolean; playing: IAccountPlayingGame; logout_time: number }) {
+	getPlayerPlayingInfo(data: { is_online: boolean; playing: IAccountPlayingGame; logout_time: number; }) {
 		const info = { color: "", text: "" };
 		if (data.is_online) {
 			const gamingName = this.getGamingName(data.playing);
@@ -186,5 +186,13 @@ export class GameUtil extends Singleton<GameUtil>() implements IGameUtil {
 		if (data.category == 4)
 			return $lang(2025);
 		return "";
+	}
+
+	openHref(url: string, openNew = true) {
+		url = url.replace(/&amp;/g, '&');
+		if (openNew)
+			window.open(url, "_blank");
+		else
+			window.location.href = url;
 	}
 }

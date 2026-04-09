@@ -1677,6 +1677,15 @@
     <image id="ojz47ploko" name="公告.jpg" path="/公告/"/>
     <image id="ojz47plokp" name="img_4140.png" path="/公告/"/>
     <image id="ojz47plokq" name="公告2.jpg" path="/公告/"/>
+    <image id="djs37plokr" name="1.jpg" path="/公告/info/"/>
+    <image id="djs37ploks" name="101.jpg" path="/公告/info/"/>
+    <image id="djs37plokt" name="102.jpg" path="/公告/info/"/>
+    <image id="djs37ploku" name="2.jpg" path="/公告/info/"/>
+    <image id="djs37plokv" name="3.jpg" path="/公告/info/"/>
+    <image id="djs37plokw" name="4.jpg" path="/公告/info/"/>
+    <image id="djs37plokx" name="5.jpg" path="/公告/info/"/>
+    <image id="djs37ploky" name="6.jpg" path="/公告/info/"/>
+    <image id="djs37plokz" name="7.jpg" path="/公告/info/"/>
   </resources>
   <publish name=""/>
 </packageDescription>

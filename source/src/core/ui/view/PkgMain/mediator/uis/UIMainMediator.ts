@@ -84,6 +84,6 @@ export class UIMainMediator extends MediatorBase<UIMainView, IUIMainData> {
 	}
 
 	private onBtnAnnouncementClick() {
-
+		this.openView(EViewID.UIAnnouncementView);
 	}
 }

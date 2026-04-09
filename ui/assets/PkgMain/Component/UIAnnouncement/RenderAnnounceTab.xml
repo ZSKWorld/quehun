@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="410,115" extention="Button" designImage="ui://ca43vz0eojz47plokq" designImageOffsetX="-268" designImageOffsetY="-405" designImageAlpha="0">
+  <controller name="button" exported="true" pages="0,up,1,down" selected="0"/>
+  <displayList>
+    <loader id="n8_ojz4" name="n8" xy="0,5" size="410,110" url="ui://vith2b66ojz4obh7" fill="scaleFree">
+      <gearIcon controller="button" pages="0" values="ui://vith2b66ojz4obh7" default="ui://vith2b66ojz4obh8"/>
+    </loader>
+    <loader id="n9_80pi" name="icon" xy="0,0" size="56,42" url="ui://vith2b66rpakobf3"/>
+    <text id="n10_80pi" name="title" xy="44,17" pivot="0.5,0.5" size="320,86" font="SimHei" fontSize="30" color="#d7d3d1" vAlign="middle" leading="0" autoSize="shrink" text="2026年3月25日 雀魂麻将更新公告"/>
+  </displayList>
+  <Button mode="Check"/>
+</component>

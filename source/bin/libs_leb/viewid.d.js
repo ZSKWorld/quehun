@@ -47,6 +47,8 @@ EViewID = {
 	ComRedDot1View: "ComRedDot1View",
 	ComTipInfoView: "ComTipInfoView",
 	ComTitleView: "ComTitleView",
+	ComAnnounceContentView: "ComAnnounceContentView",
+	ComAnnounceLeftView: "ComAnnounceLeftView",
 	ComBagDecoView: "ComBagDecoView",
 	ComBagGiftView: "ComBagGiftView",
 	ComBagIllustView: "ComBagIllustView",

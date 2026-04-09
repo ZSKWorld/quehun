@@ -1,8 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="415,714" mask="n10_ojz4" designImage="ui://ca43vz0eojz47plokq" designImageOffsetX="-265" designImageOffsetY="-225" designImageAlpha="93">
+<component size="410,710" mask="n10_ojz4" designImage="ui://ca43vz0eojz47plokq" designImageOffsetX="-268" designImageOffsetY="-225" designImageAlpha="0">
+  <controller name="type" exported="true" pages="0,,1," selected="1"/>
   <displayList>
-    <image id="n8_ojz4" name="n8" src="ojz4obh8" fileName="Texture/img_3494.png" xy="269,229"/>
-    <image id="n9_ojz4" name="n9" src="ojz4obh7" fileName="Texture/img_3493.png" xy="263,354"/>
-    <image id="n10_ojz4" name="n10" src="ojz4obh9" fileName="Texture/img_1355.png" xy="-1,-1" size="415,714"/>
+    <image id="n10_ojz4" name="n10" src="ojz4obh9" fileName="Texture/img_1355.png" xy="0,0" size="410,710"/>
+    <list id="n11_80pi" name="tab" xy="0,0" size="410,710" overflow="scroll" defaultItem="ui://vith2b66jmhgobhb" autoClearItems="true">
+      <gearDisplay controller="type" pages="1"/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+    </list>
+    <text id="n12_wu0d" name="empty" xy="14,331" pivot="0.5,0.5" size="381,48" fontSize="35" color="#eac18b" align="center" autoSize="shrink" text="正在读取公告...">
+      <gearDisplay controller="type" pages="0"/>
+    </text>
   </displayList>
 </component>

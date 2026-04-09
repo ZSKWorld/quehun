@@ -96,7 +96,7 @@ export class UserData extends BaseVO implements VO.IUserDataVO {
 		res.account_settings && $facade.dispatch(ENetMessage.fetchAccountSettings, res.account_settings);
 		res.mod_nickname_time && $facade.dispatch(ENetMessage.fetchModNicknameTime, res.mod_nickname_time);
 		res.misc && $facade.dispatch(ENetMessage.fetchMisc, res.misc);
-		res.announcement && $facade.dispatch(ENetMessage.fetchAnnouncement, res.announcement);
+		// res.announcement && $facade.dispatch(ENetMessage.fetchAnnouncement, res.announcement);
 		res.activity_list && $facade.dispatch(ENetMessage.fetchActivityList, res.activity_list);
 		res.character_info && $facade.dispatch(ENetMessage.fetchCharacterInfo, res.character_info);
 		res.all_common_views && $facade.dispatch(ENetMessage.fetchAllCommonViews, res.all_common_views);

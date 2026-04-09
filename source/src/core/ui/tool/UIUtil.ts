@@ -136,4 +136,18 @@ export class UIUtil extends Singleton<UIUtil>() implements IUIUtil {
 			ctrl_star && (ctrl_star.selectedIndex = secondary_level);
 		}
 	}
+
+	parseUBBText(str: string, hrefColor = "#51f1ff") {
+		if (!str) return str;
+		return str
+			.replace(/&/g, '&amp;')
+			.replace(/\"/g, "&quot;")
+			.replace(/\n/g, "<br/>")
+			.replace(/<b>/g, "[b]")
+			.replace(/<\/b>/g, "[/b]")
+			.replace(/<color=(#\w+)>/g, "[color=$1]")
+			.replace(/<\/color>/g, "[/color]")
+			.replace(/<href=(.+?)>/g, `[color=${ hrefColor }][url=$1]`)
+			.replace(/<\/href>/g, "[/url][/color]");
+	}
 }

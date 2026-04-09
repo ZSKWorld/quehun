@@ -9,7 +9,8 @@ export class AnnouncementVO extends BaseVO implements VO.IAnnouncementVO {
 	}
 	private get platform() { return $gameMgr.inDmm ? 'web_dmm' : 'web'; }
 	get announcements() { return this._announcements; }
-	get readList() { return this._readList; }
+
+	isRead(id: number) { return this._readList.indexOf(id) != -1; }
 
 	fetchAnnouncement() {
 		$netMgr.requests.fetchAnnouncement({
@@ -23,6 +24,7 @@ export class AnnouncementVO extends BaseVO implements VO.IAnnouncementVO {
 		const decodeRes = $decodeProtoData(res);
 		this._announcements = decodeRes.announcements;
 		this._readList = decodeRes.read_list;
+		this.dispatch(EUserEvent.OnAnnouncementChanged);
 	}
 
 	@InterestMessage(ENetNotify.NotifyAnnouncementUpdate)

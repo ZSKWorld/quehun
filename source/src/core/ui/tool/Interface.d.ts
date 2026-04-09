@@ -97,4 +97,5 @@ declare interface IUIUtil {
 		txt_htLevel?: fgui.GTextField,
 		txt_htScore?: fgui.GTextField,
 	}, data: IAccountLevel): void;
+	parseUBBText(str: string, hrefColor?: string): string;
 }

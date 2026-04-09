@@ -212,6 +212,12 @@ declare interface IGameUtil {
 	getPlayerPlayingInfo(data: { is_online: boolean; playing: IAccountPlayingGame; logout_time: number; }): { color: string, text: string; };
 	/** 获取玩家是否在游戏中 */
 	getPlayerInGaming(data: IAccountPlayingGame): boolean;
+	/**
+	 * 打开链接
+	 * @param url 链接地址
+	 * @param openNew 是否打开新窗口，默认true
+	 */
+	openHref(url: string, openNew?: boolean): void;
 }
 
 declare interface ITimeUtil {

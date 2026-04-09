@@ -45,6 +45,8 @@ import { ComRedDot1View } from "../core/ui/view/PkgCommon/view/coms/ComRedDot1Vi
 import { ComTipInfoView } from "../core/ui/view/PkgCommon/view/coms/ComTipInfoView";
 import { ComTipInfoMediator } from "../core/ui/view/PkgCommon/mediator/coms/ComTipInfoMediator";
 import { ComTitleView } from "../core/ui/view/PkgCommon/view/coms/ComTitleView";
+import { ComAnnounceContentView } from "../core/ui/view/PkgMain/view/coms/ComAnnounceContentView";
+import { ComAnnounceLeftView } from "../core/ui/view/PkgMain/view/coms/ComAnnounceLeftView";
 import { ComBagDecoView } from "../core/ui/view/PkgMain/view/coms/ComBagDecoView";
 import { ComBagGiftView } from "../core/ui/view/PkgMain/view/coms/ComBagGiftView";
 import { ComBagIllustView } from "../core/ui/view/PkgMain/view/coms/ComBagIllustView";
@@ -172,6 +174,8 @@ export class InitViewCommand extends Command {
 		register(EViewID.ComRedDot1View, EViewType.Component, ComRedDot1View);
 		register(EViewID.ComTipInfoView, EViewType.Component, ComTipInfoView, ComTipInfoMediator);
 		register(EViewID.ComTitleView, EViewType.Component, ComTitleView);
+		register(EViewID.ComAnnounceContentView, EViewType.Component, ComAnnounceContentView);
+		register(EViewID.ComAnnounceLeftView, EViewType.Component, ComAnnounceLeftView);
 		register(EViewID.ComBagDecoView, EViewType.Component, ComBagDecoView);
 		register(EViewID.ComBagGiftView, EViewType.Component, ComBagGiftView);
 		register(EViewID.ComBagIllustView, EViewType.Component, ComBagIllustView);

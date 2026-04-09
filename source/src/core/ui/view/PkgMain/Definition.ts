@@ -32,3 +32,7 @@ export const enum EUIShopTabType {
 	/** 福袋屋 */
 	FDW,
 }
+
+export const enum EUIAnnounceEvent {
+	OnTabSelectChanged = "EUIAnnounceEvent_OnTabSelectChanged",
+}

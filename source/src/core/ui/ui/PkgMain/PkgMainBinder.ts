@@ -28,6 +28,7 @@ import UIHelp from "./UIHelp";
 import UICamera from "./UICamera";
 import UIAchievement from "./UIAchievement";
 import BtnBagSkinCheck from "./BtnBagSkinCheck";
+import ComAnnounceLeft from "./ComAnnounceLeft";
 import BtnMailTab from "./BtnMailTab";
 import RenderFriendFriend from "./RenderFriendFriend";
 import RenderFriendApply from "./RenderFriendApply";
@@ -48,6 +49,7 @@ import UIMain from "./UIMain";
 import BtnXunMi from "./BtnXunMi";
 import BtnDengLong from "./BtnDengLong";
 import ComMatchMode from "./ComMatchMode";
+import ComAnnounceContent from "./ComAnnounceContent";
 import ComMatchContent from "./ComMatchContent";
 import { UILiaoSheView } from "../../view/PkgMain/view/uis/UILiaoSheView";
 import { UIRechargeView } from "../../view/PkgMain/view/uis/UIRechargeView";
@@ -77,6 +79,7 @@ import { UIHelpView } from "../../view/PkgMain/view/uis/UIHelpView";
 import { UICameraView } from "../../view/PkgMain/view/uis/UICameraView";
 import { UIAchievementView } from "../../view/PkgMain/view/uis/UIAchievementView";
 import { BtnBagSkinCheckView } from "../../view/PkgMain/view/btns/BtnBagSkinCheckView";
+import { ComAnnounceLeftView } from "../../view/PkgMain/view/coms/ComAnnounceLeftView";
 import { BtnMailTabView } from "../../view/PkgMain/view/btns/BtnMailTabView";
 import { RenderFriendFriendView } from "../../view/PkgMain/view/renders/RenderFriendFriendView";
 import { RenderFriendApplyView } from "../../view/PkgMain/view/renders/RenderFriendApplyView";
@@ -97,6 +100,7 @@ import { UIMainView } from "../../view/PkgMain/view/uis/UIMainView";
 import { BtnXunMiView } from "../../view/PkgMain/view/btns/BtnXunMiView";
 import { BtnDengLongView } from "../../view/PkgMain/view/btns/BtnDengLongView";
 import { ComMatchModeView } from "../../view/PkgMain/view/coms/ComMatchModeView";
+import { ComAnnounceContentView } from "../../view/PkgMain/view/coms/ComAnnounceContentView";
 import { ComMatchContentView } from "../../view/PkgMain/view/coms/ComMatchContentView";
 
 export default class PkgMainBinder {
@@ -129,6 +133,7 @@ export default class PkgMainBinder {
 		fgui.UIObjectFactory.setExtension(UICamera.url, UICameraView);
 		fgui.UIObjectFactory.setExtension(UIAchievement.url, UIAchievementView);
 		fgui.UIObjectFactory.setExtension(BtnBagSkinCheck.url, BtnBagSkinCheckView);
+		fgui.UIObjectFactory.setExtension(ComAnnounceLeft.url, ComAnnounceLeftView);
 		fgui.UIObjectFactory.setExtension(BtnMailTab.url, BtnMailTabView);
 		fgui.UIObjectFactory.setExtension(RenderFriendFriend.url, RenderFriendFriendView);
 		fgui.UIObjectFactory.setExtension(RenderFriendApply.url, RenderFriendApplyView);
@@ -149,6 +154,7 @@ export default class PkgMainBinder {
 		fgui.UIObjectFactory.setExtension(BtnXunMi.url, BtnXunMiView);
 		fgui.UIObjectFactory.setExtension(BtnDengLong.url, BtnDengLongView);
 		fgui.UIObjectFactory.setExtension(ComMatchMode.url, ComMatchModeView);
+		fgui.UIObjectFactory.setExtension(ComAnnounceContent.url, ComAnnounceContentView);
 		fgui.UIObjectFactory.setExtension(ComMatchContent.url, ComMatchContentView);
 	}
 }

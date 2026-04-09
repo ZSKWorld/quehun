@@ -58,9 +58,15 @@ export class FGUIExtend {
 		prototype.event = function (type: string, data?: any) {
 			return this._displayObject.event(type, data);
 		};
+		prototype.on = function (type: string, caller: any, listener: Function, args?: any[]) {
+			return this._displayObject.on(type, caller, listener, args);
+		}
 		prototype.once = function (type: string, caller: any, listener: Function, args?: any[]) {
 			return this._displayObject.once(type, caller, listener, args);
 		};
+		prototype.off = function (type: string, caller: any, listener?: Function) {
+			return this._displayObject.off(type, caller, listener);
+		}
 		prototype.offAll = function (type?: string) {
 			return this._displayObject.offAll(type);
 		};

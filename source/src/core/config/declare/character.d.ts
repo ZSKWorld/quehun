@@ -205,6 +205,7 @@ declare interface ISheet_Character_Skin {
 	400508: ISheetData_Character_Skin;
 	400709: ISheetData_Character_Skin;
 	400907: ISheetData_Character_Skin;
+	400908: ISheetData_Character_Skin;
 	401709: ISheetData_Character_Skin;
 	401906: ISheetData_Character_Skin;
 	401907: ISheetData_Character_Skin;

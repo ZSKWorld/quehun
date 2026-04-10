@@ -88,8 +88,6 @@ declare namespace ResPath {
 		Youyuan = "res/font/youyuan.ttf",
 	}
 
-	enum EScenePath { }
-
 	enum ESkeletonPath {
 		Bianhua = "res/skeleton/bianhua.sk",
 		Biaoqing = "res/skeleton/biaoqing.sk",
@@ -883,6 +881,10 @@ declare namespace ResPath {
 		40011103 = "res/spine_video/40011103.mp4",
 		40011201 = "res/spine_video/40011201.mp4",
 		40011203 = "res/spine_video/40011203.mp4",
+		40012203 = "res/spine_video/40012203.mp4",
+		40012303 = "res/spine_video/40012303.mp4",
+		40012403 = "res/spine_video/40012403.mp4",
+		40012503 = "res/spine_video/40012503.mp4",
 		400305 = "res/spine_video/400305.mp4",
 		400306 = "res/spine_video/400306.mp4",
 		400406 = "res/spine_video/400406.mp4",

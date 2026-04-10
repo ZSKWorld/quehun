@@ -15,6 +15,16 @@ declare interface ITable_Mmo {
 	mmo_level: CfgExtGroup<ISheet_Mmo_MmoLevel>;
 	/** mmonpc  ---  group */
 	mmo_npc: CfgExtGroup<ISheet_Mmo_MmoNpc>;
+	/** mmo-buff-保底机制  ---  group */
+	mmo_buff_banned: CfgExtGroup<ISheet_Mmo_MmoBuffBanned>;
+	/** mmo-buff-掉落升级机制  ---  group */
+	mmo_buff_replace: CfgExtGroup<ISheet_Mmo_MmoBuffReplace>;
+	/** mmo支援奖励  ---  group */
+	mmo_support: CfgExtGroup<ISheet_Mmo_MmoSupport>;
+	/** mmo各武器动画tick  ---  group */
+	mmo_weapon_type: CfgExtGroup<ISheet_Mmo_MmoWeaponType>;
+	/** mmo天赋战力  ---  group */
+	mmo_team_talent: CfgExtGroup<ISheet_Mmo_MmoTeamTalent>;
 }
 
 //#region mmo_activity
@@ -31,6 +41,14 @@ declare interface ISheetData_Mmo_MmoActivity {
 	random_equipment_count: number;
 	/** 指定合成需要的装备数量 */
 	appoint_equipment_count: number;
+	/** 初始关卡id */
+	initial_level_id: number;
+	/** 成功后几秒下一关 */
+	next_level_time: number;
+	/** 1秒多少tick */
+	tick: number;
+	/** 倒计时小于多少tick变红 */
+	total_tick_red: number;
 }
 //#endregion
 
@@ -48,12 +66,12 @@ declare interface ISheetData_Mmo_MmoCharacter {
 	hp: number;
 	/** 攻击力 */
 	atk: number;
-	/** 暴击率 */
+	/** 暴击率% */
 	critical_rate: number;
-	/** 暴击倍率 */
+	/** 暴击倍率% */
 	critical_damage: number;
-	/** 行动时间 */
-	action_tick: number;
+	/** 仇恨权重，优先攻击权重高的 */
+	aggro: number;
 	/** 行动顺序 */
 	action_seq: number;
 	/** 专武类型 */
@@ -83,13 +101,11 @@ declare interface ISheetData_Mmo_MmoEnemy {
 	hp: number;
 	/** 攻击力 */
 	atk: number;
-	/** 暴击率 */
+	/** 暴击率% */
 	critical_rate: number;
-	/** 暴击倍率 */
+	/** 暴击倍率% */
 	critical_damage: number;
-	/** 行动时间 */
-	action_tick: number;
-	/** 行动顺序，数字越小越先动 */
+	/** 行动顺序 */
 	action_seq: number;
 	/** 装备列表 */
 	equipment_list: string;
@@ -110,6 +126,8 @@ declare interface ISheetData_Mmo_MmoEquipment {
 	item_id: number;
 	/** 装备类型 */
 	type: number;
+	/** 武器类型 */
+	weapon_type_id: number;
 	/** 稀有度 */
 	rarity: number;
 	/** 攻击加固定值 */
@@ -133,7 +151,7 @@ declare interface ISheetData_Mmo_MmoEquipment {
 	/** 战力值 */
 	power: number;
 	/** 皮肤部件前缀名 */
-	attachment_pre_name: string;
+	attachment_pre_name: string[];
 }
 //#endregion
 
@@ -184,6 +202,8 @@ declare interface ISheetData_Mmo_MmoLevel {
 	team_max_count: number;
 	/** 背景素材 */
 	background: string;
+	/** 推荐战力 */
+	recommend_power: number;
 }
 //#endregion
 
@@ -205,5 +225,113 @@ declare interface ISheetData_Mmo_MmoNpc {
 	accessible_days: string;
 	/** npc名称,str/event */
 	npc_name: number;
+}
+//#endregion
+
+//#region mmo_buff_banned
+declare interface ISheet_Mmo_MmoBuffBanned {
+	[key: string]: ISheetData_Mmo_MmoBuffBanned[];
+	101: ISheetData_Mmo_MmoBuffBanned[];
+	102: ISheetData_Mmo_MmoBuffBanned[];
+}
+declare interface ISheetData_Mmo_MmoBuffBanned {
+	id: number;
+	/** 禁用的稀有度 */
+	ban_rare: number;
+}
+//#endregion
+
+//#region mmo_buff_replace
+declare interface ISheet_Mmo_MmoBuffReplace {
+	[key: string]: ISheetData_Mmo_MmoBuffReplace[];
+	1001: ISheetData_Mmo_MmoBuffReplace[];
+}
+declare interface ISheetData_Mmo_MmoBuffReplace {
+	id: number;
+	/** 从物品id */
+	item_id: number;
+	/** 替换为物品id */
+	replace_id: number;
+}
+//#endregion
+
+//#region mmo_support
+declare interface ISheet_Mmo_MmoSupport {
+	[key: string]: ISheetData_Mmo_MmoSupport[];
+	260401: ISheetData_Mmo_MmoSupport[];
+}
+declare interface ISheetData_Mmo_MmoSupport {
+	/** 活动id */
+	activity_id: number;
+	/** 支援数下限，闭区间 */
+	support_count_range: number[];
+	/** 奖励 */
+	reward: string;
+}
+//#endregion
+
+//#region mmo_weapon_type
+declare interface ISheet_Mmo_MmoWeaponType {
+	[key: string]: ISheetData_Mmo_MmoWeaponType[];
+	260401: ISheetData_Mmo_MmoWeaponType[];
+}
+declare interface ISheetData_Mmo_MmoWeaponType {
+	/** 活动id */
+	activity_id: number;
+	/** 武器类型 */
+	weapon_type_id: number;
+	/** 攻击动画 */
+	attack_tick: number;
+	/** 攻击后摇 */
+	attack_recovery_tick: number;
+	/** 受击动画 */
+	hit_tick: number;
+	/** 移动动画 */
+	move_tick: number;
+	/** 移动回程动画 */
+	back_tick: number;
+	/** 治疗动画 */
+	cure_tick: number;
+	/** 治疗后摇 */
+	cure_recovery_tick: number;
+	/** 动画种类 */
+	anim_type: number;
+	/** 处理手持类型 */
+	hand_type: number;
+	/** 是否是反击攻击 */
+	counter_attack: number;
+	/** 攻击距离，0近战，1远程 */
+	attack_distance: number;
+	/** attack2目标挂点 */
+	attack2_target: number;
+	/** attack2攻击delay */
+	attack2_tick: number;
+	/** 受击位置 */
+	hit_effect_param: string;
+	/** 死亡特效 */
+	die_effect_param: string;
+	/** 死亡动画 */
+	die_tick: number;
+	/** spine名字 */
+	res_name: string;
+}
+//#endregion
+
+//#region mmo_team_talent
+declare interface ISheet_Mmo_MmoTeamTalent {
+	[key: string]: ISheetData_Mmo_MmoTeamTalent[];
+	260404: ISheetData_Mmo_MmoTeamTalent[];
+}
+declare interface ISheetData_Mmo_MmoTeamTalent {
+	/** 活动id */
+	activity_id: number;
+	/** buffid */
+	buff_id: number;
+	/** buff等级 */
+	buff_level: number;
+	/** 武器类型id */
+	weapon_type_id: string;
+	/** 战力值 */
+	power: number;
 }
 //#endregion

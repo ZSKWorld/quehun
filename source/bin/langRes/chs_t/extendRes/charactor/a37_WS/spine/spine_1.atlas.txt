@@ -1,6 +1,0 @@
-a37_front.png
-size:119,73
-filter:Linear,Linear
-scale:0.8
-beijing_2611
-bounds:2,2,115,69

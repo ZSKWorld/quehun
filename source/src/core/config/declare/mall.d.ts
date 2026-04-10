@@ -15,6 +15,8 @@ declare interface ITable_Mall {
 	channel_config: CfgExt<ISheet_Mall_ChannelConfig>;
 	/** 各服月卡统一的发放内容  ---  unique */
 	month_ticket_info: CfgExt<ISheet_Mall_MonthTicketInfo>;
+	/** 首充双倍区间  ---  group */
+	recharge_bonus: CfgExtGroup<ISheet_Mall_RechargeBonus>;
 }
 
 //#region goods
@@ -186,6 +188,10 @@ declare interface ISheet_Mall_Product {
 	91: ISheetData_Mall_Product[];
 	92: ISheetData_Mall_Product[];
 	93: ISheetData_Mall_Product[];
+	94: ISheetData_Mall_Product[];
+	95: ISheetData_Mall_Product[];
+	96: ISheetData_Mall_Product[];
+	97: ISheetData_Mall_Product[];
 }
 declare interface ISheetData_Mall_Product {
 	/** 支付平台 */
@@ -317,16 +323,19 @@ declare interface ISheet_Mall_ChannelConfig {
 	302: ISheetData_Mall_ChannelConfig;
 	303: ISheetData_Mall_ChannelConfig;
 	304: ISheetData_Mall_ChannelConfig;
+	305: ISheetData_Mall_ChannelConfig;
 	400: ISheetData_Mall_ChannelConfig;
 	401: ISheetData_Mall_ChannelConfig;
 	402: ISheetData_Mall_ChannelConfig;
 	403: ISheetData_Mall_ChannelConfig;
 	404: ISheetData_Mall_ChannelConfig;
 	405: ISheetData_Mall_ChannelConfig;
+	406: ISheetData_Mall_ChannelConfig;
 	500: ISheetData_Mall_ChannelConfig;
 	501: ISheetData_Mall_ChannelConfig;
 	502: ISheetData_Mall_ChannelConfig;
 	503: ISheetData_Mall_ChannelConfig;
+	504: ISheetData_Mall_ChannelConfig;
 }
 declare interface ISheetData_Mall_ChannelConfig {
 	/** 渠道ID */
@@ -357,5 +366,18 @@ declare interface ISheet_Mall_MonthTicketInfo {
 }
 declare interface ISheetData_Mall_MonthTicketInfo {
 	id: number;
+}
+//#endregion
+
+//#region recharge_bonus
+declare interface ISheet_Mall_RechargeBonus {
+	[key: string]: ISheetData_Mall_RechargeBonus[];
+	1: ISheetData_Mall_RechargeBonus[];
+	2: ISheetData_Mall_RechargeBonus[];
+	3: ISheetData_Mall_RechargeBonus[];
+}
+declare interface ISheetData_Mall_RechargeBonus {
+	zone_id: number;
+	reset_time: string;
 }
 //#endregion

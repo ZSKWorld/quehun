@@ -502,6 +502,7 @@ declare interface ISheet_Achievement_Achievement {
 	100492: ISheetData_Achievement_Achievement;
 	100493: ISheetData_Achievement_Achievement;
 	100494: ISheetData_Achievement_Achievement;
+	100495: ISheetData_Achievement_Achievement;
 	800011: ISheetData_Achievement_Achievement;
 	800012: ISheetData_Achievement_Achievement;
 	800013: ISheetData_Achievement_Achievement;

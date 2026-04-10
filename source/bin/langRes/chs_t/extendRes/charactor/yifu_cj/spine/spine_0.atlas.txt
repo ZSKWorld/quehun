@@ -1,6 +1,0 @@
-yifu_cj_1.png
-size:1004,1004
-filter:Linear,Linear
-scale:0.5
-bg
-bounds:2,2,1000,1000

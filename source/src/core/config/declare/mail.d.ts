@@ -45,10 +45,15 @@ declare interface ISheet_Mail_MailTemplate {
 	135: ISheetData_Mail_MailTemplate;
 	136: ISheetData_Mail_MailTemplate;
 	137: ISheetData_Mail_MailTemplate;
+	138: ISheetData_Mail_MailTemplate;
+	139: ISheetData_Mail_MailTemplate;
+	140: ISheetData_Mail_MailTemplate;
 	10001: ISheetData_Mail_MailTemplate;
 	10002: ISheetData_Mail_MailTemplate;
 	10003: ISheetData_Mail_MailTemplate;
 	10004: ISheetData_Mail_MailTemplate;
+	10005: ISheetData_Mail_MailTemplate;
+	10006: ISheetData_Mail_MailTemplate;
 }
 declare interface ISheetData_Mail_MailTemplate {
 	/** 邮件模板ID */

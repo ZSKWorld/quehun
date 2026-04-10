@@ -33,6 +33,7 @@ declare interface ISheet_Spot_Spot {
 	200016: ISheetData_Spot_Spot[];
 	200017: ISheetData_Spot_Spot[];
 	200018: ISheetData_Spot_Spot[];
+	200019: ISheetData_Spot_Spot[];
 	200020: ISheetData_Spot_Spot[];
 	200021: ISheetData_Spot_Spot[];
 	200022: ISheetData_Spot_Spot[];
@@ -190,6 +191,13 @@ declare interface ISheet_Spot_Rewards {
 	1800053: ISheetData_Spot_Rewards;
 	1800061: ISheetData_Spot_Rewards;
 	1800062: ISheetData_Spot_Rewards;
+	1900041: ISheetData_Spot_Rewards;
+	1900042: ISheetData_Spot_Rewards;
+	1900051: ISheetData_Spot_Rewards;
+	1900052: ISheetData_Spot_Rewards;
+	1900061: ISheetData_Spot_Rewards;
+	1900062: ISheetData_Spot_Rewards;
+	1900063: ISheetData_Spot_Rewards;
 	2000041: ISheetData_Spot_Rewards;
 	2000042: ISheetData_Spot_Rewards;
 	2000051: ISheetData_Spot_Rewards;
@@ -325,6 +333,11 @@ declare interface ISheet_Spot_CharacterSpot {
 	20000104: ISheetData_Spot_CharacterSpot;
 	20000105: ISheetData_Spot_CharacterSpot;
 	20000121: ISheetData_Spot_CharacterSpot;
+	20009993: ISheetData_Spot_CharacterSpot;
+	20009994: ISheetData_Spot_CharacterSpot;
+	20009995: ISheetData_Spot_CharacterSpot;
+	20009996: ISheetData_Spot_CharacterSpot;
+	20009997: ISheetData_Spot_CharacterSpot;
 	20009998: ISheetData_Spot_CharacterSpot;
 	20009999: ISheetData_Spot_CharacterSpot;
 }
@@ -452,6 +465,11 @@ declare interface ISheet_Spot_SkinSpot {
 	40010501: ISheetData_Spot_SkinSpot;
 	40011499: ISheetData_Spot_SkinSpot;
 	40012101: ISheetData_Spot_SkinSpot;
+	40999301: ISheetData_Spot_SkinSpot;
+	40999401: ISheetData_Spot_SkinSpot;
+	40999501: ISheetData_Spot_SkinSpot;
+	40999601: ISheetData_Spot_SkinSpot;
+	40999701: ISheetData_Spot_SkinSpot;
 	40999801: ISheetData_Spot_SkinSpot;
 	40999901: ISheetData_Spot_SkinSpot;
 }
@@ -657,6 +675,8 @@ declare interface ISheet_Spot_AudioSpot {
 	6005: ISheetData_Spot_AudioSpot;
 	6006: ISheetData_Spot_AudioSpot;
 	6007: ISheetData_Spot_AudioSpot;
+	6008: ISheetData_Spot_AudioSpot;
+	6009: ISheetData_Spot_AudioSpot;
 	10001: ISheetData_Spot_AudioSpot;
 	10002: ISheetData_Spot_AudioSpot;
 	10003: ISheetData_Spot_AudioSpot;

@@ -1,0 +1,17 @@
+enemy_01.png
+size:384,268
+filter:Linear,Linear
+lsm1
+bounds:261,20,40,51
+lsm2
+bounds:290,73,64,52
+lsm3
+bounds:2,83,207,180
+lsm4
+bounds:211,101,77,24
+lsm5
+bounds:211,127,136,171
+rotate:90
+yy
+bounds:2,2,257,79
+offsets:4,3,264,85

@@ -5,7 +5,7 @@ scale:0.4
 Eff_shiziguang
 bounds:62,1847,51,51
 bg_3
-bounds:1808,435,240,234
+bounds:1808,434,240,234
 rotate:90
 bg_5
 bounds:405,1099,156,158
@@ -19,7 +19,7 @@ bg_8
 bounds:292,459,267,219
 offsets:0,1,268,220
 bg_9
-bounds:1584,191,242,356
+bounds:1584,190,242,356
 offsets:0,2,242,358
 rotate:90
 face_fennu
@@ -38,7 +38,7 @@ bounds:565,1087,156,159
 offsets:0,7,156,166
 rotate:90
 n_bg_9
-bounds:1112,100,242,356
+bounds:1112,99,242,356
 offsets:0,2,242,358
 rotate:90
 n_san_2
@@ -87,7 +87,7 @@ bounds:362,680,194,358
 offsets:19,134,213,561
 rotate:90
 n_x_zhanli_3
-bounds:1805,1388,108,234
+bounds:1805,1387,108,234
 offsets:0,0,113,234
 rotate:90
 n_x_zhanli_chengshou2_12
@@ -136,7 +136,7 @@ bounds:1271,1740,72,72
 paxiawangzi1
 bounds:397,1837,59,52
 san_2
-bounds:1784,1270,210,116
+bounds:1784,1269,210,116
 san_3
 bounds:1386,1431,266,103
 san_4
@@ -263,7 +263,7 @@ shinai_144
 bounds:794,1931,36,87
 rotate:90
 shinai_145
-bounds:1671,964,166,190
+bounds:1671,963,166,190
 offsets:0,8,168,198
 rotate:90
 shinai_146
@@ -352,7 +352,7 @@ shinai_33
 bounds:268,2027,10,64
 rotate:90
 shinai_34
-bounds:1743,1132,147,136
+bounds:1743,1131,147,136
 offsets:7,0,155,136
 shinai_35
 bounds:515,2026,11,53
@@ -365,7 +365,7 @@ bounds:2,2,206,858
 offsets:0,13,206,873
 rotate:90
 shinai_47
-bounds:1193,344,221,389
+bounds:1193,343,221,389
 rotate:90
 shinai_48
 bounds:1557,1993,24,104
@@ -505,7 +505,7 @@ rotate:90
 shinai_uii_1
 bounds:256,1700,81,81
 shinai_uii_3
-bounds:1829,677,252,200
+bounds:1829,676,252,200
 offsets:3,2,257,204
 rotate:90
 shinai_uii_4
@@ -786,14 +786,14 @@ bounds:824,1766,126,62
 x_shinai_119_2
 bounds:1230,1198,154,126
 x_shinai_119_3
-bounds:1892,1123,153,145
+bounds:1892,1122,153,145
 offsets:0,0,159,145
 x_shinai_119_4
 bounds:1654,1417,112,149
 offsets:0,0,115,149
 rotate:90
 x_shinai_145
-bounds:1863,931,166,190
+bounds:1863,930,166,190
 offsets:0,8,168,198
 x_shinai_157_1
 bounds:1410,1813,55,177
@@ -828,7 +828,7 @@ x_shinai_28_1
 bounds:1821,1865,46,157
 rotate:90
 x_shinai_37
-bounds:1469,769,193,358
+bounds:1469,768,193,358
 offsets:20,134,213,561
 rotate:90
 x_shinai_37_1
@@ -961,11 +961,10 @@ bounds:1269,1649,86,187
 offsets:4,2,90,192
 rotate:90
 x_zhanli_chengshou_8
-bounds:1816,1498,102,212
-offsets:0,0,103,212
+bounds:1816,1497,103,212
 rotate:90
 x_zhanlijiao1
-bounds:1317,567,200,489
+bounds:1317,566,200,489
 offsets:22,19,242,526
 rotate:90
 x_zhanlijiao2

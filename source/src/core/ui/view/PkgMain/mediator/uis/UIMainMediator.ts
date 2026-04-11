@@ -56,7 +56,7 @@ export class UIMainMediator extends MediatorBase<UIMainView, IUIMainData> {
 	}
 
 	private onBtnHelpClick() {
-
+		this.openView(EViewID.UIHelpView);
 	}
 
 	private onBtnGuideClick() {

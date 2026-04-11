@@ -266,6 +266,7 @@
     <image id="ziglobgb" name="img_172.png" path="/Texture/" exported="true" scale="9grid" scale9grid="3,3,6,6"/>
     <image id="wu0dobgc" name="img_1170.png" path="/Texture/" exported="true" scale9grid="0,1,31,1"/>
     <component id="5zjlobgd" name="UITest.xml" path="/" exported="true"/>
+    <image id="ii8iobge" name="img_1725.png" path="/Texture/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

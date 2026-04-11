@@ -216,6 +216,9 @@
     <component id="ojz4obha" name="ComAnnounceLeft.xml" path="/Component/UIAnnouncement/"/>
     <component id="jmhgobhb" name="RenderAnnounceTab.xml" path="/Component/UIAnnouncement/"/>
     <component id="wu0dobhd" name="ComAnnounceContent.xml" path="/Component/UIAnnouncement/"/>
+    <component id="ii8iobhe" name="BtnHelpTabV.xml" path="/Component/UIHelp/"/>
+    <image id="ii8iobhf" name="img_3851.png" path="/Texture/" scale="9grid" scale9grid="0,70,603,6"/>
+    <component id="ii8iobhg" name="RenderHelpItem1.xml" path="/Component/UIHelp/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1445,272">
+  <displayList>
+    <image id="n18_ii8i" name="n18" src="ii8iobhf" fileName="Texture/img_3851.png" xy="0,0" size="1445,272"/>
+    <text id="n20_ii8i" name="n20" xy="25,3" size="80,52" fontSize="38" color="#e0ab67" vAlign="middle" leading="0" singleLine="true" text="立直"/>
+    <text id="n21_ii8i" name="n21" xy="30,71" size="388,44" font="SimHei" fontSize="32" color="#8995a8" vAlign="middle" leading="0" singleLine="true" text="门前请状态听牌即可立直，"/>
+    <text id="n22_ii8i" name="n22" xy="1228,3" pivot="1,0" size="194,52" font="SimHei" fontSize="38" color="#51f372" vAlign="middle" leading="0" singleLine="true" text="门前清限定"/>
+  </displayList>
+</component>

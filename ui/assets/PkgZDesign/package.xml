@@ -1686,6 +1686,32 @@
     <image id="djs37plokx" name="5.jpg" path="/公告/info/"/>
     <image id="djs37ploky" name="6.jpg" path="/公告/info/"/>
     <image id="djs37plokz" name="7.jpg" path="/公告/info/"/>
+    <image id="ii8i7plol0" name="help1.jpg" path="/11/help/"/>
+    <image id="ii8i7plol1" name="help2.jpg" path="/11/help/"/>
+    <image id="ii8i7plol2" name="help3.jpg" path="/11/help/"/>
+    <image id="ii8i7plol3" name="course0.png" path="/11/help/"/>
+    <image id="ii8i7plol4" name="course1.png" path="/11/help/"/>
+    <image id="ii8i7plol5" name="course2.png" path="/11/help/"/>
+    <image id="ii8i7plol6" name="course3.png" path="/11/help/"/>
+    <image id="ii8i7plol7" name="course4.png" path="/11/help/"/>
+    <image id="ii8i7plol8" name="course5.png" path="/11/help/"/>
+    <image id="ii8i7plol9" name="course6.png" path="/11/help/"/>
+    <image id="ii8i7plola" name="course7.png" path="/11/help/"/>
+    <image id="ii8i7plolb" name="course8.png" path="/11/help/"/>
+    <image id="ii8i7plolc" name="help4.jpg" path="/11/help/"/>
+    <image id="ii8i7plold" name="illustration1.png" path="/11/help/"/>
+    <image id="ii8i7plole" name="illustration10.png" path="/11/help/"/>
+    <image id="ii8i7plolf" name="illustration2.png" path="/11/help/"/>
+    <image id="ii8i7plolg" name="illustration3.png" path="/11/help/"/>
+    <image id="ii8i7plolh" name="illustration4.png" path="/11/help/"/>
+    <image id="ii8i7ploli" name="illustration5.png" path="/11/help/"/>
+    <image id="ii8i7plolj" name="illustration6.png" path="/11/help/"/>
+    <image id="ii8i7plolk" name="illustration7.png" path="/11/help/"/>
+    <image id="ii8i7ploll" name="illustration8.png" path="/11/help/"/>
+    <image id="ii8i7plolm" name="illustration9.png" path="/11/help/"/>
+    <image id="ii8i7ploln" name="page1.png" path="/11/help/"/>
+    <image id="ii8i7plolo" name="page2.png" path="/11/help/"/>
+    <image id="ii8i7plolp" name="page3.png" path="/11/help/"/>
   </resources>
   <publish name=""/>
 </packageDescription>

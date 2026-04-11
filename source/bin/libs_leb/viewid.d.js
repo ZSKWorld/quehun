@@ -67,6 +67,7 @@ EViewID = {
 	UIItemDetailView: "UIItemDetailView",
 	UILoading2View: "UILoading2View",
 	UILoadingView: "UILoadingView",
+	UITestView: "UITestView",
 	UIChooseServerView: "UIChooseServerView",
 	UIEntranceView: "UIEntranceView",
 	UIBindPhoneView: "UIBindPhoneView",

@@ -1,5 +1,25 @@
 /** This script is generated automatically, Please do not any modify! */
 
+EServiceType = {
+	Lobby: ".lq.Lobby",
+	FastTest: ".lq.FastTest",
+	Route: ".lq.Route",
+}
+
+EHeaderType = {
+	Notify: 1,
+	Request: 2,
+	Response: 3,
+}
+
+ERouteState = {
+	Idle: "idle",
+	Normal: "normal",
+	Busy: "busy",
+	Removed: "removed",
+	Rejected: "rejected",
+}
+
 ELanguage = {
 	CHS: "chs",
 	CHST: "chs_t",
@@ -275,4 +295,31 @@ EVideoProgressAndInteractionEvent = {
 EVideoErrorEvent = {
 	Error: "error",
 	Abort: "abort",
+}
+
+ESpineLayout = {
+	A0: "A0",
+	B0: "B0",
+	B1: "B1",
+	B2: "B2",
+	B3: "B3",
+	C0: "C0",
+	D0: "D0",
+	E0: "E0",
+	F0: "F0",
+	F1: "F1",
+	F2: "F2",
+	G0: "G0",
+	H0: "H0",
+	I0: "I0",
+	J0: "J0",
+	K0: "K0",
+	L0: "L0",
+	Spot: "spot",
+	Treasure_Single_Small: "treasure_single_small",
+	Treasure_Single_Big: "treasure_single_big",
+	Treasure_Double_L_Small: "treasure_double_l_small",
+	Treasure_Double_L_Big: "treasure_double_l_big",
+	Treasure_Double_R_Small: "treasure_double_r_small",
+	Treasure_Double_R_Big: "treasure_double_r_big",
 }

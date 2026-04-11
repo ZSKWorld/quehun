@@ -11,24 +11,31 @@ class Main {
 	}
 	private async init() {
 		Laya.Config.FPS = 100;
-		await Laya.init(1920, 1080);
-		document.body.style.backgroundColor = "#000000";
-		document.body.style.backgroundImage = `url(${ ResPath.ETexturePath.JPG_Background })`;
+		Laya.SpineConst.VERSION = "4.2";
+		Laya.SpineConst.PREMULTIPLIED_ALPHA_DEFAULT = true;
+		Laya.InputManager.multiTouchEnabled = false;
+		Laya.Config.defaultFont = ResPath.EFontName.HYWH;
+
+		fgui.UIConfig.packageFileExtension = "zip";
 
 		LayaRepair.repair();
 		LayaExtend.extends();
 		FGUIRepair.repair();
 		FGUIExtend.extends();
 		ViewExtend.extends();
-		fgui.UIConfig.packageFileExtension = "zip";
-		Laya.SpineConst.VERSION = "4.2";
 
-		Laya.stage.scaleMode = Laya.Stage.SCALE_SHOWALL;
-		Laya.stage.screenMode = Laya.Stage.SCREEN_NONE;
-		Laya.stage.alignV = Laya.Stage.ALIGN_MIDDLE;
-		Laya.stage.alignH = Laya.Stage.ALIGN_CENTER;
-		Laya.Config.defaultFont = ResPath.EFontName.HYWH;
-		Laya.InputManager.multiTouchEnabled = false;
+		document.body.style.backgroundColor = "#000000";
+		document.body.style.backgroundImage = `url(${ ResPath.ETexturePath.JPG_Background })`;
+
+		await Laya.init({
+			designWidth: 1920,
+			designHeight: 1080,
+			scaleMode: Laya.Stage.SCALE_SHOWALL,
+			screenMode: Laya.Stage.SCREEN_NONE,
+			alignV: Laya.Stage.ALIGN_MIDDLE,
+			alignH: Laya.Stage.ALIGN_CENTER,
+			backgroundColor: "#000000",
+		});
 
 		Laya.stage.on(Laya.Event.VISIBILITY_CHANGE, this, () => {
 			if (Laya.stage.isVisibility) $facade.dispatch(ENotifyConst.OnGameShow);

@@ -1,5 +1,6 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import UITest from "./UITest";
 import ComHeadFrame from "./ComHeadFrame";
 import ComRedDot1 from "./ComRedDot1";
 import BtnBuy from "./BtnBuy";
@@ -29,6 +30,7 @@ import ComCurrency from "./ComCurrency";
 import ComItem from "./ComItem";
 import UIItemDetail from "./UIItemDetail";
 import PbLoading2 from "./PbLoading2";
+import { UITestView } from "../../view/PkgCommon/view/uis/UITestView";
 import { ComHeadFrameView } from "../../view/PkgCommon/view/coms/ComHeadFrameView";
 import { ComRedDot1View } from "../../view/PkgCommon/view/coms/ComRedDot1View";
 import { BtnBuyView } from "../../view/PkgCommon/view/btns/BtnBuyView";
@@ -58,6 +60,7 @@ import { UIItemDetailView } from "../../view/PkgCommon/view/uis/UIItemDetailView
 
 export default class PkgCommonBinder {
 	public static bindAll(): void {
+		fgui.UIObjectFactory.setExtension(UITest.url, UITestView);
 		fgui.UIObjectFactory.setExtension(ComHeadFrame.url, ComHeadFrameView);
 		fgui.UIObjectFactory.setExtension(ComRedDot1.url, ComRedDot1View);
 		fgui.UIObjectFactory.setExtension(BtnBuy.url, BtnBuyView);

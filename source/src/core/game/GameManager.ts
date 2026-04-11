@@ -102,17 +102,10 @@ export class GameManager extends Observer implements IGameManager {
 
 	protected constructor() { super(); }
 
-	async init() {
-		this._ipConfig = await $loadMgr.fetch(ResPath.EConfigPath.IPConfig, Laya.Loader.JSON);
-		const ipConfig = this._ipConfig;
-		ipConfig.ip.forEach(v => (v.zone_ids = v.zone_ids || []));
-		this._ipIndex = 0;
-		if (ipConfig.ip.length > 1)
-			this._ipIndex = await new Promise<number>(resolve => {
-				$uiMgr.openView(EViewID.UIChooseServerView, { callback: resolve });
-			});
-		const domain = this._ipIndex == 0 ? "https://game.maj-soul.com/1/" : "";
-		this._version = await $loadMgr.fetch(`${ domain }version.json?randv=${ $timeUtil.milliSecond }`, Laya.Loader.JSON);
+	async init(ipIndex: number, ipConfig: IIPConfig) {
+		this._ipIndex = ipIndex;
+		this._ipConfig = ipConfig;
+		this._version = await $loadMgr.fetch(`https://game.maj-soul.com/1/version.json?randv=${ $timeUtil.milliSecond }`, Laya.Loader.JSON);
 	}
 
 	showConfirm(msg: string) {

@@ -1,6 +1,3 @@
-import { EServiceType } from "./NetDefine";
-
-
 export class PbManager extends Singleton<PbManager>() implements IPbManager {
 	private _root: protobuf.Root;
 	private _methodMap: KeyMap<protobuf.Method>;

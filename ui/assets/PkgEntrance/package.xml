@@ -3,7 +3,7 @@
   <resources>
     <component id="nrcf0" name="UIEntrance.xml" path="/" exported="true"/>
     <image id="nrcf1" name="img_2161.png" path="/Texture/"/>
-    <image id="nrcf2" name="img_27.png" path="/Texture/"/>
+    <image id="nrcf2" name="img_27.png" path="/Texture/" scale="9grid" scale9grid="1,1,2,2"/>
     <image id="nrcf3" name="img_3208.png" path="/Texture/"/>
     <component id="hrq54" name="UIChooseServer.xml" path="/" exported="true"/>
     <component id="ffcv6" name="RenderChooseServer.xml" path="/Component/UIChooseServer/"/>

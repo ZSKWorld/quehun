@@ -1,9 +1,9 @@
 declare type LoadURL = string | Laya.ILoadURL | (string | Readonly<Laya.ILoadURL>)[];
 declare interface ILoadManager {
-	fetch<K extends keyof Laya.ContentTypeMap>(url: string, contentType: K, onProgress?: Laya.ProgressCallback, options?: Readonly<Laya.ILoadOptions>): Promise<Laya.ContentTypeMap[K]>;
+	fetch<D = any>(url: string, contentType: keyof Laya.ContentTypeMap, onProgress?: Laya.ProgressCallback, options?: Laya.ILoadOptions): Promise<D>;
 
 	load<D extends Object, T extends LoadURL>(url: T, type?: string, onProgress?: Laya.ProgressCallback): Promise<T extends Array<any> ? D[] : D>;
-	load<D extends Object, T extends LoadURL>(url: T, options?: Readonly<Laya.ILoadOptions>, onProgress?: Laya.ProgressCallback): Promise<T extends Array<any> ? D[] : D>;
+	load<D extends Object, T extends LoadURL>(url: T, options?: Laya.ILoadOptions, onProgress?: Laya.ProgressCallback): Promise<T extends Array<any> ? D[] : D>;
 	load<D extends Object, T extends LoadURL>(url: T, complete?: Laya.Handler, progress?: Laya.Handler, type?: string, priority?: number, cache?: boolean, group?: string, ignoreCache?: boolean, useWorkerLoader?: boolean): Promise<T extends Array<any> ? D[] : D>;
 
 	loadPackage(resKey: string | string[], progressHandler?: Laya.Handler | ((progress: number) => void)): Promise<fgui.UIPackage[]>;
@@ -68,6 +68,8 @@ declare interface ISpineController extends Laya.Script {
 }
 
 declare interface ISpineManager {
+	init(): Promise<void>;
+	loadIllustData(id: number): Promise<ISpineIllustSkinData>;
 	/**
 	 * 加载spine动画模板
 	 * @param ids spine id

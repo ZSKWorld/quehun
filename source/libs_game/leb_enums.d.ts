@@ -1,3 +1,30 @@
+//#region 网络相关
+declare enum EServiceType {
+	Lobby = ".lq.Lobby",
+	FastTest = ".lq.FastTest",
+	Route = ".lq.Route",
+}
+
+declare enum EHeaderType {
+	Notify = 1,
+	Request = 2,
+	Response = 3,
+}
+
+declare enum ERouteState {
+	/** 空闲 */
+	Idle = "idle",
+	/** 正常 */
+	Normal = "normal",
+	/** 忙碌 */
+	Busy = "busy",
+	/** 移除 */
+	Removed = "removed",
+	/** 拒绝 */
+	Rejected = "rejected",
+}
+//#endregion
+
 /** 本地化语言 */
 declare enum ELanguage {
 	CHS = "chs",
@@ -410,3 +437,33 @@ declare enum EVideoErrorEvent {
 }
 //#endregion
 
+//#region spine相关
+
+/** spine布局类型 */
+declare enum ESpineLayout {
+	A0 = "A0",
+	B0 = "B0",
+	B1 = "B1",
+	B2 = "B2",
+	B3 = "B3",
+	C0 = "C0",
+	D0 = "D0",
+	E0 = "E0",
+	F0 = "F0",
+	F1 = "F1",
+	F2 = "F2",
+	G0 = "G0",
+	H0 = "H0",
+	I0 = "I0",
+	J0 = "J0",
+	K0 = "K0",
+	L0 = "L0",
+	Spot = "spot",
+	Treasure_Single_Small = "treasure_single_small",
+	Treasure_Single_Big = "treasure_single_big",
+	Treasure_Double_L_Small = "treasure_double_l_small",
+	Treasure_Double_L_Big = "treasure_double_l_big",
+	Treasure_Double_R_Small = "treasure_double_r_small",
+	Treasure_Double_R_Big = "treasure_double_r_big",
+}
+//#endregion

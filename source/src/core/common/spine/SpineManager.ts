@@ -13,6 +13,28 @@ export class SpineManager extends Singleton<SpineManager>() implements ISpineMan
 	private _templetMap = new Map<string, Laya.SpineTemplet>();
 	private _unusedPool = new Map<number, ISpineController[]>();
 	private _usingPool = new Map<number, ISpineController[]>();
+
+	private _default: ISpineIllustDefaultData;
+	private _illustDataMap = new Map<number, ISpineIllustSkinData>();
+
+	async init() {
+		const data = await $loadMgr.fetch<{ default: ISpineIllustDefaultData; }>($langRes("extendRes/illust_data/default.json"), Laya.Loader.JSON);
+		this._default = data?.default;
+	}
+
+	async loadIllustData(id: number) {
+		if (this._illustDataMap.has(id))
+			return this._illustDataMap.get(id);
+
+		const cfgSkin = $cfgMgr.item_definition.skin[id];
+		if (!cfgSkin) return;
+
+		const data = await $loadMgr.fetch<ISpineIllustSkinData>($langRes(`extendRes/illust_data/${ cfgSkin.illust_data }.json`), Laya.Loader.JSON);
+		if (!data) return;
+		this._illustDataMap.set(id, data);
+		return data;
+	}
+
 	async load(ids: number[], progress?: Laya.Handler) {
 		if (!ids || ids.length == 0) {
 			progress?.runWith(1);
@@ -59,6 +81,7 @@ export class SpineManager extends Singleton<SpineManager>() implements ISpineMan
 					const child = holder.addChild(new fgui.GObject());
 					const spineNode = child.addComponent(Laya.Spine2DRenderNode);
 					spineNode.useFastRender = false;
+					spineNode.autoAdjust = true;
 					spineNode.source = urls[i];
 				}
 				const spineCtrl = holder.addComponent(SpineController);

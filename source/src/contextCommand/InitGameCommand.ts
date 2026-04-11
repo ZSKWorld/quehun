@@ -20,8 +20,17 @@ export class InitGameCommand extends Command {
 		]);
 		ShaderManager.init();
 
-		await $loadMgr.loadPackage(ResPath.EPkgPath.PkgEntrance);
-		await $gameMgr.init();
+		const [, ipConfig] = await Promise.all([
+			$loadMgr.loadPackage(ResPath.EPkgPath.PkgEntrance),
+			$loadMgr.fetch(ResPath.EConfigPath.IPConfig, Laya.Loader.JSON),
+		]);
+		ipConfig.ip.forEach(v => (v.zone_ids = v.zone_ids || []));
+
+		const ipIndex = await new Promise<number>(resolve => {
+			$uiMgr.openView<IUIChooseServerData>(EViewID.UIChooseServerView, { ipConfig, callback: resolve });
+		});
+
+		await $gameMgr.init(ipIndex, ipConfig);
 
 		$uiMgr.openView(EViewID.UIEntranceView);
 
@@ -29,6 +38,7 @@ export class InitGameCommand extends Command {
 			$pbMgr.init(),
 			$cfgMgr.init(),
 			$netMgr.init(),
+			$spineMgr.init(),
 		]);
 
 		$netMgr.connectLobby();

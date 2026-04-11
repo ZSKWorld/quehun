@@ -1,4 +1,12 @@
 {
+  "objectStatus": {
+    "n30_10mro": {
+      "collapsed": true
+    },
+    "n34_10mro": {
+      "collapsed": true
+    }
+  },
   "adaptiveTest": true,
   "designImages": [
     "ui://ca43vz0ejdu67plo03",

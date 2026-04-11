@@ -1,6 +1,6 @@
 declare interface IPbManager {
 	get methodMap(): KeyMap<protobuf.Method>;
-	get method2Service(): KeyMap<ServiceType>;
+	get method2Service(): KeyMap<EServiceType>;
 	init(): Promise<void>;
 	decodeMessage(bytes: Uint8Array): protobuf.Message<{}>;
 	encodeRpc(method: string, bytes: Uint8Array): Uint8Array;

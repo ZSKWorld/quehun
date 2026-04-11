@@ -7,6 +7,7 @@ export class InitSceneCommand extends Command {
 		const registerScene = $sceneMgr.registerScene.bind($sceneMgr) as typeof $sceneMgr.registerScene;
 		const registerView = $sceneMgr.registerView.bind($sceneMgr) as typeof $sceneMgr.registerView;
 		registerScene(ESceneType.LoginScene, SceneLogin);
+		registerView(ESceneType.LoginScene, EViewID.UIChooseServerView);
 		registerView(ESceneType.LoginScene, EViewID.UIEntranceView);
 		registerView(ESceneType.LoginScene, EViewID.UILoginView);
 		registerView(ESceneType.LoginScene, EViewID.UIBindPhoneView);

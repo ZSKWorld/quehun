@@ -2,33 +2,34 @@ import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
 import { EUIChooseServerMsg, UIChooseServerView } from "../../view/uis/UIChooseServerView";
 
 export class UIChooseServerMediator extends MediatorBase<UIChooseServerView, IUIChooseServerData> {
-	private _lastServer: number;
+	private _ipIndex: number;
+	private _lastIpIndex: number;
 
 	override onAwake() {
+		this.addEvent(EUIChooseServerMsg.OnListServerClick, this.setChooseServer);
 		this.addEvent(EUIChooseServerMsg.OnBtnLastServerClick, this.onBtnLastServerClick);
-		$uiUtil.setList(this.view.listServer, false, this, this.onListServerRender, this.onListServerClick);
 	}
 
 	override onEnable() {
-		this._lastServer = $localDataMgr.get(ELocalDataKey.LastServer, -1);
-		this.view.refreshLastServer($gameMgr.ipConfig.ip[this._lastServer]);
-		this.view.listServer.numItems = $gameMgr.ipConfig.ip.length;
-	}
-
-	private onListServerRender(index: number, item: fgui.GButton) {
-		item.title = $gameMgr.ipConfig.ip[index].name;
-	}
-
-	private onListServerClick(_, __, index: number) {
-		$localDataMgr.set(ELocalDataKey.LastServer, index);
-		this.data.callback(index);
-		this.closeSelf();
+		const ipConfig = this.data.ipConfig;
+		if (ipConfig.ip.length == 1) {
+			this.setChooseServer(0);
+		} else {
+			this._lastIpIndex = $localDataMgr.get(ELocalDataKey.LastServer, -1);
+			this.view.refresh(ipConfig.ip.map(v => v.name), this._lastIpIndex);
+		}
 	}
 
 	private onBtnLastServerClick() {
-		const info = $gameMgr.ipConfig.ip[this._lastServer];
-		if (!info) return;
-		this.data.callback(this._lastServer);
+		this.setChooseServer(this._lastIpIndex);
+	}
+
+	private setChooseServer(index: number) {
+		const { ipConfig, callback } = this.data;
+		index = $mathUtil.clamp(index, 0, ipConfig.ip.length - 1);
+		this._ipIndex = index;
+		$localDataMgr.set(ELocalDataKey.LastServer, this._ipIndex);
+		callback(this._ipIndex);
 		this.closeSelf();
 	}
 }

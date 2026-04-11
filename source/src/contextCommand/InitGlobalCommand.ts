@@ -2,7 +2,7 @@ import { LoadManager } from "../core/common/manager/LoadManager";
 import { LocalDataManager } from "../core/common/manager/LocalDataManager";
 import { MathUtil } from "../core/common/math/MathUtil";
 import { SkeletonManager } from "../core/common/skeleton/SkeletonManager";
-import { SpineManager } from "../core/common/skeleton/SpineManager";
+import { SpineManager } from "../core/common/spine/SpineManager";
 import { GameUtil } from "../core/common/utils/GameUtil";
 import { ItemUtil } from "../core/common/utils/ItemUtil";
 import { TimeUtil } from "../core/common/utils/TimeUtil";

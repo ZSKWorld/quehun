@@ -1,11 +1,11 @@
 declare interface IIPInfo {
 	name: string;
-	gateways: { id: string, url: string }[];
+	gateways: { id: string, url: string; }[];
 	system_email_url: string;
 	prefix_url: string;
 	contest_chat_url: string;
 	dhs_url: string;
-	zone_ids?:number[];
+	zone_ids?: number[];
 }
 
 declare interface IIPConfig {
@@ -50,6 +50,6 @@ declare interface IGameManager {
 	get ipConfig(): IIPConfig;
 	get ipInfo(): IIPInfo;
 	get zoneIds(): number[];
-	init(): Promise<void>;
+	init(ipIndex: number, ipConfig: IIPConfig): Promise<void>;
 	showConfirm(msg: string): Promise<boolean>;
 }

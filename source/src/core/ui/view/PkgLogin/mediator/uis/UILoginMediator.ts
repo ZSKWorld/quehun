@@ -57,7 +57,7 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 	}
 
 	private onBtnHelpClick() {
-		
+
 		// let url:string = GameMgr.config_data['wapchat_url'] + '?';
 		// url += 'fromUrl=' + game.Tools.getFinalUrl(GameMgr.config_data['homepage_url']);
 		// url += '&urlTitle=' + '网页';
@@ -68,7 +68,7 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 		// 	url += '&accessId=4184be70-95b1-11ea-b027-616616b0ded6'
 		// 	url += '&language=' + 'EN';
 		// }
-		
+
 		// let d_customField = {};
 		// d_customField['登陆状态'] = '未登录';
 		// url += '&customField=' + JSON.stringify(d_customField);

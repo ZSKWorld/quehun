@@ -1,5 +1,3 @@
-import { EHeaderType, EServiceType } from "./NetDefine";
-
 interface IWaitRpcInfo {
 	service: EServiceType;
 	method: string;

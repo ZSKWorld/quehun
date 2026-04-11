@@ -53,7 +53,8 @@ export class UIMailView extends ExtensionClass<IView, UIMail>(UIMail) implements
 		if (d) str += d + $lang(2022);
 		if (h) str += h + $lang(2021);
 		if (m) str += m + $lang(2020);
-		return str;
+		if(!str) str = "1" + $lang(2020);
+		return $lang(3754, str);
 	}
 
 	override onOpenAni() { return $uiUtil.popAlphaIn(this); }

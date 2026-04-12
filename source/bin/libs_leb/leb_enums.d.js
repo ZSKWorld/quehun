@@ -25,7 +25,7 @@ EMjpType = {
 	M: "m",
 	S: "s",
 	Z: "z",
-	B: "bd",
+	BD: "bd",
 }
 
 ELanguage = {
@@ -115,7 +115,7 @@ EItemCategory = {
 	Role: 4,
 	Common: 5,
 	ActivityItem: 6,
-	TimeLimitTitle: 7,
+	TimeLimitedTitle: 7,
 	DecorateWithoutAchieve: 8,
 }
 
@@ -141,14 +141,14 @@ EItemCommonType = {
 	HandStyle: 3,
 	LiZhiMusic: 4,
 	HeadFrame: 5,
-	ZhuoBo: 6,
-	PaiBei: 7,
+	TableCloth: 6,
+	MjpBack: 7,
 	DaTingBeiJing: 8,
 	BeiJingYinYue: 9,
 	MingPaiZhiShi: 10,
-	XianShiChengHao: 11,
+	TimeLimitedTitle: 11,
 	ChaHuaLoadingTu: 12,
-	MaJiangPaiZhengMian: 13,
+	MjpFront: 13,
 }
 
 EClientValueType = {

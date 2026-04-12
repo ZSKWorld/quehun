@@ -10,7 +10,7 @@ export class ComBagDecoView extends ExtensionClass<IView, ComBagDeco>(ComBagDeco
 	private _showItems: ProtoObject<IItem>[] = [];
 	private _showTypes: number[] = [
 		-1, EItemCommonType.HuPaiEffect, EItemCommonType.LiZhiEffect, EItemCommonType.LiZhiBang,
-		EItemCommonType.ZhuoBo, EItemCommonType.PaiBei, EItemCommonType.MaJiangPaiZhengMian,
+		EItemCommonType.TableCloth, EItemCommonType.MjpBack, EItemCommonType.MjpFront,
 		EItemCommonType.HeadFrame, EItemCommonType.MingPaiZhiShi, EItemCommonType.HandStyle,
 		EItemCommonType.DaTingBeiJing, EItemCommonType.BeiJingYinYue, EItemCommonType.LiZhiMusic
 	];

@@ -13,13 +13,15 @@ export class ItemUtil extends Singleton<ItemUtil>() implements IItemUtil {
 	private _itemView: KeyMap<IItemInfo> = {};
 	getItemInfo(id: number) {
 		if (this._itemView[id]) return this._itemView[id];
-		const idType = this.getItemType(id);
-		let name = "", icon = "", itemIcon = "", desc = "", func = "", titleIcon = "";
+
+		let name = "", icon = "", itemIcon = "", previewIcon = "", desc = "", func = "", resName = "", resPath = "";
+
 		const skinInfo: IItemInfo_SkinInfo = {
 			bighead: "", full: "", half: "", smallhead: "", smallhead1: "", smallhead2: "",
 			smallhead3: "", waitingroom: "", x: ""
 		};
-		switch (idType) {
+
+		switch (this.getItemType(id)) {
 			case EItemType.Currency:
 				const currencyCfg = $cfgMgr.item_definition.currency[id];
 				if (currencyCfg) {
@@ -38,16 +40,41 @@ export class ItemUtil extends Singleton<ItemUtil>() implements IItemUtil {
 				break;
 			case EItemType.Item:
 				const itemCfg = $cfgMgr.item_definition.item[id];
-				if (itemCfg) {
-					name = $langCfg(itemCfg, "name");
-					icon = itemCfg.icon_transparent;
-					itemIcon = itemCfg.icon;
-					desc = $langCfg(itemCfg, "desc");
-					func = $langCfg(itemCfg, "desc_func");
-					if (itemCfg.category == EItemCategory.Common && itemCfg.type == EItemCommonType.HeadFrame) {
-						const viewCfg = $cfgMgr.item_definition.view[id];
-						icon = viewCfg ? `extendRes/head_frame/${ viewCfg.res_name }.png` : "";
-					}
+				if (!itemCfg) break;
+
+				name = $langCfg(itemCfg, "name");
+				icon = itemCfg.icon_transparent;
+				itemIcon = itemCfg.icon;
+				desc = $langCfg(itemCfg, "desc");
+				func = $langCfg(itemCfg, "desc_func");
+				const viewCfg = $cfgMgr.item_definition.view[id];
+
+				switch (itemCfg.category) {
+					case EItemCategory.Common:
+						if (!viewCfg) break;
+						resName = viewCfg.res_name;
+						switch (itemCfg.type) {
+							case EItemCommonType.TableCloth:
+								previewIcon = `myres2/tablecloth/${ resName }/preview.png`;
+								break;
+							case EItemCommonType.MjpBack:
+								previewIcon = `myres2/mjp/${ resName }/preview.png`;
+								resPath = `myres2/tablecloth/${ resName }/hand/`;
+								break;
+							case EItemCommonType.MjpFront:
+								previewIcon = `myres2/mjp_surface/${ resName }/preview.png`;
+								resPath = `myres2/tablecloth/${ resName }/ui/`;
+								break;
+							case EItemCommonType.HeadFrame:
+								icon = `extendRes/head_frame/${ resName }.png`;
+								break;
+						}
+						break;
+					case EItemCategory.TimeLimitedTitle:
+						icon = itemIcon.replace("_item.jpg", ".png");
+						break;
+					default:
+						break;
 				}
 				break;
 			case EItemType.Skin:
@@ -88,17 +115,18 @@ export class ItemUtil extends Singleton<ItemUtil>() implements IItemUtil {
 				}
 				break;
 		}
-		titleIcon = icon || "extendRes/title/notitle.png";
 
 		this._itemView[id] = {
 			name,
 			icon: $langRes(icon),
 			itemIcon: $langRes(itemIcon),
+			previewIcon: $langRes(previewIcon),
 			desc,
 			func,
-			titleIcon: $langRes(titleIcon),
-			skinInfo
+			resName,
+			resPath: $langRes(resPath),
+			skinInfo: Object.freeze(skinInfo)
 		};
-		return this._itemView[id];
+		return Object.freeze(this._itemView[id]);
 	}
 }

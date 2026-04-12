@@ -162,7 +162,7 @@ declare enum EItemCategory {
 	/** 活动道具 */
 	ActivityItem = 6,
 	/** 限时称号 */
-	TimeLimitTitle = 7,
+	TimeLimitedTitle = 7,
 	/** 不参与成就的装扮 */
 	DecorateWithoutAchieve = 8,
 }
@@ -208,9 +208,9 @@ declare enum EItemCommonType {
 	/** 头像框 */
 	HeadFrame = 5,
 	/** 桌布 */
-	ZhuoBo = 6,
+	TableCloth = 6,
 	/** 牌背 */
-	PaiBei = 7,
+	MjpBack = 7,
 	/** 大厅背景 */
 	DaTingBeiJing = 8,
 	/** 背景音乐 */
@@ -218,11 +218,11 @@ declare enum EItemCommonType {
 	/** 鸣牌指示 */
 	MingPaiZhiShi = 10,
 	/** 限时称号 */
-	XianShiChengHao = 11,
+	TimeLimitedTitle = 11,
 	/** 插画loading图 */
 	ChaHuaLoadingTu = 12,
 	/** 麻将牌正面mjpface */
-	MaJiangPaiZhengMian = 13,
+	MjpFront = 13,
 }
 
 declare enum EClientValueType {

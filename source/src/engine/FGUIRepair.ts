@@ -1,40 +1,12 @@
 /** FGUI修复 */
 export class FGUIRepair {
 	static repair() {
-		this.fixPlayTransitionAction();
-		this.fixGTextInput();
 		this.fixGTextField();
 		this.fixGImage();
 		this.fixGComponent();
 		this.fixUIPackageUnload();
 		this.fixLoadPackage();
 		this.fixGTextInputOverflow();
-	}
-
-
-	/** 修改控制器动效播放机制为每次都从头播放 */
-	private static fixPlayTransitionAction() {
-		// const prototype = fgui.PlayTransitionAction.prototype;
-		// prototype["enter"] = function (controller: fgui.Controller) {
-		// 	if (!this._currentTransition) {
-		// 		this._currentTransition = controller.parent.getTransition(this.transitionName);
-		// 	}
-		// 	this._currentTransition.play(null, this.playTimes, this.delay);
-		// }
-	}
-
-	/** 修复gui 输入框自动换行 */
-	private static fixGTextInput() {
-		// const prototype = fgui.GTextInput.prototype;
-		// Object.defineProperty(prototype, "singleLine", {
-		// 	get() {
-		// 		return !this._displayObject.multiline;
-		// 	},
-		// 	set(v) {
-		// 		this._displayObject.multiline = !v;
-		// 		this._displayObject.wordWrap = !v;
-		// 	}
-		// });
 	}
 
 	private static fixGTextField() {
@@ -49,7 +21,9 @@ export class FGUIRepair {
 					this.ensureSizeCorrect();
 				},
 			}
-		})
+		});
+		labelPadding.length = 0;
+		labelPadding.push(0, 0, 0, 0);
 	}
 
 	private static fixGImage() {
@@ -58,7 +32,7 @@ export class FGUIRepair {
 			Laya.Sprite.prototype.size.call(this, width, height);
 			this.markChanged(1);
 			return this;
-		}
+		};
 	}
 
 	private static fixGComponent() {
@@ -90,7 +64,7 @@ export class FGUIRepair {
 				ah = ab - ay;
 			}
 			this.setBounds(ax, ay, aw, ah);
-		}
+		};
 	}
 
 	private static fixUIPackageUnload() {
@@ -242,6 +216,6 @@ export class FGUIRepair {
 				else if (!this._widthAutoSize)
 					this._displayObject.width = this.width;
 			}
-		}
+		};
 	}
 }

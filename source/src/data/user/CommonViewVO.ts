@@ -7,14 +7,14 @@ const DefaultViewIdMap: Record<EItemCommonType, number> = {
 	[EItemCommonType.HandStyle]: 0,
 	[EItemCommonType.LiZhiMusic]: 0,
 	[EItemCommonType.HeadFrame]: 305501,
-	[EItemCommonType.ZhuoBo]: 305044,
-	[EItemCommonType.PaiBei]: 305045,
+	[EItemCommonType.TableCloth]: 305044,
+	[EItemCommonType.MjpBack]: 305045,
 	[EItemCommonType.DaTingBeiJing]: 307001,
 	[EItemCommonType.BeiJingYinYue]: 0,
 	[EItemCommonType.MingPaiZhiShi]: 0,
-	[EItemCommonType.XianShiChengHao]: 0,
+	[EItemCommonType.TimeLimitedTitle]: 0,
 	[EItemCommonType.ChaHuaLoadingTu]: 0,
-	[EItemCommonType.MaJiangPaiZhengMian]: 305725,
+	[EItemCommonType.MjpFront]: 305725,
 };
 
 export class CommonViewVO extends BaseVO implements VO.ICommonViewVO {

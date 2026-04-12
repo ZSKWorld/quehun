@@ -171,9 +171,14 @@ declare interface IItemInfo {
 	icon: string;
 	/** 显示在物品详情的图标，非半透明背景 */
 	itemIcon: string;
+	/** 预览图标 */
+	previewIcon: string;
 	desc: string;
 	func: string;
-	titleIcon: string;
+	/** 资源名称，item_definition.view表中的res_name */
+	resName: string;
+	/** 资源路径 */
+	resPath: string;
 	/** 皮肤信息 */
 	skinInfo: IItemInfo_SkinInfo;
 }
@@ -263,5 +268,5 @@ declare interface ILocalDataManager {
 
 declare interface IItemUtil {
 	getItemType(id: number): EItemType;
-	getItemInfo(id: number): IItemInfo;
+	getItemInfo(id: number): ReadonlyAll<IItemInfo>;
 }

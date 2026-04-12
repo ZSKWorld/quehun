@@ -1,20 +1,20 @@
-import { AccountVO } from "./AccountVO";
-import { AchievementVO } from "./AchievementVO";
-import { ActivityVO } from "./ActivityVO";
-import { AnnouncementVO } from "./AnnouncementVO";
-import { BagVO } from "./BagVO";
-import { BaseVO } from "./BaseVO";
-import { CharacterVO } from "./CharacterVO";
-import { ClientValueVO } from "./ClientValueVO";
-import { CommonViewVO } from "./CommonViewVO";
-import { FriendVO } from "./FriendVO";
-import { MailVO } from "./MailVO";
-import { RechargeVO } from "./RechargeVO";
-import { ServerSettingVO } from "./ServerSettingVO";
+import { AccountDO } from "./AccountDO";
+import { AchievementDO } from "./AchievementDO";
+import { ActivityDO } from "./ActivityDO";
+import { AnnouncementDO } from "./AnnouncementDO";
+import { BagDO } from "./BagDO";
+import { BaseDO } from "./BaseDO";
+import { CharacterDO } from "./CharacterDO";
+import { ClientValueDO } from "./ClientValueDO";
+import { CommonViewDO } from "./CommonViewDO";
+import { FriendDO } from "./FriendDO";
+import { MailDO } from "./MailDO";
+import { RechargeDO } from "./RechargeDO";
+import { ServerSettingDO } from "./ServerSettingDO";
 
-export class UserData extends BaseVO implements VO.IUserDataVO {
-	private static _inst: UserData;
-	static get Inst() { return this._inst || (this._inst = new UserData()); }
+export class UserDO extends BaseDO implements DO.IUserDO {
+	private static _inst: UserDO;
+	static get Inst() { return this._inst || (this._inst = new UserDO()); }
 
 	/** 正在进行的游戏信息 */
 	game_info: IGameConnectInfo;
@@ -33,18 +33,18 @@ export class UserData extends BaseVO implements VO.IUserDataVO {
 	/** 该账户曾经领取过的奖励version值 */
 	rewarded_version: number[];
 
-	account = new AccountVO();
-	character = new CharacterVO();
-	activity = new ActivityVO();
-	recharge = new RechargeVO();
-	commonView = new CommonViewVO();
-	announcement = new AnnouncementVO();
-	clientValue = new ClientValueVO();
-	serverSetting = new ServerSettingVO();
-	friend = new FriendVO();
-	mail = new MailVO();
-	bag = new BagVO();
-	achievement = new AchievementVO();
+	account = new AccountDO();
+	character = new CharacterDO();
+	activity = new ActivityDO();
+	recharge = new RechargeDO();
+	commonView = new CommonViewDO();
+	announcement = new AnnouncementDO();
+	clientValue = new ClientValueDO();
+	serverSetting = new ServerSettingDO();
+	friend = new FriendDO();
+	mail = new MailDO();
+	bag = new BagDO();
+	achievement = new AchievementDO();
 
 	protected constructor() { super(); }
 

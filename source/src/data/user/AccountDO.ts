@@ -1,6 +1,6 @@
-import { BaseVO } from "./BaseVO";
+import { BaseDO } from "./BaseDO";
 
-export class AccountVO extends BaseVO implements VO.IAccountVO {
+export class AccountDO extends BaseDO implements DO.IAccountDO {
 	account_id: number = 0;
 	nickname: string = "";
 	login_time: number = 0;

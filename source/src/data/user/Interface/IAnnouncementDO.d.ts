@@ -1,5 +1,5 @@
-declare namespace VO {
-	interface IAnnouncementVO {
+declare namespace DO {
+	interface IAnnouncementDO {
 		announcements: ProtoObject<IAnnouncement>[];
 		isRead(id: number): boolean;
 		fetchAnnouncement(): void;

@@ -1,6 +1,6 @@
-import { BaseVO } from "./BaseVO";
+import { BaseDO } from "./BaseDO";
 
-export class ServerSettingVO extends BaseVO implements VO.IServerSettingVO {
+export class ServerSettingDO extends BaseDO implements DO.IServerSettingDO {
 	private _payment_setting: ProtoObject<IPaymentSetting>;
 	private _payment_setting_v2: ProtoObject<IPaymentSettingV2>;
 	private _nickname_setting: ProtoObject<INicknameSetting>;

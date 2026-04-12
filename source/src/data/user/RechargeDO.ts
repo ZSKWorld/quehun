@@ -1,6 +1,6 @@
-import { BaseVO } from "./BaseVO";
+import { BaseDO } from "./BaseDO";
 
-export class RechargeVO extends BaseVO implements VO.IRechargeVO {
+export class RechargeDO extends BaseDO implements DO.IRechargeDO {
 
 	/** 欠款订单列表 */
 	orders: ProtoObject<IResFetchRefundOrder_OrderInfo>[];

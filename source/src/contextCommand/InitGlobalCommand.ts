@@ -18,7 +18,7 @@ import { RedDotManager } from "../core/ui/redDot/RedDotManager";
 import { RichText } from "../core/ui/tool/RichText";
 import { TipManager } from "../core/ui/tool/TipManager";
 import { UIUtil } from "../core/ui/tool/UIUtil";
-import { UserData } from "../data/user/UserData";
+import { UserDO } from "../data/user/UserDO";
 import { SceneManager } from "../scene/SceneManager";
 
 export class InitGlobalCommand extends Command {
@@ -30,7 +30,7 @@ export class InitGlobalCommand extends Command {
 		$windowImmit("$timeUtil", TimeUtil.Inst);
 		$windowImmit("$uiMgr", UIManager.Inst);
 		$windowImmit("$pbMgr", PbManager.Inst);
-		$windowImmit("$userData", UserData.Inst);
+		$windowImmit("$user", UserDO.Inst);
 		$windowImmit("$gameUtil", GameUtil.Inst);
 		$windowImmit("$tipMgr", TipManager.Inst);
 		$windowImmit("$mathUtil", MathUtil.Inst);

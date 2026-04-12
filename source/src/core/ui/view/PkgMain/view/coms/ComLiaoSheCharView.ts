@@ -10,8 +10,8 @@ export class ComLiaoSheCharView extends ExtensionClass<IView, ComLiaoSheChar>(Co
 
 	private _selectedData: ProtoObject<ICharacter>;
 	private _selectedItem: RenderLiaoSheCharView;
-	private get showStarChar() { return !!$userData.clientValue.getValue(EClientValueType.Chara_Show_Star); }
-	private get showChars() { return this.showStarChar ? $userData.character.starChars : $userData.character.showChars; }
+	private get showStarChar() { return !!$user.clientValue.getValue(EClientValueType.Chara_Show_Star); }
+	private get showChars() { return this.showStarChar ? $user.character.starChars : $user.character.showChars; }
 
 	override onCreate() {
 		const { btn_sort, btn_filter, btn_star, list_chars } = this;
@@ -32,7 +32,7 @@ export class ComLiaoSheCharView extends ExtensionClass<IView, ComLiaoSheChar>(Co
 		btn_star.selected = showStarChar;
 		let selectedIndex = 0;
 		if (resetSelect || !this._selectedData) {
-			selectedIndex = chars.findIndex(v => v.charid == $userData.character.mainCharId);
+			selectedIndex = chars.findIndex(v => v.charid == $user.character.mainCharId);
 			this._selectedData = chars[selectedIndex];
 		}
 		else {
@@ -47,7 +47,7 @@ export class ComLiaoSheCharView extends ExtensionClass<IView, ComLiaoSheChar>(Co
 
 	private onListCharsRender(index: number, item: RenderLiaoSheCharView) {
 		const data = this.showChars[index];
-		const using = data.charid == $userData.character.mainCharId;
+		const using = data.charid == $user.character.mainCharId;
 		item.refresh(data, using, this._selectedData?.charid == data.charid);
 	}
 
@@ -58,12 +58,12 @@ export class ComLiaoSheCharView extends ExtensionClass<IView, ComLiaoSheChar>(Co
 		this._selectedData = data;
 		this._selectedItem = item;
 		item.refreshSelected(true, data.charid);
-		if (_selectedData == data && data.charid != $userData.character.mainCharId) {
+		if (_selectedData == data && data.charid != $user.character.mainCharId) {
 			$netMgr.requests.changeMainCharacter({ character_id: data.charid });
 		}
 	}
 
 	private onBtnStarClick() {
-		$userData.clientValue.setValue(EClientValueType.Chara_Show_Star, +!!this.btn_star.selected);
+		$user.clientValue.setValue(EClientValueType.Chara_Show_Star, +!!this.btn_star.selected);
 	}
 }

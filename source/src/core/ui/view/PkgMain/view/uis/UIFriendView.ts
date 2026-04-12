@@ -26,11 +26,11 @@ export class UIFriendView extends ExtensionClass<IView, UIFriend>(UIFriend) impl
 		btn_find.onClick(this, this.sendEvent, [EUIFriendMsg.OnBtnFindClick]);
 		$uiUtil.setList(list_friend, true, this, this.onListFriendRender);
 
-		txt_myID.text = $lang(2459) + $gameUtil.encodeAccountId($userData.account.account_id);
+		txt_myID.text = $lang(2459) + $gameUtil.encodeAccountId($user.account.account_id);
 	}
 
 	refreshFriends() {
-		const { friends, friendMaxCount } = $userData.friend;
+		const { friends, friendMaxCount } = $user.friend;
 		const { ctrl_type, txt_limit, list_friend, txt_empty } = this;
 		txt_limit.text = $lang(2455) + friends.length + "/" + friendMaxCount;
 		list_friend.scrollPane.percY = 0;
@@ -57,7 +57,7 @@ export class UIFriendView extends ExtensionClass<IView, UIFriend>(UIFriend) impl
 		ctrl_type.selectedIndex = 2;
 	}
 
-	refreshRecent(loading:boolean, loadedCount: number) {
+	refreshRecent(loading: boolean, loadedCount: number) {
 		const { ctrl_type, list_recent, txt_empty } = this;
 		list_recent.numItems = loadedCount;
 		txt_empty.visible = !loading && loadedCount <= 0;
@@ -83,6 +83,6 @@ export class UIFriendView extends ExtensionClass<IView, UIFriend>(UIFriend) impl
 	}
 
 	private onListFriendRender(index: number, item: RenderFriendFriendView) {
-		item.refresh($userData.friend.friends[index]);
+		item.refresh($user.friend.friends[index]);
 	}
 }

@@ -39,7 +39,7 @@ export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> 
 		this._searchPlayerLoader.reset();
 		this._recentPlayerLoader.reset();
 		this._loadRecent = false;
-		$userData.friend.applied.clear();
+		$user.friend.applied.clear();
 		this._tabGroup.clearSelection();
 	}
 
@@ -48,7 +48,7 @@ export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> 
 		switch (index) {
 			case 0: this.view.refreshFriends(); break;
 			case 1:
-				this._applyPlayerLoader.intro = [...$userData.friend.applies];
+				this._applyPlayerLoader.intro = [...$user.friend.applies];
 				this._applyPlayerLoader.loadNext();
 				const brifesLen = this._applyPlayerLoader.briefs.length;
 				this.view.refreshApply(brifesLen);
@@ -68,7 +68,7 @@ export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> 
 
 	private onBtnCopyClick() {
 		try {
-			const eid = $gameUtil.encodeAccountId($userData.account.account_id).toString();
+			const eid = $gameUtil.encodeAccountId($user.account.account_id).toString();
 			navigator.clipboard.writeText(eid)
 				.then(() => $tipMgr.showTip($lang(2125)));
 		} catch (error) {
@@ -111,7 +111,7 @@ export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> 
 	@InterestMessage(ENetMessage.searchAccountByEid)
 	private onSearchAccountByEid(res: IResSearchAccountbyEidLobby) {
 		const accoundId = res.account_id;
-		if (!accoundId || accoundId == $userData.account.account_id)
+		if (!accoundId || accoundId == $user.account.account_id)
 			return this.view.refreshSearch(true, null);
 		this._searchPlayerLoader.intro = [{ account_id: accoundId }];
 		this._searchPlayerLoader.loadNext();

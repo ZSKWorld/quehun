@@ -30,7 +30,7 @@ export class RenderLiaoSheCharView extends ExtensionClass<IView, RenderLiaoSheCh
 
 		btn_star.offClick(this, this.onBtnStarClick);
 		btn_star.onClick(this, this.onBtnStarClick, [charid]);
-		const isStarChar = $userData.character.isStarChar(charid);
+		const isStarChar = $user.character.isStarChar(charid);
 		if (isStarChar)
 			btn_star.icon = `ui://PkgMain/img_${ is_upgraded ? 862 : 864 }`;
 		else
@@ -41,12 +41,12 @@ export class RenderLiaoSheCharView extends ExtensionClass<IView, RenderLiaoSheCh
 	refreshSelected(selected: boolean, charId: number) {
 		const { btn_star, img_selected } = this;
 		img_selected.visible = selected;
-		btn_star.visible = selected || $userData.character.isStarChar(charId);
+		btn_star.visible = selected || $user.character.isStarChar(charId);
 		btn_star.touchable = selected;
 	}
 
 	private onBtnStarClick(charId: number, evt: Laya.Event) {
 		evt.stopPropagation();
-		$userData.character.changeCharStar(charId);
+		$user.character.changeCharStar(charId);
 	}
 }

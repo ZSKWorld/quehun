@@ -15,7 +15,7 @@ export class ComBagIllustView extends ExtensionClass<IView, ComBagIllust>(ComBag
 
 	override onEnable() {
 		const items = $cfgMgr.item_definition.loading_image.filter(v => {
-			return v.unlock_items.some(id => id && $userData.bag.getItemCount(id) > 0);
+			return v.unlock_items.some(id => id && $user.bag.getItemCount(id) > 0);
 		});
 		items.sort((a, b) => b.sort - a.sort);
 		this._items = items;
@@ -28,10 +28,10 @@ export class ComBagIllustView extends ExtensionClass<IView, ComBagIllust>(ComBag
 
 	private onListIllustItemRenderer(index: number, item: RenderBagIllustItemView) {
 		const itemData = this._items[index];
-		item.refresh(itemData, $userData.bag.isUsingCG(itemData.id));
+		item.refresh(itemData, $user.bag.isUsingCG(itemData.id));
 	}
 
 	private onListIllustItemClick(item: RenderBagIllustItemView, _, index: number) {
-		$userData.bag.changeCGUsing(this._items[index].id);
+		$user.bag.changeCGUsing(this._items[index].id);
 	}
 }

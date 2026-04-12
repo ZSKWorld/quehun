@@ -22,7 +22,7 @@ declare type Class<T> = new (...args: any[]) => T;
 
 declare const $gameMgr: IGameManager;
 declare const $netMgr: INetManager;
-declare const $userData: VO.IUserDataVO;
+declare const $user: DO.IUserDO;
 declare const $cfgMgr: IConfigManager;
 declare const $loadMgr: ILoadManager;
 declare const $skeletonMgr: ISkeletonManager;

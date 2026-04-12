@@ -71,7 +71,7 @@ export class ComLiaoSheDecorateView extends ExtensionClass<IView, ComLiaoSheDeco
 
 	refresh() {
 		const { list_tab } = this;
-		const { use, views } = $userData.commonView;
+		const { use, views } = $user.commonView;
 		list_tab.numItems = views.length;
 		const index = views.findIndex(v => v.index == use);
 		list_tab.selectedIndex = index;
@@ -81,7 +81,7 @@ export class ComLiaoSheDecorateView extends ExtensionClass<IView, ComLiaoSheDeco
 
 	private refreshView(index: number) {
 		const { list_view, txt_viewName, _curData } = this;
-		_curData.init($userData.commonView.views[index]);
+		_curData.init($user.commonView.views[index]);
 		list_view.numItems = _curData.values.length;
 		list_view.selectedIndex = 0;
 		list_view.scrollPane.posY = 0;
@@ -94,7 +94,7 @@ export class ComLiaoSheDecorateView extends ExtensionClass<IView, ComLiaoSheDeco
 	}
 
 	private onListTabRender(index: number, item: RenderLiaoSheDecoTabView) {
-		const { use, views } = $userData.commonView;
+		const { use, views } = $user.commonView;
 		item.refresh(views[index], views[index].index == use);
 	}
 

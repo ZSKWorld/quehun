@@ -1,5 +1,5 @@
-declare namespace VO {
-	interface IAccountVO {
+declare namespace DO {
+	interface IAccountDO {
 		account_id: number;
 		nickname: string;
 		login_time: number;

@@ -19,7 +19,7 @@ export class UIAnnouncementMediator extends MediatorBase<UIAnnouncementView, IUI
 
 	@InterestUserEvent(EUserEvent.OnAnnouncementChanged)
 	private onAnnouncementChanged() {
-		const announcement = $userData.announcement;
+		const announcement = $user.announcement;
 		const tabData: [string, boolean][] = announcement.announcements.map(v => [v.title, announcement.isRead(v.id)]);
 		this._selectIndex = $mathUtil.clamp(this._selectIndex, 0, tabData.length - 1);
 		this.view.refreshTab(tabData, this._selectIndex);
@@ -27,6 +27,6 @@ export class UIAnnouncementMediator extends MediatorBase<UIAnnouncementView, IUI
 
 	private onTabSelectChanged(index: number) {
 		this._selectIndex = index;
-		this.view.refreshContent($userData.announcement.announcements[index]);
+		this.view.refreshContent($user.announcement.announcements[index]);
 	}
 }

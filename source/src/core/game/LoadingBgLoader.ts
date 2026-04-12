@@ -13,7 +13,7 @@ export class LoadingBgLoader extends Singleton<LoadingBgLoader>() {
 
 	randomLoad() {
 		const urls: string[] = [];
-		const newCg = $userData.bag.getRandomCgPath();
+		const newCg = $user.bag.getRandomCgPath();
 		if (newCg) {
 			if (this._cg != newCg) {
 				$loadMgr.clearRes(this._cg);

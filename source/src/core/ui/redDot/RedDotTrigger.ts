@@ -27,7 +27,7 @@ export class RedDotTrigger extends Observer {
 
 	@InterestUserEvent(EUserEvent.OnMailChanged)
 	private checkMail() {
-		const mails = $userData.mail.mails;
+		const mails = $user.mail.mails;
 		this.setTriggered(ERDTriggerType.MailNotRead, mails.some(v => v.state == 0));
 		this.setTriggered(ERDTriggerType.MailHaveReward, mails.some(v => v.attachments.length && !v.take_attachment));
 	}

@@ -44,9 +44,9 @@ export class ComBagSkinView extends ExtensionClass<IView, ComBagSkin>(ComBagSkin
 			// let isShow = UI_Sushe_Filter.isShowChar(v.id, this.renderFilter);
 			// if (!isShow) return;
 
-			if (((v.region_limit && $gameMgr.regionLimited) || onlyOwn) && !$userData.character.hasChar(v.id)) {
+			if (((v.region_limit && $gameMgr.regionLimited) || onlyOwn) && !$user.character.hasChar(v.id)) {
 				const skinIds = this._charSkins[v.id];
-				if (skinIds.every(v => !$userData.character.hasSkin(v))) return false;
+				if (skinIds.every(v => !$user.character.hasSkin(v))) return false;
 			}
 			return true;
 		}).map(v => v.id);
@@ -60,16 +60,16 @@ export class ComBagSkinView extends ExtensionClass<IView, ComBagSkin>(ComBagSkin
 		if (!skins) return this.backToCharList();
 		const onlyOwn = this.btn_own.selected;
 		const cfgChar = $cfgMgr.item_definition.character[charId];
-		const ownSkins = skins.filter(v => $userData.character.hasSkin(v));
+		const ownSkins = skins.filter(v => $user.character.hasSkin(v));
 		this.txt_name.text = `${ $langCfg(cfgChar, "name") } [size=30]${ ownSkins.length }/${ skins.length }[/size]`;
 		this._showSkins = onlyOwn ? ownSkins : skins;
 		this.list_skin.numItems = this._showSkins.length;
-		this.btn_choosedChar.refresh(charId, $userData.character.hasChar(charId));
+		this.btn_choosedChar.refresh(charId, $user.character.hasChar(charId));
 	}
 
 	private onListCharItemRenderer(index: number, item: RenderBagSkinItem1View) {
 		const charId = this._showChars[index];
-		item.refresh(charId, $userData.character.hasChar(charId));
+		item.refresh(charId, $user.character.hasChar(charId));
 	}
 
 	private onListCharItemClick(_, __, index: number) {
@@ -80,7 +80,7 @@ export class ComBagSkinView extends ExtensionClass<IView, ComBagSkin>(ComBagSkin
 
 	private onListSkinItemRenderer(index: number, item: RenderBagSkinItem2View) {
 		const skinId = this._showSkins[index];
-		item.refresh(skinId, $userData.character.hasSkin(skinId));
+		item.refresh(skinId, $user.character.hasSkin(skinId));
 	}
 
 	private onListSkinItemClick(_, __, index: number) {

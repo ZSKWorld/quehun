@@ -10,13 +10,13 @@ export class RenderBagIllustItemView extends ExtensionClass<IView, RenderBagIllu
 
 	}
 
-	refresh(data: ISheetData_ItemDefinition_LoadingImage, choosed:boolean) {
+	refresh(data: ISheetData_ItemDefinition_LoadingImage, choosed: boolean) {
 		const { ctrl_type, com_item, img_choose, txt_name, txt_time } = this;
 		img_choose.visible = choosed;
 		let cgId = 0;
 		for (let i = 0; i < data.unlock_items.length; i++) {
 			const v = data.unlock_items[i];
-			if (v && $userData.bag.getItemCount(v) > 0) {
+			if (v && $user.bag.getItemCount(v) > 0) {
 				const cfgItem = $cfgMgr.item_definition.item[v];
 				if (cfgItem.item_expire) {
 					cgId = v;

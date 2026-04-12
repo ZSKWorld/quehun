@@ -1,6 +1,6 @@
-import { BaseVO } from "./BaseVO";
+import { BaseDO } from "./BaseDO";
 
-export class FriendVO extends BaseVO implements VO.IFriendVO {
+export class FriendDO extends BaseDO implements DO.IFriendDO {
 	private _friends: ProtoObject<IFriend>[] = [];
 	private _friendMaxCount: number = 0;
 	private _friendCount: number = 0;

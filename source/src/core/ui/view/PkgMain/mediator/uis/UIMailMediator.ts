@@ -24,7 +24,7 @@ export class UIMailMediator extends MediatorBase<UIMailView, IUIMailData> {
 
 	@InterestUserEvent(EUserEvent.OnMailChanged)
 	private refreshMail() {
-		const mails = $userData.mail.mails;
+		const mails = $user.mail.mails;
 		const view = this.view;
 		view.refreshEmail(mails.length);
 		if (mails.length == 0) {
@@ -44,7 +44,7 @@ export class UIMailMediator extends MediatorBase<UIMailView, IUIMailData> {
 	}
 
 	private refreshMailContent(index: number) {
-		const mail = $userData.mail.mails[index];
+		const mail = $user.mail.mails[index];
 		this._curMail = mail;
 		this.view.refreshContent(mail);
 		if (mail.state == 0)
@@ -52,11 +52,11 @@ export class UIMailMediator extends MediatorBase<UIMailView, IUIMailData> {
 	}
 
 	private onListTabRender(index: number, item: BtnMailTabView) {
-		item.refresh($userData.mail.mails[index]);
+		item.refresh($user.mail.mails[index]);
 	}
 
 	private onListTabItemClick(_, __, index: number) {
-		const mail = $userData.mail.mails[index];
+		const mail = $user.mail.mails[index];
 		if (mail.mail_id == this._curMail.mail_id) return;
 		this.refreshMailContent(index);
 	}

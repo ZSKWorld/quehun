@@ -32,7 +32,7 @@ export class ComBagDecoView extends ExtensionClass<IView, ComBagDeco>(ComBagDeco
 	}
 
 	private updateShowItems() {
-		const items = this._items = $userData.bag.getItemByCategory(EItemCategory.Common);
+		const items = this._items = $user.bag.getItemByCategory(EItemCategory.Common);
 		const { _showTypes, _typeSort } = this;
 		items.sort((a, b) => {
 			const cfgItemA = $cfgMgr.item_definition.item[a.item_id];

@@ -1,6 +1,6 @@
-import { BaseVO } from "./BaseVO";
+import { BaseDO } from "./BaseDO";
 
-export class AnnouncementVO extends BaseVO implements VO.IAnnouncementVO {
+export class AnnouncementDO extends BaseDO implements DO.IAnnouncementDO {
 	private _announcements: ProtoObject<IAnnouncement>[] = [];
 	private _readList: number[] = [];
 

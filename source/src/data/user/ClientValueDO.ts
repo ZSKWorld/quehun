@@ -1,6 +1,6 @@
-import { BaseVO } from "./BaseVO";
+import { BaseDO } from "./BaseDO";
 
-export class ClientValueVO extends BaseVO implements VO.IClientValueVO {
+export class ClientValueDO extends BaseDO implements DO.IClientValueDO {
 	private _data: KeyMap<number> = {};
 	private _rechargeCount: number = 0;
 

@@ -12,7 +12,7 @@ export class ComBagItemView extends ExtensionClass<IView, ComBagItem>(ComBagItem
 	}
 
 	override onEnable() {
-		this._items = $userData.bag.getItemByCategory(EItemCategory.Item, true);
+		this._items = $user.bag.getItemByCategory(EItemCategory.Item, true);
 		this.list_item.numItems = this._items.length;
 	}
 

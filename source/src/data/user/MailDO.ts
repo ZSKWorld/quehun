@@ -1,6 +1,6 @@
-import { BaseVO } from "./BaseVO";
+import { BaseDO } from "./BaseDO";
 
-export class MailVO extends BaseVO implements VO.IMailVO {
+export class MailDO extends BaseDO implements DO.IMailDO {
 	private _mails: ProtoObject<IMail>[] = [];
 
 	get mails() { return this._mails; }

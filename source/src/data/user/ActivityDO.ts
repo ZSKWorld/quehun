@@ -1,6 +1,6 @@
-import { BaseVO } from "./BaseVO";
+import { BaseDO } from "./BaseDO";
 
-export class ActivityVO extends BaseVO implements VO.IActivityVO {
+export class ActivityDO extends BaseDO implements DO.IActivityDO {
 	activity: ProtoObject<IAccountActivityUpdate>;
 	activity_task: ProtoObject<IAccountUpdate_TaskUpdate>;
 	/** 翻牌牌任务 */

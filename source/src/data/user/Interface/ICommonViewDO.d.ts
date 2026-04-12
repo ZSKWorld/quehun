@@ -1,6 +1,6 @@
-declare namespace VO {
-	interface ICommonViewVO {
-		
+declare namespace DO {
+	interface ICommonViewDO {
+
 		get use(): number;
 		get views(): ProtoObject<IResAllcommonViews_Views>[];
 		get curView(): ProtoObject<IResAllcommonViews_Views>;

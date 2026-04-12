@@ -1,6 +1,6 @@
-import { BaseVO } from "./BaseVO";
+import { BaseDO } from "./BaseDO";
 
-export class BagVO extends BaseVO implements VO.IBagVO {
+export class BagDO extends BaseDO implements DO.IBagDO {
 	private readonly _items: ProtoObject<IItem>[] = [];
 	private readonly _daily_gain_record: ProtoObject<IItemGainRecords>[] = [];
 	private readonly _newBagItems = new Set<number>();

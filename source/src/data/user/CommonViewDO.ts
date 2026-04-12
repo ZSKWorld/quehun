@@ -1,4 +1,4 @@
-import { BaseVO } from "./BaseVO";
+import { BaseDO } from "./BaseDO";
 
 const DefaultViewIdMap: Record<EItemCommonType, number> = {
 	[EItemCommonType.LiZhiBang]: 0,
@@ -17,7 +17,7 @@ const DefaultViewIdMap: Record<EItemCommonType, number> = {
 	[EItemCommonType.MjpFront]: 305725,
 };
 
-export class CommonViewVO extends BaseVO implements VO.ICommonViewVO {
+export class CommonViewDO extends BaseDO implements DO.ICommonViewDO {
 	private _use: number = 0;
 	private _views: ProtoObject<IResAllcommonViews_Views>[] = [];
 

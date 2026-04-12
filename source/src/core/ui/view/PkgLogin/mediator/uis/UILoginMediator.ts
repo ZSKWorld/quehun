@@ -229,7 +229,7 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 		$localDataMgr.set(ELocalDataKey.AutoLogin, 1);
 		$localDataMgr.set<ILoginInfo>(ELocalDataKey.LastLoginData, _loginInfo);
 
-		const account = $userData.account;
+		const account = $user.account;
 		//绑定电话
 		// if ($gameMgr.clientType == 'chs' && !account.phone_verify) {
 		// 	UI_Bind_Phone1.Inst.show(true, Laya.Handler.create(this, () => {
@@ -264,7 +264,7 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 		this.dispatch(ENotifyConst.LoginSuccess);
 		await Promise.all([
 			$netMgr.requests.fetchClientValue(),
-			$userData.announcement.fetchAnnouncement(),
+			$user.announcement.fetchAnnouncement(),
 			$netMgr.requests.fetchInfo(),
 		]);
 		$sceneMgr.enterScene(ESceneType.MainScene);

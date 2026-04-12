@@ -1,6 +1,6 @@
-import { BaseVO } from "./BaseVO";
+import { BaseDO } from "./BaseDO";
 
-export class CharacterVO extends BaseVO implements VO.ICharacterVO {
+export class CharacterDO extends BaseDO implements DO.ICharacterDO {
 	private _mainCharId: number = 0;
 	private _chars: ProtoObject<ICharacter>[] = [];
 	private _starChars: ProtoObject<ICharacter>[] = [];

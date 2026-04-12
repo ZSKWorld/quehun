@@ -2,7 +2,9 @@ declare interface IDynamicResManager {
 	add(path: string): void;
 	remove(path: string): void;
 	setLoader(loader: fgui.GLoader, path: string): void;
+	setLoaders(loaders: fgui.GLoader[], pathes: string[]): void;
 	clearLoader(loader: fgui.GLoader): void;
+	clearLoaders(...loaders: fgui.GLoader[]): void;
 }
 
 declare interface IUIManager {

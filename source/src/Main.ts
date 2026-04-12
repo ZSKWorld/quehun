@@ -10,7 +10,7 @@ class Main {
 		this.init();
 	}
 	private async init() {
-		Laya.Config.FPS = 100;
+		// Laya.Config.FPS = 100;
 		Laya.SpineConst.VERSION = "4.2";
 		Laya.SpineConst.PREMULTIPLIED_ALPHA_DEFAULT = true;
 		Laya.InputManager.multiTouchEnabled = false;

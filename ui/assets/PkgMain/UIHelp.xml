@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0eii8i7plol0" designImageAlpha="0">
-  <controller name="tab" pages="0,,1,,2," selected="0"/>
+  <controller name="tab" pages="0,,1,,2," selected="2"/>
+  <controller name="pointTab" pages="0,,1,,2," selected="2"/>
   <displayList>
-    <component id="n1_ii8i" name="bg" src="w29kob8e" fileName="Component/Button/BtnIconFitNoScale.xml" pkg="vx9zwser" xy="0,0" size="1920,1080" alpha="0.5">
+    <component id="n1_ii8i" name="bg" src="w29kob8e" fileName="Component/Button/BtnIconFitNoScale.xml" pkg="vx9zwser" xy="-1040,-585" size="4000,2250" aspect="true" alpha="0.5">
       <Button icon="ui://vx9zwserieavob7l"/>
     </component>
     <component id="n2_ii8i" name="n2" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" pkg="vx9zwser" xy="62,3" size="1782,1073"/>
@@ -74,22 +75,35 @@
     <component id="n31_ii8i" name="pointTab2" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="1206,47" size="511,77" group="n45_ii8i">
       <Button title="符数计算表" titleColor="#e0ab67" titleFontSize="40" icon="ui://vx9zwsergsi2obe6" selectedIcon="ui://vx9zwsergsi2obe7"/>
     </component>
-    <loader id="n32_ii8i" name="pointIcon0" xy="185,150" size="1545,875" group="n45_ii8i" touchable="false" url="ui://ca43vz0eii8i7ploln" fill="scaleFree"/>
-    <loader id="n33_ii8i" name="pointIcon1" xy="185,150" size="1545,875" group="n45_ii8i" touchable="false" url="ui://ca43vz0eii8i7plolo" fill="scaleFree"/>
-    <loader id="n34_ii8i" name="pointIcon2" xy="185,150" size="1545,875" group="n45_ii8i" touchable="false" url="ui://ca43vz0eii8i7plolp" fill="scaleFree"/>
-    <component id="n35_ii8i" name="pointLink0" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="474,410" size="65,38" group="n45_ii8i"/>
-    <component id="n36_ii8i" name="pointLink1" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="475,520" size="65,38" group="n45_ii8i"/>
-    <component id="n37_ii8i" name="pointLink2" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="475,628" size="65,38" group="n45_ii8i"/>
-    <component id="n38_ii8i" name="pointLink3" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="475,738" size="65,38" group="n45_ii8i"/>
-    <component id="n39_ii8i" name="pointLink4" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="615,220" size="94,38" group="n45_ii8i"/>
-    <component id="n40_ii8i" name="pointLink5" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="765,220" size="94,38" group="n45_ii8i"/>
-    <component id="n41_ii8i" name="pointLink6" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="945,520" size="65,38" group="n45_ii8i"/>
-    <component id="n42_ii8i" name="pointLink7" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="1211,383" size="123,38" group="n45_ii8i"/>
-    <component id="n43_ii8i" name="pointLink8" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="1211,485" size="123,38" group="n45_ii8i"/>
-    <component id="n44_ii8i" name="pointLink9" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="1211,587" size="123,38" group="n45_ii8i"/>
-    <loader id="n47_ii8i" name="pointPop" xy="462,466" size="795,211" group="n45_ii8i" url="ui://ca43vz0eii8i7ploll" autoSize="true"/>
-    <group id="n45_ii8i" name="n45" xy="185,47" size="1545,978" advanced="true">
+    <group id="n45_ii8i" name="n45" xy="199,47" size="1518,77" advanced="true">
       <gearDisplay controller="tab" pages="2"/>
+    </group>
+    <loader id="n32_ii8i" name="pointIcon0" xy="185,150" size="1545,875" touchable="false" url="ui://ca43vz0eii8i7ploln" fill="scaleFree">
+      <gearDisplay controller="tab" pages="2"/>
+      <gearDisplay2 controller="pointTab" pages="0" condition="0"/>
+    </loader>
+    <loader id="n33_ii8i" name="pointIcon1" xy="185,150" size="1545,875" touchable="false" url="ui://ca43vz0eii8i7plolo" fill="scaleFree">
+      <gearDisplay controller="tab" pages="2"/>
+      <gearDisplay2 controller="pointTab" pages="1" condition="0"/>
+    </loader>
+    <loader id="n34_ii8i" name="pointIcon2" xy="185,150" size="1545,875" touchable="false" url="ui://ca43vz0eii8i7plolp" fill="scaleFree">
+      <gearDisplay controller="tab" pages="2"/>
+      <gearDisplay2 controller="pointTab" pages="2" condition="0"/>
+    </loader>
+    <component id="n35_ii8i" name="pointLink0" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="474,410" size="65,38" group="n48_ii8i"/>
+    <component id="n36_ii8i" name="pointLink1" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="475,520" size="65,38" group="n48_ii8i"/>
+    <component id="n37_ii8i" name="pointLink2" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="475,628" size="65,38" group="n48_ii8i"/>
+    <component id="n38_ii8i" name="pointLink3" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="475,738" size="65,38" group="n48_ii8i"/>
+    <component id="n39_ii8i" name="pointLink4" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="615,220" size="94,38" group="n48_ii8i"/>
+    <component id="n40_ii8i" name="pointLink5" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="765,220" size="94,38" group="n48_ii8i"/>
+    <component id="n41_ii8i" name="pointLink6" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="945,520" size="65,38" group="n48_ii8i"/>
+    <component id="n42_ii8i" name="pointLink7" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="1211,383" size="123,38" group="n48_ii8i"/>
+    <component id="n43_ii8i" name="pointLink8" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="1211,485" size="123,38" group="n48_ii8i"/>
+    <component id="n44_ii8i" name="pointLink9" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="1211,587" size="123,38" group="n48_ii8i"/>
+    <loader id="n47_ii8i" name="pointPop" xy="462,466" size="795,211" group="n48_ii8i" visible="false" url="ui://ca43vz0eii8i7ploll" autoSize="true"/>
+    <group id="n48_ii8i" name="n48" xy="462,220" size="872,556" advanced="true">
+      <gearDisplay controller="tab" pages="2"/>
+      <gearDisplay2 controller="pointTab" pages="2" condition="0"/>
     </group>
     <component id="n8_ii8i" name="close" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1723,35" size="70,70">
       <Button icon="ui://vx9zwserj0ddob7b"/>

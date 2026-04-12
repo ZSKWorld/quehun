@@ -60,8 +60,8 @@ export class ViewManager extends Singleton<ViewManager>() {
 
 	createView(viewId: EViewID, fullScreen: boolean = false) {
 		const viewInst = this._viewClsMap[viewId].createInstance();
-		viewInst.name = viewId;
-		fullScreen && viewInst.makeFullScreen();
+		viewInst && (viewInst.name = viewId);
+		viewInst && fullScreen && viewInst.makeFullScreen();
 		return viewInst;
 	}
 

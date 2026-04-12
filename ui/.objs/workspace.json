@@ -3,7 +3,17 @@
   "libview.iconScale": 0,
   "doc.openedDocs": [
     "ui://vx9zwser5zjlobgd",
-    "ui://vx9zwserpuubobfb"
+    "ui://vx9zwserpuubobfb",
+    "ui://vith2b66ii8iobhg",
+    "ui://vith2b66ktwpob9x",
+    "ui://vx9zwserii8iobgf",
+    "ui://vx9zwserz63pob8g",
+    "ui://vith2b66ktwpob9u",
+    "ui://vith2b66co9gob9l",
+    "ui://vith2b66k5qeobge",
+    "ui://vith2b66s5z8obfv",
+    "ui://vx9zwsermj5kb6v",
+    "ui://vith2b66vwgm0"
   ],
   "packageGroup.mine": [
     "vx9zwser",
@@ -15,7 +25,7 @@
   "test.device": "iPhone 8",
   "canvasColor": 10066329,
   "auxline2": true,
-  "doc.activeDoc": "ui://vx9zwserpuubobfb",
+  "doc.activeDoc": "ui://vx9zwserii8iobgf",
   "libview.twoColumn": true,
   "libview.expandedNodes": [
     "vx9zwser",
@@ -40,8 +50,14 @@
     "/Component/",
     "vith2b66",
     "/Component/UIAnnouncement/",
+    "vith2b66",
+    "/Component/UIHelp/",
     "ca43vz0e",
     "/",
+    "ca43vz0e",
+    "/11/",
+    "ca43vz0e",
+    "/11/help/",
     "ca43vz0e",
     "/公告/",
     "ca43vz0e",

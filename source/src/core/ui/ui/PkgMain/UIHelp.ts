@@ -3,6 +3,7 @@
 export default class UIHelp extends fgui.GComponent {
 
 	protected ctrl_tab: fgui.Controller;
+	protected ctrl_pointTab: fgui.Controller;
 	protected btn_bg: fgui.GButton;
 	protected btn_tab0: fgui.GButton;
 	protected btn_tab1: fgui.GButton;
@@ -46,6 +47,7 @@ export default class UIHelp extends fgui.GComponent {
 
 	protected override onConstruct(): void {
 		this.ctrl_tab = this.getControllerAt(0);
+		this.ctrl_pointTab = this.getControllerAt(1);
 		this.btn_bg = <fgui.GButton>(this.getChildAt(0));
 		this.btn_tab0 = <fgui.GButton>(this.getChildAt(2));
 		this.btn_tab1 = <fgui.GButton>(this.getChildAt(3));
@@ -66,20 +68,20 @@ export default class UIHelp extends fgui.GComponent {
 		this.btn_pointTab0 = <fgui.GButton>(this.getChildAt(20));
 		this.btn_pointTab1 = <fgui.GButton>(this.getChildAt(21));
 		this.btn_pointTab2 = <fgui.GButton>(this.getChildAt(22));
-		this.loader_pointIcon0 = <fgui.GLoader>(this.getChildAt(23));
-		this.loader_pointIcon1 = <fgui.GLoader>(this.getChildAt(24));
-		this.loader_pointIcon2 = <fgui.GLoader>(this.getChildAt(25));
-		this.btn_pointLink0 = <fgui.GButton>(this.getChildAt(26));
-		this.btn_pointLink1 = <fgui.GButton>(this.getChildAt(27));
-		this.btn_pointLink2 = <fgui.GButton>(this.getChildAt(28));
-		this.btn_pointLink3 = <fgui.GButton>(this.getChildAt(29));
-		this.btn_pointLink4 = <fgui.GButton>(this.getChildAt(30));
-		this.btn_pointLink5 = <fgui.GButton>(this.getChildAt(31));
-		this.btn_pointLink6 = <fgui.GButton>(this.getChildAt(32));
-		this.btn_pointLink7 = <fgui.GButton>(this.getChildAt(33));
-		this.btn_pointLink8 = <fgui.GButton>(this.getChildAt(34));
-		this.btn_pointLink9 = <fgui.GButton>(this.getChildAt(35));
-		this.loader_pointPop = <fgui.GLoader>(this.getChildAt(36));
-		this.btn_close = <fgui.GButton>(this.getChildAt(38));
+		this.loader_pointIcon0 = <fgui.GLoader>(this.getChildAt(24));
+		this.loader_pointIcon1 = <fgui.GLoader>(this.getChildAt(25));
+		this.loader_pointIcon2 = <fgui.GLoader>(this.getChildAt(26));
+		this.btn_pointLink0 = <fgui.GButton>(this.getChildAt(27));
+		this.btn_pointLink1 = <fgui.GButton>(this.getChildAt(28));
+		this.btn_pointLink2 = <fgui.GButton>(this.getChildAt(29));
+		this.btn_pointLink3 = <fgui.GButton>(this.getChildAt(30));
+		this.btn_pointLink4 = <fgui.GButton>(this.getChildAt(31));
+		this.btn_pointLink5 = <fgui.GButton>(this.getChildAt(32));
+		this.btn_pointLink6 = <fgui.GButton>(this.getChildAt(33));
+		this.btn_pointLink7 = <fgui.GButton>(this.getChildAt(34));
+		this.btn_pointLink8 = <fgui.GButton>(this.getChildAt(35));
+		this.btn_pointLink9 = <fgui.GButton>(this.getChildAt(36));
+		this.loader_pointPop = <fgui.GLoader>(this.getChildAt(37));
+		this.btn_close = <fgui.GButton>(this.getChildAt(39));
 	}
 }

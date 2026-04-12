@@ -23,16 +23,27 @@ export class DynamicResManager extends Singleton<DynamicResManager>() implements
 
 	setLoader(loader: fgui.GLoader, path: string) {
 		if (!loader) return;
+		path = path || "";
 		this.remove(loader.icon);
 		loader.icon = "";
 		loader.icon = path;
 		this.add(path);
 	}
 
+	setLoaders(loaders: fgui.GLoader[], pathes: string[]) {
+		loaders.forEach((loader, index) => {
+			this.setLoader(loader, pathes[index]);
+		});
+	}
+
 	clearLoader(loader: fgui.GLoader) {
 		if (!loader) return;
 		this.remove(loader.icon);
 		loader.icon = "";
+	}
+
+	clearLoaders(...loaders: fgui.GLoader[]) {
+		loaders.forEach(v => this.clearLoader(v));
 	}
 
 	private checkUnload() {

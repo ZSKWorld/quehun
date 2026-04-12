@@ -14,7 +14,7 @@ export class SceneManager extends Singleton<SceneManager>() implements ISceneMan
 			mask.visible = false;
 			mask.sortingOrder = 9999;
 			mask.name = "SceneManager_Mask";
-			$uiMgr.addToLayer(mask, ELayer.Lock);
+			$uiMgr.addToLayer(mask, ELayer.UITop);
 			mask.drawRect(0, "", "#00000000");
 			mask.makeFullScreen();
 			mask.addRelation(mask.parent, fgui.RelationType.Size);

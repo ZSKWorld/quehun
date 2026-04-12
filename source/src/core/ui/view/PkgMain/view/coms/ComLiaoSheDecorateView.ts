@@ -21,10 +21,6 @@ const SlotIcons = [
 	'ui://PkgMain/img_3200',
 	'ui://PkgMain/img_3204',
 	'', '', '', '', ''];
-// cell_default_item = [0, 0, 0, 0, 0, 0, 305501, 305044, 305045, 305725, 307001];
-// slot_ids = [0, 1, 2, 10, 3, 4, 5, 6, 7, 13, 8];
-// slotHasPreivew = [false, false, false, false, false, false, true, true, true, true, true];
-// itemCanDiselect = [true, true, true, true, true, true, false, false, false, false, false];
 
 class DecoViewData implements IResAllcommonViews_Views {
 	name: string;

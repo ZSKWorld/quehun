@@ -52,7 +52,7 @@ export class Facade extends Singleton<Facade>() implements IFacade {
 	}
 
 	createMediator(viewId: EViewID, fullScreen = false) {
-		return this.createView(viewId, fullScreen).mediator;
+		return this.createView(viewId, fullScreen)?.mediator;
 	}
 	//#endregion
 

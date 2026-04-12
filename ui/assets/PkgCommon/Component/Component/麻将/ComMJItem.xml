@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="68,110">
+  <displayList>
+    <loader id="n0_ii8i" name="back" xy="0,0" size="68,110" fill="scaleFree">
+      <relation target="" sidePair="width-width,height-height"/>
+    </loader>
+    <loader id="n1_ii8i" name="front" xy="0,0" size="68,110" fill="scaleFree">
+      <relation target="" sidePair="width-width,height-height"/>
+    </loader>
+  </displayList>
+</component>

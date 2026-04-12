@@ -25,6 +25,22 @@ declare enum ERouteState {
 }
 //#endregion
 
+//#region 麻将牌相关
+//0.筒子p,  1.万字m,  2.条子s,  3.字牌z,  4.百搭牌
+declare enum EMjpType {
+	/** 筒子 */
+	P = "p",
+	/** 万字 */
+	M = "m",
+	/** 条子 */
+	S = "s",
+	/** 字牌 */
+	Z = "z",
+	/** 百搭 */
+	BD = "bd",
+}
+//#endregion
+
 /** 本地化语言 */
 declare enum ELanguage {
 	CHS = "chs",
@@ -113,9 +129,6 @@ declare enum ELayer {
 	UIBottom = "UIBottom",
 	UIMiddle = "UIMiddle",
 	UITop = "UITop",
-	Dialog = "Dialog",
-	Alert = "Alert",
-	Lock = "Lock",
 }
 
 /** 全局物品类型 */

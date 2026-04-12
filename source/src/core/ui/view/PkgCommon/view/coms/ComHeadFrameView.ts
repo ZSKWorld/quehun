@@ -8,7 +8,7 @@ export class ComHeadFrameView extends ExtensionClass<IView, ComHeadFrame>(ComHea
 
 	refreshIcon(id: number) {
 		const d_item = $cfgMgr.item_definition.item[id];
-		if (!d_item) id = 305501;
+		if (!d_item) id = $userData.commonView.getDefultViewId(EItemCommonType.HeadFrame);
 
 		const framePath = $itemUtil.getItemInfo(id).icon;
 		$dynamicResMgr.setLoader(this.loader_icon, framePath);
@@ -17,7 +17,7 @@ export class ComHeadFrameView extends ExtensionClass<IView, ComHeadFrame>(ComHea
 
 	refreshItemIcon(id: number) {
 		const d_item = $cfgMgr.item_definition.item[id];
-		if (!d_item) id = 305501;
+		if (!d_item) id = $userData.commonView.getDefultViewId(EItemCommonType.HeadFrame);
 
 		const framePath = $itemUtil.getItemInfo(id).itemIcon;
 		$dynamicResMgr.setLoader(this.loader_icon, framePath);

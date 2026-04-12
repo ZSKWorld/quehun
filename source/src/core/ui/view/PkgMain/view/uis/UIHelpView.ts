@@ -18,13 +18,13 @@ const CourseIcons = [
 	"course/course8.png",
 ];
 
-const PointPopIcons = [
+const PointIcons = [
 	"myres/rules_point/page1.png",
 	"myres/rules_point/page2.png",
 	"myres/rules_point/page3.png",
 ];
 
-const PointPopImages = [
+const PointPopIcons = [
 	"myres/rules_point/illustration3.png",
 	"myres/rules_point/illustration4.png",
 	"myres/rules_point/illustration5.png",
@@ -45,31 +45,43 @@ export class UIHelpView extends ExtensionClass<IView, UIHelp>(UIHelp) implements
 
 	override onCreate() {
 		CourseIcons.forEach((v, i) => (CourseIcons[i] = $langRes(v)));
+		PointIcons.forEach((v, i) => (PointIcons[i] = $langRes(v)));
 		PointPopIcons.forEach((v, i) => (PointPopIcons[i] = $langRes(v)));
-		PointPopImages.forEach((v, i) => (PointPopImages[i] = $langRes(v)));
 
-		const { btn_bg, btn_tab0, btn_tab1, btn_tab2, btn_fanTab0, btn_fanTab1, btn_fanTab2, btn_fanTab3, btn_fanTab4, btn_fanTab5, btn_fanTab6, btn_fanTab7, btn_preCourse, btn_nextCourse, btn_pointTab0, btn_pointTab1, btn_pointTab2, btn_pointLink0, btn_pointLink1, btn_pointLink2, btn_pointLink3, btn_pointLink4, btn_pointLink5, btn_pointLink6, btn_pointLink7, btn_pointLink8, btn_pointLink9, btn_close } = this;
+		const {
+			btn_bg, btn_tab0, btn_tab1, btn_tab2, btn_fanTab0, btn_fanTab1, btn_fanTab2, btn_fanTab3,
+			btn_fanTab4, btn_fanTab5, btn_fanTab6, btn_fanTab7, btn_preCourse, btn_nextCourse, btn_pointTab0,
+			btn_pointTab1, btn_pointTab2, btn_pointLink0, btn_pointLink1, btn_pointLink2, btn_pointLink3,
+			btn_pointLink4, btn_pointLink5, btn_pointLink6, btn_pointLink7, btn_pointLink8, btn_pointLink9,
+			btn_close
+		} = this;
 		btn_bg.onClick(this, this.closeSelf);
 		btn_close.onClick(this, this.closeSelf);
 		btn_preCourse.onClick(this, this.refreshCourse, [-1]);
 		btn_nextCourse.onClick(this, this.refreshCourse, [1]);
 
 		this._tabGroup.init([btn_tab0, btn_tab1, btn_tab2], this, this.onTabChanged, "#E8AF71", "#E8AF71");
+
 		this._fanGroup.init([
-			btn_fanTab0, btn_fanTab1, btn_fanTab2, btn_fanTab3, btn_fanTab4, btn_fanTab5, btn_fanTab6, btn_fanTab7
-		], null, null, "#E0AB67", "#E0AB67");
+			btn_fanTab0, btn_fanTab1, btn_fanTab2, btn_fanTab3, btn_fanTab4, btn_fanTab5, btn_fanTab6,
+			btn_fanTab7
+		], this, this.onFanTabChanged, "#E0AB67", "#E0AB67");
+
 		this._pointGroup.init([
 			btn_pointTab0, btn_pointTab1, btn_pointTab2
-		], null, null, "#E0AB67", "#E0AB67");
+		], this, this.onPointTabChanged, "#E0AB67", "#E0AB67");
+
+		[
+			btn_pointLink0, btn_pointLink1, btn_pointLink2, btn_pointLink3, btn_pointLink4, btn_pointLink5,
+			btn_pointLink6, btn_pointLink7, btn_pointLink8, btn_pointLink9
+		].forEach((v, i) => v.onClick(this, this.onPointLinkClick, [v, i]));
 	}
 
 	override onEnable() {
-		this._tabGroup.selectIndex = 0;
-	}
-
-	override onDisable() {
-		this._tabGroup.clearSelection();
-		$dynamicResMgr.clearLoader(this.loader_courseIcon);
+		const { _tabGroup, loader_pointIcon0, loader_pointIcon1, loader_pointIcon2, loader_pointPop } = this;
+		_tabGroup.selectIndex = 0;
+		$dynamicResMgr.setLoaders([loader_pointIcon0, loader_pointIcon1, loader_pointIcon2], PointIcons);
+		loader_pointPop.visible = false;
 	}
 
 	private onTabChanged(index: number) {
@@ -84,23 +96,62 @@ export class UIHelpView extends ExtensionClass<IView, UIHelp>(UIHelp) implements
 		}
 	}
 
+	//#region 役种一览
 	private onFanTabChanged(index: number) {
 
 	}
+	//#endregion
 
-	private onPointTabChanged(index: number) {
-
-	}
-
+	//#region 新手入门
 	private refreshCourse(offset = 0) {
-		const index = $mathUtil.clamp(this._courseIndex + offset, 0, CourseIcons.length - 1);
+		const { _courseIndex, btn_preCourse, btn_nextCourse, txt_coursePage, loader_courseIcon } = this;
+		const index = $mathUtil.clamp(_courseIndex + offset, 0, CourseIcons.length - 1);
 		this._courseIndex = index;
-		this.btn_preCourse.visible = index > 0;
-		this.btn_nextCourse.visible = index < CourseIcons.length - 1;
-		this.txt_coursePage.text = `${ index + 1 }/${ CourseIcons.length }`;
-		$dynamicResMgr.setLoader(this.loader_courseIcon, CourseIcons[index]);
+		btn_preCourse.visible = index > 0;
+		btn_nextCourse.visible = index < CourseIcons.length - 1;
+		txt_coursePage.text = `${ index + 1 }/${ CourseIcons.length }`;
+		$dynamicResMgr.setLoader(loader_courseIcon, CourseIcons[index]);
 	}
+	//#endregion
+
+	//#region 点数计算
+	private onPointTabChanged(index: number) {
+		this.ctrl_pointTab.selectedIndex = index;
+	}
+
+	private onPointLinkClick(btn: fgui.GButton, index: number, e: Laya.Event) {
+		this.refreshPointLinkPop(btn, index);
+		Laya.stage.once(Laya.Event.MOUSE_DOWN, this, this.refreshPointLinkPop, [null]);
+		e.stopPropagation();
+	}
+
+	private refreshPointLinkPop(btn: fgui.GButton, index: number) {
+		const pointPop = this.loader_pointPop;
+		fgui.GTween.kill(pointPop);
+		if (btn) {
+			pointPop.alpha = 0;
+			pointPop.visible = true;
+			pointPop.setPivot(index < 7 ? 0 : 1, 0, true);
+			const x = index < 7 ? (btn.x + btn.width + 2) : (btn.x - 2);
+			const y = btn.y + 35;
+			pointPop.setXY(x, y);
+			pointPop.setScale(0, 0);
+			pointPop.tweenFade(1, 0.2);
+			pointPop.tweenScale(1, 1, 0.2).setEase(fgui.EaseType.BackOut);
+			$dynamicResMgr.setLoader(pointPop, PointPopIcons[index]);
+		} else {
+			fgui.GTween.kill(pointPop);
+			pointPop.tweenFade(0, 0.2).onComplete(() => pointPop.visible = false);
+		}
+	}
+	//#endregion
 
 	override onOpenAni() { return $uiUtil.popAlphaIn(this); }
 	override onCloseAni() { return $uiUtil.popAlphaOut(this); }
+
+	override onDisable() {
+		const { _tabGroup, loader_courseIcon, loader_pointIcon0, loader_pointIcon1, loader_pointIcon2, loader_pointPop } = this;
+		_tabGroup.clearSelection();
+		$dynamicResMgr.clearLoaders(loader_courseIcon, loader_pointIcon0, loader_pointIcon1, loader_pointIcon2, loader_pointPop);
+	}
 }

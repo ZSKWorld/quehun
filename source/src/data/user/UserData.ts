@@ -74,7 +74,7 @@ export class UserData extends BaseVO implements VO.IUserDataVO {
 
 	@InterestMessage(ENetMessage.fetchInfo)
 	private onFetchInfo(res: IResFetchInfo) {
-		res.server_time && $facade.dispatch(ENetMessage.fetchServerTime, res.server_time)
+		res.server_time && $facade.dispatch(ENetMessage.fetchServerTime, res.server_time);
 		res.server_setting && $facade.dispatch(ENetMessage.fetchServerSettings, res.server_setting);
 		res.client_value && $facade.dispatch(ENetMessage.fetchClientValue, res.client_value);
 		res.friend_list && $facade.dispatch(ENetMessage.fetchFriendList, res.friend_list);

@@ -20,6 +20,14 @@ ERouteState = {
 	Rejected: "rejected",
 }
 
+EMjpType = {
+	P: "p",
+	M: "m",
+	S: "s",
+	Z: "z",
+	B: "bd",
+}
+
 ELanguage = {
 	CHS: "chs",
 	CHST: "chs_t",
@@ -89,9 +97,6 @@ ELayer = {
 	UIBottom: "UIBottom",
 	UIMiddle: "UIMiddle",
 	UITop: "UITop",
-	Dialog: "Dialog",
-	Alert: "Alert",
-	Lock: "Lock",
 }
 
 EItemType = {

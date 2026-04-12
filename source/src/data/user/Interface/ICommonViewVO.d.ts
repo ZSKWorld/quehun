@@ -4,5 +4,7 @@ declare namespace VO {
 		get use(): number;
 		get views(): ProtoObject<IResAllcommonViews_Views>[];
 		get curView(): ProtoObject<IResAllcommonViews_Views>;
+		/** 获取默认装扮id */
+		getDefultViewId(type: EItemCommonType): number;
 	}
 }

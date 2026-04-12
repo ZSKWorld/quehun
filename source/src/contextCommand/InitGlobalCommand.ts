@@ -18,7 +18,7 @@ import { RedDotManager } from "../core/ui/redDot/RedDotManager";
 import { RichText } from "../core/ui/tool/RichText";
 import { TipManager } from "../core/ui/tool/TipManager";
 import { UIUtil } from "../core/ui/tool/UIUtil";
-import { UserData } from "../core/userData/UserData";
+import { UserData } from "../data/user/UserData";
 import { SceneManager } from "../scene/SceneManager";
 
 export class InitGlobalCommand extends Command {
@@ -94,7 +94,7 @@ export class InitGlobalCommand extends Command {
 			const code = error.code;
 			const errStr = $netLang(code) || $lang(2068);
 			$confirmSma(2, errStr);
-		})
+		});
 
 		$windowImmit("$richText", function (text: string = "") {
 			return Laya.Pool.createByClass(RichText).start(text);

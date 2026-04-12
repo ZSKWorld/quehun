@@ -20,6 +20,7 @@ import { RenderBagSkinItem2View } from "../core/ui/view/PkgMain/view/renders/Ren
 import { RenderFriendApplyView } from "../core/ui/view/PkgMain/view/renders/RenderFriendApplyView";
 import { RenderFriendFriendView } from "../core/ui/view/PkgMain/view/renders/RenderFriendFriendView";
 import { RenderFriendRecentView } from "../core/ui/view/PkgMain/view/renders/RenderFriendRecentView";
+import { RenderHelpItem1View } from "../core/ui/view/PkgMain/view/renders/RenderHelpItem1View";
 import { RenderLiaoSheCharView } from "../core/ui/view/PkgMain/view/renders/RenderLiaoSheCharView";
 import { RenderLiaoSheDecoItemView } from "../core/ui/view/PkgMain/view/renders/RenderLiaoSheDecoItemView";
 import { RenderLiaoSheDecoTabView } from "../core/ui/view/PkgMain/view/renders/RenderLiaoSheDecoTabView";
@@ -151,6 +152,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.RenderFriendApplyView, EViewType.Render, RenderFriendApplyView);
 		register(EViewID.RenderFriendFriendView, EViewType.Render, RenderFriendFriendView);
 		register(EViewID.RenderFriendRecentView, EViewType.Render, RenderFriendRecentView);
+		register(EViewID.RenderHelpItem1View, EViewType.Render, RenderHelpItem1View);
 		register(EViewID.RenderLiaoSheCharView, EViewType.Render, RenderLiaoSheCharView);
 		register(EViewID.RenderLiaoSheDecoItemView, EViewType.Render, RenderLiaoSheDecoItemView);
 		register(EViewID.RenderLiaoSheDecoTabView, EViewType.Render, RenderLiaoSheDecoTabView);

@@ -1,5 +1,7 @@
 import { RadioGroup } from "../../../../extention/RadioGroup";
 import UIHelp from "../../../../ui/PkgMain/UIHelp";
+import { ComMJItemView } from "../../../PkgCommon/view/coms/ComMJItemView";
+import { RenderHelpItem1View } from "../renders/RenderHelpItem1View";
 
 export const enum EUIHelpMsg {
 	OnBtnPreCourseClick = "UIHelp_OnBtnPreCourseClick",
@@ -53,7 +55,7 @@ export class UIHelpView extends ExtensionClass<IView, UIHelp>(UIHelp) implements
 			btn_fanTab4, btn_fanTab5, btn_fanTab6, btn_fanTab7, btn_preCourse, btn_nextCourse, btn_pointTab0,
 			btn_pointTab1, btn_pointTab2, btn_pointLink0, btn_pointLink1, btn_pointLink2, btn_pointLink3,
 			btn_pointLink4, btn_pointLink5, btn_pointLink6, btn_pointLink7, btn_pointLink8, btn_pointLink9,
-			btn_close
+			btn_close, list_fan
 		} = this;
 		btn_bg.onClick(this, this.closeSelf);
 		btn_close.onClick(this, this.closeSelf);
@@ -75,6 +77,8 @@ export class UIHelpView extends ExtensionClass<IView, UIHelp>(UIHelp) implements
 			btn_pointLink0, btn_pointLink1, btn_pointLink2, btn_pointLink3, btn_pointLink4, btn_pointLink5,
 			btn_pointLink6, btn_pointLink7, btn_pointLink8, btn_pointLink9
 		].forEach((v, i) => v.onClick(this, this.onPointLinkClick, [v, i]));
+
+		$uiUtil.setList(list_fan, true, this, this.onListFanRender);
 	}
 
 	override onEnable() {
@@ -98,7 +102,11 @@ export class UIHelpView extends ExtensionClass<IView, UIHelp>(UIHelp) implements
 
 	//#region 役种一览
 	private onFanTabChanged(index: number) {
+		this.list_fan.numItems = index;
+	}
 
+	private onListFanRender(index: number, item: RenderHelpItem1View) {
+		item.refresh();
 	}
 	//#endregion
 

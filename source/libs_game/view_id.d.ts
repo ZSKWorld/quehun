@@ -21,6 +21,7 @@ declare enum EViewID {
 	RenderFriendApplyView = "RenderFriendApplyView",
 	RenderFriendFriendView = "RenderFriendFriendView",
 	RenderFriendRecentView = "RenderFriendRecentView",
+	RenderHelpItem1View = "RenderHelpItem1View",
 	RenderLiaoSheCharView = "RenderLiaoSheCharView",
 	RenderLiaoSheDecoItemView = "RenderLiaoSheDecoItemView",
 	RenderLiaoSheDecoTabView = "RenderLiaoSheDecoTabView",

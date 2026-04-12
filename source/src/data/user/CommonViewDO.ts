@@ -20,10 +20,17 @@ const DefaultViewIdMap: Record<EItemCommonType, number> = {
 export class CommonViewDO extends BaseDO implements DO.ICommonViewDO {
 	private _use: number = 0;
 	private _views: ProtoObject<IResAllcommonViews_Views>[] = [];
+	private _curView: ProtoObject<IResAllcommonViews_Views>;
+	private _curMjpBack: number;
+	private _curMjpFront: number;
+	private _curTableCloth: number;
 
 	get use() { return this._use; }
 	get views() { return this._views; }
-	get curView() { return this._views.find(v => v.index == this._use); }
+	get curView() { return this._curView; }
+	get curMjpBack() { return this._curMjpBack; }
+	get curMjpFront() { return this._curMjpFront; }
+	get curTableCloth() { return this._curTableCloth; }
 
 	getDefultViewId(type: EItemCommonType) {
 		return DefaultViewIdMap[type] ?? 0;
@@ -35,11 +42,35 @@ export class CommonViewDO extends BaseDO implements DO.ICommonViewDO {
 		this._use = decodeRes.use;
 		this._views = decodeRes.views;
 		this.fillDefaultData();
+		this.refreshCurView();
+		this.dispatch(EUserEvent.OnCommonViewChanged);
+	}
+
+	@InterestMessage(ENetMessage.useCommonView)
+	private onUseCommonView(_, req: IReqUseCommonView) {
+		this._use = req.index;
+		this.refreshCurView();
+	}
+
+	@InterestMessage(ENetMessage.saveCommonViews)
+	private onSaveCommonViews(_, req: IReqSaveCommonViews) {
+		const view = this._views.find(v => v.index == req.save_index);
+		view.values = req.views.map(v => ({
+			slot: v.slot,
+			item_id: v.item_id,
+			type: v.type,
+			item_id_list: [...v.item_id_list],
+		}));
+		if (req.is_use) {
+			this._use = req.save_index;
+			this.refreshCurView();
+		}
+		this.dispatch(EUserEvent.OnCommonViewChanged);
 	}
 
 	/** 填充默认数据 */
 	private fillDefaultData() {
-		const slotIds = [0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 13];
+		const slotIds = [0, 1, 2, 10, 3, 4, 5, 6, 7, 13, 8]; //按寮舍显示顺序
 		const { _views } = this;
 		for (let i = 0; i < 10; i++) {
 			let view = _views.find(v => v.index == i);
@@ -62,5 +93,37 @@ export class CommonViewDO extends BaseDO implements DO.ICommonViewDO {
 			slots.sort((a, b) => slotIds.indexOf(a.slot) - slotIds.indexOf(b.slot));
 		}
 		_views.sort((a, b) => a.index - b.index);
+	}
+
+	private refreshCurView() {
+		const view = this._views.find(v => v.index == this._use);
+
+		const mjpBackSlot = view.values.find(v => v.slot == EItemCommonType.MjpBack);
+		const mjpFrontSlot = view.values.find(v => v.slot == EItemCommonType.MjpFront);
+		const tableClothSlot = view.values.find(v => v.slot == EItemCommonType.TableCloth);
+
+		const mjpBack = mjpBackSlot ? (mjpBackSlot.type == 1 ? mjpBackSlot.item_id_list.random() : mjpBackSlot.item_id) : DefaultViewIdMap[EItemCommonType.MjpBack];
+		const mjpFront = mjpFrontSlot ? (mjpFrontSlot.type == 1 ? mjpFrontSlot.item_id_list.random() : mjpFrontSlot.item_id) : DefaultViewIdMap[EItemCommonType.MjpFront];
+		const tableCloth = tableClothSlot ? (tableClothSlot.type == 1 ? tableClothSlot.item_id_list.random() : tableClothSlot.item_id) : DefaultViewIdMap[EItemCommonType.TableCloth];
+
+		if (mjpBack != this._curMjpBack) {
+			this._curMjpBack = mjpBack;
+			this.dispatch(EUserEvent.OnMjpBackUseChanged);
+		}
+
+		if (mjpFront != this._curMjpFront) {
+			this._curMjpFront = mjpFront;
+			this.dispatch(EUserEvent.OnMjpFrontUseChanged);
+		}
+
+		if (tableCloth != this._curTableCloth) {
+			this._curTableCloth = tableCloth;
+			this.dispatch(EUserEvent.OnTableClothUseChanged);
+		}
+
+		if (view != this._curView) {
+			this._curView = view;
+			this.dispatch(EUserEvent.OnViewUseChanged);
+		}
 	}
 } 

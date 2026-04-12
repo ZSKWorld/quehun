@@ -2,18 +2,12 @@
   "libview.firstColumnWidth": 232,
   "libview.iconScale": 0,
   "doc.openedDocs": [
+    "ui://vith2b66pt3aobb0",
     "ui://vx9zwser5zjlobgd",
-    "ui://vx9zwserpuubobfb",
-    "ui://vith2b66ii8iobhg",
-    "ui://vith2b66ktwpob9x",
     "ui://vx9zwserii8iobgf",
-    "ui://vx9zwserz63pob8g",
-    "ui://vith2b66ktwpob9u",
-    "ui://vith2b66co9gob9l",
-    "ui://vith2b66k5qeobge",
-    "ui://vith2b66s5z8obfv",
-    "ui://vx9zwsermj5kb6v",
-    "ui://vith2b66vwgm0"
+    "ui://vith2b66ktwpob9x",
+    "ui://vith2b66ii8iobhg",
+    "ui://vith2b66ktwpob9t"
   ],
   "packageGroup.mine": [
     "vx9zwser",
@@ -25,7 +19,7 @@
   "test.device": "iPhone 8",
   "canvasColor": 10066329,
   "auxline2": true,
-  "doc.activeDoc": "ui://vx9zwserii8iobgf",
+  "doc.activeDoc": "ui://vith2b66ii8iobhg",
   "libview.twoColumn": true,
   "libview.expandedNodes": [
     "vx9zwser",

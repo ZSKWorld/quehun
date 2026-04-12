@@ -14,7 +14,7 @@ export class ItemUtil extends Singleton<ItemUtil>() implements IItemUtil {
 	getItemInfo(id: number) {
 		if (this._itemView[id]) return this._itemView[id];
 
-		let name = "", icon = "", itemIcon = "", previewIcon = "", desc = "", func = "", resName = "", resPath = "";
+		let name = "", icon = "", itemIcon = "", previewIcon = "", desc = "", func = "", resName = "", resPath = "", atlasPath = "", atlasTexPath = "";
 
 		const skinInfo: IItemInfo_SkinInfo = {
 			bighead: "", full: "", half: "", smallhead: "", smallhead1: "", smallhead2: "",
@@ -59,11 +59,15 @@ export class ItemUtil extends Singleton<ItemUtil>() implements IItemUtil {
 								break;
 							case EItemCommonType.MjpBack:
 								previewIcon = `myres2/mjp/${ resName }/preview.png`;
-								resPath = `myres2/tablecloth/${ resName }/hand/`;
+								resPath = `myres2/mjp/${ resName }/hand/`;
+								atlasPath = `myres2/mjp/${ resName }/hand.atlas`;
+								atlasTexPath = `myres2/mjp/${ resName }/hand.png`;
 								break;
 							case EItemCommonType.MjpFront:
 								previewIcon = `myres2/mjp_surface/${ resName }/preview.png`;
-								resPath = `myres2/tablecloth/${ resName }/ui/`;
+								resPath = `myres2/mjpm/${ resName }/ui/`;
+								atlasPath = `myres2/mjp_surface/${ resName }/ui.atlas`;
+								atlasTexPath = `myres2/mjp_surface/${ resName }/ui.png`;
 								break;
 							case EItemCommonType.HeadFrame:
 								icon = `extendRes/head_frame/${ resName }.png`;
@@ -124,7 +128,9 @@ export class ItemUtil extends Singleton<ItemUtil>() implements IItemUtil {
 			desc,
 			func,
 			resName,
-			resPath: $langRes(resPath),
+			resPath, //赋值地方处理$langRes，牌背牌面走的是图集路径
+			atlasPath: $langRes(atlasPath),
+			atlasTexPath: $langRes(atlasTexPath),
 			skinInfo: Object.freeze(skinInfo)
 		};
 		return Object.freeze(this._itemView[id]);

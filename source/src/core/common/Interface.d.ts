@@ -179,6 +179,10 @@ declare interface IItemInfo {
 	resName: string;
 	/** 资源路径 */
 	resPath: string;
+	/** 资源图集路径（牌背和牌面） */
+	atlasPath: string;
+	/** 图集纹理路径（牌背和牌面） */
+	atlasTexPath: string;
 	/** 皮肤信息 */
 	skinInfo: IItemInfo_SkinInfo;
 }

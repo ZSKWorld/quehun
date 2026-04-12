@@ -2,8 +2,28 @@
 <component size="1445,272">
   <displayList>
     <image id="n18_ii8i" name="n18" src="ii8iobhf" fileName="Texture/img_3851.png" xy="0,0" size="1445,272"/>
-    <text id="n20_ii8i" name="n20" xy="25,3" size="80,52" fontSize="38" color="#e0ab67" vAlign="middle" leading="0" singleLine="true" text="立直"/>
-    <text id="n21_ii8i" name="n21" xy="30,71" size="388,44" font="SimHei" fontSize="32" color="#8995a8" vAlign="middle" leading="0" singleLine="true" text="门前请状态听牌即可立直，"/>
-    <text id="n22_ii8i" name="n22" xy="1228,3" pivot="1,0" size="194,52" font="SimHei" fontSize="38" color="#51f372" vAlign="middle" leading="0" singleLine="true" text="门前清限定"/>
+    <component id="n23_mh2q" name="n23" src="ii8iobgf" fileName="Component/Component/麻将/ComMJItem.xml" pkg="vx9zwser" xy="0,0" group="n43_mh2q"/>
+    <component id="n24_mh2q" name="n24" src="ii8iobgf" fileName="Component/Component/麻将/ComMJItem.xml" pkg="vx9zwser" xy="68,0" group="n43_mh2q"/>
+    <component id="n25_mh2q" name="n25" src="ii8iobgf" fileName="Component/Component/麻将/ComMJItem.xml" pkg="vx9zwser" xy="136,0" group="n43_mh2q"/>
+    <component id="n26_mh2q" name="n26" src="ii8iobgf" fileName="Component/Component/麻将/ComMJItem.xml" pkg="vx9zwser" xy="204,0" group="n43_mh2q"/>
+    <component id="n27_mh2q" name="n27" src="ii8iobgf" fileName="Component/Component/麻将/ComMJItem.xml" pkg="vx9zwser" xy="272,0" group="n43_mh2q"/>
+    <component id="n28_mh2q" name="n28" src="ii8iobgf" fileName="Component/Component/麻将/ComMJItem.xml" pkg="vx9zwser" xy="340,0" group="n43_mh2q"/>
+    <component id="n29_mh2q" name="n29" src="ii8iobgf" fileName="Component/Component/麻将/ComMJItem.xml" pkg="vx9zwser" xy="408,0" group="n43_mh2q"/>
+    <component id="n30_mh2q" name="n30" src="ii8iobgf" fileName="Component/Component/麻将/ComMJItem.xml" pkg="vx9zwser" xy="476,0" group="n43_mh2q"/>
+    <component id="n31_mh2q" name="n31" src="ii8iobgf" fileName="Component/Component/麻将/ComMJItem.xml" pkg="vx9zwser" xy="544,0" group="n43_mh2q"/>
+    <component id="n32_mh2q" name="n32" src="ii8iobgf" fileName="Component/Component/麻将/ComMJItem.xml" pkg="vx9zwser" xy="612,0" group="n43_mh2q"/>
+    <component id="n33_mh2q" name="n33" src="ii8iobgf" fileName="Component/Component/麻将/ComMJItem.xml" pkg="vx9zwser" xy="680,0" group="n43_mh2q"/>
+    <component id="n34_mh2q" name="n34" src="ii8iobgf" fileName="Component/Component/麻将/ComMJItem.xml" pkg="vx9zwser" xy="748,0" group="n43_mh2q"/>
+    <component id="n35_mh2q" name="n35" src="ii8iobgf" fileName="Component/Component/麻将/ComMJItem.xml" pkg="vx9zwser" xy="816,0" group="n43_mh2q"/>
+    <component id="n36_mh2q" name="n36" src="ii8iobgf" fileName="Component/Component/麻将/ComMJItem.xml" pkg="vx9zwser" xy="884,0" group="n43_mh2q"/>
+    <component id="n37_mh2q" name="n37" src="ii8iobgf" fileName="Component/Component/麻将/ComMJItem.xml" pkg="vx9zwser" xy="952,0" group="n43_mh2q"/>
+    <component id="n38_mh2q" name="n38" src="ii8iobgf" fileName="Component/Component/麻将/ComMJItem.xml" pkg="vx9zwser" xy="1020,0" group="n43_mh2q"/>
+    <component id="n39_mh2q" name="n39" src="ii8iobgf" fileName="Component/Component/麻将/ComMJItem.xml" pkg="vx9zwser" xy="1088,0" group="n43_mh2q"/>
+    <component id="n40_mh2q" name="n40" src="ii8iobgf" fileName="Component/Component/麻将/ComMJItem.xml" pkg="vx9zwser" xy="1156,0" group="n43_mh2q"/>
+    <component id="n41_mh2q" name="n41" src="ii8iobgf" fileName="Component/Component/麻将/ComMJItem.xml" pkg="vx9zwser" xy="1224,0" group="n43_mh2q"/>
+    <group id="n43_mh2q" name="n43" xy="0,0" size="1292,110"/>
+    <text id="n20_ii8i" name="name" xy="25,3" size="80,52" fontSize="38" color="#e0ab67" vAlign="middle" leading="0" singleLine="true" text="立直"/>
+    <text id="n21_ii8i" name="desc" xy="30,71" size="388,44" font="SimHei" fontSize="32" color="#8995a8" vAlign="middle" leading="0" singleLine="true" text="门前请状态听牌即可立直，"/>
+    <text id="n22_ii8i" name="limit" xy="1228,3" pivot="1,0" size="194,52" font="SimHei" fontSize="38" color="#51f372" vAlign="middle" leading="0" singleLine="true" text="门前清限定"/>
   </displayList>
 </component>

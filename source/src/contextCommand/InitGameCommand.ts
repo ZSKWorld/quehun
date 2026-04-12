@@ -1,3 +1,4 @@
+import { MjpAtlasLoader } from "../core/game/MjpAtlasLoader";
 import { Command } from "../core/mvc/controller/Command";
 import { ShaderManager } from "../core/shader/ShaderManager";
 
@@ -19,6 +20,7 @@ export class InitGameCommand extends Command {
 			Laya.StatElement.M_RenderTexture,
 		]);
 		ShaderManager.init();
+		MjpAtlasLoader.Inst.init();
 
 		const [, ipConfig] = await Promise.all([
 			$loadMgr.loadPackage(ResPath.EPkgPath.PkgEntrance),

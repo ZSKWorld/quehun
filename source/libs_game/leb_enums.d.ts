@@ -73,6 +73,8 @@ declare enum ELocalDataKey {
 	MultiLogin = "LocalDataKey_MultiLogin",
 }
 
+//#region view相关
+
 /** 按键事件类型 */
 declare enum EKeyEventType {
 	KeyDown = "keydown",
@@ -130,6 +132,10 @@ declare enum ELayer {
 	UIMiddle = "UIMiddle",
 	UITop = "UITop",
 }
+
+//#endregion
+
+//#region 物品道具类型相关
 
 /** 全局物品类型 */
 declare enum EItemType {
@@ -225,6 +231,8 @@ declare enum EItemCommonType {
 	MjpFront = 13,
 }
 
+//#endregion
+
 declare enum EClientValueType {
 	None = 0,
 	CompleteRegistration = 1,
@@ -306,6 +314,7 @@ declare enum EUIPoolKey {
 	TipInfo = "TipInfo",
 }
 
+/** 全局常量定义 */
 declare enum EConstDefine {
 	/** 本地化资源根目录 */
 	LangResDir = "langRes/",
@@ -386,6 +395,21 @@ declare enum EUserEvent {
 	OnMainCharacterChanged = "EUserEvent_OnMainCharacterChanged",
 	OnCharacterChanged = "EUserEvent_OnCharacterChanged",
 	OnCharacterSortChanged = "EUserEvent_OnCharacterSortChanged",
+	//#endregion
+
+	//#region 装扮相关
+
+	/** 使用中的牌背变化 */
+	OnMjpBackUseChanged = "EUserEvent_OnMjpBackUseChanged",
+	/** 使用中的牌面变化 */
+	OnMjpFrontUseChanged = "EUserEvent_OnMjpFrontUseChanged",
+	/** 使用中的桌布变化 */
+	OnTableClothUseChanged = "EUserEvent_OnTableClothUseChanged",
+	/** 使用中的装扮变化 */
+	OnViewUseChanged = "EUserEvent_OnViewUseChanged",
+	/** 装扮数据变化 */
+	OnCommonViewChanged = "EUserEvent_OnCommonViewChanged",
+
 	//#endregion
 
 	//#region client_value相关

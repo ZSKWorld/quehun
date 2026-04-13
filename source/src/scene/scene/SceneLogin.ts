@@ -15,6 +15,8 @@ export class SceneLogin extends SceneBase<ISceneLoginData> {
 	protected override getConstResArray() {
 		return [
 			ResPath.EFontPath.HYWH,
+			ResPath.EFontPath.Fengyu,
+			ResPath.EFontPath.HYYANKAIW,
 			ResPath.EPkgPath.PkgCommon,
 		];
 	}

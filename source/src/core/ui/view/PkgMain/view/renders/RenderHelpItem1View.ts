@@ -15,7 +15,25 @@ export class RenderHelpItem1View extends ExtensionClass<IView, RenderHelpItem1>(
 		}
 	}
 
-	refresh() {
-		this._mjps.forEach((v, i) => v.refresh((i % 10 + "m") as any));
+	refresh(fandescId: number, fans: string[]) {
+		const { _mjps, txt_name, txt_desc, txt_limit } = this;
+		const cfgFanDesc = $cfgMgr.fandesc.fandesc[fandescId];
+		txt_name.text = $langCfg(cfgFanDesc, "name");
+		txt_desc.text = $langCfg(cfgFanDesc, "desc");
+		txt_limit.text = $langCfg(cfgFanDesc, "desc2");
+		let x = 45;
+		for (let i = 0, cnt = _mjps.length, j = 0; i < cnt; i++, j++) {
+			const fan = fans[j];
+			if (fan == "|") {
+				x += 20;
+				i--;
+				continue;
+			}
+			const v = _mjps[i];
+			v.visible = !!fan;
+			fan && (v.x = x);
+			fan && (x += v.width);
+			fan && v.refresh(fan as any);
+		}
 	}
 }

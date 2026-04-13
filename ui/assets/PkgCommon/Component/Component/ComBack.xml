@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="512,133" designImage="ui://ca43vz0ejdu67plnfc" designImageOffsetX="-10" designImageOffsetY="-22">
+<component size="512,133" designImage="ui://ca43vz0eglpb7plok5" designImageOffsetX="-10" designImageOffsetY="-22" designImageAlpha="73">
   <displayList>
     <image id="n6_p5uz" name="n6" src="p5uzob8j" fileName="Texture/img_2988.png" xy="106,26" size="406,81" aspect="true"/>
     <component id="n7_p5uz" name="back" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" xy="0,0" size="135,133">
       <Button icon="ui://vx9zwserp5uzob8i"/>
     </component>
-    <text id="n8_p5uz" name="title" xy="138,26" pivot="0.5,0.5" size="252,79" fontSize="60" color="#e4ba86" align="center" vAlign="middle" autoSize="none" singleLine="true" text="拜访"/>
+    <text id="n8_p5uz" name="title" xy="136,67" pivot="0,0.5" anchor="true" size="286,79" font="ui://vx9zwserrpakobeu" fontSize="58" color="#e4ba86" align="center" vAlign="middle" leading="0" autoSize="none" singleLine="true" text="寮舍"/>
   </displayList>
   <customProperty target="title" propertyId="0"/>
 </component>

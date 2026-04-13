@@ -41,6 +41,7 @@ ResPath = {
 		FZHT: "FZHT",
 		Hanyi: "hanyi",
 		HYWH: "HYWH",
+		HYYANKAIW: "HYYANKAIW",
 		Jiye: "jiye",
 		KswGoryuSouN: "KswGoryuSouN",
 		NotoSansKR: "NotoSansKR",
@@ -80,6 +81,7 @@ ResPath = {
 		FZHT: "res/font/FZHT.ttf",
 		Hanyi: "res/font/hanyi.ttf",
 		HYWH: "res/font/HYWH.ttf",
+		HYYANKAIW: "res/font/HYYANKAIW.ttf",
 		Jiye: "res/font/jiye.ttf",
 		KswGoryuSouN: "res/font/KswGoryuSouN.ttf",
 		NotoSansKR: "res/font/NotoSansKR.ttf",
@@ -87,6 +89,8 @@ ResPath = {
 		SolmoeKimdaegeonMedium: "res/font/SolmoeKimdaegeonMedium.ttf",
 		Youyuan: "res/font/youyuan.ttf",
 	},
+
+	EScenePath: { },
 
 	ESkeletonPath: {
 		Bianhua: "res/skeleton/bianhua.sk",

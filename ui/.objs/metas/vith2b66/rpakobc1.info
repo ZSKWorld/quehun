@@ -1,4 +1,18 @@
 {
+  "objectStatus": {
+    "n50_rpak": {
+      "hidden": true
+    },
+    "n36_rpak": {
+      "hidden": true
+    },
+    "n34_rpak": {
+      "hidden": true
+    },
+    "n49_rpak": {
+      "hidden": true
+    }
+  },
   "designImages": [
     "ui://ca43vz0eq5yi7plojh"
   ]

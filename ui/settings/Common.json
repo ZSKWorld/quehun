@@ -10,7 +10,10 @@
     "自定义字体大小 30"
   ],
   "fontScheme": [
-    "默认字体"
+    "默认字体",
+    "黑体 SimHei",
+    "风雨 ui://vx9zwserrpakobeu",
+    "汉仪颜楷 ui://vx9zwserrpakobex"
   ],
   "scrollBars": {
     "horizontal": "",

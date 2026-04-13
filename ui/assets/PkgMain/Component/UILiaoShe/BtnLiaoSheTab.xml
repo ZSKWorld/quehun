@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="284,84" pivot="0.5,1" extention="Button" designImage="ui://ca43vz0eik7b7plojz" designImageOffsetX="-1294" designImageOffsetY="-66" designImageAlpha="0">
+<component size="284,84" pivot="0.5,1" extention="Button" designImage="ui://ca43vz0eik7b7plojz" designImageOffsetX="-1294" designImageOffsetY="-66" designImageAlpha="21">
   <controller name="button" pages="0,up,1,down" selected="0"/>
   <displayList>
     <loader id="n3_108ab" name="n3" xy="0,0" size="284,84" url="ui://vith2b66ik7bobfe" fill="scaleFree">
       <gearXY controller="button" pages="1" values="-3,0" default="0,0"/>
       <gearIcon controller="button" pages="1" values="ui://vith2b66ik7bobff" default="ui://vith2b66ik7bobfe"/>
     </loader>
-    <text id="n4_mj5k" name="title" xy="111,21" pivot="0.5,0.5" size="84,54" fontSize="40" color="#d3a86c" singleLine="true" text="角色">
+    <text id="n4_mj5k" name="title" xy="153,50" pivot="0.5,0.5" anchor="true" size="88,56" font="ui://vx9zwserrpakobeu" fontSize="42" color="#d3a86c" leading="0" singleLine="true" text="角色">
       <gearColor controller="button" pages="1" values="#552c1c,#000000" default="#d3a86c,#000000"/>
-      <gearFontSize controller="button" pages="0" values="40" default="45"/>
+      <gearFontSize controller="button" pages="0" values="42" default="45"/>
       <relation target="" sidePair="center-center,middle-middle"/>
     </text>
   </displayList>

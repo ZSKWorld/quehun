@@ -1,5 +1,11 @@
 {
+  "objectStatus": {
+    "n6_p5uz": {
+      "hidden": true
+    }
+  },
   "designImages": [
-    "ui://ca43vz0ejdu67plnfc"
+    "ui://ca43vz0ejdu67plnfc",
+    "ui://ca43vz0eglpb7plok5"
   ]
 }

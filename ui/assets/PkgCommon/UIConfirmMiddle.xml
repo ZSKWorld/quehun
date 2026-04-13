@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0ejdu67plnjt" designImageOffsetX="-239" designImageOffsetY="-44" designImageAlpha="0" designImageLayer="1">
+<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0ejdu67plnjt" designImageAlpha="72" designImageLayer="1">
   <controller name="format" pages="4,,5," selected="0"/>
   <displayList>
     <component id="n0_j0dd" name="n0" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" xy="960,540" pivot="0.5,0.5" anchor="true" size="1144,720"/>
@@ -12,7 +12,7 @@
     <component id="n10_j0dd" name="close" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" xy="1410,213" size="70,70">
       <Button icon="ui://vx9zwserj0ddob7b"/>
     </component>
-    <text id="n12_j0dd" name="title" xy="868,218" pivot="0.5,0.5" size="184,60" fontSize="45" color="#edb26f" singleLine="true" text="弹窗标题">
+    <text id="n12_j0dd" name="title" xy="964,247" pivot="0.5,0.5" anchor="true" size="196,64" font="ui://vx9zwserrpakobex" fontSize="48" color="#edb26f" align="center" vAlign="middle" leading="0" singleLine="true" text="弹窗标题">
       <gearDisplay controller="format" pages="0,1,4,6"/>
     </text>
     <text id="n13_j0dd" name="content" xy="470,318" size="1009,418" fontSize="35" color="#ffffff" vAlign="middle" autoSize="shrink" text="一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零">

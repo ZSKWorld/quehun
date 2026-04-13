@@ -1,6 +1,5 @@
 import { RadioGroup } from "../../../../extention/RadioGroup";
 import UIHelp from "../../../../ui/PkgMain/UIHelp";
-import { ComMJItemView } from "../../../PkgCommon/view/coms/ComMJItemView";
 import { RenderHelpItem1View } from "../renders/RenderHelpItem1View";
 
 export const enum EUIHelpMsg {
@@ -44,6 +43,12 @@ export class UIHelpView extends ExtensionClass<IView, UIHelp>(UIHelp) implements
 	private _tabGroup = new RadioGroup();
 	private _fanGroup = new RadioGroup();
 	private _pointGroup = new RadioGroup();
+	private _fanMode = 0;
+	//0-普通，1-川麻
+	private _fanData: [number, string[]][][][] = [
+		[[], [], [], [], [], [], [], []],
+		[[], [], [], [], [], [], [], []],
+	];
 
 	override onCreate() {
 		CourseIcons.forEach((v, i) => (CourseIcons[i] = $langRes(v)));
@@ -79,6 +84,32 @@ export class UIHelpView extends ExtensionClass<IView, UIHelp>(UIHelp) implements
 		].forEach((v, i) => v.onClick(this, this.onPointLinkClick, [v, i]));
 
 		$uiUtil.setList(list_fan, true, this, this.onListFanRender);
+
+		$cfgMgr.fandesc.fandesc.forEach(v => {
+			if (!v.show) return;
+			const tag = v.tag - 1;
+			const mode = v.mode;
+			const arr = this._fanData[mode];
+			if (arr && tag >= 0 && tag < arr.length) {
+				const caseArr: [number, string[]] = [v.id, []];
+				for (let i = 0; i < v.case.length;) {
+					const e = v.case[i];
+					if (e == "|") {
+						caseArr[1].push("|");
+						i++;
+					} else if (e == "b") {
+						caseArr[1].push(e);
+						i++;
+					} else {
+						caseArr[1].push(e + v.case[i + 1]);
+						i += 2;
+					}
+				}
+				let a = arr[tag];
+				arr[tag].push(caseArr);
+			}
+		});
+		Logger.error(this._fanData);
 	}
 
 	override onEnable() {
@@ -102,11 +133,14 @@ export class UIHelpView extends ExtensionClass<IView, UIHelp>(UIHelp) implements
 
 	//#region 役种一览
 	private onFanTabChanged(index: number) {
-		this.list_fan.numItems = index;
+		const fanData = this._fanData[this._fanMode][index];
+		this.list_fan.numItems = fanData.length;
 	}
 
 	private onListFanRender(index: number, item: RenderHelpItem1View) {
-		item.refresh();
+		const tagIndex = this._fanGroup.selectIndex;
+		const fanData = this._fanData[this._fanMode][tagIndex][index];
+		item.refresh(fanData[0], fanData[1]);
 	}
 	//#endregion
 

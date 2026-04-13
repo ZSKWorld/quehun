@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0ejdu67plnjm" designImageOffsetX="-239" designImageOffsetY="-44" designImageAlpha="0" designImageLayer="1">
-  <controller name="format" pages="6,,7,,8,,9," selected="3"/>
+<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0ejdu67plnjn" designImageOffsetX="2" designImageAlpha="100">
+  <controller name="format" pages="6,,7,,8,,9," selected="0"/>
   <displayList>
     <component id="n0_j0dd" name="n0" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" xy="960,540" pivot="0.5,0.5" anchor="true" size="838,512"/>
     <image id="n2_j0dd" name="n2" src="j0ddob77" fileName="Texture/img_374.png" xy="614,400" size="308,4" group="n18_j0dd"/>
@@ -23,10 +23,10 @@
     <group id="n16_j0dd" name="n16" xy="629,644" size="662,92" advanced="true" layout="hz" colGap="38" excludeInvisibles="true">
       <relation target="n0_j0dd" sidePair="center-center,bottom-bottom"/>
     </group>
-    <text id="n12_j0dd" name="title" xy="868,322" pivot="0.5,0.5" size="184,60" fontSize="45" color="#edb26f" singleLine="true" text="举报昵称">
+    <text id="n12_j0dd" name="title" xy="966,350" pivot="0.5,0.5" anchor="true" size="196,64" font="ui://vx9zwserrpakobex" fontSize="48" color="#edb26f" align="center" vAlign="middle" leading="0" singleLine="true" text="举报昵称">
       <gearDisplay controller="format" pages="0,1,4,6"/>
     </text>
-    <text id="n13_j0dd" name="content" xy="611,403" size="704,206" fontSize="35" color="#ffffff" align="center" vAlign="middle" autoSize="none" text="bbbbb">
+    <text id="n13_j0dd" name="content" xy="611,424" size="704,206" fontSize="35" color="#ffffff" align="center" vAlign="middle" autoSize="none" text="bbbbb">
       <gearXY controller="format" pages="6,7,8,9" values="611,424|611,437|611,403|611,403"/>
     </text>
   </displayList>

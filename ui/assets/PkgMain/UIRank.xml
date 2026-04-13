@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0ehdeo7plojg" designImageAlpha="73" designImageLayer="1">
+<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0ehdeo7plojg" designImageAlpha="73">
   <displayList>
     <component id="n5_hdeo" name="n5" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" pkg="vx9zwser" xy="317,67" size="1439,965"/>
     <list id="n4_hdeo" name="rank" xy="343,192" size="1366,626" overflow="scroll" scrollBarFlags="4" margin="0,0,0,-32" scrollBarMargin="15,15,0,0" scrollBarRes="ui://vx9zwserhdeoobbj," defaultItem="ui://vith2b66hdeoobb2" autoItemSize="false" autoClearItems="true">
@@ -29,6 +29,6 @@
     <component id="n10_hdeo" name="sanMa" src="hdeoobbt" fileName="Component/Button/BtnNormalNoScale.xml" pkg="vx9zwser" xy="130,299" size="235,89">
       <Button title="三麻" titleColor="#e8af71" titleFontSize="40" icon="ui://vx9zwsermde1b75" selectedIcon="ui://vx9zwsermde1b74"/>
     </component>
-    <text id="n11_hdeo" name="title" xy="930,93" pivot="0.5,0.5" size="212,54" fontSize="40" color="#e8af71" letterSpacing="2" singleLine="true" text="四麻排行榜"/>
+    <text id="n11_hdeo" name="title" xy="1036,120" pivot="0.5,0.5" anchor="true" size="212,54" font="ui://vx9zwserrpakobeu" fontSize="40" color="#e8af71" align="center" vAlign="middle" leading="0" letterSpacing="2" singleLine="true" text="四麻排行榜"/>
   </displayList>
 </component>

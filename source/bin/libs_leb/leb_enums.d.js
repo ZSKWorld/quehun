@@ -268,6 +268,11 @@ EUserEvent = {
 	OnMainCharacterChanged: "EUserEvent_OnMainCharacterChanged",
 	OnCharacterChanged: "EUserEvent_OnCharacterChanged",
 	OnCharacterSortChanged: "EUserEvent_OnCharacterSortChanged",
+	OnMjpBackUseChanged: "EUserEvent_OnMjpBackUseChanged",
+	OnMjpFrontUseChanged: "EUserEvent_OnMjpFrontUseChanged",
+	OnTableClothUseChanged: "EUserEvent_OnTableClothUseChanged",
+	OnViewUseChanged: "EUserEvent_OnViewUseChanged",
+	OnCommonViewChanged: "EUserEvent_OnCommonViewChanged",
 	OnClientValueChanged: "EUserEvent_OnClientValueChanged",
 }
 

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0exmej7plojs" designImageAlpha="0" designImageLayer="1">
+<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0exmej7plojs" designImageOffsetY="40" designImageAlpha="0">
   <controller name="desc" pages="0,,1," selected="0"/>
   <controller name="open" pages="0,,1,,2," selected="0"/>
   <controller name="goto" pages="0,,1," selected="0"/>
   <displayList>
-    <graph id="n23_si7r" name="bg" xy="0,0" size="1920,1080" alpha="0" type="rect"/>
+    <graph id="n23_si7r" name="bg" xy="0,-1" size="1920,1080" alpha="0" type="rect"/>
     <component id="n0_j0dd" name="n0" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" xy="958,542" pivot="0.5,0.5" anchor="true" size="781,530">
       <gearSize controller="goto" pages="1" values="781,610,1,1" default="781,530,1,1"/>
     </component>
@@ -35,7 +35,7 @@
       <gearDisplay controller="goto" pages="1"/>
       <Button title="前往" titleColor="#6d2e3a" titleFontSize="31" icon="ui://vx9zwserj0ddob73"/>
     </component>
-    <text id="n12_j0dd" name="name" xy="885,315" pivot="0.5,0.5" size="139,60" fontSize="45" color="#edb26f" singleLine="true" text="星之石">
+    <text id="n12_j0dd" name="name" xy="960,345" pivot="0.5,0.5" anchor="true" size="244,64" font="ui://vx9zwserrpakobeu" fontSize="48" color="#edb26f" align="center" vAlign="middle" leading="0" singleLine="true" text="香喷喷曲奇">
       <relation target="n0_j0dd" sidePair="top-top"/>
     </text>
     <text id="n13_j0dd" name="desc1" xy="887,427" size="416,42" fontSize="30" color="#d2d2d0" autoSize="height" text="用于在星之屋中兑换道具">

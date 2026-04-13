@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0ejdu67plnjr" designImageOffsetX="-239" designImageOffsetY="-44" designImageAlpha="0" designImageLayer="1">
+<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0ejdu67plnjr" designImageAlpha="0">
   <controller name="format" pages="0,,1,,2,,3," selected="0"/>
   <displayList>
     <component id="n0_j0dd" name="n0" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" xy="959,540" pivot="0.5,0.5" anchor="true" size="1437,992"/>
@@ -30,7 +30,7 @@
     <group id="n16_j0dd" name="n16" xy="753,884" size="412,92" advanced="true" layout="hz" colGap="38" excludeInvisibles="true">
       <relation target="n0_j0dd" sidePair="center-center,bottom-bottom"/>
     </group>
-    <text id="n12_j0dd" name="title" xy="665,82" pivot="0.5,0.5" size="589,60" fontSize="45" color="#edb26f" singleLine="true" text="雀魂麻将游戏许可及服务协议">
+    <text id="n12_j0dd" name="title" xy="959,112" pivot="0.5,0.5" anchor="true" size="628,64" font="ui://vx9zwserrpakobex" fontSize="48" color="#edb26f" align="center" vAlign="middle" leading="0" singleLine="true" text="雀魂麻将游戏许可及服务协议">
       <gearDisplay controller="format" pages="0,1,4,6"/>
       <relation target="n0_j0dd" sidePair="center-center,top-top"/>
     </text>

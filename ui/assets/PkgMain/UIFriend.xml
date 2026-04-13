@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" designImage="ui://ca43vz0ejcnm7plojx" designImageAlpha="0" bgColorEnabled="true" bgColor="#000000">
+<component size="1920,1080" designImage="ui://ca43vz0epuub7ploju" designImageAlpha="75" bgColorEnabled="true" bgColor="#000000">
   <controller name="type" pages="0,,1,,2,,3," selected="0"/>
   <displayList>
     <component id="n0_p5uz" name="back" src="p5uzob8h" fileName="Component/Component/ComBack.xml" pkg="vx9zwser" xy="10,22">
@@ -10,7 +10,7 @@
     <component id="n5_puub" name="copy" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1766,39" group="n36_xnfa">
       <Button icon="ui://vith2b66puubobf8"/>
     </component>
-    <text id="n3_puub" name="myID" xy="1382,64" pivot="0.5,0.5" size="356,54" group="n36_xnfa" fontSize="40" color="#e2ba92" align="center" vAlign="middle" singleLine="true" text="我的ID：10474777"/>
+    <text id="n3_puub" name="myID" xy="1557,90" pivot="0.5,0.5" anchor="true" size="349,66" group="n36_xnfa" font="ui://vx9zwserrpakobeu" fontSize="50" color="#e2ba92" align="center" vAlign="middle" leading="0" singleLine="true" text="我的ID：10474777"/>
     <group id="n36_xnfa" name="n36" xy="1326,39" size="702,100" advanced="true"/>
     <image id="n6_puub" name="n6" src="q5yiobc0" fileName="Texture/img_3555.png" pkg="vx9zwser" xy="331,155" size="1531,866" group="n34_puub"/>
     <component id="n7_puub" name="friendList" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="50,206" pivot="0.873,0.5" size="336,140" group="n34_puub" aspect="true">
@@ -27,7 +27,7 @@
     </component>
     <group id="n34_puub" name="n34" xy="50,155" size="1812,866" advanced="true"/>
     <text id="n35_giyr" name="empty" xy="711,473" pivot="0.5,0.5" size="791,66" fontSize="50" color="#e6ba78" align="center" vAlign="middle" singleLine="true" text="你还没有好友，快去认识新朋友吧~"/>
-    <text id="n11_puub" name="limit" xy="1441,190" pivot="1,0" size="289,54" group="n25_puub" fontSize="40" color="#e6ba78" align="center" text="好友上限：2/50"/>
+    <text id="n11_puub" name="limit" xy="1730,217" pivot="1,0.5" anchor="true" size="298,60" group="n25_puub" font="ui://vx9zwserrpakobeu" fontSize="45" color="#e6ba78" align="right" vAlign="middle" leading="0" letterSpacing="-1" singleLine="true" text="好友上限：2/50"/>
     <list id="n12_puub" name="friend" xy="386,255" size="1430,731" group="n25_puub" overflow="scroll" scrollBarFlags="4" scrollBarRes="ui://vx9zwserpuubobfe," lineGap="11" defaultItem="ui://vith2b66puubobfa" autoClearItems="true">
       <item/>
       <item/>
@@ -37,7 +37,7 @@
       <item/>
       <item/>
     </list>
-    <group id="n25_puub" name="n25" xy="386,190" size="1430,796" advanced="true">
+    <group id="n25_puub" name="n25" xy="386,187" size="1430,799" advanced="true">
       <gearDisplay controller="type" pages="0"/>
     </group>
     <list id="n26_puub" name="apply" xy="386,201" size="1430,781" overflow="scroll" scrollBarFlags="4" scrollBarRes="ui://vx9zwserpuubobfe," lineGap="11" defaultItem="ui://vith2b66puubobfb" autoClearItems="true">

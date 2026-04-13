@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="437,309" designImage="ui://ca43vz0eq5yi7plojh" designImageOffsetX="-402" designImageOffsetY="-306" designImageAlpha="0" designImageLayer="1">
-  <controller name="type" pages="0,,1," selected="0"/>
+<component size="437,309" designImage="ui://ca43vz0eq5yi7plojh" designImageOffsetX="-402" designImageOffsetY="-306" designImageAlpha="78">
+  <controller name="type" pages="0,,1," selected="1"/>
   <displayList>
     <image id="n49_rpak" name="n49" src="q5yiobc1" fileName="Texture/img_125.png" pkg="vx9zwser" xy="4,4" size="428,243"/>
     <image id="n36_rpak" name="n36" src="rpakobf4" fileName="Texture/img_945.png" xy="36,245" size="365,64"/>
@@ -12,9 +12,9 @@
     </image>
     <image id="n51_rpak" name="n51" src="hk7robaz" fileName="Texture/img_3266.png" pkg="vx9zwser" xy="0,0" size="436,251"/>
     <image id="n33_rpak" name="choose" src="gsi2obbx" fileName="Texture/img_1743.png" xy="355,4"/>
-    <text id="n35_rpak" name="time" xy="14,197" pivot="0.5,0.5" size="411,40" fontSize="29" color="#040c11" align="center" vAlign="middle" leading="0" autoSize="shrink" singleLine="true" text="有效期至：2025-12-03 05:00:00">
+    <text id="n35_rpak" name="time" xy="219,217" pivot="0.5,0.5" anchor="true" size="411,40" font="ui://vx9zwserrpakobeu" fontSize="29" color="#040c11" align="center" vAlign="middle" leading="0" autoSize="shrink" singleLine="true" text="有效期至：2025-12-03 05:00:00">
       <gearDisplay controller="type" pages="1"/>
     </text>
-    <text id="n37_rpak" name="name" xy="36,257" pivot="0.5,0.5" size="365,40" fontSize="29" color="#ddac79" align="center" leading="0" autoSize="shrink" text="共同的心跳-2025"/>
+    <text id="n37_rpak" name="name" xy="218,277" pivot="0.5,0.5" anchor="true" size="365,40" font="ui://vx9zwserrpakobeu" fontSize="29" color="#ddac79" align="center" vAlign="middle" leading="0" autoSize="shrink" singleLine="true" text="共同的心跳-2025"/>
   </displayList>
 </component>

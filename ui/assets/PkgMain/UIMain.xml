@@ -38,7 +38,7 @@
     <component id="n1_vwgm" name="friend" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1013,946" size="148,117" group="n7_vwgm">
       <Button icon="ui://vith2b66vwgm9"/>
     </component>
-    <component id="n2_vwgm" name="observe" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1164,950" size="148,118" group="n7_vwgm">
+    <component id="n2_vwgm" name="observer" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1164,950" size="148,118" group="n7_vwgm">
       <Button icon="ui://vith2b66vwgmb"/>
     </component>
     <component id="n3_vwgm" name="paiPu" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1318,956" size="128,112" group="n7_vwgm">
@@ -59,13 +59,15 @@
     <component id="n24_exjc" name="report" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="120,428" pivot="0.5,0.5" anchor="true" size="147,155" group="n26_exjc">
       <Button icon="ui://ca43vz0eexjc7plolq"/>
     </component>
-    <group id="n26_exjc" name="n26" xy="11,13" size="497,492" advanced="true" layout="vt" excludeInvisibles="true"/>
+    <group id="n26_exjc" name="leftTop" xy="11,13" size="497,492" advanced="true" layout="vt" excludeInvisibles="true"/>
   </displayList>
   <transition name="in" frameRate="30">
     <item time="0" type="Alpha" target="n18_vwgm" tween="true" startValue="0" endValue="1" duration="10" ease="Linear"/>
+    <item time="0" type="Alpha" target="n26_exjc" tween="true" startValue="0" endValue="1" duration="10" ease="Linear"/>
     <item time="0" type="XY" target="n0_vwgm" tween="true" startValue="-,1103" endValue="-,953" duration="6" ease="Circ.Out"/>
     <item time="0" type="XY" target="n18_vwgm" tween="true" startValue="-,-133" endValue="-,-9" duration="11" ease="Quint.Out"/>
     <item time="0" type="XY" target="n1_vwgm" value="-,1096"/>
+    <item time="0" type="XY" target="n26_exjc" tween="true" startValue="-,-111" endValue="-,13" duration="11" ease="Quint.Out"/>
     <item time="0" type="XY" target="n2_vwgm" value="-,1100"/>
     <item time="0" type="XY" target="n3_vwgm" value="-,1106"/>
     <item time="0" type="XY" target="n4_vwgm" value="-,1107"/>
@@ -80,18 +82,22 @@
   </transition>
   <transition name="out" frameRate="30">
     <item time="0" type="Alpha" target="n18_vwgm" value="1"/>
+    <item time="0" type="Alpha" target="n26_exjc" value="1"/>
     <item time="0" type="XY" target="n0_vwgm" value="-,953"/>
     <item time="0" type="XY" target="n18_vwgm" value="-,-9"/>
     <item time="0" type="XY" target="n1_vwgm" value="-,946"/>
+    <item time="0" type="XY" target="n26_exjc" value="-,13"/>
     <item time="0" type="XY" target="n2_vwgm" value="-,950"/>
     <item time="0" type="XY" target="n3_vwgm" value="-,956"/>
     <item time="0" type="XY" target="n4_vwgm" value="-,957"/>
     <item time="0" type="XY" target="n5_vwgm" value="-,952"/>
     <item time="0" type="XY" target="n6_vwgm" value="-,859"/>
     <item time="1" type="Alpha" target="n18_vwgm" tween="true" startValue="1" endValue="0" duration="5" ease="Linear"/>
+    <item time="1" type="Alpha" target="n26_exjc" tween="true" startValue="1" endValue="0" duration="5" ease="Linear"/>
     <item time="1" type="XY" target="n0_vwgm" tween="true" startValue="-,953" endValue="-,1103" duration="5" ease="Linear"/>
     <item time="1" type="XY" target="n18_vwgm" tween="true" startValue="-,-9" endValue="-,-133" duration="5" ease="Linear"/>
     <item time="1" type="XY" target="n1_vwgm" tween="true" startValue="-,946" endValue="-,1096" duration="5" ease="Linear"/>
+    <item time="1" type="XY" target="n26_exjc" tween="true" startValue="-,13" endValue="-,-111" duration="5" ease="Linear"/>
     <item time="1" type="XY" target="n2_vwgm" tween="true" startValue="-,950" endValue="-,1100" duration="5" ease="Linear"/>
     <item time="1" type="XY" target="n3_vwgm" tween="true" startValue="-,956" endValue="-,1106" duration="5" ease="Linear"/>
     <item time="1" type="XY" target="n4_vwgm" tween="true" startValue="-,957" endValue="-,1107" duration="5" ease="Linear"/>

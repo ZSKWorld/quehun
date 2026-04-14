@@ -99,6 +99,8 @@ import { UICameraView } from "../core/ui/view/PkgMain/view/uis/UICameraView";
 import { UICameraMediator } from "../core/ui/view/PkgMain/mediator/uis/UICameraMediator";
 import { UIFriendView } from "../core/ui/view/PkgMain/view/uis/UIFriendView";
 import { UIFriendMediator } from "../core/ui/view/PkgMain/mediator/uis/UIFriendMediator";
+import { UIGuideView } from "../core/ui/view/PkgMain/view/uis/UIGuideView";
+import { UIGuideMediator } from "../core/ui/view/PkgMain/mediator/uis/UIGuideMediator";
 import { UIHelpView } from "../core/ui/view/PkgMain/view/uis/UIHelpView";
 import { UIHelpMediator } from "../core/ui/view/PkgMain/mediator/uis/UIHelpMediator";
 import { UILiaoSheView } from "../core/ui/view/PkgMain/view/uis/UILiaoSheView";
@@ -214,6 +216,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.UIBagView, EViewType.UI, UIBagView, UIBagMediator);
 		register(EViewID.UICameraView, EViewType.UI, UICameraView, UICameraMediator);
 		register(EViewID.UIFriendView, EViewType.UI, UIFriendView, UIFriendMediator);
+		register(EViewID.UIGuideView, EViewType.UI, UIGuideView, UIGuideMediator);
 		register(EViewID.UIHelpView, EViewType.UI, UIHelpView, UIHelpMediator);
 		register(EViewID.UILiaoSheView, EViewType.UI, UILiaoSheView, UILiaoSheMediator);
 		register(EViewID.UIMailView, EViewType.UI, UIMailView, UIMailMediator);

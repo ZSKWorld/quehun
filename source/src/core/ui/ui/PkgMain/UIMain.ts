@@ -23,7 +23,7 @@ export default class UIMain extends fgui.GComponent {
 	protected group_rightTop: fgui.GGroup;
 	protected btn_liaoShe: fgui.GButton;
 	protected btn_friend: fgui.GButton;
-	protected btn_observe: fgui.GButton;
+	protected btn_observer: fgui.GButton;
 	protected btn_paiPu: fgui.GButton;
 	protected btn_bag: fgui.GButton;
 	protected btn_shop: fgui.GButton;
@@ -31,6 +31,7 @@ export default class UIMain extends fgui.GComponent {
 	protected com_playInfo: ComMainPlayerInfoView;
 	protected btn_qiri: fgui.GButton;
 	protected btn_report: fgui.GButton;
+	protected group_leftTop: fgui.GGroup;
 	protected trans_in: fgui.Transition;
 	protected trans_out: fgui.Transition;
 	public static url: string = "ui://vith2b66vwgm0";
@@ -55,7 +56,7 @@ export default class UIMain extends fgui.GComponent {
 		this.group_rightTop = <fgui.GGroup>(this.getChildAt(12));
 		this.btn_liaoShe = <fgui.GButton>(this.getChildAt(13));
 		this.btn_friend = <fgui.GButton>(this.getChildAt(14));
-		this.btn_observe = <fgui.GButton>(this.getChildAt(15));
+		this.btn_observer = <fgui.GButton>(this.getChildAt(15));
 		this.btn_paiPu = <fgui.GButton>(this.getChildAt(16));
 		this.btn_bag = <fgui.GButton>(this.getChildAt(17));
 		this.btn_shop = <fgui.GButton>(this.getChildAt(18));
@@ -63,6 +64,7 @@ export default class UIMain extends fgui.GComponent {
 		this.com_playInfo = <ComMainPlayerInfoView>(this.getChildAt(20));
 		this.btn_qiri = <fgui.GButton>(this.getChildAt(21));
 		this.btn_report = <fgui.GButton>(this.getChildAt(22));
+		this.group_leftTop = <fgui.GGroup>(this.getChildAt(23));
 		this.trans_in = this.getTransitionAt(0);
 		this.trans_out = this.getTransitionAt(1);
 	}

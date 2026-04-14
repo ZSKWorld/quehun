@@ -1,10 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ComBackView } from "../../view/PkgCommon/view/coms/ComBackView";
-
 export default class UISetting extends fgui.GComponent {
 
-	protected com_back: ComBackView;
+	protected btn_close: fgui.GButton;
 	public static url: string = "ui://vith2b66ktwpob9w";
 
 	public static createInstance(): UISetting {
@@ -12,6 +10,6 @@ export default class UISetting extends fgui.GComponent {
 	}
 
 	protected override onConstruct(): void {
-		this.com_back = <ComBackView>(this.getChildAt(0));
+		this.btn_close = <fgui.GButton>(this.getChildAt(0));
 	}
 }

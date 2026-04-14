@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0eii8i7plol0" designImageAlpha="48">
+  <displayList>
+    <component id="n1_ii8i" name="bg" src="w29kob8e" fileName="Component/Button/BtnIconFitNoScale.xml" pkg="vx9zwser" xy="-1040,-585" size="4000,2250" aspect="true" alpha="0.5">
+      <Button icon="ui://vx9zwserieavob7l"/>
+    </component>
+    <component id="n2_ii8i" name="n2" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" pkg="vx9zwser" xy="452,171" size="1015,737"/>
+    <component id="n8_ii8i" name="close" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1354,214" size="70,70">
+      <Button icon="ui://vx9zwserj0ddob7b"/>
+    </component>
+  </displayList>
+</component>

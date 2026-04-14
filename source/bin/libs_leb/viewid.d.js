@@ -82,6 +82,7 @@ EViewID = {
 	UIBagView: "UIBagView",
 	UICameraView: "UICameraView",
 	UIFriendView: "UIFriendView",
+	UIGuideView: "UIGuideView",
 	UIHelpView: "UIHelpView",
 	UILiaoSheView: "UILiaoSheView",
 	UIMailView: "UIMailView",

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="181,181" pivot="0.5,0.5" extention="Button" designImage="ui://ca43vz0eq5yi7ploji" designImageOffsetX="-411" designImageOffsetY="-208" designImageAlpha="57">
   <displayList>
-    <component id="n12_gsi2" name="head" src="gsi2obeq" fileName="Component/Component/头像/ComBigHead1.xml" pkg="vx9zwser" xy="0,0" pivot="0.5,0.5" size="181,181" controller="type,3"/>
+    <component id="n12_gsi2" name="head" src="gsi2obeq" fileName="Component/Component/头像/ComHead1.xml" pkg="vx9zwser" xy="0,0" pivot="0.5,0.5" size="181,181" controller="type,3"/>
   </displayList>
-  <Button downEffect="scale" downEffectValue="0.9"/>
+  <Button downEffect="scale" downEffectValue="0.95"/>
 </component>

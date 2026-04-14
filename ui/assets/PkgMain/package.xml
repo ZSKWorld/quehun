@@ -225,6 +225,7 @@
     <component id="exjcobhk" name="BtnMainPlayerInfoLevel.xml" path="/Component/UIMain/"/>
     <component id="exjcobhl" name="BtnMainPlayerInfoInfo.xml" path="/Component/UIMain/"/>
     <image id="exjcobhm" name="img_1864.png" path="/Texture/"/>
+    <component id="exjcobhn" name="UIGuide.xml" path="/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

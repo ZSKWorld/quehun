@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="1920,1080" designImage="ui://ca43vz0ejdu67plnfc" designImageAlpha="36">
   <displayList>
-    <component id="n0_p5uz" name="back" src="p5uzob8h" fileName="Component/Component/ComBack.xml" pkg="vx9zwser" xy="10,22">
-      <property target="title" propertyId="0" value="好友"/>
+    <component id="n1_exjc" name="close" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1800,37" size="70,70">
+      <Button icon="ui://vx9zwserj0ddob7b"/>
     </component>
   </displayList>
 </component>

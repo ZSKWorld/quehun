@@ -1,15 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="923,657" overflow="scroll" scrollBarFlags="4" scrollBarRes="ui://vx9zwserj0ddob7h," designImage="ui://ca43vz0eojz47plokq" designImageOffsetX="-718" designImageOffsetY="-245" designImageAlpha="0">
-  <controller name="type" exported="true" pages="0,,1," selected="1"/>
   <displayList>
-    <text id="n12_wu0d" name="empty" xy="345,305" pivot="0.5,0.5" size="204,46" fontSize="34" color="#8994a8" align="center" text="什么都没有...">
-      <gearDisplay controller="type" pages="0"/>
-    </text>
-    <loader id="n13_wu0d" name="header" xy="0,0" size="894,150" group="n17_wu0d" url="ui://ca43vz0edjs37plokv" fill="scaleFree"/>
-    <text id="n14_wu0d" name="title" xy="91,167" pivot="0.5,0" size="712,100" group="n17_wu0d" font="SimHei" fontSize="38" color="#eac18b" align="center" vAlign="middle" leading="0" autoSize="shrink" bold="true" text="2026年3月25日 雀魂麻将更新公告"/>
-    <richtext id="n16_wu0d" name="content" xy="0,284" size="894,558" group="n17_wu0d" font="SimHei" fontSize="30" color="#d7d3d1" leading="6" ubb="true" autoSize="height" text="本次更新为不停服更新。活动及更新内容将于2026年3月25日（周三）11:00开始。如果发现在更新时间后游戏内无活动内容提示，请及时重启游戏以获取最新版本内容。&#xA;&#xA;【本次更新内容】&#xA;◆花与暖夜 活动开启◆&#xA;1.活动时间：2026年3月25日更新后——4月8日4:59，共计14天；&#xA;2.活动规则：&#xA;2.活动规则：&#xA;2.活动规则：&#xA;2.活动规则：&#xA;2.活动规则：&#xA;2.活动规则："/>
-    <group id="n17_wu0d" name="n17" xy="0,0" size="894,842" advanced="true" layout="vt" lineGap="17" excludeInvisibles="true">
-      <gearDisplay controller="type" pages="1"/>
-    </group>
+    <loader id="n13_wu0d" name="header" xy="0,0" size="894,150" url="ui://ca43vz0edjs37plokv" fill="scaleFree"/>
+    <text id="n14_wu0d" name="title" xy="91,167" pivot="0.5,0" size="712,100" font="SimHei" fontSize="38" color="#eac18b" align="center" vAlign="middle" leading="0" autoSize="shrink" bold="true" text="2026年3月25日 雀魂麻将更新公告"/>
+    <richtext id="n16_wu0d" name="content" xy="0,284" size="894,558" font="SimHei" fontSize="30" color="#d7d3d1" leading="6" ubb="true" autoSize="height" text="本次更新为不停服更新。活动及更新内容将于2026年3月25日（周三）11:00开始。如果发现在更新时间后游戏内无活动内容提示，请及时重启游戏以获取最新版本内容。&#xA;&#xA;【本次更新内容】&#xA;◆花与暖夜 活动开启◆&#xA;1.活动时间：2026年3月25日更新后——4月8日4:59，共计14天；&#xA;2.活动规则：&#xA;2.活动规则：&#xA;2.活动规则：&#xA;2.活动规则：&#xA;2.活动规则：&#xA;2.活动规则："/>
   </displayList>
 </component>

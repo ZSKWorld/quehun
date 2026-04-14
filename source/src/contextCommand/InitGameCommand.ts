@@ -22,9 +22,10 @@ export class InitGameCommand extends Command {
 		ShaderManager.init();
 		MjpAtlasLoader.Inst.init();
 
-		const [, ipConfig] = await Promise.all([
-			$loadMgr.loadPackage(ResPath.EPkgPath.PkgEntrance),
+		const [ipConfig] = await Promise.all([
 			$loadMgr.fetch(ResPath.EConfigPath.IPConfig, Laya.Loader.JSON),
+			$loadMgr.loadPackage([ResPath.EPkgPath.PkgCommon, ResPath.EPkgPath.PkgEntrance]),
+			$loadMgr.load([ResPath.EFontPath.HYWH, ResPath.EFontPath.Fengyu, ResPath.EFontPath.HYYANKAIW]),
 		]);
 		ipConfig.ip.forEach(v => (v.zone_ids = v.zone_ids || []));
 

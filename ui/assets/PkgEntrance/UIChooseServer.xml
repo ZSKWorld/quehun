@@ -25,7 +25,7 @@
     <component id="n14_qs6v" name="enterGame" src="qs6vobfs" fileName="Component/UIChooseServer/BtnTxt.xml" xy="1627,379" size="247,75">
       <Button title="进入游戏" titleColor="#38546a" titleFontSize="53"/>
     </component>
-    <component id="n16_qs6v" name="lastServer" src="qs6vobft" fileName="Component/UIChooseServer/BtnTxtUnderline.xml" xy="1347,590" pivot="0.5,0.5" size="330,56">
+    <component id="n16_qs6v" name="lastServer" src="qs6vobft" fileName="Component/UIChooseServer/BtnTxtUnderline.xml" xy="1426,590" pivot="0.5,0.5" size="172,56">
       <Button title="一姬服了" titleColor="#a8a7a7" titleFontSize="42"/>
     </component>
   </displayList>

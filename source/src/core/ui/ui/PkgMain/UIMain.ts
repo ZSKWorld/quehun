@@ -3,6 +3,7 @@
 import { ComMatchModeView } from "../../view/PkgMain/view/coms/ComMatchModeView";
 import { BtnDengLongView } from "../../view/PkgMain/view/btns/BtnDengLongView";
 import { BtnXunMiView } from "../../view/PkgMain/view/btns/BtnXunMiView";
+import { ComMainPlayerInfoView } from "../../view/PkgMain/view/coms/ComMainPlayerInfoView";
 import { ComCurrencyView } from "../../view/PkgCommon/view/coms/ComCurrencyView";
 
 export default class UIMain extends fgui.GComponent {
@@ -27,6 +28,9 @@ export default class UIMain extends fgui.GComponent {
 	protected btn_bag: fgui.GButton;
 	protected btn_shop: fgui.GButton;
 	protected btn_treasure: BtnXunMiView;
+	protected com_playInfo: ComMainPlayerInfoView;
+	protected btn_qiri: fgui.GButton;
+	protected btn_report: fgui.GButton;
 	protected trans_in: fgui.Transition;
 	protected trans_out: fgui.Transition;
 	public static url: string = "ui://vith2b66vwgm0";
@@ -56,6 +60,9 @@ export default class UIMain extends fgui.GComponent {
 		this.btn_bag = <fgui.GButton>(this.getChildAt(17));
 		this.btn_shop = <fgui.GButton>(this.getChildAt(18));
 		this.btn_treasure = <BtnXunMiView>(this.getChildAt(19));
+		this.com_playInfo = <ComMainPlayerInfoView>(this.getChildAt(20));
+		this.btn_qiri = <fgui.GButton>(this.getChildAt(21));
+		this.btn_report = <fgui.GButton>(this.getChildAt(22));
 		this.trans_in = this.getTransitionAt(0);
 		this.trans_out = this.getTransitionAt(1);
 	}

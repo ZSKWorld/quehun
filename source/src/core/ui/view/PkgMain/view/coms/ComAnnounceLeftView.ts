@@ -6,22 +6,25 @@ export const enum EComAnnounceLeftMsg {
 }
 
 export class ComAnnounceLeftView extends ExtensionClass<IView, ComAnnounceLeft>(ComAnnounceLeft) implements IView {
-	private _data: [string, boolean][];
+	private _announcements: [number, string, boolean][];
 
 	override onCreate() {
 		$uiUtil.setList(this.list_tab, true, this, this.onListTabRender, this.onListTabClick);
 	}
 
-	refresh(data: [string, boolean][], index:number) {
-		this._data = data;
-		this.list_tab.numItems = data.length;
+	refresh(announcements: [number, string, boolean][], selectAnnounceId: number) {
+		this._announcements = announcements;
+		this.list_tab.numItems = announcements.length;
+
+		const index = Math.max(announcements.findIndex(v => v[0] == selectAnnounceId), 0);
 		this.list_tab.selectedIndex = index;
 		this.onListTabClick(null, null, index);
 	}
 
 	private onListTabRender(index: number, item: fgui.GButton) {
-		item.title = this._data[index][0];
-		item.getChild("icon").visible = !this._data[index][1];
+		const data = this._announcements[index];
+		item.title = data[1];
+		item.getChild("icon").visible = !data[2];
 	}
 
 	private onListTabClick(_, __, index: number) {

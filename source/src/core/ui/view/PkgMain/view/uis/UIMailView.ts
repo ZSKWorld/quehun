@@ -1,21 +1,27 @@
 import UIMail from "../../../../ui/PkgMain/UIMail";
+import { BtnMailTabView } from "../btns/BtnMailTabView";
+import { RenderMailItemView } from "../renders/RenderMailItemView";
 
 export const enum EUIMailMsg {
-	OnBtnBackClick = "UIMail_OnBtnBackClick",
+	OnTabSelectChanged = "UIMail_OnTabSelectChanged",
 	OnBtnGetRewardClick = "UIMail_OnBtnGetRewardClick",
 	OnBtnDeleteClick = "UIMail_OnBtnDeleteClick",
 }
 
 export class UIMailView extends ExtensionClass<IView, UIMail>(UIMail) implements IView {
 
-	get listTab() { return this.list_tab; }
-	get listReward() { return this.list_reward; }
+	private _mails: ProtoObject<IMail>[];
+
+	private get curMail() { return this._mails[this.list_tab.selectedIndex]; }
 
 	override onCreate() {
-		const { btn_back, btn_getReward, btn_delete, list_tab } = this;
-		btn_back.onClick(this, this.sendEvent, [EUIMailMsg.OnBtnBackClick]);
+		const { btn_back, btn_getReward, btn_delete, list_tab, list_reward } = this;
+		btn_back.onClick(this, this.closeSelf);
 		btn_getReward.onClick(this, this.sendEvent, [EUIMailMsg.OnBtnGetRewardClick]);
 		btn_delete.onClick(this, this.sendEvent, [EUIMailMsg.OnBtnDeleteClick]);
+
+		$uiUtil.setList(list_tab, true, this, this.onListTabRender, this.onListTabItemClick);
+		$uiUtil.setList(list_reward, true, this, this.onListRewardRender);
 	}
 
 	override onEnable() {
@@ -26,13 +32,25 @@ export class UIMailView extends ExtensionClass<IView, UIMail>(UIMail) implements
 		$dynamicResMgr.clearLoader(this.loader_bg);
 	}
 
-	refreshEmail(count: number) {
-		const { list_tab, ctrl_empty } = this;
-		ctrl_empty.selectedIndex = count > 0 ? 0 : 1;
-		list_tab.numItems = count;
+	refreshTab(mails: ProtoObject<IMail>[], selectMailId: number) {
+		this._mails = mails;
+		const { ctrl_head, ctrl_empty, list_tab } = this;
+		ctrl_head.selectedIndex = mails.length > 0 ? 1 : 0;
+		ctrl_empty.selectedIndex = mails.length > 0 ? 0 : 1;
+		if (mails.length > 0) {
+			list_tab.numItems = mails.length;
+			const index = Math.max(mails.findIndex(v => v.mail_id == selectMailId), 0);
+			list_tab.selectedIndex = index;
+			this.onListTabItemClick(null, null, index);
+		}
 	}
 
-	refreshContent(data: ProtoObject<IMail>) {
+	private onListTabRender(index: number, item: BtnMailTabView) {
+		item.refresh(this._mails[index]);
+	}
+
+	private onListTabItemClick(_, __, index: number) {
+		const data = this.curMail;
 		const { ctrl_body, txt_title, label_content, list_reward, txt_expire } = this;
 		ctrl_body.selectedIndex = data.attachments.length > 0 ? (data.take_attachment ? 2 : 1) : 0;
 		txt_title.text = $gameUtil.getI18nContext(data.title_i18n, data.title);
@@ -40,6 +58,14 @@ export class UIMailView extends ExtensionClass<IView, UIMail>(UIMail) implements
 		list_reward.numItems = data.attachments.length;
 		txt_expire.visible = data.expire_time > 0;
 		txt_expire.text = this.getExpireDesc(data.expire_time - $timeUtil.second);
+
+		this.sendEvent(EUIMailMsg.OnTabSelectChanged, index);
+	}
+
+	private onListRewardRender(index: number, item: RenderMailItemView) {
+		const { attachments, take_attachment } = this.curMail;
+		const reward = attachments[index];
+		item.refresh(reward.id, reward.count, take_attachment, true);
 	}
 
 	private getExpireDesc(second: number) {
@@ -53,7 +79,7 @@ export class UIMailView extends ExtensionClass<IView, UIMail>(UIMail) implements
 		if (d) str += d + $lang(2022);
 		if (h) str += h + $lang(2021);
 		if (m) str += m + $lang(2020);
-		if(!str) str = "1" + $lang(2020);
+		if (!str) str = "1" + $lang(2020);
 		return $lang(3754, str);
 	}
 

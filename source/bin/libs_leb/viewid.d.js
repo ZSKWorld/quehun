@@ -58,6 +58,7 @@ EViewID = {
 	ComBagSkinView: "ComBagSkinView",
 	ComLiaoSheCharView: "ComLiaoSheCharView",
 	ComLiaoSheDecorateView: "ComLiaoSheDecorateView",
+	ComMainPlayerInfoView: "ComMainPlayerInfoView",
 	ComMatchContentView: "ComMatchContentView",
 	ComMatchItemView: "ComMatchItemView",
 	ComMatchModeView: "ComMatchModeView",

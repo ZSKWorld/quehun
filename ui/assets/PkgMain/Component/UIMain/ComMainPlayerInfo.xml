@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="492,197" designImage="ui://ca43vz0eexjc7plolr" designImageAlpha="0">
+  <controller name="ht" exported="true" pages="0,,1," selected="0"/>
+  <controller name="star" exported="true" pages="0,,1,,2,,3," selected="0"/>
+  <displayList>
+    <image id="n18_exjc" name="n18" src="exjcobhi" fileName="Texture/img_3752.png" xy="15,0"/>
+    <loader id="n3_hdeo" name="icon" xy="38,25" size="127,127" aspect="true" touchable="false" url="ui://ca43vz0ehk7r7ploij" fill="scaleFree"/>
+    <image id="n6_hdeo" name="n6" src="hdeoobbr" fileName="Texture/img_784.png" pkg="vx9zwser" xy="24,130">
+      <gearDisplay controller="ht" pages="1"/>
+    </image>
+    <text id="n7_hdeo" name="htLevel" xy="55,126" size="30,40" font="ui://vx9zwserhdeoobb8" fontSize="12" color="#fbfbfb" leading="0" text="4">
+      <gearDisplay controller="ht" pages="1"/>
+    </text>
+    <image id="n10_q5yi" name="n10" src="mde1b81" fileName="Texture/img_1512.png" pkg="vx9zwser" xy="0,85" size="46,46" group="n16_q5yi" aspect="true"/>
+    <image id="n11_q5yi" name="n11" src="mde1b81" fileName="Texture/img_1512.png" pkg="vx9zwser" xy="26,127" size="37,37" group="n16_q5yi" aspect="true"/>
+    <image id="n12_q5yi" name="n12" src="mde1b81" fileName="Texture/img_1512.png" pkg="vx9zwser" xy="60,146" size="30,30" group="n16_q5yi"/>
+    <image id="n13_q5yi" name="n13" src="mde1b82" fileName="Texture/img_1513.png" pkg="vx9zwser" xy="0,85" size="46,46" group="n16_q5yi">
+      <gearDisplay controller="star" pages="3"/>
+    </image>
+    <image id="n14_q5yi" name="n14" src="mde1b82" fileName="Texture/img_1513.png" pkg="vx9zwser" xy="26,127" size="37,37" group="n16_q5yi" aspect="true">
+      <gearDisplay controller="star" pages="2,3"/>
+    </image>
+    <image id="n15_q5yi" name="n15" src="mde1b82" fileName="Texture/img_1513.png" pkg="vx9zwser" xy="60,146" size="30,30" group="n16_q5yi">
+      <gearDisplay controller="star" pages="1,2,3"/>
+    </image>
+    <group id="n16_q5yi" name="n16" xy="0,85" size="90,91" advanced="true">
+      <gearDisplay controller="ht" pages="0"/>
+    </group>
+    <component id="n21_exjc" name="title" src="hdeoobbo" fileName="Component/Component/称号/ComTitle.xml" pkg="vx9zwser" xy="184,33" pivot="0.5,0.5" size="242,46" aspect="true" touchable="false">
+      <property target="icon" propertyId="1" value="ui://ca43vz0ehk7r7plogk"/>
+    </component>
+    <component id="n22_exjc" name="name" src="puubobfa" fileName="Component/Component/名字/ComName2.xml" pkg="vx9zwser" xy="234,91" pivot="0.5,0.5" size="143,36" touchable="false">
+      <property target="name" propertyId="0" value="Zsk123"/>
+    </component>
+    <component id="n19_exjc" name="level" src="exjcobhk" fileName="Component/UIMain/BtnMainPlayerInfoLevel.xml" xy="170,150" pivot="0.78,0.76" anchor="true"/>
+    <component id="n20_exjc" name="info" src="exjcobhl" fileName="Component/UIMain/BtnMainPlayerInfoInfo.xml" xy="449,78" pivot="0.85,0.46" anchor="true"/>
+  </displayList>
+  <customProperty target="icon" propertyId="1"/>
+  <customProperty target="level" propertyId="0"/>
+</component>

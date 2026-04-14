@@ -1,45 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0eii8i7plol0" designImageAlpha="0">
-  <controller name="tab" pages="0,,1,,2," selected="2"/>
-  <controller name="pointTab" pages="0,,1,,2," selected="2"/>
+<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0eii8i7plol0" designImageAlpha="48">
+  <controller name="tab" pages="0,,1,,2," selected="0"/>
+  <controller name="pointTab" pages="0,,1,,2," selected="0"/>
   <displayList>
     <component id="n1_ii8i" name="bg" src="w29kob8e" fileName="Component/Button/BtnIconFitNoScale.xml" pkg="vx9zwser" xy="-1040,-585" size="4000,2250" aspect="true" alpha="0.5">
       <Button icon="ui://vx9zwserieavob7l"/>
     </component>
     <component id="n2_ii8i" name="n2" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" pkg="vx9zwser" xy="62,3" size="1782,1073"/>
-    <component id="n5_ii8i" name="tab0" src="ii8iobhe" fileName="Component/UIHelp/BtnHelpTabV.xml" xy="44,165" group="n19_ii8i">
+    <component id="n5_ii8i" name="tab0" src="ii8iobhe" fileName="Component/UIHelp/BtnHelpTabV.xml" xy="85,290" pivot="0.5,0.5" anchor="true" group="n19_ii8i">
       <Button icon="ui://vx9zwsergsi2obe8" selectedIcon="ui://vx9zwsergsi2obe9"/>
     </component>
-    <component id="n6_ii8i" name="tab1" src="ii8iobhe" fileName="Component/UIHelp/BtnHelpTabV.xml" xy="44,414" group="n19_ii8i">
+    <component id="n6_ii8i" name="tab1" src="ii8iobhe" fileName="Component/UIHelp/BtnHelpTabV.xml" xy="85,539" pivot="0.5,0.5" anchor="true" group="n19_ii8i">
       <Button title="新手入门" icon="ui://vx9zwsergsi2obe8" selectedIcon="ui://vx9zwsergsi2obe9"/>
     </component>
-    <component id="n7_ii8i" name="tab2" src="ii8iobhe" fileName="Component/UIHelp/BtnHelpTabV.xml" xy="44,665" group="n19_ii8i">
+    <component id="n7_ii8i" name="tab2" src="ii8iobhe" fileName="Component/UIHelp/BtnHelpTabV.xml" xy="85,790" pivot="0.5,0.5" anchor="true" group="n19_ii8i">
       <Button title="点数计算" icon="ui://vx9zwsergsi2obe8" selectedIcon="ui://vx9zwsergsi2obe9"/>
     </component>
-    <group id="n19_ii8i" name="n19" xy="44,165" size="83,750"/>
+    <group id="n19_ii8i" name="n19" xy="43,165" size="83,750"/>
     <component id="n9_ii8i" name="fanTab0" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="235,107" size="173,77" group="n17_ii8i">
-      <Button title="一番" titleColor="#e0ab67" titleFontSize="40" icon="ui://vx9zwsergsi2obe6" selectedIcon="ui://vx9zwsergsi2obe7"/>
+      <Button title="一番" titleColor="#e0ab67" titleFontSize="43" icon="ui://vx9zwsergsi2obe6" selectedIcon="ui://vx9zwsergsi2obe7"/>
     </component>
     <component id="n10_ii8i" name="fanTab1" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="408,107" size="173,77" group="n17_ii8i">
-      <Button title="二番" titleColor="#e0ab67" titleFontSize="40" icon="ui://vx9zwsergsi2obe6" selectedIcon="ui://vx9zwsergsi2obe7"/>
+      <Button title="二番" titleColor="#e0ab67" titleFontSize="43" icon="ui://vx9zwsergsi2obe6" selectedIcon="ui://vx9zwsergsi2obe7"/>
     </component>
     <component id="n11_ii8i" name="fanTab2" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="581,107" size="173,77" group="n17_ii8i">
-      <Button title="三番" titleColor="#e0ab67" titleFontSize="40" icon="ui://vx9zwsergsi2obe6" selectedIcon="ui://vx9zwsergsi2obe7"/>
+      <Button title="三番" titleColor="#e0ab67" titleFontSize="43" icon="ui://vx9zwsergsi2obe6" selectedIcon="ui://vx9zwsergsi2obe7"/>
     </component>
     <component id="n12_ii8i" name="fanTab3" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="754,107" size="173,77" group="n17_ii8i">
-      <Button title="六番" titleColor="#e0ab67" titleFontSize="40" icon="ui://vx9zwsergsi2obe6" selectedIcon="ui://vx9zwsergsi2obe7"/>
+      <Button title="六番" titleColor="#e0ab67" titleFontSize="43" icon="ui://vx9zwsergsi2obe6" selectedIcon="ui://vx9zwsergsi2obe7"/>
     </component>
     <component id="n13_ii8i" name="fanTab4" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="927,107" size="173,77" group="n17_ii8i">
-      <Button title="满贯" titleColor="#e0ab67" titleFontSize="40" icon="ui://vx9zwsergsi2obe6" selectedIcon="ui://vx9zwsergsi2obe7"/>
+      <Button title="满贯" titleColor="#e0ab67" titleFontSize="43" icon="ui://vx9zwsergsi2obe6" selectedIcon="ui://vx9zwsergsi2obe7"/>
     </component>
     <component id="n14_ii8i" name="fanTab5" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="1100,107" size="173,77" group="n17_ii8i">
-      <Button title="役满" titleColor="#e0ab67" titleFontSize="40" icon="ui://vx9zwsergsi2obe6" selectedIcon="ui://vx9zwsergsi2obe7"/>
+      <Button title="役满" titleColor="#e0ab67" titleFontSize="43" icon="ui://vx9zwsergsi2obe6" selectedIcon="ui://vx9zwsergsi2obe7"/>
     </component>
     <component id="n15_ii8i" name="fanTab6" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="1273,107" size="237,77" group="n17_ii8i">
-      <Button title="双倍役满" titleColor="#e0ab67" titleFontSize="40" icon="ui://vx9zwsergsi2obe6" selectedIcon="ui://vx9zwsergsi2obe7"/>
+      <Button title="双倍役满" titleColor="#e0ab67" titleFontSize="43" icon="ui://vx9zwsergsi2obe6" selectedIcon="ui://vx9zwsergsi2obe7"/>
     </component>
     <component id="n16_ii8i" name="fanTab7" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="1510,107" size="173,77" group="n17_ii8i">
-      <Button title="流局" titleColor="#e0ab67" titleFontSize="40" icon="ui://vx9zwsergsi2obe6" selectedIcon="ui://vx9zwsergsi2obe7"/>
+      <Button title="流局" titleColor="#e0ab67" titleFontSize="43" icon="ui://vx9zwsergsi2obe6" selectedIcon="ui://vx9zwsergsi2obe7"/>
     </component>
     <list id="n23_ii8i" name="fan" xy="234,208" size="1445,815" group="n17_ii8i" overflow="scroll" defaultItem="ui://vith2b66ii8iobhg" autoClearItems="true">
       <item/>

@@ -1,6 +1,7 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
 import UILiaoShe from "./UILiaoShe";
+import ComMainPlayerInfo from "./ComMainPlayerInfo";
 import UIRecharge from "./UIRecharge";
 import BtnShopRefresh from "./BtnShopRefresh";
 import RenderShopItem from "./RenderShopItem";
@@ -53,6 +54,7 @@ import ComMatchMode from "./ComMatchMode";
 import ComAnnounceContent from "./ComAnnounceContent";
 import ComMatchContent from "./ComMatchContent";
 import { UILiaoSheView } from "../../view/PkgMain/view/uis/UILiaoSheView";
+import { ComMainPlayerInfoView } from "../../view/PkgMain/view/coms/ComMainPlayerInfoView";
 import { UIRechargeView } from "../../view/PkgMain/view/uis/UIRechargeView";
 import { BtnShopRefreshView } from "../../view/PkgMain/view/btns/BtnShopRefreshView";
 import { RenderShopItemView } from "../../view/PkgMain/view/renders/RenderShopItemView";
@@ -108,6 +110,7 @@ import { ComMatchContentView } from "../../view/PkgMain/view/coms/ComMatchConten
 export default class PkgMainBinder {
 	public static bindAll(): void {
 		fgui.UIObjectFactory.setExtension(UILiaoShe.url, UILiaoSheView);
+		fgui.UIObjectFactory.setExtension(ComMainPlayerInfo.url, ComMainPlayerInfoView);
 		fgui.UIObjectFactory.setExtension(UIRecharge.url, UIRechargeView);
 		fgui.UIObjectFactory.setExtension(BtnShopRefresh.url, BtnShopRefreshView);
 		fgui.UIObjectFactory.setExtension(RenderShopItem.url, RenderShopItemView);

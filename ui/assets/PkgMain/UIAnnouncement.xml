@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0eojz47plokq" designImageAlpha="0" designImageLayer="1">
+  <controller name="empty" pages="0,,1," selected="0"/>
   <displayList>
     <loader id="n1_ojz4" name="bg" xy="187,68" size="1549,949" url="ui://ca43vz0eojz47plokp" fill="scaleFree"/>
-    <component id="n10_80pi" name="tab" src="ojz4obha" fileName="Component/UIAnnouncement/ComAnnounceLeft.xml" xy="268,224" controller="type,1"/>
-    <component id="n11_wu0d" name="content" src="wu0dobhd" fileName="Component/UIAnnouncement/ComAnnounceContent.xml" xy="718,248" controller="type,1"/>
     <component id="n3_ojz4" name="close" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1590,150" size="78,78" aspect="true">
       <Button icon="ui://vx9zwsergsi2obdi"/>
     </component>
+    <component id="n10_80pi" name="tab" src="ojz4obha" fileName="Component/UIAnnouncement/ComAnnounceLeft.xml" xy="268,224" group="n14_exjc" controller="type,1"/>
+    <component id="n11_wu0d" name="content" src="wu0dobhd" fileName="Component/UIAnnouncement/ComAnnounceContent.xml" xy="718,248" group="n14_exjc"/>
+    <group id="n14_exjc" name="n14" xy="268,224" size="1373,710" advanced="true">
+      <gearDisplay controller="empty" pages="0"/>
+    </group>
     <text id="n5_ojz4" name="n5" xy="894,165" pivot="0.5,0.5" size="133,58" font="ui://vx9zwserrpakobeu" fontSize="43" color="#591d2d" align="center" vAlign="middle" singleLine="true" text="公告栏"/>
+    <text id="n12_exjc" name="n12" xy="482,572" pivot="0.5,0.5" anchor="true" size="144,48" group="n15_exjc" fontSize="35" color="#eac18b" align="center" vAlign="middle" leading="0" singleLine="true" text="暂无公告"/>
+    <text id="n13_exjc" name="n13" xy="1173,564" pivot="0.5,0.5" anchor="true" size="204,46" group="n15_exjc" fontSize="34" color="#8994a8" align="center" vAlign="middle" leading="0" singleLine="true" text="什么都没有..."/>
+    <group id="n15_exjc" name="n15" xy="410,541" size="865,55" advanced="true">
+      <gearDisplay controller="empty" pages="1"/>
+    </group>
   </displayList>
 </component>

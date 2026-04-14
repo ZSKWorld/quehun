@@ -1712,6 +1712,8 @@
     <image id="ii8i7ploln" name="page1.png" path="/11/help/"/>
     <image id="ii8i7plolo" name="page2.png" path="/11/help/"/>
     <image id="ii8i7plolp" name="page3.png" path="/11/help/"/>
+    <image id="exjc7plolq" name="annual_report.png" path="/11/"/>
+    <image id="exjc7plolr" name="大厅.jpg" path="/大厅活动入口/"/>
   </resources>
   <publish name=""/>
 </packageDescription>

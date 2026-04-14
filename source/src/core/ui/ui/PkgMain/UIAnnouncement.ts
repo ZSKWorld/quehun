@@ -5,10 +5,11 @@ import { ComAnnounceContentView } from "../../view/PkgMain/view/coms/ComAnnounce
 
 export default class UIAnnouncement extends fgui.GComponent {
 
+	protected ctrl_empty: fgui.Controller;
 	protected loader_bg: fgui.GLoader;
+	protected btn_close: fgui.GButton;
 	protected com_tab: ComAnnounceLeftView;
 	protected com_content: ComAnnounceContentView;
-	protected btn_close: fgui.GButton;
 	public static url: string = "ui://vith2b66ktwpob9v";
 
 	public static createInstance(): UIAnnouncement {
@@ -16,9 +17,10 @@ export default class UIAnnouncement extends fgui.GComponent {
 	}
 
 	protected override onConstruct(): void {
+		this.ctrl_empty = this.getControllerAt(0);
 		this.loader_bg = <fgui.GLoader>(this.getChildAt(0));
-		this.com_tab = <ComAnnounceLeftView>(this.getChildAt(1));
-		this.com_content = <ComAnnounceContentView>(this.getChildAt(2));
-		this.btn_close = <fgui.GButton>(this.getChildAt(3));
+		this.btn_close = <fgui.GButton>(this.getChildAt(1));
+		this.com_tab = <ComAnnounceLeftView>(this.getChildAt(2));
+		this.com_content = <ComAnnounceContentView>(this.getChildAt(3));
 	}
 }

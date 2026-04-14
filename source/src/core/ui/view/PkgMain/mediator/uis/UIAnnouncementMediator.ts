@@ -1,32 +1,33 @@
 import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
-import { EUIAnnouncementMsg, UIAnnouncementView } from "../../view/uis/UIAnnouncementView";
+import { EUIAnnounceEvent } from "../../Definition";
+import { UIAnnouncementView } from "../../view/uis/UIAnnouncementView";
 
 export interface IUIAnnouncementData {
 
 }
 
 export class UIAnnouncementMediator extends MediatorBase<UIAnnouncementView, IUIAnnouncementData> {
-	private _selectIndex = 0;
+	private _curAnnouncement: ProtoObject<IAnnouncement>;
 
 	override onAwake() {
-		this.addEvent(EUIAnnouncementMsg.OnTabSelectChanged, this.onTabSelectChanged);
+		this.addEvent(EUIAnnounceEvent.OnTabSelectChanged, this.onTabSelectChanged);
 	}
 
 	override onEnable() {
-		this._selectIndex = 0;
-		this.onAnnouncementChanged();
+		this.refreshAnnouncements();
+	}
+
+	override onDisable() {
+		this._curAnnouncement = null;
 	}
 
 	@InterestUserEvent(EUserEvent.OnAnnouncementChanged)
-	private onAnnouncementChanged() {
-		const announcement = $user.announcement;
-		const tabData: [string, boolean][] = announcement.announcements.map(v => [v.title, announcement.isRead(v.id)]);
-		this._selectIndex = $mathUtil.clamp(this._selectIndex, 0, tabData.length - 1);
-		this.view.refreshTab(tabData, this._selectIndex);
+	private refreshAnnouncements() {
+		const announcementId = this._curAnnouncement?.id || 0;
+		this.view.refreshTab($user.announcement.announcements, announcementId);
 	}
 
 	private onTabSelectChanged(index: number) {
-		this._selectIndex = index;
-		this.view.refreshContent($user.announcement.announcements[index]);
+		this._curAnnouncement = $user.announcement.announcements[index];
 	}
 }

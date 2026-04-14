@@ -1,24 +1,13 @@
 import UIAnnouncement from "../../../../ui/PkgMain/UIAnnouncement";
 import { EUIAnnounceEvent } from "../../Definition";
 
-export const enum EUIAnnouncementMsg {
-	OnTabSelectChanged = "UIAnnouncement_OnTabSelectChanged",
-}
-
 export class UIAnnouncementView extends ExtensionClass<IView, UIAnnouncement>(UIAnnouncement) implements IView {
+	private _announcements: ProtoObject<IAnnouncement>[];
 
 	override onCreate() {
 		const { btn_close, com_tab } = this;
 		btn_close.onClick(this, this.closeSelf);
-		com_tab.on(EUIAnnounceEvent.OnTabSelectChanged, this, this.sendEvent, [EUIAnnouncementMsg.OnTabSelectChanged]);
-	}
-
-	refreshTab(data: [string, boolean][], index:number) {
-		this.com_tab.refresh(data, index);
-	}
-
-	refreshContent(data: ProtoObject<IAnnouncement>) {
-		this.com_content.refresh(data);
+		com_tab.on(EUIAnnounceEvent.OnTabSelectChanged, this, this.onTabSelectChanged);
 	}
 
 	override onEnable() {
@@ -27,6 +16,20 @@ export class UIAnnouncementView extends ExtensionClass<IView, UIAnnouncement>(UI
 
 	override onDisable() {
 		$dynamicResMgr.clearLoader(this.loader_bg);
+	}
+
+	refreshTab(announcements: ProtoObject<IAnnouncement>[], selectAnnouncementId: number) {
+		this._announcements = announcements;
+		this.ctrl_empty.selectedIndex = announcements.length > 0 ? 0 : 1;
+		if (announcements.length > 0) {
+			const tabData: [number, string, boolean][] = announcements.map(v => [v.id, v.title, $user.announcement.isRead(v.id)]);
+			this.com_tab.refresh(tabData, selectAnnouncementId);
+		}
+	}
+
+	private onTabSelectChanged(index: number) {
+		this.com_content.refresh(this._announcements[index]);
+		this.sendEvent(EUIAnnounceEvent.OnTabSelectChanged, index);
 	}
 
 	override onOpenAni() { return $uiUtil.popAlphaIn(this); }

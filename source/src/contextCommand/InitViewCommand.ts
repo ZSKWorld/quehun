@@ -56,6 +56,7 @@ import { ComBagItemView } from "../core/ui/view/PkgMain/view/coms/ComBagItemView
 import { ComBagSkinView } from "../core/ui/view/PkgMain/view/coms/ComBagSkinView";
 import { ComLiaoSheCharView } from "../core/ui/view/PkgMain/view/coms/ComLiaoSheCharView";
 import { ComLiaoSheDecorateView } from "../core/ui/view/PkgMain/view/coms/ComLiaoSheDecorateView";
+import { ComMainPlayerInfoView } from "../core/ui/view/PkgMain/view/coms/ComMainPlayerInfoView";
 import { ComMatchContentView } from "../core/ui/view/PkgMain/view/coms/ComMatchContentView";
 import { ComMatchContentMediator } from "../core/ui/view/PkgMain/mediator/coms/ComMatchContentMediator";
 import { ComMatchItemView } from "../core/ui/view/PkgMain/view/coms/ComMatchItemView";
@@ -189,6 +190,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.ComBagSkinView, EViewType.Component, ComBagSkinView);
 		register(EViewID.ComLiaoSheCharView, EViewType.Component, ComLiaoSheCharView);
 		register(EViewID.ComLiaoSheDecorateView, EViewType.Component, ComLiaoSheDecorateView);
+		register(EViewID.ComMainPlayerInfoView, EViewType.Component, ComMainPlayerInfoView);
 		register(EViewID.ComMatchContentView, EViewType.Component, ComMatchContentView, ComMatchContentMediator);
 		register(EViewID.ComMatchItemView, EViewType.Component, ComMatchItemView, ComMatchItemMediator);
 		register(EViewID.ComMatchModeView, EViewType.Component, ComMatchModeView, ComMatchModeMediator);

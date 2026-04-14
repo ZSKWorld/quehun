@@ -109,7 +109,6 @@ export class UIHelpView extends ExtensionClass<IView, UIHelp>(UIHelp) implements
 				arr[tag].push(caseArr);
 			}
 		});
-		Logger.error(this._fanData);
 	}
 
 	override onEnable() {

@@ -219,6 +219,12 @@
     <component id="ii8iobhe" name="BtnHelpTabV.xml" path="/Component/UIHelp/"/>
     <image id="ii8iobhf" name="img_3851.png" path="/Texture/" scale="9grid" scale9grid="0,70,603,6"/>
     <component id="ii8iobhg" name="RenderHelpItem1.xml" path="/Component/UIHelp/"/>
+    <image id="exjcobhi" name="img_3752.png" path="/Texture/"/>
+    <component id="exjcobgg" name="ComMainPlayerInfo.xml" path="/Component/UIMain/"/>
+    <image id="exjcobhj" name="img_2036.png" path="/Texture/"/>
+    <component id="exjcobhk" name="BtnMainPlayerInfoLevel.xml" path="/Component/UIMain/"/>
+    <component id="exjcobhl" name="BtnMainPlayerInfoInfo.xml" path="/Component/UIMain/"/>
+    <image id="exjcobhm" name="img_1864.png" path="/Texture/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

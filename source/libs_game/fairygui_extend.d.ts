@@ -21,9 +21,7 @@ declare namespace fgui {
 		getComponents<T extends Laya.Component>(componentType: Class<T>): T[];
 
 		event(type: string, data?: any): boolean;
-		on(type: string, caller: any, listener: Function, args?: any[]): Laya.EventDispatcher;
 		once(type: string, caller: any, listener: Function, args?: any[]): Laya.EventDispatcher;
-		off(type: string, caller: any, listener?: Function): Laya.EventDispatcher;
 		offAll(type?: string): Laya.EventDispatcher;
 		offAllCaller(caller: any): Laya.EventDispatcher;
 	}
@@ -47,5 +45,7 @@ declare namespace fgui {
 		 */
 		downEffect: 0 | 1 | 2;
 		downEffectValue: number;
+		titleObject: GObject;
+		iconObject: GObject;
 	}
 }

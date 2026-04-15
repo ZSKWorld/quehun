@@ -24,7 +24,7 @@ export class ComAnnounceLeftView extends ExtensionClass<IView, ComAnnounceLeft>(
 	private onListTabRender(index: number, item: fgui.GButton) {
 		const data = this._announcements[index];
 		item.title = data[1];
-		item.getChild("icon").visible = !data[2];
+		item.iconObject.visible = !data[2];
 	}
 
 	private onListTabClick(_, __, index: number) {

@@ -8,7 +8,11 @@ export const enum EUIMainMsg {
 export class UIMainView extends ExtensionClass<IView, UIMain>(UIMain) implements IView {
 
 	override onCreate() {
-		const { btn_liaoShe, btn_friend, btn_observer, btn_paiPu, btn_bag, btn_shop, btn_treasure, btn_setting, btn_help, btn_guide, btn_camera, btn_achieve, btn_activity, btn_mail, btn_rank, btn_announcement } = this;
+		const {
+			btn_liaoShe, btn_friend, btn_observer, btn_paiPu, btn_bag, btn_shop, btn_treasure,
+			btn_setting, btn_help, btn_guide, btn_camera, btn_achieve, btn_activity, btn_mail,
+			btn_rank, btn_announcement, btn_qiri, btn_report
+		} = this;
 		btn_liaoShe.onClick(this, this.openView, [EViewID.UILiaoSheView, null, EViewOpenType.Hide]);
 		btn_friend.onClick(this, this.openView, [EViewID.UIFriendView, null, EViewOpenType.Hide]);
 		btn_observer.onClick(this, this.sendEvent, [EUIMainMsg.OnBtnObserverClick]);
@@ -25,6 +29,8 @@ export class UIMainView extends ExtensionClass<IView, UIMain>(UIMain) implements
 		btn_mail.onClick(this, this.openView, [EViewID.UIMailView]);
 		btn_rank.onClick(this, this.openView, [EViewID.UIRankView]);
 		btn_announcement.onClick(this, this.openView, [EViewID.UIAnnouncementView]);
+		btn_qiri.onClick(this, this.openView, [EViewID.UISevenDayView]);
+		// btn_report.onClick(this, this.openView, [EViewID.])
 	}
 
 	override onOpenAni() {

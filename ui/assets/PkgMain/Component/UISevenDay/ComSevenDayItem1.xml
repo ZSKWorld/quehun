@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="116,116">
+  <displayList>
+    <component id="n2_afne" name="item" src="rpakobf5" fileName="Component/Component/物品/ComItem.xml" pkg="vx9zwser" xy="13,13" size="90,90"/>
+    <image id="n3_afne" name="n3" src="ieavob7l" fileName="Texture/img_112.png" pkg="vx9zwser" xy="13,82" size="90,21" alpha="0.7"/>
+    <image id="n1_afne" name="n1" src="afneobi0" fileName="Texture/img_2478.png" xy="0,0"/>
+    <text id="n4_afne" name="count" xy="58,92" pivot="0.5,0.5" anchor="true" size="18,34" fontSize="24" color="#ffffff" align="center" vAlign="middle" leading="0" text="1"/>
+  </displayList>
+</component>

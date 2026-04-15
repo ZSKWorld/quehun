@@ -10,6 +10,7 @@ import { BtnSwitch1View } from "../core/ui/view/PkgCommon/view/btns/BtnSwitch1Vi
 import { BtnBagSkinCheckView } from "../core/ui/view/PkgMain/view/btns/BtnBagSkinCheckView";
 import { BtnDengLongView } from "../core/ui/view/PkgMain/view/btns/BtnDengLongView";
 import { BtnMailTabView } from "../core/ui/view/PkgMain/view/btns/BtnMailTabView";
+import { BtnSevenDayTabView } from "../core/ui/view/PkgMain/view/btns/BtnSevenDayTabView";
 import { BtnShopRefreshView } from "../core/ui/view/PkgMain/view/btns/BtnShopRefreshView";
 import { BtnXunMiView } from "../core/ui/view/PkgMain/view/btns/BtnXunMiView";
 import { RenderBagGiftItemView } from "../core/ui/view/PkgMain/view/renders/RenderBagGiftItemView";
@@ -26,6 +27,7 @@ import { RenderLiaoSheDecoItemView } from "../core/ui/view/PkgMain/view/renders/
 import { RenderLiaoSheDecoTabView } from "../core/ui/view/PkgMain/view/renders/RenderLiaoSheDecoTabView";
 import { RenderMailItemView } from "../core/ui/view/PkgMain/view/renders/RenderMailItemView";
 import { RenderRankItemView } from "../core/ui/view/PkgMain/view/renders/RenderRankItemView";
+import { RenderSevenDayItemView } from "../core/ui/view/PkgMain/view/renders/RenderSevenDayItemView";
 import { RenderShopCGView } from "../core/ui/view/PkgMain/view/renders/RenderShopCGView";
 import { RenderShopItemView } from "../core/ui/view/PkgMain/view/renders/RenderShopItemView";
 import { RenderShopSkinView } from "../core/ui/view/PkgMain/view/renders/RenderShopSkinView";
@@ -63,6 +65,7 @@ import { ComMatchItemView } from "../core/ui/view/PkgMain/view/coms/ComMatchItem
 import { ComMatchItemMediator } from "../core/ui/view/PkgMain/mediator/coms/ComMatchItemMediator";
 import { ComMatchModeView } from "../core/ui/view/PkgMain/view/coms/ComMatchModeView";
 import { ComMatchModeMediator } from "../core/ui/view/PkgMain/mediator/coms/ComMatchModeMediator";
+import { ComSevenDayItem1View } from "../core/ui/view/PkgMain/view/coms/ComSevenDayItem1View";
 import { UIConfirmBigView } from "../core/ui/view/PkgCommon/view/uis/UIConfirmBigView";
 import { UIConfirmBigMediator } from "../core/ui/view/PkgCommon/mediator/uis/UIConfirmBigMediator";
 import { UIConfirmMiddleView } from "../core/ui/view/PkgCommon/view/uis/UIConfirmMiddleView";
@@ -119,6 +122,8 @@ import { UIRechargeView } from "../core/ui/view/PkgMain/view/uis/UIRechargeView"
 import { UIRechargeMediator } from "../core/ui/view/PkgMain/mediator/uis/UIRechargeMediator";
 import { UISettingView } from "../core/ui/view/PkgMain/view/uis/UISettingView";
 import { UISettingMediator } from "../core/ui/view/PkgMain/mediator/uis/UISettingMediator";
+import { UISevenDayView } from "../core/ui/view/PkgMain/view/uis/UISevenDayView";
+import { UISevenDayMediator } from "../core/ui/view/PkgMain/mediator/uis/UISevenDayMediator";
 import { UIShopView } from "../core/ui/view/PkgMain/view/uis/UIShopView";
 import { UIShopMediator } from "../core/ui/view/PkgMain/mediator/uis/UIShopMediator";
 import { UITreasureView } from "../core/ui/view/PkgMain/view/uis/UITreasureView";
@@ -143,6 +148,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.BtnBagSkinCheckView, EViewType.Button, BtnBagSkinCheckView);
 		register(EViewID.BtnDengLongView, EViewType.Button, BtnDengLongView);
 		register(EViewID.BtnMailTabView, EViewType.Button, BtnMailTabView);
+		register(EViewID.BtnSevenDayTabView, EViewType.Button, BtnSevenDayTabView);
 		register(EViewID.BtnShopRefreshView, EViewType.Button, BtnShopRefreshView);
 		register(EViewID.BtnXunMiView, EViewType.Button, BtnXunMiView);
 
@@ -161,6 +167,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.RenderLiaoSheDecoTabView, EViewType.Render, RenderLiaoSheDecoTabView);
 		register(EViewID.RenderMailItemView, EViewType.Render, RenderMailItemView);
 		register(EViewID.RenderRankItemView, EViewType.Render, RenderRankItemView);
+		register(EViewID.RenderSevenDayItemView, EViewType.Render, RenderSevenDayItemView);
 		register(EViewID.RenderShopCGView, EViewType.Render, RenderShopCGView);
 		register(EViewID.RenderShopItemView, EViewType.Render, RenderShopItemView);
 		register(EViewID.RenderShopSkinView, EViewType.Render, RenderShopSkinView);
@@ -196,6 +203,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.ComMatchContentView, EViewType.Component, ComMatchContentView, ComMatchContentMediator);
 		register(EViewID.ComMatchItemView, EViewType.Component, ComMatchItemView, ComMatchItemMediator);
 		register(EViewID.ComMatchModeView, EViewType.Component, ComMatchModeView, ComMatchModeMediator);
+		register(EViewID.ComSevenDayItem1View, EViewType.Component, ComSevenDayItem1View);
 
 		//UIs
 		register(EViewID.UIConfirmBigView, EViewType.UI, UIConfirmBigView, UIConfirmBigMediator);
@@ -226,6 +234,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.UIRankView, EViewType.UI, UIRankView, UIRankMediator);
 		register(EViewID.UIRechargeView, EViewType.UI, UIRechargeView, UIRechargeMediator);
 		register(EViewID.UISettingView, EViewType.UI, UISettingView, UISettingMediator);
+		register(EViewID.UISevenDayView, EViewType.UI, UISevenDayView, UISevenDayMediator);
 		register(EViewID.UIShopView, EViewType.UI, UIShopView, UIShopMediator);
 		register(EViewID.UITreasureView, EViewType.UI, UITreasureView, UITreasureMediator);
 		register(EViewID.UIVideoView, EViewType.UI, UIVideoView, UIVideoMediator);

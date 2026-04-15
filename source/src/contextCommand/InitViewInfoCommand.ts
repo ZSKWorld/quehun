@@ -23,6 +23,7 @@ export class InitViewInfoCommand extends Command {
 		registerViewInfo(EViewID.UIBagView);
 		registerViewInfo(EViewID.UICameraView);
 		registerViewInfo(EViewID.UIFriendView);
+		registerViewInfo(EViewID.UIGuideView, UIBottom, Popup);
 		registerViewInfo(EViewID.UIHelpView, UIBottom, Popup);
 		registerViewInfo(EViewID.UILiaoSheView);
 		registerViewInfo(EViewID.UIMailView, UIBottom, Popup);
@@ -32,6 +33,7 @@ export class InitViewInfoCommand extends Command {
 		registerViewInfo(EViewID.UIRankView, UIBottom, Popup);
 		registerViewInfo(EViewID.UIRechargeView);
 		registerViewInfo(EViewID.UISettingView, UIBottom, Popup);
+		registerViewInfo(EViewID.UISevenDayView, UIBottom, Popup);
 		registerViewInfo(EViewID.UIShopView);
 		registerViewInfo(EViewID.UITreasureView);
 		registerViewInfo(EViewID.UIVideoView);

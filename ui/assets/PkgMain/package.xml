@@ -226,6 +226,21 @@
     <component id="exjcobhl" name="BtnMainPlayerInfoInfo.xml" path="/Component/UIMain/"/>
     <image id="exjcobhm" name="img_1864.png" path="/Texture/"/>
     <component id="exjcobhn" name="UIGuide.xml" path="/" exported="true"/>
+    <component id="afneobhp" name="UISevenDay.xml" path="/" exported="true"/>
+    <image id="afneobhq" name="img_2400.png" path="/Texture/" scale="9grid" scale9grid="10,0,72,132"/>
+    <image id="afneobhr" name="img_267.png" path="/Texture/" scale="9grid" scale9grid="20,0,51,4"/>
+    <image id="afneobhs" name="img_2018.png" path="/Texture/"/>
+    <image id="afneobht" name="img_2019.png" path="/Texture/"/>
+    <image id="afneobhu" name="img_598.png" path="/Texture/"/>
+    <component id="afneobhv" name="BtnSevenDayTab.xml" path="/Component/UISevenDay/"/>
+    <image id="afneobhw" name="img_208.png" path="/Texture/" scale="9grid" scale9grid="5,5,7,5"/>
+    <component id="afneobhx" name="RenderSevenDayItem.xml" path="/Component/UISevenDay/"/>
+    <image id="afneobhz" name="img_1881.png" path="/Texture/"/>
+    <image id="afneobi0" name="img_2478.png" path="/Texture/"/>
+    <component id="afneobi1" name="ComSevenDayItem1.xml" path="/Component/UISevenDay/"/>
+    <image id="afneobi2" name="img_2764.png" path="/Texture/"/>
+    <image id="afneobi3" name="img_2765.png" path="/Texture/"/>
+    <image id="afneobi4" name="img_2356.png" path="/Texture/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

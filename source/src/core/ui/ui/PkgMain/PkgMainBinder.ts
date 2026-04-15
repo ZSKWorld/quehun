@@ -1,5 +1,9 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import UISevenDay from "./UISevenDay";
+import BtnSevenDayTab from "./BtnSevenDayTab";
+import RenderSevenDayItem from "./RenderSevenDayItem";
+import ComSevenDayItem1 from "./ComSevenDayItem1";
 import UILiaoShe from "./UILiaoShe";
 import ComMainPlayerInfo from "./ComMainPlayerInfo";
 import UIGuide from "./UIGuide";
@@ -54,6 +58,10 @@ import BtnDengLong from "./BtnDengLong";
 import ComMatchMode from "./ComMatchMode";
 import ComAnnounceContent from "./ComAnnounceContent";
 import ComMatchContent from "./ComMatchContent";
+import { UISevenDayView } from "../../view/PkgMain/view/uis/UISevenDayView";
+import { BtnSevenDayTabView } from "../../view/PkgMain/view/btns/BtnSevenDayTabView";
+import { RenderSevenDayItemView } from "../../view/PkgMain/view/renders/RenderSevenDayItemView";
+import { ComSevenDayItem1View } from "../../view/PkgMain/view/coms/ComSevenDayItem1View";
 import { UILiaoSheView } from "../../view/PkgMain/view/uis/UILiaoSheView";
 import { ComMainPlayerInfoView } from "../../view/PkgMain/view/coms/ComMainPlayerInfoView";
 import { UIGuideView } from "../../view/PkgMain/view/uis/UIGuideView";
@@ -111,6 +119,10 @@ import { ComMatchContentView } from "../../view/PkgMain/view/coms/ComMatchConten
 
 export default class PkgMainBinder {
 	public static bindAll(): void {
+		fgui.UIObjectFactory.setExtension(UISevenDay.url, UISevenDayView);
+		fgui.UIObjectFactory.setExtension(BtnSevenDayTab.url, BtnSevenDayTabView);
+		fgui.UIObjectFactory.setExtension(RenderSevenDayItem.url, RenderSevenDayItemView);
+		fgui.UIObjectFactory.setExtension(ComSevenDayItem1.url, ComSevenDayItem1View);
 		fgui.UIObjectFactory.setExtension(UILiaoShe.url, UILiaoSheView);
 		fgui.UIObjectFactory.setExtension(ComMainPlayerInfo.url, ComMainPlayerInfoView);
 		fgui.UIObjectFactory.setExtension(UIGuide.url, UIGuideView);

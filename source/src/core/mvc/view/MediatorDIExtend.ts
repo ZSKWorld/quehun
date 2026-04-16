@@ -10,6 +10,27 @@ type DIMediator = IMediator & {
  * 中介类设备（鼠标、键盘）交互事件扩展 MediatorDIExtend => MediatorDeviceInteractionExtend的缩写
   */
 export class MediatorDIExtend {
+	private static readonly KEY_EVENT_PAIRS: EKeyEventType[] = [
+		EKeyEventType.KeyDown,
+		EKeyEventType.KeyPress,
+		EKeyEventType.KeyUp,
+	];
+
+	private static readonly MOUSE_EVENT_PAIRS: EMouseEventType[] = [
+		EMouseEventType.MouseDown,
+		EMouseEventType.MouseUp,
+		EMouseEventType.MouseMove,
+		EMouseEventType.MouseClick,
+		EMouseEventType.MouseDoubleClick,
+		EMouseEventType.MouseRightClick,
+		EMouseEventType.RightMouseDown,
+		EMouseEventType.RightMouseUp,
+		EMouseEventType.MouseOver,
+		EMouseEventType.MouseOut,
+		EMouseEventType.MouseWheel,
+		EMouseEventType.MouseDrag,
+		EMouseEventType.MouseDragEnd,
+	];
 
 	/**
 	 * 注册设备交互事件
@@ -20,27 +41,10 @@ export class MediatorDIExtend {
 		if (!mediator) return;
 		const { __viewKeyEventMap: vkem, __viewMouseEventMap: vmem } = mediator;
 		if (vkem) {
-			const func = this.doKeyEvent;
-			vkem.keydown && Laya.stage.on(EKeyEventType.KeyDown, mediator, func);
-			vkem.keypress && Laya.stage.on(EKeyEventType.KeyPress, mediator, func);
-			vkem.keyup && Laya.stage.on(EKeyEventType.KeyUp, mediator, func);
+			this.bindKeyEvents(mediator, true);
 		}
 		if (vmem) {
-			const mouseFunc = this.doMouseEvent;
-			const owner = mediator.owner;
-			vmem.mousedown && owner.on(EMouseEventType.MouseDown, mediator, mouseFunc);
-			vmem.mouseup && owner.on(EMouseEventType.MouseUp, mediator, mouseFunc);
-			vmem.mousemove && owner.on(EMouseEventType.MouseMove, mediator, mouseFunc);
-			vmem.click && owner.on(EMouseEventType.MouseClick, mediator, mouseFunc);
-			vmem.doubleclick && owner.on(EMouseEventType.MouseDoubleClick, mediator, mouseFunc);
-			vmem.rightclick && owner.on(EMouseEventType.MouseRightClick, mediator, mouseFunc);
-			vmem.rightmousedown && owner.on(EMouseEventType.RightMouseDown, mediator, mouseFunc);
-			vmem.rightmouseup && owner.on(EMouseEventType.RightMouseUp, mediator, mouseFunc);
-			vmem.mouseover && owner.on(EMouseEventType.MouseOver, mediator, mouseFunc);
-			vmem.mouseout && owner.on(EMouseEventType.MouseOut, mediator, mouseFunc);
-			vmem.mousewheel && owner.on(EMouseEventType.MouseWheel, mediator, mouseFunc);
-			vmem.mousedrag && owner.on(EMouseEventType.MouseDrag, mediator, mouseFunc);
-			vmem.mousedragend && owner.on(EMouseEventType.MouseDragEnd, mediator, mouseFunc);
+			this.bindMouseEvents(mediator, true);
 		}
 
 		this.resetOnceEvent(mediator);
@@ -55,27 +59,10 @@ export class MediatorDIExtend {
 		if (!mediator) return;
 		const { __viewKeyEventMap: vkem, __viewMouseEventMap: vmem } = mediator;
 		if (vkem) {
-			const func = this.doKeyEvent;
-			vkem.keydown && Laya.stage.off(EKeyEventType.KeyDown, mediator, func);
-			vkem.keypress && Laya.stage.off(EKeyEventType.KeyPress, mediator, func);
-			vkem.keyup && Laya.stage.off(EKeyEventType.KeyUp, mediator, func);
+			this.bindKeyEvents(mediator, false);
 		}
 		if (vmem) {
-			const mouseFunc = this.doMouseEvent;
-			const owner = mediator.owner;
-			vmem.mousedown && owner.off(EMouseEventType.MouseDown, mediator, mouseFunc);
-			vmem.mouseup && owner.off(EMouseEventType.MouseUp, mediator, mouseFunc);
-			vmem.mousemove && owner.off(EMouseEventType.MouseMove, mediator, mouseFunc);
-			vmem.click && owner.off(EMouseEventType.MouseClick, mediator, mouseFunc);
-			vmem.doubleclick && owner.off(EMouseEventType.MouseDoubleClick, mediator, mouseFunc);
-			vmem.rightclick && owner.off(EMouseEventType.MouseRightClick, mediator, mouseFunc);
-			vmem.rightmousedown && owner.off(EMouseEventType.RightMouseDown, mediator, mouseFunc);
-			vmem.rightmouseup && owner.off(EMouseEventType.RightMouseUp, mediator, mouseFunc);
-			vmem.mouseover && owner.off(EMouseEventType.MouseOver, mediator, mouseFunc);
-			vmem.mouseout && owner.off(EMouseEventType.MouseOut, mediator, mouseFunc);
-			vmem.mousewheel && owner.off(EMouseEventType.MouseWheel, mediator, mouseFunc);
-			vmem.mousedrag && owner.off(EMouseEventType.MouseDrag, mediator, mouseFunc);
-			vmem.mousedragend && owner.off(EMouseEventType.MouseDragEnd, mediator, mouseFunc);
+			this.bindMouseEvents(mediator, false);
 		}
 	}
 
@@ -88,17 +75,45 @@ export class MediatorDIExtend {
 			for (const key in vkem) {
 				const eventList: KeyMap<CfgFunction[]> = vkem[key];
 				for (const eventKey in eventList) {
-					const list = eventList[eventKey];
-					list.forEach(v => Object.keys(v).forEach(v1 => v[v1].__done != null && (v[v1].__done = false)));
+					this.resetFuncDoneFlag(eventList[eventKey]);
 				}
 			}
 		}
 		if (vmem) {
 			for (const key in vmem) {
-				const list: CfgFunction[] = vmem[key];
-				list.forEach(v => Object.keys(v).forEach(v1 => v[v1].__done != null && (v[v1].__done = false)));
+				this.resetFuncDoneFlag(vmem[key]);
 			}
 		}
+	}
+
+	private static bindKeyEvents(mediator: DIMediator, enable: boolean) {
+		const vkem = mediator.__viewKeyEventMap;
+		if (!vkem) return;
+		const func = this.doKeyEvent;
+		for (let i = 0; i < this.KEY_EVENT_PAIRS.length; i++) {
+			const eventType = this.KEY_EVENT_PAIRS[i];
+			if (!vkem[eventType]) continue;
+			if (enable) Laya.stage.on(eventType, mediator, func);
+			else Laya.stage.off(eventType, mediator, func);
+		}
+	}
+
+	private static bindMouseEvents(mediator: DIMediator, enable: boolean) {
+		const vmem = mediator.__viewMouseEventMap;
+		if (!vmem) return;
+		const mouseFunc = this.doMouseEvent;
+		const owner = mediator.owner;
+		for (let i = 0; i < this.MOUSE_EVENT_PAIRS.length; i++) {
+			const eventType = this.MOUSE_EVENT_PAIRS[i];
+			if (!vmem[eventType]) continue;
+			if (enable) owner.on(eventType, mediator, mouseFunc);
+			else owner.off(eventType, mediator, mouseFunc);
+		}
+	}
+
+	private static resetFuncDoneFlag(list: CfgFunction[]) {
+		if (!list) return;
+		list.forEach(v => Object.keys(v).forEach(v1 => v[v1].__done != null && (v[v1].__done = false)));
 	}
 
 	/**处理键盘事件 */
@@ -110,11 +125,11 @@ export class MediatorDIExtend {
 		if (!vkem) return;
 		const eventList: KeyMap<CfgFunction[]> = vkem[e.type];
 		if (!eventList) return;
-		const list = eventList[e.keyCode] || eventList[-1];
+		const list = eventList[-1] || eventList[e.keyCode];
 		if (!list) return;
 		for (let i = 0, len = list.length; i < len; i++) {
 			const func = list[i];
-			const cfg = func[e.keyCode];
+			const cfg = func[-1] || func[e.keyCode];
 			const args = cfg && cfg.__args ? [...cfg.__args, e] : [e];
 			if (cfg && cfg.__once) {
 				if (!cfg.__done) {

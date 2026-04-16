@@ -1,6 +1,6 @@
 export class ViewManager extends Singleton<ViewManager>() {
 	private _viewClsMap: { [viewId in EViewID]?: IViewClass; } = {};
-	private _mediatorlClsMap: { [viewId in EViewID]?: IMediatorClass; } = {};
+	private _mediatorClsMap: { [viewId in EViewID]?: IMediatorClass; } = {};
 
 	register(viewId: EViewID, viewType: EViewType, viewCls: IViewClass, mediatorCls?: IMediatorClass) {
 		if (!viewCls) {
@@ -16,12 +16,12 @@ export class ViewManager extends Singleton<ViewManager>() {
 		mediatorCls && ((<IViewExtend>mediatorCls.prototype).viewId = viewId);
 		mediatorCls && ((<IViewExtend>mediatorCls.prototype).viewType = viewType);
 		this._viewClsMap[viewId] = viewCls;
-		this._mediatorlClsMap[viewId] = mediatorCls;
+		this._mediatorClsMap[viewId] = mediatorCls;
 	}
 
 	registerInfo(viewId: EViewID, layer = ELayer.UIBottom, category = EViewCategory.FullScreen) {
 		const ViewCls = this._viewClsMap[viewId];
-		const mediatorCls = this._mediatorlClsMap[viewId];
+		const mediatorCls = this._mediatorClsMap[viewId];
 		if (ViewCls) {
 			(<IViewExtend>ViewCls.prototype).viewLayer = layer;
 			(<IViewExtend>ViewCls.prototype).viewCategory = category;
@@ -51,11 +51,11 @@ export class ViewManager extends Singleton<ViewManager>() {
 	}
 
 	hasMediator(viewId: EViewID) {
-		return !!this._mediatorlClsMap[viewId];
+		return !!this._mediatorClsMap[viewId];
 	}
 
 	getMediatorClass(viewId: EViewID) {
-		return this._mediatorlClsMap[viewId];
+		return this._mediatorClsMap[viewId];
 	}
 
 	createView(viewId: EViewID, fullScreen: boolean = false) {

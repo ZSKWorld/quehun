@@ -8,7 +8,7 @@ export class MjpAtlasLoader extends Singleton<MjpAtlasLoader>() {
 
 	protected constructor() {
 		super();
-		$facade.setUserEventDecoaratorEnable(this, true);
+		$facade.setUserEventDecoratorEnable(this, true);
 	}
 
 	init() {

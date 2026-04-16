@@ -29,12 +29,12 @@ declare function InterestUserEvent(eventName: EUserEvent, once?: boolean, args?:
 /**
  * 注入页面键盘事件
  * @param keyEventType 事件类型
- * @param key 触发事件的键值，-1 所有键都可以触发，默认-1
+ * @param keyCode 触发事件的键值，-1 所有键都可以触发，默认-1
  * @param once 是否只监听一次
  * @param args 参数
  * @return MethodDecorator
  */
-declare function ViewKeyEvent(keyEventType: EKeyEventType, key?: number, once?: boolean, args?: any[]): MethodDecorator;
+declare function ViewKeyEvent(keyEventType: EKeyEventType, keyCode?: EKeyCode, once?: boolean, args?: any[]): MethodDecorator;
 
 /**
  * 注入页面鼠标事件
@@ -199,9 +199,9 @@ declare interface IFacade {
 	offAllCaller(caller: any): void;
 	dispatch(eventName: string, data?: any): void;
 	/** 设置caller是否激活{@link InterestNotify}注册的事件 */
-	setNotifyDecoaratorEnable(caller: any, enable: boolean): void;
+	setNotifyDecoratorEnable(caller: any, enable: boolean): void;
 	/** 设置caller是否激活{@link InterestMessage}注册的事件 */
-	setMessageDecoaratorEnable(caller: any, enable: boolean): void;
+	setMessageDecoratorEnable(caller: any, enable: boolean): void;
 	/** 设置caller是否激活{@link InterestUserEvent}注册的事件 */
-	setUserEventDecoaratorEnable(caller: any, enable: boolean): void;
+	setUserEventDecoratorEnable(caller: any, enable: boolean): void;
 }

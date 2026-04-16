@@ -1,6 +1,12 @@
 import { Controller } from "./controller/Controller";
 import { ViewManager } from "./view/ViewManager";
 
+const enum DecoratorKeyMap {
+	Notify = "__notifyMap",
+	Message = "__messageMap",
+	UserEvent = "__userEventMap",
+}
+
 /** mvc门面类 */
 export class Facade extends Singleton<Facade>() implements IFacade {
 	private _viewMgr: ViewManager;
@@ -95,14 +101,14 @@ export class Facade extends Singleton<Facade>() implements IFacade {
 		this._controller.execute(eventName, data);
 	}
 
-	setNotifyDecoaratorEnable(caller: any, enable: boolean) {
-		this.setDecoratorEnable(caller, "__notifyMap", this._notifyListener, enable);
+	setNotifyDecoratorEnable(caller: any, enable: boolean) {
+		this.setDecoratorEnable(caller, DecoratorKeyMap.Notify, this._notifyListener, enable);
 	}
-	setMessageDecoaratorEnable(caller: any, enable: boolean) {
-		this.setDecoratorEnable(caller, "__messageMap", this._messageListener, enable);
+	setMessageDecoratorEnable(caller: any, enable: boolean) {
+		this.setDecoratorEnable(caller, DecoratorKeyMap.Message, this._messageListener, enable);
 	}
-	setUserEventDecoaratorEnable(caller: any, enable: boolean) {
-		this.setDecoratorEnable(caller, "__userEventMap", this._userEventListener, enable);
+	setUserEventDecoratorEnable(caller: any, enable: boolean) {
+		this.setDecoratorEnable(caller, DecoratorKeyMap.UserEvent, this._userEventListener, enable);
 	}
 	private setDecoratorEnable(caller: any, eventMapName: string, listener: Laya.EventDispatcher, enable: boolean) {
 		if (enable) {

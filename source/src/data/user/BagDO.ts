@@ -139,8 +139,9 @@ export class BagDO extends BaseDO implements DO.IBagDO {
 	}
 
 	@InterestMessage(ENetNotify.NotifyAccountUpdate)
-	private onNotifyAccountUpdate(data: IAccountUpdate) {
-		const bagInfo = $decodeProtoData(data.bag);
+	private onNotifyAccountUpdate(data: INotifyAccountUpdate) {
+		if (!data.update) return;
+		const bagInfo = $decodeProtoData(data.update.bag);
 		if (!bagInfo) return;
 		this.modifyItems(bagInfo.update_items, true);
 		this.modifyDailyGainRecord(bagInfo.update_daily_gain_record);

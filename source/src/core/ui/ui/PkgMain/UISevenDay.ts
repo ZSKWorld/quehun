@@ -1,6 +1,7 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
 import { BtnSevenDayTabView } from "../../view/PkgMain/view/btns/BtnSevenDayTabView";
+import { RenderSevenDayItemView } from "../../view/PkgMain/view/renders/RenderSevenDayItemView";
 import { ComItem1View } from "../../view/PkgCommon/view/coms/ComItem1View";
 
 export default class UISevenDay extends fgui.GComponent {
@@ -17,6 +18,9 @@ export default class UISevenDay extends fgui.GComponent {
 	protected btn_day4: BtnSevenDayTabView;
 	protected btn_day5: BtnSevenDayTabView;
 	protected btn_day6: BtnSevenDayTabView;
+	protected com_task0: RenderSevenDayItemView;
+	protected com_task1: RenderSevenDayItemView;
+	protected com_task2: RenderSevenDayItemView;
 	protected com_reward0: ComItem1View;
 	protected com_reward1: ComItem1View;
 	protected com_reward2: ComItem1View;
@@ -39,8 +43,11 @@ export default class UISevenDay extends fgui.GComponent {
 		this.btn_day4 = <BtnSevenDayTabView>(this.getChildAt(13));
 		this.btn_day5 = <BtnSevenDayTabView>(this.getChildAt(14));
 		this.btn_day6 = <BtnSevenDayTabView>(this.getChildAt(15));
-		this.com_reward0 = <ComItem1View>(this.getChildAt(16));
-		this.com_reward1 = <ComItem1View>(this.getChildAt(17));
-		this.com_reward2 = <ComItem1View>(this.getChildAt(18));
+		this.com_task0 = <RenderSevenDayItemView>(this.getChildAt(16));
+		this.com_task1 = <RenderSevenDayItemView>(this.getChildAt(17));
+		this.com_task2 = <RenderSevenDayItemView>(this.getChildAt(18));
+		this.com_reward0 = <ComItem1View>(this.getChildAt(19));
+		this.com_reward1 = <ComItem1View>(this.getChildAt(20));
+		this.com_reward2 = <ComItem1View>(this.getChildAt(21));
 	}
 }

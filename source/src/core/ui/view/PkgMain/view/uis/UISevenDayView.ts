@@ -13,6 +13,7 @@ export class UISevenDayView extends ExtensionClass<IView, UISevenDay>(UISevenDay
 		btn_mask.onClick(this, this.closeSelf);
 		btn_close.onClick(this, this.closeSelf);
 		this._tabGroup.init([btn_day0, btn_day1, btn_day2, btn_day3, btn_day4, btn_day5, btn_day6], this, this.onTabSelectChanged, "#d4815c", "#8d6f61");
+
 	}
 
 	override onEnable() {
@@ -25,8 +26,19 @@ export class UISevenDayView extends ExtensionClass<IView, UISevenDay>(UISevenDay
 		this._tabGroup.selectIndex = index;
 	}
 
-	refreshContent() {
+	refreshTask(data: ISheetData_Activity_TaskDisplay[]) {
+		this.com_task0.refresh(data[0]);
+		this.com_task1.refresh(data[1]);
+		this.com_task2.refresh(data[2]);
+	}
 
+	refreshRewards(rewardIds: number[]) {
+		[this.com_reward0, this.com_reward1, this.com_reward2].forEach((v, i) => {
+			const id = rewardIds[i];
+			v.visible = !!id;
+			v.visible && v.refresh(id);
+			v.visible && v.onClick(this, this.openView, [EViewID.UIItemDetailView, { id }]);
+		});
 	}
 
 	private onTabSelectChanged(index: number) {

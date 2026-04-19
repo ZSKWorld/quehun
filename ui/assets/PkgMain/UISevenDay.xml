@@ -35,12 +35,12 @@
     <component id="n14_afne" name="day6" src="afneobhv" fileName="Component/UISevenDay/BtnSevenDayTab.xml" xy="1589,187" size="118,70">
       <Button title="7" titleColor="#8d6f61" titleFontSize="45" icon="ui://vith2b66afneobht" selectedIcon="ui://vith2b66afneobhs"/>
     </component>
+    <component id="n22_afne" name="task0" src="afneobhx" fileName="Component/UISevenDay/RenderSevenDayItem.xml" xy="890,284"/>
+    <component id="n23_afne" name="task1" src="afneobhx" fileName="Component/UISevenDay/RenderSevenDayItem.xml" xy="890,432"/>
+    <component id="n24_afne" name="task2" src="afneobhx" fileName="Component/UISevenDay/RenderSevenDayItem.xml" xy="890,580"/>
     <component id="n18_afne" name="reward0" src="q5yiobc2" fileName="Component/Component/物品/ComItem1.xml" pkg="vx9zwser" xy="1353,774" size="120,120"/>
     <component id="n19_afne" name="reward1" src="q5yiobc2" fileName="Component/Component/物品/ComItem1.xml" pkg="vx9zwser" xy="1483,774" size="120,120"/>
     <component id="n20_afne" name="reward2" src="q5yiobc2" fileName="Component/Component/物品/ComItem1.xml" pkg="vx9zwser" xy="1613,774" size="120,120"/>
     <text id="n21_afne" name="n21" xy="930,840" pivot="0,0.5" size="414,44" font="SimHei" fontSize="32" color="#6c6d80" vAlign="middle" leading="0" autoSize="shrink" singleLine="true" text="完成7日全部任务可获得："/>
-    <component id="n22_afne" name="n22" src="afneobhx" fileName="Component/UISevenDay/RenderSevenDayItem.xml" xy="890,284"/>
-    <component id="n23_afne" name="n23" src="afneobhx" fileName="Component/UISevenDay/RenderSevenDayItem.xml" xy="890,432"/>
-    <component id="n24_afne" name="n24" src="afneobhx" fileName="Component/UISevenDay/RenderSevenDayItem.xml" xy="890,580"/>
   </displayList>
 </component>

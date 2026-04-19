@@ -519,6 +519,16 @@ declare enum EUserEvent {
 	//#region client_value相关
 	OnClientValueChanged = "EUserEvent_OnClientValueChanged",
 	//#endregion
+
+	//#region 活动相关
+	OnActivityListChanged = "EUserEvent_OnActivityListChanged",
+	OnActivityIntervalChanged = "EUserEvent_OnActivityIntervalChanged",
+	OnActivityBuffChanged = "EUserEvent_OnActivityBuffChanged",
+	OnActivityTaskProgressChanged = "EUserEvent_OnActivityTaskProgressChanged",
+	OnActivityPeriodTaskProgressChanged = "EUserEvent_OnActivityPeriodTaskProgressChanged",
+	OnActivityRandomTaskProgressChanged = "EUserEvent_OnActivityRandomTaskProgressChanged",
+	OnActivitySegmentTaskProgressChanged = "EUserEvent_OnActivitySegmentTaskProgressChanged",
+	//#endregion
 }
 
 //#region 视频事件

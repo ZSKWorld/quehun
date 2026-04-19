@@ -107,8 +107,9 @@ export class CharacterDO extends BaseDO implements DO.ICharacterDO {
 	}
 
 	@InterestMessage(ENetNotify.NotifyAccountUpdate)
-	private onNotifyAccountUpdate(data: IAccountUpdate) {
-		const { main_character, character } = data;
+	private onNotifyAccountUpdate(data: INotifyAccountUpdate) {
+		if (!data.update) return;
+		const { main_character, character } = data.update;
 		if (main_character) {
 			this._mainCharId = main_character.character_id;
 			this.mainChar.skin = main_character.skin_id;

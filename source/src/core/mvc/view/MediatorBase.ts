@@ -50,25 +50,12 @@ export abstract class MediatorBase<V extends IView = IView, D = any> extends Ext
 	override onReset() {
 		this._data = null;
 		this._parent = null;
+		this.setViewEventDecoratorEnable(false);
 	}
 
 	protected override _onAdded() {
 		super._onAdded();
-
-		//注册页面消息
-		const vem = this.__viewEventMap;
-		if (vem) {
-			for (const eventName in vem) {
-				const callbackMap = vem[eventName];
-				for (const k in callbackMap) {
-					const callback = callbackMap[k];
-					const param = callback[eventName];
-					const once = param ? param.__once : false;
-					const args = param ? param.__args : null;
-					this.addEvent(eventName, callback, args, once);
-				}
-			}
-		}
+		this.setViewEventDecoratorEnable(true);
 	}
 
 	protected override _onEnable() {
@@ -85,6 +72,22 @@ export abstract class MediatorBase<V extends IView = IView, D = any> extends Ext
 		$facade.setMessageDecoratorEnable(this, false);
 		$facade.setUserEventDecoratorEnable(this, false);
 		MediatorDIExtend.offDeviceEvent(this);
+	}
+
+	private setViewEventDecoratorEnable(enable: boolean) {
+		const vem = this.__viewEventMap;
+		if (!vem) return;
+		for (const eventName in vem) {
+			const callbackMap = vem[eventName];
+			for (const k in callbackMap) {
+				const callback = callbackMap[k];
+				const param = callback[eventName];
+				const once = param ? param.__once : false;
+				const args = param ? param.__args : null;
+				if (enable) this.addEvent(eventName, callback, args, once);
+				else this.removeEvent(eventName, callback);
+			}
+		}
 	}
 
 	protected onDataChanged(data: D) { }

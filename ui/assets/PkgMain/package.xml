@@ -241,6 +241,7 @@
     <image id="afneobi2" name="img_2764.png" path="/Texture/"/>
     <image id="afneobi3" name="img_2765.png" path="/Texture/"/>
     <image id="afneobi4" name="img_2356.png" path="/Texture/"/>
+    <image id="8ijuobi5" name="img_2766.png" path="/Texture/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

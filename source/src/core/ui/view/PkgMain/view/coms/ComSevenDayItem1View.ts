@@ -10,4 +10,8 @@ export class ComSevenDayItem1View extends ExtensionClass<IView, ComSevenDayItem1
 		
 	}
 
+	refresh(id:number, count:number) {
+		this.com_item.refreshItemIcon(id);
+		this.txt_count.text = count.toString();
+	}
 }

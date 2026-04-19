@@ -111,27 +111,28 @@ export class Facade extends Singleton<Facade>() implements IFacade {
 		this.setDecoratorEnable(caller, DecoratorKeyMap.UserEvent, this._userEventListener, enable);
 	}
 	private setDecoratorEnable(caller: any, eventMapName: string, listener: Laya.EventDispatcher, enable: boolean) {
-		if (enable) {
-			if (!caller) return;
-			const eventList = caller[eventMapName];
-			if (!eventList) return;
-			for (const eventName in eventList) {
-				const callbackList = eventList[eventName];
-				for (const k in callbackList) {
-					const callback = callbackList[k];
-					const param = callback[eventName];
-					const once = param ? param.__once : false;
-					const args = param ? param.__args : null;
+		if (!listener) return;
+		if (!caller) return;
+		const eventList = caller[eventMapName];
+		if (!eventList) return;
+		for (const eventName in eventList) {
+			const callbackList = eventList[eventName];
+			for (const k in callbackList) {
+				const callback = callbackList[k];
+				const param = callback[eventName];
+				const once = param ? param.__once : false;
+				const args = param ? param.__args : null;
+				if (enable) {
 					if (once) {
 						listener.once(eventName, caller, callback, args);
 					} else {
 						listener.on(eventName, caller, callback, args);
 					}
+				} else {
+					listener.off(eventName, caller, callback);
 				}
 			}
 		}
-		else
-			listener.offAllCaller(caller);
 	}
 	//#endregion
 }

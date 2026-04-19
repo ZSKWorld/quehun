@@ -148,4 +148,9 @@
     "commentTranslate.hover.variable": true,
     "commentTranslate.multiLineMerge": true,
     "js/ts.format.semicolons": "insert",
+    "Lingma.cloudModelAutoTriggerGenerateLength": "long",
+    "Lingma.DisplayLanguage": "简体中文",
+    "Lingma.PreferredLanguage for AI Chat": "简体中文",
+    "Lingma.PreferredLanguage forCommitMessage": "简体中文",
+    "svn.ignoreMissingSvnWarning": true,
 }

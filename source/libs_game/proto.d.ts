@@ -1709,6 +1709,12 @@ declare enum ENetMessage {
 	 */
 	createYostarSDKOrder = "createYostarSDKOrder",
 	/**
+	 ** req: {@link IReqCreateYostarV4SDKOrder}
+	 ** res: {@link IResCreateYostarV4SDKOrder}
+	 ** method: {@link IReqMethod.createYostarV4SDKOrder}
+	 */
+	createYostarV4SDKOrder = "createYostarV4SDKOrder",
+	/**
 	 ** 创建支付订单
 	 ** req: {@link IReqCreateBillingOrder}
 	 ** res: {@link IResCreateBillingOrder}
@@ -2102,6 +2108,12 @@ declare enum ENetMessage {
 	 */
 	upgradeActivityBuff = "upgradeActivityBuff",
 	/**
+	 ** req: {@link IReqSetActivityBuff}
+	 ** res: {@link IResActivityBuff}
+	 ** method: {@link IReqMethod.setActivityBuff}
+	 */
+	setActivityBuff = "setActivityBuff",
+	/**
 	 ** 升级活动升级
 	 ** req: {@link IReqUpgradeActivityLevel}
 	 ** res: {@link IResUpgradeActivityLevel}
@@ -2448,6 +2460,13 @@ declare enum ENetMessage {
 	 ** method: {@link IReqMethod.taskRequest}
 	 */
 	taskRequest = "taskRequest",
+	/**
+	 ** 悠星删除账号请求
+	 ** req: {@link IReqYostarDeleteAccount}
+	 ** res: {@link IResYostarDeleteAccount}
+	 ** method: {@link IReqMethod.yostarDeleteAccount}
+	 */
+	yostarDeleteAccount = "yostarDeleteAccount",
 	/**
 	 ** 养成活动
 	 ** req: {@link IReqSimulationActivityTrain}
@@ -3109,6 +3128,13 @@ declare enum ENetMessage {
 	 */
 	snowballActivityReceiveReward = "snowballActivityReceiveReward",
 	/**
+	 ** 获取Banner活动详细信息
+	 ** req: {@link IReqFetchBannerActivityData}
+	 ** res: {@link IResFetchBannerActivityData}
+	 ** method: {@link IReqMethod.fetchBannerActivityData}
+	 */
+	fetchBannerActivityData = "fetchBannerActivityData",
+	/**
 	 ** ==DevDebug Start==
 	 ** debug 协议在正式版本删除
 	 ** req: {@link IReqSnowballActivityDebug}
@@ -3145,6 +3171,12 @@ declare enum ENetMessage {
 	marathonActivityTest = "marathonActivityTest",
 	/**
 	 ** mmo活动
+	 ** req: {@link IReqMMOActivityFetchData}
+	 ** res: {@link IResMMOActivityFetchData}
+	 ** method: {@link IReqMethod.mmoActivityFetchData}
+	 */
+	mmoActivityFetchData = "mmoActivityFetchData",
+	/**
 	 ** req: {@link IReqMMOActivityEquipFusion}
 	 ** res: {@link IResMMOActivityEquipFusion}
 	 ** method: {@link IReqMethod.mmoActivityEquipFusion}
@@ -3169,6 +3201,12 @@ declare enum ENetMessage {
 	 */
 	mmoActivityStartBattle = "mmoActivityStartBattle",
 	/**
+	 ** req: {@link IReqMMOActivityFinishBattle}
+	 ** res: {@link IResMMOActivityFinishBattle}
+	 ** method: {@link IReqMethod.mmoActivityFinishBattle}
+	 */
+	mmoActivityFinishBattle = "mmoActivityFinishBattle",
+	/**
 	 ** req: {@link IReqMMOActivitySetEquip}
 	 ** res: {@link IResMMOActivitySetEquip}
 	 ** method: {@link IReqMethod.mmoActivitySetEquip}
@@ -3190,7 +3228,7 @@ declare enum ENetMessage {
 	 ** ==DevDebug Start==
 	 ** debug 协议在正式版本删除
 	 ** req: {@link IReqMMOActivityDebugSetTeamCandidate}
-	 ** res: {@link IResCommon}
+	 ** res: {@link IResMMOActivityDebugSetTeamCandidate}
 	 ** method: {@link IReqMethod.mmoActivityDebugSetTeamCandidate}
 	 */
 	mmoActivityDebugSetTeamCandidate = "mmoActivityDebugSetTeamCandidate",
@@ -3966,6 +4004,10 @@ declare interface IError extends IProto {
 	json_param?: string;
 	/** 报错等级，不会发送给客户端 */
 	level?: number;
+	/** 内部错误消息，不会发送给客户端 */
+	message: string;
+	/** 内部错误参数，不会发送给客户端 */
+	args: string;
 }
 
 /** .lq.Wrapper */
@@ -5334,7 +5376,14 @@ declare interface IAccountActivityUpdate extends IProto {
 	bingo_data: IActivityBingoData[];
 	snowball_data: IActivitySnowballValueChanges[];
 	choose_group_up_data: IActivityChooseGroupData[];
-	mmo_data: IActivityMMOData[];
+	mmo_data: IActivityMMODataChanges[];
+	activity_buff: IAccountActivityUpdate_ActivityBuffDataArrayDirty;
+}
+
+/** .lq.AccountActivityUpdate.ActivityBuffDataArrayDirty */
+declare interface IAccountActivityUpdate_ActivityBuffDataArrayDirty extends IProto {
+	dirty: boolean;
+	value: IActivityBuffData[];
 }
 
 /** .lq.ActivityCombiningWorkbench */
@@ -5708,24 +5757,35 @@ declare interface IActivityMMODataChanges_ActivityMMOTeamDataChanges extends IPr
 	members: IActivityMMODataChanges_ActivityMMOTeamMemberArrayDirty;
 }
 
-/** .lq.ActivityMMODataChanges.ActivityMMOBagDataChanges */
-declare interface IActivityMMODataChanges_ActivityMMOBagDataChanges extends IProto {
+/** .lq.ActivityMMODataChanges.ActivityMMOEquipmentsArrayDirty */
+declare interface IActivityMMODataChanges_ActivityMMOEquipmentsArrayDirty extends IProto {
 	dirty: boolean;
 	value: IActivityMMOEquipmentData[];
+}
+
+/** .lq.ActivityMMODataChanges.ActivityMMOBagDataChanges */
+declare interface IActivityMMODataChanges_ActivityMMOBagDataChanges extends IProto {
+	equipments: IActivityMMODataChanges_ActivityMMOEquipmentsArrayDirty;
+	total_gain_count: IUInt32Dirty;
+	total_fusion_count: IUInt32Dirty;
 }
 
 /** .lq.ActivityMMODataChanges.ActivityMMOMapDataChanges */
 declare interface IActivityMMODataChanges_ActivityMMOMapDataChanges extends IProto {
 	level: IUInt32Dirty;
 	random_seed: IUInt32Dirty;
+	/** 当前关卡是否过关了（可以调用 finish 进入下一关） */
+	won: IUInt32Dirty;
+	/** 当前配置是否已经尝试过了（更换队友/装备后重置） */
+	failed: IUInt32Dirty;
 }
 
 /** .lq.ActivityMMODataChanges.ActivityMMOSupportDataChanges */
 declare interface IActivityMMODataChanges_ActivityMMOSupportDataChanges extends IProto {
 	/** 上次领取支援奖励的时间，如果时间是本日的话说明今天已经领取过了 */
 	last_receive_time: IUInt32Dirty;
-	/** 待领取支援次数 */
-	support_count: IUInt32Dirty;
+	most_supporter: IActivityMMOSupportRecordDirty;
+	receive_support_count: IUInt32Dirty;
 }
 
 /** .lq.ActivityMMOTeamMember */
@@ -5749,6 +5809,21 @@ declare interface IMMOActivityTeamCandidateData extends IProto {
 	character_id: number;
 	equipments: number[];
 	id: number;
+}
+
+/** .lq.ActivityMMOSupportRecord */
+declare interface IActivityMMOSupportRecord extends IProto {
+	id: number;
+	count: number;
+	type: number;
+	character_id: number;
+	equipments: number[];
+}
+
+/** .lq.ActivityMMOSupportRecordDirty */
+declare interface IActivityMMOSupportRecordDirty extends IProto {
+	dirty: boolean;
+	value: IActivityMMOSupportRecord;
 }
 
 /** .lq.ActivityMMOData */
@@ -5784,20 +5859,42 @@ declare interface IActivityMMOData_ActivityMMOTeamData extends IProto {
 /** .lq.ActivityMMOData.ActivityMMOBagData */
 declare interface IActivityMMOData_ActivityMMOBagData extends IProto {
 	equipments: IActivityMMOEquipmentData[];
+	/** 获取装备总量 */
+	total_gain_count: number;
+	/** 装备合成次数 */
+	total_fusion_count: number;
+	random_record: IActivityMMOData_ActivityMMORandomRecord[];
 }
 
 /** .lq.ActivityMMOData.ActivityMMOMapData */
 declare interface IActivityMMOData_ActivityMMOMapData extends IProto {
 	level: number;
 	random_seed: number;
+	/** 当前关卡是否过关了（可以调用 finish 进入下一关） */
+	won: number;
+	/** 当前配置是否已经尝试过了（更换队友/装备后重置） */
+	failed: number;
 }
 
 /** .lq.ActivityMMOData.ActivityMMOSupportData */
 declare interface IActivityMMOData_ActivityMMOSupportData extends IProto {
 	/** 上次领取支援奖励的时间，如果时间是本日的话说明今天已经领取过了 */
 	last_receive_time: number;
-	/** 待领取支援次数 */
-	support_count: number;
+	/** 收到的最多的支援队友，客户端数据 */
+	most_supporter: IActivityMMOSupportRecord;
+	/** 总共收到的支援次数，客户端数据 */
+	receive_support_count: number;
+	/** 收到的支援记录，不会发送给客户端 */
+	support_record: IActivityMMOSupportRecord[];
+}
+
+/**
+ ** .lq.ActivityMMOData.ActivityMMOBagData.ActivityMMORandomRecord
+ ** 服务端数据，不会发送给客户端
+ */
+declare interface IActivityMMOData_ActivityMMORandomRecord extends IProto {
+	rarity: number;
+	count: number;
 }
 
 /** .lq.ActivityFriendGiftData */
@@ -6445,6 +6542,8 @@ declare interface ICustomizedContestDetail extends IProto {
 	match_start_time: number;
 	/** 自动匹配结束时间 */
 	match_end_time: number;
+	/** 是否公开排名百分比 0 - 不公开 1 - 公开 */
+	open_rank_percent: number;
 }
 
 /**
@@ -6489,6 +6588,8 @@ declare interface ICustomizedContestPlayerReport extends IProto {
 	game_ranks: number[];
 	/** 已经参与的对局次数 */
 	total_game_count: number;
+	/** 当前玩家排名前百分比（返回10，20，30...前xxx%文本前端添加） */
+	rank_percent: number;
 }
 
 /**
@@ -7968,6 +8069,35 @@ declare interface IActivityMarathonCheckData extends IProto {
 	point: number;
 	/** 是否是时间耗尽的结束 tick */
 	time_end: number;
+}
+
+/**
+ ** .lq.BannerActivityData
+ ** Banner活动数据
+ */
+declare interface IBannerActivityData extends IProto {
+	/** 活动id */
+	activity_id: number;
+	/** 标签url */
+	tag_img_url: string;
+	/** 底图banner url */
+	banner_background_url: string;
+	/** 按钮url */
+	banner_button_url: string;
+	/** 标签名 */
+	tag_name: string;
+	/** 开始时间 */
+	start_time: number;
+	/** 结束时间 */
+	end_time: number;
+	/** 跳转链接（通过协议名区分，游戏内跳转为majsoul:// ,超链接为https://） */
+	url: string;
+	/** banner活动类型枚举 1-大会室入口 */
+	type: number;
+	/** 排序 */
+	sort: number;
+	/** 是否需要进入大厅时弹窗 1-是 2-否 */
+	need_popout: number;
 }
 
 /**
@@ -9856,6 +9986,40 @@ declare interface IResCreateYostarOrder extends IResponse {
 	order_id: string;
 }
 
+/** .lq.ReqCreateYostarV4SDKOrder */
+declare interface IReqCreateYostarV4SDKOrder extends IProto {
+	goods_id: number;
+	client_type: number;
+	account_id: number;
+	/**
+	 ** 订单类型：
+	 ** 1 google_play
+	 ** 2 iap
+	 ** 3 nintendo
+	 ** 4 kr_google_play
+	 ** 5 kr_iap
+	 ** 6 pc
+	 ** 7 jp_web
+	 ** 8 kr_web
+	 ** 9 en_web
+	 ** 10 kr_pc
+	 ** 11 steam
+	 ** 12 kr_steam
+	 */
+	order_type: number;
+	client_version_string: string;
+}
+
+/** .lq.ResCreateYostarV4SDKOrder */
+declare interface IResCreateYostarV4SDKOrder extends IResponse {
+	/** 创建订单返回的订单号 */
+	order_id: string;
+	/** 回调地址，透传给 sdk */
+	notify_url: string;
+	/** 透传给 sdk */
+	extra_data: string;
+}
+
 /**
  ** .lq.ReqCreateENPaypalOrder
  ** 协议：创建美服-Paypal订单
@@ -11383,6 +11547,18 @@ declare interface IReqUpgradeActivityLevel extends IProto {
 	count: number;
 }
 
+/** .lq.ReqSetActivityBuff */
+declare interface IReqSetActivityBuff extends IProto {
+	buff_list: IReqSetActivityBuff_BuffInfo[];
+	activity_id: number;
+}
+
+/** .lq.ReqSetActivityBuff.BuffInfo */
+declare interface IReqSetActivityBuff_BuffInfo extends IProto {
+	buff_id: number;
+	level: number;
+}
+
 /** .lq.ResUpgradeActivityLevel */
 declare interface IResUpgradeActivityLevel extends IResponse {
 	rewards: IExecuteReward[];
@@ -12018,6 +12194,17 @@ declare interface IReqTaskRequest extends IProto {
 	params: number[];
 }
 
+/** .lq.ReqYostarDeleteAccount */
+declare interface IReqYostarDeleteAccount extends IProto {
+	/** 1-jp  2-en 3-kr */
+	server: number;
+}
+
+/** .lq.ResYostarDeleteAccount */
+declare interface IResYostarDeleteAccount extends IResponse {
+	notify_url: string;
+}
+
 /** .lq.ReqSimulationActivityTrain */
 declare interface IReqSimulationActivityTrain extends IProto {
 	activity_id: number;
@@ -12541,14 +12728,21 @@ declare interface IResFetchContestPlayerRank_SeasonRank extends IProto {
 	data: IResFetchContestPlayerRank_ContestPlayerAccountData;
 	team_name: string;
 	modify_score: number;
+	/** 当前玩家具体排名（当排名前10或者open_rank_percent为false时才会传递） */
+	rank: number;
+	/** 当前玩家排名前百分比（返回10，20，30...前xxx%文本前端添加） */
+	rank_percent: number;
 }
 
 /** .lq.ResFetchContestPlayerRank.PlayerData */
 declare interface IResFetchContestPlayerRank_PlayerData extends IProto {
+	/** 当前玩家具体排名（当排名前10或者open_rank_percent为false时才会传递） */
 	rank: number;
 	data: IResFetchContestPlayerRank_ContestPlayerAccountData;
 	team_name: string;
 	modify_score: number;
+	/** 当前玩家排名前百分比（返回10，20，30...前xxx%文本前端添加） */
+	rank_percent: number;
 }
 
 /** .lq.ResFetchContestPlayerRank.ContestPlayerAccountData.ContestGameResult */
@@ -12602,7 +12796,10 @@ declare interface IResFetchContestTeamRank_SeasonTeamRank extends IProto {
 	name: string;
 	/** 队伍排名数据 */
 	data: IResFetchContestTeamRank_ContestTeamData;
+	/** 当前队伍具体排名（当排名前10或者open_rank_percent为false时才会传递） */
 	rank: number;
+	/** 当前队伍排名前百分比（返回10，20，30...前xxx%文本前端添加） */
+	rank_percent: number;
 }
 
 /**
@@ -13551,6 +13748,24 @@ declare interface IResSnowballActivityReceiveReward extends IResponse {
 }
 
 /**
+ ** .lq.ReqFetchBannerActivityData
+ ** 获取Banner活动赛事详细信息请求数据
+ */
+declare interface IReqFetchBannerActivityData extends IProto {
+	activity_id_list: number[];
+	/** 语言 */
+	lang: string;
+}
+
+/**
+ ** .lq.ResFetchBannerActivityData
+ ** 获取Banner活动赛事详细信息返回数据
+ */
+declare interface IResFetchBannerActivityData extends IResponse {
+	activity_list: IBannerActivityData[];
+}
+
+/**
  ** .lq.ReqSnowballActivityDebug
  ** ==DevDebug Start==
  ** debug 协议在正式版本删除
@@ -13640,6 +13855,16 @@ declare interface IResMarathonActivityTest_MarathonWallStepValue extends IProto 
 	wall: string[];
 }
 
+/** .lq.ReqMMOActivityFetchData */
+declare interface IReqMMOActivityFetchData extends IProto {
+	activity_id: number;
+}
+
+/** .lq.ResMMOActivityFetchData */
+declare interface IResMMOActivityFetchData extends IResponse {
+	mmo_data: IActivityMMOData;
+}
+
 /** .lq.ReqMMOActivityEquipFusion */
 declare interface IReqMMOActivityEquipFusion extends IProto {
 	activity_id: number;
@@ -13693,19 +13918,21 @@ declare interface IReqMMOActivityStartBattle extends IProto {
 
 /** .lq.ResMMOActivityStartBattle */
 declare interface IResMMOActivityStartBattle extends IResponse {
-	actions: IResMMOActivityStartBattle_MMOActivityBattleInfo[];
+	actions: IResMMOActivityStartBattle_MMOActivityBattleAction[];
 	/** 参战单位初始数值 */
 	units: IResMMOActivityStartBattle_MMOActivityBattleUnit[];
 	changes: IActivityMMODataChanges;
+	/** 1-赢了 2-输了 */
+	result: number;
 }
 
-/** .lq.ResMMOActivityStartBattle.MMOActivityBattleInfo */
-declare interface IResMMOActivityStartBattle_MMOActivityBattleInfo extends IProto {
-	/** 1-攻击 2-治疗 */
+/** .lq.ResMMOActivityStartBattle.MMOActivityBattleAction */
+declare interface IResMMOActivityStartBattle_MMOActivityBattleAction extends IProto {
+	/** 1-攻击 2-治疗 3-动画 */
 	type: number;
 	/** 目标 */
 	target: number;
-	/** 来源 */
+	/** 来源, 动画的话就是播放动画的人物id */
 	from: number;
 	/** 数值 */
 	value: number;
@@ -13722,7 +13949,19 @@ declare interface IResMMOActivityStartBattle_MMOActivityBattleUnit extends IProt
 	/** 血量 */
 	hp: number;
 	/** 装备 */
-	equipment: number[];
+	equipments: number[];
+}
+
+/** .lq.ReqMMOActivityFinishBattle */
+declare interface IReqMMOActivityFinishBattle extends IProto {
+	activity_id: number;
+}
+
+/** .lq.ResMMOActivityFinishBattle */
+declare interface IResMMOActivityFinishBattle extends IResponse {
+	changes: IActivityMMODataChanges;
+	/** 奖励 */
+	rewards: IExecuteReward[];
 }
 
 /** .lq.ReqMMOActivitySetEquip */
@@ -13762,6 +14001,10 @@ declare interface IReqMMOActivityReceiveSupportReward extends IProto {
 declare interface IResMMOActivityReceiveSupportReward extends IResponse {
 	rewards: IExecuteReward[];
 	changes: IActivityMMODataChanges;
+	/** 实际支援次数 */
+	support_count: number;
+	/** 总计支援次数 */
+	total_support_count: number;
 }
 
 /** .lq.ReqMMOActivityDebugSetTeamCandidate */
@@ -13770,6 +14013,11 @@ declare interface IReqMMOActivityDebugSetTeamCandidate extends IProto {
 	friend_list: IMMOActivityTeamCandidateData[];
 	random_friends: IMMOActivityTeamCandidateData[];
 	npc_list: IMMOActivityTeamCandidateData[];
+}
+
+/** .lq.ResMMOActivityDebugSetTeamCandidate */
+declare interface IResMMOActivityDebugSetTeamCandidate extends IResponse {
+	changes: IActivityMMODataChanges;
 }
 
 /** .lq.AmuletBadgeData */
@@ -16053,6 +16301,78 @@ declare interface IRecordNoTile extends IProto {
 /** .lq.PlayerLeaving */
 declare interface IPlayerLeaving extends IProto {
 	seat: number;
+}
+
+/** .lq.SubmitGroup */
+declare interface ISubmitGroup extends IProto {
+	/** 提交的牌的数量（不管是否隐藏牌面，都会提供） */
+	count: number;
+	/** 提交的牌信息（如果隐藏就不显示） */
+	tiles: string[];
+}
+
+/**
+ ** .lq.SubmitInfo
+ ** 提交某些牌的信息
+ */
+declare interface ISubmitInfo extends IProto {
+	/** 提交的拥有者的座位 */
+	submit_seat: number;
+	/** 提交的分组信息 */
+	groups: ISubmitGroup[];
+}
+
+/** .lq.ActionSubmit */
+declare interface IActionSubmit extends IProto {
+	/** submit.tiles消息里面，如果是需要扣置的，那么没有数据 */
+	submits: ISubmitInfo[];
+}
+
+/** .lq.RecordSubmit */
+declare interface IRecordSubmit extends IProto {
+	/** submit.tiles牌谱里面一定会存储 */
+	submits: ISubmitInfo[];
+}
+
+/** .lq.TakeInfo */
+declare interface ITakeInfo extends IProto {
+	/** 拿取别人牌的玩家座位 */
+	take_seat: number;
+	/** 要拿取的牌的拥有者的座位 */
+	from_seat: number;
+	/** 提交的牌的数量（不管是否隐藏牌面，都会提供） */
+	count: number;
+	/** 提交的牌信息（如果隐藏就不显示） */
+	tiles: string[];
+}
+
+/** .lq.ActionTake */
+declare interface IActionTake extends IProto {
+	/** take.tiles消息里面，如果take_seat是自己，会有数据，否则，就没有数据 */
+	takes: ITakeInfo[];
+	/** 当亲家有听牌 */
+	tingpais0: ITingPaiDiscardInfo[];
+	/** 当子家有听牌 */
+	tingpais1: ITingPaiInfo[];
+	operation: IOptionalOperationList;
+}
+
+/** .lq.RecordTake */
+declare interface IRecordTake extends IProto {
+	/** take.tiles牌谱里面一定会存储 */
+	takes: ITakeInfo[];
+	/** 当亲家有听牌 */
+	tingpais0: ITingPaiDiscardInfo[];
+	/** 当子家有听牌 */
+	tingpai: IRecordTake_TingPai[];
+	operation: IOptionalOperationList;
+}
+
+/** .lq.RecordTake.TingPai */
+declare interface IRecordTake_TingPai extends IProto {
+	seat: number;
+	/** 当子家有听牌 */
+	tingpais1: ITingPaiInfo[];
 }
 
 /** .lq.ReqRequestConnection */

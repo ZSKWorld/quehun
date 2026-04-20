@@ -1398,6 +1398,12 @@ declare interface IReqMethod {
 	 */
 	createYostarSDKOrder(data?: IReqCreateYostarOrder): Promise<IResCreateYostarOrder>;
 	/**
+	 ** req: {@link IReqCreateYostarV4SDKOrder}
+	 ** res: {@link IResCreateYostarV4SDKOrder}
+	 ** msgId: {@link ENetMessage.createYostarV4SDKOrder}
+	 */
+	createYostarV4SDKOrder(data?: IReqCreateYostarV4SDKOrder): Promise<IResCreateYostarV4SDKOrder>;
+	/**
 	 ** 创建支付订单
 	 ** req: {@link IReqCreateBillingOrder}
 	 ** res: {@link IResCreateBillingOrder}
@@ -1791,6 +1797,12 @@ declare interface IReqMethod {
 	 */
 	upgradeActivityBuff(data?: IReqUpgradeActivityBuff): Promise<IResActivityBuff>;
 	/**
+	 ** req: {@link IReqSetActivityBuff}
+	 ** res: {@link IResActivityBuff}
+	 ** msgId: {@link ENetMessage.setActivityBuff}
+	 */
+	setActivityBuff(data?: IReqSetActivityBuff): Promise<IResActivityBuff>;
+	/**
 	 ** 升级活动升级
 	 ** req: {@link IReqUpgradeActivityLevel}
 	 ** res: {@link IResUpgradeActivityLevel}
@@ -2137,6 +2149,13 @@ declare interface IReqMethod {
 	 ** msgId: {@link ENetMessage.taskRequest}
 	 */
 	taskRequest(data?: IReqTaskRequest): Promise<IResCommon>;
+	/**
+	 ** 悠星删除账号请求
+	 ** req: {@link IReqYostarDeleteAccount}
+	 ** res: {@link IResYostarDeleteAccount}
+	 ** msgId: {@link ENetMessage.yostarDeleteAccount}
+	 */
+	yostarDeleteAccount(data?: IReqYostarDeleteAccount): Promise<IResYostarDeleteAccount>;
 	/**
 	 ** 养成活动
 	 ** req: {@link IReqSimulationActivityTrain}
@@ -2798,6 +2817,13 @@ declare interface IReqMethod {
 	 */
 	snowballActivityReceiveReward(data?: IReqSnowballActivityReceiveReward): Promise<IResSnowballActivityReceiveReward>;
 	/**
+	 ** 获取Banner活动详细信息
+	 ** req: {@link IReqFetchBannerActivityData}
+	 ** res: {@link IResFetchBannerActivityData}
+	 ** msgId: {@link ENetMessage.fetchBannerActivityData}
+	 */
+	fetchBannerActivityData(data?: IReqFetchBannerActivityData): Promise<IResFetchBannerActivityData>;
+	/**
 	 ** ==DevDebug Start==
 	 ** debug 协议在正式版本删除
 	 ** req: {@link IReqSnowballActivityDebug}
@@ -2834,6 +2860,12 @@ declare interface IReqMethod {
 	marathonActivityTest(data?: IReqMarathonActivityTest): Promise<IResMarathonActivityTest>;
 	/**
 	 ** mmo活动
+	 ** req: {@link IReqMMOActivityFetchData}
+	 ** res: {@link IResMMOActivityFetchData}
+	 ** msgId: {@link ENetMessage.mmoActivityFetchData}
+	 */
+	mmoActivityFetchData(data?: IReqMMOActivityFetchData): Promise<IResMMOActivityFetchData>;
+	/**
 	 ** req: {@link IReqMMOActivityEquipFusion}
 	 ** res: {@link IResMMOActivityEquipFusion}
 	 ** msgId: {@link ENetMessage.mmoActivityEquipFusion}
@@ -2858,6 +2890,12 @@ declare interface IReqMethod {
 	 */
 	mmoActivityStartBattle(data?: IReqMMOActivityStartBattle): Promise<IResMMOActivityStartBattle>;
 	/**
+	 ** req: {@link IReqMMOActivityFinishBattle}
+	 ** res: {@link IResMMOActivityFinishBattle}
+	 ** msgId: {@link ENetMessage.mmoActivityFinishBattle}
+	 */
+	mmoActivityFinishBattle(data?: IReqMMOActivityFinishBattle): Promise<IResMMOActivityFinishBattle>;
+	/**
 	 ** req: {@link IReqMMOActivitySetEquip}
 	 ** res: {@link IResMMOActivitySetEquip}
 	 ** msgId: {@link ENetMessage.mmoActivitySetEquip}
@@ -2879,10 +2917,10 @@ declare interface IReqMethod {
 	 ** ==DevDebug Start==
 	 ** debug 协议在正式版本删除
 	 ** req: {@link IReqMMOActivityDebugSetTeamCandidate}
-	 ** res: {@link IResCommon}
+	 ** res: {@link IResMMOActivityDebugSetTeamCandidate}
 	 ** msgId: {@link ENetMessage.mmoActivityDebugSetTeamCandidate}
 	 */
-	mmoActivityDebugSetTeamCandidate(data?: IReqMMOActivityDebugSetTeamCandidate): Promise<IResCommon>;
+	mmoActivityDebugSetTeamCandidate(data?: IReqMMOActivityDebugSetTeamCandidate): Promise<IResMMOActivityDebugSetTeamCandidate>;
 	/**
 	 ** 验证游戏口令
 	 ** req: {@link IReqAuthGame}

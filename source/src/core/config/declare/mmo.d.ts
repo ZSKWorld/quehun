@@ -107,10 +107,10 @@ declare interface ISheetData_Mmo_MmoEnemy {
 	critical_damage: number;
 	/** 行动顺序 */
 	action_seq: number;
-	/** 装备列表 */
-	equipment_list: string;
 	/** spine名字 */
 	res_name: string;
+	/** 装备列表 */
+	equipment_list: string;
 }
 //#endregion
 
@@ -314,6 +314,52 @@ declare interface ISheetData_Mmo_MmoWeaponType {
 	die_tick: number;
 	/** spine名字 */
 	res_name: string;
+	/** 移动音效 */
+	audio_move: string;
+	/** 受击音效 */
+	audio_hit: string;
+	/** 倒地音效 */
+	audio_down: string;
+	/** 倒地延迟 */
+	down_delay: number;
+	/** 死亡消散 */
+	audio_die: string;
+	/** 攻击音效lv0 */
+	audio_attack_lv0: string;
+	/** 攻击音效lv0延迟 */
+	attack_lv0_delay: number;
+	/** 攻击音效lv1 */
+	audio_attack_lv1: string;
+	/** 攻击音效lv1延迟 */
+	attack_lv1_delay: number;
+	/** 攻击音效lv2 */
+	audio_attack_lv2: string;
+	/** 攻击音效lv1延迟 */
+	attack_lv2_delay: number;
+	/** 攻击音效lv3 */
+	audio_attack_lv3: string;
+	/** 攻击音效lv1延迟 */
+	attack_lv3_delay: number;
+	/** 治疗音效 */
+	audio_heal: string;
+	/** 移动音效 */
+	audio_move_speed2: string;
+	/** 受击音效 */
+	audio_hit_speed2: string;
+	/** 倒地音效 */
+	audio_down_speed2: string;
+	/** 死亡消散 */
+	audio_die_speed2: string;
+	/** 攻击音效lv0_倍速2 */
+	audio_attack_lv0_speed2: string;
+	/** 攻击音效lv1_倍速2 */
+	audio_attack_lv1_speed2: string;
+	/** 攻击音效lv2_倍速2 */
+	audio_attack_lv2_speed2: string;
+	/** 攻击音效lv3_倍速2 */
+	audio_attack_lv3_speed2: string;
+	/** 治疗音效 */
+	audio_heal_speed2: string;
 }
 //#endregion
 

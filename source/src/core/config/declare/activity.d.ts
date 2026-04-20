@@ -3777,11 +3777,17 @@ declare interface ISheetData_Activity_GameTask {
 	/** 基础任务id */
 	base_task_id: number;
 	/** 奖励id */
+	reward_id: number;
+	/** 奖励数量 */
+	reward_count: number;
+	/** 奖励id */
 	reward: string;
 	/** 隐藏奖励 */
 	hidden_reward: string;
 	/** 限制ID source_limit表 */
 	limit_id: number;
+	/** 一场对局只能完成1次 */
+	single_trigger: number;
 	/** 维护用字段，将任务转变为不可见不可领状态 */
 	deprecated: number;
 }
@@ -6762,6 +6768,8 @@ declare interface ISheetData_Activity_PeriodTask {
 	base_task_id: number;
 	/** 奖励 */
 	reward: string;
+	/** 0普通1突出 */
+	node_mark: number;
 	/** 刷新周期 */
 	interval: number;
 	/** 周期内能完成的次数限制 */
@@ -6776,8 +6784,6 @@ declare interface ISheetData_Activity_PeriodTask {
 	unlock_day: number;
 	/** 维护用字段，将任务转变为不可见不可领状态 */
 	deprecated: number;
-	/** 0普通1突出 */
-	node_mark: number;
 	/** 补发邮件是否忽略 */
 	omit_mail_reward: number;
 }

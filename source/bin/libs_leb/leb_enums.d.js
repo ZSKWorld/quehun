@@ -377,6 +377,13 @@ EUserEvent = {
 	OnViewUseChanged: "EUserEvent_OnViewUseChanged",
 	OnCommonViewChanged: "EUserEvent_OnCommonViewChanged",
 	OnClientValueChanged: "EUserEvent_OnClientValueChanged",
+	OnActivityListChanged: "EUserEvent_OnActivityListChanged",
+	OnActivityIntervalChanged: "EUserEvent_OnActivityIntervalChanged",
+	OnActivityBuffChanged: "EUserEvent_OnActivityBuffChanged",
+	OnActivityTaskProgressChanged: "EUserEvent_OnActivityTaskProgressChanged",
+	OnActivityPeriodTaskProgressChanged: "EUserEvent_OnActivityPeriodTaskProgressChanged",
+	OnActivityRandomTaskProgressChanged: "EUserEvent_OnActivityRandomTaskProgressChanged",
+	OnActivitySegmentTaskProgressChanged: "EUserEvent_OnActivitySegmentTaskProgressChanged",
 }
 
 EVideoLoadEvent = {

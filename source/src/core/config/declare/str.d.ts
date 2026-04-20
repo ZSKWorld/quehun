@@ -4740,6 +4740,8 @@ declare interface ISheet_Str_Str {
 	26041107: ISheetData_Str_Str;
 	26041108: ISheetData_Str_Str;
 	26041109: ISheetData_Str_Str;
+	26041110: ISheetData_Str_Str;
+	26041111: ISheetData_Str_Str;
 	26042001: ISheetData_Str_Str;
 	26043001: ISheetData_Str_Str;
 	26043002: ISheetData_Str_Str;

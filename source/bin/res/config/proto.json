@@ -929,6 +929,14 @@
             "level": {
               "type": "uint32",
               "id": 5
+            },
+            "message": {
+              "type": "string",
+              "id": 6
+            },
+            "args": {
+              "type": "string",
+              "id": 7
             }
           }
         },
@@ -3491,8 +3499,27 @@
             },
             "mmo_data": {
               "rule": "repeated",
-              "type": "lq.ActivityMMOData",
+              "type": "lq.ActivityMMODataChanges",
               "id": 22
+            },
+            "activity_buff": {
+              "type": "ActivityBuffDataArrayDirty",
+              "id": 23
+            }
+          },
+          "nested": {
+            "ActivityBuffDataArrayDirty": {
+              "fields": {
+                "dirty": {
+                  "type": "bool",
+                  "id": 1
+                },
+                "value": {
+                  "rule": "repeated",
+                  "type": "lq.ActivityBuffData",
+                  "id": 2
+                }
+              }
             }
           }
         },
@@ -4361,7 +4388,7 @@
                 }
               }
             },
-            "ActivityMMOBagDataChanges": {
+            "ActivityMMOEquipmentsArrayDirty": {
               "fields": {
                 "dirty": {
                   "type": "bool",
@@ -4374,6 +4401,22 @@
                 }
               }
             },
+            "ActivityMMOBagDataChanges": {
+              "fields": {
+                "equipments": {
+                  "type": "ActivityMMOEquipmentsArrayDirty",
+                  "id": 1
+                },
+                "total_gain_count": {
+                  "type": "UInt32Dirty",
+                  "id": 2
+                },
+                "total_fusion_count": {
+                  "type": "UInt32Dirty",
+                  "id": 3
+                }
+              }
+            },
             "ActivityMMOMapDataChanges": {
               "fields": {
                 "level": {
@@ -4383,6 +4426,14 @@
                 "random_seed": {
                   "type": "UInt32Dirty",
                   "id": 2
+                },
+                "won": {
+                  "type": "UInt32Dirty",
+                  "id": 3
+                },
+                "failed": {
+                  "type": "UInt32Dirty",
+                  "id": 4
                 }
               }
             },
@@ -4392,9 +4443,13 @@
                   "type": "UInt32Dirty",
                   "id": 1
                 },
-                "support_count": {
-                  "type": "UInt32Dirty",
+                "most_supporter": {
+                  "type": "ActivityMMOSupportRecordDirty",
                   "id": 2
+                },
+                "receive_support_count": {
+                  "type": "UInt32Dirty",
+                  "id": 3
                 }
               }
             }
@@ -4447,6 +4502,43 @@
             "id": {
               "type": "uint32",
               "id": 3
+            }
+          }
+        },
+        "ActivityMMOSupportRecord": {
+          "fields": {
+            "id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "count": {
+              "type": "uint32",
+              "id": 2
+            },
+            "type": {
+              "type": "uint32",
+              "id": 3
+            },
+            "character_id": {
+              "type": "uint32",
+              "id": 4
+            },
+            "equipments": {
+              "rule": "repeated",
+              "type": "uint32",
+              "id": 5
+            }
+          }
+        },
+        "ActivityMMOSupportRecordDirty": {
+          "fields": {
+            "dirty": {
+              "type": "bool",
+              "id": 1
+            },
+            "value": {
+              "type": "ActivityMMOSupportRecord",
+              "id": 2
             }
           }
         },
@@ -4529,6 +4621,33 @@
                   "rule": "repeated",
                   "type": "ActivityMMOEquipmentData",
                   "id": 1
+                },
+                "total_gain_count": {
+                  "type": "uint32",
+                  "id": 2
+                },
+                "total_fusion_count": {
+                  "type": "uint32",
+                  "id": 3
+                },
+                "random_record": {
+                  "rule": "repeated",
+                  "type": "ActivityMMORandomRecord",
+                  "id": 100
+                }
+              },
+              "nested": {
+                "ActivityMMORandomRecord": {
+                  "fields": {
+                    "rarity": {
+                      "type": "uint32",
+                      "id": 1
+                    },
+                    "count": {
+                      "type": "uint32",
+                      "id": 2
+                    }
+                  }
                 }
               }
             },
@@ -4541,6 +4660,14 @@
                 "random_seed": {
                   "type": "uint32",
                   "id": 2
+                },
+                "won": {
+                  "type": "uint32",
+                  "id": 3
+                },
+                "failed": {
+                  "type": "uint32",
+                  "id": 4
                 }
               }
             },
@@ -4550,9 +4677,18 @@
                   "type": "uint32",
                   "id": 1
                 },
-                "support_count": {
-                  "type": "uint32",
+                "most_supporter": {
+                  "type": "ActivityMMOSupportRecord",
                   "id": 2
+                },
+                "receive_support_count": {
+                  "type": "uint32",
+                  "id": 3
+                },
+                "support_record": {
+                  "rule": "repeated",
+                  "type": "ActivityMMOSupportRecord",
+                  "id": 100
                 }
               }
             }
@@ -5743,6 +5879,10 @@
             "match_end_time": {
               "type": "uint32",
               "id": 25
+            },
+            "open_rank_percent": {
+              "type": "uint32",
+              "id": 26
             }
           }
         },
@@ -5798,6 +5938,10 @@
             "total_game_count": {
               "type": "uint32",
               "id": 5
+            },
+            "rank_percent": {
+              "type": "uint32",
+              "id": 6
             }
           }
         },
@@ -9041,6 +9185,54 @@
             }
           }
         },
+        "BannerActivityData": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "tag_img_url": {
+              "type": "string",
+              "id": 2
+            },
+            "banner_background_url": {
+              "type": "string",
+              "id": 3
+            },
+            "banner_button_url": {
+              "type": "string",
+              "id": 4
+            },
+            "tag_name": {
+              "type": "string",
+              "id": 5
+            },
+            "start_time": {
+              "type": "uint32",
+              "id": 6
+            },
+            "end_time": {
+              "type": "uint32",
+              "id": 7
+            },
+            "url": {
+              "type": "string",
+              "id": 8
+            },
+            "type": {
+              "type": "uint32",
+              "id": 9
+            },
+            "sort": {
+              "type": "uint32",
+              "id": 10
+            },
+            "need_popout": {
+              "type": "uint32",
+              "id": 11
+            }
+          }
+        },
         "Lobby": {
           "methods": {
             "fetchConnectionInfo": {
@@ -9839,6 +10031,10 @@
               "requestType": "ReqCreateYostarOrder",
               "responseType": "ResCreateYostarOrder"
             },
+            "createYostarV4SDKOrder": {
+              "requestType": "ReqCreateYostarV4SDKOrder",
+              "responseType": "ResCreateYostarV4SDKOrder"
+            },
             "createBillingOrder": {
               "requestType": "ReqCreateBillingOrder",
               "responseType": "ResCreateBillingOrder"
@@ -10067,6 +10263,10 @@
               "requestType": "ReqUpgradeActivityBuff",
               "responseType": "ResActivityBuff"
             },
+            "setActivityBuff": {
+              "requestType": "ReqSetActivityBuff",
+              "responseType": "ResActivityBuff"
+            },
             "upgradeActivityLevel": {
               "requestType": "ReqUpgradeActivityLevel",
               "responseType": "ResUpgradeActivityLevel"
@@ -10278,6 +10478,10 @@
             "taskRequest": {
               "requestType": "ReqTaskRequest",
               "responseType": "ResCommon"
+            },
+            "yostarDeleteAccount": {
+              "requestType": "ReqYostarDeleteAccount",
+              "responseType": "ResYostarDeleteAccount"
             },
             "simulationActivityTrain": {
               "requestType": "ReqSimulationActivityTrain",
@@ -10683,6 +10887,10 @@
               "requestType": "ReqSnowballActivityReceiveReward",
               "responseType": "ResSnowballActivityReceiveReward"
             },
+            "fetchBannerActivityData": {
+              "requestType": "ReqFetchBannerActivityData",
+              "responseType": "ResFetchBannerActivityData"
+            },
             "snowballActivityDebug": {
               "requestType": "ReqSnowballActivityDebug",
               "responseType": "ResCommon"
@@ -10703,6 +10911,10 @@
               "requestType": "ReqMarathonActivityTest",
               "responseType": "ResMarathonActivityTest"
             },
+            "mmoActivityFetchData": {
+              "requestType": "ReqMMOActivityFetchData",
+              "responseType": "ResMMOActivityFetchData"
+            },
             "mmoActivityEquipFusion": {
               "requestType": "ReqMMOActivityEquipFusion",
               "responseType": "ResMMOActivityEquipFusion"
@@ -10719,6 +10931,10 @@
               "requestType": "ReqMMOActivityStartBattle",
               "responseType": "ResMMOActivityStartBattle"
             },
+            "mmoActivityFinishBattle": {
+              "requestType": "ReqMMOActivityFinishBattle",
+              "responseType": "ResMMOActivityFinishBattle"
+            },
             "mmoActivitySetEquip": {
               "requestType": "ReqMMOActivitySetEquip",
               "responseType": "ResMMOActivitySetEquip"
@@ -10733,7 +10949,7 @@
             },
             "mmoActivityDebugSetTeamCandidate": {
               "requestType": "ReqMMOActivityDebugSetTeamCandidate",
-              "responseType": "ResCommon"
+              "responseType": "ResMMOActivityDebugSetTeamCandidate"
             }
           }
         },
@@ -13727,6 +13943,50 @@
             }
           }
         },
+        "ReqCreateYostarV4SDKOrder": {
+          "fields": {
+            "goods_id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "client_type": {
+              "type": "uint32",
+              "id": 2
+            },
+            "account_id": {
+              "type": "uint32",
+              "id": 3
+            },
+            "order_type": {
+              "type": "uint32",
+              "id": 4
+            },
+            "client_version_string": {
+              "type": "string",
+              "id": 5
+            }
+          }
+        },
+        "ResCreateYostarV4SDKOrder": {
+          "fields": {
+            "error": {
+              "type": "Error",
+              "id": 1
+            },
+            "order_id": {
+              "type": "string",
+              "id": 2
+            },
+            "notify_url": {
+              "type": "string",
+              "id": 3
+            },
+            "extra_data": {
+              "type": "string",
+              "id": 4
+            }
+          }
+        },
         "ReqCreateENPaypalOrder": {
           "fields": {
             "goods_id": {
@@ -16447,6 +16707,33 @@
             }
           }
         },
+        "ReqSetActivityBuff": {
+          "fields": {
+            "buff_list": {
+              "rule": "repeated",
+              "type": "BuffInfo",
+              "id": 1
+            },
+            "activity_id": {
+              "type": "uint32",
+              "id": 2
+            }
+          },
+          "nested": {
+            "BuffInfo": {
+              "fields": {
+                "buff_id": {
+                  "type": "uint32",
+                  "id": 1
+                },
+                "level": {
+                  "type": "uint32",
+                  "id": 2
+                }
+              }
+            }
+          }
+        },
         "ResUpgradeActivityLevel": {
           "fields": {
             "error": {
@@ -17787,6 +18074,26 @@
             }
           }
         },
+        "ReqYostarDeleteAccount": {
+          "fields": {
+            "server": {
+              "type": "uint32",
+              "id": 1
+            }
+          }
+        },
+        "ResYostarDeleteAccount": {
+          "fields": {
+            "error": {
+              "type": "Error",
+              "id": 1
+            },
+            "notify_url": {
+              "type": "string",
+              "id": 2
+            }
+          }
+        },
         "ReqSimulationActivityTrain": {
           "fields": {
             "activity_id": {
@@ -19059,6 +19366,14 @@
                 "modify_score": {
                   "type": "int32",
                   "id": 5
+                },
+                "rank": {
+                  "type": "uint32",
+                  "id": 6
+                },
+                "rank_percent": {
+                  "type": "uint32",
+                  "id": 7
                 }
               }
             },
@@ -19079,6 +19394,10 @@
                 "modify_score": {
                   "type": "int32",
                   "id": 4
+                },
+                "rank_percent": {
+                  "type": "uint32",
+                  "id": 5
                 }
               }
             }
@@ -19154,6 +19473,10 @@
                 "rank": {
                   "type": "uint32",
                   "id": 4
+                },
+                "rank_percent": {
+                  "type": "uint32",
+                  "id": 5
                 }
               }
             }
@@ -21128,6 +21451,32 @@
             }
           }
         },
+        "ReqFetchBannerActivityData": {
+          "fields": {
+            "activity_id_list": {
+              "rule": "repeated",
+              "type": "uint32",
+              "id": 1
+            },
+            "lang": {
+              "type": "string",
+              "id": 2
+            }
+          }
+        },
+        "ResFetchBannerActivityData": {
+          "fields": {
+            "error": {
+              "type": "Error",
+              "id": 1
+            },
+            "activity_list": {
+              "rule": "repeated",
+              "type": "BannerActivityData",
+              "id": 2
+            }
+          }
+        },
         "ReqSnowballActivityDebug": {
           "fields": {
             "snowball_activity": {
@@ -21336,6 +21685,26 @@
             }
           }
         },
+        "ReqMMOActivityFetchData": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            }
+          }
+        },
+        "ResMMOActivityFetchData": {
+          "fields": {
+            "error": {
+              "type": "Error",
+              "id": 1
+            },
+            "mmo_data": {
+              "type": "ActivityMMOData",
+              "id": 2
+            }
+          }
+        },
         "ReqMMOActivityEquipFusion": {
           "fields": {
             "activity_id": {
@@ -21452,7 +21821,7 @@
             },
             "actions": {
               "rule": "repeated",
-              "type": "MMOActivityBattleInfo",
+              "type": "MMOActivityBattleAction",
               "id": 2
             },
             "units": {
@@ -21463,10 +21832,14 @@
             "changes": {
               "type": "ActivityMMODataChanges",
               "id": 4
+            },
+            "result": {
+              "type": "uint32",
+              "id": 5
             }
           },
           "nested": {
-            "MMOActivityBattleInfo": {
+            "MMOActivityBattleAction": {
               "fields": {
                 "type": {
                   "type": "uint32",
@@ -21504,12 +21877,37 @@
                   "type": "uint32",
                   "id": 2
                 },
-                "equipment": {
+                "equipments": {
                   "rule": "repeated",
                   "type": "uint32",
                   "id": 3
                 }
               }
+            }
+          }
+        },
+        "ReqMMOActivityFinishBattle": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            }
+          }
+        },
+        "ResMMOActivityFinishBattle": {
+          "fields": {
+            "error": {
+              "type": "Error",
+              "id": 1
+            },
+            "changes": {
+              "type": "ActivityMMODataChanges",
+              "id": 2
+            },
+            "rewards": {
+              "rule": "repeated",
+              "type": "ExecuteReward",
+              "id": 3
             }
           }
         },
@@ -21599,6 +21997,14 @@
             "changes": {
               "type": "ActivityMMODataChanges",
               "id": 3
+            },
+            "support_count": {
+              "type": "uint32",
+              "id": 4
+            },
+            "total_support_count": {
+              "type": "uint32",
+              "id": 5
             }
           }
         },
@@ -21622,6 +22028,18 @@
               "rule": "repeated",
               "type": "MMOActivityTeamCandidateData",
               "id": 4
+            }
+          }
+        },
+        "ResMMOActivityDebugSetTeamCandidate": {
+          "fields": {
+            "error": {
+              "type": "Error",
+              "id": 1
+            },
+            "changes": {
+              "type": "ActivityMMODataChanges",
+              "id": 2
             }
           }
         },
@@ -26430,6 +26848,132 @@
             "seat": {
               "type": "uint32",
               "id": 1
+            }
+          }
+        },
+        "SubmitGroup": {
+          "fields": {
+            "count": {
+              "type": "uint32",
+              "id": 1
+            },
+            "tiles": {
+              "rule": "repeated",
+              "type": "string",
+              "id": 2
+            }
+          }
+        },
+        "SubmitInfo": {
+          "fields": {
+            "submit_seat": {
+              "type": "uint32",
+              "id": 1
+            },
+            "groups": {
+              "rule": "repeated",
+              "type": "SubmitGroup",
+              "id": 2
+            }
+          }
+        },
+        "ActionSubmit": {
+          "fields": {
+            "submits": {
+              "rule": "repeated",
+              "type": "SubmitInfo",
+              "id": 1
+            }
+          }
+        },
+        "RecordSubmit": {
+          "fields": {
+            "submits": {
+              "rule": "repeated",
+              "type": "SubmitInfo",
+              "id": 1
+            }
+          }
+        },
+        "TakeInfo": {
+          "fields": {
+            "take_seat": {
+              "type": "uint32",
+              "id": 1
+            },
+            "from_seat": {
+              "type": "uint32",
+              "id": 2
+            },
+            "count": {
+              "type": "uint32",
+              "id": 3
+            },
+            "tiles": {
+              "rule": "repeated",
+              "type": "string",
+              "id": 4
+            }
+          }
+        },
+        "ActionTake": {
+          "fields": {
+            "takes": {
+              "rule": "repeated",
+              "type": "TakeInfo",
+              "id": 1
+            },
+            "tingpais0": {
+              "rule": "repeated",
+              "type": "TingPaiDiscardInfo",
+              "id": 2
+            },
+            "tingpais1": {
+              "rule": "repeated",
+              "type": "TingPaiInfo",
+              "id": 3
+            },
+            "operation": {
+              "type": "OptionalOperationList",
+              "id": 4
+            }
+          }
+        },
+        "RecordTake": {
+          "fields": {
+            "takes": {
+              "rule": "repeated",
+              "type": "TakeInfo",
+              "id": 1
+            },
+            "tingpais0": {
+              "rule": "repeated",
+              "type": "TingPaiDiscardInfo",
+              "id": 2
+            },
+            "tingpai": {
+              "rule": "repeated",
+              "type": "TingPai",
+              "id": 3
+            },
+            "operation": {
+              "type": "OptionalOperationList",
+              "id": 4
+            }
+          },
+          "nested": {
+            "TingPai": {
+              "fields": {
+                "seat": {
+                  "type": "uint32",
+                  "id": 1
+                },
+                "tingpais1": {
+                  "rule": "repeated",
+                  "type": "TingPaiInfo",
+                  "id": 2
+                }
+              }
             }
           }
         },

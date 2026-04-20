@@ -61,6 +61,7 @@ service ServerRpc {
 
   // api => game
   rpc terminateGame (ReqTerminateGame) returns (ResCommon);
+  rpc terminateAllGames(ReqTerminateAllGames) returns (ResCommon);
   rpc pauseGame (ReqPauseGame) returns (ResCommon);
   rpc resumeGame (ReqResumeGame) returns (ResCommon);
 
@@ -133,6 +134,7 @@ service ServerRpc {
   rpc fetchJPCommonCreditCardOrder (lq.ReqFetchJPCommonCreditCardOrder) returns (lq.ResFetchJPCommonCreditCardOrder);
   rpc createJPGMOOrder (lq.ReqCreateJPGMOOrder) returns (lq.ResCreateJPGMOOrder);
   rpc createYostarSDKOrder(lq.ReqCreateYostarOrder) returns (lq.ResCreateYostarOrder);
+  rpc createYostarV4SDKOrder(lq.ReqCreateYostarV4SDKOrder) returns (lq.ResCreateYostarV4SDKOrder);
   rpc createDMMOrder(lq.ReqCreateDMMOrder) returns (lq.ResCreateDmmOrder);
   rpc createENPaypalOrder (lq.ReqCreateENPaypalOrder) returns (lq.ResCreateENPaypalOrder);
   rpc createENMasterCardOrder (lq.ReqCreateENMasterCardOrder) returns (lq.ResCreateENMasterCardOrder);
@@ -556,6 +558,10 @@ message ReqAccountGameEnd {
 message ReqTerminateGame {
   string game_uuid = 1;
   string reason = 2;
+}
+
+message ReqTerminateAllGames {
+  string reason = 1;
 }
 
 message ReqPauseGame {

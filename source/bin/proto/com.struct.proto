@@ -11,6 +11,8 @@ message Error {
   string json_param = 4; // json对象（内容根据code变化）
 
   uint32 level = 5; // 报错等级，不会发送给客户端
+  string message = 6; // 内部错误消息，不会发送给客户端
+  string args = 7; // 内部错误参数，不会发送给客户端
 }
 
 message Wrapper {
@@ -991,7 +993,12 @@ message AccountActivityUpdate {
   repeated lq.ActivityBingoData bingo_data = 19;
   repeated lq.ActivitySnowballValueChanges snowball_data = 20;
   repeated lq.ActivityChooseGroupData choose_group_up_data = 21;
-  repeated lq.ActivityMMOData mmo_data = 22;
+  repeated lq.ActivityMMODataChanges mmo_data = 22;
+  message ActivityBuffDataArrayDirty {
+    bool dirty = 1;
+    repeated lq.ActivityBuffData value = 2;
+  }
+  ActivityBuffDataArrayDirty activity_buff = 23;
 }
 
 message ActivityCombiningWorkbench {
@@ -1469,21 +1476,29 @@ message ActivityMMODataChanges {
   }
   ActivityMMOTeamDataChanges team = 3;
 
-  message ActivityMMOBagDataChanges {
+  message ActivityMMOEquipmentsArrayDirty {
     bool dirty = 1;
     repeated ActivityMMOEquipmentData value = 2;
+  }
+  message ActivityMMOBagDataChanges {
+    ActivityMMOEquipmentsArrayDirty equipments = 1;
+    UInt32Dirty total_gain_count = 2;
+    UInt32Dirty total_fusion_count = 3;
   }
   ActivityMMOBagDataChanges bag = 4;
 
   message ActivityMMOMapDataChanges {
     UInt32Dirty level = 1;
     UInt32Dirty random_seed = 2;
+    UInt32Dirty won = 3; // 当前关卡是否过关了（可以调用 finish 进入下一关）
+    UInt32Dirty failed = 4; // 当前配置是否已经尝试过了（更换队友/装备后重置）
   }
   ActivityMMOMapDataChanges map = 5;
 
   message ActivityMMOSupportDataChanges {
     UInt32Dirty last_receive_time = 1; // 上次领取支援奖励的时间，如果时间是本日的话说明今天已经领取过了
-    UInt32Dirty support_count = 2; // 待领取支援次数
+    ActivityMMOSupportRecordDirty most_supporter = 2;
+    UInt32Dirty receive_support_count = 3;
   }
   ActivityMMOSupportDataChanges support = 6;
 }
@@ -1504,6 +1519,19 @@ message MMOActivityTeamCandidateData {
   uint32 character_id = 1;
   repeated uint32 equipments = 2;
   uint32 id = 3;
+}
+
+message ActivityMMOSupportRecord {
+  uint32 id = 1;
+  uint32 count = 2;
+  uint32 type = 3;
+  uint32 character_id = 4;
+  repeated uint32 equipments = 5;
+}
+
+message ActivityMMOSupportRecordDirty {
+  bool dirty = 1;
+  ActivityMMOSupportRecord value = 2;
 }
 
 message ActivityMMOData {
@@ -1529,18 +1557,34 @@ message ActivityMMOData {
 
   message ActivityMMOBagData {
     repeated ActivityMMOEquipmentData equipments = 1;
+    uint32 total_gain_count = 2; // 获取装备总量
+    uint32 total_fusion_count = 3; // 装备合成次数
+
+    // 服务端数据，不会发送给客户端
+    message ActivityMMORandomRecord {
+      uint32 rarity = 1;
+      uint32 count = 2;
+    }
+    repeated ActivityMMORandomRecord random_record = 100;
   }
   ActivityMMOBagData bag = 4;
 
   message ActivityMMOMapData {
     uint32 level = 1;
     uint32 random_seed = 2;
+    uint32 won = 3; // 当前关卡是否过关了（可以调用 finish 进入下一关）
+    uint32 failed = 4; // 当前配置是否已经尝试过了（更换队友/装备后重置）
   }
   ActivityMMOMapData map = 5;
 
   message ActivityMMOSupportData {
     uint32 last_receive_time = 1; // 上次领取支援奖励的时间，如果时间是本日的话说明今天已经领取过了
-    uint32 support_count = 2; // 待领取支援次数
+    ActivityMMOSupportRecord most_supporter = 2; // 收到的最多的支援队友，客户端数据
+    uint32 receive_support_count = 3; // 总共收到的支援次数，客户端数据
+
+    // 服务端数据，不会发送给客户端
+    repeated ActivityMMOSupportRecord support_record = 100; // 收到的支援记录，不会发送给客户端
+
   }
   ActivityMMOSupportData support = 6;
 }
@@ -1983,6 +2027,7 @@ message CustomizedContestDetail {
   uint32 tied_rank = 23; // 是否使用并列排名模式 0 - 不并列 1 - 并列
   uint32 match_start_time = 24; // 自动匹配开始时间
   uint32 match_end_time = 25; // 自动匹配结束时间
+  uint32 open_rank_percent = 26; // 是否公开排名百分比 0 - 不公开 1 - 公开
 }
 
 // 预约对局数据结构
@@ -2011,6 +2056,7 @@ message CustomizedContestPlayerReport {
   int32 point = 3; // 精算点 (x1000)
   repeated uint32 game_ranks = 4; // 最近的比赛位次（根据rank_rule做判断）
   uint32 total_game_count = 5; // 已经参与的对局次数
+  uint32 rank_percent = 6; // 当前玩家排名前百分比（返回10，20，30...前xxx%文本前端添加）
 }
 
 // 牌谱记录头部信息
@@ -3210,4 +3256,19 @@ message ActivityMarathonCheckData {
   uint32 tick = 4; // 撞完墙后还剩多少tick
   uint32 point = 5; // 撞完墙结算完麻将消消乐后的分数
   uint32 time_end = 6; // 是否是时间耗尽的结束 tick
+}
+
+// Banner活动数据
+message BannerActivityData {
+  uint32 activity_id = 1; // 活动id
+  string tag_img_url = 2; // 标签url
+  string banner_background_url = 3; // 底图banner url
+  string banner_button_url = 4; // 按钮url
+  string tag_name = 5;  // 标签名
+  uint32 start_time = 6; // 开始时间
+  uint32 end_time = 7; // 结束时间
+  string url = 8; // 跳转链接（通过协议名区分，游戏内跳转为majsoul:// ,超链接为https://）
+  uint32 type = 9; // banner活动类型枚举 1-大会室入口
+  uint32 sort = 10; // 排序
+  uint32 need_popout = 11; // 是否需要进入大厅时弹窗 1-是 2-否
 }

@@ -808,3 +808,50 @@ message RecordNoTile {
 message PlayerLeaving {
   uint32 seat = 1;
 }
+
+message SubmitGroup {
+  uint32 count = 1; // 提交的牌的数量（不管是否隐藏牌面，都会提供）
+  repeated string tiles = 2; // 提交的牌信息（如果隐藏就不显示）
+}
+
+// 提交某些牌的信息
+message SubmitInfo {
+  uint32 submit_seat = 1; // 提交的拥有者的座位
+  repeated SubmitGroup groups = 2; // 提交的分组信息
+}
+
+message ActionSubmit {
+  repeated SubmitInfo submits = 1; // submit.tiles消息里面，如果是需要扣置的，那么没有数据
+}
+
+message RecordSubmit {
+  repeated SubmitInfo submits = 1; // submit.tiles牌谱里面一定会存储
+}
+
+message TakeInfo {
+  uint32 take_seat = 1; // 拿取别人牌的玩家座位
+  uint32 from_seat = 2; // 要拿取的牌的拥有者的座位
+  uint32 count = 3; // 提交的牌的数量（不管是否隐藏牌面，都会提供）
+  repeated string tiles = 4; // 提交的牌信息（如果隐藏就不显示）
+}
+
+message ActionTake {
+  repeated TakeInfo takes = 1; // take.tiles消息里面，如果take_seat是自己，会有数据，否则，就没有数据
+  repeated TingPaiDiscardInfo tingpais0 = 2; //当亲家有听牌
+  repeated TingPaiInfo tingpais1 = 3; //当子家有听牌
+  OptionalOperationList operation = 4;
+}
+
+message RecordTake {
+  repeated TakeInfo takes = 1; // take.tiles牌谱里面一定会存储
+  repeated TingPaiDiscardInfo tingpais0 = 2; //当亲家有听牌
+
+  message TingPai {
+    uint32 seat = 1;
+    repeated TingPaiInfo tingpais1 = 2; //当子家有听牌
+  }
+
+  repeated TingPai tingpai = 3; //当子家有听牌
+
+  OptionalOperationList operation = 4;
+}

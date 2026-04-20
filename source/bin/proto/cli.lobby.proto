@@ -613,6 +613,7 @@ service Lobby {
   rpc verificationIAPOrder (ReqVerificationIAPOrder) returns (ResVerificationIAPOrder);
   // 创建Yostar-SDK订单
   rpc createYostarSDKOrder (ReqCreateYostarOrder) returns (ResCreateYostarOrder);
+  rpc createYostarV4SDKOrder (ReqCreateYostarV4SDKOrder) returns (ResCreateYostarV4SDKOrder);
 
     // 创建支付订单
   rpc createBillingOrder (ReqCreateBillingOrder) returns (ResCreateBillingOrder);
@@ -781,6 +782,7 @@ service Lobby {
 
   // 升级活动buff
   rpc upgradeActivityBuff (ReqUpgradeActivityBuff) returns (ResActivityBuff);
+  rpc setActivityBuff(ReqSetActivityBuff) returns (ResActivityBuff);
 
   // 升级活动升级
   rpc upgradeActivityLevel (ReqUpgradeActivityLevel) returns (ResUpgradeActivityLevel);
@@ -917,6 +919,9 @@ service Lobby {
 
   // 前端完成任务
   rpc taskRequest(ReqTaskRequest) returns (ResCommon);
+
+  // 悠星删除账号请求
+  rpc yostarDeleteAccount(ReqYostarDeleteAccount) returns (ResYostarDeleteAccount);
 
   // 养成活动
   rpc simulationActivityTrain(ReqSimulationActivityTrain) returns (ResSimulationActivityTrain);
@@ -1083,6 +1088,9 @@ service Lobby {
   rpc snowballActivityUpgrade(ReqSnowballActivityUpgrade) returns (ResSnowballActivityUpgrade);
   rpc snowballActivityReceiveReward(ReqSnowballActivityReceiveReward) returns (ResSnowballActivityReceiveReward);
 
+    // 获取Banner活动详细信息
+  rpc fetchBannerActivityData(ReqFetchBannerActivityData) returns (ResFetchBannerActivityData);
+
   // ==DevDebug Start==
   // debug 协议在正式版本删除
   rpc snowballActivityDebug(ReqSnowballActivityDebug) returns (ResCommon);
@@ -1098,17 +1106,19 @@ service Lobby {
   // ==DevDebug End==
 
   // mmo活动
+  rpc mmoActivityFetchData(ReqMMOActivityFetchData) returns (ResMMOActivityFetchData);
   rpc mmoActivityEquipFusion(ReqMMOActivityEquipFusion) returns (ResMMOActivityEquipFusion);
   rpc mmoActivitySetCharacter(ReqMMOActivitySetCharacter) returns (ResMMOActivitySetCharacter);
   rpc mmoActivitySetTeamMember(ReqMMOActivitySetTeamMember) returns (ResMMOActivitySetTeamMember);
   rpc mmoActivityStartBattle(ReqMMOActivityStartBattle) returns (ResMMOActivityStartBattle);
+  rpc mmoActivityFinishBattle(ReqMMOActivityFinishBattle) returns (ResMMOActivityFinishBattle);
   rpc mmoActivitySetEquip(ReqMMOActivitySetEquip) returns (ResMMOActivitySetEquip);
   rpc mmoActivityUpdateFriendList(ReqMMOActivityUpdatehFriendList) returns (ResMMOActivityUpdatehFriendList);
   rpc mmoActivityReceiveSupportReward(ReqMMOActivityReceiveSupportReward) returns (ResMMOActivityReceiveSupportReward);
 
   // ==DevDebug Start==
   // debug 协议在正式版本删除
-  rpc mmoActivityDebugSetTeamCandidate(ReqMMOActivityDebugSetTeamCandidate) returns (ResCommon);
+  rpc mmoActivityDebugSetTeamCandidate(ReqMMOActivityDebugSetTeamCandidate) returns (ResMMOActivityDebugSetTeamCandidate);
   // ==DevDebug End==
 }
 
@@ -2359,6 +2369,36 @@ message ResCreateYostarOrder {
   string order_id = 2; // 创建订单返回的订单号
 }
 
+message ReqCreateYostarV4SDKOrder {
+  uint32 goods_id = 1;
+  uint32 client_type = 2;
+  uint32 account_id = 3;
+  /**
+    订单类型：
+    1 google_play
+    2 iap
+    3 nintendo
+    4 kr_google_play
+    5 kr_iap
+    6 pc
+    7 jp_web
+    8 kr_web
+    9 en_web
+    10 kr_pc
+    11 steam
+    12 kr_steam
+  */
+  uint32 order_type = 4;
+  string client_version_string = 5;
+}
+
+message ResCreateYostarV4SDKOrder {
+  Error error = 1;
+  string order_id = 2; // 创建订单返回的订单号
+  string notify_url = 3; // 回调地址，透传给 sdk
+  string extra_data = 4; // 透传给 sdk
+}
+
 // 协议：创建美服-Paypal订单
 message ReqCreateENPaypalOrder {
   uint32 goods_id = 1; // 商品ID
@@ -3454,6 +3494,15 @@ message ReqUpgradeActivityLevel {
   uint32 count = 3;
 }
 
+message ReqSetActivityBuff {
+  message BuffInfo {
+    uint32 buff_id = 1;
+    uint32 level = 2;
+  }
+  repeated BuffInfo buff_list = 1;
+  uint32 activity_id = 2;
+}
+
 message ResUpgradeActivityLevel {
   Error error = 1;
   repeated ExecuteReward rewards = 2;
@@ -3972,6 +4021,15 @@ message ReqTaskRequest {
   repeated uint32 params = 1;
 }
 
+message ReqYostarDeleteAccount {
+  uint32 server = 1; // 1-jp  2-en 3-kr
+}
+
+message ResYostarDeleteAccount {
+  Error error = 1;
+  string notify_url = 2;
+}
+
 message ReqSimulationActivityTrain {
   uint32 activity_id = 1;
   uint32 type = 2; // 训练指令, 1-对局 2-读书 3-跑步 4-祈祷 5-摸鱼
@@ -4422,12 +4480,15 @@ message ResFetchContestPlayerRank {
     ContestPlayerAccountData data = 3;
     string team_name = 4;
     int32 modify_score = 5;
+    uint32 rank = 6; // 当前玩家具体排名（当排名前10或者open_rank_percent为false时才会传递）
+    uint32 rank_percent = 7; // 当前玩家排名前百分比（返回10，20，30...前xxx%文本前端添加）
   }
   message PlayerData {
-    uint32 rank = 1;
+    uint32 rank = 1; // 当前玩家具体排名（当排名前10或者open_rank_percent为false时才会传递）
     ContestPlayerAccountData data = 2;
     string team_name = 3;
     int32 modify_score = 4;
+    uint32 rank_percent = 5; // 当前玩家排名前百分比（返回10，20，30...前xxx%文本前端添加）
   }
   Error error = 1;
   uint32 total = 2;
@@ -4453,7 +4514,8 @@ message ResFetchContestTeamRank {
     uint32 team_id = 1; // 队伍id
     string name = 2; // 队伍名称
     ContestTeamData data = 3; // 队伍排名数据
-    uint32 rank = 4;
+    uint32 rank = 4; // 当前队伍具体排名（当排名前10或者open_rank_percent为false时才会传递）
+    uint32 rank_percent = 5; // 当前队伍排名前百分比（返回10，20，30...前xxx%文本前端添加）
   }
   Error error = 1;
   uint32 total = 2; // 当前队伍总数
@@ -5234,6 +5296,18 @@ message ResSnowballActivityReceiveReward {
   repeated ExecuteReward rewards = 3;
 }
 
+// 获取Banner活动赛事详细信息请求数据
+message ReqFetchBannerActivityData {
+  repeated uint32 activity_id_list = 1;
+  string lang = 2; // 语言
+}
+
+// 获取Banner活动赛事详细信息返回数据
+message ResFetchBannerActivityData {
+  Error error = 1;
+  repeated BannerActivityData activity_list = 2;
+}
+
 // ==DevDebug Start==
 // debug 协议在正式版本删除
 message ReqSnowballActivityDebug {
@@ -5316,6 +5390,15 @@ message ResMarathonActivityTest {
 }
 // ==DevDebug End==
 
+message ReqMMOActivityFetchData {
+  uint32 activity_id = 1;
+}
+
+message ResMMOActivityFetchData {
+  Error error = 1;
+  ActivityMMOData mmo_data = 2;
+}
+
 message ReqMMOActivityEquipFusion {
   uint32 activity_id = 1;
   repeated uint32 equip_list = 2;
@@ -5361,24 +5444,36 @@ message ReqMMOActivityStartBattle {
 message ResMMOActivityStartBattle {
   Error error = 1;
 
-  message MMOActivityBattleInfo {
-    uint32 type = 1; // 1-攻击 2-治疗
+  message MMOActivityBattleAction {
+    uint32 type = 1; // 1-攻击 2-治疗 3-动画
     uint32 target = 2; // 目标
-    uint32 from = 3; // 来源
+    uint32 from = 3; // 来源, 动画的话就是播放动画的人物id
     uint32 value = 4; // 数值
     uint32 tick = 5; // 时间
     uint32 critical = 6; // 是否暴击
   }
-  repeated MMOActivityBattleInfo actions= 2;
+  repeated MMOActivityBattleAction actions = 2;
 
   message MMOActivityBattleUnit {
     uint32 id = 1; // 玩家阵营：角色id，敌方阵营：怪物id
     uint32 hp = 2; // 血量
-    repeated uint32 equipment = 3; // 装备
+    repeated uint32 equipments = 3; // 装备
   }
   repeated MMOActivityBattleUnit units = 3; // 参战单位初始数值
 
   ActivityMMODataChanges changes = 4;
+  uint32 result = 5; // 1-赢了 2-输了
+}
+
+message ReqMMOActivityFinishBattle {
+  uint32 activity_id = 1;
+}
+
+message ResMMOActivityFinishBattle {
+  Error error = 1;
+
+  ActivityMMODataChanges changes = 2;
+  repeated ExecuteReward rewards = 3; // 奖励
 }
 
 message ReqMMOActivitySetEquip {
@@ -5412,6 +5507,8 @@ message ResMMOActivityReceiveSupportReward {
   Error error = 1;
   repeated ExecuteReward rewards = 2;
   ActivityMMODataChanges changes = 3;
+  uint32 support_count = 4; // 实际支援次数
+  uint32 total_support_count = 5; // 总计支援次数
 }
 
 message ReqMMOActivityDebugSetTeamCandidate {
@@ -5419,6 +5516,11 @@ message ReqMMOActivityDebugSetTeamCandidate {
   repeated MMOActivityTeamCandidateData friend_list = 2;
   repeated MMOActivityTeamCandidateData random_friends = 3;
   repeated MMOActivityTeamCandidateData npc_list = 4;
+}
+
+message ResMMOActivityDebugSetTeamCandidate {
+  Error error = 1;
+  ActivityMMODataChanges changes = 2;
 }
 /*********************************************************************************************************************************
  ********************************************** next request & response **********************************************************

@@ -10,6 +10,7 @@ import { BtnSwitch1View } from "../core/ui/view/PkgCommon/view/btns/BtnSwitch1Vi
 import { BtnBagSkinCheckView } from "../core/ui/view/PkgMain/view/btns/BtnBagSkinCheckView";
 import { BtnDengLongView } from "../core/ui/view/PkgMain/view/btns/BtnDengLongView";
 import { BtnMailTabView } from "../core/ui/view/PkgMain/view/btns/BtnMailTabView";
+import { BtnSevenDayAnswerView } from "../core/ui/view/PkgMain/view/btns/BtnSevenDayAnswerView";
 import { BtnSevenDayTabView } from "../core/ui/view/PkgMain/view/btns/BtnSevenDayTabView";
 import { BtnShopRefreshView } from "../core/ui/view/PkgMain/view/btns/BtnShopRefreshView";
 import { BtnXunMiView } from "../core/ui/view/PkgMain/view/btns/BtnXunMiView";
@@ -148,6 +149,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.BtnBagSkinCheckView, EViewType.Button, BtnBagSkinCheckView);
 		register(EViewID.BtnDengLongView, EViewType.Button, BtnDengLongView);
 		register(EViewID.BtnMailTabView, EViewType.Button, BtnMailTabView);
+		register(EViewID.BtnSevenDayAnswerView, EViewType.Button, BtnSevenDayAnswerView);
 		register(EViewID.BtnSevenDayTabView, EViewType.Button, BtnSevenDayTabView);
 		register(EViewID.BtnShopRefreshView, EViewType.Button, BtnShopRefreshView);
 		register(EViewID.BtnXunMiView, EViewType.Button, BtnXunMiView);

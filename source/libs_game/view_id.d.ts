@@ -9,6 +9,7 @@ declare enum EViewID {
 	BtnBagSkinCheckView = "BtnBagSkinCheckView",
 	BtnDengLongView = "BtnDengLongView",
 	BtnMailTabView = "BtnMailTabView",
+	BtnSevenDayAnswerView = "BtnSevenDayAnswerView",
 	BtnSevenDayTabView = "BtnSevenDayTabView",
 	BtnShopRefreshView = "BtnShopRefreshView",
 	BtnXunMiView = "BtnXunMiView",

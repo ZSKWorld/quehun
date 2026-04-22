@@ -1,46 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0eafne7plols" designImageAlpha="0">
+<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0ejdu67plnwh" designImageAlpha="0">
+  <controller name="type" pages="0,,1," selected="0"/>
   <displayList>
     <component id="n15_afne" name="mask" src="w29kob8e" fileName="Component/Button/BtnIconFitNoScale.xml" pkg="vx9zwser" xy="-1040,-585" size="4000,2250" aspect="true" alpha="0.5">
       <Button icon="ui://vx9zwserieavob7l"/>
     </component>
-    <graph id="n16_afne" name="n16" xy="0,0" size="1920,1080" type="polygon" lineSize="0" fillColor="#00ffffff" points="87,118,1901,120,1900,200,1786,257,1786.73,967.6567,695,965,649.1832,998.2112,410.9861,980.6006,289.7491,965.436,285.2123,1020.353,212.858,1021.291,94.12057,979.0314,34,889.5917,34,869,103,800"/>
+    <graph id="n16_afne" name="n16" xy="0,0" size="1901,1021" type="polygon" lineSize="0" fillColor="#00ffffff" points="87,118,1901,120,1900,200,1786,257,1786.73,967.6567,695,965,649.1832,998.2112,410.9861,980.6006,289.7491,965.436,285.2123,1020.353,212.858,1021.291,94.12057,979.0314,34,889.5917,34,869,103,800"/>
     <loader id="n3_afne" name="bg" xy="34,120" size="1866,900" touchable="false" url="ui://ca43vz0eafneobho" fill="scaleFree"/>
-    <loader id="n4_afne" name="char" xy="170,160" size="806,760" touchable="false" url="ui://ca43vz0eafneobgi" fill="scaleFree"/>
-    <loader id="n5_afne" name="title" xy="163,688" size="462,228" touchable="false" url="ui://ca43vz0eafneobgh" fill="scaleFree"/>
-    <component id="n2_afne" name="close" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1780,112">
+    <loader id="n4_afne" name="char" xy="170,160" size="806,760" group="n25_rg6e" touchable="false" url="ui://ca43vz0eafneobgi" fill="scaleFree"/>
+    <loader id="n5_afne" name="title" xy="163,688" size="462,228" group="n25_rg6e" touchable="false" url="ui://ca43vz0eafneobgh" fill="scaleFree"/>
+    <component id="n2_afne" name="close" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1780,112" group="n25_rg6e">
       <Button icon="ui://vx9zwserafneobgg"/>
     </component>
-    <image id="n7_afne" name="n7" src="afneobhr" fileName="Texture/img_267.png" xy="892,271" size="804,4"/>
-    <image id="n6_afne" name="n6" src="afneobhq" fileName="Texture/img_2400.png" xy="896,614" size="791,132"/>
-    <image id="n17_afne" name="n17" src="afneobhw" fileName="Texture/img_208.png" xy="890,838" size="804,52"/>
-    <component id="n8_afne" name="day0" src="afneobhv" fileName="Component/UISevenDay/BtnSevenDayTab.xml" xy="887,187" size="118,70">
+    <image id="n7_afne" name="n7" src="afneobhr" fileName="Texture/img_267.png" xy="892,271" size="804,4" group="n25_rg6e"/>
+    <image id="n6_afne" name="n6" src="afneobhq" fileName="Texture/img_2400.png" xy="896,614" size="791,132" group="n25_rg6e"/>
+    <image id="n17_afne" name="n17" pkg="vith2b66" src="afneobhw" fileName="img_208.png" xy="890,838" size="804,52" group="n25_rg6e"/>
+    <component id="n8_afne" name="day0" src="afneobhv" fileName="Component/UISevenDay/BtnSevenDayTab.xml" xy="887,187" size="118,70" group="n25_rg6e">
       <Button title="1" titleColor="#8d6f61" titleFontSize="45" icon="ui://vith2b66afneobht" selectedIcon="ui://vith2b66afneobhs"/>
     </component>
-    <component id="n9_afne" name="day1" src="afneobhv" fileName="Component/UISevenDay/BtnSevenDayTab.xml" xy="1004,187" size="118,70">
+    <component id="n9_afne" name="day1" src="afneobhv" fileName="Component/UISevenDay/BtnSevenDayTab.xml" xy="1004,187" size="118,70" group="n25_rg6e">
       <Button title="2" titleColor="#8d6f61" titleFontSize="45" icon="ui://vith2b66afneobht" selectedIcon="ui://vith2b66afneobhs"/>
     </component>
-    <component id="n10_afne" name="day2" src="afneobhv" fileName="Component/UISevenDay/BtnSevenDayTab.xml" xy="1121,187" size="118,70">
+    <component id="n10_afne" name="day2" src="afneobhv" fileName="Component/UISevenDay/BtnSevenDayTab.xml" xy="1121,187" size="118,70" group="n25_rg6e">
       <Button title="3" titleColor="#8d6f61" titleFontSize="45" icon="ui://vith2b66afneobht" selectedIcon="ui://vith2b66afneobhs"/>
     </component>
-    <component id="n11_afne" name="day3" src="afneobhv" fileName="Component/UISevenDay/BtnSevenDayTab.xml" xy="1238,187" size="118,70">
+    <component id="n11_afne" name="day3" src="afneobhv" fileName="Component/UISevenDay/BtnSevenDayTab.xml" xy="1238,187" size="118,70" group="n25_rg6e">
       <Button title="4" titleColor="#8d6f61" titleFontSize="45" icon="ui://vith2b66afneobht" selectedIcon="ui://vith2b66afneobhs"/>
     </component>
-    <component id="n12_afne" name="day4" src="afneobhv" fileName="Component/UISevenDay/BtnSevenDayTab.xml" xy="1355,187" size="118,70">
+    <component id="n12_afne" name="day4" src="afneobhv" fileName="Component/UISevenDay/BtnSevenDayTab.xml" xy="1355,187" size="118,70" group="n25_rg6e">
       <Button title="5" titleColor="#8d6f61" titleFontSize="45" icon="ui://vith2b66afneobht" selectedIcon="ui://vith2b66afneobhs"/>
     </component>
-    <component id="n13_afne" name="day5" src="afneobhv" fileName="Component/UISevenDay/BtnSevenDayTab.xml" xy="1472,187" size="118,70">
+    <component id="n13_afne" name="day5" src="afneobhv" fileName="Component/UISevenDay/BtnSevenDayTab.xml" xy="1472,187" size="118,70" group="n25_rg6e">
       <Button title="6" titleColor="#8d6f61" titleFontSize="45" icon="ui://vith2b66afneobht" selectedIcon="ui://vith2b66afneobhs"/>
     </component>
-    <component id="n14_afne" name="day6" src="afneobhv" fileName="Component/UISevenDay/BtnSevenDayTab.xml" xy="1589,187" size="118,70">
+    <component id="n14_afne" name="day6" src="afneobhv" fileName="Component/UISevenDay/BtnSevenDayTab.xml" xy="1589,187" size="118,70" group="n25_rg6e">
       <Button title="7" titleColor="#8d6f61" titleFontSize="45" icon="ui://vith2b66afneobht" selectedIcon="ui://vith2b66afneobhs"/>
     </component>
-    <component id="n22_afne" name="task0" src="afneobhx" fileName="Component/UISevenDay/RenderSevenDayItem.xml" xy="890,284"/>
-    <component id="n23_afne" name="task1" src="afneobhx" fileName="Component/UISevenDay/RenderSevenDayItem.xml" xy="890,432"/>
-    <component id="n24_afne" name="task2" src="afneobhx" fileName="Component/UISevenDay/RenderSevenDayItem.xml" xy="890,580"/>
-    <component id="n18_afne" name="reward0" src="q5yiobc2" fileName="Component/Component/物品/ComItem1.xml" pkg="vx9zwser" xy="1353,774" size="120,120"/>
-    <component id="n19_afne" name="reward1" src="q5yiobc2" fileName="Component/Component/物品/ComItem1.xml" pkg="vx9zwser" xy="1483,774" size="120,120"/>
-    <component id="n20_afne" name="reward2" src="q5yiobc2" fileName="Component/Component/物品/ComItem1.xml" pkg="vx9zwser" xy="1613,774" size="120,120"/>
-    <text id="n21_afne" name="n21" xy="930,840" pivot="0,0.5" size="414,44" font="SimHei" fontSize="32" color="#6c6d80" vAlign="middle" leading="0" autoSize="shrink" singleLine="true" text="完成7日全部任务可获得："/>
+    <image id="n38_rg6e" name="finishDay0" src="afneobhu" fileName="Texture/img_598.png" xy="968,220" group="n25_rg6e"/>
+    <image id="n39_rg6e" name="finishDay1" src="afneobhu" fileName="Texture/img_598.png" xy="1086,221" group="n25_rg6e"/>
+    <image id="n40_rg6e" name="finishDay2" src="afneobhu" fileName="Texture/img_598.png" xy="1202,220" group="n25_rg6e"/>
+    <image id="n41_rg6e" name="finishDay3" src="afneobhu" fileName="Texture/img_598.png" xy="1319,220" group="n25_rg6e"/>
+    <image id="n42_rg6e" name="finishDay4" src="afneobhu" fileName="Texture/img_598.png" xy="1436,220" group="n25_rg6e"/>
+    <image id="n43_rg6e" name="finishDay5" src="afneobhu" fileName="Texture/img_598.png" xy="1553,220" group="n25_rg6e"/>
+    <image id="n44_rg6e" name="finishDay6" src="afneobhu" fileName="Texture/img_598.png" xy="1670,220" group="n25_rg6e"/>
+    <component id="n22_afne" name="task0" src="afneobhx" fileName="Component/UISevenDay/RenderSevenDayItem.xml" xy="890,284" group="n25_rg6e"/>
+    <component id="n23_afne" name="task1" src="afneobhx" fileName="Component/UISevenDay/RenderSevenDayItem.xml" xy="890,432" group="n25_rg6e"/>
+    <component id="n24_afne" name="task2" src="afneobhx" fileName="Component/UISevenDay/RenderSevenDayItem.xml" xy="890,580" group="n25_rg6e"/>
+    <component id="n18_afne" name="reward0" src="q5yiobc2" fileName="Component/Component/物品/ComItem1.xml" pkg="vx9zwser" xy="1353,774" size="120,120" group="n25_rg6e"/>
+    <component id="n19_afne" name="reward1" src="q5yiobc2" fileName="Component/Component/物品/ComItem1.xml" pkg="vx9zwser" xy="1483,774" size="120,120" group="n25_rg6e"/>
+    <component id="n20_afne" name="reward2" src="q5yiobc2" fileName="Component/Component/物品/ComItem1.xml" pkg="vx9zwser" xy="1613,774" size="120,120" group="n25_rg6e"/>
+    <text id="n21_afne" name="n21" xy="930,840" pivot="0,0.5" size="414,44" group="n25_rg6e" font="SimHei" fontSize="32" color="#6c6d80" vAlign="middle" leading="0" autoSize="shrink" singleLine="true" text="完成7日全部任务可获得："/>
+    <group id="n25_rg6e" name="n25" xy="163,112" size="1717,808" advanced="true">
+      <gearDisplay controller="type" pages="0"/>
+    </group>
+    <image id="n26_rg6e" name="n26" src="afneobhw" fileName="Texture/img_208.png" pkg="vx9zwser" xy="363,297" size="1308,448" group="n37_rg6e"/>
+    <loader id="n27_rg6e" name="qaTitle" xy="777,79" size="402,192" group="n37_rg6e" touchable="false" url="ui://ca43vz0erg6e7plolt" fill="scaleFree"/>
+    <loader id="n32_rg6e" name="qaBg" xy="365,298" size="1303,447" group="n37_rg6e" url="ui://ca43vz0erg6e7plolu" fill="scaleFree"/>
+    <loader id="n29_rg6e" name="qaChar" xy="186,459" size="364,481" group="n37_rg6e" touchable="false" url="ui://ca43vz0ehk7r7plohm" fill="scaleFree"/>
+    <component id="n33_rg6e" name="answer0" src="rg6eobia" fileName="Component/UISevenDay/BtnSevenDayAnswer.xml" xy="579,544" group="n37_rg6e" controller="type,1"/>
+    <component id="n35_rg6e" name="answer1" src="rg6eobia" fileName="Component/UISevenDay/BtnSevenDayAnswer.xml" xy="892,544" group="n37_rg6e" controller="type,1"/>
+    <component id="n36_rg6e" name="answer2" src="rg6eobia" fileName="Component/UISevenDay/BtnSevenDayAnswer.xml" xy="1205,544" group="n37_rg6e" controller="type,1"/>
+    <component id="n30_rg6e" name="qaClose" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1832,162" pivot="0.5,0.5" anchor="true" size="104,100" group="n37_rg6e">
+      <Button icon="ui://vith2b66rg6eobi6"/>
+    </component>
+    <component id="n31_rg6e" name="qaSkip" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="172,132" size="1617,836" group="n37_rg6e"/>
+    <text id="n28_rg6e" name="qaTip" xy="544,808" pivot="0,0.5" anchor="true" size="112,49" group="n37_rg6e" font="SimHei" fontSize="36" color="#a22d24" vAlign="middle" leading="0" singleLine="true" text="错了喵"/>
+    <group id="n37_rg6e" name="n37" xy="172,79" size="1712,889" advanced="true">
+      <gearDisplay controller="type" pages="1"/>
+    </group>
   </displayList>
 </component>

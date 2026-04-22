@@ -1,6 +1,19 @@
 {
+  "objectStatus": {
+    "n3_afne": {
+      "hidden": true
+    },
+    "n37_rg6e": {
+      "collapsed": true
+    },
+    "n26_rg6e": {
+      "hidden": true
+    }
+  },
   "designImages": [
     "ui://ca43vz0ejdu67plnwp",
-    "ui://ca43vz0eafne7plols"
+    "ui://ca43vz0eafne7plols",
+    "ui://ca43vz0ejdu67plnwj",
+    "ui://ca43vz0ejdu67plnwh"
   ]
 }

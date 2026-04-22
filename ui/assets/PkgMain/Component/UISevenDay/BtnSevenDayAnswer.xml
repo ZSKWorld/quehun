@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="249,191" extention="Button">
+  <controller name="type" exported="true" pages="0,,1,,2," selected="0"/>
+  <displayList>
+    <loader id="n33_rg6e" name="n33" xy="0,0" size="249,178" fill="scaleFree">
+      <gearIcon controller="type" pages="0,2" values="|ui://vith2b66rg6eobi9" default="ui://vith2b66rg6eobi8"/>
+    </loader>
+    <loader id="n34_rg6e" name="n34" xy="149,117" size="98,74" align="center" vAlign="middle" fill="scaleMatchHeight">
+      <gearIcon controller="type" pages="0,2" values="|ui://vith2b66rg6eobi7" default="ui://vith2b66afneobhz"/>
+    </loader>
+  </displayList>
+  <Button/>
+</component>

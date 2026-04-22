@@ -82,6 +82,19 @@ export class ActivityDO extends BaseDO implements DO.IActivityDO {
 	private _activityBuff: KeyMap<ProtoObject<IActivityBuffData>> = {};
 	private _activityInterval: KeyMap<ProtoObject<IResFetchActivityInterval_ActivityInterval>> = {};
 
+	private _sevenDayDatas: ISheetData_Activity_TaskDisplay[][];
+	get sevenDayDatas() { 
+		if (!this._sevenDayDatas) {
+			this._sevenDayDatas = [[], [], [], [], [], [], []];
+			const datas = $cfgMgr.activity.task_display[230601];
+			for (const data of datas) {
+				if (!data.task_serial_number) continue;
+				this._sevenDayDatas[data.day - 1][data.task_serial_number - 1] = data;
+			}
+		}
+		return this._sevenDayDatas;
+	 }
+
 	isRunning(activityId: number) {
 		if ($gameMgr.regionLimited) {
 			if (activityId >= 231111 && activityId <= 231126 && activityId != 231123) {
@@ -190,31 +203,31 @@ export class ActivityDO extends BaseDO implements DO.IActivityDO {
 			random_task_progress_list: activity_random_task?.progresses,
 			chest_up_data: null,
 			sns_data: null,
-			mine_data: activity.mine_data,
-			rpg_data: activity.rpg_data,
+			mine_data: activity?.mine_data,
+			rpg_data: activity?.rpg_data,
 			arena_data: null,
-			feed_data: activity.feed_data,
+			feed_data: activity?.feed_data,
 			segment_task_progress_list: activity_segment_task?.progresses,
 			vote_records: null,
-			spot_data: activity.spot_data,
-			friend_gift_data: activity.friend_gift_data,
-			upgrade_data: activity.upgrade_data,
-			gacha_data: activity.gacha_data,
-			simulation_data: activity.simulation_data,
-			combining_data: activity.combining_data,
-			village_data: activity.village_data,
-			festival_data: activity.festival_data,
-			island_data: activity.island_data,
-			story_data: activity.story_data,
-			choose_up_data: activity.choose_up_data,
+			spot_data: activity?.spot_data,
+			friend_gift_data: activity?.friend_gift_data,
+			upgrade_data: activity?.upgrade_data,
+			gacha_data: activity?.gacha_data,
+			simulation_data: activity?.simulation_data,
+			combining_data: activity?.combining_data,
+			village_data: activity?.village_data,
+			festival_data: activity?.festival_data,
+			island_data: activity?.island_data,
+			story_data: activity?.story_data,
+			choose_up_data: activity?.choose_up_data,
 			progress_reward_data: null,
-			quest_crew_data: null, //activity.quest_crew_data,
-			shoot_data: activity.shoot_data,
-			bingo_data: activity.bingo_data,
-			snowball_data: null, //activity.snowball_data,
+			quest_crew_data: null, //activity?.quest_crew_data,
+			shoot_data: activity?.shoot_data,
+			bingo_data: activity?.bingo_data,
+			snowball_data: null, //activity?.snowball_data,
 			marathon_data: null,
-			choose_group_up_data: activity.choose_group_up_data,
-			mmo_data: activity.mmo_data,
+			choose_group_up_data: activity?.choose_group_up_data,
+			mmo_data: null, //activity?.mmo_data,
 		} as ProtoObject<IResAccountActivityData>);
 	}
 
@@ -267,6 +280,7 @@ export class ActivityDO extends BaseDO implements DO.IActivityDO {
 			data.task_progress_list.forEach(v => {
 				activityData.task_progress_list[v.id] = v;
 			});
+			data.task_progress_list.length && this.dispatch(EUserEvent.OnActivityTaskProgressChanged);
 		}
 		if (data.accumulated_point_list) {
 			activityData.accumulated_point_list = data.accumulated_point_list;
@@ -278,6 +292,7 @@ export class ActivityDO extends BaseDO implements DO.IActivityDO {
 			data.flip_task_progress_list.forEach(v => {
 				activityData.flip_task_progress_list[v.id] = v;
 			});
+			data.flip_task_progress_list.length && this.dispatch(EUserEvent.OnActivityFlipTaskProgressChanged);
 		}
 		if (data.sign_in_data) {
 			activityData.sign_in_data = data.sign_in_data;
@@ -289,11 +304,13 @@ export class ActivityDO extends BaseDO implements DO.IActivityDO {
 			data.period_task_progress_list.forEach(v => {
 				activityData.period_task_progress_list[v.id] = v;
 			});
+			data.period_task_progress_list.length && this.dispatch(EUserEvent.OnActivityPeriodTaskProgressChanged);
 		}
 		if (data.random_task_progress_list) {
 			data.random_task_progress_list.forEach(v => {
 				activityData.random_task_progress_list[v.id] = v;
 			});
+			data.random_task_progress_list.length && this.dispatch(EUserEvent.OnActivityRandomTaskProgressChanged);
 		}
 		if (data.chest_up_data) {
 			activityData.chest_up_data = data.chest_up_data;
@@ -317,6 +334,7 @@ export class ActivityDO extends BaseDO implements DO.IActivityDO {
 			data.segment_task_progress_list.forEach(v => {
 				activityData.segment_task_progress_list[v.id] = v;
 			});
+			data.segment_task_progress_list.length && this.dispatch(EUserEvent.OnActivitySegmentTaskProgressChanged);
 		}
 		if (data.vote_records) {
 			activityData.vote_records = data.vote_records;

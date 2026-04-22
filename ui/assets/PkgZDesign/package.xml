@@ -1718,6 +1718,8 @@
     <image id="afneobgi" name="img_4207.png" path="/公告/"/>
     <image id="afneobgh" name="img_3826.png" path="/公告/"/>
     <image id="afne7plols" name="1.jpg" path="/七日任务/"/>
+    <image id="rg6e7plolt" name="img_3717.png" path="/11/texture/"/>
+    <image id="rg6e7plolu" name="QA_1.png" path="/七日任务/"/>
   </resources>
   <publish name=""/>
 </packageDescription>

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="813,139" designImage="ui://ca43vz0eafne7plols" designImageOffsetX="-890" designImageOffsetY="-432" designImageAlpha="24">
-  <controller name="type" pages="0,,1,,2,,3,,4," selected="4"/>
+  <controller name="type" pages="0,,1,,2,,3,,4," selected="3"/>
   <displayList>
-    <image id="n0_afne" name="n0" src="afneobhw" fileName="Texture/img_208.png" xy="0,0" size="813,139"/>
+    <image id="n0_afne" name="n0" src="afneobhw" fileName="Texture/img_208.png" xy="0,0" size="813,139" pkg="vx9zwser"/>
     <component id="n2_afne" name="item" src="afneobi1" fileName="Component/UISevenDay/ComSevenDayItem1.xml" xy="37,10"/>
     <component id="n8_afne" name="question" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="687,72" pivot="0.5,0.5" anchor="true" size="204,84">
       <gearDisplay controller="type" pages="0"/>
       <Button icon="ui://vith2b66afneobi3"/>
     </component>
-    <component id="n6_afne" name="goto" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="687,72" pivot="0.5,0.5" anchor="true" size="204,84">
+    <component id="n6_afne" name="jump" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="687,72" pivot="0.5,0.5" anchor="true" size="204,84">
       <gearDisplay controller="type" pages="1"/>
       <Button icon="ui://vith2b66afneobi2"/>
     </component>

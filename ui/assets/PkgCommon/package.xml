@@ -269,6 +269,7 @@
     <image id="ii8iobge" name="img_1725.png" path="/Texture/" exported="true"/>
     <component id="ii8iobgf" name="ComMJItem.xml" path="/Component/Component/麻将/" exported="true"/>
     <image id="afneobgg" name="img_2228.png" path="/Texture/" exported="true"/>
+    <image id="afneobhw" name="img_208.png" path="/Texture/" exported="true" scale="9grid" scale9grid="5,5,7,5"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

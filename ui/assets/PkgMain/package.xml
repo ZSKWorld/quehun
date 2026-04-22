@@ -233,15 +233,19 @@
     <image id="afneobht" name="img_2019.png" path="/Texture/"/>
     <image id="afneobhu" name="img_598.png" path="/Texture/"/>
     <component id="afneobhv" name="BtnSevenDayTab.xml" path="/Component/UISevenDay/"/>
-    <image id="afneobhw" name="img_208.png" path="/Texture/" scale="9grid" scale9grid="5,5,7,5"/>
     <component id="afneobhx" name="RenderSevenDayItem.xml" path="/Component/UISevenDay/"/>
-    <image id="afneobhz" name="img_1881.png" path="/Texture/"/>
+    <image id="afneobhz" name="img_1881.png" path="/Texture/" exported="true"/>
     <image id="afneobi0" name="img_2478.png" path="/Texture/"/>
     <component id="afneobi1" name="ComSevenDayItem1.xml" path="/Component/UISevenDay/"/>
     <image id="afneobi2" name="img_2764.png" path="/Texture/"/>
     <image id="afneobi3" name="img_2765.png" path="/Texture/"/>
     <image id="afneobi4" name="img_2356.png" path="/Texture/"/>
     <image id="8ijuobi5" name="img_2766.png" path="/Texture/"/>
+    <image id="rg6eobi6" name="img_2227.png" path="/Texture/"/>
+    <image id="rg6eobi7" name="img_1534.png" path="/Texture/" exported="true"/>
+    <image id="rg6eobi8" name="img_521.png" path="/Texture/" exported="true" scale="9grid" scale9grid="13,13,4,4"/>
+    <image id="rg6eobi9" name="img_522.png" path="/Texture/" exported="true" scale="9grid" scale9grid="13,13,4,4"/>
+    <component id="rg6eobia" name="BtnSevenDayAnswer.xml" path="/Component/UISevenDay/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

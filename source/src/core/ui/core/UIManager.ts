@@ -115,15 +115,18 @@ export class UIManager extends Singleton<UIManager>() implements IUIManager {
 		if (!viewId) return;
 		if (!$facade.hasMediator(viewId)) return;
 
+		$facade.dispatch(ENotifyConst.OnViewOpenBegin, viewId);
 		this.lockMark++;
 		await this.dealTopView(openType);
 		const mediator = this.getOrCreateMediator(viewId);
 		await this.addToView(mediator, data);
 		this.lockMark--;
+		$facade.dispatch(ENotifyConst.OnViewOpenEnd, viewId);
 	}
 
 	async closeView(viewId: EViewID, openStack = true) {
 		if (!viewId) return;
+		$facade.dispatch(ENotifyConst.OnViewCloseBegin, viewId);
 		this.lockMark++;
 		const success = await this.removeFromView(viewId, true);
 		if (success && this.isStackView(viewId) && openStack) {
@@ -133,6 +136,7 @@ export class UIManager extends Singleton<UIManager>() implements IUIManager {
 				await this.openView(this._openedStack.pop());
 		}
 		this.lockMark--;
+		$facade.dispatch(ENotifyConst.OnViewCloseEnd, viewId);
 	}
 
 	closeAllView() {
@@ -160,11 +164,19 @@ export class UIManager extends Singleton<UIManager>() implements IUIManager {
 
 	private async dealTopView(openType: EViewOpenType) {
 		if (openType == EViewOpenType.None) return;
+
 		const viewId = this._openedViews[0]?.viewId;
+
 		if (!viewId) return;
+		if (!this.isStackView(viewId)) {
+			this.closeView(viewId, false);
+			await this.dealTopView(openType);
+			return;
+		}
+
 		switch (openType) {
 			case EViewOpenType.Hide:
-				await this.removeFromView(viewId);
+				await this.removeFromView(viewId, false);
 				break;
 			case EViewOpenType.Close:
 				await this.closeView(viewId, false);
@@ -195,7 +207,7 @@ export class UIManager extends Singleton<UIManager>() implements IUIManager {
 		await mediator.view.onOpenAni?.();
 	}
 
-	private async removeFromView(viewId: EViewID, removeStack?: boolean) {
+	private async removeFromView(viewId: EViewID, removeStack: boolean) {
 		const index = this._openedViews.findIndex(v => v.viewId == viewId);
 		if (index <= -1) return false;
 		const mediator = this._openedViews[index];

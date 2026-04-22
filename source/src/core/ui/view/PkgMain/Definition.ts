@@ -36,3 +36,25 @@ export const enum EUIShopTabType {
 export const enum EUIAnnounceEvent {
 	OnTabSelectChanged = "EUIAnnounceEvent_OnTabSelectChanged",
 }
+
+export const enum EUISevenDayRenderClickEvent {
+	Question = -2,
+	Reward = -1,
+	JumpUIHelp = 1,
+	JumpUILiaoShe,
+	JumpUIShop,
+	JumpUIPaiPu,
+	JumpUIObserver,
+	JumpUIAchievement,
+	JumpUICreateRoom = 11,
+	JumpUILobby,
+	JumpUIBag,
+}
+
+export const enum EUISevenDayEvent {
+	OnTabSelectChanged = "EUISevenDayEvent_OnTabSelectChanged",
+	OnTaskBtnClick = "EUISevenDayEvent_OnTaskBtnClick",
+	OnQABtnCloseClick = "EUISevenDayEvent_OnQABtnCloseClick",
+	OnQABtnAnswerClick = "EUISevenDayEvent_OnQABtnAnswerClick",
+	OnQABtnSkipClick = "EUISevenDayEvent_OnQABtnSkipClick",
+}

@@ -453,6 +453,13 @@ declare enum ENotifyConst {
 	OBClosed = "NotifyConst_OBClosed",
 	//#endregion
 
+	//#region 页面相关
+	OnViewOpenBegin = "NotifyConst_OnViewOpenBegin",
+	OnViewOpenEnd = "NotifyConst_OnViewOpenEnd",
+	OnViewCloseBegin = "NotifyConst_OnViewCloseBegin",
+	OnViewCloseEnd = "NotifyConst_OnViewCloseEnd",
+	//#endregion
+
 	/**绑定手机号完成 */
 	BindPhoneCompleted = "NotifyConst_BindPhoneCompleted",
 	/** 登录成功 */
@@ -525,6 +532,7 @@ declare enum EUserEvent {
 	OnActivityIntervalChanged = "EUserEvent_OnActivityIntervalChanged",
 	OnActivityBuffChanged = "EUserEvent_OnActivityBuffChanged",
 	OnActivityTaskProgressChanged = "EUserEvent_OnActivityTaskProgressChanged",
+	OnActivityFlipTaskProgressChanged = "EUserEvent_OnActivityFlipTaskProgressChanged",
 	OnActivityPeriodTaskProgressChanged = "EUserEvent_OnActivityPeriodTaskProgressChanged",
 	OnActivityRandomTaskProgressChanged = "EUserEvent_OnActivityRandomTaskProgressChanged",
 	OnActivitySegmentTaskProgressChanged = "EUserEvent_OnActivitySegmentTaskProgressChanged",

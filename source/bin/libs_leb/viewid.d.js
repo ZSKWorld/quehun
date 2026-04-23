@@ -11,6 +11,7 @@ EViewID = {
 	BtnMailTabView: "BtnMailTabView",
 	BtnSevenDayAnswerView: "BtnSevenDayAnswerView",
 	BtnSevenDayTabView: "BtnSevenDayTabView",
+	BtnSevenDayView: "BtnSevenDayView",
 	BtnShopRefreshView: "BtnShopRefreshView",
 	BtnXunMiView: "BtnXunMiView",
 

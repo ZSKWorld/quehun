@@ -53,10 +53,10 @@
     <component id="n6_vwgm" name="treasure" src="vwgmj" fileName="Component/UIMain/BtnXunMi.xml" xy="1735,859" group="n7_vwgm"/>
     <group id="n7_vwgm" name="rightBottom" xy="869,859" size="1049,209"/>
     <component id="n25_exjc" name="playInfo" src="exjcobgg" fileName="Component/UIMain/ComMainPlayerInfo.xml" xy="16,13" group="n26_exjc"/>
-    <component id="n22_exjc" name="qiri" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="167,280" pivot="0.5,0.5" anchor="true" size="312,140" group="n26_exjc">
+    <component id="n22_exjc" name="qiri" src="jonfobib" fileName="Component/UIMain/BtnSevenDay.xml" xy="167,280" pivot="0.5,0.5" anchor="true" size="312,140" group="n26_exjc">
       <Button icon="ui://vith2b66vwgme"/>
     </component>
-    <component id="n24_exjc" name="report" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="120,428" pivot="0.5,0.5" anchor="true" size="147,155" group="n26_exjc">
+    <component id="n24_exjc" name="report" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="120,427" pivot="0.5,0.5" anchor="true" size="147,155" group="n26_exjc">
       <Button icon="ui://ca43vz0eexjc7plolq"/>
     </component>
     <group id="n26_exjc" name="leftTop" xy="11,13" size="497,492" advanced="true" layout="vt" excludeInvisibles="true"/>

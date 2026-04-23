@@ -246,6 +246,7 @@
     <image id="rg6eobi8" name="img_521.png" path="/Texture/" exported="true" scale="9grid" scale9grid="13,13,4,4"/>
     <image id="rg6eobi9" name="img_522.png" path="/Texture/" exported="true" scale="9grid" scale9grid="13,13,4,4"/>
     <component id="rg6eobia" name="BtnSevenDayAnswer.xml" path="/Component/UISevenDay/"/>
+    <component id="jonfobib" name="BtnSevenDay.xml" path="/Component/UIMain/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

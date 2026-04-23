@@ -4,7 +4,9 @@
   <displayList>
     <loader id="n3_108ab" name="icon" xy="0,0" size="103,165" url="ui://vith2b66vwgmk" fill="scaleFree"/>
     <text id="n4_mj5k" name="title" xy="52,91" pivot="0.5,0.5" anchor="true" size="74,48" font="ui://vx9zwserrpakobeu" fontSize="35" color="#56152b" align="center" vAlign="middle" leading="0" singleLine="true" text="公告"/>
-    <component id="n5_ea8n" name="redDot" src="ea8nobfg" fileName="Component/Component/红点/ComRedDot1.xml" pkg="vx9zwser" xy="-14,90" visible="false"/>
+    <component id="n5_ea8n" name="redDot" src="ea8nobfg" fileName="Component/Component/红点/ComRedDot1.xml" pkg="vx9zwser" xy="-14,90" visible="false">
+      <property target="icon" propertyId="1" value="ui://vx9zwserea8nobfh"/>
+    </component>
   </displayList>
-  <Button downEffect="scale" downEffectValue="0.9"/>
+  <Button downEffect="scale" downEffectValue="0.95"/>
 </component>

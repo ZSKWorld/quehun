@@ -26,6 +26,17 @@ function setEvent(name, list, func, once, args) {
 	}
 };
 
+function RDTriggerEvent(eventName) {
+	return function (target, propertyKey, descriptor) {
+		const eventMap = target._triggerEventMap = target._triggerEventMap || {};
+		const func = descriptor.value;
+		if (eventMap[eventName])
+			eventMap[eventName].push(func);
+		else
+			eventMap[eventName] = [func];
+	};
+}
+
 function ViewKeyEvent(name, key = -1, once = false, args = null) {
 	return function (target, propertyKey, descriptor) {
 		target.__viewKeyEventMap ||= {};

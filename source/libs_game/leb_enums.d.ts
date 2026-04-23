@@ -626,3 +626,54 @@ declare enum ESpineLayout {
 	Treasure_Double_R_Big = "treasure_double_r_big",
 }
 //#endregion
+
+//#region 红点相关
+/** 红点检测类型枚举 */
+declare enum ERDTriggerType {
+	/** 未读邮件红点 */
+	MailNotRead = "ERDTriggerType_MailNotRead",
+	/** 有奖励可领取邮件红点 */
+	MailHaveReward = "ERDTriggerType_MailHaveReward",
+	/** 未读公告红点 */
+	AnnouncementHaveNotRead = "ERDTriggerType_AnnouncementHaveNotRead",
+	/** 七日0有奖励可领取红点 */
+	SevenDay0HaveReward = "ERDTriggerType_SevenDay0HaveReward",
+	/** 七日1有奖励可领取红点 */
+	SevenDay1HaveReward = "ERDTriggerType_SevenDay1HaveReward",
+	/** 七日2有奖励可领取红点 */
+	SevenDay2HaveReward = "ERDTriggerType_SevenDay2HaveReward",
+	/** 七日3有奖励可领取红点 */
+	SevenDay3HaveReward = "ERDTriggerType_SevenDay3HaveReward",
+	/** 七日4有奖励可领取红点 */
+	SevenDay4HaveReward = "ERDTriggerType_SevenDay4HaveReward",
+	/** 七日5有奖励可领取红点 */
+	SevenDay5HaveReward = "ERDTriggerType_SevenDay5HaveReward",
+	/** 七日6有奖励可领取红点 */
+	SevenDay6HaveReward = "ERDTriggerType_SevenDay6HaveReward",
+}
+
+declare enum ERDName {
+	Root = "ERDName_Root",
+	Main_Mail = "ERDName_Main_Mail",
+	Main_Announcement = "ERDName_Main_Announcement",
+	Main_SevenDay = "ERDName_Main_SevenDay",
+	SevenDay_Day0 = "ERDName_SevenDay_Day0",
+	SevenDay_Day1 = "ERDName_SevenDay_Day1",
+	SevenDay_Day2 = "ERDName_SevenDay_Day2",
+	SevenDay_Day3 = "ERDName_SevenDay_Day3",
+	SevenDay_Day4 = "ERDName_SevenDay_Day4",
+	SevenDay_Day5 = "ERDName_SevenDay_Day5",
+	SevenDay_Day6 = "ERDName_SevenDay_Day6",
+
+}
+//#endregion
+
+
+
+
+
+
+
+
+
+

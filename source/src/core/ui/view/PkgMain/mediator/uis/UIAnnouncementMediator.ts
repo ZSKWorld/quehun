@@ -28,6 +28,11 @@ export class UIAnnouncementMediator extends MediatorBase<UIAnnouncementView, IUI
 	}
 
 	private onTabSelectChanged(index: number) {
-		this._curAnnouncement = $user.announcement.announcements[index];
+		const curAnn = $user.announcement.announcements[index];
+		this._curAnnouncement = curAnn;
+		if (!$user.announcement.isRead(curAnn.id)) {
+			$netMgr.requests.readAnnouncement({ announcement_id: curAnn.id });
+		}
+		this.view.refreshContent(curAnn);
 	}
 }

@@ -25,6 +25,7 @@ import RenderMailItem from "./RenderMailItem";
 import RenderHelpItem1 from "./RenderHelpItem1";
 import RenderLiaoSheDecoTab from "./RenderLiaoSheDecoTab";
 import RenderFriendRecent from "./RenderFriendRecent";
+import BtnSevenDay from "./BtnSevenDay";
 import ComLiaoSheChar from "./ComLiaoSheChar";
 import UIActivity from "./UIActivity";
 import UIMail from "./UIMail";
@@ -84,6 +85,7 @@ import { RenderMailItemView } from "../../view/PkgMain/view/renders/RenderMailIt
 import { RenderHelpItem1View } from "../../view/PkgMain/view/renders/RenderHelpItem1View";
 import { RenderLiaoSheDecoTabView } from "../../view/PkgMain/view/renders/RenderLiaoSheDecoTabView";
 import { RenderFriendRecentView } from "../../view/PkgMain/view/renders/RenderFriendRecentView";
+import { BtnSevenDayView } from "../../view/PkgMain/view/btns/BtnSevenDayView";
 import { ComLiaoSheCharView } from "../../view/PkgMain/view/coms/ComLiaoSheCharView";
 import { UIActivityView } from "../../view/PkgMain/view/uis/UIActivityView";
 import { UIMailView } from "../../view/PkgMain/view/uis/UIMailView";
@@ -146,6 +148,7 @@ export default class PkgMainBinder {
 		fgui.UIObjectFactory.setExtension(RenderHelpItem1.url, RenderHelpItem1View);
 		fgui.UIObjectFactory.setExtension(RenderLiaoSheDecoTab.url, RenderLiaoSheDecoTabView);
 		fgui.UIObjectFactory.setExtension(RenderFriendRecent.url, RenderFriendRecentView);
+		fgui.UIObjectFactory.setExtension(BtnSevenDay.url, BtnSevenDayView);
 		fgui.UIObjectFactory.setExtension(ComLiaoSheChar.url, ComLiaoSheCharView);
 		fgui.UIObjectFactory.setExtension(UIActivity.url, UIActivityView);
 		fgui.UIObjectFactory.setExtension(UIMail.url, UIMailView);

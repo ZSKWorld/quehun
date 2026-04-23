@@ -9354,7 +9354,7 @@ declare interface IReqUserComplain_GameRoundInfo extends IProto {
  */
 declare interface IReqReadAnnouncement extends IProto {
 	announcement_id: number;
-	announcement_list: number[];
+	announcement_list?: number[];
 }
 
 /**

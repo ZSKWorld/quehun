@@ -6,5 +6,8 @@
         "str_params": { "optional": true },
         "json_param": { "optional": true },
         "level": { "optional": true }
+    },
+    ".lq.ReqReadAnnouncement":{
+        "announcement_list": { "optional": true }
     }
 }

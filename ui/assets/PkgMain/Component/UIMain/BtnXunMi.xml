@@ -6,7 +6,7 @@
     <image id="n10_vwgm" name="n10" src="vwgmh" fileName="Texture/img_1332.png" xy="23,0" pivot="0.582,0.596" size="54,46"/>
     <image id="n9_vwgm" name="n9" src="vwgmi" fileName="Texture/img_582.png" xy="75,25" pivot="0.5,0.5" size="10,20" rotation="33"/>
   </displayList>
-  <Button downEffect="scale" downEffectValue="0.9"/>
+  <Button downEffect="scale" downEffectValue="0.95"/>
   <transition name="t0" options="4" autoPlay="true" autoPlayRepeat="-1">
     <item time="0" type="Size" target="n10_vwgm" tween="true" startValue="54,46" endValue="70,62" duration="4" ease="Linear"/>
     <item time="0" type="Size" target="n8_vwgm" tween="true" startValue="13,30" endValue="20,37" duration="6" ease="Linear"/>

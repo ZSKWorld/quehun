@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="50,50">
   <displayList>
-    <loader id="n0_ea8n" name="icon" xy="0,0" size="50,50" url="ui://vx9zwserea8nobfh" fill="scaleFree">
+    <loader id="n0_ea8n" name="icon" xy="0,0" pivot="0.5,0.5" size="50,50" url="ui://vx9zwserpt3aobaw" fill="scaleFree">
       <relation target="" sidePair="width-width,height-height"/>
     </loader>
   </displayList>
+  <transition name="t0" options="4" autoPlay="true" autoPlayRepeat="-1" frameRate="60">
+    <item time="0" type="Scale" target="n0_ea8n" tween="true" startValue="0.9,0.9" endValue="1.1,1.1" duration="42"/>
+    <item time="42" type="Scale" target="n0_ea8n" tween="true" startValue="1.1,1.1" endValue="0.9,0.9" duration="42" ease="Quad.In"/>
+  </transition>
   <customProperty target="icon" propertyId="1"/>
 </component>

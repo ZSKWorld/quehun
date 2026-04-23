@@ -163,7 +163,7 @@ export class UIManager extends Singleton<UIManager>() implements IUIManager {
 	}
 
 	private async dealTopView(openType: EViewOpenType) {
-		if (openType == EViewOpenType.None) return;
+		if(openType != EViewOpenType.Hide && openType != EViewOpenType.Close) return;
 
 		const viewId = this._openedViews[0]?.viewId;
 

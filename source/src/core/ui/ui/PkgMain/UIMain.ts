@@ -4,6 +4,7 @@ import { ComMatchModeView } from "../../view/PkgMain/view/coms/ComMatchModeView"
 import { BtnDengLongView } from "../../view/PkgMain/view/btns/BtnDengLongView";
 import { BtnXunMiView } from "../../view/PkgMain/view/btns/BtnXunMiView";
 import { ComMainPlayerInfoView } from "../../view/PkgMain/view/coms/ComMainPlayerInfoView";
+import { BtnSevenDayView } from "../../view/PkgMain/view/btns/BtnSevenDayView";
 import { ComCurrencyView } from "../../view/PkgCommon/view/coms/ComCurrencyView";
 
 export default class UIMain extends fgui.GComponent {
@@ -29,7 +30,7 @@ export default class UIMain extends fgui.GComponent {
 	protected btn_shop: fgui.GButton;
 	protected btn_treasure: BtnXunMiView;
 	protected com_playInfo: ComMainPlayerInfoView;
-	protected btn_qiri: fgui.GButton;
+	protected btn_qiri: BtnSevenDayView;
 	protected btn_report: fgui.GButton;
 	protected group_leftTop: fgui.GGroup;
 	protected trans_in: fgui.Transition;
@@ -62,7 +63,7 @@ export default class UIMain extends fgui.GComponent {
 		this.btn_shop = <fgui.GButton>(this.getChildAt(18));
 		this.btn_treasure = <BtnXunMiView>(this.getChildAt(19));
 		this.com_playInfo = <ComMainPlayerInfoView>(this.getChildAt(20));
-		this.btn_qiri = <fgui.GButton>(this.getChildAt(21));
+		this.btn_qiri = <BtnSevenDayView>(this.getChildAt(21));
 		this.btn_report = <fgui.GButton>(this.getChildAt(22));
 		this.group_leftTop = <fgui.GGroup>(this.getChildAt(23));
 		this.trans_in = this.getTransitionAt(0);

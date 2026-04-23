@@ -27,8 +27,11 @@ export class UIAnnouncementView extends ExtensionClass<IView, UIAnnouncement>(UI
 		}
 	}
 
+	refreshContent(announcement: ProtoObject<IAnnouncement>) {
+		this.com_content.refresh(announcement);
+	}
+
 	private onTabSelectChanged(index: number) {
-		this.com_content.refresh(this._announcements[index]);
 		this.sendEvent(EUIAnnounceEvent.OnTabSelectChanged, index);
 	}
 

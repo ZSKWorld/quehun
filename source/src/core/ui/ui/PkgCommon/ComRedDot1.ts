@@ -3,6 +3,7 @@
 export default class ComRedDot1 extends fgui.GComponent {
 
 	protected loader_icon: fgui.GLoader;
+	protected trans_t0: fgui.Transition;
 	public static url: string = "ui://vx9zwserea8nobfg";
 
 	public static createInstance(): ComRedDot1 {
@@ -11,5 +12,6 @@ export default class ComRedDot1 extends fgui.GComponent {
 
 	protected override onConstruct(): void {
 		this.loader_icon = <fgui.GLoader>(this.getChildAt(0));
+		this.trans_t0 = this.getTransitionAt(0);
 	}
 }

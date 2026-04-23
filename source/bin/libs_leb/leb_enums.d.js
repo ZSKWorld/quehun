@@ -448,3 +448,28 @@ ESpineLayout = {
 	Treasure_Double_R_Small: "treasure_double_r_small",
 	Treasure_Double_R_Big: "treasure_double_r_big",
 }
+
+ERDTriggerType = {
+	MailNotRead: "ERDTriggerType_MailNotRead",
+	MailHaveReward: "ERDTriggerType_MailHaveReward",
+	SevenDay0HaveReward: "ERDTriggerType_SevenDay0HaveReward",
+	SevenDay1HaveReward: "ERDTriggerType_SevenDay1HaveReward",
+	SevenDay2HaveReward: "ERDTriggerType_SevenDay2HaveReward",
+	SevenDay3HaveReward: "ERDTriggerType_SevenDay3HaveReward",
+	SevenDay4HaveReward: "ERDTriggerType_SevenDay4HaveReward",
+	SevenDay5HaveReward: "ERDTriggerType_SevenDay5HaveReward",
+	SevenDay6HaveReward: "ERDTriggerType_SevenDay6HaveReward",
+}
+
+ERDName = {
+	Root: "ERDName_Root",
+	Main_Mail: "ERDName_Main_Mail",
+	Main_SevenDay: "ERDName_Main_SevenDay",
+	SevenDay_Day0: "ERDName_SevenDay_Day0",
+	SevenDay_Day1: "ERDName_SevenDay_Day1",
+	SevenDay_Day2: "ERDName_SevenDay_Day2",
+	SevenDay_Day3: "ERDName_SevenDay_Day3",
+	SevenDay_Day4: "ERDName_SevenDay_Day4",
+	SevenDay_Day5: "ERDName_SevenDay_Day5",
+	SevenDay_Day6: "ERDName_SevenDay_Day6",
+}

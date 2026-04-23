@@ -27,6 +27,14 @@ export class AnnouncementDO extends BaseDO implements DO.IAnnouncementDO {
 		this.dispatch(EUserEvent.OnAnnouncementChanged);
 	}
 
+	@InterestMessage(ENetMessage.readAnnouncement)
+	private onReadAnnouncement(_, req: IReqReadAnnouncement) {
+		const announcementId = req.announcement_id;
+		if (this.isRead(announcementId)) return;
+		this._readList.push(announcementId);
+		this.dispatch(EUserEvent.OnAnnouncementChanged);
+	}
+
 	@InterestMessage(ENetNotify.NotifyAnnouncementUpdate)
 	private onAnnouncementUpdate(data: INotifyAnnouncementUpdate) {
 		for (let i = 0; i < data.update_list.length; i++) {

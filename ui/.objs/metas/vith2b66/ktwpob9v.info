@@ -1,4 +1,12 @@
 {
+  "objectStatus": {
+    "n14_exjc": {
+      "collapsed": true
+    },
+    "n15_exjc": {
+      "collapsed": true
+    }
+  },
   "designImages": [
     "ui://ca43vz0eojz47ploko",
     "ui://ca43vz0eojz47plokq"

@@ -33,7 +33,11 @@ export class UIMailMediator extends MediatorBase<UIMailView, IUIMailData> {
 	}
 
 	private onBtnGetRewardClick() {
-		$netMgr.requests.takeAttachmentFromMail({ mail_id: this._curMail.mail_id });
+		const { mail_id, attachments } = this._curMail;
+		$netMgr.requests.takeAttachmentFromMail({ mail_id }).then(res => {
+			if (res.error) return;
+			this.openView<IUIGetRewardData>(EViewID.UIGetRewardView, { rewards: attachments });
+		});
 	}
 
 	private onBtnDeleteClick() {

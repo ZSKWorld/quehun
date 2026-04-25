@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0ehdeo7plojg" designImageAlpha="73">
+<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0ehdeo7plojg" designImageAlpha="0">
   <displayList>
+    <component id="n12_pwg4" name="mask" src="w29kob8e" fileName="Component/Button/BtnIconFitNoScale.xml" pkg="vx9zwser" xy="-1040,-585" size="4000,2250" aspect="true" alpha="0.5"/>
+    <graph id="n13_pwg4" name="n13" xy="0,-1" size="1756,1030" type="polygon" lineSize="0" fillColor="#00ffffff" points="330,389,129.1885,389,130.3559,181.5682,320,180.2709,320,61,350.8231,62.08238,364.2316,78.41129,1745,78,1744.99,987.1555,1756.608,999.0919,1752,1029,1727.658,1030.108,1696.632,1022,358.0752,1022,330,997"/>
     <component id="n5_hdeo" name="n5" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" pkg="vx9zwser" xy="317,67" size="1439,965"/>
     <list id="n4_hdeo" name="rank" xy="343,192" size="1366,626" overflow="scroll" scrollBarFlags="4" margin="0,0,0,-32" scrollBarMargin="15,15,0,0" scrollBarRes="ui://vx9zwserhdeoobbj," defaultItem="ui://vith2b66hdeoobb2" autoItemSize="false" autoClearItems="true">
       <item/>

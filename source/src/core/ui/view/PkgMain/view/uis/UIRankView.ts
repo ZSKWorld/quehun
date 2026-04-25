@@ -2,7 +2,6 @@ import UIRank from "../../../../ui/PkgMain/UIRank";
 import { EUIRankType } from "../../Definition";
 
 export const enum EUIRankMsg {
-	OnBtnCloseClick = "UIRank_OnBtnCloseClick",
 }
 
 export class UIRankView extends ExtensionClass<IView, UIRank>(UIRank) implements IView {
@@ -12,8 +11,9 @@ export class UIRankView extends ExtensionClass<IView, UIRank>(UIRank) implements
 	get tabBtns() { return [this.btn_siMa, this.btn_sanMa]; }
 
 	override onCreate() {
-		const { btn_close, btn_siMa, btn_sanMa, list_rank } = this;
-		btn_close.onClick(this, this.sendEvent, [EUIRankMsg.OnBtnCloseClick]);
+		const { btn_mask, btn_close, btn_siMa, btn_sanMa, list_rank } = this;
+		btn_mask.onClick(this, this.closeSelf);
+		btn_close.onClick(this, this.closeSelf);
 	}
 
 	refreshView(type: EUIRankType, count: number) {

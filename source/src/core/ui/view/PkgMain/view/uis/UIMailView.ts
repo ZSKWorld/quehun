@@ -15,7 +15,8 @@ export class UIMailView extends ExtensionClass<IView, UIMail>(UIMail) implements
 	private get curMail() { return this._mails[this.list_tab.selectedIndex]; }
 
 	override onCreate() {
-		const { btn_back, btn_getReward, btn_delete, list_tab, list_reward } = this;
+		const { btn_mask, btn_back, btn_getReward, btn_delete, list_tab, list_reward } = this;
+		btn_mask.onClick(this, this.closeSelf);
 		btn_back.onClick(this, this.closeSelf);
 		btn_getReward.onClick(this, this.sendEvent, [EUIMailMsg.OnBtnGetRewardClick]);
 		btn_delete.onClick(this, this.sendEvent, [EUIMailMsg.OnBtnDeleteClick]);

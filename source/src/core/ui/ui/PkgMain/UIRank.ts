@@ -2,6 +2,7 @@
 
 export default class UIRank extends fgui.GComponent {
 
+	protected btn_mask: fgui.GButton;
 	protected list_rank: fgui.GList;
 	protected btn_close: fgui.GButton;
 	protected btn_siMa: fgui.GButton;
@@ -14,10 +15,11 @@ export default class UIRank extends fgui.GComponent {
 	}
 
 	protected override onConstruct(): void {
-		this.list_rank = <fgui.GList>(this.getChildAt(1));
-		this.btn_close = <fgui.GButton>(this.getChildAt(2));
-		this.btn_siMa = <fgui.GButton>(this.getChildAt(3));
-		this.btn_sanMa = <fgui.GButton>(this.getChildAt(4));
-		this.txt_title = <fgui.GTextField>(this.getChildAt(5));
+		this.btn_mask = <fgui.GButton>(this.getChildAt(0));
+		this.list_rank = <fgui.GList>(this.getChildAt(3));
+		this.btn_close = <fgui.GButton>(this.getChildAt(4));
+		this.btn_siMa = <fgui.GButton>(this.getChildAt(5));
+		this.btn_sanMa = <fgui.GButton>(this.getChildAt(6));
+		this.txt_title = <fgui.GTextField>(this.getChildAt(7));
 	}
 }

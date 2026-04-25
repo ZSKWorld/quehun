@@ -5,6 +5,7 @@ export default class UIMail extends fgui.GComponent {
 	protected ctrl_head: fgui.Controller;
 	protected ctrl_body: fgui.Controller;
 	protected ctrl_empty: fgui.Controller;
+	protected btn_mask: fgui.GButton;
 	protected loader_bg: fgui.GLoader;
 	protected btn_back: fgui.GButton;
 	protected list_tab: fgui.GList;
@@ -24,14 +25,15 @@ export default class UIMail extends fgui.GComponent {
 		this.ctrl_head = this.getControllerAt(0);
 		this.ctrl_body = this.getControllerAt(1);
 		this.ctrl_empty = this.getControllerAt(2);
-		this.loader_bg = <fgui.GLoader>(this.getChildAt(0));
-		this.btn_back = <fgui.GButton>(this.getChildAt(3));
-		this.list_tab = <fgui.GList>(this.getChildAt(11));
-		this.list_reward = <fgui.GList>(this.getChildAt(12));
-		this.label_content = <fgui.GLabel>(this.getChildAt(13));
-		this.btn_getReward = <fgui.GButton>(this.getChildAt(14));
-		this.btn_delete = <fgui.GButton>(this.getChildAt(15));
-		this.txt_title = <fgui.GTextField>(this.getChildAt(16));
-		this.txt_expire = <fgui.GTextField>(this.getChildAt(17));
+		this.btn_mask = <fgui.GButton>(this.getChildAt(0));
+		this.loader_bg = <fgui.GLoader>(this.getChildAt(2));
+		this.btn_back = <fgui.GButton>(this.getChildAt(5));
+		this.list_tab = <fgui.GList>(this.getChildAt(13));
+		this.list_reward = <fgui.GList>(this.getChildAt(14));
+		this.label_content = <fgui.GLabel>(this.getChildAt(15));
+		this.btn_getReward = <fgui.GButton>(this.getChildAt(16));
+		this.btn_delete = <fgui.GButton>(this.getChildAt(17));
+		this.txt_title = <fgui.GTextField>(this.getChildAt(18));
+		this.txt_expire = <fgui.GTextField>(this.getChildAt(19));
 	}
 }

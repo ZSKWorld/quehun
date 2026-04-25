@@ -5,7 +5,8 @@ export class UIAnnouncementView extends ExtensionClass<IView, UIAnnouncement>(UI
 	private _announcements: ProtoObject<IAnnouncement>[];
 
 	override onCreate() {
-		const { btn_close, com_tab } = this;
+		const { btn_mask, btn_close, com_tab } = this;
+		btn_mask.onClick(this, this.closeSelf);
 		btn_close.onClick(this, this.closeSelf);
 		com_tab.on(EUIAnnounceEvent.OnTabSelectChanged, this, this.onTabSelectChanged);
 	}

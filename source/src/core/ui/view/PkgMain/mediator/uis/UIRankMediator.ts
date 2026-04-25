@@ -21,8 +21,6 @@ export class UIRankMediator extends MediatorBase<UIRankView, any> {
 	}
 
 	override onAwake() {
-		this.addEvent(EUIRankMsg.OnBtnCloseClick, this.closeSelf);
-
 		const { tabBtns, listRank } = this.view;
 		listRank.on(fgui.Events.SCROLL, this, this.onListRankScroll);
 		$uiUtil.setList(listRank, true, this, this.onListLevelRender, this.onListRankItemClick);

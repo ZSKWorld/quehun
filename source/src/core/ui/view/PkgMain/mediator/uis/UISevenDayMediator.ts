@@ -6,11 +6,8 @@ export interface IUISevenDayData {
 
 }
 
-const taskId = 23060122;
-
 export class UISevenDayMediator extends MediatorBase<UISevenDayView, IUISevenDayData> {
 	private _tabIndex: number = 0;
-	private _totalRewards: number[];
 	private _qaData: ISheetData_Activity_TaskDisplay;
 	override onAwake() {
 		this.addEvent(EUISevenDayEvent.OnTabSelectChanged, this.onTabSelectChanged);
@@ -18,8 +15,6 @@ export class UISevenDayMediator extends MediatorBase<UISevenDayView, IUISevenDay
 		this.addEvent(EUISevenDayEvent.OnQABtnCloseClick, this.showTask);
 		this.addEvent(EUISevenDayEvent.OnQABtnSkipClick, this.showTask);
 		this.addEvent(EUISevenDayEvent.OnQABtnAnswerClick, this.onQABtnAnswerClick);
-
-		this._totalRewards = $cfgMgr.activity.period_task[taskId].reward.split(",").map(v => v.split("-")[0]).map(Number);
 	}
 
 	override onEnable() {
@@ -34,20 +29,21 @@ export class UISevenDayMediator extends MediatorBase<UISevenDayView, IUISevenDay
 	private showTask() {
 		this.view.setShowType(0);
 		this.refreshTask();
-		this.view.refreshRewards(this._totalRewards);
+		this.view.refreshRewards($user.activity.sevenDayDO.totalRewards);
 	}
 
 	@InterestUserEvent(EUserEvent.OnActivityPeriodTaskProgressChanged)
 	private refreshTask() {
-		const finishDays = $user.activity.sevenDayDatas.map(v => {
+		const finishDays = $user.activity.sevenDayDO.datas.map(v => {
 			return v.every(vv => $user.activity.getPeriodTaskInfo(vv.period_task_id).rewarded);
 		});
 		this.view.refreshTask(this._tabIndex, finishDays);
+		//TODO 检查总奖励可领取
 	}
 
 	private onTabSelectChanged(index) {
 		this._tabIndex = index;
-		this.view.refreshTaskItem($user.activity.sevenDayDatas[index]);
+		this.view.refreshTaskItem($user.activity.sevenDayDO.datas[index]);
 	}
 
 	private onTaskBtnClick(event: EUISevenDayRenderClickEvent, data: ISheetData_Activity_TaskDisplay) {
@@ -60,6 +56,7 @@ export class UISevenDayMediator extends MediatorBase<UISevenDayView, IUISevenDay
 
 			case EUISevenDayRenderClickEvent.Reward:
 				$netMgr.requests.completePeriodActivityTask({ task_id: data.period_task_id });
+				//TODO 显示奖励
 				break;
 
 			case EUISevenDayRenderClickEvent.JumpUIHelp:

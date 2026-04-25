@@ -1,6 +1,14 @@
 declare namespace DO {
+	interface SevenDayDO {
+		get activityId(): number;
+		get taskId(): number;
+		get totalRewards(): number[];
+		get datas(): ISheetData_Activity_TaskDisplay[][];
+		get completed(): boolean;
+	}
+
 	interface IActivityDO {
-		get sevenDayDatas(): ISheetData_Activity_TaskDisplay[][];
+		sevenDayDO: SevenDayDO;
 		isRunning(activityId: number): boolean;
 		getTaskInfo(taskId: number): ITaskProgress;
 		getTaskList(activityId: number): ITaskProgress[];

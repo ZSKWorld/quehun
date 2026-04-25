@@ -16,6 +16,7 @@ declare enum EViewID {
 	BtnXunMiView = "BtnXunMiView",
 
 	/**Renders */
+	RenderGetRewardItemView = "RenderGetRewardItemView",
 	RenderBagGiftItemView = "RenderBagGiftItemView",
 	RenderBagIllustItemView = "RenderBagIllustItemView",
 	RenderBagItemView = "RenderBagItemView",
@@ -39,6 +40,7 @@ declare enum EViewID {
 	ComBackView = "ComBackView",
 	ComCurrencyView = "ComCurrencyView",
 	ComFlowerLoadingView = "ComFlowerLoadingView",
+	ComGetRewardView = "ComGetRewardView",
 	ComHead1View = "ComHead1View",
 	ComHead2View = "ComHead2View",
 	ComHeadFrameView = "ComHeadFrameView",
@@ -72,6 +74,7 @@ declare enum EViewID {
 	UIConfirmBigView = "UIConfirmBigView",
 	UIConfirmMiddleView = "UIConfirmMiddleView",
 	UIConfirmSmallView = "UIConfirmSmallView",
+	UIGetRewardView = "UIGetRewardView",
 	UIItemDetailView = "UIItemDetailView",
 	UILoading2View = "UILoading2View",
 	UILoadingView = "UILoadingView",

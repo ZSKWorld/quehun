@@ -22,3 +22,8 @@ declare interface IUIItemDetailData {
 declare interface IUILoadingData {
 
 }
+
+
+declare interface IUIGetRewardData {
+	rewards: IRewardSlot[];
+}

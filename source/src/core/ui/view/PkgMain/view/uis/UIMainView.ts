@@ -33,6 +33,10 @@ export class UIMainView extends ExtensionClass<IView, UIMain>(UIMain) implements
 		// btn_report.onClick(this, this.openView, [EViewID.])
 	}
 
+	refreshQiRi(visible: boolean) {
+		this.btn_qiri.visible = visible;
+	}
+
 	override onOpenAni() {
 		return Promise.all([
 			$uiUtil.playTrans(this.trans_in),

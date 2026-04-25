@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1920,553" pivot="0.5,0.5" hitTest="n30_pwg4">
+  <displayList>
+    <graph id="n30_pwg4" name="n30" xy="0,0" size="1920,553" type="polygon" lineSize="0" fillColor="#00ffffff" points="0,140,615,140,615,0,1317,0,1317,139.6876,1920,140,1920,553,0,553"/>
+    <image id="n14_nng6" name="n14" src="gsi2obce" fileName="Texture/img_3793.png" xy="611,0" pivot="0.5,0.5"/>
+    <image id="n15_nng6" name="n15" src="gsi2obdp" fileName="Texture/img_114.png" xy="0,148" pivot="0.5,0.5" size="1920,401"/>
+    <image id="n16_nng6" name="n16" src="gsi2obc8" fileName="Texture/img_33.png" xy="135,428" size="1654,2">
+      <relation target="n15_nng6" sidePair="middle-middle%"/>
+    </image>
+    <image id="n17_nng6" name="n17" src="gsi2obde" fileName="Texture/img_1771.png" xy="0,142" size="1920,8">
+      <relation target="n15_nng6" sidePair="top-top"/>
+    </image>
+    <image id="n18_nng6" name="n18" src="gsi2obde" fileName="Texture/img_1771.png" xy="0,545" size="1920,8">
+      <relation target="n15_nng6" sidePair="bottom-bottom"/>
+    </image>
+    <text id="n19_nng6" name="tip" xy="968,182" pivot="0.5,0.5" anchor="true" size="10,44" fontSize="32" color="#fffbd6" align="center" vAlign="middle" leading="0" singleLine="true" text=""/>
+    <component id="n22_nng6" name="reward0" src="nng6obhy" fileName="Component/UIGetReward/RenderGetRewardItem.xml" xy="225,367" pivot="0.5,0.5" anchor="true"/>
+    <component id="n23_nng6" name="reward1" src="nng6obhy" fileName="Component/UIGetReward/RenderGetRewardItem.xml" xy="435,367" pivot="0.5,0.5" anchor="true"/>
+    <component id="n24_nng6" name="reward2" src="nng6obhy" fileName="Component/UIGetReward/RenderGetRewardItem.xml" xy="645,367" pivot="0.5,0.5" anchor="true"/>
+    <component id="n25_nng6" name="reward3" src="nng6obhy" fileName="Component/UIGetReward/RenderGetRewardItem.xml" xy="855,367" pivot="0.5,0.5" anchor="true"/>
+    <component id="n26_nng6" name="reward4" src="nng6obhy" fileName="Component/UIGetReward/RenderGetRewardItem.xml" xy="1065,367" pivot="0.5,0.5" anchor="true"/>
+    <component id="n27_nng6" name="reward5" src="nng6obhy" fileName="Component/UIGetReward/RenderGetRewardItem.xml" xy="1275,367" pivot="0.5,0.5" anchor="true"/>
+    <component id="n28_nng6" name="reward6" src="nng6obhy" fileName="Component/UIGetReward/RenderGetRewardItem.xml" xy="1485,367" pivot="0.5,0.5" anchor="true"/>
+    <component id="n29_nng6" name="reward7" src="nng6obhy" fileName="Component/UIGetReward/RenderGetRewardItem.xml" xy="1695,367" pivot="0.5,0.5" anchor="true"/>
+  </displayList>
+  <transition name="show" options="2" frameRate="60">
+    <item time="0" type="Alpha" value="1"/>
+    <item time="0" type="Alpha" target="n14_nng6" value="1"/>
+    <item time="0" type="Alpha" target="n14_nng6" value="0"/>
+    <item time="0" type="Alpha" target="n15_nng6" value="0"/>
+    <item time="0" type="Alpha" target="n16_nng6" value="0"/>
+    <item time="0" type="Alpha" target="n16_nng6" value="0"/>
+    <item time="0" type="Alpha" target="n17_nng6" value="0"/>
+    <item time="0" type="Alpha" target="n17_nng6" value="0"/>
+    <item time="0" type="Alpha" target="n18_nng6" value="0"/>
+    <item time="0" type="Alpha" target="n18_nng6" value="0"/>
+    <item time="0" type="Scale" value="1,1"/>
+    <item time="0" type="Scale" target="n14_nng6" value="0,0"/>
+    <item time="0" type="Scale" target="n14_nng6" value="1,1"/>
+    <item time="0" type="Size" target="n15_nng6" value="-,100"/>
+    <item time="0" type="Size" target="n15_nng6" value="1920,100"/>
+    <item time="9" type="Alpha" target="n14_nng6" tween="true" startValue="0" endValue="1" duration="0" ease="Linear"/>
+    <item time="9" type="Scale" target="n14_nng6" tween="true" startValue="0,0" endValue="0,0" duration="0" ease="Back.Out"/>
+    <item time="9" type="Scale" target="n14_nng6" tween="true" startValue="0,0" endValue="1,1" duration="9" ease="Back.Out"/>
+    <item time="18" type="Alpha" target="n14_nng6" value="1"/>
+    <item time="21" type="Alpha" target="n15_nng6" tween="true" startValue="0.3" endValue="1" duration="12" ease="Linear"/>
+    <item time="21" type="Alpha" target="n16_nng6" tween="true" startValue="0.3" endValue="1" duration="12" ease="Linear"/>
+    <item time="21" type="Alpha" target="n17_nng6" tween="true" startValue="0.3" endValue="1" duration="12" ease="Linear"/>
+    <item time="21" type="Alpha" target="n18_nng6" tween="true" startValue="0.3" endValue="1" duration="12" ease="Linear"/>
+    <item time="21" type="Size" target="n15_nng6" tween="true" startValue="-,50" endValue="-,401" duration="12" ease="Back.Out"/>
+  </transition>
+  <transition name="hide" frameRate="60">
+    <item time="0" type="Alpha" tween="true" startValue="1" endValue="0" duration="7" ease="Quad.In"/>
+    <item time="0" type="Scale" tween="true" startValue="1,1" endValue="1,0" duration="9" ease="Quad.In"/>
+  </transition>
+</component>

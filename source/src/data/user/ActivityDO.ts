@@ -39,6 +39,34 @@ interface IActivityData {
 	mmo_data: IActivityMMOData[];
 }
 
+class SevenDayDO implements DO.SevenDayDO {
+	private _totalRewards: number[];
+	private _datas: ISheetData_Activity_TaskDisplay[][];
+	get activityId() { return 230601; }
+	get taskId() { return 23060122; }
+	get totalRewards() {
+		if (!this._totalRewards) {
+			this._totalRewards = $cfgMgr.activity.period_task[this.taskId].reward.split(",").map(v => v.split("-")[0]).map(Number);
+		}
+		return this._totalRewards;
+	}
+	get datas() {
+		if (!this._datas) {
+			this._datas = [[], [], [], [], [], [], []];
+			const datas = $cfgMgr.activity.task_display[230601];
+			for (const data of datas) {
+				if (!data.task_serial_number) continue;
+				this._datas[data.day - 1][data.task_serial_number - 1] = data;
+			}
+		}
+		return this._datas;
+	}
+	get completed() {
+		const taskInfo = $user.activity.getPeriodTaskInfo(this.taskId);
+		return taskInfo && taskInfo.rewarded;
+	}
+}
+
 export class ActivityDO extends BaseDO implements DO.IActivityDO {
 	private _activityList: KeyMap<ProtoObject<IActivity>> = {};
 	private _activityData: IActivityData = {
@@ -82,18 +110,7 @@ export class ActivityDO extends BaseDO implements DO.IActivityDO {
 	private _activityBuff: KeyMap<ProtoObject<IActivityBuffData>> = {};
 	private _activityInterval: KeyMap<ProtoObject<IResFetchActivityInterval_ActivityInterval>> = {};
 
-	private _sevenDayDatas: ISheetData_Activity_TaskDisplay[][];
-	get sevenDayDatas() { 
-		if (!this._sevenDayDatas) {
-			this._sevenDayDatas = [[], [], [], [], [], [], []];
-			const datas = $cfgMgr.activity.task_display[230601];
-			for (const data of datas) {
-				if (!data.task_serial_number) continue;
-				this._sevenDayDatas[data.day - 1][data.task_serial_number - 1] = data;
-			}
-		}
-		return this._sevenDayDatas;
-	 }
+	sevenDayDO = new SevenDayDO();
 
 	isRunning(activityId: number) {
 		if ($gameMgr.regionLimited) {

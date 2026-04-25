@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="180,325">
+  <displayList>
+    <component id="n0_nng6" name="item" src="q5yiobc2" fileName="Component/Component/物品/ComItem1.xml" xy="18,0" size="144,144"/>
+    <text id="n1_nng6" name="count" xy="90,182" pivot="0.5,0.5" anchor="true" size="134,69" font="SimHei" fontSize="52" color="#fffbd6" align="center" vAlign="middle" leading="0" singleLine="true" text="99999"/>
+    <text id="n2_nng6" name="name" xy="0,246" pivot="0.5,0" size="180,79" fontSize="30" color="#e8e5c3" align="center" leading="0" autoSize="shrink" text="救赎立直棒救赎立直棒"/>
+  </displayList>
+</component>

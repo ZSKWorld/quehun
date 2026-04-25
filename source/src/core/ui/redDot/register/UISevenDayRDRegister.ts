@@ -24,7 +24,7 @@ export class UISevenDayRDRegister extends RDRegisterBase {
 		let triggered6 = false;
 
 		const activity = $user.activity;
-		activity.sevenDayDatas.forEach((v, i) => {
+		activity.sevenDayDO.datas.forEach((v, i) => {
 			if (v.some(vv => {
 				const taskInfo = activity.getPeriodTaskInfo(vv.period_task_id);
 				return taskInfo.achieved && !taskInfo.rewarded;

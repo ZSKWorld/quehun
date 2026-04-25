@@ -8,6 +8,7 @@ export class InitViewInfoCommand extends Command {
 		registerViewInfo(EViewID.UIConfirmBigView, UIBottom, Popup);
 		registerViewInfo(EViewID.UIConfirmMiddleView, UIBottom, Popup);
 		registerViewInfo(EViewID.UIConfirmSmallView, UIBottom, Popup);
+		registerViewInfo(EViewID.UIGetRewardView, UIBottom, Popup);
 		registerViewInfo(EViewID.UIItemDetailView, UIBottom, Popup);
 		registerViewInfo(EViewID.UILoadingView, UITop);
 		registerViewInfo(EViewID.UILoading2View, UITop);

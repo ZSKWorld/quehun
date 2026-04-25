@@ -15,6 +15,7 @@ import { BtnSevenDayAnswerView } from "../core/ui/view/PkgMain/view/btns/BtnSeve
 import { BtnSevenDayTabView } from "../core/ui/view/PkgMain/view/btns/BtnSevenDayTabView";
 import { BtnShopRefreshView } from "../core/ui/view/PkgMain/view/btns/BtnShopRefreshView";
 import { BtnXunMiView } from "../core/ui/view/PkgMain/view/btns/BtnXunMiView";
+import { RenderGetRewardItemView } from "../core/ui/view/PkgCommon/view/renders/RenderGetRewardItemView";
 import { RenderBagGiftItemView } from "../core/ui/view/PkgMain/view/renders/RenderBagGiftItemView";
 import { RenderBagIllustItemView } from "../core/ui/view/PkgMain/view/renders/RenderBagIllustItemView";
 import { RenderBagItemView } from "../core/ui/view/PkgMain/view/renders/RenderBagItemView";
@@ -36,6 +37,7 @@ import { RenderShopSkinView } from "../core/ui/view/PkgMain/view/renders/RenderS
 import { ComBackView } from "../core/ui/view/PkgCommon/view/coms/ComBackView";
 import { ComCurrencyView } from "../core/ui/view/PkgCommon/view/coms/ComCurrencyView";
 import { ComFlowerLoadingView } from "../core/ui/view/PkgCommon/view/coms/ComFlowerLoadingView";
+import { ComGetRewardView } from "../core/ui/view/PkgCommon/view/coms/ComGetRewardView";
 import { ComHeadView } from "../core/ui/view/PkgCommon/view/coms/ComHeadView";
 import { ComHead1View } from "../core/ui/view/PkgCommon/view/coms/ComHead1View";
 import { ComHead2View } from "../core/ui/view/PkgCommon/view/coms/ComHead2View";
@@ -74,6 +76,8 @@ import { UIConfirmMiddleView } from "../core/ui/view/PkgCommon/view/uis/UIConfir
 import { UIConfirmMiddleMediator } from "../core/ui/view/PkgCommon/mediator/uis/UIConfirmMiddleMediator";
 import { UIConfirmSmallView } from "../core/ui/view/PkgCommon/view/uis/UIConfirmSmallView";
 import { UIConfirmSmallMediator } from "../core/ui/view/PkgCommon/mediator/uis/UIConfirmSmallMediator";
+import { UIGetRewardView } from "../core/ui/view/PkgCommon/view/uis/UIGetRewardView";
+import { UIGetRewardMediator } from "../core/ui/view/PkgCommon/mediator/uis/UIGetRewardMediator";
 import { UIItemDetailView } from "../core/ui/view/PkgCommon/view/uis/UIItemDetailView";
 import { UIItemDetailMediator } from "../core/ui/view/PkgCommon/mediator/uis/UIItemDetailMediator";
 import { UILoadingView } from "../core/ui/view/PkgCommon/view/uis/UILoadingView";
@@ -157,6 +161,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.BtnXunMiView, EViewType.Button, BtnXunMiView);
 
 		//Renders
+		register(EViewID.RenderGetRewardItemView, EViewType.Render, RenderGetRewardItemView);
 		register(EViewID.RenderBagGiftItemView, EViewType.Render, RenderBagGiftItemView);
 		register(EViewID.RenderBagIllustItemView, EViewType.Render, RenderBagIllustItemView);
 		register(EViewID.RenderBagItemView, EViewType.Render, RenderBagItemView);
@@ -180,6 +185,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.ComBackView, EViewType.Component, ComBackView);
 		register(EViewID.ComCurrencyView, EViewType.Component, ComCurrencyView);
 		register(EViewID.ComFlowerLoadingView, EViewType.Component, ComFlowerLoadingView);
+		register(EViewID.ComGetRewardView, EViewType.Component, ComGetRewardView);
 		register(EViewID.ComHeadView, EViewType.Component, ComHeadView);
 		register(EViewID.ComHead1View, EViewType.Component, ComHead1View);
 		register(EViewID.ComHead2View, EViewType.Component, ComHead2View);
@@ -213,6 +219,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.UIConfirmBigView, EViewType.UI, UIConfirmBigView, UIConfirmBigMediator);
 		register(EViewID.UIConfirmMiddleView, EViewType.UI, UIConfirmMiddleView, UIConfirmMiddleMediator);
 		register(EViewID.UIConfirmSmallView, EViewType.UI, UIConfirmSmallView, UIConfirmSmallMediator);
+		register(EViewID.UIGetRewardView, EViewType.UI, UIGetRewardView, UIGetRewardMediator);
 		register(EViewID.UIItemDetailView, EViewType.UI, UIItemDetailView, UIItemDetailMediator);
 		register(EViewID.UILoadingView, EViewType.UI, UILoadingView, UILoadingMediator);
 		register(EViewID.UILoading2View, EViewType.UI, UILoading2View, UILoading2Mediator);

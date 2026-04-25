@@ -452,6 +452,7 @@ ESpineLayout = {
 ERDTriggerType = {
 	MailNotRead: "ERDTriggerType_MailNotRead",
 	MailHaveReward: "ERDTriggerType_MailHaveReward",
+	AnnouncementHaveNotRead: "ERDTriggerType_AnnouncementHaveNotRead",
 	SevenDay0HaveReward: "ERDTriggerType_SevenDay0HaveReward",
 	SevenDay1HaveReward: "ERDTriggerType_SevenDay1HaveReward",
 	SevenDay2HaveReward: "ERDTriggerType_SevenDay2HaveReward",
@@ -464,6 +465,7 @@ ERDTriggerType = {
 ERDName = {
 	Root: "ERDName_Root",
 	Main_Mail: "ERDName_Main_Mail",
+	Main_Announcement: "ERDName_Main_Announcement",
 	Main_SevenDay: "ERDName_Main_SevenDay",
 	SevenDay_Day0: "ERDName_SevenDay_Day0",
 	SevenDay_Day1: "ERDName_SevenDay_Day1",

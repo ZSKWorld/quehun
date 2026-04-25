@@ -174,7 +174,7 @@
     <image id="gsi2obdm" name="img_1302.png" path="/Texture/" exported="true"/>
     <image id="gsi2obdn" name="img_1301.png" path="/Texture/" exported="true"/>
     <image id="gsi2obdo" name="img_1261.png" path="/Texture/" exported="true"/>
-    <image id="gsi2obdp" name="img_114.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obdp" name="img_114.png" path="/Texture/" exported="true" scale="9grid" scale9grid="4,4,2,2"/>
     <image id="gsi2obdq" name="img_1127.png" path="/Texture/" exported="true"/>
     <image id="gsi2obdr" name="img_1060.png" path="/Texture/" exported="true"/>
     <image id="gsi2obds" name="img_1027.png" path="/Texture/" exported="true"/>
@@ -270,6 +270,9 @@
     <component id="ii8iobgf" name="ComMJItem.xml" path="/Component/Component/麻将/" exported="true"/>
     <image id="afneobgg" name="img_2228.png" path="/Texture/" exported="true"/>
     <image id="afneobhw" name="img_208.png" path="/Texture/" exported="true" scale="9grid" scale9grid="5,5,7,5"/>
+    <component id="nng6obhx" name="UIGetReward.xml" path="/" exported="true"/>
+    <component id="nng6obhy" name="RenderGetRewardItem.xml" path="/Component/UIGetReward/"/>
+    <component id="nng6obi1" name="ComGetReward.xml" path="/Component/UIGetReward/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

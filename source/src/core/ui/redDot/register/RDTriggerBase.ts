@@ -1,9 +1,9 @@
 import { Observer } from "../../../mvc/provider/Observer";
 
-export abstract class RDRegisterBase extends Observer implements IRDRegister {
+export abstract class RDTriggerBase extends Observer implements IRDTrigger {
 	private _triggerEventMap: KeyMap<Function[]>;
 
-	get rdInfos(): IRDRegisterInfo[] {
+	get rdInfos(): IRDTriggerInfo[] {
 		return [];
 	}
 

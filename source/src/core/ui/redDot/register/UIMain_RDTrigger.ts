@@ -1,7 +1,7 @@
-import { RDRegisterBase } from "./RDRegisterBase";
+import { RDTriggerBase } from "./RDTriggerBase";
 
-export class UIMainRDRegister extends RDRegisterBase {
-	override get rdInfos(): IRDRegisterInfo[] {
+export class UIMain_RDTrigger extends RDTriggerBase {
+	override get rdInfos(): IRDTriggerInfo[] {
 		return [
 			[ERDName.Main_SevenDay, ERDName.Root, "UIBottom.UIMainView.qiri"],
 			[ERDName.Main_Mail, ERDName.Root, "UIBottom.UIMainView.mail", [ERDTriggerType.MailNotRead, ERDTriggerType.MailHaveReward]],

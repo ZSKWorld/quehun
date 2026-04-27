@@ -29,7 +29,7 @@ export class UISevenDayMediator extends MediatorBase<UISevenDayView, IUISevenDay
 	private showTask() {
 		this.view.setShowType(0);
 		this.refreshTask();
-		this.view.refreshRewards($user.activity.sevenDayDO.totalRewards);
+		this.view.refreshRewards($user.activity.sevenDayDO.finishedRewards);
 	}
 
 	@InterestUserEvent(EUserEvent.OnActivityPeriodTaskProgressChanged)
@@ -38,12 +38,20 @@ export class UISevenDayMediator extends MediatorBase<UISevenDayView, IUISevenDay
 			return v.every(vv => $user.activity.getPeriodTaskInfo(vv.period_task_id).rewarded);
 		});
 		this.view.refreshTask(this._tabIndex, finishDays);
+		this.checkFinishedRewards();
 		//TODO 检查总奖励可领取
 	}
 
-	private onTabSelectChanged(index) {
+	private onTabSelectChanged(index: number) {
 		this._tabIndex = index;
 		this.view.refreshTaskItem($user.activity.sevenDayDO.datas[index]);
+	}
+
+	@InterestMessage(ENetMessage.completePeriodActivityTask)
+	private onCompletePeriodActivityTask(_, req: IReqCompleteActivityTask) {
+		const cfgPeriodTask = $cfgMgr.activity.period_task[req.task_id];
+		const rewards = cfgPeriodTask.reward.split2Num("-");
+		this.openView<IUIGetRewardData>(EViewID.UIGetRewardView, { rewards: [{ id: rewards[0], count: rewards[1] }] });
 	}
 
 	private onTaskBtnClick(event: EUISevenDayRenderClickEvent, data: ISheetData_Activity_TaskDisplay) {
@@ -56,7 +64,6 @@ export class UISevenDayMediator extends MediatorBase<UISevenDayView, IUISevenDay
 
 			case EUISevenDayRenderClickEvent.Reward:
 				$netMgr.requests.completePeriodActivityTask({ task_id: data.period_task_id });
-				//TODO 显示奖励
 				break;
 
 			case EUISevenDayRenderClickEvent.JumpUIHelp:
@@ -116,5 +123,9 @@ export class UISevenDayMediator extends MediatorBase<UISevenDayView, IUISevenDay
 			const cfgBaseTask = $cfgMgr.events.base_task[cfgPeriodTask.base_task_id];
 			$netMgr.requests.taskRequest({ params: cfgBaseTask.param.filter(v => !!v).map(Number) });
 		}
+	}
+
+	private checkFinishedRewards() {
+
 	}
 }

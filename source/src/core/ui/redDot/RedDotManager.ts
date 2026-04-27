@@ -1,6 +1,6 @@
 import { Observer } from "../../mvc/provider/Observer";
 import { RedDotNode } from "./RedDotNode";
-import { RDRegisterManager } from "./register/RDRegisterManager";
+import { RDTriggerManager } from "./register/RDTriggerManager";
 
 export class RedDotManager extends Observer implements IRedDotManager {
 	private static _inst: RedDotManager;
@@ -32,8 +32,8 @@ export class RedDotManager extends Observer implements IRedDotManager {
 	@InterestNotify(ENotifyConst.OnInitGameCompleted)
 	private onInitGameCompleted() {
 		const rdMap = this._rdMap;
-		const rdRegisters = RDRegisterManager.getRDRegisters();
-		const rdInfos = rdRegisters.reduce((pre, cur) => pre.concat(cur.rdInfos), [] as IRDRegisterInfo[]);
+		const rdRegisters = RDTriggerManager.getTriggers();
+		const rdInfos = rdRegisters.reduce((pre, cur) => pre.concat(cur.rdInfos), [] as IRDTriggerInfo[]);
 		while (rdInfos.length > 0) {
 			const info = rdInfos.shift();
 			const parentName = info[1];

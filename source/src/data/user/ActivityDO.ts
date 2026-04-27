@@ -44,7 +44,7 @@ class SevenDayDO implements DO.SevenDayDO {
 	private _datas: ISheetData_Activity_TaskDisplay[][];
 	get activityId() { return 230601; }
 	get taskId() { return 23060122; }
-	get totalRewards() {
+	get finishedRewards() {
 		if (!this._totalRewards) {
 			this._totalRewards = $cfgMgr.activity.period_task[this.taskId].reward.split(",").map(v => v.split("-")[0]).map(Number);
 		}

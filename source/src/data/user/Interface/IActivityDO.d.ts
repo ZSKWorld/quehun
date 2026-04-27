@@ -2,7 +2,7 @@ declare namespace DO {
 	interface SevenDayDO {
 		get activityId(): number;
 		get taskId(): number;
-		get totalRewards(): number[];
+		get finishedRewards(): number[];
 		get datas(): ISheetData_Activity_TaskDisplay[][];
 		get completed(): boolean;
 	}

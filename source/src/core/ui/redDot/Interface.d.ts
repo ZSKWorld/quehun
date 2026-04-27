@@ -16,10 +16,10 @@ declare interface IRedDotNode {
 	recover(): void;
 }
 
-declare type IRDRegisterInfo = [ERDName, ERDName?, string?, ERDTriggerType[]?];
-declare interface IRDRegister {
+declare type IRDTriggerInfo = [ERDName, ERDName?, string?, ERDTriggerType[]?];
+declare interface IRDTrigger {
 	/** [name, parentName, path, triggers] */
-	get rdInfos(): IRDRegisterInfo[];
+	get rdInfos(): IRDTriggerInfo[];
 }
 
 declare interface IRedDotManager {

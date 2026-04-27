@@ -1,7 +1,7 @@
-import { RDRegisterBase } from "./RDRegisterBase";
+import { RDTriggerBase } from "./RDTriggerBase";
 
-export class UISevenDayRDRegister extends RDRegisterBase {
-	override get rdInfos(): IRDRegisterInfo[] {
+export class UISevenDay_RDTrigger extends RDTriggerBase {
+	override get rdInfos(): IRDTriggerInfo[] {
 		return [
 			[ERDName.SevenDay_Day0, ERDName.Main_SevenDay, "UIBottom.UISevenDayView.day0", [ERDTriggerType.SevenDay0HaveReward]],
 			[ERDName.SevenDay_Day1, ERDName.Main_SevenDay, "UIBottom.UISevenDayView.day1", [ERDTriggerType.SevenDay1HaveReward]],

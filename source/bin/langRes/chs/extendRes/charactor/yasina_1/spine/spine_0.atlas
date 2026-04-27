@@ -1,6 +1,6 @@
 yasina_1_1.png
 size:2048,2048
-filter:Linear,Linear
+filter:MipMapLinearLinear,Linear
 scale:0.5
 0jy_e1
 bounds:70,2005,12,8
@@ -954,7 +954,7 @@ rotate:180
 
 yasina_1_1_2.png
 size:2048,2044
-filter:Linear,Linear
+filter:MipMapLinearLinear,Linear
 scale:0.5
 SF/A1
 bounds:930,1770,270,231
@@ -1361,7 +1361,7 @@ offsets:0,3,77,71
 
 yasina_1_1_3.png
 size:1492,580
-filter:Linear,Linear
+filter:MipMapLinearLinear,Linear
 scale:0.5
 bu_back5
 bounds:2,256,134,117

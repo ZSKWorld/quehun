@@ -1,6 +1,6 @@
 yasina_1_2.png
 size:1096,824
-filter:Linear,Linear
+filter:MipMapLinearLinear,Linear
 scale:0.5
 yezi1
 bounds:2,2,521,506

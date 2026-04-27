@@ -52,12 +52,12 @@ export class UIMailView extends ExtensionClass<IView, UIMail>(UIMail) implements
 
 	private onListTabItemClick(_, __, index: number) {
 		const data = this.curMail;
-		const { ctrl_body, txt_title, label_content, list_reward, txt_expire } = this;
+		const { ctrl_body, txt_title, label_content, list_reward, txt_expire, img_time } = this;
 		ctrl_body.selectedIndex = data.attachments.length > 0 ? (data.take_attachment ? 2 : 1) : 0;
 		txt_title.text = $gameUtil.getI18nContext(data.title_i18n, data.title);
 		label_content.text = $gameUtil.getI18nContext(data.content_i18n, data.content);
 		list_reward.numItems = data.attachments.length;
-		txt_expire.visible = data.expire_time > 0;
+		img_time.visible = txt_expire.visible = data.expire_time > 0;
 		txt_expire.text = this.getExpireDesc(data.expire_time - $timeUtil.second);
 
 		this.sendEvent(EUIMailMsg.OnTabSelectChanged, index);

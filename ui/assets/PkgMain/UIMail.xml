@@ -27,7 +27,7 @@
     <image id="n12_hk7r" name="n12" src="mde1b7e" fileName="Texture/img_544.png" pkg="vx9zwser" xy="680,670" size="960,160" group="n22_hk7r">
       <gearDisplay controller="body" pages="2,3"/>
     </image>
-    <image id="n19_hk7r" name="n19" src="hk7robb0" fileName="Texture/img_402.png" pkg="vx9zwser" xy="1009,970" group="n22_hk7r">
+    <image id="n19_hk7r" name="time" src="hk7robb0" fileName="Texture/img_402.png" pkg="vx9zwser" xy="1009,970" group="n22_hk7r">
       <relation target="n20_hk7r" sidePair="left-left"/>
     </image>
     <list id="n9_pt3a" name="tab" xy="254,190" size="352,800" group="n22_hk7r" overflow="scroll" lineGap="-6" defaultItem="ui://vith2b66pt3aobb0" autoClearItems="true">

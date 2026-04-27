@@ -8,6 +8,7 @@ export default class UIMail extends fgui.GComponent {
 	protected btn_mask: fgui.GButton;
 	protected loader_bg: fgui.GLoader;
 	protected btn_back: fgui.GButton;
+	protected img_time: fgui.GImage;
 	protected list_tab: fgui.GList;
 	protected list_reward: fgui.GList;
 	protected label_content: fgui.GLabel;
@@ -28,6 +29,7 @@ export default class UIMail extends fgui.GComponent {
 		this.btn_mask = <fgui.GButton>(this.getChildAt(0));
 		this.loader_bg = <fgui.GLoader>(this.getChildAt(2));
 		this.btn_back = <fgui.GButton>(this.getChildAt(5));
+		this.img_time = <fgui.GImage>(this.getChildAt(12));
 		this.list_tab = <fgui.GList>(this.getChildAt(13));
 		this.list_reward = <fgui.GList>(this.getChildAt(14));
 		this.label_content = <fgui.GLabel>(this.getChildAt(15));

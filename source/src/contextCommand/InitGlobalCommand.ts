@@ -80,7 +80,9 @@ export class InitGlobalCommand extends Command {
 
 		$windowImmit("$langRes", function (url: string) {
 			if (!url) return url;
-			return EConstDefine.LangResDir + $gameMgr.language + "/" + url;
+			const prefix = EConstDefine.LangResDir + $gameMgr.language + "/";
+			if (url.startsWith(prefix)) return url;
+			return prefix + url;
 		});
 
 		$windowImmit("$langCfg", function (obj: object, key: string) {

@@ -36,6 +36,21 @@ export class ItemUtil extends Singleton<ItemUtil>() implements IItemUtil {
 				if (characterCfg) {
 					name = $langCfg(characterCfg, "name");
 					desc = $langCfg(characterCfg, "desc_item");
+					const skinCfg = $cfgMgr.item_definition.skin[characterCfg.init_skin];
+					if (skinCfg) {
+						icon = skinCfg.path + "/bighead.png";
+						itemIcon = icon;
+
+						skinInfo.bighead = $langRes(icon);
+						skinInfo.full = $langRes(skinCfg.path + "/full.png");
+						skinInfo.half = $langRes(skinCfg.path + "/half.png");
+						skinInfo.smallhead = $langRes(skinCfg.path + "/smallhead.png");
+						skinInfo.smallhead1 = $langRes(skinCfg.path + "/smallhead1.png");
+						skinInfo.smallhead2 = $langRes(skinCfg.path + "/smallhead2.png");
+						skinInfo.smallhead3 = $langRes(skinCfg.path + "/smallhead3.png");
+						skinInfo.waitingroom = $langRes(skinCfg.path + "/waitingroom.png");
+						skinInfo.x = $langRes(skinCfg.path + "/x.png");
+					}
 				}
 				break;
 			case EItemType.Item:
@@ -84,7 +99,12 @@ export class ItemUtil extends Singleton<ItemUtil>() implements IItemUtil {
 			case EItemType.Skin:
 				const skinCfg = $cfgMgr.item_definition.skin[id];
 				if (skinCfg) {
-					skinInfo.bighead = $langRes(skinCfg.path + "/bighead.png");
+					name = $langCfg(skinCfg, "name");
+					desc = $langCfg(skinCfg, "desc");
+					icon = skinCfg.path + "/bighead.png";
+					itemIcon = icon;
+
+					skinInfo.bighead = $langRes(icon);
 					skinInfo.full = $langRes(skinCfg.path + "/full.png");
 					skinInfo.half = $langRes(skinCfg.path + "/half.png");
 					skinInfo.smallhead = $langRes(skinCfg.path + "/smallhead.png");
@@ -94,18 +114,15 @@ export class ItemUtil extends Singleton<ItemUtil>() implements IItemUtil {
 					skinInfo.waitingroom = $langRes(skinCfg.path + "/waitingroom.png");
 					skinInfo.x = $langRes(skinCfg.path + "/x.png");
 
-					name = $langCfg(skinCfg, "name");
-					icon = skinInfo.bighead;
-					desc = $langCfg(skinCfg, "desc");
 				}
 				break;
 			case EItemType.Title:
 				const titleCfg = $cfgMgr.item_definition.title[id];
 				if (titleCfg) {
 					name = $langCfg(titleCfg, "name");
+					desc = $langCfg(titleCfg, "desc");
 					icon = titleCfg.icon;
 					itemIcon = titleCfg.icon_item;
-					desc = $langCfg(titleCfg, "desc");
 				}
 				break;
 			case EItemType.FuncItem:

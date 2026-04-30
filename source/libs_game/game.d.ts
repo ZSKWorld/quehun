@@ -92,7 +92,7 @@ declare function $richText(text?: string): IRichText;
 /** 本地化文本， str.str表 */
 declare function $lang(id: number, ...args: any[]): string;
 /** 本地化网络文本，info.error表 */
-declare function $netLang(id: number, ...args: any[]): string;
+declare function $langNet(id: number, ...args: any[]): string;
 /** 本地化资源，bin/langRes/xx/下的资源 */
 declare function $langRes(url: string): string;
 /** 本地化表字段 */

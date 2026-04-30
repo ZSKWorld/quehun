@@ -89,7 +89,7 @@ export class NetManager extends Singleton<NetManager>() implements INetManager {
 		} else if (code == 503) {
 			//账号待删除
 		} else {
-			const errStr = $netLang(code) || $lang(2068);
+			const errStr = $langNet(code) || $lang(2068);
 			$confirmSma(2, errStr);
 		}
 	}

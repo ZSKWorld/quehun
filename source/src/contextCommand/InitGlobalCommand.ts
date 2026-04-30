@@ -63,7 +63,7 @@ export class InitGlobalCommand extends Command {
 			return s;
 		});
 
-		$windowImmit("$netLang", function (id: number, ...args: any[]) {
+		$windowImmit("$langNet", function (id: number, ...args: any[]) {
 			const d_excel = $cfgMgr.info.error[id];
 			let s = "";
 			if (d_excel) {
@@ -92,7 +92,7 @@ export class InitGlobalCommand extends Command {
 		$windowImmit("$showNetError", function (error: IError) {
 			if (!error) return;
 			const code = error.code;
-			const errStr = $netLang(code) || $lang(2068);
+			const errStr = $langNet(code) || $lang(2068);
 			$confirmSma(2, errStr);
 		});
 

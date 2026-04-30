@@ -453,6 +453,9 @@ window.Laya = (function (exports) {
             this.y = 0;
             this.z = 0;
         }
+        toString() {
+            return `{x:${this.x}, y:${this.y}, z:${this.z}}`;
+        }
     }
     Vector3.ZERO = new Vector3(0.0, 0.0, 0.0);
     Vector3.ONE = new Vector3(1.0, 1.0, 1.0);
@@ -795,7 +798,7 @@ window.Laya = (function (exports) {
 
     class LayaEnv {
     }
-    LayaEnv.version = "3.4.0-beta.1";
+    LayaEnv.version = "3.4.0-beta.3";
     LayaEnv.isPlaying = true;
     LayaEnv.isPreview = false;
     LayaEnv.isConch = window ? (window.conch != null) : false;
@@ -1707,6 +1710,11 @@ window.Laya = (function (exports) {
         }
         _disposeResource() {
         }
+        unmanaged() {
+            this.lock = true;
+            delete Resource._idResourcesMap[this._id];
+            return this;
+        }
         destroy() {
             if (this._destroyed)
                 return;
@@ -2130,7 +2138,7 @@ window.Laya = (function (exports) {
                 };
                 if (async != null)
                     script.async = async;
-                script.src = URL.postFormatURL(URL.formatURL(src));
+                script.src = URL$1.postFormatURL(URL$1.formatURL(src));
                 Browser.document.body.appendChild(script);
             });
         }
@@ -2613,7 +2621,7 @@ window.Laya = (function (exports) {
     }
     AssetDb.inst = new AssetDb();
 
-    class URL {
+    class URL$1 {
         static initMiniGameExtensionOverrides() {
             if (LayaEnv.isPreview)
                 return;
@@ -2622,8 +2630,8 @@ window.Laya = (function (exports) {
             this.usingSafeFileExts = true;
         }
         constructor(url) {
-            this._url = URL.formatURL(url);
-            this._path = URL.getPath(url);
+            this._url = URL$1.formatURL(url);
+            this._path = URL$1.getPath(url);
         }
         get url() {
             return this._url;
@@ -2632,14 +2640,14 @@ window.Laya = (function (exports) {
             return this._path;
         }
         static get rootPath() {
-            return URL.basePaths["~/"];
+            return URL$1.basePaths["~/"];
         }
         static set rootPath(value) {
-            URL.basePaths["~/"] = value;
+            URL$1.basePaths["~/"] = value;
         }
         static formatURL(url, base) {
             if (!url)
-                return base || URL.basePath || "";
+                return base || URL$1.basePath || "";
             if (url.startsWith("res://")) {
                 let uuid = url.substring(6);
                 let url2 = AssetDb.inst.UUID_to_URL(uuid);
@@ -2648,35 +2656,47 @@ window.Laya = (function (exports) {
                 url = url2;
             }
             if (url.indexOf(":") == -1 && url.charCodeAt(0) !== 47) {
-                let url2 = URL.urlMapping[url];
-                if (url2)
+                let url2 = URL$1.urlMapping[url];
+                let isBr;
+                if (url2) {
+                    if (url2.endsWith("wasm.br")) {
+                        url2 = url2.substring(0, url2.length - 3);
+                        isBr = true;
+                    }
                     url = url2;
-                if (URL.customFormat != null)
-                    url = URL.customFormat(url);
-                let ver = URL.version[url];
-                if (ver != null) {
-                    let i = url.lastIndexOf(".");
-                    url = url.substring(0, i) + "-" + ver + url.substring(i);
                 }
+                if (URL$1.customFormat != null)
+                    url = URL$1.customFormat(url);
+                let ver = URL$1.version[url];
+                if (ver != null) {
+                    if (ver == "")
+                        url += "?v=" + Date.now();
+                    else {
+                        let i = url.lastIndexOf(".");
+                        url = url.substring(0, i) + "-" + ver + url.substring(i);
+                    }
+                }
+                if (isBr)
+                    url += ".br";
                 if (base == null) {
-                    base = URL.basePath;
-                    for (let k in URL.basePaths) {
+                    base = URL$1.basePath;
+                    for (let k in URL$1.basePaths) {
                         if (url.startsWith(k)) {
                             if (k.charCodeAt(0) === 126)
                                 url = url.substring(k.length);
-                            base = URL.basePaths[k];
+                            base = URL$1.basePaths[k];
                             break;
                         }
                     }
                 }
-                url = URL.join(base, url);
+                url = URL$1.join(base, url);
             }
             return url;
         }
         static postFormatURL(url) {
-            if (URL.hasExtOverrides) {
+            if (URL$1.hasExtOverrides) {
                 let extold = Utils.getFileExtension(url);
-                let ext = URL.overrideFileExts[extold];
+                let ext = URL$1.overrideFileExts[extold];
                 if (ext != null)
                     url = Utils.replaceFileExtension(url, ext);
             }
@@ -2728,7 +2748,7 @@ window.Laya = (function (exports) {
                         path = base + path;
                 }
             }
-            return URL.normalize(path);
+            return URL$1.normalize(path);
         }
         static getPath(url) {
             var ofs = url.lastIndexOf('/');
@@ -2744,25 +2764,25 @@ window.Laya = (function (exports) {
         }
         static overrideExtension(originalExts, targetExt, miniGameOnly) {
             if (miniGameOnly) {
-                if (!URL.usingSafeFileExts) {
+                if (!URL$1.usingSafeFileExts) {
                     for (let ext of originalExts)
-                        URL.safeFileExtConversionMap[ext] = targetExt;
+                        URL$1.safeFileExtConversionMap[ext] = targetExt;
                     return;
                 }
             }
             for (let ext of originalExts)
-                URL.overrideFileExts[ext] = targetExt;
-            URL.hasExtOverrides = true;
+                URL$1.overrideFileExts[ext] = targetExt;
+            URL$1.hasExtOverrides = true;
         }
     }
-    URL.version = {};
-    URL.basePath = "";
-    URL.basePaths = {};
-    URL.urlMapping = {};
-    URL.overrideFileExts = {};
-    URL.hasExtOverrides = false;
-    URL.usingSafeFileExts = false;
-    URL.safeFileExtConversionMap = {
+    URL$1.version = {};
+    URL$1.basePath = "";
+    URL$1.basePaths = {};
+    URL$1.urlMapping = {};
+    URL$1.overrideFileExts = {};
+    URL$1.hasExtOverrides = false;
+    URL$1.usingSafeFileExts = false;
+    URL$1.safeFileExtConversionMap = {
         "rendertexture": "rt.json",
         "videotexture": "rt.json",
         "controller": "controller.json",
@@ -2775,7 +2795,8 @@ window.Laya = (function (exports) {
         "lavm": "lavm.json",
         "bp": "bp.json",
         "tres": "tres.json",
-        "lensflare": "lensflare.json"
+        "lensflare": "lensflare.json",
+        "tex2darray": "tex2darray.json",
     };
 
     class Rectangle {
@@ -3307,7 +3328,7 @@ window.Laya = (function (exports) {
             let dic = AtlasInfoManager._fileLoadDic;
             for (let key in data) {
                 let arr = data[key];
-                let prefix = URL.formatURL(arr[0]);
+                let prefix = URL$1.formatURL(arr[0]);
                 let frames = arr[1];
                 let len = frames.length;
                 let entry = { url: key };
@@ -3317,7 +3338,7 @@ window.Laya = (function (exports) {
             }
         }
         static addAtlas(atlasUrl, prefix, frames, allowOverride) {
-            prefix = URL.formatURL(prefix);
+            prefix = URL$1.formatURL(prefix);
             if (allowOverride == null)
                 allowOverride = true;
             let dic = AtlasInfoManager._fileLoadDic;
@@ -3355,6 +3376,11 @@ window.Laya = (function (exports) {
             }
         }
         static load(url, options) {
+            try {
+                url = new URL(url, document.baseURI).href;
+            }
+            catch (e) {
+            }
             let callbacks = WorkerLoader._queue[url];
             if (callbacks) {
                 return new Promise((resolve, reject) => {
@@ -4362,7 +4388,7 @@ window.Laya = (function (exports) {
                 !options.silent && Loader.warnFailed(url, type ? `unsupported load type:${type}` : !url.startsWith("res://") ? `unsupported suffix` : "", (_a = options.initiator) === null || _a === void 0 ? void 0 : _a.url);
                 return Promise.resolve(null);
             }
-            let formattedUrl = URL.formatURL(url);
+            let formattedUrl = URL$1.formatURL(url);
             if (options.group) {
                 let set = Loader.groupMap[options.group];
                 if (!set)
@@ -4500,7 +4526,7 @@ window.Laya = (function (exports) {
             return AssetDb.inst.resolveURL(url).then(url => {
                 if (url)
                     return new Promise((resolve) => {
-                        task.url = URL.formatURL(url);
+                        task.url = URL$1.formatURL(url);
                         task.onComplete = resolve;
                         this.queueToDownload(task);
                     });
@@ -4528,7 +4554,7 @@ window.Laya = (function (exports) {
             this._downloadings.add(item);
             LayaGL.statAgent.recordCountData(exports.StatElement.C_LoadRequestCount, 1);
             item.startTime = performance.now();
-            let url = URL.postFormatURL(item.url);
+            let url = URL$1.postFormatURL(item.url);
             if (item.contentType == "image") {
                 let preloadedContent = Loader.preLoadedMap[item.url];
                 if (preloadedContent) {
@@ -4650,7 +4676,7 @@ window.Laya = (function (exports) {
                 console.warn(msg);
         }
         static getRes(url, type) {
-            url = URL.formatURL(url);
+            url = URL$1.formatURL(url);
             let ret = Loader._getRes(url, type);
             return ret || null;
         }
@@ -4697,7 +4723,7 @@ window.Laya = (function (exports) {
             return (_a = Loader.getRes(url)) === null || _a === void 0 ? void 0 : _a.create();
         }
         static cacheRes(url, data, type) {
-            url = URL.formatURL(url);
+            url = URL$1.formatURL(url);
             let urlInfo = Loader.getURLInfo(url, type);
             if (urlInfo.typeId != null)
                 Loader._cacheRes(url, data, urlInfo.typeId, urlInfo.main);
@@ -4728,11 +4754,11 @@ window.Laya = (function (exports) {
             Loader.cacheRes(url, data, type);
         }
         static clearRes(url, checkObj) {
-            url = URL.formatURL(url);
+            url = URL$1.formatURL(url);
             Loader._clearRes(url, checkObj);
         }
         clearRes(url, checkObj) {
-            url = URL.formatURL(url);
+            url = URL$1.formatURL(url);
             Loader._clearRes(url, checkObj);
         }
         static _clearRes(url, checkObj) {
@@ -4778,7 +4804,7 @@ window.Laya = (function (exports) {
             }
         }
         clearTextureRes(url) {
-            url = URL.formatURL(url);
+            url = URL$1.formatURL(url);
             let entry = Loader.loadedMap[url];
             if (!entry)
                 return;
@@ -4792,7 +4818,7 @@ window.Laya = (function (exports) {
             }
         }
         static setGroup(url, group) {
-            url = URL.formatURL(url);
+            url = URL$1.formatURL(url);
             let set = Loader.groupMap[group];
             if (!set)
                 set = Loader.groupMap[group] = new Set();
@@ -4821,7 +4847,7 @@ window.Laya = (function (exports) {
             }
         }
         cancelLoadByUrl(url) {
-            url = URL.formatURL(url);
+            url = URL$1.formatURL(url);
             let i = this._queue.findIndex(item => item.url == url);
             if (i != -1) {
                 let item = this._queue[i];
@@ -4842,7 +4868,7 @@ window.Laya = (function (exports) {
             if (remoteUrl) {
                 if (!remoteUrl.endsWith("/"))
                     remoteUrl += "/";
-                URL.basePaths[path.length > 0 ? (path + "/") : path] = remoteUrl;
+                URL$1.basePaths[path.length > 0 ? (path + "/") : path] = remoteUrl;
                 return this._loadFileConfig(path, true, progress);
             }
             else {
@@ -4892,7 +4918,7 @@ window.Laya = (function (exports) {
             }
             if (fileConfig.hash) {
                 let i = 0;
-                let version = URL.version;
+                let version = URL$1.version;
                 for (let k of fileConfig.hash) {
                     if (k != null)
                         version[files[i]] = k;
@@ -4948,10 +4974,10 @@ window.Laya = (function (exports) {
                         AssetDb.inst.shaderNameMap[c.shaderName] = file;
                         break;
                     case 3:
-                        Loader.preLoadedMap[URL.formatURL(file)] = c;
+                        Loader.preLoadedMap[URL$1.formatURL(file)] = c;
                         break;
                     case 4:
-                        URL.urlMapping[Utils.getBaseName(file)] = file;
+                        URL$1.urlMapping[Utils.getBaseName(file)] = c.br ? (file + ".br") : file;
                         break;
                 }
             }
@@ -5080,6 +5106,8 @@ window.Laya = (function (exports) {
     HideFlags.HideInInspector = 0x2;
     HideFlags.DontSave = 0x4;
     HideFlags.HideAndDontSave = 0x7;
+    HideFlags.HideGizmos = 0x800;
+    HideFlags.HideTransformTool = 0x1000;
 
     class Matrix {
         static equals(a, b) {
@@ -6949,6 +6977,198 @@ window.Laya = (function (exports) {
         colorsBuffer: new Float32Array(0),
     };
 
+    exports.BufferTargetType = void 0;
+    (function (BufferTargetType) {
+        BufferTargetType[BufferTargetType["ARRAY_BUFFER"] = 1] = "ARRAY_BUFFER";
+        BufferTargetType[BufferTargetType["ELEMENT_ARRAY_BUFFER"] = 2] = "ELEMENT_ARRAY_BUFFER";
+        BufferTargetType[BufferTargetType["UNIFORM_BUFFER"] = 4] = "UNIFORM_BUFFER";
+        BufferTargetType[BufferTargetType["COPY_READ_BUFFER"] = 8] = "COPY_READ_BUFFER";
+        BufferTargetType[BufferTargetType["COPY_WRITE_BUFFER"] = 16] = "COPY_WRITE_BUFFER";
+        BufferTargetType[BufferTargetType["TRANSFORM_FEEDBACK_BUFFER"] = 32] = "TRANSFORM_FEEDBACK_BUFFER";
+    })(exports.BufferTargetType || (exports.BufferTargetType = {}));
+    exports.BufferUsage = void 0;
+    (function (BufferUsage) {
+        BufferUsage[BufferUsage["Static"] = 0] = "Static";
+        BufferUsage[BufferUsage["Dynamic"] = 1] = "Dynamic";
+        BufferUsage[BufferUsage["Stream"] = 2] = "Stream";
+    })(exports.BufferUsage || (exports.BufferUsage = {}));
+
+    exports.IndexFormat = void 0;
+    (function (IndexFormat) {
+        IndexFormat[IndexFormat["UInt8"] = 0] = "UInt8";
+        IndexFormat[IndexFormat["UInt16"] = 1] = "UInt16";
+        IndexFormat[IndexFormat["UInt32"] = 2] = "UInt32";
+    })(exports.IndexFormat || (exports.IndexFormat = {}));
+
+    class Graphic2DDynamicVIBuffer {
+        get vertexBuffer() {
+            return this._vertexBuffer;
+        }
+        get indexBuffer() {
+            return this._indexBuffer;
+        }
+        get bufferState() {
+            return this._bufferState;
+        }
+        constructor(vertexBlockSize, vertexDeclaration) {
+            this._vertexViews = [];
+            this._indexBufferLength = 0;
+            this._indexBufferMaxLength = 0;
+            this._vertexFreeBlocks = [];
+            this._vertexBlockSize = vertexBlockSize;
+            this._vertexBuffer = LayaGL.renderDeviceFactory.createVertexBuffer(exports.BufferUsage.Dynamic);
+            this._wholeVertex = LayaGL.render2DRenderPassFactory.create2DGraphicVertexBuffer();
+            this._wholeVertex.buffer = this._vertexBuffer;
+            this._indexBuffer = LayaGL.renderDeviceFactory.createIndexBuffer(exports.BufferUsage.Dynamic);
+            this._indexBuffer.indexType = exports.IndexFormat.UInt16;
+            this._wholeIndex = LayaGL.render2DRenderPassFactory.create2DGraphicIndexBuffer();
+            this._wholeIndex.buffer = this._indexBuffer;
+            this._bufferState = LayaGL.renderDeviceFactory.createBufferState();
+            this._vertexBuffer.vertexDeclaration = vertexDeclaration;
+            this._vertexDeclaration = vertexDeclaration;
+            this._vertexStride = vertexDeclaration.vertexStride;
+            this._vertexElementLength = this._vertexStride / 4;
+            this._vertexBlockLength = this._vertexBlockSize * this._vertexElementLength;
+            this._bufferState.applyState([this._vertexBuffer], this._indexBuffer);
+            let vbsize = Graphic2DDynamicVIBuffer.MAX_VERTEX / this._vertexBlockSize;
+            this.resizeVertexBuffer(vbsize);
+            let ibsize = Graphic2DDynamicVIBuffer.DEFAULT_BLOCK_SIZE;
+            this.resizeIndexBuffer(ibsize);
+            this._tempVertexData = new Float32Array(this._vertexBlockSize * this._vertexElementLength);
+        }
+        resizeVertexBuffer(blockSize) {
+            let byteLength = blockSize * this._vertexBlockSize * this._vertexStride;
+            this._wholeVertex.resetData(byteLength);
+            this._vertexBuffer.setDataLength(byteLength);
+            this._canVBlockCount = blockSize;
+        }
+        resizeIndexBuffer(size) {
+            let byteLength = size * 2;
+            this._wholeIndex.resetData(byteLength);
+            this._indexBuffer._setIndexDataLength(byteLength);
+            this._indexBufferMaxLength = size;
+        }
+        indexExtendBlock(length) {
+            let nMaxLength = Math.ceil((this._indexBufferLength + length) / Graphic2DDynamicVIBuffer.DEFAULT_BLOCK_SIZE) * Graphic2DDynamicVIBuffer.DEFAULT_BLOCK_SIZE;
+            this.resizeIndexBuffer(nMaxLength);
+        }
+        checkVertexBuffer(vertexCount) {
+            let requiredBlocks = Math.ceil(vertexCount / this._vertexBlockSize);
+            let requiredExtendBlockCount = requiredBlocks - (this._vertexFreeBlocks.length + (this._canVBlockCount - this._vertexViews.length));
+            if (requiredExtendBlockCount > 0) {
+                return null;
+            }
+            let usedBlocks = [];
+            let usedViews = [];
+            let remainingBlocks = requiredBlocks;
+            while (remainingBlocks > 0 && this._vertexFreeBlocks.length > 0) {
+                let block = this._vertexFreeBlocks.shift();
+                usedBlocks.push(block);
+                usedViews.push(this._vertexViews[block]);
+                remainingBlocks--;
+            }
+            while (remainingBlocks > 0) {
+                let newBlockIndex = this._vertexViews.length;
+                usedBlocks.push(newBlockIndex);
+                let view = LayaGL.render2DRenderPassFactory.create2DGraphicVertexDataView(this._wholeVertex, newBlockIndex * this._vertexBlockLength, this._vertexBlockLength, this._vertexElementLength);
+                this._vertexViews[newBlockIndex] = view;
+                usedViews.push(view);
+                remainingBlocks--;
+            }
+            return { vertexViews: usedViews, vertexBlocks: usedBlocks };
+        }
+        checkIndexBuffer(length) {
+            let view;
+            if (this._indexBufferLength + length > this._indexBufferMaxLength) {
+                this.indexExtendBlock(length);
+            }
+            view = LayaGL.render2DRenderPassFactory.create2DGraphicIndexDataView(this._wholeIndex, length);
+            this._wholeIndex.addDataView(view);
+            this._indexBufferLength += length;
+            return view;
+        }
+        _releaseBlocks(blocks, list, freeBlocks) {
+            if (!blocks || blocks.length === 0)
+                return;
+            freeBlocks.push(...blocks);
+        }
+        releaseVertexBlocks(blocks) {
+            this._releaseBlocks(blocks, this._vertexViews, this._vertexFreeBlocks);
+        }
+        releaseIndexView(indexView) {
+            this._indexBufferLength -= indexView.length;
+            this._wholeIndex.removeDataView(indexView);
+        }
+        clear() {
+            this._vertexViews.forEach(view => null);
+            this._vertexFreeBlocks = [];
+        }
+        destroy() {
+            this.clear();
+            this._vertexBuffer.destroy();
+            this._indexBuffer.destroy();
+        }
+    }
+    Graphic2DDynamicVIBuffer.MAX_VERTEX = 32768;
+    Graphic2DDynamicVIBuffer.DEFAULT_BLOCK_SIZE = 1024;
+
+    function drawTrianglesBatched(runner, tex, x, y, vertices, uvs, indices, matrix, alpha, blendMode, colorNum, colors, uvRange) {
+        const vertexCount = vertices.length / 2;
+        const maxBatchVertices = Graphic2DDynamicVIBuffer.MAX_VERTEX;
+        if (vertexCount <= maxBatchVertices) {
+            runner.drawTriangles(tex, x, y, vertices, uvs, indices, matrix, alpha, blendMode, colorNum, colors, uvRange);
+            return;
+        }
+        const triangleCount = indices.length / 3;
+        let batchStart = 0;
+        while (batchStart < triangleCount) {
+            const remap = new Map();
+            let newVertCount = 0;
+            let batchEnd = batchStart;
+            while (batchEnd < triangleCount) {
+                let needed = 0;
+                for (let j = 0; j < 3; j++) {
+                    if (!remap.has(indices[batchEnd * 3 + j]))
+                        needed++;
+                }
+                if (newVertCount + needed > maxBatchVertices)
+                    break;
+                for (let j = 0; j < 3; j++) {
+                    const idx = indices[batchEnd * 3 + j];
+                    if (!remap.has(idx)) {
+                        remap.set(idx, newVertCount++);
+                    }
+                }
+                batchEnd++;
+            }
+            const batchVerts = new Float32Array(newVertCount * 2);
+            const batchUVs = new Float32Array(newVertCount * 2);
+            const batchColors = colors ? new Float32Array(newVertCount * 4) : null;
+            const indexCount = (batchEnd - batchStart) * 3;
+            const batchIndices = new Uint16Array(indexCount);
+            remap.forEach((newIdx, oldIdx) => {
+                batchVerts[newIdx * 2] = vertices[oldIdx * 2];
+                batchVerts[newIdx * 2 + 1] = vertices[oldIdx * 2 + 1];
+                batchUVs[newIdx * 2] = uvs[oldIdx * 2];
+                batchUVs[newIdx * 2 + 1] = uvs[oldIdx * 2 + 1];
+                if (colors && batchColors) {
+                    batchColors[newIdx * 4] = colors[oldIdx * 4];
+                    batchColors[newIdx * 4 + 1] = colors[oldIdx * 4 + 1];
+                    batchColors[newIdx * 4 + 2] = colors[oldIdx * 4 + 2];
+                    batchColors[newIdx * 4 + 3] = colors[oldIdx * 4 + 3];
+                }
+            });
+            for (let t = batchStart; t < batchEnd; t++) {
+                const bi = (t - batchStart) * 3;
+                batchIndices[bi] = remap.get(indices[t * 3]);
+                batchIndices[bi + 1] = remap.get(indices[t * 3 + 1]);
+                batchIndices[bi + 2] = remap.get(indices[t * 3 + 2]);
+            }
+            runner.drawTriangles(tex, x, y, batchVerts, batchUVs, batchIndices, matrix, alpha, blendMode, colorNum, batchColors, uvRange);
+            batchStart = batchEnd;
+        }
+    }
+
     const className$k = "Draw9GridTextureCmd";
     class Draw9GridTextureCmd {
         constructor() {
@@ -6995,6 +7215,20 @@ window.Laya = (function (exports) {
                 vb.contentRect.setTo(0, 0, w, h);
                 if (this.color)
                     vb.color.setABGR(this.color);
+                let uvrect = this.texture.uvrect;
+                if (!this.texture._dynamic
+                    && (uvrect[0] !== 0 || uvrect[1] !== 0 || uvrect[2] !== 1 || uvrect[3] !== 1)) {
+                    let bitmapW = this.texture.bitmap.width;
+                    let bitmapH = this.texture.bitmap.height;
+                    if (bitmapW > 0 && bitmapH > 0) {
+                        let halfTexelU = 0.5 / bitmapW;
+                        let halfTexelV = 0.5 / bitmapH;
+                        vb.uvRect.x += halfTexelU;
+                        vb.uvRect.y += halfTexelV;
+                        vb.uvRect.width -= halfTexelU * 2;
+                        vb.uvRect.height -= halfTexelV * 2;
+                    }
+                }
                 let gridRect = Rectangle.create();
                 let sourceWidth = vb.mainTex.sourceWidth;
                 let sourceHeight = vb.mainTex.sourceHeight;
@@ -7003,14 +7237,14 @@ window.Laya = (function (exports) {
                 if (this.texture.uvrect) {
                     if (Config.uvClipMode === "cpu") {
                         const clippedData = UVClippingUtils.clipTrianglesByUVRange(vb.getVertices(), vb.getIndices(), vb.getUVs(), this.texture.uvrect, vb.getColors());
-                        runner.drawTriangles(this.texture, x + gx, y + gy, clippedData.vertices, clippedData.uvs, clippedData.indices, null, 1, null, null, clippedData.colors, null);
+                        drawTrianglesBatched(runner, this.texture, x + gx, y + gy, clippedData.vertices, clippedData.uvs, clippedData.indices, null, 1, null, null, clippedData.colors, null);
                     }
                     else {
-                        runner.drawTriangles(this.texture, x + gx, y + gy, vb.getVertices(), vb.getUVs(), vb.getIndices(), null, 1, null, null, vb.getColors(), this.texture.uvrect);
+                        drawTrianglesBatched(runner, this.texture, x + gx, y + gy, vb.getVertices(), vb.getUVs(), vb.getIndices(), null, 1, null, null, vb.getColors(), this.texture.uvrect);
                     }
                 }
                 else {
-                    runner.drawTriangles(this.texture, x + gx, y + gy, vb.getVertices(), vb.getUVs(), vb.getIndices(), null, 1, null, null, vb.getColors(), null);
+                    drawTrianglesBatched(runner, this.texture, x + gx, y + gy, vb.getVertices(), vb.getUVs(), vb.getIndices(), null, 1, null, null, vb.getColors(), null);
                 }
                 VertexStream.pool.recover(vb);
             }
@@ -7683,7 +7917,7 @@ window.Laya = (function (exports) {
             cmd.alpha = alpha !== null && alpha !== void 0 ? alpha : 1;
             cmd.color = color != null ? ColorUtils.create(color).numColor : 0xffffffff;
             cmd.blendMode = blendMode;
-            cmd._dynamic = (_a = texture._dynamic) === null || _a === void 0 ? void 0 : _a.uv;
+            cmd._dynamic = (_a = texture === null || texture === void 0 ? void 0 : texture._dynamic) === null || _a === void 0 ? void 0 : _a.uv;
             return cmd;
         }
         static create2(texture, mesh, color) {
@@ -7707,6 +7941,7 @@ window.Laya = (function (exports) {
             this.indices = null;
             this.matrix = null;
             this.mesh = null;
+            this.colors = null;
             this._cacheData = null;
             this._dynamic = null;
             this._tempUVs = null;
@@ -7728,19 +7963,19 @@ window.Laya = (function (exports) {
                 if ((_a = this.texture) === null || _a === void 0 ? void 0 : _a.uvrect) {
                     if (Config.uvClipMode === "cpu") {
                         const clippedData = UVClippingUtils.clipTrianglesByUVRange(vb.getVertices(), vb.getIndices(), vb.getUVs(), this.texture.uvrect, vb.getColors());
-                        runner.drawTriangles(this.texture, this.x + gx, this.y + gy, clippedData.vertices, clippedData.uvs, clippedData.indices, this.matrix, this.alpha, this.blendMode, null, clippedData.colors, null);
+                        drawTrianglesBatched(runner, this.texture, this.x + gx, this.y + gy, clippedData.vertices, clippedData.uvs, clippedData.indices, this.matrix, this.alpha, this.blendMode, null, clippedData.colors, null);
                     }
                     else {
-                        runner.drawTriangles(this.texture, this.x + gx, this.y + gy, vb.getVertices(), vb.getUVs(), vb.getIndices(), this.matrix, this.alpha, this.blendMode, null, vb.getColors(), this.texture.uvrect);
+                        drawTrianglesBatched(runner, this.texture, this.x + gx, this.y + gy, vb.getVertices(), vb.getUVs(), vb.getIndices(), this.matrix, this.alpha, this.blendMode, null, vb.getColors(), this.texture.uvrect);
                     }
                 }
                 else {
-                    runner.drawTriangles(this.texture, this.x + gx, this.y + gy, vb.getVertices(), vb.getUVs(), vb.getIndices(), this.matrix, this.alpha, this.blendMode, null, vb.getColors(), null);
+                    drawTrianglesBatched(runner, this.texture, this.x + gx, this.y + gy, vb.getVertices(), vb.getUVs(), vb.getIndices(), this.matrix, this.alpha, this.blendMode, null, vb.getColors(), null);
                 }
                 VertexStream.pool.recover(vb);
             }
             else if (this.vertices && this.uvs && this.indices) {
-                runner.drawTriangles(this.texture, this.x + gx, this.y + gy, this.vertices, this.uvs, this.indices, this.matrix, this.alpha, this.blendMode, this.color);
+                drawTrianglesBatched(runner, this.texture, this.x + gx, this.y + gy, this.vertices, this.uvs, this.indices, this.matrix, this.alpha, this.blendMode, this.color, this.colors, null);
             }
         }
         get cmdID() {
@@ -8625,15 +8860,10 @@ window.Laya = (function (exports) {
             else
                 texture.setImageData(imageSource, false, false);
             if (canread) {
-                if (LayaEnv.isConch && imageSource._nativeObj) {
-                    texture._pixels = new Uint8Array(imageSource._nativeObj.getImageData(0, 0, imageSource.width, imageSource.height));
-                }
-                else {
-                    Browser.canvas.size(imageSource.width, imageSource.height);
-                    Browser.canvas.clear();
-                    Browser.context.drawImage(imageSource, 0, 0, imageSource.width, imageSource.height);
-                    texture._pixels = new Uint8Array(Browser.context.getImageData(0, 0, imageSource.width, imageSource.height).data.buffer);
-                }
+                Browser.canvas.size(imageSource.width, imageSource.height);
+                Browser.canvas.clear();
+                Browser.context.drawImage(imageSource, 0, 0, imageSource.width, imageSource.height);
+                texture._pixels = new Uint8Array(Browser.context.getImageData(0, 0, imageSource.width, imageSource.height).data.buffer);
             }
             return texture;
         }
@@ -9396,7 +9626,7 @@ window.Laya = (function (exports) {
                         if (inc.node.condition)
                             inc.node.text = text;
                         else {
-                            ShaderCompile._compileToTree(inc.node, text, result.defs, includes, URL.getPath(inc.name));
+                            ShaderCompile._compileToTree(inc.node, text, result.defs, includes, URL$1.getPath(inc.name));
                             inc.node.text = "";
                         }
                     }
@@ -9514,9 +9744,9 @@ window.Laya = (function (exports) {
                         let includeName = words[1];
                         let includeFile;
                         if (includeName.startsWith("."))
-                            includeName = URL.join(basePath, includeName);
+                            includeName = URL$1.join(basePath, includeName);
                         else if (includeName.startsWith("/"))
-                            includeName = URL.formatURL(includeName.substring(1));
+                            includeName = URL$1.formatURL(includeName.substring(1));
                         else {
                             includeFile = ShaderCompile.includes[includeName];
                             if (!includeFile)
@@ -9533,7 +9763,7 @@ window.Laya = (function (exports) {
                         if ((ofs = words[0].indexOf("?")) < 0) {
                             if (includeFile) {
                                 text = includeFile.getWith(codeName);
-                                this._compileToTree(node, text, defs, includes, URL.getPath(includeName));
+                                this._compileToTree(node, text, defs, includes, URL$1.getPath(includeName));
                             }
                             node.text = "";
                         }
@@ -11666,6 +11896,7 @@ window.Laya = (function (exports) {
             let shader = Shader3D.add(data.name, data.enableInstancing, data.supportReflectionProbe);
             shader._supportVolumetricGI = data.supportVolumetricGI;
             shader.shaderType = data.shaderType;
+            shader.previewType = data.previewType;
             let subshader = new SubShader(data.attributeMap ? data.attributeMap : SubShader.DefaultAttributeMap, data.uniformMap, data.defaultValue);
             shader.addSubShader(subshader);
             let passDataArray = data.shaderPass;
@@ -11694,6 +11925,7 @@ window.Laya = (function (exports) {
             this._supportVolumetricGI = false;
             this._subShaders = [];
             this.shaderType = exports.ShaderFeatureType.None;
+            this.previewType = null;
             this._name = name;
             this._enableInstancing = enableInstancing;
             this._supportReflectionProbe = supportReflectionProbe;
@@ -11718,6 +11950,35 @@ window.Laya = (function (exports) {
     Shader3D.debugMode = false;
 
     class ShaderDefines2D {
+        static _buildDefineMap() {
+            this._perElementDefineMap = [];
+            const defines = [
+                ShaderDefines2D.FILLTEXTURE, ShaderDefines2D.GAMMATEXTURE, ShaderDefines2D.VERTEXALPHA,
+                ShaderDefines2D.TEXTURESHADER, ShaderDefines2D.PRIMITIVESHADER, ShaderDefines2D.USE_TEX_ARRAY,
+                ShaderDefines2D.MATERIALCLIP, ShaderDefines2D.UNIFORMCLIP, ShaderDefines2D.UV_CLIP_GPU
+            ];
+            let firstIndex = defines[0]._index;
+            this._singleWord = true;
+            for (let i = 0; i < defines.length; i++) {
+                if (defines[i]._index !== firstIndex) {
+                    this._singleWord = false;
+                }
+                this._perElementDefineMap.push({ define: defines[i], bit: 1 << i });
+            }
+            if (this._singleWord) {
+                this._sharedIndex = firstIndex;
+            }
+        }
+        static getPerElementDefineBits(shaderData) {
+            let bits = 0;
+            for (let i = 0; i < this._perElementDefineMap.length; i++) {
+                let entry = this._perElementDefineMap[i];
+                if (shaderData.hasDefine(entry.define)) {
+                    bits |= entry.bit;
+                }
+            }
+            return bits;
+        }
         static __init__() {
             ShaderDefines2D.VERTEX_SIZE = Shader3D.getDefineByName("VERTEX_SIZE");
             ShaderDefines2D.FILLTEXTURE = Shader3D.getDefineByName("FILLTEXTURE");
@@ -11732,7 +11993,23 @@ window.Laya = (function (exports) {
             ShaderDefines2D.PRIMITIVESHADER = Shader3D.getDefineByName("PRIMITIVEMESH");
             ShaderDefines2D.VERTEXALPHA = Shader3D.getDefineByName("VERTEXALPHA");
             ShaderDefines2D.USE_TEX_ARRAY = Shader3D.getDefineByName('USE_TEX_ARRAY');
+            ShaderDefines2D.SHADERDEFINE_CAMERA2D = Shader3D.getDefineByName("CAMERA2D");
+            {
+                let defines = [
+                    ShaderDefines2D.FILLTEXTURE, ShaderDefines2D.GAMMATEXTURE, ShaderDefines2D.VERTEXALPHA,
+                    ShaderDefines2D.TEXTURESHADER, ShaderDefines2D.PRIMITIVESHADER, ShaderDefines2D.USE_TEX_ARRAY,
+                    ShaderDefines2D.MATERIALCLIP, ShaderDefines2D.UNIFORMCLIP, ShaderDefines2D.UV_CLIP_GPU
+                ];
+                let idx0 = defines[0]._index;
+                for (let i = 1; i < defines.length; i++) {
+                    if (defines[i]._index !== idx0) {
+                        console.warn('[ShaderDefines2D] Per-element defines span multiple _index words (' + idx0 + ' vs ' + defines[i]._index + '). textureKey bit mapping uses per-define hasDefine() fallback.');
+                        break;
+                    }
+                }
+            }
             ShaderDefines2D.initSprite2DCommandEncoder();
+            this._buildDefineMap();
         }
         static initSprite2DCommandEncoder() {
             ShaderDefines2D.UNIFORM_NMATRIX_0 = Shader3D.propertyNameToID("u_NMatrix_0");
@@ -11743,6 +12020,7 @@ window.Laya = (function (exports) {
             ShaderDefines2D.UNIFORM_CLIPMATPOS = Shader3D.propertyNameToID("u_clipMatPos");
             ShaderDefines2D.UNIFORM_SIZE = Shader3D.propertyNameToID("u_size");
             ShaderDefines2D.UNIFORM_VERTALPHA = Shader3D.propertyNameToID("u_VertAlpha");
+            ShaderDefines2D.VIEW2D = Shader3D.propertyNameToID("u_view2D");
             const commandUniform = LayaGL.renderDeviceFactory.createGlobalUniformMap("Sprite2D");
             commandUniform.addShaderUniform(ShaderDefines2D.UNIFORM_NMATRIX_0, "u_NMatrix_0", exports.ShaderDataType.Vector3);
             commandUniform.addShaderUniform(ShaderDefines2D.UNIFORM_NMATRIX_1, "u_NMatrix_1", exports.ShaderDataType.Vector3);
@@ -11768,6 +12046,14 @@ window.Laya = (function (exports) {
             graphicsUniformMap.addShaderUniform(ShaderDefines2D.UNIFORM_SPRITETEXTURE_ARRAY, "u_spriteTextureArray", exports.ShaderDataType.Texture2DArray);
         }
     }
+    ShaderDefines2D.SHADER_DEFINE_BITS = 9;
+    ShaderDefines2D._PER_ELEMENT_DEFINE_NAMES = [
+        'FILLTEXTURE', 'GAMMATEXTURE', 'VERTEXALPHA', 'TEXTURESHADER',
+        'PRIMITIVESHADER', 'USE_TEX_ARRAY', 'MATERIALCLIP', 'UNIFORMCLIP', 'UV_CLIP_GPU'
+    ];
+    ShaderDefines2D._perElementDefineMap = null;
+    ShaderDefines2D._singleWord = false;
+    ShaderDefines2D._sharedIndex = -1;
 
     exports.BlendMode = void 0;
     (function (BlendMode) {
@@ -11821,7 +12107,7 @@ window.Laya = (function (exports) {
                     break;
                 case 7:
                     shaderData.setInt(Shader3D.BLEND_SRC, RenderState.BLENDPARAM_ZERO);
-                    shaderData.setInt(Shader3D.BLEND_DST, RenderState.BLENDPARAM_ZERO);
+                    shaderData.setInt(Shader3D.BLEND_DST, RenderState.BLENDPARAM_ONE_MINUS_SRC_ALPHA);
                     break;
                 case 9:
                     shaderData.setInt(Shader3D.BLEND_SRC, RenderState.BLENDPARAM_SRC_ALPHA);
@@ -12424,13 +12710,6 @@ window.Laya = (function (exports) {
         DrawType[DrawType["DrawElementIndirect"] = 5] = "DrawElementIndirect";
     })(exports.DrawType || (exports.DrawType = {}));
 
-    exports.IndexFormat = void 0;
-    (function (IndexFormat) {
-        IndexFormat[IndexFormat["UInt8"] = 0] = "UInt8";
-        IndexFormat[IndexFormat["UInt16"] = 1] = "UInt16";
-        IndexFormat[IndexFormat["UInt32"] = 2] = "UInt32";
-    })(exports.IndexFormat || (exports.IndexFormat = {}));
-
     exports.MeshTopology = void 0;
     (function (MeshTopology) {
         MeshTopology[MeshTopology["Points"] = 0] = "Points";
@@ -12512,15 +12791,15 @@ window.Laya = (function (exports) {
 
     var MathGLSL = "#if !defined(Math_lib)\n#define Math_lib\n#ifndef GRAPHICS_API_GLES3\nmat2 inverse(mat2 m){return mat2(m[1][1],-m[0][1],-m[1][0],m[0][0])/(m[0][0]*m[1][1]-m[0][1]*m[1][0]);}mat3 inverse(mat3 m){float a00=m[0][0],a01=m[0][1],a02=m[0][2];float a10=m[1][0],a11=m[1][1],a12=m[1][2];float a20=m[2][0],a21=m[2][1],a22=m[2][2];float b01=a22*a11-a12*a21;float b11=-a22*a10+a12*a20;float b21=a21*a10-a11*a20;float det=a00*b01+a01*b11+a02*b21;return mat3(b01,(-a22*a01+a02*a21),(a12*a01-a02*a11),b11,(a22*a00-a02*a20),(-a12*a00+a02*a10),b21,(-a21*a00+a01*a20),(a11*a00-a01*a10))/det;}mat4 inverse(mat4 m){float a00=m[0][0],a01=m[0][1],a02=m[0][2],a03=m[0][3],a10=m[1][0],a11=m[1][1],a12=m[1][2],a13=m[1][3],a20=m[2][0],a21=m[2][1],a22=m[2][2],a23=m[2][3],a30=m[3][0],a31=m[3][1],a32=m[3][2],a33=m[3][3],b00=a00*a11-a01*a10,b01=a00*a12-a02*a10,b02=a00*a13-a03*a10,b03=a01*a12-a02*a11,b04=a01*a13-a03*a11,b05=a02*a13-a03*a12,b06=a20*a31-a21*a30,b07=a20*a32-a22*a30,b08=a20*a33-a23*a30,b09=a21*a32-a22*a31,b10=a21*a33-a23*a31,b11=a22*a33-a23*a32,det=b00*b11-b01*b10+b02*b09+b03*b08-b04*b07+b05*b06;return mat4(a11*b11-a12*b10+a13*b09,a02*b10-a01*b11-a03*b09,a31*b05-a32*b04+a33*b03,a22*b04-a21*b05-a23*b03,a12*b08-a10*b11-a13*b07,a00*b11-a02*b08+a03*b07,a32*b02-a30*b05-a33*b01,a20*b05-a22*b02+a23*b01,a10*b10-a11*b08+a13*b06,a01*b08-a00*b10-a03*b06,a30*b04-a31*b02+a33*b00,a21*b02-a20*b04-a23*b00,a11*b07-a10*b09-a12*b06,a00*b09-a01*b07+a02*b06,a31*b01-a30*b03-a32*b00,a20*b03-a21*b01+a22*b00)/det;}mat4 transpose(mat4 m){return mat4(m[0][0],m[1][0],m[2][0],m[3][0],m[0][1],m[1][1],m[2][1],m[3][1],m[0][2],m[1][2],m[2][2],m[3][2],m[0][3],m[1][3],m[2][3],m[3][3]);}mat3 transpose(mat3 m){return mat3(m[0][0],m[1][0],m[2][0],m[0][1],m[1][1],m[2][1],m[0][2],m[1][2],m[2][2]);}\n#endif\n#define PI 3.14159265359\n#define INVERT_PI 0.31830988618\n#define HALF_PI 1.570796327\n#define MEDIUMP_FLT_MAX 65504.0\n#define MEDIUMP_FLT_MIN 0.00006103515625\n#if defined(GL_FRAGMENT_PRECISION_HIGH)\n#define FLT_EPS 1e-5\n#define saturateMediump(x) x\n#else\n#define FLT_EPS MEDIUMP_FLT_MIN\n#define saturateMediump(x) min(x, MEDIUMP_FLT_MAX)\n#endif\n#define saturate(x) clamp(x, 0.0, 1.0)\nfloat pow2(float x){return x*x;}vec3 pow2(vec3 x){return x*x;}float pow5(float x){float x2=x*x;return x2*x2*x;}const float INVERT_LOG10=0.43429448190325176;float log10(float x){return log(x)*INVERT_LOG10;}float vecmax(const vec2 v){return max(v.x,v.y);}float vecmax(const vec3 v){return max(v.x,max(v.y,v.z));}float vecmax(const vec4 v){return max(max(v.x,v.y),max(v.z,v.w));}float vecmin(const vec2 v){return min(v.x,v.y);}float vecmin(const vec3 v){return min(v.x,min(v.y,v.z));}float vecmin(const vec4 v){return min(min(v.x,v.y),min(v.z,v.w));}vec3 SafeNormalize(in vec3 inVec){float dp3=max(0.001,dot(inVec,inVec));return inVec*inversesqrt(dp3);}vec3 normalScale(in vec3 normal,in float scale){normal*=vec3(scale,scale,1.0);return normalize(normal);}float acosFast(float x){float y=abs(x);float p=-0.1565827*y+1.570796;p*=sqrt(1.0-y);return x>=0.0 ? p : PI-p;}float acosFastPositive(float x){float p=-0.1565827*x+1.570796;return p*sqrt(1.0-x);}float interleavedGradientNoise(const highp vec2 w){const vec3 m=vec3(0.06711056,0.00583715,52.9829189);return fract(m.z*fract(dot(w,m.xy)));}vec3 rotationByEuler(in vec3 vector,in vec3 rot){float halfRoll=rot.z*0.5;float halfPitch=rot.x*0.5;float halfYaw=rot.y*0.5;float sinRoll=sin(halfRoll);float cosRoll=cos(halfRoll);float sinPitch=sin(halfPitch);float cosPitch=cos(halfPitch);float sinYaw=sin(halfYaw);float cosYaw=cos(halfYaw);float quaX=(cosYaw*sinPitch*cosRoll)+(sinYaw*cosPitch*sinRoll);float quaY=(sinYaw*cosPitch*cosRoll)-(cosYaw*sinPitch*sinRoll);float quaZ=(cosYaw*cosPitch*sinRoll)-(sinYaw*sinPitch*cosRoll);float quaW=(cosYaw*cosPitch*cosRoll)+(sinYaw*sinPitch*sinRoll);float x=quaX+quaX;float y=quaY+quaY;float z=quaZ+quaZ;float wx=quaW*x;float wy=quaW*y;float wz=quaW*z;float xx=quaX*x;float xy=quaX*y;float xz=quaX*z;float yy=quaY*y;float yz=quaY*z;float zz=quaZ*z;return vec3(((vector.x*((1.0-yy)-zz))+(vector.y*(xy-wz)))+(vector.z*(xz+wy)),((vector.x*(xy+wz))+(vector.y*((1.0-xx)-zz)))+(vector.z*(yz-wx)),((vector.x*(xz-wy))+(vector.y*(yz+wx)))+(vector.z*((1.0-xx)-yy)));}vec3 rotationByAxis(in vec3 vector,in vec3 axis,in float angle){float halfAngle=angle*0.5;float sinf=sin(halfAngle);float quaX=axis.x*sinf;float quaY=axis.y*sinf;float quaZ=axis.z*sinf;float quaW=cos(halfAngle);float x=quaX+quaX;float y=quaY+quaY;float z=quaZ+quaZ;float wx=quaW*x;float wy=quaW*y;float wz=quaW*z;float xx=quaX*x;float xy=quaX*y;float xz=quaX*z;float yy=quaY*y;float yz=quaY*z;float zz=quaZ*z;return vec3(((vector.x*((1.0-yy)-zz))+(vector.y*(xy-wz)))+(vector.z*(xz+wy)),((vector.x*(xy+wz))+(vector.y*((1.0-xx)-zz)))+(vector.z*(yz-wx)),((vector.x*(xz-wy))+(vector.y*(yz+wx)))+(vector.z*((1.0-xx)-yy)));}vec3 rotationByQuaternions(in vec3 v,in vec4 q){return v+2.0*cross(q.xyz,cross(q.xyz,v)+q.w*v);}\n#endif\n";
 
-    var Sprite2DFrag = "#include \"ClipFrag.glsl\";\nvec3 gammaToLinear(in vec3 value){return pow((value+0.055)/1.055,vec3(2.4));}vec4 gammaToLinear(in vec4 value){return vec4(gammaToLinear(value.rgb),value.a);}vec3 linearToGamma(in vec3 value){return vec3(mix(pow(value.rgb,vec3(0.41666))*1.055-vec3(0.055),value.rgb*12.92,vec3(lessThanEqual(value.rgb,vec3(0.0031308)))));}vec4 linearToGamma(in vec4 value){return vec4(linearToGamma(value.rgb),value.a);}vec4 transspaceColor(vec4 color){\n#ifndef GAMMATEXTURE\n#ifdef GAMMASPACE\ncolor.xyz=linearToGamma(color.xyz);\n#endif\n#else\n#ifndef GAMMASPACE\ncolor.xyz=gammaToLinear(color.xyz);\n#endif\n#endif\nreturn color;}\n#ifdef TEXTUREVS\nvarying vec4 v_texcoordAlpha;varying vec4 v_color;varying float v_useTex;varying float v_useClip;varying vec4 v_customs;\n#ifdef USE_TEX_ARRAY\nvarying float v_texLayer;uniform sampler2DArray u_spriteTextureArray;\n#else\nuniform sampler2D u_spriteTexture;\n#endif\n#ifdef FILLTEXTURE\nuniform vec4 u_TexRange;\n#endif\nvec4 getSpriteTextureColor(){vec2 uv;\n#ifdef FILLTEXTURE\nuv=fract(v_texcoordAlpha.xy)*u_TexRange.zw+u_TexRange.xy;\n#else\nuv=v_texcoordAlpha.xy;\n#endif\n#ifdef USE_TEX_ARRAY\nvec4 color=texture(u_spriteTextureArray,vec3(uv,v_texLayer));\n#else\nvec4 color=texture2D(u_spriteTexture,uv);\n#endif\nreturn transspaceColor(color);}void setglColor(in vec4 color){float useTex=step(1.0,v_useTex);color=color*useTex+(1.0-useTex);\n#ifdef UV_CLIP_GPU\nif(v_useClip>=1.0){vec2 uv=v_texcoordAlpha.xy;vec4 c=v_customs;if(uv.x<c.x||uv.x>c.x+c.z||uv.y<c.y||uv.y>c.y+c.w)discard;}\n#endif\ncolor.a*=v_color.w;vec4 transColor=v_color;\n#ifndef GAMMASPACE\ntransColor=gammaToLinear(v_color);\n#endif\ncolor.rgb*=transColor.rgb;gl_FragColor=color;}\n#endif\n#ifdef BASERENDER2D\nvarying vec2 v_texcoord;varying vec4 v_color;uniform sampler2D u_baseRender2DTexture;uniform vec4 u_baseRenderColor;uniform vec4 u_tilingOffset;\n#ifdef LIGHT2D_ENABLE\nvarying vec2 v_lightUV;uniform vec3 u_LightDirection;uniform vec4 u_LightAndShadow2DParam;uniform vec4 u_LightAndShadow2DAmbient;uniform sampler2D u_LightAndShadow2D;\n#ifdef LIGHT2D_SCENEMODE_ADD\nuniform sampler2D u_LightAndShadow2D_AddMode;\n#endif\n#ifdef LIGHT2D_SCENEMODE_SUB\nuniform sampler2D u_LightAndShadow2D_SubMode;\n#endif\n#ifdef LIGHT2D_NORMAL_PARAM\nuniform sampler2D u_normal2DTexture;uniform float u_normal2DStrength;\n#endif\nvoid lightAndShadow(inout vec4 color){\n#ifdef LIGHT2D_EMPTY\ncolor.rgb*=u_LightAndShadow2DAmbient.rgb;\n#else\nvec2 uv=v_lightUV;vec2 tt=step(vec2(0.0),uv)*step(uv,vec2(1.0));float side=tt.x*tt.y;vec3 ambient=color.rgb*u_LightAndShadow2DAmbient.rgb;color.rgb=color.rgb*texture2D(u_LightAndShadow2D,uv).rgb*side;side*=color.a;\n#ifdef LIGHT2D_SCENEMODE_ADD\ncolor.rgb=min(vec3(1.0),color.rgb+texture2D(u_LightAndShadow2D_AddMode,uv).rgb*side);\n#endif\n#ifdef LIGHT2D_SCENEMODE_SUB\ncolor.rgb=max(vec3(0.0),color.rgb-texture2D(u_LightAndShadow2D_SubMode,uv).rgb*side);\n#endif\n#ifdef LIGHT2D_NORMAL_PARAM\nvec3 dr=normalize(u_LightDirection);vec3 normal=normalize(texture2D(u_normal2DTexture,v_texcoord).rgb*2.0-1.0);color.rgb=color.rgb*((1.0-u_normal2DStrength)+abs(dot(dr,normal.rgb))*u_normal2DStrength);\n#endif\ncolor.rgb=min(vec3(1.0),color.rgb+ambient);\n#endif\n}\n#endif\nvoid setglColor(in vec4 color){color.a*=v_color.w;vec4 transColor=v_color;\n#ifndef GAMMASPACE\ntransColor=gammaToLinear(v_color);\n#endif\ncolor.rgb*=transColor.rgb;gl_FragColor=color;}vec2 transformUV(in vec2 texcoord,in vec4 tilingOffset){vec2 uv=texcoord*tilingOffset.zw+tilingOffset.xy;return uv;}\n#endif\n";
+    var Sprite2DFrag = "#include \"ClipFrag.glsl\";\n#include \"Color.glsl\";\nvec4 transspaceColor(vec4 color){\n#ifndef GAMMATEXTURE\n#ifdef GAMMASPACE\ncolor.xyz=linearToGamma(color.xyz);\n#endif\n#else\n#ifndef GAMMASPACE\ncolor.xyz=gammaToLinear(color.xyz);\n#endif\n#endif\nreturn color;}\n#ifdef TEXTUREVS\nvarying vec4 v_texcoordAlpha;varying vec4 v_color;varying float v_useTex;varying float v_useClip;varying vec4 v_customs;\n#ifdef USE_TEX_ARRAY\nvarying float v_texLayer;uniform sampler2DArray u_spriteTextureArray;\n#else\nuniform sampler2D u_spriteTexture;\n#endif\n#ifdef FILLTEXTURE\nuniform vec4 u_TexRange;\n#endif\nvec4 getSpriteTextureColor(){vec2 uv;\n#ifdef FILLTEXTURE\nuv=fract(v_texcoordAlpha.xy)*u_TexRange.zw+u_TexRange.xy;\n#else\nuv=v_texcoordAlpha.xy;\n#endif\n#ifdef USE_TEX_ARRAY\nvec4 color=texture(u_spriteTextureArray,vec3(uv,v_texLayer));\n#else\nvec4 color=texture2D(u_spriteTexture,uv);\n#endif\nreturn transspaceColor(color);}void setglColor(in vec4 color){float useTex=step(1.0,v_useTex);color=color*useTex+(1.0-useTex);\n#ifdef UV_CLIP_GPU\nif(v_useClip>=1.0){vec2 uv=v_texcoordAlpha.xy;vec4 c=v_customs;if(uv.x<c.x||uv.x>c.x+c.z||uv.y<c.y||uv.y>c.y+c.w)discard;}\n#endif\ncolor.a*=v_color.w;vec4 transColor=v_color;\n#ifndef GAMMASPACE\ntransColor=gammaToLinear(v_color);\n#endif\ncolor.rgb*=transColor.rgb;gl_FragColor=color;}\n#endif\n#ifdef BASERENDER2D\nvarying vec2 v_texcoord;varying vec4 v_color;uniform sampler2D u_baseRender2DTexture;uniform vec4 u_baseRenderColor;uniform vec4 u_tilingOffset;\n#ifdef LIGHT2D_ENABLE\nvarying vec2 v_lightUV;uniform vec3 u_LightDirection;uniform vec4 u_LightAndShadow2DParam;uniform vec4 u_LightAndShadow2DAmbient;uniform sampler2D u_LightAndShadow2D;\n#ifdef LIGHT2D_SCENEMODE_ADD\nuniform sampler2D u_LightAndShadow2D_AddMode;\n#endif\n#ifdef LIGHT2D_SCENEMODE_SUB\nuniform sampler2D u_LightAndShadow2D_SubMode;\n#endif\n#ifdef LIGHT2D_NORMAL_PARAM\nuniform sampler2D u_normal2DTexture;uniform float u_normal2DStrength;\n#endif\nvoid lightAndShadow(inout vec4 color){\n#ifdef LIGHT2D_EMPTY\ncolor.rgb*=u_LightAndShadow2DAmbient.rgb;\n#else\nvec2 uv=v_lightUV;vec2 tt=step(vec2(0.0),uv)*step(uv,vec2(1.0));float side=tt.x*tt.y;vec3 ambient=color.rgb*u_LightAndShadow2DAmbient.rgb;color.rgb=color.rgb*texture2D(u_LightAndShadow2D,uv).rgb*side;side*=color.a;\n#ifdef LIGHT2D_SCENEMODE_ADD\ncolor.rgb=min(vec3(1.0),color.rgb+texture2D(u_LightAndShadow2D_AddMode,uv).rgb*side);\n#endif\n#ifdef LIGHT2D_SCENEMODE_SUB\ncolor.rgb=max(vec3(0.0),color.rgb-texture2D(u_LightAndShadow2D_SubMode,uv).rgb*side);\n#endif\n#ifdef LIGHT2D_NORMAL_PARAM\nvec3 dr=normalize(u_LightDirection);vec3 normal=normalize(texture2D(u_normal2DTexture,v_texcoord).rgb*2.0-1.0);color.rgb=color.rgb*((1.0-u_normal2DStrength)+abs(dot(dr,normal.rgb))*u_normal2DStrength);\n#endif\ncolor.rgb=min(vec3(1.0),color.rgb+ambient);\n#endif\n}\n#endif\nvoid setglColor(in vec4 color){color.a*=v_color.w;vec4 transColor=v_color;\n#ifndef GAMMASPACE\ntransColor=gammaToLinear(v_color);\n#endif\ncolor.rgb*=transColor.rgb;gl_FragColor=color;}vec2 transformUV(in vec2 texcoord,in vec4 tilingOffset){vec2 uv=texcoord*tilingOffset.zw+tilingOffset.xy;return uv;}\n#endif\n";
 
     var ClipFrag = "#if !defined(ClipFrag_lib)\n#define ClipFrag_lib\nvarying vec2 v_cliped;void clip(){\n#ifdef UNIFORMCLIP\nif(v_cliped.x<0.)discard;if(v_cliped.x>1.)discard;if(v_cliped.y<0.)discard;if(v_cliped.y>1.)discard;\n#endif\n}\n#endif\n";
 
     var ClipVertex = "#if !defined(ClipVertex_lib)\n#define ClipVertex_lib\n#ifdef MATERIALCLIP\nuniform vec4 u_mClipMatDir;uniform vec4 u_mClipMatPos;\n#endif\nvarying vec2 v_cliped;\n#ifdef UNIFORMCLIP\nuniform vec4 u_clipMatDir;uniform vec4 u_clipMatPos;\n#endif\nvoid clip(inout vec2 globalPos){\n#ifdef UNIFORMCLIP\nvec4 clipMatDir;vec4 clipMatPos;\n#ifdef MATERIALCLIP\nclipMatDir=u_mClipMatDir;clipMatPos=u_mClipMatPos;float tx=clipMatPos.z;float ty=clipMatPos.w;float cmaxx=tx+clipMatDir.x;float cmaxy=ty+clipMatDir.w;float parentMinX=u_clipMatPos.x;float parentMinY=u_clipMatPos.y;float offsetx=u_clipMatPos.z-parentMinX;float offsety=u_clipMatPos.w-parentMinY;float parentMaxX=parentMinX+u_clipMatDir.x;float parentMaxY=parentMinY+u_clipMatDir.w;if(tx<parentMinX){clipMatDir.x-=(parentMinX-tx);tx=clipMatPos.x=parentMinX;}if(cmaxx>parentMaxX){clipMatDir.x-=(cmaxx-parentMaxX);}if(ty<parentMinY){clipMatDir.w-=(parentMinY-ty);ty=clipMatPos.y=parentMinY;}if(cmaxy>parentMaxY){clipMatDir.w-=(cmaxy-parentMaxY);}clipMatPos.zw=vec2(tx+offsetx,ty+offsety);\n#else\nclipMatDir=u_clipMatDir;clipMatPos=u_clipMatPos;\n#endif\nvec2 cliped;float clipw=length(clipMatDir.xy);float cliph=length(clipMatDir.zw);vec2 clippos=globalPos-clipMatPos.xy;if(clipw>20000.&&cliph>20000.)cliped=vec2(0.5,0.5);else{cliped=vec2(dot(clippos,clipMatDir.xy)/clipw/clipw,dot(clippos,clipMatDir.zw)/cliph/cliph);}globalPos=clippos+clipMatPos.zw;v_cliped=cliped;\n#endif\n}\n#endif\n";
 
-    var Sprite2DVertex = "\n#include \"ClipVertex.glsl\";\n#ifdef CAMERA2D\nuniform mat3 u_view2D;\n#endif\n#ifdef SPRITE2DGLOBAL\n#endif\n#ifdef RENDERTEXTURE\nuniform vec3 u_InvertMat_0;uniform vec3 u_InvertMat_1;\n#endif\n#ifdef VERTEX_SIZE\nuniform vec4 u_vertexSize;\n#endif\nuniform vec3 u_NMatrix_0;uniform vec3 u_NMatrix_1;uniform vec2 u_size;varying vec4 v_color;void transfrom(vec2 pos,vec3 xDir,vec3 yDir,out vec2 outPos){outPos.x=xDir.x*pos.x+xDir.y*pos.y+xDir.z;outPos.y=yDir.x*pos.x+yDir.y*pos.y+yDir.z;}void getGlobalPos(in vec2 localPos,out vec2 globalPos){transfrom(localPos,u_NMatrix_0,u_NMatrix_1,globalPos);}void getProjectPos(in vec2 viewPos,out vec4 projectPos){projectPos=vec4((viewPos.x/u_size.x-0.5)*2.0,(0.5-viewPos.y/u_size.y)*2.0,0.,1.0);\n#ifdef INVERTY\nprojectPos.y=-projectPos.y;\n#endif\n}void getViewPos(in vec2 globalPos,out vec2 viewPos){\n#ifdef RENDERTEXTURE\nvec2 tempPos;transfrom(globalPos,u_InvertMat_0,u_InvertMat_1,tempPos);\n#ifdef CAMERA2D\nviewPos.xy=(u_view2D*vec3(tempPos,1.0)).xy+u_size/2.;\n#else\nviewPos.xy=tempPos;\n#endif\n#else\n#ifdef CAMERA2D\nviewPos.xy=(u_view2D*vec3(globalPos,1.0)).xy+u_size/2.;\n#else\nviewPos.xy=globalPos;\n#endif\n#endif\n}\n#ifdef TEXTUREVS\nstruct vertexInfo{vec2 pos;vec4 color;vec2 cliped;vec4 texcoordAlpha;float useTex;float useClip;vec4 customs;};uniform float u_VertAlpha;varying vec4 v_texcoordAlpha;varying float v_useTex;varying float v_useClip;varying vec4 v_customs;\n#ifdef USE_TEX_ARRAY\nvarying float v_texLayer;\n#endif\nvoid getVertexInfo(inout vertexInfo info){info.texcoordAlpha.xy=a_posuv.zw;info.color=a_attribColor;\n#ifdef VERTEXALPHA\ninfo.color.a*=a_attribFlags.z;\n#else\ninfo.color.a*=u_VertAlpha;\n#endif\ninfo.color.xyz*=info.color.a;info.useTex=a_attribFlags.r;info.useClip=a_attribFlags.g;info.customs=a_customs;vec2 pos;\n#ifdef VERTEX_SIZE\npos=(a_posuv.xy*u_vertexSize.zw)+u_vertexSize.xy;\n#else\npos=a_posuv.xy;\n#endif\ninfo.pos=pos;}vec4 getPosition(in vec2 positionOS){vec2 globalPos;\n#ifdef VERTEX_SIZE\ngetGlobalPos(positionOS,globalPos);\n#else\nglobalPos=positionOS;\n#endif\nclip(globalPos);vec2 viewPos;getViewPos(globalPos,viewPos);vec4 pos;getProjectPos(viewPos,pos);return pos;}\n#endif\n#ifdef BASERENDER2D\nvarying vec2 v_texcoord;uniform vec4 u_baseRenderColor;struct vertexInfo{vec4 color;vec2 uv;vec2 pos;vec2 lightUV;};\n#ifdef LIGHT2D_ENABLE\nvarying vec2 v_lightUV;uniform vec4 u_LightAndShadow2DParam;void lightAndShadow(vertexInfo info){v_lightUV=info.lightUV;}void invertMat(inout vec3 v1,inout vec3 v2){float a1=v1.x;float b1=v2.x;float c1=v1.y;float d1=v2.y;float tx1=v1.z;float ty1=v2.z;float n=a1*d1-b1*c1;v1.x=d1/n;v2.x=-b1/n;v1.y=-c1/n;v2.y=a1/n;v1.z=(c1*ty1-d1*tx1)/n;v2.z=-(a1*ty1-b1*tx1)/n;}\n#endif\nvec4 linearToGamma(in vec4 value){return vec4(mix(pow(value.rgb,vec3(0.41666))*1.055-vec3(0.055),value.rgb*12.92,vec3(lessThanEqual(value.rgb,vec3(0.0031308)))),value.a);}void getVertexInfo(inout vertexInfo info){info.pos=a_position.xy;info.color=vec4(1.0,1.0,1.0,1.0);\n#ifdef COLOR\ninfo.color=a_color;info.color.rgb*=a_color.a;\n#endif\ninfo.color*=linearToGamma(u_baseRenderColor);\n#ifdef UV\ninfo.uv=a_uv;\n#endif\n#ifdef LIGHT2D_ENABLE\nvec2 global;getGlobalPos(info.pos,global);info.lightUV.x=(global.x-u_LightAndShadow2DParam.x)/u_LightAndShadow2DParam.z;info.lightUV.y=1.0-(global.y-u_LightAndShadow2DParam.y)/u_LightAndShadow2DParam.w;\n#endif\n}vec4 getPosition(in vec2 positionOS){vec2 globalPos;getGlobalPos(positionOS,globalPos);clip(globalPos);vec2 viewPos;getViewPos(globalPos,viewPos);vec4 pos;getProjectPos(viewPos,pos);return pos;}\n#endif\n";
+    var Sprite2DVertex = "\n#include \"ClipVertex.glsl\";\n#include \"Color.glsl\";\n#ifdef CAMERA2D\nuniform mat3 u_view2D;\n#endif\n#ifdef SPRITE2DGLOBAL\n#endif\n#ifdef RENDERTEXTURE\nuniform vec3 u_InvertMat_0;uniform vec3 u_InvertMat_1;\n#endif\n#ifdef VERTEX_SIZE\nuniform vec4 u_vertexSize;\n#endif\nuniform vec3 u_NMatrix_0;uniform vec3 u_NMatrix_1;uniform vec2 u_size;varying vec4 v_color;void transfrom(vec2 pos,vec3 xDir,vec3 yDir,out vec2 outPos){outPos.x=xDir.x*pos.x+xDir.y*pos.y+xDir.z;outPos.y=yDir.x*pos.x+yDir.y*pos.y+yDir.z;}void getGlobalPos(in vec2 localPos,out vec2 globalPos){transfrom(localPos,u_NMatrix_0,u_NMatrix_1,globalPos);}void getProjectPos(in vec2 viewPos,out vec4 projectPos){projectPos=vec4((viewPos.x/u_size.x-0.5)*2.0,(0.5-viewPos.y/u_size.y)*2.0,0.,1.0);\n#ifdef INVERTY\nprojectPos.y=-projectPos.y;\n#endif\n}void getViewPos(in vec2 globalPos,out vec2 viewPos){\n#ifdef RENDERTEXTURE\nvec2 tempPos;transfrom(globalPos,u_InvertMat_0,u_InvertMat_1,tempPos);\n#ifdef CAMERA2D\nviewPos.xy=(u_view2D*vec3(tempPos,1.0)).xy+u_size/2.;\n#else\nviewPos.xy=tempPos;\n#endif\n#else\n#ifdef CAMERA2D\nviewPos.xy=(u_view2D*vec3(globalPos,1.0)).xy+u_size/2.;\n#else\nviewPos.xy=globalPos;\n#endif\n#endif\n}\n#ifdef TEXTUREVS\nstruct vertexInfo{vec2 pos;vec4 color;vec2 cliped;vec4 texcoordAlpha;float useTex;float useClip;vec4 customs;};uniform float u_VertAlpha;varying vec4 v_texcoordAlpha;varying float v_useTex;varying float v_useClip;varying vec4 v_customs;\n#ifdef USE_TEX_ARRAY\nvarying float v_texLayer;\n#endif\nvoid getVertexInfo(inout vertexInfo info){info.texcoordAlpha.xy=a_posuv.zw;info.color=a_attribColor;\n#ifdef VERTEXALPHA\ninfo.color.a*=a_attribFlags.z;\n#else\ninfo.color.a*=u_VertAlpha;\n#endif\ninfo.color.xyz*=info.color.a;info.useTex=a_attribFlags.r;info.useClip=a_attribFlags.g;info.customs=a_customs;vec2 pos;\n#ifdef VERTEX_SIZE\npos=(a_posuv.xy*u_vertexSize.zw)+u_vertexSize.xy;\n#else\npos=a_posuv.xy;\n#endif\ninfo.pos=pos;}vec4 getPosition(in vec2 positionOS){vec2 globalPos;\n#ifdef VERTEX_SIZE\ngetGlobalPos(positionOS,globalPos);\n#else\nglobalPos=positionOS;\n#endif\nclip(globalPos);vec2 viewPos;getViewPos(globalPos,viewPos);vec4 pos;getProjectPos(viewPos,pos);return pos;}\n#endif\n#ifdef BASERENDER2D\nvarying vec2 v_texcoord;uniform vec4 u_baseRenderColor;\n#ifdef UNITQUAD\nuniform vec2 u_baseRenderSize2D;\n#endif\nstruct vertexInfo{vec4 color;vec2 uv;vec2 pos;vec2 lightUV;};\n#ifdef LIGHT2D_ENABLE\nvarying vec2 v_lightUV;uniform vec4 u_LightAndShadow2DParam;void lightAndShadow(vertexInfo info){v_lightUV=info.lightUV;}void invertMat(inout vec3 v1,inout vec3 v2){float a1=v1.x;float b1=v2.x;float c1=v1.y;float d1=v2.y;float tx1=v1.z;float ty1=v2.z;float n=a1*d1-b1*c1;v1.x=d1/n;v2.x=-b1/n;v1.y=-c1/n;v2.y=a1/n;v1.z=(c1*ty1-d1*tx1)/n;v2.z=-(a1*ty1-b1*tx1)/n;}\n#endif\nvoid getVertexInfo(inout vertexInfo info){\n#ifdef UNITQUAD\ninfo.pos=a_position.xy*u_baseRenderSize2D;\n#else\ninfo.pos=a_position.xy;\n#endif\ninfo.color=vec4(1.0,1.0,1.0,1.0);\n#ifdef COLOR\ninfo.color=a_color;info.color.rgb*=a_color.a;\n#endif\nvec4 ucolor=linearToGamma(u_baseRenderColor);ucolor.rgb*=ucolor.a;info.color*=ucolor;\n#ifdef UV\ninfo.uv=a_uv;\n#endif\n#ifdef LIGHT2D_ENABLE\nvec2 global;getGlobalPos(info.pos,global);info.lightUV.x=(global.x-u_LightAndShadow2DParam.x)/u_LightAndShadow2DParam.z;info.lightUV.y=1.0-(global.y-u_LightAndShadow2DParam.y)/u_LightAndShadow2DParam.w;\n#endif\n}vec4 getPosition(in vec2 positionOS){vec2 globalPos;getGlobalPos(positionOS,globalPos);clip(globalPos);vec2 viewPos;getViewPos(globalPos,viewPos);vec4 pos;getProjectPos(viewPos,pos);return pos;}\n#endif\n";
 
-    var OutputTransformGLSL = "#if !defined(OutputTransform_lib)\n#define OutputTransform_lib\nvec3 gammaCorrect(in vec3 color,float gammaValue){return pow(color,vec3(gammaValue));}vec4 gammaCorrect(in vec4 color){float gammaValue=1.0/2.2;return vec4(gammaCorrect(color.rgb,gammaValue),color.a);}vec4 outputTransform(in vec4 color){\n#ifdef GAMMACORRECT\nreturn gammaCorrect(color);\n#else\nreturn color;\n#endif\n}\n#endif\n";
+    var OutputTransformGLSL = "#if !defined(OutputTransform_lib)\n#define OutputTransform_lib\nvec3 gammaCorrect(in vec3 color,float gammaValue){return pow(color,vec3(gammaValue));}vec4 gammaCorrect(in vec4 color){float gammaValue=1.0/2.2;return vec4(gammaCorrect(color.rgb,gammaValue),color.a);}\n#ifdef BRIDGE3D_CLIP\nuniform vec4 u_Bridge3DClipDir;uniform vec4 u_Bridge3DClipPos;\n#endif\nvec4 outputTransform(in vec4 color){\n#ifdef BRIDGE3D_CLIP\nvec2 fragPos=vec2(gl_FragCoord.x,u_Bridge3DClipPos.z-gl_FragCoord.y);vec2 clppos=fragPos-u_Bridge3DClipPos.xy;float clipw=length(u_Bridge3DClipDir.xy);float cliph=length(u_Bridge3DClipDir.zw);if(clipw>20000.0&&cliph>20000.0){}else{float cx=dot(clppos,u_Bridge3DClipDir.xy)/clipw/clipw;float cy=dot(clppos,u_Bridge3DClipDir.zw)/cliph/cliph;if(cx<0.0||cx>1.0||cy<0.0||cy>1.0)discard;}\n#endif\n#ifdef GAMMACORRECT\nreturn gammaCorrect(color);\n#else\nreturn color;\n#endif\n}\n#endif\n";
 
     class Shader2D {
         destroy() {
@@ -12661,17 +12940,16 @@ window.Laya = (function (exports) {
             if (!tex) {
                 tex = Texture2D.whiteTexture;
             }
-            if (tex instanceof Texture2DArray) {
-                this.shaderData.addDefine(ShaderDefines2D.USE_TEX_ARRAY);
-                this.shaderData.setTexture(ShaderDefines2D.UNIFORM_SPRITETEXTURE_ARRAY, tex);
-            }
-            else {
-                this.shaderData.removeDefine(ShaderDefines2D.USE_TEX_ARRAY);
-                this.shaderData.setTexture(ShaderDefines2D.UNIFORM_SPRITETEXTURE, tex);
-            }
             if (this._bitmap != tex) {
                 this._bitmap = tex;
-                this.shaderData.setTexture(ShaderDefines2D.UNIFORM_SPRITETEXTURE, this._bitmap);
+                if (tex instanceof Texture2DArray) {
+                    this.shaderData.addDefine(ShaderDefines2D.USE_TEX_ARRAY);
+                    this.shaderData.setTexture(ShaderDefines2D.UNIFORM_SPRITETEXTURE_ARRAY, tex);
+                }
+                else {
+                    this.shaderData.removeDefine(ShaderDefines2D.USE_TEX_ARRAY);
+                    this.shaderData.setTexture(ShaderDefines2D.UNIFORM_SPRITETEXTURE, tex);
+                }
             }
         }
         set enableVertexSize(value) {
@@ -12931,10 +13209,14 @@ window.Laya = (function (exports) {
             let textureHost = this._internalInfo.textureHost;
             if (textureHost)
                 texture = textureHost.bitmap || textureHost;
-            element.type = this._key.blendShader
+            let hasFillTexture = this._internalInfo.shaderData.hasDefine(ShaderDefines2D.FILLTEXTURE) ? 1 : 0;
+            element.typeKey = this._key.blendShader
                 | (useCustomMaterial << 4)
                 | (mc << 5)
-                | ((texture ? texture.id : 0) << 6);
+                | (hasFillTexture << 6);
+            let defineBits = ShaderDefines2D.getPerElementDefineBits(this._internalInfo.shaderData);
+            element.textureKey = defineBits
+                | ((texture ? texture.id : 0) << ShaderDefines2D.SHADER_DEFINE_BITS);
             if (this._cacheInfo) {
                 this._cacheInfo.texture = texture;
                 this._cacheInfo.blendShader = this._key.blendShader;
@@ -13015,7 +13297,8 @@ window.Laya = (function (exports) {
         element.owner = null;
         element.subShader = null;
         element.renderStateIsBySprite = false;
-        element.type = 0;
+        element.typeKey = 0;
+        element.textureKey = 0;
     });
     SubmitBase.ID = 1;
     SubmitBase.RENDERBASE = new SubmitBase();
@@ -13033,6 +13316,7 @@ window.Laya = (function (exports) {
     TextRenderConfig.maxFontScale = 3;
     TextRenderConfig.fontScale = 1;
     TextRenderConfig.useTextureArray = true;
+    TextRenderConfig.premultiplyAlpha = false;
 
     function measureFont(ctx, font, bold) {
         let size = TextRenderConfig.standardFontSize;
@@ -13319,9 +13603,7 @@ window.Laya = (function (exports) {
             if (letterSpacing > 0)
                 charMode = true;
             let shadow = shadowOffsetX !== 0 || shadowOffsetY !== 0;
-            let tint = stroke > 0 || !charMode && hasEmoji || shadow;
-            if (tint)
-                cacheKey += colorNum + "_";
+            cacheKey += colorNum + "_";
             if (stroke > 0)
                 cacheKey += ColorUtils.create(strokeColor).numColor + "_" + stroke + "_";
             if (shadow)
@@ -13330,7 +13612,7 @@ window.Laya = (function (exports) {
             ctx.font = (bold ? "bold " : "") + fontSize + "px " + font;
             ctx.setTransform(fontScale, 0, 0, fontScale, 0, 0);
             ctx.textBaseline = "middle";
-            ctx.fillStyle = tint ? color : 'white';
+            ctx.fillStyle = color ;
             if (stroke > 0) {
                 ctx.lineJoin = "round";
                 ctx.strokeStyle = strokeColor;
@@ -13349,7 +13631,7 @@ window.Laya = (function (exports) {
             }
             if (!renderInfo)
                 renderInfo = [];
-            let drawColor = tint ? 0xffffffff : colorNum;
+            let drawColor = 0xffffffff ;
             if ((charMode || TextRenderConfig.forceSplitRender) && !TextRenderConfig.forceWholeRender) {
                 let mat = this.owner._curMat;
                 renderInfo.length > 0 && this.freeRenderInfo(renderInfo);
@@ -13409,7 +13691,7 @@ window.Laya = (function (exports) {
             let rectY = ((margin - fontSizeOffY - lineWidth - offsetTop) * fontScale | 0) - blockGap;
             let correctionW = height * 0.08;
             let rectW = Math.ceil((width + fontSizeOffX + lineWidth * 2 + offsetLeft + offsetRight + correctionW) * fontScale) + blockGap * 2;
-            let rectH = Math.ceil((fontSizeH + lineWidth * 2 + offsetTop + offsetBottom) * fontScale) + blockGap * 2;
+            let rectH = Math.ceil((fontSizeH + lineWidth * 2 + offsetTop + offsetBottom + 1) * fontScale) + blockGap * 2;
             let needCanvW = Math.min(rectW + Math.ceil(margin * 2 * fontScale), TextRenderConfig.maxCanvasWidth);
             let needCanvH = Math.min(rectH + Math.ceil(margin * 2 * fontScale), TextRenderConfig.maxCanvasWidth);
             if (needCanvW > this.canvas.width || needCanvH > this.canvas.height)
@@ -13418,6 +13700,19 @@ window.Laya = (function (exports) {
             lineWidth > 0 && ctx.strokeText(text, margin, margin + height / 2);
             ctx.fillText(text, margin, margin + height / 2);
             let imgdt = ctx.getImageData(rectX, rectY, rectW, rectH);
+            if (TextRenderConfig.premultiplyAlpha) {
+                let pix = imgdt.data.length / 4;
+                let dt = imgdt.data;
+                for (let i = 0; i < pix; i++) {
+                    let pos = i * 4;
+                    let k = dt[pos + 3] / 255;
+                    if (k > 0) {
+                        dt[pos] = dt[pos] * k;
+                        dt[pos + 1] = dt[pos + 1] * k;
+                        dt[pos + 2] = dt[pos + 2] * k;
+                    }
+                }
+            }
             let ri = {
                 x: -fontSizeOffX - lineWidth - offsetLeft,
                 y: -emojiAdjustY - lineWidth - offsetTop,
@@ -13522,6 +13817,9 @@ window.Laya = (function (exports) {
             if (Config.useTextureArray && TextRenderConfig.useTextureArray) {
                 const alloc = TextureArrayRegistry2D.allocateLayerAsTexture(width, height, exports.TextureFormat.R8G8B8A8, 64, false);
                 if (alloc) {
+                    if (TextRenderConfig.premultiplyAlpha && alloc.array.gammaCorrection === 1) {
+                        alloc.array._texture.gammaCorrection = 2.2;
+                    }
                     TextureArrayRegistry2D.register(tex, alloc.array, alloc.layer);
                 }
             }
@@ -13536,7 +13834,7 @@ window.Laya = (function (exports) {
                 reg.array.setSubPixelsData(x, y, reg.layer, imgdt.width, imgdt.height, 1, data, 0, false, false, false);
             }
             else {
-                LayaGL.textureContext.setTextureSubPixelsData(tex._texture, data, 0, false, x, y, imgdt.width, imgdt.height, true, false);
+                LayaGL.textureContext.setTextureSubPixelsData(tex._texture, data, 0, false, x, y, imgdt.width, imgdt.height, !TextRenderConfig.premultiplyAlpha, false);
             }
             let u0 = (x + blockGap) / tex.width;
             let v0 = (y + blockGap) / tex.height;
@@ -13647,134 +13945,6 @@ window.Laya = (function (exports) {
     var freeRegionNullCnt = 0;
     var freeIsoTextureNullCnt = 0;
     var toClearChars = [];
-
-    exports.BufferTargetType = void 0;
-    (function (BufferTargetType) {
-        BufferTargetType[BufferTargetType["ARRAY_BUFFER"] = 1] = "ARRAY_BUFFER";
-        BufferTargetType[BufferTargetType["ELEMENT_ARRAY_BUFFER"] = 2] = "ELEMENT_ARRAY_BUFFER";
-        BufferTargetType[BufferTargetType["UNIFORM_BUFFER"] = 4] = "UNIFORM_BUFFER";
-        BufferTargetType[BufferTargetType["COPY_READ_BUFFER"] = 8] = "COPY_READ_BUFFER";
-        BufferTargetType[BufferTargetType["COPY_WRITE_BUFFER"] = 16] = "COPY_WRITE_BUFFER";
-        BufferTargetType[BufferTargetType["TRANSFORM_FEEDBACK_BUFFER"] = 32] = "TRANSFORM_FEEDBACK_BUFFER";
-    })(exports.BufferTargetType || (exports.BufferTargetType = {}));
-    exports.BufferUsage = void 0;
-    (function (BufferUsage) {
-        BufferUsage[BufferUsage["Static"] = 0] = "Static";
-        BufferUsage[BufferUsage["Dynamic"] = 1] = "Dynamic";
-        BufferUsage[BufferUsage["Stream"] = 2] = "Stream";
-    })(exports.BufferUsage || (exports.BufferUsage = {}));
-
-    class Graphic2DDynamicVIBuffer {
-        get vertexBuffer() {
-            return this._vertexBuffer;
-        }
-        get indexBuffer() {
-            return this._indexBuffer;
-        }
-        get bufferState() {
-            return this._bufferState;
-        }
-        constructor(vertexBlockSize, vertexDeclaration) {
-            this._vertexViews = [];
-            this._indexBufferLength = 0;
-            this._indexBufferMaxLength = 0;
-            this._vertexFreeBlocks = [];
-            this._vertexBlockSize = vertexBlockSize;
-            this._vertexBuffer = LayaGL.renderDeviceFactory.createVertexBuffer(exports.BufferUsage.Dynamic);
-            this._wholeVertex = LayaGL.render2DRenderPassFactory.create2DGraphicVertexBuffer();
-            this._wholeVertex.buffer = this._vertexBuffer;
-            this._indexBuffer = LayaGL.renderDeviceFactory.createIndexBuffer(exports.BufferUsage.Dynamic);
-            this._indexBuffer.indexType = exports.IndexFormat.UInt16;
-            this._wholeIndex = LayaGL.render2DRenderPassFactory.create2DGraphicIndexBuffer();
-            this._wholeIndex.buffer = this._indexBuffer;
-            this._bufferState = LayaGL.renderDeviceFactory.createBufferState();
-            this._vertexBuffer.vertexDeclaration = vertexDeclaration;
-            this._vertexDeclaration = vertexDeclaration;
-            this._vertexStride = vertexDeclaration.vertexStride;
-            this._vertexElementLength = this._vertexStride / 4;
-            this._vertexBlockLength = this._vertexBlockSize * this._vertexElementLength;
-            this._bufferState.applyState([this._vertexBuffer], this._indexBuffer);
-            let vbsize = Graphic2DDynamicVIBuffer.MAX_VERTEX / this._vertexBlockSize;
-            this.resizeVertexBuffer(vbsize);
-            let ibsize = Graphic2DDynamicVIBuffer.DEFAULT_BLOCK_SIZE;
-            this.resizeIndexBuffer(ibsize);
-            this._tempVertexData = new Float32Array(this._vertexBlockSize * this._vertexElementLength);
-        }
-        resizeVertexBuffer(blockSize) {
-            let byteLength = blockSize * this._vertexBlockSize * this._vertexStride;
-            this._wholeVertex.resetData(byteLength);
-            this._vertexBuffer.setDataLength(byteLength);
-            this._canVBlockCount = blockSize;
-        }
-        resizeIndexBuffer(size) {
-            let byteLength = size * 2;
-            this._wholeIndex.resetData(byteLength);
-            this._indexBuffer._setIndexDataLength(byteLength);
-            this._indexBufferMaxLength = size;
-        }
-        indexExtendBlock(length) {
-            let nMaxLength = Math.ceil((this._indexBufferLength + length) / Graphic2DDynamicVIBuffer.DEFAULT_BLOCK_SIZE) * Graphic2DDynamicVIBuffer.DEFAULT_BLOCK_SIZE;
-            this.resizeIndexBuffer(nMaxLength);
-        }
-        checkVertexBuffer(vertexCount) {
-            let requiredBlocks = Math.ceil(vertexCount / this._vertexBlockSize);
-            let requiredExtendBlockCount = requiredBlocks - (this._vertexFreeBlocks.length + (this._canVBlockCount - this._vertexViews.length));
-            if (requiredExtendBlockCount > 0) {
-                return null;
-            }
-            let usedBlocks = [];
-            let usedViews = [];
-            let remainingBlocks = requiredBlocks;
-            while (remainingBlocks > 0 && this._vertexFreeBlocks.length > 0) {
-                let block = this._vertexFreeBlocks.shift();
-                usedBlocks.push(block);
-                usedViews.push(this._vertexViews[block]);
-                remainingBlocks--;
-            }
-            while (remainingBlocks > 0) {
-                let newBlockIndex = this._vertexViews.length;
-                usedBlocks.push(newBlockIndex);
-                let view = LayaGL.render2DRenderPassFactory.create2DGraphicVertexDataView(this._wholeVertex, newBlockIndex * this._vertexBlockLength, this._vertexBlockLength, this._vertexElementLength);
-                this._vertexViews[newBlockIndex] = view;
-                usedViews.push(view);
-                remainingBlocks--;
-            }
-            return { vertexViews: usedViews, vertexBlocks: usedBlocks };
-        }
-        checkIndexBuffer(length) {
-            let view;
-            if (this._indexBufferLength + length > this._indexBufferMaxLength) {
-                this.indexExtendBlock(length);
-            }
-            view = LayaGL.render2DRenderPassFactory.create2DGraphicIndexDataView(this._wholeIndex, length);
-            this._wholeIndex.addDataView(view);
-            this._indexBufferLength += length;
-            return view;
-        }
-        _releaseBlocks(blocks, list, freeBlocks) {
-            if (!blocks || blocks.length === 0)
-                return;
-            freeBlocks.push(...blocks);
-        }
-        releaseVertexBlocks(blocks) {
-            this._releaseBlocks(blocks, this._vertexViews, this._vertexFreeBlocks);
-        }
-        releaseIndexView(indexView) {
-            this._indexBufferLength -= indexView.length;
-            this._wholeIndex.removeDataView(indexView);
-        }
-        clear() {
-            this._vertexViews.forEach(view => null);
-            this._vertexFreeBlocks = [];
-        }
-        destroy() {
-            this.clear();
-            this._vertexBuffer.destroy();
-            this._indexBuffer.destroy();
-        }
-    }
-    Graphic2DDynamicVIBuffer.MAX_VERTEX = 32768;
-    Graphic2DDynamicVIBuffer.DEFAULT_BLOCK_SIZE = 1024;
 
     class GraphicsMesh {
         static __init__() {
@@ -13985,7 +14155,7 @@ window.Laya = (function (exports) {
             this.closePath();
             this._fillAndStroke(fillColor, lineColor, lineWidth);
         }
-        _drawRoundRect(x, y, width, height, lt, rt, lb, rb, fillColor, lineColor, lineWidth) {
+        _drawRoundRect(x, y, width, height, lt, rt, lb, rb, fillColor, lineColor, lineWidth, minNum = 20, segPixel = 5) {
             if (width <= 0)
                 return;
             if (height <= 0)
@@ -14013,7 +14183,7 @@ window.Laya = (function (exports) {
                 }
                 if (st > ed) ;
                 else {
-                    this.arc(x + lt, y + lt, lt, lt, st, ed, false, true, 5);
+                    this.arc(x + lt, y + lt, lt, lt, st, ed, false, true, minNum, segPixel);
                 }
             }
             let startX = x + width - rt;
@@ -14038,7 +14208,7 @@ window.Laya = (function (exports) {
                 }
                 if (st > ed) ;
                 else {
-                    this.arc(startX, y + rt, rt, rt, st, ed, false, true, 5);
+                    this.arc(startX, y + rt, rt, rt, st, ed, false, true, minNum, segPixel);
                 }
             }
             startX = x + width - rb;
@@ -14064,7 +14234,7 @@ window.Laya = (function (exports) {
                 }
                 if (st > ed) ;
                 else {
-                    this.arc(startX, startY, rb, rb, st, ed, false, true, 5);
+                    this.arc(startX, startY, rb, rb, st, ed, false, true, minNum, segPixel);
                 }
             }
             startX = x + lb;
@@ -14090,7 +14260,7 @@ window.Laya = (function (exports) {
                 }
                 if (st > ed) ;
                 else {
-                    this.arc(startX, startY, lb, lb, st, ed, false, true, 5);
+                    this.arc(startX, startY, lb, lb, st, ed, false, true, minNum, segPixel);
                 }
             }
             this.closePath();
@@ -14159,6 +14329,8 @@ window.Laya = (function (exports) {
             this._clipRect = SaveClipRect.MAX;
             this._clip_x = 0;
             this._clip_y = 0;
+            this._clipID_Gen = 0;
+            this._clipInfoID = 0;
             this._alpha = 1.0;
             this._nBlendType = exports.BlendMode.normal;
             this._fillStyle = this._strokeStyle = DrawStyle.DEFAULT;
@@ -14609,11 +14781,11 @@ window.Laya = (function (exports) {
             tmpMat.d = transform.d;
             tmpMat.tx = transform.tx + tx;
             tmpMat.ty = transform.ty + ty;
-            tmpMat._bTransform = transform._bTransform;
+            tmpMat._checkTransform();
             if (transform && curMat._bTransform) {
                 Matrix.mul(tmpMat, curMat, tmpMat);
+                tmpMat._checkTransform();
                 transform = tmpMat;
-                transform._bTransform = true;
             }
             else {
                 tmpMat.tx += curMat.tx;
@@ -14645,6 +14817,12 @@ window.Laya = (function (exports) {
             }
             let vertexCount = vertices.length / 2;
             let vertexResult = this.acquire(vertexCount);
+            if (!vertexResult || !vertexResult.mesh) {
+                if (blendMode != null) {
+                    this.globalCompositeOperation = oldcomp;
+                }
+                return;
+            }
             let mesh = vertexResult.mesh;
             var webGLImg = tex instanceof Texture ? tex.bitmap : tex;
             var preKey = this._curSubmit._key;
@@ -14686,6 +14864,7 @@ window.Laya = (function (exports) {
                     tmpMat.ty = matrix.ty + y;
                 }
                 Matrix.mul(tmpMat, this._curMat, tmpMat);
+                tmpMat._checkTransform();
                 positions = this.appendData(vertices, indices, vertexResult, submit, uvs, rgba, tmpMat, null, !!tex, colors, uvRange);
             }
             else {
@@ -15046,7 +15225,7 @@ window.Laya = (function (exports) {
                 cvy = cy;
             }
         }
-        arc(cx, cy, rx, ry, startAngle, endAngle, counterclockwise = false, b = true, minNum = 20) {
+        arc(cx, cy, rx, ry, startAngle, endAngle, counterclockwise = false, b = true, minNum = 20, segPixel = 5) {
             if (startAngle > endAngle) {
                 [startAngle, endAngle] = [endAngle, startAngle];
             }
@@ -15054,7 +15233,7 @@ window.Laya = (function (exports) {
             var sy = this.getCurrentScaleY();
             var sr = rx * (sx > sy ? sx : sy);
             var cl = 2 * Math.PI * sr;
-            let ndivs = (Math.max(cl / 5, minNum)) | 0;
+            let ndivs = (Math.max(cl / segPixel, minNum)) | 0;
             let stepAng = Math.PI * 2 / ndivs;
             var tPath = this._getPath();
             let x = cx + Math.cos(startAngle) * rx;
@@ -15834,8 +16013,10 @@ window.Laya = (function (exports) {
             this.rb = 6;
             this.lineWidth = 0;
             this.percent = true;
+            this.minNum = 20;
+            this.segPixel = 5;
         }
-        static create(x, y, width, height, lt, rt, lb, rb, fillColor, lineColor, lineWidth, percent) {
+        static create(x, y, width, height, lt, rt, lb, rb, fillColor, lineColor, lineWidth, percent, minNum, segPixel) {
             var cmd = Pool.getItemByClass(className, DrawRoundRectCmd);
             cmd.x = x;
             cmd.y = y;
@@ -15849,11 +16030,17 @@ window.Laya = (function (exports) {
             cmd.lineColor = lineColor;
             cmd.lineWidth = lineWidth;
             cmd.percent = percent;
+            if (minNum != null)
+                cmd.minNum = minNum;
+            if (segPixel != null)
+                cmd.segPixel = segPixel;
             return cmd;
         }
         recover() {
             this.fillColor = null;
             this.lineColor = null;
+            this.minNum = 20;
+            this.segPixel = 5;
             Pool.recover(className, this);
         }
         run(runner, gx, gy) {
@@ -15862,10 +16049,10 @@ window.Laya = (function (exports) {
             if (this.percent && runner.sprite) {
                 let w = runner.sprite.width;
                 let h = runner.sprite.height;
-                runner._drawRoundRect(this.x * w + offset + gx, this.y * h + offset + gy, this.width * w - lineOffset, this.height * h - lineOffset, this.lt, this.rt, this.lb, this.rb, this.fillColor, this.lineColor, this.lineWidth);
+                runner._drawRoundRect(this.x * w + offset + gx, this.y * h + offset + gy, this.width * w - lineOffset, this.height * h - lineOffset, this.lt, this.rt, this.lb, this.rb, this.fillColor, this.lineColor, this.lineWidth, this.minNum, this.segPixel);
             }
             else {
-                runner._drawRoundRect(this.x + offset + gx, this.y + offset + gy, this.width - lineOffset, this.height - lineOffset, this.lt, this.rt, this.lb, this.rb, this.fillColor, this.lineColor, this.lineWidth);
+                runner._drawRoundRect(this.x + offset + gx, this.y + offset + gy, this.width - lineOffset, this.height - lineOffset, this.lt, this.rt, this.lb, this.rb, this.fillColor, this.lineColor, this.lineWidth, this.minNum, this.segPixel);
             }
         }
         get cmdID() {
@@ -15876,7 +16063,7 @@ window.Laya = (function (exports) {
         }
         getBounds(assembler) {
             let rect = Rectangle.TEMP.setTo(this.x, this.y, this.width, this.height);
-            if (this) {
+            if (this.percent) {
                 rect.scale(assembler.width, assembler.height);
             }
             rect.getBoundPoints(assembler.points);
@@ -16247,8 +16434,8 @@ window.Laya = (function (exports) {
         drawRect(x, y, width, height, fillColor, lineColor = null, lineWidth = 1, percent) {
             return this.addCmd(DrawRectCmd.create(x, y, width, height, fillColor, lineColor, lineWidth, percent));
         }
-        drawRoundRect(x, y, width, height, lt, rt, lb, rb, fillColor, lineColor = null, lineWidth = 1, percent) {
-            return this.addCmd(DrawRoundRectCmd.create(x, y, width, height, lt, rt, lb, rb, fillColor, lineColor, lineWidth, percent));
+        drawRoundRect(x, y, width, height, lt, rt, lb, rb, fillColor, lineColor = null, lineWidth = 1, percent, minNum, segPixel) {
+            return this.addCmd(DrawRoundRectCmd.create(x, y, width, height, lt, rt, lb, rb, fillColor, lineColor, lineWidth, percent, minNum, segPixel));
         }
         drawCircle(x, y, radius, fillColor, lineColor = null, lineWidth = 1, percent) {
             return this.addCmd(DrawCircleCmd.create(x, y, radius, fillColor, lineColor, lineWidth, percent));
@@ -16779,7 +16966,6 @@ window.Laya = (function (exports) {
                 }
             }
             this._onActive();
-            LayaGL.statAgent.recordCountData(exports.StatElement.C_Sprite2DCount, 1);
             for (let child of this._children) {
                 if ((child._bits & NodeFlags.ACTIVE) !== 0 && (child._bits & NodeFlags.NOT_IN_PAGE) === 0)
                     child._activeHierarchy(activeChangeScripts, fromSetter);
@@ -16792,7 +16978,6 @@ window.Laya = (function (exports) {
         }
         _inActiveHierarchy(activeChangeScripts, fromSetter) {
             this._onInActive();
-            LayaGL.statAgent.recordCountData(exports.StatElement.C_Sprite2DCount, -1);
             if (this._components) {
                 for (let i = 0, n = this._components.length; i < n; i++) {
                     let comp = this._components[i];
@@ -17551,7 +17736,7 @@ window.Laya = (function (exports) {
                 prop.type = 0;
             else if (type === "string")
                 prop.type = 2;
-            else if (type == "object" && (adapter = startValue[TweenValueAdapterKey]) != null)
+            else if (type == "object" && (adapter = (startValue != null ? startValue[TweenValueAdapterKey] : endValue[TweenValueAdapterKey])) != null)
                 prop.type = adapter;
             else
                 prop.type = 1;
@@ -18756,8 +18941,7 @@ window.Laya = (function (exports) {
         }
         onEnable() {
         }
-        
-		onDisable() {
+        onDisable() {
         }
         onDestroy() {
         }
@@ -18774,6 +18958,7 @@ window.Laya = (function (exports) {
             BaseRenderNode2D.BASERENDER2DCOLOR = Shader3D.propertyNameToID("u_baseRenderColor");
             BaseRenderNode2D.BASERENDER2DTEXTURE = Shader3D.propertyNameToID("u_baseRender2DTexture");
             BaseRenderNode2D.TILINGOFFSET = Shader3D.propertyNameToID("u_tilingOffset");
+            BaseRenderNode2D.BASERENDERSIZE = Shader3D.propertyNameToID("u_baseRenderSize2D");
             BaseRenderNode2D.NORMAL2DTEXTURE = Shader3D.propertyNameToID("u_normal2DTexture");
             BaseRenderNode2D.NORMAL2DSTRENGTH = Shader3D.propertyNameToID("u_normal2DStrength");
             BaseRenderNode2D.SHADERDEFINE_BASERENDER2D = Shader3D.getDefineByName("BASERENDER2D");
@@ -18782,12 +18967,14 @@ window.Laya = (function (exports) {
             BaseRenderNode2D.SHADERDEFINE_LIGHT2D_ADDMODE = Shader3D.getDefineByName("LIGHT2D_SCENEMODE_ADD");
             BaseRenderNode2D.SHADERDEFINE_LIGHT2D_SUBMODE = Shader3D.getDefineByName("LIGHT2D_SCENEMODE_SUB");
             BaseRenderNode2D.SHADERDEFINE_LIGHT2D_NORMAL_PARAM = Shader3D.getDefineByName("LIGHT2D_NORMAL_PARAM");
+            BaseRenderNode2D.SHADERDEFINE_UNITQUAD = Shader3D.getDefineByName("UNITQUAD");
             const commandUniform = LayaGL.renderDeviceFactory.createGlobalUniformMap("BaseRender2D");
             commandUniform.addShaderUniform(ShaderDefines2D.UNIFORM_NMATRIX_0, "u_NMatrix_0", exports.ShaderDataType.Vector3);
             commandUniform.addShaderUniform(ShaderDefines2D.UNIFORM_NMATRIX_1, "u_NMatrix_1", exports.ShaderDataType.Vector3);
             commandUniform.addShaderUniform(BaseRenderNode2D.BASERENDER2DCOLOR, "u_baseRenderColor", exports.ShaderDataType.Color);
             commandUniform.addShaderUniform(BaseRenderNode2D.BASERENDER2DTEXTURE, "u_baseRender2DTexture", exports.ShaderDataType.Texture2D);
             commandUniform.addShaderUniform(BaseRenderNode2D.TILINGOFFSET, "u_tilingOffset", exports.ShaderDataType.Vector4);
+            commandUniform.addShaderUniform(BaseRenderNode2D.BASERENDERSIZE, "u_baseRenderSize2D", exports.ShaderDataType.Vector2);
             commandUniform.addShaderUniform(BaseRenderNode2D.NORMAL2DTEXTURE, "u_normal2DTexture", exports.ShaderDataType.Texture2D);
             commandUniform.addShaderUniform(BaseRenderNode2D.NORMAL2DSTRENGTH, "u_normal2DStrength", exports.ShaderDataType.Float);
             commandUniform.addShaderUniform(ShaderDefines2D.UNIFORM_CLIPMATDIR, "u_clipMatDir", exports.ShaderDataType.Vector4);
@@ -18917,6 +19104,10 @@ window.Laya = (function (exports) {
         }
         _resetUpdateMark() {
             this._lightUpdateMark = 0;
+        }
+        _notifyDataChange() {
+            var _a;
+            (_a = this.owner) === null || _a === void 0 ? void 0 : _a.repaint();
         }
         _updateLight() {
             if (!this.lightReceive || !this.owner.scene || !this.owner.scene._light2DManager)
@@ -19529,12 +19720,12 @@ window.Laya = (function (exports) {
             this._subStruct = subStruct;
             this._subStruct.spriteShaderData = this._shaderData;
             this._subStruct.renderType = exports.BaseRender2DType.graphics;
-            this._submit.material = sprite.material;
             subStruct.renderDataHandler = this._handle;
             subStruct.renderMatrix = sprite.globalTrans.getMatrix();
             subStruct.renderElements = this._renderElements;
             this._renderElement.owner = this._subStruct;
-            this._renderElement.type = this._subStruct.blendMode;
+            this._renderElement.typeKey = this._subStruct.blendMode;
+            this._renderElement.textureKey = 0;
         }
         _updateRenderOffset(rect, oriRect, scaleX, scaleY) {
             rect.cloneTo(this._rtRect);
@@ -19593,10 +19784,10 @@ window.Laya = (function (exports) {
             if (this._internalInfo.textureHost == destRT && !this._needUpdateVertexSize)
                 return;
             if (destRT) {
-                this._renderElement.type = destRT._id << 6;
+                this._renderElement.textureKey = destRT._id << ShaderDefines2D.SHADER_DEFINE_BITS;
             }
             else {
-                this._renderElement.type = 0;
+                this._renderElement.textureKey = 0;
             }
             this._internalInfo.textureHost = destRT;
             let oriRect = this._oriRect;
@@ -20426,6 +20617,7 @@ window.Laya = (function (exports) {
             let indexBuffer = LayaGL.renderDeviceFactory.createIndexBuffer(exports.BufferUsage.Dynamic);
             indexBuffer._setIndexDataLength(ib.buffer.byteLength);
             indexBuffer._setIndexData(ib, 0);
+            indexBuffer.indexCount = ib.length;
             indexBuffer.indexType = ibFormat;
             mesh2d._setBuffers(vbArray, indexBuffer);
             let geometryArray = [];
@@ -20545,7 +20737,7 @@ window.Laya = (function (exports) {
                 iscreateBuffer = true;
                 this._indexBuffer = indexBuffer = LayaGL.renderDeviceFactory.createIndexBuffer(exports.BufferUsage.Static);
                 this._indexBuffer._setIndexDataLength(indices.byteLength);
-                indexBuffer.indexCount = indexBuffer.indexCount;
+                indexBuffer.indexCount = indices.length;
                 indexBuffer.indexType = format;
             }
             indexBuffer._setIndexData(indices, 0);
@@ -20581,6 +20773,15 @@ window.Laya = (function (exports) {
             Mesh2DRender.mesh2DDefaultMaterial.setFloatByIndex(ShaderDefines2D.UNIFORM_VERTALPHA, 1.0);
             Mesh2DRender.mesh2DDefaultMaterial.setIntByIndex(Shader3D.CULL, RenderState.CULL_NONE);
             Mesh2DRender.mesh2DDefaultMaterial.lock = true;
+            let vbDecl = VertexMesh2D.getVertexDeclaration(["POSITION,UV"]);
+            let vbData = new Float32Array([
+                0, 0, 0, 0, 0,
+                1, 0, 0, 1, 0,
+                1, 1, 0, 1, 1,
+                0, 1, 0, 0, 1
+            ]);
+            let ibData = new Uint16Array([0, 1, 2, 0, 2, 3]);
+            Mesh2DRender.defaultQuadMesh = Mesh2D.createMesh2DByPrimitive([vbData], vbDecl, ibData, exports.IndexFormat.UInt16, [{ start: 0, length: 6 }]);
         }
         _createRenderHandle() {
             return LayaGL.render2DRenderPassFactory.createMesh2DRenderDataHandle();
@@ -20589,6 +20790,7 @@ window.Laya = (function (exports) {
             this.color = new Color();
             this.tilingOffset = new Vector4(0, 0, 1, 1);
             this.texture = null;
+            this._applyUnitQuad(this._useUnitQuad);
         }
         _isMaterialVaild(value) {
             return value.checkType(exports.ShaderFeatureType.D2_BaseRenderNode2D);
@@ -20596,44 +20798,52 @@ window.Laya = (function (exports) {
         renderUpdate(context) {
             this._updateLight();
         }
+        set useUnitQuad(value) {
+            if (this._useUnitQuad === value)
+                return;
+            this._applyUnitQuad(value);
+        }
+        get useUnitQuad() {
+            return this._useUnitQuad;
+        }
         set sharedMesh(value) {
             if (this._sharedMesh == value)
                 return;
-            let meshArrayDefine = new Array();
             if (this._sharedMesh) {
-                VertexMesh2D.getMeshDefine(this._sharedMesh, meshArrayDefine);
-                for (var i = 0, n = meshArrayDefine.length; i < n; i++)
-                    this._spriteShaderData.removeDefine(meshArrayDefine[i]);
                 this._sharedMesh._removeReference();
             }
-            meshArrayDefine.length = 0;
             if (value) {
                 if (!value._vertexBuffers) {
                     value = null;
                     console.warn("not a 2D mesh");
                 }
                 else {
-                    VertexMesh2D.getMeshDefine(value, meshArrayDefine);
-                    for (var i = 0, n = meshArrayDefine.length; i < n; i++)
-                        this._spriteShaderData.addDefine(meshArrayDefine[i]);
                     value._addReference();
                 }
             }
             this._sharedMesh = value;
-            this._changeMesh();
+            this._applyUnitQuad(!value);
         }
         get sharedMesh() {
             return this._sharedMesh;
         }
         set color(value) {
             this._renderHandle.baseColor = value;
+            this._notifyDataChange();
         }
         get color() {
             return this._renderHandle.baseColor;
         }
+        set size(value) {
+            value.cloneTo(this._size);
+            this._spriteShaderData.setVector2(BaseRenderNode2D.BASERENDERSIZE, this._size);
+            this._notifyDataChange();
+        }
+        get size() { return this._size; }
         set tilingOffset(value) {
             this._tilingOffset = value;
             this._updateTilingOffset();
+            this._notifyDataChange();
         }
         get tilingOffset() {
             return this._tilingOffset;
@@ -20671,18 +20881,21 @@ window.Laya = (function (exports) {
             }
             this._updateTilingOffset();
             this._renderHandle.baseTexture = value;
+            this._notifyDataChange();
         }
         get texture() {
             return this._texture;
         }
         set normalTexture(value) {
             this._renderHandle.normal2DTexture = value;
+            this._notifyDataChange();
         }
         get normalTexture() {
             return this._renderHandle.normal2DTexture;
         }
         set normalStrength(value) {
             this._renderHandle.normal2DStrength = value;
+            this._notifyDataChange();
         }
         get normalStrength() {
             return this._renderHandle.normal2DStrength;
@@ -20690,12 +20903,38 @@ window.Laya = (function (exports) {
         set sharedMaterial(value) {
             super.sharedMaterial = value;
             this._changeMesh();
+            this._notifyDataChange();
         }
         get sharedMaterial() {
             return this._materials[0];
         }
+        _applyUnitQuad(value) {
+            this._useUnitQuad = value;
+            if (value) {
+                this._spriteShaderData.addDefine(BaseRenderNode2D.SHADERDEFINE_UNITQUAD);
+            }
+            else {
+                this._spriteShaderData.removeDefine(BaseRenderNode2D.SHADERDEFINE_UNITQUAD);
+            }
+            this._changeMesh();
+            this._notifyDataChange();
+        }
         _changeMesh() {
-            let submeshNum = this._sharedMesh ? this._sharedMesh.subMeshCount : 0;
+            let mesh = this._useUnitQuad ? Mesh2DRender.defaultQuadMesh : this._sharedMesh;
+            let meshArrayDefine = new Array();
+            if (this._activeMesh) {
+                VertexMesh2D.getMeshDefine(this._activeMesh, meshArrayDefine);
+                for (var i = 0, n = meshArrayDefine.length; i < n; i++)
+                    this._spriteShaderData.removeDefine(meshArrayDefine[i]);
+                meshArrayDefine.length = 0;
+            }
+            if (mesh) {
+                VertexMesh2D.getMeshDefine(mesh, meshArrayDefine);
+                for (var i = 0, n = meshArrayDefine.length; i < n; i++)
+                    this._spriteShaderData.addDefine(meshArrayDefine[i]);
+            }
+            this._activeMesh = mesh;
+            let submeshNum = mesh ? mesh.subMeshCount : 0;
             if (submeshNum < this._renderElements.length) {
                 for (var i = this._renderElements.length, n = submeshNum; n < i; i--) {
                     let element = this._renderElements[i - 1];
@@ -20707,7 +20946,7 @@ window.Laya = (function (exports) {
                 let element = this._renderElements[i];
                 if (!element)
                     element = this._renderElements[i] = LayaGL.render2DRenderPassFactory.createRenderElement2D();
-                element.geometry = this._sharedMesh.getSubMesh(i);
+                element.geometry = mesh.getSubMesh(i);
                 element.value2DShaderData = this._spriteShaderData;
                 BaseRenderNode2D._setRenderElement2DMaterial(element, this._materials[i] ? this._materials[i] : Mesh2DRender.mesh2DDefaultMaterial);
                 element.renderStateIsBySprite = false;
@@ -20718,7 +20957,9 @@ window.Laya = (function (exports) {
         }
         constructor() {
             super();
+            this._useUnitQuad = false;
             this._textureTilingOffset = new Vector4(0, 0, 1, 1);
+            this._size = new Vector2(1, 1);
             this._renderElements = [];
             this._materials = [];
         }
@@ -20921,6 +21162,7 @@ window.Laya = (function (exports) {
             super();
             this._renderElements = [];
             this._renderColor = new Color(1, 1, 1, 1);
+            this._textureTilingOffset = new Vector4(0, 0, 1, 1);
             this._tilingOffset = new Vector4(0, 0, 1, 1);
             this._drawElementData = LayaGL.render2DRenderPassFactory.createDraw2DElementCMDData();
             this._shaderData = LayaGL.renderDeviceFactory.createShaderData();
@@ -20978,25 +21220,44 @@ window.Laya = (function (exports) {
             return this._mesh;
         }
         set texture(value) {
-            value = value ? value : Texture2D.whiteTexture;
-            if (value.gammaCorrection != 1) {
+            if (this._texture instanceof Texture) {
+                this._texture._removeReference();
+            }
+            this._texture = value;
+            let baseTexture;
+            if (value instanceof Texture) {
+                value._addReference();
+                if (value.uv !== Texture.DEF_UV) {
+                    let sx = value.uvrect[2] / value.width;
+                    let sy = value.uvrect[3] / value.height;
+                    this._textureTilingOffset.setValue(value.uvrect[0] - value.offsetX * sx, value.uvrect[1] - value.offsetY * sy, value.sourceWidth * sx, value.sourceHeight * sy);
+                }
+                else {
+                    this._textureTilingOffset.setValue(0, 0, 1, 1);
+                }
+                baseTexture = value.bitmap;
+            }
+            else {
+                this._textureTilingOffset.setValue(0, 0, 1, 1);
+                baseTexture = value ? value : Texture2D.whiteTexture;
+            }
+            if (baseTexture.gammaCorrection != 1) {
                 this._shaderData.addDefine(ShaderDefines2D.GAMMATEXTURE);
             }
             else {
                 this._shaderData.removeDefine(ShaderDefines2D.GAMMATEXTURE);
             }
-            this._texture = value;
+            this._tilingOffset.setValue(this._textureTilingOffset.x, this._textureTilingOffset.y, this._textureTilingOffset.z, this._textureTilingOffset.w);
             this._shaderData.setVector(BaseRenderNode2D.TILINGOFFSET, this._tilingOffset);
-            this._shaderData.setTexture(BaseRenderNode2D.BASERENDER2DTEXTURE, value);
+            this._shaderData.setTexture(BaseRenderNode2D.BASERENDER2DTEXTURE, baseTexture);
         }
         get texture() {
             return this._texture;
         }
         set color(value) {
             this._color = value;
-            let a = value.a;
             let renderColor = this._renderColor;
-            renderColor.setValue(value.r * a, value.g * a, value.b * a, a);
+            renderColor.setValue(value.r, value.g, value.b, value.a);
             this._shaderData.setColor(BaseRenderNode2D.BASERENDER2DCOLOR, renderColor);
         }
         get color() {
@@ -21037,7 +21298,10 @@ window.Laya = (function (exports) {
             DrawMesh2DCMD._pool.recover(this);
             super.recover();
             this.material = null;
-            this.texture = null;
+            if (this._texture instanceof Texture) {
+                this._texture._removeReference();
+            }
+            this._texture = null;
             this.mesh = null;
         }
         destroy() {
@@ -21099,12 +21363,14 @@ window.Laya = (function (exports) {
     DrawRenderElement2DCMD._pool = Pool.createPool(DrawRenderElement2DCMD);
 
     class Set2DRTCMD extends Command2D {
-        static create(renderTexture, clearColor, colorValue, renderInvertY = true) {
+        static create(renderTexture, clearColor, colorValue, renderInvertY = true, viewportX = 0, viewportY = 0) {
             let cmd = Set2DRTCMD._pool.take();
             cmd.renderTexture = renderTexture;
             cmd._setRenderTargetCMD.clearColor = clearColor;
             cmd._setRenderTargetCMD.clearColorValue = colorValue;
             cmd._setRenderTargetCMD.invertY = renderInvertY;
+            cmd._setRenderTargetCMD.viewportX = viewportX;
+            cmd._setRenderTargetCMD.viewportY = viewportY;
             return cmd;
         }
         get renderTexture() {
@@ -21195,6 +21461,7 @@ window.Laya = (function (exports) {
             this._scene = null;
             this._renderCMDs = [];
             this.cacheData = {};
+            this._cacheViewport = new Vector4();
             this._name = name;
             this.shaderData = LayaGL.renderDeviceFactory.createShaderData();
             this._context = Render2DProcessor.rendercontext2D;
@@ -21207,8 +21474,11 @@ window.Laya = (function (exports) {
             this.cacheData.rt = this._context.getRenderTarget();
             this.cacheData.pipeline = this._context.pipelineMode;
             this.cacheData.invertY = this._context.invertY;
+            this._context.getOffscreenView(this._cacheViewport);
         }
         _recoverContextState() {
+            let vp = this._cacheViewport;
+            this._context.setOffscreenView(vp.z, vp.w, vp.x, vp.y);
             this._context.setRenderTarget(this.cacheData.rt, false, Color.BLACK);
             this._context.pipelineMode = this.cacheData.pipeline;
             this._context.invertY = this.cacheData.invertY;
@@ -21289,8 +21559,8 @@ window.Laya = (function (exports) {
         }
         blitTextureBlur(source, dest, blurParams) {
         }
-        setRenderTarget(renderTexture, clearColor, colorValue = Color.BLACK, invertY = true) {
-            let cmd = Set2DRTCMD.create(renderTexture, clearColor, colorValue, invertY);
+        setRenderTarget(renderTexture, clearColor, colorValue = Color.BLACK, invertY = true, viewportX = 0, viewportY = 0) {
+            let cmd = Set2DRTCMD.create(renderTexture, clearColor, colorValue, invertY, viewportX, viewportY);
             this._commands.push(cmd);
             cmd._commandBuffer = this;
             cmd.getRenderCMD && this._renderCMDs.push(cmd.getRenderCMD());
@@ -21329,6 +21599,10 @@ window.Laya = (function (exports) {
     }
 
     class PostProcess2D extends EventDispatcher {
+        static postRenderAll() {
+            PostProcess2D._pendingPostRender.forEach(pp => pp._afterRender());
+            PostProcess2D._pendingPostRender.clear();
+        }
         static init() {
             Effect2DShaderInit.colorEffect2DShaderInit();
             Effect2DShaderInit.blurEffect2DShaderInit();
@@ -21431,6 +21705,7 @@ window.Laya = (function (exports) {
             }
         }
         _render() {
+            var _a, _b;
             this._context.command.clear(true);
             this._context.indirectTarget = this._context.source;
             this._context.destination = this._context.source;
@@ -21442,6 +21717,16 @@ window.Laya = (function (exports) {
                 }
             }
             this._hasCleanRT = false;
+            (_b = (_a = this._owner) === null || _a === void 0 ? void 0 : _a._oriRenderPass) === null || _b === void 0 ? void 0 : _b.updatePostProcess();
+            PostProcess2D._pendingPostRender.add(this);
+        }
+        _afterRender() {
+            if (this._hasCleanRT)
+                return;
+            for (let i = 0, n = this._effects.length; i < n; i++) {
+                this._effects[i].clearRT(this._context);
+            }
+            this._hasCleanRT = true;
         }
         clear() {
             for (let i = 0; i < this._effects.length; i++) {
@@ -21459,6 +21744,8 @@ window.Laya = (function (exports) {
                 effect.clearRT(this._context);
             }
             this._hasCleanRT = true;
+            this._context.command.clear(true);
+            PostProcess2D._pendingPostRender.delete(this);
         }
         apply() {
             if (this._hasCleanRT) {
@@ -21481,6 +21768,7 @@ window.Laya = (function (exports) {
             this._effects.length = 0;
         }
     }
+    PostProcess2D._pendingPostRender = new Set();
     class PostProcessRenderContext2D {
         constructor() {
             this.deferredReleaseTextures = [];
@@ -21529,9 +21817,18 @@ window.Laya = (function (exports) {
             this._cacheAsBmp = false;
             this._layer = 0;
             this._ownPostProcess = false;
+            this._manualRender = false;
             this._struct = LayaGL.render2DRenderPassFactory.createRenderStruct2D();
             this._struct.owner = this;
             this._globalTrans = new SpriteGlobalTransform(this);
+        }
+        _onActive() {
+            super._onActive();
+            LayaGL.statAgent.recordCountData(exports.StatElement.C_Sprite2DCount, 1);
+        }
+        _onInActive() {
+            super._onInActive();
+            LayaGL.statAgent.recordCountData(exports.StatElement.C_Sprite2DCount, -1);
         }
         _initShaderData() {
             if (this._shaderData)
@@ -21877,6 +22174,8 @@ window.Laya = (function (exports) {
                 this.setSubpassFlag(exports.SubPassFlag.PostProcess);
             }
             if (value) {
+                if (this._manualRender)
+                    this._setManualRender(false);
                 if (!this._oriRenderPass) {
                     this.createSubRenderPass();
                 }
@@ -21892,6 +22191,8 @@ window.Laya = (function (exports) {
             let b = value === "bitmap";
             if (b === this._cacheAsBmp)
                 return;
+            if (b && this._manualRender)
+                this._setManualRender(false);
             this._cacheAsBmp = b;
             if (b) {
                 this._renderType |= SpriteConst.CANVAS;
@@ -21910,6 +22211,8 @@ window.Laya = (function (exports) {
                 return;
             if (value && value.isAncestorOf(this))
                 throw new Error("Mask cannot be ancestor of the masked object");
+            if (value && this._manualRender)
+                this._setManualRender(false);
             if (this._mask) {
                 this._mask.cacheAs = "none";
                 this._mask._maskParent = null;
@@ -21925,6 +22228,33 @@ window.Laya = (function (exports) {
             }
             this.setSubpassFlag(exports.SubPassFlag.Mask);
             this.repaint();
+        }
+        _setManualRender(value) {
+            if (value === this._manualRender)
+                return;
+            this._manualRender = value;
+            value ? this._enableManualRender() : this._disableManualRender();
+        }
+        _enableManualRender() {
+            if (this._renderType & SpriteConst.DRAW2RT) {
+                if (this._cacheAsBmp)
+                    this.cacheAs = "none";
+                if (this._mask)
+                    this.mask = null;
+            }
+            this._ensureSubPassBase();
+            this._subStruct.manualRender = true;
+            this._struct.subStruct = this._subStruct;
+            this._subStruct.enabled = true;
+            this._oriRenderPass.enable = false;
+        }
+        _disableManualRender() {
+            if (!this._subStruct)
+                return;
+            this._subStruct.manualRender = false;
+            this._subStruct.enabled = false;
+            this._struct.subStruct = null;
+            this._struct.setRepaint();
         }
         clearSubpassFlag(flag) {
             this._subpassUpdateFlag &= ~flag;
@@ -22272,50 +22602,92 @@ window.Laya = (function (exports) {
             return res;
         }
         static drawToRenderTexture2D(sprite, canvasWidth, canvasHeight, offsetX, offsetY, rt, isDrawRenderRect, flipY, clearColor, renderScaleX = 1, renderScaleY = 1) {
+            var _a;
             let renderout = rt || new RenderTexture2D(canvasWidth, canvasHeight, exports.RenderTargetFormat.R8G8B8A8);
             renderout._invertY = flipY;
             if (LayaGL.renderEngine._screenInvertY) {
                 renderout._invertY = !renderout._invertY;
             }
+            let processor = new Render2DProcessor();
+            let pass = processor.basePass;
+            if (clearColor) {
+                pass.setClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+                pass.doClearColor = true;
+            }
+            let { root, subPasses } = sprite.prepareOSR();
+            for (let subPass of subPasses) {
+                processor.addPass(subPass);
+            }
+            pass.renderTexture = renderout;
+            pass.root = root;
+            let matrix = pass.offsetMatrix;
+            matrix.identity();
+            let local = sprite.transform;
+            if (local)
+                local.copyTo(matrix);
+            matrix.scale(renderScaleX, renderScaleY);
+            matrix.invert();
+            matrix.tx = -offsetX;
+            matrix.ty = -offsetY;
+            pass.offsetMatrix = matrix;
+            let globalSD = (_a = sprite._struct.globalRenderData) === null || _a === void 0 ? void 0 : _a.globalShaderData;
+            let hadCamera2D = false;
+            if (globalSD && globalSD.hasDefine(ShaderDefines2D.SHADERDEFINE_CAMERA2D)) {
+                hadCamera2D = true;
+                globalSD.removeDefine(ShaderDefines2D.SHADERDEFINE_CAMERA2D);
+            }
+            processor.apply(Render2DProcessor.rendercontext2D);
+            if (hadCamera2D) {
+                globalSD.addDefine(ShaderDefines2D.SHADERDEFINE_CAMERA2D);
+            }
+            processor.clear();
+            pass.destroy();
+            return renderout;
+        }
+        prepareOSR() {
             let runner = Render2DProcessor.runner;
             let passSet = new Set();
-            let processor = new Render2DProcessor();
             const updateSprites = function (sprite) {
                 if (!sprite._struct || !sprite._struct.enabled)
                     return;
                 if (sprite._subpassUpdateFlag) {
-                    sprite.updateSubRenderPassState();
-                    if (sprite._oriRenderPass) {
-                        let result = sprite.updateRenderTexture();
-                        let destrt = sprite._drawOriRT;
-                        if (destrt) {
-                            sprite._oriRenderPass.renderTexture = destrt;
-                            if (sprite.mask) {
-                                sprite._oriRenderPass.mask = sprite.mask._struct;
-                            }
-                            else
-                                sprite._oriRenderPass.mask = null;
-                            if (result) {
+                    if (sprite._manualRender) {
+                        sprite._subpassUpdateFlag = 0;
+                    }
+                    else {
+                        sprite.updateSubRenderPassState();
+                        if (sprite._oriRenderPass) {
+                            let result = sprite.updateRenderTexture();
+                            let destrt = sprite._drawOriRT;
+                            if (destrt) {
                                 sprite._oriRenderPass.renderTexture = destrt;
-                            }
-                            let process = sprite._renderType & SpriteConst.POSTPROCESS ? sprite.postProcess : null;
-                            if (process
-                                && destrt != RenderTexture2D._empty) {
-                                if (result ||
-                                    (sprite._subpassUpdateFlag & exports.SubPassFlag.UPDATE_POSTPROCESS)) {
-                                    process.setResource(destrt);
-                                    process.clearCMD();
-                                    process._render();
+                                if (sprite.mask) {
+                                    sprite._oriRenderPass.mask = sprite.mask._struct;
                                 }
-                                if (process.enabled) {
-                                    destrt = process._context.destination;
+                                else
+                                    sprite._oriRenderPass.mask = null;
+                                if (result) {
+                                    sprite._oriRenderPass.renderTexture = destrt;
                                 }
+                                let process = sprite._renderType & SpriteConst.POSTPROCESS ? sprite.postProcess : null;
+                                if (process
+                                    && destrt != RenderTexture2D._empty) {
+                                    if (result ||
+                                        (sprite._subpassUpdateFlag & exports.SubPassFlag.UPDATE_POSTPROCESS)) {
+                                        process.setResource(destrt);
+                                        process.clearCMD();
+                                        process._render();
+                                    }
+                                    if (process.enabled) {
+                                        destrt = process._context.destination;
+                                    }
+                                }
+                                sprite._subStructRender._updateRenderTexture(sprite._drawOriRT, destrt);
+                                sprite._subpassUpdateFlag = 0;
                             }
-                            sprite._subStructRender._updateRenderTexture(sprite._drawOriRT, destrt);
-                            sprite._subpassUpdateFlag = 0;
-                        }
-                        else {
-                            sprite.setSubRenderPassState(false);
+                            else {
+                                sprite.setSubRenderPassState(false);
+                            }
                         }
                     }
                 }
@@ -22330,34 +22702,10 @@ window.Laya = (function (exports) {
                 for (let i = 0, len = sprite._children.length; i < len; i++)
                     updateSprites(sprite._children[i]);
             };
-            updateSprites(sprite);
-            let pass = processor.basePass;
-            if (clearColor) {
-                pass.setClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
-                pass.doClearColor = true;
-            }
-            pass.renderTexture = renderout;
-            let struct = sprite._oriRenderPass && sprite._oriRenderPass.enable ? sprite._subStruct : sprite._struct;
-            pass.root = struct;
-            let matrix = pass.offsetMatrix;
-            matrix.identity();
-            let local = sprite.transform;
-            if (local)
-                local.copyTo(matrix);
-            matrix.scale(renderScaleX, renderScaleY);
-            matrix.invert();
-            matrix.tx = -offsetX;
-            matrix.ty = -offsetY;
-            pass.offsetMatrix = matrix;
-            for (let pass of passSet) {
-                if (pass.priority > 0) {
-                    processor.addPass(pass);
-                }
-            }
-            processor.apply(Render2DProcessor.rendercontext2D);
-            processor.clear();
-            pass.destroy();
-            return renderout;
+            updateSprites(this);
+            let root = this._oriRenderPass && this._oriRenderPass.enable ? this._subStruct : this._struct;
+            let subPasses = Array.from(passSet).filter(pass => pass.priority > 0);
+            return { root, subPasses };
         }
         hitTestPoint(x, y) {
             let point = this.globalToLocal(tmpPoint.setTo(x, y));
@@ -22497,7 +22845,7 @@ window.Laya = (function (exports) {
                 }
                 else {
                     if (this._skinBaseUrl)
-                        url = URL.formatURL(url, this._skinBaseUrl);
+                        url = URL$1.formatURL(url, this._skinBaseUrl);
                     ILaya.loader.load(url).then((tex) => {
                         this.texture = tex;
                         complete && complete.run();
@@ -22683,7 +23031,9 @@ window.Laya = (function (exports) {
                 value._struct.addChild(struct, index);
             }
         }
-        createSubRenderPass() {
+        _ensureSubPassBase() {
+            if (this._oriRenderPass)
+                return;
             let subPass = LayaGL.render2DRenderPassFactory.createRender2DPass();
             subPass.root = this._struct;
             subPass.enable = false;
@@ -22691,11 +23041,19 @@ window.Laya = (function (exports) {
             let subStruct = LayaGL.render2DRenderPassFactory.createRenderStruct2D();
             subStruct.owner = this;
             subStruct.pass = subPass;
-            this._subStructRender = new SubStructRender();
-            this._subStructRender.bind(this, subPass, subStruct);
             this._subStruct = subStruct;
             this._oriRenderPass = subPass;
             subStruct.renderMatrix = this.globalTrans.getMatrix();
+        }
+        _ensureSubStructRender() {
+            if (this._subStructRender)
+                return;
+            this._subStructRender = new SubStructRender();
+            this._subStructRender.bind(this, this._oriRenderPass, this._subStruct);
+        }
+        createSubRenderPass() {
+            this._ensureSubPassBase();
+            this._ensureSubStructRender();
         }
         updateRenderTexture() {
             let rect = Rectangle.create();
@@ -22745,8 +23103,8 @@ window.Laya = (function (exports) {
                 this._drawOriRT = RenderTexture2D._empty;
             }
             else {
-                let multiSamples = this._maskParent && LayaGL.renderEngine.getCapable(exports.RenderCapable.MSAA) ? 4 : 1;
-                let renderTexture = RenderTexture2D.createFromPool(rect.width, rect.height, exports.RenderTargetFormat.R8G8B8A8, exports.RenderTargetFormat.None, multiSamples);
+                let multiSamples = LayaGL.renderEngine.getCapable(exports.RenderCapable.MSAA) ? 4 : 1;
+                let renderTexture = RenderTexture2D.createFromPool(rect.width, rect.height, exports.RenderTargetFormat.R8G8B8A8, exports.RenderTargetFormat.DEPTHSTENCIL_24_8, multiSamples);
                 renderTexture._invertY = LayaGL.renderEngine._screenInvertY;
                 this._drawOriRT = renderTexture;
             }
@@ -23232,7 +23590,7 @@ window.Laya = (function (exports) {
             return target || this._stage;
         }
         getSpriteUnderPoint(sp, x, y) {
-            if ((sp._renderType & SpriteConst.AREA2D) !== 0 && LayaEnv.isPlaying) {
+            if ((sp._renderType & SpriteConst.AREA2D) !== 0 && LayaEnv.isPlaying && !InputManager._previewFlag) {
                 sp.localToView(x, y, Point.TEMP);
                 x = Point.TEMP.x;
                 y = Point.TEMP.y;
@@ -23251,8 +23609,8 @@ window.Laya = (function (exports) {
                 let childEditing = editing || child._getBit(NodeFlags.EDITING_NODE);
                 if (!child._destroyed
                     && child._nodeType !== 1
-                    && (childEditing ? ((!child.hasHideFlag(HideFlags.HideInHierarchy) || child.mouseThrough) && !child._getBit(NodeFlags.HIDE_BY_EDITOR))
-                        : (child._mouseState === 2 || child._mouseState === 0 && child._getBit(NodeFlags.CHECK_INPUT)))
+                    && (childEditing ? (!child.hasHideFlag(HideFlags.HideInHierarchy) || child.mouseThrough)
+                        : (child._mouseState === 2 || child._mouseState === 0 && child._getBit(NodeFlags.CHECK_INPUT) || InputManager._previewFlag))
                     && child._struct.enabled) {
                     _tempPoint.setTo(x, y);
                     child.fromParentPoint(_tempPoint);
@@ -23261,6 +23619,9 @@ window.Laya = (function (exports) {
                         return ret;
                 }
             }
+            if (InputManager._previewFlag
+                && (sp._getBit(NodeFlags.LOCK_BY_EDITOR) || sp._getBit(NodeFlags.HIDE_BY_EDITOR) || sp.hasHideFlag(HideFlags.HideInHierarchy)))
+                return null;
             if (editing) {
                 if (!sp._getBit(NodeFlags.LOCK_BY_EDITOR)
                     && !sp.hasHideFlag(HideFlags.HideInHierarchy)
@@ -23351,6 +23712,7 @@ window.Laya = (function (exports) {
     InputManager.lastMouseTime = 0;
     InputManager.lastTouchId = 0;
     InputManager.onMouseDownCapture = new Delegate();
+    InputManager._previewFlag = false;
     const clickTrack = {};
     class TouchInfo {
         constructor(touches) {
@@ -23606,6 +23968,115 @@ window.Laya = (function (exports) {
         }
     }
 
+    var _renderCount = 0;
+    class Render {
+        static get paused() {
+            return Render._paused;
+        }
+        static set paused(value) {
+            var _a, _b, _c;
+            if (Render._paused === value)
+                return;
+            Render._paused = value;
+            if (!value) {
+                (_a = ILaya.systemTimer) === null || _a === void 0 ? void 0 : _a._markResumed();
+                (_b = ILaya.physicsTimer) === null || _b === void 0 ? void 0 : _b._markResumed();
+                (_c = ILaya.timer) === null || _c === void 0 ? void 0 : _c._markResumed();
+            }
+        }
+        static __init__() {
+            Render.frameInterval = 1000 / Config.FPS;
+            let timeId = 0;
+            PAL.browser.on("visibilitychange", (visible) => {
+                if (!visible)
+                    timeId = window.setInterval(Render.loop, 1000);
+                else if (timeId != 0)
+                    window.clearInterval(timeId);
+            });
+            Render.startLoop();
+        }
+        static startLoop() {
+            let lastTime = null;
+            let first = true;
+            let startTm = 0;
+            let leftTime = 0;
+            function loop(timestamp) {
+                if (timestamp == null || PAL.g !== null)
+                    timestamp = performance.now();
+                let interval = Render.frameInterval;
+                if (first) {
+                    startTm = Math.floor(timestamp / interval) * interval;
+                    first = false;
+                }
+                let delta = leftTime + timestamp - lastTime;
+                if (delta + 1 >= interval || !Config.fixedFrames) {
+                    leftTime = Math.min(delta - interval, interval);
+                    lastTime = timestamp;
+                    Render.lastFrame = Math.floor((timestamp - startTm) / interval);
+                    Render.loop(timestamp);
+                }
+                window.requestAnimationFrame(loop);
+            }
+            window.requestAnimationFrame(loop);
+        }
+        static loop(timestamp) {
+            _renderCount++;
+            if (!Render.forceOnce) {
+                if (Render.paused) {
+                    Render._syncTimersOnPause(timestamp);
+                    return;
+                }
+                let shouldUpdate = true;
+                if (Render.predicate != null)
+                    shouldUpdate = Render.predicate(timestamp);
+                else {
+                    switch (Render.throttleMode) {
+                        case 1:
+                            shouldUpdate = (_renderCount % (ILaya.stage._visible ? 2 : 5) === 0);
+                            break;
+                        case 2:
+                            shouldUpdate = (timestamp - InputManager.lastMouseTime) < 2000 || (_renderCount % (ILaya.stage._visible ? 2 : 5) === 0);
+                            break;
+                        case 3:
+                            shouldUpdate = timestamp - Render.frameStartTime >= 1000;
+                            break;
+                    }
+                }
+                if (!shouldUpdate)
+                    return;
+            }
+            else {
+                Render.stepMode = true;
+                Render.forceOnce = false;
+            }
+            Render.frameStartTime = timestamp;
+            LayaGL.statAgent.startFrameLogic(timestamp);
+            ILaya.stage.render(timestamp);
+            LayaGL.statAgent.endFrameLogic(timestamp);
+            Render.stepMode = false;
+        }
+        static vsyncTime() {
+            return Render.lastFrame * Render.frameInterval;
+        }
+        static _syncTimersOnPause(timestamp) {
+            var _a, _b, _c;
+            (_a = ILaya.systemTimer) === null || _a === void 0 ? void 0 : _a._syncTimestamp(timestamp);
+            (_b = ILaya.physicsTimer) === null || _b === void 0 ? void 0 : _b._syncTimestamp(timestamp);
+            (_c = ILaya.timer) === null || _c === void 0 ? void 0 : _c._syncTimestamp(timestamp);
+        }
+        static get canvas() {
+            return Browser.mainCanvas.source;
+        }
+    }
+    Render.frameInterval = 1000 / 60;
+    Render.lastFrame = 0;
+    Render.frameStartTime = 0;
+    Render.throttleMode = 0;
+    Render.predicate = null;
+    Render._paused = false;
+    Render.forceOnce = false;
+    Render.stepMode = false;
+
     class Timer {
         constructor(autoActive, greedyMode) {
             this.scale = 1;
@@ -23614,6 +24085,7 @@ window.Laya = (function (exports) {
             this.unscaledDelta = 0;
             this._map = {};
             this._handlers = [];
+            this._wasJustResumed = false;
             (autoActive || autoActive == null) && Timer.gSysTimer && Timer.gSysTimer.frameLoop(1, this, this._update);
             this.currTimer = performance.now();
             this._lastTimer = performance.now();
@@ -23631,11 +24103,18 @@ window.Laya = (function (exports) {
                 return;
             }
             let frame = this.currFrame = this.currFrame + this.scale;
-            this.unscaledDelta = timestamp - this._lastTimer;
+            if (Render.stepMode || this._wasJustResumed) {
+                this.unscaledDelta = Render.frameInterval;
+                this._lastTimer = timestamp;
+                this._wasJustResumed = false;
+            }
+            else {
+                this.unscaledDelta = timestamp - this._lastTimer;
+                this._lastTimer = timestamp;
+            }
             let awake = this.unscaledDelta > 30000;
             this.delta = this.unscaledDelta * this.scale;
             let timer = this.currTimer = this.currTimer + this.delta;
-            this._lastTimer = timestamp;
             let handlers = this._handlers;
             let killed = 0;
             for (let i = 0, n = handlers.length - 1; i <= n; i++) {
@@ -23784,6 +24263,12 @@ window.Laya = (function (exports) {
             }
             this._handlers.length = 0;
         }
+        _syncTimestamp(timestamp) {
+            this._lastTimer = timestamp;
+        }
+        _markResumed() {
+            this._wasJustResumed = true;
+        }
     }
     Timer.gSysTimer = null;
     Timer.callLaters = new Timer(false, true);
@@ -23807,91 +24292,7 @@ window.Laya = (function (exports) {
         }
     }
 
-    var _renderCount = 0;
-    class Render {
-        static __init__() {
-            Render.frameInterval = 1000 / Config.FPS;
-            let timeId = 0;
-            PAL.browser.on("visibilitychange", (visible) => {
-                if (!visible)
-                    timeId = window.setInterval(Render.loop, 1000);
-                else if (timeId != 0)
-                    window.clearInterval(timeId);
-            });
-            Render.startLoop();
-        }
-        static startLoop() {
-            let lastTime = null;
-            let first = true;
-            let startTm = 0;
-            let leftTime = 0;
-            function loop(timestamp) {
-                if (timestamp == null || PAL.g !== null)
-                    timestamp = performance.now();
-                let interval = Render.frameInterval;
-                if (first) {
-                    startTm = Math.floor(timestamp / interval) * interval;
-                    first = false;
-                }
-                let delta = leftTime + timestamp - lastTime;
-                if (delta + 1 >= interval || !Config.fixedFrames) {
-                    leftTime = Math.min(delta - interval, interval);
-                    lastTime = timestamp;
-                    Render.lastFrame = Math.floor((timestamp - startTm) / interval);
-                    Render.loop(timestamp);
-                }
-                window.requestAnimationFrame(loop);
-            }
-            window.requestAnimationFrame(loop);
-        }
-        static loop(timestamp) {
-            _renderCount++;
-            if (!Render.forceOnce) {
-                if (Render.paused)
-                    return;
-                let shouldUpdate = true;
-                if (Render.predicate != null)
-                    shouldUpdate = Render.predicate(timestamp);
-                else {
-                    switch (Render.throttleMode) {
-                        case 1:
-                            shouldUpdate = (_renderCount % (ILaya.stage._visible ? 2 : 5) === 0);
-                            break;
-                        case 2:
-                            shouldUpdate = (timestamp - InputManager.lastMouseTime) < 2000 || (_renderCount % (ILaya.stage._visible ? 2 : 5) === 0);
-                            break;
-                        case 3:
-                            shouldUpdate = timestamp - Render.frameStartTime >= 1000;
-                            break;
-                    }
-                }
-                if (!shouldUpdate)
-                    return;
-            }
-            else
-                Render.forceOnce = false;
-            Render.frameStartTime = timestamp;
-            LayaGL.statAgent.startFrameLogic(timestamp);
-            ILaya.stage.render(timestamp);
-            LayaGL.statAgent.endFrameLogic(timestamp);
-        }
-        static vsyncTime() {
-            return Render.lastFrame * Render.frameInterval;
-        }
-        static get canvas() {
-            return Browser.mainCanvas.source;
-        }
-    }
-    Render.frameInterval = 1000 / 60;
-    Render.lastFrame = 0;
-    Render.frameStartTime = 0;
-    Render.throttleMode = 0;
-    Render.predicate = null;
-    Render.paused = false;
-    Render.forceOnce = false;
-
     class Stage extends Sprite {
-        ;
         constructor() {
             super();
             this.offset = new Point();
@@ -24137,6 +24538,8 @@ window.Laya = (function (exports) {
             return this._scaleMode;
         }
         set scaleMode(value) {
+            if (this._scaleMode == value)
+                return;
             this._scaleMode = value;
             this.updateCanvasSize(true);
         }
@@ -24145,6 +24548,8 @@ window.Laya = (function (exports) {
             return this._alignH;
         }
         set alignH(value) {
+            if (this._alignH == value)
+                return;
             this._alignH = value;
             this.updateCanvasSize(true);
         }
@@ -24153,6 +24558,8 @@ window.Laya = (function (exports) {
             return this._alignV;
         }
         set alignV(value) {
+            if (this._alignV == value)
+                return;
             this._alignV = value;
             this.updateCanvasSize(true);
         }
@@ -24180,11 +24587,9 @@ window.Laya = (function (exports) {
             return Point.TEMP.setTo(this.mouseX, this.mouseY);
         }
         get clientScaleX() {
-            this.needUpdateCanvasSize();
             return this._scaleX;
         }
         get clientScaleY() {
-            this.needUpdateCanvasSize();
             return this._scaleY;
         }
         get screenMode() {
@@ -24290,6 +24695,7 @@ window.Laya = (function (exports) {
                 }
             }
             this.passManager.apply(Render2DProcessor.rendercontext2D);
+            PostProcess2D.postRenderAll();
             this._graphicUpdateList.clear();
             this._subpassUpdateList.clear();
             this._tranMatrixUpdateList.clear();
@@ -24819,275 +25225,39 @@ window.Laya = (function (exports) {
         }
     }
 
-    class Camera2D extends Sprite {
-        static shaderValueInit() {
-            Camera2D.VIEW2D = Shader3D.propertyNameToID("u_view2D");
-            Camera2D.SHADERDEFINE_CAMERA2D = Shader3D.getDefineByName("CAMERA2D");
-        }
-        get ignoreRotation() {
-            return this._ignoreRotation;
-        }
-        set ignoreRotation(value) {
-            this._ignoreRotation = value;
-        }
-        get isMain() {
-            return this._isMain;
-        }
-        set isMain(value) {
-            if (this._ownerArea) {
-                if (value) {
-                    this._ownerArea._setMainCamera(this);
-                    this._isMain = true;
-                }
-                else {
-                    if (this._ownerArea.mainCamera == this) {
-                        this._ownerArea._setMainCamera(null);
-                        this._isMain = false;
-                    }
-                }
-            }
-            this._isMain = value;
-        }
-        _setUnBelongScene() {
-            if (this._ownerArea != null) {
-                if (this._ownerArea.mainCamera == this)
-                    this._ownerArea._setMainCamera(null);
-                this._ownerArea = null;
-            }
-            super._setUnBelongScene();
-        }
-        _findOwnerArea() {
-            let ele = this;
-            while (ele) {
-                if (ele === this._scene || ele === ILaya.stage)
-                    break;
-                if ((ele._renderType & SpriteConst.AREA2D) !== 0) {
-                    this._ownerArea = ele;
-                    if (this._isMain && !this._ownerArea.mainCamera)
-                        this._ownerArea._setMainCamera(this);
-                    break;
-                }
-                ele = ele._parent;
-            }
-            if (this._ownerArea == null) {
-                console.warn("Camera2D must be a descendant of Area2D");
-            }
-        }
-        get zoom() {
-            return this._zoom;
-        }
-        set zoom(value) {
-            if (value) {
-                value.cloneTo(this._zoom);
-                this._struct.setRepaint();
-                this.parentRepaint();
-            }
-        }
-        get limit_Left() {
-            return this._limit_Left;
-        }
-        set limit_Left(value) {
-            this._limit_Left = value;
-        }
-        get limit_Right() {
-            return this._limit_Right;
-        }
-        set limit_Right(value) {
-            this._limit_Right = value;
-        }
-        get limit_Bottom() {
-            return this._limit_Bottom;
-        }
-        set limit_Bottom(value) {
-            this._limit_Bottom = value;
-        }
-        get limit_Top() {
-            return this._limit_Top;
-        }
-        set limit_Top(value) {
-            this._limit_Top = value;
-        }
-        get positionSmooth() {
-            return this._positionSmooth;
-        }
-        set positionSmooth(value) {
-            this._positionSmooth = value;
-        }
-        get positionSpeed() {
-            return this._positionSpeed;
-        }
-        set positionSpeed(value) {
-            this._positionSpeed = value;
-        }
-        get dragHorizontalEnable() {
-            return this._dragHorizontalEnable;
-        }
-        set dragHorizontalEnable(value) {
-            this._dragHorizontalEnable = value;
-        }
-        get dragVerticalEnable() {
-            return this._dragVerticalEnable;
-        }
-        set dragVerticalEnable(value) {
-            this._dragVerticalEnable = value;
-        }
-        get drag_Left() {
-            return this._drag_Left;
-        }
-        set drag_Left(value) {
-            this._drag_Left = value;
-        }
-        get drag_Right() {
-            return this._drag_Right;
-        }
-        set drag_Right(value) {
-            this._drag_Right = value;
-        }
-        get drag_Top() {
-            return this._drag_Top;
-        }
-        set drag_Top(value) {
-            this._drag_Top = value;
-        }
-        get drag_Bottom() {
-            return this._drag_Bottom;
-        }
-        set drag_Bottom(value) {
-            this._drag_Bottom = value;
-        }
-        get cameraMatrix() {
-            return this._cameraMatrix;
-        }
-        getCameraPos() {
-            return this._cameraPos;
-        }
-        constructor() {
-            super();
-            this._cameraPos = new Vector2();
-            this._cameraSmoothPos = new Vector2();
-            this._firstUpdate = true;
-            this._cameraMatrix = new Matrix3x3();
-            this._cameraInvertMatrix = new Matrix3x3();
-            this._ignoreRotation = true;
-            this.visiableLayer = -1;
-            this._viewRect = new Vector2();
-            this._limit_Left = -10000000;
-            this._limit_Right = 10000000;
-            this._limit_Top = -10000000;
-            this._limit_Bottom = 10000000;
-            this._drag_Left = 0.2;
-            this._drag_Right = 0.2;
-            this._drag_Top = 0.2;
-            this._drag_Bottom = 0.2;
-            this._positionSmooth = false;
-            this._rect = new Vector4();
-            this._zoom = new Vector2(1, 1);
-        }
-        _getScreenSize() {
-            this._viewRect.setValue(RenderState2D.width, RenderState2D.height);
-            return this._viewRect;
-        }
-        onEnable() {
-            this.on(Event.TRANSFORM_CHANGED, this, this._onTransChanged);
-        }
-        onDisable() {
-            this.off(Event.TRANSFORM_CHANGED, this, this._onTransChanged);
-        }
-        _onTransChanged(e) {
-            this._struct.setRepaint();
-            this.parentRepaint();
-        }
-        _getCameraTransform() {
-            let viewport = this._getScreenSize();
-            let curPosPoint = Point.TEMP;
-            this.globalTrans.getPos(curPosPoint);
-            let extendHorizental = viewport.x * 0.5 * this._zoom.x;
-            let extendVertical = viewport.y * 0.5 * this._zoom.y;
-            if (!this._firstUpdate) {
-                if (this._dragHorizontalEnable) {
-                    this._cameraPos.x = Math.min(this._cameraPos.x, curPosPoint.x + extendHorizental * this._drag_Left);
-                    this._cameraPos.x = Math.max(this._cameraPos.x, curPosPoint.x - extendHorizental * this._drag_Right);
-                }
-                else {
-                    this._cameraPos.x = curPosPoint.x;
-                }
-                if (this._dragVerticalEnable) {
-                    this._cameraPos.y = Math.min(this._cameraPos.y, curPosPoint.y + extendVertical * this._drag_Top);
-                    this._cameraPos.y = Math.max(this._cameraPos.y, curPosPoint.y - extendVertical * this._drag_Bottom);
-                }
-                else {
-                    this._cameraPos.y = curPosPoint.y;
-                }
-                let sceneRect_left = this._cameraPos.x - extendHorizental;
-                let sceneRect_right = sceneRect_left + viewport.x;
-                let sceneRect_top = this._cameraPos.y - extendVertical;
-                let sceneRect_bottom = sceneRect_top + viewport.y;
-                if (sceneRect_left < this._limit_Left) {
-                    this._cameraPos.x -= sceneRect_left - this._limit_Left;
-                }
-                if (sceneRect_right > this._limit_Right) {
-                    this._cameraPos.x -= sceneRect_right - this._limit_Right;
-                }
-                if (sceneRect_bottom > this._limit_Bottom) {
-                    this._cameraPos.y -= sceneRect_bottom - this._limit_Bottom;
-                }
-                if (sceneRect_top < this._limit_Top) {
-                    this._cameraPos.y -= sceneRect_top - this._limit_Top;
-                }
-                if (this._positionSmooth) {
-                    let epsilon = 0.01;
-                    let speed = Math.max(epsilon, Math.min(1.0, this._positionSpeed * 0.16));
-                    let deltaX = this._cameraPos.x - this._cameraSmoothPos.x;
-                    let deltaY = this._cameraPos.y - this._cameraSmoothPos.y;
-                    let transX = deltaX * speed;
-                    let transY = deltaY * speed;
-                    if (Math.abs(transX) < epsilon && Math.abs(transY) < epsilon) {
-                        this._cameraSmoothPos.x = this._cameraPos.x;
-                        this._cameraSmoothPos.y = this._cameraPos.y;
-                    }
-                    else {
-                        this._cameraSmoothPos.x += transX;
-                        this._cameraSmoothPos.y += transY;
-                    }
-                }
-                else {
-                    this._cameraSmoothPos.x = this._cameraPos.x;
-                    this._cameraSmoothPos.y = this._cameraPos.y;
-                }
-            }
-            else {
-                this._cameraSmoothPos.x = this._cameraPos.x = curPosPoint.x;
-                this._cameraSmoothPos.y = this._cameraPos.y = curPosPoint.y;
-                this._firstUpdate = false;
-            }
-            if (!this.ignoreRotation) {
-                if (this.rotationSmooth) ;
-                else {
-                    this._cameraRotation = this.globalTrans.rotation;
-                }
-            }
-            else {
-                this._cameraRotation = 0;
-            }
-            this._rect.setValue(this._cameraSmoothPos.x - extendHorizental, this._cameraSmoothPos.x + extendHorizental, this._cameraSmoothPos.y - extendVertical, this._cameraSmoothPos.y + extendVertical);
-            Matrix3x3.createMatrixFromValue(this._cameraSmoothPos, this._cameraRotation * Math.PI / 180, this._zoom, this._cameraMatrix);
-            this._cameraMatrix.invert(this._cameraInvertMatrix);
-            return this._cameraInvertMatrix;
-        }
-    }
-
+    const NoopBridge3DInternal = {
+        scene3d: null,
+        sharedCamera: null,
+        applyData(_d) { },
+        finalizeSetup() { },
+        destroy() { },
+        _onAdded() { },
+        _onRemoved() { }
+    };
     class Scene extends Sprite {
         static regManager(type, cla) {
             Scene.componentManagerMap.set(type, cla);
         }
         static __init__() {
-            Camera2D.shaderValueInit();
             let scene2DUniformMap = Scene.scene2DUniformMap = LayaGL.renderDeviceFactory.createGlobalUniformMap("Sprite2DGlobal");
-            scene2DUniformMap.addShaderUniform(Camera2D.VIEW2D, "u_view2D", exports.ShaderDataType.Matrix3x3);
+            scene2DUniformMap.addShaderUniform(ShaderDefines2D.VIEW2D, "u_view2D", exports.ShaderDataType.Matrix3x3);
+        }
+        get bridge3DInternal() {
+            return this._bridge3DInternal;
+        }
+        get bridge3D() {
+            return this._bridge3D;
+        }
+        set bridge3D(data) {
+            if (this._bridge3D === data)
+                return;
+            this._bridge3D = data;
+            this._bridge3DInternal.applyData(data);
         }
         constructor() {
             super();
             this.autoDestroyAtClosed = false;
+            this._bridge3DInternal = NoopBridge3DInternal;
             this._componentElementDatasMap = {};
             this._specialManager = new Scene2DSpecialManager();
             this._timer = ILaya.timer;
@@ -25103,6 +25273,7 @@ window.Laya = (function (exports) {
             this._struct.globalRenderData = this._globalRenderData;
             this._struct.spriteShaderData = this._shaderData;
             BlendModeHandler.initBlendMode(this._shaderData);
+            this._bridge3DInternal = Scene.bridge3DInternalHandler(this);
         }
         get componentElementDatasMap() {
             return this._componentElementDatasMap;
@@ -25152,8 +25323,15 @@ window.Laya = (function (exports) {
         }
         onClosed(type) {
         }
+        onAfterDeserialize() {
+            super.onAfterDeserialize();
+            this._bridge3DInternal.finalizeSetup();
+        }
         destroy(destroyChild = true) {
             super.destroy(destroyChild);
+            this._bridge3DInternal.destroy();
+            this._bridge3DInternal = NoopBridge3DInternal;
+            this._bridge3D = null;
             if (this._scene3D) {
                 this._scene3D.destroy();
                 this._scene3D = null;
@@ -25251,11 +25429,13 @@ window.Laya = (function (exports) {
         _onAdded() {
             super._onAdded();
             ILaya.stage._scene2Ds.push(this);
+            this._bridge3DInternal._onAdded();
         }
         _onRemoved() {
             super._onRemoved();
             let index = ILaya.stage._scene2Ds.indexOf(this);
             ILaya.stage._scene2Ds.splice(index, 1);
+            this._bridge3DInternal._onRemoved();
         }
         freshLayout() {
             this.refreshLayout();
@@ -25275,6 +25455,7 @@ window.Laya = (function (exports) {
                 root = Scene._root = ILaya.stage.addChild(new Sprite());
                 root.name = "root";
                 root.mouseThrough = true;
+                root.hideFlags |= HideFlags.HideTransformTool;
                 ILaya.stage.on("resize", null, () => {
                     root.size(ILaya.stage.width, ILaya.stage.height);
                     root.event(Event.RESIZE);
@@ -25410,6 +25591,9 @@ window.Laya = (function (exports) {
     }
     Scene.unDestroyedScenes = new Set();
     Scene.componentManagerMap = new Map();
+    Scene.bridge3DInternalHandler = function () {
+        return NoopBridge3DInternal;
+    };
 
     class Laya {
         static init(...args) {
@@ -25441,7 +25625,7 @@ window.Laya = (function (exports) {
             if (LayaEnv.beforeInit)
                 steps.push(() => LayaEnv.beforeInit(stageConfig));
             Laya._beforeInitCallbacks.forEach(func => steps.push(() => func(stageConfig)));
-            steps.push(() => LayaGL.renderDeviceFactory.createEngine(null, Browser.mainCanvas));
+            steps.push(() => LayaGL.renderDeviceFactory.createEngine(null, Browser.offscreenMainCanvas || Browser.mainCanvas));
             steps.push(() => Laya.initRender2D(stageConfig));
             let laya3D = window["Laya3D"];
             if (laya3D)
@@ -25629,7 +25813,7 @@ window.Laya = (function (exports) {
                 }
                 else {
                     if (pstr = nodeData._$prefab) {
-                        let res = Loader.getRes(URL.getResURLByUUID(pstr), Loader.HIERARCHY);
+                        let res = Loader.getRes(URL$1.getResURLByUUID(pstr), Loader.HIERARCHY);
                         if (res) {
                             if (!prefabNodeDict)
                                 prefabNodeDict = new Map();
@@ -25939,6 +26123,7 @@ window.Laya = (function (exports) {
         static collectResourceLinks(data, basePath) {
             let test = {};
             let innerUrls = [];
+            let preload = true;
             function addInnerUrl(url, type, absolutePath) {
                 if (!url)
                     return "";
@@ -25946,14 +26131,14 @@ window.Laya = (function (exports) {
                 if (Utils.isUUID(url))
                     url = "res://" + url;
                 else if (!absolutePath)
-                    url = URL.join(basePath, url);
+                    url = URL$1.join(basePath, url);
                 let entry = test[url];
                 if (entry === undefined) {
-                    innerUrls.push({ url, type });
+                    innerUrls.push({ url, type, preload });
                     test[url] = [type];
                 }
                 else if (entry.indexOf(type) === -1) {
-                    innerUrls.push({ url, type });
+                    innerUrls.push({ url, type, preload });
                     entry.push(type);
                 }
                 return url;
@@ -26006,7 +26191,6 @@ window.Laya = (function (exports) {
                     }
                 }
             }
-            check(data);
             if (data._$preloads) {
                 let types = data._$preloadTypes;
                 let pi = 0;
@@ -26018,6 +26202,8 @@ window.Laya = (function (exports) {
                     pi++;
                 }
             }
+            preload = false;
+            check(data);
             return innerUrls;
         }
     }
@@ -26146,7 +26332,7 @@ window.Laya = (function (exports) {
             }
             else if (typeof (data) === "object") {
                 if (data._$uuid != null) {
-                    let url = URL.getResURLByUUID(data._$uuid);
+                    let url = URL$1.getResURLByUUID(data._$uuid);
                     return ILaya.loader.getRes(url, Loader.assetTypeToLoadType[data._$type]);
                 }
                 if (data._$ref != null) {
@@ -26536,7 +26722,7 @@ window.Laya = (function (exports) {
                     this._frame = this._count - 1;
                 else {
                     this._reversed = false;
-                    this._frame = 0;
+                    this._frame = (this._index > 0 && this._index < this._count) ? this._index : 0;
                 }
                 if (this._stretchMode === exports.AnimationStretchMode.ResizeToFit) {
                     let w = this.width, h = this.height;
@@ -27416,6 +27602,12 @@ window.Laya = (function (exports) {
                                 this._style.color = color;
                                 this._style.colorChanged = true;
                             }
+                            let stroke = XMLIterator.getAttribute("stroke");
+                            if (stroke != null)
+                                this._style.stroke = parseInt(stroke) || 0;
+                            let strokeColor = XMLIterator.getAttribute("strokecolor");
+                            if (strokeColor != null)
+                                this._style.strokeColor = strokeColor;
                         }
                         else if (XMLIterator.tagType == exports.XMLTagType.End)
                             this.popStyle();
@@ -27610,6 +27802,7 @@ window.Laya = (function (exports) {
             this._handlers["color"] = this.onTag_COLOR;
             this._handlers["font"] = this.onTag_FONT;
             this._handlers["size"] = this.onTag_SIZE;
+            this._handlers["stroke"] = this.onTag_STROKE;
         }
         onTag_URL(tagName, end, attr) {
             if (!end) {
@@ -27666,6 +27859,23 @@ window.Laya = (function (exports) {
             if (!end) {
                 this.lastSize = attr;
                 return "<font size=\"" + attr + "\">";
+            }
+            else
+                return "</font>";
+        }
+        onTag_STROKE(tagName, end, attr) {
+            if (!end) {
+                if (attr != null) {
+                    let parts = attr.split(",");
+                    let stroke = parts[0];
+                    let strokeColor = parts.length > 1 ? parts[1] : null;
+                    let result = "<font stroke=\"" + stroke + "\"";
+                    if (strokeColor)
+                        result += " strokeColor=\"" + strokeColor + "\"";
+                    result += ">";
+                    return result;
+                }
+                return "<font stroke=\"1\">";
             }
             else
                 return "</font>";
@@ -29106,14 +29316,19 @@ window.Laya = (function (exports) {
             return this._prompt;
         }
         set prompt(value) {
-            var _a;
             if (value == null)
                 value = "";
-            value = ((_a = Text.langPacks) === null || _a === void 0 ? void 0 : _a[value]) || value;
             if (this._prompt != value) {
                 this._prompt = value;
                 this.markChanged();
             }
+        }
+        get localizedPrompt() {
+            var _a;
+            let text = ((_a = Text.langPacks) === null || _a === void 0 ? void 0 : _a[this._prompt]) || this._prompt;
+            if (this._onTranslate)
+                text = this._onTranslate(text, null, 1);
+            return text;
         }
         get promptColor() {
             return this._promptColor;
@@ -29429,6 +29644,7 @@ window.Laya = (function (exports) {
         play() {
             if (!this._api)
                 return;
+            this._paused = false;
             this._api.play();
         }
         pause() {
@@ -29678,20 +29894,29 @@ window.Laya = (function (exports) {
         _applyAniData(o, additive, weight, data) {
             var pro = o.pro;
             if (pro && pro.ower) {
+                var isMat = pro.isMat;
+                var mat = isMat ? pro.ower : null;
+                if (isMat) {
+                    this._applyMatData(mat, pro, additive, weight, data);
+                    return;
+                }
                 if (additive && "number" === typeof data) {
                     pro.ower[pro.key] = pro.defVal + weight * data;
+                    if (pro.parentOwer && pro.parentKey != null)
+                        pro.parentOwer[pro.parentKey] = pro.ower;
                 }
                 else if ("number" === typeof data) {
                     pro.ower[pro.key] = weight * data;
+                    if (pro.parentOwer && pro.parentKey != null)
+                        pro.parentOwer[pro.parentKey] = pro.ower;
                 }
                 else if ("object" === typeof data) {
                     if (data.pos) {
                         pro.ower.x = data.pos.x;
                         pro.ower.y = data.pos.y;
                     }
-                    if (null != data.rotation) {
+                    if (null != data.rotation)
                         pro.ower.rotation = data.rotation.z;
-                    }
                 }
                 else {
                     if ("string" === typeof data) {
@@ -29705,6 +29930,8 @@ window.Laya = (function (exports) {
                                 ILaya.loader.load(url, { type: Loader.IMAGE }).then(tex => {
                                     if (!this.destroyed) {
                                         pro.ower[pro.key] = tex;
+                                        if (pro.parentOwer && pro.parentKey != null)
+                                            pro.parentOwer[pro.parentKey] = pro.ower;
                                     }
                                 });
                                 return;
@@ -29712,6 +29939,55 @@ window.Laya = (function (exports) {
                         }
                     }
                     pro.ower[pro.key] = data;
+                    if (pro.parentOwer && pro.parentKey != null)
+                        pro.parentOwer[pro.parentKey] = pro.ower;
+                }
+            }
+        }
+        _applyMatData(mat, pro, additive, weight, data) {
+            var key = pro.key;
+            var comp = pro.matComp;
+            if (comp && "number" === typeof data) {
+                var nv = additive ? (pro.defVal || 0) + weight * data : weight * data;
+                var isColorComp = comp === "r" || comp === "g" || comp === "b" || comp === "a";
+                if (isColorComp) {
+                    var c = mat.getColor(key);
+                    if (c) {
+                        c[comp] = nv;
+                        mat.setColor(key, c);
+                    }
+                }
+                else {
+                    var v = mat.getVector4(key);
+                    if (v) {
+                        v[comp] = nv;
+                        mat.setVector4(key, v);
+                    }
+                }
+                return;
+            }
+            if ("number" === typeof data) {
+                var fv = additive ? (pro.defVal || 0) + weight * data : weight * data;
+                mat.setFloat(key, fv);
+            }
+            else if ("boolean" === typeof data) {
+                mat.setBool(key, data);
+            }
+            else if ("string" === typeof data) {
+                if (data.startsWith("tres://")) {
+                    let url = data.replace("tres://", "");
+                    let source = Loader.getRes(url, Loader.IMAGE);
+                    if (source)
+                        mat.setTexture(key, source);
+                    else {
+                        ILaya.loader.load(url, { type: Loader.IMAGE }).then(tex => {
+                            if (!this.destroyed)
+                                mat.setTexture(key, tex);
+                        });
+                    }
+                }
+                else {
+                    mat.setTexture(key, data);
                 }
             }
         }
@@ -29719,8 +29995,31 @@ window.Laya = (function (exports) {
             if (!this._ownerMap)
                 return;
             this._ownerMap.forEach((ownerData) => {
-                if (ownerData.pro && ownerData.pro.ower) {
-                    ownerData.pro.defVal = ownerData.pro.ower[ownerData.pro.key];
+                var pro = ownerData.pro;
+                if (pro && pro.ower) {
+                    if (pro.isMat) {
+                        var m = pro.ower;
+                        if (pro.matComp) {
+                            var c = m.getColor(pro.key);
+                            if (c)
+                                pro.defVal = c[pro.matComp];
+                            else {
+                                var v = m.getVector4(pro.key);
+                                if (v)
+                                    pro.defVal = v[pro.matComp];
+                            }
+                        }
+                        else {
+                            pro.defVal = m.getFloat(pro.key);
+                        }
+                    }
+                    else if (pro.parentOwer && pro.parentKey != null) {
+                        pro.ower = pro.parentOwer[pro.parentKey];
+                        pro.defVal = pro.ower ? pro.ower[pro.key] : null;
+                    }
+                    else {
+                        pro.defVal = pro.ower[pro.key];
+                    }
                 }
             });
         }
@@ -29749,15 +30048,44 @@ window.Laya = (function (exports) {
                     ret.pro = { ower: property, key: pname, defVal: property[pname] };
                 }
                 else {
+                    var prevPobj = undefined;
+                    var prevPname = undefined;
                     for (var i = 0; i < propertyCount; i++) {
                         var pname = node.getPropertyByIndex(i);
-                        if (i == propertyCount - 1 || null == pobj) {
-                            ret.pro = { ower: pobj, key: pname, defVal: pobj ? pobj[pname] : null };
+                        if (pobj instanceof Material) {
+                            var matKey = pname;
+                            var matComp = (i + 1 < propertyCount) ? node.getPropertyByIndex(i + 1) : undefined;
+                            var matDef = null;
+                            if (matComp) {
+                                var curColor = pobj.getColor(matKey);
+                                if (curColor)
+                                    matDef = curColor[matComp];
+                                else {
+                                    var curVec = pobj.getVector4(matKey);
+                                    if (curVec)
+                                        matDef = curVec[matComp];
+                                }
+                            }
+                            else {
+                                matDef = pobj.getFloat(matKey);
+                            }
+                            ret.pro = {
+                                ower: pobj, key: matKey, defVal: matDef,
+                                parentOwer: prevPobj, parentKey: prevPname,
+                                isMat: true, matComp,
+                            };
                             break;
                         }
+                        if (i == propertyCount - 1 || null == pobj) {
+                            ret.pro = { ower: pobj, key: pname, defVal: pobj ? pobj[pname] : null, parentOwer: prevPobj, parentKey: prevPname };
+                            break;
+                        }
+                        prevPobj = pobj;
+                        prevPname = pname;
                         if ('_gcmds' === pname && null == pobj[pname] && pobj.graphics) {
                             pobj = pobj.graphics;
                             pname = "cmds";
+                            prevPname = pname;
                         }
                         if (null == pobj[pname] && property == pobj) {
                             pobj = null;
@@ -30400,8 +30728,19 @@ window.Laya = (function (exports) {
             }
             var delta = this.owner.timer.delta / 1000.0;
             delta = this._applyUpdateMode(delta);
-            if (0 == this.speed || 0 == delta)
+            if (0 == this.speed || 0 == delta) {
+                for (var i = 0, n = this._controllerLayers.length; i < n; i++) {
+                    var controllerLayer = this._controllerLayers[i];
+                    if (!controllerLayer.enable)
+                        continue;
+                    var playStateInfo = controllerLayer._playStateInfo;
+                    if (playStateInfo._finish && controllerLayer._playType == 0) {
+                        var animatorState = playStateInfo._currentState;
+                        this._applyTransition(i, animatorState._eventtransition(playStateInfo._normalizedPlayTime, this.parameters, false));
+                    }
+                }
                 return;
+            }
             for (var i = 0, n = this._controllerLayers.length; i < n; i++) {
                 var controllerLayer = this._controllerLayers[i];
                 if (!controllerLayer.enable)
@@ -30798,6 +31137,7 @@ window.Laya = (function (exports) {
             this.c1 = new Vector3();
             this.c2 = new Vector3();
             this.curve = 0;
+            this.smooth = true;
         }
         static create(x, y, z, curve) {
             let pt = pool$1.take();
@@ -30814,6 +31154,7 @@ window.Laya = (function (exports) {
             this.c1.cloneTo(pt.c1);
             this.c2.cloneTo(pt.c2);
             pt.curve = this.curve;
+            pt.smooth = this.smooth;
             return pt;
         }
         _reset() {
@@ -30821,6 +31162,7 @@ window.Laya = (function (exports) {
             this.c1.set(0, 0, 0);
             this.c2.set(0, 0, 0);
             this.curve = 0;
+            this.smooth = true;
         }
     }
     const pool$1 = Pool.createPool(PathPoint, null, e => e._reset());
@@ -30856,6 +31198,7 @@ window.Laya = (function (exports) {
                 if (prev.curve != exports.CurveType.CRSpline) {
                     let seg = {};
                     seg.type = prev.curve;
+                    seg.smooth = prev.smooth;
                     seg.ptStart = pts.length;
                     if (prev.curve == exports.CurveType.Straight) {
                         seg.ptCount = 2;
@@ -30893,7 +31236,6 @@ window.Laya = (function (exports) {
             }
             if (splinePoints.length > 1)
                 this.createSplineSegment(splinePoints);
-            this.is2D = this._points.every(pt => Math.abs(pt.z) < 0.0001);
         }
         estimateBezierLength(ptStart, ptCount, samples = 10) {
             let length = 0;
@@ -30931,11 +31273,11 @@ window.Laya = (function (exports) {
             this._segments.length = 0;
             this._points.length = 0;
         }
-        getRotationAt(t, out) {
+        getRotationAt(t, is2D, out) {
             if (!this.rotationType)
                 return null;
             if (exports.RotationType.RotateAlongMotionPath === this.rotationType) {
-                const ret = CurvePath.getRotation(this._parPos, this._curPt);
+                const ret = getRotation(this._parPos, this._curPt);
                 if (!this._parPos) {
                     this._parPos = this._parPosCatch;
                 }
@@ -30971,11 +31313,11 @@ window.Laya = (function (exports) {
                     }
                 }
             }
-            this.tangentToEulerAngles(tangent, out);
+            this.tangentToEulerAngles(tangent, out, is2D);
             return out;
         }
-        tangentToEulerAngles(tangent, out) {
-            if (this.is2D) {
+        tangentToEulerAngles(tangent, out, is2D) {
+            if (is2D) {
                 let rotationAngle = Math.atan2(tangent.y, tangent.x) * 180 / Math.PI;
                 out.set(0, 0, rotationAngle);
             }
@@ -31178,25 +31520,25 @@ window.Laya = (function (exports) {
             }
             return out;
         }
-        static getRotation(parPos, currPos) {
-            if (!parPos)
-                return null;
-            let direction = new Vector3();
-            Vector3.subtract(currPos, parPos, direction);
-            const epsilon = 0.0001;
-            const is2D = Math.abs(direction.z) < epsilon;
-            if (is2D) {
-                let rotationAngle = Math.atan2(direction.y, direction.x) * 180 / Math.PI;
-                return new Vector3(0, 0, rotationAngle);
-            }
-            else {
-                Vector3.normalize(direction, direction);
-                let yaw = Math.atan2(direction.x, direction.z) * 180 / Math.PI;
-                let horizontalLength = Math.sqrt(direction.x * direction.x + direction.z * direction.z);
-                let pitch = Math.atan2(-direction.y, horizontalLength) * 180 / Math.PI;
-                let roll = 0;
-                return new Vector3(pitch, yaw, roll);
-            }
+    }
+    function getRotation(parPos, currPos) {
+        if (!parPos)
+            return null;
+        let direction = new Vector3();
+        Vector3.subtract(currPos, parPos, direction);
+        const epsilon = 0.0001;
+        const is2D = Math.abs(direction.z) < epsilon;
+        if (is2D) {
+            let rotationAngle = Math.atan2(direction.y, direction.x) * 180 / Math.PI;
+            return new Vector3(0, 0, rotationAngle);
+        }
+        else {
+            Vector3.normalize(direction, direction);
+            let yaw = Math.atan2(direction.x, direction.z) * 180 / Math.PI;
+            let horizontalLength = Math.sqrt(direction.x * direction.x + direction.z * direction.z);
+            let pitch = Math.atan2(-direction.y, horizontalLength) * 180 / Math.PI;
+            let roll = 0;
+            return new Vector3(pitch, yaw, roll);
         }
     }
     const tmpVec3 = new Vector3();
@@ -31346,7 +31688,6 @@ window.Laya = (function (exports) {
                         const jsonData = JSON.parse(reader.readUTFString());
                         if (Array.isArray(jsonData)) {
                             const curvePath = new CurvePath();
-                            curvePath.is2D = true;
                             k.data.val = curvePath;
                             curvePath._$data = jsonData;
                             curvePath.create(...this.createPathPoints(jsonData));
@@ -31483,7 +31824,7 @@ window.Laya = (function (exports) {
                     var frame = keyFrames[frameIndex];
                     if (isEnd) {
                         if (frame.data.val instanceof CurvePath) {
-                            outDatas[i] = { pos: frame.data.val.getPointAt(0), rotation: frame.data.val.getRotationAt(0) };
+                            outDatas[i] = { pos: frame.data.val.getPointAt(0), rotation: frame.data.val.getRotationAt(0, true) };
                         }
                         else {
                             outDatas[i] = frame.data.val;
@@ -31502,7 +31843,7 @@ window.Laya = (function (exports) {
                 }
                 else {
                     if (keyFrames[0].data.val instanceof CurvePath) {
-                        outDatas[i] = { pos: keyFrames[0].data.val.getPointAt(0), rotation: keyFrames[0].data.val.getRotationAt(0) };
+                        outDatas[i] = { pos: keyFrames[0].data.val.getPointAt(0), rotation: keyFrames[0].data.val.getRotationAt(0, true) };
                     }
                     else {
                         outDatas[i] = keyFrames[0].data.val;
@@ -31518,7 +31859,7 @@ window.Laya = (function (exports) {
             var end = nextFrame.data;
             if (start.val instanceof CurvePath) {
                 return {
-                    pos: start.val.getPointAt(t), rotation: start.val.getRotationAt(t)
+                    pos: start.val.getPointAt(t), rotation: start.val.getRotationAt(t, true)
                 };
             }
             if ("number" != typeof start.val || "number" != typeof end.val) {
@@ -32501,13 +32842,27 @@ window.Laya = (function (exports) {
             });
         }
         _load(api, task, data, fromDCC) {
-            let basePath = URL.getPath(task.url);
+            let basePath = URL$1.getPath(task.url);
             let links = api.collectResourceLinks(data, basePath);
             let options = Object.assign({}, task.options);
             options.initiator = task;
             delete options.cache;
             delete options.ignoreCache;
-            return task.loader.load(links, options, task.progress.createCallback()).then((resArray) => {
+            let preloadLinks = links.filter(link => link.preload);
+            let p;
+            if (preloadLinks.length > 0) {
+                links = links.filter(link => !link.preload);
+                p = task.loader.load(preloadLinks, options, task.progress.createCallback(0.2)).then((resArray) => {
+                    return task.loader.load(links, options, task.progress.createCallback(0.8)).then((resArray2) => {
+                        resArray.push(...resArray2);
+                        return resArray;
+                    });
+                });
+            }
+            else {
+                p = task.loader.load(links, options, task.progress.createCallback());
+            }
+            return p.then((resArray) => {
                 let res = new PrefabImpl(api, data);
                 res.fromDCC = fromDCC;
                 res.onLoad();
@@ -33341,12 +33696,12 @@ window.Laya = (function (exports) {
             });
         }
         loadStates(states, promises, task) {
-            let basePath = URL.getPath(task.url);
+            let basePath = URL$1.getPath(task.url);
             for (let j = states.length - 1; j >= 0; j--) {
                 if (states[j].clip && states[j].clip._$uuid) {
-                    let url = URL.getResURLByUUID(states[j].clip._$uuid);
+                    let url = URL$1.getResURLByUUID(states[j].clip._$uuid);
                     if (!url.startsWith("res://"))
-                        url = URL.join(basePath, url);
+                        url = URL$1.join(basePath, url);
                     promises.push(task.loader.load(url).then(res => {
                         states[j].clip = res;
                         return res;
@@ -33549,7 +33904,7 @@ window.Laya = (function (exports) {
                     let tex2D = textures[i];
                     let tex2DPath = tex2D.path;
                     if (tex2DPath) {
-                        tex2D.path = URL.join(basePath, tex2DPath);
+                        tex2D.path = URL$1.join(basePath, tex2DPath);
                         urls.push({ url: tex2D.path, type: Loader.TEXTURE2D, constructParams: tex2D.constructParams, propertyParams: tex2D.propertyParams });
                     }
                 }
@@ -33813,7 +34168,7 @@ window.Laya = (function (exports) {
             return task.loader.fetch(task.url, "json", task.progress.createCallback(0.3), task.options).then(data => {
                 if (!data)
                     return null;
-                let basePath = URL.getPath(task.url);
+                let basePath = URL$1.getPath(task.url);
                 let urls = MaterialParser.collectLinks(data, basePath);
                 if (data.version === "LAYAMATERIAL:04") {
                     let shaderName = data.props.type;
@@ -33826,7 +34181,7 @@ window.Laya = (function (exports) {
                                 if (url)
                                     urls.push(url);
                                 else if (data.props.shaderPath)
-                                    urls.push(URL.join(basePath, data.props.shaderPath));
+                                    urls.push(URL$1.join(basePath, data.props.shaderPath));
                                 else
                                     Loader.warn(`unknown shaderName: ${shaderName}`);
                                 return this.load2(task, data, urls);
@@ -34147,6 +34502,7 @@ window.Laya = (function (exports) {
                 if (shaderObj.shaderType === exports.ShaderFeatureType.D2_primitive) {
                     shaderObj.shaderType = exports.ShaderFeatureType.D2_TextureSV;
                 }
+                shaderObj.previewType = shaderObj.previewType || null;
             }
             catch (err) {
                 console.error("Shader parse error: " + err + "\n" + source.substring(0, 100) + "...");
@@ -34305,7 +34661,7 @@ window.Laya = (function (exports) {
                 ShaderParser.bindCG(obj, cgmap);
                 if (!obj.name || !obj.uniformMap)
                     return null;
-                let basePath = URL.getPath(task.url);
+                let basePath = URL$1.getPath(task.url);
                 let passArray = obj.shaderPass;
                 return Promise.all(passArray.map(pass => ShaderCompile.compileAsync(pass.VS, pass.FS, basePath))).then(compiledObjs => {
                     var _a;
@@ -34523,7 +34879,7 @@ window.Laya = (function (exports) {
                 if (!data) {
                     return null;
                 }
-                return ComputeShaderParser.parse(data, URL.getPath(task.url));
+                return ComputeShaderParser.parse(data, URL$1.getPath(task.url));
             });
         }
     }
@@ -34544,6 +34900,256 @@ window.Laya = (function (exports) {
         }
     }
     Loader.registerLoader(["mp3", "wav", "ogg"], WebAudioLoader, Loader.SOUND);
+
+    class Camera2D extends Sprite {
+        get ignoreRotation() {
+            return this._ignoreRotation;
+        }
+        set ignoreRotation(value) {
+            this._ignoreRotation = value;
+        }
+        get isMain() {
+            return this._isMain;
+        }
+        set isMain(value) {
+            if (this._ownerArea) {
+                if (value) {
+                    this._ownerArea._setMainCamera(this);
+                    this._isMain = true;
+                }
+                else {
+                    if (this._ownerArea.mainCamera == this) {
+                        this._ownerArea._setMainCamera(null);
+                        this._isMain = false;
+                    }
+                }
+            }
+            this._isMain = value;
+        }
+        _setUnBelongScene() {
+            if (this._ownerArea != null) {
+                if (this._ownerArea.mainCamera == this)
+                    this._ownerArea._setMainCamera(null);
+                this._ownerArea = null;
+            }
+            super._setUnBelongScene();
+        }
+        _findOwnerArea() {
+            let ele = this;
+            while (ele) {
+                if (ele === this._scene || ele === ILaya.stage)
+                    break;
+                if ((ele._renderType & SpriteConst.AREA2D) !== 0) {
+                    this._ownerArea = ele;
+                    if (this._isMain && !this._ownerArea.mainCamera)
+                        this._ownerArea._setMainCamera(this);
+                    break;
+                }
+                ele = ele._parent;
+            }
+        }
+        get zoom() {
+            return this._zoom;
+        }
+        set zoom(value) {
+            if (value) {
+                value.cloneTo(this._zoom);
+                this._struct.setRepaint();
+                this.parentRepaint();
+            }
+        }
+        get limit_Left() {
+            return this._limit_Left;
+        }
+        set limit_Left(value) {
+            this._limit_Left = value;
+        }
+        get limit_Right() {
+            return this._limit_Right;
+        }
+        set limit_Right(value) {
+            this._limit_Right = value;
+        }
+        get limit_Bottom() {
+            return this._limit_Bottom;
+        }
+        set limit_Bottom(value) {
+            this._limit_Bottom = value;
+        }
+        get limit_Top() {
+            return this._limit_Top;
+        }
+        set limit_Top(value) {
+            this._limit_Top = value;
+        }
+        get positionSmooth() {
+            return this._positionSmooth;
+        }
+        set positionSmooth(value) {
+            this._positionSmooth = value;
+        }
+        get positionSpeed() {
+            return this._positionSpeed;
+        }
+        set positionSpeed(value) {
+            this._positionSpeed = value;
+        }
+        get dragHorizontalEnable() {
+            return this._dragHorizontalEnable;
+        }
+        set dragHorizontalEnable(value) {
+            this._dragHorizontalEnable = value;
+        }
+        get dragVerticalEnable() {
+            return this._dragVerticalEnable;
+        }
+        set dragVerticalEnable(value) {
+            this._dragVerticalEnable = value;
+        }
+        get drag_Left() {
+            return this._drag_Left;
+        }
+        set drag_Left(value) {
+            this._drag_Left = value;
+        }
+        get drag_Right() {
+            return this._drag_Right;
+        }
+        set drag_Right(value) {
+            this._drag_Right = value;
+        }
+        get drag_Top() {
+            return this._drag_Top;
+        }
+        set drag_Top(value) {
+            this._drag_Top = value;
+        }
+        get drag_Bottom() {
+            return this._drag_Bottom;
+        }
+        set drag_Bottom(value) {
+            this._drag_Bottom = value;
+        }
+        get cameraMatrix() {
+            return this._cameraMatrix;
+        }
+        getCameraPos() {
+            return this._cameraPos;
+        }
+        constructor() {
+            super();
+            this._cameraPos = new Vector2();
+            this._cameraSmoothPos = new Vector2();
+            this._firstUpdate = true;
+            this._cameraMatrix = new Matrix3x3();
+            this._cameraInvertMatrix = new Matrix3x3();
+            this._ignoreRotation = true;
+            this.visiableLayer = -1;
+            this._viewRect = new Vector2();
+            this._limit_Left = -10000000;
+            this._limit_Right = 10000000;
+            this._limit_Top = -10000000;
+            this._limit_Bottom = 10000000;
+            this._drag_Left = 0.2;
+            this._drag_Right = 0.2;
+            this._drag_Top = 0.2;
+            this._drag_Bottom = 0.2;
+            this._positionSmooth = false;
+            this._rect = new Vector4();
+            this._zoom = new Vector2(1, 1);
+        }
+        _getScreenSize() {
+            this._viewRect.setValue(RenderState2D.width, RenderState2D.height);
+            return this._viewRect;
+        }
+        onEnable() {
+            this.on(Event.TRANSFORM_CHANGED, this, this._onTransChanged);
+        }
+        onDisable() {
+            this.off(Event.TRANSFORM_CHANGED, this, this._onTransChanged);
+        }
+        _onTransChanged(e) {
+            this._struct.setRepaint();
+            this.parentRepaint();
+        }
+        _getCameraTransform() {
+            let viewport = this._getScreenSize();
+            let curPosPoint = Point.TEMP;
+            this.globalTrans.getPos(curPosPoint);
+            let extendHorizental = viewport.x * 0.5 * this._zoom.x;
+            let extendVertical = viewport.y * 0.5 * this._zoom.y;
+            if (!this._firstUpdate) {
+                if (this._dragHorizontalEnable) {
+                    this._cameraPos.x = Math.min(this._cameraPos.x, curPosPoint.x + extendHorizental * this._drag_Left);
+                    this._cameraPos.x = Math.max(this._cameraPos.x, curPosPoint.x - extendHorizental * this._drag_Right);
+                }
+                else {
+                    this._cameraPos.x = curPosPoint.x;
+                }
+                if (this._dragVerticalEnable) {
+                    this._cameraPos.y = Math.min(this._cameraPos.y, curPosPoint.y + extendVertical * this._drag_Top);
+                    this._cameraPos.y = Math.max(this._cameraPos.y, curPosPoint.y - extendVertical * this._drag_Bottom);
+                }
+                else {
+                    this._cameraPos.y = curPosPoint.y;
+                }
+                let sceneRect_left = this._cameraPos.x - extendHorizental;
+                let sceneRect_right = sceneRect_left + viewport.x;
+                let sceneRect_top = this._cameraPos.y - extendVertical;
+                let sceneRect_bottom = sceneRect_top + viewport.y;
+                if (sceneRect_left < this._limit_Left) {
+                    this._cameraPos.x -= sceneRect_left - this._limit_Left;
+                }
+                if (sceneRect_right > this._limit_Right) {
+                    this._cameraPos.x -= sceneRect_right - this._limit_Right;
+                }
+                if (sceneRect_bottom > this._limit_Bottom) {
+                    this._cameraPos.y -= sceneRect_bottom - this._limit_Bottom;
+                }
+                if (sceneRect_top < this._limit_Top) {
+                    this._cameraPos.y -= sceneRect_top - this._limit_Top;
+                }
+                if (this._positionSmooth) {
+                    let epsilon = 0.01;
+                    let speed = Math.max(epsilon, Math.min(1.0, this._positionSpeed * 0.16));
+                    let deltaX = this._cameraPos.x - this._cameraSmoothPos.x;
+                    let deltaY = this._cameraPos.y - this._cameraSmoothPos.y;
+                    let transX = deltaX * speed;
+                    let transY = deltaY * speed;
+                    if (Math.abs(transX) < epsilon && Math.abs(transY) < epsilon) {
+                        this._cameraSmoothPos.x = this._cameraPos.x;
+                        this._cameraSmoothPos.y = this._cameraPos.y;
+                    }
+                    else {
+                        this._cameraSmoothPos.x += transX;
+                        this._cameraSmoothPos.y += transY;
+                    }
+                }
+                else {
+                    this._cameraSmoothPos.x = this._cameraPos.x;
+                    this._cameraSmoothPos.y = this._cameraPos.y;
+                }
+            }
+            else {
+                this._cameraSmoothPos.x = this._cameraPos.x = curPosPoint.x;
+                this._cameraSmoothPos.y = this._cameraPos.y = curPosPoint.y;
+                this._firstUpdate = false;
+            }
+            if (!this.ignoreRotation) {
+                if (this.rotationSmooth) ;
+                else {
+                    this._cameraRotation = this.globalTrans.rotation;
+                }
+            }
+            else {
+                this._cameraRotation = 0;
+            }
+            this._rect.setValue(this._cameraSmoothPos.x - extendHorizental, this._cameraSmoothPos.x + extendHorizental, this._cameraSmoothPos.y - extendVertical, this._cameraSmoothPos.y + extendVertical);
+            Matrix3x3.createMatrixFromValue(this._cameraSmoothPos, this._cameraRotation * Math.PI / 180, this._zoom, this._cameraMatrix);
+            this._cameraMatrix.invert(this._cameraInvertMatrix);
+            return this._cameraInvertMatrix;
+        }
+    }
 
     class GradientMode {
     }
@@ -34989,6 +35595,306 @@ window.Laya = (function (exports) {
         }
     }
 
+    exports.CurveWrapMode = void 0;
+    (function (CurveWrapMode) {
+        CurveWrapMode[CurveWrapMode["Clamp"] = 0] = "Clamp";
+        CurveWrapMode[CurveWrapMode["Loop"] = 1] = "Loop";
+        CurveWrapMode[CurveWrapMode["PingPong"] = 2] = "PingPong";
+    })(exports.CurveWrapMode || (exports.CurveWrapMode = {}));
+    class Curve {
+        constructor() {
+            this.preWrapMode = exports.CurveWrapMode.Clamp;
+            this.postWrapMode = exports.CurveWrapMode.Clamp;
+            this._keys = [];
+        }
+        get frameData() {
+            const keys = this._keys;
+            const n = keys.length;
+            const stride = Curve._FRAME_STRIDE;
+            const data = new Array(n * stride);
+            for (let i = 0; i < n; i++) {
+                const k = keys[i];
+                const off = i * stride;
+                data[off] = k.time;
+                data[off + 1] = k.value;
+                data[off + 2] = k.inTangent;
+                data[off + 3] = k.outTangent;
+                data[off + 4] = k.inWeight;
+                data[off + 5] = k.outWeight;
+                data[off + 6] = k.weightedMode;
+            }
+            return data;
+        }
+        set frameData(value) {
+            this._keys.length = 0;
+            if (!value)
+                return;
+            const stride = Curve._FRAME_STRIDE;
+            const count = Math.floor(value.length / stride);
+            for (let i = 0; i < count; i++) {
+                const off = i * stride;
+                const key = new FloatKeyframe();
+                key.time = value[off];
+                key.value = value[off + 1];
+                key.inTangent = value[off + 2];
+                key.outTangent = value[off + 3];
+                key.inWeight = value[off + 4];
+                key.outWeight = value[off + 5];
+                key.weightedMode = value[off + 6];
+                this._keys.push(key);
+            }
+        }
+        get length() {
+            return this._keys.length;
+        }
+        get duration() {
+            if (this._keys.length === 0)
+                return 0;
+            return this._keys[this._keys.length - 1].time - this._keys[0].time;
+        }
+        get startTime() {
+            if (this._keys.length === 0)
+                return 0;
+            return this._keys[0].time;
+        }
+        get endTime() {
+            if (this._keys.length === 0)
+                return 0;
+            return this._keys[this._keys.length - 1].time;
+        }
+        getKey(index) {
+            return this._keys[index];
+        }
+        get keys() {
+            return this._keys;
+        }
+        addKey(timeOrKey, value) {
+            let key;
+            if (typeof timeOrKey === "number") {
+                key = new FloatKeyframe();
+                key.time = timeOrKey;
+                key.value = value;
+                key.inTangent = 0;
+                key.outTangent = 0;
+            }
+            else {
+                key = timeOrKey;
+            }
+            let index = this._findInsertIndex(key.time);
+            this._keys.splice(index, 0, key);
+            return index;
+        }
+        removeKey(index) {
+            this._keys.splice(index, 1);
+        }
+        clear() {
+            this._keys.length = 0;
+        }
+        evaluate(time) {
+            return this._evaluate(time);
+        }
+        smoothTangents() {
+            const keys = this._keys;
+            const count = keys.length;
+            for (let i = 0; i < count; i++) {
+                this.smoothTangent(i);
+            }
+        }
+        smoothTangent(index) {
+            const keys = this._keys;
+            const count = keys.length;
+            if (count < 2)
+                return;
+            const key = keys[index];
+            if (index === 0) {
+                const next = keys[1];
+                const tangent = (next.value - key.value) / (next.time - key.time);
+                key.inTangent = tangent;
+                key.outTangent = tangent;
+            }
+            else if (index === count - 1) {
+                const prev = keys[index - 1];
+                const tangent = (key.value - prev.value) / (key.time - prev.time);
+                key.inTangent = tangent;
+                key.outTangent = tangent;
+            }
+            else {
+                const prev = keys[index - 1];
+                const next = keys[index + 1];
+                const tangent = 0.5 * ((key.value - prev.value) / (key.time - prev.time) +
+                    (next.value - key.value) / (next.time - key.time));
+                key.inTangent = tangent;
+                key.outTangent = tangent;
+            }
+        }
+        flatTangent(index) {
+            const key = this._keys[index];
+            if (key) {
+                key.inTangent = 0;
+                key.outTangent = 0;
+            }
+        }
+        cloneTo(destObject) {
+            destObject.preWrapMode = this.preWrapMode;
+            destObject.postWrapMode = this.postWrapMode;
+            destObject._keys.length = 0;
+            for (let i = 0, n = this._keys.length; i < n; i++) {
+                destObject._keys.push(this._keys[i].clone());
+            }
+        }
+        clone() {
+            const dest = new Curve();
+            this.cloneTo(dest);
+            return dest;
+        }
+        _evaluate(time) {
+            const keys = this._keys;
+            const count = keys.length;
+            if (count === 0)
+                return 0;
+            if (count === 1)
+                return keys[0].value;
+            const firstTime = keys[0].time;
+            const lastTime = keys[count - 1].time;
+            if (time <= firstTime) {
+                if (this.preWrapMode === exports.CurveWrapMode.Clamp || firstTime === lastTime)
+                    return keys[0].value;
+                time = this._wrapTime(time, firstTime, lastTime, this.preWrapMode);
+            }
+            else if (time >= lastTime) {
+                if (this.postWrapMode === exports.CurveWrapMode.Clamp || firstTime === lastTime)
+                    return keys[count - 1].value;
+                time = this._wrapTime(time, firstTime, lastTime, this.postWrapMode);
+            }
+            const index = this._findFrameIndex(time);
+            const frame = keys[index];
+            const nextFrame = keys[index + 1];
+            const dur = nextFrame.time - frame.time;
+            if (dur <= 0)
+                return frame.value;
+            const t = (time - frame.time) / dur;
+            return this._curveInterpolate(frame, nextFrame, t, dur);
+        }
+        _wrapTime(time, firstTime, lastTime, mode) {
+            const duration = lastTime - firstTime;
+            if (duration <= 0)
+                return firstTime;
+            switch (mode) {
+                case exports.CurveWrapMode.Loop: {
+                    let t = (time - firstTime) % duration;
+                    if (t < 0)
+                        t += duration;
+                    return firstTime + t;
+                }
+                case exports.CurveWrapMode.PingPong: {
+                    let t = (time - firstTime) % (duration * 2);
+                    if (t < 0)
+                        t += duration * 2;
+                    if (t > duration)
+                        t = duration * 2 - t;
+                    return firstTime + t;
+                }
+                default:
+                    return time;
+            }
+        }
+        _findInsertIndex(time) {
+            const keys = this._keys;
+            let low = 0;
+            let high = keys.length;
+            while (low < high) {
+                const mid = (low + high) >>> 1;
+                if (keys[mid].time < time)
+                    low = mid + 1;
+                else
+                    high = mid;
+            }
+            return low;
+        }
+        _findFrameIndex(time) {
+            const keys = this._keys;
+            let low = 0;
+            let high = keys.length - 2;
+            while (low <= high) {
+                const mid = (low + high) >>> 1;
+                if (keys[mid + 1].time <= time)
+                    low = mid + 1;
+                else if (keys[mid].time > time)
+                    high = mid - 1;
+                else
+                    return mid;
+            }
+            return Math.max(0, Math.min(low, keys.length - 2));
+        }
+        _isStandardHermite(weightMode, nextWeightMode) {
+            return ((weightMode & exports.WeightedMode.Out) === 0) && ((nextWeightMode & exports.WeightedMode.In) === 0);
+        }
+        _hermiteInterpolate(frame, nextFrame, t, dur) {
+            const t0 = frame.outTangent;
+            const t1 = nextFrame.inTangent;
+            if (Number.isFinite(t0) && Number.isFinite(t1)) {
+                const t2 = t * t;
+                const t3 = t2 * t;
+                const a = 2.0 * t3 - 3.0 * t2 + 1.0;
+                const b = t3 - 2.0 * t2 + t;
+                const c = t3 - t2;
+                const d = -2.0 * t3 + 3.0 * t2;
+                return a * frame.value + b * t0 * dur + c * t1 * dur + d * nextFrame.value;
+            }
+            return frame.value;
+        }
+        _hermiteWeightedInterpolate(frameValue, frameTime, frameOutWeight, frameOutTangent, nextFrameValue, nextFrameTime, nextFrameInWeight, nextFrameInTangent, time) {
+            const Eps = 2.22e-16;
+            const x = time;
+            const x1 = frameTime;
+            const y1 = frameValue;
+            const wt1 = frameOutWeight;
+            const x2 = nextFrameTime;
+            const y2 = nextFrameValue;
+            const wt2 = nextFrameInWeight;
+            const dx = x2 - x1;
+            let dy = y2 - y1;
+            dy = Math.max(Math.abs(dy), Eps) * (dy < 0 ? -1 : 1);
+            let yp1 = frameOutTangent;
+            let yp2 = nextFrameInTangent;
+            if (!Number.isFinite(yp1) || !Number.isFinite(yp2)) {
+                return frameValue;
+            }
+            yp1 = yp1 * dx / dy;
+            yp2 = yp2 * dx / dy;
+            const wt2s = 1 - wt2;
+            let t = 0.5;
+            let t2 = 0;
+            if (Math.abs(wt1 - 0.33333334) < 0.0001 && Math.abs(wt2 - 0.33333334) < 0.0001) {
+                t = x;
+                t2 = 1 - t;
+            }
+            else {
+                while (true) {
+                    t2 = (1 - t);
+                    const fg = 3 * t2 * t2 * t * wt1 + 3 * t2 * t * t * wt2s + t * t * t - x;
+                    if (Math.abs(fg) <= 2.5 * Eps)
+                        break;
+                    const fpg = 3 * t2 * t2 * wt1 + 6 * t2 * t * (wt2s - wt1) + 3 * t * t * (1 - wt2s);
+                    const fppg = 6 * t2 * (wt2s - 2 * wt1) + 6 * t * (1 - 2 * wt2s + wt1);
+                    const fpppg = 18 * wt1 - 18 * wt2s + 6;
+                    t -= (6 * fg * fpg * fpg - 3 * fg * fg * fppg) / (6 * fpg * fpg * fpg - 6 * fg * fpg * fppg + fg * fg * fpppg);
+                }
+            }
+            const y = 3 * t2 * t2 * t * wt1 * yp1 + 3 * t2 * t * t * (1 - wt2 * yp2) + t * t * t;
+            return y * dy + y1;
+        }
+        _curveInterpolate(frame, nextFrame, t, dur) {
+            if (!frame.weightedMode || this._isStandardHermite(frame.weightedMode, nextFrame.weightedMode)) {
+                return this._hermiteInterpolate(frame, nextFrame, t, dur);
+            }
+            else {
+                return this._hermiteWeightedInterpolate(frame.value, frame.time, frame.outWeight, frame.outTangent, nextFrame.value, nextFrame.time, nextFrame.inWeight, nextFrame.inTangent, t);
+            }
+        }
+    }
+    Curve._FRAME_STRIDE = 7;
+
     class Area2D extends Sprite {
         constructor() {
             super();
@@ -35009,19 +35915,46 @@ window.Laya = (function (exports) {
             this._mainCamera && (this._mainCamera._isMain = false);
             if (camera) {
                 camera._isMain = true;
-                this._globalShaderData.addDefine(Camera2D.SHADERDEFINE_CAMERA2D);
+                this._globalShaderData.addDefine(ShaderDefines2D.SHADERDEFINE_CAMERA2D);
             }
             else {
-                this._globalShaderData.removeDefine(Camera2D.SHADERDEFINE_CAMERA2D);
+                this._globalShaderData.removeDefine(ShaderDefines2D.SHADERDEFINE_CAMERA2D);
             }
             this._mainCamera = camera;
+        }
+        getSelfBounds(out, recursive) {
+            if (this._mainCamera) {
+                if (!out)
+                    out = new Rectangle();
+                let invMatrix = Matrix.TEMP;
+                this._globalTrans.getMatrixInv(invMatrix);
+                let screenW = RenderState2D.width;
+                let screenH = RenderState2D.height;
+                let a = invMatrix.a, b = invMatrix.b, c = invMatrix.c, d = invMatrix.d;
+                let tx = invMatrix.tx, ty = invMatrix.ty;
+                let x0 = tx;
+                let y0 = ty;
+                let x1 = a * screenW + tx;
+                let y1 = b * screenW + ty;
+                let x2 = c * screenH + tx;
+                let y2 = d * screenH + ty;
+                let x3 = a * screenW + c * screenH + tx;
+                let y3 = b * screenW + d * screenH + ty;
+                let minX = Math.min(x0, x1, x2, x3);
+                let minY = Math.min(y0, y1, y2, y3);
+                let maxX = Math.max(x0, x1, x2, x3);
+                let maxY = Math.max(y0, y1, y2, y3);
+                out.setTo(minX, minY, maxX - minX, maxY - minY);
+                return out;
+            }
+            return super.getSelfBounds(out, recursive);
         }
         render() {
             if (this._mainCamera) {
                 if (this._globalShaderData) {
                     this._globalRenderData.renderLayerMask = this._mainCamera.visiableLayer;
                     this._globalRenderData.cullRect = this._mainCamera._rect;
-                    this._globalShaderData.setMatrix3x3(Camera2D.VIEW2D, this._mainCamera._getCameraTransform());
+                    this._globalShaderData.setMatrix3x3(ShaderDefines2D.VIEW2D, this._mainCamera._getCameraTransform());
                 }
             }
         }
@@ -35323,6 +36256,8 @@ window.Laya = (function (exports) {
             if (this._autoPlay && this._clip) {
                 this.play();
             }
+            else
+                this._isPlaying = false;
         }
         onUpdate() {
             if (!this._isPlaying || !this._clip)
@@ -35412,12 +36347,28 @@ window.Laya = (function (exports) {
     c("Mesh2D", Mesh2D);
     c("Gradient", Gradient);
     c("FloatKeyframe", FloatKeyframe);
+    c("Curve", Curve);
     c("PostProcess2D", PostProcess2D);
     c("PostProcess2DEffect", PostProcess2DEffect);
+    c("COMPUTESHADER", ComputeShader);
 
     class SetRendertarget2DCMD {
         constructor() {
             this.size = new Vector2;
+            this._viewportX = 0;
+            this._viewportY = 0;
+        }
+        get viewportX() {
+            return this._viewportX;
+        }
+        set viewportX(value) {
+            this._viewportX = value;
+        }
+        get viewportY() {
+            return this._viewportY;
+        }
+        set viewportY(value) {
+            this._viewportY = value;
         }
         get invertY() {
             return this._invertY;
@@ -35481,7 +36432,6 @@ window.Laya = (function (exports) {
             this._offsetScale = value;
         }
         apply(context) {
-            throw new NotImplementedError();
         }
     }
 
@@ -35520,6 +36470,15 @@ window.Laya = (function (exports) {
             this._context.addDispatchCommand(cmd);
         }
         ;
+        addDispatchIndirectCommand(computeshader, shaderDefine, datas, indirectBuffer, indirectOffset) {
+            let cmd = {
+                shader: computeshader.getCacheShader(shaderDefine),
+                shaderData: datas,
+                indirectBuffer: indirectBuffer,
+                indirectOffset: indirectOffset
+            };
+            this._context.addDispatchIndirectCommand(cmd);
+        }
         addSetShaderDataCommand(shaderData, propertyID, shaderDataType, value) {
             this._context.addSetShaderDataCommand(shaderData, propertyID, shaderDataType, value);
         }
@@ -39586,6 +40545,7 @@ ${materialUniformGlsl}`;
     class DynamicAtlasManager {
         constructor(config, autoReplace = true) {
             this._textureMap = new Map();
+            this._textureIdMap = new Map();
             this._isDestroyed = false;
             this._autoReplace = false;
             this._totalDrawCount = 1;
@@ -39604,9 +40564,25 @@ ${materialUniformGlsl}`;
             }
             this._totalDrawCount = this._config.extendSize > 0 ? 2 : 1;
         }
+        _getTexture2DByUrl(url) {
+            if (!url)
+                return null;
+            let texture2D = Laya.loader.getRes(url, Loader.TEXTURE2D);
+            if (texture2D)
+                return texture2D;
+            let texture = Laya.loader.getRes(url, Loader.IMAGE);
+            if (texture && texture.bitmap) {
+                return texture.bitmap;
+            }
+            return null;
+        }
+        _getTexture2DId(textureId) {
+            return this._textureIdMap.get(textureId) || null;
+        }
         _findSmallTexture(tex, info) {
             let out = info.textureMap;
             let ot = tex.bitmap;
+            let texture2DId = info.textureId;
             const _find = (texture) => {
                 let atlas = texture._atlas;
                 if (atlas) {
@@ -39614,12 +40590,14 @@ ${materialUniformGlsl}`;
                         if (_t.bitmap == ot) {
                             _t._dynamic = info;
                             out.set(_t.id, { texture: _t, uv: _t.uv });
+                            this._textureIdMap.set(_t.id, texture2DId);
                         }
                     });
                     atlas.textures.forEach(_t => {
                         if (_t.bitmap == ot) {
                             _t._dynamic = info;
                             out.set(_t.id, { texture: _t, uv: _t.uv });
+                            this._textureIdMap.set(_t.id, texture2DId);
                         }
                     });
                 }
@@ -39628,6 +40606,7 @@ ${materialUniformGlsl}`;
             if (tex._dynamic != info) {
                 out.set(tex.id, { texture: tex, uv: tex.uv });
                 tex._dynamic = info;
+                this._textureIdMap.set(tex.id, texture2DId);
             }
         }
         addTexture(texture, scale = 1.0, largeTextureIndex = -1) {
@@ -39647,6 +40626,7 @@ ${materialUniformGlsl}`;
                 textureMap.set(texture.id, {
                     texture, uv: texture.uv
                 });
+                this._textureIdMap.set(texture.id, textureId);
                 if (this._autoReplace && textureInfo.merged) {
                     this._waitReplace.add(textureId);
                     Laya.timer.callLater(this, this.onUpdate);
@@ -39709,13 +40689,16 @@ ${materialUniformGlsl}`;
             }
         }
         addTextureByUrl(url, scale = 1.0, largeTextureIndex = -1) {
-            if (this._isDestroyed
-                || !url) {
+            if (this._isDestroyed || !url) {
                 return false;
             }
             let texture = ILaya.loader.getRes(url, Loader.IMAGE);
             if (!texture) {
                 console.warn(`DynamicAtlasManager: 纹理 ${url} 未加载，请先加载纹理`);
+                return false;
+            }
+            if (!texture.bitmap) {
+                console.warn(`DynamicAtlasManager: 纹理 ${url} 的 bitmap 为空，无法添加到图集`);
                 return false;
             }
             return this.addTexture(texture, scale, largeTextureIndex);
@@ -39746,14 +40729,20 @@ ${materialUniformGlsl}`;
                 return false;
             this._largeTexManager.removeTexture(textureId, largeTextureIndex);
             this._textureMap.delete(textureId);
-            let otexture2d = Laya.loader.getRes(textureInfo.url, Loader.TEXTURE2D) || textureInfo.source;
-            if (otexture2d.destroyed) {
+            let otexture2d = textureInfo.source;
+            if (!otexture2d || otexture2d.destroyed) {
+                if (textureInfo.url) {
+                    otexture2d = Laya.loader.getRes(textureInfo.url, Loader.TEXTURE2D);
+                }
+            }
+            if (!otexture2d || otexture2d.destroyed) {
                 return true;
             }
             textureInfo.textureMap.forEach(({ texture, uv }, id) => {
                 texture.bitmap = otexture2d;
                 texture.uv = uv;
                 texture._dynamic = null;
+                this._textureIdMap.delete(id);
                 if (event) {
                     texture.event(Event.CHANGE);
                 }
@@ -39761,10 +40750,20 @@ ${materialUniformGlsl}`;
             return true;
         }
         removeTextureByUrl(url, largeTextureIndex = -1) {
-            let texture = Laya.loader.getRes(url, Loader.IMAGE);
-            if (!texture)
+            if (!url)
                 return false;
-            return this.removeTexture(texture.id, largeTextureIndex);
+            let texture = Laya.loader.getRes(url, Loader.IMAGE);
+            if (texture && texture._dynamic) {
+                let textureInfo = texture._dynamic;
+                return this.removeTexture(textureInfo.textureId, largeTextureIndex);
+            }
+            for (let [textureId, textureInfo] of this._textureMap) {
+                if (textureInfo.url === url) {
+                    return this.removeTexture(textureId, largeTextureIndex);
+                }
+            }
+            console.warn(`DynamicAtlasManager: 纹理 ${url} 未在图集中找到`);
+            return false;
         }
         _replaceTexture(textureInfo, textureOut) {
             textureInfo.merged = true;
@@ -39851,7 +40850,12 @@ ${materialUniformGlsl}`;
             return this._textureMap.get(textureId) || null;
         }
         getTextureInfoByUrl(url) {
-            return this.getTextureInfo(Laya.loader.getRes(url, Loader.TEXTURE2D).id) || null;
+            if (!url)
+                return null;
+            let texture2D = this._getTexture2DByUrl(url);
+            if (!texture2D)
+                return null;
+            return this.getTextureInfo(texture2D.id) || null;
         }
         getLargeTexture(largeTextureIndex) {
             return this._largeTexManager.getLargeTex(largeTextureIndex);
@@ -39865,6 +40869,7 @@ ${materialUniformGlsl}`;
         clear() {
             this._largeTexManager.clear();
             this._textureMap.clear();
+            this._textureIdMap.clear();
         }
         destroy() {
             if (this._isDestroyed) {
@@ -39934,8 +40939,7 @@ ${materialUniformGlsl}`;
             if (!destObject.value) {
                 destObject.value = new CurvePath();
             }
-            destObject.value.is2D = this.value.is2D;
-            console.warn("暂时不支持PathPointKeyframe的数据克隆");
+            console.warn("PathPointKeyframe.cloneTo() not implemented yet.");
         }
         clone() {
             let f = new PathPointKeyframe();
@@ -39967,6 +40971,63 @@ ${materialUniformGlsl}`;
                 this.outWeight.cloneTo(destKeyFarme.outWeight);
                 this.weightedMode.cloneTo(destKeyFarme.weightedMode);
             }
+        }
+    }
+
+    class Rand {
+        static getFloatFromInt(v) {
+            return (v & 0x007FFFFF) * (1.0 / 8388607.0);
+        }
+        static getByteFromInt(v) {
+            return (v & 0x007FFFFF) >>> 15;
+        }
+        get seed() {
+            return this.seeds[0];
+        }
+        set seed(seed) {
+            this.seeds[0] = seed;
+            this.seeds[1] = this.seeds[0] * 0x6C078965 + 1;
+            this.seeds[2] = this.seeds[1] * 0x6C078965 + 1;
+            this.seeds[3] = this.seeds[2] * 0x6C078965 + 1;
+        }
+        constructor(seed) {
+            this._temp = new Uint32Array(1);
+            this.seeds = new Uint32Array(4);
+            this.seeds[0] = seed;
+            this.seeds[1] = this.seeds[0] * 0x6C078965 + 1;
+            this.seeds[2] = this.seeds[1] * 0x6C078965 + 1;
+            this.seeds[3] = this.seeds[2] * 0x6C078965 + 1;
+        }
+        getUint() {
+            this._temp[0] = this.seeds[0] ^ (this.seeds[0] << 11);
+            this.seeds[0] = this.seeds[1];
+            this.seeds[1] = this.seeds[2];
+            this.seeds[2] = this.seeds[3];
+            this.seeds[3] = (this.seeds[3] ^ (this.seeds[3] >>> 19)) ^ (this._temp[0] ^ (this._temp[0] >>> 8));
+            return this.seeds[3];
+        }
+        getFloat() {
+            this.getUint();
+            return (this.seeds[3] & 0x007FFFFF) * (1.0 / 8388607.0);
+        }
+        getSignedFloat() {
+            return this.getFloat() * 2.0 - 1.0;
+        }
+    }
+
+    class StringKeyframe extends Keyframe {
+        constructor() {
+            super(...arguments);
+            this.value = "";
+        }
+        cloneTo(destObject) {
+            super.cloneTo(destObject);
+            destObject.value = this.value;
+        }
+        clone() {
+            let f = new StringKeyframe();
+            this.cloneTo(f);
+            return f;
         }
     }
 
@@ -40310,7 +41371,7 @@ ${materialUniformGlsl}`;
                 this.stop();
             };
             ele.onended = () => this.onPlayEnd();
-            ele.src = URL.postFormatURL(URL.formatURL(url));
+            ele.src = URL$1.postFormatURL(URL$1.formatURL(url));
             ele.playbackRate = this.playbackRate;
             ele.currentTime = this.startTime;
             ele.loop = this.loops === 0;
@@ -40604,7 +41665,7 @@ ${materialUniformGlsl}`;
                     ele.src = url;
                 else {
                     let sourceElement = Browser.createElement("source");
-                    sourceElement.src = URL.postFormatURL(URL.formatURL(url));
+                    sourceElement.src = URL$1.postFormatURL(URL$1.formatURL(url));
                     let extension = Utils.getFileExtension(url);
                     sourceElement.type = extension == "m3u8" ? "application/vnd.apple.mpegurl" : ("video/" + extension);
                     ele.appendChild(sourceElement);
@@ -40795,7 +41856,7 @@ ${materialUniformGlsl}`;
                 sourceNode.stop(0);
             else
                 sourceNode.noteOff(0);
-            sourceNode.disconnect(0);
+            sourceNode.disconnect();
             sourceNode.onended = null;
             this._sourceNode = null;
             WebAudioChannel.gainNodePool.recover(this._gainNode);
@@ -40815,7 +41876,7 @@ ${materialUniformGlsl}`;
         node.connect(PAL.media.audioCtx.destination);
     }
     function resetGainNode(node) {
-        node.disconnect(0);
+        node.disconnect();
     }
 
     class LocalStorage {
@@ -41362,7 +42423,7 @@ ${materialUniformGlsl}`;
     class FontAdapter {
         loadFont(task) {
             let fontName = Utils.replaceFileExtension(Utils.getBaseName(task.url), "");
-            let url = URL.postFormatURL(URL.formatURL(task.url));
+            let url = URL$1.postFormatURL(URL$1.formatURL(task.url));
             if (Browser.window.FontFace)
                 return this.loadByFontFace(task, url, fontName);
             else
@@ -41599,7 +42660,7 @@ ${materialUniformGlsl}`;
             ele.readOnly = !target.editable;
             ele.maxLength = target.maxChars <= 0 ? 1E5 : target.maxChars;
             ele.value = this.target.text;
-            ele.placeholder = target.prompt;
+            ele.placeholder = target.localizedPrompt;
             let style = ele.style;
             style.fontFamily = target.realFont;
             style.color = target.color;
@@ -42018,6 +43079,12 @@ ${materialUniformGlsl}`;
                         this._tweenDic.push(tTween);
                     }
                 }
+                else if (tTweenData.type == 1) {
+                    if (time >= tTweenData.startTime) {
+                        this._index = Math.max(this._index, i + 1);
+                        this.event(Event.LABEL, tTweenData.data);
+                    }
+                }
             }
         }
         gotoLabel(Label) {
@@ -42102,7 +43169,7 @@ ${materialUniformGlsl}`;
             var tFrameTime = tNow - this._lastTime;
             var tCurrTime = this._currTime += tFrameTime * this.scale;
             this._lastTime = tNow;
-            if (this._tweenDataList.length != 0 && this._index < this._tweenDataList.length) {
+            while (this._tweenDataList.length != 0 && this._index < this._tweenDataList.length) {
                 var tTweenData = this._tweenDataList[this._index];
                 if (tCurrTime >= tTweenData.startTime) {
                     this._index++;
@@ -42117,6 +43184,9 @@ ${materialUniformGlsl}`;
                     else {
                         this.event(Event.LABEL, tTweenData.data);
                     }
+                }
+                else {
+                    break;
                 }
             }
         }
@@ -43197,8 +44267,8 @@ ${materialUniformGlsl}`;
             };
         }
         static locateFileDefault(path, scriptDirectory) {
-            if (URL.urlMapping[path])
-                return URL.formatURL(path, '');
+            if (URL$1.urlMapping[path])
+                return URL$1.formatURL(path, '');
             else
                 return scriptDirectory != null ? scriptDirectory + path : path;
         }
@@ -43362,6 +44432,7 @@ ${materialUniformGlsl}`;
     exports.Config3D = Config3D;
     exports.Const = Const;
     exports.CopyTextureInfo = CopyTextureInfo;
+    exports.Curve = Curve;
     exports.CurvePath = CurvePath;
     exports.DDSTextureInfo = DDSTextureInfo;
     exports.DefaultStaticsContext = DefaultStaticsContext;
@@ -43503,6 +44574,7 @@ ${materialUniformGlsl}`;
     exports.ProgressMesh = ProgressMesh;
     exports.Quaternion = Quaternion;
     exports.QuaternionKeyframe = QuaternionKeyframe;
+    exports.Rand = Rand;
     exports.Rectangle = Rectangle;
     exports.RegularPolygonMesh = RegularPolygonMesh;
     exports.Render = Render;
@@ -43563,6 +44635,7 @@ ${materialUniformGlsl}`;
     exports.StatUI = StatUI;
     exports.StencilState = StencilState;
     exports.StorageAdapter = StorageAdapter;
+    exports.StringKeyframe = StringKeyframe;
     exports.SubShader = SubShader;
     exports.SubStructRender = SubStructRender;
     exports.SubmitBase = SubmitBase;
@@ -43596,7 +44669,7 @@ ${materialUniformGlsl}`;
     exports.Tweener = Tweener;
     exports.TypedArrayClasses = TypedArrayClasses;
     exports.UBBParser = UBBParser;
-    exports.URL = URL;
+    exports.URL = URL$1;
     exports.UVClippingUtils = UVClippingUtils;
     exports.UniformBufferAlone = UniformBufferAlone;
     exports.UniformBufferBlock = UniformBufferBlock;
@@ -43642,6 +44715,7 @@ ${materialUniformGlsl}`;
     exports.allowMultiple = allowMultiple;
     exports.checkShaderDataValueLegal = checkShaderDataValueLegal;
     exports.classInfo = classInfo;
+    exports.drawTrianglesBatched = drawTrianglesBatched;
     exports.genSliceMesh = genSliceMesh;
     exports.genTileMesh = genTileMesh;
     exports.getCompressTextureRenderCapable = getCompressTextureRenderCapable;

@@ -296,8 +296,8 @@
             this.bufferState = null;
             this.primitiveShaderData = null;
             this.materialShaderData = null;
-            this.type = 0;
-            this.lowType = 0;
+            this.typeKey = 0;
+            this.textureKey = 0;
             this.globalRenderData = null;
             this.fillTexture = false;
         }
@@ -308,48 +308,44 @@
             this.materialShaderData = element.materialShaderData;
             this.subShader = element.subShader;
             this.bufferState = element.geometry.bufferState;
-            this.textureId = element.type & (~63);
+            this.typeKey = element.typeKey;
+            this.textureKey = element.textureKey;
+            this.textureId = element.textureKey & (~((1 << Laya.ShaderDefines2D.SHADER_DEFINE_BITS) - 1));
             this.globalAlpha = element.owner.globalAlpha;
             this.clipInfo = element.owner.getClipInfo();
-            this.type = element.type;
-            this.lowType = element.type & 63;
             this.globalRenderData = element.owner.globalRenderData;
-            this.fillTexture = this.primitiveShaderData.hasDefine(Laya.ShaderDefines2D.FILLTEXTURE);
+            this.fillTexture = !!(element.typeKey & 64);
             this.texRange = this.primitiveShaderData.getVector(Laya.ShaderDefines2D.UNIFORM_TEXRANGE);
         }
         isCompatible(element) {
-            if (this.type & 32)
+            if (this.typeKey & 32)
                 return false;
-            let elementType = element.type;
-            if (elementType & 32) {
+            if (element.typeKey & 32) {
                 return false;
             }
-            let elementLowType = elementType & 63;
-            let elementTexId = elementType & (~63);
+            if (this.typeKey !== element.typeKey) {
+                return false;
+            }
+            let defineMask = (1 << Laya.ShaderDefines2D.SHADER_DEFINE_BITS) - 1;
+            if ((this.textureKey & defineMask) !== (element.textureKey & defineMask)) {
+                return false;
+            }
+            let elementTexId = element.textureKey & (~defineMask);
             if (elementTexId !== 0 && elementTexId !== this.textureId && this.textureId !== 0)
                 return false;
-            if (this.lowType !== elementLowType) {
-                return false;
-            }
-            let elementOwner = element.owner;
             if (this.subShader !== element.subShader ||
                 this.bufferState !== element.geometry.bufferState ||
-                this.clipInfo !== elementOwner.getClipInfo() ||
-                elementOwner.globalRenderData !== this.globalRenderData) {
+                this.clipInfo !== element.owner.getClipInfo() ||
+                element.owner.globalRenderData !== this.globalRenderData) {
                 return false;
             }
-            if ((this.lowType & 16) !== 0 && element.materialShaderData !== this.materialShaderData) {
+            if ((this.typeKey & 16) !== 0 && element.materialShaderData !== this.materialShaderData) {
                 return false;
             }
-            let fillTexture = element.primitiveShaderData.hasDefine(Laya.ShaderDefines2D.FILLTEXTURE);
-            if (fillTexture) {
-                if (!this.fillTexture)
-                    return false;
+            if (this.fillTexture) {
                 if (!element.primitiveShaderData.getVector(Laya.ShaderDefines2D.UNIFORM_TEXRANGE).equal(this.texRange))
                     return false;
             }
-            else if (this.fillTexture)
-                return false;
             if (this.textureId === 0 && elementTexId !== 0) {
                 this.textureId = elementTexId;
                 this.primitiveShaderData = element.primitiveShaderData;
@@ -363,52 +359,48 @@
             this.materialShaderData = element._materialShaderData;
             this.subShader = element._subShader;
             this.bufferState = element.geometry._bufferState;
-            this.textureId = element.type & (~63);
+            this.typeKey = element.typeKey;
+            this.textureKey = element.textureKey;
+            this.textureId = element.textureKey & (~((1 << Laya.ShaderDefines2D.SHADER_DEFINE_BITS) - 1));
             this.globalAlpha = element.owner.globalAlpha;
             this.clipInfo = element.owner.getClipInfo();
-            this.type = element.type;
-            this.lowType = element.type & 63;
             this.globalRenderData = element.owner.globalRenderData;
-            this.fillTexture = this.primitiveShaderData.hasDefine(Laya.ShaderDefines2D.FILLTEXTURE);
+            this.fillTexture = !!(element.typeKey & 64);
             this.texRange = this.primitiveShaderData.getVector(Laya.ShaderDefines2D.UNIFORM_TEXRANGE);
         }
         isCompatible(element) {
-            if (this.type & 32)
+            if (this.typeKey & 32)
                 return false;
-            let elementType = element.type;
-            if (elementType & 32) {
+            if (element.typeKey & 32) {
                 return false;
             }
-            let elementLowType = elementType & 63;
-            let elementTexId = elementType & (~63);
+            if (this.typeKey !== element.typeKey) {
+                return false;
+            }
+            let defineMask = (1 << Laya.ShaderDefines2D.SHADER_DEFINE_BITS) - 1;
+            if ((this.textureKey & defineMask) !== (element.textureKey & defineMask)) {
+                return false;
+            }
+            let elementTexId = element.textureKey & (~defineMask);
             if (elementTexId !== 0 && elementTexId !== this.textureId && this.textureId !== 0)
                 return false;
-            if (this.lowType !== elementLowType) {
-                return false;
-            }
-            let elementOwner = element.owner;
             if (this.subShader !== element.subShader ||
                 this.bufferState !== element.geometry.bufferState ||
-                this.clipInfo !== elementOwner.getClipInfo() ||
-                elementOwner.globalRenderData !== this.globalRenderData) {
+                this.clipInfo !== element.owner.getClipInfo() ||
+                element.owner.globalRenderData !== this.globalRenderData) {
                 return false;
             }
-            if (this.lowType & 16 && element._materialShaderData !== this.materialShaderData) {
+            if ((this.typeKey & 16) !== 0 && element._materialShaderData !== this.materialShaderData) {
                 return false;
             }
-            let primitiveShaderData = element._primitiveShaderData;
-            let fillTexture = primitiveShaderData.hasDefine(Laya.ShaderDefines2D.FILLTEXTURE);
-            if (fillTexture) {
-                if (!this.fillTexture)
-                    return false;
+            if (this.fillTexture) {
+                let primitiveShaderData = element._primitiveShaderData;
                 if (!primitiveShaderData.getVector(Laya.ShaderDefines2D.UNIFORM_TEXRANGE).equal(this.texRange))
                     return false;
             }
-            else if (this.fillTexture)
-                return false;
             if (this.textureId === 0 && elementTexId !== 0) {
                 this.textureId = elementTexId;
-                this.primitiveShaderData = primitiveShaderData;
+                this.primitiveShaderData = element._primitiveShaderData;
             }
             return true;
         }
@@ -545,6 +537,8 @@
                     staticBatchRenderElement.renderStateIsBySprite = element.renderStateIsBySprite;
                     staticBatchRenderElement.primitiveShaderData = batchContext.primitiveShaderData;
                     staticBatchRenderElement.owner = element.owner;
+                    staticBatchRenderElement.typeKey = batchContext.typeKey;
+                    staticBatchRenderElement.textureKey = batchContext.textureKey;
                 }
                 let drawParam = geometry.drawParams.elements;
                 let drawLength = geometry.drawParams.length;
@@ -590,6 +584,8 @@
         element.owner = null;
         element.renderStateIsBySprite = false;
         element.globalShaderData = null;
+        element.typeKey = 0;
+        element.textureKey = 0;
     });
     const _STEP_ = 1024;
     var elementFlags;
@@ -706,6 +702,8 @@
                 || this._mask === struct)
                 return;
             let renderStruct = (struct.subStruct && struct !== this.root) ? struct.subStruct : struct;
+            if (renderStruct.manualRender)
+                return;
             renderStruct._handleInterData();
             let globalRenderData = struct.globalRenderData;
             if (globalRenderData) {
@@ -961,6 +959,7 @@
             this.shaderData.setVector3(Laya.ShaderDefines2D.UNIFORM_INVERTMAT_0, this._invertMat_0);
             this.shaderData.setVector3(Laya.ShaderDefines2D.UNIFORM_INVERTMAT_1, this._invertMat_1);
         }
+        updatePostProcess() { }
         destroy() {
             if (this.destroyed) {
                 return;
@@ -1134,6 +1133,12 @@
             }
         }
     }
+    class WebEmptyRender2DDataHandle extends WebRender2DDataHandle {
+        inheriteRenderData(_context) {
+        }
+        destroy() {
+        }
+    }
     class WebGraphics2DBufferBlock {
     }
     class WebGraphics2DVertexBlock {
@@ -1192,7 +1197,8 @@
             }
             else if (this._globalAlpha != this._owner.globalAlpha) {
                 this._globalAlpha = this._owner.globalAlpha;
-                this._updateVertexData(mat, this._owner.globalAlpha, false, true, false);
+                if (this._bufferBlocks && this._bufferBlocks.length)
+                    this._updateVertexData(mat, this._owner.globalAlpha, false, true, false);
             }
         }
         _updateVertexData(mat, globalAlpha, updateMatrix, updateGlobalAlpha, updateTextureArrayLayerIndex) {
@@ -1574,6 +1580,9 @@
             return this._renderDataHandler;
         }
         set renderDataHandler(value) {
+            if (this._renderDataHandler) {
+                this._renderDataHandler.owner = null;
+            }
             this._renderDataHandler = value;
             if (value)
                 this._renderDataHandler.owner = this;
@@ -1682,6 +1691,7 @@
             }
         }
         constructor() {
+            this.manualRender = false;
             this._parentData = Object.assign({}, _DefaultParentData);
             this._currentData = this._parentData;
             this.zIndex = 0;
@@ -1849,6 +1859,9 @@
         }
         getClipInfo() {
             return this._clipInfo || this._currentData.clipInfo || _DefaultClipInfo;
+        }
+        hasClip() {
+            return this.getClipInfo() !== _DefaultClipInfo;
         }
         updateChildren(type) {
             if (type == ChildrenUpdateType.None)
@@ -2307,6 +2320,7 @@
                 }
                 this._uniformBuffersPropertyMap.set(uniformId, uboBuffer);
             });
+            uboBuffer.needUpload && uboBuffer.upload();
             return uboBuffer;
         }
         _updateUBOBuffer(name) {
@@ -3134,7 +3148,7 @@
         copyToBuffer(buffer, sourceOffset, destoffset, bytelength) {
             const device = WebGPURenderEngine._instance.getDevice();
             const encoder = device.createCommandEncoder();
-            encoder.copyBufferToBuffer(this._buffer._source, sourceOffset, buffer.getNativeBuffer(), destoffset, bytelength);
+            encoder.copyBufferToBuffer(this._buffer._source, sourceOffset, buffer.getNativeBuffer()._source, destoffset, bytelength);
             device.queue.submit([encoder.finish()]);
         }
         copyToTexture() {
@@ -4883,6 +4897,205 @@ ${Object.entries(struct)
         }
     }
     WebGPUShaderData.pointerCount = 0;
+
+    const byDevice$2 = new WeakMap();
+    function getColorBlitWGSL(invertY) {
+        const uvY = invertY ? '1.0 - uv.y' : 'uv.y';
+        return `
+        @group(0) @binding(0) var srcSampler: sampler;
+        @group(0) @binding(1) var srcTexture: texture_2d<f32>;
+
+        struct VSOutput {
+            @builtin(position) position: vec4f,
+            @location(0) texcoord: vec2f,
+        };
+
+        @vertex fn vs(@builtin(vertex_index) vertexIndex: u32) -> VSOutput {
+            var pos = array<vec2f, 3>(
+                vec2f(-1.0, -1.0),
+                vec2f(-1.0,  3.0),
+                vec2f( 3.0, -1.0),
+            );
+            var vsOutput: VSOutput;
+            let xy = pos[vertexIndex];
+            vsOutput.position = vec4f(xy, 0.0, 1.0);
+            vsOutput.texcoord = xy * vec2f(0.5, -0.5) + vec2f(0.5);
+            return vsOutput;
+        }
+
+        @fragment fn fs(fsInput: VSOutput) -> @location(0) vec4f {
+            let uv = fsInput.texcoord;
+            return textureSample(srcTexture, srcSampler, vec2f(uv.x, ${uvY}));
+        }
+    `;
+    }
+    function getDepthBlitWGSL(invertY, msaa) {
+        const yExpr = invertY
+            ? 'i32(dims.y) - 1 - coord.y'
+            : 'coord.y';
+        if (msaa) {
+            return `
+        @group(0) @binding(0) var srcTexture: texture_depth_multisampled_2d;
+
+        struct VSOutput {
+            @builtin(position) position: vec4f,
+        };
+
+        @vertex fn vs(@builtin(vertex_index) vertexIndex: u32) -> VSOutput {
+            var pos = array<vec2f, 3>(
+                vec2f(-1.0, -1.0),
+                vec2f(-1.0,  3.0),
+                vec2f( 3.0, -1.0),
+            );
+            var vsOutput: VSOutput;
+            vsOutput.position = vec4f(pos[vertexIndex], 0.0, 1.0);
+            return vsOutput;
+        }
+
+        @fragment fn fs(fsInput: VSOutput) -> @builtin(frag_depth) f32 {
+            let coord = vec2i(fsInput.position.xy);
+            let dims = textureDimensions(srcTexture);
+            return textureLoad(srcTexture, vec2i(coord.x, ${yExpr}), 0);
+        }
+    `;
+        }
+        return `
+        @group(0) @binding(0) var srcTexture: texture_depth_2d;
+
+        struct VSOutput {
+            @builtin(position) position: vec4f,
+        };
+
+        @vertex fn vs(@builtin(vertex_index) vertexIndex: u32) -> VSOutput {
+            var pos = array<vec2f, 3>(
+                vec2f(-1.0, -1.0),
+                vec2f(-1.0,  3.0),
+                vec2f( 3.0, -1.0),
+            );
+            var vsOutput: VSOutput;
+            vsOutput.position = vec4f(pos[vertexIndex], 0.0, 1.0);
+            return vsOutput;
+        }
+
+        @fragment fn fs(fsInput: VSOutput) -> @builtin(frag_depth) f32 {
+            let coord = vec2i(fsInput.position.xy);
+            let dims = textureDimensions(srcTexture, 0);
+            return textureLoad(srcTexture, vec2i(coord.x, ${yExpr}), 0);
+        }
+    `;
+    }
+    function blitFramebuffer(device, srcColorTexture, dstColorTexture, dstColorFormat, srcDepthTexture, dstDepthTexture, dstDepthFormat, width, height, invertY) {
+        let perDeviceInfo = byDevice$2.get(device);
+        if (!perDeviceInfo) {
+            perDeviceInfo = {
+                colorSampler: null,
+                colorPipelines: {},
+                depthPipelines: {},
+            };
+            byDevice$2.set(device, perDeviceInfo);
+        }
+        if (!perDeviceInfo.colorSampler) {
+            perDeviceInfo.colorSampler = device.createSampler({
+                minFilter: 'nearest',
+                magFilter: 'nearest',
+            });
+        }
+        const colorSampler = perDeviceInfo.colorSampler;
+        const encoder = device.createCommandEncoder({ label: 'blitFramebuffer encoder' });
+        {
+            const key = `${dstColorFormat}_${invertY}`;
+            if (!perDeviceInfo.colorPipelines[key]) {
+                const module = device.createShaderModule({
+                    label: `blitFramebuffer color module (invertY=${invertY})`,
+                    code: getColorBlitWGSL(invertY),
+                });
+                perDeviceInfo.colorPipelines[key] = device.createRenderPipeline({
+                    label: `blitFramebuffer color pipeline`,
+                    layout: 'auto',
+                    vertex: { module, entryPoint: 'vs' },
+                    fragment: {
+                        module,
+                        entryPoint: 'fs',
+                        targets: [{ format: dstColorFormat }],
+                    },
+                });
+            }
+            const pipeline = perDeviceInfo.colorPipelines[key];
+            const bindGroup = device.createBindGroup({
+                layout: pipeline.getBindGroupLayout(0),
+                entries: [
+                    { binding: 0, resource: colorSampler },
+                    { binding: 1, resource: srcColorTexture.createView() },
+                ],
+            });
+            const pass = encoder.beginRenderPass({
+                label: 'blitFramebuffer color pass',
+                colorAttachments: [{
+                        view: dstColorTexture.createView(),
+                        loadOp: 'clear',
+                        storeOp: 'store',
+                    }],
+            });
+            pass.setPipeline(pipeline);
+            pass.setBindGroup(0, bindGroup);
+            pass.draw(3);
+            pass.end();
+        }
+        if (srcDepthTexture && dstDepthTexture && dstDepthFormat) {
+            const srcDepthMSAA = srcDepthTexture.sampleCount > 1;
+            const key = `${dstDepthFormat}_${invertY}_msaa${srcDepthMSAA}`;
+            if (!perDeviceInfo.depthPipelines[key]) {
+                const module = device.createShaderModule({
+                    label: `blitFramebuffer depth module (invertY=${invertY}, msaa=${srcDepthMSAA})`,
+                    code: getDepthBlitWGSL(invertY, srcDepthMSAA),
+                });
+                perDeviceInfo.depthPipelines[key] = device.createRenderPipeline({
+                    label: `blitFramebuffer depth pipeline`,
+                    layout: 'auto',
+                    vertex: { module, entryPoint: 'vs' },
+                    fragment: {
+                        module,
+                        entryPoint: 'fs',
+                        targets: [],
+                    },
+                    depthStencil: {
+                        format: dstDepthFormat,
+                        depthWriteEnabled: true,
+                        depthCompare: 'always',
+                    },
+                });
+            }
+            const pipeline = perDeviceInfo.depthPipelines[key];
+            const bindGroup = device.createBindGroup({
+                layout: pipeline.getBindGroupLayout(0),
+                entries: [
+                    { binding: 0, resource: srcDepthTexture.createView({ aspect: 'depth-only' }) },
+                ],
+            });
+            const hasStencil = dstDepthFormat === 'depth24plus-stencil8'
+                || dstDepthFormat === 'depth32float-stencil8';
+            const depthStencilAttachment = {
+                view: dstDepthTexture.createView(),
+                depthLoadOp: 'clear',
+                depthStoreOp: 'store',
+                depthClearValue: 1.0,
+            };
+            if (hasStencil) {
+                depthStencilAttachment.stencilLoadOp = 'load';
+                depthStencilAttachment.stencilStoreOp = 'store';
+            }
+            const pass = encoder.beginRenderPass({
+                label: 'blitFramebuffer depth pass',
+                colorAttachments: [],
+                depthStencilAttachment,
+            });
+            pass.setPipeline(pipeline);
+            pass.setBindGroup(0, bindGroup);
+            pass.draw(3);
+            pass.end();
+        }
+        device.queue.submit([encoder.finish()]);
+    }
 
     const isTypedArray = (arr) => arr && typeof arr.length === 'number' && arr.buffer instanceof ArrayBuffer && typeof arr.byteLength === 'number';
     function guessTextureBindingViewDimensionForTexture$1(texture) {
@@ -7060,6 +7273,27 @@ ${Object.entries(struct)
         createRenderTargetDepthTexture(renderTarget, dimension, width, height) {
             return renderTarget._depthTexture;
         }
+        blitFrameBuffer(source, dest, invertY) {
+            const device = this._engine.getDevice();
+            let srcColorTex;
+            if (source._samples > 1 && source._texturesResolve && source._texturesResolve.length > 0) {
+                srcColorTex = source._texturesResolve[0];
+            }
+            else {
+                srcColorTex = source._textures[0];
+            }
+            let dstColorTex;
+            if (dest._samples > 1 && dest._texturesResolve && dest._texturesResolve.length > 0) {
+                dstColorTex = dest._texturesResolve[0];
+            }
+            else {
+                dstColorTex = dest._textures[0];
+            }
+            const srcDepthRes = source._depthTexture ? source._depthTexture.resource : null;
+            const dstDepthRes = dest._depthTexture ? dest._depthTexture.resource : null;
+            const dstDepthFormat = dest._depthTexture ? dest._depthTexture._webGPUFormat : null;
+            blitFramebuffer(device, srcColorTex.resource, dstColorTex.resource, dstColorTex._webGPUFormat, srcDepthRes, dstDepthRes, dstDepthFormat, srcColorTex.width, srcColorTex.height, invertY);
+        }
         createRenderTargetCubeInternal(size, colorFormat, depthStencilFormat, generateMipmap, sRGB, multiSamples) {
             throw new Laya.NotImplementedError();
         }
@@ -8605,9 +8839,13 @@ ${fragmentCode}
                 fragmentCode = resFS.preprocessed_code;
             }
             const attributeStrs = attributeString(attributeMap[0], attributeMap[1]);
-            const varyings = executeVaryings(fragmentCode, vertexCode);
+            const { varyings, vsOnlyVaryings } = executeVaryings(fragmentCode, vertexCode);
             const vertexVaryingStrs = varyingString(varyings, "out");
             const fragmentVaryingStrs = varyingString(varyings, "in");
+            let vsOnlyGlobalStrs = "";
+            for (const v of vsOnlyVaryings) {
+                vsOnlyGlobalStrs += `${v}\n`;
+            }
             const fragmentOutStrs = fragmentOutString();
             let collectionUniforms = new Map();
             const uniformCollect = (match, precision, type, name, arrayDecl, arrayLength) => {
@@ -8715,6 +8953,8 @@ ${attributeStrs}
 ${uniformStrs}
 
 ${vertexVaryingStrs}
+
+${vsOnlyGlobalStrs}
 
 ${vertexCode}
 `;
@@ -8867,6 +9107,7 @@ ${fragmentCode}
                     hasSampler: preprocessRes.samplers.size > 0
                 };
             }
+            computeCode = ssboStrings(ssboBindingMap, computeCode);
             resCode = getComputeCode(glslVersion, defineStrs, uniformStr, computeCode);
             return {
                 code: resCode,
@@ -9079,7 +9320,8 @@ layout(set=${set}, binding=${binding++}) uniform sampler ${uniform.propertyName}
         let vertexVaryings = findVaryings(vsSource, vertexVaryingRegex);
         let fragmentVaryings = findVaryings(fsSource, fragmentVaryingRegex);
         let varyings = vertexVaryings.filter(item => fragmentVaryings.includes(item));
-        return varyings;
+        let vsOnlyVaryings = vertexVaryings.filter(item => !fragmentVaryings.includes(item));
+        return { varyings, vsOnlyVaryings };
     }
     function fragmentOutString(source) {
         return "layout(location = 0) out vec4 pc_fragColor;";
@@ -9636,6 +9878,8 @@ ${computeCode}
             this._globalComkeyCounter = 0;
             this._globalComkeyNameMap = {};
             this._globalRendercacheInfoMap = new Map();
+            this._offscreenX = 0;
+            this._offscreenY = 0;
             this._needStart = true;
             this.renderCommand = new WebGPURenderCommandEncoder();
             this._cacheGlobalDefines = new WebDefineDatas();
@@ -9646,6 +9890,9 @@ ${computeCode}
             this.device = WebGPURenderEngine._instance.getDevice();
             this._clearColor = new Laya.Color();
             this._viewport = new Laya.Viewport();
+        }
+        getOffscreenView(out) {
+            out.setValue(this._offscreenX, this._offscreenY, this._offscreenWidth, this._offscreenHeight);
         }
         globalComkeyToID(name) {
             if (this._globalComkeyNameMap[name] !== undefined) {
@@ -9786,9 +10033,11 @@ ${computeCode}
             WebGPURenderEngine._instance._framePassCount++;
             return 0;
         }
-        setOffscreenView(width, height) {
+        setOffscreenView(width, height, x = 0, y = 0) {
             this._offscreenWidth = width;
             this._offscreenHeight = height;
+            this._offscreenX = x;
+            this._offscreenY = y;
         }
         setRenderTarget(value, clear, clearColor) {
             const engine = WebGPURenderEngine._instance;
@@ -10190,12 +10439,13 @@ ${computeCode}
     var CommandType;
     (function (CommandType) {
         CommandType[CommandType["Dispatch"] = 0] = "Dispatch";
-        CommandType[CommandType["SetShaderData"] = 1] = "SetShaderData";
-        CommandType[CommandType["ClearBuffer"] = 2] = "ClearBuffer";
-        CommandType[CommandType["BufferToBuffer"] = 3] = "BufferToBuffer";
-        CommandType[CommandType["BufferToTexture"] = 4] = "BufferToTexture";
-        CommandType[CommandType["TextureToBuffer"] = 5] = "TextureToBuffer";
-        CommandType[CommandType["TextureToTexture"] = 6] = "TextureToTexture";
+        CommandType[CommandType["DispatchIndirect"] = 1] = "DispatchIndirect";
+        CommandType[CommandType["SetShaderData"] = 2] = "SetShaderData";
+        CommandType[CommandType["ClearBuffer"] = 3] = "ClearBuffer";
+        CommandType[CommandType["BufferToBuffer"] = 4] = "BufferToBuffer";
+        CommandType[CommandType["BufferToTexture"] = 5] = "BufferToTexture";
+        CommandType[CommandType["TextureToBuffer"] = 6] = "TextureToBuffer";
+        CommandType[CommandType["TextureToTexture"] = 7] = "TextureToTexture";
     })(CommandType || (CommandType = {}));
     class WebGPUComputeContext {
         constructor() {
@@ -10209,6 +10459,13 @@ ${computeCode}
         addDispatchCommand(cmd) {
             let cmdInfo = {
                 type: CommandType.Dispatch,
+                cmd
+            };
+            this.commands.push(cmdInfo);
+        }
+        addDispatchIndirectCommand(cmd) {
+            let cmdInfo = {
+                type: CommandType.DispatchIndirect,
                 cmd
             };
             this.commands.push(cmdInfo);
@@ -10320,6 +10577,17 @@ ${computeCode}
                         }
                         let dispatchParams = dispatchInfo.dispatchParams;
                         this._computeEncoder.dispatchWorkgroups(dispatchParams.x, dispatchParams.y || 1, dispatchParams.z || 1);
+                        break;
+                    case CommandType.DispatchIndirect:
+                        const indirectInfo = cmd.cmd;
+                        this._startComputePass();
+                        let indirectShader = indirectInfo.shader;
+                        this._bindGroup(indirectShader, indirectInfo.shaderData);
+                        if (this._cacheShader != indirectShader) {
+                            let pipeline = WebGPURenderEngine._instance.pipelineCache.getComputePipeline(this.bindGroupMap, indirectShader, "main");
+                            this._computeEncoder.setPipeline(pipeline);
+                        }
+                        this._computeEncoder.dispatchWorkgroupsIndirect(indirectInfo.indirectBuffer.getNativeBuffer()._source, indirectInfo.indirectOffset);
                         break;
                     case CommandType.SetShaderData:
                         const setDataCMD = cmd;
@@ -10682,6 +10950,9 @@ ${computeCode}
         createDeviceBuffer(type) {
             return new WebGPUDeviceBuffer(type);
         }
+        createDeviceVertexBuffer(type) {
+            return new WebGPUVertexBuffer(Laya.BufferTargetType.TRANSFORM_FEEDBACK_BUFFER, Laya.BufferUsage.Dynamic);
+        }
         createBufferState() {
             return new WebGPUBufferState();
         }
@@ -10693,6 +10964,7 @@ ${computeCode}
             gpuConfig.alphaMode = "opaque";
             gpuConfig.colorSpace = "srgb";
             Laya.Config.useTextureArray = true;
+            Laya.TextRenderConfig.premultiplyAlpha = true;
             switch (Laya.Config.powerPreference) {
                 case "default":
                     gpuConfig.powerPreference = "high-performance";
@@ -11305,6 +11577,8 @@ ${computeCode}
         }
         constructor() {
             super();
+            this.typeKey = 0;
+            this.textureKey = 0;
         }
     }
 
@@ -11460,6 +11734,9 @@ ${computeCode}
     }
 
     class WebGPURender2DProcess {
+        createEmptyRenderDataHandle() {
+            return new WebEmptyRender2DDataHandle();
+        }
         createGraphic2DBufferBlock() {
             return new WebGraphics2DBufferBlock();
         }
@@ -14199,6 +14476,7 @@ ${computeCode}
     exports.Web2DGraphicsIndexBuffer = Web2DGraphicsIndexBuffer;
     exports.Web2DGraphicsVertexBuffer = Web2DGraphicsVertexBuffer;
     exports.WebDefineDatas = WebDefineDatas;
+    exports.WebEmptyRender2DDataHandle = WebEmptyRender2DDataHandle;
     exports.WebGLShaderData = WebGLShaderData;
     exports.WebGPUBindGroup = WebGPUBindGroup;
     exports.WebGPUBindGroupCache = WebGPUBindGroupCache;
@@ -14279,6 +14557,7 @@ ${computeCode}
     exports.WebSubShader = WebSubShader;
     exports.WebUnitRenderModuleDataFactory = WebUnitRenderModuleDataFactory;
     exports._clearCR = _clearCR;
+    exports.blitFramebuffer = blitFramebuffer;
     exports.boolCheck = boolCheck;
     exports.compareCahceFlag = compareCahceFlag;
     exports.coverCahceFlag = coverCahceFlag;

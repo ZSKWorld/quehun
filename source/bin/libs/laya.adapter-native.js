@@ -310,7 +310,7 @@
                 ele.setBgColor(target.bgColor);
             ele.maxLength = target.maxChars <= 0 ? 1E5 : target.maxChars;
             ele.value = target.text;
-            ele.placeholder = target.prompt;
+            ele.placeholder = target.localizedPrompt;
             let style = ele.style;
             style.fontFamily = target.realFont;
             style.color = target.color;

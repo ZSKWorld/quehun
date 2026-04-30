@@ -1,27 +1,5 @@
-/**
- * @internal
- * 使用全局类的时候，避免引用其他模块
- */
-declare class ILaya {
-    static Laya: typeof Laya;
-    static Loader: typeof Loader;
-    static InputManager: typeof InputManager;
-    static Scene3D: typeof Scene3D;
-    static Laya3D: typeof Laya3D;
-    static loader: Laya.Loader;
-    static timer: Laya.Timer;
-    static systemTimer: Laya.Timer;
-    static physicsTimer: Laya.Timer;
-    static stage: Laya.Stage;
-}
-/**
- * @internal
- */
-declare type Mutable<T> = {
-    -readonly [P in keyof T]: T[P];
-};
-type TypedArrayConstructor = Laya.Float32ArrayConstructor | Laya.Int32ArrayConstructor | Laya.Uint32ArrayConstructor | Laya.Int16ArrayConstructor | Laya.Uint16ArrayConstructor | Laya.Int8ArrayConstructor | Laya.Uint8ArrayConstructor;
-type TypedArrayType = Laya.Float32Array | Laya.Int32Array | Laya.Uint32Array | Laya.Int16Array | Laya.Uint16Array | Laya.Int8Array | Laya.Uint8Array;
+type TypedArrayConstructor = Float32ArrayConstructor | Int32ArrayConstructor | Uint32ArrayConstructor | Int16ArrayConstructor | Uint16ArrayConstructor | Int8ArrayConstructor | Uint8ArrayConstructor;
+type TypedArrayType = Float32Array | Int32Array | Uint32Array | Int16Array | Uint16Array | Int8Array | Uint8Array;
 /**
  * @en Laya is the reference entry for global objects.
  *
@@ -142,20 +120,6 @@ declare class Laya {
      */
     static importNative(name: string): any;
 }
-/**@internal */
-declare var init: typeof Laya.init;
-/**@internal */
-declare var stage: Laya.Stage;
-/**@internal */
-declare var systemTimer: Laya.Timer;
-/**@internal */
-declare var physicsTimer: Laya.Timer;
-/**@internal */
-declare var timer: Laya.Timer;
-/**@internal */
-declare var loader: Laya.Loader;
-/**@internal */
-declare var alertGlobalError: typeof Laya.alertGlobalError;
 declare var addInitCallback: typeof Laya.addInitCallback;
 declare var addBeforeInitCallback: typeof Laya.addBeforeInitCallback;
 declare var addAfterInitCallback: typeof Laya.addAfterInitCallback;
@@ -170,8 +134,6 @@ declare class Laya3D {
      * @zh 物理创建管理器。
      */
     static _PhysicsCreateUtil: Laya.IPhysicsCreateUtil;
-    /**@internal */
-    static _enablePhysics: boolean;
     /**
      * @en The physics creation manager.
      * @zh 物理创建管理器。
@@ -185,18 +147,6 @@ declare class Laya3D {
      * @returns {boolean} 如果启用了物理则返回true，否则返回false。
      */
     static get enablePhysics(): boolean;
-    /**
-     *@internal
-     */
-    static _changeWebGLSize(width: number, height: number): void;
-    /**
-     *@internal
-     */
-    static __init__(): void;
-    /**
-     *@internal
-    */
-    static __initPhysics__(): Promise<void>;
 }
 declare namespace Laya {
     /**
@@ -220,8 +170,6 @@ declare namespace Laya {
          * @zh
          */
         static useSPRIV: boolean;
-        /**@internal */
-        static _uniformBlock: boolean;
         /**
         * @en Whether to enable UniformBuffer
         * @zh 材质是否启用UniformBuffer
@@ -441,16 +389,6 @@ declare namespace Laya {
          * @zh 最小cellbuild数，如果小于这个数，不会进行BVH构建
          */
         static BVH_Min_Build_nums: number;
-        /**@internal 设置分辨率宽度*/
-        static _resoluWidth: number;
-        /**@internal 设置分辨率高度*/
-        static _resoluHeight: number;
-        /**@internal */
-        static _maxAreaLightCountPerClusterAverage: number;
-        /**@internal */
-        static _multiLighting: boolean;
-        /**@internal 是否开启视锥裁剪调试 */
-        static debugFrustumCulling: boolean;
     }
     type FEnumDescriptor = {
         name: string;
@@ -971,114 +909,6 @@ declare namespace Laya {
      */
     function regLoader(fileExtensions: string[], type?: string, hotReloadable?: boolean): (constructor: Function) => void;
     /**
-     * @internal
-     */
-    class IAniLib {
-        static Skeleton: typeof Skeleton;
-        static AnimationTemplet: typeof AnimationTemplet;
-        static Templet: typeof Templet;
-    }
-    /**
-     * @internal
-     * @author ...
-     */
-    class AnimationContent {
-        nodes: AnimationNodeContent[];
-        name: string;
-        playTime: number;
-        bone3DMap: any;
-        totalKeyframeDatasLength: number;
-    }
-    /**
-     * @internal
-     */
-    class AnimationNodeContent {
-        name: string;
-        parentIndex: number;
-        parent: AnimationNodeContent;
-        keyframeWidth: number;
-        lerpType: number;
-        interpolationMethod: any[];
-        childs: any[];
-        keyFrame: KeyFramesContent[];
-        playTime: number;
-        extenData: ArrayBuffer;
-        dataOffset: number;
-    }
-    /**
-     * @internal
-     * @en The `AnimationParser01` class is responsible for parsing animation data.
-     * @zh `AnimationParser01` 类用于解析动画数据。
-     */
-    class AnimationParser01 {
-        /**
-         * @private
-         * @en Parses the animation data and populates the AnimationTemplet object.
-         * This method reads various animation properties including bone structures, keyframes, and interpolation data.
-         * @param templet The AnimationTemplet instance to populate with parsed data.
-         * @param reader The Byte reader containing the animation data.
-         * @zh 解析动画数据并填充 AnimationTemplet 对象。
-         * 此方法读取各种动画属性，包括骨骼结构、关键帧和插值数据。
-         * @param templet 要填充的 AnimationTemplet 对象。
-         * @param reader 包含动画数据的 Byte 读取器。
-         */
-        static parse(templet: AnimationTemplet, reader: Byte): void;
-    }
-    /**
-     * @internal
-     * @en The `AnimationParser02` class is responsible for parsing animation data from a binary format into an `AnimationTemplet` object, which is then used for animation playback.
-     * @zh `AnimationParser02` 类负责将二进制格式的动画数据解析到 `AnimationTemplet` 对象中，然后用于动画播放。
-     */
-    class AnimationParser02 {
-        /**@internal */
-        private static _templet;
-        /**@internal */
-        private static _reader;
-        /**@internal */
-        private static _strings;
-        /**@internal */
-        private static _BLOCK;
-        /**@internal */
-        private static _DATA;
-        /**
-         * @private
-         * @en Reads the data offset and size from the binary reader.
-         * @zh 从二进制读取器中读取数据偏移量和大小。
-         */
-        private static READ_DATA;
-        /**
-         * @private
-         * @en Reads block information including count, starts, and lengths.
-         * @zh 读取数据块信息，包括数量、起始位置和长度。
-         */
-        private static READ_BLOCK;
-        /**
-         * @private
-         * @en Reads and stores string data from the binary reader.
-         * @zh 从二进制读取器中读取并存储字符串数据。
-         */
-        private static READ_STRINGS;
-        /**
-         * @private
-         * @en Parses the animation data from the binary reader into the AnimationTemplet.
-         * This method orchestrates the overall parsing process, including reading data blocks and strings.
-         * @param templet The `AnimationTemplet` instance to populate with parsed data.
-         * @param reader The `Byte` reader containing the animation data.
-         * @zh 将二进制读取器中的动画数据解析到 AnimationTemplet 中。
-         * 此方法协调整个解析过程，包括读取数据块和字符串。
-         * @param templet 要填充解析数据的 `AnimationTemplet` 实例。
-         * @param reader 包含动画数据的 `Byte` 读取器。
-         */
-        static parse(templet: AnimationTemplet, reader: Byte): void;
-        /**
-         * @en Reads the animation data from the reader and initializes the animation content within the templet.
-         * This method parses details such as keyframe width, interpolation methods, bone hierarchies, and keyframe data.
-         * @zh 从读取器中读取动画数据，并在模板中初始化动画内容。
-         * 此方法解析诸如关键帧宽度、插值方法、骨骼层次结构和关键帧数据等细节。
-         */
-        static READ_ANIMATIONS(): void;
-    }
-    /**
      * @en The AnimationPlayer class is used for animation players.
      * - Event.PLAYED: Schedule at start of playback.
      * - Event.PAUSED: Schedule when paused.
@@ -1122,12 +952,6 @@ declare namespace Laya {
         private _cacheFrameRateInterval;
         /**@zh 缓存播放速率*/
         private _cachePlayRate;
-        /**
-         * @internal
-         * @en The elapsed playback time, including replay time.
-         * @zh 已播放时间，包括重播时间。
-         */
-        _elapsedPlaybackTime: number;
         /**
          * @en Whether to cache.
          * @zh 是否缓存。
@@ -1233,22 +1057,6 @@ declare namespace Laya {
          */
         constructor();
         /**
-         * @internal
-         */
-        _onTempletLoadedComputeFullKeyframeIndices(cachePlayRate: number, cacheFrameRate: number, templet: AnimationTemplet): void;
-        /**
-         * @internal
-         */
-        private _computeFullKeyframeIndices;
-        /**
-         * @internal
-         */
-        private _onAnimationTempletLoaded;
-        /**
-         * @internal
-         */
-        private _calculatePlayDuration;
-        /**
          * @private
          */
         private _setPlayParams;
@@ -1257,14 +1065,6 @@ declare namespace Laya {
          * 动画停止了对应的参数。目前都是设置时间为最后
          */
         private _setPlayParamsWhenStop;
-        /**
-         * @internal
-         */
-        _update(elapsedTime: number): void;
-        /**
-         * @internal
-         */
-        _destroy(): void;
         /**
          * @en Play animation based on time.
          * @param index The index of the animation to play.
@@ -1312,15 +1112,6 @@ declare namespace Laya {
         destroy(): void;
     }
     /**
-     * @internal
-     */
-    class AnimationState {
-        static stopped: number;
-        static paused: number;
-        static playing: number;
-        constructor();
-    }
-    /**
      * @en The AnimationTemplate class is used for animation template resources.
      * @zh AnimationTemplet类用于动画模板资源。
      * @blueprintIgnore
@@ -1339,28 +1130,6 @@ declare namespace Laya {
         private static _NoInterpolation_5;
         private static _BezierInterpolation_6;
         private static _BezierInterpolation_7;
-        /**
-         * 加载动画模板。
-         * @param url 动画模板地址。
-         */
-        /**@internal */
-        _aniVersion: string;
-        /**@internal */
-        _anis: AnimationContent[];
-        /**@internal */
-        _aniMap: any;
-        /**
-         * @internal
-         * @en Public Extended Data
-         * @zh 公共扩展数据
-         */
-        _publicExtData: ArrayBuffer;
-        /**
-         * @internal
-         * @en Whether to use object tree data format
-         * @zh 是否采用对象树数据格式
-         */
-        _useParent: boolean;
         /**@private */
         protected unfixedCurrentFrameIndexes: Uint32Array;
         /**@private */
@@ -1369,26 +1138,12 @@ declare namespace Laya {
         protected unfixedKeyframes: KeyFramesContent[];
         /**@private */
         protected unfixedLastAniIndex: number;
-        /**@internal */
-        _aniClassName: string;
-        /**@internal */
-        _animationDatasCache: any;
-        /**@internal */
-        _fullFrames: any[];
         /**
          * 记录每个骨骼当前在动画的第几帧。这个是为了去掉缓存的帧索引数据。
         */
         private _boneCurKeyFrm;
         /**@ignore */
         constructor();
-        /**
-         * @internal
-         */
-        _calculateKeyFrame(node: AnimationNodeContent, keyframeCount: number, keyframeDataCount: number): void;
-        /**
-         * @internal
-         */
-        _onAsynLoaded(data: any, propertyParams?: any): void;
         /**
          * @en Get the number of animations.
          * @zh 获取动画的数量。
@@ -1604,12 +1359,6 @@ declare namespace Laya {
          */
         resultRotation: number;
         d: number;
-        /**@internal */
-        private _tempMatrix;
-        /**@internal */
-        private _children;
-        /**@internal */
-        private _sprite;
         constructor();
         /**
          * @en Sets the temporary matrix for this bone and recursively for all child bones.
@@ -1727,20 +1476,6 @@ declare namespace Laya {
         displayIndex: number;
         /** @private */
         originalIndex: number;
-        /**
-         * @internal 用户自定义的皮肤。
-         */
-        private _diyTexture;
-        /**@internal */
-        private _parentMatrix;
-        /**@internal */
-        private _resultMatrix;
-        /** @internal 索引替换表 */
-        private _replaceDic;
-        /** @internal 当前diyTexture的动画纹理 */
-        private _curDiyUV;
-        /** @internal 实时模式下，复用使用 */
-        private _skinSprite;
         /** @private 变形动画数据 */
         deformData: any[];
         /**
@@ -1805,10 +1540,6 @@ declare namespace Laya {
          */
         static createSkinMesh(): any;
         private static isSameArr;
-        /**@internal */
-        private static _tempResultMatrix;
-        /**@internal */
-        private _preGraphicVerticle;
         private getSaveVerticle;
         /**
          * @en Compares two matrices to check if they are identical.
@@ -1945,109 +1676,6 @@ declare namespace Laya {
         init2(texture: Texture, ps: any[], verticles: any[], uvs: any[]): void;
     }
     /**
-     * @internal
-     */
-    class DeformAniData {
-        skinName: string;
-        deformSlotDataList: DeformSlotData[];
-        constructor();
-    }
-    /**
-     * @internal
-     * @en Deformation slot data class
-     * Used to store and manage deformation data for a single slot.
-     * @zh 变形插槽数据类
-     * 用于存储和管理单个插槽的变形数据
-     */
-    class DeformSlotData {
-        /**
-         * @en Deformation slot display data list
-         * Contains deformation data for the slot in different display states.
-         * @zh 变形插槽显示数据列表
-         * 包含了插槽在不同显示状态下的变形数据
-         */
-        deformSlotDisplayList: DeformSlotDisplayData[];
-        constructor();
-    }
-    /**
-     * @internal
-     * @en The `DeformSlotDisplayData` class is used internally to store and manage the display data for deformable slots in animations.
-     * @zh `DeformSlotDisplayData` 类用于在动画中存储和管理可变形插槽的显示数据。
-     */
-    class DeformSlotDisplayData {
-        /**
-         * @en The bone slot to which the deform data is applied.
-         * @zh 应用变形数据的骨骼插槽。
-         */
-        boneSlot: BoneSlot;
-        /**
-         * @en The index of the slot in the skin.
-         * @zh 插槽在皮肤中的索引。
-         */
-        slotIndex: number;
-        /**
-         * @en The name of the attachment associated with the deform data.
-         * @zh 与变形数据相关的附件名称。
-         */
-        attachment: string;
-        /**
-         * @en A list of time values corresponding to the keyframes of the deform animation.
-         * @zh 对应于变形动画关键帧的时间值列表。
-         */
-        timeList: number[];
-        /**
-         * @en A list of vertex data arrays for each keyframe, representing the deformed state.
-         * @zh 每个关键帧的顶点数据数组列表，代表变形状态。
-         */
-        vectices: any[][];
-        /**
-         * @en A list indicating whether there is a tween between keyframes.
-         * @zh 指示关键帧之间是否存在缓动的列表。
-         */
-        tweenKeyList: boolean[];
-        /**
-         * @en The deformed vertex data applied to the slot.
-         * @zh 应用于插槽的变形顶点数据。
-         */
-        deformData: any[];
-        /**
-         * @en The current frame index for the deform animation.
-         * @zh 变形动画的当前帧索引。
-         */
-        frameIndex: number;
-        constructor();
-        private binarySearch1;
-        /**
-         * @en Applies the deform data to the bone slot based on the given time and alpha value.
-         * @param time The current time of the animation.
-         * @param boneSlot The bone slot to which the deform data will be applied.
-         * @param alpha The alpha value for tweening between keyframes, default is 1.
-         * @zh 根据给定的时间和 alpha 值将变形数据应用到骨骼插槽。
-         * @param time 当前动画的时间。
-         * @param boneSlot 应用变形数据的骨骼插槽。
-         * @param alpha 用于在关键帧之间补间的 alpha 值，默认为 1。
-         */
-        apply(time: number, boneSlot: BoneSlot, alpha?: number): void;
-    }
-    /**
-     * @internal
-     * @en The `DrawOrderData` class is used internally to manage the draw order data which determines the rendering order of the elements in an animation frame.
-     * @zh `DrawOrderData` 类用于内部管理绘制顺序数据，该数据确定动画帧中元素的渲染顺序。
-     */
-    class DrawOrderData {
-        /**
-         * @en The time at which the draw order is defined.
-         * @zh 定义绘制顺序的时间点。
-         */
-        time: number;
-        /**
-         * @en A list of indices representing the draw order of the slots at the given time.
-         * @zh 代表给定时间点插槽绘制顺序的索引列表。
-         */
-        drawOrder: number[];
-        constructor();
-    }
-    /**
      * @en Event data of Skeleton animation.
      * @zh 骨骼动画事件数据
      */
@@ -2082,285 +1710,6 @@ declare namespace Laya {
          * @zh 时间数据。
          */
         time: number;
-        constructor();
-    }
-    /**
-     * @internal
-     * @en Represents an inverse kinematics (IK) constraint in a skeletal animation system.
-     * @zh 表示骨骼动画系统中的逆动力学（IK）约束。
-     */
-    class IkConstraint {
-        /**@internal */
-        private _targetBone;
-        /**@internal */
-        private _bones;
-        /**@internal */
-        /**
-         * @en The name of the inverse kinematics constraint.
-         * @zh IK约束的名称。
-         */
-        name: string;
-        /**
-         * @en The mix value determines the influence of the constraint on the bones, ranging from 0 (no effect) to 1 (full effect).
-         * @zh 混合值确定约束对骨骼的影响程度，范围从 0（无效果）到 1（完全有效）。
-         */
-        mix: number;
-        /**
-         * @en The bend direction of the bones in the constraint, which can be positive or negative.
-         * @zh 约束中骨骼的弯曲方向，可以是正向或负向。
-         */
-        bendDirection: number;
-        /**
-         * @en Indicating whether the constraint is applied using the Spine algorithm.
-         * @zh 指示是否使用 Spine 算法应用约束。
-         */
-        isSpine: boolean;
-        /**
-         * @en A static property that converts radians to degrees.
-         * @zh 一个静态属性，用于将弧度转换为度数。
-         */
-        static radDeg: number;
-        /**
-         * @en A static property that converts degrees to radians.
-         * @zh 一个静态属性，用于将度数转换为弧度。
-         */
-        static degRad: number;
-        constructor(data: IkConstraintData, bones: Bone[]);
-        /**
-         * @en Apply the IK constraint
-         * @zh 应用IK约束
-         */
-        apply(): void;
-        /**@internal */
-        private _applyIk1;
-        /**@internal */
-        private _sp;
-        private isDebug;
-        /**
-         * @en Update the position of the debug sprite
-         * @param x The x-coordinate of the new position
-         * @param y The y-coordinate of the new position
-         * @zh 更新调试精灵的位置
-         * @param x 新位置的x坐标
-         * @param y 新位置的y坐标
-         */
-        updatePos(x: number, y: number): void;
-        /**@internal */
-        private _applyIk2;
-        /**@internal */
-        private _applyIk3;
-    }
-    /**
-     * @internal
-     * @en Represents the data structure for an inverse kinematics (IK) constraint in a skeletal animation system.
-     * @zh 表示骨骼动画系统中逆动力学（IK）约束的数据结构。
-     */
-    class IkConstraintData {
-        /**
-         * @en The name of the IK constraint.
-         * @zh IK 约束的名称。
-         */
-        name: string;
-        /**
-         * @en The name of the target bone that the IK constraint targets.
-         * @zh IK 约束所指向的目标骨骼的名称。
-         */
-        targetBoneName: string;
-        /**
-         * @en An array of bone names that are affected by the IK constraint.
-         * @zh 受 IK 约束影响的骨骼名称数组。
-         */
-        boneNames: string[];
-        /**
-         * @en The bend direction of the IK constraint.
-         * @zh IK 约束的弯曲方向。
-         */
-        bendDirection: number;
-        /**
-         * @en The mix value of the IK constraint, influencing the weight of the constraint.
-         * @zh IK 约束的混合值，影响约束的权重。
-         */
-        mix: number;
-        /**
-         * @en A boolean indicating whether the IK constraint is used in a Spine project.
-         * @zh 一个布尔值，指示 IK 约束是否用于 Spine 项目。
-         */
-        isSpine: boolean;
-        /**
-         * @en The index of the target bone in the skeleton.
-         * @zh 在骨架中目标骨骼的索引。
-         */
-        targetBoneIndex: number;
-        /**
-         * @en An array of bone indices affected by the IK constraint.
-         * @zh 受 IK 约束影响的骨骼索引数组。
-         */
-        boneIndexs: number[];
-        constructor();
-    }
-    /**
-     * @internal
-     * @en The `PathConstraint` class is used to control the movement of bones based on a path.
-     * It performs the following operations:
-     * 1. Generates control points based on bone calculations
-     * 2. Generates the path and calculates the nodes on the path.
-     * 3. Adjusts the position of the bones based on the nodes.
-     * @zh `PathConstraint` 类是路径作用器，用于根据路径控制骨骼的移动。
-     * 它执行以下操作：
-     * 1. 生成根据骨骼计算控制点
-     * 2. 根据控制点生成路径，并计算路径上的节点。
-     * 3. 根据节点，重新调整骨骼的位置。
-     */
-    class PathConstraint {
-        private static BEFORE;
-        private static AFTER;
-        /**
-         * @en The target bone slot that the path constraint is applied to.
-         * @zh 应用路径约束的目标骨骼插槽。
-         */
-        target: BoneSlot;
-        /**
-         * @en The path constraint data used to define the constraint.
-         * @zh 用于定义约束的路径约束数据。
-         */
-        data: PathConstraintData;
-        /**
-         * @en An array of bones that will be influenced by the path constraint.
-         * @zh 将受路径约束影响的骨骼数组。
-         */
-        bones: Bone[];
-        /**
-         * @en The position of the path constraint.
-         * @zh 路径约束的位置。
-         */
-        position: number;
-        /**
-         * @en The spacing between bones when the path constraint is applied.
-         * @zh 应用路径约束时骨骼之间的间隔。
-         */
-        spacing: number;
-        /**
-         * @en The amount of rotation mixing to apply to the bones.
-         * @zh 应用于骨骼的旋转混合量。
-         */
-        rotateMix: number;
-        /**
-         * @en The amount of translation mixing to apply to the bones.
-         * @zh 应用于骨骼的平移混合量。
-         */
-        translateMix: number;
-        /**@internal */
-        private _debugKey;
-        /**@internal */
-        private _segments;
-        /**@internal */
-        private _curves;
-        /**@internal */
-        private _spaces;
-        constructor(data: PathConstraintData, bones: Bone[]);
-        /**
-         * @en Calculates the nodes of the skeleton on the path.
-         * @param boneList An array of bones that the path constraint affects.
-         * @param graphics The graphics context to use for path calculations.
-         * @zh 计算骨骼在路径上的节点。
-         * @param boneList 受路径约束影响的骨骼数组。
-         * @param graphics 用于路径计算的 Graphics 实例。
-         */
-        apply(boneList: Bone[], graphics: Graphics): void;
-        /**
-         * @en Calculate the world coordinates of vertices.
-         * @param boneSlot The bone slot to which the vertices belong.
-         * @param boneList The list of bones that affect the vertices.
-         * @param start The starting index of the vertices to calculate.
-         * @param count The number of vertices to calculate.
-         * @param worldVertices The array to store the calculated world coordinates.
-         * @param offset The offset in the worldVertices array to start storing the results.
-         * @zh 计算顶点的世界坐标。
-         * @param boneSlot 顶点所属的骨骼插槽。
-         * @param boneList 影响顶点的骨骼列表。
-         * @param start 开始计算顶点的索引。
-         * @param count 要计算的顶点数量。
-         * @param worldVertices 用于存储计算结果的数组。
-         * @param offset 数组中开始存储结果的偏移量。
-         */
-        computeWorldVertices2(boneSlot: BoneSlot, boneList: Bone[], start: number, count: number, worldVertices: number[], offset: number): void;
-        /**
-         * 计算路径上的节点
-         * @param boneSlot
-         * @param boneList
-         * @param graphics
-         * @param spacesCount
-         * @param tangents
-         * @param percentPosition
-         * @param percentSpacing
-         * @return
-         */
-        private computeWorldPositions;
-        private addBeforePosition;
-        private addAfterPosition;
-        private addCurvePosition;
-    }
-    /**
-     * @internal
-     * @en The `PathConstraintData` class contains the setup data for a path constraint.
-     * @zh `PathConstraintData` 类包含了路径约束的设置数据。
-     */
-    class PathConstraintData {
-        /**
-         * @en The name of the path constraint.
-         * @zh 路径约束的名称。
-         */
-        name: string;
-        /**
-         * @en An array of bone indices that will be used as bones for the path constraint.
-         * @zh 用作路径约束骨骼的骨骼索引数组。
-         */
-        bones: number[];
-        /**
-         * @en The target bone slot that will be constrained by the path.
-         * @zh 将被路径约束的目标骨骼插槽。
-         */
-        target: string;
-        /**
-         * @en The mode for how the bones are positioned along the path.
-         * @zh 骨骼沿路径定位的模式。
-         */
-        positionMode: string;
-        /**
-         * @en The mode for how the spacing between bones is controlled.
-         * @zh 控制骨骼间距的模式。
-         */
-        spacingMode: string;
-        /**
-         * @en The mode for how bones are rotated to match the path.
-         * @zh 骨骼如何旋转以匹配路径的模式。
-         */
-        rotateMode: string;
-        /**
-         * @en The rotation offset added to the constrained bones.
-         * @zh 添加到受约束骨骼的旋转偏移量。
-         */
-        offsetRotation: number;
-        /**
-         * @en The position of the path constraint.
-         * @zh 路径约束的位置。
-         */
-        position: number;
-        /**
-         * @en The spacing between bones when the path constraint is applied.
-         * @zh 应用路径约束时骨骼之间的间隔。
-         */
-        spacing: number;
-        /**
-         * @en Used to apply path rotation to the mix ratio of the constrained bones.
-         * @zh 用于将路径旋转应用到受约束骨骼的混合比例。
-         */
-        rotateMix: number;
-        /**
-         * @en Used to apply path translation to the mix ratio of the constrained bones.
-         * @zh 用于将路径平移应用到受约束骨骼的混合比例。
-         */
-        translateMix: number;
         constructor();
     }
     /**
@@ -2708,13 +2057,6 @@ declare namespace Laya {
         destroy(destroyChild?: boolean): void;
     }
     /**
-     * @internal
-     */
-    class SkinData {
-        name: string;
-        slotArr: any[];
-    }
-    /**
      * @en Slot display data
      * @zh 插槽显示数据
      */
@@ -2837,10 +2179,6 @@ declare namespace Laya {
          * @zh 动画的帧率
          */
         rate: number;
-        /**@internal */
-        private _mainTexture;
-        /**@internal */
-        private _graphicsCache;
         /**
          * @en Stores the original bone information.
          * @zh 存放原始骨骼信息。
@@ -2923,11 +2261,7 @@ declare namespace Laya {
          * @zh 实际显示对象列表，用于销毁用。
          */
         skinSlotDisplayDataArr: SkinSlotDisplayData[];
-        /** @internal 是否需要解析audio数据 */
-        private _isParseAudio;
         aniSectionDic: any;
-        /**@internal */
-        private _path;
         /**@private */
         tMatrixDataLen: number;
         /**
@@ -3031,77 +2365,6 @@ declare namespace Laya {
         protected _disposeResource(): void;
     }
     /**
-     * @internal
-     * @en Class representing a transform constraint which is used to control the transformations (translation, rotation, scale, shear) of bones based on a target bone.
-     * @zh 变换约束类，用于根据目标骨骼控制其他骨骼的变换（平移、旋转、缩放、剪切）。
-     */
-    class TfConstraint {
-        /**@internal */
-        private _data;
-        /**@internal */
-        private _bones;
-        /**
-         * @en The target bone that the constraint will follow.
-         * @zh 约束跟随的目标骨骼。
-         */
-        target: Bone;
-        /**
-         * @en The mix ratio for rotation transformation.
-         * @zh 旋转变换的混合比率。
-         */
-        rotateMix: number;
-        /**
-         * @en The mix ratio for translation transformation.
-         * @zh 平移变换的混合比率。
-         */
-        translateMix: number;
-        /**
-         * @en The mix ratio for scale transformation.
-         * @zh 缩放变换的混合比率。
-         */
-        scaleMix: number;
-        /**
-         * @en The mix ratio for shear transformation.
-         * @zh 剪切变换的混合比率。
-         */
-        shearMix: number;
-        /**@internal */
-        private _temp;
-        /**
-         * @en Creates a new transform constraint.
-         * @param data The transform constraint data.
-         * @param bones The bones to be constrained.
-         * @zh 构造方法，创建一个新的变换约束。
-         * @param data 变换约束数据。
-         * @param bones 要被约束的骨骼。
-         */
-        constructor(data: TfConstraintData, bones: Bone[]);
-        /**
-         * @internal
-         * @en Applies the constraint to the bones, adjusting their transformations to match the target bone.
-         * @zh 应用约束，将骨骼的变换调整为与目标骨骼一致。
-         */
-        apply(): void;
-    }
-    /**
-     * @internal
-     */
-    class TfConstraintData {
-        name: string;
-        boneIndexs: number[];
-        targetIndex: number;
-        rotateMix: number;
-        translateMix: number;
-        scaleMix: number;
-        shearMix: number;
-        offsetRotation: number;
-        offsetX: number;
-        offsetY: number;
-        offsetScaleX: number;
-        offsetScaleY: number;
-        offsetShearY: number;
-    }
-    /**
      * @en The `Transform` class represents a 2D transformation matrix, used to apply rotations, scaling, skewing, and translation to objects.
      * @zh `Transform` 类表示一个2D变换矩阵，用于对对象应用旋转、缩放、倾斜和位移。
      */
@@ -3180,72 +2443,6 @@ declare namespace Laya {
         skew(m: Matrix, x: number, y: number): Matrix;
     }
     /**
-     * @internal
-     * @en Utility class for UV transformation.
-     * @zh 用于UV转换的工具类。
-     */
-    class UVTools {
-        constructor();
-        /**
-         * @en Converts small UV coordinates, which are relative to an atlas, to UV coordinates relative to a specific large image.
-         * @param bigUV UV of the specific large image.
-         * @param smallUV UV within the atlas.
-         * @param rst Optional array to store the result.
-         * @returns UV coordinates relative to the specific large image.
-         * @zh 将相对于图集的小UV转换成相对某个大图的UV。
-         * @param bigUV 特定大图的UV。
-         * @param smallUV 图集中的UV。
-         * @param rst 可选数组用于存储结果。
-         * @returns 相对于特定大图的UV。
-         */
-        static getRelativeUV(bigUV: ArrayLike<number>, smallUV: any[], rst?: any[]): any[];
-        /**
-         * @en Converts UV coordinates relative to a specific large image to UV coordinates relative to the atlas that contains the large image.
-         * @param bigUV UV of the specific large image.
-         * @param smallUV UV coordinates relative to the specific large image.
-         * @param rst Optional array to store the result.
-         * @returns UV coordinates relative to the atlas that contains the large image.
-         * @zh 将相对于某个大图的UV转换成相对于大图图集的UV。
-         * @param bigUV 特定大图的UV。
-         * @param smallUV 相对于特定大图的UV。
-         * @param rst 可选数组用于存储结果。
-         * @return 相对于大图图集的UV
-         */
-        static getAbsoluteUV(bigUV: ArrayLike<number>, smallUV: any[], rst?: any[]): any[];
-    }
-    /**
-     * @internal
-     * @en Graphic animation class.
-     * @zh 图形动画类。
-     */
-    class GraphicsAni extends Graphics {
-        /**
-         * @private
-         * @en Draws a custom skinned mesh for graphic animation.
-         * @param skinA The skin mesh object for graphic.
-         * @param alpha The opacity value to apply to the graphic.
-         * @zh 绘制自定义蒙皮动画。
-         * @param skinA 图形的蒙皮网格对象。
-         * @param alpha 要应用于图形的不透明度值。
-         */
-        drawSkin(skinA: SkinMeshForGraphic, alpha: number): void;
-        private static _caches;
-        /**
-         * @en Retrieves an instance of GraphicsAni from the cache or creates a new one if none are available.
-         * @returns An instance of GraphicsAni.
-         * @zh 从缓存中获取一个 GraphicsAni 实例，如果没有可用的实例则创建一个新的。
-         * @returns GraphicsAni 的一个实例。
-         */
-        static create(): GraphicsAni;
-        /**
-         * @en Recycles a GraphicsAni instance by clearing its content and adding it to the cache for future use.
-         * @param graphics The GraphicsAni instance to recycle.
-         * @zh 通过清除其内容并将其实例添加到缓存中来回收 GraphicsAni。
-         * @param graphics 要回收的 GraphicsAni 实例。
-         */
-        static recycle(graphics: GraphicsAni): void;
-    }
-    /**
      * @en Keyframes
      * @zh 关键帧
      */
@@ -3314,15 +2511,7 @@ declare namespace Laya {
         protected _ended: boolean;
         /** 总帧数。*/
         protected _count: number;
-        /**@internal id_data起始位置表*/
-        _ids: any;
         protected _loadedImage: any;
-        /**@internal id_实例表*/
-        _idOfSprite: any[];
-        /**@internal 父mc*/
-        _parentMovieClip: MovieClip;
-        /**@internal 需要更新的movieClip表*/
-        _movieClipList: MovieClip[];
         protected _labels: any;
         /**
          * @en Resource root directory
@@ -3459,6 +2648,1106 @@ declare namespace Laya {
         playTo(start: number, end: number, complete?: Handler): void;
     }
     /**
+     * Bridge3D专用相机，用于2D场景中3D节点的渲染
+     *
+     * @remarks
+     * 该相机继承自标准Camera类，持有统一的Bridge3D渲染流程（阴影+前向），
+     * 与Scene3D的Camera持有IRender3DProcess的架构对称。
+     */
+    class Bridge3DCamera extends Camera {
+        static __init__(): void;
+        /**
+         * Bridge3D统一渲染流程（阴影+前向，与Scene3D的Camera持有IRender3DProcess对称）
+         * @private
+         */
+        private _bridge3DRenderProcess;
+        /**
+         * 构造函数
+         */
+        constructor();
+        /**
+         * 设置Bridge3DCamera的默认配置
+         * @private
+         */
+        private _setupBridge3DCameraDefaults;
+        /**
+         * 获取Bridge3D渲染流程
+         */
+        get bridge3DRenderProcess(): IBridge3DRenderProcess;
+        /**
+         * 重写Camera.render()，匹配Scene3D Camera.render()的流程：
+         *   1. 上下文设置
+         *   2. 相机准备（无条件，保证UBO始终有效）
+         *   3. 委托 process.fowardRender（context准备+元素收集+阴影）
+         *
+         * @param scene 场景对象
+         */
+        render(scene: Scene3D): void;
+        /**
+         * 克隆Bridge3DCamera
+         * @returns 克隆的相机实例
+         */
+        clone(): Bridge3DCamera;
+        /**
+         * 销毁Bridge3DCamera
+         * @param destroyChild 是否销毁子节点
+         */
+        destroy(destroyChild?: boolean): void;
+    }
+    /**
+     * Bridge3DData is the data object for Bridge3D configuration.
+     * It holds only serializable properties exposed to IDE and .ls files.
+     *
+     * The runtime manager (Bridge3DSceneInternal) is held separately by Scene.
+     * This class has NO runtime references or methods.
+     */
+    class Bridge3DData {
+        private _cameraZDistance;
+        private _cameraFarPlane;
+        /**
+         * @en Camera Z distance.
+         * @zh 相机 Z 距离。
+         */
+        get cameraZDistance(): number;
+        set cameraZDistance(value: number);
+        /**
+         * @en Camera far clipping plane distance.
+         * @zh 相机远裁面距离。
+         */
+        get cameraFarPlane(): number;
+        set cameraFarPlane(value: number);
+        /**
+         * @en Scene3D settings data. Used by runtime deserialization (ObjDecoder merges data into this object).
+         * Applied to scene3d during finalization.
+         * @zh Scene3D 配置数据。运行时反序列化时 ObjDecoder 将数据 merge 进此对象，
+         * 初始化时 apply 到 scene3d。
+         */
+        get scene3dSettings(): Record<string, any>;
+        /**
+         * @en Camera settings data. Used by runtime deserialization (ObjDecoder merges data into this object).
+         * Applied to sharedCamera during finalization.
+         * @zh Camera 配置数据。运行时反序列化时 ObjDecoder 将数据 merge 进此对象，
+         * 初始化时 apply 到 sharedCamera。
+         */
+        get cameraSettings(): Record<string, any>;
+    }
+    /**
+     * Bridge3DScene3D is a lightweight Scene3D implementation optimized for Bridge3D system.
+     * Only responsible for rendering pipeline — lifecycle and list management are handled by Bridge3DSceneInternal.
+     *
+     * Main optimizations:
+     * 1. _addRenderObject/_removeRenderObject delegated to Bridge3DSprite management
+     * 2. _update only updates root-level Bridge3DSprite renderUpdate, avoiding redundant _collectRenderNodes
+     * 3. Removes unnecessary heavyweight features (physics, light management, volume management, etc.)
+     *
+     * @class Bridge3DScene3D
+     * @extends Scene3D
+     */
+    class Bridge3DScene3D extends Scene3D {
+        /**
+         * Shared Bridge3D camera
+         * @private
+         */
+        private _sharedCamera;
+        /**
+         * Render object to Bridge3DSprite mapping
+         * @private
+         */
+        private _renderToBridgeMap;
+        /**
+         * Bridge3D rendering context (unified held and managed by Scene3D)
+         * @private
+         */
+        private _bridge3DContext;
+        /**
+         * Camera Z distance (synced from holder)
+         * @private
+         */
+        private _cameraZDistance;
+        /**
+         * Bridge3D独立的灯光贴图
+         * @private
+         */
+        private _bridge3DLightTexture;
+        /**
+         * Get the shared Bridge3D camera
+         * @readonly
+         */
+        get sharedCamera(): Bridge3DCamera;
+        /**
+         * Bridge3D渲染上下文（供process访问）
+         */
+        get bridge3DContext(): Bridge3DContext | RTBridge3DContext;
+        /**
+         * Create Bridge3DScene3D instance
+         * @param holder - The owning Bridge3DSceneInternal
+         */
+        constructor(holder: Bridge3DSceneInternal);
+        /**
+         * Apply camera Z distance (called by holder)
+         * @param value - Camera Z distance
+         */
+        applyCameraZDistance(value: number): void;
+        /**
+         * Apply camera far plane (called by holder)
+         * @param value - Camera far clipping plane distance
+         */
+        applyCameraFarPlane(value: number): void;
+        updateContext(): void;
+        /**
+         * 查找渲染对象所属的 Bridge3DSprite
+         * @param sprite
+         * @returns 所属的 Bridge3DSprite，如果找不到返回 null
+         * @private
+         */
+        private _findOwnerBridge3DSprite;
+        /**
+         * Update camera position based on current stage size and camera Z distance
+         * @private
+         */
+        private _updateCameraPosition;
+        /**
+         * Setup shared camera intrinsics (projection / orientation / position).
+         * Called once by the constructor as part of output initialization.
+         * Data-driven parameters (cameraZDistance / farPlane) are applied via applyCamera*.
+         */
+        setupCamera(): void;
+        /**
+         * Handle stage resize
+         * @remarks
+         * - Called when Scene2D listens to Stage.EVENT_RESIZE event
+         * - Reconfigure shared camera projection parameters and position
+         * - Uses RenderState2D's actual render size instead of stage logical size
+         */
+        onStageResize(): void;
+        /**
+         * Override renderSubmit method
+         *
+         * @remarks
+         * 匹配Scene3D.renderSubmit()的流程：scene准备 → camera.render()
+         * context准备、元素收集、阴影渲染全部下沉到 process.fowardRender() 中
+         */
+        renderSubmit(): void;
+        /**
+         * Destroy rendering resources (stage/list management is handled by holder)
+         * @param destroyChild - Whether to destroy child nodes
+         */
+        destroy(destroyChild?: boolean): void;
+    }
+    /**
+     * Bridge3DSceneInternal manages the runtime lifecycle of Bridge3DScene3D and registered Bridge3DSprites.
+     * This is an internal class held by Scene._bridge3DInternal, NOT serialized.
+     *
+     * It reads configuration from Scene.bridge3D (the data holder).
+     */
+    class Bridge3DSceneInternal implements IBridge3DSceneInternal {
+        constructor(scene: Scene);
+        _onAdded(): void;
+        _onRemoved(): void;
+        /**
+         * @en Get the Bridge3DScene3D instance (nullable)
+         * @zh 获取 Bridge3DScene3D 实例（可能为 null）
+         */
+        get scene3d(): Bridge3DScene3D | null;
+        /**
+         * @en Get the shared Bridge3D camera (null if scene3d not yet created)
+         * @zh 获取共享 Bridge3D 相机（scene3d 未创建时返回 null）
+         */
+        get sharedCamera(): any;
+        /**
+         * @en Get the registered Bridge3DSprite list
+         * @zh 获取已注册的 Bridge3DSprite 列表
+         */
+        get bridge3DList(): readonly Bridge3DSprite[];
+        /**
+         * @en Create Bridge3DScene3D and apply initial settings from the holder (idempotent).
+         * Camera intrinsics are set inside Bridge3DScene3D's constructor; here we only
+         * forward the data-driven scene3dSettings / cameraSettings.
+         * @zh 创建 Bridge3DScene3D 并套用 holder 的初始配置（幂等）。
+         * 相机内参已在 Bridge3DScene3D 构造中完成，此处仅下发数据层的 scene3dSettings / cameraSettings。
+         */
+        initScene3D(): Bridge3DScene3D;
+        private _applySettingsTo;
+        /**
+         * @en Register a Bridge3DSprite. Internally calls initScene3D() to ensure scene3d exists.
+         * @zh 注册 Bridge3DSprite。内部调用 initScene3D() 确保 scene3d 已创建。
+         */
+        registerBridge3D(bridge: Bridge3DSprite): void;
+        /**
+         * @en Unregister a Bridge3DSprite.
+         * @zh 取消注册 Bridge3DSprite。
+         */
+        unregisterBridge3D(bridge: Bridge3DSprite): void;
+        /**
+         * @en Apply data from bridge3D holder to runtime. Called when bridge3D is set/replaced.
+         * If data is null, resets to defaults.
+         * @zh 将 bridge3D 数据应用到运行时。bridge3D 赋值/替换时调用。
+         * data 为 null 时恢复默认值。
+         */
+        applyData(data: any): void;
+        /**
+         * @en Destroy scene3d and clear the list.
+         * @zh 销毁 scene3d 并清空列表。
+         */
+        destroy(): void;
+    }
+    interface IBridgeRenderElement extends IRenderElement2D {
+        addBaseRenderNode(node: IBaseRenderNode): void;
+        removeBaseRenderNode(node: IBaseRenderNode): void;
+        getBaseRenderList(): SingletonList<any>;
+        getOpaqueList(): RenderListQueue;
+        getTransparentList(): RenderListQueue;
+        setBridge3DContext(context: any): void;
+        setRenderProcess(process: IBridge3DRenderProcess): void;
+        /**
+         * 收集渲染元素：遍历节点 → 更新数据 → 分类到队列 → 排序
+         * @returns opaqueCount (Native) or -1 (Web, use TS queue)
+         */
+        collectElements(context3d: any): number;
+    }
+    /**
+     * Bridge3DSprite是2D/3D桥接容器,允许在2D场景中嵌入和管理3D节点树
+     *
+     * @class Bridge3DSprite
+     * @extends Sprite
+     */
+    class Bridge3DSprite extends Sprite {
+        static readonly defaultPixelsPerUnit = 10;
+        static createBridge3DRenderElement(): IBridgeRenderElement;
+        /**
+         * Internal BridgeContainerSprite3D, parent node for all 3D children
+         * @remarks
+         * - Container is added to Bridge3DScene3D
+         * - Automatically gets _scene reference, supports component lifecycle
+         */
+        private _containerSprite3D;
+        /**
+         * Render element
+         */
+        private _bridge3DRenderElement;
+        /**
+         * Whether registered to Bridge3DScene3D
+         */
+        private _isRegistered;
+        /**
+         * Pixels per unit
+         * @remarks
+         * - Controls how 3D content is scaled relative to 2D pixels
+         * - Default: Bridge3DConfig.defaultScale3DToPixel
+         * - Example: 100 means 1 3D unit = 100 pixels
+         */
+        private _ppu;
+        /** 缓存的3D世界空间包围盒 */
+        private _bounds3D;
+        /** 缓存的2D本地空间矩形 */
+        private _bounds2DRect;
+        /** 包围盒是否需要重新计算 */
+        private _boundsDirty;
+        /**
+         * 创建一个Bridge3DSprite实例
+         * @remarks
+         * - 自动创建内部容器Sprite3D
+         * - 自动创建Bridge3DRenderElement作为渲染元素
+         */
+        constructor();
+        /**
+         * Get internal container Sprite3D
+         * @remarks
+         * - Only for internal engine use (e.g., used by Bridge3DScene3D during registration)
+         * - User code should use addChild/removeChild APIs, not access container directly
+         */
+        get containerSprite3D(): Sprite3D;
+        /**
+         * 获取内部Transform3D实例
+         * @readonly
+         * @deprecated 请使用addChild/removeChild/getChildAt等API管理子节点
+         * @remarks
+         * - 此getter保留用于向后兼容
+         * - 返回容器Sprite3D的transform
+         */
+        get transform3D(): Transform3D;
+        /**
+         * Get the scale factor from 3D units to pixels
+         * @remarks
+         * - Defines the conversion ratio between 3D units and 2D pixels
+         * - Example: 100 means 1 3D unit = 100 pixels
+         * - Affects the visual size of 3D content in the 2D scene
+         */
+        get pixelsPerUnit(): number;
+        /**
+         * Set the scale factor from 3D units to pixels
+         * @param value - Scale factor (must be > 0)
+         * @throws Error if value <= 0
+         * @remarks
+         * - Changes take effect immediately
+         * - Triggers transform synchronization
+         * - Example: Setting to 100 makes a 1-unit cube appear as 100x100 pixels
+         *
+         * @example
+         * ```typescript
+         * const bridge = new Bridge3DSprite();
+         * bridge.scale3DToPixel = 100; // 1 meter = 100 pixels
+         *
+         * // Add a 1-unit cube (1 meter in 3D space)
+         * const cube = new MeshSprite3D(PrimitiveMesh.createBox(1, 1, 1));
+         * bridge.addChild(cube);
+         * // The cube will appear as 100x100 pixels on screen
+         * ```
+         */
+        set pixelsPerUnit(value: number);
+        /**
+         * 添加3D子节点
+         * @param node - 要添加的Sprite3D节点
+         * @returns 返回添加的子节点
+         * @throws 如果node不是Sprite3D类型
+         * @remarks
+         * - Bridge3DSprite只能添加Sprite3D类型的子节点,不能添加普通2D节点
+         * - 通过_setContainer机制,addChild操作自动委托给内部容器Sprite3D
+         * - 节点自动获得_scene引用,支持组件生命周期
+         */
+        addChild<T extends Node>(node: T): T;
+        /**
+         * Called when node is added to display list
+         * @remarks
+         * - Overrides Sprite._onAdded
+         * - Auto-initializes and registers to Bridge3DScene3D
+         * @protected
+         */
+        protected _onAdded(): void;
+        private _regsiterScene;
+        private _removeRegister;
+        /**
+         * Called when node is removed from display list
+         * @remarks
+         * - Overrides Sprite._onRemoved
+         * - Unregisters from Bridge3DScene3D
+         * @protected
+         */
+        protected _onRemoved(): void;
+        protected _setParent(value: Node, index?: number): void;
+        /**
+         * 当2D变换改变时调用
+         * @param flag - 变换标志位
+         * @remarks
+         * - 覆写Sprite._onTransformChanged
+         * - 同步更新内部Transform3D的localPosition、localScale、localRotationEuler
+         * - MVP阶段不处理倾斜变换
+         * @protected
+         */
+        protected _transChanged(flag: number): void;
+        /**
+         * 同步2D变换到3D容器
+         * @private
+         * @remarks
+         * 使用Bridge3DCoordinate工具类进行坐标转换，确保2D逻辑坐标正确映射到3D世界坐标
+         * 使用全局变换矩阵，确保正确处理父节点的变换（包括倾斜）
+         */
+        private _syncTransform2DTo3D;
+        /**
+         * 管理的渲染对象列表
+         * @private
+         */
+        private _list;
+        /**
+         * 获取3D世界空间包围盒
+         * @returns 合并所有子渲染对象的世界空间包围盒
+         */
+        get3DBounds(): Bounds;
+        /**
+         * 标记包围盒需要重新计算
+         * @private
+         */
+        private _markBoundsDirty;
+        /**
+         * 更新包围盒计算
+         * @private
+         */
+        private _updateBounds;
+        /**
+         * 将3D包围盒投影到2D本地坐标空间
+         * @private
+         */
+        private _project3DTo2D;
+        /**
+         * @override
+         */
+        getGraphicBounds(realSize?: boolean, out?: Rectangle): Rectangle;
+        /**
+         * Called when node is destroyed
+         * @remarks
+         * - Overrides Node._onDestroy
+         * - Destroys internal container Sprite3D (automatically destroys all child nodes)
+         * - Destroys render element
+         * - Unregisters from Bridge3DScene3D
+         */
+        onDestroy(): void;
+        /**
+         * 获取Bridge3D渲染元素
+         */
+        get bridge3DRenderElement(): IBridgeRenderElement;
+        /** @ignore */
+        _child3dChanged(child?: Node): void;
+    }
+    /**
+     * Bridge3DContext封装了Bridge3D渲染所需的3D上下文配置
+     *
+     * @remarks
+     * 这个类负责：
+     * 1. 存储viewport、scissor等渲染参数
+     * 2. 管理shader数据和模块数据
+     * 3. 管理清除标志和清除参数
+     * 4. 提供统一的接口来应用这些参数到3D渲染上下文
+     */
+    class Bridge3DContext {
+        /**
+         * 视口
+         */
+        private _viewport;
+        /**
+         * 裁剪区域
+         */
+        private _scissor;
+        /**
+         * 是否在渲染前清空深度缓冲
+         */
+        private _clearDepthBeforeRender;
+        /**
+         * 渲染管线模式
+         */
+        private _pipelineMode;
+        /**
+         * 是否翻转Y轴
+         */
+        private _invertY;
+        /**
+         * 清除深度值
+         */
+        private _clearDepth;
+        /**
+         * 清除模板值
+         */
+        private _clearStencil;
+        /**
+         * 场景模块数据
+         */
+        private _sceneModuleData;
+        /**
+         * 相机模块数据
+         */
+        private _cameraModuleData;
+        /**
+         * 场景shader数据
+         */
+        private _sceneData;
+        /**
+         * 相机shader数据
+         */
+        private _cameraData;
+        /**
+         * 全局shader数据
+         */
+        private _globalShaderData;
+        private _color;
+        /**
+         * 2D当前渲染目标（null表示屏幕）
+         */
+        private _renderTarget2D;
+        /**
+         * 2D逆矩阵分量 [a, c, tx]
+         */
+        private _invertMat0_a;
+        private _invertMat0_c;
+        private _invertMat0_tx;
+        /**
+         * 2D逆矩阵分量 [b, d, ty]
+         */
+        private _invertMat1_b;
+        private _invertMat1_d;
+        private _invertMat1_ty;
+        /**
+         * 2D clip信息
+         */
+        private _clipInfo;
+        /**
+         * 是否有有效的clip（非默认clip）
+         */
+        private _hasClip;
+        /**
+         * 2D invertY状态
+         */
+        private _invertY2D;
+        static _tempCorrectedProjView: Matrix4x4;
+        constructor();
+        /**
+         * 设置场景模块数据
+         */
+        setSceneModuleData(data: ISceneNodeData): void;
+        /**
+         * 设置相机模块数据
+         */
+        setCameraModuleData(data: ICameraNodeData): void;
+        /**
+         * 设置场景shader数据
+         */
+        setSceneData(data: ShaderData): void;
+        /**
+         * 设置相机shader数据
+         */
+        setCameraData(data: ShaderData): void;
+        /**
+         * 设置全局shader数据
+         */
+        setGlobalShaderData(data: ShaderData): void;
+        /**
+         * 设置2D渲染目标
+         */
+        setRenderTarget2D(rt: InternalRenderTarget): void;
+        /**
+         * 获取2D渲染目标
+         */
+        getRenderTarget2D(): InternalRenderTarget;
+        /**
+         * 设置2D逆矩阵分量
+         * 逆矩阵格式: [a c tx; b d ty]
+         */
+        setInvertMatrix(a: number, b: number, c: number, d: number, tx: number, ty: number): void;
+        /**
+         * 设置2D clip信息
+         */
+        setClipInfo(clipInfo: IClipInfo, hasClip: boolean): void;
+        /**
+         * 获取clip信息
+         */
+        getClipInfo(): IClipInfo;
+        /**
+         * 是否有有效的clip
+         */
+        get hasClip(): boolean;
+        /**
+         * 设置2D invertY状态
+         */
+        set invertY2D(value: boolean);
+        get invertY2D(): boolean;
+        /**
+         * 判断是否需要投影校正（逆矩阵不是单位矩阵）
+         */
+        get needsProjectionCorrection(): boolean;
+        /**
+         * 计算校正矩阵 M_corr
+         * 将 Stage NDC 变换到 RT NDC，考虑2D逆矩阵
+         *
+         * 变换链:
+         *   Stage NDC → Stage 像素 → (逆矩阵 M⁻¹) → RT 像素 → RT NDC
+         *
+         * @param vpW Stage viewport宽度
+         * @param vpH Stage viewport高度
+         * @param rtW RT宽度
+         * @param rtH RT高度
+         * @param out 输出校正矩阵
+         */
+        computeCorrectionMatrix(vpW: number, vpH: number, rtW: number, rtH: number, out: Matrix4x4): void;
+        /**
+         * 从相机模块数据更新viewport和scissor
+         * @param camera 相机模块数据
+         */
+        updateFromCamera(camera: Camera): void;
+        /**
+         * 应用上下文参数到3D渲染上下文
+         * @param context3d 3D渲染上下文
+         * @remarks
+         * 这个方法会设置：
+         * 1. Shader数据和模块数据
+         * 2. Viewport和scissor
+         * 3. 清除参数
+         * 4. Pipeline mode和invertY
+         */
+        applyToContext(context3d: IRenderContext3D): void;
+        /**
+         * 是否在渲染前清空深度缓冲
+         */
+        get clearDepthBeforeRender(): boolean;
+        set clearDepthBeforeRender(value: boolean);
+        /**
+         * 渲染管线模式
+         */
+        get pipelineMode(): PipelineMode;
+        set pipelineMode(value: PipelineMode);
+        /**
+         * 是否翻转Y轴
+         */
+        get invertY(): boolean;
+        set invertY(value: boolean);
+        /**
+         * 清除深度值
+         */
+        get clearDepth(): number;
+        set clearDepth(value: number);
+        /**
+         * 清除模板值
+         */
+        get clearStencil(): number;
+        set clearStencil(value: number);
+        /**
+         * 获取viewport（只读）
+         */
+        get viewport(): Viewport;
+        /**
+         * 获取scissor（只读）
+         */
+        get scissor(): Vector4;
+        /**
+         * 获取场景模块数据（只读）
+         */
+        get sceneModuleData(): ISceneNodeData;
+        /**
+         * 获取相机模块数据（只读）
+         */
+        get cameraModuleData(): ICameraNodeData;
+        /**
+         * 获取场景shader数据（只读）
+         */
+        get sceneData(): ShaderData;
+        /**
+         * 获取相机shader数据（只读）
+         */
+        get cameraData(): ShaderData;
+        /**
+         * 获取全局shader数据（只读）
+         */
+        get globalShaderData(): ShaderData;
+        /**
+         * Bridge3D独立的灯光贴图（用于解决全局灯光贴图冲突问题）
+         * @private
+         */
+        private _bridge3DLightTexture;
+        /**
+         * Bridge3D独立的灯光像素数据
+         * @private
+         */
+        private _bridge3DLightPixels;
+        /**
+         * 设置Bridge3D独立的灯光数据
+         * @param lightTexture 灯光贴图
+         * @param lightPixels 灯光像素数据
+         */
+        setBridge3DLightData(lightTexture: any, lightPixels: Float32Array): void;
+        /**
+         * 获取Bridge3D的灯光贴图
+         */
+        get bridge3DLightTexture(): any;
+        /**
+         * 获取Bridge3D的灯光像素数据
+         */
+        get bridge3DLightPixels(): Float32Array;
+    }
+    /**
+     * Bridge3DRenderElement是Bridge3DSprite的渲染元素,负责将3D内容集成到2D渲染管线
+     *
+     * @class Bridge3DRenderElement
+     */
+    class Bridge3DRenderElement implements IBridgeRenderElement {
+        type: number;
+        geometry: IRenderGeometryElement;
+        materialShaderData: ShaderData;
+        value2DShaderData: ShaderData;
+        globalShaderData: ShaderData;
+        subShader: SubShader;
+        renderStateIsBySprite: boolean;
+        nodeCommonMap: Array<string>;
+        owner: IRenderStruct2D;
+        _index?: number;
+        _baseRenderList: SingletonList<WebBaseRenderNode>;
+        /**
+         * Bridge3D渲染上下文（由Scene3D传递，不持有）
+         * @private
+         */
+        private _bridge3DContext;
+        /**
+         * 不透明渲染元素队列
+         * @private
+         */
+        private _opaqueList;
+        /**
+         * 半透明渲染元素队列
+         * @private
+         */
+        private _transparentList;
+        /**
+         * 创建Bridge3DRenderElement实例
+         */
+        constructor();
+        addBaseRenderNode(node: WebBaseRenderNode): void;
+        removeBaseRenderNode(node: WebBaseRenderNode): void;
+        setBridge3DContext(context: Bridge3DContext): void;
+        setRenderProcess(process: IBridge3DRenderProcess): void;
+        getBaseRenderList(): SingletonList<WebBaseRenderNode>;
+        getOpaqueList(): RenderListQueue;
+        getTransparentList(): RenderListQueue;
+        /**
+         * 是否在渲染前清空深度缓冲
+         * @default true
+         * @remarks
+         * - true: 实现独立深度隔离,不同Bridge3D的3D内容不互相遮挡
+         * - false: 共享深度缓冲,可能导致跨Bridge3D的深度冲突
+         */
+        get clearDepthBeforeRender(): boolean;
+        set clearDepthBeforeRender(value: boolean);
+        /**
+         * 获取Bridge3D渲染上下文（只读）
+         */
+        get bridge3DContext(): Bridge3DContext;
+        collectElements(context3d: any): number;
+        _prepare(context: IRenderContext2D): void;
+        /**
+         * 渲染3D内容到2D当前RT
+         * @param context - 2D渲染上下文
+         * @remarks
+         * 委托给 WebBridge3DRenderProcess 的三阶段流程:
+         *   initBridge3DRenderPass → prepareProjectionCorrection → renderBridge3DForward
+         */
+        _render(context: IRenderContext2D): void;
+        /**
+         * 销毁渲染元素
+         */
+        destroy(): void;
+    }
+    /**
+     * IBridge3DRenderProcess - Bridge3D统一渲染流程接口
+     *
+     * 遵循 Scene3D 的 IRender3DProcess 模式：
+     *   fowardRender (场景级：context准备 + 阴影渲染)
+     *   render (元素级：前向渲染，由每个 element 的 _render 调用)
+     *
+     * Web 实现: WebBridge3DRenderProcess (纯TS逻辑)
+     * Native 实现: RTBridge3DRenderProcess (委托C++ conchGLESBridge3DRenderProcess)
+     */
+    interface IBridge3DRenderProcess {
+        /** 场景渲染管理器（与 IRender3DProcess.render3DManager 对称） */
+        render3DManager: ISceneRenderManager;
+        /**
+         * 注册 Bridge3D 渲染元素（在 Bridge3DSprite 注册到 scene 时调用）
+         */
+        addBridgeElement(element: IBridgeRenderElement): void;
+        /**
+         * 移除 Bridge3D 渲染元素（在 Bridge3DSprite 从 scene 移除时调用）
+         */
+        removeBridgeElement(element: IBridgeRenderElement): void;
+        /**
+         * 场景级渲染入口（对标 IRender3DProcess.fowardRender）
+         * 由 Bridge3DCamera.render() 调用，内部编排：
+         *   1. Bridge3D context 准备
+         *   2. 阴影渲染（条件）
+         */
+        fowardRender(context3d: IRenderContext3D, camera: Camera): void;
+        /**
+         * 元素级前向渲染（由每个 element 的 _render 调用）
+         * 内部执行：initBridge3DRenderPass → prepareProjectionCorrection → renderBridge3DForward
+         */
+        render(element: IBridgeRenderElement, context2d: IRenderContext2D, context3d: IRenderContext3D): void;
+        destroy(): void;
+    }
+    /**
+     * RTBridge3DContext - Native wrapper for GLESBridge3DContext
+     *
+     * Wraps the C++ GLESBridge3DContext for use on native platforms.
+     */
+    class RTBridge3DContext {
+        _nativeObj: any;
+        constructor();
+        setSceneModuleData(data: ISceneNodeData): void;
+        setCameraModuleData(data: ICameraNodeData): void;
+        setSceneData(data: ShaderData): void;
+        setCameraData(data: ShaderData): void;
+        setGlobalShaderData(data: ShaderData): void;
+        setRenderTarget2D(rt: InternalRenderTarget): void;
+        getRenderTarget2D(): InternalRenderTarget;
+        setViewPort(vp: Viewport): void;
+        setScissor(sc: Vector4): void;
+        setClearData(flag: number, color: Color, depthValue: number, stencilValue: number): void;
+        setInvertMatrix(a: number, b: number, c: number, d: number, tx: number, ty: number): void;
+        applyToContext(context: IRenderContext3D): void;
+        computeCorrectionMatrix(vpW: number, vpH: number, rtW: number, rtH: number, out: Matrix4x4): void;
+        get clearDepthBeforeRender(): boolean;
+        set clearDepthBeforeRender(value: boolean);
+        get clearDepth(): number;
+        set clearDepth(value: number);
+        get clearStencil(): number;
+        set clearStencil(value: number);
+        get pipelineMode(): PipelineMode;
+        set pipelineMode(value: PipelineMode);
+        get invertY(): boolean;
+        set invertY(value: boolean);
+        get sceneModuleData(): ISceneNodeData;
+        get cameraModuleData(): ICameraNodeData;
+        get sceneData(): ShaderData;
+        get cameraData(): ShaderData;
+        get globalShaderData(): ShaderData;
+        setBridge3DLightData(lightTexture: any, lightPixels: Float32Array): void;
+        get bridge3DLightTexture(): any;
+        get bridge3DLightPixels(): Float32Array;
+        /**
+         * Update viewport/scissor from camera (mirrors Bridge3DContext.updateFromCamera)
+         * @remarks Kept for backward compatibility, but not called in hot path (use prepareForRender instead)
+         */
+        updateFromCamera(camera: Camera): void;
+        /**
+         * 合并多个初始化操作为一次 C++ 调用
+         * 包含: updateFromCamera + applyToContext + addPreDrawUniformMap("Scene3D") + addPreDrawUniformMap("Global")
+         * 同时设置 stageRenderSize
+         */
+        prepareForRender(camera: Camera, context3d: IRenderContext3D): void;
+    }
+    /**
+     * RTBridge3DRenderElement - Native implementation of IBridgeRenderElement
+     *
+     * Wraps the C++ GLESBridge3DRenderElement2D which handles all rendering logic
+     * (projection correction, clip transform, 3D queue rendering) natively.
+     */
+    class RTBridge3DRenderElement implements IBridgeRenderElement {
+        type: number;
+        geometry: IRenderGeometryElement;
+        materialShaderData: ShaderData;
+        value2DShaderData: ShaderData;
+        globalShaderData: ShaderData;
+        subShader: SubShader;
+        renderStateIsBySprite: boolean;
+        nodeCommonMap: Array<string>;
+        _index?: number;
+        _nativeObj: any;
+        private _owner;
+        private _baseRenderList;
+        private _bridge3DContext;
+        private _opaqueList;
+        private _transparentList;
+        constructor();
+        get owner(): IRenderStruct2D;
+        set owner(value: IRenderStruct2D);
+        addBaseRenderNode(node: IBaseRenderNode): void;
+        removeBaseRenderNode(node: IBaseRenderNode): void;
+        setBridge3DContext(context: any): void;
+        setRenderProcess(process: IBridge3DRenderProcess): void;
+        getBaseRenderList(): SingletonList<IBaseRenderNode>;
+        getOpaqueList(): RenderListQueue;
+        getTransparentList(): RenderListQueue;
+        /**
+         * 获取Bridge3D渲染上下文
+         */
+        get bridge3DContext(): RTBridge3DContext;
+        collectElements(context3d: any): number;
+        _prepare(context: IRenderContext2D): void;
+        /**
+         * 渲染3D内容到2D当前RT
+         * C++端 GLESBridge3DRenderElement2D::_render 负责完整流程:
+         *   collectFromNodes → renderProcess->render (三阶段)
+         */
+        _render(context: IRenderContext2D): void;
+        destroy(): void;
+    }
+    /**
+     * RTBridge3DRenderProcess - Native端Bridge3D统一渲染流程
+     *
+     * 遵循 RTRender3DProcess 的模式：声明式属性配置 → 单次C++执行调用
+     * 阴影阶段使用 RTDirCascadeShadowRP/RTBaseSpotRP
+     * 前向阶段委托C++ conchGLESBridge3DRenderProcess 处理
+     */
+    class RTBridge3DRenderProcess implements IBridge3DRenderProcess {
+        _nativeObj: any;
+        /** Native directional shadow render pass */
+        private _dirShadowRP;
+        /** Native spot shadow render pass */
+        private _spotShadowRP;
+        /** 默认阴影贴图（1x1占位） */
+        private _defaultShadowMap;
+        /** 场景渲染管理器 */
+        private _render3DManager;
+        get render3DManager(): ISceneRenderManager;
+        set render3DManager(value: ISceneRenderManager);
+        /** 已注册的 Bridge3D 渲染元素列表 */
+        private _bridgeElements;
+        constructor();
+        addBridgeElement(element: IBridgeRenderElement): void;
+        removeBridgeElement(element: IBridgeRenderElement): void;
+        /**
+         * 统一渲染入口（对标 RTRender3DProcess.fowardRender）
+         * 由 Bridge3DCamera.render() 调用，编排完整流程：
+         *   1. Bridge3D context 准备（单次 C++ 调用）
+         *   2. 元素收集（直接遍历已注册的元素列表）
+         *   3. 阴影渲染（条件）
+         */
+        fowardRender(context3d: IRenderContext3D, camera: Camera): void;
+        /**
+         * 阴影渲染（由 fowardRender 内部调用）
+         * 遵循 RTRender3DProcess.initRenderpass 的声明式模式：
+         *   TS 端配置属性 → 单次 C++ renderShadows 执行
+         */
+        renderShadows(context: IRenderContext3D, camera: Camera): void;
+        /**
+         * 完整前向渲染流程 (单次C++调用)
+         */
+        render(element: IBridgeRenderElement, context2d: IRenderContext2D, context3d: IRenderContext3D): void;
+        destroy(): void;
+    }
+    /**
+     * WebBridge3DRenderProcess - Web端Bridge3D统一渲染流程
+     *
+     * 遵循 WebRender3DProcess 的架构，统一管理阴影和前向渲染:
+     *   renderShadows (阴影阶段) + render → initBridge3DRenderPass → prepareProjectionCorrection → renderBridge3DForward (前向阶段)
+     */
+    class WebBridge3DRenderProcess implements IBridge3DRenderProcess {
+        /** 方向光阴影渲染管线 */
+        private _dirShadowRP;
+        /** 聚光灯阴影渲染管线 */
+        private _spotShadowRP;
+        /** 默认阴影贴图（1x1占位） */
+        private _defaultShadowMap;
+        /** 场景渲染管理器引用 */
+        render3DManager: ISceneRenderManager;
+        /** 已注册的 Bridge3D 渲染元素列表（注册时加入，避免每帧遍历 bridge3DList） */
+        private _bridgeElements;
+        private _rt2d;
+        private _cachedInvertY;
+        private _rtW;
+        private _rtH;
+        private _vpW;
+        private _vpH;
+        private _hasInvertMatrix;
+        private _invA;
+        private _invB;
+        private _invC;
+        private _invD;
+        private _invTx;
+        private _invTy;
+        private _projCorrected;
+        private _hasShaderClip;
+        private _hasGammaCorrect;
+        private static _tempViewport;
+        private static _tempScissor;
+        private static _savedProjMatrix;
+        private static _savedProjViewMatrix;
+        constructor();
+        addBridgeElement(element: IBridgeRenderElement): void;
+        removeBridgeElement(element: IBridgeRenderElement): void;
+        /**
+         * 统一渲染入口（对标 WebRender3DProcess.fowardRender）
+         * 由 Bridge3DCamera.render() 调用，编排完整流程：
+         *   1. Bridge3D context 准备
+         *   2. 元素收集（直接遍历已注册的元素列表）
+         *   3. 阴影渲染（条件）
+         */
+        fowardRender(context3d: IRenderContext3D, camera: Camera): void;
+        /**
+         * 阴影渲染（由 fowardRender 内部调用）
+         *
+         * 对应 WebRender3DProcess._renderForwardAddCameraPass() 中的阴影部分
+         */
+        renderShadows(context: IRenderContext3D, camera: Camera): void;
+        /**
+         * 阶段1: 初始化渲染Pass
+         */
+        initBridge3DRenderPass(element: IBridgeRenderElement, context2d: IRenderContext2D, context3d: IRenderContext3D): void;
+        /**
+         * 阶段2: 投影校正准备
+         */
+        prepareProjectionCorrection(element: IBridgeRenderElement, context2d: IRenderContext2D, context3d: IRenderContext3D): void;
+        /**
+         * 阶段3: 执行前向渲染
+         */
+        renderBridge3DForward(element: IBridgeRenderElement, context2d: IRenderContext2D, context3d: IRenderContext3D): void;
+        /**
+         * 完整前向渲染流程
+         */
+        render(element: IBridgeRenderElement, context2d: IRenderContext2D, context3d: IRenderContext3D): void;
+        destroy(): void;
+    }
+    /**
+     * Bridge3D坐标转换工具类
+     * 处理2D逻辑坐标与3D世界坐标之间的转换
+     *
+     * @remarks
+     * LayaAir的坐标系统：
+     * - Stage逻辑坐标：stage.width × stage.height（用户设置的逻辑尺寸）
+     * - Canvas渲染坐标：RenderState2D.width × RenderState2D.height（实际渲染尺寸，可能经过缩放）
+     * - 3D世界坐标：与Canvas渲染坐标对齐
+     *
+     * 当stage被缩放时（如适配不同屏幕），逻辑坐标与渲染坐标会不一致，需要转换。
+     */
+    class Bridge3DCoordinate {
+        /**
+         * 将2D逻辑坐标转换为3D世界坐标
+         * @param x - 2D逻辑X坐标（相对于stage）
+         * @param y - 2D逻辑Y坐标（相对于stage）
+         * @param z - 3D世界Z坐标（默认0）
+         * @param out - 输出向量（可选，不提供则创建新向量）
+         * @returns 3D世界坐标
+         *
+         * @example
+         * ```typescript
+         * // Bridge3D在2D逻辑坐标(400, 300)
+         * const worldPos = Bridge3DCoordinate.logicTo3D(400, 300, 0);
+         * // worldPos现在是3D世界坐标，考虑了stage缩放
+         * ```
+         */
+        static logicTo3D(x: number, y: number, z?: number, out?: Vector3): Vector3;
+        /**
+         * 将3D世界坐标转换为2D逻辑坐标
+         * @param worldPos - 3D世界坐标
+         * @returns {x: number, y: number} 2D逻辑坐标
+         *
+         * @example
+         * ```typescript
+         * const worldPos = new Vector3(800, 600, 0);
+         * const logicPos = Bridge3DCoordinate.worldTo2D(worldPos);
+         * // logicPos.x, logicPos.y 是2D逻辑坐标
+         * ```
+         */
+        static worldTo2D(worldPos: Vector3): {
+            x: number;
+            y: number;
+        };
+        /**
+         * 获取当前的坐标缩放比例
+         * @returns {scaleX: number, scaleY: number} X和Y方向的缩放比例
+         *
+         * @remarks
+         * - scaleX = RenderState2D.width / stage.width
+         * - scaleY = RenderState2D.height / stage.height
+         * - 当stage适配屏幕时，这些值可能不为1
+         */
+        static getScale(): {
+            scaleX: number;
+            scaleY: number;
+        };
+        /**
+         * 获取当前的渲染尺寸信息
+         * @returns 包含逻辑尺寸、渲染尺寸和缩放比例的对象
+         */
+        static getRenderInfo(): {
+            logicWidth: number;
+            logicHeight: number;
+            renderWidth: number;
+            renderHeight: number;
+            scaleX: number;
+            scaleY: number;
+        };
+        /**
+         * 将2D屏幕坐标转换为3D世界坐标（考虑相机投影）
+         * @param screenX - 屏幕X坐标（像素）
+         * @param screenY - 屏幕Y坐标（像素）
+         * @param camera - Bridge3D相机
+         * @param depth - 深度值（默认0，表示Z=0平面）
+         * @param out - 输出向量（可选）
+         * @returns 3D世界坐标
+         *
+         * @remarks
+         * 此方法用于将鼠标点击等屏幕坐标转换为3D世界坐标
+         */
+        static screenTo3D(screenX: number, screenY: number, camera: Camera, depth?: number, out?: Vector3): Vector3;
+        /**
+         * 调试输出当前坐标系统信息
+         */
+        static debugInfo(): void;
+    }
+    /**
      * @en Animation condition types
      * @zh 动画条件类型
      */
@@ -3546,40 +3835,6 @@ declare namespace Laya {
      */
     class AnimationClip2D extends Resource {
         /**
-         * @internal
-         * @en Parses animation data into a 2D animation clip.
-         * @param data The animation data to be parsed.
-         * @returns The parsed 2D animation clip.
-         * @zh 将动画数据解析为2D动画片段。
-         * @param data 要解析的动画数据。
-         * @returns 解析后的2D动画片段。
-         */
-        static _parse(data: ArrayBuffer): AnimationClip2D;
-        /**
-         * @internal
-         */
-        _frameRate: number;
-        /**
-         * @internal
-         */
-        _duration: number;
-        /**
-         * @internal
-         */
-        _animationEvents: Animation2DEvent[];
-        /**
-         * @internal
-         */
-        _nodesDic: Record<string, KeyframeNode2D>;
-        /**
-         * @internal
-         */
-        _nodesMap: Record<string, KeyframeNode2D[]>;
-        /**
-         * @internal
-         */
-        _nodes: KeyframeNodeList2D | null;
-        /**
          * @en Is it a loop?
          * @zh 是否循环
          */
@@ -3594,33 +3849,6 @@ declare namespace Laya {
          * @zh 动画时长
          */
         duration(): number;
-        /**
-         * @internal
-         * @param playCurTime
-         * @param realTimeCurrentFrameIndexes
-         * @param addtive
-         * @param frontPlay
-         * @param outDatas
-         */
-        _evaluateClipDatasRealTime(playCurTime: number, realTimeCurrentFrameIndexes: Int16Array, addtive: boolean, frontPlay: boolean, outDatas: Array<number | string | boolean | {
-            pos: Vector3;
-            rotation: Vector3;
-        }>): void;
-        /**
-         * @internal
-         * @param frame
-         * @param nextFrame
-         * @param t
-         * @param dur
-         * @returns
-         */
-        private _getTweenVal;
-        /**
-         * @internal
-         * @param time
-         * @returns
-         */
-        private _binarySearchEventIndex;
         /**
          * @en hermite interpolation algorithm
          * @param frameValue The value of the previous keyframe.
@@ -3659,68 +3887,13 @@ declare namespace Laya {
      * @zh 用于AnimationClip资源解析
      */
     class AnimationClip2DParse01 {
-        /**@internal */
-        private static _clip;
-        /**@internal */
-        private static _reader;
-        /**@internal */
-        private static _version;
-        /**@internal */
-        private static _strings;
-        /**@internal */
-        private static _DATA;
-        /**@internal */
-        private static _BLOCK;
-        /**
-         * @internal
-         */
-        private static READ_DATA;
-        /**
-         * @internal
-         */
-        private static READ_BLOCK;
-        /**
-         * @internal
-         */
-        private static READ_STRINGS;
-        /**
-         * @internal
-         * @en Parses the animation data from the specified reader and clip, based on the given version.
-         * @param clip The animation clip to be parsed into.
-         * @param reader The reader containing the binary data of the animation.
-         * @param version The version of the animation file format.
-         * @zh 根据指定的版本，从指定的读取器和剪辑解析动画数据.
-         * @param clip 要解析的动画剪辑.
-         * @param reader 包含动画二进制数据的读取器.
-         * @param version 动画文件格式的版本.
-         */
-        static parse(clip: AnimationClip2D, reader: Byte, version: string): void;
-        /**
-         * @internal
-         * @param second
-         * @param fps
-         * @returns
-         */
-        private static timeToFrame;
         private static createPathPoints;
-        /**
-         * @internal
-         */
-        static READ_ANIMATIONS2D(): void;
     }
     /**
      * @en 2D animation components
      * @zh 2D动画组件
      */
     class Animator2D extends Animator2DBase {
-        /**@internal */
-        _parameters: Record<string, Animation2DParm>;
-        /**@internal */
-        _controllerLayers: AnimatorControllerLayer2D[];
-        /**@internal */
-        _controller: AnimatorController2D;
-        /**@internal */
-        _checkEnterIndex: number[];
         /**
          * @en Constructor method of Animator2D Component.
          * @zh 2D动画组件构造方法。
@@ -3738,16 +3911,6 @@ declare namespace Laya {
          */
         get parameters(): Record<string, Animation2DParm>;
         set parameters(val: Record<string, Animation2DParm>);
-        /**
-         * @internal
-         * @param parentState
-         * @param currentState
-         */
-        private _switchState;
-        /**
-         * @internal
-         */
-        private _updatePlayer;
         /**
          * 启用过渡
          * @param layerindex
@@ -3839,15 +4002,6 @@ declare namespace Laya {
          */
         crossFade(name: string, layerIndex: number, normalizedTime: number): boolean;
         /**
-         * @internal
-         * @returns
-         */
-        onAfterDeserialize(): void;
-        /**
-         * @internal
-         */
-        onEnable(): void;
-        /**
          * @en Get the default State Machine
          * @param layerIndex The index of the layer.
          * @zh 获取默认状态机
@@ -3886,130 +4040,12 @@ declare namespace Laya {
          * @param name 名字
          */
         getParamsvalue(name: string): number | boolean;
-        /**
-         * @internal
-         */
-        onDestroy(): void;
-    }
-    /**
-     * @en Base class for 2D animator components, provides shared clip playback logic.
-     * @zh 2D 动画组件基类，提供共用的 clip 播放逻辑。
-     * @internal
-     */
-    class Animator2DBase extends Component {
-        /**@internal */
-        protected _speed: number;
-        /**@internal 更新模式*/
-        protected _updateMode: AnimatorUpdateMode;
-        /**@internal 降低更新频率调整值*/
-        protected _lowUpdateDelty: number;
-        /**@internal */
-        protected _isPlaying: boolean;
-        /**@internal */
-        protected _ownerMap: Map<KeyframeNode2D, {
-            ower: Node;
-            pro?: {
-                ower: any;
-                key: string;
-                defVal: any;
-            };
-        }>;
-        /**@internal */
-        protected _isPlayBack: boolean;
-        constructor();
-        /**
-         * @en The playback speed of the animation.
-         * @zh 播放速度
-         */
-        get speed(): number;
-        set speed(num: number);
-        /**
-         * @en If the animation is currently playing.
-         * @zh 动画是否正在播放。
-         */
-        get isPlaying(): boolean;
-        /**
-         * @en Assigns data to a Node.
-         * @internal
-         */
-        protected _setClipDatasToNode(stateInfo: AnimatorState2D, additive: boolean, weight: number): void;
-        /**
-         * @internal
-         */
-        protected _applyAniData(o: {
-            ower: Node;
-            pro?: {
-                ower: any;
-                key: string;
-                defVal: any;
-            };
-        }, additive: boolean, weight: number, data: string | number | boolean | {
-            pos: Vector3;
-            rotation: Vector3;
-        }): void;
-        /**
-         * @internal 更新所有已缓存的owner的defVal为当前属性值
-         */
-        protected _updateDefVal(): void;
-        /**
-         * @internal
-         */
-        protected getOwner(node: KeyframeNode2D): {
-            ower: Node;
-            pro?: {
-                ower: any;
-                key: string;
-                defVal: any;
-            };
-        };
-        /**
-         * @internal 更新clip数据
-         */
-        protected _updateClipDatas(animatorState: AnimatorState2D, addtive: boolean, playStateInfo: AnimatorPlayState2D): void;
-        /**
-         * @internal 仅更新时间与循环，不处理状态机过渡。供 Animator2D/AnimatorClip2D 共用。
-         * @returns isReplay 本帧是否发生循环
-         */
-        protected _updatePlayerTime(animatorState: AnimatorState2D, playState: AnimatorPlayState2D, elapsedTime: number, loop: number): boolean;
-        /**
-         * @internal
-         */
-        protected _updateStateFinish(animatorState: AnimatorState2D, playState: AnimatorPlayState2D): void;
-        /**
-         * @internal
-         */
-        protected _eventScript(events: Animation2DEvent[], parentPlayTime: number, currPlayTime: number, frontPlay: boolean): void;
-        /**
-         * @internal
-         */
-        protected _updateEventScript(stateInfo: AnimatorState2D, playStateInfo: AnimatorPlayState2D): void;
-        /**
-         * @internal
-         */
-        protected _applyUpdateMode(delta: number): number;
-        /**
-         * @en Reset the base values for additive animations.
-         * @zh 重置additive动画的基础值。
-         */
-        resetAdditiveBaseValues(): void;
     }
     /**
      * @en 2D animator component that plays a single AnimationClip2D directly, without a state machine.
      * @zh 直接播放单个 2D 动画片段的组件，无需状态机。
      */
     class AnimatorClip2D extends Animator2DBase {
-        /**@internal */
-        private _clip;
-        /**@internal */
-        private _playStateInfo;
-        /**@internal 用于复用的单 clip 状态，与 Animator2D 共用 _updateClipDatas 等逻辑 */
-        private _clipState;
-        /**@internal */
-        private _defaultWeight;
-        /**@internal */
-        private _additive;
-        /**@internal */
-        private _autoPlay;
         constructor();
         /**
          * @en The animation clip to play.
@@ -4080,75 +4116,11 @@ declare namespace Laya {
      */
     class AnimatorController2D extends Resource {
         /**
-         * @internal
-         * @en Data of the animator controller
-         * @zh 动画控制器的数据
-         */
-        data: TypeAnimatorControllerData;
-        /**
-         * @internal
-         * @en Array of clip IDs
-         * @zh 剪辑ID数组
-         */
-        clipsID: string[];
-        /**
          * @en Constructor method of 2D animation controller
          * @zh 2D动画控制器的构造方法
          */
         constructor(data: any);
-        /**
-         * @internal
-         * @returns
-         */
-        private getLayers;
-        /**
-         * @internal
-         * @param states
-         * @param idCatch
-         * @param acl
-         * @returns
-         */
-        private createState;
-        /**
-         * @internal
-         * @param states
-         * @param acl
-         * @param data
-         */
-        private getState;
-        /**
-         * @internal
-         * @param exitRet
-         * @param transitions
-         * @param idCatch
-         * @param data
-         * @param pExitRet
-         */
-        private setExitTransition;
         private _getAnimatorTransition2D;
-        /**
-         * @internal
-         * @param states
-         * @param idCatch
-         * @param acl
-         * @param data
-         * @param pState
-         * @returns
-         */
-        private setTransitions;
-        /**
-         * @internal
-         * @param arr
-         * @param ato
-         * @param data
-         * @returns
-         */
-        private addConditions;
-        /**
-         * @internal
-         * @param a
-         */
-        updateTo(a: Animator2D): void;
     }
     /**
      * @en Layer of 2D animation controllers
@@ -4165,28 +4137,6 @@ declare namespace Laya {
          * @zh 混合模式_叠加。
          */
         static readonly BLENDINGMODE_ADDTIVE: number;
-        /**@internal */
-        private _defaultState;
-        /**@internal */
-        private _referenceCount;
-        /**@internal */
-        private _defaultStateNameCatch;
-        /**@internal*/
-        _playStateInfo: AnimatorPlayState2D | null;
-        /**@internal*/
-        _crossPlayStateInfo: AnimatorPlayState2D | null;
-        /**@internal*/
-        _crossMark: number;
-        /**@internal */
-        _crossNodesOwnersCount: number;
-        /**@internal */
-        _crossNodesOwnersIndicesMap: any;
-        /**@internal */
-        _srcCrossClipNodeIndices: number[];
-        /**@internal */
-        _destCrossClipNodeIndices: number[];
-        /**@internal */
-        _enterTransition: AnimatorTransition2D;
         /**
          * @en layer name
          * @zh 层的名字
@@ -4212,18 +4162,6 @@ declare namespace Laya {
          * @zh 是否开启
          */
         enable: boolean;
-        /**
-         * @internal
-         * @en State machine
-         * @zh 状态机
-         */
-        _states: AnimatorState2D[];
-        /**
-         * @internal
-         * @en 0:normal play, 1:dynamic fusing play, 2:fixed fusing play
-         * @zh 0:常规播放、1:动态融合播放、2:固定融合播放
-         */
-        _playType: number;
         /**
          * @en Constructor method of 2D animator controller Layer.
          * @zh 2D动画控制器层的构造方法
@@ -4254,25 +4192,6 @@ declare namespace Laya {
          * @param state
          */
         private _removeClip;
-        /**
-         * @internal
-         * @returns
-         */
-        _getReferenceCount(): number;
-        /**
-         * @internal
-         * @param count
-         */
-        _addReference(count: number): void;
-        /**
-         * @internal
-         * @param count
-         */
-        _removeReference(count?: number): void;
-        /**
-         * @internal
-         */
-        _clearReference(): void;
         /**
          * @en Gets the current play state of the animator.
          * @returns The play state of the animation.
@@ -4430,45 +4349,11 @@ declare namespace Laya {
      */
     class AnimatorPlayState2D {
         _finish: boolean;
-        /**@internal */
-        _startPlayTime: number;
-        /**@internal */
-        _lastElapsedTime: number;
-        /**
-         * @internal
-         * @en Animation playback time
-         * @zh 动画播放时间
-         */
-        _elapsedTime: number;
-        /**
-         * @internal
-         * @en Playback count
-         * @zh 播放的次数
-         */
-        _playNum: number;
         /**
          * @en Total play time, not affected by negative speed values.
          * @zh 总播放时间，不受速度为负数的影响。
          */
         _playAllTime: number;
-        /**
-         * @internal
-         * @en Normalized time for a single playback.
-         * @zh 单次播放的归一化时间。
-         */
-        _normalizedPlayTime: number;
-        /**@internal */
-        _duration: number;
-        /**
-         * @internal
-         * @en The time of the last playback, used by event events.
-         * @zh 上次播放的时间，用于event事件。
-         */
-        _parentPlayTime: number;
-        /**@internal */
-        _lastIsFront: boolean;
-        /**@internal */
-        _currentState: AnimatorState2D | null;
         /**
          * @en Indicates if the playback is in forward direction.
          * @zh 表示播放是否为正向。
@@ -4489,14 +4374,6 @@ declare namespace Laya {
          * @zh AnimatorPlayState2D类的构造方法
          */
         constructor();
-        /**
-         * @internal
-         */
-        _resetPlayState(startTime: number, clipDuration: number): void;
-        /**
-         * @internal
-         */
-        _cloneTo(dest: AnimatorPlayState2D): void;
     }
     /**
      * @en The Animator class is used to create animation components.
@@ -4533,12 +4410,6 @@ declare namespace Laya {
          * @blueprintIgnore
          */
         static EVENT_OnStateLoop: string;
-        /** @internal */
-        private _referenceCount;
-        /** @internal */
-        _clip: AnimationClip2D | null;
-        /**@internal */
-        _currentFrameIndices: Int16Array | null;
         /**
          * @en Play on awake start offset
          * @zh 启动时播放偏移
@@ -4575,46 +4446,17 @@ declare namespace Laya {
          */
         yoyo: boolean;
         /**
-         * @internal
-         * @en The list of transitions for the animator.
-         * @zh 动画器的过渡列表。
-         */
-        transitions: AnimatorTransition2D[];
-        /**
          * @en Priority Transition List.
          * @zh 优先过渡列表。
          */
         soloTransitions: AnimatorTransition2D[];
-        /**@internal */
-        _scripts: AnimatorState2DScript[] | null;
-        /**@internal */
-        _realtimeDatas: Array<number | string | boolean | {
-            pos: Vector3;
-            rotation: Vector3;
-        }>;
         /**
          * @en Animation Clip
          * @zh 动画剪辑
          */
         get clip(): AnimationClip2D | null;
         set clip(value: AnimationClip2D | null);
-        /**
-         * @internal
-         */
-        _eventStateUpdate(value: number): void;
-        /**
-         * @internal
-         */
-        _eventStart(animator: Animator2D, layerIndex: number): void;
-        /**
-         * @internal
-         */
-        _eventExit(): void;
         _eventSwitch(currentState: AnimatorState2D): void;
-        /**
-         * @internal
-         */
-        _eventLoop(): void;
         /**
          * @en Dispatches the transition event and checks for transitions based on normalized time and parameters.
          * @param normalizeTime The normalized time for transition checking.
@@ -4626,29 +4468,6 @@ declare namespace Laya {
          * @param isReplay 是否重复播放
          */
         _eventtransition(normalizeTime: number, paramsMap: Record<string, Animation2DParm>, isReplay: boolean): AnimatorTransition2D;
-        /**
-         * @internal
-         */
-        _resetFrameIndices(): void;
-        /**
-         * @internal
-         * @returns
-         */
-        _getReferenceCount(): number;
-        /**
-         * @internal
-         * @param count
-         */
-        _addReference(count: number): void;
-        /**
-         * @internal
-         * @param count
-         */
-        _removeReference(count: number): void;
-        /**
-         * @internal
-         */
-        _clearReference(): void;
         /**
          * @en Adds a script of the specified type to the animator state.
          * @param type The type of the script to be added.
@@ -4696,24 +4515,11 @@ declare namespace Laya {
          */
         destroy(): void;
     }
-    interface AnimatorPlay2DScriptInfo {
-        animator: Animator2D;
-        layerindex: number;
-        playState: AnimatorState2D;
-    }
     /**
      * @en The AnimatorStateScript class is used as the parent class for animation state scripts. This class is abstract and does not allow instances.
      * @zh AnimatorStateScript 类用于动画状态脚本的父类,该类为抽象类,不允许实例。
      */
     class AnimatorState2DScript {
-        /**@internal */
-        playStateInfo: AnimatorPlay2DScriptInfo;
-        /**
-         * @internal
-         * @en Set the play script information
-         * @zh 设置播放脚本信息
-         */
-        setPlayScriptInfo(animator: Animator2D, layerindex: number, playstate: AnimatorState2D): void;
         /**
          * @en Constructor method of AnimatorStateScript.
          * @zh AnimatorStateScript的构造方法
@@ -4752,14 +4558,6 @@ declare namespace Laya {
      * @zh 动画状态机过渡条件
      */
     class AnimatorStateCondition {
-        /**
-         * @internal
-         */
-        static _conditionNameMap: any;
-        /**
-         * @internal
-         */
-        static _propertyNameCounter: number;
         /**
          * @en Gets the unique ID associated with a name.
          * @param name The unique name.
@@ -4806,14 +4604,6 @@ declare namespace Laya {
          * @zh 条件的类型。
          */
         get type(): AniStateConditionType;
-        /**
-         * @internal
-         * @en Checks if the state condition is triggered based on the provided value.
-         * @param value The value to check against the condition, can be a number or a boolean.
-         * @zh 根据提供的值检查状态条件是否被触发。
-         * @param value 用于检查条件的值，可以是数字或布尔值。
-         */
-        checkState(value: number | boolean): boolean;
     }
     /**
      * @en Numerical condition class. Used to handle conditions based on numerical comparisons.
@@ -5002,15 +4792,11 @@ declare namespace Laya {
         private _hideFlags;
         /**@private */
         private _enableState;
-        /** @internal */
-        _status: number;
         /**
          * @en Gets the owner Node to which the component belongs.
          * @zh 获取组件所属的 Node 节点。
          */
         readonly owner: Node;
-        /** @internal */
-        _enabled: boolean;
         /**
          * @en Whether the component is a singleton, meaning only one instance of this type of script can be added to the same node.
          * @zh 是否为单例，即同一个节点只能添加此类型的脚本一次。
@@ -5035,10 +4821,6 @@ declare namespace Laya {
          */
         _extra: IComponentExtra;
         /**
-         * @internal
-         */
-        _driver: ComponentDriver;
-        /**
          * @en The hide flags that determine the hiding behavior of the component.
          * @zh 确定组件隐藏行为的标志。
          */
@@ -5049,12 +4831,6 @@ declare namespace Laya {
          * @zh 组件的构造方法
          */
         constructor();
-        /**
-         * @internal
-         * @en used in IDE
-         * @zh 在IDE中使用。
-         * */
-        _initialize(): void;
         /**
          * @en Checks if the component has a specific hide flag set.
          * @param flag The hide flag to check for.
@@ -5089,18 +4865,6 @@ declare namespace Laya {
          */
         _isScript(): boolean;
         /**
-         * @internal
-         */
-        protected _resetComp(): void;
-        /**
-         * @internal
-         * @en Sets the owner Node of the component.
-         * @param node The Node that now owns the component.
-         * @zh 设置组件所属的 Node 节点。
-         * @param node 现在拥有该组件的 Node。
-         */
-        _setOwner(node: Node): void;
-        /**
          * @ignore
          * 被添加到节点后调用，可根据需要重写此方法
          */
@@ -5127,34 +4891,14 @@ declare namespace Laya {
          */
         protected _onDestroy(): void;
         /**
-         * @internal
-         */
-        _parse(data: any, interactMap?: any): void;
-        /**
-         * @internal
-         */
-        _parseInteractive(data?: any, spriteMap?: any): void;
-        /**
-         * @internal
-         */
-        _cloneTo(dest: Component): void;
-        /**
          * @ignore
          */
         _setActive(value: boolean): void;
-        /**
-         * @internal
-         */
-        protected setupScript(): void;
         /**
          * @en Destroy components
          * @zh 销毁组件
          */
         destroy(): void;
-        /**
-         * @internal
-         */
-        _destroy(second?: boolean): void;
         /**
          * @en Called after the component is added to a node. Unlike Awake, onAdded is called even if the node is not active.
          * @zh 组件被添加到节点后调用，与 onAwake 不同的是，即使节点未激活也会调用 onAdded。
@@ -5237,63 +4981,6 @@ declare namespace Laya {
         private _toStarts;
         readonly _toDestroys: Set<Component>;
         /**
-         * @internal
-         * @en Calling component Onstart
-         * @zh 调用组件Onstart
-         */
-        callStart(): void;
-        /**
-         * @internal
-         * @en Calling component OnUpdate
-         * @zh 调用组件OnUpdate
-         */
-        callUpdate(): void;
-        /**
-         * @internal
-         * @en Calling component LayeUpdate
-         * @zh 调用组件LayeUpdate
-         */
-        callLateUpdate(): void;
-        /**
-         * @internal
-         * @en Calling component onPreRender
-         * @zh 调用组件onPreRender
-         */
-        callPreRender(): void;
-        /**
-         * @internal
-         * @en Calling component onPostRender
-         * @zh 调用组件onPostRender
-         */
-        callPostRender(): void;
-        /**
-         * @internal
-         * @en Calling destroy
-         * @zh 调用销毁
-         */
-        callDestroy(): void;
-        /**
-         * @internal
-         * @en Adds a component.
-         * @param comp The component to be added.
-         * @zh 添加一个组件。
-         * @param comp 要添加的组件。
-         */
-        add(comp: Component): void;
-        /**
-         * @internal
-         * @en Removes a component.
-         * @param comp The component to be removed.
-         * @zh 移除一个组件。
-         * @param comp 要移除的组件。
-         */
-        remove(comp: Component): void;
-        /**
-         * @internal
-         * 删除组件Driver
-         */
-        destroy(): void;
-        /**
          * @en Error handling.
          * @zh 错误处理。
          */
@@ -5374,8 +5061,6 @@ declare namespace Laya {
         private _drawCmds;
         private _loadId;
         private _changingSize;
-        /** @internal */
-        _labels: string[];
         readonly owner: Sprite;
         /**
          * @en Constructor method of Animation.
@@ -6009,14 +5694,22 @@ declare namespace Laya {
          * @zh 对象隐藏且不会保存到场景或预制件中。
          */
         static HideAndDontSave: number;
+        /**
+         * @en The gizmos of the object are hidden in the scene view.
+         * @zh 对象的 gizmos 在场景视图中隐藏。
+         */
+        static HideGizmos: number;
+        /**
+         * @en The transform tool of the object is hidden in the scene view.
+         * @zh 对象的变换工具在场景视图中隐藏。
+         */
+        static HideTransformTool: number;
     }
     /**
      * @en The AnimationClip class is used for animation clip resources.
      * @zh AnimationClip 类用于动画片段资源。
      */
     class AnimationClip extends Resource {
-        /**@internal	*/
-        static _tempQuaternion0: Quaternion;
         /**
          * @en Parse animation data into animation clip
          * @returns Animation clip
@@ -6034,18 +5727,6 @@ declare namespace Laya {
          * @param complete 加载完成回调。
          */
         static load(url: string, complete: Handler): void;
-        /**@internal */
-        _duration: number;
-        /**@internal */
-        _frameRate: number;
-        /**@internal */
-        _nodes: KeyframeNodeList | null;
-        /**@internal */
-        _nodesDic: any;
-        /**@internal */
-        _nodesMap: any;
-        /** @internal */
-        _animationEvents: AnimationEvent[];
         /**
          * @en Whether the animation is looping.
          * @zh 是否循环。
@@ -6075,43 +5756,10 @@ declare namespace Laya {
          * @returns 返回true，表示此段动画插值使用埃尔米特插值。
          */
         private _weightModeHermite;
-        /**
-         * @internal
-         */
-        private _hermiteInterpolate;
-        /**
-         * @internal
-         */
-        private _hermiteInterpolateVector3;
-        /**
-         * @internal
-         */
-        private _hermiteInterpolateQuaternion;
         private _hermiteInterpolateVector4;
         private _hermiteInterpolateVector2;
         private _hermiteCurveSplineWeight;
         private _curveInterpolate;
-        /**
-         * @internal
-         * @en Calculate animation data for the current frame.
-         * @param nodes Animation keyframes.
-         * @param playCurTime Current playback time.
-         * @param realTimeCurrentFrameIndexes Current frame indices of the animation.
-         * @param addtive Whether it's in additive mode.
-         * @param frontPlay Whether it's playing forward.
-         * @param outDatas Calculated animation data.
-         * @zh 计算当前帧的动画数据。
-         * @param nodes 动画帧。
-         * @param playCurTime 现在的播放时间。
-         * @param realTimeCurrentFrameIndexes 目前到达了动画的第几帧。
-         * @param addtive 是否是addtive模式。
-         * @param frontPlay 是否是前向播放。
-         * @param outDatas 计算好的动画数据。
-         */
-        _evaluateClipDatasRealTime(nodes: KeyframeNodeList, playCurTime: number, realTimeCurrentFrameIndexes: Int16Array, addtive: boolean, frontPlay: boolean, outDatas: Array<boolean | number | Vector3 | Quaternion | Vector4 | Vector2 | {
-            pos: Vector3;
-            rotation: Vector3;
-        }>, avatarMask: AvatarMask): void;
         private _evaluateFrameNodeVector3DatasRealTime;
         private _evaluateFrameNodeVector2DatasRealTime;
         private _evaluateFrameNodeVector4DatasRealTime;
@@ -6129,78 +5777,6 @@ declare namespace Laya {
          * @zh 销毁资源。
          */
         protected _disposeResource(): void;
-    }
-    /**
-     * @internal
-     * @en A tool class for parsing AnimationClip data.
-     * @zh 解析AnimationClip数据的工具类。
-     */
-    class AnimationClipParser03 {
-        private static _animationClip;
-        private static _reader;
-        private static _strings;
-        private static _BLOCK;
-        private static _DATA;
-        private static READ_DATA;
-        private static READ_BLOCK;
-        private static READ_STRINGS;
-        /**
-         * @internal
-         * @en Parse the AnimationClip data from the byte reader.
-         * This method reads the AnimationClip data, including blocks and strings, and processes each block according to its type.
-         * @param clip The AnimationClip object to be populated with parsed data.
-         * @param reader The Byte reader containing the AnimationClip data.
-         * @zh 从字节读取器中解析AnimationClip数据。
-         * 此方法读取AnimationClip数据，包括块和字符串，并根据每个块的类型进行处理。
-         * @param clip 要填充解析数据的 AnimationClip 对象。
-         * @param reader 包含AnimationClip数据的字节读取器。
-         */
-        static parse(clip: AnimationClip, reader: Byte): void;
-        /**
-         * @internal
-         * @en Read and parse animation data from the byte reader.
-         * This method reads AnimationClip information, keyframe nodes, and animation events.
-         * It populates the AnimationClip object with the parsed data.
-         * @zh 从字节读取器中读取并解析动画数据。
-         * 此方法读取AnimationClip信息、关键帧节点和动画事件。
-         * 它用解析的数据填充 AnimationClip 对象。
-         */
-        static READ_ANIMATIONS(): void;
-    }
-    /**
-     * @internal
-     * @en A tool class for parsing AnimationClip data.
-     * @zh 解析AnimationClip数据的工具类。
-     */
-    class AnimationClipParser04 {
-        private static _animationClip;
-        private static _reader;
-        private static _strings;
-        private static _BLOCK;
-        private static _DATA;
-        private static _version;
-        private static READ_DATA;
-        private static READ_BLOCK;
-        private static READ_STRINGS;
-        /**
-         * @internal
-         * @en Parse AnimationClip data from a byte stream.
-         * @param clip The AnimationClip object to be populated with parsed data.
-         * @param reader The Byte object containing the animation data to be parsed.
-         * @param version The version string of the animation data format.
-         * @zh 从字节流中解析AnimationClip数据。
-         * @param clip 要填充解析数据的 AnimationClip 对象。
-         * @param reader 包含要解析的动画数据的 Byte 对象。
-         * @param version 动画数据格式的版本字符串。
-         */
-        static parse(clip: AnimationClip, reader: Byte, version: string): void;
-        static createPathPoints(arr: any[]): PathPoint[];
-        /**
-         * @internal
-         * @en Parse the various components of the AnimationClip from binary data and assemble them into a complete AnimationClip object for subsequent animation playback and processing.
-         * @zh 从二进制数据中解析出 AnimationClip 的各个组成部分，并将其组装成一个完整的 AnimationClip 对象，以便后续的动画播放和处理。
-         */
-        static READ_ANIMATIONS(): void;
     }
     /**
      * @en The AnimationEvent class is used to implement animation events.
@@ -6227,33 +5803,11 @@ declare namespace Laya {
          */
         constructor();
     }
-    interface AnimatorPlayScriptInfo {
-        animator: Animator;
-        layerindex: number;
-        playState: AnimatorState;
-    }
     /**
      * @en The AnimatorStateScript class is the base class for animation state scripts. This is an abstract class and cannot be instantiated.
      * @zh AnimatorStateScript 类用于动画状态脚本的父类,该类为抽象类,不允许实例。
      */
     class AnimatorStateScript {
-        /**
-         * @internal
-         * 动画播放脚本的相关信息。
-         */
-        playStateInfo: AnimatorPlayScriptInfo;
-        /**
-         * @internal
-         * @en Set the play script information.
-         * @param animator The animator instance.
-         * @param layerindex The index of the layer.
-         * @param playstate The animator state.
-         * @zh 设置播放脚本信息。
-         * @param animator 动画器实例。
-         * @param layerindex 层索引。
-         * @param playstate 动画状态。
-         */
-        setPlayScriptInfo(animator: Animator, layerindex: number, playstate: AnimatorState): void;
         /**
          * @ignore
          * @en Creates an instance of AnimatorStateScript.
@@ -6296,27 +5850,6 @@ declare namespace Laya {
         private _ownerPath;
         private _propertys;
         private _materialId;
-        /**@internal */
-        _keyFrames: Keyframe[];
-        /**@internal */
-        _indexInList: number;
-        /**@internal */
-        type: KeyFrameValueType;
-        /**@internal */
-        fullPath: string;
-        /**@internal */
-        nodePath: string;
-        /**@internal */
-        propertyOwner: string;
-        /**@internal call bake fun*/
-        callbackFunData: string;
-        /**@internal apply params*/
-        callParams: any[];
-        /**
-         * @internal
-         * ide
-         */
-        propertyChangePath: string;
         /**
          * @en The number of sprite paths.
          * @zh 精灵路径个数。
@@ -6332,38 +5865,6 @@ declare namespace Laya {
          * @zh 帧个数。
          */
         get keyFramesCount(): number;
-        /**
-         * @internal
-         */
-        _setOwnerPathCount(value: number): void;
-        /**
-         * @internal
-         */
-        _setOwnerPathByIndex(index: number, value: string): void;
-        /**
-         * @internal
-         */
-        _joinOwnerPath(sep: string): string;
-        /**
-         * @internal
-         */
-        _setPropertyCount(value: number): void;
-        /**
-         * @internal
-         */
-        _setPropertyByIndex(index: number, value: string): void;
-        /**
-         * @internal
-         */
-        _joinProperty(sep: string): string;
-        /**
-         * @internal
-         */
-        _setKeyframeCount(value: number): void;
-        /**
-         * @internal
-         */
-        _setKeyframeByIndex(index: number, value: Keyframe): void;
         /**
          * @en Get the sprite path by index.
          * @param index The index of the sprite path.
@@ -6383,16 +5884,6 @@ declare namespace Laya {
          */
         getPropertyByIndex(index: number): string;
         /**
-         * @internal
-         * @en Get cached material property ID by index (for shader properties)
-         * @param index The index of the property
-         * @returns The shader property ID
-         * @zh 通过索引获取缓存的材质属性ID（用于shader属性）
-         * @param index 索引
-         * @returns shader属性ID
-         */
-        getMaterialPropertyId(index: number): number;
-        /**
          * @en Get the keyframe by index.
          * @param index The index of the keyframe.
          * @returns The keyframe at the specified index.
@@ -6407,8 +5898,6 @@ declare namespace Laya {
      * @zh KeyframeNodeList 类用于创建 KeyframeNode 节点队列。
      */
     class KeyframeNodeList {
-        /** @internal */
-        private _nodes;
         /**
          * @en The number of nodes.
          * @zh 节点个数。
@@ -6468,33 +5957,13 @@ declare namespace Laya {
         /** 降低更新频率调整值*/
         private _lowUpdateDelty;
         private _animatorParams;
-        /**@internal	*/
-        _avatarNodeMap: any;
-        /**@internal */
-        _linkAvatarSpritesData: any;
-        /**@internal */
-        _linkAvatarSprites: Sprite3D[];
         /**
          * @en Culling mode，By default, when set to invisible, the animation will not play at all.
          * @zh 裁剪模式,默认为不可见时完全不播放动画。
          */
         cullingMode: number;
-        /**@internal	[NATIVE]*/
-        _animationNodeLocalPositions: Float32Array;
-        /**@internal	[NATIVE]*/
-        _animationNodeLocalRotations: Float32Array;
-        /**@internal	[NATIVE]*/
-        _animationNodeLocalScales: Float32Array;
-        /**@internal	[NATIVE]*/
-        _animationNodeWorldMatrixs: Float32Array;
-        /**@internal	[NATIVE]*/
-        _animationNodeParentIndices: Int16Array;
         private _finishSleep;
         private _LateUpdateEvents;
-        /**
-         * @internal
-         */
-        _controller: AnimatorController;
         /**
          * @en The animation controller.
          * @zh 动画控制器。
@@ -6541,14 +6010,6 @@ declare namespace Laya {
          */
         constructor();
         private _addKeyframeNodeOwner;
-        /**
-         * @internal
-         */
-        _removeKeyframeNodeOwner(nodeOwners: (KeyframeNodeOwner | null)[], node: KeyframeNode): void;
-        /**
-         * @internal
-         */
-        _getOwnersByClip(clipStateInfo: AnimatorState): void;
         private _updatePlayer;
         /**
          * 启用过渡
@@ -6562,12 +6023,6 @@ declare namespace Laya {
          * @param playState
          */
         private _updateStateFinish;
-        /**
-         * @internal
-         * @param parentState
-         * @param currentState
-         */
-        private _switchState;
         private _updateEventScript;
         private _eventScript;
         /**
@@ -6594,29 +6049,9 @@ declare namespace Laya {
         private _setCrossClipDatasToNode;
         private _setFixedCrossClipDatasToNode;
         private _revertDefaultKeyframeNodes;
-        /** @internal */
-        onAfterDeserialize(): void;
         protected _onEnable(): void;
         protected _onDestroy(): void;
         private _applyUpdateMode;
-        /**
-         * @internal
-         */
-        _handleSpriteOwnersBySprite(isLink: boolean, path: string[], sprite: Sprite3D): void;
-        /**
-         * @internal
-         * @perfTag PerformanceDefine.T_AnimatorUpdate
-         */
-        onUpdate(): void;
-        /**
-         * @internal
-         */
-        _cloneTo(dest: Animator): void;
-        /**
-         * @internal
-         * 更新所有已缓存的keyframe owner的defaultValue为当前属性值
-         */
-        private _updateDefaultValues;
         /**
          * @en Reset the base values for additive animations. Call this when you manually modify animated properties and want the additive animation to use the new values as base.
          * @zh 重置additive动画的基础值。当手动修改了被动画控制的属性，并希望additive动画基于新值叠加时调用此方法。
@@ -6788,42 +6223,6 @@ declare namespace Laya {
          * @zh 混合模式：叠加。
          */
         static readonly BLENDINGMODE_ADDTIVE: number;
-        /**@internal */
-        private _defaultState;
-        /**@internal */
-        private _referenceCount;
-        /**
-         * @internal
-         * @en Play type of the layer. 0: Normal play, 1: Dynamic blend play, 2: Fixed blend play
-         * @zh 层的播放类型。0：常规播放、1：动态融合播放、2：固定融合播放
-         */
-        _playType: number;
-        /**@internal */
-        _crossDuration: number;
-        /**@internal */
-        _crossPlayState: AnimatorState;
-        /**@internal */
-        _crossMark: number;
-        /**@internal */
-        _crossNodesOwnersCount: number;
-        /**@internal */
-        _crossNodesOwners: KeyframeNodeOwner[];
-        /**@internal */
-        _crossNodesOwnersIndicesMap: any;
-        /**@internal */
-        _srcCrossClipNodeIndices: number[];
-        /**@internal */
-        _destCrossClipNodeIndices: number[];
-        /**@internal */
-        _animator: Animator;
-        /**@internal */
-        _states: AnimatorState[];
-        /**@internal */
-        _playStateInfo: AnimatorPlayState | null;
-        /**@internal */
-        _crossPlayStateInfo: AnimatorPlayState | null;
-        /**@internal */
-        _avatarMask: AvatarMask;
         /**
          * @en The name of the layer.
          * @zh 层的名称。
@@ -6882,26 +6281,6 @@ declare namespace Laya {
          */
         constructor(name: string);
         /**
-         * @internal
-         */
-        private _removeClip;
-        /**
-         * @internal
-         */
-        _getReferenceCount(): number;
-        /**
-         * @internal
-         */
-        _addReference(count?: number): void;
-        /**
-         * @internal
-         */
-        _removeReference(count?: number): void;
-        /**
-         * @internal
-         */
-        _clearReference(): void;
-        /**
          * @en Gets the current play state of the animation.
          * @returns The current AnimatorPlayState.
          * @zh 获取当前的动画播放状态。
@@ -6956,28 +6335,6 @@ declare namespace Laya {
      * @zh AnimatorPlayState 类用于创建动画播放状态信息。
      */
     class AnimatorPlayState {
-        /**@internal */
-        _finish: boolean;
-        /**@internal */
-        _startPlayTime: number;
-        /**@internal */
-        _lastElapsedTime: number;
-        /**@internal 动画播放时间*/
-        _elapsedTime: number;
-        /**@internal 播放状态的归一化时间,整数为循环次数，小数为单次播放时间。*/
-        _normalizedTime: number;
-        /**@internal 单词播放归一化时间 */
-        _normalizedPlayTime: number;
-        /**@internal */
-        _duration: number;
-        /**@internal 上次播放的时间，event事件使用*/
-        _parentPlayTime: number;
-        /**@internal */
-        _playEventIndex: number;
-        /**@internal */
-        _lastIsFront: boolean;
-        /**@internal */
-        private _currentState;
         /**
          * @en The current AnimatorState.
          * @zh 当前的动画状态。
@@ -7006,14 +6363,6 @@ declare namespace Laya {
          * @zh 构造函数
          */
         constructor();
-        /**
-         * @internal
-         */
-        _resetPlayState(startTime: number, clipDuration: number): void;
-        /**
-         * @internal
-         */
-        _cloneTo(dest: AnimatorPlayState): void;
     }
     /**
      * @en Animator resource class for handling animation-related resources.
@@ -7065,42 +6414,6 @@ declare namespace Laya {
          * @blueprintIgnore
          */
         static readonly EVENT_OnStateSwitch = "OnStateSwitch";
-        /** @internal */
-        private _referenceCount;
-        /** @internal */
-        _clip: AnimationClip | null;
-        /** @internal */
-        _nodeOwners: KeyframeNodeOwner[];
-        /** @internal */
-        _currentFrameIndices: Int16Array | null;
-        /**
-         * @internal
-         * @en Whether to loop playback. 0 uses _clip.islooping, 1 for loop, 2 for no loop.
-         * @zh 是否循环播放。0表示使用_clip.islooping，1表示循环，2表示不循环。
-         */
-        _isLooping: 0 | 1 | 2;
-        /**
-         * @internal
-         * @en Realtime data array to avoid data confusion. Must store realtime data in animatorState, not in animationClip.
-         * This is necessary for operations like crossFade() with different animatorStates but the same clip source.
-         * @zh 实时数据数组，用于避免数据混淆。必须将实时数据存储在animatorState中，而不是animationClip中。
-         * 这对于像crossFade()这样的操作是必要的，因为可能使用不同的animatorState但相同的片段源。
-         */
-        _realtimeDatas: Array<number | Vector3 | Quaternion>;
-        /** @internal */
-        _scripts: AnimatorStateScript[] | null;
-        /**
-         * @internal
-         * @en List of transitions.
-         * @zh 过渡列表。
-         */
-        _transitions: AnimatorTransition[];
-        /**
-         * @internal
-         * @en List of solo transitions that only play this transition.
-         * @zh 优先过渡列表，只播放此过渡。
-         */
-        _soloTransitions: AnimatorTransition[];
         /**
          * @en Current transition content.
          * @zh 当前过渡内容。
@@ -7160,61 +6473,6 @@ declare namespace Laya {
          */
         constructor();
         /**
-         * @internal
-         */
-        _eventStart(animator: Animator, layerIndex: number): void;
-        /**
-         * @internal
-         */
-        _eventExit(): void;
-        /**
-         * @internal
-         * @param currentState
-         */
-        _eventSwitch(currentState: AnimatorState): void;
-        /**
-         * @internal
-         */
-        _eventStateUpdate(value: number): void;
-        /**
-         * @internal
-         */
-        _eventLoop(): void;
-        /**
-         * @internal
-         * @en Dispatch transition events.
-         * @param normalizeTime Normalized time of the animation.
-         * @param paramsMap Map of animator parameters.
-         * @returns The triggered transition, or null if no transition is triggered.
-         * @zh 派发过渡事件。
-         * @param normalizeTime 动画的归一化时间。
-         * @param paramsMap 动画参数映射。
-         * @returns 触发的过渡，如果没有触发过渡则返回null。
-         */
-        _eventtransition(normalizeTime: number, paramsMap: AnimatorParams): AnimatorTransition;
-        /**
-         * @internal
-         */
-        _getReferenceCount(): number;
-        /**
-         * @internal
-         * @param count
-         */
-        _addReference(count?: number): void;
-        /**
-         * @internal
-         * @param count
-         */
-        _removeReference(count?: number): void;
-        /**
-         * @internal
-         */
-        _clearReference(): void;
-        /**
-         * @internal
-         */
-        _resetFrameIndices(): void;
-        /**
          * @en Add a script to the animator state.
          * @param type The type of the script to add.
          * @returns The added script instance.
@@ -7255,55 +6513,12 @@ declare namespace Laya {
          * @returns 一个新的AnimatorState对象，具有与当前对象相同的属性。
          */
         clone(): AnimatorState;
-        /** @internal @blueprintEvent */
-        Animator_bpEvent: {
-            [AnimatorState.EVENT_OnStateEnter]: () => void;
-            [AnimatorState.EVENT_OnStateUpdate]: () => void;
-            [AnimatorState.EVENT_OnStateLoop]: (state: AnimatorState) => void;
-            [AnimatorState.EVENT_OnStateExit]: () => void;
-        };
     }
     /**
      * @en The AnimatorTransition class represents a transition between two AnimatorStates.
      * @zh AnimatorTransition 类表示两个 AnimatorState 之间的过渡。
      */
     class AnimatorTransition {
-        /**
-         * @internal
-         */
-        private _name;
-        /**
-         * @internal
-         */
-        private _mute;
-        /**
-         * @internal
-         */
-        private _exitTime;
-        /**
-         * @internal
-         */
-        private _exitByTime;
-        /**
-         * @internal
-         */
-        private _transstartoffset;
-        /**
-         * @internal
-         */
-        private _transduration;
-        /**
-         * @internal
-         */
-        private _conditions;
-        /**
-         * @internal
-         */
-        private _destState;
-        /**
-         *  @internal
-         */
-        private _isAndOperEnabled;
         /**
          * 创建一个新的Animatortransition
          */
@@ -7453,114 +6668,8 @@ declare namespace Laya {
         Vector4 = 7,
         Color = 8,
         Boolean = 9,
-        PathPoint = 10
-    }
-    /**
-     * @internal
-     * @en The KeyframeNodeOwner class is used to store the owner information of frame nodes.
-     * @zh KeyframeNodeOwner 类用于保存帧节点的拥有者信息。
-     */
-    class KeyframeNodeOwner {
-        /**
-         * @internal
-         * @en Index in the list
-         * @zh 列表中的索引
-         */
-        indexInList: number;
-        /**
-         * @internal
-         * @en Reference count
-         * @zh 引用计数
-         */
-        referenceCount: number;
-        /**
-         * @internal
-         * @en Update mark
-         * @zh 更新标记
-         */
-        updateMark: number;
-        /**
-         * @internal
-         * @en 0 float, 1 position, 2 rotation, 3 Scale, 4 rotationEuler
-         * @zh 0 浮点数, 1 位置, 2 旋转, 3 缩放, 4 欧拉角旋转
-         */
-        type: KeyFrameValueType;
-        /**
-         * @internal
-         * @en Full path of the node
-         * @zh 节点的完整路径
-         */
-        fullPath: string | null;
-        nodePath: string | null;
-        /**
-         * @internal
-         * @en Owner of the property
-         * @zh 属性的所有者
-         */
-        propertyOwner: any;
-        /**
-         * @internal
-         * @en Property array
-         * @zh 属性数组
-         */
-        property: string[] | null;
-        /**
-         * @internal
-         * @en Default value of the property
-         * @zh 属性的默认值
-         */
-        defaultValue: any;
-        /**
-         * @internal
-         * @en Current value of the property
-         * @zh 属性的当前值
-         */
-        value: any;
-        /**
-         * @internal
-         * @en Fixed value for cross-fading
-         * @zh 用于交叉淡入淡出的固定值
-         */
-        crossFixedValue: any;
-        /**
-         * @internal
-         * @en Whether the property belongs to a material
-         * @zh 属性是否属于材质
-         */
-        isMaterial: boolean;
-        /**
-         * @internal
-         * @en Callback path
-         * @zh 回调路径
-         */
-        callbackFunData: string;
-        /**
-         * @internal
-         * @en Callback owner
-         * @zh 回调归属
-         */
-        callBackOwner: any;
-        /**@internal */
-        callbackFun: string;
-        /**@internal */
-        callParams: any[];
-        /**
-         * @en constructor of KeyframeNodeOwner
-         * @zh 构造函数
-         */
-        constructor();
-        /**
-         * @internal
-         */
-        saveCrossFixedValue(): void;
-        /**
-         * @internal
-         */
-        animatorDataSetCallBack(): void;
-        /**
-         * @internal
-         */
-        getCallbackNode(): void;
+        PathPoint = 10,
+        MaterialRef = 11
     }
     /**
      * @en HLOD (Hierarchical Level of Detail) component for optimizing rendering performance.
@@ -7568,23 +6677,6 @@ declare namespace Laya {
      * @blueprintIgnore
      */
     class HLOD extends Component {
-        /**@internal */
-        _resourceList: HLODResourceGroup[];
-        /**@internal */
-        _curLODSource: HLODResourceGroup;
-        /**@internal 包围盒*/
-        _bounds: Bounds;
-        /**@internal */
-        _curRender: HLODRender[];
-        /**@internal TODO*/
-        /**@internal TODO*/
-        /**@internal TODO*/
-        /**@internal */
-        _HLODConfig: HLODConfig;
-        /**@internal */
-        private _lodRateArray;
-        /**@internal */
-        private _size;
         readonly owner: Sprite3D;
         constructor();
         /**
@@ -7608,18 +6700,6 @@ declare namespace Laya {
         private _applyLODResource;
         private _releaseGroupRender;
         /**
-         * @internal
-         * @en Recalculates the bounding box.
-         * @zh 重新计算包围盒。
-         */
-        recalculateBounds(): void;
-        /**
-         * @internal
-         * @en Updates before rendering.
-         * @zh 渲染之前的更新。
-         */
-        onPreRender(): void;
-        /**
          * @ignore
          * @en Executed every frame during the update phase.
          * @zh 每帧更新时执行。
@@ -7638,12 +6718,6 @@ declare namespace Laya {
      * @zh 用于层次化细节级别（HLOD）的批处理网格。该类通过合并多个子网格为单一的渲染单元来优化渲染性能，减少绘制调用。
      */
     class HLODBatchMesh extends GeometryElement {
-        /**@internal batchMesh */
-        private _mesh;
-        /**@internal */
-        private _batchSubMeshInfos;
-        /**@internal */
-        private _drawSubMeshs;
         /**
          * @en construct method of HLODBatchMesh.
          * @zh HLODBatchMesh的构造方法。
@@ -7661,21 +6735,7 @@ declare namespace Laya {
          */
         get batchSubMeshInfo(): HLODBatchSubMesh[];
         set batchSubMeshInfo(value: HLODBatchSubMesh[]);
-        /**
-         * @internal
-         * @en The draw sub-meshes.
-         * @zh 绘制的子网格。
-         */
-        get drawSubMeshs(): HLODBatchSubMesh[];
         set drawSubMeshs(value: HLODBatchSubMesh[]);
-        /**
-         * @internal
-         */
-        _prepareRender(state: RenderContext3D): boolean;
-        /**
-         * @internal
-         */
-        _updateRenderParams(state: RenderContext3D): void;
         /**
          * @en Destroy the HLODBatchMesh.
          * @zh 销毁 HLODBatchMesh。
@@ -7687,12 +6747,6 @@ declare namespace Laya {
      * @zh HLOD渲染处理类，负责管理场景中对象的层级细节层次（HLOD），以提高渲染性能。通过在相机较远时渲染更简单的网格来实现。
      */
     class HLODRender extends BaseRender {
-        /**@internal */
-        _singleton: boolean;
-        /**@internal */
-        _curHLODRS: HLODElement;
-        /**@internal */
-        _curSubBatchMeshBounds: Bounds[];
         /** @ignore */
         constructor();
         /**
@@ -7717,12 +6771,6 @@ declare namespace Laya {
          * @param lodMesh 新的 LOD 网格，用于渲染。
          */
         private _changeMesh;
-        /**
-         * @internal
-         * @en Apply the lightmap parameters of the current HLOD element to the shader.
-         * @zh 将当前 HLOD 元素的光照图参数应用到着色器上。
-         */
-        _applyLightMapParams(): void;
         /**
          * @en re caculate BoundBox
          * @zh 重新计算包围盒
@@ -7846,16 +6894,6 @@ declare namespace Laya {
      * @zh `LODInfo` 类描述了细节层次（LOD）数据。
      */
     class LODInfo {
-        /**@internal */
-        _mincullRate: number;
-        /**@internal */
-        _renders: BaseRender[];
-        /**@internal */
-        _cachSprite3D: Sprite3D[];
-        /**@internal */
-        _lodIndex: number;
-        /**@internal */
-        private _group;
         /**
          * @en Constructor method of LODInfo.
          * @zh 细节层次数据的构造方法
@@ -7869,12 +6907,6 @@ declare namespace Laya {
         set mincullRate(value: number);
         set maxVisibalDistance(value: number);
         set minVisibalDistance(value: number);
-        /**
-         * @internal
-         * @en Sets the LOD group
-         * @zh 设置LOD组。
-         */
-        set group(value: LODGroup);
         /**
          * @en The node information for the LODInfo.
          * @zh LODInfo的节点信息。
@@ -7979,43 +7011,8 @@ declare namespace Laya {
          * @zh LOD包围盒
          */
         get bounds(): Bounds;
-        /**
-         * @internal
-         */
-        protected _onEnable(): void;
-        /**
-         * @internal
-         */
-        protected _onDisable(): void;
-        /**
-         * @internal
-         * @en Called when the object is being destroyed to perform cleanup operations.
-         * @zh 在对象被销毁时调用，以执行清理操作。
-         */
-        onDestroy(): void;
-        /**
-         * @internal
-         */
-        _updateRecaculateFlag(): void;
-        /**
-         * @internal
-         * @param lodGroup
-         */
-        _cloneTo(lodGroup: LODGroup): void;
-        /**
-         * @internal
-         * @en Recalculate the bounding box
-         * @zh 重新计算包围盒
-         */
-        recalculateBounds(): void;
         _notifyChangeLODVisibal(): void;
         _changeLODVisibal(): void;
-        /**
-         * @internal
-         * @en Update before rendering
-         * @zh 渲染之前的更新
-         */
-        onPreRender(): void;
     }
     /**
      * @en Maintain compatibility with 2.0. The new script supports the use of scripts.
@@ -8037,14 +7034,6 @@ declare namespace Laya {
          * @returns 一个新的静态合批实例。
          */
         static create(info: StaticMeshMergeInfo): StaticBatchMesh;
-        /**@internal */
-        _bufferState: BufferState;
-        /**@internal */
-        _vertexBuffer: VertexBuffer3D;
-        /**@internal */
-        _indexBuffer: IndexBuffer3D;
-        /**@internal */
-        _staticSubMeshes: Map<Material, StaticBatchSubMesh>;
         /**
          * @en The bounding volume of the static batch mesh.
          * @zh 静态批处理网格的边界体积。
@@ -8155,14 +7144,6 @@ declare namespace Laya {
         _cloneTo(dest: StaticBatchMeshRender): void;
     }
     /**
-     * @internal
-     */
-    class StaticBatchMeshRenderElement extends RenderElement {
-        constructor();
-        /** @internal */
-        getInvertFront(): boolean;
-    }
-    /**
      * @en represents information for a sub-batch in static batch rendering.
      * @zh 静态批处理渲染中子批次的信息。
      */
@@ -8198,8 +7179,6 @@ declare namespace Laya {
      * @zh 用于静态批处理子网格渲染。
      */
     class StaticBatchSubMesh extends GeometryElement {
-        /**@internal */
-        private static _type;
         /**
          * @en Array of StaticBatchSubInfo objects representing sub-mesh information.
          * @zh StaticBatchSubInfo 对象数组，表示子网格信息。
@@ -8248,33 +7227,6 @@ declare namespace Laya {
          * @zh 销毁 StaticBatchSubMesh 及其资源。
          */
         destroy(): void;
-    }
-    /**
-     * @internal
-     * @en Manages static mesh batching.
-     * @zh 管理静态网格批处理。
-     */
-    class StaticMeshBatchManager {
-        private meshVertexDecSet;
-        constructor();
-        /**
-         * @en Combines multiple MeshRenderers into static batch renders.
-         * @param renders Array of MeshRenderer objects to be combined.
-         * @returns Array of StaticBatchMeshRender objects created from the combination.
-         * @zh 将多个 MeshRenderer 合并为静态批处理渲染器。
-         * @param renders 要合并的 MeshRenderer 对象数组。
-         * @returns 由合并创建的 StaticBatchMeshRender 对象数组。
-         */
-        combine(renders: MeshRenderer[]): StaticBatchMeshRender[];
-        /**
-         * @en Merges a single StaticMeshMergeInfo into a StaticBatchMeshRender.
-         * @param info The StaticMeshMergeInfo to be merged.
-         * @returns A new StaticBatchMeshRender created from the merge info.
-         * @zh 将单个 StaticMeshMergeInfo 合并为 StaticBatchMeshRender。
-         * @param info 要合并的 StaticMeshMergeInfo。
-         * @returns 从合并信息创建的新 StaticBatchMeshRender。
-         */
-        merge(info: StaticMeshMergeInfo): StaticBatchMeshRender;
     }
     /**
      * @en StaticMeshMergeInfo class represents information for merging static meshes.
@@ -8349,15 +7301,6 @@ declare namespace Laya {
      * @zh `VolumeManager` 类用于管理体积组件。
      */
     interface IVolumeManager {
-        /**是否需要重新更新 */
-        /** @internal */
-        _needUpdateAllRender: boolean;
-        add(volume: Volume): void;
-        remove(volume: Volume): void;
-        _updateRenderObject(baseRender: BaseRender): void;
-        handleMotionlist(motionObjects: FastSinglelist<BaseRender>): void;
-        reCaculateAllRenderObjects(baseRenders: FastSinglelist<BaseRender>): void;
-        destroy(): void;
     }
     /**
      * @en Reflective probe mode
@@ -8379,66 +7322,15 @@ declare namespace Laya {
      * @zh 用于实现反射探针组件
      */
     class ReflectionProbe extends Volume {
-        /** @internal */
-        static CommandMap: CommandUniformMap;
-        /** @internal */
-        static BlockName: string;
-        /** @internal */
-        static SHADERDEFINE_GI_IBL: ShaderDefine;
-        /** @internal */
-        static IBLTEX: number;
-        /** @internal */
-        static IBLROUGHNESSLEVEL: number;
-        /** @internal */
-        static AMBIENTSH: number;
-        /** @internal */
-        static AMBIENTCOLOR: number;
-        /** @internal */
-        static AMBIENTINTENSITY: number;
-        /** @internal */
-        static REFLECTIONINTENSITY: number;
-        /** 反射探针位置 最大、最小值*/
-        /** @internal */
-        static REFLECTIONCUBE_PROBEPOSITION: number;
-        /** @internal */
-        static REFLECTIONCUBE_PROBEBOXMAX: number;
-        /** @internal */
-        static REFLECTIONCUBE_PROBEBOXMIN: number;
         /**
          * @en Number of reflection probes
          * @zh 反射探针数量
          */
         static reflectionCount: number;
-        /**
-         * @en Get a globally unique ID
-         * @zh 获取一个全局唯一ID
-         * @internal
-         */
-        static getID(): number;
-        /** @internal */
-        static init(): void;
-        /**
-         * @en Default HDR decode values
-         * @zh 默认的 HDR 解码数据
-         * @internal
-         */
-        static defaultTextureHDRDecodeValues: Vector4;
-        /**@internal 探针重要度 */
-        protected _importance: number;
         /**漫反射顔色 */
         private _ambientColor;
         /**漫反射SH */
         private _ambientSH;
-        /**
-         * @internal
-         * @en Whether the probe is a scene probe.
-         * @zh 是否是场景探针
-         */
-        _isScene: boolean;
-        /**@internal */
-        _reflectionProbeID: number;
-        /**@internal */
-        _dataModule: IReflectionProbeData;
         constructor();
         /**
          * @en The shader data of the reflection probe
@@ -8527,28 +7419,12 @@ declare namespace Laya {
          */
         get iblTexRGBD(): boolean;
         set iblTexRGBD(value: boolean);
-        /**
-         * @inheritdoc
-         * @internal
-         */
-        protected _onEnable(): void;
-        /**
-         * @inheritdoc
-         * @internal
-         */
-        protected _onDestroy(): void;
     }
     /**
      * @en The `ReflectionProbeManager` class is used for managing reflection probes.
      * @zh `ReflectionProbeManager` 类用于管理反射探针。
      */
     class ReflectionProbeManager implements IVolumeManager {
-        /** @internal 反射探针队列 */
-        private _reflectionProbes;
-        /** @internal 环境探针 */
-        private _sceneReflectionProbe;
-        /** @internal */
-        _needUpdateAllRender: boolean;
         /**
          * @en The constructor of the `ReflectionProbeManager` class.
          * @zh `ReflectionProbeManager` 类构造函数。
@@ -8567,44 +7443,6 @@ declare namespace Laya {
          * @param baseRender 要更新的基础渲染对象。
          */
         _updateRenderObject(baseRender: BaseRender): void;
-        /**
-         * @internal
-         * @en Add a reflection probe to the scene.
-         * @param volume The reflection probe to add.
-         * @zh 在场景中添加反射探针。
-         * @param volume 要添加的反射探针。
-         */
-        add(volume: ReflectionProbe): void;
-        /**
-         * @internal
-         * @en Remove a reflection probe from the scene.
-         * @param volume The reflection probe to remove.
-         * @zh 从场景中删除反射探针。
-         * @param volume 要删除的反射探针。
-         */
-        remove(volume: ReflectionProbe): void;
-        /**
-         * @internal
-         * @en Update reflection probe information for moving objects.
-         * @param motionObjects List of moving render objects.
-         * @zh 更新运动物体的反射探针信息。
-         * @param motionObjects 运动渲染对象列表。
-         */
-        handleMotionlist(motionObjects: SingletonList<BaseRender>): void;
-        /**
-         * @internal
-         * @en Recalculate reflection probes for all provided renderers.
-         * @param baseRenders List of base renderers to update.
-         * @zh 重新计算所有提供的渲染器的反射探针。
-         * @param baseRenders 要更新的基础渲染器列表。
-         */
-        reCaculateAllRenderObjects(baseRenders: SingletonList<BaseRender>): void;
-        /**
-         * @internal
-         * @en Destroy the ReflectionProbeManager and all associated resources.
-         * @zh 销毁 ReflectionProbeManager 及其关联的所有资源。
-         */
-        destroy(): void;
     }
     /**
      * @en Enum representing the types of intersection between volumes.
@@ -8651,8 +7489,6 @@ declare namespace Laya {
         protected _primitiveBounds: Bounds;
         /**包围盒 */
         protected _bounds: Bounds;
-        /**@internal cache number of around Volume */
-        protected _aroundVolumeCacheNum: number;
         /**around Volume */
         protected _aroundVolume: Volume[];
         /**volume manager */
@@ -8673,12 +7509,6 @@ declare namespace Laya {
          * @zh 体积类型。
          */
         get type(): number;
-        /**
-         * @internal
-         * @en The bounds of the volume.
-         * @zh 体积的边界。
-         */
-        get bounds(): Bounds;
         /**
          * @en The maximum point of the volume component's own bounding box.
          * @zh 体积组件自身包围盒的最大点。
@@ -8704,40 +7534,6 @@ declare namespace Laya {
         set importance(value: number);
         protected _onEnable(): void;
         protected _onDisable(): void;
-        /**
-         * @internal
-         * @en Called when a render node enters the volume.
-         * @param renderNode The BaseRender node entering the volume.
-         * @zh 当一个渲染节点进入体积时调用。
-         * @param renderNode 进入体积的BaseRender节点。
-         */
-        _addRenderNode?(renderNode: BaseRender): void;
-        /**
-         * @internal
-         * @en Called when a render node is removed from the volume.
-         * @param renderNode The BaseRender node being removed from the volume.
-         * @zh 当一个渲染节点从体积中移除时调用。
-         * @param renderNode 从体积中移除的BaseRender节点。
-         */
-        _removeRenderNode?(renderNode: BaseRender): void;
-        /**
-         * @internal
-         * @en Called when a render node moves within the volume.
-         * @param renderNode The BaseRender node moving within the volume.
-         * @zh 当一个渲染节点在体积中移动时调用。
-         * @param renderNode 在体积中移动的BaseRender节点。
-         */
-        _motionInVolume?(renderNode: BaseRender): void;
-        /**
-         * @internal
-         * @en Handles volume changes.
-         * @zh 处理体积变化。
-         */
-        _VolumeChange(): void;
-        /**
-         * @internal
-         */
-        _reCaculateBoundBox(): void;
     }
     /**
      * @en The `VolumeManager` class is used to manage volume components in a scene.
@@ -8754,16 +7550,6 @@ declare namespace Laya {
          * @zh 体积全局光照的类型标识符。
          */
         static VolumetricGIType: number;
-        /** @internal 需要跟新反射探针的渲染队列 */
-        private _motionObjects;
-        /** @internal volume list */
-        private _volumeList;
-        /**
-         * @internal
-         * @en whether all renders need to be updated.
-         * @zh 是否需要更新所有渲染。
-         */
-        _needUpdateAllRender: boolean;
         /**
          * @en Dictionary of specialized volume managers for different volume types.
          * @zh 不同体积类型的专门体积管理器字典。
@@ -8771,12 +7557,6 @@ declare namespace Laya {
         _regVolumeManager: {
             [key: number]: IVolumeManager;
         };
-        /**
-         * @internal
-         * @en Reflection probe manager.
-         * @zh 反射探针管理器。
-         */
-        _reflectionProbeManager: ReflectionProbeManager;
         /**
          * @en Volumetric Global Illumination manager.
          * @zh 体积全局光照管理器。
@@ -8821,14 +7601,6 @@ declare namespace Laya {
          */
         _updateRenderObject(baseRender: BaseRender): void;
         /**
-         * @internal
-         * @en Handle motion list.
-         * This method updates render objects, processes reflection probes, and handles volumetric GI for objects in motion.
-         * @zh 处理运动列表。
-         * 此方法更新渲染对象，处理反射探针，并处理运动物体的体积全局光照。
-         */
-        handleMotionlist(): void;
-        /**
          * @en Recalculate and update all Volume information for render objects
          * @zh 重新计算并更新所有渲染对象的Volume信息
          */
@@ -8838,40 +7610,12 @@ declare namespace Laya {
          * @zh 检查是否需要重新计算所有渲染对象
          */
         needreCaculateAllRenderObjects(): boolean;
-        /**
-         * @internal
-         * @en Clean up the change queue
-         * @zh 清理变动队列
-         */
-        clearMotionObjects(): void;
-        /**
-         * @internal
-         * @en Destroy the object
-         * @zh 销毁对象
-         */
-        destroy(): void;
     }
     /**
      * @en The VolumetricGI class represents volumetric global illumination in the scene.
      * @zh VolumetricGI 类表示场景中的体积全局光照。
      */
     class VolumetricGI extends Volume {
-        /** @internal */
-        static BlockName: string;
-        /** @internal */
-        static SHADERDEFINE_VOLUMETRICGI: ShaderDefine;
-        /** @internal */
-        static VOLUMETRICGI_PROBECOUNTS: number;
-        /** @internal */
-        static VOLUMETRICGI_PROBESTEPS: number;
-        /** @internal */
-        static VOLUMETRICGI_PROBESTARTPOS: number;
-        /** @internal */
-        static VOLUMETRICGI_PROBEPARAMS: number;
-        /** @internal */
-        static VOLUMETRICGI_IRRADIANCE: number;
-        /** @internal */
-        static VOLUMETRICGI_DISTANCE: number;
         static init(): void;
         /**
          * @en The count of volumetric global illumination probes.
@@ -8883,8 +7627,6 @@ declare namespace Laya {
          * @zh 获取一个全局唯一的ID。
          */
         static getID(): number;
-        /** @internal IDE*/
-        probeLocations: Float32Array;
         private _probeCounts;
         private _probeStep;
         /**
@@ -8894,10 +7636,6 @@ declare namespace Laya {
          * w: viewBias
          */
         private _params;
-        /**@internal */
-        _volumetricProbeID: number;
-        /**@internal */
-        _dataModule: IVolumetricGIData;
         get shaderData(): ShaderData;
         /**
          * @en construct method, initialize VolumetricGI object.
@@ -8960,149 +7698,20 @@ declare namespace Laya {
         get probeStep(): Vector3;
         set probeStep(value: Vector3);
         _reCaculateBoundBox(): void;
-        /**
-         * @internal
-         */
-        _onDestroy(): void;
-        /**@internal */
-        _cloneTo(dest: VolumetricGI): void;
-    }
-    /**
-     * @internal
-     * @en Manager class for Volumetric Global Illumination (GI).
-     * @zh 体积全局光照(GI)管理器类。
-     */
-    class VolumetricGIManager implements IVolumeManager {
-        /**
-         * @en Whether all renders need to be updated.
-         * @zh 是否需要更新所有渲染。
-         */
-        _needUpdateAllRender: boolean;
-        private _GIVolumes;
-        /**
-         * @en Constructor, initialize the VolumetricGI manager.
-         * @zh 构造函数，初始化体积全局光照(VolumetricGI)管理器。
-         */
-        constructor();
-        /**
-         * @en Remove Volumetric GI from the specified renderer.
-         * @zh 从指定的渲染器中移除体积全局光照。
-         */
-        removeVolumetricGI(renderer: BaseRender): void;
-        /**
-         * @en Add a VolumetricGI volume to the collection.
-         * @zh 添加一个体积全局光照(VolumetricGI)到集合中。
-         */
-        add(volume: VolumetricGI): void;
-        /**
-         * @en Remove a VolumetricGI volume from the collection.
-         * @zh 从集合中移除一个体积全局光照(VolumetricGI)。
-         */
-        remove(volume: VolumetricGI): void;
-        /**
-         * @en Update the render object based on the current VolumetricGI volumes.
-         * This method checks for overlap between the renderer's bounds and VolumetricGI volumes, and applies the most overlapping volume's settings to the renderer.
-         * @param renderer The BaseRender object to update.
-         * @zh 根据当前的体积全局光照(VolumetricGI)更新渲染对象。
-         * 此方法检查渲染器边界与VolumetricGI之间的重叠，并将重叠最多的体积的设置应用于渲染器。
-         * @param renderer 要更新的BaseRender对象。
-         */
-        _updateRenderObject(renderer: BaseRender): void;
-        /**
-         * @en Handle the list of motion objects by updating their VolumetricGI settings.
-         * @param motionObjects A SingletonList of BaseRender objects representing motion objects.
-         * @zh 处理运动对象列表，更新它们的体积全局光照(VolumetricGI)设置。
-         * @param motionObjects 表示运动对象的BaseRender对象的SingletonList。
-         */
-        handleMotionlist(motionObjects: SingletonList<BaseRender>): void;
-        /**
-         * @en Recalculate VolumetricGI settings for all render objects.
-         * @param renders A SingletonList of BaseRender objects to recalculate.
-         * @zh 重新计算所有渲染对象的体积全局光照(VolumetricGI)设置。
-         * @param renders 需要重新计算的BaseRender对象的SingletonList。
-         */
-        reCaculateAllRenderObjects(renders: SingletonList<BaseRender>): void;
-        /**
-         * @en Destroy the instance and release resources.
-         * @zh 销毁实例并释放资源。
-         */
-        destroy(): void;
     }
     /**
      * @en The `BaseCamera` class is used to create the parent class of cameras.
      * @zh `BaseCamera` 类用于创建摄像机的父类。
      */
     class BaseCamera extends Sprite3D {
-        /**
-         * @internal
-         * @en CameraUniformBlock Map
-         * @zh 相机UniformBlock映射
-         */
-        static cameraUniformMap: CommandUniformMap;
-        /** @internal */
-        static cameraBlockName: string;
-        /**Camera Uniform PropertyID */
-        /**@internal */
-        static CAMERAPOS: number;
-        /**@internal */
-        static VIEWMATRIX: number;
-        /**@internal */
-        static PROJECTMATRIX: number;
-        /**@internal */
-        static VIEWPROJECTMATRIX: number;
-        /**@internal */
-        static CAMERADIRECTION: number;
-        /**@internal */
-        static CAMERAUP: number;
-        /**@internal */
-        static VIEWPORT: number;
-        /**@internal */
-        static PROJECTION_PARAMS: number;
-        /**@internal */
-        static OPAQUETEXTURE: number;
-        /**@internal */
-        static OPAQUETEXTUREPARAMS: number;
-        /**@internal */
-        static DEPTHTEXTURE: number;
-        /**@internal */
-        static DEPTHNORMALSTEXTURE: number;
-        /**@internal */
-        static DEPTHZBUFFERPARAMS: number;
-        /**@internal */
-        static CAMERAUNIFORMBLOCK: number;
-        /**Camera Define*/
-        /**@internal */
-        static SHADERDEFINE_FXAA: ShaderDefine;
-        /** @internal */
-        static RENDERINGTYPE_SHADERDEFINE_FXAA: string;
-        /**渲染模式,延迟光照渲染，暂未开放。 @internal */
-        static RENDERINGTYPE_DEFERREDLIGHTING: string;
-        /**
-         * @en Rendering mode: Forward rendering.
-         * @zh 渲染模式：前向渲染。
-         * @internal
-         */
-        static RENDERINGTYPE_FORWARDRENDERING: string;
         protected static _invertYScaleMatrix: Matrix4x4;
         protected static _invertYProjectionMatrix: Matrix4x4;
         protected static _invertYProjectionViewMatrix: Matrix4x4;
-        /**
-         * @internal
-         * @en Initialize shader information
-         * @zh 初始化着色器信息
-         */
-        static shaderValueInit(): void;
         /**
          * @en Initialize the Camera
          * @zh 初始化相机
          */
         static __init__(): void;
-        /**
-         * @internal
-         * @en Rendering order.
-         * @zh 渲染顺序。
-         */
-        _renderingOrder: number;
         /**
          * @en Near clipping plane.
          * @zh 近裁剪面。
@@ -9155,13 +7764,10 @@ declare namespace Laya {
          */
         protected _useUserProjectionMatrix: boolean;
         /**
-         * @internal
          * @en Shader data.
          * @zh 着色器数据。
          */
         _shaderValues: ShaderData;
-        /** @internal */
-        _linearClearColor: Color;
         /**
          * @en The clear color of the camera. The default color is CornflowerBlue.
          * @zh 摄像机的清除颜色。默认颜色为CornflowerBlue。
@@ -9174,12 +7780,6 @@ declare namespace Laya {
          * @zh 可视层位标记遮罩值,支持混合 例:cullingMask=Math.pow(2,0)|Math.pow(2,1)为第0层和第1层可见。
          */
         private _cullingMask;
-        /**
-         * @internal
-         * @en Static mask
-         * @zh 静态遮罩
-         */
-        staticMask: number;
         /**
          * @en Whether to use occlusion culling during rendering.
          * @zh 渲染时是否使用遮挡剔除。
@@ -9249,16 +7849,6 @@ declare namespace Laya {
         private _caculateMaxLocalYRange;
         protected _calculateProjectionMatrix(): void;
         protected _onScreenSizeChanged(): void;
-        /**
-         * @internal
-         * @en Sort cameras by their RenderingOrder property.
-         * @zh 通过 RenderingOrder 属性对摄像机进行排序。
-         */
-        _sortCamerasByRenderingOrder(): void;
-        /**
-         * @internal
-         */
-        _prepareCameraToRender(): void;
         /**
          * @en Camera rendering.
          * @param scene The scene to render.
@@ -9372,23 +7962,12 @@ declare namespace Laya {
      * @zh Camera 类用于创建摄像机。
      */
     class Camera extends BaseCamera {
-        /** @internal*/
-        static _context3DViewPortCatch: Viewport;
-        /**@internal */
-        static _contextScissorPortCatch: Vector4;
         /**
-         * @internal
          * @en Update flag
          * @zh 更新标志位
          */
         static get _updateMark(): number;
         static set _updateMark(value: number);
-        /**
-         * @internal
-         * @en Depth map pipeline
-         * @zh 深度贴图管线
-         */
-        static depthPass: DepthPass;
         /**
          * @en Get the rendering result of a certain position in the scene based on camera and scene information.
          * @param camera The camera
@@ -9455,10 +8034,6 @@ declare namespace Laya {
          * @returns 创建的立方体贴图。
          */
         static drawTextureCubeByScene(camera: Camera, position: Vector3, scene: Scene3D, renderCubeSize: number, format: TextureFormat, cullingMask?: number): TextureCube;
-        /**
-         * @internal
-         */
-        static __init__(): void;
         protected _aspectRatio: number;
         protected _viewport: Viewport;
         protected _rayViewport: Viewport;
@@ -9480,14 +8055,6 @@ declare namespace Laya {
         _offScreenRenderTexture: RenderTexture;
         _internalRenderTexture: RenderTexture;
         /**
-         * @internal
-         * @en Whether to directly use the rendered depth map
-         * @zh 是否直接使用渲染深度贴图
-         */
-        _canBlitDepth: boolean;
-        /**@internal */
-        _internalCommandBuffer: CommandBuffer;
-        /**
          * @en Depth texture format
          * @zh 深度贴图格式
          */
@@ -9503,33 +8070,15 @@ declare namespace Laya {
          */
         private _depthNormalsTexture;
         /**
-         * @internal
-         * @en Opaque objects texture
-         * @zh 非透明物体贴图
-         */
-        _opaqueTexture: RenderTexture;
-        /**
          * @en Whether to enable the opaque objects pass
          * @zh 是否开启非透明物体通道
          */
         private _opaquePass;
-        /** @internal */
-        _cameraEventCommandBuffer: {
-            [key: string]: CommandBuffer[];
-        };
         /**
          * @en Implement shadow rendering using CommandBuffer
          * @zh 实现CommandBuffer的阴影渲染
          */
         private _shadowCasterCommanBuffer;
-        /** @internal */
-        _clusterXPlanes: Vector3[];
-        /** @internal */
-        _clusterYPlanes: Vector3[];
-        /** @internal */
-        _clusterPlaneCacheFlag: Vector2;
-        /** @internal */
-        _screenOffsetScale: Vector4;
         /**
          * @en Whether rendering is allowed.
          * @zh 是否允许渲染。
@@ -9540,18 +8089,6 @@ declare namespace Laya {
          * @zh 清除标记。
          */
         clearFlag: CameraClearFlags;
-        /**
-         * @internal
-         * @en Whether to cache the depth texture from the previous frame.
-         * @zh 是否缓存上一帧的深度纹理。
-         */
-        _cacheDepth: boolean;
-        /**
-         * @internal
-         * @en Cached texture from the previous frame.
-         * @zh 缓存的上一帧纹理。
-         */
-        _cacheDepthTexture: RenderTexture;
         _renderDataModule: ICameraNodeData;
         private _Render3DProcess;
         /**
@@ -9708,124 +8245,12 @@ declare namespace Laya {
         private _calculationViewport;
         protected _calculateProjectionMatrix(): void;
         /**
-         * @internal
-         * @en Check if a layer is visible based on the culling mask.
-         * @param layer The layer to check.
-         * @returns Whether the layer is visible.
-         * @zh 通过蒙版值获取蒙版是否显示。
-         * @param layer 要检查的图层。
-         * @returns 图层是否可见。
-         */
-        _isLayerVisible(layer: number): boolean;
-        /**
-         * @internal
-         */
-        _onTransformChanged(flag: number): void;
-        /**
          * @en Clone the camera.
          * @zh 克隆相机。
          */
         clone(): Camera;
-        /**
-         * @internal
-         */
-        _getCanvasWidth(): number;
-        /**
-         * @internal
-         */
-        _getCanvasHeight(): number;
-        /**
-         * @internal
-         */
-        _getRenderTexture(): RenderTexture;
-        /**
-         * @internal
-         * @en Determine if the render result needs gamma correction.
-         * @param rt The render target format to check.
-         * @returns Whether gamma correction is needed for the given render target format.
-         * @zh 判断渲染结果是否需要 Gamma 校正。
-         * @param rt 要检查的渲染目标格式。
-         * @returns 给定的渲染目标格式是否需要 Gamma 校正。
-         */
-        _needRenderGamma(rt: RenderTargetFormat): boolean;
-        /**
-         * @internal
-         */
-        _needInternalRenderTexture(): boolean;
-        /**
-         * @internal
-         */
-        _getRenderTextureFormat(): RenderTargetFormat;
-        /**
-         * @internal
-         * update Camera Render
-         * @param context
-         */
-        _updateCameraRenderData(context: RenderContext3D): void;
-        /**
-         * @internal
-         */
-        _prepareCameraToRender(): void;
-        /**
-         * @internal
-         * @param context
-         */
-        _contextApply(context: RenderContext3D): void;
-        /**
-         * @internal
-         */
-        _applyViewProject(viewMat: Matrix4x4, proMat: Matrix4x4, invertY: boolean): void;
-        /**
-         * @internal
-         */
-        _updateClusterPlaneXY(): void;
-        /**
-        * @internal
-        */
-        _addCasterShadowCommandBuffer(commandBuffer: CommandBuffer): void;
-        /**
-         * @internal
-         * @param commandBuffer
-         */
-        _removeCasterShadowCommandBuffer(commandBuffer: CommandBuffer): void;
-        /**
-         * @internal
-         * @en Pre-render process for the main rendering pass.
-         * @param context The rendering context.
-         * @param scene The scene to be rendered.
-         * @param needInternalRT Whether an internal render target is needed.
-         * @param viewport The viewport for rendering.
-         * @zh 主渲染流程之前的预处理过程。
-         * @param context 渲染上下文。
-         * @param scene 要渲染的场景。
-         * @param needInternalRT 是否需要内部渲染目标。
-         * @param viewport 渲染的视口。
-         */
-        _preRenderMainPass(context: RenderContext3D, scene: Scene3D, needInternalRT: boolean, viewport: Viewport): void;
-        /**
-         * @internal
-         * @en The depth texture of the camera.
-         * @zh 相机的深度纹理。
-         */
-        get depthTexture(): BaseTexture;
         set depthTexture(value: BaseTexture);
-        /**
-         * @internal
-         * @en The depth-normal texture of the camera.
-         * @zh 相机的深度法线纹理。
-         */
-        get depthNormalTexture(): RenderTexture;
         set depthNormalTexture(value: RenderTexture);
-        /**
-         * @internal
-         */
-        _aftRenderMainPass(): void;
-        /**
-         * @internal
-         * @en Create the opaque pass texture.
-         * @zh 创建不透明通道纹理。
-         */
-        _createOpaqueTexture(): void;
         /**
          * @en Render the scene.
          * @param scene The scene to render.
@@ -9912,23 +8337,15 @@ declare namespace Laya {
          * @param event 相机事件标志
          */
         removeCommandBuffers(event: CameraEventFlags): void;
-        /** @internal [NATIVE]*/
-        _boundFrustumBuffer: Float32Array;
     }
     /**
      * @en The `GeometryElement` class is used to implement geometric elements. This class is abstract.
      * @zh `GeometryElement` 类用于实现几何体元素，该类为抽象类。
      */
     class GeometryElement {
-        /** @internal */
-        private static _uniqueIDCounter;
         protected _owner: any;
         static _typeCounter: number;
-        /**@internal */
-        protected _destroyed: boolean;
         _geometryElementOBj: IRenderGeometryElement;
-        /** @internal */
-        _id: number;
         protected _bufferState: BufferState;
         /**
          * @en VAO (Vertex Array Object) instance
@@ -9998,24 +8415,6 @@ declare namespace Laya {
          * @zh 获取几何体类型
          */
         _getType(): number;
-        /**
-         * @internal
-         * @en Whether rendering is needed
-         * @param state The render context
-         * @returns Whether rendering is needed
-         * @zh 是否需要渲染。
-         * @param state 渲染上下文。
-         * @return 是否需要渲染。
-         */
-        _prepareRender(state: RenderContext3D): boolean;
-        /**
-         * @internal
-         * @en Update geometry data
-         * @param state The render context
-         * @zh 更新几何体数据
-         * @param state 渲染上下文。
-         */
-        _updateRenderParams(state: RenderContext3D): void;
         /**
          * @en Destroy the object
          * @zh 销毁对象
@@ -10092,13 +8491,7 @@ declare namespace Laya {
      * @zh DirectionLight 类用于创建方向光。
      */
     class DirectionLightCom extends Light {
-        /**@internal */
-        _dataModule: IDirectLightData;
         private _direction;
-        /** @internal */
-        _shadowTwoCascadeSplits: number;
-        /** @internal */
-        _shadowFourCascadeSplits: Vector3;
         /**
          * @en The direction of the directional light.
          * @zh 方向光的方向。
@@ -10161,20 +8554,6 @@ declare namespace Laya {
         protected _dataModule: IDirectLightData | ISpotLightData | IPointLightData;
         protected _shadowMode: ShadowMode;
         private _isAlternate;
-        /** @internal */
-        _intensityColor: Vector3;
-        /** @internal */
-        _intensity: number;
-        /** @internal */
-        _lightmapBakedType: LightMode;
-        /** @internal */
-        _lightType: LightType;
-        /**
-         * @internal
-         * @en The light world matrix,because the scale will affect the clipping of the shadow
-         * @zh 因为scale会影响裁剪阴影
-         */
-        _lightWoldMatrix: Matrix4x4;
         /**
          * @en The light color.
          * @zh 灯光颜色。
@@ -10252,14 +8631,6 @@ declare namespace Laya {
          */
         constructor();
         protected _creatModuleData(): void;
-        /**@internal */
-        _setOwner(node: Sprite3D): void;
-        /**@internal */
-        _getRenderDataModule(): IDirectLightData | ISpotLightData | IPointLightData;
-        /**
-         * @internal
-         */
-        _cloneTo(dest: Light): void;
         private _addToScene;
         private _removeFromScene;
         protected _addToLightQueue(): void;
@@ -10302,25 +8673,11 @@ declare namespace Laya {
         normalLightOrdering(brightestIndex: number): void;
     }
     /**
-     * @internal
-     * @en The `AlternateLightQueue` class extends the `LightQueue` class, and overrides the remove method.
-     * @zh `AlternateLightQueue` 类继承自 `LightQueue` 类，重写了移除灯光的方法
-     */
-    class AlternateLightQueue extends LightQueue<Light> {
-        /**
-         * @en Removes a light from the queue.
-         * @zh 从队列中移除灯光。
-         */
-        remove(light: Light): void;
-    }
-    /**
      * @ignore
      * @deprecated
      * <code>LightSprite</code> 类用于创建灯光的父类。
      */
     class LightSprite extends Sprite3D {
-        /** @internal */
-        _light: Light;
         /**
          * 灯光颜色。
          */
@@ -10384,10 +8741,6 @@ declare namespace Laya {
          * 创建一个 <code>LightSprite</code> 实例。
          */
         constructor();
-        /**
-         * @internal
-         */
-        _cloneTo(destObject: LightSprite, rootSprite: Node, dstSprite: Node): void;
         protected _addToLightQueue(): void;
         protected _removeFromLightQueue(): void;
     }
@@ -10417,10 +8770,6 @@ declare namespace Laya {
         protected _creatModuleData(): void;
         protected _addToLightQueue(): void;
         protected _removeFromLightQueue(): void;
-        /**
-         * @internal
-         */
-        _cloneTo(dest: PointLightCom): void;
     }
     /**
      * @en Shadow cascade mode.
@@ -10479,216 +8828,6 @@ declare namespace Laya {
         bit32 = 2
     }
     /**
-     * @internal
-     * @en Utility class for shadow-related calculations and operations.
-     * @zh 用于阴影相关计算和操作的实用工具类。
-     */
-    class ShadowUtils {
-        /** @internal */
-        private static _adjustNearPlane;
-        /** @internal */
-        private static _adjustFarPlane;
-        /** @internal */
-        private static _backPlaneFaces;
-        /** @internal */
-        private static _edgePlanePoint2;
-        /**
-         * @internal
-         * @en The size of the border for the shadow atlas, which is used to avoid shadow artifacts. Now the maximum shadow sample tent is 5x5, so the atlas border size should be at least 3 (ceiling of 2.5), plus 1 pixel for the global border in no cascade mode.
-         * @zh 阴影图集的边框大小，用于避免阴影伪影。当前最大阴影采样罩是5x5，因此图集边框大小至少应为3（2.5的上取整），再加上1像素用于无级联模式下的全局边框。
-         */
-        static readonly atlasBorderSize: number;
-        /**
-         * @en Initializes the shadow utility with default planes for adjusting the near and far planes.
-         * @zh 使用默认平面初始化阴影工具，以调整近平面和远平面。
-         */
-        static init(): void;
-        /**
-         * @internal
-         * @en Checks if shadow rendering is supported by the current rendering engine.
-         * @zh 检查当前渲染引擎是否支持阴影渲染。
-         */
-        static supportShadow(): boolean;
-        /**
-         * @internal
-         * @en Creates a temporary shadow texture with the specified dimensions and format.
-         * @param width The width of the shadow texture.
-         * @param height The height of the shadow texture.
-         * @param shadowFormat The format of the shadow map.
-         * @zh 创建一个具有指定尺寸和格式的临时阴影纹理。
-         * @param width 阴影纹理的宽度。
-         * @param height 阴影纹理的高度。
-         * @param shadowFormat 阴影贴图的格式。
-         */
-        static getTemporaryShadowTexture(witdh: number, height: number, shadowFormat: ShadowMapFormat): RenderTexture;
-        /**
-         * @internal
-         * @en Calculates the shadow bias for a light based on the shadow projection matrix and shadow resolution.
-         * @param light The light source.
-         * @param shadowProjectionMatrix The shadow projection matrix.
-         * @param shadowResolution The resolution of the shadow map.
-         * @param out The output vector to store the calculated depth and normal bias values.
-         * @zh 根据阴影投影矩阵和阴影分辨率为光源计算阴影偏差。
-         * @param light 光源。
-         * @param shadowProjectionMatrix 阴影投影矩阵。
-         * @param shadowResolution 阴影贴图的分辨率。
-         * @param out 输出向量，用于存储计算出的深度和法线偏差值。
-         */
-        static getShadowBias(light: Light, shadowProjectionMatrix: Matrix4x4, shadowResolution: number, out: Vector4): void;
-        /**
-         * @internal
-         * @en Retrieves the frustum planes from the camera's view-projection matrix.
-         * @param cameraViewProjectMatrix The combined camera view and projection matrix.
-         * @param frustumPlanes An array to store the retrieved frustum planes.
-         * @zh 从相机的视图投影矩阵中检索透视体的各个平面。
-         * @param cameraViewProjectMatrix 相机的视图和投影矩阵。
-         * @param frustumPlanes 一个数组，用于存储检索到的透视体平面。
-         */
-        static getCameraFrustumPlanes(cameraViewProjectMatrix: Matrix4x4, frustumPlanes: Plane[]): void;
-        /**
-         * @internal
-         * @en Calculates the far distance based on the given radius and denominator.
-         * @param radius The radius used for calculation.
-         * @param denominator The denominator used in the calculation.
-         * @zh 根据给定的半径和分母计算远距离。
-         * @param radius 用于计算的半径。
-         * @param denominator 计算中使用的分母。
-         */
-        static getFarWithRadius(radius: number, denominator: number): number;
-        /**
-         * @internal
-         * @en Calculates the split distances for cascade shadow mapping.
-         * @param twoSplitRatio The split ratio for two cascades.
-         * @param fourSplitRatio The split ratios for four cascades.
-         * @param cameraNear The near plane distance of the camera.
-         * @param shadowFar The far plane distance for shadow rendering.
-         * @param fov The field of view of the camera.
-         * @param aspectRatio The aspect ratio of the camera.
-         * @param cascadesMode The cascade mode (NoCascades, TwoCascades, or FourCascades).
-         * @param out The output array to store the calculated split distances.
-         * @zh 计算级联阴影映射的分割距离。
-         * @param twoSplitRatio 两级级联的分割比例。
-         * @param fourSplitRatio 四级级联的分割比例。
-         * @param cameraNear 相机的近平面距离。
-         * @param shadowFar 阴影渲染的远平面距离。
-         * @param fov 相机的视野角度。
-         * @param aspectRatio 相机的宽高比。
-         * @param cascadesMode 级联模式（无级联、两级级联或四级级联）。
-         * @param out 用于存储计算得出的分割距离的输出数组。
-         */
-        static getCascadesSplitDistance(twoSplitRatio: number, fourSplitRatio: Vector3, cameraNear: number, shadowFar: number, fov: number, aspectRatio: number, cascadesMode: ShadowCascadesMode, out: number[]): void;
-        /**
-         * @internal
-         * @en Applies transformation to the shadow slice.
-         * @param shadowSliceData The data containing the resolution and offset for the shadow slice.
-         * @param atlasWidth The width of the shadow map atlas.
-         * @param atlasHeight The height of the shadow map atlas.
-         * @param cascadeIndex The index of the cascade to apply the transformation to.
-         * @param outShadowMatrices The output array to store the transformed shadow matrices.
-         * @zh 对阴影切片应用变换。
-         * @param shadowSliceData 包含阴影切片的分辨率和偏移量的数据。
-         * @param atlasWidth 阴影图集的宽度。
-         * @param atlasHeight 阴影图集的高度。
-         * @param cascadeIndex 要应用变换的级联索引。
-         * @param outShadowMatrices 输出数组，用于存储变换后的阴影矩阵。
-         */
-        static applySliceTransform(shadowSliceData: ShadowSliceData, atlasWidth: number, atlasHeight: number, cascadeIndex: number, outShadowMatrices: Float32Array): void;
-        /**
-         * @internal
-         * @en Calculates the culling planes for a directional light shadow from the camera frustum planes and the specified cascade index.
-         * @param cameraFrustumPlanes Array containing the planes of the camera frustum.
-         * @param cascadeIndex The index of the cascade for which to calculate the shadow culling planes.
-         * @param splitDistance Array containing the split distances for the shadow cascades.
-         * @param cameraNear The near plane distance of the camera.
-         * @param direction The direction of the directional light.
-         * @param shadowSliceData The data structure to store the calculated culling planes and related information.
-         * @zh 根据相机透视体平面和指定的级联索引计算定向光阴影的剔除平面。
-         * @param cameraFrustumPlanes 包含相机透视体平面的数组。
-         * @param cascadeIndex 要计算阴影剔除平面的级联索引。
-         * @param splitDistance 包含阴影级联分割距离的数组。
-         * @param cameraNear 相机的近平面距离。
-         * @param direction 定向光的方向。
-         * @param shadowSliceData 用于存储计算得到的剔除平面和相关信息的数据结构。
-         */
-        static getDirectionLightShadowCullPlanes(cameraFrustumPlanes: Array<Plane>, cascadeIndex: number, splitDistance: number[], cameraNear: number, direction: Vector3, shadowSliceData: ShadowSliceData): void;
-        /**
-         * @internal
-         * @en Calculates the minimal bounding sphere of a frustum defined by a camera.
-         * @param near The distance to the near plane of the frustum.
-         * @param far The distance to the far plane of the frustum.
-         * @param fov The field of view angle of the camera.
-         * @param aspectRatio The aspect ratio of the camera.
-         * @param cameraPos The position of the camera.
-         * @param forward The forward direction of the camera.
-         * @param outBoundSphere The output bound sphere containing the calculated center and radius.
-         * @returns The calculated center Z position of the bounding sphere.
-         * @zh 计算由相机定义的透视体的最小边界球。
-         * @param near 到透视体近平面的距离。
-         * @param far 到透视体远平面的距离。
-         * @param fov 相机的视野角度。
-         * @param aspectRatio 相机的宽高比。
-         * @param cameraPos 相机的位置。
-         * @param forward 相机的前方向。
-         * @param outBoundSphere 输出边界球，包含计算得到的中心和半径。
-         * @returns 计算得到的边界球的中心 Z 位置。
-         */
-        static getBoundSphereByFrustum(near: number, far: number, fov: number, aspectRatio: number, cameraPos: Vector3, forward: Vector3, outBoundSphere: BoundSphere): number;
-        /**
-         * @internal
-         * @en Calculates the maximum tile resolution that can fit in the given atlas dimensions.
-         * @param atlasWidth The width of the atlas.
-         * @param atlasHeight The height of the atlas.
-         * @param tileCount The number of tiles to fit in the atlas.
-         * @zh 计算在给定的图集尺寸内可以容纳的最大瓦片分辨率。
-         * @param atlasWidth 图集的宽度。
-         * @param atlasHeight 图集的高度。
-         * @param tileCount 需要在图集中容纳的瓦片数量。
-         */
-        static getMaxTileResolutionInAtlas(atlasWidth: number, atlasHeight: number, tileCount: number): number;
-        /**
-         * @internal
-         * @en Calculates the matrices for directional light shadows.
-         * @param lightUp The up vector of the light.
-         * @param lightSide The side vector of the light.
-         * @param lightForward The forward vector of the light.
-         * @param cascadeIndex The index of the current cascade.
-         * @param nearPlane The near plane distance.
-         * @param shadowResolution The resolution of the shadow map.
-         * @param shadowSliceData The data for the shadow slice.
-         * @param shadowMatrices The output array for the calculated shadow matrices.
-         * @zh 计算定向光阴影的矩阵。
-         * @param lightUp 光源的上向量。
-         * @param lightSide 光源的侧向量。
-         * @param lightForward 光源的前向量。
-         * @param cascadeIndex 当前级联的索引。
-         * @param nearPlane 近平面距离。
-         * @param shadowResolution 阴影贴图的分辨率。
-         * @param shadowSliceData 阴影切片的数据。
-         * @param shadowMatrices 用于存储计算得出的阴影矩阵的输出数组。
-         */
-        static getDirectionalLightMatrices(lightUp: Vector3, lightSide: Vector3, lightForward: Vector3, cascadeIndex: number, nearPlane: number, shadowResolution: number, shadowSliceData: ShadowSliceData, shadowMatrices: Float32Array): void;
-        /**
-         * @internal
-         * @en Prepares shader values for shadow receivers.
-         * @param shadowMapWidth The width of the shadow map.
-         * @param shadowMapHeight The height of the shadow map.
-         * @param shadowSliceDatas An array of ShadowSliceData objects.
-         * @param cascadeCount The number of shadow cascades.
-         * @param shadowMapSize A Vector4 to store shadow map size information.
-         * @param shadowMatrices A Float32Array to store shadow matrices.
-         * @param splitBoundSpheres A Float32Array to store split bound spheres.
-         * @zh 为阴影接收者准备着色器值。
-         * @param shadowMapWidth 阴影贴图的宽度。
-         * @param shadowMapHeight 阴影贴图的高度。
-         * @param shadowSliceDatas 阴影切片数据对象的数组。
-         * @param cascadeCount 阴影级联的数量。
-         * @param shadowMapSize 用于存储阴影贴图大小信息的 Vector4。
-         * @param shadowMatrices 用于存储阴影矩阵的 Float32Array。
-         * @param splitBoundSpheres 用于存储分割边界球的 Float32Array。
-         */
-        static prepareShadowReceiverShaderValues(shadowMapWidth: number, shadowMapHeight: number, shadowSliceDatas: ShadowSliceData[], cascadeCount: number, shadowMapSize: Vector4, shadowMatrices: Float32Array, splitBoundSpheres: Float32Array): void;
-    }
-    /**
      * @en The `SpotLightCom` class is used to create a spotlight.
      * @zh `SpotLightCom` 类用于创建聚光。
      */
@@ -10698,8 +8837,6 @@ declare namespace Laya {
          * @zh 声明聚光灯的数据模块。
          */
         _dataModule: ISpotLightData;
-        /** @internal */
-        private _direction;
         /**
          * @en The direction of the spotlight.
          * @zh 聚光的方向。
@@ -10727,10 +8864,6 @@ declare namespace Laya {
         protected _creatModuleData(): void;
         protected _addToLightQueue(): void;
         protected _removeFromLightQueue(): void;
-        /**
-         * @internal
-         */
-        _cloneTo(dest: SpotLightCom): void;
     }
     /**
      * @en The BlinnPhongMaterial class is used to implement Blinn-Phong materials.
@@ -10762,53 +8895,11 @@ declare namespace Laya {
          * @zh 渲染状态：透明混合。
          */
         static RENDERMODE_TRANSPARENT: number;
-        /**@internal */
-        static SHADERDEFINE_DIFFUSEMAP: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_NORMALMAP: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_SPECULARMAP: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_ENABLEVERTEXCOLOR: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_ENABLETRANSMISSION: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_THICKNESSMAP: ShaderDefine;
-        /**@internal */
-        static ALBEDOTEXTURE: number;
-        /**@internal */
-        static NORMALTEXTURE: number;
-        /**@internal */
-        static SPECULARTEXTURE: number;
-        /**@internal */
-        static ALBEDOCOLOR: number;
-        /**@internal */
-        static MATERIALSPECULAR: number;
-        /**@internal */
-        static SHININESS: number;
-        /**@internal */
-        static TILINGOFFSET: number;
-        /**@internal */
-        static TRANSMISSIONRATE: number;
-        /**@internal */
-        static IBACKDIFFUSE: number;
-        /**@internal */
-        static IBACKSCALE: number;
-        /**@internal */
-        static THINKNESSTEXTURE: number;
-        /**@internal */
-        static TRANSMISSIONCOLOR: number;
-        /**@internal */
-        static AlbedoIntensity: number;
         /**
          * @en The default material, prohibit modification.
          * @zh 默认材质，禁止修改。
          */
         static defaultMaterial: BlinnPhongMaterial;
-        /**
-         * @internal
-         */
-        static __initDefine__(): void;
         /**
          * @en The render mode.
          * @zh 渲染模式。
@@ -10988,117 +9079,6 @@ declare namespace Laya {
         set renderMode(value: number);
     }
     /**
-     * @internal
-     * @deprecated
-     */
-    class ExtendTerrainMaterial extends Material {
-        /**渲染状态_不透明。*/
-        static RENDERMODE_OPAQUE: number;
-        /**渲染状态_透明混合。*/
-        static RENDERMODE_TRANSPARENT: number;
-        /**@internal */
-        static SPLATALPHATEXTURE: number;
-        /**@internal */
-        static DIFFUSETEXTURE1: number;
-        /**@internal */
-        static DIFFUSETEXTURE2: number;
-        /**@internal */
-        static DIFFUSETEXTURE3: number;
-        /**@internal */
-        static DIFFUSETEXTURE4: number;
-        /**@internal */
-        static DIFFUSETEXTURE5: number;
-        /**@internal */
-        static DIFFUSESCALEOFFSET1: number;
-        /**@internal */
-        static DIFFUSESCALEOFFSET2: number;
-        /**@internal */
-        static DIFFUSESCALEOFFSET3: number;
-        /**@internal */
-        static DIFFUSESCALEOFFSET4: number;
-        /**@internal */
-        static DIFFUSESCALEOFFSET5: number;
-        /**地形细节宏定义。*/
-        /**@internal */
-        static SHADERDEFINE_DETAIL_NUM1: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_DETAIL_NUM2: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_DETAIL_NUM3: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_DETAIL_NUM4: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_DETAIL_NUM5: ShaderDefine;
-        /**
-         * @internal
-         */
-        static __initDefine__(): void;
-        /**
-         * splatAlpha贴图。
-         */
-        get splatAlphaTexture(): BaseTexture;
-        set splatAlphaTexture(value: BaseTexture);
-        /**
-         * 第一层贴图。
-         */
-        get diffuseTexture1(): BaseTexture;
-        set diffuseTexture1(value: BaseTexture);
-        /**
-         * 第二层贴图。
-         */
-        get diffuseTexture2(): BaseTexture;
-        set diffuseTexture2(value: BaseTexture);
-        /**
-         * 第三层贴图。
-         */
-        get diffuseTexture3(): BaseTexture;
-        set diffuseTexture3(value: BaseTexture);
-        /**
-         * 第四层贴图。
-         */
-        get diffuseTexture4(): BaseTexture;
-        set diffuseTexture4(value: BaseTexture);
-        /**
-         * 第五层贴图。
-         */
-        get diffuseTexture5(): BaseTexture;
-        set diffuseTexture5(value: BaseTexture);
-        /**
-         * 第一层贴图缩放偏移。
-         */
-        set diffuseScaleOffset1(scaleOffset1: Vector4);
-        /**
-         * 第二层贴图缩放偏移。
-         */
-        set diffuseScaleOffset2(scaleOffset2: Vector4);
-        /**
-         * 第三层贴图缩放偏移。
-         */
-        set diffuseScaleOffset3(scaleOffset3: Vector4);
-        /**
-         * 第四层贴图缩放偏移。
-         */
-        set diffuseScaleOffset4(scaleOffset4: Vector4);
-        /**
-         * 第五层贴图缩放偏移。
-         */
-        set diffuseScaleOffset5(scaleOffset5: Vector4);
-        /**
-         * 设置渲染模式。
-         */
-        set renderMode(value: number);
-        /**
-         * 创建一个 <code>ExtendTerrainMaterial</code> 实例。
-         */
-        constructor();
-        private _setDetailNum;
-        /**
-        * 克隆。
-        * @return	 克隆副本。
-        */
-        clone(): ExtendTerrainMaterial;
-    }
-    /**
      * @en Enum representing the different render modes used in PBR (Physically Based Rendering) materials.
      * @zh 表示 PBR（基于物理的渲染）材质中使用的不同渲染模式的枚举。
      */
@@ -11129,86 +9109,6 @@ declare namespace Laya {
      * @zh PBR材质的父类,该类为抽象类。
      */
     class PBRMaterial extends Material {
-        /** @internal */
-        static SHADERDEFINE_ALBEDOTEXTURE: ShaderDefine;
-        /** @internal */
-        static SHADERDEFINE_NORMALTEXTURE: ShaderDefine;
-        /** @internal */
-        static SHADERDEFINE_OCCLUSIONTEXTURE: ShaderDefine;
-        /** @internal */
-        static SHADERDEFINE_PARALLAXTEXTURE: ShaderDefine;
-        /** @internal */
-        static SHADERDEFINE_EMISSIONTEXTURE: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_DETAILALBEDO: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_DETAILNORMAL: ShaderDefine;
-        /** @internal */
-        static SHADERDEFINE_ENABLEVERTEXCOLOR: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_ANISOTROPYTEXTURE: ShaderDefine;
-        /** @internal */
-        static SHADERDEFINE_TRANSPARENTBLEND: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_LAYA_PBR_BRDF_HIGH: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_LAYA_PBR_BRDF_LOW: ShaderDefine;
-        /** @internal */
-        static ALBEDOTEXTURE: number;
-        /** @internal */
-        static ALBEDOCOLOR: number;
-        /** @internal */
-        static TILINGOFFSET: number;
-        /** @internal */
-        static NORMALTEXTURE: number;
-        /** @internal */
-        static NORMALSCALE: number;
-        /** @internal */
-        static SMOOTHNESS: number;
-        /** @internal */
-        static SMOOTHNESSSCALE: number;
-        /** @internal */
-        static OCCLUSIONTEXTURE: number;
-        /** @internal */
-        static OCCLUSIONSTRENGTH: number;
-        /** @internal */
-        static PARALLAXTEXTURE: number;
-        /** @internal */
-        static PARALLAXSCALE: number;
-        /** @internal */
-        static EMISSIONTEXTURE: number;
-        /** @internal */
-        static EMISSIONCOLOR: number;
-        /**@internal */
-        static EMISSIONIntensity: number;
-        /** @internal */
-        static DETAILALBEDOTEXTURE: number;
-        /**@internal */
-        static DETAILNORMALTEXTURE: number;
-        /**@internal */
-        static DETAILTILLINGOFFSET: number;
-        /**@internal */
-        static DETAILNORMALSCALE: number;
-        /**@internal */
-        static CLEARCOAT: number;
-        /**@internal */
-        static SHADERDEFINE_CLEARCOATTEXTURE: ShaderDefine;
-        /**@internal */
-        static CLEARCOATTEXTURE: number;
-        /**@internal */
-        static CLEARCOATROUGHNESS: number;
-        /**@internal */
-        static SHADERDEFINE_CLEARCOATROUGHNESSTEXTURE: ShaderDefine;
-        /**@internal */
-        static CLEARCOATROUGHNESSTEXTURE: number;
-        /** @internal */
-        static CLEARCOATNORMALTEXTURE: number;
-        /** @internal */
-        static ANISOTROPY: number;
-        /** @internal */
-        static ANISOTROPYTEXTURE: number;
-        /** @internal */
-        static ANISOTROPYROTATION: number;
         /**
          * @en render quality
          * @zh 渲染质量。
@@ -11442,25 +9342,11 @@ declare namespace Laya {
      * @zh PBRStandardMaterial 类用于实现PBR材质。
      */
     class PBRStandardMaterial extends PBRMaterial {
-        /** @internal */
-        static SHADERDEFINE_SMOOTHNESSSOURCE_ALBEDOTEXTURE_ALPHA: ShaderDefine;
-        /** @internal */
-        static SHADERDEFINE_METALLICGLOSSTEXTURE: ShaderDefine;
-        /** @internal */
-        static METALLICGLOSSTEXTURE: number;
-        /** @internal */
-        static METALLIC: number;
         /**
          * @en Default material, no modification allowed
          * @zh 默认材质，禁止修改
          */
         static defaultMaterial: PBRStandardMaterial;
-        /**
-         * @internal
-         */
-        static __init__(): void;
-        /** @internal */
-        private _smoothnessSource;
         /**
          * @en Metallic gloss texture.
          * @zh 金属光滑度贴图。
@@ -11507,10 +9393,6 @@ declare namespace Laya {
          * @zh 默认材质，禁止修改
          */
         static defaultMaterial: SkyBoxMaterial;
-        /**
-        * @internal
-        */
-        static __initDefine__(): void;
         /**
          * @en Tint color of the skybox.
          * @zh 天空盒的颜色。
@@ -11559,12 +9441,6 @@ declare namespace Laya {
         static ROTATION: number;
         static TEXTURE: number;
         static TEXTURE_HDR_PARAMS: number;
-        /**
-         * @internal
-         */
-        static __init__(): void;
-        /** @internal */
-        private _textureHDRParams;
         /**
          * @en Tint color of the panoramic sky.
          * @zh 全景天空的颜色。
@@ -11616,30 +9492,8 @@ declare namespace Laya {
          * @zh 太阳：高质量
          */
         static SUN_HIGH_QUALITY: number;
-        /**@internal */
-        static SUNSIZE: number;
-        /**@internal */
-        static SUNSIZECONVERGENCE: number;
-        /**@internal */
-        static ATMOSPHERETHICKNESS: number;
-        /**@internal */
-        static SKYTINT: number;
-        /**@internal */
-        static GROUNDTINT: number;
-        /**@internal */
-        static EXPOSURE: number;
-        /**@internal */
-        static SHADERDEFINE_SUN_HIGH_QUALITY: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_SUN_SIMPLE: ShaderDefine;
         /** 默认材质，禁止修改*/
         static defaultMaterial: SkyProceduralMaterial;
-        /**
-         * @internal
-         */
-        static __initDefine__(): void;
-        /**@internal */
-        private _sunDisk;
         /**
          * @en Sun state.
          * @zh 太阳状态。
@@ -11707,10 +9561,6 @@ declare namespace Laya {
         static ALBEDOCOLOR: number;
         static TILINGOFFSET: number;
         static defaultMaterial: UnlitMaterial;
-        /**
-         * @internal
-         */
-        static __initDefine__(): void;
         private _albedoIntensity;
         /**
          * @en Albedo color
@@ -11786,37 +9636,13 @@ declare namespace Laya {
      * @zh `MeshFilter` 类用于创建网格过滤器。
      */
     class MeshFilter extends Component {
-        /** @internal */
-        static _meshVerticeDefine: Array<ShaderDefine>;
-        /** @internal */
-        private _sharedMesh;
         constructor();
-        /**
-         * @internal
-         */
-        protected _onEnable(): void;
-        /**
-         * @internal
-         */
-        protected _onDisable(): void;
         /**
          * @en The shared mesh of the MeshFilter.
          * @zh 共享网格。
          */
         get sharedMesh(): Mesh;
         set sharedMesh(value: Mesh);
-        /**
-         * @internal
-         */
-        protected _onDestroy(): void;
-        /**
-         * @internal
-         * @en Clone the component to another object.
-         * @param dest The destination component.
-         * @zh 克隆组件到另一个对象。
-         * @param dest 目标组件。
-         */
-        _cloneTo(dest: MeshFilter): void;
     }
     /**
      * @en The `MeshRenderer` class is used for mesh rendering.
@@ -11827,14 +9653,8 @@ declare namespace Laya {
         protected _projectionViewWorldMatrix: Matrix4x4;
         protected _mesh: Mesh;
         _baseRenderNode: IMeshRenderNode;
-        /**
-         * @internal
-         */
-        static __init__(): void;
         private morphTargetActiveCount;
         private morphTargetActiveData;
-        /**@internal */
-        morphTargetWeight: Float32Array;
         private morphtargetChannels;
         private _morphWeightChange;
         /**
@@ -11845,18 +9665,6 @@ declare namespace Laya {
         constructor();
         protected _createBaseRenderNode(): IBaseRenderNode;
         protected _isMaterialVaild(value: Material): boolean;
-        /**
-         * @internal
-         */
-        _createRenderElement(): RenderElement;
-        /**
-         * @internal
-         * @en Get the mesh object.
-         * @returns The mesh object.
-         * @zh 获取网格对象。
-         * @returns 网格对象。
-         */
-        getMesh(): Mesh;
         protected _onEnable(): void;
         /**
          * @param mesh
@@ -11875,11 +9683,6 @@ declare namespace Laya {
         get morphTargetValues(): Record<string, number>;
         set morphTargetValues(value: Record<string, number>);
         /**
-         * @internal
-         * @param key
-         */
-        _changeMorphTargetValue(key: string): void;
-        /**
          * @en Set the weight of a morph target channel.
          * @param channelName The name of the morph target channel.
          * @param weight The weight value to set for the channel.
@@ -11888,17 +9691,7 @@ declare namespace Laya {
          * @param weight 要设置的通道权重值。
          */
         setMorphChannelWeight(channelName: string, weight: number): void;
-        /**
-         * @internal
-         * @en Update morph target data.
-         * @zh 更新变形目标数据。
-         */
-        protected _applyMorphdata(): void;
         _setBelongScene(scene: any): void;
-        /**
-         * @internal
-         */
-        _setUnBelongScene(): void;
         protected _statAdd(): void;
         protected _statRemove(): void;
         /**
@@ -11910,15 +9703,6 @@ declare namespace Laya {
         protected _changeMorphData(mesh: Mesh): void;
         protected _meshChange: boolean;
         /**
-         * @internal
-         */
-        _onMeshChange(mesh: Mesh): void;
-        /**
-         * @internal
-         * BaseRender motion
-         */
-        protected _onWorldMatNeedChange(flag: number): void;
-        /**
          * @en Update the rendering state of the mesh renderer.
          * @param context The 3D render context.
          * @zh 更新网格渲染器的渲染状态。
@@ -11926,11 +9710,6 @@ declare namespace Laya {
          */
         renderUpdate(context: RenderContext3D): void;
         protected _onDestroy(): void;
-        /**
-         * @internal
-         * @param dest
-         */
-        _cloneTo(dest: MeshRenderer): void;
     }
     /**
      * @deprecated
@@ -12042,14 +9821,6 @@ declare namespace Laya {
         private _maxUpdate;
         private _floatBound;
         private _calculateBound;
-        /** @internal */
-        _ownerRender: PixelLineRenderer;
-        /** @internal */
-        _bounds: Bounds;
-        /** @internal */
-        _maxLineCount: number;
-        /** @internal */
-        _lineCount: number;
         /**
          * @ignore
          * @en initialize pixeLineFilter instance.
@@ -12060,31 +9831,7 @@ declare namespace Laya {
          * @param maxLineCount 最大线段数量。
          */
         constructor(owner: PixelLineRenderer, maxLineCount: number);
-        /**
-         *  @internal
-         */
-        _getType(): number;
-        /**
-         * @internal
-         */
-        _resizeLineData(maxCount: number): void;
         private _updateLineVertices;
-        /**
-         * @internal
-         */
-        _reCalculateBound(): void;
-        /**
-         * @internal
-         */
-        _removeLineData(index: number): void;
-        /**
-         * @internal
-         */
-        _updateLineData(index: number, startPosition: Vector3, endPosition: Vector3, startColor: Color, endColor: Color, startNormal?: Vector3, endNormal?: Vector3): void;
-        /**
-         * @internal
-         */
-        _updateLineDatas(index: number, data: PixelLineData[]): void;
         /**
          * @en Get the line segment data.
          * @param index The index of the line segment.
@@ -12094,14 +9841,6 @@ declare namespace Laya {
          * @param out 输出的PixelLineData对象。
          */
         _getLineData(index: number, out: PixelLineData): void;
-        /**
-         * @internal
-         */
-        _prepareRender(state: RenderContext3D): boolean;
-        /**
-         * @internal
-         */
-        _updateRenderParams(state: RenderContext3D): void;
         /**
          * @en Destroy the PixelLineFilter instance.
          * @zh 销毁PixelLineFilter实例。
@@ -12113,17 +9852,11 @@ declare namespace Laya {
      * @zh PixelLineMaterial 类用于实现像素线材质。
      */
     class PixelLineMaterial extends Material {
-        /**@internal */
-        static COLOR: number;
         /**
          * @en Default material, no modification allowed
          * @zh 默认材质，禁止修改
          */
         static defaultMaterial: Material;
-        /**
-        * @internal
-        */
-        static __initDefine__(): void;
         /**
          * @en The color of the pixel line.
          * @zh 像素线的颜色。
@@ -12136,14 +9869,6 @@ declare namespace Laya {
          * @zh 初始化PixelLineMaterial实例
          */
         constructor();
-        /**
-         * @internal
-         * @en Clone.
-         * @returns Clone copy.
-         * @zh 克隆。
-         * @returns 克隆副本。
-         */
-        clone(): PixelLineMaterial;
     }
     /**
      * @en PixelLineRenderer class for line rendering.
@@ -12151,8 +9876,6 @@ declare namespace Laya {
      */
     class PixelLineRenderer extends BaseRender {
         protected _projectionViewWorldMatrix: Matrix4x4;
-        /**@internal */
-        _pixelLineFilter: PixelLineFilter;
         /**  是否调用active */
         private _isRenderActive;
         /**  是否加入渲染队列*/
@@ -12193,26 +9916,12 @@ declare namespace Laya {
         protected _createBaseRenderNode(): IMeshRenderNode;
         protected _isMaterialVaild(value: Material): boolean;
         /**
-         * @internal
-         * BaseRender motion
-         */
-        protected _onWorldMatNeedChange(flag: number): void;
-        /**
          * @en Update the render context.
          * @param context The render context.
          * @zh 更新渲染上下文。
          * @param context 渲染上下文。
          */
         renderUpdate(context: RenderContext3D): void;
-        /**
-         * @internal
-         */
-        _changeRenderObjects(index: number, material: Material): void;
-        /**
-         * @internal //animator data set call
-         * @param key
-         */
-        _pixelLinesDataChange(key: string): void;
         /**
          * @en Add a line.
          * @param startPosition Initial point position
@@ -12319,8 +10028,6 @@ declare namespace Laya {
         private _isRenderActive;
         /** 是否加入渲染队列*/
         private _isInRenders;
-        /** @internal */
-        _geometryFilter: PixelLineFilter;
         /**
          * @en The maximum line count.
          * @zh 最大线数量。
@@ -12404,19 +10111,6 @@ declare namespace Laya {
          */
         clear(): void;
     }
-    /**
-     * @internal
-     */
-    class PixelLineVertex {
-        private static _vertexDeclaration;
-        static get vertexDeclaration(): VertexDeclaration;
-        /**
-         * @internal
-         */
-        static __init__(): void;
-        get vertexDeclaration(): VertexDeclaration;
-        constructor();
-    }
     enum RenderBitFlag {
         RenderBitFlag_Batch = 0,
         RenderBitFlag_Editor = 1,
@@ -12454,29 +10148,7 @@ declare namespace Laya {
      * @zh `BaseRender` 类是渲染器的父类，是一个抽象类，不允许实例化。
      */
     class BaseRender extends Component {
-        /** @internal */
-        static _meshVerticeDefine: Array<ShaderDefine>;
         private static _uniqueIDCounter;
-        /**@internal */
-        static _tempBoundBoxCorners: Vector3[];
-        /**@internal */
-        static _defaultLightmapScaleOffset: Vector4;
-        /**
-         * @en Initialize the BaseRender class.
-         * @zh 初始化 BaseRender 类。
-         * @internal
-         */
-        static __init__(): void;
-        /**
-         * @internal
-         * @en Get mesh definitions and store them in the output array.
-         * @param mesh The input mesh.
-         * @param out The output array to store shader definitions.
-         * @zh 获取网格定义并存储在输出数组中。
-         * @param mesh 输入网格。
-         * @param out 输出数组用于存储着色器定义。
-         */
-        static getMeshDefine(mesh: Mesh, out: Array<ShaderDefine>): number;
         /**
          * @en Change vertex shader definitions based on mesh changes.
          * @param oldMesh The old mesh.
@@ -12493,26 +10165,10 @@ declare namespace Laya {
          * @zh 宏定义初始化
          */
         static shaderValueInit(): void;
-        /**@internal renderData*/
+        /**renderData*/
         _baseRenderNode: IBaseRenderNode;
-        /** @internal */
-        _sharedMaterials: Material[];
-        /** @internal */
-        _scene: any;
-        /** @internal 是否需要反射探针*/
-        _probReflection: ReflectionProbe;
-        /** @internal 材质是否支持反射探针*/
-        _surportReflectionProbe: boolean;
-        /** @internal */
-        _lightProb: VolumetricGI;
-        /**@internal */
-        _supportVolumetricGI: boolean;
-        /**@internal TODO*/
-        _batchRender: IBatchModuleAgent;
         /**@interface */
         _receiveShadow: boolean;
-        /**@internal */
-        _inRenderList: boolean;
         protected _bounds: Bounds;
         protected _transform: Transform3D;
         /** 如果这个值不是0,说明有一些条件使他不能加入渲染队列，例如如果是1，证明此节点被lod淘汰*/
@@ -12568,14 +10224,6 @@ declare namespace Laya {
         get lightmapIndex(): number;
         set lightmapIndex(value: number);
         /**
-         * @internal
-         * @en Sets the lightmap index.
-         * @param value The new lightmap index.
-         * @zh 设置光照贴图的索引。
-         * @param value 新的光照贴图索引。
-         */
-        setLightmapIndex(value: number): void;
-        /**
          * @en The irradient mode.
          * @zh 间接光照功能。
          */
@@ -12627,12 +10275,6 @@ declare namespace Laya {
          */
         get volume(): Volume;
         set volume(value: Volume);
-        /**
-         * @internal
-         * @en The reflection probe.
-         * @zh 反射探针。
-         */
-        get probReflection(): ReflectionProbe;
         set probReflection(value: ReflectionProbe);
         /**
          * @en The light probe.
@@ -12689,36 +10331,9 @@ declare namespace Laya {
         private _changeLayer;
         private _changeStaticMask;
         private _changeMaterialReference;
-        /**
-         * @internal
-         */
-        private _getInstanceMaterial;
-        /**
-         * @internal
-         */
-        private _isSupportRenderFeature;
-        /**
-         * @internal
-         * @en Adds the renderer to the update reflection probe queue.
-         * @zh 渲染器添加到更新反射探针队列。
-         */
-        _addReflectionProbeUpdate(): void;
-        /**
-         * @internal
-         * @en Sets the scene to which this object belongs.
-         * @zh 设置所属 Scene 调用此方法。
-         */
-        _setBelongScene(scene: any): void;
         protected _statAdd(): void;
         protected _statRemove(): void;
         /**
-         * @internal
-         * @en This method is called when the object is removed from the Scene.
-         * @zh 从 Scene 移除会调用此方法。
-         */
-        _setUnBelongScene(): void;
-        /**
-         * @internal
          * @param boundFrustum 裁剪。
          */
         _needRender(boundFrustum: BoundFrustum, context: RenderContext3D): boolean;
@@ -12750,29 +10365,11 @@ declare namespace Laya {
         set distanceForSort(value: number);
     }
     /**
-     * @internal
-     */
-    class BatchMark {
-        /**@internal */
-        updateMark: number;
-        /**@internal */
-        indexInList: number;
-        /**@internal */
-        batched: boolean;
-        /**@internal */
-        _curBindElementIndex: number;
-        _cacheRenderElement: IRenderElement3D[];
-    }
-    /**
      * @en Class used for creating instructions to output from a render source to a render target.
      * @zh 类用于创建从渲染源输出到渲染目标的指令。
      */
     class BlitFrameBufferCMD {
         private static readonly _pool;
-        /** @internal */
-        static shaderdata: ShaderData;
-        /** @internal */
-        static __init__(): void;
         /**
          * @en Create a render command set.
          * @param source The source texture.
@@ -12846,10 +10443,6 @@ declare namespace Laya {
      * @zh BlitScreenQuadCMD 类用于创建通过全屏四边形将源纹理渲染到目标渲染纹理的指令
      */
     class BlitScreenQuadCMD extends Command {
-        /**@internal */
-        static readonly SCREENTYPE_QUAD: number;
-        /**@internal */
-        static readonly SCREENTYPE_TRIANGLE: number;
         private static readonly _pool;
         /**
          * @en Create command stream
@@ -12881,8 +10474,6 @@ declare namespace Laya {
         private _subShader;
         private _renderElement;
         private _transform3D;
-        /**@internal */
-        _blitQuadCMDData: BlitQuadCMDData;
         /**@ignore */
         constructor();
         /**
@@ -12902,10 +10493,6 @@ declare namespace Laya {
          * @zh 渲染的着色器数据。
          */
         set shaderData(value: ShaderData);
-        /**
-         * @internal
-         */
-        getRenderCMD(): BlitQuadCMDData;
         /**
          * @param shader
          * @param subShader
@@ -12934,28 +10521,6 @@ declare namespace Laya {
      * @blueprintIgnore @blueprintIgnoreSubclasses
      */
     class Command {
-        /** @internal */
-        static _screenShader: Shader3D;
-        /** @internal */
-        static readonly SCREENTEXTURE_NAME: string;
-        /** @internal */
-        static readonly SCREENTEXTUREOFFSETSCALE_NAME: string;
-        /** @internal */
-        static readonly MAINTEXTURE_TEXELSIZE_NAME: string;
-        /** @internal */
-        static SCREENTEXTURE_ID: number;
-        /** @internal */
-        static SCREENTEXTUREOFFSETSCALE_ID: number;
-        /** @internal */
-        static MAINTEXTURE_TEXELSIZE_ID: number;
-        /**@internal */
-        _commandBuffer: CommandBuffer;
-        /**@internal */
-        _context: RenderContext3D;
-        /**
-        * @internal
-        */
-        static __init__(): void;
         /**@ignore */
         constructor();
         /**
@@ -12968,14 +10533,6 @@ declare namespace Laya {
          * @zh 回收渲染指令。
          */
         recover(): void;
-        /**
-         * @internal
-         */
-        getRenderCMD?(): IRenderCMD;
-        /**
-         * @internal
-         */
-        destroy(): void;
     }
     /**
      * @en The `CommandBuffer` Class used to create command buffer
@@ -12984,17 +10541,9 @@ declare namespace Laya {
      */
     class CommandBuffer {
         static instance: CommandBuffer;
-        /**@internal */
-        _name: string;
-        /**@internal */
-        private _shadow;
-        /**@internal */
         _camera: Camera;
-        /**@internal */
         _context: RenderContext3D;
-        /**@internal */
         private _commands;
-        /**@internal */
         _renderCMDs: any[];
         /** @ignore */
         constructor(name?: string, shadowCaster?: boolean);
@@ -13325,29 +10874,16 @@ declare namespace Laya {
          */
         addCustomCMD(command: Command): void;
         /**
-         * @internal
          * @en Clears the command buffer.
          * @zh 清除命令缓冲区。
          */
         clear(): void;
     }
     class ComputeCommandBufferCMD extends Command {
-        /**@internal */
-        private static readonly _pool;
         private _computeCMD;
         private _computeBuffer;
-        /**
-         * @internal
-         */
-        static create(value: ComputeCommandBuffer): ComputeCommandBufferCMD;
         constructor();
         set computeBuffer(value: ComputeCommandBuffer);
-        /**
-         * @override
-         * @internal
-         * @returns
-         */
-        getRenderCMD(): ComputeCommandAppatchCMD;
         /**
          * @inheritDoc
          * @override
@@ -13355,46 +10891,20 @@ declare namespace Laya {
         recover(): void;
     }
     /**
-     * @internal
      * <code>SetShaderDataTextureCMD</code> 类用于创建设置渲染目标指令。
      */
     class DrawMeshCMD extends Command {
         private static readonly _pool;
-        /**
-         * @internal
-         */
         static create(mesh: Mesh, matrix: Matrix4x4, material: Material, subMeshIndex: number, subShaderIndex: number, commandBuffer: CommandBuffer): DrawMeshCMD;
-        /**@internal */
-        private _material;
-        /**@internal */
-        private _matrix;
-        /**@internal */
-        private _subMeshIndex;
         get subMeshIndex(): number;
         set subMeshIndex(value: number);
         private _subShaderIndex;
         private _mesh;
         private _renderElemnts;
-        /**@internal */
-        _meshRender: MeshRenderer;
         private _transform;
         private _drawRenderCMDDData;
         constructor();
-        /**
-         * @internal
-         */
-        set material(value: Material);
         get material(): Material;
-        /**
-         * @internal
-         */
-        set mesh(value: Mesh);
-        /**
-         * @override
-         * @internal
-         * @returns
-         */
-        getRenderCMD(): DrawElementCMDData | DrawNodeCMDData;
         /**
          * @inheritDoc
          * @override
@@ -13422,62 +10932,6 @@ declare namespace Laya {
          * @zh 设置最大DrawInstance数。
          */
         static maxInstanceCount: number;
-        /**
-         * @internal
-         * @en Create a command stream.
-         * @param mesh The mesh to be drawn.
-         * @param subMeshIndex The index of the sub-mesh.
-         * @param matrixs Array of transformation matrices.
-         * @param material The material to be used.
-         * @param subShaderIndex The index of the sub-shader.
-         * @param instanceProperty Material instance property block.
-         * @param drawnums Number of instances to be drawn.
-         * @param commandBuffer The command buffer.
-         * @returns A new DrawMeshInstancedCMD instance.
-         * @zh 创建一个命令流。
-         * @param mesh 要绘制的网格。
-         * @param subMeshIndex 子网格索引。
-         * @param matrixs 变换矩阵数组。
-         * @param material 要使用的材质。
-         * @param subShaderIndex 子着色器索引。
-         * @param instanceProperty 材质实例属性块。
-         * @param drawnums 要绘制的实例数量。
-         * @param commandBuffer 命令缓冲区。
-         * @return 一个新的 DrawMeshInstancedCMD 实例。
-         */
-        static create(mesh: Mesh, subMeshIndex: number, matrixs: Matrix4x4[], material: Material, subShaderIndex: number, instanceProperty: MaterialInstancePropertyBlock, drawnums: number, commandBuffer: CommandBuffer): DrawMeshInstancedCMD;
-        /**@internal */
-        private _material;
-        /**@internal */
-        private _matrixs;
-        /**@internal */
-        private _subMeshIndex;
-        /**@internal */
-        private _subShaderIndex;
-        /**@internal */
-        private _mesh;
-        /**@internal */
-        private _instanceProperty;
-        /** @internal */
-        private _instanceBufferState;
-        /** @internal */
-        private _drawnums;
-        /**@internal 世界矩阵数据*/
-        private _instanceWorldMatrixData;
-        /**@internal 世界矩阵buffer*/
-        private _instanceWorldMatrixBuffer;
-        /**@internal */
-        private _instanceGeometryArray;
-        /**@internal */
-        private _instanceRenderElementArray;
-        /**@internal */
-        _byteCount: number;
-        /**@internal */
-        _transform: Transform3D;
-        /**@internal */
-        _render: BaseRender;
-        /**@internal */
-        _drawElementCMDData: DrawElementCMDData;
         constructor();
         /**
          * @en The material for the command.
@@ -13496,15 +10950,6 @@ declare namespace Laya {
         get mesh(): Mesh;
         set mesh(value: Mesh);
         /**
-         * @internal
-         */
-        private _setInstanceBuffer;
-        /**
-         * 更新世界矩阵buffer
-         * @internal
-         */
-        private _updateWorldMatrixBuffer;
-        /**
          * @en Reset the world matrix array for DrawInstance.
          * @param worldMatrixArray Array of world matrices.
          * @zh 重置DrawInstance的世界矩阵数组。
@@ -13518,12 +10963,6 @@ declare namespace Laya {
          * @param drawNums 渲染个数。
          */
         setDrawNums(drawNums: number): void;
-        /**
-         * @override
-         * @internal
-         * @returns
-         */
-        getRenderCMD(): DrawElementCMDData;
         /**
          * @en Update the render element.
          * @param renderElement The render element to update.
@@ -13547,12 +10986,6 @@ declare namespace Laya {
          * @zh 回收命令。
          */
         recover(): void;
-        /**
-         * @internal
-         * @en Destroy the command.
-         * @zh 销毁命令。
-         */
-        destroy(): void;
     }
     /**
      * @en Represents a draw render command.
@@ -13560,20 +10993,13 @@ declare namespace Laya {
      */
     class DrawRenderCMD extends Command {
         private static readonly _pool;
-        /**
-         * @internal
-         */
         static create(render: BaseRender, material: Material, subMeshIndex: number, commandBuffer: CommandBuffer): DrawRenderCMD;
-        /**@internal */
-        private _render;
         /**
          * @en The render object.
          * @zh 渲染对象。
          */
         get render(): BaseRender;
         set render(render: BaseRender);
-        /**@internal */
-        private _material;
         /**
          * @en The material.
          * @zh 材质。
@@ -13587,10 +11013,6 @@ declare namespace Laya {
          */
         get subMeshIndex(): number;
         set subMeshIndex(value: number);
-        /**@internal */
-        private _prematerial;
-        /**@internal */
-        _drawNodeCMDData: DrawNodeCMDData;
         constructor();
         /**
          * @en Gets the render command data.
@@ -13630,10 +11052,6 @@ declare namespace Laya {
          * @return 一个新的或从池中检索到的 `DrawRenderElementCMD` 实例。
          */
         static create(renderElement: RenderElement): DrawRenderElementCMD;
-        /**@internal */
-        _drawElementCMDData: DrawElementCMDData;
-        /**@internal */
-        private _renderElement;
         /**
          * @en The render element of this command.
          * @zh 此命令的渲染元素。
@@ -13649,13 +11067,6 @@ declare namespace Laya {
          */
         recover(): void;
         /**
-         * @override
-         * @internal
-         * @en Gets the render command data.
-         * @zh 获取渲染命令数据。
-         */
-        getRenderCMD(): DrawElementCMDData;
-        /**
          * @en Destroys the command.
          * @zh 销毁命令。
          */
@@ -13670,18 +11081,6 @@ declare namespace Laya {
         static instance: ScreenQuad;
         static InvertInstance: ScreenQuad;
         /**
-         * @internal
-         */
-        static __init__(): void;
-        /** @internal */
-        private _vertexBuffer;
-        /** @internal */
-        protected _bufferState: BufferState;
-        /** @internal */
-        private _vertexBufferInvertUV;
-        /** @internal */
-        private _bufferStateInvertUV;
-        /**
          * @ignore
          * @en Construcutor method, do not use.
          * @zh 构造方法，禁止使用。
@@ -13695,45 +11094,9 @@ declare namespace Laya {
          */
         set invertY(value: boolean);
         /**
-         * @internal
-         * UpdateGeometry Data
-         */
-        _updateRenderParams(state: RenderContext3D): void;
-        /**
          * @en Destroys the ScreenQuad instance.
          * @zh 销毁ScreenQuad实例。
          */
-        destroy(): void;
-    }
-    /**
-     * @internal
-     * <code>Mesh</code> 类用于创建CustomInstance属性。
-     */
-    class MaterialInstanceProperty {
-        /**@internal instanceProperty name*/
-        _name: string;
-        /**@internal property Data*/
-        _value: Vector4[] | Vector3[] | Vector2[] | Float32Array;
-        /**@internal vertex Declaration */
-        _vertexDeclaration: VertexDeclaration;
-        /**@internal */
-        _isNeedUpdate: boolean;
-        /**@internal */
-        _vertexStride: number;
-        /**@internal */
-        _instanceData: Float32Array;
-        /**@internal */
-        _vertexBuffer: VertexBuffer3D;
-        /**
-         * @internal
-         * 创建instance顶点Buffer
-         */
-        createInstanceVertexBuffer3D(): void;
-        /**
-         * @internal
-         * 更新顶点数据
-         */
-        updateVertexBufferData(drawNums: number): void;
         destroy(): void;
     }
     enum InstanceLocation {
@@ -13758,21 +11121,7 @@ declare namespace Laya {
          * @zh 统一实例渲染方案。优点：实例变量多，灵活。缺点：合并数量受 WebGLContext._maxUniformFragmentVectors 的影响，合并效率低。
          */
         static INSTANCETYPE_UNIFORMBUFFER: number;
-        /**@internal instance type*/
-        protected _type: number;
-        /**@internal property map*/
-        _propertyMap: {
-            [key: number]: MaterialInstanceProperty;
-        };
         constructor();
-        /**
-         * @internal 检查传入的参数是否符合规则
-         * @param vertexElementFormat 顶点元素
-         * @param propertyName 属性名
-         * @param attributeLocation attribute位置
-         * @param prob 材质属性
-         */
-        private _checkPropertyLegal;
         /**
          * 创建instance属性
          * @param attributeName name
@@ -13839,126 +11188,9 @@ declare namespace Laya {
          */
         clear(): void;
     }
-    /**
-     * @internal
-     * @en SetGlobalShaderDataCMD class is used to create a command for setting global shader data.
-     * @zh SetGlobalShaderDataCMD 类用于创建设置全局着色器数据的指令。
-     */
-    class SetGlobalShaderDataCMD extends Command {
-        /**
-         * @internal
-         * @en Creates a SetGlobalShaderDataCMD instance.
-         * @param nameID The ID of the shader property name.
-         * @param value The value to set for the shader property.
-         * @param shaderDataType The type of shader data.
-         * @param commandBuffer The command buffer to which this command will be added.
-         * @returns A new SetGlobalShaderDataCMD instance.
-         * @zh 创建一个 SetGlobalShaderDataCMD 实例。
-         * @param nameID 着色器属性名称的ID。
-         * @param value 要为着色器属性设置的值。
-         * @param shaderDataType 着色器数据的类型。
-         * @param commandBuffer 将添加此命令的命令缓冲区。
-         * @returns 一个新的 SetGlobalShaderDataCMD 实例。
-         */
-        static create(nameID: number, value: any, shaderDataType: ShaderDataType, commandBuffer: CommandBuffer): SetGlobalShaderDataCMD;
-    }
-    /**
-     * @internal
-     * @en SetRTCMD used to create a command to set the render target.
-     * @zh SetRTCMD 类用于创建设置渲染目标指令。
-     */
-    class SetRTCMD extends Command {
-        private static readonly _pool;
-        /**
-         * @internal
-         * @en Creates a SetRTCMD instance.
-         * @param renderTexture The render texture to set.
-         * @param clearColor Whether to clear the color buffer.
-         * @param clearDepth Whether to clear the depth buffer.
-         * @param clearStencil Whether to clear the stencil buffer.
-         * @param backgroundColor The background color to clear with.
-         * @param depth The depth value to clear with. Default is 1.
-         * @param stencil The stencil value to clear with. Default is 0.
-         * @param commandBuffer The command buffer to which this command will be added.
-         * @zh 创建一个 SetRTCMD 实例。
-         * @param renderTexture 要设置的渲染纹理。
-         * @param clearColor 是否清除颜色缓冲区。
-         * @param clearDepth 是否清除深度缓冲区。
-         * @param clearStencil 是否清除模板缓冲区。
-         * @param backgroundColor 用于清除的背景颜色。
-         * @param depth 用于清除的深度值。默认为1。
-         * @param stencil 用于清除的模板值。默认为0。
-         * @param commandBuffer 将添加此命令的命令缓冲区。
-         */
-        static create(renderTexture: RenderTexture, clearColor: boolean, clearDepth: boolean, clearStencil: boolean, backgroundColor: Color, depth: number, stencil: number, commandBuffer: CommandBuffer): SetRTCMD;
-        /**@internal */
-        private _renderTexture;
-        /**@internal */
-        _setRenderTargetCMD: SetRenderTargetCMD;
-        /**
-         * @en The render texture.
-         * @zh 渲染纹理。
-         */
-        get renderTexture(): RenderTexture;
-        set renderTexture(value: RenderTexture);
-        constructor();
-        /**
-         * @override
-         * @internal
-         * @en Retrieves the render command.
-         * @zh 获取渲染命令。
-         */
-        getRenderCMD(): SetRenderTargetCMD;
-        /**
-         * @inheritDoc
-         * @override
-         * @en Recycles the command object for later use.
-         * @zh 回收命令以便复用。
-         */
-        recover(): void;
-    }
-    /**
-     * @internal
-     * <code>SetShaderDataTextureCMD</code> 类用于创建设置渲染目标指令。
-     */
-    class SetShaderDataCMD extends Command {
-        static readonly ShaderDataType_define: number;
-        /**@internal */
-        private static readonly _pool;
-        /**@internal */
-        _setRenderDataCMD: SetRenderDataCMD;
-        /**
-         * @internal
-         */
-        static create(shaderData: ShaderData, nameID: number, value: ShaderDataItem, shaderDataType: ShaderDataType, commandBuffer: CommandBuffer): SetShaderDataCMD;
-        constructor();
-        /**
-         * @override
-         * @internal
-         * @returns
-         */
-        getRenderCMD(): SetRenderDataCMD;
-        /**
-         * @inheritDoc
-         * @override
-         */
-        recover(): void;
-    }
     class SetDefineCMD extends Command {
         private static readonly _pool;
-        /**@internal */
-        _setRenderDefineCMD: SetShaderDefineCMD;
-        /**
-         * @internal
-         */
-        static create(shaderData: ShaderData, define: ShaderDefine, addDefine: boolean, commandBuffer: CommandBuffer): SetDefineCMD;
         constructor();
-        /**
-         * @override
-         * @internal
-         * @returns
-         */
-        getRenderCMD(): SetShaderDefineCMD;
         /**
          * @inheritDoc
          * @override
@@ -13970,34 +11202,13 @@ declare namespace Laya {
      * @zh `InstanceRenderElement` 类用于实例化渲染。
      */
     class InstanceRenderElement extends RenderElement {
-        /** @internal */
-        static readonly maxInstanceCount: number;
         private static readonly _pool;
         /**
          * @en Creates an instance of `InstanceRenderElement`, reusing from the pool if available.
          * @zh 创建 `InstanceRenderElement` 的实例，如果池中有可用的实例则重用。
          */
         static create(): InstanceRenderElement;
-        /**@internal */
-        _instanceBatchElementList: FastSinglelist<RenderElement>;
-        /**@internal */
-        _isInPool: boolean;
-        /**
-         * @internal
-         * 判断是否需要更新数据
-         * */
-        _isUpdataData: boolean;
-        /** @internal */
-        _invertFrontFace: boolean;
-        /**@internal recover renderData*/
-        private oriRendertype;
-        /**@internal */
-        private _InvertFront;
         constructor();
-        /**
-         * @internal
-         */
-        getInvertFront(): boolean;
         set InvertFront(value: boolean);
         protected _createRenderElementOBJ(): void;
         /** @ignore */
@@ -14022,54 +11233,6 @@ declare namespace Laya {
      * @zh `PostProcess` 类用于创建后期处理组件。
      */
     class PostProcess {
-        /**@internal */
-        static SHADERDEFINE_BLOOM_LOW: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_BLOOM: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_FINALPASS: ShaderDefine;
-        /**@internal */
-        static SHADERVALUE_MAINTEX: number;
-        /**@internal */
-        static SHADERVALUE_BLOOMTEX: number;
-        /**@internal */
-        static SHADERVALUE_AUTOEXPOSURETEX: number;
-        /**@internal */
-        static SHADERVALUE_BLOOM_DIRTTEX: number;
-        /**@internal */
-        static SHADERVALUE_BLOOMTEX_TEXELSIZE: number;
-        /**@internal */
-        static SHADERVALUE_BLOOM_DIRTTILEOFFSET: number;
-        /**@internal */
-        static SHADERVALUE_BLOOM_SETTINGS: number;
-        /**@internal */
-        static SHADERVALUE_BLOOM_COLOR: number;
-        /**
-         * @internal
-         */
-        static __init__(): void;
-        /**@internal */
-        private _compositeShaderData;
-        /**@internal */
-        private _effects;
-        /**@internal */
-        private _enable;
-        /**@internal */
-        private _depthtextureFlag;
-        /**
-         * @internal
-         * @en Color Effect
-         * @zh 调色Effect
-         */
-        _ColorGradEffect: ColorGradEffect;
-        /**
-         * @internal
-         * @en Whether to enable the color effect.
-         * @zh 是否开启调色Effect
-         */
-        _enableColorGrad: boolean;
-        /**@internal */
-        _context: PostProcessRenderContext;
         /**
          * 重新计算CameraFlag
          */
@@ -14086,11 +11249,6 @@ declare namespace Laya {
         get enable(): boolean;
         set enable(value: boolean);
         /**
-         * 设置渲染状态
-         * @internal
-         */
-        set commandContext(oriContext: RenderContext3D);
-        /**
          * @en Set the array of post-process effects.IDE main
          * @zh 设置后期处理效果数组。
          */
@@ -14101,14 +11259,6 @@ declare namespace Laya {
          * @zh 后期处理所需的相机深度纹理模式。
          */
         get cameraDepthTextureMode(): DepthTextureMode;
-        /**
-         *@internal
-         */
-        _init(camera: Camera): void;
-        /**
-         * @internal
-         */
-        _render(camera: Camera): void;
         /**
          * @en Add a post-processing effect.
          * @param effect The post-processing effect to add.
@@ -14137,12 +11287,6 @@ declare namespace Laya {
          * @zh 清理所有后期处理效果。
          */
         clearEffect(): void;
-        /**
-         * @internal
-         * @en Call the instruction set.
-         * @zh 调用指令集。
-         */
-        _applyPostProcessCommandBuffers(): void;
     }
     /**
      * @en Used to create post-processing rendering effects.
@@ -14156,12 +11300,6 @@ declare namespace Laya {
          * @ignore
          */
         constructor();
-        /**
-         * @internal
-         * @en Whether only one instance of the effect can be added.
-         * @zh 是否只能添加一个效果实例。
-         */
-        get singleton(): boolean;
         /**
          * @en Whether the effect is enabled.
          * @zh 效果是否开启。
@@ -14281,38 +11419,14 @@ declare namespace Laya {
          * @zh 渲染区域的高度。
          */
         static clientHeight: number;
-        /** @internal */
-        static GammaCorrect: ShaderDefine;
-        /**@internal */
-        static __init__(): void;
-        /** @internal */
-        viewMatrix: Matrix4x4;
-        /**@internal */
-        customShader: Shader3D;
-        /**@internal */
-        replaceTag: string;
-        /** @internal */
-        projectionMatrix: Matrix4x4;
-        /** @internal */
-        projectionViewMatrix: Matrix4x4;
         private _camera;
         get camera(): Camera;
         set camera(value: Camera);
-        /**@internal */
-        _scene: Scene3D;
         /**
          * @en The rendering pipeline mode.
          * @zh 渲染管线模式
          */
         configPipeLineMode: PipelineMode;
-        /**@internal contextOBJ*/
-        _contextOBJ: IRenderContext3D;
-        /**
-         * @internal
-         * @en The destination render target.
-         * @zh 目标渲染目标。
-         */
-        set destTarget(value: IRenderTarget);
         /**
          * @en The viewport for rendering.
          * @zh 渲染视口。
@@ -14323,11 +11437,7 @@ declare namespace Laya {
          * @zh 渲染裁剪矩形。
          */
         set scissor(value: Vector4);
-        /** @internal */
-        get invertY(): boolean;
         set invertY(value: boolean);
-        /** @internal */
-        get pipelineMode(): PipelineMode;
         set pipelineMode(value: PipelineMode);
         /**
          * @en The camera shader data.
@@ -14335,12 +11445,6 @@ declare namespace Laya {
          */
         get cameraShaderValue(): ShaderData;
         set cameraShaderValue(value: ShaderData);
-        /**
-         * @internal
-         * @en The current scene.
-         * @zh 当前场景。
-         */
-        get scene(): Scene3D;
         set scene(value: Scene3D);
         /**
          * @en Changes the viewport.
@@ -14396,24 +11500,6 @@ declare namespace Laya {
          * @zh 可提交底层的渲染节点
          */
         _renderElementOBJ: IRenderElement3D;
-        /** @internal */
-        _geometry: GeometryElement;
-        /** @internal */
-        _material: Material;
-        /** @internal */
-        _baseRender: BaseRender;
-        /**@internal */
-        _subShader: SubShader;
-        /**@internal */
-        _subShaderIndex: number;
-        /**@internal */
-        _transform: Transform3D;
-        /**
-         * @internal
-         * @en The transform of the render element.
-         * @zh 渲染元素的变换。
-         */
-        get transform(): Transform3D;
         set transform(value: Transform3D);
         /**
          * @en The material of the render element.
@@ -14433,12 +11519,6 @@ declare namespace Laya {
          */
         get subShaderIndex(): number;
         set subShaderIndex(value: number);
-        /**
-         * @internal
-         * @en The BaseRender of the render element.
-         * @zh 渲染元素的 BaseRender。
-         */
-        get render(): BaseRender;
         set render(value: BaseRender);
         /**@ignore */
         constructor();
@@ -14457,23 +11537,6 @@ declare namespace Laya {
          * @param geometry 要设置的几何信息。
          */
         setGeometry(geometry: GeometryElement): void;
-        /**
-         * @internal
-         */
-        destroy(): void;
-    }
-    /**
-     * @internal
-     */
-    class SkinRenderElement extends RenderElement {
-        /**
-         * 可提交底层的渲染节点
-         */
-        _renderElementOBJ: WebGLSkinRenderElement3D;
-        setSkinData(value: Float32Array[]): void;
-        constructor();
-        protected _createRenderElementOBJ(): void;
-        _render(context: IRenderContext3D): void;
     }
     /**
      * @en The `SkyRenderElement` class is a render element that represents the sky.
@@ -14526,43 +11589,10 @@ declare namespace Laya {
      * @zh `Sprite3DRenderDeclaration` 类包含了3D精灵渲染中使用的着色器定义。
      */
     class Sprite3DRenderDeclaration {
-        /**@internal */
-        static SHADERDEFINE_GI_LEGACYIBL: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_IBL_RGBD: ShaderDefine;
         /**
          * @en Box reflection macro
          * @zh 盒子反射宏 */
         static SHADERDEFINE_SPECCUBE_BOX_PROJECTION: ShaderDefine;
-    }
-    /**
-     * @internal
-     */
-    class SubMeshRenderElement extends RenderElement {
-        private _dynamicWorldPositionNormalNeedUpdate;
-        /** @internal */
-        staticBatchIndexStart: number;
-        /** @internal */
-        staticBatchIndexEnd: number;
-        /** @internal */
-        staticBatchElementList: FastSinglelist<SubMeshRenderElement>;
-        /** @internal */
-        instanceSubMesh: SubMesh;
-        /** @internal */
-        instanceBatchElementList: FastSinglelist<SubMeshRenderElement>;
-        /** @internal */
-        vertexBatchElementList: FastSinglelist<SubMeshRenderElement>;
-        /** @internal */
-        vertexBatchVertexDeclaration: VertexDeclaration;
-        /**
-         * @ignore
-         * 创建一个 <code>SubMeshRenderElement</code> 实例。
-         */
-        constructor();
-        private _onWorldMatrixChanged;
-        setTransform(transform: Transform3D): void;
-        setGeometry(geometry: GeometryElement): void;
-        destroy(): void;
     }
     /**
      * @deprecated
@@ -14587,51 +11617,6 @@ declare namespace Laya {
         static SHADERDEFINE_MORPHTARGET_POSITION: ShaderDefine;
         static SHADERDEFINE_MORPHTARGET_NORMAL: ShaderDefine;
         static SHADERDEFINE_MORPHTARGET_TANGENT: ShaderDefine;
-        /** @internal */
-        static MorphTex: number;
-        /** @internal */
-        static MorphParams: number;
-        /** @internal */
-        static MorphAttriOffset: number;
-        /** @internal */
-        static MorphActiceTargets: number;
-        /** @internal */
-        static MorphActiveCount: number;
-        /**
-         * @deprecated
-         * @internal
-         */
-        static AMBIENTSHAR: number;
-        /**
-         * @deprecated
-         * @internal
-         */
-        static AMBIENTSHAG: number;
-        /**
-         * @deprecated
-         * @internal
-         */
-        static AMBIENTSHAB: number;
-        /**
-         * @deprecated
-         * @internal
-         */
-        static AMBIENTSHBR: number;
-        /**
-        * @deprecated
-        * @internal
-        */
-        static AMBIENTSHBG: number;
-        /**
-        * @deprecated
-        * @internal
-        */
-        static AMBIENTSHBB: number;
-        /**
-        * @deprecated
-        * @internal
-        */
-        static AMBIENTSHC: number;
         /**
          * @deprecated
          *  反射贴图
@@ -14643,45 +11628,10 @@ declare namespace Laya {
          */
         static REFLECTIONCUBE_HDR_PARAMS: number;
         /**
-         * @internal
-         */
-        static __init__(): void;
-        /** @internal */
-        _render: BaseRender;
-        /**
          * @deprecated
          * 创建一个 <code>RenderableSprite3D</code> 实例。
          */
         constructor(name: string);
-        /**
-         * @internal
-         * @inheritDoc
-         */
-        protected _onInActive(): void;
-        /**
-         * @internal
-         * @inheritDoc
-         */
-        protected _onActive(): void;
-        /**
-         * @internal
-         * @inheritDoc
-         */
-        protected _onActiveInScene(): void;
-        /**
-         * @internal
-         */
-        _addToInitStaticBatchManager(): void;
-        /**
-         * @inheritDoc
-         * @internal
-         */
-        _setBelongScene(scene: Node): void;
-        /**
-         * @inheritDoc
-         * @internal
-         */
-        _setUnBelongScene(): void;
     }
     /**
      * @en Environment light mode.
@@ -14704,10 +11654,6 @@ declare namespace Laya {
      * @zh 光照贴图。
      */
     class Lightmap {
-        /**@internal */
-        static ApplyLightmapEvent: string;
-        /**@internal */
-        _dataModule: ILightMapData;
         private _lightmapColor;
         /**
          * @en The color of the lightmap.
@@ -14723,10 +11669,6 @@ declare namespace Laya {
          */
         get lightmapDirection(): Texture2D;
         set lightmapDirection(value: Texture2D);
-        /**
-         * @internal
-         */
-        constructor();
     }
     enum FogMode {
         Linear = 0,
@@ -14740,61 +11682,8 @@ declare namespace Laya {
     class Scene3D extends Sprite {
         private static _lightTexture;
         private static _lightPixles;
-        /** @internal */
-        static _shadowCasterPass: ShadowCasterPass;
-        /**@internal */
-        static physicsSettings: PhysicsSettings;
-        /** Scene UniformPropertyID */
-        /** @internal */
-        static FOGCOLOR: number;
-        /** @internal */
-        static FOGPARAMS: number;
-        /** @internal */
-        static DIRECTIONLIGHTCOUNT: number;
-        /** @internal */
-        static LIGHTBUFFER: number;
-        /** @internal */
-        static CLUSTERBUFFER: number;
-        /** @internal */
-        static SUNLIGHTDIRECTION: number;
-        /** @internal */
-        static SUNLIGHTDIRCOLOR: number;
-        /** @internal */
-        static AMBIENTCOLOR: number;
-        /** @internal */
-        static TIME: number;
-        /**@internal */
-        static GIRotate: number;
         /**Scene3D UniformMap */
         static sceneUniformMap: CommandUniformMap;
-        /** @internal */
-        static LIGHTDIRECTION: number;
-        /** @internal */
-        static LIGHTDIRCOLOR: number;
-        /** @internal */
-        static LIGHTMODE: number;
-        /** @internal */
-        static POINTLIGHTPOS: number;
-        /** @internal */
-        static POINTLIGHTRANGE: number;
-        /** @internal */
-        static POINTLIGHTCOLOR: number;
-        /** @internal */
-        static POINTLIGHTMODE: number;
-        /** @internal */
-        static SPOTLIGHTPOS: number;
-        /** @internal */
-        static SPOTLIGHTDIRECTION: number;
-        /** @internal */
-        static SPOTLIGHTSPOTANGLE: number;
-        /** @internal */
-        static SPOTLIGHTRANGE: number;
-        /** @internal */
-        static SPOTLIGHTCOLOR: number;
-        /** @internal */
-        static SPOTLIGHTMODE: number;
-        /**@internal */
-        static mainCavansViewPort: Viewport;
         /**
          * @en Scene component management table
          * @zh 场景组件管理表
@@ -14805,7 +11694,7 @@ declare namespace Laya {
          * @zh 场景更新标记。
          */
         static get _updateMark(): number;
-        /** @internal 场景更新标记 */
+        /** 场景更新标记 */
         static set _updateMark(value: number);
         /**
          * @en Registers a manager within the scene.
@@ -14817,25 +11706,6 @@ declare namespace Laya {
          */
         static regManager(type: string, cla: new () => IElementComponentManager): void;
         /**
-         * @en init shaderData
-         * @zh 着色器数据初始化
-         * @internal
-         */
-        static shaderValueInit(): void;
-        /**
-         * @en Initializes legacy lighting values for the ShaderData.
-         * This function sets up the uniform mappings between the shader and the scene for various types of lights,
-         * including directional lights, point lights, and spotlights.
-         * @zh 初始化 ShaderData 的传统光照值。
-         * 此函数为各种类型的灯光（包括方向光、点光源和聚光灯）设置着色器与场景之间的统一映射。
-         * @internal
-         */
-        static legacyLightingValueInit(): void;
-        /**
-         * @internal
-         */
-        static __init__(): void;
-        /**
          * @deprecated 请使用Loader.load(url:string, type: ILaya.Loader.HIERARCHY)
          * @en Loads the scene, note: not cached.
          * @param url The template address.
@@ -14845,68 +11715,6 @@ declare namespace Laya {
          * @param complete 完成回调。
          */
         static load(url: string, complete: Handler): void;
-        /**@internal ide配置文件使用 */
-        _reflectionsSource: number;
-        /**@internal ide配置文件使用 */
-        _reflectionsResolution: string;
-        /**@internal ide配置文件使用 */
-        _reflectionsIblSamples: number;
-        /** @internal */
-        private _group;
-        /** @internal */
-        _lightCount: number;
-        /** @internal */
-        _pointLights: LightQueue<PointLightCom>;
-        /** @internal */
-        _spotLights: LightQueue<SpotLightCom>;
-        /** @internal */
-        _directionLights: LightQueue<DirectionLightCom>;
-        /** @internal */
-        _alternateLights: AlternateLightQueue;
-        /** @internal */
-        private _lightmaps;
-        /** @internal */
-        private _skyRenderer;
-        /** @internal */
-        private _enableFog;
-        /** @internal */
-        private _timer;
-        /** @internal */
-        private _time;
-        /** @internal */
-        private _fogParams;
-        /** @internal */
-        private _fogMode;
-        /**@internal */
-        private _sceneReflectionProb;
-        /**@internal */
-        private _physicsStepTime;
-        /**@internal */
-        _sunColor: Color;
-        /**@internal */
-        _sundir: Vector3;
-        /** @internal */
-        _mainDirectionLight: DirectionLightCom;
-        /** @internal */
-        _mainSpotLight: SpotLightCom;
-        /** @internal */
-        _mainPointLight: PointLightCom;
-        /** @internal */
-        _physicsManager: IPhysicsManager;
-        /** @internal 只读,不允许修改。*/
-        _collsionTestList: number[];
-        /** @internal */
-        _shaderValues: ShaderData;
-        /** @internal */
-        _key: SubmitKey;
-        /** @internal */
-        _cameraPool: BaseCamera[];
-        /** @internal */
-        _volumeManager: VolumeManager;
-        /**@internal */
-        _UI3DManager: UI3DManager;
-        /**@internal */
-        _sceneRenderManager: SceneRenderManager;
         /**
          * @en The mask layer to which the sprite belongs is currently being created.
          * @zh 当前创建精灵所属遮罩层。
@@ -14917,20 +11725,6 @@ declare namespace Laya {
          * @zh 是否启用灯光。
          */
         enableLight: boolean;
-        /**lightShadowMap 更新频率 @internal */
-        _ShadowMapupdateFrequency: number;
-        /** @internal */
-        _nativeObj: any;
-        /** @internal 由IDE负责调用渲染 */
-        _renderByEditor: boolean;
-        /** @internal */
-        _scene2D: Scene;
-        /** @internal */
-        _sceneModuleData: ISceneNodeData;
-        /** @internal */
-        componentElementMap: Map<string, IElementComponentManager>;
-        /** @internal */
-        private _componentElementDatasMap;
         /** @ts-ignore **/
         _children: Sprite3D[];
         /** @ts-ignore **/
@@ -14982,12 +11776,6 @@ declare namespace Laya {
          */
         get fogDensity(): number;
         set fogDensity(value: number);
-        /**
-         * @internal
-         * @en The fog effect parameters.
-         * @zh 雾效参数。
-         */
-        get fogParams(): Vector4;
         set fogParams(value: Vector4);
         /**
          * @en The GI rotation value. The value should be between 0 and 2PI.
@@ -15008,12 +11796,6 @@ declare namespace Laya {
          * @zh 场景反射探针。
          */
         get sceneReflectionProb(): ReflectionProbe;
-        /**
-         * @internal
-         * @en The scene reflection probe.
-         * @zh 场景反射探针。
-         */
-        set sceneReflectionProb(value: ReflectionProbe);
         /**
          * @en The fixed color ambient light.
          * @zh 固定颜色环境光。
@@ -15089,29 +11871,9 @@ declare namespace Laya {
          * @zh 组件元素数据映射表。
          */
         get componentElementDatasMap(): any;
-        /** @internal */
-        set componentElementDatasMap(value: any);
-        /** @internal */
-        _setStructParent(value: Sprite): void;
-        /**
-         * @internal
-         */
-        _update(): void;
-        /**
-         * @internal
-         */
-        private _binarySearchIndexInCameraPool;
-        /**
-         * @internal
-         */
-        _getGroup(): string;
-        /**
-         * @internal
-         */
-        _setGroup(value: string): void;
         protected _onActive(): void;
         protected _onInActive(): void;
-        private _prepareSceneToRender;
+        protected _prepareSceneToRender(): void;
         private _cullInfoCamera;
         /**
          * @en The culling camera used for determining the visibility of scene elements.
@@ -15119,32 +11881,10 @@ declare namespace Laya {
          */
         get cullInfoCamera(): Camera;
         /**
-         * @internal
-         * scence外的Camera渲染场景,需要设置这个接口
-         * @param camera
-         */
-        _setCullCamera(camera: Camera): void;
-        /**
          * @en Recalculate the culling camera.
          * @zh 重新计算剔除摄像机。
          */
         recaculateCullCamera(): void;
-        /**
-         * @internal
-         */
-        _addCamera(camera: BaseCamera): void;
-        /**
-         * @internal
-         */
-        _removeCamera(camera: BaseCamera): void;
-        /**
-         * @internal
-         */
-        _addRenderObject(render: BaseRender): void;
-        /**
-         * @internal
-         */
-        _removeRenderObject(render: BaseRender): void;
         _setBelongScene(scene: Node): void;
         /**
          * @en Destroys the scene.
@@ -15165,14 +11905,6 @@ declare namespace Laya {
          * @zh 渲染入口
          */
         renderSubmit(): void;
-        /**
-         * @internal
-         * @param source
-         * @param normalizeViewPort
-         * @param camera
-         * @returns
-         */
-        blitMainCanvas(source: BaseTexture, normalizeViewPort: Viewport, camera: Camera): void;
         /**
          * @en Sets a global shader value for rendering.
          * @param name The name corresponding to the shader.
@@ -15204,50 +11936,11 @@ declare namespace Laya {
         getlightmaps(): Texture2D[];
     }
     /**
-     * @internal
-     * @en The collection of scene shader macros.
-     * @zh 场景宏集合
-     */
-    class Scene3DShaderDeclaration {
-        /**@internal */
-        static SHADERDEFINE_FOG: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_FOG_LINEAR: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_FOG_EXP: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_FOG_EXP2: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_DIRECTIONLIGHT: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_POINTLIGHT: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_SPOTLIGHT: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_SHADOW: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_SHADOW_CASCADE: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_SHADOW_SOFT_SHADOW_LOW: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_SHADOW_SOFT_SHADOW_HIGH: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_SHADOW_SPOT: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_SHADOW_SPOT_SOFT_SHADOW_LOW: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_SHADOW_SPOT_SOFT_SHADOW_HIGH: ShaderDefine;
-    }
-    /**
      * @en The class is used to implement scene rendering node management.
      * @zh 该类用于实现场景渲染节点的管理。
      * @blueprintIgnore
      */
     class SceneRenderManager {
-        /**@internal */
-        _sceneManagerOBJ: ISceneRenderManager;
-        /** @internal */
-        _list: SingletonList<BaseRender>;
         /**
          * @ignore
          * @en Creates an instance of SceneRenderManager.
@@ -15306,8 +11999,6 @@ declare namespace Laya {
     }
     class SimpleSkinnedMeshRenderer extends SkinnedMeshRenderer {
         private _simpleAnimatorTexture;
-        /**@internal */
-        _simpleAnimatorParams: Vector4;
         private _simpleAnimatorTextureSize;
         /**  x simpleAnimation offset,y simpleFrameOffset*/
         private _simpleAnimatorOffset;
@@ -15323,16 +12014,6 @@ declare namespace Laya {
          */
         get simpleAnimatorTexture(): Texture2D;
         set simpleAnimatorTexture(value: Texture2D);
-        /**
-         * @internal
-         * @en The animator params
-         * @zh 设置动画帧数参数
-         */
-        get simpleAnimatorOffset(): Vector2;
-        /**
-         * @internal
-         */
-        set simpleAnimatorOffset(value: Vector2);
         protected _isISkinRenderNode(): any;
         /**
          * @ignore
@@ -15352,14 +12033,6 @@ declare namespace Laya {
          */
         renderUpdate(context: RenderContext3D): void;
         /**
-         *@internal
-         */
-        _createRenderElement(): SubMeshRenderElement;
-        /**
-         * @internal
-         */
-        _computeAnimatorParamsData(): void;
-        /**
          * @en Set custom data
          * @param value1 Custom data 1
          * @param value2 Custom data 2
@@ -15368,16 +12041,6 @@ declare namespace Laya {
          * @param value2 自定义数据1
          */
         setCustomData(value1: number, value2?: number): void;
-        /**
-        *@internal
-        */
-        _onMeshChange(value: Mesh): void;
-        /**
-         * @internal
-         * 克隆到目标
-         * @param dest 目标
-         */
-        _cloneTo(dest: SimpleSkinnedMeshRenderer): void;
         /**
          * 删除节点
          */
@@ -15388,16 +12051,10 @@ declare namespace Laya {
      * @zh `SimpleSkinnedMeshSprite3D` 类用于创建简单网格。
      */
     class SimpleSkinnedMeshSprite3D extends RenderableSprite3D {
-        /**@internal */
-        static _tempArray0: any[];
         /** */
         static SIMPLE_SIMPLEANIMATORTEXTURE: number;
         static SIMPLE_SIMPLEANIMATORPARAMS: number;
         static SIMPLE_SIMPLEANIMATORTEXTURESIZE: number;
-        /**
-         * @internal
-         */
-        static __init__(): void;
         private _meshFilter;
         /**
          * @en The mesh filter component.
@@ -15425,26 +12082,8 @@ declare namespace Laya {
      * @zh `SkinnedMeshRenderer` 类用于蒙皮网格渲染。
      */
     class SkinnedMeshRenderer extends MeshRenderer {
-        /**
-          * @en Shader variable name for skinned animation.
-          * @zh 着色器变量名，用于蒙皮动画。
-          * @internal
-          */
-        static BONES: number;
-        /**
-         * @internal
-         */
-        static __init__(): void;
         protected _cacheMesh: Mesh;
         protected __bones: Sprite3D[];
-        /**@internal 不可删  IDE数据在这里*/
-        get _bones(): Sprite3D[];
-        /**@internal */
-        set _bones(value: Sprite3D[]);
-        /**@internal */
-        _renderElements: RenderElement[];
-        /** @internal */
-        _skinnedData: any[];
         protected _localBounds: Bounds;
         protected _cacheRootBone: Sprite3D;
         protected _worldParams: Vector4;
@@ -15478,34 +12117,7 @@ declare namespace Laya {
          */
         protected _createBaseRenderNode(): IBaseRenderNode;
         protected _getcommonUniformMap(): Array<string>;
-        /**
-        * @inheritDoc
-        * @internal
-        */
-        _needRender(boundFrustum: BoundFrustum, context: RenderContext3D): boolean;
-        /**
-         *@inheritDoc
-         *@internal
-         */
-        _createRenderElement(): RenderElement;
         protected _isISkinRenderNode(): any;
-        /**
-         * @internal
-         */
-        _onSkinMeshChange(mesh: Mesh): void;
-        /**
-        *@internal
-        */
-        _onMeshChange(value: Mesh): void;
-        /**
-         * @internal
-         * @param scene 场景类
-         */
-        _setBelongScene(scene: Scene3D): void;
-        /**
-         * @internal
-         */
-        _setUnBelongScene(): void;
         protected _statAdd(): void;
         protected _statRemove(): void;
         /**
@@ -15523,8 +12135,6 @@ declare namespace Laya {
      * @zh `SkinnedMeshSprite3D` 类用于绑点骨骼节点精灵。
      */
     class SkinnedMeshSprite3D extends RenderableSprite3D {
-        /**@internal */
-        static _tempArray0: any[];
         private _meshFilter;
         /**
          * @en Mesh filter component.
@@ -15571,13 +12181,6 @@ declare namespace Laya {
         static SHADERDEFINE_SIMPLEBONE: ShaderDefine;
     }
     /**
-     * @internal
-     */
-    enum StaticFlag {
-        Normal = 1,
-        StaticBatch = 2
-    }
-    /**
      * @en The `Sprite3D` class is used to implement 3D sprites.
      * @zh `Sprite3D` 类用于实现3D精灵。
      */
@@ -15594,12 +12197,6 @@ declare namespace Laya {
          * @readonly
          */
         static WORLDINVERTFRONT: number;
-        /** @internal */
-        static sprite3DCommandUniformMap: CommandUniformMap;
-        /**
-         * @internal
-         */
-        static __init__(): void;
         /**
          * @en Create a clone instance of the sprite.
          * @param original The original sprite.
@@ -15629,14 +12226,6 @@ declare namespace Laya {
          */
         static load(url: string, complete: Handler): void;
         private _id;
-        /** @internal */
-        _isStatic: number;
-        /** @internal */
-        _layer: number;
-        /**@internal */
-        _transform: Transform3D;
-        /**@internal 0表示不是渲染节点*/
-        _isRenderNode: number;
         _children: Sprite3D[];
         _scene: Scene3D;
         /**
@@ -15655,8 +12244,6 @@ declare namespace Laya {
          * @zh 是否为静态。
          */
         get isStatic(): boolean;
-        /**@internal IDE only*/
-        set isStatic(value: boolean);
         /**
          * @en Sprite transformation.
          * @zh 精灵变换。
@@ -15681,12 +12268,6 @@ declare namespace Laya {
         protected _onAdded(): void;
         protected _onRemoved(): void;
         protected onStartListeningToType(type: string): void;
-        /**
-         * @internal
-         * 克隆。
-         * @param destObject 克隆源。
-         */
-        _cloneTo(destObject: Sprite3D, srcRoot: Node, dstRoot: Node): void;
         private static _createSprite3DInstance;
         private static _parseSprite3DInstance;
         /**
@@ -15709,71 +12290,11 @@ declare namespace Laya {
      * @zh `Transform3D` 类用于实现3D变换。
      */
     class Transform3D extends EventDispatcher {
-        /**@internal */
-        static TRANSFORM_LOCALQUATERNION: number;
-        /**@internal */
-        static TRANSFORM_LOCALEULER: number;
-        /**@internal */
-        static TRANSFORM_LOCALMATRIX: number;
-        /**@internal */
-        static TRANSFORM_WORLDPOSITION: number;
-        /**@internal */
-        static TRANSFORM_WORLDQUATERNION: number;
-        /**@internal */
-        static TRANSFORM_WORLDSCALE: number;
-        /**@internal */
-        static TRANSFORM_WORLDMATRIX: number;
-        /**@internal */
-        static TRANSFORM_WORLDEULER: number;
-        /**@internal */
-        static TRANSFORM_LOCALPOS: number;
-        /**@internal */
-        static TRANSFORM_LOCALSCALE: number;
-        /**@internal */
-        static _angleToRandin: number;
-        /** @internal */
-        protected _owner: Sprite3D;
-        /** @internal */
-        protected _localPosition: Vector3;
-        /** @internal */
-        protected _localRotation: Quaternion;
-        /** @internal */
-        protected _localScale: Vector3;
-        /**@internal */
-        protected _localRotationEuler: Vector3;
-        /** @internal */
-        protected _localMatrix: Matrix4x4;
-        /** @internal */
-        protected _position: Vector3;
-        /** @internal */
-        protected _rotation: Quaternion;
-        /** @internal */
-        protected _scale: Vector3;
-        /**@internal */
-        protected _rotationEuler: Vector3;
-        /** @internal */
-        protected _worldMatrix: Matrix4x4;
-        /** @internal */
-        _children: Transform3D[] | null;
-        /**@internal 如果为true 表示自身相对于父节点并无任何改变，将通过这个参数忽略计算*/
-        protected _isDefaultMatrix: boolean;
-        /**@internal */
-        protected _faceInvert: boolean;
-        /**@internal */
-        protected _frontFaceValue: number;
-        /** @internal */
-        _parent: Transform3D | null;
-        /**@internal */
-        private _transformFlag;
         /**
          * @en Whether it is the default matrix. If `true`, it indicates that there is no change relative to the parent node, and calculations will be skipped based on this parameter.
          * @zh 是否为默认矩阵，如果为true，表示自身相对于父节点并无任何改变，将通过这个参数忽略计算。
          */
         get isDefaultMatrix(): boolean;
-        /**
-         * @internal
-         */
-        get _isFrontFaceInvert(): boolean;
         /**
          * @en Whether the front face is clockwise.
          * @zh 获取是否前向顺时针面。
@@ -15922,55 +12443,7 @@ declare namespace Laya {
          */
         get worldMatrix(): Matrix4x4;
         set worldMatrix(value: Matrix4x4);
-        /**
-         * @internal
-         * @en Creates an instance of Transform3D.
-         * @param owner The sprite of the owner.
-         * @zh 创建一个 Transform3D 的实例。
-         * @param owner 所属精灵。
-         */
-        constructor(owner: Sprite3D);
         protected _initProperty(): void;
-        /**
-         * @internal
-         */
-        _getScaleMatrix(): Matrix3x3;
-        /**
-         * @internal
-         */
-        protected _setTransformFlag(type: number, value: boolean): void;
-        /**
-         * @internal
-         */
-        protected _getTransformFlag(type: number): boolean;
-        /**
-         * @internal
-         */
-        _setParent(value: Transform3D): void;
-        /**
-         * @internal
-         */
-        protected _onWorldPositionRotationTransform(): void;
-        /**
-         * @internal
-         */
-        protected _onWorldPositionScaleTransform(): void;
-        /**
-         * @internal
-         */
-        protected _onWorldPositionTransform(): void;
-        /**
-         * @internal
-         */
-        protected _onWorldRotationTransform(): void;
-        /**
-         * @internal
-         */
-        protected _onWorldScaleTransform(): void;
-        /**
-         * @internal
-         */
-        _onWorldTransform(): void;
         /**
          * @en Perform translation transformation.
          * @param translation The distance to move.
@@ -16121,20 +12594,12 @@ declare namespace Laya {
          * @deprecated
          */
         set scale(value: Vector3);
-        /** @internal @blueprintEvent */
-        Transform3D_bpEvent: {
-            [Event.TRANSFORM_CHANGED]: (flag: number) => void;
-        };
     }
     /**
      * @en UI3D class, used to create 3D UI components.
      * @zh UI3D类，用于创建3D UI组件。
      */
     class UI3D extends BaseRender {
-        /**@internal */
-        static DEBUG: boolean;
-        /**@internal */
-        static _ray: Ray;
         private _shellSprite;
         private _uisprite;
         private _ui3DMat;
@@ -16235,10 +12700,6 @@ declare namespace Laya {
         constructor();
         protected _isMaterialVaild(value: Material): boolean;
         private _creatDefaultMat;
-        /**
-         * @internal add renderelement
-         */
-        private _addRenderElement;
         private _isCameraSpaceMode;
         /**
        * 分析碰撞点
@@ -16246,55 +12707,10 @@ declare namespace Laya {
        */
         private _parseHit;
         /**
-         * @internal
-         */
-        private _resizeRT;
-        /**
-         * @internal
-         */
-        onPreRender(): void;
-        /**
          * @en Get the UI rendering texture.
          * @zh 获得ui渲染图
          */
         getUITexture(): BaseTexture;
-        /**
-         * @internal
-         * get camera distance
-         * @param rayOri
-         * @returns
-         */
-        _getCameraDistance(rayOri: Vector3): number;
-        /**
-         * @internal
-         */
-        _renderUpdate(context: IRenderContext3D): void;
-        /**
-         * @internal
-         * @param context
-         */
-        renderUpdate(context: RenderContext3D): void;
-        /**
-         * @internal
-         * 更新Sprite的RT
-         */
-        _submitRT(): void;
-        /**
-         * @internal
-         * 设置材质纹理
-         */
-        _setMaterialTexture(): void;
-        /**
-         * 检测UI事件
-         * @internal
-         * @param ray
-         * @returns
-         */
-        _checkUIPos(ray: Ray): false | Sprite;
-        /**
-         * @internal
-         */
-        _calculateBoundingBox(): void;
         protected _onAdded(): void;
         protected _onDisable(): void;
         protected _onEnable(): void;
@@ -16314,21 +12730,7 @@ declare namespace Laya {
         /**@zh index数据 */
         private _index;
         private _bound;
-        /**@internal */
-        _positionArray: Vector3[];
-        /**
-         * @internal
-         * @en Constructor method.
-         * @zh 构造方法。
-         */
-        constructor(owner: UI3D);
-        /**@internal */
-        get bounds(): Bounds;
         private _createBuffer;
-        /**
-         * @internal
-         */
-        _updateRenderParams(state: RenderContext3D): void;
         /**
          * @en Destroys the instance and releases resources.
          * @zh 销毁实例并释放资源。
@@ -16387,24 +12789,8 @@ declare namespace Laya {
      */
     class DepthPass {
         static SHADOW_BIAS: Vector4;
-        /** @internal */
-        static DEPTHPASS: ShaderDefine;
-        /** @internal */
-        static DEFINE_SHADOW_BIAS: number;
-        /**@internal */
-        static DEPTHTEXTURE: number;
-        /**@internal */
-        static DEPTHNORMALSTEXTURE: number;
-        /**@internal */
-        static DEPTHZBUFFERPARAMS: number;
         private _zBufferParams;
         static __init__(): void;
-        /**@internal */
-        private _depthTexture;
-        /**@internal */
-        private _depthNormalsTexture;
-        /**@internal */
-        private _viewPort;
         /** @ignore */
         constructor();
         /**
@@ -16419,36 +12805,15 @@ declare namespace Laya {
          * @param depthTextureFormat 深度纹理的格式，定义数据的表示方式。
          */
         getTarget(camera: Camera, depthType: DepthTextureMode, depthTextureFormat: RenderTargetFormat): void;
-        /**
-         * @internal
-         * @en Parameters passed after rendering is complete.
-         * @zh 渲染完后传入使用的参数。
-         */
-        _setupDepthModeShaderValue(depthType: DepthTextureMode, camera: Camera): void;
-        /**
-         * @internal
-         * @en Clear the depth data.
-         * @zh 清理深度数据
-         */
-        cleanUp(camera: Camera): void;
     }
-    /**
-     * @internal
-     * @en The `FrustumCulling` class is used for performing frustum culling calculations to determine visibility of objects within the camera's view.
-     * @zh `FrustumCulling` 类用于执行视锥体剔除计算，以确定对象是否在相机视图中可见。
-     */
-    class FrustumCulling {
-        /**
-         * @en Calculates whether the given bounds are culled based on the provided culling information.
-         * @param bounds The bounds to test for culling.
-         * @param cullInfo The culling information containing plane data.
-         * @returns  True if the bounds are not culled and are therefore visible, otherwise false.
-         * @zh 根据提供的剔除信息，计算给定的边界是否被剔除。
-         * @param bounds 要测试剔除的边界。
-         * @param cullInfo 包含剔除平面数据的剔除信息。
-         * @returns 如果边界没有被剔除并且因此可见，则返回 true，否则返回 false。
-         */
-        static cullingRenderBounds(bounds: Bounds, cullInfo: any): boolean;
+    class DeviceBuffer {
+        private _deviceBuffer;
+        get deviceBuffer(): IDeviceBuffer;
+        private _vertexBuffer;
+        private _vertexBuffer3D;
+        get vertexBuffer(): VertexBuffer3D;
+        constructor(byteLength: number, usage: EDeviceBufferUsage);
+        destroy(): void;
     }
     /**
      * @en IndexBuffer3D class is used to create index buffer. Please use LayaGL.RenderOBJCreate.createIndexBuffer3D to create.
@@ -16456,17 +12821,9 @@ declare namespace Laya {
      * @blueprintIgnore
      */
     class IndexBuffer3D {
-        /** @internal */
-        private _canRead;
         private _indexType;
-        /** @internal */
-        private _indexTypeByteCount;
-        /** @internal */
-        private _indexCount;
         _byteLength: number;
         _buffer: Float32Array | Uint16Array | Uint8Array | Uint32Array;
-        /**@internal */
-        _deviceBuffer: IIndexBuffer;
         bufferUsage: BufferUsage;
         /**
          * @en The index type.
@@ -16530,55 +12887,10 @@ declare namespace Laya {
         destroy(): void;
     }
     /**
-     * @internal
-     */
-    class MeshInstanceGeometry extends GeometryElement {
-        private _subMesh;
-        constructor(subMesh: SubMesh);
-        set subMesh(value: SubMesh);
-        get subMesh(): SubMesh;
-        /**
-         * @internal
-         * UpdateGeometry Data
-         */
-        _updateRenderParams(state: RenderContext3D): void;
-    }
-    /**
-     * @internal
-     */
-    class Cluster {
-        static instance: Cluster;
-        private _xSlices;
-        private _ySlices;
-        private _zSlices;
-        private _clusterDatas;
-        private _clusterPixels;
-        private _updateMark;
-        private _depthSliceParam;
-        _clusterTexture: Texture2D;
-        constructor(xSlices: number, ySlices: number, zSlices: number, maxLightsPerClusterAverage: number);
-        private _placePointLightToClusters;
-        private _placeSpotLightToClusters;
-        private _insertConePlane;
-        private _shrinkSphereLightZPerspective;
-        private _shrinkSpotLightZPerspective;
-        private _shrinkSphereLightByBoundOrth;
-        private _shrinkSpotLightByBoundOrth;
-        private _shrinkXYByRadiusPerspective;
-        private _shrinkSpotXYByConePerspective;
-        private _updatePointLightPerspective;
-        private _updateSpotLightPerspective;
-        private _updatePointLightOrth;
-        private _updateSpotLightOrth;
-        update(camera: Camera, scene: Scene3D): void;
-    }
-    /**
      * @en Second-order spherical harmonics function.
      * @zh 二阶球谐函数。
      */
     class SphericalHarmonicsL2 {
-        /** @internal */
-        static _default: SphericalHarmonicsL2;
         private _coefficients;
         /**
          * @en Gets the coefficient for a specific color channel.
@@ -16636,165 +12948,13 @@ declare namespace Laya {
         cloneTo(dest: SphericalHarmonicsL2): void;
     }
     /**
-     * @internal
-     * @en The `SphericalHarmonicsL2Generater` class is used for generating second-order spherical harmonics coefficients.
-     * @zh `SphericalHarmonicsL2Generater` 类用于生成二阶球谐系数。
-     */
-    class SphericalHarmonicsL2Generater {
-        /**
-         * k0: 1/2  * sqrt(1/Pi)
-         * k1: 1/3  * sqrt(3/Pi)
-         * k2: 1/8  * sqrt(15/Pi)
-         * k3: 1/16 * sqrt(5/Pi)
-         * k4: 1/16 * sqrt(15/Pi)
-         * [
-         *  k0,
-         * -k1, k1, k1
-         * k2, -k2, k3, -k2, k4
-         * ]
-         */
-        private static readonly k;
-        /** @internal */
-        static readonly GradientSimulateSize: number;
-        /** @internal */
-        static readonly SH_Count: number;
-        private static _tempSkyPixels;
-        private static _tempEquatorPixels;
-        private static _tempGroundPixels;
-        /**
-         * @internal
-         * @en Calculates the surface area corresponding to the uv coordinates on a sphere.
-         * @param u The u coordinate.
-         * @param v The v coordinate.
-         * @returns The surface area.
-         * @zh 计算球面上uv坐标对应的立体角。
-         * @param u u坐标。
-         * @param v v坐标。
-         * @returns 立体角。
-         */
-        static surfaceArea(u: number, v: number): number;
-        /**
-         * @en Converts uv coordinates to a direction vector based on the cube face.
-         * @param u The u coordinate.
-         * @param v The v coordinate.
-         * @param face The cube map face.
-         * @param out_dir The resulting direction vector.
-         * @zh 根据立方体贴图面将uv坐标转换为方向向量。
-         * @param u u坐标。
-         * @param v v坐标。
-         * @param face 立方体贴图面。
-         * @param out_dir 输出的方向向量。
-         */
-        static uv2Dir(u: number, v: number, face: TextureCubeFace, out_dir: Vector3): void;
-        /**
-         * @internal
-         * @en Evaluates the spherical harmonics function for given coefficients.
-         * @param i The coefficient index.
-         * @param x The x component of the direction vector.
-         * @param y The y component of the direction vector.
-         * @param z The z component of the direction vector.
-         * @returns The evaluated value.
-         * @zh 根据给定的系数评估球谐函数。
-         * @param i 系数索引。
-         * @param x 方向向量的x分量。
-         * @param y 方向向量的y分量。
-         * @param z 方向向量的z分量。
-         * @returns 评估值。
-         */
-        static sh_eval_9(i: number, x: number, y: number, z: number): number;
-        /**
-         * @internal
-         * @en Calculates the ambient light coefficients from cubemap pixel values.
-         * @param cubemapPixels The cubemap pixel data for each face.
-         * @param pixelComponentSize The number of components per pixel.
-         * @param cubemapSize The size of the cubemap.
-         * @param isGamma Whether the pixel data is in gamma color space.
-         * @zh 从立方体贴图像素值计算环境光照系数。
-         * @param cubemapPixels 立方体贴图的每个面的像素数据。
-         * @param pixelComponentSize 每像素数据量。
-         * @param cubemapSize 立方体贴图的大小。
-         * @param isGamma 像素数据是否为伽马颜色空间。
-         */
-        static CalCubemapSH(cubemapPixels: Float32Array[], pixelComponentSize: number, cubemapSize: number, isGamma?: boolean): SphericalHarmonicsL2;
-        /**
-         * @internal
-         * @en Calculate the ambient lighting coefficient based on sky color, horizon color, and ground color
-         * @param skyColor The color of the sky.
-         * @param equatorColor The color of the equator.
-         * @param groundColor The color of the ground.
-         * @param isGamma Whether the colors are in gamma color space.
-         * @zh 通过 天空颜色, 地平线颜色, 地面颜色计算环境光照系数
-         * @param skyColor 天空颜色。
-         * @param equatorColor 地平线颜色。
-         * @param groundColor 地面颜色。
-         * @param isGamma 颜色是否为伽马空间。
-         */
-        static CalGradientSH(skyColor: Vector3, equatorColor: Vector3, groundColor: Vector3, isGamma?: boolean): SphericalHarmonicsL2;
-    }
-    /**
-     * 是否要删除
-     * @internal
-     */
-    class SubMeshInstanceBatch extends GeometryElement {
-        /** @internal */
-        static instance: SubMeshInstanceBatch;
-        /** @internal */
-        static maxInstanceCount: number;
-        /**
-         * @internal
-         */
-        static __init__(): void;
-        /** @internal */
-        instanceWorldMatrixData: Float32Array;
-        /** @internal */
-        instanceWorldMatrixBuffer: VertexBuffer3D;
-        /**SimpleAnimator */
-        /** @internal */
-        instanceSimpleAnimatorData: Float32Array;
-        /** @internal */
-        instanceSimpleAnimatorBuffer: VertexBuffer3D;
-        /**
-         * 创建一个 <code>InstanceSubMesh</code> 实例。
-         */
-        constructor();
-        /**
-         * @inheritDoc
-         * @override
-         */
-        _updateRenderParams(state: RenderContext3D): void;
-    }
-    /**
-     * @internal
-     * <code>VertexPositionNormalTexture</code> 类用于创建位置、纹理顶点结构。
-     */
-    class VertexPositionTexture {
-        private static _vertexDeclaration;
-        static get vertexDeclaration(): VertexDeclaration;
-        /**
-         * @internal
-         */
-        static __init__(): void;
-        private _position;
-        private _textureCoordinate0;
-        get position(): Vector3;
-        get textureCoordinate0(): Vector2;
-        get vertexDeclaration(): VertexDeclaration;
-        constructor(position: Vector3, textureCoordinate0: Vector2);
-    }
-    /**
      * @en The `VertexBuffer3D` class is used to create vertex buffers. To create an instance of `VertexBuffer3D`, use `LayaGL.RenderOBJCreate.createIndexBuffer3D`.
      * @zh `VertexBuffer3D` 类用于创建顶点缓冲。要创建 `VertexBuffer3D` 的实例，请使用 `LayaGL.RenderOBJCreate.createIndexBuffer3D`。
      * @blueprintIgnore
      */
     class VertexBuffer3D {
-        /** @internal */
-        private _canRead;
         _byteLength: number;
-        /**@internal */
-        _deviceBuffer: IVertexBuffer;
         _buffer: Float32Array | Uint16Array | Uint8Array | Uint32Array;
-        /** @internal */
-        _float32Reader: Float32Array | null;
         bufferUsage: BufferUsage;
         /**
          * @en The vertex declaration.
@@ -16881,116 +13041,6 @@ declare namespace Laya {
         private move;
     }
     /**
-     * @internal
-     * @en `LoadModelV04` class is used for loading model data.
-     * @zh `LoadModelV04` 类用于加载模型数据。
-     */
-    class LoadModelV04 {
-        /**@internal */
-        private static _BLOCK;
-        /**@internal */
-        private static _DATA;
-        /**@internal */
-        private static _strings;
-        /**@internal */
-        private static _readData;
-        /**@internal */
-        private static _version;
-        /**@internal */
-        private static _mesh;
-        /**@internal */
-        private static _subMeshes;
-        /**
-         * @internal
-         */
-        static parse(readData: Byte, version: string, mesh: Mesh, subMeshes: SubMesh[]): void;
-        /**
-         * @internal
-         */
-        private static _readString;
-        /**
-         * @internal
-         */
-        private static READ_DATA;
-        /**
-         * @internal
-         */
-        private static READ_BLOCK;
-        /**
-         * @internal
-         */
-        private static READ_STRINGS;
-        /**
-         * @internal
-         */
-        private static READ_MESH;
-        /**
-         * @internal
-         */
-        private static READ_SUBMESH;
-    }
-    /**
-     * @internal
-     * @en `LoadModelV05` class is used for loading model data.
-     * @zh `LoadModelV05` 类用于加载模型数据。
-     */
-    class LoadModelV05 {
-        /**@internal */
-        private static _BLOCK;
-        /**@internal */
-        private static _DATA;
-        /**@internal */
-        private static _strings;
-        /**@internal */
-        private static _readData;
-        /**@internal */
-        private static _version;
-        /**@internal */
-        private static _mesh;
-        /**@internal */
-        private static _subMeshes;
-        /**
-         * @internal
-         */
-        static parse(readData: Byte, version: string, mesh: Mesh, subMeshes: SubMesh[]): void;
-        /**
-         * @internal
-         */
-        private static _readString;
-        /**
-         * @internal
-         */
-        private static READ_DATA;
-        /**
-         * @internal
-         */
-        private static READ_BLOCK;
-        /**
-         * @internal
-         */
-        private static READ_STRINGS;
-        /**
-         * @internal
-         */
-        private static READ_MESH;
-        /**
-         * @internal
-         */
-        private static READ_SUBMESH;
-        private static READ_MORPH;
-        private static READ_UVSIZE;
-    }
-    /**
-     * @internal
-     */
-    class MeshReader {
-        static parse(readData: Byte, version: string): Mesh;
-        /**
-         */
-        static _parse(data: ArrayBuffer): Mesh;
-        static read(data: ArrayBuffer, mesh: Mesh, subMeshes: SubMesh[]): void;
-    }
-    /**
      * @ignore
      * @en Used for loading 2D texture array resources(.tex2darray).
      * @zh 用于加载纹理数组资源（.tex2darray）。
@@ -17032,10 +13082,6 @@ declare namespace Laya {
          */
         constructor(min: Vector3, max: Vector3);
         /**
-         * @internal
-         */
-        private _rotateExtents;
-        /**
          * @en Retrieves the 8 corner vertices of the bounding box.
          * @param corners The array to store the corner vertices.
          * @zh 获取包围盒的8个角顶点。
@@ -17065,16 +13111,6 @@ declare namespace Laya {
          * @param extent 包围盒的轴半径
          */
         setCenterAndExtent(center: Vector3, extent: Vector3): void;
-        /**
-         * @internal
-         * @en Transforms the bounding box using the given matrix.
-         * @param matrix The transformation matrix.
-         * @param out The bounding box to store the result.
-         * @zh 使用给定的矩阵变换包围盒。
-         * @param matrix 变换矩阵。
-         * @param out 存储结果的包围盒。
-         */
-        tranform(matrix: Matrix4x4, out: BoundBox): void;
         /**
          * @en Resets the bounding box to its default values.
          * @zh 将包围盒重置为其默认值。
@@ -17154,20 +13190,6 @@ declare namespace Laya {
          * @param  bp 底平面。
          */
         static getPlanesFromMatrix(m: Matrix4x4, np: Plane, fp: Plane, lp: Plane, rp: Plane, tp: Plane, bp: Plane): void;
-        /** @internal */
-        protected _matrix: Matrix4x4;
-        /** @internal */
-        protected _near: Plane;
-        /** @internal */
-        protected _far: Plane;
-        /** @internal */
-        protected _left: Plane;
-        /** @internal */
-        protected _right: Plane;
-        /** @internal */
-        protected _top: Plane;
-        /** @internal */
-        protected _bottom: Plane;
         /**
          * @en Constructor method.
          * @param matrix The 4x4 matrix that describes the frustum.
@@ -17363,16 +13385,6 @@ declare namespace Laya {
          * @return 如果点在包围盒内返回 `true`；否则返回 `false`。
          */
         static containPoint(box: Bounds, point: Vector3): boolean;
-        /**@internal */
-        static _UPDATE_MIN: number;
-        /**@internal */
-        static _UPDATE_MAX: number;
-        /**@internal */
-        static _UPDATE_CENTER: number;
-        /**@internal */
-        static _UPDATE_EXTENT: number;
-        /**@internal	*/
-        _imp: any;
         /**
          * @en The minimum point of the bounding box.
          * @zh 包围盒的最小点
@@ -17451,73 +13463,6 @@ declare namespace Laya {
          */
         constructor(min?: Vector3, max?: Vector3);
         /**
-         * 获得更新标志
-         * @internal
-         * @param type 类型
-         * @return void
-         */
-        protected _getUpdateFlag(type: number): boolean;
-        /**
-         * 设置更新标志
-         * @internal
-         * @param type 类型
-         * @param value 值
-         * @return void
-         */
-        protected _setUpdateFlag(type: number, value: boolean): void;
-        /**
-         * 获得包围盒中心值
-         * @internal
-         * @param min 最小值
-         * @param max 最大值
-         * @param out 返回值
-         * @return void
-         */
-        protected _getCenter(min: Vector3, max: Vector3, out: Vector3): void;
-        /**
-         * 获得包围盒范围
-         * @internal
-         * @param min 最小值
-         * @param max 最大值
-         * @param out 返回值
-         * @return void
-         */
-        protected _getExtent(min: Vector3, max: Vector3, out: Vector3): void;
-        /**
-         * 获得包围盒最小值
-         * @internal
-         * @param center 中心点
-         * @param extent 范围
-         * @param out 返回值
-         * @return void
-         */
-        protected _getMin(center: Vector3, extent: Vector3, out: Vector3): void;
-        /**
-         * 获得包围盒最大值
-         * @internal
-         * @param center 中心点
-         * @param extent 范围
-         * @param out 返回值
-         * @return void
-         */
-        protected _getMax(center: Vector3, extent: Vector3, out: Vector3): void;
-        /**
-        * 旋转范围
-        * @internal
-        * @param extent 范围
-        * @param rotation 旋转矩阵
-        * @param out 返回值
-        * @return void
-        */
-        protected _rotateExtents(extents: Vector3, rotation: Matrix4x4, out: Vector3): void;
-        /**
-         * 转换包围盒
-         * @internal
-         * @param matrix 转换矩阵
-         * @param out 输出包围盒
-         */
-        _tranform(matrix: Matrix4x4, out: Bounds): void;
-        /**
          * @en Retrieves the eight corner vertices of the bounding box.
          * @param corners The array to store the corner vertices.
          * @zh 获取包围盒的八个角顶点
@@ -17560,22 +13505,6 @@ declare namespace Laya {
      * @zh BoundsImpl 类用于创建包围体。
      */
     class BoundsImpl implements IClone {
-        /**@internal */
-        static _UPDATE_MIN: number;
-        /**@internal */
-        static _UPDATE_MAX: number;
-        /**@internal */
-        static _UPDATE_CENTER: number;
-        /**@internal */
-        static _UPDATE_EXTENT: number;
-        /**@internal	*/
-        protected _updateFlag: number;
-        /**@internal	*/
-        _center: Vector3;
-        /**@internal	*/
-        _extent: Vector3;
-        /**@internal	*/
-        _boundBox: BoundBox;
         /**
          * @en The minimum point of the bounding box.
          * @zh 包围盒的最小点。
@@ -17654,79 +13583,6 @@ declare namespace Laya {
          */
         constructor(min?: Vector3, max?: Vector3);
         /**
-         * 获得跟新标志
-         * @internal
-         * @param type 类型
-         * @return void
-         */
-        protected _getUpdateFlag(type: number): boolean;
-        /**
-         * 设置跟新标志
-         * @internal
-         * @param type 类型
-         * @param value 值
-         * @return void
-         */
-        protected _setUpdateFlag(type: number, value: boolean): void;
-        /**
-         * 获得包围盒中心值
-         * @internal
-         * @param min 最小值
-         * @param max 最大值
-         * @param out 返回值
-         * @return void
-         */
-        protected _getCenter(min: Vector3, max: Vector3, out: Vector3): void;
-        /**
-         * 获得包围盒范围
-         * @internal
-         * @param min 最小值
-         * @param max 最大值
-         * @param out 返回值
-         * @return void
-         */
-        protected _getExtent(min: Vector3, max: Vector3, out: Vector3): void;
-        /**
-         * 获得包围盒最小值
-         * @internal
-         * @param center 中心点
-         * @param extent 范围
-         * @param out 返回值
-         * @return void
-         */
-        protected _getMin(center: Vector3, extent: Vector3, out: Vector3): void;
-        /**
-          * 获得包围盒最大值
-          * @internal
-          * @param center 中心点
-          * @param extent 范围
-          * @param out 返回值
-          * @return void
-          */
-        protected _getMax(center: Vector3, extent: Vector3, out: Vector3): void;
-        /**
-         * 旋转范围
-         * @internal
-         * @param extent 范围
-         * @param rotation 旋转矩阵
-         * @param out 返回值
-         * @return void
-         */
-        protected _rotateExtents(extents: Vector3, rotation: Matrix4x4, out: Vector3): void;
-        /**
-         * 转换包围盒
-         * @internal
-         * @param matrix 转换矩阵
-         * @param out 输出包围盒
-         */
-        _tranform(matrix: Matrix4x4, out: BoundsImpl): void;
-        /**
-         * 获得实际的包围值
-         * @internal
-         * @returns BoundBox
-         */
-        _getBoundBox(): BoundBox;
-        /**
          * @en Calculates the intersection volume between this bounds implementation and another `BoundsImpl` instance.
          * @param bounds The `BoundsImpl` instance to calculate the intersection with.
          * @returns -1 if the bounds do not intersect; when not 0, the return value is the intersecting volume
@@ -17755,10 +13611,6 @@ declare namespace Laya {
      * @zh BoundSphere 类用于创建包围球。
      */
     class BoundSphere implements IClone {
-        /** @internal 包围球的中心。*/
-        _center: Vector3;
-        /** @internal 包围球的半径。*/
-        _radius: number;
         /**
          * @en The center of the bounding sphere.
          * @zh 包围球的中心。
@@ -18358,13 +14210,11 @@ declare namespace Laya {
          */
         static readonly PlaneIntersectionType_Intersecting: number;
         /**
-         * @internal
          * @en The normal vector of the plane.
          * @zh 平面的法线向量。
          */
         normal: Vector3;
         /**
-         * @internal
          * @en The distance from the plane to the origin of the coordinate system.
          * @zh 平面到坐标系原点的距离。
          */
@@ -18412,85 +14262,10 @@ declare namespace Laya {
         clone(): Plane;
     }
     /**
-     * @en The Rand class is used to create random numbers using a 32-bit unsigned integer seed.
-     * @zh Rand 类用于通过32位无符号整型随机种子创建随机数。
-     */
-    class Rand {
-        /**
-         * @en Obtain unsigned 32-bit floating-point random numbers through unsigned 32-bit shaping
-         * @param v The unsigned 32-bit integer random number.
-         * @returns The 32-bit floating-point random number.
-         * @zh 通过无符号32位整形，获取32位浮点随机数。
-         * @param v 无符号32位整数随机数。
-         * @returns 32位浮点随机数。
-         */
-        static getFloatFromInt(v: number): number;
-        /**
-         * @en Obtain an unsigned 8-bit byte random number through unsigned 32-bit shaping.
-         * @param v The unsigned 32-bit integer random number.
-         * @returns The unsigned 8-bit byte random number.
-         * @zh 通过无符号32位整形，获取无符号8位字节随机数。
-         * @param v 无符号32位整数随机数。
-         * @returns 无符号8位字节随机数。
-         */
-        static getByteFromInt(v: number): number;
-        /**@internal */
-        private _temp;
-        /**
-         * @en Obtain random seeds
-         * @zh 获取随机种子。
-         */
-        seeds: Uint32Array;
-        /**
-         * @en The random seed.
-         * @zh 随机种子。
-         */
-        get seed(): number;
-        set seed(seed: number);
-        /**
-         * @en Constructor method.
-         * @param seed  32bit unsigned integer random seed.
-         * @zh 构造方法。
-         * @param seed  32位无符号整型随机种子。
-         */
-        constructor(seed: number);
-        /**
-         * @en Gets an unsigned 32-bit integer random number.
-         * @returns The unsigned 32-bit integer random number.
-         * @zh 获取无符号32位整数随机数
-         * @returns 无符号32位整数随机数。
-         */
-        getUint(): number;
-        /**
-         * @en Gets a floating-point random number between 0 and 1.
-         * @returns The floating-point random number between 0 and 1.
-         * @zh 获取0到1之间的浮点随机数。
-         * @returns 0到1之间的浮点随机数。
-         */
-        getFloat(): number;
-        /**
-         * @en Gets a floating-point random number between -1 and 1.
-         * @returns The floating-point random number between -1 and 1.
-         * @zh 获取-1到1之间的浮点随机数。
-         * @returns -1到1之间的浮点随机数。
-         */
-        getSignedFloat(): number;
-    }
-    /**
      * @en The `RandX` class is used to generate random numbers using a 128-bit integer seed. The algorithm comes from the provided link: https://github.com/AndreasMadsen/xorshift
      * @zh `RandX` 类用于通过128位整型种子创建随机数。算法来自提供的链接：https://github.com/AndreasMadsen/xorshift
      */
     class RandX {
-        /**@internal */
-        private static _CONVERTION_BUFFER;
-        /**@internal */
-        private _state0U;
-        /**@internal */
-        private _state0L;
-        /**@internal */
-        private _state1U;
-        /**@internal */
-        private _state1L;
         /**
          * @en A random number generator seeded based on the current time.
          * @zh 基于当前时间种子的随机数生成器。
@@ -18557,37 +14332,6 @@ declare namespace Laya {
      * @zh CharacterController 类用于创建角色控制器。
      */
     class CharacterController extends PhysicsColliderComponent {
-        /**@internal */
-        protected _collider: ICharacterController;
-        /** @internal */
-        private _stepHeight;
-        /** @internal */
-        private _upAxis;
-        /**@internal */
-        private _maxSlope;
-        /** @internal */
-        private _gravity;
-        /**@internal */
-        private _radius;
-        /**@internal */
-        private _height;
-        /**@internal */
-        private _offset;
-        /**@internal */
-        private _contactOffset;
-        /**@internal */
-        private _minDistance;
-        /**@internal */
-        private _simGravity;
-        /**@internal */
-        private _pushForce;
-        /**@internal */
-        private _jumpSpeed;
-        /**
-         * @override
-         * @internal
-         */
-        protected _initCollider(): void;
         protected _onEnable(): void;
         /**
          * @en The frame loop.
@@ -18702,32 +14446,12 @@ declare namespace Laya {
          * @returns 是否在地面上。
          */
         isOnGround(): boolean;
-        /**
-         * @inheritDoc
-         * @override
-         * @internal
-         */
-        _cloneTo(dest: CharacterController): void;
-        /**
-         * @internal
-         */
-        protected _setEventFilter(): void;
     }
     /**
      * @en The Collision class is used to create physical collision information.
      * @zh Collision 类用于创建物理碰撞信息。
      */
     class Collision {
-        /**@internal */
-        _lastUpdateFrame: number;
-        /**@internal */
-        _updateFrame: number;
-        /**@internal */
-        _isTrigger: boolean;
-        /**@internal */
-        _colliderA: ICollider;
-        /**@internal */
-        _colliderB: ICollider;
         /**
          * @readonly
          * @en List of collision information generated by collision.
@@ -18740,107 +14464,17 @@ declare namespace Laya {
          * @zh 碰撞中涉及的另一个碰撞体组件。
          */
         other: PhysicsColliderComponent;
-        /**@internal */
-        _inPool: boolean;
         /**
          * @en constructor of Collision.
          * @zh Collision构造方法。
          */
         constructor();
-        /**
-         * @internal
-         */
-        _setUpdateFrame(farme: number): void;
     }
     /**
      * @en The ConfigurableConstraint class is used for configurable constraint components.
      * @zh ConfigurableConstraint类用于可设置的约束组件
      */
     class ConfigurableConstraint extends ConstraintComponent {
-        /**@internal */
-        _joint: ID6Joint;
-        /** @internal */
-        private _axis;
-        /** @internal */
-        private _secondaryAxis;
-        /** @internal */
-        private _xMotion;
-        /** @internal */
-        private _yMotion;
-        /** @internal */
-        private _zMotion;
-        /** @internal */
-        private _angularXMotion;
-        /** @internal */
-        private _angularYMotion;
-        /** @internal */
-        private _angularZMotion;
-        /** @internal */
-        private _distanceLimit;
-        /** @internal */
-        private _distanceBounciness;
-        /** @internal */
-        private _distanceBounceThreshold;
-        /** @internal */
-        private _distanceSpring;
-        /** @internal */
-        private _distanceDamper;
-        /**@internal */
-        private _twistUper;
-        /**@internal */
-        private _twistLower;
-        /**@internal */
-        private _twistBounceness;
-        /**@internal */
-        private _twistBounceThreshold;
-        /**@internal */
-        private _twistStiffness;
-        /**@internal */
-        private _twistDamping;
-        /**@internal */
-        private _ySwingAngleLimit;
-        /**@internal */
-        private _zSwingAngleLimit;
-        /**@internal */
-        private _Swingrestitution;
-        /**@internal */
-        private _SwingbounceThreshold;
-        /**@internal */
-        private _SwingStiffness;
-        /**@internal */
-        private _SwingDamping;
-        /**@internal */
-        private _targetPosition;
-        /**@internal */
-        private _targetRotation;
-        /**@internal */
-        private _targetVelocity;
-        /**@internal */
-        private _targetAngularVelocity;
-        /**@internal */
-        private _linearDriveforceLimit;
-        /**@internal */
-        private _linearDriveForce;
-        /**@internal */
-        private _linearDriveDamping;
-        /**@internal */
-        private _angularXDriveForceLimit;
-        /**@internal */
-        private _angularXDriveForce;
-        /**@internal */
-        private _angularXDriveDamp;
-        /**@internal */
-        private _angularYZDriveForceLimit;
-        /**@internal */
-        private _angularYZDriveForce;
-        /**@internal */
-        private _angularYZDriveDamp;
-        /**@internal */
-        private _angularSlerpDriveForceLimit;
-        /**@internal */
-        private _angularSlerpDriveForce;
-        /**@internal */
-        private _angularSlerpDriveDamp;
         /** @ignore */
         constructor();
         private _setDriveLinearX;
@@ -19140,31 +14774,12 @@ declare namespace Laya {
          */
         get angularSlerpDriveDamp(): number;
         set angularSlerpDriveDamp(value: number);
-        /**
-         * @internal
-         */
-        _initAllConstraintInfo(): void;
-        /**
-         * @internal
-         */
-        protected _onEnable(): void;
-        /**
-         * @internal
-         */
-        protected _onDisable(): void;
-        /**
-         * @internal
-         * create joint
-         */
-        protected _initJoint(): void;
     }
     /**
      * @en ConstraintComponent class is the base class for creating constraints.
      * @zh ConstraintComponent 类用于创建约束的父类。
      */
     class ConstraintComponent extends Component {
-        /**@internal */
-        _joint: IJoint;
         private _enableCollison;
         protected _physicsManager: IPhysicsManager;
         protected _ownCollider: PhysicsColliderComponent;
@@ -19252,12 +14867,6 @@ declare namespace Laya {
         setConstraintEnabled(enable: boolean): void;
         protected _onEnable(): void;
         protected _onDestroy(): void;
-        /**
-         * @internal
-         * @en Checks if the constraint is broken, indicating whether the joint has exceeded its limits and is no longer constrained.
-         * @zh 检查约束是否被破坏，表明关节是否超出了其限制并且不再受约束。
-         */
-        isBreakConstrained(): Boolean;
     }
     /**
      * @en Fixed constraint. Used to fix two rigidbodies together.
@@ -19266,12 +14875,6 @@ declare namespace Laya {
     class FixedConstraint extends ConstraintComponent {
         /** @ignore */
         constructor();
-        /**
-         * @inheritDoc
-         * @override
-         * @internal
-         */
-        protected _initJoint(): void;
         protected _onEnable(): void;
         protected _onDisable(): void;
     }
@@ -19280,28 +14883,6 @@ declare namespace Laya {
      * @zh 两个刚体之间的铰链约束。
      */
     class HingeConstraint extends ConstraintComponent {
-        /**@internal */
-        _joint: IHingeJoint;
-        /**@internal */
-        private _axis;
-        /**@internal */
-        private _motor;
-        /**@internal */
-        private _targetVelocity;
-        /**@internal */
-        private _freeSpin;
-        /**@internal */
-        private _limit;
-        /**@internal */
-        private _lowerLimit;
-        /**@internal */
-        private _uperLimit;
-        /**@internal */
-        private _bounciness;
-        /**@internal */
-        private _bounceMinVelocity;
-        /**@internal */
-        private _contactDistance;
         /** @ignore */
         constructor();
         protected _initJoint(): void;
@@ -19383,22 +14964,6 @@ declare namespace Laya {
      * @zh `SpringConstraint` 类表示一种在物理模拟中模拟弹簧行为的约束类型。
      */
     class SpringConstraint extends ConstraintComponent {
-        /**@internal */
-        _joint: ISpringJoint;
-        /**@internal */
-        private _minDistance;
-        /**@internal */
-        private _damping;
-        /**@internal */
-        private _maxDistance;
-        /**@internal */
-        private _tolerance;
-        /**@internal */
-        private _stiffness;
-        /**
-         * @internal
-         */
-        protected _initJoint(): void;
         protected _onAdded(): void;
         protected _onEnable(): void;
         protected _onDisable(): void;
@@ -19441,10 +15006,6 @@ declare namespace Laya {
      * @zh ContactPoint 类用于创建物理碰撞信息。
      */
     class ContactPoint {
-        /**@internal */
-        _idCounter: number;
-        /**@internal */
-        _id: number;
         /**
          * @en Collider A.
          * @zh 碰撞器A。
@@ -19511,8 +15072,6 @@ declare namespace Laya {
          * @zh 碰撞分数。
          */
         hitFraction: number;
-        /**@internal */
-        _inPool: boolean;
         /** @ignore */
         constructor();
     }
@@ -19521,17 +15080,6 @@ declare namespace Laya {
      * @zh PhysicsCollider 类用于创建物理碰撞器。
      */
     class PhysicsCollider extends PhysicsColliderComponent {
-        /** @internal */
-        private _isTrigger;
-        /** @internal */
-        private _allowSleep;
-        /**@override @internal */
-        _collider: IStaticCollider;
-        /**
-         * @internal
-         * @override
-         */
-        protected _initCollider(): void;
         /** @ignore */
         constructor();
         _onEnable(): void;
@@ -19547,10 +15095,6 @@ declare namespace Laya {
          */
         get allowSleep(): boolean;
         set allowSleep(value: boolean);
-        /**
-         * @internal
-         */
-        protected _setEventFilter(): void;
     }
     /**
      * @en Describes how the physics materials of colliding objects are combined.
@@ -19599,36 +15143,6 @@ declare namespace Laya {
      * @zh PhysicsColliderComponent 类用于创建物理组件的父类。
      */
     class PhysicsColliderComponent extends Component {
-        /** @internal */
-        protected _restitution: number;
-        /** @internal */
-        protected _friction: number;
-        /** @internal */
-        protected _rollingFriction: number;
-        /**@internal */
-        protected _dynamicFriction: number;
-        /**@internal */
-        protected _staticFriction: number;
-        /**@internal */
-        protected _frictionCombine: number;
-        /**@internal */
-        protected _restitutionCombine: number;
-        /** @internal */
-        protected _collisionGroup: number;
-        /** @internal */
-        protected _canCollideWith: number;
-        /** @internal */
-        protected _colliderShape: Physics3DColliderShape;
-        /** @internal */
-        protected _transformFlag: number;
-        /** @internal 是否只接受物理引擎的模拟变化 Rigidbody为true*/
-        protected _controlBySimulation: boolean;
-        /**@internal */
-        protected _physicsManager: IPhysicsManager;
-        /**@internal */
-        protected _collider: ICollider;
-        /**@internal */
-        protected _eventsArray: string[];
         private _isColliderInit;
         readonly owner: Sprite3D;
         /**
@@ -19718,26 +15232,12 @@ declare namespace Laya {
         set canCollideWith(value: number);
         /** @ignore */
         constructor();
-        /**
-         * @internal
-         * @en Initializes the collider and configures its properties.
-         * @zh 初始化碰撞器并配置其属性。
-         */
-        initCollider(): void;
         protected _initCollider(): void;
         protected _setEventFilter(): void;
         protected _onAdded(): void;
         protected _onEnable(): void;
         protected _onDisable(): void;
         protected _onDestroy(): void;
-        /**
-         * @internal
-         */
-        _onTransformChanged(flag: number): void;
-        /**
-         * @internal
-         */
-        _cloneTo(dest: PhysicsColliderComponent): void;
     }
     /**
      * @zh PhysicsSettings 类用于创建物理配置信息。
@@ -19782,63 +15282,12 @@ declare namespace Laya {
     class PhysicsUpdateList extends SingletonList<ICollider> {
         /** @ignore */
         constructor();
-        /**
-         * @internal
-         * @en Adds an element to the physics update list.
-         * @param element The collider element to add.
-         * @zh 将元素添加到物理更新列表中。
-         * @param element 要添加的碰撞器元素。
-         */
-        add(element: ICollider): void;
-        /**
-         * @internal
-         * @en Removes an element from the physics update list.
-         * @param element The collider element to remove.
-         * @zh 从物理更新列表中移除元素。
-         * @param element 要移除的碰撞器元素。
-         */
-        remove(element: ICollider): void;
     }
     /**
      * @en Rigidbody3D is a component that creates a rigidbody collider.
      * @zh Rigidbody3D 类用于创建刚体碰撞器。
      */
     class Rigidbody3D extends PhysicsColliderComponent {
-        /**@internal */
-        protected _collider: IDynamicCollider;
-        /** @internal */
-        private _isKinematic;
-        /** @internal */
-        private _mass;
-        /** @internal */
-        private _gravity;
-        /** @internal */
-        private _angularDamping;
-        /** @internal */
-        private _linearDamping;
-        /** @internal */
-        private _linearVelocity;
-        /** @internal */
-        private _angularVelocity;
-        /** @internal */
-        private _linearFactor;
-        /** @internal */
-        private _angularFactor;
-        /**@internal */
-        private _sleepThreshold;
-        /**@internal */
-        private _sleepAngularThreshold;
-        /**@internal */
-        private _trigger;
-        /**@internal */
-        private _collisionDetectionMode;
-        /**@internal */
-        private _allowSleep;
-        /**
-         * @override
-         * @internal
-         */
-        protected _initCollider(): void;
         /**
          * @en The mass of the rigidbody.
          * @zh 刚体的质量。
@@ -19947,20 +15396,6 @@ declare namespace Laya {
         /** @ignore */
         constructor();
         /**
-         * @internal
-         */
-        protected _onEnable(): void;
-        /**
-         * @internal
-         */
-        protected _onDestroy(): void;
-        /**
-         * @inheritDoc
-         * @override
-         * @internal
-         */
-        _cloneTo(dest: Rigidbody3D): void;
-        /**
          * @en Applies a force to the rigidbody.
          * @param force The force to apply.
          * @param localOffset The offset, if it is null, it is the center point.
@@ -20018,18 +15453,12 @@ declare namespace Laya {
          * @param localOffset 受力点距离质点的偏移
          */
         applyForceXYZ(fx: number, fy: number, fz: number, localOffset?: Vector3): void;
-        /**
-         * @internal
-         */
-        protected _setEventFilter(): void;
     }
     /**
      * @en BoxColliderShape class is used to create box collider shape.
      * @zh BoxColliderShape 类用于创建盒子形状碰撞器。
      */
     class BoxColliderShape extends Physics3DColliderShape {
-        /**@internal */
-        _shape: IBoxColliderShape;
         private _size;
         /**
          * @en Constructor method, initializes the box collider shape with a specified size.
@@ -20087,8 +15516,6 @@ declare namespace Laya {
      * @zh CapsuleColliderShape 类用于创建胶囊形状碰撞器。
      */
     class CapsuleColliderShape extends Physics3DColliderShape {
-        /**@internal */
-        _shape: ICapsuleColliderShape;
         private _radius;
         private _length;
         private _orientation;
@@ -20142,10 +15569,6 @@ declare namespace Laya {
      * @zh 用于创建组合碰撞器。
      */
     class CompoundColliderShape extends Physics3DColliderShape {
-        /**@internal */
-        _shape: ICompoundColliderShape;
-        /**@internal */
-        private _childColliderShapes;
         /**
          * @en create a new instance of CompoundColliderShape.
          * @zh 创建一个新的组合碰撞形状实例。
@@ -20203,14 +15626,6 @@ declare namespace Laya {
      * @zh ConeColliderShape 类用于创建圆锥碰撞器。
      */
     class ConeColliderShape extends Physics3DColliderShape {
-        /**@internal */
-        _shape: IConeColliderShape;
-        /**@internal */
-        private _orientation;
-        /**@internal */
-        private _radius;
-        /**@internal */
-        private _height;
         /**
          * @en The radius of the cone collider.
          * @zh 圆锥碰撞器的半径。
@@ -20241,11 +15656,6 @@ declare namespace Laya {
          */
         constructor(radius?: number, height?: number, orientation?: number);
         /**
-         * @internal
-         * @override
-         */
-        protected _createShape(): void;
-        /**
          * @inheritDoc
          * @override
          * @en Clone a new ConeColliderShape object.
@@ -20269,14 +15679,6 @@ declare namespace Laya {
      * @zh CylinderColliderShape 类用于创建圆柱碰撞器。
      */
     class CylinderColliderShape extends Physics3DColliderShape {
-        /**@internal */
-        _shape: ICylinderColliderShape;
-        /**@internal */
-        private _orientation;
-        /**@internal */
-        private _radius;
-        /**@internal */
-        private _height;
         /**
          * @en The radius of the cylinder collider.
          * @zh 圆柱碰撞器的半径。
@@ -20306,11 +15708,6 @@ declare namespace Laya {
          * @param orientation 圆柱的朝向。
          */
         constructor(radius?: number, height?: number, orientation?: number);
-        /**
-         * @internal
-         * @override
-         */
-        protected _createShape(): void;
         /**
          * @inheritDoc
          * @override
@@ -20366,10 +15763,6 @@ declare namespace Laya {
      * @zh 描述高度场物理碰撞的类。
      */
     class HeightFieldColliderShape extends Physics3DColliderShape {
-        /**@internal */
-        _shape: IHeightFieldShape;
-        /**@internal */
-        _terrainData: heightFieldData;
         /**
          * @ignore
          * @en Constructor method, initialize height field data.
@@ -20378,24 +15771,12 @@ declare namespace Laya {
          * @param heightFieldData 高度场数据。
          */
         constructor(heightFieldData: heightFieldData);
-        /**
-         * @internal
-         */
-        protected _createShape(): void;
     }
     /**
      * @en The `MeshColliderShape` class is used to create mesh colliders.
      * @zh `MeshColliderShape` 类用于创建网格碰撞器。
      */
     class MeshColliderShape extends Physics3DColliderShape {
-        /** @internal */
-        private _mesh;
-        /** @internal */
-        private _convex;
-        /** @internal */
-        private _convexVertexMax;
-        /**@internal */
-        _shape: IMeshColliderShape;
         /**
          * @en The mesh of the collider.
          * @zh 碰撞器的网格。
@@ -20417,11 +15798,6 @@ declare namespace Laya {
         set convex(value: boolean);
         /** @ignore */
         constructor();
-        /**
-         * @internal
-         * @override
-         */
-        protected _createShape(): void;
         /**
          * @inheritDoc
          * @override
@@ -20462,8 +15838,6 @@ declare namespace Laya {
          * @zh 形状方向：沿 Z 轴正向。
          */
         static readonly SHAPEORIENTATION_UPZ: number;
-        /**@internal */
-        _shape: IColliderShape;
         /**
          * @en The physics component of the collider.
          * @zh 碰撞器的物理组件。
@@ -20474,8 +15848,6 @@ declare namespace Laya {
          * @zh 碰撞器的形状。
          */
         get shape(): IColliderShape;
-        /**@internal */
-        protected _localOffset: Vector3;
         /**
          * @en The local offset of the shape.
          * @zh 形状的本地偏移。
@@ -20490,11 +15862,6 @@ declare namespace Laya {
         set physicsComponent(value: PhysicsColliderComponent);
         /**@ignore */
         constructor();
-        /**
-         * @internal
-         * @protected
-         */
-        protected _createShape(): void;
         /**
          * @en Clone this object to a destination object.
          * @param destObject The destination object.
@@ -20520,10 +15887,6 @@ declare namespace Laya {
      * @zh `SphereColliderShape` 类用于创建球形碰撞器。
      */
     class SphereColliderShape extends Physics3DColliderShape {
-        /**@internal */
-        _shape: ISphereColliderShape;
-        /** @internal */
-        private _radius;
         /**
          * @en The radius of the sphere collider.
          * @zh 球形碰撞器的半径。
@@ -20537,8 +15900,6 @@ declare namespace Laya {
          * @param radius 球形碰撞器的半径。
          */
         constructor(radius?: number);
-        /**@internal */
-        protected _createShape(): void;
         /**
          * @inheritDoc
          * @override
@@ -20548,96 +15909,13 @@ declare namespace Laya {
          * @return 一个新的 球形碰撞器 对象。
          */
         clone(): SphereColliderShape;
-        /**
-         * @internal
-         * @en Clone data to target object.
-         * @param destObject Target object.
-         * @zh 将数据克隆到目标对象
-         * @param destObject 目标对象。
-         */
-        cloneTo(destObject: SphereColliderShape): void;
     }
     /**
      * @en The BloomEffect class is used to create a flood effect.
      * @zh BloomEffect 类用于创建泛光效果。
      */
     class BloomEffect extends PostProcessEffect {
-        /** @internal */
-        static SHADERVALUE_MAINTEX: number;
-        /**@internal */
-        static SHADERVALUE_AUTOEXPOSURETEX: number;
-        /**@internal */
-        static SHADERVALUE_SAMPLESCALE: number;
-        /**@internal */
-        static SHADERVALUE_THRESHOLD: number;
-        /**@internal */
-        static SHADERVALUE_PARAMS: number;
-        /**@internal */
-        static SHADERVALUE_BLOOMTEX: number;
-        /**@internal */
-        static SUBSHADER_PREFILTER13: number;
-        /**@internal */
-        static SUBSHADER_PREFILTER4: number;
-        /**@internal */
-        static SUBSHADER_DOWNSAMPLE13: number;
-        /**@internal */
-        static SUBSHADER_DOWNSAMPLE4: number;
-        /**@internal */
-        static SUBSHADER_UPSAMPLETENT: number;
-        /**@internal */
-        static SUBSHADER_UPSAMPLEBOX: number;
-        /**@internal */
-        private static MAXPYRAMIDSIZE;
-        /**
-         * @en Bloom resource initialize
-         * @zh 泛光资源初始化
-         * @internal
-         */
-        static init(): void;
-        /**
-         * @internal
-         * @en Shader initialize
-         * @zh 着色器初始化
-         */
-        static CompositeInit(): void;
-        /**
-         * @internal
-         * 初始化宏定义
-         */
-        static __initDefine__(): void;
-        /**@internal */
-        private _shader;
-        /**@internal */
-        private _shaderData;
         private _compositeShaderData;
-        /**@internal */
-        private _linearColor;
-        /**@internal */
-        private _bloomTextureTexelSize;
-        /**@internal */
-        private _shaderThreshold;
-        /**@internal */
-        private _shaderParams;
-        /**@internal */
-        private _pyramid;
-        /**@internal */
-        private _intensity;
-        /**@internal */
-        private _threshold;
-        /**@internal */
-        private _softKnee;
-        /**@internal */
-        private _diffusion;
-        /**@internal */
-        private _anamorphicRatio;
-        /**@internal */
-        private _dirtIntensity;
-        /**@internal */
-        private _shaderSetting;
-        /**@internal */
-        private _dirtTileOffset;
-        /**@internal*/
-        private _clamp;
         /**泛光颜色。*/
         private _color;
         /**是否开启快速模式。该模式通过降低质量来提升性能。*/
@@ -20732,16 +16010,6 @@ declare namespace Laya {
          * @param postprocess 后期处理组件。
          */
         release(postprocess: PostProcess): void;
-        /**
-         * @inheritDoc
-         * @override
-         * @internal
-         * @en Render the effect.
-         * @param context The post-processing render context.
-         * @zh 渲染效果。
-         * @param context 后期处理渲染上下文。
-         */
-        render(context: PostProcessRenderContext): void;
     }
     enum ToneMappingType {
         None = 0,
@@ -20752,32 +16020,6 @@ declare namespace Laya {
      * @zh ColorGradEffect 类用于创建调色效果
      */
     class ColorGradEffect extends PostProcessEffect {
-        /**
-         * @internal
-         * @en ACES macro
-         * @zh ACES宏
-         */
-        static SHADERDEFINE_ACES: ShaderDefine;
-        /**
-         * @internal
-         * @en Custom LUT macro
-         * @zh 自定义LUT宏
-         */
-        static SHADERDEFINE_CUSTOMLUT: ShaderDefine;
-        /**@internal */
-        static SHADERVALUE_LUT: number;
-        /**@internal */
-        static SHADERVALUE_LUTPARAMS: number;
-        /**@internal */
-        static SHADERVALUE_CUSTOMLUT: number;
-        /**@internal */
-        static SHADERVALUE_CUSTOMLUTPARAMS: number;
-        /**
-         * @internal
-         * @en Initialize shader configurations and rendering state settings.
-         * @zh 初始化着色器配置和渲染状态设置。
-         */
-        static init(): void;
         private static lutBuilderInit;
         /**
          * @en Initialize shader definitions.
@@ -20785,58 +16027,19 @@ declare namespace Laya {
          */
         static __initDefine__(): void;
         private _needBuildLUT;
-        /**@internal */
-        _lutTex: RenderTexture;
         private _lutBuilderMat;
         private _LUTShader;
         private _lutShaderData;
         private _blitlutParams;
-        /**color Tone */
-        /**@internal */
-        private _toneMapping;
-        /**@internal lut height size */
-        private _lutSize;
-        /**@internal */
-        private _enableSplitTone;
         private _splitShadow;
         private _splitBalance;
         private _splithighlights;
         private _u_SplitShadow;
         private _enableSMH;
-        /**@internal */
-        private _shadows;
-        /**@internal */
-        private _midtones;
-        /**@internal */
-        private _highlights;
-        /**@internal */
-        private _limits;
         private _enableLiftGammaGain;
-        /**@internal */
-        private _lift;
-        /**@internal */
-        private _gamma;
-        /**@internal */
-        private _gain;
         private _enableBalance;
-        /**@internal tint,temperature */
-        private _balance;
         private _tint;
         private _temperature;
-        /**@internal */
-        private _enableColorAdjust;
-        /**@internal 自动曝光,默认值是1 */
-        private _postExposure;
-        /**@internal */
-        private _contrast;
-        /**@internal */
-        private _colorFilter;
-        /**@internal */
-        private _HueShift;
-        /**@internal */
-        private _saturation;
-        /**@internal _HueShift,_saturation,_contrast*/
-        private _HueSatCon;
         /**
          * @en the tone mapping type.
          * @zh 色调映射类型
@@ -21015,11 +16218,6 @@ declare namespace Laya {
         private default_gain;
         private default_ColorFilter;
         private default_HueSatCon;
-        /**
-         * @internal
-         * 生成LUT纹理
-         */
-        _buildLUT(): void;
         private _postProcess;
         /**
          * @en Called when added to the post-processing stack.
@@ -21035,16 +16233,6 @@ declare namespace Laya {
          * @param postprocess 后期处理节点。
          */
         release(postprocess: PostProcess): void;
-        /**
-         * @inheritDoc
-         * @override
-         * @internal
-         * @en Render the effect.
-         * @param context The post-processing rendering context.
-         * @zh 渲染效果。
-         * @param context 后期处理渲染上下文。
-         */
-        render(context: PostProcessRenderContext): void;
     }
     /**
      * @en The `GaussianDoF` class is used to create a Gaussian Depth of Field effect.
@@ -21059,36 +16247,6 @@ declare namespace Laya {
      * - maxRadius: 远景模糊最大半径
      */
     class GaussianDoF extends PostProcessEffect {
-        /**@internal */
-        static SOURCESIZE: number;
-        /**@internal */
-        static COCPARAMS: number;
-        /**@internal */
-        static DEPTHTEXTURE: number;
-        /**@internal */
-        static NORMALDEPTHTEXTURE: number;
-        /**@internal */
-        static FULLCOCTEXTURE: number;
-        /**@internal */
-        static DOWNSAMPLESCALE: number;
-        /**@internal */
-        static BLURCOCTEXTURE: number;
-        /**@internal */
-        static SHADERDEFINE_DEPTHNORMALTEXTURE: ShaderDefine;
-        /**
-         * @en GaussianDOF resource init
-         * @zh 高斯DOF资源初始化
-         * @internal
-         */
-        static init(): void;
-        /**@internal */
-        private _shader;
-        /**@internal */
-        private _shaderData;
-        /**@internal */
-        private _sourceSize;
-        /**@internal */
-        private _dowmSampleScale;
         /**
          * @ignore
          * @en initialization GaussianDOF effect instance.
@@ -21113,43 +16271,12 @@ declare namespace Laya {
          */
         get maxRadius(): number;
         set maxRadius(value: number);
-        /**
-         * @internal
-         * @param context
-         */
-        private _setupShaderValue;
-        /**
-         * @internal
-         * @override
-         * @en Get the camera depth texture mode flag.
-         * @zh 获取相机深度纹理模式标志。
-         */
-        getCameraDepthTextureModeFlag(): DepthTextureMode;
-        /**
-         * @internal
-         * @override
-         * @en Render the Gaussian DoF effect.
-         * @param context The post-process render context.
-         * @zh 渲染高斯景深效果。
-         * @param context 后处理渲染上下文。
-         */
-        render(context: PostProcessRenderContext): void;
     }
     /**
      * @en Represents lens flare command
      * @zh 表示镜头光晕指令
      */
     class LensFlareCMD {
-        /**@internal geoemtry */
-        private _lensFlareGeometry;
-        /**@internal renderElement*/
-        private _renderElement;
-        /**@internal */
-        private _materials;
-        /**@internal */
-        private _transform3D;
-        /**@internal */
-        private _lensFlareElementData;
         private _instanceCount;
         /**
          * @en The number of instances drawn
@@ -21167,30 +16294,6 @@ declare namespace Laya {
          * init material
          */
         private _initMaterial;
-        /**
-         * @internal
-         * @en The center position of the lens flare effect.
-         * @zh 镜头光晕效果的中心位置。
-         */
-        set center(value: Vector2);
-        /**
-         * @internal
-         * @en The rotation angle of the lens flare effect.
-         * @zh 镜头光晕效果的旋转角度。
-         */
-        set rotate(value: number);
-        /**
-         * @internal
-         * @en The edge fade factor for smooth fade out at screen edges.
-         * @zh 边缘渐变系数，用于在屏幕边缘平滑淡出。
-         */
-        set edgeFade(value: number);
-        /**
-         * @internal
-         * @en The lens flare element data.
-         * @zh 镜头光晕元素数据
-         */
-        get lensFlareElement(): LensFlareElement;
         set lensFlareElement(value: LensFlareElement);
         /**
          * @en apply element Data
@@ -21204,18 +16307,6 @@ declare namespace Laya {
          * @zh 执行命令
          */
         run(cmd: CommandBuffer): void;
-        /**
-         * @internal
-         * @en recover command
-         * @zh 回收命令
-         */
-        recover(): void;
-        /**
-         * @internal
-         * @en Destroy command
-         * @zh 销毁命令
-         */
-        destroy(): void;
     }
     /**
      * @en lens Flare Element
@@ -21241,12 +16332,6 @@ declare namespace Laya {
         private _startPosition;
         private _angularOffset;
         private _aspectRatio;
-        /**@internal */
-        private _modulateByLightColor;
-        /**@internal */
-        private _blendMode;
-        /**@internal */
-        private _translationScale;
         /**
          * @en Whether the element is active.
          * @zh 是否激活
@@ -21325,13 +16410,6 @@ declare namespace Laya {
      * @zh 镜头光晕效果
      */
     class LensFlareEffect extends PostProcessEffect {
-        /**@internal */
-        static SHADERDEFINE_AUTOROTATE: ShaderDefine;
-        /**
-         * @internal
-         * initdefine
-         */
-        static __initDefine__(): void;
         /**
          * @en Initialize Shader and Geometry
          * @zh 初始化着色器和几何体
@@ -21371,13 +16449,6 @@ declare namespace Laya {
         get effectScale(): number;
         set effectScale(value: number);
         constructor();
-        /**
-         * @internal
-         * 更新后处理数据
-         * @param cmd 命令缓冲
-         * @param edgeFade 边缘渐变系数 [0, 1]
-         */
-        _updateEffectData(cmd: CommandBuffer, edgeFade?: number): void;
         /**
          * @en Calculate the center point of directional light
          * @param camera The camera
@@ -21429,24 +16500,6 @@ declare namespace Laya {
          * @zh 表示位置、旋转和缩放属性的常量。
          */
         static PositionRotationScale: number;
-        /**@internal */
-        static lensQuadVertices: Float32Array;
-        /**@internal */
-        static lensQuadIndex: Uint16Array;
-        /**@internal */
-        static vertexDeclaration: VertexDeclaration;
-        /**@internal */
-        static instanceVertexDeclaration: VertexDeclaration;
-        /**@internal 最大instanceData*/
-        static lensFlareElementMax: number;
-        /**@internal */
-        private _vertexBuffer;
-        /**@internal */
-        private _instanceVertexBuffer;
-        /**@internal */
-        private _indexBuffer;
-        /**@internal */
-        private static _type;
         /**
          * @en Initializes the data for lens flare element geometry.
          * @zh 初始化镜头光晕元素几何体的数据。
@@ -21458,28 +16511,10 @@ declare namespace Laya {
         constructor();
         private _createBuffer;
         /**
-         * @internal
-         */
-        get instanceBuffer(): VertexBuffer3D;
-        /**
-         *  @internal
-         */
-        _getType(): number;
-        /**
-         * @internal
-         * @return  是否需要渲染。
-         */
-        _prepareRender(state: RenderContext3D): boolean;
-        /**
          * @en Destroys the lens flare element geometry and releases its resources.
          * @zh 销毁镜头光晕元素几何体并释放其资源。
          */
         destroy(): void;
-        /**
-        * @internal
-        * UpdateGeometry Data
-        */
-        _updateRenderParams(state: RenderContext3D): void;
     }
     /**
      * @en Initialize the lens flare element shader.
@@ -21534,32 +16569,6 @@ declare namespace Laya {
      * @zh ScalableAO 类用于创建环境光遮罩效果。
      */
     class ScalableAO extends PostProcessEffect {
-        /**@internal */
-        static SHADERDEFINE_AOHigh: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_AOMEDIUM: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_LOWEST: ShaderDefine;
-        /**@internal */
-        static BlurDelty: number;
-        /**@internal */
-        static AOColor: number;
-        /**@internal */
-        static aoTexture: number;
-        /**@internal */
-        static AOParams: number;
-        /**@internal */
-        static SourceTex: number;
-        /**@internal */
-        static deltyHorizontal: Vector2;
-        /**@internal */
-        static deltyVector: Vector2;
-        /**
-         * @internal
-         * @en ScaleAO resource init
-         * @zh 初始化AO资源
-         */
-        static init(): void;
         private _shader;
         /** shader data */
         private _shaderData;
@@ -21622,29 +16631,10 @@ declare namespace Laya {
         static renderOBJCreate: IRenderEngine3DOBJFactory;
     }
     /**
-     * @internal
-     */
-    class skinnedMatrixCache {
-        readonly subMeshIndex: number;
-        readonly batchIndex: number;
-        readonly batchBoneIndex: number;
-        constructor(subMeshIndex: number, batchIndex: number, batchBoneIndex: number);
-    }
-    /**
      * @en Mesh class is used to create a template for file mesh data.
      * @zh Mesh 类用于创建文件网格数据模板。
      */
     class Mesh extends Resource implements IClone {
-        /**@internal */
-        static MESH_INSTANCEBUFFER_TYPE_NORMAL: number;
-        /**@internal */
-        static MESH_INSTANCEBUFFER_TYPE_SIMPLEANIMATOR: number;
-        /**@internal */
-        _convexMesh: any;
-        /**@internal */
-        _triangleMesh: any;
-        /**@internal */
-        __convexMesh: Mesh;
         /**
          * @deprecated 请使用Loader.load(url:string, type: ILaya.Loader.MESH)
          * @en Loads a mesh template from the specified URL and calls the complete callback upon completion.
@@ -21660,47 +16650,11 @@ declare namespace Laya {
         private _maxVerticesUpdate;
         private _needUpdateBounds;
         private _bounds;
-        /** @internal */
-        _isReadable: boolean;
-        /** @internal */
-        _bufferState: BufferState;
-        /** @internal */
-        _instanceBufferState: BufferState;
-        /** @internal */
-        _instanceBufferStateType: number;
-        /**@internal */
-        _instanceWorldVertexBuffer: VertexBuffer3D;
-        /**@internal */
-        _instanceSimpleAniVertexBuffer: VertexBuffer3D;
-        /**@internal */
-        _instanceLightMapVertexBuffer: VertexBuffer3D;
-        /** @internal */
-        _subMeshes: SubMesh[];
-        /** @internal */
-        _vertexBuffer: VertexBuffer3D;
-        /** @internal */
-        _indexBuffer: IndexBuffer3D;
-        /** @internal */
-        _boneNames: string[];
-        /** @internal */
-        _inverseBindPoses: Matrix4x4[];
-        /** @internal */
-        _skinnedMatrixCaches: skinnedMatrixCache[];
-        /** @internal */
-        _vertexCount: number;
-        /** @internal */
-        _indexFormat: IndexFormat;
-        /** @internal */
-        instanceLightMapScaleOffsetData: Float32Array;
         /**
          * @en Morph target data for the mesh.
          * @zh 网格的变形目标数据。
          */
         morphTargetData: MorphTargetData;
-        /** @internal */
-        _width: number;
-        /** @internal */
-        _height: number;
         /**
          * @en The array of inverse absolute bind poses for the mesh.
          * @zh 网格的全局默认绑定动作逆矩阵数组。
@@ -21732,6 +16686,16 @@ declare namespace Laya {
          * @zh 网格的索引格式。
          */
         get indexFormat(): IndexFormat;
+        /**
+         * @en The vertex buffer of the mesh. Used for GPU-side vertex data access (e.g., VFX compute shader instancing).
+         * @zh 网格的顶点缓冲区。用于 GPU 端顶点数据访问（如 VFX 计算着色器实例化渲染）。
+         */
+        get vertexBuffer(): VertexBuffer3D;
+        /**
+         * @en The index buffer of the mesh. Used for GPU-side index data access (e.g., VFX compute shader instancing).
+         * @zh 网格的索引缓冲区。用于 GPU 端索引数据访问（如 VFX 计算着色器实例化渲染）。
+         */
+        get indexBuffer(): IndexBuffer3D;
         set indexFormat(value: IndexFormat);
         /**
          * @en Constructor method, do not use.
@@ -21740,10 +16704,6 @@ declare namespace Laya {
          * @param isReadable 是否可读。
          */
         constructor(isReadable?: boolean);
-        /**
-         * @internal
-         */
-        private _getPositionElement;
         private _getVerticeElementData;
         private _setVerticeElementData;
         /**
@@ -21751,22 +16711,6 @@ declare namespace Laya {
          * @zh 销毁资源
          */
         protected _disposeResource(): void;
-        /**
-         *@internal
-         */
-        _setSubMeshes(subMeshes: SubMesh[]): void;
-        /**
-         * @internal
-         */
-        _setBuffer(vertexBuffer: VertexBuffer3D, indexBuffer: IndexBuffer3D): void;
-        /**
-         * @internal
-         */
-        _setInstanceBuffer(): void;
-        /**
-         * @internal
-         */
-        _uploadVerticesData(): void;
         /**
          * @en Retrieves a sub-mesh based on the index.
          * @param index The index of the sub-mesh.
@@ -21942,8 +16886,6 @@ declare namespace Laya {
          * @return 当前网格的克隆副本。
          */
         clone(): Mesh;
-        /** @internal */
-        _inverseBindPosesBuffer: ArrayBuffer;
     }
     /**
      * @en Utility class for mesh operations
@@ -21965,8 +16907,6 @@ declare namespace Laya {
      * @zh 表示3D建模中的变形目标
      */
     class MorphTarget {
-        /** @internal */
-        _index: number;
         /**
          * @en The name of the morph target
          * @zh 变形目标的名称
@@ -21990,8 +16930,6 @@ declare namespace Laya {
      * @zh 表示变形目标的通道
      */
     class MorphTargetChannel {
-        /** @internal */
-        _index: number;
         /**
          * @en The name of the morph target channel
          * @zh 变形目标通道的名称
@@ -22043,24 +16981,6 @@ declare namespace Laya {
          */
         elementCount: number;
         /**
-         * @internal
-         * @en The attribute offset vector.
-         * @zh 属性偏移向量。
-         */
-        attributeOffset: Vector4;
-        /**
-         * @internal
-         * @en The parameters vector.
-         * @zh 参数向量。
-         */
-        params: Vector4;
-        /**
-         * @internal
-         * @en The target texture for morph targets, used internally.
-         * @zh 用于变形目标的内部目标纹理。
-         */
-        targetTexture: Texture2DArray;
-        /**
          * @en The vertex declaration associated with the morph target data.
          * @zh 与变形目标数据关联的顶点声明。
          */
@@ -22098,18 +17018,6 @@ declare namespace Laya {
          */
         getMorphChannelbyIndex(index: number): MorphTargetChannel;
         /**
-         * @internal
-         * @en The count of morph targets.
-         * @zh 变形目标的计数。
-         */
-        get targetCount(): number;
-        /**
-         * @internal
-         * @en The count of morph target channels.
-         * @zh 变形目标通道的计数。
-         */
-        get channelCount(): number;
-        /**
          * @en Initializes the data for the morph targets.
          * @zh 初始化变形目标的数据。
          */
@@ -22133,10 +17041,6 @@ declare namespace Laya {
      */
     class PrimitiveMesh {
         static __init__(): void;
-        /**
-         * @internal
-         */
-        static _createMesh(vertexDeclaration: VertexDeclaration, vertices: Float32Array, indices: Uint16Array): Mesh;
         /**
          * @en Creates a box mesh.
          * @param long The length of the box. Default is 1.
@@ -22240,53 +17144,22 @@ declare namespace Laya {
          */
         static instance: SkyBox;
         /**
-         * @internal
-         */
-        static __init__(): void;
-        /**
          * @ignore
          * @en Creates an instance of SkyBox.
          * @zh 创建 SkyBox 的实例。
          */
         constructor();
-        /**
-         * @internal
-         * UpdateGeometry Data
-         */
-        _updateRenderParams(state: RenderContext3D): void;
     }
     /**
      * @en SkyDome class is used to create a sky dome.
      * @zh SkyDome 类用于创建天空球。
      */
     class SkyDome extends GeometryElement {
-        /**@internal */
-        private static _radius;
         /**
          * @en The singleton instance of the SkyDome.
          * @zh SkyDome的实例。
          */
         static instance: SkyDome;
-        /**
-         * @internal
-         */
-        static __init__(): void;
-        /**@internal */
-        private _stacks;
-        /**@internal */
-        private _slices;
-        /**
-         * @internal
-         * @en The number of stacks of the SkyDome.
-         * @zh SkyDome的堆数。
-         */
-        get stacks(): number;
-        /**
-         * @internal
-         * @en The number of slices of the SkyDome.
-         * @zh SkyDome的层数。
-         */
-        get slices(): number;
         /**
          * @en Creates an instance of SkyDome.
          * @param stacks The number of stacks of the SkyDome.
@@ -22296,37 +17169,12 @@ declare namespace Laya {
          * @param slices SkyDome的层数。
          */
         constructor(stacks?: number, slices?: number);
-        /**
-         * @internal
-         * UpdateGeometry Data
-         */
-        _updateRenderParams(state: RenderContext3D): void;
     }
     /**
      * @en SkyRenderer class used to implement sky rendering.
      * @zh SkyRenderer 类用于实现天空渲染器。
      */
     class SkyRenderer {
-        /**@internal */
-        static SUNLIGHTDIRECTION: number;
-        /**@internal */
-        static SUNLIGHTDIRCOLOR: number;
-        /**@internal */
-        static SKYVIEWMATRIX: number;
-        /**@internal */
-        static SKYPROJECTIONMATRIX: number;
-        /**@internal */
-        static SKYPROJECTIONVIEWMATRIX: number;
-        /**
-         * @internal
-         */
-        static __init__(): void;
-        /** @internal */
-        private _material;
-        /** @internal */
-        private _mesh;
-        /** @internal */
-        _baseRenderNode: IBaseRenderNode;
         private _renderData;
         private _renderGeometry;
         private _cacheRenderElement;
@@ -22356,23 +17204,12 @@ declare namespace Laya {
         constructor();
         protected _isMaterialVaild(value: Material): boolean;
         /**
-         * @internal
-         * 是否可用。
-         */
-        _isAvailable(): boolean;
-        /** @internal */
-        renderUpdate(context: RenderContext3D): void;
-        /**
          * @en Sets the render element for the sky.
          * @param skyRenderElement The render element to set.
          * @zh 设置天空的渲染元素。
          * @param skyRenderElement 要设置的渲染元素。
          */
         setRenderElement(skyRenderElement: SkyRenderElement): void;
-        /**
-         * @internal
-         */
-        destroy(): void;
     }
     /**
      * @en SubMesh class used to create submesh data template.
@@ -22380,28 +17217,6 @@ declare namespace Laya {
      * @blueprintIgnore
      */
     class SubMesh extends GeometryElement {
-        /**@internal */
-        private static _type;
-        /** @internal */
-        _mesh: Mesh;
-        /** @internal */
-        _boneIndicesList: Uint16Array[];
-        /** @internal */
-        _subIndexBufferStart: number[];
-        /** @internal */
-        _subIndexBufferCount: number[];
-        /** @internal */
-        _indexInMesh: number;
-        /** @internal */
-        _indexStart: number;
-        /** @internal */
-        _indexCount: number;
-        /** @internal */
-        _indices: Uint16Array | Uint32Array;
-        /**@internal [只读]*/
-        _vertexBuffer: VertexBuffer3D;
-        /**@internal [只读]*/
-        _indexBuffer: IndexBuffer3D;
         /**
          * @en The number of indices.
          * @zh 索引的数量。
@@ -22414,25 +17229,6 @@ declare namespace Laya {
          * @param mesh  网格数据模板。
          */
         constructor(mesh: Mesh);
-        /**
-         * @internal
-         */
-        _setIndexRange(indexStart: number, indexCount: number, indexFormat?: IndexFormat): void;
-        /**
-         * @internal
-         * @override
-         */
-        _getType(): number;
-        /**
-         * @internal
-         * @override
-         */
-        _prepareRender(state: RenderContext3D): boolean;
-        /**
-         * @internal
-         * @override
-         */
-        _updateRenderParams(state: RenderContext3D): void;
         /**
          * @en Copies and gets a copy of the submesh index data.
          * @returns A copy of the indices.
@@ -22454,27 +17250,8 @@ declare namespace Laya {
          */
         destroy(): void;
     }
-    /**
-     * 贴图生成器
-     * @internal
-     */
-    class TextureGenerator {
-        constructor();
-        static lightAttenTexture(x: number, y: number, maxX: number, maxY: number, index: number, data: Uint8Array): void;
-        static haloTexture(x: number, y: number, maxX: number, maxY: number, index: number, data: Uint8Array): void;
-        static _generateTexture2D(texture: Texture2D, textureWidth: number, textureHeight: number, func: Function): void;
-    }
     class BlinnPhongShaderInit {
         static init(): void;
-    }
-    /**
-     * @internal
-     */
-    class PBRDefaultDFG {
-        private static _defaultDFG;
-        static get defaultDFG(): Texture2D;
-        static set defaultDFG(value: Texture2D);
-        static DefaultDfgTexture(): void;
     }
     class PBRShaderLib {
         /**
@@ -22518,16 +17295,6 @@ declare namespace Laya {
     class BlitScreenShaderInit {
         static init(): void;
     }
-    /**
-     * @internal
-     * <code>ShaderInit</code> 类用于初始化内置Shader。
-     */
-    class ShaderInit3D {
-        /**
-         * @internal
-         */
-        static __init__(): void;
-    }
     class SkyBoxShaderInit {
         static init(): void;
     }
@@ -22539,77 +17306,6 @@ declare namespace Laya {
     }
     class UnlitShaderInit {
         static init(): void;
-    }
-    /**
-     * @internal
-     * @en ShadowCasterPass class used to implement the shadow rendering pipeline.
-     * @zh ShadowCasterPass 类用于实现阴影渲染管线。
-     */
-    class ShadowCasterPass {
-        static ShadowUniformMap: CommandUniformMap;
-        /** @internal */
-        static SHADOW_BIAS: number;
-        /** @internal */
-        static SHADOW_LIGHT_DIRECTION: number;
-        /** @internal */
-        static SHADOW_SPLIT_SPHERES: number;
-        /** @internal */
-        static SHADOW_MATRICES: number;
-        /** @internal */
-        static SHADOW_MAP_SIZE: number;
-        /** @internal */
-        static SHADOW_MAP: number;
-        /** @internal */
-        static SHADOW_PARAMS: number;
-        /** @internal */
-        static SHADOW_SPOTMAP_SIZE: number;
-        /** @internal */
-        static SHADOW_SPOTMAP: number;
-        /** @internal */
-        static SHADOW_SPOTMATRICES: number;
-        /**
-         * @internal
-         * init Scene UniformMap
-         */
-        static __init__(): void;
-        /** @internal */
-        private _shadowDirectLightMap;
-        /** @internal */
-        private _shadowSpotLightMap;
-        /**
-         * @en Create a new instance of ShadowCasterPass.
-         * @zh 创建  ShadowCasterPass 类的新实例。
-         */
-        constructor();
-        /**
-         * @en Retrieve the shadow map for a directional light.
-         * @param light The directional light component.
-         * @returns The shadow map texture for the directional light.
-         * @zh 获取方向光的阴影贴图。
-         * @param light 方向光组件。
-         * @returns 方向光的阴影贴图纹理。
-         */
-        getDirectLightShadowMap(light: IDirectLightData): RenderTexture;
-        /**
-         * @en Retrieve the shadow pass data for a spot light.
-         * @param light The spot light component.
-         * @returns The shadow map texture for the spot light.
-         * @zh 获取聚光灯的阴影通道数据。
-         * @param light 聚光灯组件。
-         * @returns 聚光灯的阴影贴图纹理。
-         */
-        getSpotLightShadowPassData(light: ISpotLightData): RenderTexture;
-        /**
-         * @en Retrieve the shadow pass data for a point light.
-         * @zh 获取点光源的阴影通道数据。
-         */
-        getPointLightShadowPassData(): void;
-        /**
-         * @internal
-         * @en Clean up shadow data.
-         * @zh 清理阴影数据。
-         */
-        cleanUp(): void;
     }
     /**
      * @en Shadow Light enum
@@ -22753,79 +17449,6 @@ declare namespace Laya {
         /**
          * @en Create a new instance of ShadowSpotData.
          * @zh 创建 ShadowSpotData 类的新实例。
-         */
-        constructor();
-        destroy(): void;
-    }
-    /**
-     * @internal
-     * @en Shadow Slice Data.
-     * @zh 阴影分割数据。
-     */
-    class ShadowSliceData {
-        /**
-         * @en Shader data associated with the shadow slice.
-         * @zh 与阴影切片关联的着色器数据。
-         */
-        cameraShaderValue: ShaderData;
-        /**
-         * @en Position of the shadow slice in world space.
-         * @zh 阴影切片在世界空间中的位置。
-         */
-        position: Vector3;
-        /**
-         * @en X-axis offset for the shadow map.
-         * @zh 阴影贴图的X轴偏移。
-         */
-        offsetX: number;
-        /**
-         * @en Y-axis offset for the shadow map.
-         * @zh 阴影贴图的Y轴偏移。
-         */
-        offsetY: number;
-        /**
-         * @en Resolution of the shadow map for the slice.
-         * @zh 阴影切片的阴影贴图分辨率。
-         */
-        resolution: number;
-        /**
-         * @en View matrix of the shadow slice camera.
-         * @zh 阴影切片摄像机的视图矩阵。
-         */
-        viewMatrix: Matrix4x4;
-        /**
-         * @en Projection matrix of the shadow slice camera.
-         * @zh 阴影切片摄像机的投影矩阵。
-         */
-        projectionMatrix: Matrix4x4;
-        /**
-         * @en Combined view and projection matrix for the shadow slice camera.
-         * @zh 阴影切片摄像机的视图投影矩阵。
-         */
-        viewProjectMatrix: Matrix4x4;
-        /**
-         * @en Array of planes used for culling in the shadow slice.
-         * @zh 阴影切片中用于裁剪的平面数组。
-         */
-        cullPlanes: Array<Plane>;
-        /**
-         * @en Total count of culling planes.
-         * @zh 裁剪平面的总数。
-         */
-        cullPlaneCount: number;
-        /**
-         * @en Bounding sphere for the shadow slice.
-         * @zh 阴影切片的包围球体。
-         */
-        splitBoundSphere: BoundSphere;
-        /**
-         * @en Center Z coordinate of the bounding sphere for culling.
-         * @zh 用于裁剪的包围球体的中心Z坐标。
-         */
-        sphereCenterZ: number;
-        /**
-         * @en Create a new instance of ShadowSliceData.
-         * @zh 创建 ShadowSliceData 类的新实例。
          */
         constructor();
         destroy(): void;
@@ -23046,10 +17669,6 @@ declare namespace Laya {
      */
     class Utils3D {
         /**
-         * @internal
-         */
-        static _createFloatTextureBuffer(width: number, height: number): Texture2D;
-        /**
          *通过数平移、旋转、缩放值计算到结果矩阵数组,骨骼动画专用。
          * @param tx left矩阵数组。
          * @param ty left矩阵数组的偏移。
@@ -23085,16 +17704,6 @@ declare namespace Laya {
          * @returns 若P在三角形内，返回true，否则返回false。
          */
         static PointinTriangle(A: Vector3, B: Vector3, C: Vector3, P: Vector3): boolean;
-        /** @internal */
-        static _computeBoneAndAnimationDatasByBindPoseMatrxix(bones: any, curData: Float32Array, inverGlobalBindPose: Matrix4x4[], outBonesDatas: Float32Array, outAnimationDatas: Float32Array, boneIndexToMesh: number[]): void;
-        /** @internal */
-        static _computeAnimationDatasByArrayAndMatrixFast(inverGlobalBindPose: Matrix4x4[], bonesDatas: Float32Array, outAnimationDatas: Float32Array, boneIndexToMesh: number[]): void;
-        /** @internal */
-        static _computeBoneAndAnimationDatasByBindPoseMatrxixOld(bones: any, curData: Float32Array, inverGlobalBindPose: Matrix4x4[], outBonesDatas: Float32Array, outAnimationDatas: Float32Array): void;
-        /** @internal */
-        static _computeAnimationDatasByArrayAndMatrixFastOld(inverGlobalBindPose: Matrix4x4[], bonesDatas: Float32Array, outAnimationDatas: Float32Array): void;
-        /** @internal */
-        static _computeRootAnimationData(bones: any, curData: Float32Array, animationDatas: Float32Array): void;
         /**
          * @en Rotates a 3D vector using a quaternion.
          * @param sourceArray The source vector components in a Float32Array.
@@ -23219,10 +17828,6 @@ declare namespace Laya {
          */
         static transformVector3ArrayToVector3ArrayNormal(source: Float32Array, sourceOffset: number, transform: Matrix4x4, result: Float32Array, resultOffset: number): void;
         /**
-         * @internal
-         */
-        static transformLightingMapTexcoordArray(source: Float32Array, sourceOffset: number, lightingMapScaleOffset: Vector4, result: Float32Array, resultOffset: number): void;
-        /**
          * @en Retrieves the version string from a URL.
          * @param url The URL to extract the version from.
          * @returns The version string or null if not found.
@@ -23231,18 +17836,6 @@ declare namespace Laya {
          * @returns 版本字符串或null。
          */
         static getURLVerion(url: string): string;
-        /**
-         * @internal
-         */
-        static _createAffineTransformationArray(trans: Vector3, rot: Quaternion, scale: Vector3, outE: Float32Array): void;
-        /**
-         * @internal
-         */
-        static _mulMatrixArray(left: Float32Array, right: Float32Array, rightOffset: number, outArray: Float32Array, outOffset: number): void;
-        /**@internal */
-        private static arcTanAngle;
-        /**@internal */
-        static angleTo(from: Vector3, location: Vector3, angle: Vector3): void;
         /**
          * @en Applies a rotation to a 3D vector using a quaternion.
          * @param source The original 3D vector.
@@ -23265,45 +17858,6 @@ declare namespace Laya {
          * @param e 目标数据。
          */
         static quaternionWeight(f: Quaternion, weight: number, e: Quaternion): void;
-        /**
-         * @internal
-         */
-        static quaternionConjugate(value: Quaternion, result: Quaternion): void;
-        /**
-         * @internal
-         */
-        static scaleWeight(s: Vector3, w: number, out: Vector3): void;
-        /**
-         * @internal
-         */
-        static scaleBlend(sa: Vector3, sb: Vector3, w: number, out: Vector3): void;
-        /**@internal */
-        static matrix4x4MultiplyFFF(a: Float32Array, b: Float32Array, e: Float32Array): void;
-        /**@internal */
-        static matrix4x4MultiplyMFM(left: Matrix4x4, right: Float32Array, out: Matrix4x4): void;
-        /**
-         * @internal
-         */
-        static _buildTexture2D(width: number, height: number, format: number, colorFunc: Function, mipmaps?: boolean): Texture2D;
-        /**
-         * @internal
-         */
-        static _drawBound(debugLine: PixelLineSprite3D, boundBox: BoundBox | Bounds, color: Color): void;
-        /**
-         * @internal
-         * @param rootSprite parent Sprite
-         * @param checkSprite check Sprite
-         * @param path pathArray
-         * @returns
-         */
-        static _getHierarchyPath(rootSprite: Node, checkSprite: Node, path: number[]): any[];
-        /**
-         * @internal
-         * @param rootSprite parentNode
-         * @param invPath PathArray
-         * @returns
-         */
-        static _getNodeByHierarchyPath(rootSprite: Node, invPath: number[]): Node;
         static _getParentNodeByHierarchyPath(rootSprite: Node, path: number[]): Node;
         /**
          * @deprecated 请使用uint8ArrayToArrayBufferAsync函数代替
@@ -23321,88 +17875,6 @@ declare namespace Laya {
          * @returns 一个 Promise，该 Promise 将解析为表示 RenderTexture 的 Base64 字符串。
          */
         static uint8ArrayToArrayBufferAsync(rendertexture: RenderTexture): Promise<String>;
-    }
-    /**
-     * @ignore 功能还没有实现完，开发者请勿使用。
-     * @internal
-     * 类用于创建WebXR摄像机。
-     */
-    class WebXRCamera extends Camera {
-        /**
-         * @internal
-         */
-        isWebXR: boolean;
-        /**
-         * WebXRSessionManager
-         */
-        private _webXRManager;
-        /**
-         * override client
-         */
-        private _clientWidth;
-        /**
-         * override client
-         */
-        private _clientHeight;
-        /**
-         * 自定义渲染场景的渲染目标。
-         */
-        get renderTarget(): RenderTexture;
-        /**
-         * @internal
-         */
-        set renderTarget(value: RenderTexture);
-        /**
-         * @internal
-         */
-        set clientWidth(value: number);
-        /**
-         * @internal
-         */
-        set clientHeight(value: number);
-        /**
-         * @internal
-         */
-        get clientWidth(): number;
-        /**
-         * @internal
-         */
-        get clientHeight(): number;
-        /**
-         * restore view state
-         * @internal
-         */
-        private _restoreView;
-        /**
-         * 渲染
-         * @override
-         * @param shader
-         * @param replacementTag
-         */
-        render(): void;
-        /**
-     * 渲染主流程
-     * @internal
-     * @param context 渲染上下文
-     * @param viewport 视口
-     * @param scene 场景
-     * @param shader shader
-     * @param replacementTag 替换标签
-     * @param needInternalRT 是否需要内部RT
-     */
-        _renderMainPass(context: RenderContext3D, viewport: Viewport, scene: Scene3D, shader: Shader3D, replacementTag: string, needInternalRT: boolean): void;
-        /**
-         * null function
-         */
-        protected _calculateProjectionMatrix(): void;
-        /**
-         * @internal
-         */
-        clear(gl: WebGLRenderingContext): void;
-        /**
-         * destroy
-         */
-        destroy(): void;
     }
     /**
      * @en This class is used to manage XRCamera
@@ -23598,25 +18070,6 @@ declare namespace Laya {
          */
         private axisData;
         /**
-         * 类用于创建轴数据
-         * @internal
-         * @param handness 轴设备名字
-         * @param length 轴数量
-         */
-        constructor(handness: string, length: number);
-        /**
-         * @internal
-         * @param padGameAxi 轴数据
-         */
-        update(padGameAxi: any): void;
-        /**
-         * 派发轴事件
-         * @internal
-         * @param value
-         * @param index
-         */
-        outPutStickValue(value: Vector2, index: number): void;
-        /**
          * @en Cleans up and removes all listeners for this gamepad's axis events.
          * @zh 清理并移除此游戏手柄轴的所有事件监听器。
          */
@@ -23666,46 +18119,6 @@ declare namespace Laya {
          */
         constructor(handness: string, index: number);
         /**
-         * @internal
-         * GamePadButton update
-         */
-        update(padButton: any): void;
-        /**
-         * @internal
-         * event touch enter
-         */
-        private touchEnter;
-        /**
-         * @internal
-         * event touch Stay
-         */
-        private touchStay;
-        /**
-         * @internal
-         * event touch Out
-         */
-        private touchOut;
-        /**
-         * @internal
-         * event press enter
-         */
-        private pressEnter;
-        /**
-         * @internal
-         * event press Stay
-         */
-        private pressStay;
-        /**
-         * @internal
-         * event press Out
-         */
-        private pressOut;
-        /**
-         * @internal
-         * event press value
-         */
-        private outpressed;
-        /**
          * @en Cleans up and removes all listeners for this gamepad's button events.
          * @zh 清理并移除此游戏手柄按钮的所有事件监听器。
          */
@@ -23728,10 +18141,6 @@ declare namespace Laya {
          * 预处理axis事件
          */
         private preAxisEventList;
-        /**
-         * @internal
-         */
-        _inputSource: any;
         /**
          * @en The last XR pose data.
          * @zh 上一次的 XR 姿态数据。
@@ -23780,13 +18189,6 @@ declare namespace Laya {
          * @param handness 设备名称，"left" 或 "right"。
          */
         constructor(handness: string);
-        /**
-         * 更新XRInput数据
-         * @internal
-         * @param xrFrame WebXR帧数据
-         * @param referenceSpace 参考空间
-         */
-        _updateByXRPose(xrFrame: any, referenceSpace: any): void;
         /**
          * handle gamepad Event
          */
@@ -23943,8 +18345,6 @@ declare namespace Laya {
      * @zh `WebXRRenderTexture` 类用来创建 WebXR 渲染的渲染纹理。
      */
     class WebXRRenderTexture extends RenderTexture {
-        /** @internal */
-        protected _frameBuffer: any;
         /**
          * @en The frame loop counter for the render texture.
          * @zh 渲染纹理的帧循环计数器。
@@ -24016,11 +18416,6 @@ declare namespace Laya {
         private _baseLayer;
         /**web XRSystem */
         private _xrNavigator;
-        /**
-         * @internal
-         * 类用来管理WebXR状态
-         */
-        constructor();
         /**
          * @en The current reference space used in this session.
          * @zh 当前会话中使用参考空间。
@@ -24459,10 +18854,6 @@ declare namespace Laya {
          * @returns 如果至少有两个方向的加速度差值超过阈值，则返回 true；否则返回 false。
          */
         private isShaked;
-        /** @internal @blueprintEvent */
-        Shake_bpEvent: {
-            [Event.CHANGE]: () => void;
-        };
     }
     /**
      * @ignore
@@ -24653,11 +19044,6 @@ declare namespace Laya {
          */
         static clearCache(key: string): void;
         protected _setFramesFromCache(name: string, showWarn?: boolean): boolean;
-        /** @internal @blueprintEvent */
-        Animation_bpEvent: {
-            [Event.COMPLETE]: () => void;
-            [Event.LABEL]: (label: string) => void;
-        };
     }
     class Area2D extends Sprite {
         private _mainCamera;
@@ -24667,19 +19053,13 @@ declare namespace Laya {
         get mainCamera(): Camera2D;
         _setMainCamera(camera: Camera2D): void;
         /**
-         * @internal
-         * @param ctx
-         * @param x
-         * @param y
+         * @en When a main camera exists, returns screen-sized bounds in Area2D local space,
+         * so that the parent's RT covers the full screen for correct post-processing.
+         * @zh 当存在主相机时，返回覆盖全屏的本地空间 bounds，
+         * 使父级 RT 为屏幕大小，后处理可覆盖相机全视野。
          */
-        render(): void;
+        getSelfBounds(out?: Rectangle, recursive?: boolean): Rectangle;
         _setBelongScene(scene: Node): void;
-        /**
-          * @internal
-          * @en Unset the node from its belong scene.
-          * @zh 从所属场景中移除节点。
-          */
-        _setUnBelongScene(): void;
         localToView(x: number, y: number, out?: Point): Point;
         /**
          * @en Convert screen coordinates to Area2D internal UI coordinates.
@@ -25321,8 +19701,6 @@ declare namespace Laya {
      * @zh 绘制图片命令
      */
     class DrawImageCmd implements IGraphicsCmd {
-        /** @internal */
-        _cacheData: any;
         /**
          * @en Identifier for the DrawImageCmd
          * @zh 绘制图片命令的标识符
@@ -26018,6 +20396,18 @@ declare namespace Laya {
          */
         percent: boolean;
         /**
+         * @en Minimum number of arc segments for a full circle (controls smoothness at small radii).
+         * @zh 圆弧最小分段数（整圆），控制小半径时的平滑度。
+         */
+        minNum: number;
+        /**
+         * @en Pixel step for arc segmentation. Smaller value = more segments = smoother arcs.
+         * The arc uses `max(circumference / segPixel, minNum)` segments.
+         * @zh 圆弧分段的像素步长。值越小分段越多、弧线越平滑。
+         * 实际分段数 = max(周长 / segPixel, minNum)。
+         */
+        segPixel: number;
+        /**
          * @en Create a DrawRoundRectCmd instance
          * @param x The X-axis position of the rounded rectangle
          * @param y The Y-axis position of the rounded rectangle
@@ -26047,7 +20437,7 @@ declare namespace Laya {
          * @param percent 位置和大小是否是百分比
          * @returns DrawRoundRectCmd 实例
          */
-        static create(x: number, y: number, width: number, height: number, lt: number, rt: number, lb: number, rb: number, fillColor: any, lineColor: any, lineWidth: number, percent?: boolean): DrawRoundRectCmd;
+        static create(x: number, y: number, width: number, height: number, lt: number, rt: number, lb: number, rb: number, fillColor: any, lineColor: any, lineWidth: number, percent?: boolean, minNum?: number, segPixel?: number): DrawRoundRectCmd;
         /**
          * @en Recycle to the object pool
          * @zh 回收到对象池
@@ -26083,8 +20473,6 @@ declare namespace Laya {
      * @zh 绘制单个贴图
      */
     class DrawTextureCmd implements IGraphicsCmd {
-        /** @internal */
-        _cacheData: any;
         /**
          * @en Identifier for the DrawTextureCmd
          * @zh 绘制单个贴图命令的标识符
@@ -26207,8 +20595,6 @@ declare namespace Laya {
      * @zh 根据坐标集合绘制多个贴图
      */
     class DrawTexturesCmd implements IGraphicsCmd {
-        /** @internal */
-        _cacheData: any;
         /**
          * @en Identifier for the DrawTexturesCmd
          * @zh 根据坐标集合绘制多个贴图命令的标识符
@@ -26269,12 +20655,17 @@ declare namespace Laya {
         get cmdID(): string;
     }
     /**
+     * @en Split large triangle meshes into batches when vertex count exceeds the GPU index buffer limit.
+     * Uint16Array indices can only reference vertices 0-65535, and the engine's dynamic VB limit is MAX_VERTEX (32768).
+     * @zh 当顶点数超过 GPU 索引缓冲区限制时，将大型三角形网格拆分为多个批次。
+     * Uint16Array 索引只能引用 0-65535 的顶点，引擎动态 VB 限制为 MAX_VERTEX (32768)。
+     */
+    function drawTrianglesBatched(runner: GraphicsRunner, tex: Texture | BaseTexture, x: number, y: number, vertices: Float32Array, uvs: Float32Array, indices: Uint16Array, matrix: Matrix | null, alpha: number, blendMode: string | null, colorNum: number | null, colors: Float32Array | null, uvRange: ArrayLike<number> | null): void;
+    /**
      * @en Draw triangles command
      * @zh 绘制三角形命令
      */
     class DrawTrianglesCmd implements IGraphicsCmd {
-        /** @internal */
-        _cacheData: any;
         /**
          * @en Identifier for the DrawTrianglesCmd
          * @zh 绘制三角形命令的标识符
@@ -26330,13 +20721,12 @@ declare namespace Laya {
          * @zh 颜色变换。
          */
         color: number | null;
+        colors: ArrayLike<number> | null;
         /**
          * @en Mesh factory for creating the mesh.
          * @zh 用于创建网格的工厂。
          */
         mesh: IMeshFactory;
-        /** @internal 标记 */
-        _dynamic: Vector4;
         private _tempUVs;
         /**
          * @en Create a DrawTrianglesCmd instance
@@ -26499,11 +20889,6 @@ declare namespace Laya {
          * @zh 阴影颜色
          */
         shadowColor: string;
-        /**
-         * @internal
-         * Text组件已经将宽度计算好了，这里传入可以减少重复测量
-         */
-        _preMeasuredWidth: number;
         private _font;
         private _renderInfo;
         /**
@@ -27356,7 +21741,6 @@ declare namespace Laya {
      */
     class Graphics {
         /**
-         * @internal
          * @en Add global Uniform Data Map
          * @param propertyID The ID of the property
          * @param propertyKey The key of the property
@@ -27369,21 +21753,9 @@ declare namespace Laya {
         static add2DGlobalUniformData(propertyID: number, propertyKey: string, uniformtype: ShaderDataType): void;
         /** @readonly */
         owner: Sprite | null;
-        /** @internal 是否优先使用精灵状态 */
-        _useSpriteState: boolean;
-        /**
-         * @internal
-         * @en Whether to return graphics bounds as the sprite rect, instead of the bounds calculated from the commands.
-         * @zh 是否返回graphics边界为精灵矩形，而不是从命令计算的边界。对于像文本这种情况，可以优化效率。
-         */
-        _useSpriteRect: boolean;
         private _cmds;
         private _graphicBounds;
         private _material;
-        /** @internal */
-        _modified: number;
-        /** @internal 需要响应布局变化的cmd计数 */
-        private _layoutRepaintCount;
         /**
         * @en Whether to use sprite state.
         * @zh graphics是否优先使用精灵状态。
@@ -27391,8 +21763,6 @@ declare namespace Laya {
         */
         get useSpriteState(): boolean;
         set useSpriteState(value: boolean);
-        /** @internal 是否需要缓存 */
-        needCache: boolean;
         /**@ignore @blueprintIgnore */
         constructor();
         /**
@@ -27416,13 +21786,6 @@ declare namespace Laya {
          * @zh 重绘此对象。
          */
         repaint(): void;
-        /**
-         * @internal
-         * @en Get the count of commands that need to respond to layout changes.
-         * @zh 获取需要响应布局变化的命令数量。
-         * @returns The count of commands that need layout repaint.
-         */
-        getLayoutRepaintCount(): number;
         /**
          * @en Command flow. All drawing commands are stored.
          * @zh 命令流。存储了所有绘制命令。
@@ -27833,7 +22196,7 @@ declare namespace Laya {
          * @param lineWidth （可选）边框宽度。默认为1。
          * @param percent （可选）位置和大小是否是百分比值
          */
-        drawRoundRect(x: number, y: number, width: number, height: number, lt: number, rt: number, lb: number, rb: number, fillColor: any, lineColor?: any, lineWidth?: number, percent?: boolean): DrawRoundRectCmd;
+        drawRoundRect(x: number, y: number, width: number, height: number, lt: number, rt: number, lb: number, rb: number, fillColor: any, lineColor?: any, lineWidth?: number, percent?: boolean, minNum?: number, segPixel?: number): DrawRoundRectCmd;
         /**
          * @en Draw a circle.
          * @param x X-axis position of the circle center
@@ -27997,8 +22360,6 @@ declare namespace Laya {
          * @zh 如果为true，则不自动回收
          */
         lock?: boolean;
-        /** @internal */
-        _cacheData?: any;
         /**
          *
          * @param runner
@@ -28180,6 +22541,7 @@ declare namespace Laya {
          */
         get prompt(): string;
         set prompt(value: string);
+        get localizedPrompt(): string;
         /**
          * @en Enter the prompt color.
          * @zh 输入提示文本的颜色。
@@ -28234,14 +22596,6 @@ declare namespace Laya {
          * @zh 选中当前实例的所有文本。
          */
         select(): void;
-        /** @internal @blueprintEvent */
-        Input_bpEvent: {
-            [Event.CHANGE]: () => void;
-            [Event.INPUT]: () => void;
-            [Event.ENTER]: () => void;
-            [Event.FOCUS]: () => void;
-            [Event.BLUR]: () => void;
-        };
     }
     class CircleMesh implements IMeshFactory {
         onPopulateMesh(vb: VertexStream): void;
@@ -28411,52 +22765,9 @@ declare namespace Laya {
         protected _reactiveBits: number;
         protected _hideFlags: number;
         /**
-         * @internal
-         * @en Child object collection, please do not modify this object directly.
-         * @zh 子对象集合，请不要直接修改此对象。
-         */
-        _children: Node[];
-        /**
-         * @internal
-         * @en Parent node object.
-         * @zh 父节点对象。
-         */
-        _parent: Node;
-        /**
-         * @internal
-         * @en Whether it has been destroyed.
-         * @zh 是否已经被销毁。
-         */
-        _destroyed: boolean;
-        /**@internal */
-        _conchData: any;
-        /**@internal */
-        _componentDriver: ComponentDriver;
-        /**
          * 0-2D节点，1-3D节点，2-New UI节点
          */
         _nodeType: number;
-        /**
-         * @internal
-         * 可以为节点定义一个容器节点，后续addChild等操作会默认添加到这个容器节点中，而不是本节点
-         */
-        _$container: Node;
-        /**
-         * @internal
-         * 当节点具有_$container节点后，_$container的孩子节点的_$parent属性指向本节点
-         */
-        _$parent: Node;
-        /**
-         * @internal
-         * 当节点具有_$container节点后，它的_$children属性会指向_$container的_children
-         */
-        _$children: Node[];
-        /**
-         * @internal
-         * @en the URL of the resource.
-         * @zh 资源的URL。
-         */
-        _url: string;
         /**
          * @ignore
          * @en Extra data of the node.
@@ -28498,12 +22809,6 @@ declare namespace Laya {
         /** @ignore  @blueprintIgnore */
         constructor();
         /**
-        * @internal
-        * @en Initialize the node.
-        * @zh 初始化节点。
-        */
-        _initialize(): void;
-        /**
          * @en Set a specific bit of the node.
          * @param bit The bit to set.
          * @param value The value to set, true or false.
@@ -28532,14 +22837,6 @@ declare namespace Laya {
          * @param value The value to set, true or false.
          */
         protected _onSetBit(bit: number, value: boolean): void;
-        /**
-         * @internal
-         * @en Set a specific bit up the parent chain.
-         * @param type The bit type to set.
-         * @zh 向上设置父节点链的特定位。
-         * @param type 要设置的位类型。
-         */
-        _setBitUp(type: number): void;
         /**
          * @en Start listening to a specific event type.
          * This method sets the DISPLAY flag if the event type is DISPLAY or UNDISPLAY and the node is not already marked as displayed.
@@ -28611,12 +22908,12 @@ declare namespace Laya {
         /**
          * @en Insert a child node at a specific index.
          * @param node The child node to be inserted.
-         * @param index The index at which the child node will be inserted.
-         * @returns The inserted child node.
+         * @param index The index.
+         * @returns The inserted child node.Throws `OutOfRangeError` if the index is out of range [0, childCount].
          * @zh 在指定的索引位置插入子节点。
-         * @param node 节点对象。
-         * @param index 索引位置。
-         * @returns 返回添加的节点。
+         * @param node 要插入的子节点对象。
+         * @param index 索引。
+         * @returns 返回添加的节点。如果索引超出范围 [0, 子节点数量]，则抛出 `OutOfRangeError`。
          */
         addChildAt<T extends Node>(node: T, index: number): T;
         /**
@@ -28651,14 +22948,14 @@ declare namespace Laya {
          */
         getChildByName<T extends Node = ChildType<this>>(name: string, classType?: new (...args: any[]) => T): T;
         /**
-         * @en Get a child node by its index.
-         * @param index The index of the child node.
+         * @en Get a child node by index.
+         * @param index The index.
          * @param classType Optional child node type, used to specify the type of the returned child node.
-         * @returns The child node at the specified index, or null if the index is out of range.
-         * @zh 根据子节点的索引位置获取子节点对象。
-         * @param index 索引位置。
+         * @returns The child node at the specified index.OutOfRangeError If the index is out of range.
+         * @zh 根据索引获取子节点对象。
+         * @param index 索引。
          * @param classType 可选的子节点类型，用于明确返回子节点的类型。
-         * @returns 指定索引处的子节点，如果索引超出范围，则为空。
+         * @returns 指定索引处的子节点。索引超出范围时抛出OutOfRangeError。
          */
         getChildAt<T extends Node = ChildType<this>>(index: number, classType?: new (...args: any[]) => T): T;
         /**
@@ -28705,10 +23002,6 @@ declare namespace Laya {
          * @returns
          */
         setChildIndexBefore(node: Node, index: number): number;
-        /**
-         * @internal
-         */
-        _setChildIndex(node: Node, oldIndex: number, index: number): number;
         /**
          * @en Callback when a child node changes.
          * @param child The child node that has changed.
@@ -28781,21 +23074,6 @@ declare namespace Laya {
          */
         replaceChild(newNode: Node, oldNode: Node): Node;
         /**
-         * @internal
-         * 为节点设置一个容器节点，这样后续addChild等操作会默认添加到这个容器节点中，而不是自身
-         */
-        _setContainer(container: Node): void;
-        /**
-         * @internal
-         * 当节点成为容器节点后，addChild操作会作用到容器节点上，如果需要添加到自身，可以通过这个方法恢复
-         */
-        _addChild(node: Node, index?: number): Node;
-        /**
-         * @internal
-         * 当节点成为容器节点后，removeChild操作会作用到容器节点上，如果需要移除自身的孩子，可以通过这个方法恢复
-        */
-        _removeChild(node: Node): Node;
-        /**
          * @en The number of child nodes.
          * @zh 子对象数量。
          */
@@ -28826,14 +23104,6 @@ declare namespace Laya {
          * @zh 表示是否在显示列表中显示。
          */
         get displayedInStage(): boolean;
-        /**
-         * @internal
-         * @en Set the display status of the node.
-         * @param value The display status.
-         * @zh 设置节点的显示状态。
-         * @param value 显示状态。
-         */
-        _setDisplay(value: boolean): void;
         /**
         * @en Set the display state of a node's children.
         * @param node The node whose children's display state needs to change.
@@ -28948,12 +23218,6 @@ declare namespace Laya {
         protected _components: Component[];
         private _activeChangeScripts;
         /**
-        * @internal
-        * @en The scene this node belongs to.
-        * @zh 该节点所属的场景。
-        */
-        _scene: Node;
-        /**
          * @en Get the scene this node belongs to.
          * @zh 获取该节点所属的场景。
          */
@@ -29019,50 +23283,6 @@ declare namespace Laya {
          */
         onDisable(): void;
         /**
-         * @internal
-         */
-        _parse(data: any, spriteMap: any): void;
-        /**
-        * @internal
-        * @en Set the scene to which the node belongs.
-        * @param scene The scene the node belongs to.
-        * @zh 设置节点归属的场景。
-        * @param scene 节点所属的场景。
-        */
-        _setBelongScene(scene: Node): void;
-        /**
-         * @internal
-         * @en Unset the node from its belong scene.
-         * @zh 从所属场景中移除节点。
-         */
-        _setUnBelongScene(): void;
-        /**
-        * @internal
-        * @en Processes the active state of the node and its children in the hierarchy.
-        * @param active The active state to be set.
-        * @param fromSetter Whether the state is set from a setter.
-        * @zh 处理节点及其子节点在层级中的激活状态。
-        * @param active 设置的激活状态。
-        * @param fromSetter 是否由 setter 设置。
-        */
-        _processActive(active: boolean, fromSetter?: boolean): void;
-        /**
-         * @internal
-         * @en Activate the node and its children within the hierarchy. It marks the node and all its children as active, and adds eligible component scripts to the activation change list.
-         * @param activeChangeScripts The list of component scripts affected by the activation change.
-         * @zh 在层级中递归地激活节点及其子节点。这个方法将节点及其所有子节点标记为激活状态，并将符合条件的组件脚本添加到激活变更列表中。
-         * @param activeChangeScripts 存放激活状态变更的组件脚本列表。
-         */
-        _activeHierarchy(activeChangeScripts: any[], fromSetter?: boolean): void;
-        /**
-         * @internal
-         * @en Deactivates the current node, its components, and children recursively. Only the scripts that are marked as active will have their references pushed to `activeChangeScripts`.
-         * @param activeChangeScripts Array to hold the references of active scripts that are being deactivated.
-         * @zh 在层级中递归地停用当前节点、其组件和子节点。只有标记为活动的脚本才会将其引用推送到 `activeChangeScripts` 中。
-         * @param activeChangeScripts 用于保存正在被停用的活动脚本的引用的数组。
-         */
-        _inActiveHierarchy(activeChangeScripts: any[], fromSetter?: boolean): void;
-        /**
          * @en Handle the addition of the node to its parent.
          * This method is called when the node is added to a parent node, updating the active state and scene reference if applicable.
          * @zh 处理节点被添加到父节点时的操作。
@@ -29084,14 +23304,6 @@ declare namespace Laya {
          */
         protected _addComponentInstance(comp: Component): void;
         /**
-         * @internal
-         * @en Destroy a component on the node.
-         * @param comp The component to destroy.
-         * @zh 销毁节点上的组件。
-         * @param comp 要销毁的组件。
-         */
-        _destroyComponent(comp: Component): void;
-        /**
          * @en Destroy all components on the node.
          * @zh 销毁节点上的所有组件。
          */
@@ -29107,14 +23319,6 @@ declare namespace Laya {
          * @param action 执行的操作：0 表示添加，1 表示移除，2 表示全部销毁。
          */
         protected _componentsChanged?(comp: Component, action: 0 | 1 | 2): void;
-        /**
-        * @internal
-        * @en Clones the components from the current node to the destination object.
-        * @param destObject The destination object to clone the components to.
-        * @zh 将当前节点的组件克隆到指定的目标对象中。
-        * @param destObject 要克隆组件到的目标对象。
-        */
-        _cloneTo(destObject: Node, srcRoot: Node, dstRoot: Node): void;
         /**
          * @en Add a component instance to the node.
          * @param component The component instance.
@@ -29256,12 +23460,6 @@ declare namespace Laya {
     class PostProcess2D extends EventDispatcher {
         private _effects;
         private _enabled;
-        /**@internal */
-        _context: PostProcessRenderContext2D;
-        /**@internal */
-        _hasCleanRT: boolean;
-        /**@internal */
-        static init(): void;
         /**
          * @en Whether the post-processing effect is enabled.
          * @zh 是否启用后期处理效果。
@@ -29276,8 +23474,6 @@ declare namespace Laya {
          */
         get owner(): Sprite;
         set owner(value: Sprite);
-        /** @internal */
-        _checkEnabled(): boolean;
         /**
          * @en Refresh render
          * @zh 刷新渲染
@@ -29392,24 +23588,12 @@ declare namespace Laya {
           * @returns 选择到的 RenderTexture，如果没有匹配的，则返回 null。
           */
         getRenderTexture(width: number, height: number, colorFormat: RenderTargetFormat, depthFormat: RenderTargetFormat): RenderTexture2D;
-        /**
-         * @internal
-         * @en Apply post-processing effects and recycle unused textures.
-         * @zh 应用后处理效果并回收纹理。
-         */
-        _apply(): void;
     }
     abstract class PostProcess2DEffect {
         protected _active: boolean;
         protected _owner: PostProcess2D;
         destroyed: boolean;
         protected _singleton: boolean;
-        /**
-         * @internal
-         * @en Whether only one instance of the effect can be added.
-         * @zh 是否只能添加一个效果实例。
-         */
-        get singleton(): boolean;
         /**
          * @en Whether the effect is enabled.
          * @zh 效果是否开启。
@@ -29474,6 +23658,29 @@ declare namespace Laya {
          */
         clear(): void;
     }
+    /**
+     * @en Bridge3D data holder interface. Contains only serializable configuration properties.
+     * @zh Bridge3D 数据持有者接口。仅包含可序列化的配置属性。
+     * @blueprintIgnore
+     */
+    interface IBridge3DData {
+        cameraZDistance: number;
+        cameraFarPlane: number;
+        readonly scene3dSettings: Record<string, any>;
+        readonly cameraSettings: Record<string, any>;
+    }
+    /**
+     * @en Bridge3D runtime manager interface. Internal use.
+     * @zh Bridge3D 运行时管理器接口。仅内部使用。
+     * @blueprintIgnore
+     */
+    interface IBridge3DSceneInternal {
+        scene3d: Scene3D;
+        sharedCamera: Camera;
+        applyData(data: IBridge3DData | null): void;
+        finalizeSetup(): void;
+        destroy(): void;
+    }
     /** @blueprintIgnore */
     interface ILight2DManager {
         preRenderUpdate(): void;
@@ -29512,19 +23719,29 @@ declare namespace Laya {
          * @param cla 实例
          */
         static regManager(type: string, cla: new (scene: Scene) => IElementComponentManager): void;
-        /** @internal */
-        static __init__(): void;
         /**
          * @en Whether to automatically destroy (destroy nodes and used resources) after the scene is closed, default is false
          * @zh 场景被关闭后，是否自动销毁（销毁节点和使用到的资源），默认为 false
          */
         autoDestroyAtClosed: boolean;
-        /** @internal */
-        _idMap?: any;
-        /** @internal */
-        _scene3D: Scene3D;
-        /** @internal */
-        _area2Ds: Set<Area2D>;
+        /**
+         * @en Factory for creating the Bridge3D runtime manager. Registered by the bridge module.
+         * @zh 创建 Bridge3D 运行时管理器的工厂。由 bridge 模块注册。
+         */
+        static bridge3DInternalHandler: ((scene: Scene) => IBridge3DSceneInternal) | null;
+        /**
+         * @en Bridge3D runtime manager. Returns a no-op stub when the Bridge3D module is not loaded.
+         * @zh Bridge3D 运行时管理器。Bridge3D 模块未加载时返回空实现。
+         */
+        get bridge3DInternal(): IBridge3DSceneInternal;
+        /**
+         * @en Bridge3D data holder (serializable configuration).
+         * Null when Bridge3D is not used in this scene.
+         * @zh Bridge3D 数据对象（可序列化配置）。
+         * 场景未使用 Bridge3D 时为 null。
+         */
+        get bridge3D(): IBridge3DData | null;
+        set bridge3D(data: IBridge3DData | null);
         /**
          * @en relative layout component
          * @zh 相对布局组件
@@ -29535,14 +23752,6 @@ declare namespace Laya {
          * @zh 场景时钟
          */
         private _timer;
-        /** @internal */
-        _componentElementDatasMap: any;
-        /**@internal */
-        _specialManager: Scene2DSpecialManager;
-        /**@internal */
-        _light2DManager: ILight2DManager;
-        /**@internal */
-        _globalRenderData: I2DGlobalRenderData;
         constructor();
         /**
          * @en The data map of component elements in the scene.
@@ -29603,6 +23812,8 @@ declare namespace Laya {
          * @blueprintEvent
          */
         onClosed(type?: string): void;
+        /** @ignore */
+        onAfterDeserialize(): void;
         /**
          * @en Destroy the scene.
          * @param destroyChild Whether to delete child nodes.
@@ -29657,21 +23868,7 @@ declare namespace Laya {
          */
         get centerY(): number;
         set centerY(value: number);
-        /**
-         * @internal
-         * @param ctx
-         * @param x
-         * @param y
-         */
-        render(x: number, y: number): void;
         setglobalRenderData(uniformIndex: number, type: ShaderDataType, value: ShaderDataItem): void;
-        /**
-         * @internal
-         * @param ctx
-         * @param x
-         * @param y
-         */
-        _preRenderUpdate(x: number, y: number): void;
         /**
          * @ignore
          */
@@ -29802,12 +23999,6 @@ declare namespace Laya {
         static hideLoadingPage(delay?: number): void;
     }
     class Camera2D extends Sprite {
-        /**@internal */
-        static shaderValueInit(): void;
-        /**@internal */
-        static VIEW2D: number;
-        /**@internal */
-        static SHADERDEFINE_CAMERA2D: ShaderDefine;
         private _cameraPos;
         private _cameraSmoothPos;
         private _firstUpdate;
@@ -29826,12 +24017,6 @@ declare namespace Laya {
         private _drag_Bottom;
         private _positionSmooth;
         private _positionSpeed;
-        /**@internal TODO*/
-        _renderTarget: RenderTexture;
-        /**@internal */
-        _isMain: boolean;
-        /**@internal */
-        _cameraRotation: number;
         /**
          * @en Whether to ignore rotation, if the value is true, the rotation value of camera2d will always be 0
          * @returns The x coordinate value.
@@ -29860,8 +24045,6 @@ declare namespace Laya {
          */
         get zoom(): Vector2;
         set zoom(value: Vector2);
-        /** @internal min_x max_x min_y max_y */
-        _rect: Vector4;
         /**
          * @en The left boundary of the camera position limit range
          * @zh 相机位置的限制范围的左边界
@@ -29969,11 +24152,6 @@ declare namespace Laya {
         onEnable(): void;
         onDisable(): void;
         private _onTransChanged;
-        /**
-         * @internal
-         * @returns
-         */
-        _getCameraTransform(): Matrix3x3;
     }
     class Graphic2DDynamicVIBuffer {
         static MAX_VERTEX: number;
@@ -29993,8 +24171,6 @@ declare namespace Laya {
         private _vertexDeclaration;
         private _vertexElementLength;
         private _vertexStride;
-        /** @internal 临时顶点数据 */
-        _tempVertexData: Float32Array;
         get vertexBuffer(): IVertexBuffer;
         get indexBuffer(): IIndexBuffer;
         get bufferState(): IBufferState;
@@ -30109,30 +24285,8 @@ declare namespace Laya {
         transformByMatrix(matrix: Matrix, tx: number, ty: number): void;
         drawRect(x: number, y: number, width: number, height: number, fillColor: any, lineColor: any, lineWidth: number): void;
         alpha(value: number): void;
-        /**@internal */
-        _transform(mat: Matrix, pivotX: number, pivotY: number): void;
-        /**@internal */
-        _rotate(angle: number, pivotX: number, pivotY: number): void;
-        /**@internal */
-        _scale(scaleX: number, scaleY: number, pivotX: number, pivotY: number): void;
-        /**@internal */
-        _drawLine(x: number, y: number, fromX: number, fromY: number, toX: number, toY: number, lineColor: string, lineWidth: number, vid: number): void;
-        /**@internal */
-        _drawLines(x: number, y: number, points: any[], lineColor: any, lineWidth: number, vid: number): void;
         drawCurves(x: number, y: number, points: any[], lineColor: any, lineWidth: number): void;
         private _fillAndStroke;
-        /**@internal */
-        _drawCircle(x: number, y: number, radius: number, fillColor: any, lineColor: any, lineWidth: number, vid: number): void;
-        /**@internal */
-        _drawEllipse(x: number, y: number, width: number, height: number, fillColor: any, lineColor: any, lineWidth: number): void;
-        /**@internal */
-        _drawRoundRect(x: number, y: number, width: number, height: number, lt: number, rt: number, lb: number, rb: number, fillColor: any, lineColor: any, lineWidth: number): void;
-        /**@internal */
-        _drawPie(x: number, y: number, radius: number, startAngle: number, endAngle: number, fillColor: any, lineColor: any, lineWidth: number, vid: number): void;
-        /**@internal */
-        _drawPoly(x: number, y: number, points: any[], fillColor: any, lineColor: any, lineWidth: number, isConvexPolygon: boolean, vid: number): void;
-        /**@internal */
-        _drawPath(x: number, y: number, paths: any[], brush: any, pen: any): void;
         /**
          * 释放所有资源
          */
@@ -30180,30 +24334,10 @@ declare namespace Laya {
         private _appendBlockInfo;
         fillRect(x: number, y: number, width: number, height: number, fillStyle?: any): void;
         fillTexture(texture: Texture, x: number, y: number, width: number, height: number, type: string, offset: Point, color: number): void;
-        /**@internal */
-        private _fillTexture;
         createSubmit(mesh: GraphicsMesh): SubmitBase;
         drawTexture(tex: Texture, x: number, y: number, width: number, height: number, color?: number): void;
         drawTextures(tex: Texture, pos: ArrayLike<number>, tx: number, ty: number, colors: number[]): void;
-        /**@internal */
-        _drawTextureM(tex: Texture, x: number, y: number, width: number, height: number, m: Matrix, alpha: number, uv: any[] | null, color: number): boolean;
-        /**@internal */
-        _setClipInfo(material: GraphicsShaderInfo): void;
         private isSameClipInfo;
-        /**
-         * @internal
-         * @param tex {Texture | RenderTexture }
-         * @param  imgid 图片id用来比较合并的
-         * @param x
-         * @param y
-         * @param width
-         * @param height
-         * @param m
-         * @param alpha
-         * @param uv
-         * @return
-         */
-        _inner_drawTexture(tex: Texture | BaseTexture, imgid: number, x: number, y: number, width: number, height: number, m: Matrix | null, uv: ArrayLike<number> | null, alpha: number, color: number, italicDeg?: number, pixelSnap?: boolean): boolean;
         /**
          * pt所描述的多边形完全在clip外边，整个被裁掉了
          * @param pt
@@ -30252,15 +24386,13 @@ declare namespace Laya {
          */
         lineTo(x: number, y: number): void;
         arcTo(x1: number, y1: number, x2: number, y2: number, r: number): void;
-        arc(cx: number, cy: number, rx: number, ry: number, startAngle: number, endAngle: number, counterclockwise?: boolean, b?: boolean, minNum?: number): void;
+        arc(cx: number, cy: number, rx: number, ry: number, startAngle: number, endAngle: number, counterclockwise?: boolean, b?: boolean, minNum?: number, segPixel?: number): void;
         quadraticCurveTo(cpx: number, cpy: number, x: number, y: number): void;
         /**
          * 把颜色跟当前设置的alpha混合
          * @return
          */
         mixRGBandAlpha(color: number): number;
-        /**@internal */
-        _mixRGBandAlpha(color: number, alpha: number): number;
         strokeRect(x: number, y: number, width: number, height: number, parameterLineWidth?: number): void;
         /*******************************************end矢量绘制***************************************************/
         drawParticle(x: number, y: number, pt: any): void;
@@ -30279,10 +24411,6 @@ declare namespace Laya {
          */
         private _reuseBlocks;
         appendData(vertices: ArrayLike<number>, indices: ArrayLike<number>, result: MeshBlockInfo, submit: SubmitBase, uvs: ArrayLike<number>, rgba: number, matrix: Matrix, uvrect: ArrayLike<number>, useTex: boolean, colors?: ArrayLike<number>, uvRange?: ArrayLike<number>): number[];
-        /**@internal 使用已缓存的 submit 信息应用缓存 */
-        applyCachedSubmitInfo(submitInfo: SubmitCacheInfo): void;
-        /**@internal */
-        _applyCachedChunk(matrix: Matrix, total: MeshBlockInfo, submit: SubmitBase, chunk: GraphicsRunnerCacheChunk, dataViewIndex: number): number;
         /**
          * @en Default geometry
          * @zh 默认的geometry
@@ -30295,101 +24423,6 @@ declare namespace Laya {
         inv_geometry: IRenderGeometryElement;
         initDefalutMesh(): void;
     }
-    type GraphicBlockBucket = {
-        mesh: GraphicsMesh;
-        blocks: Record<number, I2DGraphicVertexDataView>;
-        indexs: number[];
-    };
-    /** @internal */
-    class GraphicsRenderer {
-        static _emptyList: IPrimitiveRenderElement2D[];
-        /** @internal */
-        _renderElements: IPrimitiveRenderElement2D[];
-        /**@internal */
-        _submits: FastSinglelist<SubmitBase>;
-        private _bufferBlocks;
-        owner: Sprite;
-        _struct: IRenderStruct2D;
-        texturesMap: Map<number, {
-            texture: Texture;
-            time: number;
-        }>;
-        _display: boolean;
-        private _renderDataHandle;
-        graphics: Graphics;
-        modified: number;
-        /** @internal 当前帧记录的块按 mesh 分组 */
-        _blockBuckets: GraphicBlockBucket[];
-        /** @internal 上一帧保留用于复用的块 */
-        _cachedBuckets: GraphicBlockBucket[];
-        constructor(owner: Sprite);
-        /** @internal */
-        private _onOwnerTransformChanged;
-        /**
-         * 设置Graphics对象
-         * @param graphics Graphics对象
-         */
-        setGraphics(graphics: Graphics): void;
-        /**
-          * @internal
-          */
-        _render(runner: GraphicsRunner, x?: number, y?: number): void;
-        /**
-         * @internal
-         */
-        onModified(): void;
-        /** @internal */
-        _checkDisplay(): void;
-        take(info: MeshBlockInfo): void;
-        clear(): void;
-        destroy(): void;
-        updateRenderElement(needSkipBufferUpdate: boolean): void;
-        setRenderElement(): void;
-        createSubmit(runner: GraphicsRunner): SubmitBase;
-        addResRef(res: Resource): void;
-        private _resourceRepaint;
-        /**
-         * @internal
-         */
-        protected _saveCache(): void;
-    }
-    /** @internal */
-    class SubStructRender {
-        private _subRenderPass;
-        private _subStruct;
-        private _sprite;
-        private _renderElement;
-        /** @internal 模拟sprite shaderdata */
-        private _shaderData;
-        private _handle;
-        private _submit;
-        private _internalInfo;
-        /** @internal 渲染区域 */
-        _rtRect: Rectangle;
-        _oriRect: Rectangle;
-        _logicMatrix: Matrix;
-        private _needUpdateVertexSize;
-        private _renderElements;
-        private _scaleX;
-        private _scaleY;
-        constructor();
-        bind(sprite: Sprite, subRenderPass: IRender2DPass, subStruct: IRenderStruct2D): void;
-        /**
-         * @internal 更新渲染区域
-         * @param rect
-         * @param scaleX
-         * @param scaleY
-         */
-        _updateRenderOffset(rect: Rectangle, oriRect: Rectangle, scaleX: number, scaleY: number): void;
-        private _updateLogicMatrix;
-        /**
-         * @internal
-         * @param oriRT
-         * @param destRT
-         */
-        _updateRenderTexture(oriRT: RenderTexture2D, destRT: RenderTexture2D): void;
-        destroy(): void;
-    }
     /**
      * 用于在 2D 中显示 Mesh2D 的节点
      */
@@ -30399,16 +24432,26 @@ declare namespace Laya {
          * @zh 默认Mesh2D渲染材质
          */
         static mesh2DDefaultMaterial: Material;
+        static defaultQuadMesh: Mesh2D;
         static __init__(): void;
         private _sharedMesh;
+        private _useUnitQuad;
+        private _activeMesh;
         _renderHandle: IMesh2DRenderDataHandle;
         private _textureTilingOffset;
         private _tilingOffset;
         private _texture;
+        private _size;
         protected _createRenderHandle(): IMesh2DRenderDataHandle;
         protected _initDefaultRenderData(): void;
         protected _isMaterialVaild(value: Material): boolean;
         renderUpdate(context: IRenderContext2D): void;
+        /**
+         * @en Whether to use the built-in unit quad mesh with size scaling
+         * @zh 是否使用内置单位四边形网格（配合 size 缩放）
+         */
+        set useUnitQuad(value: boolean);
+        get useUnitQuad(): boolean;
         /**
          * @en 2D Mesh
          * @zh 2D 渲染网格
@@ -30421,6 +24464,12 @@ declare namespace Laya {
          */
         set color(value: Color);
         get color(): Color;
+        /**
+         * @en Render size for unit quad scaling
+         * @zh 单位四边形的渲染尺寸
+         */
+        set size(value: Vector2);
+        get size(): Vector2;
         /**
          * @en Tiling offset
          * @zh 平铺偏移
@@ -30452,6 +24501,7 @@ declare namespace Laya {
          */
         set sharedMaterial(value: Material);
         get sharedMaterial(): Material;
+        private _applyUnitQuad;
         private _changeMesh;
         /**@ignore */
         constructor();
@@ -30490,10 +24540,6 @@ declare namespace Laya {
         private _shader;
         private _shaderData;
         private _renderElement;
-        /**
-         * @internal
-         */
-        _blitQuadCMDData: Blit2DQuadCMD;
         constructor();
         /**
          * @en The offset and scale for rendering.
@@ -30519,10 +24565,6 @@ declare namespace Laya {
          */
         set shaderData(value: ShaderData);
         /**
-         * @internal
-         */
-        getRenderCMD(): Blit2DQuadCMD;
-        /**
          * @en change render shader
          * @param shader use shader
          * @param shaderData data for shader
@@ -30535,10 +24577,6 @@ declare namespace Laya {
         recover(): void;
     }
     class Command2D {
-        /**@internal */
-        _commandBuffer: CommandBuffer2D;
-        /**@internal */
-        _context: IRenderContext2D;
         /**
          * @ignore
          */
@@ -30553,10 +24591,6 @@ declare namespace Laya {
          * @zh 回收渲染指令。
          */
         recover(): void;
-        /**
-         * @internal
-         */
-        getRenderCMD?(): IRenderCMD;
         destroy(): void;
     }
     /**
@@ -30568,11 +24602,6 @@ declare namespace Laya {
         private _name;
         private _scene;
         private _commands;
-        private _renderCMDs;
-        /**
-         * @internal
-         */
-        shaderData: ShaderData;
         /** @ignore */
         constructor(name?: string);
         /**
@@ -30581,6 +24610,7 @@ declare namespace Laya {
          */
         getName(): string;
         private cacheData;
+        private _cacheViewport;
         private _cacheContextState;
         private _recoverContextState;
         /**
@@ -30664,8 +24694,10 @@ declare namespace Laya {
          * @param clearColor clear color when change target
          * @param colorValue clear color value
          * @param invertY invert y coordinate
+         * @param viewportX viewport x offset
+         * @param viewportY viewport y offset
          */
-        setRenderTarget(renderTexture: IRenderTarget, clearColor: boolean, colorValue?: Color, invertY?: boolean): void;
+        setRenderTarget(renderTexture: IRenderTarget, clearColor: boolean, colorValue?: Color, invertY?: boolean, viewportX?: number, viewportY?: number): void;
         /**
          * 渲染元素位置指令
          * @param renderelement
@@ -30699,7 +24731,7 @@ declare namespace Laya {
          * @param material
          * @returns
          */
-        static create(mesh: Mesh2D, mat: Matrix, texture: BaseTexture, color: Color, material: Material): DrawMesh2DCMD;
+        static create(mesh: Mesh2D, mat: Matrix, texture: BaseTexture | Texture, color: Color, material: Material): DrawMesh2DCMD;
         private _drawElementData;
         private _renderElements;
         private _shaderData;
@@ -30710,6 +24742,7 @@ declare namespace Laya {
         private _color;
         private _renderColor;
         private _texture;
+        private _textureTilingOffset;
         private _tilingOffset;
         constructor();
         _setMatrix(value: Matrix): void;
@@ -30717,16 +24750,10 @@ declare namespace Laya {
         get material(): Material;
         set mesh(value: Mesh2D);
         get mesh(): Mesh2D;
-        set texture(value: BaseTexture);
-        get texture(): BaseTexture;
+        set texture(value: BaseTexture | Texture);
+        get texture(): BaseTexture | Texture;
         set color(value: Color);
         get color(): Color;
-        /**
-         * @override
-         * @internal
-         * @returns
-         */
-        getRenderCMD(): Draw2DElementCMD;
         /**
          * @en Runs the  command.
          * @zh 运行命令。
@@ -30756,8 +24783,6 @@ declare namespace Laya {
          */
         get renderElement(): IRenderElement2D;
         set renderElement(value: IRenderElement2D);
-        /**@internal */
-        _drawElementCMDData: Draw2DElementCMD;
         constructor();
         _setMatrix(value: Matrix): void;
         run(): void;
@@ -30769,13 +24794,6 @@ declare namespace Laya {
          */
         recover(): void;
         /**
-        * @override
-        * @internal
-        * @en Gets the render command data.
-        * @zh 获取渲染命令数据。
-        */
-        getRenderCMD(): Draw2DElementCMD;
-        /**
          * @en Destroys the command.
          * @zh 销毁命令。
          */
@@ -30783,7 +24801,7 @@ declare namespace Laya {
     }
     class Set2DRTCMD extends Command2D {
         private static readonly _pool;
-        static create(renderTexture: IRenderTarget, clearColor: boolean, colorValue: Color, renderInvertY?: boolean): Set2DRTCMD;
+        static create(renderTexture: IRenderTarget, clearColor: boolean, colorValue: Color, renderInvertY?: boolean, viewportX?: number, viewportY?: number): Set2DRTCMD;
         private _renderTexture;
         _setRenderTargetCMD: SetRendertarget2DCMD;
         /**
@@ -30800,16 +24818,8 @@ declare namespace Laya {
     class Set2DShaderDataCMD extends Command2D {
         private static readonly _pool;
         static create(shaderData: ShaderData, nameID: number, value: ShaderDataItem, shaderDataType: ShaderDataType): Set2DShaderDataCMD;
-        /**@internal */
-        _setRenderDataCMD: SetRenderDataCMD;
         _globalMode: boolean;
         constructor();
-        /**
-         * @override
-         * @internal
-         * @returns
-         */
-        getRenderCMD(): SetRenderDataCMD;
         setDest(value: ShaderData): void;
         /**
          * @inheritDoc
@@ -30819,22 +24829,8 @@ declare namespace Laya {
     }
     class Set2DDefineCMD extends Command2D {
         private static readonly _pool;
-        /**@internal */
-        _setRenderDefineCMD: SetShaderDefineCMD;
-        /**@internal */
-        _globalMode: boolean;
-        /**
-             * @internal
-             */
-        static create(shaderData: ShaderData, define: ShaderDefine, addDefine: boolean): Set2DDefineCMD;
         constructor();
         setDest(value: ShaderData): void;
-        /**
-         * @override
-         * @internal
-         * @returns
-         */
-        getRenderCMD(): SetShaderDefineCMD;
         /**
          * @inheritDoc
          * @override
@@ -30843,10 +24839,6 @@ declare namespace Laya {
     }
     class Scene2DSpecialManager {
         static SPRITE2DGLOBAL: ShaderDefine;
-        /**@internal */
-        _shaderData: ShaderData;
-        /** @internal */
-        componentElementMap: Map<string, IElementComponentManager>;
         constructor();
     }
     /**
@@ -30855,140 +24847,6 @@ declare namespace Laya {
      * @blueprintInheritable
      */
     class Sprite extends Node {
-        /**
-         * @internal
-         */
-        _x: number;
-        /**
-         * @internal
-         */
-        _y: number;
-        /**
-         * @internal
-         */
-        _width: number;
-        /**
-         * @internal
-         */
-        _height: number;
-        /**
-         * @internal
-         * @en Horizontal scaling
-         * @zh 水平缩放
-         */
-        _scaleX: number;
-        /**
-         * @internal
-         * @en Vertical scaling
-         * @zh 垂直缩放
-         */
-        _scaleY: number;
-        /**
-         * @internal
-         * @en Horizontal skew angle
-         * @zh 水平倾斜角度
-         */
-        _skewX: number;
-        /**
-         * @internal
-         * @en Vertical skew angle
-         * @zh 垂直倾斜角度
-         */
-        _skewY: number;
-        /**
-         * @internal
-         * @en X-axis pivot point
-         * @zh X轴心点
-         */
-        _pivotX: number;
-        /**
-         * @internal
-         * @en Y-axis pivot point
-         * @zh Y轴心点
-         */
-        _pivotY: number;
-        /**
-         * @internal
-         * @en X anchor point, value ranges from 0 to 1. Setting anchorX ultimately changes the node's pivot point through the pivotX value.
-         * @zh X锚点，值为0-1，设置anchorX值最终通过pivotX值来改变节点轴心点。
-         */
-        _anchorX: number;
-        /**
-         * @internal
-         * @en Y anchor point, value ranges from 0 to 1. Setting anchorY ultimately changes the node's pivot point through the pivotY value.
-         * @zh Y锚点，值为0-1，设置anchorY值最终通过pivotY值来改变节点轴心点。
-         */
-        _anchorY: number;
-        /**
-         * @internal
-         * @en Rotation angle
-         * @zh 旋转角度
-         */
-        _rotation: number;
-        /**
-         * @internal
-         * @en Transparency
-         * @zh 透明度
-         */
-        _alpha: number;
-        /**
-         * @internal
-         * @en Scroll area
-         * @zh 滚动区域
-         */
-        _scrollRect: Rectangle;
-        /**
-         * @internal
-         * @en Hit area
-         * @zh 点击区域
-         */
-        _hitArea: IHitArea;
-        /**
-         * @internal
-         * @en Dragging
-         * @zh 滑动
-         */
-        _dragSupport: DragSupport;
-        /**
-         * @internal
-         * @en Blend mode
-         * @zh 混合模式
-         */
-        _blendMode: BlendMode;
-        /**
-         * @internal
-         */
-        _visible: boolean;
-        /**
-         * @internal
-         * @en Mouse state, 0: auto, 1: mouseEnabled=false, 2: mouseEnabled=true.
-         * @zh 鼠标状态，0:auto，1:mouseEnabled=false，2:mouseEnabled=true。
-         */
-        _mouseState: number;
-        /**
-         * @internal
-         * @en Z-order for sorting, higher values are displayed in front.
-         * @zh z排序，数值越大越靠前。
-         */
-        _zOrder: number;
-        /**
-         * @internal
-         */
-        _transform: Matrix;
-        /**
-         * @internal
-         */
-        _globalTrans: SpriteGlobalTransform;
-        /**@internal */
-        _renderType: number;
-        /**@internal */
-        _graphics: Graphics;
-        /**@internal */
-        _renderNode: BaseRenderNode2D;
-        /**@internal */
-        _struct: IRenderStruct2D;
-        /**@internal */
-        _subpassUpdateFlag: number;
         /**
          * @en For non-UI component display object nodes (container objects or display objects without image resources), specifies whether the mouse events penetrate this object's collision detection. `true` means the object is penetrable, `false` means it is not penetrable.
          * When penetrable, the engine will no longer detect this object and will recursively check its child objects until it finds the target object or misses all objects.
@@ -31028,38 +24886,12 @@ declare namespace Laya {
         private _userBounds;
         private _ownGraphics;
         private _mask;
-        /** @internal */
-        _maskParent: Sprite;
         private _cacheAsBmp;
         private _layer;
-        /** @internal */
-        _children: Sprite[];
-        /** @internal */
-        _$children: Sprite[];
-        /** @internal */
-        _parent: Sprite;
-        /** @internal */
-        _scene: Scene;
-        /** @internal */
-        _texture: Texture;
-        /** @internal */
-        _ownerArea: Sprite;
-        /** @internal */
-        _subStructRender: SubStructRender;
-        /** @internal */
-        _ownPostProcess: boolean;
-        /** @internal 渲染真实spritet的pass，在启用后处理，cacheAsBitmap和mask的时候生效 */
-        _oriRenderPass: IRender2DPass;
-        /** @internal 渲染真实sprite所需的rt大小 */
-        _drawOriRT: RenderTexture2D;
-        /** @internal 片，代替的结构 ，真正的结构划到了rt上 */
-        _subStruct: IRenderStruct2D;
-        /** @internal */
-        _shaderData: ShaderData;
         /** @ignore */
         constructor();
-        /** @internal */
-        _initShaderData(): void;
+        protected _onActive(): void;
+        protected _onInActive(): void;
         /**
          * @en Destroy the sprite.
          * @param destroyChild Whether to destroy child nodes. Default is true.
@@ -31231,8 +25063,6 @@ declare namespace Laya {
          */
         get layer(): number;
         set layer(value: number);
-        /** @internal */
-        _graphicsRenderer: GraphicsRenderer;
         /**
          * @en The drawing object, which encapsulates the interfaces for drawing bitmaps and vector graphics. All drawing operations of Sprite are implemented through Graphics.
          * @zh 绘图对象。封装了绘制位图和矢量图的接口,Sprite 的所有绘图操作都是通过 Graphics 实现的。
@@ -31283,6 +25113,8 @@ declare namespace Laya {
          */
         get mask(): Sprite;
         set mask(value: Sprite);
+        private _enableManualRender;
+        private _disableManualRender;
         /** @ignore @blueprintIgnore */
         clearSubpassFlag(flag: SubPassFlag): void;
         /**
@@ -31291,8 +25123,6 @@ declare namespace Laya {
          * @param flag
          */
         setSubpassFlag(flag: SubPassFlag): void;
-        /** @internal */
-        _needUpdateSubpass(): boolean;
         /**
          * @en The scroll rectangle range of the display object, with a clipping effect (if you only want to limit the rendering area of child objects, please use viewport).
          * Differences between srollRect and viewport:
@@ -31647,6 +25477,16 @@ declare namespace Laya {
          */
         static drawToRenderTexture2D(sprite: Sprite, canvasWidth: number, canvasHeight: number, offsetX: number, offsetY: number, rt?: RenderTexture2D, isDrawRenderRect?: boolean, flipY?: boolean, clearColor?: Color, renderScaleX?: number, renderScaleY?: number): RenderTexture2D;
         /**
+         * @en Prepare for off-screen rendering. This method will update the render texture of the current Sprite and its child nodes, and return the root node and sub-pass information for the current Sprite. This method is used internally when rendering to a texture, and generally does not need to be called externally.
+         * @returns An object containing the root node and an array of sub-pass information.
+         * @zh 准备离屏渲染。此方法会更新当前 Sprite 及其子节点的渲染纹理，并返回当前 Sprite 的根节点和子通道信息。此方法在渲染到纹理时内部使用，一般不需要外部调用。
+         * @return 包含根节点和子通道信息的对象。
+         */
+        prepareOSR(): {
+            root: IRenderStruct2D;
+            subPasses: Array<IRender2DPass>;
+        };
+        /**
          * @en Checks whether a point is within this object.
          * @param x Global x-coordinate.
          * @param y Global y-coordinate.
@@ -31775,21 +25615,11 @@ declare namespace Laya {
         * @param flag 重绘类型。
         */
         repaint(flag?: number): void;
-        /** @internal */
-        _needGraphicsUpdate(): boolean;
         /**
          * @en Clear the repaint flag.
          * @zh 清除重绘标志。
          */
         clearRepaint(): void;
-        /**
-         * @internal
-         * @en Check if it is re-cached.
-         * @returns True if it is re-cached, otherwise false.
-         * @zh 检查是否重新缓存。
-         * @returns 如果重新缓存值为 true，否则值为 false。
-         */
-        _needRepaint(): boolean;
         /**
          * @en Repaint the parent node. When `cacheAs` is enabled, set all parent object caches to invalid.
          * @zh 重新绘制父节点。启用 `cacheAs` 时，设置所有父对象缓存失效。
@@ -31831,14 +25661,6 @@ declare namespace Laya {
         protected onStartListeningToType(type: string): void;
         private setDemandTransEventUp;
         /**
-         * @internal
-         * @en This method should be called when all variable state determining factors change, typically such as the visible property.
-         * @return Whether the visible status is actually changed.
-         * @zh 这个方法在所有可变状态决定因子改变时都应调用，典型的如visible属性。
-         * @return 可见状态是否真正改变了。
-         */
-        _processVisible(): boolean;
-        /**
          * @ignore
          */
         _setUnBelongScene(): void;
@@ -31849,13 +25671,9 @@ declare namespace Laya {
         _setBelongScene(scene: Node): void;
         protected _findOwnerArea(): void;
         protected _setStructParent(value: Sprite, index: number): void;
+        private _ensureSubPassBase;
+        private _ensureSubStructRender;
         private createSubRenderPass;
-        /** @internal */
-        updateRenderTexture(): boolean;
-        /** @internal */
-        updateSubRenderPassState(): void;
-        /** @internal */
-        _updateStruct(): void;
         /**
          * @en Set the state of the sub-render pass.
          * @param enable Whether to enable the sub-render pass.
@@ -31883,27 +25701,6 @@ declare namespace Laya {
          * @ignore
          */
         protected _addComponentInstance(comp: Component): void;
-        /** @internal @blueprintEvent */
-        Sprite_bpEvent: {
-            [Event.MOUSE_DOWN]: (event: Event) => void;
-            [Event.MOUSE_UP]: (event: Event) => void;
-            [Event.MOUSE_MOVE]: (event: Event) => void;
-            [Event.MOUSE_OVER]: (event: Event) => void;
-            [Event.MOUSE_OUT]: (evente: Event) => void;
-            [Event.MOUSE_DRAG]: (event: Event) => void;
-            [Event.MOUSE_DRAG_END]: (event: Event) => void;
-            [Event.CLICK]: (event: Event) => void;
-            [Event.RIGHT_MOUSE_DOWN]: (event: Event) => void;
-            [Event.RIGHT_MOUSE_UP]: (event: Event) => void;
-            [Event.RIGHT_CLICK]: (event: Event) => void;
-            [Event.DOUBLE_CLICK]: (event: Event) => void;
-            [Event.DRAG_START]: (data: any) => void;
-            [Event.DRAG_MOVE]: (data: any) => void;
-            [Event.DRAG_END]: (data: any) => void;
-            [Event.DROP]: (source: Sprite, data: any) => void;
-            [SpriteGlobalTransform.CHANGED]: (type: number) => void;
-            [Event.TRANSFORM_CHANGED]: () => void;
-        };
     }
     /**
      * @ignore
@@ -31953,9 +25750,7 @@ declare namespace Laya {
         PostProcess = 1,
         CacheAsBitmap = 2,
         Mask = 4,
-        RenderTexture = 8,
-        /** @internal */
-        UPDATE_POSTPROCESS = 9
+        RenderTexture = 8
     }
     class SpriteGlobalTransform {
         private _sp;
@@ -31967,8 +25762,6 @@ declare namespace Laya {
         private _scaleY;
         private _matrix;
         private _cache;
-        /** @internal */
-        _modifiedFrame: number;
         /**
          * @zh An event constant for when the global transformation information changes.
          * @zh 全局变换信息发生改变时的事件常量。
@@ -32063,39 +25856,10 @@ declare namespace Laya {
         private _cachePos;
         private _cacheScale;
         /**
-         * @internal
-         * @en Gets a global cache flag for a specific type.
-         * @param type The type of cache flag to get.
-         * @returns Whether the cache flag is enabled.
-         * @zh 获取特定类型的全局缓存标志。
-         */
-        _getFlag(type: number): boolean;
-        /**
-         * @internal
-         * @en Sets a global cache flag for a specific type.
-         * @param type The type of cache flag to set.
-         * @param value Whether to enable the cache flag.
-         * @param notify Whether to notify.
-         * @zh 设置特定类型的全局缓存标志。
-         * @param type 要设置的缓存标志类型。
-         * @param value 是否启用缓存标志。
-         * @param notify 是否通知。
-         */
-        _setFlag(type: number, value: boolean, notify?: boolean): void;
-        /**
-         * @internal
-         */
-        _notifyRenderSpriteTransChange(): void;
-        /**
          * @param flag
          * @param value
          */
         private _syncFlag;
-        /**
-         * @internal
-         * @param kind
-         */
-        _spTransChanged(kind: TransformKind): void;
         /**
          * @en Convert the point to the global coordinate system.
          * @param x The X-axis position of the point.
@@ -32292,9 +26056,7 @@ declare namespace Laya {
          * @zh 2D渲染的Pass管理器，管理渲染Pass并处理2D对象的渲染。
          */
         readonly passManager: Render2DProcessor;
-        /** @internal */
         readonly _scene3Ds: Scene3D[];
-        /** @internal */
         readonly _scene2Ds: Scene[];
         private _screenMode;
         private _scaleMode;
@@ -32503,19 +26265,6 @@ declare namespace Laya {
          */
         get frameRate(): string;
         set frameRate(value: string);
-        /** @internal @blueprintEvent */
-        Stage_bpEvent: {
-            [Event.KEY_DOWN]: (event: Event) => void;
-            [Event.KEY_UP]: (event: Event) => void;
-            [Event.KEY_PRESS]: (event: Event) => void;
-            [Event.RESIZE]: () => void;
-            [Event.FOCUS]: () => void;
-            [Event.BLUR]: () => void;
-            [Event.FOCUS_CHANGE]: () => void;
-            [Event.VISIBILITY_CHANGE]: (visible: boolean) => void;
-            [Event.FULL_SCREEN_CHANGE]: () => void;
-            [Event.WILL_RESIZE]: () => void;
-        };
     }
     /**
      * @en The Text class is used to create display objects to show text.
@@ -32626,14 +26375,6 @@ declare namespace Laya {
          * 如果 wordWrap 的值为 true，则该文本字段自动换行；如果值为 false，则该文本字段不自动换行。
          */
         protected _wordWrap: boolean;
-        /**
-         * @internal
-         * @en Specifies whether the text field is a password text field.
-         * If the value of this property is true, the text field is considered a password text field and uses asterisks to hide the input characters instead of the actual characters. If false, the text field is not considered a password text field.
-         * @zh 指定文本字段是否是密码文本字段。
-         * 如果此属性的值为 true，则文本字段被视为密码文本字段，并使用星号而不是实际字符来隐藏输入的字符。如果为 false，则不会将文本字段视为密码文本字段。
-         */
-        protected _asPassword: boolean;
         protected _htmlParseOptions: HtmlParseOptions;
         protected _templateVars: Record<string, string>;
         /**
@@ -32665,12 +26406,6 @@ declare namespace Laya {
         private _updatingLayout;
         private _fontSizeScale;
         private _fontGlobalScale;
-        /**
-         * @internal
-         * @en Whether to convert` \n `and `\t `in the string to functional characters.
-         * @zh 是否将字符串中的`\n`,`\t`转换为实际功能的字符。
-         */
-        _parseEscapeChars: boolean;
         /**
          * An callback function for wrappers to do something after layout updated.
          */
@@ -33030,10 +26765,6 @@ declare namespace Laya {
          */
         get lines(): ReadonlyArray<ITextLine>;
         /**
-         * @internal
-         */
-        protected markChanged(): void;
-        /**
          * @en Typeset the text.
          * @param force Whether to force typesetting.
          * @zh 排版文本。
@@ -33077,11 +26808,6 @@ declare namespace Laya {
         protected drawBg(): void;
         /** @ignore */
         protected _setParent(value: Node, index?: number): void;
-        /** @internal @blueprintEvent */
-        Text_bpEvent: {
-            [Event.CHANGE]: () => void;
-            [Event.LINK]: (href: string) => void;
-        };
     }
     interface ITextCmd {
         x: number;
@@ -33104,43 +26830,6 @@ declare namespace Laya {
         height: number;
         width: number;
         cmd: ITextCmd;
-    }
-    /**
-     * @deprecated
-     * @internal
-     */
-    class ButtonEffect {
-        private _tar;
-        private _curState;
-        private _curTween;
-        /**
-         * effectScale
-         * @prop {name:effectScale,type:number, tips:"缩放值",default:"1.5"}
-         */
-        effectScale: number;
-        /**
-         * tweenTime
-         * @prop {name:tweenTime,type:number, tips:"缓动时长",default:"300"}
-         */
-        tweenTime: number;
-        /**
-         * effectEase
-         * @prop {name:effectEase,type:ease, tips:"效果缓动类型"}
-         */
-        effectEase: string;
-        /**
-         * backEase
-         * @prop {name:backEase,type:ease, tips:"恢复缓动类型"}
-         */
-        backEase: string;
-        /**
-         * 设置控制对象
-         * @param tar
-         */
-        set target(tar: Sprite);
-        private toChangedState;
-        private toInitState;
-        private tweenComplete;
     }
     /**
      * @en Effect plugin base class, managed based on the object pool.
@@ -33638,12 +27327,6 @@ declare namespace Laya {
          * @zh 原生浏览器事件。
          */
         nativeEvent: MouseEvent | TouchEvent | WheelEvent | KeyboardEvent;
-        /** @internal */
-        _stopped: boolean;
-        /** @internal */
-        _defaultPrevented: boolean;
-        /** @internal */
-        _touches: ReadonlyArray<Readonly<ITouchInfo>>;
         constructor();
         /**
          * @en Sets the event data.
@@ -33912,16 +27595,11 @@ declare namespace Laya {
          * @zh 在处理MOUSE_DOWN事件之前调度，可用于提前处理按下事件。
          */
         static readonly onMouseDownCapture: Delegate;
-        /**@internal */
-        protected _stage: Stage;
-        /**@internal */
-        protected _mouseTouch: TouchInfo;
-        /**@internal */
-        protected _touches: TouchInfo[];
-        /**@internal */
-        protected _touchPool: TouchInfo[];
-        /**@internal */
-        protected _touchTarget: Node;
+        /**
+         * @ignore
+         * Use by IDE
+        */
+        static _previewFlag: boolean;
         /**
          * @en Used for IDE processing.
          * @zh 用于IDE处理。
@@ -33976,12 +27654,6 @@ declare namespace Laya {
          * @return 是否被按下。
          */
         static hasKeyDown(key: string | number): boolean;
-        /**
-         * @internal
-         * @en Initialization.
-         * @zh 初始化。
-         */
-        static __init__(): void;
         /**
          * @en Handling mouse events
          * @param ev Mouse events
@@ -34049,105 +27721,6 @@ declare namespace Laya {
          */
         hitTest(sp: Sprite, x: number, y: number, editing?: boolean): boolean;
         private handleRollOver;
-    }
-    class TouchInfo implements ITouchInfo {
-        /**
-         * @en The event object associated with this touch.
-         * @zh 与此触摸关联的事件对象。
-         */
-        readonly event: Event;
-        /**
-         * @en The current position of the touch.
-         * @zh 当前触摸的位置。
-         */
-        readonly pos: Point;
-        /**
-         * @en The ID of the touch.
-         * @zh 触摸的ID。
-         */
-        touchId: number;
-        /**
-         * @en The number of consecutive clicks.
-         * @zh 连续点击的次数。
-         */
-        clickCount: number;
-        /**
-         * @en Indicates whether the touch has begun.
-         * @zh 表示触摸是否已开始。
-         */
-        began: boolean;
-        /**
-         * @en The target node of the touch.
-         * @zh 触摸的目标节点。
-         */
-        target: Node;
-        /**
-         * @en The last node the touch rolled over.
-         * @zh 最后一次触摸经过的节点。
-         */
-        lastRollOver: Node;
-        /**
-         * @en Indicates whether the click was cancelled.
-         * @zh 表示点击是否已取消。
-         */
-        clickCancelled: boolean;
-        /**
-         * @en Indicates whether the touch has moved.
-         * @zh 表示触摸是否已移动。
-         */
-        moved: boolean;
-        /**
-         * @en The button pressed during the touch.
-         * @zh 触摸期间按下的按钮。
-         */
-        downButton: number;
-        /**
-         * @en The list of nodes that were under the touch when it began.
-         * @zh 触摸开始时位于其下方的节点列表。
-         */
-        readonly downTargets: Node[];
-        /**
-         * @en The position where the touch began.
-         * @zh 触摸开始时的位置。
-         */
-        private downPos;
-        private bubbleChain;
-        /**
-         * @ignore
-         * @en Creates a new instance of the TouchInfo class.
-         * @param touches An array of touch information.
-         * @zh 创建 TouchInfo 类的新实例。
-         * @param touches 触摸信息数组。
-         */
-        constructor(touches: Array<TouchInfo>);
-        /**
-         * @en Marks the beginning of the touch.
-         * @zh 标记触摸的开始。
-         */
-        begin(): void;
-        /**
-         * @en Updates the touch information when the touch moves.
-         * @zh 当触摸移动时更新触摸信息。
-         */
-        move(): void;
-        /**
-         * @en Marks the end of the touch and updates the click count.
-         * @zh 标记触摸的结束并更新点击次数。
-         */
-        end(): void;
-        /**
-         * @en Tests whether the touch should trigger a click event and returns the target node if successful.
-         * @returns The target node if the click test is successful; otherwise, null.
-         * @zh 测试触摸是否应触发点击事件，并在成功时返回目标节点。
-         * @returns 如果点击测试成功，则返回目标节点；否则返回null。
-         */
-        clickTest(): Node;
-        /**
-         * @en Resets the touch information to its initial state.
-         * @zh 将触摸信息重置为初始状态。
-         */
-        reset(): void;
-        bubble(type: string, target?: Node): void;
     }
     /**
      * @en The `Keyboard` class contains constants representing the most commonly used keys for controlling a game.
@@ -34689,10 +28262,6 @@ declare namespace Laya {
      */
     class BlurFilter extends Filter {
         /**
-         * @internal
-         */
-        _effect2D: BlurEffect2D;
-        /**
          * @en Gets the effect2d instance.
          * @zh 获取 effect2d 实例。
          */
@@ -34721,10 +28290,6 @@ declare namespace Laya {
      * 注意：对于 RGBA 值，最高有效字节代表红色通道值，其后的有效字节分别代表绿色、蓝色和 Alpha 通道值。
      */
     class ColorFilter extends Filter {
-        /**
-         * @internal
-         */
-        _effect2D: ColorEffect2D;
         /**
          * @en Gets the effect2d instance.
          * @zh 获取 effect2d 实例。
@@ -34893,1186 +28458,6 @@ declare namespace Laya {
         set blur(value: number);
     }
     /**
-     * @internal
-     */
-    interface glTFExtension {
-        readonly name: string;
-        loadExtensionTextureInfo?(info: glTFTextureInfo): any;
-        /**
-         * 加载附加纹理
-         * @param basePath
-         * @param progress
-         */
-        loadAdditionTextures?(basePath: string, progress?: IBatchProgress): Promise<Texture2D[]>;
-        createMaterial?(glTFMaterial: glTFMaterial): Material;
-        /**
-         *
-         * @param glTFMaterial
-         * @param material
-         * @return need default property apply
-         */
-        additionMaterialProperties?(glTFMaterial: glTFMaterial, material: Material): void;
-    }
-    /** @internal */
-    class KHR_materials_anisotropy implements glTFExtension {
-        readonly name: string;
-        private _resource;
-        constructor(resource: glTFResource);
-        loadAdditionTextures(basePath: string, progress?: IBatchProgress): Promise<any>;
-        additionMaterialProperties(glTFMaterial: glTFMaterial, material: Material): void;
-    }
-    /**
-     * @internal
-     * https://github.com/KhronosGroup/glTF/tree/main/extensions/2.0/Khronos/KHR_materials_clearcoat
-     *
-     * exclusions: KHR_materials_pbrSpecularGlossiness, KHR_materials_unlit
-     */
-    class KHR_materials_clearcoat implements glTFExtension {
-        readonly name: string;
-        private _resource;
-        constructor(resource: glTFResource);
-        loadAdditionTextures(basePath: string, progress?: IBatchProgress): Promise<any>;
-        additionMaterialProperties(glTFMaterial: glTFMaterial, material: Material): void;
-    }
-    /** @internal */
-    class KHR_materials_emissive_strength implements glTFExtension {
-        readonly name: string;
-        private _resource;
-        constructor(resource: glTFResource);
-        additionMaterialProperties(glTFMaterial: glTFMaterial, material: Material): void;
-    }
-    /** @internal */
-    class KHR_materials_ior implements glTFExtension {
-        readonly name: string;
-        private _resource;
-        constructor(resource: glTFResource);
-        additionMaterialProperties(glTFMaterial: glTFMaterial, material: Material): void;
-    }
-    /** @internal */
-    class KHR_materials_iridescence implements glTFExtension {
-        readonly name: string;
-        private _resource;
-        constructor(resource: glTFResource);
-        loadAdditionTextures(basePath: string, progress?: IBatchProgress): Promise<any>;
-        additionMaterialProperties(glTFMaterial: glTFMaterial, material: Material): void;
-    }
-    /** @internal */
-    class KHR_materials_sheen implements glTFExtension {
-        readonly name: string;
-        private _resource;
-        constructor(resource: glTFResource);
-        loadAdditionTextures(basePath: string, progress?: IBatchProgress): Promise<any>;
-        additionMaterialProperties(glTFMaterial: glTFMaterial, material: Material): void;
-    }
-    /** @internal */
-    class KHR_materials_specular implements glTFExtension {
-        readonly name: string;
-        private _resource;
-        constructor(resource: glTFResource);
-        loadAdditionTextures(basePath: string, progress?: IBatchProgress): Promise<Texture2D[]>;
-        additionMaterialProperties(glTFMaterial: glTFMaterial, material: Material): void;
-    }
-    /** @internal */
-    class KHR_materials_transmission implements glTFExtension {
-        readonly name: string;
-        private _resource;
-        constructor(resource: glTFResource);
-        loadAdditionTextures(basePath: string, progress?: IBatchProgress): Promise<any>;
-        additionMaterialProperties(glTFMaterial: glTFMaterial, material: Material): void;
-    }
-    /**
-     * @internal
-     * https://github.com/KhronosGroup/glTF/blob/main/extensions/2.0/Khronos/KHR_materials_unlit/README.md
-     */
-    class KHR_materials_unlit implements glTFExtension {
-        readonly name: string;
-        private _resource;
-        constructor(resource: glTFResource);
-        createMaterial(glTFMaterial: glTFMaterial): Material;
-    }
-    /** @internal */
-    class KHR_materials_volume implements glTFExtension {
-        readonly name: string;
-        private _resource;
-        constructor(resource: glTFResource);
-        loadAdditionTextures(basePath: string, progress?: IBatchProgress): Promise<any>;
-        additionMaterialProperties(glTFMaterial: glTFMaterial, material: Material): void;
-    }
-    /** @internal */
-    class KHR_texture_transform implements glTFExtension {
-        readonly name: string;
-        private _resource;
-        constructor(resource: glTFResource);
-        createTransform(extension: glTFTextureTransform): Matrix3x3;
-        loadExtensionTextureInfo(info: glTFTextureInfo): {
-            transform: Matrix3x3;
-            texCoord: number;
-        };
-    }
-    /**
-     * @internal
-     */
-    const enum glTFAccessorComponentType {
-        /** Byte */
-        BYTE = 5120,
-        /** Unsigned Byte */
-        UNSIGNED_BYTE = 5121,
-        /** Short */
-        SHORT = 5122,
-        /** Unsigned Short */
-        UNSIGNED_SHORT = 5123,
-        /** Unsigned Int */
-        UNSIGNED_INT = 5125,
-        /** Float */
-        FLOAT = 5126
-    }
-    /**
-     * @internal
-     */
-    const enum glTFAccessorType {
-        /** Scalar */
-        SCALAR = "SCALAR",
-        /** Vector2 */
-        VEC2 = "VEC2",
-        /** Vector3 */
-        VEC3 = "VEC3",
-        /** Vector4 */
-        VEC4 = "VEC4",
-        /** Matrix2x2 */
-        MAT2 = "MAT2",
-        /** Matrix3x3 */
-        MAT3 = "MAT3",
-        /** Matrix4x4 */
-        MAT4 = "MAT4"
-    }
-    /**
-     * @internal
-     */
-    const enum glTFAnimationChannelTargetPath {
-        /** Translation */
-        TRANSLATION = "translation",
-        /** Rotation */
-        ROTATION = "rotation",
-        /** Scale */
-        SCALE = "scale",
-        /** Weights */
-        WEIGHTS = "weights"
-    }
-    /**
-     * @internal
-     */
-    const enum glTFAnimationSamplerInterpolation {
-        /** The animated values are linearly interpolated between keyframes */
-        LINEAR = "LINEAR",
-        /** The animated values remain constant to the output of the first keyframe, until the next keyframe */
-        STEP = "STEP",
-        /** The animation's interpolation is computed using a cubic spline with specified tangents */
-        CUBICSPLINE = "CUBICSPLINE"
-    }
-    /**
-     * @internal
-     */
-    const enum glTFCameraType {
-        /** A perspective camera containing properties to create a perspective projection matrix  */
-        PERSPECTIVE = "perspective",
-        /**  An orthographic camera containing properties to create an orthographic projection matrix */
-        ORTHOGRAPHIC = "orthographic"
-    }
-    /**
-     * @internal
-     */
-    const enum glTFImageMimeType {
-        /**  JPEG Mime-type */
-        JPEG = "image/jpeg",
-        /** PNG Mime-type */
-        PNG = "image/png"
-    }
-    /**
-     * @internal
-     */
-    const enum glTFMaterialAlphaMode {
-        /**  The alpha value is ignored and the rendered output is fully opaque */
-        OPAQUE = "OPAQUE",
-        /** The rendered output is either fully opaque or fully transparent depending on the alpha value and the specified alpha cutoff value */
-        MASK = "MASK",
-        /** The alpha value is used to composite the source and destination areas. The rendered output is combined with the background using the normal painting operation (i.e. the Porter and Duff over operator) */
-        BLEND = "BLEND"
-    }
-    /**
-     * @internal
-     * The type of the primitives to render
-     */
-    const enum glTFMeshPrimitiveMode {
-        /** Points */
-        POINTS = 0,
-        /** Lines */
-        LINES = 1,
-        /** Line Loop */
-        LINE_LOOP = 2,
-        /** Line Strip */
-        LINE_STRIP = 3,
-        /** Triangles */
-        TRIANGLES = 4,
-        /** Triangle Strip */
-        TRIANGLE_STRIP = 5,
-        /** Triangle Fan */
-        TRIANGLE_FAN = 6
-    }
-    /**
-     * @internal
-     * Magnification filter.  Valid values correspond to WebGL enums: 9728 (NEAREST) and 9729 (LINEAR)
-     */
-    const enum glTFTextureMagFilter {
-        /** Nearest */
-        NEAREST = 9728,
-        /**  Linear */
-        LINEAR = 9729
-    }
-    /**
-     * @internal
-     * Minification filter.  All valid values correspond to WebGL enums
-     */
-    const enum glTFTextureMinFilter {
-        /**  Nearest */
-        NEAREST = 9728,
-        /** Linear */
-        LINEAR = 9729,
-        /** Nearest Mip-Map Nearest */
-        NEAREST_MIPMAP_NEAREST = 9984,
-        /** Linear Mipmap Nearest */
-        LINEAR_MIPMAP_NEAREST = 9985,
-        /** Nearest Mipmap Linear */
-        NEAREST_MIPMAP_LINEAR = 9986,
-        /** Linear Mipmap Linear */
-        LINEAR_MIPMAP_LINEAR = 9987
-    }
-    /**
-     * @internal
-     * S (U) wrapping mode.  All valid values correspond to WebGL enums
-     */
-    const enum glTFTextureWrapMode {
-        /** Clamp to Edge */
-        CLAMP_TO_EDGE = 33071,
-        /** Mirrored Repeat */
-        MIRRORED_REPEAT = 33648,
-        /** Repeat */
-        REPEAT = 10497
-    }
-    /**
-     * @internal
-     * glTF Node Property
-     */
-    interface glTFNodeProperty {
-        /** Dictionary object with extension-specific objects. */
-        extensions?: {
-            [key: string]: any;
-        };
-        /** Application-specific data. */
-        extras?: any;
-    }
-    /**
-     * @internal
-     */
-    interface glTFChildNodeProperty {
-        /** The user-defined name of this object. */
-        name?: string;
-    }
-    /**
-     * @internal
-     */
-    interface glTFAccessorSparseIndeces extends glTFNodeProperty {
-        /** The index of the bufferView with sparse indices. Referenced bufferView can't have ARRAY_BUFFER or ELEMENT_ARRAY_BUFFER target */
-        bufferView: number;
-        /** The offset relative to the start of the bufferView in bytes. Must be aligned */
-        byteOffset?: number;
-        /** The indices data type.  Valid values correspond to WebGL enums: 5121 (UNSIGNED_BYTE), 5123 (UNSIGNED_SHORT), 5125 (UNSIGNED_INT)*/
-        componentType: glTFAccessorComponentType;
-    }
-    /**
-     * @internal
-     */
-    interface glTFAccessorSparseValues extends glTFNodeProperty {
-        /**  The index of the bufferView with sparse values. Referenced bufferView can't have ARRAY_BUFFER or ELEMENT_ARRAY_BUFFER target */
-        bufferView: number;
-        /**  The offset relative to the start of the bufferView in bytes. Must be aligned */
-        byteOffset?: number;
-    }
-    /**
-     * @internal
-     */
-    interface glTFAccessorSparse extends glTFNodeProperty {
-        /** Number of entries stored in the sparse array. */
-        count: number;
-        /** Index array of size count that points to those accessor attributes that deviate from their initialization value. Indices must strictly increase */
-        indices: glTFAccessorSparseIndeces;
-        /** Array of size count times number of components, storing the displaced accessor attributes pointed by indices. Substituted values must have the same componentType and number of components as the base accessor */
-        values: glTFAccessorSparseValues;
-    }
-    /**
-     * @internal
-     * Indices of those attributes that deviate from their initialization value
-     */
-    interface glTFAccessor extends glTFNodeProperty {
-        /** The index of the bufferView. */
-        bufferView?: number;
-        /** The offset relative to the start of the bufferView in bytes. */
-        byteOffset?: number;
-        /** The datatype of components in the attribute. */
-        componentType: glTFAccessorComponentType;
-        /** Specifies whether integer data values should be normalized. */
-        normalized?: boolean;
-        /** The number of attributes referenced by this accessor. */
-        count: number;
-        /** Specifies if the attribute is a scalar, vector, or matrix. */
-        type: glTFAccessorType;
-        /** Maximum value of each component in this attribute. */
-        max?: number[];
-        /** Minimum value of each component in this attribute. */
-        min?: number[];
-        /** Sparse storage of attributes that deviate from their initialization value. */
-        sparse?: glTFAccessorSparse;
-    }
-    /**
-     * @internal
-     * The index of the node and TRS property that an animation channel targets
-     */
-    interface glTFAnimationChannelTarget extends glTFNodeProperty {
-        /** The index of the node to target */
-        node: number;
-        /** The name of the node's TRS property to modify, or the weights of the Morph Targets it instantiates */
-        path: glTFAnimationChannelTargetPath;
-    }
-    /**
-     * @internal
-     * Targets an animation's sampler at a node's property
-     */
-    interface glTFAnimationChannel extends glTFNodeProperty {
-        /** * The index of a sampler in this animation used to compute the value for the target */
-        sampler: number;
-        /** * The index of the node and TRS property to target */
-        target: glTFAnimationChannelTarget;
-    }
-    /**
-     * @internal
-     * Combines input and output accessors with an interpolation algorithm to define a keyframe graph (but not its target)
-     */
-    interface glTFAnimationSampler extends glTFNodeProperty {
-        /** The index of an accessor containing keyframe input values, e.g., time */
-        input: number;
-        /** Interpolation algorithm */
-        interpolation?: glTFAnimationSamplerInterpolation;
-        /** The index of an accessor, containing keyframe output values */
-        output: number;
-    }
-    /**
-     * @internal
-     * A keyframe animation.
-     */
-    interface glTFAnimation extends glTFNodeProperty, glTFChildNodeProperty {
-        /** An array of channels, each of which targets an animation's sampler at a node's property */
-        channels: glTFAnimationChannel[];
-        /** An array of samplers that combines input and output accessors with an interpolation algorithm to define a keyframe graph (but not its target) */
-        samplers: glTFAnimationSampler[];
-    }
-    /**
-     * @internal
-     * Metadata about the glTF asset
-     */
-    interface glTFAsset extends glTFChildNodeProperty {
-        /** A copyright message suitable for display to credit the content creator. */
-        copyright?: string;
-        /** Tool that generated this glTF model. Useful for debugging. */
-        generator?: string;
-        /** The glTF version that this asset targets. */
-        version: string;
-        /** The minimum glTF version that this asset targets. */
-        minVersion?: string;
-    }
-    /**
-     * @internal
-     * A buffer points to binary geometry, animation, or skins
-     */
-    interface glTFBuffer extends glTFChildNodeProperty, glTFNodeProperty {
-        /**  The uri of the buffer.  Relative paths are relative to the .gltf file.  Instead of referencing an external file, the uri can also be a data-uri */
-        uri?: string;
-        /**  The length of the buffer in bytes */
-        byteLength: number;
-    }
-    /**
-     * @internal
-     * A view into a buffer generally representing a subset of the buffer
-     */
-    interface glTFBufferView extends glTFChildNodeProperty, glTFNodeProperty {
-        /** The index of the buffer */
-        buffer: number;
-        /** The offset into the buffer in bytes */
-        byteOffset?: number;
-        /** The lenth of the bufferView in bytes */
-        byteLength: number;
-        /** The stride, in bytes */
-        byteStride?: number;
-    }
-    /**
-     * @internal
-     * An orthographic camera containing properties to create an orthographic projection matrix
-     */
-    interface glTFCameraOrthographic extends glTFNodeProperty {
-        /** The floating-point horizontal magnification of the view. Must not be zero */
-        xmag: number;
-        /** The floating-point vertical magnification of the view. Must not be zero */
-        ymag: number;
-        /** The floating-point distance to the far clipping plane. zfar must be greater than znear */
-        zfar: number;
-        /** The floating-point distance to the near clipping plane */
-        znear: number;
-    }
-    /**
-     * @internal
-     * A perspective camera containing properties to create a perspective projection matrix
-     */
-    interface glTFCameraPerspective extends glTFNodeProperty {
-        /** The floating-point aspect ratio of the field of view */
-        aspectRatio?: number;
-        /** The floating-point vertical field of view in radians */
-        yfov: number;
-        /** The floating-point distance to the far clipping plane */
-        zfar?: number;
-        /** The floating-point distance to the near clipping plane */
-        znear: number;
-    }
-    /**
-     * @internal
-     * A camera's projection.  A node can reference a camera to apply a transform to place the camera in the scene
-     */
-    interface glTFCamera extends glTFChildNodeProperty, glTFNodeProperty {
-        /** An orthographic camera containing properties to create an orthographic projection matrix */
-        orthographic?: glTFCameraOrthographic;
-        /** A perspective camera containing properties to create a perspective projection matrix */
-        perspective?: glTFCameraPerspective;
-        /** Specifies if the camera uses a perspective or orthographic projection */
-        type: glTFCameraType;
-    }
-    /**
-     * @internal
-     * Image data used to create a texture. Image can be referenced by URI or bufferView index. mimeType is required in the latter case
-     */
-    interface glTFImage extends glTFChildNodeProperty, glTFNodeProperty {
-        /**
-         * The uri of the image.  Relative paths are relative to the .gltf file.  Instead of referencing an external file, the uri can also be a data-uri.  The image format must be jpg or png
-         */
-        uri?: string;
-        /**
-         * The image's MIME type
-         */
-        mimeType?: glTFImageMimeType;
-        /**
-         * The index of the bufferView that contains the image. Use this instead of the image's uri property
-         */
-        bufferView?: number;
-    }
-    /**
-     * @internal
-     * Reference to a texture
-     */
-    interface glTFTextureInfo extends glTFNodeProperty {
-        /**  The index of the texture */
-        index: number;
-        /** The set index of texture's TEXCOORD attribute used for texture coordinate mapping */
-        texCoord?: number;
-    }
-    /**
-     * @internal
-     * A set of parameter values that are used to define the metallic-roughness material model from Physically-Based Rendering (PBR) methodology
-     */
-    interface glTFMaterialPbrMetallicRoughness extends glTFNodeProperty {
-        /** The material's base color factor */
-        baseColorFactor?: number[];
-        /** The base color texture */
-        baseColorTexture?: glTFTextureInfo;
-        /** The metalness of the material */
-        metallicFactor?: number;
-        /** The roughness of the material */
-        roughnessFactor?: number;
-        /** The metallic-roughness texture */
-        metallicRoughnessTexture?: glTFTextureInfo;
-    }
-    /**
-     * @internal
-     * Material Normal Texture Info
-     */
-    interface glTFMaterialNormalTextureInfo extends glTFTextureInfo {
-        /** The scalar multiplier applied to each normal vector of the normal texture. default: 1*/
-        scale?: number;
-    }
-    /**
-     * @internal
-     * Material Occlusion Texture Info
-     */
-    interface glTFMaterialOcclusionTextureInfo extends glTFTextureInfo {
-        /**
-         * A scalar multiplier controlling the amount of occlusion applied
-         */
-        strength?: number;
-    }
-    /**
-     * @internal
-     * The material appearance of a primitive
-     */
-    interface glTFMaterial extends glTFChildNodeProperty, glTFNodeProperty {
-        /** A set of parameter values that are used to define the metallic-roughness material model from Physically-Based Rendering (PBR) methodology. When not specified, all the default values of pbrMetallicRoughness apply */
-        pbrMetallicRoughness?: glTFMaterialPbrMetallicRoughness;
-        /** The normal map texture */
-        normalTexture?: glTFMaterialNormalTextureInfo;
-        /** The occlusion map texture */
-        occlusionTexture?: glTFMaterialOcclusionTextureInfo;
-        /** The emissive map texture */
-        emissiveTexture?: glTFTextureInfo;
-        /** The RGB components of the emissive color of the material. These values are linear. If an emissiveTexture is specified, this value is multiplied with the texel values */
-        emissiveFactor?: number[];
-        /** The alpha rendering mode of the material */
-        alphaMode?: glTFMaterialAlphaMode;
-        /** The alpha cutoff value of the material */
-        alphaCutoff?: number;
-        /** Specifies whether the material is double sided */
-        doubleSided?: boolean;
-    }
-    /**
-     * @internal
-     * Geometry to be rendered with the given material
-     */
-    interface glTFMeshPrimitive extends glTFNodeProperty {
-        /**
-         * A dictionary object, where each key corresponds to mesh attribute semantic and each value is the index of the accessor containing attribute's data
-         */
-        attributes: {
-            [name: string]: number;
-        };
-        /**
-         * The index of the accessor that contains the indices
-         */
-        indices?: number;
-        /**
-         * The index of the material to apply to this primitive when rendering
-         */
-        material?: number;
-        /**
-         * The type of primitives to render. All valid values correspond to WebGL enums
-         */
-        mode?: glTFMeshPrimitiveMode;
-        /**
-         * An array of Morph Targets, each  Morph Target is a dictionary mapping attributes (only POSITION, NORMAL, and TANGENT supported) to their deviations in the Morph Target
-         */
-        targets?: {
-            [name: string]: number;
-        }[];
-    }
-    /**
-     * @internal
-     * A set of primitives to be rendered.  A node can contain one mesh.  A node's transform places the mesh in the scene
-     */
-    interface glTFMesh extends glTFChildNodeProperty, glTFNodeProperty {
-        /**  An array of primitives, each defining geometry to be rendered with a material */
-        primitives: glTFMeshPrimitive[];
-        /**  Array of weights to be applied to the Morph Targets */
-        weights?: number[];
-    }
-    /**
-     * @internal
-     * A node in the node hierarchy
-     */
-    interface glTFNode extends glTFChildNodeProperty, glTFNodeProperty {
-        /** The index of the camera referenced by this node */
-        camera?: number;
-        /** The indices of this node's children */
-        children?: number[];
-        /** The index of the skin referenced by this node */
-        skin?: number;
-        /** A floating-point 4x4 transformation matrix stored in column-major order */
-        matrix?: number[];
-        /** The index of the mesh in this node */
-        mesh?: number;
-        /** The node's unit quaternion rotation in the order (x, y, z, w), where w is the scalar */
-        rotation?: number[];
-        /** The node's non-uniform scale, given as the scaling factors along the x, y, and z axes */
-        scale?: number[];
-        /** The node's translation along the x, y, and z axes */
-        translation?: number[];
-        /** The weights of the instantiated Morph Target. Number of elements must match number of Morph Targets of used mesh */
-        weights?: number[];
-    }
-    /**
-     * @internal
-     * Texture sampler properties for filtering and wrapping modes
-     */
-    interface glTFSampler extends glTFChildNodeProperty, glTFNodeProperty {
-        /** Magnification filter.  Valid values correspond to WebGL enums: 9728 (NEAREST) and 9729 (LINEAR) */
-        magFilter?: glTFTextureMagFilter;
-        /** Minification filter.  All valid values correspond to WebGL enums */
-        minFilter?: glTFTextureMinFilter;
-        /** S (U) wrapping mode.  All valid values correspond to WebGL enums */
-        wrapS?: glTFTextureWrapMode;
-        /** T (V) wrapping mode.  All valid values correspond to WebGL enums */
-        wrapT?: glTFTextureWrapMode;
-    }
-    /**
-     * @internal
-     * The root nodes of a scene
-     */
-    interface glTFScene extends glTFChildNodeProperty, glTFNodeProperty {
-        /**  The indices of each root node */
-        nodes: number[];
-    }
-    /**
-     * @internal
-     * Joints and matrices defining a skin
-     */
-    interface glTFSkin extends glTFChildNodeProperty, glTFNodeProperty {
-        /** The index of the accessor containing the floating-point 4x4 inverse-bind matrices.  The default is that each matrix is a 4x4 identity matrix, which implies that inverse-bind matrices were pre-applied */
-        inverseBindMatrices?: number;
-        /** The index of the node used as a skeleton root. When undefined, joints transforms resolve to scene root */
-        skeleton?: number;
-        /** Indices of skeleton nodes, used as joints in this skin.  The array length must be the same as the count property of the inverseBindMatrices accessor (when defined) */
-        joints: number[];
-    }
-    /**
-     * @internal
-     * A texture and its sampler
-     */
-    interface glTFTexture extends glTFChildNodeProperty, glTFNodeProperty {
-        /** The index of the sampler used by this texture. When undefined, a sampler with repeat wrapping and auto filtering should be used */
-        sampler?: number;
-        /** The index of the image used by this texture */
-        source: number;
-    }
-    /**
-     * @internal
-     */
-    interface glTF extends glTFNodeProperty {
-        /** An array of accessors. An accessor is a typed view into a bufferView */
-        accessors?: glTFAccessor[];
-        /** An array of keyframe animations */
-        animations?: glTFAnimation[];
-        /** Metadata about the glTF asset */
-        asset: glTFAsset;
-        /** An array of buffers.  A buffer points to binary geometry, animation, or skins */
-        buffers?: glTFBuffer[];
-        /** An array of bufferViews.  A bufferView is a view into a buffer generally representing a subset of the buffer */
-        bufferViews?: glTFBufferView[];
-        /** An array of cameras */
-        cameras?: glTFCamera[];
-        /** Names of glTF extensions used somewhere in this asset */
-        extensionsUsed?: string[];
-        /** Names of glTF extensions required to properly load this asset */
-        extensionsRequired?: string[];
-        /** An array of images.  An image defines data used to create a texture */
-        images?: glTFImage[];
-        /** An array of materials.  A material defines the appearance of a primitive */
-        materials?: glTFMaterial[];
-        /** An array of meshes.  A mesh is a set of primitives to be rendered */
-        meshes?: glTFMesh[];
-        /** An array of nodes */
-        nodes?: glTFNode[];
-        /** An array of samplers.  A sampler contains properties for texture filtering and wrapping modes */
-        samplers?: glTFSampler[];
-        /** The index of the default scene */
-        scene?: number;
-        /** An array of scenes */
-        scenes?: glTFScene[];
-        /** An array of skins.  A skin is defined by joints and matrices */
-        skins?: glTFSkin[];
-        /** An array of textures */
-        textures?: glTFTexture[];
-    }
-    /**
-     * @internal
-     */
-    interface glTFMaterialAnisotropy {
-        /** The anisotropy strength. When anisotropyTexture is present, this value is multiplied by the blue channel. default: 0.0 */
-        anisotropyStrength: number;
-        /** The rotation of the anisotropy in tangent, bitangent space, measured in radians counter-clockwise from the tangent. When anisotropyTexture is present, anisotropyRotation provides additional rotation to the vectors in the texture. default: 0.0 */
-        anisotropyRotation: number;
-        /** The anisotropy texture. Red and green channels represent the anisotropy direction in [-1, 1] tangent, bitangent space, to be rotated by anisotropyRotation. The blue channel contains strength as [0, 1] to be multiplied by anisotropyStrength. */
-        anisotropyTexture: glTFTextureInfo;
-    }
-    /**
-     * @internal
-     */
-    interface glTFMaterialClearCoat {
-        /** The clearcoat layer intensity. default: 0.0*/
-        clearcoatFactor?: number;
-        /** The base color texture */
-        clearcoatTexture?: glTFTextureInfo;
-        /** The clearcoat layer roughness.  default: 0.0*/
-        clearcoatRoughnessFactor?: number;
-        /** The clearcoat layer roughness texture.*/
-        clearcoatRoughnessTexture?: glTFTextureInfo;
-        /** The clearcoat normal map texture. */
-        clearcoatNormalTexture?: glTFMaterialNormalTextureInfo;
-    }
-    /**
-     * @internal
-     */
-    interface glTFMaterialEmissionStrength {
-        /** The strength adjustment to be multiplied with the material's emissive value. default: 1.0 */
-        emissiveStrength: number;
-    }
-    /**
-     * @internal
-     */
-    interface glTFMaterialIOR {
-        /** The index of refraction. default: 1.5 */
-        ior: number;
-    }
-    /**
-     * @internal
-     */
-    interface glTFMaterialIridescence {
-        /** The iridescence intensity factor. default: 0.0 */
-        iridescenceFactor: number;
-        /** The iridescence intensity texture. */
-        iridescenceTexture: glTFTextureInfo;
-        /** The index of refraction of the dielectric thin-film layer. default: 1.3 */
-        iridescenceIor: number;
-        /** The minimum thickness of the thin-film layer given in nanometers. default: 100.0 */
-        iridescenceThicknessMinimum: number;
-        /** The maximum thickness of the thin-film layer given in nanometers. default: 400.0 */
-        iridescenceThicknessMaximum: number;
-        /** The thickness texture of the thin-film layer. */
-        iridescenceThicknessTexture: glTFTextureInfo;
-    }
-    /**
-     * @internal
-     */
-    interface glTFMaterialSheen {
-        /** The sheen color in linear space. default: [0, 0, 0] */
-        sheenColorFactor: number[];
-        /** The sheen color (RGB) in sRGB transfer function. */
-        sheenColorTexture: glTFTextureInfo;
-        /** The sheen roughness. default: 0.0 */
-        sheenRoughnessFactor: number;
-        /** The sheen roughness (Alpha) texture. */
-        sheenRoughnessTexture: glTFTextureInfo;
-    }
-    /**
-     * @internal
-     */
-    interface glTFMaterialSpecular {
-        /** The strength of the specular reflection. default: 1.0 */
-        specularFactor: number;
-        /** A texture that defines the strength of the specular reflection, stored in the alpha (A) channel. This will be multiplied by specularFactor. */
-        specularTexture: glTFTextureInfo;
-        /** The F0 color of the specular reflection (linear RGB). default: [1.0, 1.0, 1.0] */
-        specularColorFactor: number[];
-        /** A texture that defines the F0 color of the specular reflection, stored in the RGB channels and encoded in sRGB. This texture will be multiplied by specularColorFactor. */
-        specularColorTexture: glTFTextureInfo;
-    }
-    /**
-     * @internal
-     */
-    interface glTFMaterialTransmission {
-        /** The base percentage of light that is transmitted through the surface. default: 0 */
-        transmissionFactor: number;
-        /** A texture that defines the transmission percentage of the surface, stored in the R channel. */
-        transmissionTexture: glTFTextureInfo;
-    }
-    /**
-     * @internal
-     */
-    interface glTFMaterialVolume {
-        /** The thickness of the volume beneath the surface. default: 0.0 */
-        thicknessFactor: number;
-        /** A texture that defines the thickness, stored in the G channel. */
-        thicknessTexture: glTFTextureInfo;
-        /** Density of the medium given as the average distance that light travels in the medium before interacting with a particle. default: +Infinity */
-        attenuationDistance: number;
-        /** The color that white light turns into due to absorption when reaching the attenuation distance. default: [1, 1, 1] */
-        attenuationColor: number[];
-    }
-    /**
-     * @internal
-     */
-    interface glTFTextureTransform {
-        /** The offset of the UV coordinate origin as a factor of the texture dimensions. default: [0, 0] */
-        offset: number[];
-        /** Rotate the UVs by this many radians counter-clockwise around the origin. This is equivalent to a similar rotation of the image clockwise. default: 0.0 */
-        rotation: number;
-        /** The scale factor applied to the components of the UV coordinates. default: [1, 1] */
-        scale: number[];
-        /** Overrides the textureInfo texCoord value if supplied, and if this extension is supported. */
-        texCoord: number;
-    }
-    /**
-     * @internal
-     */
-    class glTFResource extends Prefab {
-        private static _Extensions;
-        static registerExtension(name: string, factory: (resource: glTFResource) => glTFExtension): void;
-        protected _data: glTF;
-        get data(): Readonly<glTF.glTF>;
-        protected _buffers: Record<string, ArrayBuffer>;
-        protected _textures: Texture2D[];
-        protected _materials: Material[];
-        protected _meshes: Record<string, Mesh>;
-        protected _extensions: Map<string, glTFExtension>;
-        protected _pendingOps: Array<Promise<any>>;
-        private _scenes;
-        private _nodes;
-        /** @internal */
-        private _idCounter;
-        constructor();
-        /**
-         * @internal
-         * @param basePath
-         * @param progress
-         * @returns
-         */
-        loadBinary(basePath: string, progress?: IBatchProgress): Promise<void> | Promise<any[]>;
-        loadTextureFromInfo(info: glTFTextureInfo, sRGB: boolean, basePath: string, progress?: IBatchProgress): Promise<Texture2D>;
-        /**
-         * @internal
-         * @param basePath
-         * @param progress
-         * @returns
-         */
-        loadTextures(basePath: string, progress?: IBatchProgress): Promise<any>;
-        /**
-         * @internal
-         * @returns
-         */
-        importMaterials(): Promise<void>;
-        /**
-         * @internal
-         * @returns
-         */
-        importMeshes(): Promise<void>;
-        /**
-         * @param data
-         * @param createURL
-         * @param progress
-         * @returns
-         */
-        _parse(data: glTF, createURL: string, progress?: IBatchProgress): Promise<void>;
-        /**
-         *
-         * @param data
-         * @param createURL
-         * @param progress
-         */
-        _parseglb(data: ArrayBuffer, createURL: string, progress?: IBatchProgress): Promise<void>;
-        create(): Sprite3D;
-        protected loadTextureFromBuffer(buffer: ArrayBuffer, mimeType: glTFImageMimeType, constructParams: TextureConstructParams, propertyParams: TexturePropertyParams, progress?: IBatchProgress): Promise<Texture2D>;
-        protected loadTexture(url: string, constructParams: TextureConstructParams, propertyParams: TexturePropertyParams, progress?: IBatchProgress): Promise<Texture2D>;
-        /**
-         * @internal
-         * 获取 node name
-         */
-        protected generateId(context: string): string;
-        /**
-         * 根据数据类型获取分量
-         * @param type
-         */
-        private getAccessorComponentsNum;
-        /**
-         * 获取 attribute 分量
-         * @param attriStr
-         */
-        private getAttributeNum;
-        /**
-         * @internal
-         * 获取 buffer constructor
-         * @param componentType
-         */
-        private _getTypedArrayConstructor;
-        /**
-         * @internal
-         * 获取 accessor data Type byte stride
-         * @param componentType
-         */
-        _getAccessorDateByteStride(componentType: glTFAccessorComponentType): 1 | 2 | 4;
-        private getBufferFormBufferView;
-        /**
-         * 获取 accessor buffer 数据
-         * @param accessorIndex
-         */
-        private getBufferwithAccessorIndex;
-        /**
-         * 判断 Texture 是否需要 mipmap
-         * @param glTFImage
-         * @param glTFSampler
-         */
-        private getTextureMipmap;
-        /**
-         * 获取 Texture format
-         * @param glTFImage
-         */
-        private getTextureFormat;
-        /**
-         * 获取 Texture filter mode
-         * @param glTFSampler
-         */
-        private getTextureFilterMode;
-        /**
-         * 获取 Texture warp mode
-         * @param mode
-         */
-        private getTextureWrapMode;
-        /**
-        * 获取 Texture 初始化参数
-        * @param glTFImage
-        * @param glTFSampler
-        */
-        private getTextureConstructParams;
-        /**
-         * 获取 Texture 属性参数
-         * @param glTFImage
-         * @param glTFSampler
-         */
-        private getTexturePropertyParams;
-        /**
-         * 根据 glTFTextureInfo 获取 Texture2D
-         * @param glTFTextureInfo
-         */
-        getTextureWithInfo(glTFTextureInfo: glTFTextureInfo): Texture2D;
-        getExtensionTextureInfo(info: glTFTextureInfo, extensionName: string): any;
-        /**
-         *
-         * @param glTFMaterial
-         * @param material
-         */
-        applyMaterialRenderState(glTFMaterial: glTFMaterial, material: Material): void;
-        setMaterialTextureProperty(material: Material, texInfo: glTFTextureInfo, name: string, define: ShaderDefine, transformName: string, transformDefine: ShaderDefine): void;
-        /**
-         * @param glTFMaterial
-         * @param material
-         */
-        applyDefaultMaterialProperties(glTFMaterial: glTFMaterial, material: Material): void;
-        /**
-         * 根据 glTFMaterial 节点数据创建 default Material
-         * @param glTFMaterial
-         */
-        createDefaultMaterial(glTFMaterial: glTFMaterial): Material;
-        protected createMaterial(glTFMaterial: glTFMaterial): Material;
-        /**
-         * 获取 gltf mesh 中 material
-         * @param glTFMesh
-         */
-        private pickMeshMaterials;
-        /**
-         * @internal
-         * 加载场景节点
-         * @param glTFScene
-         */
-        private loadScenes;
-        /**
-         * @internal
-         * 加载场景节点
-         * @param glTFScene
-         */
-        private _loadScene;
-        /**
-         * 创建 glTFScene 节点
-         * @param glTFScene
-         */
-        private _createSceneNode;
-        /**
-         * 应用 Transform 信息
-         * @param glTFNode
-         * @param sprite
-         */
-        private applyTransform;
-        /**
-         * @internal
-         * 构建 当前 glTF 对象 节点树
-         * @param glTFNodes
-         */
-        private buildHierarchy;
-        /**
-         * @internal
-         * 加载 glTF 节点
-         * @param glTFNodes
-         */
-        private loadNodes;
-        /**
-         * @internal
-         * 加载 glTF 节点
-         * @param glTFNode
-         */
-        private loadNode;
-        /**
-         * 创建 节点对象
-         * @param glTFNode
-         */
-        private createSprite3D;
-        /**
-         * 创建 MeshSprite3D 对象
-         * @param glTFNode
-         */
-        private createMeshSprite3D;
-        /**
-         * 创建 MeshSprite3D 对象
-         * @param glTFNode
-         */
-        private createSkinnedMeshSprite3D;
-        /**
-         * @internal
-         * 获取 attribute buffer 数据
-         * @param attributeAccessorIndex
-         * @param layaDeclarStr
-         * @param attributes
-         * @param vertexDeclarArr
-         * @param func
-         */
-        private getArrributeBuffer;
-        /**
-         * @internal
-         * 获取 glTFMeshPrimitive index buffer
-         * @param attributeAccessorIndex
-         * @param vertexCount
-         */
-        private getIndexBuffer;
-        private calculateFlatNormal;
-        /**
-         * @internal
-         * 解析 subData 记录数据
-         * @param subDatas
-         * @param layaMesh
-         */
-        private parseMeshwithSubMeshData;
-        /**
-         * @internal
-         * 填充 mesh buffer 数据
-         * @param subDatas
-         * @param vertexArray
-         * @param indexArray
-         * @param vertexFloatStride
-         */
-        private fillMeshBuffers;
-        /**
-         * @internal
-         * 根据 单次提交最大骨骼数量 划分 submesh 提交队列
-         * @param attributeMap
-         * @param indexArray
-         * @param boneIndicesList
-         * @param subIndexStartArray
-         * @param subIndexCountArray
-         */
-        private splitSubMeshByBonesCount;
-        /**
-         * @internal
-         * 生成 mesh
-         * @param vertexArray
-         * @param indexArray
-         * @param vertexDeclaration
-         * @param ibFormat
-         * @param subDatas
-         * @param layaMesh
-         */
-        private generateMesh;
-        /**
-         * @internal
-         * mesh 应用蒙皮数据
-         * @param mesh
-         * @param glTFSkin
-         */
-        private applyglTFSkinData;
-        private applyMorphTarget;
-        /**
-         * 创建 Mesh
-         * @param mesh
-         */
-        protected createMesh(glTFMesh: glTFMesh, glTFSkin?: glTFSkin): Mesh;
-        /**
-         * 计算 SkinnedMeshSprite3D local bounds
-         * @param skinned
-         */
-        private calSkinnedSpriteLocalBounds;
-        /**
-         * @internal
-         * 补全 skinnedMeshSprite 所需数据
-         * @param glTFNode
-         * @param skinned
-         */
-        private fixSkinnedSprite;
-        /**
-         * @internal
-         * 获取 Animator 根节点
-         */
-        private getAnimationRoot;
-        /**
-         * @internal
-         * 获取 动画路径信息
-         * @param root
-         * @param curSprite
-         */
-        private getAnimationPath;
-        /**
-         * @internal
-         * 加载 Animation
-         * @param animations
-         */
-        private loadAnimations;
-        /**
-         * @internal
-         * 加载 Animation
-         * @param animation
-         */
-        private loadAnimation;
-        /**
-         * @internal
-         * 创建 Animator 组件
-         * @param animation
-         */
-        private createAnimator;
-        /**
-         * @internal
-         * 创建 AnimationClip
-         * @param animation
-         * @param animatorRoot
-         * @returns
-         */
-        protected createAnimatorClip(animation: glTFAnimation, animatorRoot: Sprite3D): AnimationClip;
-    }
-    /**
-     * @internal
-     */
-    class glTFShader {
-        static ShaderName: string;
-        static Define_BaseColorMap: ShaderDefine;
-        static Define_BaseColorMapTransform: ShaderDefine;
-        static Define_MetallicRoughnessMap: ShaderDefine;
-        static Define_MetallicRoughnessMapTransform: ShaderDefine;
-        static Define_NormalMap: ShaderDefine;
-        static Define_NormalMapTransform: ShaderDefine;
-        static Define_OcclusionMap: ShaderDefine;
-        static Define_OcclusionMapTransform: ShaderDefine;
-        static Define_EmissionMap: ShaderDefine;
-        static Define_EmissionMapTransform: ShaderDefine;
-        static Define_ClearCoatMap: ShaderDefine;
-        static Define_ClearCoatMapTransform: ShaderDefine;
-        static Define_ClearCoatRoughnessMap: ShaderDefine;
-        static Define_ClearCoatRoughnessMapTransform: ShaderDefine;
-        static Define_ClearCoatNormalMapTransform: ShaderDefine;
-        static Define_AnisotropyMap: ShaderDefine;
-        static Define_AnisotropyMapTransform: ShaderDefine;
-        static Define_IridescenceMap: ShaderDefine;
-        static Define_IridescenceMapTransform: ShaderDefine;
-        static Define_IridescenceThicknessMap: ShaderDefine;
-        static Define_IridescenceThicknessMapTransform: ShaderDefine;
-        static Define_SheenColorMap: ShaderDefine;
-        static Define_SheenColorMapTransform: ShaderDefine;
-        static Define_SheenRoughnessMap: ShaderDefine;
-        static Define_SheenRoughnessMapTransform: ShaderDefine;
-        static Define_TransmissionMap: ShaderDefine;
-        static Define_TransmissionMapTransform: ShaderDefine;
-        static Define_VolumeThicknessMap: ShaderDefine;
-        static Define_VolumeThicknessMapTransform: ShaderDefine;
-        static Define_SpecularFactorMap: ShaderDefine;
-        static Define_SpecularFactorMapTransform: ShaderDefine;
-        static Define_SpecularColorMap: ShaderDefine;
-        static Define_SpecularColorMapTransform: ShaderDefine;
-        static init(): void;
-    }
-    /**
      * @en Enum representing the types of HTML elements.
      * @zh 枚举，表示 HTML 元素的类型。
      */
@@ -36106,13 +28491,7 @@ declare namespace Laya {
          * @en Object element, used for embedding objects like images, videos, or other media.
          * @zh 对象元素，用于嵌入对象，如图像、视频或其他媒体。
          */
-        Object = 5,
-        /**
-         * @internal
-         * @en Indicates the end of link elements.
-         * @zh 表示链接元素的结束。
-         */
-        LinkEnd = 6
+        Object = 5
     }
     /**
      * @en The `HtmlElement` class represents HTML element.
@@ -36606,6 +28985,7 @@ declare namespace Laya {
         protected onTag_COLOR(tagName: string, end: boolean, attr: string): string;
         protected onTag_FONT(tagName: string, end: boolean, attr: string): string;
         protected onTag_SIZE(tagName: string, end: boolean, attr: string): string;
+        protected onTag_STROKE(tagName: string, end: boolean, attr: string): string;
         protected getTagText(remove?: boolean): string;
         /**
          * @en Parses the UBB formatted text and returns the corresponding HTML string.
@@ -37570,11 +29950,6 @@ declare namespace Laya {
         static enableAutoDynamicAtlas: boolean;
         static limitDynamicAtlasSize: number;
     }
-    /** @internal */
-    type _$TextureData = {
-        texture: Texture;
-        uv: ArrayLike<number>;
-    };
     /**
      * 纹理信息接口
      */
@@ -37635,12 +30010,25 @@ declare namespace Laya {
     class DynamicAtlasManager {
         private _largeTexManager;
         private _textureMap;
+        private _textureIdMap;
         private _config;
         private _isDestroyed;
         private _autoReplace;
         private _totalDrawCount;
         private _waitReplace;
         constructor(config?: Partial<DynamicAtlasConfig>, autoReplace?: boolean);
+        /**
+         * Helper method to consistently get Texture2D from URL
+         * @param url The texture URL
+         * @returns Texture2D object or null if not found
+         */
+        private _getTexture2DByUrl;
+        /**
+         * Get Texture2D ID from Texture ID using the mapping table
+         * @param textureId The Texture ID
+         * @returns Texture2D ID or null if not found
+         */
+        private _getTexture2DId;
         private _findSmallTexture;
         /**
          * @en Add texture to atlas
@@ -38416,7 +30804,6 @@ declare namespace Laya {
          * @param ltn 大纹理数量上限
          * @param tsm 小纹理单元尺寸
          * @param exs 小纹理扩边尺寸
-         * @param qds 大纹理观察尺寸
          */
         constructor(lts: number[], ltn: number, tsm?: number, exs?: number, texFormat?: RenderTargetFormat);
         /**
@@ -38504,42 +30891,7 @@ declare namespace Laya {
         onUpdate(): void;
         cleanupUnused(): void;
     }
-    /**
-     * @internal
-     */
-    class LargeTexProcessor {
-        static _instance: LargeTexProcessor;
-        mgrs: LargeTexManager[];
-        private _textureProcessor;
-        static addMgr(mgr: LargeTexManager): void;
-        static removeMgr(mgr: LargeTexManager): void;
-        static cleanupUnused(): void;
-        /**
-         * @en Get texture processor instance
-         * @zh 获取纹理处理器实例
-         */
-        get textureProcessor(): ITextureProcessor;
-        /**
-         * @en Set texture processor instance
-         * @zh 设置纹理处理器实例
-         * @param processor Texture processor instance
-         */
-        setTextureProcessor(processor: ITextureProcessor): void;
-        addManager(mgr: LargeTexManager): void;
-        removeManager(mgr: LargeTexManager): void;
-        /**
-         * 分帧更新大图
-         * @param force 强制更新
-         */
-        update(force?: boolean): void;
-    }
     class TextureMergeShaderInit {
-        /** @internal */
-        static _sdNotChange: ShaderData;
-        /** @internal */
-        static _sdGammaToLinear: ShaderData;
-        /** @internal */
-        static _sdLinearToGamma: ShaderData;
         private static LINEAR_TO_GAMMA;
         private static GAMMA_TO_LINEAR;
         static init(): void;
@@ -38551,36 +30903,10 @@ declare namespace Laya {
      */
     class CommandEncoder {
         /**
-         * @internal
-         * @en Shader variable list
-         * @zh Shader变量列表
-         */
-        _idata: ShaderVariable[];
-        /**
          * @en Constructor method, initialize CommandEncoder object
          * @zh 构造方法，初始化CommandEncoder对象
          */
         constructor();
-        /**
-         * @internal
-         * @en Get the Shader variable list
-         * @zh 获取ShaderVariable数组
-         */
-        getArrayData(): ShaderVariable[];
-        /**
-         * @internal
-         * @en Get the count of ShaderVariables in the array
-         * @zh 获取ShaderVariable数组的数量
-         */
-        getCount(): number;
-        /**
-         * @internal
-         * @en Add one ShaderVariable
-         * @param variable The ShaderVariable to be added
-         * @zh 添加一个ShaderVariable
-         * @param variable 要添加的ShaderVariable
-         */
-        addShaderUniform(variable: ShaderVariable): void;
     }
     /**
      * @en Package GL commands
@@ -38845,60 +31171,6 @@ declare namespace Laya {
         endFrameLogic(timestamp: number): void;
     }
     /**
-     * @internal
-     * @en `HierarchyParserV2` is a class used for parsing hierarchy data in a 3D scene.
-     * @zh `HierarchyParserV2` 类用于解析3D场景中的层级数据。
-     */
-    class HierarchyParserV2 {
-        /**
-         * @internal
-         * @param nodeData 创建数据
-         * @param spriteMap 精灵集合
-         * @param outBatchSprites 渲染精灵集合
-         */
-        private static _createSprite3DInstance;
-        /**
-         * @internal
-         * @param nodeData
-         * @param spriteMap
-         * @param interactMap
-         */
-        private static _createComponentInstance;
-        /**
-         * @internal
-         */
-        static _createNodeByJson02(nodeData: any, outBatchSprites: RenderableSprite3D[]): Node;
-        /**
-         * @internal
-         */
-        static _createInteractInstance(interatMap: any, spriteMap: any): void;
-        /**
-         * @internal
-         * @en Parses the provided data into a 3D scene hierarchy.
-         * @param data The data object containing the hierarchy information and version.
-         * @returns A `Sprite3D` or `Scene3D` object representing the parsed hierarchy.
-         * @zh 将提供的数据解析为3D场景层级。
-         * @param data 包含层级信息和版本的数据对象。
-         * @returns 解析后的层级的Sprite3D或Scene3D对象
-         */
-        static parse(data: any): Scene3D | Sprite3D;
-        /**
-         * @internal
-         */
-        static _createNodeByJson(nodeData: any, outBatchSprites: RenderableSprite3D[]): Node;
-        /**
-         * @en Collects all the resource links required for loading from the given data object.
-         * @param data The data object containing hierarchy and resource information.
-         * @param basePath The base path to resolve relative URLs.
-         * @returns An array of resource URLs or `ILoadURL` objects.
-         * @zh 从给定的数据对象中收集所有需要加载的资源链接。
-         * @param data 包含层级和资源信息的数据对象。
-         * @param basePath 用于解析相对URL的基路径。
-         * @returns 资源URL或 `ILoadURL` 对象的数组。
-         */
-        static collectResourceLinks(data: any, basePath: string): (string | ILoadURL)[];
-    }
-    /**
      * @private 场景辅助类
      */
     class LegacyUIParser {
@@ -38908,8 +31180,6 @@ declare namespace Laya {
         private static _parseWatchData;
         /**@private */
         private static _parseKeyWord;
-        /**@internal */
-        static _sheet: any;
         static parse(data: any, options: any): Sprite;
         /**
          * @private 根据字符串，返回函数表达式
@@ -38982,18 +31252,6 @@ declare namespace Laya {
          */
         static createByJson(json: any, node?: any, root?: Node, customHandler?: Handler, instanceHandler?: Handler): any;
         /**
-         * @internal
-         * 将graphic对象添加到Sprite上
-         * @param graphicO graphic对象描述
-         */
-        static _addGraphicsToSprite(graphicO: any, sprite: Sprite): void;
-        /**
-         * @internal
-         * 将graphic绘图指令添加到sprite上
-         * @param graphicO 绘图指令描述
-         */
-        static _addGraphicToSprite(graphicO: any, sprite: Sprite, isChild?: boolean): void;
-        /**
          * @private
          */
         private static _getGraphicsFromSprite;
@@ -39018,10 +31276,6 @@ declare namespace Laya {
          */
         private static _adptLinesData;
         /**
-         * @internal
-         */
-        static _isDrawType(type: string): boolean;
-        /**
          * @private
          */
         private static _getParams;
@@ -39034,10 +31288,6 @@ declare namespace Laya {
         /**@private */
         private static _alpha;
         /**
-         * @internal
-         */
-        static _getPointListByStr(str: string): any[];
-        /**
          * @private
          */
         private static _getObjVar;
@@ -39047,10 +31297,6 @@ declare namespace Laya {
         private _nodeRefList;
         /**@private */
         private _initList;
-        /**@internal */
-        _idMap: {
-            [key: string]: Sprite;
-        };
         reset(): void;
         recover(): void;
         static create(): InitTool;
@@ -39146,34 +31392,16 @@ declare namespace Laya {
         clearAll(): void;
     }
     /**
-     * @internal
-     */
-    class IMap {
-        static TiledMap: typeof TiledMap;
-    }
-    /**
      * @deprecated
      * @en The `MapLayer` class represents layer within a map that supports multi-layer rendering, such as terrain, vegetation, and building layers. This class is a hierarchical class
      * @zh `MapLayer` 类代表地图中的层级，支持多层渲染，例如地表层、植被层、建筑层等。本类就是层级类。
      */
     class MapLayer extends Sprite {
         private _map;
-        /**
-         * @internal
-         * @en Internal data associated with the map layer.
-         * @zh 与地图层相关联的内部数据。
-         */
-        _mapData: any[];
         private _tileWidthHalf;
         private _tileHeightHalf;
         private _mapWidthHalf;
         private _mapHeightHalf;
-        /**
-         * @internal
-         * @en Array of grid sprites that make up the layer.
-         * @zh 构成层的网格精灵数组。
-         */
-        _gridSpriteArray: any[];
         private _objDic;
         private _dataDic;
         private _tempMapPos;
@@ -39443,10 +31671,6 @@ declare namespace Laya {
         private _pivotScaleY;
         private _centerX;
         private _centerY;
-        /**@internal */
-        _viewPortX: number;
-        /**@internal */
-        _viewPortY: number;
         private _viewPortWidth;
         private _viewPortHeight;
         private _enableLinear;
@@ -40026,15 +32250,7 @@ declare namespace Laya {
          * @readonly
          */
         static LIGHTANDSHADOW_AMBIENT: number;
-        /**
-         * @internal
-         */
-        static idCounter: number;
         readonly owner: Sprite;
-        /**
-         * @internal
-         */
-        static __init__(): void;
         protected _type: Light2DType;
         private _lightMode;
         private _sceneMode;
@@ -40061,35 +32277,10 @@ declare namespace Laya {
         protected _screenCache: Rectangle;
         private _texSize;
         /**
-         * @internal
-         * 灯光贴图（实时渲染)
-         */
-        _texLight: BaseTexture;
-        /**
          * @en Is show light texture
          * @zh 是否显示灯光贴图
          */
         showLightTexture: boolean;
-        /**
-         * @internal
-         */
-        _lightId: number;
-        /**
-         * @internal
-         */
-        _needUpdateLight: boolean;
-        /**
-         * @internal
-         */
-        _needUpdateLightAndShadow: boolean;
-        /**
-         * @internal
-         */
-        _needUpdateLightLocalRange: boolean;
-        /**
-         * @internal
-         */
-        _needUpdateLightWorldRange: boolean;
         /**
          * @en The light render order
          * @zh 灯光渲染顺序
@@ -40231,50 +32422,10 @@ declare namespace Laya {
         protected _onDisable(): void;
         protected _onDestroy(): void;
         /**
-         * @internal
-         * @en Response matrix change
-         * @zh 响应矩阵改变
-         */
-        _transformChange(): void;
-        /**
          * @en Clear screen size cache
          * @zh 清除屏幕尺寸缓存
          */
         protected _clearScreenCache(): void;
-        /**
-         * @internal
-         * @en Calculate PCF coefficient
-         * @zh 计算PCF系数
-         */
-        _pcfIntensity(): number;
-        /**
-         * @internal
-         * @en Get light range (local coordinates)
-         * @zh 获取灯光范围（局部坐标）
-         */
-        _getLocalRange(): Rectangle;
-        /**
-         * @internal
-         * @en Get light range (world coordinates)
-         * @zh 获取灯光范围（世界坐标）
-         */
-        _getWorldRange(screen?: Rectangle): Rectangle;
-        /**
-         * @internal
-         * @en Get light range (light map)
-         * @zh 获取灯光范围（光影图）
-         */
-        _getLightRange(screen?: Rectangle): Rectangle;
-        /**
-         * @internal
-         * 获取贴图尺寸
-         */
-        _getTextureSize(): Vector2;
-        /**
-         * @internal
-         * 是否需要建立阴影网格
-         */
-        _isNeedShadowMesh(): boolean;
         /**
          * 矩形1是否包含矩形2
          * @param rect1
@@ -40331,41 +32482,10 @@ declare namespace Laya {
          */
         isShadowLayerEnable(layer: number): number;
         /**
-         * @internal
-         * 将渲染出的贴图以Base64的方式打印到终端上
-         */
-        _printTextureToConsoleAsBase64(): void;
-        /**
-         * @internal
-         * 计算灯光范围（局部坐标）
-         */
-        protected _calcLocalRange(): void;
-        /**
-         * @internal
-         * 获取灯光范围
-         */
-        protected _calcWorldRange(screen?: Rectangle): void;
-        /**
-         * @internal
-         * 设置灯光放缩和旋转
-         */
-        protected _lightScaleAndRotation(): void;
-        /**
          * @en Render light texture
          * @zh 渲染灯光贴图
          */
         renderLightTexture(): void;
-        /**
-         * @internal
-         * 灯光是否在指定范围内
-         */
-        _isInRange(range: Rectangle): boolean;
-        /**
-         * @internal
-         * 灯光是否在屏幕内
-         * @param screen 屏幕位置和尺寸
-         */
-        _isInScreen(screen: Rectangle): boolean;
         /**
          * @en Generates or updates a mesh object.
          * @param points Vertex data representing the coordinates of the mesh vertices.
@@ -40429,11 +32549,6 @@ declare namespace Laya {
          */
         set shadowDistance(value: number);
         /**
-         * @internal
-         * @param screen 屏幕位置和尺寸
-         */
-        _getWorldRange(screen?: Rectangle): Rectangle;
-        /**
          * 计算灯光范围（局部坐标）
          */
         protected _calcLocalRange(): void;
@@ -40442,23 +32557,6 @@ declare namespace Laya {
          * @param screen 屏幕位置和尺寸
          */
         protected _calcWorldRange(screen?: Rectangle): void;
-        /**
-         * @internal
-         * 获取阴影范围（世界坐标）
-         * @param screen 屏幕位置和尺寸
-         */
-        _getShadowRange(screen?: Rectangle): Rectangle;
-        /**
-         * @internal
-         * 灯光是否在指定范围内
-         */
-        _isInRange(range: Rectangle): boolean;
-        /**
-         * @internal
-         * 灯光是否在屏幕内
-         * @param screen 屏幕位置和尺寸
-         */
-        _isInScreen(screen: Rectangle): boolean;
     }
     /**
      * 自定义形状灯光
@@ -40492,11 +32590,6 @@ declare namespace Laya {
          */
         set falloffRange(value: number);
         /**
-         * @internal
-         * 设置默认多边形数据
-         */
-        private _defaultPoly;
-        /**
          * @en Set polygon endpoint data
          * @param poly Poly data
          * @zh 设置多边形端点数据
@@ -40518,12 +32611,6 @@ declare namespace Laya {
          * @zh 获取灯光世界位置的Y坐标值
          */
         getGlobalPosY(): number;
-        /**
-         * @internal
-         * @en Response matrix change
-         * @zh 响应矩阵改变
-         */
-        _transformChange(): void;
         /**
          * 计算灯光范围（局部坐标）
          */
@@ -40635,10 +32722,6 @@ declare namespace Laya {
      * @blueprintIgnore
      */
     class Light2DManager implements IElementComponentManager, ILight2DManager {
-        /**
-         * @internal
-         */
-        static _managerName: string;
         static MAX_LAYER: number;
         static SCREEN_SCHMITT_SIZE: number;
         static DIRECTION_LIGHT_SIZE: number;
@@ -40647,6 +32730,10 @@ declare namespace Laya {
         static DEBUG: boolean;
         static SUPPORT_LIGHT_BLEND_MODE: boolean;
         static SUPPORT_LIGHT_SCENE_MODE: boolean;
+        /**
+         * 将光影图尺寸夹到设备 MAX_TEXTURE_SIZE，避免低端机因 outerRadius 过大创建超限 RT 导致 glTexStorage2D / framebuffer incomplete
+         */
+        static clampRTSize(size: number): number;
         lsTarget: RenderTexture[];
         lsTargetAdd: RenderTexture[];
         lsTargetSub: RenderTexture[];
@@ -40719,17 +32806,6 @@ declare namespace Laya {
         name: string;
         Init(data: any): void;
         update(dt: number): void;
-        /**
-         * @internal
-         * 将渲染出的贴图以Base64的方式打印到终端上
-         */
-        _printTextureToConsoleAsBase64(tex: RenderTexture): void;
-        /**
-         * @internal
-         * 灯光的变换矩阵发生变化
-         * @param light 灯光对象
-         */
-        _lightTransformChange(light: BaseLight2D): void;
         /**
          * 检查灯光范围，如果需要更新则更新
          * @param light 灯光对象
@@ -40896,20 +32972,9 @@ declare namespace Laya {
          */
         preRenderUpdate(): void;
         /**
-         * @internal
-         * 获取层更新码
-         * @param layer 层序号
-         */
-        _getLayerUpdateMark(layer: number): number;
-        /**
-         * @internal
-         * 更新指定层的着色器数据
-         * @param layer 层序号
-         * @param shaderData 着色器数据
-         */
-        _updateShaderDataByLayer(layer: number, shaderData: ShaderData): void;
-        /**
          * 更新屏幕尺寸和偏移参数
+         * 单 Area2D + Camera2D 时跟随主相机视野；其余情况退化为屏幕像素空间。
+         * 多 Area2D 仍然只跟随第一个有 mainCamera 的 area，配合 layer 查询（不区分 area2d）。
          */
         private _updateScreen;
         /**
@@ -41101,6 +33166,11 @@ declare namespace Laya {
          */
         enableShadow(light: BaseLight2D, recover: any[]): void;
         /**
+         * @en Destroy and release all material references
+         * @zh 销毁并释放所有材质引用
+         */
+        destroy(): void;
+        /**
          * @en Render light and shadow
          * @param rt Render target (mulitply mode)
          * @param rtAdd
@@ -41178,10 +33248,6 @@ declare namespace Laya {
      * 2D灯光遮挡器（遮光器）
      */
     class LightOccluder2DCore {
-        /**
-         * @internal
-         */
-        static _idCounter: number;
         private _layerMask;
         private _layers;
         private _owner;
@@ -41224,10 +33290,6 @@ declare namespace Laya {
         get outside(): boolean;
         set outside(value: boolean);
         /**
-         * @internal
-         */
-        _occluderId: number;
-        /**
          * 遮光器范围（局部坐标）
          */
         private _localRange;
@@ -41235,10 +33297,6 @@ declare namespace Laya {
          * 遮光器范围（世界坐标）
          */
         private _worldRange;
-        /**
-         * @internal
-         */
-        private _needUpdate;
         get needUpdate(): boolean;
         set needUpdate(value: boolean);
         private _needTransformPoly;
@@ -41256,14 +33314,6 @@ declare namespace Laya {
          * @ignore
          */
         constructor(manager?: Light2DManager);
-        /**
-         * @internal
-         */
-        _onEnable(): void;
-        /**
-         * @internal
-         */
-        _onDisable(): void;
         /**
          * @en Set the position. Equivalent to setting the x and y properties separately.
          * Since the return value is the object itself, you can use the following syntax: spr.pos(...).scale(...);
@@ -41347,18 +33397,6 @@ declare namespace Laya {
         get transform(): Matrix;
         set transform(value: Matrix);
         /**
-         * @internal
-         * 通知此遮光器层的改变
-         * @param oldLayerMask 旧层掩码
-         * @param newLayerMask 新层掩码
-         */
-        _layerMaskChange(oldLayerMask: number, newLayerMask: number): void;
-        /**
-         * @internal
-         * 响应矩阵改变
-         */
-        _transformChange(): void;
-        /**
          * @en Set polygon endpoint data
          * @param poly Polygon data
          * @zh 设置多边形端点数据
@@ -41391,11 +33429,6 @@ declare namespace Laya {
          * 计算范围（世界坐标）
          */
         private _calcWorldRange;
-        /**
-         * @internal
-         * 获取范围（世界坐标）
-         */
-        _getRange(): Rectangle;
         /**
          * @en Is inside the light range
          * @param range Specified range
@@ -41790,11 +33823,6 @@ declare namespace Laya {
          */
         get spriteTexture(): Texture2D;
         /**
-         * @internal
-         * 计算灯光范围（局部坐标）
-         */
-        protected _calcLocalRange(): void;
-        /**
          * 计算灯光范围（世界坐标）
          * @param screen 屏幕位置和尺寸
          */
@@ -41811,7 +33839,7 @@ declare namespace Laya {
     }
     class Draw2DLineCMD extends Command2D {
         private static readonly _pool;
-        static create(pointArray: number[], mat: Matrix, color?: Color, lineWidth?: number): Draw2DLineCMD;
+        static create(pointArray: number[], mat: Matrix, color?: Color, lineWidth?: number, screenSpaceWidth?: boolean): Draw2DLineCMD;
         private _drawElementData;
         _line2DRender: Line2DRender;
         private _needUpdateElement;
@@ -41820,12 +33848,6 @@ declare namespace Laya {
         private _struct;
         constructor();
         _setMatrix(value: Matrix): void;
-        /**
-       * @override
-       * @internal
-       * @returns
-       */
-        getRenderCMD(): Draw2DElementCMD;
         /**
          * @en Runs the  command.
          * @zh 运行命令。
@@ -41841,10 +33863,6 @@ declare namespace Laya {
     }
     class Line2DRender extends BaseRenderNode2D {
         private static defaultLine2DMaterial;
-        /**
-         * @internal
-         */
-        static _createDefaultLineMaterial(): void;
         private _color;
         private _baseRender2DTexture;
         private _positions;
@@ -41855,6 +33873,7 @@ declare namespace Laya {
         private _maxLineNumer;
         private _enLarge;
         private _lineWidth;
+        private _screenSpaceWidth;
         private _renderGeometry;
         private _positionInstansBufferData;
         private _positionVertexBuffer;
@@ -41872,6 +33891,12 @@ declare namespace Laya {
          */
         get lineWidth(): number;
         set lineWidth(value: number);
+        /**
+         * @en Whether the line width is in screen space. When enabled, the line width remains constant regardless of node transformations.
+         * @zh 线宽是否为屏幕空间宽度。启用后，线宽不受节点变换矩阵的影响，始终保持设定的像素宽度。
+         */
+        get screenSpaceWidth(): boolean;
+        set screenSpaceWidth(value: boolean);
         /**
          * @en The color of the line segment.
          * @zh 线段颜色
@@ -41915,22 +33940,14 @@ declare namespace Laya {
         set tillOffset(value: Vector4);
         get tillOffset(): Vector4;
         /**
-       * @en Render material
-       * @zh 渲染材质
-       */
+         * @en Render material
+         * @zh 渲染材质
+         */
+        get sharedMaterial(): Material;
         set sharedMaterial(value: Material);
         private _updateDashValue;
         protected _isMaterialVaild(value: Material): boolean;
-        /**
-         * 基于不同BaseRender的uniform集合
-         * @internal
-         */
-        protected _getcommonUniformMap(): Array<string>;
         protected _initDefaultRenderData(): void;
-        /**
-         * @internal
-         */
-        private _changeGeometry;
         /**
          * @en Add a line segment.
          * @param startx  starting x position
@@ -41950,8 +33967,6 @@ declare namespace Laya {
          */
         clear(): void;
         onPreRender(): void;
-        /** @internal */
-        _initRender(): void;
         /**@ignore */
         constructor();
     }
@@ -41959,16 +33974,9 @@ declare namespace Laya {
         static LINEWIDTH: number;
         static DASHED: number;
         static TILINGOFFSET: number;
+        static SCREENSPACEWIDTH: number;
         static linePoisitionDesc: VertexDeclaration;
         static lineLengthDesc: VertexDeclaration;
-        /**
-         * @internal
-         */
-        static _vbs: IVertexBuffer;
-        /**
-         * @internal
-         */
-        static _ibs: IIndexBuffer;
         private static _isInit;
         static __init__(): void;
     }
@@ -41984,48 +33992,6 @@ declare namespace Laya {
         static collectResourceLinks(data: any, basePath: string): ILoadURL[];
     }
     class LoadModel2DV01 {
-        /**@internal */
-        private static _BLOCK;
-        /**@internal */
-        private static _DATA;
-        /**@internal */
-        private static _strings;
-        /**@internal */
-        private static _readData;
-        /**@internal */
-        private static _version;
-        /**@internal */
-        private static _mesh;
-        /**@internal */
-        private static _subMeshes;
-        /**
-         * @internal
-         */
-        static parse(readData: Byte, version: string, mesh: Mesh2D, subMeshes: IRenderGeometryElement[]): void;
-        /**
-         * @internal
-         */
-        private static _readString;
-        /**
-         * @internal
-         */
-        private static READ_DATA;
-        /**
-         * @internal
-         */
-        private static READ_BLOCK;
-        /**
-         * @internal
-         */
-        private static READ_STRINGS;
-        /**
-         * @internal
-         */
-        private static READ_MESH;
-        /**
-         * @internal
-         */
-        private static READ_SUBMESH;
     }
     class MaterialLoader implements IResourceLoader {
         load(task: ILoadTask): Promise<any>;
@@ -42457,6 +34423,175 @@ declare namespace Laya {
         getStyleString(): string;
     }
     /**
+     * @en Wrap mode for curve evaluation when time is outside the keyframe range.
+     * @zh 当时间超出关键帧范围时，曲线求值的循环模式。
+     */
+    enum CurveWrapMode {
+        /**
+         * @en Clamp the value to the first/last keyframe value.
+         * @zh 将值钳制到第一个/最后一个关键帧的值。
+         */
+        Clamp = 0,
+        /**
+         * @en Loop the curve by repeating the keyframe range.
+         * @zh 通过重复关键帧范围来循环曲线。
+         */
+        Loop = 1,
+        /**
+         * @en Ping-pong the curve, alternating forward and backward.
+         * @zh 乒乓模式，交替正向和反向播放。
+         */
+        PingPong = 2
+    }
+    /**
+     * @en The `Curve` class stores a collection of float keyframes and provides evaluation of interpolated values.
+     * It supports Hermite spline interpolation with optional weighted tangents.
+     * @zh `Curve` 类存储一组浮点关键帧，并提供插值求值功能。
+     * 支持 Hermite 样条插值以及可选的加权切线。
+     */
+    class Curve implements IClone {
+        /**
+         * @en Pre-wrap mode applied when time is before the first keyframe.
+         * @zh 当时间早于第一个关键帧时应用的前循环模式。
+         */
+        preWrapMode: CurveWrapMode;
+        /**
+         * @en Post-wrap mode applied when time is after the last keyframe.
+         * @zh 当时间晚于最后一个关键帧时应用的后循环模式。
+         */
+        postWrapMode: CurveWrapMode;
+        /**
+         * @ignore
+         * @en Creates an instance of `Curve`.
+         * @zh 创建一个 `Curve` 的实例。
+         */
+        constructor();
+        /**
+         * @en Flat keyframe data for serialization. Every 7 floats form one keyframe:
+         * [time, value, inTangent, outTangent, inWeight, outWeight, weightedMode].
+         * @zh 用于序列化的关键帧平坦数据。每 7 个 float 为一组关键帧:
+         * [time, value, inTangent, outTangent, inWeight, outWeight, weightedMode]。
+         */
+        get frameData(): number[];
+        set frameData(value: number[]);
+        /**
+         * @en The number of keyframes in the curve.
+         * @zh 曲线中关键帧的数量。
+         */
+        get length(): number;
+        /**
+         * @en The duration of the curve (time of the last keyframe minus time of the first keyframe).
+         * @zh 曲线的时长（最后一个关键帧的时间减去第一个关键帧的时间）。
+         */
+        get duration(): number;
+        /**
+         * @en The start time of the curve (time of the first keyframe).
+         * @zh 曲线的起始时间（第一个关键帧的时间）。
+         */
+        get startTime(): number;
+        /**
+         * @en The end time of the curve (time of the last keyframe).
+         * @zh 曲线的结束时间（最后一个关键帧的时间）。
+         */
+        get endTime(): number;
+        /**
+         * @en Gets the keyframe at the specified index.
+         * @param index The index of the keyframe.
+         * @returns The keyframe at the index.
+         * @zh 获取指定索引处的关键帧。
+         * @param index 关键帧的索引。
+         * @returns 该索引处的关键帧。
+         */
+        getKey(index: number): FloatKeyframe;
+        /**
+         * @en Gets a readonly copy of all keyframes.
+         * @returns The array of keyframes.
+         * @zh 获取所有关键帧的只读副本。
+         * @returns 关键帧数组。
+         */
+        get keys(): readonly FloatKeyframe[];
+        /**
+         * @en Adds a keyframe to the curve. Keyframes are kept sorted by time.
+         * @param key The keyframe to add.
+         * @returns The index at which the keyframe was inserted.
+         * @zh 向曲线添加一个关键帧。关键帧按时间排序。
+         * @param key 要添加的关键帧。
+         * @returns 关键帧插入的索引位置。
+         */
+        addKey(key: FloatKeyframe): number;
+        /**
+         * @en Adds a keyframe with the specified time and value. Tangents default to 0.
+         * @param time The time of the keyframe.
+         * @param value The value of the keyframe.
+         * @returns The index at which the keyframe was inserted.
+         * @zh 使用指定的时间和值添加关键帧。切线默认为 0。
+         * @param time 关键帧的时间。
+         * @param value 关键帧的值。
+         * @returns 关键帧插入的索引位置。
+         */
+        addKey(time: number, value: number): number;
+        /**
+         * @en Removes the keyframe at the specified index.
+         * @param index The index of the keyframe to remove.
+         * @zh 移除指定索引处的关键帧。
+         * @param index 要移除的关键帧的索引。
+         */
+        removeKey(index: number): void;
+        /**
+         * @en Removes all keyframes from the curve.
+         * @zh 移除曲线中的所有关键帧。
+         */
+        clear(): void;
+        /**
+         * @en Evaluates the curve at the given time and returns the interpolated value.
+         * Uses Hermite spline interpolation between keyframes, with optional weighted tangents.
+         * @param time The time at which to evaluate the curve.
+         * @returns The interpolated value.
+         * @zh 在给定时间点对曲线求值，返回插值后的值。
+         * 在关键帧之间使用 Hermite 样条插值，支持可选的加权切线。
+         * @param time 求值的时间点。
+         * @returns 插值后的值。
+         */
+        evaluate(time: number): number;
+        /**
+         * @en Automatically computes smooth tangents for all keyframes.
+         * @zh 自动为所有关键帧计算平滑切线。
+         */
+        smoothTangents(): void;
+        /**
+         * @en Computes a smooth tangent for the keyframe at the given index.
+         * Uses the Catmull-Rom approach based on neighboring keyframes.
+         * @param index The keyframe index.
+         * @zh 为指定索引处的关键帧计算平滑切线。
+         * 使用基于相邻关键帧的 Catmull-Rom 方法。
+         * @param index 关键帧索引。
+         */
+        smoothTangent(index: number): void;
+        /**
+         * @en Sets a flat (zero) tangent for the keyframe at the given index.
+         * @param index The keyframe index.
+         * @zh 将指定索引处的关键帧的切线设置为平坦（零）。
+         * @param index 关键帧索引。
+         */
+        flatTangent(index: number): void;
+        /**
+         * @inheritDoc
+         * @override
+         * @en Clones the data to another object.
+         * @param destObject The target object to clone to.
+         * @zh 克隆数据到目标对象。
+         * @param destObject 克隆目标。
+         */
+        cloneTo(destObject: Curve): void;
+        /**
+         * @en Creates a clone of the current curve.
+         * @returns A clone of the current curve.
+         * @zh 克隆当前曲线。
+         * @returns 克隆副本。
+         */
+        clone(): Curve;
+    }
+    /**
      * @en The `FloatKeyframe` class is used to create floating-point keyframe instances.
      * @zh `FloatKeyframe` 类用于创建浮点关键帧实例。
      */
@@ -42526,8 +34661,6 @@ declare namespace Laya {
          * @zh 颜色 RGB 数量。
          */
         get colorRGBKeysCount(): number;
-        /**@internal */
-        _rgbElementDatas: Float32Array;
         /**
          * @ignore
          * @en RGB data storage settings. The first is the key, and the second, third, and fourth are the R, G, and B values, forming a group, and so on.
@@ -42543,8 +34676,6 @@ declare namespace Laya {
          * @zh 颜色 Alpha 数量。
          */
         get colorAlphaKeysCount(): number;
-        /** @internal */
-        _alphaElementDatas: Float32Array;
         /**
          * @ignore
          * @en Alpha data storage settings. The first is the key, and the second is the value, forming a pair, and so on.
@@ -42553,20 +34684,6 @@ declare namespace Laya {
         get _alphaElements(): Float32Array;
         set _alphaElements(value: Float32Array);
         get maxColorKeysCount(): number;
-        /**
-         * @internal
-         * @en element key range
-         * x: colorkey min
-         * y: colorkey max
-         * z: alphakey min
-         * w: alphakey max
-         * @zh 元素键值范围
-         * x: 颜色最小值
-         * y: 颜色最大值
-         * z: 透明度最小值
-         * w: 透明度最大值
-         */
-        _keyRanges: Vector4;
         /**
          * @en Gradient mode. 0: Blend mode, 1: Fixed mode.
          * @zh 渐变模式。0：混合模式，1：固定模式。
@@ -42657,37 +34774,9 @@ declare namespace Laya {
         private _fixGPUAlphaData;
         private _fixGPURGBData;
         private _gpuRGBData4;
-        /**
-         * @internal
-         * 获取 GPU rgb data
-         * 并更新数据
-         * @returns
-         */
-        _getGPURGBData4(): Float32Array;
         private _gpuRGBData8;
-        /**
-         * @internal
-         * 获取 GPU rgb data
-         * 并更新数据
-         * @returns
-         */
-        _getGPURGBData8(): Float32Array;
         private _gpuAlphaData4;
-        /**
-         * @internal
-         * 获取 GPU alpha data
-         * 并更新数据
-         * @returns
-         */
-        _getGPUAlphaData4(): Float32Array;
         private _gpuAlphaData8;
-        /**
-         * @internal
-         * 获取 GPU alpha data
-         * 并更新数据
-         * @returns
-         */
-        _getGPUAlphaData8(): Float32Array;
         /**
          * @en Clone.
          * @param destObject The destination object to clone to.
@@ -43069,8 +35158,6 @@ declare namespace Laya {
          * @zh 用于中转使用的 Matrix 对象。
          */
         static readonly TEMP: Matrix;
-        /**@internal */
-        static _createFun: Function | null;
         /**
          * @en The value that affects the positioning of pixels along the x axis when scaling or rotating an image.
          * @zh 缩放或旋转图像时影响像素沿 x 轴定位的值。
@@ -43102,12 +35189,6 @@ declare namespace Laya {
          */
         ty: number;
         /**
-         * @internal
-         * @en Whether there are rotation or scaling operations.
-         * @zh 是否有旋转缩放操作。
-         */
-        _bTransform: boolean;
-        /**
          * @en Constructs method, initialize matrix.
          * @param a (Optional) The value that affects the positioning of pixels along the x axis when scaling or rotating an image.
          * @param b (Optional) The value that affects the positioning of pixels along the y axis when rotating or skewing an image.
@@ -43133,8 +35214,6 @@ declare namespace Laya {
          * @return 返回当前矩形。
          */
         identity(): Matrix;
-        /**@internal */
-        _checkTransform(): boolean;
         /**
          * @en Sets the translation along the x and y axes.
          * @param x The distance to translate along the x axis.
@@ -43757,30 +35836,6 @@ declare namespace Laya {
          */
         constructor(m11?: number, m12?: number, m13?: number, m14?: number, m21?: number, m22?: number, m23?: number, m24?: number, m31?: number, m32?: number, m33?: number, m34?: number, m41?: number, m42?: number, m43?: number, m44?: number, elements?: Float32Array);
         /**
-         * @internal
-         * @en Get the element of the matrix by row and column.
-         * @param row The row index (0-3).
-         * @param column The column index (0-3).
-         * @returns The value of the element.
-         * @zh 通过行和列获取矩阵元素。
-         * @param row 行索引（0-3）。
-         * @param column 列索引（0-3）。
-         * @returns 元素的值。
-         */
-        getElementByRowColumn(row: number, column: number): number;
-        /**
-         * @internal
-         * @en Set the element of the matrix by row and column.
-         * @param row The row index (0-3).
-         * @param column The column index (0-3).
-         * @param value The value to set.
-         * @zh 通过行和列设置矩阵元素。
-         * @param row 行索引（0-3）。
-         * @param column 列索引（0-3）。
-         * @param value 要设置的值。
-         */
-        setElementByRowColumn(row: number, column: number, value: number): void;
-        /**
          * @en Generate matrix from quaternion.
          * @param rotation The rotation quaternion.
          * @zh 从四元数生成矩阵。
@@ -44067,8 +36122,6 @@ declare namespace Laya {
      * @zh `Quaternion` 类用于创建四元数。
      */
     class Quaternion implements IClone {
-        /**@internal */
-        static readonly TEMP: Quaternion;
         /**
          * @en Default quaternion, read-only.
          * @zh 默认四元数，只读。
@@ -44463,6 +36516,69 @@ declare namespace Laya {
         cloneTo(dest: any): void;
     }
     /**
+     * @en The Rand class is used to create random numbers using a 32-bit unsigned integer seed.
+     * @zh Rand 类用于通过32位无符号整型随机种子创建随机数。
+     */
+    class Rand {
+        /**
+         * @en Obtain unsigned 32-bit floating-point random numbers through unsigned 32-bit shaping
+         * @param v The unsigned 32-bit integer random number.
+         * @returns The 32-bit floating-point random number.
+         * @zh 通过无符号32位整形，获取32位浮点随机数。
+         * @param v 无符号32位整数随机数。
+         * @returns 32位浮点随机数。
+         */
+        static getFloatFromInt(v: number): number;
+        /**
+         * @en Obtain an unsigned 8-bit byte random number through unsigned 32-bit shaping.
+         * @param v The unsigned 32-bit integer random number.
+         * @returns The unsigned 8-bit byte random number.
+         * @zh 通过无符号32位整形，获取无符号8位字节随机数。
+         * @param v 无符号32位整数随机数。
+         * @returns 无符号8位字节随机数。
+         */
+        static getByteFromInt(v: number): number;
+        /**
+         * @en Obtain random seeds
+         * @zh 获取随机种子。
+         */
+        seeds: Uint32Array;
+        /**
+         * @en The random seed.
+         * @zh 随机种子。
+         */
+        get seed(): number;
+        set seed(seed: number);
+        /**
+         * @en Constructor method.
+         * @param seed  32bit unsigned integer random seed.
+         * @zh 构造方法。
+         * @param seed  32位无符号整型随机种子。
+         */
+        constructor(seed: number);
+        /**
+         * @en Gets an unsigned 32-bit integer random number.
+         * @returns The unsigned 32-bit integer random number.
+         * @zh 获取无符号32位整数随机数
+         * @returns 无符号32位整数随机数。
+         */
+        getUint(): number;
+        /**
+         * @en Gets a floating-point random number between 0 and 1.
+         * @returns The floating-point random number between 0 and 1.
+         * @zh 获取0到1之间的浮点随机数。
+         * @returns 0到1之间的浮点随机数。
+         */
+        getFloat(): number;
+        /**
+         * @en Gets a floating-point random number between -1 and 1.
+         * @returns The floating-point random number between -1 and 1.
+         * @zh 获取-1到1之间的浮点随机数。
+         * @returns -1到1之间的浮点随机数。
+         */
+        getSignedFloat(): number;
+    }
+    /**
      * @en The `Rectangle` object is an area defined by its position, as indicated by its top-left corner point (x, y), and by its width and height.
      * The x, y, width, and height properties of the Rectangle class are independent of each other; changing the value of one property has no effect on the others.
      * @zh `Rectangle` 对象是按其位置（由它左上角的点 (x, y) 确定）以及宽度和高度定义的区域。
@@ -44712,6 +36828,27 @@ declare namespace Laya {
          * @param destObject 目标对象。
          */
         cloneTo(destObject: Rectangle): void;
+    }
+    class StringKeyframe extends Keyframe {
+        /**
+         * @en The value of the keyframe.
+         * @zh 关键帧的值。
+         */
+        value: string;
+        /**
+         * @inheritDoc
+         * @override
+         * @en Clones the data to another object.
+         * @param destObject The target object to clone to.
+         * @zh 克隆数据到目标对象。
+         * @param destObject 拷贝数据结构
+         */
+        cloneTo(destObject: StringKeyframe): void;
+        /**
+         * @en Clones.
+         * @zh 克隆
+         */
+        clone(): StringKeyframe;
     }
     interface IV2 {
         x: number;
@@ -45371,6 +37508,12 @@ declare namespace Laya {
          * @zh 将当前向量设置为默认值 (0, 0, 0)。
          */
         toDefault(): void;
+        /**
+         * @en Converts the vector to a string.
+         * @zh 将向量转换为字符串。
+         * @returns 字符串。
+         */
+        toString(): string;
     }
     /**
      * @en The `Vector3Keyframe` class is used to create instances of three-dimensional vector keyframes.
@@ -46024,10 +38167,6 @@ declare namespace Laya {
         protected _muted: boolean;
         protected _startTime: number;
         protected _pauseTime: number;
-        /** @internal */
-        _isMusic: boolean;
-        /** @internal */
-        _autoResume: boolean;
         constructor(url: string);
         /**
          * @en The volume. The volume range is from 0 (mute) to 1 (maximum volume).
@@ -46120,8 +38259,6 @@ declare namespace Laya {
          * @zh 失去焦点后是否自动停止背景音乐。
          */
         static autoStopMusic: boolean;
-        /**@internal */
-        static __init__(): void;
         private static _muted;
         private static _soundMuted;
         private static _musicMuted;
@@ -46235,10 +38372,6 @@ declare namespace Laya {
          */
         static findChannel(url: string): SoundChannel | null;
         private static updateMutedStatus;
-        /** @internal */
-        static addChannel(channel: SoundChannel): void;
-        /** @internal */
-        static removeChannel(channel: SoundChannel): void;
     }
     /**
      * @en Node used for playing background music or sound effects
@@ -46767,8 +38900,6 @@ declare namespace Laya {
         protected _owner: Sprite;
         protected _playing: boolean;
         protected _loaded: boolean;
-        /** @internal */
-        _autoResume: boolean;
         /**
          * @en The current playback position in seconds
          * @zh 当前播放头位置（以秒为单位）
@@ -46886,8 +39017,6 @@ declare namespace Laya {
         protected _frameRate: number;
         protected _useMediaFrameRate: boolean;
         protected _loop: boolean;
-        /** @internal */
-        _autoResume: boolean;
         /**
          * @en Create a video texture instance. You need to create a video texture in this way. You cannot directly use the new VideoTexture() method to create it.
          * @zh 创建一个视频纹理实例，需要通过这种方式创建视频纹理，不能直接使用new VideoTexture()的方式创建。
@@ -47021,10 +39150,6 @@ declare namespace Laya {
         canPlayType(type: string): CanPlayTypeResult;
         protected setLoaded(width: number, height: number, rgba: boolean): void;
         /**
-         * @internal
-         */
-        render(force?: boolean): void;
-        /**
          * @en Load the video texture.
          * @param url Video URL
          * @zh 加载视频纹理。
@@ -47046,12 +39171,6 @@ declare namespace Laya {
          * @zh 继续播放视频
          */
         resume(): void;
-        /** @internal */
-        get gammaCorrection(): number;
-        /** @internal */
-        _getSource(): any;
-        /** @internal */
-        get defaultTexture(): Texture2D;
         /**
          * @en Destroys the current instance and releases resources.
          * @zh 销毁当前实例并释放资源。
@@ -47110,30 +39229,7 @@ declare namespace Laya {
         constructor();
         /**@ignore */
         onAwake(): void;
-        /**@internal */
-        _getcollisionQueryRange(): number;
-        /**@internal */
-        _getpathOptimizationRange(): number;
-        /**
-         * @internal
-         */
-        _getradius(): number;
-        /**
-        * @internal
-        */
-        _getheight(): number;
-        /**
-         * @internal
-         * @en Get the current rendering world coordinates
-         * @zh 获取当前渲染世界坐标
-         */
-        _getpos(pos: Vector3): void;
         protected _getManager(): BaseNavigationManager;
-        /**
-         * @internal
-         * 同步寻路位置和方向到渲染引擎
-         */
-        _updatePosition(pos: Vector3, dir: Vector3): void;
     }
     /**
      * @en NavMesh2DSurface is a 2D component that modifies the navigation mesh surface.
@@ -47172,48 +39268,7 @@ declare namespace Laya {
          * @ignore
          */
         onAwake(): void;
-        /**@internal */
-        _getManager(): Navigation2DManage;
         protected _crateNavMesh(config: RecastConfig, min: Vector3, max: Vector3): NavMesh2D;
-    }
-    /** @internal*/
-    class Navgiation2DUtils {
-        private static _colorMap;
-        /**
-         * @internal
-         */
-        static __init__(): void;
-        /**
-         * @internal
-         */
-        static _vec2ToVec3: (value: Vector2, out: Vector3) => void;
-        /**
-         * @internal
-         */
-        static _setValue3(x: number, y: number, out: Vector3): void;
-        /**
-         * @internal
-         */
-        static _getSpriteGlobalPos(sprite: Sprite, out: Vector3): void;
-        /**
-         * @internal
-         */
-        static _transfromVec2ToVec3(vec2: Vector2, mat: Matrix, out: Vector3): void;
-        /** @internal*/
-        static _getSpriteMatrix4x4(sprite: Sprite, out: Matrix4x4): void;
-        /** @internal*/
-        static _getTransfromMatrix4x4(pos: Vector2, rot: number, scale: Vector2, out: Matrix4x4): void;
-        /** @internal*/
-        private static _getTitleData;
-        /** @internal*/
-        private static _updateMesh2DData;
-        /**
-         * @internal
-         * create navMesh tile to Laya Mesh
-         * @param navMesh
-         * @param mesh
-         */
-        static _createDebugMesh(navMesh: NavMesh2D, mesh?: Mesh2D, isGlobal?: boolean): Mesh2D;
     }
     enum NavObstacles2DType {
         RECT = 0,
@@ -47221,39 +39276,16 @@ declare namespace Laya {
         CUSTOMER = 2
     }
     class Navigation2DManage extends BaseNavigationManager {
-        /**@internal */
-        static _managerName: string;
         static _obstacleMap: Map<NavObstacles2DType, NavTileCache>;
-        /**
-         * 获取导航管理器
-         * @internal
-         * @param comp
-         */
-        static _getNavManager(comp: Component): Navigation2DManage;
-        /** @internal */
-        static __initialize(): Promise<void>;
         protected static __init__(): void;
-        /** @internal */
-        static _getObstacleData(type: NavObstacles2DType): NavTileCache;
         /**@ignore */
         constructor();
-        /**
-         * @internal
-         */
-        _init(): void;
     }
     class NavMesh2D extends BaseNavMesh {
         protected _debugMesh: Mesh2D;
         _surface: NavMesh2DSurface;
         /** @ignore */
         constructor(config: RecastConfig, min: Vector3, max: Vector3, surface: NavMesh2DSurface);
-        /**
-         * @internal
-         * @param cache
-         * @param binds
-         * @param partitionType
-         */
-        _addTile(cache: NavTileCache, binds: any[], partitionType: number, maxSimplificationError: number): void;
         /**
         * get Mesh
         *
@@ -47360,17 +39392,7 @@ declare namespace Laya {
         set scale(value: Vector2);
         /**@ignore */
         constructor();
-        /**
-         * @internal
-         */
-        _bindSurface(surface: NavMesh2DSurface): void;
-        /**
-         * @internal
-         */
-        _destroy(): void;
         private _vector2dTo3d;
-        /**@internal */
-        _transfromChange(): void;
     }
     class NavMesh2DObstacles {
         private _modifierData;
@@ -47380,8 +39402,6 @@ declare namespace Laya {
         private _size;
         private _radius;
         private _meshType;
-        /**@internal load*/
-        _oriTiles: NavTileData;
         /**
          * @en Agent type for the navigation node
          * @zh 导航节点的代理类型
@@ -47444,26 +39464,12 @@ declare namespace Laya {
         set radius(value: number);
         /**@ignore */
         constructor();
-        /**
-         * @internal
-         */
-        _bindSurface(surface: NavMesh2DSurface): void;
-        /**@internal */
-        _destroy(): void;
-        /**@internal */
-        _changeData(): void;
-        /**@internal */
-        _transfromChange(): void;
     }
     /**
      * @en BaseNav3DModifle is the base class for dynamic navigation nodes.
      * @zh BaseNav3DModifle 是动态导航节点的基类。
      */
     class BaseNav3DModifle extends Component {
-        /**@internal */
-        protected _modifierData: BaseData;
-        /**@internal */
-        protected _manager: NavigationManager;
         readonly owner: Sprite3D;
         /**
          * @en Agent type for the navigation node
@@ -47478,22 +39484,8 @@ declare namespace Laya {
         set areaFlag(value: string);
         get areaFlag(): string;
         constructor();
-        /**
-         * @internal
-         */
-        protected _onEnable(): void;
-        /**
-         * @internal
-         */
-        protected _onWorldMatNeedChange(): void;
-        /**
-         * @internal
-         */
-        _refeashTranfrom(mat: Matrix4x4, min: Vector3, max: Vector3): void;
     }
     class NavAgent extends BaseNavAgent {
-        /**@internal */
-        protected _destination: Vector3;
         readonly owner: Sprite3D;
         /**
          * @en Offset of the pivot point.
@@ -47510,23 +39502,6 @@ declare namespace Laya {
         set destination(value: Vector3);
         get destination(): Vector3;
         /**
-         * @overload
-         * @internal
-         */
-        protected _getManager(): NavigationManager;
-        /**
-         * @internal
-         */
-        _getpos(vec: Vector3): void;
-        /**
-         * @internal
-         */
-        _getheight(): number;
-        /**
-         * @internal
-         */
-        _getradius(): number;
-        /**
          * @override
          */
         protected _updatePosition(pos: Vector3, dir: Vector3): void;
@@ -47536,8 +39511,6 @@ declare namespace Laya {
      * @zh NavMeshLink 表示导航网格外的两点之间的连接。
      */
     class NavMeshLink extends BaseNav3DModifle {
-        /**@internal */
-        private _agentType;
         /**
          * @en The width of the link
          * @zh 链接的宽度
@@ -47568,26 +39541,12 @@ declare namespace Laya {
          */
         constructor();
         private get _data();
-        /**@internal */
-        protected _onEnable(): void;
-        /**
-         * @internal
-         */
-        _refeashTranfrom(mat: Matrix4x4, min: Vector3, max: Vector3): void;
-        /**@internal */
-        _cloneTo(dest: NavMeshLink): void;
     }
     /**
      * @en NavMeshModifierVolume is a component that modifies the navigation mesh in a specific volume.
      * @zh NavMeshModifierVolume 是一个在特定体积内修改导航网格的组件。
      */
     class NavMeshModifierVolume extends Component {
-        /**@internal */
-        protected _volumeData: ModifierVolumeData;
-        /**@internal */
-        private _center;
-        /**@internal */
-        private _size;
         readonly owner: Sprite3D;
         /**
          * @en The agent type that this volume applies to.
@@ -47618,29 +39577,15 @@ declare namespace Laya {
          */
         constructor();
         /**
-         * @internal
-         */
-        protected _onEnable(): void;
-        /**
-         * @internal
-         */
-        protected _onDisable(): void;
-        /**
          * @override
          */
         protected _onWorldMatNeedChange(): void;
-        /**@internal */
-        _cloneTo(dest: NavMeshModifierVolume): void;
     }
     /**
      * @en NavMeshModifileSurface is a component that modifies the navigation mesh surface.
      * @zh NavMeshModifileSurface 是一个修改导航网格表面的组件。
      */
     class NavMeshModifileSurface extends BaseNav3DModifle {
-        /**@internal load*/
-        _oriTiles: NavTileData;
-        /**@internal */
-        _oriNavTileCache: NavTileCache;
         /**
          * <code>NavMeshModifileSurface<Code>
          */
@@ -47655,14 +39600,6 @@ declare namespace Laya {
         */
         set datas(value: TextResource);
         get datas(): TextResource;
-        /**@internal */
-        protected _onEnable(): void;
-        /**
-         * @internal
-         */
-        _refeashTranfrom(mat: Matrix4x4, min: Vector3, max: Vector3): void;
-        /**@internal */
-        _changeData(): void;
         _cloneTo(dest: NavMeshModifileSurface): void;
     }
     /**
@@ -47670,24 +39607,6 @@ declare namespace Laya {
      * @zh NavMeshObstacles 常用的导航网格障碍物形状。
      */
     class NavMeshObstacles extends BaseNav3DModifle {
-        /**@internal */
-        static _boundMin: Vector3;
-        /**@internal */
-        static _boundMax: Vector3;
-        /**@internal */
-        private _meshType;
-        /**@internal */
-        private _localMat;
-        /**@internal */
-        private _center;
-        /**@internal */
-        private _size;
-        /**@internal */
-        private _height;
-        /**@internal */
-        private _radius;
-        /**@internal load*/
-        _oriTiles: NavTileData;
         /**
          * @en The mesh type of the obstacle.
          * @param value The mesh type to set.
@@ -47737,18 +39656,6 @@ declare namespace Laya {
         set datas(value: TextResource);
         get datas(): TextResource;
         constructor();
-        /**@internal */
-        protected _onEnable(): void;
-        /**
-         * @internal
-         */
-        _refeashTranfrom(mat: Matrix4x4, min: Vector3, max: Vector3): void;
-        /**@internal */
-        _changeData(): void;
-        /**@internal */
-        protected _onDestroy(): void;
-        /**@internal */
-        _cloneTo(dest: Component): void;
     }
     /**
      * @en NavMeshSurface is a 3D component used to generate navigation mesh.
@@ -47761,30 +39668,9 @@ declare namespace Laya {
          */
         constructor();
         /**
-         * @overload
-         * @internal
-         */
-        _getManager(): NavigationManager;
-        /**
          * @override
          */
         protected _crateNavMesh(config: RecastConfig, min: Vector3, max: Vector3): NavMesh;
-    }
-    /**
-     * @internal
-     */
-    class Navgiation3DUtils {
-        static __init__(): void;
-        /**@internal  */
-        static _resetMesh(mesh: Mesh, vertexDeclaration: VertexDeclaration, vertices: Float32Array, indices: Uint16Array): void;
-        /**@internal  */
-        static _getTitleData(title: any, vbDatas: number[], center: Vector3, ibs: number[]): void;
-        /**
-         * create navMesh tile to Laya Mesh
-         * @param navMesh
-         * @param mesh
-         */
-        static _createDebugMesh(navMesh: NavMesh, mesh: Mesh): Mesh;
     }
     enum NavObstaclesMeshType {
         BOX = 0,
@@ -47792,24 +39678,10 @@ declare namespace Laya {
         CUSTOMER = 2
     }
     class NavigationManager extends BaseNavigationManager {
-        /**@internal  */
-        static _managerName: string;
-        /**@internal  */
-        static _obstacleMap: Map<NavObstaclesMeshType, NavTileCache>;
-        /**@internal */
-        static _getNavManager(comp: Component): NavigationManager;
-        /**@internal */
-        static _initialize(): Promise<void>;
-        /**@internal */
-        private static __init__;
-        /**@internal */
-        static _getObstacleData(type: NavObstaclesMeshType): NavTileCache;
         constructor();
     }
     /**<code>NavMesh</code> 3D导航网格*/
     class NavMesh extends BaseNavMesh {
-        /**@internal */
-        protected _debugMesh: Mesh;
         /**
         * 创建一个 NavMesh 实例
         */
@@ -47831,12 +39703,6 @@ declare namespace Laya {
      * @zh 表示代理可以通过的导航区域类型。
      */
     class AreaMask {
-        /**@internal */
-        private _flags;
-        /**@internal */
-        private _excludeflag;
-        /**@internal */
-        private _areaFlagMap;
         /**
          * @en The exclude flag.
          * @zh 排除标志。
@@ -47853,14 +39719,6 @@ declare namespace Laya {
          * @zh 创建 AreaMask 的新实例。
          */
         constructor();
-        /**
-         * @internal
-         */
-        _setAreaMap(areaFlagMap: Map<string, NavAreaFlag>): void;
-        /**
-         * @internal
-         */
-        _calculFlagVale(): void;
     }
     /**
      * @en BaseNavigationManager is a base navigation manager responsible for managing navigation meshes.
@@ -47868,61 +39726,17 @@ declare namespace Laya {
      */
     class BaseNavigationManager implements IElementComponentManager {
         /**
-         * 初始化系统，由系统内部调用
-         * @internal
-         */
-        protected static _initialize(callback: () => void | Promise<void>): Promise<void>;
-        /**
         * find all
         * @param surfaces
         * @param sprite
         */
         static findNavMeshSurface(surfaces: Array<BaseNavMeshSurface>, sprite: Node, agentFlags: string[]): void;
-        /**@internal */
-        name: string;
-        /**@internal */
-        _navConfigMap: Map<string, RecastConfig>;
-        /**@internal */
-        _areaFlagMap: Map<string, NavAreaFlag>;
-        /**@internal */
-        _naveMeshMaps: Map<string, SingletonList<BaseNavMeshSurface>>;
-        /**@internal */
-        _naveMeshLinkMaps: Map<string, Array<NavMeshLinkData>>;
-        /**@internal */
-        _deflatAllMask: AreaMask;
         /**
           * @en Instantiates a Navigation manager.
           * @zh 实例化一个 Navigation 管理器。
           */
         constructor(name: string);
         destroy(): void;
-        /**
-         * 初始化默认配置
-         * @internal
-         * @param {*}
-         * @return {*}
-         */
-        protected _init(): void;
-        /**
-        * 获得key值
-        * @internal
-        * @param {*}
-        * @return {*}
-        */
-        private _getLinkIdByNavMeshSurfaces;
-        /**
-         * @internal
-         * @param data
-         */
-        Init(data: any): void;
-        /**
-         * @internal
-         */
-        setFilterCost(filer: any): void;
-        /**
-         * @internal
-         */
-        update(dt: number): void;
         /**
          * @en Registers a navigation mesh agent type configuration.
          * @param config The RecastConfig object containing the agent configuration.
@@ -47985,26 +39799,6 @@ declare namespace Laya {
          */
         removeMeshLink(start: BaseNavMeshSurface, end: BaseNavMeshSurface, link: NavMeshLinkData): void;
         /**
-         * 根据两个不同的BaseNavMeshSurface查找直接是否存在BaseNavMeshLink
-         * @internal
-         * @param from NavMeshSurface
-         * @param to NavMeshSurface
-         * @returns NavMeshLink[]
-         */
-        getNavMeshLink(from: BaseNavMeshSurface, to: BaseNavMeshSurface): NavMeshLinkData[];
-        /**
-         * regist NavMeshSurface
-         * @internal
-         * @param nav
-         */
-        regNavMeshSurface(nav: BaseNavMeshSurface): void;
-        /**
-         * remove NavMeshSurface
-         * @internal
-         * @param nav
-         */
-        removeNavMeshSurface(nav: BaseNavMeshSurface): void;
-        /**
          * @en Get the corresponding NavMeshSurface based on a world position.
          * @param pos World coordinate position.
          * @param agentType Agent type.
@@ -48039,273 +39833,10 @@ declare namespace Laya {
         getNavMeshSurfacesByBound(min: Vector3, max: Vector3, type: string): BaseNavMeshSurface[];
     }
     /**
-     * @internal
-     * <code>BaseNavMesh</code> 类用于创建导航网格。
-    */
-    class BaseNavMesh {
-        /**@internal ori navMesh*/
-        protected _navMesh: any;
-        /**@internal ori navQuery*/
-        protected _navQuery: any;
-        /**@internal ori meshLink*/
-        protected _navMeshLink: any;
-        /**@internal ori convexVolume*/
-        protected _navConvexVolume: any;
-        /**@internal 寻路代理 */
-        protected _crowd: any;
-        /**@internal 过滤信息 */
-        protected _defatfilter: any;
-        /**@internal TODO */
-        protected _extents: number[];
-        /**@internal */
-        _surface: BaseNavMeshSurface;
-        /**@internal */
-        protected _titileConfig: TitleConfig;
-        /**@internal */
-        protected _maxAgents: number;
-        /**@internal */
-        protected _navcreateedTileMaps: Set<number>;
-        /**@internal */
-        protected _delayCreates: Map<number, BaseNavAgent[]>;
-        /**@internal */
-        protected _allAgents: Map<number, BaseNavAgent>;
-        /**@internal */
-        protected _fiterMap: Map<number, any>;
-        /** @internal */
-        protected _grid: NavMeshGrid;
-        /**@internal */
-        protected _is3D: boolean;
-        /**
-         * @internal
-         * @en Find the nearest point's range
-         * @zh 寻找最近点的范围
-         */
-        get extents(): number[];
-        /**
-         * @internal
-         * @en Get the navigation mesh
-         */
-        get navMesh(): any;
-        /**
-        * @internal
-        */
-        get navQuery(): any;
-        /**
-        * @internal
-        */
-        get crowd(): any;
-        /**
-         * @internal
-         */
-        get navTileGrid(): NavMeshGrid;
-        /**
-         * @internal
-         */
-        get is3D(): boolean;
-        /**
-         * <code>实例化一个NavMesh<code>
-         */
-        constructor(config: RecastConfig, min: Vector3, max: Vector3, surface: BaseNavMeshSurface, is3D?: boolean);
-        /**
-         * get filter
-         *  @internal
-         */
-        private _getFilter;
-        /**
-         * create agent
-         * @param agent
-         */
-        protected _createAgents(agent: BaseNavAgent): void;
-        /**
-         * add Agent
-         * @internal
-         * @param agent
-         */
-        _addAgent(agent: BaseNavAgent): void;
-        /**
-         * remove agent
-         * @internal
-         * @param agent
-         */
-        _removeAgent(agent: BaseNavAgent): void;
-        /**
-         * @internal
-         * @en Get the current point's Flag
-         * @zh 获得当前点的Flag
-         * @param pos 世界坐标
-         * @param fiter
-         * @return flag
-         */
-        _getPolyFlags(pos: Vector3, fiter?: any): number;
-        /**
-         * @internal
-         * @en Get the current point's Area
-         * @zh 获得当前点的Area
-         * @param pos 世界坐标
-         * @param fiter
-         * @return area
-         */
-        _getPolyArea(pos: Vector3, fiter?: any): number;
-        /**
-         * @internal
-         * @en Find the nearest point
-         * @zh 查找最近点
-         * @param pos 世界坐标
-         * @param fiter
-         * @param out 返回世界坐标
-         * @return polyRef
-         */
-        _findNearestPoly(pos: Vector3, fiter: any, out: Vector3): number;
-        /**
-         * @internal
-         */
-        _findFllowPath(fllowPaths: NavigationPathData[], startPos: Vector3, endPos: Vector3, speed: number, filter?: any): boolean;
-        /**
-         * @internal
-         * @en Find the distance to the wall
-         * @zh 查找到墙的距离
-         * @param pos:Vector3
-         * @param filter
-         * @returns {dist:number,pos:Array<number>(3),normal:Array<number>(3)}
-         */
-        _findDistanceToWall(pos: Vector3, filter?: any): {
-            dist: number;
-            pos: Array<number>;
-            normal: Array<number>;
-        };
-        /**
-         * @internal
-         * @param agent
-         * @returns
-         */
-        _requestMoveTarget(agent: BaseNavAgent, destination: Vector3): boolean;
-        /**
-         * @internal
-         * @en create a navMesh and navQuery
-         */
-        _creatNavMesh(): void;
-        /**
-         * @internal
-         * @en init the navMesh
-         * @zh 初始化导航网格
-         */
-        _navMeshInit(): void;
-        /**
-         * @internal
-         * @en The heartbeat of pathfinding, updating the navigation mesh, synchronizing the agent's position, orientation
-         * @zh 寻路的心跳，更新导航网格,同步agent的位置,朝向
-         * @param dt (秒)
-         */
-        _updateNavMesh(dt: number): void;
-        /**
-         * @internal
-         * @en add a navigation grid link
-         * @zh 添加一个导航网格链接
-         * @param index
-         * @param start
-         * @param end
-         * @param width
-         * @param bidirectional
-         * @param areaFlag
-         * @returns
-         */
-        _addNavMeshLink(index: number, start: Vector3, end: Vector3, width: number, bidirectional: boolean, areaFlag: number): void;
-        /**
-         * @internal
-         * @en remove a navigation grid link
-         * @zh 删除一个导航网格链接
-         * @param linkid
-         */
-        _removeNavMeshLink(index: number): void;
-        /**
-         * @internal
-         * @en add a convexVolume
-         * @zh 添加一个凸体
-         */
-        _updateConvexVolume(index: number, buffer: Float32Array, miny: number, maxy: number, areaType: number): boolean;
-        /**
-         * @internal
-         * @en remove a convexVolume
-         * @zh 删除一个凸体
-         * @param index
-         */
-        _deleteConvexVoume(index: number): boolean;
-        /**
-         * @internal
-         * @en add a tile
-         * @zh 添加一个tile
-         * @param cellX
-         * @param cellY
-         * @param binds
-         * @param bound
-         */
-        _addTile(cache: NavTileCache, binds: any[], partitionType: number, maxSimplificationError: number): void;
-        /**
-         * @internal
-         * @en remove a tile
-         * @zh 删除一个tile
-         * @param cellX
-         * @param cellY
-         */
-        _removeTile(tileX: number, tileY: number): void;
-        /**@internal */
-        _clearn(): void;
-        /**
-         * @internal
-         */
-        _destroy(): void;
-    }
-    /**
      * @en Class used to instantiate a navigation agent
      * @zh 类用来实例化一个寻路代理
      */
     class BaseNavAgent extends Component {
-        /**@internal */
-        private _targetPos;
-        /**@internal */
-        protected _agentType: string;
-        /**@internal */
-        protected _currentNaveSurface: BaseNavMeshSurface;
-        /**@internal 速度*/
-        protected _speed: number;
-        /**@internal 加速度*/
-        protected _maxAcceleration: number;
-        /**@internal */
-        protected _angularSpeed: number;
-        /**@internal TODO*/
-        protected _stopDistance: number;
-        /**@internal TODO*/
-        protected _Acceleration: number;
-        /**@internal TODO*/
-        protected _autoBraking: boolean;
-        /**@internal */
-        protected _radius: number;
-        /**@internal */
-        protected _height: number;
-        /**@internal */
-        protected _quality: ObstacleAvoidanceType;
-        /**@internal */
-        protected _priority: number;
-        /**@internal */
-        protected _fllowPath: NavigationPathData[];
-        /**@internal */
-        protected _baseOffset: number;
-        /**@internal */
-        _navManager: BaseNavigationManager;
-        /**@internal */
-        _navAgentLinkAnim: NavAgentLinkAnim;
-        /**@internal */
-        _crowAgent: any;
-        /**@internal */
-        _agentId: number;
-        /**@internal */
-        _areaMask: AreaMask;
-        /**@internal */
-        _filter: any;
-        /**@internal */
-        _curentSpeed: Vector3;
-        /**@internal navMeshSurface是否准备好，这里处理先添加agent再初始化navMeshSurface的情况*/
-        private _navMeshSurfaceReady;
         /**
          * @en Radius of the agent.
          * @zh 代理的半径。
@@ -48403,83 +39934,22 @@ declare namespace Laya {
          * 目的地
          */
         protected _setTarget(value: Vector3): void;
-        /**
-         * @internal
-         */
-        _getpos(vec: Vector3): void;
-        /**@internal */
-        _getcollisionQueryRange(): number;
-        /**@internal */
-        _getpathOptimizationRange(): number;
-        /**@internal */
-        protected _getManager(): BaseNavigationManager;
-        /**
-         * @internal
-         */
-        protected _onEnable(): void;
         protected _onDisable(): void;
-        /**
-         * @internal
-         */
-        protected _addAgent(): void;
-        /**
-         * @internal
-         */
-        protected _removeAgent(): void;
-        /**
-         * @internal
-         */
-        _getheight(): number;
-        /**
-         * @internal
-         */
-        _getradius(): number;
         _getUpdateFlags(): number;
         _onDestroy(): void;
-        /**
-         * 由系统调用
-         * @internal
-         */
-        _updateNavMesh(pos: number[], dir: number[]): void;
-        /**
-         * @internal
-         */
-        protected _updatePosition(pos: Vector3, dir: Vector3): void;
-        /**@internal */
-        _cloneTo(dest: Component): void;
     }
     /**
      * @en BaseNavMeshSurface is a base component used to generate navigation mesh. 2d and 3d integrate this class respectively.
      * @zh BaseNavMeshSurface 是一个用于生成导航网格的基础组件，2d 和 3d 分别集成该类。
      */
     class BaseNavMeshSurface extends Component {
-        /**@internal 网格模型的数据 */
-        private _datas;
         private _maxSimplificationError;
         private _agentType;
         private _partitionType;
         private _boundMin;
         private _boundMax;
-        /**@internal load*/
-        private _oriTiles;
         private _cachedata;
-        /**@internal 是否开启异步处理*/
-        private _needAsyn;
         private _cacheDataMap;
-        /** @internal */
-        private _meshlinkOffMaps;
-        /** @internal */
-        private _meshVolumeMaps;
-        /**@internal */
-        _navMesh: BaseNavMesh;
-        /**@internal */
-        _buildTileList: Set<number>;
-        /**@internal */
-        _manager: BaseNavigationManager;
-        /**@internal 延时改变列表*/
-        _delayCacheMap: Set<CacheData>;
-        /**@internal */
-        _featureCache: Map<number, Set<any>>;
         /**
          * @en Agent type
          * @zh 代理类型
@@ -48529,18 +39999,6 @@ declare namespace Laya {
          * <code>实例化一个寻路功能<code>
          */
         constructor();
-        /**
-         * @internal
-         * @en Clean all Tile
-         * @zh 清理所有的Tile
-         */
-        cleanAllTile(): void;
-        /**
-         * @internal
-         * @en Rebuild the tile at the specified location
-         * @zh 重建指定位置的Tile
-         */
-        rebuildTile(pos: Vector3): void;
         /**
          * @en Get the current point's Flag
          * @param pos World coordinates;
@@ -48612,308 +40070,27 @@ declare namespace Laya {
         protected _removeCacheData(data: any): CacheData;
         protected _crateNavMesh(config: RecastConfig, min: Vector3, max: Vector3): BaseNavMesh;
         protected _updateNavData(): void;
-        /**@internal */
-        _getManager(): BaseNavigationManager;
-        /**
-        * @internal
-        */
-        _onEnable(): void;
-        /**
-         * @internal
-         * @param dt
-         */
-        _update(dt: number): void;
-        /**
-         * @internal
-         * build one Mesh
-         */
-        protected _buildOneTileMesh(): void;
         /**
          * build all Mesh
          */
         protected _buildAllTileMesh(): void;
         protected _onDisable(): void;
         protected _onDestroy(): void;
-        /**
-         * @internal
-         */
-        _cloneTo(dest: Component): void;
-        /**
-         * @internal
-         */
-        _cleanBindData(): void;
-        /**
-         * @internal
-         * add one modifile navMesh
-         * @param navModifile
-         */
-        _addModifileNavMesh(navModifile: NavModifleData): CacheData;
-        /**
-         * @internal
-         * remove one Modifile NavMesh
-         * @param navModifile
-         */
-        _removeModifileNavMesh(navModifile: NavModifleData): void;
-        /** @internal */
-        _addModifileLink(link: NavMeshLinkData): CacheData;
-        /** @internal */
-        _addConvexVoume(volume: ModifierVolumeData): CacheData;
-        /**
-         * @internal
-         * @param volume
-         */
-        _deleteCovexVoume(volume: ModifierVolumeData): void;
-    }
-    /**
-     * @internal
-     *
-     */
-    class BaseData {
-        /**@internal */
-        _transfrom: Matrix4x4;
-        /**@internal */
-        _min: Vector3;
-        /**@internal */
-        _max: Vector3;
-        /**@internal */
-        _agentType: string;
-        /**@internal */
-        _areaFlags: string;
-        /**@internal */
-        _cacheDatas: Array<CacheData>;
-        /**
-        * agentType
-        */
-        set agentType(value: string);
-        get agentType(): string;
-        /**
-         * area 类型
-         */
-        set areaFlag(value: string);
-        get areaFlag(): string;
-        /**
-         * @internal
-         * 刷新数据
-         */
-        _refeashData(): void;
-        /**
-         * @internal
-         * 刷新transfrom
-         */
-        _refeahTransfrom(): void;
-        /**
-         * @internal
-         * 刷新包围盒
-         */
-        _refeahBound(): void;
-    }
-    /**
-     * @internal
-     * 存储缓存数据
-     * 当数据有修改的时候;会调用对应的方法进行更新。
-     */
-    class CacheData {
-        static TransfromFlag: number;
-        static AreaFlag: number;
-        static MinFlag: number;
-        static MaxFlag: number;
-        static DataFlag: number;
-        static DeleteFlag: number;
-        static OtherDataFlag: number;
-        static ResetDataFlag: number;
-        /**@internal */
-        protected _cacheflag: number;
-        /**@internal */
-        protected _areaFlag: string;
-        /**@internal */
-        protected _data: any;
-        /**@internal */
-        _surface: BaseNavMeshSurface;
-        /**@internal */
-        _transfrom: Matrix4x4;
-        /**@internal */
-        _min: Vector3;
-        /**@internal */
-        _max: Vector3;
-        /**@internal */
-        _titleIndex: Set<number>;
-        /**@internal */
-        _flagChangeHander: Handler;
-        /**@internal */
-        _tileHander: Handler;
-        /**@internal */
-        id: number;
-        /**@internal */
-        constructor(surface: BaseNavMeshSurface);
-        /**@internal */
-        _setUpdateDataHander(handler: Handler): void;
-        /**@internal */
-        _setTileHander(handler: Handler): void;
-        /**@internal */
-        _updateTransfrom(mat: Matrix4x4): void;
-        /**@internal */
-        _updateAreaFlag(flag: string): void;
-        /**@internal */
-        get areaFlag(): string;
-        /**@internal */
-        _cacheBound(min: Vector3, max: Vector3): void;
-        /**@internal */
-        set _cacheData(data: any);
-        /**@internal */
-        get _cacheData(): any;
-        /**@internal */
-        _destroy(): void;
-        /**@internal */
-        _setCacheFlag(type: number): void;
-        /**@internal */
-        _getCacheFlag(type: number): boolean;
-        /**@internal */
-        _updateCache(): void;
-        /**@internal */
-        _resetData(): void;
-    }
-    /**
-     * @internal
-     * @en Convex polygon data
-     * @zh 凸多边形数据
-     */
-    class ModifierVolumeData extends BaseData {
-        /**@internal */
-        _datas: number[];
-        /**@internal */
-        _buffer: Float32Array;
-        /**@internal 用于设置包围盒y方向偏移 */
-        _yOffset: number;
-        constructor(yOff?: number);
-        /**
-         * @internal
-         * 更新buffer
-         */
-        private _updateBuffer;
-        /**
-         * @internal
-         */
-        _initSurface(surface: Array<BaseNavMeshSurface>): void;
-        /**
-         * @internal
-         */
-        _destory(): void;
     }
     class NavMeshLinkData extends BaseData {
-        /**@internal */
-        _startPoint: Vector3;
-        /**@internal */
-        _endPoint: Vector3;
-        /**@internal */
-        _width: number;
-        /**@internal */
-        _bidirectional: boolean;
-        /**@internal */
-        globalStart: Vector3;
-        /**@internal */
-        globalEnd: Vector3;
-        /**@internal */
-        _startNavSurfaces: BaseNavMeshSurface[];
-        /**@internal */
-        _endNavSurfaces: BaseNavMeshSurface[];
-        /**@internal */
-        private _regisgMaps;
         constructor();
         _updateWidth(value: number): void;
         _updateBidirectional(value: boolean): void;
         _updateStartPoint(value: Vector3): void;
         _updateEndPoint(value: Vector3): void;
         private _updateData;
-        /**
-         * @internal
-         */
-        _initSurface(surface: Array<BaseNavMeshSurface>): void;
-        /**
-         * @internal
-         */
-        _updateBuffer(cache: CacheData, areaFlag: number): void;
-        /**@internal */
-        getDistance(): number;
         destroy(): void;
     }
     class NavModifleData extends BaseData {
-        /**@internal */
-        _datas: NavTileCache;
-        /**@internal */
-        _bindData: any;
         set datas(value: NavTileCache);
         get datas(): NavTileCache;
         constructor();
-        /**
-         * @internal
-         * 更新buffer
-         */
-        private _updateBuffer;
         private _updateTileIndexs;
-        /**
-         * @internal
-         */
-        _initSurface(surface: Array<BaseNavMeshSurface>): void;
-        /**
-         * @internal
-         */
-        _destory(): void;
-    }
-    /**
-     * @internal
-     * 一个用于映射对象和id的类
-     */
-    class ItemMapId<T> {
-        /**@internal */
-        private _idMap;
-        private _idArray;
-        constructor(maxCount: number);
-        haveId(): boolean;
-        getId(value: T): number;
-        removeItem(value: T): number;
-    }
-    /**
-     * @internal
-     * @en Navigation agent link animation between two NavMeshSurfaces
-     * @zh 作用于两个NavMeshSurface之间的导航代理链接动画
-     */
-    class NavAgentLinkAnim {
-        /**@internal */
-        _startPos: Vector3;
-        /**@internal */
-        _endPos: Vector3;
-        /**@internal */
-        _initPos: Vector3;
-        /**@internal */
-        targetSurface: BaseNavMeshSurface;
-        /**@internal */
-        _active: boolean;
-        /**@internal */
-        _isStart: boolean;
-        /**@internal */
-        _runTime: number;
-        /**@internal */
-        _totalTime: number;
-        /**@internal */
-        _clearn(): void;
-        /**@internal */
-        _setStartPos(value: Vector3): void;
-        /**@internal */
-        _getSartPos(): Vector3;
-        /**@internal */
-        _setEndPos(value: Vector3): void;
-        /**@internal */
-        _getEndPos(): Vector3;
-        /**@internal */
-        _nearerStartPos(value: Vector3): boolean;
-        /**@internal */
-        _nearerEndPos(value: Vector3): boolean;
-        /**@internal */
-        _start(maxSpeed: number, postions: Vector3): void;
-        /**@internal */
-        _update(position: Vector3, dir: Vector3): void;
-        /**@internal */
-        _tween(t: number, t0: number, t1: number): number;
     }
     /**
     * 数据分块算法
@@ -48955,10 +40132,6 @@ declare namespace Laya {
         get flag(): number;
     }
     class NavigationPathData {
-        /** @internal */
-        _pos: Vector3;
-        /** @internal */
-        _flag: number;
         /**
          * @en position
          * @zh 位置
@@ -48976,60 +40149,6 @@ declare namespace Laya {
      * @zh NavigationUtils 是一个导航工具类,主要用于处理与导航网格相关的操作。
      */
     class NavigationUtils {
-        /**@internal */
-        private static _MAX_SMOOTH;
-        /**@internal 超了怎么办 */
-        private static _MAX_POLYS;
-        /**@internal */
-        static _TitleMeshIbOff: number[];
-        /**@internal ori recast Data */
-        static _recast: any;
-        /**@internal */
-        static _dtCrowdAgentParams: any;
-        /**@internal */
-        static _TemprefPoint: any;
-        /**@internal */
-        static _TemprefPoint1: any;
-        /** @internal */
-        static _boundContentPoint(min: Vector3, max: Vector3, point: Vector3): boolean;
-        /** @internal */
-        static _boundInterection(min1: Vector3, max1: Vector3, min2: Vector3, max2: Vector3): number;
-        /**
-         * @internal
-         * @param fllowPath
-         * @param index
-         * @param data
-         * @param flag
-         */
-        private static _setDatastoArray;
-        /**@internal  */
-        static _inRange(v1: number[], v2: number[], radius: number, height: number, offIndex: number): boolean;
-        /**@internal
-         * calculate the boundBox of the transform
-         * @param min vector3
-         * @param max vector3
-         * @param transfrom matrix4x4
-         * @param outMin vector3
-         * @param outMax vector3
-         */
-        static _transfromBoundBox(min: Vector3, max: Vector3, transfrom: Matrix4x4, outMin: Vector3, outMax: Vector3): void;
-        /**@internal  */
-        static _isFlags(data: number, flag: any): number;
-        /**@internal  */
-        static _addVector3ToArray(vec1: Vector3, vec2: Vector3, scale: number): number[];
-        /**@internal  */
-        static _getSteerTarget(navMesh: BaseNavMesh, startRef: any, endRef: any, minTargetDist: number, paths: number[], pathSize: number, out: Vector3): {
-            steerPosFlag: any;
-            steerPosRef: any;
-        };
-        /**@internal  */
-        static _dtMergeCorridorStartMoved(path: number[], npath: number, maxPath: number, visited: number[], nvisited: number): number;
-        /**@internal  */
-        static _findFllowPath(navMesh: BaseNavMesh, filter: any, startPos: Vector3, endPos: Vector3, steplength: number, minTarget: number, fllowPath: NavigationPathData[]): void;
-        /**@internal  */
-        static _initialize(Recast: any): void;
-        /**@internal  */
-        static _getRecast(): any;
         /**
          * create NavMesh
          * @return any
@@ -49065,16 +40184,6 @@ declare namespace Laya {
          * @return any
          */
         static _createCrowd(): any;
-        /**
-         * create NavTileData
-         * @internal
-         */
-        static _createdtNavTileData(): any;
-        /**
-         * create NavTileCache
-         * @internal
-         */
-        static _createdtNavTileCache(): any;
         /**
         * get CrowdAgentParams
         * @return any
@@ -49121,87 +40230,10 @@ declare namespace Laya {
         private _cellSize;
         private _bordWidth;
         /**
-         * @internal
-         * @en The width of a single tile.
-         * @zh 单个瓦片的宽度。
-        */
-        get tileWidth(): number;
-        /**
-         * @internal
-         * @en The bounding box of the navigation mesh.
-         * @zh 导航网格的最小值。
-        */
-        get max(): Vector3;
-        /**
-         * @internal
-         * @en The bounding box of the navigation mesh.
-         * @zh 导航网格的最大值。
-        */
-        get min(): Vector3;
-        /**
-         * @internal
-         * @en The configuration of the navigation mesh.
-         * @zh 导航网格的配置。
-         */
-        get config(): RecastConfig;
-        /**
-         *@internal
-        * @en Get the maximum number of tiles.
-        * @zh 获取最大瓦片数量。
-        */
-        get maxtiles(): number;
-        /**
-         * @internal
-         * @en Get the maximum number of tiles along the x-axis.
-         * @zh 获取 x 轴方向的最大瓦片数量。
-         */
-        get maxXTileCount(): number;
-        /**
-         * @internal
-         * @en Get the maximum number of tiles along the z-axis.
-         * @zh 获取 z 轴方向的最大瓦片数量。
-         */
-        get maxZTileCount(): number;
-        /**
          * <code>实例化一个NavMeshGrid组件<code>
          * @ignore
          */
         constructor(config: RecastConfig, min: Vector3, max: Vector3);
-        /**
-         * @internal
-         * @en Update the configuration and bounding box based on the given tile data.
-         * @param tile The navigation tile data.
-         * @zh 根据给定的瓦片数据更新配置和边界框。
-         * @param tile 导航瓦片数据。
-         */
-        _refeashBound(tile: NavTileData): void;
-        /**
-         * @internal
-         * @en Get the tile indices that intersect with the given bounding box defined by minimum and maximum coordinates.
-         * @param min The minimum coordinates of the bounding box.
-         * @param max The maximum coordinates of the bounding box.
-         * @param isbord Whether to include a border around the bounding box.
-         * @returns An array of tile indices.
-         * @zh 获取与由最小和最大坐标定义的给定边界框相交的瓦片索引。
-         * @param min 边界框的最小坐标。
-         * @param max 边界框的最大坐标。
-         * @param isbord 是否在边界框周围包含边界。
-         * @returns 瓦片索引数组。
-         */
-        getBoundTileIndex(min: Vector3, max: Vector3, isbord?: boolean): number[];
-        /**
-         * @internal
-        * get tile index of map by position
-        * @param x  世界坐标x
-        * @param z  世界坐标z
-        */
-        getTileIndexByPos(x: number, z: number): number;
-        /**
-         * @internal
-         * @en get tile index of map
-         * @zh 获取地图的tile索引
-         */
-        getTileIndex(xIndex: number, zIndex: number): number;
         /**
         * get tile x index
         */
@@ -49224,26 +40256,6 @@ declare namespace Laya {
      * @zh 类 NavTileCache 用于缓存和管理导航网格的瓦片数据。
      */
     class NavTileCache {
-        /**
-         * @internal
-         */
-        _bindData: any;
-        /**
-         * @internal
-         */
-        _triVertex: Float32Array;
-        /**
-         * @internal
-         */
-        _triIndex: Uint32Array;
-        /**
-         * @internal
-         */
-        _triFlag: Uint8Array;
-        /** @internal tile bounds */
-        _boundMin: Vector3;
-        /** @internal tile bounds */
-        _boundMax: Vector3;
         /**
          * @en The x offset of the tile.
          * @zh 瓦片的x偏移。
@@ -49299,16 +40311,6 @@ declare namespace Laya {
      * @zh NavTileData 类用于解析和存储导航网格数据
      */
     class NavTileData {
-        /**@internal load*/
-        _dirtyFlag: number;
-        /**@internal load*/
-        _oriTiles: Array<NavTileCache>;
-        /**@internal load*/
-        _res: TextResource;
-        /**@internal load*/
-        _boundMin: Vector3;
-        /**@internal load*/
-        _boundMax: Vector3;
         /**
          * @en Create a new instance of NavTileData.
          * @param res TextResource containing navigation data
@@ -49316,8 +40318,6 @@ declare namespace Laya {
          * @param res 包含导航数据的 TextResource
          */
         constructor(res: TextResource);
-        /**@internal load*/
-        _parse(): void;
         /**
          * @en Get the dirty flag
          * @zh 获取脏标记
@@ -49342,16 +40342,6 @@ declare namespace Laya {
      * @zh 创建Recast navMesh配置
      */
     class RecastConfig implements IClone {
-        /**
-         * @internal
-         *内部标记；用于记录数据是否有变化需要重新生成
-         */
-        _dirtyFlag: number;
-        /**
-         * @internal
-         *像素格子尺寸 单位/m
-         */
-        _cellSize: number;
         /**name */
         agentName: string;
         /**像素格子高度 单位/m */
@@ -49382,48 +40372,6 @@ declare namespace Laya {
         * @param destObject 克隆源。
         */
         cloneTo(destObject: RecastConfig): void;
-    }
-    /**
-     * @internal
-     * @zh js向wasm 写入数据，内部使用；不对外开放。
-     */
-    class TitleConfig {
-        tx: number;
-        ty: number;
-        bmin: number[];
-        bmax: number[];
-        agentHeight: number;
-        agentRadius: number;
-        agentMaxClimb: number;
-        maxEdgeLen: number;
-        maxSimplificationError: number;
-        partitionType: any;
-        constructor();
-        /**
-         * 设置Title序列
-         * @param {*}
-         * @return {*}
-         */
-        _setOff(tx: number, ty: number): void;
-        /**
-         * 设置包围盒最小值
-         * @param {*}
-         * @return {*}
-         */
-        _setMin(value: Vector3): void;
-        /**
-         *设置包围盒最大值
-         */
-        _setMax(value: Vector3): void;
-        /**
-         * 设置运行代理的参数
-         * @param {number} height
-         * @param {number} radius
-         * @param {number} maxClimb
-         */
-        _setAgent(height: number, radius: number, maxClimb: number): void;
-        /** 设置最大边长 */
-        _setMaxEdgeLen(value: number): void;
     }
     /**
      * 自动图集管理类
@@ -50095,10 +41043,6 @@ declare namespace Laya {
          * @returns Promise 对象。
          */
         load(url: string | ILoadURL | (string | Readonly<ILoadURL>)[], complete?: Handler, progress?: Handler, type?: string, priority?: number, cache?: boolean, group?: string, ignoreCache?: boolean, useWorkerLoader?: boolean): Promise<any>;
-        /** @internal */
-        _load1(url: string, type: string, options: ILoadOptions, onProgress: ProgressCallback): Promise<any>;
-        /** @internal */
-        _load2(url: string, uuid: string, type: string, options: ILoadOptions, onProgress: ProgressCallback): Promise<any>;
         /**
          * @en Download from the specified URL. This is a low-level method for downloading resources. Unlike the load method, it doesn't parse the returned data or cache the downloaded content. Returns the downloaded data on success, null on failure.
          * @param url The URL to download from.
@@ -50157,8 +41101,6 @@ declare namespace Laya {
          * @return 返回资源。
          */
         static getRes(url: string, type?: string): any;
-        /** @internal */
-        static _getRes(url: string, type?: string): any;
         /**
          * @en Get a Texture2D resource by URL.
          * @param url The URL of the Texture2D resource.
@@ -50217,8 +41159,6 @@ declare namespace Laya {
          * @param type 资源类型。
          */
         static cacheRes(url: string, data: any, type?: string): void;
-        /** @internal */
-        static _cacheRes(url: string, data: any, typeId: number, main: boolean): void;
         /**
          * @en Cache a resource.
          * @param url The URL of the resource.
@@ -50248,10 +41188,6 @@ declare namespace Laya {
          * @param checkObj 如果提供，只有缓存中的对象匹配这个才清除，否则不清除。
          */
         clearRes(url: string, checkObj?: any): void;
-        /**
-         * @internal
-         */
-        static _clearRes(url: string, checkObj?: any): void;
         /**
          * @en Destroy the image resource used by a Texture, keeping the texture shell. If the texture's image resource is found to be missing during the next render, it will be automatically restored. Compared to clearRes, clearTextureRes only clears the image resource used in the texture without destroying the texture itself. The image resource will be automatically restored when used again. While clearRes completely destroys the texture, making it unusable, clearTextureRes ensures immediate destruction of the image resource without worrying about incorrect destruction.
          * @param url The URL of the atlas or texture, e.g., "res/atlas/comp.atlas" or "hall/bg.jpg".
@@ -50521,13 +41457,6 @@ declare namespace Laya {
          */
         flush(): void;
         protected _onMessage(data: string | ArrayBuffer): void;
-        /** @internal @blueprintEvent */
-        Socket_bpEvent: {
-            [Event.OPEN]: () => void;
-            [Event.CLOSE]: () => void;
-            [Event.ERROR]: (e: any) => void;
-            [Event.MESSAGE]: (data: string | ArrayBuffer) => void;
-        };
     }
     /**
      * @en The `URL` class provides URL formatting and version management.
@@ -50681,17 +41610,6 @@ declare namespace Laya {
          */
         static overrideExtension(originalExts: Array<string>, targetExt: string, miniGameOnly?: boolean): void;
     }
-    /** @internal */
-    class _WebSocket implements IWebSocket {
-        ws: WebSocket;
-        onOpen: (result: any) => void;
-        onClose: () => void;
-        onError: (e: any) => void;
-        onMessage: (data: string | ArrayBuffer) => void;
-        open(url: string, options?: IWebSocketConnectOptions): void;
-        close(): void;
-        send(data: string | ArrayBuffer): Promise<void>;
-    }
     /**
      * @en Image loader that uses a Web Worker for asynchronous loading.
      * @zh 使用Web Worker进行异步加载的图像加载器。
@@ -50745,8 +41663,6 @@ declare namespace Laya {
      * 2D 渲染基类
      */
     class BaseRenderNode2D extends Component {
-        /**@internal */
-        private static _uniqueIDCounter;
         /**
          * 渲染节点颜色ID
          * @readonly
@@ -50794,43 +41710,8 @@ declare namespace Laya {
         static SHADERDEFINE_LIGHT2D_SUBMODE: ShaderDefine;
         /** @readonly */
         static SHADERDEFINE_LIGHT2D_NORMAL_PARAM: ShaderDefine;
-        /**
-         * @internal
-         */
-        static initBaseRender2DCommandEncoder(): void;
-        /**
-        * @internal
-        */
-        static _setRenderElement2DMaterial(element: IRenderElement2D, material: Material): void;
-        /**
-         * @internal
-         * 渲染节点
-         */
-        _renderElements: IRenderElement2D[];
-        /**
-         * @internal
-         * 材质集
-         */
-        _materials: Material[];
-        /**
-         * @internal
-         * 渲染类型
-         */
-        _renderType: BaseRender2DType;
-        /**
-         * @internal
-         * 帧循环标记
-         */
-        _renderUpdateMask: number;
-        /**
-         * @internal
-         * sprite ShaderData,可以为null
-         */
-        _spriteShaderData: ShaderData;
-        /**
-         * @internal
-         */
-        _struct: IRenderStruct2D;
+        /** @readonly */
+        static SHADERDEFINE_UNITQUAD: ShaderDefine;
         /**
          * 唯一ID
          */
@@ -50848,15 +41729,6 @@ declare namespace Laya {
          */
         private _rtsize;
         protected _lightReceive: boolean;
-        /**
-         * @internal Light params
-         */
-        _lightUpdateMark: number;
-        /**
-         *@internal Light params
-         *render是否已经记录在manager中，避免重复记录
-         */
-        _lightRecord: boolean;
         readonly owner: Sprite;
         /**
          * 渲染层掩码，用于裁剪规则一
@@ -50887,8 +41759,6 @@ declare namespace Laya {
          */
         protected _getcommonUniformMap(): Array<string>;
         protected _initDefaultRenderData?(): void;
-        /** @internal */
-        _transformChange(): void;
         private _changeMaterialReference;
         /**@ignore */
         constructor();
@@ -50921,6 +41791,7 @@ declare namespace Laya {
         get lightReceive(): boolean;
         set lightReceive(value: boolean);
         _resetUpdateMark(): void;
+        protected _notifyDataChange(): void;
         _updateLight(): void;
         /**
          * light Manager
@@ -50936,18 +41807,12 @@ declare namespace Laya {
          */
         get sharedMaterial(): Material;
         set sharedMaterial(value: Material);
-        /** @internal */
-        _getRenderElements(): IRenderElement2D[];
         /**
          * @en Get 2D render component ID
          * @zh 获得2D渲染组件标识ID
          * @returns 获得ID
          */
         getRenderID(): number;
-        /**
-         * @internal
-         */
-        clear(): void;
     }
     /**
      * @en The `GradientDataNumber` class is used to create floating-point gradients.
@@ -50955,22 +41820,10 @@ declare namespace Laya {
      */
     class GradientDataNumber implements IClone {
         /**
-         * @internal
-         * @en Create a constant gradient curve data.
-         * @param constantValue The constant value for the gradient.
-         * @returns A new GradientDataNumber instance with constant value.
-         * @zh 创建一个常数渐变曲线数据。
-         * @param constantValue 常数值。
-         * @returns 包含常数值的 GradientDataNumber 实例。
-         */
-        static createConstantData(constantValue: number): GradientDataNumber;
-        /**
          * @en The current length of the gradient data.
          * @zh 渐变数据的当前长度。
          */
         _currentLength: number;
-        /** @internal */
-        _dataBuffer: Float32Array;
         /**
          * @en The gradient elements.
          * @zh 渐变元素。
@@ -50998,12 +41851,6 @@ declare namespace Laya {
          * @zh 创建一个 GradientDataNumber 类的实例。
          */
         constructor();
-        /**
-         * @internal
-         * @en Format data, ensure the maximum value is 1.
-         * @zh 格式化数据，确保数据的最大值为 1。
-         */
-        _formatData(): void;
         /**
          * @en Add a floating-point gradient.
          * @param key Lifecycle, ranging from 0 to 1.
@@ -51070,21 +41917,12 @@ declare namespace Laya {
     class EmissionModule implements IClone {
         enable: boolean;
         private _rateOverTime;
-        get rateOverTime(): number;
-        set rateOverTime(value: number);
-        /** @internal */
-        _lastPosition: Vector3;
+        get rateOverTime(): ParticleMinMaxCurve;
+        set rateOverTime(value: number | ParticleMinMaxCurve);
         rateOverDistance: number;
-        /**
-         * @internal
-         * 粒子发射间隔时间
-         */
-        _emissionInterval: number;
         private _bursts;
         get bursts(): EmissionBurst[];
         set bursts(value: EmissionBurst[]);
-        /** @internal */
-        _sortedBursts: EmissionBurst[];
         constructor();
         destroy(): void;
         cloneTo(destObject: EmissionModule): void;
@@ -51103,17 +41941,11 @@ declare namespace Laya {
         startFrame: ParticleMinMaxCurve;
         cycles: number;
         constructor();
-        /** @internal */
-        _sheetFrameData: Vector4;
-        /** @internal */
-        _calculateSheetFrameData(): void;
         cloneTo(destObject: TextureSheetAnimationModule): void;
         clone(): TextureSheetAnimationModule;
     }
     abstract class ParticleControler {
         particlePool: ParticlePool;
-        /** @internal */
-        _initParticlePool(maxParticles: number, particleByteStride: number, particleInfo: ParticleInfo): void;
         /**
          * 播放时间（单位: 秒）
          */
@@ -51122,17 +41954,6 @@ declare namespace Laya {
          * 总播放时间（单位: 秒）
          */
         totalTime: number;
-        /**
-         * @internal
-         * 上次 emit 的时间
-         */
-        _lastEmitTime: number;
-        /** @internal */
-        _emitDistance: number;
-        /** @internal */
-        _nextBurstIndex: number;
-        /** @internal */
-        _burstLoopCount: number;
         protected _isEmitting: boolean;
         get isEmitting(): boolean;
         protected _isPlaying: boolean;
@@ -51214,17 +42035,6 @@ declare namespace Laya {
         get particleByteStride(): number;
         particleDatas: Float32Array;
         readonly particleInfo: ParticleInfo;
-        /**
-         * @internal
-         * active range [activeStartIndex, activeEndIndex)
-         */
-        activeStartIndex: number;
-        /** @internal */
-        activeEndIndex: number;
-        /** @internal */
-        updateStartIndex: number;
-        /** @internal */
-        updateEndIndex: number;
         get activeParticleCount(): number;
         constructor(maxCount: number, particleByteStride: number, particleInfo: ParticleInfo);
         clear(): void;
@@ -51261,13 +42071,9 @@ declare namespace Laya {
         set startSize(value: ParticleMinMaxCurve);
         startRotation: ParticleMinMaxCurve;
         startColor: ParticleMinMaxGradient;
-        /** @internal */
-        _gravity: Vector2;
-        gravityModifier: number;
-        /** @internal */
-        _spriteRotAndScale: Vector4;
-        /** @internal */
-        _spriteTranslateAndSpace: Vector3;
+        private _gravityModifier;
+        get gravityModifier(): Vector2;
+        set gravityModifier(value: number | Vector2);
         simulationSpace: Particle2DSimulationSpace;
         simulationSpeed: number;
         scaleMode: Particle2DScalingMode;
@@ -51305,8 +42111,15 @@ declare namespace Laya {
     abstract class Base2DShape implements IClone {
         type: Base2DShapeType;
         protected posAndDir: Vector4;
+        positionX: number;
+        positionY: number;
+        scaleX: number;
+        scaleY: number;
+        rotation: number;
         constructor(type: Base2DShapeType);
-        abstract getPositionAndDirection(): Vector4;
+        protected applyTransform(): void;
+        protected cloneTransformTo(destObject: Base2DShape): void;
+        abstract getPositionAndDirection(randomFn?: () => number): Vector4;
         abstract clone(): Base2DShape;
         abstract cloneTo(destObject: Base2DShape): void;
     }
@@ -51314,7 +42127,7 @@ declare namespace Laya {
         size: Vector2;
         randomDirection: boolean;
         constructor();
-        getPositionAndDirection(): Vector4;
+        getPositionAndDirection(randomFn?: () => number): Vector4;
         cloneTo(destObject: Box2DShape): void;
         clone(): Box2DShape;
     }
@@ -51323,7 +42136,7 @@ declare namespace Laya {
         emitFromEdge: boolean;
         randomDirction: boolean;
         constructor();
-        getPositionAndDirection(): Vector4;
+        getPositionAndDirection(randomFn?: () => number): Vector4;
         cloneTo(destObject: Circle2DShape): void;
         clone(): Circle2DShape;
     }
@@ -51337,7 +42150,7 @@ declare namespace Laya {
         emitType: FanShapeEmitType;
         length: number;
         constructor();
-        getPositionAndDirection(): Readonly<Vector4>;
+        getPositionAndDirection(randomFn?: () => number): Readonly<Vector4>;
         cloneTo(destObject: FanShape): void;
         clone(): FanShape;
     }
@@ -51346,7 +42159,7 @@ declare namespace Laya {
         emitFromEdge: boolean;
         randomDirction: boolean;
         constructor();
-        getPositionAndDirection(): Vector4;
+        getPositionAndDirection(randomFn?: () => number): Vector4;
         cloneTo(destObject: SemicircleShap): void;
         clone(): SemicircleShap;
     }
@@ -51558,17 +42371,11 @@ declare namespace Laya {
         onDestroy(): void;
         _cloneTo(dest: ShurikenParticle2DRenderer): void;
     }
-    /** @internal */
-    enum Particle2DSystemDirtyFlagBits {
-        Velocity2DOverLifetimeBit = 1,
-        ColorOverLifetimeBit = 2,
-        Size2DOverLifetimeBit = 4,
-        Rotation2DOverLifetimeBit = 8,
-        TextureSheetAnimationBit = 16
-    }
     class ShurikenParticle2DSystem extends ParticleControler implements IClone {
         owner: Sprite;
         _dirtyFlags: number;
+        private _rand;
+        private _randomSeeds;
         private _main;
         get main(): Main2DModule;
         private _emission;
@@ -51591,10 +42398,12 @@ declare namespace Laya {
         set textureSheetAnimation(value: TextureSheetAnimationModule);
         _initParticleData(particleByteStride: number, particleInfo: ParticleInfo): void;
         constructor();
+        private _getFloat;
+        private _getShapeRandom;
         play(): void;
         protected getPositionAndDirection(): Vector4;
         _emit(emitTime: number, age: number): boolean;
-        _emitOverTime(elapsedTime: number): void;
+        _emitOverTime(deltaTime: number): void;
         _emitOverDistance(): void;
         _emitBurst(burst: EmissionBurst, emitTime: number): void;
         _emitBursts(): void;
@@ -51700,17 +42509,7 @@ declare namespace Laya {
      * @zh Emission 类用于粒子发射器。
      */
     class Emission implements IClone {
-        /** @internal */
-        private _destroyed;
-        /** @internal */
-        private _emissionRate;
         private _emissionRateOverDistance;
-        /**
-         * @internal
-         * @en Particle bursts, not allowed to modify.
-         * @zh 粒子的爆发，不允许修改。
-         */
-        _bursts: Burst[];
         /**
          * @en Whether the emission is enabled.
          * @zh 是否启用。
@@ -52023,50 +42822,11 @@ declare namespace Laya {
         private _gradientY;
         private _gradientZ;
         private _gradientW;
-        /**@internal */
-        _constantGradientDdata: GradientDataNumber;
-        /**@internal */
-        _constantMinGradientDdata: GradientDataNumber;
-        /**@internal */
-        _constantMaxGradientDdata: GradientDataNumber;
         private __constant;
         private __constantMin;
         private __constantMax;
-        /**
-         * @internal
-         */
-        get _constant(): number;
-        /**
-         * @internal
-         */
-        set _constant(value: number);
-        /**
-         * @internal
-         */
-        get _constantMin(): number;
-        /**
-         * @internal
-         */
-        set _constantMin(value: number);
-        /**
-         * @internal
-         */
-        get _constantMax(): number;
-        /**
-         * @internal
-         */
-        set _constantMax(value: number);
         private __constantMinSeparate;
         private __constantMaxSeparate;
-        _constantXGradientDdata: GradientDataNumber;
-        _constantYGradientDdata: GradientDataNumber;
-        _constantZGradientDdata: GradientDataNumber;
-        _constantXMinGradientDdata: GradientDataNumber;
-        _constantYMinGradientDdata: GradientDataNumber;
-        _constantZMinGradientDdata: GradientDataNumber;
-        _constantXMaxGradientDdata: GradientDataNumber;
-        _constantYMaxGradientDdata: GradientDataNumber;
-        _constantZMaxGradientDdata: GradientDataNumber;
         /**
          * @en The minimum constant separate vector.
          * @zh 最小常量分离向量。
@@ -52370,12 +43130,6 @@ declare namespace Laya {
          */
         constructor();
         /**
-         * @internal
-         * @en Format the data to ensure the maximum value is 1.
-         * @zh 格式化数据；保证数据的最大值为1。
-         */
-        _formatData(): void;
-        /**
          * @en Add an integer gradient.
          * @param key - The lifecycle key, ranging from 0 to 1.
          * @param value - The integer value.
@@ -52405,12 +43159,6 @@ declare namespace Laya {
      */
     class GradientDataVector2 implements IClone {
         private _currentLength;
-        /**
-         * @internal
-         * @en Developers are prohibited from modifying this.
-         * @zh 开发者禁止修改。
-         */
-        _elements: Float32Array;
         /**
          * @en The number of two-dimensional vector gradients.
          * @zh 二维向量渐变数量。
@@ -52796,42 +43544,6 @@ declare namespace Laya {
          */
         get constantMax(): Vector3;
         /**
-         *@internal
-         */
-        get gradientConstantX(): GradientDataNumber;
-        /**
-         * @internal
-         */
-        get gradientConstantY(): GradientDataNumber;
-        /**
-         * @internal
-         */
-        get gradientConstantZ(): GradientDataNumber;
-        /**
-         *@internal
-         */
-        get gradientConstantXMin(): GradientDataNumber;
-        /**
-         * @internal
-         */
-        get gradientConstantXMax(): GradientDataNumber;
-        /**
-         * @internal
-         */
-        get gradientConstantYMin(): GradientDataNumber;
-        /**
-         * @internal
-         */
-        get gradientConstantYMax(): GradientDataNumber;
-        /**
-         * @internal
-         */
-        get gradientConstantZMin(): GradientDataNumber;
-        /**
-         * @internal
-         */
-        get gradientConstantZMax(): GradientDataNumber;
-        /**
          * @en The minimum gradient velocity for X axis.
          * @zh X轴最小渐变速度。
          */
@@ -52977,10 +43689,6 @@ declare namespace Laya {
          * @zh 创建一个BaseShape实例。
          */
         constructor();
-        /**@internal */
-        protected _getShapeBoundBox(boundBox: BoundBox): void;
-        /**@internal */
-        protected _getSpeedBoundBox(boundBox: BoundBox): void;
         /**
          * @en Generates initial position and direction for particles.
          * @param position The particle position.
@@ -52994,10 +43702,6 @@ declare namespace Laya {
          * @param randomSeeds 随机种子。
          */
         generatePositionAndDirection(position: Vector3, direction: Vector3, rand?: Rand, randomSeeds?: Uint32Array): void;
-        /**
-         * @internal
-         */
-        _calculateProceduralBounds(boundBox: BoundBox, emitterPosScale: Vector3, minMaxBounds: Vector2): void;
         /**
          * @en Clones to a target object.
          * @param destObject The target object to clone to.
@@ -53039,10 +43743,6 @@ declare namespace Laya {
          * @zh 创建一个BoxShape实例。
          */
         constructor();
-        /**
-         * @internal
-         */
-        protected _getShapeBoundBox(boundBox: BoundBox): void;
         protected _getSpeedBoundBox(boundBox: BoundBox): void;
         /**
          * @en Generates initial position and direction for particles.
@@ -53256,81 +43956,6 @@ declare namespace Laya {
         clone(): HemisphereShape;
     }
     /**
-     * @internal
-     * @en Utility class for generating random points in various shapes.
-     * @zh 用于在各种形状中生成随机点的实用工具类。
-     */
-    class ShapeUtils {
-        /**
-         * @en Generates a random point on the arc of a unit circle.
-         * @param arc The arc angle in radians.
-         * @param out The output Vector2 to store the result.
-         * @param rand Optional random number generator. If not provided, Math.random() will be used.
-         * @zh 在单位圆弧上生成一个随机点。
-         * @param arc 弧度角度。
-         * @param out 输出 Vector2 用于存储结果。
-         * @param rand 可选的随机数生成器。如果不提供，则使用 Math.random()。
-         */
-        static _randomPointUnitArcCircle(arc: number, out: Vector2, rand?: Rand): void;
-        /**
-         * @en Generates a random point inside the arc of a unit circle.
-         * @param arc The arc angle in radians.
-         * @param out The output Vector2 to store the result.
-         * @param rand Optional random number generator. If not provided, Math.random() will be used.
-         * @zh 在单位圆弧内生成一个随机点。
-         * @param arc 弧度角度。
-         * @param out 输出 Vector2 用于存储结果。
-         * @param rand 可选的随机数生成器。如果不提供，则使用 Math.random()。
-         */
-        static _randomPointInsideUnitArcCircle(arc: number, out: Vector2, rand?: Rand): void;
-        /**
-         * @en Generates a random point on the circumference of a unit circle.
-         * @param out The output Vector2 to store the result.
-         * @param rand Optional random number generator. If not provided, Math.random() will be used.
-         * @zh 在单位圆周上生成一个随机点。
-         * @param out 输出 Vector2 用于存储结果。
-         * @param rand 可选的随机数生成器。如果不提供，则使用 Math.random()。
-         */
-        static _randomPointUnitCircle(out: Vector2, rand?: Rand): void;
-        /**
-         * @en Generates a random point inside a unit circle.
-         * @param out The output Vector2 to store the result.
-         * @param rand Optional random number generator. If not provided, Math.random() will be used.
-         * @zh 在单位圆内生成一个随机点。
-         * @param out 输出 Vector2 用于存储结果。
-         * @param rand 可选的随机数生成器。如果不提供，则使用 Math.random()。
-         */
-        static _randomPointInsideUnitCircle(out: Vector2, rand?: Rand): void;
-        /**
-         * @en Generates a random point on the surface of a unit sphere.
-         * @param out The output Vector3 to store the result.
-         * @param rand Optional random number generator. If not provided, Math.random() will be used.
-         * @zh 在单位球面上生成一个随机点。
-         * @param out 输出 Vector3 用于存储结果。
-         * @param rand 可选的随机数生成器。如果不提供，则使用 Math.random()。
-         */
-        static _randomPointUnitSphere(out: Vector3, rand?: Rand): void;
-        /**
-         * @en Generates a random point inside a unit sphere.
-         * @param out The output Vector3 to store the result.
-         * @param rand Optional random number generator. If not provided, Math.random() will be used.
-         * @zh 在单位球体内生成一个随机点。
-         * @param out 输出 Vector3 用于存储结果。
-         * @param rand 可选的随机数生成器。如果不提供，则使用 Math.random()。
-         */
-        static _randomPointInsideUnitSphere(out: Vector3, rand?: Rand): void;
-        /**
-         * @en Generates a random point inside half of a unit box (cube).
-         * @param out The output Vector3 to store the result.
-         * @param rand Optional random number generator. If not provided, Math.random() will be used.
-         * @zh 在半单位立方体内生成一个随机点。
-         * @param out 输出 Vector3 用于存储结果。
-         * @param rand 可选的随机数生成器。如果不提供，则使用 Math.random()。
-         */
-        static _randomPointInsideHalfUnitBox(out: Vector3, rand?: Rand): void;
-        constructor();
-    }
-    /**
      * @en SphereShape class is used to create spherical particle shapes.
      * @zh SphereShape 类用于创建球形粒子发射器。
      */
@@ -53495,10 +44120,6 @@ declare namespace Laya {
      * @zh `TextureSheetAnimation` 类用于创建粒子帧动画。
      */
     class TextureSheetAnimation implements IClone {
-        /**@internal */
-        private _frame;
-        /**@internal */
-        private _startFrame;
         /**
          * @en Texture tiling.
          * @zh 纹理平铺。
@@ -53573,8 +44194,6 @@ declare namespace Laya {
      * @zh `VelocityOverLifetime` 类用于控制粒子在生命周期内的速度变化。
      */
     class VelocityOverLifetime implements IClone {
-        /**@internal */
-        private _velocity;
         /**
          * @en Whether to enable.
          * @zh 是否启用*/
@@ -53650,209 +44269,6 @@ declare namespace Laya {
         destroy(destroyChild?: boolean): void;
     }
     /**
-     * @internal
-     */
-    class ShuriKenParticle3DShaderDeclaration {
-        /**@internal */
-        static SHADERDEFINE_RENDERMODE_BILLBOARD: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_RENDERMODE_STRETCHEDBILLBOARD: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_RENDERMODE_HORIZONTALBILLBOARD: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_RENDERMODE_VERTICALBILLBOARD: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_COLORKEYCOUNT_8: ShaderDefine;
-        /**@internal Mul Shuriken Define*/
-        static SHADERDEFINE_COLOROVERLIFETIME: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_RANDOMCOLOROVERLIFETIME: ShaderDefine;
-        /**@internal Mul Shuriken Define*/
-        static SHADERDEFINE_VELOCITYOVERLIFETIMECONSTANT: ShaderDefine;
-        /**@internal Mul Shuriken Define*/
-        static SHADERDEFINE_VELOCITYOVERLIFETIMECURVE: ShaderDefine;
-        /**@internal Mul Shuriken Define*/
-        static SHADERDEFINE_VELOCITYOVERLIFETIMERANDOMCONSTANT: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_VELOCITYOVERLIFETIMERANDOMCURVE: ShaderDefine;
-        /**@internal Mul Shuriken Define*/
-        static SHADERDEFINE_TEXTURESHEETANIMATIONCURVE: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_TEXTURESHEETANIMATIONRANDOMCURVE: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_ROTATIONOVERLIFETIME: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_ROTATIONOVERLIFETIMESEPERATE: ShaderDefine;
-        /**@internal Mul Shuriken Define*/
-        static SHADERDEFINE_ROTATIONOVERLIFETIMECONSTANT: ShaderDefine;
-        /**@internal Mul Shuriken Define*/
-        static SHADERDEFINE_ROTATIONOVERLIFETIMECURVE: ShaderDefine;
-        /**@internal Mul Shuriken Define*/
-        static SHADERDEFINE_ROTATIONOVERLIFETIMERANDOMCONSTANTS: ShaderDefine;
-        /**@internal Mul Shuriken Define*/
-        static SHADERDEFINE_ROTATIONOVERLIFETIMERANDOMCURVES: ShaderDefine;
-        /**@internal Mul Shuriken Define*/
-        static SHADERDEFINE_SIZEOVERLIFETIMECURVE: ShaderDefine;
-        /**@internal Mul Shuriken Define*/
-        static SHADERDEFINE_SIZEOVERLIFETIMECURVESEPERATE: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_SIZEOVERLIFETIMERANDOMCURVES: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_SIZEOVERLIFETIMERANDOMCURVESSEPERATE: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_RENDERMODE_MESH: ShaderDefine;
-        /**@internal Mul Shuriken Define*/
-        static SHADERDEFINE_SHAPE: ShaderDefine;
-        /**@internal */
-        static WORLDPOSITION: number;
-        /**@internal */
-        static WORLDROTATION: number;
-        /**@internal */
-        static POSITIONSCALE: number;
-        /**@internal */
-        static SIZESCALE: number;
-        /**@internal */
-        static SCALINGMODE: number;
-        /**@internal */
-        static GRAVITY: number;
-        /**@internal */
-        static THREEDSTARTROTATION: number;
-        /**@internal */
-        static SHAPE: number;
-        /**@internal */
-        static STRETCHEDBILLBOARDLENGTHSCALE: number;
-        /**@internal */
-        static STRETCHEDBILLBOARDSPEEDSCALE: number;
-        /**@internal */
-        static SIMULATIONSPACE: number;
-        /**@internal */
-        static CURRENTTIME: number;
-        /**@internal */
-        static DRAG: number;
-        /**@internal  Mul Shuriken Define*/
-        static VOLVELOCITYCONST: number;
-        /**@internal */
-        static VOLVELOCITYGRADIENTX: number;
-        /**@internal */
-        static VOLVELOCITYGRADIENTY: number;
-        /**@internal */
-        static VOLVELOCITYGRADIENTZ: number;
-        /**@internal  Mul Shuriken Define*/
-        static VOLVELOCITYCONSTMAX: number;
-        /**@internal */
-        static VOLVELOCITYGRADIENTXMAX: number;
-        /**@internal */
-        static VOLVELOCITYGRADIENTYMAX: number;
-        /**@internal */
-        static VOLVELOCITYGRADIENTZMAX: number;
-        /**@internal */
-        static VOLSPACETYPE: number;
-        /**@internal */
-        static COLOROVERLIFEGRADIENTALPHAS: number;
-        /**@internal */
-        static COLOROVERLIFEGRADIENTCOLORS: number;
-        /**@internal */
-        static COLOROVERLIFEGRADIENTRANGES: number;
-        /**@internal */
-        static MAXCOLOROVERLIFEGRADIENTALPHAS: number;
-        /**@internal */
-        static MAXCOLOROVERLIFEGRADIENTCOLORS: number;
-        /**@internal */
-        static MAXCOLOROVERLIFEGRADIENTRANGES: number;
-        /**@internal */
-        static SOLSIZEGRADIENT: number;
-        /**@internal */
-        static SOLSIZEGRADIENTX: number;
-        /**@internal */
-        static SOLSIZEGRADIENTY: number;
-        /**@internal */
-        static SOLSizeGradientZ: number;
-        /**@internal */
-        static SOLSizeGradientMax: number;
-        /**@internal */
-        static SOLSIZEGRADIENTXMAX: number;
-        /**@internal */
-        static SOLSIZEGRADIENTYMAX: number;
-        /**@internal */
-        static SOLSizeGradientZMAX: number;
-        /**@internal  Mul Shuriken Define*/
-        static ROLANGULARVELOCITYCONST: number;
-        /**@internal  Mul Shuriken Define*/
-        static ROLANGULARVELOCITYCONSTSEPRARATE: number;
-        /**@internal */
-        static ROLANGULARVELOCITYGRADIENT: number;
-        /**@internal */
-        static ROLANGULARVELOCITYGRADIENTX: number;
-        /**@internal */
-        static ROLANGULARVELOCITYGRADIENTY: number;
-        /**@internal */
-        static ROLANGULARVELOCITYGRADIENTZ: number;
-        /**@internal  Mul Shuriken Define*/
-        static ROLANGULARVELOCITYCONSTMAX: number;
-        /**@internal  Mul Shuriken Define*/
-        static ROLANGULARVELOCITYCONSTMAXSEPRARATE: number;
-        /**@internal */
-        static ROLANGULARVELOCITYGRADIENTMAX: number;
-        /**@internal */
-        static ROLANGULARVELOCITYGRADIENTXMAX: number;
-        /**@internal */
-        static ROLANGULARVELOCITYGRADIENTYMAX: number;
-        /**@internal */
-        static ROLANGULARVELOCITYGRADIENTZMAX: number;
-        /**@internal  Mul Shuriken Define*/
-        static ROLANGULARVELOCITYGRADIENTWMAX: number;
-        /**@internal */
-        static TEXTURESHEETANIMATIONCYCLES: number;
-        /**@internal */
-        static TEXTURESHEETANIMATIONSUBUVLENGTH: number;
-        /**@internal */
-        static TEXTURESHEETANIMATIONGRADIENTUVS: number;
-        /**@internal */
-        static TEXTURESHEETANIMATIONGRADIENTMAXUVS: number;
-        /**
-        * @en
-        * Is it a multi macro mode
-        * If this value is true, multi macro mode will be enabled, and the single compilation time of particles will be shorter, but the macro variables of particles will increase, and the number of compiled shaders will increase
-        * If resignation is set to false, the multi macro mode of particles will be turned off, and the single compilation time of particles will be longer, but the number of compiled shaders will correspondingly decrease
-        * @zh
-        * 是否为多宏模式
-        * 如果此值为true，那么将开启多宏模式，粒子的单个编译时间较短，但是粒子的宏变量会增多，编译的shader数量将会增加
-        * 如果辞职为false，那么将关闭粒子的多宏模式，粒子的单个编译时间会变长，但是编译的shader数量会相应减少
-        */
-        static mulShaderDefineMode: boolean;
-        /**
-         * init
-         */
-        static __init__(): void;
-    }
-    /**
-     *  @internal
-     */
-    class ShurikenParticleData {
-        static startLifeTime: number;
-        static startColor: Vector4;
-        static startSize: Float32Array;
-        static startRotation: Float32Array;
-        static startUVInfo: Float32Array;
-        constructor();
-        /**
-         * @internal
-         */
-        private static _getStartLifetimeFromGradient;
-        /**
-         * @internal
-         */
-        private static _randomInvertRoationArray;
-        /**
-         * @internal
-         */
-        private static _randomInvertRoation;
-        /**
-         * @internal
-         */
-        static create(particleSystem: ShurikenParticleSystem, particleRender: ShurikenParticleRenderer): void;
-    }
-    /**
      * @en ShurikenParticleInstanceSystem class is used to implement instanced particle rendering.
      * @zh ShurikenParticleInstanceSystem 类用于实现实例化粒子渲染。
      */
@@ -53898,12 +44314,6 @@ declare namespace Laya {
          */
         addParticle(position: Vector3, direction: Vector3, time: number, elapsedTime: number): boolean;
         /**
-         * @internal
-         * @en Add new particles to the vertex buffer.
-         * @zh 将新粒子添加到顶点缓冲区。
-         */
-        addNewParticlesToVertexBuffer(): void;
-        /**
          * @en Update the render parameters for the particle system.
          * @param stage The current render context.
          * @zh 更新粒子系统的渲染参数。
@@ -53931,27 +44341,11 @@ declare namespace Laya {
          * @zh 渲染状态_加色法混合。
          */
         static RENDERMODE_ADDTIVE: number;
-        /**@internal */
-        static SHADERDEFINE_DIFFUSEMAP: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_TINTCOLOR: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_ADDTIVEFOG: ShaderDefine;
-        /**@internal */
-        static DIFFUSETEXTURE: number;
-        /**@internal */
-        static TINTCOLOR: number;
-        /**@internal */
-        static TILINGOFFSET: number;
         /**
          * @en Default material, modification prohibited.
          * @zh 默认材质，禁止修改。
          */
         static defaultMaterial: ShurikenParticleMaterial;
-        /**
-         * @internal
-         */
-        static __initDefine__(): void;
         /**
          * @en Color of the particle material.
          * @zh 粒子材质的颜色。
@@ -54014,106 +44408,6 @@ declare namespace Laya {
         set tilingOffsetW(w: number);
         /**
          * @deprecated
-         * @internal
-         */
-        get _TintColor(): Color;
-        /**
-         * @deprecated
-         * @internal
-         */
-        set _TintColor(value: Color);
-        /**
-         * @deprecated
-         * @internal
-         */
-        get _TintColorR(): number;
-        /**
-         * @deprecated
-         * @internal
-         */
-        set _TintColorR(value: number);
-        /**
-         * @deprecated
-         * @internal
-         */
-        get _TintColorG(): number;
-        /**
-         * @deprecated
-         * @internal
-         */
-        set _TintColorG(value: number);
-        /**
-         * @deprecated
-         * @internal
-         */
-        get _TintColorB(): number;
-        /**
-         * @deprecated
-         * @internal
-         */
-        set _TintColorB(value: number);
-        /**
-         * @deprecated
-         * @internal
-         */
-        get _TintColorA(): number;
-        /**
-         * @deprecated
-         * @internal
-         */
-        set _TintColorA(value: number);
-        /**
-         * @deprecated
-         * @internal
-         */
-        get _MainTex_ST(): Vector4;
-        /**
-         * @deprecated
-         * @internal
-         */
-        set _MainTex_ST(value: Vector4);
-        /**
-         * @deprecated
-         * @internal
-         */
-        get _MainTex_STX(): number;
-        /**
-         * @deprecated
-         * @internal
-         */
-        set _MainTex_STX(x: number);
-        /**
-         * @deprecated
-         * @internal
-         */
-        get _MainTex_STY(): number;
-        /**
-         * @deprecated
-         * @internal
-         */
-        set _MainTex_STY(y: number);
-        /**
-         * @deprecated
-         * @internal
-         */
-        get _MainTex_STZ(): number;
-        /**
-         * @deprecated
-         * @internal
-         */
-        set _MainTex_STZ(z: number);
-        /**
-         * @deprecated
-         * @internal
-         */
-        get _MainTex_STW(): number;
-        /**
-         * @deprecated
-         * @internal
-         */
-        set _MainTex_STW(w: number);
-        /**
-         * @deprecated
          * 颜色R分量。
          */
         get colorR(): number;
@@ -54151,8 +44445,7 @@ declare namespace Laya {
         private _dragConstant;
         private _renderMode;
         private _mesh;
-        /**@internal */
-        _particleSystem: ShurikenParticleSystem;
+        private _pivot;
         /**
          * @en Scale of camera speed in stretched billboard mode (currently not supported).
          * @zh 拉伸广告牌模式摄像机速度缩放（暂不支持）。
@@ -54186,6 +44479,12 @@ declare namespace Laya {
         get mesh(): Mesh;
         set mesh(value: Mesh);
         /**
+         * @en Pivot offset for the particle rotation center. The value is a multiplier of the particle size. Effective for all render modes.
+         * @zh 粒子旋转中心偏移，值是粒子size的乘数。对所有渲染模式有效。
+         */
+        get pivot(): Vector3;
+        set pivot(value: Vector3);
+        /**
          * @ignore
          * @en Creates a new instance of ShurikenParticleRender class.
          * @zh 创建ShurikenParticleRender类的新实例。
@@ -54196,18 +44495,6 @@ declare namespace Laya {
         protected _onAdded(): void;
         protected _onEnable(): void;
         protected _onDisable(): void;
-        /**
-         * @internal
-         */
-        _calculateBoundingBox(): void;
-        /**
-         * @internal
-         */
-        _needRender(boundFrustum: BoundFrustum, context: RenderContext3D): boolean;
-        /**
-         * @internal
-         */
-        _renderUpdate(context: IRenderContext3D): void;
         /**
          * @en Update the render state.
          * @param context The render context.
@@ -54220,10 +44507,6 @@ declare namespace Laya {
          * @zh 包围盒。只读，不允许修改其值。
          */
         get bounds(): Bounds;
-        /**
-         * @internal
-         */
-        _cloneTo(dest: ShurikenParticleRenderer): void;
         protected _onDestroy(): void;
         protected _statAdd(): void;
         protected _statRemove(): void;
@@ -54233,25 +44516,9 @@ declare namespace Laya {
      * @zh ShurikenParticleSystem 类用于创建3D粒子数据模板。
      */
     class ShurikenParticleSystem extends GeometryElement implements IClone {
-        /** @internal 0:Burst,1:预留,2:StartDelay,3:StartColor,4:StartSize,5:StartRotation,6:randomizeRotationDirection,7:StartLifetime,8:StartSpeed,9:VelocityOverLifetime,10:ColorOverLifetime,11:SizeOverLifetime,12:RotationOverLifetime,13-15:TextureSheetAnimation,16-17:Shape*/
-        static _RANDOMOFFSET: Uint32Array;
         protected static halfKSqrtOf2: number;
         protected static g: number;
-        /** @internal */
-        static _maxElapsedTime: number;
         protected static _type: number;
-        /** @internal */
-        _bounds: Bounds;
-        /**
-         * @internal
-         * @en Gravity effect offset, used to calculate the world bounding box
-         * @zh 重力影响偏移, 用于计算世界包围盒
-         */
-        _gravityOffset: Vector2;
-        /** @internal */
-        _customBounds: Bounds;
-        /** @internal */
-        _useCustomBounds: boolean;
         protected _owner: Sprite3D;
         protected _ownerRender: ShurikenParticleRenderer;
         protected _vertices: Float32Array;
@@ -54283,7 +44550,6 @@ declare namespace Laya {
         protected _emissionDistance: number;
         protected _emissionLastPosition: Vector3;
         protected _burstsIndex: number;
-        protected _velocityOverLifetime: VelocityOverLifetime;
         protected _colorOverLifetime: ColorOverLifetime;
         protected _sizeOverLifetime: SizeOverLifetime;
         protected _rotationOverLifetime: RotationOverLifetime;
@@ -54305,14 +44571,6 @@ declare namespace Laya {
         protected _updateMask: number;
         /** 多宏模式 */
         protected _mulDefMode: boolean;
-        /**@internal */
-        _currentTime: number;
-        /**@internal */
-        _startUpdateLoopCount: number;
-        /**@internal */
-        _rand: Rand;
-        /**@internal */
-        _randomSeeds: Uint32Array;
         /**
          * @en Total duration of particle system runtime, in seconds.
          * @zh 粒子运行的总时长，单位为秒。
@@ -54474,8 +44732,8 @@ declare namespace Laya {
          */
         randomizeRotationDirection: number;
         /**
-         * @en Start color mode. 0 for constant color, 2 for random between two constant colors. Two modes are missing.
-         * @zh 开始颜色模式。0为恒定颜色，2为两个恒定颜色的随机插值。缺少2种模式。
+         * @en Start color mode. 0 for constant color, 1 for Gradient, 2 for random between two constant colors, 3 for random between two Gradient colors.
+         * @zh 开始颜色模式。0为恒定颜色，1为Gradient，2为两个恒定颜色的随机插值，3为两个Gradient颜色的随机插值。
          */
         startColorType: number;
         /**
@@ -54493,6 +44751,9 @@ declare namespace Laya {
          * @zh 最大开始颜色，1模式。
          */
         startColorConstantMax: Vector4;
+        startColorGradient: Gradient;
+        startColorGradientMin: Gradient;
+        startColorGradientMax: Gradient;
         /**
          * @en Gravity modifier.
          * @zh 重力敏感度。
@@ -54533,6 +44794,13 @@ declare namespace Laya {
          * @zh 是否为性能模式。性能模式下会延迟粒子释放。
          */
         isPerformanceMode: boolean;
+        protected _gradientKeyCount8: boolean;
+        /**
+         * @en Whether to use 8-key gradient mode. When enabled, gradient curves (velocity/size/rotation/textureSheet over lifetime) support up to 8 key points instead of 4. This increases shader complexity but provides finer control over particle animations.
+         * @zh 是否使用8关键点渐变模式。开启后，生命周期曲线（速度/尺寸/旋转/纹理动画）支持最多8个关键点（默认4个）。会增加shader复杂度，但能提供更精细的粒子动画控制。
+         */
+        get gradientKeyCount8(): boolean;
+        set gradientKeyCount8(value: boolean);
         /**
          * @en Maximum number of particles
          * @zh 最大粒子数。
@@ -54665,27 +44933,11 @@ declare namespace Laya {
          */
         constructor(render: ShurikenParticleRenderer, meshTopology?: MeshTopology, drawType?: DrawType);
         /**
-         * @internal
-         */
-        _getVertexBuffer(index?: number): VertexBuffer3D;
-        /**
-         * @internal
-         */
-        _getIndexBuffer(): IndexBuffer3D;
-        /**
-         * @internal
-         */
-        _generateBounds(): void;
-        /**
          * @en Custom bounds
          * @zh 自定义 包围盒
          */
         get customBounds(): Bounds;
         set customBounds(value: Bounds);
-        /**
-         * @internal
-         */
-        _simulationSupported(): boolean;
         /**
          * 计算粒子更新时间
          */
@@ -54703,18 +44955,6 @@ declare namespace Laya {
          */
         protected _burst(fromTime: number, toTime: number): number;
         protected _advanceTime(elapsedTime: number, emitTime: number): void;
-        /**
-         * @internal
-         */
-        protected _advanceDistance(emitTime: number, elapsedTime: number): void;
-        /**
-         * @internal
-         */
-        _initBufferDatas(): void;
-        /**
-         * @internal
-         */
-        destroy(): void;
         /**
          * @en Emits a particle.
          * @zh 发射一个粒子。
@@ -54739,14 +44979,6 @@ declare namespace Laya {
          */
         addNewParticlesToVertexBuffer(): void;
         _getType(): number;
-        /**
-         * @internal
-         */
-        _prepareRender(state: RenderContext3D): boolean;
-        /**
-         * @internal
-         */
-        _updateRenderParams(state: RenderContext3D): void;
         /**
          * @en Start emitting particles
          * @zh 开始发射粒子。
@@ -54787,162 +45019,11 @@ declare namespace Laya {
         clone(): ShurikenParticleSystem;
     }
     /**
-     * @internal
-     */
-    class VertexShuriKenParticle {
-        static PARTICLE_DIRECTIONTIME: number;
-        static PARTICLE_POSITION0: number;
-        static PARTICLE_COLOR0: number;
-        static PARTICLE_TEXTURECOORDINATE0: number;
-        static PARTICLE_SHAPEPOSITIONSTARTLIFETIME: number;
-        static PARTICLE_CORNERTEXTURECOORDINATE0: number;
-        static PARTICLE_STARTCOLOR0: number;
-        static PARTICLE_ENDCOLOR0: number;
-        static PARTICLE_STARTSIZE: number;
-        static PARTICLE_STARTROTATION: number;
-        static PARTICLE_STARTSPEED: number;
-        static PARTICLE_RANDOM0: number;
-        static PARTICLE_RANDOM1: number;
-        static PARTICLE_SIMULATIONWORLDPOSTION: number;
-        static PARTICLE_SIMULATIONWORLDROTATION: number;
-        static PARTICLE_SIMULATIONUV: number;
-        constructor();
-    }
-    /**
-     * @internal
-     * <code>VertexShurikenParticle</code> 类用于创建粒子顶点结构。
-     */
-    class VertexShurikenParticleBillboard extends VertexShuriKenParticle {
-        /**@internal */
-        private static _vertexDeclaration;
-        static get vertexDeclaration(): VertexDeclaration;
-        private static _vertexInstanceMeshDeclaration;
-        static get vertexInstanceMeshDeclaration(): VertexDeclaration;
-        private static _vertexInstanceParticleDeclaration;
-        static get vertexInstanceParticleDeclaration(): VertexDeclaration;
-        private static _billboardVertexArray;
-        static get billboardVertexArray(): Float32Array;
-        private static _billboardIndexArray;
-        static get billboardIndexArray(): Uint16Array;
-        static set billboardIndexArray(value: Uint16Array);
-        /**
-          * @internal
-          */
-        static __init__(): void;
-        /**@internal */
-        private _cornerTextureCoordinate;
-        /**@internal */
-        private _positionStartLifeTime;
-        /**@internal */
-        private _velocity;
-        /**@internal */
-        private _startColor;
-        /**@internal */
-        private _startSize;
-        /**@internal */
-        private _startRotation0;
-        /**@internal */
-        private _startRotation1;
-        /**@internal */
-        private _startRotation2;
-        /**@internal */
-        private _startLifeTime;
-        /**@internal */
-        private _time;
-        /**@internal */
-        private _startSpeed;
-        /**@internal */
-        private _randoms0;
-        /**@internal */
-        private _randoms1;
-        /**@internal */
-        private _simulationWorldPostion;
-        get cornerTextureCoordinate(): Vector4;
-        get positionStartLifeTime(): Vector4;
-        get velocity(): Vector3;
-        get startColor(): Vector4;
-        get startSize(): Vector3;
-        get startRotation0(): Vector3;
-        get startRotation1(): Vector3;
-        get startRotation2(): Vector3;
-        get startLifeTime(): number;
-        get time(): number;
-        get startSpeed(): number;
-        get random0(): Vector4;
-        get random1(): Vector4;
-        get simulationWorldPostion(): Vector3;
-        constructor(cornerTextureCoordinate: Vector4, positionStartLifeTime: Vector4, velocity: Vector3, startColor: Vector4, startSize: Vector3, startRotation0: Vector3, startRotation1: Vector3, startRotation2: Vector3, ageAddScale: number, time: number, startSpeed: number, randoms0: Vector4, randoms1: Vector4, simulationWorldPostion: Vector3);
-    }
-    /**
-     * @internal
-     * <code>VertexShurikenParticle</code> 类用于创建粒子顶点结构。
-     */
-    class VertexShurikenParticleMesh extends VertexShuriKenParticle {
-        /**@internal */
-        private static _vertexDeclaration;
-        /**
-      * @internal
-      */
-        static __init__(): void;
-        static get vertexDeclaration(): VertexDeclaration;
-        private static _vertexInstanceMeshDeclaration;
-        static get vertexInstanceMeshDeclaration(): VertexDeclaration;
-        private static _vertexInstanceParticleDeclaration;
-        static get vertexInstanceParticleDeclaration(): VertexDeclaration;
-        /**@internal */
-        private _cornerTextureCoordinate;
-        /**@internal */
-        private _positionStartLifeTime;
-        /**@internal */
-        private _velocity;
-        /**@internal */
-        private _startColor;
-        /**@internal */
-        private _startSize;
-        /**@internal */
-        private _startRotation0;
-        /**@internal */
-        private _startRotation1;
-        /**@internal */
-        private _startRotation2;
-        /**@internal */
-        private _startLifeTime;
-        /**@internal */
-        private _time;
-        /**@internal */
-        private _startSpeed;
-        /**@internal */
-        private _randoms0;
-        /**@internal */
-        private _randoms1;
-        /**@internal */
-        private _simulationWorldPostion;
-        get cornerTextureCoordinate(): Vector4;
-        get position(): Vector4;
-        get velocity(): Vector3;
-        get startColor(): Vector4;
-        get startSize(): Vector3;
-        get startRotation0(): Vector3;
-        get startRotation1(): Vector3;
-        get startRotation2(): Vector3;
-        get startLifeTime(): number;
-        get time(): number;
-        get startSpeed(): number;
-        get random0(): Vector4;
-        get random1(): Vector4;
-        get simulationWorldPostion(): Vector3;
-        constructor(cornerTextureCoordinate: Vector4, positionStartLifeTime: Vector4, velocity: Vector3, startColor: Vector4, startSize: Vector3, startRotation0: Vector3, startRotation1: Vector3, startRotation2: Vector3, ageAddScale: number, time: number, startSpeed: number, randoms0: Vector4, randoms1: Vector4, simulationWorldPostion: Vector3);
-    }
-    /**
      * @deprecated
      * @en 2D rectangular collision body
      * @zh 2D矩形碰撞体
      */
     class BoxCollider extends StaticCollider {
-        /**@internal 矩形宽度*/
-        protected _width: number;
-        /**@internal 矩形高度*/
-        private _height;
         /**
          * @en Rectangle width of collision body
          * @zh 碰撞体矩形宽度
@@ -54960,12 +45041,6 @@ declare namespace Laya {
         * @zh 构造方法
         */
         constructor();
-        /**
-         * @internal
-         * @override
-         * @param shape
-         */
-        protected _setShapeData(shape: any): void;
     }
     /**
      * @deprecated
@@ -54973,16 +45048,6 @@ declare namespace Laya {
      * @zh 2D 链形碰撞体
      */
     class ChainCollider extends StaticCollider {
-        /**
-         * @internal
-         * @deprecated
-         * 用逗号隔开的点的集合，格式：x,y,x,y ...
-         */
-        private _points;
-        /**@internal 顶点数据*/
-        private _datas;
-        /**@internal 是否是闭环，注意不要有自相交的链接形状，它可能不能正常工作*/
-        private _loop;
         /**
         * @deprecated
         * @en A collection of points separated by commas, format: x, y, x, y, ...
@@ -55004,11 +45069,6 @@ declare namespace Laya {
         set loop(value: boolean);
         constructor();
         /**
-         * @internal
-         * @override
-         */
-        protected _setShapeData(shape: any): void;
-        /**
          * @en Called after being added to the node, different from Awake, onAdded will be called even if the node is not active.
          * @zh 被添加到节点后调用，和 Awake 不同的是即使节点未激活 onAdded 也会调用。
          */
@@ -55020,8 +45080,6 @@ declare namespace Laya {
      * @zh 2D圆形碰撞体
      */
     class CircleCollider extends StaticCollider {
-        /**@internal 圆形半径，必须为正数*/
-        private _radius;
         /**
          * @en Circular radius, must be a positive number
          * @zh 圆形半径，必须为正数
@@ -55029,27 +45087,12 @@ declare namespace Laya {
         get radius(): number;
         set radius(value: number);
         constructor();
-        /**
-         * @internal 设置碰撞体数据
-         * @param shape
-         */
-        protected _setShapeData(shape: any): void;
     }
     /**
      * @en 2DPhysics Collider base class
      * @zh 2D物理碰撞体基类
      */
     class ColliderBase extends Component {
-        /**
-         * @internal
-         * @zh 碰撞体根据自定义的质量、质心、惯性张量计算质量（只在未开启自动质量计算的时候才使用）
-         */
-        protected _massData: any;
-        /**
-         * @internal
-         * @zh 是否在激活状态
-         */
-        protected _isAwake: boolean;
         /**
          * @en The type of rigidbody, supports three types: dynamic and kinematic, default is dynamic.
          * dynamic: Dynamic type, affected by gravity.
@@ -55060,18 +45103,6 @@ declare namespace Laya {
          */
         protected _type: RigidBody2DType;
         /**
-         * @internal
-         * @en Is the rigid body mass calculated based on the collider
-         * @zh 是否根据碰撞体计算刚体质量
-         */
-        protected _useAutoMass: boolean;
-        /**
-         * @internal
-         * @en The rigid body mass. (Only valid when not using automatic mass calculation)
-         * @zh 刚体质量（只在未开启自动质量计算时才有效）
-         */
-        protected _mass: number;
-        /**
          * @en The rigid body inertia tensor. (Only valid when not using automatic mass calculation)
          * @zh 刚体惯性张量（只在未开启自动质量计算时才有效）
         */
@@ -55081,30 +45112,6 @@ declare namespace Laya {
          * @zh 刚体质心位置（只在未开启自动质量计算时才有效）
          */
         protected _centerOfMass: Vector2;
-        /**
-         * @internal
-         * @zh 当前碰撞体所属场景的2D物理管理器
-         */
-        protected _physics2DManager: Physics2DWorldManager;
-        /**
-         * @internal
-         * @zh 碰撞体的结构定义
-         */
-        protected _bodyDef: RigidBody2DInfo;
-        /**
-         * @internal
-         * @zh 碰撞体box2D的结构定义
-         */
-        private _box2DBodyDef;
-        /**
-         * @internal
-         * @zh 碰撞体box2D的对象
-         */
-        protected _box2DBody: any;
-        /**@internal 相对节点的x轴偏移*/
-        private _x;
-        /**@internal 相对节点的y轴偏移*/
-        private _y;
         /**
          * @en label
          * @zh 标签
@@ -55148,20 +45155,6 @@ declare namespace Laya {
         get isAwake(): boolean;
         set isAwake(value: boolean);
         /**
-         * @internal
-         * 获得节点的全局缩放X
-         */
-        protected get scaleX(): number;
-        /**
-         * @internal
-         * 获得节点的全局缩放Y
-         */
-        protected get scaleY(): number;
-        /**@internal 创建获得相对于描点x的偏移 */
-        protected get pivotoffx(): number;
-        /**@internal 创建获得相对于描点y的偏移 */
-        protected get pivotoffy(): number;
-        /**
          * @deprecated
          * @en The x-axis offset relative to the node.
          * @zh 相对于节点的 x 轴偏移。
@@ -55191,8 +45184,6 @@ declare namespace Laya {
          * @returns
          */
         getInertia(): number;
-        /**@internal*/
-        protected _onEnable(): void;
         protected _getPhysicsManager(): void;
         /**
          * @en Get the world coordinates relative to the body.
@@ -55203,10 +45194,6 @@ declare namespace Laya {
          * @param y 像素坐标的 y 值。
          */
         getWorldPoint(x: number, y: number): Readonly<Point>;
-        /**@internal 通知rigidBody 更新shape 属性值 */
-        protected _needupdataShapeAttribute(flag?: number): void;
-        /**@internal*/
-        protected _onDisable(): void;
         protected _onDestroy(): void;
         /**@deprecated 兼容参数  */
         protected _box2DFilter: any;
@@ -55216,18 +45203,8 @@ declare namespace Laya {
         protected _shapeDef: Box2DShapeDef;
         /**@deprecated 兼容参数 */
         protected _box2DShape: any;
-        /**@internal @deprecated shape类型标记*/
-        protected _shapeType: EPhysics2DShape;
         /**@deprecated 兼容参数 */
         protected _rigidbody: RigidBody;
-        /**@internal @deprecated 已废弃，是否是传感器，传感器能够触发碰撞事件，但不会产生碰撞反应*/
-        private _isSensor;
-        /**@internal @deprecated 已废弃，密度值，值可以为零或者是正数，建议使用相似的密度，这样做可以改善堆叠稳定性，默认值为10*/
-        private _density;
-        /**@internal @deprecated 已废弃，摩擦力，取值范围0-1，值越大，摩擦越大，默认值为0.2*/
-        private _friction;
-        /**@internal @deprecated 已废弃，弹性系数，取值范围0-1，值越大，弹性越大，默认值为0*/
-        private _restitution;
         /**
          * @deprecated This is only for compatibility. In subsequent versions, you can set whether the shape is a sensor.
          * @en Whether the object is a sensor. A sensor can trigger collision events but does not produce collision responses.
@@ -55261,11 +45238,6 @@ declare namespace Laya {
         get restitution(): number;
         set restitution(value: number);
         /**
-         * @internal
-         * @deprecated 兼容方法
-         */
-        createShape(collider: ColliderBase): void;
-        /**
          * @deprecated 兼容方法，根据刚体的数据设置def
          * @param collider
          */
@@ -55278,14 +45250,6 @@ declare namespace Laya {
      */
     class EdgeCollider extends StaticCollider {
         /**
-         * @internal
-         * @deprecated
-         * 用逗号隔开的点的集合，注意只有两个点，格式：x,y,x,y
-         */
-        private _points;
-        /**@internal 顶点数据*/
-        private _datas;
-        /**
          * @deprecated
          * 用逗号隔开的点的集合，注意只有两个点，格式：x,y,x,y*/
         get points(): string;
@@ -55297,11 +45261,6 @@ declare namespace Laya {
         get datas(): number[];
         set datas(value: number[]);
         constructor();
-        /**
-         * @internal
-         * @override
-         */
-        protected _setShapeData(shape: any): void;
     }
     /**
      * @deprecated
@@ -55311,14 +45270,6 @@ declare namespace Laya {
      * 节点个数最多是 `b2_maxPolygonVertices`，这数值默认是8，所以点的数量不建议超过8个，也不能小于3个。
      */
     class PolygonCollider extends StaticCollider {
-        /**
-         * @internal
-         * @deprecated
-         * 用逗号隔开的点的集合，格式：x,y,x,y ...
-         */
-        private _points;
-        /**@internal 顶点数据*/
-        private _datas;
         /**
         * @deprecated
         * 用逗号隔开的点的集合，格式：x,y,x,y ...
@@ -55461,6 +45412,44 @@ declare namespace Laya {
          */
         EdgeShape = 4
     }
+    /**
+     * @en Physics 2D contact object passed in collision event callbacks.
+     * @zh 碰撞事件回调中传入的 2D 物理接触对象。
+     */
+    interface IPhysics2DContact {
+        /**
+         * @en Get collision hit information including contact points, normal and separations.
+         * @zh 获取碰撞信息，包括接触点、法线和分离距离。
+         */
+        getHitInfo(): Physics2DContactHitResult;
+    }
+    /**
+     * @en Contact hit information returned by getHitInfo().
+     * @zh getHitInfo() 返回的碰撞接触信息。
+     */
+    class Physics2DContactHitResult {
+        /**
+         * @en The contact normal direction (unit vector, pointing from A to B).
+         * @zh 碰撞法线方向（单位向量，从碰撞体 A 指向碰撞体 B）。
+         */
+        normal: {
+            x: number;
+            y: number;
+        };
+        /**
+         * @en The contact points in pixel coordinates (max 2 points for Box2D).
+         * @zh 碰撞接触点数组，像素坐标（Box2D 最多 2 个接触点）。
+         */
+        points: {
+            x: number;
+            y: number;
+        }[];
+        /**
+         * @en The separation distances at each contact point (negative means overlap depth, in pixels).
+         * @zh 各接触点的分离距离（负值表示重叠深度，单位：像素）。
+         */
+        separations: number[];
+    }
     class Physics2DHitResult {
         /**
          * @zh 所属物理组件
@@ -55520,240 +45509,6 @@ declare namespace Laya {
          */
         mask: number;
     }
-    /**
-     * @internal
-     * @zh 形状定义
-     * @en Shape definition
-     */
-    class Box2DShapeDef {
-        /**
-         * @zh 密度
-         * @en Density
-         */
-        density: number;
-        /**
-         * @zh 摩擦力
-         * @en Friction
-         */
-        friction: number;
-        /**
-         * @zh 是否为传感器
-         * @en Whether it is a sensor
-         */
-        isSensor: boolean;
-        /**
-         * @zh 弹力
-         * @en Restitution
-         */
-        restitution: number;
-        /**
-         * @zh 恢复速度阈值（米/秒），高于此速度的碰撞将应用恢复即反弹
-         */
-        restitutionThreshold: number;
-        /**
-         * @zh 形状
-         * @en Shape
-         */
-        shapeType: EPhysics2DShape;
-        /**
-         * @zh 碰撞过滤数据
-         * @en Collision filtering data
-         */
-        filter: FilterData;
-    }
-    /**
-     * @internal
-     * @zh 刚体2D定义
-     * @en The information of the rigid body in 2D physics.
-     */
-    class RigidBody2DInfo {
-        /**
-         * @zh 位置
-         * @en Position
-         */
-        position: Vector2;
-        /**
-         * @zh 角度
-         * @en Angle
-         */
-        angle: number;
-        /**
-         * @zh 允许睡眠
-         * @en Whether to allow sleeping
-         */
-        allowSleep: boolean;
-        /**
-         * @zh 角速度阻尼
-         * @en Angular velocity damping
-         */
-        angularDamping: number;
-        /**
-         * @zh 角速度
-         * @en Angular velocity
-         */
-        angularVelocity: number;
-        /**
-         * @zh 是否bullet高速运动类型
-         * @en Whether it is a bullet high speed motion type
-         */
-        bullet: boolean;
-        /**
-         * @zh 是否固定旋转
-         * @en Whether to fix rotation
-         */
-        fixedRotation: boolean;
-        /**
-         * @zh 重力缩放
-         * @en Gravity scale
-         */
-        gravityScale: number;
-        /**
-         * @zh 线性阻尼
-         * @en Linear damping
-         */
-        linearDamping: number;
-        /**
-         * @zh 线性速度
-         * @en Linear velocity
-         */
-        linearVelocity: Vector2;
-        type: string;
-        /**
-         * @deprecated 碰撞分组，作为兼容使用
-         */
-        group: number;
-    }
-    /**
-     * @internal
-     * @zh 2D物理joint定义
-     * @en 2D physics joint definition
-     */
-    class physics2D_BaseJointDef {
-        /**
-         * @zh 刚体A
-         * @en Body A
-         */
-        bodyA: any;
-        /**
-         * @zh 刚体B
-         * @en Body B
-         */
-        bodyB: any;
-        /**
-         * @zh 刚体之间是否可以互相碰撞
-         */
-        collideConnected: boolean;
-    }
-    /**
-     * @internal
-     * @zh Box2D 距离关节定义结构
-     * @en Box2D distance Joint def Struct
-     */
-    class physics2D_DistancJointDef extends physics2D_BaseJointDef {
-        localAnchorA: Vector2;
-        localAnchorB: Vector2;
-        frequency: number;
-        dampingRatio: number;
-        length: number;
-        maxLength: number;
-        minLength: number;
-        isLocalAnchor: boolean;
-    }
-    /**
-     * @internal
-     */
-    class physics2D_GearJointDef extends physics2D_BaseJointDef {
-        joint1: any;
-        joint2: any;
-        ratio: number;
-    }
-    /**
-     * @internal
-     */
-    class physics2D_MotorJointDef extends physics2D_BaseJointDef {
-        linearOffset: Vector2;
-        angularOffset: number;
-        maxForce: number;
-        maxTorque: number;
-        correctionFactor: number;
-    }
-    /**
-     * @internal
-     */
-    class physics2D_MouseJointJointDef extends physics2D_BaseJointDef {
-        maxForce: number;
-        frequency: number;
-        dampingRatio: number;
-        target: Vector2;
-    }
-    /**
-     * @internal
-     */
-    class physics2D_PrismaticJointDef extends physics2D_BaseJointDef {
-        anchor: Vector2;
-        axis: Vector2;
-        enableMotor: boolean;
-        motorSpeed: number;
-        maxMotorForce: number;
-        enableLimit: boolean;
-        lowerTranslation: number;
-        upperTranslation: number;
-    }
-    /**
-     * @internal
-     */
-    class physics2D_PulleyJointDef extends physics2D_BaseJointDef {
-        groundAnchorA: Vector2;
-        groundAnchorB: Vector2;
-        localAnchorA: Vector2;
-        localAnchorB: Vector2;
-        ratio: number;
-    }
-    /**
-     * @internal
-     */
-    class physics2D_RevoluteJointDef extends physics2D_BaseJointDef {
-        anchor: Vector2;
-        enableMotor: boolean;
-        motorSpeed: number;
-        maxMotorTorque: number;
-        enableLimit: boolean;
-        lowerAngle: number;
-        upperAngle: number;
-    }
-    /**
-     * @internal
-     */
-    class physics2D_WeldJointDef extends physics2D_BaseJointDef {
-        anchor: Vector2;
-        frequency: number;
-        dampingRatio: number;
-    }
-    /**
-     * @internal
-     */
-    class physics2D_WheelJointDef extends physics2D_BaseJointDef {
-        anchor: Vector2;
-        axis: Vector2;
-        enableMotor: boolean;
-        motorSpeed: number;
-        maxMotorTorque: number;
-        enableLimit: boolean;
-        lowerTranslation: number;
-        upperTranslation: number;
-        frequency: number;
-        dampingRatio: number;
-    }
-    /**
-     * @internal
-     */
-    class box2DWorldDef {
-        gravity: Vector2;
-        pixelRatio: number;
-        subStep: number;
-        velocityIterations: number;
-        positionIterations: number;
-    }
     enum Ebox2DType {
         b2Color = 0,
         b2Vec2 = 1,
@@ -55780,6 +45535,24 @@ declare namespace Laya {
         warpPoint(ins: any, type: Ebox2DType): any;
         getContactShapeA(contact: any): any;
         getContactShapeB(contact: any): any;
+        /**
+         * @en Get the world manifold of a contact, including contact points, normal and separations.
+         * @zh 获取碰撞的世界流形信息，包括接触点、法线和分离距离。
+         * @param contact The b2Contact object.
+         * @param result Output object to store the result.
+         * @returns The number of contact points.
+         */
+        getContactWorldManifold(contact: any, result: {
+            normal: {
+                x: number;
+                y: number;
+            };
+            points: {
+                x: number;
+                y: number;
+            }[];
+            separations: number[];
+        }): number;
         createContactListener(): any;
         createJSQueryCallback(): any;
         createJSRayCastCallback(): any;
@@ -55798,25 +45571,7 @@ declare namespace Laya {
         shiftOrigin(world: any, newOrigin: Vector2): void;
         appendFlags(jsDraw: any, flags: number): void;
         clearFlags(jsDraw: any, flags: number): void;
-        /**
-         * @internal
-         * 初始化系统
-         */
-        initialize(): Promise<void>;
-        /**
-         * @internal
-         * 更新物理
-         */
-        update(delta: number): void;
         createJointDef(world: any, type: EPhysics2DJoint, def: physics2D_BaseJointDef): any;
-        /**
-         * @internal
-         */
-        createJoint(world: any, type: EPhysics2DJoint, def: any): any;
-        /**
-         * @internal
-         */
-        removeJoint(world: any, joint: any): void;
         /**
          * 当前约束的反作用力(也就是为了维持约束对刚体施加的力)
          * @param joint
@@ -55829,140 +45584,12 @@ declare namespace Laya {
         get_joint_reactionTorque(joint: any): number;
         isValidJoint(joint: any): boolean;
         setJoint_userData(joint: any, data: any): void;
-        /**
-         * @internal
-         */
-        getJoint_userData(joint: any): any;
-        /**
-         * @internal
-         */
-        getJoint_userData_destroy(joint: any): boolean;
-        /**
-         * @internal
-         */
-        set_Joint_EnableMotor(joint: any, enableMotor: boolean): void;
-        /**
-         * @internal
-         */
-        set_Joint_SetMotorSpeed(joint: any, motorSpeed: number): void;
-        /**
-         * @internal
-         */
-        set_Joint_SetMaxMotorTorque(joint: any, maxTorque: number): void;
-        /**
-         * @internal
-         */
-        set_Joint_EnableLimit(joint: any, enableLimit: boolean): void;
-        /**
-         * @internal
-         */
-        set_Joint_SetLimits(joint: any, lowerAngle: number, upperAngle: number): void;
-        /**
-         * @internal
-         */
-        set_Joint_frequencyAndDampingRatio(joint: any, frequency: number, dampingRatio: number, isdamping: boolean): void;
-        /**
-         * @internal
-         */
-        set_DistanceJoint_length(joint: any, length: number): void;
         get_DistanceJoint_length(joint: any): number;
-        /**
-         * @internal
-         */
-        set_DistanceJoint_MaxLength(joint: any, length: number): void;
-        /**
-         * @internal
-         */
-        set_DistanceJoint_MinLength(joint: any, length: number): void;
-        /**
-         * @internal
-         */
-        set_DistanceJointStiffnessDamping(joint: any, steffness: number, damping: number): void;
-        /**
-         * @internal
-         */
-        set_GearJoint_SetRatio(joint: any, radio: number): void;
-        /**
-         * @internal
-         */
-        set_MouseJoint_target(joint: any, x: number, y: number): void;
-        /**
-         * @internal
-         */
-        set_MouseJoint_frequencyAndDampingRatio(joint: any, frequency: number, dampingRatio: number): void;
-        /**
-         * @internal
-         */
-        set_MotorJoint_linearOffset(joint: any, x: number, y: number): void;
-        /**
-         * @internal
-         */
-        set_MotorJoint_SetAngularOffset(joint: any, angular: number): void;
-        /**
-         * @internal
-         */
-        set_MotorJoint_SetMaxForce(joint: any, maxForce: number): void;
-        /**
-         * @internal
-         */
-        set_MotorJoint_SetMaxTorque(joint: any, maxTorque: number): void;
-        /**
-         * @internal
-         */
-        set_MotorJoint_SetCorrectionFactor(joint: any, correctionFactor: number): void;
-        /**
-         * @internal
-         */
-        set_collider_SetAsBox(shape: any, x: number, y: number, pos: IV2, scaleX: number, scaleY: number): any;
-        /**
-         * @internal
-         */
-        set_ChainShape_data(shape: any, x: number, y: number, arr: number[], loop: boolean, scaleX: number, scaleY: number): any;
-        /**
-         * @internal
-         */
-        set_CircleShape_radius(shape: any, radius: number, scale: number): void;
-        /**
-         * @internal
-         */
-        set_CircleShape_pos(shape: any, x: number, y: number, scaleX: number, scaleY: number): void;
-        /**
-         * @internal
-         */
-        set_EdgeShape_data(shape: any, x: number, y: number, arr: number[], scaleX: number, scaleY: number): any;
-        /**
-         * @internal
-         */
-        set_PolygonShape_data(shape: any, x: number, y: number, arr: number[], scaleX: number, scaleY: number): any;
         createShapeDef(world: any, shapeDef: Box2DShapeDef, filter: any): any;
         getShapeByDef(shapeDef: any, shapeType: EPhysics2DShape): any;
         createFilter(): any;
         createShape(world: any, body: any, shapeType: EPhysics2DShape, shapdeDef: any): any;
         destroyShape(world: any, body: any, shape: any): void;
-        /**
-         * @internal
-         */
-        set_shapeDef_GroupIndex(def: any, groupIndex: number): void;
-        /**
-         * @internal
-         */
-        set_shapeDef_CategoryBits(def: any, categoryBits: number): void;
-        /**
-         * @internal
-         */
-        set_shapeDef_maskBits(def: any, maskbits: number): void;
-        /**
-        * @internal
-        */
-        resetShapeData(shape: any, shapeDef: any): void;
-        /**
-         * @internal
-         */
-        set_shape_collider(shape: any, instance: any): void;
-        /**
-         * @internal
-         */
-        get_shape_body(shape: any): any;
         set_shape_isSensor(shape: any, sensor: boolean): void;
         get_shape_isSensor(shape: any): boolean;
         getShape(shape: any, type: EPhysics2DShape): any;
@@ -55977,159 +45604,23 @@ declare namespace Laya {
         set_shape_restitutionThreshold(shape: any, restitutionThreshold: number): void;
         get_shape_AABB(shape: any): any;
         createMassData(): any;
-        /**
-         * @internal
-         */
-        createBody(world: any, def: any): any;
-        /**
-         * @internal
-         */
-        removeBody(world: any, body: any): void;
         get_rigidBody_isEnable(body: any): boolean;
         get_rigidBody_fixedRotation(body: any): boolean;
         get_rigidBody_next(body: any): any;
         set_rigidBody_userData(body: any, data: any): void;
         get_rigidBody_userData(body: any): any;
-        /**
-         * @internal
-         */
-        rigidBody_DestroyShape(body: any, shape: any): any;
-        /**
-         * @internal
-         */
-        createBodyDef(world: any, rigidbodyDef: RigidBody2DInfo): any;
-        /**
-         * @internal
-         */
-        get_RigidBody_Position(body: any, v2: Vector2): void;
-        /**
-         * @internal
-         */
-        get_RigidBody_Angle(body: any): number;
-        /**
-         * @internal
-         */
-        set_RigibBody_Enable(body: any, enable: boolean): void;
-        /**
-         * @internal
-         */
-        set_RigibBody_Transform(body: any, x: number, y: number, angle: number): void;
         get_RigibBody_Transform(body: any): any;
-        /**
-         * @internal
-         */
-        get_rigidBody_WorldPoint(body: any, x: number, y: number): IV2;
         get_rigidBody_WorldVector(body: any, value: Vector2): Vector2;
-        /**
-         * @internal
-         */
-        get_rigidBody_LocalPoint(body: any, x: number, y: number): IV2;
         get_rigidBody_LocalVector(body: any, value: Vector2): Vector2;
-        /**
-         * @internal
-         */
-        rigidBody_applyForce(body: any, force: IV2, position: IV2): void;
-        /**
-         * @internal
-         */
-        rigidBody_applyForceToCenter(body: any, force: IV2): void;
-        /**
-         * @internal
-         */
-        rigidbody_ApplyLinearImpulse(body: any, impulse: IV2, position: IV2): void;
         rigidbody_ApplyAngularImpulse(body: any, impulse: number): void;
-        /**
-         * @internal
-         */
-        rigidbody_ApplyLinearImpulseToCenter(body: any, impulse: IV2): void;
-        /**
-         * @internal
-         */
-        rigidbody_applyTorque(body: any, torque: number): void;
-        /**
-         * @internal
-         */
-        set_rigidBody_Awake(body: any, awake: boolean): void;
-        /**
-         * @internal
-         */
-        get_rigidBody_Mass(body: any): number;
-        /**
-         * @internal
-         */
-        set_rigidBody_Mass(body: any, massValue: number, centerOfMass: IV2, inertia: number, massData: any): void;
-        /**
-         * @internal
-         */
-        get_rigidBody_Center(body: any): IV2;
-        /**
-         * @internal
-         */
-        get_rigidBody_Inertia(body: any): number;
-        /**
-         * @internal
-         */
-        get_rigidBody_IsAwake(body: any): boolean;
-        /**
-         * @internal
-         */
-        get_rigidBody_WorldCenter(body: any): IV2;
-        /**
-         * @internal
-         */
-        set_rigidBody_type(body: any, value: string): void;
         get_rigidBody_type(body: any): string;
-        /**
-         * @internal
-         */
-        set_rigidBody_gravityScale(body: any, value: number): void;
         get_rigidBody_gravityScale(body: any): number;
-        /**
-         * @internal
-         */
-        set_rigidBody_allowRotation(body: any, value: boolean): void;
-        /**
-         * @internal
-         */
-        set_rigidBody_allowSleep(body: any, value: boolean): void;
         get_rigidBody_allowSleep(body: any): boolean;
-        /**
-         * @internal
-         */
-        set_rigidBody_angularDamping(body: any, value: number): void;
         get_rigidBody_angularDamping(body: any): number;
-        /**
-         * @internal
-         */
-        get_rigidBody_angularVelocity(body: any): number;
-        /**
-         * @internal
-         */
-        set_rigidBody_angularVelocity(body: any, value: number): void;
-        /**
-         * @internal
-         */
-        set_rigidBody_linearDamping(body: any, value: number): void;
         get_rigidBody_linearDamping(body: any): number;
-        /**
-         * @internal
-         */
-        get_rigidBody_linearVelocity(body: any): IV2;
-        /**
-         * @internal
-         */
-        set_rigidBody_linearVelocity(body: any, value: IV2): void;
         get_rigidBody_linearVelocityFromWorldPoint(body: any, worldPoint: Vector2): Vector2;
         get_rigidBody_linearVelocityFromLocalPoint(body: any, localPoint: Vector2): Vector2;
-        /**
-         * @internal
-         */
-        set_rigidBody_bullet(body: any, value: boolean): void;
         get_rigidBody_bullet(body: any): boolean;
-        /**
-        * @internal
-        */
-        retSet_rigidBody_MassData(body: any): void;
     }
     /**
      * @en Implements Box2D c++ version 2.4.1
@@ -56140,14 +45631,8 @@ declare namespace Laya {
         worldCount: number;
         private _tempVe21;
         private _tempVe22;
-        /**@internal box2D Engine */
-        _box2d: any;
-        /**
-         * @internal
-         * @en The box2d engine instance.
-         * @zh box2d引擎实例。
-         */
-        get box2d(): any;
+        private _tempReadColor;
+        private _tempReadTransform;
         /**
          * @en Create a Vec2 object in the physical system.
          * @param x The x-coordinate (unit: meters).
@@ -56723,124 +46208,25 @@ declare namespace Laya {
         get_rigidBody_linearVelocityFromWorldPoint(body: any, worldPoint: Vector2): Vector2;
         get_rigidBody_linearVelocityFromLocalPoint(body: any, localPoint: Vector2): Vector2;
         get_rigidBody_bullet(body: any): boolean;
-        /**
-         * @internal
-         * @en Get the body type based on the string representation.
-         * @param type The string representation of the body type.
-         * @returns The body type.
-         * @zh 根据字符串表示获取刚体类型。
-         * @param type 刚体类型字符串。
-         * @returns 刚体类型。
-         */
-        getbodyType(type: string): any;
         setDestructionListener(world: any, destroyFun: Function): void;
         setContactListener(world: any, listener: Function): void;
         warpPoint(ins: any, type: Ebox2DType): any;
         getContactShapeA(contact: any): any;
         getContactShapeB(contact: any): any;
+        getContactWorldManifold(contact: any, result: {
+            normal: {
+                x: number;
+                y: number;
+            };
+            points: {
+                x: number;
+                y: number;
+            }[];
+            separations: number[];
+        }): number;
         createContactListener(): any;
         createJSQueryCallback(): any;
         createJSRayCastCallback(): any;
-        /**
-         * @internal
-         * @en Destruction listener.
-         * @zh 销毁监听器。
-         */
-        getDestructionListener(): any;
-        /**
-         * @internal
-         * @en Cast an object to a specific class.
-         * @param pointer The pointer.
-         * @param cls The class.
-         * @returns The casted object.
-         * @zh 将对象转换为特定类。
-         * @param pointer 指针。
-         * @param cls 类。
-         * @returns 转换后的对象。
-         */
-        castObject(pointer: any, cls: any): any;
-        /**
-         * @internal
-         * @en Create a wrapped pointer from points.
-         * @param points The points.
-         * @returns The wrapped pointer.
-         * @zh 从点创建包装的指针。
-         * @param points 点。
-         * @returns 包装的指针。
-         */
-        createWrapPointer(world: any, points: number[]): any;
-        /**
-         * @internal
-         * @en Create a Vec2 pointer from points.
-         * @param points The points.
-         * @param x The x-coordinate.
-         * @param y The y-coordinate.
-         * @param scaleX The horizontal scale.
-         * @param scaleY The vertical scale.
-         * @returns The Vec2 pointer.
-         * @zh 从点创建 Vec2 指针。
-         * @param points 点。
-         * @param x x坐标。
-         * @param y y坐标。
-         * @param scaleX 水平缩放。
-         * @param scaleY 垂直缩放。
-         * @returns Vec2 指针。
-         */
-        createVec2Pointer(world: any, points: number[], x: number, y: number, scaleX: number, scaleY: number): any;
-        /**
-         * @internal
-         * @en Calculate linear stiffness.
-         * @param def The definition.
-         * @param frequencyHertz The frequency in Hertz.
-         * @param dampingRatio The damping ratio.
-         * @param bodyA The first body.
-         * @param bodyB The second body.
-         * @zh 计算线性刚度。
-         * @param def 定义。
-         * @param frequencyHertz 频率（赫兹）。
-         * @param dampingRatio 阻尼比。
-         * @param bodyA 第一个刚体。
-         * @param bodyB 第二个刚体。
-         */
-        b2LinearStiffness(def: any, frequencyHertz: number, dampingRatio: number, bodyA: any, bodyB: any): void;
-        /**
-         * @internal
-         * @en Utility to compute rotational stiffness values frequency and damping ratio.
-         * @param def The definition.
-         * @param frequencyHertz The frequency in Hertz.
-         * @param dampingRatio The damping ratio.
-         * @param bodyA The first body.
-         * @param bodyB The second body.
-         * @zh 用于计算旋转刚度值频率和阻尼比的实用程序。
-         * @param def 定义。
-         * @param frequencyHertz 频率（赫兹）。
-         * @param dampingRatio 阻尼比。
-         * @param bodyA 第一个刚体。
-         * @param bodyB 第二个刚体。
-         */
-        b2AngularStiffness(def: any, frequencyHertz: number, dampingRatio: number, bodyA: any, bodyB: any): void;
-        /**
-         * @internal
-         * @en Get the length between two vectors.
-         * @param p1 The first vector.
-         * @param p2 The second vector.
-         * @returns The length between the two vectors.
-         * @zh 获取两个向量之间的长度。
-         * @param p1 第一个向量。
-         * @param p2 第二个向量。
-         * @returns 两个向量之间的长度。
-         */
-        getVec2Length(p1: any, p2: any): number;
-        /**
-         * @internal
-         * @en Check if the data is null.
-         * @param data The data to check.
-         * @returns True if the data is null, false otherwise.
-         * @zh 检查数据是否为空。
-         * @param data 要检查的数据。
-         * @returns 数据是否为空，如果为空则返回 true，否则返回 false。
-         */
-        isNullData(data: any): any;
         /**
          * @en Destroy the data.
          * @param data The data to destroy.
@@ -56848,36 +46234,12 @@ declare namespace Laya {
          * @param data 要销毁的数据。
          */
         destroyData(data: any): void;
-        /**
-         * @internal
-         * @en Get the fixture shape based on the physics shape.
-         * @param shape The shape.
-         * @param physicShape The physics shape.
-         * @returns The fixture shape.
-         * @zh 根据物理形状获取夹具形状。
-         * @param shape 形状。
-         * @param physicShape 物理形状。
-         * @returns 夹具形状。
-         */
-        get_fixtureshape(shape: any, physicShape: EPhysics2DShape): any;
     }
     /**
      * @en Distance Joint: A joint that maintains a fixed distance between two points on two bodies.
      * @zh 距离关节描述了两个刚体锚点之间的距离，并且最终会保持着这个约束的距离。
      */
     class DistanceJoint extends JointBase {
-        /**@internal */
-        private static _temp;
-        /**@internal 约束的目标静止长度*/
-        private _length;
-        /**@internal 约束的最小长度，-1表示使用默认值*/
-        private _maxLength;
-        /**@internal 约束的最大长度，-1表示使用默认值*/
-        private _minLength;
-        /**@internal 弹簧系统的震动频率，可以视为弹簧的弹性系数，通常频率应该小于时间步长频率的一半*/
-        private _frequency;
-        /**@internal 刚体在回归到节点过程中受到的阻尼比，建议取值0~1*/
-        private _dampingRatio;
         /**
          * @en The joint's own rigid body, effective only on the first setting.
          * @zh [首次设置有效]关节的自身刚体。
@@ -56939,13 +46301,6 @@ declare namespace Laya {
          */
         get jointLength(): number;
         /**
-         * @internal
-         * @override
-         */
-        protected _createJoint(): void;
-        /**@internal */
-        _refeahJoint(): void;
-        /**
          * @en Called when the object is being destroyed. This method removes event listeners to prevent memory leaks.
          * @zh 在对象被销毁时调用。此方法移除事件监听器以防止内存泄漏。
          */
@@ -56956,10 +46311,6 @@ declare namespace Laya {
      * @zh 齿轮关节：用来模拟两个齿轮间的约束关系，齿轮旋转时，产生的动量有两种输出方式，一种是齿轮本身的角速度，另一种是齿轮表面的线速度
      */
     class GearJoint extends JointBase {
-        /**@internal */
-        private static _temp;
-        /**@internal 两个齿轮角速度比例，默认1*/
-        private _ratio;
         private _joint1;
         private _joint2;
         /**
@@ -56985,21 +46336,12 @@ declare namespace Laya {
          */
         get ratio(): number;
         set ratio(value: number);
-        /**
-         * @internal
-         * @override
-         */
-        protected _createJoint(): void;
     }
     /**
      * @en Joint base class
      * @zh 关节基类
      */
     class JointBase extends Component {
-        /**@internal 原生关节对象*/
-        protected _joint: any;
-        /**@internal */
-        protected _factory: IPhysics2DFactory;
         readonly owner: Sprite;
         protected _physics2DManager: Physics2DWorldManager;
         protected _box2DJointDef: any;
@@ -57012,35 +46354,13 @@ declare namespace Laya {
         getJointRecationForce(): Vector2;
         getJointRecationTorque(): number;
         isValid(): boolean;
-        /**@internal */
-        protected getBodyAnchor(body: ColliderBase, anchorx: number, anchory: number): Point;
         protected _onAdded(): void;
-        /**@internal */
-        protected _onEnable(): void;
-        /**@internal */
-        protected _onAwake(): void;
-        /**@internal */
-        protected _createJoint(): void;
-        /**@internal */
-        protected _onDisable(): void;
     }
     /**
      * @en Motor Joint: Allows specifying the relative position and angle between two rigid bodies, and then attempts to achieve these targets by applying forces and torques, striving to maintain this configuration.
      * @zh 马达关节：允许指定两个刚体间的相对位置和角度，然后尝试通过施加力和扭矩来达到这些目标，并会尽力维持这样的配置。
      */
     class MotorJoint extends JointBase {
-        /**@internal */
-        private static _temp;
-        /**@internal 基于otherBody坐标位置的偏移量，也是selfBody的目标位置*/
-        private _linearOffset;
-        /**@internal 基于otherBody的角度偏移量，也是selfBody的目标角度*/
-        private _angularOffset;
-        /**@internal 当selfBody偏离目标位置时，为使其恢复到目标位置，马达关节所施加的最大作用力*/
-        private _maxForce;
-        /**@internal 当selfBody角度与目标角度不同时，为使其达到目标角度，马达关节施加的最大扭力*/
-        private _maxTorque;
-        /**@internal selfBody向目标位置移动时的缓动因子，取值0~1，值越大速度越快*/
-        private _correctionFactor;
         /**
          * @en The self body of the joint, effective only on the first setting.
          * @zh [首次设置有效]关节的自身刚体。
@@ -57086,22 +46406,12 @@ declare namespace Laya {
          */
         get correctionFactor(): number;
         set correctionFactor(value: number);
-        /**@internal */
-        protected _createJoint(): void;
     }
     /**
      * @en Mouse joint: A physics constraint used to simulate the user dragging an object with the mouse. It typically allows a rigid body to follow the mouse cursor's movement while also being influenced by other physics effects such as collisions and gravity.
      * @zh 鼠标关节:一种用来模拟用户用鼠标拖拽物体的物理约束。它通常会使得一个刚体可以跟随鼠标移动，但同时也能受到其他物理效果如碰撞、重力等的影响。
      */
     class MouseJoint extends JointBase {
-        /**@internal */
-        private static _temp;
-        /**@internal 鼠标关节在拖曳刚体bodyB时施加的最大作用力*/
-        private _maxForce;
-        /**@internal 弹簧系统的震动频率，可以视为弹簧的弹性系数，通常频率应该小于时间步长频率的一半*/
-        private _frequency;
-        /**@internal 刚体在回归到节点过程中受到的阻尼比，建议取值0~1*/
-        private _dampingRatio;
         /**
          * @en The self rigid body of a joint, effective only on the first setting.
          * @zh [首次设置有效]关节的自身刚体。
@@ -57130,45 +46440,12 @@ declare namespace Laya {
          */
         get damping(): number;
         set damping(value: number);
-        /**@internal */
-        protected _onEnable(): void;
-        /**@internal */
-        protected _createJoint(): void;
-        /**@internal */
-        private _onMouseDown;
-        /**@internal */
-        private _onStageMouseUp;
-        /**@internal */
-        private _onMouseMove;
-        /**@internal */
-        protected _onDisable(): void;
     }
     /**
      * @en Translation joint: A movement joint allows two objects to move relative to each other along a specified axis, but it prevents relative rotation
      * @zh 平移关节：移动关节允许两个物体沿指定轴相对移动，它会阻止相对旋转
      */
     class PrismaticJoint extends JointBase {
-        /**@internal */
-        private static _temp;
-        /**@internal 是否开启马达，开启马达可使目标刚体运动*/
-        private _enableMotor;
-        /**@internal 启用马达后，在axis坐标轴上移动可以达到的最大速度*/
-        private _motorSpeed;
-        /**@internal 启用马达后，可以施加的最大作用力*/
-        private _maxMotorForce;
-        /**@internal 是否对刚体的移动范围加以约束*/
-        private _enableLimit;
-        /**@internal 启用约束后，刚体移动范围的下限，是距离anchor的偏移量*/
-        private _lowerTranslation;
-        /**@internal 启用约束后，刚体移动范围的上限，是距离anchor的偏移量*/
-        private _upperTranslation;
-        /**
-        * @internal
-        * @deprecated
-        * @en A vector describing the axis of motion. For example, [1, 0] represents movement along the positive X-axis to the right. This setting is effective only on the first assignment.
-        * @zh [首次设置有效]一个向量值，描述运动方向，比如1,0是沿X轴向右
-        */
-        _axis: any[];
         /**
          * @en The rigid body to which the joint is attached. This setting is effective only on the first assignment.
          * @zh [首次设置有效]关节的自身刚体。
@@ -57237,16 +46514,12 @@ declare namespace Laya {
          */
         get axis(): any;
         set axis(value: any);
-        /**@internal */
-        protected _createJoint(): void;
     }
     /**
      * @en PulleyJoint class, which connects two bodies to the ground and to each other, when one body rises, the other descends, simulating the behavior of a pulley system.
      * @zh 滑轮关节：它将两个物体接地(ground)并彼此连接，当一个物体上升，另一个物体就会下降
      */
     class PulleyJoint extends JointBase {
-        /**@internal */
-        private static _temp;
         /**
          * @en The rigid body that is attached to the joint. This setting is effective only on the first assignment.
          * @zh [首次设置有效]与关节相连的自身刚体。
@@ -57287,28 +46560,12 @@ declare namespace Laya {
          * @zh [首次设置有效]两个连接的刚体是否可以相互碰撞，默认为 false。
          */
         collideConnected: boolean;
-        /**@internal */
-        protected _createJoint(): void;
     }
     /**
      * @en Rotating joint forces two objects to share an anchor point, and the two objects rotate relative to each other
      * @zh 旋转关节强制两个物体共享一个锚点，两个物体相对旋转
      */
     class RevoluteJoint extends JointBase {
-        /**@internal */
-        private static _temp;
-        /**@internal 是否开启马达，开启马达可使目标刚体运动*/
-        private _enableMotor;
-        /**@internal 启用马达后，可以达到的最大旋转速度*/
-        private _motorSpeed;
-        /**@internal 启用马达后，可以施加的最大扭距，如果最大扭矩太小，会导致不旋转*/
-        private _maxMotorTorque;
-        /**@internal 是否对刚体的旋转范围加以约束*/
-        private _enableLimit;
-        /**@internal 启用约束后，刚体旋转范围的下限角度*/
-        private _lowerAngle;
-        /**@internal 启用约束后，刚体旋转范围的上限角度*/
-        private _upperAngle;
         /**
          * @en The rigid body that is locally attached to the joint. This setting is effective only on the first assignment.
          * @zh [首次设置有效]与关节直接相连的自身刚体。
@@ -57365,20 +46622,12 @@ declare namespace Laya {
          */
         get upperAngle(): number;
         set upperAngle(value: number);
-        /** @internal */
-        protected _createJoint(): void;
     }
     /**
      * @en WeldJoint class, used to constrain two bodies together so they cannot move relative to each other. The relative position and angle between the two bodies are fixed, making them appear as a single rigid body.
      * @zh 焊接关节：焊接关节的用途是使两个物体不能相对运动，受到关节的限制，两个刚体的相对位置和角度都保持不变，看上去像一个整体
      */
     class WeldJoint extends JointBase {
-        /**@internal */
-        private static _temp;
-        /**@internal 弹簧系统的震动频率，可以视为弹簧的弹性系数，通常频率应该小于时间步长频率的一半*/
-        private _frequency;
-        /**@internal 刚体在回归到节点过程中受到的阻尼比，建议取值0~1*/
-        private _dampingRatio;
         /**
          * @en The rigid body that is locally attached to the joint. This setting is effective only on the first assignment.
          * @zh [首次设置有效]与关节直接相连的自身刚体。
@@ -57411,32 +46660,12 @@ declare namespace Laya {
          */
         get damping(): number;
         set damping(value: number);
-        /**@internal */
-        protected _createJoint(): void;
     }
     /**
      * @en WheelJoint: Allows an object to rotate around a fixed axis relative to another object, while also providing spring-like resistance along the axis for bouncing back.
      * @zh 轮子关节：允许一个物体在另一个物体上以固定的轴向转动，同时还能沿着轴向弹簧回弹。
      */
     class WheelJoint extends JointBase {
-        /**@internal */
-        private static _temp;
-        /**@internal 弹簧系统的震动频率，可以视为弹簧的弹性系数，通常频率应该小于时间步长频率的一半*/
-        private _frequency;
-        /**@internal 刚体在回归到节点过程中受到的阻尼比，建议取值0~1*/
-        private _dampingRatio;
-        /**@internal 是否开启马达，开启马达可使目标刚体运动*/
-        private _enableMotor;
-        /**@internal 启用马达后，可以达到的最大旋转速度*/
-        private _motorSpeed;
-        /**@internal 启用马达后，可以施加的最大扭距，如果最大扭矩太小，会导致不旋转*/
-        private _maxMotorTorque;
-        /**@internal 是否对刚体的移动范围加以约束*/
-        private _enableLimit;
-        /**@internal 启用约束后，刚体移动范围的下限，是距离anchor的偏移量*/
-        private _lowerTranslation;
-        /**@internal 启用约束后，刚体移动范围的上限，是距离anchor的偏移量*/
-        private _upperTranslation;
         /**
          * @en The rigid body that is locally attached to the joint. This setting is effective only on the first assignment.
          * @zh [首次设置有效]与关节直接相连的自身刚体。
@@ -57519,8 +46748,6 @@ declare namespace Laya {
          * 启用约束后，刚体移动范围的上限，是距离anchor的偏移量*/
         get axis(): any;
         set axis(value: any);
-        /**@internal */
-        protected _createJoint(): void;
     }
     /**
      * @en 2D Physics Engine
@@ -57536,26 +46763,8 @@ declare namespace Laya {
         static get I(): Physics2D;
         /** 是否已经激活*/
         private _enabled;
-        /**
-         * @internal
-         * @en An empty body node for joints that do not require a node.
-         * @zh 给不需要节点的关节使用的空的 body 节点。
-         */
-        _emptyBody: any;
         _factory: IPhysics2DFactory;
-        /**
-         * @internal
-         * @en Need to synchronize and update the data list in real-time.
-         * @zh 需要同步实时更新数据列表。
-         */
-        _rigiBodyList: SingletonList<RigidBody>;
-        /**@internal */
-        _addRigidBody(body: RigidBody): void;
-        /**@internal */
-        _removeRigidBody(body: RigidBody): void;
         private _update;
-        /**@internal */
-        _updatePhysicsTransformToRender(): void;
         /**
          * @en Enables the physics world. This method initializes the physics engine and starts the simulation.
          * @zh 开启物理世界。此方法初始化物理引擎并启动模拟。
@@ -57576,6 +46785,18 @@ declare namespace Laya {
          * @zh 停止物理世界。
          */
         stop(): void;
+        /**
+         * @en Convert a value from globalTrans space to design resolution (physics) space by removing stage scale.
+         * @zh 将 globalTrans 空间的值转换为设计分辨率（物理空间），剥离 Stage 缩放。
+         */
+        static toPhysicsX(v: number): number;
+        static toPhysicsY(v: number): number;
+        /**
+         * @en Convert a value from design resolution (physics) space to globalTrans space by restoring stage scale.
+         * @zh 将设计分辨率（物理空间）的值转换回 globalTrans 空间，恢复 Stage 缩放。
+         */
+        static toRenderX(v: number): number;
+        static toRenderY(v: number): number;
     }
     /**
      * @ignore
@@ -57928,12 +47149,6 @@ declare namespace Laya {
         set color(value: Color);
         _setMatrix(value: Matrix): void;
         /**
-       * @override
-       * @internal
-       * @returns
-       */
-        getRenderCMD(): Draw2DElementCMD;
-        /**
          * @en Runs the  command.
          * @zh 运行命令。
          */
@@ -58003,14 +47218,6 @@ declare namespace Laya {
         static TILINGOFFSET: number;
         static linePoisitionDesc: VertexDeclaration;
         static lineLengthDesc: VertexDeclaration;
-        /**
-         * @internal
-         */
-        static _vbs: IVertexBuffer;
-        /**
-         * @internal
-         */
-        static _ibs: IIndexBuffer;
         private static _isInit;
         static __init__(): void;
     }
@@ -58188,22 +47395,12 @@ declare namespace Laya {
          */
         get rotation(): number;
         constructor();
-        /**
-         * @internal
-         * @en Synchronize the body type.
-         * @zh 同步刚体类型。
-         */
-        _updateBodyType(): void;
-        /** @internal */
-        _globalChangeHandler(flag: number): void;
         protected _onAwake(): void;
         /**
          * @en Update the body structure data.
          * @zh 更新刚体结构体的数据
          */
         private _setBodyDefValue;
-        /** @internal */
-        _onEnable(): void;
         /**
          * @en Get the box2DBody of the rigid body
          * @returns box2DBody
@@ -58211,17 +47408,7 @@ declare namespace Laya {
          * @returns box2DBody
          */
         getBody(): any;
-        /**
-         * @internal
-         * @en Synchronize physics coordinates to game coordinates. Called by the system.
-         * @zh 同步物理坐标到游戏坐标，由系统调用。
-         */
-        _updatePhysicsTransformToRender(): void;
         private _destroyAllShape;
-        /**@internal */
-        _onDisable(): void;
-        /**@internal */
-        _onDestroy(): void;
         /**
          * @zh 获取刚体的自定义数据
          * @returns 自定义数据
@@ -58367,14 +47554,6 @@ declare namespace Laya {
         * @zh 构造方法
         */
         constructor();
-        /**
-         * @internal
-         */
-        protected _createShape(): void;
-        /**
-         * @internal
-         */
-        protected _updateShapeData(): void;
         clone(): BoxShape2D;
         cloneTo(destObject: BoxShape2D): void;
     }
@@ -58383,10 +47562,6 @@ declare namespace Laya {
      * @zh 2D物理链形碰撞形状
      */
     class ChainShape2D extends Physics2DShapeBase {
-        /**@internal 顶点数据*/
-        private _datas;
-        /**@internal 是否是闭环，注意不要有自相交的链接形状，它可能不能正常工作*/
-        private _loop;
         /**
          * @en Vertex data x,y,x,y ...
          * @zh 顶点数据 x,y,x,y ...
@@ -58404,16 +47579,6 @@ declare namespace Laya {
         * @zh 构造方法
         */
         constructor();
-        /**
-         * @internal
-         * @override
-         */
-        protected _createShape(): void;
-        /**
-         * @internal
-         * @override
-         */
-        protected _updateShapeData(): void;
         clone(): ChainShape2D;
         cloneTo(destObject: ChainShape2D): void;
     }
@@ -58440,8 +47605,6 @@ declare namespace Laya {
      * @zh 2D物理边缘碰撞形状。
      */
     class EdgeShape2D extends Physics2DShapeBase {
-        /**@internal 顶点数据*/
-        private _datas;
         /**
          * @en Vertex data in the format of x,y,x,y ...
          * @zh 顶点数据，格式为 x,y,x,y ...
@@ -58472,10 +47635,6 @@ declare namespace Laya {
         protected _box2DShapeDef: any;
         protected _box2DShape: any;
         protected _physics2DManager: Physics2DWorldManager;
-        /**@internal 相对节点的x轴偏移*/
-        private _x;
-        /**@internal 相对节点的y轴偏移*/
-        private _y;
         /**
          * @en The x-axis offset relative to the node.
          * @zh 相对于节点的 x 轴偏移。
@@ -58525,20 +47684,6 @@ declare namespace Laya {
         get isSensor(): boolean;
         set isSensor(value: boolean);
         /**
-         * @internal
-         * 获得节点的全局缩放X
-         */
-        protected get scaleX(): number;
-        /**
-         * @internal
-         * 获得节点的全局缩放Y
-         */
-        protected get scaleY(): number;
-        /**@internal 创建获得相对于描点x的偏移 */
-        protected get pivotoffx(): number;
-        /**@internal 创建获得相对于描点y的偏移 */
-        protected get pivotoffy(): number;
-        /**
          * @en constructor method
          * @zh 构造方法
          */
@@ -58548,14 +47693,6 @@ declare namespace Laya {
          * @en Update collision group data
          */
         private _updateFilterData;
-        /**
-         * @internal
-         * @en Set the collision volume to which the shape belongs and initialize the content
-         * @param body The collision body
-         * @zh 设置形状所属的碰撞体并初始化内容
-         * @param body 所属的碰撞体
-         */
-        setCollider(body: ColliderBase): void;
         private _initShape;
         /**
          * @override
@@ -58596,8 +47733,6 @@ declare namespace Laya {
      * 节点个数最多是 `b2_maxPolygonVertices`，这数值默认是8，所以点的数量不建议超过8个，也不能小于3个。
      */
     class PolygonShape2D extends Physics2DShapeBase {
-        /**@internal 顶点数据*/
-        private _datas;
         /**
          * @en Vertex data in the format: x,y,x,y ...
          * @zh 顶点数据，格式：x,y,x,y ...
@@ -58679,74 +47814,6 @@ declare namespace Laya {
          * @zh 清除画线结果。
          */
         clear(): void;
-    }
-    /**
-     * @internal
-     */
-    class BulletInteractive {
-        mem: WebAssembly.Memory;
-        dbgLine: IPhyDebugDrawer;
-        /**
-         * @ignore
-         * @en Creates an instance of BulletInteractive.
-         * @param mem WebAssembly memory.
-         * @param dbgline If you want to display physical lines, you need to set this.
-         * @zh 创建一个 BulletInteractive 的实例。
-         * @param mem WebAssembly 内存。
-         * @param dbgline 如果要显示物理线框，要设置这个。
-         */
-        constructor(mem: WebAssembly.Memory, dbgline: IPhyDebugDrawer);
-        /**
-         * @en Dynamic physical body, called once when initialized, Kinematic physical body, called every physical tick (if not in sleep state), let the physical engine know the position of the body.
-         * @param rigidBodyID The ID of the rigid body.
-         * @param worldTransPointer Pointer to the world transform data.
-         * @zh Dynamic刚体,初始化时调用一次,Kinematic刚体,每次物理tick时调用(如果未进入睡眠状态),让物理引擎知道刚体位置。
-         * @param rigidBodyID 刚体的 ID。
-         * @param worldTransPointer 世界变换数据的指针。
-         */
-        getWorldTransform(rigidBodyID: number, worldTransPointer: number): void;
-        /**
-         * @en Dynamic physical body, the physical engine calls it once every frame, used to update the rendering matrix.
-         * @param rigidBodyID The ID of the rigid body.
-         * @param worldTransPointer Pointer to the world transform data.
-         * @zh Dynamic刚体,物理引擎每帧调用一次,用于更新渲染矩阵。
-         * @param rigidBodyID 刚体的 ID。
-         * @param worldTransPointer 世界变换数据的指针。
-         */
-        setWorldTransform(rigidBodyID: number, worldTransPointer: number): void;
-        /**
-         * @en Draw a debug line.
-         * @param sx Start point x coordinate.
-         * @param sy Start point y coordinate.
-         * @param sz Start point z coordinate.
-         * @param ex End point x coordinate.
-         * @param ey End point y coordinate.
-         * @param ez End point z coordinate.
-         * @param color Line color.
-         * @zh 绘制调试线段。
-         * @param sx 起点 x 坐标。
-         * @param sy 起点 y 坐标。
-         * @param sz 起点 z 坐标。
-         * @param ex 终点 x 坐标。
-         * @param ey 终点 y 坐标。
-         * @param ez 终点 z 坐标。
-         * @param color 线段颜色。
-         */
-        drawLine: (sx: number, sy: number, sz: number, ex: number, ey: number, ez: number, color: number) => void;
-        /**
-         * @en Clear all debug lines.
-         * @zh 清除所有调试线段。
-         */
-        clearLine: () => void;
-        /**
-         * @en Log a message from WebAssembly to console.
-         * @param ptr Pointer to the message string in WebAssembly memory.
-         * @param len Length of the message string.
-         * @zh 将 WebAssembly 中的消息记录到控制台。
-         * @param ptr WebAssembly 内存中消息字符串的指针。
-         * @param len 消息字符串的长度。
-         */
-        jslog: (ptr: number, len: number) => void;
     }
     /**
      * @en The `btPhysicsCreateUtil` class is responsible for creating and managing various physics objects and capabilities within the Bullet physics engine.
@@ -58920,20 +47987,6 @@ declare namespace Laya {
      * @zh `btPhysicsManager` 类是用于管理 Bullet 物理引擎的核心类。
      */
     class btPhysicsManager implements IPhysicsManager {
-        /** @internal */
-        private static _btTempVector30;
-        /** @internal */
-        private static _btTempVector31;
-        /** @internal */
-        private static _btTempQuaternion0;
-        /** @internal */
-        private static _btTempQuaternion1;
-        /** @internal */
-        private static _btTempTransform0;
-        /** @internal */
-        private static _btTempTransform1;
-        /** @internal */
-        private static _tempVector30;
         /**
          * @en Initializes the btPhysicsManager.
          * @zh 初始化 btPhysicsManager。
@@ -58970,47 +48023,7 @@ declare namespace Laya {
          * @zh 物理计算中使用的时间间隔，默认为 1/60 秒。
          */
         dt: number;
-        /** @internal */
-        private _btDiscreteDynamicsWorld;
-        /** @internal */
-        private _btCollisionWorld;
-        /** @internal */
-        protected _btDispatcher: number;
-        /** @internal */
-        private _btCollisionConfiguration;
-        /** @internal */
-        private _btBroadphase;
-        /** @internal */
-        _btSolverInfo: number;
-        /** @internal */
-        private _btDispatchInfo;
-        /** @internal */
-        _gravity: Vector3;
-        /** @internal */
-        private _btClosestRayResultCallback;
-        /** @internal */
-        private _btAllHitsRayResultCallback;
-        /** @internal */
-        private _btClosestConvexResultCallback;
-        /** @internal */
-        private _btAllConvexResultCallback;
-        /** @internal */
-        private _btVector3Zero;
-        /** @internal */
-        private _btDefaultQuaternion;
-        /**@internal*/
-        _updatedRigidbodies: number;
         protected _updateCount: number;
-        /** @internal */
-        protected _previousFrameCollisions: Collision[];
-        /** @internal */
-        protected _currentFrameCollisions: Collision[];
-        /** @internal */
-        protected _collisionsUtils: CollisionTool;
-        /** @internal */
-        private _currentConstraint;
-        /** @internal */
-        _physicsUpdateList: PhysicsUpdateList;
         _characters: btCharacterCollider[];
         protected _physicsEngineCapableMap: Map<any, any>;
         /**
@@ -59043,19 +48056,6 @@ declare namespace Laya {
          * @param collisionmask 用于过滤查询结果的碰撞掩码。
          */
         sphereQuery?(pos: Vector3, radius: number, result: ICollider[], collisionmask: number): void;
-        /**
-        * @internal
-        */
-        private _simulate;
-        /**
-         * @internal
-         * @perfTag PerformanceDefine.T_Physics_UpdateNode
-         */
-        private _updatePhysicsTransformToRender;
-        /**
-         * @internal
-         */
-        _updateCollisions(): void;
         /**
          * @perfTag PerformanceDefine.T_PhysicsColliderEnter
          * @en Dispatch Collider Enter Event
@@ -59152,10 +48152,6 @@ declare namespace Laya {
          * @zh 这个只是给对象发送事件，不会挨个组件调用碰撞函数。组件要响应碰撞的话，要通过监听事件。
          */
         dispatchCollideEvent(): void;
-        /**
-        * @internal
-        */
-        _updateCharacters(): void;
         /**
          * @en Debugger function to enable or disable the debug drawer.
          * @param value A boolean value to enable (true) or disable (false) the debug drawer.
@@ -59309,22 +48305,6 @@ declare namespace Laya {
          * @zh 销毁物理管理器并释放所有相关资源。
          */
         destroy(): void;
-        /**
-        * @internal
-        */
-        private _addRigidBody;
-        /**
-         * @internal
-         */
-        private _removeRigidBody;
-        /**
-         * @internal
-         */
-        private _addCharacter;
-        /**
-         * @internal
-         */
-        private _removeCharacter;
     }
     class btStatics {
         static bt: any;
@@ -59413,242 +48393,12 @@ declare namespace Laya {
          * @zh 所有过滤组
          */
         static COLLISIONFILTERGROUP_ALLFILTER: number;
-        /**
-         * @internal
-         * @en Active tag for activation state
-         * @zh 激活状态的标签
-         */
-        static ACTIVATIONSTATE_ACTIVE_TAG: number;
-        /**
-         * @internal
-         * @en Island sleeping tag for activation state
-         * @zh 落地休眠状态的标签
-         */
-        static ACTIVATIONSTATE_ISLAND_SLEEPING: number;
-        /**
-         * @internal
-         * @en Wants deactivation tag for activation state
-         * @zh 希望停用状态的标签
-         */
-        static ACTIVATIONSTATE_WANTS_DEACTIVATION: number;
-        /**
-         * @internal
-         * @en Disable deactivation tag for activation state
-         * @zh 禁用停用状态的标签
-         */
-        static ACTIVATIONSTATE_DISABLE_DEACTIVATION: number;
-        /**
-         * @internal
-         * @en Disable simulation tag for activation state
-         * @zh 禁用模拟状态的标签
-         */
-        static ACTIVATIONSTATE_DISABLE_SIMULATION: number;
-        /**
-         * @internal
-         * @en Collision flag: Static object
-         * @zh 碰撞标志：静态对象
-         */
-        static COLLISIONFLAGS_STATIC_OBJECT: number;
-        /**
-         * @internal
-         * @en Collision flag: Kinematic object
-         * @zh 碰撞标志：运动学对象
-         */
-        static COLLISIONFLAGS_KINEMATIC_OBJECT: number;
-        /**
-         * @internal
-         * @en Collision flag: No contact response
-         * @zh 碰撞标志：无接触响应
-         */
-        static COLLISIONFLAGS_NO_CONTACT_RESPONSE: number;
-        /**
-         * @internal
-         * @en Collision flag: Custom material callback.This allows per-triangle material (friction/restitution)
-         * @zh 碰撞标志：自定义材质回调。这允许每个三角形使用单独的材质（摩擦力/弹性）
-         */
-        static COLLISIONFLAGS_CUSTOM_MATERIAL_CALLBACK: number;
-        /**
-         * @internal
-         * @en Collision flag: Character object
-         * @zh 碰撞标志：角色对象
-         */
-        static COLLISIONFLAGS_CHARACTER_OBJECT: number;
-        /**
-         * @internal
-         * @en Collision flag: Disable visualize object.Disables debug drawing
-         * @zh 碰撞标志：禁用可视化对象。禁用调试绘制
-         */
-        static COLLISIONFLAGS_DISABLE_VISUALIZE_OBJECT: number;
-        /**
-         * @internal
-         * @en Collision flag: Disable SPU collision processing.Disables parallel/SPU processing
-         * @zh 碰撞标志：禁用 SPU 碰撞处理。禁用并行/SPU 处理
-         */
-        static COLLISIONFLAGS_DISABLE_SPU_COLLISION_PROCESSING: number;
-        /**
-         * @internal
-         * @en Physics engine flag: None.Indicates no specific physics engine features are enabled.
-         * @zh 物理引擎标志：无。表示没有启用任何特定的物理引擎功能。
-         */
-        static PHYSICSENGINEFLAGS_NONE: number;
-        /**
-         * @internal
-         * @en Physics engine flag: Collisions only.Enables collision detection without full physics simulation.
-         * @zh 物理引擎标志：仅碰撞。启用碰撞检测，但不进行完整的物理模拟。
-         */
-        static PHYSICSENGINEFLAGS_COLLISIONSONLY: number;
-        /**
-         * @internal
-         * @en Physics engine flag: Soft body support.Enables soft body physics simulation.
-         * @zh 物理引擎标志：软体支持。启用软体物理模拟。
-         */
-        static PHYSICSENGINEFLAGS_SOFTBODYSUPPORT: number;
-        /**
-         * @internal
-         * @en Physics engine flag: Multi-threaded.Enables multi-threaded physics computations.
-         * @zh 物理引擎标志：多线程。启用多线程物理计算。
-         */
-        static PHYSICSENGINEFLAGS_MULTITHREADED: number;
-        /**
-         * @internal
-         * @en Physics engine flag: Use hardware when possible.Enables hardware acceleration for physics calculations when available.
-         * @zh 物理引擎标志：尽可能使用硬件加速。在可用时启用硬件加速进行物理计算。
-         */
-        static PHYSICSENGINEFLAGS_USEHARDWAREWHENPOSSIBLE: number;
-        /**
-         * @internal
-         * @en Solver mode: Randomize order.Randomizes the order of constraint solving.
-         * @zh 求解器模式：随机顺序。随机化约束求解的顺序。
-         */
-        static SOLVERMODE_RANDMIZE_ORDER: number;
-        /**
-         * @internal
-         * @en Solver mode: Separate friction.Handles friction separately from other constraints.
-         * @zh 求解器模式：分离摩擦力。将摩擦力与其他约束分开处理。
-         */
-        static SOLVERMODE_FRICTION_SEPARATE: number;
-        /**
-         * @internal
-         * @en Solver mode: Use warm starting.Uses previous solution as a starting point for faster convergence.
-         * @zh 求解器模式：使用热启动。使用前一次的解作为起点，以加快收敛速度。
-         */
-        static SOLVERMODE_USE_WARMSTARTING: number;
-        /**
-         * @internal
-         * @en Solver mode: Use 2 friction directions.Applies friction in two orthogonal directions.
-         * @zh 求解器模式：使用两个摩擦方向。在两个正交方向上应用摩擦力。
-         */
-        static SOLVERMODE_USE_2_FRICTION_DIRECTIONS: number;
-        /**
-         * @internal
-         * @en Solver mode: Enable friction direction caching。Caches friction directions for improved performance.
-         * @zh 求解器模式：启用摩擦方向缓存。缓存摩擦方向以提高性能。
-         */
-        static SOLVERMODE_ENABLE_FRICTION_DIRECTION_CACHING: number;
-        /**
-         * @internal
-         * @en Solver mode: Disable velocity-dependent friction direction.Friction direction does not depend on relative velocity.
-         * @zh 求解器模式：禁用速度相关的摩擦方向。摩擦方向不依赖于相对速度。
-         */
-        static SOLVERMODE_DISABLE_VELOCITY_DEPENDENT_FRICTION_DIRECTION: number;
-        /**
-         * @internal
-         * @en Solver mode: Cache friendly.Optimizes memory access patterns for better cache utilization.
-         * @zh 求解器模式：缓存友好。优化内存访问模式以更好地利用缓存。
-         */
-        static SOLVERMODE_CACHE_FRIENDLY: number;
-        /**
-         * @internal
-         * @en Solver mode: SIMD.Uses SIMD instructions for improved performance.
-         * @zh 求解器模式：SIMD。使用 SIMD 指令以提高性能。
-         */
-        static SOLVERMODE_SIMD: number;
-        /**
-         * @internal
-         * @en Solver mode: Interleave contact and friction constraints.Alternates between contact and friction constraint solving.
-         * @zh 求解器模式：交错接触和摩擦约束。在接触约束和摩擦约束求解之间交替进行。
-         */
-        static SOLVERMODE_INTERLEAVE_CONTACT_AND_FRICTION_CONSTRAINTS: number;
-        /**
-         * @internal
-         * @en Solver mode: Allow zero length friction directions.Permits friction calculations even when relative velocity is zero.
-         * @zh 求解器模式：允许零长度摩擦方向。即使相对速度为零也允许进行摩擦力计算。
-         */
-        static SOLVERMODE_ALLOW_ZERO_LENGTH_FRICTION_DIRECTIONS: number;
-        /**
-         * @internal
-         * @en Ray result callback flag: None.No special flags applied to the ray callback.
-         * @zh 射线结果回调标志：无。不应用特殊标志到射线回调。
-         */
-        static HITSRAYRESULTCALLBACK_FLAG_NONE: number;
-        /**
-         * @internal
-         * @en Ray result callback flag: Ignore back faces.Ray test will ignore back faces of triangles.
-         * @zh 射线回调模式：忽略反面。射线检测时，会忽略掉反面的三角形
-         */
-        static HITSRAYRESULTCALLBACK_FLAG_FILTERBACKFACESS: number;
-        /**
-         * @internal
-         * @en Ray result callback flag: Keep unflipped normal.Maintains the original normal direction of hit surfaces.
-         * @zh 射线结果回调标志：保持未翻转的法线。保持命中表面的原始法线方向。
-         */
-        static HITSRAYRESULTCALLBACK_FLAG_KEEPUNFILIPPEDNORMAL: number;
-        /**
-         * @internal
-         * @en Ray result callback flag: Use sub-simplex convex cast ray test.Employs a sub-simplex algorithm for convex shape ray casting.
-         * @zh 射线结果回调标志：使用子单纯形凸体投射射线测试。使用子单纯形算法进行凸形体的射线投射。
-         */
-        static HITSRAYRESULTCALLBACK_FLAG_USESUBSIMPLEXCONVEXCASTRAYTEST: number;
-        /**
-         * @internal
-         * @en Ray result callback flag: Use GJK convex cast ray test.Utilizes the GJK algorithm for convex shape ray casting.
-         * @zh 射线结果回调标志：使用 GJK 凸体投射射线测试。使用 GJK 算法进行凸形体的射线投射。
-         */
-        static HITSRAYRESULTCALLBACK_FLAG_USEGJKCONVEXCASTRAYTEST: number;
-        /**
-         * @internal
-         * @en Ray result callback flag: Terminator.Indicates the end of ray callback flags.
-         * @zh 射线结果回调标志：终止符。表示射线回调标志的结束。
-         */
-        static HITSRAYRESULTCALLBACK_FLAG_TERMINATOR: number;
     }
-    /**
-     * @internal
-     */
-    function convertToBulletVec3(lVector: Vector3, out: number): void;
     /**
      * @en The btCharacterCollider class is used to handle 3D physics character colliders.
      * @zh btCharacterCollider 类用于处理3D物理角色碰撞器。
      */
     class btCharacterCollider extends btCollider implements ICharacterController {
-        /** @internal */
-        private static _btTempVector30;
-        /** @internal */
-        private static _btTempVector31;
-        /**@internal */
-        _btKinematicCharacter: number;
-        /** @internal */
-        private _stepHeight;
-        /** @internal */
-        private _upAxis;
-        /**@internal */
-        private _maxSlope;
-        /**@internal */
-        private _fallSpeed;
-        /**@internal */
-        private _jumpSpeed;
-        /** @internal */
-        private _gravity;
-        /**@internal */
-        private _pushForce;
-        /**@internal */
-        static _characterCapableMap: Map<any, any>;
-        /**
-         * @internal
-         * @en Whethe the character is enabled.
-         * @zh 是否启用。
-         */
-        componentEnable: boolean;
         static __init__(): void;
         /**
          * @en Check if the character is capable of a specific action.
@@ -59892,13 +48642,7 @@ declare namespace Laya {
          * 注意：和静态或其他类型刚体不会产生动态交互。
          */
         static TYPE_KINEMATIC: number;
-        /** @internal */
-        static _physicObjectsMap: {
-            [key: number]: btCollider;
-        };
         protected static _btVector30: number;
-        /** @internal */
-        protected static _btQuaternion0: number;
         /**
          * @en The underlying Bullet physics collider object.
          * @zh 物理碰撞器对象。
@@ -59969,28 +48713,6 @@ declare namespace Laya {
          * @zh 与此碰撞器关联的Transform3D组件。
          */
         _transform: Transform3D;
-        /**
-         * @internal
-         * @en Indicates whether the component is enabled.
-         * @zh 表示组件是否启用。
-         */
-        componentEnable: boolean;
-        /** @internal */
-        protected _restitution: number;
-        /** @internal */
-        protected _friction: number;
-        /** @internal */
-        protected _rollingFriction: number;
-        /** @internal */
-        protected _ccdThreshold: number;
-        /** @internal */
-        protected _ccdSwapSphereRadius: number;
-        /** @internal */
-        protected _transformFlag: number;
-        /**
-        * @internal
-        */
-        static __init__(): void;
         /**
          * @ignore
          * @en Creates an instance of btCollider.
@@ -60068,10 +48790,6 @@ declare namespace Laya {
         setCanCollideWith(value: number): void;
         protected _initCollider(): void;
         protected getColliderType(): btColliderType;
-        /**
-         * @internal
-         */
-        protected _onScaleChange(scale: Vector3): void;
         protected _onShapeChange(): void;
         /**
          * @en Sets the collider shape.
@@ -60085,56 +48803,6 @@ declare namespace Laya {
          * @zh 销毁碰撞器。
          */
         destroy(): void;
-        /**
-         * @internal
-         * @en Updates the physics transformation based on the rendering matrix.
-         * @param force Whether to force update.
-         * @zh 通过渲染矩阵更新物理矩阵。
-         * @param force 是否强制更新。
-         */
-        _derivePhysicsTransformation(force: boolean): void;
-        /**
-         * @internal
-         * @en Updates the physics transformation based on the rendering matrix.
-         * @param physicTransformPtr Pointer to the physics transform.
-         * @param force Whether to force update.
-         * @zh 通过渲染矩阵更新物理矩阵。
-         * @param physicTransformPtr 物理变换的指针。
-         * @param force 是否强制更新。
-         */
-        _innerDerivePhysicsTransformation(physicTransformPtr: number, force: boolean): void;
-        /**
-         * @internal
-         * @en Updates the rendering transformation based on the physics matrix.
-         * @param physicsTransform The physics transform.
-         * @param syncRot Whether to synchronize rotation.
-         * @param addmargin Additional margin to add.
-         * @zh 通过物理矩阵更新渲染矩阵。
-         * @param physicsTransform 物理变换。
-         * @param syncRot 是否同步旋转。
-         * @param addmargin 要添加的额外边距。
-         */
-        _updateTransformComponent(physicsTransform: number, syncRot?: boolean, addmargin?: number): void;
-        /**
-         * @internal
-         * @en Checks if a specific transform flag is set.
-         * @param type The type of transform flag to check.
-         * @returns Whether the flag is set.
-         * @zh 检查是否设置了特定的变换标志。
-         * @param type 要检查的变换标志类型。
-         * @returns 标志是否被设置。
-         */
-        _getTransformFlag(type: number): boolean;
-        /**
-         * @internal
-         * @en Sets a specific transform flag.
-         * @param type The type of transform flag to set.
-         * @param value Whether to set or unset the flag.
-         * @zh 设置特定的变换标志。
-         * @param type 要设置的变换标志类型。
-         * @param value 是否设置或取消设置标志。
-         */
-        _setTransformFlag(type: number, value: boolean): void;
         /**
          * @en Handles transform changes.
          * @param flag The transform flag.
@@ -60183,66 +48851,6 @@ declare namespace Laya {
      * @zh `btRigidBodyCollider` 类用于实现3D物理刚体碰撞器。
      */
     class btRigidBodyCollider extends btCollider implements IDynamicCollider {
-        /** @internal */
-        static _BT_DISABLE_WORLD_GRAVITY: number;
-        /** @internal */
-        static _BT_ENABLE_GYROPSCOPIC_FORCE: number;
-        /** @internal */
-        private static _btTempVector30;
-        /** @internal */
-        private static _btTempVector31;
-        /** @internal */
-        private static _RBtempVector30;
-        /** @internal */
-        private static _btVector3Zero;
-        /**@internal */
-        private static _btTransform0;
-        /** @internal */
-        private static _btInertia;
-        /** @internal */
-        private static _btImpulse;
-        /** @internal */
-        private static _btImpulseOffset;
-        /** @internal */
-        private static _btGravity;
-        /**@internal */
-        static _rigidBodyCapableMap: Map<any, any>;
-        /**
-        * @internal
-        */
-        static __init__(): void;
-        /**@internal */
-        componentEnable: boolean;
-        /** @internal */
-        private _btLayaMotionState;
-        /** @internal */
-        private _isKinematic;
-        /** @internal */
-        private _mass;
-        /** @internal */
-        private _gravity;
-        /** @internal */
-        private _angularDamping;
-        /** @internal */
-        private _linearDamping;
-        /** @internal */
-        private _overrideGravity;
-        /** @internal */
-        private _totalTorque;
-        /** @internal */
-        private _totalForce;
-        /** @internal */
-        private _linearVelocity;
-        /** @internal */
-        private _angularVelocity;
-        /** @internal */
-        private _linearFactor;
-        /** @internal */
-        private _angularFactor;
-        /** @internal */
-        private _detectCollisions;
-        /**@internal TODO*/
-        private _allowSleep;
         constructor(manager: btPhysicsManager);
         /**
          * @en Get the capability of the rigid body collider.
@@ -60292,10 +48900,6 @@ declare namespace Laya {
          * @zh 是否重载重力。
          */
         private _setoverrideGravity;
-        /**
-        * @internal
-        */
-        private _updateMass;
         /**
          * @en Whether it is sleeping.
          * @zh 是否处于睡眠状态。
@@ -60500,14 +49104,6 @@ declare namespace Laya {
          * @zh 唤醒刚体。
          */
         wakeUp(): void;
-        /**
-         * @internal
-         * @en Update the physics transformation based on the render matrix.
-         * @param force Whether to force update.
-         * @zh 通过渲染矩阵更新物理矩阵。
-         * @param force 是否强制更新。
-         */
-        _derivePhysicsTransformation(force: boolean): void;
         protected _onScaleChange(scale: Vector3): void;
         /**
          * @en Set the collider shape for the rigid body.
@@ -60527,14 +49123,6 @@ declare namespace Laya {
      * @zh `btStaticCollider` 类用于创建和管理静态碰撞体。
      */
     class btStaticCollider extends btCollider implements IStaticCollider {
-        /**@internal */
-        static _staticCapableMap: Map<any, any>;
-        /**@internal */
-        componentEnable: boolean;
-        /**
-         * @internal
-         */
-        static __init__(): void;
         protected _initCollider(): void;
         /**
          * @en Set whether the collider is a trigger.
@@ -60590,168 +49178,10 @@ declare namespace Laya {
         destroy(): void;
     }
     /**
-     * @internal
-     * <code>CollisionMap</code> 类用于实现碰撞组合实例图。
-     */
-    class CollisionTool {
-        /**@internal	*/
-        private _hitResultsPoolIndex;
-        /**@internal	*/
-        private _hitResultsPool;
-        /**@internal	*/
-        private _contactPonintsPoolIndex;
-        /**@internal	*/
-        private _contactPointsPool;
-        /**@internal */
-        private _collisionsPool;
-        /**@internal */
-        private _collisions;
-        /**
-         * 创建一个 <code>CollisionMap</code> 实例。
-         */
-        constructor();
-        /**
-         * @internal
-         */
-        getHitResult(): HitResult;
-        /**
-         * @internal
-         */
-        recoverAllHitResultsPool(): void;
-        /**
-         * @internal
-         */
-        getContactPoints(): ContactPoint;
-        /**
-         * @internal
-         */
-        recoverAllContactPointsPool(): void;
-        /**
-         * @internal
-         */
-        getCollision(physicComponentA: btCollider, physicComponentB: btCollider): Collision;
-        /**
-         * @internal
-         */
-        recoverCollision(collision: Collision): void;
-        /**
-         * @internal
-         */
-        garbageCollection(): void;
-    }
-    /**
      * @en The `btCustomJoint` class is used for detailed control of joints.
      * @zh 类`btCustomJoint`用于实现关节的详细控制。
      */
     class btCustomJoint extends btJoint implements ID6Joint {
-        /**
-         * @internal
-         * @en Minimum angular limit for X-axis rotation
-         * @zh X轴旋转的最小角度限制
-         */
-        _minAngularXLimit: number;
-        /**
-         * @internal
-         * @en Maximum angular limit for X-axis rotation
-         * @zh X轴旋转的最大角度限制
-         */
-        _maxAngularXLimit: number;
-        /**
-         * @internal
-         * @en Minimum angular limit for Y-axis rotation
-         * @zh Y轴旋转的最小角度限制
-         */
-        _minAngularYLimit: number;
-        /**
-         * @internal
-         * @en Maximum angular limit for Y-axis rotation
-         * @zh Y轴旋转的最大角度限制
-         */
-        _maxAngularYLimit: number;
-        /**
-         * @internal
-         * @en Minimum angular limit for Z-axis rotation
-         * @zh Z轴旋转的最小角度限制
-         */
-        _minAngularZLimit: number;
-        /**
-         * @internal
-         * @en Maximum angular limit for Z-axis rotation
-         * @zh Z轴旋转的最大角度限制
-         */
-        _maxAngularZLimit: number;
-        /**
-         * @internal
-         * @en Minimum distance limit
-         * @zh 最小距离限制
-         */
-        _minLinearLimit: number;
-        /**
-         * @internal
-         * @en Maximum distance limit
-         * @zh 最大距离限制
-         */
-        _maxLinearLimit: number;
-        /**
-         * @internal
-         * @en Linear motion along X-axis
-         * @zh X轴方向的线性运动
-         */
-        _linearXMotion: D6Axis;
-        /**
-         * @internal
-         * @en Linear motion along Y-axis
-         * @zh Y轴方向的线性运动
-         */
-        _linearYMotion: D6Axis;
-        /**
-         * @internal
-         * @en Linear motion along Z-axis
-         * @zh Z轴方向的线性运动
-         */
-        _linearZMotion: D6Axis;
-        /**
-         * @internal
-         * @en Angular motion around X-axis
-         * @zh 绕X轴的角运动
-         */
-        _angularXMotion: D6Axis;
-        /**
-         * @internal
-         * @en Angular motion around Y-axis
-         * @zh 绕Y轴的角运动
-         */
-        _angularYMotion: D6Axis;
-        /**
-         * @internal
-         * @en Angular motion around Z-axis
-         * @zh 绕Z轴的角运动
-         */
-        _angularZMotion: D6Axis;
-        /**
-         * @internal
-         * @en axis constraint
-         * @zh 轴限制
-         */
-        _axis: Vector3;
-        /**
-         * @internal
-         * @en Secondary axis constraint
-         * @zh 副轴限制
-         */
-        _secondAxis: Vector3;
-        /**
-         * @internal
-         * @en Bullet physics primary axis representation
-         * @zh Bullet物理引擎的轴表示
-         */
-        _btAxis: number;
-        /**
-         * @internal
-         * @en Bullet physics secondary axis representation
-         * @zh Bullet物理引擎的副轴表示
-         */
-        _btsceondAxis: number;
         /**
          * @en Initializes the joint.
          * @zh 初始化关节。
@@ -60771,17 +49201,6 @@ declare namespace Laya {
          * @param manager 用于处理物理模拟的Bullet物理管理器实例。
          */
         constructor(manager: btPhysicsManager);
-        /**
-         * TODO
-         * @internal
-         * @en Sets the equilibrium point for a specific axis of the constraint.
-         * @param axis The axis index to set the equilibrium point for.
-         * @param equilibriumPoint The equilibrium point value to set.
-         * @zh 为约束的特定轴设置平衡点。
-         * @param axis 要设置平衡点的轴索引。
-         * @param equilibriumPoint 要设置的平衡点值。
-         */
-        setEquilibriumPoint(axis: number, equilibriumPoint: number): void;
         /**
          * @en Sets the local position of the joint.
          * @param pos The new local position vector.
@@ -60805,60 +49224,6 @@ declare namespace Laya {
          * @param secendary 次轴向量。
          */
         setAxis(axis: Vector3, secendary: Vector3): void;
-        /**
-         * @internal
-         * @en Sets the limit values for each axis.
-         * @param axis The constraint type.
-         * @param motionType The motion type.
-         * @param low The lower limit (optional).
-         * @param high The upper limit (optional).
-         * @zh 设置各个轴限制值。
-         * @param axis 限制类型。
-         * @param motionType 运动类型。
-         * @param low 下限（可选）。
-         * @param high 上限（可选）。
-         */
-        _setLimit(axis: D6Axis, motionType: D6MotionType, low?: number, high?: number): void;
-        /**
-         * @internal
-         * @en Sets the spring properties for each axis.
-         * @param axis The constraint type.
-         * @param motionType The motion type.
-         * @param springValue The spring stiffness value.
-         * @param limitIfNeeded Whether to set the limit if needed (default: true).
-         * @zh 设置各个轴的弹簧属性值。
-         * @param axis 约束类型。
-         * @param motionType 运动类型。
-         * @param springValue 弹簧刚度值。
-         * @param limitIfNeeded 是否在需要时设置限制（默认：true）。
-         */
-        _setSpring(axis: D6Axis, motionType: D6MotionType, springValue: number, limitIfNeeded?: boolean): void;
-        /**
-         * @internal
-         * @en Sets the bounce value for each axis.
-         * @param axis The constraint type.
-         * @param motionType The motion type.
-         * @param bounce The bounce value.
-         * @zh 设置各个轴的弹力值。
-         * @param axis 约束类型。
-         * @param motionType 运动类型。
-         * @param bounce 弹力值。
-         */
-        _setBounce(axis: D6Axis, motionType: D6MotionType, bounce: number): void;
-        /**
-         * @internal
-         * @en Sets the damping value for each axis of the constraint.
-         * @param axis The constraint type.
-         * @param motionType The motion type.
-         * @param damp The damping value.
-         * @param limitIfNeeded Whether to set the limit if needed (default: true).
-         * @zh 设置各个轴的阻尼值。
-         * @param axis 约束类型。
-         * @param motionType 运动类型。
-         * @param damp 阻尼值。
-         * @param limitIfNeeded 是否在需要时设置限制（默认：true）。
-         */
-        _setDamp(axis: D6Axis, motionType: D6MotionType, damp: number, limitIfNeeded?: boolean): void;
         /**
          * @en Sets the motion type for a specific axis of the constraint.
          * @param axis The constraint type to set.
@@ -61016,27 +49381,7 @@ declare namespace Laya {
      * @zh 类 `btHingeJoint` 表示两个刚体之间的摆动关节。
      */
     class btHingeJoint extends btJoint implements IHingeJoint {
-        /**@internal */
-        static ANGULAR_X: number;
-        /**@internal */
-        static ANGULAR_Y: number;
-        /**@internal */
-        static ANGULAR_Z: number;
-        /**@internal */
-        _uperLimit: number;
-        /**@internal */
-        _lowerLimit: number;
-        /**@internal */
-        _angularAxis: number;
-        /**@internal */
-        _enableLimit: boolean;
-        /**@internal */
-        _enableDrive: boolean;
         protected _createJoint(): void;
-        /**
-         * @internal
-         */
-        _initJointConstraintInfo(): void;
         /**
          * @ignore
          * @en Creates an instance of btHingeJoint.
@@ -61204,80 +49549,12 @@ declare namespace Laya {
      * @zh 类`btJoint`用于实现物理关节的基类。
      */
     class btJoint implements IJoint {
-        /**@internal */
-        static _jointCapableMap: Map<any, any>;
-        /** @internal TODO*/
-        static CONSTRAINT_POINT2POINT_CONSTRAINT_TYPE: number;
-        /** @internal TODO*/
-        static CONSTRAINT_HINGE_CONSTRAINT_TYPE: number;
-        /** @internal TODO*/
-        static CONSTRAINT_CONETWIST_CONSTRAINT_TYPE: number;
-        /** @internal TODO*/
-        static CONSTRAINT_D6_CONSTRAINT_TYPE: number;
-        /** @internal TODO*/
-        static CONSTRAINT_SLIDER_CONSTRAINT_TYPE: number;
-        /** @internal TODO*/
-        static CONSTRAINT_CONTACT_CONSTRAINT_TYPE: number;
-        /** @internal TODO*/
-        static CONSTRAINT_D6_SPRING_CONSTRAINT_TYPE: number;
-        /** @internal TODO*/
-        static CONSTRAINT_GEAR_CONSTRAINT_TYPE: number;
-        /** @internal */
-        static CONSTRAINT_FIXED_CONSTRAINT_TYPE: number;
-        /** @internal TODO*/
-        static CONSTRAINT_MAX_CONSTRAINT_TYPE: number;
-        /** @internal error reduction parameter (ERP)*/
-        static CONSTRAINT_CONSTRAINT_ERP: number;
-        /** @internal*/
-        static CONSTRAINT_CONSTRAINT_STOP_ERP: number;
-        /** @internal constraint force mixing（CFM）*/
-        static CONSTRAINT_CONSTRAINT_CFM: number;
-        /** @internal*/
-        static CONSTRAINT_CONSTRAINT_STOP_CFM: number;
-        /**@internal */
-        _connectCollider: ICollider;
-        /**@internal */
-        _collider: ICollider;
-        /**@internal */
-        _connectOwner: Sprite3D;
-        /**@internal */
-        owner: Sprite3D;
-        /**@internal */
-        _id: number;
-        /**@internal */
-        _btJoint: any;
-        /**@internal 回调参数*/
-        _btJointFeedBackObj: number;
-        /**@internal */
-        private _getJointFeedBack;
-        /**@internal */
-        _constraintType: number;
         _manager: btPhysicsManager;
         /**
          * @en Whether to perform collision detection between the two connected objects.
          * @zh 连接的两个物体是否进行碰撞检测。
          */
         _disableCollisionsBetweenLinkedBodies: boolean;
-        /**@internal */
-        _anchor: Vector3;
-        /** @internal */
-        _connectAnchor: Vector3;
-        /**@internal */
-        private _currentForce;
-        /**@internal */
-        private _breakForce;
-        /**@internal */
-        private _currentTorque;
-        /**@internal */
-        private _breakTorque;
-        /**@internal */
-        protected _btTempVector30: number;
-        /**@internal */
-        protected _btTempVector31: number;
-        /**@internal */
-        protected _btTempTrans0: number;
-        /**@internal */
-        protected _btTempTrans1: number;
         static __init__(): void;
         /**
          * @en Initialize the joint capability map.
@@ -61373,12 +49650,6 @@ declare namespace Laya {
          */
         _isBreakConstrained(): boolean;
         /**
-         * @internal
-         * @en Get the feedback information from bt.
-         * @zh 获取bt回调参数。
-         */
-        _btFeedBackInfo(): void;
-        /**
          * @en Set the mass scale of the connected body.
          * @param value The mass scale to set.
          * @zh 设置连接物体的质量比例。
@@ -61426,29 +49697,7 @@ declare namespace Laya {
      * @zh 类`btSpringJoint`用于在物理引擎中创建和管理弹簧关节。
      */
     class btSpringJoint extends btJoint implements ISpringJoint {
-        /**@internal */
-        static LINEARSPRING_AXIS_X: number;
-        /**@internal */
-        static LINEARSPRING_AXIS_Y: number;
-        /**@internal */
-        static LINEARSPRING_AXIS_Z: number;
-        /**@internal */
-        static ANGULARSPRING_AXIS_X: number;
-        /**@internal */
-        static ANGULARSPRING_AXIS_Y: number;
-        /**@internal */
-        static ANGULARSPRING_AXIS_Z: number;
-        /**@internal */
-        _minDistance: number;
-        /**@internal */
-        _maxDistance: number;
         protected _createJoint(): void;
-        /**
-         * @internal
-         * @en Initializes the joint constraint information.
-         * @zh 初始化关节约束信息。
-         */
-        _initJointConstraintInfo(): void;
         /**
          * @ignore
          * @en Creates an instance of the `btSpringJoint` class.
@@ -61521,10 +49770,6 @@ declare namespace Laya {
      * @zh 类`btBoxColliderShape` 用于创建和管理物理引擎的盒子碰撞形状。
      */
     class btBoxColliderShape extends btColliderShape implements IBoxColliderShape {
-        /** @internal */
-        private _btSize;
-        /** @internal */
-        private _size;
         constructor();
         private changeBoxShape;
         protected _createShape(): void;
@@ -61548,12 +49793,6 @@ declare namespace Laya {
      */
     class btCapsuleColliderShape extends btColliderShape implements ICapsuleColliderShape {
         private static _tempVector30;
-        /**@internal */
-        private _radius;
-        /**@internal */
-        private _length;
-        /**@internal */
-        private _orientation;
         constructor();
         protected _createShape(): void;
         protected _getType(): number;
@@ -61611,24 +49850,6 @@ declare namespace Laya {
          * @zh 形状方向沿 Z 轴正向
          */
         static SHAPEORIENTATION_UPZ: number;
-        /** @internal */
-        static SHAPETYPES_BOX: number;
-        /** @internal */
-        static SHAPETYPES_SPHERE: number;
-        /** @internal */
-        static SHAPETYPES_CYLINDER: number;
-        /** @internal */
-        static SHAPETYPES_CAPSULE: number;
-        /** @internal */
-        static SHAPETYPES_CONVEXHULL: number;
-        /** @internal */
-        static SHAPETYPES_COMPOUND: number;
-        /** @internal */
-        static SHAPETYPES_STATICPLANE: number;
-        /** @internal */
-        static SHAPETYPES_CONE: number;
-        /** @internal */
-        static SHAPETYPES_HEIGHTFIELDTERRAIN: number;
         _type: number;
         _btShape: any;
         _btScale: any;
@@ -61672,18 +49893,6 @@ declare namespace Laya {
      * @zh 用于创建组合碰撞器。
      */
     class btCompoundColliderShape extends btColliderShape implements ICompoundColliderShape {
-        /**@internal */
-        private _physicsComponent;
-        /**@internal */
-        private _btVector3One;
-        /**@internal */
-        private _btTransform;
-        /**@internal */
-        private _btOffset;
-        /**@internal */
-        private _btRotation;
-        /**@internal */
-        private _childColliderShapes;
         /**
          * @en create a new instance of btCompoundColliderShape.
          * @zh 创建一个新的组合碰撞形状实例。
@@ -61706,12 +49915,6 @@ declare namespace Laya {
      * @zh 类 `btConeColliderShape` 用于创建和管理物理引擎中圆锥碰撞器形状。
      */
     class btConeColliderShape extends btColliderShape implements IConeColliderShape {
-        /**@internal */
-        private _radius;
-        /**@internal */
-        private _length;
-        /**@internal */
-        private _orientation;
         constructor();
         protected _createShape(): void;
         protected _getType(): number;
@@ -61748,12 +49951,6 @@ declare namespace Laya {
      */
     class btCylinderColliderShape extends btColliderShape implements ICylinderColliderShape {
         private static _tempVector30;
-        /**@internal */
-        private _radius;
-        /**@internal */
-        private _length;
-        /**@internal */
-        private _orientation;
         private _btSize;
         constructor();
         protected _createShape(): void;
@@ -61790,16 +49987,6 @@ declare namespace Laya {
      * @zh `btMeshColliderShape` 类用于创建和管理基于网格的碰撞形状。
      */
     class btMeshColliderShape extends btColliderShape implements IMeshColliderShape {
-        /**@internal */
-        private _mesh;
-        /**@internal */
-        private _physicMesh;
-        /**@internal */
-        static _btTempVector30: number;
-        /**@internal */
-        static _btTempVector31: number;
-        /**@internal */
-        static _btTempVector32: number;
         private _limitvertex;
         private _convex;
         /**
@@ -61832,12 +50019,6 @@ declare namespace Laya {
          * @param limit 限制值。
          */
         setLimitVertex(limit: number): void;
-        /**
-         * @internal
-         * @en Whether the shape is convex.
-         * @zh 形状是否为凸包。
-         */
-        get convex(): boolean;
         private _createPhysicsMeshFromMesh;
         private _createConvexMeshFromMesh;
         protected _createTrianggleMeshGeometry(): void;
@@ -61855,8 +50036,6 @@ declare namespace Laya {
      * @zh `btSphereColliderShape` 类用于创建和管理球形碰撞体形状。
      */
     class btSphereColliderShape extends btColliderShape implements ISphereColliderShape {
-        /**@internal */
-        private _radius;
         /** @ignore */
         constructor();
         protected _getType(): number;
@@ -62019,12 +50198,6 @@ declare namespace Laya {
          * @zh 在物理更新列表中的索引。
          */
         inPhysicUpdateListIndex: number;
-        /**
-         * @internal
-         * @en Indicates whether the component is enabled.
-         * @zh 指示组件是否启用。
-         */
-        componentEnable: boolean;
         /**
          * @en The physics collider component associated with this collider.
          * @zh 与此碰撞器关联的物理碰撞器组件。
@@ -63879,37 +52052,9 @@ declare namespace Laya {
     class pxCharactorCollider extends pxCollider implements ICharacterController {
         static tempV3: Vector3;
         _shapeID: number;
-        /** @internal */
-        _id: number;
-        /** @internal */
-        _pxController: any;
-        /** @internal */
-        _pxNullShape: pxCapsuleColliderShape;
-        /**@internal */
-        _radius: number;
-        /**@internal */
-        _height: number;
-        /**@internal */
-        _localOffset: Vector3;
-        /**@internal */
-        _upDirection: Vector3;
-        /**@internal */
-        private _stepOffset;
-        /**@internal */
-        private _slopeLimit;
-        /**@internal */
-        private _contactOffset;
-        /**@internal */
-        private _minDistance;
         private _nonWalkableMode;
         private _gravity;
         private _characterCollisionFlags;
-        /**@internal */
-        static _characterCapableMap: Map<any, any>;
-        /**@internal */
-        private _pushForce;
-        /**@internal */
-        private _characterEvents;
         /**
          * @en Creates a instance of pxCharactorCollider.
          * @param manager The physics manager responsible for this collider.
@@ -64130,18 +52275,8 @@ declare namespace Laya {
      * @zh `pxCollider` 类用于处理物理碰撞器。
      */
     class pxCollider implements ICollider {
-        /**@internal pool of Actor */
-        static _ActorPool: Map<number, pxCollider>;
-        /**@internal UUid of pxActor */
-        static _pxActorID: number;
         /**temp tranform object */
         private static _tempTransform;
-        /**@internal */
-        owner: Sprite3D;
-        /**@internal */
-        componentEnable: boolean;
-        /**@internal */
-        component: PhysicsColliderComponent;
         /**actor */
         _pxActor: any;
         /**owner transform */
@@ -64150,8 +52285,6 @@ declare namespace Laya {
         _type: pxColliderType;
         /**触发器 */
         _isTrigger: boolean;
-        /**@internal */
-        _isSimulate: boolean;
         /**can collision Group*/
         _canCollisionWith: number;
         /**collision group */
@@ -64167,21 +52300,9 @@ declare namespace Laya {
          * @zh 此碰撞器在物理更新列表中的索引。
          */
         inPhysicUpdateListIndex: number;
-        /**@internal */
-        _enableProcessCollisions: boolean;
         /**id */
         _id: number;
-        /** @internal */
-        protected _transformFlag: number;
         private _bounciness;
-        /** @internal */
-        private _dynamicFriction;
-        /** @internal */
-        private _staticFriction;
-        /** @internal */
-        private _bounceCombine;
-        /** @internal */
-        private _frictionCombine;
         /**
          * @en Creates a instance of pxCollider.
          * @param manager The physics manager responsible for this collider.
@@ -64309,21 +52430,6 @@ declare namespace Laya {
          * @param value 弹性合并模式。
          */
         setBounceCombine(value: PhysicsCombineMode): void;
-        /**
-       * @internal
-       */
-        _getTransformFlag(type: number): boolean;
-        /**
-         * @internal
-         */
-        _setTransformFlag(type: number, value: boolean): void;
-        /**
-         * @internal
-         */
-        _transformTo(pos: Vector3, rot: Quaternion): {
-            translation: Vector3;
-            rotation: Quaternion;
-        };
     }
     /**
      * @en The collision detection mode constants.
@@ -64397,8 +52503,6 @@ declare namespace Laya {
      * @zh `pxDynamicCollider` 类用于在物理引擎中管理动态碰撞体。
      */
     class pxDynamicCollider extends pxCollider implements IDynamicCollider {
-        /**@internal */
-        static _dynamicCapableMap: Map<any, any>;
         /**
          * @en Get the static collider capability for a given value.
          * @param value The collider capability to check.
@@ -64628,8 +52732,6 @@ declare namespace Laya {
      * @zh 表示 PhysX 物理引擎中的静态碰撞器的类。
      */
     class pxStaticCollider extends pxCollider implements IStaticCollider {
-        /**@internal */
-        static _staticCapableMap: Map<any, any>;
         /**
          * @en Get the capability of a static collider for a specific collider capable.
          * @param value The collider capable to check.
@@ -64687,22 +52789,10 @@ declare namespace Laya {
      * @zh `pxD6Joint` 类用于创建和管理 PhysX 物理引擎中的 D6 关节（6 自由度关节）。
      */
     class pxD6Joint extends pxJoint implements ID6Joint {
-        /**@internal temp V3 */
-        static tempV3: Vector3;
-        /**@internal axis */
-        private _axis;
-        /**@internal */
-        private _SecondaryAxis;
-        /**@internal */
-        private _axisRotationQuaternion;
         /**
          * create Joint
          */
         protected _createJoint(): void;
-        /**
-         * @internal
-         */
-        _initAllConstrainInfo(): void;
         /**
          * set local Pose
          * @param actor
@@ -64948,46 +53038,6 @@ declare namespace Laya {
      * @zh `pxJoint`类用于在物理引擎中实现关节功能。
      */
     class pxJoint implements IJoint {
-        /**@internal */
-        static _ActorPool: Map<number, pxJoint>;
-        /**@internal */
-        static _pxJointID: number;
-        /**@internal */
-        static _tempTransform0: {
-            translation: Vector3;
-            rotation: Quaternion;
-        };
-        /**@internal */
-        static _tempTransform1: {
-            translation: Vector3;
-            rotation: Quaternion;
-        };
-        /**@internal */
-        protected _pxJoint: any;
-        /**@internal */
-        protected _collider: pxCollider;
-        /**@internal */
-        protected _localPos: Vector3;
-        /**@internal */
-        protected _connectCollider: pxCollider;
-        /**@internal */
-        protected _connectlocalPos: Vector3;
-        /**@internal */
-        protected _breakForce: number;
-        /**@internal */
-        protected _breakTorque: number;
-        /**@internal */
-        protected _id: number;
-        /**@internal */
-        protected _linearForce: Vector3;
-        /**@internal */
-        protected _angularForce: Vector3;
-        /**
-         * @internal
-         */
-        owner: Sprite3D;
-        /**@internal */
-        _physicsManager: pxPhysicsManager;
         /**
          * @en Create an instance of the pxJoint class.
          * @param manager The physics manager.
@@ -64995,49 +53045,7 @@ declare namespace Laya {
          * @param manager 物理管理器。
          */
         constructor(manager: pxPhysicsManager);
-        /**@internal */
-        isEnable(value: boolean): void;
-        /**@internal */
-        isCollision(value: boolean): void;
-        /**@internal */
-        isPreprocessiong(value: boolean): void;
-        /**@internal */
-        protected _createJoint(): void;
         destroy(): void;
-        /**@internal */
-        setOwner(value: Sprite3D): void;
-        /**@internal */
-        protected _setActor(): void;
-        /**@internal */
-        setCollider(owner: pxCollider): void;
-        /**@internal */
-        setConnectedCollider(owner: pxCollider): void;
-        /**@internal */
-        protected _setLocalPose(actor: number, position: Vector3): void;
-        /**@internal */
-        setLocalPos(value: Vector3): void;
-        /**@internal */
-        setConnectLocalPos(value: Vector3): void;
-        /**@internal */
-        setConnectedMassScale(value: number): void;
-        /**@internal */
-        setConnectedInertiaScale(value: number): void;
-        /**@internal */
-        setMassScale(value: number): void;
-        /**@internal */
-        setInertiaScale(value: number): void;
-        /**@internal */
-        setBreakForce(value: number): void;
-        /**@internal */
-        setBreakTorque(value: number): void;
-        /**@internal */
-        getlinearForce(): Vector3;
-        /**@internal */
-        getAngularForce(): Vector3;
-        /**@internal */
-        isValid(): boolean;
-        /**@internal */
-        release(): void;
     }
     enum PxRevoluteJointFlag {
         eLIMIT_ENABLED = 1,
@@ -65049,60 +53057,10 @@ declare namespace Laya {
      * @zh `pxRevoluteJoint`类用于在物理引擎中创建和管理旋转关节（铰链关节）
      */
     class pxRevoluteJoint extends pxJoint implements IHingeJoint {
-        /**@internal */
-        protected static _xAxis: Vector3;
-        /**@internal */
-        private _axisRotationQuaternion;
-        /**@internal */
-        private _velocity;
-        /**@internal */
-        private _lowerLimit;
-        /**@internal */
-        private _uperLimit;
-        /**@internal */
-        private _bouncenciness;
-        /**@internal */
-        private _bouncenMinVelocity;
-        /**@internal */
-        private _contactDistance;
-        /**@internal */
-        private _enableLimit;
         /**
          * create Joint
          */
         protected _createJoint(): void;
-        /**@internal */
-        protected _setLocalPose(actor: number, position: Vector3): void;
-        /**@internal */
-        private _setRevoluteJointFlag;
-        /**@internal */
-        private _setLimit;
-        /**@internal */
-        setLowerLimit(lowerLimit: number): void;
-        /**@internal */
-        setUpLimit(value: number): void;
-        /**@internal */
-        setBounceness(value: number): void;
-        /**@internal */
-        setBouncenMinVelocity(value: number): void;
-        /**@internal */
-        setContactDistance(value: number): void;
-        /**@internal */
-        enableLimit(value: boolean): void;
-        /**@internal */
-        enableDrive(value: boolean): void;
-        /**@internal */
-        enableFreeSpin(value: boolean): void;
-        /**@internal */
-        setAxis(value: Vector3): void;
-        /**@internal */
-        getAngle(): number;
-        /**@internal */
-        getVelocity(): Readonly<Vector3>;
-        /**@internal */
-        setDriveVelocity(velocity: number): void;
-        /**@internal */
-        setDriveForceLimit(limit: number): void;
         /**
          * @en Destroy joint
          * @zh 销毁关节
@@ -65116,20 +53074,8 @@ declare namespace Laya {
      * @zh 实现PhysX碰撞数据内容
      */
     class pxCollisionTool {
-        /**@internal */
-        static _collisionPool: Collision[];
-        /**@internal */
-        static _hitPool: HitResult[];
-        /**@internal */
-        static _tempV3: Vector3;
-        /**@internal */
-        static _contactPoint: ContactPoint;
         /**@ignore */
         constructor();
-        /**
-         * @internal
-         */
-        static getCollision(pxCollsionData: any, isTrigger: boolean): Collision;
         /**
          * @en Convert PhysX LayaQuaryResult to HitResult type
          * @param out The HitResult object to store the result
@@ -65346,11 +53292,7 @@ declare namespace Laya {
      * @zh `pxPhysicsManager` 类用于实现物理管理。
      */
     class pxPhysicsManager implements IPhysicsManager {
-        /** @internal 引擎更新物理列表*/
-        _physicsUpdateList: PhysicsUpdateList;
         _dynamicUpdateList: PhysicsUpdateList;
-        /** @internal */
-        _pxScene: any;
         /**
          * @en Fixed time step for physics simulation.
          * @zh 物理模拟的固定时间步长。
@@ -65361,24 +53303,10 @@ declare namespace Laya {
          * @zh 是否启用连续碰撞检测(CCD)。
          */
         enableCCD: boolean;
-        /**@internal 碰撞开始数据表*/
-        _contactCollisionsBegin: Map<number, Collision>;
-        /**@internal 碰撞持续数据表*/
-        _contactCollisionsPersist: Map<number, Collision>;
-        /**@internal 碰撞结束数据表*/
-        _contactCollisionsEnd: Map<number, Collision>;
-        /**@internal 触发数据开始列表*/
-        _triggerCollisionsBegin: Map<number, Collision>;
-        /**@internal 触发数据持续列表*/
-        _triggerCollisionsPersist: Map<number, Collision>;
-        /**@internal 触发数据结束列表*/
-        _triggerCollisionsEnd: Map<number, Collision>;
         _pxcontrollerManager: any;
         private _gravity;
         /**temp tranform object */
         private static _tempTransform;
-        /**@internal */
-        private static _tempVector30;
         /**
          * @en Create a new instance of `pxPhysicsManager`.
          * @param physicsSettings The physics settings to initialize the manager.
@@ -65489,10 +53417,6 @@ declare namespace Laya {
          */
         private _updatePhysicsTransformToRender;
         /**
-         * @internal
-         */
-        private _updatePhysicsTransformFromRender;
-        /**
          * @perfTag PerformanceDefine.T_Physics_Simulation
          * @en Update the physics simulation.
          * @param elapsedTime The elapsed time since the last update.
@@ -65597,8 +53521,6 @@ declare namespace Laya {
         private _staticFriction;
         private _bounceCombine;
         private _frictionCombine;
-        /** @internal */
-        _pxMaterial: any;
         /**
          * @en Creates a new pxPhysicsMaterial class.
          * @zh 创建一个新的pxPhysicsMaterial类。
@@ -65645,67 +53567,6 @@ declare namespace Laya {
          */
         destroy(): void;
     }
-    /** @internal */
-    class pxStatics {
-        static _foundation: any;
-        static _physX: any;
-        static _physics: any;
-        static _physXPVD: boolean;
-        static _PxPvdPort: any;
-        static _pvd: any;
-        static _PxPvdTransport: any;
-        static _physXSimulationCallbackInstance: any;
-        static _sceneDesc: any;
-        static _allocator: any;
-        static _tolerancesScale: any;
-        /**
-         * @en Create a Float32Array with allocated memory.
-         * @param length The length of the array.
-         * @zh 创建具有分配内存的Float32Array。
-         * @param length 数组的长度。
-         */
-        static createFloat32Array(length: number): {
-            ptr: number;
-            buffer: Float32Array;
-        };
-        /**
-         * @en Create a Uint32Array with allocated memory.
-         * @param length The length of the array.
-         * @zh 创建具有分配内存的Uint32Array。
-         * @param length 数组的长度。
-         */
-        static createUint32Array(length: number): {
-            ptr: number;
-            buffer: Uint32Array;
-        };
-        /**
-         * @en Create a Uint16Array with allocated memory.
-         * @param length The length of the array.
-         * @zh 创建具有分配内存的Uint16Array。
-         * @param length 数组的长度。
-         */
-        static createUint16Array(length: number): {
-            ptr: number;
-            buffer: Uint16Array;
-        };
-        /**
-         * @en Create a Uint8Array with allocated memory.
-         * @param length The length of the array.
-         * @zh 创建具有分配内存的Uint8Array。
-         * @param length 数组的长度。
-         */
-        static createUint8Array(length: number): {
-            ptr: number;
-            buffer: Uint8Array;
-        };
-        /**
-         * @en Free the allocated memory for a buffer.
-         * @param data The buffer object to free.
-         * @zh 释放为缓冲区分配的内存。
-         * @param data 要释放的缓冲区对象。
-         */
-        static freeBuffer(data: any): void;
-    }
     enum partFlag {
         eSOLVE_CONTACT = 1,
         eMODIFY_CONTACTS = 2,
@@ -65732,8 +53593,6 @@ declare namespace Laya {
      */
     class pxBoxColliderShape extends pxColliderShape implements IBoxColliderShape {
         private static _tempHalfExtents;
-        /** @internal */
-        private _size;
         /**
          * @en Creates a new instance of pxBoxColliderShape.
          * @zh 创建 pxBoxColliderShape 的新实例。
@@ -65764,23 +53623,12 @@ declare namespace Laya {
      * @zh 表示 PhysX 物理引擎中的胶囊碰撞器形状。
      */
     class pxCapsuleColliderShape extends pxColliderShape implements ICapsuleColliderShape {
-        /** @internal */
-        _radius: number;
-        /** @internal */
-        _halfHeight: number;
-        /**@internal in Physx capsule's height is X Axis, need to rotate*/
-        _rotation: Quaternion;
         private _upAxis;
         /**
          * @en Creates a new instance of pxCapsuleColliderShape.
          * @zh 创建 pxCapsuleColliderShape 的新实例。
          */
         constructor();
-        /**
-         * @internal
-         * rotate capusle in physx, physx capsule heigth is X axis
-         */
-        _setCapsuleRotation(): void;
         /**
          * @en Adds the shape to a collider.
          * @param collider The collider to add the shape to.
@@ -65853,12 +53701,8 @@ declare namespace Laya {
         _offset: Vector3;
         _scale: Vector3;
         _shapeFlags: ShapeFlag;
-        /** @internal */
-        _pxCollider: pxCollider;
         _pxShape: any;
         _pxGeometry: any;
-        /** @internal */
-        _pxMaterials: pxPhysicsMaterial[];
         _destroyed: boolean;
         _id: number;
         /**
@@ -65939,20 +53783,6 @@ declare namespace Laya {
      * @zh 表示 PhysX 物理引擎中的高度场形状。
      */
     class pxHeightFieldShape extends pxColliderShape implements IHeightFieldShape {
-        /**@internal */
-        private _numRows;
-        /**@internal */
-        private _numCols;
-        /**@internal */
-        private _heightData;
-        /**@internal */
-        private _flag;
-        /**@internal */
-        private _heightFiled;
-        /**@internal */
-        private _minHeight;
-        /**@internal */
-        private _maxHeight;
         /**@ignore */
         constructor();
         /**
@@ -66086,8 +53916,6 @@ declare namespace Laya {
      * @zh 表示物理引擎中的球体碰撞器形状。
      */
     class pxSphereColliderShape extends pxColliderShape implements ISphereColliderShape {
-        /**@internal */
-        private _radius;
         /**
          * @en Creates a new instance of pxSphereColliderShape.
          * @zh 创建一个新的 pxSphereColliderShape 实例。
@@ -66120,8 +53948,6 @@ declare namespace Laya {
         webSocketClass: new () => IWebSocket;
         protected _visibilityStateKey: string;
         protected _pixelRatio: number;
-        /** @internal */
-        _globalErrorCallback: (e: any) => void;
         constructor();
         protected init(): void;
         protected setPlatform(u: string, platform: string): void;
@@ -66362,8 +54188,6 @@ declare namespace Laya {
          */
         static g: IPlatformGlobalType;
         private static _classes;
-        /** @internal */
-        static __init__(): void;
         /**
          * @en Register a platform adapter.
          * @param name The name of the adapter.
@@ -66573,18 +54397,6 @@ declare namespace Laya {
          * @param right
          */
         sort(elements: FastSinglelist<IRenderElement3D>, isTransparent: boolean, left: number, right: number): void;
-        /**
-         * @internal
-         */
-        private _quickSort;
-        /**
-         * @internal
-         */
-        private _partitionRenderObject;
-        /**
-         * @internal
-         */
-        private _compare;
     }
     interface I2DRenderPassFactory {
         createRenderElement2D(): IRenderElement2D;
@@ -66609,6 +54421,8 @@ declare namespace Laya {
         create2DGraphicIndexDataView(wholeBuffer: I2DGraphicWholeBuffer, elementSize: number): I2DGraphicIndexDataView;
         create2DGraphicVertexBuffer(): I2DGraphicWholeBuffer;
         create2DGraphicIndexBuffer(): I2DGraphicWholeBuffer;
+        /** 创建仅跑 clip/alpha 流程的空 handle，用于无 2D 渲染节点但需继承父级裁剪的节点 */
+        createEmptyRenderDataHandle(): IRender2DDataHandle;
     }
     interface IRender2DCMD extends IRenderCMD {
         apply(context: IRenderContext2D): void;
@@ -66624,6 +54438,20 @@ declare namespace Laya {
         protected _clearColorValue: Color;
         protected _invertY: boolean;
         size: Vector2;
+        protected _viewportX: number;
+        protected _viewportY: number;
+        /**
+         * @en viewport x offset
+         * @zh 视口X偏移
+         */
+        get viewportX(): number;
+        set viewportX(value: number);
+        /**
+         * @en viewport y offset
+         * @zh 视口Y偏移
+         */
+        get viewportY(): number;
+        set viewportY(value: number);
         /**
          * @en Flip Y Rendering
          * @zh 翻转Y轴渲染
@@ -66701,7 +54529,8 @@ declare namespace Laya {
         passData: ShaderData;
         setRenderTarget(value: InternalRenderTarget, clear: boolean, clearColor: Color): void;
         getRenderTarget(): InternalRenderTarget;
-        setOffscreenView(width: number, height: number): void;
+        setOffscreenView(width: number, height: number, x?: number, y?: number): void;
+        getOffscreenView(out: Vector4): void;
         drawRenderElementOne(node: IRenderElement2D): void;
         drawRenderElementList(list: SingletonList<IRenderElement2D>): number;
         runOneCMD(cmd: IRenderCMD): void;
@@ -66721,13 +54550,21 @@ declare namespace Laya {
         nodeCommonMap: Array<string>;
         owner: IRenderStruct2D;
         destroy(): void;
-        /** @internal 在合批过程中需要收集 */
-        _index?: number;
     }
     /**
      * @blueprintIgnore @blueprintIgnoreSubclasses
      */
     interface IPrimitiveRenderElement2D extends IRenderElement2D {
+        /**
+         * @en Type key encoding blend mode and flags: blendShader | useCustomMaterial | mc | hasFillTexture.
+         * @zh 类型键编码混合模式和标志位：blendShader | useCustomMaterial | mc | hasFillTexture。
+         */
+        typeKey: number;
+        /**
+         * @en Texture key encoding per-element shader define bits and texture ID.
+         * @zh 纹理键编码逐元素着色器宏定义位和纹理ID。
+         */
+        textureKey: number;
         primitiveShaderData: ShaderData;
     }
     /**
@@ -67138,28 +54975,23 @@ declare namespace Laya {
         private _context;
         constructor();
         /**
-         * @internal
-         */
-        getResource(): IComputeContext;
-        /**
             * 清理所有指令
             */
         clearCMDs(): void;
         /**
          * @en Adds a command to run a ComputeShader.
          * @param computeshader The ComputeShader instance to run.
-         * @param kernel The name of the kernel in the ComputeShader.
          * @param shaderDefine The shader define data.
          * @param datas The list of ShaderData to pass to the shader.
          * @param dispatchParams The dispatch parameters, typically a Vector3 representing the workgroup size
          * @zh 添加运行ComputeShader的命令
          * @param computeshader 计算着色器实例
-         * @param kernel 计算着色器的内核名称
          * @param shaderDefine 着色器定义数据
          * @param datas 需要传递给着色器的数据列表
          * @param dispatchParams 调度参数，通常是一个Vector3，表示计算的工作组大小。
          */
         addDispatchCommand(computeshader: ComputeShader, shaderDefine: IDefineDatas, datas: ShaderData[], dispatchParams: Vector3): void;
+        addDispatchIndirectCommand(computeshader: ComputeShader, shaderDefine: IDefineDatas, datas: ShaderData[], indirectBuffer: IDeviceBuffer, indirectOffset: number): void;
         /**
          * 添加修改ShaderData值的命令
          * @param shaderData 要修改的ShaderData
@@ -67217,23 +55049,13 @@ declare namespace Laya {
         destroy(): void;
     }
     class ComputeShader {
-        /**@internal */
-        static _CompileShader: Record<string, ComputeShader>;
         static createComputeShader(name: string, code: string, other: any): ComputeShader;
-        /** @internal */
-        protected _cacheSharders: any;
-        /** @internal */
-        protected _cacheShaderHierarchy: number;
         name: string;
         node: ShaderNode;
         uniformMaps: CommandUniformMap[];
         constructor(name: string, node: IComputeShaderCompileObj, uniformMaps: CommandUniformMap[]);
         private setCacheShader;
         getCacheShader(compileDefine: IDefineDatas): IComputeShader;
-        /**
-      * @internal
-      */
-        _resizeCacheShaderMap(cacheMap: any, hierarchy: number, resizeLength: number): void;
     }
     interface IGPUBuffer {
         getNativeBuffer(): any;
@@ -67265,6 +55087,12 @@ declare namespace Laya {
         shaderData: ShaderData[];
         dispatchParams: Vector3;
     }
+    interface IComputeCMD_DispatchIndirect {
+        shader: IComputeShader;
+        shaderData: ShaderData[];
+        indirectBuffer: IGPUBuffer;
+        indirectOffset: number;
+    }
     class CopyTextureInfo {
         texture: InternalTexture;
         mipLevel: number;
@@ -67280,6 +55108,11 @@ declare namespace Laya {
          * @param cmd 计算着色器调度命令
          */
         addDispatchCommand(cmd: IComputeCMD_Dispatch): void;
+        /**
+         * 添加间接调度ComputeShader的命令
+         * @param cmd 计算着色器间接调度命令
+         */
+        addDispatchIndirectCommand(cmd: IComputeCMD_DispatchIndirect): void;
         /**
          * 添加修改ShaderData值的命令
          * @param shaderData 要修改的ShaderData
@@ -67502,11 +55335,10 @@ declare namespace Laya {
         createComputeShader?(info: ComputeShaderProcessInfo): IComputeShader;
         createComputeContext?(): IComputeContext;
         createDeviceBuffer?(type: EDeviceBufferUsage): IDeviceBuffer;
+        createDeviceVertexBuffer?(type: EDeviceBufferUsage): IVertexBuffer;
     }
     interface IRenderEngine {
         _context: any;
-        /**@internal */
-        _isShaderDebugMode: boolean;
         _framePassCount: number;
         _remapZ: boolean;
         _screenInvertY: boolean;
@@ -67640,6 +55472,7 @@ declare namespace Laya {
         instanceBuffer: boolean;
         setData(buffer: ArrayBufferLike, bufferOffset: number, dataStartIndex: number, dataCount: number): void;
         setDataLength(byteLength: number): void;
+        getStorageBuffer(): IDeviceBuffer;
         destroy(): void;
     }
     enum ShaderDataType {
@@ -67675,17 +55508,7 @@ declare namespace Laya {
      * 着色器数据类。
      */
     class ShaderData implements IClone {
-        /**@internal */
-        readonly _ownerResource: Resource;
-        /**
-         * @internal
-         */
-        constructor(ownerResource?: Resource);
         getDefineData(): IDefineDatas;
-        /**
-         * @internal
-         */
-        getData(): any;
         /**
          * 增加Shader宏定义。
          * @param define 宏定义。
@@ -67903,10 +55726,6 @@ declare namespace Laya {
     class UniformBufferBlock {
         private static _idCounter;
         private _destroyed;
-        /**
-         * @internal
-         */
-        _id: number;
         cluster: UniformBufferCluster;
         index: number;
         offset: number;
@@ -67930,18 +55749,6 @@ declare namespace Laya {
      */
     class UniformBufferCluster {
         static _idCounter: number;
-        /**
-         * @internal
-         */
-        _inManagerUpdateArray: boolean;
-        /**
-         * @internal
-         */
-        _sn: number;
-        /**
-         * @internal
-         */
-        _id: number;
         protected _blockNum: number;
         protected _move: Uint8Array;
         protected _destroyed: boolean;
@@ -67949,10 +55756,6 @@ declare namespace Laya {
         protected _blocks: UniformBufferBlock[];
         protected _needUpload: Array<boolean>;
         protected _holeNum: number;
-        /**
-         * @internal
-         */
-        _blockSize: number;
         private _expand;
         buffer: any;
         data: ArrayBuffer;
@@ -68356,7 +56159,6 @@ declare namespace Laya {
         createSpineRenderDataHandle(): ISpineRenderDataHandle;
         createRender2DPass(): IRender2DPass;
         createRenderStruct2D(): IRenderStruct2D;
-        createRender2DDataHandle(): IRender2DDataHandle;
         create2D2DPrimitiveDataHandle(): I2DPrimitiveDataHandle;
         create2DBaseRenderDataHandle(): I2DBaseRenderDataHandle;
         createMesh2DRenderDataHandle(): IMesh2DRenderDataHandle;
@@ -68368,8 +56170,11 @@ declare namespace Laya {
         createRenderElement2D(): IRenderElement2D;
         createPrimitiveRenderElement2D(): IPrimitiveRenderElement2D;
         createRenderContext2D(): IRenderContext2D;
+        createEmptyRenderDataHandle(): IRender2DDataHandle;
     }
     class NoRenderElement2D implements IRenderElement2D {
+        typeKey: number;
+        textureKey: number;
         type: number;
         owner: IRenderStruct2D;
         nodeCommonMap: string[];
@@ -68389,7 +56194,8 @@ declare namespace Laya {
         invertY: boolean;
         pipelineMode: string;
         setRenderTarget(value: InternalRenderTarget, clear: boolean, clearColor: Color): void;
-        setOffscreenView(width: number, height: number): void;
+        setOffscreenView(width: number, height: number, x?: number, y?: number): void;
+        getOffscreenView(out: Vector4): void;
         drawRenderElementOne(node: IRenderElement2D): void;
         drawRenderElementList(list: SingletonList<IRenderElement2D>): number;
         runOneCMD(cmd: IRenderCMD): void;
@@ -68595,6 +56401,7 @@ declare namespace Laya {
     class NoRenderVertexBuffer implements IVertexBuffer {
         vertexDeclaration: VertexDeclaration;
         instanceBuffer: boolean;
+        getStorageBuffer(): IDeviceBuffer;
         setData(buffer: ArrayBuffer, bufferOffset: number, dataStartIndex: number, dataCount: number): void;
         setDataLength(byteLength: number): void;
         destroy(): void;
@@ -68619,15 +56426,7 @@ declare namespace Laya {
         destroy(): void;
     }
     class NoRenderShaderData extends ShaderData {
-        /**@internal */
-        _data: any;
-        /** @internal */
-        _defineDatas: WebDefineDatas;
         getDefineData(): WebDefineDatas;
-        /**
-         * @internal
-         */
-        getData(): any;
         /**
          * @ignore
          */
@@ -68849,16 +56648,8 @@ declare namespace Laya {
         resizeOffScreen(width: number, height: number): void;
         endFrame(): void;
         startFrame(): void;
-        /**@internal */
-        private _propertyNameMap;
-        /**@internal */
-        private _propertyNameCounter;
         propertyNameToID(name: string): number;
         propertyIDToName(id: number): string;
-        /**@internal */
-        private static _defineMap;
-        /**@internal */
-        private static _defineCounter;
         static _maskMap: Array<{
             [key: number]: string;
         }>;
@@ -68963,6 +56754,18 @@ declare namespace Laya {
          */
         get clearColor(): boolean;
         set clearColor(value: boolean);
+        /**
+         * @en viewport x offset
+         * @zh 视口X偏移
+         */
+        get viewportX(): number;
+        set viewportX(value: number);
+        /**
+         * @en viewport y offset
+         * @zh 视口Y偏移
+         */
+        get viewportY(): number;
+        set viewportY(value: number);
     }
     class GLESDraw2DElementCMD extends Draw2DElementCMD {
         private _elemets;
@@ -69001,6 +56804,18 @@ declare namespace Laya {
         set offsetScale(value: Vector4);
     }
     class GLESPrimitiveRenderElement2D extends GLESRenderElement2D implements IPrimitiveRenderElement2D {
+        /**
+         * @en Type key proxied to native object's type field.
+         * @zh 类型键代理到原生对象的 type 字段。
+         */
+        set typeKey(value: number);
+        get typeKey(): number;
+        /**
+         * @en Texture key encoding shader define bits + texture ID. Proxied to native.
+         * @zh 纹理键编码着色器宏定义位和纹理ID。代理到原生对象。
+         */
+        set textureKey(value: number);
+        get textureKey(): number;
         protected init(): void;
         private _primitiveShaderData;
         get primitiveShaderData(): GLESShaderData;
@@ -69029,16 +56844,17 @@ declare namespace Laya {
         createRenderContext2D(): GLESRenderContext2D;
         createRender2DPass(): IRender2DPass;
         createRenderStruct2D(): IRenderStruct2D;
+        createEmptyRenderDataHandle(): IRender2DDataHandle;
     }
     class GLESRenderContext2D implements IRenderContext2D {
         static isCreateBlitScreenELement: boolean;
         static blitScreenElement: GLESRenderElement2D;
         private _tempList;
-        /**
-         * @internal
-         */
-        _nativeObj: any;
         private _dist;
+        private _offscreenX;
+        private _offscreenY;
+        private _offscreenWidth;
+        private _offscreenHeight;
         get invertY(): boolean;
         set invertY(value: boolean);
         get pipelineMode(): string;
@@ -69051,7 +56867,8 @@ declare namespace Laya {
         drawRenderElementList(list: FastSinglelist<GLESRenderElement2D>): number;
         setRenderTarget(value: GLESInternalRT, clear: boolean, clearColor: Color): void;
         getRenderTarget(): GLESInternalRT;
-        setOffscreenView(width: number, height: number): void;
+        setOffscreenView(width: number, height: number, x?: number, y?: number): void;
+        getOffscreenView(out: Vector4): void;
         drawRenderElementOne(node: GLESRenderElement2D): void;
         runOneCMD(cmd: IRenderCMD): void;
         runCMDList(cmds: IRenderCMD[]): void;
@@ -69074,8 +56891,6 @@ declare namespace Laya {
         get globalShaderData(): GLESShaderData;
         get subShader(): SubShader;
         set subShader(value: SubShader);
-        /**@internal */
-        _nativeObj: any;
         protected init(): void;
         constructor();
         _owner: IRenderStruct2D;
@@ -69111,8 +56926,6 @@ declare namespace Laya {
         protected _destShaderData: GLESShaderData;
         protected _destSubShader: SubShader;
         protected _subMeshIndex: number;
-        /**@internal */
-        _nativeObj: any;
         get node(): RTBaseRenderNode;
         set node(value: RTBaseRenderNode);
         get destShaderData(): GLESShaderData;
@@ -69131,8 +56944,6 @@ declare namespace Laya {
         protected _scissor: Vector4;
         protected _offsetScale: Vector4;
         protected _element: GLESRenderElement3D;
-        /**@internal */
-        _nativeObj: any;
         get dest(): GLESInternalRT;
         set dest(value: GLESInternalRT);
         get viewport(): Viewport;
@@ -69149,16 +56960,12 @@ declare namespace Laya {
     }
     class GLESDrawElementCMDData extends DrawElementCMDData {
         type: RenderCMDType;
-        /**@internal */
-        _nativeObj: any;
         private _elemets;
         constructor();
         setRenderelements(value: GLESRenderElement3D[]): void;
     }
     class GLESSetViewportCMD extends SetViewportCMD {
         type: RenderCMDType;
-        /**@internal */
-        _nativeObj: any;
         protected _viewport: Viewport;
         protected _scissor: Vector4;
         get viewport(): Viewport;
@@ -69169,8 +56976,6 @@ declare namespace Laya {
     }
     class GLESSetRenderTargetCMD extends SetRenderTargetCMD {
         type: RenderCMDType;
-        /**@internal */
-        _nativeObj: any;
         protected _rt: GLESInternalRT;
         protected _clearFlag: number;
         protected _clearColorValue: Color;
@@ -69295,6 +57100,11 @@ declare namespace Laya {
          * @param cmd 计算调度命令信息
          */
         addDispatchCommand(cmd: IComputeCMD_Dispatch): void;
+        /**
+         * 添加间接调度计算命令
+         * @param cmd 间接调度命令信息
+         */
+        addDispatchIndirectCommand(cmd: IComputeCMD_DispatchIndirect): void;
         /**
          * 添加设置着色器数据命令
          * @param shaderData 着色器数据
@@ -69452,17 +57262,8 @@ declare namespace Laya {
     }
     class GLESCommandUniformMap extends CommandUniformMap {
         _nativeObj: any;
-        /**@internal */
-        _idata: Map<number, UniformProperty>;
         _stateName: string;
         constructor(stateName: string);
-        /**
-         * 增加一个Uniform参数，如果Uniform属性是Array，请使用addShaderUniformArray
-         * @internal
-         * @param propertyID
-         * @param propertyKey
-         */
-        addShaderUniform(propertyID: number, propertyKey: string, uniformtype: ShaderDataType, options?: UniformOptions): void;
         /**
          * 增加一个UniformArray参数
          */
@@ -69550,43 +57351,8 @@ declare namespace Laya {
         get _depthTexture(): InternalTexture;
         dispose(): void;
     }
-    /** @internal */
-    class GLESInternalTex implements InternalTexture {
-        _nativeObj: any;
-        constructor(nativeObj: any);
-        get wrapU(): WrapMode;
-        set wrapU(value: WrapMode);
-        get wrapV(): WrapMode;
-        set wrapV(value: WrapMode);
-        get wrapW(): WrapMode;
-        set wrapW(value: WrapMode);
-        set baseMipmapLevel(value: number);
-        get baseMipmapLevel(): number;
-        set maxMipmapLevel(value: number);
-        get maxMipmapLevel(): number;
-        get compareMode(): TextureCompareMode;
-        set compareMode(value: TextureCompareMode);
-        get anisoLevel(): number;
-        set anisoLevel(value: number);
-        get filterMode(): FilterMode;
-        set filterMode(value: FilterMode);
-        get mipmapCount(): number;
-        get mipmap(): boolean;
-        get isPotSize(): boolean;
-        get useSRGBLoad(): boolean;
-        get depth(): number;
-        get gammaCorrection(): number;
-        set gammaCorrection(value: number);
-        get resource(): any;
-        get width(): number;
-        get height(): number;
-        get gpuMemory(): number;
-        dispose(): void;
-    }
     class GLESSetRenderData extends SetRenderDataCMD {
         type: RenderCMDType;
-        /**@internal */
-        _nativeObj: any;
         protected _dataType: ShaderDataType;
         protected _propertyID: number;
         protected _dest: GLESShaderData;
@@ -69611,8 +57377,6 @@ declare namespace Laya {
     }
     class GLESSetShaderDefine extends SetShaderDefineCMD {
         type: RenderCMDType;
-        /**@internal */
-        _nativeObj: any;
         protected _define: RTShaderDefine;
         protected _dest: GLESShaderData;
         protected _add: boolean;
@@ -69642,11 +57406,8 @@ declare namespace Laya {
     }
     class GLESRenderGeometryElement implements IRenderGeometryElement {
         private _bufferState;
-        /**@internal */
         drawParams: FastSinglelist<number>;
         _nativeObj: any;
-        /**@internal */
-        constructor(mode: MeshTopology, drawType: DrawType);
         getDrawDataParams(out: FastSinglelist<number>): void;
         setDrawArrayParams(first: number, count: number): void;
         setDrawElemenParams(count: number, offset: number): void;
@@ -69676,15 +57437,7 @@ declare namespace Laya {
         _deviceBufferData: {
             [key: number]: IDeviceBuffer;
         };
-        /**
-         * @internal
-         */
-        constructor(ownerResource?: Resource, createNativeObj?: boolean);
         getDefineData(): RTDefineDatas;
-        /**
-         * @internal
-         */
-        getData(): any;
         clearData(): void;
         /**
          * @ignore
@@ -69833,8 +57586,6 @@ declare namespace Laya {
          * @param value 纹理。
          */
         setTexture(index: number, value: BaseTexture): void;
-        /**@internal */
-        _setInternalTexture(index: number, value: InternalTexture): void;
         /**
          * 获取纹理。
          * @param index shader索引。
@@ -69849,26 +57600,6 @@ declare namespace Laya {
          */
         clone(): GLESShaderData;
         destroy(): void;
-    }
-    /**
-     * @internal
-     * <code>ShaderInstance</code> 类用于实现ShaderInstance。
-     */
-    class GLESShaderInstance implements IShaderInstance {
-        _nativeObj: any;
-        /**@internal */
-        private _shaderPass;
-        /**@internal */
-        private _attributeMapTemp;
-        constructor();
-        _serializeShader(): ArrayBuffer;
-        _deserialize(buffer: ArrayBuffer): boolean;
-        _create(shaderProcessInfo: ShaderProcessInfo, shaderPass: ShaderPass): void;
-        /**
-         * @inheritDoc
-         * @override
-         */
-        _disposeResource(): void;
     }
     class GLESTextureContext implements ITextureContext {
         needBitmap: boolean;
@@ -69920,18 +57651,11 @@ declare namespace Laya {
         _nativeObj: any;
         constructor(targetType: BufferTargetType, bufferUsageType: BufferUsage);
         private _vertexDeclaration;
-        /**@internal */
-        _shaderValues: {
-            [key: number]: VertexStateContext;
-        };
-        /**@internal */
-        private _attributeMapTemp;
-        /**@internal */
-        private _bufferRef;
         get vertexDeclaration(): VertexDeclaration;
         set vertexDeclaration(value: VertexDeclaration);
         get instanceBuffer(): boolean;
         set instanceBuffer(value: boolean);
+        getStorageBuffer(): IDeviceBuffer;
         setData(buffer: ArrayBuffer, bufferOffset: number, dataStartIndex: number, dataCount: number): void;
         setDataLength(byteLength: number): void;
         destroy(): void;
@@ -70044,6 +57768,7 @@ declare namespace Laya {
         needRender(): boolean;
         setClearColor(r: number, g: number, b: number, a: number): void;
         fowardRender(context: IRenderContext2D): void;
+        updatePostProcess(): void;
         destroy(): void;
     }
     /** @ignore @blueprintIgnore */
@@ -70066,6 +57791,8 @@ declare namespace Laya {
      */
     interface IRenderStruct2D {
         subStruct: IRenderStruct2D;
+        /** 手动渲染模式：子节点不参与父 pass 的自动遍历和渲染 */
+        manualRender: boolean;
         owner: Sprite;
         zIndex: number;
         stackingRoot: boolean;
@@ -70149,6 +57876,7 @@ declare namespace Laya {
         lightProbUpdateMark: number;
         irradientMode: IrradianceMode;
         ismoved: Vector2;
+        perCameraUpdate: boolean;
         set_renderUpdatePreCall(call: any, fun: any): void;
         set_caculateBoundingBox(call: any, fun: any): void;
         /**
@@ -70156,26 +57884,11 @@ declare namespace Laya {
          */
         setRenderelements(value: IRenderElement3D[]): void;
         /**
-         * @internal
-         * @param value
-         */
-        setLightmapScaleOffset(value: Vector4): void;
-        /**
-         * @internal
-         * @param value
-         */
-        setCommonUniformMap(value: string[]): void;
-        /**
          * 设置基于RenderNode的渲染数据
          * @param dataSlot
          * @param data
          */
         setNodeCustomData(dataSlot: ENodeCustomData, data: number): void;
-        /**
-         * @override
-         * @internal
-         */
-        destroy(): void;
         _applyLightProb(): void;
         _applyReflection(): void;
     }
@@ -70231,44 +57944,8 @@ declare namespace Laya {
         shadowNearPlane: number;
     }
     interface ILightMapData {
-        /**@internal */
-        lightmapColor: InternalTexture;
-        /**@internal */
-        lightmapDirection: InternalTexture;
-        /**@internal */
-        destroy(): void;
     }
     interface IReflectionProbeData {
-        /** @internal */
-        _id: number;
-        /**@internal */
-        boxProjection: boolean;
-        /**@internal */
-        bound: Bounds;
-        /**@internal */
-        ambientMode: AmbientMode;
-        /**@internal */
-        ambientIntensity: number;
-        /**@internal */
-        reflectionIntensity: number;
-        /**@internal */
-        reflectionTexture: InternalTexture;
-        /**@internal */
-        iblTex: InternalTexture;
-        /**@internal */
-        updateMark: number;
-        /**@internal */
-        iblTexRGBD: boolean;
-        /**@internal */
-        shaderData: ShaderData;
-        /**@internal */
-        setProbePosition(value: Vector3): void;
-        /**@internal */
-        setAmbientColor(value: Color): void;
-        /**@internal */
-        setAmbientSH(value: Float32Array): void;
-        /**@internal */
-        destroy(): void;
     }
     interface IVolumetricGIData {
         _id: number;
@@ -70312,18 +57989,6 @@ declare namespace Laya {
     }
     /** @ignore */
     interface IDefineDatas {
-        /**
-         * @internal
-         */
-        _mask: Array<number>;
-        /**
-         * @internal
-         */
-        _length: number;
-        /**
-         * @internal
-         */
-        _intersectionDefineDatas(define: IDefineDatas): void;
         add(define: ShaderDefine): void;
         remove(define: ShaderDefine): void;
         addDefineDatas(define: IDefineDatas): void;
@@ -70471,8 +58136,6 @@ declare namespace Laya {
         static STENCILOP_DECR_WRAP: number;
         /**按位反转当前的模板缓冲区的值*/
         static STENCILOP_INVERT: number;
-        /** @internal */
-        static readonly Default: Readonly<RenderState>;
         /**渲染剔除状态。*/
         private _cull;
         get cull(): number;
@@ -70567,18 +58230,9 @@ declare namespace Laya {
         set depthBiasClamp(value: number);
         protected createObj(): void;
         /**
-         * @internal
-         * 表示渲染状态 hash 值，
-         */
-        hash: string;
-        /**
          * 创建一个 <code>RenderState</code> 实例。
          */
         constructor();
-        /**
-         * @internal
-         */
-        setNull(): void;
         /**
          * 克隆
          * @param dest
@@ -70621,10 +58275,6 @@ declare namespace Laya {
         get buffer(): IVertexBuffer;
         set buffer(value: IVertexBuffer);
         constructor();
-        /**
-         * @internal
-         */
-        _setData(data: ArrayLike<number>, view: RT2DGraphic2DVertexDataView): void;
         _addDataView(dataView: I2DGraphicBufferDataView): void;
         removeDataView(dataView: I2DGraphicBufferDataView): void;
         destroy(): void;
@@ -70684,6 +58334,7 @@ declare namespace Laya {
         set doClearColor(value: boolean);
         get doClearColor(): boolean;
         postProcess: PostProcess2D;
+        private _enablePostProcess;
         private _mask;
         set mask(value: RTRenderStruct2D);
         get mask(): RTRenderStruct2D;
@@ -70710,7 +58361,8 @@ declare namespace Laya {
          * @param context
          */
         fowardRender(context: GLESRenderContext2D): void;
-        private renderCallBack;
+        updatePostProcess(): void;
+        private _getRenderCMDArray;
         destroy(): void;
     }
     class RTRender2DPassManager implements IRender2DPassManager {
@@ -70732,6 +58384,12 @@ declare namespace Laya {
         set needUseMatrix(value: boolean);
         destroy(): void;
         inheriteRenderData(context: GLESRenderContext2D): void;
+    }
+    /** 空 handle，仅跑通 clip/alpha 流程；无原生实现时使用 dummy 对象 */
+    class RTEmptyRender2DDataHandle extends RTRender2DDataHandle {
+        constructor();
+        inheriteRenderData(_context: GLESRenderContext2D): void;
+        destroy(): void;
     }
     class RTGraphics2DBufferBlock implements IGraphics2DBufferBlock {
         private _vertexs;
@@ -70826,6 +58484,10 @@ declare namespace Laya {
     class RTRenderStruct2D implements IRenderStruct2D {
         _nativeObj: any;
         owner: Sprite;
+        /** 手动渲染模式：子节点不参与父 pass 的自动遍历和渲染 */
+        private _manualRender;
+        get manualRender(): boolean;
+        set manualRender(value: boolean);
         get globalAlpha(): number;
         private _clipRect;
         private _dcOptimize;
@@ -70957,8 +58619,6 @@ declare namespace Laya {
         private _clearFlag;
         get clearFlag(): number;
         set clearFlag(value: number);
-        /**@internal */
-        private _cameraCullInfo;
         setCameraCullInfo(value: Camera, sceneManager: ISceneRenderManager): void;
         setViewPort(value: Viewport): void;
         setScissor(value: Vector4): void;
@@ -70979,12 +58639,8 @@ declare namespace Laya {
         set enableSpotLightShadowPass(value: boolean);
         get enablePostProcess(): boolean;
         set enablePostProcess(value: boolean);
-        /**@internal */
-        private _postProcess;
         get postProcess(): CommandBuffer;
         set postProcess(value: CommandBuffer);
-        /**@internal */
-        private _finalize;
         get finalize(): CommandBuffer;
         set finalize(value: CommandBuffer);
         private _dirLightShadowPass;
@@ -71019,28 +58675,6 @@ declare namespace Laya {
         renderFowarAddCameraPass(context: IRenderContext3D, renderpass: RTForwardAddRP): void;
     }
     class NativeBounds implements IClone {
-        /**@internal */
-        static BOUNDS_MIN_DATAOFFSET: number;
-        /**@internal */
-        static BOUNDS_MAX_DATAOFFSET: number;
-        /**@internal */
-        static BOUNDS_CENTER_DATAOFFSET: number;
-        /**@internal */
-        static BOUNDS_EXTENT_DATAOFFSET: number;
-        /**@internal */
-        static BOUNDS_SHARE_MEMORY_SIZE: number;
-        /**@internal	*/
-        nativeMemory: NativeMemory;
-        /**@internal	*/
-        float32Array: Float32Array;
-        /**@internal	*/
-        _nativeObj: any;
-        /**@internal	*/
-        _center: Vector3;
-        /**@internal	*/
-        _extent: Vector3;
-        /**@internal */
-        private _boundBox;
         get min(): Vector3;
         set min(value: Vector3);
         get max(): Vector3;
@@ -71091,10 +58725,6 @@ declare namespace Laya {
          * @param max  max 最大坐标。
          */
         constructor(min?: Vector3, max?: Vector3);
-        /**
-         * @internal
-         */
-        _tranform(matrix: Matrix4x4, out: NativeBounds): void;
         _getBoundBox(): BoundBox;
         /**
          * @returns -1为不相交 不为0的时候返回值为相交体积
@@ -71216,12 +58846,12 @@ declare namespace Laya {
          */
         set_caculateBoundingBox(call: any, fun: any): void;
         _nativeObj: any;
-        /**@internal */
-        _defaultBaseGeometryBounds: Bounds;
         protected _getNativeObj(): void;
         private _additionShaderData;
         get additionShaderData(): Map<string, ShaderData>;
         set additionShaderData(value: Map<string, ShaderData>);
+        get perCameraUpdate(): boolean;
+        set perCameraUpdate(value: boolean);
         constructor();
         get visibalRangeBit(): number;
         set visibalRangeBit(value: number);
@@ -71274,10 +58904,6 @@ declare namespace Laya {
         constructor();
     }
     class RTLightmapData implements ILightMapData {
-        /**@internal */
-        _lightmapColor: InternalTexture;
-        /**@internal */
-        _lightmapDirection: InternalTexture;
         _nativeObj: any;
         constructor();
         get lightmapColor(): InternalTexture;
@@ -71313,8 +58939,6 @@ declare namespace Laya {
     }
     class RTReflectionProb implements IReflectionProbeData {
         private static _idCounter;
-        /** @internal */
-        _id: number;
         get boxProjection(): boolean;
         set boxProjection(value: boolean);
         private _bound;
@@ -71338,8 +58962,6 @@ declare namespace Laya {
         set iblTexRGBD(value: boolean);
         setProbePosition(value: Vector3): void;
         setAmbientColor(value: Color): void;
-        /**@internal */
-        private _ambientSH;
         setAmbientSH(value: Float32Array): void;
         _nativeObj: any;
         constructor();
@@ -71350,10 +58972,6 @@ declare namespace Laya {
     }
     class RTScene3DRenderManager implements ISceneRenderManager {
         _nativeObj: any;
-        /** @internal */
-        _list: SingletonList<BaseRender>;
-        /**@internal 合批队列 */
-        batchAgentList: Map<number, IBatchModuleAgent>;
         baseRenderList: SingletonList<IBaseRenderNode>;
         /**
         * @en The list of render objects.
@@ -71422,62 +59040,6 @@ declare namespace Laya {
         setDirection(value: Vector3): void;
     }
     class RTTransform3D extends Transform3D {
-        /**@internal */
-        static TRANSFORM_LOCALQUATERNION_DATAOFFSET: number;
-        /**@internal */
-        static TRANSFORM_LOCALEULER_DATAOFFSET: number;
-        /**@internal */
-        static TRANSFORM_LOCALPOS_DATAOFFSET: number;
-        /**@internal */
-        static TRANSFORM_LOCALSCALE_DATAOFFSET: number;
-        /**@internal */
-        static TRANSFORM_LOCALMATRIX_DATAOFFSET: number;
-        /**@internal */
-        static TRANSFORM_WORLDQUATERNION_DATAOFFSET: number;
-        /**@internal */
-        static TRANSFORM_WORLDEULER_DATAOFFSET: number;
-        /**@internal */
-        static TRANSFORM_WORLDPOS_DATAOFFSET: number;
-        /**@internal */
-        static TRANSFORM_WORLDSCALE_DATAOFFSET: number;
-        /**@internal */
-        static TRANSFORM_WORLDMATRIX_DATAOFFSET: number;
-        /**@internal */
-        static TRANSFORM_CHANGEFLAG_DATAOFFSET: number;
-        /**@internal */
-        static TRANSFORM_RT_SYNC_FLAG_DATAOFFSET: number;
-        /**@internal */
-        static TRANSFORM_SHARE_MEMORY_SIZE: number;
-        /** @internal */
-        protected _owner: Sprite3D;
-        /** @internal */
-        protected _localPosition: Vector3;
-        /** @internal */
-        protected _localRotation: Quaternion;
-        /** @internal */
-        protected _localScale: Vector3;
-        /**@internal */
-        protected _localRotationEuler: Vector3;
-        /** @internal */
-        protected _localMatrix: Matrix4x4;
-        /** @internal */
-        protected _position: Vector3;
-        /** @internal */
-        protected _rotation: Quaternion;
-        /** @internal */
-        protected _scale: Vector3;
-        /**@internal */
-        protected _rotationEuler: Vector3;
-        /** @internal */
-        protected _worldMatrix: Matrix4x4;
-        /**@internal runtime同步标记*/
-        _rtSyncFlag: number;
-        /**@internal 如果为true 表示自身相对于父节点并无任何改变，将通过这个参数忽略计算*/
-        protected _isDefaultMatrix: boolean;
-        /**@internal */
-        protected _faceInvert: boolean;
-        /**@internal */
-        protected _frontFaceValue: number;
         /**native Share Memory */
         private _nativeMemory;
         private _nativeFloat32Buffer;
@@ -71489,18 +59051,6 @@ declare namespace Laya {
          * 是否未DefaultMatrix
          */
         get isDefaultMatrix(): boolean;
-        /**
-         * @internal
-         */
-        protected _setTransformFlag(type: number, value: boolean): void;
-        /**
-         * @internal
-         */
-        protected _getTransformFlag(type: number): boolean;
-        /**
-         * @internal
-         */
-        protected _getRTSyncFlag(type: number): boolean;
         protected _setRTSyncFlag(type: number, value: boolean): void;
         get _RTtransformFlag(): number;
         /**
@@ -71579,34 +59129,6 @@ declare namespace Laya {
         get worldMatrix(): Matrix4x4;
         set worldMatrix(value: Matrix4x4);
         /**
-         * @internal
-         */
-        _setParent(value: Transform3D): void;
-        /**
-         * @internal
-         */
-        protected _onWorldPositionRotationTransform(): void;
-        /**
-         * @internal
-         */
-        protected _onWorldPositionScaleTransform(): void;
-        /**
-         * @internal
-         */
-        protected _onWorldPositionTransform(): void;
-        /**
-         * @internal
-         */
-        protected _onWorldRotationTransform(): void;
-        /**
-         * @internal
-         */
-        protected _onWorldScaleTransform(): void;
-        /**
-         * @internal
-         */
-        _onWorldTransform(): void;
-        /**
          * 平移变换。
          * @param translation 移动距离。
          * @param isLocal 是否局部空间。
@@ -71638,10 +59160,6 @@ declare namespace Laya {
         set intensity(value: number);
         get updateMark(): number;
         set updateMark(value: number);
-        /**@internal */
-        _nativeObj: any;
-        /**@internal */
-        _defaultBounds: Bounds;
         _shaderData: ShaderData;
         set shaderData(value: ShaderData);
         get shaderData(): ShaderData;
@@ -71669,12 +59187,6 @@ declare namespace Laya {
     }
     class NativeMemory {
         static NativeSourceID: number;
-        /**@internal 共享内存数据 */
-        _buffer: ArrayBuffer;
-        /**@internal 显示数据 */
-        static _sharedBuffer: ArrayBuffer;
-        /**@internal 显示数据 */
-        protected _idata: Int32Array;
         protected _uidata: Uint32Array;
         protected _uint16data: Uint16Array;
         protected _fdata: Float32Array;
@@ -71724,10 +59236,6 @@ declare namespace Laya {
         set _length(value: number);
         get _mask(): number[];
         set _mask(value: number[]);
-        /**
-         * @internal
-         */
-        _intersectionDefineDatas(define: RTDefineDatas): void;
         add(define: RTShaderDefine): void;
         remove(define: RTShaderDefine): void;
         addDefineDatas(define: RTDefineDatas): void;
@@ -71817,8 +59325,6 @@ declare namespace Laya {
         get nodeCommonMap(): string[];
         set nodeCommonMap(value: string[]);
         attributeLocations: Set<number>;
-        /** @internal */
-        static getGlobalCompileDefine(): RTDefineDatas;
         get statefirst(): boolean;
         set statefirst(value: boolean);
         private _renderState;
@@ -71891,12 +59397,6 @@ declare namespace Laya {
         _needResetData: boolean;
         _inPass: boolean;
         protected _num: number;
-        /** @internal */
-        _first: Web2DGraphicsBufferDataView;
-        /** @internal */
-        _last: Web2DGraphicsBufferDataView;
-        /** @internal */
-        _updateRange: Vector2;
         abstract resetData(byteLength: number): void;
         abstract _upload(): void;
         _modifyOneView(view: Web2DGraphicsBufferDataView): void;
@@ -71907,20 +59407,12 @@ declare namespace Laya {
     class Web2DGraphicsVertexBuffer extends Web2DGraphicWholeBuffer {
         buffer: IVertexBuffer;
         _dataView: Float32Array;
-        /** @internal */
-        _first: Web2DGraphic2DVertexDataView;
-        /** @internal */
-        _last: Web2DGraphic2DVertexDataView;
         resetData(byteLength: number): void;
         _upload(): void;
     }
     class Web2DGraphicsIndexBuffer extends Web2DGraphicWholeBuffer {
         buffer: IIndexBuffer;
         _dataView: Uint16Array;
-        /** @internal */
-        _first: Web2DGraphic2DIndexDataView;
-        /** @internal */
-        _last: Web2DGraphic2DIndexDataView;
         resetData(byteLength: number): void;
         _upload(): void;
         _modifyOneView(view: Web2DGraphic2DIndexDataView): void;
@@ -71928,8 +59420,6 @@ declare namespace Laya {
     class Web2DGraphicsIndexBatchBuffer extends Web2DGraphicsIndexBuffer {
         _first: Web2DGraphic2DIndexCloneDataView;
         _last: Web2DGraphic2DIndexCloneDataView;
-        /** @internal */
-        _upload(): void;
         _modifyOneView(view: Web2DGraphic2DIndexCloneDataView): void;
         clearBufferViews(): void;
         _resetData(byteLength: number): void;
@@ -71940,24 +59430,11 @@ declare namespace Laya {
         start: number;
         length: number;
         owner: Web2DGraphicWholeBuffer;
-        /** @internal */
-        _next: Web2DGraphicsBufferDataView;
-        /** @internal */
-        _prev: Web2DGraphicsBufferDataView;
     }
     class Web2DGraphic2DVertexDataView extends Web2DGraphicsBufferDataView implements I2DGraphicVertexDataView {
         private _view;
         stride: number;
         owner: Web2DGraphicsVertexBuffer;
-        /** @internal */
-        _next: Web2DGraphic2DVertexDataView;
-        /** @internal */
-        _prev: Web2DGraphic2DVertexDataView;
-        /**
-         * @internal
-         * @returns
-         */
-        _getData(): Float32Array;
         /** @private */
         _modify(): void;
         _updateView(wholeData: Float32Array): void;
@@ -71969,10 +59446,6 @@ declare namespace Laya {
         owner: Web2DGraphicsIndexBuffer;
         _geometry: IRenderGeometryElement;
         setGeometry(value: IRenderGeometryElement): void;
-        /** @internal */
-        _next: Web2DGraphic2DIndexDataView;
-        /** @internal */
-        _prev: Web2DGraphic2DIndexDataView;
         setData(data: Float32Array | Uint16Array): void;
         constructor(owner: Web2DGraphicsIndexBuffer, length: number, create?: boolean);
         _updateView(wholeData: Uint16Array): void;
@@ -71993,12 +59466,8 @@ declare namespace Laya {
         destroy(): void;
     }
     class Web2DGraphic2DIndexCloneDataView extends Web2DGraphic2DIndexDataView {
-        /** @internal */
-        owner: Web2DGraphicsIndexBatchBuffer;
         _next: Web2DGraphic2DIndexCloneDataView;
         _prev: Web2DGraphic2DIndexCloneDataView;
-        /** @internal */
-        destroy(): void;
     }
     class BatchBuffer {
         indexBuffer: IIndexBuffer;
@@ -72028,8 +59497,8 @@ declare namespace Laya {
         bufferState: any;
         primitiveShaderData: any;
         materialShaderData: any;
-        type: number;
-        lowType: number;
+        typeKey: number;
+        textureKey: number;
         globalRenderData: any;
         fillTexture: boolean;
         texRange: Vector4;
@@ -72092,10 +59561,6 @@ declare namespace Laya {
          * rt渲染偏移
          **/
         offsetMatrix: Matrix;
-        /** @internal 反向矩阵 0 */
-        _invertMat_0: Vector3;
-        /** @internal 反向矩阵 1 */
-        _invertMat_1: Vector3;
         shaderData: ShaderData;
         destroyed: boolean;
         constructor();
@@ -72119,6 +59584,7 @@ declare namespace Laya {
         static uploadBuffer(): void;
         private _updateInvertMatrix;
         private _setInvertMatrix;
+        updatePostProcess(): void;
         destroy(): void;
     }
     class WebRender2DPassManager implements IRender2DPassManager {
@@ -72142,6 +59608,14 @@ declare namespace Laya {
         destroy(): void;
         inheriteRenderData(context: IRenderContext2D): void;
     }
+    /**
+     * 空 Render Data Handle，仅用于跑通 _handleInterData 中的 clip/alpha 上传流程。
+     * 适用于无 2D 渲染节点但需继承父级 scrollRect（clipRect）的节点，如 Bridge3DSprite。
+     */
+    class WebEmptyRender2DDataHandle extends WebRender2DDataHandle {
+        inheriteRenderData(_context: IRenderContext2D): void;
+        destroy(): void;
+    }
     class WebGraphics2DBufferBlock implements IGraphics2DBufferBlock {
         vertexs: IGraphics2DVertexBlock[];
         indexView: I2DGraphicIndexDataView;
@@ -72161,8 +59635,6 @@ declare namespace Laya {
         private _globalAlpha;
         applyVertexBufferBlock(blocks: IGraphics2DBufferBlock[]): void;
         skipBufferUpdate(): void;
-        /** @internal */
-        _getBlocks(): IGraphics2DBufferBlock[];
         inheriteRenderData(context: IRenderContext2D): void;
         private _updateVertexData;
         getCloneViews(): Web2DGraphic2DIndexCloneDataView[];
@@ -72219,21 +59691,10 @@ declare namespace Laya {
         matrix: Matrix;
         modifiedFrame: number;
     }
-    type ParentData = {
-        clipInfo: IClipInfo;
-        blendMode: BlendMode;
-        globalRenderData: WebGlobalRenderData;
-        pass: WebRender2DPass;
-        enableCulling: boolean;
-        dcOptimize: boolean;
-        globalAlpha: number;
-    };
     class WebRenderStruct2D implements IRenderStruct2D {
         owner: Sprite;
-        /** @internal 原始数据，修改操作时修改这个 */
-        _parentData: ParentData;
-        /** @internal 读取数据，用于读取数据，subStruct 截断 */
-        _currentData: ParentData;
+        /** 手动渲染模式：子节点不参与父 pass 的自动遍历和渲染 */
+        manualRender: boolean;
         zIndex: number;
         _effectZ: number;
         stackingRoot: boolean;
@@ -72248,8 +59709,6 @@ declare namespace Laya {
         /** 按标记来 */
         renderType: number;
         renderUpdateMask: number;
-        /** @internal */
-        _dcOptimize: boolean;
         get dcOptimize(): boolean;
         set dcOptimize(value: boolean);
         get inheritedDcOptimize(): boolean;
@@ -72262,14 +59721,8 @@ declare namespace Laya {
         private _alpha;
         get alpha(): number;
         set alpha(value: number);
-        /** @internal 最特殊，需要最后一个处理混合 */
-        private _blendMode;
         get blendMode(): BlendMode;
         set blendMode(value: BlendMode);
-        /** @internal */
-        needUploadClip: number;
-        /** @internal */
-        needUploadAlpha: boolean;
         /** 是否启动 */
         enabled: boolean;
         isRenderStruct: boolean;
@@ -72278,30 +59731,16 @@ declare namespace Laya {
         private _renderDataHandler;
         get renderDataHandler(): WebRender2DDataHandle;
         set renderDataHandler(value: WebRender2DDataHandle);
-        /** @internal */
-        _globalShaderData: ShaderData;
-        /** @internal */
-        private _globalRenderData;
         get globalRenderData(): WebGlobalRenderData;
         set globalRenderData(value: WebGlobalRenderData);
         private _updateGlobalShaderData;
-        /** @internal */
-        _pass: WebRender2DPass;
-        /** @internal */
-        _maskParentPass: WebRender2DPass;
         private _updatePriority;
-        /** @internal */
-        setMaskParentPass(pass: WebRender2DPass): void;
         get pass(): WebRender2DPass;
         set pass(value: WebRender2DPass);
         private _subStruct;
         get subStruct(): WebRenderStruct2D;
         set subStruct(value: WebRenderStruct2D);
         constructor();
-        /** @internal */
-        _clipRect: Rectangle;
-        /** @internal */
-        _clipInfo: IClipInfo;
         private _uniformClip;
         /**@deprecated 使用_currentData.clipInfo代替 */
         get _parentClipInfo(): IClipInfo;
@@ -72314,6 +59753,8 @@ declare namespace Laya {
         private _updateGlobalAlpha;
         private _updateBlendMode;
         getClipInfo(): IClipInfo;
+        /** 是否存在有效裁剪（非默认值） */
+        hasClip(): boolean;
         private updateChildren;
         setRepaint(): void;
         addChild(child: WebRenderStruct2D, index: number): void;
@@ -72382,15 +59823,15 @@ declare namespace Laya {
         private _renderUpdatePreCall;
         private _renderUpdatePreFun;
         private _updateMark;
+        /**
+         * @en If true, _renderUpdatePre is called once per camera; otherwise once per frame.
+         * @zh 为 true 时 _renderUpdatePre 逐相机调用，否则逐帧调用。
+         */
+        perCameraUpdate: boolean;
         protected _additionShaderData: Map<string, ShaderData>;
         protected _shaderData: ShaderData;
         get shaderData(): ShaderData;
         set shaderData(value: ShaderData);
-        /**
-         * context3D:GLESRenderContext3D
-         * @internal
-         */
-        _renderUpdatePre(context3D: IRenderContext3D): void;
         _calculateBoundingBox(): void;
         /**
          * get bounds
@@ -72423,34 +59864,6 @@ declare namespace Laya {
          * @param value :RenderElementObj
          */
         setRenderelements(value: IRenderElement3D[]): void;
-        /**
-         * @internal
-         * @param index
-         * @param mat
-         * @returns
-         */
-        setOneMaterial(index: number, mat: Material): void;
-        /**
-         * @internal
-         * @param value
-         */
-        setLightmapScaleOffset(value: Vector4): void;
-        /**@internal */
-        setCommonUniformMap(value: string[]): void;
-        /**
-         * @internal
-         * @returns
-         */
-        shadowCullPass(): boolean;
-        /**
-         * @internal
-         */
-        _ownerCalculateBoundingBox(): void;
-        /**
-         * @internal
-         * 全局贴图
-         */
-        _applyLightMapParams(): void;
         /**
         * apply lightProb
         * @returns
@@ -72559,10 +59972,6 @@ declare namespace Laya {
         destory(): void;
     }
     class WebForwardAddRP implements IForwardAddRP {
-        /**@internal */
-        protected _afterAllRenderCMDS: Array<CommandBuffer>;
-        /**@internal */
-        protected _beforeImageEffectCMDS: Array<CommandBuffer>;
         shadowCastPass: boolean;
         enableDirectLightShadow: boolean;
         enableSpotLightShadowPass: boolean;
@@ -72625,12 +60034,6 @@ declare namespace Laya {
         destroy(): void;
     }
     class WebLightmap implements ILightMapData {
-        /**@internal */
-        lightmapColor: InternalTexture;
-        /**@internal */
-        lightmapDirection: InternalTexture;
-        /**@internal */
-        destroy(): void;
     }
     function WebMeshRenderNode(): any;
     class WebCameraNodeData implements ICameraNodeData {
@@ -72659,71 +60062,13 @@ declare namespace Laya {
     }
     class WebReflectionProbe implements IReflectionProbeData {
         private static _idCounter;
-        /** @internal */
-        _id: number;
-        /**@internal */
-        boxProjection: boolean;
-        /**@internal */
-        bound: Bounds;
-        /**@internal */
-        ambientMode: AmbientMode;
-        /**@internal */
-        ambientIntensity: number;
-        /**@internal */
-        reflectionIntensity: number;
-        /**@internal */
-        reflectionTexture: InternalTexture;
-        /**@internal */
-        iblTex: InternalTexture;
-        /**@internal */
-        updateMark: number;
-        /**@internal */
-        iblTexRGBD: boolean;
-        /**@internal */
-        shaderData: ShaderData;
-        /**@internal */
-        private _reflectionHDRParams;
-        /**@internal */
-        private _shCoefficients;
-        /**@internal */
-        private _probePosition;
-        /**@internal */
-        private _ambientColor;
-        /**@internal */
-        private _ambientSH;
         private _updateMaskFlag;
-        /**@internal */
-        constructor();
-        /**
-         * @internal
-         */
-        needUpdate(): boolean;
-        /**
-         * @internal
-         */
-        destroy(): void;
-        /**@internal */
-        setAmbientSH(value: Float32Array): void;
-        /**@internal */
-        setShCoefficients(value: Vector4[]): void;
-        /**@internal */
-        setProbePosition(value: Vector3): void;
-        /**@internal */
-        setreflectionHDRParams(value: Vector4): void;
-        /**@internal */
-        setAmbientColor(value: Color): void;
-        /**@internal */
-        applyRenderData(): void;
     }
     /**
      * @en The `SceneRenderManagerOBJ` class is used to manage the rendering nodes of a scene.
      * @zh `SceneRenderManagerOBJ` 类用于管理场景的渲染节点。
      */
     class WebSceneRenderManager implements ISceneRenderManager {
-        /** @internal */
-        _list: SingletonList<BaseRender>;
-        /**@internal 合批队列 */
-        batchAgentList: Map<number, IBatchModuleAgent>;
         /**
          * @en The base render list.
          * @zh 基础渲染节点列表。
@@ -72803,22 +60148,12 @@ declare namespace Laya {
          */
         private _applyCasterPassCommandBuffer;
         /**
-        * @internal
-        */
-        private _getSpotLightShadowData;
-        /**
        * get shadow bias
        * @param shadowResolution
        * @param out
        */
         private _getShadowBias;
         private _setupShadowCasterShaderValues;
-        /**
-         * 设置聚光接受阴影的模式
-         * @internal
-         * @param shaderValues 渲染数据
-         */
-        private _applyRenderData;
         setShadowCasterCommanBuffer(cmd: CommandBuffer[]): void;
         setCameraCullInfo(sceneManager: ISceneRenderManager): void;
         setRPData(spotLight: WebSpotLight, context: IRenderContext3D): void;
@@ -72829,54 +60164,15 @@ declare namespace Laya {
         destory(): void;
     }
     class WebDirCascadeShadowRP implements IDirShadowRP {
-        /** @internal 最大cascade*/
-        private static _maxCascades;
         private _light;
-        /**@internal */
-        private _lightup;
-        /**@internal */
-        private _lightSide;
-        /**@internal */
-        private _lightForward;
-        /**@internal 分割distance*/
-        private _cascadesSplitDistance;
-        /** @internal */
-        private _frustumPlanes;
-        /** @internal */
-        private _shadowMatrices;
-        /**@internal */
-        private _splitBoundSpheres;
-        /** @internal */
-        private _shadowSliceDatas;
-        /** @internal */
-        private _shadowMapSize;
-        /** @internal */
-        private _shadowBias;
-        /** @internal */
-        private _cascadeCount;
-        /** @internal */
-        private _shadowMapWidth;
-        /** @internal */
-        private _shadowMapHeight;
-        /** @internal */
-        private _shadowTileResolution;
-        /** @internal */
-        private _shadowCullInfo;
         private _shadowCastMode;
         private _camera;
         private _destShadowRT;
-        /**@internal */
-        private _renderQueue;
         private _shadowCasterCommanBuffer;
         private _defaultShadowMap;
         constructor();
         private _setLight;
         private _getShadowBias;
-        /**
-        * 设置阴影级联数据模式
-        * @internal
-        */
-        private _setupShadowCasterShaderValues;
         /**
          * set shaderData after Render shadow
          * @param scene
@@ -72925,14 +60221,6 @@ declare namespace Laya {
         intensity: number;
         updateMark: number;
         shaderData: ShaderData;
-        /**
-         * @internal
-         * x: irradiance probe texel size
-         * y: distance probe texel size
-         * z: normalBias
-         * w: viewBias
-         */
-        private _params;
         constructor();
         setParams(value: Vector4): void;
         setProbeCounts(value: Vector3): void;
@@ -72946,21 +60234,9 @@ declare namespace Laya {
     class WebDefineDatas implements IDefineDatas {
         private _changeFlags;
         /**
-         * @internal
-         */
-        _mask: Array<number>;
-        /**
-         * @internal
-         */
-        _length: number;
-        /**
          * 创建一个 <code>DefineDatas</code> 实例。
          */
         constructor();
-        /**
-         * @internal
-         */
-        _intersectionDefineDatas(define: WebDefineDatas): void;
         /**
          * 添加宏定义值。
          * @param define 宏定义值。
@@ -73011,38 +60287,12 @@ declare namespace Laya {
      */
     class WebGLShaderData extends ShaderData {
         private static pointerCount;
-        /**@internal */
-        protected _gammaColorMap: Map<number, Color>;
-        /**@internal */
-        _data: any;
-        /** @internal */
-        _defineDatas: WebDefineDatas;
         _id: number;
-        /** @internal */
-        private _uniformBuffers;
-        /** @internal */
-        private _subUniformBuffers;
-        /** @internal */
-        private _uniformBuffersPropertyMap;
         private _needCacheData;
         private _updateCacheArray;
         private _subUboBufferNumber;
         private _renderStateChanged;
-        /** @internal */
-        get renderStateChanged(): boolean;
-        /** @internal */
-        renderState: RenderState;
-        /** @internal */
-        updateRenderState(): void;
         private _checkRenderState;
-        /**
-         * @internal
-         */
-        constructor(ownerResource?: Resource);
-        /**
-         * @internal
-         */
-        _initData(): void;
         /**
          * @param name
          * @param uniformMap
@@ -73051,11 +60301,6 @@ declare namespace Laya {
         createUniformBuffer(name: string, uniformMap: Map<number, UniformProperty>, needUpdata?: boolean): WebGLUniformBuffer;
         private _updateUBOBuffer;
         createSubUniformBuffer(name: string, cacheName: string, uniformMap: Map<number, UniformProperty>): WebGLSubUniformBuffer;
-        /**
-         * 注意!!!!!! 不要获得data之后直接设置值，设置值请使用set函数
-         * @internal
-         */
-        getData(): any;
         /**
          * @ignore
          */
@@ -73160,11 +60405,6 @@ declare namespace Laya {
          */
         setColor(index: number, value: Color): void;
         /**
-         * @internal
-         * @param index
-         */
-        getLinearColor(index: number): Vector4;
-        /**
          * 获取矩阵。
          * @param	index shader索引。
          * @return  矩阵。
@@ -73237,27 +60477,13 @@ declare namespace Laya {
         private _renderState;
         get renderState(): RenderState;
         set renderState(value: RenderState);
-        /** @internal */
-        protected _cacheShaderHierarchy: number;
         get validDefine(): WebDefineDatas;
         set validDefine(value: WebDefineDatas);
-        /** @internal */
-        protected _cacheSharders: {
-            [key: number]: {
-                [key: number]: {
-                    [key: number]: IShaderInstance;
-                };
-            };
-        };
         constructor(pass: ShaderPass);
         name: string;
         additionShaderData: string[];
         nodeCommonMap: string[];
         attributeLocations: Set<number>;
-        /**
-        * @internal
-        */
-        _resizeCacheShaderMap(cacheMap: any, hierarchy: number, resizeLength: number): void;
         setCacheShader(compileDefine: WebDefineDatas, shader: IShaderInstance): void;
         getCacheShader(compileDefine: WebDefineDatas): IShaderInstance;
         destroy(): void;
@@ -73298,10 +60524,16 @@ declare namespace Laya {
         apply(context: WebglRenderContext2D): void;
     }
     class WebGLPrimitiveRenderElement2D extends WebGLRenderElement2D implements IPrimitiveRenderElement2D {
+        typeKey: number;
+        textureKey: number;
         private static _additionShaderData;
-        primitiveShaderData: WebGLShaderData;
+        private _primitiveShaderData;
+        get primitiveShaderData(): WebGLShaderData;
+        set primitiveShaderData(value: WebGLShaderData);
         protected _compileShader(context: WebglRenderContext2D): void;
+        _render(context: WebglRenderContext2D): void;
         renderByShaderInstance(shader: WebGLShaderInstance, context: WebglRenderContext2D): void;
+        destroy(): void;
     }
     class WebGLRender2DProcess implements I2DRenderPassFactory {
         constructor();
@@ -73320,16 +60552,17 @@ declare namespace Laya {
         createMesh2DRenderDataHandle(): IMesh2DRenderDataHandle;
         createSetRenderDataCMD(): SetRenderDataCMD;
         createSetShaderDefineCMD(): SetShaderDefineCMD;
-        createBlit2DQuadCMDData(): WebGLBlit2DQuadCMD;
+        createBlit2DQuadCMDData(): Blit2DQuadCMD;
         createDraw2DElementCMDData(): Draw2DElementCMD;
         createSetRendertarget2DCMD(): SetRendertarget2DCMD;
         createRenderElement2D(): IRenderElement2D;
         createRenderContext2D(): IRenderContext2D;
         createRender2DPass(): IRender2DPass;
         createRenderStruct2D(): any;
+        createEmptyRenderDataHandle(): IRender2DDataHandle;
     }
     class WebglRenderContext2D implements IRenderContext2D {
-        private _clearColor;
+        _clearColor: Color;
         _destRT: WebGLInternalRT;
         invertY: boolean;
         pipelineMode: string;
@@ -73337,29 +60570,66 @@ declare namespace Laya {
         _globalConfigShaderData: WebDefineDatas;
         private _offscreenWidth;
         private _offscreenHeight;
+        private _offscreenX;
+        private _offscreenY;
         constructor();
         drawRenderElementList(list: FastSinglelist<WebGLRenderElement2D>): number;
-        setOffscreenView(width: number, height: number): void;
+        setOffscreenView(width: number, height: number, x?: number, y?: number): void;
+        getOffscreenView(out: Vector4): void;
         setRenderTarget(value: WebGLInternalRT, clear: boolean, clearColor: Color): void;
         getRenderTarget(): WebGLInternalRT;
         drawRenderElementOne(node: WebGLRenderElement2D): void;
         runOneCMD(cmd: IRenderCMD): void;
         runCMDList(cmds: IRenderCMD[]): void;
     }
+    /**
+     * 每个 pass key 对应的编译缓存条目
+     * element 在不同 (passData, invertY, gamma) 组合下各自缓存一份编译结果
+     */
+    class Pass2DCacheInfo {
+        shaderInss: WebGLShaderInstance[];
+        /** 本条目上次编译时的时间戳 x（loopCount），用于与各 changeFlag 比较 */
+        cacheFlagX: number;
+        /** 本条目上次编译时的时间戳 y（framePassCount），用于与各 changeFlag 比较 */
+        cacheFlagY: number;
+        /** 本条目上次编译时的 dirtyVersion */
+        cachedDirtyVersion: number;
+        /** 本条目对应的 passData define 变化标记（稳定注册在 passData._defineDatas 上） */
+        passDefineFlag: Vector2;
+        /** 注册 passDefineFlag 的 passData 引用，用于 destroy 时注销 */
+        trackedPassData: WebGLShaderData;
+    }
     class WebGLRenderElement2D implements IRenderElement2D {
         owner: WebRenderStruct2D;
         nodeCommonMap: string[];
         renderStateIsBySprite: boolean;
         type: number;
-        /** @internal */
-        static _compileDefine: WebDefineDatas;
-        protected _shaderInstances: FastSinglelist<WebGLShaderInstance>;
         geometry: WebGLRenderGeometryElement;
-        materialShaderData: WebGLShaderData;
-        value2DShaderData: WebGLShaderData;
-        /** @internal */
-        globalShaderData: WebGLShaderData;
-        subShader: SubShader;
+        protected _defineChangeFlag: Vector2;
+        /**
+         * 引用变化版本号，setter 触发时递增
+         * 每个 pass cache 条目各自记录上次编译时的版本，跨 pass 不互相干扰
+         */
+        protected _dirtyVersion: number;
+        protected _passCache: Map<WebGLShaderData, Pass2DCacheInfo[]>;
+        private _subShader;
+        get subShader(): SubShader;
+        set subShader(value: SubShader);
+        private _materialShaderData;
+        get materialShaderData(): WebGLShaderData;
+        set materialShaderData(value: WebGLShaderData);
+        private _value2DShaderData;
+        get value2DShaderData(): WebGLShaderData;
+        set value2DShaderData(value: WebGLShaderData);
+        private _globalShaderData;
+        set globalShaderData(value: WebGLShaderData);
+        protected _registerDefineFlag(data: WebGLShaderData): void;
+        protected _unregisterDefineFlag(data: WebGLShaderData): void;
+        /**
+         * 获取或创建当前 pass key 对应的缓存条目
+         * 新建时将 passDefineFlag 注册到 passData._defineDatas 上
+         */
+        private _getOrCreateCacheEntry;
         protected _compileShader(context: WebglRenderContext2D): void;
         _prepare(context: WebglRenderContext2D): void;
         _render(context: WebglRenderContext2D): void;
@@ -73383,11 +60653,6 @@ declare namespace Laya {
          * max instance count
          */
         static readonly MaxInstanceCount: number;
-        /**
-         * pool of Buffer
-         * @internal
-         */
-        private _bufferPool;
         _instanceBufferCreate(length: number): Float32Array;
         instanceElementList: FastSinglelist<WebGLRenderElement3D>;
         private _vertexBuffers;
@@ -73419,14 +60684,6 @@ declare namespace Laya {
         destroy(): void;
     }
     class BatchMark {
-        /**@internal */
-        updateMark: number;
-        /**@internal */
-        indexInList: number;
-        /**@internal */
-        batched: boolean;
-        /**@internal */
-        _curBindElementIndex: number;
         _cacheRenderElement: WebGLInstanceRenderElement3D[];
         constructor();
         release(): void;
@@ -73472,17 +60729,17 @@ declare namespace Laya {
     class WebGL3DRenderPassFactory implements I3DRenderPassFactory {
         createMeshRenderBatchModule(): IBatchModuleAgent;
         createSimpleSkinRenderBatchModule(): IBatchModuleAgent;
-        createSetRenderDataCMD(): WebGLSetRenderData;
-        createSetShaderDefineCMD(): WebGLSetShaderDefine;
-        createDrawNodeCMDData(): WebGLDrawNodeCMDData;
-        createBlitQuadCMDData(): WebGLBlitQuadCMDData;
-        createDrawElementCMDData(): WebGLDrawElementCMDData;
-        createSetViewportCMD(): WebGLSetViewportCMD;
-        createSetRenderTargetCMD(): WebGLSetRenderTargetCMD;
-        createSceneRenderManager(): WebSceneRenderManager;
-        createSkinRenderElement(): WebGLSkinRenderElement3D;
-        createRenderContext3D(): WebGLRenderContext3D;
-        createRenderElement3D(): WebGLRenderElement3D;
+        createSetRenderDataCMD(): SetRenderDataCMD;
+        createSetShaderDefineCMD(): SetShaderDefineCMD;
+        createDrawNodeCMDData(): DrawNodeCMDData;
+        createBlitQuadCMDData(): BlitQuadCMDData;
+        createDrawElementCMDData(): DrawElementCMDData;
+        createSetViewportCMD(): SetViewportCMD;
+        createSetRenderTargetCMD(): SetRenderTargetCMD;
+        createSceneRenderManager(): ISceneRenderManager;
+        createSkinRenderElement(): ISkinRenderElement3D;
+        createRenderContext3D(): IRenderContext3D;
+        createRenderElement3D(): IRenderElement3D;
         createRender3DProcess(): IRender3DProcess;
     }
     class WebGLDrawNodeCMDData extends DrawNodeCMDData {
@@ -73566,45 +60823,10 @@ declare namespace Laya {
     }
     class WebGLRenderContext3D implements IRenderContext3D {
         static _instance: WebGLRenderContext3D;
-        /**
-         * @internal
-        */
         preDrawUniformMaps: Set<string>;
-        /** @internal */
-        _cacheGlobalDefines: WebDefineDatas;
         _globalConfigShaderData: WebDefineDatas;
         private _globalShaderData;
-        /**@internal */
-        private _sceneData;
-        /**@internal */
-        private _sceneModuleData;
         private _cameraModuleData;
-        /**@internal */
-        private _cameraData;
-        /**@internal */
-        private _renderTarget;
-        /**@internal */
-        private _viewPort;
-        /**@internal */
-        private _scissor;
-        /**@internal */
-        private _sceneUpdateMask;
-        /**@internal */
-        private _cameraUpdateMask;
-        /**@internal */
-        private _pipelineMode;
-        /**@internal */
-        private _invertY;
-        /**@internal */
-        private _clearFlag;
-        /**@internal */
-        private _clearColor;
-        /**@internal */
-        private _clearDepth;
-        /**@internal */
-        private _clearStencil;
-        /**@internal */
-        private _needStart;
         get sceneData(): WebGLShaderData;
         set sceneData(value: WebGLShaderData);
         get cameraData(): WebGLShaderData;
@@ -73615,27 +60837,12 @@ declare namespace Laya {
         set cameraModuleData(value: WebCameraNodeData);
         get globalShaderData(): WebGLShaderData;
         set globalShaderData(value: WebGLShaderData);
-        /**@internal */
-        _curRenderGlobalKey: number;
-        /**@internal */
-        _curDefineChangeFlag: Vector2;
         private _globalComkeyNameMap;
         private _globalComkeyCounter;
         private _globalRendercacheInfoMap;
         _curRenderCacheInfo: WebGLGlobalPipeLineCacheInfo;
         private globalComkeyToID;
         private _getSceneCameraCacheKey;
-        /**
-         * @internal
-         * @returns
-         */
-        _getContextShaderDefines(): WebDefineDatas;
-        /**
-         * @internal
-         * 1. 更新 context shader defines string
-         * 2. upload context shader data
-         */
-        _prepareContext(): void;
         setRenderTarget(value: InternalRenderTarget, clearFlag: RenderClearFlag): void;
         setViewPort(value: Viewport): void;
         setScissor(value: Vector4): void;
@@ -73661,8 +60868,6 @@ declare namespace Laya {
         clearRenderTarget(): void;
     }
     class WebGLRenderElement3D implements IRenderElement3D {
-        /** @internal */
-        static _compileDefine: WebDefineDatas;
         geometry: WebGLRenderGeometryElement;
         private subShaderChange;
         protected _subShader: SubShader;
@@ -73882,37 +61087,16 @@ declare namespace Laya {
         destroy(): void;
     }
     class WebGLCommandUniformMap extends CommandUniformMap {
-        /**@internal */
-        _idata: Map<number, UniformProperty>;
         _stateName: string;
         _stateID: number;
         constructor(stateName: string);
         hasPtrID(propertyID: number): boolean;
-        /**
-         * 增加一个Uniform参数，如果Uniform属性是Array，请使用addShaderUniformArray
-         * @internal
-         * @param propertyID
-         * @param propertyKey
-         */
-        addShaderUniform(propertyID: number, propertyKey: string, uniformtype: ShaderDataType, options?: UniformOptions): void;
-        /**
-         * 增加一个UniformArray参数
-         * @internal
-         */
-        addShaderUniformArray(propertyID: number, propertyName: string, uniformtype: ShaderDataType, arrayLength: number, block?: string): void;
         setDefaultTextureData(key: number, defaultTex: BaseTexture): void;
     }
     /**
      * 封装Webgl
      */
     class WebGLEngine extends EventDispatcher implements IRenderEngine {
-        /**
-         * @internal
-         * 存储 texture uniform gamma define
-         */
-        static _texGammaDefine: {
-            [key: number]: ShaderDefine;
-        };
         static _lastFrameBuffer: WebGLInternalRT;
         static _lastFrameBuffer_WebGLOBJ: WebGLFramebuffer;
         static _lastShaderError: string;
@@ -73925,31 +61109,6 @@ declare namespace Laya {
         private _webglMode;
         private _propertyNameMap;
         private _propertyNameCounter;
-        /**@internal */
-        _IDCounter: number;
-        /**@internal ShaderDebugMode*/
-        _isShaderDebugMode: boolean;
-        /**@internal gl.TextureID*/
-        _glTextureIDParams: Array<number>;
-        /**@internal bind active Texture*/
-        _activedTextureID: number;
-        /**@internal bindTexture */
-        _activeTextures: WebGLTexture[];
-        /**
-        * @internal
-        * bind GLVertexArray
-        */
-        _GLBindVertexArray: GLVertexState;
-        /**
-        * @internal
-        * 支持功能
-        */
-        _supportCapatable: GlCapable;
-        /**
-         * @internal
-         * bind Program
-         */
-        _glUseProgram: GLShaderInstance;
         private _GLBufferBindMap;
         private _lastViewport;
         private _lastScissor;
@@ -73968,12 +61127,6 @@ declare namespace Laya {
         _GLRenderState: GLRenderState;
         private static _defineMap;
         private static _defineCounter;
-        /**@internal */
-        static _maskMap: Array<{
-            [key: number]: string;
-        }>;
-        /** @internal */
-        bufferMgr: WebGLUniformBufferManager;
         _uboBindingMap: {
             buffer: WebGLBuffer;
             offset: number;
@@ -74005,12 +61158,6 @@ declare namespace Laya {
         private _initBindBufferMap;
         _getbindBuffer(target: BufferTargetType): GLBuffer;
         _setbindBuffer(target: BufferTargetType, buffer: GLBuffer | null): void;
-        /**
-         * @internal
-         * @param target
-         * @param texture
-         */
-        _bindTexture(target: number, texture: WebGLTexture): void;
         getCapable(capatableType: RenderCapable): boolean;
         viewport(x: number, y: number, width: number, height: number): void;
         scissor(x: number, y: number, width: number, height: number): void;
@@ -74042,14 +61189,6 @@ declare namespace Laya {
         * @param name
         */
         getDefineByName(name: string): ShaderDefine;
-        /**
-         * @internal
-         */
-        uploadUniforms(shader: GLShaderInstance, commandEncoder: CommandEncoder, shaderData: WebGLShaderData, uploadUnTexture: boolean): number;
-        /**
-         * @internal
-         */
-        uploadOneUniforms(shader: GLShaderInstance, shaderVariable: ShaderVariable, data: any): void;
         unbindVertexState(): void;
         /**
          *
@@ -74155,110 +61294,16 @@ declare namespace Laya {
         getParams(params: RenderParams): number;
     }
     class GLRenderDrawContext extends GLObject {
-        /**@internal */
-        private _angleInstancedArrays;
         constructor(engine: WebGLEngine);
-        /**
-         * @internal
-         * @param mode
-         * @returns
-         */
-        getMeshTopology(mode: MeshTopology): number;
-        /**
-         * @internal
-         * @param type
-         * @returns
-         */
-        getIndexType(type: IndexFormat): number;
-        /**
-         * @internal
-         */
-        drawElementsInstanced(mode: number, count: number, type: IndexFormat, offset: number, instanceCount: number): void;
-        /**
-         * @internal
-         */
-        drawArraysInstanced(mode: number, first: number, count: number, instanceCount: number): void;
-        /**
-         * @internal
-         * @param mode
-         * @param first
-         * @param count
-         */
-        drawArrays(mode: number, first: number, count: number): void;
-        /**
-         * @internal
-         * @param mode
-         * @param count
-         * @param type
-         * @param offset
-         */
-        drawElements(mode: number, count: number, type: IndexFormat, offset: number): void;
-        /**
-         * @internal
-         * @param geometryElement
-         */
-        drawGeometryElement(geometryElement: WebGLRenderGeometryElement): void;
     }
     class GLRenderState {
-        /**@internal */
-        private _depthTest;
-        /**@internal */
-        private _depthMask;
-        /**@internal */
-        private _depthFunc;
-        /**@internal */
-        private _stencilTest;
-        /** @internal */
-        private _stencilWrite;
-        /**@internal */
-        private _stencilFunc;
-        /**@internal */
-        private _stencilWriteMask;
-        /** @internal */
-        private _stencilReadMask;
-        /**@internal */
-        private _stencilRef;
-        /**@internal */
-        private _stencilOp_fail;
-        /**@internal */
-        private _stencilOp_zfail;
-        /**@internal */
-        private _stencilOp_zpass;
         private _depthBias;
         private _depthBiasConstant;
         private _depthBiasSlope;
         private _depthBiasClamp;
-        /**@internal */
-        private _blend;
-        /**@internal */
-        private _blendEquation;
-        /**@internal */
-        private _blendEquationRGB;
-        /**@internal */
-        private _blendEquationAlpha;
-        /**@internal */
-        private _sFactor;
-        /**@internal */
-        private _dFactor;
-        /**@internal */
-        private _sFactorRGB;
-        /**@internal */
-        private _dFactorRGB;
-        /**@internal */
-        private _sFactorAlpha;
-        /**@internal */
-        private _dFactorAlpha;
-        /**@internal */
-        private _cullFace;
-        /**@internal */
-        private _frontFace;
         private renderStateCache;
         private isTargetCache;
         private invertFrontCache;
-        /**@internal */
-        _engine: WebGLEngine;
-        /**@internal */
-        _gl: WebGLRenderingContext | WebGL2RenderingContext;
         /**
          * intance glRenderState
          * @param engine
@@ -74298,118 +61343,10 @@ declare namespace Laya {
          * @returns
          */
         _getGLFrontfaceFactor(cullmode: CullMode): 2305 | 2304;
-        /**
-         * @internal
-         */
-        setDepthTest(value: boolean): void;
-        /**
-         * @internal
-         */
-        setDepthMask(value: boolean): void;
-        /**
-         * @internal
-         * value {CompareType}
-         */
-        setDepthFunc(value: number): void;
-        /**
-         * @internal
-         */
-        setStencilTest(value: boolean): void;
-        /**
-         * @internal
-         * 模板写入开关
-         * @param value
-         */
-        setStencilWrite(value: boolean): void;
-        /**
-         * @internal
-         * 模板写入掩码
-         */
-        setStencilWriteMask(mask: number): void;
-        /**
-         * @internal
-         */
-        setStencilFunc(fun: number, ref: number, mask: number): void;
-        /**
-        * @internal
-        */
-        setStencilOp(fail: number, zfail: number, zpass: number): void;
-        /**
-         * @internal
-         * 设置深度偏移
-         * @param value
-         */
-        setDepthBias(value: boolean): void;
-        /**
-         * @internal
-         * 设置深度偏移因子
-         * @param constantFactor
-         * @param slopeFactor
-         * @param clamp
-         */
-        setDepthBiasFactor(constantFactor: number, slopeFactor: number, clamp?: number): void;
-        /**
-         * @internal
-         */
-        setBlend(value: boolean): void;
-        /**
-         * @internal
-         */
-        setBlendEquation(blendEquation: number): void;
-        /**
-         * @internal
-         */
-        setBlendEquationSeparate(blendEquationRGB: number, blendEquationAlpha: number): void;
-        /**
-         * @internal
-         */
-        setBlendFunc(sFactor: number, dFactor: number, force?: boolean): void;
-        /**
-         * @internal
-         */
-        setBlendFuncSeperate(srcRGB: number, dstRGB: number, srcAlpha: number, dstAlpha: number): void;
-        /**
-         * @internal
-         */
-        setCullFace(value: boolean): void;
-        /**
-         * @internal
-         */
-        setFrontFace(value: number): void;
-        /**
-         * @internal
-         * 清理渲染状态缓存
-         */
-        clearRenderStateCache(): void;
-        /**
-         * @internal
-         * @param renderState
-         */
-        setRenderState(renderState: RenderState, isTarget: boolean, invertFront: boolean): void;
     }
     class GLShaderInstance extends GLObject {
         _engine: WebGLEngine;
         _gl: WebGLRenderingContext | WebGL2RenderingContext;
-        /**@internal */
-        private _vs;
-        /**@internal */
-        private _ps;
-        /**@internal TextureId*/
-        private _curActTexIndex;
-        /**@internal */
-        private _vshader;
-        /**@internal */
-        private _pshader;
-        /**@internal */
-        private _program;
-        /**@internal */
-        private _attributeMap;
-        /**@internal */
-        private _uniformMap;
-        /**@internal */
-        private _uniformObjectMap;
-        /**@internal */
-        _complete: boolean;
         constructor(engine: WebGLEngine, vs: string, ps: string, attributeMap: {
             [name: string]: [
                 number,
@@ -74417,121 +61354,10 @@ declare namespace Laya {
             ];
         });
         private _create;
-        /**
-        * @internal
-        */
-        private _createShader;
-        /**
-         * @internal
-         */
-        private _addShaderUnifiormFun;
         getUniformMap(): ShaderVariable[];
-        /**
-         * @internal
-         * @returns
-         */
-        bind(): boolean;
-        /**
-         * @internal
-         */
-        useProgram(): boolean;
-        /**
-        * @internal
-        */
-        _uniform1f(one: any, value: any): number;
-        /**
-        * @internal
-        */
-        _uniform1fv(one: any, value: any): number;
-        /**
-         * @internal
-         */
-        _uniform_vec2(one: any, v: Vector2): number;
-        /**
-         * @internal
-         */
-        _uniform_vec2v(one: any, value: Float32Array): number;
-        /**
-         * @internal
-         */
-        _uniform_vec3(one: any, v: Vector3): number;
-        /**
-         * @internal
-         */
-        _uniform_vec3v(one: any, v: Float32Array): number;
-        /**
-         * @internal
-         */
-        _uniform_vec4(one: any, v: Vector4): number;
-        /**
-         * @internal
-         */
-        _uniform_vec4v(one: any, v: Float32Array): number;
-        /**
-         * @internal
-         */
-        _uniformMatrix2fv(one: any, value: any): number;
-        /** @internal */
-        _uniformMatrix3f(one: any, value: Matrix3x3): number;
-        /**
-         * @internal
-         */
-        _uniformMatrix3fv(one: any, value: Float32Array): number;
-        /**
-         * @internal
-         */
-        _uniformMatrix4f(one: any, m: Matrix4x4): number;
-        /**
-         * @internal
-         */
-        _uniformMatrix4fv(one: any, m: Float32Array): number;
-        /**
-         * @internal
-         */
-        _uniform1i(one: any, value: any): number;
-        /**
-         * @internal
-         */
-        _uniform1iv(one: any, value: any): number;
-        /**
-         * @internal
-         */
-        _uniform_ivec2(one: any, value: any): number;
-        /**
-         * @internal
-         */
-        _uniform_ivec2v(one: any, value: any): number;
-        /**
-         * @internal
-         */
-        _uniform_vec3i(one: any, value: any): number;
-        /**
-         * @internal
-         */
-        _uniform_vec3vi(one: any, value: any): number;
-        /**
-         * @internal
-         */
-        _uniform_vec4i(one: any, value: any): number;
-        /**
-         * @internal
-         */
-        _uniform_vec4vi(one: any, value: any): number;
-        /**
-         * @internal
-         */
-        _uniform_sampler2D(one: any, texture: BaseTexture): number;
         _uniform_sampler2DArray(one: any, texture: BaseTexture): number;
         _uniform_sampler3D(one: any, texture: BaseTexture): number;
-        /**
-         * @internal
-         */
-        _uniform_samplerCube(one: any, texture: BaseTexture): number;
         _uniform_UniformBuffer(one: ShaderVariable, value: WebGLUniformBufferBase): number;
-        /**
-         * @internal
-         */
-        _bindTexture(textureID: number, target: number, texture: WebGLTexture): void;
         destroy(): void;
     }
     class GLVertexState extends GLObject {
@@ -74544,37 +61370,9 @@ declare namespace Laya {
         _bindedIndexBuffer: WebGLIndexBuffer;
         _vertexBuffers: WebGLVertexBuffer[];
         constructor(engine: WebGLEngine);
-        /**
-         * @internal
-         */
-        private createVertexArray;
-        /**
-         * @internal
-         */
-        private deleteVertexArray;
-        /**
-         * @internal
-         */
-        bindVertexArray(): void;
-        /**
-         * @internal
-         */
-        unbindVertexArray(): void;
-        /**
-         * @internal
-         */
-        isVertexArray(): void;
         applyVertexBuffer(vertexBuffer: WebGLVertexBuffer[]): void;
         clearVAO(): void;
         applyIndexBuffer(indexBuffer: WebGLIndexBuffer | null): void;
-        /**
-             * @internal
-             */
-        vertexAttribDivisor(index: number, divisor: number): void;
-        /**
-         * @internal
-         */
-        destroy(): void;
     }
     class VertexArrayObject {
         constructor();
@@ -74623,69 +61421,6 @@ declare namespace Laya {
         private _changeTexMemory;
         constructor(engine: WebGLEngine, colorFormat: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, isCube: boolean, generateMipmap: boolean, samples: number);
         _getSource(): any;
-        dispose(): void;
-    }
-    /** @internal */
-    class WebGLInternalTex extends GLObject implements InternalTexture {
-        _gl: WebGLRenderingContext | WebGL2RenderingContext;
-        readonly resource: WebGLTexture;
-        _resourceTarget: number;
-        readonly width: number;
-        readonly height: number;
-        readonly depth: number;
-        readonly isPotSize: boolean;
-        private _mipmap;
-        /**
-         * 是否存在 mipmap 数据
-         */
-        get mipmap(): boolean;
-        private _mipmapCount;
-        get mipmapCount(): number;
-        readonly useSRGBLoad: boolean;
-        readonly gammaCorrection: number;
-        readonly target: number;
-        internalFormat: number;
-        format: number;
-        type: number;
-        /**bytelength */
-        _gpuMemory: number;
-        private _statistics_M_Texture;
-        private _statistics_RC_Texture;
-        _getSource(): WebGLTexture;
-        get gpuMemory(): number;
-        set gpuMemory(value: number);
-        constructor(engine: WebGLEngine, target: number, width: number, height: number, depth: number, dimension: TextureDimension, mipmap: boolean, useSRGBLoader: boolean, gammaCorrection: number);
-        private _filterMode;
-        get filterMode(): FilterMode;
-        set filterMode(value: FilterMode);
-        private _warpU;
-        get wrapU(): WrapMode;
-        set wrapU(value: WrapMode);
-        private _warpV;
-        get wrapV(): WrapMode;
-        set wrapV(value: WrapMode);
-        private _warpW;
-        get wrapW(): WrapMode;
-        set wrapW(value: WrapMode);
-        private _anisoLevel;
-        get anisoLevel(): number;
-        set anisoLevel(value: number);
-        private _baseMipmapLevel;
-        set baseMipmapLevel(value: number);
-        get baseMipmapLevel(): number;
-        private _maxMipmapLevel;
-        set maxMipmapLevel(value: number);
-        get maxMipmapLevel(): number;
-        private _compareMode;
-        get compareMode(): TextureCompareMode;
-        set compareMode(value: TextureCompareMode);
-        _setTexParameteri(pname: number, param: number): void;
-        _setTexParametexf(pname: number, param: number): void;
-        protected getFilteMinrParam(filterMode: FilterMode, mipmap: boolean): 9984 | 9728 | 9985 | 9729 | 9987;
-        protected getFilterMagParam(filterMode: FilterMode): 9728 | 9729;
-        protected getWrapParam(wrapMode: WrapMode): 10497 | 33071 | 33648;
-        protected _setWrapMode(pname: number, param: number): void;
-        private _changeTexMemory;
         dispose(): void;
     }
     class WebGLSetRenderData extends SetRenderDataCMD {
@@ -74759,13 +61494,9 @@ declare namespace Laya {
         _id: number;
         bufferState: WebGLBufferState;
         private _mode;
-        /**@internal 优化使用*/
-        _glmode: number;
         drawType: DrawType;
         drawParams: FastSinglelist<number>;
         instanceCount: number;
-        /**@internal 优化*/
-        _glindexFormat: number;
         private _indexFormat;
         /**
          * index format
@@ -74789,39 +61520,7 @@ declare namespace Laya {
      * <code>ShaderInstance</code> 类用于实现ShaderInstance。
      */
     class WebGLShaderInstance implements IShaderInstance {
-        /**@internal */
-        private _shaderPass;
-        /**@internal */
-        _cacheShaerVariable: {
-            [key: number]: ShaderVariable;
-        };
-        /**@internal */
-        _renderShaderInstance: GLShaderInstance;
-        /**@internal */
-        _sceneUniformParamsMap: CommandEncoder;
-        /**@internal */
-        _cameraUniformParamsMap: CommandEncoder;
-        /**@internal */
-        _spriteUniformParamsMap: CommandEncoder;
-        /**@internal */
-        _materialUniformParamsMap: CommandEncoder;
-        /**@internal */
-        _sprite2DUniformParamsMap: CommandEncoder;
         _additionUniformParamsMaps: Map<string, CommandEncoder>;
-        /**@internal */
-        _uploadMark: number;
-        /**@internal */
-        _uploadMaterial: ShaderData;
-        /**@internal RenderIDTODO*/
-        _uploadRender: ShaderData;
-        /** @internal */
-        _uploadRenderType: number;
-        /**@internal CamneraTOD*/
-        _uploadCameraShaderValue: ShaderData;
-        /**@internal SceneIDTODO*/
-        _uploadScene: ShaderData;
-        /** @internal 缓存数据 用来优化一些*/
-        _additionShaderData: Map<string, ShaderData>;
         renderState: RenderState;
         /**
       * shader pass statefirst 为 true 时
@@ -74840,14 +61539,6 @@ declare namespace Laya {
          */
         get complete(): boolean;
         _create(shaderProcessInfo: ShaderProcessInfo, shaderPass: ShaderPass): void;
-        /**
-         * @internal
-         */
-        protected _create3D(): void;
-        /**
-         * @internal
-         */
-        protected _create2D(): void;
         private hasSpritePtrID;
         private _hasAdditionShaderData;
         /**
@@ -74884,10 +61575,6 @@ declare namespace Laya {
          * @param shaderDatas
          */
         private uploadRenderStateBlendDepthByMaterial;
-        /**
-         * @internal
-         */
-        uploadRenderStateFrontFace(shaderDatas: ShaderData, isTarget: boolean, invertFront: boolean): void;
     }
     class WebGLSubUniformBuffer extends WebGLUniformBufferBase implements IUniformBufferUser {
         uniformMap: Map<number, {
@@ -75006,14 +61693,11 @@ declare namespace Laya {
     class WebGLVertexBuffer implements IVertexBuffer {
         _glBuffer: GLBuffer;
         private _vertexDeclaration;
-        /**@internal */
-        _shaderValues: {
-            [key: number]: VertexStateContext;
-        };
         get vertexDeclaration(): VertexDeclaration;
         set vertexDeclaration(value: VertexDeclaration);
         instanceBuffer: boolean;
         constructor(targetType: BufferTargetType, bufferUsageType: BufferUsage);
+        getStorageBuffer(): IDeviceBuffer;
         setDataLength(byteLength: number): void;
         setData(buffer: ArrayBuffer, bufferOffset: number, dataStartIndex: number, dataCount: number): void;
         /**
@@ -75049,6 +61733,8 @@ declare namespace Laya {
         apply(context: WebGPURenderContext2D): void;
     }
     class WebGPUPrimitiveRenderElement2D extends WebGPURenderElement2D implements IPrimitiveRenderElement2D {
+        typeKey: number;
+        textureKey: number;
         private _sprite2DGraphicUBOs;
         private _primitiveShaderData;
         get primitiveShaderData(): WebGPUShaderData;
@@ -75057,6 +61743,7 @@ declare namespace Laya {
         constructor();
     }
     class WebGPURender2DProcess implements I2DRenderPassFactory {
+        createEmptyRenderDataHandle(): IRender2DDataHandle;
         createGraphic2DBufferBlock(): IGraphics2DBufferBlock;
         createGraphic2DVertexBlock(): IGraphics2DVertexBlock;
         create2DGraphicVertexDataView(wholeBuffer: I2DGraphicWholeBuffer, elementOffset: number, elementSize: number, stride: number): I2DGraphicVertexDataView;
@@ -75090,6 +61777,8 @@ declare namespace Laya {
         private _globalComkeyNameMap;
         private _globalRendercacheInfoMap;
         private _passData;
+        private _offscreenX;
+        private _offscreenY;
         private _offscreenWidth;
         private _offscreenHeight;
         private _needClearColor;
@@ -75111,6 +61800,7 @@ declare namespace Laya {
         get passData(): WebGPUShaderData;
         set passData(value: WebGPUShaderData);
         constructor();
+        getOffscreenView(out: Vector4): void;
         private globalComkeyToID;
         private _getPassCacheKey;
         private _getRenderPipeLine;
@@ -75127,11 +61817,9 @@ declare namespace Laya {
          * 准备录制渲染命令
          */
         private _start;
-        /**@internal */
-        _needGlobalData(): boolean;
         getRenderTarget(): InternalRenderTarget;
         drawRenderElementList(list: FastSinglelist<WebGPURenderElement2D>): number;
-        setOffscreenView(width: number, height: number): void;
+        setOffscreenView(width: number, height: number, x?: number, y?: number): void;
         setRenderTarget(value: WebGPUInternalRT, clear: boolean, clearColor: Color): void;
         drawRenderElementOne(node: WebGPURenderElement2D): void;
         runOneCMD(cmd: IRenderCMD): void;
@@ -75190,8 +61878,6 @@ declare namespace Laya {
         get globalShaderData(): WebGPUShaderData;
         set globalShaderData(value: WebGPUShaderData);
         constructor();
-        /** @internal */
-        protected _needUpdatePipeline(): void;
         protected getGlobalShaderData(): ShaderData;
         protected _getShaderInstanceDefines(context: WebGPURenderContext2D): WebDefineDatas;
         /**
@@ -75344,89 +62030,379 @@ declare namespace Laya {
         removeOneBatchMark(oneBathMark: OneBatchMark): void;
         release(): void;
     }
+    /**
+     * @zh WebGPU 实例化渲染相关的状态信息。
+     * @en WebGPU instance rendering related state information.
+     */
     interface WebGPUInstanceStateInfo {
+        /**
+         * @zh 当前实例化的缓冲状态。
+         * @en The buffer state used for instancing.
+         */
         state: WebGPUBufferState;
+        /**
+         * @zh 世界矩阵实例化顶点缓冲。
+         * @en World matrix instance vertex buffer.
+         */
         worldInstanceVB?: WebGPUVertexBuffer;
+        /**
+         * @zh 简单骨骼动画实例化顶点缓冲。
+         * @en Simple skinning animator instance vertex buffer.
+         */
         simpleAnimatorVB?: WebGPUVertexBuffer;
+        /**
+         * @zh 光照贴图缩放偏移量实例化顶点缓冲。
+         * @en Lightmap scale/offset instance vertex buffer.
+         */
         lightmapScaleOffsetVB?: WebGPUVertexBuffer;
     }
+    /**
+     * @zh WebGPU Mesh 实例化工具类，负责合并顶点/索引缓冲并设置实例化相关状态。
+     * @en WebGPU mesh instancing utility class, responsible for merging vertex/index buffers and setting up instancing state.
+     */
     class WebGPUMeshInstanceUtil {
+        /**
+         * @zh 是否合并成大缓冲区。
+         * @en Whether to merge into a large buffer.
+         */
         static mergeBigBuffer: boolean;
+        /**
+         * @zh 获取并绑定实例化所需的缓冲状态。
+         * @en Get and bind the buffer state needed for instanced rendering.
+         * @param stateInfo 实例化状态信息。
+         * @param renderType 渲染类型。
+         * @param oriGeometry 原始几何体。
+         * @param newGeometry 新几何体（用于合批/实例化）。
+         * @param oneBatchMark 合批标记。
+         * @param stateInfo Instance state info.
+         * @param renderType Render type.
+         * @param oriGeometry Original geometry.
+         * @param newGeometry New geometry for batching/instancing.
+         * @param oneBatchMark One-batch mark.
+         */
         static getInstanceBufferState(stateInfo: WebGPUInstanceStateInfo, renderType: number, oriGeometry: WebGPURenderGeometry, newGeometry: WebGPURenderGeometry, oneBatchMark: OneBatchMark): void;
     }
     class SingleLeakList<T> {
         elements: Array<T>;
         leakIndexList: Array<number>;
+        /**
+         * @zh 添加元素并返回其索引。
+         * @en Add an element and return its index.
+         * @param element 要添加的元素。
+         * @param element The element to add.
+         */
         add(element: T): number;
+        /**
+         * @zh 删除元素并将其索引加入可复用列表。
+         * @en Remove an element and push its index into the reusable list.
+         * @param element 要删除的元素。
+         * @param element The element to remove.
+         */
         remove(element: T): void;
+        /**
+         * @zh 查找元素索引，若已回收返回 -1。
+         * @en Find the index of an element, return -1 if it has been recycled.
+         * @param element 要查找的元素。
+         * @param element The element to find.
+         */
         indexof(element: T): number;
+        /**
+         * @zh 释放所有资源引用。
+         * @en Release all references.
+         */
         release(): void;
     }
+    /**
+     * @zh WebGPU 合批渲染队列，包含不透明和透明渲染队列以及排序控制。
+     * @en WebGPU batch rendering queue, containing opaque and transparent queues with sorting control.
+     */
     class WebGPUBatchQueue implements IModuleAgentResource {
+        /**
+         * @zh 不透明渲染队列。
+         * @en Opaque render queue.
+         */
         opaqueQueue: RenderListQueue;
+        /**
+         * @zh 不透明渲染元素列表（内部使用）。
+         * @en Opaque render element list (internal use).
+         */
         opaqueList: FastSinglelist<WebGPURenderElement3D>;
+        /**
+         * @zh 透明渲染队列。
+         * @en Transparent render queue.
+         */
         transparentQueue: RenderListQueue;
+        /**
+         * @zh 透明渲染元素列表（内部使用）。
+         * @en Transparent render element list (internal use).
+         */
         transparentList: FastSinglelist<WebGPURenderElement3D>;
+        /**
+         * @zh 是否自定义不透明排序。
+         * @en Whether to use custom opaque sorting.
+         */
         opaqueCustomSort: boolean;
+        /**
+         * @zh 是否自定义透明排序。
+         * @en Whether to use custom transparent sorting.
+         */
         transCustomSort: boolean;
+        /**
+         * @zh 创建批次渲染队列。
+         * @en Create a batch rendering queue.
+         * @param createTransList 是否创建透明队列。
+         * @param createTransList Whether to create a transparent queue.
+         */
         constructor(createTransList: boolean);
+        /**
+         * @zh 清空队列中缓存的渲染元素列表。
+         * @en Clear cached render element lists in the queues.
+         */
         clearList(): void;
+        /**
+         * @zh 释放队列资源并销毁内部对象。
+         * @en Release queue resources and destroy internal objects.
+         */
         release(): void;
     }
+    /**
+     * @zh 渲染节点自定义数据，用于跟踪当前节点的合批状态及裁剪相关信息。
+     * @en Custom data for a render node, tracking batching state and culling information.
+     */
     class renderNodeCustomData {
+        /**
+         * @zh 是否所有渲染元素均参与合批。
+         * @en Whether all render elements are batched.
+         */
         allBatch: boolean;
+        /**
+         * @zh 是否存在已合批的元素。
+         * @en Whether there are any batched elements.
+         */
         hasBatch: boolean;
+        /**
+         * @zh 当前裁剪通道索引。
+         * @en Current cull pass index.
+         */
         cullPassIndex: number;
+        /**
+         * @zh 合批记录列表。
+         * @en List of batch records.
+         */
         batchRecoards: batchRecoard[];
+        /**
+         * @zh 裁剪掩码。
+         * @en Culling mask.
+         */
         cullMask: number;
         constructor();
+        /**
+         * @zh 初始化自身数据。
+         * @en Initialize the custom data state.
+         */
         _initData(): void;
+        /**
+         * @zh 判断是否需要重新进行裁剪。
+         * @en Determine whether culling needs to be performed again.
+         * @param updateMark 当前帧或更新标记。
+         * @param updateMark Current frame or update mark.
+         */
         needCull(updateMark: number): boolean;
     }
+    /**
+     * @zh 单个合批记录，用于缓存元素的合批状态。
+     * @en A single batch record used to cache an element's batching state.
+     */
     class batchRecoard {
+        /**
+         * @zh 当前元素是否可合批。
+         * @en Whether the element can be batched.
+         */
         canBatch: boolean;
+        /**
+         * @zh 合批标记信息。
+         * @en Batching mark information.
+         */
         batchMark: OneBatchMark;
+        /**
+         * @zh 对应的渲染元素。
+         * @en The corresponding render element.
+         */
         renderElement: WebGPURenderElement3D;
     }
+    /**
+     * @zh 用于填充 GPU 裁剪数据的帮助类。
+     * @en Helper class for filling GPU culling data.
+     */
     class WebGPUBatch_CullDataSet {
+        /**
+         * @zh 将裁剪平面数据写入指定的 Float32Array。
+         * @en Write a culling plane into a Float32Array at the given index.
+         * @param plane 需要写入的裁剪平面。
+         * @param index 写入的起始位置索引（float 单位）。
+         * @param data 目标数据数组。
+         * @param plane The culling plane to write.
+         * @param index The start index in the float array.
+         * @param data The target float array.
+         */
         static fillPlaneCullData(plane: Plane, index: number, data: Float32Array): void;
+        /**
+         * @zh 使用相机裁剪信息填充裁剪数据（包含视锥体和相机位置）。
+         * @en Fill culling data from camera cull info (frustum planes and camera position).
+         * @param cameraCullInfo 相机裁剪信息。
+         * @param index 写入的起始位置索引（float 单位）。
+         * @param data 目标 float 数据数组。
+         * @param dataUint32 目标 uint32 数据数组（用于标记）。
+         * @param cameraCullInfo Camera cull info.
+         * @param index The start index in the float array.
+         * @param data Target float array.
+         * @param dataUint32 Target uint32 array (for flags).
+         */
         static fillCameraCullData(cameraCullInfo: CameraCullInfo, index: number, data: Float32Array, dataUint32: Uint32Array): void;
+        /**
+         * @zh 使用方向光裁剪信息填充裁剪数据（包含裁剪平面 + 光源位置 + 阴影标记）。
+         * @en Fill culling data from directional light cull info (including planes, light position and shadow flag).
+         * @param cullInfo 方向光裁剪信息。
+         * @param index 写入的起始位置索引（float 单位）。
+         * @param data 目标 float 数据数组。
+         * @param dataUint32 目标 uint32 数据数组（用于标记）。
+         * @param cullInfo Directional light cull info.
+         * @param index The start index in the float array.
+         * @param data Target float array.
+         * @param dataUint32 Target uint32 array (for flags).
+         */
         static fillDirCullData(cullInfo: ShadowCullInfo, index: number, data: Float32Array, dataUint32: Uint32Array): void;
+        /**
+         * @zh 填充不进行裁剪的标记数据（用于跳过裁剪）。
+         * @en Fill data indicating no culling should be performed (skip culling).
+         * @param index 写入的起始位置索引（float 单位）。
+         * @param dataUint32 目标 uint32 数据数组（用于标记）。
+         * @param index The start index in the float array.
+         * @param dataUint32 Target uint32 array (for flags).
+         */
         static fillNOCullData(index: number, dataUint32: Uint32Array): void;
+        /**
+         * @zh 使用聚光灯裁剪信息填充裁剪数据（视锥体 + 相机位置 + 阴影标记）。
+         * @en Fill culling data from spot light cull info (frustum + camera position + shadow flag).
+         * @param spotCullInfo 聚光灯裁剪信息。
+         * @param index 写入的起始位置索引（float 单位）。
+         * @param data 目标 float 数据数组。
+         * @param dataUint32 目标 uint32 数据数组（用于标记）。
+         * @param spotCullInfo Spot light cull info.
+         * @param index The start index in the float array.
+         * @param data Target float array.
+         * @param dataUint32 Target uint32 array (for flags).
+         */
         static fillSpotCullData(spotCullInfo: CameraCullInfo, index: number, data: Float32Array, dataUint32: Uint32Array): void;
+        /**
+         * @zh 通用相机裁剪逻辑（内部使用），根据相机视锥判断 RenderNode 是否可渲染，并将其元素分类到不透明/透明列表中。
+         * @en Common camera culling logic (internal), determines whether a RenderNode is renderable by the camera frustum and sorts its render elements into opaque/transparent lists.
+         * @param cameraCullInfo 相机裁剪信息。
+         * @param count 要处理的节点数量。
+         * @param context 渲染上下文。
+         * @param list 待裁剪的节点列表。
+         * @param opaqueList 结果不透明列表。
+         * @param transparent 结果透明列表。
+         * @param cullOutResoult 裁剪结果对象。
+         * @param cameraCullInfo Camera cull info.
+         * @param count Number of nodes to process.
+         * @param context Render context.
+         * @param list List of render nodes to cull.
+         * @param opaqueList Result opaque list.
+         * @param transparent Result transparent list.
+         * @param cullOutResoult Culling result object.
+         */
         static _commonCullByCameraCullInfo(cameraCullInfo: CameraCullInfo, count: number, context: IRenderContext3D, list: SingletonList<WebGPUBaseRenderNode>, opaqueList: SingletonList<WebGPURenderElement3D>, transparent: SingletonList<WebGPURenderElement3D>, cullOutResoult: WebGPUMeshBatchCPUCullResult): void;
         /**
-         * @param cameraCullInfo
-         * @param lists
-         * @param opaqueList
-         * @param transparent
-         * @param context
+         * @zh 使用相机裁剪信息进行合批裁剪（动态/静态/预合批）。
+         * @en Perform batching culling using camera cull info (dynamic/static/one-batch pre-pass).
+         * @param cameraCullInfo 相机裁剪信息。
+         * @param cullNodeManager 裁剪节点管理器。
+         * @param cullOutResoult 裁剪结果对象。
+         * @param transparent 透明物体渲染队列。
+         * @param context 渲染上下文。
+         * @param cameraCullInfo Camera cull info.
+         * @param cullNodeManager Cull node manager.
+         * @param cullOutResoult Culling result object.
+         * @param transparent Transparent render queue.
+         * @param context Render context.
          */
         static cullByCameraCullInfo2(cameraCullInfo: CameraCullInfo, cullNodeManager: WebGPUMeshBatchCPUCullNodeList, cullOutResoult: WebGPUMeshBatchCPUCullResult, transparent: RenderListQueue, context: IRenderContext3D): void;
+        /**
+         * @zh 通用方向光阴影裁剪逻辑（内部使用），判定哪些渲染节点需要参与阴影渲染。
+         * @en Common directional light shadow culling logic (internal), determining which render nodes should participate in shadow rendering.
+         */
         static _commonCullByDirectLightShadow(shadowCullInfo: ShadowCullInfo, list: SingletonList<WebGPUBaseRenderNode>, count: number, opaqueList: SingletonList<WebGPURenderElement3D>, context: IRenderContext3D, cullOutResoult: WebGPUMeshBatchCPUCullResult): void;
         /**
-          * 方向光源裁剪
-          * @param shadowCullInfo
-          * @param lists
-          * @param opaqueList
-          * @param context
-          */
+         * @zh 使用方向光阴影信息进行合批裁剪（动态/静态/预合批）。
+         * @en Perform batching culling using directional light shadow info (dynamic/static/one-batch pre-pass).
+         */
         static cullDirectLightShadow2(shadowCullInfo: ShadowCullInfo, cullNodeManager: WebGPUMeshBatchCPUCullNodeList, cullOutResoult: WebGPUMeshBatchCPUCullResult, context: IRenderContext3D): void;
+        /**
+         * @zh 使用聚光灯阴影信息进行合批裁剪（动态/静态/预合批）。
+         * @en Perform batching culling using spot light shadow info (dynamic/static/one-batch pre-pass).
+         * @param spotCullInfo 聚光灯阴影裁剪信息。
+         * @param cullNodeManager 裁剪节点管理器。
+         * @param cullOutResoult 裁剪结果对象。
+         * @param context 渲染上下文。
+         * @param spotCullInfo Spot light shadow cull info.
+         * @param cullNodeManager Cull node manager.
+         * @param cullOutResoult Culling result object.
+         * @param context Render context.
+         */
         static cullSpotLightShadow2(spotCullInfo: CameraCullInfo, cullNodeManager: WebGPUMeshBatchCPUCullNodeList, cullOutResoult: WebGPUMeshBatchCPUCullResult, context: IRenderContext3D): void;
+        /**
+         * @zh 快速执行一次合批裁剪，判断当前批次中的任何一个节点是否可通过裁剪条件（相机/主光/聚光）。
+         * @en Quickly perform a single batch cull pass, checking whether any node in the batch passes culling conditions (camera/direct/spot).
+         * @param batch 待裁剪的合批标记。
+         * @param cullMode 裁剪模式（相机/主光/聚光）。
+         * @param cullData 裁剪信息对象。
+         * @param cullMask 裁剪掩码，用于避免重复裁剪。
+         * @param cullInfoIndex 裁剪信息索引。
+         * @param batch The batch mark to cull.
+         * @param cullMode Culling mode (camera/direct/spot).
+         * @param cullData The culling info object.
+         * @param cullMask Culling mask used to avoid repeated culls.
+         * @param cullInfoIndex Culling info index.
+         */
         static quickOneMarkBatchCull(batch: OneBatchMark, cullMode: BatchCullMode, cullData: any, cullMask: number, cullInfoIndex: number): boolean;
         /**
-         * 聚光灯裁剪
-         * @param cameraCullInfo
-         * @param list
-         * @param count
-         * @param opaqueList
-         * @param context
+         * @zh 聚光灯裁剪（仅用于阴影合批），将符合条件的渲染元素加入不透明列表。
+         * @en Spot light culling (for shadow batching), adding eligible render elements to the opaque list.
+         * @param cameraCullInfo 聚光灯裁剪信息。
+         * @param list 渲染节点列表。
+         * @param count 节点数量。
+         * @param opaqueList 输出的不透明渲染元素列表。
+         * @param context 渲染上下文。
+         * @param cullOutResoult 裁剪结果对象。
+         * @param cameraCullInfo Spot light cull info.
+         * @param list List of render nodes.
+         * @param count Number of nodes.
+         * @param opaqueList Output opaque render element list.
+         * @param context Render context.
+         * @param cullOutResoult Culling result object.
          */
         static cullSpotShadow(cameraCullInfo: CameraCullInfo, list: SingletonList<WebGPUBaseRenderNode>, count: number, opaqueList: FastSinglelist<WebGPURenderElement3D>, context: IRenderContext3D, cullOutResoult: WebGPUMeshBatchCPUCullResult): void;
     }
+    /**
+     * @zh 用于合并多个 Mesh 的顶点/索引数据到一个大缓冲区，避免频繁创建/切换缓冲区。
+     * @en Used to merge multiple mesh vertex/index data into a big buffer, reducing buffer churn.
+     */
     class BatchMergeVertexInfo {
+        /**
+         * @zh 顶点缓冲扩展步长。
+         * @en Vertex buffer extension step.
+         */
         static VertexBufferExtendCount: number;
+        /**
+         * @zh 索引缓冲扩展步长。
+         * @en Index buffer extension step.
+         */
         static IndexBufferExtendCount: number;
+        /**
+         * @zh 大缓冲索引格式，统一使用 UInt32。
+         * @en Index format for big buffers, always UInt32.
+         */
         static indexFormat: IndexFormat;
         private _cacheVertexInfo;
         private _cacheIndexInfo;
@@ -75436,30 +62412,120 @@ declare namespace Laya {
         private _curMaxIndexCount;
         private _vertexData;
         private _indexData;
+        /**
+         * @zh 合并后的顶点缓冲。
+         * @en The merged vertex buffer.
+         */
         vertexBuffer: WebGPUVertexBuffer;
+        /**
+         * @zh 合并后的索引缓冲。
+         * @en The merged index buffer.
+         */
         indexBuffer: WebGPUIndexBuffer;
+        /**
+         * @zh 顶点步长（Float 个数）。
+         * @en Vertex stride (number of floats per vertex).
+         */
         vertexStride: number;
+        /**
+         * @zh 创建一个合并顶点信息对象。
+         * @en Create a batch merge vertex info object.
+         * @param vertexLength 初始顶点字节长度。
+         * @param indexLength 初始索引字节长度。
+         * @param oriVertex 原始顶点缓冲，用于获取顶点声明信息。
+         * @param vertexLength Initial vertex buffer byte length.
+         * @param indexLength Initial index buffer byte length.
+         * @param oriVertex The original vertex buffer used to obtain vertex declaration.
+         */
         constructor(vertexLength: number, indexLength: number, oriVertex: WebGPUVertexBuffer);
+        /**
+         * @zh 扩展索引缓冲区到至少指定元素个数。
+         * @en Extend the index buffer to accommodate at least the specified number of indices.
+         */
         private _extendIndexBuffer;
+        /**
+         * @zh 扩展顶点缓冲区到至少指定顶点个数。
+         * @en Extend the vertex buffer to accommodate at least the specified number of vertices.
+         */
         private _extendVertexBuffer;
+        /**
+         * @zh 向大缓冲区中添加一个 Mesh 的顶点/索引数据，并返回该 Mesh 在索引缓冲中的偏移。
+         * @en Add a mesh's vertex/index data into the big buffer and return its index offset.
+         * @param MergVertexBuffer 要合并的顶点缓冲。
+         * @param MergeIndexBuffer 要合并的索引缓冲。
+         * @param indexOffsetCount 输出索引偏移信息（x 分量为起始偏移）。
+         * @param MergVertexBuffer The vertex buffer to merge.
+         * @param MergeIndexBuffer The index buffer to merge.
+         * @param indexOffsetCount Output index offset info (x component is start offset).
+         */
         addMesh(MergVertexBuffer: WebGPUVertexBuffer, MergeIndexBuffer: WebGPUIndexBuffer, indexOffsetCount: Vector2): void;
     }
+    /**
+     * @zh 合并 Mesh 缓冲的工具类，主要用于 MeshRender 的顶点/索引合并。
+     * @en Utility class for merging Mesh buffers, primarily used for MeshRender vertex/index merging.
+     */
     class MergeMeshUtil {
+        /**
+         * @zh key: state cache ID，value: BatchMergeVertexInfo。
+         * @en key: state cache ID, value: BatchMergeVertexInfo.
+         */
         static vertexStateMap: Map<number, BatchMergeVertexInfo>;
+        /**
+         * @zh 获取（或创建）用于合并的 BatchMergeVertexInfo，并附加到当前 Mesh 的缓存状态。
+         * @en Get (or create) a BatchMergeVertexInfo for merging, and attach it to the mesh state cache.
+         * @param mergeGeometry 需要合并的源几何体。
+         * @param newGeoemtty 目标几何体，会被修改为使用 Uint32 索引格式。
+         * @param outIndexOffsetCount 输出索引偏移，用于更新索引偏移量。
+         * @param mergeGeometry Source geometry to merge.
+         * @param newGeoemtty The target geometry, will be modified to use Uint32 index format.
+         * @param outIndexOffsetCount Output index offset for updating offsets.
+         */
         static getMergeInfo(mergeGeometry: WebGPURenderGeometry, newGeoemtty: WebGPURenderGeometry, outIndexOffsetCount: Vector2): BatchMergeVertexInfo;
+        /**
+         * @zh 获取（或创建）用于合并的 BatchMergeVertexInfo（无实例化），并附加到当前 Mesh 的缓存状态。
+         * @en Get (or create) a BatchMergeVertexInfo for merging (no instancing), and attach it to the mesh state cache.
+         * @param mergeGeometry 需要合并的源几何体。
+         * @param outIndexOffsetCount 输出索引偏移，用于更新索引偏移量。
+         * @param mergeGeometry Source geometry to merge.
+         * @param outIndexOffsetCount Output index offset for updating offsets.
+         */
         static getMergeInfoNoIns(mergeGeometry: WebGPURenderGeometry, outIndexOffsetCount: Vector2): BatchMergeVertexInfo;
     }
+    /**
+     * @zh 批次渲染元素排序工具，提供内存友好的原地快速排序。
+     * @en Sorting utilities for batch render elements, providing in-place quicksort.
+     */
     class BatchAgentSortUtil {
         /**
-         * 原地快速排序 - 更节省内存，时间复杂度O(n log n)
+         * @zh 原地快速排序 - 更节省内存，时间复杂度 O(n log n)。
+         * @en In-place quicksort - more memory efficient, O(n log n) complexity.
+         * @param arr 要排序的元素数组。
+         * @param low 排序起始索引。
+         * @param high 排序结束索引。
+         * @param arr Array of elements to sort.
+         * @param low Starting index for sort.
+         * @param high Ending index for sort.
          */
         static quickSortInPlace(arr: WebGPURenderElement3D[], low?: number, high?: number): void;
         private static partition;
         /**
-        * 原地快速排序 - 更节省内存，时间复杂度O(n log n)
-        */
+         * @zh 另一个原地快速排序实现，使用与 `partition2` 配套的 pivot 计算方式。- 更节省内存，时间复杂度O(n log n)
+         * @en Another in-place quicksort implementation using a different pivot calculation (see `partition2`).
+         */
         static quickSortInPlace2(arr: WebGPURenderElement3D[], low?: number, high?: number): void;
+        /**
+         * @zh 快速排序 partition 操作（使用自定义 pivot）。
+         * @en Partition operation for quicksort (using custom pivot).
+         * @param arr 待排序数组。
+         * @param low 分区起始索引。
+         * @param high 分区结束索引。
+         */
         private static partition2;
+        /**
+         * @zh 计算排序 pivot 值。
+         * @en Compute the pivot value for sorting.
+         * @param arr 用于计算 pivot 的渲染元素。
+         */
         private static getPivot2;
     }
     class CullAdditionalInfo {
@@ -75901,8 +62967,6 @@ declare namespace Laya {
         get subShader(): SubShader;
         set subShader(value: SubShader);
         constructor();
-        /** @internal */
-        protected _needUpdatePipeline(): void;
         /**
          * 是否反转面片
          */
@@ -76007,6 +63071,11 @@ declare namespace Laya {
          * @param cmd 计算调度命令信息
          */
         addDispatchCommand(cmd: IComputeCMD_Dispatch): void;
+        /**
+         * 添加间接调度计算命令
+         * @param cmd 间接调度命令信息
+         */
+        addDispatchIndirectCommand(cmd: IComputeCMD_DispatchIndirect): void;
         /**
          * 添加设置着色器数据命令
          * @param shaderData 着色器数据
@@ -76121,53 +63190,6 @@ declare namespace Laya {
         readData(dest: ArrayBuffer, destOffset: number, srcOffset: number, byteLength: number): Promise<void>;
         destroy(): void;
     }
-    /**
-     * attribute列表
-     */
-    type WebGPUAttributeMapType = {
-        [key: string]: [
-            number,
-            ShaderDataType
-        ];
-    };
-    /**
-     * @internal
-     * generate glsl for vulkan
-     */
-    class GLSLForVulkanGenerator {
-        /**
-         *
-         * @param defines
-         * @param attributeMap //0:useAttributeMap  1:nouseAttributeMap
-         * @param uniformMap
-         * @param shaderPassName
-         * @param materialMap
-         * @param VS
-         * @param FS
-         * @param useTexArray
-         * @param checkSetNumber
-         * @param appendSet
-         * @returns
-         */
-        static process(defines: string[], attributeMap: WebGPUAttributeMapType[], uniformMap: Map<number, WebGPUUniformPropertyBindingInfo[]>, shaderPassName: string, materialMap: Map<number, UniformProperty>, VS: ShaderNode, FS: ShaderNode, useTexArray: Set<string>, checkSetNumber: number, appendSet: number): {
-            vertex: string;
-            fragment: string;
-            appendNewUniform: boolean;
-        };
-        static proccessCompute(defines: string[], uniformCommandMaps: WebGPUCommandUniformMap[], uniformMaps: Map<number, WebGPUUniformPropertyBindingInfo[]>, node: ShaderNode, shaderName: string): {
-            code?: undefined;
-            hasSampler?: undefined;
-        } | {
-            code: string;
-            hasSampler: boolean;
-        };
-    }
-    /** @internal */
-    function getTypeString(type: ShaderDataType): "" | "int" | "bool" | "float" | "vec2" | "vec3" | "vec4" | "mat4" | "mat3" | "sampler2D" | "samplerCube" | "sampler2DArray" | "sampler3D" | "uvec4";
-    /** @internal */
-    function getTypeDefaultString(type: ShaderDataType): "" | "0" | "false" | "0.0" | "vec2(0.0)" | "vec3(0.0)" | "vec4(0.0)";
-    /** @internal */
-    function isSamplerType(type: ShaderDataType): boolean;
     class WebGPU_GLSLCommon {
         /**
          * 替换字符串的一部分
@@ -76473,6 +63495,21 @@ declare namespace Laya {
         destroy(): void;
     }
     /**
+     * 兼容 WebGL 的 blitFramebuffer 功能
+     * 通过 render pass + 全屏三角形实现颜色和深度的拷贝，支持 invertY
+     * @param device GPUDevice
+     * @param srcColorTexture 源颜色纹理
+     * @param dstColorTexture 目标颜色纹理（GPUTexture）
+     * @param dstColorFormat 目标颜色格式（GPUTextureFormat）
+     * @param srcDepthTexture 源深度纹理（可选）
+     * @param dstDepthTexture 目标深度纹理（可选，GPUTexture）
+     * @param dstDepthFormat 目标深度格式（可选，GPUTextureFormat）
+     * @param width 拷贝宽度
+     * @param height 拷贝高度
+     * @param invertY 是否翻转Y轴
+     */
+    function blitFramebuffer(device: GPUDevice, srcColorTexture: GPUTexture, dstColorTexture: GPUTexture, dstColorFormat: GPUTextureFormat, srcDepthTexture: GPUTexture | null, dstDepthTexture: GPUTexture | null, dstDepthFormat: GPUTextureFormat | null, width: number, height: number, invertY: boolean): void;
+    /**
      * Converts a `GPUExtent3D` into an array of numbers
      *
      * `GPUExtent3D` has two forms `[width, height?, depth?]` or
@@ -76736,39 +63773,14 @@ declare namespace Laya {
         clearBundle(): void;
     }
     class WebGPUCapable {
-        /**@internal */
-        private _capabilityMap;
         constructor(descriptor: GPUDeviceDescriptor);
         initCapable(descriptor: GPUDeviceDescriptor): void;
         getCapable(type: RenderCapable): boolean;
     }
     class WebGPUCommandUniformMap extends CommandUniformMap {
-        /** @internal */
-        _idata: Map<number, UniformProperty>;
-        /** @internal */
-        _defaultData: Map<number, BaseTexture>;
-        /** @internal */
-        _hasUniformBuffer: boolean;
-        /** @internal */
-        _stateName: string;
         _stateID: number;
-        /**
-         * @internal
-         * map 中包含的纹理数量
-         * 不包括 storage texture
-         */
-        _textureCount: number;
-        /** @internal */
-        _textureBits: Map<number, number>;
-        /** @internal */
-        _textureExits: number;
         constructor(stateName: string);
         hasPtrID(propertyID: number): boolean;
-        /**
-         * 增加一个Uniform参数，如果Uniform属性是Array，请使用addShaderUniformArray
-         * @internal
-         */
-        addShaderUniform(propertyID: number, propertyName: string, uniformtype: ShaderDataType, options?: UniformOptions): void;
         addShaderUniformArray(propertyID: number, propertyName: string, uniformtype: ShaderDataType, arrayLength: number): void;
         /**
          * 设置默认值
@@ -76822,12 +63834,6 @@ declare namespace Laya {
         _renderPassDescriptor: GPURenderPassDescriptor;
         _arrayLayerIndex: number;
         constructor(colorFormat: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, isCube: boolean, generateMipmap: boolean, samples: number, sRGB: boolean);
-        /**
-         * @internal
-         * 获取附件格式ID
-         * @returns 基于颜色和深度格式的唯一标识符
-         */
-        _getCacheInfo(): void;
         dispose(): void;
     }
     class WebGPUInternalTex implements InternalTexture {
@@ -76856,8 +63862,6 @@ declare namespace Laya {
         private _statistics_RC_TextureX;
         globalId: number;
         objectName: string;
-        /** @internal */
-        shaderDatas: Map<WebGPUShaderData, number>;
         private _onStateChange;
         private _filterMode;
         get filterMode(): FilterMode;
@@ -77019,6 +64023,7 @@ declare namespace Laya {
         createIndexBuffer(bufferUsage: BufferUsage): IIndexBuffer;
         createVertexBuffer(bufferUsageType: BufferUsage): IVertexBuffer;
         createDeviceBuffer(type: EDeviceBufferUsage): IDeviceBuffer;
+        createDeviceVertexBuffer(type: EDeviceBufferUsage): IVertexBuffer;
         createBufferState(): IBufferState;
         createRenderGeometryElement(mode: MeshTopology, drawType: DrawType): IRenderGeometryElement;
         createEngine(config: Config, canvas: HTMLCanvas): Promise<void>;
@@ -77156,18 +64161,8 @@ declare namespace Laya {
          */
         initRenderEngine(): Promise<void>;
         copySubFrameBuffertoTex(texture: InternalTexture, level: number, xoffset: number, yoffset: number, x: number, y: number, width: number, height: number): void;
-        /**@internal */
-        private _propertyNameMap;
-        /**@internal */
-        private _propertyNameCounter;
         propertyNameToID(name: string): number;
         propertyIDToName(id: number): string;
-        /**@internal */
-        private _defineMap;
-        /**@internal */
-        private _defineCounter;
-        /**@internal */
-        private _maskMap;
         getDefineByName(name: string): ShaderDefine;
         getNamesByDefineData(defineData: IDefineDatas, out: string[]): void;
         _texGammaDefine: {
@@ -77183,8 +64178,6 @@ declare namespace Laya {
          * 创建屏幕渲染目标
          */
         private _createScreenRT;
-        /** @internal  */
-        hasScreenCleared: boolean;
         /**
          * 开始一帧
          */
@@ -77201,10 +64194,6 @@ declare namespace Laya {
         triangle_list = "triangle-list",
         triangle_strip = "triangle-strip"
     }
-    interface WebGPUDrawIndirectInfo {
-        buffer: WebGPUDeviceBuffer;
-        offset: number;
-    }
     class WebGPURenderGeometry implements IRenderGeometryElement {
         private static _geometryConterMap;
         private static _geometryIDConter;
@@ -77214,14 +64203,6 @@ declare namespace Laya {
         private _mode;
         private _instanceCount;
         _bufferState: WebGPUBufferState;
-        /**@internal WebGPUDrawArrayInfo array  1 start 2 count*/
-        _drawArrayInfo: FastSinglelist<number>;
-        /**@internal  WebGPUDrawElementInfo array 1 elementStart 2 elementStart 2 elementCount*/
-        _drawElementInfo: FastSinglelist<number>;
-        /**@internal */
-        _drawElementInfo0: boolean;
-        /**@internal */
-        _drawIndirectInfo: WebGPUDrawIndirectInfo[];
         private _drawType;
         set drawType(v: DrawType);
         get drawType(): DrawType;
@@ -77241,8 +64222,6 @@ declare namespace Laya {
         set bufferState(value: WebGPUBufferState);
         get indexFormat(): IndexFormat;
         set indexFormat(value: IndexFormat);
-        /**@internal */
-        constructor(mode: MeshTopology, drawType: DrawType);
         private _getCacheInfo;
         getDrawDataParams(out: FastSinglelist<number>): void;
         setDrawArrayParams(first: number, count: number): void;
@@ -77435,21 +64414,9 @@ declare namespace Laya {
         */
         static endFrame(): void;
         private _gammaColorMap;
-        /**@internal */
-        _data: any;
-        /**@internal */
-        _defineDatas: WebDefineDatas;
-        /**@internal UBO Buffer Module*/
-        _uniformBuffers: Map<string, WebGPUUniformBuffer>;
-        /**@internal */
-        _subUniformBuffers: Map<string, WebGPUSubUniformBuffer>;
-        /**@internal */
-        _uniformBuffersPropertyMap: Map<number, WebGPUUniformBufferBase>;
         _id: number;
         private _subUboBufferNumber;
         private _textureStatesMap;
-        /** @internal */
-        get textureStatesMap(): ReadonlyMap<string, number>;
         _textureData: {
             [key: number]: BaseTexture;
         };
@@ -77480,8 +64447,6 @@ declare namespace Laya {
         removeBindGroupChangeFlag(commandMapID: string, flag: Vector2, layoutFlag: Vector2): void;
         private _initBufferData;
         createUniformBuffer(name: string, uniformMap: WebGPUCommandUniformMap): WebGPUUniformBuffer;
-        /** @internal */
-        _cacheSubUniformBuffer(buffer: WebGPUSubUniformBuffer, name: string, cacheName: string, uniformMap: Map<number, UniformProperty>): void;
         createSubUniformBuffer(name: string, cacheName: string, uniformMap: Map<number, UniformProperty>): WebGPUSubUniformBuffer;
         /**
          * 获取数据对象
@@ -77597,11 +64562,6 @@ declare namespace Laya {
          */
         setColor(index: number, value: Color): void;
         /**
-         * @internal
-         * @param index
-         */
-        getLinearColor(index: number): Vector4;
-        /**
          * 获取矩阵
          * @param index
          * @returns
@@ -77690,20 +64650,10 @@ declare namespace Laya {
         get fragmentModule(): GPUShaderModule;
         private _destroyed;
         private _commanMap;
-        /**
-         * @internal
-         */
-        _id: number;
-        /**
-         * @internal
-         */
-        _shaderPass: ShaderPass;
         name: string;
         complete: boolean;
         uniformSetMap: Map<number, WebGPUUniformPropertyBindingInfo[]>;
         private uniformResourcesCacheKey;
-        /** @internal */
-        uniformTextureExits: Map<number, number>;
         constructor(name: string);
         _serializeShader(): ArrayBuffer;
         _deserialize(buffer: ArrayBuffer): boolean;
@@ -77863,8 +64813,6 @@ declare namespace Laya {
         createTextureInternal(dimension: TextureDimension, width: number, height: number, format: TextureFormat, generateMipmap: boolean, sRGB: boolean, premultipliedAlpha: boolean): InternalTexture;
         setTextureImageData(texture: WebGPUInternalTex, source: HTMLCanvasElement | HTMLImageElement | ImageBitmap, premultiplyAlpha: boolean, invertY: boolean): Promise<void>;
         setTextureSubImageData(texture: InternalTexture, source: HTMLCanvasElement | HTMLImageElement | ImageBitmap, x: number, y: number, premultiplyAlpha: boolean, invertY: boolean): void;
-        /**@internal */
-        private _getBlockInformationFromFormat;
         setTexturePixelsData(texture: WebGPUInternalTex, source: ArrayBufferView, premultiplyAlpha: boolean, invertY: boolean): void;
         setTextureSubPixelsData(texture: WebGPUInternalTex, source: ArrayBufferView, mipmapLevel: number, generateMipmap: boolean, xOffset: number, yOffset: number, width: number, height: number, premultiplyAlpha: boolean, invertY: boolean): void;
         setTextureDDSData(texture: WebGPUInternalTex, ddsInfo: DDSTextureInfo): void;
@@ -77889,6 +64837,11 @@ declare namespace Laya {
          */
         createRenderTargetFromArrayLayer(arrayTex: WebGPUInternalTex, layer: number, colorFormat: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, sRGB: boolean): InternalRenderTarget;
         createRenderTargetDepthTexture(renderTarget: WebGPUInternalRT, dimension: TextureDimension, width: number, height: number): WebGPUInternalTex;
+        /**
+         * 兼容 WebGL blitFramebuffer 的功能
+         * 将 source RT 的颜色和深度拷贝到 dest RT，支持 invertY
+         */
+        blitFrameBuffer(source: WebGPUInternalRT, dest: WebGPUInternalRT, invertY: boolean): void;
         createRenderTargetCubeInternal(size: number, colorFormat: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, generateMipmap: boolean, sRGB: boolean, multiSamples: number): InternalRenderTarget;
         bindRenderTarget(renderTarget: InternalRenderTarget, faceIndex?: number): void;
         bindoutScreenTarget(): void;
@@ -78421,12 +65374,6 @@ declare namespace Laya {
         color_color(col: Vector4, clr: Vector4): void;
     }
     class IndexBuffer extends Buffer {
-        /** @internal */
-        protected _indexType: IndexFormat;
-        /** @internal */
-        protected _indexTypeByteCount: number;
-        /** @internal */
-        protected _indexCount: number;
         constructor(targetType: BufferTargetType, bufferUsageType: BufferUsage);
     }
     /**
@@ -78821,28 +65768,6 @@ declare namespace Laya {
         /** 镜像采样 */
         Mirrored = 2
     }
-    /**
-     * @internal
-     */
-    class GLSLCodeGenerator {
-        static glslAttributeString(attributeMap: {
-            [name: string]: [
-                number,
-                ShaderDataType
-            ];
-        }): string;
-        static glslUniformString(uniformsMap: Map<number, UniformProperty>, useUniformBlock: boolean, blockName: string): string;
-        static GLShaderLanguageProcess3D(defineString: string[], attributeMap: {
-            [name: string]: [
-                number,
-                ShaderDataType
-            ];
-        }, uniformMap: Map<number, UniformProperty>, VS: ShaderNode, FS: ShaderNode): {
-            vs: string;
-            fs: string;
-        };
-        static getAttributeType(type: ShaderDataType): "" | "int" | "bool" | "float" | "vec2" | "vec3" | "vec4" | "mat4" | "mat3" | "sampler2D" | "samplerCube" | "sampler2DArray" | "sampler3D" | "image2D" | "buffer";
-    }
     interface IShaderObjStructor {
         name: string;
         enableInstancing: boolean;
@@ -78850,6 +65775,7 @@ declare namespace Laya {
         supportVolumetricGI: boolean;
         attributeMap: any;
         shaderType: ShaderFeatureType | string;
+        previewType: string;
         uniformMap: any;
         defaultValue: any;
         shaderPass: Array<any>;
@@ -78880,8 +65806,6 @@ declare namespace Laya {
      */
     class Shader3D {
         static _configDefineValues: IDefineDatas;
-        /**@internal */
-        private static _compileDefineDatas;
         /**渲染状态_剔除。*/
         static CULL: number;
         /**渲染状态_混合。*/
@@ -78938,37 +65862,12 @@ declare namespace Laya {
         static PERIOD_CAMERA: number;
         /**shader变量提交周期，逐场景。*/
         static PERIOD_SCENE: number;
-        /**@internal */
-        static SHADERDEFINE_LEGACYSINGALLIGHTING: ShaderDefine;
-        /**@internal 图形数据传输使用UniformBlock的方式 */
-        static SHADERDEFINE_ENUNIFORMBLOCK: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_FLOATTEXTURE: ShaderDefine;
-        /**@internal */
-        static SHADERDEFINE_FLOATTEXTURE_FIL_LINEAR: ShaderDefine;
-        /**@internal opengl webgl 需要重新映射深度值 */
-        static SHADERDEFINE_REMAP_POSITIONZ: ShaderDefine;
-        /**@internal 是否支持指定LOD的贴图采样 */
-        static SHADERDEFINE_LOD_TEXTURE_SAMPLE: ShaderDefine;
-        /**@internal 是否支持动态中断贴图采样 */
-        static SHADERDEFINE_BREAK_TEXTURE_SAMPLE: ShaderDefine;
-        /**@internal 是否支持动态中断贴图采样 */
-        static SHADERDEFINE_STORAGEBUFFER: ShaderDefine;
-        /**@internal */
-        static _propertyNameMap: any;
-        /**@internal */
         static _preCompileShader: {
             [key: string]: Shader3D;
         };
-        /**@internal */
-        static _debugShaderVariantInfo: any;
         /**是否开启调试模式。 */
         static debugMode: boolean;
         static init(): void;
-        /**
-         * @internal
-         */
-        static _getNamesByDefineData(defineData: IDefineDatas, out: Array<string>): string[];
         /**
          * 注册宏定义。
          * @param name
@@ -79017,17 +65916,17 @@ declare namespace Laya {
          */
         static find(name: string): Shader3D;
         static parse(data: IShaderObjStructor, basePath: string): Shader3D;
-        /**@internal */
-        _name: string;
-        /**@internal */
-        _enableInstancing: boolean;
-        /**@internal */
-        _supportReflectionProbe: boolean;
-        /**@internal */
-        _supportVolumetricGI: boolean;
-        /**@internal */
         _subShaders: SubShader[];
+        /**
+         * @en Shader type, such as 2D, 3D, post-processing, etc., used to distinguish shader categories.
+         * @zh 着色器类型，例如2D、3D、后处理等，用于区分着色器类别。
+         */
         shaderType: ShaderFeatureType;
+        /**
+         * @en Preview type, used to specify the preview model for the shader in the editor, such as Plane, Sphere, etc.
+         * @zh 预览类型，用于在编辑器中指定着色器的预览模型，如Plane、Sphere等。
+         */
+        previewType: string;
         /**
          * 名字。
          */
@@ -79071,18 +65970,6 @@ declare namespace Laya {
          */
         get renderState(): RenderState;
         constructor(owner: SubShader, compiledObj: IShaderCompiledObj);
-        /**
-         * @internal
-         * @param is2D
-         * @param compileDefine
-         * @returns
-         */
-        static createShaderInstance(shaderpass: ShaderPass, is2D: boolean, compileDefine: IDefineDatas): IShaderInstance;
-        /**
-         * @override
-         * @internal
-         */
-        withCompile(compileDefine: IDefineDatas, is2D?: boolean): IShaderInstance;
         withComplieByBin(compileDefine: IDefineDatas, is2D: boolean, buffer: ArrayBuffer): IShaderInstance;
     }
     /**
@@ -79090,26 +65977,6 @@ declare namespace Laya {
      */
     class ShaderVariable {
         static pointID: number;
-        /**@internal */
-        name: string;
-        /**@internal */
-        type: number;
-        /**@internal */
-        location: number;
-        /**@internal */
-        isArray: boolean;
-        /**@internal */
-        textureID: number;
-        /**@internal */
-        dataOffset: number;
-        /**@internal */
-        caller: any;
-        /**@internal */
-        fun: any;
-        /**@internal */
-        uploadedValue: any[];
-        /**@internal */
-        onID: number;
         /**
          * 创建一个 <code>shaderVariable</code> 实例。
          */
@@ -79169,26 +66036,8 @@ declare namespace Laya {
                 ShaderDataType
             ];
         };
-        /**@internal */
-        _attributeMap: AttributeMapType;
-        /**
-         * @internal
-         * uniform 默认值
-         */
-        readonly _uniformDefaultValue: {
-            [name: string]: ShaderDataItem;
-        };
-        /**
-         * @internal
-         * uniform 数据类型
-         */
-        readonly _uniformMap: Map<number, UniformProperty>;
         _owner: Shader3D;
-        /**@internal */
-        _flags: any;
         moduleData: ISubshaderData;
-        /**@internal */
-        _passes: ShaderPass[];
         /**
          * 创建一个 <code>SubShader</code> 实例。
          * @param attributeMap  顶点属性表。
@@ -79261,12 +66110,6 @@ declare namespace Laya {
         static MESH_CUSTOME2: number;
         /**顶点自定义数据3 */
         static MESH_CUSTOME3: number;
-        /**@internal */
-        private static _vertexDeclarationMap;
-        /**
-         * @internal
-         */
-        static __init__(): void;
         /**
          * 获取顶点声明。
          * @param vertexFlag 顶点声明标记字符,格式为:"POSITION,NORMAL,COLOR,UV,UV1,BLENDWEIGHT,BLENDINDICES,TANGENT"。
@@ -79305,17 +66148,9 @@ declare namespace Laya {
          * @param vertexs
          */
         constructor(vertexs: VertexBuffer[]);
-        /**
-         * @internal
-         * @param vertexs
-         * @returns
-         */
-        deepthEqaul(vertexs: VertexBuffer[]): boolean;
     }
     class VertexBuffer extends Buffer {
         private _instanceBuffer;
-        /** @internal */
-        _vertexDeclaration: VertexDeclaration | null;
         _buffer: Float32Array | Uint16Array | Uint8Array | Uint32Array;
         /**
          * 获取顶点声明。
@@ -79338,22 +66173,6 @@ declare namespace Laya {
      * <code>VertexDeclaration</code> 类用于生成顶点声明。
      */
     class VertexDeclaration {
-        /**@internal */
-        private static _uniqueIDCounter;
-        /**@internal */
-        private _id;
-        /**@internal */
-        private _vertexStride;
-        /**@internal */
-        private _vertexElementsDic;
-        /**@internal */
-        _shaderValues: {
-            [key: number]: VertexStateContext;
-        };
-        /**@internal [只读]*/
-        _vertexElements: Array<VertexElement>;
-        /**@internal */
-        _VAElements: Array<VAElement>;
         /**
          * 获取唯一标识ID(通常用于优化或识别)。
          * @return 唯一标识ID
@@ -79417,24 +66236,22 @@ declare namespace Laya {
          * @en Pauses or resumes the rendering loop.
          * @zh 暂停或恢复渲染循环。
          */
-        static paused: boolean;
+        static get paused(): boolean;
+        static set paused(value: boolean);
         /**
          * @en Force the next frame to be rendered. This flag is automatically cleared after rendering.
          * @zh 强制渲染下一帧。渲染后该标记会自动清除。
          */
         static forceOnce: boolean;
         /**
-         * @internal
+         * @en Indicates whether the engine is in step mode.
+         * When true, Timer will use a fixed frame interval instead of real elapsed time.
+         * This ensures animations advance by exactly one frame during step execution.
+         * @zh 指示引擎是否处于单步模式。
+         * 为 true 时，Timer 将使用固定的帧间隔而非真实经过的时间。
+         * 这确保了动画在单步执行时精确前进一帧。
          */
-        static __init__(): void;
-        /**
-         * @internal
-         */
-        static startLoop(): void;
-        /**
-         * @internal
-         */
-        static loop(timestamp: number): void;
+        static stepMode: boolean;
         /**
          * @ignore
          */
@@ -79447,12 +66264,6 @@ declare namespace Laya {
      * @blueprintIgnore
      */
     class VertexElement {
-        /**@internal */
-        _offset: number;
-        /**@internal */
-        _elementFormat: string;
-        /**@internal */
-        _elementUsage: number;
         /**
          * 顶点偏移
          */
@@ -79503,18 +66314,6 @@ declare namespace Laya {
         static NormalizedShort2: string;
         /**归一化半精度浮点数组4 */
         static NormalizedShort4: string;
-        /**@internal */
-        static HalfVector2: string;
-        /**@internal */
-        static HalfVector4: string;
-        /**@internal */
-        static NorByte4: string;
-        /**@internal */
-        static NorUByte4: string;
-        /** @internal [组数量,数据类型,是否归一化:0为false]。*/
-        private static _elementInfos;
-        /**@internal */
-        static __init__(): void;
         /**
          * 获取顶点元素格式信息。
          * @param element 元素名称
@@ -79723,10 +66522,6 @@ declare namespace Laya {
      */
     class BaseTexture extends Resource {
         /**
-         * @internal
-         */
-        _texture: InternalTexture;
-        /**
          * @en hdr encode format
          * @zh hdr编码格式
          */
@@ -79820,8 +66615,6 @@ declare namespace Laya {
          */
         get maxMipmapLevel(): number;
         set maxMipmapLevel(value: number);
-        /**@internal */
-        _gammaSpace: boolean;
         /**
          * @en Gets whether the texture is using gamma space.
          * @zh 判断纹理是否使用伽马空间。
@@ -79845,15 +66638,6 @@ declare namespace Laya {
          * @returns 如果纹理是gpu压缩格式，则返回true，否则返回false。
          */
         gpuCompressFormat(): boolean;
-        /**
-         * 获取纹理格式的字节数
-         * @internal
-         */
-        _getFormatByteCount(): number;
-        /**
-         * @internal
-         */
-        _getSource(): any;
         /**
          * @en The default texture.
          * @zh 默认贴图
@@ -80026,15 +66810,7 @@ declare namespace Laya {
          * @param complete 加载完成后的回调函数。
          */
         static load(url: string, complete: Handler): void;
-        /**
-         * @internal
-         */
-        static __initDefine__(): void;
         private _matRenderNode;
-        /** @internal */
-        _shader: Shader3D;
-        /** @internal */
-        _shaderValues: ShaderData | null;
         private _renderQueue;
         /**
          * @en The rendering queue of the material.
@@ -80047,22 +66823,7 @@ declare namespace Laya {
          * @zh 所属元素
          */
         ownerElements: Set<IRenderElement3D | IRenderElement2D>;
-        /**
-         * @internal
-         * @param element
-         */
-        _setOwner3DElement(element: IRenderElement3D): void;
         _setOwner2DElement(element: IRenderElement2D): void;
-        /**
-         * @internal
-         * @param element
-         */
-        _removeOwnerElement(element: IRenderElement3D | IRenderElement2D): void;
-        /**
-         * @internal
-         * 通知 owner element 材质数据发生改变
-         */
-        _notifyOwnerElements(): void;
         /**
          * @en The shader data.
          * @zh 着色器数据。
@@ -80296,10 +67057,6 @@ declare namespace Laya {
          * @param name 要设置的着色器名称。
          */
         setShaderName(name: string): void;
-        /**
-         * @internal
-         */
-        applyUniformDefaultValue(uniformMap: Map<number, UniformProperty>, defaultValue: Record<string, ShaderDataItem>): void;
         /**
          * @en Gets the boolean uniform value by index.
          * @param uniformIndex The index of the uniform.
@@ -80826,26 +67583,6 @@ declare namespace Laya {
             start: number;
             length: number;
         }[], canRead?: boolean): Mesh2D;
-        /** @internal */
-        _bufferState: IBufferState;
-        /** @internal */
-        _instanceBufferState: IBufferState;
-        /** @internal */
-        _instanceBufferStateType: number;
-        /**@internal */
-        _instanceWorldVertexBuffer: IVertexBuffer;
-        /**@internal */
-        _instanceSimpleAniVertexBuffer: IVertexBuffer;
-        /** @internal */
-        _subMeshes: IRenderGeometryElement[];
-        /** @internal */
-        _vertexBuffers: IVertexBuffer[];
-        /** @internal */
-        _indexBuffer: IIndexBuffer;
-        /** @internal */
-        _vertexCount: number;
-        /** @internal */
-        _indexFormat: IndexFormat;
         /**
          * @en Get the vertex buffer of the mesh.
          * @zh 获取网格的顶点缓冲。
@@ -80878,10 +67615,6 @@ declare namespace Laya {
         get indexFormat(): IndexFormat;
         /** 是否保留数据 */
         canRead: boolean;
-        /** @internal */
-        _vertices: ArrayBuffer[];
-        /** @internal */
-        _indices: Uint16Array | Uint32Array | Uint8Array;
         /**
          * @ignore
          * @en prohibition of use.
@@ -80893,14 +67626,6 @@ declare namespace Laya {
          * @zh 销毁资源
          */
         protected _disposeResource(): void;
-        /**
-         * @internal
-         */
-        _setSubMeshes(subMeshes: IRenderGeometryElement[]): void;
-        /**
-         * @internal
-         */
-        _setBuffers(vertexBuffers: IVertexBuffer[], indexBuffer: IIndexBuffer): void;
         /**
          * @en Retrieves a SubMesh based on its index.
          * @param index The index of the SubMesh.
@@ -81101,18 +67826,11 @@ declare namespace Laya {
         static get bindCanvasRender(): RenderTexture;
         static set bindCanvasRender(value: RenderTexture);
         /**
-         * @internal
-         * 是否在对象池中
-         */
-        _inPool: boolean;
-        /**
          * 是否是相机目标纹理
-         * @internal
          */
         _isCameraTarget: boolean;
         /**
          * 渲染纹理
-         * @internal
          */
         _renderTarget: InternalRenderTarget;
         private _generateDepthTexture;
@@ -81132,11 +67850,6 @@ declare namespace Laya {
          * @zh 深度与模板剔除纹理贴图
          */
         get depthStencilTexture(): BaseTexture;
-        /**
-         * 是否生成多级纹理
-         * @internal
-         */
-        _generateMipmap: boolean;
         /**
          * @en Color format
          * @zh 颜色格式
@@ -81200,11 +67913,6 @@ declare namespace Laya {
          */
         constructor(width: number, height: number, colorFormat: RenderTargetFormat, depthFormat: RenderTargetFormat, generateMipmap?: boolean, multiSamples?: number, generateDepthTexture?: boolean, sRGB?: boolean, stroage?: boolean);
         /**
-         * 创建渲染纹理
-         * @internal
-         */
-        _createRenderTarget(): void;
-        /**
          * @en Recreates the RenderTexture with the specified parameters.
          * @param width New width of the RenderTexture.
          * @param height New height of the RenderTexture.
@@ -81265,8 +67973,6 @@ declare namespace Laya {
      */
     class RenderTexture2D extends BaseTexture implements IRenderTarget {
         static _empty: RenderTexture2D;
-        /** @internal */
-        static __init__(): void;
         private static _currentActive;
         private static _pool;
         private static _poolMemory;
@@ -81327,28 +68033,12 @@ declare namespace Laya {
          */
         static cleanupExpired(): number;
         /**
-         * @internal
-         * @en Cleans up excess objects from the pool when memory limit is exceeded.
-         * @zh 当对象池超过内存限制时清理多余的对象。
-         */
-        private static _cleanupExcess;
-        /** @internal */
-        static _clearColor: Color;
-        /** @internal */
-        static _clear: boolean;
-        /**
          * @en The currently active RenderTexture.
          * @zh 当前激活的渲染纹理。
          */
         static get currentActive(): RenderTexture2D;
         private _depthStencilFormat;
         private _colorFormat;
-        /**@internal */
-        _mgrKey: number;
-        /**@internal */
-        _invertY: boolean;
-        /** @internal */
-        _inPool: boolean;
         /**
          * @en Depth format.
          * @zh 深度格式。
@@ -81437,18 +68127,6 @@ declare namespace Laya {
          */
         get generateMipmap(): boolean;
         /**
-         * @internal
-         */
-        _start(): void;
-        /**
-         * @internal
-         */
-        _end(): void;
-        /**
-         * @internal
-         */
-        _create(): void;
-        /**
          * @en Clears the render texture.
          * @param r The red component.
          * @param g The green component.
@@ -81493,16 +68171,6 @@ declare namespace Laya {
          * @returns 二进制数据
          */
         getDataAsync(xOffset: number, yOffset: number, width: number, height: number, out: Uint8Array | Float32Array): Promise<ArrayBufferView>;
-        /**
-         * @internal
-         * @en Recycles the RenderTexture2D.
-         * @zh 回收渲染纹理。
-         */
-        recycle(): void;
-        /**
-         * @internal
-         */
-        _disposeResource(): void;
     }
     /**
      * @en The `RenderTextureCube` class is used for creating cube map render textures.
@@ -81529,10 +68197,6 @@ declare namespace Laya {
          * @param multiSamples 多采样的样本数量。
          */
         constructor(size: number, colorFormat: RenderTargetFormat, depthFormat: RenderTargetFormat, generateMipmap: boolean, multiSamples: number);
-        /**
-         * @internal
-         */
-        _createRenderTarget(): void;
     }
     /**
      * @en The `Resource` class used for resource access.
@@ -81561,18 +68225,6 @@ declare namespace Laya {
          * @zh 当前显存，以字节为单位。
          */
         static get gpuMemory(): number;
-        /**
-         * @internal
-         */
-        static _addCPUMemory(size: number): void;
-        /**
-         * @internal
-         */
-        static _addGPUMemory(size: number): void;
-        /**
-         * @internal
-         */
-        static _addMemory(cpuSize: number, gpuSize: number): void;
         /**
          * @en Destroy unused resources, this function will ignore resources with lock=true.
          * @zh 销毁当前没有被使用的资源,该函数会忽略lock=true的资源。
@@ -81723,6 +68375,7 @@ declare namespace Laya {
         addDeps(resArr: Array<Resource>): void;
         private onDepObsolute;
         protected _disposeResource(): void;
+        unmanaged(): this;
         /**
          * @en Destroys the resource, the resource cannot be recovered.
          * @zh 销毁资源,销毁后资源不能恢复。
@@ -81813,8 +68466,6 @@ declare namespace Laya {
          */
         uvrect: number[];
         private _bitmap;
-        /**@internal */
-        _uv: ArrayLike<number>;
         private _w;
         private _h;
         /**
@@ -81853,32 +68504,6 @@ declare namespace Laya {
          */
         scaleRate: number;
         /**
-         * 九宫格
-         * @internal
-         */
-        _sizeGrid?: Array<number>;
-        /**
-         * 状态数量
-         * @internal
-         */
-        _stateNum?: number;
-        /**
-         * @internal
-         */
-        _clipCache: Map<string, Texture>;
-        /**
-         * @internal
-         * 如果是图集中的小图，记录了图集的引用
-         */
-        _atlas: AtlasResource;
-        /** @internal 动态图集的信息 */
-        _dynamic: DynamicTexInfo;
-        /**
-         * @internal
-         * 是否旋转。
-         */
-        _rotate: boolean;
-        /**
          * @en Creates a `Texture` object based on the specified source, coordinates, dimensions, and offsets.
          * @param source The source texture, either a `Texture2D` or a `Texture` object.
          * @param x The starting absolute x coordinate.
@@ -81903,23 +68528,6 @@ declare namespace Laya {
          * @return `Texture` 对象。
          */
         static create(source: Texture | BaseTexture, x: number, y: number, width: number, height: number, offsetX?: number, offsetY?: number, sourceWidth?: number, sourceHeight?: number, rotate?: boolean): Texture;
-        /**
-         * @internal
-         * 根据指定资源和坐标、宽高、偏移量等创建 <code>Texture</code> 对象。
-         * @param source 绘图资源 Texture2D 或者 Texture 对象。
-         * @param x 起始绝对坐标 x 。
-         * @param y 起始绝对坐标 y 。
-         * @param width 宽绝对值。
-         * @param height 高绝对值。
-         * @param offsetX X 轴偏移量（可选）。
-         * @param offsetY Y 轴偏移量（可选）。
-         * @param sourceWidth 原始宽度，包括被裁剪的透明区域（可选）。
-         * @param sourceHeight 原始高度，包括被裁剪的透明区域（可选）。
-         * @param rotate 是否旋转。
-         * @param outTexture 返回的Texture对象。
-         * @return  <code>Texture</code> 对象。
-         */
-        static _create(source: Texture | BaseTexture, x: number, y: number, width: number, height: number, offsetX?: number, offsetY?: number, sourceWidth?: number, sourceHeight?: number, rotate?: boolean, outTexture?: Texture): Texture;
         /**
          * @en Creates a new `Texture` by cropping a part of an existing `Texture`. If the two areas do not intersect, it returns null.
          * @param texture The target `Texture` to crop.
@@ -81977,18 +68585,6 @@ declare namespace Laya {
          * @param sourceHeight 纹理原始高度。
          */
         constructor(source?: Texture | BaseTexture, uv?: ArrayLike<number>, sourceWidth?: number, sourceHeight?: number);
-        /**
-         * @internal
-         */
-        _addReference(count?: number): void;
-        /**
-         * @internal
-         */
-        _removeReference(count?: number): void;
-        /**
-         * @internal
-         */
-        _getSource(cb?: () => void): any;
         /**
          * @en Sets the bitmap resource and UV data information for this object.
          * @param bitmap The bitmap resource.
@@ -82161,30 +68757,6 @@ declare namespace Laya {
          */
         static errorTexture: Texture2D;
         /**
-         * @internal
-         */
-        static __init__(): void;
-        /**
-         * @internal
-         */
-        static _SimpleAnimatorTextureParse(data: ArrayBuffer, propertyParams?: TexturePropertyParams, constructParams?: TextureConstructParams): Texture2D;
-        /**
-         * @internal
-         */
-        static _parseImage(imageSource: any, propertyParams?: TexturePropertyParams, constructParams?: TextureConstructParams): Texture2D;
-        /**
-         * @internal
-         */
-        static _parseDDS(data: ArrayBuffer, propertyParams?: TexturePropertyParams, constructParams?: TextureConstructParams): Texture2D;
-        /**
-         * @internal
-         */
-        static _parseKTX(data: ArrayBuffer, propertyParams?: TexturePropertyParams, constructParams?: TextureConstructParams): Texture2D;
-        /**
-         * @internal
-         */
-        static _parsePVR(data: ArrayBuffer, propertyParams?: TexturePropertyParams, constructParams?: TextureConstructParams): Texture2D;
-        /**
          * @deprecated 请使用Loader.load(url:string, type: ILaya.Loader.TEXTURE2D)
          * @en Loads a texture from the specified URL.
          * @param url The path to the texture file.
@@ -82194,12 +68766,6 @@ declare namespace Laya {
          * @param complete 纹理加载完成后的回调函数。
          */
         static load(url: string, complete: Handler): void;
-        /**@internal */
-        _canRead: boolean;
-        /**@internal */
-        _pixels: Uint8Array;
-        /** @internal */
-        _premultiplyAlpha: boolean;
         /**
          * @en Creates an instance of Texture2D.
          * @param width The width of the texture.
@@ -82308,8 +68874,6 @@ declare namespace Laya {
          * @zh 默认纹理。
          */
         static get defaultTexture(): Texture2DArray;
-        /** @internal */
-        static __init__(): void;
         /**
          * @en The number of texture layers.
          * @zh 纹理层的数量。
@@ -82396,8 +68960,6 @@ declare namespace Laya {
          * @zh 3D纹理的默认纹理。
          */
         static get defaultTexture(): Texture3D;
-        /** @internal */
-        static __init__(): void;
         /**
          * @en The depth of the 3D texture.
          * @zh 3D纹理的深度。
@@ -82517,10 +69079,6 @@ declare namespace Laya {
          */
         static get errorTexture(): TextureCube;
         /**
-         * @internal
-         */
-        static __init__(): void;
-        /**
          * @en Creates an instance of TextureCube.
          * @param size The size of each face of the cube texture.
          * @param format The texture format.
@@ -82633,12 +69191,6 @@ declare namespace Laya {
      * @zh 表示 Spine 骨骼的外部皮肤的类。
      */
     class ExternalSkin {
-        /**@internal */
-        protected _source: string;
-        /**@internal */
-        protected _templet: SpineTemplet;
-        /**@internal */
-        protected _items: ExternalSkinItem[];
         /**
          * @en The target Spine skeleton.
          * @zh 目标 Spine 骨骼。
@@ -82676,12 +69228,6 @@ declare namespace Laya {
         flush(): void;
     }
     class ExternalSkinItem {
-        /**@internal */
-        protected _skin: string;
-        /**@internal */
-        protected _slot: string;
-        /**@internal */
-        protected _attachment: string;
         /**
          * @en The skin.
          * @zh 皮肤。
@@ -82827,8 +69373,8 @@ declare namespace Laya {
          */
         render(time: number, physicsUpdate: number): void;
         /**
-         * @zh 通过名称显示皮肤
-         * @param name 皮肤名称
+         * @zh 通过索引显示皮肤
+         * @param skinIndex 皮肤索引
          */
         showSkinByIndex(skinIndex: number): void;
         /**
@@ -83202,12 +69748,13 @@ declare namespace Laya {
          */
         collectTextures(atlasText: string, task: ILoadTask): ILoadURL[];
         /**
+         * @zh 解析骨骼数据并创建 SpineTemplet。
+         * @param desc 骨骼数据（JSON字符串或ArrayBuffer）。
+         * @param textures 加载的纹理对象数组。
          * @en Parse skeleton data and create SpineTemplet.
          * @param desc Skeleton data (JSON string or ArrayBuffer).
          * @param textures Array of loaded texture objects.
-         * @param atlasText Atlas text content (optional, for texture mapping).
          * @returns SpineTemplet instance.
-         * @zh 解析骨骼数据并创建 SpineTemplet。
          */
         create(desc: string | ArrayBuffer, textures: Texture2D[]): SpineTemplet;
         /**
@@ -83215,6 +69762,27 @@ declare namespace Laya {
          * @zh 销毁解析器。
          */
         destroy(): void;
+    }
+    /**
+     * @en Spine3DShaderInit class handles the initialization of Spine 3D shader components.
+     * @zh Spine3DShaderInit 类用于处理 Spine 3D 着色器组件的初始化。
+     */
+    class Spine3DShaderInit {
+        /**
+         * @en Shader define for Spine billboard rendering (always face camera).
+         * @zh Spine 广告牌渲染的着色器定义（始终面向相机）。
+         */
+        static SPINE_BILLBOARD: ShaderDefine;
+        /**
+         * @en Property ID for Spine billboard world matrix.
+         * @zh Spine 广告牌世界矩阵的属性 ID。
+         */
+        static SPINE_BILLBOARD_MATRIX: number;
+        /**
+         * @en Initialize Spine 3D shader components. Must be called after SpineShaderInit.init().
+         * @zh 初始化 Spine 3D 着色器组件。必须在 SpineShaderInit.init() 之后调用。
+         */
+        static init(): void;
     }
     /**
      * @en SpineShaderInit class handles the initialization and management of Spine shader-related components.
@@ -83261,36 +69829,6 @@ declare namespace Laya {
          */
         static BONEMAT: number;
         /**
-         * @internal
-         * @en Simple animator texture.
-         * @zh 简单动画器纹理。
-         */
-        static SIMPLE_SIMPLEANIMATORTEXTURE: number;
-        /**
-         * @internal
-         * @en Simple animator parameters.
-         * @zh 简单动画器参数。
-         */
-        static SIMPLE_SIMPLEANIMATORPARAMS: number;
-        /**
-         * @internal
-         * @en Simple animator texture size.
-         * @zh 简单动画器纹理尺寸。
-         */
-        static SIMPLE_SIMPLEANIMATORTEXTURESIZE: number;
-        /**
-         * @internal
-         * @en Bone matrix 0.
-         * @zh Rigidbody骨骼矩阵0。
-         */
-        static BONEMAT_0: number;
-        /**
-         * @internal
-         * @en Bone matrix 1.
-         * @zh Rigidbody骨骼矩阵1。
-         */
-        static BONEMAT_1: number;
-        /**
          * @en Property ID for Spine texture.
          * @zh Spine 纹理的属性 ID。
          */
@@ -83322,16 +69860,6 @@ declare namespace Laya {
          */
         static SPINE_GPU_INSTANCE: ShaderDefine;
         static SPINE_PREMULTIPLYALPHA: ShaderDefine;
-        /**
-         * @en Shader define for Spine billboard rendering (always face camera).
-         * @zh Spine 广告牌渲染的着色器定义（始终面向相机）。
-         */
-        static SPINE_BILLBOARD: ShaderDefine;
-        /**
-         * @en Property ID for Spine billboard world matrix.
-         * @zh Spine 广告牌世界矩阵的属性 ID。
-         */
-        static SPINE_BILLBOARD_MATRIX: number;
         /**
          * @en TextureSV Mesh Descript.
          * @zh 纹理 Spine 顶点属性描述。
@@ -83366,8 +69894,6 @@ declare namespace Laya {
      */
     class Spine2DRenderNode extends BaseRenderNode2D {
         private _createBone;
-        /** @internal */
-        _spineRender: ISpineRender;
         /**
          * @zh 物理更新模式。
          * @en The physics update mode.
@@ -83452,8 +69978,6 @@ declare namespace Laya {
          * @en Whether to enable transparent premultiplied. The attribute needs to be set using the setPremultipliedAlpha method.
          */
         get premultipliedAlpha(): boolean;
-        /** @internal */
-        set premultipliedAlpha(value: boolean);
         /**
          * @en Set the transparent premultiplied.
          * @zh 设置透明预乘。
@@ -83638,8 +70162,6 @@ declare namespace Laya {
          * @param force Whether to force delete all audio channels.
          */
         private _onAniSoundStoped;
-        /** @internal */
-        reset(): void;
         /**
          * @zh 添加一个动画
          * @param nameOrIndex   动画名字或者索引
@@ -83794,14 +70316,11 @@ declare namespace Laya {
         protected _isMaterialVaild(value: Material): boolean;
         protected _getcommonUniformMap(): Array<string>;
         private _premultipliedAlpha;
-        /** @internal */
-        _setPreAlphaFlag: boolean;
         /**
          * @zh 是否启用透明预乘。设置属性需要使用setPremultipliedAlpha方法。
          * @en Whether to enable transparent premultiplied. The attribute needs to be set using the setPremultipliedAlpha method.
          */
         get premultipliedAlpha(): boolean;
-        /** @internal */
         set premultipliedAlpha(value: boolean);
         /**
          * @en Set the transparent premultiplied.
@@ -83812,11 +70331,6 @@ declare namespace Laya {
         setPremultipliedAlpha(value: boolean): void;
         _renderUpdate(context3D: IRenderContext3D): void;
         private _updateBillboardMatrix;
-        /**
-         * @internal
-         * BaseRender motion
-         */
-        protected _onWorldMatNeedChange(flag: number): void;
         /**
          * @zh 动画源文件路径
          * @en Spine source file path.
@@ -83985,8 +70499,6 @@ declare namespace Laya {
          * @en Clear method, used to release and reset related resources.
          */
         clear(): void;
-        /** @internal */
-        reset(): void;
         /**
          * @ignore @blueprintIgnore
          * @zh 销毁当前对象
@@ -84070,10 +70582,6 @@ declare namespace Laya {
         initBake(data: TSpineBakeData): Promise<void>;
     }
     class SpineConst {
-        /** @internal */
-        static SPLIT_REGEX: RegExp;
-        /** @internal */
-        static PMA_REGEX: RegExp;
         /**
          * @en Image defalut premultiplied alpha
          * @zh 图片默认预乘
@@ -84343,8 +70851,6 @@ declare namespace Laya {
          * @zh Spine动画中使用的材质映射
          */
         materialMap: Map<string, Material>;
-        /** @internal */
-        _textures: Record<string, Texture2D>;
         /**
          * @en X of spine data
          * @zh spine 数据 x
@@ -84375,13 +70881,9 @@ declare namespace Laya {
          * @zh spine 动画Y轴偏移
          */
         offsetY: number;
-        /** @internal */
-        _parser: ISpineTempletParser;
         optimize: ISkeletonOptimise;
         /** @ignore */
         constructor();
-        /** @internal */
-        _premultipliedAlpha: boolean;
         /**
          * @en Switch for premultipliedAlpha.
          * @zh 透明预乘的开关。
@@ -84459,6 +70961,19 @@ declare namespace Laya {
          * @zh 释放纹理和材质
          */
         protected _disposeResource(): void;
+    }
+    /**
+     * @en SpineTempletLoader class used for loading Spine skeleton data and atlas.
+     * @zh SpineTempletLoader 类用于加载 Spine 骨骼数据和图集。
+     */
+    class SpineTempletLoader implements IResourceLoader {
+        /**
+         * @en Load Spine skeleton data and atlas.
+         * @param task The load task.
+         * @zh 加载 Spine 骨骼数据和图集。
+         * @param task 加载任务。
+         */
+        load(task: ILoadTask): Promise<import("./SpineTemplet").SpineTemplet>;
     }
     /**
      * @en Unified Spine buffer view that holds its own vertex and index data
@@ -84550,10 +71065,6 @@ declare namespace Laya {
          * @zh Y 轴偏移
          */
         offsetY: number;
-        /** @internal */
-        _next: SpineBufferView;
-        /** @internal */
-        _prev: SpineBufferView;
         constructor(vertexCapacity: number, indexCapacity: number);
         /**
          * @en Get direct access to vertex data for writing
@@ -84875,10 +71386,6 @@ declare namespace Laya {
          * @zh 此缓冲区管理的视图数量
          */
         private _num;
-        /** @internal */
-        _first: SpineBufferView;
-        /** @internal */
-        _last: SpineBufferView;
         constructor(vertexBuffer: IVertexBuffer, indexBuffer: IIndexBuffer);
         /**
          * @en Reset buffer capacity
@@ -84938,8 +71445,6 @@ declare namespace Laya {
         private clipper;
         private _internalMaterials;
         materials: Material[];
-        /** @internal */
-        _materialIndex: number;
         needUpdate: boolean;
         /**
          * @en Output array for subMeshes - only used for rendering output, populated from batches
@@ -84988,12 +71493,6 @@ declare namespace Laya {
          */
         appendVertices(positions: spine.NumberArrayLike, uvs: spine.NumberArrayLike, finalColor: spine.Color, darkColor: spine.Color, verticesLength: number, indices: spine.NumberArrayLike, indicesLength: number, stride: number, offsetX: number, offsetY: number): void;
         /**
-         * @internal
-         * @en Bind all views to buffers (Phase 2: Post-processing)
-         * @zh 将所有 views 绑定到 buffers（阶段 2：后处理）
-         */
-        private _bindViewsToBuffers;
-        /**
          * @en Get the view associated with a geometry (for batching)
          * @zh 获取与 geometry 关联的 view（用于合批）
          */
@@ -85039,14 +71538,6 @@ declare namespace Laya {
          */
         assignViewToBuffer(view: SpineBufferView, vertexCount: number): void;
         /**
-         * @internal
-         * @en Find existing buffer with available space or create new one
-         * @param vertexCount Number of vertices needed
-         * @zh 查找有可用空间的现有缓冲区或创建新缓冲区
-         * @param vertexCount 需要的顶点数
-         */
-        private _findOrCreateBuffer;
-        /**
          * @en Allocate a buffer view, automatically selecting or creating a suitable buffer.
          * Results are stored in output fields: outView, outBufferState, outBufferIndex
          * @param vertexCount Number of vertices needed (in vertices, not float count)
@@ -85064,12 +71555,6 @@ declare namespace Laya {
          * @param view 要释放的视图
          */
         releaseView(view: SpineBufferView): void;
-        /**
-         * @internal
-         * @en Create a new buffer with bufferState
-         * @zh 创建新的 buffer 及其 bufferState
-         */
-        private _createBuffer;
         /**
          * @en Clear all buffers (used for hot reload or resource cleanup)
          * @zh 清理所有 buffers (用于热重载或资源清理)
@@ -85089,14 +71574,6 @@ declare namespace Laya {
         static createRenderElement2D(): IRenderElement2D;
         /** @ignore @blueprintIgnore */
         static recoverRenderElement2D(value: IRenderElement2D): void;
-        /** @internal */
-        protected readonly is3D: boolean;
-        /** @internal */
-        private _renderElements;
-        /** @internal */
-        _owner: Spine2DRenderNode;
-        /** @internal */
-        private _handle;
         /** @ignore */
         constructor(owner: Spine2DRenderNode);
         init(templet: SpineTemplet): void;
@@ -85135,15 +71612,9 @@ declare namespace Laya {
          * @zh 清除所有渲染元素。
          */
         _clearRenderElements(): void;
-        /** @internal */
-        _getMaterialByName(name: string, blendMode: number): Material;
-        /** @internal */
-        _getMaterial(texture: Texture2D, blendMode: number): Material;
         _getRenderHandle(): any;
     }
     class BakedSpine2DRenderer extends BakedSpineRenderer {
-        /** @internal */
-        protected _struct: IRenderStruct2D;
         /**
          * @en Create a new instance of SpineBaseRenderer.
          * @param struct The render struct.
@@ -85155,8 +71626,6 @@ declare namespace Laya {
         leave(): void;
     }
     class StandardSpine2DRenderer extends StandardSpineRenderer {
-        /** @internal */
-        protected _struct: IRenderStruct2D;
         private _updateFrame;
         normalUpdater: Spine2DNormalRenderUpdater;
         /**
@@ -85202,12 +71671,6 @@ declare namespace Laya {
         static createRenderElement3D(): IRenderElement3D;
         /** @ignore @blueprintIgnore */
         static recoverRenderElement3D(value: IRenderElement3D): void;
-        /** @internal */
-        protected readonly is3D: boolean;
-        /** @internal */
-        private _renderElements;
-        /** @internal */
-        _owner: IBaseRenderNode;
         /** @ignore */
         constructor(owner: IBaseRenderNode);
         protected _createRenderProxies(): void;
@@ -85238,10 +71701,6 @@ declare namespace Laya {
          * @zh 清除所有渲染元素。
          */
         _clearRenderElements(): void;
-        /** @internal */
-        _getMaterialByName(name: string, blendMode: number): Material;
-        /** @internal */
-        _getMaterial(texture: Texture2D, blendMode: number): Material;
     }
     /**
      * @en Creator class for index buffer (IB) in spine rendering.
@@ -85474,13 +71933,7 @@ declare namespace Laya {
          * @zh 插槽ID到附件位置数据的映射。
          */
         slotVBMap: Map<number, Map<string, TAttamentPos>>;
-        /** @internal */
-        _vertexSize: number;
-        /** @internal 没有骨骼的顶点数 */
-        _baseVtxCount: number;
         _boneVtxCount: number;
-        /** @internal TODO 双顶点色模式 */
-        twoColorTint: boolean;
         private _vertexDeclaration;
         /**
          * @en Vertex flag string defining the vertex format.
@@ -85592,8 +72045,6 @@ declare namespace Laya {
      * @zh VBRigBodyCreator 类用于处理刚体特定的顶点缓冲区创建。
      */
     class VBRigBodyCreator extends VBCreator {
-        /** @internal */
-        _create(): VBCreator;
         /**
          * @en Appends vertex array data for an attachment.
          * @param attachmentParse The attachment parse data.
@@ -85871,8 +72322,6 @@ declare namespace Laya {
          */
         color: TColor;
         lightColor: TColor;
-        /** @internal 双顶点色 */
-        darkColor: TColor;
         /**
          * @en The blend mode of the attachment.
          * @zh 附件的混合模式。
@@ -85981,31 +72430,11 @@ declare namespace Laya {
      * @zh Spine优化渲染基类,支持2D和3D渲染。
      */
     abstract class BaseOptimizeRender implements ISpineRender {
-        /** @internal */
-        updater: SpineRenderUpdater;
-        /** @internal */
-        _skinIndex: number;
-        /** @internal */
-        _curAnimationName: string;
-        /** @internal */
-        _dynamicMap: Map<number, Mesh2D[]>;
         /**
          * @en Color of the Spine object.
          * @zh Spine 对象的颜色。
          */
         spineColor: Color;
-        /** @internal */
-        _optimize: SkeletonOptimise;
-        /** @internal */
-        _skeleton: spine.Skeleton;
-        /** @internal */
-        protected _state: spine.AnimationState;
-        /** @internal */
-        protected _stateData: spine.AnimationStateData;
-        /** @internal */
-        protected _skinAttach: SkinAttach;
-        /** @internal */
-        protected _currentAnimator: AnimationRender;
         /**
          * @en Current render proxy.
          * @zh 当前渲染代理。
@@ -86016,16 +72445,12 @@ declare namespace Laya {
          * @zh ERenderProxyType 到 IRender 对象的映射。
          */
         renderProxyMap: Map<ERenderProxyType, IRender>;
-        /** @internal */
-        _templet: SpineTemplet;
         /**
          * @en Bake data for the Spine animation.
          * @zh Spine 动画的烘焙数据。
          */
         bakeData: TSpineBakeData;
         private _transform;
-        /** @internal */
-        _enableCache: boolean;
         /**
          * @en Current render mode.
          * @zh 当前渲染模式。
@@ -86037,8 +72462,6 @@ declare namespace Laya {
         currentTime: number;
         trackEntry: spine.TrackEntry;
         private _listeners;
-        /** @internal */
-        _premultipliedAlpha: boolean;
         get premultipliedAlpha(): boolean;
         set premultipliedAlpha(value: boolean);
         /**
@@ -86375,8 +72798,8 @@ declare namespace Laya {
         changeOrder(attachMap: AttachmentParse[]): number[] | null;
     }
     /**
-     * @en SketonOptimise class used for skeleton optimization.
-     * @zh SketonOptimise 类用于骨骼优化。
+     * @en SkeletonOptimise class used for skeleton optimization.
+     * @zh SkeletonOptimise 类用于骨骼优化。
      */
     class SkeletonOptimise implements ISkeletonOptimise {
         private static emptyBounds;
@@ -86452,17 +72875,13 @@ declare namespace Laya {
             height: number;
         };
         getSkin(index: number): spine.Skin;
-        /** @internal */
-        _updateState(delta: number): spine.Bone[];
-        /** @internal */
-        _play(animationName: string): number;
         /**
          * @en Check and initialize the main attachment.
          * @param skeleton The skeleton
-         * @param skeletonData The skeleton data to check.
+         * @param data The skeleton data to check.
          * @zh 检查并初始化主附件。
          * @param skeleton 骨骼对象。
-         * @param skeletonData 要检查的骨骼数据。
+         * @param data 要检查的骨骼数据。
          */
         checkMainAttach(skeleton: spine.Skeleton, data: spine.SkeletonData): void;
         /**
@@ -86617,10 +73036,6 @@ declare namespace Laya {
         materialIndex: number;
     }
     class SpineNormalRenderUpdater implements ISpineNormalUpdater {
-        /** @internal */
-        static _TEMP_COLOR: spine.Color;
-        /** @internal */
-        static _TEMP_COLOR2: spine.Color;
         static positions: Float32Array;
         static __init__(): void;
         private clipper;
@@ -86641,8 +73056,6 @@ declare namespace Laya {
         private static readonly MAX_VERTICES_PER_BUFFER;
         _internalMaterials: Material[];
         materials: Material[];
-        /** @internal */
-        _materialIndex: number;
         needUpdate: boolean;
         subMeshes: IRenderGeometryElement[];
         autoCacheEnabled: boolean;
@@ -86713,10 +73126,6 @@ declare namespace Laya {
      */
     abstract class SpineBaseRenderer implements IRender {
         type: ESpineRenderMode;
-        /** @internal */
-        protected _shaderData: ShaderData;
-        /** @internal */
-        protected _skeleton: spine.Skeleton;
         /**
          * @en Array of Spine bones.
          * @zh Spine 骨骼数组。
@@ -86749,9 +73158,7 @@ declare namespace Laya {
         bind(updater: SpineRenderUpdater, skeleton: spine.Skeleton): void;
         /**
          * @en Abstract method to change the current render context.
-         * @param context The render context containing skin and animation updaters.
          * @zh 更改当前渲染上下文的抽象方法。
-         * @param context 包含皮肤和动画更新器的渲染上下文。
          */
         abstract change(): void;
         /**
@@ -86762,10 +73169,8 @@ declare namespace Laya {
         /**
          * @en Abstract method to render the current animation at a specific time.
          * @param curTime The current time for rendering.
-         * @param boneMat The bone matrix for rendering.
          * @zh 在特定时间渲染当前动画的抽象方法。
          * @param curTime 渲染的当前时间。
-         * @param boneMat 用于渲染的骨骼矩阵。
          */
         abstract render(curTime: number, offsetX?: number, offsetY?: number): void;
         /**
@@ -86805,9 +73210,7 @@ declare namespace Laya {
         constructor(shaderData: ShaderData);
         /**
          * @en Change the current render context.
-         * @param context The render context containing skin and animation updaters.
          * @zh 更改当前渲染上下文。
-         * @param context 包含皮肤和动画更新器的渲染上下文。
          */
         change(): void;
         /**
@@ -86850,9 +73253,7 @@ declare namespace Laya {
         leave(): void;
         /**
          * @en Change the current render context.
-         * @param context The render context containing skin and animation updaters.
          * @zh 更改当前渲染上下文。
-         * @param context 包含皮肤和动画更新器的渲染上下文。
          */
         change(): void;
         /**
@@ -86876,14 +73277,10 @@ declare namespace Laya {
      */
     class BakedSpineRenderer extends SpineBaseRenderer {
         type: ESpineRenderMode;
-        /** @internal */
-        private _simpleAnimatorParams;
         private _simpleAnimatorTextureSize;
         private _simpleAnimatorTexture;
         /** x simpleAnimation offset,y simpleFrameOffset*/
         private _simpleAnimatorOffset;
-        /** @internal */
-        _bonesNums: number;
         /**
          * @en Map of animation offsets.
          * @zh 动画偏移量映射。
@@ -86913,15 +73310,9 @@ declare namespace Laya {
         leave(): void;
         /**
          * @en Change the current render context.
-         * @param context The render context containing skin and animation updaters.
          * @zh 更改当前渲染上下文。
-         * @param context 包含皮肤和动画更新器的渲染上下文。
          */
         change(): void;
-        /**
-         * @internal
-         */
-        _computeAnimatorParamsData(): void;
         /**
          * @en Set custom data for the animator.
          * @param value1 First custom value.
@@ -86932,12 +73323,10 @@ declare namespace Laya {
          */
         setCustomData(value1: number, value2?: number): void;
         /**
-         * @en Render the current animation at a specific time.
-         * @param curTime The current time for rendering.
-         * @param boneMat The bone matrix for rendering.
          * @zh 在特定时间渲染当前动画。
          * @param curTime 渲染的当前时间。
-         * @param boneMat 用于渲染的骨骼矩阵。
+         * @en Render the current animation at a specific time.
+         * @param curTime The current time for rendering.
          */
         render(curTime: number, offsetX?: number, offsetY?: number): void;
         /**
@@ -86977,8 +73366,6 @@ declare namespace Laya {
         cacheMaterials: Material[][];
         vChanges: IVBChange[];
         private _animator;
-        /** @internal */
-        cacheFrameIndex: number;
         /**
          * @en The current key frame index.
          * @zh 当前关键帧索引。
@@ -86994,11 +73381,7 @@ declare namespace Laya {
          * @zh 动画状态。
          */
         state: spine.AnimationState;
-        /** @internal */
-        _skinAttach: SkinAttach;
         updateBones: (delta: number, bones: spine.Bone[], boneMat: Float32Array, ofx: number, ofy: number) => void;
-        /** @internal */
-        _mesh: Mesh2D;
         getSubMeshes(): import("../../../../RenderDriver/DriverDesign/RenderDevice/IRenderGeometryElement").IRenderGeometryElement[];
         needUpdate: boolean;
         /**
@@ -87088,33 +73471,33 @@ declare namespace Laya {
         renderWithMat(bones: spine.Bone[], slots: spine.Slot[], curTime: number, boneMat: Float32Array, ofx: number, ofy: number): void;
         private _resetVertexBuffers;
         /**
-         * @en Updates bone matrices using cached data.
-         * @param delta Time delta.
-         * @param animation Animation render data.
-         * @param bones Spine bones.
-         * @param state Spine animation state.
-         * @param boneMat Bone matrix array.
          * @zh 使用缓存数据更新骨骼矩阵。
          * @param delta 时间增量。
-         * @param animation 动画渲染数据。
          * @param bones 骨骼数组。
-         * @param state 骨骼动画状态。
          * @param boneMat 骨骼矩阵数组。
+         * @param ofx 偏移x。
+         * @param ofy 偏移y。
+         * @en Updates bone matrices using cached data.
+         * @param delta Time delta.
+         * @param bones Spine bones.
+         * @param boneMat Bone matrix array.
+         * @param ofx Offset x.
+         * @param ofy Offset y.
          */
         updateBoneMatrix(delta: number, bones: spine.Bone[], boneMat: Float32Array, ofx?: number, ofy?: number): void;
         /**
-         * @en Updates bone matrices using cached data.
-         * @param delta Time delta.
-         * @param animation Animation render data.
-         * @param bones Spine bones.
-         * @param state Spine animation state.
-         * @param boneMat Bone matrix array.
          * @zh 使用缓存数据更新骨骼矩阵。
          * @param delta 时间增量。
-         * @param animation 动画渲染数据。
          * @param bones 骨骼数组。
-         * @param state 骨骼动画状态。
          * @param boneMat 骨骼矩阵数组。
+         * @param ofx 偏移x。
+         * @param ofy 偏移y。
+         * @en Updates bone matrices using cached data.
+         * @param delta Time delta.
+         * @param bones Spine bones.
+         * @param boneMat Bone matrix array.
+         * @param ofx Offset x.
+         * @param ofy Offset y.
          */
         updateBoneMatrixCache(delta: number, bones: spine.Bone[], boneMat: Float32Array, ofx?: number, ofy?: number): void;
         /**
@@ -87141,8 +73524,6 @@ declare namespace Laya {
          * @param boneMat 骨骼矩阵数组。
          */
         writeBoneBufferCache(boneFrames: Float32Array[][], frames: number, boneMat: Float32Array, ofx?: number, ofy?: number): void;
-        /** @internal */
-        _updateMaterials(elements: Material[]): void;
         _clearCacheMaterials(): void;
         /**
          * @en Destroy the SpineRenderUpdater instance.
@@ -87338,76 +73719,6 @@ declare namespace Laya {
          * 格子系统转像素系统
          */
         gridToPixel(row: number, col: number, out: Vector2): void;
-        /**
-         * @internal
-         * 计算chunk的大小,内部方法。不对用户开发
-         * @param rowCount chunk的宽度
-         * @param colCount chunk的高度
-         * @param out 输出的Vector2
-         */
-        _getChunkSize(rowCount: number, colCount: number, out: Vector2): void;
-        /**
-         * @internal
-         * 计算 chunk 左上角的坐标,内部方法。不对用户开发
-         * @param row
-         * @param col
-         * @param rowCount
-         * @param colCount
-         * @param out
-         */
-        _getChunkLeftTop(row: number, col: number, rowCount: number, colCount: number, out: Vector2): void;
-    }
-    /**
-     * @internal
-     * 生成渲染网格的顶点数据
-     * 实现像素和格子系统之间的转换
-     */
-    class Grid {
-        /**@internal */
-        _sheet: BaseSheet;
-        /**@internal */
-        _tileShape: TileShape;
-        private _offset;
-        private _color;
-        private _vbs;
-        private _ibs;
-        private _vbLength;
-        constructor();
-        /**
-         * @internal
-         */
-        _updateTileShape(tileShape: TileShape, size: Vector2): boolean;
-        /**
-         * @internal
-         */
-        _updateColor(color: Color): boolean;
-        /**
-         * @internal
-         */
-        _updateBufferData(): void;
-        /**
-         * @internal
-         */
-        _setTileSize(x: number, y: number): void;
-        /**
-         * @internal
-        * 像素系统转格子系统
-        */
-        _pixelToGrid(pixelX: number, pixelY: number, out: Vector2): void;
-        /**
-         * @internal
-         * 格子系统转像素系统
-         */
-        _gridToPixel(row: number, col: number, out: Vector2): void;
-        /**
-         * 获得网格渲染VbBuffer
-         */
-        _getBaseVertexBuffer(): IVertexBuffer;
-        /**
-         * 获得网格渲染VbBuffer
-         */
-        _getBaseIndexBuffer(): IIndexBuffer;
-        _getBaseIndexCount(): number;
     }
     /**
      * 半错位四边形
@@ -87478,12 +73789,6 @@ declare namespace Laya {
     class TileSetPhysicsLayer {
         /** 识别用索引 */
         id: number;
-        /** @internal 密度值，值可以为零或者是正数，建议使用相似的密度，这样做可以改善堆叠稳定性，默认值为10*/
-        private _density;
-        /** @internal 摩擦力，取值范围0-1，值越大，摩擦越大，默认值为0.2*/
-        private _friction;
-        /** @internal 弹性系数，取值范围0-1，值越大，弹性越大，默认值为0*/
-        private _restitution;
         /**
          * @en [Read-only] Specifies the collision group to which the body belongs, default is 0, the collision rules are as follows:
          * 1. If the group values of two objects are equal:
@@ -87634,40 +73939,11 @@ declare namespace Laya {
         isClipper(x: number, y: number): boolean;
     }
     class TileMapShaderInit {
-        /**
-         * @internal
-         */
-        static _tileMapPositionUVColorDec: VertexDeclaration;
-        /**
-         * @internal
-         */
-        static _tileMapCellColorInstanceDec: VertexDeclaration;
-        /**
-         * @internal
-         */
-        static _tileMapCellPosScaleDec: VertexDeclaration;
-        /**
-         * @internal
-         */
-        static _tileMapCellUVOriScaleDec: VertexDeclaration;
-        /**
-         * @internal
-         */
-        static _tileMapCellUVTrans: VertexDeclaration;
         static __init__(): void;
     }
     class TileMapTerrain {
         static fillConnect(tileMapLayer: TileMapLayer, list: IV2[], terrainSetId: number, terrainId: number, ignoreEmpty?: boolean): Map<TTerrainVector2, TerrainsParams>;
         private static getReady2FillRule;
-        /** @internal */
-        private static _fillRules;
-        /**
-         *  @internal
-         *  按这个块本身是否匹配，这个块周围是否匹配，不匹配就加分，取分值最小的地块
-         */
-        private static _getBestTerrainParams;
-        /** @internal */
-        private static _getRulesByParams;
     }
     class TerrainsParams {
         terrainSet: number;
@@ -87679,10 +73955,6 @@ declare namespace Laya {
         private _arr;
         link(cellData: TileSetCellData): void;
         get arr(): TileSetCellData[];
-        /**
-         * @internal
-         */
-        _getDebugs(): void;
         clearLinks(): void;
     }
     type TTerrainVector2 = {
@@ -87701,14 +73973,6 @@ declare namespace Laya {
     };
     class TileMapTerrainUtil {
         static shape_mode_map: Map<TileShape, NeighborObject>;
-        /** @internal */
-        private static initSquare;
-        /** @internal */
-        private static initIsometric;
-        /** @internal */
-        private static initHalfOffset;
-        /** @internal */
-        static __init__(): void;
         static temp_vec2: Vector2;
         static temp_vec3: Vector3;
         static getNeighborObject(shape: TileShape): NeighborObject;
@@ -87768,10 +74032,6 @@ declare namespace Laya {
      * 定义一个 tile 各种样式
      */
     class TileAlternativesData {
-        /** @internal */
-        _tileDatas: Record<number, TileSetCellData>;
-        /** @internal */
-        _owner: TileSetCellGroup;
         /** Base Data 瓦片在group中的位置 uint int */
         private _localPos;
         /** group中单位大小 uint int */
@@ -87821,109 +74081,10 @@ declare namespace Laya {
         set animationFrams(frams: number[]);
         get animationFrams(): number[];
         constructor();
-        /**
-         * @internal
-         */
-        _initialIndexFIrstCellData(): void;
-        /**
-         * @internal
-         */
-        _hasAni(): boolean;
-        /**
-         * @internal
-         */
-        _init(): void;
-        /**
-         * @internal
-         */
-        _updateOriginUV(x: number, y: number, data: number): void;
-        /**
-         * @internal
-         */
-        _getTextureUVOri(): Vector2;
-        /**
-         * @internal
-         */
-        _getTextureUVExtends(): Vector2;
-        /**
-         * @internal
-         */
-        _getRegionSize(): Vector2;
-        /**
-         * @internal
-         */
-        _updateAnimator(): void;
         getCelldata(index: number): TileSetCellData;
         removeCellData(index: number): void;
         addCellData(index: number): TileSetCellData;
         destroy(): void;
-    }
-    /**
-     * @internal
-     * TileMapChunk 瓦片地图块与渲染块之间的转换
-     * 因为瓦片地图是无限的；因此 Chunk 也是无限的；
-     * 瓦块的坐标是相对原点的，而一个Chunk的坐标是相对于瓦块的;
-     * 一个Chunk 内部的单元格索引从左到右，从上到下计算
-     */
-    class TileMapChunk {
-        private _grid;
-        private _chunkWidth;
-        private _chunkHeight;
-        private _maxCell;
-        constructor(grid: Grid);
-        /**
-         * 获得一个块内格子的最大数量
-         */
-        get maxCell(): number;
-        /**
-         * @internal
-         * 设置chunk的宽高
-         * @param width 设置块的列数
-         * @param height 设置块的行数
-         */
-        _setChunkSize(width: number, height: number): void;
-        /**
-         * @internal
-         * 将像素单位转换相应cell对应的ChunckLocal位置以及ChunckLocalIndex
-         * @param pixelx  像素单位x
-         * @param pixely  像素单位y
-         * @param out 输出 x chunk列坐标 y chunk行坐标 z Chunk内部索引
-         */
-        _getChunkPosByPixel(pixelx: number, pixely: number, out: Vector3): void;
-        /**
-         * 根据cell坐标找到对应Chuck位置以及cell在chunck中的index
-         * @param x 单元格x索引
-         * @param y 单元格y索引
-         * @param out 输出 x chunk列坐标 y chunk行坐标 z Chunk内部索引
-         */
-        _getChunkPosByCell(cellRow: number, cellCol: number, out: Vector3): void;
-        /**
-         * 获得cell 在chunk内部的索引 从第一行第一列开始计数，从左到右，从上到下计算
-         * @param cellRow 单元格的列索引
-         * @param cellCol 单元格的行索引
-         * @returns 单元格在chunk内部的索引
-         */
-        _getChunkIndexByCellPos(cellRow: number, cellCol: number): number;
-        /**
-         * 通过块的行列索引和块内部的索引获得单元格的行列索引
-         * @param chunkx 块的列索引
-         * @param chunky 块的行索引
-         * @param index 块内部的索引
-         * @param out 输出单元格的行列索引
-         */
-        _getCellPosByChunkPosAndIndex(chunkx: number, chunky: number, chunklocalindex: number, out: Vector2): void;
-        _getPixelByChunkPosAndIndex(chunkx: number, chunky: number, chunklocalindex: number, out: Vector2): void;
-        /**
-         * @internal
-         * 获得块的像素宽高
-         * @param out 输出块的像素宽高
-         */
-        _getChunkSize(out: Vector2): void;
-        /**
-         * @internal
-         * 获得块的左上角像素坐标
-         */
-        _getChunkLeftTop(chunkx: number, chunky: number, out: Vector2): void;
     }
     interface IMergeCellInfo {
         cell: TileSetCellData;
@@ -87968,17 +74129,11 @@ declare namespace Laya {
          */
         private _dirtyFlags;
         /**
-         * @internal
-         */
-        private _transFlags;
-        /**
          * 缓存chuckCellInfo数据
          * Key1 chuckLocalIndex
          * value ChunkCellInfo
          */
         private _cellDataMap;
-        /** @internal 用于排序的列表 */
-        _chuckCellList: ChunkCellInfo[];
         private _renderElementArray;
         private _animatorAlterArray;
         _tileLayer: TileMapLayer;
@@ -87998,38 +74153,14 @@ declare namespace Laya {
          */
         chunkY: number;
         private _rigidBody;
-        /**
-         * @internal
-         */
-        _needUpdateRange: boolean;
         private _range;
         constructor();
-        /** @internal */
-        get cellDataRefMap(): number[][];
-        /**
-         * @internal
-         * @deprecated
-         * 危险操作
-         */
-        set cellDataRefMap(data: number[][]);
         /**
          * 获取使用得压缩数据
          */
         get compressData(): Record<number, number[]>;
-        /**
-         * 危险操作
-         * @internal
-         */
-        set compressData(value: Record<number, number[]>);
         get transFlags(): Record<number, number>;
         set transFlags(value: Record<number, number>);
-        /** @internal */
-        _parseCellDataRefMap(): void;
-        /**
-         * @internal
-         * 将数据合并到二维map中
-         */
-        _mergeBuffer(datas: Map<number, Map<number, IMergeCellInfo>>, minRange: Vector2, maxRange: Vector2): void;
         _setBuffer(datas: Map<number, Map<number, IMergeCellInfo>>, minRange: Vector2, maxRange: Vector2, tileSize: number): number;
         _updateChunkData(chunkX: number, chunkY: number): void;
         private _upeateGridData;
@@ -88040,48 +74171,8 @@ declare namespace Laya {
         private _breakBatch;
         private _createRenderElement;
         private _clearRenderElement;
-        /**
-         * @internal
-         * @param datas 渲染数据
-         */
-        _setRenderData(datas: {
-            x: number;
-            y: number;
-            length: number;
-            tiles: number[];
-        }): void;
-        /**
-         * @internal
-         * 清理引用格子的数据
-         */
-        _clearnRefTileCellData(): void;
         _clearAllChunkCellInfo(): void;
-        /**
-         * @internal
-         */
-        _update(): void;
-        /**
-         * @internal
-         */
-        _getCellPos(sheetCell: ChunkCellInfo, out: Vector2): void;
-        /**
-         * @internal
-         * 合并到渲染列表
-         */
-        _mergeToElement(renderElements: IRenderElement2D[]): void;
-        /**
-         * @internal
-         * 更新一个格子
-         * @param index local chunck index
-         * @param gid cellData
-         * @param transFlag 位操作
-         */
-        _setCell(index: number, cellData: TileSetCellData, transFlag: number): void;
         private _clearChunkCellInfo;
-        /**
-         * @internal
-         */
-        _removeCell(index: number): void;
         _modifyData(): void;
         getRange(): Rectangle;
         /**
@@ -88094,33 +74185,6 @@ declare namespace Laya {
          * @returns
          */
         getCell(index: number): ChunkCellInfo;
-        /**
-         * @internal
-         * 当某个 TileSetCellData 的 y_sort_origin 发生变化时，
-         * 刷新当前 Chunk 中所有引用该 cell 的 sortY。
-         */
-        _refreshCellSort(cellData: TileSetCellData): void;
-        /**
-         * tileSetCellData 删除或者无效
-         * @internal
-         */
-        _clearOneCell(cell: TileSetCellData): void;
-        /**
-         * @internal
-         */
-        _setDirtyFlag(gid: number, flag: TileMapDirtyFlag, type?: DirtyFlagType): void;
-        /**
-         * @internal
-         */
-        _forceUpdateDrity(flags: boolean[]): void;
-        /**
-         * @internal
-         */
-        _clearCell(): void;
-        /**
-         * @internal
-         */
-        _destroy(): void;
         /**
          * debug
          * @param sprite
@@ -88202,30 +74266,9 @@ declare namespace Laya {
     }
     class TileMapLayer extends BaseRenderNode2D {
         private static _inited;
-        /**
-         * @internal
-         * @returns
-         */
-        static __init__(): void;
         private _tileSet;
-        /**
-         * @internal
-         * 工具类；用于计算格子所在的大块
-         */
-        _chunk: TileMapChunk;
-        /**
-         * @internal
-         * 工具类；实现像素坐标和格子坐标的转换
-         */
-        _grid: Grid;
         readonly owner: Sprite;
-        /**
-         * @internal
-         */
-        _cliper: RectClipper;
         private _layerColor;
-        /** @internal */
-        _sortMode: TileLayerSortMode;
         private _renderTileSize;
         private _navigationEnable;
         private _physicsEnable;
@@ -88235,10 +74278,6 @@ declare namespace Laya {
         /**物理模块 */
         private _tileMapPhysics;
         private _tileMapOccluder;
-        /** @internal */
-        _needUpdateDirtys: boolean[];
-        /** @internal */
-        get chunkDatas(): Record<number, Record<number, TileMapChunkData>>;
         set chunkDatas(datas: Record<number, Record<number, TileMapChunkData>>);
         get layerColor(): Color;
         set layerColor(value: Color);
@@ -88276,37 +74315,11 @@ declare namespace Laya {
          * 根据范围重新生成 TileMapChunkData
          */
         private _updateChunkData;
-        /**
-         * @internal
-         */
-        _updateMapDatas(): void;
-        /**
-         * @internal
-         * @param tile
-         */
-        _setLayerDataByPos(tile: TileMapChunkData): void;
-        /**
-         * @internal
-         */
-        _getLayerDataTileByPos(chunkX: number, chunkY: number): TileMapChunkData;
         onAwake(): void;
         onEnable(): void;
         onDisable(): void;
         onDestroy(): void;
         _globalChangeHandler(): void;
-        /**
-         * @internal
-         * @returns
-         */
-        _globalTransfrom(): Matrix;
-        /**
-         * @internal
-         * cmd run时调用，可以用来计算matrix等获得即时context属性
-         * @param context
-         * @param px
-         * @param py
-         */
-        addCMDCall(px: number, py: number): void;
         get rect(): Vector4;
         /**
          * 计算所有chunkdata的包围盒合并到layer
@@ -88462,8 +74475,6 @@ declare namespace Laya {
         destroyRigidBody(rigidBody: any): void;
         /** 创建Shape */
         createFixture(rigidBody: any, layer: TileSetPhysicsLayer, data: number[]): any;
-        /** @internal */
-        _updateTransfrom(): void;
         /**
          * 移除物理形状
          */
@@ -88544,8 +74555,6 @@ declare namespace Laya {
         private _groupIds;
         private _defalutMaterials;
         private _ownerList;
-        /** @internal */
-        _terrainsDirty: boolean;
         private _paramsLists;
         constructor();
         /**
@@ -88564,27 +74573,6 @@ declare namespace Laya {
         _addOwner(tilemapLayer: TileMapLayer): void;
         _removeOwner(tilemapLayer: TileMapLayer): void;
         _notifyTileSetCellGroupsChange(): void;
-        /**
-         * TODO 改成事件？
-         * @internal
-         */
-        private _notifyCustomDataLayerChange;
-        /**
-         * @internal
-         */
-        private _notifyRenderLayerChange;
-        /**
-         * @internal
-         */
-        private _notifyTerrainSetChange;
-        /**
-         * @internal
-         */
-        private _notifyNavigationLayerChange;
-        /**
-         * @internal
-         */
-        private _notifyPhysicsLayerChange;
         addTileSetCellGroup(resource: TileSetCellGroup): void;
         getTileSetCellGroup(id: number): TileSetCellGroup;
         removeTileSetCellGroup(id: number): void;
@@ -88641,8 +74629,6 @@ declare namespace Laya {
      * TileMap中一个Cell的数据结构
      */
     class TileSetCellData {
-        /** @internal */
-        static _EMPTY: TileSetCellData;
         private _index;
         private _cellowner;
         private _flip_h;
@@ -88752,10 +74738,6 @@ declare namespace Laya {
         set_physicsData(layerIndex: number, data: TileSetCellPhysicsInfo): void;
         get_physicsData(layerIndex: number): TileSetCellPhysicsInfo;
         getTerrainsParams(): TerrainsParams;
-        /**
-         * @internal
-         */
-        _getTerrainPeeringBits(): number[];
         set_navigationData(layerIndex: number, data: TileSetCellNavigationInfo): void;
         get_navigationData(layerIndex: number): TileSetCellNavigationInfo;
         set_customData(name: string, value: any): void;
@@ -88872,11 +74854,6 @@ declare namespace Laya {
         set color(value: Color);
         get color(): Color;
         protected _isMaterialVaild(value: Material): boolean;
-        /**
-         * 基于不同BaseRender的uniform集合
-         * @internal
-         */
-        protected _getcommonUniformMap(): Array<string>;
         protected _onAdded(): void;
         private _initRender;
         onPreRender(): void;
@@ -88913,20 +74890,8 @@ declare namespace Laya {
          * @zh 轨迹准线。
          */
         alignment: TrailAlignment;
-        /**@internal */
-        _ownerRender: TrailRenderer;
         /** @ignore */
         constructor(owner: TrailRenderer);
-        /**
-         * @internal
-         * @en Adds a render element to the renderer.
-         * @zh 向渲染器添加渲染元素。
-         */
-        addRenderElement(): void;
-        /**
-         * @internal
-         */
-        _update(state: RenderContext3D): void;
     }
     /**
      * @en The `TrailMaterial` class is used to implement trail materials.
@@ -88938,16 +74903,6 @@ declare namespace Laya {
          * @zh 默认材质，禁止修改。
          */
         static defaultMaterial: TrailMaterial;
-        /**@internal */
-        static MAINTEXTURE: number;
-        /**@internal */
-        static TINTCOLOR: number;
-        /**@internal */
-        static TILINGOFFSET: number;
-        /**
-         * @internal
-         */
-        static __initDefine__(): void;
         /**
          * @en The color of the material.
          * @zh 材质的颜色。
@@ -89065,25 +75020,10 @@ declare namespace Laya {
          */
         get bounds(): Bounds;
         /**
-         * @inheritDoc
-         * @internal
-         * @override
-         */
-        _calculateBoundingBox(): void;
-        /**
          * @en Clear the trail.
          * @zh 清除拖尾
          */
         clear(): void;
-        /**
-         * @internal
-         */
-        protected _onDestroy(): void;
-        /**
-         * @internal
-         * @param dest
-         */
-        _cloneTo(dest: TrailRenderer): void;
     }
     /**
      * @en The `TrailGeometry2` class is used to create trail rendering elements.
@@ -89095,101 +75035,10 @@ declare namespace Laya {
          * @zh 单精度浮点(float)零的容差。
          */
         static zeroTolerance: number;
-        /**@internal */
-        static _tempVector33: Vector3;
-        /**@internal */
-        static _tempVector34: Vector3;
-        /**@internal */
-        static _tempVector35: Vector3;
-        /**@internal */
-        static _tempVector36: Vector3;
-        /**@internal */
-        _floatCountPerVertices1: number;
-        /**@internal */
-        private _floatCountPerVertices2;
-        /**@internal */
-        private _increaseSegementCount;
-        /**@internal */
-        private _needAddFirstVertex;
-        /**@internal */
-        private _isTempEndVertex;
-        /**@internal 顶点出生时间*/
-        private _subBirthTime;
-        /**@internal 顶点间隔距离*/
-        private _subDistance;
-        /**@internal */
-        private _segementCount;
-        /**@internal 缓存数据,可以用来计算包围盒 */
-        _vertices1: Float32Array;
-        /**@internal */
-        private _vertices2;
-        /**@internal */
-        private _vertexBuffer1;
-        /**@internal */
-        private _vertexBuffer2;
-        /**@internal 上个有效点位置*/
-        _lastFixedVertexPosition: Vector3;
         private tmpColor;
-        /**@internal 拖尾长度 */
-        _totalLength: number;
-        /**@internal 顶点开始位置*/
-        _activeIndex: number;
-        /**@internal 顶点结束位置*/
-        _endIndex: number;
         /** @private 是否需要重新计算包围盒*/
         _disappearBoundsMode: Boolean;
-        /**@internal */
-        _geometryElementOBj: IRenderGeometryElement;
-        /** @internal */
-        _bufferState: IBufferState;
         constructor();
-        /**
-         * @internal
-         */
-        private _resizeData;
-        /**
-         * @internal
-         */
-        private _resetData;
-        /**
-         * @internal
-         * 通过起始位置添加TrailRenderElement起始数据
-         */
-        _addTrailByFirstPosition(position: Vector3, curtime: number): void;
-        /**
-         * @internal
-         * @param position 当前的位置
-         * @param curtime 当前时间
-         * @param minVertexDistance 顶点最小距离
-         * @param pointAtoBVector3 顶点扩张方向和长度
-         * @param delLength 和上一个顶点的距离
-         */
-        _addTrailByNextPosition(position: Vector3, curtime: number, minVertexDistance: number, pointAtoBVector3: Vector3, delLength: number): void;
-        /**
-         * @internal
-         * 通过位置更新顶点数据
-         */
-        private _updateVerticesByPositionData;
-        /**
-         * @internal
-         * 通过位置更新顶点数据、距离、出生时间
-         */
-        private _updateVerticesByPosition;
-        /**
-         * @internal
-         * 更新VertexBuffer2数据
-         */
-        _updateVertexBufferUV(colorGradient: Gradient, textureMode: TrailTextureMode, tileUnit?: number): void;
-        /**
-         * @internal
-         */
-        _updateDisappear(curtime: number, lifetime: number): void;
-        /**
-         * @inheritDoc
-         * @internal
-         * @override
-         */
-        _updateRenderParams(): void;
         /**
          * @inheritDoc
          * @override
@@ -89204,33 +75053,6 @@ declare namespace Laya {
         clear(): void;
     }
     class TrailShaderCommon {
-        /**@internal */
-        static CURTIME: number;
-        /**@internal */
-        static LIFETIME: number;
-        /**@internal */
-        static WIDTHCURVE: number;
-        /**@internal */
-        static WIDTHCURVEKEYLENGTH: number;
-        /**@internal */
-        static inited: boolean;
-        /**@internal */
-        static attributeMap: {
-            [name: string]: [
-                number,
-                ShaderDataType
-            ];
-        };
-        /**@internal */
-        static uniformMap: {
-            [name: string]: ShaderDataType;
-        };
-        /**@internal */
-        static defaultValue: {
-            [name: string]: any;
-        };
-        /**@internal */
-        static init(): void;
     }
     /**
      * @en Trail Texture Mode
@@ -89248,69 +75070,7 @@ declare namespace Laya {
          */
         Tile = 1
     }
-    /**
-     * @internal
-     * @en The `VertexTrail` class is used to create the vertex structure for a trail.
-     * @zh `VertexTrail` 类用于创建拖尾的顶点结构。
-     */
-    class VertexTrail {
-        /**@internal */
-        static TRAIL_POSITION0: number;
-        /**@internal */
-        static TRAIL_OFFSETVECTOR: number;
-        /**@internal */
-        static TRAIL_TIME0: number;
-        /**@internal */
-        static TRAIL_TEXTURECOORDINATE0Y: number;
-        /**@internal */
-        static TRAIL_TEXTURECOORDINATE0X: number;
-        /**@internal */
-        static TRAIL_COLOR: number;
-        /**@internal */
-        private static _vertexDeclaration1;
-        /**@internal */
-        private static _vertexDeclaration2;
-        /**
-         * @internal
-         * @en The vertex declaration for the first set of vertex elements.
-         * @zh 第一组顶点元素的顶点声明。
-         */
-        static get vertexDeclaration1(): VertexDeclaration;
-        /**
-         * @internal
-         * @en The vertex declaration for the second set of vertex elements.
-         * @zh 第二组顶点元素的顶点声明。
-         */
-        static get vertexDeclaration2(): VertexDeclaration;
-        /**
-         * @en The vertex declaration for this vertex structure.
-         * @zh 此顶点结构的顶点声明。
-         */
-        get vertexDeclaration(): VertexDeclaration;
-        /**
-         * @internal
-         */
-        static __init__(): void;
-    }
     class TrailBaseFilter {
-        /**@internal */
-        protected _minVertexDistance: number;
-        /**@internal */
-        protected _widthMultiplier: number;
-        /**@internal */
-        protected _time: number;
-        /**@internal */
-        protected _widthCurve: FloatKeyframe[];
-        /**@internal */
-        protected _colorGradient: Gradient;
-        /**@internal */
-        protected _textureMode: TrailTextureMode;
-        /**@internal */
-        _trialGeometry: TrailGeometry;
-        /**@internal */
-        _lastPosition: Vector3;
-        /**@internal */
-        _curtime: number;
         protected _nodeShaderData: ShaderData;
         /**
              * @en Fade out time.
@@ -89350,21 +75110,6 @@ declare namespace Laya {
         set textureMode(value: TrailTextureMode);
         constructor(nodeShaderData: ShaderData);
         /**
-         * @internal
-         * @returns
-         */
-        _isRender(): boolean;
-        /**
-         * @internal
-         */
-        private _initDefaultData;
-        /**
-         * @internal
-         * @en Destroys the instance and releases resources.
-         * @zh 销毁实例并释放资源。
-         */
-        destroy(): void;
-        /**
          * @en Clears the trail.
          * @zh 清除拖尾。
          */
@@ -89379,7 +75124,8 @@ declare namespace Laya {
         private _parPos;
         private _parPosCatch;
         /**
-        * 0或者null为不旋转，1为沿路径曲线路径旋转，2为沿运动路径旋转
+        * @en 0 or null for no rotation, 1 for rotating along the path curve, 2 for rotating along the motion path
+        * @zh 0或者null为不旋转，1为沿路径曲线路径旋转，2为沿运动路径旋转
         */
         rotationType: RotationType;
         constructor();
@@ -89388,7 +75134,6 @@ declare namespace Laya {
          * @zh 曲线的总长度。
          */
         get length(): number;
-        is2D: boolean;
         /**
          * @en Create a curve.
          * @param points Point list.
@@ -89421,6 +75166,7 @@ declare namespace Laya {
          * For 2D data (z=0), returns Vector3(0, 0, rotationAngle).
          * For 3D data, returns Vector3(pitch, yaw, roll).
          * @param t Distance value. It should be a value between 0 and 1.
+         * @param is2D Whether the curve is 2D. If true, the method will return rotation in 2D format. If false, it will return rotation in 3D format.
          * @param out Optional output Vector3 to store the result. If not provided, a new Vector3 will be created.
          * @returns The rotation angles in degrees representing the tangent direction at the specified point.
          * @zh 获取曲线上指定距离点的旋转角度（切线方向）。
@@ -89428,10 +75174,11 @@ declare namespace Laya {
          * 对于2D数据（z=0），返回Vector3(0, 0, 旋转角度)。
          * 对于3D数据，返回Vector3(俯仰角, 偏航角, 滚转角)。
          * @param t 距离值，它应该是0到1之间的值。
+         * @param is2D 曲线是否为2D。如果为true，方法将返回2D格式的旋转；如果为false，将返回3D格式的旋转。
          * @param out 可选的输出Vector3用于存储结果。如果未提供，将创建新的Vector3。
          * @returns 表示指定点切线方向的旋转角度（度）。
          */
-        getRotationAt(t: number, out?: Vector3): Vector3;
+        getRotationAt(t: number, is2D?: boolean, out?: Vector3): Vector3;
         /**
          * @en Convert a tangent vector to Euler angles in degrees.
          * Automatically detects if the curve is 2D (z=0) or 3D and returns appropriate rotation format.
@@ -89556,7 +75303,6 @@ declare namespace Laya {
         private getPointOnSegment;
         private onCRSplineCurve;
         private onBezierCurve;
-        static getRotation(parPos: Vector3, currPos: Vector3): Vector3;
     }
     /**
      * @en The `Ease` class defines easing functions for Tween animations to achieve various transition effects.
@@ -90151,9 +75897,14 @@ declare namespace Laya {
          */
         curve: CurveType;
         /**
+         * @en Whether it's a smooth curve. Used for cubic Bezier curves. Indicates whether the first control point of this path point is symmetric to the second control point of the previous path point to achieve a smooth transition.
+         * @zh 是否平滑曲线。用于三次贝塞尔曲线。表示这个路径点的第一个控制器点是否与前一个路径点的第二个控制器点成对称关系，以实现平滑过渡。
+         */
+        smooth: boolean;
+        /**
          * 0或者null为不旋转，1为沿路径曲线路径旋转，2为沿运动路径旋转
          */
-        rotationType?: RotationType;
+        rotationType: RotationType;
         /**
          * @en Create a cardinalspline curve point.
          * @zh 创建一个 PathPoint 的实例。
@@ -90171,10 +75922,6 @@ declare namespace Laya {
          * @returns PathPoint 实例。
          */
         clone(): PathPoint;
-        /**
-         * @internal
-         */
-        _reset(): void;
     }
     /**
      * @en When the entire slow motion ends, it will be scheduled
@@ -90786,10 +76533,6 @@ declare namespace Laya {
         private constructor();
         private cur;
         /**
-         * @internal
-         */
-        _check(): void;
-        /**
          * @en This is an interpolator that implements a shake effect.
          * @param amplitude The amplitude of the shake effect.
          * @zh 这是一个实现震动效果的插值器。
@@ -90819,110 +76562,16 @@ declare namespace Laya {
          * @zh 这是一个使用曲线路径的插值器。数值将从曲线路径中获取。
          */
         static useCurvePath(time: number, start: ReadonlyArray<number>, end: ReadonlyArray<number>, result: Array<number>, path: CurvePath): void;
-        /**
-         * @internal
-         */
-        static _pool: IPool<Tween>;
-    }
-    /**
-     * @internal
-     */
-    type TweenPropInfo = {
-        name: string;
-        type: 0 | 1 | 2 | TweenValueAdapter;
-        offset: number;
-        renewFlags?: number;
-    };
-    /**
-     * @internal
-     */
-    class Tweener implements ITweener {
-        id: number;
-        name: string;
-        owner: Tween;
-        target: any;
-        userData: any;
-        lifecycleOwner: {
-            destroyed: boolean;
-        };
-        startValue: TweenValue;
-        endValue: TweenValue;
-        value: TweenValue;
-        deltaValue: TweenValue;
-        delay: number;
-        duration: number;
-        breakpoint: number;
-        repeat: number;
-        paused: boolean;
-        props: Array<TweenPropInfo>;
-        ease: EaseFunction;
-        easeArgs: any[];
-        yoyo: boolean;
-        timeScale: number;
-        ignoreEngineTimeScale: boolean;
-        snapping: boolean;
-        interp: TweenInterpolator<any>;
-        interpArgs: any[];
-        onUpdate: TweenCallback;
-        onStart: TweenCallback;
-        onComplete: TweenCallback;
-        onCompleteResolvers: Array<Function>;
-        onUpdateCaller: any;
-        onStartCaller: any;
-        onCompleteCaller: any;
-        _killed: boolean;
-        _started: boolean;
-        _ended: number;
-        _startFrame: number;
-        _elapsedTime: number;
-        _normalizedTime: number;
-        _active: boolean;
-        static create(owner: Tween): Tweener;
-        static getTween(id: number): Tweener | null;
-        static isTweening(target: any): boolean;
-        static getTweens(target: any, out?: Array<Tween>): Array<Tween>;
-        static kill(tweenId: number, complete?: boolean): boolean;
-        static killAll(target: any, completed?: boolean): boolean;
-        constructor();
-        go<T>(propName: string, startValue: T, endValue: T): this;
-        get normalizedTime(): number;
-        get breaking(): boolean;
-        get remainTime(): number;
-        activate(): void;
-        seek(time: number): void;
-        kill(complete?: boolean): void;
-        private init;
-        private reset;
-        private update;
-        private update2;
-        private callStartCallback;
-        private callUpdateCallback;
-        private callCompleteCallback;
-        static _pool: IPool<Tweener>;
-        static _runAll(): void;
-        static _getMap(): ReadonlyMap<number, Tweener>;
     }
     class TweenValue implements ITweenValue {
         readonly nums: Array<number>;
         private _props;
-        /**
-         * @internal
-         */
-        constructor(props: Array<TweenPropInfo>);
         get(name: string): any;
         set(name: string, value: any): void;
         getAt(index: number): any;
         setAt(index: number, value: any): void;
         get count(): number;
         copy(source: ITweenValue): this;
-        /**
-         * @internal
-         */
-        read(type: TweenPropInfo["type"], offset: number): any;
-        /**
-         * @internal
-         */
-        write(type: TweenPropInfo["type"], offset: number, value: any): void;
     }
     const TweenValueAdapterKey: unique symbol;
     /**
@@ -90943,10 +76592,6 @@ declare namespace Laya {
         protected _isChanged: boolean;
         protected _stateIndex: number;
         protected _stateNum: number;
-        /**@internal */
-        _color: string;
-        /**@internal */
-        _offset: any[];
         private _drawCmd;
         uv: number[];
         /**
@@ -91000,16 +76645,6 @@ declare namespace Laya {
          * @zh 销毁对象。
          */
         destroy(): void;
-        /**
-         * @internal
-         * @en Set the state of the object.
-         * @param index The state index.
-         * @param numStates The total number of states.
-         * @zh 设置对象的状态。
-         * @param index 状态索引。
-         * @param numStates 状态的总数。
-         */
-        setState(index: number, numStates: number): void;
     }
     /**
      * @en The `Box` class is the base class for UI containers.
@@ -91091,10 +76726,6 @@ declare namespace Laya {
          */
         protected _clickHandler: Handler;
         protected _stateChanged: boolean;
-        /**
-         * @internal
-         */
-        _graphics: AutoBitmap;
         /**
          * @en The state value of the button.
          * @zh 对象的状态值。
@@ -91268,14 +76899,6 @@ declare namespace Laya {
          */
         protected onMouse(e: Event): void;
         /**
-         * @internal
-         * @en Set the skin resource of the button.
-         * @param url The URL of the skin resource.
-         * @zh 设置皮肤资源。
-         * @param url 皮肤资源的URL。
-         */
-        _setSkin(url: string): Promise<void>;
-        /**
          * @en The skin resource is loaded.
          * @param tex The texture resource.
          * @zh 皮肤资源加载完成后的处理。
@@ -91302,10 +76925,6 @@ declare namespace Laya {
          * @zh 设置数据源。
          */
         set_dataSource(value: any): void;
-        /** @internal @blueprintEvent */
-        Button_bpEvent: {
-            [Event.CHANGE]: () => void;
-        };
     }
     /**
      * @en The `CheckBox` component displays a small box that can have a check mark.
@@ -91375,8 +76994,6 @@ declare namespace Laya {
         protected _group: string;
         protected _toIndex: number;
         protected _clipBySize: boolean;
-        /**@internal */
-        _graphics: AutoBitmap;
         /**
          * @en The address of the skin resource.
          * @zh 皮肤资源地址
@@ -91482,8 +77099,6 @@ declare namespace Laya {
          */
         constructor(url?: string, clipX?: number, clipY?: number);
         private _onDisplay;
-        /**@internal */
-        _setSkin(url: string): Promise<void>;
         protected _skinLoaded(): void;
         protected _setClipChanged(): void;
         /**
@@ -91523,11 +77138,6 @@ declare namespace Laya {
          */
         stop(): void;
         set_dataSource(value: any): void;
-        /** @internal @blueprintEvent */
-        Clip_bpEvent: {
-            [Event.CHANGE]: () => void;
-            [Event.LOADED]: () => void;
-        };
     }
     /**
      * @en The `ColorPicker` component displays a color palette from which the user can select a color.
@@ -91725,10 +77335,6 @@ declare namespace Laya {
          * @param destroyChild 是否同时销毁子项。默认为 true。
          */
         destroy(destroyChild?: boolean): void;
-        /** @internal @blueprintEvent */
-        ColorPicker_bpEvent: {
-            [Event.CHANGE]: () => void;
-        };
     }
     /**
      * @zh `ComboBox` 组件包含一个下拉列表，用户可以从该列表中选择单个值。
@@ -91983,10 +77589,6 @@ declare namespace Laya {
          * @param value The new data source.
          */
         set_dataSource(value: any): void;
-        /** @internal @blueprintEvent */
-        ComboBox_bpEvent: {
-            [Event.CHANGE]: () => void;
-        };
     }
     /**
      * @en The `Dialog` component is a pop-up dialog box that implements the functionality of popping up, dragging, and modal windows.
@@ -92085,10 +77687,6 @@ declare namespace Laya {
          */
         static closeByGroup(group: string): any[];
         private _dragArea;
-        /**@internal */
-        _param: any;
-        /**@internal */
-        _effectTween: Tween;
         /**
          * @en The handler function that will be triggered when the dialog is closed.
          * The callback function parameter is the button name clicked by the user, of type `String`.
@@ -92260,12 +77858,6 @@ declare namespace Laya {
         private _centerDialog;
         private _clearDialogEffect;
         private _closeAll;
-        /**
-         * @internal
-         * @zh 重新检查遮罩层位置（z 变更后）。
-         * @en Re-check mask layer after z-order changes.
-         */
-        _checkMask(): void;
         /**
          * @zh 设置锁定界面，value 为空则不显示。
          * @param value 要显示在锁定层的 UIComponent，空则不显示。
@@ -92457,32 +78049,6 @@ declare namespace Laya {
          */
         protected _transChanged(kind: TransformKind): void;
         /**
-         * @internal
-         * @en Resource loading completed
-         * @zh 资源加载完毕
-         */
-        protected loadComplete(url: string, img: Texture): void;
-        /**
-         * @internal
-         * @en Implementation logic after font clip property changes
-         * @zh 字体切片属性变化后的实现逻辑
-         */
-        protected changeValue(): void;
-        /**
-         * @internal
-         * @override
-         * @en the width of the font clip.
-         * @zh 获得字体切片的宽度。
-         */
-        protected measureWidth(): number;
-        /**
-         * @internal
-         * @override
-         * @en the height of the font clip.
-         * @zh 获得字体切片的高度。
-         */
-        protected measureHeight(): number;
-        /**
          * @override
          * @en Destroys the FontClip instance and optionally its children.
          * @param destroyChild  Whether to destroy the children of the FontClip.
@@ -92583,8 +78149,6 @@ declare namespace Laya {
         protected _skin: string;
         protected _group: string;
         protected _useSourceSize: boolean;
-        /**@internal */
-        _graphics: AutoBitmap;
         /**
          * @en The skin address of the object, represented as a string.
          * If the resource is not loaded, it will be loaded first and then applied to this object after loading is complete.
@@ -92641,10 +78205,6 @@ declare namespace Laya {
          */
         constructor(skin?: string | null);
         /**
-         * @internal
-         */
-        _setSkin(url: string): Promise<void>;
-        /**
          * @ignore
          */
         protected _transChanged(kind: TransformKind): void;
@@ -92663,10 +78223,6 @@ declare namespace Laya {
          * @zh 销毁对象并释放加载的皮肤资源。
          */
         dispose(): void;
-        /** @internal @blueprintEvent */
-        Image_bpEvent: {
-            [Event.LOADED]: () => void;
-        };
     }
     /**
      * @en The ISelect interface, which should be implemented by objects that have a selected property and a clickHandler for selection callback function processing.
@@ -93232,20 +78788,12 @@ declare namespace Laya {
         protected _transChanged(kind: TransformKind): void;
         private _getOneCell;
         private _createItems;
-        /**@internal */
-        _afterInited(): void;
         private _bindData;
         protected _sizeChanged(): void;
         protected _setCellChanged(): void;
         private onScrollStart;
         private onScrollEnd;
         protected createItem(): UIComponent;
-        /**
-         * @internal
-         * 更改单元格的信息。
-         * 在此销毁、创建单元格，并设置单元格的位置等属性。相当于此列表内容发送改变时调用此函数。
-         */
-        protected changeCells(): void;
         /**
          * @en Adds a cell to the list.
          * @param cell The cell object to be added.
@@ -93423,10 +78971,6 @@ declare namespace Laya {
          * @param destroyChild 指定是否销毁子元素。
          */
         destroy(destroyChild?: boolean): void;
-        /** @internal @blueprintEvent */
-        List_bpEvent: {
-            [Event.CHANGE]: () => void;
-        };
     }
     /**
      * @en Panel is a panel container class.
@@ -93456,8 +79000,6 @@ declare namespace Laya {
          */
         destroy(destroyChild?: boolean): void;
         protected createChildren(): void;
-        /** @internal */
-        _panelChildChanged(child: Sprite): void;
         private changeScroll;
         protected _sizeChanged(): void;
         /**
@@ -93619,8 +79161,6 @@ declare namespace Laya {
          */
         constructor(skin?: string);
         protected createChildren(): void;
-        /**@internal */
-        _setSkin(url: string): Promise<void>;
         protected _skinLoaded(): void;
         protected measureWidth(): number;
         protected measureHeight(): number;
@@ -93647,11 +79187,6 @@ declare namespace Laya {
          * @param destroyChild 是否销毁子元素。默认为 true。
          */
         destroy(destroyChild?: boolean): void;
-        /** @internal @blueprintEvent */
-        ProgressBar_bpEvent: {
-            [Event.CHANGE]: () => void;
-            [Event.LOADED]: () => void;
-        };
     }
     /**
      * @en The Radio control allows users to select one option from a mutually exclusive set of choices.
@@ -93707,8 +79242,6 @@ declare namespace Laya {
      * `change`事件用于当Group的selectedIndex属性发生变化时调度。
      */
     class RadioGroup extends UIGroup {
-        /** @internal */
-        constructor();
         protected createItem(skin: string, label: string): Sprite;
         /**
          * @zh 设置节点宽高是否自适应文本内容，一旦适应后，文本对齐设置将无效。
@@ -94070,13 +79603,6 @@ declare namespace Laya {
          */
         backToNormal(): void;
         private _backToNormal;
-        /** @internal @blueprintEvent */
-        ScrollBar_bpEvent: {
-            [Event.CHANGE]: () => void;
-            [Event.START]: () => void;
-            [Event.END]: () => void;
-            [Event.LOADED]: () => void;
-        };
     }
     /**
      * @en The Slider control allows users to select a value by moving a slider between the end points of the track.
@@ -94240,11 +79766,6 @@ declare namespace Laya {
          * @zh 滑块按钮的引用。
          */
         get bar(): Button;
-        /** @internal @blueprintEvent */
-        Slider_bpEvent: {
-            [Event.CHANGE]: () => void;
-            [Event.CHANGED]: () => void;
-        };
     }
     /**
      * @en The `Styles` class defines common style properties used by components.
@@ -94427,10 +79948,6 @@ declare namespace Laya {
      */
     class TextInput extends Label {
         protected _skin: string;
-        /** @internal */
-        _graphics: AutoBitmap;
-        /** @internal */
-        _tf: Input;
         /**
          * @en The URL of the skin for the TextInput UIComponent.
          * @zh TextInput组件的皮肤地址。
@@ -94520,8 +80037,6 @@ declare namespace Laya {
          * @param text 文本内容。
          */
         constructor(text?: string);
-        /** @internal */
-        _setSkin(url: string): Promise<void>;
         protected _skinLoaded(source: any): void;
         /**
          * @ignore
@@ -94543,14 +80058,6 @@ declare namespace Laya {
          * @param endIndex 选中文本的光标结束位置。
          */
         setSelection(startIndex: number, endIndex: number): void;
-        /** @internal @blueprintEvent */
-        TextInput_bpEvent: {
-            [Event.INPUT]: () => void;
-            [Event.ENTER]: () => void;
-            [Event.FOCUS]: () => void;
-            [Event.BLUR]: () => void;
-            [Event.CHANGE]: () => void;
-        };
     }
     /**
      * @en Mouse Tip Management Class
@@ -94819,10 +80326,6 @@ declare namespace Laya {
          * @param destroyChild 是否销毁子对象。
          */
         destroy(destroyChild?: boolean): void;
-        /** @internal @blueprintEvent */
-        Tree_bpEvent: {
-            [Event.CHANGE]: () => void;
-        };
     }
     /**
      * @en UIComponent is the base class of UI Component.
@@ -95322,14 +80825,6 @@ declare namespace Laya {
          * @override
          */
         protected preinitialize(): void;
-        /**
-         * @internal
-         * @en 2.0 parsing will call
-         * @zh 2.0解析会调用
-         */
-        _afterInited(): void;
-        /** @internal */
-        _setSkin(url: string): Promise<void>;
         protected _skinLoaded(): void;
         protected _setLabelChanged(): void;
         /**
@@ -95405,11 +80900,6 @@ declare namespace Laya {
          * @en Sets the data source for this component.
          */
         set_dataSource(value: any): void;
-        /** @internal @blueprintEvent */
-        UIGroup_bpEvent: {
-            [Event.CHANGE]: () => void;
-            [Event.LOADED]: () => void;
-        };
     }
     /**
      * @en The `UIUtils` class is a collection of text utility functions.
@@ -95523,8 +81013,6 @@ declare namespace Laya {
          * @param json	UI内容
          */
         static regUI(url: string, json: any): void;
-        /**@internal */
-        _watchMap: any;
         /**
          * @en The data source.
          * @zh 数据源。
@@ -95559,12 +81047,6 @@ declare namespace Laya {
      * @blueprintInheritable
      */
     class ViewStack extends Box {
-        /**@internal */
-        protected _items: any[];
-        /**@internal */
-        protected _setIndexHandler: Handler;
-        /**@internal */
-        protected _selectedIndex: number;
         /**
          * @en The index of the current view.
          * @zh 当前视图的索引。
@@ -95804,10 +81286,6 @@ declare namespace Laya {
          * @zh 指示控制器当前是否正在更改。
          */
         readonly changing: boolean;
-        /**
-         * @internal
-         */
-        _refs: Set<ControllerRef>;
         /** @ignore @blueprintIgnore */
         constructor();
         /**
@@ -95851,10 +81329,6 @@ declare namespace Laya {
          * @zh 相反页面的索引。即如果当前索引为0，则相反索引为1；如果当前索引大于0，则相反索引为0。
          */
         set oppositeIndex(value: number);
-        /** @internal @blueprintEvent */
-        Controller_bpEvent: {
-            [Event.CHANGED]: () => void;
-        };
     }
     /** @ignore */
     class ControllerRef {
@@ -95862,8 +81336,6 @@ declare namespace Laya {
         private _name;
         private _inst;
         private _inited;
-        /** @internal */
-        onChanged: (initiator: Controller) => void;
         constructor(target: GWidget, name: string);
         constructor(inst: Controller);
         get target(): GWidget;
@@ -95974,10 +81446,6 @@ declare namespace Laya {
          */
         setLayoutChangedFlag(reason?: LayoutChangedReason): void;
         protected _sizeChanged(changeByLayout?: boolean): void;
-        /** @internal @blueprintEvent */
-        GBox_bpEvent: {
-            [UIEvent.ContentSizeChanged]: () => void;
-        };
     }
     const ButtonPageAlternatives: Record<number, ButtonStatus>;
     /**
@@ -96107,10 +81575,6 @@ declare namespace Laya {
         private _removeFromStage;
         private _click;
         private _rightClick;
-        /** @internal @blueprintEvent */
-        GButton_bpEvent: {
-            [Event.CHANGED]: () => void;
-        };
     }
     /**
      * @en GComboBox is a dropdown list that allows users to select an item from a list of options.
@@ -96208,11 +81672,6 @@ declare namespace Laya {
         private _rollout;
         private _mousedown;
         private _mouseup;
-        /** @internal @blueprintEvent */
-        GComboBox_bpEvent: {
-            [Event.CHANGED]: () => void;
-            [UIEvent.Popup]: () => void;
-        };
     }
     /**
      * @en Base class for gears that manage property changes based on controller pages.
@@ -96223,10 +81682,6 @@ declare namespace Laya {
         protected _controller: ControllerRef;
         protected _propPath: string;
         protected _tweenCfg: GearTweenConfig;
-        /** @internal */
-        _tween: Tween;
-        /** @internal */
-        _propPathArr: string[];
         /**
          * @en The values associated with different pages.
          * @zh 与不同页面关联的值。
@@ -96395,10 +81850,6 @@ declare namespace Laya {
         protected _sizeChanged(changeByLayout?: boolean): void;
         /** @ignore */
         destroy(): void;
-        /** @internal @blueprintEvent */
-        GImage_bpEvent: {
-            [Event.LOADED]: () => void;
-        };
     }
     /**
      * @en GLabel is a widget that displays a text label and an icon.
@@ -96474,8 +81925,6 @@ declare namespace Laya {
         itemProvider: (index: number) => string;
         protected _layout: IListLayout;
         private _pool;
-        /** @internal */
-        _templateNode: GWidget;
         constructor();
         /** @ignore */
         destroy(): void;
@@ -96591,8 +82040,6 @@ declare namespace Laya {
         private _setVirtual;
         /** @ignore @blueprintIgnore */
         onAfterDeserialize(): void;
-        /** @internal */
-        _buildInitItems(): void;
     }
     /**
      * @en GLoader is a widget that displays an image or animation resource.
@@ -96701,10 +82148,6 @@ declare namespace Laya {
         protected _sizeChanged(): void;
         /** @ignore */
         destroy(): void;
-        /** @internal @blueprintEvent */
-        GLoader_bpEvent: {
-            [Event.LOADED]: () => void;
-        };
     }
     /**
      * @en GMovieClip is a widget that displays a frame animation, allowing for playback control and customization.
@@ -96823,19 +82266,8 @@ declare namespace Laya {
          */
         get touchItem(): GWidget;
         protected _sizeChanged(changeByLayout?: boolean): void;
-        /** @internal */
-        _panelChildChanged(child: Sprite): void;
         /** @ignore */
         destroy(): void;
-        /** @internal @blueprintEvent */
-        GPanel_bpEvent: {
-            [Event.CHANGED]: () => void;
-            [UIEvent.ClickItem]: (item: GButton, evt: Event) => void;
-            [UIEvent.Scroll]: () => void;
-            [UIEvent.ScrollEnd]: () => void;
-            [UIEvent.PullDownRelease]: () => void;
-            [UIEvent.PullUpRelease]: () => void;
-        };
     }
     /**
      * @en GProgressBar is a widget that displays a progress bar.
@@ -96919,8 +82351,6 @@ declare namespace Laya {
         protected update(newValue: number, delay?: boolean): void;
         private updateTitle;
         private setFillAmount;
-        /** @internal */
-        _onConstruct(inPrefab?: boolean): void;
         protected _sizeChanged(): void;
     }
     /**
@@ -97056,8 +82486,6 @@ declare namespace Laya {
          * @zh GRoot 中是否有任何弹出窗口当前显示。
          */
         get hasAnyPopup(): boolean;
-        /** @internal */
-        adjustModalLayer(): void;
     }
     /**
      * @en GScrollBar is a widget that provides a scroll bar interface for scrolling content.
@@ -97096,8 +82524,6 @@ declare namespace Laya {
          */
         get fixedGripSize(): boolean;
         set fixedGripSize(value: boolean);
-        /** @internal */
-        _onConstruct(inPrefab?: boolean): void;
         private _gripTouchBegin;
         private _gripTouchMove;
         private _gripTouchEnd;
@@ -97201,8 +82627,6 @@ declare namespace Laya {
         protected update(delay?: boolean): void;
         private updateWithPercent;
         private updateTitle;
-        /** @internal */
-        _onConstruct(inPrefab?: boolean): void;
         private setupEvents;
         protected _sizeChanged(): void;
         private _gripTouchBegin;
@@ -97210,10 +82634,6 @@ declare namespace Laya {
         private _barTouchBegin;
         /** @ignore */
         onAfterDeserialize(): void;
-        /** @internal @blueprintEvent */
-        GSlider_bpEvent: {
-            [Event.CHANGED]: (e: Event) => void;
-        };
     }
     /**
      * @en GTextField is a widget that displays text with various formatting options, including font, size, color, alignment, and more.
@@ -97495,10 +82915,6 @@ declare namespace Laya {
         protected _transChanged(kind: TransformKind): void;
         /** @ignore */
         protected _onPostLayout(): void;
-        /** @internal @blueprintEvent */
-        GTextField_bpEvent: {
-            [Event.LINK]: (href: string) => void;
-        };
     }
     /**
      * @en GTextInput is a widget that provides a text input field with various formatting options.
@@ -97712,14 +83128,6 @@ declare namespace Laya {
         blur(): void;
         /** @ignore */
         protected _transChanged(kind: TransformKind): void;
-        /** @internal @blueprintEvent */
-        GTextInput_bpEvent: {
-            [Event.CHANGE]: () => void;
-            [Event.INPUT]: () => void;
-            [Event.ENTER]: () => void;
-            [Event.FOCUS]: () => void;
-            [Event.BLUR]: () => void;
-        };
     }
     /**
      * @en GTree is a widget that displays a hierarchical tree structure, allowing for item rendering and selection.
@@ -97791,25 +83199,13 @@ declare namespace Laya {
          */
         collapseAll(folderNode?: GTreeNode): void;
         private createCell;
-        /** @internal */
-        _afterInserted(node: GTreeNode): void;
         private getInsertIndexForNode;
-        /** @internal */
-        _afterRemoved(node: GTreeNode): void;
-        /** @internal */
-        _afterExpanded(node: GTreeNode, byEvent?: boolean): void;
-        /** @internal */
-        _afterCollapsed(node: GTreeNode, byEvent?: boolean): void;
-        /** @internal */
-        _afterMoved(node: GTreeNode): void;
         private getFolderEndIndex;
         private checkChildren;
         private hideFolderNode;
         private removeNode;
         /** @ignore @blueprintIgnore */
         onAfterDeserialize(): void;
-        /** @internal */
-        _buildInitItems(): void;
     }
     /**
      * @en Represents a node in a tree structure.
@@ -97839,8 +83235,6 @@ declare namespace Laya {
          * @zh 当节点被展开或折叠时调用的函数。
          */
         onExpanded?: (expand: boolean) => void;
-        /** @internal */
-        _cellFromPool: boolean;
         constructor(isFolder?: boolean, resURL?: string, addIndent?: number);
         /**
          * @en The expanded state of the node.
@@ -97848,8 +83242,6 @@ declare namespace Laya {
          */
         get expanded(): boolean;
         set expanded(value: boolean);
-        /** @internal */
-        _setExpanded(value: boolean, byEvent?: boolean): void;
         /**
          * @en Indicates whether this node is a folder.
          * @zh 指示此节点是否为文件夹。
@@ -98032,8 +83424,6 @@ declare namespace Laya {
          * @zh 此节点所属的树。
          */
         get tree(): GTree;
-        /** @internal */
-        _setTree(value: GTree): void;
         private _expandedStateChanged;
         private _cellMouseDown;
         private _clickExpandButton;
@@ -98063,14 +83453,6 @@ declare namespace Laya {
         private _gears;
         private _relations;
         private _forceSizeFlag;
-        /** @internal */
-        _rawWidth: number;
-        /** @internal */
-        _rawHeight: number;
-        /** @internal */
-        _deltaWidth: number;
-        /** @internal */
-        _deltaHeight: number;
         /** @ignore */
         _giveWidth: number;
         /** @ignore */
@@ -98079,8 +83461,6 @@ declare namespace Laya {
         sourceWidth: number;
         /** @ignore */
         sourceHeight: number;
-        /** @internal */
-        static _defaultRoot: GRoot;
         constructor();
         /**
          * @en The leftmost x-coordinate of the widget, calculated based on the anchor point.
@@ -98143,10 +83523,6 @@ declare namespace Laya {
          */
         get enabled(): boolean;
         set enabled(value: boolean);
-        /** @internal */
-        get internalVisible(): boolean;
-        /** @internal */
-        set internalVisible(value: boolean);
         /**
          * @en The tooltips text displayed when the mouse hovers over the widget.
          * @zh 鼠标悬停在小部件上时显示的工具提示文本。
@@ -98184,10 +83560,6 @@ declare namespace Laya {
          * @zh 小部件的关系，定义它与其他小部件或场景的关系。
          */
         get relations(): Array<Relation>;
-        /** @internal */
-        set relations(value: Array<Relation>);
-        /** @internal */
-        _addRelations(value: Array<Relation>): void;
         /**
          * @en Adds a relation to the widget.
          * @param target The target widget or scene to relate to.
@@ -98229,8 +83601,6 @@ declare namespace Laya {
          * @zh 与小部件关联的控制器数量。
          */
         get controllerCount(): number;
-        /** @internal */
-        set controllers(value: Readonly<Record<string, Controller>>);
         /**
          * @en Adds a new controller to the widget.
          * @param name The name of the controller to add.
@@ -98274,10 +83644,6 @@ declare namespace Laya {
          * @en The gears of the widget.
          */
         get gears(): Array<Gear>;
-        /** @internal */
-        set gears(value: Array<Gear>);
-        /** @internal */
-        _addGears(value: Array<Gear>): void;
         /**
          * @en Adds a new gear to the widget.
          * @param value The gear to add to the widget.
@@ -98343,8 +83709,6 @@ declare namespace Laya {
          * @param reason 可选。布局更改的原因，例如大小、位置等。
          */
         setLayoutChangedFlag(reason?: LayoutChangedReason): void;
-        /** @internal */
-        _onConstruct(inPrefab?: boolean): void;
         /**
          * @en Called when the widget is constructed.
          * This method is invoked after the widget is created and its properties are initialized.
@@ -98944,28 +84308,6 @@ declare namespace Laya {
          * @param size 页尾的大小。
          */
         lockFooter(size: number): void;
-        /** @internal */
-        destroy(): void;
-        /** @internal */
-        _loop: number;
-        /** @internal */
-        _setDefaultDirection(): void;
-        /** @internal */
-        _ownerSizeChanged(): void;
-        /** @internal */
-        _ownerContentSizeChanged(): void;
-        /** @internal */
-        _shouldCheckOverflow(): number;
-        /** @internal */
-        _changeContentSizeOnScrolling(deltaWidth: number, deltaHeight: number, deltaPosX: number, deltaPosY: number): void;
-        /** @internal */
-        _updateScrollBarVisible(): void;
-        /** @internal */
-        _processClipping(): void;
-        /** @internal */
-        createHzScrollBar(force?: boolean): void;
-        /** @internal */
-        createVtScrollBar(force?: boolean): void;
     }
     interface ILayout {
         /**
@@ -99120,10 +84462,6 @@ declare namespace Laya {
          * @param force 是否强制刷新，即使没有发生更改。
          */
         refresh(force?: boolean): void;
-        /** @internal */
-        setContentSize(aw: number, ah: number): void;
-        /** @internal */
-        _disabled: boolean;
     }
     interface IListLayout extends ILayout {
         /**
@@ -99162,10 +84500,6 @@ declare namespace Laya {
          * @zh 刷新虚拟列表。一般不需要手动调用。
          */
         refreshVirtualList(): void;
-        /** @internal */
-        _setVirtual(loop: boolean): void;
-        /** @internal */
-        readonly _virtual: boolean;
     }
     class Layout implements ILayout {
         protected _owner: GBox;
@@ -99212,11 +84546,7 @@ declare namespace Laya {
         get stretchY(): StretchMode;
         set stretchY(value: StretchMode);
         get stretchParamsX(): Array<StretchParam>;
-        /** @internal */
-        private set stretchParamsX(value);
         get stretchParamsY(): Array<StretchParam>;
-        /** @internal */
-        set stretchParamsY(value: Array<StretchParam>);
         get foldInvisibles(): boolean;
         set foldInvisibles(value: boolean);
         get minChildSize(): number;
@@ -99278,8 +84608,6 @@ declare namespace Laya {
         set numItems(value: number);
         get itemSize(): Point;
         set itemSize(value: Point);
-        /** @internal */
-        _setVirtual(loop: boolean): void;
         childIndexToItemIndex(index: number): number;
         itemIndexToChildIndex(index: number): number;
         private shouldSnapToNext;
@@ -99287,8 +84615,6 @@ declare namespace Laya {
         getRectByItemIndex(index: number): Rectangle;
         setChangedFlag(reason?: LayoutChangedReason): void;
         refresh(force?: boolean): void;
-        /** @internal */
-        _checkVirtualList(): void;
         refreshVirtualList(): void;
         private getColumns;
         private getRows;
@@ -99584,10 +84910,6 @@ declare namespace Laya {
          */
         hide(): void;
         private _clickItem;
-        /** @internal @blueprintEvent */
-        PopupMenu_bpEvent: {
-            [UIEvent.Popup]: () => void;
-        };
     }
     class Relation {
         private _owner;
@@ -99597,12 +84919,6 @@ declare namespace Laya {
         private _ty;
         private _tw;
         private _th;
-        /** @internal */
-        _sw: number;
-        /** @internal */
-        _sh: number;
-        /** @internal */
-        _isDisabled: boolean;
         constructor();
         /**
          * @en The owner widget of this relation.
@@ -99690,8 +85006,6 @@ declare namespace Laya {
         private _vScrollBar;
         private _header;
         private _footer;
-        /** @internal */
-        _loop: number;
         constructor();
         get owner(): GPanel;
         set owner(value: GPanel);
@@ -99907,10 +85221,6 @@ declare namespace Laya {
         handleClick(item: GWidget, evt: Event): void;
         /** @ignore @blueprintIgnore */
         handleArrowKey(dir: number, evt?: Event): number;
-        /** @internal */
-        destroy(): void;
-        /** @internal */
-        _refresh(): void;
     }
     interface ITreeSelection extends ISelection {
         /**
@@ -100003,8 +85313,6 @@ declare namespace Laya {
     class TreeSelection extends Selection implements ITreeSelection {
         _owner: GTree;
         private _clickToExpand;
-        /** @internal */
-        _expandedStatusInEvt: boolean;
         get clickToExpand(): TreeClickToExpandType;
         set clickToExpand(value: TreeClickToExpandType);
         getSelectedNode(): GTreeNode;
@@ -100084,8 +85392,6 @@ declare namespace Laya {
          * ```
          */
         static provider: i18n;
-        /** @internal */
-        static _allInsts: Map<string, Translations>;
         /**
          * @en Gets the Translations instance by its ID.
          * @param id The ID of the Translations instance.
@@ -100418,8 +85724,6 @@ declare namespace Laya {
          * @returns GComboBox
          */
         static createComboBox(): GComboBox;
-        /** @internal */
-        static _init(): Promise<void>;
     }
     /** @ignore */
     class WidgetPool {
@@ -100764,6 +86068,11 @@ declare namespace Laya {
          * @readonly
          */
         static mainCanvas: HTMLCanvas;
+        /**
+         * @zh 是否使用一个离屏画布来进行渲染，默认是空，即使用mainCanvas。
+         * @en Whether to use an offscreen canvas for rendering. By default, it is null, which means using the mainCanvas.
+         */
+        static offscreenMainCanvas: HTMLCanvas;
         /**
          * @zh 全局离屏画布，主要用来测量文本和获取图像数据。
          * @en The global offscreen canvas, used primarily for measuring text and obtaining image data.
@@ -101137,22 +86446,6 @@ declare namespace Laya {
          */
         writeUint8(value: number): void;
         /**
-         * @internal
-         * @en Reads six values using getFloat32() and returns a Matrix object created from those values.
-         * @returns The Matrix object that was created.
-         * @zh 使用 getFloat32() 读取六个值，并创建返回一个 Matrix 对象。
-         * @returns 创建的 Matrix 对象。
-         */
-        _getMatrix(): Matrix;
-        /**
-         * @internal
-         * @en Reads six values using getFloat32() and returns a Matrix object created from those values.
-         * @returns The Matrix object that was created.
-         * @zh 使用 getFloat32() 读取六个值，并创建返回一个 Matrix 对象。
-         * @returns 创建的 Matrix 对象。
-         */
-        _readMatrix(): Matrix;
-        /**
          * 读取指定长度的 UTF 型字符串。
          * @param len 需要读取的长度。
          * @return 读取的字符串。
@@ -101368,10 +86661,6 @@ declare namespace Laya {
          */
         numColor: number;
         /**
-         * @internal
-        */
-        _drawStyle: any;
-        /**
          * @en Constructor method.
          * @param value The color value, which can be a string (e.g., "#ff0000") or a hexadecimal color (e.g., 0xff0000).
          * @zh 构造方法
@@ -101575,10 +86864,6 @@ declare namespace Laya {
      */
     class HalfFloatUtils {
         /**
-         * @internal
-         */
-        static __init__(): void;
-        /**
          * @en round a number to a half float number bits.
          * @param num The number to round.
          * @zh 将数字四舍五入到最接近的半浮点数。
@@ -101699,11 +86984,11 @@ declare namespace Laya {
      */
     class HitArea implements IHitArea {
         /**
-         * @internal
+         * @ignore
          */
         _hit: Graphics;
         /**
-         * @internal
+         * @ignore
          */
         _unHit: Graphics;
         /**
@@ -101747,12 +87032,6 @@ declare namespace Laya {
          */
         get unHit(): Graphics;
         set unHit(value: Graphics);
-        /**
-         * @en Called after deserialization.
-         * @zh 序列化后调用。
-         * @internal
-         */
-        onAfterDeserialize(): void;
     }
     /**
      * @en IClone resource cloning interface.
@@ -102395,8 +87674,6 @@ declare namespace Laya {
          */
         static hide(): void;
         private static loop;
-        /** @internal */
-        static render(): void;
     }
     /** @ignore */
     class StatUI {
@@ -102418,12 +87695,6 @@ declare namespace Laya {
      * @zh Timer 是时钟管理类。它是一个单例，不要手动实例化此类，应该通过 Laya.timer 访问。
      */
     class Timer {
-        /**@internal */
-        static gSysTimer: Timer;
-        /**@internal */
-        static readonly callLaters: Timer;
-        /**@internal */
-        static readonly _pool: TimerHandler[];
         /**
          * @en Scale of the clock hand.
          * @zh 时针的缩放比例。
@@ -102473,8 +87744,6 @@ declare namespace Laya {
          */
         _update(timestamp: number): void;
         private _clearHandlers;
-        /** @internal */
-        _create(useFrame: boolean, repeat: boolean, delay: number, caller: any, method: Function, args: any[], coverBefore: boolean): TimerHandler;
         /**
          * Executes once after a delay.
          * @param delay The delay time in milliseconds.
@@ -102615,65 +87884,6 @@ declare namespace Laya {
          * @zh 删除定时器，同时清理定时器上的所有事件。
          */
         destroy(): void;
-    }
-    class TimerHandler {
-        /**
-         * @en The key of the timer handler.
-         * @zh 定时器处理程序的键。
-         */
-        key: string;
-        /**
-         * @en Whether the timer should repeat.
-         * @zh 定时器是否应该重复。
-         */
-        repeat: boolean;
-        /**
-         * @en The delay between executions in milliseconds.
-         * @zh 执行之间的延迟，以毫秒为单位。
-         */
-        delay: number;
-        /**
-         * @en Whether to use frame-based timing.
-         * @zh 是否使用基于帧的计时。
-         */
-        userFrame: boolean;
-        /**
-         * @en The execution time of the timer.
-         * @zh 定时器的执行时间。
-         */
-        exeTime: number;
-        /**
-         * @en The caller object for the timer method.
-         * @zh 定时器方法的调用者对象。
-         */
-        caller: any;
-        /**
-         * @en The method to be executed by the timer.
-         * @zh 定时器要执行的方法。
-         */
-        method: Function;
-        /**
-         * @en The arguments to be passed to the timer method.
-         * @zh 要传递给定时器方法的参数。
-         */
-        args: any[];
-        /**
-         * @en Whether to jump frames.
-         * @zh 是否跳帧。
-         */
-        jumpFrame: boolean;
-        /**
-         * @en Clear the timer handler by setting its properties to null.
-         * @zh 通过将其属性设置为 null 来清除定时器处理程序。
-         */
-        clear(): void;
-        /**
-         * @en Run the timer handler method.
-         * @param withClear Whether to clear the handler after execution.
-         * @zh 运行定时器处理程序方法。
-         * @param withClear 是否在执行后清除处理程序。
-         */
-        run(withClear: boolean): void;
     }
     /**
      * @en Utils is a utility class.
@@ -103076,48 +88286,6 @@ declare namespace Laya {
         static locateFileDefault(path: string, scriptDirectory?: string): string;
     }
     /**
-     * @internal
-     * 弱引用对象
-     * 注意：如果采用Object，为了防止内存泄漏，则采用定时清理缓存策略
-     */
-    class WeakObject {
-        /**多少时间清理一次缓存，默认10分钟清理一次*/
-        static delInterval: number;
-        private static _maps;
-        private static _i;
-        /**
-         * @en Global WeakObject singleton.
-         * @zh 全局WeakObject单例
-         */
-        static get I(): WeakObject;
-        /**
-         * @en Clear cache and recycle memory.
-         * @zh 清理缓存，回收内存
-         */
-        static clearCache(): void;
-        private _obj;
-        constructor();
-        /**
-         * 设置缓存
-         * @param key kye对象，可被回收
-         * @param value object对象，可被回收
-         */
-        set(key: any, value: any): void;
-        /**
-         * 获取缓存
-         * @param key kye对象，可被回收
-         */
-        get(key: any): any;
-        /**
-         * 删除缓存
-         */
-        del(key: any): void;
-        /**
-         * 是否有缓存
-         */
-        has(key: any): boolean;
-    }
-    /**
      * @en BlendMode enumeration.
      * @zh 混合模式枚举。
      * @blueprintable
@@ -103141,8 +88309,6 @@ declare namespace Laya {
      * @ignore
      */
     class BlendModeHandler {
-        /**@internal */
-        static _init_(): void;
         static setShaderData(blendType: BlendMode, shaderData: ShaderData, premultipliedAlpha?: boolean): void;
         static initBlendMode(shaderData: ShaderData): void;
     }
@@ -103203,8 +88369,6 @@ declare namespace Laya {
         private _newSubmit;
         constructor();
         static _createArray(): any[];
-        /**@internal */
-        static _init(): any;
         isSaveMark(): boolean;
         restore(runner: GraphicsRunner): void;
         static save(runner: GraphicsRunner, type: number, dataObj: any, newSubmit: boolean): void;
@@ -103225,10 +88389,6 @@ declare namespace Laya {
     /** @ignore */
     class SaveMark implements ISaveData {
         private static POOL;
-        /**@internal */
-        _saveuse: number;
-        /**@internal */
-        _preSaveMark: SaveMark;
         constructor();
         isSaveMark(): boolean;
         restore(runner: GraphicsRunner): void;
@@ -103264,15 +88424,6 @@ declare namespace Laya {
         static save(runner: GraphicsRunner): void;
     }
     class Shader2D {
-        /**@internal */
-        static graphicsShader: Shader3D;
-        /**@internal */
-        /**@internal */
-        static render2DNodeShader: Shader3D;
-        /**
-         * @internal
-         */
-        destroy(): void;
         /**
          * primitive Mesh Descript
          */
@@ -103297,34 +88448,18 @@ declare namespace Laya {
         static __init__(): void;
     }
     class ShaderDefines2D {
-        /**@internal */
-        static FILLTEXTURE: ShaderDefine;
-        /**@internal */
-        static GAMMASPACE: ShaderDefine;
-        /**@internal */
-        static INVERTY: ShaderDefine;
-        /**@internal */
-        static GAMMATEXTURE: ShaderDefine;
-        /** @internal */
-        static VERTEX_SIZE: ShaderDefine;
-        /** @internal */
-        static VERTEXALPHA: ShaderDefine;
-        /**@internal */
-        static TEXTURESHADER: ShaderDefine;
-        /**@internal */
-        static PRIMITIVESHADER: ShaderDefine;
-        /**@internal */
-        static USE_TEX_ARRAY: ShaderDefine;
-        /** @internal */
-        static RENDERTEXTURE: ShaderDefine;
-        /**@internal */
-        static MATERIALCLIP: ShaderDefine;
-        /** @internal */
-        static UNIFORMCLIP: ShaderDefine;
-        /** @internal */
-        static UV_CLIP_GPU: ShaderDefine;
-        /**@internal */
-        static UNIFORM_CLIPMATDIR: number;
+        /**
+         * @en Number of bits reserved for per-element shader defines in the textureKey encoding.
+         * @zh textureKey 编码中为逐元素着色器宏定义保留的位数。
+         */
+        static SHADER_DEFINE_BITS: number;
+        /**
+         * @en Compute a bit field (0..511) representing which per-element shader defines are active in the given ShaderData.
+         * @zh 计算给定 ShaderData 中活跃的逐元素着色器宏定义位域（0..511）。
+         * @param shaderData The shader data to query defines from.
+         * @returns A number in range [0, 2^SHADER_DEFINE_BITS - 1].
+         */
+        static getPerElementDefineBits(shaderData: ShaderData): number;
         static UNIFORM_CLIPMATPOS: number;
         static UNIFORM_MATERIAL_CLIPMATDIR: number;
         static UNIFORM_MATERIAL_CLIPMATPOS: number;
@@ -103527,10 +88662,6 @@ declare namespace Laya {
         static ID: number;
         clipInfoID: number;
         protected _id: number;
-        /**@internal */
-        _renderType: number;
-        /**@internal */
-        _key: SubmitKey;
         private _mesh;
         get mesh(): GraphicsMesh;
         set mesh(value: GraphicsMesh);
@@ -103540,23 +88671,11 @@ declare namespace Laya {
         indexCount: number;
         indices: number[];
         indexView: I2DGraphicIndexDataView;
-        /** @internal */
-        _internalInfo: GraphicsShaderInfo;
         renderStateIsBySprite: boolean;
         vertexs: FastSinglelist<IGraphics2DVertexBlock>;
         renderElement: IPrimitiveRenderElement2D;
         _bufferBlock: IGraphics2DBufferBlock;
-        /** @internal 本帧使用的顶点块标识 */
-        private _currentVertexBlocks;
-        /** @internal 上一帧使用的顶点块标识 */
-        private _lastVertexBlocks;
-        /** @internal 标记 bufferBlock 是否需要重新应用 */
-        _bufferBlockDirty: boolean;
-        /** @internal submit 的缓存信息，可以从这里获取 */
-        _cacheInfo: SubmitCacheInfo | null;
         constructor();
-        /** @internal 获取或创建 cache 信息 */
-        _getCacheInfo(): SubmitCacheInfo;
         clear(): void;
         /**
          * @param info 添加顶点数据到submit
@@ -103617,18 +88736,6 @@ declare namespace Laya {
          */
         reset(): void;
     }
-    /**
-     * 这是测算字体绘制大小和偏移的逻辑
-     * @internal
-     */
-    function measureFont(ctx: CanvasRenderingContext2D, font: string, bold: boolean): {
-        xoff: number;
-        yoff: number;
-        bbxw: number;
-        bbxh: number;
-        eoff: number;
-        ebbxh: number;
-    };
     /** @ignore @blueprintIgnore */
     class TextRender {
         readonly owner: GraphicsRunner;
@@ -103652,8 +88759,6 @@ declare namespace Laya {
         private free;
         getFontHeight(font: string, fontSize: number, bold?: boolean): number;
         private getFont;
-        /** @internal */
-        onFontScaleChanged(): void;
         GC(): void;
     }
     interface IFontInfo {
@@ -103755,6 +88860,11 @@ declare namespace Laya {
          * @zh 是否使用纹理数组进行文字渲染
          */
         static useTextureArray: boolean;
+        /**
+         * @en  Whether to use premultipAlpha
+         * @zh  是否预乘
+         */
+        static premultiplyAlpha: boolean;
     }
     /**
      * BufferState类用于实现渲染所需的Buffer状态集合。
@@ -103764,10 +88874,6 @@ declare namespace Laya {
         private static vertexBufferArray;
         /**@private [只读]*/
         _deviceBufferState: IBufferState;
-        /**@internal [只读]*/
-        _bindedIndexBuffer: IndexBuffer3D;
-        /**@internal */
-        _vertexBuffers: VertexBuffer3D[];
         /**
          * 创建一个 <code>BufferState</code> 实例。
          */
@@ -103790,8 +88896,6 @@ declare namespace Laya {
         static stride: number;
         static vertexDeclarition: VertexDeclaration;
         static __init__(): void;
-        /** @internal */
-        _buffer: Graphic2DDynamicVIBuffer;
         get bufferState(): IBufferState;
         constructor(vertexBlockSize: number);
         /**
@@ -103966,22 +89070,6 @@ declare namespace Laya {
      * @zh 用于2D渲染的UV三角形裁剪工具类
      */
     class UVClippingUtils {
-        /** @internal */
-        private static readonly EPSILON;
-        /** @internal */
-        private static _threadLocalContext;
-        /**
-         * @internal 重置缓冲区 - 只重置长度计数器,保持数组容量避免GC
-         */
-        private static _resetBuffers;
-        /**
-         * @internal 确保TypedArray缓冲区容量足够,不足时扩容
-         * @param buffer 当前缓冲区
-         * @param requiredLength 所需长度
-         * @param constructor TypedArray构造函数
-         * @returns 足够容量的缓冲区(可能是原缓冲区或新创建的)
-         */
-        private static _ensureBufferCapacity;
         /**
          * @en CPU-side UV vertex clipping. Clips triangles based on UV range and outputs clipped vertices, indices, UVs, and color data.
          * @param vertices Vertex position array (x, y pairs)
@@ -104149,8 +89237,6 @@ declare namespace Laya {
         private lastGroupUsed;
         private toClear;
         constructor(cacheRoot: string);
-        /** @internal */
-        start(): Promise<void>;
         /**
          * @en Get a file from the cache, if it is not in the cache, return null.
          * @param url The URL of the file to be retrieved.
@@ -104327,6 +89413,8 @@ declare namespace Laya {
         onError: (e: any) => void;
         onMessage: (data: string | ArrayBuffer) => void;
         open(url: string, options?: IWebSocketConnectOptions): void;
+        /** 将 Base64 字符串转为 ArrayBuffer */
+        private base64ToArrayBuffer;
         close(): void;
         send(data: string | ArrayBuffer): Promise<void>;
     }

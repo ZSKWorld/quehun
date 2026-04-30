@@ -1847,13 +1847,13 @@
         }
     }
 
-    var ShurikenVS = "#define SHADER_NAME ParticleVS\n#include \"Camera.glsl\";\n#include \"particleShuriKenSpriteVS.glsl\";\n#include \"Math.glsl\";\n#include \"MathGradient.glsl\";\n#include \"Color.glsl\";\n#include \"Scene.glsl\"\n#include \"SceneFogInput.glsl\"\n#ifdef RENDERMODE_MESH\nvarying vec4 v_MeshColor;\n#endif\nvarying vec4 v_Color;varying vec2 v_TextureCoordinate;vec2 TransformUV(vec2 texcoord,vec4 tilingOffset){vec2 transTexcoord=vec2(texcoord.x,texcoord.y-1.0)*tilingOffset.xy+vec2(tilingOffset.z,-tilingOffset.w);transTexcoord.y+=1.0;return transTexcoord;}\n#if defined(VELOCITYOVERLIFETIMECONSTANT) || defined(VELOCITYOVERLIFETIMECURVE) || defined(VELOCITYOVERLIFETIMERANDOMCONSTANT) || defined(VELOCITYOVERLIFETIMERANDOMCURVE)\nvec3 computeParticleLifeVelocity(in float normalizedAge){vec3 outLifeVelocity;\n#ifdef VELOCITYOVERLIFETIMECONSTANT\noutLifeVelocity=u_VOLVelocityConst;\n#endif\n#ifdef VELOCITYOVERLIFETIMECURVE\noutLifeVelocity=vec3(getCurValueFromGradientFloat(u_VOLVelocityGradientX,normalizedAge),getCurValueFromGradientFloat(u_VOLVelocityGradientY,normalizedAge),getCurValueFromGradientFloat(u_VOLVelocityGradientZ,normalizedAge));\n#endif\n#ifdef VELOCITYOVERLIFETIMERANDOMCONSTANT\noutLifeVelocity=mix(u_VOLVelocityConst,u_VOLVelocityConstMax,vec3(a_Random1.y,a_Random1.z,a_Random1.w));\n#endif\n#ifdef VELOCITYOVERLIFETIMERANDOMCURVE\noutLifeVelocity=vec3(mix(getCurValueFromGradientFloat(u_VOLVelocityGradientX,normalizedAge),getCurValueFromGradientFloat(u_VOLVelocityGradientMaxX,normalizedAge),a_Random1.y),mix(getCurValueFromGradientFloat(u_VOLVelocityGradientY,normalizedAge),getCurValueFromGradientFloat(u_VOLVelocityGradientMaxY,normalizedAge),a_Random1.z),mix(getCurValueFromGradientFloat(u_VOLVelocityGradientZ,normalizedAge),getCurValueFromGradientFloat(u_VOLVelocityGradientMaxZ,normalizedAge),a_Random1.w));\n#endif\nreturn outLifeVelocity;}\n#endif\nvec3 getStartPosition(vec3 startVelocity,float age,vec3 dragData){vec3 startPosition;float lasttime=min(startVelocity.x/dragData.x,age);startPosition=lasttime*(startVelocity-0.5*dragData*lasttime);return startPosition;}vec3 computeParticlePosition(in vec3 startVelocity,in vec3 lifeVelocity,in float age,in float normalizedAge,vec3 gravityVelocity,vec4 worldRotation,vec3 dragData){vec3 startPosition=getStartPosition(startVelocity,age,dragData);vec3 lifePosition;\n#if defined(VELOCITYOVERLIFETIMECONSTANT) || defined(VELOCITYOVERLIFETIMECURVE) || defined(VELOCITYOVERLIFETIMERANDOMCONSTANT) || defined(VELOCITYOVERLIFETIMERANDOMCURVE)\n#ifdef VELOCITYOVERLIFETIMECONSTANT\nlifePosition=lifeVelocity*age;\n#endif\n#ifdef VELOCITYOVERLIFETIMECURVE\nlifePosition=vec3(getTotalValueFromGradientFloat(u_VOLVelocityGradientX,normalizedAge),getTotalValueFromGradientFloat(u_VOLVelocityGradientY,normalizedAge),getTotalValueFromGradientFloat(u_VOLVelocityGradientZ,normalizedAge));\n#endif\n#ifdef VELOCITYOVERLIFETIMERANDOMCONSTANT\nlifePosition=lifeVelocity*age;\n#endif\n#ifdef VELOCITYOVERLIFETIMERANDOMCURVE\nlifePosition=vec3(mix(getTotalValueFromGradientFloat(u_VOLVelocityGradientX,normalizedAge),getTotalValueFromGradientFloat(u_VOLVelocityGradientMaxX,normalizedAge),a_Random1.y),mix(getTotalValueFromGradientFloat(u_VOLVelocityGradientY,normalizedAge),getTotalValueFromGradientFloat(u_VOLVelocityGradientMaxY,normalizedAge),a_Random1.z),mix(getTotalValueFromGradientFloat(u_VOLVelocityGradientZ,normalizedAge),getTotalValueFromGradientFloat(u_VOLVelocityGradientMaxZ,normalizedAge),a_Random1.w));\n#endif\nvec3 finalPosition;if(u_VOLSpaceType==0){if(u_ScalingMode!=2)finalPosition=rotationByQuaternions(u_PositionScale*(a_ShapePositionStartLifeTime.xyz+startPosition+lifePosition),worldRotation);else finalPosition=rotationByQuaternions(u_PositionScale*a_ShapePositionStartLifeTime.xyz+startPosition+lifePosition,worldRotation);}else{if(u_ScalingMode!=2)finalPosition=rotationByQuaternions(u_PositionScale*(a_ShapePositionStartLifeTime.xyz+startPosition),worldRotation)+lifePosition;else finalPosition=rotationByQuaternions(u_PositionScale*a_ShapePositionStartLifeTime.xyz+startPosition,worldRotation)+lifePosition;}\n#else\nvec3 finalPosition;if(u_ScalingMode!=2)finalPosition=rotationByQuaternions(u_PositionScale*(a_ShapePositionStartLifeTime.xyz+startPosition),worldRotation);else finalPosition=rotationByQuaternions(u_PositionScale*a_ShapePositionStartLifeTime.xyz+startPosition,worldRotation);\n#endif\nif(u_SimulationSpace==0)finalPosition=finalPosition+a_SimulationWorldPostion;else if(u_SimulationSpace==1)finalPosition=finalPosition+u_WorldPosition;finalPosition+=0.5*gravityVelocity*age;return finalPosition;}vec4 computeParticleColor(in vec4 color,in float normalizedAge){\n#ifdef COLOROVERLIFETIME\ncolor*=getColorFromGradient(u_ColorOverLifeGradientAlphas,u_ColorOverLifeGradientColors,normalizedAge,u_ColorOverLifeGradientRanges);\n#endif\n#ifdef RANDOMCOLOROVERLIFETIME\ncolor*=mix(getColorFromGradient(u_ColorOverLifeGradientAlphas,u_ColorOverLifeGradientColors,normalizedAge,u_ColorOverLifeGradientRanges),getColorFromGradient(u_MaxColorOverLifeGradientAlphas,u_MaxColorOverLifeGradientColors,normalizedAge,u_MaxColorOverLifeGradientRanges),a_Random0.y);\n#endif\nreturn color;}vec2 computeParticleSizeBillbard(in vec2 size,in float normalizedAge){\n#ifdef SIZEOVERLIFETIMECURVE\nsize*=getCurValueFromGradientFloat(u_SOLSizeGradient,normalizedAge);\n#endif\n#ifdef SIZEOVERLIFETIMERANDOMCURVES\nsize*=mix(getCurValueFromGradientFloat(u_SOLSizeGradient,normalizedAge),getCurValueFromGradientFloat(u_SOLSizeGradientMax,normalizedAge),a_Random0.z);\n#endif\n#ifdef SIZEOVERLIFETIMECURVESEPERATE\nsize*=vec2(getCurValueFromGradientFloat(u_SOLSizeGradientX,normalizedAge),getCurValueFromGradientFloat(u_SOLSizeGradientY,normalizedAge));\n#endif\n#ifdef SIZEOVERLIFETIMERANDOMCURVESSEPERATE\nsize*=vec2(mix(getCurValueFromGradientFloat(u_SOLSizeGradientX,normalizedAge),getCurValueFromGradientFloat(u_SOLSizeGradientMaxX,normalizedAge),a_Random0.z),mix(getCurValueFromGradientFloat(u_SOLSizeGradientY,normalizedAge),getCurValueFromGradientFloat(u_SOLSizeGradientMaxY,normalizedAge),a_Random0.z));\n#endif\nreturn size;}\n#ifdef RENDERMODE_MESH\nvec3 computeParticleSizeMesh(in vec3 size,in float normalizedAge){\n#ifdef SIZEOVERLIFETIMECURVE\nsize*=getCurValueFromGradientFloat(u_SOLSizeGradient,normalizedAge);\n#endif\n#ifdef SIZEOVERLIFETIMERANDOMCURVES\nsize*=mix(getCurValueFromGradientFloat(u_SOLSizeGradient,normalizedAge),getCurValueFromGradientFloat(u_SOLSizeGradientMax,normalizedAge),a_Random0.z);\n#endif\n#ifdef SIZEOVERLIFETIMECURVESEPERATE\nsize*=vec3(getCurValueFromGradientFloat(u_SOLSizeGradientX,normalizedAge),getCurValueFromGradientFloat(u_SOLSizeGradientY,normalizedAge),getCurValueFromGradientFloat(u_SOLSizeGradientZ,normalizedAge));\n#endif\n#ifdef SIZEOVERLIFETIMERANDOMCURVESSEPERATE\nsize*=vec3(mix(getCurValueFromGradientFloat(u_SOLSizeGradientX,normalizedAge),getCurValueFromGradientFloat(u_SOLSizeGradientMaxX,normalizedAge),a_Random0.z),mix(getCurValueFromGradientFloat(u_SOLSizeGradientY,normalizedAge),getCurValueFromGradientFloat(u_SOLSizeGradientMaxY,normalizedAge),a_Random0.z),mix(getCurValueFromGradientFloat(u_SOLSizeGradientZ,normalizedAge),getCurValueFromGradientFloat(u_SOLSizeGradientMaxZ,normalizedAge),a_Random0.z));\n#endif\nreturn size;}\n#endif\nfloat computeParticleRotationFloat(in float rotation,in float age,in float normalizedAge){\n#ifdef ROTATIONOVERLIFETIME\n#ifdef ROTATIONOVERLIFETIMECONSTANT\nfloat ageRot=u_ROLAngularVelocityConst*age;rotation+=ageRot;\n#endif\n#ifdef ROTATIONOVERLIFETIMECURVE\nrotation+=getTotalValueFromGradientFloat(u_ROLAngularVelocityGradient,normalizedAge);\n#endif\n#ifdef ROTATIONOVERLIFETIMERANDOMCONSTANTS\nfloat ageRot=mix(u_ROLAngularVelocityConst,u_ROLAngularVelocityConstMax,a_Random0.w)*age;rotation+=ageRot;\n#endif\n#ifdef ROTATIONOVERLIFETIMERANDOMCURVES\nrotation+=mix(getTotalValueFromGradientFloat(u_ROLAngularVelocityGradient,normalizedAge),getTotalValueFromGradientFloat(u_ROLAngularVelocityGradientMax,normalizedAge),a_Random0.w);\n#endif\n#endif\n#ifdef ROTATIONOVERLIFETIMESEPERATE\n#ifdef ROTATIONOVERLIFETIMECONSTANT\nfloat ageRot=u_ROLAngularVelocityConstSeprarate.z*age;rotation+=ageRot;\n#endif\n#ifdef ROTATIONOVERLIFETIMECURVE\nrotation+=getTotalValueFromGradientFloat(u_ROLAngularVelocityGradientZ,normalizedAge);\n#endif\n#ifdef ROTATIONOVERLIFETIMERANDOMCONSTANTS\nfloat ageRot=mix(u_ROLAngularVelocityConstSeprarate.z,u_ROLAngularVelocityConstMaxSeprarate.z,a_Random0.w)*age;rotation+=ageRot;\n#endif\n#ifdef ROTATIONOVERLIFETIMERANDOMCURVES\nrotation+=mix(getTotalValueFromGradientFloat(u_ROLAngularVelocityGradientZ,normalizedAge),getTotalValueFromGradientFloat(u_ROLAngularVelocityGradientMaxZ,normalizedAge),a_Random0.w);\n#endif\n#endif\nreturn rotation;}\n#if defined(RENDERMODE_MESH) && (defined(ROTATIONOVERLIFETIME) || defined(ROTATIONOVERLIFETIMESEPERATE))\nvec3 computeParticleRotationVec3(in vec3 rotation,in float age,in float normalizedAge){\n#ifdef ROTATIONOVERLIFETIME\n#ifdef ROTATIONOVERLIFETIMECONSTANT\nfloat ageRot=u_ROLAngularVelocityConst*age;rotation+=ageRot;\n#endif\n#ifdef ROTATIONOVERLIFETIMECURVE\nrotation+=getTotalValueFromGradientFloat(u_ROLAngularVelocityGradient,normalizedAge);\n#endif\n#ifdef ROTATIONOVERLIFETIMERANDOMCONSTANTS\nfloat ageRot=mix(u_ROLAngularVelocityConst,u_ROLAngularVelocityConstMax,a_Random0.w)*age;rotation+=ageRot;\n#endif\n#ifdef ROTATIONOVERLIFETIMERANDOMCURVES\nrotation+=mix(getTotalValueFromGradientFloat(u_ROLAngularVelocityGradient,normalizedAge),getTotalValueFromGradientFloat(u_ROLAngularVelocityGradientMax,normalizedAge),a_Random0.w);\n#endif\n#endif\n#ifdef ROTATIONOVERLIFETIMESEPERATE\n#ifdef ROTATIONOVERLIFETIMECONSTANT\nvec3 ageRot=u_ROLAngularVelocityConstSeprarate*age;rotation+=ageRot;\n#endif\n#ifdef ROTATIONOVERLIFETIMECURVE\nrotation+=vec3(getTotalValueFromGradientFloat(u_ROLAngularVelocityGradientX,normalizedAge),getTotalValueFromGradientFloat(u_ROLAngularVelocityGradientY,normalizedAge),getTotalValueFromGradientFloat(u_ROLAngularVelocityGradientZ,normalizedAge));\n#endif\n#ifdef ROTATIONOVERLIFETIMERANDOMCONSTANTS\nvec3 ageRot=mix(u_ROLAngularVelocityConstSeprarate,u_ROLAngularVelocityConstMaxSeprarate,a_Random0.w)*age;rotation+=ageRot;\n#endif\n#ifdef ROTATIONOVERLIFETIMERANDOMCURVES\nrotation+=vec3(mix(getTotalValueFromGradientFloat(u_ROLAngularVelocityGradientX,normalizedAge),getTotalValueFromGradientFloat(u_ROLAngularVelocityGradientMaxX,normalizedAge),a_Random0.w),mix(getTotalValueFromGradientFloat(u_ROLAngularVelocityGradientY,normalizedAge),getTotalValueFromGradientFloat(u_ROLAngularVelocityGradientMaxY,normalizedAge),a_Random0.w),mix(getTotalValueFromGradientFloat(u_ROLAngularVelocityGradientZ,normalizedAge),getTotalValueFromGradientFloat(u_ROLAngularVelocityGradientMaxZ,normalizedAge),a_Random0.w));\n#endif\n#endif\nreturn rotation;}\n#endif\nvec2 computeParticleUV(in vec2 uv,in float normalizedAge){\n#ifdef TEXTURESHEETANIMATIONCURVE\nfloat cycleNormalizedAge=normalizedAge*u_TSACycles;float frame=getFrameFromGradient(u_TSAGradientUVs,cycleNormalizedAge-floor(cycleNormalizedAge));float totalULength=frame*u_TSASubUVLength.x;float floorTotalULength=floor(totalULength);uv.x+=totalULength-floorTotalULength;uv.y+=floorTotalULength*u_TSASubUVLength.y;\n#endif\n#ifdef TEXTURESHEETANIMATIONRANDOMCURVE\nfloat cycleNormalizedAge=normalizedAge*u_TSACycles;float uvNormalizedAge=cycleNormalizedAge-floor(cycleNormalizedAge);float frame=floor(mix(getFrameFromGradient(u_TSAGradientUVs,uvNormalizedAge),getFrameFromGradient(u_TSAMaxGradientUVs,uvNormalizedAge),a_Random1.x));float totalULength=frame*u_TSASubUVLength.x;float floorTotalULength=floor(totalULength);uv.x+=totalULength-floorTotalULength;uv.y+=floorTotalULength*u_TSASubUVLength.y;\n#endif\nreturn uv;}void main(){float age=u_CurrentTime-a_DirectionTime.w;float normalizedAge=age/a_ShapePositionStartLifeTime.w;vec3 lifeVelocity;if(normalizedAge<1.0){vec3 startVelocity=a_DirectionTime.xyz*a_StartSpeed;\n#if defined(VELOCITYOVERLIFETIMECONSTANT) || defined(VELOCITYOVERLIFETIMECURVE) || defined(VELOCITYOVERLIFETIMERANDOMCONSTANT) || defined(VELOCITYOVERLIFETIMERANDOMCURVE)\nlifeVelocity=computeParticleLifeVelocity(normalizedAge);\n#endif\nvec3 gravityVelocity=u_Gravity*age;vec4 worldRotation;if(u_SimulationSpace==0)worldRotation=a_SimulationWorldRotation;else worldRotation=u_WorldRotation;vec3 dragData=a_DirectionTime.xyz*mix(u_DragConstanct.x,u_DragConstanct.y,a_Random0.x);vec3 center=computeParticlePosition(startVelocity,lifeVelocity,age,normalizedAge,gravityVelocity,worldRotation,dragData);\n#ifdef SPHERHBILLBOARD\nvec2 corner=a_CornerTextureCoordinate.xy;vec3 cameraUpVector=normalize(u_CameraUp);vec3 sideVector=normalize(cross(u_CameraDirection,cameraUpVector));vec3 upVector=normalize(cross(sideVector,u_CameraDirection));corner*=computeParticleSizeBillbard(a_StartSize.xy,normalizedAge);\n#if defined(ROTATIONOVERLIFETIME) || defined(ROTATIONOVERLIFETIMESEPERATE)\nif(u_ThreeDStartRotation!=0){vec3 rotation=vec3(a_StartRotation0.xy,computeParticleRotationFloat(a_StartRotation0.z,age,normalizedAge));center+=u_SizeScale.xzy*rotationByEuler(corner.x*sideVector+corner.y*upVector,rotation);}else{float rot=computeParticleRotationFloat(a_StartRotation0.x,age,normalizedAge);float c=cos(rot);float s=sin(rot);mat2 rotation=mat2(c,-s,s,c);corner=rotation*corner;center+=u_SizeScale.xzy*(corner.x*sideVector+corner.y*upVector);}\n#else\nif(u_ThreeDStartRotation!=0){center+=u_SizeScale.xzy*rotationByEuler(corner.x*sideVector+corner.y*upVector,a_StartRotation0);}else{float c=cos(a_StartRotation0.x);float s=sin(a_StartRotation0.x);mat2 rotation=mat2(c,-s,s,c);corner=rotation*corner;center+=u_SizeScale.xzy*(corner.x*sideVector+corner.y*upVector);}\n#endif\n#endif\n#ifdef STRETCHEDBILLBOARD\nvec2 corner=a_CornerTextureCoordinate.xy;vec3 velocity;\n#if defined(VELOCITYOVERLIFETIMECONSTANT) || defined(VELOCITYOVERLIFETIMECURVE) || defined(VELOCITYOVERLIFETIMERANDOMCONSTANT) || defined(VELOCITYOVERLIFETIMERANDOMCURVE)\nif(u_VOLSpaceType==0)velocity=rotationByQuaternions(u_SizeScale*(startVelocity+lifeVelocity),worldRotation)+gravityVelocity;else velocity=rotationByQuaternions(u_SizeScale*startVelocity,worldRotation)+lifeVelocity+gravityVelocity;\n#else\nvelocity=rotationByQuaternions(u_SizeScale*startVelocity,worldRotation)+gravityVelocity;\n#endif\nvec3 cameraUpVector=normalize(velocity);vec3 direction=normalize(center-u_CameraPos);vec3 sideVector=normalize(cross(direction,normalize(velocity)));sideVector=u_SizeScale.xzy*sideVector;cameraUpVector=length(vec3(u_SizeScale.x,0.0,0.0))*cameraUpVector;vec2 size=computeParticleSizeBillbard(a_StartSize.xy,normalizedAge);const mat2 rotaionZHalfPI=mat2(0.0,-1.0,1.0,0.0);corner=rotaionZHalfPI*corner;corner.y=corner.y-abs(corner.y);float speed=length(velocity);center+=sign(u_SizeScale.x)*(sign(u_StretchedBillboardLengthScale)*size.x*corner.x*sideVector+(speed*u_StretchedBillboardSpeedScale+size.y*u_StretchedBillboardLengthScale)*corner.y*cameraUpVector);\n#endif\n#ifdef HORIZONTALBILLBOARD\nvec2 corner=a_CornerTextureCoordinate.xy;const vec3 cameraUpVector=vec3(0.0,0.0,1.0);const vec3 sideVector=vec3(-1.0,0.0,0.0);float rot=computeParticleRotationFloat(a_StartRotation0.x,age,normalizedAge);float c=cos(rot);float s=sin(rot);mat2 rotation=mat2(c,-s,s,c);corner=rotation*corner*cos(0.78539816339744830961566084581988);corner*=computeParticleSizeBillbard(a_StartSize.xy,normalizedAge);center+=u_SizeScale.xzy*(corner.x*sideVector+corner.y*cameraUpVector);\n#endif\n#ifdef VERTICALBILLBOARD\nvec2 corner=a_CornerTextureCoordinate.xy;const vec3 cameraUpVector=vec3(0.0,1.0,0.0);vec3 sideVector=normalize(cross(u_CameraDirection,cameraUpVector));float rot=computeParticleRotationFloat(a_StartRotation0.x,age,normalizedAge);float c=cos(rot);float s=sin(rot);mat2 rotation=mat2(c,-s,s,c);corner=rotation*corner*cos(0.78539816339744830961566084581988);corner*=computeParticleSizeBillbard(a_StartSize.xy,normalizedAge);center+=u_SizeScale.xzy*(corner.x*sideVector+corner.y*cameraUpVector);\n#endif\n#ifdef RENDERMODE_MESH\nvec3 size=computeParticleSizeMesh(a_StartSize,normalizedAge);\n#if defined(ROTATIONOVERLIFETIME) || defined(ROTATIONOVERLIFETIMESEPERATE)\nif(u_ThreeDStartRotation!=0){vec3 rotation=vec3(a_StartRotation0.xy,computeParticleRotationFloat(a_StartRotation0.z,age,normalizedAge));center+=rotationByQuaternions(u_SizeScale*rotationByEuler(a_MeshPosition*size,rotation),worldRotation);}else{\n#ifdef ROTATIONOVERLIFETIME\nfloat angle=computeParticleRotationFloat(a_StartRotation0.x,age,normalizedAge);if(a_ShapePositionStartLifeTime.x!=0.0||a_ShapePositionStartLifeTime.y!=0.0){center+=(rotationByQuaternions(rotationByAxis(u_SizeScale*a_MeshPosition*size,normalize(cross(vec3(0.0,0.0,1.0),vec3(a_ShapePositionStartLifeTime.xy,0.0))),angle),worldRotation));}else{vec3 axis=mix(vec3(0.0,0.0,-1.0),vec3(0.0,-1.0,0.0),float(u_Shape));\n#ifdef SHAPE\ncenter+=u_SizeScale.xzy*(rotationByQuaternions(rotationByAxis(a_MeshPosition*size,axis,angle),worldRotation));\n#else\nif(u_SimulationSpace==0)center+=rotationByAxis(u_SizeScale*a_MeshPosition*size,axis,angle);else if(u_SimulationSpace==1)center+=rotationByQuaternions(u_SizeScale*rotationByAxis(a_MeshPosition*size,axis,angle),worldRotation);\n#endif\n}\n#endif\n#ifdef ROTATIONOVERLIFETIMESEPERATE\nvec3 angle=computeParticleRotationVec3(vec3(0.0,0.0,-a_StartRotation0.x),age,normalizedAge);center+=(rotationByQuaternions(rotationByEuler(u_SizeScale*a_MeshPosition*size,vec3(angle.x,angle.y,angle.z)),worldRotation));\n#endif\n}\n#else\nif(u_ThreeDStartRotation!=0){center+=rotationByQuaternions(u_SizeScale*rotationByEuler(a_MeshPosition*size,a_StartRotation0),worldRotation);}else{\n#ifdef SHAPE\nif(u_SimulationSpace==0)center+=u_SizeScale*rotationByAxis(a_MeshPosition*size,vec3(0.0,-1.0,0.0),a_StartRotation0.x);else if(u_SimulationSpace==1)center+=rotationByQuaternions(u_SizeScale*rotationByAxis(a_MeshPosition*size,vec3(0.0,-1.0,0.0),a_StartRotation0.x),worldRotation);\n#else\nif(a_ShapePositionStartLifeTime.x!=0.0||a_ShapePositionStartLifeTime.y!=0.0){if(u_SimulationSpace==0)center+=rotationByAxis(u_SizeScale*a_MeshPosition*size,normalize(cross(vec3(0.0,0.0,1.0),vec3(a_ShapePositionStartLifeTime.xy,0.0))),a_StartRotation0.x);else if(u_SimulationSpace==1)center+=(rotationByQuaternions(u_SizeScale*rotationByAxis(a_MeshPosition*size,normalize(cross(vec3(0.0,0.0,1.0),vec3(a_ShapePositionStartLifeTime.xy,0.0))),a_StartRotation0.x),worldRotation));}else{vec3 axis=mix(vec3(0.0,0.0,-1.0),vec3(0.0,-1.0,0.0),float(u_Shape));if(u_SimulationSpace==0)center+=u_SizeScale*rotationByAxis(a_MeshPosition*size,axis,a_StartRotation0.x);else if(u_SimulationSpace==1)center+=rotationByQuaternions(u_SizeScale*rotationByAxis(a_MeshPosition*size,axis,a_StartRotation0.x),worldRotation);}\n#endif\n}\n#endif\nv_MeshColor=a_MeshColor;\n#endif\ngl_Position=u_Projection*u_View*vec4(center,1.0);vec4 startcolor=gammaToLinear(a_StartColor);v_Color=computeParticleColor(startcolor,normalizedAge);\n#ifdef DIFFUSEMAP\nvec2 simulateUV;\n#if defined(SPHERHBILLBOARD) || defined(STRETCHEDBILLBOARD) || defined(HORIZONTALBILLBOARD) || defined(VERTICALBILLBOARD)\nsimulateUV=a_SimulationUV.xy+a_CornerTextureCoordinate.zw*a_SimulationUV.zw;v_TextureCoordinate=computeParticleUV(simulateUV,normalizedAge);\n#endif\n#ifdef RENDERMODE_MESH\nsimulateUV=a_SimulationUV.xy+a_MeshTextureCoordinate*a_SimulationUV.zw;v_TextureCoordinate=computeParticleUV(simulateUV,normalizedAge);\n#endif\nv_TextureCoordinate=TransformUV(v_TextureCoordinate,u_TilingOffset);\n#endif\n}else{gl_Position=vec4(2.0,2.0,2.0,1.0);}gl_Position=remapPositionZ(gl_Position);\n#ifdef FOG\nFogHandle(gl_Position.z);\n#endif\n}";
+    var ShurikenVS = "#define SHADER_NAME ParticleVS\n#include \"Camera.glsl\";\n#include \"particleShuriKenSpriteVS.glsl\";\n#include \"Math.glsl\";\n#include \"MathGradient.glsl\";\n#include \"Color.glsl\";\n#include \"Scene.glsl\"\n#include \"SceneFogInput.glsl\"\n#ifdef RENDERMODE_MESH\nvarying vec4 v_MeshColor;\n#endif\nvarying vec4 v_Color;varying vec2 v_TextureCoordinate;vec2 TransformUV(vec2 texcoord,vec4 tilingOffset){vec2 transTexcoord=vec2(texcoord.x,texcoord.y-1.0)*tilingOffset.xy+vec2(tilingOffset.z,-tilingOffset.w);transTexcoord.y+=1.0;return transTexcoord;}\n#if defined(VELOCITYOVERLIFETIMECONSTANT) || defined(VELOCITYOVERLIFETIMECURVE) || defined(VELOCITYOVERLIFETIMERANDOMCONSTANT) || defined(VELOCITYOVERLIFETIMERANDOMCURVE)\nvec3 computeParticleLifeVelocity(in float normalizedAge){vec3 outLifeVelocity;\n#ifdef VELOCITYOVERLIFETIMECONSTANT\noutLifeVelocity=u_VOLVelocityConst;\n#endif\n#ifdef VELOCITYOVERLIFETIMECURVE\noutLifeVelocity=vec3(getCurValueFromGradientFloat(u_VOLVelocityGradientX,normalizedAge),getCurValueFromGradientFloat(u_VOLVelocityGradientY,normalizedAge),getCurValueFromGradientFloat(u_VOLVelocityGradientZ,normalizedAge));\n#endif\n#ifdef VELOCITYOVERLIFETIMERANDOMCONSTANT\noutLifeVelocity=mix(u_VOLVelocityConst,u_VOLVelocityConstMax,vec3(a_Random1.y,a_Random1.z,a_Random1.w));\n#endif\n#ifdef VELOCITYOVERLIFETIMERANDOMCURVE\noutLifeVelocity=vec3(mix(getCurValueFromGradientFloat(u_VOLVelocityGradientX,normalizedAge),getCurValueFromGradientFloat(u_VOLVelocityGradientMaxX,normalizedAge),a_Random1.y),mix(getCurValueFromGradientFloat(u_VOLVelocityGradientY,normalizedAge),getCurValueFromGradientFloat(u_VOLVelocityGradientMaxY,normalizedAge),a_Random1.z),mix(getCurValueFromGradientFloat(u_VOLVelocityGradientZ,normalizedAge),getCurValueFromGradientFloat(u_VOLVelocityGradientMaxZ,normalizedAge),a_Random1.w));\n#endif\nreturn outLifeVelocity;}\n#endif\nvec3 getStartPosition(vec3 startVelocity,float age,vec3 dragData){vec3 startPosition;float lasttime=min(startVelocity.x/dragData.x,age);startPosition=lasttime*(startVelocity-0.5*dragData*lasttime);return startPosition;}vec3 computeParticlePosition(in vec3 startVelocity,in vec3 lifeVelocity,in float age,in float normalizedAge,vec3 gravityVelocity,vec4 worldRotation,vec3 dragData){vec3 startPosition=getStartPosition(startVelocity,age,dragData);vec3 lifePosition;\n#if defined(VELOCITYOVERLIFETIMECONSTANT) || defined(VELOCITYOVERLIFETIMECURVE) || defined(VELOCITYOVERLIFETIMERANDOMCONSTANT) || defined(VELOCITYOVERLIFETIMERANDOMCURVE)\n#ifdef VELOCITYOVERLIFETIMECONSTANT\nlifePosition=lifeVelocity*age;\n#endif\n#ifdef VELOCITYOVERLIFETIMECURVE\nlifePosition=vec3(getTotalValueFromGradientFloat(u_VOLVelocityGradientX,normalizedAge),getTotalValueFromGradientFloat(u_VOLVelocityGradientY,normalizedAge),getTotalValueFromGradientFloat(u_VOLVelocityGradientZ,normalizedAge));\n#endif\n#ifdef VELOCITYOVERLIFETIMERANDOMCONSTANT\nlifePosition=lifeVelocity*age;\n#endif\n#ifdef VELOCITYOVERLIFETIMERANDOMCURVE\nlifePosition=vec3(mix(getTotalValueFromGradientFloat(u_VOLVelocityGradientX,normalizedAge),getTotalValueFromGradientFloat(u_VOLVelocityGradientMaxX,normalizedAge),a_Random1.y),mix(getTotalValueFromGradientFloat(u_VOLVelocityGradientY,normalizedAge),getTotalValueFromGradientFloat(u_VOLVelocityGradientMaxY,normalizedAge),a_Random1.z),mix(getTotalValueFromGradientFloat(u_VOLVelocityGradientZ,normalizedAge),getTotalValueFromGradientFloat(u_VOLVelocityGradientMaxZ,normalizedAge),a_Random1.w));\n#endif\nvec3 finalPosition;if(u_VOLSpaceType==0){if(u_ScalingMode!=2)finalPosition=rotationByQuaternions(u_PositionScale*(a_ShapePositionStartLifeTime.xyz+startPosition+lifePosition),worldRotation);else finalPosition=rotationByQuaternions(u_PositionScale*a_ShapePositionStartLifeTime.xyz+startPosition+lifePosition,worldRotation);}else{if(u_ScalingMode!=2)finalPosition=rotationByQuaternions(u_PositionScale*(a_ShapePositionStartLifeTime.xyz+startPosition),worldRotation)+lifePosition;else finalPosition=rotationByQuaternions(u_PositionScale*a_ShapePositionStartLifeTime.xyz+startPosition,worldRotation)+lifePosition;}\n#else\nvec3 finalPosition;if(u_ScalingMode!=2)finalPosition=rotationByQuaternions(u_PositionScale*(a_ShapePositionStartLifeTime.xyz+startPosition),worldRotation);else finalPosition=rotationByQuaternions(u_PositionScale*a_ShapePositionStartLifeTime.xyz+startPosition,worldRotation);\n#endif\nif(u_SimulationSpace==0)finalPosition=finalPosition+a_SimulationWorldPostion;else if(u_SimulationSpace==1)finalPosition=finalPosition+u_WorldPosition;finalPosition+=0.5*gravityVelocity*age;return finalPosition;}vec4 computeParticleColor(in vec4 color,in float normalizedAge){\n#ifdef COLOROVERLIFETIME\ncolor*=getColorFromGradient(u_ColorOverLifeGradientAlphas,u_ColorOverLifeGradientColors,normalizedAge,u_ColorOverLifeGradientRanges);\n#endif\n#ifdef RANDOMCOLOROVERLIFETIME\ncolor*=mix(getColorFromGradient(u_ColorOverLifeGradientAlphas,u_ColorOverLifeGradientColors,normalizedAge,u_ColorOverLifeGradientRanges),getColorFromGradient(u_MaxColorOverLifeGradientAlphas,u_MaxColorOverLifeGradientColors,normalizedAge,u_MaxColorOverLifeGradientRanges),a_Random0.y);\n#endif\nreturn color;}vec2 computeParticleSizeBillbard(in vec2 size,in float normalizedAge){\n#ifdef SIZEOVERLIFETIMECURVE\nsize*=getCurValueFromGradientFloat(u_SOLSizeGradient,normalizedAge);\n#endif\n#ifdef SIZEOVERLIFETIMERANDOMCURVES\nsize*=mix(getCurValueFromGradientFloat(u_SOLSizeGradient,normalizedAge),getCurValueFromGradientFloat(u_SOLSizeGradientMax,normalizedAge),a_Random0.z);\n#endif\n#ifdef SIZEOVERLIFETIMECURVESEPERATE\nsize*=vec2(getCurValueFromGradientFloat(u_SOLSizeGradientX,normalizedAge),getCurValueFromGradientFloat(u_SOLSizeGradientY,normalizedAge));\n#endif\n#ifdef SIZEOVERLIFETIMERANDOMCURVESSEPERATE\nsize*=vec2(mix(getCurValueFromGradientFloat(u_SOLSizeGradientX,normalizedAge),getCurValueFromGradientFloat(u_SOLSizeGradientMaxX,normalizedAge),a_Random0.z),mix(getCurValueFromGradientFloat(u_SOLSizeGradientY,normalizedAge),getCurValueFromGradientFloat(u_SOLSizeGradientMaxY,normalizedAge),a_Random0.z));\n#endif\nreturn size;}\n#ifdef RENDERMODE_MESH\nvec3 computeParticleSizeMesh(in vec3 size,in float normalizedAge){\n#ifdef SIZEOVERLIFETIMECURVE\nsize*=getCurValueFromGradientFloat(u_SOLSizeGradient,normalizedAge);\n#endif\n#ifdef SIZEOVERLIFETIMERANDOMCURVES\nsize*=mix(getCurValueFromGradientFloat(u_SOLSizeGradient,normalizedAge),getCurValueFromGradientFloat(u_SOLSizeGradientMax,normalizedAge),a_Random0.z);\n#endif\n#ifdef SIZEOVERLIFETIMECURVESEPERATE\nsize*=vec3(getCurValueFromGradientFloat(u_SOLSizeGradientX,normalizedAge),getCurValueFromGradientFloat(u_SOLSizeGradientY,normalizedAge),getCurValueFromGradientFloat(u_SOLSizeGradientZ,normalizedAge));\n#endif\n#ifdef SIZEOVERLIFETIMERANDOMCURVESSEPERATE\nsize*=vec3(mix(getCurValueFromGradientFloat(u_SOLSizeGradientX,normalizedAge),getCurValueFromGradientFloat(u_SOLSizeGradientMaxX,normalizedAge),a_Random0.z),mix(getCurValueFromGradientFloat(u_SOLSizeGradientY,normalizedAge),getCurValueFromGradientFloat(u_SOLSizeGradientMaxY,normalizedAge),a_Random0.z),mix(getCurValueFromGradientFloat(u_SOLSizeGradientZ,normalizedAge),getCurValueFromGradientFloat(u_SOLSizeGradientMaxZ,normalizedAge),a_Random0.z));\n#endif\nreturn size;}\n#endif\nfloat computeParticleRotationFloat(in float rotation,in float age,in float normalizedAge){\n#ifdef ROTATIONOVERLIFETIME\n#ifdef ROTATIONOVERLIFETIMECONSTANT\nfloat ageRot=u_ROLAngularVelocityConst*age;rotation+=ageRot;\n#endif\n#ifdef ROTATIONOVERLIFETIMECURVE\nrotation+=getTotalValueFromGradientFloat(u_ROLAngularVelocityGradient,normalizedAge);\n#endif\n#ifdef ROTATIONOVERLIFETIMERANDOMCONSTANTS\nfloat ageRot=mix(u_ROLAngularVelocityConst,u_ROLAngularVelocityConstMax,a_Random0.w)*age;rotation+=ageRot;\n#endif\n#ifdef ROTATIONOVERLIFETIMERANDOMCURVES\nrotation+=mix(getTotalValueFromGradientFloat(u_ROLAngularVelocityGradient,normalizedAge),getTotalValueFromGradientFloat(u_ROLAngularVelocityGradientMax,normalizedAge),a_Random0.w);\n#endif\n#endif\n#ifdef ROTATIONOVERLIFETIMESEPERATE\n#ifdef ROTATIONOVERLIFETIMECONSTANT\nfloat ageRot=u_ROLAngularVelocityConstSeprarate.z*age;rotation+=ageRot;\n#endif\n#ifdef ROTATIONOVERLIFETIMECURVE\nrotation+=getTotalValueFromGradientFloat(u_ROLAngularVelocityGradientZ,normalizedAge);\n#endif\n#ifdef ROTATIONOVERLIFETIMERANDOMCONSTANTS\nfloat ageRot=mix(u_ROLAngularVelocityConstSeprarate.z,u_ROLAngularVelocityConstMaxSeprarate.z,a_Random0.w)*age;rotation+=ageRot;\n#endif\n#ifdef ROTATIONOVERLIFETIMERANDOMCURVES\nrotation+=mix(getTotalValueFromGradientFloat(u_ROLAngularVelocityGradientZ,normalizedAge),getTotalValueFromGradientFloat(u_ROLAngularVelocityGradientMaxZ,normalizedAge),a_Random0.w);\n#endif\n#endif\nreturn rotation;}\n#if defined(RENDERMODE_MESH) && (defined(ROTATIONOVERLIFETIME) || defined(ROTATIONOVERLIFETIMESEPERATE))\nvec3 computeParticleRotationVec3(in vec3 rotation,in float age,in float normalizedAge){\n#ifdef ROTATIONOVERLIFETIME\n#ifdef ROTATIONOVERLIFETIMECONSTANT\nfloat ageRot=u_ROLAngularVelocityConst*age;rotation+=ageRot;\n#endif\n#ifdef ROTATIONOVERLIFETIMECURVE\nrotation+=getTotalValueFromGradientFloat(u_ROLAngularVelocityGradient,normalizedAge);\n#endif\n#ifdef ROTATIONOVERLIFETIMERANDOMCONSTANTS\nfloat ageRot=mix(u_ROLAngularVelocityConst,u_ROLAngularVelocityConstMax,a_Random0.w)*age;rotation+=ageRot;\n#endif\n#ifdef ROTATIONOVERLIFETIMERANDOMCURVES\nrotation+=mix(getTotalValueFromGradientFloat(u_ROLAngularVelocityGradient,normalizedAge),getTotalValueFromGradientFloat(u_ROLAngularVelocityGradientMax,normalizedAge),a_Random0.w);\n#endif\n#endif\n#ifdef ROTATIONOVERLIFETIMESEPERATE\n#ifdef ROTATIONOVERLIFETIMECONSTANT\nvec3 ageRot=u_ROLAngularVelocityConstSeprarate*age;rotation+=ageRot;\n#endif\n#ifdef ROTATIONOVERLIFETIMECURVE\nrotation+=vec3(getTotalValueFromGradientFloat(u_ROLAngularVelocityGradientX,normalizedAge),getTotalValueFromGradientFloat(u_ROLAngularVelocityGradientY,normalizedAge),getTotalValueFromGradientFloat(u_ROLAngularVelocityGradientZ,normalizedAge));\n#endif\n#ifdef ROTATIONOVERLIFETIMERANDOMCONSTANTS\nvec3 ageRot=mix(u_ROLAngularVelocityConstSeprarate,u_ROLAngularVelocityConstMaxSeprarate,a_Random0.w)*age;rotation+=ageRot;\n#endif\n#ifdef ROTATIONOVERLIFETIMERANDOMCURVES\nrotation+=vec3(mix(getTotalValueFromGradientFloat(u_ROLAngularVelocityGradientX,normalizedAge),getTotalValueFromGradientFloat(u_ROLAngularVelocityGradientMaxX,normalizedAge),a_Random0.w),mix(getTotalValueFromGradientFloat(u_ROLAngularVelocityGradientY,normalizedAge),getTotalValueFromGradientFloat(u_ROLAngularVelocityGradientMaxY,normalizedAge),a_Random0.w),mix(getTotalValueFromGradientFloat(u_ROLAngularVelocityGradientZ,normalizedAge),getTotalValueFromGradientFloat(u_ROLAngularVelocityGradientMaxZ,normalizedAge),a_Random0.w));\n#endif\n#endif\nreturn rotation;}\n#endif\nvec2 computeParticleUV(in vec2 uv,in float normalizedAge){\n#ifdef TEXTURESHEETANIMATIONCURVE\nfloat cycleNormalizedAge=normalizedAge*u_TSACycles;float frame=getFrameFromGradient(u_TSAGradientUVs,cycleNormalizedAge-floor(cycleNormalizedAge));float totalULength=frame*u_TSASubUVLength.x;float floorTotalULength=floor(totalULength);uv.x+=totalULength-floorTotalULength;uv.y+=floorTotalULength*u_TSASubUVLength.y;\n#endif\n#ifdef TEXTURESHEETANIMATIONRANDOMCURVE\nfloat cycleNormalizedAge=normalizedAge*u_TSACycles;float uvNormalizedAge=cycleNormalizedAge-floor(cycleNormalizedAge);float frame=floor(mix(getFrameFromGradient(u_TSAGradientUVs,uvNormalizedAge),getFrameFromGradient(u_TSAMaxGradientUVs,uvNormalizedAge),a_Random1.x));float totalULength=frame*u_TSASubUVLength.x;float floorTotalULength=floor(totalULength);uv.x+=totalULength-floorTotalULength;uv.y+=floorTotalULength*u_TSASubUVLength.y;\n#endif\nreturn uv;}void main(){float age=u_CurrentTime-a_DirectionTime.w;float normalizedAge=age/a_ShapePositionStartLifeTime.w;vec3 lifeVelocity;if(normalizedAge<1.0){vec3 startVelocity=a_DirectionTime.xyz*a_StartSpeed;\n#if defined(VELOCITYOVERLIFETIMECONSTANT) || defined(VELOCITYOVERLIFETIMECURVE) || defined(VELOCITYOVERLIFETIMERANDOMCONSTANT) || defined(VELOCITYOVERLIFETIMERANDOMCURVE)\nlifeVelocity=computeParticleLifeVelocity(normalizedAge);\n#endif\nvec3 gravityVelocity=u_Gravity*age;vec4 worldRotation;if(u_SimulationSpace==0)worldRotation=a_SimulationWorldRotation;else worldRotation=u_WorldRotation;vec3 dragData=a_DirectionTime.xyz*mix(u_DragConstanct.x,u_DragConstanct.y,a_Random0.x);vec3 center=computeParticlePosition(startVelocity,lifeVelocity,age,normalizedAge,gravityVelocity,worldRotation,dragData);\n#ifdef SPHERHBILLBOARD\nvec2 corner=a_CornerTextureCoordinate.xy;vec3 cameraUpVector=normalize(u_CameraUp);vec3 sideVector=normalize(cross(u_CameraDirection,cameraUpVector));vec3 upVector=normalize(cross(sideVector,u_CameraDirection));vec2 bbSize=computeParticleSizeBillbard(a_StartSize.xy,normalizedAge);corner*=bbSize;vec2 pivot2D=u_Pivot.xy*bbSize;corner+=pivot2D*vec2(-1.0,1.0);\n#if defined(ROTATIONOVERLIFETIME) || defined(ROTATIONOVERLIFETIMESEPERATE)\nif(u_ThreeDStartRotation!=0){vec3 rotation=vec3(a_StartRotation0.xy,computeParticleRotationFloat(a_StartRotation0.z,age,normalizedAge));center+=u_SizeScale.xzy*rotationByEuler(corner.x*sideVector+corner.y*upVector,rotation);}else{float rot=computeParticleRotationFloat(a_StartRotation0.x,age,normalizedAge);float c=cos(rot);float s=sin(rot);mat2 rotation=mat2(c,-s,s,c);corner=rotation*corner;center+=u_SizeScale.xzy*(corner.x*sideVector+corner.y*upVector);}\n#else\nif(u_ThreeDStartRotation!=0){center+=u_SizeScale.xzy*rotationByEuler(corner.x*sideVector+corner.y*upVector,a_StartRotation0);}else{float c=cos(a_StartRotation0.x);float s=sin(a_StartRotation0.x);mat2 rotation=mat2(c,-s,s,c);corner=rotation*corner;center+=u_SizeScale.xzy*(corner.x*sideVector+corner.y*upVector);}\n#endif\n#endif\n#ifdef STRETCHEDBILLBOARD\nvec2 corner=a_CornerTextureCoordinate.xy;vec3 velocity;\n#if defined(VELOCITYOVERLIFETIMECONSTANT) || defined(VELOCITYOVERLIFETIMECURVE) || defined(VELOCITYOVERLIFETIMERANDOMCONSTANT) || defined(VELOCITYOVERLIFETIMERANDOMCURVE)\nif(u_VOLSpaceType==0)velocity=rotationByQuaternions(u_SizeScale*(startVelocity+lifeVelocity),worldRotation)+gravityVelocity;else velocity=rotationByQuaternions(u_SizeScale*startVelocity,worldRotation)+lifeVelocity+gravityVelocity;\n#else\nvelocity=rotationByQuaternions(u_SizeScale*startVelocity,worldRotation)+gravityVelocity;\n#endif\nvec3 cameraUpVector=normalize(velocity);vec3 direction=normalize(center-u_CameraPos);vec3 sideVector=normalize(cross(direction,normalize(velocity)));sideVector=u_SizeScale.xzy*sideVector;cameraUpVector=length(vec3(u_SizeScale.x,0.0,0.0))*cameraUpVector;vec2 size=computeParticleSizeBillbard(a_StartSize.xy,normalizedAge);const mat2 rotaionZHalfPI=mat2(0.0,-1.0,1.0,0.0);corner=rotaionZHalfPI*corner;corner.y=corner.y-abs(corner.y);float speed=length(velocity);center+=sign(u_SizeScale.x)*(sign(u_StretchedBillboardLengthScale)*size.x*(corner.x-u_Pivot.x)*sideVector+(speed*u_StretchedBillboardSpeedScale+size.y*u_StretchedBillboardLengthScale)*(corner.y+u_Pivot.y)*cameraUpVector);\n#endif\n#ifdef HORIZONTALBILLBOARD\nvec2 corner=a_CornerTextureCoordinate.xy;const vec3 cameraUpVector=vec3(0.0,0.0,1.0);const vec3 sideVector=vec3(-1.0,0.0,0.0);vec2 hBbSize=computeParticleSizeBillbard(a_StartSize.xy,normalizedAge);corner+=u_Pivot.xy*vec2(-1.0,1.0);float rot=computeParticleRotationFloat(a_StartRotation0.x,age,normalizedAge);float c=cos(rot);float s=sin(rot);mat2 rotation=mat2(c,-s,s,c);corner=rotation*corner*cos(0.78539816339744830961566084581988);corner*=hBbSize;center+=u_SizeScale.xzy*(corner.x*sideVector+corner.y*cameraUpVector);\n#endif\n#ifdef VERTICALBILLBOARD\nvec2 corner=a_CornerTextureCoordinate.xy;const vec3 cameraUpVector=vec3(0.0,1.0,0.0);vec3 sideVector=normalize(cross(u_CameraDirection,cameraUpVector));vec2 vBbSize=computeParticleSizeBillbard(a_StartSize.xy,normalizedAge);corner+=u_Pivot.xy*vec2(-1.0,1.0);float rot=computeParticleRotationFloat(a_StartRotation0.x,age,normalizedAge);float c=cos(rot);float s=sin(rot);mat2 rotation=mat2(c,-s,s,c);corner=rotation*corner*cos(0.78539816339744830961566084581988);corner*=vBbSize;center+=u_SizeScale.xzy*(corner.x*sideVector+corner.y*cameraUpVector);\n#endif\n#ifdef RENDERMODE_MESH\nvec3 size=computeParticleSizeMesh(a_StartSize,normalizedAge);vec3 pivot=u_Pivot*size;vec3 scaledPivot=u_SizeScale*pivot;\n#if defined(ROTATIONOVERLIFETIME) || defined(ROTATIONOVERLIFETIMESEPERATE)\nif(u_ThreeDStartRotation!=0){vec3 rotation=vec3(a_StartRotation0.xy,computeParticleRotationFloat(a_StartRotation0.z,age,normalizedAge));center+=rotationByQuaternions(u_SizeScale*rotationByEuler(a_MeshPosition*size+pivot,rotation),worldRotation);}else{\n#ifdef ROTATIONOVERLIFETIME\nfloat angle=computeParticleRotationFloat(a_StartRotation0.x,age,normalizedAge);if(a_ShapePositionStartLifeTime.x!=0.0||a_ShapePositionStartLifeTime.y!=0.0){center+=(rotationByQuaternions(rotationByAxis(u_SizeScale*a_MeshPosition*size+scaledPivot,normalize(cross(vec3(0.0,0.0,1.0),vec3(a_ShapePositionStartLifeTime.xy,0.0))),angle),worldRotation));}else{vec3 axis=mix(vec3(0.0,0.0,-1.0),vec3(0.0,-1.0,0.0),float(u_Shape));\n#ifdef SHAPE\ncenter+=u_SizeScale.xzy*(rotationByQuaternions(rotationByAxis(a_MeshPosition*size+pivot,axis,angle),worldRotation));\n#else\nif(u_SimulationSpace==0)center+=rotationByAxis(u_SizeScale*a_MeshPosition*size+scaledPivot,axis,angle);else if(u_SimulationSpace==1)center+=rotationByQuaternions(u_SizeScale*rotationByAxis(a_MeshPosition*size+pivot,axis,angle),worldRotation);\n#endif\n}\n#endif\n#ifdef ROTATIONOVERLIFETIMESEPERATE\nvec3 angle=computeParticleRotationVec3(vec3(0.0,0.0,-a_StartRotation0.x),age,normalizedAge);center+=(rotationByQuaternions(rotationByEuler(u_SizeScale*a_MeshPosition*size+scaledPivot,vec3(angle.x,angle.y,angle.z)),worldRotation));\n#endif\n}\n#else\nif(u_ThreeDStartRotation!=0){center+=rotationByQuaternions(u_SizeScale*rotationByEuler(a_MeshPosition*size+pivot,a_StartRotation0),worldRotation);}else{\n#ifdef SHAPE\nif(u_SimulationSpace==0)center+=u_SizeScale*rotationByAxis(a_MeshPosition*size+pivot,vec3(0.0,-1.0,0.0),a_StartRotation0.x);else if(u_SimulationSpace==1)center+=rotationByQuaternions(u_SizeScale*rotationByAxis(a_MeshPosition*size+pivot,vec3(0.0,-1.0,0.0),a_StartRotation0.x),worldRotation);\n#else\nif(a_ShapePositionStartLifeTime.x!=0.0||a_ShapePositionStartLifeTime.y!=0.0){if(u_SimulationSpace==0)center+=rotationByAxis(u_SizeScale*a_MeshPosition*size+scaledPivot,normalize(cross(vec3(0.0,0.0,1.0),vec3(a_ShapePositionStartLifeTime.xy,0.0))),a_StartRotation0.x);else if(u_SimulationSpace==1)center+=(rotationByQuaternions(u_SizeScale*rotationByAxis(a_MeshPosition*size+pivot,normalize(cross(vec3(0.0,0.0,1.0),vec3(a_ShapePositionStartLifeTime.xy,0.0))),a_StartRotation0.x),worldRotation));}else{vec3 axis=mix(vec3(0.0,0.0,-1.0),vec3(0.0,-1.0,0.0),float(u_Shape));if(u_SimulationSpace==0)center+=u_SizeScale*rotationByAxis(a_MeshPosition*size+pivot,axis,a_StartRotation0.x);else if(u_SimulationSpace==1)center+=rotationByQuaternions(u_SizeScale*rotationByAxis(a_MeshPosition*size+pivot,axis,a_StartRotation0.x),worldRotation);}\n#endif\n}\n#endif\nv_MeshColor=a_MeshColor;\n#endif\ngl_Position=u_Projection*u_View*vec4(center,1.0);vec4 startcolor=gammaToLinear(a_StartColor);v_Color=computeParticleColor(startcolor,normalizedAge);\n#ifdef DIFFUSEMAP\nvec2 simulateUV;\n#if defined(SPHERHBILLBOARD) || defined(STRETCHEDBILLBOARD) || defined(HORIZONTALBILLBOARD) || defined(VERTICALBILLBOARD)\nsimulateUV=a_SimulationUV.xy+a_CornerTextureCoordinate.zw*a_SimulationUV.zw;v_TextureCoordinate=computeParticleUV(simulateUV,normalizedAge);\n#endif\n#ifdef RENDERMODE_MESH\nsimulateUV=a_SimulationUV.xy+a_MeshTextureCoordinate*a_SimulationUV.zw;v_TextureCoordinate=computeParticleUV(simulateUV,normalizedAge);\n#endif\nv_TextureCoordinate=TransformUV(v_TextureCoordinate,u_TilingOffset);\n#endif\n}else{gl_Position=vec4(2.0,2.0,2.0,1.0);}gl_Position=remapPositionZ(gl_Position);\n#ifdef FOG\nFogHandle(gl_Position.z);\n#endif\n}";
 
     var ShurikenFS = "#define SHADER_NAME ParticleFS\n#include \"Scene.glsl\";\n#include \"SceneFog.glsl\";\n#include \"Color.glsl\";\nconst vec4 c_ColorSpace=vec4(4.59479380,4.59479380,4.59479380,2.0);varying vec4 v_Color;varying vec2 v_TextureCoordinate;\n#ifdef RENDERMODE_MESH\nvarying vec4 v_MeshColor;\n#endif\nvoid main(){vec4 color;\n#ifdef RENDERMODE_MESH\ncolor=v_MeshColor;\n#else\ncolor=vec4(1.0);\n#endif\n#ifdef DIFFUSEMAP\nvec4 colorT=texture2D(u_texture,v_TextureCoordinate);\n#ifdef Gamma_u_texture\ncolorT=gammaToLinear(colorT);\n#endif\n#ifdef TINTCOLOR\ncolor*=colorT*u_Tintcolor*c_ColorSpace*v_Color;\n#else\ncolor*=colorT*v_Color;\n#endif\n#else\n#ifdef TINTCOLOR\ncolor*=u_Tintcolor*c_ColorSpace*v_Color;\n#else\ncolor*=v_Color;\n#endif\n#endif\n#ifdef ALPHATEST\nif(color.a<u_AlphaTestValue){discard;}\n#endif\n#ifdef FOG\ncolor.rgb=scenUnlitFog(color.rgb);\n#endif\ngl_FragColor=color;gl_FragColor=outputTransform(gl_FragColor);}";
 
-    var MathGradient = "#ifdef GRAPHICS_API_GLES3\nvec2 getVec2ValueByIndexFromeVec4Array(in vec4 gradientNumbers[2],in int vec2Index){int v4Index=int(floor(float(vec2Index)/2.0));int offset=(vec2Index-v4Index*2)*2;return vec2(gradientNumbers[v4Index][offset],gradientNumbers[v4Index][offset+1]);}vec2 getVec2ValueByIndexFromeVec4Array_COLORCOUNT(in vec4 gradientNumbers[COLORCOUNT_HALF],in int vec2Index){int v4Index=int(floor(float(vec2Index)/2.0));int offset=(vec2Index-v4Index*2)*2;vec4 v4Value=gradientNumbers[v4Index];return vec2(v4Value[offset],v4Value[offset+1]);}\n#endif\nfloat getCurValueFromGradientFloat(in vec4 gradientNumbers[2],in float normalizedAge){float curValue;\n#ifndef GRAPHICS_API_GLES3\nvec2 gradientNumbersVec2[4];gradientNumbersVec2[0]=gradientNumbers[0].xy;gradientNumbersVec2[1]=gradientNumbers[0].zw;gradientNumbersVec2[2]=gradientNumbers[1].xy;gradientNumbersVec2[3]=gradientNumbers[1].zw;\n#endif\nfor(int i=1;i<4;i++){vec2 gradientNumber;\n#ifdef GRAPHICS_API_GLES3\ngradientNumber=getVec2ValueByIndexFromeVec4Array(gradientNumbers,i);\n#else\ngradientNumber=gradientNumbersVec2[i];\n#endif\nfloat key=gradientNumber.x;curValue=gradientNumber.y;if(key>=normalizedAge){vec2 lastGradientNumber;\n#ifdef GRAPHICS_API_GLES3\nlastGradientNumber=getVec2ValueByIndexFromeVec4Array(gradientNumbers,i-1);\n#else\nlastGradientNumber=gradientNumbersVec2[i-1];\n#endif\nfloat lastKey=lastGradientNumber.x;float age=max((normalizedAge-lastKey),0.0)/(key-lastKey);curValue=mix(lastGradientNumber.y,gradientNumber.y,age);break;}}return curValue;}float getTotalValueFromGradientFloat(in vec4 gradientNumbers[2],in float normalizedAge){\n#ifndef GRAPHICS_API_GLES3\nvec2 gradientNumbersVec2[4];gradientNumbersVec2[0]=gradientNumbers[0].xy;gradientNumbersVec2[1]=gradientNumbers[0].zw;gradientNumbersVec2[2]=gradientNumbers[1].xy;gradientNumbersVec2[3]=gradientNumbers[1].zw;\n#endif\n#ifdef GRAPHICS_API_GLES3\nvec2 val=getVec2ValueByIndexFromeVec4Array(gradientNumbers,0);\n#else\nvec2 val=gradientNumbersVec2[0];\n#endif\nfloat keyTime=min(normalizedAge,val.x);float totalValue=keyTime*val.y;float lastSpeed=0.;for(int i=1;i<4;i++){\n#ifdef GRAPHICS_API_GLES3\nvec2 gradientNumber=getVec2ValueByIndexFromeVec4Array(gradientNumbers,i);vec2 lastGradientNumber=getVec2ValueByIndexFromeVec4Array(gradientNumbers,i-1);\n#else\nvec2 gradientNumber=gradientNumbersVec2[i];vec2 lastGradientNumber=gradientNumbersVec2[i-1];\n#endif\nfloat key=gradientNumber.x;float lastValue=lastGradientNumber.y;if(key>=normalizedAge){float lastKey=lastGradientNumber.x;float time=max((normalizedAge-lastKey),0.);float age=time/(key-lastKey);lastSpeed=mix(lastValue,gradientNumber.y,age);totalValue+=(lastValue+mix(lastValue,gradientNumber.y,age))/2.0*a_ShapePositionStartLifeTime.w*time;keyTime=normalizedAge;break;}else if(key>keyTime){totalValue+=(lastValue+gradientNumber.y)/2.0*a_ShapePositionStartLifeTime.w*(key-lastGradientNumber.x);keyTime=key;lastSpeed=gradientNumber.y;}}return totalValue+max(normalizedAge-keyTime,0.)*lastSpeed*a_ShapePositionStartLifeTime.w;}vec4 getColorFromGradient(in vec4 gradientAlphas[COLORCOUNT_HALF],in vec4 gradientColors[COLORCOUNT],in float normalizedAge,in vec4 keyRanges){\n#ifndef GRAPHICS_API_GLES3\n#ifdef COLORKEYCOUNT_8\nvec2 resoult[8];resoult[0]=gradientAlphas[0].xy;resoult[1]=gradientAlphas[0].zw;resoult[2]=gradientAlphas[1].xy;resoult[3]=gradientAlphas[1].zw;resoult[4]=gradientAlphas[2].xy;resoult[5]=gradientAlphas[2].zw;resoult[6]=gradientAlphas[3].xy;resoult[7]=gradientAlphas[3].zw;\n#else\nvec2 resoult[4];resoult[0]=gradientAlphas[0].xy;resoult[1]=gradientAlphas[0].zw;resoult[2]=gradientAlphas[1].xy;resoult[3]=gradientAlphas[1].zw;\n#endif\n#endif\nfloat alphaAge=clamp(normalizedAge,keyRanges.z,keyRanges.w);vec4 overTimeColor;for(int i=1;i<COLORCOUNT;i++){\n#ifdef GRAPHICS_API_GLES3\nvec2 gradientAlpha=getVec2ValueByIndexFromeVec4Array_COLORCOUNT(gradientAlphas,i);\n#else\nvec2 gradientAlpha=resoult[i];\n#endif\nfloat alphaKey=gradientAlpha.x;if(alphaKey>=alphaAge){\n#ifdef GRAPHICS_API_GLES3\nvec2 lastGradientAlpha=getVec2ValueByIndexFromeVec4Array_COLORCOUNT(gradientAlphas,i-1);\n#else\nvec2 lastGradientAlpha=resoult[i-1];\n#endif\nfloat lastAlphaKey=lastGradientAlpha.x;float age=clamp((alphaAge-lastAlphaKey)/(alphaKey-lastAlphaKey),0.0,1.0);overTimeColor.a=mix(lastGradientAlpha.y,gradientAlpha.y,age);break;}}float colorAge=clamp(normalizedAge,keyRanges.x,keyRanges.y);for(int i=1;i<COLORCOUNT;i++){vec4 gradientColor=gradientColors[i];float colorKey=gradientColor.x;if(colorKey>=colorAge){vec4 lastGradientColor=gradientColors[i-1];float lastColorKey=lastGradientColor.x;float age=(colorAge-lastColorKey)/(colorKey-lastColorKey);overTimeColor.rgb=mix(gradientColors[i-1].yzw,gradientColor.yzw,age);break;}}return overTimeColor;}float getFrameFromGradient(in vec4 gradientFrames[2],in float normalizedAge){\n#ifndef GRAPHICS_API_GLES3\nvec2 gradientNumbersVec2[4];gradientNumbersVec2[0]=gradientFrames[0].xy;gradientNumbersVec2[1]=gradientFrames[0].zw;gradientNumbersVec2[2]=gradientFrames[1].xy;gradientNumbersVec2[3]=gradientFrames[1].zw;\n#endif\nfloat overTimeFrame;for(int i=1;i<4;i++){\n#ifdef GRAPHICS_API_GLES3\nvec2 gradientFrame=getVec2ValueByIndexFromeVec4Array(gradientFrames,i);\n#else\nvec2 gradientFrame=gradientNumbersVec2[i];\n#endif\nfloat key=gradientFrame.x;overTimeFrame=gradientFrame.y;if(key>=normalizedAge){\n#ifdef GRAPHICS_API_GLES3\nvec2 lastGradientFrame=getVec2ValueByIndexFromeVec4Array(gradientFrames,i-1);\n#else\nvec2 lastGradientFrame=gradientNumbersVec2[i-1];\n#endif\nfloat lastKey=lastGradientFrame.x;float age=max((normalizedAge-lastKey),0.)/(key-lastKey);overTimeFrame=mix(lastGradientFrame.y,gradientFrame.y,age);break;}}return floor(overTimeFrame);}";
+    var MathGradient = "#ifdef GRAPHICS_API_GLES3\nvec2 getVec2ValueByIndexFromeVec4Array(in vec4 gradientNumbers[GRADIENT_VEC4_COUNT],in int vec2Index){int v4Index=int(floor(float(vec2Index)/2.0));int offset=(vec2Index-v4Index*2)*2;return vec2(gradientNumbers[v4Index][offset],gradientNumbers[v4Index][offset+1]);}vec2 getVec2ValueByIndexFromeVec4Array_COLORCOUNT(in vec4 gradientNumbers[COLORCOUNT_HALF],in int vec2Index){int v4Index=int(floor(float(vec2Index)/2.0));int offset=(vec2Index-v4Index*2)*2;vec4 v4Value=gradientNumbers[v4Index];return vec2(v4Value[offset],v4Value[offset+1]);}\n#endif\nfloat getCurValueFromGradientFloat(in vec4 gradientNumbers[GRADIENT_VEC4_COUNT],in float normalizedAge){float curValue;\n#ifndef GRAPHICS_API_GLES3\n#ifdef GRADIENTKEYCOUNT_8\nvec2 gradientNumbersVec2[8];gradientNumbersVec2[0]=gradientNumbers[0].xy;gradientNumbersVec2[1]=gradientNumbers[0].zw;gradientNumbersVec2[2]=gradientNumbers[1].xy;gradientNumbersVec2[3]=gradientNumbers[1].zw;gradientNumbersVec2[4]=gradientNumbers[2].xy;gradientNumbersVec2[5]=gradientNumbers[2].zw;gradientNumbersVec2[6]=gradientNumbers[3].xy;gradientNumbersVec2[7]=gradientNumbers[3].zw;\n#else\nvec2 gradientNumbersVec2[4];gradientNumbersVec2[0]=gradientNumbers[0].xy;gradientNumbersVec2[1]=gradientNumbers[0].zw;gradientNumbersVec2[2]=gradientNumbers[1].xy;gradientNumbersVec2[3]=gradientNumbers[1].zw;\n#endif\n#endif\nfor(int i=1;i<GRADIENT_KEY_COUNT;i++){vec2 gradientNumber;\n#ifdef GRAPHICS_API_GLES3\ngradientNumber=getVec2ValueByIndexFromeVec4Array(gradientNumbers,i);\n#else\ngradientNumber=gradientNumbersVec2[i];\n#endif\nfloat key=gradientNumber.x;curValue=gradientNumber.y;if(key>=normalizedAge){vec2 lastGradientNumber;\n#ifdef GRAPHICS_API_GLES3\nlastGradientNumber=getVec2ValueByIndexFromeVec4Array(gradientNumbers,i-1);\n#else\nlastGradientNumber=gradientNumbersVec2[i-1];\n#endif\nfloat lastKey=lastGradientNumber.x;float age=max((normalizedAge-lastKey),0.0)/(key-lastKey);curValue=mix(lastGradientNumber.y,gradientNumber.y,age);break;}}return curValue;}float getTotalValueFromGradientFloat(in vec4 gradientNumbers[GRADIENT_VEC4_COUNT],in float normalizedAge){\n#ifndef GRAPHICS_API_GLES3\n#ifdef GRADIENTKEYCOUNT_8\nvec2 gradientNumbersVec2[8];gradientNumbersVec2[0]=gradientNumbers[0].xy;gradientNumbersVec2[1]=gradientNumbers[0].zw;gradientNumbersVec2[2]=gradientNumbers[1].xy;gradientNumbersVec2[3]=gradientNumbers[1].zw;gradientNumbersVec2[4]=gradientNumbers[2].xy;gradientNumbersVec2[5]=gradientNumbers[2].zw;gradientNumbersVec2[6]=gradientNumbers[3].xy;gradientNumbersVec2[7]=gradientNumbers[3].zw;\n#else\nvec2 gradientNumbersVec2[4];gradientNumbersVec2[0]=gradientNumbers[0].xy;gradientNumbersVec2[1]=gradientNumbers[0].zw;gradientNumbersVec2[2]=gradientNumbers[1].xy;gradientNumbersVec2[3]=gradientNumbers[1].zw;\n#endif\n#endif\n#ifdef GRAPHICS_API_GLES3\nvec2 val=getVec2ValueByIndexFromeVec4Array(gradientNumbers,0);\n#else\nvec2 val=gradientNumbersVec2[0];\n#endif\nfloat keyTime=min(normalizedAge,val.x);float totalValue=keyTime*val.y;float lastSpeed=0.;for(int i=1;i<GRADIENT_KEY_COUNT;i++){\n#ifdef GRAPHICS_API_GLES3\nvec2 gradientNumber=getVec2ValueByIndexFromeVec4Array(gradientNumbers,i);vec2 lastGradientNumber=getVec2ValueByIndexFromeVec4Array(gradientNumbers,i-1);\n#else\nvec2 gradientNumber=gradientNumbersVec2[i];vec2 lastGradientNumber=gradientNumbersVec2[i-1];\n#endif\nfloat key=gradientNumber.x;float lastValue=lastGradientNumber.y;if(key>=normalizedAge){float lastKey=lastGradientNumber.x;float time=max((normalizedAge-lastKey),0.);float age=time/(key-lastKey);lastSpeed=mix(lastValue,gradientNumber.y,age);totalValue+=(lastValue+mix(lastValue,gradientNumber.y,age))/2.0*a_ShapePositionStartLifeTime.w*time;keyTime=normalizedAge;break;}else if(key>keyTime){totalValue+=(lastValue+gradientNumber.y)/2.0*a_ShapePositionStartLifeTime.w*(key-lastGradientNumber.x);keyTime=key;lastSpeed=gradientNumber.y;}}return totalValue+max(normalizedAge-keyTime,0.)*lastSpeed*a_ShapePositionStartLifeTime.w;}vec4 getColorFromGradient(in vec4 gradientAlphas[COLORCOUNT_HALF],in vec4 gradientColors[COLORCOUNT],in float normalizedAge,in vec4 keyRanges){\n#ifndef GRAPHICS_API_GLES3\n#ifdef COLORKEYCOUNT_8\nvec2 resoult[8];resoult[0]=gradientAlphas[0].xy;resoult[1]=gradientAlphas[0].zw;resoult[2]=gradientAlphas[1].xy;resoult[3]=gradientAlphas[1].zw;resoult[4]=gradientAlphas[2].xy;resoult[5]=gradientAlphas[2].zw;resoult[6]=gradientAlphas[3].xy;resoult[7]=gradientAlphas[3].zw;\n#else\nvec2 resoult[4];resoult[0]=gradientAlphas[0].xy;resoult[1]=gradientAlphas[0].zw;resoult[2]=gradientAlphas[1].xy;resoult[3]=gradientAlphas[1].zw;\n#endif\n#endif\nfloat alphaAge=clamp(normalizedAge,keyRanges.z,keyRanges.w);vec4 overTimeColor;for(int i=1;i<COLORCOUNT;i++){\n#ifdef GRAPHICS_API_GLES3\nvec2 gradientAlpha=getVec2ValueByIndexFromeVec4Array_COLORCOUNT(gradientAlphas,i);\n#else\nvec2 gradientAlpha=resoult[i];\n#endif\nfloat alphaKey=gradientAlpha.x;if(alphaKey>=alphaAge){\n#ifdef GRAPHICS_API_GLES3\nvec2 lastGradientAlpha=getVec2ValueByIndexFromeVec4Array_COLORCOUNT(gradientAlphas,i-1);\n#else\nvec2 lastGradientAlpha=resoult[i-1];\n#endif\nfloat lastAlphaKey=lastGradientAlpha.x;float age=clamp((alphaAge-lastAlphaKey)/(alphaKey-lastAlphaKey),0.0,1.0);overTimeColor.a=mix(lastGradientAlpha.y,gradientAlpha.y,age);break;}}float colorAge=clamp(normalizedAge,keyRanges.x,keyRanges.y);for(int i=1;i<COLORCOUNT;i++){vec4 gradientColor=gradientColors[i];float colorKey=gradientColor.x;if(colorKey>=colorAge){vec4 lastGradientColor=gradientColors[i-1];float lastColorKey=lastGradientColor.x;float age=(colorAge-lastColorKey)/(colorKey-lastColorKey);overTimeColor.rgb=mix(gradientColors[i-1].yzw,gradientColor.yzw,age);break;}}return overTimeColor;}float getFrameFromGradient(in vec4 gradientFrames[GRADIENT_VEC4_COUNT],in float normalizedAge){\n#ifndef GRAPHICS_API_GLES3\n#ifdef GRADIENTKEYCOUNT_8\nvec2 gradientNumbersVec2[8];gradientNumbersVec2[0]=gradientFrames[0].xy;gradientNumbersVec2[1]=gradientFrames[0].zw;gradientNumbersVec2[2]=gradientFrames[1].xy;gradientNumbersVec2[3]=gradientFrames[1].zw;gradientNumbersVec2[4]=gradientFrames[2].xy;gradientNumbersVec2[5]=gradientFrames[2].zw;gradientNumbersVec2[6]=gradientFrames[3].xy;gradientNumbersVec2[7]=gradientFrames[3].zw;\n#else\nvec2 gradientNumbersVec2[4];gradientNumbersVec2[0]=gradientFrames[0].xy;gradientNumbersVec2[1]=gradientFrames[0].zw;gradientNumbersVec2[2]=gradientFrames[1].xy;gradientNumbersVec2[3]=gradientFrames[1].zw;\n#endif\n#endif\nfloat overTimeFrame;for(int i=1;i<GRADIENT_KEY_COUNT;i++){\n#ifdef GRAPHICS_API_GLES3\nvec2 gradientFrame=getVec2ValueByIndexFromeVec4Array(gradientFrames,i);\n#else\nvec2 gradientFrame=gradientNumbersVec2[i];\n#endif\nfloat key=gradientFrame.x;overTimeFrame=gradientFrame.y;if(key>=normalizedAge){\n#ifdef GRAPHICS_API_GLES3\nvec2 lastGradientFrame=getVec2ValueByIndexFromeVec4Array(gradientFrames,i-1);\n#else\nvec2 lastGradientFrame=gradientNumbersVec2[i-1];\n#endif\nfloat lastKey=lastGradientFrame.x;float age=max((normalizedAge-lastKey),0.)/(key-lastKey);overTimeFrame=mix(lastGradientFrame.y,gradientFrame.y,age);break;}}return floor(overTimeFrame);}";
 
-    var ParticleSpriteVS = "uniform float u_CurrentTime;uniform vec3 u_Gravity;uniform vec2 u_DragConstanct;uniform vec3 u_WorldPosition;uniform vec4 u_WorldRotation;uniform int u_ThreeDStartRotation;uniform int u_Shape;uniform int u_ScalingMode;uniform vec3 u_PositionScale;uniform vec3 u_SizeScale;uniform float u_StretchedBillboardLengthScale;uniform float u_StretchedBillboardSpeedScale;uniform int u_SimulationSpace;\n#if defined(VELOCITYOVERLIFETIMECONSTANT) || defined(VELOCITYOVERLIFETIMECURVE) || defined(VELOCITYOVERLIFETIMERANDOMCONSTANT) || defined(VELOCITYOVERLIFETIMERANDOMCURVE)\nuniform int u_VOLSpaceType;\n#endif\n#if defined(VELOCITYOVERLIFETIMECONSTANT) || defined(VELOCITYOVERLIFETIMERANDOMCONSTANT)\nuniform vec3 u_VOLVelocityConst;\n#endif\n#if defined(VELOCITYOVERLIFETIMECURVE) || defined(VELOCITYOVERLIFETIMERANDOMCURVE)\nuniform vec4 u_VOLVelocityGradientX[2];uniform vec4 u_VOLVelocityGradientY[2];uniform vec4 u_VOLVelocityGradientZ[2];\n#endif\n#ifdef VELOCITYOVERLIFETIMERANDOMCONSTANT\nuniform vec3 u_VOLVelocityConstMax;\n#endif\n#ifdef VELOCITYOVERLIFETIMERANDOMCURVE\nuniform vec4 u_VOLVelocityGradientMaxX[2];uniform vec4 u_VOLVelocityGradientMaxY[2];uniform vec4 u_VOLVelocityGradientMaxZ[2];\n#endif\n#ifdef COLORKEYCOUNT_8\n#define COLORCOUNT 8\n#define COLORCOUNT_HALF 4\n#else\n#define COLORCOUNT 4\n#define COLORCOUNT_HALF 2\n#endif\n#ifdef COLOROVERLIFETIME\nuniform vec4 u_ColorOverLifeGradientColors[COLORCOUNT];uniform vec4 u_ColorOverLifeGradientAlphas[COLORCOUNT_HALF];uniform vec4 u_ColorOverLifeGradientRanges;\n#endif\n#ifdef RANDOMCOLOROVERLIFETIME\nuniform vec4 u_ColorOverLifeGradientColors[COLORCOUNT];uniform vec4 u_ColorOverLifeGradientAlphas[COLORCOUNT_HALF];uniform vec4 u_ColorOverLifeGradientRanges;uniform vec4 u_MaxColorOverLifeGradientColors[COLORCOUNT];uniform vec4 u_MaxColorOverLifeGradientAlphas[COLORCOUNT_HALF];uniform vec4 u_MaxColorOverLifeGradientRanges;\n#endif\n#if defined(SIZEOVERLIFETIMECURVE) || defined(SIZEOVERLIFETIMERANDOMCURVES)\nuniform vec4 u_SOLSizeGradient[2];\n#endif\n#ifdef SIZEOVERLIFETIMERANDOMCURVES\nuniform vec4 u_SOLSizeGradientMax[2];\n#endif\n#if defined(SIZEOVERLIFETIMECURVESEPERATE) || defined(SIZEOVERLIFETIMERANDOMCURVESSEPERATE)\nuniform vec4 u_SOLSizeGradientX[2];uniform vec4 u_SOLSizeGradientY[2];uniform vec4 u_SOLSizeGradientZ[2];\n#endif\n#ifdef SIZEOVERLIFETIMERANDOMCURVESSEPERATE\nuniform vec4 u_SOLSizeGradientMaxX[2];uniform vec4 u_SOLSizeGradientMaxY[2];uniform vec4 u_SOLSizeGradientMaxZ[2];\n#endif\n#ifdef ROTATIONOVERLIFETIME\n#if defined(ROTATIONOVERLIFETIMECONSTANT) || defined(ROTATIONOVERLIFETIMERANDOMCONSTANTS)\nuniform float u_ROLAngularVelocityConst;\n#endif\n#ifdef ROTATIONOVERLIFETIMERANDOMCONSTANTS\nuniform float u_ROLAngularVelocityConstMax;\n#endif\n#if defined(ROTATIONOVERLIFETIMECURVE) || defined(ROTATIONOVERLIFETIMERANDOMCURVES)\nuniform vec4 u_ROLAngularVelocityGradient[2];\n#endif\n#ifdef ROTATIONOVERLIFETIMERANDOMCURVES\nuniform vec4 u_ROLAngularVelocityGradientMax[2];\n#endif\n#endif\n#ifdef ROTATIONOVERLIFETIMESEPERATE\n#if defined(ROTATIONOVERLIFETIMECONSTANT) || defined(ROTATIONOVERLIFETIMERANDOMCONSTANTS)\nuniform vec3 u_ROLAngularVelocityConstSeprarate;\n#endif\n#ifdef ROTATIONOVERLIFETIMERANDOMCONSTANTS\nuniform vec3 u_ROLAngularVelocityConstMaxSeprarate;\n#endif\n#if defined(ROTATIONOVERLIFETIMECURVE) || defined(ROTATIONOVERLIFETIMERANDOMCURVES)\nuniform vec4 u_ROLAngularVelocityGradientX[2];uniform vec4 u_ROLAngularVelocityGradientY[2];uniform vec4 u_ROLAngularVelocityGradientZ[2];\n#endif\n#ifdef ROTATIONOVERLIFETIMERANDOMCURVES\nuniform vec4 u_ROLAngularVelocityGradientMaxX[2];uniform vec4 u_ROLAngularVelocityGradientMaxY[2];uniform vec4 u_ROLAngularVelocityGradientMaxZ[2];\n#endif\n#endif\n#if defined(TEXTURESHEETANIMATIONCURVE) || defined(TEXTURESHEETANIMATIONRANDOMCURVE)\nuniform float u_TSACycles;uniform vec2 u_TSASubUVLength;uniform vec4 u_TSAGradientUVs[2];\n#endif\n#ifdef TEXTURESHEETANIMATIONRANDOMCURVE\nuniform vec4 u_TSAMaxGradientUVs[2];\n#endif\n";
+    var ParticleSpriteVS = "uniform float u_CurrentTime;uniform vec3 u_Gravity;uniform vec2 u_DragConstanct;uniform vec3 u_WorldPosition;uniform vec4 u_WorldRotation;uniform int u_ThreeDStartRotation;uniform int u_Shape;uniform int u_ScalingMode;uniform vec3 u_PositionScale;uniform vec3 u_SizeScale;uniform float u_StretchedBillboardLengthScale;uniform float u_StretchedBillboardSpeedScale;uniform int u_SimulationSpace;\n#ifdef GRADIENTKEYCOUNT_8\n#define GRADIENT_VEC4_COUNT 4\n#define GRADIENT_KEY_COUNT 8\n#else\n#define GRADIENT_VEC4_COUNT 2\n#define GRADIENT_KEY_COUNT 4\n#endif\n#if defined(VELOCITYOVERLIFETIMECONSTANT) || defined(VELOCITYOVERLIFETIMECURVE) || defined(VELOCITYOVERLIFETIMERANDOMCONSTANT) || defined(VELOCITYOVERLIFETIMERANDOMCURVE)\nuniform int u_VOLSpaceType;\n#endif\n#if defined(VELOCITYOVERLIFETIMECONSTANT) || defined(VELOCITYOVERLIFETIMERANDOMCONSTANT)\nuniform vec3 u_VOLVelocityConst;\n#endif\n#if defined(VELOCITYOVERLIFETIMECURVE) || defined(VELOCITYOVERLIFETIMERANDOMCURVE)\n#ifdef GRADIENTKEYCOUNT_8\nuniform vec4 u_VOLVelocityGradientX[4];uniform vec4 u_VOLVelocityGradientY[4];uniform vec4 u_VOLVelocityGradientZ[4];\n#else\nuniform vec4 u_VOLVelocityGradientX[2];uniform vec4 u_VOLVelocityGradientY[2];uniform vec4 u_VOLVelocityGradientZ[2];\n#endif\n#endif\n#ifdef VELOCITYOVERLIFETIMERANDOMCONSTANT\nuniform vec3 u_VOLVelocityConstMax;\n#endif\n#ifdef VELOCITYOVERLIFETIMERANDOMCURVE\n#ifdef GRADIENTKEYCOUNT_8\nuniform vec4 u_VOLVelocityGradientMaxX[4];uniform vec4 u_VOLVelocityGradientMaxY[4];uniform vec4 u_VOLVelocityGradientMaxZ[4];\n#else\nuniform vec4 u_VOLVelocityGradientMaxX[2];uniform vec4 u_VOLVelocityGradientMaxY[2];uniform vec4 u_VOLVelocityGradientMaxZ[2];\n#endif\n#endif\n#ifdef COLORKEYCOUNT_8\n#define COLORCOUNT 8\n#define COLORCOUNT_HALF 4\n#else\n#define COLORCOUNT 4\n#define COLORCOUNT_HALF 2\n#endif\n#ifdef COLOROVERLIFETIME\nuniform vec4 u_ColorOverLifeGradientColors[COLORCOUNT];uniform vec4 u_ColorOverLifeGradientAlphas[COLORCOUNT_HALF];uniform vec4 u_ColorOverLifeGradientRanges;\n#endif\n#ifdef RANDOMCOLOROVERLIFETIME\nuniform vec4 u_ColorOverLifeGradientColors[COLORCOUNT];uniform vec4 u_ColorOverLifeGradientAlphas[COLORCOUNT_HALF];uniform vec4 u_ColorOverLifeGradientRanges;uniform vec4 u_MaxColorOverLifeGradientColors[COLORCOUNT];uniform vec4 u_MaxColorOverLifeGradientAlphas[COLORCOUNT_HALF];uniform vec4 u_MaxColorOverLifeGradientRanges;\n#endif\n#if defined(SIZEOVERLIFETIMECURVE) || defined(SIZEOVERLIFETIMERANDOMCURVES)\n#ifdef GRADIENTKEYCOUNT_8\nuniform vec4 u_SOLSizeGradient[4];\n#else\nuniform vec4 u_SOLSizeGradient[2];\n#endif\n#endif\n#ifdef SIZEOVERLIFETIMERANDOMCURVES\n#ifdef GRADIENTKEYCOUNT_8\nuniform vec4 u_SOLSizeGradientMax[4];\n#else\nuniform vec4 u_SOLSizeGradientMax[2];\n#endif\n#endif\n#if defined(SIZEOVERLIFETIMECURVESEPERATE) || defined(SIZEOVERLIFETIMERANDOMCURVESSEPERATE)\n#ifdef GRADIENTKEYCOUNT_8\nuniform vec4 u_SOLSizeGradientX[4];uniform vec4 u_SOLSizeGradientY[4];uniform vec4 u_SOLSizeGradientZ[4];\n#else\nuniform vec4 u_SOLSizeGradientX[2];uniform vec4 u_SOLSizeGradientY[2];uniform vec4 u_SOLSizeGradientZ[2];\n#endif\n#endif\n#ifdef SIZEOVERLIFETIMERANDOMCURVESSEPERATE\n#ifdef GRADIENTKEYCOUNT_8\nuniform vec4 u_SOLSizeGradientMaxX[4];uniform vec4 u_SOLSizeGradientMaxY[4];uniform vec4 u_SOLSizeGradientMaxZ[4];\n#else\nuniform vec4 u_SOLSizeGradientMaxX[2];uniform vec4 u_SOLSizeGradientMaxY[2];uniform vec4 u_SOLSizeGradientMaxZ[2];\n#endif\n#endif\n#ifdef ROTATIONOVERLIFETIME\n#if defined(ROTATIONOVERLIFETIMECONSTANT) || defined(ROTATIONOVERLIFETIMERANDOMCONSTANTS)\nuniform float u_ROLAngularVelocityConst;\n#endif\n#ifdef ROTATIONOVERLIFETIMERANDOMCONSTANTS\nuniform float u_ROLAngularVelocityConstMax;\n#endif\n#if defined(ROTATIONOVERLIFETIMECURVE) || defined(ROTATIONOVERLIFETIMERANDOMCURVES)\n#ifdef GRADIENTKEYCOUNT_8\nuniform vec4 u_ROLAngularVelocityGradient[4];\n#else\nuniform vec4 u_ROLAngularVelocityGradient[2];\n#endif\n#endif\n#ifdef ROTATIONOVERLIFETIMERANDOMCURVES\n#ifdef GRADIENTKEYCOUNT_8\nuniform vec4 u_ROLAngularVelocityGradientMax[4];\n#else\nuniform vec4 u_ROLAngularVelocityGradientMax[2];\n#endif\n#endif\n#endif\n#ifdef ROTATIONOVERLIFETIMESEPERATE\n#if defined(ROTATIONOVERLIFETIMECONSTANT) || defined(ROTATIONOVERLIFETIMERANDOMCONSTANTS)\nuniform vec3 u_ROLAngularVelocityConstSeprarate;\n#endif\n#ifdef ROTATIONOVERLIFETIMERANDOMCONSTANTS\nuniform vec3 u_ROLAngularVelocityConstMaxSeprarate;\n#endif\n#if defined(ROTATIONOVERLIFETIMECURVE) || defined(ROTATIONOVERLIFETIMERANDOMCURVES)\n#ifdef GRADIENTKEYCOUNT_8\nuniform vec4 u_ROLAngularVelocityGradientX[4];uniform vec4 u_ROLAngularVelocityGradientY[4];uniform vec4 u_ROLAngularVelocityGradientZ[4];\n#else\nuniform vec4 u_ROLAngularVelocityGradientX[2];uniform vec4 u_ROLAngularVelocityGradientY[2];uniform vec4 u_ROLAngularVelocityGradientZ[2];\n#endif\n#endif\n#ifdef ROTATIONOVERLIFETIMERANDOMCURVES\n#ifdef GRADIENTKEYCOUNT_8\nuniform vec4 u_ROLAngularVelocityGradientMaxX[4];uniform vec4 u_ROLAngularVelocityGradientMaxY[4];uniform vec4 u_ROLAngularVelocityGradientMaxZ[4];\n#else\nuniform vec4 u_ROLAngularVelocityGradientMaxX[2];uniform vec4 u_ROLAngularVelocityGradientMaxY[2];uniform vec4 u_ROLAngularVelocityGradientMaxZ[2];\n#endif\n#endif\n#endif\n#if defined(TEXTURESHEETANIMATIONCURVE) || defined(TEXTURESHEETANIMATIONRANDOMCURVE)\nuniform float u_TSACycles;uniform vec2 u_TSASubUVLength;\n#ifdef GRADIENTKEYCOUNT_8\nuniform vec4 u_TSAGradientUVs[4];\n#else\nuniform vec4 u_TSAGradientUVs[2];\n#endif\n#endif\n#ifdef TEXTURESHEETANIMATIONRANDOMCURVE\n#ifdef GRADIENTKEYCOUNT_8\nuniform vec4 u_TSAMaxGradientUVs[4];\n#else\nuniform vec4 u_TSAMaxGradientUVs[2];\n#endif\n#endif\nuniform vec3 u_Pivot;";
 
     class VertexShuriKenParticle {
         constructor() {
@@ -1924,6 +1924,7 @@
             ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_HORIZONTALBILLBOARD = Laya.Shader3D.getDefineByName("HORIZONTALBILLBOARD");
             ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_VERTICALBILLBOARD = Laya.Shader3D.getDefineByName("VERTICALBILLBOARD");
             ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_COLORKEYCOUNT_8 = Laya.Shader3D.getDefineByName("COLORKEYCOUNT_8");
+            ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_GRADIENTKEYCOUNT_8 = Laya.Shader3D.getDefineByName("GRADIENTKEYCOUNT_8");
             mulDefineMode && (ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_COLOROVERLIFETIME = Laya.Shader3D.getDefineByName("COLOROVERLIFETIME"));
             ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RANDOMCOLOROVERLIFETIME = Laya.Shader3D.getDefineByName("RANDOMCOLOROVERLIFETIME");
             mulDefineMode && (ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_VELOCITYOVERLIFETIMECONSTANT = Laya.Shader3D.getDefineByName("VELOCITYOVERLIFETIMECONSTANT"));
@@ -1957,6 +1958,7 @@
             ShuriKenParticle3DShaderDeclaration.SIMULATIONSPACE = Laya.Shader3D.propertyNameToID("u_SimulationSpace");
             ShuriKenParticle3DShaderDeclaration.CURRENTTIME = Laya.Shader3D.propertyNameToID("u_CurrentTime");
             ShuriKenParticle3DShaderDeclaration.DRAG = Laya.Shader3D.propertyNameToID("u_DragConstanct");
+            ShuriKenParticle3DShaderDeclaration.PIVOT = Laya.Shader3D.propertyNameToID("u_Pivot");
             mulDefineMode && (ShuriKenParticle3DShaderDeclaration.VOLVELOCITYCONST = Laya.Shader3D.propertyNameToID("u_VOLVelocityConst"));
             ShuriKenParticle3DShaderDeclaration.VOLVELOCITYGRADIENTX = Laya.Shader3D.propertyNameToID("u_VOLVelocityGradientX");
             ShuriKenParticle3DShaderDeclaration.VOLVELOCITYGRADIENTY = Laya.Shader3D.propertyNameToID("u_VOLVelocityGradientY");
@@ -2016,240 +2018,43 @@
             uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.MAXCOLOROVERLIFEGRADIENTCOLORS, 'u_MaxColorOverLifeGradientColors', Laya.ShaderDataType.Vector4, 8);
             uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.MAXCOLOROVERLIFEGRADIENTRANGES, 'u_MaxColorOverLifeGradientRanges', Laya.ShaderDataType.Vector4);
             mulDefineMode && (uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.VOLVELOCITYCONST, 'u_VOLVelocityConst', Laya.ShaderDataType.Vector3));
-            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.VOLVELOCITYGRADIENTX, 'u_VOLVelocityGradientX', Laya.ShaderDataType.Vector4, 2);
-            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.VOLVELOCITYGRADIENTY, 'u_VOLVelocityGradientY', Laya.ShaderDataType.Vector4, 2);
-            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.VOLVELOCITYGRADIENTZ, 'u_VOLVelocityGradientZ', Laya.ShaderDataType.Vector4, 2);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.VOLVELOCITYGRADIENTX, 'u_VOLVelocityGradientX', Laya.ShaderDataType.Vector4, 4);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.VOLVELOCITYGRADIENTY, 'u_VOLVelocityGradientY', Laya.ShaderDataType.Vector4, 4);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.VOLVELOCITYGRADIENTZ, 'u_VOLVelocityGradientZ', Laya.ShaderDataType.Vector4, 4);
             mulDefineMode && (uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.VOLVELOCITYCONSTMAX, 'u_VOLVelocityConstMax', Laya.ShaderDataType.Vector3));
-            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.VOLVELOCITYGRADIENTXMAX, 'u_VOLVelocityGradientMaxX', Laya.ShaderDataType.Vector4, 2);
-            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.VOLVELOCITYGRADIENTYMAX, 'u_VOLVelocityGradientMaxY', Laya.ShaderDataType.Vector4, 2);
-            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.VOLVELOCITYGRADIENTZMAX, 'u_VOLVelocityGradientMaxZ', Laya.ShaderDataType.Vector4, 2);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.VOLVELOCITYGRADIENTXMAX, 'u_VOLVelocityGradientMaxX', Laya.ShaderDataType.Vector4, 4);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.VOLVELOCITYGRADIENTYMAX, 'u_VOLVelocityGradientMaxY', Laya.ShaderDataType.Vector4, 4);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.VOLVELOCITYGRADIENTZMAX, 'u_VOLVelocityGradientMaxZ', Laya.ShaderDataType.Vector4, 4);
             uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.VOLSPACETYPE, 'u_VOLSpaceType', Laya.ShaderDataType.Int);
-            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.SOLSIZEGRADIENT, 'u_SOLSizeGradient', Laya.ShaderDataType.Vector4, 2);
-            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.SOLSIZEGRADIENTX, 'u_SOLSizeGradientX', Laya.ShaderDataType.Vector4, 2);
-            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.SOLSIZEGRADIENTY, 'u_SOLSizeGradientY', Laya.ShaderDataType.Vector4, 2);
-            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.SOLSizeGradientZ, 'u_SOLSizeGradientZ', Laya.ShaderDataType.Vector4, 2);
-            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.SOLSizeGradientMax, 'u_SOLSizeGradientMax', Laya.ShaderDataType.Vector4, 2);
-            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.SOLSIZEGRADIENTXMAX, 'u_SOLSizeGradientMaxX', Laya.ShaderDataType.Vector4, 2);
-            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.SOLSIZEGRADIENTYMAX, 'u_SOLSizeGradientMaxY', Laya.ShaderDataType.Vector4, 2);
-            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.SOLSizeGradientZMAX, 'u_SOLSizeGradientMaxZ', Laya.ShaderDataType.Vector4, 2);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.SOLSIZEGRADIENT, 'u_SOLSizeGradient', Laya.ShaderDataType.Vector4, 4);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.SOLSIZEGRADIENTX, 'u_SOLSizeGradientX', Laya.ShaderDataType.Vector4, 4);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.SOLSIZEGRADIENTY, 'u_SOLSizeGradientY', Laya.ShaderDataType.Vector4, 4);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.SOLSizeGradientZ, 'u_SOLSizeGradientZ', Laya.ShaderDataType.Vector4, 4);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.SOLSizeGradientMax, 'u_SOLSizeGradientMax', Laya.ShaderDataType.Vector4, 4);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.SOLSIZEGRADIENTXMAX, 'u_SOLSizeGradientMaxX', Laya.ShaderDataType.Vector4, 4);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.SOLSIZEGRADIENTYMAX, 'u_SOLSizeGradientMaxY', Laya.ShaderDataType.Vector4, 4);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.SOLSizeGradientZMAX, 'u_SOLSizeGradientMaxZ', Laya.ShaderDataType.Vector4, 4);
             mulDefineMode && (uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYCONST, 'u_ROLAngularVelocityConst', Laya.ShaderDataType.Float));
             mulDefineMode && (uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYCONSTSEPRARATE, 'u_ROLAngularVelocityConstSeprarate', Laya.ShaderDataType.Vector3));
-            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYGRADIENT, 'u_ROLAngularVelocityGradient', Laya.ShaderDataType.Vector4, 2);
-            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYGRADIENTX, 'u_ROLAngularVelocityGradientX', Laya.ShaderDataType.Vector4, 2);
-            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYGRADIENTY, 'u_ROLAngularVelocityGradientY', Laya.ShaderDataType.Vector4, 2);
-            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYGRADIENTZ, 'u_ROLAngularVelocityGradientZ', Laya.ShaderDataType.Vector4, 2);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYGRADIENT, 'u_ROLAngularVelocityGradient', Laya.ShaderDataType.Vector4, 4);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYGRADIENTX, 'u_ROLAngularVelocityGradientX', Laya.ShaderDataType.Vector4, 4);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYGRADIENTY, 'u_ROLAngularVelocityGradientY', Laya.ShaderDataType.Vector4, 4);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYGRADIENTZ, 'u_ROLAngularVelocityGradientZ', Laya.ShaderDataType.Vector4, 4);
             mulDefineMode && (uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYCONSTMAX, 'u_ROLAngularVelocityConstMax', Laya.ShaderDataType.Float));
             mulDefineMode && (uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYCONSTMAXSEPRARATE, 'u_ROLAngularVelocityConstMaxSeprarate', Laya.ShaderDataType.Vector3));
-            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYGRADIENTMAX, 'u_ROLAngularVelocityGradientMax', Laya.ShaderDataType.Vector4, 2);
-            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYGRADIENTXMAX, 'u_ROLAngularVelocityGradientMaxX', Laya.ShaderDataType.Vector4, 2);
-            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYGRADIENTYMAX, 'u_ROLAngularVelocityGradientMaxY', Laya.ShaderDataType.Vector4, 2);
-            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYGRADIENTZMAX, 'u_ROLAngularVelocityGradientMaxZ', Laya.ShaderDataType.Vector4, 2);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYGRADIENTMAX, 'u_ROLAngularVelocityGradientMax', Laya.ShaderDataType.Vector4, 4);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYGRADIENTXMAX, 'u_ROLAngularVelocityGradientMaxX', Laya.ShaderDataType.Vector4, 4);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYGRADIENTYMAX, 'u_ROLAngularVelocityGradientMaxY', Laya.ShaderDataType.Vector4, 4);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.ROLANGULARVELOCITYGRADIENTZMAX, 'u_ROLAngularVelocityGradientMaxZ', Laya.ShaderDataType.Vector4, 4);
             uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.TEXTURESHEETANIMATIONCYCLES, 'u_TSACycles', Laya.ShaderDataType.Float);
             uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.TEXTURESHEETANIMATIONSUBUVLENGTH, 'u_TSASubUVLength', Laya.ShaderDataType.Vector2);
-            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.TEXTURESHEETANIMATIONGRADIENTUVS, 'u_TSAGradientUVs', Laya.ShaderDataType.Vector4, 2);
-            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.TEXTURESHEETANIMATIONGRADIENTMAXUVS, 'u_TSAMaxGradientUVs', Laya.ShaderDataType.Vector4, 2);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.TEXTURESHEETANIMATIONGRADIENTUVS, 'u_TSAGradientUVs', Laya.ShaderDataType.Vector4, 4);
+            uniformMap.addShaderUniformArray(ShuriKenParticle3DShaderDeclaration.TEXTURESHEETANIMATIONGRADIENTMAXUVS, 'u_TSAMaxGradientUVs', Laya.ShaderDataType.Vector4, 4);
             uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.DRAG, 'u_DragConstanct', Laya.ShaderDataType.Vector2);
+            uniformMap.addShaderUniform(ShuriKenParticle3DShaderDeclaration.PIVOT, 'u_Pivot', Laya.ShaderDataType.Vector3);
         }
     }
     ShuriKenParticle3DShaderDeclaration.mulShaderDefineMode = true;
-
-    class ShurikenParticleMaterial extends Laya.Material {
-        static __initDefine__() {
-            ShurikenParticleMaterial.SHADERDEFINE_DIFFUSEMAP = Laya.Shader3D.getDefineByName("DIFFUSEMAP");
-            ShurikenParticleMaterial.SHADERDEFINE_TINTCOLOR = Laya.Shader3D.getDefineByName("TINTCOLOR");
-            ShurikenParticleMaterial.SHADERDEFINE_ADDTIVEFOG = Laya.Shader3D.getDefineByName("ADDTIVEFOG");
-            ShurikenParticleMaterial.DIFFUSETEXTURE = Laya.Shader3D.propertyNameToID("u_texture");
-            ShurikenParticleMaterial.TINTCOLOR = Laya.Shader3D.propertyNameToID("u_Tintcolor");
-            ShurikenParticleMaterial.TILINGOFFSET = Laya.Shader3D.propertyNameToID("u_TilingOffset");
-        }
-        get color() {
-            return this._shaderValues.getColor(ShurikenParticleMaterial.TINTCOLOR);
-        }
-        set color(value) {
-            if (value)
-                this._shaderValues.addDefine(ShurikenParticleMaterial.SHADERDEFINE_TINTCOLOR);
-            else
-                this._shaderValues.removeDefine(ShurikenParticleMaterial.SHADERDEFINE_TINTCOLOR);
-            this._shaderValues.setColor(ShurikenParticleMaterial.TINTCOLOR, value);
-        }
-        get tilingOffset() {
-            return this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET);
-        }
-        set tilingOffset(value) {
-            if (value) {
-                this._shaderValues.setVector(ShurikenParticleMaterial.TILINGOFFSET, value);
-            }
-            else {
-                this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET).setValue(1.0, 1.0, 0.0, 0.0);
-            }
-        }
-        get texture() {
-            return this._shaderValues.getTexture(ShurikenParticleMaterial.DIFFUSETEXTURE);
-        }
-        set texture(value) {
-            if (value)
-                this._shaderValues.addDefine(ShurikenParticleMaterial.SHADERDEFINE_DIFFUSEMAP);
-            else
-                this._shaderValues.removeDefine(ShurikenParticleMaterial.SHADERDEFINE_DIFFUSEMAP);
-            this._shaderValues.setTexture(ShurikenParticleMaterial.DIFFUSETEXTURE, value);
-        }
-        constructor() {
-            super();
-            this.setShaderName("PARTICLESHURIKEN");
-            this.renderMode = ShurikenParticleMaterial.RENDERMODE_ALPHABLENDED;
-        }
-        clone() {
-            var dest = new ShurikenParticleMaterial();
-            this.cloneTo(dest);
-            return dest;
-        }
-        set renderMode(value) {
-            switch (value) {
-                case ShurikenParticleMaterial.RENDERMODE_ADDTIVE:
-                    this.renderQueue = Laya.Material.RENDERQUEUE_TRANSPARENT;
-                    this.depthWrite = false;
-                    this.cull = Laya.RenderState.CULL_NONE;
-                    this.blend = Laya.RenderState.BLEND_ENABLE_ALL;
-                    this.blendSrc = Laya.RenderState.BLENDPARAM_SRC_ALPHA;
-                    this.blendDst = Laya.RenderState.BLENDPARAM_ONE;
-                    this.alphaTest = false;
-                    this._shaderValues.addDefine(ShurikenParticleMaterial.SHADERDEFINE_ADDTIVEFOG);
-                    break;
-                case ShurikenParticleMaterial.RENDERMODE_ALPHABLENDED:
-                    this.renderQueue = Laya.Material.RENDERQUEUE_TRANSPARENT;
-                    this.depthWrite = false;
-                    this.cull = Laya.RenderState.CULL_NONE;
-                    this.blend = Laya.RenderState.BLEND_ENABLE_ALL;
-                    this.blendSrc = Laya.RenderState.BLENDPARAM_SRC_ALPHA;
-                    this.blendDst = Laya.RenderState.BLENDPARAM_ONE_MINUS_SRC_ALPHA;
-                    this.alphaTest = false;
-                    this._shaderValues.removeDefine(ShurikenParticleMaterial.SHADERDEFINE_ADDTIVEFOG);
-                    break;
-                default:
-                    throw new Error("ShurikenParticleMaterial : renderMode value error.");
-            }
-        }
-        get tilingOffsetX() {
-            return this._MainTex_STX;
-        }
-        set tilingOffsetX(x) {
-            this._MainTex_STX = x;
-        }
-        get tilingOffsetY() {
-            return this._MainTex_STY;
-        }
-        set tilingOffsetY(y) {
-            this._MainTex_STY = y;
-        }
-        get tilingOffsetZ() {
-            return this._MainTex_STZ;
-        }
-        set tilingOffsetZ(z) {
-            this._MainTex_STZ = z;
-        }
-        get tilingOffsetW() {
-            return this._MainTex_STW;
-        }
-        set tilingOffsetW(w) {
-            this._MainTex_STW = w;
-        }
-        get _TintColor() {
-            return this.color;
-        }
-        set _TintColor(value) {
-            this.color = value;
-        }
-        get _TintColorR() {
-            return this.color.r;
-        }
-        set _TintColorR(value) {
-            this.color.r = value;
-        }
-        get _TintColorG() {
-            return this.color.g;
-        }
-        set _TintColorG(value) {
-            this.color.g = value;
-        }
-        get _TintColorB() {
-            return this.color.b;
-        }
-        set _TintColorB(value) {
-            this.color.b = value;
-        }
-        get _TintColorA() {
-            return this.color.a;
-        }
-        set _TintColorA(value) {
-            this.color.a = value;
-        }
-        get _MainTex_ST() {
-            return this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET);
-        }
-        set _MainTex_ST(value) {
-            var tilOff = this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET);
-            tilOff.setValue(value.x, value.y, value.z, value.w);
-            this.tilingOffset = tilOff;
-        }
-        get _MainTex_STX() {
-            return this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET).x;
-        }
-        set _MainTex_STX(x) {
-            var tilOff = this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET);
-            tilOff.x = x;
-            this.tilingOffset = tilOff;
-        }
-        get _MainTex_STY() {
-            return this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET).y;
-        }
-        set _MainTex_STY(y) {
-            var tilOff = this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET);
-            tilOff.y = y;
-            this.tilingOffset = tilOff;
-        }
-        get _MainTex_STZ() {
-            return this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET).z;
-        }
-        set _MainTex_STZ(z) {
-            var tilOff = this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET);
-            tilOff.z = z;
-            this.tilingOffset = tilOff;
-        }
-        get _MainTex_STW() {
-            return this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET).w;
-        }
-        set _MainTex_STW(w) {
-            var tilOff = this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET);
-            tilOff.w = w;
-            this.tilingOffset = tilOff;
-        }
-        get colorR() {
-            return this._TintColorR;
-        }
-        set colorR(value) {
-            this._TintColorR = value;
-        }
-        get colorG() {
-            return this._TintColorG;
-        }
-        set colorG(value) {
-            this._TintColorG = value;
-        }
-        get colorB() {
-            return this._TintColorB;
-        }
-        set colorB(value) {
-            this._TintColorB = value;
-        }
-        get colorA() {
-            return this._TintColorA;
-        }
-        set colorA(value) {
-            this._TintColorA = value;
-        }
-    }
-    ShurikenParticleMaterial.RENDERMODE_ALPHABLENDED = 0;
-    ShurikenParticleMaterial.RENDERMODE_ADDTIVE = 1;
 
     class ShurikenParticleData {
         constructor() {
@@ -2304,6 +2109,8 @@
             var autoRandomSeed = particleSystem.autoRandomSeed;
             var rand = particleSystem._rand;
             var randomSeeds = particleSystem._randomSeeds;
+            const duration = particleSystem.duration;
+            const normalizedTime = duration > 0 ? (particleSystem.emissionTime % duration) / duration : 0;
             switch (particleSystem.startColorType) {
                 case 0:
                     var constantStartColor = particleSystem.startColorConstant;
@@ -2311,6 +2118,13 @@
                     ShurikenParticleData.startColor.y = constantStartColor.y;
                     ShurikenParticleData.startColor.z = constantStartColor.z;
                     ShurikenParticleData.startColor.w = constantStartColor.w;
+                    break;
+                case 1:
+                    particleSystem.startColorGradient.evaluateColorRGB(normalizedTime, tempColor);
+                    ShurikenParticleData.startColor.x = tempColor.r;
+                    ShurikenParticleData.startColor.y = tempColor.g;
+                    ShurikenParticleData.startColor.z = tempColor.b;
+                    ShurikenParticleData.startColor.w = tempColor.a;
                     break;
                 case 2:
                     if (autoRandomSeed) {
@@ -2322,6 +2136,30 @@
                         randomSeeds[3] = rand.seed;
                     }
                     break;
+                case 3: {
+                    particleSystem.startColorGradientMin.evaluateColorRGB(normalizedTime, tempColor);
+                    const colorMin = tempVector4;
+                    colorMin.x = tempColor.r;
+                    colorMin.y = tempColor.g;
+                    colorMin.z = tempColor.b;
+                    colorMin.w = tempColor.a;
+                    particleSystem.startColorGradientMax.evaluateColorRGB(normalizedTime, tempColor);
+                    const colorMax = tempVector41;
+                    colorMax.x = tempColor.r;
+                    colorMax.y = tempColor.g;
+                    colorMax.z = tempColor.b;
+                    colorMax.w = tempColor.a;
+                    if (autoRandomSeed) {
+                        Laya.Vector4.lerp(colorMin, colorMax, Math.random(), ShurikenParticleData.startColor);
+                    }
+                    else {
+                        rand.seed = randomSeeds[3];
+                        const lerp = rand.getFloat();
+                        randomSeeds[3] = rand.seed;
+                        Laya.Vector4.lerp(colorMin, colorMax, lerp, ShurikenParticleData.startColor);
+                    }
+                    break;
+                }
             }
             var colorOverLifetime = particleSystem.colorOverLifetime;
             if (colorOverLifetime && colorOverLifetime.enable) {
@@ -2596,6 +2434,9 @@
     ShurikenParticleData.startRotation = new Float32Array(3);
     ShurikenParticleData.startUVInfo = new Float32Array(4);
     const _tempVector30$1 = new Laya.Vector3();
+    const tempColor = new Laya.Color();
+    const tempVector4 = new Laya.Vector4();
+    const tempVector41 = new Laya.Vector4();
 
     class VertexShurikenParticleBillboard extends VertexShuriKenParticle {
         static get vertexDeclaration() {
@@ -2825,6 +2666,21 @@
 
     const tempV3$1 = new Laya.Vector3();
     class ShurikenParticleSystem extends Laya.GeometryElement {
+        get gradientKeyCount8() {
+            return this._gradientKeyCount8;
+        }
+        set gradientKeyCount8(value) {
+            if (this._gradientKeyCount8 !== value) {
+                this._gradientKeyCount8 = value;
+                var shaDat = this._ownerRender._baseRenderNode.shaderData;
+                if (value) {
+                    shaDat.addDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_GRADIENTKEYCOUNT_8);
+                }
+                else {
+                    shaDat.removeDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_GRADIENTKEYCOUNT_8);
+                }
+            }
+        }
         get maxParticles() {
             return this._bufferMaxParticles - 1;
         }
@@ -3533,6 +3389,9 @@
             this.startColorConstant = new Laya.Vector4(1, 1, 1, 1);
             this.startColorConstantMin = new Laya.Vector4(0, 0, 0, 0);
             this.startColorConstantMax = new Laya.Vector4(1, 1, 1, 1);
+            this.startColorGradient = new Laya.Gradient();
+            this.startColorGradientMin = new Laya.Gradient();
+            this.startColorGradientMax = new Laya.Gradient();
             this.gravityModifier = 0;
             this.simulationSpace = 0;
             this.simulationSpeed = 1.0;
@@ -3541,6 +3400,7 @@
             this.randomSeed = null;
             this.autoRandomSeed = false;
             this.isPerformanceMode = false;
+            this._gradientKeyCount8 = false;
             this._mulDefMode = ShuriKenParticle3DShaderDeclaration.mulShaderDefineMode;
             this.indexFormat = Laya.IndexFormat.UInt16;
             this._firstActiveElement = 0;
@@ -3988,6 +3848,8 @@
             }
         }
         _advanceDistance(emitTime, elapsedTime) {
+            if (this._ownerRender.renderMode === 4 && !this._ownerRender.mesh)
+                return;
             let position = this._owner.transform.position;
             let offsetDistance = Laya.Vector3.distance(position, this._emissionLastPosition);
             let rateOverDistance = this._emission.emissionRateOverDistance;
@@ -4143,6 +4005,9 @@
             this.startColorConstant = null;
             this.startColorConstantMin = null;
             this.startColorConstantMax = null;
+            this.startColorGradient = null;
+            this.startColorGradientMin = null;
+            this.startColorGradientMax = null;
             this._velocityOverLifetime = null;
             this._colorOverLifetime = null;
             this._sizeOverLifetime = null;
@@ -4562,6 +4427,9 @@
             this.startColorConstant.cloneTo(destObject.startColorConstant);
             this.startColorConstantMin.cloneTo(destObject.startColorConstantMin);
             this.startColorConstantMax.cloneTo(destObject.startColorConstantMax);
+            this.startColorGradient.cloneTo(destObject.startColorGradient);
+            this.startColorGradientMin.cloneTo(destObject.startColorGradientMin);
+            this.startColorGradientMax.cloneTo(destObject.startColorGradientMax);
             destObject.gravityModifier = this.gravityModifier;
             destObject.simulationSpace = this.simulationSpace;
             destObject.simulationSpeed = this.simulationSpeed;
@@ -4578,6 +4446,7 @@
             (this._rotationOverLifetime) && (destObject.rotationOverLifetime = this._rotationOverLifetime.clone());
             (this._textureSheetAnimation) && (destObject.textureSheetAnimation = this._textureSheetAnimation.clone());
             destObject.isPerformanceMode = this.isPerformanceMode;
+            destObject.gradientKeyCount8 = this._gradientKeyCount8;
             destObject._isEmitting = this._isEmitting;
             destObject._isPlaying = this._isPlaying;
             destObject._isPaused = this._isPaused;
@@ -4608,304 +4477,6 @@
     const _tempVector37 = new Laya.Vector3();
     const _tempPosition = new Laya.Vector3();
     const _tempDirection = new Laya.Vector3();
-
-    class ShurikenParticleRenderer extends Laya.BaseRender {
-        get particleSystem() {
-            return this._particleSystem;
-        }
-        get renderMode() {
-            return this._renderMode;
-        }
-        set renderMode(value) {
-            if (this._renderMode !== value) {
-                var defineDatas = this._baseRenderNode.shaderData;
-                switch (this._renderMode) {
-                    case 0:
-                        defineDatas.removeDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_BILLBOARD);
-                        break;
-                    case 1:
-                        defineDatas.removeDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_STRETCHEDBILLBOARD);
-                        break;
-                    case 2:
-                        defineDatas.removeDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_HORIZONTALBILLBOARD);
-                        break;
-                    case 3:
-                        defineDatas.removeDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_VERTICALBILLBOARD);
-                        break;
-                    case 4:
-                        defineDatas.removeDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_MESH);
-                        break;
-                }
-                this._renderMode = value;
-                switch (value) {
-                    case 0:
-                        defineDatas.addDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_BILLBOARD);
-                        break;
-                    case 1:
-                        defineDatas.addDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_STRETCHEDBILLBOARD);
-                        break;
-                    case 2:
-                        defineDatas.addDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_HORIZONTALBILLBOARD);
-                        break;
-                    case 3:
-                        defineDatas.addDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_VERTICALBILLBOARD);
-                        break;
-                    case 4:
-                        defineDatas.addDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_MESH);
-                        break;
-                    default:
-                        throw new Error("ShurikenParticleRender: unknown renderMode Value.");
-                }
-                var parSys = this._particleSystem;
-                (parSys) && (parSys._initBufferDatas());
-            }
-        }
-        get mesh() {
-            return this._mesh;
-        }
-        set mesh(value) {
-            if (this._mesh !== value) {
-                (this._mesh) && (this._mesh._removeReference());
-                this._mesh = value;
-                (value) && (value._addReference());
-                this._particleSystem._initBufferDatas();
-            }
-        }
-        constructor() {
-            super();
-            this._finalGravity = new Laya.Vector3();
-            this._dragConstant = new Laya.Vector2();
-            this._mesh = null;
-            this.stretchedBillboardCameraSpeedScale = 0;
-            this.stretchedBillboardSpeedScale = 0;
-            this.stretchedBillboardLengthScale = 2;
-            this.renderMode = 0;
-            this._baseRenderNode.renderNodeType = Laya.BaseRenderType.ParticleRender;
-        }
-        _isMaterialVaild(value) {
-            return value.checkType(Laya.ShaderFeatureType.Effect);
-        }
-        _getcommonUniformMap() {
-            return ["Sprite3D", "ShurikenSprite3D"];
-        }
-        _onAdded() {
-            super._onAdded();
-            this._particleSystem = new ShurikenParticleSystem(this);
-            var elements = this._renderElements;
-            var element = elements[0] = new Laya.RenderElement();
-            element.setTransform(this.owner._transform);
-            element.render = this;
-            element.setGeometry(this._particleSystem);
-            element.material = ShurikenParticleMaterial.defaultMaterial;
-            this._setRenderElements();
-        }
-        _onEnable() {
-            super._onEnable();
-            (this._particleSystem.playOnAwake && Laya.LayaEnv.isPlaying) && (this._particleSystem.play());
-        }
-        _onDisable() {
-            super._onDisable();
-            (this._particleSystem.isAlive) && (this._particleSystem.simulate(0, true));
-        }
-        _calculateBoundingBox() {
-            var particleSystem = this._particleSystem;
-            var bounds;
-            if (particleSystem._useCustomBounds) {
-                bounds = particleSystem.customBounds;
-                bounds._tranform(this.owner.transform.worldMatrix, this._bounds);
-            }
-            else if (particleSystem._simulationSupported()) {
-                particleSystem._generateBounds();
-                bounds = particleSystem._bounds;
-                bounds._tranform(this.owner.transform.worldMatrix, this._bounds);
-                if (particleSystem.gravityModifier != 0) {
-                    var max = this._bounds.getMax();
-                    var min = this._bounds.getMin();
-                    var gravityOffset = particleSystem._gravityOffset;
-                    max.y -= gravityOffset.x;
-                    min.y -= gravityOffset.y;
-                    this._bounds.setMax(max);
-                    this._bounds.setMin(min);
-                }
-            }
-            else {
-                var min = this._bounds.getMin();
-                min.setValue(-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE);
-                this._bounds.setMin(min);
-                var max = this._bounds.getMax();
-                max.setValue(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
-                this._bounds.setMax(max);
-            }
-        }
-        _needRender(boundFrustum, context) {
-            if (!Laya.Stat.enableParticle)
-                return false;
-            if (boundFrustum) {
-                if (boundFrustum.intersects(this.bounds)) {
-                    if (this._particleSystem.isAlive)
-                        return true;
-                    else
-                        return false;
-                }
-                else {
-                    return false;
-                }
-            }
-            else {
-                return true;
-            }
-        }
-        _renderUpdate(context) {
-            var particleSystem = this._particleSystem;
-            var sv = this._baseRenderNode.shaderData;
-            var transform = this.owner.transform;
-            switch (particleSystem.simulationSpace) {
-                case 0:
-                    break;
-                case 1:
-                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.WORLDPOSITION, transform.position);
-                    sv.setShaderData(ShuriKenParticle3DShaderDeclaration.WORLDROTATION, Laya.ShaderDataType.Vector4, transform.rotation);
-                    break;
-                default:
-                    throw new Error("ShurikenParticleMaterial: SimulationSpace value is invalid.");
-            }
-            if (particleSystem.shape && particleSystem.shape.enable) {
-                sv.setBool(ShuriKenParticle3DShaderDeclaration.SHAPE, true);
-            }
-            else {
-                sv.setBool(ShuriKenParticle3DShaderDeclaration.SHAPE, false);
-            }
-            switch (particleSystem.scaleMode) {
-                case 0:
-                    var scale = transform.getWorldLossyScale();
-                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.POSITIONSCALE, scale);
-                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.SIZESCALE, scale);
-                    break;
-                case 1:
-                    var localScale = transform.localScale;
-                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.POSITIONSCALE, localScale);
-                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.SIZESCALE, localScale);
-                    break;
-                case 2:
-                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.POSITIONSCALE, transform.getWorldLossyScale());
-                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.SIZESCALE, Laya.Vector3.ONE);
-                    break;
-            }
-            switch (particleSystem.dragType) {
-                case 0:
-                    this._dragConstant.setValue(particleSystem.dragSpeedConstantMin, particleSystem.dragSpeedConstantMin);
-                    sv.setVector2(ShuriKenParticle3DShaderDeclaration.DRAG, this._dragConstant);
-                    break;
-                case 2:
-                    this._dragConstant.setValue(particleSystem.dragSpeedConstantMin, particleSystem.dragSpeedConstantMax);
-                    sv.setVector2(ShuriKenParticle3DShaderDeclaration.DRAG, this._dragConstant);
-                    break;
-                default:
-                    this._dragConstant.setValue(0, 0);
-                    break;
-            }
-            Laya.Vector3.scale(ShurikenParticleRenderer.gravity, particleSystem.gravityModifier, this._finalGravity);
-            sv.setVector3(ShuriKenParticle3DShaderDeclaration.GRAVITY, this._finalGravity);
-            sv.setInt(ShuriKenParticle3DShaderDeclaration.SIMULATIONSPACE, particleSystem.simulationSpace);
-            sv.setBool(ShuriKenParticle3DShaderDeclaration.THREEDSTARTROTATION, particleSystem.threeDStartRotation);
-            sv.setInt(ShuriKenParticle3DShaderDeclaration.SCALINGMODE, particleSystem.scaleMode);
-            sv.setNumber(ShuriKenParticle3DShaderDeclaration.STRETCHEDBILLBOARDLENGTHSCALE, this.stretchedBillboardLengthScale);
-            sv.setNumber(ShuriKenParticle3DShaderDeclaration.STRETCHEDBILLBOARDSPEEDSCALE, this.stretchedBillboardSpeedScale);
-            sv.setNumber(ShuriKenParticle3DShaderDeclaration.CURRENTTIME, particleSystem._currentTime);
-        }
-        renderUpdate(context) {
-            this._renderElements.forEach(element => {
-                element._renderElementOBJ.isRender = element._geometry._prepareRender(context);
-                element._geometry._prepareRender(context);
-                element._geometry._updateRenderParams(context);
-            });
-        }
-        get bounds() {
-            if (this.boundsChange) {
-                this._calculateBoundingBox();
-                this.boundsChange = false;
-            }
-            return this._bounds;
-        }
-        _cloneTo(dest) {
-            this._particleSystem.cloneTo(dest._particleSystem);
-            dest.sharedMaterial = this.sharedMaterial;
-            dest.renderMode = this.renderMode;
-            dest.mesh = this.mesh;
-            dest.stretchedBillboardCameraSpeedScale = this.stretchedBillboardCameraSpeedScale;
-            dest.stretchedBillboardSpeedScale = this.stretchedBillboardSpeedScale;
-            dest.stretchedBillboardLengthScale = this.stretchedBillboardLengthScale;
-            dest.sortingFudge = this.sortingFudge;
-        }
-        _onDestroy() {
-            (this._mesh) && (this._mesh._removeReference(), this._mesh = null);
-            this._particleSystem.destroy();
-            this._particleSystem = null;
-            super._onDestroy();
-        }
-        _statAdd() {
-            super._statAdd();
-            Laya.LayaGL.statAgent.recordCountData(Laya.StatElement.C_ShurikenParticleRenderCount, 1);
-        }
-        _statRemove() {
-            super._statRemove();
-            Laya.LayaGL.statAgent.recordCountData(Laya.StatElement.C_ShurikenParticleRenderCount, -1);
-        }
-    }
-    ShurikenParticleRenderer.gravity = new Laya.Vector3(0, -9.81, 0);
-    Laya.Laya.addInitCallback(() => {
-        ParticleShuriKenShaderInit.init();
-        VertexShurikenParticleBillboard.__init__();
-        VertexShurikenParticleMesh.__init__();
-        ShuriKenParticle3DShaderDeclaration.__init__();
-        ShuriKenParticle3D.__init__();
-        ShurikenParticleMaterial.__initDefine__();
-    });
-
-    class ShuriKenParticle3D extends Laya.RenderableSprite3D {
-        get particleSystem() {
-            return this._particleSystem;
-        }
-        get particleRenderer() {
-            return this._render;
-        }
-        constructor() {
-            super(null);
-            this._render = this.addComponent(ShurikenParticleRenderer);
-            this._particleSystem = this._render._particleSystem;
-        }
-        destroy(destroyChild = true) {
-            if (this._destroyed)
-                return;
-            super.destroy(destroyChild);
-        }
-    }
-
-    let c = Laya.ClassUtils.regClass;
-    c("ShurikenParticleMaterial", ShurikenParticleMaterial);
-    c("ShuriKenParticle3D", ShuriKenParticle3D);
-    c("ShurikenParticleRenderer", ShurikenParticleRenderer);
-    c("ShurikenParticleSystem", ShurikenParticleSystem);
-    c("Burst", Burst);
-    c("Emission", Emission);
-    c("BaseShape", BaseShape);
-    c("BoxShape", BoxShape);
-    c("CircleShape", CircleShape);
-    c("ConeShape", ConeShape);
-    c("HemisphereShape", HemisphereShape);
-    c("SphereShape", SphereShape);
-    c("FrameOverTime", FrameOverTime);
-    c("GradientAngularVelocity", GradientAngularVelocity);
-    c("GradientColor", GradientColor);
-    c("GradientDataInt", GradientDataInt);
-    c("GradientSize", GradientSize);
-    c("GradientVelocity", GradientVelocity);
-    c("StartFrame", StartFrame);
-    c("TextureSheetAnimation", TextureSheetAnimation);
-    c("ColorOverLifetime", ColorOverLifetime);
-    c("RotationOverLifetime", RotationOverLifetime);
-    c("SizeOverLifetime", SizeOverLifetime);
-    c("VelocityOverLifetime", VelocityOverLifetime);
 
     const tempV3 = new Laya.Vector3(0, 0, 0);
     class ShurikenParticleInstanceSystem extends ShurikenParticleSystem {
@@ -5327,6 +4898,515 @@
             this._meshFloatCountPreVertex = null;
         }
     }
+
+    class ShurikenParticleMaterial extends Laya.Material {
+        static __initDefine__() {
+            ShurikenParticleMaterial.SHADERDEFINE_DIFFUSEMAP = Laya.Shader3D.getDefineByName("DIFFUSEMAP");
+            ShurikenParticleMaterial.SHADERDEFINE_TINTCOLOR = Laya.Shader3D.getDefineByName("TINTCOLOR");
+            ShurikenParticleMaterial.SHADERDEFINE_ADDTIVEFOG = Laya.Shader3D.getDefineByName("ADDTIVEFOG");
+            ShurikenParticleMaterial.DIFFUSETEXTURE = Laya.Shader3D.propertyNameToID("u_texture");
+            ShurikenParticleMaterial.TINTCOLOR = Laya.Shader3D.propertyNameToID("u_Tintcolor");
+            ShurikenParticleMaterial.TILINGOFFSET = Laya.Shader3D.propertyNameToID("u_TilingOffset");
+        }
+        get color() {
+            return this._shaderValues.getColor(ShurikenParticleMaterial.TINTCOLOR);
+        }
+        set color(value) {
+            if (value)
+                this._shaderValues.addDefine(ShurikenParticleMaterial.SHADERDEFINE_TINTCOLOR);
+            else
+                this._shaderValues.removeDefine(ShurikenParticleMaterial.SHADERDEFINE_TINTCOLOR);
+            this._shaderValues.setColor(ShurikenParticleMaterial.TINTCOLOR, value);
+        }
+        get tilingOffset() {
+            return this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET);
+        }
+        set tilingOffset(value) {
+            if (value) {
+                this._shaderValues.setVector(ShurikenParticleMaterial.TILINGOFFSET, value);
+            }
+            else {
+                this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET).setValue(1.0, 1.0, 0.0, 0.0);
+            }
+        }
+        get texture() {
+            return this._shaderValues.getTexture(ShurikenParticleMaterial.DIFFUSETEXTURE);
+        }
+        set texture(value) {
+            if (value)
+                this._shaderValues.addDefine(ShurikenParticleMaterial.SHADERDEFINE_DIFFUSEMAP);
+            else
+                this._shaderValues.removeDefine(ShurikenParticleMaterial.SHADERDEFINE_DIFFUSEMAP);
+            this._shaderValues.setTexture(ShurikenParticleMaterial.DIFFUSETEXTURE, value);
+        }
+        constructor() {
+            super();
+            this.setShaderName("PARTICLESHURIKEN");
+            this.renderMode = ShurikenParticleMaterial.RENDERMODE_ALPHABLENDED;
+        }
+        clone() {
+            var dest = new ShurikenParticleMaterial();
+            this.cloneTo(dest);
+            return dest;
+        }
+        set renderMode(value) {
+            switch (value) {
+                case ShurikenParticleMaterial.RENDERMODE_ADDTIVE:
+                    this.renderQueue = Laya.Material.RENDERQUEUE_TRANSPARENT;
+                    this.depthWrite = false;
+                    this.cull = Laya.RenderState.CULL_NONE;
+                    this.blend = Laya.RenderState.BLEND_ENABLE_ALL;
+                    this.blendSrc = Laya.RenderState.BLENDPARAM_SRC_ALPHA;
+                    this.blendDst = Laya.RenderState.BLENDPARAM_ONE;
+                    this.alphaTest = false;
+                    this._shaderValues.addDefine(ShurikenParticleMaterial.SHADERDEFINE_ADDTIVEFOG);
+                    break;
+                case ShurikenParticleMaterial.RENDERMODE_ALPHABLENDED:
+                    this.renderQueue = Laya.Material.RENDERQUEUE_TRANSPARENT;
+                    this.depthWrite = false;
+                    this.cull = Laya.RenderState.CULL_NONE;
+                    this.blend = Laya.RenderState.BLEND_ENABLE_ALL;
+                    this.blendSrc = Laya.RenderState.BLENDPARAM_SRC_ALPHA;
+                    this.blendDst = Laya.RenderState.BLENDPARAM_ONE_MINUS_SRC_ALPHA;
+                    this.alphaTest = false;
+                    this._shaderValues.removeDefine(ShurikenParticleMaterial.SHADERDEFINE_ADDTIVEFOG);
+                    break;
+                default:
+                    throw new Error("ShurikenParticleMaterial : renderMode value error.");
+            }
+        }
+        get tilingOffsetX() {
+            return this._MainTex_STX;
+        }
+        set tilingOffsetX(x) {
+            this._MainTex_STX = x;
+        }
+        get tilingOffsetY() {
+            return this._MainTex_STY;
+        }
+        set tilingOffsetY(y) {
+            this._MainTex_STY = y;
+        }
+        get tilingOffsetZ() {
+            return this._MainTex_STZ;
+        }
+        set tilingOffsetZ(z) {
+            this._MainTex_STZ = z;
+        }
+        get tilingOffsetW() {
+            return this._MainTex_STW;
+        }
+        set tilingOffsetW(w) {
+            this._MainTex_STW = w;
+        }
+        get _TintColor() {
+            return this.color;
+        }
+        set _TintColor(value) {
+            this.color = value;
+        }
+        get _TintColorR() {
+            return this.color.r;
+        }
+        set _TintColorR(value) {
+            this.color.r = value;
+        }
+        get _TintColorG() {
+            return this.color.g;
+        }
+        set _TintColorG(value) {
+            this.color.g = value;
+        }
+        get _TintColorB() {
+            return this.color.b;
+        }
+        set _TintColorB(value) {
+            this.color.b = value;
+        }
+        get _TintColorA() {
+            return this.color.a;
+        }
+        set _TintColorA(value) {
+            this.color.a = value;
+        }
+        get _MainTex_ST() {
+            return this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET);
+        }
+        set _MainTex_ST(value) {
+            var tilOff = this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET);
+            tilOff.setValue(value.x, value.y, value.z, value.w);
+            this.tilingOffset = tilOff;
+        }
+        get _MainTex_STX() {
+            return this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET).x;
+        }
+        set _MainTex_STX(x) {
+            var tilOff = this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET);
+            tilOff.x = x;
+            this.tilingOffset = tilOff;
+        }
+        get _MainTex_STY() {
+            return this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET).y;
+        }
+        set _MainTex_STY(y) {
+            var tilOff = this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET);
+            tilOff.y = y;
+            this.tilingOffset = tilOff;
+        }
+        get _MainTex_STZ() {
+            return this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET).z;
+        }
+        set _MainTex_STZ(z) {
+            var tilOff = this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET);
+            tilOff.z = z;
+            this.tilingOffset = tilOff;
+        }
+        get _MainTex_STW() {
+            return this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET).w;
+        }
+        set _MainTex_STW(w) {
+            var tilOff = this._shaderValues.getVector(ShurikenParticleMaterial.TILINGOFFSET);
+            tilOff.w = w;
+            this.tilingOffset = tilOff;
+        }
+        get colorR() {
+            return this._TintColorR;
+        }
+        set colorR(value) {
+            this._TintColorR = value;
+        }
+        get colorG() {
+            return this._TintColorG;
+        }
+        set colorG(value) {
+            this._TintColorG = value;
+        }
+        get colorB() {
+            return this._TintColorB;
+        }
+        set colorB(value) {
+            this._TintColorB = value;
+        }
+        get colorA() {
+            return this._TintColorA;
+        }
+        set colorA(value) {
+            this._TintColorA = value;
+        }
+    }
+    ShurikenParticleMaterial.RENDERMODE_ALPHABLENDED = 0;
+    ShurikenParticleMaterial.RENDERMODE_ADDTIVE = 1;
+
+    class ShurikenParticleRenderer extends Laya.BaseRender {
+        get particleSystem() {
+            return this._particleSystem;
+        }
+        get renderMode() {
+            return this._renderMode;
+        }
+        set renderMode(value) {
+            if (this._renderMode !== value) {
+                var defineDatas = this._baseRenderNode.shaderData;
+                switch (this._renderMode) {
+                    case 0:
+                        defineDatas.removeDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_BILLBOARD);
+                        break;
+                    case 1:
+                        defineDatas.removeDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_STRETCHEDBILLBOARD);
+                        break;
+                    case 2:
+                        defineDatas.removeDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_HORIZONTALBILLBOARD);
+                        break;
+                    case 3:
+                        defineDatas.removeDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_VERTICALBILLBOARD);
+                        break;
+                    case 4:
+                        defineDatas.removeDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_MESH);
+                        break;
+                }
+                this._renderMode = value;
+                switch (value) {
+                    case 0:
+                        defineDatas.addDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_BILLBOARD);
+                        break;
+                    case 1:
+                        defineDatas.addDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_STRETCHEDBILLBOARD);
+                        break;
+                    case 2:
+                        defineDatas.addDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_HORIZONTALBILLBOARD);
+                        break;
+                    case 3:
+                        defineDatas.addDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_VERTICALBILLBOARD);
+                        break;
+                    case 4:
+                        defineDatas.addDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_RENDERMODE_MESH);
+                        break;
+                    default:
+                        throw new Error("ShurikenParticleRender: unknown renderMode Value.");
+                }
+                var parSys = this._particleSystem;
+                (parSys) && (parSys._initBufferDatas());
+            }
+        }
+        get mesh() {
+            return this._mesh;
+        }
+        set mesh(value) {
+            if (this._mesh !== value) {
+                (this._mesh) && (this._mesh._removeReference());
+                this._mesh = value;
+                (value) && (value._addReference());
+                this._particleSystem._initBufferDatas();
+            }
+        }
+        get pivot() {
+            return this._pivot;
+        }
+        set pivot(value) {
+            value.cloneTo(this._pivot);
+        }
+        constructor() {
+            super();
+            this._finalGravity = new Laya.Vector3();
+            this._dragConstant = new Laya.Vector2();
+            this._mesh = null;
+            this._pivot = new Laya.Vector3(0, 0, 0);
+            this.stretchedBillboardCameraSpeedScale = 0;
+            this.stretchedBillboardSpeedScale = 0;
+            this.stretchedBillboardLengthScale = 2;
+            this.renderMode = 0;
+            this._baseRenderNode.renderNodeType = Laya.BaseRenderType.ParticleRender;
+        }
+        _isMaterialVaild(value) {
+            return value.checkType(Laya.ShaderFeatureType.Effect);
+        }
+        _getcommonUniformMap() {
+            return ["Sprite3D", "ShurikenSprite3D"];
+        }
+        _onAdded() {
+            super._onAdded();
+            if (!Laya.LayaGL.renderEngine.getCapable(Laya.RenderCapable.DrawElement_Instance)) {
+                this._particleSystem = new ShurikenParticleSystem(this);
+            }
+            else
+                this._particleSystem = new ShurikenParticleInstanceSystem(this);
+            var elements = this._renderElements;
+            var element = elements[0] = new Laya.RenderElement();
+            element.setTransform(this.owner._transform);
+            element.render = this;
+            element.setGeometry(this._particleSystem);
+            element.material = ShurikenParticleMaterial.defaultMaterial;
+            this._setRenderElements();
+        }
+        _onEnable() {
+            super._onEnable();
+            (this._particleSystem.playOnAwake && Laya.LayaEnv.isPlaying) && (this._particleSystem.play());
+        }
+        _onDisable() {
+            super._onDisable();
+            (this._particleSystem.isAlive) && (this._particleSystem.simulate(0, true));
+        }
+        _calculateBoundingBox() {
+            var particleSystem = this._particleSystem;
+            var bounds;
+            if (particleSystem._useCustomBounds) {
+                bounds = particleSystem.customBounds;
+                bounds._tranform(this.owner.transform.worldMatrix, this._bounds);
+            }
+            else if (particleSystem._simulationSupported()) {
+                particleSystem._generateBounds();
+                bounds = particleSystem._bounds;
+                bounds._tranform(this.owner.transform.worldMatrix, this._bounds);
+                if (particleSystem.gravityModifier != 0) {
+                    var max = this._bounds.getMax();
+                    var min = this._bounds.getMin();
+                    var gravityOffset = particleSystem._gravityOffset;
+                    max.y -= gravityOffset.x;
+                    min.y -= gravityOffset.y;
+                    this._bounds.setMax(max);
+                    this._bounds.setMin(min);
+                }
+            }
+            else {
+                var min = this._bounds.getMin();
+                min.setValue(-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE);
+                this._bounds.setMin(min);
+                var max = this._bounds.getMax();
+                max.setValue(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
+                this._bounds.setMax(max);
+            }
+        }
+        _needRender(boundFrustum, context) {
+            if (!Laya.Stat.enableParticle)
+                return false;
+            if (boundFrustum) {
+                if (boundFrustum.intersects(this.bounds)) {
+                    if (this._particleSystem.isAlive)
+                        return true;
+                    else
+                        return false;
+                }
+                else {
+                    return false;
+                }
+            }
+            else {
+                return true;
+            }
+        }
+        _renderUpdate(context) {
+            var particleSystem = this._particleSystem;
+            var sv = this._baseRenderNode.shaderData;
+            var transform = this.owner.transform;
+            switch (particleSystem.simulationSpace) {
+                case 0:
+                    break;
+                case 1:
+                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.WORLDPOSITION, transform.position);
+                    sv.setShaderData(ShuriKenParticle3DShaderDeclaration.WORLDROTATION, Laya.ShaderDataType.Vector4, transform.rotation);
+                    break;
+                default:
+                    throw new Error("ShurikenParticleMaterial: SimulationSpace value is invalid.");
+            }
+            if (particleSystem.shape && particleSystem.shape.enable) {
+                sv.setBool(ShuriKenParticle3DShaderDeclaration.SHAPE, true);
+            }
+            else {
+                sv.setBool(ShuriKenParticle3DShaderDeclaration.SHAPE, false);
+            }
+            switch (particleSystem.scaleMode) {
+                case 0:
+                    var scale = transform.getWorldLossyScale();
+                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.POSITIONSCALE, scale);
+                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.SIZESCALE, scale);
+                    break;
+                case 1:
+                    var localScale = transform.localScale;
+                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.POSITIONSCALE, localScale);
+                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.SIZESCALE, localScale);
+                    break;
+                case 2:
+                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.POSITIONSCALE, transform.getWorldLossyScale());
+                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.SIZESCALE, Laya.Vector3.ONE);
+                    break;
+            }
+            switch (particleSystem.dragType) {
+                case 0:
+                    this._dragConstant.setValue(particleSystem.dragSpeedConstantMin, particleSystem.dragSpeedConstantMin);
+                    sv.setVector2(ShuriKenParticle3DShaderDeclaration.DRAG, this._dragConstant);
+                    break;
+                case 2:
+                    this._dragConstant.setValue(particleSystem.dragSpeedConstantMin, particleSystem.dragSpeedConstantMax);
+                    sv.setVector2(ShuriKenParticle3DShaderDeclaration.DRAG, this._dragConstant);
+                    break;
+                default:
+                    this._dragConstant.setValue(0, 0);
+                    break;
+            }
+            Laya.Vector3.scale(ShurikenParticleRenderer.gravity, particleSystem.gravityModifier, this._finalGravity);
+            sv.setVector3(ShuriKenParticle3DShaderDeclaration.GRAVITY, this._finalGravity);
+            sv.setInt(ShuriKenParticle3DShaderDeclaration.SIMULATIONSPACE, particleSystem.simulationSpace);
+            sv.setBool(ShuriKenParticle3DShaderDeclaration.THREEDSTARTROTATION, particleSystem.threeDStartRotation);
+            sv.setInt(ShuriKenParticle3DShaderDeclaration.SCALINGMODE, particleSystem.scaleMode);
+            sv.setNumber(ShuriKenParticle3DShaderDeclaration.STRETCHEDBILLBOARDLENGTHSCALE, this.stretchedBillboardLengthScale);
+            sv.setNumber(ShuriKenParticle3DShaderDeclaration.STRETCHEDBILLBOARDSPEEDSCALE, this.stretchedBillboardSpeedScale);
+            sv.setNumber(ShuriKenParticle3DShaderDeclaration.CURRENTTIME, particleSystem._currentTime);
+            sv.setVector3(ShuriKenParticle3DShaderDeclaration.PIVOT, this._pivot);
+        }
+        renderUpdate(context) {
+            this._renderElements.forEach(element => {
+                element._renderElementOBJ.isRender = element._geometry._prepareRender(context);
+                element._geometry._prepareRender(context);
+                element._geometry._updateRenderParams(context);
+            });
+        }
+        get bounds() {
+            if (this.boundsChange) {
+                this._calculateBoundingBox();
+                this.boundsChange = false;
+            }
+            return this._bounds;
+        }
+        _cloneTo(dest) {
+            this._particleSystem.cloneTo(dest._particleSystem);
+            dest.sharedMaterial = this.sharedMaterial;
+            dest.renderMode = this.renderMode;
+            dest.mesh = this.mesh;
+            this._pivot.cloneTo(dest._pivot);
+            dest.stretchedBillboardCameraSpeedScale = this.stretchedBillboardCameraSpeedScale;
+            dest.stretchedBillboardSpeedScale = this.stretchedBillboardSpeedScale;
+            dest.stretchedBillboardLengthScale = this.stretchedBillboardLengthScale;
+            dest.sortingFudge = this.sortingFudge;
+        }
+        _onDestroy() {
+            (this._mesh) && (this._mesh._removeReference(), this._mesh = null);
+            this._particleSystem.destroy();
+            this._particleSystem = null;
+            super._onDestroy();
+        }
+        _statAdd() {
+            super._statAdd();
+            Laya.LayaGL.statAgent.recordCountData(Laya.StatElement.C_ShurikenParticleRenderCount, 1);
+        }
+        _statRemove() {
+            super._statRemove();
+            Laya.LayaGL.statAgent.recordCountData(Laya.StatElement.C_ShurikenParticleRenderCount, -1);
+        }
+    }
+    ShurikenParticleRenderer.gravity = new Laya.Vector3(0, -9.81, 0);
+    Laya.Laya.addInitCallback(() => {
+        ParticleShuriKenShaderInit.init();
+        VertexShurikenParticleBillboard.__init__();
+        VertexShurikenParticleMesh.__init__();
+        ShuriKenParticle3DShaderDeclaration.__init__();
+        ShuriKenParticle3D.__init__();
+        ShurikenParticleMaterial.__initDefine__();
+    });
+
+    class ShuriKenParticle3D extends Laya.RenderableSprite3D {
+        get particleSystem() {
+            return this._particleSystem;
+        }
+        get particleRenderer() {
+            return this._render;
+        }
+        constructor() {
+            super(null);
+            this._render = this.addComponent(ShurikenParticleRenderer);
+            this._particleSystem = this._render._particleSystem;
+        }
+        destroy(destroyChild = true) {
+            if (this._destroyed)
+                return;
+            super.destroy(destroyChild);
+        }
+    }
+
+    let c = Laya.ClassUtils.regClass;
+    c("ShurikenParticleMaterial", ShurikenParticleMaterial);
+    c("ShuriKenParticle3D", ShuriKenParticle3D);
+    c("ShurikenParticleRenderer", ShurikenParticleRenderer);
+    c("ShurikenParticleSystem", ShurikenParticleSystem);
+    c("Burst", Burst);
+    c("Emission", Emission);
+    c("BaseShape", BaseShape);
+    c("BoxShape", BoxShape);
+    c("CircleShape", CircleShape);
+    c("ConeShape", ConeShape);
+    c("HemisphereShape", HemisphereShape);
+    c("SphereShape", SphereShape);
+    c("FrameOverTime", FrameOverTime);
+    c("GradientAngularVelocity", GradientAngularVelocity);
+    c("GradientColor", GradientColor);
+    c("GradientDataInt", GradientDataInt);
+    c("GradientSize", GradientSize);
+    c("GradientVelocity", GradientVelocity);
+    c("StartFrame", StartFrame);
+    c("TextureSheetAnimation", TextureSheetAnimation);
+    c("ColorOverLifetime", ColorOverLifetime);
+    c("RotationOverLifetime", RotationOverLifetime);
+    c("SizeOverLifetime", SizeOverLifetime);
+    c("VelocityOverLifetime", VelocityOverLifetime);
 
     class GradientDataVector2 {
         get gradientCount() {

@@ -121,6 +121,10 @@
             this._rigiBodyList.clear();
             Laya.ILaya.physicsTimer.clear(this, this._update);
         }
+        static toPhysicsX(v) { return v / Laya.ILaya.stage.clientScaleX; }
+        static toPhysicsY(v) { return v / Laya.ILaya.stage.clientScaleY; }
+        static toRenderX(v) { return v * Laya.ILaya.stage.clientScaleX; }
+        static toRenderY(v) { return v * Laya.ILaya.stage.clientScaleY; }
     }
     Laya.Laya.addInitCallback(() => Physics2D.I.enable());
 
@@ -154,6 +158,13 @@
         EPhysics2DShape[EPhysics2DShape["ChainShape"] = 3] = "ChainShape";
         EPhysics2DShape[EPhysics2DShape["EdgeShape"] = 4] = "EdgeShape";
     })(exports.EPhysics2DShape || (exports.EPhysics2DShape = {}));
+    class Physics2DContactHitResult {
+        constructor() {
+            this.normal = { x: 0, y: 0 };
+            this.points = [];
+            this.separations = [];
+        }
+    }
     class Physics2DHitResult {
         constructor() {
             this.hitPoint = new Laya.Vector2();
@@ -453,6 +464,8 @@
             }
         }
         render() {
+            this._matrix.identity();
+            this._matrix.scale(Physics2D.toRenderX(1), Physics2D.toRenderY(1));
             let area2D = this._scene._area2Ds.size > 0 ? this._scene._area2Ds.values().next().value._struct : null;
             this._cmdBuffer.setRenderTarget(null, false);
             for (let i = 0; i < this._cmdDrawMeshList.length; i++) {
@@ -486,6 +499,8 @@
             }
             this._cmdDrawLineList.length = 0;
             this._cmdDrawMeshList.length = 0;
+            this._meshList.length = 0;
+            this._linePointsList.length = 0;
         }
         createMesh2DByVertices(vertices) {
             const pointCount = vertices.length / 2;
@@ -580,10 +595,27 @@
             Laya.Laya.timer.clear(this, this.render);
             this._cmdBuffer && this._cmdBuffer.clear(false);
             this._material && this._material.destroy();
-            this._material && (this._material = null);
-            this._cmdBuffer && (this._cmdBuffer = null);
-            this._cmdDrawLineList && (this._cmdDrawLineList.length = 0);
-            this._cmdDrawMeshList && (this._cmdDrawMeshList.length = 0);
+            this._material = null;
+            this._cmdBuffer = null;
+            if (this._meshList) {
+                for (let i = 0; i < this._meshList.length; i++) {
+                    this._meshList[i].destroy();
+                }
+                this._meshList.length = 0;
+            }
+            if (this._cmdDrawMeshList) {
+                for (let i = 0; i < this._cmdDrawMeshList.length; i++) {
+                    this._cmdDrawMeshList[i].recover();
+                }
+                this._cmdDrawMeshList.length = 0;
+            }
+            if (this._cmdDrawLineList) {
+                for (let i = 0; i < this._cmdDrawLineList.length; i++) {
+                    this._cmdDrawLineList[i].recover();
+                }
+                this._cmdDrawLineList.length = 0;
+            }
+            this._linePointsList && (this._linePointsList.length = 0);
         }
     }
 
@@ -705,6 +737,10 @@
                 for (let i = 0; i < length; i += 2) {
                     this._dispatchEvent(this._eventList[i], this._eventList[i + 1]);
                 }
+                let factory = Physics2D.I._factory;
+                for (let i = 1; i < length; i += 2) {
+                    factory._cleanCache(this._eventList[i]);
+                }
                 this._eventList.length = 0;
             }
         }
@@ -755,17 +791,19 @@
         RayCast(res, startPos, endPos) {
             let callback = (warp, point, normal, fraction) => {
                 let fixture = Physics2D.I._factory.warpPoint(warp, exports.Ebox2DType.b2Fixture);
-                point = Physics2D.I._factory.warpPoint(point, exports.Ebox2DType.b2Vec2);
-                normal = Physics2D.I._factory.warpPoint(normal, exports.Ebox2DType.b2Vec2);
                 if (!fixture)
                     return 1;
+                let v = Physics2D.I._factory.warpPoint(point, exports.Ebox2DType.b2Vec2);
+                let px = v.x, py = v.y;
+                v = Physics2D.I._factory.warpPoint(normal, exports.Ebox2DType.b2Vec2);
+                let nx = v.x, ny = v.y;
                 let hitRes = new Physics2DHitResult();
                 let collider = fixture.collider;
                 hitRes.collider = collider;
-                hitRes.hitPoint.x = this.physics2DToLaya(point.x);
-                hitRes.hitPoint.y = this.physics2DToLaya(point.y);
-                hitRes.hitNormal.x = this.physics2DToLaya(normal.x);
-                hitRes.hitNormal.y = this.physics2DToLaya(normal.y);
+                hitRes.hitPoint.x = this.physics2DToLaya(px);
+                hitRes.hitPoint.y = this.physics2DToLaya(py);
+                hitRes.hitNormal.x = this.physics2DToLaya(nx);
+                hitRes.hitNormal.y = this.physics2DToLaya(ny);
                 hitRes.fraction = fraction;
                 res.push(hitRes);
                 if (collider) {
@@ -776,19 +814,14 @@
                 }
             };
             this._JSRayCastcallback.ReportFixture = callback.bind(this);
-            let scaleX = Laya.ILaya.stage.clientScaleX;
-            let scaleY = Laya.ILaya.stage.clientScaleY;
-            startPos.x *= scaleX;
-            startPos.y *= scaleY;
-            endPos.x *= scaleX;
-            endPos.y *= scaleY;
             Physics2D.I._factory.RayCast(this._box2DWorld, this._JSRayCastcallback, startPos, endPos);
         }
         destroy() {
             Physics2D.I._factory.removeBody(this._box2DWorld, Physics2D.I._emptyBody);
             Physics2D.I._emptyBody = null;
+            let box2DWorld = this._box2DWorld;
             Laya.Laya.timer.callLater(this, () => {
-                Physics2D.I._factory.destroyWorld(this._box2DWorld);
+                Physics2D.I._factory.destroyWorld(box2DWorld);
             });
             if (this._debugDraw) {
                 this._debugDraw.destroy();
@@ -860,12 +893,12 @@
             }
         }
         _debugDrawSegment(p1, p2, color) {
-            p1 = Physics2D.I._factory.warpPoint(p1, exports.Ebox2DType.b2Vec2);
-            p2 = Physics2D.I._factory.warpPoint(p2, exports.Ebox2DType.b2Vec2);
-            let p1x = this.physics2DToLaya(p1.x);
-            let p1y = this.physics2DToLaya(p1.y);
-            let p2x = this.physics2DToLaya(p2.x);
-            let p2y = this.physics2DToLaya(p2.y);
+            let v = Physics2D.I._factory.warpPoint(p1, exports.Ebox2DType.b2Vec2);
+            let p1x = this.physics2DToLaya(v.x);
+            let p1y = this.physics2DToLaya(v.y);
+            v = Physics2D.I._factory.warpPoint(p2, exports.Ebox2DType.b2Vec2);
+            let p2x = this.physics2DToLaya(v.x);
+            let p2y = this.physics2DToLaya(v.y);
             let points = [];
             points.push(p1x);
             points.push(p1y);
@@ -908,10 +941,9 @@
             this._debugDraw.addMeshDebugDrawCMD(mesh2D, outColor);
         }
         _debugDrawSolidCircle(center, radius, axis, color) {
-            center = Physics2D.I._factory.warpPoint(center, exports.Ebox2DType.b2Vec2);
-            axis = Physics2D.I._factory.warpPoint(axis, exports.Ebox2DType.b2Vec2);
-            let cx = this.physics2DToLaya(center.x);
-            let cy = this.physics2DToLaya(center.y);
+            let v = Physics2D.I._factory.warpPoint(center, exports.Ebox2DType.b2Vec2);
+            let cx = this.physics2DToLaya(v.x);
+            let cy = this.physics2DToLaya(v.y);
             radius = this.physics2DToLaya(radius);
             let outColor = this._makeStyleString(color, 0.5);
             let mesh2d = this._debugDraw.createCircleMeshByVertices({ x: cx, y: cy }, radius, 100);
@@ -967,12 +999,14 @@
             this._debugDraw.addLineDebugDrawCMD(point, outColor);
         }
         _debugDrawAABB(min, max, color) {
-            min = Physics2D.I._factory.warpPoint(min, exports.Ebox2DType.b2Vec2);
-            max = Physics2D.I._factory.warpPoint(max, exports.Ebox2DType.b2Vec2);
-            var cx = (max.x + min.x) * 0.5;
-            var cy = (max.y + min.y) * 0.5;
-            var hw = (max.x - min.x) * 0.5;
-            var hh = (max.y - min.y) * 0.5;
+            let v = Physics2D.I._factory.warpPoint(min, exports.Ebox2DType.b2Vec2);
+            let minX = v.x, minY = v.y;
+            v = Physics2D.I._factory.warpPoint(max, exports.Ebox2DType.b2Vec2);
+            let maxX = v.x, maxY = v.y;
+            var cx = (maxX + minX) * 0.5;
+            var cy = (maxY + minY) * 0.5;
+            var hw = (maxX - minX) * 0.5;
+            var hh = (maxY - minY) * 0.5;
             let outColor = this._makeStyleString(color, 1);
             let point0 = [];
             point0.push(this.physics2DToLaya(cx - hw));
@@ -1015,7 +1049,18 @@
             }
             let ownerA = colliderA.owner;
             let ownerB = colliderB.owner;
+            let __this = this;
+            let _hitResult;
             contact.getHitInfo = function () {
+                if (!_hitResult)
+                    _hitResult = new Physics2DContactHitResult();
+                let pointCount = Physics2D.I._factory.getContactWorldManifold(contact, _hitResult);
+                for (let i = 0; i < pointCount; i++) {
+                    _hitResult.points[i].x = __this.physics2DToLaya(_hitResult.points[i].x);
+                    _hitResult.points[i].y = __this.physics2DToLaya(_hitResult.points[i].y);
+                    _hitResult.separations[i] = __this.physics2DToLaya(_hitResult.separations[i]);
+                }
+                return _hitResult;
             };
             if (ownerA) {
                 var args = [colliderB, colliderA, contact];
@@ -1030,6 +1075,7 @@
     Physics2DWorldManager.__managerName = "Physics2DWorldManager";
     Laya.Scene.regManager(Physics2DWorldManager.__managerName, Physics2DWorldManager);
 
+    const _tempWorldPoint = new Laya.Point();
     class ColliderBase extends Laya.Component {
         get isConnectedJoint() {
             return this._isConnectedJoint;
@@ -1104,7 +1150,7 @@
             if (this._box2DBody) {
                 this._isAwake = Physics2D.I._factory.get_rigidBody_IsAwake(this._box2DBody);
             }
-            return this.isAwake;
+            return this._isAwake;
         }
         set isAwake(value) {
             this._isAwake = value;
@@ -1179,7 +1225,8 @@
             this._physics2DManager = (_b = (_a = this.owner) === null || _a === void 0 ? void 0 : _a.scene) === null || _b === void 0 ? void 0 : _b.getComponentElementManager(Physics2DWorldManager.__managerName);
         }
         getWorldPoint(x, y) {
-            return this.owner.globalTrans.localToGlobal(x, y);
+            let p = this.owner.globalTrans.localToGlobal(x, y);
+            return _tempWorldPoint.setTo(Physics2D.toPhysicsX(p.x), Physics2D.toPhysicsY(p.y));
         }
         _needupdataShapeAttribute(flag) {
             if (this._rigidbody && this._rigidbody.applyOwnerColliderComponent) {
@@ -1188,7 +1235,7 @@
             var sp = this.owner;
             if (this._type != "dynamic" && (flag & (Laya.TransformKind.Pos | Laya.TransformKind.Rotation | Laya.TransformKind.Scale))) {
                 if (flag & (Laya.TransformKind.Pos | Laya.TransformKind.Rotation | Laya.TransformKind.Scale)) {
-                    this._box2DBody && Physics2D.I._factory.set_RigibBody_Transform(this._box2DBody, sp.globalTrans.x, sp.globalTrans.y, Laya.Utils.toRadian(this.owner.globalTrans.rotation));
+                    this._box2DBody && Physics2D.I._factory.set_RigibBody_Transform(this._box2DBody, Physics2D.toPhysicsX(sp.globalTrans.x), Physics2D.toPhysicsY(sp.globalTrans.y), Laya.Utils.toRadian(this.owner.globalTrans.rotation));
                     this._box2DBody && Physics2D.I._factory.set_rigidBody_Awake(this._box2DBody, true);
                 }
             }
@@ -1197,6 +1244,7 @@
         _onDisable() {
             this._box2DBody && Physics2D.I._factory.removeBody(this._physics2DManager.box2DWorld, this._box2DBody);
             this._box2DBody = null;
+            this._box2DBodyDef && Physics2D.I._factory.destroyData(this._box2DBodyDef);
             this._box2DBodyDef = null;
             this.owner.off(Laya.SpriteGlobalTransform.CHANGED, this, this._needupdataShapeAttribute);
         }
@@ -1379,9 +1427,7 @@
             _tempP0.x = pos.x;
             _tempP0.y = pos.y;
             let globalPos = this.owner.parent.localToGlobal(_tempP0);
-            globalPos.x = globalPos.x * Laya.ILaya.stage.clientScaleX;
-            globalPos.y = globalPos.y * Laya.ILaya.stage.clientScaleY;
-            factory.set_RigibBody_Transform(this._box2DBody, globalPos.x, globalPos.y, rotateValue);
+            factory.set_RigibBody_Transform(this._box2DBody, Physics2D.toPhysicsX(globalPos.x), Physics2D.toPhysicsY(globalPos.y), rotateValue);
             factory.set_rigidBody_Awake(this._box2DBody, true);
             Physics2D.I._addRigidBody(this);
         }
@@ -1393,8 +1439,8 @@
             }
             var pos = Laya.Vector2.TEMP;
             Physics2D.I._factory.get_RigidBody_Position(this._box2DBody, pos);
-            _tempP0.x = pos.x;
-            _tempP0.y = pos.y;
+            _tempP0.x = Physics2D.toRenderX(pos.x);
+            _tempP0.y = Physics2D.toRenderY(pos.y);
             let localPos = this.owner.parent.globalToLocal(_tempP0);
             _tempP0.x = localPos.x;
             _tempP0.y = localPos.y;
@@ -1455,7 +1501,7 @@
         _setBodyDefValue() {
             if (this._type == "static") {
                 let owner = this.owner;
-                this._bodyDef.position.setValue(owner.globalTrans.x, owner.globalTrans.y);
+                this._bodyDef.position.setValue(Physics2D.toPhysicsX(owner.globalTrans.x), Physics2D.toPhysicsY(owner.globalTrans.y));
                 this._bodyDef.angle = Laya.Utils.toRadian(owner.globalTrans.rotation);
                 this._bodyDef.allowSleep = false;
                 this._bodyDef.angularVelocity = 0;
@@ -1468,7 +1514,7 @@
                 return;
             }
             let owner = this.owner;
-            this._bodyDef.position.setValue(owner.globalTrans.x, owner.globalTrans.y);
+            this._bodyDef.position.setValue(Physics2D.toPhysicsX(owner.globalTrans.x), Physics2D.toPhysicsY(owner.globalTrans.y));
             this._bodyDef.angle = Laya.Utils.toRadian(owner.globalTrans.rotation);
             this._bodyDef.fixedRotation = !this._allowRotation;
             this._bodyDef.allowSleep = this._allowSleep;
@@ -1517,7 +1563,7 @@
             if (Physics2D.I._factory.get_rigidBody_IsAwake(this._box2DBody)) {
                 var pos = Laya.Vector2.TEMP;
                 factory.get_RigidBody_Position(this._box2DBody, pos);
-                pos.setValue(pos.x, pos.y);
+                pos.setValue(Physics2D.toRenderX(pos.x), Physics2D.toRenderY(pos.y));
                 this.owner.globalTrans.setPos(pos.x, pos.y);
                 this.owner.globalTrans.rotation = Laya.Utils.toAngle(factory.get_RigidBody_Angle(this._box2DBody));
             }
@@ -1603,7 +1649,7 @@
             if (!this._box2DBody)
                 return;
             var factory = Physics2D.I._factory;
-            factory.set_RigibBody_Transform(this._box2DBody, this.owner.globalTrans.x, this.owner.globalTrans.y, Laya.Utils.toRadian(value));
+            factory.set_RigibBody_Transform(this._box2DBody, Physics2D.toPhysicsX(this.owner.globalTrans.x), Physics2D.toPhysicsY(this.owner.globalTrans.y), Laya.Utils.toRadian(value));
             factory.set_rigidBody_Awake(this._box2DBody, true);
         }
         getMass() {
@@ -1627,10 +1673,11 @@
             return center;
         }
         getWorldPoint(x, y) {
-            return this.owner.globalTrans.localToGlobal(x, y);
+            let p = this.owner.globalTrans.localToGlobal(x, y);
+            return _tempP0.setTo(Physics2D.toPhysicsX(p.x), Physics2D.toPhysicsY(p.y));
         }
         getLocalPoint(x, y) {
-            return this.owner.globalTrans.globalToLocal(x, y);
+            return this.owner.globalTrans.globalToLocal(Physics2D.toRenderX(x), Physics2D.toRenderY(y));
         }
     }
 
@@ -1663,7 +1710,7 @@
         }
         _setBodyDefValue() {
             let owner = this.owner;
-            this._bodyDef.position.setValue(owner.globalTrans.x, owner.globalTrans.y);
+            this._bodyDef.position.setValue(Physics2D.toPhysicsX(owner.globalTrans.x), Physics2D.toPhysicsY(owner.globalTrans.y));
             this._bodyDef.angle = Laya.Utils.toRadian(owner.globalTrans.rotation);
             this._bodyDef.allowSleep = false;
             this._bodyDef.angularVelocity = 0;
@@ -1696,19 +1743,29 @@
             }
         }
         _removeShapeAndDestroyData() {
-            if (!this._rigidbody) {
-                if (!this._shapes)
-                    return;
-                for (let i = 0; i < this.shapes.length; i++) {
-                    let shape = this._shapes[i];
-                    shape.destroy();
+            if (this._rigidbody) {
+                let body = this._rigidbody.getBox2DBody();
+                if (body && !body.destroyed && this._box2DShape) {
+                    Physics2D.I._factory.destroyShape(this._physics2DManager.box2DWorld, body, this._box2DShape);
                 }
             }
-            this._rigidbody && (this._box2DBody = this._rigidbody.getBox2DBody());
-            this._box2DBody && (Physics2D.I._factory.removeBody(this._physics2DManager.box2DWorld, this._box2DBody));
+            else {
+                if (this._shapes) {
+                    for (let i = 0; i < this._shapes.length; i++) {
+                        let shape = this._shapes[i];
+                        shape.destroy();
+                    }
+                }
+                if (this._box2DBody) {
+                    Physics2D.I._factory.removeBody(this._physics2DManager.box2DWorld, this._box2DBody);
+                }
+            }
             this._box2DFilter && Physics2D.I._factory.destroyData(this._box2DFilter);
+            if (this._box2DShapeDef && this._box2DShapeDef._shape) {
+                Physics2D.I._factory.destroyData(this._box2DShapeDef._shape);
+                this._box2DShapeDef._shape = null;
+            }
             this._box2DShapeDef && Physics2D.I._factory.destroyData(this._box2DShapeDef);
-            this._box2DShape && Physics2D.I._factory.destroyData(this._box2DShape);
             this._box2DBody = null;
             this._box2DFilter = null;
             this._box2DShape = null;
@@ -1716,10 +1773,13 @@
         }
         _onDisable() {
             this._removeShapeAndDestroyData();
+            super._onDisable();
         }
         _onDestroy() {
             this._shapeDef = null;
             this._removeShapeAndDestroyData();
+            this._shapes = null;
+            super._onDestroy();
         }
         createShape(collider) {
             if (!collider)
@@ -1730,6 +1790,10 @@
             this._box2DBody = collider.getBox2DBody();
             if (this._box2DShape) {
                 Physics2D.I._factory.destroyShape(this._physics2DManager.box2DWorld, this._box2DBody, this._box2DShape);
+                if (this._box2DShapeDef && this._box2DShapeDef._shape) {
+                    Physics2D.I._factory.destroyData(this._box2DShapeDef._shape);
+                    this._box2DShapeDef._shape = null;
+                }
                 Physics2D.I._factory.destroyData(this._box2DShapeDef);
                 this._box2DShape = null;
                 this._box2DShapeDef = null;
@@ -2121,7 +2185,7 @@
                     this.selfBody.owner.on("bodyCreated", this, this._createJoint);
                     return;
                 }
-                def.localAnchorB.setValue(point.x * Laya.ILaya.stage.clientScaleX, point.y * Laya.ILaya.stage.clientScaleY);
+                def.localAnchorB.setValue(point.x, point.y);
                 this.selfBody.owner.on("shapeChange", this, this._refeahJoint);
                 if (this.otherBody) {
                     def.bodyA = this.otherBody.getBox2DBody();
@@ -2131,7 +2195,7 @@
                         return;
                     }
                     point = this.getBodyAnchor(this.otherBody, this.otherAnchor[0], this.otherAnchor[1]);
-                    def.localAnchorA.setValue(point.x * Laya.ILaya.stage.clientScaleX, point.y * Laya.ILaya.stage.clientScaleY);
+                    def.localAnchorA.setValue(point.x, point.y);
                     this.otherBody.owner.on("shapeChange", this, this._refeahJoint);
                 }
                 else {
@@ -2582,9 +2646,13 @@
                 var def = MouseJoint._temp || (MouseJoint._temp = new physics2D_MouseJointJointDef());
                 if (this.anchor) {
                     var anchorPos = this.selfBody.owner.localToGlobal(Laya.Point.TEMP.setTo(this.anchor[0], this.anchor[1]), false, this._physics2DManager.getRootSprite());
+                    anchorPos.x = Physics2D.toPhysicsX(anchorPos.x);
+                    anchorPos.y = Physics2D.toPhysicsY(anchorPos.y);
                 }
                 else {
                     anchorPos = this._physics2DManager.getRootSprite().globalToLocal(Laya.Point.TEMP.setTo(Laya.ILaya.InputManager.mouseX, Laya.ILaya.InputManager.mouseY));
+                    anchorPos.x = Physics2D.toPhysicsX(anchorPos.x);
+                    anchorPos.y = Physics2D.toPhysicsY(anchorPos.y);
                 }
                 if (!Physics2D.I._emptyBody)
                     Physics2D.I._emptyBody = Physics2D.I._factory.createBody(this._physics2DManager.box2DWorld, null);
@@ -2620,7 +2688,7 @@
         }
         _onMouseMove() {
             if (this._joint)
-                this._factory.set_MouseJoint_target(this._joint, Laya.ILaya.InputManager.mouseX, Laya.ILaya.InputManager.mouseY);
+                this._factory.set_MouseJoint_target(this._joint, Physics2D.toPhysicsX(Laya.ILaya.InputManager.mouseX), Physics2D.toPhysicsY(Laya.ILaya.InputManager.mouseY));
         }
         _onDisable() {
             super._onDisable();
@@ -2938,10 +3006,10 @@
             this._box2DShape && Physics2D.I._factory.set_shape_isSensor(this._box2DShape, value);
         }
         get scaleX() {
-            return this._body.owner.globalScaleX;
+            return Physics2D.toPhysicsX(this._body.owner.globalScaleX);
         }
         get scaleY() {
-            return this._body.owner.globalScaleY;
+            return Physics2D.toPhysicsY(this._body.owner.globalScaleY);
         }
         get pivotoffx() {
             return this._x - this._body.owner.pivotX;
@@ -2979,6 +3047,10 @@
                 return;
             if (this._box2DShape) {
                 Physics2D.I._factory.destroyShape(this._physics2DManager.box2DWorld, this._box2DBody, this._box2DShape);
+                if (this._box2DShapeDef && this._box2DShapeDef._shape) {
+                    Physics2D.I._factory.destroyData(this._box2DShapeDef._shape);
+                    this._box2DShapeDef._shape = null;
+                }
                 Physics2D.I._factory.destroyData(this._box2DShapeDef);
                 this._box2DShape = null;
                 this._box2DShapeDef = null;
@@ -3018,12 +3090,20 @@
             return Physics2D.I._factory.shape_rayCast(this._box2DShape, null, null, index);
         }
         destroy() {
+            if (!this._box2DBody || !this._box2DShape)
+                return;
             Physics2D.I._factory.destroyShape(this._physics2DManager.box2DWorld, this._box2DBody, this._box2DShape);
             Physics2D.I._factory.destroyData(this._box2DFilter);
+            if (this._box2DShapeDef && this._box2DShapeDef._shape) {
+                Physics2D.I._factory.destroyData(this._box2DShapeDef._shape);
+                this._box2DShapeDef._shape = null;
+            }
             Physics2D.I._factory.destroyData(this._box2DShapeDef);
             this._box2DShape = null;
             this._box2DFilter = null;
             this._box2DShapeDef = null;
+            this._body = null;
+            this._box2DBody = null;
         }
         clone() {
         }
@@ -3131,6 +3211,9 @@
             var len = this._datas.length;
             if (len % 2 == 1)
                 throw "ChainCollider datas lenth must a multiplier of 2";
+            var pointCount = len >> 1;
+            if (pointCount < 2 || (this._loop && pointCount < 3))
+                return;
             let shape = this._box2DShape ? Physics2D.I._factory.getShape(this._box2DShape, this._shapeDef.shapeType) : Physics2D.I._factory.getShapeByDef(this._box2DShapeDef, this._shapeDef.shapeType);
             Physics2D.I._factory.set_ChainShape_data(shape, this.pivotoffx, this.pivotoffy, this._datas, this._loop, this.scaleX, this.scaleY);
         }
@@ -3310,6 +3393,7 @@
     exports.MotorJoint = MotorJoint;
     exports.MouseJoint = MouseJoint;
     exports.Physics2D = Physics2D;
+    exports.Physics2DContactHitResult = Physics2DContactHitResult;
     exports.Physics2DDebugDraw = Physics2DDebugDraw;
     exports.Physics2DHitResult = Physics2DHitResult;
     exports.Physics2DOption = Physics2DOption;

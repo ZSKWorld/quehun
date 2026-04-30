@@ -66,7 +66,7 @@
     NavigationManager._managerName = "navMesh";
     NavigationManager._obstacleMap = new Map();
     Laya.Scene3D.regManager(NavigationManager._managerName, NavigationManager);
-    Laya.Laya.addBeforeInitCallback(NavigationManager._initialize);
+    Laya.Laya.addInitCallback(NavigationManager._initialize);
 
     class BaseNav3DModifle extends Laya.Component {
         set agentType(value) {

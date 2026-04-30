@@ -679,6 +679,8 @@
         _skinLoaded(tex) {
             if (this._destroyed)
                 return;
+            if (tex)
+                this._graphics.setState(this._state, this._stateNum);
             this._graphics.source = tex;
             if (tex)
                 this.callLater(this.changeClips);
@@ -2808,7 +2810,9 @@
         }
         createChildren() {
             this._content = new Box();
-            this._content.hideFlags = Laya.HideFlags.HideAndDontSave;
+            if (!Laya.LayaEnv.isPlaying)
+                this._content.hideFlags = Laya.HideFlags.HideAndDontSave;
+            this._content.mouseThrough = true;
             this.addChild(this._content);
         }
         _transChanged(kind) {
@@ -2856,7 +2860,6 @@
                     }
                     else {
                         cell = this.createItem();
-                        cell.hideFlags = Laya.HideFlags.HideAndDontSave;
                     }
                     cell.x = (this._isVertical ? l : k) * cellWidth - box._x;
                     cell.y = (this._isVertical ? k : l) * cellHeight - box._y;
@@ -2923,7 +2926,8 @@
                 console.warn("cannot create list item");
                 box = new Box();
             }
-            box.hideFlags = Laya.HideFlags.HideAndDontSave;
+            if (!Laya.LayaEnv.isPlaying)
+                box.hideFlags = Laya.HideFlags.HideAndDontSave;
             if (arr.length == 0 && box["_watchMap"]) {
                 let watchMap = box["_watchMap"];
                 for (let name in watchMap) {
@@ -4309,6 +4313,7 @@
         createChildren() {
             this._content = new PanelContentBox();
             this._content.hideFlags = Laya.HideFlags.HideAndDontSave;
+            this._content._setBit(Laya.NodeFlags.LOCK_BY_EDITOR, true);
             this.addChild(this._content);
             this._setContainer(this._content);
         }
@@ -5727,7 +5732,8 @@
         }
         createChildren() {
             this._list = new List();
-            this._list.hideFlags = Laya.HideFlags.HideAndDontSave;
+            if (!Laya.LayaEnv.isPlaying)
+                this._list.hideFlags = Laya.HideFlags.HideAndDontSave;
             this._list.left = 0;
             this._list.right = 0;
             this._list.top = 0;

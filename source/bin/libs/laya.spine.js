@@ -79,17 +79,11 @@
 
     var spineFragment = "#if !defined(SpineFragment_lib)\n#define SpineFragment_lib\n#include \"Sprite2DFrag.glsl\";\nvec4 getColor(){vec4 color=texture2D(u_spineTexture,v_texcoord.xy);\n#ifndef GAMMATEXTURE\n#ifdef GAMMASPACE\ncolor.xyz=linearToGamma(color.xyz);\n#endif\n#else\n#ifndef GAMMASPACE\ncolor.xyz=gammaToLinear(color.xyz);\n#endif\n#endif\nvec4 final;\n#ifdef TWOCOLORTINT\nfinal.a=color.a*v_color.a;final.xyz=((color.a-1.0)*v_color2.a+1.0-color.xyz)*v_color2.xyz+color.xyz*v_color.xyz;\n#else\nfinal=color*v_color;\n#endif\nreturn final;}\n#endif\n";
 
-    var spine3DVertex = "#if !defined(SpineVertex_lib)\n#define SpineVertex_lib\n#include \"SpineVertexCommon.glsl\";\nuniform mat4 u_WorldMat;uniform vec4 u_WorldInvertFront;struct Vertex{vec3 positionOS;vec3 normalOS;vec2 texCoord0;\n#ifdef UV1\nvec2 texCoord1;\n#endif\nvec4 vertexColor;\n#ifdef LIGHTMAP\nvec4 lightmapScaleOffset;\n#endif LIGHTMAP\n};\n#ifdef LIGHTMAP\n#ifndef GPU_INSTANCE\nuniform vec4 u_LightmapScaleOffset;\n#endif\nvec4 getLightmapScaleOffset(){\n#ifdef GPU_INSTANCE\nreturn a_LightmapScaleOffset;\n#else\nreturn u_LightmapScaleOffset;\n#endif\n}\n#endif\nvoid getVertexParams(inout Vertex vertex){vec4 spinePos2D=getSpinePos();vertex.positionOS=vec3(spinePos2D.xy,0.0);vertex.normalOS=vec3(0.0,0.0,1.0);vertex.vertexColor=vec4(1.0,1.0,1.0,1.0);vertex.vertexColor=a_color;vertex.vertexColor.rgb*=a_color.a;vertex.texCoord0=a_uv;\n#ifdef UV1\nvertex.texCoord1=a_Texcoord1;\n#endif\n#ifdef LIGHTMAP\nvertex.lightmapScaleOffset=getLightmapScaleOffset();\n#endif LIGHTMAP\n}\n#endif\n";
-
     var spine2DVertex = "#if !defined(SpineVertex_lib)\n#define SpineVertex_lib\nvoid transfrom_spine(vec2 pos,vec3 xDir,vec3 yDir,out vec2 outPos){outPos.x=xDir.x*pos.x+xDir.y*pos.y+xDir.z;outPos.y=-yDir.x*pos.x-yDir.y*pos.y+yDir.z;}void getGlobalPos(vec4 pos,out vec2 globalPos){\n#ifdef GPU_INSTANCE\nvec3 down=a_NMatrix_1;vec3 up=a_NMatrix_0;\n#else\nvec3 down=u_NMatrix_1;vec3 up=u_NMatrix_0;\n#endif\n#ifdef SPINE_NORMAL_2D\nglobalPos.xy=pos.xy;\n#else\ntransfrom_spine(pos.xy,up,down,globalPos);\n#endif\n}vec4 getScreenPos(vec4 pos){vec2 globalPos;\n#ifdef GPU_INSTANCE\nvec3 down=a_NMatrix_1;vec3 up=a_NMatrix_0;\n#else\nvec3 down=u_NMatrix_1;vec3 up=u_NMatrix_0;\n#endif\n#ifdef SPINE_NORMAL_2D\nglobalPos.xy=pos.xy;\n#else\ntransfrom_spine(pos.xy,up,down,globalPos);\n#endif\nclip(globalPos);vec2 viewPos;getViewPos(globalPos,viewPos);vec4 outPos;getProjectPos(viewPos,outPos);return outPos;}void getVertexInfo(vec4 pos,inout vertexInfo info){info.pos=pos.xy;info.color=vec4(1.0);\n#ifdef COLOR\ninfo.color=a_color;\n#endif\ninfo.color*=u_baseRenderColor;\n#ifdef PREMULTIPLYALPHA\ninfo.color.rgb=info.color.rgb*info.color.a;\n#endif\n#ifdef UV\ninfo.uv=a_uv;\n#endif\n#ifdef LIGHT2D_ENABLE\nvec2 global;getGlobalPos(pos,global);info.lightUV.x=(global.x-u_LightAndShadow2DParam.x)/u_LightAndShadow2DParam.z;info.lightUV.y=1.0-(global.y-u_LightAndShadow2DParam.y)/u_LightAndShadow2DParam.w;\n#endif\n}\n#endif\n";
 
     var spineStandardVS = "#define SHADER_NAME SpineStandardVS\nvarying vec4 v_color2;\n#include \"Sprite2DVertex.glsl\";\n#include \"SpineVertexCommon.glsl\";\n#include \"Spine2DVertex.glsl\";\nvoid main(){vec4 pos=getSpinePos();vertexInfo info;getVertexInfo(pos,info);v_texcoord=info.uv;v_color=info.color;\n#ifdef COLOR2\nv_color2=a_color2;\n#else\nv_color2=vec4(0.0,0.0,0.0,1.0);\n#endif\n#ifdef PREMULTIPLYALPHA\nv_color2.xyz=v_color2.xyz*v_color.a;\n#endif\n#ifdef LIGHT2D_ENABLE\nlightAndShadow(info);\n#endif\ngl_Position=getScreenPos(pos);}";
 
     var spineStandardFS = "#define SHADER_NAME SpineStandardFS\nvarying vec4 v_color2;\n#include \"SpineFragment.glsl\";\nvoid main(){clip();gl_FragColor=getColor();\n#ifdef LIGHT2D_ENABLE\nlightAndShadow(gl_FragColor);\n#endif\n}";
-
-    var spine3DVS = "#define SHADER_NAME Spine3DVS\n#include \"Math.glsl\";\n#include \"Scene.glsl\";\n#include \"SceneFogInput.glsl\";\n#include \"Camera.glsl\";\n#include \"Spine3DVertex.glsl\";\n#ifdef SPINE_BILLBOARD\nuniform mat4 u_spineBillboardMatrix;\n#endif\nvarying vec2 v_texcoord;varying vec4 v_color;varying vec4 v_color2;mat4 getWorldMatrix(){\n#ifdef SPINE_BILLBOARD\nreturn u_spineBillboardMatrix;\n#else\n#ifdef GPU_INSTANCE\nmat4 worldMat=a_WorldMat;\n#else\nmat4 worldMat=u_WorldMat;\n#endif\nreturn worldMat;\n#endif\n}void main(){Vertex vertex;getVertexParams(vertex);v_texcoord=vertex.texCoord0;v_color=vertex.vertexColor;\n#ifdef COLOR2\nv_color2=a_color2;\n#else\nv_color2=vec4(0.0,0.0,0.0,1.0);\n#endif\n#ifdef PREMULTIPLYALPHA\nv_color2.xyz=v_color2.xyz*v_color.a;\n#endif\nmat4 worldMat=getWorldMatrix();vec4 pos=worldMat*vec4(vertex.positionOS,1.0);vec3 positionWS=pos.xyz/pos.w;gl_Position=getPositionCS(positionWS);gl_Position=remapPositionZ(gl_Position);\n#ifdef FOG\nFogHandle(gl_Position.z);\n#endif\n}";
-
-    var spine3DFS = "#define SHADER_NAME Spine3DFS\n#include \"Color.glsl\";\n#include \"Scene.glsl\";\n#include \"SceneFog.glsl\";\n#include \"Camera.glsl\";\nvarying vec2 v_texcoord;varying vec4 v_color;varying vec4 v_color2;vec4 getColor(){vec4 color=texture2D(u_spineTexture,v_texcoord.xy);\n#ifdef Gamma_u_spineTexture\ncolor=gammaToLinear(color);\n#endif\nvec4 final;\n#ifdef TWOCOLORTINT\nfinal.a=color.a*v_color.a;final.xyz=((color.a-1.0)*v_color2.a+1.0-color.xyz)*v_color2.xyz+color.xyz*v_color.xyz;\n#else\nfinal=color*v_color;\n#endif\nreturn final;}void main(){gl_FragColor=getColor();gl_FragColor=outputTransform(gl_FragColor);\n#ifdef FOG\ngl_FragColor=sceneLitFog(gl_FragColor);\n#endif\n}";
 
     class SpineShaderInit {
         static SetSpineBlendMode(value, mat, premultipliedAlpha = true) {
@@ -128,7 +122,6 @@
         }
         static init() {
             Laya.Shader3D.addInclude("SpineFragment.glsl", spineFragment);
-            Laya.Shader3D.addInclude("Spine3DVertex.glsl", spine3DVertex);
             Laya.Shader3D.addInclude("Spine2DVertex.glsl", spine2DVertex);
             Laya.Shader3D.addInclude("SpineVertexCommon.glsl", spineVertexCommon);
             SpineShaderInit.BONEMAT = Laya.Shader3D.propertyNameToID("u_sBone");
@@ -149,8 +142,6 @@
             SpineShaderInit.SPINE_GPU_INSTANCE = Laya.Shader3D.getDefineByName("GPU_INSTANCE");
             SpineShaderInit.SPINE_TWOCOLORTINT = Laya.Shader3D.getDefineByName("TWOCOLORTINT");
             SpineShaderInit.SPINE_COLOR2 = Laya.Shader3D.getDefineByName("COLOR2");
-            SpineShaderInit.SPINE_BILLBOARD = Laya.Shader3D.getDefineByName("SPINE_BILLBOARD");
-            SpineShaderInit.SPINE_BILLBOARD_MATRIX = Laya.Shader3D.propertyNameToID("u_spineBillboardMatrix");
             const commandUniform = Laya.LayaGL.renderDeviceFactory.createGlobalUniformMap("Spine2D");
             commandUniform.addShaderUniformArray(SpineShaderInit.BONEMAT, "u_sBone", Laya.ShaderDataType.Vector4, 200);
             commandUniform.addShaderUniform(SpineShaderInit.BONEMAT_0, "u_sBone0", Laya.ShaderDataType.Vector3);
@@ -159,15 +150,6 @@
             commandUniform.addShaderUniform(SpineShaderInit.SIMPLE_SIMPLEANIMATORTEXTURE, "u_SimpleAnimatorTexture", Laya.ShaderDataType.Texture2D);
             commandUniform.addShaderUniform(SpineShaderInit.SIMPLE_SIMPLEANIMATORTEXTURESIZE, "u_SimpleAnimatorTextureSize", Laya.ShaderDataType.Float);
             commandUniform.addShaderUniform(SpineShaderInit.SPINE_RENDER_SIZE, "u_spineRenderSize", Laya.ShaderDataType.Vector2);
-            const commandUniform3D = Laya.LayaGL.renderDeviceFactory.createGlobalUniformMap("Spine3D");
-            commandUniform3D.addShaderUniformArray(SpineShaderInit.BONEMAT, "u_sBone", Laya.ShaderDataType.Vector4, 200);
-            commandUniform3D.addShaderUniform(SpineShaderInit.BONEMAT_0, "u_sBone0", Laya.ShaderDataType.Vector3);
-            commandUniform3D.addShaderUniform(SpineShaderInit.BONEMAT_1, "u_sBone1", Laya.ShaderDataType.Vector3);
-            commandUniform3D.addShaderUniform(SpineShaderInit.SIMPLE_SIMPLEANIMATORPARAMS, "u_SimpleAnimatorParams", Laya.ShaderDataType.Vector4);
-            commandUniform3D.addShaderUniform(SpineShaderInit.SIMPLE_SIMPLEANIMATORTEXTURE, "u_SimpleAnimatorTexture", Laya.ShaderDataType.Texture2D);
-            commandUniform3D.addShaderUniform(SpineShaderInit.SIMPLE_SIMPLEANIMATORTEXTURESIZE, "u_SimpleAnimatorTextureSize", Laya.ShaderDataType.Float);
-            commandUniform3D.addShaderUniform(SpineShaderInit.SPINE_RENDER_SIZE, "u_spineRenderSize", Laya.ShaderDataType.Vector2);
-            commandUniform3D.addShaderUniform(SpineShaderInit.SPINE_BILLBOARD_MATRIX, "u_spineBillboardMatrix", Laya.ShaderDataType.Matrix4x4);
             let shader = Laya.Shader3D.add("SpineStandard", true, false);
             shader.shaderType = Laya.ShaderFeatureType.D2_BaseRenderNode2D;
             let uniformMap = {
@@ -176,14 +158,6 @@
             let subShader = new Laya.SubShader(SpineShaderInit.textureSpineAttribute, uniformMap);
             shader.addSubShader(subShader);
             subShader.addShaderPass(spineStandardVS, spineStandardFS);
-            let shader3D = Laya.Shader3D.add("Spine3D", true, false);
-            shader3D.shaderType = Laya.ShaderFeatureType.D3;
-            let uniformMap3D = {
-                "u_spineTexture": Laya.ShaderDataType.Texture2D
-            };
-            let subShader3D = new Laya.SubShader(SpineShaderInit.textureSpineAttribute, uniformMap3D);
-            shader3D.addSubShader(subShader3D);
-            subShader3D.addShaderPass(spine3DVS, spine3DFS);
             SpineShaderInit.SpineNormalVertexDeclaration = SpineShaderInit.getVertexDeclaration("UV,COLOR,POSITION,COLOR2");
             SpineShaderInit.instanceNMatrixDeclaration = new Laya.VertexDeclaration(24, [
                 new Laya.VertexElement(0, Laya.VertexElementFormat.Vector3, 8),
@@ -344,7 +318,7 @@
         constructor() {
             super();
             this._createBone = false;
-            this.physicsUpdate = 2;
+            this.physicsUpdate = 0;
             this._maxDeltaTime = 0.1;
             this._pause = true;
             this._needUpdate = false;
@@ -639,8 +613,8 @@
                 width = 100;
             if (height < 1)
                 height = 100;
-            this.owner.size(width, height);
-            this.owner.pivot(this._templet.offsetX, -this._templet.offsetY);
+            this.owner.size(Math.round(width), Math.round(height));
+            this.owner.pivot(Math.round(this._templet.offsetX), Math.round(-this._templet.offsetY));
         }
         onEnable() {
             this.owner.on(Laya.Event.TRANSFORM_CHANGED, this, this.onTransformChanged);
@@ -991,479 +965,6 @@
     Spine2DRenderNode.PAUSED = 1;
     Spine2DRenderNode.PLAYING = 2;
 
-    class Spine3DRenderer extends Laya.BaseRender {
-        get renderSize() {
-            return this._renderSize;
-        }
-        set renderSize(value) {
-            value.cloneTo(this._renderSize);
-            this._baseRenderNode.shaderData.setVector2(SpineShaderInit.SPINE_RENDER_SIZE, this._renderSize);
-        }
-        get billboard() {
-            return this._billboard;
-        }
-        set billboard(value) {
-            if (this._billboard === value)
-                return;
-            this._billboard = value;
-            if (this._billboard) {
-                this._baseRenderNode.shaderData.addDefine(SpineShaderInit.SPINE_BILLBOARD);
-            }
-            else {
-                this._baseRenderNode.shaderData.removeDefine(SpineShaderInit.SPINE_BILLBOARD);
-            }
-        }
-        constructor() {
-            super();
-            this._maxDeltaTime = 0.1;
-            this._pause = true;
-            this._needUpdate = false;
-            this._playbackRate = 1.0;
-            this.trackIndex = 0;
-            this._skinName = "default";
-            this._loop = true;
-            this._useFastRender = true;
-            this._billboard = false;
-            this._enableCache = false;
-            this._renderSize = new Laya.Vector2(0, 0);
-            this._billboardMatrix = new Laya.Matrix4x4();
-            this._cacheMoved = new Laya.Vector2(-1, -1);
-            this._worldParams = new Laya.Vector4();
-            this._playAudio = false;
-            this._geometryBounds = new Laya.Bounds();
-            this._premultipliedAlpha = true;
-            this._setPreAlphaFlag = false;
-            this._baseRenderNode.baseGeometryBounds = this._geometryBounds;
-        }
-        _createBaseRenderNode() {
-            return Laya.Laya3DRender.Render3DModuleDataFactory.createMeshRenderNode();
-        }
-        _isMaterialVaild(value) {
-            return value.checkType(Laya.ShaderFeatureType.D3);
-        }
-        _getcommonUniformMap() {
-            return ["Sprite3D", "Spine3D"];
-        }
-        get premultipliedAlpha() {
-            return !this._templet || this._setPreAlphaFlag ? this._premultipliedAlpha : this._templet.premultipliedAlpha;
-        }
-        set premultipliedAlpha(value) {
-            this._premultipliedAlpha = value;
-            if (!this._spineRender)
-                return;
-            if (this._setPreAlphaFlag || !this._templet) {
-                this._spineRender.premultipliedAlpha = value;
-            }
-            else {
-                this._spineRender.premultipliedAlpha = this._templet._premultipliedAlpha;
-            }
-        }
-        setPremultipliedAlpha(value) {
-            this._premultipliedAlpha = value;
-            this._spineRender.premultipliedAlpha = value;
-            this._setPreAlphaFlag = true;
-        }
-        _renderUpdate(context3D) {
-            let renderNode = this._baseRenderNode;
-            renderNode._applyReflection();
-            renderNode._applyLightProb();
-            if (renderNode.ismoved.x > this._cacheMoved.x || (renderNode.ismoved.x == this._cacheMoved.x && renderNode.ismoved.y > this._cacheMoved.y)) {
-                let trans = renderNode.transform;
-                renderNode.shaderData.setMatrix4x4(Laya.Sprite3D.WORLDMATRIX, trans.worldMatrix);
-                this._worldParams.x = trans.getFrontFaceValue();
-                renderNode.shaderData.setVector(Laya.Sprite3D.WORLDINVERTFRONT, this._worldParams);
-                renderNode.ismoved.cloneTo(this._cacheMoved);
-            }
-            this._updateBillboardMatrix(renderNode, context3D);
-        }
-        _updateBillboardMatrix(renderNode, context3D) {
-            var _a;
-            if (!this._billboard || !context3D)
-                return;
-            let cameraTransform = (_a = context3D.cameraModuleData) === null || _a === void 0 ? void 0 : _a.transform;
-            if (!cameraTransform)
-                return;
-            let transform = renderNode.transform;
-            let cameraUp = Spine3DRenderer._tempCameraUp;
-            let cameraForward = Spine3DRenderer._tempCameraForward;
-            cameraTransform.getUp(cameraUp);
-            cameraTransform.getForward(cameraForward);
-            Laya.Matrix4x4.billboard(transform.position, cameraTransform.position, cameraUp, cameraForward, this._billboardMatrix);
-            const lossyScale = transform.getWorldLossyScale();
-            const elements = this._billboardMatrix.elements;
-            elements[0] *= -lossyScale.x;
-            elements[1] *= -lossyScale.x;
-            elements[2] *= -lossyScale.x;
-            elements[4] *= lossyScale.y;
-            elements[5] *= lossyScale.y;
-            elements[6] *= lossyScale.y;
-            elements[8] *= lossyScale.z;
-            elements[9] *= lossyScale.z;
-            elements[10] *= lossyScale.z;
-            renderNode.shaderData.setMatrix4x4(SpineShaderInit.SPINE_BILLBOARD_MATRIX, this._billboardMatrix);
-        }
-        _onWorldMatNeedChange(flag) {
-            super._onWorldMatNeedChange(flag);
-            this._baseRenderNode.ismoved.setValue(Laya.Stat.loopCount, Laya.LayaGL.renderEngine._framePassCount);
-            this._baseRenderNode.ismoved = this._baseRenderNode.ismoved;
-        }
-        get source() {
-            return this._source;
-        }
-        set source(value) {
-            this._source = value;
-            if (value) {
-                let template = Laya.ILaya.loader.getRes(value, Laya.Loader.SPINE);
-                if (template) {
-                    this.templet = template;
-                }
-                else {
-                    Laya.ILaya.loader.load(value, Laya.Loader.SPINE).then((templet) => {
-                        if (!this._source || templet && !templet.isCreateFromURL(this._source))
-                            return;
-                        if (this.destroyed)
-                            return;
-                        this.templet = templet;
-                    });
-                }
-            }
-            else
-                this.templet = null;
-        }
-        get skinName() {
-            return this._skinName;
-        }
-        set skinName(value) {
-            this._skinName = value;
-            if (this._templet)
-                this.showSkinByName(value);
-        }
-        get animationName() {
-            return this._animationName;
-        }
-        set animationName(value) {
-            this._animationName = value;
-            if (this._templet)
-                this.play(value, this._loop, true);
-        }
-        get maxDetlaTime() {
-            return this._maxDeltaTime;
-        }
-        set maxDetlaTime(value) {
-            this._maxDeltaTime = value;
-        }
-        get loop() {
-            return this._loop;
-        }
-        set loop(value) {
-            this._loop = value;
-            if (this._templet)
-                this.play(this._animationName, this._loop, true);
-        }
-        get templet() {
-            return this._templet;
-        }
-        set templet(value) {
-            this.init(value);
-        }
-        set currentTime(value) {
-            if (!this._templet)
-                return;
-            value /= 1000;
-            if (value < this._playStart || (!!this._playEnd && value > this._playEnd) || value > this._duration)
-                throw new Error("AnimationPlayer: value must large than playStartTime,small than playEndTime.");
-            this._spineRender.currentTime = value;
-        }
-        get currentTime() {
-            if (!this._templet)
-                return 0;
-            return this._spineRender.currentTime;
-        }
-        get playState() {
-            if (this._pause)
-                if (this.currentTime)
-                    return exports.ESpineRenderState.Paused;
-                else
-                    return exports.ESpineRenderState.Stopped;
-            return exports.ESpineRenderState.Playing;
-        }
-        get useFastRender() {
-            return this._useFastRender;
-        }
-        set useFastRender(value) {
-            if (this._useFastRender === value)
-                return;
-            this._useFastRender = value;
-            if (!this._templet)
-                return;
-            this._spineRender.mode = value ? exports.ESpineRenderMode.Optimize : exports.ESpineRenderMode.Normal;
-        }
-        get enableCache() {
-            return this._enableCache;
-        }
-        set enableCache(value) {
-            if (this._enableCache === value)
-                return;
-            this._enableCache = value;
-            if (this._spineRender) {
-                if (value) {
-                    this._spineRender.enableCache();
-                }
-                else {
-                    this._spineRender.disableCache();
-                }
-            }
-            if (this._animationName) {
-                this.play(this._animationName, this._loop, true, this._playStart, this._playEnd, this._playAudio);
-            }
-        }
-        onEnable() {
-            super.onEnable();
-            this.owner.on(Laya.Event.TRANSFORM_CHANGED, this, this.onTransformChanged);
-            if (this._spineRender && Laya.LayaEnv.isPlaying && this._animationName !== undefined)
-                this.play(this._animationName, this._loop, true);
-        }
-        onDisable() {
-            super.onDisable();
-            this.owner.off(Laya.Event.TRANSFORM_CHANGED, this, this.onTransformChanged);
-        }
-        init(templet) {
-            if (this.destroyed)
-                return;
-            if (this._templet) {
-                this.clear();
-            }
-            this._templet = templet;
-            if (!this._templet)
-                return;
-            this._templet._addReference();
-            if (this._spineRender) {
-                this._spineRender.destroy();
-            }
-            this._spineRender = SpineConst.factory.createSpineRender3D(this._baseRenderNode);
-            this._spineRender.init(templet);
-            this._spineRender.mode = this._useFastRender ? exports.ESpineRenderMode.Optimize : exports.ESpineRenderMode.Normal;
-            this._spineRender.premultipliedAlpha = this._setPreAlphaFlag ? this._premultipliedAlpha : this._templet.premultipliedAlpha;
-            if (this._enableCache) {
-                this._spineRender.enableCache();
-            }
-            if (this._renderSize.x !== 0 && this._renderSize.y !== 0) {
-                this._baseRenderNode.shaderData.setVector2(SpineShaderInit.SPINE_RENDER_SIZE, this._renderSize);
-            }
-            else {
-                this._baseRenderNode.shaderData.setVector2(SpineShaderInit.SPINE_RENDER_SIZE, Laya.Vector2.TEMP.setValue(templet.width, templet.height));
-            }
-            this.boundsChange = true;
-            let skinIndex = this._templet.getSkinIndexByName(this._skinName);
-            if (skinIndex != -1)
-                this.showSkinByIndex(skinIndex);
-            this._initBounds();
-            this.onTransformChanged();
-            this._spineRender.setEventListener({
-                start: (entry) => {
-                },
-                interrupt: (entry) => {
-                },
-                end: (entry) => {
-                },
-                dispose: (entry) => {
-                },
-                complete: (entry) => {
-                    this.owner.event(Laya.Event.END);
-                    if (entry.loop) {
-                        this._spineRender.complete();
-                        this.owner.event(Laya.Event.COMPLETE);
-                    }
-                    else {
-                        this.stop();
-                    }
-                },
-                event: (entry, event) => {
-                    let eventData = {
-                        audioValue: event.data.audioPath,
-                        audioPath: event.data.audioPath,
-                        floatValue: event.floatValue,
-                        intValue: event.intValue,
-                        name: event.data.name,
-                        stringValue: event.stringValue,
-                        time: event.time * 1000,
-                        balance: event.balance,
-                        volume: event.volume
-                    };
-                    this.owner.event(Laya.Event.LABEL, eventData);
-                }
-            });
-            this.owner.event(Laya.Event.READY);
-            if (Laya.LayaEnv.isPlaying
-                && this.enabled
-                && this._animationName !== undefined) {
-                this.play(this._animationName, this._loop, true);
-            }
-        }
-        _initBounds() {
-            let x = this._templet.x;
-            let y = this._templet.y;
-            let width = this._templet.width;
-            let height = this._templet.height;
-            let min = this._geometryBounds.getMin();
-            let max = this._geometryBounds.getMax();
-            min.x = x;
-            min.y = y;
-            min.z = 0;
-            max.x = width + x;
-            max.y = height + y;
-            max.z = 0;
-            this._geometryBounds.setMin(min);
-            this._geometryBounds.setMax(max);
-            this._baseRenderNode.baseGeometryBounds = this._geometryBounds;
-        }
-        play(nameOrIndex, loop, force = true, start = 0, end = 0, playAudio = false) {
-            this._playAudio = playAudio;
-            start /= 1000;
-            end /= 1000;
-            this._loop = loop;
-            if (start < 0 || end < 0)
-                throw new Error("SpineSkeleton: start and end must large than zero.");
-            if ((end !== 0) && (start > end))
-                throw new Error("SpineSkeleton: start must less than end.");
-            if (typeof nameOrIndex == "number") {
-                nameOrIndex = this.getAniNameByIndex(nameOrIndex);
-            }
-            else {
-                if (!this.templet.hasAnimation(nameOrIndex))
-                    return;
-            }
-            if (force || this._pause || this._animationName != nameOrIndex) {
-                this._animationName = nameOrIndex;
-                this._spineRender.play(nameOrIndex, loop, this.trackIndex, start, end);
-                let duration = this._spineRender.trackEntry.animation.duration;
-                this._duration = duration;
-                this._playStart = start;
-                this._playEnd = end <= duration ? end : duration;
-                if (this._pause) {
-                    this._pause = false;
-                    this._needUpdate = true;
-                }
-                this._update();
-            }
-        }
-        _update() {
-            let timerDelta = this._enableCache ? SpineConst.SPINE_STEP : Laya.Laya.timer.delta / 1000 * this._playbackRate;
-            if (timerDelta > this._maxDeltaTime)
-                timerDelta = this._maxDeltaTime;
-            let delta = timerDelta * this._playbackRate;
-            let currentPlayTime = this._spineRender.currentTime;
-            this._spineRender.update(delta);
-            if (this.destroyed) {
-                return;
-            }
-            this._spineRender.render(currentPlayTime, 2);
-        }
-        getAnimNum() {
-            return this._templet.getAnimationCount();
-        }
-        getAniNameByIndex(index) {
-            return this._templet.getAniNameByIndex(index);
-        }
-        getSlotByName(slotName) {
-            return this._spineRender.findSlot(slotName);
-        }
-        playbackRate(value) {
-            this._playbackRate = value;
-        }
-        showSkinByName(name) {
-            this.showSkinByIndex(this._templet.getSkinIndexByName(name));
-        }
-        showSkinByIndex(skinIndex) {
-            this._spineRender.showSkinByIndex(skinIndex);
-        }
-        stop() {
-            if (!this._pause) {
-                this._pause = true;
-                this._needUpdate = false;
-                this._spineRender.update(-this._spineRender.currentTime);
-                this._spineRender.currentTime = 0;
-                this.owner.event(Laya.Event.STOPPED);
-            }
-        }
-        onUpdate() {
-            this._needUpdate && this._update();
-        }
-        paused() {
-            if (!this._pause) {
-                this._pause = true;
-                this._needUpdate = false;
-                this.owner.event(Laya.Event.PAUSED);
-            }
-        }
-        resume() {
-            if (this._pause) {
-                this._pause = false;
-                this._needUpdate = true;
-            }
-        }
-        onTransformChanged() {
-            if (!this._spineRender)
-                return;
-            let matrix = this.owner.transform.worldMatrix;
-            this._spineRender.setSkeletonPosition(matrix.elements[12], matrix.elements[13]);
-        }
-        setSlotAttachment(slotName, attachmentName) {
-            this.useFastRender = false;
-            this._spineRender.setAttachment(slotName, attachmentName);
-        }
-        clear() {
-            this.reset();
-        }
-        reset() {
-            this._spineRender.reset();
-            this._templet._removeReference(1);
-            this._templet = null;
-            this._pause = true;
-            this._needUpdate = false;
-        }
-        _onDestroy() {
-            super._onDestroy();
-            if (this._templet) {
-                this.clear();
-            }
-            this._spineRender.destroy();
-            this._spineRender = null;
-        }
-        addAnimation(nameOrIndex, loop = false, delay = 0) {
-            delay /= 1000;
-            let animationName = nameOrIndex;
-            if (typeof animationName == "number") {
-                animationName = this.getAniNameByIndex(animationName);
-            }
-            this._animationName = animationName;
-            this._spineRender.addAnimation(animationName, loop, delay, this.trackIndex);
-        }
-        setMix(fromNameOrIndex, toNameOrIndex, duration) {
-            duration /= 1000;
-            let fromName = fromNameOrIndex;
-            if (typeof fromName == "number") {
-                fromName = this.getAniNameByIndex(fromName);
-            }
-            let toName = toNameOrIndex;
-            if (typeof toName == "number") {
-                toName = this.getAniNameByIndex(toName);
-            }
-            this._spineRender.setMix(fromName, toName, duration);
-        }
-        getBoneByName(boneName) {
-            return this._spineRender.findBone(boneName);
-        }
-        getSkeleton() {
-            return this._spineRender.getSkeleton();
-        }
-        physicsTranslate(x, y) {
-            this._spineRender.physicsTranslate(x, y);
-        }
-    }
-    Spine3DRenderer._tempCameraUp = new Laya.Vector3();
-    Spine3DRenderer._tempCameraForward = new Laya.Vector3();
-
     class SpineSkeleton extends Laya.Sprite {
         constructor() {
             super();
@@ -1573,31 +1074,11 @@
         ESpineRenderType[ESpineRenderType["rigidBody"] = 2] = "rigidBody";
     })(exports.ESpineRenderType || (exports.ESpineRenderType = {}));
 
-    class SpineTempletLoader {
-        load(task) {
-            let atlasUrl = Laya.Utils.replaceFileExtension(task.url, "atlas");
-            return Promise.all([
-                task.loader.fetch(task.url, task.ext == "skel" ? "arraybuffer" : "json", task.progress.createCallback()),
-                task.loader.fetch(atlasUrl, "text", task.progress.createCallback())
-            ]).then(res => {
-                if (!res[0] || !res[1])
-                    return null;
-                let parser = SpineConst.factory.createSpineTempletParser();
-                let urls = parser.collectTextures(res[1], task);
-                return Laya.Laya.loader.load(urls, null, task.progress.createCallback()).then((textures) => {
-                    return parser.create(res[0], textures);
-                });
-            });
-        }
-    }
-    Laya.Loader.registerLoader(["skel"], SpineTempletLoader, Laya.Loader.SPINE);
-
     let c = Laya.ClassUtils.regClass;
     c("SpineSkeleton", SpineSkeleton);
     c("ExternalSkin", ExternalSkin);
     c("ExternalSkinItem", ExternalSkinItem);
     c("Spine2DRenderNode", Spine2DRenderNode);
-    c("Spine3DRenderer", Spine3DRenderer);
     Laya.Laya.addBeforeInitCallback(() => {
         if (Laya.PlayerConfig.spineVersion)
             SpineConst.VERSION = Laya.PlayerConfig.spineVersion;
@@ -1745,6 +1226,25 @@
             this._parser = null;
         }
     }
+
+    class SpineTempletLoader {
+        load(task) {
+            let atlasUrl = Laya.Utils.replaceFileExtension(task.url, "atlas");
+            return Promise.all([
+                task.loader.fetch(task.url, task.ext == "skel" ? "arraybuffer" : "json", task.progress.createCallback()),
+                task.loader.fetch(atlasUrl, "text", task.progress.createCallback())
+            ]).then(res => {
+                if (!res[0] || !res[1])
+                    return null;
+                let parser = SpineConst.factory.createSpineTempletParser();
+                let urls = parser.collectTextures(res[1], task);
+                return Laya.Laya.loader.load(urls, null, task.progress.createCallback()).then((textures) => {
+                    return parser.create(res[0], textures);
+                });
+            });
+        }
+    }
+    Laya.Loader.registerLoader(["skel"], SpineTempletLoader, Laya.Loader.SPINE);
 
     exports.ERenderProxyType = void 0;
     (function (ERenderProxyType) {
@@ -2404,7 +1904,8 @@
             this._currentAnimator;
             let skinAttach = this._skinAttach;
             let currentAnimator = this._optimize.animators.find(animator => animator.name === animationName);
-            let isNormalRender = skinAttach.isNormalRender || currentAnimator.hasClip;
+            let skinAniData = currentAnimator.skinDataArray[skinAttach.index];
+            let isNormalRender = skinAttach.isNormalRender || currentAnimator.hasClip || (skinAniData && skinAniData.isNormalRender);
             if (!isNormalRender && (this.mode === exports.ESpineRenderMode.Optimize || this.mode === exports.ESpineRenderMode.Bake)) {
                 if (skinAttach.vertexBones > 4) {
                     console.warn(`In FastRender mode - Current skin: ${skinAttach.name} has ${skinAttach.vertexBones} bones influencing each vertex. This exceeds the recommended limit of 4 bones per vertex.`);
@@ -5900,6 +5401,11 @@
             }
             let skeletonOptimise = new SkeletonOptimise();
             let skeleton = new spine.Skeleton(skeletonData);
+            templet._textures = textures;
+            templet._premultipliedAlpha = this._premultipliedAlpha;
+            skeletonOptimise.hasPhysics = this._premultipliedAlpha && skeletonData.physicsConstraints.length > 0;
+            skeletonOptimise.canCache = SpineConst.cacheSwitch && !skeletonOptimise.hasPhysics;
+            skeletonOptimise.checkMainAttach(skeleton, skeletonData);
             if (skeletonData.x == undefined
                 || skeletonData.y == undefined
                 || skeletonData.width == undefined
@@ -5920,11 +5426,6 @@
                 templet.offsetX = (skeletonData.x || 0) + templet.width;
                 templet.offsetY = -((skeletonData.y || 0) + templet.height);
             }
-            templet._textures = textures;
-            templet._premultipliedAlpha = this._premultipliedAlpha;
-            skeletonOptimise.hasPhysics = this._premultipliedAlpha && skeletonData.physicsConstraints.length > 0;
-            skeletonOptimise.canCache = SpineConst.cacheSwitch && !skeletonOptimise.hasPhysics;
-            skeletonOptimise.checkMainAttach(skeleton, skeletonData);
             templet.optimize = skeletonOptimise;
             templet._parser = this;
             return templet;
@@ -6518,7 +6019,6 @@
     exports.SkinAttach = SkinAttach;
     exports.Spine2DNormalRenderUpdater = Spine2DNormalRenderUpdater;
     exports.Spine2DRenderNode = Spine2DRenderNode;
-    exports.Spine3DRenderer = Spine3DRenderer;
     exports.SpineAdapter = SpineAdapter;
     exports.SpineBakeScript = SpineBakeScript;
     exports.SpineBaseRenderer = SpineBaseRenderer;
@@ -6537,6 +6037,7 @@
     exports.SpineShaderInit = SpineShaderInit;
     exports.SpineSkeleton = SpineSkeleton;
     exports.SpineTemplet = SpineTemplet;
+    exports.SpineTempletLoader = SpineTempletLoader;
     exports.SpineTexture = SpineTexture;
     exports.SpineWholeBuffer = SpineWholeBuffer;
     exports.StandardSpine2DRenderer = StandardSpine2DRenderer;

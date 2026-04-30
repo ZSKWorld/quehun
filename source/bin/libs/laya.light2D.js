@@ -147,6 +147,7 @@
                 this.lightMeshs[i].length = pcf;
                 if (!this.material[i]) {
                     this.material[i] = new Laya.Material();
+                    this.material[i]._addReference();
                     this._initMaterial(this.material[i], false);
                 }
                 else
@@ -160,6 +161,7 @@
                 if (light._isNeedShadowMesh()) {
                     if (!this.materialShadow[i]) {
                         this.materialShadow[i] = new Laya.Material();
+                        this.materialShadow[i]._addReference();
                         this._initMaterial(this.materialShadow[i], true);
                     }
                     else
@@ -300,6 +302,7 @@
                         }
                         if (!this.materialShadow[i]) {
                             this.materialShadow[i] = new Laya.Material();
+                            this.materialShadow[i]._addReference();
                             this._initMaterial(this.materialShadow[i], true);
                         }
                         this.needShadowMesh[i] = true;
@@ -307,6 +310,22 @@
                     return;
                 }
             }
+        }
+        destroy() {
+            for (let i = this.material.length - 1; i > -1; i--) {
+                if (this.material[i]) {
+                    this.material[i]._removeReference();
+                    this.material[i] = null;
+                }
+            }
+            for (let i = this.materialShadow.length - 1; i > -1; i--) {
+                if (this.materialShadow[i]) {
+                    this.materialShadow[i]._removeReference();
+                    this.materialShadow[i] = null;
+                }
+            }
+            this.material.length = 0;
+            this.materialShadow.length = 0;
         }
         render(rt, rtAdd, rtSub) {
             const length = this.lights.length;
@@ -1149,6 +1168,14 @@
     }
 
     class Light2DManager {
+        static clampRTSize(size) {
+            const max = Laya.LayaGL.renderEngine.getParams(Laya.RenderParams.MAX_Texture_Size);
+            if (max > 0 && size > max) {
+                console.warn(`[Light2D] RT size ${size} exceeds device MAX_TEXTURE_SIZE (${max}), clamped. Reduce light outerRadius/range to avoid visual truncation on low-end devices.`);
+                return max;
+            }
+            return size;
+        }
         get config() {
             return Light2DManager._config;
         }
@@ -1236,6 +1263,11 @@
             ];
         }
         destroy() {
+            for (let i = this._lightRenderRes.length - 1; i > -1; i--) {
+                if (this._lightRenderRes[i])
+                    this._lightRenderRes[i].destroy();
+            }
+            this._lightRenderRes.length = 0;
         }
         _onScreenResize() {
             this._lights.forEach(light => light._transformChange());
@@ -1459,8 +1491,11 @@
             }
         }
         _buildRenderTexture(width, height) {
+            width = Light2DManager.clampRTSize(width);
+            height = Light2DManager.clampRTSize(height);
             const tex = new Laya.RenderTexture(width, height, Laya.RenderTargetFormat.R8G8B8A8, null, false, this.config.multiSamples);
             tex.wrapModeU = tex.wrapModeV = Laya.WrapMode.Clamp;
+            tex.lock = true;
             return tex;
         }
         _collectLightInScreenByLayer(layer) {
@@ -1842,10 +1877,31 @@
             }
         }
         _updateScreen() {
-            this._screen.x = 0;
-            this._screen.y = 0;
-            this._screen.width = Laya.RenderState2D.width | 0;
-            this._screen.height = Laya.RenderState2D.height | 0;
+            let cameraRect = null;
+            if (this._scene && this._scene._area2Ds && this._scene._area2Ds.size > 0) {
+                for (const area of this._scene._area2Ds) {
+                    const cam = area.mainCamera;
+                    if (cam) {
+                        const r = cam._rect;
+                        if (r && r.y > r.x && r.w > r.z) {
+                            cameraRect = r;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (cameraRect) {
+                this._screen.x = cameraRect.x | 0;
+                this._screen.y = cameraRect.z | 0;
+                this._screen.width = (cameraRect.y - cameraRect.x) | 0;
+                this._screen.height = (cameraRect.w - cameraRect.z) | 0;
+            }
+            else {
+                this._screen.x = 0;
+                this._screen.y = 0;
+                this._screen.width = Laya.RenderState2D.width | 0;
+                this._screen.height = Laya.RenderState2D.height | 0;
+            }
             if (this._screen.width <= 0 || this._screen.height <= 0)
                 return false;
             if (this._screen.x < this._screenSchmitt.x
@@ -2804,6 +2860,8 @@
             this._needUpdateLight = true;
         }
         _buildRenderTexture(width, height) {
+            width = Light2DManager.clampRTSize(width);
+            height = Light2DManager.clampRTSize(height);
             if (this._texLight)
                 this._texLight.destroy();
             const tex = this._texLight = new Laya.RenderTexture(width, height, Laya.RenderTargetFormat.R8G8B8A8, null, false, this.antiAlias ? 4 : 1);
@@ -2812,6 +2870,7 @@
                 this._cmdRT = Laya.Set2DRTCMD.create(tex, true, Laya.Color.CLEAR, false);
             else
                 this._cmdRT.renderTexture = tex;
+            tex.lock = true;
         }
         renderLightTexture() {
             var _a;
@@ -2819,8 +2878,8 @@
             if (this._needUpdateLight) {
                 this._needUpdateLight = false;
                 const range = this._getLocalRange();
-                const width = range.width;
-                const height = range.height;
+                const width = Light2DManager.clampRTSize(range.width);
+                const height = Light2DManager.clampRTSize(range.height);
                 if (width === 0 || height === 0)
                     return;
                 if (!this._texLight || !(this._texLight instanceof Laya.RenderTexture)) {
@@ -3171,6 +3230,8 @@
             this._needUpdateLight = true;
         }
         _buildRenderTexture(width, height) {
+            width = Light2DManager.clampRTSize(width);
+            height = Light2DManager.clampRTSize(height);
             if (this._texLight)
                 this._texLight.destroy();
             const tex = this._texLight = new Laya.RenderTexture(width, height, Laya.RenderTargetFormat.R8G8B8A8, null, false, this.antiAlias ? 4 : 1);
@@ -3179,6 +3240,7 @@
                 this._cmdRT = Laya.Set2DRTCMD.create(tex, true, Laya.Color.CLEAR, false);
             else
                 this._cmdRT.renderTexture = tex;
+            tex.lock = true;
         }
         renderLightTexture() {
             var _a;
@@ -3186,8 +3248,8 @@
             if (this._needUpdateLight) {
                 this._needUpdateLight = false;
                 const range = this._getLocalRange();
-                const width = range.width;
-                const height = range.height;
+                const width = Light2DManager.clampRTSize(range.width);
+                const height = Light2DManager.clampRTSize(range.height);
                 if (width === 0 || height === 0)
                     return;
                 if (!this._texLight || !(this._texLight instanceof Laya.RenderTexture)) {

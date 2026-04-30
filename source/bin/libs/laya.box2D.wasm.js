@@ -6,6 +6,9 @@
         constructor() {
             this.worldMap = new Map();
             this.worldCount = 0;
+            this._tempReadVec2 = { x: 0, y: 0 };
+            this._tempReadColor = { r: 0, g: 0, b: 0 };
+            this._tempReadTransform = { x: 0, y: 0, angle: 0 };
         }
         get box2d() {
             return this._box2d;
@@ -15,6 +18,11 @@
         }
         createPhyFromLayaVec2(world, x, y) {
             return new this.box2d.b2Vec2(this.convertLayaValueToPhysics(world, x), this.convertLayaValueToPhysics(world, y));
+        }
+        _destroyVec2(vec) {
+            if (!vec)
+                return;
+            this._box2d.destroy(vec);
         }
         convertLayaValueToPhysics(world, value) {
             let _rePixelRatio = 1 / world._pixelRatio;
@@ -57,6 +65,7 @@
         createWorld(worldDef) {
             let gravity = this.createPhyVec2(worldDef.gravity.x, worldDef.gravity.y);
             let world = new this._box2d.b2World(gravity);
+            this._destroyVec2(gravity);
             world.destroyed = false;
             return world;
         }
@@ -167,6 +176,7 @@
                     jointDef = new this.box2d.b2RevoluteJointDef();
                     let revoluteAnchorVec = this.createPhyFromLayaVec2(world, def.anchor.x, def.anchor.y);
                     jointDef.Initialize(def.bodyA, def.bodyB, revoluteAnchorVec);
+                    this._destroyVec2(revoluteAnchorVec);
                     jointDef.enableMotor = def.enableMotor;
                     jointDef.motorSpeed = def.motorSpeed;
                     jointDef.maxMotorTorque = def.maxMotorTorque;
@@ -191,6 +201,10 @@
                     let anchorVecA = this.createPhyFromLayaVec2(world, def.localAnchorA.x, def.localAnchorA.y);
                     let anchorVecB = this.createPhyFromLayaVec2(world, def.localAnchorB.x, def.localAnchorB.y);
                     jointDef.Initialize(def.bodyA, def.bodyB, groundVecA, groundVecB, anchorVecA, anchorVecB, def.ratio);
+                    this._destroyVec2(groundVecA);
+                    this._destroyVec2(groundVecB);
+                    this._destroyVec2(anchorVecA);
+                    this._destroyVec2(anchorVecB);
                     jointDef.collideConnected = def.collideConnected;
                     break;
                 case Laya.EPhysics2DJoint.WheelJoint:
@@ -198,6 +212,8 @@
                     let anchorVec = this.createPhyFromLayaVec2(world, def.anchor.x, def.anchor.y);
                     let wheelAxis = this.createPhyVec2(def.axis.x, def.axis.y);
                     jointDef.Initialize(def.bodyA, def.bodyB, anchorVec, wheelAxis);
+                    this._destroyVec2(anchorVec);
+                    this._destroyVec2(wheelAxis);
                     jointDef.enableMotor = def.enableMotor;
                     jointDef.motorSpeed = def.motorSpeed;
                     jointDef.maxMotorTorque = def.maxMotorTorque;
@@ -211,6 +227,7 @@
                     jointDef = new this.box2d.b2WeldJointDef();
                     let weldAnchorVec = this.createPhyFromLayaVec2(world, def.anchor.x, def.anchor.y);
                     jointDef.Initialize(def.bodyA, def.bodyB, weldAnchorVec);
+                    this._destroyVec2(weldAnchorVec);
                     this.b2AngularStiffness(jointDef, def.frequency, def.dampingRatio, def.bodyA, def.bodyB);
                     jointDef.collideConnected = def.collideConnected;
                     break;
@@ -218,7 +235,9 @@
                     jointDef = new this.box2d.b2MouseJointDef();
                     jointDef.bodyA = def.bodyA;
                     jointDef.bodyB = def.bodyB;
-                    jointDef.target = this.createPhyFromLayaVec2(world, def.target.x, def.target.y);
+                    let mouseTarget = this.createPhyFromLayaVec2(world, def.target.x, def.target.y);
+                    jointDef.target = mouseTarget;
+                    this._destroyVec2(mouseTarget);
                     jointDef.maxForce = def.maxForce * def.bodyB.GetMass();
                     jointDef.collideConnected = true;
                     this.b2LinearStiffness(jointDef, def.frequency, def.dampingRatio, def.bodyA, def.bodyB);
@@ -226,7 +245,9 @@
                 case Laya.EPhysics2DJoint.MotorJoint:
                     jointDef = new this.box2d.b2MotorJointDef();
                     jointDef.Initialize(def.bodyA, def.bodyB);
-                    jointDef.linearOffset = this.createPhyFromLayaVec2(world, def.linearOffset.x, def.linearOffset.y);
+                    let motorOffset = this.createPhyFromLayaVec2(world, def.linearOffset.x, def.linearOffset.y);
+                    jointDef.linearOffset = motorOffset;
+                    this._destroyVec2(motorOffset);
                     jointDef.angularOffset = def.angularOffset;
                     jointDef.maxForce = def.maxForce;
                     jointDef.maxTorque = def.maxTorque;
@@ -238,6 +259,8 @@
                     let prismaticAnchorVec = this.createPhyFromLayaVec2(world, def.anchor.x, def.anchor.y);
                     let axis = this.createPhyVec2(def.axis.x, def.axis.y);
                     jointDef.Initialize(def.bodyA, def.bodyB, prismaticAnchorVec, axis);
+                    this._destroyVec2(prismaticAnchorVec);
+                    this._destroyVec2(axis);
                     jointDef.enableMotor = def.enableMotor;
                     jointDef.motorSpeed = def.motorSpeed;
                     jointDef.maxMotorForce = def.maxMotorForce;
@@ -372,7 +395,8 @@
         }
         set_MotorJoint_linearOffset(joint, x, y) {
             let world = joint.world;
-            joint.SetLinearOffset(this.createPhyFromLayaVec2(world, x, y));
+            this._tempVe21.Set(this.convertLayaValueToPhysics(world, x), this.convertLayaValueToPhysics(world, y));
+            joint.SetLinearOffset(this._tempVe21);
         }
         set_MotorJoint_SetAngularOffset(joint, angular) {
             joint.SetAngularOffset(angular);
@@ -474,6 +498,7 @@
                 shape.CreateChain(ptr_wrapped, len >> 1);
             }
             this._box2d._free(ptr_wrapped.ptr);
+            this._cleanCache(ptr_wrapped);
         }
         set_CircleShape_radius(shape, radius, scale) {
             let world = shape.world;
@@ -485,21 +510,26 @@
         }
         set_EdgeShape_data(shape, x, y, arr, scaleX, scaleY) {
             let world = shape.world;
-            let len = arr.length;
-            var ps = [];
-            for (var i = 0, n = len; i < n; i += 2) {
-                ps.push(this.createPhyFromLayaVec2(world, (x + arr[i]) * scaleX, (y + arr[i + 1]) * scaleY));
-            }
-            shape.SetTwoSided(ps[0], ps[1]);
+            this._tempVe21.Set(this.convertLayaValueToPhysics(world, (x + arr[0]) * scaleX), this.convertLayaValueToPhysics(world, (y + arr[1]) * scaleY));
+            this._tempVe22.Set(this.convertLayaValueToPhysics(world, (x + arr[2]) * scaleX), this.convertLayaValueToPhysics(world, (y + arr[3]) * scaleY));
+            shape.SetTwoSided(this._tempVe21, this._tempVe22);
         }
         set_PolygonShape_data(shape, x, y, arr, scaleX, scaleY) {
             let world = shape.world;
             let ptr_wrapped = this.createVec2Pointer(world, arr, x, y, scaleX, scaleY);
             shape.Set(ptr_wrapped, arr.length / 2);
             this._box2d._free(ptr_wrapped.ptr);
+            this._cleanCache(ptr_wrapped);
         }
         destroyShape(world, body, shape) {
+            if (!shape || !body)
+                return;
+            if (shape.shape)
+                this._cleanCache(shape.shape);
+            if (shape.filter)
+                this._cleanCache(shape.filter);
             body.DestroyFixture(shape);
+            this._cleanCache(shape);
         }
         set_shapeDef_GroupIndex(def, groupIndex) {
             def.filter.groupIndex = groupIndex;
@@ -593,10 +623,18 @@
             if (!world.destroyed)
                 world.DestroyBody(body);
             body.destroyed = true;
+            this._cleanCache(body);
         }
         rigidBody_DestroyShape(body, shape) {
+            if (!shape || !body)
+                return;
+            if (shape.shape)
+                this._cleanCache(shape.shape);
+            if (shape.filter)
+                this._cleanCache(shape.filter);
             if (body.world && !body.world.destroyed)
                 body.DestroyFixture(shape);
+            this._cleanCache(shape);
         }
         createBodyDef(world, rigidbodyDef) {
             var def = new this.box2d.b2BodyDef();
@@ -609,7 +647,7 @@
             def.fixedRotation = rigidbodyDef.fixedRotation;
             def.gravityScale = rigidbodyDef.gravityScale;
             def.linearDamping = rigidbodyDef.linearDamping;
-            def.linearVelocity = new this.box2d.b2Vec2(this.convertLayaValueToPhysics(world, rigidbodyDef.linearVelocity.x), this.convertLayaValueToPhysics(world, rigidbodyDef.linearVelocity.y));
+            def.linearVelocity.Set(this.convertLayaValueToPhysics(world, rigidbodyDef.linearVelocity.x), this.convertLayaValueToPhysics(world, rigidbodyDef.linearVelocity.y));
             def.type = this.getbodyType(rigidbodyDef.type);
             return def;
         }
@@ -633,7 +671,8 @@
         }
         get_rigidBody_WorldPoint(body, x, y) {
             let world = body.world;
-            let data = body.GetWorldPoint(this.createPhyFromLayaVec2(world, x, y));
+            this._tempVe21.Set(this.convertLayaValueToPhysics(world, x), this.convertLayaValueToPhysics(world, y));
+            let data = body.GetWorldPoint(this._tempVe21);
             return {
                 x: this.convertPhysicsValueToLaya(world, data.x),
                 y: this.convertPhysicsValueToLaya(world, data.y)
@@ -641,7 +680,8 @@
         }
         get_rigidBody_LocalPoint(body, x, y) {
             let world = body.world;
-            let data = body.GetLocalPoint(this.createPhyFromLayaVec2(world, x, y));
+            this._tempVe21.Set(this.convertLayaValueToPhysics(world, x), this.convertLayaValueToPhysics(world, y));
+            let data = body.GetLocalPoint(this._tempVe21);
             return {
                 x: this.convertPhysicsValueToLaya(world, data.x),
                 y: this.convertPhysicsValueToLaya(world, data.y)
@@ -865,9 +905,15 @@
         }
         warpPoint(ins, type) {
             let res;
+            let tmp;
             switch (type) {
                 case Laya.Ebox2DType.b2Color:
-                    res = this._box2d.wrapPointer(ins, this._box2d.b2Color);
+                    tmp = this._box2d.wrapPointer(ins, this._box2d.b2Color);
+                    res = this._tempReadColor;
+                    res.r = tmp.get_r();
+                    res.g = tmp.get_g();
+                    res.b = tmp.get_b();
+                    this._cleanCache(tmp);
                     break;
                 case Laya.Ebox2DType.b2Contact:
                     res = this._box2d.wrapPointer(ins, this._box2d.b2Contact);
@@ -879,15 +925,19 @@
                     res = this._box2d.wrapPointer(ins, this._box2d.b2Joint);
                     break;
                 case Laya.Ebox2DType.b2Transform:
-                    res = this._box2d.wrapPointer(ins, this._box2d.b2Transform);
-                    res.x = res.p.x;
-                    res.y = res.p.y;
-                    res.angle = res.q.GetAngle();
+                    tmp = this._box2d.wrapPointer(ins, this._box2d.b2Transform);
+                    res = this._tempReadTransform;
+                    res.x = tmp.get_p().get_x();
+                    res.y = tmp.get_p().get_y();
+                    res.angle = tmp.get_q().GetAngle();
+                    this._cleanCache(tmp);
                     break;
                 case Laya.Ebox2DType.b2Vec2:
-                    res = this._box2d.wrapPointer(ins, this._box2d.b2Vec2);
-                    res.x = res.get_x();
-                    res.y = res.get_y();
+                    tmp = this._box2d.wrapPointer(ins, this._box2d.b2Vec2);
+                    res = this._tempReadVec2;
+                    res.x = tmp.get_x();
+                    res.y = tmp.get_y();
+                    this._cleanCache(tmp);
                     break;
                 case Laya.Ebox2DType.b2Filter:
                     res = this._box2d.wrapPointer(ins, this._box2d.b2Filter);
@@ -900,6 +950,33 @@
         }
         getContactShapeB(contact) {
             return contact.GetFixtureB();
+        }
+        getContactWorldManifold(contact, result) {
+            if (!this._tempWorldManifold) {
+                this._tempWorldManifold = new this._box2d.b2WorldManifold();
+            }
+            let manifold = this._tempWorldManifold;
+            contact.GetWorldManifold(manifold);
+            let b2Manifold = contact.GetManifold();
+            let pointCount = b2Manifold.get_pointCount();
+            let normal = manifold.get_normal();
+            result.normal.x = normal.get_x();
+            result.normal.y = normal.get_y();
+            result.points.length = pointCount;
+            result.separations.length = pointCount;
+            for (let i = 0; i < pointCount; i++) {
+                let p = manifold.get_points(i);
+                if (!result.points[i]) {
+                    result.points[i] = { x: 0, y: 0 };
+                }
+                result.points[i].x = p.get_x();
+                result.points[i].y = p.get_y();
+                result.separations[i] = manifold.get_separations(i);
+                this._cleanCache(p);
+            }
+            this._cleanCache(normal);
+            this._cleanCache(b2Manifold);
+            return pointCount;
         }
         createContactListener() {
             let listener = new this._box2d.JSContactListener();
@@ -916,28 +993,21 @@
         getDestructionListener() {
             var listner = new this.box2d.JSDestructionListener();
             let box2d = this.box2d;
+            let self = this;
             listner.SayGoodbyeJoint = function (joint) {
                 joint = box2d.wrapPointer(joint, box2d.b2Joint);
                 joint.GetUserData().pointer = -1;
+                self._cleanCache(joint);
             };
             listner.SayGoodbyeFixture = function (fixture) {
                 fixture = box2d.wrapPointer(fixture, box2d.b2Fixture);
                 fixture.GetUserData().pointer = -1;
+                self._cleanCache(fixture);
             };
             return listner;
         }
         castObject(pointer, cls) {
             return this.box2d.castObject(pointer, cls);
-        }
-        createWrapPointer(world, points) {
-            var len = points.length;
-            var buffer = this.box2d._malloc(len * 4);
-            var offset = 0;
-            for (var i = 0; i < len; i++) {
-                this.box2d.HEAPF32[buffer + offset >> 2] = this.convertLayaValueToPhysics(world, points[i]);
-                offset += 4;
-            }
-            return buffer;
         }
         createVec2Pointer(world, points, x, y, scaleX, scaleY) {
             var len = points.length >> 1;
@@ -996,7 +1066,24 @@
             return this.box2d.compare(data, this.box2d.NULL);
         }
         destroyData(data) {
-            data && data.__destroy__();
+            if (!data)
+                return;
+            if (this._box2d.destroy) {
+                this._box2d.destroy(data);
+            }
+            else {
+                data.__destroy__();
+            }
+        }
+        _cleanCache(obj) {
+            if (!obj || obj.ptr == null)
+                return;
+            let cache = this._box2d.getCache;
+            if (cache && obj.__class__) {
+                let c = cache(obj.__class__);
+                if (c)
+                    delete c[obj.ptr];
+            }
         }
         get_fixtureshape(shape, physicShape) {
             let obj;

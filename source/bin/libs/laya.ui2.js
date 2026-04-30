@@ -1515,6 +1515,8 @@
                 this._drawCmd.texture = this._tex;
                 if (drawClass === Laya.DrawTrianglesCmd)
                     this._drawCmd.mesh = this._meshFactory;
+                else if (drawClass === Laya.Draw9GridTextureCmd)
+                    this._drawCmd.sizeGrid = this._tex._sizeGrid;
                 this._owner.graphics.repaint();
                 return;
             }
@@ -2151,7 +2153,9 @@
             this.name = "GRoot";
             this.zOrder = GRoot.LAYER;
             this.mouseThrough = true;
-            this.hideFlags |= Laya.HideFlags.HideAndDontSave;
+            if (!Laya.LayaEnv.isPlaying)
+                this.hideFlags |= Laya.HideFlags.HideAndDontSave;
+            this.hideFlags |= Laya.HideFlags.HideTransformTool;
             this.size(Laya.ILaya.stage.width, Laya.ILaya.stage.height);
             Laya.ILaya.stage.addChild(this);
             this._popupMgr = new PopupManager(this);
@@ -2893,7 +2897,7 @@
                     cy = vh - ch;
             }
             cx = 0;
-            if (this._stretchX === exports.StretchMode.ResizeToFit && cw < vw) {
+            if (this._stretchX === exports.StretchMode.ResizeToFit) {
                 if (align === 1)
                     cx = Math.floor((cw - vw) / 2);
                 else if (align === 2)
@@ -3042,7 +3046,7 @@
                     cx = vw - cw;
             }
             cy = 0;
-            if (this._stretchY === exports.StretchMode.ResizeToFit && ch < vh) {
+            if (this._stretchY === exports.StretchMode.ResizeToFit) {
                 if (valign === 1)
                     cy = Math.floor((ch - vh) / 2);
                 else if (valign === 2)
@@ -4721,7 +4725,7 @@
             else
                 ret = Laya.Loader.getRes(url).create(this._createOptions);
             if (ret)
-                ret.hideFlags |= Laya.HideFlags.HideAndDontSave;
+                ret.hideFlags |= (Laya.LayaEnv.isPlaying ? Laya.HideFlags.DontSave : Laya.HideFlags.HideAndDontSave);
             return ret;
         }
         recover(obj) {
@@ -6470,6 +6474,7 @@
             let container = new PanelContainer();
             container.mouseThrough = true;
             container.hideFlags |= Laya.HideFlags.HideAndDontSave;
+            container._setBit(Laya.NodeFlags.LOCK_BY_EDITOR, true);
             this._maskContainer.addChild(container);
             this._setContainer(container);
             this._selection = new (selectionClass || Selection)(this);
@@ -6663,7 +6668,7 @@
         _buildInitItems() {
             for (let i = this.children.length - 1; i >= 0; i--) {
                 let child = this.getChildAt(i);
-                if (child.hasHideFlag(Laya.HideFlags.HideAndDontSave))
+                if (child.hasHideFlag(Laya.HideFlags.DontSave))
                     child.destroy();
             }
             if (this.itemTemplate == null)
@@ -6673,7 +6678,7 @@
                 let m = (itemData && i < itemData.length) ? itemData[i] : null;
                 if (m != null) {
                     let child = (m.res ? m.res.create() : this.getFromPool());
-                    child.hideFlags |= Laya.HideFlags.HideAndDontSave;
+                    child.hideFlags |= (Laya.LayaEnv.isPlaying ? Laya.HideFlags.DontSave : Laya.HideFlags.HideAndDontSave);
                     child.text = m.title;
                     if (m.icon)
                         child.icon = m.icon;

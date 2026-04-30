@@ -32,6 +32,17 @@
         set startSize(value) {
             this.startSizeX = value;
         }
+        get gravityModifier() {
+            return this._gravityModifier;
+        }
+        set gravityModifier(value) {
+            if (typeof value === 'number') {
+                this._gravityModifier.setValue(value, value);
+            }
+            else {
+                value.cloneTo(this._gravityModifier);
+            }
+        }
         get maxParticles() {
             return this._maxParticles;
         }
@@ -51,7 +62,7 @@
             this.startRotation = new Laya.ParticleMinMaxCurve();
             this.startColor = new Laya.ParticleMinMaxGradient();
             this._gravity = new Laya.Vector2();
-            this.gravityModifier = 0;
+            this._gravityModifier = new Laya.Vector2(0, 0);
             this._spriteRotAndScale = new Laya.Vector4();
             this._spriteTranslateAndSpace = new Laya.Vector3();
             this.simulationSpace = exports.Particle2DSimulationSpace.Local;
@@ -88,7 +99,7 @@
             this.startSizeY.cloneTo(destObject.startSizeY);
             destObject.startRotation = this.startRotation;
             this.startColor.cloneTo(destObject.startColor);
-            destObject.gravityModifier = this.gravityModifier;
+            this.gravityModifier.cloneTo(destObject._gravityModifier);
             destObject.simulationSpace = this.simulationSpace;
             destObject.simulationSpeed = this.simulationSpeed;
             destObject.scaleMode = this.scaleMode;
@@ -139,7 +150,53 @@
         constructor(type) {
             this.type = exports.Base2DShapeType.None;
             this.posAndDir = new Laya.Vector4();
+            this.positionX = 0;
+            this.positionY = 0;
+            this.scaleX = 1;
+            this.scaleY = 1;
+            this.rotation = 0;
             this.type = type;
+        }
+        applyTransform() {
+            if (this.scaleX === 1 && this.scaleY === 1 && this.rotation === 0 && this.positionX === 0 && this.positionY === 0) {
+                return;
+            }
+            let x = this.posAndDir.x;
+            let y = this.posAndDir.y;
+            let dirX = this.posAndDir.z;
+            let dirY = this.posAndDir.w;
+            x *= this.scaleX;
+            y *= this.scaleY;
+            dirX *= this.scaleX;
+            dirY *= this.scaleY;
+            if (this.rotation !== 0) {
+                let rad = this.rotation * Math.PI / 180;
+                let cos = Math.cos(rad);
+                let sin = Math.sin(rad);
+                let rx = x * cos - y * sin;
+                let ry = x * sin + y * cos;
+                x = rx;
+                y = ry;
+                let rdx = dirX * cos - dirY * sin;
+                let rdy = dirX * sin + dirY * cos;
+                dirX = rdx;
+                dirY = rdy;
+            }
+            x += this.positionX;
+            y += this.positionY;
+            let len = Math.sqrt(dirX * dirX + dirY * dirY);
+            if (len > 0) {
+                dirX /= len;
+                dirY /= len;
+            }
+            this.posAndDir.setValue(x, y, dirX, dirY);
+        }
+        cloneTransformTo(destObject) {
+            destObject.positionX = this.positionX;
+            destObject.positionY = this.positionY;
+            destObject.scaleX = this.scaleX;
+            destObject.scaleY = this.scaleY;
+            destObject.rotation = this.rotation;
         }
     }
 
@@ -157,9 +214,9 @@
             this.emitType = exports.FanShapeEmitType.Base;
             this.length = 5;
         }
-        getPositionAndDirection() {
+        getPositionAndDirection(randomFn = Math.random) {
             let radius = this.radius;
-            let randomRadius = (Math.random() * 2 - 1);
+            let randomRadius = (randomFn() * 2 - 1);
             let radians = this.angle * randomRadius * Angle2Radian;
             let xDir = Math.sin(radians);
             let yDir = Math.cos(radians);
@@ -168,7 +225,7 @@
             switch (this.emitType) {
                 case exports.FanShapeEmitType.Area:
                     {
-                        y = this.length * Math.random();
+                        y = this.length * randomFn();
                         x += y * Math.tan(radians);
                         break;
                     }
@@ -213,13 +270,13 @@
             this.size = new Laya.Vector2(1, 1);
             this.randomDirection = false;
         }
-        getPositionAndDirection() {
-            let x = Math.random() * this.size.x + this.size.x * -0.5;
-            let y = Math.random() * this.size.y + this.size.y * -0.5;
+        getPositionAndDirection(randomFn = Math.random) {
+            let x = randomFn() * this.size.x + this.size.x * -0.5;
+            let y = randomFn() * this.size.y + this.size.y * -0.5;
             let xDir = 0;
             let yDir = 1;
             if (this.randomDirection) {
-                let radians = Math.random() * Math.PI * 2;
+                let radians = randomFn() * Math.PI * 2;
                 xDir = Math.sin(radians);
                 yDir = Math.cos(radians);
             }
@@ -244,8 +301,8 @@
             this.emitFromEdge = false;
             this.randomDirction = false;
         }
-        getPositionAndDirection() {
-            let radians = Math.random() * Math.PI * 2;
+        getPositionAndDirection(randomFn = Math.random) {
+            let radians = randomFn() * Math.PI * 2;
             let xDir = Math.sin(radians);
             let yDir = Math.cos(radians);
             let x = 0;
@@ -255,22 +312,24 @@
                 y = yDir * this.radius;
             }
             else {
-                let length = Math.random() * this.radius;
+                let length = randomFn() * this.radius;
                 x = xDir * length;
                 y = yDir * length;
             }
             if (this.randomDirction) {
-                let radians = Math.random() * Math.PI * 2;
+                let radians = randomFn() * Math.PI * 2;
                 xDir = Math.sin(radians);
                 yDir = Math.cos(radians);
             }
             this.posAndDir.setValue(x, y, xDir, yDir);
+            this.applyTransform();
             return this.posAndDir;
         }
         cloneTo(destObject) {
             destObject.radius = this.radius;
             destObject.emitFromEdge = this.emitFromEdge;
             destObject.randomDirction = this.randomDirction;
+            this.cloneTransformTo(destObject);
         }
         clone() {
             let destObject = new Circle2DShape();
@@ -286,8 +345,8 @@
             this.emitFromEdge = false;
             this.randomDirction = false;
         }
-        getPositionAndDirection() {
-            let radians = Math.random() * Math.PI - Math.PI * 0.5;
+        getPositionAndDirection(randomFn = Math.random) {
+            let radians = randomFn() * Math.PI - Math.PI * 0.5;
             let xDir = Math.sin(radians);
             let yDir = Math.cos(radians);
             let x = 0;
@@ -297,12 +356,12 @@
                 y = yDir * this.radius;
             }
             else {
-                let length = Math.random() * this.radius;
+                let length = randomFn() * this.radius;
                 x = xDir * length;
                 y = yDir * length;
             }
             if (this.randomDirction) {
-                let radians = Math.random() * Math.PI - Math.PI * 0.5;
+                let radians = randomFn() * Math.PI - Math.PI * 0.5;
                 xDir = Math.sin(radians);
                 yDir = Math.cos(radians);
             }
@@ -495,9 +554,9 @@
         }
     }
 
-    var Particle2DCommon = "#if !defined(ShruikenParticleCommon_glsl)\n#define ShruikenParticleCommon_glsl\nuniform vec3 u_NMatrix_0;uniform vec3 u_NMatrix_1;uniform vec2 u_size;\n#ifdef COLOROVERLIFETIME\n#ifdef COLOROVERLIFETIME_COLORKEY_8\nuniform vec4 u_GradientRGB[8];uniform vec4 u_GradientAlpha[4];uniform vec4 u_GradientMaxRGB[8];uniform vec4 u_GradientMaxAlpha[4];\n#else\nuniform vec4 u_GradientRGB[4];uniform vec4 u_GradientAlpha[2];uniform vec4 u_GradientMaxRGB[4];uniform vec4 u_GradientMaxAlpha[2];\n#endif\nuniform vec4 u_GradientTimeRange;uniform vec4 u_GradientMaxTimeRange;\n#endif\n#ifdef VELOCITYOVERLIFETIME\nuniform vec4 u_VelocityCurveMinX[2];uniform vec4 u_VelocityCurveMinY[2];uniform vec4 u_VelocityCurveMaxX[2];uniform vec4 u_VelocityCurveMaxY[2];uniform float u_VelocityOverLifetimeSpace;\n#endif\n#ifdef SIZEOVERLIFETIME\nuniform vec4 u_SizeCurveMinX[2];uniform vec4 u_SizeCurveMinY[2];uniform vec4 u_SizeCurveMinTimeRange;uniform vec4 u_SizeCurveMaxX[2];uniform vec4 u_SizeCurveMaxY[2];uniform vec4 u_SizeCurveMaxTimeRange;\n#endif\n#ifdef ROTATIONOVERLIFETIME\nuniform vec4 u_RotationCurveMin[2];uniform vec4 u_RotationCurveMax[2];\n#endif\n#ifdef TEXTURESHEETANIMATION\nuniform vec4 u_TextureSheetFrame[2];uniform vec4 u_TextureSheetFrameMax[2];uniform vec4 u_TextureSheetFrameRange;uniform vec4 u_TextureSheetFrameData;\n#endif\nuniform float u_CurrentTime;uniform float u_UnitPixels;uniform vec4 u_SpriteRotAndScale;varying vec4 v_ParticleColor;varying vec2 v_ParticleUV;\n#ifdef CAMERA2D\nuniform mat3 u_view2D;\n#endif\n#ifdef RENDERTEXTURE\nuniform vec3 u_InvertMat_0;uniform vec3 u_InvertMat_1;\n#endif\nuniform vec4 u_clipMatDir;uniform vec4 u_clipMatPos;varying vec2 v_cliped;\n#endif\n";
+    var Particle2DCommon = "#if !defined(ShruikenParticleCommon_glsl)\n#define ShruikenParticleCommon_glsl\nuniform vec3 u_NMatrix_0;uniform vec3 u_NMatrix_1;uniform vec2 u_size;\n#ifdef COLOROVERLIFETIME\n#ifdef COLOROVERLIFETIME_COLORKEY_8\nuniform vec4 u_GradientRGB[8];uniform vec4 u_GradientAlpha[4];uniform vec4 u_GradientMaxRGB[8];uniform vec4 u_GradientMaxAlpha[4];\n#else\nuniform vec4 u_GradientRGB[4];uniform vec4 u_GradientAlpha[2];uniform vec4 u_GradientMaxRGB[4];uniform vec4 u_GradientMaxAlpha[2];\n#endif\nuniform vec4 u_GradientTimeRange;uniform vec4 u_GradientMaxTimeRange;\n#endif\n#ifdef VELOCITYOVERLIFETIME\nuniform vec4 u_VelocityCurveMinX[2];uniform vec4 u_VelocityCurveMinY[2];uniform vec4 u_VelocityCurveMaxX[2];uniform vec4 u_VelocityCurveMaxY[2];uniform float u_VelocityOverLifetimeSpace;\n#endif\n#ifdef SIZEOVERLIFETIME\nuniform vec4 u_SizeCurveMinX[2];uniform vec4 u_SizeCurveMinY[2];uniform vec4 u_SizeCurveMinTimeRange;uniform vec4 u_SizeCurveMaxX[2];uniform vec4 u_SizeCurveMaxY[2];uniform vec4 u_SizeCurveMaxTimeRange;\n#endif\n#ifdef ROTATIONOVERLIFETIME\nuniform vec4 u_RotationCurveMin[2];uniform vec4 u_RotationCurveMax[2];\n#endif\n#ifdef TEXTURESHEETANIMATION\nuniform vec4 u_TextureSheetFrame[2];uniform vec4 u_TextureSheetFrameMax[2];uniform vec4 u_TextureSheetFrameRange;uniform vec4 u_TextureSheetFrameData;\n#endif\nuniform float u_CurrentTime;uniform float u_UnitPixels;uniform vec4 u_SpriteRotAndScale;varying vec4 v_ParticleColor;varying vec2 v_ParticleUV;\n#ifdef CAMERA2D\nuniform mat3 u_view2D;\n#endif\n#ifdef RENDERTEXTURE\nuniform vec3 u_InvertMat_0;uniform vec3 u_InvertMat_1;\n#endif\n#endif\n";
 
-    var Particle2DFrag = "#if !defined(ShurikenParticleFrag_glsl)\n#define ShurikenParticleFrag_glsl\n#include \"Particle2DCommon.glsl\"\nvec4 getParticleColor(){return v_ParticleColor;}vec2 getParticleUV(){return v_ParticleUV;}void clip(){if(v_cliped.x<0.)discard;if(v_cliped.x>1.)discard;if(v_cliped.y<0.)discard;if(v_cliped.y>1.)discard;}\n#endif\n";
+    var Particle2DFrag = "#if !defined(ShurikenParticleFrag_glsl)\n#define ShurikenParticleFrag_glsl\n#include \"ClipFrag.glsl\"\n#include \"Particle2DCommon.glsl\"\nvec4 getParticleColor(){return v_ParticleColor;}vec2 getParticleUV(){return v_ParticleUV;}\n#endif\n";
 
     var Particle2DLifetimeColor = "#ifdef COLOROVERLIFETIME\n#ifdef COLOROVERLIFETIME_COLORKEY_8\nvec4 getColorFromGradient(float normalizedAge,vec4 gradientRGB[8],vec4 gradientAlpha[4],vec4 range){vec4 color=vec4(1.0,1.0,1.0,1.0);vec2 colorRange=range.xy;float colorAge=clamp(normalizedAge,colorRange.x,colorRange.y);for(int i=1;i<8;i++){vec4 currentRGB=gradientRGB[i];vec4 lastRGB=gradientRGB[i-1];if(currentRGB.x>=colorAge){float t=(colorAge-lastRGB.x)/(currentRGB.x-lastRGB.x);color.rgb=mix(lastRGB.yzw,currentRGB.yzw,t);break;}}vec2 alphaRange=range.zw;float alphaAge=clamp(normalizedAge,alphaRange.x,alphaRange.y);vec2 alphas[8];alphas[0]=gradientAlpha[0].xy;alphas[1]=gradientAlpha[0].zw;alphas[2]=gradientAlpha[1].xy;alphas[3]=gradientAlpha[1].zw;alphas[4]=gradientAlpha[2].xy;alphas[5]=gradientAlpha[2].zw;alphas[6]=gradientAlpha[3].xy;alphas[7]=gradientAlpha[3].zw;for(int i=1;i<8;i++){vec2 currentAlpha=alphas[i];vec2 lastAlpha=alphas[i-1];if(currentAlpha.x>=alphaAge){float t=(alphaAge-lastAlpha.x)/(currentAlpha.x-lastAlpha.x);color.a=mix(lastAlpha.y,currentAlpha.y,t);break;}}return color;}\n#else\nvec4 getColorFromGradient(float normalizedAge,vec4 gradientRGB[4],vec4 gradientAlpha[2],vec4 range){vec4 color=vec4(1.0,1.0,1.0,1.0);vec2 colorRange=range.xy;float colorAge=clamp(normalizedAge,colorRange.x,colorRange.y);for(int i=1;i<4;i++){vec4 currentRGB=gradientRGB[i];vec4 lastRGB=gradientRGB[i-1];if(currentRGB.x>=colorAge){float t=(colorAge-lastRGB.x)/(currentRGB.x-lastRGB.x);color.rgb=mix(lastRGB.yzw,currentRGB.yzw,t);break;}}vec2 alphaRange=range.zw;float alphaAge=clamp(normalizedAge,alphaRange.x,alphaRange.y);vec2 alphas[4];alphas[0]=gradientAlpha[0].xy;alphas[1]=gradientAlpha[0].zw;alphas[2]=gradientAlpha[1].xy;alphas[3]=gradientAlpha[1].zw;for(int i=1;i<4;i++){vec2 currentAlpha=alphas[i];vec2 lastAlpha=alphas[i-1];if(currentAlpha.x>=alphaAge){float t=(alphaAge-lastAlpha.x)/(currentAlpha.x-lastAlpha.x);color.a=mix(lastAlpha.y,currentAlpha.y,t);break;}}return color;}\n#endif\nvec4 getColorOverLifetime(float normalizedAge){\n#ifdef COLOROVERLIFETIME_RANDOM\nvec4 minColor=getColorFromGradient(normalizedAge,u_GradientRGB,u_GradientAlpha,u_GradientTimeRange);vec4 maxColor=getColorFromGradient(normalizedAge,u_GradientMaxRGB,u_GradientMaxAlpha,u_GradientMaxTimeRange);return mix(minColor,maxColor,a_Random.x);\n#else\nreturn getColorFromGradient(normalizedAge,u_GradientRGB,u_GradientAlpha,u_GradientTimeRange);\n#endif\n}\n#endif\n";
 
@@ -509,7 +568,7 @@
 
     var Particle2DTextureSheetAnimation = "#ifdef TEXTURESHEETANIMATION\nvec2 getAnimationUV(float normalizedAge,vec2 uv){float cycles=u_TextureSheetFrameData.z;vec2 gridUV=1.0/u_TextureSheetFrameData.xy;float startFrame=a_SheetFrameData.x;float frameCount=a_SheetFrameData.y;float rowIndex=a_SheetFrameData.z;float cycleTime=mod(normalizedAge*cycles,1.0);float minFrame=getCurveValue(cycleTime,u_TextureSheetFrame,u_TextureSheetFrameRange.xy);float maxFrame=getCurveValue(cycleTime,u_TextureSheetFrameMax,u_TextureSheetFrameRange.zw);float frame=floor(mix(minFrame,maxFrame,a_Random1.y));frame=mod(frame+startFrame,frameCount)+rowIndex*u_TextureSheetFrameData.x;float indexX=floor(mod(frame,u_TextureSheetFrameData.x));float indexY=floor(frame/u_TextureSheetFrameData.x);vec2 uvOffset=vec2(indexX,indexY)*gridUV;return uv*gridUV+uvOffset;}\n#endif\n";
 
-    var Particle2DVertex = "#if !defined(ShurikenParticleVertex_glsl)\n#define ShurikenParticleVertex_glsl\n#include \"Particle2DCommon.glsl\"\n#include \"Curve.glsl\"\n#include \"Particle2DLifetimeColor.glsl\"\n#include \"Particle2DLifetimeRotation.glsl\"\n#include \"Particle2DLifetimeSize.glsl\"\n#include \"Particle2DLifetimeVelocity.glsl\"\n#include \"Particle2DTextureSheetAnimation.glsl\"\nstruct VertexInfo{vec2 position;vec2 uv;};VertexInfo getVertexInfo(){VertexInfo vertex;vertex.position=a_PositionAndUV.xy;vertex.uv=a_PositionAndUV.zw;return vertex;}struct Particle{float age;float lifetime;vec2 position;vec2 startVelocity;vec2 size;vec2 rot;vec2 gravity;vec4 color;vec2 uv;vec2 meshPos;};vec2 transfrom(vec2 pos,vec3 xDir,vec3 yDir){vec2 outPos;outPos.x=xDir.x*pos.x+xDir.y*pos.y+xDir.z;outPos.y=yDir.x*pos.x+yDir.y*pos.y+yDir.z;return outPos;}Particle getParticle(){Particle p;p.age=u_CurrentTime-a_SizeAndTimes.z;p.lifetime=a_SizeAndTimes.w;p.position=a_DirectionAndPosition.zw*vec2(1.0,-1.0);vec4 spriteRotAndScale=mix(u_SpriteRotAndScale,a_SpriteRotAndSacle,a_SpeedSpaceAndRot.y);vec2 spriteRot=spriteRotAndScale.xy;vec2 spriteScale=spriteRotAndScale.zw;mat2 spriteRotMat=mat2(spriteRot.x,spriteRot.y,-spriteRot.y,spriteRot.x);p.position=spriteRotMat*(p.position*spriteScale);float normalizedAge=p.age/p.lifetime;vec2 direction=normalize((a_DirectionAndPosition.xy));float startSpeed=a_SpeedSpaceAndRot.x;p.startVelocity=direction*startSpeed;p.size=a_SizeAndTimes.xy;p.rot=a_SpeedSpaceAndRot.zw;p.gravity=a_SpriteTransAndGravity.zw;p.color=a_StartColor;\n#ifdef COLOROVERLIFETIME\np.color*=getColorOverLifetime(normalizedAge);\n#endif\nVertexInfo vertex=getVertexInfo();p.meshPos=vertex.position;p.uv=vertex.uv;\n#ifdef TEXTURESHEETANIMATION\np.uv=getAnimationUV(normalizedAge,p.uv);\n#endif\nreturn p;}vec4 transPosition(vec2 position,vec3 nMatrix0,vec3 nMatrix1){vec4 pos=vec4(position*u_UnitPixels,0.0,1.0);float x=nMatrix0.x*pos.x+nMatrix0.y*pos.y+nMatrix0.z;float y=nMatrix1.x*pos.x+nMatrix1.y*pos.y+nMatrix1.z;x=(x/u_size.x-0.5)*2.0;y=(0.5-y/u_size.y)*2.0;pos.xy=vec2(x,y);return pos;}vec2 clip(in vec2 globalPos){vec4 clipMatDir;vec4 clipMatPos;clipMatDir=u_clipMatDir;clipMatPos=u_clipMatPos;vec2 cliped;float clipw=length(clipMatDir.xy);float cliph=length(clipMatDir.zw);vec2 clippos=globalPos-clipMatPos.xy;if(clipw>20000.&&cliph>20000.)cliped=vec2(0.5,0.5);else{cliped=vec2(dot(clippos,clipMatDir.xy)/clipw/clipw,dot(clippos,clipMatDir.zw)/cliph/cliph);}globalPos=clippos+clipMatPos.zw;v_cliped=cliped;return globalPos;}void getViewPos(in vec2 globalPos,out vec2 viewPos){\n#ifdef RENDERTEXTURE\nvec2 tempPos=transfrom(globalPos,u_InvertMat_0,u_InvertMat_1);\n#ifdef CAMERA2D\nviewPos.xy=(u_view2D*vec3(tempPos,1.0)).xy+u_size/2.;\n#else\nviewPos.xy=tempPos;\n#endif\n#else\n#ifdef CAMERA2D\nviewPos.xy=(u_view2D*vec3(globalPos,1.0)).xy+u_size/2.;\n#else\nviewPos.xy=globalPos;\n#endif\n#endif\n}void getProjectPos(in vec2 viewPos,out vec4 projectPos){projectPos=vec4((viewPos.x/u_size.x-0.5)*2.0,(0.5-viewPos.y/u_size.y)*2.0,0.,1.0);\n#ifdef INVERTY\nprojectPos.y=-projectPos.y;\n#endif\n}vec4 updateParticlePosition(Particle particle){vec2 position=particle.meshPos;vec4 spriteRotAndScale=mix(u_SpriteRotAndScale,a_SpriteRotAndSacle,a_SpeedSpaceAndRot.y);vec2 spriteRot=spriteRotAndScale.xy;vec2 spriteScale=spriteRotAndScale.zw;mat2 spriteRotMat=mat2(spriteRot.x,spriteRot.y,-spriteRot.y,spriteRot.x);vec2 startVelocity=spriteRotMat*(particle.startVelocity*spriteScale*vec2(1.0,-1.0));vec2 particleOffset=startVelocity*particle.age+0.5*particle.gravity*particle.age*particle.age;vec2 particleSize=particle.size;float normalizedAge=particle.age/particle.lifetime;\n#ifdef SIZEOVERLIFETIME\nvec2 sizeOverLifetime=getSizeOverLifetime(normalizedAge);particleSize*=sizeOverLifetime;\n#endif\nfloat cosAngle=particle.rot.x;float sinAngle=particle.rot.y;mat2 particleRot=mat2(cosAngle,-sinAngle,sinAngle,cosAngle);\n#ifdef ROTATIONOVERLIFETIME\nfloat rotationOverLifetime=getRotationOverLifetime(normalizedAge,particle.lifetime);float cosRot=cos(rotationOverLifetime);float sinRot=sin(rotationOverLifetime);mat2 rotationMat=mat2(cosRot,-sinRot,sinRot,cosRot);particleRot*=rotationMat;\n#endif\nmat2 transMat=particleRot*mat2(particleSize.x,0.0,0.0,particleSize.y);vec2 positionOS=transMat*position;vec2 scale=spriteRotAndScale.zw;vec3 nMatrix0=vec3(1.0*scale.x,0.0,0.0);vec3 nMatrix1=vec3(0.0,1.0*scale.y,0.0);positionOS.x=nMatrix0.x*positionOS.x+nMatrix0.y*positionOS.y+nMatrix0.z;positionOS.y=nMatrix1.x*positionOS.x+nMatrix1.y*positionOS.y+nMatrix1.z;positionOS+=particleOffset;\n#ifdef VELOCITYOVERLIFETIME\nvec2 velocityWorldDistance=getVelocityOverLifetimeDistance(normalizedAge,particle.lifetime);vec2 velocityLocalDistance=spriteRotMat*(velocityWorldDistance*vec2(1.0,-1.0));vec2 velocityDistance=mix(velocityLocalDistance,velocityWorldDistance,u_VelocityOverLifetimeSpace);positionOS+=velocityDistance;\n#endif\nvec2 loaclTrans=vec2(u_NMatrix_0.z,u_NMatrix_1.z);vec2 worldTrans=vec2(a_SpriteTransAndGravity.xy);float space=a_SpeedSpaceAndRot.y;vec2 trans=mix(loaclTrans,worldTrans,space);vec2 positionWS=positionOS+trans/u_UnitPixels;float x=positionWS.x;float y=positionWS.y;x=x+particle.position.x;y=y+particle.position.y;vec4 positionCS=vec4(x*u_UnitPixels,y*u_UnitPixels,0.0,1.0);clip(positionCS.xy);vec2 viewPos;getViewPos(positionCS.xy,viewPos);getProjectPos(viewPos,positionCS);return positionCS;}void shareParticleParams(Particle p){v_ParticleColor=p.color;v_ParticleUV=p.uv;}\n#endif\n";
+    var Particle2DVertex = "#if !defined(ShurikenParticleVertex_glsl)\n#define ShurikenParticleVertex_glsl\n#include \"ClipVertex.glsl\"\n#include \"Particle2DCommon.glsl\"\n#include \"Curve.glsl\"\n#include \"Particle2DLifetimeColor.glsl\"\n#include \"Particle2DLifetimeRotation.glsl\"\n#include \"Particle2DLifetimeSize.glsl\"\n#include \"Particle2DLifetimeVelocity.glsl\"\n#include \"Particle2DTextureSheetAnimation.glsl\"\nstruct VertexInfo{vec2 position;vec2 uv;};VertexInfo getVertexInfo(){VertexInfo vertex;vertex.position=a_PositionAndUV.xy;vertex.uv=a_PositionAndUV.zw;return vertex;}struct Particle{float age;float lifetime;vec2 position;vec2 startVelocity;vec2 size;vec2 rot;vec2 gravity;vec4 color;vec2 uv;vec2 meshPos;};vec2 transfrom(vec2 pos,vec3 xDir,vec3 yDir){vec2 outPos;outPos.x=xDir.x*pos.x+xDir.y*pos.y+xDir.z;outPos.y=yDir.x*pos.x+yDir.y*pos.y+yDir.z;return outPos;}Particle getParticle(){Particle p;p.age=u_CurrentTime-a_SizeAndTimes.z;p.lifetime=a_SizeAndTimes.w;p.position=a_DirectionAndPosition.zw*vec2(1.0,-1.0);vec4 spriteRotAndScale=mix(u_SpriteRotAndScale,a_SpriteRotAndSacle,a_SpeedSpaceAndRot.y);vec2 spriteRot=spriteRotAndScale.xy;vec2 spriteScale=spriteRotAndScale.zw;mat2 spriteRotMat=mat2(spriteRot.x,spriteRot.y,-spriteRot.y,spriteRot.x);p.position=spriteRotMat*(p.position*spriteScale);float normalizedAge=p.age/p.lifetime;vec2 direction=normalize((a_DirectionAndPosition.xy));float startSpeed=a_SpeedSpaceAndRot.x;p.startVelocity=direction*startSpeed;p.size=a_SizeAndTimes.xy;p.rot=a_SpeedSpaceAndRot.zw;p.gravity=a_SpriteTransAndGravity.zw;p.color=a_StartColor;\n#ifdef COLOROVERLIFETIME\np.color*=getColorOverLifetime(normalizedAge);\n#endif\nVertexInfo vertex=getVertexInfo();p.meshPos=vertex.position;p.uv=vertex.uv;\n#ifdef TEXTURESHEETANIMATION\np.uv=getAnimationUV(normalizedAge,p.uv);\n#endif\nreturn p;}vec4 transPosition(vec2 position,vec3 nMatrix0,vec3 nMatrix1){vec4 pos=vec4(position*u_UnitPixels,0.0,1.0);float x=nMatrix0.x*pos.x+nMatrix0.y*pos.y+nMatrix0.z;float y=nMatrix1.x*pos.x+nMatrix1.y*pos.y+nMatrix1.z;x=(x/u_size.x-0.5)*2.0;y=(0.5-y/u_size.y)*2.0;pos.xy=vec2(x,y);return pos;}void getViewPos(in vec2 globalPos,out vec2 viewPos){\n#ifdef RENDERTEXTURE\nvec2 tempPos=transfrom(globalPos,u_InvertMat_0,u_InvertMat_1);\n#ifdef CAMERA2D\nviewPos.xy=(u_view2D*vec3(tempPos,1.0)).xy+u_size/2.;\n#else\nviewPos.xy=tempPos;\n#endif\n#else\n#ifdef CAMERA2D\nviewPos.xy=(u_view2D*vec3(globalPos,1.0)).xy+u_size/2.;\n#else\nviewPos.xy=globalPos;\n#endif\n#endif\n}void getProjectPos(in vec2 viewPos,out vec4 projectPos){projectPos=vec4((viewPos.x/u_size.x-0.5)*2.0,(0.5-viewPos.y/u_size.y)*2.0,0.,1.0);\n#ifdef INVERTY\nprojectPos.y=-projectPos.y;\n#endif\n}vec4 updateParticlePosition(Particle particle){vec2 position=particle.meshPos;vec4 spriteRotAndScale=mix(u_SpriteRotAndScale,a_SpriteRotAndSacle,a_SpeedSpaceAndRot.y);vec2 spriteRot=spriteRotAndScale.xy;vec2 spriteScale=spriteRotAndScale.zw;mat2 spriteRotMat=mat2(spriteRot.x,spriteRot.y,-spriteRot.y,spriteRot.x);vec2 startVelocity=spriteRotMat*(particle.startVelocity*spriteScale*vec2(1.0,-1.0));vec2 particleOffset=startVelocity*particle.age+0.5*particle.gravity*particle.age*particle.age;vec2 particleSize=particle.size;float normalizedAge=particle.age/particle.lifetime;\n#ifdef SIZEOVERLIFETIME\nvec2 sizeOverLifetime=getSizeOverLifetime(normalizedAge);particleSize*=sizeOverLifetime;\n#endif\nfloat cosAngle=particle.rot.x;float sinAngle=particle.rot.y;mat2 particleRot=mat2(cosAngle,-sinAngle,sinAngle,cosAngle);\n#ifdef ROTATIONOVERLIFETIME\nfloat rotationOverLifetime=getRotationOverLifetime(normalizedAge,particle.lifetime);float cosRot=cos(rotationOverLifetime);float sinRot=sin(rotationOverLifetime);mat2 rotationMat=mat2(cosRot,-sinRot,sinRot,cosRot);particleRot*=rotationMat;\n#endif\nmat2 transMat=particleRot*mat2(particleSize.x,0.0,0.0,particleSize.y);vec2 positionOS=transMat*position;vec2 scale=spriteRotAndScale.zw;vec3 nMatrix0=vec3(1.0*scale.x,0.0,0.0);vec3 nMatrix1=vec3(0.0,1.0*scale.y,0.0);positionOS.x=nMatrix0.x*positionOS.x+nMatrix0.y*positionOS.y+nMatrix0.z;positionOS.y=nMatrix1.x*positionOS.x+nMatrix1.y*positionOS.y+nMatrix1.z;positionOS+=particleOffset;\n#ifdef VELOCITYOVERLIFETIME\nvec2 velocityWorldDistance=getVelocityOverLifetimeDistance(normalizedAge,particle.lifetime);vec2 velocityLocalDistance=spriteRotMat*(velocityWorldDistance*vec2(1.0,-1.0));vec2 velocityDistance=mix(velocityLocalDistance,velocityWorldDistance,u_VelocityOverLifetimeSpace);positionOS+=velocityDistance;\n#endif\nvec2 loaclTrans=vec2(u_NMatrix_0.z,u_NMatrix_1.z);vec2 worldTrans=vec2(a_SpriteTransAndGravity.xy);float space=a_SpeedSpaceAndRot.y;vec2 trans=mix(loaclTrans,worldTrans,space);vec2 positionWS=positionOS+trans/u_UnitPixels;float x=positionWS.x;float y=positionWS.y;x=x+particle.position.x;y=y+particle.position.y;vec4 positionCS=vec4(x*u_UnitPixels,y*u_UnitPixels,0.0,1.0);clip(positionCS.xy);vec2 viewPos;getViewPos(positionCS.xy,viewPos);getProjectPos(viewPos,positionCS);return positionCS;}void shareParticleParams(Particle p){v_ParticleColor=p.color;v_ParticleUV=p.uv;}\n#endif\n";
 
     var Curve = "#if !defined(GradientNumber_lib)\n#define GradientNumber_lib\nfloat getCurveValue(float time,vec4 curve[2],vec2 range){vec2 curveDatas[4];curveDatas[0]=curve[0].xy;curveDatas[1]=curve[0].zw;curveDatas[2]=curve[1].xy;curveDatas[3]=curve[1].zw;float value=0.0;float age=clamp(time,range.x,range.y);for(int i=1;i<4;i++){vec2 curveData=curveDatas[i];vec2 lastCurveData=curveDatas[i-1];float t=(age-lastCurveData.x)/(curveData.x-lastCurveData.x);float currentSize=mix(lastCurveData.y,curveData.y,t);value=currentSize;if(curveData.x>=age){break;}}return value;}float getCurveCalculus(float normalizedAge,float lifetime,vec4 curve[2]){vec2 curveDatas[4];curveDatas[0]=curve[0].xy;curveDatas[1]=curve[0].zw;curveDatas[2]=curve[1].xy;curveDatas[3]=curve[1].zw;float startCurveTime=curveDatas[0].x;float startCurveValue=curveDatas[0].y;float keyTime=min(normalizedAge,startCurveTime);float totalValue=lifetime*keyTime*startCurveValue;float lastValue=0.0;for(int i=1;i<4;i++){float currentCurveTime=curveDatas[i].x;float currentCurveValue=curveDatas[i].y;float lastCurveTime=curveDatas[i-1].x;float lastCurveValue=curveDatas[i-1].y;if(currentCurveTime>=normalizedAge){float time=max((normalizedAge-lastCurveTime),0.0);float t=time/(currentCurveTime-lastCurveTime);lastValue=mix(lastCurveValue,currentCurveValue,t);float calculus=(lastCurveValue+mix(lastCurveValue,currentCurveValue,t))*time*lifetime*0.5;totalValue+=calculus;keyTime=normalizedAge;break;}else if(currentCurveTime>keyTime){float calculus=(lastCurveValue+currentCurveValue)*(currentCurveTime-lastCurveTime)*lifetime*0.5;totalValue+=calculus;lastValue=lastCurveValue;keyTime=currentCurveTime;}}totalValue+=max((normalizedAge-keyTime),0.0)*lifetime*lastValue;return totalValue;}\n#endif\n";
 
@@ -551,31 +610,31 @@
             }
             {
                 Particle2DShader.VelocityOverLifetimeDef = Laya.Shader3D.getDefineByName("VELOCITYOVERLIFETIME");
-                Particle2DShader.VelocityCurveMinX = addUniformArray("u_VelocityCurveMinX", Laya.ShaderDataType.Vector4, 2);
-                Particle2DShader.VelocityCurveMinY = addUniformArray("u_VelocityCurveMinY", Laya.ShaderDataType.Vector4, 2);
-                Particle2DShader.VelocityCurveMaxX = addUniformArray("u_VelocityCurveMaxX", Laya.ShaderDataType.Vector4, 2);
-                Particle2DShader.VelocityCurveMaxY = addUniformArray("u_VelocityCurveMaxY", Laya.ShaderDataType.Vector4, 2);
+                Particle2DShader.VelocityCurveMinX = addUniformArray("u_VelocityCurveMinX", Laya.ShaderDataType.Vector4, 4);
+                Particle2DShader.VelocityCurveMinY = addUniformArray("u_VelocityCurveMinY", Laya.ShaderDataType.Vector4, 4);
+                Particle2DShader.VelocityCurveMaxX = addUniformArray("u_VelocityCurveMaxX", Laya.ShaderDataType.Vector4, 4);
+                Particle2DShader.VelocityCurveMaxY = addUniformArray("u_VelocityCurveMaxY", Laya.ShaderDataType.Vector4, 4);
                 Particle2DShader.VelocityOverLifetimeSpace = addUniform("u_VelocityOverLifetimeSpace", Laya.ShaderDataType.Float);
             }
             {
                 Particle2DShader.SizeOverLifetimeDef = Laya.Shader3D.getDefineByName("SIZEOVERLIFETIME");
-                Particle2DShader.SizeCurveMinX = addUniformArray("u_SizeCurveMinX", Laya.ShaderDataType.Vector4, 2);
-                Particle2DShader.SizeCurveMinY = addUniformArray("u_SizeCurveMinY", Laya.ShaderDataType.Vector4, 2);
+                Particle2DShader.SizeCurveMinX = addUniformArray("u_SizeCurveMinX", Laya.ShaderDataType.Vector4, 4);
+                Particle2DShader.SizeCurveMinY = addUniformArray("u_SizeCurveMinY", Laya.ShaderDataType.Vector4, 4);
                 Particle2DShader.SizeCurveMinTimeRange = addUniform("u_SizeCurveMinTimeRange", Laya.ShaderDataType.Vector4);
-                Particle2DShader.SizeCurveMaxX = addUniformArray("u_SizeCurveMaxX", Laya.ShaderDataType.Vector4, 2);
-                Particle2DShader.SizeCurveMaxY = addUniformArray("u_SizeCurveMaxY", Laya.ShaderDataType.Vector4, 2);
+                Particle2DShader.SizeCurveMaxX = addUniformArray("u_SizeCurveMaxX", Laya.ShaderDataType.Vector4, 4);
+                Particle2DShader.SizeCurveMaxY = addUniformArray("u_SizeCurveMaxY", Laya.ShaderDataType.Vector4, 4);
                 Particle2DShader.SizeCurveMaxTimeRange = addUniform("u_SizeCurveMaxTimeRange", Laya.ShaderDataType.Vector4);
             }
             {
                 Particle2DShader.RotationOverLifetimeDef = Laya.Shader3D.getDefineByName("ROTATIONOVERLIFETIME");
-                Particle2DShader.RotationCurveMin = addUniformArray("u_RotationCurveMin", Laya.ShaderDataType.Vector4, 2);
-                Particle2DShader.RotationCurveMax = addUniformArray("u_RotationCurveMax", Laya.ShaderDataType.Vector4, 2);
+                Particle2DShader.RotationCurveMin = addUniformArray("u_RotationCurveMin", Laya.ShaderDataType.Vector4, 4);
+                Particle2DShader.RotationCurveMax = addUniformArray("u_RotationCurveMax", Laya.ShaderDataType.Vector4, 4);
             }
             {
                 Particle2DShader.TextureSheetAnimationDef = Laya.Shader3D.getDefineByName("TEXTURESHEETANIMATION");
                 Particle2DShader.TextureSheetFrameData = addUniform("u_TextureSheetFrameData", Laya.ShaderDataType.Vector4);
-                Particle2DShader.TextureSheetFrame = addUniformArray("u_TextureSheetFrame", Laya.ShaderDataType.Vector4, 2);
-                Particle2DShader.TextureSheetFrameMax = addUniformArray("u_TextureSheetFrameMax", Laya.ShaderDataType.Vector4, 2);
+                Particle2DShader.TextureSheetFrame = addUniformArray("u_TextureSheetFrame", Laya.ShaderDataType.Vector4, 4);
+                Particle2DShader.TextureSheetFrameMax = addUniformArray("u_TextureSheetFrameMax", Laya.ShaderDataType.Vector4, 4);
                 Particle2DShader.TextureSheetFrameRange = addUniform("u_TextureSheetFrameRange", Laya.ShaderDataType.Vector4);
             }
         }
@@ -807,19 +866,40 @@
         constructor() {
             super();
             this._dirtyFlags = ~0;
+            this._rand = new Laya.Rand(0);
+            this._randomSeeds = new Uint32Array(16);
+            this._getShapeRandom = () => {
+                return this._getFloat(14);
+            };
             this._main = new Main2DModule();
             this._emission = new Laya.EmissionModule();
             this._dirtyFlags = ~0;
         }
+        _getFloat(seedIndex) {
+            if (this.main.autoRandomSeed) {
+                return Math.random();
+            }
+            this._rand.seed = this._randomSeeds[seedIndex];
+            let value = this._rand.getFloat();
+            this._randomSeeds[seedIndex] = this._rand.seed;
+            return value;
+        }
         play() {
             super.play();
+            if (!this.main.autoRandomSeed) {
+                this._rand.seed = this.main.randomSeed;
+                for (let i = 0; i < this._randomSeeds.length; i++) {
+                    this._randomSeeds[i] = this._rand.getUint();
+                }
+            }
+            this.emission._emitAccumulator = 0;
             let globalPoint = _globalPoint;
             this.owner.globalTrans.getPos(globalPoint);
             this.emission._lastPosition.setValue(globalPoint.x, globalPoint.y, 0);
         }
         getPositionAndDirection() {
             if (this.shape && this.shape.enable && this.shape.shape) {
-                return this.shape.shape.getPositionAndDirection();
+                return this.shape.shape.getPositionAndDirection(this._getShapeRandom);
             }
             else {
                 return Laya.Vector4.UnitW;
@@ -833,20 +913,20 @@
             let particle = Particle2DVertexMesh.TempParticle2D;
             let duration = main.duration;
             let normalizedTime = this.time / duration;
-            let lifetimeRandom = curveNeedRandom(main.startLifetime.mode) ? Math.random() : 0;
+            let lifetimeRandom = curveNeedRandom(main.startLifetime.mode) ? this._getFloat(0) : 0;
             let lifetime = main.startLifetime.evaluate(normalizedTime, lifetimeRandom);
-            let startDelayRandom = curveNeedRandom(main.startDelay.mode) ? Math.random() : 0;
+            let startDelayRandom = curveNeedRandom(main.startDelay.mode) ? this._getFloat(1) : 0;
             let startDelay = main.startDelay.evaluate(normalizedTime, startDelayRandom);
-            let startSpeedRandom = curveNeedRandom(main.startSpeed.mode) ? Math.random() : 0;
+            let startSpeedRandom = curveNeedRandom(main.startSpeed.mode) ? this._getFloat(2) : 0;
             let startSpeed = main.startSpeed.evaluate(normalizedTime, startSpeedRandom);
-            let startSizeXRandom = curveNeedRandom(main.startSizeX.mode) ? Math.random() : 0;
+            let startSizeXRandom = curveNeedRandom(main.startSizeX.mode) ? this._getFloat(3) : 0;
             let startSizeX = main.startSizeX.evaluate(normalizedTime, startSizeXRandom);
             let startSizeY = startSizeX;
             if (main.startSize2D) {
-                let startSizeYRandom = curveNeedRandom(main.startSizeY.mode) ? Math.random() : 0;
+                let startSizeYRandom = curveNeedRandom(main.startSizeY.mode) ? this._getFloat(4) : 0;
                 startSizeY = main.startSizeY.evaluate(normalizedTime, startSizeYRandom);
             }
-            let startRotationRandom = curveNeedRandom(main.startRotation.mode) ? Math.random() : 0;
+            let startRotationRandom = curveNeedRandom(main.startRotation.mode) ? this._getFloat(5) : 0;
             let startRotation = main.startRotation.evaluate(normalizedTime, startRotationRandom);
             let startRadians = -startRotation * Math.PI / 180;
             particle.setEmitTime(emitTime + startDelay);
@@ -863,7 +943,7 @@
                 let color = this.colorOverLifetime.color;
                 switch (color.mode) {
                     case Laya.ParticleMinMaxGradientMode.TwoGradients:
-                        colorOverLifetimeRandom = Math.random();
+                        colorOverLifetimeRandom = this._getFloat(7);
                         break;
                 }
             }
@@ -874,8 +954,8 @@
                 switch (mode) {
                     case Laya.ParticleMinMaxCurveMode.TwoConstants:
                     case Laya.ParticleMinMaxCurveMode.TwoCurves:
-                        velocityOverLifetimeRandomX = Math.random();
-                        velocityOverLifetimeRandomY = Math.random();
+                        velocityOverLifetimeRandomX = this._getFloat(8);
+                        velocityOverLifetimeRandomY = this._getFloat(9);
                         break;
                 }
             }
@@ -885,7 +965,7 @@
                 switch (mode) {
                     case Laya.ParticleMinMaxCurveMode.TwoConstants:
                     case Laya.ParticleMinMaxCurveMode.TwoCurves:
-                        rotation2DOverLifetimeRandom = Math.random();
+                        rotation2DOverLifetimeRandom = this._getFloat(10);
                         break;
                 }
             }
@@ -915,25 +995,25 @@
                                 let sizeMinY = this.size2DOverLifetime.y.constantMin;
                                 let sizeMaxX = this.size2DOverLifetime.x.constantMax;
                                 let sizeMaxY = this.size2DOverLifetime.y.constantMax;
-                                let sizeX = sizeMinX + Math.random() * (sizeMaxX - sizeMinX);
-                                let sizeY = sizeMinY + Math.random() * (sizeMaxY - sizeMinY);
+                                let sizeX = sizeMinX + this._getFloat(11) * (sizeMaxX - sizeMinX);
+                                let sizeY = sizeMinY + this._getFloat(12) * (sizeMaxY - sizeMinY);
                                 particle.setSize(startSizeX * sizeX, startSizeY * sizeY);
                             }
                             else {
                                 let sizeMin = this.size2DOverLifetime.size.constantMin;
                                 let sizeMax = this.size2DOverLifetime.size.constantMax;
-                                let size = sizeMin + Math.random() * (sizeMax - sizeMin);
+                                let size = sizeMin + this._getFloat(11) * (sizeMax - sizeMin);
                                 particle.setSize(startSizeX * size, startSizeY * size);
                             }
                             break;
                         }
                     case Laya.ParticleMinMaxCurveMode.TwoCurves:
                         if (this.size2DOverLifetime.separateAxes) {
-                            sizeOverLifetimeRandomX = Math.random();
-                            sizeOverLifetimeRandomY = Math.random();
+                            sizeOverLifetimeRandomX = this._getFloat(11);
+                            sizeOverLifetimeRandomY = this._getFloat(12);
                         }
                         else {
-                            sizeOverLifetimeRandomX = sizeOverLifetimeRandomY = Math.random();
+                            sizeOverLifetimeRandomX = sizeOverLifetimeRandomY = this._getFloat(11);
                         }
                         break;
                 }
@@ -945,7 +1025,7 @@
                 switch (mode) {
                     case Laya.ParticleMinMaxCurveMode.TwoConstants:
                     case Laya.ParticleMinMaxCurveMode.TwoCurves:
-                        textureSheetAnimationRandom = Math.random();
+                        textureSheetAnimationRandom = this._getFloat(13);
                         break;
                 }
             }
@@ -955,7 +1035,7 @@
             let spriteTransAndSpace = main._spriteTranslateAndSpace;
             particle.setSpriteTrans(spriteTransAndSpace.x, spriteTransAndSpace.y);
             particle.setSimulationSpace(spriteTransAndSpace.z);
-            let startColorRandom = gradientNeedRandom(main.startColor.mode) ? Math.random() : 0;
+            let startColorRandom = gradientNeedRandom(main.startColor.mode) ? this._getFloat(6) : 0;
             let color = main.startColor.evaluate(normalizedTime, startColorRandom);
             particle.setColor(color.r, color.g, color.b, color.a);
             if (this.textureSheetAnimation && this.textureSheetAnimation.enable) {
@@ -966,19 +1046,15 @@
             this.particlePool.addParticleData(particle.data);
             return true;
         }
-        _emitOverTime(elapsedTime) {
-            let currentTime = this.totalTime;
-            let lastEmitTime = this._lastEmitTime;
-            let duration = currentTime - lastEmitTime;
-            let emissionInterval = this.emission._emissionInterval;
-            if (duration >= emissionInterval) {
-                let count = Math.floor(duration / emissionInterval);
-                for (let i = 1; i <= count; i++) {
-                    let emitTime = i * emissionInterval + lastEmitTime;
-                    let age = currentTime - emitTime;
-                    this._emit(emitTime, age);
-                    this._lastEmitTime = emitTime;
-                }
+        _emitOverTime(deltaTime) {
+            let normalizedTime = this.time / this.main.duration;
+            let rateOverTime = this.emission.rateOverTime;
+            let random = curveNeedRandom(rateOverTime.mode) ? this._getFloat(15) : 0;
+            let rate = rateOverTime.evaluate(normalizedTime, random);
+            this.emission._emitAccumulator += rate * deltaTime;
+            while (this.emission._emitAccumulator >= 1) {
+                this._emit(this.totalTime, 0);
+                this.emission._emitAccumulator -= 1;
             }
         }
         _emitOverDistance() {
@@ -1608,7 +1684,7 @@
             }
         }
         setParticleData(shaderData, worldMat) {
-            var _a, _b;
+            var _a, _b, _c, _d, _e, _f;
             let ps = this.particleSystem;
             if (!this.particleGeometry || ps.main.maxParticles != this.particleGeometry.maxParitcleCount) {
                 this._createRenderGeometry();
@@ -1640,18 +1716,29 @@
                         scaleX *= this.owner.scene.globalScaleX;
                         scaleY *= this.owner.scene.globalScaleY;
                     }
+                    else {
+                        let stage = Laya.ILaya.stage;
+                        if (stage) {
+                            scaleX *= stage.scaleX;
+                            scaleY *= stage.scaleY;
+                        }
+                    }
                     break;
             }
             ps.main._spriteRotAndScale.setValue(cosAngle, sinAngle, scaleX, scaleY);
             shaderData.setVector(Particle2DShader.SpriteRotAndScale, ps.main._spriteRotAndScale);
             ps.main._spriteTranslateAndSpace.setValue(translateX, translateY, simulationSpace);
-            const Physics2DSettingPixelRatio = (_a = Laya.Physics2DOption === null || Laya.Physics2DOption === void 0 ? void 0 : Laya.Physics2DOption.pixelRatio) !== null && _a !== void 0 ? _a : 50;
-            const Physics2DSettingGravity = (_b = Laya.Physics2DOption === null || Laya.Physics2DOption === void 0 ? void 0 : Laya.Physics2DOption.gravity) !== null && _b !== void 0 ? _b : { x: 0, y: 9.8 };
+            const configlayer = (_a = Laya.PlayerConfig.physics2D) === null || _a === void 0 ? void 0 : _a.defaultConfig;
+            const Physics2DSettingPixelRatio = (_b = configlayer === null || configlayer === void 0 ? void 0 : configlayer.pixelRatio) !== null && _b !== void 0 ? _b : Laya.Physics2DOption.pixelRatio;
+            const Physics2DSettingGravity = {
+                x: (_d = (_c = configlayer === null || configlayer === void 0 ? void 0 : configlayer.gravity) === null || _c === void 0 ? void 0 : _c.x) !== null && _d !== void 0 ? _d : Laya.Physics2DOption.gravity.x,
+                y: (_f = (_e = configlayer === null || configlayer === void 0 ? void 0 : configlayer.gravity) === null || _e === void 0 ? void 0 : _e.y) !== null && _f !== void 0 ? _f : Laya.Physics2DOption.gravity.y
+            };
             let physicPixelRatio = ps.main.unitPixels / Physics2DSettingPixelRatio;
             let gravityX = Physics2DSettingGravity.x * physicPixelRatio;
             let gravityY = Physics2DSettingGravity.y * physicPixelRatio;
             let gravityModifier = ps.main.gravityModifier;
-            ps.main._gravity.setValue(gravityX * gravityModifier, gravityY * gravityModifier);
+            ps.main._gravity.setValue(gravityX * gravityModifier.x, gravityY * gravityModifier.y);
             if (ps.emission.rateOverDistance >= 0) {
                 let posX = translateX;
                 let posY = translateY;

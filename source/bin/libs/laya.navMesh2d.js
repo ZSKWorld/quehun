@@ -250,7 +250,7 @@
     Navigation2DManage._managerName = "navMesh2D";
     Navigation2DManage._obstacleMap = new Map();
     Laya.Scene.regManager(Navigation2DManage._managerName, Navigation2DManage);
-    Laya.Laya.addBeforeInitCallback(Navigation2DManage.__initialize);
+    Laya.Laya.addInitCallback(Navigation2DManage.__initialize);
 
     const tempVector3$1 = new Laya.Vector3();
     class Nav2DAgent extends Laya.BaseNavAgent {

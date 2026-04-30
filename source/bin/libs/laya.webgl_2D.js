@@ -296,8 +296,8 @@
             this.bufferState = null;
             this.primitiveShaderData = null;
             this.materialShaderData = null;
-            this.type = 0;
-            this.lowType = 0;
+            this.typeKey = 0;
+            this.textureKey = 0;
             this.globalRenderData = null;
             this.fillTexture = false;
         }
@@ -308,48 +308,44 @@
             this.materialShaderData = element.materialShaderData;
             this.subShader = element.subShader;
             this.bufferState = element.geometry.bufferState;
-            this.textureId = element.type & (~63);
+            this.typeKey = element.typeKey;
+            this.textureKey = element.textureKey;
+            this.textureId = element.textureKey & (~((1 << Laya.ShaderDefines2D.SHADER_DEFINE_BITS) - 1));
             this.globalAlpha = element.owner.globalAlpha;
             this.clipInfo = element.owner.getClipInfo();
-            this.type = element.type;
-            this.lowType = element.type & 63;
             this.globalRenderData = element.owner.globalRenderData;
-            this.fillTexture = this.primitiveShaderData.hasDefine(Laya.ShaderDefines2D.FILLTEXTURE);
+            this.fillTexture = !!(element.typeKey & 64);
             this.texRange = this.primitiveShaderData.getVector(Laya.ShaderDefines2D.UNIFORM_TEXRANGE);
         }
         isCompatible(element) {
-            if (this.type & 32)
+            if (this.typeKey & 32)
                 return false;
-            let elementType = element.type;
-            if (elementType & 32) {
+            if (element.typeKey & 32) {
                 return false;
             }
-            let elementLowType = elementType & 63;
-            let elementTexId = elementType & (~63);
+            if (this.typeKey !== element.typeKey) {
+                return false;
+            }
+            let defineMask = (1 << Laya.ShaderDefines2D.SHADER_DEFINE_BITS) - 1;
+            if ((this.textureKey & defineMask) !== (element.textureKey & defineMask)) {
+                return false;
+            }
+            let elementTexId = element.textureKey & (~defineMask);
             if (elementTexId !== 0 && elementTexId !== this.textureId && this.textureId !== 0)
                 return false;
-            if (this.lowType !== elementLowType) {
-                return false;
-            }
-            let elementOwner = element.owner;
             if (this.subShader !== element.subShader ||
                 this.bufferState !== element.geometry.bufferState ||
-                this.clipInfo !== elementOwner.getClipInfo() ||
-                elementOwner.globalRenderData !== this.globalRenderData) {
+                this.clipInfo !== element.owner.getClipInfo() ||
+                element.owner.globalRenderData !== this.globalRenderData) {
                 return false;
             }
-            if ((this.lowType & 16) !== 0 && element.materialShaderData !== this.materialShaderData) {
+            if ((this.typeKey & 16) !== 0 && element.materialShaderData !== this.materialShaderData) {
                 return false;
             }
-            let fillTexture = element.primitiveShaderData.hasDefine(Laya.ShaderDefines2D.FILLTEXTURE);
-            if (fillTexture) {
-                if (!this.fillTexture)
-                    return false;
+            if (this.fillTexture) {
                 if (!element.primitiveShaderData.getVector(Laya.ShaderDefines2D.UNIFORM_TEXRANGE).equal(this.texRange))
                     return false;
             }
-            else if (this.fillTexture)
-                return false;
             if (this.textureId === 0 && elementTexId !== 0) {
                 this.textureId = elementTexId;
                 this.primitiveShaderData = element.primitiveShaderData;
@@ -363,52 +359,48 @@
             this.materialShaderData = element._materialShaderData;
             this.subShader = element._subShader;
             this.bufferState = element.geometry._bufferState;
-            this.textureId = element.type & (~63);
+            this.typeKey = element.typeKey;
+            this.textureKey = element.textureKey;
+            this.textureId = element.textureKey & (~((1 << Laya.ShaderDefines2D.SHADER_DEFINE_BITS) - 1));
             this.globalAlpha = element.owner.globalAlpha;
             this.clipInfo = element.owner.getClipInfo();
-            this.type = element.type;
-            this.lowType = element.type & 63;
             this.globalRenderData = element.owner.globalRenderData;
-            this.fillTexture = this.primitiveShaderData.hasDefine(Laya.ShaderDefines2D.FILLTEXTURE);
+            this.fillTexture = !!(element.typeKey & 64);
             this.texRange = this.primitiveShaderData.getVector(Laya.ShaderDefines2D.UNIFORM_TEXRANGE);
         }
         isCompatible(element) {
-            if (this.type & 32)
+            if (this.typeKey & 32)
                 return false;
-            let elementType = element.type;
-            if (elementType & 32) {
+            if (element.typeKey & 32) {
                 return false;
             }
-            let elementLowType = elementType & 63;
-            let elementTexId = elementType & (~63);
+            if (this.typeKey !== element.typeKey) {
+                return false;
+            }
+            let defineMask = (1 << Laya.ShaderDefines2D.SHADER_DEFINE_BITS) - 1;
+            if ((this.textureKey & defineMask) !== (element.textureKey & defineMask)) {
+                return false;
+            }
+            let elementTexId = element.textureKey & (~defineMask);
             if (elementTexId !== 0 && elementTexId !== this.textureId && this.textureId !== 0)
                 return false;
-            if (this.lowType !== elementLowType) {
-                return false;
-            }
-            let elementOwner = element.owner;
             if (this.subShader !== element.subShader ||
                 this.bufferState !== element.geometry.bufferState ||
-                this.clipInfo !== elementOwner.getClipInfo() ||
-                elementOwner.globalRenderData !== this.globalRenderData) {
+                this.clipInfo !== element.owner.getClipInfo() ||
+                element.owner.globalRenderData !== this.globalRenderData) {
                 return false;
             }
-            if (this.lowType & 16 && element._materialShaderData !== this.materialShaderData) {
+            if ((this.typeKey & 16) !== 0 && element._materialShaderData !== this.materialShaderData) {
                 return false;
             }
-            let primitiveShaderData = element._primitiveShaderData;
-            let fillTexture = primitiveShaderData.hasDefine(Laya.ShaderDefines2D.FILLTEXTURE);
-            if (fillTexture) {
-                if (!this.fillTexture)
-                    return false;
+            if (this.fillTexture) {
+                let primitiveShaderData = element._primitiveShaderData;
                 if (!primitiveShaderData.getVector(Laya.ShaderDefines2D.UNIFORM_TEXRANGE).equal(this.texRange))
                     return false;
             }
-            else if (this.fillTexture)
-                return false;
             if (this.textureId === 0 && elementTexId !== 0) {
                 this.textureId = elementTexId;
-                this.primitiveShaderData = primitiveShaderData;
+                this.primitiveShaderData = element._primitiveShaderData;
             }
             return true;
         }
@@ -545,6 +537,8 @@
                     staticBatchRenderElement.renderStateIsBySprite = element.renderStateIsBySprite;
                     staticBatchRenderElement.primitiveShaderData = batchContext.primitiveShaderData;
                     staticBatchRenderElement.owner = element.owner;
+                    staticBatchRenderElement.typeKey = batchContext.typeKey;
+                    staticBatchRenderElement.textureKey = batchContext.textureKey;
                 }
                 let drawParam = geometry.drawParams.elements;
                 let drawLength = geometry.drawParams.length;
@@ -590,6 +584,8 @@
         element.owner = null;
         element.renderStateIsBySprite = false;
         element.globalShaderData = null;
+        element.typeKey = 0;
+        element.textureKey = 0;
     });
     const _STEP_ = 1024;
     var elementFlags;
@@ -706,6 +702,8 @@
                 || this._mask === struct)
                 return;
             let renderStruct = (struct.subStruct && struct !== this.root) ? struct.subStruct : struct;
+            if (renderStruct.manualRender)
+                return;
             renderStruct._handleInterData();
             let globalRenderData = struct.globalRenderData;
             if (globalRenderData) {
@@ -961,6 +959,7 @@
             this.shaderData.setVector3(Laya.ShaderDefines2D.UNIFORM_INVERTMAT_0, this._invertMat_0);
             this.shaderData.setVector3(Laya.ShaderDefines2D.UNIFORM_INVERTMAT_1, this._invertMat_1);
         }
+        updatePostProcess() { }
         destroy() {
             if (this.destroyed) {
                 return;
@@ -1134,6 +1133,12 @@
             }
         }
     }
+    class WebEmptyRender2DDataHandle extends WebRender2DDataHandle {
+        inheriteRenderData(_context) {
+        }
+        destroy() {
+        }
+    }
     class WebGraphics2DBufferBlock {
     }
     class WebGraphics2DVertexBlock {
@@ -1192,7 +1197,8 @@
             }
             else if (this._globalAlpha != this._owner.globalAlpha) {
                 this._globalAlpha = this._owner.globalAlpha;
-                this._updateVertexData(mat, this._owner.globalAlpha, false, true, false);
+                if (this._bufferBlocks && this._bufferBlocks.length)
+                    this._updateVertexData(mat, this._owner.globalAlpha, false, true, false);
             }
         }
         _updateVertexData(mat, globalAlpha, updateMatrix, updateGlobalAlpha, updateTextureArrayLayerIndex) {
@@ -1574,6 +1580,9 @@
             return this._renderDataHandler;
         }
         set renderDataHandler(value) {
+            if (this._renderDataHandler) {
+                this._renderDataHandler.owner = null;
+            }
             this._renderDataHandler = value;
             if (value)
                 this._renderDataHandler.owner = this;
@@ -1682,6 +1691,7 @@
             }
         }
         constructor() {
+            this.manualRender = false;
             this._parentData = Object.assign({}, _DefaultParentData);
             this._currentData = this._parentData;
             this.zIndex = 0;
@@ -1849,6 +1859,9 @@
         }
         getClipInfo() {
             return this._clipInfo || this._currentData.clipInfo || _DefaultClipInfo;
+        }
+        hasClip() {
+            return this.getClipInfo() !== _DefaultClipInfo;
         }
         updateChildren(type) {
             if (type == ChildrenUpdateType.None)
@@ -6984,6 +6997,7 @@
                 }
                 this._uniformBuffersPropertyMap.set(uniformId, uboBuffer);
             });
+            uboBuffer.needUpload && uboBuffer.upload();
             return uboBuffer;
         }
         _updateUBOBuffer(name) {
@@ -7469,6 +7483,9 @@
                 context.invertY = this.invertY;
             else
                 context.invertY = false;
+            let targetHeight = this.rt ? this.size.y : Laya.RenderState2D.height;
+            let vpY = context.invertY ? this.viewportY : targetHeight - this.viewportY - this.size.y;
+            context.setOffscreenView(this.size.x, this.size.y, this.viewportX, vpY);
             context.setRenderTarget(this.rt, this.clearColor, this.clearColorValue);
             context.passData.setVector2(Laya.ShaderDefines2D.UNIFORM_SIZE, this.size);
         }
@@ -7516,7 +7533,7 @@
         }
         apply(context) {
             let cacheInvert = context.invertY;
-            if (!this._dest) {
+            if (!this._dest || context._destRT._textures[0].gammaCorrection != 1) {
                 context.invertY = false;
                 this.element.materialShaderData.addDefine(WebGLBlit2DQuadCMD.GammaCorrect);
             }
@@ -7532,22 +7549,96 @@
         }
     }
 
+    class Pass2DCacheInfo {
+        constructor() {
+            this.shaderInss = [];
+            this.cacheFlagX = -1;
+            this.cacheFlagY = -1;
+            this.cachedDirtyVersion = -1;
+            this.passDefineFlag = new Laya.Vector2(-1, -1);
+        }
+    }
     class WebGLRenderElement2D {
         constructor() {
             this.renderStateIsBySprite = true;
             this.type = 0;
-            this._shaderInstances = new Laya.FastSinglelist();
+            this._defineChangeFlag = new Laya.Vector2(-1, -1);
+            this._dirtyVersion = 0;
+            this._passCache = new Map();
+        }
+        get subShader() { return this._subShader; }
+        set subShader(value) {
+            if (this._subShader !== value) {
+                this._subShader = value;
+                this._dirtyVersion++;
+            }
+        }
+        get materialShaderData() { return this._materialShaderData; }
+        set materialShaderData(value) {
+            if (this._materialShaderData !== value) {
+                this._unregisterDefineFlag(this._materialShaderData);
+                this._materialShaderData = value;
+                this._registerDefineFlag(value);
+                this._dirtyVersion++;
+            }
+        }
+        get value2DShaderData() { return this._value2DShaderData; }
+        set value2DShaderData(value) {
+            if (this._value2DShaderData !== value) {
+                this._unregisterDefineFlag(this._value2DShaderData);
+                this._value2DShaderData = value;
+                this._registerDefineFlag(value);
+                this._dirtyVersion++;
+            }
+        }
+        get globalShaderData() { return this._globalShaderData; }
+        set globalShaderData(value) {
+            if (this._globalShaderData !== value) {
+                this._unregisterDefineFlag(this._globalShaderData);
+                this._globalShaderData = value;
+                this._registerDefineFlag(value);
+                this._dirtyVersion++;
+            }
+        }
+        _registerDefineFlag(data) {
+            var _a;
+            (_a = data === null || data === void 0 ? void 0 : data._defineDatas) === null || _a === void 0 ? void 0 : _a.addChangeFlagInfo(this._defineChangeFlag);
+        }
+        _unregisterDefineFlag(data) {
+            var _a;
+            (_a = data === null || data === void 0 ? void 0 : data._defineDatas) === null || _a === void 0 ? void 0 : _a.removeChangeFlagInfo(this._defineChangeFlag);
+        }
+        _getOrCreateCacheEntry(context) {
+            let pd = context.passData || null;
+            let arr = this._passCache.get(pd);
+            if (!arr) {
+                arr = [null, null, null, null];
+                this._passCache.set(pd, arr);
+            }
+            let gamma = !context._destRT || context._destRT._textures[0].gammaCorrection != 1;
+            let idx = (context.invertY ? 2 : 0) | (gamma ? 1 : 0);
+            let entry = arr[idx];
+            if (!entry) {
+                entry = new Pass2DCacheInfo();
+                if (pd === null || pd === void 0 ? void 0 : pd._defineDatas) {
+                    pd._defineDatas.addChangeFlagInfo(entry.passDefineFlag);
+                    entry.trackedPassData = pd;
+                }
+                arr[idx] = entry;
+            }
+            return entry;
         }
         _compileShader(context) {
-            var passes = this.subShader._passes;
-            this._shaderInstances.clear();
+            var passes = this._subShader._passes;
+            let entry = this._curCacheEntry;
+            let renderCount = 0;
             for (var j = 0, m = passes.length; j < m; j++) {
                 var pass = passes[j];
                 if (pass.pipelineMode !== context.pipelineMode)
                     continue;
                 var comDef = WebGLRenderElement2D._compileDefine;
-                if (this.globalShaderData) {
-                    this.globalShaderData._defineDatas.cloneTo(comDef);
+                if (this._globalShaderData) {
+                    this._globalShaderData._defineDatas.cloneTo(comDef);
                 }
                 else {
                     context._globalConfigShaderData.cloneTo(comDef);
@@ -7568,33 +7659,51 @@
                 else {
                     comDef.remove(Laya.ShaderDefines2D.INVERTY);
                 }
-                if (this.value2DShaderData) {
-                    comDef.addDefineDatas(this.value2DShaderData.getDefineData());
+                if (this._value2DShaderData) {
+                    comDef.addDefineDatas(this._value2DShaderData.getDefineData());
                     pass.nodeCommonMap = this.nodeCommonMap;
                 }
-                if (this.materialShaderData)
-                    comDef.addDefineDatas(this.materialShaderData._defineDatas);
+                if (this._materialShaderData)
+                    comDef.addDefineDatas(this._materialShaderData._defineDatas);
                 var shaderIns = pass.withCompile(comDef, true);
-                this._shaderInstances.add(shaderIns);
+                entry.shaderInss[renderCount++] = shaderIns;
             }
+            entry.shaderInss.length = renderCount;
         }
         _prepare(context) {
             this.globalShaderData = this.owner && this.owner._globalShaderData;
-            this._compileShader(context);
+            let entry = this._getOrCreateCacheEntry(context);
+            this._curCacheEntry = entry;
+            let cfx = entry.cacheFlagX, cfy = entry.cacheFlagY;
+            let dcf = this._defineChangeFlag;
+            let pdf = entry.passDefineFlag;
+            if (entry.cachedDirtyVersion !== this._dirtyVersion
+                || dcf.x > cfx || (dcf.x === cfx && dcf.y > cfy)
+                || pdf.x > cfx || (pdf.x === cfx && pdf.y > cfy)) {
+                entry.cachedDirtyVersion = this._dirtyVersion;
+                entry.cacheFlagX = Laya.Stat.loopCount;
+                entry.cacheFlagY = WebGLEngine.instance._framePassCount;
+                this._compileShader(context);
+            }
         }
         _render(context) {
-            if (this._shaderInstances.length == 1) {
-                this.renderByShaderInstance(this._shaderInstances.elements[0], context);
+            context._prevTypeKey = -1;
+            context._prevTextureKey = -1;
+            context._prevClip = null;
+            context._prevShaderIns = null;
+            let inss = this._curCacheEntry.shaderInss;
+            let count = inss.length;
+            if (count === 1) {
+                this.renderByShaderInstance(inss[0], context);
             }
             else {
-                var passes = this._shaderInstances.elements;
-                for (var j = 0, m = this._shaderInstances.length; j < m; j++) {
-                    this.renderByShaderInstance(passes[j], context);
+                for (let j = 0; j < count; j++) {
+                    this.renderByShaderInstance(inss[j], context);
                 }
             }
         }
         _uploadGlobalAndPass(shader, context) {
-            this.globalShaderData && shader.uploadUniforms(shader._cameraUniformParamsMap, this.globalShaderData, true);
+            this._globalShaderData && shader.uploadUniforms(shader._cameraUniformParamsMap, this._globalShaderData, true);
             context.passData && shader.uploadUniforms(shader._sceneUniformParamsMap, context.passData, true);
         }
         renderByShaderInstance(shader, context) {
@@ -7602,28 +7711,61 @@
                 return;
             shader.bind();
             this._uploadGlobalAndPass(shader, context);
-            this.value2DShaderData && shader.uploadUniforms(shader._sprite2DUniformParamsMap, this.value2DShaderData, true);
-            this.materialShaderData && shader.uploadUniforms(shader._materialUniformParamsMap, this.materialShaderData, true);
-            if (this.renderStateIsBySprite || !this.materialShaderData) {
-                shader.uploadRenderStateBlendDepth(this.value2DShaderData);
-                shader.uploadRenderStateFrontFace(this.value2DShaderData, false, context.invertY);
+            this._value2DShaderData && shader.uploadUniforms(shader._sprite2DUniformParamsMap, this._value2DShaderData, true);
+            this._materialShaderData && shader.uploadUniforms(shader._materialUniformParamsMap, this._materialShaderData, true);
+            if (this.renderStateIsBySprite || !this._materialShaderData) {
+                shader.uploadRenderStateBlendDepth(this._value2DShaderData);
+                shader.uploadRenderStateFrontFace(this._value2DShaderData, false, context.invertY);
             }
             else {
-                shader.uploadRenderStateBlendDepth(this.materialShaderData);
-                shader.uploadRenderStateFrontFace(this.materialShaderData, false, context.invertY);
+                shader.uploadRenderStateBlendDepth(this._materialShaderData);
+                shader.uploadRenderStateFrontFace(this._materialShaderData, false, context.invertY);
             }
             WebGLEngine.instance.getDrawContext().drawGeometryElement(this.geometry);
         }
         destroy() {
-            this.globalShaderData = null;
+            this._unregisterDefineFlag(this._globalShaderData);
+            this._unregisterDefineFlag(this._materialShaderData);
+            this._unregisterDefineFlag(this._value2DShaderData);
+            if (this._passCache) {
+                this._passCache.forEach(arr => {
+                    var _a, _b;
+                    for (let i = 0; i < 4; i++) {
+                        let entry = arr[i];
+                        if (entry) {
+                            (_b = (_a = entry.trackedPassData) === null || _a === void 0 ? void 0 : _a._defineDatas) === null || _b === void 0 ? void 0 : _b.removeChangeFlagInfo(entry.passDefineFlag);
+                        }
+                    }
+                });
+            }
+            this._globalShaderData = null;
+            this._materialShaderData = null;
+            this._value2DShaderData = null;
+            this._passCache = null;
+            this._curCacheEntry = null;
         }
     }
     WebGLRenderElement2D._compileDefine = new WebDefineDatas();
 
     class WebGLPrimitiveRenderElement2D extends WebGLRenderElement2D {
+        constructor() {
+            super(...arguments);
+            this.typeKey = 0;
+            this.textureKey = 0;
+        }
+        get primitiveShaderData() { return this._primitiveShaderData; }
+        set primitiveShaderData(value) {
+            if (this._primitiveShaderData !== value) {
+                this._unregisterDefineFlag(this._primitiveShaderData);
+                this._primitiveShaderData = value;
+                this._registerDefineFlag(value);
+                this._dirtyVersion++;
+            }
+        }
         _compileShader(context) {
             var passes = this.subShader._passes;
-            this._shaderInstances.clear();
+            let entry = this._curCacheEntry;
+            let renderCount = 0;
             for (var j = 0, m = passes.length; j < m; j++) {
                 var pass = passes[j];
                 if (pass.pipelineMode !== context.pipelineMode)
@@ -7657,12 +7799,39 @@
                 }
                 if (this.materialShaderData)
                     comDef.addDefineDatas(this.materialShaderData._defineDatas);
-                if (this.primitiveShaderData) {
+                if (this._primitiveShaderData) {
                     pass.additionShaderData = WebGLPrimitiveRenderElement2D._additionShaderData;
-                    comDef.addDefineDatas(this.primitiveShaderData.getDefineData());
+                    comDef.addDefineDatas(this._primitiveShaderData.getDefineData());
                 }
                 var shaderIns = pass.withCompile(comDef, true);
-                this._shaderInstances.add(shaderIns);
+                entry.shaderInss[renderCount++] = shaderIns;
+            }
+            entry.shaderInss.length = renderCount;
+        }
+        _render(context) {
+            let inss = this._curCacheEntry.shaderInss;
+            let count = inss.length;
+            if (count === 1) {
+                let shaderIns = inss[0];
+                let clipInfo = this.owner.getClipInfo();
+                if (this.typeKey === context._prevTypeKey
+                    && this.textureKey === context._prevTextureKey
+                    && clipInfo === context._prevClip
+                    && shaderIns === context._prevShaderIns) {
+                    WebGLEngine.instance.getDrawContext().drawGeometryElement(this.geometry);
+                }
+                else {
+                    this.renderByShaderInstance(shaderIns, context);
+                }
+                context._prevTypeKey = this.typeKey;
+                context._prevTextureKey = this.textureKey;
+                context._prevClip = clipInfo;
+                context._prevShaderIns = shaderIns;
+            }
+            else {
+                for (let j = 0; j < count; j++) {
+                    this.renderByShaderInstance(inss[j], context);
+                }
             }
         }
         renderByShaderInstance(shader, context) {
@@ -7673,19 +7842,24 @@
             this.value2DShaderData && shader.uploadUniforms(shader._sprite2DUniformParamsMap, this.value2DShaderData, true);
             this.materialShaderData && shader.uploadUniforms(shader._materialUniformParamsMap, this.materialShaderData, true);
             let encoder = shader._additionUniformParamsMaps.get("Sprite2DGraphics");
-            encoder && this.primitiveShaderData && shader.uploadUniforms(encoder, this.primitiveShaderData, true);
+            encoder && this._primitiveShaderData && shader.uploadUniforms(encoder, this._primitiveShaderData, true);
             let shaderData = this.value2DShaderData;
             if (!this.renderStateIsBySprite) {
                 if (this.materialShaderData) {
                     shaderData = this.materialShaderData;
                 }
-                else if (this.primitiveShaderData) {
-                    shaderData = this.primitiveShaderData;
+                else if (this._primitiveShaderData) {
+                    shaderData = this._primitiveShaderData;
                 }
             }
             shader.uploadRenderStateBlendDepth(shaderData);
             shader.uploadRenderStateFrontFace(shaderData, false, context.invertY);
             WebGLEngine.instance.getDrawContext().drawGeometryElement(this.geometry);
+        }
+        destroy() {
+            this._unregisterDefineFlag(this._primitiveShaderData);
+            this._primitiveShaderData = null;
+            super.destroy();
         }
     }
     WebGLPrimitiveRenderElement2D._additionShaderData = ["Sprite2DGraphics"];
@@ -7830,6 +8004,12 @@
             this._clearColor = new Laya.Color(0, 0, 0, 0);
             this.invertY = false;
             this.pipelineMode = "Forward";
+            this._prevTypeKey = -1;
+            this._prevTextureKey = -1;
+            this._prevClip = null;
+            this._prevShaderIns = null;
+            this._offscreenX = 0;
+            this._offscreenY = 0;
             this._globalConfigShaderData = Laya.Shader3D._configDefineValues;
         }
         drawRenderElementList(list) {
@@ -7840,29 +8020,37 @@
             }
             Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_2DContextPre, performance.now() - time);
             time = performance.now();
+            this._prevTypeKey = -1;
+            this._prevTextureKey = -1;
+            this._prevClip = null;
+            this._prevShaderIns = null;
             for (var i = 0, n = list.length; i < n; i++) {
-                let element = list.elements[i];
-                element._render(this);
+                list.elements[i]._render(this);
             }
             Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_2DDrawCall, list.length);
             Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_2DContextRender, performance.now() - time);
             Laya.LayaGL.renderEngine._framePassCount++;
             return 0;
         }
-        setOffscreenView(width, height) {
+        setOffscreenView(width, height, x = 0, y = 0) {
             this._offscreenWidth = width;
             this._offscreenHeight = height;
+            this._offscreenX = x;
+            this._offscreenY = y;
+        }
+        getOffscreenView(out) {
+            out.setValue(this._offscreenX, this._offscreenY, this._offscreenWidth, this._offscreenHeight);
         }
         setRenderTarget(value, clear, clearColor) {
             this._destRT = value;
             clearColor.cloneTo(this._clearColor);
             if (this._destRT) {
                 WebGLEngine.instance.getTextureContext().bindRenderTarget(this._destRT);
-                WebGLEngine.instance.viewport(0, 0, this._destRT._textures[0].width, this._destRT._textures[0].height);
+                WebGLEngine.instance.viewport(this._offscreenX, this._offscreenY, this._destRT._textures[0].width, this._destRT._textures[0].height);
             }
             else {
                 WebGLEngine.instance.getTextureContext().bindoutScreenTarget();
-                WebGLEngine.instance.viewport(0, 0, this._offscreenWidth, this._offscreenHeight);
+                WebGLEngine.instance.viewport(this._offscreenX, this._offscreenY, this._offscreenWidth, this._offscreenHeight);
             }
             WebGLEngine.instance.scissorTest(false);
             WebGLEngine.instance.clearRenderTexture(clear ? Laya.RenderClearFlag.Color : Laya.RenderClearFlag.Nothing, this._clearColor);
@@ -7954,6 +8142,9 @@
         }
         createRenderStruct2D() {
             return new WebRenderStruct2D();
+        }
+        createEmptyRenderDataHandle() {
+            return new WebEmptyRender2DDataHandle();
         }
     }
     Laya.Laya.addBeforeInitCallback(() => {
@@ -8542,6 +8733,9 @@
         constructor(targetType, bufferUsageType) {
             this._glBuffer = WebGLEngine.instance.createBuffer(targetType, bufferUsageType);
         }
+        getStorageBuffer() {
+            return null;
+        }
         setDataLength(byteLength) {
             this._glBuffer.setDataLength(byteLength);
         }
@@ -8697,6 +8891,7 @@
     exports.GLVertexState = GLVertexState;
     exports.GlCapable = GlCapable;
     exports.OneDrawPassCacheInfo = OneDrawPassCacheInfo;
+    exports.Pass2DCacheInfo = Pass2DCacheInfo;
     exports.VertexArrayObject = VertexArrayObject;
     exports.Web2DBaseRenderDataHandle = Web2DBaseRenderDataHandle;
     exports.Web2DGraphic2DIndexCloneDataView = Web2DGraphic2DIndexCloneDataView;
@@ -8708,6 +8903,7 @@
     exports.Web2DGraphicsIndexBuffer = Web2DGraphicsIndexBuffer;
     exports.Web2DGraphicsVertexBuffer = Web2DGraphicsVertexBuffer;
     exports.WebDefineDatas = WebDefineDatas;
+    exports.WebEmptyRender2DDataHandle = WebEmptyRender2DDataHandle;
     exports.WebGLBlit2DQuadCMD = WebGLBlit2DQuadCMD;
     exports.WebGLBufferState = WebGLBufferState;
     exports.WebGLCommandUniformMap = WebGLCommandUniformMap;

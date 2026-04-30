@@ -1730,6 +1730,12 @@
                 this._nativeObj.addOneAddiionalData(key, value._nativeObj);
             }
         }
+        get perCameraUpdate() {
+            return this._nativeObj.perCameraUpdate;
+        }
+        set perCameraUpdate(value) {
+            this._nativeObj.perCameraUpdate = value;
+        }
         constructor() {
             this._additionShaderData = new Map();
             this._ismoved = new Laya.Vector2();

@@ -7397,6 +7397,7 @@
             super.recover();
             this._material && (this.material = null);
             this._mesh && (this.mesh = null);
+            this._meshRender.lightProbe = null;
         }
         destroy() {
             super.destroy();
@@ -8067,7 +8068,6 @@
             camera.render(scene);
             camera.renderTarget = recoverTexture;
             scene.recaculateCullCamera();
-            scene._componentDriver.callPostRender();
             camera._aftRenderMainPass();
             camera._scene = originScene;
             return renderTexture;
@@ -8466,7 +8466,7 @@
             return this._canBlitDepth;
         }
         get canblitDepth() {
-            return this._canBlitDepth && this._internalRenderTexture && this._internalRenderTexture.depthStencilFormat != null;
+            return this._canBlitDepth && this._internalRenderTexture && this._internalRenderTexture.depthStencilFormat != null && this._cacheDepthTexture != null;
         }
         constructor(aspectRatio = 0, nearPlane = 0.3, farPlane = 1000) {
             super(nearPlane, farPlane);
@@ -8754,9 +8754,10 @@
                 if (this._cacheDepthTexture)
                     this._cacheDepthTexture._inPool ? 0 : Laya.RenderTexture.recoverToPool(this._cacheDepthTexture);
                 this._cacheDepthTexture = this._internalRenderTexture;
+                this._internalRenderTexture = null;
             }
             else {
-                this._internalRenderTexture && Laya.RenderTexture.recoverToPool(this._internalRenderTexture);
+                this._internalRenderTexture && (!this._internalRenderTexture._inPool) && Laya.RenderTexture.recoverToPool(this._internalRenderTexture);
             }
         }
         _createOpaqueTexture() {
@@ -9045,7 +9046,6 @@
         }
         destroy() {
             this._list.clear();
-            this.list = null;
             this._sceneManagerOBJ.destroy();
         }
     }
@@ -9532,12 +9532,18 @@
             var scenes = Laya.ILaya.stage._scene3Ds;
             scenes.splice(scenes.indexOf(this), 1);
         }
+        _getLightTexture() {
+            return Scene3D._lightTexture;
+        }
+        _getLightPixels() {
+            return Scene3D._lightPixles;
+        }
         _prepareSceneToRender() {
             var shaderValues = this._shaderValues;
             var multiLighting = Laya.Config3D._multiLighting && Laya.Stat.enableMulLight;
             if (multiLighting) {
-                var ligTex = Scene3D._lightTexture;
-                var ligPix = Scene3D._lightPixles;
+                var ligTex = this._getLightTexture();
+                var ligPix = this._getLightPixels();
                 const pixelWidth = ligTex.width;
                 const floatWidth = pixelWidth * 4;
                 var curCount = 0;
@@ -10064,6 +10070,12 @@
         }
         get indexFormat() {
             return this._indexFormat;
+        }
+        get vertexBuffer() {
+            return this._vertexBuffer;
+        }
+        get indexBuffer() {
+            return this._indexBuffer;
         }
         set indexFormat(value) {
             this._indexFormat = value;
@@ -11461,6 +11473,7 @@
         }
         set localBounds(value) {
             this._localBounds = value;
+            this._baseRenderNode.boundsChange = true;
             this.geometryBounds = this._localBounds;
         }
         get rootBone() {
@@ -12821,6 +12834,7 @@
         KeyFrameValueType[KeyFrameValueType["Color"] = 8] = "Color";
         KeyFrameValueType[KeyFrameValueType["Boolean"] = 9] = "Boolean";
         KeyFrameValueType[KeyFrameValueType["PathPoint"] = 10] = "PathPoint";
+        KeyFrameValueType[KeyFrameValueType["MaterialRef"] = 11] = "MaterialRef";
     })(exports.KeyFrameValueType || (exports.KeyFrameValueType = {}));
     class KeyframeNodeOwner {
         constructor() {
@@ -12860,6 +12874,9 @@
                     case exports.KeyFrameValueType.Vector4:
                     case exports.KeyFrameValueType.Color:
                         this.value.cloneTo(this.crossFixedValue);
+                        break;
+                    case exports.KeyFrameValueType.MaterialRef:
+                        this.crossFixedValue = this.value;
                         break;
                     default:
                         throw new Error("Animator:unknown type.");
@@ -13092,6 +13109,13 @@
                                     valueV4.z = reader.readFloat32();
                                     valueV4.w = reader.readFloat32();
                                     break;
+                                case exports.KeyFrameValueType.MaterialRef: {
+                                    const kf = new Laya.StringKeyframe();
+                                    kf.time = startTimeTypes[reader.readUint16()];
+                                    kf.value = AnimationClipParser04._strings[reader.readUint16()];
+                                    node._setKeyframeByIndex(j, kf);
+                                    break;
+                                }
                                 default:
                                     throw new Error("AnimationClipParser04:unknown type.");
                             }
@@ -13118,6 +13142,13 @@
                                     booleanKeyframe.time = startTimeTypes[reader.readUint16()];
                                     booleanKeyframe.value = reader.readByte() == 1;
                                     break;
+                                case exports.KeyFrameValueType.MaterialRef: {
+                                    const kf = new Laya.StringKeyframe();
+                                    kf.time = startTimeTypes[reader.readUint16()];
+                                    kf.value = AnimationClipParser04._strings[reader.readUint16()];
+                                    node._setKeyframeByIndex(j, kf);
+                                    break;
+                                }
                                 case exports.KeyFrameValueType.Float:
                                     var floatKeyframe = new Laya.FloatKeyframe();
                                     node._setKeyframeByIndex(j, floatKeyframe);
@@ -13376,6 +13407,13 @@
                                     valueV4.z = Laya.HalfFloatUtils.convertToNumber(reader.readUint16());
                                     valueV4.w = Laya.HalfFloatUtils.convertToNumber(reader.readUint16());
                                     break;
+                                case exports.KeyFrameValueType.MaterialRef: {
+                                    const kf = new Laya.StringKeyframe();
+                                    kf.time = startTimeTypes[reader.readUint16()];
+                                    kf.value = AnimationClipParser04._strings[reader.readUint16()];
+                                    node._setKeyframeByIndex(j, kf);
+                                    break;
+                                }
                                 default:
                                     throw "AnimationClipParser04:unknown type.";
                             }
@@ -13777,6 +13815,14 @@
                         }
                         break;
                     case exports.KeyFrameValueType.Boolean:
+                        if (frameIndex !== -1) {
+                            outDatas[i] = keyFrames[frameIndex].value;
+                        }
+                        else {
+                            outDatas[i] = keyFrames[0].value;
+                        }
+                        break;
+                    case exports.KeyFrameValueType.MaterialRef:
                         if (frameIndex !== -1) {
                             outDatas[i] = keyFrames[frameIndex].value;
                         }
@@ -15826,14 +15872,26 @@
             else {
                 var property = propertyOwner;
                 for (var i = 0, n = node.propertyCount; i < n; i++) {
+                    if (node.type === exports.KeyFrameValueType.MaterialRef)
+                        break;
                     if (mat) {
                         const shaderPropId = node.getMaterialPropertyId(i);
                         const type = node.type;
                         switch (type) {
-                            case exports.KeyFrameValueType.Color:
+                            case exports.KeyFrameValueType.Color: {
                                 const color = property.shaderData.getColor(shaderPropId);
-                                property = new Laya.Vector4(color.r, color.g, color.b, color.a);
+                                if (color != null) {
+                                    _tempVector4.x = color.r;
+                                    _tempVector4.y = color.g;
+                                    _tempVector4.z = color.b;
+                                    _tempVector4.w = color.a;
+                                    property = _tempVector4;
+                                }
+                                else {
+                                    property = null;
+                                }
                                 break;
+                            }
                             case exports.KeyFrameValueType.Vector2:
                                 property = property.shaderData.getVector2(shaderPropId);
                                 break;
@@ -15876,9 +15934,24 @@
                     propertys[i] = node.getPropertyByIndex(i);
                 keyframeNodeOwner.property = propertys;
                 keyframeNodeOwner.type = node.type;
+                if (node.type === exports.KeyFrameValueType.MaterialRef) {
+                    for (let ki = 0, kn = node.keyFramesCount; ki < kn; ki++) {
+                        const kf = node.getKeyframeByIndex(ki);
+                        if (kf === null || kf === void 0 ? void 0 : kf.value) {
+                            const alreadyCached = Laya.ILaya.loader.getRes(kf.value) ||
+                                (!kf.value.startsWith("res://") && Laya.ILaya.loader.getRes("res://" + kf.value));
+                            if (!alreadyCached) {
+                                Laya.ILaya.loader.load(kf.value, { type: Laya.Loader.MATERIAL });
+                            }
+                        }
+                    }
+                }
                 if (property) {
                     if (node.type === exports.KeyFrameValueType.Float || node.type === exports.KeyFrameValueType.Boolean || node.type === exports.KeyFrameValueType.PathPoint) {
                         keyframeNodeOwner.defaultValue = property;
+                    }
+                    else if (node.type === exports.KeyFrameValueType.MaterialRef) {
+                        keyframeNodeOwner.defaultValue = "";
                     }
                     else {
                         var defaultValue = new property.constructor();
@@ -15886,6 +15959,37 @@
                         keyframeNodeOwner.defaultValue = defaultValue;
                         keyframeNodeOwner.value = new property.constructor();
                         keyframeNodeOwner.crossFixedValue = new property.constructor();
+                    }
+                }
+                else if (mat) {
+                    switch (node.type) {
+                        case exports.KeyFrameValueType.Color:
+                        case exports.KeyFrameValueType.Vector4:
+                            keyframeNodeOwner.defaultValue = new Laya.Vector4();
+                            keyframeNodeOwner.value = new Laya.Vector4();
+                            keyframeNodeOwner.crossFixedValue = new Laya.Vector4();
+                            break;
+                        case exports.KeyFrameValueType.Vector3:
+                            keyframeNodeOwner.defaultValue = new Laya.Vector3();
+                            keyframeNodeOwner.value = new Laya.Vector3();
+                            keyframeNodeOwner.crossFixedValue = new Laya.Vector3();
+                            break;
+                        case exports.KeyFrameValueType.Vector2:
+                            keyframeNodeOwner.defaultValue = new Laya.Vector2();
+                            keyframeNodeOwner.value = new Laya.Vector2();
+                            keyframeNodeOwner.crossFixedValue = new Laya.Vector2();
+                            break;
+                        case exports.KeyFrameValueType.Float:
+                        case exports.KeyFrameValueType.Boolean:
+                            keyframeNodeOwner.defaultValue = 0;
+                            keyframeNodeOwner.value = 0;
+                            keyframeNodeOwner.crossFixedValue = 0;
+                            break;
+                        case exports.KeyFrameValueType.Rotation:
+                            keyframeNodeOwner.defaultValue = new Laya.Quaternion();
+                            keyframeNodeOwner.value = new Laya.Quaternion();
+                            keyframeNodeOwner.crossFixedValue = new Laya.Quaternion();
+                            break;
                     }
                 }
                 this._keyframeNodeOwners.push(keyframeNodeOwner);
@@ -16375,6 +16479,34 @@
                     case exports.KeyFrameValueType.Boolean:
                         console.log("Animator:Boolean not support3");
                         break;
+                    case exports.KeyFrameValueType.MaterialRef: {
+                        const srcStr = typeof srcValue === "string" && srcValue ? srcValue : null;
+                        const desStr = typeof desValue === "string" && desValue ? desValue : null;
+                        const matPath = (srcStr && crossWeight < 0.5) ? srcStr : desStr;
+                        if (!matPath)
+                            break;
+                        let mat = Laya.ILaya.loader.getRes(matPath);
+                        if (!mat && !matPath.startsWith("res://"))
+                            mat = Laya.ILaya.loader.getRes("res://" + matPath);
+                        if (!mat) {
+                            Laya.ILaya.loader.load(matPath, { type: Laya.Loader.MATERIAL });
+                            break;
+                        }
+                        const pn = nodeOwner.property[0];
+                        const idx = parseInt(nodeOwner.property[nodeOwner.property.length - 1]);
+                        const mats = pro[pn];
+                        if (Array.isArray(mats)) {
+                            if (mats[idx] !== mat) {
+                                mats[idx] = mat;
+                                pro[pn] = mats;
+                            }
+                        }
+                        else {
+                            pro[pn] = mat;
+                        }
+                        nodeOwner.value = matPath;
+                        break;
+                    }
                     case exports.KeyFrameValueType.Float:
                         var proPat = nodeOwner.property;
                         var m = proPat.length - 1;
@@ -16449,7 +16581,10 @@
                             pro && (pro[lastpro] = this._applyColor(pro[lastpro], nodeOwner, additive, weight, isFirstLayer, v44));
                         }
                         else {
-                            pro && pro.setColor(lastpro, this._applyColor(pro.getColor(lastpro), nodeOwner, additive, weight, isFirstLayer, v44));
+                            const crossColor = pro && pro.getColor(lastpro);
+                            if (crossColor != null) {
+                                pro.setColor(lastpro, this._applyColor(crossColor, nodeOwner, additive, weight, isFirstLayer, v44));
+                            }
                         }
                         if (nodeOwner.callbackFun) {
                             nodeOwner.animatorDataSetCallBack();
@@ -16472,7 +16607,8 @@
                             pro && (pro[lastpro] = this._applyVec2(pro[lastpro], nodeOwner, additive, weight, isFirstLayer, v2));
                         }
                         else {
-                            pro && pro.setVector2(lastpro, this._applyVec2(pro.getVector2(lastpro), nodeOwner, additive, weight, isFirstLayer, v2));
+                            const crossV2 = pro && pro.getVector2(lastpro);
+                            crossV2 && pro.setVector2(lastpro, this._applyVec2(crossV2, nodeOwner, additive, weight, isFirstLayer, v2));
                         }
                         if (nodeOwner.callbackFun) {
                             nodeOwner.animatorDataSetCallBack();
@@ -16497,7 +16633,8 @@
                             pro && (pro[lastpro] = this._applyVec4(pro[lastpro], nodeOwner, additive, weight, isFirstLayer, v4));
                         }
                         else {
-                            pro && pro.setVector4(lastpro, this._applyVec4(pro.getVector4(lastpro), nodeOwner, additive, weight, isFirstLayer, v4));
+                            const crossV4 = pro && pro.getVector4(lastpro);
+                            crossV4 && pro.setVector4(lastpro, this._applyVec4(crossV4, nodeOwner, additive, weight, isFirstLayer, v4));
                         }
                         if (nodeOwner.callbackFun) {
                             nodeOwner.animatorDataSetCallBack();
@@ -16521,7 +16658,8 @@
                             pro && (pro[lastpro] = this._applyVec3(pro[lastpro], nodeOwner, additive, weight, isFirstLayer, v3));
                         }
                         else {
-                            pro && pro.setVector3(lastpro, this._applyVec3(pro.getVector3(lastpro), nodeOwner, additive, weight, isFirstLayer, v3));
+                            const crossV3 = pro && pro.getVector3(lastpro);
+                            crossV3 && pro.setVector3(lastpro, this._applyVec3(crossV3, nodeOwner, additive, weight, isFirstLayer, v3));
                         }
                         if (nodeOwner.callbackFun) {
                             nodeOwner.animatorDataSetCallBack();
@@ -16535,7 +16673,44 @@
             var realtimeDatas = stateInfo._realtimeDatas;
             var nodes = stateInfo._clip._nodes;
             var nodeOwners = stateInfo._nodeOwners;
-            for (var i = 0, n = nodes.count; i < n; i++) {
+            const n = nodes.count;
+            for (let mi = 0; mi < n; mi++) {
+                const mo = nodeOwners[mi];
+                if (!mo || mo.type !== exports.KeyFrameValueType.MaterialRef)
+                    continue;
+                const mn = nodes.getNodeByIndex(mi);
+                if (controllerLayer.avatarMask && !controllerLayer.avatarMask.getTransformActive(mn.nodePath))
+                    continue;
+                const mp = mo.propertyOwner;
+                if (!mp)
+                    continue;
+                const matUrl = realtimeDatas[mi];
+                if (!matUrl)
+                    continue;
+                let mat = Laya.ILaya.loader.getRes(matUrl);
+                if (!mat && !matUrl.startsWith("res://"))
+                    mat = Laya.ILaya.loader.getRes("res://" + matUrl);
+                if (mat) {
+                    const pn = mo.property[0];
+                    const idx = parseInt(mo.property[mo.property.length - 1]);
+                    const mats = mp[pn];
+                    if (Array.isArray(mats)) {
+                        if (mats[idx] !== mat) {
+                            mats[idx] = mat;
+                            mp[pn] = mats;
+                        }
+                    }
+                    else {
+                        mp[pn] = mat;
+                    }
+                    mo.value = matUrl;
+                }
+                else {
+                    Laya.ILaya.loader.load(matUrl, { type: Laya.Loader.MATERIAL });
+                }
+                mo.updateMark = this._updateMark;
+            }
+            for (var i = 0; i < n; i++) {
                 var nodeOwner = nodeOwners[i];
                 if (nodeOwner) {
                     var node = nodes.getNodeByIndex(i);
@@ -16575,6 +16750,9 @@
                                 if (!nodeOwner.isMaterial) {
                                     pro && (pro[lastBoolPro] = realtimeDatas[i]);
                                 }
+                                break;
+                            case exports.KeyFrameValueType.MaterialRef:
+                                nodeOwner.value = realtimeDatas[i];
                                 break;
                             case exports.KeyFrameValueType.Float:
                                 var proPat = nodeOwner.property;
@@ -16688,8 +16866,8 @@
                                     }
                                 }
                                 else {
-                                    const color = pro.getColor(value);
-                                    if (pro && color) {
+                                    const color = pro && pro.getColor(value);
+                                    if (color) {
                                         _tempColor.r = color.r;
                                         _tempColor.g = color.g;
                                         _tempColor.b = color.b;
@@ -16881,7 +17059,7 @@
                                     }
                                 }
                                 else {
-                                    pro && pro.getVector3(value) && pro.setVector3(value, nodeOwner.defaultValue);
+                                    pro && pro.getVector4(value) && pro.setVector4(value, nodeOwner.defaultValue);
                                 }
                                 break;
                             case exports.KeyFrameValueType.Color:
@@ -16908,6 +17086,8 @@
                                 else {
                                     pro && pro.getColor(value) && pro.setColor(value, _tempColor);
                                 }
+                                break;
+                            case exports.KeyFrameValueType.MaterialRef:
                                 break;
                             default:
                                 throw "Animator:unknown type.";
@@ -16984,11 +17164,24 @@
             let timer = this.owner._scene.timer;
             let delta = timer.delta / 1000.0;
             delta = this._applyUpdateMode(delta);
-            if (this._speed === 0 || delta === 0)
+            var i, n;
+            if (this._speed === 0 || delta === 0) {
+                for (i = 0, n = this._controllerLayers.length; i < n; i++) {
+                    var controllerLayer = this._controllerLayers[i];
+                    if (!controllerLayer.enable)
+                        continue;
+                    var playStateInfo = controllerLayer._playStateInfo;
+                    if (playStateInfo._finish && controllerLayer._playType == 0) {
+                        var animatorState = playStateInfo.currentState;
+                        this._applyTransition(animatorState, i, animatorState._eventtransition(playStateInfo._normalizedPlayTime, this.animatorParams));
+                    }
+                }
+                this._LateUpdateEvents.invoke();
+                this._LateUpdateEvents.clear();
                 return;
+            }
             if (!Laya.Stat.enableAnimatorUpdate)
                 return;
-            var i, n;
             this._updateMark++;
             for (i = 0, n = this._controllerLayers.length; i < n; i++) {
                 var controllerLayer = this._controllerLayers[i];
@@ -16996,6 +17189,8 @@
                     continue;
                 var playStateInfo = controllerLayer._playStateInfo;
                 if (this.sleep && playStateInfo._finish && controllerLayer._playType == 0) {
+                    var animatorState = playStateInfo.currentState;
+                    this._applyTransition(animatorState, i, animatorState._eventtransition(playStateInfo._normalizedPlayTime, this.animatorParams));
                     continue;
                 }
                 var crossPlayStateInfo = controllerLayer._crossPlayStateInfo;
@@ -17394,6 +17589,7 @@
     Animator.CULLINGMODE_ALWAYSANIMATE = 0;
     Animator.CULLINGMODE_CULLCOMPLETELY = 2;
     const _tempVector31 = new Laya.Vector3();
+    const _tempVector4 = new Laya.Vector4();
     const _tempColor = new Laya.Color();
     const _tempQuaternion1 = new Laya.Quaternion();
 
@@ -17435,6 +17631,9 @@
                                 realtimeDatas[i] = new Laya.Vector4();
                                 break;
                             case exports.KeyFrameValueType.PathPoint:
+                                break;
+                            case exports.KeyFrameValueType.MaterialRef:
+                                realtimeDatas[i] = "";
                                 break;
                             default:
                                 throw new Error("AnimationClipParser04:unknown type.");
@@ -18254,6 +18453,7 @@
             value.cloneTo(this._size);
             this._resizeRT();
             this.boundsChange = true;
+            this._sizeChange = true;
             this._scale.setValue(value.x, value.y, 1);
         }
         get renderMode() {
@@ -18455,8 +18655,10 @@
                     Laya.Matrix4x4.createAffineTransformation(this._transform.position, camera.transform.rotation, this._scale, this._matrix);
                 }
                 else if (this._sizeChange) {
+                    this._sizeChange = false;
                     this.boundsChange = true;
-                    this._transform.worldMatrix.cloneTo(this._matrix);
+                    Laya.Matrix4x4.createScaling(this._scale, tempMatrix$1);
+                    Laya.Matrix4x4.multiply(this._transform.worldMatrix, tempMatrix$1, this._matrix);
                 }
             }
         }
@@ -21092,6 +21294,38 @@
     MaterialInstancePropertyBlock.INSTANCETYPE_ATTRIBUTE = 0;
     MaterialInstancePropertyBlock.INSTANCETYPE_UNIFORMBUFFER = 1;
 
+    class DeviceBuffer {
+        get deviceBuffer() {
+            return this._deviceBuffer;
+        }
+        get vertexBuffer() {
+            return this._vertexBuffer3D;
+        }
+        constructor(byteLength, usage) {
+            if (!Laya.LayaGL.renderEngine.getCapable(Laya.RenderCapable.ComputeShader)) {
+                return;
+            }
+            if (usage & Laya.EDeviceBufferUsage.VERTEX) {
+                this._vertexBuffer = Laya.LayaGL.renderDeviceFactory.createDeviceVertexBuffer(usage);
+                this._deviceBuffer = this._vertexBuffer.getStorageBuffer();
+                this._vertexBuffer.setDataLength(byteLength);
+                this._vertexBuffer3D = new VertexBuffer3D(0, Laya.BufferUsage.Dynamic, false);
+                this._vertexBuffer3D.destroy();
+                this._vertexBuffer3D._deviceBuffer = this._vertexBuffer;
+                this._vertexBuffer3D._byteLength = byteLength;
+            }
+            else {
+                this._deviceBuffer = Laya.LayaGL.renderDeviceFactory.createDeviceBuffer(usage);
+                this._deviceBuffer.setDataLength(byteLength);
+            }
+        }
+        destroy() {
+            var _a;
+            (_a = this.vertexBuffer) === null || _a === void 0 ? void 0 : _a.destroy();
+            this._deviceBuffer.destroy();
+        }
+    }
+
     class FrustumCulling {
         static cullingRenderBounds(bounds, cullInfo) {
             var cullPlaneCount = cullInfo.cullPlaneCount;
@@ -21363,47 +21597,6 @@
     const TEMP_VECTOR3_MAX0 = new Laya.Vector3();
     const TEMP_VECTOR3_MAX1 = new Laya.Vector3();
 
-    class Rand {
-        static getFloatFromInt(v) {
-            return (v & 0x007FFFFF) * (1.0 / 8388607.0);
-        }
-        static getByteFromInt(v) {
-            return (v & 0x007FFFFF) >>> 15;
-        }
-        get seed() {
-            return this.seeds[0];
-        }
-        set seed(seed) {
-            this.seeds[0] = seed;
-            this.seeds[1] = this.seeds[0] * 0x6C078965 + 1;
-            this.seeds[2] = this.seeds[1] * 0x6C078965 + 1;
-            this.seeds[3] = this.seeds[2] * 0x6C078965 + 1;
-        }
-        constructor(seed) {
-            this._temp = new Uint32Array(1);
-            this.seeds = new Uint32Array(4);
-            this.seeds[0] = seed;
-            this.seeds[1] = this.seeds[0] * 0x6C078965 + 1;
-            this.seeds[2] = this.seeds[1] * 0x6C078965 + 1;
-            this.seeds[3] = this.seeds[2] * 0x6C078965 + 1;
-        }
-        getUint() {
-            this._temp[0] = this.seeds[0] ^ (this.seeds[0] << 11);
-            this.seeds[0] = this.seeds[1];
-            this.seeds[1] = this.seeds[2];
-            this.seeds[2] = this.seeds[3];
-            this.seeds[3] = (this.seeds[3] ^ (this.seeds[3] >>> 19)) ^ (this._temp[0] ^ (this._temp[0] >>> 8));
-            return this.seeds[3];
-        }
-        getFloat() {
-            this.getUint();
-            return (this.seeds[3] & 0x007FFFFF) * (1.0 / 8388607.0);
-        }
-        getSignedFloat() {
-            return this.getFloat() * 2.0 - 1.0;
-        }
-    }
-
     class RandX {
         constructor(seed) {
             if (!(seed instanceof Array) || seed.length !== 4)
@@ -21650,6 +21843,7 @@
     exports.ContainmentType = ContainmentType;
     exports.CubemapLoader = CubemapLoader;
     exports.DepthPass = DepthPass;
+    exports.DeviceBuffer = DeviceBuffer;
     exports.DirectionLightCom = DirectionLightCom;
     exports.DrawElementCMDData = DrawElementCMDData;
     exports.DrawMeshCMD = DrawMeshCMD;
@@ -21719,7 +21913,6 @@
     exports.PostProcessEffect = PostProcessEffect;
     exports.PostProcessRenderContext = PostProcessRenderContext;
     exports.PrimitiveMesh = PrimitiveMesh;
-    exports.Rand = Rand;
     exports.RandX = RandX;
     exports.Ray = Ray;
     exports.ReflectionProbe = ReflectionProbe;

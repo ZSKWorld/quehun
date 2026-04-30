@@ -13,9 +13,9 @@
         }
         set _elements(value) {
             let currentLength = value.length;
-            currentLength = currentLength > 8 ? 8 : currentLength;
+            currentLength = currentLength > 16 ? 16 : currentLength;
             this._currentLength = currentLength;
-            this._dataBuffer.set(value);
+            this._dataBuffer.set(value.subarray(0, currentLength));
             this._formatData();
         }
         get gradientCount() {
@@ -23,27 +23,27 @@
         }
         constructor() {
             this._currentLength = 0;
-            this._dataBuffer = new Float32Array(8);
+            this._dataBuffer = new Float32Array(16);
         }
         _formatData() {
-            if (this._currentLength == 8)
+            if (this._currentLength == 16)
                 return;
-            if (this._elements[this._currentLength - 2] !== 1) {
+            if (this._currentLength >= 2 && this._elements[this._currentLength - 2] !== 1) {
                 this._elements[this._currentLength] = 1;
                 this._elements[this._currentLength + 1] = this._elements[this._currentLength - 1];
             }
         }
         add(key, value) {
-            if (this._currentLength < 8) {
-                if ((this._currentLength === 6) && ((key !== 1))) {
+            if (this._currentLength < 16) {
+                if ((this._currentLength === 14) && ((key !== 1))) {
                     key = 1;
-                    console.log("GradientDataNumber warning:the forth key is  be force set to 1.");
+                    console.log("GradientDataNumber warning:the eighth key is  be force set to 1.");
                 }
                 this._elements[this._currentLength++] = key;
                 this._elements[this._currentLength++] = value;
             }
             else {
-                console.log("GradientDataNumber warning:data count must lessEqual than 4");
+                console.log("GradientDataNumber warning:data count must lessEqual than 8");
             }
         }
         getKeyByIndex(index) {
@@ -161,72 +161,6 @@
         }
     }
 
-    class EmissionBurst {
-        constructor() {
-            this.time = 0;
-            this.count = 30;
-        }
-        cloneTo(destObject) {
-            destObject.time = this.time;
-            destObject.count = this.count;
-        }
-        clone() {
-            var dest = new EmissionBurst();
-            this.cloneTo(dest);
-            return dest;
-        }
-    }
-    class EmissionModule {
-        get rateOverTime() {
-            return this._rateOverTime;
-        }
-        set rateOverTime(value) {
-            this._rateOverTime = value;
-            this._emissionInterval = 1 / value;
-        }
-        get bursts() {
-            return this._bursts;
-        }
-        set bursts(value) {
-            this._bursts = value;
-            if (value) {
-                this._sortedBursts = value.slice().sort((a, b) => a.time - b.time);
-            }
-            else {
-                this._sortedBursts = [];
-            }
-        }
-        constructor() {
-            this.enable = true;
-            this._rateOverTime = 10;
-            this._lastPosition = new Laya.Vector3();
-            this.rateOverDistance = 0;
-            this._emissionInterval = 0.1;
-            this._sortedBursts = [];
-        }
-        destroy() {
-            this._sortedBursts = null;
-            this._bursts = null;
-        }
-        cloneTo(destObject) {
-            destObject.enable = this.enable;
-            destObject.rateOverTime = this.rateOverTime;
-            destObject.rateOverDistance = this.rateOverDistance;
-            if (this.bursts) {
-                let bursts = [];
-                this.bursts.forEach(burst => {
-                    bursts.push(burst.clone());
-                });
-                destObject.bursts = bursts;
-            }
-        }
-        clone() {
-            let dest = new EmissionModule();
-            this.cloneTo(dest);
-            return dest;
-        }
-    }
-
     exports.ParticleMinMaxCurveMode = void 0;
     (function (ParticleMinMaxCurveMode) {
         ParticleMinMaxCurveMode[ParticleMinMaxCurveMode["Constant"] = 0] = "Constant";
@@ -301,6 +235,79 @@
         }
         clone() {
             let dest = new ParticleMinMaxCurve();
+            this.cloneTo(dest);
+            return dest;
+        }
+    }
+
+    class EmissionBurst {
+        constructor() {
+            this.time = 0;
+            this.count = 30;
+        }
+        cloneTo(destObject) {
+            destObject.time = this.time;
+            destObject.count = this.count;
+        }
+        clone() {
+            var dest = new EmissionBurst();
+            this.cloneTo(dest);
+            return dest;
+        }
+    }
+    class EmissionModule {
+        get rateOverTime() {
+            return this._rateOverTime;
+        }
+        set rateOverTime(value) {
+            if (typeof value === 'number') {
+                this._rateOverTime.mode = exports.ParticleMinMaxCurveMode.Constant;
+                this._rateOverTime.constant = value;
+            }
+            else {
+                this._rateOverTime = value;
+            }
+        }
+        get bursts() {
+            return this._bursts;
+        }
+        set bursts(value) {
+            this._bursts = value;
+            if (value) {
+                this._sortedBursts = value.slice().sort((a, b) => a.time - b.time);
+            }
+            else {
+                this._sortedBursts = [];
+            }
+        }
+        constructor() {
+            this.enable = true;
+            this._rateOverTime = new ParticleMinMaxCurve();
+            this._lastPosition = new Laya.Vector3();
+            this.rateOverDistance = 0;
+            this._emitAccumulator = 0;
+            this._sortedBursts = [];
+            this._rateOverTime.mode = exports.ParticleMinMaxCurveMode.Constant;
+            this._rateOverTime.constant = 10;
+        }
+        destroy() {
+            this._sortedBursts = null;
+            this._bursts = null;
+        }
+        cloneTo(destObject) {
+            destObject.enable = this.enable;
+            this.rateOverTime.cloneTo(destObject._rateOverTime);
+            destObject.rateOverDistance = this.rateOverDistance;
+            if (this.bursts) {
+                let bursts = [];
+                this.bursts.forEach(burst => {
+                    bursts.push(burst.clone());
+                });
+                destObject.bursts = bursts;
+            }
+        }
+        clone() {
+            let dest = new EmissionModule();
             this.cloneTo(dest);
             return dest;
         }

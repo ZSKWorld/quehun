@@ -1,9 +1,9 @@
 (function (exports, Laya) {
     'use strict';
 
-    var LineFs = "#define SHADER_NAME 2DLineFS\n#include \"Sprite2DFrag.glsl\"\nvarying vec2 v_position;varying vec4 v_linePionts;varying float v_lineLength;varying vec2 v_linedir;varying vec3 v_dashed;varying float v_lineWidth;uniform vec4 u_TilingOffset;vec2 dotToline(in vec2 a,vec2 b,in vec2 p){vec2 pa=p-a,ba=b-a;float h=clamp(dot(pa,ba)/dot(ba,ba),0.0,1.0);return ba*h+a;}void main(){vec2 p=dotToline(v_linePionts.xy,v_linePionts.zw,v_position);float d=v_lineWidth*0.5-length(p-v_position);vec2 left=v_linePionts.xy-v_linedir;vec2 p1=dotToline(left,v_linePionts.zw+v_linedir,v_position);float t=v_lineLength+length(left-p1)-v_dashed.z;d*=step(fract(t/v_dashed.x),v_dashed.y);vec2 uv=transformUV(v_texcoord.xy,u_TilingOffset);vec4 textureColor=texture2D(u_baseRender2DTexture,fract(uv));textureColor=transspaceColor(textureColor*u_baseRenderColor);gl_FragColor=vec4(textureColor.rgb,textureColor.a*smoothstep(0.0,2.0,d));}";
+    var LineFs = "#define SHADER_NAME 2DLineFS\n#include \"Sprite2DFrag.glsl\"\nvarying vec2 v_position;varying vec4 v_linePionts;varying float v_lineLength;varying vec2 v_linedir;varying vec3 v_dashed;varying float v_lineWidth;uniform vec4 u_TilingOffset;vec2 dotToline(in vec2 a,vec2 b,in vec2 p){vec2 pa=p-a,ba=b-a;float h=clamp(dot(pa,ba)/dot(ba,ba),0.0,1.0);return ba*h+a;}void main(){clip();vec2 p=dotToline(v_linePionts.xy,v_linePionts.zw,v_position);float d=v_lineWidth*0.5-length(p-v_position);vec2 left=v_linePionts.xy-v_linedir;vec2 p1=dotToline(left,v_linePionts.zw+v_linedir,v_position);float t=v_lineLength+length(left-p1)-v_dashed.z;d*=step(fract(t/v_dashed.x),v_dashed.y);vec2 uv=transformUV(v_texcoord.xy,u_TilingOffset);vec4 textureColor=texture2D(u_baseRender2DTexture,fract(uv));textureColor=transspaceColor(textureColor);vec4 renderColor=u_baseRenderColor;\n#ifdef GAMMASPACE\nrenderColor=linearToGamma(renderColor);\n#endif\nrenderColor.rgb*=renderColor.a;textureColor*=renderColor;float aa=min(v_lineWidth*0.5,2.0);gl_FragColor=vec4(textureColor.rgb,textureColor.a*smoothstep(0.0,aa,d));}";
 
-    var LineVs = "#define SHADER_NAME 2DLineVS\n#include \"Sprite2DVertex.glsl\"\nvarying vec2 v_position;varying vec4 v_linePionts;varying float v_lineLength;varying vec2 v_linedir;varying vec3 v_dashed;varying float v_lineWidth;uniform vec3 u_dashed;uniform float u_lineWidth;void lineMat(in vec2 left,in vec2 right,inout vec3 xDir,inout vec3 yDir,float LineWidth){vec2 dir=right-left;float lineLength=length(dir)+LineWidth+2.0;dir=normalize(dir);xDir.x=dir.x*lineLength;yDir.x=dir.y*lineLength;float lineWidth=LineWidth+2.0;xDir.y=-dir.y*LineWidth;yDir.y=dir.x*LineWidth;xDir.z=(left.x+right.x)*0.5;yDir.z=(left.y+right.y)*0.5;}void main(){vec2 oriUV=(a_position.xy+vec2(0.5,0.5));oriUV.x=(oriUV.x*length(a_linePos.xy-a_linePos.zw)+a_linelength)/50.0;v_texcoord=oriUV;vec2 left,right;getGlobalPos(a_linePos.xy,left);getGlobalPos(a_linePos.zw,right);float lengthScale=length(right-left)/length(a_linePos.zw-a_linePos.xy);v_lineLength=a_linelength*lengthScale;v_dashed=vec3(u_dashed.x*lengthScale,u_dashed.y,u_dashed.z*lengthScale);v_linePionts=vec4(left,right);float lineWidth=u_lineWidth*lengthScale;v_lineWidth=lineWidth;v_linedir=normalize(right-left)*v_lineWidth*0.5;vec3 xDir;vec3 yDir;lineMat(left,right,xDir,yDir,v_lineWidth);transfrom(a_position.xy,xDir,yDir,v_position);vec2 viewPos;getViewPos(v_position,viewPos);clip(viewPos);vec4 pos;getProjectPos(viewPos,pos);gl_Position=pos;}";
+    var LineVs = "#define SHADER_NAME 2DLineVS\n#include \"Sprite2DVertex.glsl\"\nvarying vec2 v_position;varying vec4 v_linePionts;varying float v_lineLength;varying vec2 v_linedir;varying vec3 v_dashed;varying float v_lineWidth;uniform vec3 u_dashed;uniform float u_lineWidth;uniform float u_screenSpaceWidth;void lineMat(in vec2 left,in vec2 right,inout vec3 xDir,inout vec3 yDir,float LineWidth){vec2 dir=right-left;float lineLength=length(dir)+LineWidth+2.0;dir=normalize(dir);xDir.x=dir.x*lineLength;yDir.x=dir.y*lineLength;float lineWidth=LineWidth+2.0;xDir.y=-dir.y*LineWidth;yDir.y=dir.x*LineWidth;xDir.z=(left.x+right.x)*0.5;yDir.z=(left.y+right.y)*0.5;}void main(){vec2 oriUV=(a_position.xy+vec2(0.5,0.5));oriUV.x=(oriUV.x*length(a_linePos.xy-a_linePos.zw)+a_linelength)/50.0;v_texcoord=oriUV;vec2 left,right;getGlobalPos(a_linePos.xy,left);getGlobalPos(a_linePos.zw,right);float lengthScale=length(right-left)/length(a_linePos.zw-a_linePos.xy);v_lineLength=a_linelength*lengthScale;v_dashed=vec3(u_dashed.x*lengthScale,u_dashed.y,u_dashed.z*lengthScale);v_linePionts=vec4(left,right);float lineWidth=u_lineWidth*mix(lengthScale,1.0,u_screenSpaceWidth);v_lineWidth=lineWidth;v_linedir=normalize(right-left)*v_lineWidth*0.5;vec3 xDir;vec3 yDir;lineMat(left,right,xDir,yDir,v_lineWidth);vec2 globalPos;transfrom(a_position.xy,xDir,yDir,globalPos);v_position=globalPos;clip(globalPos);vec2 viewPos;getViewPos(globalPos,viewPos);vec4 pos;getProjectPos(viewPos,pos);gl_Position=pos;}";
 
     class LineShader {
         static __init__() {
@@ -24,10 +24,12 @@
             LineShader.LINEWIDTH = Laya.Shader3D.propertyNameToID("u_lineWidth");
             LineShader.DASHED = Laya.Shader3D.propertyNameToID("u_dashed");
             LineShader.TILINGOFFSET = Laya.Shader3D.propertyNameToID("u_TilingOffset");
+            LineShader.SCREENSPACEWIDTH = Laya.Shader3D.propertyNameToID("u_screenSpaceWidth");
             const commandUniform = Laya.LayaGL.renderDeviceFactory.createGlobalUniformMap("Line2DRender");
             commandUniform.addShaderUniform(LineShader.LINEWIDTH, "u_lineWidth", Laya.ShaderDataType.Float);
             commandUniform.addShaderUniform(LineShader.DASHED, "u_dashed", Laya.ShaderDataType.Vector3);
             commandUniform.addShaderUniform(LineShader.TILINGOFFSET, "u_TilingOffset", Laya.ShaderDataType.Vector4);
+            commandUniform.addShaderUniform(LineShader.SCREENSPACEWIDTH, "u_screenSpaceWidth", Laya.ShaderDataType.Float);
             let vertexs = new Float32Array([
                 -0.5, -0.5, 0,
                 0.5, -0.5, 0,
@@ -85,8 +87,15 @@
             return this._lineWidth;
         }
         set lineWidth(value) {
-            this._lineWidth = Math.max(1, value);
+            this._lineWidth = value;
             this._spriteShaderData.setNumber(LineShader.LINEWIDTH, this._lineWidth);
+        }
+        get screenSpaceWidth() {
+            return this._screenSpaceWidth;
+        }
+        set screenSpaceWidth(value) {
+            this._screenSpaceWidth = value;
+            this._spriteShaderData.setNumber(LineShader.SCREENSPACEWIDTH, value ? 1.0 : 0.0);
         }
         set color(value) {
             value = value ? value : Laya.Color.BLACK;
@@ -161,6 +170,9 @@
         get tillOffset() {
             return this._tillOffset;
         }
+        get sharedMaterial() {
+            return this._materials[0];
+        }
         set sharedMaterial(value) {
             super.sharedMaterial = value;
             Laya.BaseRenderNode2D._setRenderElement2DMaterial(this._renderElements[0], this._materials[0] ? this._materials[0] : Line2DRender.defaultLine2DMaterial);
@@ -183,6 +195,7 @@
             this._initRender();
             this._spriteShaderData.setColor(Laya.BaseRenderNode2D.BASERENDER2DCOLOR, this._color);
             this._updateDashValue();
+            this._spriteShaderData.setNumber(LineShader.SCREENSPACEWIDTH, 0.0);
             this.tillOffset = null;
             this.texture = null;
         }
@@ -269,6 +282,7 @@
             this._maxLineNumer = 200;
             this._enLarge = 100;
             this._lineWidth = 1;
+            this._screenSpaceWidth = false;
             Line2DRender._createDefaultLineMaterial();
             this._renderElements = [];
             this._materials = [];
@@ -277,11 +291,12 @@
     Laya.Laya.addInitCallback(() => Line2DRender._createDefaultLineMaterial());
 
     class Draw2DLineCMD extends Laya.Command2D {
-        static create(pointArray, mat, color = Laya.Color.WHITE, lineWidth = 3) {
+        static create(pointArray, mat, color = Laya.Color.WHITE, lineWidth = 3, screenSpaceWidth = false) {
             var cmd = Draw2DLineCMD._pool.take();
             cmd._line2DRender.color = color;
             cmd._line2DRender.positions = pointArray;
             cmd._line2DRender.lineWidth = lineWidth;
+            cmd._line2DRender.screenSpaceWidth = screenSpaceWidth;
             cmd._needUpdateElement = true;
             cmd._setMatrix(mat);
             return cmd;

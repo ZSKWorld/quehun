@@ -1361,6 +1361,7 @@
         }
         createMesh(glTFMesh, glTFSkin) {
             let layaMesh = new Laya.Mesh();
+            glTFMesh.name && (layaMesh.name = glTFMesh.name);
             let glTFMeshPrimitives = glTFMesh.primitives;
             let morphWeights = glTFMesh.weights;
             let boneCount = (glTFSkin) ? glTFSkin.joints.length : 0;

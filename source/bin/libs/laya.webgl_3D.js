@@ -213,10 +213,13 @@
             }
         }
         _renderUpdatePre(context3D) {
-            if (this._updateMark == context3D.sceneUpdateMask)
+            const mask = this.perCameraUpdate
+                ? context3D.cameraUpdateMask
+                : context3D.sceneUpdateMask;
+            if (this._updateMark == mask)
                 return;
             this._renderUpdatePreFun.call(this._renderUpdatePreCall, context3D);
-            this._updateMark = context3D.sceneUpdateMask;
+            this._updateMark = mask;
         }
         _calculateBoundingBox() {
             this._caculateBoundingBoxFun.call(this._caculateBoundingBoxCall);
@@ -262,6 +265,7 @@
         constructor() {
             this.ismoved = new Laya.Vector2();
             this.defineDataChangeFlag = new Laya.Vector2();
+            this.perCameraUpdate = false;
             this.renderelements = [];
             this._commonUniformMap = [];
             this._worldParams = new Laya.Vector4(1, 0, 0, 0);
@@ -1562,7 +1566,6 @@
             context.sceneData.removeDefine(Laya.Scene3DShaderDeclaration.SHADERDEFINE_SHADOW);
         }
         destory() {
-            throw new Error("Method not implemented.");
         }
     }
     WebDirCascadeShadowRP._maxCascades = 4;
@@ -2215,6 +2218,18 @@
                 value.simpleAnimatorVB && value.simpleAnimatorVB.destroy();
             }
             WebGLInstanceRenderElement3D._instanceBufferStateMap.clear();
+            const baseRenderArray = this._baseRenderList.elements;
+            for (let i = 0, n = this._baseRenderList.length; i < n; i++) {
+                const renderNode = baseRenderArray[i];
+                if (!renderNode)
+                    continue;
+                const elements = renderNode.renderelements;
+                if (!elements)
+                    continue;
+                for (let j = 0, m = elements.length; j < m; j++) {
+                    elements[j] && (elements[j].customData = null);
+                }
+            }
             this._list.clear();
             this._list = null;
             this._baseRenderList.clear();

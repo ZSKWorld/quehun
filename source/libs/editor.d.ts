@@ -740,10 +740,11 @@ declare global {
             filterTopLevels<T extends { parent: any }>(items: ReadonlyArray<T>): ReadonlyArray<T>;
 
             /**
-             * Get the file path from a dropped file.
-             * @param file The dropped file, from the drag-and-drop event. 
+             * Get the file path from a web file.
+             * @param file The web file, usually from the drag-and-drop event.
+             * @returns The file path.
              */
-            getDropFilePath(file: File): string;
+            getPathForWebFile(file: File): string;
         }
         export interface IUUIDUtils {
             /**
@@ -1094,6 +1095,13 @@ declare global {
             getTypeOfClass(cls: Function): FTypeDescriptor;
 
             /**
+             * Get the type descriptor of a class without looking for its base types. Null will be returned if the class is not registered.
+             * @param cls The class.
+             * @return The type descriptor of the class.
+             */
+            getOwnTypeOfClass(cls: Function): FTypeDescriptor;
+
+            /**
              * Sort properties. The order is determined by the position property and the catalog property of the property descriptor.
              * @param props The properties to sort. 
              * @param considerCatalog Whether to consider the catalog property. The default is false.
@@ -1104,6 +1112,18 @@ declare global {
             getClassMeta(constructor: Function, forceCreate?: boolean): any;
             parsePropType(ptype: any): Partial<FPropertyDescriptor>;
         }
+        /**
+         * Public contract for the editor title bar.
+         */
+        export interface ITitleBar {
+            /**
+             * Reserved title bar height in pixels.
+             * Consumers usually use this value to set top margin/inset.
+             */
+            readonly height: number;
+            refreshLayout(): void;
+        }
+
         export type RenderTemplateOptions = {
             /**
              * Whether to escape html characters. Default is false.
@@ -1349,6 +1369,11 @@ declare global {
              * In general, custom configuration files are only used in the editor environment. If the configuration data also needs to be read at runtime, this parameter can be set to true, and then accessed at runtime through `Laya.PlayerConfig.XXX`, where `XXX` is the name of the configuration file.
              */
             contributeToPlayerConfig?: boolean;
+
+            /**
+             * The file name of the configuration file will be `{prefix}{name}.json`, where `prefix` is "Plugin-" by default, and `name` is the name passed in by the user. For example, if the name is "TestConfig", then the file name will be "Plugin-TestConfig.json". If you want to customize the file name, you can set this property. The file name should use characters that conform to file name specifications and should not contain the extension, as the extension will be automatically added. For example, if the file name is set to "MyConfig", then the actual file name will be "MyConfig.json". 
+             */
+            fileName?: string;
         }
 
         export interface ISettingsService {
@@ -1608,18 +1633,24 @@ declare global {
         }
         export interface IResourceManager {
             /**
-             * Get the cached resource properties. 只有曾经对相同ID调用过getResourceProps，这个方法才会返回上次的结果。
+             * Whether to allow saving resource changes in preview mode. If false, changes to resources in preview mode will not be saved to disk, and will be reverted when exiting preview mode. If true, changes to resources in preview mode will be saved to disk, and will persist after exiting preview mode. Default is true.
+             */
+            allowSaveResourceChangesInPreview: boolean;
+
+            /**
+             * Get the cached resource properties. This method will return the cached resource properties if the resource is already loaded, otherwise it will return null. The returned object is a watched object, and changes to its properties will be automatically saved to disk and reflected in the editor.
              * @param resId The resource id.
              * @returns The resource data.
              */
             getCachedResourceProps(resId: string): any;
 
             /**
-             * Get the resource properties. 这个方法会在场景查询资源对象，如果资源已载入，则返回资源的属性，否则返回null。
+             * Get the resource properties. This method will return the resource properties if the resource is already loaded, otherwise it will load the resource properties from disk. The returned object is a watched object, and changes to its properties will be automatically saved to disk and reflected in the editor.
              * @param resId The resource id.
+             * @param inline Whether the properties are used for rendering the inspector inline within a node inspector.
              * @returns The resource data.
              */
-            getResourceProps(resId: string): Promise<any>;
+            getResourceProps(resId: string, inline?: boolean): Promise<any>;
 
             /**
              * Save all dirty resources.
@@ -1811,6 +1842,144 @@ declare global {
              * @returns Metadata value or undefined if not found.
              */
             function getOwnMetadata(key: string, target: any, propertyName?: string): any;
+        }
+
+        /**
+         * A gui.Widget subclass that hosts React content inside a Shadow DOM.
+         *
+         * Integrates into the FairyGUI hierarchy via `parent.addChild(reactDOM)`.
+         * Shadow DOM isolates CSS — editor styles don't affect React content and
+         * vice versa. A base dark-theme stylesheet is automatically injected.
+         *
+         * ## Built-in Theme
+         *
+         * The base stylesheet provides a dark theme matching the editor's look.
+         * Plugins can use these directly without writing any CSS.
+         *
+         * **CSS Custom Properties** (override via `:host { --accent: newValue; }` in your CSS):
+         *
+         * | Variable | Description |
+         * |---|---|
+         * | `--bg-darkest` | Deepest background |
+         * | `--bg-dark` | Dark background |
+         * | `--bg-base` | Standard panel background |
+         * | `--bg-elevated` | Elevated surface (tooltips, popups) |
+         * | `--bg-surface` | Button / card background |
+         * | `--bg-hover` | Button/control hover background (NOT for list items) |
+         * | `--bg-pressed` | Pressed / active state |
+         * | `--bg-input` | Input field background |
+         * | `--accent` | Accent color (focus rings, checkboxes, links, selections) |
+         * | `--accent-hover` | Accent hover |
+         * | `--accent-muted` | List item / row hover background |
+         * | `--accent-strong` | Strong accent (selection) |
+         * | `--primary` | Primary button background |
+         * | `--primary-hover` | Primary button hover |
+         * | `--primary-text` | Primary button text |
+         * | `--text` | Default text |
+         * | `--text-bright` | Bright text (headings, active tab) |
+         * | `--text-muted` | Secondary text (placeholders, inactive hints) |
+         * | `--text-disabled` | Disabled text |
+         * | `--border` | Default border |
+         * | `--border-light` | Light border |
+         * | `--radius` | Default border radius |
+         * | `--font-size` | Base font size |
+         *
+         * **Styled HTML elements** (no class needed):
+         * `<button>`, `<input>`, `<textarea>`, `<select>`, `<table>`, `<th>`, `<td>`, `<a>`, `<code>`, `<pre>`, `<hr>`
+         *
+         * **Component classes**:
+         * - `.btn-primary` / `button.primary` — primary button (`--primary` blue)
+         * - `.btn-icon` / `button.icon` — small square icon button, no border
+         * - `.list-item` — list row with hover/selected states (use `.selected` or `aria-selected`)
+         * - `.tab` — tab button (use `.active` or `aria-selected` for current tab)
+         * - `.panel` / `.panel-header` / `.panel-body` — bordered section container
+         * - `.menu` / `.menu-item` / `.menu-divider` — popup menu (also works with `role` attributes)
+         * - `.tooltip` — tooltip popup
+         * - `.badge` — small rounded label
+         * - `.label` — form label (default text color, no-select)
+         *
+         * **Utility classes**:
+         * `.flex`, `.flex-col`, `.flex-row`, `.flex-1`, `.items-center`, `.justify-between`, `.justify-center`,
+         * `.gap-1`, `.gap-2`, `.gap-3`, `.p-1`–`.p-3`, `.px-1`–`.px-2`, `.py-1`–`.py-2`,
+         * `.m-1`–`.m-2`, `.w-full`, `.h-full`, `.overflow-auto`, `.truncate`, `.text-center`, `.text-muted`,
+         * `.text-bright`, `.text-sm`, `.text-lg`, `.hidden`, `.pointer`, `.select-none`
+         *
+         * @example Panel usage:
+         * ```tsx
+         * import styles from './MyPlugin.css';
+         *
+         * class MyPanel extends IEditor.EditorPanel {
+         *     private _react: IEditor.ReactDOM;
+         *     async create() {
+         *         this._panel = new gui.Widget();
+         *         this._react = new IEditor.ReactDOM();
+         *         this._react.adoptStyles(styles);
+         *         this._react.makeFullSize(this._panel, true);
+         *         this._panel.addChild(this._react);
+         *         this._react.render(<App />);
+         *     }
+         *     onDestroy() { this._react.dispose(); }
+         * }
+         * ```
+         *
+         * @example Dialog usage:
+         * ```tsx
+         * let reactDOM = new IEditor.ReactDOM();
+         * reactDOM.setSize(320, 200);
+         * dialog.contentPane = reactDOM;
+         * reactDOM.render(<MyForm />);
+         * ```
+         */
+        export interface IReactDOM extends gui.Widget {
+            /**
+             * The Shadow Root inside the widget's element.
+             * Use as a container for React Portals (dropdowns, modals, tooltips)
+             * that need to stay within the style-isolated boundary.
+             */
+            readonly shadowRoot: ShadowRoot;
+
+            /**
+             * The mount point div inside the Shadow DOM where React content is rendered.
+             */
+            readonly mountPoint: HTMLDivElement;
+
+            /**
+             * Render or update React content.
+             *
+             * Call once after setup, and again whenever you need to re-render
+             * (e.g. in response to editor events like `onSelectionChanged`).
+             *
+             * @param element A React element (JSX expression).
+             *
+             * @example
+             * ```tsx
+             * reactDOM.render(<App data={myData} />);
+             * ```
+             */
+            render(element: any): void;
+
+            /**
+             * Inject additional CSS into this container's Shadow DOM.
+             *
+             * Use with `.css` files imported as text strings. The IDE build pipeline
+             * includes a built-in css-text esbuild plugin that converts
+             * `import styles from './Foo.css'` into a string automatically.
+             *
+             * @param css CSS text to inject.
+             *
+             * @example
+             * ```ts
+             * import styles from './MyPlugin.css';
+             * reactDOM.adoptStyles(styles);
+             * ```
+             */
+            adoptStyles(css: string): void;
+
+            /**
+             * Unmount React tree and clean up resources.
+             * Call in `onDestroy()` of your panel or when the host widget is removed.
+             */
+            dispose(): void;
         }
 
         export interface IQRCodeDialog extends IDialog {
@@ -3563,6 +3732,10 @@ declare global {
              * Whether the menu item is a checkbox. Same as `type: 'checkbox'`.
              */
             checkbox?: boolean;
+            /**
+             * Whether the menu item is a radio. Same as `type: 'radio'`.
+             */
+            radio?: boolean;
 
             /**
              * Insert a separator before the menu item.
@@ -3700,15 +3873,17 @@ declare global {
              * Display the menu.
              * @param callbackThisObj The `this` object of the callback function.
              * @param popupOptions Popup options.
+             * @param callbackUserData User data that will be passed to the callback function when a menu item is clicked. This is optional and can be used to pass extra information to the callback function.
              */
-            show(callbackThisObj?: any, popupOptions?: IMenuPopupOptions): void;
+            show(callbackThisObj?: any, popupOptions?: IMenuPopupOptions, callbackUserData?: any): void;
 
             /**
              * Simulate a click on a menu item.
              * @param itemId Menu item ID. 
              * @param callbackThisObj The `this` object of the callback function. 
+             * @param callbackUserData User data that will be passed to the callback function when a menu item is clicked. This is optional and can be used to pass extra information to the callback function.
              */
-            simulateClick(itemId: string, callbackThisObj?: any): void;
+            simulateClick(itemId: string, callbackThisObj?: any, callbackUserData?: any): void;
         }
 
         export namespace MenuStatic {
@@ -4843,8 +5018,20 @@ declare global {
              * e.g. `App/tool/i18n:module:group/a` and `App/tool/group/a:` will be in the same submenu.
              * @param callback The callback function for the menu item. It will be called when the menu item is clicked. Can be omitted if the menu has a default handler.
              * @param options The options for the menu.
+             * @see IEditor.menu
              */
             addMenuItem(name: string, callback?: IMenuItem['click'], options?: ICustomMenuItemOptions): void;
+
+            /**
+             * Register a hotkey. When the user presses the corresponding key combination, the callback function will be called.
+             * 
+             * This method is only allowed to be called in ＠IEditor.onLoad.
+             * 
+             * @param combo The key combination, such as "ctrl+s".
+             * @param callback The callback function. It will be called when the user presses the corresponding key combination.
+             * @see IEditor.hotkey
+             */
+            registerHotkey(combo: string, callback: Function): void;
 
             /**
              * Find a function by name. The name is in the form of "className.staticMethodName".
@@ -5081,6 +5268,11 @@ declare global {
             readonly clipboard: IClipboard;
 
             /**
+             * The title bar of the editor.
+             */
+            readonly titleBar: ITitleBar;
+
+            /**
              * Create the panel manager.
              * @param options 
              * @param placeHolder 
@@ -5210,6 +5402,15 @@ declare global {
              * Clear all error message tooltips.
              */
             clearErrorTips(): void;
+
+            /**
+             * Show a toast message. A toast message is a message that appears at the bottom of the window and automatically disappears after a few seconds. It is used to provide feedback to the user.
+             * @param message The message to display in the toast.
+             * @param type The type of the toast. It can be "info", "warning", or "error". The default is "info". 
+             * @param buttons An array of buttons to display in the toast. Each button has a label, a primary flag indicating whether it is the primary button, and a callback function that is called when the button is clicked. If not provided, no buttons will be displayed.
+             * @param duration The duration to show the toast, in milliseconds. If not provided, the toast will not automatically disappear.
+             */
+            showToast(message: string, type?: "info" | "warning" | "error", buttons?: Array<{ label: string, primary?: boolean, callback: () => boolean }>, duration?: number): void;
 
             /**
              * Open a file for editing. Depending on the file type, different editors will be opened. For example, opening a xx.ls file will open the scene editor, and opening a **.bp will open the blueprint editor.
@@ -6231,6 +6432,13 @@ declare global {
             refresh(): void;
 
             /**
+             * Notify the inspector that the data has changed. The inspector will update the display according to the data path provided.
+             * You dont need to call this method as the inspector will be automatically notified when the data changes. 
+             * @param datapath The path of the changed data. It is an array of strings, each string is a key in the data object. The inspector will update the display of the field that corresponds to the data path.
+             */
+            notifyChange(datapath: ReadonlyArray<string>): void;
+
+            /**
              * The Inspector will use the name of the data type as the title by default. If you need to customize the title, you can call this method.
              * @param value The title to be set.
              */
@@ -6890,11 +7098,16 @@ declare global {
          */
         export namespace IAssetStoreTools {
             /**
-             * Subscribe a resource.
-             * @param resourceId The resource id.
-             * @returns A promise that resolves with a boolean indicating whether the resource is subscribed successfully. 
+             * Get the full URL for the given asset store API.
+             * @param api The API path, e.g. "resource/multiPartsUpload". 
              */
-            function subscribe(resourceId: string): Promise<boolean>;
+            function getURL(api: string): string;
+
+            /**
+             * Get the full URL for the given asset store resource.
+             * @param relativePath The relative path of the resource, e.g. "icons/123.png".
+             */
+            function getResURL(relativePath: string): string;
 
             /**
              * Upload a package to the asset store.
@@ -6914,6 +7127,10 @@ declare global {
              * @returns A promise that resolves with the result.
              */
             function callPluginBackend(action: string, resourceId: string, billingMethod: number, data: any): Promise<any>;
+
+            function subscribe(resourceId: string): Promise<boolean>;
+            function exchange(resourceId: string): Promise<boolean>;
+            function chooseUploadTarget(): Promise<string | null>;
         }
         /**
          * Asset Panel Interface
@@ -7044,6 +7261,7 @@ declare global {
             I18nSettings,
 
             Dll,
+            CSS
         }
 
         /**
@@ -7094,6 +7312,15 @@ declare global {
              * The asset is a built-in asset.
              */
             BuiltIn = 0x10000,
+            /**
+             * The asset is a feature pack asset.
+             */
+            FeaturePack = 0x20000,
+
+            /**
+             * The asset is a package or feature pack asset.
+             */
+            PackageLike = Packages | FeaturePack,
         }
 
         /**
@@ -7445,7 +7672,7 @@ declare global {
              * @param asset The asset.
              * @returns The initials of the asset.
              */
-            getAssetInitials(asset: IAssetInfo): string;
+            getAssetInitials(asset: IAssetInfo): string[];
 
             /**
              * Get the icon of the asset. The icon is the image of the asset.
@@ -7868,7 +8095,7 @@ declare global {
              */
             affectBy?: string;
             /**
-             * The property is only effective in the editor and will not be stripped in the build.
+             * The property is only effective in the editor and will be stripped in the build.
              */
             stripInBuild?: boolean;
 
@@ -8622,6 +8849,7 @@ declare global {
             private _showing;
             private _creatingWin;
             private _blockLayer;
+            private _titleBar;
             constructor();
             get contentPane(): T;
             set contentPane(value: T);
@@ -8655,10 +8883,6 @@ declare global {
             private fixSize;
             private fixResize;
         }
-        export declare function getDialog<T extends IDialog>(cls: gui.Constructor<T>): Promise<T>;
-        export declare function getDialogSync<T extends IDialog>(cls: gui.Constructor<T>): T;
-        export declare function destroyAllDialogs(): void;
-
         export class EditorPanel implements IEditorPanel {
             panelOptions: IPanelOptions;
             panelId: string;
@@ -8680,6 +8904,174 @@ declare global {
             onGlobalHotkey?(combo: string): boolean;
             onSearch?(searchKey: string): void;
             onExtensionReload?(): void;
+        }
+
+        /**
+         * A gui.Widget subclass that hosts React content inside a Shadow DOM.
+         *
+         * Since it extends gui.Widget, add it to the FairyGUI hierarchy with
+         * `parent.addChild(reactDOM)`. Shadow DOM provides CSS isolation.
+         * A base dark-theme stylesheet is automatically injected.
+         *
+         * Key APIs:
+         * - `render(element)` — render or update React content (JSX).
+         * - `adoptStyles(css)` — inject additional CSS (import .css files as text).
+         * - `dispose()` — unmount React and clean up.
+         * - `ReactDOM.useWidget(widget)` — React hook to embed a FairyGUI widget inside React.
+         * - `ReactDOM.createStore(initial)` — create a reactive store for editor→React data flow.
+         *
+         * @example Panel:
+         * ```tsx
+         * import styles from './MyPlugin.css';
+         *
+         * class MyPanel extends IEditor.EditorPanel {
+         *     private _react: IEditor.ReactDOM;
+         *     async create() {
+         *         this._panel = new gui.Widget();
+         *         this._react = new IEditor.ReactDOM();
+         *         this._react.adoptStyles(styles);
+         *         this._react.makeFullSize(this._panel, true);
+         *         this._panel.addChild(this._react);
+         *         this._react.render(<App />);
+         *     }
+         *     onDestroy() { this._react.dispose(); }
+         * }
+         * ```
+         *
+         * @example Dialog:
+         * ```tsx
+         * let reactDOM = new IEditor.ReactDOM();
+         * reactDOM.adoptStyles(styles);
+         * reactDOM.setSize(320, 200);
+         * dialog.contentPane = reactDOM;  // ReactDOM IS a gui.Widget
+         * reactDOM.render(<MyForm />);
+         * ```
+         *
+         * @example Embedding FairyGUI inside React:
+         * ```tsx
+         * function MyComponent() {
+         *     let panel = IEditor.GUIUtils.createInspectorPanel();
+         *     panel.inspect(data, typeDesc);
+         *     panel.resizeToFit();
+         *     let ref = IEditor.ReactDOM.useWidget(panel);
+         *     return <div ref={ref} style={{ height: panel.height }} />;
+         * }
+         * ```
+         *
+         * @example Reactive data bridge:
+         * ```tsx
+         * const store = IEditor.ReactDOM.createStore<string[]>([]);
+         * // Editor side: store.set(newValue);
+         * // React side:  useSyncExternalStore(store.subscribe, store.get);
+         * ```
+         *
+         * @example Internationalization (use standard gui.Translations):
+         * ```tsx
+         * let myI18n = gui.Translations.create("my-plugin")
+         *     .setContent("zh-CN", { hello: "你好" })
+         *     .setContent("en", { hello: "Hello" });
+         * // In JSX: <span>{myI18n.t("hello")}</span>
+         * ```
+         */
+        export class ReactDOM extends gui.Widget {
+            private _shadowRoot;
+            private _reactRoot;
+            private _mountPoint;
+            private _cssSources;
+            private _sheets;
+            private _sheetDocument;
+            constructor();
+            /**
+             * The Shadow Root. Useful for creating React Portals (dropdowns,
+             * modals) that stay within the style-isolated boundary.
+             */
+            get shadowRoot(): ShadowRoot;
+            /**
+             * The mount point element inside the Shadow DOM.
+             */
+            get mountPoint(): HTMLDivElement;
+            /**
+             * Render a React element into the Shadow DOM container.
+             * Can be called multiple times to update the content.
+             */
+            render(element: any): void;
+            /**
+             * Inject additional CSS into this container's Shadow DOM.
+             * Typically used with CSS imported as text via the css-text esbuild plugin.
+             *
+             * ```ts
+             * import styles from './MyPlugin.css';
+             * reactDOM.adoptStyles(styles);
+             * ```
+             */
+            adoptStyles(css: string): void;
+            /**
+             * Unmount React and clean up.
+             */
+            dispose(): void;
+            /**
+             * Called by FairyGUI when the widget is added to the stage.
+             * Rebuild adoptedStyleSheets if the element moved to a different
+             * document (e.g. Dialog popup in a new Electron window).
+             */
+            protected onEnable(): void;
+            private _addSheet;
+            private _applySheets;
+            private _rebuildSheets;
+            private _createSheet;
+            private _ensureSheetsDocument;
+            /**
+             * React hook for embedding a FairyGUI Widget inside React.
+             *
+             * Pass a widget instance. Returns a `ref` to attach to a container div.
+             * The widget is automatically mounted, sized via ResizeObserver,
+             * and cleaned up on unmount.
+             *
+             * @example
+             * ```tsx
+             * function MyApp() {
+             *     let panel = IEditor.GUIUtils.createInspectorPanel();
+             *     panel.inspect(data, typeDesc);
+             *     panel.resizeToFit();
+             *
+             *     let ref = IEditor.ReactDOM.useWidget(panel);
+             *
+             *     return (
+             *         <div>
+             *             <h3>Properties</h3>
+             *             <div ref={ref} style={{ height: panel.height }} />
+             *         </div>
+             *     );
+             * }
+             * ```
+             */
+            static useWidget(contentWidget: gui.Widget): import("react").RefObject<HTMLDivElement>;
+            /**
+             * Create a minimal external store for bridging editor events into React.
+             * Works with React 18's `useSyncExternalStore` hook.
+             *
+             * @example
+             * ```tsx
+             * const store = IEditor.ReactDOM.createStore<string[]>([]);
+             *
+             * // Editor side: push data
+             * store.set(newValue);
+             *
+             * // React side: subscribe
+             * function List() {
+             *     const ids = useSyncExternalStore(store.subscribe, store.get);
+             *     return <ul>{ids.map(id => <li key={id}>{id}</li>)}</ul>;
+             * }
+             * ```
+             */
+            static createStore<T>(initialValue: T): {
+                /** Get current snapshot (identity-stable between sets). */
+                get: () => T;
+                /** Replace value and notify all subscribers. */
+                set: (next: T) => void;
+                /** Subscribe for change notifications. Returns unsubscribe function. */
+                subscribe: (fn: () => void) => () => boolean;
+            };
         }
 
         export class NodeRefInput extends gui.Label {
@@ -9109,6 +9501,7 @@ declare global {
             private _changes;
             /**
              * Whether to allow undo. If true, the history will be recorded and can be undone.
+             * The data pass in through inspect method must be watched by DataWatcher, Otherwise, the undo will not work for those changes.
              */
             allowUndo: boolean;
             /**
@@ -9149,6 +9542,12 @@ declare global {
              * @param catalog Catalog name.
              */
             showCatalog(catalog: string): void;
+            /**
+             * Resize the panel to fit the content. It will resize the panel to fit the content height, and keep the width unchanged.
+             * @param minSize The minimum height of the panel. If the content height is less than the minimum height, the panel will be resized to the minimum height.
+             */
+            resizeToFit(minSize?: number): void;
+            private rebuild;
             private _onDataChanged;
             private emitChanges;
             private onHotkey;
@@ -9540,8 +9939,9 @@ declare global {
          * The `BuildTask` class is used to start a build task.
          * @param platform The platform to build. e.g. "web", "android", "ios", etc.
          * @param destPath The destination path of the build. Defaults to null.
+         * @param recompileMode Whether to run in recompile mode, where only scripts are built and assets are not exported.
          */
-        const BuildTask: { start(platform: string, destPath?: string): void };
+        const BuildTask: { start(platform: string, destPath?: string, recompileMode?: boolean): void };
 
         /**
          * The `DataComponent` class is used to create a data component.
@@ -9608,11 +10008,6 @@ declare global {
          * ```
          */
         const InputTextDialog: new () => IInputTextDialog;
-
-        /**
-         * The `ChooseUploadTargetDialog` class is used to create a dialog for selecting the upload target.
-         */
-        const ChooseUploadTargetDialog: new () => IDialog;
 
         /**
          * The `QRCodeDialog` class is used to create a dialog for displaying a QR code.
@@ -9878,6 +10273,23 @@ declare global {
          * ```
          */
         function menu(name: string, options?: ICustomMenuItemOptions): Function;
+
+        /**
+         * Decorator function for registering a hotkey.
+         * 
+         * A hotkey is a combination of keys that can trigger a specific function when pressed.
+         * @param combo The key combination of the hotkey. The format is "ctrl+shift+a", "alt+b", "f1", etc.
+         * 'mod' can be used as a platform-independent modifier key, which maps to 'ctrl' on Windows/Linux and 'meta' on macOS. For example, "mod+shift+a" will be "ctrl+shift+a" on Windows/Linux and "meta+shift+a" on macOS.
+         * @returns The hotkey decorator function.
+         * @example
+         * ```
+         * ＠IEditor.hotkey("ctrl+shift+a")
+         * function onHotkey() {
+         *    console.log("Hotkey triggered.");
+         * }
+         * ```
+         */
+        function hotkey(combo: string): Function;
     }
 
     /**

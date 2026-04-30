@@ -41,6 +41,20 @@
             this._clearColor = value;
             this._nativeObj.setClearColor(value);
         }
+        get viewportX() {
+            return this._viewportX;
+        }
+        set viewportX(value) {
+            this._viewportX = value;
+            this._nativeObj.setViewportX(value);
+        }
+        get viewportY() {
+            return this._viewportY;
+        }
+        set viewportY(value) {
+            this._viewportY = value;
+            this._nativeObj.setViewportY(value);
+        }
     }
     class GLESDraw2DElementCMD extends Laya.Draw2DElementCMD {
         constructor() {
@@ -462,6 +476,18 @@
     }
 
     class GLESPrimitiveRenderElement2D extends GLESRenderElement2D {
+        set typeKey(value) {
+            this._nativeObj.type = value;
+        }
+        get typeKey() {
+            return this._nativeObj.type;
+        }
+        set textureKey(value) {
+            this._nativeObj.textureKey = value;
+        }
+        get textureKey() {
+            return this._nativeObj.textureKey;
+        }
         init() {
             this._nativeObj = new window.conchGLESPrimitiveRenderElement2D();
             window.conchGLESRenderElement2D.setCompileDefine(RTShaderPass.getGlobalCompileDefine()._nativeObj);
@@ -569,11 +595,11 @@
             this._isSupport = false;
             this._root = null;
             this.postProcess = null;
+            this._enablePostProcess = false;
             this._shaderData = null;
             this._renderOffset = new Laya.Matrix();
             this._shaderData = Laya.LayaGL.renderDeviceFactory.createShaderData(null);
             this._nativeObj = new window.conchRTRender2DPass(this._shaderData._nativeObj);
-            this._nativeObj.setRenderCallback(this.renderCallBack.bind(this));
             this.enable = true;
             this.enableBatch = true;
             this.isSupport = false;
@@ -589,10 +615,26 @@
             }
             this._nativeObj.fowardRender(context._nativeObj);
         }
-        renderCallBack(context) {
-            if (this.postProcess && this.postProcess.enabled) {
-                this.postProcess.apply();
+        updatePostProcess() {
+            let pp = this.postProcess;
+            if (pp === null || pp === void 0 ? void 0 : pp._checkEnabled()) {
+                let command = pp._context.command;
+                this._nativeObj.setPostProcessShaderData(command.shaderData._nativeObj);
+                this._nativeObj.setPostProcess(this._getRenderCMDArray(command._renderCMDs));
+                this._nativeObj.setEnablePostProcess(true);
+                this._enablePostProcess = true;
             }
+            else if (this._enablePostProcess) {
+                this._nativeObj.setEnablePostProcess(false);
+                this._enablePostProcess = false;
+            }
+        }
+        _getRenderCMDArray(cmds) {
+            let nativeobCMDs = [];
+            cmds.forEach(element => {
+                nativeobCMDs.push(element._nativeObj);
+            });
+            return nativeobCMDs;
         }
         destroy() {
             this._nativeObj.destroy();
@@ -644,6 +686,18 @@
         }
         inheriteRenderData(context) {
             this._nativeObj.inheriteRenderData(context._nativeObj);
+        }
+    }
+    class RTEmptyRender2DDataHandle extends RTRender2DDataHandle {
+        constructor() {
+            const nativeObj = (typeof window.conchRTEmptyRender2DDataHandle === 'function')
+                ? new window.conchRTEmptyRender2DDataHandle()
+                : { setOwner: () => { }, needUseMatrix: false, inheriteRenderData: () => { }, destroy: () => { } };
+            super(nativeObj);
+        }
+        inheriteRenderData(_context) {
+        }
+        destroy() {
         }
     }
     class RTGraphics2DBufferBlock {
@@ -932,6 +986,13 @@
         }
     }
     class RTRenderStruct2D {
+        get manualRender() {
+            return this._manualRender;
+        }
+        set manualRender(value) {
+            this._manualRender = value;
+            this._nativeObj.manualRender = value;
+        }
         get globalAlpha() {
             return this._nativeObj.getGlobalAlpha();
         }
@@ -1117,6 +1178,7 @@
             this._nativeObj.setPass(value ? value._nativeObj : null);
         }
         constructor() {
+            this._manualRender = false;
             this._clipRect = new Laya.Rectangle(0, 0, 0, 0);
             this._dcOptimize = false;
             this._zIndex = 0;
@@ -1534,6 +1596,10 @@
         }
         constructor() {
             this._tempList = [];
+            this._offscreenX = 0;
+            this._offscreenY = 0;
+            this._offscreenWidth = 0;
+            this._offscreenHeight = 0;
             this._passData = null;
             this._passDataShell = new GLESShaderData(null, false);
             this._nativeObj = new window.conchGLESRenderContext2D();
@@ -1563,8 +1629,15 @@
         getRenderTarget() {
             return this._dist;
         }
-        setOffscreenView(width, height) {
-            this._nativeObj.setOffscreenView(width, height);
+        setOffscreenView(width, height, x = 0, y = 0) {
+            this._offscreenWidth = width;
+            this._offscreenHeight = height;
+            this._offscreenX = x;
+            this._offscreenY = y;
+            this._nativeObj.setOffscreenView(width, height, x, y);
+        }
+        getOffscreenView(out) {
+            out.setValue(this._offscreenX, this._offscreenY, this._offscreenWidth, this._offscreenHeight);
         }
         drawRenderElementOne(node) {
             this._nativeObj.drawRenderElementOne(node._nativeObj);
@@ -1836,6 +1909,9 @@
         }
         createRenderStruct2D() {
             return new RTRenderStruct2D();
+        }
+        createEmptyRenderDataHandle() {
+            return new RTEmptyRender2DDataHandle();
         }
     }
     Laya.Laya.addBeforeInitCallback(() => {
@@ -2241,7 +2317,7 @@
             this._nativeObj.matUseUBO = Laya.Config.matUseUBO;
         }
         copySubFrameBuffertoTex(texture, level, xoffset, yoffset, x, y, width, height) {
-            throw new Laya.NotImplementedError();
+            this._nativeObj.copySubFrameBuffertoTex(texture._nativeObj, level, xoffset, yoffset, x, y, width, height);
         }
         propertyNameToID(name) {
             return this._nativeObj.propertyNameToID(name);
@@ -2407,6 +2483,9 @@
         }
         set instanceBuffer(value) {
             this._nativeObj._instanceBuffer = value;
+        }
+        getStorageBuffer() {
+            throw new Error("Method not implemented.");
         }
         setData(buffer, bufferOffset, dataStartIndex, dataCount) {
             this._bufferRef = buffer;
@@ -2900,6 +2979,8 @@
             this.commands.push(cmdInfo);
             this._nativeObj.addCMD(cmdInfo._nativeObj);
         }
+        addDispatchIndirectCommand(cmd) {
+        }
         addSetShaderDataCommand(shaderData, propertyID, shaderDataType, value) {
             let cmdInfo = new ISetShaderDataCommand();
             cmdInfo.shaderData = shaderData;
@@ -3112,6 +3193,7 @@
     exports.RT2DGraphicVertexBuffer = RT2DGraphicVertexBuffer;
     exports.RTBaseRenderDataHandle = RTBaseRenderDataHandle;
     exports.RTDefineDatas = RTDefineDatas;
+    exports.RTEmptyRender2DDataHandle = RTEmptyRender2DDataHandle;
     exports.RTGlobalRenderData = RTGlobalRenderData;
     exports.RTGraphics2DBufferBlock = RTGraphics2DBufferBlock;
     exports.RTGraphics2DVertexBlock = RTGraphics2DVertexBlock;

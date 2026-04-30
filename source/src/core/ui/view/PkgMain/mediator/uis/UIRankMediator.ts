@@ -23,7 +23,7 @@ export class UIRankMediator extends MediatorBase<UIRankView, any> {
 	override onAwake() {
 		const { tabBtns, listRank } = this.view;
 		listRank.on(fgui.Events.SCROLL, this, this.onListRankScroll);
-		$uiUtil.setList(listRank, true, this, this.onListLevelRender, this.onListRankItemClick);
+		$uiUtil.setList(listRank, true, this, this.onListRankRender, this.onListRankItemClick);
 
 		this._tabGroup.init(tabBtns, this, () => {
 			this.refreshCurrentView();
@@ -44,7 +44,7 @@ export class UIRankMediator extends MediatorBase<UIRankView, any> {
 		this._tabGroup.clearSelection();
 	}
 
-	private onListLevelRender(index: number, item: RenderRankItemView) {
+	private onListRankRender(index: number, item: RenderRankItemView) {
 		const state = this._states[this.selectType];
 		item.refresh(index, this.selectType, state.briefs[index]);
 	}

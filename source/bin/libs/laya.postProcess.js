@@ -879,33 +879,31 @@
             super();
             this._shader = Laya.Shader3D.find("GaussianDoF");
             this._shaderData = Laya.LayaGL.renderDeviceFactory.createShaderData(null);
-            this._shaderData.setVector3(GaussianDoF.COCPARAMS, new Laya.Vector3(10, 30, 1));
+            this._cocParams = new Laya.Vector3(10, 30, 1);
+            this._shaderData.setVector3(GaussianDoF.COCPARAMS, this._cocParams);
             this._sourceSize = new Laya.Vector4();
             this._dowmSampleScale = new Laya.Vector4();
         }
         get farStart() {
-            return this._shaderData.getVector3(GaussianDoF.COCPARAMS).x;
+            return this._cocParams.x;
         }
         set farStart(value) {
-            let cocParams = this._shaderData.getVector3(GaussianDoF.COCPARAMS);
-            cocParams.x = value;
-            this._shaderData.setVector3(GaussianDoF.COCPARAMS, cocParams);
+            this._cocParams.x = value;
+            this._shaderData.setVector3(GaussianDoF.COCPARAMS, this._cocParams);
         }
         get farEnd() {
-            return this._shaderData.getVector3(GaussianDoF.COCPARAMS).y;
+            return this._cocParams.y;
         }
         set farEnd(value) {
-            let cocParams = this._shaderData.getVector3(GaussianDoF.COCPARAMS);
-            cocParams.y = Math.max(cocParams.x, value);
-            this._shaderData.setVector3(GaussianDoF.COCPARAMS, cocParams);
+            this._cocParams.y = Math.max(this._cocParams.x, value);
+            this._shaderData.setVector3(GaussianDoF.COCPARAMS, this._cocParams);
         }
         get maxRadius() {
-            return this._shaderData.getVector3(GaussianDoF.COCPARAMS).z;
+            return this._cocParams.z;
         }
         set maxRadius(value) {
-            let cocParams = this._shaderData.getVector3(GaussianDoF.COCPARAMS);
-            cocParams.z = Math.min(value, 2);
-            this._shaderData.setVector3(GaussianDoF.COCPARAMS, cocParams);
+            this._cocParams.z = Math.min(value, 2);
+            this._shaderData.setVector3(GaussianDoF.COCPARAMS, this._cocParams);
         }
         _setupShaderValue(context) {
             context.camera;

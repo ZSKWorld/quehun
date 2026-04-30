@@ -3523,6 +3523,7 @@
                 else {
                     dMat.removeDefine(Laya.ShaderDefines2D.GAMMATEXTURE);
                 }
+                dMat.lock = true;
                 this._defalutMaterials[url] = dMat;
             }
             return dMat;

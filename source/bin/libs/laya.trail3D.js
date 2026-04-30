@@ -143,7 +143,9 @@
                             Laya.Vector3.transformCoordinate(curPos, cameraMatrix, Laya.TrailGeometry._tempVector33);
                             Laya.Vector3.transformCoordinate(this._trialGeometry._lastFixedVertexPosition, cameraMatrix, Laya.TrailGeometry._tempVector34);
                             Laya.Vector3.subtract(Laya.TrailGeometry._tempVector33, Laya.TrailGeometry._tempVector34, delVector3);
-                            Laya.Vector3.cross(Laya.TrailGeometry._tempVector33, delVector3, pointAtoBVector3);
+                            pointAtoBVector3.x = -delVector3.y;
+                            pointAtoBVector3.y = delVector3.x;
+                            pointAtoBVector3.z = 0;
                             break;
                         case exports.TrailAlignment.TransformZ:
                             Laya.Vector3.subtract(curPos, this._trialGeometry._lastFixedVertexPosition, delVector3);

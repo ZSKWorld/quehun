@@ -213,10 +213,13 @@
             }
         }
         _renderUpdatePre(context3D) {
-            if (this._updateMark == context3D.sceneUpdateMask)
+            const mask = this.perCameraUpdate
+                ? context3D.cameraUpdateMask
+                : context3D.sceneUpdateMask;
+            if (this._updateMark == mask)
                 return;
             this._renderUpdatePreFun.call(this._renderUpdatePreCall, context3D);
-            this._updateMark = context3D.sceneUpdateMask;
+            this._updateMark = mask;
         }
         _calculateBoundingBox() {
             this._caculateBoundingBoxFun.call(this._caculateBoundingBoxCall);
@@ -262,6 +265,7 @@
         constructor() {
             this.ismoved = new Laya.Vector2();
             this.defineDataChangeFlag = new Laya.Vector2();
+            this.perCameraUpdate = false;
             this.renderelements = [];
             this._commonUniformMap = [];
             this._worldParams = new Laya.Vector4(1, 0, 0, 0);
@@ -1562,7 +1566,6 @@
             context.sceneData.removeDefine(Laya.Scene3DShaderDeclaration.SHADERDEFINE_SHADOW);
         }
         destory() {
-            throw new Error("Method not implemented.");
         }
     }
     WebDirCascadeShadowRP._maxCascades = 4;
@@ -2854,6 +2857,7 @@
             this._globalRendercacheInfoMap = new Map();
             this._sceneUpdateMask = 0;
             this._cameraUpdateMask = 0;
+            this._pipelineMode = "";
             this._clearColor = Laya.Color.BLACK.clone();
             this._needStart = true;
             this._blitFrameCount = 0;
@@ -2884,12 +2888,16 @@
             let sceneResources = Laya.WebGPUBindGroupHelper.createBindPropertyInfoArrayByCommandMap(0, sceneCommands);
             let sceneLayoutInfo = engine.bindGroupCache.getLayoutInfo(sceneCommands, this._sceneData, null, sceneResources, ~0);
             let cameraCommands = ["BaseCamera"];
-            let cameraResources = Laya.WebGPUBindGroupHelper.createBindPropertyInfoArrayByCommandMap(1, cameraCommands);
-            let cameraLayoutInfo = engine.bindGroupCache.getLayoutInfo(cameraCommands, this.cameraData, null, cameraResources, ~0);
-            return `${this.destRT.stateCacheID},${this.invertY ? 1 : 0},(${sceneLayoutInfo.id},${cameraLayoutInfo.id})`;
+            let cameraid = -1;
+            if (this.cameraData) {
+                let cameraResources = Laya.WebGPUBindGroupHelper.createBindPropertyInfoArrayByCommandMap(1, cameraCommands);
+                let cameraLayoutInfo = engine.bindGroupCache.getLayoutInfo(cameraCommands, this.cameraData, null, cameraResources, ~0);
+                cameraid = cameraLayoutInfo.id;
+            }
+            return `${this.destRT.stateCacheID},${this.invertY ? 1 : 0},(${sceneLayoutInfo.id},${cameraid})`;
         }
         _getSceneCameraCacheKey() {
-            let key = `${this.sceneData._id ? this.sceneData._id : -1} + ${this.cameraData ? this.cameraData._id : -1}+${this._pipelineMode}+${this.destRT == Laya.WebGPURenderEngine._instance._screenRT ? 0 : 1}`;
+            let key = `${(this.sceneData && this.sceneData._id) ? this.sceneData._id : -1} + ${this.cameraData ? this.cameraData._id : -1}+${this._pipelineMode}+${this.destRT == Laya.WebGPURenderEngine._instance._screenRT ? 0 : 1}`;
             this._curRenderGlobalKey = this.globalComkeyToID(key);
             let pipelineLayout = this._getRenderPipeLine();
             if (!this._globalRendercacheInfoMap.has(this._curRenderGlobalKey)) {
@@ -2935,7 +2943,7 @@
                 this._sceneBindGroup = Laya.LayaGL.renderEngine.bindGroupCache.getBindGroup(commandArray, this._sceneData, null, resource, ~0);
             }
             else {
-                this._globalConfigShaderData.cloneTo(contextDef);
+                this._globalConfigShaderData && this._globalConfigShaderData.cloneTo(contextDef);
             }
             if (this.cameraData) {
                 contextDef.addDefineDatas(this.cameraData._defineDatas);
@@ -3059,8 +3067,15 @@
         }
         drawRenderElementList(list) {
             const len = list.length;
-            if (len === 0)
+            if (len === 0) {
+                if (this.rtNeedClear) {
+                    this._setScreenRT();
+                    this.clearRenderTarget();
+                    this.rtNeedClear = false;
+                    Laya.WebGPURenderEngine._instance._framePassCount++;
+                }
                 return 0;
+            }
             this._setScreenRT();
             let time = Laya.Browser.now();
             this._prepareContext();
@@ -3078,8 +3093,8 @@
                 this._needStart = false;
             }
             let cmd = this._renderCommand;
-            cmd.setBindGroup(0, this._sceneBindGroup);
-            cmd.setBindGroup(1, this._cameraBindGroup);
+            cmd.setBindGroup(0, this._sceneBindGroup ? this._sceneBindGroup : Laya.WebGPUBindGroupCache.emptyBindGroup);
+            cmd.setBindGroup(1, this._cameraBindGroup ? this._cameraBindGroup : Laya.WebGPUBindGroupCache.emptyBindGroup);
             for (let i = 0; i < len; i++)
                 elements[i]._render(this, cmd);
             this._submit();
@@ -3098,8 +3113,8 @@
                 this._start();
                 this._needStart = false;
             }
-            this._renderCommand.setBindGroup(0, this._sceneBindGroup);
-            this._renderCommand.setBindGroup(1, this._cameraBindGroup);
+            this._renderCommand.setBindGroup(0, this._sceneBindGroup ? this._sceneBindGroup : Laya.WebGPUBindGroupCache.emptyBindGroup);
+            this._renderCommand.setBindGroup(1, this._cameraBindGroup ? this._cameraBindGroup : Laya.WebGPUBindGroupCache.emptyBindGroup);
             node._render(this, this._renderCommand);
             this._submit();
             this.rtNeedClear = false;
@@ -3994,6 +4009,9 @@
                     if (baseRenerNode.customData.hasBatch) {
                         this._changeInstanceData.add(baseRenerNode);
                     }
+                    if (property === Laya.propertyChangeFlag.transform && baseRenerNode.staticMask === Laya.StaticFlag.StaticBatch) {
+                        this._cpuCullList._staticChangeMask = Laya.Stat.loopCount;
+                    }
                     break;
             }
         }
@@ -4222,6 +4240,12 @@
                 let queLength = opaqueQueue.elements.length;
                 for (var i = 0; i < queLength; i++) {
                     queElement[i].owner._renderUpdatePre(context);
+                }
+                let transList = moduleBatchQueue.transparentList;
+                if (transList) {
+                    for (var i = 0, n = transList.length; i < n; i++) {
+                        transList.elements[i].owner._renderUpdatePre(context);
+                    }
                 }
             }
             return moduleBatchQueue;

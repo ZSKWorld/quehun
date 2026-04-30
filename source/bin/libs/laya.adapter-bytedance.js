@@ -138,8 +138,9 @@
                 return;
             if (this.toClear != 0) {
                 this.running = true;
+                let clearFlag = this.toClear;
                 this.toClear = 0;
-                if ((this.toClear & 2) !== 0)
+                if ((clearFlag & 2) !== 0)
                     this.doClearAllCache().then(() => this.running = false);
                 else
                     this.clearSpace(0).then(() => this.saveDirtyManifests()).then(() => this.running = false);
@@ -457,6 +458,21 @@
             });
         }
         image(owner, url, originalUrl, onProgress, onComplete) {
+            let skipCache = false;
+            if (Laya.Browser.onTBMiniGame) {
+                if (window.__NOT_TBMINIGAME__ !== undefined) {
+                    skipCache = window.__NOT_TBMINIGAME__;
+                }
+            }
+            if (skipCache) {
+                if (url.startsWith("http://") || url.startsWith("https://")) {
+                    super.image(owner, url, originalUrl, onProgress, onComplete);
+                }
+                else {
+                    super.image(owner, this.escapeURL(url), originalUrl, onProgress, onComplete);
+                }
+                return;
+            }
             if (!url.startsWith("http://") && !url.startsWith("https://") || !this.cacheManager) {
                 super.image(owner, this.escapeURL(url), originalUrl, onProgress, onComplete);
                 return;
@@ -508,7 +524,7 @@
                 success: (res) => {
                     if (res.statusCode == null || res.statusCode === 200) {
                         let filePath = res.tempFilePath || res.apFilePath;
-                        if (this.cacheManager)
+                        if (this.cacheManager && url.indexOf("?v=") === -1)
                             this.cacheManager.addFile(url, filePath);
                         onComplete(filePath);
                     }
@@ -601,9 +617,23 @@
             this.ws.onClose(() => this.onClose());
             this.ws.onError(err => this.onError(err));
             this.ws.onMessage(msg => {
-                if (msg.data)
-                    this.onMessage(msg.data);
+                if (msg.data) {
+                    var data = msg.data;
+                    if (data.isBuffer) {
+                        data = this.base64ToArrayBuffer(data.data);
+                    }
+                    this.onMessage(data);
+                }
             });
+        }
+        base64ToArrayBuffer(base64) {
+            const binary = atob(base64);
+            const len = binary.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binary.charCodeAt(i);
+            }
+            return bytes.buffer;
         }
         close() {
             if (this.ws)
@@ -677,12 +707,12 @@
                 if (this._pixelRatio === 1 && Laya.Browser.onPC && !Laya.Browser.onDevTools)
                     this._pixelRatio = 2;
             }
-            Laya.PAL.g.onShow(() => {
+            Laya.PAL.g.onShow && Laya.PAL.g.onShow(() => {
                 this._visible = true;
                 this.event(Laya.Event.VISIBILITY_CHANGE, true);
                 this.event(Laya.Event.FOCUS);
             });
-            Laya.PAL.g.onHide(() => {
+            Laya.PAL.g.onHide && Laya.PAL.g.onHide(() => {
                 this._visible = false;
                 this.event(Laya.Event.VISIBILITY_CHANGE, false);
                 this.event(Laya.Event.BLUR);
@@ -733,7 +763,7 @@
                 wasmGlobal = window.qg;
             if (wasmGlobal) {
                 if (!window.WebAssembly)
-                    window.WebAssembly = {};
+                    window.WebAssembly = { Memory: wasmGlobal.Memory };
                 Laya.WasmAdapter.Memory = wasmGlobal.Memory;
                 Laya.WasmAdapter.instantiateWasm = (wasmFile, imports) => {
                     wasmFile = Laya.WasmAdapter.locateFileDefault(wasmFile);
@@ -781,10 +811,17 @@
         createElement(tagName) {
             var _a;
             let ele;
-            if (tagName === "canvas" && typeof (Laya.PAL.g.createCanvas) === "function")
-                ele = Laya.PAL.g.createCanvas();
-            else
+            if (tagName === "canvas" && typeof (Laya.PAL.g.createCanvas) === "function") {
+                if (Laya.Browser.onTBMiniGame && window.__NOT_TBMINIGAME__) {
+                    ele = window.canvas.getRealCanvas();
+                }
+                else {
+                    ele = Laya.PAL.g.createCanvas();
+                }
+            }
+            else {
                 ele = super.createElement(tagName);
+            }
             if (!ele.style)
                 ele.style = {};
             else if (ele.style === ((_a = window.canvas) === null || _a === void 0 ? void 0 : _a.style))

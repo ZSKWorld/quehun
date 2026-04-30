@@ -58,48 +58,6 @@ declare function Singleton<T>(): typeof ProtectedClass & { get Inst(): T; };
 /** 把proto数据转成普通object对象 */
 declare function $decodeProtoData<T extends IProto | IProto[]>(data: T): ProtoObject<T>;
 
-/**
- * 大号弹窗
- * @param format 0-标题、内容、确认按钮
- * @param format 1-标题、内容
- * @param format 2-内容、确认按钮
- * @param format 3-内容、确认按钮、取消按钮
- * @param content 内容
- * @param title 标题
- */
-declare function $confirmBig(format: 0 | 1 | 2 | 3, content: string, title?: string): Promise<boolean>;
-/**
- * 中号弹窗
- * @param format 0-标题、内容、确认按钮
- * @param format 1-内容、确认按钮
- * @param content 内容
- * @param title 标题
- */
-declare function $confirmMid(format: 0 | 1, content: string, title?: string): Promise<boolean>;
-/**
- * 小号弹窗
- * @param format 0-标题、内容、确认按钮、取消按钮
- * @param format 1-内容
- * @param format 2-内容、确认按钮
- * @param format 3-内容、确认按钮、取消按钮
- * @param content 内容
- * @param title 标题
- */
-declare function $confirmSma(format: 0 | 1 | 2 | 3, content: string, title?: string): Promise<boolean>;
-
-/** 富文本 */
-declare function $richText(text?: string): IRichText;
-/** 本地化文本， str.str表 */
-declare function $lang(id: number, ...args: any[]): string;
-/** 本地化网络文本，info.error表 */
-declare function $langNet(id: number, ...args: any[]): string;
-/** 本地化资源，bin/langRes/xx/下的资源 */
-declare function $langRes(url: string): string;
-/** 本地化表字段 */
-declare function $langCfg<T = string>(obj: object, key: string): T;
-/** 显示网络错误码弹窗 */
-declare function $showNetError(res: IError): void;
-
 declare namespace CryptoJS {
 	class AES {
 		static encrypt(message: string, key: string): any;

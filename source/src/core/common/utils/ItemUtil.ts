@@ -37,20 +37,9 @@ export class ItemUtil extends Singleton<ItemUtil>() implements IItemUtil {
 					name = $langCfg(characterCfg, "name");
 					desc = $langCfg(characterCfg, "desc_item");
 					const skinCfg = $cfgMgr.item_definition.skin[characterCfg.init_skin];
-					if (skinCfg) {
-						icon = skinCfg.path + "/bighead.png";
-						itemIcon = icon;
-
-						skinInfo.bighead = $langRes(icon);
-						skinInfo.full = $langRes(skinCfg.path + "/full.png");
-						skinInfo.half = $langRes(skinCfg.path + "/half.png");
-						skinInfo.smallhead = $langRes(skinCfg.path + "/smallhead.png");
-						skinInfo.smallhead1 = $langRes(skinCfg.path + "/smallhead1.png");
-						skinInfo.smallhead2 = $langRes(skinCfg.path + "/smallhead2.png");
-						skinInfo.smallhead3 = $langRes(skinCfg.path + "/smallhead3.png");
-						skinInfo.waitingroom = $langRes(skinCfg.path + "/waitingroom.png");
-						skinInfo.x = $langRes(skinCfg.path + "/x.png");
-					}
+					icon = skinCfg.path + "/bighead.png";
+					itemIcon = icon;
+					Object.assign(skinInfo, this.getItemInfo(characterCfg.init_skin).skinInfo);
 				}
 				break;
 			case EItemType.Item:

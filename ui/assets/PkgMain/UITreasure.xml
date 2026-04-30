@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" designImage="ui://ca43vz0ejdu67plnfc" designImageAlpha="36">
+<component size="1920,1080" designImage="ui://ca43vz0efhgq7plolv" designImageAlpha="36">
   <displayList>
     <component id="n0_p5uz" name="back" src="p5uzob8h" fileName="Component/Component/ComBack.xml" pkg="vx9zwser" xy="10,22">
       <property target="title" propertyId="0" value="寻觅"/>
     </component>
+    <component id="n1_fhgq" name="n1" src="qs7jobft" fileName="Component/Component/货币/ComCurrency.xml" pkg="vx9zwser" xy="1310,39" group="n3_fhgq" controller="type,3"/>
+    <component id="n2_fhgq" name="n2" src="qs7jobft" fileName="Component/Component/货币/ComCurrency.xml" pkg="vx9zwser" xy="1600,40" group="n3_fhgq" controller="type,1"/>
+    <group id="n3_fhgq" name="n3" xy="1310,39" size="564,81" advanced="true"/>
   </displayList>
+  <transition name="show" options="2" frameRate="60">
+    <item time="0" type="Alpha" target="n3_fhgq" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
+    <item time="0" type="XY" target="n3_fhgq" tween="true" startValue="-,-93" endValue="-,39" duration="12" ease="Linear"/>
+  </transition>
 </component>

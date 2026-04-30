@@ -14,8 +14,9 @@ export abstract class MediatorBase<V extends IView = IView, D = any> extends Ext
 
 	override get data() { return this._data; }
 	override set data(value) {
+		const oldData = this._data;
 		this._data = value;
-		this.onDataChanged(value);
+		this.onDataChanged(value, oldData);
 	}
 	override get view() { return this.gowner as V; }
 	protected get parent() {
@@ -90,5 +91,5 @@ export abstract class MediatorBase<V extends IView = IView, D = any> extends Ext
 		}
 	}
 
-	protected onDataChanged(data: D) { }
+	protected onDataChanged(data: D, oldData?: D) { }
 }

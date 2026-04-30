@@ -1,6 +1,7 @@
 import ComCurrency from "../../../../ui/PkgCommon/ComCurrency";
 
 export class ComCurrencyView extends ExtensionClass<IView, ComCurrency>(ComCurrency) implements IView {
+	private _currencyType: ECurrencyType;
 
 	override onCreate() {
 		const { btn_add, btn_currency } = this;
@@ -18,22 +19,21 @@ export class ComCurrencyView extends ExtensionClass<IView, ComCurrency>(ComCurre
 	}
 
 	private refreshCurrency() {
+		let currencyType: ECurrencyType;
 		switch (this.ctrl_type.selectedIndex) {
-			// 金币
-			case 0: this.txt_count.text = $user.bag.getItemCount(100002).toString(); break;
-			// 魂玉
-			case 1: this.txt_count.text = $user.bag.getItemCount(100001).toString(); break;
-			// 皮肤券
-			case 2: this.txt_count.text = $user.bag.getItemCount(100004).toString(); break;
-			// 寻觅卷轴
-			case 3: this.txt_count.text = $user.bag.getItemCount(301001).toString(); break;
-			// 信仰值
-			case 4: this.txt_count.text = $user.bag.getItemCount(100001).toString(); break;
+			case 0: currencyType = ECurrencyType.Gold; break;
+			case 1: currencyType = ECurrencyType.Diamond; break;
+			case 2: currencyType = ECurrencyType.SkinTicket; break;
+			case 3: currencyType = ECurrencyType.SeekTicket; break;
+			case 4: currencyType = ECurrencyType.FaithValue; break;
 		}
+
+		this._currencyType = currencyType;
+		this.txt_count.text = $user.bag.getItemCount(currencyType).toString();
 	}
 
 	private onBtnAddClick() {
-		this.openView(EViewID.UIShopView, null, EViewOpenType.Hide);
+		this.openView<IUIShopData>(EViewID.UIShopView, { currencyType: this._currencyType }, EViewOpenType.Hide);
 	}
 
 	private onBtnCurrencyClick() {

@@ -254,6 +254,14 @@ EItemCommonType = {
 	MjpFront: 13,
 }
 
+ECurrencyType = {
+	Gold: 100002,
+	Diamond: 100001,
+	SkinTicket: 100004,
+	SeekTicket: 301001,
+	FaithValue: 100001,
+}
+
 EClientValueType = {
 	None: 0,
 	CompleteRegistration: 1,

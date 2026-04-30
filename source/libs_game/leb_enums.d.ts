@@ -335,6 +335,19 @@ declare enum EItemCommonType {
 	MjpFront = 13,
 }
 
+/** 货币类型 */
+declare enum ECurrencyType {
+	/** 金币 */
+	Gold = 100002,
+	/** 魂玉 */
+	Diamond = 100001,
+	/** 皮肤券 */
+	SkinTicket = 100004,
+	/** 寻觅卷轴 */
+	SeekTicket = 301001,
+	/** 信仰值 */
+	FaithValue = 100001,
+}
 //#endregion
 
 declare enum EClientValueType {

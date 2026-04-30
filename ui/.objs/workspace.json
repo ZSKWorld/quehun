@@ -1,10 +1,12 @@
 {
   "libview.firstColumnWidth": 232,
-  "auxline1": true,
   "libview.iconScale": 0,
   "doc.openedDocs": [
     "ui://vith2b66ktwpob9t",
     "ui://vith2b66hk7robax",
+    "ui://vx9zwserfpd2obgp",
+    "ui://vith2b66qke2ob9q",
+    "ui://vith2b66qke2ob9r",
     "ui://vx9zwserq5yiobc2",
     "ui://vx9zwserrpakobf5"
   ],
@@ -18,7 +20,7 @@
   "test.device": "iPhone 8 Plus",
   "canvasColor": 10066329,
   "auxline2": true,
-  "doc.activeDoc": "ui://vx9zwserrpakobf5",
+  "doc.activeDoc": "ui://vith2b66qke2ob9r",
   "libview.twoColumn": true,
   "libview.expandedNodes": [
     "vx9zwser",
@@ -68,6 +70,7 @@
     "ca43vz0e",
     "/七日任务/"
   ],
+  "auxline1": true,
   "showGrid": false,
   "snapToGrid": true,
   "test.orientation": "landscape",

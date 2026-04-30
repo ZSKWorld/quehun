@@ -120,7 +120,7 @@ export class MediatorDIExtend {
 	private static doKeyEvent(e: Laya.Event) {
 		//这里的this是MediatorBase
 		const caller = this as unknown as DIMediator;
-		if (!$uiMgr.isTopView(caller)) return;
+		if (!$uiMgr.isTopView(caller.viewId)) return;
 		const vkem = caller.__viewKeyEventMap;
 		if (!vkem) return;
 		const eventList: KeyMap<CfgFunction[]> = vkem[e.type];

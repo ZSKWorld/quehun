@@ -1,4 +1,4 @@
-import UIRecharge from "../../../../ui/PkgMain/UIRecharge";
+import UIRecharge from "../../../../ui/PkgCommon/UIRecharge";
 
 export const enum EUIRechargeMsg {
 

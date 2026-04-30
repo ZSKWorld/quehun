@@ -11,7 +11,20 @@ export class UITreasureView extends ExtensionClass<IView, UITreasure>(UITreasure
 		com_back.onBackClick(this, this.closeSelf);
 	}
 
-	override onOpenAni() { return this.com_back.onOpenAni(); }
+	override onOpenAni() {
+		$uiUtil.playTrans(this.trans_show);
+		return this.com_back.onOpenAni();
+	}
 
-	override onCloseAni() { return this.com_back.onCloseAni(); }
+	override onCloseAni() {
+		$uiUtil.playTrans(this.trans_show, true);
+		return this.com_back.onCloseAni();
+	}
+
+	override onDisable() {
+		const anis = [this.trans_show];
+		anis.forEach(v => {
+			v.playing && v.stop(true, true);
+		});
+	}
 }

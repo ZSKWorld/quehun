@@ -7,7 +7,6 @@ import ComSevenDayItem1 from "./ComSevenDayItem1";
 import UILiaoShe from "./UILiaoShe";
 import ComMainPlayerInfo from "./ComMainPlayerInfo";
 import UIGuide from "./UIGuide";
-import UIRecharge from "./UIRecharge";
 import BtnShopRefresh from "./BtnShopRefresh";
 import RenderShopItem from "./RenderShopItem";
 import RenderShopSkin from "./RenderShopSkin";
@@ -67,7 +66,6 @@ import { ComSevenDayItem1View } from "../../view/PkgMain/view/coms/ComSevenDayIt
 import { UILiaoSheView } from "../../view/PkgMain/view/uis/UILiaoSheView";
 import { ComMainPlayerInfoView } from "../../view/PkgMain/view/coms/ComMainPlayerInfoView";
 import { UIGuideView } from "../../view/PkgMain/view/uis/UIGuideView";
-import { UIRechargeView } from "../../view/PkgMain/view/uis/UIRechargeView";
 import { BtnShopRefreshView } from "../../view/PkgMain/view/btns/BtnShopRefreshView";
 import { RenderShopItemView } from "../../view/PkgMain/view/renders/RenderShopItemView";
 import { RenderShopSkinView } from "../../view/PkgMain/view/renders/RenderShopSkinView";
@@ -130,7 +128,6 @@ export default class PkgMainBinder {
 		fgui.UIObjectFactory.setExtension(UILiaoShe.url, UILiaoSheView);
 		fgui.UIObjectFactory.setExtension(ComMainPlayerInfo.url, ComMainPlayerInfoView);
 		fgui.UIObjectFactory.setExtension(UIGuide.url, UIGuideView);
-		fgui.UIObjectFactory.setExtension(UIRecharge.url, UIRechargeView);
 		fgui.UIObjectFactory.setExtension(BtnShopRefresh.url, BtnShopRefreshView);
 		fgui.UIObjectFactory.setExtension(RenderShopItem.url, RenderShopItemView);
 		fgui.UIObjectFactory.setExtension(RenderShopSkin.url, RenderShopSkinView);

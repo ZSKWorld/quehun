@@ -5,10 +5,10 @@ import { ComBackView } from "../../view/PkgCommon/view/coms/ComBackView";
 export default class UIRecharge extends fgui.GComponent {
 
 	protected com_back: ComBackView;
-	public static url: string = "ui://vith2b66fpd2obgp";
+	public static url: string = "ui://vx9zwserfpd2obgp";
 
 	public static createInstance(): UIRecharge {
-		return <UIRecharge>(fgui.UIPackage.createObject("PkgMain", "UIRecharge"));
+		return <UIRecharge>(fgui.UIPackage.createObject("PkgCommon", "UIRecharge"));
 	}
 
 	protected override onConstruct(): void {

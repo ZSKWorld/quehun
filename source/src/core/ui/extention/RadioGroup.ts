@@ -25,7 +25,7 @@ export class RadioGroup {
 		this.reset();
 		items = items || [];
 		this._items = [...items];
-		items.forEach((v, index) => {
+		onValueChanged && items.forEach((v, index) => {
 			v.mode = fgui.ButtonMode.Radio;
 			v.onClick(this, this.onItemClick, [index]);
 		});

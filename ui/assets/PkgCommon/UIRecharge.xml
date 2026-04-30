@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="1920,1080" designImage="ui://ca43vz0ejdu67plnfc" designImageAlpha="36">
   <displayList>
-    <component id="n0_p5uz" name="back" src="p5uzob8h" fileName="Component/Component/ComBack.xml" pkg="vx9zwser" xy="10,22">
+    <component id="n0_p5uz" name="back" src="p5uzob8h" fileName="Component/Component/ComBack.xml" xy="10,22">
       <property target="title" propertyId="0" value="商店"/>
     </component>
   </displayList>

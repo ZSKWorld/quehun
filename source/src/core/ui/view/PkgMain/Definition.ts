@@ -19,6 +19,8 @@ export const enum EUIRankType {
 }
 
 export const enum EUIShopTabType {
+	/** 服饰屋 */
+	FSW,
 	/** 杂货屋 */
 	ZHW,
 	/** 背景屋 */

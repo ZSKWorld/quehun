@@ -273,6 +273,9 @@
     <component id="nng6obhx" name="UIGetReward.xml" path="/" exported="true"/>
     <component id="nng6obhy" name="RenderGetRewardItem.xml" path="/Component/UIGetReward/"/>
     <component id="nng6obi1" name="ComGetReward.xml" path="/Component/UIGetReward/"/>
+    <component id="fpd2obgp" name="UIRecharge.xml" path="/" exported="true"/>
+    <image id="fhgqobi2" name="img_3261.png" path="/Texture/" exported="true"/>
+    <image id="fhgqobi3" name="img_3263.png" path="/Texture/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

@@ -1,43 +1,68 @@
+import { RadioGroup } from "../../../../extention/RadioGroup";
 import UIShop from "../../../../ui/PkgMain/UIShop";
 import { EUIShopTabType } from "../../Definition";
 
 export const enum EUIShopMsg {
+	OnTabSelectChanged = "UIShop_OnTabSelectChanged",
 	OnBtnZhwRefreshClick = "UIShop_OnBtnZhwRefreshClick",
 }
 
 export class UIShopView extends ExtensionClass<IView, UIShop>(UIShop) implements IView {
+	private _tabGroup = new RadioGroup();
 
-	get tabBtns() { return [this.btn_item0, this.btn_item1, this.btn_item2, this.btn_item3, this.btn_item4, this.btn_item5]; }
+	get tabIndex() { return this._tabGroup.selectIndex; }
 
 	override onCreate() {
-		const { com_back, btn_zhwRefresh } = this;
+		const {
+			com_back, btn_zhwRefresh, btn_item0, btn_item1, btn_item2, btn_item3,
+			btn_item4, btn_item5, btn_item6
+		} = this;
 		com_back.onBackClick(this, this.closeSelf);
 		btn_zhwRefresh.onClick(this, this.sendEvent, [EUIShopMsg.OnBtnZhwRefreshClick]);
+
+		this._tabGroup.init([
+			btn_item0, btn_item1, btn_item2, btn_item3,
+			btn_item4, btn_item5, btn_item6
+		], this, this.onTabChanged, "#d9b263", "#8cb65f");
 	}
-	
+
+	refreshTab(type: EUIShopTabType) {
+		this._tabGroup.clearSelection();
+		this._tabGroup.selectIndex = type;
+	}
+
+	/** 服饰屋 */
+	refreshFSW() {
+		this.ctrl_c1.selectedIndex = EUIShopTabType.FSW;
+	}
+
 	/** 杂货屋 */
-	refreshZHW(){
+	refreshZHW() {
 		this.ctrl_c1.selectedIndex = EUIShopTabType.ZHW;
 	}
 	/** 背景屋 */
-	refreshBJW(){
+	refreshBJW() {
 		this.ctrl_c1.selectedIndex = EUIShopTabType.BJW;
 	}
 	/** 祈愿屋 */
-	refreshQYW(){
+	refreshQYW() {
 		this.ctrl_c1.selectedIndex = EUIShopTabType.QYW;
 	}
 	/** 星之屋 */
-	refreshXZW(){
+	refreshXZW() {
 		this.ctrl_c1.selectedIndex = EUIShopTabType.XZW;
 	}
 	/** 插画屋 */
-	refreshCHW(){
+	refreshCHW() {
 		this.ctrl_c1.selectedIndex = EUIShopTabType.CHW;
 	}
 	/** 福袋屋 */
-	refreshFDW(){
+	refreshFDW() {
 		this.ctrl_c1.selectedIndex = EUIShopTabType.FDW;
+	}
+
+	private onTabChanged(type?: EUIShopTabType) {
+		this.sendEvent(EUIShopMsg.OnTabSelectChanged, type);
 	}
 
 	override onOpenAni() {
@@ -55,5 +80,6 @@ export class UIShopView extends ExtensionClass<IView, UIShop>(UIShop) implements
 		anis.forEach(v => {
 			v.playing && v.stop(true, true);
 		});
+		this._tabGroup.clearSelection();
 	}
 }

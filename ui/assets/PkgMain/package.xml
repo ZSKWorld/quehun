@@ -193,7 +193,6 @@
     <image id="kolmobgm" name="img_3203.jpg" path="/Texture/" exported="true"/>
     <image id="kolmobgn" name="img_3204.jpg" path="/Texture/" exported="true"/>
     <image id="kolmobgo" name="img_3205.jpg" path="/Texture/" exported="true"/>
-    <component id="fpd2obgp" name="UIRecharge.xml" path="/" exported="true"/>
     <component id="fpd2obgq" name="BtnShopRefresh.xml" path="/Component/UIShop/"/>
     <component id="fpd2obgr" name="RenderShopItem.xml" path="/Component/UIShop/"/>
     <image id="fpd2obgs" name="img_3675.png" path="/Texture/"/>

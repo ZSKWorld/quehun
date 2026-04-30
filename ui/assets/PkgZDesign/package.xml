@@ -1720,6 +1720,7 @@
     <image id="afne7plols" name="1.jpg" path="/七日任务/"/>
     <image id="rg6e7plolt" name="img_3717.png" path="/11/texture/"/>
     <image id="rg6e7plolu" name="QA_1.png" path="/七日任务/"/>
+    <image id="fhgq7plolv" name="寻觅1.jpg" path="/寻觅/"/>
   </resources>
   <publish name=""/>
 </packageDescription>

@@ -71,6 +71,9 @@ export class UIManager extends Singleton<UIManager>() implements IUIManager {
 		this._lockMask.visible = value != 0;
 	}
 
+	private get topView() { return this._openedViews[0]; }
+	private get topViewId() { return this.topView?.viewId; }
+
 	protected constructor() {
 		super();
 		this._layerMap = {} as any;
@@ -104,16 +107,16 @@ export class UIManager extends Singleton<UIManager>() implements IUIManager {
 		targetLayer.addChildAt(obj, targetIndex);
 	}
 
-	isTopView(view: IMediator | IView) {
-		if (!view) return false;
-		const topView = this._openedViews[0];
-		if (!topView) return false;
-		return topView == view || topView.view == view;
-	}
+	isTopView(viewId: EViewID) { return this.topViewId == viewId; }
 
 	async openView<T = any>(viewId: EViewID, data?: T, openType = EViewOpenType.None) {
 		if (!viewId) return;
 		if (!$facade.hasMediator(viewId)) return;
+
+		if (this.isTopView(viewId)) {
+			this.topView.data = data;
+			return;
+		}
 
 		$facade.dispatch(ENotifyConst.OnViewOpenBegin, viewId);
 		this.lockMark++;
@@ -131,7 +134,7 @@ export class UIManager extends Singleton<UIManager>() implements IUIManager {
 		const success = await this.removeFromView(viewId, true);
 		if (success && this.isStackView(viewId) && openStack) {
 			const nextViewId = this._openedStack.peek();
-			const topViewId = this._openedViews[0]?.viewId;
+			const topViewId = this.topViewId;
 			if (nextViewId && nextViewId != topViewId)
 				await this.openView(this._openedStack.pop());
 		}
@@ -163,9 +166,9 @@ export class UIManager extends Singleton<UIManager>() implements IUIManager {
 	}
 
 	private async dealTopView(openType: EViewOpenType) {
-		if(openType != EViewOpenType.Hide && openType != EViewOpenType.Close) return;
+		if (openType != EViewOpenType.Hide && openType != EViewOpenType.Close) return;
 
-		const viewId = this._openedViews[0]?.viewId;
+		const viewId = this.topViewId;
 
 		if (!viewId) return;
 		if (!this.isStackView(viewId)) {
@@ -202,7 +205,7 @@ export class UIManager extends Singleton<UIManager>() implements IUIManager {
 			this._openedStack.push(mediator.viewId);
 		this._openedViews.unshift(mediator);
 		mediator.view.removeFromParent();
-		data !== void 0 && (mediator.data = data);
+		mediator.data = data;
 		this.addToLayer(mediator.view, mediator.view.viewLayer || ELayer.UIBottom);
 		await mediator.view.onOpenAni?.();
 	}

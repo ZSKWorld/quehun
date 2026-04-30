@@ -63,7 +63,7 @@ declare interface IUISettingData {
 }
 
 declare interface IUIShopData {
-
+	currencyType?: ECurrencyType;
 }
 
 declare interface IUIShopData {

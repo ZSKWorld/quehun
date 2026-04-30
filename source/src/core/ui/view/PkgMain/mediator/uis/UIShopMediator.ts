@@ -1,27 +1,29 @@
 import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
-import { RadioGroup } from "../../../../extention/RadioGroup";
 import { EUIShopTabType } from "../../Definition";
 import { EUIShopMsg, UIShopView } from "../../view/uis/UIShopView";
 
 export class UIShopMediator extends MediatorBase<UIShopView, IUIShopData> {
-	private _tabGroup = new RadioGroup();
 
-	override onAwake() {
+	override onAdded() {
+		this.addEvent(EUIShopMsg.OnTabSelectChanged, this.onTabSelectChanged);
 		this.addEvent(EUIShopMsg.OnBtnZhwRefreshClick, this.onBtnZhwRefreshClick);
-		this._tabGroup.init(this.view.tabBtns, this, this.onTabChanged, "#d9b263", "#8cb65f");
 	}
 
-	override onEnable() {
-		this._tabGroup.selectIndex = 0;
+	protected override onDataChanged(data: IUIShopData) {
+		let type = this.view.tabIndex;
+		switch (data?.currencyType) {
+			case ECurrencyType.SeekTicket: type = EUIShopTabType.FDW; break;
+			default:
+				if (type < 0)
+					type = EUIShopTabType.ZHW;
+				break;
+		}
+		this.view.refreshTab(type);
 	}
 
-	override onDisable() {
-		this._tabGroup.clearSelection();
-	}
-
-	private onTabChanged(type?: EUIShopTabType) {
-		type = type ?? this._tabGroup.selectIndex;
+	private onTabSelectChanged(type: EUIShopTabType) {
 		switch (type) {
+			case EUIShopTabType.FSW: this.view.refreshFSW(); break;
 			case EUIShopTabType.ZHW: this.view.refreshZHW(); break;
 			case EUIShopTabType.BJW: this.view.refreshBJW(); break;
 			case EUIShopTabType.QYW: this.view.refreshQYW(); break;

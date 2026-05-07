@@ -27,18 +27,18 @@ export class InitGameCommand extends Command {
 		ShaderManager.init();
 		MjpAtlasLoader.Inst.init();
 
-		const [ipConfig] = await Promise.all([
-			$loadMgr.fetch(ResPath.EConfigPath.IPConfig, Laya.Loader.JSON),
+		const [config] = await Promise.all([
+			$loadMgr.fetch<IConfig>(ResPath.EConfigPath.GameConfig, Laya.Loader.JSON),
 			$loadMgr.loadPackage([ResPath.EPkgPath.PkgCommon, ResPath.EPkgPath.PkgEntrance]),
 			$loadMgr.load([ResPath.EFontPath.HYWH, ResPath.EFontPath.Fengyu, ResPath.EFontPath.HYYANKAIW]),
 		]);
-		ipConfig.ip.forEach(v => (v.zone_ids = v.zone_ids || []));
+		config.ip.forEach(v => (v.zone_ids = v.zone_ids || []));
 
 		const ipIndex = await new Promise<number>(resolve => {
-			$uiMgr.openView<IUIChooseServerData>(EViewID.UIChooseServerView, { ipConfig, callback: resolve });
+			$uiMgr.openView<IUIChooseServerData>(EViewID.UIChooseServerView, { ipInfos: config.ip, callback: resolve });
 		});
 
-		await $gameMgr.init(ipIndex, ipConfig);
+		await $gameMgr.init(ipIndex, config);
 
 		$uiMgr.openView(EViewID.UIEntranceView);
 

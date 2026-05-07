@@ -87,7 +87,8 @@
     <item time="0" type="XY" target="n33_puub" tween="true" startValue="-,258" endValue="-,208" duration="12" ease="Linear"/>
     <item time="0" type="XY" target="n34_puub" tween="true" startValue="-,205" endValue="-,155" duration="12" ease="Linear"/>
     <item time="0" type="XY" target="n35_giyr" tween="true" startValue="-,523" endValue="-,473" duration="12" ease="Linear"/>
-    <item time="0" type="XY" target="n36_xnfa" tween="true" startValue="-,-43" endValue="-,39" duration="12" ease="Linear"/>
+    <item time="0" type="XY" target="n36_xnfa" tween="true" startValue="-,-141" endValue="-,39" duration="12"/>
     <item time="0" type="XY" target="n38_jcnm" tween="true" startValue="-,257" endValue="-,207" duration="12" ease="Linear"/>
+    <item time="12" type="XY" target="n36_xnfa" value="-,39"/>
   </transition>
 </component>

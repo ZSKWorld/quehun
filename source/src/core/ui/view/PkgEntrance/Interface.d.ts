@@ -1,5 +1,5 @@
 declare interface IUIChooseServerData {
-	ipConfig: IIPConfig;
+	ipInfos: IIPInfo[];
 	callback: (index: number) => void;
 }
 

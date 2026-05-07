@@ -23,7 +23,10 @@ declare interface IUILoadingData {
 
 }
 
-
 declare interface IUIGetRewardData {
 	rewards: IRewardSlot[];
+}
+
+declare interface IUIRechargeData {
+	currencyType?: ECurrencyType;
 }

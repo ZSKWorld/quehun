@@ -22,6 +22,7 @@ import UIConfirmMiddle from "./UIConfirmMiddle";
 import UIConfirmSmall from "./UIConfirmSmall";
 import BtnCheckTxtRight from "./BtnCheckTxtRight";
 import BtnCheckRichTxtRight from "./BtnCheckRichTxtRight";
+import ComRechargeItem from "./ComRechargeItem";
 import UIGetReward from "./UIGetReward";
 import RenderGetRewardItem from "./RenderGetRewardItem";
 import ComGetReward from "./ComGetReward";
@@ -55,6 +56,7 @@ import { UIConfirmMiddleView } from "../../view/PkgCommon/view/uis/UIConfirmMidd
 import { UIConfirmSmallView } from "../../view/PkgCommon/view/uis/UIConfirmSmallView";
 import { BtnCheckTxtRightView } from "../../view/PkgCommon/view/btns/BtnCheckTxtRightView";
 import { BtnCheckRichTxtRightView } from "../../view/PkgCommon/view/btns/BtnCheckRichTxtRightView";
+import { ComRechargeItemView } from "../../view/PkgCommon/view/coms/ComRechargeItemView";
 import { UIGetRewardView } from "../../view/PkgCommon/view/uis/UIGetRewardView";
 import { RenderGetRewardItemView } from "../../view/PkgCommon/view/renders/RenderGetRewardItemView";
 import { ComGetRewardView } from "../../view/PkgCommon/view/coms/ComGetRewardView";
@@ -92,6 +94,7 @@ export default class PkgCommonBinder {
 		fgui.UIObjectFactory.setExtension(UIConfirmSmall.url, UIConfirmSmallView);
 		fgui.UIObjectFactory.setExtension(BtnCheckTxtRight.url, BtnCheckTxtRightView);
 		fgui.UIObjectFactory.setExtension(BtnCheckRichTxtRight.url, BtnCheckRichTxtRightView);
+		fgui.UIObjectFactory.setExtension(ComRechargeItem.url, ComRechargeItemView);
 		fgui.UIObjectFactory.setExtension(UIGetReward.url, UIGetRewardView);
 		fgui.UIObjectFactory.setExtension(RenderGetRewardItem.url, RenderGetRewardItemView);
 		fgui.UIObjectFactory.setExtension(ComGetReward.url, ComGetRewardView);

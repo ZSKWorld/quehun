@@ -8,7 +8,7 @@ declare interface IIPInfo {
 	zone_ids?: number[];
 }
 
-declare interface IIPConfig {
+declare interface IConfig {
 	ip: IIPInfo[];
 	goods_sheleve_id: string;
 	emergency_url: string;
@@ -47,9 +47,9 @@ declare interface IGameManager {
 	/** 重复登陆 */
 	get multiLogin(): boolean;
 	get regionLimited(): boolean;
-	get ipConfig(): IIPConfig;
+	get config(): IConfig;
 	get ipInfo(): IIPInfo;
 	get zoneIds(): number[];
-	init(ipIndex: number, ipConfig: IIPConfig): Promise<void>;
+	init(ipIndex: number, config: IConfig): Promise<void>;
 	showConfirm(msg: string): Promise<boolean>;
 }

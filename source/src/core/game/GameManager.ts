@@ -16,12 +16,12 @@ export class GameManager extends Observer implements IGameManager {
 	private _deviceId: string;
 	private _version: IVersionInfo;
 	private _clientEndPoint: ProtoObject<INetworkEndpoint>;
-	private _ipConfig: IIPConfig;
+	private _config: IConfig;
 	private _ipIndex: number;
 	get released() { return false; }
 	get inDmm() { return this._inDmm; }
 	get language() { return ELanguage.CHS; }
-	get clientType() { return EClientType.CHS; }
+	get clientType() { return EClientType.CHST; }
 	get version() { return this._version?.version || ""; }
 	get clientVersion() { return 'web-' + this.version.replace('.w', ''); }
 	get currency() {
@@ -92,8 +92,8 @@ export class GameManager extends Observer implements IGameManager {
 	}
 	get regionLimited() { return this.clientType == EClientType.KR; }
 	get p2() { return "DF2vkXCnfeXp4WoGSBGNcJBufZiMN3UP" + (window["pertinent3"] || ""); }
-	get ipConfig() { return this._ipConfig; }
-	get ipInfo() { return this._ipConfig.ip[this._ipIndex]; }
+	get config() { return this._config; }
+	get ipInfo() { return this._config.ip[this._ipIndex]; }
 	get zoneIds() { return this.ipInfo.zone_ids; }
 
 	private _hangOutTime = 0;
@@ -102,9 +102,9 @@ export class GameManager extends Observer implements IGameManager {
 
 	protected constructor() { super(); }
 
-	async init(ipIndex: number, ipConfig: IIPConfig) {
+	async init(ipIndex: number, config: IConfig) {
 		this._ipIndex = ipIndex;
-		this._ipConfig = ipConfig;
+		this._config = config;
 		this._version = await $loadMgr.fetch(`https://game.maj-soul.com/1/version.json?randv=${ $timeUtil.milliSecond }`, Laya.Loader.JSON);
 	}
 

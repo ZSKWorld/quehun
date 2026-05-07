@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="330,747" pivot="0.5,0.5" designImage="ui://ca43vz0efpd27plokm" designImageOffsetX="-438" designImageOffsetY="-207" designImageAlpha="0">
+  <displayList>
+    <component id="n15_fpd2" name="item" src="rpakobf5" fileName="Component/Component/物品/ComItem.xml" xy="1,25" size="328,476">
+      <property target="icon" propertyId="1" value="ui://vx9zwserik7bobfj"/>
+    </component>
+    <image id="n21_ffpy" name="n21" src="9luvobib" fileName="Texture/img_3848.png" xy="0,0" size="330,747"/>
+    <image id="n22_ffpy" name="n22" src="9luvobic" fileName="Texture/img_802.png" xy="65,42" pivot="0.5,0.5" size="200,30">
+      <relation target="n23_ffpy" sidePair="width-width"/>
+    </image>
+    <image id="n26_ffpy" name="dynamic" src="9luvobid" fileName="Texture/img_1750.png" xy="14,424"/>
+    <image id="n29_ffpy" name="n29" src="ffpyobg7" fileName="Texture/img_312.png" xy="33,570" size="262,69"/>
+    <image id="n25_ffpy" name="owned" src="9luvobie" fileName="Texture/img_2439.png" xy="63,571" size="204,156"/>
+    <component id="n28_ffpy" name="buy" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="27,642" size="273,88">
+      <Button title="购买" titleColor="#1f0b15" titleFontSize="40" icon="ui://vx9zwsergsi2obcn"/>
+    </component>
+    <text id="n23_ffpy" name="lastTime" xy="76,40" pivot="0.5,0.5" size="177,34" fontSize="24" color="#ffffff" align="center" vAlign="middle" singleLine="true" text="14天后结束销售"/>
+    <text id="n24_ffpy" name="name" xy="11,483" pivot="0.5,0.5" size="308,48" fontSize="35" color="#deae7a" align="center" vAlign="middle" autoSize="none" singleLine="true" text="午安盛夏"/>
+    <text id="n27_ffpy" name="desc" xy="9,533" pivot="0.5,0.5" size="312,33" fontSize="23" color="#c8c8c8" align="center" vAlign="middle" autoSize="none" singleLine="true" text="午安盛夏"/>
+    <loader id="n36_ffpy" name="currency2" xy="95,581" size="51,51" group="n42_ffpy" url="ui://vx9zwserhpkoobg0" fill="scaleFree"/>
+    <text id="n37_ffpy" name="currencyCount2" xy="156,574" pivot="0.5,0.5" size="79,66" group="n42_ffpy" font="SimHei" fontSize="50" color="#b9c8c8" vAlign="middle" singleLine="true" text="600"/>
+    <group id="n42_ffpy" name="n42" xy="95,574" size="140,66" advanced="true" layout="hz" colGap="10" excludeInvisibles="true">
+      <relation target="" sidePair="center-center"/>
+    </group>
+    <image id="n30_ffpy" name="n30" src="9luvobif" fileName="Texture/img_2566.png" xy="-10,565" group="n43_ffpy"/>
+    <loader id="n32_ffpy" name="currency1" xy="165,600" size="35,35" group="n43_ffpy" url="ui://vx9zwserhpkoobfz" fill="scaleFree"/>
+    <text id="n31_ffpy" name="discount" xy="46,575" pivot="0.5,0.5" size="112,58" group="n43_ffpy" rotation="-3" fontSize="43" color="#e4ffc4" align="center" vAlign="middle" singleLine="true" text="-50%"/>
+    <text id="n33_ffpy" name="newPrice" xy="202,588" pivot="1,0" size="88,55" group="n43_ffpy" font="SimHei" fontSize="41" color="#b9c8c8" vAlign="middle" singleLine="true" text="3240"/>
+    <text id="n34_ffpy" name="oldPrice" xy="218,563" pivot="1,0" size="72,45" group="n43_ffpy" font="SimHei" fontSize="33" color="#979797" align="center" strike="true" text="6480"/>
+    <group id="n43_ffpy" name="n43" xy="-10,563" size="300,85"/>
+  </displayList>
+</component>

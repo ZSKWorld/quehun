@@ -49,6 +49,7 @@ import { ComLevel1View } from "../core/ui/view/PkgCommon/view/coms/ComLevel1View
 import { ComMJItemView } from "../core/ui/view/PkgCommon/view/coms/ComMJItemView";
 import { ComName1View } from "../core/ui/view/PkgCommon/view/coms/ComName1View";
 import { ComName2View } from "../core/ui/view/PkgCommon/view/coms/ComName2View";
+import { ComRechargeItemView } from "../core/ui/view/PkgCommon/view/coms/ComRechargeItemView";
 import { ComRedDot1View } from "../core/ui/view/PkgCommon/view/coms/ComRedDot1View";
 import { ComTipInfoView } from "../core/ui/view/PkgCommon/view/coms/ComTipInfoView";
 import { ComTipInfoMediator } from "../core/ui/view/PkgCommon/mediator/coms/ComTipInfoMediator";
@@ -197,6 +198,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.ComMJItemView, EViewType.Component, ComMJItemView);
 		register(EViewID.ComName1View, EViewType.Component, ComName1View);
 		register(EViewID.ComName2View, EViewType.Component, ComName2View);
+		register(EViewID.ComRechargeItemView, EViewType.Component, ComRechargeItemView);
 		register(EViewID.ComRedDot1View, EViewType.Component, ComRedDot1View);
 		register(EViewID.ComTipInfoView, EViewType.Component, ComTipInfoView, ComTipInfoMediator);
 		register(EViewID.ComTitleView, EViewType.Component, ComTitleView);

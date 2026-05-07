@@ -1721,6 +1721,10 @@
     <image id="rg6e7plolt" name="img_3717.png" path="/11/texture/"/>
     <image id="rg6e7plolu" name="QA_1.png" path="/七日任务/"/>
     <image id="fhgq7plolv" name="寻觅1.jpg" path="/寻觅/"/>
+    <image id="f9je7plolw" name="1.jpg" path="/11/商店/"/>
+    <image id="f9je7plolx" name="2.jpg" path="/11/商店/"/>
+    <image id="f9je7ploly" name="3.jpg" path="/11/商店/"/>
+    <image id="f9je7plolz" name="4.jpg" path="/11/商店/"/>
   </resources>
   <publish name=""/>
 </packageDescription>

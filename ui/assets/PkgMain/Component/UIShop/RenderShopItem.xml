@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="269,370" pivot="0.5,0.5" designImage="ui://ca43vz0efpd27ploki" designImageOffsetX="-411" designImageOffsetY="-208" designImageAlpha="0">
   <displayList>
-    <image id="n13_fpd2" name="n13" src="fpd2obgs" fileName="Texture/img_3675.png" xy="0,0" size="269,370"/>
+    <image id="n13_fpd2" name="n13" src="9luvobi7" fileName="Texture/img_3675.png" pkg="vx9zwser" xy="0,0" size="269,370"/>
     <component id="n15_fpd2" name="item" src="q5yiobc2" fileName="Component/Component/物品/ComItem1.xml" pkg="vx9zwser" xy="50,79" size="170,170" aspect="true">
       <property target="icon" propertyId="1" value="ui://ca43vz0eq5yi7plojn"/>
     </component>

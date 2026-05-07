@@ -52,6 +52,7 @@ EViewID = {
 	ComMJItemView: "ComMJItemView",
 	ComName1View: "ComName1View",
 	ComName2View: "ComName2View",
+	ComRechargeItemView: "ComRechargeItemView",
 	ComRedDot1View: "ComRedDot1View",
 	ComTipInfoView: "ComTipInfoView",
 	ComTitleView: "ComTitleView",

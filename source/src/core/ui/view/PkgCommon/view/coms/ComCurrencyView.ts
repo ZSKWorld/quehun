@@ -33,7 +33,16 @@ export class ComCurrencyView extends ExtensionClass<IView, ComCurrency>(ComCurre
 	}
 
 	private onBtnAddClick() {
-		this.openView<IUIShopData>(EViewID.UIShopView, { currencyType: this._currencyType }, EViewOpenType.Hide);
+		let viewId: EViewID;
+		switch (this._currencyType) {
+			case ECurrencyType.Gold: viewId = EViewID.UIRechargeView; break;
+			case ECurrencyType.Diamond: viewId = EViewID.UIRechargeView; break;
+			case ECurrencyType.SkinTicket: viewId = EViewID.UIRechargeView; break;
+			case ECurrencyType.SeekTicket: viewId = EViewID.UIShopView; break;
+			// case ECurrencyType.FaithValue: break;
+		}
+		if (!viewId) return;
+		this.openView<IUIShopData | IUIRechargeData>(viewId, { currencyType: this._currencyType }, EViewOpenType.Hide);
 	}
 
 	private onBtnCurrencyClick() {

@@ -3,8 +3,8 @@ ResPath = {
 	EUnclassifiedPath: { },
 
 	EConfigPath: {
-		IPConfig: "res/config/IPConfig.json",
-		IPConfig1: "res/config/IPConfig1.json",
+		GameConfig: "res/config/gameConfig.json",
+		GameConfig1: "res/config/gameConfig1.json",
 		Lqc: "res/config/lqc.bin",
 		Proto: "res/config/proto.json",
 		Tbl_pbConfig: "res/config/tbl_pbConfig.proto",

@@ -10,6 +10,10 @@ export class ComItem1View extends ExtensionClass<IView, ComItem1>(ComItem1) impl
 
 	}
 
+	refreshSkin(url: string) {
+		this.com_item.refreshSkin(url);
+	}
+
 	refresh(id: number) {
 		this.com_item.refreshItemIcon(id);
 	}

@@ -276,6 +276,24 @@
     <component id="fpd2obgp" name="UIRecharge.xml" path="/" exported="true"/>
     <image id="fhgqobi2" name="img_3261.png" path="/Texture/" exported="true"/>
     <image id="fhgqobi3" name="img_3263.png" path="/Texture/" exported="true"/>
+    <image id="9luvobi4" name="img_195.png" path="/Texture/" scale="9grid" scale9grid="10,0,32,4"/>
+    <component id="9luvobi5" name="BtnShopRefresh.xml" path="/Component/UIShop/"/>
+    <component id="9luvobi6" name="RenderShopItem.xml" path="/Component/UIShop/"/>
+    <image id="9luvobi7" name="img_3675.png" path="/Texture/" exported="true"/>
+    <image id="9luvobi8" name="img_2920.png" path="/Texture/"/>
+    <image id="9luvobi9" name="img_2921.png" path="/Texture/"/>
+    <component id="9luvobia" name="RenderShopSkin.xml" path="/Component/UIShop/"/>
+    <image id="9luvobib" name="img_3848.png" path="/Texture/" scale="9grid" scale9grid="0,46,328,17"/>
+    <image id="9luvobic" name="img_802.png" path="/Texture/" scale="9grid" scale9grid="22,0,6,30"/>
+    <image id="9luvobid" name="img_1750.png" path="/Texture/"/>
+    <image id="9luvobie" name="img_2439.png" path="/Texture/"/>
+    <image id="9luvobif" name="img_2566.png" path="/Texture/"/>
+    <component id="9luvobig" name="RenderShopCG.xml" path="/Component/UIShop/"/>
+    <image id="9luvobih" name="img_4023.png" path="/Texture/" scale="9grid" scale9grid="0,70,620,40"/>
+    <image id="9luvobii" name="img_1073.png" path="/Texture/"/>
+    <component id="n15iobik" name="ComRechargeItem.xml" path="/Component/UIRecharge/"/>
+    <image id="n15iobil" name="img_1560.png" path="/Texture/" exported="true"/>
+    <component id="n15iobin" name="BtnRecharge.xml" path="/Component/UIRecharge/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

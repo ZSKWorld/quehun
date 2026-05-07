@@ -11,12 +11,12 @@ export class UIChooseServerMediator extends MediatorBase<UIChooseServerView, IUI
 	}
 
 	override onEnable() {
-		const ipConfig = this.data.ipConfig;
-		if (ipConfig.ip.length == 1) {
+		const ipInfos = this.data.ipInfos;
+		if (ipInfos.length == 1) {
 			this.setChooseServer(0);
 		} else {
 			this._lastIpIndex = $localDataMgr.get(ELocalDataKey.LastServer, -1);
-			this.view.refresh(ipConfig.ip.map(v => v.name), this._lastIpIndex);
+			this.view.refresh(ipInfos.map(v => v.name), this._lastIpIndex);
 		}
 	}
 
@@ -25,8 +25,8 @@ export class UIChooseServerMediator extends MediatorBase<UIChooseServerView, IUI
 	}
 
 	private setChooseServer(index: number) {
-		const { ipConfig, callback } = this.data;
-		index = $mathUtil.clamp(index, 0, ipConfig.ip.length - 1);
+		const { ipInfos, callback } = this.data;
+		index = $mathUtil.clamp(index, 0, ipInfos.length - 1);
 		this._ipIndex = index;
 		$localDataMgr.set(ELocalDataKey.LastServer, this._ipIndex);
 		callback(this._ipIndex);

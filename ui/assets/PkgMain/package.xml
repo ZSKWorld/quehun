@@ -195,7 +195,6 @@
     <image id="kolmobgo" name="img_3205.jpg" path="/Texture/" exported="true"/>
     <component id="fpd2obgq" name="BtnShopRefresh.xml" path="/Component/UIShop/"/>
     <component id="fpd2obgr" name="RenderShopItem.xml" path="/Component/UIShop/"/>
-    <image id="fpd2obgs" name="img_3675.png" path="/Texture/"/>
     <image id="fpd2obgt" name="img_2920.png" path="/Texture/"/>
     <image id="fpd2obgu" name="img_2921.png" path="/Texture/"/>
     <component id="fpd2obgv" name="RenderShopSkin.xml" path="/Component/UIShop/"/>

@@ -14,15 +14,15 @@ export class UIShopView extends ExtensionClass<IView, UIShop>(UIShop) implements
 
 	override onCreate() {
 		const {
-			com_back, btn_zhwRefresh, btn_item0, btn_item1, btn_item2, btn_item3,
-			btn_item4, btn_item5, btn_item6
+			com_back, btn_zhwRefresh, btn_tab0, btn_tab1, btn_tab2, btn_tab3,
+			btn_tab4, btn_tab5, btn_tab6
 		} = this;
 		com_back.onBackClick(this, this.closeSelf);
 		btn_zhwRefresh.onClick(this, this.sendEvent, [EUIShopMsg.OnBtnZhwRefreshClick]);
 
 		this._tabGroup.init([
-			btn_item0, btn_item1, btn_item2, btn_item3,
-			btn_item4, btn_item5, btn_item6
+			btn_tab0, btn_tab1, btn_tab2, btn_tab3,
+			btn_tab4, btn_tab5, btn_tab6
 		], this, this.onTabChanged, "#d9b263", "#8cb65f");
 	}
 
@@ -61,7 +61,7 @@ export class UIShopView extends ExtensionClass<IView, UIShop>(UIShop) implements
 		this.ctrl_c1.selectedIndex = EUIShopTabType.FDW;
 	}
 
-	private onTabChanged(type?: EUIShopTabType) {
+	private onTabChanged(type: EUIShopTabType) {
 		this.sendEvent(EUIShopMsg.OnTabSelectChanged, type);
 	}
 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1920,1080" designImage="ui://ca43vz0ef9je7plolz" designImageAlpha="100">
+  <displayList>
+    <image id="n52_exet" name="n52" src="exetobip" fileName="Texture/img_3065.png" xy="849,260" size="641,104" scale="0.8,0.8"/>
+    <component id="n48_exet" name="title" src="hdeoobbo" fileName="Component/Component/称号/ComTitle.xml" xy="886,260" size="547,105" aspect="true" scale="0.8,0.8">
+      <property target="icon" propertyId="1" value="ui://ca43vz0ehk7r7plogz"/>
+    </component>
+    <image id="n50_exet" name="n50" src="gsi2obci" fileName="Texture/img_269.png" xy="1204,218"/>
+    <image id="n51_exet" name="n51" src="gsi2obci" fileName="Texture/img_269.png" xy="1002,218" scale="-1,1"/>
+    <image id="n53_exet" name="n53" src="gsi2obci" fileName="Texture/img_269.png" xy="1207,413"/>
+    <image id="n54_exet" name="n54" src="gsi2obci" fileName="Texture/img_269.png" xy="1005,413" scale="-1,1"/>
+    <text id="n49_exet" name="n49" xy="1102,220" pivot="0.5,0.5" anchor="true" size="172,56" scale="0.9,1" font="ui://vx9zwserrpakobeu" fontSize="42" color="#fcc45f" align="center" vAlign="middle" leading="0" singleLine="true" text="称号效果"/>
+    <text id="n55_exet" name="n55" xy="1105,415" pivot="0.5,0.5" anchor="true" size="172,56" scale="0.9,1" font="ui://vx9zwserrpakobeu" fontSize="42" color="#fcc45f" align="center" vAlign="middle" leading="0" singleLine="true" text="契约奖励"/>
+  </displayList>
+</component>

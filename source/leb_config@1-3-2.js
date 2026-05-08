@@ -65,7 +65,7 @@ module.exports = {
     /** 是否在启动时打开主页 */
     ifOpenHome: true,
     /** 是否立即刷新浏览器 */
-    ifUpdateNow: true,
+    ifUpdateNow: false,
     /** 文件监听 */
     fileWatch: {
         /** src目录的监听配置，enable选项无效 */

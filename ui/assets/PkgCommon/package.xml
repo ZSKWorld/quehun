@@ -294,6 +294,8 @@
     <component id="n15iobik" name="ComRechargeItem.xml" path="/Component/UIRecharge/"/>
     <image id="n15iobil" name="img_1560.png" path="/Texture/" exported="true"/>
     <component id="n15iobin" name="BtnRecharge.xml" path="/Component/UIRecharge/"/>
+    <component id="exetobio" name="ComRechargeVIP.xml" path="/Component/UIRecharge/"/>
+    <image id="exetobip" name="img_3065.png" path="/Texture/" exported="true" scale="9grid" scale9grid="109,0,28,104"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

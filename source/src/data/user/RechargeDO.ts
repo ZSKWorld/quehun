@@ -36,6 +36,10 @@ export class RechargeDO extends BaseDO implements DO.IRechargeDO {
 		return goods_sheleve_id;
 	}
 
+	isFirstRecharge(id: number) {
+		return true;
+	}
+
 	@InterestMessage(ENetMessage.fetchServerSettings)
 	private onFetchServerSetting(res: IResServerSettings) {
 		this.onNotifyServerSetting(res);

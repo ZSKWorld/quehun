@@ -44,7 +44,7 @@ export class UIRechargeMediator extends MediatorBase<UIRechargeView, IUIRecharge
 				items = $cfgMgr.mall.goods_shelves[shelevesId].filter(v => {
 					return !v.is_monthcard && $cfgMgr.mall.goods[v.goods_id].type != 1;
 				}).map(v => v.goods_id);
-				// items.push(4001);
+				items.push(4001);
 				this.view.refreshItems(items);
 				break;
 			case EUIRechargeTabType.TB:

@@ -37,12 +37,14 @@ export class UIRechargeView extends ExtensionClass<IView, UIRecharge>(UIRecharge
 
 	refreshItems(itemIds: number[]) {
 		this._itemIds = itemIds;
+		this.list_item.visible = true;
+		this.list_item.scrollPane.posY = 0;
 		this.list_item.numItems = itemIds.length;
 	}
 
 	/** 契约等级 */
 	refreshQYDJ() {
-
+		this.list_item.visible = false;
 	}
 
 	private onTabChanged(type: EUIRechargeTabType) {
@@ -50,7 +52,7 @@ export class UIRechargeView extends ExtensionClass<IView, UIRecharge>(UIRecharge
 	}
 
 	private onListItemRender(index: number, item: ComRechargeItemView) {
-		item.refresh(this._tabGroup.selectIndex, this._itemIds[index], index);
+		item.refresh(this._tabGroup.selectIndex, this._itemIds[index]);
 	}
 
 	override onOpenAni() {

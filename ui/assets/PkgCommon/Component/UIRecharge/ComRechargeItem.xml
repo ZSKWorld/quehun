@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="269,370" designImage="ui://ca43vz0ef9je7plolw" designImageOffsetX="-477" designImageOffsetY="-216" designImageAlpha="0">
+<component size="269,370" designImage="ui://ca43vz0ef9je7plolw" designImageOffsetX="-797" designImageOffsetY="-216" designImageAlpha="0">
   <displayList>
     <image id="n43_n15i" name="n43" src="9luvobi7" fileName="Texture/img_3675.png" xy="0,0" size="269,370"/>
     <image id="n46_n15i" name="first" src="n15iobil" fileName="Texture/img_1560.png" xy="5,4"/>
@@ -8,7 +8,7 @@
     <component id="n41_n15i" name="buy2" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="20,290" size="228,65">
       <Button title="NTD  33" titleColor="#3a2138" titleFontSize="42" icon="ui://vx9zwserfpd2obg4"/>
     </component>
-    <text id="n45_n15i" name="title" xy="14,16" pivot="0.5,0.5" size="239,42" font="ui://vx9zwserrpakobeu" fontSize="30" color="#e4b777" align="center" vAlign="middle" leading="0" singleLine="true" text="月势御守（30天）"/>
+    <text id="n45_n15i" name="title" xy="9,14" pivot="0.5,0.5" size="250,45" font="ui://vx9zwserrpakobeu" fontSize="33" color="#e4b777" align="center" vAlign="middle" leading="0" autoSize="shrink" singleLine="true" text="65辉玉"/>
     <text id="n47_n15i" name="desc" xy="5,252" pivot="0.5,0.5" size="258,35" font="SimHei" fontSize="25" color="#f178ff" align="center" vAlign="middle" leading="0" singleLine="true" text="辉玉(340立即+60每天)"/>
   </displayList>
 </component>

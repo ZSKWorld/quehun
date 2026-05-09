@@ -1347,7 +1347,7 @@ declare interface ISheet_Activity_Activity {
 	260450: ISheetData_Activity_Activity;
 	260451: ISheetData_Activity_Activity;
 }
-declare interface ISheetData_Activity_Activity {
+declare interface ISheetData_Activity_Activity extends ISheetDataBase {
 	/** 活动id */
 	id: number;
 	/** 活动名称 */
@@ -2088,7 +2088,7 @@ declare interface ISheet_Activity_Task {
 	26030141: ISheetData_Activity_Task;
 	26030142: ISheetData_Activity_Task;
 }
-declare interface ISheetData_Activity_Task {
+declare interface ISheetData_Activity_Task extends ISheetDataBase {
 	/** 活动任务id */
 	id: number;
 	/** 活动id */
@@ -2468,7 +2468,7 @@ declare interface ISheet_Activity_Exchange {
 	26010303: ISheetData_Activity_Exchange;
 	26010304: ISheetData_Activity_Exchange;
 }
-declare interface ISheetData_Activity_Exchange {
+declare interface ISheetData_Activity_Exchange extends ISheetDataBase {
 	/** 兑换id */
 	id: number;
 	/** 活动id */
@@ -2941,7 +2941,7 @@ declare interface ISheet_Activity_ChestUp {
 	260420: ISheetData_Activity_ChestUp[];
 	260421: ISheetData_Activity_ChestUp[];
 }
-declare interface ISheetData_Activity_ChestUp {
+declare interface ISheetData_Activity_ChestUp extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 宝箱ID */
@@ -3769,7 +3769,7 @@ declare interface ISheet_Activity_GameTask {
 	26040606: ISheetData_Activity_GameTask;
 	26040607: ISheetData_Activity_GameTask;
 }
-declare interface ISheetData_Activity_GameTask {
+declare interface ISheetData_Activity_GameTask extends ISheetDataBase {
 	/** 活动任务id */
 	id: number;
 	/** 活动id */
@@ -3961,7 +3961,7 @@ declare interface ISheet_Activity_GamePoint {
 	23115131: ISheetData_Activity_GamePoint;
 	23115132: ISheetData_Activity_GamePoint;
 }
-declare interface ISheetData_Activity_GamePoint {
+declare interface ISheetData_Activity_GamePoint extends ISheetDataBase {
 	id: number;
 	/** 活动ID */
 	activity_id: number;
@@ -3987,7 +3987,7 @@ declare interface ISheet_Activity_Rank {
 	[key: string]: ISheetData_Activity_Rank[];
 	1010: ISheetData_Activity_Rank[];
 }
-declare interface ISheetData_Activity_Rank {
+declare interface ISheetData_Activity_Rank extends ISheetDataBase {
 	/** 活动ID */
 	activity_id: number;
 	/** 排行榜ID */
@@ -4004,7 +4004,7 @@ declare interface ISheet_Activity_RankReward {
 	[key: string]: ISheetData_Activity_RankReward[];
 	1010: ISheetData_Activity_RankReward[];
 }
-declare interface ISheetData_Activity_RankReward {
+declare interface ISheetData_Activity_RankReward extends ISheetDataBase {
 	id: number;
 	/** 档位排名下界 */
 	lower_rank_bound: number;
@@ -4485,7 +4485,7 @@ declare interface ISheet_Activity_FlipTask {
 	220501035: ISheetData_Activity_FlipTask;
 	220501036: ISheetData_Activity_FlipTask;
 }
-declare interface ISheetData_Activity_FlipTask {
+declare interface ISheetData_Activity_FlipTask extends ISheetDataBase {
 	/** 活动任务id */
 	id: number;
 	/** 活动ID */
@@ -4520,7 +4520,7 @@ declare interface ISheet_Activity_FlipInfo {
 	250790: ISheetData_Activity_FlipInfo;
 	260190: ISheetData_Activity_FlipInfo;
 }
-declare interface ISheetData_Activity_FlipInfo {
+declare interface ISheetData_Activity_FlipInfo extends ISheetDataBase {
 	/** 活动ID */
 	id: number;
 	/** 每日翻牌次数 */
@@ -4560,7 +4560,7 @@ declare interface ISheet_Activity_DailySign {
 	260281: ISheetData_Activity_DailySign[];
 	260391: ISheetData_Activity_DailySign[];
 }
-declare interface ISheetData_Activity_DailySign {
+declare interface ISheetData_Activity_DailySign extends ISheetDataBase {
 	/** 活动ID */
 	activity_id: number;
 	/** 奖励id */
@@ -4581,7 +4581,7 @@ declare interface ISheet_Activity_RichmanInfo {
 	1246: ISheetData_Activity_RichmanInfo;
 	241201: ISheetData_Activity_RichmanInfo;
 }
-declare interface ISheetData_Activity_RichmanInfo {
+declare interface ISheetData_Activity_RichmanInfo extends ISheetDataBase {
 	/** 活动ID */
 	activity_id: number;
 	/** 活动地图ID */
@@ -4624,7 +4624,7 @@ declare interface ISheet_Activity_RichmanMap {
 	124601: ISheetData_Activity_RichmanMap[];
 	24120101: ISheetData_Activity_RichmanMap[];
 }
-declare interface ISheetData_Activity_RichmanMap {
+declare interface ISheetData_Activity_RichmanMap extends ISheetDataBase {
 	/** 地图ID */
 	map_id: number;
 	/** 地图位置 */
@@ -4654,7 +4654,7 @@ declare interface ISheet_Activity_RichmanLevel {
 	1246: ISheetData_Activity_RichmanLevel[];
 	241201: ISheetData_Activity_RichmanLevel[];
 }
-declare interface ISheetData_Activity_RichmanLevel {
+declare interface ISheetData_Activity_RichmanLevel extends ISheetDataBase {
 	/** 活动ID */
 	activity_id: number;
 	/** 名称 */
@@ -4702,7 +4702,7 @@ declare interface ISheet_Activity_RichmanEvent {
 	24120105: ISheetData_Activity_RichmanEvent;
 	24120106: ISheetData_Activity_RichmanEvent;
 }
-declare interface ISheetData_Activity_RichmanEvent {
+declare interface ISheetData_Activity_RichmanEvent extends ISheetDataBase {
 	/** event唯一标识 */
 	event_id: number;
 	/** 活动ID */
@@ -6759,7 +6759,7 @@ declare interface ISheet_Activity_PeriodTask {
 	26040347: ISheetData_Activity_PeriodTask;
 	26040348: ISheetData_Activity_PeriodTask;
 }
-declare interface ISheetData_Activity_PeriodTask {
+declare interface ISheetData_Activity_PeriodTask extends ISheetDataBase {
 	/** 活动任务id */
 	id: number;
 	/** 活动id */
@@ -6841,7 +6841,7 @@ declare interface ISheet_Activity_RandomTaskPool {
 	2507012: ISheetData_Activity_RandomTaskPool[];
 	2507013: ISheetData_Activity_RandomTaskPool[];
 }
-declare interface ISheetData_Activity_RandomTaskPool {
+declare interface ISheetData_Activity_RandomTaskPool extends ISheetDataBase {
 	/** 任务池ID */
 	pool_id: number;
 	/** 任务id */
@@ -6883,7 +6883,7 @@ declare interface ISheet_Activity_RandomTaskInfo {
 	250502: ISheetData_Activity_RandomTaskInfo;
 	250701: ISheetData_Activity_RandomTaskInfo;
 }
-declare interface ISheetData_Activity_RandomTaskInfo {
+declare interface ISheetData_Activity_RandomTaskInfo extends ISheetDataBase {
 	/** 活动ID */
 	activity_id: number;
 	/** 任务池ID */
@@ -6896,7 +6896,7 @@ declare interface ISheet_Activity_RichmanRewardSeq {
 	[key: string]: ISheetData_Activity_RichmanRewardSeq[];
 	10101: ISheetData_Activity_RichmanRewardSeq[];
 }
-declare interface ISheetData_Activity_RichmanRewardSeq {
+declare interface ISheetData_Activity_RichmanRewardSeq extends ISheetDataBase {
 	/** id */
 	id: number;
 	/** 完成圈数 */
@@ -6950,7 +6950,7 @@ declare interface ISheet_Activity_ActivityBuff {
 	26040434: ISheetData_Activity_ActivityBuff[];
 	26040501: ISheetData_Activity_ActivityBuff[];
 }
-declare interface ISheetData_Activity_ActivityBuff {
+declare interface ISheetData_Activity_ActivityBuff extends ISheetDataBase {
 	/** buffid */
 	buff_id: number;
 	/** 活动ID */
@@ -7026,7 +7026,7 @@ declare interface ISheet_Activity_BuffCondition {
 	26040434: ISheetData_Activity_BuffCondition[];
 	26040501: ISheetData_Activity_BuffCondition[];
 }
-declare interface ISheetData_Activity_BuffCondition {
+declare interface ISheetData_Activity_BuffCondition extends ISheetDataBase {
 
 }
 //#endregion
@@ -7038,7 +7038,7 @@ declare interface ISheet_Activity_GamePointInfo {
 	221201: ISheetData_Activity_GamePointInfo;
 	231151: ISheetData_Activity_GamePointInfo;
 }
-declare interface ISheetData_Activity_GamePointInfo {
+declare interface ISheetData_Activity_GamePointInfo extends ISheetDataBase {
 	/** 活动ID */
 	activity_id: number;
 	/** 得分筛选器id */
@@ -7057,7 +7057,7 @@ declare interface ISheet_Activity_GamePointRank {
 	[key: string]: ISheetData_Activity_GamePointRank[];
 	1135: ISheetData_Activity_GamePointRank[];
 }
-declare interface ISheetData_Activity_GamePointRank {
+declare interface ISheetData_Activity_GamePointRank extends ISheetDataBase {
 	/** 活动ID */
 	activity_id: number;
 	/** 大于（百分比） */
@@ -7076,7 +7076,7 @@ declare interface ISheet_Activity_GamePointFilter {
 	221201: ISheetData_Activity_GamePointFilter[];
 	231151: ISheetData_Activity_GamePointFilter[];
 }
-declare interface ISheetData_Activity_GamePointFilter {
+declare interface ISheetData_Activity_GamePointFilter extends ISheetDataBase {
 	id: number;
 	/** 是否可以带AI */
 	has_robot: string;
@@ -7111,7 +7111,7 @@ declare interface ISheet_Activity_ActivityRoom {
 	251050: ISheetData_Activity_ActivityRoom;
 	260451: ISheetData_Activity_ActivityRoom;
 }
-declare interface ISheetData_Activity_ActivityRoom {
+declare interface ISheetData_Activity_ActivityRoom extends ISheetDataBase {
 	/** 友人房活动ID */
 	activity_id: number;
 	/** 数字小的在前 */
@@ -9933,7 +9933,7 @@ declare interface ISheet_Activity_SnsActivity {
 	25121662: ISheetData_Activity_SnsActivity;
 	25121663: ISheetData_Activity_SnsActivity;
 }
-declare interface ISheetData_Activity_SnsActivity {
+declare interface ISheetData_Activity_SnsActivity extends ISheetDataBase {
 	/** snsID */
 	id: number;
 	disable: number;
@@ -9985,7 +9985,7 @@ declare interface ISheet_Activity_MineActivity {
 	241002: ISheetData_Activity_MineActivity;
 	250702: ISheetData_Activity_MineActivity;
 }
-declare interface ISheetData_Activity_MineActivity {
+declare interface ISheetData_Activity_MineActivity extends ISheetDataBase {
 	/** activity_id */
 	activity_id: number;
 	/** 奖励组ID */
@@ -10010,7 +10010,7 @@ declare interface ISheet_Activity_MineReward {
 	241002: ISheetData_Activity_MineReward[];
 	250702: ISheetData_Activity_MineReward[];
 }
-declare interface ISheetData_Activity_MineReward {
+declare interface ISheetData_Activity_MineReward extends ISheetDataBase {
 	group_id: number;
 	/** 唯一奖励id */
 	reward_id: number;
@@ -10030,7 +10030,7 @@ declare interface ISheet_Activity_RpgActivity {
 	[key: string]: ISheetData_Activity_RpgActivity;
 	1206: ISheetData_Activity_RpgActivity;
 }
-declare interface ISheetData_Activity_RpgActivity {
+declare interface ISheetData_Activity_RpgActivity extends ISheetDataBase {
 	activity_id: number;
 	/** 玩家基础生命 */
 	base_hp: number;
@@ -10069,7 +10069,7 @@ declare interface ISheet_Activity_RpgMonsterGroup {
 	120601: ISheetData_Activity_RpgMonsterGroup[];
 	22081101: ISheetData_Activity_RpgMonsterGroup[];
 }
-declare interface ISheetData_Activity_RpgMonsterGroup {
+declare interface ISheetData_Activity_RpgMonsterGroup extends ISheetDataBase {
 	group_id: number;
 	/** 顺序 */
 	seq: number;
@@ -10099,7 +10099,7 @@ declare interface ISheet_Activity_ArenaActivity {
 	[key: string]: ISheetData_Activity_ArenaActivity;
 	1245: ISheetData_Activity_ArenaActivity;
 }
-declare interface ISheetData_Activity_ArenaActivity {
+declare interface ISheetData_Activity_ArenaActivity extends ISheetDataBase {
 	activity_id: number;
 	/** 匹配时间控制 */
 	match_time: string;
@@ -10131,7 +10131,7 @@ declare interface ISheet_Activity_ArenaReward {
 	[key: string]: ISheetData_Activity_ArenaReward[];
 	124501: ISheetData_Activity_ArenaReward[];
 }
-declare interface ISheetData_Activity_ArenaReward {
+declare interface ISheetData_Activity_ArenaReward extends ISheetDataBase {
 	group_id: number;
 	/** 胜场数量 */
 	win_count: number;
@@ -10145,7 +10145,7 @@ declare interface ISheet_Activity_ArenaRewardDisplay {
 	[key: string]: ISheetData_Activity_ArenaRewardDisplay[];
 	124501: ISheetData_Activity_ArenaRewardDisplay[];
 }
-declare interface ISheetData_Activity_ArenaRewardDisplay {
+declare interface ISheetData_Activity_ArenaRewardDisplay extends ISheetDataBase {
 	group_id: number;
 	win_count_min: number;
 	win_count_max: number;
@@ -10178,7 +10178,7 @@ declare interface ISheet_Activity_SegmentTask {
 	23010301: ISheetData_Activity_SegmentTask;
 	23091101: ISheetData_Activity_SegmentTask;
 }
-declare interface ISheetData_Activity_SegmentTask {
+declare interface ISheetData_Activity_SegmentTask extends ISheetDataBase {
 	/** 活动任务id */
 	id: number;
 	/** 活动id */
@@ -10199,7 +10199,7 @@ declare interface ISheet_Activity_FeedActivityInfo {
 	[key: string]: ISheetData_Activity_FeedActivityInfo;
 	1260: ISheetData_Activity_FeedActivityInfo;
 }
-declare interface ISheetData_Activity_FeedActivityInfo {
+declare interface ISheetData_Activity_FeedActivityInfo extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 最多喂次数 */
@@ -10220,7 +10220,7 @@ declare interface ISheet_Activity_FeedActivityReward {
 	[key: string]: ISheetData_Activity_FeedActivityReward[];
 	126001: ISheetData_Activity_FeedActivityReward[];
 }
-declare interface ISheetData_Activity_FeedActivityReward {
+declare interface ISheetData_Activity_FeedActivityReward extends ISheetDataBase {
 	/** 奖励id */
 	id: number;
 	/** 次数 */
@@ -10243,7 +10243,7 @@ declare interface ISheet_Activity_VoteActivity {
 	250890: ISheetData_Activity_VoteActivity;
 	250891: ISheetData_Activity_VoteActivity;
 }
-declare interface ISheetData_Activity_VoteActivity {
+declare interface ISheetData_Activity_VoteActivity extends ISheetDataBase {
 	/** 活动id */
 	id: number;
 	/** 投票道具ID */
@@ -10260,7 +10260,7 @@ declare interface ISheet_Activity_RpgV2Activity {
 	[key: string]: ISheetData_Activity_RpgV2Activity;
 	220811: ISheetData_Activity_RpgV2Activity;
 }
-declare interface ISheetData_Activity_RpgV2Activity {
+declare interface ISheetData_Activity_RpgV2Activity extends ISheetDataBase {
 	activity_id: number;
 	/** 玩家基础攻击 */
 	base_atk: number;
@@ -10314,7 +10314,7 @@ declare interface ISheet_Activity_SpotActivity {
 	24060411: ISheetData_Activity_SpotActivity;
 	24060412: ISheetData_Activity_SpotActivity;
 }
-declare interface ISheetData_Activity_SpotActivity {
+declare interface ISheetData_Activity_SpotActivity extends ISheetDataBase {
 	/** 剧情id */
 	unique_id: number;
 	/** 活动id */
@@ -10403,7 +10403,7 @@ declare interface ISheet_Activity_ActivityItem {
 	260312: ISheetData_Activity_ActivityItem;
 	260412: ISheetData_Activity_ActivityItem;
 }
-declare interface ISheetData_Activity_ActivityItem {
+declare interface ISheetData_Activity_ActivityItem extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 发放道具到背包 */
@@ -10416,7 +10416,7 @@ declare interface ISheet_Activity_UpgradeActivity {
 	[key: string]: ISheetData_Activity_UpgradeActivity;
 	230101: ISheetData_Activity_UpgradeActivity;
 }
-declare interface ISheetData_Activity_UpgradeActivity {
+declare interface ISheetData_Activity_UpgradeActivity extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 奖励邮件 */
@@ -10438,7 +10438,7 @@ declare interface ISheet_Activity_UpgradeActivityReward {
 	23010103: ISheetData_Activity_UpgradeActivityReward[];
 	23010199: ISheetData_Activity_UpgradeActivityReward[];
 }
-declare interface ISheetData_Activity_UpgradeActivityReward {
+declare interface ISheetData_Activity_UpgradeActivityReward extends ISheetDataBase {
 	/** 奖励组id，group形式 */
 	id: number;
 	/** 等级 */
@@ -10456,7 +10456,7 @@ declare interface ISheet_Activity_FriendGiftActivity {
 	[key: string]: ISheetData_Activity_FriendGiftActivity;
 	230102: ISheetData_Activity_FriendGiftActivity;
 }
-declare interface ISheetData_Activity_FriendGiftActivity {
+declare interface ISheetData_Activity_FriendGiftActivity extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 赠送给好友次数限制 */
@@ -10480,7 +10480,7 @@ declare interface ISheet_Activity_UpgradeActivityDisplay {
 	23010103: ISheetData_Activity_UpgradeActivityDisplay[];
 	23010199: ISheetData_Activity_UpgradeActivityDisplay[];
 }
-declare interface ISheetData_Activity_UpgradeActivityDisplay {
+declare interface ISheetData_Activity_UpgradeActivityDisplay extends ISheetDataBase {
 	/** 奖励组id，group形式 */
 	id: number;
 	/** 等级 */
@@ -10494,7 +10494,7 @@ declare interface ISheet_Activity_ActivityDesktop {
 	[key: string]: ISheetData_Activity_ActivityDesktop[];
 	230143: ISheetData_Activity_ActivityDesktop[];
 }
-declare interface ISheetData_Activity_ActivityDesktop {
+declare interface ISheetData_Activity_ActivityDesktop extends ISheetDataBase {
 	activity_id: number;
 	desktop_id: number;
 	interval: number;
@@ -10510,7 +10510,7 @@ declare interface ISheet_Activity_GachaActivityInfo {
 	240901: ISheetData_Activity_GachaActivityInfo;
 	250501: ISheetData_Activity_GachaActivityInfo;
 }
-declare interface ISheetData_Activity_GachaActivityInfo {
+declare interface ISheetData_Activity_GachaActivityInfo extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 奖池 */
@@ -10534,7 +10534,7 @@ declare interface ISheet_Activity_GachaPool {
 	103: ISheetData_Activity_GachaPool[];
 	104: ISheetData_Activity_GachaPool[];
 }
-declare interface ISheetData_Activity_GachaPool {
+declare interface ISheetData_Activity_GachaPool extends ISheetDataBase {
 	/** 奖品池id */
 	pool_id: number;
 	/** 奖品id */
@@ -10556,7 +10556,7 @@ declare interface ISheet_Activity_GachaControl {
 	103: ISheetData_Activity_GachaControl[];
 	104: ISheetData_Activity_GachaControl[];
 }
-declare interface ISheetData_Activity_GachaControl {
+declare interface ISheetData_Activity_GachaControl extends ISheetDataBase {
 
 }
 //#endregion
@@ -10566,7 +10566,7 @@ declare interface ISheet_Activity_TaskDisplay {
 	[key: string]: ISheetData_Activity_TaskDisplay[];
 	230601: ISheetData_Activity_TaskDisplay[];
 }
-declare interface ISheetData_Activity_TaskDisplay {
+declare interface ISheetData_Activity_TaskDisplay extends ISheetDataBase {
 	activity_id: number;
 	/** 自然日 */
 	day: number;
@@ -10590,7 +10590,7 @@ declare interface ISheet_Activity_SimulationActivityInfo {
 	[key: string]: ISheetData_Activity_SimulationActivityInfo;
 	230801: ISheetData_Activity_SimulationActivityInfo;
 }
-declare interface ISheetData_Activity_SimulationActivityInfo {
+declare interface ISheetData_Activity_SimulationActivityInfo extends ISheetDataBase {
 	/** 活动ID */
 	activity_id: number;
 	/** 体力值物品ID */
@@ -10629,7 +10629,7 @@ declare interface ISheet_Activity_RewardMail {
 	260302: ISheetData_Activity_RewardMail;
 	260403: ISheetData_Activity_RewardMail;
 }
-declare interface ISheetData_Activity_RewardMail {
+declare interface ISheetData_Activity_RewardMail extends ISheetDataBase {
 	/** 活动ID */
 	activity_id: number;
 	/** 对应邮件 */
@@ -10643,7 +10643,7 @@ declare interface ISheet_Activity_CombiningActivityInfo {
 	231201: ISheetData_Activity_CombiningActivityInfo;
 	250601: ISheetData_Activity_CombiningActivityInfo;
 }
-declare interface ISheetData_Activity_CombiningActivityInfo {
+declare interface ISheetData_Activity_CombiningActivityInfo extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 材料桶1id */
@@ -10675,7 +10675,7 @@ declare interface ISheet_Activity_CombiningCraftPool {
 	25060102: ISheetData_Activity_CombiningCraftPool[];
 	25060103: ISheetData_Activity_CombiningCraftPool[];
 }
-declare interface ISheetData_Activity_CombiningCraftPool {
+declare interface ISheetData_Activity_CombiningCraftPool extends ISheetDataBase {
 	/** 材料桶id */
 	bin_id: number;
 	/** 素材id */
@@ -10689,7 +10689,7 @@ declare interface ISheet_Activity_CombiningMap {
 	231201: ISheetData_Activity_CombiningMap[];
 	250601: ISheetData_Activity_CombiningMap[];
 }
-declare interface ISheetData_Activity_CombiningMap {
+declare interface ISheetData_Activity_CombiningMap extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 分数道具id */
@@ -10735,7 +10735,7 @@ declare interface ISheet_Activity_CombiningOrder {
 	25060114: ISheetData_Activity_CombiningOrder;
 	25060115: ISheetData_Activity_CombiningOrder;
 }
-declare interface ISheetData_Activity_CombiningOrder {
+declare interface ISheetData_Activity_CombiningOrder extends ISheetDataBase {
 
 }
 //#endregion
@@ -10790,7 +10790,7 @@ declare interface ISheet_Activity_CombiningCraft {
 	15002: ISheetData_Activity_CombiningCraft;
 	15003: ISheetData_Activity_CombiningCraft;
 }
-declare interface ISheetData_Activity_CombiningCraft {
+declare interface ISheetData_Activity_CombiningCraft extends ISheetDataBase {
 	/** 素材id */
 	id: number;
 	/** 活动id */
@@ -10878,7 +10878,7 @@ declare interface ISheet_Activity_CombiningCustomer {
 	1057: ISheetData_Activity_CombiningCustomer;
 	1058: ISheetData_Activity_CombiningCustomer;
 }
-declare interface ISheetData_Activity_CombiningCustomer {
+declare interface ISheetData_Activity_CombiningCustomer extends ISheetDataBase {
 	/** 客人id */
 	customer_id: number;
 	/** 活动id */
@@ -11080,7 +11080,7 @@ declare interface ISheet_Activity_ChestReplaceUp {
 	260430: ISheetData_Activity_ChestReplaceUp[];
 	260431: ISheetData_Activity_ChestReplaceUp[];
 }
-declare interface ISheetData_Activity_ChestReplaceUp {
+declare interface ISheetData_Activity_ChestReplaceUp extends ISheetDataBase {
 	/** 宝箱ID（索引） */
 	chest_id: number;
 }
@@ -11091,7 +11091,7 @@ declare interface ISheet_Activity_VillageActivityInfo {
 	[key: string]: ISheetData_Activity_VillageActivityInfo;
 	240101: ISheetData_Activity_VillageActivityInfo;
 }
-declare interface ISheetData_Activity_VillageActivityInfo {
+declare interface ISheetData_Activity_VillageActivityInfo extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 工人物品ID */
@@ -11120,7 +11120,7 @@ declare interface ISheet_Activity_VillageBuilding {
 	[key: string]: ISheetData_Activity_VillageBuilding[];
 	240101: ISheetData_Activity_VillageBuilding[];
 }
-declare interface ISheetData_Activity_VillageBuilding {
+declare interface ISheetData_Activity_VillageBuilding extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 建筑ID */
@@ -11160,7 +11160,7 @@ declare interface ISheet_Activity_VillageTask {
 	[key: string]: ISheetData_Activity_VillageTask[];
 	240101: ISheetData_Activity_VillageTask[];
 }
-declare interface ISheetData_Activity_VillageTask {
+declare interface ISheetData_Activity_VillageTask extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 委托id */
@@ -11188,7 +11188,7 @@ declare interface ISheet_Activity_LiverEventInfo {
 	240301: ISheetData_Activity_LiverEventInfo;
 	260101: ISheetData_Activity_LiverEventInfo;
 }
-declare interface ISheetData_Activity_LiverEventInfo {
+declare interface ISheetData_Activity_LiverEventInfo extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 初始关注人数 */
@@ -11224,7 +11224,7 @@ declare interface ISheet_Activity_LiverTextInfo {
 	240301: ISheetData_Activity_LiverTextInfo[];
 	260101: ISheetData_Activity_LiverTextInfo[];
 }
-declare interface ISheetData_Activity_LiverTextInfo {
+declare interface ISheetData_Activity_LiverTextInfo extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 角色类型1=雀魂角色，2=路人id */
@@ -11246,7 +11246,7 @@ declare interface ISheet_Activity_FestivalActivity {
 	240401: ISheetData_Activity_FestivalActivity;
 	250101: ISheetData_Activity_FestivalActivity;
 }
-declare interface ISheetData_Activity_FestivalActivity {
+declare interface ISheetData_Activity_FestivalActivity extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 资金道具id */
@@ -11272,7 +11272,7 @@ declare interface ISheet_Activity_FestivalLevel {
 	240401: ISheetData_Activity_FestivalLevel[];
 	250101: ISheetData_Activity_FestivalLevel[];
 }
-declare interface ISheetData_Activity_FestivalLevel {
+declare interface ISheetData_Activity_FestivalLevel extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 等级 */
@@ -11294,7 +11294,7 @@ declare interface ISheet_Activity_FestivalProposal {
 	240401: ISheetData_Activity_FestivalProposal[];
 	250101: ISheetData_Activity_FestivalProposal[];
 }
-declare interface ISheetData_Activity_FestivalProposal {
+declare interface ISheetData_Activity_FestivalProposal extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 提案id */
@@ -11322,7 +11322,7 @@ declare interface ISheet_Activity_FestivalEvent {
 	240401: ISheetData_Activity_FestivalEvent[];
 	250101: ISheetData_Activity_FestivalEvent[];
 }
-declare interface ISheetData_Activity_FestivalEvent {
+declare interface ISheetData_Activity_FestivalEvent extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 事件id */
@@ -11532,7 +11532,7 @@ declare interface ISheet_Activity_FestivalEnding {
 	2002501: ISheetData_Activity_FestivalEnding[];
 	2002502: ISheetData_Activity_FestivalEnding[];
 }
-declare interface ISheetData_Activity_FestivalEnding {
+declare interface ISheetData_Activity_FestivalEnding extends ISheetDataBase {
 	group_id: number;
 	/** 结局ID */
 	ending_id: number;
@@ -11556,7 +11556,7 @@ declare interface ISheet_Activity_IslandActivity {
 	[key: string]: ISheetData_Activity_IslandActivity;
 	240601: ISheetData_Activity_IslandActivity;
 }
-declare interface ISheetData_Activity_IslandActivity {
+declare interface ISheetData_Activity_IslandActivity extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 食物id */
@@ -11577,7 +11577,7 @@ declare interface ISheet_Activity_IslandGoods {
 	[key: string]: ISheetData_Activity_IslandGoods[];
 	240601: ISheetData_Activity_IslandGoods[];
 }
-declare interface ISheetData_Activity_IslandGoods {
+declare interface ISheetData_Activity_IslandGoods extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 商品id */
@@ -11600,7 +11600,7 @@ declare interface ISheet_Activity_IslandBag {
 	[key: string]: ISheetData_Activity_IslandBag[];
 	240601: ISheetData_Activity_IslandBag[];
 }
-declare interface ISheetData_Activity_IslandBag {
+declare interface ISheetData_Activity_IslandBag extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 背包id */
@@ -11631,7 +11631,7 @@ declare interface ISheet_Activity_IslandMap {
 	[key: string]: ISheetData_Activity_IslandMap[];
 	240601: ISheetData_Activity_IslandMap[];
 }
-declare interface ISheetData_Activity_IslandMap {
+declare interface ISheetData_Activity_IslandMap extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 地区id,从0开始 */
@@ -11658,7 +11658,7 @@ declare interface ISheet_Activity_IslandShop {
 	[key: string]: ISheetData_Activity_IslandShop[];
 	240601: ISheetData_Activity_IslandShop[];
 }
-declare interface ISheetData_Activity_IslandShop {
+declare interface ISheetData_Activity_IslandShop extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 活动第几日 */
@@ -11679,7 +11679,7 @@ declare interface ISheet_Activity_IslandNews {
 	[key: string]: ISheetData_Activity_IslandNews[];
 	240601: ISheetData_Activity_IslandNews[];
 }
-declare interface ISheetData_Activity_IslandNews {
+declare interface ISheetData_Activity_IslandNews extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 第几日 */
@@ -11706,7 +11706,7 @@ declare interface ISheet_Activity_SummerStory {
 	[key: string]: ISheetData_Activity_SummerStory[];
 	240811: ISheetData_Activity_SummerStory[];
 }
-declare interface ISheetData_Activity_SummerStory {
+declare interface ISheetData_Activity_SummerStory extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 页签ID */
@@ -11742,7 +11742,7 @@ declare interface ISheet_Activity_StoryActivity {
 	260205: ISheetData_Activity_StoryActivity[];
 	260407: ISheetData_Activity_StoryActivity[];
 }
-declare interface ISheetData_Activity_StoryActivity {
+declare interface ISheetData_Activity_StoryActivity extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 故事id */
@@ -11811,7 +11811,7 @@ declare interface ISheet_Activity_StoryEnding {
 	24110730: ISheetData_Activity_StoryEnding[];
 	24110740: ISheetData_Activity_StoryEnding[];
 }
-declare interface ISheetData_Activity_StoryEnding {
+declare interface ISheetData_Activity_StoryEnding extends ISheetDataBase {
 	/** 故事id */
 	story_id: number;
 	/** 结局id */
@@ -11882,7 +11882,7 @@ declare interface ISheet_Activity_ActivityBanner {
 	260391: ISheetData_Activity_ActivityBanner;
 	260401: ISheetData_Activity_ActivityBanner;
 }
-declare interface ISheetData_Activity_ActivityBanner {
+declare interface ISheetData_Activity_ActivityBanner extends ISheetDataBase {
 	/** id */
 	id: number;
 	/** 排序,大的在上面 */
@@ -11927,7 +11927,7 @@ declare interface ISheet_Activity_ActivityGuide {
 	24081118: ISheetData_Activity_ActivityGuide;
 	24081119: ISheetData_Activity_ActivityGuide;
 }
-declare interface ISheetData_Activity_ActivityGuide {
+declare interface ISheetData_Activity_ActivityGuide extends ISheetDataBase {
 	/** 引导id */
 	guide_id: number;
 	/** 活动id */
@@ -11948,7 +11948,7 @@ declare interface ISheet_Activity_SummerStoryReward {
 	[key: string]: ISheetData_Activity_SummerStoryReward[];
 	240811: ISheetData_Activity_SummerStoryReward[];
 }
-declare interface ISheetData_Activity_SummerStoryReward {
+declare interface ISheetData_Activity_SummerStoryReward extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 奖励任务ID */
@@ -11966,7 +11966,7 @@ declare interface ISheet_Activity_ChooseUpActivity {
 	250125: ISheetData_Activity_ChooseUpActivity;
 	260215: ISheetData_Activity_ChooseUpActivity;
 }
-declare interface ISheetData_Activity_ChooseUpActivity {
+declare interface ISheetData_Activity_ChooseUpActivity extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** choose_up_replace.id */
@@ -12016,7 +12016,7 @@ declare interface ISheet_Activity_ChooseUpReplace {
 	1001: ISheetData_Activity_ChooseUpReplace[];
 	1002: ISheetData_Activity_ChooseUpReplace[];
 }
-declare interface ISheetData_Activity_ChooseUpReplace {
+declare interface ISheetData_Activity_ChooseUpReplace extends ISheetDataBase {
 	/** 替换选择组id */
 	id: number;
 	/** 卡池id,国 */
@@ -12029,7 +12029,7 @@ declare interface ISheet_Activity_ProgressReward {
 	[key: string]: ISheetData_Activity_ProgressReward[];
 	250895: ISheetData_Activity_ProgressReward[];
 }
-declare interface ISheetData_Activity_ProgressReward {
+declare interface ISheetData_Activity_ProgressReward extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 进度（百分数*100） */
@@ -12044,7 +12044,7 @@ declare interface ISheet_Activity_BingoInfo {
 	[key: string]: ISheetData_Activity_BingoInfo[];
 	251190: ISheetData_Activity_BingoInfo[];
 }
-declare interface ISheetData_Activity_BingoInfo {
+declare interface ISheetData_Activity_BingoInfo extends ISheetDataBase {
 	activity_id: number;
 	card_id: number;
 	unlock_day: number;
@@ -12062,7 +12062,7 @@ declare interface ISheet_Activity_BingoCard {
 	100006: ISheetData_Activity_BingoCard[];
 	100007: ISheetData_Activity_BingoCard[];
 }
-declare interface ISheetData_Activity_BingoCard {
+declare interface ISheetData_Activity_BingoCard extends ISheetDataBase {
 	/** 冰果卡id */
 	card_id: number;
 	/** 冰菓格类型 */
@@ -12085,7 +12085,7 @@ declare interface ISheet_Activity_BingoReward {
 	100006: ISheetData_Activity_BingoReward[];
 	100007: ISheetData_Activity_BingoReward[];
 }
-declare interface ISheetData_Activity_BingoReward {
+declare interface ISheetData_Activity_BingoReward extends ISheetDataBase {
 	card_id: number;
 	reward_id: number;
 	/** 奖励str */
@@ -12105,7 +12105,7 @@ declare interface ISheet_Activity_ChooseGroupUpActivity {
 	260224: ISheetData_Activity_ChooseGroupUpActivity;
 	260225: ISheetData_Activity_ChooseGroupUpActivity;
 }
-declare interface ISheetData_Activity_ChooseGroupUpActivity {
+declare interface ISheetData_Activity_ChooseGroupUpActivity extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** choose_group.group_id */
@@ -12157,7 +12157,7 @@ declare interface ISheet_Activity_ChooseGroup {
 	2001: ISheetData_Activity_ChooseGroup[];
 	2002: ISheetData_Activity_ChooseGroup[];
 }
-declare interface ISheetData_Activity_ChooseGroup {
+declare interface ISheetData_Activity_ChooseGroup extends ISheetDataBase {
 	/** 组id */
 	group_id: number;
 	/** 选项id */
@@ -12223,7 +12223,7 @@ declare interface ISheet_Activity_TaskTab {
 	26040347: ISheetData_Activity_TaskTab;
 	26040348: ISheetData_Activity_TaskTab;
 }
-declare interface ISheetData_Activity_TaskTab {
+declare interface ISheetData_Activity_TaskTab extends ISheetDataBase {
 	/** 活动任务id */
 	id: number;
 	/** 活动id */

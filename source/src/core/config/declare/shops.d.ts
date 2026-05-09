@@ -47,7 +47,7 @@ declare interface ISheet_Shops_ZhpGoods {
 	23: ISheetData_Shops_ZhpGoods;
 	24: ISheetData_Shops_ZhpGoods;
 }
-declare interface ISheetData_Shops_ZhpGoods {
+declare interface ISheetData_Shops_ZhpGoods extends ISheetDataBase {
 	id: number;
 	/** 图标 */
 	icon: string;
@@ -79,7 +79,7 @@ declare interface ISheet_Shops_ZhpRefreshGroup {
 	2: ISheetData_Shops_ZhpRefreshGroup;
 	3: ISheetData_Shops_ZhpRefreshGroup;
 }
-declare interface ISheetData_Shops_ZhpRefreshGroup {
+declare interface ISheetData_Shops_ZhpRefreshGroup extends ISheetDataBase {
 
 }
 //#endregion
@@ -188,7 +188,7 @@ declare interface ISheet_Shops_ZhpRefreshPrice {
 	99: ISheetData_Shops_ZhpRefreshPrice;
 	100: ISheetData_Shops_ZhpRefreshPrice;
 }
-declare interface ISheetData_Shops_ZhpRefreshPrice {
+declare interface ISheetData_Shops_ZhpRefreshPrice extends ISheetDataBase {
 	/** 组id */
 	id: number;
 	/** 刷新价格 */
@@ -767,7 +767,7 @@ declare interface ISheet_Shops_Goods {
 	9077: ISheetData_Shops_Goods;
 	9078: ISheetData_Shops_Goods;
 }
-declare interface ISheetData_Shops_Goods {
+declare interface ISheetData_Shops_Goods extends ISheetDataBase {
 	id: number;
 	/** 商店类型 */
 	category: number;
@@ -820,7 +820,7 @@ declare interface ISheet_Shops_GoodsPackage {
 	[key: string]: ISheetData_Shops_GoodsPackage[];
 	700001: ISheetData_Shops_GoodsPackage[];
 }
-declare interface ISheetData_Shops_GoodsPackage {
+declare interface ISheetData_Shops_GoodsPackage extends ISheetDataBase {
 	id: number;
 	/** 商品ID */
 	good_id: number;
@@ -834,7 +834,7 @@ declare interface ISheet_Shops_IntervalRefreshGoods {
 	[key: string]: ISheetData_Shops_IntervalRefreshGoods[];
 	1001: ISheetData_Shops_IntervalRefreshGoods[];
 }
-declare interface ISheetData_Shops_IntervalRefreshGoods {
+declare interface ISheetData_Shops_IntervalRefreshGoods extends ISheetDataBase {
 	group_id: number;
 	goods_id: number;
 	interval: number;
@@ -848,7 +848,7 @@ declare interface ISheet_Shops_ItemPackage {
 	700002: ISheetData_Shops_ItemPackage;
 	700003: ISheetData_Shops_ItemPackage;
 }
-declare interface ISheetData_Shops_ItemPackage {
+declare interface ISheetData_Shops_ItemPackage extends ISheetDataBase {
 	id: number;
 	/** 包含道具 */
 	item_info: string;
@@ -860,7 +860,7 @@ declare interface ISheet_Shops_SelectedPackage {
 	[key: string]: ISheetData_Shops_SelectedPackage[];
 	5399: ISheetData_Shops_SelectedPackage[];
 }
-declare interface ISheetData_Shops_SelectedPackage {
+declare interface ISheetData_Shops_SelectedPackage extends ISheetDataBase {
 	/** 自选服饰商品id */
 	id: number;
 	/** 可选商品id */

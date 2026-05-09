@@ -10,7 +10,7 @@ declare interface ISheet_Leaderboard_Leaderboard {
 	[key: string]: ISheetData_Leaderboard_Leaderboard;
 	1010: ISheetData_Leaderboard_Leaderboard;
 }
-declare interface ISheetData_Leaderboard_Leaderboard {
+declare interface ISheetData_Leaderboard_Leaderboard extends ISheetDataBase {
 	id: number;
 	/** 开始排名时间 */
 	start_time: string;

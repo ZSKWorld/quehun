@@ -24,7 +24,7 @@ declare interface ISheet_Vip_Vip {
 	14: ISheetData_Vip_Vip;
 	15: ISheetData_Vip_Vip;
 }
-declare interface ISheetData_Vip_Vip {
+declare interface ISheetData_Vip_Vip extends ISheetDataBase {
 	id: number;
 	/** 称号名称 */
 	name_chs: string;

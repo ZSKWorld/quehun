@@ -34,7 +34,7 @@ declare interface ISheet_Simulation_SimV2Info {
 	[key: string]: ISheetData_Simulation_SimV2Info;
 	250401: ISheetData_Simulation_SimV2Info;
 }
-declare interface ISheetData_Simulation_SimV2Info {
+declare interface ISheetData_Simulation_SimV2Info extends ISheetDataBase {
 	/** 绑定activity表的活动 */
 	activity_id: number;
 	/** 玩家控制角色一姬（200001） */
@@ -83,7 +83,7 @@ declare interface ISheet_Simulation_SimV2Round {
 	[key: string]: ISheetData_Simulation_SimV2Round[];
 	250401: ISheetData_Simulation_SimV2Round[];
 }
-declare interface ISheetData_Simulation_SimV2Round {
+declare interface ISheetData_Simulation_SimV2Round extends ISheetDataBase {
 	/** 绑定activity表的活动 */
 	activity_id: number;
 	/** 回合数（1-50） */
@@ -98,7 +98,7 @@ declare interface ISheet_Simulation_SimV2Character {
 	[key: string]: ISheetData_Simulation_SimV2Character[];
 	250401: ISheetData_Simulation_SimV2Character[];
 }
-declare interface ISheetData_Simulation_SimV2Character {
+declare interface ISheetData_Simulation_SimV2Character extends ISheetDataBase {
 	/** 绑定activity表的活动 */
 	activity_id: number;
 	/** 角色id */
@@ -125,7 +125,7 @@ declare interface ISheet_Simulation_SimV2Roll {
 	[key: string]: ISheetData_Simulation_SimV2Roll[];
 	25040101: ISheetData_Simulation_SimV2Roll[];
 }
-declare interface ISheetData_Simulation_SimV2Roll {
+declare interface ISheetData_Simulation_SimV2Roll extends ISheetDataBase {
 	/** 事件组ID */
 	event_group_id: number;
 	/** 事件（注释） */
@@ -143,7 +143,7 @@ declare interface ISheet_Simulation_SimV2Event {
 	25040101: ISheetData_Simulation_SimV2Event[];
 	25040153: ISheetData_Simulation_SimV2Event[];
 }
-declare interface ISheetData_Simulation_SimV2Event {
+declare interface ISheetData_Simulation_SimV2Event extends ISheetDataBase {
 	/** 雀斗大会事件组 */
 	event_group_id: number;
 	/** 单个事件id */
@@ -365,7 +365,7 @@ declare interface ISheet_Simulation_SimV2Trigger {
 	9127063: ISheetData_Simulation_SimV2Trigger;
 	9127064: ISheetData_Simulation_SimV2Trigger;
 }
-declare interface ISheetData_Simulation_SimV2Trigger {
+declare interface ISheetData_Simulation_SimV2Trigger extends ISheetDataBase {
 	/** 触发条件每个一行 */
 	trigger_id: number;
 	/** 列举所有用到的条件type */
@@ -479,7 +479,7 @@ declare interface ISheet_Simulation_SimV2Selection {
 	1099: ISheetData_Simulation_SimV2Selection[];
 	1100: ISheetData_Simulation_SimV2Selection[];
 }
-declare interface ISheetData_Simulation_SimV2Selection {
+declare interface ISheetData_Simulation_SimV2Selection extends ISheetDataBase {
 	/** 单个事件ID */
 	event_id: number;
 	/** 选项ID */
@@ -519,7 +519,7 @@ declare interface ISheet_Simulation_SimV2Effect {
 	9019: ISheetData_Simulation_SimV2Effect;
 	9020: ISheetData_Simulation_SimV2Effect;
 }
-declare interface ISheetData_Simulation_SimV2Effect {
+declare interface ISheetData_Simulation_SimV2Effect extends ISheetDataBase {
 	/** 特性ID */
 	effect_id: number;
 	/** 运气（1-10000） */
@@ -919,7 +919,7 @@ declare interface ISheet_Simulation_SimV2SelectionResult {
 	110002: ISheetData_Simulation_SimV2SelectionResult[];
 	110004: ISheetData_Simulation_SimV2SelectionResult[];
 }
-declare interface ISheetData_Simulation_SimV2SelectionResult {
+declare interface ISheetData_Simulation_SimV2SelectionResult extends ISheetDataBase {
 	/** 选项id组，每个结果配置一行 */
 	selection_id: number;
 	/** 结果id */
@@ -1355,7 +1355,7 @@ declare interface ISheet_Simulation_SimV2Buff {
 	11000222: ISheetData_Simulation_SimV2Buff;
 	11000411: ISheetData_Simulation_SimV2Buff;
 }
-declare interface ISheetData_Simulation_SimV2Buff {
+declare interface ISheetData_Simulation_SimV2Buff extends ISheetDataBase {
 	/** 对局结果，每种1行 */
 	buff_id: number;
 	/** buff的结果页显示文本，str_event */
@@ -1376,7 +1376,7 @@ declare interface ISheet_Simulation_SimV2Upgrade {
 	[key: string]: ISheetData_Simulation_SimV2Upgrade;
 	250401: ISheetData_Simulation_SimV2Upgrade;
 }
-declare interface ISheetData_Simulation_SimV2Upgrade {
+declare interface ISheetData_Simulation_SimV2Upgrade extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 一个升级点对应属性点个数 */
@@ -1393,7 +1393,7 @@ declare interface ISheet_Simulation_SimV2Story {
 	[key: string]: ISheetData_Simulation_SimV2Story[];
 	250401: ISheetData_Simulation_SimV2Story[];
 }
-declare interface ISheetData_Simulation_SimV2Story {
+declare interface ISheetData_Simulation_SimV2Story extends ISheetDataBase {
 	/** 绑定activity表的活动 */
 	activity_id: number;
 	story_id: number;
@@ -1412,7 +1412,7 @@ declare interface ISheet_Simulation_SimV2Reward {
 	[key: string]: ISheetData_Simulation_SimV2Reward[];
 	250401: ISheetData_Simulation_SimV2Reward[];
 }
-declare interface ISheetData_Simulation_SimV2Reward {
+declare interface ISheetData_Simulation_SimV2Reward extends ISheetDataBase {
 	/** 绑定activity表的活动 */
 	activity_id: number;
 	/** 排位 1-4 */

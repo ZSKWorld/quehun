@@ -29,7 +29,7 @@ declare interface ISheet_Events_Soscoin {
 	115: ISheetData_Events_Soscoin;
 	116: ISheetData_Events_Soscoin;
 }
-declare interface ISheetData_Events_Soscoin {
+declare interface ISheetData_Events_Soscoin extends ISheetDataBase {
 	id: number;
 	/** 段位限制 */
 	level_limit: number;
@@ -284,7 +284,7 @@ declare interface ISheet_Events_Dailyevent {
 	30041: ISheetData_Events_Dailyevent;
 	30042: ISheetData_Events_Dailyevent;
 }
-declare interface ISheetData_Events_Dailyevent {
+declare interface ISheetData_Events_Dailyevent extends ISheetDataBase {
 	id: number;
 	/** 奖励类型 */
 	reward_type: number;
@@ -3048,7 +3048,7 @@ declare interface ISheet_Events_BaseTask {
 	800017: ISheetData_Events_BaseTask;
 	800018: ISheetData_Events_BaseTask;
 }
-declare interface ISheetData_Events_BaseTask {
+declare interface ISheetData_Events_BaseTask extends ISheetDataBase {
 	id: number;
 	/** 描述 */
 	desc_chs: string;

@@ -10,7 +10,7 @@ declare interface ISheet_Tournament_Tournaments {
 	[key: string]: ISheetData_Tournament_Tournaments;
 	1: ISheetData_Tournament_Tournaments;
 }
-declare interface ISheetData_Tournament_Tournaments {
+declare interface ISheetData_Tournament_Tournaments extends ISheetDataBase {
 	id: number;
 	/** 比赛名称 */
 	name: string;

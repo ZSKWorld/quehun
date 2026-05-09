@@ -436,7 +436,7 @@ declare interface ISheet_Audio_Audio {
 	30530011: ISheetData_Audio_Audio;
 	30530012: ISheetData_Audio_Audio;
 }
-declare interface ISheetData_Audio_Audio {
+declare interface ISheetData_Audio_Audio extends ISheetDataBase {
 	id: number;
 	/** 路径 */
 	path: string;
@@ -473,7 +473,7 @@ declare interface ISheet_Audio_Bgm {
 	30610005: ISheetData_Audio_Bgm;
 	30610006: ISheetData_Audio_Bgm;
 }
-declare interface ISheetData_Audio_Bgm {
+declare interface ISheetData_Audio_Bgm extends ISheetDataBase {
 	id: number;
 	auto_hide: number;
 	/** 名称 */

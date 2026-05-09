@@ -87,7 +87,7 @@ declare interface ISheet_LevelDefinition_LevelDefinition {
 	20719: ISheetData_LevelDefinition_LevelDefinition;
 	20720: ISheetData_LevelDefinition_LevelDefinition;
 }
-declare interface ISheetData_LevelDefinition_LevelDefinition {
+declare interface ISheetData_LevelDefinition_LevelDefinition extends ISheetDataBase {
 	id: number;
 	type: number;
 	primary_level: number;
@@ -127,7 +127,7 @@ declare interface ISheet_LevelDefinition_Character {
 	200095: ISheetData_LevelDefinition_Character[];
 	20000112: ISheetData_LevelDefinition_Character[];
 }
-declare interface ISheetData_LevelDefinition_Character {
+declare interface ISheetData_LevelDefinition_Character extends ISheetDataBase {
 	level: number;
 	character_id: number;
 	/** 经验槽 */
@@ -162,7 +162,7 @@ declare interface ISheet_LevelDefinition_Trail {
 	12: ISheetData_LevelDefinition_Trail;
 	13: ISheetData_LevelDefinition_Trail;
 }
-declare interface ISheetData_LevelDefinition_Trail {
+declare interface ISheetData_LevelDefinition_Trail extends ISheetDataBase {
 	id: number;
 	/** 初始等级 */
 	init_level: number;
@@ -180,7 +180,7 @@ declare interface ISheet_LevelDefinition_TopRank {
 	[key: string]: ISheetData_LevelDefinition_TopRank[];
 	1001: ISheetData_LevelDefinition_TopRank[];
 }
-declare interface ISheetData_LevelDefinition_TopRank {
+declare interface ISheetData_LevelDefinition_TopRank extends ISheetDataBase {
 	id: number;
 	/** 第一名获得pt */
 	rank_pt: number[];

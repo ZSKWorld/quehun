@@ -135,7 +135,7 @@ declare interface ISheet_Character_Emoji {
 	20000124: ISheetData_Character_Emoji[];
 	20000125: ISheetData_Character_Emoji[];
 }
-declare interface ISheetData_Character_Emoji {
+declare interface ISheetData_Character_Emoji extends ISheetDataBase {
 	/** 角色ID */
 	charid: number;
 	/** 表情ID */
@@ -179,7 +179,7 @@ declare interface ISheet_Character_Cutin {
 	40011202: ISheetData_Character_Cutin;
 	40011203: ISheetData_Character_Cutin;
 }
-declare interface ISheetData_Character_Cutin {
+declare interface ISheetData_Character_Cutin extends ISheetDataBase {
 	/** 皮肤ID */
 	skinid: number;
 	/** 本体名 */
@@ -246,7 +246,7 @@ declare interface ISheet_Character_Skin {
 	40012403: ISheetData_Character_Skin;
 	40012503: ISheetData_Character_Skin;
 }
-declare interface ISheetData_Character_Skin {
+declare interface ISheetData_Character_Skin extends ISheetDataBase {
 	/** 皮肤ID */
 	skinid: number;
 	/** 动皮有几层 */

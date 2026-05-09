@@ -144,7 +144,7 @@ declare interface ISheet_Animation_Animation {
 	1002704: ISheetData_Animation_Animation;
 	1002705: ISheetData_Animation_Animation;
 }
-declare interface ISheetData_Animation_Animation {
+declare interface ISheetData_Animation_Animation extends ISheetDataBase {
 	id: number;
 	name: string;
 	type: string;

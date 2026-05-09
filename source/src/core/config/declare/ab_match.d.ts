@@ -20,7 +20,7 @@ declare interface ISheet_AbMatch_MatchInfo {
 	1004: ISheetData_AbMatch_MatchInfo;
 	1005: ISheetData_AbMatch_MatchInfo;
 }
-declare interface ISheetData_AbMatch_MatchInfo {
+declare interface ISheetData_AbMatch_MatchInfo extends ISheetDataBase {
 	id: number;
 	ab_match_activity_id: number;
 	match_activity_id: number;
@@ -50,7 +50,7 @@ declare interface ISheet_AbMatch_Point {
 	4004: ISheetData_AbMatch_Point[];
 	4005: ISheetData_AbMatch_Point[];
 }
-declare interface ISheetData_AbMatch_Point {
+declare interface ISheetData_AbMatch_Point extends ISheetDataBase {
 	id: number;
 	rank: number;
 	desktop_id_list: string;
@@ -67,7 +67,7 @@ declare interface ISheet_AbMatch_RewardSeq {
 	5004: ISheetData_AbMatch_RewardSeq[];
 	5005: ISheetData_AbMatch_RewardSeq[];
 }
-declare interface ISheetData_AbMatch_RewardSeq {
+declare interface ISheetData_AbMatch_RewardSeq extends ISheetDataBase {
 	id: number;
 	point_lower: number;
 	point_upper: number;
@@ -83,7 +83,7 @@ declare interface ISheet_AbMatch_ConsumeSeq {
 	9002: ISheetData_AbMatch_ConsumeSeq[];
 	9003: ISheetData_AbMatch_ConsumeSeq[];
 }
-declare interface ISheetData_AbMatch_ConsumeSeq {
+declare interface ISheetData_AbMatch_ConsumeSeq extends ISheetDataBase {
 	id: number;
 	match_count: number;
 	item_id: number;

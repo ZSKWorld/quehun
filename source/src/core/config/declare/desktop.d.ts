@@ -71,7 +71,7 @@ declare interface ISheet_Desktop_Matchmode {
 	53: ISheetData_Desktop_Matchmode;
 	54: ISheetData_Desktop_Matchmode;
 }
-declare interface ISheetData_Desktop_Matchmode {
+declare interface ISheetData_Desktop_Matchmode extends ISheetDataBase {
 	/** 匹配ID */
 	id: number;
 	/** 是否开放 */
@@ -191,7 +191,7 @@ declare interface ISheet_Desktop_Chest {
 	4: ISheetData_Desktop_Chest;
 	5: ISheetData_Desktop_Chest;
 }
-declare interface ISheetData_Desktop_Chest {
+declare interface ISheetData_Desktop_Chest extends ISheetDataBase {
 	/** 宝箱ID */
 	id: number;
 	/** 经验条长度 */
@@ -219,7 +219,7 @@ declare interface ISheet_Desktop_Settings {
 	account_friendship_bar_length: ISheetData_Desktop_Settings;
 	account_friendship_bar_reward_id: ISheetData_Desktop_Settings;
 }
-declare interface ISheetData_Desktop_Settings {
+declare interface ISheetData_Desktop_Settings extends ISheetDataBase {
 	key: string;
 	int_value: number;
 }
@@ -244,7 +244,7 @@ declare interface ISheet_Desktop_FieldSpell {
 	40000: ISheetData_Desktop_FieldSpell;
 	50000: ISheetData_Desktop_FieldSpell;
 }
-declare interface ISheetData_Desktop_FieldSpell {
+declare interface ISheetData_Desktop_FieldSpell extends ISheetDataBase {
 	/** 位置，取值范围[1,3] */
 	field: number;
 	/** id值，取值范围[1,5] */
@@ -277,7 +277,7 @@ declare interface ISheet_Desktop_FriendRoom {
 	16: ISheetData_Desktop_FriendRoom;
 	17: ISheetData_Desktop_FriendRoom;
 }
-declare interface ISheetData_Desktop_FriendRoom {
+declare interface ISheetData_Desktop_FriendRoom extends ISheetDataBase {
 	/** 友人房模式 */
 	id: number;
 	/** 对应activity_room,三人四人无 */
@@ -307,7 +307,7 @@ declare interface ISheet_Desktop_TourPresetRule {
 	7: ISheetData_Desktop_TourPresetRule;
 	101: ISheetData_Desktop_TourPresetRule;
 }
-declare interface ISheetData_Desktop_TourPresetRule {
+declare interface ISheetData_Desktop_TourPresetRule extends ISheetDataBase {
 	id: number;
 	/** 预设规则名的strID */
 	preset_rule: number;

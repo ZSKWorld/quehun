@@ -32,7 +32,7 @@ declare interface ISheet_Mmo_MmoActivity {
 	[key: string]: ISheetData_Mmo_MmoActivity;
 	260401: ISheetData_Mmo_MmoActivity;
 }
-declare interface ISheetData_Mmo_MmoActivity {
+declare interface ISheetData_Mmo_MmoActivity extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 装备最大数量 */
@@ -57,7 +57,7 @@ declare interface ISheet_Mmo_MmoCharacter {
 	[key: string]: ISheetData_Mmo_MmoCharacter[];
 	260401: ISheetData_Mmo_MmoCharacter[];
 }
-declare interface ISheetData_Mmo_MmoCharacter {
+declare interface ISheetData_Mmo_MmoCharacter extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 角色id */
@@ -92,7 +92,7 @@ declare interface ISheet_Mmo_MmoEnemy {
 	[key: string]: ISheetData_Mmo_MmoEnemy[];
 	260401: ISheetData_Mmo_MmoEnemy[];
 }
-declare interface ISheetData_Mmo_MmoEnemy {
+declare interface ISheetData_Mmo_MmoEnemy extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 敌人id */
@@ -119,7 +119,7 @@ declare interface ISheet_Mmo_MmoEquipment {
 	[key: string]: ISheetData_Mmo_MmoEquipment[];
 	260401: ISheetData_Mmo_MmoEquipment[];
 }
-declare interface ISheetData_Mmo_MmoEquipment {
+declare interface ISheetData_Mmo_MmoEquipment extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 对应function_item表的道具id */
@@ -164,7 +164,7 @@ declare interface ISheet_Mmo_MmoEquipmentBuff {
 	1004: ISheetData_Mmo_MmoEquipmentBuff;
 	1005: ISheetData_Mmo_MmoEquipmentBuff;
 }
-declare interface ISheetData_Mmo_MmoEquipmentBuff {
+declare interface ISheetData_Mmo_MmoEquipmentBuff extends ISheetDataBase {
 	/** buffid */
 	buff_id: number;
 	/** buff类型 */
@@ -181,7 +181,7 @@ declare interface ISheet_Mmo_MmoLevel {
 	[key: string]: ISheetData_Mmo_MmoLevel[];
 	260401: ISheetData_Mmo_MmoLevel[];
 }
-declare interface ISheetData_Mmo_MmoLevel {
+declare interface ISheetData_Mmo_MmoLevel extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 关卡id */
@@ -212,7 +212,7 @@ declare interface ISheet_Mmo_MmoNpc {
 	[key: string]: ISheetData_Mmo_MmoNpc[];
 	260401: ISheetData_Mmo_MmoNpc[];
 }
-declare interface ISheetData_Mmo_MmoNpc {
+declare interface ISheetData_Mmo_MmoNpc extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** npcid */
@@ -234,7 +234,7 @@ declare interface ISheet_Mmo_MmoBuffBanned {
 	101: ISheetData_Mmo_MmoBuffBanned[];
 	102: ISheetData_Mmo_MmoBuffBanned[];
 }
-declare interface ISheetData_Mmo_MmoBuffBanned {
+declare interface ISheetData_Mmo_MmoBuffBanned extends ISheetDataBase {
 	id: number;
 	/** 禁用的稀有度 */
 	ban_rare: number;
@@ -246,7 +246,7 @@ declare interface ISheet_Mmo_MmoBuffReplace {
 	[key: string]: ISheetData_Mmo_MmoBuffReplace[];
 	1001: ISheetData_Mmo_MmoBuffReplace[];
 }
-declare interface ISheetData_Mmo_MmoBuffReplace {
+declare interface ISheetData_Mmo_MmoBuffReplace extends ISheetDataBase {
 	id: number;
 	/** 从物品id */
 	item_id: number;
@@ -260,7 +260,7 @@ declare interface ISheet_Mmo_MmoSupport {
 	[key: string]: ISheetData_Mmo_MmoSupport[];
 	260401: ISheetData_Mmo_MmoSupport[];
 }
-declare interface ISheetData_Mmo_MmoSupport {
+declare interface ISheetData_Mmo_MmoSupport extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 支援数下限，闭区间 */
@@ -275,7 +275,7 @@ declare interface ISheet_Mmo_MmoWeaponType {
 	[key: string]: ISheetData_Mmo_MmoWeaponType[];
 	260401: ISheetData_Mmo_MmoWeaponType[];
 }
-declare interface ISheetData_Mmo_MmoWeaponType {
+declare interface ISheetData_Mmo_MmoWeaponType extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 武器类型 */
@@ -368,7 +368,7 @@ declare interface ISheet_Mmo_MmoTeamTalent {
 	[key: string]: ISheetData_Mmo_MmoTeamTalent[];
 	260404: ISheetData_Mmo_MmoTeamTalent[];
 }
-declare interface ISheetData_Mmo_MmoTeamTalent {
+declare interface ISheetData_Mmo_MmoTeamTalent extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** buffid */

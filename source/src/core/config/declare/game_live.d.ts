@@ -39,7 +39,7 @@ declare interface ISheet_GameLive_SelectFilters {
 	227: ISheetData_GameLive_SelectFilters;
 	228: ISheetData_GameLive_SelectFilters;
 }
-declare interface ISheetData_GameLive_SelectFilters {
+declare interface ISheetData_GameLive_SelectFilters extends ISheetDataBase {
 	id: number;
 	/** 游戏分类 */
 	category: number;

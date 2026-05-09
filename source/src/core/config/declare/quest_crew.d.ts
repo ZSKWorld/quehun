@@ -16,7 +16,7 @@ declare interface ISheet_QuestCrew_QcInfo {
 	[key: string]: ISheetData_QuestCrew_QcInfo;
 	251001: ISheetData_QuestCrew_QcInfo;
 }
-declare interface ISheetData_QuestCrew_QcInfo {
+declare interface ISheetData_QuestCrew_QcInfo extends ISheetDataBase {
 	/** 活动ID */
 	id: number;
 	/** 角色池id */
@@ -43,7 +43,7 @@ declare interface ISheet_QuestCrew_QcCharacterPool {
 	[key: string]: ISheetData_QuestCrew_QcCharacterPool[];
 	1001: ISheetData_QuestCrew_QcCharacterPool[];
 }
-declare interface ISheetData_QuestCrew_QcCharacterPool {
+declare interface ISheetData_QuestCrew_QcCharacterPool extends ISheetDataBase {
 	/** 角色池 */
 	id: number;
 	/** 角色ID */
@@ -113,7 +113,7 @@ declare interface ISheet_QuestCrew_QcEffect {
 	10033: ISheetData_QuestCrew_QcEffect;
 	10034: ISheetData_QuestCrew_QcEffect;
 }
-declare interface ISheetData_QuestCrew_QcEffect {
+declare interface ISheetData_QuestCrew_QcEffect extends ISheetDataBase {
 	/** 特性ID */
 	id: number;
 	/** 特性类型 */
@@ -128,7 +128,7 @@ declare interface ISheet_QuestCrew_QcQuestPool {
 	[key: string]: ISheetData_QuestCrew_QcQuestPool[];
 	2001: ISheetData_QuestCrew_QcQuestPool[];
 }
-declare interface ISheetData_QuestCrew_QcQuestPool {
+declare interface ISheetData_QuestCrew_QcQuestPool extends ISheetDataBase {
 	/** 委托池id */
 	id: number;
 	/** 委托ID */

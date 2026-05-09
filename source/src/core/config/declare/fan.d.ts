@@ -105,7 +105,7 @@ declare interface ISheet_Fan_Fan {
 	1020: ISheetData_Fan_Fan;
 	1021: ISheetData_Fan_Fan;
 }
-declare interface ISheetData_Fan_Fan {
+declare interface ISheetData_Fan_Fan extends ISheetDataBase {
 	id: number;
 	name_chs: string;
 	name_chs_t: string;

@@ -18,7 +18,7 @@ declare interface ISheet_Marathon_MarathonInfo {
 	[key: string]: ISheetData_Marathon_MarathonInfo;
 	260201: ISheetData_Marathon_MarathonInfo;
 }
-declare interface ISheetData_Marathon_MarathonInfo {
+declare interface ISheetData_Marathon_MarathonInfo extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 一秒多少tick */
@@ -65,7 +65,7 @@ declare interface ISheet_Marathon_MarathonReward {
 	[key: string]: ISheetData_Marathon_MarathonReward[];
 	3001: ISheetData_Marathon_MarathonReward[];
 }
-declare interface ISheetData_Marathon_MarathonReward {
+declare interface ISheetData_Marathon_MarathonReward extends ISheetDataBase {
 	/** 分数组 */
 	group_id: number;
 	type: number;
@@ -80,7 +80,7 @@ declare interface ISheet_Marathon_MarathonTileGroup {
 	[key: string]: ISheetData_Marathon_MarathonTileGroup[];
 	2001: ISheetData_Marathon_MarathonTileGroup[];
 }
-declare interface ISheetData_Marathon_MarathonTileGroup {
+declare interface ISheetData_Marathon_MarathonTileGroup extends ISheetDataBase {
 	/** 牌组 */
 	group_id: number;
 	/** 牌 */
@@ -97,7 +97,7 @@ declare interface ISheet_Marathon_MarathonWallGroup {
 	[key: string]: ISheetData_Marathon_MarathonWallGroup[];
 	1001: ISheetData_Marathon_MarathonWallGroup[];
 }
-declare interface ISheetData_Marathon_MarathonWallGroup {
+declare interface ISheetData_Marathon_MarathonWallGroup extends ISheetDataBase {
 	/** 牌墙组 */
 	group_id: number;
 	/** 下限(闭区间) */
@@ -136,7 +136,7 @@ declare interface ISheet_Marathon_MarathonItemGroup {
 	4002: ISheetData_Marathon_MarathonItemGroup[];
 	4003: ISheetData_Marathon_MarathonItemGroup[];
 }
-declare interface ISheetData_Marathon_MarathonItemGroup {
+declare interface ISheetData_Marathon_MarathonItemGroup extends ISheetDataBase {
 	/** 道具组 */
 	group_id: number;
 	/** 道具类型 */

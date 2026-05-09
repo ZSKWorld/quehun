@@ -20,7 +20,7 @@ declare interface ISheet_Snowball_SnowballActivity {
 	[key: string]: ISheetData_Snowball_SnowballActivity;
 	251201: ISheetData_Snowball_SnowballActivity;
 }
-declare interface ISheetData_Snowball_SnowballActivity {
+declare interface ISheetData_Snowball_SnowballActivity extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 怪物组 */
@@ -68,7 +68,7 @@ declare interface ISheet_Snowball_SnowballAttackGroup {
 	251201: ISheetData_Snowball_SnowballAttackGroup[];
 	251202: ISheetData_Snowball_SnowballAttackGroup[];
 }
-declare interface ISheetData_Snowball_SnowballAttackGroup {
+declare interface ISheetData_Snowball_SnowballAttackGroup extends ISheetDataBase {
 	group_id: number;
 	/** 弹道0下、1中、2上 */
 	track: number;
@@ -90,7 +90,7 @@ declare interface ISheet_Snowball_SnowballMonsterGroup {
 	[key: string]: ISheetData_Snowball_SnowballMonsterGroup[];
 	2512001: ISheetData_Snowball_SnowballMonsterGroup[];
 }
-declare interface ISheetData_Snowball_SnowballMonsterGroup {
+declare interface ISheetData_Snowball_SnowballMonsterGroup extends ISheetDataBase {
 	group_id: number;
 	/** 关卡 */
 	level: number;
@@ -136,7 +136,7 @@ declare interface ISheet_Snowball_PlayerSnowballBuff {
 	[key: string]: ISheetData_Snowball_PlayerSnowballBuff[];
 	251201: ISheetData_Snowball_PlayerSnowballBuff[];
 }
-declare interface ISheetData_Snowball_PlayerSnowballBuff {
+declare interface ISheetData_Snowball_PlayerSnowballBuff extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** buffid */
@@ -163,7 +163,7 @@ declare interface ISheet_Snowball_MonsterSnowballBuff {
 	[key: string]: ISheetData_Snowball_MonsterSnowballBuff[];
 	251201: ISheetData_Snowball_MonsterSnowballBuff[];
 }
-declare interface ISheetData_Snowball_MonsterSnowballBuff {
+declare interface ISheetData_Snowball_MonsterSnowballBuff extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 }
@@ -185,7 +185,7 @@ declare interface ISheet_Snowball_SnowballAttackLevel {
 	2512033: ISheetData_Snowball_SnowballAttackLevel;
 	2512034: ISheetData_Snowball_SnowballAttackLevel;
 }
-declare interface ISheetData_Snowball_SnowballAttackLevel {
+declare interface ISheetData_Snowball_SnowballAttackLevel extends ISheetDataBase {
 	attack_level_id: number;
 	/** 单次投掷额外增加数 */
 	snowball_count: number;

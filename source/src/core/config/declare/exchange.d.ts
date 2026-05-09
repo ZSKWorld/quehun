@@ -19,7 +19,7 @@ declare interface ISheet_Exchange_Exchange {
 	2005: ISheetData_Exchange_Exchange;
 	2006: ISheetData_Exchange_Exchange;
 }
-declare interface ISheetData_Exchange_Exchange {
+declare interface ISheetData_Exchange_Exchange extends ISheetDataBase {
 	id: number;
 	/** 源币种 */
 	source_currency: number;
@@ -52,7 +52,7 @@ declare interface ISheet_Exchange_Searchexchange {
 	3001: ISheetData_Exchange_Searchexchange;
 	3002: ISheetData_Exchange_Searchexchange;
 }
-declare interface ISheetData_Exchange_Searchexchange {
+declare interface ISheetData_Exchange_Searchexchange extends ISheetDataBase {
 	id: number;
 	/** 源币种 */
 	source_currency: number;
@@ -84,7 +84,7 @@ declare interface ISheet_Exchange_Fushiquanexchange {
 	[key: string]: ISheetData_Exchange_Fushiquanexchange;
 	4001: ISheetData_Exchange_Fushiquanexchange;
 }
-declare interface ISheetData_Exchange_Fushiquanexchange {
+declare interface ISheetData_Exchange_Fushiquanexchange extends ISheetDataBase {
 	id: number;
 	/** 源币种 */
 	source_currency: number;

@@ -18,7 +18,7 @@ declare interface ISheet_Season_Season {
 	[key: string]: ISheetData_Season_Season;
 	1001: ISheetData_Season_Season;
 }
-declare interface ISheetData_Season_Season {
+declare interface ISheetData_Season_Season extends ISheetDataBase {
 	id: number;
 	/** 开始时间 */
 	start_time: string;
@@ -180,7 +180,7 @@ declare interface ISheet_Season_LevelTicket {
 	100131: ISheetData_Season_LevelTicket;
 	100132: ISheetData_Season_LevelTicket;
 }
-declare interface ISheetData_Season_LevelTicket {
+declare interface ISheetData_Season_LevelTicket extends ISheetDataBase {
 	/** 课题券ID */
 	id: number;
 	/** 难度 */
@@ -200,7 +200,7 @@ declare interface ISheet_Season_LevelTicketPool {
 	[key: string]: ISheetData_Season_LevelTicketPool[];
 	100101: ISheetData_Season_LevelTicketPool[];
 }
-declare interface ISheetData_Season_LevelTicketPool {
+declare interface ISheetData_Season_LevelTicketPool extends ISheetDataBase {
 	/** 课题券池ID */
 	pool_id: number;
 	/** 等级下限 */
@@ -217,7 +217,7 @@ declare interface ISheet_Season_TicketRetry {
 	[key: string]: ISheetData_Season_TicketRetry[];
 	100102: ISheetData_Season_TicketRetry[];
 }
-declare interface ISheetData_Season_TicketRetry {
+declare interface ISheetData_Season_TicketRetry extends ISheetDataBase {
 	/** 组别id */
 	group_id: number;
 	/** 次数 */
@@ -232,7 +232,7 @@ declare interface ISheet_Season_SeasonReward {
 	[key: string]: ISheetData_Season_SeasonReward[];
 	1001: ISheetData_Season_SeasonReward[];
 }
-declare interface ISheetData_Season_SeasonReward {
+declare interface ISheetData_Season_SeasonReward extends ISheetDataBase {
 	/** 赛季ID */
 	season_id: number;
 	/** 排名下限 */

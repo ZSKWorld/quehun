@@ -40,7 +40,7 @@ declare interface ISheet_Amulet_AmuletActivity {
 	250111: ISheetData_Amulet_AmuletActivity;
 	250811: ISheetData_Amulet_AmuletActivity;
 }
-declare interface ISheetData_Amulet_AmuletActivity {
+declare interface ISheetData_Amulet_AmuletActivity extends ISheetDataBase {
 	activity_id: number;
 	/** 强化道具编号 */
 	skill_item: number;
@@ -88,7 +88,7 @@ declare interface ISheet_Amulet_AmuletGames {
 	250111: ISheetData_Amulet_AmuletGames[];
 	250811: ISheetData_Amulet_AmuletGames[];
 }
-declare interface ISheetData_Amulet_AmuletGames {
+declare interface ISheetData_Amulet_AmuletGames extends ISheetDataBase {
 	activity_id: number;
 	/** 关卡等级 */
 	level: number;
@@ -119,7 +119,7 @@ declare interface ISheet_Amulet_AmuletRewards {
 	250111: ISheetData_Amulet_AmuletRewards[];
 	250811: ISheetData_Amulet_AmuletRewards[];
 }
-declare interface ISheetData_Amulet_AmuletRewards {
+declare interface ISheetData_Amulet_AmuletRewards extends ISheetDataBase {
 	activity_id: number;
 	/** 目标分数百分比 */
 	target_point: number;
@@ -176,7 +176,7 @@ declare interface ISheet_Amulet_AmuletBuff {
 	9061: ISheetData_Amulet_AmuletBuff;
 	9062: ISheetData_Amulet_AmuletBuff;
 }
-declare interface ISheetData_Amulet_AmuletBuff {
+declare interface ISheetData_Amulet_AmuletBuff extends ISheetDataBase {
 	/** buffid */
 	id: number;
 	/** 1-boss，2-商店升级，3-场外升级 */
@@ -561,7 +561,7 @@ declare interface ISheet_Amulet_AmuletEffect {
 	2330: ISheetData_Amulet_AmuletEffect;
 	2331: ISheetData_Amulet_AmuletEffect;
 }
-declare interface ISheetData_Amulet_AmuletEffect {
+declare interface ISheetData_Amulet_AmuletEffect extends ISheetDataBase {
 	/** 护身符id */
 	id: number;
 	/** 是否允许钦定(1可以,0不行) */
@@ -605,7 +605,7 @@ declare interface ISheet_Amulet_AmuletEffectGroup {
 	1: ISheetData_Amulet_AmuletEffectGroup;
 	2: ISheetData_Amulet_AmuletEffectGroup;
 }
-declare interface ISheetData_Amulet_AmuletEffectGroup {
+declare interface ISheetData_Amulet_AmuletEffectGroup extends ISheetDataBase {
 	/** 护身符组id */
 	id: number;
 	/** 融合后护身符id */
@@ -666,7 +666,7 @@ declare interface ISheet_Amulet_AmuletFan {
 	100: ISheetData_Amulet_AmuletFan;
 	101: ISheetData_Amulet_AmuletFan;
 }
-declare interface ISheetData_Amulet_AmuletFan {
+declare interface ISheetData_Amulet_AmuletFan extends ISheetDataBase {
 	/** 番种id */
 	id: number;
 	/** 番数（都按照门清役计算，可重复时填写1个） */
@@ -687,7 +687,7 @@ declare interface ISheet_Amulet_AmuletGoods {
 	113: ISheetData_Amulet_AmuletGoods;
 	991: ISheetData_Amulet_AmuletGoods;
 }
-declare interface ISheetData_Amulet_AmuletGoods {
+declare interface ISheetData_Amulet_AmuletGoods extends ISheetDataBase {
 	/** goods_id */
 	id: number;
 	/** 在商店中出现的权重 */
@@ -715,7 +715,7 @@ declare interface ISheet_Amulet_AmuletShopUpgrade {
 	8003: ISheetData_Amulet_AmuletShopUpgrade[];
 	8004: ISheetData_Amulet_AmuletShopUpgrade[];
 }
-declare interface ISheetData_Amulet_AmuletShopUpgrade {
+declare interface ISheetData_Amulet_AmuletShopUpgrade extends ISheetDataBase {
 	/** 升级group */
 	id: number;
 	/** 等级 */
@@ -737,7 +737,7 @@ declare interface ISheet_Amulet_AmuletUpgrade {
 	905: ISheetData_Amulet_AmuletUpgrade[];
 	906: ISheetData_Amulet_AmuletUpgrade[];
 }
-declare interface ISheetData_Amulet_AmuletUpgrade {
+declare interface ISheetData_Amulet_AmuletUpgrade extends ISheetDataBase {
 	/** 升级group */
 	id: number;
 	/** 等级 */
@@ -771,7 +771,7 @@ declare interface ISheet_Amulet_AmuletTask {
 	25011315: ISheetData_Amulet_AmuletTask;
 	25011316: ISheetData_Amulet_AmuletTask;
 }
-declare interface ISheetData_Amulet_AmuletTask {
+declare interface ISheetData_Amulet_AmuletTask extends ISheetDataBase {
 	/** 任务id */
 	id: number;
 	/** 相关护身符id */
@@ -795,7 +795,7 @@ declare interface ISheet_Amulet_AmuletPool {
 	25081102: ISheetData_Amulet_AmuletPool[];
 	25081103: ISheetData_Amulet_AmuletPool[];
 }
-declare interface ISheetData_Amulet_AmuletPool {
+declare interface ISheetData_Amulet_AmuletPool extends ISheetDataBase {
 	/** 护身符池id */
 	level_amulet_pool_id: number;
 	/** 护身符id */
@@ -830,7 +830,7 @@ declare interface ISheet_Amulet_AmuletBadge {
 	600200: ISheetData_Amulet_AmuletBadge;
 	600210: ISheetData_Amulet_AmuletBadge;
 }
-declare interface ISheetData_Amulet_AmuletBadge {
+declare interface ISheetData_Amulet_AmuletBadge extends ISheetDataBase {
 	/** 印章id */
 	id: number;
 	/** 屏蔽标记，0正常，1屏蔽 */
@@ -882,7 +882,7 @@ declare interface ISheet_Amulet_AmuletTag {
 	25084024: ISheetData_Amulet_AmuletTag;
 	25084025: ISheetData_Amulet_AmuletTag;
 }
-declare interface ISheetData_Amulet_AmuletTag {
+declare interface ISheetData_Amulet_AmuletTag extends ISheetDataBase {
 	/** 关键词id */
 	tag_id: number;
 	/** str/event关键词名 */
@@ -1003,7 +1003,7 @@ declare interface ISheet_Amulet_AmuletLargeNumber {
 	297: ISheetData_Amulet_AmuletLargeNumber;
 	300: ISheetData_Amulet_AmuletLargeNumber;
 }
-declare interface ISheetData_Amulet_AmuletLargeNumber {
+declare interface ISheetData_Amulet_AmuletLargeNumber extends ISheetDataBase {
 	/** 数字id（10的n次方） */
 	number_id: string;
 	/** str/str万进制单位 */

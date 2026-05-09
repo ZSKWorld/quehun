@@ -40,7 +40,7 @@ declare interface ISheet_Spot_Spot {
 	200025: ISheetData_Spot_Spot[];
 	200094: ISheetData_Spot_Spot[];
 }
-declare interface ISheetData_Spot_Spot {
+declare interface ISheetData_Spot_Spot extends ISheetDataBase {
 	/** 角色ID */
 	id: number;
 	/** 剧情id */
@@ -239,7 +239,7 @@ declare interface ISheet_Spot_Rewards {
 	20000061: ISheetData_Spot_Rewards;
 	20000062: ISheetData_Spot_Rewards;
 }
-declare interface ISheetData_Spot_Rewards {
+declare interface ISheetData_Spot_Rewards extends ISheetDataBase {
 	/** 奖励ID */
 	id: number;
 	/** 结局种类 */
@@ -285,7 +285,7 @@ declare interface ISheet_Spot_Event {
 	24040104: ISheetData_Spot_Event;
 	24040105: ISheetData_Spot_Event;
 }
-declare interface ISheetData_Spot_Event {
+declare interface ISheetData_Spot_Event extends ISheetDataBase {
 	/** 唯一id */
 	id: number;
 	/** 活动ID */
@@ -341,7 +341,7 @@ declare interface ISheet_Spot_CharacterSpot {
 	20009998: ISheetData_Spot_CharacterSpot;
 	20009999: ISheetData_Spot_CharacterSpot;
 }
-declare interface ISheetData_Spot_CharacterSpot {
+declare interface ISheetData_Spot_CharacterSpot extends ISheetDataBase {
 	id: number;
 	/** 递增 数字大的在后 */
 	sort: number;
@@ -473,7 +473,7 @@ declare interface ISheet_Spot_SkinSpot {
 	40999801: ISheetData_Spot_SkinSpot;
 	40999901: ISheetData_Spot_SkinSpot;
 }
-declare interface ISheetData_Spot_SkinSpot {
+declare interface ISheetData_Spot_SkinSpot extends ISheetDataBase {
 	id: number;
 	/** 是不是原皮 */
 	type: number;
@@ -725,7 +725,7 @@ declare interface ISheet_Spot_AudioSpot {
 	20004: ISheetData_Spot_AudioSpot;
 	20005: ISheetData_Spot_AudioSpot;
 }
-declare interface ISheetData_Spot_AudioSpot {
+declare interface ISheetData_Spot_AudioSpot extends ISheetDataBase {
 	id: number;
 	/** 路径 */
 	path: string;

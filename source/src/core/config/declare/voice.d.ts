@@ -135,7 +135,7 @@ declare interface ISheet_Voice_Sound {
 	124: ISheetData_Voice_Sound[];
 	125: ISheetData_Voice_Sound[];
 }
-declare interface ISheetData_Voice_Sound {
+declare interface ISheetData_Voice_Sound extends ISheetDataBase {
 	id: number;
 	/** 名称 */
 	name_chs: string;
@@ -176,7 +176,7 @@ declare interface ISheet_Voice_Event {
 	3: ISheetData_Voice_Event[];
 	4: ISheetData_Voice_Event[];
 }
-declare interface ISheetData_Voice_Event {
+declare interface ISheetData_Voice_Event extends ISheetDataBase {
 	id: number;
 	/** 台词 */
 	words_chs: string;
@@ -1706,7 +1706,7 @@ declare interface ISheet_Voice_Spot {
 	12519: ISheetData_Voice_Spot;
 	12520: ISheetData_Voice_Spot;
 }
-declare interface ISheetData_Voice_Spot {
+declare interface ISheetData_Voice_Spot extends ISheetDataBase {
 	id: number;
 	character: number;
 	/** 语音种类14种，定义见右侧 */

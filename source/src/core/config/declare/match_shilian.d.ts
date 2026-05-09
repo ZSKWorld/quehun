@@ -14,7 +14,7 @@ declare interface ISheet_MatchShilian_Shilian {
 	[key: string]: ISheetData_MatchShilian_Shilian;
 	1: ISheetData_MatchShilian_Shilian;
 }
-declare interface ISheetData_MatchShilian_Shilian {
+declare interface ISheetData_MatchShilian_Shilian extends ISheetDataBase {
 	id: number;
 	name: string;
 	ticket_id: number;
@@ -40,7 +40,7 @@ declare interface ISheet_MatchShilian_ShilianReward {
 	4: ISheetData_MatchShilian_ShilianReward[];
 	5: ISheetData_MatchShilian_ShilianReward[];
 }
-declare interface ISheetData_MatchShilian_ShilianReward {
+declare interface ISheetData_MatchShilian_ShilianReward extends ISheetDataBase {
 	id: number;
 	reward_id: number;
 	reward_count: number;
@@ -52,7 +52,7 @@ declare interface ISheet_MatchShilian_ShilianTime {
 	[key: string]: ISheetData_MatchShilian_ShilianTime;
 	1: ISheetData_MatchShilian_ShilianTime;
 }
-declare interface ISheetData_MatchShilian_ShilianTime {
+declare interface ISheetData_MatchShilian_ShilianTime extends ISheetDataBase {
 	id: number;
 	start: string;
 	end: string;

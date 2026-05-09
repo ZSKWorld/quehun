@@ -561,7 +561,7 @@ declare interface ISheet_Info_Error {
 	26320: ISheetData_Info_Error;
 	26321: ISheetData_Info_Error;
 }
-declare interface ISheetData_Info_Error {
+declare interface ISheetData_Info_Error extends ISheetDataBase {
 	id: number;
 	chs: string;
 	chs_t: string;
@@ -575,7 +575,7 @@ declare interface ISheetData_Info_Error {
 declare interface ISheet_Info_Forbidden {
 
 }
-declare interface ISheetData_Info_Forbidden {
+declare interface ISheetData_Info_Forbidden extends ISheetDataBase {
 	word: string;
 	type_chs: number;
 	near_chs: number;
@@ -593,7 +593,7 @@ declare interface ISheetData_Info_Forbidden {
 declare interface ISheet_Info_Near {
 
 }
-declare interface ISheetData_Info_Near {
+declare interface ISheetData_Info_Near extends ISheetDataBase {
 	/** 形近字1 */
 	word1: string;
 	/** 形近字2 */
@@ -622,7 +622,7 @@ declare interface ISheet_Info_Translate {
 	"segment delay": ISheetData_Info_Translate;
 	"segment not found": ISheetData_Info_Translate;
 }
-declare interface ISheetData_Info_Translate {
+declare interface ISheetData_Info_Translate extends ISheetDataBase {
 	original: string;
 	chs: string;
 	chs_t: string;

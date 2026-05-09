@@ -581,7 +581,7 @@ declare interface ISheet_Achievement_Achievement {
 	800110: ISheetData_Achievement_Achievement;
 	900001: ISheetData_Achievement_Achievement;
 }
-declare interface ISheetData_Achievement_Achievement {
+declare interface ISheetData_Achievement_Achievement extends ISheetDataBase {
 	id: number;
 	name_chs: string;
 	name_chs_t: string;
@@ -630,7 +630,7 @@ declare interface ISheet_Achievement_AchievementGroup {
 	13: ISheetData_Achievement_AchievementGroup;
 	14: ISheetData_Achievement_AchievementGroup;
 }
-declare interface ISheetData_Achievement_AchievementGroup {
+declare interface ISheetData_Achievement_AchievementGroup extends ISheetDataBase {
 	id: number;
 	name_chs: string;
 	name_chs_t: string;
@@ -672,7 +672,7 @@ declare interface ISheet_Achievement_Badge {
 	810025: ISheetData_Achievement_Badge;
 	810026: ISheetData_Achievement_Badge;
 }
-declare interface ISheetData_Achievement_Badge {
+declare interface ISheetData_Achievement_Badge extends ISheetDataBase {
 	id: number;
 	/** 对应任务id */
 	base_task: number;
@@ -700,7 +700,7 @@ declare interface ISheet_Achievement_BadgeGroup {
 	24: ISheetData_Achievement_BadgeGroup;
 	25: ISheetData_Achievement_BadgeGroup;
 }
-declare interface ISheetData_Achievement_BadgeGroup {
+declare interface ISheetData_Achievement_BadgeGroup extends ISheetDataBase {
 	id: number;
 	badge_id: number[];
 	/** 勋章名 */

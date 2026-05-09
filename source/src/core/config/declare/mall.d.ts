@@ -103,7 +103,7 @@ declare interface ISheet_Mall_Goods {
 	5107: ISheetData_Mall_Goods;
 	5108: ISheetData_Mall_Goods;
 }
-declare interface ISheetData_Mall_Goods {
+declare interface ISheetData_Mall_Goods extends ISheetDataBase {
 	id: number;
 	name_chs: string;
 	name_chs_t: string;
@@ -193,7 +193,7 @@ declare interface ISheet_Mall_Product {
 	96: ISheetData_Mall_Product[];
 	97: ISheetData_Mall_Product[];
 }
-declare interface ISheetData_Mall_Product {
+declare interface ISheetData_Mall_Product extends ISheetDataBase {
 	/** 支付平台 */
 	payment_platform: number;
 	/** 商品ID */
@@ -229,7 +229,7 @@ declare interface ISheet_Mall_GoodsShelves {
 	shelves_007: ISheetData_Mall_GoodsShelves[];
 	shelves_008: ISheetData_Mall_GoodsShelves[];
 }
-declare interface ISheetData_Mall_GoodsShelves {
+declare interface ISheetData_Mall_GoodsShelves extends ISheetDataBase {
 	/** 货架ID */
 	id: string;
 	/** 商品ID */
@@ -251,7 +251,7 @@ declare interface ISheet_Mall_ZoneParams {
 	2: ISheetData_Mall_ZoneParams[];
 	3: ISheetData_Mall_ZoneParams[];
 }
-declare interface ISheetData_Mall_ZoneParams {
+declare interface ISheetData_Mall_ZoneParams extends ISheetDataBase {
 	zone_id: string;
 	key: string;
 	string_value: string;
@@ -266,7 +266,7 @@ declare interface ISheet_Mall_MonthTicket {
 	3010: ISheetData_Mall_MonthTicket;
 	5010: ISheetData_Mall_MonthTicket;
 }
-declare interface ISheetData_Mall_MonthTicket {
+declare interface ISheetData_Mall_MonthTicket extends ISheetDataBase {
 	/** 月票ID 和goods里的ID是同一个 不要重复 */
 	id: number;
 	/** 月票名称 */
@@ -337,7 +337,7 @@ declare interface ISheet_Mall_ChannelConfig {
 	503: ISheetData_Mall_ChannelConfig;
 	504: ISheetData_Mall_ChannelConfig;
 }
-declare interface ISheetData_Mall_ChannelConfig {
+declare interface ISheetData_Mall_ChannelConfig extends ISheetDataBase {
 	/** 渠道ID */
 	id: number;
 	/** 渠道可消费货币种类 */
@@ -364,7 +364,7 @@ declare interface ISheet_Mall_MonthTicketInfo {
 	[key: string]: ISheetData_Mall_MonthTicketInfo;
 	1: ISheetData_Mall_MonthTicketInfo;
 }
-declare interface ISheetData_Mall_MonthTicketInfo {
+declare interface ISheetData_Mall_MonthTicketInfo extends ISheetDataBase {
 	id: number;
 }
 //#endregion
@@ -376,7 +376,7 @@ declare interface ISheet_Mall_RechargeBonus {
 	2: ISheetData_Mall_RechargeBonus[];
 	3: ISheetData_Mall_RechargeBonus[];
 }
-declare interface ISheetData_Mall_RechargeBonus {
+declare interface ISheetData_Mall_RechargeBonus extends ISheetDataBase {
 	zone_id: number;
 	reset_time: string;
 }

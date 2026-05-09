@@ -45,6 +45,9 @@ declare interface IConfigManager {
 	init(): Promise<void>;
 }
 
+declare interface ISheetDataBase {
+	langField<T = string>(name: string): T;
+}
 
 type CfgFieldType<T> = { [P in keyof T]: T[P] }[keyof T];
 interface ICfgExtension<T> {

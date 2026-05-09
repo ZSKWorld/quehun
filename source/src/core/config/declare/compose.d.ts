@@ -10,7 +10,7 @@ declare interface ISheet_Compose_Characompose {
 	[key: string]: ISheetData_Compose_Characompose;
 	1: ISheetData_Compose_Characompose;
 }
-declare interface ISheetData_Compose_Characompose {
+declare interface ISheetData_Compose_Characompose extends ISheetDataBase {
 	id: number;
 	/** 碎片id */
 	item_id: number;

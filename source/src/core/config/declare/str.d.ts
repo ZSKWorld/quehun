@@ -4470,6 +4470,7 @@ declare interface ISheet_Str_Str {
 	26030207: ISheetData_Str_Str;
 	26030208: ISheetData_Str_Str;
 	26030209: ISheetData_Str_Str;
+	26030210: ISheetData_Str_Str;
 	26030301: ISheetData_Str_Str;
 	26030302: ISheetData_Str_Str;
 	26030303: ISheetData_Str_Str;
@@ -4783,7 +4784,7 @@ declare interface ISheet_Str_Str {
 	26044005: ISheetData_Str_Str;
 	26044006: ISheetData_Str_Str;
 }
-declare interface ISheetData_Str_Str {
+declare interface ISheetData_Str_Str extends ISheetDataBase {
 	id: number;
 	type: string;
 	chs: string;
@@ -13407,7 +13408,7 @@ declare interface ISheet_Str_Event {
 	26044013: ISheetData_Str_Event;
 	26044014: ISheetData_Str_Event;
 }
-declare interface ISheetData_Str_Event {
+declare interface ISheetData_Str_Event extends ISheetDataBase {
 	id: number;
 	type: string;
 	chs: string;

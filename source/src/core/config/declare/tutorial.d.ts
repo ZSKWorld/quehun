@@ -15,7 +15,7 @@ declare interface ISheet_Tutorial_Init {
 	3: ISheetData_Tutorial_Init;
 	4: ISheetData_Tutorial_Init;
 }
-declare interface ISheetData_Tutorial_Init {
+declare interface ISheetData_Tutorial_Init extends ISheetDataBase {
 	/** 1-4章 */
 	episode_id: number;
 	/** 宝牌指示牌 */
@@ -65,7 +65,7 @@ declare interface ISheet_Tutorial_Step {
 	3: ISheetData_Tutorial_Step[];
 	4: ISheetData_Tutorial_Step[];
 }
-declare interface ISheetData_Tutorial_Step {
+declare interface ISheetData_Tutorial_Step extends ISheetDataBase {
 	/** 章节1234 */
 	episode_id: number;
 	/** 唯一步骤id */

@@ -27,7 +27,7 @@ declare interface ISheet_RankIntroduce_Rank {
 	15: ISheetData_RankIntroduce_Rank;
 	16: ISheetData_RankIntroduce_Rank;
 }
-declare interface ISheetData_RankIntroduce_Rank {
+declare interface ISheetData_RankIntroduce_Rank extends ISheetDataBase {
 	id: number;
 	info: string[];
 }
@@ -53,7 +53,7 @@ declare interface ISheet_RankIntroduce_Rank3 {
 	15: ISheetData_RankIntroduce_Rank3;
 	16: ISheetData_RankIntroduce_Rank3;
 }
-declare interface ISheetData_RankIntroduce_Rank3 {
+declare interface ISheetData_RankIntroduce_Rank3 extends ISheetDataBase {
 	id: number;
 	info: string[];
 }

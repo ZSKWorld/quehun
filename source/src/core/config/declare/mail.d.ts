@@ -55,7 +55,7 @@ declare interface ISheet_Mail_MailTemplate {
 	10005: ISheetData_Mail_MailTemplate;
 	10006: ISheetData_Mail_MailTemplate;
 }
-declare interface ISheetData_Mail_MailTemplate {
+declare interface ISheetData_Mail_MailTemplate extends ISheetDataBase {
 	/** 邮件模板ID */
 	id: number;
 	/** 标题 */

@@ -14,7 +14,7 @@ declare interface ISheet_Global_Global {
 	4: ISheetData_Global_Global;
 	5: ISheetData_Global_Global;
 }
-declare interface ISheetData_Global_Global {
+declare interface ISheetData_Global_Global extends ISheetDataBase {
 	id: number;
 	/** 参数 */
 	args: string;

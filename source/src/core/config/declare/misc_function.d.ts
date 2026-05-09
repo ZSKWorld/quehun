@@ -16,7 +16,7 @@ declare interface ISheet_MiscFunction_DailySignIn {
 	6: ISheetData_MiscFunction_DailySignIn;
 	7: ISheetData_MiscFunction_DailySignIn;
 }
-declare interface ISheetData_MiscFunction_DailySignIn {
+declare interface ISheetData_MiscFunction_DailySignIn extends ISheetDataBase {
 	/** 天数 1-7 */
 	id: number;
 	/** 奖励Id */

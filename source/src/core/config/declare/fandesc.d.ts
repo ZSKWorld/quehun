@@ -96,7 +96,7 @@ declare interface ISheet_Fandesc_Fandesc {
 	1115: ISheetData_Fandesc_Fandesc;
 	1116: ISheetData_Fandesc_Fandesc;
 }
-declare interface ISheetData_Fandesc_Fandesc {
+declare interface ISheetData_Fandesc_Fandesc extends ISheetDataBase {
 	id: number;
 	/** 标签 */
 	tag: number;

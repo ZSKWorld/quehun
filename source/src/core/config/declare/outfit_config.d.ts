@@ -36,7 +36,7 @@ declare interface ISheet_OutfitConfig_Ron {
 	30520007: ISheetData_OutfitConfig_Ron;
 	30520009: ISheetData_OutfitConfig_Ron;
 }
-declare interface ISheetData_OutfitConfig_Ron {
+declare interface ISheetData_OutfitConfig_Ron extends ISheetDataBase {
 	/** 道具id */
 	id: number;
 	/** 是含有全屏特效，1有，0无 */
@@ -51,7 +51,7 @@ declare interface ISheet_OutfitConfig_Liqi {
 	[key: string]: ISheetData_OutfitConfig_Liqi;
 	308048: ISheetData_OutfitConfig_Liqi;
 }
-declare interface ISheetData_OutfitConfig_Liqi {
+declare interface ISheetData_OutfitConfig_Liqi extends ISheetDataBase {
 	/** 道具id */
 	id: number;
 	/** 部分方向隐藏特效 */
@@ -63,7 +63,7 @@ declare interface ISheetData_OutfitConfig_Liqi {
 declare interface ISheet_OutfitConfig_EffectLiqi {
 	[key: string]: ISheetData_OutfitConfig_EffectLiqi;
 }
-declare interface ISheetData_OutfitConfig_EffectLiqi {
+declare interface ISheetData_OutfitConfig_EffectLiqi extends ISheetDataBase {
 	/** 道具id */
 	id: number;
 }
@@ -73,7 +73,7 @@ declare interface ISheetData_OutfitConfig_EffectLiqi {
 declare interface ISheet_OutfitConfig_Mpzs {
 	[key: string]: ISheetData_OutfitConfig_Mpzs;
 }
-declare interface ISheetData_OutfitConfig_Mpzs {
+declare interface ISheetData_OutfitConfig_Mpzs extends ISheetDataBase {
 	/** 道具id */
 	id: number;
 }
@@ -83,7 +83,7 @@ declare interface ISheetData_OutfitConfig_Mpzs {
 declare interface ISheet_OutfitConfig_Tablecloth {
 	[key: string]: ISheetData_OutfitConfig_Tablecloth;
 }
-declare interface ISheetData_OutfitConfig_Tablecloth {
+declare interface ISheetData_OutfitConfig_Tablecloth extends ISheetDataBase {
 	/** 道具id */
 	id: number;
 }
@@ -93,7 +93,7 @@ declare interface ISheetData_OutfitConfig_Tablecloth {
 declare interface ISheet_OutfitConfig_Mjp {
 	[key: string]: ISheetData_OutfitConfig_Mjp;
 }
-declare interface ISheetData_OutfitConfig_Mjp {
+declare interface ISheetData_OutfitConfig_Mjp extends ISheetDataBase {
 	/** 道具id */
 	id: number;
 }
@@ -103,7 +103,7 @@ declare interface ISheetData_OutfitConfig_Mjp {
 declare interface ISheet_OutfitConfig_Mjpface {
 	[key: string]: ISheetData_OutfitConfig_Mjpface;
 }
-declare interface ISheetData_OutfitConfig_Mjpface {
+declare interface ISheetData_OutfitConfig_Mjpface extends ISheetDataBase {
 	/** 道具id */
 	id: number;
 }
@@ -113,7 +113,7 @@ declare interface ISheetData_OutfitConfig_Mjpface {
 declare interface ISheet_OutfitConfig_Headframe {
 	[key: string]: ISheetData_OutfitConfig_Headframe;
 }
-declare interface ISheetData_OutfitConfig_Headframe {
+declare interface ISheetData_OutfitConfig_Headframe extends ISheetDataBase {
 	/** 道具id */
 	id: number;
 }
@@ -123,7 +123,7 @@ declare interface ISheetData_OutfitConfig_Headframe {
 declare interface ISheet_OutfitConfig_Hand {
 	[key: string]: ISheetData_OutfitConfig_Hand;
 }
-declare interface ISheetData_OutfitConfig_Hand {
+declare interface ISheetData_OutfitConfig_Hand extends ISheetDataBase {
 	/** 道具id */
 	id: number;
 }

@@ -51,7 +51,7 @@ declare interface ISheet_Chest_Chest {
 	8002: ISheetData_Chest_Chest;
 	8003: ISheetData_Chest_Chest;
 }
-declare interface ISheetData_Chest_Chest {
+declare interface ISheetData_Chest_Chest extends ISheetDataBase {
 	id: number;
 	/** 卡池类型 */
 	type: number;
@@ -528,7 +528,7 @@ declare interface ISheet_Chest_Pool {
 	80519: ISheetData_Chest_Pool[];
 	80520: ISheetData_Chest_Pool[];
 }
-declare interface ISheetData_Chest_Pool {
+declare interface ISheetData_Chest_Pool extends ISheetDataBase {
 
 }
 //#endregion
@@ -562,7 +562,7 @@ declare interface ISheet_Chest_PoolSeq {
 	9001: ISheetData_Chest_PoolSeq[];
 	9002: ISheetData_Chest_PoolSeq[];
 }
-declare interface ISheetData_Chest_PoolSeq {
+declare interface ISheetData_Chest_PoolSeq extends ISheetDataBase {
 
 }
 //#endregion
@@ -656,7 +656,7 @@ declare interface ISheet_Chest_ItemPool {
 	190002: ISheetData_Chest_ItemPool[];
 	190003: ISheetData_Chest_ItemPool[];
 }
-declare interface ISheetData_Chest_ItemPool {
+declare interface ISheetData_Chest_ItemPool extends ISheetDataBase {
 
 }
 //#endregion
@@ -1663,7 +1663,7 @@ declare interface ISheet_Chest_ChestShop {
 	3504: ISheetData_Chest_ChestShop;
 	3999: ISheetData_Chest_ChestShop;
 }
-declare interface ISheetData_Chest_ChestShop {
+declare interface ISheetData_Chest_ChestShop extends ISheetDataBase {
 	id: number;
 	/** 其实是个faithid */
 	chest_id: number;
@@ -1719,7 +1719,7 @@ declare interface ISheet_Chest_Preview {
 	8002: ISheetData_Chest_Preview[];
 	8003: ISheetData_Chest_Preview[];
 }
-declare interface ISheetData_Chest_Preview {
+declare interface ISheetData_Chest_Preview extends ISheetDataBase {
 	chest_id: number;
 	item_id: number;
 	/** 类型 */
@@ -1775,7 +1775,7 @@ declare interface ISheet_Chest_Up {
 	3033: ISheetData_Chest_Up[];
 	3034: ISheetData_Chest_Up[];
 }
-declare interface ISheetData_Chest_Up {
+declare interface ISheetData_Chest_Up extends ISheetDataBase {
 
 }
 //#endregion
@@ -1785,7 +1785,7 @@ declare interface ISheet_Chest_ItemPrice {
 	[key: string]: ISheetData_Chest_ItemPrice[];
 	1064: ISheetData_Chest_ItemPrice[];
 }
-declare interface ISheetData_Chest_ItemPrice {
+declare interface ISheetData_Chest_ItemPrice extends ISheetDataBase {
 
 }
 //#endregion
@@ -1795,7 +1795,7 @@ declare interface ISheet_Chest_ReplaceUp {
 	[key: string]: ISheetData_Chest_ReplaceUp;
 	100001: ISheetData_Chest_ReplaceUp;
 }
-declare interface ISheetData_Chest_ReplaceUp {
+declare interface ISheetData_Chest_ReplaceUp extends ISheetDataBase {
 	/** id */
 	id: number;
 	/** replace池ID */
@@ -1817,7 +1817,7 @@ declare interface ISheet_Chest_ReplacePool {
 	1001: ISheetData_Chest_ReplacePool[];
 	1002: ISheetData_Chest_ReplacePool[];
 }
-declare interface ISheetData_Chest_ReplacePool {
+declare interface ISheetData_Chest_ReplacePool extends ISheetDataBase {
 	id: number;
 	/** 资源Id */
 	resource_id: number;

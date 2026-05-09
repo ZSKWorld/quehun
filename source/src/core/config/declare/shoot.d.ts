@@ -16,7 +16,7 @@ declare interface ISheet_Shoot_ShootInfo {
 	[key: string]: ISheetData_Shoot_ShootInfo;
 	251101: ISheetData_Shoot_ShootInfo;
 }
-declare interface ISheetData_Shoot_ShootInfo {
+declare interface ISheetData_Shoot_ShootInfo extends ISheetDataBase {
 	/** 活动id */
 	activity_id: number;
 	/** 关卡组id */
@@ -33,7 +33,7 @@ declare interface ISheet_Shoot_ShootMission {
 	[key: string]: ISheetData_Shoot_ShootMission[];
 	101: ISheetData_Shoot_ShootMission[];
 }
-declare interface ISheetData_Shoot_ShootMission {
+declare interface ISheetData_Shoot_ShootMission extends ISheetDataBase {
 	/** 关卡配置组 */
 	group_id: number;
 	/** 关卡 */
@@ -50,7 +50,7 @@ declare interface ISheet_Shoot_ShootEnemy {
 	1012: ISheetData_Shoot_ShootEnemy[];
 	1013: ISheetData_Shoot_ShootEnemy[];
 }
-declare interface ISheetData_Shoot_ShootEnemy {
+declare interface ISheetData_Shoot_ShootEnemy extends ISheetDataBase {
 	/** 敌人配置组 */
 	group_id: number;
 	/** 敌人id独立 */
@@ -81,7 +81,7 @@ declare interface ISheet_Shoot_ShootReward {
 	101302: ISheetData_Shoot_ShootReward[];
 	101303: ISheetData_Shoot_ShootReward[];
 }
-declare interface ISheetData_Shoot_ShootReward {
+declare interface ISheetData_Shoot_ShootReward extends ISheetDataBase {
 	/** 道具奖励组 */
 	group_id: number;
 	/** 奖励id唯一 */

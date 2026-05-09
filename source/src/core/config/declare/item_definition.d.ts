@@ -38,7 +38,7 @@ declare interface ISheet_ItemDefinition_Currency {
 	100004: ISheetData_ItemDefinition_Currency;
 	101001: ISheetData_ItemDefinition_Currency;
 }
-declare interface ISheetData_ItemDefinition_Currency {
+declare interface ISheetData_ItemDefinition_Currency extends ISheetDataBase {
 	id: number;
 	/** 名称 */
 	name_chs: string;
@@ -1156,7 +1156,7 @@ declare interface ISheet_ItemDefinition_Item {
 	30990013: ISheetData_ItemDefinition_Item;
 	30990014: ISheetData_ItemDefinition_Item;
 }
-declare interface ISheetData_ItemDefinition_Item {
+declare interface ISheetData_ItemDefinition_Item extends ISheetDataBase {
 	id: number;
 	/** 递增 数字大的在后 */
 	sort: number;
@@ -1385,7 +1385,7 @@ declare interface ISheet_ItemDefinition_Title {
 	600158: ISheetData_ItemDefinition_Title;
 	600159: ISheetData_ItemDefinition_Title;
 }
-declare interface ISheetData_ItemDefinition_Title {
+declare interface ISheetData_ItemDefinition_Title extends ISheetDataBase {
 	id: number;
 	/** 名称 */
 	name_chs: string;
@@ -1540,7 +1540,7 @@ declare interface ISheet_ItemDefinition_Character {
 	20000124: ISheetData_ItemDefinition_Character;
 	20000125: ISheetData_ItemDefinition_Character;
 }
-declare interface ISheetData_ItemDefinition_Character {
+declare interface ISheetData_ItemDefinition_Character extends ISheetDataBase {
 	id: number;
 	/** 递增 数字大的在后 */
 	sort: number;
@@ -2111,7 +2111,7 @@ declare interface ISheet_ItemDefinition_View {
 	30990013: ISheetData_ItemDefinition_View;
 	30990014: ISheetData_ItemDefinition_View;
 }
-declare interface ISheetData_ItemDefinition_View {
+declare interface ISheetData_ItemDefinition_View extends ISheetDataBase {
 	id: number;
 	/** 资源名字 */
 	res_name: string;
@@ -2621,7 +2621,7 @@ declare interface ISheet_ItemDefinition_Skin {
 	40012502: ISheetData_ItemDefinition_Skin;
 	40012503: ISheetData_ItemDefinition_Skin;
 }
-declare interface ISheetData_ItemDefinition_Skin {
+declare interface ISheetData_ItemDefinition_Skin extends ISheetDataBase {
 	id: number;
 	/** 是不是原皮 */
 	type: number;
@@ -2737,7 +2737,7 @@ declare interface ISheetData_ItemDefinition_Skin {
 declare interface ISheet_ItemDefinition_ItemRecovery {
 	[key: string]: ISheetData_ItemDefinition_ItemRecovery[];
 }
-declare interface ISheetData_ItemDefinition_ItemRecovery {
+declare interface ISheetData_ItemDefinition_ItemRecovery extends ISheetDataBase {
 
 }
 //#endregion
@@ -2750,7 +2750,7 @@ declare interface ISheet_ItemDefinition_ItemManualPool {
 	304102: ISheetData_ItemDefinition_ItemManualPool[];
 	309063: ISheetData_ItemDefinition_ItemManualPool[];
 }
-declare interface ISheetData_ItemDefinition_ItemManualPool {
+declare interface ISheetData_ItemDefinition_ItemManualPool extends ISheetDataBase {
 	id: number;
 	/** 资源ID */
 	res_id: number;
@@ -2780,7 +2780,7 @@ declare interface ISheet_ItemDefinition_SourceLimit {
 	10015: ISheetData_ItemDefinition_SourceLimit[];
 	10016: ISheetData_ItemDefinition_SourceLimit[];
 }
-declare interface ISheetData_ItemDefinition_SourceLimit {
+declare interface ISheetData_ItemDefinition_SourceLimit extends ISheetDataBase {
 	/** 限制ID */
 	id: number;
 	/** 道具ID */
@@ -2795,7 +2795,7 @@ declare interface ISheet_ItemDefinition_ItemPackage {
 	[key: string]: ISheetData_ItemDefinition_ItemPackage[];
 	1001: ISheetData_ItemDefinition_ItemPackage[];
 }
-declare interface ISheetData_ItemDefinition_ItemPackage {
+declare interface ISheetData_ItemDefinition_ItemPackage extends ISheetDataBase {
 	id: number;
 	/** 资源ID */
 	res_id: number;
@@ -2809,7 +2809,7 @@ declare interface ISheet_ItemDefinition_FakeRandomPool {
 	[key: string]: ISheetData_ItemDefinition_FakeRandomPool;
 	309047: ISheetData_ItemDefinition_FakeRandomPool;
 }
-declare interface ISheetData_ItemDefinition_FakeRandomPool {
+declare interface ISheetData_ItemDefinition_FakeRandomPool extends ISheetDataBase {
 	/** ID */
 	id: number;
 	stage_count: number[];
@@ -2930,7 +2930,7 @@ declare interface ISheet_ItemDefinition_LoadingImage {
 	30740020: ISheetData_ItemDefinition_LoadingImage;
 	30740021: ISheetData_ItemDefinition_LoadingImage;
 }
-declare interface ISheetData_ItemDefinition_LoadingImage {
+declare interface ISheetData_ItemDefinition_LoadingImage extends ISheetDataBase {
 	id: number;
 	/** 大图路径 */
 	img_path: string;
@@ -3160,7 +3160,7 @@ declare interface ISheet_ItemDefinition_FunctionItem {
 	70001615: ISheetData_ItemDefinition_FunctionItem;
 	70001616: ISheetData_ItemDefinition_FunctionItem;
 }
-declare interface ISheetData_ItemDefinition_FunctionItem {
+declare interface ISheetData_ItemDefinition_FunctionItem extends ISheetDataBase {
 	/** 功能道具id */
 	id: number;
 	/** 类型 */

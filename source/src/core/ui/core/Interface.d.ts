@@ -35,8 +35,6 @@ declare function $lang(id: number, ...args: any[]): string;
 declare function $langNet(id: number, ...args: any[]): string;
 /** 本地化资源，bin/langRes/xx/下的资源 */
 declare function $langRes(url: string): string;
-/** 本地化表字段 */
-declare function $langCfg<T = string>(obj: object, key: string): T;
 /** 显示网络错误码弹窗 */
 declare function $showNetError(res: IError): void;
 

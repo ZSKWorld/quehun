@@ -26,16 +26,16 @@ export class ItemUtil extends Singleton<ItemUtil>() implements IItemUtil {
 			case EItemType.Currency:
 				const currencyCfg = $cfgMgr.item_definition.currency[id];
 				if (!currencyCfg) break;
-				name = $langCfg(currencyCfg, "name");
+				name = currencyCfg.langField("name");
 				icon = currencyCfg.icon;
 				itemIcon = currencyCfg.icon_jpg;
-				desc = $langCfg(currencyCfg, "desc");
+				desc = currencyCfg.langField("desc");
 				break;
 			case EItemType.Character:
 				const characterCfg = $cfgMgr.item_definition.character[id];
 				if (!characterCfg) break;
-				name = $langCfg(characterCfg, "name");
-				desc = $langCfg(characterCfg, "desc_item");
+				name = characterCfg.langField("name");
+				desc = characterCfg.langField("desc_item");
 				const skinItemInfo = this.getItemInfo(characterCfg.init_skin);
 				icon = skinItemInfo.icon;
 				itemIcon = skinItemInfo.itemIcon;
@@ -45,11 +45,11 @@ export class ItemUtil extends Singleton<ItemUtil>() implements IItemUtil {
 				const itemCfg = $cfgMgr.item_definition.item[id];
 				if (!itemCfg) break;
 
-				name = $langCfg(itemCfg, "name");
+				name = itemCfg.langField("name");
 				icon = itemCfg.icon_transparent;
 				itemIcon = itemCfg.icon;
-				desc = $langCfg(itemCfg, "desc");
-				func = $langCfg(itemCfg, "desc_func");
+				desc = itemCfg.langField("desc");
+				func = itemCfg.langField("desc_func");
 
 				switch (itemCfg.category) {
 					case EItemCategory.Common:
@@ -95,8 +95,8 @@ export class ItemUtil extends Singleton<ItemUtil>() implements IItemUtil {
 			case EItemType.Skin:
 				const skinCfg = $cfgMgr.item_definition.skin[id];
 				if (!skinCfg) break;
-				name = $langCfg(skinCfg, "name");
-				desc = $langCfg(skinCfg, "desc");
+				name = skinCfg.langField("name");
+				desc = skinCfg.langField("desc");
 				icon = skinCfg.path + "/bighead.png";
 				itemIcon = icon;
 
@@ -114,8 +114,8 @@ export class ItemUtil extends Singleton<ItemUtil>() implements IItemUtil {
 			case EItemType.Title:
 				const titleCfg = $cfgMgr.item_definition.title[id];
 				if (!titleCfg) break;
-				name = $langCfg(titleCfg, "name");
-				desc = $langCfg(titleCfg, "desc");
+				name = titleCfg.langField("name");
+				desc = titleCfg.langField("desc");
 				icon = titleCfg.icon;
 				itemIcon = titleCfg.icon_item;
 				break;

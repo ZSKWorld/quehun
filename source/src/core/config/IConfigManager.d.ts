@@ -46,6 +46,7 @@ declare interface IConfigManager {
 }
 
 declare interface ISheetDataBase {
+	/** 本地化字段 */
 	langField<T = string>(name: string): T;
 }
 

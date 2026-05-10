@@ -6,7 +6,7 @@ interface ISheetRawData {
 	/** sheet meta 信息 */
 	meta: {
 		/** 四种类型：唯一、无键、分组、KV对 */
-		category: 'unique' | 'nokey' | 'group' | 'kv';
+		category: "unique" | "nokey" | "group" | "kv";
 		key: string;
 	};
 	/** sheet 结构信息 */
@@ -78,6 +78,13 @@ export class ConfigManager extends Singleton<ConfigManager>() implements IConfig
 		const bytes = new Laya.Byte(lqcBin);
 		const rawData = this.parseConfig(tblPbCfg, bytes.readUint8Array(0, bytes.length));
 
+		const sheetProto = {};
+		for (const method of ARRAY_METHODS) {
+			sheetProto[method] = function (...args: any[]) {
+				return (this.groups || this.rows)[method](...args);
+			};
+		}
+
 		for (const sheet of rawData) {
 			const { table, sheet: sheetName, meta, rows } = sheet;
 			const { category, key } = meta;
@@ -86,28 +93,21 @@ export class ConfigManager extends Singleton<ConfigManager>() implements IConfig
 			const tableObj = this[table] || (this[table] = {});
 
 			// 创建原型对象，承载 Array 方法和原始 rows
-			const proto: any = { rows };
-			const groups: any[][] = [];
-			if (category === 'group') proto.groups = groups;
-
-			// 定义代理方法：优先操作 groups 或 rows
-			for (const method of ARRAY_METHODS) {
-				proto[method] = function (...args: any[]) {
-					return (this.groups || this.rows)[method](...args);
-				};
-			}
+			const proto: any = Object.create(sheetProto);
+			proto.rows = rows;
+			const groups: any[][] = category === "group" ? (proto.groups = []) : null;
 
 			// 使用 Object.create 提升性能，避免后续修改 __proto__
 			const configSheet = Object.create(proto);
 
 			// 索引逻辑优化
 			switch (category) {
-				case 'unique':
+				case "unique":
 					// 如果 key 是数字，排序后再索引
 					rows.sort((a, b) => (a[key] || 0) - (b[key] || 0));
 					for (const row of rows) configSheet[row[key]] = row;
 					break;
-				case 'group':
+				case "group":
 					for (const row of rows) {
 						const groupKey = row[key];
 						if (!configSheet[groupKey]) {
@@ -117,8 +117,8 @@ export class ConfigManager extends Singleton<ConfigManager>() implements IConfig
 						configSheet[groupKey].push(row);
 					}
 					break;
-				case 'kv':
-				case 'nokey':
+				case "kv":
+				case "nokey":
 					for (const row of rows) {
 						const rowKey = row[key];
 						if (rowKey !== undefined) configSheet[rowKey] = row;
@@ -130,9 +130,15 @@ export class ConfigManager extends Singleton<ConfigManager>() implements IConfig
 		}
 	}
 
-	parseConfig(protoContent: string, bindata: Uint8Array) {
+	private parseConfig(protoContent: string, bindata: Uint8Array) {
+		const dataProto = {
+			langField(name) {
+				return this[name + "_" + $gameMgr.language];
+			},
+		} as ISheetDataBase;
+
 		const root = protobuf.parse(protoContent, { keepCase: true }).root;
-		const ConfigTables = root.lookupType('lq.config.ConfigTables');
+		const ConfigTables = root.lookupType("lq.config.ConfigTables");
 		const configTables = ConfigTables.decode(bindata) as any;
 
 		// 1. 建立数据查询 Map，避免嵌套循环查询
@@ -158,14 +164,18 @@ export class ConfigManager extends Singleton<ConfigManager>() implements IConfig
 						field.field_name,
 						field.pb_index,
 						field.pb_type,
-						field.array_length > 0 ? 'repeated' : 'optional'
+						field.array_length > 0 ? "repeated" : "optional"
 					));
 				}
 				root.add(MessageClass);
 
 				// 解码数据
 				const rawBinRows = dataMap.get(className) || [];
-				const decodedRows = rawBinRows.map(bin => MessageClass.decode(bin));
+				const decodedRows = rawBinRows.map(bin => {
+					const d = $decodeProtoData(MessageClass.decode(bin));
+					d["__proto__"] = dataProto;
+					return d;
+				});
 
 				// 组装最终结构
 				result.push({

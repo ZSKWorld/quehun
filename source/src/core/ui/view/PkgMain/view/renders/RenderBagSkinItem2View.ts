@@ -7,7 +7,7 @@ export const enum ERenderBagSkinItem2Msg {
 export class RenderBagSkinItem2View extends ExtensionClass<IView, RenderBagSkinItem2>(RenderBagSkinItem2) implements IView {
 
 	override onCreate() {
-		
+
 	}
 
 	refresh(skinId: number, own: boolean) {
@@ -19,7 +19,7 @@ export class RenderBagSkinItem2View extends ExtensionClass<IView, RenderBagSkinI
 			if ($gameMgr.language == ELanguage.EN)
 				this.txt_desc.text = cfgSkin.name_en;
 			else
-				this.txt_desc.text = $langCfg(cfgSkin, "lock_tips");
+				this.txt_desc.text = cfgSkin.langField("lock_tips");
 		}
 	}
 }

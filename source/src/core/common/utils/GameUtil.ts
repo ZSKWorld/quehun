@@ -180,7 +180,7 @@ export class GameUtil extends Singleton<GameUtil>() implements IGameUtil {
 
 		if (data.category == 2 && data.meta) {
 			const d = $cfgMgr.desktop.matchmode[data.meta.mode_id];
-			if (d) return $langCfg(d, "room_name");
+			if (d) return d.langField("room_name");
 		}
 
 		if (data.category == 4)

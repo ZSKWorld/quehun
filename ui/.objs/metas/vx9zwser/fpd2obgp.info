@@ -1,6 +1,19 @@
 {
+  "objectStatus": {
+    "n9_fpd2": {
+      "hidden": true,
+      "collapsed": true
+    },
+    "n33_fhgq": {
+      "collapsed": true
+    },
+    "n38_n15i": {
+      "hidden": true
+    }
+  },
   "designImages": [
     "ui://ca43vz0ejdu67plnxx",
-    "ui://ca43vz0ef9je7plolw"
+    "ui://ca43vz0ef9je7plolw",
+    "ui://ca43vz0ef9je7plolz"
   ]
 }

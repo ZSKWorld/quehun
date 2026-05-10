@@ -18,9 +18,9 @@ export class RenderHelpItem1View extends ExtensionClass<IView, RenderHelpItem1>(
 	refresh(fandescId: number, fans: string[]) {
 		const { _mjps, txt_name, txt_desc, txt_limit } = this;
 		const cfgFanDesc = $cfgMgr.fandesc.fandesc[fandescId];
-		txt_name.text = cfgFanDesc.langField("name");
-		txt_desc.text = cfgFanDesc.langField("desc");
-		txt_limit.text = cfgFanDesc.langField("desc2");
+		txt_name.text = cfgFanDesc.langField(ECfgLangField.name);
+		txt_desc.text = cfgFanDesc.langField(ECfgLangField.desc);
+		txt_limit.text = cfgFanDesc.langField(ECfgLangField.desc2);
 		let x = 45;
 		for (let i = 0, cnt = _mjps.length, j = 0; i < cnt; i++, j++) {
 			const fan = fans[j];

@@ -30,7 +30,7 @@ export class RenderBagIllustItemView extends ExtensionClass<IView, RenderBagIllu
 		const expired = !!cfgItem.item_expire;
 		ctrl_type.selectedIndex = expired ? 1 : 0;
 		com_item.refreshLoadingImage(data.id);
-		txt_name.text = cfgItem.langField("name");
-		expired && (txt_time.text = $lang(3119) + cfgItem.langField("expire_desc"));
+		txt_name.text = cfgItem.langField(ECfgLangField.name);
+		expired && (txt_time.text = $lang(3119) + cfgItem.langField(ECfgLangField.expire_desc));
 	}
 }

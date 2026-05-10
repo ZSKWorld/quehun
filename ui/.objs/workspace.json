@@ -3,6 +3,12 @@
   "libview.iconScale": 0,
   "doc.openedDocs": [
     "ui://vx9zwserexetobio",
+    "ui://vx9zwserfpd2obgp",
+    "ui://vx9zwsersxdbobix",
+    "ui://vx9zwserea8nobfg",
+    "ui://vx9zwsermj5kb6u",
+    "ui://vx9zwsersxdbobiu",
+    "ui://vx9zwsersxdbobiq",
     "ui://vith2b66hdeoobb2"
   ],
   "packageGroup.mine": [
@@ -24,6 +30,8 @@
     "/Component/",
     "vx9zwser",
     "/Component/Component/",
+    "vx9zwser",
+    "/Component/PbBar/",
     "vx9zwser",
     "/Component/UIRecharge/",
     "vx9zwser",

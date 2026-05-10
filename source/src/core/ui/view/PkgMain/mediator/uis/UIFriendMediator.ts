@@ -27,7 +27,7 @@ export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> 
 		this.view.listRecent.on(fgui.Events.SCROLL, this, this.onListRecentScroll);
 		$uiUtil.setList(this.view.listApply, true, this, this.onListApplyRender);
 		$uiUtil.setList(this.view.listRecent, true, this, this.onListRecentRender);
-		this._tabGroup.init(this.view.tabBtns, this, this.onTabChanged, "#EAB65E", "#EAB65E");
+		this._tabGroup.init(this.view.tabBtns, this, this.onTabChanged, EColorString._eab65e, EColorString._eab65e);
 	}
 
 	override onEnable() {

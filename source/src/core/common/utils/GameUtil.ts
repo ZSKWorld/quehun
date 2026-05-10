@@ -153,10 +153,10 @@ export class GameUtil extends Singleton<GameUtil>() implements IGameUtil {
 		const info = { color: "", text: "" };
 		if (data.is_online) {
 			const gamingName = this.getGamingName(data.playing);
-			info.color = gamingName ? "#a9d94d" : "#58c4db";
+			info.color = gamingName ? EColorString._a9d94d : EColorString._58c4db;
 			info.text = $lang(gamingName ? 2069 : 2071, gamingName);
 		} else {
-			info.color = "#8c8c8c";
+			info.color = EColorString._8c8c8c;
 			info.text = $timeUtil.timeFormat5(data.logout_time) + $lang(2072);
 		}
 		return info;
@@ -180,7 +180,7 @@ export class GameUtil extends Singleton<GameUtil>() implements IGameUtil {
 
 		if (data.category == 2 && data.meta) {
 			const d = $cfgMgr.desktop.matchmode[data.meta.mode_id];
-			if (d) return d.langField("room_name");
+			if (d) return d.langField(ECfgLangField.room_name);
 		}
 
 		if (data.category == 4)

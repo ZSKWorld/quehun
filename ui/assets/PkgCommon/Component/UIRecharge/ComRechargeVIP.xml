@@ -1,15 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" designImage="ui://ca43vz0ef9je7plolz" designImageAlpha="100">
+<component size="1421,788" designImage="ui://ca43vz0esxdb7plom0" designImageOffsetX="-389" designImageOffsetY="-183" designImageAlpha="0">
+  <controller name="type" pages="0,无称号,1,有称号,2,可领取" selected="0"/>
   <displayList>
-    <image id="n52_exet" name="n52" src="exetobip" fileName="Texture/img_3065.png" xy="849,260" size="641,104" scale="0.8,0.8"/>
-    <component id="n48_exet" name="title" src="hdeoobbo" fileName="Component/Component/称号/ComTitle.xml" xy="886,260" size="547,105" aspect="true" scale="0.8,0.8">
+    <image id="n52_exet" name="n52" src="exetobip" fileName="Texture/img_3065.png" xy="460,313" size="641,104" scale="0.8,0.8">
+      <gearXY controller="type" pages="0" values="460,313" default="460,68"/>
+    </image>
+    <image id="n50_exet" name="n50" src="gsi2obci" fileName="Texture/img_269.png" xy="815,26"/>
+    <image id="n51_exet" name="n51" src="gsi2obci" fileName="Texture/img_269.png" xy="613,26" scale="-1,1"/>
+    <image id="n53_exet" name="n53" src="gsi2obci" fileName="Texture/img_269.png" xy="818,221">
+      <gearDisplay controller="type" pages="1,2"/>
+    </image>
+    <image id="n54_exet" name="n54" src="gsi2obci" fileName="Texture/img_269.png" xy="616,221" scale="-1,1">
+      <gearDisplay controller="type" pages="1,2"/>
+    </image>
+    <image id="n60_sxdb" name="n60" src="sxdbobis" fileName="Texture/img_847.png" xy="94,524" size="1225,156"/>
+    <component id="n48_exet" name="title" src="hdeoobbo" fileName="Component/Component/称号/ComTitle.xml" xy="497,313" size="547,105" aspect="true" scale="0.8,0.8">
+      <gearXY controller="type" pages="0" values="497,313" default="497,68"/>
       <property target="icon" propertyId="1" value="ui://ca43vz0ehk7r7plogz"/>
     </component>
-    <image id="n50_exet" name="n50" src="gsi2obci" fileName="Texture/img_269.png" xy="1204,218"/>
-    <image id="n51_exet" name="n51" src="gsi2obci" fileName="Texture/img_269.png" xy="1002,218" scale="-1,1"/>
-    <image id="n53_exet" name="n53" src="gsi2obci" fileName="Texture/img_269.png" xy="1207,413"/>
-    <image id="n54_exet" name="n54" src="gsi2obci" fileName="Texture/img_269.png" xy="1005,413" scale="-1,1"/>
-    <text id="n49_exet" name="n49" xy="1102,220" pivot="0.5,0.5" anchor="true" size="172,56" scale="0.9,1" font="ui://vx9zwserrpakobeu" fontSize="42" color="#fcc45f" align="center" vAlign="middle" leading="0" singleLine="true" text="称号效果"/>
-    <text id="n55_exet" name="n55" xy="1105,415" pivot="0.5,0.5" anchor="true" size="172,56" scale="0.9,1" font="ui://vx9zwserrpakobeu" fontSize="42" color="#fcc45f" align="center" vAlign="middle" leading="0" singleLine="true" text="契约奖励"/>
+    <component id="n67_sxdb" name="curTitle" src="hdeoobbo" fileName="Component/Component/称号/ComTitle.xml" xy="407,735" size="280,53" aspect="true" scale="0.8,0.8">
+      <property target="icon" propertyId="1" value="ui://ca43vz0ehk7r7plogk"/>
+    </component>
+    <component id="n69_sxdb" name="nextTitle" src="hdeoobbo" fileName="Component/Component/称号/ComTitle.xml" xy="821,735" size="280,53" aspect="true" scale="0.8,0.8">
+      <relation target="n68_sxdb" sidePair="right-right"/>
+      <property target="icon" propertyId="1" value="ui://ca43vz0ehk7r7plogz"/>
+    </component>
+    <list id="n58_sxdb" name="rewards" xy="208,277" pivot="0.5,0.5" size="1000,166" layout="row" overflow="scroll" scroll="horizontal" scrollBarFlags="128" colGap="16" defaultItem="ui://vx9zwsersxdbobiq" align="center" autoClearItems="true">
+      <gearDisplay controller="type" pages="1,2"/>
+      <item/>
+      <item/>
+      <item/>
+    </list>
+    <component id="n63_sxdb" name="vip" src="sxdbobiu" fileName="Component/PbBar/PbLoading3.xml" xy="97,708" size="1222,26">
+      <ProgressBar max="6"/>
+    </component>
+    <component id="n70_sxdb" name="getReward" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="708,480" pivot="0.5,0.5" anchor="true" size="171,64">
+      <gearDisplay controller="type" pages="2"/>
+      <Button title="领取" titleColor="#000001" titleFontSize="35" icon="ui://vx9zwsergsi2obdx"/>
+    </component>
+    <component id="n72_sxdb" name="last" src="sxdbobix" fileName="Component/UIRecharge/BtnRechargeVip.xml" xy="0,243" scale="-1,1"/>
+    <component id="n71_sxdb" name="next" src="sxdbobix" fileName="Component/UIRecharge/BtnRechargeVip.xml" xy="1267,242"/>
+    <text id="n49_exet" name="n49" xy="713,28" pivot="0.5,0.5" anchor="true" size="172,56" scale="0.9,1" font="ui://vx9zwserrpakobeu" fontSize="42" color="#fcc45f" align="center" vAlign="middle" leading="0" singleLine="true" text="称号效果"/>
+    <text id="n55_exet" name="n55" xy="716,223" pivot="0.5,0.5" anchor="true" size="172,56" scale="0.9,1" font="ui://vx9zwserrpakobeu" fontSize="42" color="#fcc45f" align="center" vAlign="middle" leading="0" singleLine="true" text="契约奖励">
+      <gearDisplay controller="type" pages="1,2"/>
+    </text>
+    <text id="n59_sxdb" name="desc" xy="708,498" pivot="0.5,0.5" anchor="true" size="267,35" font="SimHei" fontSize="25" color="#c5a56b" align="center" vAlign="middle" leading="0" singleLine="true" text="达成条件：充值6契约点">
+      <gearDisplay controller="type" pages="1"/>
+    </text>
+    <text id="n61_sxdb" name="info1" xy="401,602" pivot="0.5,0.5" anchor="true" size="231,105" font="SimHei" fontSize="25" color="#68c65e" align="center" vAlign="middle" leading="5" text="每日送礼次数：4&#xA;杂货屋刷新次数：6&#xA;对局好感度加成+50%"/>
+    <text id="n62_sxdb" name="info2" xy="1014,602" pivot="0.5,0.5" anchor="true" size="267,105" font="SimHei" fontSize="25" color="#68c65e" align="center" vAlign="middle" leading="5" text="好友数量上限+0&#xA;杂货屋免费刷新次数：1&#xA;牌谱收藏上限:25"/>
+    <text id="n66_sxdb" name="n66" xy="358,738" pivot="1,0.5" size="54,35" font="SimHei" fontSize="25" color="#c5a56b" align="center" vAlign="middle" leading="5" singleLine="true" text="当前"/>
+    <text id="n68_sxdb" name="desc2" xy="658,738" pivot="0,0.5" size="167,35" font="SimHei" fontSize="25" color="#c5a56b" align="center" vAlign="middle" leading="5" singleLine="true" text="再获得6契约点"/>
   </displayList>
 </component>

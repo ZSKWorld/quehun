@@ -24,7 +24,7 @@ class Main {
 		FGUIExtend.extends();
 		ViewExtend.extends();
 
-		document.body.style.backgroundColor = "#000000";
+		document.body.style.backgroundColor = EColorString._000000;
 		document.body.style.backgroundImage = `url(${ ResPath.ETexturePath.JPG_Background })`;
 
 		await Laya.init({
@@ -34,7 +34,7 @@ class Main {
 			screenMode: Laya.Stage.SCREEN_NONE,
 			alignV: Laya.Stage.ALIGN_MIDDLE,
 			alignH: Laya.Stage.ALIGN_CENTER,
-			backgroundColor: "#000000",
+			backgroundColor: EColorString._000000,
 		});
 
 		Laya.stage.on(Laya.Event.VISIBILITY_CHANGE, this, () => {

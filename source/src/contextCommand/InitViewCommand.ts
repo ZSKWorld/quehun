@@ -16,6 +16,7 @@ import { BtnSevenDayTabView } from "../core/ui/view/PkgMain/view/btns/BtnSevenDa
 import { BtnShopRefreshView } from "../core/ui/view/PkgMain/view/btns/BtnShopRefreshView";
 import { BtnXunMiView } from "../core/ui/view/PkgMain/view/btns/BtnXunMiView";
 import { RenderGetRewardItemView } from "../core/ui/view/PkgCommon/view/renders/RenderGetRewardItemView";
+import { RenderRechargeItemView } from "../core/ui/view/PkgCommon/view/renders/RenderRechargeItemView";
 import { RenderBagGiftItemView } from "../core/ui/view/PkgMain/view/renders/RenderBagGiftItemView";
 import { RenderBagIllustItemView } from "../core/ui/view/PkgMain/view/renders/RenderBagIllustItemView";
 import { RenderBagItemView } from "../core/ui/view/PkgMain/view/renders/RenderBagItemView";
@@ -50,6 +51,7 @@ import { ComMJItemView } from "../core/ui/view/PkgCommon/view/coms/ComMJItemView
 import { ComName1View } from "../core/ui/view/PkgCommon/view/coms/ComName1View";
 import { ComName2View } from "../core/ui/view/PkgCommon/view/coms/ComName2View";
 import { ComRechargeItemView } from "../core/ui/view/PkgCommon/view/coms/ComRechargeItemView";
+import { ComRechargeVIPView } from "../core/ui/view/PkgCommon/view/coms/ComRechargeVIPView";
 import { ComRedDot1View } from "../core/ui/view/PkgCommon/view/coms/ComRedDot1View";
 import { ComTipInfoView } from "../core/ui/view/PkgCommon/view/coms/ComTipInfoView";
 import { ComTipInfoMediator } from "../core/ui/view/PkgCommon/mediator/coms/ComTipInfoMediator";
@@ -163,6 +165,7 @@ export class InitViewCommand extends Command {
 
 		//Renders
 		register(EViewID.RenderGetRewardItemView, EViewType.Render, RenderGetRewardItemView);
+		register(EViewID.RenderRechargeItemView, EViewType.Render, RenderRechargeItemView);
 		register(EViewID.RenderBagGiftItemView, EViewType.Render, RenderBagGiftItemView);
 		register(EViewID.RenderBagIllustItemView, EViewType.Render, RenderBagIllustItemView);
 		register(EViewID.RenderBagItemView, EViewType.Render, RenderBagItemView);
@@ -199,6 +202,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.ComName1View, EViewType.Component, ComName1View);
 		register(EViewID.ComName2View, EViewType.Component, ComName2View);
 		register(EViewID.ComRechargeItemView, EViewType.Component, ComRechargeItemView);
+		register(EViewID.ComRechargeVIPView, EViewType.Component, ComRechargeVIPView);
 		register(EViewID.ComRedDot1View, EViewType.Component, ComRedDot1View);
 		register(EViewID.ComTipInfoView, EViewType.Component, ComTipInfoView, ComTipInfoMediator);
 		register(EViewID.ComTitleView, EViewType.Component, ComTitleView);

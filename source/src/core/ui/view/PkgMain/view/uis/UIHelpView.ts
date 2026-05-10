@@ -67,16 +67,16 @@ export class UIHelpView extends ExtensionClass<IView, UIHelp>(UIHelp) implements
 		btn_preCourse.onClick(this, this.refreshCourse, [-1]);
 		btn_nextCourse.onClick(this, this.refreshCourse, [1]);
 
-		this._tabGroup.init([btn_tab0, btn_tab1, btn_tab2], this, this.onTabChanged, "#E8AF71", "#E8AF71");
+		this._tabGroup.init([btn_tab0, btn_tab1, btn_tab2], this, this.onTabChanged, EColorString._e8af71, EColorString._e8af71);
 
 		this._fanGroup.init([
 			btn_fanTab0, btn_fanTab1, btn_fanTab2, btn_fanTab3, btn_fanTab4, btn_fanTab5, btn_fanTab6,
 			btn_fanTab7
-		], this, this.onFanTabChanged, "#E0AB67", "#E0AB67");
+		], this, this.onFanTabChanged, EColorString._e0ab67, EColorString._e0ab67);
 
 		this._pointGroup.init([
 			btn_pointTab0, btn_pointTab1, btn_pointTab2
-		], this, this.onPointTabChanged, "#E0AB67", "#E0AB67");
+		], this, this.onPointTabChanged, EColorString._e0ab67, EColorString._e0ab67);
 
 		[
 			btn_pointLink0, btn_pointLink1, btn_pointLink2, btn_pointLink3, btn_pointLink4, btn_pointLink5,

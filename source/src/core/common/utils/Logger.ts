@@ -6,15 +6,15 @@ const enum ELogLevel {
 }
 
 const Colors: { [key in ELogLevel]: [string, string, string] } = {
-	[ELogLevel.Log]: ["#FFFFFF", "#00AAFF", "#FF0000"],
-	[ELogLevel.Warn]: ["#000080", "#FFC900", "#FF0000"],
-	[ELogLevel.Error]: ["#FF0000", "#FFC8C8", "#FF0000"],
-	[ELogLevel.Assert]: ["#FF0000", "#FFC8C8", "#FF0000"],
+	[ELogLevel.Log]: [EColorString._ffffff, EColorString._00aaff, EColorString._ff0000],
+	[ELogLevel.Warn]: [EColorString._000080, EColorString._ffc900, EColorString._ff0000],
+	[ELogLevel.Error]: [EColorString._ff0000, EColorString._ffc8c8, EColorString._ff0000],
+	[ELogLevel.Assert]: [EColorString._ff0000, EColorString._ffc8c8, EColorString._ff0000],
 };
 
 /** 日志打印工具 */
 export class Logger {
-	private static _loggerMap: { [name: string]: Logger } = {};
+	private static _loggerMap: { [name: string]: Logger; } = {};
 	private static _globalEnable = true;
 	private static readonly _default = new Logger("Default", true);
 
@@ -62,7 +62,7 @@ export class Logger {
 		const borderRadius = 7;
 		const color = Colors[type];
 		name += name ? ":" : "";
-		const logParams = ["%c" + name + type, `color:${ color[0] };border-radius:${ borderRadius }px 0px 0px ${ borderRadius }px;background:#66CCFF;padding:5px;`];
+		const logParams = ["%c" + name + type, `color:${ color[0] };border-radius:${ borderRadius }px 0px 0px ${ borderRadius }px;background:${ EColorString._66ccff };padding:5px;`];
 		const len = args.length;
 		let lastIsStr = false;
 		let lastStrIndex = 1;
@@ -75,7 +75,7 @@ export class Logger {
 			}
 			else {
 				logParams[0] += "%c" + String(msg);
-				logParams.push(`color:${ color[0] };padding:5px;background:${ color[1] };font-weight:bold;${ lastIsStr ? "border-left:2px solid #ffffff;border-top:1px solid #ffffff;" : "" }`);
+				logParams.push(`color:${ color[0] };padding:5px;background:${ color[1] };font-weight:bold;${ lastIsStr ? `border-left:2px solid ${ EColorString._ffffff };border-top:1px solid ${ EColorString._ffffff };` : "" }`);
 				lastIsStr = true;
 				lastStrIndex = logParams.length - 1;
 			}

@@ -296,6 +296,13 @@
     <component id="n15iobin" name="BtnRecharge.xml" path="/Component/UIRecharge/"/>
     <component id="exetobio" name="ComRechargeVIP.xml" path="/Component/UIRecharge/"/>
     <image id="exetobip" name="img_3065.png" path="/Texture/" exported="true" scale="9grid" scale9grid="109,0,28,104"/>
+    <component id="sxdbobiq" name="RenderRechargeItem.xml" path="/Component/UIRecharge/"/>
+    <image id="sxdbobir" name="img_1052.png" path="/Texture/" exported="true"/>
+    <image id="sxdbobis" name="img_847.png" path="/Texture/" exported="true" scale="9grid" scale9grid="10,10,20,20"/>
+    <component id="sxdbobiu" name="PbLoading3.xml" path="/Component/PbBar/"/>
+    <image id="sxdbobiv" name="img_1841.png" path="/Texture/" exported="true"/>
+    <image id="sxdbobiw" name="img_667.png" path="/Texture/" exported="true" scale="9grid" scale9grid="1,1,48,21"/>
+    <component id="sxdbobix" name="BtnRechargeVip.xml" path="/Component/UIRecharge/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

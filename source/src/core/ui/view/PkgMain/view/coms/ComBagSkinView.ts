@@ -61,7 +61,7 @@ export class ComBagSkinView extends ExtensionClass<IView, ComBagSkin>(ComBagSkin
 		const onlyOwn = this.btn_own.selected;
 		const cfgChar = $cfgMgr.item_definition.character[charId];
 		const ownSkins = skins.filter(v => $user.character.hasSkin(v));
-		this.txt_name.text = `${ cfgChar.langField("name") } [size=30]${ ownSkins.length }/${ skins.length }[/size]`;
+		this.txt_name.text = `${ cfgChar.langField(ECfgLangField.name) } [size=30]${ ownSkins.length }/${ skins.length }[/size]`;
 		this._showSkins = onlyOwn ? ownSkins : skins;
 		this.list_skin.numItems = this._showSkins.length;
 		this.btn_choosedChar.refresh(charId, $user.character.hasChar(charId));

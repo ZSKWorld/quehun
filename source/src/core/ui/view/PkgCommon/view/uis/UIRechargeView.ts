@@ -21,7 +21,7 @@ export class UIRechargeView extends ExtensionClass<IView, UIRecharge>(UIRecharge
 
 		this._tabGroup.init([
 			btn_tab0, btn_tab1, btn_tab2, btn_tab3, btn_tab4
-		], this, this.onTabChanged, "#d9b263", "#8cb65f");
+		], this, this.onTabChanged, EColorString._d9b263, EColorString._8cb65f);
 		$uiUtil.setList(list_item, true, this, this.onListItemRender);
 	}
 
@@ -37,14 +37,17 @@ export class UIRechargeView extends ExtensionClass<IView, UIRecharge>(UIRecharge
 
 	refreshItems(itemIds: number[]) {
 		this._itemIds = itemIds;
+		this.com_vip.visible = false;
 		this.list_item.visible = true;
 		this.list_item.scrollPane.posY = 0;
 		this.list_item.numItems = itemIds.length;
 	}
 
 	/** 契约等级 */
-	refreshQYDJ() {
+	refreshQYDJ(level: number) {
+		this.com_vip.visible = true;
 		this.list_item.visible = false;
+		this.com_vip.refresh(level);
 	}
 
 	private onTabChanged(type: EUIRechargeTabType) {

@@ -42,7 +42,7 @@ export class LayaRepair {
 		// 	sp.size(txt1.textWidth + 150, txt1.textHeight + 10);
 		// 	sp.graphics.clear();
 		// 	sp.graphics.alpha(0.5);
-		// 	sp.graphics.drawRect(0, 0, sp.width, sp.height, "#999999");
+		// 	sp.graphics.drawRect(0, 0, sp.width, sp.height, EColorString._999999);
 		// 	sp.graphics.alpha(2);
 		// }
 	}

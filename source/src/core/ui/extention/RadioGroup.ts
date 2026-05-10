@@ -3,8 +3,8 @@ export class RadioGroup {
 	private _items: fgui.GButton[] = [];
 	private _valueChangedCaller: any;
 	private _onValueChanged: (index: number) => void;
-	private _selectedColor: string;
-	private _deselectedColor: string;
+	private _selectedColor: EColorString;
+	private _deselectedColor: EColorString;
 
 	get selectIndex() { return this._selectIndex; }
 	set selectIndex(v) {
@@ -19,8 +19,8 @@ export class RadioGroup {
 		items: fgui.GButton[],
 		caller?: any,
 		onValueChanged?: (index: number) => void,
-		selectedColor: string = "#EBB661",
-		deselectedColor: string = "#8CB65F"
+		selectedColor: EColorString = EColorString._ebb661,
+		deselectedColor: EColorString = EColorString._8cb65f
 	) {
 		this.reset();
 		items = items || [];

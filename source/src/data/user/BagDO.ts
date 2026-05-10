@@ -110,10 +110,9 @@ export class BagDO extends BaseDO implements DO.IBagDO {
 	@InterestMessage(ENetMessage.oauth2Login)
 	private onLogin(res: IResLogin) {
 		if (!res.account) return;
-		const { gold, vip, diamond, platform_diamond, skin_ticket, platform_skin_ticket, loading_image } = res.account;
+		const { gold, diamond, platform_diamond, skin_ticket, platform_skin_ticket, loading_image } = res.account;
 		const items: IItem[] = [];
 		gold && items.push({ item_id: 100002, stack: gold });
-		vip && items.push({ item_id: 100099, stack: vip });
 		diamond && items.push({ item_id: 100001, stack: diamond });
 		skin_ticket && items.push({ item_id: 100004, stack: skin_ticket });
 		this._loadingImage = loading_image.slice();

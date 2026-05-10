@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" designImage="ui://ca43vz0ef9je7plolw" designImageAlpha="100">
-  <controller name="c1" pages="6,服饰屋,0,杂货屋,1,背景屋,2,祈愿屋,3,星之屋,4,插画屋,5,福袋屋" selected="0"/>
+<component size="1920,1080" designImage="ui://ca43vz0ef9je7plolz" designImageAlpha="100">
   <displayList>
     <component id="n0_p5uz" name="back" src="p5uzob8h" fileName="Component/Component/ComBack.xml" xy="10,22">
       <property target="title" propertyId="0" value="商店"/>
@@ -10,9 +9,6 @@
     <component id="n3_fpd2" name="n3" src="qs7jobft" fileName="Component/Component/货币/ComCurrency.xml" xy="1493,57" group="n30_ffpy" controller="type,1"/>
     <group id="n30_ffpy" name="n30" xy="912,57" size="856,80" advanced="true"/>
     <image id="n4_fpd2" name="n4" src="q5yiobc0" fileName="Texture/img_3555.png" xy="362,154" size="1461,857" group="n9_fpd2"/>
-    <image id="n12_fpd2" name="n12" src="rpakobf6" fileName="Texture/img_195.png" pkg="vith2b66" xy="450,276" size="1294,4" group="n9_fpd2">
-      <gearDisplay controller="c1" pages="0,2,3,4,5"/>
-    </image>
     <component id="n32_fhgq" name="tab0" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" xy="81,201" pivot="0.873,0.5" size="336,140" group="n33_fhgq">
       <Button title="辉玉" titleColor="#d9b263" titleFontSize="50" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
     </component>
@@ -48,6 +44,7 @@
       <item/>
       <item/>
     </list>
+    <component id="n39_sxdb" name="vip" src="exetobio" fileName="Component/UIRecharge/ComRechargeVIP.xml" xy="389,193" group="n31_ffpy"/>
     <group id="n31_ffpy" name="n31" xy="81,154" size="1742,857" advanced="true"/>
   </displayList>
   <transition name="show" frameRate="60">

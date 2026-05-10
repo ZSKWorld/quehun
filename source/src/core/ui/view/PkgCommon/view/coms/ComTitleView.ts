@@ -6,6 +6,11 @@ export const enum EComTitle1Msg {
 
 export class ComTitleView extends ExtensionClass<IView, ComTitle>(ComTitle) implements IView {
 
+	/** 刷新指定路径icon */
+	refreshSkin(url: string) {
+		$dynamicResMgr.setLoader(this.loader_icon, url);
+	}
+
 	refreshIcon(id: number) {
 		const icon = $itemUtil.getItemInfo(id).icon || $langRes("extendRes/title/notitle.png");
 		$dynamicResMgr.setLoader(this.loader_icon, icon);

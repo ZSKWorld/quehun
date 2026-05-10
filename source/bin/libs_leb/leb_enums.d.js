@@ -483,3 +483,43 @@ ERDName = {
 	SevenDay_Day5: "ERDName_SevenDay_Day5",
 	SevenDay_Day6: "ERDName_SevenDay_Day6",
 }
+
+ECfgLangField = {
+	name: "name",
+	desc: "desc",
+	desc2: "desc2",
+	desc_item: "desc_item",
+	desc_func: "desc_func",
+	first_desc: "first_desc",
+	normal_desc: "normal_desc",
+	expire_desc: "expire_desc",
+	room_name: "room_name",
+	lock_tips: "lock_tips",
+}
+
+EColorString = {
+	_000000: "#000000",
+	_000080: "#000080",
+	_00aaff: "#00aaff",
+	_51f1ff: "#51f1ff",
+	_58c4db: "#58c4db",
+	_66ccff: "#66ccff",
+	_8c8c8c: "#8c8c8c",
+	_8cb65f: "#8cb65f",
+	_8d6f61: "#8d6f61",
+	_999999: "#999999",
+	_a9d94d: "#a9d94d",
+	_d4815c: "#d4815c",
+	_d9b263: "#d9b263",
+	_e0ab67: "#e0ab67",
+	_e8af71: "#e8af71",
+	_eab65e: "#eab65e",
+	_ebb661: "#ebb661",
+	_f17828: "#f17828",
+	_f56aff: "#f56aff",
+	_ff0000: "#ff0000",
+	_ffc8c8: "#ffc8c8",
+	_ffc900: "#ffc900",
+	_ffffff: "#ffffff",
+	_00000000: "#00000000",
+}

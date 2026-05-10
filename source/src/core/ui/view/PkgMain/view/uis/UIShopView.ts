@@ -23,7 +23,7 @@ export class UIShopView extends ExtensionClass<IView, UIShop>(UIShop) implements
 		this._tabGroup.init([
 			btn_tab0, btn_tab1, btn_tab2, btn_tab3,
 			btn_tab4, btn_tab5, btn_tab6
-		], this, this.onTabChanged, "#d9b263", "#8cb65f");
+		], this, this.onTabChanged, EColorString._d9b263, EColorString._8cb65f);
 	}
 
 	refreshTab(type: EUIShopTabType) {

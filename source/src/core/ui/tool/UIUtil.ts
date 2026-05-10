@@ -137,7 +137,7 @@ export class UIUtil extends Singleton<UIUtil>() implements IUIUtil {
 		}
 	}
 
-	parseUBBText(str: string, hrefColor = "#51f1ff") {
+	parseUBBText(str: string, hrefColor: EColorString = EColorString._51f1ff) {
 		if (!str) return str;
 		return str
 			.replace(/&/g, '&amp;')

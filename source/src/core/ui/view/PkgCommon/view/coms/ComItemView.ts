@@ -8,7 +8,7 @@ export class ComItemView extends ExtensionClass<IView, ComItem>(ComItem) impleme
 
 	/** 刷新指定路径icon */
 	refreshSkin(url: string) {
-		this.loader_icon.icon = url;
+		$dynamicResMgr.setLoader(this.loader_icon, url);
 	}
 
 	/** 刷新半透明icon */

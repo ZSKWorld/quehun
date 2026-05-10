@@ -3,6 +3,7 @@
 import UITest from "./UITest";
 import ComHeadFrame from "./ComHeadFrame";
 import ComRedDot1 from "./ComRedDot1";
+import ComRechargeVIP from "./ComRechargeVIP";
 import BtnBuy from "./BtnBuy";
 import UIRecharge from "./UIRecharge";
 import ComFlowerLoading from "./ComFlowerLoading";
@@ -35,10 +36,13 @@ import ComHead from "./ComHead";
 import ComCurrency from "./ComCurrency";
 import ComItem from "./ComItem";
 import UIItemDetail from "./UIItemDetail";
+import RenderRechargeItem from "./RenderRechargeItem";
+import PbLoading3 from "./PbLoading3";
 import PbLoading2 from "./PbLoading2";
 import { UITestView } from "../../view/PkgCommon/view/uis/UITestView";
 import { ComHeadFrameView } from "../../view/PkgCommon/view/coms/ComHeadFrameView";
 import { ComRedDot1View } from "../../view/PkgCommon/view/coms/ComRedDot1View";
+import { ComRechargeVIPView } from "../../view/PkgCommon/view/coms/ComRechargeVIPView";
 import { BtnBuyView } from "../../view/PkgCommon/view/btns/BtnBuyView";
 import { UIRechargeView } from "../../view/PkgCommon/view/uis/UIRechargeView";
 import { ComFlowerLoadingView } from "../../view/PkgCommon/view/coms/ComFlowerLoadingView";
@@ -69,12 +73,14 @@ import { ComHeadView } from "../../view/PkgCommon/view/coms/ComHeadView";
 import { ComCurrencyView } from "../../view/PkgCommon/view/coms/ComCurrencyView";
 import { ComItemView } from "../../view/PkgCommon/view/coms/ComItemView";
 import { UIItemDetailView } from "../../view/PkgCommon/view/uis/UIItemDetailView";
+import { RenderRechargeItemView } from "../../view/PkgCommon/view/renders/RenderRechargeItemView";
 
 export default class PkgCommonBinder {
 	public static bindAll(): void {
 		fgui.UIObjectFactory.setExtension(UITest.url, UITestView);
 		fgui.UIObjectFactory.setExtension(ComHeadFrame.url, ComHeadFrameView);
 		fgui.UIObjectFactory.setExtension(ComRedDot1.url, ComRedDot1View);
+		fgui.UIObjectFactory.setExtension(ComRechargeVIP.url, ComRechargeVIPView);
 		fgui.UIObjectFactory.setExtension(BtnBuy.url, BtnBuyView);
 		fgui.UIObjectFactory.setExtension(UIRecharge.url, UIRechargeView);
 		fgui.UIObjectFactory.setExtension(ComFlowerLoading.url, ComFlowerLoadingView);
@@ -107,6 +113,8 @@ export default class PkgCommonBinder {
 		fgui.UIObjectFactory.setExtension(ComCurrency.url, ComCurrencyView);
 		fgui.UIObjectFactory.setExtension(ComItem.url, ComItemView);
 		fgui.UIObjectFactory.setExtension(UIItemDetail.url, UIItemDetailView);
+		fgui.UIObjectFactory.setExtension(RenderRechargeItem.url, RenderRechargeItemView);
+		fgui.UIObjectFactory.setExtension(PbLoading3.url, PbLoading3);
 		fgui.UIObjectFactory.setExtension(PbLoading2.url, PbLoading2);
 	}
 }

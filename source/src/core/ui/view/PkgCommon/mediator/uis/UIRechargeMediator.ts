@@ -32,7 +32,7 @@ export class UIRechargeMediator extends MediatorBase<UIRechargeView, IUIRecharge
 
 	private onTabSelectChanged(type: EUIRechargeTabType) {
 		let items: number[];
-		const shelevesId = $user.recharge.shelevesId;
+		const { shelevesId, vipLevel } = $user.recharge;
 		switch (type) {
 			case EUIRechargeTabType.HY:
 				items = $cfgMgr.mall.goods_shelves[shelevesId].filter(v => {
@@ -52,7 +52,7 @@ export class UIRechargeMediator extends MediatorBase<UIRechargeView, IUIRecharge
 				this.view.refreshItems(items);
 				break;
 			case EUIRechargeTabType.QYDJ:
-				this.view.refreshQYDJ();
+				this.view.refreshQYDJ(vipLevel);
 				break;
 			case EUIRechargeTabType.HS:
 				items = $cfgMgr.exchange.searchexchange.map(v => v.id);

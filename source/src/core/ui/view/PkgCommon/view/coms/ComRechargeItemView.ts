@@ -33,7 +33,7 @@ export class ComRechargeItemView extends ExtensionClass<IView, ComRechargeItem>(
 		if (_itemType == EUIRechargeTabType.FSQ && _itemId == 4001) {
 			btn_buy1.visible = true;
 			const cfgGoods = $cfgMgr.exchange.fushiquanexchange[_itemId];
-			txt_title.text = cfgGoods.langField("name");
+			txt_title.text = cfgGoods.langField(ECfgLangField.name);
 			com_item.refreshSkin($langRes(cfgGoods.icon));
 			btn_buy1.title = cfgGoods.source_value.toString();
 			btn_buy1.icon = $langRes($cfgMgr.item_definition.currency[cfgGoods.source_currency].icon);
@@ -43,19 +43,19 @@ export class ComRechargeItemView extends ExtensionClass<IView, ComRechargeItem>(
 			const cfgGoodsShelves = $cfgMgr.mall.goods_shelves[$user.recharge.shelevesId].find(v => v.goods_id == _itemId);
 			if (cfgGoodsShelves.is_monthcard) {
 				const cfgGoods = $cfgMgr.mall.month_ticket[_itemId];
-				txt_title.text = cfgGoods.langField("name");
+				txt_title.text = cfgGoods.langField(ECfgLangField.name);
 				com_item.refreshSkin($langRes(cfgGoods.icon));
-				txt_desc.text = cfgGoods.langField("desc");
-				txt_desc.color = "#f56aff";
+				txt_desc.text = cfgGoods.langField(ECfgLangField.desc);
+				txt_desc.color = EColorString._f56aff;
 				//TODO vip剩余天数显示
 			} else {
 				const cfgGoods = $cfgMgr.mall.goods[_itemId];
 				const firstRecharge = cfgGoods.first_extend_add && $user.recharge.isFirstRecharge(cfgGoods.cny);
 				img_first.visible = firstRecharge;
-				txt_title.text = cfgGoods.langField("name");
+				txt_title.text = cfgGoods.langField(ECfgLangField.name);
 				com_item.refreshSkin($langRes(cfgGoods.icon));
-				txt_desc.text = cfgGoods.langField(firstRecharge ? "first_desc" : "normal_desc");
-				txt_desc.color = firstRecharge ? "#f56aff" : "#f17828";
+				txt_desc.text = cfgGoods.langField(firstRecharge ? ECfgLangField.first_desc : ECfgLangField.normal_desc);
+				txt_desc.color = firstRecharge ? EColorString._f56aff : EColorString._f17828;
 			}
 			btn_buy2.title = cfgGoodsShelves.price;
 		}
@@ -67,7 +67,7 @@ export class ComRechargeItemView extends ExtensionClass<IView, ComRechargeItem>(
 		btn_buy1.visible = true;
 
 		const cfgExchange = $cfgMgr.exchange.exchange[_itemId];
-		txt_title.text = cfgExchange.langField("name");
+		txt_title.text = cfgExchange.langField(ECfgLangField.name);
 		com_item.refreshSkin($langRes(cfgExchange.icon));
 		btn_buy1.title = cfgExchange.source_value.toString();
 		btn_buy1.icon = $langRes($cfgMgr.item_definition.currency[cfgExchange.source_currency].icon);
@@ -79,7 +79,7 @@ export class ComRechargeItemView extends ExtensionClass<IView, ComRechargeItem>(
 		btn_buy1.visible = true;
 
 		const cfgSearchExchange = $cfgMgr.exchange.searchexchange[_itemId];
-		txt_title.text = cfgSearchExchange.langField("name");
+		txt_title.text = cfgSearchExchange.langField(ECfgLangField.name);
 		com_item.refreshSkin($langRes(cfgSearchExchange.icon));
 		btn_buy1.title = cfgSearchExchange.source_value.toString();
 		btn_buy1.icon = $langRes($cfgMgr.item_definition.currency[cfgSearchExchange.source_currency].icon);

@@ -47,7 +47,7 @@ declare interface IConfigManager {
 
 declare interface ISheetDataBase {
 	/** 本地化字段 */
-	langField<T = string>(name: string): T;
+	langField<T = string>(name: ECfgLangField): T;
 }
 
 type CfgFieldType<T> = { [P in keyof T]: T[P] }[keyof T];

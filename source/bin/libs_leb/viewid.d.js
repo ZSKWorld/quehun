@@ -17,6 +17,7 @@ EViewID = {
 
 	/**Renders */
 	RenderGetRewardItemView: "RenderGetRewardItemView",
+	RenderRechargeItemView: "RenderRechargeItemView",
 	RenderBagGiftItemView: "RenderBagGiftItemView",
 	RenderBagIllustItemView: "RenderBagIllustItemView",
 	RenderBagItemView: "RenderBagItemView",
@@ -53,6 +54,7 @@ EViewID = {
 	ComName1View: "ComName1View",
 	ComName2View: "ComName2View",
 	ComRechargeItemView: "ComRechargeItemView",
+	ComRechargeVIPView: "ComRechargeVIPView",
 	ComRedDot1View: "ComRedDot1View",
 	ComTipInfoView: "ComTipInfoView",
 	ComTitleView: "ComTitleView",

@@ -19,7 +19,9 @@ export class UISevenDayView extends ExtensionClass<IView, UISevenDay>(UISevenDay
 		[btn_answer0, btn_answer1, btn_answer2].forEach((v, i) => v.onClick(this, this.sendEvent, [EUISevenDayEvent.OnQABtnAnswerClick, i]));
 		[com_task0, com_task1, com_task2].forEach(v => v.on(EUISevenDayEvent.OnTaskBtnClick, this, this.onTaskBtnClick));
 
-		_tabGroup.init([btn_day0, btn_day1, btn_day2, btn_day3, btn_day4, btn_day5, btn_day6], this, this.onTabSelectChanged, "#d4815c", "#8d6f61");
+		_tabGroup.init([
+			btn_day0, btn_day1, btn_day2, btn_day3, btn_day4, btn_day5, btn_day6
+		], this, this.onTabSelectChanged, EColorString._d4815c, EColorString._8d6f61);
 	}
 
 	override onEnable() {

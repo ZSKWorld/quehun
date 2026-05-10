@@ -26,16 +26,16 @@ export class ItemUtil extends Singleton<ItemUtil>() implements IItemUtil {
 			case EItemType.Currency:
 				const currencyCfg = $cfgMgr.item_definition.currency[id];
 				if (!currencyCfg) break;
-				name = currencyCfg.langField("name");
+				name = currencyCfg.langField(ECfgLangField.name);
 				icon = currencyCfg.icon;
 				itemIcon = currencyCfg.icon_jpg;
-				desc = currencyCfg.langField("desc");
+				desc = currencyCfg.langField(ECfgLangField.desc);
 				break;
 			case EItemType.Character:
 				const characterCfg = $cfgMgr.item_definition.character[id];
 				if (!characterCfg) break;
-				name = characterCfg.langField("name");
-				desc = characterCfg.langField("desc_item");
+				name = characterCfg.langField(ECfgLangField.name);
+				desc = characterCfg.langField(ECfgLangField.desc_item);
 				const skinItemInfo = this.getItemInfo(characterCfg.init_skin);
 				icon = skinItemInfo.icon;
 				itemIcon = skinItemInfo.itemIcon;
@@ -45,11 +45,11 @@ export class ItemUtil extends Singleton<ItemUtil>() implements IItemUtil {
 				const itemCfg = $cfgMgr.item_definition.item[id];
 				if (!itemCfg) break;
 
-				name = itemCfg.langField("name");
+				name = itemCfg.langField(ECfgLangField.name);
 				icon = itemCfg.icon_transparent;
 				itemIcon = itemCfg.icon;
-				desc = itemCfg.langField("desc");
-				func = itemCfg.langField("desc_func");
+				desc = itemCfg.langField(ECfgLangField.desc);
+				func = itemCfg.langField(ECfgLangField.desc_func);
 
 				switch (itemCfg.category) {
 					case EItemCategory.Common:
@@ -95,8 +95,8 @@ export class ItemUtil extends Singleton<ItemUtil>() implements IItemUtil {
 			case EItemType.Skin:
 				const skinCfg = $cfgMgr.item_definition.skin[id];
 				if (!skinCfg) break;
-				name = skinCfg.langField("name");
-				desc = skinCfg.langField("desc");
+				name = skinCfg.langField(ECfgLangField.name);
+				desc = skinCfg.langField(ECfgLangField.desc);
 				icon = skinCfg.path + "/bighead.png";
 				itemIcon = icon;
 
@@ -114,8 +114,8 @@ export class ItemUtil extends Singleton<ItemUtil>() implements IItemUtil {
 			case EItemType.Title:
 				const titleCfg = $cfgMgr.item_definition.title[id];
 				if (!titleCfg) break;
-				name = titleCfg.langField("name");
-				desc = titleCfg.langField("desc");
+				name = titleCfg.langField(ECfgLangField.name);
+				desc = titleCfg.langField(ECfgLangField.desc);
 				icon = titleCfg.icon;
 				itemIcon = titleCfg.icon_item;
 				break;

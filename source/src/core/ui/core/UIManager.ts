@@ -95,7 +95,7 @@ export class UIManager extends Singleton<UIManager>() implements IUIManager {
 		mask.sortingOrder = 9999;
 		mask.name = "UIManager_Mask";
 		this.addToLayer(mask, ELayer.UITop);
-		mask.drawRect(0, "", "#00000000");
+		mask.drawRect(0, "", EColorString._00000000);
 		mask.makeFullScreen();
 		mask.addRelation(mask.parent, fgui.RelationType.Size);
 	}

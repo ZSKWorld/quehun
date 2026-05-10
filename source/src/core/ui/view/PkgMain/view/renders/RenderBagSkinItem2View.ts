@@ -19,7 +19,7 @@ export class RenderBagSkinItem2View extends ExtensionClass<IView, RenderBagSkinI
 			if ($gameMgr.language == ELanguage.EN)
 				this.txt_desc.text = cfgSkin.name_en;
 			else
-				this.txt_desc.text = cfgSkin.langField("lock_tips");
+				this.txt_desc.text = cfgSkin.langField(ECfgLangField.lock_tips);
 		}
 	}
 }

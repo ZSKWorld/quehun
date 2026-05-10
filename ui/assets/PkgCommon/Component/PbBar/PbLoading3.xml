@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="867,26" extention="ProgressBar">
+  <displayList>
+    <image id="n2_ieav" name="n2" src="sxdbobiw" fileName="Texture/img_667.png" xy="0,0" size="867,26">
+      <relation target="" sidePair="width-width,height-height"/>
+    </image>
+    <image id="n3_ieav" name="bar" src="sxdbobiv" fileName="Texture/img_1841.png" xy="0,0" size="867,26" fillMethod="hz" fillAmount="50">
+      <relation target="" sidePair="width-width,height-height"/>
+    </image>
+    <text id="n5_ieav" name="title" xy="433,11" pivot="0.5,0.5" anchor="true" size="43,35" font="SimHei" fontSize="25" color="#ffffff" align="center" vAlign="middle" singleLine="true" text="60%">
+      <relation target="" sidePair="center-center,middle-middle"/>
+    </text>
+  </displayList>
+  <ProgressBar titleType="valueAndmax"/>
+  <transition name="t0" autoPlay="true" autoPlayRepeat="-1" frameRate="60"/>
+</component>

@@ -23,7 +23,7 @@ export class RenderSevenDayItemView extends ExtensionClass<IView, RenderSevenDay
 		const rewards = cfgPeriodTask.reward.split2Num("-");
 		com_item.refresh(rewards[0], rewards[1]);
 		const cfgBaseTask = $cfgMgr.events.base_task[cfgPeriodTask.base_task_id];
-		txt_desc.text = cfgBaseTask.langField("desc");
+		txt_desc.text = cfgBaseTask.langField(ECfgLangField.desc);
 
 		const taskInfo = $user.activity.getPeriodTaskInfo(data.period_task_id);
 		//ctrl_type.selectedIndex 0:问答 1:前往 2:进度 3:领取 4:已领取

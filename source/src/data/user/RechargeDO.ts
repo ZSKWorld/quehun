@@ -3,7 +3,6 @@ import { BaseDO } from "./BaseDO";
 export class RechargeDO extends BaseDO implements DO.IRechargeDO {
 
 	private _vipExp: number = 0;
-	private _vipLevel: number = 1;
 	/** 以及充值过的人民币档位 */
 	private _rechargedList: number[] = [];
 	private _gainedVipLevels: number[] = [];
@@ -18,7 +17,15 @@ export class RechargeDO extends BaseDO implements DO.IRechargeDO {
 	private _paymentSettingMap: Record<string, ProtoObject<IPaymentSettingV2_PaymentSettingUnit>> = {};
 
 	get vipExp() { return this._vipExp; }
-	get vipLevel() { return this._vipLevel; }
+	get vipLevel() {
+		let level = 1;
+		const vipExp = this._vipExp;
+		$cfgMgr.vip.vip.forEach(v => {
+			if (vipExp >= v.charge)
+				level = v.id;
+		});
+		return level;
+	}
 	get paymentOpen() {
 		return this._paymentSettingV2 && this._paymentSettingV2.open_payment == 1;
 	}
@@ -56,14 +63,7 @@ export class RechargeDO extends BaseDO implements DO.IRechargeDO {
 	private onLogin(res: IResLogin) {
 		if (!res.account) return;
 		const vipExp = this._vipExp = res.account.vip;
-		let level = 1;
-		$cfgMgr.vip.vip.forEach(v => {
-			if (vipExp >= v.charge)
-				level = v.id;
-		});
-		this._vipLevel = level;
 		this.dispatch(EUserEvent.OnRechargeVipExpChanged);
-		this.dispatch(EUserEvent.OnRechargeVipLevelChanged);
 	}
 
 	@InterestMessage(ENetMessage.fetchMisc)

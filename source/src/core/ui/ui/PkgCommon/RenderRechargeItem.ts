@@ -6,6 +6,7 @@ export default class RenderRechargeItem extends fgui.GComponent {
 
 	protected com_item: ComItem1View;
 	protected txt_count: fgui.GTextField;
+	protected img_gotReward: fgui.GImage;
 	public static url: string = "ui://vx9zwsersxdbobiq";
 
 	public static createInstance(): RenderRechargeItem {
@@ -15,5 +16,6 @@ export default class RenderRechargeItem extends fgui.GComponent {
 	protected override onConstruct(): void {
 		this.com_item = <ComItem1View>(this.getChildAt(0));
 		this.txt_count = <fgui.GTextField>(this.getChildAt(1));
+		this.img_gotReward = <fgui.GImage>(this.getChildAt(2));
 	}
 }

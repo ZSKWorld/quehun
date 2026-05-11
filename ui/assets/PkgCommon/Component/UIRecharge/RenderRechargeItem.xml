@@ -3,6 +3,7 @@
   <displayList>
     <component id="n13_q5yi" name="item" src="q5yiobc2" fileName="Component/Component/物品/ComItem1.xml" xy="0,0" size="128,128" aspect="true"/>
     <text id="n11_hk7r" name="count" xy="0,124" pivot="0.5,0.5" size="128,42" font="SimHei" fontSize="30" color="#eab75f" align="center" vAlign="middle" leading="0" autoSize="shrink" singleLine="true" text="5"/>
+    <image id="n14_i67f" name="gotReward" src="hk7robay" fileName="Texture/img_2297.png" xy="18,47" pivot="0.5,0.5" size="125,97" aspect="true"/>
   </displayList>
   <customProperty target="title" propertyId="0"/>
 </component>

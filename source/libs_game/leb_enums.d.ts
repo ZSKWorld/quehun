@@ -554,8 +554,6 @@ declare enum EUserEvent {
 	//#region 充值相关
 	/** vip经验变化 */
 	OnRechargeVipExpChanged = "EUserEvent_OnRechargeVipExpChanged",
-	/** vip等级变化 */
-	OnRechargeVipLevelChanged = "EUserEvent_OnRechargeVipLevelChanged",
 	/** 已充值档位变化 */
 	OnRechargeRechargedListChanged = "EUserEvent_OnRechargeRechargedListChanged",
 	/** 已领取的vip等级奖励变化 */

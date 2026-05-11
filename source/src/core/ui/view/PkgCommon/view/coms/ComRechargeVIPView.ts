@@ -1,4 +1,5 @@
 import ComRechargeVIP from "../../../../ui/PkgCommon/ComRechargeVIP";
+import { RenderRechargeItemView } from "../renders/RenderRechargeItemView";
 
 export class ComRechargeVIPView extends ExtensionClass<IView, ComRechargeVIP>(ComRechargeVIP) implements IView {
 
@@ -7,10 +8,11 @@ export class ComRechargeVIPView extends ExtensionClass<IView, ComRechargeVIP>(Co
 	private _vipRewards: IRewardSlot[];
 
 	override onCreate() {
-		const { btn_getReward, btn_last, btn_next } = this;
+		const { btn_getReward, btn_last, btn_next, list_rewards } = this;
 		btn_getReward.onClick(this, this.onBtnGetReward);
 		btn_last.onClick(this, this.onBtnLastAndNext, [-1]);
 		btn_next.onClick(this, this.onBtnLastAndNext, [1]);
+		$uiUtil.setList(list_rewards, true, this, this.onListRewardRender);
 	}
 
 	refresh(level: number) {
@@ -24,8 +26,6 @@ export class ComRechargeVIPView extends ExtensionClass<IView, ComRechargeVIP>(Co
 			_myLevel, _curLevel, ctrl_type, com_title, com_curTitle, com_nextTitle, list_rewards,
 			pb_vip, btn_getReward, btn_last, btn_next, txt_desc, txt_info1, txt_info2, txt_desc2,
 		} = this;
-
-		const { vipExp, vipLevel } = $user.recharge;
 
 		const isFirstLevel = _curLevel <= 1;
 		const canGetReward = !isFirstLevel && _curLevel <= _myLevel && !$user.recharge.gainedVipLevelReward(_curLevel);
@@ -44,7 +44,7 @@ export class ComRechargeVIPView extends ExtensionClass<IView, ComRechargeVIP>(Co
 			if (!$user.recharge.gainedVipLevelReward(i)) {
 				if (i < _curLevel) {
 					leftRedDot = true;
-					i = _curLevel + 1;
+					i = _curLevel;
 				} else {
 					rightRedDot = true;
 					break;
@@ -61,7 +61,8 @@ export class ComRechargeVIPView extends ExtensionClass<IView, ComRechargeVIP>(Co
 		!isFirstLevel && (list_rewards.numItems = this._vipRewards.length);
 
 		!isFirstLevel && txt_desc.langText(2159, cfgVip.charge);
-
+		
+		const { vipExp } = $user.recharge;
 		pb_vip.titleType = cfgVipMyNext ? fgui.ProgressTitleType.ValueAndMax : fgui.ProgressTitleType.Value;
 		pb_vip.max = cfgVipMyNext ? cfgVipMyNext.charge : vipExp;
 		pb_vip.value = vipExp;
@@ -82,5 +83,10 @@ export class ComRechargeVIPView extends ExtensionClass<IView, ComRechargeVIP>(Co
 		if (!$cfgMgr.vip.vip[level]) return;
 		this._curLevel = level;
 		this.refreshInfo();
+	}
+
+	private onListRewardRender(index: number, item: RenderRechargeItemView) {
+		const reward = this._vipRewards[index];
+		item.refresh(reward.id, reward.count, $user.recharge.gainedVipLevelReward(this._curLevel));
 	}
 }

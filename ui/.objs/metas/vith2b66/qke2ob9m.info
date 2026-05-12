@@ -1,4 +1,12 @@
 {
+  "objectStatus": {
+    "n2_puub": {
+      "hidden": true
+    },
+    "n1_puub": {
+      "hidden": true
+    }
+  },
   "adaptiveTest": true,
   "designImages": [
     "ui://ca43vz0epuub7plojv",

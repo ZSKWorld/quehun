@@ -39,8 +39,6 @@
     <image id="ieavob7m" name="img_74.png" path="/Texture/" exported="true"/>
     <image id="ieavob7n" name="img_717.png" path="/Texture/" exported="true"/>
     <image id="ieavob7o" name="img_4138.png" path="/Texture/" exported="true"/>
-    <image id="ieavob7p" name="img_3921.png" path="/Texture/" exported="true"/>
-    <image id="ieavob7q" name="img_3920.png" path="/Texture/" exported="true" scale="9grid" scale9grid="10,10,453,282"/>
     <image id="ieavob7r" name="img_335.png" path="/Texture/" exported="true"/>
     <image id="ieavob7s" name="img_2840.png" path="/Texture/" exported="true"/>
     <image id="ieavob7t" name="img_2839.png" path="/Texture/" exported="true"/>
@@ -137,9 +135,6 @@
     <image id="gsi2obcl" name="img_249.png" path="/Texture/" exported="true"/>
     <image id="gsi2obcm" name="img_248.png" path="/Texture/" exported="true"/>
     <image id="gsi2obcn" name="img_2801.png" path="/Texture/" exported="true"/>
-    <image id="gsi2obco" name="img_3828.png" path="/Texture/" exported="true"/>
-    <image id="gsi2obcp" name="img_4032.png" path="/Texture/" exported="true"/>
-    <image id="gsi2obcq" name="img_4033.png" path="/Texture/" exported="true"/>
     <image id="gsi2obcr" name="img_986.png" path="/Texture/" exported="true"/>
     <image id="gsi2obcs" name="img_932.png" path="/Texture/" exported="true"/>
     <image id="gsi2obct" name="img_918.png" path="/Texture/" exported="true"/>
@@ -276,21 +271,15 @@
     <component id="fpd2obgp" name="UIRecharge.xml" path="/" exported="true"/>
     <image id="fhgqobi2" name="img_3261.png" path="/Texture/" exported="true"/>
     <image id="fhgqobi3" name="img_3263.png" path="/Texture/" exported="true"/>
-    <image id="9luvobi4" name="img_195.png" path="/Texture/" scale="9grid" scale9grid="10,0,32,4"/>
-    <component id="9luvobi5" name="BtnShopRefresh.xml" path="/Component/UIShop/"/>
-    <component id="9luvobi6" name="RenderShopItem.xml" path="/Component/UIShop/"/>
+    <image id="9luvobi4" name="img_195.png" path="/Texture/" exported="true" scale="9grid" scale9grid="10,0,32,4"/>
     <image id="9luvobi7" name="img_3675.png" path="/Texture/" exported="true"/>
-    <image id="9luvobi8" name="img_2920.png" path="/Texture/"/>
-    <image id="9luvobi9" name="img_2921.png" path="/Texture/"/>
-    <component id="9luvobia" name="RenderShopSkin.xml" path="/Component/UIShop/"/>
-    <image id="9luvobib" name="img_3848.png" path="/Texture/" scale="9grid" scale9grid="0,46,328,17"/>
-    <image id="9luvobic" name="img_802.png" path="/Texture/" scale="9grid" scale9grid="22,0,6,30"/>
-    <image id="9luvobid" name="img_1750.png" path="/Texture/"/>
-    <image id="9luvobie" name="img_2439.png" path="/Texture/"/>
-    <image id="9luvobif" name="img_2566.png" path="/Texture/"/>
-    <component id="9luvobig" name="RenderShopCG.xml" path="/Component/UIShop/"/>
-    <image id="9luvobih" name="img_4023.png" path="/Texture/" scale="9grid" scale9grid="0,70,620,40"/>
-    <image id="9luvobii" name="img_1073.png" path="/Texture/"/>
+    <image id="9luvobi8" name="img_2920.png" path="/Texture/" exported="true"/>
+    <image id="9luvobi9" name="img_2921.png" path="/Texture/" exported="true"/>
+    <image id="9luvobic" name="img_802.png" path="/Texture/" exported="true" scale="9grid" scale9grid="22,0,6,30"/>
+    <image id="9luvobid" name="img_1750.png" path="/Texture/" exported="true"/>
+    <image id="9luvobie" name="img_2439.png" path="/Texture/" exported="true"/>
+    <image id="9luvobif" name="img_2566.png" path="/Texture/" exported="true"/>
+    <image id="9luvobii" name="img_1073.png" path="/Texture/" exported="true"/>
     <component id="n15iobik" name="ComRechargeItem.xml" path="/Component/UIRecharge/"/>
     <image id="n15iobil" name="img_1560.png" path="/Texture/" exported="true"/>
     <component id="n15iobin" name="BtnRecharge.xml" path="/Component/UIRecharge/"/>
@@ -303,6 +292,7 @@
     <image id="sxdbobiv" name="img_1841.png" path="/Texture/" exported="true"/>
     <image id="sxdbobiw" name="img_667.png" path="/Texture/" exported="true" scale="9grid" scale9grid="1,1,48,21"/>
     <component id="sxdbobix" name="BtnRechargeVip.xml" path="/Component/UIRecharge/"/>
+    <image id="tggzobiy" name="img_244.png" path="/Texture/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

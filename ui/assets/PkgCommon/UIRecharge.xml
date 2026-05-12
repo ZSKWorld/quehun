@@ -10,19 +10,19 @@
     <group id="n30_ffpy" name="n30" xy="912,57" size="856,80" advanced="true"/>
     <image id="n4_fpd2" name="n4" src="q5yiobc0" fileName="Texture/img_3555.png" xy="362,154" size="1461,857" group="n9_fpd2"/>
     <component id="n32_fhgq" name="tab0" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" xy="81,201" pivot="0.873,0.5" size="336,140" group="n33_fhgq">
-      <Button title="辉玉" titleColor="#d9b263" titleFontSize="50" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
+      <Button title="辉玉" titleColor="#d9b263" titleFontSize="60" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
     </component>
     <component id="n5_fpd2" name="tab1" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" xy="81,326" pivot="0.873,0.5" size="336,140" group="n33_fhgq">
-      <Button title="服饰券" titleColor="#d9b263" titleFontSize="50" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
+      <Button title="服饰券" titleColor="#d9b263" titleFontSize="60" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
     </component>
     <component id="n6_fpd2" name="tab2" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" xy="81,451" pivot="0.873,0.5" size="336,140" group="n33_fhgq">
-      <Button title="铜币" titleColor="#8cb65f" titleFontSize="50" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
+      <Button title="铜币" titleColor="#8cb65f" titleFontSize="60" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
     </component>
     <component id="n7_fpd2" name="tab3" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" xy="81,576" pivot="0.873,0.5" size="336,140" group="n33_fhgq">
-      <Button title="契约等级" titleColor="#d9b263" titleFontSize="50" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
+      <Button title="契约等级" titleColor="#d9b263" titleFontSize="60" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
     </component>
     <component id="n34_f9je" name="tab4" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" xy="81,701" pivot="0.873,0.5" size="336,140" group="n33_fhgq">
-      <Button title="辉石" titleColor="#d9b263" titleFontSize="50" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
+      <Button title="辉石" titleColor="#d9b263" titleFontSize="60" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
     </component>
     <group id="n33_fhgq" name="n33" xy="81,201" size="336,640" group="n9_fpd2" advanced="true" layout="vt" lineGap="-15" excludeInvisibles="true"/>
     <group id="n9_fpd2" name="n9" xy="81,154" size="1742,857" group="n31_ffpy"/>

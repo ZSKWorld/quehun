@@ -14,25 +14,25 @@
       <gearDisplay controller="c1" pages="0,2,3,4,5"/>
     </image>
     <component id="n32_fhgq" name="tab0" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="81,163" pivot="0.873,0.5" size="336,130" group="n33_fhgq">
-      <Button title="服饰屋" titleColor="#d9b263" titleFontSize="50" icon="ui://vx9zwserfhgqobi3" selectedIcon="ui://vx9zwserfhgqobi2"/>
+      <Button title="服饰屋" titleColor="#d9b263" titleFontSize="60" icon="ui://vx9zwserfhgqobi3" selectedIcon="ui://vx9zwserfhgqobi2"/>
     </component>
     <component id="n5_fpd2" name="tab1" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="81,280" pivot="0.873,0.5" size="336,130" group="n33_fhgq">
-      <Button title="杂货屋" titleColor="#d9b263" titleFontSize="50" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
+      <Button title="杂货屋" titleColor="#d9b263" titleFontSize="60" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
     </component>
     <component id="n6_fpd2" name="tab2" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="81,397" pivot="0.873,0.5" size="336,130" group="n33_fhgq">
-      <Button title="背景屋" titleColor="#8cb65f" titleFontSize="50" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
+      <Button title="背景屋" titleColor="#8cb65f" titleFontSize="60" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
     </component>
     <component id="n7_fpd2" name="tab3" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="81,514" pivot="0.873,0.5" size="336,130" group="n33_fhgq">
-      <Button title="祈愿屋" titleColor="#d9b263" titleFontSize="50" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
+      <Button title="祈愿屋" titleColor="#d9b263" titleFontSize="60" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
     </component>
     <component id="n8_fpd2" name="tab4" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="81,631" pivot="0.873,0.5" size="336,130" group="n33_fhgq">
-      <Button title="星之屋" titleColor="#d9b263" titleFontSize="50" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
+      <Button title="星之屋" titleColor="#d9b263" titleFontSize="60" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
     </component>
     <component id="n10_fpd2" name="tab5" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="81,748" pivot="0.873,0.5" size="336,130" group="n33_fhgq">
-      <Button title="插画屋" titleColor="#d9b263" titleFontSize="50" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
+      <Button title="插画屋" titleColor="#d9b263" titleFontSize="60" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
     </component>
     <component id="n11_fpd2" name="tab6" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="81,865" pivot="0.873,0.5" size="336,130" group="n33_fhgq">
-      <Button title="福袋屋" titleColor="#d9b263" titleFontSize="50" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
+      <Button title="福袋屋" titleColor="#d9b263" titleFontSize="60" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
     </component>
     <group id="n33_fhgq" name="n33" xy="81,163" size="336,832" group="n9_fpd2" advanced="true" layout="vt" lineGap="-13" excludeInvisibles="true"/>
     <group id="n9_fpd2" name="n9" xy="81,154" size="1742,857" group="n31_ffpy"/>
@@ -114,6 +114,5 @@
     <item time="0" type="Alpha" target="n31_ffpy" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
     <item time="0" type="XY" target="n30_ffpy" tween="true" startValue="-,-123" endValue="-,57" duration="12"/>
     <item time="0" type="XY" target="n31_ffpy" tween="true" startValue="-,204" endValue="-,154" duration="12" ease="Linear"/>
-    <item time="12" type="XY" target="n30_ffpy" value="-,57"/>
   </transition>
 </component>

@@ -7,19 +7,19 @@
     </component>
     <image id="n8_q5yi" name="n8" src="q5yiobc0" fileName="Texture/img_3555.png" pkg="vx9zwser" xy="331,155" size="1491,864" group="n39_mk4a"/>
     <component id="n2_q5yi" name="daoJu" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="50,202" pivot="0.873,0.5" size="336,140" group="n39_mk4a" aspect="true">
-      <Button title="道具" titleColor="#8cb65f" titleFontSize="55" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
+      <Button title="道具" titleColor="#8cb65f" titleFontSize="60" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
     </component>
     <component id="n3_q5yi" name="liWu" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="50,327" pivot="0.873,0.5" size="336,140" group="n39_mk4a" aspect="true">
-      <Button title="礼物" titleColor="#ebb661" titleFontSize="55" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
+      <Button title="礼物" titleColor="#ebb661" titleFontSize="60" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
     </component>
     <component id="n4_q5yi" name="zhuangBan" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="50,451" pivot="0.873,0.5" size="336,140" group="n39_mk4a" aspect="true">
-      <Button title="装扮" titleColor="#8cb65f" titleFontSize="55" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
+      <Button title="装扮" titleColor="#8cb65f" titleFontSize="60" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
     </component>
     <component id="n5_q5yi" name="fuShi" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="50,574" pivot="0.873,0.5" size="336,140" group="n39_mk4a" aspect="true">
-      <Button title="服饰" titleColor="#8cb65f" titleFontSize="55" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
+      <Button title="服饰" titleColor="#8cb65f" titleFontSize="60" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
     </component>
     <component id="n6_q5yi" name="chaHua" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="50,697" pivot="0.873,0.5" size="336,140" group="n39_mk4a" aspect="true">
-      <Button title="插画" titleColor="#8cb65f" titleFontSize="55" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
+      <Button title="插画" titleColor="#8cb65f" titleFontSize="60" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
     </component>
     <component id="n11_gsi2" name="item" src="gsi2obbt" fileName="Component/UIBag/ComBagItem.xml" xy="442,207" group="n39_mk4a">
       <gearDisplay controller="type" pages="0"/>

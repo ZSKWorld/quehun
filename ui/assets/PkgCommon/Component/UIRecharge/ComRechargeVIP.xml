@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1421,788" designImage="ui://ca43vz0esxdb7plom0" designImageOffsetX="-389" designImageOffsetY="-183" designImageAlpha="0">
+<component size="1421,788" designImage="ui://ca43vz0esxdb7plom0" designImageOffsetX="-389" designImageOffsetY="-191" designImageAlpha="0">
   <controller name="type" pages="0,无称号,1,有称号,2,可领取" selected="0"/>
   <displayList>
     <image id="n52_exet" name="n52" src="exetobip" fileName="Texture/img_3065.png" xy="460,313" size="641,104" scale="0.8,0.8">
@@ -51,5 +51,6 @@
     <text id="n62_sxdb" name="info2" xy="1014,602" pivot="0.5,0.5" anchor="true" size="267,105" font="SimHei" fontSize="25" color="#68c65e" align="center" vAlign="middle" leading="5" text="好友数量上限+0&#xA;杂货屋免费刷新次数：1&#xA;牌谱收藏上限:25"/>
     <text id="n66_sxdb" name="n66" xy="358,738" pivot="1,0.5" size="54,35" font="SimHei" fontSize="25" color="#c5a56b" align="center" vAlign="middle" leading="5" singleLine="true" text="当前"/>
     <text id="n68_sxdb" name="desc2" xy="658,738" pivot="0,0.5" size="167,35" font="SimHei" fontSize="25" color="#c5a56b" align="center" vAlign="middle" leading="5" singleLine="true" text="再获得6契约点"/>
+    <image id="n73_tggz" name="n73" src="tggzobiy" fileName="Texture/img_244.png" xy="706,526"/>
   </displayList>
 </component>

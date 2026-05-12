@@ -32,19 +32,19 @@ export default class UIFriend extends fgui.GComponent {
 		this.ctrl_type = this.getControllerAt(0);
 		this.com_back = <ComBackView>(this.getChildAt(0));
 		this.btn_copy = <fgui.GButton>(this.getChildAt(3));
-		this.txt_myID = <fgui.GTextField>(this.getChildAt(4));
-		this.btn_friendList = <fgui.GButton>(this.getChildAt(7));
-		this.btn_friendApply = <fgui.GButton>(this.getChildAt(8));
-		this.btn_searchFriend = <fgui.GButton>(this.getChildAt(9));
-		this.btn_recentMatch = <fgui.GButton>(this.getChildAt(10));
-		this.txt_empty = <fgui.GTextField>(this.getChildAt(12));
-		this.txt_limit = <fgui.GTextField>(this.getChildAt(13));
-		this.list_friend = <fgui.GList>(this.getChildAt(14));
-		this.list_apply = <fgui.GList>(this.getChildAt(16));
-		this.itxt_searchId = <fgui.GTextInput>(this.getChildAt(18));
-		this.btn_find = <fgui.GButton>(this.getChildAt(19));
-		this.com_searchPlayer = <RenderFriendRecentView>(this.getChildAt(20));
-		this.list_recent = <fgui.GList>(this.getChildAt(22));
+		this.txt_myID = <fgui.GTextField>(this.getChildAt(5));
+		this.btn_friendList = <fgui.GButton>(this.getChildAt(8));
+		this.btn_friendApply = <fgui.GButton>(this.getChildAt(9));
+		this.btn_searchFriend = <fgui.GButton>(this.getChildAt(10));
+		this.btn_recentMatch = <fgui.GButton>(this.getChildAt(11));
+		this.txt_empty = <fgui.GTextField>(this.getChildAt(13));
+		this.txt_limit = <fgui.GTextField>(this.getChildAt(14));
+		this.list_friend = <fgui.GList>(this.getChildAt(15));
+		this.list_apply = <fgui.GList>(this.getChildAt(17));
+		this.itxt_searchId = <fgui.GTextInput>(this.getChildAt(19));
+		this.btn_find = <fgui.GButton>(this.getChildAt(20));
+		this.com_searchPlayer = <RenderFriendRecentView>(this.getChildAt(21));
+		this.list_recent = <fgui.GList>(this.getChildAt(23));
 		this.trans_show = this.getTransitionAt(0);
 	}
 }

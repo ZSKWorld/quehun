@@ -2,45 +2,46 @@
 <packageDescription id="vs9845at">
   <resources>
     <component id="jdu6b6x" name="UILogin.xml" path="/" exported="true"/>
-    <image id="mde1b6y" name="img_1014.png" path="/Texture/" exported="true"/>
-    <image id="mde1b6z" name="img_2752.png" path="/Texture/" exported="true"/>
-    <image id="mde1b70" name="img_2773.png" path="/Texture/" exported="true"/>
-    <image id="mde1b72" name="img_2806.png" path="/Texture/" exported="true"/>
-    <image id="mde1b73" name="img_2809.png" path="/Texture/" exported="true"/>
-    <image id="mde1b76" name="img_2969.png" path="/Texture/" exported="true"/>
-    <image id="mde1b77" name="img_3029.png" path="/Texture/" exported="true"/>
-    <image id="mde1b78" name="img_3070.png" path="/Texture/" exported="true"/>
-    <image id="mde1b79" name="img_3071.png" path="/Texture/" exported="true"/>
-    <image id="mde1b7a" name="img_3080.png" path="/Texture/" exported="true"/>
-    <image id="mde1b7b" name="img_450.png" path="/Texture/" exported="true"/>
-    <image id="mde1b7h" name="img_805.png" path="/Texture/" exported="true"/>
-    <image id="mde1b7i" name="img_806.png" path="/Texture/" exported="true"/>
-    <image id="mde1b7j" name="img_842.png" path="/Texture/" exported="true"/>
-    <image id="mde1b7k" name="img_2751.png" path="/Texture/" exported="true"/>
-    <image id="mde1b7l" name="img_843.png" path="/Texture/" exported="true"/>
-    <image id="mde1b7m" name="img_2629.png" path="/Texture/" exported="true"/>
-    <image id="mde1b7p" name="img_1063.png" path="/Texture/" exported="true"/>
-    <image id="mde1b7q" name="img_1064.png" path="/Texture/" exported="true"/>
-    <image id="mde1b7r" name="img_1065.png" path="/Texture/" exported="true" scale="9grid" scale9grid="12,12,24,24"/>
-    <image id="mde1b7s" name="img_1066.png" path="/Texture/" exported="true"/>
-    <image id="mde1b7t" name="img_1070.png" path="/Texture/" exported="true"/>
-    <image id="mde1b7u" name="img_123.png" path="/Texture/" exported="true"/>
-    <image id="mde1b7w" name="img_1262.png" path="/Texture/" exported="true"/>
-    <image id="mde1b7x" name="img_1263.png" path="/Texture/" exported="true"/>
-    <image id="mde1b7y" name="img_1264.png" path="/Texture/" exported="true"/>
-    <image id="mde1b7z" name="img_1265.png" path="/Texture/" exported="true"/>
-    <image id="mde1b80" name="img_1279.png" path="/Texture/" exported="true"/>
-    <image id="mde1b83" name="img_1520.png" path="/Texture/" exported="true"/>
-    <image id="mde1b84" name="img_1521.png" path="/Texture/" exported="true"/>
-    <image id="mde1b85" name="img_1758.png" path="/Texture/" exported="true"/>
-    <image id="mde1b86" name="img_2189.png" path="/Texture/" exported="true"/>
-    <image id="mde1b87" name="img_2190.png" path="/Texture/" exported="true"/>
-    <image id="mde1b88" name="img_228.png" path="/Texture/" exported="true"/>
-    <image id="mde1b89" name="img_2619.png" path="/Texture/" exported="true"/>
+    <image id="mde1b6y" name="img_1014.png" path="/Texture/"/>
+    <image id="mde1b6z" name="img_2752.png" path="/Texture/"/>
+    <image id="mde1b70" name="img_2773.png" path="/Texture/"/>
+    <image id="mde1b72" name="img_2806.png" path="/Texture/"/>
+    <image id="mde1b73" name="img_2809.png" path="/Texture/"/>
+    <image id="mde1b76" name="img_2969.png" path="/Texture/"/>
+    <image id="mde1b77" name="img_3029.png" path="/Texture/"/>
+    <image id="mde1b78" name="img_3070.png" path="/Texture/"/>
+    <image id="mde1b79" name="img_3071.png" path="/Texture/"/>
+    <image id="mde1b7a" name="img_3080.png" path="/Texture/"/>
+    <image id="mde1b7b" name="img_450.png" path="/Texture/"/>
+    <image id="mde1b7h" name="img_805.png" path="/Texture/"/>
+    <image id="mde1b7i" name="img_806.png" path="/Texture/"/>
+    <image id="mde1b7j" name="img_842.png" path="/Texture/"/>
+    <image id="mde1b7k" name="img_2751.png" path="/Texture/"/>
+    <image id="mde1b7l" name="img_843.png" path="/Texture/"/>
+    <image id="mde1b7m" name="img_2629.png" path="/Texture/"/>
+    <image id="mde1b7p" name="img_1063.png" path="/Texture/"/>
+    <image id="mde1b7q" name="img_1064.png" path="/Texture/"/>
+    <image id="mde1b7r" name="img_1065.png" path="/Texture/" scale="9grid" scale9grid="12,12,24,24"/>
+    <image id="mde1b7s" name="img_1066.png" path="/Texture/"/>
+    <image id="mde1b7t" name="img_1070.png" path="/Texture/"/>
+    <image id="mde1b7u" name="img_123.png" path="/Texture/"/>
+    <image id="mde1b7w" name="img_1262.png" path="/Texture/"/>
+    <image id="mde1b7x" name="img_1263.png" path="/Texture/"/>
+    <image id="mde1b7y" name="img_1264.png" path="/Texture/"/>
+    <image id="mde1b7z" name="img_1265.png" path="/Texture/"/>
+    <image id="mde1b80" name="img_1279.png" path="/Texture/"/>
+    <image id="mde1b83" name="img_1520.png" path="/Texture/"/>
+    <image id="mde1b84" name="img_1521.png" path="/Texture/"/>
+    <image id="mde1b85" name="img_1758.png" path="/Texture/"/>
+    <image id="mde1b86" name="img_2189.png" path="/Texture/"/>
+    <image id="mde1b87" name="img_2190.png" path="/Texture/"/>
+    <image id="mde1b88" name="img_228.png" path="/Texture/"/>
+    <image id="mde1b89" name="img_2619.png" path="/Texture/"/>
     <component id="nxdeb8b" name="BtnLogin.xml" path="/Component/UILogin/" exported="true"/>
     <component id="nxdeb8c" name="BtnHelp.xml" path="/Component/UILogin/" exported="true"/>
     <component id="6eqpb8d" name="UILoginQueue.xml" path="/" exported="true"/>
     <component id="ieavb8e" name="UIBindPhone.xml" path="/" exported="true"/>
+    <image id="ieavob7q" name="img_3920.png" path="/Texture/" scale="9grid" scale9grid="10,10,453,282"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

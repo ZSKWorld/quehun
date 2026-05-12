@@ -10,20 +10,23 @@
     <component id="n5_puub" name="copy" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1766,39" group="n36_xnfa">
       <Button icon="ui://vith2b66puubobf8"/>
     </component>
-    <text id="n3_puub" name="myID" xy="1557,90" pivot="0.5,0.5" anchor="true" size="349,66" group="n36_xnfa" font="ui://vx9zwserrpakobeu" fontSize="50" color="#e2ba92" align="center" vAlign="middle" leading="0" singleLine="true" text="我的ID：10474777"/>
+    <text id="n3_puub" name="n3" xy="1362,92" pivot="0,0.5" anchor="true" size="182,64" group="n36_xnfa" font="ui://vx9zwserrpakobeu" fontSize="48" color="#e2ba92" align="center" vAlign="middle" leading="0" singleLine="true" text="我的ID：">
+      <relation target="n39_tggz" sidePair="left-left"/>
+    </text>
+    <text id="n39_tggz" name="myID" xy="1714,95" pivot="1,0.5" anchor="true" size="179,59" group="n36_xnfa" font="ui://vx9zwserrpakobex" fontSize="44" color="#e2ba92" align="center" vAlign="middle" leading="0" singleLine="true" text="10474777"/>
     <group id="n36_xnfa" name="n36" xy="1326,39" size="702,100" advanced="true"/>
     <image id="n6_puub" name="n6" src="q5yiobc0" fileName="Texture/img_3555.png" pkg="vx9zwser" xy="331,155" size="1531,866" group="n34_puub"/>
     <component id="n7_puub" name="friendList" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="50,206" pivot="0.873,0.5" size="336,140" group="n34_puub" aspect="true">
-      <Button title="好友列表" titleColor="#eab65e" titleFontSize="50" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
+      <Button title="好友列表" titleColor="#eab65e" titleFontSize="55" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
     </component>
     <component id="n8_puub" name="friendApply" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="50,346" pivot="0.873,0.5" size="336,140" group="n34_puub" aspect="true">
-      <Button title="好友申请" titleColor="#eab65e" titleFontSize="50" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
+      <Button title="好友申请" titleColor="#eab65e" titleFontSize="55" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
     </component>
     <component id="n9_puub" name="searchFriend" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="50,486" pivot="0.873,0.5" size="336,140" group="n34_puub" aspect="true">
-      <Button title="查找好友" titleColor="#eab65e" titleFontSize="50" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
+      <Button title="查找好友" titleColor="#eab65e" titleFontSize="55" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
     </component>
     <component id="n10_puub" name="recentMatch" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="50,626" pivot="0.873,0.5" size="336,140" group="n34_puub" aspect="true">
-      <Button title="近期对局" titleColor="#eab65e" titleFontSize="50" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
+      <Button title="近期对局" titleColor="#eab65e" titleFontSize="55" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
     </component>
     <group id="n34_puub" name="n34" xy="50,155" size="1812,866" advanced="true"/>
     <text id="n35_giyr" name="empty" xy="711,473" pivot="0.5,0.5" size="791,66" fontSize="50" color="#e6ba78" align="center" vAlign="middle" singleLine="true" text="你还没有好友，快去认识新朋友吧~"/>
@@ -89,6 +92,5 @@
     <item time="0" type="XY" target="n35_giyr" tween="true" startValue="-,523" endValue="-,473" duration="12" ease="Linear"/>
     <item time="0" type="XY" target="n36_xnfa" tween="true" startValue="-,-141" endValue="-,39" duration="12"/>
     <item time="0" type="XY" target="n38_jcnm" tween="true" startValue="-,257" endValue="-,207" duration="12" ease="Linear"/>
-    <item time="12" type="XY" target="n36_xnfa" value="-,39"/>
   </transition>
 </component>

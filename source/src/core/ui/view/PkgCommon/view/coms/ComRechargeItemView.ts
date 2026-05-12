@@ -7,9 +7,6 @@ export class ComRechargeItemView extends ExtensionClass<IView, ComRechargeItem>(
 	private _itemId: number;
 
 	override onCreate() {
-		const { btn_buy1, btn_buy2 } = this;
-		btn_buy1.onClick(this, this.onBtnBuy);
-		btn_buy2.onClick(this, this.onBtnBuy);
 	}
 
 	refresh(type: EUIRechargeTabType, id: number) {
@@ -19,6 +16,8 @@ export class ComRechargeItemView extends ExtensionClass<IView, ComRechargeItem>(
 		this.btn_buy1.visible = false;
 		this.btn_buy2.visible = false;
 		this.txt_desc.visible = false;
+		this.btn_buy1.offAllCaller(this);
+		this.btn_buy2.offAllCaller(this);
 		switch (type) {
 			case EUIRechargeTabType.HY: this.refreshHY_FSQ(); break;
 			case EUIRechargeTabType.FSQ: this.refreshHY_FSQ(); break;
@@ -85,7 +84,15 @@ export class ComRechargeItemView extends ExtensionClass<IView, ComRechargeItem>(
 		btn_buy1.icon = $langRes($cfgMgr.item_definition.currency[cfgSearchExchange.source_currency].icon);
 	}
 
-	private onBtnBuy() {
+	private onBtnRecharge() {
+
+	}
+
+	private onBtnRechargeHY() {
+
+	}
+
+	private onBtnRechargeTB() {
 
 	}
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="1920,1080">
   <displayList>
-    <image id="n0_ieav" name="n0" src="ieavob7q" fileName="Texture/img_3920.png" pkg="vx9zwser" xy="480,228" size="959,620"/>
+    <image id="n0_ieav" name="n0" src="ieavob7q" fileName="Texture/img_3920.png" xy="480,228" size="959,620"/>
     <text id="n1_ieav" name="title" xy="838,249" size="244,79" fontSize="60" color="#e0aa6d" text="绑定手机"/>
     <text id="n2_ieav" name="n2" xy="553,351" size="760,39" fontSize="28" color="#afbac3" text="根据网络游戏实名制的相关规定要求，请绑定手机完成认证。"/>
     <text id="n3_ieav" name="n3" xy="553,413" size="181,39" fontSize="28" color="#afbac3" text="当前账号昵称:"/>

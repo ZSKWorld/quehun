@@ -44,10 +44,10 @@ export class UIRechargeView extends ExtensionClass<IView, UIRecharge>(UIRecharge
 	}
 
 	/** 契约等级 */
-	refreshQYDJ(level: number) {
+	refreshQYDJ() {
 		this.com_vip.visible = true;
 		this.list_item.visible = false;
-		this.com_vip.refresh(level);
+		this.com_vip.refresh();
 	}
 
 	private onTabChanged(type: EUIRechargeTabType) {

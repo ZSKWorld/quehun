@@ -3,6 +3,9 @@
   "libview.iconScale": 0,
   "doc.openedDocs": [
     "ui://vx9zwsersxdbobiq",
+    "ui://vx9zwserfpd2obgp",
+    "ui://vx9zwserexetobio",
+    "ui://vx9zwsersxdbobiu",
     "ui://vith2b66hk7robax"
   ],
   "packageGroup.mine": [
@@ -15,7 +18,7 @@
   "test.device": "iPhone 8 Plus",
   "canvasColor": 10066329,
   "auxline2": true,
-  "doc.activeDoc": "ui://vx9zwsersxdbobiq",
+  "doc.activeDoc": "ui://vx9zwsersxdbobiu",
   "libview.twoColumn": true,
   "libview.expandedNodes": [
     "vx9zwser",

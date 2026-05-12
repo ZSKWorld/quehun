@@ -55,7 +55,7 @@ export class RechargeDO extends BaseDO implements DO.IRechargeDO {
 	}
 
 	gainedVipLevelReward(level: number) {
-		return this._gainedVipLevels.includes(level);
+		return this._gainedVipLevels.includes(level - 1);
 	}
 
 	@InterestMessage(ENetMessage.login)

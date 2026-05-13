@@ -60,16 +60,3 @@ export const enum EUISevenDayEvent {
 	OnQABtnAnswerClick = "EUISevenDayEvent_OnQABtnAnswerClick",
 	OnQABtnSkipClick = "EUISevenDayEvent_OnQABtnSkipClick",
 }
-
-export const enum EUIRechargeTabType {
-	/** 辉玉 */
-	HY,
-	/** 服饰券 */
-	FSQ,
-	/** 铜币 */
-	TB,
-	/** 契约等级 */
-	QYDJ,
-	/** 辉石 */
-	HS = 4,
-}

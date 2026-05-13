@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="269,370" designImage="ui://ca43vz0ef9je7plolw" designImageOffsetX="-797" designImageOffsetY="-216" designImageAlpha="0">
+<component size="269,370" pivot="0.5,0.5" extention="Button" designImage="ui://ca43vz0ef9je7ploly" designImageOffsetX="-797" designImageOffsetY="-216" designImageAlpha="0">
+  <controller name="type" pages="0,,1," selected="1"/>
   <displayList>
     <image id="n43_n15i" name="n43" src="9luvobi7" fileName="Texture/img_3675.png" xy="0,0" size="269,370"/>
     <image id="n46_n15i" name="first" src="n15iobil" fileName="Texture/img_1560.png" xy="5,4"/>
+    <image id="n48_w6x6" name="n48" src="fpd2obg4" fileName="Texture/img_2104.png" xy="20,290" size="228,65">
+      <relation target="" sidePair="width-width,height-height"/>
+    </image>
     <component id="n44_n15i" name="item" src="q5yiobc2" fileName="Component/Component/物品/ComItem1.xml" xy="49,79" size="170,170" aspect="true"/>
-    <component id="n42_n15i" name="buy1" src="n15iobin" fileName="Component/UIRecharge/BtnRecharge.xml" xy="20,290"/>
-    <component id="n41_n15i" name="buy2" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="20,290" size="228,65">
-      <Button title="NTD  33" titleColor="#3a2138" titleFontSize="42" icon="ui://vx9zwserfpd2obg4"/>
-    </component>
+    <loader id="n50_w6x6" name="currency" xy="91,301" size="45,45" aspect="true" touchable="false" url="ui://vx9zwserhpkoobfz" fill="scaleFree">
+      <gearDisplay controller="type" pages="1"/>
+      <relation target="n51_w6x6" sidePair="left-left"/>
+    </loader>
     <text id="n45_n15i" name="title" xy="9,14" pivot="0.5,0.5" size="250,45" font="ui://vx9zwserrpakobeu" fontSize="33" color="#e4b777" align="center" vAlign="middle" leading="0" autoSize="shrink" singleLine="true" text="65辉玉"/>
     <text id="n47_n15i" name="desc" xy="5,252" pivot="0.5,0.5" size="258,35" font="SimHei" fontSize="25" color="#f178ff" align="center" vAlign="middle" leading="0" singleLine="true" text="辉玉(340立即+60每天)"/>
+    <text id="n51_w6x6" name="cost" xy="157,324" pivot="0.5,0.5" anchor="true" size="46,56" font="SimHei" fontSize="42" color="#3a2138" vAlign="middle" leading="0" singleLine="true" text="60">
+      <gearXY controller="type" pages="1" values="157,324" default="135,324"/>
+    </text>
   </displayList>
+  <Button downEffect="scale" downEffectValue="0.95"/>
 </component>

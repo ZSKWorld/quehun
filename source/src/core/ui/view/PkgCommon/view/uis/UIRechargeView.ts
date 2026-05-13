@@ -1,11 +1,7 @@
 import { RadioGroup } from "../../../../extention/RadioGroup";
 import UIRecharge from "../../../../ui/PkgCommon/UIRecharge";
-import { EUIRechargeTabType } from "../../../PkgMain/Definition";
+import { EUIRechargeEvent, EUIRechargeTabType } from "../../Definition";
 import { ComRechargeItemView } from "../coms/ComRechargeItemView";
-
-export const enum EUIRechargeMsg {
-	OnTabSelectChanged = "UIRecharge_OnTabSelectChanged",
-}
 
 export class UIRechargeView extends ExtensionClass<IView, UIRecharge>(UIRecharge) implements IView {
 	private _tabGroup = new RadioGroup();
@@ -22,7 +18,7 @@ export class UIRechargeView extends ExtensionClass<IView, UIRecharge>(UIRecharge
 		this._tabGroup.init([
 			btn_tab0, btn_tab1, btn_tab2, btn_tab3, btn_tab4
 		], this, this.onTabChanged, EColorString._d9b263, EColorString._8cb65f);
-		$uiUtil.setList(list_item, true, this, this.onListItemRender);
+		$uiUtil.setList(list_item, true, this, this.onListItemRender, this.onListItemClick);
 	}
 
 	refreshTab(type: EUIRechargeTabType, enables: Record<EUIRechargeTabType, boolean>) {
@@ -51,11 +47,17 @@ export class UIRechargeView extends ExtensionClass<IView, UIRecharge>(UIRecharge
 	}
 
 	private onTabChanged(type: EUIRechargeTabType) {
-		this.sendEvent(EUIRechargeMsg.OnTabSelectChanged, type);
+		this.sendEvent(EUIRechargeEvent.OnTabSelectChanged, type);
 	}
 
 	private onListItemRender(index: number, item: ComRechargeItemView) {
 		item.refresh(this._tabGroup.selectIndex, this._itemIds[index]);
+	}
+
+	private onListItemClick(item: ComRechargeItemView, _, index: number) {
+		const eventName = item.rechargeEvent;
+		if (eventName)
+			this.sendEvent(eventName, this._itemIds[index]);
 	}
 
 	override onOpenAni() {

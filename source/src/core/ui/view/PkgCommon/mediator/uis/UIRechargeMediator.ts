@@ -1,11 +1,15 @@
 import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
-import { EUIRechargeTabType } from "../../../PkgMain/Definition";
-import { EUIRechargeMsg, UIRechargeView } from "../../view/uis/UIRechargeView";
+import { EUIRechargeEvent, EUIRechargeTabType } from "../../Definition";
+import { UIRechargeView } from "../../view/uis/UIRechargeView";
 
 export class UIRechargeMediator extends MediatorBase<UIRechargeView, IUIRechargeData> {
 
 	override onAdded() {
-		this.addEvent(EUIRechargeMsg.OnTabSelectChanged, this.onTabSelectChanged);
+		this.addEvent(EUIRechargeEvent.OnTabSelectChanged, this.onTabSelectChanged);
+		this.addEvent(EUIRechargeEvent.OnRecharge, this.onRecharge);
+		this.addEvent(EUIRechargeEvent.OnRechargeHY, this.onRechargeHY);
+		this.addEvent(EUIRechargeEvent.OnRechargeTB, this.onRechargeTB);
+		this.addEvent(EUIRechargeEvent.OnRechargeHS, this.onRechargeHS);
 	}
 
 	protected override onDataChanged(data: IUIRechargeData) {
@@ -59,5 +63,21 @@ export class UIRechargeMediator extends MediatorBase<UIRechargeView, IUIRecharge
 				this.view.refreshItems(items);
 				break;
 		}
+	}
+
+	private onRecharge(goodsId: number) {
+
+	}
+
+	private onRechargeHY(goodsId: number) {
+
+	}
+
+	private onRechargeTB(goodsId: number) {
+
+	}
+
+	private onRechargeHS(goodsId: number) {
+
 	}
 }

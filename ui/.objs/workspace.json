@@ -4,6 +4,9 @@
   "doc.openedDocs": [
     "ui://vx9zwsersxdbobiq",
     "ui://vx9zwserfpd2obgp",
+    "ui://vx9zwsersi7robf6",
+    "ui://vx9zwsern15iobik",
+    "ui://vx9zwsern15iobin",
     "ui://vx9zwserexetobio",
     "ui://vx9zwsersxdbobiu",
     "ui://vith2b66hk7robax"
@@ -18,15 +21,13 @@
   "test.device": "iPhone 8 Plus",
   "canvasColor": 10066329,
   "auxline2": true,
-  "doc.activeDoc": "ui://vx9zwsersxdbobiu",
+  "doc.activeDoc": "ui://vx9zwserfpd2obgp",
   "libview.twoColumn": true,
   "libview.expandedNodes": [
     "vx9zwser",
     "/",
     "vx9zwser",
     "/Component/",
-    "vx9zwser",
-    "/Component/Component/",
     "vx9zwser",
     "/Component/PbBar/",
     "vx9zwser",

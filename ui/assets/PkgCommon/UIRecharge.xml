@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" designImage="ui://ca43vz0ef9je7plolz" designImageAlpha="100">
+<component size="1920,1080" designImage="ui://ca43vz0ew6x67plom1" designImageAlpha="100" designImageLayer="1">
   <displayList>
     <component id="n0_p5uz" name="back" src="p5uzob8h" fileName="Component/Component/ComBack.xml" xy="10,22">
       <property target="title" propertyId="0" value="商店"/>

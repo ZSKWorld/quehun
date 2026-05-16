@@ -22,3 +22,10 @@ export const enum EUIRechargeEvent {
 	/** 充值辉石 */
 	OnRechargeHS = "EUIRechargeEvent_OnRechargeHS",
 }
+
+export const enum EUIBuyGoodsType {
+	Single = 0,
+	Cg,
+	Multi1,
+	Multi2,
+}

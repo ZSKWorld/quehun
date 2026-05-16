@@ -1727,6 +1727,11 @@
     <image id="f9je7plolz" name="4.jpg" path="/11/商店/"/>
     <image id="sxdb7plom0" name="5.jpg" path="/11/商店/"/>
     <image id="w6x67plom1" name="6.jpg" path="/11/商店/"/>
+    <image id="hrao7plom2" name="10.jpg" path="/11/商店/"/>
+    <image id="hrao7plom3" name="7.jpg" path="/11/商店/"/>
+    <image id="hrao7plom4" name="8.jpg" path="/11/商店/"/>
+    <image id="hrao7plom5" name="9.jpg" path="/11/商店/"/>
+    <image id="hrao7plom6" name="jade_tender_0.png" path="/11/extendRes/items/"/>
   </resources>
   <publish name=""/>
 </packageDescription>

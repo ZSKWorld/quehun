@@ -2,7 +2,7 @@
 <component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0eojz47plokq" designImageAlpha="0" designImageLayer="1">
   <controller name="empty" pages="0,,1," selected="0"/>
   <displayList>
-    <component id="n16_pwg4" name="mask" src="w29kob8e" fileName="Component/Button/BtnIconFitNoScale.xml" pkg="vx9zwser" xy="-1040,-585" size="4000,2250" aspect="true" alpha="0.5"/>
+    <component id="n16_pwg4" name="mask" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="0,0" size="1920,1080" aspect="true" alpha="0.5"/>
     <graph id="n18_pwg4" name="n18" xy="244,127" size="1439,827" type="rect" lineSize="0" fillColor="#00ffffff"/>
     <loader id="n1_ojz4" name="bg" xy="187,68" size="1549,949" touchable="false" url="ui://ca43vz0eojz47plokp" fill="scaleFree"/>
     <component id="n3_ojz4" name="close" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1590,150" size="78,78" aspect="true">

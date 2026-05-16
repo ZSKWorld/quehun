@@ -8,9 +8,16 @@ export class RichText implements IRichText {
 		return this;
 	}
 
-	href(url: string, content?: string) {
-		if (content != null) {
-			this._text += `[url=${ url }]${ content }[/url]`;
+	end() {
+		const result = this._text;
+		this._text = "";
+		Laya.Pool.recoverByClass(this);
+		return result;
+	}
+
+	href(url: string, text?: string) {
+		if (text != null) {
+			this._text += `[url=${ url }]${ text }[/url]`;
 		} else {
 			this._text = `[url=${ url }]${ this._text }[/url]`;
 		}
@@ -23,23 +30,35 @@ export class RichText implements IRichText {
 		return this;
 	}
 
-	bold() {
-		this._text = `[b]${ this._text }[/b]`;
+	bold(text?: string) {
+		if (text != null) {
+			this._text += `[b]${ text }[/b]`;
+		} else {
+			this._text = `[b]${ this._text }[/b]`;
+		}
 		return this;
 	}
 
-	italic() {
-		this._text = `[i]${ this._text }[/i]`;
+	italic(text?: string) {
+		if (text != null) {
+			this._text += `[i]${ text }[/i]`;
+		} else {
+			this._text = `[i]${ this._text }[/i]`;
+		}
 		return this;
 	}
 
-	underline() {
-		this._text = `[u]${ this._text }[/u]`;
+	underline(text?: string) {
+		if (text != null) {
+			this._text += `[u]${ text }[/u]`;
+		} else {
+			this._text = `[u]${ this._text }[/u]`;
+		}
 		return this;
 	}
 
 	space(num: number = 1) {
-		if (num > 0) this._text += "&nbsp;".repeat(num)
+		if (num > 0) this._text += "&nbsp;".repeat(num);
 		return this;
 	}
 
@@ -48,25 +67,26 @@ export class RichText implements IRichText {
 		return this;
 	}
 
-	size(size: number) {
-		this._text = `[size=${ size }]${ this._text }[/size]`;
+	size(size: number, text?: string) {
+		if (text != null) {
+			this._text += `[size=${ size }]${ text }[/size]`;
+		} else {
+			this._text = `[size=${ size }]${ this._text }[/size]`;
+		}
 		return this;
 	}
 
-	color(color: string) {
-		this._text = `[color=${ color }]${ this._text }[/color]`;
+	color(color: string, text?: string) {
+		if (text != null) {
+			this._text += `[color=${ color }]${ text }[/color]`;
+		} else {
+			this._text = `[color=${ color }]${ this._text }[/color]`;
+		}
 		return this;
 	}
 
 	append(text: string) {
 		this._text += text;
 		return this;
-	}
-
-	end() {
-		const result = this._text;
-		this._text = "";
-		Laya.Pool.recoverByClass(this);
-		return result;
 	}
 }

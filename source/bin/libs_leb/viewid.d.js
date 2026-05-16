@@ -74,6 +74,7 @@ EViewID = {
 	ComSevenDayItem1View: "ComSevenDayItem1View",
 
 	/**UIs */
+	UIBuyGoodsView: "UIBuyGoodsView",
 	UIConfirmBigView: "UIConfirmBigView",
 	UIConfirmMiddleView: "UIConfirmMiddleView",
 	UIConfirmSmallView: "UIConfirmSmallView",

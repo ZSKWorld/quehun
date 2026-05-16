@@ -293,6 +293,10 @@
     <image id="sxdbobiw" name="img_667.png" path="/Texture/" exported="true" scale="9grid" scale9grid="1,1,48,21"/>
     <component id="sxdbobix" name="BtnRechargeVip.xml" path="/Component/UIRecharge/"/>
     <image id="tggzobiy" name="img_244.png" path="/Texture/" exported="true"/>
+    <component id="hraoobiz" name="UIBuyGoods.xml" path="/" exported="true"/>
+    <image id="hraoobj0" name="img_1755.png" path="/Texture/" exported="true"/>
+    <image id="hraoobj1" name="img_848.png" path="/Texture/" exported="true" scale="9grid" scale9grid="15,15,10,10"/>
+    <image id="hraoobj2" name="img_2113.png" path="/Texture/" exported="true" scale="9grid" scale9grid="33,17,66,34"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

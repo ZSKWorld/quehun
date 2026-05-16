@@ -397,6 +397,9 @@ EUserEvent = {
 	OnActivityPeriodTaskProgressChanged: "EUserEvent_OnActivityPeriodTaskProgressChanged",
 	OnActivityRandomTaskProgressChanged: "EUserEvent_OnActivityRandomTaskProgressChanged",
 	OnActivitySegmentTaskProgressChanged: "EUserEvent_OnActivitySegmentTaskProgressChanged",
+	OnRechargeVipExpChanged: "EUserEvent_OnRechargeVipExpChanged",
+	OnRechargeRechargedListChanged: "EUserEvent_OnRechargeRechargedListChanged",
+	OnRechargeGainVipLevelChanged: "EUserEvent_OnRechargeGainVipLevelChanged",
 }
 
 EVideoLoadEvent = {
@@ -501,6 +504,7 @@ EColorString = {
 	_000000: "#000000",
 	_000080: "#000080",
 	_00aaff: "#00aaff",
+	_00ff00: "#00ff00",
 	_51f1ff: "#51f1ff",
 	_58c4db: "#58c4db",
 	_66ccff: "#66ccff",
@@ -517,6 +521,7 @@ EColorString = {
 	_ebb661: "#ebb661",
 	_f17828: "#f17828",
 	_f56aff: "#f56aff",
+	_f7b75d: "#f7b75d",
 	_ff0000: "#ff0000",
 	_ffc8c8: "#ffc8c8",
 	_ffc900: "#ffc900",

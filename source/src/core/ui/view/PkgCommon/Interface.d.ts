@@ -30,3 +30,27 @@ declare interface IUIGetRewardData {
 declare interface IUIRechargeData {
 	currencyType?: ECurrencyType;
 }
+
+declare interface IUIBuyGoodsData {
+	/**
+	 * 0：当个购买
+	 * 1：cg购买
+	 * 2：多个购买1
+	 * 3：多个购买2
+	 */
+	type: 0 | 1 | 2 | 3;
+	/** 购买的物品id */
+	id: number;
+	/** 花费的货币id */
+	currencyId: number;
+	/** 单价 */
+	price: number;
+	/** 是否显示已有数量，defalt: false */
+	showOwn?: boolean;
+	/** 最大购买数量，default: 1 */
+	max?: number;
+	/** 剩余数量字符串，有可能“本月剩余5”这样的描述 */
+	last?: string;
+	title?: string;
+	multiDesc?: string;
+}

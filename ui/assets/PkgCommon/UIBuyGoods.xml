@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0ehrao7plom5" designImageOffsetY="22" designImageAlpha="0" designImageLayer="1">
+  <controller name="c1" pages="5,单个购买,6,cg购买,7,多个购买1,8,多个购买2" selected="2"/>
+  <displayList>
+    <component id="n39_ivmb" name="mask" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" xy="0,0" size="1920,1080"/>
+    <component id="n0_hrao" name="n0" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" xy="960,556" pivot="0.5,0.5" anchor="true" size="746,750">
+      <gearSize controller="c1" pages="6,7,8" values="746,562,1,1|746,750,1,1|746,750,1,1" default="640,465,1,1"/>
+    </component>
+    <component id="n11_hrao" name="close" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" xy="1240,203" size="70,70">
+      <relation target="n0_hrao" sidePair="right-right,top-top"/>
+      <Button icon="ui://vx9zwserj0ddob7b"/>
+    </component>
+    <component id="n2_hrao" name="item" src="q5yiobc2" fileName="Component/Component/物品/ComItem1.xml" xy="680,290" size="156,156">
+      <gearXY controller="c1" pages="5,6,7,8" values="714,418|656,383|680,290|680,290"/>
+      <gearSize controller="c1" pages="6" values="202,118,1,1" default="156,156,1,1"/>
+    </component>
+    <image id="n6_hrao" name="line" src="gsi2obd5" fileName="Texture/img_42.png" xy="859,333" size="410,5">
+      <gearSize controller="c1" pages="6,7,8" values="380,5,1,1|410,5,1,1|410,5,1,1" default="330,5,1,1"/>
+      <relation target="n3_hrao" sidePair="left-left,top-bottom"/>
+    </image>
+    <text id="n1_hrao" name="title" xy="959,241" pivot="0.5,0.5" anchor="true" size="179,48" fontSize="35" color="#e8af71" align="center" vAlign="middle" leading="0" singleLine="true" text="翡翠立直棒">
+      <relation target="n0_hrao" sidePair="center-center,top-top"/>
+    </text>
+    <text id="n14_hrao" name="own" xy="721,447" pivot="0.5,0.5" size="76,35" fontSize="25" color="#b7b7b7" align="center" vAlign="middle" leading="0" singleLine="true" text="已有:0">
+      <gearDisplay controller="c1" pages="5,7,8"/>
+      <relation target="n2_hrao" sidePair="center-center,top-top"/>
+    </text>
+    <text id="n3_hrao" name="desc" xy="858,292" size="430,35" fontSize="25" color="#b5c4c8" leading="5" autoSize="height" text="点击仓库-插画更换">
+      <gearXY controller="c1" pages="5,6,7,8" values="888,419|877,385|858,292|858,292"/>
+      <gearSize controller="c1" pages="6,7,8" values="400,35,1,1|430,35,1,1|430,35,1,1" default="350,35,1,1"/>
+      <gearFontSize controller="c1" pages="6,7,8" values="25|25|25" default="30"/>
+    </text>
+    <text id="n7_hrao" name="desc2" xy="856,352" size="430,65" fontSize="25" color="#8994aa" leading="0" autoSize="height" text="晶莹剔透的立直棒，使用的时候最好轻拿轻放，以免损坏。">
+      <gearSize controller="c1" pages="6,7,8" values="400,70,1,1|430,70,1,1|430,65,1,1" default="350,70,1,1"/>
+      <gearFontSize controller="c1" pages="6,7,8" values="25|25|25" default="30"/>
+      <relation target="n3_hrao" sidePair="left-left,top-bottom"/>
+    </text>
+    <image id="n33_hrao" name="n33" src="ieavob7l" fileName="Texture/img_112.png" xy="710,592" size="500,91" group="n37_hrao" alpha="0.4">
+      <gearDisplay controller="c1" pages="6"/>
+    </image>
+    <component id="n35_hrao" name="cgCurrency" src="rpakobf5" fileName="Component/Component/物品/ComItem.xml" xy="912,640" size="32,32" group="n37_hrao">
+      <relation target="n36_hrao" sidePair="left-left"/>
+    </component>
+    <text id="n34_hrao" name="cgName" xy="908,601" pivot="0.5,0.5" size="104,35" group="n37_hrao" fontSize="25" color="#98a9c3" align="center" vAlign="middle" leading="0" singleLine="true" text="慈爱宝玉"/>
+    <richtext id="n36_hrao" name="cgCost" xy="954,634" pivot="0.5,0.5" size="54,45" group="n37_hrao" fontSize="33" color="#ffffff" vAlign="middle" leading="0" ubb="true" singleLine="true" text="[color=#ff0000]3[/color][color=#f7b75d]/8[/color]"/>
+    <group id="n37_hrao" name="n37" xy="710,592" size="500,91" advanced="true">
+      <gearDisplay controller="c1" pages="6"/>
+    </group>
+    <image id="n15_hrao" name="n15" src="hraoobj1" fileName="Texture/img_848.png" xy="875,504" size="170,84" group="n28_hrao"/>
+    <component id="n19_hrao" name="multiCurrency" src="rpakobf5" fileName="Component/Component/物品/ComItem.xml" xy="887,548" size="32,32" group="n28_hrao" aspect="true"/>
+    <text id="n17_hrao" name="n17" xy="881,507" pivot="0,0.5" size="56,36" group="n28_hrao" fontSize="26" color="#6c779d" vAlign="middle" leading="0" singleLine="true" text="单价"/>
+    <text id="n20_hrao" name="multiPrice" xy="931,544" pivot="0,0.5" size="44,45" group="n28_hrao" fontSize="33" color="#8c9cb4" vAlign="middle" leading="0" singleLine="true" text="50"/>
+    <group id="n28_hrao" name="n28" xy="875,504" size="170,85" group="n32_hrao" advanced="true">
+      <gearDisplay controller="c1" pages="7,8"/>
+      <gearXY controller="c1" pages="5,6,7" values="782,362|782,362|875,504" default="782,502"/>
+    </group>
+    <image id="n16_hrao" name="n16" src="hraoobj1" fileName="Texture/img_848.png" xy="970,504" size="170,84" group="n29_hrao"/>
+    <text id="n18_hrao" name="n18" xy="976,508" pivot="0,0.5" size="56,36" group="n29_hrao" fontSize="26" color="#6c779d" vAlign="middle" leading="0" singleLine="true" text="剩余"/>
+    <text id="n21_hrao" name="multiLast" xy="988,547" pivot="1,0.5" size="141,39" group="n29_hrao" fontSize="28" color="#8c9cb4" vAlign="middle" leading="0" singleLine="true" text="本月剩余:5"/>
+    <group id="n29_hrao" name="n29" xy="970,504" size="170,84" group="n32_hrao" advanced="true">
+      <gearDisplay controller="c1" pages="8"/>
+    </group>
+    <text id="n22_hrao" name="multiDesc" xy="867,591" pivot="0.5,0.5" size="186,36" group="n32_hrao" fontSize="26" color="#4f7da8" vAlign="middle" leading="0" singleLine="true" text="每个月刷新一次"/>
+    <text id="n27_hrao" name="multiCount" xy="944,646" pivot="0.5,0.5" size="37,73" group="n32_hrao" fontSize="55" color="#dbd8d8" align="center" vAlign="middle" leading="0" singleLine="true" text="1"/>
+    <component id="n23_hrao" name="sub10" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="665,636" size="86,84" group="n32_hrao">
+      <Button title="-10" titleColor="#79b1d6" titleFontSize="45" icon="ui://vx9zwserhraoobj2"/>
+    </component>
+    <component id="n24_hrao" name="sub1" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="776,636" size="86,84" group="n32_hrao">
+      <Button title="-1" titleColor="#79b1d6" titleFontSize="45" icon="ui://vx9zwserhraoobj2"/>
+    </component>
+    <component id="n25_hrao" name="add1" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="1065,636" size="86,84" group="n32_hrao">
+      <Button title="+1" titleColor="#79b1d6" titleFontSize="45" icon="ui://vx9zwserhraoobj2"/>
+    </component>
+    <component id="n26_hrao" name="add10" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="1177,636" size="86,84" group="n32_hrao">
+      <Button title="+10" titleColor="#79b1d6" titleFontSize="45" icon="ui://vx9zwserhraoobj2"/>
+    </component>
+    <group id="n32_hrao" name="n32" xy="665,504" size="598,216" advanced="true">
+      <gearDisplay controller="c1" pages="7,8"/>
+    </group>
+    <image id="n4_hrao" name="n4" src="hraoobj0" fileName="Texture/img_1755.png" xy="792,779" size="338,34" group="n31_hrao"/>
+    <component id="n8_hrao" name="currency" src="rpakobf5" fileName="Component/Component/物品/ComItem.xml" xy="946,774" size="42,42" group="n31_hrao" aspect="true">
+      <relation target="n9_hrao" sidePair="left-left"/>
+    </component>
+    <text id="n5_hrao" name="n5" xy="884,779" pivot="1,0.5" size="54,35" group="n31_hrao" fontSize="25" color="#dbd8d8" vAlign="middle" leading="0" singleLine="true" text="总价">
+      <relation target="n9_hrao" sidePair="right-left"/>
+    </text>
+    <text id="n9_hrao" name="cost" xy="1015,796" pivot="0.5,0.5" anchor="true" size="46,48" group="n31_hrao" fontSize="35" color="#00ff00" vAlign="middle" leading="0" singleLine="true" text="25"/>
+    <group id="n31_hrao" name="n31" xy="792,772" size="338,48" advanced="true">
+      <gearDisplay controller="c1" pages="5,7,8"/>
+      <relation target="n0_hrao" sidePair="center-center,bottom-bottom"/>
+    </group>
+    <component id="n10_hrao" name="buy" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="842,820" pivot="0.5,0.5" size="238,74">
+      <relation target="n0_hrao" sidePair="center-center,bottom-bottom"/>
+      <Button title="购买" titleColor="#6d2e3a" titleFontSize="45"/>
+    </component>
+  </displayList>
+</component>

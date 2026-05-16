@@ -73,6 +73,8 @@ import { ComMatchItemMediator } from "../core/ui/view/PkgMain/mediator/coms/ComM
 import { ComMatchModeView } from "../core/ui/view/PkgMain/view/coms/ComMatchModeView";
 import { ComMatchModeMediator } from "../core/ui/view/PkgMain/mediator/coms/ComMatchModeMediator";
 import { ComSevenDayItem1View } from "../core/ui/view/PkgMain/view/coms/ComSevenDayItem1View";
+import { UIBuyGoodsView } from "../core/ui/view/PkgCommon/view/uis/UIBuyGoodsView";
+import { UIBuyGoodsMediator } from "../core/ui/view/PkgCommon/mediator/uis/UIBuyGoodsMediator";
 import { UIConfirmBigView } from "../core/ui/view/PkgCommon/view/uis/UIConfirmBigView";
 import { UIConfirmBigMediator } from "../core/ui/view/PkgCommon/mediator/uis/UIConfirmBigMediator";
 import { UIConfirmMiddleView } from "../core/ui/view/PkgCommon/view/uis/UIConfirmMiddleView";
@@ -222,6 +224,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.ComSevenDayItem1View, EViewType.Component, ComSevenDayItem1View);
 
 		//UIs
+		register(EViewID.UIBuyGoodsView, EViewType.UI, UIBuyGoodsView, UIBuyGoodsMediator);
 		register(EViewID.UIConfirmBigView, EViewType.UI, UIConfirmBigView, UIConfirmBigMediator);
 		register(EViewID.UIConfirmMiddleView, EViewType.UI, UIConfirmMiddleView, UIConfirmMiddleMediator);
 		register(EViewID.UIConfirmSmallView, EViewType.UI, UIConfirmSmallView, UIConfirmSmallMediator);

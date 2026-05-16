@@ -1,19 +1,28 @@
 declare interface IRichText {
 	get text(): string;
 	/** 
-	 * 将当前内容包装为超链接 
+	 * 超链接 
 	 * @param url 链接地址
-	 * @param content 可选：如果传入则直接追加带链接的内容，不传入则包装当前所有内容
+	 * @param text 可选：为空包装当前文本，否则包装传入文本
 	 */
-	href(url: string, content?: string): IRichText;
+	href(url: string, text?: string): IRichText;
 	/** 添加图片 */
 	img(url: string, width?: number, height?: number): IRichText;
-	/** 粗体 */
-	bold(): IRichText;
-	/** 斜体 */
-	italic(): IRichText;
-	/** 下划线 */
-	underline(): IRichText;
+	/**
+	 * 粗体
+	 * @param text 可选：为空包装当前文本，否则包装传入文本
+	 */
+	bold(text?: string): IRichText;
+	/**
+	 * 斜体
+	 * @param text 可选：为空包装当前文本，否则包装传入文本
+	 */
+	italic(text?: string): IRichText;
+	/**
+	 * 下划线
+	 * @param text 可选：为空包装当前文本，否则包装传入文本
+	 */
+	underline(text?: string): IRichText;
 	/**
 	 * 添加空格
 	 * @param count default 1
@@ -24,10 +33,18 @@ declare interface IRichText {
 	 * @param count default 1
 	 */
 	break(count?: number): IRichText;
-	/** 设置大小 */
-	size(size: number): IRichText;
-	/** 设置颜色 */
-	color(color: string): IRichText;
+	/**
+	 * 字号
+	 * @param size 字号
+	 * @param text 可选：为空包装当前文本，否则包装传入文本
+	 */
+	size(size: number, text?: string): IRichText;
+	/**
+	 * 颜色
+	 * @param color 颜色
+	 * @param text 可选：为空包装当前文本，否则包装传入文本
+	 */
+	color(color: EColorString, text?: string): IRichText;
 	/** 追加文本 */
 	append(text: string): IRichText;
 	/** 结束并返回富文本 */

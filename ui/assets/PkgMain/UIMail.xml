@@ -4,7 +4,7 @@
   <controller name="body" pages="1,无奖励,2,奖励未领取,3,奖励已领取" selected="0"/>
   <controller name="empty" pages="0,,1," selected="0"/>
   <displayList>
-    <component id="n25_pwg4" name="mask" src="w29kob8e" fileName="Component/Button/BtnIconFitNoScale.xml" pkg="vx9zwser" xy="-1040,-585" size="4000,2250" aspect="true" alpha="0.5"/>
+    <component id="n25_pwg4" name="mask" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="0,0" size="1920,1080" aspect="true" alpha="0.5"/>
     <graph id="n23_pwg4" name="n23" xy="0,0" size="1920,1080" type="polygon" lineSize="0" fillColor="#00ffffff" points="189.0002,884.0003,210.0002,870.0002,203,151,152.0002,127.0002,115.0002,63.00015,115,25,627.8833,60.93764,1290,62.0001,1810,22,1809.001,249.0002,1715.001,249.0002,1720.001,985.0004,1740,1015,1717.001,1055,1671.001,1040,253.0003,1040,205.0002,1054,176,1021"/>
     <loader id="n1_dwe0" name="bg" xy="109,20" size="1700,1034" touchable="false" url="ui://ca43vz0edwe0obaq" fill="scaleFree"/>
     <image id="n7_pt3a" name="n7" src="pt3aobav" fileName="Texture/img_439.png" xy="627,193" size="6,798"/>

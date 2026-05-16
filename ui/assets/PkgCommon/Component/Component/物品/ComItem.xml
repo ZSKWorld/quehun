@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="170,170" designImage="ui://ca43vz0ejdu67plndp" designImageOffsetX="-644" designImageOffsetY="-877" designImageAlpha="0">
   <displayList>
-    <loader id="n10_hk7r" name="icon" xy="0,0" size="170,170" url="ui://ca43vz0ehk7r7ploj4" align="center" vAlign="middle" fill="scaleMatchWidth">
+    <loader id="n10_hk7r" name="icon" xy="0,0" size="170,170" url="ui://ca43vz0ehk7r7ploj4" align="center" vAlign="middle" fill="scale">
       <relation target="" sidePair="width-width,height-height"/>
     </loader>
   </displayList>

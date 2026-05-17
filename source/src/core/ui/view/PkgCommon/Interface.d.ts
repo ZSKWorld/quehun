@@ -45,9 +45,11 @@ declare interface IUIBuyGoodsData {
 	currencyId: number;
 	/** 单价 */
 	price: number;
+	/** 单价可购买的数量，default: 1 */
+	priceCount?: number;
 	/** 是否显示已有数量，defalt: false */
 	showOwn?: boolean;
-	/** 最大购买数量，default: 1 */
+	/** 最大购买数量，default: 1, 小于等于0为无限制*/
 	max?: number;
 	/** 剩余数量字符串，有可能“本月剩余5”这样的描述 */
 	last?: string;

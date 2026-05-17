@@ -23,8 +23,12 @@ export class UIBuyGoodsView extends ExtensionClass<IView, UIBuyGoods>(UIBuyGoods
 	}
 
 	refresh(data: IUIBuyGoodsData) {
-		const { id, currencyId, price, type, showOwn, last, title, multiDesc } = data;
-		const { ctrl_c1, txt_title, com_item, txt_desc, txt_desc2, txt_own, img_line, txt_multiPrice, txt_multiLast, txt_multiDesc, com_currency, com_cgCurrency, com_multiCurrency } = this;
+		const { id, currencyId, price, priceCount, type, showOwn, last, title, multiDesc } = data;
+		const {
+			ctrl_c1, txt_title, com_item, txt_desc, txt_desc2, txt_own, img_line, txt_multiPrice, txt_multiLast,
+			txt_multiDesc, com_currency, com_cgCurrency, com_multiCurrency,
+			btn_sub10, btn_sub1, btn_add1, btn_add10
+		} = this;
 
 		ctrl_c1.selectedIndex = type;
 		const itemInfo = $itemUtil.getItemInfo(id);
@@ -48,16 +52,21 @@ export class UIBuyGoodsView extends ExtensionClass<IView, UIBuyGoods>(UIBuyGoods
 		if (type == EUIBuyGoodsType.Multi1 || type == EUIBuyGoodsType.Multi2) {
 			txt_multiPrice.text = price.toString();
 			com_multiCurrency.refreshIcon(currencyId);
+
+			btn_sub10.title = String(priceCount * -10);
+			btn_sub1.title = String(priceCount * -1);
+			btn_add1.title = String(priceCount * 1);
+			btn_add10.title = String(priceCount * 10);
 		}
 	}
 
-	refreshBuyCount(count: number, price: number, ownCount: number) {
+	refreshBuyCount(count: number, price: number, priceCount: number, ownCount: number) {
 		const cost = count * price;
 		const txtColor = ownCount >= cost ? EColorString._00ff00 : EColorString._ff0000;
 
 		const { rtxt_cgCost, txt_multiCount, txt_cost, btn_buy } = this;
 		rtxt_cgCost.text = $richText().color(txtColor, String(ownCount)).color(EColorString._f7b75d, "/" + cost).end();
-		txt_multiCount.text = count.toString();
+		txt_multiCount.text = (count * priceCount).toString();
 		txt_cost.text = cost.toString();
 		txt_cost.color = txtColor;
 		btn_buy.grayed = ownCount < cost;

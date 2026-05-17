@@ -69,8 +69,18 @@ export class UIRechargeMediator extends MediatorBase<UIRechargeView, IUIRecharge
 
 	}
 
-	private onRechargeHY(goodsId: number) {
-
+	private onRechargeHY(id: number) {
+		const cfgGoods = $cfgMgr.exchange.fushiquanexchange[id];
+		this.openView<IUIBuyGoodsData>(EViewID.UIBuyGoodsView, {
+			type: 2,
+			id: 100001,
+			currencyId: 100004,
+			price: cfgGoods.source_value,
+			priceCount: cfgGoods.source_value,
+			max: -1,
+			showOwn: true,
+			title: cfgGoods.langField(ECfgLangField.name),
+		});
 	}
 
 	private onRechargeTB(goodsId: number) {

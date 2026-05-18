@@ -5,7 +5,9 @@
         "u32_params": { "optional": true },
         "str_params": { "optional": true },
         "json_param": { "optional": true },
-        "level": { "optional": true }
+        "level": { "optional": true },
+        "message": { "optional": true },
+        "args": { "optional": true }
     },
     ".lq.ReqReadAnnouncement":{
         "announcement_list": { "optional": true }

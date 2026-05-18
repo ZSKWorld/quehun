@@ -3373,7 +3373,7 @@ declare enum ENetMessage {
 	heartbeat = "heartbeat",
 }
 
-declare type ProtoObject<T> = Omit<T, "toJSON" | "$type">;
+declare type ProtoObject<T> = Omit<T, keyof IProto>;
 
 declare interface IProto {
 	$type?: protobuf.Type;
@@ -4005,9 +4005,9 @@ declare interface IError extends IProto {
 	/** 报错等级，不会发送给客户端 */
 	level?: number;
 	/** 内部错误消息，不会发送给客户端 */
-	message: string;
+	message?: string;
 	/** 内部错误参数，不会发送给客户端 */
-	args: string;
+	args?: string;
 }
 
 /** .lq.Wrapper */

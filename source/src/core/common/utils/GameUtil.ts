@@ -195,4 +195,26 @@ export class GameUtil extends Singleton<GameUtil>() implements IGameUtil {
 		else
 			window.location.href = url;
 	}
+
+	freeze<T>(obj: T, deep: boolean = true) {
+		if (obj === null || (typeof obj !== 'object' && typeof obj !== 'function'))
+			return obj;
+
+		if (Object.isFrozen(obj))
+			return obj;
+
+		Object.freeze(obj);
+
+		if (!deep)
+			return obj;
+
+		// 获取所有自身属性（包含 Symbol / 不可枚举）
+		for (const key of Reflect.ownKeys(obj)) {
+			const value = obj[key];
+			if (value !== null && (typeof value === 'object' || typeof value === 'function'))
+				this.freeze(value, deep);
+		}
+
+		return obj;
+	}
 }

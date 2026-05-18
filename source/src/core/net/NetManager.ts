@@ -30,7 +30,7 @@ export class NetManager extends Singleton<NetManager>() implements INetManager {
 			else continue;
 			reqs[key] = data => socket.send(ENetMessage[key], data || {});
 		}
-		this.requests = Object.freeze(reqs);
+		this.requests = $gameUtil.freeze(reqs);
 	}
 
 	private initLobby() {

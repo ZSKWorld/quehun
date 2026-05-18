@@ -84,7 +84,7 @@ export class ConfigManager extends Singleton<ConfigManager>() implements IConfig
 				return (this.groups || this.rows)[method](...args);
 			};
 		}
-		Object.freeze(sheetProto);
+		$gameUtil.freeze(sheetProto);
 
 		for (const sheet of rawData) {
 			const { table, sheet: sheetName, meta, rows } = sheet;
@@ -97,7 +97,6 @@ export class ConfigManager extends Singleton<ConfigManager>() implements IConfig
 			const proto: any = Object.create(sheetProto);
 			proto.rows = rows;
 			const groups: any[][] = category === "group" ? (proto.groups = []) : null;
-			Object.freeze(proto);
 
 			const configSheet = Object.create(proto);
 
@@ -128,11 +127,14 @@ export class ConfigManager extends Singleton<ConfigManager>() implements IConfig
 			}
 
 			tableObj[sheetName] = configSheet;
+
+			$gameUtil.freeze(proto);
 		}
+		$gameUtil.freeze(this);
 	}
 
 	private parseConfig(protoContent: string, bindata: Uint8Array) {
-		const dataProto = Object.freeze({
+		const dataProto = $gameUtil.freeze({
 			langField(name) {
 				return this[name + "_" + $gameMgr.language];
 			},

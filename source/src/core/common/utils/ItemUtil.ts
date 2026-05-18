@@ -141,8 +141,8 @@ export class ItemUtil extends Singleton<ItemUtil>() implements IItemUtil {
 			resPath, //赋值地方处理$langRes，牌背牌面走的是图集路径
 			atlasPath: $langRes(atlasPath),
 			atlasTexPath: $langRes(atlasTexPath),
-			skinInfo: Object.freeze(skinInfo)
+			skinInfo: skinInfo
 		};
-		return Object.freeze(this._itemView[id]);
+		return $gameUtil.freeze(this._itemView[id]);
 	}
 }

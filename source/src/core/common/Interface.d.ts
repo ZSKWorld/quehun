@@ -229,6 +229,13 @@ declare interface IGameUtil {
 	 * @param openNew 是否打开新窗口，默认true
 	 */
 	openHref(url: string, openNew?: boolean): void;
+	/**
+	 * 冻结对象
+	 * @param obj 需要冻结的对象
+	 * @param deep 是否深度冻结，默认true
+	 * @returns 冻结后的对象
+	 */
+	freeze<T>(obj: T, deep?: boolean): T;
 }
 
 declare interface ITimeUtil {

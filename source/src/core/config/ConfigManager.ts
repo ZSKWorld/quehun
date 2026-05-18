@@ -84,6 +84,7 @@ export class ConfigManager extends Singleton<ConfigManager>() implements IConfig
 				return (this.groups || this.rows)[method](...args);
 			};
 		}
+		Object.freeze(sheetProto);
 
 		for (const sheet of rawData) {
 			const { table, sheet: sheetName, meta, rows } = sheet;
@@ -96,8 +97,8 @@ export class ConfigManager extends Singleton<ConfigManager>() implements IConfig
 			const proto: any = Object.create(sheetProto);
 			proto.rows = rows;
 			const groups: any[][] = category === "group" ? (proto.groups = []) : null;
+			Object.freeze(proto);
 
-			// 使用 Object.create 提升性能，避免后续修改 __proto__
 			const configSheet = Object.create(proto);
 
 			// 索引逻辑优化
@@ -131,11 +132,11 @@ export class ConfigManager extends Singleton<ConfigManager>() implements IConfig
 	}
 
 	private parseConfig(protoContent: string, bindata: Uint8Array) {
-		const dataProto = {
+		const dataProto = Object.freeze({
 			langField(name) {
 				return this[name + "_" + $gameMgr.language];
 			},
-		} as ISheetDataBase;
+		}) as ISheetDataBase;
 
 		const root = protobuf.parse(protoContent, { keepCase: true }).root;
 		const ConfigTables = root.lookupType("lq.config.ConfigTables");
@@ -173,7 +174,7 @@ export class ConfigManager extends Singleton<ConfigManager>() implements IConfig
 				const rawBinRows = dataMap.get(className) || [];
 				const decodedRows = rawBinRows.map(bin => {
 					const d = $decodeProtoData(MessageClass.decode(bin));
-					d["__proto__"] = dataProto;
+					Object.setPrototypeOf(d, dataProto);
 					return d;
 				});
 

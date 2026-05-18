@@ -15,9 +15,12 @@ export class NetManager extends Singleton<NetManager>() implements INetManager {
 
 	async init() {
 		await this.fetchRoutes();
-		this._lobbySocket = new WebSocket(this._routes[0], "gateway");
 
-		const reqs = this.requests = {} as any;
+		this.initLobby();
+		this.initGame();
+		this.initOb();
+
+		const reqs = {} as any;
 		for (const key in ENetMessage) {
 			const service = $pbMgr.method2Service[key];
 			let socket: WebSocket;
@@ -27,24 +30,22 @@ export class NetManager extends Singleton<NetManager>() implements INetManager {
 			else continue;
 			reqs[key] = data => socket.send(ENetMessage[key], data || {});
 		}
-
-		this.initLobby();
-		this.initGame();
-		this.initOb();
+		this.requests = Object.freeze(reqs);
 	}
 
 	private initLobby() {
-		this._lobbySocket.on(ESocketEvent.Connecting, this, () => $facade.dispatch(ENotifyConst.LobbyConnecting));
-		this._lobbySocket.on(ESocketEvent.Reconnecting, this, () => $facade.dispatch(ENotifyConst.LobbyReconnecting));
-		this._lobbySocket.on(ESocketEvent.Connected, this, () => $facade.dispatch(ENotifyConst.LobbyConnected));
-		this._lobbySocket.on(ESocketEvent.Closed, this, () => $facade.dispatch(ENotifyConst.LobbyClosed));
-		this._lobbySocket.on(ESocketEvent.Response, this, (method: string, res: IResponse, req: any) => {
+		const socket = this._lobbySocket = new WebSocket(this._routes[0], "gateway");
+		socket.on(ESocketEvent.Connecting, this, () => $facade.dispatch(ENotifyConst.LobbyConnecting));
+		socket.on(ESocketEvent.Reconnecting, this, () => $facade.dispatch(ENotifyConst.LobbyReconnecting));
+		socket.on(ESocketEvent.Connected, this, () => $facade.dispatch(ENotifyConst.LobbyConnected));
+		socket.on(ESocketEvent.Closed, this, () => $facade.dispatch(ENotifyConst.LobbyClosed));
+		socket.on(ESocketEvent.Response, this, (method: string, res: IResponse, req: IRequest) => {
 			if (res.error)
-				this.onResponseError(method, res.error);
+				this.onResponseError(method, res, req);
 			else
 				$facade.dispatch(method, [res, req]);
 		});
-		this._lobbySocket.on(ESocketEvent.Notify, $facade, $facade.dispatch);
+		socket.on(ESocketEvent.Notify, $facade, $facade.dispatch);
 	}
 	connectLobby() { this._lobbySocket?.connect(); }
 	closeLobby() { this._lobbySocket?.close(); }
@@ -77,7 +78,9 @@ export class NetManager extends Singleton<NetManager>() implements INetManager {
 		ENetMessage.heatbeat,
 		ENetMessage.updateClientValue,
 	]);
-	private onResponseError(method: string, err: IError) {
+	private onResponseError(method: string, res: IResponse, req: IRequest) {
+		if (req.ignoreError) return;
+		const err = res.error;
 		if (!err) return;
 		if (this._ignoreErrRequest.has(method)) return;
 		Logger.error(method, err);

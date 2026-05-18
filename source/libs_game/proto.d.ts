@@ -3380,6 +3380,14 @@ declare interface IProto {
 	toJSON?(): ProtoObject<this>;
 }
 
+declare interface INotify extends IProto {
+
+}
+
+declare interface IRequest extends IProto {
+	ignoreError?: boolean;
+}
+
 declare interface IResponse extends IProto {
 	error?: IError;
 }
@@ -3388,7 +3396,7 @@ declare interface IResponse extends IProto {
  ** .lq.NotifyRoomGameStart
  ** 通知房间游戏开始了
  */
-declare interface INotifyRoomGameStart extends IProto {
+declare interface INotifyRoomGameStart extends INotify {
 	/** 游戏的url */
 	game_url: string;
 	/** 连接口令 */
@@ -3403,7 +3411,7 @@ declare interface INotifyRoomGameStart extends IProto {
  ** .lq.NotifyMatchGameStart
  ** 通知匹配场游戏开始了
  */
-declare interface INotifyMatchGameStart extends IProto {
+declare interface INotifyMatchGameStart extends INotify {
 	/** 游戏的url */
 	game_url: string;
 	/** 连接口令 */
@@ -3420,7 +3428,7 @@ declare interface INotifyMatchGameStart extends IProto {
  ** .lq.NotifyRoomPlayerReady
  ** 通知玩家就绪
  */
-declare interface INotifyRoomPlayerReady extends IProto {
+declare interface INotifyRoomPlayerReady extends INotify {
 	account_id: number;
 	/** true=准备 false=未准备 */
 	ready: boolean;
@@ -3438,7 +3446,7 @@ declare interface INotifyRoomPlayerReady_AccountReadyState extends IProto {
  ** .lq.NotifyRoomPlayerDressing
  ** 通知玩家装扮状态
  */
-declare interface INotifyRoomPlayerDressing extends IProto {
+declare interface INotifyRoomPlayerDressing extends INotify {
 	account_id: number;
 	/** true=正在装扮 false=没有装扮 */
 	dressing: boolean;
@@ -3456,7 +3464,7 @@ declare interface INotifyRoomPlayerDressing_AccountDressingState extends IProto 
  ** .lq.NotifyRoomPlayerUpdate
  ** 通知玩家变化
  */
-declare interface INotifyRoomPlayerUpdate extends IProto {
+declare interface INotifyRoomPlayerUpdate extends INotify {
 	/** 房主变化 */
 	owner_id: number;
 	/** 机器人数量，已废弃，使用 robots 字段 */
@@ -3473,14 +3481,14 @@ declare interface INotifyRoomPlayerUpdate extends IProto {
  ** .lq.NotifyRoomKickOut
  ** 通知玩家被踢出
  */
-declare interface INotifyRoomKickOut extends IProto {
+declare interface INotifyRoomKickOut extends INotify {
 }
 
 /**
  ** .lq.NotifyFriendStateChange
  ** 通知好友状态变化
  */
-declare interface INotifyFriendStateChange extends IProto {
+declare interface INotifyFriendStateChange extends INotify {
 	target_id: number;
 	active_state: IAccountActiveState;
 }
@@ -3489,7 +3497,7 @@ declare interface INotifyFriendStateChange extends IProto {
  ** .lq.NotifyFriendViewChange
  ** 通知好友展示信息变化
  */
-declare interface INotifyFriendViewChange extends IProto {
+declare interface INotifyFriendViewChange extends INotify {
 	target_id: number;
 	base: IPlayerBaseView;
 }
@@ -3498,7 +3506,7 @@ declare interface INotifyFriendViewChange extends IProto {
  ** .lq.NotifyFriendChange
  ** 通知好友变化
  */
-declare interface INotifyFriendChange extends IProto {
+declare interface INotifyFriendChange extends INotify {
 	/** 好友id */
 	account_id: number;
 	/** 1=add 2=remove */
@@ -3511,7 +3519,7 @@ declare interface INotifyFriendChange extends IProto {
  ** .lq.NotifyNewFriendApply
  ** 新的好友申请
  */
-declare interface INotifyNewFriendApply extends IProto {
+declare interface INotifyNewFriendApply extends INotify {
 	/** 申请者id */
 	account_id: number;
 	/** 申请时间 */
@@ -3524,7 +3532,7 @@ declare interface INotifyNewFriendApply extends IProto {
  ** .lq.NotifyClientMessage
  ** 发送一条单方面消息
  */
-declare interface INotifyClientMessage extends IProto {
+declare interface INotifyClientMessage extends INotify {
 	sender: IPlayerBaseView;
 	type: number;
 	content: string;
@@ -3534,7 +3542,7 @@ declare interface INotifyClientMessage extends IProto {
  ** .lq.NotifyAccountUpdate
  ** 人物数据更新
  */
-declare interface INotifyAccountUpdate extends IProto {
+declare interface INotifyAccountUpdate extends INotify {
 	update: IAccountUpdate;
 }
 
@@ -3542,14 +3550,14 @@ declare interface INotifyAccountUpdate extends IProto {
  ** .lq.NotifyAnotherLogin
  ** 提示有另一处登录
  */
-declare interface INotifyAnotherLogin extends IProto {
+declare interface INotifyAnotherLogin extends INotify {
 }
 
 /**
  ** .lq.NotifyAccountLogout
  ** 提示玩家需要登出
  */
-declare interface INotifyAccountLogout extends IProto {
+declare interface INotifyAccountLogout extends INotify {
 }
 
 /**
@@ -3558,7 +3566,7 @@ declare interface INotifyAccountLogout extends IProto {
  ** yaya(2020-07-29): 现在不放具体内容，只进行通知（消息体内容除lang外为空），客户端在收到通知后随机延迟（五分钟内）重新调用获取通知接口进行更新
  ** yaya(2021-12-09): 改成以列表形式通知
  */
-declare interface INotifyAnnouncementUpdate extends IProto {
+declare interface INotifyAnnouncementUpdate extends INotify {
 	update_list: INotifyAnnouncementUpdate_AnnouncementUpdate[];
 }
 
@@ -3572,7 +3580,7 @@ declare interface INotifyAnnouncementUpdate_AnnouncementUpdate extends IProto {
  ** .lq.NotifyNewMail
  ** 通知新邮件
  */
-declare interface INotifyNewMail extends IProto {
+declare interface INotifyNewMail extends INotify {
 	mail: IMail;
 }
 
@@ -3580,7 +3588,7 @@ declare interface INotifyNewMail extends IProto {
  ** .lq.NotifyDeleteMail
  ** 通知删除邮件
  */
-declare interface INotifyDeleteMail extends IProto {
+declare interface INotifyDeleteMail extends INotify {
 	mail_id_list: number[];
 }
 
@@ -3588,7 +3596,7 @@ declare interface INotifyDeleteMail extends IProto {
  ** .lq.NotifyReviveCoinUpdate
  ** 通知复活币更新
  */
-declare interface INotifyReviveCoinUpdate extends IProto {
+declare interface INotifyReviveCoinUpdate extends INotify {
 	has_gained: boolean;
 }
 
@@ -3596,7 +3604,7 @@ declare interface INotifyReviveCoinUpdate extends IProto {
  ** .lq.NotifyDailyTaskUpdate
  ** 每日任务刷新推送
  */
-declare interface INotifyDailyTaskUpdate extends IProto {
+declare interface INotifyDailyTaskUpdate extends INotify {
 	progresses: ITaskProgress[];
 	max_daily_task_count: number;
 	/** 剩余可刷新次数 */
@@ -3607,7 +3615,7 @@ declare interface INotifyDailyTaskUpdate extends IProto {
  ** .lq.NotifyActivityTaskUpdate
  ** 每日活动任务刷新推送
  */
-declare interface INotifyActivityTaskUpdate extends IProto {
+declare interface INotifyActivityTaskUpdate extends INotify {
 	progresses: ITaskProgress[];
 }
 
@@ -3615,7 +3623,7 @@ declare interface INotifyActivityTaskUpdate extends IProto {
  ** .lq.NotifyActivityPeriodTaskUpdate
  ** 长期活动任务刷新推送
  */
-declare interface INotifyActivityPeriodTaskUpdate extends IProto {
+declare interface INotifyActivityPeriodTaskUpdate extends INotify {
 	progresses: ITaskProgress[];
 }
 
@@ -3623,17 +3631,17 @@ declare interface INotifyActivityPeriodTaskUpdate extends IProto {
  ** .lq.NotifyAccountRandomTaskUpdate
  ** 随机活动任务刷新推送
  */
-declare interface INotifyAccountRandomTaskUpdate extends IProto {
+declare interface INotifyAccountRandomTaskUpdate extends INotify {
 	progresses: ITaskProgress[];
 }
 
 /** .lq.NotifyActivitySegmentTaskUpdate */
-declare interface INotifyActivitySegmentTaskUpdate extends IProto {
+declare interface INotifyActivitySegmentTaskUpdate extends INotify {
 	progresses: ISegmentTaskProgress[];
 }
 
 /** .lq.NotifyActivityUpdate */
-declare interface INotifyActivityUpdate extends IProto {
+declare interface INotifyActivityUpdate extends INotify {
 	list: INotifyActivityUpdate_FeedActivityData[];
 }
 
@@ -3666,7 +3674,7 @@ declare interface INotifyActivityUpdate_GiftBoxData extends IProto {
  ** .lq.NotifyAccountChallengeTaskUpdate
  ** 试炼赛更新推送
  */
-declare interface INotifyAccountChallengeTaskUpdate extends IProto {
+declare interface INotifyAccountChallengeTaskUpdate extends INotify {
 	progresses: ITaskProgress[];
 	/** 试炼等级 */
 	level: number;
@@ -3684,35 +3692,35 @@ declare interface INotifyAccountChallengeTaskUpdate extends IProto {
  ** .lq.NotifyNewComment
  ** 通知：有新的留言
  */
-declare interface INotifyNewComment extends IProto {
+declare interface INotifyNewComment extends INotify {
 }
 
 /**
  ** .lq.NotifyRollingNotice
  ** 通知：新滚动公告
  */
-declare interface INotifyRollingNotice extends IProto {
+declare interface INotifyRollingNotice extends INotify {
 }
 
 /**
  ** .lq.NotifyMaintainNotice
  ** 通知：新维护公告
  */
-declare interface INotifyMaintainNotice extends IProto {
+declare interface INotifyMaintainNotice extends INotify {
 }
 
 /**
  ** .lq.NotifyGiftSendRefresh
  ** 通知：每日送礼次数刷新
  */
-declare interface INotifyGiftSendRefresh extends IProto {
+declare interface INotifyGiftSendRefresh extends INotify {
 }
 
 /**
  ** .lq.NotifyShopUpdate
  ** 通知：商店更新
  */
-declare interface INotifyShopUpdate extends IProto {
+declare interface INotifyShopUpdate extends INotify {
 	shop_info: IShopInfo;
 }
 
@@ -3720,14 +3728,14 @@ declare interface INotifyShopUpdate extends IProto {
  ** .lq.NotifyIntervalUpdate
  ** 通知：轮换商店/活动发生改变
  */
-declare interface INotifyIntervalUpdate extends IProto {
+declare interface INotifyIntervalUpdate extends INotify {
 }
 
 /**
  ** .lq.NotifyVipLevelChange
  ** 通知：VIP等级变化
  */
-declare interface INotifyVipLevelChange extends IProto {
+declare interface INotifyVipLevelChange extends INotify {
 	/** 每日送礼次数上限 */
 	gift_limit: number;
 	/** 好像数量上限 */
@@ -3745,7 +3753,7 @@ declare interface INotifyVipLevelChange extends IProto {
  ** .lq.NotifyServerSetting
  ** 服务器设置
  */
-declare interface INotifyServerSetting extends IProto {
+declare interface INotifyServerSetting extends INotify {
 	settings: IServerSettings;
 }
 
@@ -3753,7 +3761,7 @@ declare interface INotifyServerSetting extends IProto {
  ** .lq.NotifyPayResult
  ** 通知：充值结果
  */
-declare interface INotifyPayResult extends IProto {
+declare interface INotifyPayResult extends INotify {
 	/** 0=success other=failed */
 	pay_result: number;
 	order_id: string;
@@ -3763,7 +3771,7 @@ declare interface INotifyPayResult extends IProto {
 }
 
 /** .lq.NotifyPayResult.ResourceModify */
-declare interface INotifyPayResult_ResourceModify extends IResponse {
+declare interface INotifyPayResult_ResourceModify extends IProto {
 	id: number;
 	count: number;
 	final: number;
@@ -3773,7 +3781,7 @@ declare interface INotifyPayResult_ResourceModify extends IResponse {
  ** .lq.NotifyCustomContestAccountMsg
  ** 通知：比赛聊天消息
  */
-declare interface INotifyCustomContestAccountMsg extends IProto {
+declare interface INotifyCustomContestAccountMsg extends INotify {
 	unique_id: number;
 	account_id: number;
 	/** 发送人的昵称 */
@@ -3786,7 +3794,7 @@ declare interface INotifyCustomContestAccountMsg extends IProto {
  ** .lq.NotifyCustomContestSystemMsg
  ** 通知：比赛系统消息
  */
-declare interface INotifyCustomContestSystemMsg extends IProto {
+declare interface INotifyCustomContestSystemMsg extends INotify {
 	unique_id: number;
 	/** 1=game-start 2=game-end */
 	type: number;
@@ -3799,7 +3807,7 @@ declare interface INotifyCustomContestSystemMsg extends IProto {
  ** .lq.NotifyMatchTimeout
  ** 通知：匹配超时通知
  */
-declare interface INotifyMatchTimeout extends IProto {
+declare interface INotifyMatchTimeout extends INotify {
 	sid: string;
 }
 
@@ -3807,7 +3815,7 @@ declare interface INotifyMatchTimeout extends IProto {
  ** .lq.NotifyMatchFailed
  ** 通知：匹配出错
  */
-declare interface INotifyMatchFailed extends IProto {
+declare interface INotifyMatchFailed extends INotify {
 	sid: string;
 }
 
@@ -3815,7 +3823,7 @@ declare interface INotifyMatchFailed extends IProto {
  ** .lq.NotifyCustomContestState
  ** 通知：自定义比赛状态变化
  */
-declare interface INotifyCustomContestState extends IProto {
+declare interface INotifyCustomContestState extends INotify {
 	unique_id: number;
 	/** 比赛状态 */
 	state: number;
@@ -3825,7 +3833,7 @@ declare interface INotifyCustomContestState extends IProto {
  ** .lq.NotifyActivityChange
  ** 通知：活动变化
  */
-declare interface INotifyActivityChange extends IProto {
+declare interface INotifyActivityChange extends INotify {
 	/** 新活动 */
 	new_activities: IActivity[];
 	/** 结束的活动 */
@@ -3836,7 +3844,7 @@ declare interface INotifyActivityChange extends IProto {
  ** .lq.NotifyAFKResult
  ** 通知：挂机惩罚
  */
-declare interface INotifyAFKResult extends IProto {
+declare interface INotifyAFKResult extends INotify {
 	/** 惩罚类型 1-无结算奖励 2-封号 */
 	type: number;
 	/** 封号->封号结束时间 */
@@ -3849,14 +3857,14 @@ declare interface INotifyAFKResult extends IProto {
  ** .lq.NotifyLoginQueueFinished
  ** 通知：登录排队完成
  */
-declare interface INotifyLoginQueueFinished extends IProto {
+declare interface INotifyLoginQueueFinished extends INotify {
 }
 
 /**
  ** .lq.NotifyGameFinishRewardV2
  ** 比赛结束奖励
  */
-declare interface INotifyGameFinishRewardV2 extends IProto {
+declare interface INotifyGameFinishRewardV2 extends INotify {
 	mode_id: number;
 	level_change: INotifyGameFinishRewardV2_LevelChange;
 	/** 比赛宝箱 */
@@ -3901,7 +3909,7 @@ declare interface INotifyGameFinishRewardV2_CharacterGift extends IProto {
 }
 
 /** .lq.NotifyActivityRewardV2 */
-declare interface INotifyActivityRewardV2 extends IProto {
+declare interface INotifyActivityRewardV2 extends INotify {
 	/** 活动奖励 */
 	activity_reward: INotifyActivityRewardV2_ActivityReward[];
 }
@@ -3913,7 +3921,7 @@ declare interface INotifyActivityRewardV2_ActivityReward extends IProto {
 }
 
 /** .lq.NotifyActivityPointV2 */
-declare interface INotifyActivityPointV2 extends IProto {
+declare interface INotifyActivityPointV2 extends INotify {
 	/** 活动对局得点 */
 	activity_points: INotifyActivityPointV2_ActivityPoint[];
 }
@@ -3926,7 +3934,7 @@ declare interface INotifyActivityPointV2_ActivityPoint extends IProto {
 }
 
 /** .lq.NotifyLeaderboardPointV2 */
-declare interface INotifyLeaderboardPointV2 extends IProto {
+declare interface INotifyLeaderboardPointV2 extends INotify {
 	/** 排行榜对局得点 */
 	leaderboard_points: INotifyLeaderboardPointV2_LeaderboardPoint[];
 }
@@ -3939,7 +3947,7 @@ declare interface INotifyLeaderboardPointV2_LeaderboardPoint extends IProto {
 }
 
 /** .lq.NotifySeerReport */
-declare interface INotifySeerReport extends IProto {
+declare interface INotifySeerReport extends INotify {
 	report: ISeerBrief;
 }
 
@@ -3947,7 +3955,7 @@ declare interface INotifySeerReport extends IProto {
  ** .lq.NotifyConnectionShutdown
  ** 服务端主动断开
  */
-declare interface INotifyConnectionShutdown extends IProto {
+declare interface INotifyConnectionShutdown extends INotify {
 	reason: number;
 	/** 服务器将于这个时间戳断开连接 */
 	close_at: number;
@@ -3957,7 +3965,7 @@ declare interface INotifyConnectionShutdown extends IProto {
  ** .lq.NotifyCustomizedContestReady
  ** 通知大会室准备状态修改
  */
-declare interface INotifyCustomizedContestReady extends IProto {
+declare interface INotifyCustomizedContestReady extends INotify {
 	unique_id: number;
 	/** 准备状态，1-准备 0-取消准备 （现在应该只会发0） */
 	ready: number;
@@ -3970,7 +3978,7 @@ declare interface INotifyCustomizedContestReady extends IProto {
  ** 通知大会室规则修改
  ** 只会发送给大会室管理员
  */
-declare interface INotifyCustomizedContestRuleModify extends IProto {
+declare interface INotifyCustomizedContestRuleModify extends INotify {
 	unique_id: number;
 	/** 自动匹配状态 */
 	auto_match: number;
@@ -3980,7 +3988,7 @@ declare interface INotifyCustomizedContestRuleModify extends IProto {
  ** .lq.NotifyCustomizedContestPlanReady
  ** 通知大会室预约对局玩家准备状态修改(预约赛事创建/玩家准备状态变化时发送给客户端)
  */
-declare interface INotifyCustomizedContestPlanReady extends IProto {
+declare interface INotifyCustomizedContestPlanReady extends INotify {
 	game_plan: ICustomizedContestGamePlan;
 }
 
@@ -3988,7 +3996,7 @@ declare interface INotifyCustomizedContestPlanReady extends IProto {
  ** .lq.NotifyCustomizedContestPlanCancel
  ** 通知当前大会室预约取消
  */
-declare interface INotifyCustomizedContestPlanCancel extends IProto {
+declare interface INotifyCustomizedContestPlanCancel extends INotify {
 	/** 大会室唯一id */
 	unique_id: number;
 	/** 对局uuid */
@@ -4027,7 +4035,7 @@ declare interface INetworkEndpoint extends IProto {
  ** .lq.ReqCommon
  ** 默认空请求结构体
  */
-declare interface IReqCommon extends IProto {
+declare interface IReqCommon extends IRequest {
 }
 
 /**
@@ -8115,7 +8123,7 @@ declare interface IResFetchQueueInfo extends IResponse {
 }
 
 /** .lq.ReqOpenidCheck */
-declare interface IReqOpenidCheck extends IProto {
+declare interface IReqOpenidCheck extends IRequest {
 	type: number;
 	token: string;
 }
@@ -8124,7 +8132,7 @@ declare interface IReqOpenidCheck extends IProto {
  ** .lq.ReqSignupAccount
  ** 协议：注册账号
  */
-declare interface IReqSignupAccount extends IProto {
+declare interface IReqSignupAccount extends IRequest {
 	/** 玩家登陆账号名 */
 	account: string;
 	/** hash后的密码 */
@@ -8149,7 +8157,7 @@ declare interface IResSignupAccount extends IResponse {
  ** .lq.ReqLogin
  ** 协议：登录游戏内账号
  */
-declare interface IReqLogin extends IProto {
+declare interface IReqLogin extends IRequest {
 	/** 玩家登陆账号名 */
 	account: string;
 	/** hash后的密码 */
@@ -8199,7 +8207,7 @@ declare interface IResLogin extends IResponse {
 }
 
 /** .lq.ReqPrepareLogin */
-declare interface IReqPrepareLogin extends IProto {
+declare interface IReqPrepareLogin extends IRequest {
 	/** Oauth2Login 中的 access_token */
 	access_token: string;
 	/** Oauth2Login 中的 type */
@@ -8207,7 +8215,7 @@ declare interface IReqPrepareLogin extends IProto {
 }
 
 /** .lq.ReqFastLogin */
-declare interface IReqFastLogin extends IProto {
+declare interface IReqFastLogin extends IRequest {
 	client_version_string: string;
 }
 
@@ -8220,7 +8228,7 @@ declare interface IResFastLogin extends IResponse {
 }
 
 /** .lq.ReqEmailLogin */
-declare interface IReqEmailLogin extends IProto {
+declare interface IReqEmailLogin extends IRequest {
 	/** 玩家登陆账号名 */
 	email: string;
 	/** hash后的密码 */
@@ -8242,7 +8250,7 @@ declare interface IReqEmailLogin extends IProto {
  ** .lq.ReqBindAccount
  ** 协议：绑定账号密码
  */
-declare interface IReqBindAccount extends IProto {
+declare interface IReqBindAccount extends IRequest {
 	account: string;
 	password: string;
 }
@@ -8251,7 +8259,7 @@ declare interface IReqBindAccount extends IProto {
  ** .lq.ReqCreatePhoneVerifyCode
  ** 协议：获取手机验证码
  */
-declare interface IReqCreatePhoneVerifyCode extends IProto {
+declare interface IReqCreatePhoneVerifyCode extends IRequest {
 	phone: string;
 	/**
 	 ** 用途（用于之后的操作校验）
@@ -8269,7 +8277,7 @@ declare interface IReqCreatePhoneVerifyCode extends IProto {
  ** .lq.ReqCreateEmailVerifyCode
  ** 协议：获取邮箱验证码
  */
-declare interface IReqCreateEmailVerifyCode extends IProto {
+declare interface IReqCreateEmailVerifyCode extends IRequest {
 	email: string;
 	/**
 	 ** 用途（用于之后的操作校验）
@@ -8282,7 +8290,7 @@ declare interface IReqCreateEmailVerifyCode extends IProto {
  ** .lq.ReqVerifyCodeForSecure
  ** 协议：验证码获取安全权限
  */
-declare interface IReqVerifyCodeForSecure extends IProto {
+declare interface IReqVerifyCodeForSecure extends IRequest {
 	code: string;
 	/** 1=更换手机号绑定 */
 	operation: number;
@@ -8298,7 +8306,7 @@ declare interface IResVerfiyCodeForSecure extends IResponse {
  ** .lq.ReqBindPhoneNumber
  ** 协议：绑定手机号
  */
-declare interface IReqBindPhoneNumber extends IProto {
+declare interface IReqBindPhoneNumber extends IRequest {
 	/** 验证码 */
 	code: string;
 	phone: string;
@@ -8312,7 +8320,7 @@ declare interface IReqBindPhoneNumber extends IProto {
  ** .lq.ReqUnbindPhoneNumber
  ** 协议：解绑账号手机
  */
-declare interface IReqUnbindPhoneNumber extends IProto {
+declare interface IReqUnbindPhoneNumber extends IRequest {
 	code: string;
 	phone: string;
 	password: string;
@@ -8331,7 +8339,7 @@ declare interface IResFetchPhoneLoginBind extends IResponse {
  ** .lq.ReqCreatePhoneLoginBind
  ** 协议：生成手机登录绑定
  */
-declare interface IReqCreatePhoneLoginBind extends IProto {
+declare interface IReqCreatePhoneLoginBind extends IRequest {
 	/** 没有密码需要设置密码 */
 	password: string;
 }
@@ -8340,7 +8348,7 @@ declare interface IReqCreatePhoneLoginBind extends IProto {
  ** .lq.ReqBindEmail
  ** 协议：绑定邮箱
  */
-declare interface IReqBindEmail extends IProto {
+declare interface IReqBindEmail extends IRequest {
 	email: string;
 	code: string;
 	/** 没有密码需要设置密码 */
@@ -8351,7 +8359,7 @@ declare interface IReqBindEmail extends IProto {
  ** .lq.ReqModifyPassword
  ** 协议：修改密码
  */
-declare interface IReqModifyPassword extends IProto {
+declare interface IReqModifyPassword extends IRequest {
 	/** 新密码 */
 	new_password: string;
 	/** 老密码（无任何绑定的情况） */
@@ -8364,7 +8372,7 @@ declare interface IReqModifyPassword extends IProto {
  ** .lq.ReqOauth2Auth
  ** 协议：Oauth2 授权
  */
-declare interface IReqOauth2Auth extends IProto {
+declare interface IReqOauth2Auth extends IRequest {
 	/** oauth2 自定义平台类型 */
 	type: number;
 	/** oauth2 code */
@@ -8384,7 +8392,7 @@ declare interface IResOauth2Auth extends IResponse {
  ** .lq.ReqOauth2Check
  ** 协议：Oauth2 验证是否已经注册过账号
  */
-declare interface IReqOauth2Check extends IProto {
+declare interface IReqOauth2Check extends IRequest {
 	/** oauth2 自定义平台类型 */
 	type: number;
 	/** oauth2 code */
@@ -8401,7 +8409,7 @@ declare interface IResOauth2Check extends IResponse {
  ** .lq.ReqOauth2Signup
  ** 协议：Oauth2 注册账号
  */
-declare interface IReqOauth2Signup extends IProto {
+declare interface IReqOauth2Signup extends IRequest {
 	type: number;
 	access_token: string;
 	email: string;
@@ -8424,7 +8432,7 @@ declare interface IResOauth2Signup extends IResponse {
  ** .lq.ReqOauth2Login
  ** 协议：Oauth2 登录
  */
-declare interface IReqOauth2Login extends IProto {
+declare interface IReqOauth2Login extends IRequest {
 	/** 0=账号密码快速登录 1=微信 2=微博 3=QQ */
 	type: number;
 	access_token: string;
@@ -8451,7 +8459,7 @@ declare interface IReqOauth2Login extends IProto {
  ** .lq.ReqDMMPreLogin
  ** 协议：获取DMM登录参数
  */
-declare interface IReqDMMPreLogin extends IProto {
+declare interface IReqDMMPreLogin extends IRequest {
 	finish_url: string;
 }
 
@@ -8464,7 +8472,7 @@ declare interface IResDMMPreLogin extends IResponse {
  ** .lq.ReqLogout
  ** 协议：注销账号
  */
-declare interface IReqLogout extends IProto {
+declare interface IReqLogout extends IRequest {
 }
 
 /** .lq.ResLogout */
@@ -8475,13 +8483,13 @@ declare interface IResLogout extends IResponse {
  ** .lq.ReqHeatBeat
  ** 心跳请求
  */
-declare interface IReqHeatBeat extends IProto {
+declare interface IReqHeatBeat extends IRequest {
 	/** 无操作时间计数（用于踢下线） */
 	no_operation_counter: number;
 }
 
 /** .lq.ReqSearchAccountByEidLobby */
-declare interface IReqSearchAccountByEidLobby extends IProto {
+declare interface IReqSearchAccountByEidLobby extends IRequest {
 	eid: number;
 }
 
@@ -8494,7 +8502,7 @@ declare interface IResSearchAccountbyEidLobby extends IResponse {
  ** .lq.ReqLoginBeat
  ** 登录心跳
  */
-declare interface IReqLoginBeat extends IProto {
+declare interface IReqLoginBeat extends IRequest {
 	contract: string;
 }
 
@@ -8502,7 +8510,7 @@ declare interface IReqLoginBeat extends IProto {
  ** .lq.ReqJoinMatchQueue
  ** 协议：加入匹配队列
  */
-declare interface IReqJoinMatchQueue extends IProto {
+declare interface IReqJoinMatchQueue extends IRequest {
 	match_mode: number;
 	/** 客户端版本验证用 */
 	client_version_string: string;
@@ -8512,7 +8520,7 @@ declare interface IReqJoinMatchQueue extends IProto {
  ** .lq.ReqCancelMatchQueue
  ** 协议：取消匹配
  */
-declare interface IReqCancelMatchQueue extends IProto {
+declare interface IReqCancelMatchQueue extends IRequest {
 	match_mode: number;
 }
 
@@ -8520,7 +8528,7 @@ declare interface IReqCancelMatchQueue extends IProto {
  ** .lq.ReqAccountInfo
  ** 协议：请求账号信息
  */
-declare interface IReqAccountInfo extends IProto {
+declare interface IReqAccountInfo extends IRequest {
 	/** 本人可以不填数据 */
 	account_id: number;
 }
@@ -8535,7 +8543,7 @@ declare interface IResAccountInfo extends IResponse {
  ** .lq.ReqCreateNickname
  ** 协议：创建昵称
  */
-declare interface IReqCreateNickname extends IProto {
+declare interface IReqCreateNickname extends IRequest {
 	nickname: string;
 	advertise_str: string;
 	/** 服务器标签，日志统计用 */
@@ -8546,7 +8554,7 @@ declare interface IReqCreateNickname extends IProto {
  ** .lq.ReqModifyNickname
  ** 协议：修改昵称
  */
-declare interface IReqModifyNickname extends IProto {
+declare interface IReqModifyNickname extends IRequest {
 	nickname: string;
 	/** 使用改名卡 */
 	use_item_id: number;
@@ -8556,7 +8564,7 @@ declare interface IReqModifyNickname extends IProto {
  ** .lq.ReqModifyBirthday
  ** 协议：修改生日
  */
-declare interface IReqModifyBirthday extends IProto {
+declare interface IReqModifyBirthday extends IRequest {
 	/** unix second */
 	birthday: number;
 }
@@ -8578,7 +8586,7 @@ declare interface IResFetchGamingInfo extends IResponse {
  ** .lq.ReqCreateRoom
  ** 协议：创建房间
  */
-declare interface IReqCreateRoom extends IProto {
+declare interface IReqCreateRoom extends IRequest {
 	player_count: number;
 	mode: IGameMode;
 	/** 公开观战 */
@@ -8598,7 +8606,7 @@ declare interface IResCreateRoom extends IResponse {
  ** .lq.ReqJoinRoom
  ** 协议：加入房间
  */
-declare interface IReqJoinRoom extends IProto {
+declare interface IReqJoinRoom extends IRequest {
 	room_id: number;
 	/** 客户端版本验证用 */
 	client_version_string: string;
@@ -8613,7 +8621,7 @@ declare interface IResJoinRoom extends IResponse {
  ** .lq.ReqRoomReady
  ** 协议：准备就绪
  */
-declare interface IReqRoomReady extends IProto {
+declare interface IReqRoomReady extends IRequest {
 	/** true=准备 false=取消准备 */
 	ready: boolean;
 }
@@ -8622,7 +8630,7 @@ declare interface IReqRoomReady extends IProto {
  ** .lq.ReqRoomDressing
  ** 协议：切换装扮状态
  */
-declare interface IReqRoomDressing extends IProto {
+declare interface IReqRoomDressing extends IRequest {
 	/** true=正在装扮 false=普通状态 */
 	dressing: boolean;
 }
@@ -8631,14 +8639,14 @@ declare interface IReqRoomDressing extends IProto {
  ** .lq.ReqRoomStart
  ** 协议：开始游戏
  */
-declare interface IReqRoomStart extends IProto {
+declare interface IReqRoomStart extends IRequest {
 }
 
 /**
  ** .lq.ReqRoomKickPlayer
  ** 协议：踢出玩家
  */
-declare interface IReqRoomKickPlayer extends IProto {
+declare interface IReqRoomKickPlayer extends IRequest {
 	/** 玩家账号id或机器人id */
 	id: number;
 }
@@ -8647,7 +8655,7 @@ declare interface IReqRoomKickPlayer extends IProto {
  ** .lq.ReqModifyRoom
  ** 协议：修改房间
  */
-declare interface IReqModifyRoom extends IProto {
+declare interface IReqModifyRoom extends IRequest {
 	robot_count: number;
 }
 
@@ -8655,7 +8663,7 @@ declare interface IReqModifyRoom extends IProto {
  ** .lq.ReqAddRoomRobot
  ** 协议：添加好友房机器人
  */
-declare interface IReqAddRoomRobot extends IProto {
+declare interface IReqAddRoomRobot extends IRequest {
 	position: number;
 }
 
@@ -8663,7 +8671,7 @@ declare interface IReqAddRoomRobot extends IProto {
  ** .lq.ReqChangeAvatar
  ** 协议：修改头像
  */
-declare interface IReqChangeAvatar extends IProto {
+declare interface IReqChangeAvatar extends IRequest {
 	avatar_id: number;
 }
 
@@ -8671,7 +8679,7 @@ declare interface IReqChangeAvatar extends IProto {
  ** .lq.ReqAccountStatisticInfo
  ** 协议：请求账号统计信息
  */
-declare interface IReqAccountStatisticInfo extends IProto {
+declare interface IReqAccountStatisticInfo extends IRequest {
 	account_id: number;
 }
 
@@ -8709,7 +8717,7 @@ declare interface IResAccountCharacterInfo extends IResponse {
  ** .lq.ReqShopPurchase
  ** 协议：商店购买
  */
-declare interface IReqShopPurchase extends IProto {
+declare interface IReqShopPurchase extends IRequest {
 	type: string;
 	id: number;
 }
@@ -8724,7 +8732,7 @@ declare interface IResShopPurchase extends IResponse {
  ** .lq.ReqGameRecord
  ** 协议：获取单场牌谱记录
  */
-declare interface IReqGameRecord extends IProto {
+declare interface IReqGameRecord extends IRequest {
 	game_uuid: string;
 	client_version_string: string;
 }
@@ -8744,7 +8752,7 @@ declare interface IResGameRecord extends IResponse {
  ** 协议：获取牌谱列表
  ** 已废弃，使用v2
  */
-declare interface IReqGameRecordList extends IProto {
+declare interface IReqGameRecordList extends IRequest {
 	/** 起始下标，基于0 */
 	start: number;
 	/** 期望获取的数量（结果可能少于该数量，最大有效值为30，超过按照30获取） */
@@ -8769,7 +8777,7 @@ declare interface IResGameRecordList extends IResponse {
  ** 客户端得到迭代器游标之后，使用游标进行后续请求
  ** 迭代器有失效时间，过期后调用本接口重新申请
  */
-declare interface IReqGameRecordListV2 extends IProto {
+declare interface IReqGameRecordListV2 extends IRequest {
 	/** 标签，总览（全部）=0/段位=1/友人=2/活动=3/赛事=4（收藏是另外的逻辑） */
 	tag: number;
 	/** 筛选的开始日期（精确到选择的0点），不填服务器默认为90天前的日期（也是0点） */
@@ -8802,7 +8810,7 @@ declare interface IResGameRecordListV2 extends IResponse {
  ** .lq.ReqNextGameRecordList
  ** 协议：根据迭代器获取牌谱列表内容
  */
-declare interface IReqNextGameRecordList extends IProto {
+declare interface IReqNextGameRecordList extends IRequest {
 	iterator: string;
 	/** 期望的数量（服务器最大返回30条，这个与原先做法一致） */
 	count: number;
@@ -8837,7 +8845,7 @@ declare interface IResCollectedGameRecordList extends IResponse {
  ** .lq.ReqGameRecordsDetail
  ** 协议:获取牌谱列表的详细信息
  */
-declare interface IReqGameRecordsDetail extends IProto {
+declare interface IReqGameRecordsDetail extends IRequest {
 	/** 根据uuid获取牌谱详情（返回的结果不超过30个） */
 	uuid_list: string[];
 }
@@ -8852,7 +8860,7 @@ declare interface IResGameRecordsDetail extends IResponse {
  ** .lq.ReqGameRecordsDetailV2
  ** 协议:获取牌谱列表的详细信息（新版）
  */
-declare interface IReqGameRecordsDetailV2 extends IProto {
+declare interface IReqGameRecordsDetailV2 extends IRequest {
 	/** 根据uuid获取牌谱详情（返回的结果不超过30个） */
 	uuid_list: string[];
 }
@@ -8867,7 +8875,7 @@ declare interface IResGameRecordsDetailV2 extends IResponse {
  ** .lq.ReqAddCollectedGameRecord
  ** 协议:添加牌谱收藏
  */
-declare interface IReqAddCollectedGameRecord extends IProto {
+declare interface IReqAddCollectedGameRecord extends IRequest {
 	/** 牌谱uuid */
 	uuid: string;
 	/** 备注，如果是默认备注则不用传过来 */
@@ -8884,7 +8892,7 @@ declare interface IResAddCollectedGameRecord extends IResponse {
  ** .lq.ReqRemoveCollectedGameRecord
  ** 协议:移除牌谱收藏
  */
-declare interface IReqRemoveCollectedGameRecord extends IProto {
+declare interface IReqRemoveCollectedGameRecord extends IRequest {
 	/** 牌谱uuid */
 	uuid: string;
 }
@@ -8897,7 +8905,7 @@ declare interface IResRemoveCollectedGameRecord extends IResponse {
  ** .lq.ReqChangeCollectedGameRecordRemarks
  ** 协议:修改收藏牌谱的注释
  */
-declare interface IReqChangeCollectedGameRecordRemarks extends IProto {
+declare interface IReqChangeCollectedGameRecordRemarks extends IRequest {
 	/** 牌谱uuid */
 	uuid: string;
 	/** 备注，只能修改收藏过的牌谱 */
@@ -8912,7 +8920,7 @@ declare interface IResChangeCollectedGameRecordRemarks extends IResponse {
  ** .lq.ReqLevelLeaderboard
  ** 协议：排行榜
  */
-declare interface IReqLevelLeaderboard extends IProto {
+declare interface IReqLevelLeaderboard extends IRequest {
 	/** 1=四麻 2=三麻 */
 	type: number;
 }
@@ -8934,7 +8942,7 @@ declare interface IResLevelLeaderboard_Item extends IProto {
  ** .lq.ReqChallangeLeaderboard
  ** 协议：试炼赛排行榜
  */
-declare interface IReqChallangeLeaderboard extends IProto {
+declare interface IReqChallangeLeaderboard extends IRequest {
 	season: number;
 }
 
@@ -8956,7 +8964,7 @@ declare interface IResChallengeLeaderboard_Item extends IProto {
  ** .lq.ReqMutiChallengeLevel
  ** 协议：获取多人试炼赛等级
  */
-declare interface IReqMutiChallengeLevel extends IProto {
+declare interface IReqMutiChallengeLevel extends IRequest {
 	account_id_list: number[];
 	season: number;
 }
@@ -8976,7 +8984,7 @@ declare interface IResMutiChallengeLevel_Item extends IProto {
  ** .lq.ReqMultiAccountId
  ** 协议：获取多人信息
  */
-declare interface IReqMultiAccountId extends IProto {
+declare interface IReqMultiAccountId extends IRequest {
 	account_id_list: number[];
 }
 
@@ -9017,7 +9025,7 @@ declare interface IResFriendApplyList_FriendApply extends IProto {
  ** .lq.ReqApplyFriend
  ** 申请好友
  */
-declare interface IReqApplyFriend extends IProto {
+declare interface IReqApplyFriend extends IRequest {
 	/** 申请的目标id */
 	target_id: number;
 }
@@ -9026,7 +9034,7 @@ declare interface IReqApplyFriend extends IProto {
  ** .lq.ReqHandleFriendApply
  ** 处理好友申请
  */
-declare interface IReqHandleFriendApply extends IProto {
+declare interface IReqHandleFriendApply extends IRequest {
 	target_id: number;
 	/** 1=agree 2=refuse */
 	method: number;
@@ -9036,7 +9044,7 @@ declare interface IReqHandleFriendApply extends IProto {
  ** .lq.ReqRemoveFriend
  ** 删除好友
  */
-declare interface IReqRemoveFriend extends IProto {
+declare interface IReqRemoveFriend extends IRequest {
 	target_id: number;
 }
 
@@ -9044,7 +9052,7 @@ declare interface IReqRemoveFriend extends IProto {
  ** .lq.ReqSearchAccountByPattern
  ** 模糊查询
  */
-declare interface IReqSearchAccountByPattern extends IProto {
+declare interface IReqSearchAccountByPattern extends IRequest {
 	/** 继续上次查询 */
 	search_next: boolean;
 	/** 开启新的模糊查询 */
@@ -9063,7 +9071,7 @@ declare interface IResSearchAccountByPattern extends IResponse {
  ** .lq.ReqAccountList
  ** 查询玩家状态
  */
-declare interface IReqAccountList extends IProto {
+declare interface IReqAccountList extends IRequest {
 	/** 最多一次20个 */
 	account_id_list: number[];
 }
@@ -9077,7 +9085,7 @@ declare interface IResAccountStates extends IResponse {
  ** .lq.ReqSearchAccountById
  ** 查询单个玩家
  */
-declare interface IReqSearchAccountById extends IProto {
+declare interface IReqSearchAccountById extends IRequest {
 	account_id: number;
 }
 
@@ -9099,7 +9107,7 @@ declare interface IResBagInfo extends IResponse {
  ** .lq.ReqUseBagItem
  ** 协议：使用背包道具
  */
-declare interface IReqUseBagItem extends IProto {
+declare interface IReqUseBagItem extends IRequest {
 	item_id: number;
 }
 
@@ -9107,7 +9115,7 @@ declare interface IReqUseBagItem extends IProto {
  ** .lq.ReqOpenManualItem
  ** 协议：使用手选道具物品
  */
-declare interface IReqOpenManualItem extends IProto {
+declare interface IReqOpenManualItem extends IRequest {
 	/** 使用的道具物品ID */
 	item_id: number;
 	/** 使用数量 */
@@ -9120,7 +9128,7 @@ declare interface IReqOpenManualItem extends IProto {
  ** .lq.ReqOpenRandomRewardItem
  ** 协议：使用随机道具物品
  */
-declare interface IReqOpenRandomRewardItem extends IProto {
+declare interface IReqOpenRandomRewardItem extends IRequest {
 	/** 使用的道具物品ID */
 	item_id: number;
 	/** 使用个数 */
@@ -9137,7 +9145,7 @@ declare interface IResOpenRandomRewardItem extends IResponse {
  ** .lq.ReqOpenAllRewardItem
  ** 协议：使用全领礼包物品
  */
-declare interface IReqOpenAllRewardItem extends IProto {
+declare interface IReqOpenAllRewardItem extends IRequest {
 	/** 使用的道具物品ID */
 	item_id: number;
 }
@@ -9152,7 +9160,7 @@ declare interface IResOpenAllRewardItem extends IResponse {
  ** .lq.ReqComposeShard
  ** 协议：合成碎片
  */
-declare interface IReqComposeShard extends IProto {
+declare interface IReqComposeShard extends IRequest {
 	item_id: number;
 }
 
@@ -9160,7 +9168,7 @@ declare interface IReqComposeShard extends IProto {
  ** .lq.ReqFetchAnnouncement
  ** 协议：公告
  */
-declare interface IReqFetchAnnouncement extends IProto {
+declare interface IReqFetchAnnouncement extends IRequest {
 	lang: string;
 	/** web, steam, apple, android, google, dmm_web, windows */
 	platform: string;
@@ -9181,17 +9189,17 @@ declare interface IResMailInfo extends IResponse {
 }
 
 /** .lq.ReqReadMail */
-declare interface IReqReadMail extends IProto {
+declare interface IReqReadMail extends IRequest {
 	mail_id: number;
 }
 
 /** .lq.ReqDeleteMail */
-declare interface IReqDeleteMail extends IProto {
+declare interface IReqDeleteMail extends IRequest {
 	mail_id: number;
 }
 
 /** .lq.ReqTakeAttachment */
-declare interface IReqTakeAttachment extends IProto {
+declare interface IReqTakeAttachment extends IRequest {
 	mail_id: number;
 }
 
@@ -9199,7 +9207,7 @@ declare interface IReqTakeAttachment extends IProto {
  ** .lq.ReqReceiveAchievementGroupReward
  ** 协议：领取成就组奖励
  */
-declare interface IReqReceiveAchievementGroupReward extends IProto {
+declare interface IReqReceiveAchievementGroupReward extends IRequest {
 	group_id: number;
 }
 
@@ -9212,7 +9220,7 @@ declare interface IResReceiveAchievementGroupReward extends IResponse {
  ** .lq.ReqReceiveAchievementReward
  ** 协议：领取成就奖励
  */
-declare interface IReqReceiveAchievementReward extends IProto {
+declare interface IReqReceiveAchievementReward extends IRequest {
 	achievement_id: number;
 }
 
@@ -9257,7 +9265,7 @@ declare interface IResTitleList extends IResponse {
  ** .lq.ReqUseTitle
  ** 协议：使用称号
  */
-declare interface IReqUseTitle extends IProto {
+declare interface IReqUseTitle extends IRequest {
 	title: number;
 }
 
@@ -9265,7 +9273,7 @@ declare interface IReqUseTitle extends IProto {
  ** .lq.ReqBuyShiLian
  ** 协议：购买试炼资格
  */
-declare interface IReqBuyShiLian extends IProto {
+declare interface IReqBuyShiLian extends IRequest {
 	/** 0=ticket 1=currency */
 	type: number;
 }
@@ -9274,7 +9282,7 @@ declare interface IReqBuyShiLian extends IProto {
  ** .lq.ReqUpdateClientValue
  ** 协议：更新客户端统计信息
  */
-declare interface IReqUpdateClientValue extends IProto {
+declare interface IReqUpdateClientValue extends IRequest {
 	key: number;
 	value: number;
 }
@@ -9299,7 +9307,7 @@ declare interface IResClientValue_Value extends IProto {
  ** .lq.ReqClientMessage
  ** 协议：客户端信息
  */
-declare interface IReqClientMessage extends IProto {
+declare interface IReqClientMessage extends IRequest {
 	timestamp: number;
 	message: string;
 }
@@ -9308,7 +9316,7 @@ declare interface IReqClientMessage extends IProto {
  ** .lq.ReqCurrentMatchInfo
  ** 协议：请求当前匹配模式信息
  */
-declare interface IReqCurrentMatchInfo extends IProto {
+declare interface IReqCurrentMatchInfo extends IRequest {
 	mode_list: number[];
 }
 
@@ -9327,7 +9335,7 @@ declare interface IResCurrentMatchInfo_CurrentMatchInfo extends IProto {
  ** .lq.ReqUserComplain
  ** 协议：用户举报
  */
-declare interface IReqUserComplain extends IProto {
+declare interface IReqUserComplain extends IRequest {
 	target_id: number;
 	/** 0-不友善对局 1-昵称违规 2-中途退出/挂机 3-作弊 4-通牌 */
 	type: number;
@@ -9352,7 +9360,7 @@ declare interface IReqUserComplain_GameRoundInfo extends IProto {
  ** .lq.ReqReadAnnouncement
  ** 阅读公告
  */
-declare interface IReqReadAnnouncement extends IProto {
+declare interface IReqReadAnnouncement extends IRequest {
 	announcement_id: number;
 	announcement_list?: number[];
 }
@@ -9379,7 +9387,7 @@ declare interface IResDailyTask extends IResponse {
 }
 
 /** .lq.ReqRefreshDailyTask */
-declare interface IReqRefreshDailyTask extends IProto {
+declare interface IReqRefreshDailyTask extends IRequest {
 	task_id: number;
 }
 
@@ -9391,7 +9399,7 @@ declare interface IResRefreshDailyTask extends IResponse {
 }
 
 /** .lq.ReqUseGiftCode */
-declare interface IReqUseGiftCode extends IProto {
+declare interface IReqUseGiftCode extends IRequest {
 	/** 礼品码 */
 	code: string;
 }
@@ -9411,7 +9419,7 @@ declare interface IResUseSpecialGiftCode extends IResponse {
  ** .lq.ReqSendClientMessage
  ** 发送一条单方面消息
  */
-declare interface IReqSendClientMessage extends IProto {
+declare interface IReqSendClientMessage extends IRequest {
 	target_id: number;
 	type: number;
 	content: string;
@@ -9421,7 +9429,7 @@ declare interface IReqSendClientMessage extends IProto {
  ** .lq.ReqGameLiveInfo
  ** 协议：获取游戏直播信息（全视角）
  */
-declare interface IReqGameLiveInfo extends IProto {
+declare interface IReqGameLiveInfo extends IRequest {
 	game_uuid: string;
 }
 
@@ -9440,7 +9448,7 @@ declare interface IResGameLiveInfo extends IResponse {
  ** .lq.ReqGameLiveLeftSegment
  ** 协议：获取游戏直播剩余分片信息（增量）
  */
-declare interface IReqGameLiveLeftSegment extends IProto {
+declare interface IReqGameLiveLeftSegment extends IRequest {
 	game_uuid: string;
 	/** 客户端已经接收到的最大分片id */
 	last_segment_id: number;
@@ -9462,7 +9470,7 @@ declare interface IResGameLiveLeftSegment extends IResponse {
  ** .lq.ReqGameLiveList
  ** 协议：获取正在直播的游戏列表
  */
-declare interface IReqGameLiveList extends IProto {
+declare interface IReqGameLiveList extends IRequest {
 	filter_id: number;
 }
 
@@ -9484,7 +9492,7 @@ declare interface IResCommentSetting extends IResponse {
  ** .lq.ReqUpdateCommentSetting
  ** 协议：更新留言板设置
  */
-declare interface IReqUpdateCommentSetting extends IProto {
+declare interface IReqUpdateCommentSetting extends IRequest {
 	comment_allow: number;
 }
 
@@ -9492,7 +9500,7 @@ declare interface IReqUpdateCommentSetting extends IProto {
  ** .lq.ReqFetchCommentList
  ** 协议：获取留言板列表
  */
-declare interface IReqFetchCommentList extends IProto {
+declare interface IReqFetchCommentList extends IRequest {
 	target_id: number;
 }
 
@@ -9508,7 +9516,7 @@ declare interface IResFetchCommentList extends IResponse {
  ** .lq.ReqFetchCommentContent
  ** 协议：获取留言板内容
  */
-declare interface IReqFetchCommentContent extends IProto {
+declare interface IReqFetchCommentContent extends IRequest {
 	target_id: number;
 	comment_id_list: number[];
 }
@@ -9522,7 +9530,7 @@ declare interface IResFetchCommentContent extends IResponse {
  ** .lq.ReqLeaveComment
  ** 协议：发送留言
  */
-declare interface IReqLeaveComment extends IProto {
+declare interface IReqLeaveComment extends IRequest {
 	target_id: number;
 	content: string;
 }
@@ -9531,7 +9539,7 @@ declare interface IReqLeaveComment extends IProto {
  ** .lq.ReqDeleteComment
  ** 协议：删除留言
  */
-declare interface IReqDeleteComment extends IProto {
+declare interface IReqDeleteComment extends IRequest {
 	target_id: number;
 	/** 删除列表 */
 	delete_list: number[];
@@ -9541,7 +9549,7 @@ declare interface IReqDeleteComment extends IProto {
  ** .lq.ReqUpdateReadComment
  ** 协议：更新留言阅读记录
  */
-declare interface IReqUpdateReadComment extends IProto {
+declare interface IReqUpdateReadComment extends IRequest {
 	/** 阅读的最大id */
 	read_id: number;
 }
@@ -9566,7 +9574,7 @@ declare interface IResFetchMaintainNotice extends IResponse {
  ** .lq.ReqFetchRollingNotice
  ** 滚动公告请求数据
  */
-declare interface IReqFetchRollingNotice extends IProto {
+declare interface IReqFetchRollingNotice extends IRequest {
 	/** 语言信息 */
 	lang: string;
 }
@@ -9584,7 +9592,7 @@ declare interface IResServerTime extends IResponse {
  ** .lq.ReqPlatformBillingProducts
  ** 协议：获取对应平台的商品列表
  */
-declare interface IReqPlatformBillingProducts extends IProto {
+declare interface IReqPlatformBillingProducts extends IRequest {
 	/** 货架ID */
 	shelves_id: number;
 }
@@ -9598,7 +9606,7 @@ declare interface IResPlatformBillingProducts extends IResponse {
  ** .lq.ReqCreateBillingOrder
  ** 协议：创建支付订单
  */
-declare interface IReqCreateBillingOrder extends IProto {
+declare interface IReqCreateBillingOrder extends IRequest {
 	/** 商品ID */
 	goods_id: number;
 	/** 支付渠道类型枚举 */
@@ -9620,7 +9628,7 @@ declare interface IResCreateBillingOrder extends IResponse {
  ** .lq.ReqSolveGooglePlayOrder
  ** 协议：处理 Google Play 支付完成
  */
-declare interface IReqSolveGooglePlayOrder extends IProto {
+declare interface IReqSolveGooglePlayOrder extends IRequest {
 	/** INAPP_PURCHASE_DATA 字段 */
 	inapp_purchase_data: string;
 	/** INAPP_DATA_SIGNATURE 字段 */
@@ -9628,7 +9636,7 @@ declare interface IReqSolveGooglePlayOrder extends IProto {
 }
 
 /** .lq.ReqSolveGooglePlayOrderV3 */
-declare interface IReqSolveGooglePlayOrderV3 extends IProto {
+declare interface IReqSolveGooglePlayOrderV3 extends IRequest {
 	order_id: string;
 	transaction_id: string;
 	token: string;
@@ -9639,7 +9647,7 @@ declare interface IReqSolveGooglePlayOrderV3 extends IProto {
  ** .lq.ReqCancelGooglePlayOrder
  ** 协议：取消 Google Play 订单
  */
-declare interface IReqCancelGooglePlayOrder extends IProto {
+declare interface IReqCancelGooglePlayOrder extends IRequest {
 	order_id: string;
 }
 
@@ -9647,7 +9655,7 @@ declare interface IReqCancelGooglePlayOrder extends IProto {
  ** .lq.ReqCreateWechatNativeOrder
  ** 协议：创建微信支付（扫码支付）订单
  */
-declare interface IReqCreateWechatNativeOrder extends IProto {
+declare interface IReqCreateWechatNativeOrder extends IRequest {
 	/** 商品ID */
 	goods_id: number;
 	/** 设备类型 */
@@ -9670,7 +9678,7 @@ declare interface IResCreateWechatNativeOrder extends IResponse {
  ** .lq.ReqCreateWechatAppOrder
  ** 协议：创建微信支付（App支付）订单
  */
-declare interface IReqCreateWechatAppOrder extends IProto {
+declare interface IReqCreateWechatAppOrder extends IRequest {
 	/** 商品ID */
 	goods_id: number;
 	/** 设备类型 */
@@ -9703,7 +9711,7 @@ declare interface IResCreateWechatAppOrder_CallWechatAppParam extends IProto {
  ** .lq.ReqCreateAlipayOrder
  ** 协议：创建支付宝（链接地址）订单
  */
-declare interface IReqCreateAlipayOrder extends IProto {
+declare interface IReqCreateAlipayOrder extends IRequest {
 	/** 商品ID */
 	goods_id: number;
 	/** 设备类型 */
@@ -9726,7 +9734,7 @@ declare interface IResCreateAlipayOrder extends IResponse {
  ** .lq.ReqCreateAlipayScanOrder
  ** 协议：创建支付宝（扫码支付）订单
  */
-declare interface IReqCreateAlipayScanOrder extends IProto {
+declare interface IReqCreateAlipayScanOrder extends IRequest {
 	/** 商品ID */
 	goods_id: number;
 	/** 设备类型 */
@@ -9749,7 +9757,7 @@ declare interface IResCreateAlipayScanOrder extends IResponse {
  ** .lq.ReqCreateAlipayAppOrder
  ** 协议：创建支付宝（App支付）订单
  */
-declare interface IReqCreateAlipayAppOrder extends IProto {
+declare interface IReqCreateAlipayAppOrder extends IRequest {
 	/** 商品ID */
 	goods_id: number;
 	/** 设备类型 */
@@ -9769,7 +9777,7 @@ declare interface IResCreateAlipayAppOrder extends IResponse {
  ** .lq.ReqCreateJPCreditCardOrder
  ** 协议：创建日服-CreditCard订单
  */
-declare interface IReqCreateJPCreditCardOrder extends IProto {
+declare interface IReqCreateJPCreditCardOrder extends IRequest {
 	/** 商品ID */
 	goods_id: number;
 	/** 设备类型 */
@@ -9793,7 +9801,7 @@ declare interface IResCreateJPCreditCardOrder extends IResponse {
  ** .lq.ReqCreateJPPaypalOrder
  ** 协议：创建日服-Paypal订单
  */
-declare interface IReqCreateJPPaypalOrder extends IProto {
+declare interface IReqCreateJPPaypalOrder extends IRequest {
 	/** 商品ID */
 	goods_id: number;
 	/** 设备类型 */
@@ -9817,7 +9825,7 @@ declare interface IResCreateJPPaypalOrder extends IResponse {
  ** .lq.ReqCreateJPAuOrder
  ** 协议：创建日服-Au订单
  */
-declare interface IReqCreateJPAuOrder extends IProto {
+declare interface IReqCreateJPAuOrder extends IRequest {
 	/** 商品ID */
 	goods_id: number;
 	/** 设备类型 */
@@ -9841,7 +9849,7 @@ declare interface IResCreateJPAuOrder extends IResponse {
  ** .lq.ReqCreateJPDocomoOrder
  ** 协议：创建日服-Docomo订单
  */
-declare interface IReqCreateJPDocomoOrder extends IProto {
+declare interface IReqCreateJPDocomoOrder extends IRequest {
 	/** 商品ID */
 	goods_id: number;
 	/** 设备类型 */
@@ -9865,7 +9873,7 @@ declare interface IResCreateJPDocomoOrder extends IResponse {
  ** .lq.ReqCreateJPWebMoneyOrder
  ** 协议：创建日服-WebMoney订单
  */
-declare interface IReqCreateJPWebMoneyOrder extends IProto {
+declare interface IReqCreateJPWebMoneyOrder extends IRequest {
 	/** 商品ID */
 	goods_id: number;
 	/** 设备类型 */
@@ -9889,7 +9897,7 @@ declare interface IResCreateJPWebMoneyOrder extends IResponse {
  ** .lq.ReqCreateJPSoftbankOrder
  ** 协议：创建日服-Softbank订单
  */
-declare interface IReqCreateJPSoftbankOrder extends IProto {
+declare interface IReqCreateJPSoftbankOrder extends IRequest {
 	/** 商品ID */
 	goods_id: number;
 	/** 设备类型 */
@@ -9910,7 +9918,7 @@ declare interface IResCreateJPSoftbankOrder extends IResponse {
 }
 
 /** .lq.ReqCreateJPPayPayOrder */
-declare interface IReqCreateJPPayPayOrder extends IProto {
+declare interface IReqCreateJPPayPayOrder extends IRequest {
 	/** 商品ID */
 	goods_id: number;
 	/** 设备类型 */
@@ -9931,7 +9939,7 @@ declare interface IResCreateJPPayPayOrder extends IResponse {
 }
 
 /** .lq.ReqFetchJPCommonCreditCardOrder */
-declare interface IReqFetchJPCommonCreditCardOrder extends IProto {
+declare interface IReqFetchJPCommonCreditCardOrder extends IRequest {
 	order_id: string;
 	account_id: number;
 }
@@ -9941,7 +9949,7 @@ declare interface IResFetchJPCommonCreditCardOrder extends IResponse {
 }
 
 /** .lq.ReqCreateJPGMOOrder */
-declare interface IReqCreateJPGMOOrder extends IProto {
+declare interface IReqCreateJPGMOOrder extends IRequest {
 	/** 商品ID */
 	goods_id: number;
 	/** 设备类型 */
@@ -9965,7 +9973,7 @@ declare interface IResCreateJPGMOOrder extends IResponse {
  ** .lq.ReqCreateYostarOrder
  ** 协议：创建yostar-sdk订单
  */
-declare interface IReqCreateYostarOrder extends IProto {
+declare interface IReqCreateYostarOrder extends IRequest {
 	/** 商品ID */
 	goods_id: number;
 	/** 设备类型 */
@@ -9987,7 +9995,7 @@ declare interface IResCreateYostarOrder extends IResponse {
 }
 
 /** .lq.ReqCreateYostarV4SDKOrder */
-declare interface IReqCreateYostarV4SDKOrder extends IProto {
+declare interface IReqCreateYostarV4SDKOrder extends IRequest {
 	goods_id: number;
 	client_type: number;
 	account_id: number;
@@ -10024,7 +10032,7 @@ declare interface IResCreateYostarV4SDKOrder extends IResponse {
  ** .lq.ReqCreateENPaypalOrder
  ** 协议：创建美服-Paypal订单
  */
-declare interface IReqCreateENPaypalOrder extends IProto {
+declare interface IReqCreateENPaypalOrder extends IRequest {
 	/** 商品ID */
 	goods_id: number;
 	/** 设备类型 */
@@ -10048,7 +10056,7 @@ declare interface IResCreateENPaypalOrder extends IResponse {
  ** .lq.ReqCreateENJCBOrder
  ** 协议：创建美服-JCB订单
  */
-declare interface IReqCreateENJCBOrder extends IProto {
+declare interface IReqCreateENJCBOrder extends IRequest {
 	/** 商品ID */
 	goods_id: number;
 	/** 设备类型 */
@@ -10072,7 +10080,7 @@ declare interface IResCreateENJCBOrder extends IResponse {
  ** .lq.ReqCreateENMasterCardOrder
  ** 协议：创建美服-MasterCard订单
  */
-declare interface IReqCreateENMasterCardOrder extends IProto {
+declare interface IReqCreateENMasterCardOrder extends IRequest {
 	/** 商品ID */
 	goods_id: number;
 	/** 设备类型 */
@@ -10096,7 +10104,7 @@ declare interface IResCreateENMasterCardOrder extends IResponse {
  ** .lq.ReqCreateENVisaOrder
  ** 协议：创建美服-Visa订单
  */
-declare interface IReqCreateENVisaOrder extends IProto {
+declare interface IReqCreateENVisaOrder extends IRequest {
 	/** 商品ID */
 	goods_id: number;
 	/** 设备类型 */
@@ -10120,7 +10128,7 @@ declare interface IResCreateENVisaOrder extends IResponse {
  ** .lq.ReqCreateENAlipayOrder
  ** 协议：创建美服-支付宝订单
  */
-declare interface IReqCreateENAlipayOrder extends IProto {
+declare interface IReqCreateENAlipayOrder extends IRequest {
 	/** 商品ID */
 	goods_id: number;
 	/** 设备类型 */
@@ -10144,7 +10152,7 @@ declare interface IResCreateENAlipayOrder extends IResponse {
  ** .lq.ReqCreateKRPaypalOrder
  ** 协议：创建韩服-Paypal订单
  */
-declare interface IReqCreateKRPaypalOrder extends IProto {
+declare interface IReqCreateKRPaypalOrder extends IRequest {
 	/** 商品ID */
 	goods_id: number;
 	/** 设备类型 */
@@ -10168,7 +10176,7 @@ declare interface IResCreateKRPaypalOrder extends IResponse {
  ** .lq.ReqCreateKRJCBOrder
  ** 协议：创建韩服-JCB订单
  */
-declare interface IReqCreateKRJCBOrder extends IProto {
+declare interface IReqCreateKRJCBOrder extends IRequest {
 	/** 商品ID */
 	goods_id: number;
 	/** 设备类型 */
@@ -10192,7 +10200,7 @@ declare interface IResCreateKRJCBOrder extends IResponse {
  ** .lq.ReqCreateKRMasterCardOrder
  ** 协议：创建韩服-MasterCard订单
  */
-declare interface IReqCreateKRMasterCardOrder extends IProto {
+declare interface IReqCreateKRMasterCardOrder extends IRequest {
 	/** 商品ID */
 	goods_id: number;
 	/** 设备类型 */
@@ -10216,7 +10224,7 @@ declare interface IResCreateKRMasterCardOrder extends IResponse {
  ** .lq.ReqCreateKRVisaOrder
  ** 协议：创建韩服-Visa订单
  */
-declare interface IReqCreateKRVisaOrder extends IProto {
+declare interface IReqCreateKRVisaOrder extends IRequest {
 	/** 商品ID */
 	goods_id: number;
 	/** 设备类型 */
@@ -10240,7 +10248,7 @@ declare interface IResCreateKRVisaOrder extends IResponse {
  ** .lq.ReqCreateKRAlipayOrder
  ** 协议：创建韩服-支付宝订单
  */
-declare interface IReqCreateKRAlipayOrder extends IProto {
+declare interface IReqCreateKRAlipayOrder extends IRequest {
 	/** 商品ID */
 	goods_id: number;
 	/** 设备类型 */
@@ -10264,7 +10272,7 @@ declare interface IResCreateKRAlipayOrder extends IResponse {
  ** .lq.ReqCreateDMMOrder
  ** 协议：创建DMM订单
  */
-declare interface IReqCreateDMMOrder extends IProto {
+declare interface IReqCreateDMMOrder extends IRequest {
 	goods_id: number;
 	account_id: number;
 	client_type: number;
@@ -10287,7 +10295,7 @@ declare interface IResCreateDmmOrder extends IResponse {
  ** .lq.ReqCreateIAPOrder
  ** 协议：创建苹果内购订单
  */
-declare interface IReqCreateIAPOrder extends IProto {
+declare interface IReqCreateIAPOrder extends IRequest {
 	/** 商品ID */
 	goods_id: number;
 	/** 设备类型 */
@@ -10310,7 +10318,7 @@ declare interface IResCreateIAPOrder extends IResponse {
  ** .lq.ReqVerificationIAPOrder
  ** 协议：验证苹果内购订单
  */
-declare interface IReqVerificationIAPOrder extends IProto {
+declare interface IReqVerificationIAPOrder extends IRequest {
 	/** 创建订单返回的订单号 */
 	order_id: string;
 	/** 苹果订单id */
@@ -10329,7 +10337,7 @@ declare interface IResVerificationIAPOrder extends IResponse {
  ** .lq.ReqCreateSteamOrder
  ** 协议：创建Steam订单
  */
-declare interface IReqCreateSteamOrder extends IProto {
+declare interface IReqCreateSteamOrder extends IRequest {
 	language: string;
 	account_id: number;
 	client_type: number;
@@ -10360,7 +10368,7 @@ declare interface IResRandomCharacter extends IResponse {
  ** .lq.ReqRandomCharacter
  ** 协议：设置角色随机池
  */
-declare interface IReqRandomCharacter extends IProto {
+declare interface IReqRandomCharacter extends IRequest {
 	/** 随机角色池启用开关(1 = 启用 0 = 不启用) */
 	enabled: boolean;
 	/** 随机角色池 */
@@ -10371,7 +10379,7 @@ declare interface IReqRandomCharacter extends IProto {
  ** .lq.ReqVerifySteamOrder
  ** 协议：Steam验单
  */
-declare interface IReqVerifySteamOrder extends IProto {
+declare interface IReqVerifySteamOrder extends IRequest {
 	order_id: string;
 	account_id: number;
 }
@@ -10380,7 +10388,7 @@ declare interface IReqVerifySteamOrder extends IProto {
  ** .lq.ReqCreateMyCardOrder
  ** 协议：创建MyCard订单
  */
-declare interface IReqCreateMyCardOrder extends IProto {
+declare interface IReqCreateMyCardOrder extends IRequest {
 	/** 商品ID */
 	goods_id: number;
 	/** 设备类型 */
@@ -10398,7 +10406,7 @@ declare interface IResCreateMyCardOrder extends IResponse {
 }
 
 /** .lq.ReqVerifyMyCardOrder */
-declare interface IReqVerifyMyCardOrder extends IProto {
+declare interface IReqVerifyMyCardOrder extends IRequest {
 	order_id: string;
 	account_id: number;
 }
@@ -10407,7 +10415,7 @@ declare interface IReqVerifyMyCardOrder extends IProto {
  ** .lq.ReqCreatePaypalOrder
  ** 协议：创建Palpal订单
  */
-declare interface IReqCreatePaypalOrder extends IProto {
+declare interface IReqCreatePaypalOrder extends IRequest {
 	/** 商品ID */
 	goods_id: number;
 	/** 设备类型 */
@@ -10428,7 +10436,7 @@ declare interface IResCreatePaypalOrder extends IResponse {
  ** .lq.ReqCreateXsollaOrder
  ** 协议：创建Xsolla订单
  */
-declare interface IReqCreateXsollaOrder extends IProto {
+declare interface IReqCreateXsollaOrder extends IRequest {
 	/** 商品ID */
 	goods_id: number;
 	/** 设备类型 */
@@ -10453,7 +10461,7 @@ declare interface IResCreateXsollaOrder extends IResponse {
  ** .lq.ReqDeliverAA32Order
  ** 协议：处理AA32订单
  */
-declare interface IReqDeliverAA32Order extends IProto {
+declare interface IReqDeliverAA32Order extends IRequest {
 	account_id: number;
 	nsa_id: string;
 	nsa_token: string;
@@ -10463,7 +10471,7 @@ declare interface IReqDeliverAA32Order extends IProto {
  ** .lq.ReqOpenChest
  ** 协议：抽宝箱
  */
-declare interface IReqOpenChest extends IProto {
+declare interface IReqOpenChest extends IRequest {
 	/** 宝箱Id */
 	chest_id: number;
 	/** 1 or 10 */
@@ -10498,7 +10506,7 @@ declare interface IResOpenChest_ChestReplaceCountData extends IProto {
  ** .lq.ReqBuyFromChestShop
  ** 协议：宝箱商店购买商品
  */
-declare interface IReqBuyFromChestShop extends IProto {
+declare interface IReqBuyFromChestShop extends IRequest {
 	goods_id: number;
 	count: number;
 }
@@ -10525,7 +10533,7 @@ declare interface IResDailySignInInfo extends IResponse {
  ** .lq.ReqDoActivitySignIn
  ** 协议：活动签到
  */
-declare interface IReqDoActivitySignIn extends IProto {
+declare interface IReqDoActivitySignIn extends IRequest {
 	activity_id: number;
 }
 
@@ -10569,7 +10577,7 @@ declare interface IResCharacterInfo extends IResponse {
  ** .lq.ReqUpdateCharacterSort
  ** 协议：更新角色排序和隐藏角色
  */
-declare interface IReqUpdateCharacterSort extends IProto {
+declare interface IReqUpdateCharacterSort extends IRequest {
 	/** 星标排序 */
 	sort: number[];
 	/** 非星标排序 */
@@ -10582,7 +10590,7 @@ declare interface IReqUpdateCharacterSort extends IProto {
  ** .lq.ReqChangeMainCharacter
  ** 协议：切换主角色
  */
-declare interface IReqChangeMainCharacter extends IProto {
+declare interface IReqChangeMainCharacter extends IRequest {
 	character_id: number;
 }
 
@@ -10590,7 +10598,7 @@ declare interface IReqChangeMainCharacter extends IProto {
  ** .lq.ReqChangeCharacterSkin
  ** 协议：切换角色皮肤
  */
-declare interface IReqChangeCharacterSkin extends IProto {
+declare interface IReqChangeCharacterSkin extends IRequest {
 	character_id: number;
 	skin: number;
 }
@@ -10599,7 +10607,7 @@ declare interface IReqChangeCharacterSkin extends IProto {
  ** .lq.ReqChangeCharacterView
  ** 协议：设置角色外观
  */
-declare interface IReqChangeCharacterView extends IProto {
+declare interface IReqChangeCharacterView extends IRequest {
 	character_id: number;
 	slot: number;
 	item_id: number;
@@ -10609,7 +10617,7 @@ declare interface IReqChangeCharacterView extends IProto {
  ** .lq.ReqSetHiddenCharacter
  ** 协议：设置隐藏角色
  */
-declare interface IReqSetHiddenCharacter extends IProto {
+declare interface IReqSetHiddenCharacter extends IRequest {
 	chara_list: number[];
 }
 
@@ -10622,7 +10630,7 @@ declare interface IResSetHiddenCharacter extends IResponse {
  ** .lq.ReqSendGiftToCharacter
  ** 协议：赠送礼物给角色
  */
-declare interface IReqSendGiftToCharacter extends IProto {
+declare interface IReqSendGiftToCharacter extends IRequest {
 	character_id: number;
 	gifts: IReqSendGiftToCharacter_Gift[];
 }
@@ -10643,7 +10651,7 @@ declare interface IResSendGiftToCharacter extends IResponse {
  ** .lq.ReqSellItem
  ** 协议：出售道具
  */
-declare interface IReqSellItem extends IProto {
+declare interface IReqSellItem extends IRequest {
 	sells: IReqSellItem_Item[];
 }
 
@@ -10671,7 +10679,7 @@ declare interface IResCommonView_Slot extends IProto {
  ** .lq.ReqChangeCommonView
  ** 协议：切换通用外观（牌桌，牌背等）
  */
-declare interface IReqChangeCommonView extends IProto {
+declare interface IReqChangeCommonView extends IRequest {
 	slot: number;
 	value: number;
 }
@@ -10680,7 +10688,7 @@ declare interface IReqChangeCommonView extends IProto {
  ** .lq.ReqSaveCommonViews
  ** 协议：保存通用外观方案
  */
-declare interface IReqSaveCommonViews extends IProto {
+declare interface IReqSaveCommonViews extends IRequest {
 	views: IViewSlot[];
 	save_index: number;
 	is_use: number;
@@ -10692,7 +10700,7 @@ declare interface IReqSaveCommonViews extends IProto {
  ** .lq.ReqCommonViews
  ** 协议：获取通用外观方案
  */
-declare interface IReqCommonViews extends IProto {
+declare interface IReqCommonViews extends IRequest {
 	index: number;
 }
 
@@ -10724,7 +10732,7 @@ declare interface IResAllcommonViews_Views extends IProto {
  ** .lq.ReqUseCommonView
  ** 协议：切换通用外观方案
  */
-declare interface IReqUseCommonView extends IProto {
+declare interface IReqUseCommonView extends IRequest {
 	index: number;
 }
 
@@ -10732,7 +10740,7 @@ declare interface IReqUseCommonView extends IProto {
  ** .lq.ReqUpgradeCharacter
  ** 协议：突破角色
  */
-declare interface IReqUpgradeCharacter extends IProto {
+declare interface IReqUpgradeCharacter extends IRequest {
 	character_id: number;
 }
 
@@ -10746,7 +10754,7 @@ declare interface IResUpgradeCharacter extends IResponse {
  ** 协议：完成结局
  ** 协议：领取结局奖励
  */
-declare interface IReqFinishedEnding extends IProto {
+declare interface IReqFinishedEnding extends IRequest {
 	/** 角色ID */
 	character_id: number;
 	/** 剧情ID */
@@ -10759,7 +10767,7 @@ declare interface IReqFinishedEnding extends IProto {
  ** .lq.ReqGMCommand
  ** 协议：GM指令
  */
-declare interface IReqGMCommand extends IProto {
+declare interface IReqGMCommand extends IRequest {
 	command: string;
 }
 
@@ -10775,7 +10783,7 @@ declare interface IResShopInfo extends IResponse {
  ** .lq.ReqBuyFromShop
  ** 协议：普通商店购买
  */
-declare interface IReqBuyFromShop extends IProto {
+declare interface IReqBuyFromShop extends IRequest {
 	/** 商品Id */
 	goods_id: number;
 	/** 购买数量 */
@@ -10806,7 +10814,7 @@ declare interface IResBuyFromShop extends IResponse {
  ** .lq.ReqBuyFromZHP
  ** 协议：杂货铺购买
  */
-declare interface IReqBuyFromZHP extends IProto {
+declare interface IReqBuyFromZHP extends IRequest {
 	/** 商品Id */
 	goods_id: number;
 	/** 购买数量 */
@@ -10817,7 +10825,7 @@ declare interface IReqBuyFromZHP extends IProto {
  ** .lq.ReqPayMonthTicket
  ** 协议：领取月卡工资
  */
-declare interface IReqPayMonthTicket extends IProto {
+declare interface IReqPayMonthTicket extends IRequest {
 	/** 月卡Id */
 	ticket_id: number;
 }
@@ -10834,7 +10842,7 @@ declare interface IResPayMonthTicket extends IResponse {
  ** .lq.ReqReshZHPShop
  ** 协议：刷新杂货铺商店
  */
-declare interface IReqReshZHPShop extends IProto {
+declare interface IReqReshZHPShop extends IRequest {
 	free_refresh: number;
 	cost_refresh: number;
 }
@@ -10856,7 +10864,7 @@ declare interface IResMonthTicketInfo extends IResponse {
  ** .lq.ReqExchangeCurrency
  ** 协议：兑换货币
  */
-declare interface IReqExchangeCurrency extends IProto {
+declare interface IReqExchangeCurrency extends IRequest {
 	id: number;
 	count: number;
 }
@@ -10881,7 +10889,7 @@ declare interface IResAccountSettings extends IResponse {
  ** .lq.ReqUpdateAccountSettings
  ** 更新账号设置
  */
-declare interface IReqUpdateAccountSettings extends IProto {
+declare interface IReqUpdateAccountSettings extends IRequest {
 	setting: IAccountSetting;
 }
 
@@ -10921,7 +10929,7 @@ declare interface IResMisc_MiscFaithData extends IProto {
  ** .lq.ReqModifySignature
  ** 协议：修改签名
  */
-declare interface IReqModifySignature extends IProto {
+declare interface IReqModifySignature extends IRequest {
 	signature: string;
 }
 
@@ -10940,7 +10948,7 @@ declare interface IResIDCardInfo extends IResponse {
  ** .lq.ReqUpdateIDCardInfo
  ** 协议：进行实名认证
  */
-declare interface IReqUpdateIDCardInfo extends IProto {
+declare interface IReqUpdateIDCardInfo extends IRequest {
 	/** 全名 */
 	fullname: string;
 	/** 身份证 */
@@ -10984,7 +10992,7 @@ declare interface IResFetchRefundOrder_OrderInfo extends IProto {
  ** .lq.ReqGainVipReward
  ** 协议：领取vip奖励
  */
-declare interface IReqGainVipReward extends IProto {
+declare interface IReqGainVipReward extends IRequest {
 	vip_level: number;
 }
 
@@ -10992,7 +11000,7 @@ declare interface IReqGainVipReward extends IProto {
  ** .lq.ReqFetchCustomizedContestList
  ** 协议：获取赛事列表
  */
-declare interface IReqFetchCustomizedContestList extends IProto {
+declare interface IReqFetchCustomizedContestList extends IRequest {
 	start: number;
 	/** 服务器限制最多 100 个 */
 	count: number;
@@ -11012,7 +11020,7 @@ declare interface IResFetchCustomizedContestList extends IResponse {
  ** .lq.ReqFetchCustomizedContestAuthInfo
  ** 协议：获取赛事权限相关信息
  */
-declare interface IReqFetchCustomizedContestAuthInfo extends IProto {
+declare interface IReqFetchCustomizedContestAuthInfo extends IRequest {
 	unique_id: number;
 }
 
@@ -11026,7 +11034,7 @@ declare interface IResFetchCustomizedContestAuthInfo extends IResponse {
  ** .lq.ReqEnterCustomizedContest
  ** 协议：进入赛事主页
  */
-declare interface IReqEnterCustomizedContest extends IProto {
+declare interface IReqEnterCustomizedContest extends IRequest {
 	unique_id: number;
 	lang: string;
 }
@@ -11048,7 +11056,7 @@ declare interface IResEnterCustomizedContest extends IResponse {
  ** .lq.ReqFetchCustomizedContestOnlineInfo
  ** 协议：请求比赛在线信息
  */
-declare interface IReqFetchCustomizedContestOnlineInfo extends IProto {
+declare interface IReqFetchCustomizedContestOnlineInfo extends IRequest {
 	unique_id: number;
 }
 
@@ -11062,7 +11070,7 @@ declare interface IResFetchCustomizedContestOnlineInfo extends IResponse {
  ** .lq.ReqFetchCustomizedContestByContestId
  ** 协议：获取赛事基本信息（通过赛事ID）
  */
-declare interface IReqFetchCustomizedContestByContestId extends IProto {
+declare interface IReqFetchCustomizedContestByContestId extends IRequest {
 	contest_id: number;
 	lang: string;
 }
@@ -11076,7 +11084,7 @@ declare interface IResFetchCustomizedContestByContestId extends IResponse {
  ** .lq.ReqSignupCustomizedContest
  ** 协议：报名比赛
  */
-declare interface IReqSignupCustomizedContest extends IProto {
+declare interface IReqSignupCustomizedContest extends IRequest {
 	unique_id: number;
 	client_version_string: string;
 }
@@ -11090,13 +11098,13 @@ declare interface IResSignupCustomizedContest extends IResponse {
  ** .lq.ReqStartCustomizedContest
  ** 协议：开始比赛匹配
  */
-declare interface IReqStartCustomizedContest extends IProto {
+declare interface IReqStartCustomizedContest extends IRequest {
 	unique_id: number;
 	client_version_string: string;
 }
 
 /** .lq.ReqStopCustomizedContest */
-declare interface IReqStopCustomizedContest extends IProto {
+declare interface IReqStopCustomizedContest extends IRequest {
 	unique_id: number;
 }
 
@@ -11104,7 +11112,7 @@ declare interface IReqStopCustomizedContest extends IProto {
  ** .lq.ReqJoinCustomizedContestChatRoom
  ** 协议：进入比赛聊天室
  */
-declare interface IReqJoinCustomizedContestChatRoom extends IProto {
+declare interface IReqJoinCustomizedContestChatRoom extends IRequest {
 	unique_id: number;
 }
 
@@ -11117,7 +11125,7 @@ declare interface IResJoinCustomizedContestChatRoom extends IResponse {
  ** .lq.ReqSayChatMessage
  ** 协议：发送聊天消息
  */
-declare interface IReqSayChatMessage extends IProto {
+declare interface IReqSayChatMessage extends IRequest {
 	content: string;
 	unique_id: number;
 }
@@ -11126,7 +11134,7 @@ declare interface IReqSayChatMessage extends IProto {
  ** .lq.ReqFetchCustomizedContestGameLiveList
  ** 协议：获取正在直播的比赛游戏列表
  */
-declare interface IReqFetchCustomizedContestGameLiveList extends IProto {
+declare interface IReqFetchCustomizedContestGameLiveList extends IRequest {
 	unique_id: number;
 }
 
@@ -11139,7 +11147,7 @@ declare interface IResFetchCustomizedContestGameLiveList extends IResponse {
  ** .lq.ReqFetchCustomizedContestGameRecords
  ** 协议：查询赛事牌谱列表
  */
-declare interface IReqFetchCustomizedContestGameRecords extends IProto {
+declare interface IReqFetchCustomizedContestGameRecords extends IRequest {
 	unique_id: number;
 	/** 最新下标 从0开始 初始填null */
 	last_index: number;
@@ -11155,7 +11163,7 @@ declare interface IResFetchCustomizedContestGameRecords extends IResponse {
 }
 
 /** .lq.ReqTargetCustomizedContest */
-declare interface IReqTargetCustomizedContest extends IProto {
+declare interface IReqTargetCustomizedContest extends IRequest {
 	unique_id: number;
 }
 
@@ -11271,7 +11279,7 @@ declare interface ISNSReply extends IProto {
  ** .lq.ReqExchangeActivityItem
  ** 协议：兑换活动道具
  */
-declare interface IReqExchangeActivityItem extends IProto {
+declare interface IReqExchangeActivityItem extends IRequest {
 	/** 兑换ID */
 	exchange_id: number;
 	count: number;
@@ -11286,17 +11294,17 @@ declare interface IResExchangeActivityItem extends IResponse {
  ** .lq.ReqCompleteActivityTask
  ** 协议：完成活动任务
  */
-declare interface IReqCompleteActivityTask extends IProto {
+declare interface IReqCompleteActivityTask extends IRequest {
 	task_id: number;
 }
 
 /** .lq.ReqCompleteActivityTaskBatch */
-declare interface IReqCompleteActivityTaskBatch extends IProto {
+declare interface IReqCompleteActivityTaskBatch extends IRequest {
 	task_list: number[];
 }
 
 /** .lq.ReqCompletePeriodActivityTaskBatch */
-declare interface IReqCompletePeriodActivityTaskBatch extends IProto {
+declare interface IReqCompletePeriodActivityTaskBatch extends IRequest {
 	task_list: number[];
 }
 
@@ -11304,7 +11312,7 @@ declare interface IReqCompletePeriodActivityTaskBatch extends IProto {
  ** .lq.ReqReceiveActivityFlipTask
  ** 协议：翻牌牌
  */
-declare interface IReqReceiveActivityFlipTask extends IProto {
+declare interface IReqReceiveActivityFlipTask extends IRequest {
 	task_id: number;
 }
 
@@ -11318,7 +11326,7 @@ declare interface IResReceiveActivityFlipTask extends IResponse {
  ** 协议： 批量翻牌
  ** dapeng 2025/12/05: 翻牌活动批量任务领取接口出现错误无法全部领取时，则为统一失败的状态，任务要么全部领取要么全都不领取
  */
-declare interface IReqReceiveActivityFlipTaskBatch extends IProto {
+declare interface IReqReceiveActivityFlipTaskBatch extends IRequest {
 	/** 翻牌任务列表 */
 	task_list: number[];
 }
@@ -11333,7 +11341,7 @@ declare interface IResReceiveActivityFlipTaskBatch extends IResponse {
  ** .lq.ReqCompleteSegmentTaskReward
  ** 协议：完成分段任务
  */
-declare interface IReqCompleteSegmentTaskReward extends IProto {
+declare interface IReqCompleteSegmentTaskReward extends IRequest {
 	task_id: number;
 	count: number;
 }
@@ -11347,7 +11355,7 @@ declare interface IResCompleteSegmentTaskReward extends IResponse {
  ** .lq.ReqFetchActivityFlipInfo
  ** 协议：翻牌牌奖励格领取
  */
-declare interface IReqFetchActivityFlipInfo extends IProto {
+declare interface IReqFetchActivityFlipInfo extends IRequest {
 	activity_id: number;
 }
 
@@ -11362,7 +11370,7 @@ declare interface IResFetchActivityFlipInfo extends IResponse {
  ** 协议：翻牌活动批量领取奖励格
  ** dapeng 2025/12/05: 翻牌活动批量接口出现错误无法全部领取时，则为统一失败的状态，传入参数中其他完成的任务也不会领取
  */
-declare interface IReqCompleteActivityFlipTaskBatch extends IProto {
+declare interface IReqCompleteActivityFlipTaskBatch extends IRequest {
 	/** 翻牌任务列表 */
 	task_list: number[];
 }
@@ -11377,19 +11385,19 @@ declare interface IResCompleteActivityFlipTaskBatch extends IResponse {
  ** .lq.ReqGainAccumulatedPointActivityReward
  ** 协议：领取得点活动奖励
  */
-declare interface IReqGainAccumulatedPointActivityReward extends IProto {
+declare interface IReqGainAccumulatedPointActivityReward extends IRequest {
 	activity_id: number;
 	reward_id: number;
 }
 
 /** .lq.ReqGainMultiPointActivityReward */
-declare interface IReqGainMultiPointActivityReward extends IProto {
+declare interface IReqGainMultiPointActivityReward extends IRequest {
 	activity_id: number;
 	reward_id_list: number[];
 }
 
 /** .lq.ReqFetchRankPointLeaderboard */
-declare interface IReqFetchRankPointLeaderboard extends IProto {
+declare interface IReqFetchRankPointLeaderboard extends IRequest {
 	leaderboard_id: number;
 }
 
@@ -11409,7 +11417,7 @@ declare interface IResFetchRankPointLeaderboard_Item extends IProto {
 }
 
 /** .lq.ReqGainRankPointReward */
-declare interface IReqGainRankPointReward extends IProto {
+declare interface IReqGainRankPointReward extends IRequest {
 	leaderboard_id: number;
 	activity_id: number;
 }
@@ -11418,7 +11426,7 @@ declare interface IReqGainRankPointReward extends IProto {
  ** .lq.ReqRichmanNextMove
  ** 协议：大富翁投骰子
  */
-declare interface IReqRichmanNextMove extends IProto {
+declare interface IReqRichmanNextMove extends IRequest {
 	activity_id: number;
 }
 
@@ -11473,13 +11481,13 @@ declare interface IResRichmanNextMove_BuffData extends IProto {
 }
 
 /** .lq.ReqRichmanSpecialMove */
-declare interface IReqRichmanSpecialMove extends IProto {
+declare interface IReqRichmanSpecialMove extends IRequest {
 	activity_id: number;
 	step: number;
 }
 
 /** .lq.ReqRichmanChestInfo */
-declare interface IReqRichmanChestInfo extends IProto {
+declare interface IReqRichmanChestInfo extends IRequest {
 	activity_id: number;
 }
 
@@ -11498,7 +11506,7 @@ declare interface IResRichmanChestInfo_ItemData extends IProto {
  ** .lq.ReqCreateGameObserveAuth
  ** 协议：创建实时OB权限
  */
-declare interface IReqCreateGameObserveAuth extends IProto {
+declare interface IReqCreateGameObserveAuth extends IRequest {
 	game_uuid: string;
 }
 
@@ -11512,7 +11520,7 @@ declare interface IResCreateGameObserveAuth extends IResponse {
  ** .lq.ReqRefreshGameObserveAuth
  ** 协议：刷新实时OB权限时长
  */
-declare interface IReqRefreshGameObserveAuth extends IProto {
+declare interface IReqRefreshGameObserveAuth extends IRequest {
 	token: string;
 }
 
@@ -11533,7 +11541,7 @@ declare interface IResActivityBuff extends IResponse {
  ** .lq.ReqUpgradeActivityBuff
  ** 协议：升级活动buff
  */
-declare interface IReqUpgradeActivityBuff extends IProto {
+declare interface IReqUpgradeActivityBuff extends IRequest {
 	buff_id: number;
 }
 
@@ -11541,14 +11549,14 @@ declare interface IReqUpgradeActivityBuff extends IProto {
  ** .lq.ReqUpgradeActivityLevel
  ** 协议：升级活动升级
  */
-declare interface IReqUpgradeActivityLevel extends IProto {
+declare interface IReqUpgradeActivityLevel extends IRequest {
 	activity_id: number;
 	group: number;
 	count: number;
 }
 
 /** .lq.ReqSetActivityBuff */
-declare interface IReqSetActivityBuff extends IProto {
+declare interface IReqSetActivityBuff extends IRequest {
 	buff_list: IReqSetActivityBuff_BuffInfo[];
 	activity_id: number;
 }
@@ -11565,7 +11573,7 @@ declare interface IResUpgradeActivityLevel extends IResponse {
 }
 
 /** .lq.ReqReceiveUpgradeActivityReward */
-declare interface IReqReceiveUpgradeActivityReward extends IProto {
+declare interface IReqReceiveUpgradeActivityReward extends IRequest {
 	activity_id: number;
 }
 
@@ -11575,7 +11583,7 @@ declare interface IResReceiveUpgradeActivityReward extends IResponse {
 }
 
 /** .lq.ReqReceiveAllActivityGift */
-declare interface IReqReceiveAllActivityGift extends IProto {
+declare interface IReqReceiveAllActivityGift extends IRequest {
 	activity_id: number;
 }
 
@@ -11649,7 +11657,7 @@ declare interface IResFetchChallengeInfo extends IResponse {
  ** .lq.ReqForceCompleteChallengeTask
  ** 协议：试炼赛盖章
  */
-declare interface IReqForceCompleteChallengeTask extends IProto {
+declare interface IReqForceCompleteChallengeTask extends IRequest {
 	task_id: number;
 }
 
@@ -11677,7 +11685,7 @@ declare interface IResFetchABMatch_MatchPoint extends IProto {
  ** .lq.ReqStartUnifiedMatch
  ** 协议：开始匹配
  */
-declare interface IReqStartUnifiedMatch extends IProto {
+declare interface IReqStartUnifiedMatch extends IRequest {
 	match_sid: string;
 	/** 客户端版本验证用 */
 	client_version_string: string;
@@ -11687,7 +11695,7 @@ declare interface IReqStartUnifiedMatch extends IProto {
  ** .lq.ReqCancelUnifiedMatch
  ** 协议：取消匹配
  */
-declare interface IReqCancelUnifiedMatch extends IProto {
+declare interface IReqCancelUnifiedMatch extends IRequest {
 	match_sid: string;
 }
 
@@ -11711,7 +11719,7 @@ declare interface IResChallengeSeasonInfo_ChallengeInfo extends IProto {
  ** .lq.ReqReceiveChallengeRankReward
  ** 协议：领取赛季排名奖励
  */
-declare interface IReqReceiveChallengeRankReward extends IProto {
+declare interface IReqReceiveChallengeRankReward extends IRequest {
 	season_id: number;
 }
 
@@ -11730,7 +11738,7 @@ declare interface IResReceiveChallengeRankReward_Reward extends IProto {
  ** .lq.ReqBuyInABMatch
  ** 协议：买入AB赛
  */
-declare interface IReqBuyInABMatch extends IProto {
+declare interface IReqBuyInABMatch extends IRequest {
 	match_id: number;
 }
 
@@ -11738,7 +11746,7 @@ declare interface IReqBuyInABMatch extends IProto {
  ** .lq.ReqGamePointRank
  ** 协议：获取打点活动排行榜
  */
-declare interface IReqGamePointRank extends IProto {
+declare interface IReqGamePointRank extends IRequest {
 	activity_id: number;
 }
 
@@ -11764,7 +11772,7 @@ declare interface IResFetchSelfGamePointRank extends IResponse {
 }
 
 /** .lq.ReqReadSNS */
-declare interface IReqReadSNS extends IProto {
+declare interface IReqReadSNS extends IRequest {
 	id: number;
 }
 
@@ -11774,7 +11782,7 @@ declare interface IResReadSNS extends IResponse {
 }
 
 /** .lq.ReqReplySNS */
-declare interface IReqReplySNS extends IProto {
+declare interface IReqReplySNS extends IRequest {
 	id: number;
 }
 
@@ -11784,7 +11792,7 @@ declare interface IResReplySNS extends IResponse {
 }
 
 /** .lq.ReqLikeSNS */
-declare interface IReqLikeSNS extends IProto {
+declare interface IReqLikeSNS extends IRequest {
 	id: number;
 }
 
@@ -11794,7 +11802,7 @@ declare interface IResLikeSNS extends IResponse {
 }
 
 /** .lq.ReqDigMine */
-declare interface IReqDigMine extends IProto {
+declare interface IReqDigMine extends IRequest {
 	activity_id: number;
 	point: IPoint;
 }
@@ -11806,7 +11814,7 @@ declare interface IResDigMine extends IResponse {
 }
 
 /** .lq.ReqFetchLastPrivacy */
-declare interface IReqFetchLastPrivacy extends IProto {
+declare interface IReqFetchLastPrivacy extends IRequest {
 	type: number[];
 }
 
@@ -11822,7 +11830,7 @@ declare interface IResFetchLastPrivacy_PrivacyInfo extends IProto {
 }
 
 /** .lq.ReqCheckPrivacy */
-declare interface IReqCheckPrivacy extends IProto {
+declare interface IReqCheckPrivacy extends IRequest {
 	device_type: string;
 	versions: IReqCheckPrivacy_Versions[];
 }
@@ -11834,7 +11842,7 @@ declare interface IReqCheckPrivacy_Versions extends IProto {
 }
 
 /** .lq.ReqFetchRPGBattleHistory */
-declare interface IReqFetchRPGBattleHistory extends IProto {
+declare interface IReqFetchRPGBattleHistory extends IRequest {
 	activity_id: number;
 }
 
@@ -11909,17 +11917,17 @@ declare interface IResFetchRPGBattleHistoryV2_BattleResultV2 extends IProto {
 }
 
 /** .lq.ReqBuyArenaTicket */
-declare interface IReqBuyArenaTicket extends IProto {
+declare interface IReqBuyArenaTicket extends IRequest {
 	activity_id: number;
 }
 
 /** .lq.ReqArenaReward */
-declare interface IReqArenaReward extends IProto {
+declare interface IReqArenaReward extends IRequest {
 	activity_id: number;
 }
 
 /** .lq.ReqEnterArena */
-declare interface IReqEnterArena extends IProto {
+declare interface IReqEnterArena extends IRequest {
 	activity_id: number;
 }
 
@@ -11935,12 +11943,12 @@ declare interface IResArenaReward_RewardItem extends IProto {
 }
 
 /** .lq.ReqReceiveRPGRewards */
-declare interface IReqReceiveRPGRewards extends IProto {
+declare interface IReqReceiveRPGRewards extends IRequest {
 	activity_id: number;
 }
 
 /** .lq.ReqReceiveRPGReward */
-declare interface IReqReceiveRPGReward extends IProto {
+declare interface IReqReceiveRPGReward extends IRequest {
 	activity_id: number;
 	monster_seq: number;
 }
@@ -11957,7 +11965,7 @@ declare interface IResReceiveRPGRewards_RewardItem extends IProto {
 }
 
 /** .lq.ReqFetchOBToken */
-declare interface IReqFetchOBToken extends IProto {
+declare interface IReqFetchOBToken extends IRequest {
 	uuid: string;
 }
 
@@ -11970,7 +11978,7 @@ declare interface IResFetchOBToken extends IResponse {
 }
 
 /** .lq.ReqReceiveCharacterRewards */
-declare interface IReqReceiveCharacterRewards extends IProto {
+declare interface IReqReceiveCharacterRewards extends IRequest {
 	character_id: number;
 	level: number;
 }
@@ -11987,7 +11995,7 @@ declare interface IResReceiveCharacterRewards_RewardItem extends IProto {
 }
 
 /** .lq.ReqFeedActivityFeed */
-declare interface IReqFeedActivityFeed extends IProto {
+declare interface IReqFeedActivityFeed extends IRequest {
 	activity_id: number;
 	count: number;
 }
@@ -12005,7 +12013,7 @@ declare interface IResFeedActivityFeed_RewardItem extends IProto {
 }
 
 /** .lq.ReqSendActivityGiftToFriend */
-declare interface IReqSendActivityGiftToFriend extends IProto {
+declare interface IReqSendActivityGiftToFriend extends IRequest {
 	activity_id: number;
 	item_id: number;
 	target_id: number;
@@ -12017,13 +12025,13 @@ declare interface IResSendActivityGiftToFriend extends IResponse {
 }
 
 /** .lq.ReqReceiveActivityGift */
-declare interface IReqReceiveActivityGift extends IProto {
+declare interface IReqReceiveActivityGift extends IRequest {
 	activity_id: number;
 	id: number;
 }
 
 /** .lq.ReqFetchFriendGiftActivityData */
-declare interface IReqFetchFriendGiftActivityData extends IProto {
+declare interface IReqFetchFriendGiftActivityData extends IRequest {
 	activity_id: number;
 	account_list: number[];
 }
@@ -12047,7 +12055,7 @@ declare interface IResFetchFriendGiftActivityData_FriendData extends IProto {
 }
 
 /** .lq.ReqOpenPreChestItem */
-declare interface IReqOpenPreChestItem extends IProto {
+declare interface IReqOpenPreChestItem extends IRequest {
 	item_id: number;
 	pool_id: number;
 }
@@ -12059,7 +12067,7 @@ declare interface IResOpenPreChestItem extends IResponse {
 }
 
 /** .lq.ReqFetchVoteActivity */
-declare interface IReqFetchVoteActivity extends IProto {
+declare interface IReqFetchVoteActivity extends IRequest {
 	activity_id: number;
 }
 
@@ -12077,7 +12085,7 @@ declare interface IResFetchVoteActivity_VoteRankData extends IProto {
 }
 
 /** .lq.ReqVoteActivity */
-declare interface IReqVoteActivity extends IProto {
+declare interface IReqVoteActivity extends IRequest {
 	vote: number;
 	activity_id: number;
 	/** 1 或 10 */
@@ -12090,18 +12098,18 @@ declare interface IResVoteActivity extends IResponse {
 }
 
 /** .lq.ReqUnlockActivitySpot */
-declare interface IReqUnlockActivitySpot extends IProto {
+declare interface IReqUnlockActivitySpot extends IRequest {
 	unique_id: number;
 }
 
 /** .lq.ReqUnlockActivitySpotEnding */
-declare interface IReqUnlockActivitySpotEnding extends IProto {
+declare interface IReqUnlockActivitySpotEnding extends IRequest {
 	unique_id: number;
 	ending_id: number;
 }
 
 /** .lq.ReqReceiveActivitySpotReward */
-declare interface IReqReceiveActivitySpotReward extends IProto {
+declare interface IReqReceiveActivitySpotReward extends IRequest {
 	unique_id: number;
 }
 
@@ -12117,19 +12125,19 @@ declare interface IResReceiveActivitySpotReward_RewardItem extends IProto {
 }
 
 /** .lq.ReqLogReport */
-declare interface IReqLogReport extends IProto {
+declare interface IReqLogReport extends IRequest {
 	success: number;
 	failed: number;
 }
 
 /** .lq.ReqBindOauth2 */
-declare interface IReqBindOauth2 extends IProto {
+declare interface IReqBindOauth2 extends IRequest {
 	type: number;
 	token: string;
 }
 
 /** .lq.ReqFetchOauth2 */
-declare interface IReqFetchOauth2 extends IProto {
+declare interface IReqFetchOauth2 extends IRequest {
 	type: number;
 }
 
@@ -12144,7 +12152,7 @@ declare interface IResDeleteAccount extends IResponse {
 }
 
 /** .lq.ReqSetLoadingImage */
-declare interface IReqSetLoadingImage extends IProto {
+declare interface IReqSetLoadingImage extends IRequest {
 	images: number[];
 }
 
@@ -12176,7 +12184,7 @@ declare interface IResFetchrecentFriend extends IResponse {
 }
 
 /** .lq.ReqOpenGacha */
-declare interface IReqOpenGacha extends IProto {
+declare interface IReqOpenGacha extends IRequest {
 	activity_id: number;
 	count: number;
 }
@@ -12190,12 +12198,12 @@ declare interface IResOpenGacha extends IResponse {
 }
 
 /** .lq.ReqTaskRequest */
-declare interface IReqTaskRequest extends IProto {
+declare interface IReqTaskRequest extends IRequest {
 	params: number[];
 }
 
 /** .lq.ReqYostarDeleteAccount */
-declare interface IReqYostarDeleteAccount extends IProto {
+declare interface IReqYostarDeleteAccount extends IRequest {
 	/** 1-jp  2-en 3-kr */
 	server: number;
 }
@@ -12206,7 +12214,7 @@ declare interface IResYostarDeleteAccount extends IResponse {
 }
 
 /** .lq.ReqSimulationActivityTrain */
-declare interface IReqSimulationActivityTrain extends IProto {
+declare interface IReqSimulationActivityTrain extends IRequest {
 	activity_id: number;
 	/** 训练指令, 1-对局 2-读书 3-跑步 4-祈祷 5-摸鱼 */
 	type: number;
@@ -12221,7 +12229,7 @@ declare interface IResSimulationActivityTrain extends IResponse {
 }
 
 /** .lq.ReqFetchSimulationGameRecord */
-declare interface IReqFetchSimulationGameRecord extends IProto {
+declare interface IReqFetchSimulationGameRecord extends IRequest {
 	game_uuid: string;
 	activity_id: number;
 }
@@ -12232,7 +12240,7 @@ declare interface IResFetchSimulationGameRecord extends IResponse {
 }
 
 /** .lq.ReqStartSimulationActivityGame */
-declare interface IReqStartSimulationActivityGame extends IProto {
+declare interface IReqStartSimulationActivityGame extends IRequest {
 	activity_id: number;
 }
 
@@ -12242,7 +12250,7 @@ declare interface IResStartSimulationActivityGame extends IResponse {
 }
 
 /** .lq.ReqFetchSimulationGameRank */
-declare interface IReqFetchSimulationGameRank extends IProto {
+declare interface IReqFetchSimulationGameRank extends IRequest {
 	activity_id: number;
 	day: number;
 }
@@ -12259,7 +12267,7 @@ declare interface IResFetchSimulationGameRank_RankInfo extends IProto {
 }
 
 /** .lq.ReqGenerateCombiningCraft */
-declare interface IReqGenerateCombiningCraft extends IProto {
+declare interface IReqGenerateCombiningCraft extends IRequest {
 	activity_id: number;
 	bin_id: number;
 }
@@ -12271,7 +12279,7 @@ declare interface IResGenerateCombiningCraft extends IResponse {
 }
 
 /** .lq.ReqMoveCombiningCraft */
-declare interface IReqMoveCombiningCraft extends IProto {
+declare interface IReqMoveCombiningCraft extends IRequest {
 	activity_id: number;
 	from: number;
 	to: number;
@@ -12292,7 +12300,7 @@ declare interface IResMoveCombiningCraft_BonusData extends IProto {
 }
 
 /** .lq.ReqCombiningRecycleCraft */
-declare interface IReqCombiningRecycleCraft extends IProto {
+declare interface IReqCombiningRecycleCraft extends IRequest {
 	activity_id: number;
 	pos: number;
 }
@@ -12303,7 +12311,7 @@ declare interface IResCombiningRecycleCraft extends IResponse {
 }
 
 /** .lq.ReqRecoverCombiningRecycle */
-declare interface IReqRecoverCombiningRecycle extends IProto {
+declare interface IReqRecoverCombiningRecycle extends IRequest {
 	activity_id: number;
 }
 
@@ -12314,7 +12322,7 @@ declare interface IResRecoverCombiningRecycle extends IResponse {
 }
 
 /** .lq.ReqFinishCombiningOrder */
-declare interface IReqFinishCombiningOrder extends IProto {
+declare interface IReqFinishCombiningOrder extends IRequest {
 	activity_id: number;
 	craft_pos: number;
 	order_pos: number;
@@ -12399,7 +12407,7 @@ declare interface IResFetchServerMaintenanceInfo_ServerActivityMaintenanceInfo e
 }
 
 /** .lq.ReqUpgradeVillageBuilding */
-declare interface IReqUpgradeVillageBuilding extends IProto {
+declare interface IReqUpgradeVillageBuilding extends IRequest {
 	/** 建筑id */
 	building_id: number;
 	/** 活动id */
@@ -12407,7 +12415,7 @@ declare interface IReqUpgradeVillageBuilding extends IProto {
 }
 
 /** .lq.ReqReceiveVillageBuildingReward */
-declare interface IReqReceiveVillageBuildingReward extends IProto {
+declare interface IReqReceiveVillageBuildingReward extends IRequest {
 	activity_id: number;
 	building_id: number;
 	rewards: IRewardSlot[];
@@ -12419,13 +12427,13 @@ declare interface IResReceiveVillageBuildingReward extends IResponse {
 }
 
 /** .lq.ReqStartVillageTrip */
-declare interface IReqStartVillageTrip extends IProto {
+declare interface IReqStartVillageTrip extends IRequest {
 	dest: number;
 	activity_id: number;
 }
 
 /** .lq.ReqReceiveVillageTripReward */
-declare interface IReqReceiveVillageTripReward extends IProto {
+declare interface IReqReceiveVillageTripReward extends IRequest {
 	activity_id: number;
 	dest_id: number;
 	rewards: IRewardSlot[];
@@ -12437,7 +12445,7 @@ declare interface IResReceiveVillageTripReward extends IResponse {
 }
 
 /** .lq.ReqCompleteVillageTask */
-declare interface IReqCompleteVillageTask extends IProto {
+declare interface IReqCompleteVillageTask extends IRequest {
 	task_id: number;
 	activity_id: number;
 }
@@ -12448,7 +12456,7 @@ declare interface IResCompleteVillageTask extends IResponse {
 }
 
 /** .lq.ReqGetFriendVillageData */
-declare interface IReqGetFriendVillageData extends IProto {
+declare interface IReqGetFriendVillageData extends IRequest {
 	account_list: number[];
 	activity_id: number;
 }
@@ -12465,7 +12473,7 @@ declare interface IResGetFriendVillageData_FriendVillageData extends IProto {
 }
 
 /** .lq.ReqSetVillageWorker */
-declare interface IReqSetVillageWorker extends IProto {
+declare interface IReqSetVillageWorker extends IRequest {
 	building_id: number;
 	/** 如果这个位置上有人就卸下来，没人就装上去 */
 	worker_pos: number;
@@ -12479,7 +12487,7 @@ declare interface IResSetVillageWorker extends IResponse {
 }
 
 /** .lq.ReqNextRoundVillage */
-declare interface IReqNextRoundVillage extends IProto {
+declare interface IReqNextRoundVillage extends IRequest {
 	activity_id: number;
 }
 
@@ -12489,7 +12497,7 @@ declare interface IResNextRoundVillage extends IResponse {
 }
 
 /** .lq.ReqResolveFestivalActivityProposal */
-declare interface IReqResolveFestivalActivityProposal extends IProto {
+declare interface IReqResolveFestivalActivityProposal extends IRequest {
 	activity_id: number;
 	id: number;
 	select: number;
@@ -12506,7 +12514,7 @@ declare interface IResResolveFestivalActivityProposal extends IResponse {
 }
 
 /** .lq.ReqResolveFestivalActivityEvent */
-declare interface IReqResolveFestivalActivityEvent extends IProto {
+declare interface IReqResolveFestivalActivityEvent extends IRequest {
 	activity_id: number;
 	id: number;
 	select: number;
@@ -12522,7 +12530,7 @@ declare interface IResResolveFestivalActivityEvent extends IResponse {
 }
 
 /** .lq.ReqBuyFestivalProposal */
-declare interface IReqBuyFestivalProposal extends IProto {
+declare interface IReqBuyFestivalProposal extends IRequest {
 	activity_id: number;
 }
 
@@ -12532,13 +12540,13 @@ declare interface IResBuyFestivalProposal extends IResponse {
 }
 
 /** .lq.ReqIslandActivityMove */
-declare interface IReqIslandActivityMove extends IProto {
+declare interface IReqIslandActivityMove extends IRequest {
 	activity_id: number;
 	zone_id: number;
 }
 
 /** .lq.ReqIslandActivityBuy */
-declare interface IReqIslandActivityBuy extends IProto {
+declare interface IReqIslandActivityBuy extends IRequest {
 	activity_id: number;
 	items: IReqIslandActivityBuy_BuyItems[];
 }
@@ -12553,7 +12561,7 @@ declare interface IReqIslandActivityBuy_BuyItems extends IProto {
 }
 
 /** .lq.ReqIslandActivitySell */
-declare interface IReqIslandActivitySell extends IProto {
+declare interface IReqIslandActivitySell extends IRequest {
 	activity_id: number;
 	items: IReqIslandActivitySell_SellItem[];
 }
@@ -12566,7 +12574,7 @@ declare interface IReqIslandActivitySell_SellItem extends IProto {
 }
 
 /** .lq.ReqIslandActivityTidyBag */
-declare interface IReqIslandActivityTidyBag extends IProto {
+declare interface IReqIslandActivityTidyBag extends IRequest {
 	activity_id: number;
 	bag_data: IReqIslandActivityTidyBag_BagData[];
 }
@@ -12586,7 +12594,7 @@ declare interface IReqIslandActivityTidyBag_ITemData extends IProto {
 }
 
 /** .lq.ReqIslandActivityUnlockBagGrid */
-declare interface IReqIslandActivityUnlockBagGrid extends IProto {
+declare interface IReqIslandActivityUnlockBagGrid extends IRequest {
 	activity_id: number;
 	bag_id: number;
 	pos: number[];
@@ -12613,7 +12621,7 @@ declare interface IContestSetting_LevelLimit extends IProto {
 }
 
 /** .lq.ReqCreateCustomizedContest */
-declare interface IReqCreateCustomizedContest extends IProto {
+declare interface IReqCreateCustomizedContest extends IRequest {
 	name: string;
 	open_show: number;
 	game_rule_setting: IGameMode;
@@ -12634,7 +12642,7 @@ declare interface IResCreateCustomizedContest extends IResponse {
 }
 
 /** .lq.ReqFetchmanagerCustomizedContestList */
-declare interface IReqFetchmanagerCustomizedContestList extends IProto {
+declare interface IReqFetchmanagerCustomizedContestList extends IRequest {
 	lang: string;
 }
 
@@ -12645,7 +12653,7 @@ declare interface IResFetchManagerCustomizedContestList extends IResponse {
 }
 
 /** .lq.ReqFetchManagerCustomizedContest */
-declare interface IReqFetchManagerCustomizedContest extends IProto {
+declare interface IReqFetchManagerCustomizedContest extends IRequest {
 	unique_id: number;
 }
 
@@ -12686,7 +12694,7 @@ declare interface IResFetchManagerCustomizedContest_SeasonInfo extends IProto {
 }
 
 /** .lq.ReqUpdateManagerCustomizedContest */
-declare interface IReqUpdateManagerCustomizedContest extends IProto {
+declare interface IReqUpdateManagerCustomizedContest extends IRequest {
 	name: string;
 	open_show: number;
 	game_rule_setting: IGameMode;
@@ -12699,7 +12707,7 @@ declare interface IReqUpdateManagerCustomizedContest extends IProto {
 }
 
 /** .lq.ReqFetchContestPlayerRank */
-declare interface IReqFetchContestPlayerRank extends IProto {
+declare interface IReqFetchContestPlayerRank extends IRequest {
 	unique_id: number;
 	limit: number;
 	offset: number;
@@ -12758,7 +12766,7 @@ declare interface IResFetchContestPlayerRank_ContestSeriesGameResult extends IPr
 }
 
 /** .lq.ReqFetchContestTeamRank */
-declare interface IReqFetchContestTeamRank extends IProto {
+declare interface IReqFetchContestTeamRank extends IRequest {
 	/** 赛事唯一id */
 	unique_id: number;
 	limit: number;
@@ -12806,7 +12814,7 @@ declare interface IResFetchContestTeamRank_SeasonTeamRank extends IProto {
  ** .lq.ReqFetchContestTeamPlayerRank
  ** 大会室团队赛个人排名请求协议
  */
-declare interface IReqFetchContestTeamPlayerRank extends IProto {
+declare interface IReqFetchContestTeamPlayerRank extends IRequest {
 	/** 赛事唯一id */
 	unique_id: number;
 	offset: number;
@@ -12817,7 +12825,7 @@ declare interface IReqFetchContestTeamPlayerRank extends IProto {
  ** .lq.ReqFetchContestTeamMember
  ** 队伍明细请求数据
  */
-declare interface IReqFetchContestTeamMember extends IProto {
+declare interface IReqFetchContestTeamMember extends IRequest {
 	/** 赛事唯一id */
 	unique_id: number;
 	/** 队伍id */
@@ -12849,7 +12857,7 @@ declare interface IResFetchContestTeamMember_ContestTeamMemberRank extends IProt
 }
 
 /** .lq.ReqFetchReadyPlayerList */
-declare interface IReqFetchReadyPlayerList extends IProto {
+declare interface IReqFetchReadyPlayerList extends IRequest {
 	unique_id: number;
 }
 
@@ -12866,7 +12874,7 @@ declare interface IResFetchReadyPlayerList_Player extends IProto {
 }
 
 /** .lq.ReqCreateGamePlan */
-declare interface IReqCreateGamePlan extends IProto {
+declare interface IReqCreateGamePlan extends IRequest {
 	unique_id: number;
 	account_list: number[];
 	game_start_time: number;
@@ -12882,7 +12890,7 @@ declare interface IResGenerateContestManagerLoginCode extends IResponse {
 }
 
 /** .lq.ReqAmuletActivityFetchInfo */
-declare interface IReqAmuletActivityFetchInfo extends IProto {
+declare interface IReqAmuletActivityFetchInfo extends IRequest {
 	activity_id: number;
 }
 
@@ -12892,7 +12900,7 @@ declare interface IResAmuletActivityFetchInfo extends IResponse {
 }
 
 /** .lq.ReqAmuletActivityFetchBrief */
-declare interface IReqAmuletActivityFetchBrief extends IProto {
+declare interface IReqAmuletActivityFetchBrief extends IRequest {
 	activity_id: number;
 }
 
@@ -12909,7 +12917,7 @@ declare interface IResAmuletActivityFetchBrief extends IResponse {
 }
 
 /** .lq.ReqFetchAmuletActivityData */
-declare interface IReqFetchAmuletActivityData extends IProto {
+declare interface IReqFetchAmuletActivityData extends IRequest {
 	activity_id: number;
 }
 
@@ -12924,12 +12932,12 @@ declare interface IResAmuletEventResponse extends IResponse {
 }
 
 /** .lq.ReqAmuletActivityStartGame */
-declare interface IReqAmuletActivityStartGame extends IProto {
+declare interface IReqAmuletActivityStartGame extends IRequest {
 	activity_id: number;
 }
 
 /** .lq.ReqAmuletActivityOperate */
-declare interface IReqAmuletActivityOperate extends IProto {
+declare interface IReqAmuletActivityOperate extends IRequest {
 	activity_id: number;
 	/** 操作类型 1-切牌 4-开杠 8-和牌 99-模切 100-结束换牌 101-换牌 */
 	type: number;
@@ -12938,64 +12946,64 @@ declare interface IReqAmuletActivityOperate extends IProto {
 }
 
 /** .lq.ReqAmuletActivityUpgrade */
-declare interface IReqAmuletActivityUpgrade extends IProto {
+declare interface IReqAmuletActivityUpgrade extends IRequest {
 	activity_id: number;
 }
 
 /** .lq.ReqAmuletActivitySelectPack */
-declare interface IReqAmuletActivitySelectPack extends IProto {
+declare interface IReqAmuletActivitySelectPack extends IRequest {
 	activity_id: number;
 	id: number;
 }
 
 /** .lq.ReqAmuletActivityBuy */
-declare interface IReqAmuletActivityBuy extends IProto {
+declare interface IReqAmuletActivityBuy extends IRequest {
 	activity_id: number;
 	id: number;
 }
 
 /** .lq.ReqAmuletActivitySellEffect */
-declare interface IReqAmuletActivitySellEffect extends IProto {
+declare interface IReqAmuletActivitySellEffect extends IRequest {
 	activity_id: number;
 	id: number;
 }
 
 /** .lq.ReqAmuletActivityEffectSort */
-declare interface IReqAmuletActivityEffectSort extends IProto {
+declare interface IReqAmuletActivityEffectSort extends IRequest {
 	activity_id: number;
 	sorted_id: number[];
 }
 
 /** .lq.ReqAmuletActivityGiveup */
-declare interface IReqAmuletActivityGiveup extends IProto {
+declare interface IReqAmuletActivityGiveup extends IRequest {
 	activity_id: number;
 }
 
 /** .lq.ReqAmuletActivityRefreshShop */
-declare interface IReqAmuletActivityRefreshShop extends IProto {
+declare interface IReqAmuletActivityRefreshShop extends IRequest {
 	activity_id: number;
 }
 
 /** .lq.ReqAmuletActivitySelectFreeEffect */
-declare interface IReqAmuletActivitySelectFreeEffect extends IProto {
+declare interface IReqAmuletActivitySelectFreeEffect extends IRequest {
 	activity_id: number;
 	/** 选择的护身符id */
 	selected_id: number;
 }
 
 /** .lq.ReqAmuletActivityUpgradeShopBuff */
-declare interface IReqAmuletActivityUpgradeShopBuff extends IProto {
+declare interface IReqAmuletActivityUpgradeShopBuff extends IRequest {
 	activity_id: number;
 	id: number;
 }
 
 /** .lq.ReqAmuletActivityEndShopping */
-declare interface IReqAmuletActivityEndShopping extends IProto {
+declare interface IReqAmuletActivityEndShopping extends IRequest {
 	activity_id: number;
 }
 
 /** .lq.ReqAmuletActivitySetSkillLevel */
-declare interface IReqAmuletActivitySetSkillLevel extends IProto {
+declare interface IReqAmuletActivitySetSkillLevel extends IRequest {
 	activity_id: number;
 	/** 技能点数与等级 */
 	skill: IAmuletSkillData[];
@@ -13008,13 +13016,13 @@ declare interface IResAmuletActivityMaintainInfo extends IResponse {
 }
 
 /** .lq.ReqAmuletActivitySelectRewardPack */
-declare interface IReqAmuletActivitySelectRewardPack extends IProto {
+declare interface IReqAmuletActivitySelectRewardPack extends IRequest {
 	activity_id: number;
 	id: number;
 }
 
 /** .lq.ReqAmuletActivitySelectBookEffect */
-declare interface IReqAmuletActivitySelectBookEffect extends IProto {
+declare interface IReqAmuletActivitySelectBookEffect extends IRequest {
 	activity_id: number;
 	effect_id: number;
 }
@@ -13024,12 +13032,12 @@ declare interface IReqAmuletActivitySelectBookEffect extends IProto {
  ** ==DevDebug Start==
  ** debug 协议在正式版本删除
  */
-declare interface IReqAmuletActivityDebug extends IProto {
+declare interface IReqAmuletActivityDebug extends IRequest {
 	activity_data: IActivityAmuletData;
 }
 
 /** .lq.ReqAmuletActivityFetchDebug */
-declare interface IReqAmuletActivityFetchDebug extends IProto {
+declare interface IReqAmuletActivityFetchDebug extends IRequest {
 	activity_id: number;
 }
 
@@ -13039,20 +13047,20 @@ declare interface IResFetchAmuletActivityDebug extends IResponse {
 }
 
 /** .lq.ReqStoryActivityUnlock */
-declare interface IReqStoryActivityUnlock extends IProto {
+declare interface IReqStoryActivityUnlock extends IRequest {
 	activity_id: number;
 	story_id: number;
 }
 
 /** .lq.ReqStoryActivityUnlockEnding */
-declare interface IReqStoryActivityUnlockEnding extends IProto {
+declare interface IReqStoryActivityUnlockEnding extends IRequest {
 	activity_id: number;
 	story_id: number;
 	ending_id: number;
 }
 
 /** .lq.ReqStoryActivityReceiveEndingReward */
-declare interface IReqStoryActivityReceiveEndingReward extends IProto {
+declare interface IReqStoryActivityReceiveEndingReward extends IRequest {
 	activity_id: number;
 	story_id: number;
 	ending_id: number;
@@ -13064,19 +13072,19 @@ declare interface IResStoryReward extends IResponse {
 }
 
 /** .lq.ReqStoryActivityReceiveFinishReward */
-declare interface IReqStoryActivityReceiveFinishReward extends IProto {
+declare interface IReqStoryActivityReceiveFinishReward extends IRequest {
 	activity_id: number;
 	story_id: number;
 }
 
 /** .lq.ReqStoryActivityReceiveAllFinishReward */
-declare interface IReqStoryActivityReceiveAllFinishReward extends IProto {
+declare interface IReqStoryActivityReceiveAllFinishReward extends IRequest {
 	activity_id: number;
 	story_id: number;
 }
 
 /** .lq.ReqStoryActivityUnlockEndingAndReceive */
-declare interface IReqStoryActivityUnlockEndingAndReceive extends IProto {
+declare interface IReqStoryActivityUnlockEndingAndReceive extends IRequest {
 	activity_id: number;
 	story_id: number;
 	ending_id: number;
@@ -13090,7 +13098,7 @@ declare interface IResStoryActivityUnlockEndingAndReceive extends IResponse {
 }
 
 /** .lq.ReqFetchActivityRank */
-declare interface IReqFetchActivityRank extends IProto {
+declare interface IReqFetchActivityRank extends IRequest {
 	activity_id: number;
 	/** 可选，不传就是获取全服排名，传了就是获取 account_list 内的账号排名，account_list 内的账号必须是好友 */
 	account_list: number[];
@@ -13114,7 +13122,7 @@ declare interface IResFetchActivityRank_ActivityRankItem extends IProto {
 }
 
 /** .lq.ReqFetchQuestionnaireList */
-declare interface IReqFetchQuestionnaireList extends IProto {
+declare interface IReqFetchQuestionnaireList extends IRequest {
 	lang: string;
 	channel: string;
 }
@@ -13127,7 +13135,7 @@ declare interface IResFetchQuestionnaireList extends IResponse {
 }
 
 /** .lq.ReqFetchQuestionnaireDetail */
-declare interface IReqFetchQuestionnaireDetail extends IProto {
+declare interface IReqFetchQuestionnaireDetail extends IRequest {
 	id: number;
 	lang: string;
 	channel: string;
@@ -13139,12 +13147,12 @@ declare interface IResFetchQuestionnaireDetail extends IResponse {
 }
 
 /** .lq.ReqSetVerifiedHidden */
-declare interface IReqSetVerifiedHidden extends IProto {
+declare interface IReqSetVerifiedHidden extends IRequest {
 	verified_hidden: number;
 }
 
 /** .lq.ReqSubmitQuestionnaire */
-declare interface IReqSubmitQuestionnaire extends IProto {
+declare interface IReqSubmitQuestionnaire extends IRequest {
 	questionnaire_id: number;
 	questionnaire_version_id: number;
 	answers: IReqSubmitQuestionnaire_QuestionnaireAnswer[];
@@ -13169,13 +13177,13 @@ declare interface IReqSubmitQuestionnaire_QuestionnaireAnswerValue extends IProt
 }
 
 /** .lq.ReqSetFriendRoomRandomBotChar */
-declare interface IReqSetFriendRoomRandomBotChar extends IProto {
+declare interface IReqSetFriendRoomRandomBotChar extends IRequest {
 	/** 1 - 只用一姬  0 - 所有角色池里随机 */
 	disable_random_char: number;
 }
 
 /** .lq.ReqFetchAccountGameHuRecords */
-declare interface IReqFetchAccountGameHuRecords extends IProto {
+declare interface IReqFetchAccountGameHuRecords extends IRequest {
 	uuid: string;
 	/** 1 - 四人麻将  2 - 三人麻将 */
 	category: number;
@@ -13201,7 +13209,7 @@ declare interface IResFetchAccountGameHuRecords_GameHuRecords extends IProto {
 }
 
 /** .lq.ReqFetchAccountInfoExtra */
-declare interface IReqFetchAccountInfoExtra extends IProto {
+declare interface IReqFetchAccountInfoExtra extends IRequest {
 	account_id: number;
 	/** 1 - 四人麻将  2 - 三人麻将 */
 	category: number;
@@ -13255,7 +13263,7 @@ declare interface IResFetchAccountInfoExtra_AccountGameResult extends IProto {
 }
 
 /** .lq.ReqSetAccountFavoriteHu */
-declare interface IReqSetAccountFavoriteHu extends IProto {
+declare interface IReqSetAccountFavoriteHu extends IRequest {
 	/** 1- 显示最近大和 2- 显示自选和牌 */
 	mode: number;
 	/** 1 - 四人麻将  2 - 三人麻将 */
@@ -13270,7 +13278,7 @@ declare interface IReqSetAccountFavoriteHu extends IProto {
 }
 
 /** .lq.ReqFetchSeerReport */
-declare interface IReqFetchSeerReport extends IProto {
+declare interface IReqFetchSeerReport extends IRequest {
 	uuid: string;
 }
 
@@ -13280,7 +13288,7 @@ declare interface IResFetchSeerReport extends IResponse {
 }
 
 /** .lq.ReqCreateSeerReport */
-declare interface IReqCreateSeerReport extends IProto {
+declare interface IReqCreateSeerReport extends IRequest {
 	uuid: string;
 }
 
@@ -13296,7 +13304,7 @@ declare interface IResFetchSeerReportList extends IResponse {
 }
 
 /** .lq.ReqSelectChestChooseUp */
-declare interface IReqSelectChestChooseUp extends IProto {
+declare interface IReqSelectChestChooseUp extends IRequest {
 	activity_id: number;
 	/** 选择的物品id */
 	selection: number;
@@ -13305,7 +13313,7 @@ declare interface IReqSelectChestChooseUp extends IProto {
 }
 
 /** .lq.ReqSelectChestChooseGroupActivity */
-declare interface IReqSelectChestChooseGroupActivity extends IProto {
+declare interface IReqSelectChestChooseGroupActivity extends IRequest {
 	activity_id: number;
 	/** 选择的组合id */
 	selection: number;
@@ -13318,12 +13326,12 @@ declare interface IReqSelectChestChooseGroupActivity extends IProto {
  ** ==DevDebug Start==
  ** debug 协议在正式版本删除
  */
-declare interface IReqFestivalDebug extends IProto {
+declare interface IReqFestivalDebug extends IRequest {
 	festival_activity: IActivityFestivalData;
 }
 
 /** .lq.ReqFestivalFetchDebug */
-declare interface IReqFestivalFetchDebug extends IProto {
+declare interface IReqFestivalFetchDebug extends IRequest {
 	activity_id: number;
 }
 
@@ -13333,7 +13341,7 @@ declare interface IResFestivalFetchDebug extends IResponse {
 }
 
 /** .lq.ReqGenerateAnnualReportToken */
-declare interface IReqGenerateAnnualReportToken extends IProto {
+declare interface IReqGenerateAnnualReportToken extends IRequest {
 	/** cn jp en kr */
 	lang: string;
 }
@@ -13351,13 +13359,13 @@ declare interface IResFetchAnnualReportInfo extends IResponse {
 }
 
 /** .lq.ReqRemarkFriend */
-declare interface IReqRemarkFriend extends IProto {
+declare interface IReqRemarkFriend extends IRequest {
 	account_id: number;
 	remark: string;
 }
 
 /** .lq.ReqSimV2ActivityFetchInfo */
-declare interface IReqSimV2ActivityFetchInfo extends IProto {
+declare interface IReqSimV2ActivityFetchInfo extends IRequest {
 	activity_id: number;
 }
 
@@ -13367,7 +13375,7 @@ declare interface IResSimV2ActivityFetchInfo extends IResponse {
 }
 
 /** .lq.ReqSimV2ActivityStartSeason */
-declare interface IReqSimV2ActivityStartSeason extends IProto {
+declare interface IReqSimV2ActivityStartSeason extends IRequest {
 	activity_id: number;
 }
 
@@ -13377,7 +13385,7 @@ declare interface IResSimV2ActivityStartSeason extends IResponse {
 }
 
 /** .lq.ReqSimV2ActivityTrain */
-declare interface IReqSimV2ActivityTrain extends IProto {
+declare interface IReqSimV2ActivityTrain extends IRequest {
 	activity_id: number;
 	ability: number;
 	skip: number;
@@ -13402,7 +13410,7 @@ declare interface IResSimV2ActivityTrain extends IResponse {
 }
 
 /** .lq.ReqSimV2ActivitySelectEvent */
-declare interface IReqSimV2ActivitySelectEvent extends IProto {
+declare interface IReqSimV2ActivitySelectEvent extends IRequest {
 	activity_id: number;
 	selection_id: number;
 }
@@ -13430,7 +13438,7 @@ declare interface IResSimV2ActivitySelectEvent extends IResponse {
 }
 
 /** .lq.ReqSimV2ActivityStartMatch */
-declare interface IReqSimV2ActivityStartMatch extends IProto {
+declare interface IReqSimV2ActivityStartMatch extends IRequest {
 	activity_id: number;
 }
 
@@ -13447,7 +13455,7 @@ declare interface IResSimV2ActivityStartMatch extends IResponse {
 }
 
 /** .lq.ReqSimV2ActivityEndMatch */
-declare interface IReqSimV2ActivityEndMatch extends IProto {
+declare interface IReqSimV2ActivityEndMatch extends IRequest {
 	activity_id: number;
 }
 
@@ -13479,12 +13487,12 @@ declare interface IResSimV2ActivityEndMatch_SimulationV2MatchReward extends IPro
 }
 
 /** .lq.ReqSimV2ActivityGiveUp */
-declare interface IReqSimV2ActivityGiveUp extends IProto {
+declare interface IReqSimV2ActivityGiveUp extends IRequest {
 	activity_id: number;
 }
 
 /** .lq.ReqSimV2ActivitySetUpgrade */
-declare interface IReqSimV2ActivitySetUpgrade extends IProto {
+declare interface IReqSimV2ActivitySetUpgrade extends IRequest {
 	activity_id: number;
 	/** 场外升级全量数据 */
 	upgrade: ISimulationV2Ability;
@@ -13495,12 +13503,12 @@ declare interface IReqSimV2ActivitySetUpgrade extends IProto {
  ** ==DevDebug Start==
  ** debug 协议在正式版本删除
  */
-declare interface IReqSimV2ActivityDebug extends IProto {
+declare interface IReqSimV2ActivityDebug extends IRequest {
 	sim_activity: ISimulationV2Data;
 }
 
 /** .lq.ReqSimV2ActivityFetchDebug */
-declare interface IReqSimV2ActivityFetchDebug extends IProto {
+declare interface IReqSimV2ActivityFetchDebug extends IRequest {
 	activity_id: number;
 }
 
@@ -13510,7 +13518,7 @@ declare interface IResSimV2ActivityFetchDebug extends IResponse {
 }
 
 /** .lq.ReqProgressRewardActivityReceive */
-declare interface IReqProgressRewardActivityReceive extends IProto {
+declare interface IReqProgressRewardActivityReceive extends IRequest {
 	activity_id: number;
 	progresses: number[];
 }
@@ -13521,7 +13529,7 @@ declare interface IResProgressRewardActivityReceive extends IResponse {
 }
 
 /** .lq.ReqFetchProgressRewardActivityInfo */
-declare interface IReqFetchProgressRewardActivityInfo extends IProto {
+declare interface IReqFetchProgressRewardActivityInfo extends IRequest {
 	activity_id: number;
 }
 
@@ -13531,7 +13539,7 @@ declare interface IResFetchProgressRewardActivityInfo extends IResponse {
 }
 
 /** .lq.ReqShootActivityAttackEnemies */
-declare interface IReqShootActivityAttackEnemies extends IProto {
+declare interface IReqShootActivityAttackEnemies extends IRequest {
 	activity_id: number;
 	/** 子弹数量 */
 	bullets_count: number;
@@ -13562,7 +13570,7 @@ declare interface IResShootActivityAttackEnemies_ActivityShootAttackRecord exten
 }
 
 /** .lq.ReqQuestCrewActivityStartQuest */
-declare interface IReqQuestCrewActivityStartQuest extends IProto {
+declare interface IReqQuestCrewActivityStartQuest extends IRequest {
 	activity_id: number;
 	joined_members: number[];
 	quest_id: number;
@@ -13584,7 +13592,7 @@ declare interface IResQuestCrewActivityStartQuest_ActivityQuestCrewEffectInfo ex
 }
 
 /** .lq.ReqQuestCrewActivityHire */
-declare interface IReqQuestCrewActivityHire extends IProto {
+declare interface IReqQuestCrewActivityHire extends IRequest {
 	activity_id: number;
 	member_id: number;
 }
@@ -13596,7 +13604,7 @@ declare interface IResQuestCrewActivityHire extends IResponse {
 }
 
 /** .lq.ReqQuestCrewActivityFeed */
-declare interface IReqQuestCrewActivityFeed extends IProto {
+declare interface IReqQuestCrewActivityFeed extends IRequest {
 	activity_id: number;
 	member_id: number[];
 }
@@ -13608,7 +13616,7 @@ declare interface IResQuestCrewActivityFeed extends IResponse {
 }
 
 /** .lq.ReqQuestCrewActivityRefreshMarket */
-declare interface IReqQuestCrewActivityRefreshMarket extends IProto {
+declare interface IReqQuestCrewActivityRefreshMarket extends IRequest {
 	activity_id: number;
 }
 
@@ -13619,7 +13627,7 @@ declare interface IResQuestCrewActivityRefreshMarket extends IResponse {
 }
 
 /** .lq.ReqBingoActivityReceiveReward */
-declare interface IReqBingoActivityReceiveReward extends IProto {
+declare interface IReqBingoActivityReceiveReward extends IRequest {
 	activity_id: number;
 	rewards: IReqBingoActivityReceiveReward_BingoReward[];
 }
@@ -13638,7 +13646,7 @@ declare interface IResBingoActivityReceiveReward extends IResponse {
 }
 
 /** .lq.ReqFetchBingoActivityData */
-declare interface IReqFetchBingoActivityData extends IProto {
+declare interface IReqFetchBingoActivityData extends IRequest {
 	activity_id: number;
 }
 
@@ -13648,7 +13656,7 @@ declare interface IResFetchBingoActivityData extends IResponse {
 }
 
 /** .lq.ReqSnowballActivityStartBattle */
-declare interface IReqSnowballActivityStartBattle extends IProto {
+declare interface IReqSnowballActivityStartBattle extends IRequest {
 	activity_id: number;
 	/** debug字段，传入该字段时当前战斗直接使用当前随机种子，不传则后端随机，正式环境不使用 */
 	random_seed_debug: number;
@@ -13668,7 +13676,7 @@ declare interface IResSnowballActivityStartBattle extends IResponse {
 }
 
 /** .lq.ReqSnowballActivityFinishBattle */
-declare interface IReqSnowballActivityFinishBattle extends IProto {
+declare interface IReqSnowballActivityFinishBattle extends IRequest {
 	activity_id: number;
 	/** 只需要发玩家操作，连射的雪球只发第一个 */
 	player_action: IActivitySnowballPlayerAction[];
@@ -13725,7 +13733,7 @@ declare interface IResSnowballActivityFinishBattle extends IResponse {
 }
 
 /** .lq.ReqSnowballActivityUpgrade */
-declare interface IReqSnowballActivityUpgrade extends IProto {
+declare interface IReqSnowballActivityUpgrade extends IRequest {
 	activity_id: number;
 	upgrade: IActivitySnowballUpgrade[];
 }
@@ -13736,7 +13744,7 @@ declare interface IResSnowballActivityUpgrade extends IResponse {
 }
 
 /** .lq.ReqSnowballActivityReceiveReward */
-declare interface IReqSnowballActivityReceiveReward extends IProto {
+declare interface IReqSnowballActivityReceiveReward extends IRequest {
 	activity_id: number;
 	level: number[];
 }
@@ -13751,7 +13759,7 @@ declare interface IResSnowballActivityReceiveReward extends IResponse {
  ** .lq.ReqFetchBannerActivityData
  ** 获取Banner活动赛事详细信息请求数据
  */
-declare interface IReqFetchBannerActivityData extends IProto {
+declare interface IReqFetchBannerActivityData extends IRequest {
 	activity_id_list: number[];
 	/** 语言 */
 	lang: string;
@@ -13770,12 +13778,12 @@ declare interface IResFetchBannerActivityData extends IResponse {
  ** ==DevDebug Start==
  ** debug 协议在正式版本删除
  */
-declare interface IReqSnowballActivityDebug extends IProto {
+declare interface IReqSnowballActivityDebug extends IRequest {
 	snowball_activity: IActivitySnowballData;
 }
 
 /** .lq.ReqSnowballActivityFetchDebug */
-declare interface IReqSnowballActivityFetchDebug extends IProto {
+declare interface IReqSnowballActivityFetchDebug extends IRequest {
 	activity_id: number;
 }
 
@@ -13785,7 +13793,7 @@ declare interface IResSnowballActivityFetchDebug extends IResponse {
 }
 
 /** .lq.ReqMarathonActivityStartRace */
-declare interface IReqMarathonActivityStartRace extends IProto {
+declare interface IReqMarathonActivityStartRace extends IRequest {
 	activity_id: number;
 }
 
@@ -13796,7 +13804,7 @@ declare interface IResMarathonActivityStartRace extends IResponse {
 }
 
 /** .lq.ReqMarathonActivityFinishRace */
-declare interface IReqMarathonActivityFinishRace extends IProto {
+declare interface IReqMarathonActivityFinishRace extends IRequest {
 	activity_id: number;
 	race_data: IActivityMarathonCheckData[];
 	record: IMarathonGameRecord;
@@ -13814,7 +13822,7 @@ declare interface IResMarathonActivityFinishRace extends IResponse {
  ** ==DevDebug Start==
  ** debug 协议在正式版本删除
  */
-declare interface IReqMarathonActivityTest extends IProto {
+declare interface IReqMarathonActivityTest extends IRequest {
 	activity_id: number;
 	wall_tests: IReqMarathonActivityTest_MarathonWallTest[];
 }
@@ -13856,7 +13864,7 @@ declare interface IResMarathonActivityTest_MarathonWallStepValue extends IProto 
 }
 
 /** .lq.ReqMMOActivityFetchData */
-declare interface IReqMMOActivityFetchData extends IProto {
+declare interface IReqMMOActivityFetchData extends IRequest {
 	activity_id: number;
 }
 
@@ -13866,7 +13874,7 @@ declare interface IResMMOActivityFetchData extends IResponse {
 }
 
 /** .lq.ReqMMOActivityEquipFusion */
-declare interface IReqMMOActivityEquipFusion extends IProto {
+declare interface IReqMMOActivityEquipFusion extends IRequest {
 	activity_id: number;
 	equip_list: number[];
 	/** 0-随机合成 1-剑武 2-战武 3-法武 4-头饰 5-防具 */
@@ -13881,7 +13889,7 @@ declare interface IResMMOActivityEquipFusion extends IResponse {
 }
 
 /** .lq.ReqMMOActivitySetCharacter */
-declare interface IReqMMOActivitySetCharacter extends IProto {
+declare interface IReqMMOActivitySetCharacter extends IRequest {
 	activity_id: number;
 	character_id: number;
 }
@@ -13892,7 +13900,7 @@ declare interface IResMMOActivitySetCharacter extends IResponse {
 }
 
 /** .lq.ReqMMOActivitySetTeamMember */
-declare interface IReqMMOActivitySetTeamMember extends IProto {
+declare interface IReqMMOActivitySetTeamMember extends IRequest {
 	activity_id: number;
 	members: IReqMMOActivitySetTeamMember_MMOActivityTeamMember[];
 }
@@ -13912,7 +13920,7 @@ declare interface IResMMOActivitySetTeamMember extends IResponse {
 }
 
 /** .lq.ReqMMOActivityStartBattle */
-declare interface IReqMMOActivityStartBattle extends IProto {
+declare interface IReqMMOActivityStartBattle extends IRequest {
 	activity_id: number;
 }
 
@@ -13953,7 +13961,7 @@ declare interface IResMMOActivityStartBattle_MMOActivityBattleUnit extends IProt
 }
 
 /** .lq.ReqMMOActivityFinishBattle */
-declare interface IReqMMOActivityFinishBattle extends IProto {
+declare interface IReqMMOActivityFinishBattle extends IRequest {
 	activity_id: number;
 }
 
@@ -13965,7 +13973,7 @@ declare interface IResMMOActivityFinishBattle extends IResponse {
 }
 
 /** .lq.ReqMMOActivitySetEquip */
-declare interface IReqMMOActivitySetEquip extends IProto {
+declare interface IReqMMOActivitySetEquip extends IRequest {
 	activity_id: number;
 	equipments: number[];
 }
@@ -13976,7 +13984,7 @@ declare interface IResMMOActivitySetEquip extends IResponse {
 }
 
 /** .lq.ReqMMOActivityUpdatehFriendList */
-declare interface IReqMMOActivityUpdatehFriendList extends IProto {
+declare interface IReqMMOActivityUpdatehFriendList extends IRequest {
 	activity_id: number;
 }
 
@@ -13993,7 +14001,7 @@ declare interface IResMMOActivityUpdatehFriendList extends IResponse {
 }
 
 /** .lq.ReqMMOActivityReceiveSupportReward */
-declare interface IReqMMOActivityReceiveSupportReward extends IProto {
+declare interface IReqMMOActivityReceiveSupportReward extends IRequest {
 	activity_id: number;
 }
 
@@ -14008,7 +14016,7 @@ declare interface IResMMOActivityReceiveSupportReward extends IResponse {
 }
 
 /** .lq.ReqMMOActivityDebugSetTeamCandidate */
-declare interface IReqMMOActivityDebugSetTeamCandidate extends IProto {
+declare interface IReqMMOActivityDebugSetTeamCandidate extends IRequest {
 	activity_id: number;
 	friend_list: IMMOActivityTeamCandidateData[];
 	random_friends: IMMOActivityTeamCandidateData[];
@@ -14754,7 +14762,7 @@ declare interface IAmuletEventData extends IProto {
  ** .lq.ReqAuthGame
  ** 协议：验证游戏连接
  */
-declare interface IReqAuthGame extends IProto {
+declare interface IReqAuthGame extends IRequest {
 	account_id: number;
 	/** 口令 */
 	token: string;
@@ -14813,7 +14821,7 @@ declare interface IResEnterGame extends IResponse {
  ** .lq.ReqSyncGame
  ** 协议：同步游戏
  */
-declare interface IReqSyncGame extends IProto {
+declare interface IReqSyncGame extends IRequest {
 	/** 回合id：场局本 */
 	round_id: string;
 	step: number;
@@ -14832,7 +14840,7 @@ declare interface IResSyncGame extends IResponse {
  ** 请求：玩家打牌、自摸、暗杠等操作
  ** !!修改此协议记得同步 GameSelfOperation 消息结构
  */
-declare interface IReqSelfOperation extends IProto {
+declare interface IReqSelfOperation extends IRequest {
 	type: number;
 	index: number;
 	tile: string;
@@ -14854,7 +14862,7 @@ declare interface IReqSelfOperation extends IProto {
  ** 请求：玩家吃碰明杠
  ** !!修改此协议记得同步 GameChiPengGang 消息结构
  */
-declare interface IReqChiPengGang extends IProto {
+declare interface IReqChiPengGang extends IRequest {
 	type: number;
 	index: number;
 	cancel_operation: boolean;
@@ -14865,7 +14873,7 @@ declare interface IReqChiPengGang extends IProto {
  ** .lq.ReqBroadcastInGame
  ** 请求：广播内容 （在游戏中）
  */
-declare interface IReqBroadcastInGame extends IProto {
+declare interface IReqBroadcastInGame extends IRequest {
 	content: string;
 	except_self: boolean;
 }
@@ -14875,7 +14883,7 @@ declare interface IReqBroadcastInGame extends IProto {
  ** 请求：游戏中GM命令
  ** deprecated
  */
-declare interface IReqGMCommandInGaming extends IProto {
+declare interface IReqGMCommandInGaming extends IRequest {
 	json_data: string;
 }
 
@@ -14893,7 +14901,7 @@ declare interface IResGamePlayerState extends IResponse {
  ** 退出房间投票
  ** !!修改此协议记得同步 GameVoteGameEnd 消息结构
  */
-declare interface IReqVoteGameEnd extends IProto {
+declare interface IReqVoteGameEnd extends IRequest {
 	yes: boolean;
 }
 
@@ -14907,7 +14915,7 @@ declare interface IResGameEndVote extends IResponse {
  ** .lq.ReqAuthObserve
  ** 观战验证
  */
-declare interface IReqAuthObserve extends IProto {
+declare interface IReqAuthObserve extends IRequest {
 	/** 口令 */
 	token: string;
 }
@@ -14926,7 +14934,7 @@ declare interface IResStartObserve extends IResponse {
  ** .lq.NotifyNewGame
  ** 通知新的一场游戏开始了
  */
-declare interface INotifyNewGame extends IProto {
+declare interface INotifyNewGame extends INotify {
 	/** 游戏的uuid */
 	game_uuid: string;
 	/** 玩家名字列表 - 按这个次序座 [0, 1, 2, 3] */
@@ -14937,7 +14945,7 @@ declare interface INotifyNewGame extends IProto {
  ** .lq.NotifyPlayerLoadGameReady
  ** 通知玩家进入游戏的准备就绪
  */
-declare interface INotifyPlayerLoadGameReady extends IProto {
+declare interface INotifyPlayerLoadGameReady extends INotify {
 	/** 已就绪Id列表 */
 	ready_id_list: number[];
 }
@@ -14946,7 +14954,7 @@ declare interface INotifyPlayerLoadGameReady extends IProto {
  ** .lq.NotifyGameBroadcast
  ** 玩家游戏内广播
  */
-declare interface INotifyGameBroadcast extends IProto {
+declare interface INotifyGameBroadcast extends INotify {
 	seat: number;
 	content: string;
 }
@@ -14955,7 +14963,7 @@ declare interface INotifyGameBroadcast extends IProto {
  ** .lq.NotifyGameEndResult
  ** 发送整场游戏结束信息
  */
-declare interface INotifyGameEndResult extends IProto {
+declare interface INotifyGameEndResult extends INotify {
 	result: IGameEndResult;
 }
 
@@ -14963,7 +14971,7 @@ declare interface INotifyGameEndResult extends IProto {
  ** .lq.NotifyGameTerminate
  ** 通知游戏中断
  */
-declare interface INotifyGameTerminate extends IProto {
+declare interface INotifyGameTerminate extends INotify {
 	reason: string;
 }
 
@@ -14971,7 +14979,7 @@ declare interface INotifyGameTerminate extends IProto {
  ** .lq.NotifyPlayerConnectionState
  ** 广播玩家连接状态变化
  */
-declare interface INotifyPlayerConnectionState extends IProto {
+declare interface INotifyPlayerConnectionState extends INotify {
 	seat: number;
 	state: GamePlayerState;
 }
@@ -14980,7 +14988,7 @@ declare interface INotifyPlayerConnectionState extends IProto {
  ** .lq.NotifyAccountLevelChange
  ** 通知玩家段位变化
  */
-declare interface INotifyAccountLevelChange extends IProto {
+declare interface INotifyAccountLevelChange extends INotify {
 	/** 原来的段位 */
 	origin: IAccountLevel;
 	/** 变化后的段位 */
@@ -14993,7 +15001,7 @@ declare interface INotifyAccountLevelChange extends IProto {
  ** .lq.NotifyGameFinishReward
  ** 比赛结束奖励
  */
-declare interface INotifyGameFinishReward extends IProto {
+declare interface INotifyGameFinishReward extends INotify {
 	mode_id: number;
 	level_change: INotifyGameFinishReward_LevelChange;
 	/** 比赛宝箱 */
@@ -15038,7 +15046,7 @@ declare interface INotifyGameFinishReward_CharacterGift extends IProto {
 }
 
 /** .lq.NotifyActivityReward */
-declare interface INotifyActivityReward extends IProto {
+declare interface INotifyActivityReward extends INotify {
 	/** 活动奖励 */
 	activity_reward: INotifyActivityReward_ActivityReward[];
 }
@@ -15050,7 +15058,7 @@ declare interface INotifyActivityReward_ActivityReward extends IProto {
 }
 
 /** .lq.NotifyActivityPoint */
-declare interface INotifyActivityPoint extends IProto {
+declare interface INotifyActivityPoint extends INotify {
 	/** 活动对局得点 */
 	activity_points: INotifyActivityPoint_ActivityPoint[];
 }
@@ -15063,7 +15071,7 @@ declare interface INotifyActivityPoint_ActivityPoint extends IProto {
 }
 
 /** .lq.NotifyLeaderboardPoint */
-declare interface INotifyLeaderboardPoint extends IProto {
+declare interface INotifyLeaderboardPoint extends INotify {
 	/** 排行榜对局得点 */
 	leaderboard_points: INotifyLeaderboardPoint_LeaderboardPoint[];
 }
@@ -15079,7 +15087,7 @@ declare interface INotifyLeaderboardPoint_LeaderboardPoint extends IProto {
  ** .lq.NotifyGamePause
  ** 比赛暂停通知
  */
-declare interface INotifyGamePause extends IProto {
+declare interface INotifyGamePause extends INotify {
 	/** 是不是在暂停中 */
 	paused: boolean;
 }
@@ -15088,7 +15096,7 @@ declare interface INotifyGamePause extends IProto {
  ** .lq.NotifyEndGameVote
  ** 比赛退出投票通知
  */
-declare interface INotifyEndGameVote extends IProto {
+declare interface INotifyEndGameVote extends INotify {
 	results: INotifyEndGameVote_VoteResult[];
 	/** 投票开始时间 */
 	start_time: number;
@@ -15106,7 +15114,7 @@ declare interface INotifyEndGameVote_VoteResult extends IProto {
  ** .lq.NotifyObserveData
  ** 通知观战数据
  */
-declare interface INotifyObserveData extends IProto {
+declare interface INotifyObserveData extends INotify {
 	unit: IGameLiveUnit;
 }
 
@@ -16376,7 +16384,7 @@ declare interface IRecordTake_TingPai extends IProto {
 }
 
 /** .lq.ReqRequestConnection */
-declare interface IReqRequestConnection extends IProto {
+declare interface IReqRequestConnection extends IRequest {
 	/** 连接类型 1-主链接 2-备用连接 3-测探连接 */
 	type: number;
 	/** 线路ID */
@@ -16394,7 +16402,7 @@ declare interface IResRequestConnection extends IResponse {
 }
 
 /** .lq.ReqRequestRouteChange */
-declare interface IReqRequestRouteChange extends IProto {
+declare interface IReqRequestRouteChange extends IRequest {
 	/** 之前使用的线路ID */
 	before: string;
 	/** 本连接使用的线路ID */
@@ -16410,7 +16418,7 @@ declare interface IResRequestRouteChange extends IResponse {
 }
 
 /** .lq.ReqHeartbeat */
-declare interface IReqHeartbeat extends IProto {
+declare interface IReqHeartbeat extends IRequest {
 	/** 网络延迟 */
 	delay: number;
 	no_operation_counter: number;

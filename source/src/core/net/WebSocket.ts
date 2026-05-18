@@ -1,7 +1,7 @@
 interface IWaitRpcInfo {
 	service: EServiceType;
 	method: string;
-	reqData: any;
+	reqData: IRequest;
 	callback: (res: IResponse) => void;
 }
 
@@ -103,7 +103,7 @@ export class WebSocket extends Laya.EventDispatcher {
 		this._socket.close();
 	}
 
-	send(methodName: ENetMessage, data: any) {
+	send(methodName: ENetMessage, data: IRequest) {
 		const dataStr = JSON.stringify(data);
 		const reqKey = methodName + ":" + dataStr;
 
@@ -193,7 +193,7 @@ export class WebSocket extends Laya.EventDispatcher {
 		this._socket.connectByUrl(this.url);
 	}
 
-	private eventMessage(type: ESocketEvent.Response | ESocketEvent.Notify, name: string, res: IResponse, req?: any, callback?: Function) {
+	private eventMessage(type: ESocketEvent.Response | ESocketEvent.Notify, name: string, res: IResponse, req?: IRequest, callback?: Function) {
 		this.event(type, [name, res, req]);
 		callback && callback(res);
 	}

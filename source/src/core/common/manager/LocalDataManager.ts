@@ -1,10 +1,19 @@
 export class LocalDataManager extends Singleton<LocalDataManager>() implements ILocalDataManager {
 	set<T>(key: string, value: T) {
-		Laya.LocalStorage.setJSON(key, value);
+		try {
+			Laya.LocalStorage.setJSON(key, value);
+		} catch (error) {
+			Logger.error("LocalDataManager set error", key, value, error);
+		}
 	}
 
 	get<T = any>(key: string, defaultValue?: T) {
-		const value = Laya.LocalStorage.getJSON(key);
+		let value = null;
+		try {
+			value = Laya.LocalStorage.getJSON(key);
+		} catch (error) {
+			Logger.error("LocalDataManager get error", key, error);
+		}
 		return (value == null ? defaultValue : value) as T;
 	}
 

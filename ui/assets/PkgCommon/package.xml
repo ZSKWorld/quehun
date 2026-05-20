@@ -297,6 +297,14 @@
     <image id="hraoobj0" name="img_1755.png" path="/Texture/" exported="true"/>
     <image id="hraoobj1" name="img_848.png" path="/Texture/" exported="true" scale="9grid" scale9grid="15,15,10,10"/>
     <image id="hraoobj2" name="img_2113.png" path="/Texture/" exported="true" scale="9grid" scale9grid="33,17,66,34"/>
+    <component id="q9u3obj3" name="UIPayment.xml" path="/" exported="true"/>
+    <component id="q9u3obj4" name="ComPaymentCHS.xml" path="/Component/UIPayment/"/>
+    <component id="q9u3obj5" name="RenderPaymentItem.xml" path="/Component/UIPayment/"/>
+    <image id="q9u3obj6" name="img_2365.png" path="/Texture/" exported="true"/>
+    <image id="q9u3obj7" name="img_2366.png" path="/Texture/" exported="true"/>
+    <image id="q9u3obj8" name="img_2367.png" path="/Texture/" exported="true"/>
+    <image id="q9u3obj9" name="img_2369.png" path="/Texture/" exported="true"/>
+    <image id="q9u3obja" name="img_2370.png" path="/Texture/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

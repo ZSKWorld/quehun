@@ -21,8 +21,8 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 	}
 
 	override onEnable() {
-		const autoLogin = !!$localDataMgr.get(ELocalDataKey.AutoLogin);
-		this._loginInfo = $localDataMgr.get(ELocalDataKey.LastLoginData);
+		const autoLogin = $localDataMgr.getBool(ELocalDataKey.AutoLogin);
+		this._loginInfo = $localDataMgr.getObj(ELocalDataKey.LastLoginData);
 		if (!this._loginInfo) {
 			this._loginInfo = {
 				loginType: ELoginType.Account,
@@ -226,8 +226,8 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 
 	private async afterLogin() {
 		const { _loginInfo } = this;
-		$localDataMgr.set(ELocalDataKey.AutoLogin, 1);
-		$localDataMgr.set<ILoginInfo>(ELocalDataKey.LastLoginData, _loginInfo);
+		$localDataMgr.setNum(ELocalDataKey.AutoLogin, 1);
+		$localDataMgr.setObj(ELocalDataKey.LastLoginData, _loginInfo);
 
 		const account = $user.account;
 		//绑定电话

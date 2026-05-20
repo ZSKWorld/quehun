@@ -268,12 +268,19 @@ declare interface ITimeUtil {
 }
 
 declare interface ILocalDataManager {
-	set<T = any>(key: ELocalDataKey, value: T): void;
+	getNum(key: ELocalDataKey, defaultValue?: number): number;
+	setNum(key: ELocalDataKey, value: number): void;
 
-	get<T = any>(key: ELocalDataKey, defaultValue?: T): T;
+	getStr(key: ELocalDataKey, defaultValue?: string): string;
+	setStr(key: ELocalDataKey, value: string): void;
+
+	getBool(key: ELocalDataKey, defaultValue?: boolean): boolean;
+	setBool(key: ELocalDataKey, value: boolean): void;
+
+	getObj<T extends object>(key: ELocalDataKey, defaultValue?: T): T;
+	setObj<T extends object>(key: ELocalDataKey, value: T): void;
 
 	remove(key: ELocalDataKey): void;
-
 	removeAll(): void;
 }
 

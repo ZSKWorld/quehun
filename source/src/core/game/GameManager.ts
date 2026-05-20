@@ -56,10 +56,10 @@ export class GameManager extends Observer implements IGameManager {
 		return 'unknown';
 	}
 	get deviceId() {
-		this._deviceId = this._deviceId || $localDataMgr.get(ELocalDataKey.DeviceId);
+		this._deviceId = this._deviceId || $localDataMgr.getStr(ELocalDataKey.DeviceId);
 		if (!this._deviceId) {
 			this._deviceId = $gameUtil.createUUID();
-			$localDataMgr.set(ELocalDataKey.DeviceId, this._deviceId);
+			$localDataMgr.setStr(ELocalDataKey.DeviceId, this._deviceId);
 		}
 		return this._deviceId;
 	}
@@ -86,7 +86,7 @@ export class GameManager extends Observer implements IGameManager {
 		return device;
 	}
 	get multiLogin() {
-		const stime = $localDataMgr.get<number>(ELocalDataKey.MultiLogin);
+		const stime = $localDataMgr.getNum(ELocalDataKey.MultiLogin);
 		if (!stime) return false;
 		return $timeUtil.second < stime + 1.5 && stime < $timeUtil.second + 1800;
 	}
@@ -134,7 +134,7 @@ export class GameManager extends Observer implements IGameManager {
 			_lastMousePoint.setTo(mousePoint.x, mousePoint.y);
 		}
 
-		$localDataMgr.set(ELocalDataKey.MultiLogin, $timeUtil.second);
+		$localDataMgr.setNum(ELocalDataKey.MultiLogin, $timeUtil.second);
 
 		//23/12/27新增，每6分钟同步服务器时间
 		if (_hangOutTime % 360 == 0) {
@@ -161,11 +161,11 @@ export class GameManager extends Observer implements IGameManager {
 	@InterestMessage(ENetNotify.NotifyAnotherLogin)
 	private onNotifyAnotherLogin() {
 		$netMgr.closeAll();
-		$localDataMgr.set(ELocalDataKey.AutoLogin, 0);
-		const loginInfo = $localDataMgr.get<ILoginInfo>(ELocalDataKey.LastLoginData);
+		$localDataMgr.setNum(ELocalDataKey.AutoLogin, 0);
+		const loginInfo = $localDataMgr.getObj<ILoginInfo>(ELocalDataKey.LastLoginData);
 		if (loginInfo) {
 			loginInfo.access_token = "";
-			$localDataMgr.set(ELocalDataKey.LastLoginData, loginInfo);
+			$localDataMgr.setObj(ELocalDataKey.LastLoginData, loginInfo);
 		}
 		$confirmSma(2, $lang(2324)).then(v => {
 			// window.location.reload();

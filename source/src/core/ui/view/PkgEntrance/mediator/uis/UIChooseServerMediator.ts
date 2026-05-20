@@ -15,7 +15,7 @@ export class UIChooseServerMediator extends MediatorBase<UIChooseServerView, IUI
 		if (ipInfos.length == 1) {
 			this.setChooseServer(0);
 		} else {
-			this._lastIpIndex = $localDataMgr.get(ELocalDataKey.LastServer, -1);
+			this._lastIpIndex = $localDataMgr.getNum(ELocalDataKey.LastServer, -1);
 			this.view.refresh(ipInfos.map(v => v.name), this._lastIpIndex);
 		}
 	}
@@ -28,7 +28,7 @@ export class UIChooseServerMediator extends MediatorBase<UIChooseServerView, IUI
 		const { ipInfos, callback } = this.data;
 		index = $mathUtil.clamp(index, 0, ipInfos.length - 1);
 		this._ipIndex = index;
-		$localDataMgr.set(ELocalDataKey.LastServer, this._ipIndex);
+		$localDataMgr.setNum(ELocalDataKey.LastServer, this._ipIndex);
 		callback(this._ipIndex);
 		this.closeSelf();
 	}

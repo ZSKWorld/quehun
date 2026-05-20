@@ -65,7 +65,7 @@ export class UIRechargeMediator extends MediatorBase<UIRechargeView, IUIRecharge
 		}
 	}
 
-	private onRecharge(goodsId: number) {
+	private onRecharge(id: number) {
 
 	}
 
@@ -83,11 +83,21 @@ export class UIRechargeMediator extends MediatorBase<UIRechargeView, IUIRecharge
 		});
 	}
 
-	private onRechargeTB(goodsId: number) {
-
+	private onRechargeTB(id: number) {
+		// const cfgExchange = $cfgMgr.exchange.exchange[id];
+		// this.openView<IUIBuyGoodsData>(EViewID.UIBuyGoodsView, {
+		// 	type: 2,
+		// 	id: 100001,
+		// 	currencyId: 100004,
+		// 	price: cfgExchange.source_value,
+		// 	priceCount: cfgExchange.source_value,
+		// 	max: -1,
+		// 	showOwn: true,
+		// 	title: cfgExchange.langField(ECfgLangField.name),
+		// });
 	}
 
-	private onRechargeHS(goodsId: number) {
+	private onRechargeHS(id: number) {
 
 	}
 }

@@ -35,10 +35,10 @@ export class NetManager extends Singleton<NetManager>() implements INetManager {
 
 	private initLobby() {
 		const socket = this._lobbySocket = new WebSocket(this._routes[0], "gateway");
-		socket.on(ESocketEvent.Connecting, this, () => $facade.dispatch(ENotifyConst.LobbyConnecting));
-		socket.on(ESocketEvent.Reconnecting, this, () => $facade.dispatch(ENotifyConst.LobbyReconnecting));
-		socket.on(ESocketEvent.Connected, this, () => $facade.dispatch(ENotifyConst.LobbyConnected));
-		socket.on(ESocketEvent.Closed, this, () => $facade.dispatch(ENotifyConst.LobbyClosed));
+		socket.on(ESocketEvent.Connecting, $facade, $facade.dispatch, [ENotifyConst.LobbyConnecting]);
+		socket.on(ESocketEvent.Reconnecting, $facade, $facade.dispatch, [ENotifyConst.LobbyReconnecting]);
+		socket.on(ESocketEvent.Connected, $facade, $facade.dispatch, [ENotifyConst.LobbyConnected]);
+		socket.on(ESocketEvent.Closed, $facade, $facade.dispatch, [ENotifyConst.LobbyClosed]);
 		socket.on(ESocketEvent.Response, this, (method: string, res: IResponse, req: IRequest) => {
 			if (res.error)
 				this.onResponseError(method, res, req);
@@ -47,15 +47,41 @@ export class NetManager extends Singleton<NetManager>() implements INetManager {
 		});
 		socket.on(ESocketEvent.Notify, $facade, $facade.dispatch);
 	}
+	private initGame() {
+		// const socket = this._gameSocket = new WebSocket(this._routes[0], "gateway");
+		// socket.on(ESocketEvent.Connecting, $facade, $facade.dispatch, [ENotifyConst.GameConnecting]);
+		// socket.on(ESocketEvent.Reconnecting, $facade, $facade.dispatch, [ENotifyConst.GameReconnecting]);
+		// socket.on(ESocketEvent.Connected, $facade, $facade.dispatch, [ENotifyConst.GameConnected]);
+		// socket.on(ESocketEvent.Closed, $facade, $facade.dispatch, [ENotifyConst.GameClosed]);
+		// socket.on(ESocketEvent.Response, this, (method: string, res: IResponse, req: IRequest) => {
+		// 	if (res.error)
+		// 		this.onResponseError(method, res, req);
+		// 	else
+		// 		$facade.dispatch(method, [res, req]);
+		// });
+		// socket.on(ESocketEvent.Notify, $facade, $facade.dispatch);
+	}
+	private initOb() {
+		// const socket = this._obSocket = new WebSocket(this._routes[0], "gateway");
+		// socket.on(ESocketEvent.Connecting, $facade, $facade.dispatch, [ENotifyConst.OBConnecting]);
+		// socket.on(ESocketEvent.Reconnecting, $facade, $facade.dispatch, [ENotifyConst.OBReconnecting]);
+		// socket.on(ESocketEvent.Connected, $facade, $facade.dispatch, [ENotifyConst.OBConnected]);
+		// socket.on(ESocketEvent.Closed, $facade, $facade.dispatch, [ENotifyConst.OBClosed]);
+		// socket.on(ESocketEvent.Response, this, (method: string, res: IResponse, req: IRequest) => {
+		// 	if (res.error)
+		// 		this.onResponseError(method, res, req);
+		// 	else
+		// 		$facade.dispatch(method, [res, req]);
+		// });
+		// socket.on(ESocketEvent.Notify, $facade, $facade.dispatch);
+	}
+
 	connectLobby() { this._lobbySocket?.connect(); }
-	closeLobby() { this._lobbySocket?.close(); }
-
-	private initGame() { }
 	connectGame() { this._gameSocket?.connect(); }
-	closeGame() { this._gameSocket?.close(); }
-
-	private initOb() { }
 	connectOb() { this._obSocket?.connect(); }
+
+	closeLobby() { this._lobbySocket?.close(); }
+	closeGame() { this._gameSocket?.close(); }
 	closeOb() { this._obSocket?.close(); }
 
 	closeAll() {

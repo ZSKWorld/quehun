@@ -25,10 +25,10 @@ declare interface INetManager {
 
 	init(): Promise<void>;
 	connectLobby(): void;
-	closeLobby(): void;
 	connectGame(): void;
-	closeGame(): void;
 	connectOb(): void;
+	closeLobby(): void;
+	closeGame(): void;
 	closeOb(): void;
 	closeAll(): void;
 }

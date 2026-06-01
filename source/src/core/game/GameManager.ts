@@ -23,7 +23,7 @@ export class GameManager extends Observer implements IGameManager {
 	get language() { return ELanguage.CHS; }
 	get clientType() { return EClientType.CHST; }
 	get version() {
-		return "4.0.43";
+		return "4.0.44";
 		return this._version?.version || "";
 	}
 	get clientVersion() { return 'web-' + this.version.replace('.w', ''); }

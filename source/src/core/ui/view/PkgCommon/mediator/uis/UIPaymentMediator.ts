@@ -7,7 +7,7 @@ export class UIPaymentMediator extends MediatorBase<UIPaymentView, IUIPaymentDat
 	}
 
 	override onEnable() {
-		this.view.refresh(this.data.id);
+		this.view.refresh(this.data.id, this.data.debtId);
 	}
 
 	private onListPaymentClick(type: EPaymentType) {

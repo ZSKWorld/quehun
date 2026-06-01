@@ -59,4 +59,5 @@ declare interface IUIBuyGoodsData {
 
 declare interface IUIPaymentData {
 	id: number;
+	debtId?: string;
 }

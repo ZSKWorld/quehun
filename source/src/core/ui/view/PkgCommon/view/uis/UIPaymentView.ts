@@ -24,7 +24,21 @@ export class UIPaymentView extends ExtensionClass<IView, UIPayment>(UIPayment) i
 		$uiUtil.setList(list_payment, false, this, this.onListPaymentRender, this.onListPaymentClick);
 	}
 
-	refresh(id: number) {
+	refresh(id: number, debtId?: string) {
+		const { txt_name, txt_price, list_payment } = this;
+		if (debtId) {
+			txt_name.langText(3438);
+		} else {
+			if (id == 1010 || id == 2010 || id == 3010 || id == 5010) {
+				txt_name.text = $cfgMgr.mall.month_ticket[id].langField(ECfgLangField.name);
+			} else {
+				txt_name.text = $cfgMgr.mall.goods[id].langField(ECfgLangField.name);
+			}
+		}
+		const shelvesId = $user.account.isFrozen ? "shelves_006" : "shelves_004";
+		const cfgGoodsShelves = $cfgMgr.mall.goods_shelves[shelvesId].find(v => v.goods_id == id);
+		txt_price.text = cfgGoodsShelves ? cfgGoodsShelves.price : "";
+
 		this._paymentTypes = [
 			EPaymentType.YinLian,
 			EPaymentType.XinYongKa,
@@ -32,7 +46,7 @@ export class UIPaymentView extends ExtensionClass<IView, UIPayment>(UIPayment) i
 			EPaymentType.MyCard,
 			EPaymentType.XSolla,
 		];
-		this.list_payment.numItems = this._paymentTypes.length;
+		list_payment.numItems = this._paymentTypes.length;
 	}
 
 	override onOpenAni() { return $uiUtil.popAlphaIn(this); }

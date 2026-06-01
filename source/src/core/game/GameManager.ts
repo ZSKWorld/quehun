@@ -22,7 +22,10 @@ export class GameManager extends Observer implements IGameManager {
 	get inDmm() { return this._inDmm; }
 	get language() { return ELanguage.CHS; }
 	get clientType() { return EClientType.CHST; }
-	get version() { return this._version?.version || ""; }
+	get version() {
+		return "4.0.43";
+		return this._version?.version || "";
+	}
 	get clientVersion() { return 'web-' + this.version.replace('.w', ''); }
 	get currency() {
 		const info = $cfgMgr.mall.channel_config[this.payChannelId];

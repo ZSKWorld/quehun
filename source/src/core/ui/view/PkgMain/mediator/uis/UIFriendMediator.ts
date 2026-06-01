@@ -68,7 +68,7 @@ export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> 
 
 	private onBtnCopyClick() {
 		try {
-			const eid = $gameUtil.encodeAccountId($user.account.account_id).toString();
+			const eid = $gameUtil.encodeAccountId($user.account.accountId).toString();
 			navigator.clipboard.writeText(eid)
 				.then(() => $tipMgr.showTip($lang(2125)));
 		} catch (error) {
@@ -110,10 +110,10 @@ export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> 
 
 	@InterestMessage(ENetMessage.searchAccountByEid)
 	private onSearchAccountByEid(res: IResSearchAccountbyEidLobby) {
-		const accoundId = res.account_id;
-		if (!accoundId || accoundId == $user.account.account_id)
+		const accountId = res.account_id;
+		if (!accountId || accountId == $user.account.accountId)
 			return this.view.refreshSearch(true, null);
-		this._searchPlayerLoader.intro = [{ account_id: accoundId }];
+		this._searchPlayerLoader.intro = [{ account_id: accountId }];
 		this._searchPlayerLoader.loadNext();
 	}
 

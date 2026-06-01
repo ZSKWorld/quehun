@@ -733,6 +733,20 @@ declare enum EColorString {
 	_00000000 = "#00000000",
 }
 
+//#region 充值相关
+
+/** 支付类型 */
+declare enum EPaymentType {
+	MyCard = 1,
+	PayPal = 2,
+	XSolla = 3,
+	YinLian = 4,
+	WeChat = 5,
+	AliPay = 6,
+	XinYongKa = 7,
+}
+//#endregion
+
 
 
 

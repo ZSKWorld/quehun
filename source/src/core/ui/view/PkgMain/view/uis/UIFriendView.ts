@@ -26,7 +26,7 @@ export class UIFriendView extends ExtensionClass<IView, UIFriend>(UIFriend) impl
 		btn_find.onClick(this, this.sendEvent, [EUIFriendMsg.OnBtnFindClick]);
 		$uiUtil.setList(list_friend, true, this, this.onListFriendRender);
 
-		txt_myID.text = $gameUtil.encodeAccountId($user.account.account_id).toString();
+		txt_myID.text = $gameUtil.encodeAccountId($user.account.accountId).toString();
 	}
 
 	refreshFriends() {

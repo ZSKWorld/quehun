@@ -1,4 +1,5 @@
 import { CommandQueue } from "../core/mvc/controller/CommandQueue";
+import { InitCommandCommand } from "./InitCommandCommand";
 import { InitGameCommand } from "./InitGameCommand";
 import { InitGlobalCommand } from "./InitGlobalCommand";
 import { InitSceneCommand } from "./InitSceneCommand";
@@ -11,6 +12,7 @@ export class InitContextCommand extends CommandQueue {
 		this.addSubCommand(InitViewCommand);
 		this.addSubCommand(InitViewInfoCommand);
 		this.addSubCommand(InitSceneCommand);
+		this.addSubCommand(InitCommandCommand);
 		this.addSubCommand(InitGameCommand);
 	}
 }

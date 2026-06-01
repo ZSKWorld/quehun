@@ -6,8 +6,7 @@ export class Controller extends Singleton<Controller>() {
 			Logger.error("cls 不能为空", notifyName, cls);
 		}
 		if (this._commandMap[notifyName]) {
-			const commandCls = this._commandMap[notifyName].find(v => v == cls);
-			if (commandCls) {
+			if (this._commandMap[notifyName].includes(cls)) {
 				Logger.error("重复注册command", notifyName, cls);
 				return;
 			}
@@ -34,6 +33,10 @@ export class Controller extends Singleton<Controller>() {
 
 	execute(notifyName: string, data?: any) {
 		if (!this.has(notifyName)) return;
-		this._commandMap[notifyName].forEach(v => new v().execute(notifyName, data));
+		const commandClses = this._commandMap[notifyName];
+		for (let i = 0, n = commandClses.length; i < n; i++) {
+			const commandCls = commandClses[i];
+			new commandCls().execute(notifyName, data);
+		}
 	}
 }

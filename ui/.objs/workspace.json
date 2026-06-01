@@ -6,7 +6,6 @@
     "ui://vx9zwserfpd2obgp",
     "ui://vx9zwserhraoobiz",
     "ui://vx9zwserq9u3obj3",
-    "ui://vx9zwserq9u3obj4",
     "ui://vx9zwserq9u3obj5",
     "ui://vx9zwserj0ddob7e",
     "ui://vx9zwserj0ddob7j",
@@ -43,7 +42,7 @@
   "test.device": "iPhone 8 Plus",
   "canvasColor": 10066329,
   "auxline2": true,
-  "doc.activeDoc": "ui://vx9zwserq9u3obj4",
+  "doc.activeDoc": "ui://vx9zwserq9u3obj3",
   "libview.twoColumn": true,
   "libview.expandedNodes": [
     "vx9zwser",

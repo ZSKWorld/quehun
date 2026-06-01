@@ -82,6 +82,7 @@ declare enum EViewID {
 	UIItemDetailView = "UIItemDetailView",
 	UILoading2View = "UILoading2View",
 	UILoadingView = "UILoadingView",
+	UIPaymentView = "UIPaymentView",
 	UIRechargeView = "UIRechargeView",
 	UITestView = "UITestView",
 	UIChooseServerView = "UIChooseServerView",

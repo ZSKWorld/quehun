@@ -6,12 +6,6 @@ export class RechargeDO extends BaseDO implements DO.IRechargeDO {
 	/** 以及充值过的人民币档位 */
 	private _rechargedList: number[] = [];
 	private _gainedVipLevels: number[] = [];
-	/** 欠款订单列表 */
-	private _orders: ProtoObject<IResFetchRefundOrder_OrderInfo>[] = [];
-	/** 最后补款时间 */
-	private _clearDeadline: number = 0;
-	/** 提示消息 */
-	private _message: ProtoObject<II18nContext>[] = [];
 	// private _paymentSetting: ProtoObject<IPaymentSetting> = {};
 	private _paymentSettingV2: ProtoObject<IPaymentSettingV2> = { open_payment: 0, payment_platforms: [] };
 	private _paymentSettingMap: Record<string, ProtoObject<IPaymentSettingV2_PaymentSettingUnit>> = {};
@@ -25,9 +19,6 @@ export class RechargeDO extends BaseDO implements DO.IRechargeDO {
 				level = v.id;
 		});
 		return level;
-	}
-	get paymentOpen() {
-		return this._paymentSettingV2 && this._paymentSettingV2.open_payment == 1;
 	}
 	get shelevesId() {
 		let goods_sheleve_id = '';
@@ -48,6 +39,12 @@ export class RechargeDO extends BaseDO implements DO.IRechargeDO {
 			goods_sheleve_id = 'shelves_007';
 		}
 		return goods_sheleve_id;
+	}
+	get payOpen() {
+		return this._paymentSettingV2?.open_payment == 1;
+	}
+	get paymentTypes() {
+		return this._paymentSettingV2?.payment_platforms.map(e => e.platform) || [];
 	}
 
 	isFirstRecharge(id: number) {
@@ -81,13 +78,6 @@ export class RechargeDO extends BaseDO implements DO.IRechargeDO {
 	@InterestMessage(ENetMessage.fetchServerSettings)
 	private onFetchServerSetting(res: IResServerSettings) {
 		this.onNotifyServerSetting(res);
-	}
-
-	@InterestMessage(ENetMessage.fetchRefundOrder)
-	private onFetchRefundOrder(res: IResFetchRefundOrder) {
-		this._orders = res.orders.map($decodeProtoData);
-		this._clearDeadline = res.clear_deadline;
-		this._message = res.message.map($decodeProtoData);
 	}
 
 	@InterestMessage(ENetNotify.NotifyAccountUpdate)

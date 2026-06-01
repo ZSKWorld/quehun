@@ -1,38 +1,43 @@
 declare namespace DO {
+	interface IRefundInfo {
+		get orders(): ProtoObject<IResFetchRefundOrder_OrderInfo>[];
+		get clearDeadline(): number;
+		get message(): ProtoObject<II18nContext>[];
+	}
+
 	interface IAccountDO {
-		account_id: number;
-		nickname: string;
-		login_time: number;
-		logout_time: number;
-		room_id: number;
+		get accountId(): number;
+		get nickName(): string;
+		get loginTime(): number;
+		get logoutTime(): number;
+		get roomId(): number;
 		/** 防沉迷 */
-		anti_addiction: ProtoObject<IAntiAddiction>;
+		get antiAddiction(): ProtoObject<IAntiAddiction>;
 		/** 称号 */
-		title: number;
+		get title(): number;
 		/** 签名 */
-		signature: string;
-		email: string;
-		email_verify: number;
-		avatar_id: number;
-		birthday: number;
-		phone: string;
-		phone_verify: number;
-		/** 各平台钻石 */
-		platform_diamond: ProtoObject<IAccount_PlatformDiamond>[];
+		get signature(): string;
+		get email(): string;
+		get emailVerify(): number;
+		get avatarId(): number;
+		get birthday(): number;
+		get phone(): string;
+		get phoneVerify(): number;
 		/** 4麻段位 */
-		level: ProtoObject<IAccountLevel>;
+		get level(): ProtoObject<IAccountLevel>;
 		/** 3麻段位 */
-		level3: ProtoObject<IAccountLevel>;
-		avatar_frame: number;
-		skin_ticket: number;
-		platform_skin_ticket: ProtoObject<IAccount_PlatformSkinTicket>[];
+		get level3(): ProtoObject<IAccountLevel>;
+		get avatarFrame(): number;
 		/** 名人认证 */
-		verified: number;
-		challenge_levels: ProtoObject<IAccount_ChallengeLevel>[];
-		frozen_state: number;
-		achievement_count: ProtoObject<IAccount_AchievementCount>[];
-		favorite_hu: ProtoObject<IFavoriteHu>[];
+		get verified(): number;
+		get challengeLevels(): ProtoObject<IAccount_ChallengeLevel>[];
+		get frozenState(): number;
+		get achievementCount(): ProtoObject<IAccount_AchievementCount>[];
+		get favoriteHu(): ProtoObject<IFavoriteHu>[];
 		/** 勋章列表 */
-		badges: ProtoObject<IAccount_Badge>[];
+		get badges(): ProtoObject<IAccount_Badge>[];
+
+		/** 是否是冻结账户 */
+		get isFrozen(): boolean;
 	}
 }

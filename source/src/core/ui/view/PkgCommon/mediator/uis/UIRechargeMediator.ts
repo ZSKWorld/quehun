@@ -23,10 +23,10 @@ export class UIRechargeMediator extends MediatorBase<UIRechargeView, IUIRecharge
 					type = EUIRechargeTabType.HY;
 				break;
 		}
-		const paymentOpen = !!$gameMgr.config.goods_sheleve_id && $user.recharge.paymentOpen;
+		const payOpen = !!$gameMgr.config.goods_sheleve_id && $user.recharge.payOpen;
 		const enables: Record<EUIRechargeTabType, boolean> = {
-			[EUIRechargeTabType.HY]: paymentOpen,
-			[EUIRechargeTabType.FSQ]: paymentOpen,
+			[EUIRechargeTabType.HY]: payOpen,
+			[EUIRechargeTabType.FSQ]: payOpen,
 			[EUIRechargeTabType.TB]: true,
 			[EUIRechargeTabType.QYDJ]: $gameMgr.clientType != EClientType.CHS,
 			[EUIRechargeTabType.HS]: $gameMgr.clientType == EClientType.CHS,
@@ -66,7 +66,7 @@ export class UIRechargeMediator extends MediatorBase<UIRechargeView, IUIRecharge
 	}
 
 	private onRecharge(id: number) {
-
+		this.openView<IUIPaymentData>(EViewID.UIPaymentView, { id });
 	}
 
 	private onRechargeHY(id: number) {

@@ -89,6 +89,8 @@ import { UILoadingView } from "../core/ui/view/PkgCommon/view/uis/UILoadingView"
 import { UILoadingMediator } from "../core/ui/view/PkgCommon/mediator/uis/UILoadingMediator";
 import { UILoading2View } from "../core/ui/view/PkgCommon/view/uis/UILoading2View";
 import { UILoading2Mediator } from "../core/ui/view/PkgCommon/mediator/uis/UILoading2Mediator";
+import { UIPaymentView } from "../core/ui/view/PkgCommon/view/uis/UIPaymentView";
+import { UIPaymentMediator } from "../core/ui/view/PkgCommon/mediator/uis/UIPaymentMediator";
 import { UIRechargeView } from "../core/ui/view/PkgCommon/view/uis/UIRechargeView";
 import { UIRechargeMediator } from "../core/ui/view/PkgCommon/mediator/uis/UIRechargeMediator";
 import { UITestView } from "../core/ui/view/PkgCommon/view/uis/UITestView";
@@ -232,6 +234,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.UIItemDetailView, EViewType.UI, UIItemDetailView, UIItemDetailMediator);
 		register(EViewID.UILoadingView, EViewType.UI, UILoadingView, UILoadingMediator);
 		register(EViewID.UILoading2View, EViewType.UI, UILoading2View, UILoading2Mediator);
+		register(EViewID.UIPaymentView, EViewType.UI, UIPaymentView, UIPaymentMediator);
 		register(EViewID.UIRechargeView, EViewType.UI, UIRechargeView, UIRechargeMediator);
 		register(EViewID.UITestView, EViewType.UI, UITestView, UITestMediator);
 		register(EViewID.UIChooseServerView, EViewType.UI, UIChooseServerView, UIChooseServerMediator);

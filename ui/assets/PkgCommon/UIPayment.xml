@@ -1,13 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0ehrao7plom5" designImageOffsetY="22" designImageAlpha="0" designImageLayer="1">
+<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0eq9u37plom7" designImageOffsetY="22" designImageAlpha="78" designImageLayer="1">
   <displayList>
     <component id="n39_ivmb" name="mask" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" xy="0,0" size="1920,1080"/>
-    <component id="n0_hrao" name="n0" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" xy="960,539" pivot="0.5,0.5" anchor="true" size="640,465">
-      <relation target="" sidePair="center-center,middle-middle"/>
-    </component>
+    <component id="n41_lkqm" name="n41" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" xy="388,191" size="1143,698"/>
     <component id="n11_hrao" name="close" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" xy="1187,329" size="70,70">
-      <relation target="n0_hrao" sidePair="right-right,top-top"/>
       <Button icon="ui://vx9zwserj0ddob7b"/>
     </component>
+    <text id="n42_lkqm" name="title" xy="816,250" pivot="0.5,0.5" size="292,64" font="ui://vx9zwserrpakobeu" fontSize="48" color="#edb26f" align="center" vAlign="middle" leading="0" singleLine="true" text="选择支付方式"/>
+    <text id="n43_lkqm" name="n43" xy="508,373" pivot="0,0.5" size="194,52" fontSize="38" color="#7380a3" vAlign="middle" leading="0" singleLine="true" text="商品名称："/>
+    <text id="n44_lkqm" name="n44" xy="992,373" pivot="0,0.5" size="194,52" fontSize="38" color="#7380a3" vAlign="middle" leading="0" singleLine="true" text="应付金额："/>
+    <text id="n45_lkqm" name="n45" xy="508,474" pivot="0,0.5" size="194,52" fontSize="38" color="#7380a3" vAlign="middle" leading="0" singleLine="true" text="选择支付："/>
+    <text id="n46_lkqm" name="name" xy="699,373" pivot="0,0.5" size="280,52" fontSize="38" color="#c9d2d7" vAlign="middle" leading="0" autoSize="shrink" singleLine="true" text="340辉玉"/>
+    <text id="n47_lkqm" name="price" xy="1184,373" size="163,52" fontSize="38" color="#feb83f" vAlign="middle" leading="0" singleLine="true" text="NTD 170"/>
+    <list id="n48_lkqm" name="payment" xy="521,550" size="880,250" layout="flow_hz" overflow="scroll" scrollBarFlags="128" lineGap="30" colGap="56" lineItemCount="3" defaultItem="ui://vx9zwserq9u3obj5" autoClearItems="true">
+      <item icon="ui://vx9zwserq9u3obj8"/>
+      <item icon="ui://vx9zwserq9u3obj9"/>
+      <item icon="ui://vx9zwserq9u3obj7"/>
+      <item icon="ui://vx9zwserq9u3obj6"/>
+      <item icon="ui://vx9zwserq9u3obja"/>
+    </list>
   </displayList>
 </component>

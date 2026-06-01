@@ -253,7 +253,7 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 		// 	this.checkFrozenState();
 		// }
 
-		if (account.frozen_state) {
+		if (account.frozenState) {
 			const res = await $netMgr.requests.fetchRefundOrder();
 			if (res.error) {
 				$showNetError(res.error);

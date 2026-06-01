@@ -12,11 +12,15 @@ export abstract class CommandQueue extends Command {
 	}
 
 	protected addSubCommand(commandCls: ICommandClass) {
-		if (this._queue.find(v => v == commandCls)) return;
+		if (this._queue.includes(commandCls)) return;
 		this._queue.push(commandCls);
 	}
 
 	override execute(notifyName: string, data?: any): void {
-		this._queue.forEach(v => new v().execute(notifyName, data));
+		const queue = this._queue;
+		for (let i = 0, n = queue.length; i < n; i++) {
+			const commandCls = queue[i];
+			new commandCls().execute(notifyName, data);
+		}
 	}
 }

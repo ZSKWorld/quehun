@@ -56,3 +56,7 @@ declare interface IUIBuyGoodsData {
 	title?: string;
 	multiDesc?: string;
 }
+
+declare interface IUIPaymentData {
+	id: number;
+}

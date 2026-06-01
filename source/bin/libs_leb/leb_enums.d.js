@@ -528,3 +528,13 @@ EColorString = {
 	_ffffff: "#ffffff",
 	_00000000: "#00000000",
 }
+
+EPaymentType = {
+	MyCard: 1,
+	PayPal: 2,
+	XSolla: 3,
+	YinLian: 4,
+	WeChat: 5,
+	AliPay: 6,
+	XinYongKa: 7,
+}

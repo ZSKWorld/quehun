@@ -4,15 +4,17 @@ export class Controller extends Singleton<Controller>() {
 	register(notifyName: string, cls: ICommandClass) {
 		if (!cls) {
 			Logger.error("cls 不能为空", notifyName, cls);
+			return;
 		}
-		if (this._commandMap[notifyName]) {
-			if (this._commandMap[notifyName].includes(cls)) {
-				Logger.error("重复注册command", notifyName, cls);
-				return;
-			}
+		const commandMap = this._commandMap;
+
+		if (commandMap[notifyName]?.includes(cls)) {
+			Logger.error("重复注册command", notifyName, cls);
+			return;
 		}
-		this._commandMap[notifyName] = this._commandMap[notifyName] || [];
-		this._commandMap[notifyName].push(cls);
+
+		commandMap[notifyName] = commandMap[notifyName] || [];
+		commandMap[notifyName].push(cls);
 	}
 
 	has(notifyName: string) {
@@ -21,6 +23,7 @@ export class Controller extends Singleton<Controller>() {
 
 	remove(notifyName: string, cls?: ICommandClass) {
 		if (!this.has(notifyName)) return;
+
 		if (cls) {
 			const commandClses = this._commandMap[notifyName];
 			const index = commandClses.findIndex(v => v == cls);
@@ -33,6 +36,7 @@ export class Controller extends Singleton<Controller>() {
 
 	execute(notifyName: string, data?: any) {
 		if (!this.has(notifyName)) return;
+
 		const commandClses = this._commandMap[notifyName];
 		for (let i = 0, n = commandClses.length; i < n; i++) {
 			const commandCls = commandClses[i];

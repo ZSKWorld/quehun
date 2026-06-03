@@ -18,9 +18,9 @@ interface IResGroup {
 export abstract class SceneBase<T> extends Observer implements IScene<T> {
 	readonly type: ESceneType;
 	data: T;
-	readonly views = new Set<EViewID>();
+	readonly views = new Set<EUIViewID>();
 	/** 加载时显示的load页面id */
-	protected loadViewId: EViewID;
+	protected loadViewId: EUIViewID;
 	/** 资源加载进度更新回调 */
 	private _progressHandlers: Laya.Handler[] = [];
 	/** 资源加载进度 */

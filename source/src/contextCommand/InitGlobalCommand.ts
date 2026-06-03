@@ -111,7 +111,7 @@ export class InitGlobalCommand extends Command {
 		});
 	}
 
-	private registerConfirm(name: string, viewId: EViewID) {
+	private registerConfirm(name: string, viewId: EUIViewID) {
 		$windowImmit(name, function (format: number, content: string, title = "") {
 			if (!fgui.UIPackage.getByName(ResPath.EPkgName.PkgCommon))
 				return $gameMgr.showConfirm(content);

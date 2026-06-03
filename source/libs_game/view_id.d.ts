@@ -110,3 +110,8 @@ declare enum EViewID {
 	UITreasureView = "UITreasureView",
 	UIVideoView = "UIVideoView",
 }
+
+declare type EButtonViewID = Extract<EViewID, `Btn${ string }`>;
+declare type ERenderViewID = Extract<EViewID, `Render${ string }`>;
+declare type EComViewID = Extract<EViewID, `Com${ string }`>;
+declare type EUIViewID = Extract<EViewID, `UI${ string }`>;

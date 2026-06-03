@@ -19,7 +19,7 @@ export class ViewManager extends Singleton<ViewManager>() {
 		this._mediatorClsMap[viewId] = mediatorCls;
 	}
 
-	registerInfo(viewId: EViewID, layer = ELayer.UIBottom, category = EViewCategory.FullScreen) {
+	registerInfo(viewId: EUIViewID, layer = ELayer.UIBottom, category = EViewCategory.FullScreen) {
 		const ViewCls = this._viewClsMap[viewId];
 		const mediatorCls = this._mediatorClsMap[viewId];
 		if (ViewCls) {

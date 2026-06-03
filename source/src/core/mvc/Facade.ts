@@ -29,7 +29,7 @@ export class Facade extends Singleton<Facade>() implements IFacade {
 		this._viewMgr.register(viewId, viewType, viewCls, mediatorCls);
 	}
 
-	registerViewInfo(viewId: EViewID, layer = ELayer.UIBottom, category = EViewCategory.FullScreen) {
+	registerViewInfo(viewId: EUIViewID, layer = ELayer.UIBottom, category = EViewCategory.FullScreen) {
 		this._viewMgr.registerInfo(viewId, layer, category);
 	}
 

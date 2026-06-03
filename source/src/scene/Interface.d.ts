@@ -3,7 +3,7 @@ declare interface IScene<T = any> extends IObserver {
 	readonly type: ESceneType;
 	/** 场景打开数据 */
 	readonly data: T;
-	readonly views: Set<EViewID>;
+	readonly views: Set<EUIViewID>;
 
 	/**加载场景，进入场景前的资源加载 */
 	load(): Promise<void>;
@@ -17,7 +17,7 @@ declare interface IScene<T = any> extends IObserver {
 
 declare interface ISceneManager {
 	registerScene(type: string, scene: Class<IScene>): void;
-	registerView(type: string, view: EViewID): void;
+	registerView(type: string, view: EUIViewID): void;
 	/**
 	 * 
 	 * @param type ESceneType

@@ -97,12 +97,12 @@ declare interface IViewExtend {
 	 * @param data 传入参数, default: null
 	 * @param openType 页面打开对当前页面操作的类型, default: {@link EViewOpenType.None}
 	 */
-	openView<T = any>(viewId: EViewID, data?: T, openType?: EViewOpenType): Promise<void>;
+	openView<T = any>(viewId: EUIViewID, data?: T, openType?: EViewOpenType): Promise<void>;
 
 	/** 移除页面
 	 * @param viewId 页面id
 	 */
-	closeView(viewId: EViewID): Promise<void>;
+	closeView(viewId: EUIViewID): Promise<void>;
 
 	/** 移除当前页面，只有UI界面才能移除自身，其他Com，Btn，Render之类的无效 */
 	closeSelf(): Promise<void>;
@@ -170,7 +170,7 @@ declare interface ICommand {
 declare interface IFacade {
 
 	registerView(viewId: EViewID, viewType: EViewType, viewCls: IViewClass, mediatorCls?: IMediatorClass): void;
-	registerViewInfo(viewId: EViewID, layer?: ELayer, category?: EViewCategory): void;
+	registerViewInfo(viewId: EUIViewID, layer?: ELayer, category?: EViewCategory): void;
 	hasMediator(viewId: EViewID): boolean;
 	getMediatorClass(viewId: EViewID): IMediatorClass;
 	getViewType(viewId: EViewID): EViewType;

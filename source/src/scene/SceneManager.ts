@@ -31,7 +31,7 @@ export class SceneManager extends Singleton<SceneManager>() implements ISceneMan
 		}
 	}
 
-	registerView(type: ESceneType, view: EViewID) {
+	registerView(type: ESceneType, view: EUIViewID) {
 		const scene = this._sceneMap.get(type);
 		if (scene) scene.views.add(view);
 	}

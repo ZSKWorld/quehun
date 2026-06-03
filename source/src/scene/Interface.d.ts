@@ -9,10 +9,10 @@ declare interface IScene<T = any> extends IObserver {
 	load(): Promise<void>;
 
 	/** 进入场景，资源加载后执行 */
-	enter(data: any): void;
+	enter(data: any): Promise<void>;
 
 	/** 退出场景 */
-	exit(): void;
+	exit(): Promise<void>;
 }
 
 declare interface ISceneManager {

@@ -18,11 +18,12 @@ export class SceneLogin extends SceneBase<ISceneLoginData> {
 	}
 
 	protected override onEnter() {
-		$uiMgr.openView(EViewID.UILoginView);
+		return $uiMgr.openView(EViewID.UILoginView);
 	}
 
 	protected override onExit() {
 		const res = fgui.UIPackage.getById(ResPath.EPkgPath.PkgEntrance);
 		res && fgui.UIPackage.removePackage(ResPath.EPkgPath.PkgEntrance);
+		return null;
 	}
 }

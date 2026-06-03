@@ -28,10 +28,8 @@ export abstract class SceneBase<T> extends Observer implements IScene<T> {
 
 	async load() {
 		try {
-			this.dispatch(ENotifyConst.OnSceneLoadBegin, this.type);
-
 			await LoadingBgLoader.Inst.randomLoad();
-			
+
 			const count = this.loadViewId ? 4 : 3;
 			for (let i = 0; i < count; i++) {
 				this._progresses.push(0);
@@ -69,26 +67,23 @@ export abstract class SceneBase<T> extends Observer implements IScene<T> {
 			this._progresses.length = 0;
 			$uiMgr.closeAllView();
 			LoadingBgLoader.Inst.clear();
-			this.dispatch(ENotifyConst.OnSceneLoadEnd, this.type);
 		}
 	}
 
 	enter(data: T) {
 		this.data = data;
-		this.onEnter();
-		this.dispatch(ENotifyConst.OnEnterScene, this.type);
+		return this.onEnter();
 	}
 
 	exit() {
 		this.views.forEach(v => $uiMgr.destroyView(v));
 		this.clearRes(EResGroupType.Normal);
-		this.onExit();
-		this.dispatch(ENotifyConst.OnExitScene, this.type);
+		return this.onExit();
 	}
 
-	protected onEnter() { }
+	protected onEnter(): Promise<void> { return null; }
 
-	protected onExit() { }
+	protected onExit(): Promise<void> { return null; }
 
 	/** 可卸载资源，场景退出时卸载 */
 	protected getNormalResArray() { return [] as string[]; }

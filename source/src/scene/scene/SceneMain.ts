@@ -14,7 +14,7 @@ export class SceneMain extends SceneBase<ISceneMainData> {
 	}
 
 	protected override onEnter() {
-		$uiMgr.openView(EViewID.UIMainView);
+		return $uiMgr.openView(EViewID.UIMainView);
 	}
 
 }

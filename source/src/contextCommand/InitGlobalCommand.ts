@@ -1,6 +1,6 @@
 import { LoadManager } from "../core/common/manager/LoadManager";
 import { LocalDataManager } from "../core/common/manager/LocalDataManager";
-import { MathUtil } from "../core/common/math/MathUtil";
+import { MathUtil } from "../core/common/utils/MathUtil";
 import { SkeletonManager } from "../core/common/skeleton/SkeletonManager";
 import { SpineManager } from "../core/common/spine/SpineManager";
 import { GameUtil } from "../core/common/utils/GameUtil";

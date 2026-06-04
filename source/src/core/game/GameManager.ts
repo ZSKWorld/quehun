@@ -164,7 +164,7 @@ export class GameManager extends Observer implements IGameManager {
 	@InterestMessage(ENetNotify.NotifyAnotherLogin)
 	private onNotifyAnotherLogin() {
 		$netMgr.closeAll();
-		$localDataMgr.setNum(ELocalDataKey.AutoLogin, 0);
+		$localDataMgr.setBool(ELocalDataKey.AutoLogin, false);
 		const loginInfo = $localDataMgr.getObj<ILoginInfo>(ELocalDataKey.LastLoginData);
 		if (loginInfo) {
 			loginInfo.access_token = "";

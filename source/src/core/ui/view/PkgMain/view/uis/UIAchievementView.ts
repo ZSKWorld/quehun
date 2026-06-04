@@ -11,4 +11,11 @@ export class UIAchievementView extends ExtensionClass<IView, UIAchievement>(UIAc
 		com_back.onBackClick(this, this.closeSelf);
 	}
 
+	override onOpenAni() {
+		return this.com_back.onOpenAni();
+	}
+
+	override onCloseAni() {
+		return this.com_back.onCloseAni();
+	}
 }

@@ -226,7 +226,7 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 
 	private async afterLogin() {
 		const { _loginInfo } = this;
-		$localDataMgr.setNum(ELocalDataKey.AutoLogin, 1);
+		$localDataMgr.setBool(ELocalDataKey.AutoLogin, true);
 		$localDataMgr.setObj(ELocalDataKey.LastLoginData, _loginInfo);
 
 		const account = $user.account;

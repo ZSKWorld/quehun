@@ -1,35 +1,36 @@
 export class LocalDataManager extends Singleton<LocalDataManager>() implements ILocalDataManager {
 	getNum(key: ELocalDataKey, defaultValue: number = 0): number {
-		const value = Laya.LocalStorage.getItem(key);
+		const value = this.getItem(key);
 		if (value === void 0) return defaultValue;
 		const num = +value;
 		return isNaN(num) ? defaultValue : num;
 	}
 	setNum(key: ELocalDataKey, value: number): void {
-		Laya.LocalStorage.setItem(key, value.toString());
+		this.setItem(key, value.toString());
 	}
 
 	getStr(key: ELocalDataKey, defaultValue: string = ""): string {
-		const value = Laya.LocalStorage.getItem(key);
+		const value = this.getItem(key);
 		return value === void 0 ? defaultValue : value;
 	}
 	setStr(key: ELocalDataKey, value: string): void {
-		Laya.LocalStorage.setItem(key, value);
+		this.setItem(key, value);
 	}
 
 	getBool(key: ELocalDataKey, defaultValue: boolean = false): boolean {
-		const value = Laya.LocalStorage.getItem(key);
+		const value = this.getItem(key);
 		if (value === void 0) return defaultValue;
 		return value === "true";
 	}
 	setBool(key: ELocalDataKey, value: boolean): void {
-		Laya.LocalStorage.setItem(key, value.toString());
+		this.setItem(key, value.toString());
 	}
 
 	getObj<T>(key: ELocalDataKey, defaultValue: T = null): T {
+		const value = this.getItem(key);
+		if (!value) return defaultValue;
 		try {
-			const value = Laya.LocalStorage.getJSON(key);
-			return value === void 0 ? defaultValue : value;
+			return JSON.parse(value);
 		} catch (error) {
 			Logger.error("LocalDataManager get error", key, error);
 			return defaultValue;
@@ -37,17 +38,25 @@ export class LocalDataManager extends Singleton<LocalDataManager>() implements I
 	}
 	setObj<T>(key: ELocalDataKey, value: T) {
 		try {
-			Laya.LocalStorage.setJSON(key, value);
+			this.setItem(key, JSON.stringify(value));
 		} catch (error) {
 			Logger.error("LocalDataManager set error", key, value, error);
 		}
 	}
 
 	remove(key: ELocalDataKey) {
-		Laya.LocalStorage.removeItem(key);
+		Laya.LocalStorage.removeItem($gameUtil.encrypt(key));
 	}
 
 	removeAll() {
 		Laya.LocalStorage.clear();
+	}
+
+	private getItem(key: string): string {
+		return $gameUtil.decrypt(Laya.LocalStorage.getItem($gameUtil.encrypt(key)));
+	}
+
+	private setItem(key: string, value: string): void {
+		Laya.LocalStorage.setItem($gameUtil.encrypt(key), $gameUtil.encrypt(value));
 	}
 }

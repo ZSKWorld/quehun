@@ -58,7 +58,7 @@ declare interface IUIManager {
 	addToLayer(obj: fgui.GObject, layer: ELayer, index?: number): void;
 
 	/** 是否是最顶层ui */
-	isTopView(viewId: EUIViewID): boolean;
+	isTopView(viewId: EViewID): boolean;
 
 	/**
 	 * 打开页面

@@ -107,7 +107,7 @@ export class UIManager extends Singleton<UIManager>() implements IUIManager {
 		targetLayer.addChildAt(obj, targetIndex);
 	}
 
-	isTopView(viewId: EUIViewID) { return this.topViewId == viewId; }
+	isTopView(viewId: EViewID) { return this.topViewId == viewId; }
 
 	async openView<T = any>(viewId: EUIViewID, data?: T, openType = EViewOpenType.None) {
 		if (!viewId) return;

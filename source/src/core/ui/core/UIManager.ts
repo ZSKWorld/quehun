@@ -34,6 +34,7 @@ class UICache {
 	private _mediators = new Map<EUIViewID, IMediator>();
 
 	cache(mediator: IMediator) {
+		if (!mediator) return;
 		const viewId = mediator.viewId as EUIViewID;
 		this._mediators.set(viewId, mediator);
 	}
@@ -126,9 +127,10 @@ export class UIManager extends Singleton<UIManager>() implements IUIManager {
 
 	async closeView(viewId: EUIViewID, openStack = true) {
 		if (!viewId) return;
+
 		this.lockMark++;
-		const success = await this.removeView(viewId, true);
-		if (success && this.isStackView(viewId) && openStack) {
+		await this.removeView(viewId, true);
+		if (openStack && this.isStackView(viewId)) {
 			const nextViewId = this._openedStack.peek();
 			const topViewId = this.topViewId;
 			if (nextViewId && nextViewId != topViewId)
@@ -209,7 +211,7 @@ export class UIManager extends Singleton<UIManager>() implements IUIManager {
 
 	private async removeView(viewId: EUIViewID, removeStack: boolean) {
 		const index = this._openedViews.findIndex(v => v.viewId == viewId);
-		if (index <= -1) return false;
+		if (index <= -1) return;
 		$facade.dispatch(ENotifyConst.OnViewCloseBegin, viewId);
 		const mediator = this._openedViews[index];
 		this._openedViews.splice(index, 1);
@@ -218,6 +220,5 @@ export class UIManager extends Singleton<UIManager>() implements IUIManager {
 		this._cache.cache(mediator);
 		mediator.view.removeFromParent();
 		$facade.dispatch(ENotifyConst.OnViewCloseEnd, viewId);
-		return true;
 	}
 }

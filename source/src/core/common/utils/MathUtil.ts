@@ -82,7 +82,7 @@ export class MathUtil extends Singleton<MathUtil>() implements IMathUtil {
 		min = Math.floor(min);
 		max = Math.floor(max);
 		if (min >= max) return min;
-		return Math.floor(min + (max - min) * Math.random());
+		return Math.floor(min + (max - min + 1) * Math.random());
 	}
 
 	randomFloat(min: number, max: number) {
@@ -110,5 +110,16 @@ export class MathUtil extends Singleton<MathUtil>() implements IMathUtil {
 	symbol(num: number) {
 		if (num == 0) return 0;
 		return num < 0 ? -1 : 1;
+	}
+
+	repeat(t: number, length: number) {
+		if (length == 0) return 0;
+		return t - Math.floor(t / length) * length;
+	}
+
+	pingpong(t: number, length: number) {
+		if (length == 0) return 0;
+		t = this.repeat(t, length * 2);
+		return length - Math.abs(t - length);
 	}
 }

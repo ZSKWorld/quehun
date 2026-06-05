@@ -21,10 +21,10 @@ export class LoadingBgLoader extends Singleton<LoadingBgLoader>() {
 				urls.push(newCg);
 			}
 		} else {
-			const left = $langRes(`myres2/loading_3que1/left_${ $mathUtil.randomInt(0, 18) }.png`);
-			const mid = $langRes(`myres2/loading_3que1/mid_${ $mathUtil.randomInt(0, 18) }.png`);
-			const right = $langRes(`myres2/loading_3que1/right_${ $mathUtil.randomInt(0, 19) }.png`);
-			const desk = $langRes(`myres2/loading_3que1/desktop${ $mathUtil.randomInt(0, 2) }.png`);
+			const left = $langRes(`myres2/loading_3que1/left_${ $mathUtil.randomInt(0, 17) }.png`);
+			const mid = $langRes(`myres2/loading_3que1/mid_${ $mathUtil.randomInt(0, 17) }.png`);
+			const right = $langRes(`myres2/loading_3que1/right_${ $mathUtil.randomInt(0, 18) }.png`);
+			const desk = $langRes(`myres2/loading_3que1/desktop${ $mathUtil.randomInt(0, 1) }.png`);
 			if (this._left != left) {
 				$loadMgr.clearRes(this._left);
 				this._left = left;

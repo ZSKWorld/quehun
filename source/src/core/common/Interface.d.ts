@@ -127,7 +127,7 @@ declare interface IMathUtil {
 	/**
 	 * 返回min-max之间得随机整数
 	 * @param min 最小值整数(包含)
-	 * @param max 最大值整数(不包含)
+	 * @param max 最大值整数(包含)
 	 * @returns
 	 */
 	randomInt(min: number, max: number): number;
@@ -163,6 +163,10 @@ declare interface IMathUtil {
 
 	/** 获取数字正负号 */
 	symbol(num: number): -1 | 0 | 1;
+	/** 重复0-length */
+	repeat(t: number, length: number): number;
+	/** 反复0-length-0 */
+	pingpong(t: number, length: number): number;
 }
 
 declare interface IItemInfo {

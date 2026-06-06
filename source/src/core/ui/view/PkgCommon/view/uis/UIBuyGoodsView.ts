@@ -1,5 +1,4 @@
 import UIBuyGoods from "../../../../ui/PkgCommon/UIBuyGoods";
-import { EUIBuyGoodsType } from "../../Definition";
 
 export const enum EUIBuyGoodsMsg {
 	OnBtnSub10Click = "UIBuyGoods_OnBtnSub10Click",
@@ -7,6 +6,13 @@ export const enum EUIBuyGoodsMsg {
 	OnBtnAdd1Click = "UIBuyGoods_OnBtnAdd1Click",
 	OnBtnAdd10Click = "UIBuyGoods_OnBtnAdd10Click",
 	OnBtnBuyClick = "UIBuyGoods_OnBtnBuyClick",
+}
+
+export const enum EUIBuyGoodsType {
+	Single = 0,
+	Cg,
+	Multi1,
+	Multi2,
 }
 
 export class UIBuyGoodsView extends ExtensionClass<IView, UIBuyGoods>(UIBuyGoods) implements IView {

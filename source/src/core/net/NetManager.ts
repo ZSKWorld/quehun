@@ -45,7 +45,10 @@ export class NetManager extends Singleton<NetManager>() implements INetManager {
 			else
 				$facade.dispatch(method, [res, req]);
 		});
-		socket.on(ESocketEvent.Notify, $facade, $facade.dispatch);
+		socket.on(ESocketEvent.Notify, this, (notify: string, res: INotify) => {
+			Logger.error("on notify", notify, res);
+			$facade.dispatch(notify, res);
+		});
 	}
 	private initGame() {
 		// const socket = this._gameSocket = new WebSocket(this._routes[0], "gateway");

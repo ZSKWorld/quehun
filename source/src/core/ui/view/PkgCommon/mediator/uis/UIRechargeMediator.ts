@@ -70,34 +70,61 @@ export class UIRechargeMediator extends MediatorBase<UIRechargeView, IUIRecharge
 	}
 
 	private onRechargeHY(id: number) {
-		const cfgGoods = $cfgMgr.exchange.fushiquanexchange[id];
+		const cfgExchange = $cfgMgr.exchange.fushiquanexchange[id];
 		this.openView<IUIBuyGoodsData>(EViewID.UIBuyGoodsView, {
 			type: 2,
-			id: 100001,
-			currencyId: 100004,
-			price: cfgGoods.source_value,
-			priceCount: cfgGoods.source_value,
-			max: -1,
+			id: cfgExchange.target_currency,
+			currencyId: cfgExchange.source_currency,
+			price: cfgExchange.source_value,
+			priceCount: cfgExchange.target_value,
 			showOwn: true,
-			title: cfgGoods.langField(ECfgLangField.name),
+			title: cfgExchange.langField(ECfgLangField.name),
+			onBuy: count => {
+				$confirmSma(3, $lang(3910, count * cfgExchange.target_value)).then(success => {
+					success && $netMgr.requests.exchangeDiamond({ id, count });
+				});
+			},
 		});
 	}
 
+	@InterestMessage(ENetMessage.exchangeDiamond)
+	private onExchangeDiamond(_, req: IReqExchangeCurrency) {
+		const cfgExchange = $cfgMgr.exchange.fushiquanexchange[req.id];
+		const cfgCurrency = $cfgMgr.item_definition.currency[cfgExchange.target_currency];
+		$tipMgr.showTip($lang(2231, cfgCurrency.langField(ECfgLangField.name)));
+	}
+
 	private onRechargeTB(id: number) {
-		// const cfgExchange = $cfgMgr.exchange.exchange[id];
-		// this.openView<IUIBuyGoodsData>(EViewID.UIBuyGoodsView, {
-		// 	type: 2,
-		// 	id: 100001,
-		// 	currencyId: 100004,
-		// 	price: cfgExchange.source_value,
-		// 	priceCount: cfgExchange.source_value,
-		// 	max: -1,
-		// 	showOwn: true,
-		// 	title: cfgExchange.langField(ECfgLangField.name),
-		// });
+		const cfgExchange = $cfgMgr.exchange.exchange[id];
+		this.openView<IUIBuyGoodsData>(EViewID.UIBuyGoodsView, {
+			type: 0,
+			id: cfgExchange.target_currency,
+			currencyId: cfgExchange.source_currency,
+			price: cfgExchange.source_value,
+			title: cfgExchange.langField(ECfgLangField.name),
+			onBuy: count => {
+				$netMgr.requests.exchangeCurrency({ id, count });
+			},
+		});
 	}
 
 	private onRechargeHS(id: number) {
-
+		const cfgSearchExchange = $cfgMgr.exchange.searchexchange[id];
+		this.openView<IUIBuyGoodsData>(EViewID.UIBuyGoodsView, {
+			type: 0,
+			id: cfgSearchExchange.target_currency,
+			currencyId: cfgSearchExchange.source_currency,
+			price: cfgSearchExchange.source_value,
+			title: cfgSearchExchange.langField(ECfgLangField.name),
+			onBuy: count => {
+				$netMgr.requests.exchangeChestStone({ id, count });
+			},
+		});
+	}
+	
+	@InterestMessage(ENetMessage.exchangeCurrency)
+	@InterestMessage(ENetMessage.exchangeChestStone)
+	private onExchangeCurrencyOrChestStone() {
+		$tipMgr.showTip($lang(2191));
 	}
 }

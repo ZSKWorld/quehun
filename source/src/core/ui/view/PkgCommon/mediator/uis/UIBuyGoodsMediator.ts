@@ -1,6 +1,5 @@
 import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
-import { EUIBuyGoodsType } from "../../Definition";
-import { EUIBuyGoodsMsg, UIBuyGoodsView } from "../../view/uis/UIBuyGoodsView";
+import { EUIBuyGoodsMsg, EUIBuyGoodsType, UIBuyGoodsView } from "../../view/uis/UIBuyGoodsView";
 
 export class UIBuyGoodsMediator extends MediatorBase<UIBuyGoodsView, IUIBuyGoodsData> {
 	private _count: number = 0;
@@ -10,11 +9,8 @@ export class UIBuyGoodsMediator extends MediatorBase<UIBuyGoodsView, IUIBuyGoods
 		data.priceCount = data.priceCount ?? 1;
 		data.showOwn = data.showOwn ?? false;
 
-		let max = data.max ?? 1;
-		max = max <= 0 ? Number.MAX_SAFE_INTEGER : max;
-		data.max = max;
-
-
+		const max = data.max ?? -1;
+		data.max = max <= 0 ? Number.MAX_SAFE_INTEGER : max;
 	}
 
 	override onAwake() {
@@ -29,7 +25,7 @@ export class UIBuyGoodsMediator extends MediatorBase<UIBuyGoodsView, IUIBuyGoods
 		this._count = 1;
 		const { data, view } = this;
 		view.refresh(data);
-		(data.type == EUIBuyGoodsType.Multi1 || data.type == EUIBuyGoodsType.Multi2) && this.changeBuyCount();
+		this.changeBuyCount();
 	}
 
 	private changeBuyCount(change: number = 0) {
@@ -40,7 +36,8 @@ export class UIBuyGoodsMediator extends MediatorBase<UIBuyGoodsView, IUIBuyGoods
 	}
 
 	private onBtnBuyClick() {
-
+		this.data.onBuy?.(this._count);
+		this.closeSelf();
 	}
 
 }

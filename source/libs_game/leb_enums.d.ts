@@ -738,6 +738,26 @@ declare enum EColorString {
 
 //#region 充值相关
 
+/** 支付平台 */
+declare enum EPaymentPlatform {
+	GooglePlay = "google_play",
+	Iap = "iap",
+	MyCard = "mycard",
+	NintenDo = "nintendo",
+	PayPal = "paypal",
+	Steam = "steam",
+	XSolla = "xsolla",
+	XSollaV4 = "xsolla_v4",
+}
+
+/** 支付渠道 */
+declare enum EPaymentChannel {
+	UnionPay = "unionpay",
+	CreditCard = "creditcard",
+	WeChat = "wechat",
+	AliPay = "alipay"
+}
+
 /** 支付类型 */
 declare enum EPaymentType {
 	MyCard = 1,

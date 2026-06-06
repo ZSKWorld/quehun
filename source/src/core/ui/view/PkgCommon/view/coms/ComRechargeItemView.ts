@@ -29,7 +29,8 @@ export class ComRechargeItemView extends ExtensionClass<IView, ComRechargeItem>(
 			this.title = cfgGoods.langField(ECfgLangField.name);
 			com_item.refreshSkin($langRes(cfgGoods.icon));
 			txt_cost.text = cfgGoods.source_value.toString();
-			loader_currency.icon = $langRes($cfgMgr.item_definition.currency[cfgGoods.source_currency].icon);
+			const icon = $langRes($cfgMgr.item_definition.currency[cfgGoods.source_currency].icon);
+			$dynamicResMgr.setLoader(loader_currency, icon);
 		} else {
 			txt_desc.visible = true;
 			ctrl_type.selectedIndex = 0;
@@ -64,7 +65,8 @@ export class ComRechargeItemView extends ExtensionClass<IView, ComRechargeItem>(
 		this.title = cfgExchange.langField(ECfgLangField.name);
 		com_item.refreshSkin($langRes(cfgExchange.icon));
 		txt_cost.text = cfgExchange.source_value.toString();
-		loader_currency.icon = $langRes($cfgMgr.item_definition.currency[cfgExchange.source_currency].icon);
+		const icon = $langRes($cfgMgr.item_definition.currency[cfgExchange.source_currency].icon);
+		$dynamicResMgr.setLoader(loader_currency, icon);
 	}
 
 	private refreshHS(type: EUIRechargeTabType, id: number) {
@@ -76,6 +78,11 @@ export class ComRechargeItemView extends ExtensionClass<IView, ComRechargeItem>(
 		this.title = cfgSearchExchange.langField(ECfgLangField.name);
 		com_item.refreshSkin($langRes(cfgSearchExchange.icon));
 		txt_cost.text = cfgSearchExchange.source_value.toString();
-		loader_currency.icon = $langRes($cfgMgr.item_definition.currency[cfgSearchExchange.source_currency].icon);
+		const icon = $langRes($cfgMgr.item_definition.currency[cfgSearchExchange.source_currency].icon);
+		$dynamicResMgr.setLoader(loader_currency, icon);
+	}
+
+	override onDisable() {
+		$dynamicResMgr.clearLoader(this.loader_currency);
 	}
 }

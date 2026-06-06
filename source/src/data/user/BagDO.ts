@@ -140,14 +140,27 @@ export class BagDO extends BaseDO implements DO.IBagDO {
 	@InterestMessage(ENetNotify.NotifyAccountUpdate)
 	private onNotifyAccountUpdate(data: INotifyAccountUpdate) {
 		if (!data.update) return;
-		const bagInfo = $decodeProtoData(data.update.bag);
-		if (!bagInfo) return;
-		this.modifyItems(bagInfo.update_items, true);
-		this.modifyDailyGainRecord(bagInfo.update_daily_gain_record);
+		const updateItems: IItem[] = [];
 
-		bagInfo.update_items.length > 0 && this.openAllRewardItem();
-		bagInfo.update_items.length > 0 && this.dispatch(EUserEvent.OnBagItemsChanged);
-		bagInfo.update_daily_gain_record.length > 0 && this.dispatch(EUserEvent.OnBagDailyGainRecordChanged);
+		const { numerical, bag } = data.update;
+
+		if (numerical && numerical.length) {
+			updateItems.push(...numerical.map(v => ({ item_id: v.id, stack: v.final })));
+		}
+
+		const bagInfo = $decodeProtoData(bag);
+		if (bagInfo) {
+			updateItems.push(...bagInfo.update_items);
+			this.modifyDailyGainRecord(bagInfo.update_daily_gain_record);
+
+			bagInfo.update_daily_gain_record.length > 0 && this.dispatch(EUserEvent.OnBagDailyGainRecordChanged);
+		}
+
+		if (updateItems.length) {
+			this.modifyItems(updateItems, true);
+			this.openAllRewardItem();
+			this.dispatch(EUserEvent.OnBagItemsChanged);
+		}
 	}
 
 	private openAllRewardItem() {

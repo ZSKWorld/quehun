@@ -8,9 +8,13 @@ export class RechargeDO extends BaseDO implements DO.IRechargeDO {
 	private _gainedVipLevels: number[] = [];
 	// private _paymentSetting: ProtoObject<IPaymentSetting> = {};
 	private _paymentSettingV2: ProtoObject<IPaymentSettingV2> = { open_payment: 0, payment_platforms: [] };
-	private _paymentSettingMap: Record<string, ProtoObject<IPaymentSettingV2_PaymentSettingUnit>> = {};
+	private _paymentSettingMap: Record<EPaymentPlatform, ProtoObject<IPaymentSettingV2_PaymentSettingUnit>> = {} as any;
 
 	get vipExp() { return this._vipExp; }
+	private set vipExp(value) {
+		this._vipExp = value;
+		this.dispatch(EUserEvent.OnRechargeVipExpChanged);
+	}
 	get vipLevel() {
 		let level = 1;
 		const vipExp = this._vipExp;
@@ -59,8 +63,7 @@ export class RechargeDO extends BaseDO implements DO.IRechargeDO {
 	@InterestMessage(ENetMessage.oauth2Login)
 	private onLogin(res: IResLogin) {
 		if (!res.account) return;
-		const vipExp = this._vipExp = res.account.vip;
-		this.dispatch(EUserEvent.OnRechargeVipExpChanged);
+		this.vipExp = res.account.vip;
 	}
 
 	@InterestMessage(ENetMessage.fetchMisc)
@@ -83,7 +86,12 @@ export class RechargeDO extends BaseDO implements DO.IRechargeDO {
 	@InterestMessage(ENetNotify.NotifyAccountUpdate)
 	private onNotifyAccountUpdate(data: INotifyAccountUpdate) {
 		if (!data.update) return;
-		const new_recharged_list = data.update.new_recharged_list;
+		const { numerical, new_recharged_list } = data.update;
+		if (numerical && numerical.length) {
+			const vipExpData = numerical.find(v => v.id == 100099);
+			if (vipExpData) this._vipExp = vipExpData.final;
+		}
+
 		if (new_recharged_list && new_recharged_list.length) {
 			this._rechargedList = [...new Set([...this._rechargedList, ...new_recharged_list])];
 			this.dispatch(EUserEvent.OnRechargeRechargedListChanged);
@@ -96,7 +104,7 @@ export class RechargeDO extends BaseDO implements DO.IRechargeDO {
 		const setting = $decodeProtoData(data.settings);
 		// this._paymentSetting = setting.payment_setting;
 		this._paymentSettingV2 = setting.payment_setting_v2;
-		this._paymentSettingMap = {};
+		this._paymentSettingMap = {} as any;
 		for (const e of setting.payment_setting_v2.payment_platforms) {
 			this._paymentSettingMap[e.platform] = e;
 		}

@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GenCode_TS_Self = GenCode_TS_Self;
 const CodeWriter_1 = require("./CodeWriter");
-const signArr = ["UI", "Com", "Btn", "Render"];
-const viewDirs = ["uis/", "coms/", "btns/", "renders/"];
+const signArr = ["UI", "Com", "Btn", "Render", "Label"];
+const viewDirs = ["uis/", "coms/", "btns/", "renders/", "labels/"];
 function setMemberTypeName(info, clsInfo) {
     if (!info.res)
         return;

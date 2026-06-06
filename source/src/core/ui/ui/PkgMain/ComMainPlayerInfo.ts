@@ -1,7 +1,7 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
 import { ComTitleView } from "../../view/PkgCommon/view/coms/ComTitleView";
-import { ComName2View } from "../../view/PkgCommon/view/coms/ComName2View";
+import { LabelNameView } from "../../view/PkgCommon/view/labels/LabelNameView";
 
 export default class ComMainPlayerInfo extends fgui.GComponent {
 
@@ -10,7 +10,7 @@ export default class ComMainPlayerInfo extends fgui.GComponent {
 	protected loader_icon: fgui.GLoader;
 	protected txt_htLevel: fgui.GTextField;
 	protected com_title: ComTitleView;
-	protected com_name: ComName2View;
+	protected label_name: LabelNameView;
 	protected btn_level: fgui.GButton;
 	protected btn_info: fgui.GButton;
 	public static url: string = "ui://vith2b66exjcobgg";
@@ -25,7 +25,7 @@ export default class ComMainPlayerInfo extends fgui.GComponent {
 		this.loader_icon = <fgui.GLoader>(this.getChildAt(1));
 		this.txt_htLevel = <fgui.GTextField>(this.getChildAt(3));
 		this.com_title = <ComTitleView>(this.getChildAt(11));
-		this.com_name = <ComName2View>(this.getChildAt(12));
+		this.label_name = <LabelNameView>(this.getChildAt(12));
 		this.btn_level = <fgui.GButton>(this.getChildAt(13));
 		this.btn_info = <fgui.GButton>(this.getChildAt(14));
 	}

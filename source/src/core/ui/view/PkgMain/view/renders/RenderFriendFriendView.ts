@@ -15,7 +15,7 @@ export class RenderFriendFriendView extends ExtensionClass<IView, RenderFriendFr
 	refresh(data: ProtoObject<IFriend>) {
 		this._friendData = data;
 		const {
-			txt_offlineTime, com_head, com_title, com_name, com_level4, com_level3, btn_ob
+			txt_offlineTime, com_head, com_title, label_name, com_level4, com_level3, btn_ob
 		} = this;
 		const { base, state } = data;
 
@@ -29,7 +29,7 @@ export class RenderFriendFriendView extends ExtensionClass<IView, RenderFriendFr
 
 		com_head.refresh(base.avatar_id, base.avatar_frame);
 		com_title.refreshIcon(base.title);
-		com_name.refresh(base);
+		label_name.refresh(base);
 		com_level4.refresh(base.level);
 		com_level3.refresh(base.level3);
 	}

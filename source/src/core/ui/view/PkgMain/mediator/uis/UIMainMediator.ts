@@ -1,13 +1,15 @@
 import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
-import { EUIMainMsg, UIMainView } from "../../view/uis/UIMainView";
+import { EUIMainEvent } from "../../Definition";
+import { UIMainView } from "../../view/uis/UIMainView";
 
 export class UIMainMediator extends MediatorBase<UIMainView, IUIMainData> {
 
 	override onAwake() {
-		this.addEvent(EUIMainMsg.OnBtnObserverClick, this.onBtnObserverClick);
+		this.addEvent(EUIMainEvent.OnBtnObserverClick, this.onBtnObserverClick);
 	}
 
 	override onEnable() {
+		this.view.refreshPlayerInfo();
 		this.refreshQiRi();
 	}
 

@@ -14,14 +14,14 @@ export class RenderFriendApplyView extends ExtensionClass<IView, RenderFriendApp
 	refresh(applyTime: number, data: ProtoObject<IPlayerBaseView>) {
 		this._playerData = data;
 		const {
-			txt_offlineTime, com_head, com_title, com_name, com_level4, com_level3
+			txt_offlineTime, com_head, com_title, label_name, com_level4, com_level3
 		} = this;
 
 		txt_offlineTime.text = $timeUtil.timeFormat5(applyTime);
 
 		com_head.refresh(data.avatar_id, data.avatar_frame);
 		com_title.refreshIcon(data.title);
-		com_name.refresh(data);
+		label_name.refresh(data);
 		com_level4.refresh(data.level);
 		com_level3.refresh(data.level3);
 	}

@@ -9,8 +9,8 @@
     <component id="n16_puub" name="title" src="hdeoobbo" fileName="Component/Component/称号/ComTitle.xml" pkg="vx9zwser" xy="358,39" pivot="0.5,0.5" size="224,43" aspect="true">
       <property target="icon" propertyId="1" value="ui://ca43vz0ehk7r7plogk"/>
     </component>
-    <component id="n18_puub" name="name" src="puubobfa" fileName="Component/Component/名字/ComName2.xml" pkg="vx9zwser" xy="414,90" pivot="0.5,0.5" size="151,36">
-      <property target="name" propertyId="0" value="邓不利少"/>
+    <component id="n18_puub" name="name" src="puubobfa" fileName="Component/Component/名字/LabelName.xml" pkg="vx9zwser" xy="415,90" pivot="0.5,0.5" size="110,36">
+      <Label title="13ed" titleFontSize="26"/>
     </component>
     <component id="n19_puub" name="level4" src="puubobfb" fileName="Component/Component/段位/ComLevel.xml" pkg="vx9zwser" xy="628,31">
       <property target="icon" propertyId="1" value="ui://ca43vz0ehk7r7ploim"/>

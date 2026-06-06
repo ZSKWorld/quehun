@@ -1,3 +1,10 @@
+export const enum EUIMainEvent {
+	OnBtnObserverClick = "UIMain_OnBtnObserverClick",
+	OnBtnGuideClick = "UIMain_OnBtnGuideClick",
+	OnBtnLevelClick = "UIMain_OnBtnLevelClick",
+	OnBtnInfoClick = "UIMain_OnBtnInfoClick",
+}
+
 export const enum EComMatchModeShowType {
 	/** 主页 */
 	Mode,

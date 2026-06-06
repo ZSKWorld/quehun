@@ -71,6 +71,8 @@ declare enum ELocalDataKey {
 	DeviceId = "LocalDataKey_DeviceId",
 	/** 重复登陆 */
 	MultiLogin = "LocalDataKey_MultiLogin",
+	/** 主页左上角玩家信息段位显示类型，1-四麻，2-三麻 */
+	PlayerInfoLevelShowType = "LocalDataKey_PlayerInfoLevelShowType",
 }
 
 //#region view相关
@@ -225,6 +227,7 @@ declare enum EViewCategory {
 declare enum EViewType {
 	UI = "UI",
 	Component = "Component",
+	Label = "Label",
 	Render = "Render",
 	Button = "Button",
 }

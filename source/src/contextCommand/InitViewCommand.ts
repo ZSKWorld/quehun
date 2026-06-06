@@ -15,6 +15,7 @@ import { BtnSevenDayAnswerView } from "../core/ui/view/PkgMain/view/btns/BtnSeve
 import { BtnSevenDayTabView } from "../core/ui/view/PkgMain/view/btns/BtnSevenDayTabView";
 import { BtnShopRefreshView } from "../core/ui/view/PkgMain/view/btns/BtnShopRefreshView";
 import { BtnXunMiView } from "../core/ui/view/PkgMain/view/btns/BtnXunMiView";
+import { LabelNameView } from "../core/ui/view/PkgCommon/view/labels/LabelNameView";
 import { RenderGetRewardItemView } from "../core/ui/view/PkgCommon/view/renders/RenderGetRewardItemView";
 import { RenderRechargeItemView } from "../core/ui/view/PkgCommon/view/renders/RenderRechargeItemView";
 import { RenderBagGiftItemView } from "../core/ui/view/PkgMain/view/renders/RenderBagGiftItemView";
@@ -48,8 +49,6 @@ import { ComItem1View } from "../core/ui/view/PkgCommon/view/coms/ComItem1View";
 import { ComLevelView } from "../core/ui/view/PkgCommon/view/coms/ComLevelView";
 import { ComLevel1View } from "../core/ui/view/PkgCommon/view/coms/ComLevel1View";
 import { ComMJItemView } from "../core/ui/view/PkgCommon/view/coms/ComMJItemView";
-import { ComName1View } from "../core/ui/view/PkgCommon/view/coms/ComName1View";
-import { ComName2View } from "../core/ui/view/PkgCommon/view/coms/ComName2View";
 import { ComRechargeItemView } from "../core/ui/view/PkgCommon/view/coms/ComRechargeItemView";
 import { ComRechargeVIPView } from "../core/ui/view/PkgCommon/view/coms/ComRechargeVIPView";
 import { ComRedDot1View } from "../core/ui/view/PkgCommon/view/coms/ComRedDot1View";
@@ -167,6 +166,9 @@ export class InitViewCommand extends Command {
 		register(EViewID.BtnShopRefreshView, EViewType.Button, BtnShopRefreshView);
 		register(EViewID.BtnXunMiView, EViewType.Button, BtnXunMiView);
 
+		//Labels
+		register(EViewID.LabelNameView, EViewType.Label, LabelNameView);
+
 		//Renders
 		register(EViewID.RenderGetRewardItemView, EViewType.Render, RenderGetRewardItemView);
 		register(EViewID.RenderRechargeItemView, EViewType.Render, RenderRechargeItemView);
@@ -203,8 +205,6 @@ export class InitViewCommand extends Command {
 		register(EViewID.ComLevelView, EViewType.Component, ComLevelView);
 		register(EViewID.ComLevel1View, EViewType.Component, ComLevel1View);
 		register(EViewID.ComMJItemView, EViewType.Component, ComMJItemView);
-		register(EViewID.ComName1View, EViewType.Component, ComName1View);
-		register(EViewID.ComName2View, EViewType.Component, ComName2View);
 		register(EViewID.ComRechargeItemView, EViewType.Component, ComRechargeItemView);
 		register(EViewID.ComRechargeVIPView, EViewType.Component, ComRechargeVIPView);
 		register(EViewID.ComRedDot1View, EViewType.Component, ComRedDot1View);

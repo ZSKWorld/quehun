@@ -8,8 +8,8 @@
     <component id="n39_jcnm" name="title" src="hdeoobbo" fileName="Component/Component/称号/ComTitle.xml" pkg="vx9zwser" xy="165,27" pivot="0.5,0.5" size="292,56" aspect="true">
       <property target="icon" propertyId="1" value="ui://ca43vz0ehk7r7plogk"/>
     </component>
-    <component id="n40_jcnm" name="name" src="puubobfa" fileName="Component/Component/名字/ComName2.xml" pkg="vx9zwser" xy="247,101" pivot="0.5,0.5" size="168,36">
-      <property target="name" propertyId="0" value="wang309"/>
+    <component id="n40_jcnm" name="name" src="puubobfa" fileName="Component/Component/名字/LabelName.xml" pkg="vx9zwser" xy="257,90" pivot="0.5,0.5" size="110,36">
+      <Label title="13ed" titleFontSize="26"/>
     </component>
     <component id="n41_jcnm" name="add" src="108ab6i" fileName="Component/Button/BtnNormal.xml" pkg="vx9zwser" xy="509,53" size="156,70">
       <Button title="添加" titleColor="#e6ba78" titleFontSize="40" icon="ui://vx9zwserieavob7x"/>

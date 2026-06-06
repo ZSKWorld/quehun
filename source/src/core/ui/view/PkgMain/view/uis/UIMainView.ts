@@ -1,9 +1,5 @@
 import UIMain from "../../../../ui/PkgMain/UIMain";
-
-export const enum EUIMainMsg {
-	OnBtnObserverClick = "UIMain_OnBtnObserverClick",
-	OnBtnGuideClick = "UIMain_OnBtnGuideClick",
-}
+import { EUIMainEvent } from "../../Definition";
 
 export class UIMainView extends ExtensionClass<IView, UIMain>(UIMain) implements IView {
 
@@ -15,7 +11,7 @@ export class UIMainView extends ExtensionClass<IView, UIMain>(UIMain) implements
 		} = this;
 		btn_liaoShe.onClick(this, this.openView, [EViewID.UILiaoSheView, null, EViewOpenType.Hide]);
 		btn_friend.onClick(this, this.openView, [EViewID.UIFriendView, null, EViewOpenType.Hide]);
-		btn_observer.onClick(this, this.sendEvent, [EUIMainMsg.OnBtnObserverClick]);
+		btn_observer.onClick(this, this.sendEvent, [EUIMainEvent.OnBtnObserverClick]);
 		btn_paiPu.onClick(this, this.openView, [EViewID.UIPaipuView, null, EViewOpenType.Hide]);
 		btn_bag.onClick(this, this.openView, [EViewID.UIBagView, null, EViewOpenType.Hide]);
 		btn_shop.onClick(this, this.openView, [EViewID.UIShopView, null, EViewOpenType.Hide]);
@@ -31,6 +27,10 @@ export class UIMainView extends ExtensionClass<IView, UIMain>(UIMain) implements
 		btn_announcement.onClick(this, this.openView, [EViewID.UIAnnouncementView]);
 		btn_qiri.onClick(this, this.openView, [EViewID.UISevenDayView]);
 		// btn_report.onClick(this, this.openView, [EViewID.])
+	}
+
+	refreshPlayerInfo() {
+		this.com_playInfo.refresh();
 	}
 
 	refreshQiRi(visible: boolean) {

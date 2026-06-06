@@ -15,6 +15,9 @@ EViewID = {
 	BtnShopRefreshView: "BtnShopRefreshView",
 	BtnXunMiView: "BtnXunMiView",
 
+	/**Labels */
+	LabelNameView: "LabelNameView",
+
 	/**Renders */
 	RenderGetRewardItemView: "RenderGetRewardItemView",
 	RenderRechargeItemView: "RenderRechargeItemView",
@@ -51,8 +54,6 @@ EViewID = {
 	ComLevel1View: "ComLevel1View",
 	ComLevelView: "ComLevelView",
 	ComMJItemView: "ComMJItemView",
-	ComName1View: "ComName1View",
-	ComName2View: "ComName2View",
 	ComRechargeItemView: "ComRechargeItemView",
 	ComRechargeVIPView: "ComRechargeVIPView",
 	ComRedDot1View: "ComRedDot1View",

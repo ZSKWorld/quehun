@@ -2,7 +2,7 @@
 
 import { ComHead2View } from "../../view/PkgCommon/view/coms/ComHead2View";
 import { ComTitleView } from "../../view/PkgCommon/view/coms/ComTitleView";
-import { ComName2View } from "../../view/PkgCommon/view/coms/ComName2View";
+import { LabelNameView } from "../../view/PkgCommon/view/labels/LabelNameView";
 import { ComLevelView } from "../../view/PkgCommon/view/coms/ComLevelView";
 
 export default class RenderFriendFriend extends fgui.GComponent {
@@ -10,7 +10,7 @@ export default class RenderFriendFriend extends fgui.GComponent {
 	protected txt_offlineTime: fgui.GTextField;
 	protected com_head: ComHead2View;
 	protected com_title: ComTitleView;
-	protected com_name: ComName2View;
+	protected label_name: LabelNameView;
 	protected com_level4: ComLevelView;
 	protected com_level3: ComLevelView;
 	protected btn_look: fgui.GButton;
@@ -26,7 +26,7 @@ export default class RenderFriendFriend extends fgui.GComponent {
 		this.txt_offlineTime = <fgui.GTextField>(this.getChildAt(1));
 		this.com_head = <ComHead2View>(this.getChildAt(2));
 		this.com_title = <ComTitleView>(this.getChildAt(3));
-		this.com_name = <ComName2View>(this.getChildAt(4));
+		this.label_name = <LabelNameView>(this.getChildAt(4));
 		this.com_level4 = <ComLevelView>(this.getChildAt(5));
 		this.com_level3 = <ComLevelView>(this.getChildAt(6));
 		this.btn_look = <fgui.GButton>(this.getChildAt(7));

@@ -29,8 +29,8 @@
     <component id="n21_exjc" name="title" src="hdeoobbo" fileName="Component/Component/称号/ComTitle.xml" pkg="vx9zwser" xy="184,33" pivot="0.5,0.5" size="242,46" aspect="true" touchable="false">
       <property target="icon" propertyId="1" value="ui://ca43vz0ehk7r7plogk"/>
     </component>
-    <component id="n22_exjc" name="name" src="puubobfa" fileName="Component/Component/名字/ComName2.xml" pkg="vx9zwser" xy="234,91" pivot="0.5,0.5" size="143,36" touchable="false">
-      <property target="name" propertyId="0" value="Zsk123"/>
+    <component id="n22_exjc" name="name" src="puubobfa" fileName="Component/Component/名字/LabelName.xml" pkg="vx9zwser" xy="244,95" pivot="0.5,0.5" size="123,36" touchable="false">
+      <Label titleFontSize="26"/>
     </component>
     <component id="n19_exjc" name="level" src="exjcobhk" fileName="Component/UIMain/BtnMainPlayerInfoLevel.xml" xy="170,150" pivot="0.78,0.76" anchor="true"/>
     <component id="n20_exjc" name="info" src="exjcobhl" fileName="Component/UIMain/BtnMainPlayerInfoInfo.xml" xy="449,78" pivot="0.85,0.46" anchor="true"/>

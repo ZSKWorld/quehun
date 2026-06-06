@@ -57,7 +57,7 @@ export class WebSocket extends Laya.EventDispatcher {
 	private _rpcIndex = 0;
 	private _state: ESocketState = ESocketState.Disconnect;
 	private _waitList = new Map<number, IWaitRpcInfo>();
-	private _rpcRepeatMap = new Map<ENetMessage, Promise<IResponse>>();
+	private _rpcRepeatMap = new Map<string, Promise<IResponse>>();
 	private _reconnectIndex: number = 0;
 	private _reconnectTime = [1000, 2000, 3000];
 
@@ -105,8 +105,9 @@ export class WebSocket extends Laya.EventDispatcher {
 
 	send(methodName: ENetMessage, data: IRequest) {
 		const rpcRepeatMap = this._rpcRepeatMap;
-		if (rpcRepeatMap.has(methodName))
-			return rpcRepeatMap.get(methodName);
+		const rpcKey = methodName + ":" + JSON.stringify(data);
+		if (rpcRepeatMap.has(rpcKey))
+			return rpcRepeatMap.get(rpcKey);
 
 		const promise = new Promise<IResponse>(resolve => {
 			if (!this.connected) {
@@ -122,7 +123,7 @@ export class WebSocket extends Laya.EventDispatcher {
 				method: methodName,
 				reqData: data,
 				callback: res => {
-					rpcRepeatMap.delete(methodName);
+					rpcRepeatMap.delete(rpcKey);
 					resolve(res);
 				}
 			});
@@ -136,7 +137,7 @@ export class WebSocket extends Laya.EventDispatcher {
 			this._socket.send(byte.buffer);
 		});
 
-		rpcRepeatMap.set(methodName, promise);
+		rpcRepeatMap.set(rpcKey, promise);
 
 		return promise;
 	}

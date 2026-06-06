@@ -103,7 +103,6 @@
     <image id="hdeoobbl" name="img_70.png" path="/Texture/" exported="true" scale="9grid" scale9grid="0,4,6,2"/>
     <component id="hdeoobbn" name="ComHead2.xml" path="/Component/Component/头像/" exported="true"/>
     <component id="hdeoobbo" name="ComTitle.xml" path="/Component/Component/称号/" exported="true"/>
-    <component id="hdeoobbp" name="ComName1.xml" path="/Component/Component/名字/" exported="true"/>
     <component id="hdeoobbq" name="ComLevel1.xml" path="/Component/Component/段位/" exported="true"/>
     <image id="hdeoobbr" name="img_784.png" path="/Texture/" exported="true"/>
     <component id="hdeoobbt" name="BtnNormalNoScale.xml" path="/Component/Button/" exported="true"/>
@@ -223,7 +222,7 @@
     <image id="c6l6obf7" name="img_658.png" path="/Texture/" exported="true"/>
     <component id="c6l6obf8" name="ComHeadFrame.xml" path="/Component/Component/头像/" exported="true"/>
     <component id="xmejobf9" name="RenderItemDetail.xml" path="/Component/Component/"/>
-    <component id="puubobfa" name="ComName2.xml" path="/Component/Component/名字/" exported="true"/>
+    <component id="puubobfa" name="LabelName.xml" path="/Component/Component/名字/" exported="true"/>
     <component id="puubobfb" name="ComLevel.xml" path="/Component/Component/段位/" exported="true"/>
     <image id="puubobfc" name="img_178.png" path="/Texture/" exported="true" scale="9grid" scale9grid="1,1,2,28"/>
     <image id="puubobfd" name="img_785.png" path="/Texture/" exported="true"/>

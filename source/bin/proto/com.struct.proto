@@ -12,7 +12,6 @@ message Error {
 
   uint32 level = 5; // 报错等级，不会发送给客户端
   string message = 6; // 内部错误消息，不会发送给客户端
-  string args = 7; // 内部错误参数，不会发送给客户端
 }
 
 message Wrapper {
@@ -2650,6 +2649,7 @@ message TransparentData {
   bytes data = 2;
   string session = 3;
   NetworkEndpoint remote = 4;
+  string platform = 5;
 }
 
 // message AmuletTile {

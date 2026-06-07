@@ -1,0 +1,351 @@
+spine.png
+	size: 2048, 2048
+	filter: Linear, Linear
+	scale: 0.5
+MZ_01
+	bounds: 2, 1201, 845, 845
+	offsets: 45, 0, 890, 850
+yc_0
+	bounds: 1762, 542, 275, 398
+	offsets: 0, 0, 275, 399
+yc_100
+	bounds: 591, 204, 528, 995
+yc_103
+	bounds: 181, 3, 57, 146
+	rotate: 90
+yc_104
+	bounds: 1736, 1402, 644, 257
+	rotate: 90
+yc_105
+	bounds: 1762, 446, 60, 94
+yc_107
+	bounds: 1121, 18, 704, 423
+yc_11
+	bounds: 1995, 1402, 34, 27
+	rotate: 90
+yc_113
+	bounds: 2, 152, 587, 1047
+	offsets: 0, 1, 588, 1053
+yc_114
+	bounds: 2, 2, 177, 148
+yc_12
+	bounds: 849, 1209, 152, 270
+	offsets: 0, 0, 152, 276
+	rotate: 90
+yc_14
+	bounds: 591, 13, 356, 189
+yc_21
+	bounds: 849, 1363, 683, 885
+	rotate: 90
+yc_22
+	bounds: 1121, 443, 918, 639
+	rotate: 90
+yc_23
+	bounds: 1827, 2, 140, 108
+yc_26
+	bounds: 1995, 1587, 36, 81
+yc_27
+	bounds: 1995, 1753, 45, 116
+	offsets: 0, 0, 46, 116
+yc_30
+	bounds: 181, 62, 341, 88
+yc_33
+	bounds: 475, 2, 57, 58
+yc_35
+	bounds: 329, 4, 56, 144
+	offsets: 0, 0, 60, 144
+	rotate: 90
+yc_36
+	bounds: 949, 2, 102, 137
+	rotate: 90
+yc_40
+	bounds: 2023, 1344, 56, 18
+	offsets: 3, 3, 59, 24
+	rotate: 90
+yc_41
+	bounds: 1995, 1438, 70, 39
+	rotate: 90
+yc_50
+	bounds: 1827, 112, 218, 428
+yc_56_1
+	bounds: 1762, 942, 458, 259
+	rotate: 90
+yc_57
+	bounds: 849, 1201, 6, 8
+	rotate: 90
+yc_59
+	bounds: 1995, 1986, 60, 51
+	offsets: 0, 5, 60, 57
+	rotate: 90
+yc_60
+	bounds: 1108, 45, 11, 26
+yc_61
+	bounds: 2023, 1268, 28, 21
+	offsets: 1, 0, 29, 21
+	rotate: 90
+yc_62
+	bounds: 591, 2, 25, 9
+	offsets: 0, 1, 25, 10
+yc_63
+	bounds: 1995, 1670, 81, 39
+	offsets: 0, 0, 83, 39
+	rotate: 90
+yc_64
+	bounds: 2005, 7, 17, 33
+	rotate: 90
+yc_65
+	bounds: 2023, 1298, 44, 17
+	offsets: 0, 1, 44, 19
+	rotate: 90
+yc_67
+	bounds: 1736, 1372, 24, 28
+yc_68
+	bounds: 1108, 73, 11, 31
+yc_71
+	bounds: 2033, 1609, 59, 12
+	offsets: 0, 2, 59, 14
+	rotate: 90
+yc_72
+	bounds: 1088, 46, 58, 18
+	offsets: 0, 0, 58, 21
+	rotate: 90
+yc_73_01
+	bounds: 1995, 1510, 75, 37
+	offsets: 0, 0, 75, 38
+	rotate: 90
+yc_76
+	bounds: 1736, 1363, 8, 7
+yc_77
+	bounds: 2033, 1591, 12, 16
+	offsets: 0, 0, 13, 16
+yc_78
+	bounds: 1969, 2, 22, 34
+	rotate: 90
+yc_8
+	bounds: 1995, 1871, 113, 49
+	rotate: 90
+yc_81
+	bounds: 859, 1201, 6, 7
+	offsets: 1, 0, 7, 7
+	rotate: 90
+yc_82
+	bounds: 2023, 1251, 15, 15
+yc_83
+	bounds: 1088, 5, 30, 38
+yc_84
+	bounds: 534, 4, 55, 61
+yc_85
+	bounds: 1969, 26, 84, 74
+	offsets: 1, 0, 86, 74
+	rotate: 90
+yc_88
+	bounds: 524, 67, 83, 65
+	rotate: 90
+yc_91
+	bounds: 949, 106, 170, 96
+
+spine_2.png
+	size: 2048, 2048
+	filter: Linear, Linear
+	scale: 0.5
+YC_shou_001
+	bounds: 1411, 1138, 325, 400
+	offsets: 8, 5, 339, 411
+yc_10
+	bounds: 804, 817, 551, 358
+yc_101
+	bounds: 1720, 731, 257, 300
+yc_102
+	bounds: 867, 22, 325, 487
+	rotate: 90
+yc_106
+	bounds: 1888, 432, 128, 297
+yc_108
+	bounds: 2, 1331, 848, 715
+yc_109
+	bounds: 1768, 30, 103, 221
+	rotate: 90
+yc_110
+	bounds: 852, 1177, 361, 557
+	rotate: 90
+yc_115
+	bounds: 1738, 1033, 296, 514
+	offsets: 4, 5, 300, 519
+yc_116_1
+	bounds: 2, 130, 510, 621
+yc_13
+	bounds: 1979, 747, 87, 62
+	rotate: 90
+yc_15
+	bounds: 1768, 135, 278, 244
+	offsets: 0, 0, 278, 245
+yc_16
+	bounds: 1534, 1549, 456, 497
+	offsets: 0, 0, 457, 497
+yc_19
+	bounds: 514, 124, 627, 351
+	offsets: 21, 0, 648, 351
+	rotate: 90
+yc_20_01
+	bounds: 867, 349, 476, 466
+	offsets: 12, 0, 501, 466
+yc_25
+	bounds: 1345, 381, 541, 328
+yc_28
+	bounds: 1979, 900, 57, 131
+	offsets: 6, 0, 63, 131
+yc_47
+	bounds: 448, 7, 115, 205
+	offsets: 1, 0, 116, 205
+	rotate: 90
+yc_49
+	bounds: 2, 2, 151, 126
+	offsets: 0, 0, 152, 126
+yc_51
+	bounds: 1356, 64, 315, 410
+	rotate: 90
+yc_55_2_2
+	bounds: 655, 20, 189, 102
+	offsets: 0, 0, 189, 107
+yc_55_3
+	bounds: 804, 774, 52, 41
+yc_58
+	bounds: 1888, 381, 49, 56
+	offsets: 0, 1, 49, 57
+	rotate: 90
+yc_6
+	bounds: 852, 1540, 680, 506
+	offsets: 1, 0, 682, 506
+yc_66
+	bounds: 1991, 109, 27, 24
+	offsets: 1, 0, 28, 24
+yc_69
+	bounds: 1992, 1941, 105, 52
+	rotate: 90
+yc_70
+	bounds: 1356, 37, 32, 25
+	offsets: 0, 0, 44, 25
+yc_79
+	bounds: 804, 1270, 41, 59
+	offsets: 1, 0, 43, 59
+yc_80
+	bounds: 1979, 836, 62, 67
+	rotate: 90
+yc_87
+	bounds: 1357, 1138, 28, 37
+yc_90
+	bounds: 155, 54, 74, 291
+	rotate: 90
+yc_94
+	bounds: 2, 753, 800, 576
+yc_95_1
+	bounds: 1357, 711, 361, 425
+
+spine_3.png
+	size: 1258, 1258
+	filter: Linear, Linear
+	scale: 0.5
+Glow
+	bounds: 614, 2, 98, 143
+	rotate: 90
+Glow_094_c
+	bounds: 2, 164, 256, 256
+MMT_glow
+	bounds: 930, 332, 196, 183
+	offsets: 8, 1, 213, 185
+	rotate: 90
+Nya~
+	bounds: 666, 1034, 283, 222
+UI_zhangchang_9
+	bounds: 411, 749, 216, 240
+	rotate: 90
+circle_01
+	bounds: 939, 198, 132, 132
+	offsets: 62, 62, 256, 256
+light_01
+	bounds: 666, 897, 240, 135
+yc_111
+	bounds: 616, 228, 98, 173
+	rotate: 90
+yc_112
+	bounds: 265, 8, 194, 182
+	offsets: 0, 0, 195, 182
+	rotate: 90
+yc_117
+	bounds: 260, 204, 216, 167
+	rotate: 90
+yc_17
+	bounds: 1115, 282, 104, 110
+	rotate: 90
+yc_18
+	bounds: 992, 116, 64, 80
+	offsets: 0, 0, 64, 81
+yc_24
+	bounds: 449, 48, 188, 163
+	rotate: 90
+yc_29
+	bounds: 759, 26, 110, 69
+	offsets: 2, 0, 112, 69
+yc_3
+	bounds: 1073, 209, 73, 71
+yc_31
+	bounds: 2, 422, 287, 349
+yc_32
+	bounds: 853, 749, 138, 146
+yc_34
+	bounds: 882, 99, 108, 97
+yc_38
+	bounds: 2, 11, 261, 151
+yc_39
+	bounds: 1115, 894, 141, 154
+yc_4
+	bounds: 653, 749, 198, 146
+	offsets: 1, 1, 199, 147
+yc_43
+	bounds: 291, 438, 171, 309
+yc_44
+	bounds: 1105, 551, 130, 201
+yc_45
+	bounds: 429, 238, 93, 185
+	rotate: 90
+yc_46
+	bounds: 464, 333, 172, 231
+	rotate: 90
+yc_48
+	bounds: 614, 102, 147, 124
+	offsets: 0, 1, 147, 125
+yc_5
+	bounds: 917, 530, 186, 217
+yc_53
+	bounds: 1115, 388, 124, 161
+	offsets: 0, 1, 124, 162
+yc_54
+	bounds: 908, 900, 132, 205
+	rotate: 90
+yc_55_1
+	bounds: 951, 1050, 206, 257
+	rotate: 90
+yc_7 - fb
+	bounds: 763, 97, 105, 117
+	offsets: 3, 0, 108, 117
+	rotate: 90
+yc_75
+	bounds: 411, 967, 253, 289
+yc_89
+	bounds: 697, 328, 177, 231
+	rotate: 90
+yc_9
+	bounds: 2, 773, 407, 483
+	offsets: 35, 0, 442, 483
+yc_92
+	bounds: 993, 749, 68, 149
+yc_93
+	bounds: 791, 204, 122, 146
+	rotate: 90
+yc_96
+	bounds: 464, 507, 223, 240
+yc_98
+	bounds: 689, 507, 240, 226
+	rotate: 90
+yc_99
+	bounds: 1063, 754, 173, 138

@@ -1,4 +1,7 @@
 {
+  "options": {
+    "syntax": "proto3"
+  },
   "nested": {
     "lq": {
       "options": {
@@ -930,10 +933,6 @@
             "message": {
               "type": "string",
               "id": 6
-            },
-            "args": {
-              "type": "string",
-              "id": 7
             }
           }
         },
@@ -7707,6 +7706,10 @@
             "remote": {
               "type": "NetworkEndpoint",
               "id": 4
+            },
+            "platform": {
+              "type": "string",
+              "id": 5
             }
           }
         },
@@ -10632,49 +10635,17 @@
               "requestType": "ReqAmuletActivityStartGame",
               "responseType": "ResAmuletEventResponse"
             },
+            "amuletActivityGameOperate": {
+              "requestType": "ReqAmuletActivityGameOperate",
+              "responseType": "ResAmuletEventResponse"
+            },
             "amuletActivityOperate": {
               "requestType": "ReqAmuletActivityOperate",
-              "responseType": "ResAmuletEventResponse"
-            },
-            "amuletActivityUpgrade": {
-              "requestType": "ReqAmuletActivityUpgrade",
-              "responseType": "ResAmuletEventResponse"
-            },
-            "amuletActivityBuy": {
-              "requestType": "ReqAmuletActivityBuy",
-              "responseType": "ResAmuletEventResponse"
-            },
-            "amuletActivitySelectPack": {
-              "requestType": "ReqAmuletActivitySelectPack",
-              "responseType": "ResAmuletEventResponse"
-            },
-            "amuletActivitySellEffect": {
-              "requestType": "ReqAmuletActivitySellEffect",
-              "responseType": "ResAmuletEventResponse"
-            },
-            "amuletActivityEffectSort": {
-              "requestType": "ReqAmuletActivityEffectSort",
               "responseType": "ResAmuletEventResponse"
             },
             "amuletActivityGiveup": {
               "requestType": "ReqAmuletActivityGiveup",
               "responseType": "ResCommon"
-            },
-            "amuletActivityRefreshShop": {
-              "requestType": "ReqAmuletActivityRefreshShop",
-              "responseType": "ResAmuletEventResponse"
-            },
-            "amuletActivitySelectFreeEffect": {
-              "requestType": "ReqAmuletActivitySelectFreeEffect",
-              "responseType": "ResAmuletEventResponse"
-            },
-            "amuletActivityUpgradeShopBuff": {
-              "requestType": "ReqAmuletActivityUpgradeShopBuff",
-              "responseType": "ResAmuletEventResponse"
-            },
-            "amuletActivityEndShopping": {
-              "requestType": "ReqAmuletActivityEndShopping",
-              "responseType": "ResAmuletEventResponse"
             },
             "amuletActivitySetSkillLevel": {
               "requestType": "ReqAmuletActivitySetSkillLevel",
@@ -10683,10 +10654,6 @@
             "amuletActivityMaintainInfo": {
               "requestType": "ReqCommon",
               "responseType": "ResAmuletActivityMaintainInfo"
-            },
-            "amuletActivitySelectRewardPack": {
-              "requestType": "ReqAmuletActivitySelectRewardPack",
-              "responseType": "ResAmuletEventResponse"
             },
             "amuletActivitySelectBookEffect": {
               "requestType": "ReqAmuletActivitySelectBookEffect",
@@ -10699,6 +10666,54 @@
             "amuletActivityFetchDebug": {
               "requestType": "ReqAmuletActivityFetchDebug",
               "responseType": "ResFetchAmuletActivityDebug"
+            },
+            "amuletActivityAddEffect": {
+              "requestType": "ReqAmuletActivityAddEffect",
+              "responseType": "ResCommon"
+            },
+            "amuletActivityRemoveEffect": {
+              "requestType": "ReqAmuletActivityRemoveEffect",
+              "responseType": "ResCommon"
+            },
+            "amuletActivityAddRuneStone": {
+              "requestType": "ReqAmuletActivityAddRuneStone",
+              "responseType": "ResCommon"
+            },
+            "amuletActivityRemoveRuneStone": {
+              "requestType": "ReqAmuletActivityRemoveRuneStone",
+              "responseType": "ResCommon"
+            },
+            "amuletActivityRemoveAllEffect": {
+              "requestType": "ReqAmuletActivityRemoveAllEffect",
+              "responseType": "ResCommon"
+            },
+            "amuletActivityAddAllRuneStone": {
+              "requestType": "ReqAmuletActivityAddAllRuneStone",
+              "responseType": "ResCommon"
+            },
+            "amuletActivityRemoveAllRuneStone": {
+              "requestType": "ReqAmuletActivityRemoveAllRuneStone",
+              "responseType": "ResCommon"
+            },
+            "amuletActivitySetHp": {
+              "requestType": "ReqAmuletActivitySetHp",
+              "responseType": "ResCommon"
+            },
+            "amuletActivitySetChangeTileCount": {
+              "requestType": "ReqAmuletActivitySetChangeTileCount",
+              "responseType": "ResCommon"
+            },
+            "amuletActivityFetchDebugData": {
+              "requestType": "ReqAmuletActivityFetchDebugData",
+              "responseType": "ResFetchAmuletActivityDebugData"
+            },
+            "amuletActivitySetDebugData": {
+              "requestType": "ReqAmuletActivitySetDebugData",
+              "responseType": "ResCommon"
+            },
+            "amuletActivityRefreshTingListAndNextOperation": {
+              "requestType": "ReqAmuletActivityRefreshTingListAndNextOperation",
+              "responseType": "ResCommon"
             },
             "storyActivityUnlock": {
               "requestType": "ReqStoryActivityUnlock",
@@ -10947,6 +10962,10 @@
             "mmoActivityDebugSetTeamCandidate": {
               "requestType": "ReqMMOActivityDebugSetTeamCandidate",
               "responseType": "ResMMOActivityDebugSetTeamCandidate"
+            },
+            "fetchDailySignActivityData": {
+              "requestType": "ReqFetchDailySignActivityData",
+              "responseType": "ResFetchDailySignActivityData"
             }
           }
         },
@@ -15707,6 +15726,10 @@
             "game_plan": {
               "type": "CustomizedContestGamePlan",
               "id": 7
+            },
+            "disable_chat_room": {
+              "type": "bool",
+              "id": 8
             }
           }
         },
@@ -19724,7 +19747,7 @@
             }
           }
         },
-        "ReqAmuletActivityOperate": {
+        "ReqAmuletActivityGameOperate": {
           "fields": {
             "activity_id": {
               "type": "uint32",
@@ -19735,6 +19758,23 @@
               "id": 2
             },
             "tile_list": {
+              "rule": "repeated",
+              "type": "uint32",
+              "id": 3
+            }
+          }
+        },
+        "ReqAmuletActivityOperate": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "type": {
+              "type": "uint32",
+              "id": 2
+            },
+            "args": {
               "rule": "repeated",
               "type": "uint32",
               "id": 3
@@ -19920,6 +19960,146 @@
             "activity_data": {
               "type": "ActivityAmuletData",
               "id": 2
+            }
+          }
+        },
+        "ReqAmuletActivityAddEffect": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "effect_id": {
+              "type": "uint32",
+              "id": 2
+            },
+            "badge_id": {
+              "type": "uint32",
+              "id": 3
+            }
+          }
+        },
+        "ReqAmuletActivityRemoveEffect": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "uid": {
+              "type": "uint32",
+              "id": 2
+            }
+          }
+        },
+        "ReqAmuletActivityAddRuneStone": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "stone_id": {
+              "type": "uint32",
+              "id": 2
+            }
+          }
+        },
+        "ReqAmuletActivityRemoveRuneStone": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "stone_id": {
+              "type": "uint32",
+              "id": 2
+            }
+          }
+        },
+        "ReqAmuletActivityRemoveAllEffect": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            }
+          }
+        },
+        "ReqAmuletActivityAddAllRuneStone": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            }
+          }
+        },
+        "ReqAmuletActivityRemoveAllRuneStone": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            }
+          }
+        },
+        "ReqAmuletActivitySetHp": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "hp": {
+              "type": "uint32",
+              "id": 2
+            }
+          }
+        },
+        "ReqAmuletActivitySetChangeTileCount": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "change_tile_count": {
+              "type": "uint32",
+              "id": 2
+            }
+          }
+        },
+        "ReqAmuletActivityFetchDebugData": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            }
+          }
+        },
+        "ResFetchAmuletActivityDebugData": {
+          "fields": {
+            "error": {
+              "type": "Error",
+              "id": 1
+            },
+            "debug_data": {
+              "type": "AmuletDebugData",
+              "id": 2
+            }
+          }
+        },
+        "ReqAmuletActivitySetDebugData": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "debug_data": {
+              "type": "AmuletDebugData",
+              "id": 2
+            }
+          }
+        },
+        "ReqAmuletActivityRefreshTingListAndNextOperation": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
             }
           }
         },
@@ -22040,6 +22220,72 @@
             }
           }
         },
+        "ReqFetchDailySignActivityData": {
+          "fields": {
+            "activity_id_list": {
+              "rule": "repeated",
+              "type": "uint32",
+              "id": 1
+            }
+          }
+        },
+        "ResFetchDailySignActivityData": {
+          "fields": {
+            "error": {
+              "type": "Error",
+              "id": 1
+            },
+            "activity_list": {
+              "rule": "repeated",
+              "type": "DailySignActivityData",
+              "id": 2
+            }
+          },
+          "nested": {
+            "DailySignActivityReward": {
+              "fields": {
+                "id": {
+                  "type": "uint32",
+                  "id": 1
+                },
+                "count": {
+                  "type": "uint32",
+                  "id": 2
+                }
+              }
+            },
+            "DailySignActivityDay": {
+              "fields": {
+                "day": {
+                  "type": "uint32",
+                  "id": 1
+                },
+                "rewards": {
+                  "rule": "repeated",
+                  "type": "DailySignActivityReward",
+                  "id": 2
+                }
+              }
+            },
+            "DailySignActivityData": {
+              "fields": {
+                "activity_id": {
+                  "type": "uint32",
+                  "id": 1
+                },
+                "days": {
+                  "rule": "repeated",
+                  "type": "DailySignActivityDay",
+                  "id": 2
+                },
+                "type": {
+                  "type": "uint32",
+                  "id": 3
+                }
+              }
+            }
+          }
+        },
         "AmuletBadgeData": {
           "fields": {
             "id": {
@@ -22091,6 +22337,19 @@
             }
           }
         },
+        "AmuletRuneStoneData": {
+          "fields": {
+            "id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "store": {
+              "rule": "repeated",
+              "type": "string",
+              "id": 2
+            }
+          }
+        },
         "AmuletTile": {
           "fields": {
             "id": {
@@ -22127,6 +22386,26 @@
               "id": 2
             },
             "goods_id": {
+              "type": "uint32",
+              "id": 3
+            },
+            "price": {
+              "type": "uint32",
+              "id": 4
+            }
+          }
+        },
+        "AmuletShopUpgradeGoods": {
+          "fields": {
+            "id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "upgrade_id": {
+              "type": "uint32",
+              "id": 2
+            },
+            "level": {
               "type": "uint32",
               "id": 3
             },
@@ -22313,6 +22592,10 @@
               "rule": "repeated",
               "type": "uint32",
               "id": 13
+            },
+            "effect_upgrade_count": {
+              "type": "uint32",
+              "id": 14
             }
           }
         },
@@ -22337,6 +22620,26 @@
             }
           }
         },
+        "AmuletEnemyData": {
+          "fields": {
+            "id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "max_hp": {
+              "type": "string",
+              "id": 2
+            },
+            "hp": {
+              "type": "string",
+              "id": 3
+            },
+            "atk": {
+              "type": "uint32",
+              "id": 4
+            }
+          }
+        },
         "AmuletGameRoundData": {
           "fields": {
             "pool": {
@@ -22357,90 +22660,100 @@
             "dora": {
               "rule": "repeated",
               "type": "uint32",
-              "id": 5
+              "id": 4
             },
             "hands": {
               "rule": "repeated",
               "type": "uint32",
-              "id": 6
+              "id": 5
             },
             "used_desktop": {
               "rule": "repeated",
               "type": "uint32",
-              "id": 8
+              "id": 6
             },
             "ming": {
               "rule": "repeated",
               "type": "AmuletMingInfo",
-              "id": 9
+              "id": 7
             },
             "locked_tile": {
               "rule": "repeated",
               "type": "uint32",
-              "id": 12
+              "id": 8
             },
             "change_tile_count": {
               "type": "uint32",
-              "id": 13
+              "id": 9
             },
             "total_change_tile_count": {
               "type": "uint32",
-              "id": 14
+              "id": 10
             },
             "next_operation": {
               "rule": "repeated",
               "type": "AmuletGameOperation",
-              "id": 15
+              "id": 11
             },
             "ting_list": {
               "rule": "repeated",
               "type": "AmuletActivityTingInfo",
-              "id": 16
-            },
-            "point": {
-              "type": "string",
-              "id": 18
-            },
-            "target_point": {
-              "type": "string",
-              "id": 19
+              "id": 12
             },
             "locked_tile_count": {
               "type": "uint32",
-              "id": 22
+              "id": 15
+            },
+            "enemy": {
+              "type": "AmuletEnemyData",
+              "id": 17
+            },
+            "delay_round": {
+              "type": "uint32",
+              "id": 107
             },
             "mountain": {
               "rule": "repeated",
               "type": "uint32",
-              "id": 4
+              "id": 101
             },
             "used": {
               "rule": "repeated",
               "type": "uint32",
-              "id": 7
+              "id": 102
             },
             "desktop": {
               "rule": "repeated",
               "type": "uint32",
-              "id": 10
+              "id": 103
             },
             "show_desktop": {
               "rule": "repeated",
               "type": "uint32",
-              "id": 11
+              "id": 104
             },
             "after_gang": {
               "type": "uint32",
-              "id": 17
+              "id": 105
+            },
+            "berserk_tile": {
+              "rule": "repeated",
+              "type": "uint32",
+              "id": 106
             },
             "desktop_remain": {
               "type": "uint32",
-              "id": 20
+              "id": 201
             },
             "show_desktop_tiles": {
               "rule": "repeated",
               "type": "AmuletShowDesktopTileData",
-              "id": 21
+              "id": 202
+            },
+            "berserk_tile_pos": {
+              "rule": "repeated",
+              "type": "uint32",
+              "id": 203
             }
           }
         },
@@ -22453,6 +22766,31 @@
             "badge_id": {
               "type": "uint32",
               "id": 2
+            }
+          }
+        },
+        "AmuletPackQueue": {
+          "fields": {
+            "pack_id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "sure_candidate": {
+              "rule": "repeated",
+              "type": "uint32",
+              "id": 2
+            },
+            "count": {
+              "type": "uint32",
+              "id": 3
+            },
+            "disable_skip": {
+              "type": "uint32",
+              "id": 4
+            },
+            "source": {
+              "type": "uint32",
+              "id": 5
             }
           }
         },
@@ -22478,28 +22816,86 @@
               "type": "AmuletBuffData",
               "id": 4
             },
-            "free_reward_candidates": {
+            "rune_stone_list": {
               "rule": "repeated",
-              "type": "AmuletEffectCandidate",
+              "type": "AmuletRuneStoneData",
               "id": 5
-            },
-            "level_reward_candidates": {
-              "rule": "repeated",
-              "type": "AmuletEffectCandidate",
-              "id": 6
-            },
-            "level_reward_packs": {
-              "rule": "repeated",
-              "type": "uint32",
-              "id": 7
-            },
-            "current_level_reward_pack": {
-              "type": "uint32",
-              "id": 8
             },
             "max_effect_volume": {
               "type": "uint32",
               "id": 9
+            },
+            "pack_candidates": {
+              "rule": "repeated",
+              "type": "AmuletEffectCandidate",
+              "id": 10
+            },
+            "pack_goods_id": {
+              "type": "uint32",
+              "id": 11
+            },
+            "pack_queue": {
+              "rule": "repeated",
+              "type": "AmuletPackQueue",
+              "id": 12
+            },
+            "pack_disable_skip": {
+              "type": "uint32",
+              "id": 13
+            }
+          }
+        },
+        "AmuletMapNodeData": {
+          "fields": {
+            "type": {
+              "type": "uint32",
+              "id": 1
+            },
+            "sub_type": {
+              "type": "uint32",
+              "id": 2
+            },
+            "args": {
+              "rule": "repeated",
+              "type": "uint32",
+              "id": 3
+            }
+          }
+        },
+        "AmuletMapData": {
+          "fields": {
+            "level": {
+              "type": "uint32",
+              "id": 1
+            },
+            "node": {
+              "type": "uint32",
+              "id": 2
+            },
+            "map_nodes": {
+              "rule": "repeated",
+              "type": "AmuletMapNodeData",
+              "id": 3
+            },
+            "transport_count": {
+              "type": "uint32",
+              "id": 4
+            }
+          }
+        },
+        "AmuletCharacterData": {
+          "fields": {
+            "character_id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "max_hp": {
+              "type": "uint32",
+              "id": 2
+            },
+            "hp": {
+              "type": "uint32",
+              "id": 3
             }
           }
         },
@@ -22510,11 +22906,6 @@
               "type": "AmuletGameShopGoods",
               "id": 1
             },
-            "candidate_effect_list": {
-              "rule": "repeated",
-              "type": "AmuletEffectCandidate",
-              "id": 2
-            },
             "shop_refresh_count": {
               "type": "uint32",
               "id": 3
@@ -22522,6 +22913,227 @@
             "refresh_price": {
               "type": "uint32",
               "id": 4
+            },
+            "upgrade_goods": {
+              "rule": "repeated",
+              "type": "AmuletShopUpgradeGoods",
+              "id": 5
+            }
+          }
+        },
+        "AmuletStateData": {
+          "fields": {
+            "current": {
+              "type": "uint32",
+              "id": 1
+            },
+            "interrupt": {
+              "type": "uint32",
+              "id": 2
+            }
+          }
+        },
+        "AmuletAdvancedShopGoods": {
+          "fields": {
+            "id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "type": {
+              "type": "uint32",
+              "id": 2
+            },
+            "effect": {
+              "type": "AmuletEffectCandidate",
+              "id": 3
+            },
+            "rune_stone": {
+              "type": "uint32",
+              "id": 4
+            },
+            "sold": {
+              "type": "uint32",
+              "id": 5
+            },
+            "price": {
+              "type": "uint32",
+              "id": 6
+            }
+          }
+        },
+        "AmuletNodeEventData": {
+          "fields": {
+            "advanced_shop_goods": {
+              "rule": "repeated",
+              "type": "AmuletAdvancedShopGoods",
+              "id": 1
+            },
+            "advanced_shop_refresh_count": {
+              "type": "uint32",
+              "id": 2
+            },
+            "bonfire_selection": {
+              "rule": "repeated",
+              "type": "uint32",
+              "id": 3
+            },
+            "gamble_id": {
+              "type": "uint32",
+              "id": 4
+            },
+            "gamble_count": {
+              "type": "uint32",
+              "id": 5
+            },
+            "gamble_price": {
+              "type": "uint32",
+              "id": 6
+            },
+            "gamble_selections": {
+              "rule": "repeated",
+              "type": "uint32",
+              "id": 7
+            },
+            "trade_items": {
+              "rule": "repeated",
+              "type": "AmuletTradeItem",
+              "id": 8
+            },
+            "trade_count": {
+              "type": "uint32",
+              "id": 9
+            },
+            "trade_reward": {
+              "type": "AmuletTradeReward",
+              "id": 10
+            },
+            "advanced_shop_upgrade": {
+              "rule": "repeated",
+              "type": "AmuletAdvancedShopUpgrade",
+              "id": 11
+            },
+            "advanced_shop_refresh_price": {
+              "type": "uint32",
+              "id": 12
+            }
+          }
+        },
+        "AmuletAdvancedShopUpgrade": {
+          "fields": {
+            "id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "upgrade_id": {
+              "type": "uint32",
+              "id": 2
+            },
+            "sold": {
+              "type": "uint32",
+              "id": 3
+            },
+            "price": {
+              "type": "uint32",
+              "id": 4
+            }
+          }
+        },
+        "AmuletTradeItem": {
+          "fields": {
+            "id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "store": {
+              "rule": "repeated",
+              "type": "uint32",
+              "id": 2
+            }
+          }
+        },
+        "AmuletTradeReward": {
+          "fields": {
+            "id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "type": {
+              "type": "uint32",
+              "id": 2
+            },
+            "rune_stone_id": {
+              "type": "uint32",
+              "id": 3
+            },
+            "effect_id": {
+              "type": "uint32",
+              "id": 4
+            },
+            "badge_id": {
+              "type": "uint32",
+              "id": 5
+            }
+          }
+        },
+        "AmuletDebugDesktop": {
+          "fields": {
+            "desktop": {
+              "rule": "repeated",
+              "type": "uint32",
+              "id": 1
+            },
+            "mountain": {
+              "rule": "repeated",
+              "type": "uint32",
+              "id": 2
+            },
+            "show_desktop": {
+              "rule": "repeated",
+              "type": "uint32",
+              "id": 3
+            },
+            "locked_tile_count": {
+              "type": "int32",
+              "id": 4
+            }
+          }
+        },
+        "AmuletDebugData": {
+          "fields": {
+            "gamble_destroy_rate": {
+              "type": "OptionalUInt32",
+              "id": 1
+            },
+            "map_nodes": {
+              "rule": "repeated",
+              "type": "AmuletMapNodeData",
+              "id": 2
+            },
+            "pack_candidates": {
+              "rule": "repeated",
+              "type": "AmuletEffectCandidate",
+              "id": 3
+            },
+            "gamble_result": {
+              "type": "OptionalUInt32",
+              "id": 4
+            },
+            "next_desktop": {
+              "rule": "repeated",
+              "type": "AmuletDebugDesktop",
+              "id": 5
+            }
+          }
+        },
+        "OptionalUInt32": {
+          "fields": {
+            "enabled": {
+              "type": "uint32",
+              "id": 1
+            },
+            "value": {
+              "type": "uint32",
+              "id": 2
             }
           }
         },
@@ -22539,10 +23151,6 @@
               "type": "AmuletGameInfoData",
               "id": 3
             },
-            "stage": {
-              "type": "uint32",
-              "id": 4
-            },
             "shop": {
               "type": "AmuletShopData",
               "id": 5
@@ -22551,9 +23159,37 @@
               "type": "AmuletGameRecordData",
               "id": 6
             },
-            "ended": {
-              "type": "bool",
+            "state": {
+              "type": "AmuletStateData",
               "id": 7
+            },
+            "map": {
+              "type": "AmuletMapData",
+              "id": 8
+            },
+            "character": {
+              "type": "AmuletCharacterData",
+              "id": 9
+            },
+            "node_event": {
+              "type": "AmuletNodeEventData",
+              "id": 10
+            },
+            "debug": {
+              "type": "AmuletDebugData",
+              "id": 11
+            }
+          }
+        },
+        "AmuletFanValue": {
+          "fields": {
+            "id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "value": {
+              "type": "string",
+              "id": 2
             }
           }
         },
@@ -22571,16 +23207,6 @@
               "type": "uint32",
               "id": 3
             },
-            "next_boss_buff": {
-              "rule": "repeated",
-              "type": "uint32",
-              "id": 4
-            },
-            "boss_buff": {
-              "rule": "repeated",
-              "type": "uint32",
-              "id": 5
-            },
             "tile_score_map": {
               "rule": "repeated",
               "type": "AmuletTileScore",
@@ -22589,6 +23215,15 @@
             "book_effect_id": {
               "type": "uint32",
               "id": 8
+            },
+            "fan_value_map": {
+              "rule": "repeated",
+              "type": "AmuletFanValue",
+              "id": 9
+            },
+            "init_change_hand_count": {
+              "type": "uint32",
+              "id": 10
             }
           }
         },
@@ -22603,6 +23238,11 @@
               "rule": "repeated",
               "type": "uint32",
               "id": 4
+            },
+            "rune_stone_collection": {
+              "rule": "repeated",
+              "type": "uint32",
+              "id": 5
             }
           }
         },
@@ -22660,6 +23300,10 @@
             "highest_hu": {
               "type": "ActivityAmuletHuRecord",
               "id": 9
+            },
+            "level_node": {
+              "type": "uint32",
+              "id": 10
             }
           }
         },
@@ -22700,6 +23344,35 @@
             "highest_coin_consumed": {
               "type": "string",
               "id": 9
+            },
+            "character_statistic": {
+              "rule": "repeated",
+              "type": "CharacterStatistic",
+              "id": 10
+            },
+            "highest_level_node": {
+              "type": "uint32",
+              "id": 11
+            }
+          }
+        },
+        "CharacterStatistic": {
+          "fields": {
+            "character_id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "highest_level": {
+              "type": "uint32",
+              "id": 2
+            },
+            "highest_score": {
+              "type": "string",
+              "id": 3
+            },
+            "highest_level_node": {
+              "type": "uint32",
+              "id": 4
             }
           }
         },
@@ -22792,7 +23465,7 @@
               "id": 6
             },
             "coin_modify": {
-              "type": "ValueResult",
+              "type": "BigIntValueResult",
               "id": 8
             },
             "tile_replace": {
@@ -22809,6 +23482,10 @@
               "rule": "repeated",
               "type": "AmuletTileScore",
               "id": 12
+            },
+            "calc_desktop_count": {
+              "type": "int32",
+              "id": 13
             },
             "modify_desktop_count": {
               "type": "int32",
@@ -22887,11 +23564,11 @@
               "id": 32
             },
             "modify_base": {
-              "type": "ValueResult",
+              "type": "BigIntValueResult",
               "id": 33
             },
             "modify_fan": {
-              "type": "ValueResult",
+              "type": "BigIntValueResult",
               "id": 34
             },
             "modify_fan_info": {
@@ -22970,6 +23647,35 @@
               "rule": "repeated",
               "type": "AmuletTileScore",
               "id": 54
+            },
+            "heal": {
+              "type": "UInt32ValueResult",
+              "id": 55
+            },
+            "damage": {
+              "type": "UInt32ValueResult",
+              "id": 56
+            },
+            "modify_berserk_tile_count": {
+              "type": "uint32",
+              "id": 57
+            },
+            "modify_enemy_max_hp": {
+              "type": "BigIntValueResult",
+              "id": 58
+            },
+            "add_fan_value": {
+              "rule": "repeated",
+              "type": "AmuletFanValue",
+              "id": 59
+            },
+            "set_change_tile_count": {
+              "type": "uint32",
+              "id": 60
+            },
+            "modify_shop_upgrade_goods_price": {
+              "type": "bool",
+              "id": 61
             }
           },
           "nested": {
@@ -23024,7 +23730,7 @@
                 }
               }
             },
-            "ValueResult": {
+            "BigIntValueResult": {
               "fields": {
                 "origin": {
                   "type": "string",
@@ -23115,6 +23821,11 @@
                   "type": "AmuletShowDesktopTileData",
                   "id": 1
                 },
+                "desktop": {
+                  "rule": "repeated",
+                  "type": "uint32",
+                  "id": 2
+                },
                 "locked_tile_count": {
                   "type": "uint32",
                   "id": 3
@@ -23127,6 +23838,11 @@
                   "rule": "repeated",
                   "type": "uint32",
                   "id": 5
+                },
+                "berserk_tile_pos": {
+                  "rule": "repeated",
+                  "type": "uint32",
+                  "id": 7
                 }
               }
             },
@@ -23152,6 +23868,22 @@
                 "volume": {
                   "type": "uint32",
                   "id": 5
+                }
+              }
+            },
+            "UInt32ValueResult": {
+              "fields": {
+                "origin": {
+                  "type": "uint32",
+                  "id": 1
+                },
+                "modify": {
+                  "type": "uint32",
+                  "id": 2
+                },
+                "final": {
+                  "type": "uint32",
+                  "id": 3
                 }
               }
             }
@@ -23255,6 +23987,18 @@
             }
           }
         },
+        "AmuletEnemyDirty": {
+          "fields": {
+            "dirty": {
+              "type": "bool",
+              "id": 1
+            },
+            "value": {
+              "type": "AmuletEnemyData",
+              "id": 2
+            }
+          }
+        },
         "AmuletRoundDataChanges": {
           "fields": {
             "pool": {
@@ -23309,14 +24053,6 @@
               "type": "AmuletTingInfoArrayDirty",
               "id": 16
             },
-            "point": {
-              "type": "StringDirty",
-              "id": 18
-            },
-            "target_point": {
-              "type": "StringDirty",
-              "id": 19
-            },
             "desktop_remain": {
               "type": "UInt32Dirty",
               "id": 20
@@ -23328,6 +24064,18 @@
             "locked_tile_count": {
               "type": "UInt32Dirty",
               "id": 22
+            },
+            "berserk_tile_pos": {
+              "type": "UInt32ArrayDirty",
+              "id": 23
+            },
+            "enemy": {
+              "type": "AmuletEnemyDirty",
+              "id": 24
+            },
+            "delay_round": {
+              "type": "UInt32Dirty",
+              "id": 25
             }
           }
         },
@@ -23357,6 +24105,32 @@
             }
           }
         },
+        "AmuletPackQueueArrayDirty": {
+          "fields": {
+            "dirty": {
+              "type": "bool",
+              "id": 1
+            },
+            "value": {
+              "rule": "repeated",
+              "type": "AmuletPackQueue",
+              "id": 2
+            }
+          }
+        },
+        "AmuletRuneStoneArrayDirty": {
+          "fields": {
+            "dirty": {
+              "type": "bool",
+              "id": 1
+            },
+            "value": {
+              "rule": "repeated",
+              "type": "AmuletRuneStoneData",
+              "id": 3
+            }
+          }
+        },
         "AmuletEffectDataChanges": {
           "fields": {
             "effect_list": {
@@ -23375,17 +24149,25 @@
               "type": "AmuletBuffDataArrayDirty",
               "id": 4
             },
-            "free_reward_candidates": {
-              "type": "AmuletEffectCandidatesArrayDirty",
+            "rune_stone_list": {
+              "type": "AmuletRuneStoneArrayDirty",
               "id": 5
-            },
-            "level_reward_candidates": {
-              "type": "AmuletEffectCandidatesArrayDirty",
-              "id": 6
             },
             "current_level_reward_pack": {
               "type": "UInt32Dirty",
               "id": 7
+            },
+            "pack_candidates": {
+              "type": "AmuletEffectCandidatesArrayDirty",
+              "id": 8
+            },
+            "pack_queue": {
+              "type": "AmuletPackQueueArrayDirty",
+              "id": 9
+            },
+            "pack_goods_id": {
+              "type": "UInt32Dirty",
+              "id": 10
             }
           }
         },
@@ -23398,6 +24180,19 @@
             "value": {
               "rule": "repeated",
               "type": "AmuletTileScore",
+              "id": 2
+            }
+          }
+        },
+        "AmuletFanValueArrayDirty": {
+          "fields": {
+            "dirty": {
+              "type": "bool",
+              "id": 1
+            },
+            "value": {
+              "rule": "repeated",
+              "type": "AmuletFanValue",
               "id": 2
             }
           }
@@ -23416,17 +24211,13 @@
               "type": "UInt32Dirty",
               "id": 3
             },
-            "next_boss_buff": {
-              "type": "UInt32ArrayDirty",
-              "id": 4
-            },
-            "boss_buff": {
-              "type": "UInt32ArrayDirty",
-              "id": 5
-            },
             "tile_score_map": {
               "type": "AmuletTileScoreArrayDirty",
               "id": 6
+            },
+            "fan_value_map": {
+              "type": "AmuletFanValueArrayDirty",
+              "id": 7
             }
           }
         },
@@ -23443,15 +24234,24 @@
             }
           }
         },
+        "AmuletShopUpgradeGoodsArrayDirty": {
+          "fields": {
+            "dirty": {
+              "type": "bool",
+              "id": 1
+            },
+            "value": {
+              "rule": "repeated",
+              "type": "AmuletShopUpgradeGoods",
+              "id": 2
+            }
+          }
+        },
         "AmuletShopDataChanges": {
           "fields": {
             "goods": {
               "type": "AmuletShopGoodsArrayDirty",
               "id": 1
-            },
-            "candidate_effect_list": {
-              "type": "AmuletEffectCandidatesArrayDirty",
-              "id": 2
             },
             "shop_refresh_count": {
               "type": "UInt32Dirty",
@@ -23460,6 +24260,10 @@
             "refresh_price": {
               "type": "UInt32Dirty",
               "id": 4
+            },
+            "upgrade_goods": {
+              "type": "AmuletShopUpgradeGoodsArrayDirty",
+              "id": 5
             }
           }
         },
@@ -23537,6 +24341,166 @@
             "effect_counter": {
               "type": "AmuletEffectCounterDataArrayDirty",
               "id": 12
+            },
+            "hu_tiles_id": {
+              "type": "UInt32ArrayDirty",
+              "id": 13
+            },
+            "effect_upgrade_count": {
+              "type": "UInt32Dirty",
+              "id": 14
+            }
+          }
+        },
+        "ActivityAmuletMapNodeDataArrayDirty": {
+          "fields": {
+            "dirty": {
+              "type": "bool",
+              "id": 1
+            },
+            "value": {
+              "rule": "repeated",
+              "type": "AmuletMapNodeData",
+              "id": 2
+            }
+          }
+        },
+        "AmuletMapDataChanges": {
+          "fields": {
+            "level": {
+              "type": "UInt32Dirty",
+              "id": 1
+            },
+            "node": {
+              "type": "UInt32Dirty",
+              "id": 2
+            },
+            "map_nodes": {
+              "type": "ActivityAmuletMapNodeDataArrayDirty",
+              "id": 3
+            },
+            "transport_count": {
+              "type": "UInt32Dirty",
+              "id": 4
+            }
+          }
+        },
+        "AmuletAdvancedShopGoodsArrayDirty": {
+          "fields": {
+            "dirty": {
+              "type": "bool",
+              "id": 1
+            },
+            "value": {
+              "rule": "repeated",
+              "type": "AmuletAdvancedShopGoods",
+              "id": 2
+            }
+          }
+        },
+        "ActivityAmuletTradeItemArrayDirty": {
+          "fields": {
+            "dirty": {
+              "type": "bool",
+              "id": 1
+            },
+            "value": {
+              "rule": "repeated",
+              "type": "AmuletTradeItem",
+              "id": 2
+            }
+          }
+        },
+        "ActivityAmuletTradeRewardDirty": {
+          "fields": {
+            "dirty": {
+              "type": "bool",
+              "id": 1
+            },
+            "value": {
+              "type": "AmuletTradeReward",
+              "id": 2
+            }
+          }
+        },
+        "AmuletNodeEventChanges": {
+          "fields": {
+            "advanced_shop_goods": {
+              "type": "AmuletAdvancedShopGoodsArrayDirty",
+              "id": 1
+            },
+            "advanced_shop_refresh_count": {
+              "type": "UInt32Dirty",
+              "id": 2
+            },
+            "advanced_shop_refresh_price": {
+              "type": "UInt32Dirty",
+              "id": 3
+            },
+            "bonfire_selection": {
+              "type": "UInt32ArrayDirty",
+              "id": 4
+            },
+            "gamble_id": {
+              "type": "UInt32Dirty",
+              "id": 5
+            },
+            "gamble_count": {
+              "type": "UInt32Dirty",
+              "id": 6
+            },
+            "gamble_price": {
+              "type": "UInt32Dirty",
+              "id": 7
+            },
+            "gamble_selections": {
+              "type": "UInt32ArrayDirty",
+              "id": 8
+            },
+            "trade_items": {
+              "type": "ActivityAmuletTradeItemArrayDirty",
+              "id": 9
+            },
+            "trade_count": {
+              "type": "UInt32Dirty",
+              "id": 10
+            },
+            "trade_reward": {
+              "type": "ActivityAmuletTradeRewardDirty",
+              "id": 11
+            },
+            "advanced_shop_upgrade": {
+              "type": "AmuletAdvancedShopUpgradeArrayDirty",
+              "id": 12
+            }
+          }
+        },
+        "AmuletAdvancedShopUpgradeArrayDirty": {
+          "fields": {
+            "dirty": {
+              "type": "bool",
+              "id": 1
+            },
+            "value": {
+              "rule": "repeated",
+              "type": "AmuletAdvancedShopUpgrade",
+              "id": 2
+            }
+          }
+        },
+        "AmuletCharacterDataChanges": {
+          "fields": {
+            "character_id": {
+              "type": "UInt32Dirty",
+              "id": 1
+            },
+            "hp": {
+              "type": "UInt32Dirty",
+              "id": 2
+            },
+            "max_hp": {
+              "type": "UInt32Dirty",
+              "id": 3
             }
           }
         },
@@ -23554,10 +24518,6 @@
               "type": "AmuletGameInfoDataChanges",
               "id": 3
             },
-            "stage": {
-              "type": "uint32",
-              "id": 4
-            },
             "shop": {
               "type": "AmuletShopDataChanges",
               "id": 5
@@ -23566,9 +24526,21 @@
               "type": "AmuletRecordDataChanges",
               "id": 6
             },
-            "ended": {
-              "type": "bool",
+            "state": {
+              "type": "AmuletStateData",
               "id": 7
+            },
+            "map": {
+              "type": "AmuletMapDataChanges",
+              "id": 8
+            },
+            "character": {
+              "type": "AmuletCharacterDataChanges",
+              "id": 9
+            },
+            "node_event": {
+              "type": "AmuletNodeEventChanges",
+              "id": 10
             }
           }
         },
@@ -23605,6 +24577,14 @@
             "select_pack_result": {
               "type": "SelectPackResult",
               "id": 8
+            },
+            "gamble_result": {
+              "type": "GambleResult",
+              "id": 9
+            },
+            "advanced_shop_upgrade_result": {
+              "type": "AdvancedShopUpgradeResult",
+              "id": 10
             }
           },
           "nested": {
@@ -23625,6 +24605,10 @@
                 "hu_base": {
                   "type": "HuInfo",
                   "id": 2
+                },
+                "attack": {
+                  "type": "string",
+                  "id": 3
                 }
               },
               "nested": {
@@ -23677,10 +24661,6 @@
                 "level_coin": {
                   "type": "string",
                   "id": 1
-                },
-                "point_coin": {
-                  "type": "string",
-                  "id": 2
                 }
               }
             },
@@ -23720,6 +24700,32 @@
                   "id": 6
                 }
               }
+            },
+            "GambleResult": {
+              "fields": {
+                "destroyed": {
+                  "type": "uint32",
+                  "id": 1
+                },
+                "result_selection": {
+                  "type": "uint32",
+                  "id": 2
+                },
+                "modify_tile_score": {
+                  "rule": "repeated",
+                  "type": "AmuletTileScore",
+                  "id": 3
+                }
+              }
+            },
+            "AdvancedShopUpgradeResult": {
+              "fields": {
+                "modify_tile_score": {
+                  "rule": "repeated",
+                  "type": "AmuletTileScore",
+                  "id": 1
+                }
+              }
             }
           }
         },
@@ -23755,6 +24761,10 @@
               "rule": "repeated",
               "type": "AmuletEventHookData",
               "id": 5
+            },
+            "state": {
+              "type": "AmuletStateData",
+              "id": 6
             }
           }
         },
@@ -27003,6 +28013,10 @@
             "timestamp": {
               "type": "uint64",
               "id": 4
+            },
+            "platform": {
+              "type": "string",
+              "id": 6
             }
           }
         },

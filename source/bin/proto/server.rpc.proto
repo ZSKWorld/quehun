@@ -7,6 +7,7 @@ option go_package = ".;majprotocol";
 import "cli.lobby.proto";
 import "cli.game.proto";
 import "com.struct.proto";
+import "amulet.struct.proto";
 
 service ServerRpc {
 
@@ -17,6 +18,10 @@ service ServerRpc {
   rpc forwardAccountActivityRequest(ReqForwardAccountActivityRequest) returns (ResForwardAccountActivityRequest);
   rpc fetchAccountActivityData(ReqSrvFetchAccountActivityData) returns (ResSrvFetchAccountActivityData);
   rpc modifyAccountActivityData(ReqSrvModifyAccountActivityData) returns (ResCommon);
+  // ==DevDebug Start==
+  // debug 协议在正式版本删除
+  rpc fetchAccountRecentActivityDataDebug(ReqSrvFetchAccountRecentActivityDataDebug) returns (ResSrvFetchAccountRecentActivityDataDebug);
+  // ==DevDebug End==
   rpc deleteAccountActivityData(ReqDeleteAccountActivityData) returns (ResCommon);
 
   // ws-gateway => session-manger
@@ -325,6 +330,7 @@ message ResForwardAccountActivityRequest {
 message ReqSrvFetchAccountActivityData {
   string type = 1;
   uint32 account_id = 2;
+  uint32 activity_id = 3;
 }
 
 message ResSrvFetchAccountActivityData {
@@ -336,11 +342,31 @@ message ReqSrvModifyAccountActivityData {
   string type = 1;
   uint32 account_id = 2;
   bytes activity_data = 3;
+  uint32 activity_id = 4;
 }
+
+// ==DevDebug Start==
+message ReqSrvFetchAccountRecentActivityDataDebug {
+  string type = 1;
+  uint32 account_id = 2;
+  uint32 activity_id = 3;
+}
+
+message ResSrvFetchAccountRecentActivityDataDebug {
+  message RecentActivityData {
+    uint32 timestamp = 1;
+    ActivityAmuletData activity_data = 2;
+  }
+  Error error = 1;
+  repeated RecentActivityData list = 2;
+}
+
+// ==DevDebug End==
 
 message ReqDeleteAccountActivityData {
   string type = 1;
   uint32 account_id = 2;
+  uint32 activity_id = 3;
 }
 
 message ResForwardAccountMessage {
@@ -583,7 +609,7 @@ message ReqFetchGameRecord {
 message ResFetchGameRecord {
   Error error = 1;
   bytes data = 2;
-  string data_url = 3;  // 牌谱打牌数据url地址
+  string data_url = 3; // 牌谱打牌数据url地址
 }
 
 message ReqNotifyPlayerUpdate {

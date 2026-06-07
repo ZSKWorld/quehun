@@ -1,0 +1,194 @@
+
+Character_XNY_sy_Front.png
+size: 2022,2022
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+UI_zhangchang_9
+  rotate: true
+  xy: 1265, 1804
+  size: 216, 240
+  orig: 216, 240
+  offset: 0, 0
+  index: -1
+XNY_SY__1
+  rotate: true
+  xy: 638, 1478
+  size: 357, 467
+  orig: 357, 467
+  offset: 0, 0
+  index: -1
+XNY_SY__112
+  rotate: false
+  xy: 1107, 1418
+  size: 426, 363
+  orig: 426, 363
+  offset: 0, 0
+  index: -1
+XNY_SY__113
+  rotate: false
+  xy: 901, 1837
+  size: 362, 183
+  orig: 362, 183
+  offset: 0, 0
+  index: -1
+XNY_SY__114
+  rotate: false
+  xy: 2, 1156
+  size: 549, 364
+  orig: 549, 364
+  offset: 0, 0
+  index: -1
+XNY_SY__115
+  rotate: false
+  xy: 1535, 1381
+  size: 466, 400
+  orig: 466, 400
+  offset: 0, 0
+  index: -1
+XNY_SY__142
+  rotate: true
+  xy: 198, 1961
+  size: 59, 66
+  orig: 59, 66
+  offset: 0, 0
+  index: -1
+XNY_SY__2
+  rotate: true
+  xy: 553, 966
+  size: 450, 894
+  orig: 450, 894
+  offset: 0, 0
+  index: -1
+XNY_SY__3
+  rotate: false
+  xy: 1449, 856
+  size: 571, 523
+  orig: 571, 523
+  offset: 0, 0
+  index: -1
+effect/YUYI_61
+  rotate: false
+  xy: 60, 1991
+  size: 29, 29
+  orig: 29, 29
+  offset: 0, 0
+  index: -1
+effect/guangban_1
+  rotate: true
+  xy: 138, 1964
+  size: 56, 58
+  orig: 56, 58
+  offset: 0, 0
+  index: -1
+light_1
+  rotate: false
+  xy: 260, 1522
+  size: 376, 336
+  orig: 376, 336
+  offset: 0, 0
+  index: -1
+sucai1/skillscale_square_out
+  rotate: false
+  xy: 2, 1703
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+xj_1
+  rotate: false
+  xy: 2, 2006
+  size: 28, 14
+  orig: 28, 14
+  offset: 0, 0
+  index: -1
+xj_4
+  rotate: false
+  xy: 266, 1907
+  size: 113, 113
+  orig: 113, 113
+  offset: 0, 0
+  index: -1
+xj_5
+  rotate: false
+  xy: 2, 477
+  size: 865, 487
+  orig: 865, 487
+  offset: 0, 0
+  index: -1
+xj_6
+  rotate: false
+  xy: 869, 313
+  size: 961, 541
+  orig: 961, 541
+  offset: 0, 0
+  index: -1
+xny_DZHSC__0
+  rotate: true
+  xy: 381, 1896
+  size: 124, 137
+  orig: 124, 137
+  offset: 0, 0
+  index: -1
+xny_DZHSC__1
+  rotate: false
+  xy: 718, 1849
+  size: 181, 171
+  orig: 181, 171
+  offset: 0, 0
+  index: -1
+xny_DZHSC__2
+  rotate: false
+  xy: 520, 1860
+  size: 196, 160
+  orig: 196, 160
+  offset: 0, 0
+  index: -1
+xny_DZHSC__3
+  rotate: false
+  xy: 91, 1978
+  size: 45, 42
+  orig: 45, 42
+  offset: 0, 0
+  index: -1
+xny_DZHSC__4
+  rotate: false
+  xy: 32, 1995
+  size: 26, 25
+  orig: 26, 25
+  offset: 0, 0
+  index: -1
+xny_DZHSC__5
+  rotate: false
+  xy: 1507, 1783
+  size: 295, 237
+  orig: 295, 237
+  offset: 0, 0
+  index: -1
+
+Character_XNY_sy_Front2.png
+size: 1584,1584
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+photo
+  rotate: false
+  xy: 2, 740
+  size: 736, 842
+  orig: 736, 842
+  offset: 0, 0
+  index: -1
+photo2
+  rotate: false
+  xy: 740, 740
+  size: 736, 842
+  orig: 736, 842
+  offset: 0, 0
+  index: -1
+photo3
+  rotate: true
+  xy: 2, 2
+  size: 736, 842
+  orig: 736, 842
+  offset: 0, 0
+  index: -1

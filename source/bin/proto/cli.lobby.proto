@@ -979,28 +979,61 @@ service Lobby {
   rpc amuletActivityFetchBrief(ReqAmuletActivityFetchBrief) returns (ResAmuletActivityFetchBrief); // 获取挑战任务与收藏数据
 
   rpc amuletActivityStartGame(ReqAmuletActivityStartGame) returns (ResAmuletEventResponse); // 开始游戏
-  rpc amuletActivityOperate(ReqAmuletActivityOperate) returns (ResAmuletEventResponse); // 换牌/打牌/开杠/和牌/模切/结束换牌 操作
-  rpc amuletActivityUpgrade(ReqAmuletActivityUpgrade) returns (ResAmuletEventResponse); // 下一关
-  rpc amuletActivityBuy(ReqAmuletActivityBuy) returns (ResAmuletEventResponse); // 购买卡包
-  rpc amuletActivitySelectPack(ReqAmuletActivitySelectPack) returns (ResAmuletEventResponse); // 选择卡包护身符
-  rpc amuletActivitySellEffect(ReqAmuletActivitySellEffect) returns (ResAmuletEventResponse); // 出售护身符
-  rpc amuletActivityEffectSort(ReqAmuletActivityEffectSort) returns (ResAmuletEventResponse); // 护身符排序
+
+  rpc amuletActivityGameOperate(ReqAmuletActivityGameOperate) returns (ResAmuletEventResponse); // 换牌/打牌/开杠/和牌/模切/结束换牌 操作
+  rpc amuletActivityOperate(ReqAmuletActivityOperate) returns (ResAmuletEventResponse); // 对局外的其他操作
+
   rpc amuletActivityGiveup(ReqAmuletActivityGiveup) returns (ResCommon); // 放弃当前对局
-  rpc amuletActivityRefreshShop(ReqAmuletActivityRefreshShop) returns (ResAmuletEventResponse); // 刷新商店
-  rpc amuletActivitySelectFreeEffect(ReqAmuletActivitySelectFreeEffect) returns (ResAmuletEventResponse); // 选择开局免费护身符
-  rpc amuletActivityUpgradeShopBuff(ReqAmuletActivityUpgradeShopBuff) returns (ResAmuletEventResponse); // 商店升级buff
-  rpc amuletActivityEndShopping(ReqAmuletActivityEndShopping) returns (ResAmuletEventResponse); // 退出商店，进入选关
 
   rpc amuletActivitySetSkillLevel(ReqAmuletActivitySetSkillLevel) returns (ResCommon); // 设置场外增强
   rpc amuletActivityMaintainInfo(ReqCommon) returns (ResAmuletActivityMaintainInfo); // 获取青云之志维护信息
-  rpc amuletActivitySelectRewardPack(ReqAmuletActivitySelectRewardPack) returns (ResAmuletEventResponse);
   rpc amuletActivitySelectBookEffect(ReqAmuletActivitySelectBookEffect) returns (ResCommon); // 设置青云之志钦定护身符
+
+  // rpc amuletActivitySelectRewardPack(ReqAmuletActivitySelectRewardPack) returns (ResAmuletEventResponse);
+  // rpc amuletActivityUpgrade(ReqAmuletActivityUpgrade) returns (ResAmuletEventResponse); // 下一关
+  // rpc amuletActivityBuy(ReqAmuletActivityBuy) returns (ResAmuletEventResponse); // 购买卡包
+  // rpc amuletActivitySelectPack(ReqAmuletActivitySelectPack) returns (ResAmuletEventResponse); // 选择卡包护身符
+  // rpc amuletActivitySellEffect(ReqAmuletActivitySellEffect) returns (ResAmuletEventResponse); // 出售护身符
+  // rpc amuletActivityEffectSort(ReqAmuletActivityEffectSort) returns (ResAmuletEventResponse); // 护身符排序
+  // rpc amuletActivityRefreshShop(ReqAmuletActivityRefreshShop) returns (ResAmuletEventResponse); // 刷新商店
+  // rpc amuletActivitySelectFreeEffect(ReqAmuletActivitySelectFreeEffect) returns (ResAmuletEventResponse); // 选择开局免费护身符
+  // rpc amuletActivityUpgradeShopBuff(ReqAmuletActivityUpgradeShopBuff) returns (ResAmuletEventResponse); // 商店升级buff
+  // rpc amuletActivityEndShopping(ReqAmuletActivityEndShopping) returns (ResAmuletEventResponse); // 退出商店，进入选关
+
+
   // rpc amuletActivityReceiveTaskReward(ReqAmuletActivityReceiveTaskReward) returns (ResAmuletActivityReceiveTaskReward);
 
   // ==DevDebug Start==
   // debug 协议在正式版本删除
+
+  // 设置青云之志完整数据
   rpc amuletActivityDebug(ReqAmuletActivityDebug) returns (ResCommon);
+  // 获取青云之志完整数据
   rpc amuletActivityFetchDebug(ReqAmuletActivityFetchDebug) returns (ResFetchAmuletActivityDebug);
+  // 青云之志添加护身符
+  rpc amuletActivityAddEffect(ReqAmuletActivityAddEffect) returns (ResCommon);
+  // 青云之志移除护身符
+  rpc amuletActivityRemoveEffect(ReqAmuletActivityRemoveEffect) returns (ResCommon);
+  // 青云之志添加符文石
+  rpc amuletActivityAddRuneStone(ReqAmuletActivityAddRuneStone) returns (ResCommon);
+  // 青云之志移除符文石
+  rpc amuletActivityRemoveRuneStone(ReqAmuletActivityRemoveRuneStone) returns (ResCommon);
+  // 青云之志移除所有护身符
+  rpc amuletActivityRemoveAllEffect(ReqAmuletActivityRemoveAllEffect) returns (ResCommon);
+  // 青云之志添加所有符文石
+  rpc amuletActivityAddAllRuneStone(ReqAmuletActivityAddAllRuneStone) returns (ResCommon);
+  // 青云之志移除所有符文石
+  rpc amuletActivityRemoveAllRuneStone(ReqAmuletActivityRemoveAllRuneStone) returns (ResCommon);
+  // 青云之志设置玩家生命值
+  rpc amuletActivitySetHp(ReqAmuletActivitySetHp) returns (ResCommon);
+  // 青云之志修改换牌次数
+  rpc amuletActivitySetChangeTileCount(ReqAmuletActivitySetChangeTileCount) returns (ResCommon);
+  // 青云之志获取debug数据
+  rpc amuletActivityFetchDebugData(ReqAmuletActivityFetchDebugData) returns (ResFetchAmuletActivityDebugData);
+  // 青云之志设置debug数据
+  rpc amuletActivitySetDebugData(ReqAmuletActivitySetDebugData) returns (ResCommon);
+  // 青云之志刷新听牌列表和下一步操作
+  rpc amuletActivityRefreshTingListAndNextOperation(ReqAmuletActivityRefreshTingListAndNextOperation) returns (ResCommon);
   // ==DevDebug End==
 
   // story剧情活动相关
@@ -1088,7 +1121,7 @@ service Lobby {
   rpc snowballActivityUpgrade(ReqSnowballActivityUpgrade) returns (ResSnowballActivityUpgrade);
   rpc snowballActivityReceiveReward(ReqSnowballActivityReceiveReward) returns (ResSnowballActivityReceiveReward);
 
-    // 获取Banner活动详细信息
+  // 获取Banner活动详细信息
   rpc fetchBannerActivityData(ReqFetchBannerActivityData) returns (ResFetchBannerActivityData);
 
   // ==DevDebug Start==
@@ -1120,6 +1153,9 @@ service Lobby {
   // debug 协议在正式版本删除
   rpc mmoActivityDebugSetTeamCandidate(ReqMMOActivityDebugSetTeamCandidate) returns (ResMMOActivityDebugSetTeamCandidate);
   // ==DevDebug End==
+
+  // 获取签到活动详情
+  rpc fetchDailySignActivityData(ReqFetchDailySignActivityData) returns (ResFetchDailySignActivityData);
 }
 
 // 获取客户端连接信息
@@ -3085,6 +3121,7 @@ message ResEnterCustomizedContest {
   bool is_admin = 6;
 
   CustomizedContestGamePlan game_plan = 7; // 预约对局（若玩家没有预约对局则不传）
+  bool disable_chat_room = 8; // 为 true 时不要连接聊天室
 }
 
 // 协议：请求比赛在线信息
@@ -4619,10 +4656,35 @@ message ReqAmuletActivityStartGame {
   uint32 activity_id = 1;
 }
 
+message ReqAmuletActivityGameOperate {
+  uint32 activity_id = 1;
+  uint32 type = 2; // 操作类型 1-切牌 4-开杠 8-和牌 99-模切 101-换牌
+  repeated uint32 tile_list = 3; // 操作牌 切牌时传要切的牌  杠时传杠的牌(四张都要传)  和牌不用传
+}
+
 message ReqAmuletActivityOperate {
   uint32 activity_id = 1;
-  uint32 type = 2; // 操作类型 1-切牌 4-开杠 8-和牌 99-模切 100-结束换牌 101-换牌
-  repeated uint32 tile_list = 3; // 操作牌 切牌时传要切的牌  杠时传杠的牌(四张都要传)  和牌不用传
+  /*
+    操作类型          args
+    1  选择角色       [id]
+    2  确认
+    3  跳过
+    4  商店购买卡包   [goodsId]
+    5  出售护身符     [uid]
+    6  商店升级       [goodsId]
+    7  传送
+    8  护身符排序     [uid1, uid2, uid3...]
+    9  刷新商店
+    10 额外商店购买   [goodsId]
+    11 额外商店升级   [goodsId]
+    12 交易           [selection1, selection2, ...]
+    13 篝火选择       [selection]
+    14 锻造           [uid]
+    15 转转盘
+    16 选择卡包护身符  [index]
+  */
+  uint32 type = 2;
+  repeated uint32 args = 3;
 }
 
 message ReqAmuletActivityUpgrade {
@@ -4719,6 +4781,68 @@ message ResFetchAmuletActivityDebug {
  Error error = 1;
  ActivityAmuletData activity_data = 2;
 }
+
+message ReqAmuletActivityAddEffect {
+  uint32 activity_id = 1;
+  uint32 effect_id = 2;
+  uint32 badge_id = 3;
+}
+
+message ReqAmuletActivityRemoveEffect {
+  uint32 activity_id = 1;
+  uint32 uid = 2;
+}
+
+message ReqAmuletActivityAddRuneStone {
+  uint32 activity_id = 1;
+  uint32 stone_id = 2;
+}
+
+message ReqAmuletActivityRemoveRuneStone {
+  uint32 activity_id = 1;
+  uint32 stone_id = 2;
+}
+
+message ReqAmuletActivityRemoveAllEffect {
+  uint32 activity_id = 1;
+}
+
+message ReqAmuletActivityAddAllRuneStone {
+  uint32 activity_id = 1;
+}
+
+message ReqAmuletActivityRemoveAllRuneStone {
+  uint32 activity_id = 1;
+}
+
+message ReqAmuletActivitySetHp {
+  uint32 activity_id = 1;
+  uint32 hp = 2;
+}
+
+message ReqAmuletActivitySetChangeTileCount {
+  uint32 activity_id = 1;
+  uint32 change_tile_count = 2;
+}
+
+message ReqAmuletActivityFetchDebugData {
+  uint32 activity_id = 1;
+}
+
+message ResFetchAmuletActivityDebugData {
+  Error error = 1;
+  AmuletDebugData debug_data = 2;
+}
+
+message ReqAmuletActivitySetDebugData {
+  uint32 activity_id = 1;
+  AmuletDebugData debug_data = 2;
+}
+
+message ReqAmuletActivityRefreshTingListAndNextOperation {
+  uint32 activity_id = 1;
+}
+
 // ==DevDebug End==
 
 message ReqStoryActivityUnlock {
@@ -5521,6 +5645,32 @@ message ReqMMOActivityDebugSetTeamCandidate {
 message ResMMOActivityDebugSetTeamCandidate {
   Error error = 1;
   ActivityMMODataChanges changes = 2;
+}
+
+message ReqFetchDailySignActivityData {
+  repeated uint32 activity_id_list = 1;
+}
+
+message ResFetchDailySignActivityData {
+  Error error = 1;
+
+  message DailySignActivityReward {
+    uint32 id = 1;
+    uint32 count = 2;
+  }
+
+  message DailySignActivityDay {
+    uint32 day = 1;
+    repeated DailySignActivityReward rewards = 2;
+  }
+
+  message DailySignActivityData {
+    uint32 activity_id = 1;
+    repeated DailySignActivityDay days = 2;
+    uint32 type = 3; // 签到类型 1-普通签到 >1 特殊活动签到
+  }
+
+  repeated DailySignActivityData activity_list = 2;
 }
 /*********************************************************************************************************************************
  ********************************************** next request & response **********************************************************

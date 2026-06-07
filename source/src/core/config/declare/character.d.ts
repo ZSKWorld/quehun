@@ -207,6 +207,7 @@ declare interface ISheet_Character_Skin {
 	400907: ISheetData_Character_Skin;
 	400908: ISheetData_Character_Skin;
 	401709: ISheetData_Character_Skin;
+	401806: ISheetData_Character_Skin;
 	401906: ISheetData_Character_Skin;
 	401907: ISheetData_Character_Skin;
 	402106: ISheetData_Character_Skin;
@@ -221,6 +222,8 @@ declare interface ISheet_Character_Skin {
 	404505: ISheetData_Character_Skin;
 	404805: ISheetData_Character_Skin;
 	404806: ISheetData_Character_Skin;
+	405004: ISheetData_Character_Skin;
+	405104: ISheetData_Character_Skin;
 	405905: ISheetData_Character_Skin;
 	405906: ISheetData_Character_Skin;
 	406004: ISheetData_Character_Skin;
@@ -251,8 +254,8 @@ declare interface ISheetData_Character_Skin extends ISheetDataBase {
 	skinid: number;
 	/** 动皮有几层 */
 	spine_layers: number;
-	/** 特效只允许存在俩层，每层最多俩，用‘,'分割，前面的是持续存在的，后面是跟对应动画出现的 */
-	effects: string[];
+	/** 特效动皮 */
+	has_effect: number;
 	/** 庆祝音效 */
 	audio_celebrate: string;
 	/** 庆祝待机音效 */

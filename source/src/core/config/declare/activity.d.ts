@@ -1346,6 +1346,38 @@ declare interface ISheet_Activity_Activity {
 	260431: ISheetData_Activity_Activity;
 	260450: ISheetData_Activity_Activity;
 	260451: ISheetData_Activity_Activity;
+	260511: ISheetData_Activity_Activity;
+	260512: ISheetData_Activity_Activity;
+	260513: ISheetData_Activity_Activity;
+	260521: ISheetData_Activity_Activity;
+	260522: ISheetData_Activity_Activity;
+	260523: ISheetData_Activity_Activity;
+	260524: ISheetData_Activity_Activity;
+	260525: ISheetData_Activity_Activity;
+	260531: ISheetData_Activity_Activity;
+	260532: ISheetData_Activity_Activity;
+	260533: ISheetData_Activity_Activity;
+	260534: ISheetData_Activity_Activity;
+	260535: ISheetData_Activity_Activity;
+	260540: ISheetData_Activity_Activity;
+	260541: ISheetData_Activity_Activity;
+	260542: ISheetData_Activity_Activity;
+	260591: ISheetData_Activity_Activity;
+	260601: ISheetData_Activity_Activity;
+	260602: ISheetData_Activity_Activity;
+	260603: ISheetData_Activity_Activity;
+	260610: ISheetData_Activity_Activity;
+	260611: ISheetData_Activity_Activity;
+	260612: ISheetData_Activity_Activity;
+	260620: ISheetData_Activity_Activity;
+	260621: ISheetData_Activity_Activity;
+	260630: ISheetData_Activity_Activity;
+	260631: ISheetData_Activity_Activity;
+	260650: ISheetData_Activity_Activity;
+	260651: ISheetData_Activity_Activity;
+	260652: ISheetData_Activity_Activity;
+	260670: ISheetData_Activity_Activity;
+	260691: ISheetData_Activity_Activity;
 }
 declare interface ISheetData_Activity_Activity extends ISheetDataBase {
 	/** 活动id */
@@ -2940,6 +2972,13 @@ declare interface ISheet_Activity_ChestUp {
 	260322: ISheetData_Activity_ChestUp[];
 	260420: ISheetData_Activity_ChestUp[];
 	260421: ISheetData_Activity_ChestUp[];
+	260521: ISheetData_Activity_ChestUp[];
+	260522: ISheetData_Activity_ChestUp[];
+	260523: ISheetData_Activity_ChestUp[];
+	260524: ISheetData_Activity_ChestUp[];
+	260525: ISheetData_Activity_ChestUp[];
+	260620: ISheetData_Activity_ChestUp[];
+	260621: ISheetData_Activity_ChestUp[];
 }
 declare interface ISheetData_Activity_ChestUp extends ISheetDataBase {
 	/** 活动id */
@@ -3777,10 +3816,6 @@ declare interface ISheetData_Activity_GameTask extends ISheetDataBase {
 	/** 基础任务id */
 	base_task_id: number;
 	/** 奖励id */
-	reward_id: number;
-	/** 奖励数量 */
-	reward_count: number;
-	/** 奖励id */
 	reward: string;
 	/** 隐藏奖励 */
 	hidden_reward: string;
@@ -4559,6 +4594,8 @@ declare interface ISheet_Activity_DailySign {
 	250991: ISheetData_Activity_DailySign[];
 	260281: ISheetData_Activity_DailySign[];
 	260391: ISheetData_Activity_DailySign[];
+	260591: ISheetData_Activity_DailySign[];
+	260691: ISheetData_Activity_DailySign[];
 }
 declare interface ISheetData_Activity_DailySign extends ISheetDataBase {
 	/** 活动ID */
@@ -6758,6 +6795,140 @@ declare interface ISheet_Activity_PeriodTask {
 	26040346: ISheetData_Activity_PeriodTask;
 	26040347: ISheetData_Activity_PeriodTask;
 	26040348: ISheetData_Activity_PeriodTask;
+	26051201: ISheetData_Activity_PeriodTask;
+	26051202: ISheetData_Activity_PeriodTask;
+	26051203: ISheetData_Activity_PeriodTask;
+	26051204: ISheetData_Activity_PeriodTask;
+	26051205: ISheetData_Activity_PeriodTask;
+	26051206: ISheetData_Activity_PeriodTask;
+	26051207: ISheetData_Activity_PeriodTask;
+	26051208: ISheetData_Activity_PeriodTask;
+	26051209: ISheetData_Activity_PeriodTask;
+	26051210: ISheetData_Activity_PeriodTask;
+	26051211: ISheetData_Activity_PeriodTask;
+	26051212: ISheetData_Activity_PeriodTask;
+	26051213: ISheetData_Activity_PeriodTask;
+	26051214: ISheetData_Activity_PeriodTask;
+	26051215: ISheetData_Activity_PeriodTask;
+	26051216: ISheetData_Activity_PeriodTask;
+	26051217: ISheetData_Activity_PeriodTask;
+	26051218: ISheetData_Activity_PeriodTask;
+	26051219: ISheetData_Activity_PeriodTask;
+	26051220: ISheetData_Activity_PeriodTask;
+	26051221: ISheetData_Activity_PeriodTask;
+	26051301: ISheetData_Activity_PeriodTask;
+	26051302: ISheetData_Activity_PeriodTask;
+	26051303: ISheetData_Activity_PeriodTask;
+	26051304: ISheetData_Activity_PeriodTask;
+	26051305: ISheetData_Activity_PeriodTask;
+	26051306: ISheetData_Activity_PeriodTask;
+	26051307: ISheetData_Activity_PeriodTask;
+	26051308: ISheetData_Activity_PeriodTask;
+	26051309: ISheetData_Activity_PeriodTask;
+	26051310: ISheetData_Activity_PeriodTask;
+	26051311: ISheetData_Activity_PeriodTask;
+	26051312: ISheetData_Activity_PeriodTask;
+	26051313: ISheetData_Activity_PeriodTask;
+	26051314: ISheetData_Activity_PeriodTask;
+	26051315: ISheetData_Activity_PeriodTask;
+	26051316: ISheetData_Activity_PeriodTask;
+	26051317: ISheetData_Activity_PeriodTask;
+	26051318: ISheetData_Activity_PeriodTask;
+	26051319: ISheetData_Activity_PeriodTask;
+	26051320: ISheetData_Activity_PeriodTask;
+	26051321: ISheetData_Activity_PeriodTask;
+	26060201: ISheetData_Activity_PeriodTask;
+	26060202: ISheetData_Activity_PeriodTask;
+	26060203: ISheetData_Activity_PeriodTask;
+	26060204: ISheetData_Activity_PeriodTask;
+	26060205: ISheetData_Activity_PeriodTask;
+	26060206: ISheetData_Activity_PeriodTask;
+	26060207: ISheetData_Activity_PeriodTask;
+	26060208: ISheetData_Activity_PeriodTask;
+	26060209: ISheetData_Activity_PeriodTask;
+	26060210: ISheetData_Activity_PeriodTask;
+	26060211: ISheetData_Activity_PeriodTask;
+	26060212: ISheetData_Activity_PeriodTask;
+	26060213: ISheetData_Activity_PeriodTask;
+	26060214: ISheetData_Activity_PeriodTask;
+	26060215: ISheetData_Activity_PeriodTask;
+	26060216: ISheetData_Activity_PeriodTask;
+	26060217: ISheetData_Activity_PeriodTask;
+	26060218: ISheetData_Activity_PeriodTask;
+	26060219: ISheetData_Activity_PeriodTask;
+	26060220: ISheetData_Activity_PeriodTask;
+	26060221: ISheetData_Activity_PeriodTask;
+	26060222: ISheetData_Activity_PeriodTask;
+	26060223: ISheetData_Activity_PeriodTask;
+	26060224: ISheetData_Activity_PeriodTask;
+	26060225: ISheetData_Activity_PeriodTask;
+	26060226: ISheetData_Activity_PeriodTask;
+	26060227: ISheetData_Activity_PeriodTask;
+	26060228: ISheetData_Activity_PeriodTask;
+	26060229: ISheetData_Activity_PeriodTask;
+	26060230: ISheetData_Activity_PeriodTask;
+	26060231: ISheetData_Activity_PeriodTask;
+	26060232: ISheetData_Activity_PeriodTask;
+	26060233: ISheetData_Activity_PeriodTask;
+	26060234: ISheetData_Activity_PeriodTask;
+	26060235: ISheetData_Activity_PeriodTask;
+	26060236: ISheetData_Activity_PeriodTask;
+	26060237: ISheetData_Activity_PeriodTask;
+	26060238: ISheetData_Activity_PeriodTask;
+	26060239: ISheetData_Activity_PeriodTask;
+	26060240: ISheetData_Activity_PeriodTask;
+	26060241: ISheetData_Activity_PeriodTask;
+	26060242: ISheetData_Activity_PeriodTask;
+	26060301: ISheetData_Activity_PeriodTask;
+	26060302: ISheetData_Activity_PeriodTask;
+	26060303: ISheetData_Activity_PeriodTask;
+	26060304: ISheetData_Activity_PeriodTask;
+	26060305: ISheetData_Activity_PeriodTask;
+	26060306: ISheetData_Activity_PeriodTask;
+	26060307: ISheetData_Activity_PeriodTask;
+	26060308: ISheetData_Activity_PeriodTask;
+	26060309: ISheetData_Activity_PeriodTask;
+	26060310: ISheetData_Activity_PeriodTask;
+	26060311: ISheetData_Activity_PeriodTask;
+	26060312: ISheetData_Activity_PeriodTask;
+	26060313: ISheetData_Activity_PeriodTask;
+	26060314: ISheetData_Activity_PeriodTask;
+	26060315: ISheetData_Activity_PeriodTask;
+	26060316: ISheetData_Activity_PeriodTask;
+	26060317: ISheetData_Activity_PeriodTask;
+	26060318: ISheetData_Activity_PeriodTask;
+	26060319: ISheetData_Activity_PeriodTask;
+	26060320: ISheetData_Activity_PeriodTask;
+	26060321: ISheetData_Activity_PeriodTask;
+	26060322: ISheetData_Activity_PeriodTask;
+	26060323: ISheetData_Activity_PeriodTask;
+	26060324: ISheetData_Activity_PeriodTask;
+	26060325: ISheetData_Activity_PeriodTask;
+	26060326: ISheetData_Activity_PeriodTask;
+	26060327: ISheetData_Activity_PeriodTask;
+	26060328: ISheetData_Activity_PeriodTask;
+	26060329: ISheetData_Activity_PeriodTask;
+	26060330: ISheetData_Activity_PeriodTask;
+	26060331: ISheetData_Activity_PeriodTask;
+	26060332: ISheetData_Activity_PeriodTask;
+	26060333: ISheetData_Activity_PeriodTask;
+	26060334: ISheetData_Activity_PeriodTask;
+	26060335: ISheetData_Activity_PeriodTask;
+	26060336: ISheetData_Activity_PeriodTask;
+	26060337: ISheetData_Activity_PeriodTask;
+	26060338: ISheetData_Activity_PeriodTask;
+	26060339: ISheetData_Activity_PeriodTask;
+	26060340: ISheetData_Activity_PeriodTask;
+	26060341: ISheetData_Activity_PeriodTask;
+	26060342: ISheetData_Activity_PeriodTask;
+	26060343: ISheetData_Activity_PeriodTask;
+	26060344: ISheetData_Activity_PeriodTask;
+	26060345: ISheetData_Activity_PeriodTask;
+	26060346: ISheetData_Activity_PeriodTask;
+	26060347: ISheetData_Activity_PeriodTask;
+	26060348: ISheetData_Activity_PeriodTask;
+	26060349: ISheetData_Activity_PeriodTask;
+	26060350: ISheetData_Activity_PeriodTask;
 }
 declare interface ISheetData_Activity_PeriodTask extends ISheetDataBase {
 	/** 活动任务id */
@@ -7097,7 +7268,6 @@ declare interface ISheet_Activity_ActivityRoom {
 	1161: ISheetData_Activity_ActivityRoom;
 	1166: ISheetData_Activity_ActivityRoom;
 	1190: ISheetData_Activity_ActivityRoom;
-	1232: ISheetData_Activity_ActivityRoom;
 	1233: ISheetData_Activity_ActivityRoom;
 	1296: ISheetData_Activity_ActivityRoom;
 	1297: ISheetData_Activity_ActivityRoom;
@@ -7110,6 +7280,7 @@ declare interface ISheet_Activity_ActivityRoom {
 	250412: ISheetData_Activity_ActivityRoom;
 	251050: ISheetData_Activity_ActivityRoom;
 	260451: ISheetData_Activity_ActivityRoom;
+	260652: ISheetData_Activity_ActivityRoom;
 }
 declare interface ISheetData_Activity_ActivityRoom extends ISheetDataBase {
 	/** 友人房活动ID */
@@ -10402,6 +10573,8 @@ declare interface ISheet_Activity_ActivityItem {
 	260212: ISheetData_Activity_ActivityItem;
 	260312: ISheetData_Activity_ActivityItem;
 	260412: ISheetData_Activity_ActivityItem;
+	260542: ISheetData_Activity_ActivityItem;
+	260612: ISheetData_Activity_ActivityItem;
 }
 declare interface ISheetData_Activity_ActivityItem extends ISheetDataBase {
 	/** 活动id */
@@ -10628,6 +10801,8 @@ declare interface ISheet_Activity_RewardMail {
 	260204: ISheetData_Activity_RewardMail;
 	260302: ISheetData_Activity_RewardMail;
 	260403: ISheetData_Activity_RewardMail;
+	260513: ISheetData_Activity_RewardMail;
+	260603: ISheetData_Activity_RewardMail;
 }
 declare interface ISheetData_Activity_RewardMail extends ISheetDataBase {
 	/** 活动ID */
@@ -11079,6 +11254,13 @@ declare interface ISheet_Activity_ChestReplaceUp {
 	260332: ISheetData_Activity_ChestReplaceUp[];
 	260430: ISheetData_Activity_ChestReplaceUp[];
 	260431: ISheetData_Activity_ChestReplaceUp[];
+	260531: ISheetData_Activity_ChestReplaceUp[];
+	260532: ISheetData_Activity_ChestReplaceUp[];
+	260533: ISheetData_Activity_ChestReplaceUp[];
+	260534: ISheetData_Activity_ChestReplaceUp[];
+	260535: ISheetData_Activity_ChestReplaceUp[];
+	260630: ISheetData_Activity_ChestReplaceUp[];
+	260631: ISheetData_Activity_ChestReplaceUp[];
 }
 declare interface ISheetData_Activity_ChestReplaceUp extends ISheetDataBase {
 	/** 宝箱ID（索引） */
@@ -11741,6 +11923,7 @@ declare interface ISheet_Activity_StoryActivity {
 	251004: ISheetData_Activity_StoryActivity[];
 	260205: ISheetData_Activity_StoryActivity[];
 	260407: ISheetData_Activity_StoryActivity[];
+	260670: ISheetData_Activity_StoryActivity[];
 }
 declare interface ISheetData_Activity_StoryActivity extends ISheetDataBase {
 	/** 活动id */
@@ -11792,6 +11975,8 @@ declare interface ISheet_Activity_StoryEnding {
 	2604075: ISheetData_Activity_StoryEnding[];
 	2604076: ISheetData_Activity_StoryEnding[];
 	2604077: ISheetData_Activity_StoryEnding[];
+	2606701: ISheetData_Activity_StoryEnding[];
+	2606702: ISheetData_Activity_StoryEnding[];
 	24081101: ISheetData_Activity_StoryEnding[];
 	24081102: ISheetData_Activity_StoryEnding[];
 	24081111: ISheetData_Activity_StoryEnding[];
@@ -11881,6 +12066,8 @@ declare interface ISheet_Activity_ActivityBanner {
 	260302: ISheetData_Activity_ActivityBanner;
 	260391: ISheetData_Activity_ActivityBanner;
 	260401: ISheetData_Activity_ActivityBanner;
+	260511: ISheetData_Activity_ActivityBanner;
+	260601: ISheetData_Activity_ActivityBanner;
 }
 declare interface ISheetData_Activity_ActivityBanner extends ISheetDataBase {
 	/** id */

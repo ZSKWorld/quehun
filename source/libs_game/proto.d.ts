@@ -2710,46 +2710,18 @@ declare enum ENetMessage {
 	amuletActivityStartGame = "amuletActivityStartGame",
 	/**
 	 ** 换牌/打牌/开杠/和牌/模切/结束换牌 操作
+	 ** req: {@link IReqAmuletActivityGameOperate}
+	 ** res: {@link IResAmuletEventResponse}
+	 ** method: {@link IReqMethod.amuletActivityGameOperate}
+	 */
+	amuletActivityGameOperate = "amuletActivityGameOperate",
+	/**
+	 ** 对局外的其他操作
 	 ** req: {@link IReqAmuletActivityOperate}
 	 ** res: {@link IResAmuletEventResponse}
 	 ** method: {@link IReqMethod.amuletActivityOperate}
 	 */
 	amuletActivityOperate = "amuletActivityOperate",
-	/**
-	 ** 下一关
-	 ** req: {@link IReqAmuletActivityUpgrade}
-	 ** res: {@link IResAmuletEventResponse}
-	 ** method: {@link IReqMethod.amuletActivityUpgrade}
-	 */
-	amuletActivityUpgrade = "amuletActivityUpgrade",
-	/**
-	 ** 购买卡包
-	 ** req: {@link IReqAmuletActivityBuy}
-	 ** res: {@link IResAmuletEventResponse}
-	 ** method: {@link IReqMethod.amuletActivityBuy}
-	 */
-	amuletActivityBuy = "amuletActivityBuy",
-	/**
-	 ** 选择卡包护身符
-	 ** req: {@link IReqAmuletActivitySelectPack}
-	 ** res: {@link IResAmuletEventResponse}
-	 ** method: {@link IReqMethod.amuletActivitySelectPack}
-	 */
-	amuletActivitySelectPack = "amuletActivitySelectPack",
-	/**
-	 ** 出售护身符
-	 ** req: {@link IReqAmuletActivitySellEffect}
-	 ** res: {@link IResAmuletEventResponse}
-	 ** method: {@link IReqMethod.amuletActivitySellEffect}
-	 */
-	amuletActivitySellEffect = "amuletActivitySellEffect",
-	/**
-	 ** 护身符排序
-	 ** req: {@link IReqAmuletActivityEffectSort}
-	 ** res: {@link IResAmuletEventResponse}
-	 ** method: {@link IReqMethod.amuletActivityEffectSort}
-	 */
-	amuletActivityEffectSort = "amuletActivityEffectSort",
 	/**
 	 ** 放弃当前对局
 	 ** req: {@link IReqAmuletActivityGiveup}
@@ -2757,34 +2729,6 @@ declare enum ENetMessage {
 	 ** method: {@link IReqMethod.amuletActivityGiveup}
 	 */
 	amuletActivityGiveup = "amuletActivityGiveup",
-	/**
-	 ** 刷新商店
-	 ** req: {@link IReqAmuletActivityRefreshShop}
-	 ** res: {@link IResAmuletEventResponse}
-	 ** method: {@link IReqMethod.amuletActivityRefreshShop}
-	 */
-	amuletActivityRefreshShop = "amuletActivityRefreshShop",
-	/**
-	 ** 选择开局免费护身符
-	 ** req: {@link IReqAmuletActivitySelectFreeEffect}
-	 ** res: {@link IResAmuletEventResponse}
-	 ** method: {@link IReqMethod.amuletActivitySelectFreeEffect}
-	 */
-	amuletActivitySelectFreeEffect = "amuletActivitySelectFreeEffect",
-	/**
-	 ** 商店升级buff
-	 ** req: {@link IReqAmuletActivityUpgradeShopBuff}
-	 ** res: {@link IResAmuletEventResponse}
-	 ** method: {@link IReqMethod.amuletActivityUpgradeShopBuff}
-	 */
-	amuletActivityUpgradeShopBuff = "amuletActivityUpgradeShopBuff",
-	/**
-	 ** 退出商店，进入选关
-	 ** req: {@link IReqAmuletActivityEndShopping}
-	 ** res: {@link IResAmuletEventResponse}
-	 ** method: {@link IReqMethod.amuletActivityEndShopping}
-	 */
-	amuletActivityEndShopping = "amuletActivityEndShopping",
 	/**
 	 ** 设置场外增强
 	 ** req: {@link IReqAmuletActivitySetSkillLevel}
@@ -2800,12 +2744,6 @@ declare enum ENetMessage {
 	 */
 	amuletActivityMaintainInfo = "amuletActivityMaintainInfo",
 	/**
-	 ** req: {@link IReqAmuletActivitySelectRewardPack}
-	 ** res: {@link IResAmuletEventResponse}
-	 ** method: {@link IReqMethod.amuletActivitySelectRewardPack}
-	 */
-	amuletActivitySelectRewardPack = "amuletActivitySelectRewardPack",
-	/**
 	 ** 设置青云之志钦定护身符
 	 ** req: {@link IReqAmuletActivitySelectBookEffect}
 	 ** res: {@link IResCommon}
@@ -2813,19 +2751,103 @@ declare enum ENetMessage {
 	 */
 	amuletActivitySelectBookEffect = "amuletActivitySelectBookEffect",
 	/**
-	 ** ==DevDebug Start==
-	 ** debug 协议在正式版本删除
+	 ** 设置青云之志完整数据
 	 ** req: {@link IReqAmuletActivityDebug}
 	 ** res: {@link IResCommon}
 	 ** method: {@link IReqMethod.amuletActivityDebug}
 	 */
 	amuletActivityDebug = "amuletActivityDebug",
 	/**
+	 ** 获取青云之志完整数据
 	 ** req: {@link IReqAmuletActivityFetchDebug}
 	 ** res: {@link IResFetchAmuletActivityDebug}
 	 ** method: {@link IReqMethod.amuletActivityFetchDebug}
 	 */
 	amuletActivityFetchDebug = "amuletActivityFetchDebug",
+	/**
+	 ** 青云之志添加护身符
+	 ** req: {@link IReqAmuletActivityAddEffect}
+	 ** res: {@link IResCommon}
+	 ** method: {@link IReqMethod.amuletActivityAddEffect}
+	 */
+	amuletActivityAddEffect = "amuletActivityAddEffect",
+	/**
+	 ** 青云之志移除护身符
+	 ** req: {@link IReqAmuletActivityRemoveEffect}
+	 ** res: {@link IResCommon}
+	 ** method: {@link IReqMethod.amuletActivityRemoveEffect}
+	 */
+	amuletActivityRemoveEffect = "amuletActivityRemoveEffect",
+	/**
+	 ** 青云之志添加符文石
+	 ** req: {@link IReqAmuletActivityAddRuneStone}
+	 ** res: {@link IResCommon}
+	 ** method: {@link IReqMethod.amuletActivityAddRuneStone}
+	 */
+	amuletActivityAddRuneStone = "amuletActivityAddRuneStone",
+	/**
+	 ** 青云之志移除符文石
+	 ** req: {@link IReqAmuletActivityRemoveRuneStone}
+	 ** res: {@link IResCommon}
+	 ** method: {@link IReqMethod.amuletActivityRemoveRuneStone}
+	 */
+	amuletActivityRemoveRuneStone = "amuletActivityRemoveRuneStone",
+	/**
+	 ** 青云之志移除所有护身符
+	 ** req: {@link IReqAmuletActivityRemoveAllEffect}
+	 ** res: {@link IResCommon}
+	 ** method: {@link IReqMethod.amuletActivityRemoveAllEffect}
+	 */
+	amuletActivityRemoveAllEffect = "amuletActivityRemoveAllEffect",
+	/**
+	 ** 青云之志添加所有符文石
+	 ** req: {@link IReqAmuletActivityAddAllRuneStone}
+	 ** res: {@link IResCommon}
+	 ** method: {@link IReqMethod.amuletActivityAddAllRuneStone}
+	 */
+	amuletActivityAddAllRuneStone = "amuletActivityAddAllRuneStone",
+	/**
+	 ** 青云之志移除所有符文石
+	 ** req: {@link IReqAmuletActivityRemoveAllRuneStone}
+	 ** res: {@link IResCommon}
+	 ** method: {@link IReqMethod.amuletActivityRemoveAllRuneStone}
+	 */
+	amuletActivityRemoveAllRuneStone = "amuletActivityRemoveAllRuneStone",
+	/**
+	 ** 青云之志设置玩家生命值
+	 ** req: {@link IReqAmuletActivitySetHp}
+	 ** res: {@link IResCommon}
+	 ** method: {@link IReqMethod.amuletActivitySetHp}
+	 */
+	amuletActivitySetHp = "amuletActivitySetHp",
+	/**
+	 ** 青云之志修改换牌次数
+	 ** req: {@link IReqAmuletActivitySetChangeTileCount}
+	 ** res: {@link IResCommon}
+	 ** method: {@link IReqMethod.amuletActivitySetChangeTileCount}
+	 */
+	amuletActivitySetChangeTileCount = "amuletActivitySetChangeTileCount",
+	/**
+	 ** 青云之志获取debug数据
+	 ** req: {@link IReqAmuletActivityFetchDebugData}
+	 ** res: {@link IResFetchAmuletActivityDebugData}
+	 ** method: {@link IReqMethod.amuletActivityFetchDebugData}
+	 */
+	amuletActivityFetchDebugData = "amuletActivityFetchDebugData",
+	/**
+	 ** 青云之志设置debug数据
+	 ** req: {@link IReqAmuletActivitySetDebugData}
+	 ** res: {@link IResCommon}
+	 ** method: {@link IReqMethod.amuletActivitySetDebugData}
+	 */
+	amuletActivitySetDebugData = "amuletActivitySetDebugData",
+	/**
+	 ** 青云之志刷新听牌列表和下一步操作
+	 ** req: {@link IReqAmuletActivityRefreshTingListAndNextOperation}
+	 ** res: {@link IResCommon}
+	 ** method: {@link IReqMethod.amuletActivityRefreshTingListAndNextOperation}
+	 */
+	amuletActivityRefreshTingListAndNextOperation = "amuletActivityRefreshTingListAndNextOperation",
 	/**
 	 ** 解锁剧情
 	 ** req: {@link IReqStoryActivityUnlock}
@@ -3232,6 +3254,13 @@ declare enum ENetMessage {
 	 ** method: {@link IReqMethod.mmoActivityDebugSetTeamCandidate}
 	 */
 	mmoActivityDebugSetTeamCandidate = "mmoActivityDebugSetTeamCandidate",
+	/**
+	 ** 获取签到活动详情
+	 ** req: {@link IReqFetchDailySignActivityData}
+	 ** res: {@link IResFetchDailySignActivityData}
+	 ** method: {@link IReqMethod.fetchDailySignActivityData}
+	 */
+	fetchDailySignActivityData = "fetchDailySignActivityData",
 	/**
 	 ** 验证游戏口令
 	 ** req: {@link IReqAuthGame}
@@ -4014,8 +4043,6 @@ declare interface IError extends IProto {
 	level?: number;
 	/** 内部错误消息，不会发送给客户端 */
 	message?: string;
-	/** 内部错误参数，不会发送给客户端 */
-	args?: string;
 }
 
 /** .lq.Wrapper */
@@ -7374,6 +7401,7 @@ declare interface ITransparentData extends IProto {
 	data: number[];
 	session: string;
 	remote: INetworkEndpoint;
+	platform: string;
 }
 
 /**
@@ -11050,6 +11078,8 @@ declare interface IResEnterCustomizedContest extends IResponse {
 	is_admin: boolean;
 	/** 预约对局（若玩家没有预约对局则不传） */
 	game_plan: ICustomizedContestGamePlan;
+	/** 为 true 时不要连接聊天室 */
+	disable_chat_room: boolean;
 }
 
 /**
@@ -12936,13 +12966,39 @@ declare interface IReqAmuletActivityStartGame extends IRequest {
 	activity_id: number;
 }
 
-/** .lq.ReqAmuletActivityOperate */
-declare interface IReqAmuletActivityOperate extends IRequest {
+/** .lq.ReqAmuletActivityGameOperate */
+declare interface IReqAmuletActivityGameOperate extends IRequest {
 	activity_id: number;
-	/** 操作类型 1-切牌 4-开杠 8-和牌 99-模切 100-结束换牌 101-换牌 */
+	/** 操作类型 1-切牌 4-开杠 8-和牌 99-模切 101-换牌 */
 	type: number;
 	/** 操作牌 切牌时传要切的牌  杠时传杠的牌(四张都要传)  和牌不用传 */
 	tile_list: number[];
+}
+
+/** .lq.ReqAmuletActivityOperate */
+declare interface IReqAmuletActivityOperate extends IRequest {
+	activity_id: number;
+	/**
+	 ** 操作类型          args
+	 ** 1  选择角色       [id]
+	 ** 2  确认
+	 ** 3  跳过
+	 ** 4  商店购买卡包   [goodsId]
+	 ** 5  出售护身符     [uid]
+	 ** 6  商店升级       [goodsId]
+	 ** 7  传送
+	 ** 8  护身符排序     [uid1, uid2, uid3...]
+	 ** 9  刷新商店
+	 ** 10 额外商店购买   [goodsId]
+	 ** 11 额外商店升级   [goodsId]
+	 ** 12 交易           [selection1, selection2, ...]
+	 ** 13 篝火选择       [selection]
+	 ** 14 锻造           [uid]
+	 ** 15 转转盘
+	 ** 16 选择卡包护身符  [index]
+	 */
+	type: number;
+	args: number[];
 }
 
 /** .lq.ReqAmuletActivityUpgrade */
@@ -13044,6 +13100,79 @@ declare interface IReqAmuletActivityFetchDebug extends IRequest {
 /** .lq.ResFetchAmuletActivityDebug */
 declare interface IResFetchAmuletActivityDebug extends IResponse {
 	activity_data: IActivityAmuletData;
+}
+
+/** .lq.ReqAmuletActivityAddEffect */
+declare interface IReqAmuletActivityAddEffect extends IRequest {
+	activity_id: number;
+	effect_id: number;
+	badge_id: number;
+}
+
+/** .lq.ReqAmuletActivityRemoveEffect */
+declare interface IReqAmuletActivityRemoveEffect extends IRequest {
+	activity_id: number;
+	uid: number;
+}
+
+/** .lq.ReqAmuletActivityAddRuneStone */
+declare interface IReqAmuletActivityAddRuneStone extends IRequest {
+	activity_id: number;
+	stone_id: number;
+}
+
+/** .lq.ReqAmuletActivityRemoveRuneStone */
+declare interface IReqAmuletActivityRemoveRuneStone extends IRequest {
+	activity_id: number;
+	stone_id: number;
+}
+
+/** .lq.ReqAmuletActivityRemoveAllEffect */
+declare interface IReqAmuletActivityRemoveAllEffect extends IRequest {
+	activity_id: number;
+}
+
+/** .lq.ReqAmuletActivityAddAllRuneStone */
+declare interface IReqAmuletActivityAddAllRuneStone extends IRequest {
+	activity_id: number;
+}
+
+/** .lq.ReqAmuletActivityRemoveAllRuneStone */
+declare interface IReqAmuletActivityRemoveAllRuneStone extends IRequest {
+	activity_id: number;
+}
+
+/** .lq.ReqAmuletActivitySetHp */
+declare interface IReqAmuletActivitySetHp extends IRequest {
+	activity_id: number;
+	hp: number;
+}
+
+/** .lq.ReqAmuletActivitySetChangeTileCount */
+declare interface IReqAmuletActivitySetChangeTileCount extends IRequest {
+	activity_id: number;
+	change_tile_count: number;
+}
+
+/** .lq.ReqAmuletActivityFetchDebugData */
+declare interface IReqAmuletActivityFetchDebugData extends IRequest {
+	activity_id: number;
+}
+
+/** .lq.ResFetchAmuletActivityDebugData */
+declare interface IResFetchAmuletActivityDebugData extends IResponse {
+	debug_data: IAmuletDebugData;
+}
+
+/** .lq.ReqAmuletActivitySetDebugData */
+declare interface IReqAmuletActivitySetDebugData extends IRequest {
+	activity_id: number;
+	debug_data: IAmuletDebugData;
+}
+
+/** .lq.ReqAmuletActivityRefreshTingListAndNextOperation */
+declare interface IReqAmuletActivityRefreshTingListAndNextOperation extends IRequest {
+	activity_id: number;
 }
 
 /** .lq.ReqStoryActivityUnlock */
@@ -14028,6 +14157,36 @@ declare interface IResMMOActivityDebugSetTeamCandidate extends IResponse {
 	changes: IActivityMMODataChanges;
 }
 
+/** .lq.ReqFetchDailySignActivityData */
+declare interface IReqFetchDailySignActivityData extends IRequest {
+	activity_id_list: number[];
+}
+
+/** .lq.ResFetchDailySignActivityData */
+declare interface IResFetchDailySignActivityData extends IResponse {
+	activity_list: IResFetchDailySignActivityData_DailySignActivityData[];
+}
+
+/** .lq.ResFetchDailySignActivityData.DailySignActivityReward */
+declare interface IResFetchDailySignActivityData_DailySignActivityReward extends IProto {
+	id: number;
+	count: number;
+}
+
+/** .lq.ResFetchDailySignActivityData.DailySignActivityDay */
+declare interface IResFetchDailySignActivityData_DailySignActivityDay extends IProto {
+	day: number;
+	rewards: IResFetchDailySignActivityData_DailySignActivityReward[];
+}
+
+/** .lq.ResFetchDailySignActivityData.DailySignActivityData */
+declare interface IResFetchDailySignActivityData_DailySignActivityData extends IProto {
+	activity_id: number;
+	days: IResFetchDailySignActivityData_DailySignActivityDay[];
+	/** 签到类型 1-普通签到 >1 特殊活动签到 */
+	type: number;
+}
+
 /** .lq.AmuletBadgeData */
 declare interface IAmuletBadgeData extends IProto {
 	/** 表内的印章id */
@@ -14054,6 +14213,12 @@ declare interface IAmuletEffectData extends IProto {
 	tags: number[];
 }
 
+/** .lq.AmuletRuneStoneData */
+declare interface IAmuletRuneStoneData extends IProto {
+	id: number;
+	store: string[];
+}
+
 /** .lq.AmuletTile */
 declare interface IAmuletTile extends IProto {
 	id: number;
@@ -14072,6 +14237,18 @@ declare interface IAmuletGameShopGoods extends IProto {
 	id: number;
 	sold: boolean;
 	goods_id: number;
+	price: number;
+}
+
+/** .lq.AmuletShopUpgradeGoods */
+declare interface IAmuletShopUpgradeGoods extends IProto {
+	/** 唯一id, 升级传参用 */
+	id: number;
+	/** 升级项 id, 对应 amulet.amulet_shop_upgrade 表的 id */
+	upgrade_id: number;
+	/** 升级项等级，对应 amulet.amulet_shop_upgrade 表的 level */
+	level: number;
+	/** 价格 */
 	price: number;
 }
 
@@ -14155,6 +14332,8 @@ declare interface IAmuletGameRecordData extends IProto {
 	effect_counter: IAmuletEffectCounterData[];
 	/** 上局和牌手牌（记录牌id） */
 	hu_tiles_id: number[];
+	/** 护身符升级次数 */
+	effect_upgrade_count: number;
 }
 
 /** .lq.AmuletSkillData */
@@ -14167,6 +14346,14 @@ declare interface IAmuletSkillData extends IProto {
 declare interface IActivityAmuletUpgradeData extends IProto {
 	/** 已分配技能点数与等级 */
 	skill: IAmuletSkillData[];
+}
+
+/** .lq.AmuletEnemyData */
+declare interface IAmuletEnemyData extends IProto {
+	id: number;
+	max_hp: string;
+	hp: string;
+	atk: number;
 }
 
 /** .lq.AmuletGameRoundData */
@@ -14184,18 +14371,28 @@ declare interface IAmuletGameRoundData extends IProto {
 	total_change_tile_count: number;
 	next_operation: IAmuletGameOperation[];
 	ting_list: IAmuletActivityTingInfo[];
-	point: string;
-	target_point: string;
+	/**
+	 ** string point = 13;
+	 ** string target_point = 14;
+	 */
 	locked_tile_count: number;
+	/** 敌人 */
+	enemy: IAmuletEnemyData;
+	/** 苦战回合数 */
+	delay_round: number;
 	/** 服务端专用 */
 	mountain: number[];
 	used: number[];
 	desktop: number[];
 	show_desktop: number[];
 	after_gang: number;
+	/** 狂暴牌 */
+	berserk_tile: number[];
 	/** 客户端专用 */
 	desktop_remain: number;
 	show_desktop_tiles: IAmuletShowDesktopTileData[];
+	/** 狂暴牌位置 */
+	berserk_tile_pos: number[];
 }
 
 /** .lq.AmuletEffectCandidate */
@@ -14206,30 +14403,206 @@ declare interface IAmuletEffectCandidate extends IProto {
 	badge_id: number;
 }
 
+/** .lq.AmuletPackQueue */
+declare interface IAmuletPackQueue extends IProto {
+	pack_id: number;
+	/** 一定能开出的卡 */
+	sure_candidate: number[];
+	/** 从卡包里开出几张卡 */
+	count: number;
+	/** 是否允许跳过，不选卡 */
+	disable_skip: number;
+	/** 卡包来源 1-商店卡包 2-关卡奖励 3-转盘选卡 4-初始三选一 */
+	source: number;
+}
+
 /** .lq.AmuletGameEffectData */
 declare interface IAmuletGameEffectData extends IProto {
 	effect_list: IAmuletEffectData[];
 	buff_list: IAmuletBuffData[];
 	skill_buff_list: IAmuletBuffData[];
 	shop_buff_list: IAmuletBuffData[];
-	free_reward_candidates: IAmuletEffectCandidate[];
-	/** 关卡奖励卡包护身符选项 */
-	level_reward_candidates: IAmuletEffectCandidate[];
-	/** 未开的关卡奖励卡包 */
-	level_reward_packs: number[];
-	/** 当前关卡奖励卡包id */
-	current_level_reward_pack: number;
+	rune_stone_list: IAmuletRuneStoneData[];
 	/** 客户端数据，最大护身符持有体积 */
 	max_effect_volume: number;
+	/** 卡包中断状态，待选卡 */
+	pack_candidates: IAmuletEffectCandidate[];
+	/** 卡包中断状态，打开的卡包id */
+	pack_goods_id: number;
+	/** 待开启的卡包 */
+	pack_queue: IAmuletPackQueue[];
+	/** 当前卡包中断状态是否禁止跳过 */
+	pack_disable_skip: number;
+}
+
+/** .lq.AmuletMapNodeData */
+declare interface IAmuletMapNodeData extends IProto {
+	/**
+	 ** 地图节点类型:
+	 ** 1 - 起始点
+	 ** 2 - 小战斗
+	 ** 3 - 事件点
+	 ** 4 - 大战斗
+	 */
+	type: number;
+	/**
+	 ** 节点子类型
+	 ** 小战斗： 怪物id
+	 ** 事件点： 事件类型
+	 ** 大战斗： 怪物id
+	 */
+	sub_type: number;
+	/**
+	 ** 节点参数
+	 ** 大战斗：[怪物技能id]
+	 */
+	args: number[];
+}
+
+/** .lq.AmuletMapData */
+declare interface IAmuletMapData extends IProto {
+	level: number;
+	node: number;
+	map_nodes: IAmuletMapNodeData[];
+	/** 传送次数 */
+	transport_count: number;
+}
+
+/** .lq.AmuletCharacterData */
+declare interface IAmuletCharacterData extends IProto {
+	character_id: number;
+	max_hp: number;
+	hp: number;
 }
 
 /** .lq.AmuletShopData */
 declare interface IAmuletShopData extends IProto {
 	goods: IAmuletGameShopGoods[];
-	candidate_effect_list: IAmuletEffectCandidate[];
+	/** repeated AmuletEffectCandidate candidate_effect_list = 2; */
 	shop_refresh_count: number;
 	/** 客户端专用 */
 	refresh_price: number;
+	/** 商店升级商品 */
+	upgrade_goods: IAmuletShopUpgradeGoods[];
+}
+
+/** .lq.AmuletStateData */
+declare interface IAmuletStateData extends IProto {
+	/** 游戏状态  https://confluence.catfoodstudio.net:5443/pages/viewpage.action?pageId=159359044#id-%E9%9D%92%E4%BA%91%E4%B9%8B%E5%BF%974.0%E5%BC%80%E5%8F%91%E6%96%87%E6%A1%A3-%E6%B8%B8%E6%88%8F%E7%8A%B6%E6%80%81.1 */
+	current: number;
+	/** 中断状态 https://confluence.catfoodstudio.net:5443/pages/viewpage.action?pageId=159359044#id-%E9%9D%92%E4%BA%91%E4%B9%8B%E5%BF%974.0%E5%BC%80%E5%8F%91%E6%96%87%E6%A1%A3-%E4%B8%AD%E6%96%AD%E7%8A%B6%E6%80%81.1 */
+	interrupt: number;
+}
+
+/** .lq.AmuletAdvancedShopGoods */
+declare interface IAmuletAdvancedShopGoods extends IProto {
+	id: number;
+	/** 1-护身符 2-符文石 */
+	type: number;
+	/** 护身符数据,type=1时有值 */
+	effect: IAmuletEffectCandidate;
+	/** 符文石id,type=2时有值 */
+	rune_stone: number;
+	/** 是否已售 */
+	sold: number;
+	/** 价格 */
+	price: number;
+}
+
+/** .lq.AmuletNodeEventData */
+declare interface IAmuletNodeEventData extends IProto {
+	advanced_shop_goods: IAmuletAdvancedShopGoods[];
+	advanced_shop_refresh_count: number;
+	bonfire_selection: number[];
+	/** 转盘id */
+	gamble_id: number;
+	/** 转盘次数 */
+	gamble_count: number;
+	/** 转盘价格，客户端专用 */
+	gamble_price: number;
+	/** 转盘选项 */
+	gamble_selections: number[];
+	/** 交易条件 */
+	trade_items: IAmuletTradeItem[];
+	/** 交易次数 */
+	trade_count: number;
+	/** 交易奖励 */
+	trade_reward: IAmuletTradeReward;
+	/** 高级商店升级 */
+	advanced_shop_upgrade: IAmuletAdvancedShopUpgrade[];
+	/** 高级商店刷新价格 */
+	advanced_shop_refresh_price: number;
+}
+
+/** .lq.AmuletAdvancedShopUpgrade */
+declare interface IAmuletAdvancedShopUpgrade extends IProto {
+	/** 唯一id, 购买传参用 */
+	id: number;
+	/** amulet_advanced_shop_upgrade 表id */
+	upgrade_id: number;
+	/** 是否已售, 1=已售 0-未售 */
+	sold: number;
+	/** 价格 */
+	price: number;
+}
+
+/** .lq.AmuletTradeItem */
+declare interface IAmuletTradeItem extends IProto {
+	/** 交易条件配表id, amulet.amulet_trade_item */
+	id: number;
+	/** 存放随机值 */
+	store: number[];
+}
+
+/** .lq.AmuletTradeReward */
+declare interface IAmuletTradeReward extends IProto {
+	/** 交易奖励的配表id, amulet.amulet_trade_reward */
+	id: number;
+	/** 种类 1=护身符，2=符文石 */
+	type: number;
+	/** 符文石id, type=2时有值 */
+	rune_stone_id: number;
+	/** 护身符id, type=1时有值 */
+	effect_id: number;
+	/** 印章id, type=1时可能有值 */
+	badge_id: number;
+}
+
+/**
+ ** .lq.AmuletDebugDesktop
+ ** ==DevDebug Start==
+ ** debug 协议在正式版本删除
+ */
+declare interface IAmuletDebugDesktop extends IProto {
+	/** 待摸牌 */
+	desktop: number[];
+	/** 山 */
+	mountain: number[];
+	/** 公开牌 */
+	show_desktop: number[];
+	/** 锁定牌数量, -1 表示不控制 */
+	locked_tile_count: number;
+}
+
+/** .lq.AmuletDebugData */
+declare interface IAmuletDebugData extends IProto {
+	/** 转盘爆炸概率 */
+	gamble_destroy_rate: IOptionalUInt32;
+	/** 固定关卡小关构成 */
+	map_nodes: IAmuletMapNodeData[];
+	/** 固定卡包结果 */
+	pack_candidates: IAmuletEffectCandidate[];
+	/** 固定转盘结果 */
+	gamble_result: IOptionalUInt32;
+	/** 控制下次发牌（初始和苦战都生效） */
+	next_desktop: IAmuletDebugDesktop[];
+}
+
+/** .lq.OptionalUInt32 */
+declare interface IOptionalUInt32 extends IProto {
+	/** 是否启用 */
+	enabled: number;
+	value: number;
 }
 
 /** .lq.AmuletGameData */
@@ -14237,11 +14610,21 @@ declare interface IAmuletGameData extends IProto {
 	round: IAmuletGameRoundData;
 	effect: IAmuletGameEffectData;
 	game: IAmuletGameInfoData;
-	stage: number;
+	/** uint32 stage = 4; */
 	shop: IAmuletShopData;
 	record: IAmuletGameRecordData;
-	/** 本局游戏是否已经结束 */
-	ended: boolean;
+	state: IAmuletStateData;
+	map: IAmuletMapData;
+	character: IAmuletCharacterData;
+	node_event: IAmuletNodeEventData;
+	/** ==DevDebug Start== */
+	debug: IAmuletDebugData;
+}
+
+/** .lq.AmuletFanValue */
+declare interface IAmuletFanValue extends IProto {
+	id: number;
+	value: string;
 }
 
 /** .lq.AmuletGameInfoData */
@@ -14249,17 +14632,25 @@ declare interface IAmuletGameInfoData extends IProto {
 	level: number;
 	coin: string;
 	max_effect_volume: number;
-	next_boss_buff: number[];
-	boss_buff: number[];
+	/**
+	 ** repeated uint32 next_boss_buff = 4;
+	 ** repeated uint32 boss_buff = 5;
+	 */
 	tile_score_map: IAmuletTileScore[];
 	book_effect_id: number;
+	fan_value_map: IAmuletFanValue[];
+	/** 初始换手牌数量 */
+	init_change_hand_count: number;
 }
 
 /** .lq.ActivityAmuletIllustratedBookData */
 declare interface IActivityAmuletIllustratedBookData extends IProto {
-	/** 护身符 */
+	/** 已收集的护身符 */
 	effect_collection: number[];
+	/** 已收集的印章 */
 	badge_collection: number[];
+	/** 已收集的符文石 */
+	rune_stone_collection: number[];
 }
 
 /** .lq.ActivityAmuletEffectRecordData */
@@ -14272,6 +14663,7 @@ declare interface IActivityAmuletEffectRecordData extends IProto {
 /** .lq.ActivityAmuletGameRecordData */
 declare interface IActivityAmuletGameRecordData extends IProto {
 	effect_builds: IActivityAmuletEffectRecordData[];
+	/** 大关，amulet_level 表的 level 字段 */
 	level: number;
 	highest_level_score: string;
 	highest_fan: string;
@@ -14281,11 +14673,13 @@ declare interface IActivityAmuletGameRecordData extends IProto {
 	time: number;
 	/** 最高和牌记录 */
 	highest_hu: IActivityAmuletHuRecord;
+	/** 关卡节点，amulet_node 表的 node 字段 */
+	level_node: number;
 }
 
 /** .lq.ActivityAmuletStatisticData */
 declare interface IActivityAmuletStatisticData extends IProto {
-	/** 历史最高关卡记录 */
+	/** 历史最高关卡记录 大关，amulet_level 表的 level 字段 */
 	highest_level: number;
 	/** 历史最高和牌记录 */
 	highest_hu: IActivityAmuletHuRecord;
@@ -14300,6 +14694,22 @@ declare interface IActivityAmuletStatisticData extends IProto {
 	open_pack_count: number;
 	/** 最多单轮花费星币 */
 	highest_coin_consumed: string;
+	/** 角色统计数据 */
+	character_statistic: ICharacterStatistic[];
+	/** 历史最高关卡记录 节点，amulet_node 表的 node 字段 */
+	highest_level_node: number;
+}
+
+/** .lq.CharacterStatistic */
+declare interface ICharacterStatistic extends IProto {
+	/** 角色 id */
+	character_id: number;
+	/** 历史最高关卡记录 大关，amulet_level 表的 level 字段 */
+	highest_level: number;
+	/** 最大的分数 */
+	highest_score: string;
+	/** 历史最高关卡节点 节点，amulet_node 表的 node 字段 */
+	highest_level_node: number;
 }
 
 /**
@@ -14340,20 +14750,31 @@ declare interface IAmuletHookResult extends IProto {
 	remove_buff: number[];
 	add_tian_dora: string[];
 	add_dora: IAmuletHookResult_AddDoraResult;
-	coin_modify: IAmuletHookResult_ValueResult;
+	/** 金币修改 */
+	coin_modify: IAmuletHookResult_BigIntValueResult;
+	/** 牌替换的列表 */
 	tile_replace: IAmuletTile[];
+	/** 增加的公开牌id列表 */
 	add_show_tile: number[];
+	/** 牌基础分变化 */
 	modify_tile_score: IAmuletTileScore[];
+	/** 待摸牌初始数量 */
+	calc_desktop_count: number;
+	/** 待摸牌变化 */
 	modify_desktop_count: number;
+	/** 公开待摸牌数量变化 */
 	modify_show_desktop_count: number;
+	/** 锁定牌数量变化 */
 	modify_lock_tile_count: number;
-	/** 修改换牌次数 */
+	/** 开局的时候修改换牌次数 */
 	modify_change_hands_count: number;
-	/** 修改单次换牌牌数 */
+	/** 修改单次换牌牌数, 一次换牌能换几张牌 */
 	modify_change_hands_tile_count: number;
+	/** 强制模切 */
 	force_moqie: boolean;
 	/** 变牌后可以和牌 */
 	replace_hu: boolean;
+	/** 目标分数变化 */
 	modify_target_point: string;
 	/** 无视过关分数直接过关 */
 	upgrade_level: boolean;
@@ -14375,8 +14796,11 @@ declare interface IAmuletHookResult extends IProto {
 	modify_goods: IAmuletGameShopGoods[];
 	/** 移除商店卡包 */
 	remove_goods: number[];
-	modify_base: IAmuletHookResult_ValueResult;
-	modify_fan: IAmuletHookResult_ValueResult;
+	/** 基础分修改 */
+	modify_base: IAmuletHookResult_BigIntValueResult;
+	/** 番数修改 */
+	modify_fan: IAmuletHookResult_BigIntValueResult;
+	/** 番信息变化 */
 	modify_fan_info: IAmuletFan[];
 	/** 护身符变形(从A卡变为B卡) */
 	transform_effect: IAmuletHookResult_TransformResult[];
@@ -14410,6 +14834,20 @@ declare interface IAmuletHookResult extends IProto {
 	upgrade_effect: IAmuletHookResult_UpgradeEffectResult[];
 	/** 修改和牌基础分 */
 	modify_tile_base_score: IAmuletTileScore[];
+	/** 对目标造成治疗 */
+	heal: IAmuletHookResult_UInt32ValueResult;
+	/** 对目标造成伤害 */
+	damage: IAmuletHookResult_UInt32ValueResult;
+	/** 狂暴牌数量变化 */
+	modify_berserk_tile_count: number;
+	/** 敌人最大生命值变化 */
+	modify_enemy_max_hp: IAmuletHookResult_BigIntValueResult;
+	/** 番数值增加 */
+	add_fan_value: IAmuletFanValue[];
+	/** 换牌次数被直接设置 */
+	set_change_tile_count: number;
+	/** 修改商店升级商品价格 */
+	modify_shop_upgrade_goods_price: boolean;
 }
 
 /** .lq.AmuletHookResult.AddEffectResult */
@@ -14439,8 +14877,8 @@ declare interface IAmuletHookResult_AddDoraResult extends IProto {
 	list: number[];
 }
 
-/** .lq.AmuletHookResult.ValueResult */
-declare interface IAmuletHookResult_ValueResult extends IProto {
+/** .lq.AmuletHookResult.BigIntValueResult */
+declare interface IAmuletHookResult_BigIntValueResult extends IProto {
 	origin: string;
 	modify: string;
 	final: string;
@@ -14485,9 +14923,16 @@ declare interface IAmuletHookResult_CopyEffect extends IProto {
 declare interface IAmuletHookResult_AmuletChangeDesktopResult extends IProto {
 	/** 当前可见牌 */
 	show_desktop_tiles: IAmuletShowDesktopTileData[];
+	/** 待摸牌id列表 */
+	desktop: number[];
+	/** 锁定牌数量 */
 	locked_tile_count: number;
+	/** 待摸牌数量 */
 	desktop_remain: number;
+	/** 锁定牌id列表 */
 	locked_tile: number[];
+	/** 狂暴牌位置列表 */
+	berserk_tile_pos: number[];
 }
 
 /** .lq.AmuletHookResult.UpgradeEffectResult */
@@ -14501,6 +14946,13 @@ declare interface IAmuletHookResult_UpgradeEffectResult extends IProto {
 	store: string[];
 	/** 新护身符体积 */
 	volume: number;
+}
+
+/** .lq.AmuletHookResult.UInt32ValueResult */
+declare interface IAmuletHookResult_UInt32ValueResult extends IProto {
+	origin: number;
+	modify: number;
+	final: number;
 }
 
 /** .lq.AmuletEffectedHookData */
@@ -14548,6 +15000,12 @@ declare interface IAmuletShowDesktopTileDataArrayDirty extends IProto {
 	value: IAmuletShowDesktopTileData[];
 }
 
+/** .lq.AmuletEnemyDirty */
+declare interface IAmuletEnemyDirty extends IProto {
+	dirty: boolean;
+	value: IAmuletEnemyData;
+}
+
 /** .lq.AmuletRoundDataChanges */
 declare interface IAmuletRoundDataChanges extends IProto {
 	pool: IAmuletTileArrayDirty;
@@ -14563,11 +15021,16 @@ declare interface IAmuletRoundDataChanges extends IProto {
 	total_change_tile_count: IUInt32Dirty;
 	next_operation: IAmuletGameOperationArrayDirty;
 	ting_list: IAmuletTingInfoArrayDirty;
-	point: IStringDirty;
-	target_point: IStringDirty;
+	/**
+	 ** StringDirty point = 18;
+	 ** StringDirty target_point = 19;
+	 */
 	desktop_remain: IUInt32Dirty;
 	show_desktop_tiles: IAmuletShowDesktopTileDataArrayDirty;
 	locked_tile_count: IUInt32Dirty;
+	berserk_tile_pos: IUInt32ArrayDirty;
+	enemy: IAmuletEnemyDirty;
+	delay_round: IUInt32Dirty;
 }
 
 /** .lq.AmuletEffectDataArrayDirty */
@@ -14582,15 +15045,29 @@ declare interface IAmuletBuffDataArrayDirty extends IProto {
 	value: IAmuletBuffData[];
 }
 
+/** .lq.AmuletPackQueueArrayDirty */
+declare interface IAmuletPackQueueArrayDirty extends IProto {
+	dirty: boolean;
+	value: IAmuletPackQueue[];
+}
+
+/** .lq.AmuletRuneStoneArrayDirty */
+declare interface IAmuletRuneStoneArrayDirty extends IProto {
+	dirty: boolean;
+	value: IAmuletRuneStoneData[];
+}
+
 /** .lq.AmuletEffectDataChanges */
 declare interface IAmuletEffectDataChanges extends IProto {
 	effect_list: IAmuletEffectDataArrayDirty;
 	buff_list: IAmuletBuffDataArrayDirty;
 	skill_buff_list: IAmuletBuffDataArrayDirty;
 	shop_buff_list: IAmuletBuffDataArrayDirty;
-	free_reward_candidates: IAmuletEffectCandidatesArrayDirty;
-	level_reward_candidates: IAmuletEffectCandidatesArrayDirty;
+	rune_stone_list: IAmuletRuneStoneArrayDirty;
 	current_level_reward_pack: IUInt32Dirty;
+	pack_candidates: IAmuletEffectCandidatesArrayDirty;
+	pack_queue: IAmuletPackQueueArrayDirty;
+	pack_goods_id: IUInt32Dirty;
 }
 
 /** .lq.AmuletTileScoreArrayDirty */
@@ -14599,14 +15076,23 @@ declare interface IAmuletTileScoreArrayDirty extends IProto {
 	value: IAmuletTileScore[];
 }
 
+/** .lq.AmuletFanValueArrayDirty */
+declare interface IAmuletFanValueArrayDirty extends IProto {
+	dirty: boolean;
+	value: IAmuletFanValue[];
+}
+
 /** .lq.AmuletGameInfoDataChanges */
 declare interface IAmuletGameInfoDataChanges extends IProto {
 	level: IUInt32Dirty;
 	coin: IStringDirty;
 	max_effect_volume: IUInt32Dirty;
-	next_boss_buff: IUInt32ArrayDirty;
-	boss_buff: IUInt32ArrayDirty;
+	/**
+	 ** UInt32ArrayDirty next_boss_buff = 4;
+	 ** UInt32ArrayDirty boss_buff = 5;
+	 */
 	tile_score_map: IAmuletTileScoreArrayDirty;
+	fan_value_map: IAmuletFanValueArrayDirty;
 }
 
 /** .lq.AmuletShopGoodsArrayDirty */
@@ -14615,12 +15101,19 @@ declare interface IAmuletShopGoodsArrayDirty extends IProto {
 	value: IAmuletGameShopGoods[];
 }
 
+/** .lq.AmuletShopUpgradeGoodsArrayDirty */
+declare interface IAmuletShopUpgradeGoodsArrayDirty extends IProto {
+	dirty: boolean;
+	value: IAmuletShopUpgradeGoods[];
+}
+
 /** .lq.AmuletShopDataChanges */
 declare interface IAmuletShopDataChanges extends IProto {
 	goods: IAmuletShopGoodsArrayDirty;
-	candidate_effect_list: IAmuletEffectCandidatesArrayDirty;
+	/** AmuletEffectCandidatesArrayDirty candidate_effect_list = 2; */
 	shop_refresh_count: IUInt32Dirty;
 	refresh_price: IUInt32Dirty;
+	upgrade_goods: IAmuletShopUpgradeGoodsArrayDirty;
 }
 
 /** .lq.ActivityAmuletHuRecordDirty */
@@ -14649,6 +15142,69 @@ declare interface IAmuletRecordDataChanges extends IProto {
 	pack_count: IUInt32Dirty;
 	round_count: IUInt32Dirty;
 	effect_counter: IAmuletEffectCounterDataArrayDirty;
+	hu_tiles_id: IUInt32ArrayDirty;
+	effect_upgrade_count: IUInt32Dirty;
+}
+
+/** .lq.ActivityAmuletMapNodeDataArrayDirty */
+declare interface IActivityAmuletMapNodeDataArrayDirty extends IProto {
+	dirty: boolean;
+	value: IAmuletMapNodeData[];
+}
+
+/** .lq.AmuletMapDataChanges */
+declare interface IAmuletMapDataChanges extends IProto {
+	level: IUInt32Dirty;
+	node: IUInt32Dirty;
+	map_nodes: IActivityAmuletMapNodeDataArrayDirty;
+	transport_count: IUInt32Dirty;
+}
+
+/** .lq.AmuletAdvancedShopGoodsArrayDirty */
+declare interface IAmuletAdvancedShopGoodsArrayDirty extends IProto {
+	dirty: boolean;
+	value: IAmuletAdvancedShopGoods[];
+}
+
+/** .lq.ActivityAmuletTradeItemArrayDirty */
+declare interface IActivityAmuletTradeItemArrayDirty extends IProto {
+	dirty: boolean;
+	value: IAmuletTradeItem[];
+}
+
+/** .lq.ActivityAmuletTradeRewardDirty */
+declare interface IActivityAmuletTradeRewardDirty extends IProto {
+	dirty: boolean;
+	value: IAmuletTradeReward;
+}
+
+/** .lq.AmuletNodeEventChanges */
+declare interface IAmuletNodeEventChanges extends IProto {
+	advanced_shop_goods: IAmuletAdvancedShopGoodsArrayDirty;
+	advanced_shop_refresh_count: IUInt32Dirty;
+	advanced_shop_refresh_price: IUInt32Dirty;
+	bonfire_selection: IUInt32ArrayDirty;
+	gamble_id: IUInt32Dirty;
+	gamble_count: IUInt32Dirty;
+	gamble_price: IUInt32Dirty;
+	gamble_selections: IUInt32ArrayDirty;
+	trade_items: IActivityAmuletTradeItemArrayDirty;
+	trade_count: IUInt32Dirty;
+	trade_reward: IActivityAmuletTradeRewardDirty;
+	advanced_shop_upgrade: IAmuletAdvancedShopUpgradeArrayDirty;
+}
+
+/** .lq.AmuletAdvancedShopUpgradeArrayDirty */
+declare interface IAmuletAdvancedShopUpgradeArrayDirty extends IProto {
+	dirty: boolean;
+	value: IAmuletAdvancedShopUpgrade[];
+}
+
+/** .lq.AmuletCharacterDataChanges */
+declare interface IAmuletCharacterDataChanges extends IProto {
+	character_id: IUInt32Dirty;
+	hp: IUInt32Dirty;
+	max_hp: IUInt32Dirty;
 }
 
 /** .lq.AmuletValueChanges */
@@ -14656,10 +15212,12 @@ declare interface IAmuletValueChanges extends IProto {
 	round: IAmuletRoundDataChanges;
 	effect: IAmuletEffectDataChanges;
 	game: IAmuletGameInfoDataChanges;
-	stage: number;
 	shop: IAmuletShopDataChanges;
 	record: IAmuletRecordDataChanges;
-	ended: boolean;
+	state: IAmuletStateData;
+	map: IAmuletMapDataChanges;
+	character: IAmuletCharacterDataChanges;
+	node_event: IAmuletNodeEventChanges;
 }
 
 /** .lq.AmuletEventResult */
@@ -14680,6 +15238,8 @@ declare interface IAmuletEventResult extends IProto {
 	sell_effect_result: IAmuletEventResult_SellEffectResult;
 	/** SelectFreeEffect(2) SelectPack(14) SelectLevelRewardPack(16) */
 	select_pack_result: IAmuletEventResult_SelectPackResult;
+	gamble_result: IAmuletEventResult_GambleResult;
+	advanced_shop_upgrade_result: IAmuletEventResult_AdvancedShopUpgradeResult;
 }
 
 /** .lq.AmuletEventResult.DealResult */
@@ -14691,6 +15251,8 @@ declare interface IAmuletEventResult_DealResult extends IProto {
 declare interface IAmuletEventResult_HuResult extends IProto {
 	hu_final: IAmuletEventResult_HuInfo;
 	hu_base: IAmuletEventResult_HuInfo;
+	/** 攻击伤害 */
+	attack: string;
 }
 
 /** .lq.AmuletEventResult.GameEndResult */
@@ -14706,7 +15268,6 @@ declare interface IAmuletEventResult_GangResult extends IProto {
 /** .lq.AmuletEventResult.UpgradeResult */
 declare interface IAmuletEventResult_UpgradeResult extends IProto {
 	level_coin: string;
-	point_coin: string;
 }
 
 /** .lq.AmuletEventResult.SellEffectResult */
@@ -14728,6 +15289,22 @@ declare interface IAmuletEventResult_SelectPackResult extends IProto {
 	merged_result: number;
 	/** 新印章数据 */
 	badge: IAmuletBadgeData;
+}
+
+/** .lq.AmuletEventResult.GambleResult */
+declare interface IAmuletEventResult_GambleResult extends IProto {
+	/** 转盘是否炸了 */
+	destroyed: number;
+	/** 转盘结果，炸了的话没有这个字段 */
+	result_selection: number;
+	/** 转盘结果修改的牌基础分 */
+	modify_tile_score: IAmuletTileScore[];
+}
+
+/** .lq.AmuletEventResult.AdvancedShopUpgradeResult */
+declare interface IAmuletEventResult_AdvancedShopUpgradeResult extends IProto {
+	/** 高级商店升级修改的牌基础分 */
+	modify_tile_score: IAmuletTileScore[];
 }
 
 /** .lq.AmuletEventResult.HuResult.HuInfo */
@@ -14756,6 +15333,7 @@ declare interface IAmuletEventData extends IProto {
 	result: IAmuletEventResult;
 	/** 事件影响，类似 effected_hooks 但是由事件本身触发的，而不是 hook 触发的 */
 	event_hooks: IAmuletEventHookData[];
+	state: IAmuletStateData;
 }
 
 /**
@@ -16391,6 +16969,8 @@ declare interface IReqRequestConnection extends IRequest {
 	route_id: string;
 	/** 时间戳（毫秒） */
 	timestamp: number;
+	/** 客户端平台 */
+	platform: string;
 }
 
 /** .lq.ResRequestConnection */

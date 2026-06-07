@@ -48,6 +48,8 @@ declare interface ISheet_Mail_MailTemplate {
 	138: ISheetData_Mail_MailTemplate;
 	139: ISheetData_Mail_MailTemplate;
 	140: ISheetData_Mail_MailTemplate;
+	141: ISheetData_Mail_MailTemplate;
+	142: ISheetData_Mail_MailTemplate;
 	10001: ISheetData_Mail_MailTemplate;
 	10002: ISheetData_Mail_MailTemplate;
 	10003: ISheetData_Mail_MailTemplate;

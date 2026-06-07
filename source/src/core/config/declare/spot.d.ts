@@ -39,6 +39,7 @@ declare interface ISheet_Spot_Spot {
 	200022: ISheetData_Spot_Spot[];
 	200025: ISheetData_Spot_Spot[];
 	200094: ISheetData_Spot_Spot[];
+	20000106: ISheetData_Spot_Spot[];
 }
 declare interface ISheetData_Spot_Spot extends ISheetDataBase {
 	/** 角色ID */
@@ -231,6 +232,12 @@ declare interface ISheet_Spot_Rewards {
 	9400052: ISheetData_Spot_Rewards;
 	9400061: ISheetData_Spot_Rewards;
 	9400062: ISheetData_Spot_Rewards;
+	10600011: ISheetData_Spot_Rewards;
+	10600012: ISheetData_Spot_Rewards;
+	10600021: ISheetData_Spot_Rewards;
+	10600022: ISheetData_Spot_Rewards;
+	10600031: ISheetData_Spot_Rewards;
+	10600032: ISheetData_Spot_Rewards;
 	20000041: ISheetData_Spot_Rewards;
 	20000042: ISheetData_Spot_Rewards;
 	20000051: ISheetData_Spot_Rewards;
@@ -333,6 +340,7 @@ declare interface ISheet_Spot_CharacterSpot {
 	20000104: ISheetData_Spot_CharacterSpot;
 	20000105: ISheetData_Spot_CharacterSpot;
 	20000121: ISheetData_Spot_CharacterSpot;
+	20009992: ISheetData_Spot_CharacterSpot;
 	20009993: ISheetData_Spot_CharacterSpot;
 	20009994: ISheetData_Spot_CharacterSpot;
 	20009995: ISheetData_Spot_CharacterSpot;
@@ -465,6 +473,7 @@ declare interface ISheet_Spot_SkinSpot {
 	40010501: ISheetData_Spot_SkinSpot;
 	40011499: ISheetData_Spot_SkinSpot;
 	40012101: ISheetData_Spot_SkinSpot;
+	40999201: ISheetData_Spot_SkinSpot;
 	40999301: ISheetData_Spot_SkinSpot;
 	40999401: ISheetData_Spot_SkinSpot;
 	40999501: ISheetData_Spot_SkinSpot;

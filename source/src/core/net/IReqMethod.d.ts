@@ -2399,46 +2399,18 @@ declare interface IReqMethod {
 	amuletActivityStartGame(data?: IReqAmuletActivityStartGame): Promise<IResAmuletEventResponse>;
 	/**
 	 ** 换牌/打牌/开杠/和牌/模切/结束换牌 操作
+	 ** req: {@link IReqAmuletActivityGameOperate}
+	 ** res: {@link IResAmuletEventResponse}
+	 ** msgId: {@link ENetMessage.amuletActivityGameOperate}
+	 */
+	amuletActivityGameOperate(data?: IReqAmuletActivityGameOperate): Promise<IResAmuletEventResponse>;
+	/**
+	 ** 对局外的其他操作
 	 ** req: {@link IReqAmuletActivityOperate}
 	 ** res: {@link IResAmuletEventResponse}
 	 ** msgId: {@link ENetMessage.amuletActivityOperate}
 	 */
 	amuletActivityOperate(data?: IReqAmuletActivityOperate): Promise<IResAmuletEventResponse>;
-	/**
-	 ** 下一关
-	 ** req: {@link IReqAmuletActivityUpgrade}
-	 ** res: {@link IResAmuletEventResponse}
-	 ** msgId: {@link ENetMessage.amuletActivityUpgrade}
-	 */
-	amuletActivityUpgrade(data?: IReqAmuletActivityUpgrade): Promise<IResAmuletEventResponse>;
-	/**
-	 ** 购买卡包
-	 ** req: {@link IReqAmuletActivityBuy}
-	 ** res: {@link IResAmuletEventResponse}
-	 ** msgId: {@link ENetMessage.amuletActivityBuy}
-	 */
-	amuletActivityBuy(data?: IReqAmuletActivityBuy): Promise<IResAmuletEventResponse>;
-	/**
-	 ** 选择卡包护身符
-	 ** req: {@link IReqAmuletActivitySelectPack}
-	 ** res: {@link IResAmuletEventResponse}
-	 ** msgId: {@link ENetMessage.amuletActivitySelectPack}
-	 */
-	amuletActivitySelectPack(data?: IReqAmuletActivitySelectPack): Promise<IResAmuletEventResponse>;
-	/**
-	 ** 出售护身符
-	 ** req: {@link IReqAmuletActivitySellEffect}
-	 ** res: {@link IResAmuletEventResponse}
-	 ** msgId: {@link ENetMessage.amuletActivitySellEffect}
-	 */
-	amuletActivitySellEffect(data?: IReqAmuletActivitySellEffect): Promise<IResAmuletEventResponse>;
-	/**
-	 ** 护身符排序
-	 ** req: {@link IReqAmuletActivityEffectSort}
-	 ** res: {@link IResAmuletEventResponse}
-	 ** msgId: {@link ENetMessage.amuletActivityEffectSort}
-	 */
-	amuletActivityEffectSort(data?: IReqAmuletActivityEffectSort): Promise<IResAmuletEventResponse>;
 	/**
 	 ** 放弃当前对局
 	 ** req: {@link IReqAmuletActivityGiveup}
@@ -2446,34 +2418,6 @@ declare interface IReqMethod {
 	 ** msgId: {@link ENetMessage.amuletActivityGiveup}
 	 */
 	amuletActivityGiveup(data?: IReqAmuletActivityGiveup): Promise<IResCommon>;
-	/**
-	 ** 刷新商店
-	 ** req: {@link IReqAmuletActivityRefreshShop}
-	 ** res: {@link IResAmuletEventResponse}
-	 ** msgId: {@link ENetMessage.amuletActivityRefreshShop}
-	 */
-	amuletActivityRefreshShop(data?: IReqAmuletActivityRefreshShop): Promise<IResAmuletEventResponse>;
-	/**
-	 ** 选择开局免费护身符
-	 ** req: {@link IReqAmuletActivitySelectFreeEffect}
-	 ** res: {@link IResAmuletEventResponse}
-	 ** msgId: {@link ENetMessage.amuletActivitySelectFreeEffect}
-	 */
-	amuletActivitySelectFreeEffect(data?: IReqAmuletActivitySelectFreeEffect): Promise<IResAmuletEventResponse>;
-	/**
-	 ** 商店升级buff
-	 ** req: {@link IReqAmuletActivityUpgradeShopBuff}
-	 ** res: {@link IResAmuletEventResponse}
-	 ** msgId: {@link ENetMessage.amuletActivityUpgradeShopBuff}
-	 */
-	amuletActivityUpgradeShopBuff(data?: IReqAmuletActivityUpgradeShopBuff): Promise<IResAmuletEventResponse>;
-	/**
-	 ** 退出商店，进入选关
-	 ** req: {@link IReqAmuletActivityEndShopping}
-	 ** res: {@link IResAmuletEventResponse}
-	 ** msgId: {@link ENetMessage.amuletActivityEndShopping}
-	 */
-	amuletActivityEndShopping(data?: IReqAmuletActivityEndShopping): Promise<IResAmuletEventResponse>;
 	/**
 	 ** 设置场外增强
 	 ** req: {@link IReqAmuletActivitySetSkillLevel}
@@ -2489,12 +2433,6 @@ declare interface IReqMethod {
 	 */
 	amuletActivityMaintainInfo(data?: IReqCommon): Promise<IResAmuletActivityMaintainInfo>;
 	/**
-	 ** req: {@link IReqAmuletActivitySelectRewardPack}
-	 ** res: {@link IResAmuletEventResponse}
-	 ** msgId: {@link ENetMessage.amuletActivitySelectRewardPack}
-	 */
-	amuletActivitySelectRewardPack(data?: IReqAmuletActivitySelectRewardPack): Promise<IResAmuletEventResponse>;
-	/**
 	 ** 设置青云之志钦定护身符
 	 ** req: {@link IReqAmuletActivitySelectBookEffect}
 	 ** res: {@link IResCommon}
@@ -2502,19 +2440,103 @@ declare interface IReqMethod {
 	 */
 	amuletActivitySelectBookEffect(data?: IReqAmuletActivitySelectBookEffect): Promise<IResCommon>;
 	/**
-	 ** ==DevDebug Start==
-	 ** debug 协议在正式版本删除
+	 ** 设置青云之志完整数据
 	 ** req: {@link IReqAmuletActivityDebug}
 	 ** res: {@link IResCommon}
 	 ** msgId: {@link ENetMessage.amuletActivityDebug}
 	 */
 	amuletActivityDebug(data?: IReqAmuletActivityDebug): Promise<IResCommon>;
 	/**
+	 ** 获取青云之志完整数据
 	 ** req: {@link IReqAmuletActivityFetchDebug}
 	 ** res: {@link IResFetchAmuletActivityDebug}
 	 ** msgId: {@link ENetMessage.amuletActivityFetchDebug}
 	 */
 	amuletActivityFetchDebug(data?: IReqAmuletActivityFetchDebug): Promise<IResFetchAmuletActivityDebug>;
+	/**
+	 ** 青云之志添加护身符
+	 ** req: {@link IReqAmuletActivityAddEffect}
+	 ** res: {@link IResCommon}
+	 ** msgId: {@link ENetMessage.amuletActivityAddEffect}
+	 */
+	amuletActivityAddEffect(data?: IReqAmuletActivityAddEffect): Promise<IResCommon>;
+	/**
+	 ** 青云之志移除护身符
+	 ** req: {@link IReqAmuletActivityRemoveEffect}
+	 ** res: {@link IResCommon}
+	 ** msgId: {@link ENetMessage.amuletActivityRemoveEffect}
+	 */
+	amuletActivityRemoveEffect(data?: IReqAmuletActivityRemoveEffect): Promise<IResCommon>;
+	/**
+	 ** 青云之志添加符文石
+	 ** req: {@link IReqAmuletActivityAddRuneStone}
+	 ** res: {@link IResCommon}
+	 ** msgId: {@link ENetMessage.amuletActivityAddRuneStone}
+	 */
+	amuletActivityAddRuneStone(data?: IReqAmuletActivityAddRuneStone): Promise<IResCommon>;
+	/**
+	 ** 青云之志移除符文石
+	 ** req: {@link IReqAmuletActivityRemoveRuneStone}
+	 ** res: {@link IResCommon}
+	 ** msgId: {@link ENetMessage.amuletActivityRemoveRuneStone}
+	 */
+	amuletActivityRemoveRuneStone(data?: IReqAmuletActivityRemoveRuneStone): Promise<IResCommon>;
+	/**
+	 ** 青云之志移除所有护身符
+	 ** req: {@link IReqAmuletActivityRemoveAllEffect}
+	 ** res: {@link IResCommon}
+	 ** msgId: {@link ENetMessage.amuletActivityRemoveAllEffect}
+	 */
+	amuletActivityRemoveAllEffect(data?: IReqAmuletActivityRemoveAllEffect): Promise<IResCommon>;
+	/**
+	 ** 青云之志添加所有符文石
+	 ** req: {@link IReqAmuletActivityAddAllRuneStone}
+	 ** res: {@link IResCommon}
+	 ** msgId: {@link ENetMessage.amuletActivityAddAllRuneStone}
+	 */
+	amuletActivityAddAllRuneStone(data?: IReqAmuletActivityAddAllRuneStone): Promise<IResCommon>;
+	/**
+	 ** 青云之志移除所有符文石
+	 ** req: {@link IReqAmuletActivityRemoveAllRuneStone}
+	 ** res: {@link IResCommon}
+	 ** msgId: {@link ENetMessage.amuletActivityRemoveAllRuneStone}
+	 */
+	amuletActivityRemoveAllRuneStone(data?: IReqAmuletActivityRemoveAllRuneStone): Promise<IResCommon>;
+	/**
+	 ** 青云之志设置玩家生命值
+	 ** req: {@link IReqAmuletActivitySetHp}
+	 ** res: {@link IResCommon}
+	 ** msgId: {@link ENetMessage.amuletActivitySetHp}
+	 */
+	amuletActivitySetHp(data?: IReqAmuletActivitySetHp): Promise<IResCommon>;
+	/**
+	 ** 青云之志修改换牌次数
+	 ** req: {@link IReqAmuletActivitySetChangeTileCount}
+	 ** res: {@link IResCommon}
+	 ** msgId: {@link ENetMessage.amuletActivitySetChangeTileCount}
+	 */
+	amuletActivitySetChangeTileCount(data?: IReqAmuletActivitySetChangeTileCount): Promise<IResCommon>;
+	/**
+	 ** 青云之志获取debug数据
+	 ** req: {@link IReqAmuletActivityFetchDebugData}
+	 ** res: {@link IResFetchAmuletActivityDebugData}
+	 ** msgId: {@link ENetMessage.amuletActivityFetchDebugData}
+	 */
+	amuletActivityFetchDebugData(data?: IReqAmuletActivityFetchDebugData): Promise<IResFetchAmuletActivityDebugData>;
+	/**
+	 ** 青云之志设置debug数据
+	 ** req: {@link IReqAmuletActivitySetDebugData}
+	 ** res: {@link IResCommon}
+	 ** msgId: {@link ENetMessage.amuletActivitySetDebugData}
+	 */
+	amuletActivitySetDebugData(data?: IReqAmuletActivitySetDebugData): Promise<IResCommon>;
+	/**
+	 ** 青云之志刷新听牌列表和下一步操作
+	 ** req: {@link IReqAmuletActivityRefreshTingListAndNextOperation}
+	 ** res: {@link IResCommon}
+	 ** msgId: {@link ENetMessage.amuletActivityRefreshTingListAndNextOperation}
+	 */
+	amuletActivityRefreshTingListAndNextOperation(data?: IReqAmuletActivityRefreshTingListAndNextOperation): Promise<IResCommon>;
 	/**
 	 ** 解锁剧情
 	 ** req: {@link IReqStoryActivityUnlock}
@@ -2921,6 +2943,13 @@ declare interface IReqMethod {
 	 ** msgId: {@link ENetMessage.mmoActivityDebugSetTeamCandidate}
 	 */
 	mmoActivityDebugSetTeamCandidate(data?: IReqMMOActivityDebugSetTeamCandidate): Promise<IResMMOActivityDebugSetTeamCandidate>;
+	/**
+	 ** 获取签到活动详情
+	 ** req: {@link IReqFetchDailySignActivityData}
+	 ** res: {@link IResFetchDailySignActivityData}
+	 ** msgId: {@link ENetMessage.fetchDailySignActivityData}
+	 */
+	fetchDailySignActivityData(data?: IReqFetchDailySignActivityData): Promise<IResFetchDailySignActivityData>;
 	/**
 	 ** 验证游戏口令
 	 ** req: {@link IReqAuthGame}

@@ -96,6 +96,7 @@ declare enum EViewID {
 	UIAnnouncementView = "UIAnnouncementView",
 	UIBagView = "UIBagView",
 	UICameraView = "UICameraView",
+	UICheckCurrencyView = "UICheckCurrencyView",
 	UIFriendView = "UIFriendView",
 	UIGuideView = "UIGuideView",
 	UIHelpView = "UIHelpView",

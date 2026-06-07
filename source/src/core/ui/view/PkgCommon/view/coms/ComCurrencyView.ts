@@ -46,6 +46,11 @@ export class ComCurrencyView extends ExtensionClass<IView, ComCurrency>(ComCurre
 	}
 
 	private onBtnCurrencyClick() {
-
+		switch (this._currencyType) {
+			case ECurrencyType.Diamond:
+			case ECurrencyType.SkinTicket: break;
+			default: return;
+		}
+		this.openView(EViewID.UICheckCurrencyView, this._currencyType);
 	}
 }

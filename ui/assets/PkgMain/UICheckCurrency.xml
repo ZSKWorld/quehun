@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0egiq17plom8" designImageAlpha="0">
+  <displayList>
+    <component id="n12_pwg4" name="mask" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="0,0" size="1920,1080" aspect="true" alpha="0.5"/>
+    <component id="n5_hdeo" name="n5" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" pkg="vx9zwser" xy="655,339" size="610,401"/>
+    <component id="n6_hdeo" name="close" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1170,364" size="70,70">
+      <Button icon="ui://vx9zwserj0ddob7b"/>
+    </component>
+    <component id="n14_giq1" name="buy" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="748,634" size="168,72">
+      <Button title="购买" titleColor="#6d2e3a" titleFontSize="33" icon="ui://vx9zwserj0ddob73"/>
+    </component>
+    <component id="n15_giq1" name="confirm" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="1008,634" size="168,72">
+      <Button title="确认" titleColor="#e5b673" titleFontSize="33" icon="ui://vx9zwserj0ddob70"/>
+    </component>
+    <text id="n11_hdeo" name="title" xy="961,400" pivot="0.5,0.5" anchor="true" size="220,49" font="ui://vx9zwserrpakobeu" fontSize="36" color="#e8af71" align="center" vAlign="middle" leading="0" singleLine="true" text="当前辉玉情况"/>
+    <text id="n18_giq1" name="n18" xy="875,449" pivot="1,0.5" size="100,44" font="ui://vx9zwserrpakobeu" fontSize="32" color="#b5c4c8" vAlign="middle" leading="0" singleLine="true" text="有偿："/>
+    <text id="n19_giq1" name="n19" xy="875,499" pivot="1,0.5" size="100,44" font="ui://vx9zwserrpakobeu" fontSize="32" color="#b5c4c8" vAlign="middle" leading="0" singleLine="true" text="无偿："/>
+    <text id="n20_giq1" name="n20" xy="875,549" pivot="1,0.5" size="100,44" font="ui://vx9zwserrpakobeu" fontSize="32" color="#b5c4c8" vAlign="middle" leading="0" singleLine="true" text="总计："/>
+    <text id="n21_giq1" name="paid" xy="984,449" pivot="0,0.5" size="20,44" font="SimHei" fontSize="32" color="#b5c4c8" vAlign="middle" leading="0" singleLine="true" text="0"/>
+    <text id="n22_giq1" name="free" xy="984,499" pivot="0,0.5" size="36,44" font="SimHei" fontSize="32" color="#b5c4c8" vAlign="middle" leading="0" singleLine="true" text="50"/>
+    <text id="n23_giq1" name="total" xy="984,549" pivot="0,0.5" size="36,44" font="SimHei" fontSize="32" color="#b5c4c8" vAlign="middle" leading="0" singleLine="true" text="50"/>
+  </displayList>
+</component>

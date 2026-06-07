@@ -50,6 +50,7 @@ ELocalDataKey = {
 	LastLoginData: "LocalDataKey_LastLoginData",
 	DeviceId: "LocalDataKey_DeviceId",
 	MultiLogin: "LocalDataKey_MultiLogin",
+	PlayerInfoLevelShowType: "LocalDataKey_PlayerInfoLevelShowType",
 }
 
 EKeyCode = {
@@ -191,6 +192,7 @@ EViewCategory = {
 EViewType = {
 	UI: "UI",
 	Component: "Component",
+	Label: "Label",
 	Render: "Render",
 	Button: "Button",
 }
@@ -527,6 +529,27 @@ EColorString = {
 	_ffc900: "#ffc900",
 	_ffffff: "#ffffff",
 	_00000000: "#00000000",
+}
+
+EPaymentPlatform = {
+	DMM: "dmm",
+	GooglePlay: "google_play",
+	Iap: "iap",
+	MyCard: "mycard",
+	NintenDo: "nintendo",
+	PayPal: "paypal",
+	Steam: "steam",
+	XSolla: "xsolla",
+	XSollaV4: "xsolla_v4",
+	YoStarV4: "yostar_v4",
+	YoStarV4_KR: "yostar_v4_kr",
+}
+
+EPaymentChannel = {
+	UnionPay: "unionpay",
+	CreditCard: "creditcard",
+	WeChat: "wechat",
+	AliPay: "alipay",
 }
 
 EPaymentType = {

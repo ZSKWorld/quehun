@@ -740,6 +740,7 @@ declare enum EColorString {
 
 /** 支付平台 */
 declare enum EPaymentPlatform {
+	DMM = "dmm",
 	GooglePlay = "google_play",
 	Iap = "iap",
 	MyCard = "mycard",
@@ -748,6 +749,8 @@ declare enum EPaymentPlatform {
 	Steam = "steam",
 	XSolla = "xsolla",
 	XSollaV4 = "xsolla_v4",
+	YoStarV4 = "yostar_v4",
+	YoStarV4_KR = "yostar_v4_kr",
 }
 
 /** 支付渠道 */

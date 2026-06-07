@@ -114,6 +114,8 @@ import { UIBagView } from "../core/ui/view/PkgMain/view/uis/UIBagView";
 import { UIBagMediator } from "../core/ui/view/PkgMain/mediator/uis/UIBagMediator";
 import { UICameraView } from "../core/ui/view/PkgMain/view/uis/UICameraView";
 import { UICameraMediator } from "../core/ui/view/PkgMain/mediator/uis/UICameraMediator";
+import { UICheckCurrencyView } from "../core/ui/view/PkgMain/view/uis/UICheckCurrencyView";
+import { UICheckCurrencyMediator } from "../core/ui/view/PkgMain/mediator/uis/UICheckCurrencyMediator";
 import { UIFriendView } from "../core/ui/view/PkgMain/view/uis/UIFriendView";
 import { UIFriendMediator } from "../core/ui/view/PkgMain/mediator/uis/UIFriendMediator";
 import { UIGuideView } from "../core/ui/view/PkgMain/view/uis/UIGuideView";
@@ -247,6 +249,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.UIAnnouncementView, EViewType.UI, UIAnnouncementView, UIAnnouncementMediator);
 		register(EViewID.UIBagView, EViewType.UI, UIBagView, UIBagMediator);
 		register(EViewID.UICameraView, EViewType.UI, UICameraView, UICameraMediator);
+		register(EViewID.UICheckCurrencyView, EViewType.UI, UICheckCurrencyView, UICheckCurrencyMediator);
 		register(EViewID.UIFriendView, EViewType.UI, UIFriendView, UIFriendMediator);
 		register(EViewID.UIGuideView, EViewType.UI, UIGuideView, UIGuideMediator);
 		register(EViewID.UIHelpView, EViewType.UI, UIHelpView, UIHelpMediator);

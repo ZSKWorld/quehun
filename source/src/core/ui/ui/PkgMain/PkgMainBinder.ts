@@ -11,6 +11,7 @@ import BtnShopRefresh from "./BtnShopRefresh";
 import RenderShopItem from "./RenderShopItem";
 import RenderShopSkin from "./RenderShopSkin";
 import RenderShopCG from "./RenderShopCG";
+import UICheckCurrency from "./UICheckCurrency";
 import RenderLiaoSheDecoItem from "./RenderLiaoSheDecoItem";
 import ComLiaoSheDecorate from "./ComLiaoSheDecorate";
 import ComMatchItem from "./ComMatchItem";
@@ -70,6 +71,7 @@ import { BtnShopRefreshView } from "../../view/PkgMain/view/btns/BtnShopRefreshV
 import { RenderShopItemView } from "../../view/PkgMain/view/renders/RenderShopItemView";
 import { RenderShopSkinView } from "../../view/PkgMain/view/renders/RenderShopSkinView";
 import { RenderShopCGView } from "../../view/PkgMain/view/renders/RenderShopCGView";
+import { UICheckCurrencyView } from "../../view/PkgMain/view/uis/UICheckCurrencyView";
 import { RenderLiaoSheDecoItemView } from "../../view/PkgMain/view/renders/RenderLiaoSheDecoItemView";
 import { ComLiaoSheDecorateView } from "../../view/PkgMain/view/coms/ComLiaoSheDecorateView";
 import { ComMatchItemView } from "../../view/PkgMain/view/coms/ComMatchItemView";
@@ -132,6 +134,7 @@ export default class PkgMainBinder {
 		fgui.UIObjectFactory.setExtension(RenderShopItem.url, RenderShopItemView);
 		fgui.UIObjectFactory.setExtension(RenderShopSkin.url, RenderShopSkinView);
 		fgui.UIObjectFactory.setExtension(RenderShopCG.url, RenderShopCGView);
+		fgui.UIObjectFactory.setExtension(UICheckCurrency.url, UICheckCurrencyView);
 		fgui.UIObjectFactory.setExtension(RenderLiaoSheDecoItem.url, RenderLiaoSheDecoItemView);
 		fgui.UIObjectFactory.setExtension(ComLiaoSheDecorate.url, ComLiaoSheDecorateView);
 		fgui.UIObjectFactory.setExtension(ComMatchItem.url, ComMatchItemView);

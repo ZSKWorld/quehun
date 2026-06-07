@@ -114,14 +114,9 @@ export class UIManager extends Singleton<UIManager>() implements IUIManager {
 		if (!viewId) return;
 		if (!$facade.hasMediator(viewId)) return;
 
-		if (this.isTopView(viewId)) {
-			this.topView.data = data;
-			return;
-		}
-
 		this.lockMark++;
-		await this.dealTopView(openType);
-		await this.addView(viewId, data);
+		const success = await this.dealTopView(viewId, data, openType);
+		success && await this.addView(viewId, data);
 		this.lockMark--;
 	}
 
@@ -162,25 +157,32 @@ export class UIManager extends Singleton<UIManager>() implements IUIManager {
 		return category == EViewCategory.FullScreen;
 	}
 
-	private async dealTopView(openType: EViewOpenType) {
-		if (openType != EViewOpenType.Hide && openType != EViewOpenType.Close) return;
+	private async dealTopView(viewId: EUIViewID, data: any, openType: EViewOpenType) {
+		if (openType != EViewOpenType.Hide && openType != EViewOpenType.Close) return true;
 
-		const viewId = this.topViewId;
-		if (!viewId) return;
+		const topId = this.topViewId;
+		if (!topId) return true;
 
-		if (!this.isStackView(viewId)) {
-			this.closeView(viewId, false);
-			return this.dealTopView(openType);
+		if (this.isTopView(viewId)) {
+			this.topView.data = data;
+			return false;
+		}
+
+		if (!this.isStackView(topId)) {
+			this.closeView(topId, false);
+			return this.dealTopView(viewId, data, openType);
 		}
 
 		switch (openType) {
 			case EViewOpenType.Hide:
-				await this.removeView(viewId, false);
+				await this.removeView(topId, false);
 				break;
 			case EViewOpenType.Close:
-				await this.removeView(viewId, true);
+				await this.removeView(topId, true);
 				break;
+			default: return false;
 		}
+		return true;
 	}
 
 	private getOrCreateMediator(viewId: EUIViewID) {

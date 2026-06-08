@@ -15,7 +15,7 @@ export class MjpAtlasLoader extends Singleton<MjpAtlasLoader>() {
 
 	}
 
-	@InterestUserEvent(EUserEvent.OnMjpBackUseChanged)
+	@InjectUserEvent(EUserEvent.OnMjpBackUseChanged)
 	private onMjpBackUseChanged() {
 		const oldBack = this._mjpBack;
 		const mjpBack = $user.commonView.curMjpBack;
@@ -32,7 +32,7 @@ export class MjpAtlasLoader extends Singleton<MjpAtlasLoader>() {
 		$loadMgr.load(newInfo.atlasPath);
 	}
 
-	@InterestUserEvent(EUserEvent.OnMjpFrontUseChanged)
+	@InjectUserEvent(EUserEvent.OnMjpFrontUseChanged)
 	private onMjpFrontUseChanged() {
 		const oldFront = this._mjpFront;
 		const mjpFront = $user.commonView.curMjpFront;
@@ -49,7 +49,7 @@ export class MjpAtlasLoader extends Singleton<MjpAtlasLoader>() {
 		$loadMgr.load(newInfo.atlasPath);
 	}
 
-	@InterestUserEvent(EUserEvent.OnTableClothUseChanged)
+	@InjectUserEvent(EUserEvent.OnTableClothUseChanged)
 	private onTableClothUseChanged() {
 		const oldTableCloth = this._tableCloth;
 		const tableCloth = $user.commonView.curTableCloth;

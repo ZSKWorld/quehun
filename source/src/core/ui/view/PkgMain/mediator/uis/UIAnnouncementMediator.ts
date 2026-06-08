@@ -21,7 +21,7 @@ export class UIAnnouncementMediator extends MediatorBase<UIAnnouncementView, IUI
 		this._curAnnouncement = null;
 	}
 
-	@InterestUserEvent(EUserEvent.OnAnnouncementChanged)
+	@InjectUserEvent(EUserEvent.OnAnnouncementChanged)
 	private refreshAnnouncements() {
 		const announcementId = this._curAnnouncement?.id || 0;
 		this.view.refreshTab($user.announcement.announcements, announcementId);

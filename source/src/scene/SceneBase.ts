@@ -96,7 +96,7 @@ export abstract class SceneBase<T> extends Observer implements IScene<T> {
 		progress != null && (_progresses[index] = progress);
 		const totalProgress = _progresses.reduce((sum, cur) => sum + cur, 0);
 		const average = totalProgress / _progresses.length;
-		this.dispatch(ENotifyConst.OnSceneLoadProgress, average);
+		this.dispatch(EGlobalEvent.OnSceneLoadProgress, average);
 	}
 
 	/** 获取资源数组 */

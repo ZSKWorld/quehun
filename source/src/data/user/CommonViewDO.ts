@@ -36,7 +36,7 @@ export class CommonViewDO extends BaseDO implements DO.ICommonViewDO {
 		return DefaultViewIdMap[type] ?? 0;
 	}
 
-	@InterestMessage(ENetMessage.fetchAllCommonViews)
+	@InjectNetEvent(ENetMessage.fetchAllCommonViews)
 	private onFetchClientValue(res: IResAllcommonViews) {
 		const decodeRes = $decodeProtoData(res);
 		this._use = decodeRes.use;
@@ -46,13 +46,13 @@ export class CommonViewDO extends BaseDO implements DO.ICommonViewDO {
 		this.dispatch(EUserEvent.OnCommonViewChanged);
 	}
 
-	@InterestMessage(ENetMessage.useCommonView)
+	@InjectNetEvent(ENetMessage.useCommonView)
 	private onUseCommonView(_, req: IReqUseCommonView) {
 		this._use = req.index;
 		this.refreshCurView();
 	}
 
-	@InterestMessage(ENetMessage.saveCommonViews)
+	@InjectNetEvent(ENetMessage.saveCommonViews)
 	private onSaveCommonViews(_, req: IReqSaveCommonViews) {
 		const view = this._views.find(v => v.index == req.save_index);
 		view.values = req.views.map(v => ({

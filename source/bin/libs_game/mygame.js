@@ -37,7 +37,7 @@ function RDTriggerEvent(eventName) {
 	};
 }
 
-function ViewKeyEvent(name, key = -1, once = false, args = null) {
+function InjectViewKeyEvent(name, key = -1, once = false, args = null) {
 	return function (target, propertyKey, descriptor) {
 		target.__viewKeyEventMap ||= {};
 		target.__viewKeyEventMap[name] ||= {};
@@ -49,7 +49,7 @@ function ViewKeyEvent(name, key = -1, once = false, args = null) {
 	};
 };
 
-function ViewMouseEvent(name, once, args) {
+function InjectViewMouseEvent(name, once, args) {
 	return function (target, propertyKey, descriptor) {
 		target.__viewMouseEventMap ||= {};
 		target.__viewMouseEventMap[name] ||= [];
@@ -60,7 +60,7 @@ function ViewMouseEvent(name, once, args) {
 	};
 };
 
-function ViewEvent(name, once, args) {
+function InjectViewEvent(name, once, args) {
 	return function (target, propertyKey, descriptor) {
 		target.__viewEventMap ||= {};
 		target.__viewEventMap[name] ||= [];
@@ -71,7 +71,7 @@ function ViewEvent(name, once, args) {
 	};
 };
 
-function InterestNotify(eventName, once, args) {
+function InjectGlobalEvent(eventName, once, args) {
 	return function (target, propertyKey, descriptor) {
 		target.__notifyMap ||= {};
 		target.__notifyMap[eventName] ||= [];
@@ -82,7 +82,7 @@ function InterestNotify(eventName, once, args) {
 	};
 };
 
-function InterestMessage(msgName, once, args) {
+function InjectNetEvent(msgName, once, args) {
 	return function (target, propertyKey, descriptor) {
 		target.__messageMap ||= {};
 		target.__messageMap[msgName] ||= [];
@@ -93,7 +93,7 @@ function InterestMessage(msgName, once, args) {
 	};
 };
 
-function InterestUserEvent(eventName, once, args) {
+function InjectUserEvent(eventName, once, args) {
 	return function (target, propertyKey, descriptor) {
 		target.__userEventMap ||= {};
 		target.__userEventMap[eventName] ||= [];

@@ -2,7 +2,7 @@ import { MediatorDIExtend } from "./MediatorDIExtend";
 
 /**
  * 中介基类
- * 该组件为可回收组件。鼠标、键盘交互事件可使用装饰器注册 => ViewKeyEvent、ViewMouseEvent
+ * 该组件为可回收组件。鼠标、键盘交互事件可使用装饰器注册 => InjectViewKeyEvent, InjectViewMouseEvent
  */
 export abstract class MediatorBase<V extends IView = IView, D = any> extends ExtensionClass<IMediator, Laya.Script>(Laya.Script) implements IMediator {
 	override _singleton = true;

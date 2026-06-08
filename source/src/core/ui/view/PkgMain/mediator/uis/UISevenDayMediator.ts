@@ -32,7 +32,7 @@ export class UISevenDayMediator extends MediatorBase<UISevenDayView, IUISevenDay
 		this.view.refreshRewards($user.activity.sevenDayDO.finishedRewards);
 	}
 
-	@InterestUserEvent(EUserEvent.OnActivityPeriodTaskProgressChanged)
+	@InjectUserEvent(EUserEvent.OnActivityPeriodTaskProgressChanged)
 	private refreshTask() {
 		const finishDays = $user.activity.sevenDayDO.datas.map(v => {
 			return v.every(vv => $user.activity.getPeriodTaskInfo(vv.period_task_id).rewarded);
@@ -47,7 +47,7 @@ export class UISevenDayMediator extends MediatorBase<UISevenDayView, IUISevenDay
 		this.view.refreshTaskItem($user.activity.sevenDayDO.datas[index]);
 	}
 
-	@InterestMessage(ENetMessage.completePeriodActivityTask)
+	@InjectNetEvent(ENetMessage.completePeriodActivityTask)
 	private onCompletePeriodActivityTask(_, req: IReqCompleteActivityTask) {
 		const cfgPeriodTask = $cfgMgr.activity.period_task[req.task_id];
 		const rewards = cfgPeriodTask.reward.split2Num("-");

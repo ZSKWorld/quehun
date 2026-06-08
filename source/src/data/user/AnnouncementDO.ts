@@ -19,7 +19,7 @@ export class AnnouncementDO extends BaseDO implements DO.IAnnouncementDO {
 		});
 	}
 
-	@InterestMessage(ENetMessage.fetchAnnouncement)
+	@InjectNetEvent(ENetMessage.fetchAnnouncement)
 	private onFetchAnnouncement(res: IResAnnouncement) {
 		const decodeRes = $decodeProtoData(res);
 		this._announcements = decodeRes.announcements;
@@ -27,7 +27,7 @@ export class AnnouncementDO extends BaseDO implements DO.IAnnouncementDO {
 		this.dispatch(EUserEvent.OnAnnouncementChanged);
 	}
 
-	@InterestMessage(ENetMessage.readAnnouncement)
+	@InjectNetEvent(ENetMessage.readAnnouncement)
 	private onReadAnnouncement(_, req: IReqReadAnnouncement) {
 		const announcementId = req.announcement_id;
 		if (this.isRead(announcementId)) return;
@@ -35,7 +35,7 @@ export class AnnouncementDO extends BaseDO implements DO.IAnnouncementDO {
 		this.dispatch(EUserEvent.OnAnnouncementChanged);
 	}
 
-	@InterestMessage(ENetNotify.NotifyAnnouncementUpdate)
+	@InjectNetEvent(ENetNotify.NotifyAnnouncementUpdate)
 	private onAnnouncementUpdate(data: INotifyAnnouncementUpdate) {
 		for (let i = 0; i < data.update_list.length; i++) {
 			const e = data.update_list[i];

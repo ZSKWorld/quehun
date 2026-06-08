@@ -60,8 +60,8 @@ export class AccountDO extends BaseDO implements DO.IAccountDO {
 	}
 	//#endregion
 
-	@InterestMessage(ENetMessage.login)
-	@InterestMessage(ENetMessage.oauth2Login)
+	@InjectNetEvent(ENetMessage.login)
+	@InjectNetEvent(ENetMessage.oauth2Login)
 	private onLogin(res: IResLogin) {
 		if (!res.account) return;
 		const account = $decodeProtoData(res.account);
@@ -91,7 +91,7 @@ export class AccountDO extends BaseDO implements DO.IAccountDO {
 		this._badges = account.badges;
 	}
 
-	@InterestMessage(ENetMessage.fetchRefundOrder)
+	@InjectNetEvent(ENetMessage.fetchRefundOrder)
 	private onFetchRefundOrder(res: IResFetchRefundOrder) {
 		const data = $decodeProtoData(res);
 		this._refundOrderInfo = {

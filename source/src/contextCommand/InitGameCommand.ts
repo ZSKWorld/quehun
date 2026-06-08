@@ -51,6 +51,6 @@ export class InitGameCommand extends Command {
 
 		$netMgr.connectLobby();
 
-		$facade.dispatch(ENotifyConst.OnInitGameCompleted);
+		$facade.dispatch(EGlobalEvent.OnInitGameCompleted);
 	}
 }

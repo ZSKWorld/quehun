@@ -38,7 +38,7 @@ export class UITestMediator extends MediatorBase<UITestView, IUITestData> {
 		this._lastPoint.setTo(Laya.stage.mouseX, Laya.stage.mouseY);
 	}
 
-	@ViewMouseEvent(EMouseEventType.MouseWheel)
+	@InjectViewMouseEvent(EMouseEvent.MouseWheel)
 	private onMouseWheel(e: Laya.Event) {
 		if (!this._spine) return;
 		const gowner = this._spine.gowner;

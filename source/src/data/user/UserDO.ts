@@ -48,8 +48,8 @@ export class UserDO extends BaseDO implements DO.IUserDO {
 
 	protected constructor() { super(); }
 
-	@InterestMessage(ENetMessage.login)
-	@InterestMessage(ENetMessage.oauth2Login)
+	@InjectNetEvent(ENetMessage.login)
+	@InjectNetEvent(ENetMessage.oauth2Login)
 	private onLogin(res: IResLogin) {
 		this.game_info = $decodeProtoData(res.game_info);
 		this.has_unread_announcement = res.has_unread_announcement;
@@ -61,18 +61,18 @@ export class UserDO extends BaseDO implements DO.IUserDO {
 		this.rewarded_version = [...res.rewarded_version];
 	}
 
-	@InterestMessage(ENetNotify.NotifyAccountUpdate)
+	@InjectNetEvent(ENetNotify.NotifyAccountUpdate)
 	private onNotifyAccountUpdate(data: IAccountUpdate) {
 
 
 	}
 
-	@InterestMessage(ENetNotify.NotifyVipLevelChange)
+	@InjectNetEvent(ENetNotify.NotifyVipLevelChange)
 	private onNotifyVipLevelChange(data: INotifyVipLevelChange) {
 		Logger.error("NotifyVipLevelChange", data);
 	}
 
-	@InterestMessage(ENetMessage.fetchInfo)
+	@InjectNetEvent(ENetMessage.fetchInfo)
 	private onFetchInfo(res: IResFetchInfo) {
 		const dispatch = $facade.dispatch.bind($facade) as typeof $facade.dispatch;
 		res.server_time && dispatch(ENetMessage.fetchServerTime, res.server_time);

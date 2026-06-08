@@ -38,8 +38,8 @@ class Main {
 		});
 
 		Laya.stage.on(Laya.Event.VISIBILITY_CHANGE, this, () => {
-			if (Laya.stage.isVisibility) $facade.dispatch(ENotifyConst.OnGameShow);
-			else $facade.dispatch(ENotifyConst.OnGameHide);
+			if (Laya.stage.isVisibility) $facade.dispatch(EGlobalEvent.OnGameShow);
+			else $facade.dispatch(EGlobalEvent.OnGameHide);
 		});
 		new InitContextCommand().execute("");
 	}

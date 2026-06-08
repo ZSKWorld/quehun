@@ -156,13 +156,13 @@ EKeyCode = {
 	INSERT: 45,
 }
 
-EKeyEventType = {
+EKeyEvent = {
 	KeyDown: "keydown",
 	KeyPress: "keypress",
 	KeyUp: "keyup",
 }
 
-EMouseEventType = {
+EMouseEvent = {
 	MouseDown: "mousedown",
 	MouseUp: "mouseup",
 	MouseMove: "mousemove",
@@ -342,35 +342,35 @@ EConstDefine = {
 	LangResDir: "langRes/",
 }
 
-ENotifyConst = {
-	OnGameShow: "NotifyConst_OnGameShow",
-	OnGameHide: "NotifyConst_OnGameHide",
-	RedDotCompAwake: "NotifyConst_RedDotCompAwake",
-	RedDotCompDestroy: "NotifyConst_RedDotCompDestroy",
-	OnInitGameCompleted: "NotifyConst_OnInitGameCompleted",
-	LobbyConnecting: "NotifyConst_LobbyConnectting",
-	LobbyReconnecting: "NotifyConst_LobbyReconnecting",
-	LobbyConnected: "NotifyConst_LobbyConnected",
-	LobbyClosed: "NotifyConst_LobbyClosed",
-	GameConnecting: "NotifyConst_GameConnecting",
-	GameReconnecting: "NotifyConst_GameReconnecting",
-	GameConnected: "NotifyConst_GameConnected",
-	GameClosed: "NotifyConst_GameClosed",
-	OBConnecting: "NotifyConst_OBConnecting",
-	OBReconnecting: "NotifyConst_OBReconnecting",
-	OBConnected: "NotifyConst_OBConnected",
-	OBClosed: "NotifyConst_OBClosed",
-	OnViewOpenBegin: "NotifyConst_OnViewOpenBegin",
-	OnViewOpenEnd: "NotifyConst_OnViewOpenEnd",
-	OnViewCloseBegin: "NotifyConst_OnViewCloseBegin",
-	OnViewCloseEnd: "NotifyConst_OnViewCloseEnd",
-	BindPhoneCompleted: "NotifyConst_BindPhoneCompleted",
-	LoginSuccess: "NotifyConst_LoginSuccess",
-	OnSceneLoadBegin: "NotifyConst_OnSceneLoadBegin",
-	OnSceneLoadProgress: "NotifyConst_OnSceneLoadProgress",
-	OnSceneLoadEnd: "NotifyConst_OnSceneLoadEnd",
-	OnEnterScene: "NotifyConst_OnEnterScene",
-	OnExitScene: "NotifyConst_OnExitScene",
+EGlobalEvent = {
+	OnGameShow: "EGlobalEvent_OnGameShow",
+	OnGameHide: "EGlobalEvent_OnGameHide",
+	RedDotCompAwake: "EGlobalEvent_RedDotCompAwake",
+	RedDotCompDestroy: "EGlobalEvent_RedDotCompDestroy",
+	OnInitGameCompleted: "EGlobalEvent_OnInitGameCompleted",
+	LobbyConnecting: "EGlobalEvent_LobbyConnectting",
+	LobbyReconnecting: "EGlobalEvent_LobbyReconnecting",
+	LobbyConnected: "EGlobalEvent_LobbyConnected",
+	LobbyClosed: "EGlobalEvent_LobbyClosed",
+	GameConnecting: "EGlobalEvent_GameConnecting",
+	GameReconnecting: "EGlobalEvent_GameReconnecting",
+	GameConnected: "EGlobalEvent_GameConnected",
+	GameClosed: "EGlobalEvent_GameClosed",
+	OBConnecting: "EGlobalEvent_OBConnecting",
+	OBReconnecting: "EGlobalEvent_OBReconnecting",
+	OBConnected: "EGlobalEvent_OBConnected",
+	OBClosed: "EGlobalEvent_OBClosed",
+	OnViewOpenBegin: "EGlobalEvent_OnViewOpenBegin",
+	OnViewOpenEnd: "EGlobalEvent_OnViewOpenEnd",
+	OnViewCloseBegin: "EGlobalEvent_OnViewCloseBegin",
+	OnViewCloseEnd: "EGlobalEvent_OnViewCloseEnd",
+	BindPhoneCompleted: "EGlobalEvent_BindPhoneCompleted",
+	LoginSuccess: "EGlobalEvent_LoginSuccess",
+	OnSceneLoadBegin: "EGlobalEvent_OnSceneLoadBegin",
+	OnSceneLoadProgress: "EGlobalEvent_OnSceneLoadProgress",
+	OnSceneLoadEnd: "EGlobalEvent_OnSceneLoadEnd",
+	OnEnterScene: "EGlobalEvent_OnEnterScene",
+	OnExitScene: "EGlobalEvent_OnExitScene",
 }
 
 EUserEvent = {

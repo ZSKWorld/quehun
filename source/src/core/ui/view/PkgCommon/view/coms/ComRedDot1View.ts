@@ -11,10 +11,10 @@ export class ComRedDot1View extends ExtensionClass<IView, ComRedDot1>(ComRedDot1
 	}
 
 	override onAwake() {
-		this.dispatch(ENotifyConst.RedDotCompAwake, this);
+		this.dispatch(EGlobalEvent.RedDotCompAwake, this);
 	}
 
 	override onDestroy() {
-		this.dispatch(ENotifyConst.RedDotCompDestroy, this);
+		this.dispatch(EGlobalEvent.RedDotCompDestroy, this);
 	}
 }

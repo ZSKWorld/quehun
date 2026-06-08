@@ -8,7 +8,7 @@ declare type ICommandClass = Class<ICommand>;
  * @param once 是否只监听一次
  * @param args 参数
  */
-declare function InterestNotify(eventName: ENotifyConst, once?: boolean, args?: any[]): MethodDecorator;
+declare function InjectGlobalEvent(eventName: EGlobalEvent, once?: boolean, args?: any[]): MethodDecorator;
 
 /**
  * 注入网络消息事件监听
@@ -16,7 +16,7 @@ declare function InterestNotify(eventName: ENotifyConst, once?: boolean, args?: 
  * @param once 是否只监听一次
  * @param args 参数
  */
-declare function InterestMessage(msgName: ENetMessage | ENetNotify, once?: boolean, args?: any[]): MethodDecorator;
+declare function InjectNetEvent(msgName: ENetMessage | ENetNotify, once?: boolean, args?: any[]): MethodDecorator;
 
 /**
  * 注入用户数据事件监听
@@ -24,7 +24,7 @@ declare function InterestMessage(msgName: ENetMessage | ENetNotify, once?: boole
  * @param once 是否只监听一次
  * @param args 参数
  */
-declare function InterestUserEvent(eventName: EUserEvent, once?: boolean, args?: any[]): MethodDecorator;
+declare function InjectUserEvent(eventName: EUserEvent, once?: boolean, args?: any[]): MethodDecorator;
 
 /**
  * 注入页面键盘事件
@@ -34,7 +34,7 @@ declare function InterestUserEvent(eventName: EUserEvent, once?: boolean, args?:
  * @param args 参数
  * @return MethodDecorator
  */
-declare function ViewKeyEvent(keyEventType: EKeyEventType, keyCode?: EKeyCode, once?: boolean, args?: any[]): MethodDecorator;
+declare function InjectViewKeyEvent(keyEventType: EKeyEvent, keyCode?: EKeyCode, once?: boolean, args?: any[]): MethodDecorator;
 
 /**
  * 注入页面鼠标事件
@@ -43,7 +43,7 @@ declare function ViewKeyEvent(keyEventType: EKeyEventType, keyCode?: EKeyCode, o
  * @param args 参数
  * @return MethodDecorator
  */
-declare function ViewMouseEvent(mouseEventType: EMouseEventType, once?: boolean, args?: any[]): MethodDecorator;
+declare function InjectViewMouseEvent(mouseEventType: EMouseEvent, once?: boolean, args?: any[]): MethodDecorator;
 
 /**
  * 注入页面自定义事件
@@ -52,7 +52,7 @@ declare function ViewMouseEvent(mouseEventType: EMouseEventType, once?: boolean,
  * @param args  参数
  * @returns MethodDecorator
  */
-declare function ViewEvent(name: string, once?: boolean, args?: any[]): MethodDecorator;
+declare function InjectViewEvent(name: string, once?: boolean, args?: any[]): MethodDecorator;
 
 declare interface INotifier {
 	/**
@@ -198,10 +198,10 @@ declare interface IFacade {
 	offAll(type: string): void;
 	offAllCaller(caller: any): void;
 	dispatch(eventName: string, data?: any): void;
-	/** 设置caller是否激活{@link InterestNotify}注册的事件 */
+	/** 设置caller是否可用装饰器{@link InjectGlobalEvent}注册{@link EGlobalEvent}事件 */
 	setNotifyDecoratorEnable(caller: any, enable: boolean): void;
-	/** 设置caller是否激活{@link InterestMessage}注册的事件 */
+	/** 设置caller是否可用装饰器{@link InjectNetEvent}注册{@link ENetMessage}或{@link ENetNotify}事件 */
 	setMessageDecoratorEnable(caller: any, enable: boolean): void;
-	/** 设置caller是否激活{@link InterestUserEvent}注册的事件 */
+	/** 设置caller是否可用装饰器{@link InjectUserEvent}注册{@link EUserEvent}事件 */
 	setUserEventDecoratorEnable(caller: any, enable: boolean): void;
 }

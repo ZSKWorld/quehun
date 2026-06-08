@@ -17,7 +17,7 @@ export class ClientValueDO extends BaseDO implements DO.IClientValueDO {
 		$netMgr.requests.updateClientValue({ key, value });
 	}
 
-	@InterestMessage(ENetMessage.fetchClientValue)
+	@InjectNetEvent(ENetMessage.fetchClientValue)
 	private onFetchClientValue(res: IResClientValue) {
 		const decodeRes = $decodeProtoData(res);
 		decodeRes.datas.forEach(v => {

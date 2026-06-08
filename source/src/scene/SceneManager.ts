@@ -46,17 +46,17 @@ export class SceneManager extends Singleton<SceneManager>() implements ISceneMan
 		this.isSwitching = true;
 
 		try {
-			$facade.dispatch(ENotifyConst.OnSceneLoadBegin, type);
+			$facade.dispatch(EGlobalEvent.OnSceneLoadBegin, type);
 			await newScene.load();
-			$facade.dispatch(ENotifyConst.OnSceneLoadEnd, type);
+			$facade.dispatch(EGlobalEvent.OnSceneLoadEnd, type);
 
 			const curScene = this._sceneMap.get(this._currentType);
 			await curScene?.exit();
-			$facade.dispatch(ENotifyConst.OnExitScene, this._currentType);
+			$facade.dispatch(EGlobalEvent.OnExitScene, this._currentType);
 
 			this._currentType = type;
 			await newScene.enter(data);
-			$facade.dispatch(ENotifyConst.OnEnterScene, type);
+			$facade.dispatch(EGlobalEvent.OnEnterScene, type);
 
 		} catch (e) {
 			const retry = await $confirmSma(0, `${ type } 场景加载失败，是否重试?`, "提示");

@@ -2,34 +2,34 @@
 type FuncCfg = { __once: boolean, __done: boolean, __args: any[]; };
 type CfgFunction = Function & { [key: string]: FuncCfg; };
 type DIMediator = IMediator & {
-	__viewKeyEventMap?: { [key in EKeyEventType]: KeyMap<CfgFunction[]> };
-	__viewMouseEventMap?: { [key in EMouseEventType]: CfgFunction[] },
+	__viewKeyEventMap?: { [key in EKeyEvent]: KeyMap<CfgFunction[]> };
+	__viewMouseEventMap?: { [key in EMouseEvent]: CfgFunction[] },
 };
 
 /**
  * 中介类设备（鼠标、键盘）交互事件扩展 MediatorDIExtend => MediatorDeviceInteractionExtend的缩写
   */
 export class MediatorDIExtend {
-	private static readonly KEY_EVENT_PAIRS: EKeyEventType[] = [
-		EKeyEventType.KeyDown,
-		EKeyEventType.KeyPress,
-		EKeyEventType.KeyUp,
+	private static readonly KEY_EVENT_PAIRS: EKeyEvent[] = [
+		EKeyEvent.KeyDown,
+		EKeyEvent.KeyPress,
+		EKeyEvent.KeyUp,
 	];
 
-	private static readonly MOUSE_EVENT_PAIRS: EMouseEventType[] = [
-		EMouseEventType.MouseDown,
-		EMouseEventType.MouseUp,
-		EMouseEventType.MouseMove,
-		EMouseEventType.MouseClick,
-		EMouseEventType.MouseDoubleClick,
-		EMouseEventType.MouseRightClick,
-		EMouseEventType.RightMouseDown,
-		EMouseEventType.RightMouseUp,
-		EMouseEventType.MouseOver,
-		EMouseEventType.MouseOut,
-		EMouseEventType.MouseWheel,
-		EMouseEventType.MouseDrag,
-		EMouseEventType.MouseDragEnd,
+	private static readonly MOUSE_EVENT_PAIRS: EMouseEvent[] = [
+		EMouseEvent.MouseDown,
+		EMouseEvent.MouseUp,
+		EMouseEvent.MouseMove,
+		EMouseEvent.MouseClick,
+		EMouseEvent.MouseDoubleClick,
+		EMouseEvent.MouseRightClick,
+		EMouseEvent.RightMouseDown,
+		EMouseEvent.RightMouseUp,
+		EMouseEvent.MouseOver,
+		EMouseEvent.MouseOut,
+		EMouseEvent.MouseWheel,
+		EMouseEvent.MouseDrag,
+		EMouseEvent.MouseDragEnd,
 	];
 
 	/**

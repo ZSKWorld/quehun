@@ -3,7 +3,7 @@ import { RadioGroup } from "../../../../extention/RadioGroup";
 import { PlayerViewLoader } from "../../../../tool/PlayerViewLoader";
 import { EUIRankType } from "../../Definition";
 import { RenderRankItemView } from "../../view/renders/RenderRankItemView";
-import { EUIRankMsg, UIRankView } from "../../view/uis/UIRankView";
+import { UIRankView } from "../../view/uis/UIRankView";
 
 const Scroll_Threshold = 150; // 触底检查阈值
 
@@ -61,7 +61,7 @@ export class UIRankMediator extends MediatorBase<UIRankView, any> {
 		}
 	}
 
-	@InterestMessage(ENetMessage.fetchLevelLeaderboard)
+	@InjectNetEvent(ENetMessage.fetchLevelLeaderboard)
 	private onFetchLevelLeaderboard(res: IResLevelLeaderboard, req: IReqLevelLeaderboard) {
 		const state = this._states[req.type];
 		state.intro = res.items;

@@ -5,7 +5,7 @@ export class MailDO extends BaseDO implements DO.IMailDO {
 
 	get mails() { return this._mails; }
 
-	@InterestMessage(ENetMessage.fetchMailInfo)
+	@InjectNetEvent(ENetMessage.fetchMailInfo)
 	private onFetchMailInfo(res: IResMailInfo) {
 		this._mails = res.mails.map($decodeProtoData);
 		this._mails.sort((a, b) => {
@@ -16,7 +16,7 @@ export class MailDO extends BaseDO implements DO.IMailDO {
 		this.dispatch(EUserEvent.OnMailChanged);
 	}
 
-	@InterestMessage(ENetMessage.readMail)
+	@InjectNetEvent(ENetMessage.readMail)
 	private onReadMail(_, req: IReqReadMail) {
 		const mail = this._mails.find(v => v.mail_id == req.mail_id);
 		if (!mail) return;
@@ -24,7 +24,7 @@ export class MailDO extends BaseDO implements DO.IMailDO {
 		this.dispatch(EUserEvent.OnMailChanged);
 	}
 
-	@InterestMessage(ENetMessage.deleteMail)
+	@InjectNetEvent(ENetMessage.deleteMail)
 	private onDeleteMail(_, req: IReqDeleteMail) {
 		const index = this._mails.findIndex(v => v.mail_id == req.mail_id);
 		if (index < 0) return;
@@ -32,7 +32,7 @@ export class MailDO extends BaseDO implements DO.IMailDO {
 		this.dispatch(EUserEvent.OnMailChanged);
 	}
 
-	@InterestMessage(ENetMessage.takeAttachmentFromMail)
+	@InjectNetEvent(ENetMessage.takeAttachmentFromMail)
 	private onTakeAttachmentFromMail(_, req: IReqTakeAttachment) {
 		const mail = this._mails.find(v => v.mail_id == req.mail_id);
 		if (!mail) return;
@@ -40,13 +40,13 @@ export class MailDO extends BaseDO implements DO.IMailDO {
 		this.dispatch(EUserEvent.OnMailChanged);
 	}
 
-	@InterestMessage(ENetNotify.NotifyNewMail)
+	@InjectNetEvent(ENetNotify.NotifyNewMail)
 	private onNotifyNewMail(data: INotifyNewMail) {
 		this._mails.push($decodeProtoData(data.mail));
 		this.dispatch(EUserEvent.OnMailChanged);
 	}
 
-	@InterestMessage(ENetNotify.NotifyDeleteMail)
+	@InjectNetEvent(ENetNotify.NotifyDeleteMail)
 	private onNotifyDeleteMail(data: INotifyDeleteMail) {
 		data.mail_id_list.forEach(v => {
 			const index = this._mails.findIndex(m => m.mail_id == v);

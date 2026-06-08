@@ -18,7 +18,7 @@ export class UIMainMediator extends MediatorBase<UIMainView, IUIMainData> {
 		this.openView<IUIVideoData>(EViewID.UIVideoView, { skinId: 400305 });
 	}
 
-	@InterestUserEvent(EUserEvent.OnActivityPeriodTaskProgressChanged)
+	@InjectUserEvent(EUserEvent.OnActivityPeriodTaskProgressChanged)
 	private refreshQiRi() {
 		this.view.refreshQiRi(!$user.activity.sevenDayDO.completed);
 	}

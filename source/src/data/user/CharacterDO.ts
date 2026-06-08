@@ -79,7 +79,7 @@ export class CharacterDO extends BaseDO implements DO.ICharacterDO {
 		$netMgr.requests.updateCharacterSort(param);
 	}
 
-	@InterestMessage(ENetMessage.fetchCharacterInfo)
+	@InjectNetEvent(ENetMessage.fetchCharacterInfo)
 	private onFetchCharacterInfo(res: IResCharacterInfo) {
 		this._mainCharId = res.main_character_id;
 		this._chars = res.characters.map($decodeProtoData);
@@ -106,7 +106,7 @@ export class CharacterDO extends BaseDO implements DO.ICharacterDO {
 		this.dispatch(EUserEvent.OnCharacterSortChanged);
 	}
 
-	@InterestMessage(ENetNotify.NotifyAccountUpdate)
+	@InjectNetEvent(ENetNotify.NotifyAccountUpdate)
 	private onNotifyAccountUpdate(data: INotifyAccountUpdate) {
 		if (!data.update) return;
 		const { main_character, character } = data.update;
@@ -130,13 +130,13 @@ export class CharacterDO extends BaseDO implements DO.ICharacterDO {
 		}
 	}
 
-	@InterestMessage(ENetMessage.changeMainCharacter)
+	@InjectNetEvent(ENetMessage.changeMainCharacter)
 	private onChangeMainCharacter(_, req: IReqChangeMainCharacter) {
 		this._mainCharId = req.character_id;
 		this.dispatch(EUserEvent.OnMainCharacterChanged);
 	}
 
-	@InterestMessage(ENetMessage.updateCharacterSort)
+	@InjectNetEvent(ENetMessage.updateCharacterSort)
 	private onUpdateCharacterSort(res: IResCommon, req: IReqUpdateCharacterSort) {
 		this._characterSort = req.sort;
 		this._otherCharacterSort = req.other_sort;

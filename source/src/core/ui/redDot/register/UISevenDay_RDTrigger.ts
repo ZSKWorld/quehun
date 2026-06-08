@@ -13,7 +13,7 @@ export class UISevenDay_RDTrigger extends RDTriggerBase {
 		];
 	}
 
-	@InterestUserEvent(EUserEvent.OnActivityPeriodTaskProgressChanged)
+	@InjectUserEvent(EUserEvent.OnActivityPeriodTaskProgressChanged)
 	private checkSevenDay() {
 		let triggered0 = false;
 		let triggered1 = false;

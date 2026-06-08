@@ -35,10 +35,10 @@ export class NetManager extends Singleton<NetManager>() implements INetManager {
 
 	private initLobby() {
 		const socket = this._lobbySocket = new WebSocket(this._routes[0], "gateway");
-		socket.on(ESocketEvent.Connecting, $facade, $facade.dispatch, [ENotifyConst.LobbyConnecting]);
-		socket.on(ESocketEvent.Reconnecting, $facade, $facade.dispatch, [ENotifyConst.LobbyReconnecting]);
-		socket.on(ESocketEvent.Connected, $facade, $facade.dispatch, [ENotifyConst.LobbyConnected]);
-		socket.on(ESocketEvent.Closed, $facade, $facade.dispatch, [ENotifyConst.LobbyClosed]);
+		socket.on(ESocketEvent.Connecting, $facade, $facade.dispatch, [EGlobalEvent.LobbyConnecting]);
+		socket.on(ESocketEvent.Reconnecting, $facade, $facade.dispatch, [EGlobalEvent.LobbyReconnecting]);
+		socket.on(ESocketEvent.Connected, $facade, $facade.dispatch, [EGlobalEvent.LobbyConnected]);
+		socket.on(ESocketEvent.Closed, $facade, $facade.dispatch, [EGlobalEvent.LobbyClosed]);
 		socket.on(ESocketEvent.Response, this, (method: string, res: IResponse, req: IRequest) => {
 			if (res.error)
 				this.onResponseError(method, res, req);
@@ -52,10 +52,10 @@ export class NetManager extends Singleton<NetManager>() implements INetManager {
 	}
 	private initGame() {
 		// const socket = this._gameSocket = new WebSocket(this._routes[0], "gateway");
-		// socket.on(ESocketEvent.Connecting, $facade, $facade.dispatch, [ENotifyConst.GameConnecting]);
-		// socket.on(ESocketEvent.Reconnecting, $facade, $facade.dispatch, [ENotifyConst.GameReconnecting]);
-		// socket.on(ESocketEvent.Connected, $facade, $facade.dispatch, [ENotifyConst.GameConnected]);
-		// socket.on(ESocketEvent.Closed, $facade, $facade.dispatch, [ENotifyConst.GameClosed]);
+		// socket.on(ESocketEvent.Connecting, $facade, $facade.dispatch, [EGlobalEvent.GameConnecting]);
+		// socket.on(ESocketEvent.Reconnecting, $facade, $facade.dispatch, [EGlobalEvent.GameReconnecting]);
+		// socket.on(ESocketEvent.Connected, $facade, $facade.dispatch, [EGlobalEvent.GameConnected]);
+		// socket.on(ESocketEvent.Closed, $facade, $facade.dispatch, [EGlobalEvent.GameClosed]);
 		// socket.on(ESocketEvent.Response, this, (method: string, res: IResponse, req: IRequest) => {
 		// 	if (res.error)
 		// 		this.onResponseError(method, res, req);
@@ -66,10 +66,10 @@ export class NetManager extends Singleton<NetManager>() implements INetManager {
 	}
 	private initOb() {
 		// const socket = this._obSocket = new WebSocket(this._routes[0], "gateway");
-		// socket.on(ESocketEvent.Connecting, $facade, $facade.dispatch, [ENotifyConst.OBConnecting]);
-		// socket.on(ESocketEvent.Reconnecting, $facade, $facade.dispatch, [ENotifyConst.OBReconnecting]);
-		// socket.on(ESocketEvent.Connected, $facade, $facade.dispatch, [ENotifyConst.OBConnected]);
-		// socket.on(ESocketEvent.Closed, $facade, $facade.dispatch, [ENotifyConst.OBClosed]);
+		// socket.on(ESocketEvent.Connecting, $facade, $facade.dispatch, [EGlobalEvent.OBConnecting]);
+		// socket.on(ESocketEvent.Reconnecting, $facade, $facade.dispatch, [EGlobalEvent.OBReconnecting]);
+		// socket.on(ESocketEvent.Connected, $facade, $facade.dispatch, [EGlobalEvent.OBConnected]);
+		// socket.on(ESocketEvent.Closed, $facade, $facade.dispatch, [EGlobalEvent.OBClosed]);
 		// socket.on(ESocketEvent.Response, this, (method: string, res: IResponse, req: IRequest) => {
 		// 	if (res.error)
 		// 		this.onResponseError(method, res, req);
@@ -126,7 +126,7 @@ export class NetManager extends Singleton<NetManager>() implements INetManager {
 		}
 	}
 
-	@InterestNotify(ENotifyConst.LobbyClosed)
+	@InjectGlobalEvent(EGlobalEvent.LobbyClosed)
 	private onLobbyClosed() {
 		$confirmSma(2, $lang(2061));
 	}

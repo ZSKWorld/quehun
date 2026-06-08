@@ -261,7 +261,7 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 				return;
 			}
 		}
-		this.dispatch(ENotifyConst.LoginSuccess);
+		this.dispatch(EGlobalEvent.LoginSuccess);
 		await Promise.all([
 			$netMgr.requests.fetchClientValue(),
 			$user.announcement.fetchAnnouncement(),

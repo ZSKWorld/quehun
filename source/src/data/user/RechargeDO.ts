@@ -59,31 +59,31 @@ export class RechargeDO extends BaseDO implements DO.IRechargeDO {
 		return this._gainedVipLevels.includes(level - 1);
 	}
 
-	@InterestMessage(ENetMessage.login)
-	@InterestMessage(ENetMessage.oauth2Login)
+	@InjectNetEvent(ENetMessage.login)
+	@InjectNetEvent(ENetMessage.oauth2Login)
 	private onLogin(res: IResLogin) {
 		if (!res.account) return;
 		this.vipExp = res.account.vip;
 	}
 
-	@InterestMessage(ENetMessage.fetchMisc)
+	@InjectNetEvent(ENetMessage.fetchMisc)
 	private onFetchMisc(res: IResMisc) {
 		this._rechargedList = [...res.recharged_list];
 		this.dispatch(EUserEvent.OnRechargeRechargedListChanged);
 	}
 
-	@InterestMessage(ENetMessage.fetchVipReward)
+	@InjectNetEvent(ENetMessage.fetchVipReward)
 	private onFetchVipReward(res: IResVipReward) {
 		this._gainedVipLevels = [...res.gained_vip_levels];
 		this.dispatch(EUserEvent.OnRechargeGainVipLevelChanged);
 	}
 
-	@InterestMessage(ENetMessage.fetchServerSettings)
+	@InjectNetEvent(ENetMessage.fetchServerSettings)
 	private onFetchServerSetting(res: IResServerSettings) {
 		this.onNotifyServerSetting(res);
 	}
 
-	@InterestMessage(ENetNotify.NotifyAccountUpdate)
+	@InjectNetEvent(ENetNotify.NotifyAccountUpdate)
 	private onNotifyAccountUpdate(data: INotifyAccountUpdate) {
 		if (!data.update) return;
 		const { numerical, new_recharged_list } = data.update;
@@ -98,7 +98,7 @@ export class RechargeDO extends BaseDO implements DO.IRechargeDO {
 		}
 	}
 
-	@InterestMessage(ENetNotify.NotifyServerSetting)
+	@InjectNetEvent(ENetNotify.NotifyServerSetting)
 	private onNotifyServerSetting(data: INotifyServerSetting) {
 		if (!data.settings) return;
 		const setting = $decodeProtoData(data.settings);

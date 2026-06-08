@@ -29,7 +29,7 @@ export class RedDotManager extends Observer implements IRedDotManager {
 		_triggers.clear();
 	}
 
-	@InterestNotify(ENotifyConst.OnInitGameCompleted)
+	@InjectGlobalEvent(EGlobalEvent.OnInitGameCompleted)
 	private onInitGameCompleted() {
 		const rdMap = this._rdMap;
 		const rdRegisters = RDTriggerManager.getTriggers();
@@ -50,13 +50,13 @@ export class RedDotManager extends Observer implements IRedDotManager {
 		}
 	}
 
-	@InterestNotify(ENotifyConst.RedDotCompAwake)
+	@InjectGlobalEvent(EGlobalEvent.RedDotCompAwake)
 	private onRedDotCompAwake(comp: fgui.GComponent) {
 		const data = this.getRDByComp(this._rdMap[ERDName.Root], comp);
 		data && data.refresh();
 	}
 
-	@InterestNotify(ENotifyConst.RedDotCompDestroy)
+	@InjectGlobalEvent(EGlobalEvent.RedDotCompDestroy)
 	private onRedDotCompDestroy(comp: fgui.GComponent) {
 		const data = this.getRDByComp(this._rdMap[ERDName.Root], comp);
 		data && data.recover();

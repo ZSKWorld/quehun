@@ -108,7 +108,7 @@ export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> 
 		item.refresh(briefs[index]);
 	}
 
-	@InterestMessage(ENetMessage.searchAccountByEid)
+	@InjectNetEvent(ENetMessage.searchAccountByEid)
 	private onSearchAccountByEid(res: IResSearchAccountbyEidLobby) {
 		const accountId = res.account_id;
 		if (!accountId || accountId == $user.account.accountId)
@@ -117,15 +117,15 @@ export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> 
 		this._searchPlayerLoader.loadNext();
 	}
 
-	@InterestUserEvent(EUserEvent.OnFriendsChanged, false, [0])
-	@InterestUserEvent(EUserEvent.OnFriendMaxCountChanged, false, [0])
-	@InterestUserEvent(EUserEvent.OnFriendApplyChanged, false, [1])
+	@InjectUserEvent(EUserEvent.OnFriendsChanged, false, [0])
+	@InjectUserEvent(EUserEvent.OnFriendMaxCountChanged, false, [0])
+	@InjectUserEvent(EUserEvent.OnFriendApplyChanged, false, [1])
 	private tryToRefresh(index: number) {
 		if (index != this._tabGroup.selectIndex) return;
 		this.onTabChanged();
 	}
 
-	@InterestMessage(ENetMessage.fetchRecentFriend)
+	@InjectNetEvent(ENetMessage.fetchRecentFriend)
 	private onFetchRecentFriend(res: IResFetchrecentFriend) {
 		this._recentPlayerLoader.intro = res.account_list.map(v => ({ account_id: v }));
 		this._recentPlayerLoader.loadNext();

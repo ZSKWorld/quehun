@@ -106,8 +106,8 @@ export class BagDO extends BaseDO implements DO.IBagDO {
 		return items;
 	}
 
-	@InterestMessage(ENetMessage.login)
-	@InterestMessage(ENetMessage.oauth2Login)
+	@InjectNetEvent(ENetMessage.login)
+	@InjectNetEvent(ENetMessage.oauth2Login)
 	private onLogin(res: IResLogin) {
 		if (!res.account) return;
 		const { gold, diamond, platform_diamond, skin_ticket, platform_skin_ticket, loading_image } = res.account;
@@ -122,12 +122,12 @@ export class BagDO extends BaseDO implements DO.IBagDO {
 		this.dispatch(EUserEvent.OnBagItemsChanged);
 	}
 
-	@InterestMessage(ENetMessage.fetchMisc)
+	@InjectNetEvent(ENetMessage.fetchMisc)
 	private onFetchMisc(res: IResMisc) {
 
 	}
 
-	@InterestMessage(ENetMessage.fetchBagInfo)
+	@InjectNetEvent(ENetMessage.fetchBagInfo)
 	private onFetchBagInfo(res: IResBagInfo) {
 		const { items, daily_gain_record } = $decodeProtoData(res.bag);
 		this.modifyItems(items);
@@ -137,7 +137,7 @@ export class BagDO extends BaseDO implements DO.IBagDO {
 		this.dispatch(EUserEvent.OnBagDailyGainRecordChanged);
 	}
 
-	@InterestMessage(ENetNotify.NotifyAccountUpdate)
+	@InjectNetEvent(ENetNotify.NotifyAccountUpdate)
 	private onNotifyAccountUpdate(data: INotifyAccountUpdate) {
 		if (!data.update) return;
 		const updateItems: IItem[] = [];
@@ -206,7 +206,7 @@ export class BagDO extends BaseDO implements DO.IBagDO {
 		});
 	}
 
-	@InterestNotify(ENotifyConst.OnInitGameCompleted)
+	@InjectGlobalEvent(EGlobalEvent.OnInitGameCompleted)
 	private onEnterLoginScene() {
 		const info = $cfgMgr.mall.channel_config[$gameMgr.payChannelId];
 		if (info) {
@@ -222,7 +222,7 @@ export class BagDO extends BaseDO implements DO.IBagDO {
 		}
 	}
 
-	@InterestMessage(ENetMessage.setLoadingImage)
+	@InjectNetEvent(ENetMessage.setLoadingImage)
 	private onSetLoadingImageRes(_, req: IReqSetLoadingImage) {
 		this._loadingImage = req.images.slice();
 		this.dispatch(EUserEvent.OnCGUsingChanged);

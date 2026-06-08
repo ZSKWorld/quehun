@@ -172,17 +172,17 @@ export class ActivityDO extends BaseDO implements DO.IActivityDO {
 		return list;
 	}
 
-	@InterestMessage(ENetMessage.fetchActivityList)
+	@InjectNetEvent(ENetMessage.fetchActivityList)
 	private onFetchActivityList(res: IResActivityList) {
 		this.onNotifyActivityChange({ new_activities: res.activities, end_activities: null });
 	}
 
-	@InterestMessage(ENetMessage.fetchAccountActivityData)
+	@InjectNetEvent(ENetMessage.fetchAccountActivityData)
 	private onFetchAccountActivityData(res: IResAccountActivityData) {
 		this.updateActivityData($decodeProtoData(res));
 	}
 
-	@InterestMessage(ENetMessage.fetchActivityBuff)
+	@InjectNetEvent(ENetMessage.fetchActivityBuff)
 	private onFetchActivityBuff(res: IResActivityBuff) {
 		const activityBuff = this._activityBuff;
 		$decodeProtoData(res.buff_list).forEach(v => {
@@ -191,7 +191,7 @@ export class ActivityDO extends BaseDO implements DO.IActivityDO {
 		this.dispatch(EUserEvent.OnActivityBuffChanged);
 	}
 
-	@InterestMessage(ENetMessage.fetchActivityInterval)
+	@InjectNetEvent(ENetMessage.fetchActivityInterval)
 	private onFetchActivityInterval(res: IResFetchActivityInterval) {
 		const activityInterval = this._activityInterval;
 		$decodeProtoData(res.result).forEach(v => {
@@ -200,7 +200,7 @@ export class ActivityDO extends BaseDO implements DO.IActivityDO {
 		this.dispatch(EUserEvent.OnActivityIntervalChanged);
 	}
 
-	@InterestMessage(ENetNotify.NotifyAccountUpdate)
+	@InjectNetEvent(ENetNotify.NotifyAccountUpdate)
 	private onNotifyAccountUpdate(data: INotifyAccountUpdate) {
 		if (!data.update) return;
 		const {
@@ -248,27 +248,27 @@ export class ActivityDO extends BaseDO implements DO.IActivityDO {
 		} as ProtoObject<IResAccountActivityData>);
 	}
 
-	@InterestMessage(ENetNotify.NotifyActivityTaskUpdate)
+	@InjectNetEvent(ENetNotify.NotifyActivityTaskUpdate)
 	private onNotifyActivityTaskUpdate(data: INotifyActivityTaskUpdate) {
 		this.updateActivityData({ task_progress_list: $decodeProtoData(data.progresses) });
 	}
 
-	@InterestMessage(ENetNotify.NotifyActivityPeriodTaskUpdate)
+	@InjectNetEvent(ENetNotify.NotifyActivityPeriodTaskUpdate)
 	private onNotifyActivityPeriodTaskUpdate(data: INotifyActivityPeriodTaskUpdate) {
 		this.updateActivityData({ period_task_progress_list: $decodeProtoData(data.progresses) });
 	}
 
-	@InterestMessage(ENetNotify.NotifyAccountRandomTaskUpdate)
+	@InjectNetEvent(ENetNotify.NotifyAccountRandomTaskUpdate)
 	private onNotifyAccountRandomTaskUpdate(data: INotifyAccountRandomTaskUpdate) {
 		this.updateActivityData({ random_task_progress_list: $decodeProtoData(data.progresses) });
 	}
 
-	@InterestMessage(ENetNotify.NotifyActivitySegmentTaskUpdate)
+	@InjectNetEvent(ENetNotify.NotifyActivitySegmentTaskUpdate)
 	private onNotifyActivitySegmentTaskUpdate(data: INotifyActivitySegmentTaskUpdate) {
 		this.updateActivityData({ segment_task_progress_list: $decodeProtoData(data.progresses) });
 	}
 
-	@InterestMessage(ENetNotify.NotifyActivityChange)
+	@InjectNetEvent(ENetNotify.NotifyActivityChange)
 	private onNotifyActivityChange(data: INotifyActivityChange) {
 		const activityList = this._activityList;
 		const { new_activities, end_activities } = $decodeProtoData(data);

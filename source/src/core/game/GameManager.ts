@@ -115,7 +115,7 @@ export class GameManager extends Observer implements IGameManager {
 		return Promise.resolve(confirm(msg));
 	}
 
-	@InterestNotify(ENotifyConst.LoginSuccess)
+	@InjectGlobalEvent(EGlobalEvent.LoginSuccess)
 	private loginSuccess() {
 		$netMgr.requests.fetchConnectionInfo();
 		Laya.timer.loop(1000, this, this.secondCheckLoop);
@@ -150,18 +150,18 @@ export class GameManager extends Observer implements IGameManager {
 		}
 	}
 
-	@InterestMessage(ENetMessage.fetchConnectionInfo)
+	@InjectNetEvent(ENetMessage.fetchConnectionInfo)
 	private onFetchConnectionInfo(res: IResConnectionInfo) {
 		this._clientEndPoint = $decodeProtoData(res.client_endpoint);
 	}
 
-	@InterestMessage(ENetMessage.login)
-	@InterestMessage(ENetMessage.oauth2Login)
+	@InjectNetEvent(ENetMessage.login)
+	@InjectNetEvent(ENetMessage.oauth2Login)
 	private onLogin() {
 		$netMgr.requests.loginBeat({ contract: this.p2 });
 	}
 
-	@InterestMessage(ENetNotify.NotifyAnotherLogin)
+	@InjectNetEvent(ENetNotify.NotifyAnotherLogin)
 	private onNotifyAnotherLogin() {
 		$netMgr.closeAll();
 		$localDataMgr.setBool(ELocalDataKey.AutoLogin, false);
@@ -175,7 +175,7 @@ export class GameManager extends Observer implements IGameManager {
 		});
 	}
 
-	@InterestMessage(ENetNotify.NotifyAccountLogout)
+	@InjectNetEvent(ENetNotify.NotifyAccountLogout)
 	private onNotifyAccountLogout() {
 		$netMgr.closeAll();
 		$confirmSma(2, $lang(2329)).then(v => {
@@ -183,14 +183,14 @@ export class GameManager extends Observer implements IGameManager {
 		});
 	}
 
-	@InterestMessage(ENetNotify.NotifyClientMessage)
+	@InjectNetEvent(ENetNotify.NotifyClientMessage)
 	private onNotifyClientMessage(data: INotifyClientMessage) {
 		if (data.type == EClientMessageType.RoomInvite) {
 			Logger.error("有邀请", data);
 		}
 	}
 
-	@InterestMessage(ENetMessage.fetchServerTime)
+	@InjectNetEvent(ENetMessage.fetchServerTime)
 	private onFetchServerTime(res: IResServerTime) {
 		$timeUtil.setServerTime(res.server_time * 1000);
 	}

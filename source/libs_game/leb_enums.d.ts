@@ -182,14 +182,14 @@ declare enum EKeyCode {
 }
 
 /** 按键事件类型 */
-declare enum EKeyEventType {
+declare enum EKeyEvent {
 	KeyDown = "keydown",
 	KeyPress = "keypress",
 	KeyUp = "keyup",
 }
 
 /** 鼠标事件类型 */
-declare enum EMouseEventType {
+declare enum EMouseEvent {
 	MouseDown = "mousedown",
 	MouseUp = "mouseup",
 	MouseMove = "mousemove",
@@ -441,57 +441,61 @@ declare enum EConstDefine {
 }
 
 /** 全局事件枚举 */
-declare enum ENotifyConst {
+declare enum EGlobalEvent {
 	/** 游戏回到前台事件 */
-	OnGameShow = "NotifyConst_OnGameShow",
+	OnGameShow = "EGlobalEvent_OnGameShow",
 	/** 游戏隐藏后台事件 */
-	OnGameHide = "NotifyConst_OnGameHide",
+	OnGameHide = "EGlobalEvent_OnGameHide",
 
 	/** 红点组件唤醒 */
-	RedDotCompAwake = "NotifyConst_RedDotCompAwake",
+	RedDotCompAwake = "EGlobalEvent_RedDotCompAwake",
 	/** 红点组件销毁 */
-	RedDotCompDestroy = "NotifyConst_RedDotCompDestroy",
+	RedDotCompDestroy = "EGlobalEvent_RedDotCompDestroy",
 	/** 初始完成 */
-	OnInitGameCompleted = "NotifyConst_OnInitGameCompleted",
+	OnInitGameCompleted = "EGlobalEvent_OnInitGameCompleted",
 
 	//#region 网络相关
-	LobbyConnecting = "NotifyConst_LobbyConnectting",
-	LobbyReconnecting = "NotifyConst_LobbyReconnecting",
-	LobbyConnected = "NotifyConst_LobbyConnected",
-	LobbyClosed = "NotifyConst_LobbyClosed",
-	GameConnecting = "NotifyConst_GameConnecting",
-	GameReconnecting = "NotifyConst_GameReconnecting",
-	GameConnected = "NotifyConst_GameConnected",
-	GameClosed = "NotifyConst_GameClosed",
-	OBConnecting = "NotifyConst_OBConnecting",
-	OBReconnecting = "NotifyConst_OBReconnecting",
-	OBConnected = "NotifyConst_OBConnected",
-	OBClosed = "NotifyConst_OBClosed",
+	LobbyConnecting = "EGlobalEvent_LobbyConnectting",
+	LobbyReconnecting = "EGlobalEvent_LobbyReconnecting",
+	LobbyConnected = "EGlobalEvent_LobbyConnected",
+	LobbyClosed = "EGlobalEvent_LobbyClosed",
+	GameConnecting = "EGlobalEvent_GameConnecting",
+	GameReconnecting = "EGlobalEvent_GameReconnecting",
+	GameConnected = "EGlobalEvent_GameConnected",
+	GameClosed = "EGlobalEvent_GameClosed",
+	OBConnecting = "EGlobalEvent_OBConnecting",
+	OBReconnecting = "EGlobalEvent_OBReconnecting",
+	OBConnected = "EGlobalEvent_OBConnected",
+	OBClosed = "EGlobalEvent_OBClosed",
 	//#endregion
 
 	//#region 页面相关
-	OnViewOpenBegin = "NotifyConst_OnViewOpenBegin",
-	OnViewOpenEnd = "NotifyConst_OnViewOpenEnd",
-	OnViewCloseBegin = "NotifyConst_OnViewCloseBegin",
-	OnViewCloseEnd = "NotifyConst_OnViewCloseEnd",
+	/** 页面打开前 */
+	OnViewOpenBegin = "EGlobalEvent_OnViewOpenBegin",
+	/** 页面打开后 */
+	OnViewOpenEnd = "EGlobalEvent_OnViewOpenEnd",
+	/** 页面关闭前 */
+	OnViewCloseBegin = "EGlobalEvent_OnViewCloseBegin",
+	/** 页面关闭后 */
+	OnViewCloseEnd = "EGlobalEvent_OnViewCloseEnd",
 	//#endregion
 
 	/**绑定手机号完成 */
-	BindPhoneCompleted = "NotifyConst_BindPhoneCompleted",
+	BindPhoneCompleted = "EGlobalEvent_BindPhoneCompleted",
 	/** 登录成功 */
-	LoginSuccess = "NotifyConst_LoginSuccess",
+	LoginSuccess = "EGlobalEvent_LoginSuccess",
 
 	//#region logicScene相关
 	/** 场景开始加载 */
-	OnSceneLoadBegin = "NotifyConst_OnSceneLoadBegin",
+	OnSceneLoadBegin = "EGlobalEvent_OnSceneLoadBegin",
 	/** 场景加载进度 */
-	OnSceneLoadProgress = "NotifyConst_OnSceneLoadProgress",
+	OnSceneLoadProgress = "EGlobalEvent_OnSceneLoadProgress",
 	/** 场景加载结束 */
-	OnSceneLoadEnd = "NotifyConst_OnSceneLoadEnd",
+	OnSceneLoadEnd = "EGlobalEvent_OnSceneLoadEnd",
 	/** 进入场景 */
-	OnEnterScene = "NotifyConst_OnEnterScene",
+	OnEnterScene = "EGlobalEvent_OnEnterScene",
 	/** 退出场景 */
-	OnExitScene = "NotifyConst_OnExitScene",
+	OnExitScene = "EGlobalEvent_OnExitScene",
 	//#endregion
 
 }

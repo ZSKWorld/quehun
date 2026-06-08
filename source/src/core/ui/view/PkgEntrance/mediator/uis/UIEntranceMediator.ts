@@ -8,7 +8,7 @@ export class UIEntranceMediator extends MediatorBase<UIEntranceView, IUIEntrance
 		Laya.timer.once(this.view.transT0Duration, this, this.check2Login);
 	}
 
-	@InterestNotify(ENotifyConst.LobbyConnected)
+	@InjectGlobalEvent(EGlobalEvent.LobbyConnected)
 	private check2Login() {
 		this._recordCnt++;
 		if (this._recordCnt >= 2)

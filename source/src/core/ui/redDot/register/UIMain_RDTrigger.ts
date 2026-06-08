@@ -9,14 +9,14 @@ export class UIMain_RDTrigger extends RDTriggerBase {
 		];
 	}
 
-	@InterestUserEvent(EUserEvent.OnMailChanged)
+	@InjectUserEvent(EUserEvent.OnMailChanged)
 	private checkMail() {
 		const mails = $user.mail.mails;
 		this.setTriggered(ERDTriggerType.MailNotRead, mails.some(v => v.state == 0));
 		this.setTriggered(ERDTriggerType.MailHaveReward, mails.some(v => v.attachments.length && !v.take_attachment));
 	}
 
-	@InterestUserEvent(EUserEvent.OnAnnouncementChanged)
+	@InjectUserEvent(EUserEvent.OnAnnouncementChanged)
 	private checkAnnouncement() {
 		const announcement = $user.announcement;
 		this.setTriggered(ERDTriggerType.AnnouncementHaveNotRead, announcement.announcements.some(v => !announcement.isRead(v.id)));

@@ -87,7 +87,7 @@ export class UIRechargeMediator extends MediatorBase<UIRechargeView, IUIRecharge
 		});
 	}
 
-	@InterestMessage(ENetMessage.exchangeDiamond)
+	@InjectNetEvent(ENetMessage.exchangeDiamond)
 	private onExchangeDiamond(_, req: IReqExchangeCurrency) {
 		const cfgExchange = $cfgMgr.exchange.fushiquanexchange[req.id];
 		const cfgCurrency = $cfgMgr.item_definition.currency[cfgExchange.target_currency];
@@ -121,9 +121,9 @@ export class UIRechargeMediator extends MediatorBase<UIRechargeView, IUIRecharge
 			},
 		});
 	}
-	
-	@InterestMessage(ENetMessage.exchangeCurrency)
-	@InterestMessage(ENetMessage.exchangeChestStone)
+
+	@InjectNetEvent(ENetMessage.exchangeCurrency)
+	@InjectNetEvent(ENetMessage.exchangeChestStone)
 	private onExchangeCurrencyOrChestStone() {
 		$tipMgr.showTip($lang(2191));
 	}

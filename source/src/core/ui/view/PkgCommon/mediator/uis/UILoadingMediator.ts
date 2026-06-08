@@ -11,7 +11,7 @@ export class UILoadingMediator extends MediatorBase<UILoadingView, IUILoadingDat
 		this.view.updateBlockPos();
 	}
 
-	@InterestNotify(ENotifyConst.OnSceneLoadProgress)
+	@InjectGlobalEvent(EGlobalEvent.OnSceneLoadProgress)
 	protected onSceneLoadProgrss(pro: number) {
 		this.view.refreshProgress(pro);
 	}

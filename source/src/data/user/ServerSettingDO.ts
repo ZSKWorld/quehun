@@ -5,7 +5,7 @@ export class ServerSettingDO extends BaseDO implements DO.IServerSettingDO {
 
 	get nickname_setting() { return this._nickname_setting; }
 
-	@InterestMessage(ENetNotify.NotifyServerSetting)
+	@InjectNetEvent(ENetNotify.NotifyServerSetting)
 	private onNotifyServerSetting(data: INotifyServerSetting) {
 		if (!data.settings) return;
 		const setting = $decodeProtoData(data.settings);

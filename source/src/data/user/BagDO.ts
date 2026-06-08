@@ -207,7 +207,7 @@ export class BagDO extends BaseDO implements DO.IBagDO {
 	}
 
 	@InjectGlobalEvent(EGlobalEvent.OnInitGameCompleted)
-	private onEnterLoginScene() {
+	private onInitGameCompleted() {
 		const info = $cfgMgr.mall.channel_config[$gameMgr.payChannelId];
 		if (info) {
 			const { free_jade_ids, free_voucher_ids, paid_jade_ids, paid_voucher_ids } = info;

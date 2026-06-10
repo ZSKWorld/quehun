@@ -22,6 +22,8 @@ declare interface IUIBagData {
 	index?: number;
 }
 
+declare type IUICheckCurrencyData = ECurrencyType;
+
 declare interface IUICameraData {
 
 }
@@ -54,9 +56,7 @@ declare interface IUIPaipuData {
 
 }
 
-declare interface IUIRankData {
-
-}
+declare type IUIRankData = any;
 
 declare interface IUISettingData {
 

@@ -1,7 +1,7 @@
 import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
 import { EUICheckCurrencyMsg, UICheckCurrencyView } from "../../view/uis/UICheckCurrencyView";
 
-export class UICheckCurrencyMediator extends MediatorBase<UICheckCurrencyView, ECurrencyType> {
+export class UICheckCurrencyMediator extends MediatorBase<UICheckCurrencyView, IUICheckCurrencyData> {
 
 	override onAwake() {
 		this.addEvent(EUICheckCurrencyMsg.OnBtnBuyClick, this.onBtnBuyClick);

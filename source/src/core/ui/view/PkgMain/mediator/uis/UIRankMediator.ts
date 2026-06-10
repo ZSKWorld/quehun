@@ -7,7 +7,7 @@ import { UIRankView } from "../../view/uis/UIRankView";
 
 const Scroll_Threshold = 150; // 触底检查阈值
 
-export class UIRankMediator extends MediatorBase<UIRankView, any> {
+export class UIRankMediator extends MediatorBase<UIRankView, IUIRankData> {
 	private _tabGroup = new RadioGroup();
 
 	// 使用 Record 管理不同类型的状态

@@ -38,7 +38,7 @@ export class InitGameCommand extends Command {
 			$uiMgr.openView<IUIChooseServerData>(EViewID.UIChooseServerView, { ipInfos: config.ip, callback: resolve });
 		});
 
-		await $gameMgr.init(ipIndex, config);
+		$gameMgr.init(ipIndex, config);
 
 		$uiMgr.openView(EViewID.UIEntranceView);
 

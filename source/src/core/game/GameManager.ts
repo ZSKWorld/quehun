@@ -101,7 +101,7 @@ export class GameManager extends Observer implements IGameManager {
 
 	protected constructor() { super(); }
 
-	async init(ipIndex: number, config: IConfig) {
+	init(ipIndex: number, config: IConfig) {
 		this._ipIndex = ipIndex;
 		this._config = config;
 	}

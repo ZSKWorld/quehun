@@ -50,6 +50,6 @@ declare interface IGameManager {
 	get config(): IConfig;
 	get ipInfo(): IIPInfo;
 	get zoneIds(): number[];
-	init(ipIndex: number, config: IConfig): Promise<void>;
+	init(ipIndex: number, config: IConfig): void;
 	showConfirm(msg: string): Promise<boolean>;
 }

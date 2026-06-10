@@ -11,6 +11,7 @@
     "ui://vith2b66ktwpob9u",
     "ui://vith2b66giq1obic",
     "ui://vx9zwserqs7jobft",
+    "ui://vx9zwsersi7robf6",
     "ui://vith2b66qke2ob9q",
     "ui://vx9zwserfpd2obgp",
     "ui://vx9zwserhdeoobbq",
@@ -26,7 +27,7 @@
   "test.device": "iPhone 8 Plus",
   "canvasColor": 10066329,
   "auxline2": true,
-  "doc.activeDoc": "ui://vx9zwserqs7jobft",
+  "doc.activeDoc": "ui://vx9zwsersi7robf6",
   "libview.twoColumn": true,
   "libview.expandedNodes": [
     "vx9zwser",

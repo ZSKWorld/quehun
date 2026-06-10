@@ -4,17 +4,12 @@ const enum EClientMessageType {
 	RoomInvite = 1,
 }
 
-interface IVersionInfo {
-	version: string;
-}
-
 export class GameManager extends Observer implements IGameManager {
 	private static _inst: GameManager;
 	static get Inst() { return this._inst || (this._inst = new GameManager()); }
 
 	private _inDmm = false;
 	private _deviceId: string;
-	private _version: IVersionInfo;
 	private _clientEndPoint: ProtoObject<INetworkEndpoint>;
 	private _config: IConfig;
 	private _ipIndex: number;
@@ -24,10 +19,9 @@ export class GameManager extends Observer implements IGameManager {
 	get clientType() { return EClientType.CHST; }
 	get version() {
 		return "4.0.44";
-		return this._version?.version || "";
 	}
 	get clientVersion() {
-		return 'WebGL_2022-0.16.231';
+		return 'WebGL_2022-0.16.232';
 	}
 	get currency() {
 		const info = $cfgMgr.mall.channel_config[this.payChannelId];
@@ -110,7 +104,6 @@ export class GameManager extends Observer implements IGameManager {
 	async init(ipIndex: number, config: IConfig) {
 		this._ipIndex = ipIndex;
 		this._config = config;
-		this._version = await $loadMgr.fetch(`https://game.maj-soul.com/1/version.json?randv=${ $timeUtil.milliSecond }`, Laya.Loader.JSON);
 	}
 
 	showConfirm(msg: string) {

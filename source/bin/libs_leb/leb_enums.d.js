@@ -369,8 +369,10 @@ EGlobalEvent = {
 	OnSceneLoadBegin: "EGlobalEvent_OnSceneLoadBegin",
 	OnSceneLoadProgress: "EGlobalEvent_OnSceneLoadProgress",
 	OnSceneLoadEnd: "EGlobalEvent_OnSceneLoadEnd",
-	OnEnterScene: "EGlobalEvent_OnEnterScene",
-	OnExitScene: "EGlobalEvent_OnExitScene",
+	OnSceneEnterBegin: "EGlobalEvent_OnSceneEnterBegin",
+	OnSceneEnterEnd: "EGlobalEvent_OnSceneEnterEnd",
+	OnSceneExitBegin: "EGlobalEvent_OnSceneExitBegin",
+	OnSceneExitEnd: "EGlobalEvent_OnSceneExitEnd",
 }
 
 EUserEvent = {

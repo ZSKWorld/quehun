@@ -1,3 +1,4 @@
+import { LoadingBgLoader } from "../core/game/LoadingBgLoader";
 
 /** 逻辑场景管理类 */
 export class SceneManager extends Singleton<SceneManager>() implements ISceneManager {
@@ -44,29 +45,33 @@ export class SceneManager extends Singleton<SceneManager>() implements ISceneMan
 		if (!newScene) return;
 
 		this.isSwitching = true;
+		await LoadingBgLoader.Inst.randomLoad();
 
 		try {
 			$facade.dispatch(EGlobalEvent.OnSceneLoadBegin, type);
 			await newScene.load();
 			$facade.dispatch(EGlobalEvent.OnSceneLoadEnd, type);
 
-			const curScene = this._sceneMap.get(this._currentType);
-			await curScene?.exit();
-			$facade.dispatch(EGlobalEvent.OnExitScene, this._currentType);
+			$facade.dispatch(EGlobalEvent.OnSceneExitBegin, this._currentType);
+			await this._sceneMap.get(this._currentType)?.exit();
+			$facade.dispatch(EGlobalEvent.OnSceneExitEnd, this._currentType);
 
 			this._currentType = type;
+			$facade.dispatch(EGlobalEvent.OnSceneEnterBegin, type);
 			await newScene.enter(data);
-			$facade.dispatch(EGlobalEvent.OnEnterScene, type);
+			$facade.dispatch(EGlobalEvent.OnSceneEnterEnd, type);
 
 		} catch (e) {
 			const retry = await $confirmSma(0, `${ type } 场景加载失败，是否重试?`, "提示");
 			if (retry) {
 				this.isSwitching = false;
 				this.enterScene(type, data);
-			} else
+			} else {
 				await newScene.exit();
+				this.isSwitching = false;
+			}
 		} finally {
-			this.isSwitching = false;
+			LoadingBgLoader.Inst.clear();
 		}
 	}
 }

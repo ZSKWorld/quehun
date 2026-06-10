@@ -1,4 +1,3 @@
-import { LoadingBgLoader } from "../core/game/LoadingBgLoader";
 import { Observer } from "../core/mvc/provider/Observer";
 
 const enum EResGroupType {
@@ -28,7 +27,6 @@ export abstract class SceneBase<T> extends Observer implements IScene<T> {
 
 	async load() {
 		try {
-			await LoadingBgLoader.Inst.randomLoad();
 
 			const count = this.loadViewId ? 4 : 3;
 			for (let i = 0; i < count; i++) {
@@ -66,7 +64,6 @@ export abstract class SceneBase<T> extends Observer implements IScene<T> {
 			this._progressHandlers.length = 0;
 			this._progresses.length = 0;
 			$uiMgr.closeAllView();
-			LoadingBgLoader.Inst.clear();
 		}
 	}
 

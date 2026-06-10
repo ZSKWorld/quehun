@@ -492,10 +492,14 @@ declare enum EGlobalEvent {
 	OnSceneLoadProgress = "EGlobalEvent_OnSceneLoadProgress",
 	/** 场景加载结束 */
 	OnSceneLoadEnd = "EGlobalEvent_OnSceneLoadEnd",
-	/** 进入场景 */
-	OnEnterScene = "EGlobalEvent_OnEnterScene",
-	/** 退出场景 */
-	OnExitScene = "EGlobalEvent_OnExitScene",
+	/** 进入场景开始 */
+	OnSceneEnterBegin = "EGlobalEvent_OnSceneEnterBegin",
+	/** 进入场景结束 */
+	OnSceneEnterEnd = "EGlobalEvent_OnSceneEnterEnd",
+	/** 退出场景开始 */
+	OnSceneExitBegin = "EGlobalEvent_OnSceneExitBegin",
+	/** 退出场景结束 */
+	OnSceneExitEnd = "EGlobalEvent_OnSceneExitEnd",
 	//#endregion
 
 }

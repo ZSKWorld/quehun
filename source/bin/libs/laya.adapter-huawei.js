@@ -319,7 +319,7 @@
             };
             if (Laya.Browser.onVVMiniGame || Laya.Browser.onQGMiniGame)
                 this.supportSubPackageMultiLevelFolders = false;
-            if (Laya.Browser.onWXMiniGame || Laya.Browser.onHWMiniGame)
+            if (Laya.Browser.onWXMiniGame || Laya.Browser.onHWMiniGame || Laya.Browser.onTTMiniGame)
                 this.escapeZhCharsInURL = false;
             if (enableCache) {
                 let cacheRoot;
@@ -632,7 +632,7 @@
         }
         start() {
             var _a;
-            let downloader = Laya.Loader.downloader = new MgDownloader(Laya.PAL.hasAPI("getFileSystemManager") && Laya.PAL.hasAPI(Laya.PAL.g.getFileSystemManager(), "writeFile"));
+            let downloader = Laya.Loader.downloader = new MgDownloader(Laya.PAL.hasAPI("getFileSystemManager") && Laya.PAL.hasAPI(Laya.PAL.g.getFileSystemManager(), "writeFile") && Laya.PAL.hasAPI(Laya.PAL.g.getFileSystemManager(), "readdir"));
             this.setupWasmSupport();
             (_a = MgBrowserAdapter.afterInit) === null || _a === void 0 ? void 0 : _a.call(MgBrowserAdapter);
             if (downloader.cacheManager)
@@ -669,8 +669,13 @@
             else if (Laya.Browser.onHWMiniGame)
                 wasmGlobal = window.qg;
             if (wasmGlobal) {
-                if (!window.WebAssembly)
-                    window.WebAssembly = { Memory: wasmGlobal.Memory };
+                if (!window.WebAssembly) {
+                    try {
+                        window.WebAssembly = { Memory: wasmGlobal.Memory };
+                    }
+                    catch (e) {
+                    }
+                }
                 Laya.WasmAdapter.Memory = wasmGlobal.Memory;
                 Laya.WasmAdapter.instantiateWasm = (wasmFile, imports) => {
                     wasmFile = Laya.WasmAdapter.locateFileDefault(wasmFile);
@@ -815,6 +820,9 @@
     MgBrowserAdapter.beforeInit = function () {
         Laya.Browser.onHWMiniGame = true;
         Laya.PAL.g = window.hbs;
+    };
+    MgBrowserAdapter.afterInit = function () {
+        Laya.PAL.browser.webSocketClass = Laya._WebSocket;
     };
 
     function ImageDataPolyfill() {

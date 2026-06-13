@@ -9,8 +9,8 @@
         static init() {
             Laya.TrailShaderCommon.init();
             let shader = Laya.Shader3D.add("Trail2D", false, false);
-            shader.shaderType = Laya.ShaderFeatureType.Effect;
-            let subShader = new Laya.SubShader(Laya.TrailShaderCommon.attributeMap, { "u_TilingOffset": Laya.ShaderDataType.Vector4 }, { "u_TilingOffset": new Laya.Vector4(1, 1, 0, 0) });
+            shader.shaderType = Laya.ShaderFeatureType.D2_BaseRenderNode2D;
+            let subShader = new Laya.SubShader(Laya.TrailShaderCommon.attributeMap, Laya.TrailShaderCommon.uniformMap, Laya.TrailShaderCommon.defaultValue);
             shader.addSubShader(subShader);
             subShader.addShaderPass(TrailVS, TrailFS);
             let mat = Trail2DRender.defaultTrail2DMaterial = new Laya.Material();
@@ -117,10 +117,13 @@
             renderElement.renderStateIsBySprite = false;
             renderElement.nodeCommonMap = this._getcommonUniformMap();
             renderElement.owner = this.owner._struct;
-            Laya.BaseRenderNode2D._setRenderElement2DMaterial(renderElement, this._materials[0] ? this._materials[0] : Trail2DRender.defaultTrail2DMaterial);
+            Laya.BaseRenderNode2D._setRenderElement2DMaterial(renderElement, this._getElementMaterial(0));
             this._renderElements[0] = renderElement;
             this.owner._struct.renderElements = this._renderElements;
             this._renderHandle.needUseMatrix = false;
+        }
+        _getElementMaterial(index) {
+            return this._materials[index] || Trail2DRender.defaultTrail2DMaterial;
         }
         onPreRender() {
             let curtime = this._trailFilter._curtime += Math.min(Laya.Laya.timer.delta / 1000, 0.016);

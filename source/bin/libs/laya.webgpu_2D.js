@@ -21,6 +21,288 @@
         destroy() { }
     }
 
+    class SequenceFrame2DInstanceBatch {
+        constructor() {
+            this._recoverList = new Laya.FastSinglelist();
+        }
+        static __init__() {
+            if (BatchManager.registry[Laya.BaseRender2DType.sequenceFrame2D]) {
+                return;
+            }
+            BatchManager.registerProvider(Laya.BaseRender2DType.sequenceFrame2D, SequenceFrame2DInstanceBatch);
+        }
+        batch(list, start, end, allowReorder) {
+            if (start > end) {
+                return;
+            }
+            const elementArray = list.elements;
+            let batchStart = -1;
+            let headElement = null;
+            let instanceCount = 0;
+            for (let i = start; i <= end; i++) {
+                const element = elementArray[i];
+                const renderer = element._sequenceFrame2DRender;
+                const count = renderer ? renderer.activeInstanceCount : 0;
+                if (count <= 0) {
+                    continue;
+                }
+                if (batchStart < 0) {
+                    batchStart = i;
+                    headElement = element;
+                    instanceCount = count;
+                    continue;
+                }
+                if (!this.check(headElement, element) || instanceCount + count > SequenceFrame2DInstanceBatchTool.MaxInstanceCount) {
+                    this._batchInternal(list, batchStart, i - 1);
+                    batchStart = i;
+                    headElement = element;
+                    instanceCount = count;
+                }
+                else {
+                    instanceCount += count;
+                }
+            }
+            if (batchStart >= 0) {
+                this._batchInternal(list, batchStart, end);
+            }
+        }
+        reset() {
+            this.recover();
+        }
+        destroy() {
+            this.recover();
+            this._recoverList.length = 0;
+        }
+        check(left, right) {
+            const leftRenderer = left._sequenceFrame2DRender;
+            const rightRenderer = right._sequenceFrame2DRender;
+            if (!leftRenderer || !rightRenderer) {
+                return false;
+            }
+            if (!leftRenderer._canBatchWith(rightRenderer)) {
+                return false;
+            }
+            if (left.materialShaderData !== right.materialShaderData || left.subShader !== right.subShader) {
+                return false;
+            }
+            const leftOwner = left.owner;
+            const rightOwner = right.owner;
+            if (leftOwner.globalRenderData !== rightOwner.globalRenderData) {
+                return false;
+            }
+            if (leftOwner.getClipInfo && rightOwner.getClipInfo && leftOwner.getClipInfo() !== rightOwner.getClipInfo()) {
+                return false;
+            }
+            return true;
+        }
+        recover() {
+            const recoverArray = this._recoverList.elements;
+            for (let i = 0, n = this._recoverList.length; i < n; i++) {
+                SequenceFrame2DInstanceBatchTool.recover(recoverArray[i]);
+            }
+            this._recoverList.length = 0;
+        }
+        _batchInternal(list, start, end) {
+            const elementArray = list.elements;
+            const activeElements = [];
+            let totalInstanceCount = 0;
+            for (let i = start; i <= end; i++) {
+                const element = elementArray[i];
+                const renderer = element._sequenceFrame2DRender;
+                const count = renderer ? renderer.activeInstanceCount : 0;
+                if (count > 0) {
+                    activeElements.push(element);
+                    totalInstanceCount += count;
+                }
+            }
+            if (totalInstanceCount <= 0) {
+                return;
+            }
+            if (activeElements.length === 1) {
+                list.add(activeElements[0]);
+                return;
+            }
+            const info = SequenceFrame2DInstanceBatchTool.getBatchInfo();
+            this._recoverList.add(info);
+            const configHash = this._getConfigHash(activeElements, totalInstanceCount);
+            const uploadConfig = !info.configValid || info.configHash !== configHash;
+            const firstRenderer = activeElements[0]._sequenceFrame2DRender;
+            if (this._isContiguousInstanceIDRange(activeElements)) {
+                const firstID = firstRenderer.instanceID;
+                firstRenderer._uploadRuntimeDataRange(info.runtimeVB, firstID, totalInstanceCount);
+                if (uploadConfig) {
+                    firstRenderer._uploadConfigDataRange(info.configVB, firstID, totalInstanceCount);
+                    info.configHash = configHash;
+                    info.configValid = true;
+                }
+            }
+            else {
+                const runtimeStride = Laya.SequenceFrame2DShader.RUNTIME_FLOAT_STRIDE;
+                const configStride = Laya.SequenceFrame2DShader.CONFIG_FLOAT_STRIDE;
+                const runtimeData = SequenceFrame2DInstanceBatchTool._instanceBufferCreate(runtimeStride * SequenceFrame2DInstanceBatchTool.MaxInstanceCount);
+                this._copyRuntimeData(activeElements, runtimeData);
+                info.runtimeVB.setData(runtimeData.buffer, 0, 0, totalInstanceCount * runtimeStride * 4);
+                SequenceFrame2DInstanceBatchTool._instanceBufferRecover(runtimeData);
+                if (uploadConfig) {
+                    const configData = SequenceFrame2DInstanceBatchTool._instanceBufferCreate(configStride * SequenceFrame2DInstanceBatchTool.MaxInstanceCount);
+                    this._copyConfigData(activeElements, configData);
+                    info.configVB.setData(configData.buffer, 0, 0, totalInstanceCount * configStride * 4);
+                    SequenceFrame2DInstanceBatchTool._instanceBufferRecover(configData);
+                    info.configHash = configHash;
+                    info.configValid = true;
+                }
+            }
+            const first = activeElements[0];
+            const geometry = info.geometry;
+            geometry.instanceCount = totalInstanceCount;
+            geometry.indexFormat = first.geometry.indexFormat;
+            const batchElement = info.element;
+            batchElement.materialShaderData = first.materialShaderData;
+            batchElement.value2DShaderData = first.value2DShaderData;
+            batchElement.globalShaderData = first.globalShaderData;
+            batchElement.subShader = first.subShader;
+            batchElement.renderStateIsBySprite = first.renderStateIsBySprite;
+            batchElement.nodeCommonMap = first.nodeCommonMap;
+            batchElement.owner = first.owner;
+            list.add(batchElement);
+        }
+        _isContiguousInstanceIDRange(activeElements) {
+            let expectedID = -1;
+            for (let i = 0, n = activeElements.length; i < n; i++) {
+                const renderer = activeElements[i]._sequenceFrame2DRender;
+                const id = renderer.instanceID;
+                const count = renderer.activeInstanceCount;
+                if (id < 0 || count <= 0)
+                    return false;
+                if (expectedID >= 0 && id !== expectedID)
+                    return false;
+                expectedID = id + count;
+            }
+            return true;
+        }
+        _copyRuntimeData(activeElements, target) {
+            const stride = Laya.SequenceFrame2DShader.RUNTIME_FLOAT_STRIDE;
+            this._copySharedDataRuns(activeElements, target, stride, (sourceRenderer, targetOffset, startID, count) => {
+                sourceRenderer._copyRuntimeDataRange(target, targetOffset, startID, count);
+            });
+        }
+        _copyConfigData(activeElements, target) {
+            const stride = Laya.SequenceFrame2DShader.CONFIG_FLOAT_STRIDE;
+            this._copySharedDataRuns(activeElements, target, stride, (sourceRenderer, targetOffset, startID, count) => {
+                sourceRenderer._copyConfigDataRange(target, targetOffset, startID, count);
+            });
+        }
+        _copySharedDataRuns(activeElements, target, stride, copyRun) {
+            const sourceRenderer = activeElements[0]._sequenceFrame2DRender;
+            let targetOffset = 0;
+            let runStartID = -1;
+            let runCount = 0;
+            let expectedID = -1;
+            const flush = () => {
+                if (runCount <= 0)
+                    return;
+                copyRun(sourceRenderer, targetOffset, runStartID, runCount);
+                targetOffset += runCount * stride;
+                runCount = 0;
+            };
+            for (let i = 0, n = activeElements.length; i < n; i++) {
+                const renderer = activeElements[i]._sequenceFrame2DRender;
+                const id = renderer.instanceID;
+                const count = renderer.activeInstanceCount;
+                if (id < 0 || count <= 0)
+                    continue;
+                if (runCount > 0 && id === expectedID) {
+                    runCount += count;
+                    expectedID = id + count;
+                    continue;
+                }
+                flush();
+                runStartID = id;
+                runCount = count;
+                expectedID = id + count;
+            }
+            flush();
+        }
+        _getConfigHash(activeElements, totalInstanceCount) {
+            let hash = totalInstanceCount | 0;
+            for (let i = 0, n = activeElements.length; i < n; i++) {
+                const renderer = activeElements[i]._sequenceFrame2DRender;
+                hash = Math.imul(hash ^ renderer.instanceID, 16777619);
+                hash = Math.imul(hash ^ renderer.getRenderID(), 16777619);
+                hash = Math.imul(hash ^ renderer.configVersion, 16777619);
+                hash = Math.imul(hash ^ renderer.activeInstanceCount, 16777619);
+            }
+            return hash;
+        }
+    }
+    class SequenceFrame2DInstanceBatchTool {
+        static getBatchInfo() {
+            return SequenceFrame2DInstanceBatchTool._batchInfoPool.pop() || SequenceFrame2DInstanceBatchTool.createBatchInfo();
+        }
+        static createBatchInfo() {
+            const element = Laya.LayaGL.render2DRenderPassFactory.createRenderElement2D();
+            const geometry = Laya.LayaGL.renderDeviceFactory.createRenderGeometryElement(Laya.MeshTopology.Triangles, Laya.DrawType.DrawElementInstance);
+            const state = Laya.LayaGL.renderDeviceFactory.createBufferState();
+            const runtimeVB = Laya.LayaGL.renderDeviceFactory.createVertexBuffer(Laya.BufferUsage.Dynamic);
+            const configVB = Laya.LayaGL.renderDeviceFactory.createVertexBuffer(Laya.BufferUsage.Dynamic);
+            runtimeVB.vertexDeclaration = Laya.SequenceFrame2DShader.runtimeDeclaration;
+            runtimeVB.instanceBuffer = true;
+            runtimeVB.setDataLength(SequenceFrame2DInstanceBatchTool.MaxInstanceCount * Laya.SequenceFrame2DShader.RUNTIME_FLOAT_STRIDE * 4);
+            configVB.vertexDeclaration = Laya.SequenceFrame2DShader.configDeclaration;
+            configVB.instanceBuffer = true;
+            configVB.setDataLength(SequenceFrame2DInstanceBatchTool.MaxInstanceCount * Laya.SequenceFrame2DShader.CONFIG_FLOAT_STRIDE * 4);
+            geometry.bufferState = state;
+            geometry.indexFormat = Laya.IndexFormat.UInt16;
+            geometry.setDrawElemenParams(6, 0);
+            geometry.instanceCount = 0;
+            state.applyState([Laya.SequenceFrame2DShader._vbs, runtimeVB, configVB], Laya.SequenceFrame2DShader._ibs);
+            element.geometry = geometry;
+            element.renderStateIsBySprite = false;
+            element.nodeCommonMap = ["BaseRender2D"];
+            return {
+                element,
+                geometry,
+                state,
+                runtimeVB,
+                configVB,
+                configHash: -1,
+                configValid: false,
+            };
+        }
+        static recover(info) {
+            const element = info.element;
+            element.materialShaderData = null;
+            element.value2DShaderData = null;
+            element.globalShaderData = null;
+            element.subShader = null;
+            element.owner = null;
+            element.nodeCommonMap = ["BaseRender2D"];
+            info.geometry.clearRenderParams();
+            info.geometry.setDrawElemenParams(6, 0);
+            info.geometry.instanceCount = 0;
+            SequenceFrame2DInstanceBatchTool._batchInfoPool.push(info);
+        }
+        static _instanceBufferCreate(length) {
+            let array = SequenceFrame2DInstanceBatchTool._bufferPool[length];
+            if (!array) {
+                array = SequenceFrame2DInstanceBatchTool._bufferPool[length] = [];
+            }
+            return array.pop() || new Float32Array(length);
+        }
+        static _instanceBufferRecover(float32) {
+            const length = float32.length;
+            let array = SequenceFrame2DInstanceBatchTool._bufferPool[length];
+            if (!array) {
+                array = SequenceFrame2DInstanceBatchTool._bufferPool[length] = [];
+            }
+            array.push(float32);
+        }
+    }
+    SequenceFrame2DInstanceBatchTool.MaxInstanceCount = 4096;
+    SequenceFrame2DInstanceBatchTool._batchInfoPool = [];
+    SequenceFrame2DInstanceBatchTool._bufferPool = [];
+    SequenceFrame2DInstanceBatch.__init__();
+
     class Web2DGraphicWholeBuffer {
         constructor() {
             this._num = 0;
@@ -349,6 +631,7 @@
             if (this.textureId === 0 && elementTexId !== 0) {
                 this.textureId = elementTexId;
                 this.primitiveShaderData = element.primitiveShaderData;
+                this.textureKey = element.textureKey;
             }
             return true;
         }
@@ -401,6 +684,7 @@
             if (this.textureId === 0 && elementTexId !== 0) {
                 this.textureId = elementTexId;
                 this.primitiveShaderData = element._primitiveShaderData;
+                this.textureKey = element.textureKey;
             }
             return true;
         }
@@ -702,8 +986,6 @@
                 || this._mask === struct)
                 return;
             let renderStruct = (struct.subStruct && struct !== this.root) ? struct.subStruct : struct;
-            if (renderStruct.manualRender)
-                return;
             renderStruct._handleInterData();
             let globalRenderData = struct.globalRenderData;
             if (globalRenderData) {
@@ -744,9 +1026,9 @@
             let rect_maxy = rect.y + rect.height;
             return !(rect_maxx < cullRect.x || rect_minx > cullRect.y || rect_maxy < cullRect.z || rect_miny > cullRect.w);
         }
-        fowardRender(context) {
+        fowardRender(context, renderTime) {
             var _a, _b;
-            let success = this._initRenderProcess(context);
+            let success = this._initRenderProcess(context, renderTime);
             if (!success)
                 return;
             if (this.repaint) {
@@ -865,7 +1147,7 @@
         getBatchProvider(renderType) {
             return this._batchProviders[renderType] || (this._batchProviders[renderType] = BatchManager.createProvider(renderType));
         }
-        _initRenderProcess(context) {
+        _initRenderProcess(context, renderTime) {
             if (!this.root || this.root.globalAlpha < 0.01) {
                 return false;
             }
@@ -890,7 +1172,7 @@
                 if (sizeX === 0 || sizeY === 0)
                     return false;
                 context.invertY = false;
-                context.setOffscreenView(sizeX, sizeY);
+                context.setOffscreenView(sizeX, sizeY, 0, 0);
                 context.setRenderTarget(null, this.doClearColor, this._clearColor);
                 this._setInvertMatrix(1, 0, 0, 1, 0, 0);
                 this.shaderData.removeDefine(Laya.ShaderDefines2D.RENDERTEXTURE);
@@ -900,6 +1182,7 @@
                 this._rtsize.setValue(sizeX, sizeY);
                 this.shaderData.setVector2(Laya.ShaderDefines2D.UNIFORM_SIZE, this._rtsize);
             }
+            this.shaderData.setNumber(Laya.ShaderDefines2D.UNIFORM_TIME, renderTime);
             return true;
         }
         static setBuffer(buffer) {
@@ -991,14 +1274,14 @@
             this._passes.splice(index, 1);
             this._modify = true;
         }
-        apply(context) {
+        apply(context, renderTime) {
             if (this._modify) {
                 this._modify = false;
                 this._passes.sort((a, b) => b._priority - a._priority);
             }
             for (const pass of this._passes) {
                 if (pass.needRender()) {
-                    pass.fowardRender(context);
+                    pass.fowardRender(context, renderTime);
                 }
             }
         }
@@ -1749,42 +2032,92 @@
                             let parentClipPos = clipInfo.clipMatPos;
                             let offsetx = parentClipPos.z - parentClipPos.x;
                             let offsety = parentClipPos.w - parentClipPos.y;
-                            if (cm.a > 0 && cm.d > 0) {
-                                let parentMat = clipInfo.clipMatrix;
-                                let parentMinX = parentMat.tx;
-                                let parentMinY = parentMat.ty;
-                                let parentMaxX = parentMinX + parentMat.a;
-                                let parentMaxY = parentMinY + parentMat.d;
-                                let cmaxx = tx + cm.a;
-                                let cmaxy = ty + cm.d;
-                                if (cmaxx <= parentMinX || cmaxy <= parentMinY || tx >= parentMaxX || ty >= parentMaxY) {
+                            let parentMat = clipInfo.clipMatrix;
+                            let pmRot = parentMat.b !== 0 || parentMat.c !== 0;
+                            let cmRot = cm.b !== 0 || cm.c !== 0;
+                            if (!pmRot && !cmRot) {
+                                if (cm.a > 0 && cm.d > 0) {
+                                    let parentMinX = parentMat.tx;
+                                    let parentMinY = parentMat.ty;
+                                    let parentMaxX = parentMinX + parentMat.a;
+                                    let parentMaxY = parentMinY + parentMat.d;
+                                    let cmaxx = tx + cm.a;
+                                    let cmaxy = ty + cm.d;
+                                    if (cmaxx <= parentMinX || cmaxy <= parentMinY || tx >= parentMaxX || ty >= parentMaxY) {
+                                        cm.a = -0.1;
+                                        cm.d = -0.1;
+                                    }
+                                    else {
+                                        if (tx < parentMinX) {
+                                            cm.a -= (parentMinX - tx);
+                                            tx = parentMinX;
+                                        }
+                                        if (cmaxx > parentMaxX) {
+                                            cm.a -= (cmaxx - parentMaxX);
+                                        }
+                                        if (ty < parentMinY) {
+                                            cm.d -= (parentMinY - ty);
+                                            ty = parentMinY;
+                                        }
+                                        if (cmaxy > parentMaxY) {
+                                            cm.d -= (cmaxy - parentMaxY);
+                                        }
+                                        if (cm.a <= 0)
+                                            cm.a = -0.1;
+                                        if (cm.d <= 0)
+                                            cm.d = -0.1;
+                                        if (cm.tx < parentMinX) {
+                                            cm.tx = parentMinX;
+                                        }
+                                        if (cm.ty < parentMinY) {
+                                            cm.ty = parentMinY;
+                                        }
+                                    }
+                                }
+                            }
+                            else {
+                                let det = parentMat.a * parentMat.d - parentMat.b * parentMat.c;
+                                if (det === 0) {
                                     cm.a = -0.1;
+                                    cm.b = 0;
+                                    cm.c = 0;
                                     cm.d = -0.1;
                                 }
                                 else {
-                                    if (tx < parentMinX) {
-                                        cm.a -= (parentMinX - tx);
-                                        tx = parentMinX;
-                                    }
-                                    if (cmaxx > parentMaxX) {
-                                        cm.a -= (cmaxx - parentMaxX);
-                                    }
-                                    if (ty < parentMinY) {
-                                        cm.d -= (parentMinY - ty);
-                                        ty = parentMinY;
-                                    }
-                                    if (cmaxy > parentMaxY) {
-                                        cm.d -= (cmaxy - parentMaxY);
-                                    }
-                                    if (cm.a <= 0)
+                                    let invDet = 1 / det;
+                                    let dx0 = cm.tx - parentMat.tx, dy0 = cm.ty - parentMat.ty;
+                                    let u0 = (parentMat.d * dx0 - parentMat.c * dy0) * invDet;
+                                    let v0 = (-parentMat.b * dx0 + parentMat.a * dy0) * invDet;
+                                    let du1 = (parentMat.d * cm.a - parentMat.c * cm.b) * invDet;
+                                    let dv1 = (-parentMat.b * cm.a + parentMat.a * cm.b) * invDet;
+                                    let du2 = (parentMat.d * cm.c - parentMat.c * cm.d) * invDet;
+                                    let dv2 = (-parentMat.b * cm.c + parentMat.a * cm.d) * invDet;
+                                    let du1N = du1 < 0 ? du1 : 0, du1P = du1 > 0 ? du1 : 0;
+                                    let du2N = du2 < 0 ? du2 : 0, du2P = du2 > 0 ? du2 : 0;
+                                    let dv1N = dv1 < 0 ? dv1 : 0, dv1P = dv1 > 0 ? dv1 : 0;
+                                    let dv2N = dv2 < 0 ? dv2 : 0, dv2P = dv2 > 0 ? dv2 : 0;
+                                    let cMinU = u0 + du1N + du2N, cMaxU = u0 + du1P + du2P;
+                                    let cMinV = v0 + dv1N + dv2N, cMaxV = v0 + dv1P + dv2P;
+                                    let iu0 = cMinU > 0 ? cMinU : 0;
+                                    let iv0 = cMinV > 0 ? cMinV : 0;
+                                    let iu1 = cMaxU < 1 ? cMaxU : 1;
+                                    let iv1 = cMaxV < 1 ? cMaxV : 1;
+                                    if (iu0 >= iu1 || iv0 >= iv1) {
                                         cm.a = -0.1;
-                                    if (cm.d <= 0)
+                                        cm.b = 0;
+                                        cm.c = 0;
                                         cm.d = -0.1;
-                                    if (cm.tx < parentMinX) {
-                                        cm.tx = parentMinX;
                                     }
-                                    if (cm.ty < parentMinY) {
-                                        cm.ty = parentMinY;
+                                    else {
+                                        let du = iu1 - iu0, dv = iv1 - iv0;
+                                        cm.tx = parentMat.tx + iu0 * parentMat.a + iv0 * parentMat.c;
+                                        cm.ty = parentMat.ty + iu0 * parentMat.b + iv0 * parentMat.d;
+                                        cm.a = du * parentMat.a;
+                                        cm.b = du * parentMat.b;
+                                        cm.c = dv * parentMat.c;
+                                        cm.d = dv * parentMat.d;
+                                        tx = cm.tx;
+                                        ty = cm.ty;
                                     }
                                 }
                             }
@@ -2031,7 +2364,7 @@
             this.parent = null;
             this.children.length = 0;
             this.children = null;
-            this.pass = null;
+            this._pass = null;
         }
     }
 
@@ -7509,6 +7842,25 @@ ${Object.entries(struct)
         }
         _getGPUdevice(deviceDescriptor) {
             this._supportCapatable = new WebGPUCapable(deviceDescriptor);
+            deviceDescriptor = deviceDescriptor || {};
+            if (this._adapter && !deviceDescriptor.requiredLimits) {
+                const al = this._adapter.limits;
+                deviceDescriptor.requiredLimits = {
+                    maxTextureDimension1D: al.maxTextureDimension1D,
+                    maxTextureDimension2D: al.maxTextureDimension2D,
+                    maxTextureDimension3D: al.maxTextureDimension3D,
+                    maxTextureArrayLayers: al.maxTextureArrayLayers,
+                    maxBufferSize: al.maxBufferSize,
+                    maxStorageBufferBindingSize: al.maxStorageBufferBindingSize,
+                    maxUniformBufferBindingSize: al.maxUniformBufferBindingSize,
+                    maxComputeWorkgroupStorageSize: al.maxComputeWorkgroupStorageSize,
+                    maxComputeInvocationsPerWorkgroup: al.maxComputeInvocationsPerWorkgroup,
+                    maxComputeWorkgroupSizeX: al.maxComputeWorkgroupSizeX,
+                    maxComputeWorkgroupSizeY: al.maxComputeWorkgroupSizeY,
+                    maxComputeWorkgroupSizeZ: al.maxComputeWorkgroupSizeZ,
+                    maxComputeWorkgroupsPerDimension: al.maxComputeWorkgroupsPerDimension,
+                };
+            }
             return this._adapter.requestDevice(deviceDescriptor);
         }
         _unCapturedErrorCall(event) {
@@ -10963,7 +11315,6 @@ ${computeCode}
             const gpuConfig = new WebGPUConfig();
             gpuConfig.alphaMode = "opaque";
             gpuConfig.colorSpace = "srgb";
-            Laya.Config.useTextureArray = true;
             Laya.TextRenderConfig.premultiplyAlpha = true;
             switch (Laya.Config.powerPreference) {
                 case "default":
@@ -14466,6 +14817,8 @@ ${computeCode}
     exports.IRenderPipelineInfo = IRenderPipelineInfo;
     exports.OneDrawCacheInfo = OneDrawCacheInfo;
     exports.OneDrawPassCacheInfo = OneDrawPassCacheInfo;
+    exports.SequenceFrame2DInstanceBatch = SequenceFrame2DInstanceBatch;
+    exports.SequenceFrame2DInstanceBatchTool = SequenceFrame2DInstanceBatchTool;
     exports.Web2DBaseRenderDataHandle = Web2DBaseRenderDataHandle;
     exports.Web2DGraphic2DIndexCloneDataView = Web2DGraphic2DIndexCloneDataView;
     exports.Web2DGraphic2DIndexDataView = Web2DGraphic2DIndexDataView;

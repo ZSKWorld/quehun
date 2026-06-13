@@ -818,8 +818,9 @@
     Laya.PAL.register("browser", MgBrowserAdapter);
 
     MgBrowserAdapter.beforeInit = function () {
-        Laya.Browser.onAlipayMiniGame = true;
-        Laya.PAL.g = window.my;
+        Laya.Browser.onBLMiniGame = true;
+        Laya.Browser.isIOSHighPerformanceModePlus = GameGlobal.isIOSHighPerformanceModePlus;
+        Laya.PAL.g = window.bl;
     };
 
     function ImageDataPolyfill() {

@@ -1,0 +1,4196 @@
+(function (exports, Laya) {
+    'use strict';
+
+    class RTScene3DRenderManager {
+        get list() {
+            return this._list;
+        }
+        set list(value) {
+            this._list = value;
+            if (value) {
+                let elemnt = this._list.elements;
+                for (let i = 0; i < this._list.length; i++) {
+                    this.removeRenderObject(elemnt[i]);
+                }
+                elemnt = value.elements;
+                for (let i = 0; i < value.length; i++) {
+                    this.addRenderObject(elemnt[i]);
+                }
+            }
+        }
+        _addBaseRenderNode(object) {
+            this._nativeObj.addBaseRenderNode(object._nativeObj);
+        }
+        _removeBaseRenderNode(object) {
+            this._nativeObj.removeBaseRenderNode(object._nativeObj);
+        }
+        _clearBaseRenderNode() {
+            this._nativeObj.clearBaseRenderNode();
+        }
+        addRenderObject(object) {
+            let agent = this.batchAgentList.get(object._baseRenderNode.renderNodeType);
+            if (agent) {
+                agent.addRenderNode(object);
+                object._batchRender = agent;
+            }
+            else {
+                this._addBaseRenderNode(object._baseRenderNode);
+            }
+        }
+        removeRenderObject(object) {
+            let agent = this.batchAgentList.get(object._baseRenderNode.renderNodeType);
+            if (agent) {
+                agent.removeRenderNode(object);
+                object._batchRender = null;
+            }
+            else {
+                this._removeBaseRenderNode(object._baseRenderNode);
+            }
+        }
+        removeMotionObject(object) {
+        }
+        addMotionObject(object) {
+        }
+        updateMotionObjects() {
+        }
+        destroy() {
+            var _a;
+            (_a = this._list) === null || _a === void 0 ? void 0 : _a.destroy();
+            this._clearBaseRenderNode();
+            this._list = null;
+        }
+        constructor() {
+            this._list = new Laya.SingletonList();
+            this.batchAgentList = new Map();
+            this._nativeObj = new window.conchRTScene3DRenderManager();
+        }
+        registerBatchModuleAgent(renderNodeType, agent) {
+            if (!this.batchAgentList.has(renderNodeType)) {
+                this.batchAgentList.set(renderNodeType, agent);
+                this._nativeObj.registerBatchModuleAgent(renderNodeType, agent._nativeObj);
+                for (let i = 0; i < this._list.length; i++) {
+                    if (this._list.elements[i].renderNode.renderNodeType == renderNodeType) {
+                        agent.addRenderNode(this._list.elements[i]);
+                        this._list.elements[i]._batchRender = agent;
+                    }
+                }
+            }
+        }
+        updateProperty(object, property) {
+            let agent = this.batchAgentList.get(object._baseRenderNode.renderNodeType);
+            agent && agent.updateProperty(object, property);
+        }
+    }
+
+    class LayaXBlitRenderFeature {
+        _ensureNative() {
+            if (!this._nativeObj) {
+                this._nativeObj = new window.conchLayaXBlitFeature();
+            }
+            return this._nativeObj;
+        }
+        dispatch(element, destRT, globalSD, sceneSD, cameraSD, viewport, scissor, offsetScale) {
+            let bf = this._ensureNative();
+            bf.setElement(element ? element._nativeObj : null);
+            bf.setDestRT(destRT ? destRT._nativeObj : null);
+            bf.setShaderData(globalSD ? globalSD._nativeObj : null, sceneSD ? sceneSD._nativeObj : null, cameraSD ? cameraSD._nativeObj : null);
+            bf.setViewport(viewport.x, viewport.y, viewport.width, viewport.height);
+            bf.setScissor(scissor.x, scissor.y, scissor.z, scissor.w);
+            bf.setOffsetScale(offsetScale.x, offsetScale.y, offsetScale.z, offsetScale.w);
+            bf.execute();
+        }
+        destroy() {
+            this._nativeObj = null;
+        }
+    }
+
+    class LayaXRenderContext3D {
+        get globalShaderData() { return this._globalShaderData; }
+        set globalShaderData(value) {
+            this._globalShaderData = value;
+            if (this._nativeObj) {
+                this._nativeObj.setGlobalShaderData(value ? value._nativeObj : null);
+            }
+        }
+        get sceneData() { return this._sceneData; }
+        set sceneData(value) {
+            this._sceneData = value;
+            if (this._nativeObj) {
+                this._nativeObj.setSceneShaderData(value ? value._nativeObj : null);
+            }
+        }
+        get cameraData() { return this._cameraData; }
+        set cameraData(value) {
+            this._cameraData = value;
+            if (this._nativeObj) {
+                this._nativeObj.setCameraShaderData(value ? value._nativeObj : null);
+            }
+        }
+        get sceneModuleData() { return this._sceneModuleData; }
+        set sceneModuleData(value) {
+            this._sceneModuleData = value;
+            if (this._nativeObj) {
+                this._nativeObj.setSceneModuleData(value ? value._nativeObj : null);
+            }
+        }
+        get cameraModuleData() { return this._cameraModuleData; }
+        set cameraModuleData(value) {
+            this._cameraModuleData = value;
+            if (this._nativeObj) {
+                this._nativeObj.setCameraModuleData(value ? value._nativeObj : null);
+            }
+        }
+        get sceneUpdateMask() { return this._sceneUpdateMask; }
+        set sceneUpdateMask(value) { this._sceneUpdateMask = value; }
+        get cameraUpdateMask() { return this._cameraUpdateMask; }
+        set cameraUpdateMask(value) { this._cameraUpdateMask = value; }
+        get pipelineMode() { return this._pipelineMode; }
+        set pipelineMode(value) { this._pipelineMode = value; }
+        get invertY() { return this._invertY; }
+        set invertY(value) {
+            this._invertY = value;
+            if (this._nativeObj) {
+                this._nativeObj.setInvertY(value);
+            }
+        }
+        constructor() {
+            this._sceneUpdateMask = 0;
+            this._cameraUpdateMask = 0;
+            this._pipelineMode = "Forward";
+            this._invertY = false;
+            this.preDrawUniformMaps = new Set();
+            this._destRT = null;
+            this._viewport = new Laya.Viewport(0, 0, 0, 0);
+            this._scissor = new Laya.Vector4();
+            this._offsetScale = new Laya.Vector4(0, 0, 1, 1);
+            this.cameraUpdateMask = 0;
+            this._nativeObj = new window.conchLayaXRenderContext();
+        }
+        setRenderTarget(value, clearFlag) {
+            this._destRT = value;
+        }
+        setViewPort(value) {
+            value.cloneTo(this._viewport);
+        }
+        setScissor(value) {
+            value.cloneTo(this._scissor);
+        }
+        setClearData(clearFlag, color, depth, stencil) {
+            return 0;
+        }
+        clearRenderTarget() {
+        }
+        drawRenderElementList(list) {
+            if (!list)
+                return 0;
+            for (let i = 0, n = list.length; i < n; i++) {
+                this.drawRenderElementOne(list.elements[i]);
+            }
+            return list.length;
+        }
+        drawRenderElementOne(node) {
+            if (!node)
+                return 0;
+            if (!this._blitFeature) {
+                this._blitFeature = new LayaXBlitRenderFeature();
+            }
+            this._blitFeature.dispatch(node, this._destRT, this._globalShaderData, this._sceneData, this._cameraData, this._viewport, this._scissor, this._offsetScale);
+            return 1;
+        }
+        runOneCMD(cmd) {
+            if (cmd) {
+                cmd.apply(this);
+            }
+        }
+        runCMDList(cmds) {
+            if (!cmds)
+                return;
+            for (let i = 0, n = cmds.length; i < n; i++) {
+                cmds[i].apply(this);
+            }
+        }
+    }
+
+    class LayaXRenderElement3D {
+        constructor() {
+            this._isRender = true;
+            this._materialRenderQueue = 0;
+            this._materialId = 0;
+            this._canDynamicBatch = false;
+            this._nativeObj = new window.conchLayaXRenderElement();
+        }
+        get geometry() { return this._geometry; }
+        set geometry(data) {
+            this._geometry = data;
+            if (this._nativeObj) {
+                this._nativeObj.setGeometry(data ? data._nativeObj : null);
+            }
+        }
+        get materialShaderData() { return this._materialShaderData; }
+        set materialShaderData(data) {
+            if (this._materialShaderData instanceof Laya.LayaXShaderData) {
+                this._materialShaderData._removeRenderStateListener(this);
+            }
+            this._materialShaderData = data;
+            if (this._nativeObj) {
+                this._nativeObj.setMaterialShaderData(data ? data._nativeObj : null);
+            }
+            if (data instanceof Laya.LayaXShaderData) {
+                data._addRenderStateListener(this);
+                this._onRenderStateChanged();
+            }
+        }
+        get renderShaderData() { return this._renderShaderData; }
+        set renderShaderData(data) {
+            this._renderShaderData = data;
+            if (this._nativeObj) {
+                this._nativeObj.setRenderShaderData(data ? data._nativeObj : null);
+            }
+        }
+        get transform() { return this._transform; }
+        set transform(data) {
+            this._transform = data;
+            if (this._nativeObj) {
+                this._nativeObj.setTransform(data ? data._nativeObj : null);
+            }
+        }
+        get isRender() { return this._isRender; }
+        set isRender(data) {
+            this._isRender = data;
+            if (this._nativeObj) {
+                this._nativeObj.setIsRender(data);
+            }
+        }
+        get materialRenderQueue() { return this._materialRenderQueue; }
+        set materialRenderQueue(value) {
+            this._materialRenderQueue = value;
+            if (this._nativeObj) {
+                this._nativeObj.setRenderQueue(value);
+            }
+        }
+        get materialId() { return this._materialId; }
+        set materialId(value) { this._materialId = value; }
+        get owner() { return this._owner; }
+        set owner(value) {
+            this._owner = value;
+            if (this._nativeObj) {
+                this._nativeObj.setOwner(value ? value._nativeObj : null);
+            }
+        }
+        get subShader() { return this._subShader; }
+        set subShader(value) {
+            this._subShader = value;
+            if (this._nativeObj) {
+                this._nativeObj.setSubShader(value ? value.moduleData._nativeObj : null);
+            }
+        }
+        get canDynamicBatch() { return this._canDynamicBatch; }
+        set canDynamicBatch(value) { this._canDynamicBatch = value; }
+        _onRenderStateChanged() {
+            var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x;
+            let sd = this._materialShaderData;
+            if (!sd || !this._nativeObj)
+                return;
+            let D = Laya.RenderState.Default;
+            let blend = (_a = sd.getInt(Laya.Shader3D.BLEND)) !== null && _a !== void 0 ? _a : D.blend;
+            let srcBlend = (_b = sd.getInt(Laya.Shader3D.BLEND_SRC)) !== null && _b !== void 0 ? _b : D.srcBlend;
+            let dstBlend = (_c = sd.getInt(Laya.Shader3D.BLEND_DST)) !== null && _c !== void 0 ? _c : D.dstBlend;
+            let blendEq = (_d = sd.getInt(Laya.Shader3D.BLEND_EQUATION)) !== null && _d !== void 0 ? _d : D.blendEquation;
+            let srcBlendRGB = (_e = sd.getInt(Laya.Shader3D.BLEND_SRC_RGB)) !== null && _e !== void 0 ? _e : D.srcBlendRGB;
+            let dstBlendRGB = (_f = sd.getInt(Laya.Shader3D.BLEND_DST_RGB)) !== null && _f !== void 0 ? _f : D.dstBlendRGB;
+            let srcBlendAlpha = (_g = sd.getInt(Laya.Shader3D.BLEND_SRC_ALPHA)) !== null && _g !== void 0 ? _g : D.srcBlendAlpha;
+            let dstBlendAlpha = (_h = sd.getInt(Laya.Shader3D.BLEND_DST_ALPHA)) !== null && _h !== void 0 ? _h : D.dstBlendAlpha;
+            let blendEqRGB = (_j = sd.getInt(Laya.Shader3D.BLEND_EQUATION_RGB)) !== null && _j !== void 0 ? _j : D.blendEquationRGB;
+            let blendEqAlpha = (_k = sd.getInt(Laya.Shader3D.BLEND_EQUATION_ALPHA)) !== null && _k !== void 0 ? _k : D.blendEquationAlpha;
+            let depthTest = (_l = sd.getInt(Laya.Shader3D.DEPTH_TEST)) !== null && _l !== void 0 ? _l : D.depthTest;
+            let depthWrite = (_m = sd.getBool(Laya.Shader3D.DEPTH_WRITE)) !== null && _m !== void 0 ? _m : D.depthWrite;
+            let stencilTest = (_o = sd.getInt(Laya.Shader3D.STENCIL_TEST)) !== null && _o !== void 0 ? _o : D.stencilTest;
+            let stencilWrite = (_p = sd.getBool(Laya.Shader3D.STENCIL_WRITE)) !== null && _p !== void 0 ? _p : D.stencilWrite;
+            let stencilRef = (_q = sd.getInt(Laya.Shader3D.STENCIL_Ref)) !== null && _q !== void 0 ? _q : D.stencilRef;
+            let stencilReadMask = (_r = sd.getInt(Laya.Shader3D.STENCIL_READ_MASK)) !== null && _r !== void 0 ? _r : D.stencilReadMask;
+            let stencilWriteMask = (_s = sd.getInt(Laya.Shader3D.STENCIL_WRITE_MASK)) !== null && _s !== void 0 ? _s : D.stencilWriteMask;
+            let stencilOp = sd.getVector3(Laya.Shader3D.STENCIL_Op);
+            let stencilFail = stencilOp ? stencilOp.x : D.stencilOp.x;
+            let stencilZFail = stencilOp ? stencilOp.y : D.stencilOp.y;
+            let stencilPass = stencilOp ? stencilOp.z : D.stencilOp.z;
+            let depthBias = (_t = sd.getBool(Laya.Shader3D.DEPTH_BIAS)) !== null && _t !== void 0 ? _t : D.depthBias;
+            let depthBiasConstant = (_u = sd.getNumber(Laya.Shader3D.DEPTH_BIAS_CONSTANT)) !== null && _u !== void 0 ? _u : D.depthBiasConstant;
+            let depthBiasSlopeScale = (_v = sd.getNumber(Laya.Shader3D.DEPTH_BIAS_SLOPESCALE)) !== null && _v !== void 0 ? _v : D.depthBiasSlopeScale;
+            let depthBiasClamp = (_w = sd.getNumber(Laya.Shader3D.DEPTH_BIAS_CLAMP)) !== null && _w !== void 0 ? _w : D.depthBiasClamp;
+            let cull = (_x = sd.getInt(Laya.Shader3D.CULL)) !== null && _x !== void 0 ? _x : D.cull;
+            this._nativeObj.registerAndSetRenderState(blend, srcBlend, dstBlend, blendEq, srcBlendRGB, dstBlendRGB, srcBlendAlpha, dstBlendAlpha, blendEqRGB, blendEqAlpha, depthTest, depthWrite ? 1 : 0, stencilTest, stencilWrite ? 1 : 0, stencilRef, stencilReadMask, stencilWriteMask, stencilFail, stencilZFail, stencilPass, depthBias ? 1 : 0, depthBiasConstant, depthBiasSlopeScale, depthBiasClamp, cull, LayaXRenderElement3D._defaultFrontFace);
+        }
+        destroy() {
+            if (this._materialShaderData instanceof Laya.LayaXShaderData) {
+                this._materialShaderData._removeRenderStateListener(this);
+            }
+            if (this._nativeObj) {
+                this._nativeObj.destroy();
+                this._nativeObj = null;
+            }
+            this._geometry = null;
+            this._materialShaderData = null;
+            this._renderShaderData = null;
+            this._transform = null;
+            this._owner = null;
+            this._subShader = null;
+        }
+    }
+    LayaXRenderElement3D._defaultFrontFace = 1;
+
+    class LayaXReflectionProbe {
+        get boxProjection() { return this._nativeObj._boxProjection; }
+        set boxProjection(value) {
+            if (this._nativeObj._boxProjection === value)
+                return;
+            this._nativeObj._boxProjection = value;
+            LayaXReflectionProbe._dirtySet.add(this);
+        }
+        get bound() { return this._bound; }
+        set bound(value) {
+            this._bound = value;
+            this._nativeObj.setBounds(value ? value._imp._nativeObj : null);
+        }
+        get ambientMode() { return this._nativeObj._ambientMode; }
+        set ambientMode(value) {
+            if (this._nativeObj._ambientMode === value)
+                return;
+            this._nativeObj._ambientMode = value;
+            LayaXReflectionProbe._dirtySet.add(this);
+        }
+        get ambientIntensity() { return this._nativeObj._ambientIntensity; }
+        set ambientIntensity(value) {
+            if (this._nativeObj._ambientIntensity === value)
+                return;
+            this._nativeObj._ambientIntensity = value;
+            LayaXReflectionProbe._dirtySet.add(this);
+        }
+        get reflectionIntensity() { return this._nativeObj._reflectionIntensity; }
+        set reflectionIntensity(value) {
+            if (this._nativeObj._reflectionIntensity === value)
+                return;
+            this._nativeObj._reflectionIntensity = value;
+            LayaXReflectionProbe._dirtySet.add(this);
+        }
+        get reflectionTexture() { return this._reflectionTexture; }
+        set reflectionTexture(value) {
+            if (this._reflectionTexture === value)
+                return;
+            this._reflectionTexture = value;
+            this._nativeObj.setReflectionTexture(value ? value._nativeObj : null);
+            LayaXReflectionProbe._dirtySet.add(this);
+        }
+        get iblTex() { return this._iblTex; }
+        set iblTex(value) {
+            if (this._iblTex === value)
+                return;
+            this._iblTex = value;
+            this._nativeObj.setIblTex(value ? value._nativeObj : null);
+            LayaXReflectionProbe._dirtySet.add(this);
+        }
+        get updateMark() { return this._nativeObj._updateMark; }
+        set updateMark(value) {
+            if (this._nativeObj._updateMark === value)
+                return;
+            this._nativeObj._updateMark = value;
+            LayaXReflectionProbe._dirtySet.add(this);
+        }
+        get iblTexRGBD() { return this._nativeObj._iblTexRGBD; }
+        set iblTexRGBD(value) {
+            if (this._nativeObj._iblTexRGBD === value)
+                return;
+            this._nativeObj._iblTexRGBD = value;
+            LayaXReflectionProbe._dirtySet.add(this);
+        }
+        get shaderData() { return this._shaderData; }
+        set shaderData(value) {
+            this._shaderData = value;
+            this._nativeObj.shaderData = value ? this._shaderData._nativeObj : null;
+        }
+        setProbePosition(value) {
+            if (value) {
+                value.cloneTo(this._probePosition);
+                this._nativeObj.setProbePosition(value);
+                LayaXReflectionProbe._dirtySet.add(this);
+            }
+        }
+        setAmbientColor(value) {
+            if (value) {
+                value.cloneTo(this._ambientColor);
+                this._nativeObj.setAmbientColor(value);
+                LayaXReflectionProbe._dirtySet.add(this);
+            }
+        }
+        setAmbientSH(value) {
+            this._ambientSH = value;
+            this._nativeObj.setAmbientSH(value);
+            LayaXReflectionProbe._dirtySet.add(this);
+        }
+        needUpdate() {
+            return this.updateMark != this._updateMaskFlag;
+        }
+        applyRenderData() {
+            this._updateMaskFlag = this.updateMark;
+            let data = this._shaderData;
+            if (!this.boxProjection) {
+                data.removeDefine(Laya.Sprite3DRenderDeclaration.SHADERDEFINE_SPECCUBE_BOX_PROJECTION);
+            }
+            else {
+                data.addDefine(Laya.Sprite3DRenderDeclaration.SHADERDEFINE_SPECCUBE_BOX_PROJECTION);
+                data.setVector3(Laya.ReflectionProbe.REFLECTIONCUBE_PROBEPOSITION, this._probePosition);
+                data.setVector3(Laya.ReflectionProbe.REFLECTIONCUBE_PROBEBOXMAX, this._bound.getMax());
+                data.setVector3(Laya.ReflectionProbe.REFLECTIONCUBE_PROBEBOXMIN, this._bound.getMin());
+            }
+            if (this.ambientMode == Laya.AmbientMode.SolidColor) {
+                data.removeDefine(Laya.Sprite3DRenderDeclaration.SHADERDEFINE_GI_LEGACYIBL);
+                data.removeDefine(Laya.ReflectionProbe.SHADERDEFINE_GI_IBL);
+                data.setColor(Laya.ReflectionProbe.AMBIENTCOLOR, this._ambientColor);
+            }
+            else if (this._iblTex && this._ambientSH) {
+                data.addDefine(Laya.ReflectionProbe.SHADERDEFINE_GI_IBL);
+                data.removeDefine(Laya.Sprite3DRenderDeclaration.SHADERDEFINE_GI_LEGACYIBL);
+                if (this._iblTex) {
+                    data._setInternalTexture(Laya.ReflectionProbe.IBLTEX, this._iblTex._nativeObj);
+                    data.setNumber(Laya.ReflectionProbe.IBLROUGHNESSLEVEL, this._iblTex.maxMipmapLevel);
+                }
+                this.iblTexRGBD ? data.addDefine(Laya.Sprite3DRenderDeclaration.SHADERDEFINE_IBL_RGBD) : data.removeDefine(Laya.Sprite3DRenderDeclaration.SHADERDEFINE_IBL_RGBD);
+                this._ambientSH && data.setBuffer(Laya.ReflectionProbe.AMBIENTSH, this._ambientSH);
+            }
+            else {
+                data.removeDefine(Laya.Sprite3DRenderDeclaration.SHADERDEFINE_GI_LEGACYIBL);
+                data.removeDefine(Laya.ReflectionProbe.SHADERDEFINE_GI_IBL);
+            }
+            data.setNumber(Laya.ReflectionProbe.AMBIENTINTENSITY, this.ambientIntensity);
+            data.setNumber(Laya.ReflectionProbe.REFLECTIONINTENSITY, this.reflectionIntensity);
+        }
+        constructor() {
+            this._id = ++LayaXReflectionProbe._idCounter;
+            this._updateMaskFlag = -1;
+            this._probePosition = new Laya.Vector3();
+            this._ambientColor = new Laya.Color();
+            this._nativeObj = new window.conchLayaXReflectionProbe();
+            this.shaderData = Laya.LayaGL.renderDeviceFactory.createShaderData();
+        }
+        destroy() {
+            LayaXReflectionProbe._dirtySet.delete(this);
+            this._nativeObj.destroy();
+            this.shaderData.destroy();
+            this.shaderData = null;
+        }
+    }
+    LayaXReflectionProbe._idCounter = 0;
+    LayaXReflectionProbe._dirtySet = new Set();
+
+    class LayaXVolumetricGI {
+        get irradiance() { return this._irradiance; }
+        set irradiance(value) {
+            if (this._irradiance === value)
+                return;
+            this._irradiance = value;
+            this._nativeObj.setIrradiance(value ? value._nativeObj : null);
+            LayaXVolumetricGI._dirtySet.add(this);
+        }
+        get distance() { return this._distance; }
+        set distance(value) {
+            if (this._distance === value)
+                return;
+            this._distance = value;
+            this._nativeObj.setDistance(value ? value._nativeObj : null);
+            LayaXVolumetricGI._dirtySet.add(this);
+        }
+        get bound() { return this._bound; }
+        set bound(value) {
+            this._bound = value;
+            this._nativeObj.setBounds(value ? value._imp._nativeObj : null);
+        }
+        get intensity() { return this._nativeObj._intensity; }
+        set intensity(value) {
+            if (this._nativeObj._intensity === value)
+                return;
+            this._nativeObj._intensity = value;
+            LayaXVolumetricGI._dirtySet.add(this);
+        }
+        get updateMark() { return this._nativeObj._updateMark; }
+        set updateMark(value) {
+            if (this._nativeObj._updateMark === value)
+                return;
+            this._nativeObj._updateMark = value;
+            LayaXVolumetricGI._dirtySet.add(this);
+        }
+        get shaderData() { return this._shaderData; }
+        set shaderData(value) {
+            this._shaderData = value;
+            this._nativeObj.shaderData = value ? this._shaderData._nativeObj : null;
+        }
+        constructor() {
+            this._id = ++LayaXVolumetricGI._idCounter;
+            this._probeCounts = new Laya.Vector3();
+            this._probeStep = new Laya.Vector3();
+            this._params = new Laya.Vector4();
+            this._nativeObj = new window.conchLayaXVolumetricGI();
+            this.shaderData = Laya.LayaGL.renderDeviceFactory.createShaderData();
+            this._defaultBounds = new Laya.Bounds();
+            this.bound = this._defaultBounds;
+        }
+        setParams(value) {
+            value.cloneTo(this._params);
+            this._nativeObj.setParams(value);
+        }
+        setProbeCounts(value) {
+            value.cloneTo(this._probeCounts);
+            this._nativeObj.setProbeCounts(value);
+        }
+        setProbeStep(value) {
+            value.cloneTo(this._probeStep);
+            this._nativeObj.setProbeStep(value);
+        }
+        applyRenderData() {
+            let data = this._shaderData;
+            data.addDefine(Laya.VolumetricGI.SHADERDEFINE_VOLUMETRICGI);
+            data.setVector3(Laya.VolumetricGI.VOLUMETRICGI_PROBECOUNTS, this._probeCounts);
+            data.setVector3(Laya.VolumetricGI.VOLUMETRICGI_PROBESTEPS, this._probeStep);
+            data.setVector3(Laya.VolumetricGI.VOLUMETRICGI_PROBESTARTPOS, this._bound.getMin());
+            data.setVector(Laya.VolumetricGI.VOLUMETRICGI_PROBEPARAMS, this._params);
+            data._setInternalTexture(Laya.VolumetricGI.VOLUMETRICGI_IRRADIANCE, this._irradiance ? this._irradiance._nativeObj : null);
+            data._setInternalTexture(Laya.VolumetricGI.VOLUMETRICGI_DISTANCE, this._distance ? this._distance._nativeObj : null);
+            data.setNumber(Laya.ReflectionProbe.AMBIENTINTENSITY, this.intensity);
+        }
+        destroy() {
+            LayaXVolumetricGI._dirtySet.delete(this);
+            this._nativeObj.destroy();
+            this.distance = null;
+            this.irradiance = null;
+            this._shaderData.destroy();
+            this._shaderData = null;
+        }
+    }
+    LayaXVolumetricGI._idCounter = 0;
+    LayaXVolumetricGI._dirtySet = new Set();
+
+    class LayaXDirCascadeShadowRP {
+        constructor() {
+            this._nativeObj = new window.conchLayaXDirCascadeShadowRP();
+        }
+        setShadowCasterCommanBuffer(cmd) {
+            this._nativeObj.clearShadowCasterCommandBuffer();
+            cmd.forEach(element => {
+                this._setCmd(element);
+            });
+        }
+        _setCmd(cmd) {
+            cmd._apply(false);
+            let cmds = cmd._renderCMDs;
+            let nativeobCMDs = [];
+            cmds.forEach(element => {
+                nativeobCMDs.push(element._nativeObj);
+            });
+            this._nativeObj.addShadowCasterCommandBuffers(nativeobCMDs);
+        }
+        setRPData(dirLight, camera, context) {
+            this._destShadowRT = Laya.Scene3D._shadowCasterPass.getDirectLightShadowMap(dirLight);
+            this._nativeObj.setRPData(dirLight._nativeObj, camera._nativeObj, context._nativeObj, this._destShadowRT._renderTarget._nativeObj);
+            if (dirLight.transform) {
+                let lightWorld = Laya.Matrix4x4.TEMP;
+                Laya.Matrix4x4.createFromQuaternion(dirLight.transform.rotation, lightWorld);
+                let e = lightWorld.elements;
+                dirLight._nativeObj.setOrientation(e[4], e[5], e[6], e[0], e[1], e[2], -e[8], -e[9], -e[10]);
+            }
+        }
+        setCameraCullInfo(sceneManager) {
+            this._nativeObj.setCameraCullInfo(sceneManager._nativeObj);
+        }
+        destroy() {
+        }
+    }
+
+    class LayaXForwardAddClusterRP {
+        get pipelineMode() {
+            return this._nativeObj.pipelineMode;
+        }
+        set pipelineMode(value) {
+            this._nativeObj.pipelineMode = value;
+        }
+        get depthPipelineMode() {
+            return this._nativeObj.depthPipelineMode;
+        }
+        set depthPipelineMode(value) {
+            this._nativeObj.depthPipelineMode = value;
+        }
+        get depthNormalPipelineMode() {
+            return this._nativeObj.depthNormalPipelineMode;
+        }
+        set depthNormalPipelineMode(value) {
+            this._nativeObj.depthNormalPipelineMode = value;
+        }
+        get depthTextureMode() {
+            return this._nativeObj.depthTextureMode;
+        }
+        set depthTextureMode(value) {
+            this._nativeObj.depthTextureMode = value;
+        }
+        get depthTarget() {
+            return this._depthTarget;
+        }
+        set depthTarget(value) {
+            this._depthTarget = value;
+            this._nativeObj.setDepthTarget(value._nativeObj);
+        }
+        get destTarget() {
+            return this._destTarget;
+        }
+        set destTarget(value) {
+            this._destTarget = value;
+            this._nativeObj.setDestTarget(value._nativeObj);
+        }
+        get depthNormalTarget() {
+            return this._depthNormalTarget;
+        }
+        set depthNormalTarget(value) {
+            this._depthNormalTarget = value;
+            this._nativeObj.setDepthNormalTarget(value._nativeObj);
+        }
+        get enableCMD() {
+            return this._nativeObj.enableCMD;
+        }
+        set enableCMD(value) {
+            this._nativeObj.enableCMD = value;
+        }
+        get enableOpaque() {
+            return this._nativeObj.enableOpaque;
+        }
+        set enableOpaque(value) {
+            this._nativeObj.enableOpaque = value;
+        }
+        get enableTransparent() {
+            return this._nativeObj.enableTransparent;
+        }
+        set enableTransparent(value) {
+            this._nativeObj.enableTransparent = value;
+        }
+        get camera() {
+            return this._camera;
+        }
+        set camera(value) {
+            this._camera = value;
+            this._nativeObj.setCameraNodeData(value._nativeObj);
+        }
+        get clearColor() {
+            return this._clearColor;
+        }
+        set clearColor(value) {
+            this._clearColor = value;
+            this._nativeObj.setClearColor(value);
+        }
+        get clearFlag() {
+            return this._clearFlag;
+        }
+        set clearFlag(value) {
+            this._clearFlag = value;
+            this._nativeObj.setClearFlag(value);
+        }
+        setCameraCullInfo(value, sceneManager) {
+            let pos = value._transform.position;
+            this._nativeObj.setCameraCullInfo(value.cullingMask, value.staticMask, pos.x, pos.y, pos.z);
+        }
+        setViewPort(value) {
+            this._nativeObj.setViewPort(value);
+        }
+        setScissor(value) {
+            this._nativeObj.setScissor(value);
+        }
+        _getRenderCMDArray(cmds) {
+            let nativeobCMDs = [];
+            cmds.forEach(element => {
+                nativeobCMDs.push(element._nativeObj);
+            });
+            return nativeobCMDs;
+        }
+        setSkyRenderNode(value) {
+            this._nativeObj.setSkyRenderNode(value ? value._nativeObj : null);
+        }
+        setBeforeSkyboxCmds(value) {
+            if (value && value.length > 0) {
+                this._nativeObj.clearBeforeSkyboxCmds();
+                value.forEach(element => {
+                    element._apply(false);
+                    this._nativeObj.addBeforeSkyboxCmds(this._getRenderCMDArray(element._renderCMDs));
+                });
+            }
+            else {
+                this._nativeObj.clearBeforeSkyboxCmds();
+            }
+        }
+        setBeforeForwardCmds(value) {
+            if (value && value.length > 0) {
+                this._nativeObj.clearBeforeForwardCmds();
+                value.forEach(element => {
+                    element._apply(false);
+                    this._nativeObj.addBeforeForwardCmds(this._getRenderCMDArray(element._renderCMDs));
+                });
+            }
+            else {
+                this._nativeObj.clearBeforeForwardCmds();
+            }
+        }
+        setBeforeTransparentCmds(value) {
+            if (value && value.length > 0) {
+                this._nativeObj.clearBeforeTransparentCmds();
+                value.forEach(element => {
+                    element._apply(false);
+                    this._nativeObj.addBeforeTransparentCmds(this._getRenderCMDArray(element._renderCMDs));
+                });
+            }
+            else {
+                this._nativeObj.clearBeforeTransparentCmds();
+            }
+        }
+        constructor() {
+            this._nativeObj = new window.conchLayaXForwardAddClusterRP();
+        }
+        destroy() {
+            this._nativeObj = null;
+        }
+    }
+
+    class LayaXBaseSpotRP {
+        constructor() {
+            this._nativeObj = new window.conchLayaXBaseSpotRP();
+        }
+        setShadowCasterCommanBuffer(cmd) {
+        }
+        setCameraCullInfo(sceneManager) {
+            this._nativeObj.setCameraCullInfo(sceneManager._nativeObj);
+        }
+        setRPData(spotLight, context) {
+            this._destShadowRT = Laya.Scene3D._shadowCasterPass.getSpotLightShadowPassData(spotLight);
+            this._nativeObj.setRPData(spotLight._nativeObj, context._nativeObj, this._destShadowRT._renderTarget._nativeObj);
+        }
+        destroy() {
+        }
+    }
+
+    class LayaXForwardAddRP {
+        get shadowCastPass() {
+            return this._nativeObj.shadowCastPass;
+        }
+        set shadowCastPass(value) {
+            this._nativeObj.shadowCastPass = value;
+        }
+        get enableDirectLightShadow() {
+            return this._nativeObj.enableDirectLightShadow;
+        }
+        set enableDirectLightShadow(value) {
+            this._nativeObj.enableDirectLightShadow = value;
+        }
+        get enableSpotLightShadowPass() {
+            return this._nativeObj.enableSpotLightShadowPass;
+        }
+        set enableSpotLightShadowPass(value) {
+            this._nativeObj.enableSpotLightShadowPass = value;
+        }
+        get enablePostProcess() {
+            return this._nativeObj.enablePostProcess;
+        }
+        set enablePostProcess(value) {
+            this._nativeObj.enablePostProcess = value;
+        }
+        get postProcess() {
+            return this._postProcess;
+        }
+        set postProcess(value) {
+            this._postProcess = value;
+            value._apply(false);
+            this._nativeObj.setPostProcess(this._getRenderCMDArray(value._renderCMDs));
+        }
+        get finalize() {
+            return this._finalize;
+        }
+        set finalize(value) {
+            this._finalize = value;
+            value._apply(false);
+            this._nativeObj.setfinalize(this._getRenderCMDArray(value._renderCMDs));
+        }
+        get dirShadowRenderPass() {
+            return this._dirLightShadowPass;
+        }
+        set dirShadowRenderPass(value) {
+            this._dirLightShadowPass = value;
+            this._nativeObj.setDirectLightShadowPass(value._nativeObj);
+        }
+        get spotShadowRenderPass() {
+            return this._spotShadowRenderPass;
+        }
+        set spotShadowRenderPass(value) {
+            this._spotShadowRenderPass = value;
+            this._nativeObj.setSpotLightShadowPass(value._nativeObj);
+        }
+        get mainRenderpass() {
+            return this._mainRenderpass;
+        }
+        set mainRenderpass(value) {
+            this._mainRenderpass = value;
+            this._nativeObj.setMainPass(value._nativeObj);
+        }
+        constructor() {
+            this._finalize = new Laya.CommandBuffer();
+            this._nativeObj = new window.conchLayaXForwardAddRP();
+            this.shadowCastPass = false;
+            this.enableDirectLightShadow = false;
+            this.enableSpotLightShadowPass = false;
+            this.dirShadowRenderPass = new LayaXDirCascadeShadowRP();
+            this.spotShadowRenderPass = new LayaXBaseSpotRP();
+            this.mainRenderpass = new LayaXForwardAddClusterRP();
+        }
+        _getRenderCMDArray(cmds) {
+            let nativeobCMDs = [];
+            cmds.forEach(element => {
+                nativeobCMDs.push(element._nativeObj);
+            });
+            return nativeobCMDs;
+        }
+        setAfterEventCmd(value) {
+            if (value && value.length > 0) {
+                this._nativeObj.clearAfterAllRenderCmds();
+                value.forEach(element => {
+                    element._apply(false);
+                    this._nativeObj.addAfterAllRenderCmds(this._getRenderCMDArray(element._renderCMDs));
+                });
+            }
+            else {
+                this._nativeObj.clearAfterAllRenderCmds();
+            }
+        }
+        setBeforeImageEffect(value) {
+            if (value && value.length > 0) {
+                this._nativeObj.clearBeforeImageEffectCmds();
+                value.forEach(element => {
+                    element._apply(false);
+                    this._nativeObj.addBeforeImageEffectCmds(this._getRenderCMDArray(element._renderCMDs));
+                });
+            }
+            else {
+                this._nativeObj.clearBeforeImageEffectCmds();
+            }
+        }
+        destroy() {
+        }
+    }
+
+    const viewport$1 = new Laya.Viewport(0, 0, 0, 0);
+    const offsetScale$1 = new Laya.Vector4();
+    class LayaXRender3DProcess {
+        constructor() {
+            this._renderPass = new LayaXForwardAddRP();
+            this._nativeObj = new window.conchLayaXRT3DRenderProcess();
+            this._defaultDepthTex = Laya.RenderTexture.createFromPool(1, 1, Laya.RenderTargetFormat.DEPTH_32, Laya.RenderTargetFormat.None, false, 1);
+            this._defaultShadowMap = Laya.ShadowUtils.getTemporaryShadowTexture(1, 1, Laya.ShadowMapFormat.bit16);
+            this._nativeObj.setDefaultShadowMap(this._defaultShadowMap._renderTarget._nativeObj);
+            let shadowMap = Laya.LayaGL.renderDeviceFactory.createGlobalUniformMap("Shadow");
+            shadowMap.setDefaultTextureData(Laya.ShadowCasterPass.SHADOW_MAP, this._defaultShadowMap);
+            shadowMap.setDefaultTextureData(Laya.ShadowCasterPass.SHADOW_SPOTMAP, this._defaultShadowMap);
+        }
+        get render3DManager() {
+            return this._render3DManager;
+        }
+        set render3DManager(value) {
+            this._render3DManager = value;
+            this._nativeObj.renderManager = value._nativeObj;
+        }
+        destroy() {
+            this._renderPass = null;
+        }
+        initRenderpass(camera, context) {
+            camera._renderDataModule.syncProjection();
+            let renderpass = this._renderPass.mainRenderpass;
+            let renderRT = camera._getRenderTexture();
+            let clearConst = 0;
+            let clearFlag = camera.clearFlag;
+            if (clearFlag == Laya.CameraClearFlags.Sky && !camera.scene.skyRenderer._isAvailable()) {
+                clearFlag = Laya.CameraClearFlags.SolidColor;
+            }
+            let hasStencil = renderRT.depthStencilFormat == Laya.RenderTargetFormat.DEPTHSTENCIL_24_8;
+            let stencilFlag = hasStencil ? Laya.RenderClearFlag.Stencil : 0;
+            switch (clearFlag) {
+                case Laya.CameraClearFlags.DepthOnly:
+                case Laya.CameraClearFlags.Sky:
+                    clearConst = Laya.RenderClearFlag.Depth | stencilFlag;
+                    break;
+                case Laya.CameraClearFlags.Nothing:
+                    clearConst = 0;
+                    break;
+                case Laya.CameraClearFlags.ColorOnly:
+                    clearConst = Laya.RenderClearFlag.Color;
+                    break;
+                case Laya.CameraClearFlags.SolidColor:
+                default:
+                    clearConst = Laya.RenderClearFlag.Color | Laya.RenderClearFlag.Depth | stencilFlag;
+                    break;
+            }
+            let clearValue = camera._linearClearColor;
+            clearValue = renderRT.gammaCorrection != 1 ? camera.clearColor : camera._linearClearColor;
+            renderpass.camera = camera._renderDataModule;
+            renderpass.destTarget = renderRT._renderTarget;
+            renderpass.clearFlag = clearConst;
+            renderpass.clearColor = clearValue;
+            let needInternalRT = camera._needInternalRenderTexture();
+            renderpass.setCameraCullInfo(camera, this.render3DManager);
+            if (needInternalRT) {
+                viewport$1.set(0, 0, renderRT.width, renderRT.height);
+            }
+            else {
+                camera.viewport.cloneTo(viewport$1);
+            }
+            renderpass.setViewPort(viewport$1);
+            let scissor = Laya.Vector4.TEMP;
+            scissor.setValue(viewport$1.x, viewport$1.y, viewport$1.width, viewport$1.height);
+            renderpass.setScissor(scissor);
+            renderpass.enableOpaque = Laya.Stat.enableOpaque;
+            renderpass.enableTransparent = Laya.Stat.enableTransparent;
+            renderpass.enableCMD = Laya.Stat.enableCameraCMD;
+            renderpass.setBeforeForwardCmds(camera._cameraEventCommandBuffer[Laya.CameraEventFlags.BeforeForwardOpaque]);
+            renderpass.setBeforeSkyboxCmds(camera._cameraEventCommandBuffer[Laya.CameraEventFlags.BeforeSkyBox]);
+            renderpass.setBeforeTransparentCmds(camera._cameraEventCommandBuffer[Laya.CameraEventFlags.BeforeTransparent]);
+            if (clearFlag == Laya.CameraClearFlags.Sky) {
+                renderpass.setSkyRenderNode(camera.scene.skyRenderer._baseRenderNode);
+            }
+            else {
+                renderpass.setSkyRenderNode(null);
+            }
+            this._renderPass.setBeforeImageEffect(camera._cameraEventCommandBuffer[Laya.CameraEventFlags.BeforeImageEffect]);
+            this._renderPass.setAfterEventCmd(camera._cameraEventCommandBuffer[Laya.CameraEventFlags.AfterEveryThing]);
+            renderpass.pipelineMode = Laya.RenderContext3D._instance.configPipeLineMode;
+            let enableShadow = Laya.Scene3D._updateMark % camera.scene._ShadowMapupdateFrequency == 0 && Laya.Stat.enableShadow;
+            this._renderPass.shadowCastPass = enableShadow;
+            window.conchLayaXRT3DRenderProcess._addPreDrawUniformMap("Scene3D", context._nativeObj);
+            window.conchLayaXRT3DRenderProcess._addPreDrawUniformMap("Global", context._nativeObj);
+            context.preDrawUniformMaps = context.preDrawUniformMaps;
+            if (enableShadow) {
+                let mainDirectionLight = camera.scene._mainDirectionLight;
+                let needDirectionShadow = mainDirectionLight && mainDirectionLight.shadowMode != Laya.ShadowMode.None;
+                this._renderPass.enableDirectLightShadow = needDirectionShadow;
+                if (needDirectionShadow) {
+                    let dirLight = mainDirectionLight._dataModule;
+                    let camData = camera._renderDataModule;
+                    dirLight.syncShadow();
+                    this._renderPass.dirShadowRenderPass.setRPData(dirLight, camData, context);
+                    this._renderPass.dirShadowRenderPass.setCameraCullInfo(this._render3DManager);
+                }
+                let mainSpotLight = camera.scene._mainSpotLight;
+                let needSpotShadow = mainSpotLight && mainSpotLight.shadowMode != Laya.ShadowMode.None;
+                this._renderPass.enableSpotLightShadowPass = needSpotShadow;
+                if (needSpotShadow) {
+                    let spotLight = mainSpotLight._dataModule;
+                    spotLight.syncShadow();
+                    this._renderPass.spotShadowRenderPass.setRPData(spotLight, context);
+                    this._renderPass.spotShadowRenderPass.setCameraCullInfo(this.render3DManager);
+                }
+                if (needDirectionShadow || needSpotShadow) {
+                    window.conchLayaXRT3DRenderProcess._addPreDrawUniformMap("Shadow", context._nativeObj);
+                }
+            }
+            else {
+                window.conchLayaXRT3DRenderProcess._removePreDrawUniformMap("Shadow", context._nativeObj);
+            }
+            context.preDrawUniformMaps = context.preDrawUniformMaps;
+            if (Laya.Stat.enablePostprocess && camera.postProcess && camera.postProcess.enable && camera.postProcess.effects.length > 0) {
+                this._renderPass.enablePostProcess = camera.postProcess.enable;
+                camera.postProcess._render(camera);
+                this._renderPass.postProcess = camera.postProcess._context.command;
+            }
+            else {
+                this._renderPass.enablePostProcess = false;
+            }
+            this._renderPass.finalize.clear();
+            this._renderPass.finalize._camera = camera;
+            if (!this._renderPass.enablePostProcess && needInternalRT && camera._offScreenRenderTexture) {
+                let dst = camera._offScreenRenderTexture;
+                if (Laya.LayaGL.renderEngine._screenInvertY) {
+                    offsetScale$1.setValue(camera.normalizedViewport.x, camera.normalizedViewport.y, renderRT.width / dst.width, renderRT.height / dst.height);
+                }
+                else {
+                    offsetScale$1.setValue(camera.normalizedViewport.x, 1.0 - camera.normalizedViewport.y, renderRT.width / dst.width, -renderRT.height / dst.height);
+                }
+                this._renderPass.finalize.blitScreenQuad(renderRT, camera._offScreenRenderTexture, offsetScale$1);
+            }
+            this._renderPass.finalize = this._renderPass.finalize;
+        }
+        renderDepth(camera) {
+            let depthMode = camera.depthTextureMode;
+            if (camera.postProcess && camera.postProcess.enable) {
+                depthMode |= camera.postProcess.cameraDepthTextureMode;
+            }
+            if ((depthMode & Laya.DepthTextureMode.Depth) != 0) {
+                Laya.Camera.depthPass.getTarget(camera, Laya.DepthTextureMode.Depth, camera.depthTextureFormat);
+                this._renderPass.mainRenderpass.depthTarget = camera.depthTexture._renderTarget;
+                Laya.Camera.depthPass._setupDepthModeShaderValue(Laya.DepthTextureMode.Depth, camera);
+            }
+            if ((depthMode & Laya.DepthTextureMode.DepthNormals) != 0) {
+                Laya.Camera.depthPass.getTarget(camera, Laya.DepthTextureMode.DepthNormals, camera.depthTextureFormat);
+                this._renderPass.mainRenderpass.depthNormalTarget = camera.depthNormalTexture._renderTarget;
+                camera._shaderValues.setTexture(Laya.DepthPass.DEPTHNORMALSTEXTURE, camera.depthNormalTexture);
+                Laya.Camera.depthPass._setupDepthModeShaderValue(Laya.DepthTextureMode.DepthNormals, camera);
+            }
+            this._renderPass.mainRenderpass.depthTextureMode = depthMode;
+        }
+        fowardRender(context, camera) {
+            LayaXRender3DProcess._flushDirtyProbes();
+            Laya.Camera.depthPass.cleanUp(camera);
+            this.renderDepth(camera);
+            this.initRenderpass(camera, context);
+            this.renderFowarAddCameraPass(context, this._renderPass);
+        }
+        static _flushDirtyProbes() {
+            let rpDirty = LayaXReflectionProbe._dirtySet;
+            if (rpDirty.size > 0) {
+                rpDirty.forEach(probe => probe.applyRenderData());
+                rpDirty.clear();
+            }
+            let giDirty = LayaXVolumetricGI._dirtySet;
+            if (giDirty.size > 0) {
+                giDirty.forEach(gi => gi.applyRenderData());
+                giDirty.clear();
+            }
+        }
+        renderFowarAddCameraPass(context, renderpass) {
+            this._nativeObj.renderForwardAddCameraPass(context._nativeObj, renderpass._nativeObj);
+        }
+    }
+
+    class LayaXSkinRenderElement3D extends LayaXRenderElement3D {
+        get skinnedData() {
+            return this._skinnedData;
+        }
+        set skinnedData(data) {
+            this._skinnedData = data;
+        }
+    }
+    class LayaXDrawNodeCMDData extends Laya.DrawNodeCMDData {
+        constructor() {
+            super();
+            this.type = Laya.RenderCMDType.DrawNode;
+            this._nativeObj = new window.conchLayaXDrawNodeCMD();
+        }
+        get node() {
+            return this._node;
+        }
+        set node(value) {
+            this._node = value;
+            this._nativeObj.setBaseRenderNode(value ? value._nativeObj : null);
+        }
+        get destShaderData() {
+            return this._destShaderData;
+        }
+        set destShaderData(value) {
+            this._destShaderData = value;
+            this._nativeObj.setShaderData(value ? value._nativeObj : null);
+        }
+        get destSubShader() {
+            return this._destSubShader;
+        }
+        set destSubShader(value) {
+            this._destSubShader = value;
+            this._nativeObj.setSubShader(value ? value.moduleData._nativeObj : null);
+        }
+        get subMeshIndex() {
+            return this._subMeshIndex;
+        }
+        set subMeshIndex(value) {
+            this._subMeshIndex = value;
+            this._nativeObj.setSubMeshIndex(value);
+        }
+        apply(_context) {
+            this._nativeObj.execute();
+        }
+    }
+    class LayaXBlitQuadCMDData extends Laya.BlitQuadCMDData {
+        constructor() {
+            super();
+            this.type = Laya.RenderCMDType.Blit;
+            this._nativeObj = new window.conchLayaXBlitQuadCMD();
+        }
+        get element() {
+            return this._element;
+        }
+        set element(value) {
+            this._element = value;
+            this._nativeObj.setRenderElement(value ? value._nativeObj : null);
+        }
+        get dest() {
+            return this._dest;
+        }
+        set dest(value) {
+            this._dest = value;
+            this._nativeObj.setDest(value ? value._nativeObj : null);
+        }
+        get viewport() {
+            return this._viewport;
+        }
+        set viewport(value) {
+            this._viewport = value;
+            if (value) {
+                this._nativeObj.setViewport(value);
+            }
+        }
+        get scissor() {
+            return this._scissor;
+        }
+        set scissor(value) {
+            this._scissor = value;
+            if (value) {
+                this._nativeObj.setScissor(value);
+            }
+        }
+        get source() {
+            return this._source;
+        }
+        set source(value) {
+            this._source = value;
+            this._nativeObj.setSource(value ? value._nativeObj : null);
+        }
+        get offsetScale() {
+            return this._offsetScale;
+        }
+        set offsetScale(value) {
+            this._offsetScale = value;
+            if (value) {
+                this._nativeObj.setOffsetScale(value);
+            }
+        }
+        apply(_context) {
+            this._nativeObj.execute();
+        }
+    }
+    class LayaXDrawElementCMDData extends Laya.DrawElementCMDData {
+        constructor() {
+            super();
+            this.type = Laya.RenderCMDType.DrawElement;
+            this._nativeObj = new window.conchLayaXDrawElementCMD();
+        }
+        setRenderelements(value) {
+            this._nativeObj.clearElement();
+            if (value) {
+                for (let i = 0, n = value.length; i < n; i++) {
+                    this._nativeObj.addOneElement(value[i]._nativeObj);
+                }
+            }
+        }
+        apply(_context) {
+            this._nativeObj.execute();
+        }
+    }
+    class LayaXSetViewportCMD extends Laya.SetViewportCMD {
+        constructor() {
+            super();
+            this.type = Laya.RenderCMDType.ChangeViewPort;
+            this._nativeObj = new window.conchLayaXSetViewportCMD();
+        }
+        get viewport() {
+            return this._viewport;
+        }
+        set viewport(value) {
+            this._viewport = value;
+            if (value) {
+                this._nativeObj.setViewport(value);
+            }
+        }
+        get scissor() {
+            return this._scissor;
+        }
+        set scissor(value) {
+            this._scissor = value;
+            if (value) {
+                this._nativeObj.setScissor(value);
+            }
+        }
+        apply(_context) {
+            this._nativeObj.execute();
+        }
+    }
+    class LayaXSetRenderTargetCMD extends Laya.SetRenderTargetCMD {
+        constructor() {
+            super();
+            this.type = Laya.RenderCMDType.ChangeRenderTarget;
+            this._nativeObj = new window.conchLayaXSetRenderTargetCMD();
+        }
+        get rt() {
+            return this._rt;
+        }
+        set rt(value) {
+            this._rt = value;
+            this._nativeObj.setRT(value ? value._nativeObj : null);
+        }
+        get clearFlag() {
+            return this._clearFlag;
+        }
+        set clearFlag(value) {
+            this._clearFlag = value;
+            this._nativeObj.setClearFlag(value);
+        }
+        get clearColorValue() {
+            return this._clearColorValue;
+        }
+        set clearColorValue(value) {
+            this._clearColorValue = value;
+            if (value) {
+                this._nativeObj.clearColorValue(value);
+            }
+        }
+        get clearDepthValue() {
+            return this._clearDepthValue;
+        }
+        set clearDepthValue(value) {
+            this._clearDepthValue = value;
+            this._nativeObj.clearDepthValue(value);
+        }
+        get clearStencilValue() {
+            return this._clearStencilValue;
+        }
+        set clearStencilValue(value) {
+            this._clearStencilValue = value;
+            this._nativeObj.clearStencilValue(value);
+        }
+        apply(_context) {
+            this._nativeObj.execute();
+        }
+    }
+    class LayaX3DRenderPassFactory {
+        createRender3DProcess() {
+            return new LayaXRender3DProcess();
+        }
+        createRenderContext3D() {
+            return new LayaXRenderContext3D();
+        }
+        createSetRenderDataCMD() {
+            return new Laya.LayaXSetRenderData();
+        }
+        createSetShaderDefineCMD() {
+            return new Laya.LayaXSetShaderDefine();
+        }
+        createDrawNodeCMDData() {
+            return new LayaXDrawNodeCMDData();
+        }
+        createBlitQuadCMDData() {
+            return new LayaXBlitQuadCMDData();
+        }
+        createDrawElementCMDData() {
+            return new LayaXDrawElementCMDData();
+        }
+        createSetViewportCMD() {
+            return new LayaXSetViewportCMD();
+        }
+        createSetRenderTargetCMD() {
+            return new LayaXSetRenderTargetCMD();
+        }
+        createSceneRenderManager() {
+            return new RTScene3DRenderManager();
+        }
+        createSkinRenderElement() {
+            return new LayaXSkinRenderElement3D();
+        }
+        createRenderElement3D() {
+            return new LayaXRenderElement3D();
+        }
+    }
+    Laya.Laya.addBeforeInitCallback(() => {
+        if (Laya.LayaEnv.isModernAPIs && !Laya.Laya3DRender.Render3DPassFactory)
+            Laya.Laya3DRender.Render3DPassFactory = new LayaX3DRenderPassFactory();
+    });
+
+    class LayaXBounds {
+        get min() {
+            return this.getMin();
+        }
+        set min(value) {
+            this.setMin(value);
+        }
+        get max() {
+            return this.getMax();
+        }
+        set max(value) {
+            this.setMax(value);
+        }
+        setMin(value) {
+            this._nativeObj.setMin(value.x, value.y, value.z);
+            this._boundBox.min.setValue(value.x, value.y, value.z);
+        }
+        getMin() {
+            this._nativeObj.getMin();
+            this._syncBoundBoxFromNative();
+            return this._boundBox.min;
+        }
+        setMax(value) {
+            this._nativeObj.setMax(value.x, value.y, value.z);
+            this._boundBox.max.setValue(value.x, value.y, value.z);
+        }
+        getMax() {
+            this._nativeObj.getMax();
+            this._syncBoundBoxFromNative();
+            return this._boundBox.max;
+        }
+        setCenter(value) {
+            this._nativeObj.setCenter(value.x, value.y, value.z);
+        }
+        getCenter() {
+            this._nativeObj.getCenter();
+            this._syncBoundBoxFromNative();
+            const min = this._boundBox.min;
+            const max = this._boundBox.max;
+            this._center.setValue((min.x + max.x) * 0.5, (min.y + max.y) * 0.5, (min.z + max.z) * 0.5);
+            return this._center;
+        }
+        setExtent(value) {
+            this._nativeObj.setExtent(value.x, value.y, value.z);
+        }
+        getExtent() {
+            this._nativeObj.getExtent();
+            this._syncBoundBoxFromNative();
+            const min = this._boundBox.min;
+            const max = this._boundBox.max;
+            this._extent.setValue((max.x - min.x) * 0.5, (max.y - min.y) * 0.5, (max.z - min.z) * 0.5);
+            return this._extent;
+        }
+        constructor(min, max) {
+            this._center = new Laya.Vector3();
+            this._extent = new Laya.Vector3();
+            this._boundBox = new Laya.BoundBox(new Laya.Vector3(), new Laya.Vector3());
+            this._nativeObj = new window.conchLayaXBounds();
+            min && this.setMin(min);
+            max && this.setMax(max);
+        }
+        _tranform(matrix, out) {
+            this._nativeObj._tranform(matrix.elements, out._nativeObj);
+        }
+        _getBoundBox() {
+            this._nativeObj._getBoundBox();
+            this._syncBoundBoxFromNative();
+            return this._boundBox;
+        }
+        _syncBoundBoxFromNative() {
+            const min = this._boundBox.min;
+            const max = this._boundBox.max;
+            min.setValue(this._nativeObj._minX, this._nativeObj._minY, this._nativeObj._minZ);
+            max.setValue(this._nativeObj._maxX, this._nativeObj._maxY, this._nativeObj._maxZ);
+        }
+        calculateBoundsintersection(bounds) {
+            let ownMax = this.getMax();
+            let ownMin = this.getMin();
+            let calMax = bounds.getMax();
+            let calMin = bounds.getMin();
+            let thisExtends = this.getExtent();
+            let boundExtends = bounds.getExtent();
+            let tempV0 = TEMP_VECTOR3_MAX0$1;
+            let tempV1 = TEMP_VECTOR3_MAX1$1;
+            tempV0.setValue(Math.max(ownMax.x, calMax.x) - Math.min(ownMin.x, calMin.x), Math.max(ownMax.y, calMax.y) - Math.min(ownMin.y, calMin.y), Math.max(ownMax.z, calMax.z) - Math.min(ownMin.z, calMin.z));
+            tempV1.setValue((thisExtends.x + boundExtends.x) * 2.0, (thisExtends.y + boundExtends.y) * 2.0, (thisExtends.z + boundExtends.z) * 2.0);
+            if (tempV0.x > tempV1.x)
+                return -1;
+            if (tempV0.y > tempV1.y)
+                return -1;
+            if (tempV0.z > tempV1.z)
+                return -1;
+            return (tempV1.x - tempV0.x) * (tempV1.y - tempV0.y) * (tempV1.z - tempV0.z);
+        }
+        cloneTo(destObject) {
+            this._nativeObj.cloneTo(destObject._nativeObj);
+        }
+        clone() {
+            let dest = new LayaXBounds(new Laya.Vector3(), new Laya.Vector3());
+            this.cloneTo(dest);
+            return dest;
+        }
+    }
+    const TEMP_VECTOR3_MAX0$1 = new Laya.Vector3();
+    const TEMP_VECTOR3_MAX1$1 = new Laya.Vector3();
+
+    class LayaXTransform3D extends Laya.Transform3D {
+        constructor(owner) {
+            super(owner);
+            this._notifyFrame = 0;
+            this._poolBound = false;
+            this._posView = null;
+            this._rotView = null;
+            this._scaleView = null;
+            this._worldView = null;
+            this._dirtyWordView = null;
+            this._dirtyMask = 0;
+        }
+        _initProperty() {
+            let mem = LayaXTransform3D._sharedNativeMemory;
+            if (!mem)
+                mem = LayaXTransform3D._sharedNativeMemory =
+                    new Laya.NativeMemory(LayaXTransform3D.TRANSFORM_SHARE_MEMORY_SIZE * 4, false);
+            this._nativeFloat32Buffer = mem.float32Array;
+            this._nativeObj = new window.conchLayaXTransform(mem._buffer);
+            this._flagMemory = new Laya.NativeMemory(LayaXTransform3D.FLAG_MEMORY_SIZE * 4, false);
+            this._flagU32 = this._flagMemory.Uint32Array;
+            if (this._nativeObj.bindChangeFlagBuffer)
+                this._nativeObj.bindChangeFlagBuffer(this._flagMemory._buffer);
+            this._setTransformFlag(Laya.Transform3D.TRANSFORM_LOCALQUATERNION | Laya.Transform3D.TRANSFORM_LOCALEULER | Laya.Transform3D.TRANSFORM_LOCALMATRIX, false);
+            this._setTransformFlag(Laya.Transform3D.TRANSFORM_WORLDPOSITION | Laya.Transform3D.TRANSFORM_WORLDQUATERNION |
+                Laya.Transform3D.TRANSFORM_WORLDEULER | Laya.Transform3D.TRANSFORM_WORLDSCALE | Laya.Transform3D.TRANSFORM_WORLDMATRIX, true);
+            this.localPosition = this._localPosition;
+            this.localRotation = this._localRotation;
+            this.localScale = this._localScale;
+        }
+        onStartListeningToType(type) {
+            super.onStartListeningToType(type);
+            if (type === Laya.Event.TRANSFORM_CHANGED)
+                this._hasTransformChangedListener = true;
+        }
+        createEntity() {
+            this._nativeObj.createEntity();
+            this._bindPool();
+        }
+        destroyEntity() {
+            this._nativeObj.destroyEntity();
+            this._poolBound = false;
+            this._worldMatrix.elements = new Float32Array(16);
+            this._setTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX, true);
+            this._posView = this._rotView = this._scaleView = this._worldView = null;
+            this._dirtyWordView = null;
+        }
+        _bindPool() {
+            const idx = this._nativeObj.getPoolIdx();
+            if (idx === 0xFFFFFFFF) {
+                if (LayaXTransform3D._diagN < 5) {
+                    LayaXTransform3D._diagN++;
+                    console.warn("[LayaXTransform] bind FAIL: getPoolIdx()==UINT32_MAX，entity/slot 未分配");
+                }
+                return;
+            }
+            if (!LayaXTransform3D._zeroCopyProbed) {
+                const probe = this._nativeObj.getOwnLocalPos();
+                LayaXTransform3D._hasZeroCopy = !!probe && probe.byteLength > 0;
+                LayaXTransform3D._zeroCopyProbed = true;
+                console.warn("[LayaXTransform] zeroCopy probe: hasZeroCopy=" + LayaXTransform3D._hasZeroCopy +
+                    " probeBytes=" + (probe ? probe.byteLength : "null"));
+            }
+            if (!LayaXTransform3D._hasZeroCopy) {
+                if (LayaXTransform3D._diagN < 5) {
+                    LayaXTransform3D._diagN++;
+                    console.warn("[LayaXTransform] bind FAIL: hasZeroCopy=false → 全程走 C++ 降级");
+                }
+                return;
+            }
+            this._posView = new Float32Array(this._nativeObj.getOwnLocalPos());
+            this._rotView = new Float32Array(this._nativeObj.getOwnLocalRot());
+            this._scaleView = new Float32Array(this._nativeObj.getOwnLocalScale());
+            this._dirtyWordView = new Uint32Array(this._nativeObj.getOwnDirtyWord());
+            this._dirtyMask = (1 << (idx & 31)) >>> 0;
+            this._poolBound = true;
+            this._worldView = new Float32Array(this._nativeObj.getOwnWorldMat());
+            this._worldMatrix.elements = this._worldView;
+            this._setTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX, true);
+            if (LayaXTransform3D._diagN < 5) {
+                LayaXTransform3D._diagN++;
+                console.warn("[LayaXTransform] bind OK: idx=" + idx + " mask=" + this._dirtyMask +
+                    " posLen=" + this._posView.length + " rotLen=" + this._rotView.length +
+                    " scaleLen=" + this._scaleView.length + " dirtyLen=" + this._dirtyWordView.length);
+            }
+        }
+        activeInScene() {
+            this.createEntity();
+        }
+        inActiveInScene() {
+            this.destroyEntity();
+        }
+        get isEntityValid() {
+            return this._nativeObj.isEntityValid();
+        }
+        get _RTtransformFlag() {
+            return this._getTransformChangeFlag();
+        }
+        _setTransformFlag(type, value) {
+            let flag = this._flagU32[LayaXTransform3D.FLAG_CHANGE_IDX];
+            if (value)
+                flag |= type;
+            else
+                flag &= ~type;
+            this._flagU32[LayaXTransform3D.FLAG_CHANGE_IDX] = flag;
+        }
+        _getTransformFlag(type) {
+            return (this._flagU32[LayaXTransform3D.FLAG_CHANGE_IDX] & type) != 0;
+        }
+        _getTransformChangeFlag() {
+            return this._flagU32[LayaXTransform3D.FLAG_CHANGE_IDX];
+        }
+        _pullPos() {
+            if (this._poolBound) {
+                this._localPosition.setValue(this._posView[0], this._posView[1], this._posView[2]);
+            }
+            else {
+                this._nativeObj.getLocalPosition();
+                let i = LayaXTransform3D.TRANSFORM_LOCALPOS_DATAOFFSET;
+                this._localPosition.setValue(this._nativeFloat32Buffer[i], this._nativeFloat32Buffer[i + 1], this._nativeFloat32Buffer[i + 2]);
+            }
+        }
+        _pullRot() {
+            if (this._poolBound) {
+                this._localRotation.setValue(this._rotView[0], this._rotView[1], this._rotView[2], this._rotView[3]);
+            }
+            else {
+                this._nativeObj.getLocalRotation();
+                let i = LayaXTransform3D.TRANSFORM_LOCALQUATERNION_DATAOFFSET;
+                this._localRotation.setValue(this._nativeFloat32Buffer[i], this._nativeFloat32Buffer[i + 1], this._nativeFloat32Buffer[i + 2], this._nativeFloat32Buffer[i + 3]);
+            }
+            this._setTransformFlag(Laya.Transform3D.TRANSFORM_LOCALEULER, true);
+            this._setTransformFlag(Laya.Transform3D.TRANSFORM_LOCALQUATERNION, false);
+        }
+        _pullScale() {
+            if (this._poolBound) {
+                this._localScale.setValue(this._scaleView[0], this._scaleView[1], this._scaleView[2]);
+            }
+            else {
+                this._nativeObj.getLocalScale();
+                let i = LayaXTransform3D.TRANSFORM_LOCALSCALE_DATAOFFSET;
+                this._localScale.setValue(this._nativeFloat32Buffer[i], this._nativeFloat32Buffer[i + 1], this._nativeFloat32Buffer[i + 2]);
+            }
+        }
+        _syncLocal(need) {
+            const pending = this._flagU32[LayaXTransform3D.FLAG_SYNC_IDX] & need;
+            if (pending === 0)
+                return;
+            if (pending & LayaXTransform3D.SYNC_POS)
+                this._pullPos();
+            if (pending & LayaXTransform3D.SYNC_ROT)
+                this._pullRot();
+            if (pending & LayaXTransform3D.SYNC_SCALE)
+                this._pullScale();
+            this._flagU32[LayaXTransform3D.FLAG_SYNC_IDX] &= ~pending;
+            this._setTransformFlag(Laya.Transform3D.TRANSFORM_LOCALMATRIX, true);
+            this._onWorldTransform();
+        }
+        set localPosition(value) {
+            super.localPosition = value;
+            this._pushLocalPos();
+        }
+        get localPosition() {
+            this._syncLocal(LayaXTransform3D.SYNC_POS);
+            return super.localPosition;
+        }
+        set localRotation(value) {
+            super.localRotation = value;
+            this._pushLocalRot();
+        }
+        get localRotation() {
+            this._syncLocal(LayaXTransform3D.SYNC_ROT);
+            return super.localRotation;
+        }
+        set localScale(value) {
+            super.localScale = value;
+            this._pushLocalScale();
+        }
+        get localScale() {
+            this._syncLocal(LayaXTransform3D.SYNC_SCALE);
+            return super.localScale;
+        }
+        set localRotationEuler(value) {
+            super.localRotationEuler = value;
+            this._pushLocalRot();
+        }
+        get localRotationEuler() {
+            this._syncLocal(LayaXTransform3D.SYNC_ROT);
+            return super.localRotationEuler;
+        }
+        set localMatrix(value) {
+            super.localMatrix = value;
+            this._pushLocalPos();
+            this._pushLocalRot();
+            this._pushLocalScale();
+        }
+        get localMatrix() {
+            this._syncLocal(LayaXTransform3D.SYNC_ALL);
+            return super.localMatrix;
+        }
+        get localPositionX() {
+            this._syncLocal(LayaXTransform3D.SYNC_POS);
+            return super.localPositionX;
+        }
+        set localPositionX(x) { super.localPositionX = x; }
+        get localPositionY() {
+            this._syncLocal(LayaXTransform3D.SYNC_POS);
+            return super.localPositionY;
+        }
+        set localPositionY(y) { super.localPositionY = y; }
+        get localPositionZ() {
+            this._syncLocal(LayaXTransform3D.SYNC_POS);
+            return super.localPositionZ;
+        }
+        set localPositionZ(z) { super.localPositionZ = z; }
+        get localScaleX() {
+            this._syncLocal(LayaXTransform3D.SYNC_SCALE);
+            return super.localScaleX;
+        }
+        set localScaleX(value) { super.localScaleX = value; }
+        get localScaleY() {
+            this._syncLocal(LayaXTransform3D.SYNC_SCALE);
+            return super.localScaleY;
+        }
+        set localScaleY(value) { super.localScaleY = value; }
+        get localScaleZ() {
+            this._syncLocal(LayaXTransform3D.SYNC_SCALE);
+            return super.localScaleZ;
+        }
+        set localScaleZ(value) { super.localScaleZ = value; }
+        get position() {
+            this._syncLocal(LayaXTransform3D.SYNC_ALL);
+            return super.position;
+        }
+        set position(value) { super.position = value; }
+        getWorldLossyScale() {
+            this._syncLocal(LayaXTransform3D.SYNC_ALL);
+            return super.getWorldLossyScale();
+        }
+        _pushLocalPos() {
+            const lp = this._localPosition;
+            if (this._poolBound) {
+                const p = this._posView;
+                p[0] = lp.x;
+                p[1] = lp.y;
+                p[2] = lp.z;
+                this._dirtyWordView[0] |= this._dirtyMask;
+            }
+            else {
+                const i = LayaXTransform3D.TRANSFORM_LOCALPOS_DATAOFFSET, f = this._nativeFloat32Buffer;
+                f[i] = lp.x;
+                f[i + 1] = lp.y;
+                f[i + 2] = lp.z;
+                this._nativeObj.setLocalPosition();
+            }
+        }
+        _pushLocalRot() {
+            const lr = this.localRotation;
+            if (this._poolBound) {
+                const p = this._rotView;
+                p[0] = lr.x;
+                p[1] = lr.y;
+                p[2] = lr.z;
+                p[3] = lr.w;
+                this._dirtyWordView[0] |= this._dirtyMask;
+            }
+            else {
+                const i = LayaXTransform3D.TRANSFORM_LOCALQUATERNION_DATAOFFSET, f = this._nativeFloat32Buffer;
+                f[i] = lr.x;
+                f[i + 1] = lr.y;
+                f[i + 2] = lr.z;
+                f[i + 3] = lr.w;
+                this._nativeObj.setLocalRotation();
+            }
+        }
+        _pushLocalScale() {
+            const ls = this._localScale;
+            if (this._poolBound) {
+                const p = this._scaleView;
+                p[0] = ls.x;
+                p[1] = ls.y;
+                p[2] = ls.z;
+                this._dirtyWordView[0] |= this._dirtyMask;
+            }
+            else {
+                const i = LayaXTransform3D.TRANSFORM_LOCALSCALE_DATAOFFSET, f = this._nativeFloat32Buffer;
+                f[i] = ls.x;
+                f[i + 1] = ls.y;
+                f[i + 2] = ls.z;
+                this._nativeObj.setLocalScale();
+            }
+        }
+        _setParent(value) {
+            super._setParent(value);
+            this._nativeObj.setParent(value ? value._nativeObj : null);
+        }
+    }
+    LayaXTransform3D.TRANSFORM_LOCALQUATERNION_DATAOFFSET = 0;
+    LayaXTransform3D.TRANSFORM_LOCALEULER_DATAOFFSET = 4;
+    LayaXTransform3D.TRANSFORM_LOCALPOS_DATAOFFSET = 7;
+    LayaXTransform3D.TRANSFORM_LOCALSCALE_DATAOFFSET = 10;
+    LayaXTransform3D.TRANSFORM_LOCALMATRIX_DATAOFFSET = 13;
+    LayaXTransform3D.TRANSFORM_WORLDQUATERNION_DATAOFFSET = 29;
+    LayaXTransform3D.TRANSFORM_WORLDEULER_DATAOFFSET = 33;
+    LayaXTransform3D.TRANSFORM_WORLDPOS_DATAOFFSET = 36;
+    LayaXTransform3D.TRANSFORM_WORLDSCALE_DATAOFFSET = 39;
+    LayaXTransform3D.TRANSFORM_WORLDMATRIX_DATAOFFSET = 42;
+    LayaXTransform3D.TRANSFORM_CHANGEFLAG_DATAOFFSET = 58;
+    LayaXTransform3D.TRANSFORM_RT_SYNC_FLAG_DATAOFFSET = 59;
+    LayaXTransform3D.TRANSFORM_SHARE_MEMORY_SIZE = 60;
+    LayaXTransform3D.FLAG_CHANGE_IDX = 0;
+    LayaXTransform3D.FLAG_SYNC_IDX = 1;
+    LayaXTransform3D.FLAG_MEMORY_SIZE = 2;
+    LayaXTransform3D.SYNC_POS = 1 << 0;
+    LayaXTransform3D.SYNC_ROT = 1 << 1;
+    LayaXTransform3D.SYNC_SCALE = 1 << 2;
+    LayaXTransform3D.SYNC_ALL = (1 << 0) | (1 << 1) | (1 << 2);
+    LayaXTransform3D._zeroCopyProbed = false;
+    LayaXTransform3D._hasZeroCopy = false;
+    LayaXTransform3D._diagN = 0;
+    LayaXTransform3D._sharedNativeMemory = null;
+
+    class LayaXCameraNodeData {
+        get transform() {
+            return this._transform;
+        }
+        set transform(value) {
+            this._transform = value;
+            this._nativeObj.setTransform(value ? value._nativeObj : null);
+        }
+        get farplane() {
+            return this._nativeObj._farplane;
+        }
+        set farplane(value) {
+            this._nativeObj._farplane = value;
+        }
+        get nearplane() {
+            return this._nativeObj._nearplane;
+        }
+        set nearplane(value) {
+            this._nativeObj._nearplane = value;
+        }
+        get fieldOfView() {
+            return this._nativeObj._fieldOfView;
+        }
+        set fieldOfView(value) {
+            this._nativeObj._fieldOfView = value;
+        }
+        get aspectRatio() {
+            return this._nativeObj._aspectRatio;
+        }
+        set aspectRatio(value) {
+            this._nativeObj._aspectRatio = value;
+        }
+        get handle() {
+            return this._nativeObj ? this._nativeObj.getHandle() : 0;
+        }
+        constructor() {
+            this._nativeObj = new window.conchLayaXCameraNodeData();
+        }
+        setProjectionViewMatrix(value) {
+            value && this._nativeObj.setProjectionViewMatrix(value.elements);
+        }
+        setForward(x, y, z) {
+            this._nativeObj.setForward(x, y, z);
+        }
+        syncProjection() {
+            this._nativeObj.syncProjection();
+        }
+        destroy() {
+            if (this._nativeObj) {
+                this._nativeObj.destroy();
+                this._nativeObj = null;
+            }
+        }
+    }
+
+    class LayaXSceneNodeData {
+        get lightmapDirtyFlag() {
+            return this._nativeObj._lightmapDirtyFlag;
+        }
+        set lightmapDirtyFlag(value) {
+            this._nativeObj._lightmapDirtyFlag = value;
+        }
+        constructor() {
+            this._nativeObj = new window.conchLayaXSceneNodeData();
+        }
+    }
+
+    class LayaXBaseRenderNode {
+        get transform() { return this._transform; }
+        set transform(value) {
+            this._nativeObj.setTransform(value ? value._nativeObj : null);
+            this._transform = value;
+        }
+        get distanceForSort() { return this._nativeObj.distanceForSort; }
+        set distanceForSort(value) { this._nativeObj.distanceForSort = value; }
+        get sortingFudge() { return this._nativeObj.sortingFudge; }
+        set sortingFudge(value) { this._nativeObj.sortingFudge = value; }
+        get castShadow() { return this._nativeObj.castShadow; }
+        set castShadow(value) { this._nativeObj.castShadow = value; }
+        get receiveShadow() { return this._nativeObj.receiveShadow; }
+        set receiveShadow(value) { this._nativeObj.receiveShadow = value; }
+        get enable() { return this._nativeObj.enable; }
+        set enable(value) { this._nativeObj.enable = value; }
+        get renderbitFlag() { return this._nativeObj.renderbitFlag; }
+        set renderbitFlag(value) { this._nativeObj.renderbitFlag = value; }
+        get visibalRangeBit() { return this._nativeObj.visibalRangeBit; }
+        set visibalRangeBit(value) { this._nativeObj.visibalRangeBit = value; }
+        get visibalMin() { return this._nativeObj.visibalMin; }
+        set visibalMin(value) { this._nativeObj.visibalMin = value; }
+        get visibalMax() { return this._nativeObj.visibalMax; }
+        set visibalMax(value) { this._nativeObj.visibalMax = value; }
+        get layer() { return this._nativeObj.layer; }
+        set layer(value) { this._nativeObj.layer = value; }
+        get renderNodeType() { return this._nativeObj.renderNodeType; }
+        set renderNodeType(value) { this._nativeObj.renderNodeType = value; }
+        get boundsChange() { return this._boundsChange; }
+        set boundsChange(value) { this._boundsChange = value; }
+        get staticMask() { return this._nativeObj.staticMask; }
+        set staticMask(value) { this._nativeObj.staticMask = value; }
+        get lightmapIndex() { return this._nativeObj.lightmapIndex; }
+        set lightmapIndex(value) { this._nativeObj.lightmapIndex = value; }
+        get reflectionMode() { return this._nativeObj.reflectionMode; }
+        set reflectionMode(value) { this._nativeObj.reflectionMode = value; }
+        get lightProbUpdateMark() { return this._nativeObj.lightProbUpdateMark; }
+        set lightProbUpdateMark(value) { this._nativeObj.lightProbUpdateMark = value; }
+        get perCameraUpdate() { return this._nativeObj.perCameraUpdate; }
+        set perCameraUpdate(value) { this._nativeObj.perCameraUpdate = value; }
+        get bounds() {
+            if (this.boundsChange) {
+                this._nativeObj._calculateBoundingBox();
+                this.boundsChange = false;
+            }
+            return this._bounds;
+        }
+        set bounds(value) {
+            this._bounds = value;
+            this._nativeObj._bounds = value._imp._nativeObj;
+        }
+        get baseGeometryBounds() { return this._baseGeometryBounds; }
+        set baseGeometryBounds(value) {
+            this._baseGeometryBounds = value;
+            this._nativeObj.setBaseGeometryBounds(value._imp._nativeObj);
+        }
+        get shaderData() { return this._shaderData; }
+        set shaderData(value) {
+            this._shaderData = value;
+            this._nativeObj.setShaderData(value ? value._nativeObj : null);
+        }
+        get additionShaderData() { return this._additionShaderData; }
+        set additionShaderData(value) {
+            this._additionShaderData = value;
+            this._nativeObj.clearAdditionalMap();
+            for (let [key, sd] of this._additionShaderData) {
+                this._nativeObj.addOneAddiionalData(key, sd._nativeObj);
+            }
+        }
+        get lightmap() { return this._lightmap; }
+        set lightmap(value) {
+            this._lightmap = value;
+            this._nativeObj.setLightmap(value ? value._nativeObj : null);
+        }
+        get probeReflection() { return this._probeReflection; }
+        set probeReflection(value) {
+            this._probeReflection = value;
+            this._nativeObj.setProbeReflection(value ? value._nativeObj : null);
+        }
+        get volumetricGI() { return this._volumetricGI; }
+        set volumetricGI(value) {
+            this._volumetricGI = value;
+            this._nativeObj.setVolumetricGI(value ? value._nativeObj : null);
+        }
+        get irradientMode() { return this._irradientMode; }
+        set irradientMode(value) {
+            this._irradientMode = value;
+            this._nativeObj.irradianceMode = value;
+        }
+        get ismoved() {
+            return this._ismoved;
+        }
+        set ismoved(value) {
+            this._ismoved.setValue(value.x, value.y);
+        }
+        set_renderUpdatePreCall(call, fun) {
+            this._renderUpdatePrebindFun = fun.bind(call, Laya.RenderContext3D._instance._contextOBJ);
+            this._nativeObj.setRenderUpdatePre(this._renderUpdatePrebindFun);
+        }
+        set_caculateBoundingBox(call, fun) {
+            this._caculateBoundingBoxbindFun = fun.bind(call);
+            this._nativeObj.setCalculateBoundingBox(this._caculateBoundingBoxbindFun);
+        }
+        _getNativeObj() {
+            this._nativeObj = new window.conchLayaXBaseRenderNode();
+        }
+        constructor() {
+            this._boundsChange = false;
+            this._additionShaderData = new Map();
+            this.lightmapScaleOffset = new Laya.Vector4(1, 1, 0, 0);
+            this.lightmapDirtyFlag = -1;
+            this._ismoved = new Laya.Vector2();
+            this._worldParams = new Laya.Vector4(1, 0, 0, 0);
+            this._getNativeObj();
+            this._defaultBaseGeometryBounds = new Laya.Bounds();
+            this.baseGeometryBounds = this._defaultBaseGeometryBounds;
+            this.renderelements = [];
+            this._nativeObj.worldParams = this._worldParams;
+        }
+        setNodeCustomData(dataSlot, data) {
+            switch (dataSlot) {
+                case 0:
+                    this._worldParams.y = data;
+                    break;
+                case 1:
+                    this._worldParams.z = data;
+                    break;
+                case 2:
+                    this._worldParams.w = data;
+                    break;
+            }
+            this._nativeObj.worldParams = this._worldParams;
+        }
+        setRenderelements(value) {
+            let tempArray = [];
+            this.renderelements.length = 0;
+            for (let i = 0; i < value.length; i++) {
+                this.renderelements.push(value[i]);
+                value[i].owner = this;
+                tempArray.push(value[i]._nativeObj);
+            }
+            this._nativeObj.setRenderElements(tempArray);
+        }
+        setLightmapScaleOffset(value) {
+            value && value.cloneTo(this.lightmapScaleOffset);
+            this._nativeObj.setLightmapScaleOffset(value);
+            if (this._shaderData) {
+                this._shaderData.setVector(Laya.RenderableSprite3D.LIGHTMAPSCALEOFFSET, this.lightmapScaleOffset);
+            }
+        }
+        _applyLightMapParams() {
+            let shaderValues = this._shaderData;
+            if (!shaderValues)
+                return;
+            if (this._lightmap && this._lightmap.lightmapColor) {
+                let lightMap = this._lightmap;
+                shaderValues.setVector(Laya.RenderableSprite3D.LIGHTMAPSCALEOFFSET, this.lightmapScaleOffset);
+                shaderValues._setInternalTexture(Laya.RenderableSprite3D.LIGHTMAP, lightMap.lightmapColor._nativeObj);
+                shaderValues.addDefine(Laya.RenderableSprite3D.SAHDERDEFINE_LIGHTMAP);
+                if (lightMap.lightmapDirection) {
+                    shaderValues._setInternalTexture(Laya.RenderableSprite3D.LIGHTMAP_DIRECTION, lightMap.lightmapDirection._nativeObj);
+                    shaderValues.addDefine(Laya.RenderableSprite3D.SHADERDEFINE_LIGHTMAP_DIRECTIONAL);
+                }
+                else {
+                    shaderValues.removeDefine(Laya.RenderableSprite3D.SHADERDEFINE_LIGHTMAP_DIRECTIONAL);
+                }
+            }
+            else {
+                shaderValues.removeDefine(Laya.RenderableSprite3D.SAHDERDEFINE_LIGHTMAP);
+                shaderValues.removeDefine(Laya.RenderableSprite3D.SHADERDEFINE_LIGHTMAP_DIRECTIONAL);
+            }
+        }
+        setCommonUniformMap(value) {
+            this._nativeObj.setCommonUniformMap(value);
+        }
+        setOneMaterial(index, mat) {
+            if (!this.renderelements[index])
+                return;
+            this.renderelements[index].materialShaderData = mat.shaderData;
+            this.renderelements[index].materialRenderQueue = mat.renderQueue;
+            this.renderelements[index].subShader = mat.shader.getSubShaderAt(0);
+        }
+        _applyLightProb() {
+        }
+        _applyReflection() {
+        }
+        destroy() {
+            this._nativeObj.destroy();
+            for (let i = 0, n = this.renderelements.length; i < n; i++) {
+                this.renderelements[i].destroy();
+            }
+            this.renderelements.length = 0;
+            this._baseGeometryBounds = null;
+            this.transform = null;
+            this._shaderData && this._shaderData.destroy();
+        }
+    }
+
+    class LayaXMeshRenderNode extends LayaXBaseRenderNode {
+        _getNativeObj() {
+            this._nativeObj = new window.conchLayaXMeshRenderNode();
+        }
+    }
+
+    class LayaXSkinRenderNode extends LayaXBaseRenderNode {
+        _getNativeObj() {
+            this._nativeObj = new window.conchLayaXSkinRenderNode();
+        }
+        constructor() {
+            super();
+            this.boneNums = 0;
+            this._bonesRegistered = false;
+        }
+        computeSkinnedData() {
+            if (this._bonesRegistered)
+                return;
+            if (this.boneNums === 0) {
+                this._bonesRegistered = true;
+                return;
+            }
+            if (this._nativeObj.tryCommitBoneEntities()) {
+                this._bonesRegistered = true;
+            }
+        }
+        setRootBoneTransfom(value) {
+            this._nativeObj.setRootBoneTransfom(value.transform._nativeObj);
+        }
+        setOwnerTransform(value) {
+            this._nativeObj.setOwnerTransform(value.transform._nativeObj);
+        }
+        setCacheMesh(cacheMesh) {
+            this._nativeObj.resizeCacheMeshInverseBindPoes(cacheMesh._inverseBindPoses.length);
+            for (let i = 0, n = cacheMesh._inverseBindPoses.length; i < n; i++) {
+                this._nativeObj.setinverseBindPoseDataByIndex(i, cacheMesh._inverseBindPoses[i]);
+            }
+            this._nativeObj.resizeMatrixCache(cacheMesh._skinnedMatrixCaches.length);
+            for (let i = 0, n = cacheMesh._skinnedMatrixCaches.length; i < n; i++) {
+                let cache = cacheMesh._skinnedMatrixCaches[i];
+                if (!cache)
+                    continue;
+                this._nativeObj.setMatrixCacheByIndex(i, cache.batchBoneIndex, cache.batchIndex, cache.subMeshIndex);
+            }
+            this._nativeObj.setSubMeshCount(cacheMesh.subMeshCount);
+            this._nativeObj.resizeBoneIndicesList(cacheMesh.subMeshCount);
+            for (let i = 0, n = cacheMesh.subMeshCount; i < n; i++) {
+                this._nativeObj.setBoneIndicesList(i, cacheMesh.getSubMesh(i)._boneIndicesList);
+            }
+            this._nativeObj.commitCacheMeshSkinData();
+        }
+        setBones(value) {
+            this._nativeObj.clearBoneTransform();
+            this.boneNums = 0;
+            for (let i = 0, n = value.length; i < n; i++) {
+                if (value[i]) {
+                    this._nativeObj.addBoneTransform(value[i].transform._nativeObj);
+                    this.boneNums++;
+                }
+            }
+            this._bonesRegistered = false;
+        }
+        setSkinnedData(value) {
+            this._nativeObj.resizeSkinnedData(value.length);
+            for (let i = 0, n = value.length; i < n; i++) {
+                this._nativeObj.setSkinnedDataByIndex(i, value[i]);
+            }
+        }
+    }
+
+    class LayaXSimpleSkinRenderNode extends LayaXBaseRenderNode {
+        _getNativeObj() {
+            this._nativeObj = new window.conchLayaXSimpleSkinRenderNode();
+            let buffer = new ArrayBuffer(4 * 4);
+            this._shareBuffer = new Float32Array(buffer);
+            this._nativeObj.setShareBuffer(buffer);
+        }
+        constructor() {
+            super();
+            this._simpleAnimatorParams = new Laya.Vector4();
+            this.set_renderUpdatePreCall(this, this._renderUpdate);
+        }
+        setSimpleAnimatorParams(value) {
+            value.cloneTo(this._simpleAnimatorParams);
+            this.shaderData.setVector(Laya.SimpleSkinnedMeshSprite3D.SIMPLE_SIMPLEANIMATORPARAMS, this._simpleAnimatorParams);
+            this._shareBuffer[0] = value.x;
+            this._shareBuffer[1] = value.y;
+            this._shareBuffer[2] = value.z;
+            this._shareBuffer[3] = value.w;
+            this._nativeObj.setSimpleAnimatorParamsByBuffer();
+        }
+        _renderUpdate(context3D) {
+            this.shaderData.setVector(Laya.SimpleSkinnedMeshSprite3D.SIMPLE_SIMPLEANIMATORPARAMS, this._simpleAnimatorParams);
+        }
+    }
+
+    class LayaXDirectLight {
+        get transform() { return this._transform; }
+        set transform(value) {
+            this._transform = value;
+            this._nativeObj.setTransform(value ? value._nativeObj : null);
+        }
+        get shadowResolution() { return this._nativeObj._shadowResolution; }
+        set shadowResolution(value) { this._nativeObj._shadowResolution = value; }
+        get shadowDistance() { return this._nativeObj._shadowDistance; }
+        set shadowDistance(value) { this._nativeObj._shadowDistance = value; }
+        get shadowMode() { return this._nativeObj._shadowMode; }
+        set shadowMode(value) { this._nativeObj._shadowMode = value; }
+        get shadowStrength() { return this._nativeObj._shadowStrength; }
+        set shadowStrength(value) { this._nativeObj._shadowStrength = value; }
+        get shadowDepthBias() { return this._nativeObj._shadowDepthBias; }
+        set shadowDepthBias(value) { this._nativeObj._shadowDepthBias = value; }
+        get shadowNormalBias() { return this._nativeObj._shadowNormalBias; }
+        set shadowNormalBias(value) { this._nativeObj._shadowNormalBias = value; }
+        get shadowNearPlane() { return this._nativeObj._shadowNearPlane; }
+        set shadowNearPlane(value) { this._nativeObj._shadowNearPlane = value; }
+        get shadowCascadesMode() { return this._nativeObj._shadowCascadesMode; }
+        set shadowCascadesMode(value) { this._nativeObj._shadowCascadesMode = value; }
+        get shadowTwoCascadeSplits() { return this._nativeObj._shadowTwoCascadeSplits; }
+        set shadowTwoCascadeSplits(value) { this._nativeObj._shadowTwoCascadeSplits = value; }
+        setShadowFourCascadeSplits(value) {
+            value && this._nativeObj.setShadowFourCascadeSplits(value);
+        }
+        setDirection(value) {
+            value && this._nativeObj.setDirection(value);
+        }
+        constructor() {
+            this._nativeObj = new window.conchLayaXDirectLight();
+        }
+        syncShadow() {
+            this._nativeObj.setShadow(this._nativeObj._shadowResolution, this._nativeObj._shadowDistance, this._nativeObj._shadowStrength, this._nativeObj._shadowMode);
+        }
+    }
+
+    class LayaXPointLight {
+        get transform() { return this._transform; }
+        set transform(value) {
+            this._transform = value;
+            this._nativeObj.setTransform(value ? value._nativeObj : null);
+        }
+        get range() { return this._nativeObj.range; }
+        set range(value) { this._nativeObj.range = value; }
+        get shadowResolution() { return this._nativeObj.shadowResolution; }
+        set shadowResolution(value) { this._nativeObj.shadowResolution = value; }
+        get shadowDistance() { return this._nativeObj.shadowDistance; }
+        set shadowDistance(value) { this._nativeObj.shadowDistance = value; }
+        get shadowMode() { return this._nativeObj.shadowMode; }
+        set shadowMode(value) { this._nativeObj.shadowMode = value; }
+        get shadowStrength() { return this._nativeObj.shadowStrength; }
+        set shadowStrength(value) { this._nativeObj.shadowStrength = value; }
+        get shadowDepthBias() { return this._nativeObj.shadowDepthBias; }
+        set shadowDepthBias(value) { this._nativeObj.shadowDepthBias = value; }
+        get shadowNormalBias() { return this._nativeObj.shadowNormalBias; }
+        set shadowNormalBias(value) { this._nativeObj.shadowNormalBias = value; }
+        get shadowNearPlane() { return this._nativeObj.shadowNearPlane; }
+        set shadowNearPlane(value) { this._nativeObj.shadowNearPlane = value; }
+        constructor() {
+            this._nativeObj = new window.conchLayaXPointLight();
+        }
+    }
+
+    class LayaXSpotLight {
+        get transform() { return this._transform; }
+        set transform(value) {
+            this._nativeObj.setTransform(value ? value._nativeObj : null);
+            this._transform = value;
+        }
+        get shadowResolution() { return this._nativeObj._shadowResolution; }
+        set shadowResolution(value) { this._nativeObj._shadowResolution = value; }
+        get shadowDistance() { return this._nativeObj._shadowDistance; }
+        set shadowDistance(value) { this._nativeObj._shadowDistance = value; }
+        get shadowMode() { return this._nativeObj._shadowMode; }
+        set shadowMode(value) { this._nativeObj._shadowMode = value; }
+        get shadowStrength() { return this._nativeObj._shadowStrength; }
+        set shadowStrength(value) { this._nativeObj._shadowStrength = value; }
+        get shadowDepthBias() { return this._nativeObj._shadowDepthBias; }
+        set shadowDepthBias(value) { this._nativeObj._shadowDepthBias = value; }
+        get shadowNormalBias() { return this._nativeObj._shadowNormalBias; }
+        set shadowNormalBias(value) { this._nativeObj._shadowNormalBias = value; }
+        get shadowNearPlane() { return this._nativeObj._shadowNearPlane; }
+        set shadowNearPlane(value) { this._nativeObj._shadowNearPlane = value; }
+        get spotRange() { return this._nativeObj._spotRange; }
+        set spotRange(value) { this._nativeObj._spotRange = value; }
+        get spotAngle() { return this._nativeObj._spotAngle; }
+        set spotAngle(value) { this._nativeObj._spotAngle = value; }
+        setDirection(value) {
+            this._nativeObj.setDirection(value);
+        }
+        constructor() {
+            this._nativeObj = new window.conchLayaXSpotLight();
+        }
+        syncShadow() {
+            this._nativeObj.setShadow(this._nativeObj._shadowResolution, this._nativeObj._shadowStrength, this._nativeObj._shadowMode, this._nativeObj._shadowDepthBias, this._nativeObj._shadowNormalBias, this._nativeObj._shadowNearPlane);
+            if (this._transform) {
+                this._nativeObj.syncShadow(this._transform.worldMatrix, this._nativeObj._spotAngle, this._nativeObj._spotRange);
+            }
+        }
+    }
+
+    class LayaXLightmapData {
+        constructor() {
+            this._nativeObj = new window.conchLayaXLightmapData();
+        }
+        get lightmapColor() {
+            return this._lightmapColor;
+        }
+        set lightmapColor(value) {
+            this._lightmapColor = value;
+            this._nativeObj.setLightmapColor(value ? value._nativeObj : null);
+        }
+        get lightmapDirection() {
+            return this._lightmapDirection;
+        }
+        set lightmapDirection(value) {
+            this._lightmapDirection = value;
+            this._nativeObj.setLightmapDirection(value ? value._nativeObj : null);
+        }
+        destroy() {
+            this._nativeObj.destroy();
+        }
+    }
+
+    class LayaX3DRenderModuleFactory {
+        createTransform(owner) {
+            return new LayaXTransform3D(owner);
+        }
+        createBounds(min, max) {
+            return new LayaXBounds(min, max);
+        }
+        createVolumetricGI() {
+            return new LayaXVolumetricGI();
+        }
+        createReflectionProbe() {
+            return new LayaXReflectionProbe();
+        }
+        createLightmapData() {
+            return new LayaXLightmapData();
+        }
+        createDirectLight() {
+            return new LayaXDirectLight();
+        }
+        createSpotLight() {
+            return new LayaXSpotLight();
+        }
+        createPointLight() {
+            return new LayaXPointLight();
+        }
+        createCameraModuleData() {
+            return new LayaXCameraNodeData();
+        }
+        createSceneModuleData() {
+            return new LayaXSceneNodeData();
+        }
+        createBaseRenderNode() {
+            return new LayaXBaseRenderNode();
+        }
+        createMeshRenderNode() {
+            return new LayaXMeshRenderNode();
+        }
+        createSkinRenderNode() {
+            return new LayaXSkinRenderNode();
+        }
+        createSimpleSkinRenderNode() {
+            return new LayaXSimpleSkinRenderNode();
+        }
+    }
+    Laya.Laya.addBeforeInitCallback(() => {
+        if (Laya.LayaEnv.isModernAPIs && !Laya.Laya3DRender.Render3DModuleDataFactory)
+            Laya.Laya3DRender.Render3DModuleDataFactory = new LayaX3DRenderModuleFactory();
+    });
+
+    class RTBaseSpotRP {
+        constructor() {
+            this._nativeObj = new window.conchRPBaseSpotRP();
+        }
+        setShadowCasterCommanBuffer(cmd) {
+        }
+        setCameraCullInfo(sceneManager) {
+            this._nativeObj.setCameraCullInfo(sceneManager._nativeObj);
+        }
+        setRPData(spotLight, context) {
+            this._destShadowRT = Laya.Scene3D._shadowCasterPass.getSpotLightShadowPassData(spotLight);
+            this._nativeObj.setRPData(spotLight._nativeObj, context._nativeObj, this._destShadowRT._renderTarget._nativeObj);
+        }
+        destroy() {
+        }
+    }
+
+    class RTDirCascadeShadowRP {
+        constructor() {
+            this._nativeObj = new window.conchRTDirCascadeShadowRP();
+        }
+        setShadowCasterCommanBuffer(cmd) {
+            this._nativeObj.clearShadowCasterCommandBuffer();
+            cmd.forEach(element => {
+                this._setCmd(element);
+            });
+        }
+        _setCmd(cmd) {
+            cmd._apply(false);
+            let cmds = cmd._renderCMDs;
+            let nativeobCMDs = [];
+            cmds.forEach(element => {
+                nativeobCMDs.push(element._nativeObj);
+            });
+            this._nativeObj.addShadowCasterCommandBuffers(nativeobCMDs);
+        }
+        setRPData(dirLight, camera, context) {
+            this._destShadowRT = Laya.Scene3D._shadowCasterPass.getDirectLightShadowMap(dirLight);
+            this._nativeObj.setRPData(dirLight._nativeObj, camera._nativeObj, context._nativeObj, this._destShadowRT._renderTarget._nativeObj);
+        }
+        setCameraCullInfo(sceneManager) {
+            this._nativeObj.setCameraCullInfo(sceneManager._nativeObj);
+        }
+        destroy() {
+        }
+    }
+
+    class RTForwardAddClusterRP {
+        get pipelineMode() {
+            return this._nativeObj.pipelineMode;
+        }
+        set pipelineMode(value) {
+            this._nativeObj.pipelineMode = value;
+        }
+        get depthPipelineMode() {
+            return this._nativeObj.depthPipelineMode;
+        }
+        set depthPipelineMode(value) {
+            this._nativeObj.depthPipelineMode = value;
+        }
+        get depthNormalPipelineMode() {
+            return this._nativeObj.depthNormalPipelineMode;
+        }
+        set depthNormalPipelineMode(value) {
+            this._nativeObj.depthNormalPipelineMode = value;
+        }
+        get depthTextureMode() {
+            return this._nativeObj.depthTextureMode;
+        }
+        set depthTextureMode(value) {
+            this._nativeObj.depthTextureMode = value;
+        }
+        get depthTarget() {
+            return this._depthTarget;
+        }
+        set depthTarget(value) {
+            this._depthTarget = value;
+            this._nativeObj.setDepthTarget(value._nativeObj);
+        }
+        get destTarget() {
+            return this._destTarget;
+        }
+        set destTarget(value) {
+            this._destTarget = value;
+            this._nativeObj.setDestTarget(value._nativeObj);
+        }
+        get depthNormalTarget() {
+            return this._depthNormalTarget;
+        }
+        set depthNormalTarget(value) {
+            this._depthNormalTarget = value;
+            this._nativeObj.setDepthNormalTarget(value._nativeObj);
+        }
+        get enableCMD() {
+            return this._nativeObj.enableCMD;
+        }
+        set enableCMD(value) {
+            this._nativeObj.enableCMD = value;
+        }
+        get enableOpaque() {
+            return this._nativeObj.enableOpaque;
+        }
+        set enableOpaque(value) {
+            this._nativeObj.enableOpaque = value;
+        }
+        get enableTransparent() {
+            return this._nativeObj.enableTransparent;
+        }
+        set enableTransparent(value) {
+            this._nativeObj.enableTransparent = value;
+        }
+        get skyRenderNode() {
+            return this._skyRenderNode;
+        }
+        set skyRenderNode(value) {
+            this._skyRenderNode = value;
+            this._nativeObj.setSkyRenderNode(value ? value._nativeObj : null);
+        }
+        get camera() {
+            return this._camera;
+        }
+        set camera(value) {
+            this._camera = value;
+            this._nativeObj.setCameraNodeData(value._nativeObj);
+        }
+        get clearColor() {
+            return this._clearColor;
+        }
+        set clearColor(value) {
+            this._clearColor = value;
+            this._nativeObj.setClearColor(value);
+        }
+        get clearFlag() {
+            return this._clearFlag;
+        }
+        set clearFlag(value) {
+            this._clearFlag = value;
+            this._nativeObj.setClearFlag(value);
+        }
+        setCameraCullInfo(value, sceneManager) {
+            this._cameraCullInfo.position = value._transform.position;
+            this._cameraCullInfo.cullingMask = value.cullingMask;
+            this._cameraCullInfo.staticMask = value.staticMask;
+            this._cameraCullInfo.boundFrustum = value.boundFrustum;
+            this._cameraCullInfo.useOcclusionCulling = value.useOcclusionCulling;
+            this._nativeObj.setCameraCullInfo(this._cameraCullInfo, sceneManager._nativeObj);
+        }
+        setViewPort(value) {
+            this._nativeObj.setViewPort(value);
+        }
+        setScissor(value) {
+            this._nativeObj.setScissor(value);
+        }
+        _getRenderCMDArray(cmds) {
+            let nativeobCMDs = [];
+            cmds.forEach(element => {
+                nativeobCMDs.push(element._nativeObj);
+            });
+            return nativeobCMDs;
+        }
+        setBeforeForwardCmds(value) {
+            if (value && value.length > 0) {
+                this._nativeObj.clearBeforeForwardCmds();
+                value.forEach(element => {
+                    element._apply(false);
+                    this._nativeObj.addBeforeForwardCmds(this._getRenderCMDArray(element._renderCMDs));
+                });
+            }
+            else {
+                this._nativeObj.clearBeforeForwardCmds();
+            }
+        }
+        setBeforeSkyboxCmds(value) {
+            if (value && value.length > 0) {
+                this._nativeObj.clearBeforeSkyboxCmds();
+                value.forEach(element => {
+                    element._apply(false);
+                    this._nativeObj.addBeforeSkyboxCmds(this._getRenderCMDArray(element._renderCMDs));
+                });
+            }
+            else {
+                this._nativeObj.clearBeforeSkyboxCmds();
+            }
+        }
+        setBeforeTransparentCmds(value) {
+            if (value && value.length > 0) {
+                this._nativeObj.clearBeforeTransparentCmds();
+                value.forEach(element => {
+                    element._apply(false);
+                    this._nativeObj.addBeforeTransparentCmds(this._getRenderCMDArray(element._renderCMDs));
+                });
+            }
+            else {
+                this._nativeObj.clearBeforeTransparentCmds();
+            }
+        }
+        constructor() {
+            this._cameraCullInfo = new Laya.CameraCullInfo();
+            this._nativeObj = new window.conchRTForwardAddClusterRP();
+        }
+        destroy() {
+            this._nativeObj = null;
+        }
+    }
+
+    class RTForwardAddRP {
+        get shadowCastPass() {
+            return this._nativeObj.shadowCastPass;
+        }
+        set shadowCastPass(value) {
+            this._nativeObj.shadowCastPass = value;
+        }
+        get enableDirectLightShadow() {
+            return this._nativeObj.enableDirectLightShadow;
+        }
+        set enableDirectLightShadow(value) {
+            this._nativeObj.enableDirectLightShadow = value;
+        }
+        get enableSpotLightShadowPass() {
+            return this._nativeObj.enableSpotLightShadowPass;
+        }
+        set enableSpotLightShadowPass(value) {
+            this._nativeObj.enableSpotLightShadowPass = value;
+        }
+        get enablePostProcess() {
+            return this._nativeObj.enablePostProcess;
+        }
+        set enablePostProcess(value) {
+            this._nativeObj.enablePostProcess = value;
+        }
+        get postProcess() {
+            return this._postProcess;
+        }
+        set postProcess(value) {
+            this._postProcess = value;
+            value._apply(false);
+            this._nativeObj.setPostProcess(this._getRenderCMDArray(value._renderCMDs));
+        }
+        get finalize() {
+            return this._finalize;
+        }
+        set finalize(value) {
+            this._finalize = value;
+            value._apply(false);
+            this._nativeObj.setfinalize(this._getRenderCMDArray(value._renderCMDs));
+        }
+        get dirShadowRenderPass() {
+            return this._dirLightShadowPass;
+        }
+        set dirShadowRenderPass(value) {
+            this._dirLightShadowPass = value;
+            this._nativeObj.setDirectLightShadowPass(value._nativeObj);
+        }
+        get spotShadowRenderPass() {
+            return this._spotShadowRenderPass;
+        }
+        set spotShadowRenderPass(value) {
+            this._spotShadowRenderPass = value;
+            this._nativeObj.setSpotLightShadowPass(value._nativeObj);
+        }
+        get mainRenderpass() {
+            return this._mainRenderpass;
+        }
+        set mainRenderpass(value) {
+            this._mainRenderpass = value;
+            this._nativeObj.setMainPass(value._nativeObj);
+        }
+        constructor() {
+            this._finalize = new Laya.CommandBuffer();
+            this._nativeObj = new window.conchRTForwardAddRP();
+            this.shadowCastPass = false;
+            this.enableDirectLightShadow = false;
+            this.enableSpotLightShadowPass = false;
+            this.dirShadowRenderPass = new RTDirCascadeShadowRP();
+            this.spotShadowRenderPass = new RTBaseSpotRP();
+            this.mainRenderpass = new RTForwardAddClusterRP();
+        }
+        _getRenderCMDArray(cmds) {
+            let nativeobCMDs = [];
+            cmds.forEach(element => {
+                nativeobCMDs.push(element._nativeObj);
+            });
+            return nativeobCMDs;
+        }
+        setAfterEventCmd(value) {
+            if (value && value.length > 0) {
+                this._nativeObj.clearAfterAllRenderCmds();
+                value.forEach(element => {
+                    element._apply(false);
+                    this._nativeObj.addAfterAllRenderCmds(this._getRenderCMDArray(element._renderCMDs));
+                });
+            }
+            else {
+                this._nativeObj.clearAfterAllRenderCmds();
+            }
+        }
+        setBeforeImageEffect(value) {
+            if (value && value.length > 0) {
+                this._nativeObj.clearBeforeImageEffectCmds();
+                value.forEach(element => {
+                    element._apply(false);
+                    this._nativeObj.addBeforeImageEffectCmds(this._getRenderCMDArray(element._renderCMDs));
+                });
+            }
+            else {
+                this._nativeObj.clearBeforeImageEffectCmds();
+            }
+        }
+        destroy() {
+        }
+    }
+
+    const viewport = new Laya.Viewport(0, 0, 0, 0);
+    const offsetScale = new Laya.Vector4();
+    new Laya.Vector4();
+    class RTRender3DProcess {
+        constructor() {
+            this._renderPass = new RTForwardAddRP();
+            this._nativeObj = new window.conchRT3DRenderProcess();
+            this._defaultDepthTex = Laya.RenderTexture.createFromPool(1, 1, Laya.RenderTargetFormat.DEPTH_32, Laya.RenderTargetFormat.None, false, 1);
+            this._defaultShadowMap = Laya.ShadowUtils.getTemporaryShadowTexture(1, 1, Laya.ShadowMapFormat.bit16);
+            this._nativeObj.setDefaultShadowMap(this._defaultShadowMap._renderTarget._nativeObj);
+            let shadowMap = Laya.LayaGL.renderDeviceFactory.createGlobalUniformMap("Shadow");
+            shadowMap.setDefaultTextureData(Laya.ShadowCasterPass.SHADOW_MAP, this._defaultShadowMap);
+            shadowMap.setDefaultTextureData(Laya.ShadowCasterPass.SHADOW_SPOTMAP, this._defaultShadowMap);
+        }
+        get render3DManager() {
+            return this._render3DManager;
+        }
+        set render3DManager(value) {
+            this._render3DManager = value;
+            this._nativeObj.renderManager = value._nativeObj;
+        }
+        destroy() {
+            this._renderPass = null;
+        }
+        initRenderpass(camera, context) {
+            let renderpass = this._renderPass.mainRenderpass;
+            let renderRT = camera._getRenderTexture();
+            let clearConst = 0;
+            let clearFlag = camera.clearFlag;
+            if (clearFlag == Laya.CameraClearFlags.Sky && !camera.scene.skyRenderer._isAvailable()) {
+                clearFlag = Laya.CameraClearFlags.SolidColor;
+            }
+            let hasStencil = renderRT.depthStencilFormat == Laya.RenderTargetFormat.DEPTHSTENCIL_24_8;
+            let stencilFlag = hasStencil ? Laya.RenderClearFlag.Stencil : 0;
+            switch (clearFlag) {
+                case Laya.CameraClearFlags.DepthOnly:
+                case Laya.CameraClearFlags.Sky:
+                    clearConst = Laya.RenderClearFlag.Depth | stencilFlag;
+                    break;
+                case Laya.CameraClearFlags.Nothing:
+                    clearConst = 0;
+                    break;
+                case Laya.CameraClearFlags.ColorOnly:
+                    clearConst = Laya.RenderClearFlag.Color;
+                    break;
+                case Laya.CameraClearFlags.SolidColor:
+                default:
+                    clearConst = Laya.RenderClearFlag.Color | Laya.RenderClearFlag.Depth | stencilFlag;
+                    break;
+            }
+            let clearValue = camera._linearClearColor;
+            clearValue = renderRT.gammaCorrection != 1 ? camera.clearColor : camera._linearClearColor;
+            renderpass.camera = camera._renderDataModule;
+            renderpass.destTarget = renderRT._renderTarget;
+            renderpass.clearFlag = clearConst;
+            renderpass.clearColor = clearValue;
+            let needInternalRT = camera._needInternalRenderTexture();
+            renderpass.setCameraCullInfo(camera, this.render3DManager);
+            if (needInternalRT) {
+                viewport.set(0, 0, renderRT.width, renderRT.height);
+            }
+            else {
+                camera.viewport.cloneTo(viewport);
+            }
+            renderpass.setViewPort(viewport);
+            let scissor = Laya.Vector4.TEMP;
+            scissor.setValue(viewport.x, viewport.y, viewport.width, viewport.height);
+            renderpass.setScissor(scissor);
+            renderpass.enableOpaque = Laya.Stat.enableOpaque;
+            renderpass.enableTransparent = Laya.Stat.enableTransparent;
+            renderpass.enableCMD = Laya.Stat.enableCameraCMD;
+            renderpass.setBeforeSkyboxCmds(camera._cameraEventCommandBuffer[Laya.CameraEventFlags.BeforeSkyBox]);
+            renderpass.setBeforeForwardCmds(camera._cameraEventCommandBuffer[Laya.CameraEventFlags.BeforeForwardOpaque]);
+            renderpass.setBeforeTransparentCmds(camera._cameraEventCommandBuffer[Laya.CameraEventFlags.BeforeTransparent]);
+            this._renderPass.setBeforeImageEffect(camera._cameraEventCommandBuffer[Laya.CameraEventFlags.BeforeImageEffect]);
+            this._renderPass.setAfterEventCmd(camera._cameraEventCommandBuffer[Laya.CameraEventFlags.AfterEveryThing]);
+            if (clearFlag == Laya.CameraClearFlags.Sky) {
+                renderpass.skyRenderNode = camera.scene.skyRenderer._baseRenderNode;
+            }
+            else {
+                renderpass.skyRenderNode = null;
+            }
+            renderpass.pipelineMode = Laya.RenderContext3D._instance.configPipeLineMode;
+            let enableShadow = Laya.Scene3D._updateMark % camera.scene._ShadowMapupdateFrequency == 0 && Laya.Stat.enableShadow;
+            this._renderPass.shadowCastPass = enableShadow;
+            window.conchRT3DRenderProcess._addPreDrawUniformMap("Scene3D", context._nativeObj);
+            window.conchRT3DRenderProcess._addPreDrawUniformMap("Global", context._nativeObj);
+            context.preDrawUniformMaps = context.preDrawUniformMaps;
+            if (enableShadow) {
+                let mainDirectionLight = camera.scene._mainDirectionLight;
+                let needDirectionShadow = mainDirectionLight && mainDirectionLight.shadowMode != Laya.ShadowMode.None;
+                this._renderPass.enableDirectLightShadow = needDirectionShadow;
+                if (needDirectionShadow) {
+                    this._renderPass.dirShadowRenderPass.setRPData(mainDirectionLight._dataModule, camera._renderDataModule, context);
+                    this._renderPass.dirShadowRenderPass.setCameraCullInfo(this._render3DManager);
+                }
+                let mainSpotLight = camera.scene._mainSpotLight;
+                let needSpotShadow = mainSpotLight && mainSpotLight.shadowMode != Laya.ShadowMode.None;
+                this._renderPass.enableSpotLightShadowPass = needSpotShadow;
+                if (needSpotShadow) {
+                    this._renderPass.spotShadowRenderPass.setRPData(mainSpotLight._dataModule, context);
+                    this._renderPass.spotShadowRenderPass.setCameraCullInfo(this.render3DManager);
+                }
+                if (needDirectionShadow || needSpotShadow) {
+                    window.conchRT3DRenderProcess._addPreDrawUniformMap("Shadow", context._nativeObj);
+                }
+            }
+            else {
+                window.conchRT3DRenderProcess._removePreDrawUniformMap("Shadow", context._nativeObj);
+            }
+            context.preDrawUniformMaps = context.preDrawUniformMaps;
+            if (Laya.Stat.enablePostprocess && camera.postProcess && camera.postProcess.enable && camera.postProcess.effects.length > 0) {
+                this._renderPass.enablePostProcess = camera.postProcess.enable;
+                camera.postProcess._render(camera);
+                this._renderPass.postProcess = camera.postProcess._context.command;
+            }
+            else {
+                this._renderPass.enablePostProcess = false;
+            }
+            this._renderPass.finalize.clear();
+            if (!this._renderPass.enablePostProcess && needInternalRT && camera._offScreenRenderTexture) {
+                let dst = camera._offScreenRenderTexture;
+                offsetScale.setValue(camera.normalizedViewport.x, 1.0 - camera.normalizedViewport.y, renderRT.width / dst.width, -renderRT.height / dst.height);
+                this._renderPass.finalize.blitScreenQuad(renderRT, camera._offScreenRenderTexture, offsetScale);
+            }
+            this._renderPass.finalize = this._renderPass.finalize;
+        }
+        renderDepth(camera) {
+            let depthMode = camera.depthTextureMode;
+            if (camera.postProcess && camera.postProcess.enable) {
+                depthMode |= camera.postProcess.cameraDepthTextureMode;
+            }
+            if ((depthMode & Laya.DepthTextureMode.Depth) != 0) {
+                Laya.Camera.depthPass.getTarget(camera, Laya.DepthTextureMode.Depth, camera.depthTextureFormat);
+                this._renderPass.mainRenderpass.depthTarget = camera.depthTexture._renderTarget;
+                Laya.Camera.depthPass._setupDepthModeShaderValue(Laya.DepthTextureMode.Depth, camera);
+            }
+            if ((depthMode & Laya.DepthTextureMode.DepthNormals) != 0) {
+                Laya.Camera.depthPass.getTarget(camera, Laya.DepthTextureMode.DepthNormals, camera.depthTextureFormat);
+                this._renderPass.mainRenderpass.depthNormalTarget = camera.depthNormalTexture._renderTarget;
+                camera._shaderValues.setTexture(Laya.DepthPass.DEPTHNORMALSTEXTURE, camera.depthNormalTexture);
+                Laya.Camera.depthPass._setupDepthModeShaderValue(Laya.DepthTextureMode.DepthNormals, camera);
+            }
+            this._renderPass.mainRenderpass.depthTextureMode = depthMode;
+        }
+        fowardRender(context, camera) {
+            Laya.Camera.depthPass.cleanUp(camera);
+            this.renderDepth(camera);
+            this.initRenderpass(camera, context);
+            this.renderFowarAddCameraPass(context, this._renderPass);
+        }
+        renderFowarAddCameraPass(context, renderpass) {
+            this._nativeObj.renderForwardAddCameraPass(context._nativeObj, renderpass._nativeObj);
+        }
+    }
+
+    class NativeBounds {
+        get min() {
+            return this.getMin();
+        }
+        set min(value) {
+            this.setMin(value);
+        }
+        get max() {
+            return this.getMax();
+        }
+        set max(value) {
+            this.setMax(value);
+        }
+        setMin(value) {
+            let index = NativeBounds.BOUNDS_MIN_DATAOFFSET;
+            this.float32Array[index] = value.x;
+            this.float32Array[index + 1] = value.y;
+            this.float32Array[index + 2] = value.z;
+            this._nativeObj.setMin();
+        }
+        getMin() {
+            var min = this._boundBox.min;
+            this._nativeObj.getMin();
+            let index = NativeBounds.BOUNDS_MIN_DATAOFFSET;
+            min.x = this.float32Array[index];
+            min.y = this.float32Array[index + 1];
+            min.z = this.float32Array[index + 2];
+            return min;
+        }
+        setMax(value) {
+            let index = NativeBounds.BOUNDS_MAX_DATAOFFSET;
+            this.float32Array[index] = value.x;
+            this.float32Array[index + 1] = value.y;
+            this.float32Array[index + 2] = value.z;
+            this._nativeObj.setMax();
+        }
+        getMax() {
+            var max = this._boundBox.max;
+            this._nativeObj.getMax();
+            let index = NativeBounds.BOUNDS_MAX_DATAOFFSET;
+            max.x = this.float32Array[index];
+            max.y = this.float32Array[index + 1];
+            max.z = this.float32Array[index + 2];
+            return max;
+        }
+        setCenter(value) {
+            let index = NativeBounds.BOUNDS_CENTER_DATAOFFSET;
+            this.float32Array[index] = value.x;
+            this.float32Array[index + 1] = value.y;
+            this.float32Array[index + 2] = value.z;
+            this._nativeObj.setCenter();
+        }
+        getCenter() {
+            var center = this._center;
+            this._nativeObj.getCenter();
+            let index = NativeBounds.BOUNDS_CENTER_DATAOFFSET;
+            center.x = this.float32Array[index];
+            center.y = this.float32Array[index + 1];
+            center.z = this.float32Array[index + 2];
+            return center;
+        }
+        setExtent(value) {
+            let index = NativeBounds.BOUNDS_EXTENT_DATAOFFSET;
+            this.float32Array[index] = value.x;
+            this.float32Array[index + 1] = value.y;
+            this.float32Array[index + 2] = value.z;
+            this._nativeObj.setExtent();
+        }
+        getExtent() {
+            var extent = this._extent;
+            this._nativeObj.getExtent();
+            let index = NativeBounds.BOUNDS_EXTENT_DATAOFFSET;
+            extent.x = this.float32Array[index];
+            extent.y = this.float32Array[index + 1];
+            extent.z = this.float32Array[index + 2];
+            return extent;
+        }
+        constructor(min, max) {
+            this._center = new Laya.Vector3();
+            this._extent = new Laya.Vector3();
+            this._boundBox = new Laya.BoundBox(new Laya.Vector3(), new Laya.Vector3());
+            this.nativeMemory = new Laya.NativeMemory(NativeBounds.BOUNDS_SHARE_MEMORY_SIZE * 4, true);
+            this.float32Array = this.nativeMemory.float32Array;
+            this._nativeObj = new window.conchBounds(this.nativeMemory._buffer);
+            min && this.setMin(min);
+            max && this.setMax(max);
+        }
+        _tranform(matrix, out) {
+            this._nativeObj._tranform(matrix.elements, out._nativeObj);
+        }
+        _getBoundBox() {
+            this._nativeObj._getBoundBox();
+            let minIndex = NativeBounds.BOUNDS_MIN_DATAOFFSET;
+            let maxIndex = NativeBounds.BOUNDS_MAX_DATAOFFSET;
+            this._boundBox.min.x = this.float32Array[minIndex];
+            this._boundBox.min.y = this.float32Array[minIndex + 1];
+            this._boundBox.min.z = this.float32Array[minIndex + 2];
+            this._boundBox.max.x = this.float32Array[maxIndex];
+            this._boundBox.max.y = this.float32Array[maxIndex + 1];
+            this._boundBox.max.z = this.float32Array[maxIndex + 2];
+            return this._boundBox;
+        }
+        calculateBoundsintersection(bounds) {
+            var ownMax = this.getMax();
+            var ownMin = this.getMin();
+            var calMax = bounds.getMax();
+            var calMin = bounds.getMin();
+            var tempV0 = TEMP_VECTOR3_MAX0;
+            var tempV1 = TEMP_VECTOR3_MAX1;
+            var thisExtends = this.getExtent();
+            var boundExtends = bounds.getExtent();
+            tempV0.setValue(Math.max(ownMax.x, calMax.x) - Math.min(ownMin.x, calMin.x), Math.max(ownMax.y, calMax.y) - Math.min(ownMin.y, calMin.y), Math.max(ownMax.z, calMax.z) - Math.min(ownMin.z, calMin.z));
+            tempV1.setValue((thisExtends.x + boundExtends.x) * 2.0, (thisExtends.y + boundExtends.y) * 2.0, (thisExtends.z + boundExtends.z) * 2.0);
+            if ((tempV0.x) > (tempV1.x))
+                return -1;
+            if ((tempV0.y) > (tempV1.y))
+                return -1;
+            if ((tempV0.z) > (tempV1.z))
+                return -1;
+            return (tempV1.x - tempV0.x) * (tempV1.y - tempV0.y) * (tempV1.z - tempV0.z);
+        }
+        cloneTo(destObject) {
+            this._nativeObj.cloneTo(destObject._nativeObj);
+        }
+        clone() {
+            var dest = new NativeBounds(new Laya.Vector3(), new Laya.Vector3());
+            this.cloneTo(dest);
+            return dest;
+        }
+    }
+    NativeBounds.BOUNDS_MIN_DATAOFFSET = 0;
+    NativeBounds.BOUNDS_MAX_DATAOFFSET = 3;
+    NativeBounds.BOUNDS_CENTER_DATAOFFSET = 6;
+    NativeBounds.BOUNDS_EXTENT_DATAOFFSET = 9;
+    NativeBounds.BOUNDS_SHARE_MEMORY_SIZE = 12;
+    const TEMP_VECTOR3_MAX0 = new Laya.Vector3();
+    const TEMP_VECTOR3_MAX1 = new Laya.Vector3();
+
+    class RTCameraNodeData {
+        get transform() {
+            return this._transform;
+        }
+        set transform(value) {
+            this._transform = value;
+            this._nativeObj.setTransform(value._nativeObj);
+        }
+        get farplane() {
+            return this._nativeObj._farplane;
+        }
+        set farplane(value) {
+            this._nativeObj._farplane = value;
+        }
+        get nearplane() {
+            return this._nativeObj._nearplane;
+        }
+        set nearplane(value) {
+            this._nativeObj._nearplane = value;
+        }
+        get fieldOfView() {
+            return this._nativeObj._fieldOfView;
+        }
+        set fieldOfView(value) {
+            this._nativeObj._fieldOfView = value;
+        }
+        get aspectRatio() {
+            return this._nativeObj._aspectRatio;
+        }
+        set aspectRatio(value) {
+            this._nativeObj._aspectRatio = value;
+        }
+        constructor() {
+            this._nativeObj = new window.conchRTCameraNodeData();
+        }
+        setProjectionViewMatrix(value) {
+            value && this._nativeObj.setProjectionViewMatrix(value);
+        }
+    }
+    class RTSceneNodeData {
+        get lightmapDirtyFlag() {
+            return this._nativeObj._lightmapDirtyFlag;
+        }
+        set lightmapDirtyFlag(value) {
+            this._nativeObj._lightmapDirtyFlag = value;
+        }
+        constructor() {
+            this._nativeObj = new window.conchRTSceneNodeData();
+        }
+    }
+
+    class RTTransform3D extends Laya.Transform3D {
+        constructor(owner) {
+            super(owner);
+            this._localPosition = new Laya.Vector3(0, 0, 0);
+            this._localRotation = new Laya.Quaternion(0, 0, 0, 1);
+            this._localScale = new Laya.Vector3(1, 1, 1);
+            this._localRotationEuler = new Laya.Vector3(0, 0, 0);
+            this._localMatrix = new Laya.Matrix4x4();
+            this._position = new Laya.Vector3(0, 0, 0);
+            this._rotation = new Laya.Quaternion(0, 0, 0, 1);
+            this._scale = new Laya.Vector3(1, 1, 1);
+            this._rotationEuler = new Laya.Vector3(0, 0, 0);
+            this._worldMatrix = new Laya.Matrix4x4();
+            this._rtSyncFlag = 0;
+            this._notifyFrame = 0;
+            this._hasTransformChangedListener = false;
+            this._isDefaultMatrix = false;
+            this._faceInvert = false;
+            this._frontFaceValue = 1;
+        }
+        _initProperty() {
+            this._nativeMemory = new Laya.NativeMemory(RTTransform3D.TRANSFORM_SHARE_MEMORY_SIZE * 4, false);
+            this._nativeFloat32Buffer = this._nativeMemory.float32Array;
+            this._nativeUInt32Buffer = this._nativeMemory.Uint32Array;
+            this._nativeObj = new window.conchRTTransform(this._nativeMemory._buffer);
+            this._setTransformFlag(Laya.Transform3D.TRANSFORM_WORLDPOSITION | Laya.Transform3D.TRANSFORM_WORLDQUATERNION | Laya.Transform3D.TRANSFORM_WORLDEULER | Laya.Transform3D.TRANSFORM_WORLDSCALE | Laya.Transform3D.TRANSFORM_WORLDMATRIX, true);
+            this.rotation = this._rotation;
+            this.localScale = this._localScale;
+            this.setWorldLossyScale(this._scale);
+            this.localRotation = this._localRotation;
+        }
+        onStartListeningToType(type) {
+            super.onStartListeningToType(type);
+            if (type === Laya.Event.TRANSFORM_CHANGED)
+                this._hasTransformChangedListener = true;
+        }
+        get isDefaultMatrix() {
+            if (this._getTransformFlag(Laya.Transform3D.TRANSFORM_LOCALMATRIX)) {
+                this.localMatrix;
+            }
+            return this._isDefaultMatrix;
+        }
+        _setTransformFlag(type, value) {
+            let flag = this._nativeUInt32Buffer[RTTransform3D.TRANSFORM_CHANGEFLAG_DATAOFFSET];
+            if (value)
+                flag |= type;
+            else
+                flag &= ~type;
+            this._nativeUInt32Buffer[RTTransform3D.TRANSFORM_CHANGEFLAG_DATAOFFSET] = flag;
+        }
+        _getTransformFlag(type) {
+            return (this._getTransformChangeFlag() & type) != 0;
+        }
+        _getTransformChangeFlag() {
+            return this._nativeUInt32Buffer[RTTransform3D.TRANSFORM_CHANGEFLAG_DATAOFFSET];
+        }
+        _getRTSyncFlag(type) {
+            return (this._nativeUInt32Buffer[RTTransform3D.TRANSFORM_RT_SYNC_FLAG_DATAOFFSET] & type) != 0;
+        }
+        _setRTSyncFlag(type, value) {
+            let flag = this._nativeUInt32Buffer[RTTransform3D.TRANSFORM_RT_SYNC_FLAG_DATAOFFSET];
+            if (value)
+                flag |= type;
+            else
+                flag &= ~type;
+            this._nativeUInt32Buffer[RTTransform3D.TRANSFORM_RT_SYNC_FLAG_DATAOFFSET] = flag;
+        }
+        get _RTtransformFlag() {
+            return this._getTransformChangeFlag();
+        }
+        get localPositionX() {
+            return this.localPosition.x;
+        }
+        set localPositionX(x) {
+            let localPos = this.localPosition;
+            localPos.x = x;
+            this.localPosition = localPos;
+        }
+        get localPositionY() {
+            return this.localPosition.y;
+        }
+        set localPositionY(y) {
+            let localPos = this.localPosition;
+            localPos.y = y;
+            this.localPosition = localPos;
+        }
+        get localPositionZ() {
+            return this.localPosition.z;
+        }
+        set localPositionZ(z) {
+            let localPos = this.localPosition;
+            localPos.z = z;
+            this.localPosition = localPos;
+        }
+        get localPosition() {
+            if (this._getTransformFlag(Laya.Transform3D.TRANSFORM_LOCALPOS)) {
+                this._nativeObj.getLocalPosition();
+            }
+            if (this._getRTSyncFlag(Laya.Transform3D.TRANSFORM_LOCALPOS)) {
+                let index = RTTransform3D.TRANSFORM_LOCALPOS_DATAOFFSET;
+                this._localPosition.setValue(this._nativeFloat32Buffer[index], this._nativeFloat32Buffer[index + 1], this._nativeFloat32Buffer[index + 2]);
+                this._setRTSyncFlag(Laya.Transform3D.TRANSFORM_LOCALPOS, false);
+            }
+            return this._localPosition;
+        }
+        set localPosition(value) {
+            let index = RTTransform3D.TRANSFORM_LOCALPOS_DATAOFFSET;
+            this._nativeFloat32Buffer[index] = value.x;
+            this._nativeFloat32Buffer[index + 1] = value.y;
+            this._nativeFloat32Buffer[index + 2] = value.z;
+            this._nativeObj.setLocalPosition();
+            this._onWorldPositionTransform();
+        }
+        get localRotation() {
+            if (this._getTransformFlag(Laya.Transform3D.TRANSFORM_LOCALQUATERNION)) {
+                this._nativeObj.getLocalRotation();
+            }
+            if (this._getRTSyncFlag(Laya.Transform3D.TRANSFORM_LOCALQUATERNION)) {
+                let index = RTTransform3D.TRANSFORM_LOCALQUATERNION_DATAOFFSET;
+                this._localRotation.setValue(this._nativeFloat32Buffer[index], this._nativeFloat32Buffer[index + 1], this._nativeFloat32Buffer[index + 2], this._nativeFloat32Buffer[index + 3]);
+                this._setRTSyncFlag(Laya.Transform3D.TRANSFORM_LOCALQUATERNION, false);
+            }
+            return this._localRotation;
+        }
+        set localRotation(value) {
+            value.normalize(this._localRotation);
+            let index = RTTransform3D.TRANSFORM_LOCALQUATERNION_DATAOFFSET;
+            this._nativeFloat32Buffer[index] = value.x;
+            this._nativeFloat32Buffer[index + 1] = value.y;
+            this._nativeFloat32Buffer[index + 2] = value.z;
+            this._nativeFloat32Buffer[index + 3] = value.w;
+            this._nativeObj.setLocalRotation();
+            this._onWorldRotationTransform();
+        }
+        get localScaleX() {
+            return this.localScale.x;
+        }
+        set localScaleX(value) {
+            let scale = this.localScale;
+            scale.x = value;
+            this.localScale = scale;
+        }
+        get localScaleY() {
+            return this.localScale.y;
+        }
+        set localScaleY(value) {
+            let scale = this.localScale;
+            scale.y = value;
+            this.localScale = scale;
+        }
+        get localScaleZ() {
+            return this.localScale.z;
+        }
+        set localScaleZ(value) {
+            let scale = this.localScale;
+            scale.z = value;
+            this.localScale = scale;
+        }
+        get localScale() {
+            if (this._getTransformFlag(Laya.Transform3D.TRANSFORM_LOCALPOS)) {
+                this._nativeObj.getLocalScale();
+            }
+            if (this._getRTSyncFlag(Laya.Transform3D.TRANSFORM_LOCALSCALE)) {
+                let index = RTTransform3D.TRANSFORM_LOCALSCALE_DATAOFFSET;
+                this._localScale.setValue(this._nativeFloat32Buffer[index], this._nativeFloat32Buffer[index + 1], this._nativeFloat32Buffer[index + 2]);
+                this._setRTSyncFlag(Laya.Transform3D.TRANSFORM_LOCALSCALE, false);
+            }
+            return this._localScale;
+        }
+        set localScale(value) {
+            let index = RTTransform3D.TRANSFORM_LOCALSCALE_DATAOFFSET;
+            this._nativeFloat32Buffer[index] = value.x;
+            this._nativeFloat32Buffer[index + 1] = value.y;
+            this._nativeFloat32Buffer[index + 2] = value.z;
+            this._nativeObj.setLocalScale();
+            this._onWorldScaleTransform();
+        }
+        get localRotationEuler() {
+            if (this._getTransformFlag(Laya.Transform3D.TRANSFORM_LOCALEULER)) {
+                this._nativeObj.getLocalRotationEuler();
+            }
+            if (this._getRTSyncFlag(Laya.Transform3D.TRANSFORM_LOCALEULER)) {
+                let index = RTTransform3D.TRANSFORM_LOCALEULER_DATAOFFSET;
+                this._localRotationEuler.setValue(this._nativeFloat32Buffer[index], this._nativeFloat32Buffer[index + 1], this._nativeFloat32Buffer[index + 2]);
+                this._setRTSyncFlag(Laya.Transform3D.TRANSFORM_LOCALEULER, false);
+            }
+            return this._localRotationEuler;
+        }
+        set localRotationEuler(value) {
+            let index = RTTransform3D.TRANSFORM_LOCALEULER_DATAOFFSET;
+            this._nativeFloat32Buffer[index] = value.x;
+            this._nativeFloat32Buffer[index + 1] = value.y;
+            this._nativeFloat32Buffer[index + 2] = value.z;
+            this._nativeObj.setLocalRotationEuler();
+            this._onWorldRotationTransform();
+        }
+        get localMatrix() {
+            if (this._getTransformFlag(Laya.Transform3D.TRANSFORM_LOCALMATRIX)) {
+                this._nativeObj.getLocalMatrix();
+            }
+            if (this._getRTSyncFlag(Laya.Transform3D.TRANSFORM_LOCALEULER)) {
+                let index = RTTransform3D.TRANSFORM_LOCALMATRIX_DATAOFFSET;
+                for (var i = 0; i < 16; ++i) {
+                    this._localMatrix.elements[i] = this._nativeFloat32Buffer[i + index];
+                }
+                this._setRTSyncFlag(Laya.Transform3D.TRANSFORM_LOCALEULER, false);
+            }
+            return this._localMatrix;
+        }
+        set localMatrix(value) {
+            let index = RTTransform3D.TRANSFORM_LOCALMATRIX_DATAOFFSET;
+            this._nativeFloat32Buffer.set(value.elements, index);
+            this._nativeObj.setLocalMatrix();
+            this._isDefaultMatrix = value.isIdentity();
+            this._onWorldTransform();
+        }
+        get position() {
+            if (this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDPOSITION)) {
+                this._nativeObj.getPosition();
+            }
+            if (this._getRTSyncFlag(Laya.Transform3D.TRANSFORM_WORLDPOSITION)) {
+                let index = RTTransform3D.TRANSFORM_WORLDPOS_DATAOFFSET;
+                this._position.setValue(this._nativeFloat32Buffer[index], this._nativeFloat32Buffer[index + 1], this._nativeFloat32Buffer[index + 2]);
+                this._setRTSyncFlag(Laya.Transform3D.TRANSFORM_WORLDPOSITION, false);
+            }
+            return this._position;
+        }
+        set position(value) {
+            let index = RTTransform3D.TRANSFORM_WORLDPOS_DATAOFFSET;
+            this._nativeFloat32Buffer[index] = value.x;
+            this._nativeFloat32Buffer[index + 1] = value.y;
+            this._nativeFloat32Buffer[index + 2] = value.z;
+            this._nativeObj.setPosition();
+            this._onWorldPositionTransform();
+        }
+        get rotation() {
+            if (this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDQUATERNION)) {
+                this._nativeObj.getRotation();
+            }
+            if (this._getRTSyncFlag(Laya.Transform3D.TRANSFORM_WORLDQUATERNION)) {
+                let index = RTTransform3D.TRANSFORM_WORLDQUATERNION_DATAOFFSET;
+                this._rotation.setValue(this._nativeFloat32Buffer[index], this._nativeFloat32Buffer[index + 1], this._nativeFloat32Buffer[index + 2], this._nativeFloat32Buffer[index + 3]);
+                this._setRTSyncFlag(Laya.Transform3D.TRANSFORM_WORLDQUATERNION, false);
+            }
+            return this._rotation;
+        }
+        set rotation(value) {
+            let index = RTTransform3D.TRANSFORM_WORLDQUATERNION_DATAOFFSET;
+            this._nativeFloat32Buffer[index] = value.x;
+            this._nativeFloat32Buffer[index + 1] = value.y;
+            this._nativeFloat32Buffer[index + 2] = value.z;
+            this._nativeFloat32Buffer[index + 3] = value.w;
+            this._nativeObj.setRotation();
+            this._onWorldRotationTransform();
+        }
+        get rotationEuler() {
+            if (this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDEULER)) {
+                this._nativeObj.getRotationEuler();
+            }
+            if (this._getRTSyncFlag(Laya.Transform3D.TRANSFORM_WORLDEULER)) {
+                let index = RTTransform3D.TRANSFORM_WORLDEULER_DATAOFFSET;
+                this._rotationEuler.setValue(this._nativeFloat32Buffer[index], this._nativeFloat32Buffer[index + 1], this._nativeFloat32Buffer[index + 2]);
+                this._setRTSyncFlag(Laya.Transform3D.TRANSFORM_WORLDEULER, false);
+            }
+            return this._rotationEuler;
+        }
+        set rotationEuler(value) {
+            let index = RTTransform3D.TRANSFORM_WORLDEULER_DATAOFFSET;
+            this._nativeFloat32Buffer[index] = value.x;
+            this._nativeFloat32Buffer[index + 1] = value.y;
+            this._nativeFloat32Buffer[index + 2] = value.z;
+            this._nativeObj.setRotationEuler();
+            this._onWorldRotationTransform();
+        }
+        get worldMatrix() {
+            if (this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX)) {
+                this._nativeObj.getWorldMatrix();
+            }
+            if (this._getRTSyncFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX)) {
+                let index = RTTransform3D.TRANSFORM_WORLDMATRIX_DATAOFFSET;
+                for (var i = 0; i < 16; ++i) {
+                    this._worldMatrix.elements[i] = this._nativeFloat32Buffer[i + index];
+                }
+                this._setRTSyncFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX, false);
+            }
+            return this._worldMatrix;
+        }
+        set worldMatrix(value) {
+            let index = RTTransform3D.TRANSFORM_WORLDMATRIX_DATAOFFSET;
+            this._nativeFloat32Buffer.set(value.elements, index);
+            this._nativeObj.setWorldMatrix();
+            this._onWorldTransform();
+        }
+        _setParent(value) {
+            super._setParent(value);
+            this._nativeObj.setParent(value ? value._nativeObj : null);
+        }
+        _onWorldPositionRotationTransform() {
+            if (!this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDPOSITION) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDQUATERNION) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDEULER)) {
+                this._setTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX | Laya.Transform3D.TRANSFORM_WORLDPOSITION | Laya.Transform3D.TRANSFORM_WORLDQUATERNION | Laya.Transform3D.TRANSFORM_WORLDEULER, true);
+                if (this._hasTransformChangedListener)
+                    this.event(Laya.Event.TRANSFORM_CHANGED, this._getTransformChangeFlag());
+            }
+            for (var i = 0, n = this._children.length; i < n; i++)
+                this._children[i]._onWorldPositionRotationTransform();
+        }
+        _onWorldPositionScaleTransform() {
+            if (!this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDPOSITION) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDSCALE)) {
+                this._setTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX | Laya.Transform3D.TRANSFORM_WORLDPOSITION | Laya.Transform3D.TRANSFORM_WORLDSCALE, true);
+                if (this._hasTransformChangedListener)
+                    this.event(Laya.Event.TRANSFORM_CHANGED, this._getTransformChangeFlag());
+            }
+            for (var i = 0, n = this._children.length; i < n; i++)
+                this._children[i]._onWorldPositionScaleTransform();
+        }
+        _onWorldPositionTransform() {
+            if (!this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDPOSITION)) {
+                this._setTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX | Laya.Transform3D.TRANSFORM_WORLDPOSITION, true);
+                if (this._hasTransformChangedListener)
+                    this.event(Laya.Event.TRANSFORM_CHANGED, this._getTransformChangeFlag());
+            }
+            if (Laya.Transform3D._inAnimatorBatch) {
+                if (this._lastAnimatorFrame === Laya.Transform3D._currentAnimatorFrame)
+                    return;
+                this._lastAnimatorFrame = Laya.Transform3D._currentAnimatorFrame;
+                for (var i = 0, n = this._children.length; i < n; i++)
+                    this._children[i]._onWorldTransform();
+                return;
+            }
+            for (var j = 0, m = this._children.length; j < m; j++)
+                this._children[j]._onWorldPositionTransform();
+        }
+        _onWorldRotationTransform() {
+            if (!this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDQUATERNION) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDEULER)) {
+                this._setTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX | Laya.Transform3D.TRANSFORM_WORLDQUATERNION | Laya.Transform3D.TRANSFORM_WORLDEULER, true);
+                if (this._hasTransformChangedListener)
+                    this.event(Laya.Event.TRANSFORM_CHANGED, this._getTransformChangeFlag());
+            }
+            if (Laya.Transform3D._inAnimatorBatch) {
+                if (this._lastAnimatorFrame === Laya.Transform3D._currentAnimatorFrame)
+                    return;
+                this._lastAnimatorFrame = Laya.Transform3D._currentAnimatorFrame;
+                for (var i = 0, n = this._children.length; i < n; i++)
+                    this._children[i]._onWorldTransform();
+                return;
+            }
+            for (var j = 0, m = this._children.length; j < m; j++)
+                this._children[j]._onWorldPositionRotationTransform();
+        }
+        _onWorldScaleTransform() {
+            if (!this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDSCALE)) {
+                this._setTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX | Laya.Transform3D.TRANSFORM_WORLDSCALE, true);
+                if (this._hasTransformChangedListener)
+                    this.event(Laya.Event.TRANSFORM_CHANGED, this._getTransformChangeFlag());
+            }
+            if (Laya.Transform3D._inAnimatorBatch) {
+                if (this._lastAnimatorFrame === Laya.Transform3D._currentAnimatorFrame)
+                    return;
+                this._lastAnimatorFrame = Laya.Transform3D._currentAnimatorFrame;
+                for (var i = 0, n = this._children.length; i < n; i++)
+                    this._children[i]._onWorldTransform();
+                return;
+            }
+            for (var j = 0, m = this._children.length; j < m; j++)
+                this._children[j]._onWorldPositionScaleTransform();
+        }
+        _onWorldTransform() {
+            if (!this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDPOSITION) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDQUATERNION) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDEULER) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDSCALE)) {
+                this._setTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX | Laya.Transform3D.TRANSFORM_WORLDPOSITION | Laya.Transform3D.TRANSFORM_WORLDQUATERNION | Laya.Transform3D.TRANSFORM_WORLDEULER | Laya.Transform3D.TRANSFORM_WORLDSCALE, true);
+                if (this._hasTransformChangedListener)
+                    this.event(Laya.Event.TRANSFORM_CHANGED, this._getTransformChangeFlag());
+            }
+            if (Laya.Transform3D._inAnimatorBatch) {
+                if (this._lastAnimatorFrame === Laya.Transform3D._currentAnimatorFrame)
+                    return;
+                this._lastAnimatorFrame = Laya.Transform3D._currentAnimatorFrame;
+            }
+            for (var i = 0, n = this._children.length; i < n; i++)
+                this._children[i]._onWorldTransform();
+        }
+        translate(translation, isLocal = true) {
+            if (isLocal) {
+                Laya.Matrix4x4.createFromQuaternion(this.localRotation, _tempMatrix0);
+                Laya.Vector3.transformCoordinate(translation, _tempMatrix0, _tempVector30);
+                Laya.Vector3.add(this.localPosition, _tempVector30, this._localPosition);
+                this.localPosition = this._localPosition;
+            }
+            else {
+                Laya.Vector3.add(this.position, translation, this._position);
+                this.position = this._position;
+            }
+        }
+        rotate(rotation, isLocal = true, isRadian = true) {
+            var rot;
+            if (isRadian) {
+                rot = rotation;
+            }
+            else {
+                Laya.Vector3.scale(rotation, Math.PI / 180.0, _tempVector30);
+                rot = _tempVector30;
+            }
+            Laya.Quaternion.createFromYawPitchRoll(rot.y, rot.x, rot.z, _tempQuaternion0);
+            if (isLocal) {
+                Laya.Quaternion.multiply(this.localRotation, _tempQuaternion0, this._localRotation);
+                this.localRotation = this._localRotation;
+            }
+            else {
+                Laya.Quaternion.multiply(_tempQuaternion0, this.rotation, this._rotation);
+                this.rotation = this._rotation;
+            }
+        }
+        getWorldLossyScale() {
+            if (this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDSCALE)) {
+                this._nativeObj.getWorldLossyScale();
+            }
+            if (this._getRTSyncFlag(Laya.Transform3D.TRANSFORM_WORLDSCALE)) {
+                let index = RTTransform3D.TRANSFORM_WORLDSCALE_DATAOFFSET;
+                this._scale.set(this._nativeFloat32Buffer[index], this._nativeFloat32Buffer[index + 1], this._nativeFloat32Buffer[index + 2]);
+                this._setRTSyncFlag(Laya.Transform3D.TRANSFORM_WORLDSCALE, false);
+            }
+            return this._scale;
+        }
+        setWorldLossyScale(value) {
+            let index = RTTransform3D.TRANSFORM_WORLDSCALE_DATAOFFSET;
+            this._nativeFloat32Buffer[index] = value.x;
+            this._nativeFloat32Buffer[index + 1] = value.y;
+            this._nativeFloat32Buffer[index + 2] = value.z;
+            this._nativeObj.setWorldLossyScale();
+        }
+    }
+    RTTransform3D.TRANSFORM_LOCALQUATERNION_DATAOFFSET = 0;
+    RTTransform3D.TRANSFORM_LOCALEULER_DATAOFFSET = 4;
+    RTTransform3D.TRANSFORM_LOCALPOS_DATAOFFSET = 7;
+    RTTransform3D.TRANSFORM_LOCALSCALE_DATAOFFSET = 10;
+    RTTransform3D.TRANSFORM_LOCALMATRIX_DATAOFFSET = 13;
+    RTTransform3D.TRANSFORM_WORLDQUATERNION_DATAOFFSET = 29;
+    RTTransform3D.TRANSFORM_WORLDEULER_DATAOFFSET = 33;
+    RTTransform3D.TRANSFORM_WORLDPOS_DATAOFFSET = 36;
+    RTTransform3D.TRANSFORM_WORLDSCALE_DATAOFFSET = 39;
+    RTTransform3D.TRANSFORM_WORLDMATRIX_DATAOFFSET = 42;
+    RTTransform3D.TRANSFORM_CHANGEFLAG_DATAOFFSET = 58;
+    RTTransform3D.TRANSFORM_RT_SYNC_FLAG_DATAOFFSET = 59;
+    RTTransform3D.TRANSFORM_SHARE_MEMORY_SIZE = 60;
+    const _tempVector30 = new Laya.Vector3();
+    const _tempQuaternion0 = new Laya.Quaternion();
+    const _tempMatrix0 = new Laya.Matrix4x4();
+
+    class RTBaseRenderNode {
+        get transform() {
+            return this._transform;
+        }
+        set transform(value) {
+            this._nativeObj.setTransform(value ? value._nativeObj : null);
+            this._transform = value;
+        }
+        get distanceForSort() {
+            return this._nativeObj.distanceForSort;
+        }
+        set distanceForSort(value) {
+            this._nativeObj.distanceForSort = value;
+        }
+        get sortingFudge() {
+            return this._nativeObj.sortingFudge;
+        }
+        set sortingFudge(value) {
+            this._nativeObj.sortingFudge = value;
+        }
+        get castShadow() {
+            return this._nativeObj.castShadow;
+        }
+        set castShadow(value) {
+            this._nativeObj.castShadow = value;
+        }
+        get enable() {
+            return this._nativeObj.enable;
+        }
+        set enable(value) {
+            this._nativeObj.enable = value;
+        }
+        get renderbitFlag() {
+            return this._nativeObj.renderbitFlag;
+        }
+        set renderbitFlag(value) {
+            this._nativeObj.renderbitFlag = value;
+        }
+        get layer() {
+            return this._nativeObj.layer;
+        }
+        set layer(value) {
+            this._nativeObj.layer = value;
+        }
+        get bounds() {
+            if (this.boundsChange) {
+                this._nativeObj._calculateBoundingBox();
+                this.boundsChange = false;
+            }
+            return this._bounds;
+        }
+        set bounds(value) {
+            this._bounds = value;
+            this._nativeObj._bounds = value._imp._nativeObj;
+        }
+        get baseGeometryBounds() {
+            return this._baseGeometryBounds;
+        }
+        set baseGeometryBounds(value) {
+            this._baseGeometryBounds = value;
+            this._nativeObj.setBaseGeometryBounds(value._imp._nativeObj);
+        }
+        get boundsChange() {
+            return this._nativeObj.boundsChange;
+        }
+        set boundsChange(value) {
+            this._nativeObj.boundsChange = value;
+        }
+        get customCull() {
+            return this._nativeObj._customCull;
+        }
+        set customCull(value) {
+            this._nativeObj._customCull = value;
+        }
+        get customCullResoult() {
+            return this._nativeObj._customCullResoult;
+        }
+        set customCullResoult(value) {
+            this._nativeObj._customCullResoult = value;
+        }
+        get staticMask() {
+            return this._nativeObj.staticMask;
+        }
+        set staticMask(value) {
+            this._nativeObj.staticMask = value;
+        }
+        get shaderData() {
+            return this._shaderData;
+        }
+        set shaderData(value) {
+            this._shaderData = value;
+            this._nativeObj.setShaderData(value._nativeObj);
+        }
+        get lightmapIndex() {
+            return this._nativeObj.lightmapIndex;
+        }
+        set lightmapIndex(value) {
+            this._nativeObj.lightmapIndex = value;
+        }
+        get lightmap() {
+            return this._lightmap;
+        }
+        set lightmap(value) {
+            this._lightmap = value;
+            this._nativeObj.setLightmap(value ? value._nativeObj : null);
+        }
+        get probeReflection() {
+            return this._probeReflection;
+        }
+        set probeReflection(value) {
+            this._probeReflection = value;
+            this._nativeObj.setProbeReflection(value._nativeObj);
+        }
+        get reflectionMode() {
+            return this._nativeObj.reflectionMode;
+        }
+        set reflectionMode(value) {
+            this._nativeObj.reflectionMode = value;
+        }
+        get volumetricGI() {
+            return this._volumetricGI;
+        }
+        set volumetricGI(value) {
+            this._volumetricGI = value;
+            this._nativeObj.setVolumetricGI(value._nativeObj);
+        }
+        get lightProbUpdateMark() {
+            return this._nativeObj.lightProbUpdateMark;
+        }
+        set lightProbUpdateMark(value) {
+            this._nativeObj.lightProbUpdateMark = value;
+        }
+        get irradientMode() {
+            return this._irradientMode;
+        }
+        set irradientMode(value) {
+            this._irradientMode = value;
+            this._nativeObj.irradianceMode = value;
+        }
+        set_renderUpdatePreCall(call, fun) {
+            this._renderUpdatePrebindFun = fun.bind(call, Laya.RenderContext3D._instance._contextOBJ);
+            this._nativeObj.setRenderUpdatePre(this._renderUpdatePrebindFun);
+        }
+        set_caculateBoundingBox(call, fun) {
+            this._caculateBoundingBoxbindFun = fun.bind(call);
+            this._nativeObj.setCalculateBoundingBox(this._caculateBoundingBoxbindFun);
+        }
+        _getNativeObj() {
+            this._nativeObj = new window.conchRTBaseRenderNode();
+        }
+        get additionShaderData() {
+            return this._additionShaderData;
+        }
+        set additionShaderData(value) {
+            this._additionShaderData = value;
+            this._nativeObj.clearAdditionalMap();
+            for (let [key, value] of this._additionShaderData) {
+                this._nativeObj.addOneAddiionalData(key, value._nativeObj);
+            }
+        }
+        get perCameraUpdate() {
+            return this._nativeObj.perCameraUpdate;
+        }
+        set perCameraUpdate(value) {
+            this._nativeObj.perCameraUpdate = value;
+        }
+        constructor() {
+            this._additionShaderData = new Map();
+            this._ismoved = new Laya.Vector2();
+            this._worldParams = new Laya.Vector4();
+            this._getNativeObj();
+            this._defaultBaseGeometryBounds = new Laya.Bounds();
+            this.baseGeometryBounds = this._defaultBaseGeometryBounds;
+            this.renderelements = [];
+        }
+        get visibalRangeBit() {
+            return this._nativeObj.visibalRangeBit;
+        }
+        set visibalRangeBit(value) {
+            this._nativeObj.visibalRangeBit = value;
+        }
+        get visibalMin() {
+            return this._nativeObj.visibalMin;
+        }
+        set visibalMin(value) {
+            this._nativeObj.visibalMin = value;
+        }
+        get visibalMax() {
+            return this._nativeObj.visibalMax;
+        }
+        set visibalMax(value) {
+            this._nativeObj.visibalMax = value;
+        }
+        get ismoved() {
+            return this._ismoved;
+        }
+        set ismoved(value) {
+            this._ismoved.setValue(value.x, value.y);
+            this._nativeObj.ismoved = value;
+        }
+        setNodeCustomData(dataSlot, data) {
+            switch (dataSlot) {
+                case 0:
+                    this._worldParams.y = data;
+                    break;
+                case 1:
+                    this._worldParams.z = data;
+                    break;
+                case 2:
+                    this._worldParams.w = data;
+                    break;
+            }
+            this._nativeObj.worldParams = this._worldParams;
+        }
+        get renderNodeType() {
+            return this._nativeObj.renderNodeType;
+        }
+        set renderNodeType(value) {
+            this._nativeObj.renderNodeType = value;
+        }
+        get receiveShadow() {
+            return this._nativeObj.receiveShadow;
+        }
+        set receiveShadow(value) {
+            this._nativeObj.receiveShadow = value;
+        }
+        _applyLightProb() {
+            this._nativeObj._applyLightProb();
+        }
+        _applyReflection() {
+            this._nativeObj._applyReflection();
+        }
+        setRenderelements(value) {
+            var tempArray = [];
+            this.renderelements.length = 0;
+            for (var i = 0; i < value.length; i++) {
+                this.renderelements.push(value[i]);
+                value[i].owner = this;
+                tempArray.push(value[i]._nativeObj);
+            }
+            this._nativeObj.setRenderElements(tempArray);
+        }
+        setLightmapScaleOffset(value) {
+            this._nativeObj.setLightmapScaleOffset(value);
+        }
+        setCommonUniformMap(value) {
+            this._nativeObj.setCommonUniformMap(value);
+        }
+        setOneMaterial(index, mat) {
+            if (!this.renderelements[index])
+                return;
+            this.renderelements[index].materialShaderData = mat.shaderData;
+            this.renderelements[index].materialRenderQueue = mat.renderQueue;
+            this.renderelements[index].subShader = mat.shader.getSubShaderAt(0);
+        }
+        destroy() {
+            this._nativeObj.destroy();
+            for (let i = 0, n = this.renderelements.length; i < n; i++) {
+                this.renderelements[i].destroy();
+            }
+            this.renderelements.length = 0;
+            this._baseGeometryBounds = null;
+            this.transform = null;
+            this._shaderData && this._shaderData.destroy();
+        }
+    }
+
+    class RTDirectLight {
+        get shadowNearPlane() {
+            return this._nativeObj._shadowNearPlane;
+        }
+        set shadowNearPlane(value) {
+            this._nativeObj._shadowNearPlane = value;
+        }
+        get shadowCascadesMode() {
+            return this._nativeObj._shadowCascadesMode;
+        }
+        set shadowCascadesMode(value) {
+            this._nativeObj._shadowCascadesMode = value;
+        }
+        get transform() {
+            return this._transform;
+        }
+        set transform(value) {
+            this._transform = value;
+            this._nativeObj.setTransform(value._nativeObj);
+        }
+        get shadowResolution() {
+            return this._nativeObj._shadowResolution;
+        }
+        set shadowResolution(value) {
+            this._nativeObj._shadowResolution = value;
+        }
+        get shadowDistance() {
+            return this._nativeObj._shadowDistance;
+        }
+        set shadowDistance(value) {
+            this._nativeObj._shadowDistance = value;
+        }
+        get shadowMode() {
+            return this._nativeObj._shadowMode;
+        }
+        set shadowMode(value) {
+            this._nativeObj._shadowMode = value;
+        }
+        get shadowStrength() {
+            return this._nativeObj._shadowStrength;
+        }
+        set shadowStrength(value) {
+            this._nativeObj._shadowStrength = value;
+        }
+        get shadowDepthBias() {
+            return this._nativeObj._shadowDepthBias;
+        }
+        set shadowDepthBias(value) {
+            this._nativeObj._shadowDepthBias = value;
+        }
+        get shadowNormalBias() {
+            return this._nativeObj._shadowNormalBias;
+        }
+        set shadowNormalBias(value) {
+            this._nativeObj._shadowNormalBias = value;
+        }
+        get shadowTwoCascadeSplits() {
+            return this._nativeObj._shadowTwoCascadeSplits;
+        }
+        set shadowTwoCascadeSplits(value) {
+            this._nativeObj._shadowTwoCascadeSplits = value;
+        }
+        setShadowFourCascadeSplits(value) {
+            value && this._nativeObj.setShadowFourCascadeSplits(value);
+        }
+        setDirection(value) {
+            value && this._nativeObj.setDirection(value);
+        }
+        constructor() {
+            this._nativeObj = new window.conchRTDirectLight();
+        }
+    }
+
+    class RTLightmapData {
+        constructor() {
+            this._nativeObj = new window.conchRTLightmapData();
+        }
+        get lightmapColor() {
+            return this._lightmapColor;
+        }
+        set lightmapColor(value) {
+            this._lightmapColor = value;
+            this._nativeObj.setLightmapColor(value._nativeObj);
+        }
+        get lightmapDirection() {
+            return this._lightmapDirection;
+        }
+        set lightmapDirection(value) {
+            this._lightmapDirection = value;
+            this._nativeObj.setLightmapDirection(value._nativeObj);
+        }
+        destroy() {
+            this._nativeObj.destroy();
+        }
+    }
+
+    class RTMeshRenderNode extends RTBaseRenderNode {
+    }
+
+    class RTPointLight {
+        get transform() {
+            return this._transform;
+        }
+        set transform(value) {
+            this._transform = value;
+            this._nativeObj.setTransform(value._nativeObj);
+        }
+        get range() {
+            return this._nativeObj.range;
+        }
+        set range(value) {
+            this._nativeObj.range = value;
+        }
+        get shadowResolution() {
+            return this._nativeObj.shadowResolution;
+        }
+        set shadowResolution(value) {
+            this._nativeObj.shadowResolution = value;
+        }
+        get shadowDistance() {
+            return this._nativeObj.shadowDistance;
+        }
+        set shadowDistance(value) {
+            this._nativeObj.shadowDistance = value;
+        }
+        ;
+        get shadowMode() {
+            return this._nativeObj.shadowMode;
+        }
+        set shadowMode(value) {
+            this._nativeObj.shadowMode = value;
+        }
+        ;
+        get shadowStrength() {
+            return this._nativeObj.shadowStrength;
+        }
+        set shadowStrength(value) {
+            this._nativeObj.shadowStrength = value;
+        }
+        get shadowDepthBias() {
+            return this._nativeObj.shadowDepthBias;
+        }
+        set shadowDepthBias(value) {
+            this._nativeObj.shadowDepthBias = value;
+        }
+        get shadowNormalBias() {
+            return this._nativeObj.shadowNormalBias;
+        }
+        set shadowNormalBias(value) {
+            this._nativeObj.shadowNormalBias = value;
+        }
+        get shadowNearPlane() {
+            return this._nativeObj.shadowNearPlane;
+        }
+        set shadowNearPlane(value) {
+            this._nativeObj.shadowNearPlane = value;
+        }
+        constructor() {
+            this._nativeObj = new window.conchRTPointLight();
+        }
+    }
+
+    class RTReflectionProb {
+        get boxProjection() {
+            return this._nativeObj._boxProjection;
+        }
+        set boxProjection(value) {
+            this._nativeObj._boxProjection = value;
+        }
+        get bound() {
+            return this._bound;
+        }
+        set bound(value) {
+            this._bound = value;
+            this._nativeObj.setBounds(value._imp._nativeObj);
+        }
+        get ambientMode() {
+            return this._nativeObj._ambientMode;
+        }
+        set ambientMode(value) {
+            this._nativeObj._ambientMode = value;
+        }
+        get ambientIntensity() {
+            return this._nativeObj._ambientIntensity;
+        }
+        set ambientIntensity(value) {
+            this._nativeObj._ambientIntensity = value;
+        }
+        get reflectionIntensity() {
+            return this._nativeObj._reflectionIntensity;
+        }
+        set reflectionIntensity(value) {
+            this._nativeObj._reflectionIntensity = value;
+        }
+        get reflectionTexture() {
+            return this._reflectionTexture;
+        }
+        set reflectionTexture(value) {
+            this._reflectionTexture = value;
+            if (!value) {
+                this._nativeObj.setReflectionTexture(null);
+                return;
+            }
+            this._nativeObj.setReflectionTexture(value._nativeObj);
+        }
+        get iblTex() {
+            return this._iblTex;
+        }
+        set iblTex(value) {
+            this._iblTex = value;
+            if (!value) {
+                this._nativeObj.setIblTex(null);
+                return;
+            }
+            this._nativeObj.setIblTex(value._nativeObj);
+        }
+        get updateMark() {
+            return this._nativeObj._updateMark;
+        }
+        set updateMark(value) {
+            this._nativeObj._updateMark = value;
+        }
+        get iblTexRGBD() {
+            return this._nativeObj._iblTexRGBD;
+        }
+        set iblTexRGBD(value) {
+            this._nativeObj._iblTexRGBD = value;
+        }
+        setProbePosition(value) {
+            value && this._nativeObj.setProbePosition(value);
+        }
+        setAmbientColor(value) {
+            value && this._nativeObj.setAmbientColor(value);
+        }
+        setAmbientSH(value) {
+            this._ambientSH = value;
+            this._nativeObj.setAmbientSH(value);
+        }
+        constructor() {
+            this._id = ++RTReflectionProb._idCounter;
+            this._nativeObj = new window.conchRTReflectionProb();
+            this.shaderData = Laya.LayaGL.renderDeviceFactory.createShaderData();
+        }
+        get shaderData() {
+            return this._shaderData;
+        }
+        set shaderData(value) {
+            this._shaderData = value;
+            this._nativeObj.shaderData = value ? this._shaderData._nativeObj : null;
+        }
+        destroy() {
+            this._nativeObj.destroy();
+            this.shaderData.destroy();
+            this.shaderData = null;
+        }
+    }
+    RTReflectionProb._idCounter = 0;
+
+    class RTSimpleSkinRenderNode extends RTBaseRenderNode {
+        setSimpleAnimatorParams(value) {
+            this._float32Array[0] = value.x;
+            this._float32Array[1] = value.y;
+            this._float32Array[2] = value.z;
+            this._float32Array[3] = value.w;
+            this._nativeObj.setSimpleAnimatorParamsByBuffer();
+        }
+        _getNativeObj() {
+            this._nativeObj = new window.conchRTSimpleSkinRenderNode();
+            this._nativeMemory = new Laya.NativeMemory(4 * 4, true);
+            this._nativeObj.setShareBuffer(this._nativeMemory._buffer);
+            this._float32Array = this._nativeMemory.float32Array;
+        }
+        constructor() {
+            super();
+        }
+    }
+
+    class RTSkinRenderNode extends RTBaseRenderNode {
+        _getNativeObj() {
+            this._nativeObj = new window.conchRTSkinRenderNode();
+        }
+        constructor() {
+            super();
+            this.boneNums = 0;
+        }
+        computeSkinnedData() {
+            (this.boneNums != 0) && this._nativeObj.computeSkinnedData(Laya.Stat.loopCount);
+        }
+        setRootBoneTransfom(value) {
+            this._nativeObj.setRootBoneTransfom(value.transform._nativeObj);
+        }
+        setOwnerTransform(value) {
+            this._nativeObj.setOwnerTransform(value.transform._nativeObj);
+        }
+        setCacheMesh(cacheMesh) {
+            this._nativeObj.resizeCacheMeshInverseBindPoes(cacheMesh._inverseBindPoses.length);
+            for (var i = 0, n = cacheMesh._inverseBindPoses.length; i < n; i++) {
+                this._nativeObj.setinverseBindPoseDataByIndex(i, cacheMesh._inverseBindPoses[i]);
+            }
+            this._nativeObj.resizeMatrixCache(cacheMesh._skinnedMatrixCaches.length);
+            for (var i = 0, n = cacheMesh._skinnedMatrixCaches.length; i < n; i++) {
+                let cache = cacheMesh._skinnedMatrixCaches[i];
+                if (!cache)
+                    continue;
+                this._nativeObj.setMatrixCacheByIndex(i, cache.batchBoneIndex, cache.batchIndex, cache.subMeshIndex);
+            }
+            this._nativeObj.setSubMeshCount(cacheMesh.subMeshCount);
+            this._nativeObj.resizeBoneIndicesList(cacheMesh.subMeshCount);
+            for (var i = 0, n = cacheMesh.subMeshCount; i < n; i++) {
+                this._nativeObj.setBoneIndicesList(i, cacheMesh.getSubMesh(i)._boneIndicesList);
+            }
+        }
+        setBones(value) {
+            this._nativeObj.clearBoneTransform();
+            for (var i = 0, n = value.length; i < n; i++) {
+                if (value[i]) {
+                    this._nativeObj.addBoneTransform(value[i].transform._nativeObj);
+                    this.boneNums++;
+                }
+            }
+        }
+        setSkinnedData(value) {
+            this._nativeObj.resizeSkinnedData(value.length);
+            for (var i = 0, n = value.length; i < n; i++) {
+                this._nativeObj.setSkinnedDataByIndex(i, value[i]);
+            }
+        }
+    }
+
+    class RTSpotLight {
+        get transform() {
+            return this._transform;
+        }
+        set transform(value) {
+            this._nativeObj.setTransform(value._nativeObj);
+            this._transform = value;
+        }
+        get shadowResolution() {
+            return this._nativeObj._shadowResolution;
+        }
+        set shadowResolution(value) {
+            this._nativeObj._shadowResolution = value;
+        }
+        get shadowDistance() {
+            return this._nativeObj._shadowDistance;
+        }
+        set shadowDistance(value) {
+            this._nativeObj._shadowDistance = value;
+        }
+        get shadowMode() {
+            return this._nativeObj._shadowMode;
+        }
+        set shadowMode(value) {
+            this._nativeObj._shadowMode = value;
+        }
+        get shadowStrength() {
+            return this._nativeObj._shadowStrength;
+        }
+        set shadowStrength(value) {
+            this._nativeObj._shadowStrength = value;
+        }
+        get shadowDepthBias() {
+            return this._nativeObj._shadowDepthBias;
+        }
+        set shadowDepthBias(value) {
+            this._nativeObj._shadowDepthBias = value;
+        }
+        get shadowNormalBias() {
+            return this._nativeObj._shadowNormalBias;
+        }
+        set shadowNormalBias(value) {
+            this._nativeObj._shadowNormalBias = value;
+        }
+        get shadowNearPlane() {
+            return this._nativeObj._shadowNearPlane;
+        }
+        set shadowNearPlane(value) {
+            this._nativeObj._shadowNearPlane = value;
+        }
+        get spotRange() {
+            return this._nativeObj._spotRange;
+        }
+        set spotRange(value) {
+            this._nativeObj._spotRange = value;
+        }
+        get spotAngle() {
+            return this._nativeObj._spotAngle;
+        }
+        set spotAngle(value) {
+            this._nativeObj._spotAngle = value;
+        }
+        constructor() {
+            this._nativeObj = new window.conchRTSpotLight();
+        }
+        setDirection(value) {
+            this._nativeObj.setDirection(value);
+        }
+    }
+
+    class RTVolumetricGI {
+        get irradiance() {
+            return this._irradiance;
+        }
+        set irradiance(value) {
+            this._irradiance = value;
+            this._nativeObj.setIrradiance(value ? value._nativeObj : null);
+        }
+        get distance() {
+            return this._distance;
+        }
+        set distance(value) {
+            this._distance = value;
+            this._nativeObj.setDistance(value ? value._nativeObj : null);
+        }
+        get bound() {
+            return this._bound;
+        }
+        set bound(value) {
+            this._bound = value;
+            this._nativeObj.setBounds(value ? value._imp._nativeObj : null);
+        }
+        get intensity() {
+            return this._nativeObj._intensity;
+        }
+        set intensity(value) {
+            this._nativeObj._intensity = value;
+        }
+        get updateMark() {
+            return this._nativeObj._updateMark;
+        }
+        set updateMark(value) {
+            this._nativeObj._updateMark = value;
+        }
+        set shaderData(value) {
+            this._shaderData = value;
+            this._nativeObj.shaderData = this._shaderData._nativeObj;
+        }
+        get shaderData() {
+            return this._shaderData;
+        }
+        constructor() {
+            this._id = ++RTVolumetricGI._idCounter;
+            this._nativeObj = new window.conchRTVolumetricGI();
+            this.shaderData = Laya.LayaGL.renderDeviceFactory.createShaderData();
+            this._defaultBounds = new Laya.Bounds();
+            this.bound = this._defaultBounds;
+        }
+        setParams(value) {
+            this._nativeObj.setParams(value);
+        }
+        setProbeCounts(value) {
+            this._nativeObj.setProbeCounts(value);
+        }
+        setProbeStep(value) {
+            this._nativeObj.setProbeStep(value);
+        }
+        destroy() {
+            this._nativeObj.destroy();
+            this.distance = null;
+            this.irradiance = null;
+            this._shaderData.destroy();
+            this._shaderData = null;
+        }
+    }
+    RTVolumetricGI._idCounter = 0;
+
+    class RT3DRenderModuleFactory {
+        createTransform(owner) {
+            return new RTTransform3D(owner);
+        }
+        createBounds(min, max) {
+            return new NativeBounds(min, max);
+        }
+        createVolumetricGI() {
+            return new RTVolumetricGI();
+        }
+        createReflectionProbe() {
+            return new RTReflectionProb();
+        }
+        createLightmapData() {
+            return new RTLightmapData();
+        }
+        createDirectLight() {
+            return new RTDirectLight();
+        }
+        createSpotLight() {
+            return new RTSpotLight();
+        }
+        createPointLight() {
+            return new RTPointLight();
+        }
+        createCameraModuleData() {
+            return new RTCameraNodeData();
+        }
+        createSceneModuleData() {
+            return new RTSceneNodeData();
+        }
+        createBaseRenderNode() {
+            return new RTBaseRenderNode();
+        }
+        createMeshRenderNode() {
+            return new RTMeshRenderNode();
+        }
+        createSkinRenderNode() {
+            return new RTSkinRenderNode();
+        }
+        createSimpleSkinRenderNode() {
+            return new RTSimpleSkinRenderNode();
+        }
+    }
+    Laya.Laya.addBeforeInitCallback(() => {
+        if (!Laya.Laya3DRender.Render3DModuleDataFactory)
+            Laya.Laya3DRender.Render3DModuleDataFactory = new RT3DRenderModuleFactory();
+    });
+
+    exports.LayaX3DRenderModuleFactory = LayaX3DRenderModuleFactory;
+    exports.LayaX3DRenderPassFactory = LayaX3DRenderPassFactory;
+    exports.LayaXBaseRenderNode = LayaXBaseRenderNode;
+    exports.LayaXBaseSpotRP = LayaXBaseSpotRP;
+    exports.LayaXBlitRenderFeature = LayaXBlitRenderFeature;
+    exports.LayaXBounds = LayaXBounds;
+    exports.LayaXCameraNodeData = LayaXCameraNodeData;
+    exports.LayaXDirCascadeShadowRP = LayaXDirCascadeShadowRP;
+    exports.LayaXDirectLight = LayaXDirectLight;
+    exports.LayaXForwardAddClusterRP = LayaXForwardAddClusterRP;
+    exports.LayaXForwardAddRP = LayaXForwardAddRP;
+    exports.LayaXLightmapData = LayaXLightmapData;
+    exports.LayaXMeshRenderNode = LayaXMeshRenderNode;
+    exports.LayaXPointLight = LayaXPointLight;
+    exports.LayaXReflectionProbe = LayaXReflectionProbe;
+    exports.LayaXRender3DProcess = LayaXRender3DProcess;
+    exports.LayaXRenderContext3D = LayaXRenderContext3D;
+    exports.LayaXRenderElement3D = LayaXRenderElement3D;
+    exports.LayaXSceneNodeData = LayaXSceneNodeData;
+    exports.LayaXSimpleSkinRenderNode = LayaXSimpleSkinRenderNode;
+    exports.LayaXSkinRenderNode = LayaXSkinRenderNode;
+    exports.LayaXSpotLight = LayaXSpotLight;
+    exports.LayaXTransform3D = LayaXTransform3D;
+    exports.LayaXVolumetricGI = LayaXVolumetricGI;
+    exports.NativeBounds = NativeBounds;
+    exports.RT3DRenderModuleFactory = RT3DRenderModuleFactory;
+    exports.RTBaseRenderNode = RTBaseRenderNode;
+    exports.RTBaseSpotRP = RTBaseSpotRP;
+    exports.RTCameraNodeData = RTCameraNodeData;
+    exports.RTDirCascadeShadowRP = RTDirCascadeShadowRP;
+    exports.RTDirectLight = RTDirectLight;
+    exports.RTForwardAddClusterRP = RTForwardAddClusterRP;
+    exports.RTForwardAddRP = RTForwardAddRP;
+    exports.RTLightmapData = RTLightmapData;
+    exports.RTMeshRenderNode = RTMeshRenderNode;
+    exports.RTPointLight = RTPointLight;
+    exports.RTReflectionProb = RTReflectionProb;
+    exports.RTRender3DProcess = RTRender3DProcess;
+    exports.RTScene3DRenderManager = RTScene3DRenderManager;
+    exports.RTSceneNodeData = RTSceneNodeData;
+    exports.RTSimpleSkinRenderNode = RTSimpleSkinRenderNode;
+    exports.RTSkinRenderNode = RTSkinRenderNode;
+    exports.RTSpotLight = RTSpotLight;
+    exports.RTTransform3D = RTTransform3D;
+    exports.RTVolumetricGI = RTVolumetricGI;
+
+})(window.Laya = window.Laya || {}, Laya);
+//# sourceMappingURL=laya.modernAPIs_3D.js.map

@@ -1720,6 +1720,7 @@
             this._maxMove = this.isVertical ? (this.height - this._bar.height) : (this.width - this._bar.width);
             this._tx = stage.mouseX;
             this._ty = stage.mouseY;
+            this._startValue = this._value;
             stage.on(Laya.Event.MOUSE_MOVE, this, this.mouseMove);
             stage.once(Laya.Event.MOUSE_UP, this, this.mouseUp);
             stage.once(Laya.Event.MOUSE_OUT, this, this.mouseUp);
@@ -1748,7 +1749,8 @@
             stage.off(Laya.Event.MOUSE_MOVE, this, this.mouseMove);
             stage.off(Laya.Event.MOUSE_UP, this, this.mouseUp);
             stage.off(Laya.Event.MOUSE_OUT, this, this.mouseUp);
-            this.sendChangeEvent(Laya.Event.CHANGED);
+            if (this._value != this._startValue)
+                this.sendChangeEvent(Laya.Event.CHANGED);
             this.hideValueText();
         }
         mouseMove(e) {

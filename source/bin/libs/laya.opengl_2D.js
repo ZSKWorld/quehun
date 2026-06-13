@@ -477,16 +477,18 @@
 
     class GLESPrimitiveRenderElement2D extends GLESRenderElement2D {
         set typeKey(value) {
-            this._nativeObj.type = value;
+            this._nativeObj.typeKey = value;
+            this._typeKey = value;
         }
         get typeKey() {
-            return this._nativeObj.type;
+            return this._typeKey;
         }
         set textureKey(value) {
             this._nativeObj.textureKey = value;
+            this._textureKey = value;
         }
         get textureKey() {
-            return this._nativeObj.textureKey;
+            return this._textureKey;
         }
         init() {
             this._nativeObj = new window.conchGLESPrimitiveRenderElement2D();
@@ -589,7 +591,7 @@
         setClearColor(r, g, b, a) {
             this._nativeObj.setClearColor(r, g, b, a);
         }
-        constructor() {
+        constructor(skipNative) {
             this._enable = false;
             this._enableBatch = false;
             this._isSupport = false;
@@ -599,21 +601,23 @@
             this._shaderData = null;
             this._renderOffset = new Laya.Matrix();
             this._shaderData = Laya.LayaGL.renderDeviceFactory.createShaderData(null);
-            this._nativeObj = new window.conchRTRender2DPass(this._shaderData._nativeObj);
-            this.enable = true;
-            this.enableBatch = true;
-            this.isSupport = false;
-            this.doClearColor = true;
-            this.repaint = true;
-            this.priority = 0;
-            this.offsetMatrix = new Laya.Matrix();
+            if (!skipNative) {
+                this._nativeObj = new window.conchRTRender2DPass(this._shaderData._nativeObj);
+                this.enable = true;
+                this.enableBatch = true;
+                this.isSupport = false;
+                this.doClearColor = true;
+                this.repaint = true;
+                this.priority = 0;
+                this.offsetMatrix = new Laya.Matrix();
+            }
         }
-        fowardRender(context) {
+        fowardRender(context, renderTime) {
             let rt = this.renderTexture;
             if (rt) {
                 context.invertY = rt._invertY;
             }
-            this._nativeObj.fowardRender(context._nativeObj);
+            this._nativeObj.fowardRender(context._nativeObj, renderTime);
         }
         updatePostProcess() {
             let pp = this.postProcess;
@@ -651,8 +655,8 @@
         removePass(pass) {
             this._nativeObj.removePass(pass._nativeObj);
         }
-        apply(context) {
-            this._nativeObj.apply(context._nativeObj);
+        apply(context, renderTime) {
+            this._nativeObj.apply(context._nativeObj, renderTime);
         }
         clear() {
             this._nativeObj.clear();
@@ -690,9 +694,7 @@
     }
     class RTEmptyRender2DDataHandle extends RTRender2DDataHandle {
         constructor() {
-            const nativeObj = (typeof window.conchRTEmptyRender2DDataHandle === 'function')
-                ? new window.conchRTEmptyRender2DDataHandle()
-                : { setOwner: () => { }, needUseMatrix: false, inheriteRenderData: () => { }, destroy: () => { } };
+            const nativeObj = new window.conchRTEmptyRender2DDataHandle();
             super(nativeObj);
         }
         inheriteRenderData(_context) {
@@ -3113,6 +3115,8 @@
 
     class RTSubShader {
         constructor() {
+            this._pendingUniformMap = null;
+            this._uniformPropertyIds = new Set();
             this._nativeObj = new window.conchRTSubShader();
         }
         get shaderName() {
@@ -3123,7 +3127,15 @@
             this._nativeObj.shaderName = value;
         }
         setUniformMap(_uniformMap) {
-            _uniformMap.forEach((value, key) => {
+            this._pendingUniformMap = _uniformMap;
+            this._syncUniformProperties(_uniformMap);
+        }
+        _syncUniformProperties(uniformMap) {
+            uniformMap.forEach((value) => {
+                if (this._uniformPropertyIds.has(value.id)) {
+                    return;
+                }
+                this._uniformPropertyIds.add(value.id);
                 this._nativeObj.addUnifromProperty(value.id, value.propertyName, value.uniformtype, value.arrayLength);
             });
         }
@@ -3137,6 +3149,9 @@
             this._nativeObj.destroy();
         }
         addShaderPass(pass) {
+            if (this._pendingUniformMap) {
+                this._syncUniformProperties(this._pendingUniformMap);
+            }
             this._nativeObj.addShaderPass(pass._nativeObj);
         }
     }

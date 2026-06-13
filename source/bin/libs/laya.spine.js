@@ -75,11 +75,11 @@
         }
     }
 
-    var spineVertexCommon = "#if !defined(SpineVertexCommon_lib)\n#define SpineVertexCommon_lib\nuniform vec4 u_color;\n#ifdef SPINE_RB\nuniform vec3 u_sBone0;uniform vec3 u_sBone1;\n#endif\nvoid transfrom(vec2 pos,vec4 xDir,vec4 yDir,out vec2 outPos){outPos.x=xDir.x*pos.x+xDir.y*pos.y+xDir.z;outPos.y=yDir.x*pos.x+yDir.y*pos.y+yDir.z;}\n#ifdef SPINE_SIMPLE\nuniform vec4 u_SimpleAnimatorParams;uniform sampler2D u_SimpleAnimatorTexture;uniform float u_SimpleAnimatorTextureSize;vec4 getBonePosBake(float FramePos,float boneIndices,float weight,vec2 pos,float offset){vec2 uv=vec2(0.0,0.0);float PixelPos=FramePos+boneIndices*2.0;float halfOffset=offset*0.5;float uvoffset=PixelPos/u_SimpleAnimatorTextureSize;uv.y=floor(uvoffset)*offset+halfOffset;uv.x=mod(PixelPos,u_SimpleAnimatorTextureSize)*offset+halfOffset;vec4 up=texture2D(u_SimpleAnimatorTexture,uv);uv.x+=offset;vec4 down=texture2D(u_SimpleAnimatorTexture,uv);vec2 outPos;transfrom(pos,up,down,outPos);outPos=outPos*weight;return vec4(outPos,0.,1.0);}\n#endif\n#ifdef SPINE_FAST\nuniform vec4 u_sBone[200];vec4 getBonePos(float fboneId,float weight,vec2 pos){int boneId=int(fboneId);vec4 up=u_sBone[boneId*2];vec4 down=u_sBone[boneId*2+1];vec2 outPos;transfrom(pos,up,down,outPos);outPos=outPos*weight;return vec4(outPos,0.,1.0);}\n#endif\nvec4 getSpinePos(){\n#ifdef SPINE_SIMPLE\n#ifdef GPU_INSTANCE\nfloat currentPixelPos=a_SimpleTextureParams.x+a_SimpleTextureParams.y;\n#else\nfloat currentPixelPos=u_SimpleAnimatorParams.x+u_SimpleAnimatorParams.y;\n#endif\nfloat offset=1.0/u_SimpleAnimatorTextureSize;return getBonePosBake(currentPixelPos,a_BoneId,a_weight,a_position,offset)+getBonePosBake(currentPixelPos,a_PosWeightBoneID_2.w,a_PosWeightBoneID_2.z,a_PosWeightBoneID_2.xy,offset)+getBonePosBake(currentPixelPos,a_PosWeightBoneID_3.w,a_PosWeightBoneID_3.z,a_PosWeightBoneID_3.xy,offset)+getBonePosBake(currentPixelPos,a_PosWeightBoneID_4.w,a_PosWeightBoneID_4.z,a_PosWeightBoneID_4.xy,offset);\n#else\n#ifdef SPINE_FAST\nreturn getBonePos(a_BoneId,a_weight,a_position)+getBonePos(a_PosWeightBoneID_2.w,a_PosWeightBoneID_2.z,a_PosWeightBoneID_2.xy)+getBonePos(a_PosWeightBoneID_3.w,a_PosWeightBoneID_3.z,a_PosWeightBoneID_3.xy)+getBonePos(a_PosWeightBoneID_4.w,a_PosWeightBoneID_4.z,a_PosWeightBoneID_4.xy);\n#endif\n#ifdef SPINE_RB\nvec2 pos;transfrom(a_position,u_sBone0,u_sBone1,pos);return vec4(pos,0.,1.);\n#endif\n#endif\nreturn vec4(a_position.x,a_position.y,0.,1.);}\n#endif\n";
+    var spineVertexCommon = "#if !defined(SpineVertexCommon_lib)\n#define SpineVertexCommon_lib\nuniform vec4 u_color;\n#ifdef SPINE_RB\nuniform vec4 u_sBone0;uniform vec4 u_sBone1;\n#endif\nvoid transfrom(vec2 pos,vec4 xDir,vec4 yDir,out vec2 outPos){outPos.x=xDir.x*pos.x+xDir.y*pos.y+xDir.z;outPos.y=yDir.x*pos.x+yDir.y*pos.y+yDir.z;}\n#ifdef SPINE_SIMPLE\nuniform vec4 u_SimpleAnimatorParams;uniform sampler2D u_SimpleAnimatorTexture;uniform float u_SimpleAnimatorTextureSize;vec4 getBonePosBake(float FramePos,float boneIndices,float weight,vec2 pos,float offset){vec2 uv=vec2(0.0,0.0);float PixelPos=FramePos+boneIndices*2.0;float halfOffset=offset*0.5;float uvoffset=PixelPos/u_SimpleAnimatorTextureSize;uv.y=floor(uvoffset)*offset+halfOffset;uv.x=mod(PixelPos,u_SimpleAnimatorTextureSize)*offset+halfOffset;vec4 up=texture2D(u_SimpleAnimatorTexture,uv);uv.x+=offset;vec4 down=texture2D(u_SimpleAnimatorTexture,uv);vec2 outPos;transfrom(pos,up,down,outPos);outPos=outPos*weight;return vec4(outPos,0.,1.0);}\n#endif\n#ifdef SPINE_FAST\nuniform vec4 u_sBone[200];vec4 getBonePos(float fboneId,float weight,vec2 pos){int boneId=int(fboneId);vec4 up=u_sBone[boneId*2];vec4 down=u_sBone[boneId*2+1];vec2 outPos;transfrom(pos,up,down,outPos);outPos=outPos*weight;return vec4(outPos,0.,1.0);}\n#endif\nvec4 getSpinePos(){\n#ifdef SPINE_SIMPLE\n#ifdef GPU_INSTANCE\nfloat currentPixelPos=a_SimpleTextureParams.x+a_SimpleTextureParams.y;\n#else\nfloat currentPixelPos=u_SimpleAnimatorParams.x+u_SimpleAnimatorParams.y;\n#endif\nfloat offset=1.0/u_SimpleAnimatorTextureSize;return getBonePosBake(currentPixelPos,a_BoneId,a_weight,a_position,offset)+getBonePosBake(currentPixelPos,a_PosWeightBoneID_2.w,a_PosWeightBoneID_2.z,a_PosWeightBoneID_2.xy,offset)+getBonePosBake(currentPixelPos,a_PosWeightBoneID_3.w,a_PosWeightBoneID_3.z,a_PosWeightBoneID_3.xy,offset)+getBonePosBake(currentPixelPos,a_PosWeightBoneID_4.w,a_PosWeightBoneID_4.z,a_PosWeightBoneID_4.xy,offset);\n#else\n#ifdef SPINE_FAST\nreturn getBonePos(a_BoneId,a_weight,a_position)+getBonePos(a_PosWeightBoneID_2.w,a_PosWeightBoneID_2.z,a_PosWeightBoneID_2.xy)+getBonePos(a_PosWeightBoneID_3.w,a_PosWeightBoneID_3.z,a_PosWeightBoneID_3.xy)+getBonePos(a_PosWeightBoneID_4.w,a_PosWeightBoneID_4.z,a_PosWeightBoneID_4.xy);\n#endif\n#ifdef SPINE_RB\nvec2 pos;transfrom(a_position,u_sBone0,u_sBone1,pos);return vec4(pos,0.,1.);\n#endif\n#endif\nreturn vec4(a_position.x,a_position.y,0.,1.);}\n#endif\n";
 
     var spineFragment = "#if !defined(SpineFragment_lib)\n#define SpineFragment_lib\n#include \"Sprite2DFrag.glsl\";\nvec4 getColor(){vec4 color=texture2D(u_spineTexture,v_texcoord.xy);\n#ifndef GAMMATEXTURE\n#ifdef GAMMASPACE\ncolor.xyz=linearToGamma(color.xyz);\n#endif\n#else\n#ifndef GAMMASPACE\ncolor.xyz=gammaToLinear(color.xyz);\n#endif\n#endif\nvec4 final;\n#ifdef TWOCOLORTINT\nfinal.a=color.a*v_color.a;final.xyz=((color.a-1.0)*v_color2.a+1.0-color.xyz)*v_color2.xyz+color.xyz*v_color.xyz;\n#else\nfinal=color*v_color;\n#endif\nreturn final;}\n#endif\n";
 
-    var spine2DVertex = "#if !defined(SpineVertex_lib)\n#define SpineVertex_lib\nvoid transfrom_spine(vec2 pos,vec3 xDir,vec3 yDir,out vec2 outPos){outPos.x=xDir.x*pos.x+xDir.y*pos.y+xDir.z;outPos.y=-yDir.x*pos.x-yDir.y*pos.y+yDir.z;}void getGlobalPos(vec4 pos,out vec2 globalPos){\n#ifdef GPU_INSTANCE\nvec3 down=a_NMatrix_1;vec3 up=a_NMatrix_0;\n#else\nvec3 down=u_NMatrix_1;vec3 up=u_NMatrix_0;\n#endif\n#ifdef SPINE_NORMAL_2D\nglobalPos.xy=pos.xy;\n#else\ntransfrom_spine(pos.xy,up,down,globalPos);\n#endif\n}vec4 getScreenPos(vec4 pos){vec2 globalPos;\n#ifdef GPU_INSTANCE\nvec3 down=a_NMatrix_1;vec3 up=a_NMatrix_0;\n#else\nvec3 down=u_NMatrix_1;vec3 up=u_NMatrix_0;\n#endif\n#ifdef SPINE_NORMAL_2D\nglobalPos.xy=pos.xy;\n#else\ntransfrom_spine(pos.xy,up,down,globalPos);\n#endif\nclip(globalPos);vec2 viewPos;getViewPos(globalPos,viewPos);vec4 outPos;getProjectPos(viewPos,outPos);return outPos;}void getVertexInfo(vec4 pos,inout vertexInfo info){info.pos=pos.xy;info.color=vec4(1.0);\n#ifdef COLOR\ninfo.color=a_color;\n#endif\ninfo.color*=u_baseRenderColor;\n#ifdef PREMULTIPLYALPHA\ninfo.color.rgb=info.color.rgb*info.color.a;\n#endif\n#ifdef UV\ninfo.uv=a_uv;\n#endif\n#ifdef LIGHT2D_ENABLE\nvec2 global;getGlobalPos(pos,global);info.lightUV.x=(global.x-u_LightAndShadow2DParam.x)/u_LightAndShadow2DParam.z;info.lightUV.y=1.0-(global.y-u_LightAndShadow2DParam.y)/u_LightAndShadow2DParam.w;\n#endif\n}\n#endif\n";
+    var spine2DVertex = "#if !defined(SpineVertex_lib)\n#define SpineVertex_lib\nvoid transfrom_spine(vec2 pos,vec3 xDir,vec3 yDir,out vec2 outPos){outPos.x=xDir.x*pos.x-xDir.y*pos.y+xDir.z;outPos.y=yDir.x*pos.x-yDir.y*pos.y+yDir.z;}void getGlobalPos(vec4 pos,out vec2 globalPos){\n#ifdef GPU_INSTANCE\nvec3 down=a_NMatrix_1;vec3 up=a_NMatrix_0;\n#else\nvec3 down=u_NMatrix_1;vec3 up=u_NMatrix_0;\n#endif\n#ifdef SPINE_NORMAL_2D\nglobalPos.xy=pos.xy;\n#else\ntransfrom_spine(pos.xy,up,down,globalPos);\n#endif\n}vec4 getScreenPos(vec4 pos){vec2 globalPos;\n#ifdef GPU_INSTANCE\nvec3 down=a_NMatrix_1;vec3 up=a_NMatrix_0;\n#else\nvec3 down=u_NMatrix_1;vec3 up=u_NMatrix_0;\n#endif\n#ifdef SPINE_NORMAL_2D\nglobalPos.xy=pos.xy;\n#else\ntransfrom_spine(pos.xy,up,down,globalPos);\n#endif\nclip(globalPos);vec2 viewPos;getViewPos(globalPos,viewPos);vec4 outPos;getProjectPos(viewPos,outPos);return outPos;}void getVertexInfo(vec4 pos,inout vertexInfo info){info.pos=pos.xy;info.color=vec4(1.0);\n#ifdef COLOR\ninfo.color=a_color;\n#endif\ninfo.color*=u_baseRenderColor;\n#ifdef PREMULTIPLYALPHA\ninfo.color.rgb=info.color.rgb*info.color.a;\n#endif\n#ifdef UV\ninfo.uv=a_uv;\n#endif\n#ifdef LIGHT2D_ENABLE\nvec2 global;getGlobalPos(pos,global);info.lightUV.x=(global.x-u_LightAndShadow2DParam.x)/u_LightAndShadow2DParam.z;info.lightUV.y=1.0-(global.y-u_LightAndShadow2DParam.y)/u_LightAndShadow2DParam.w;\n#endif\n}\n#endif\n";
 
     var spineStandardVS = "#define SHADER_NAME SpineStandardVS\nvarying vec4 v_color2;\n#include \"Sprite2DVertex.glsl\";\n#include \"SpineVertexCommon.glsl\";\n#include \"Spine2DVertex.glsl\";\nvoid main(){vec4 pos=getSpinePos();vertexInfo info;getVertexInfo(pos,info);v_texcoord=info.uv;v_color=info.color;\n#ifdef COLOR2\nv_color2=a_color2;\n#else\nv_color2=vec4(0.0,0.0,0.0,1.0);\n#endif\n#ifdef PREMULTIPLYALPHA\nv_color2.xyz=v_color2.xyz*v_color.a;\n#endif\n#ifdef LIGHT2D_ENABLE\nlightAndShadow(info);\n#endif\ngl_Position=getScreenPos(pos);}";
 
@@ -263,6 +263,199 @@
         "a_color2": [11, Laya.ShaderDataType.Vector4],
     };
 
+    class SpineTemplet extends Laya.Resource {
+        constructor() {
+            super();
+            this.materialMap = new Map();
+            this._spineMaterials2D = {};
+            this._spineMaterials3D = {};
+            this._spineMaterialTextures = {};
+            this._spineMaterialTextureKeys = {};
+            this.x = 0;
+            this.y = 0;
+            this.offsetX = 0;
+            this.offsetY = 0;
+            this._premultipliedAlpha = true;
+        }
+        get premultipliedAlpha() {
+            return this._premultipliedAlpha;
+        }
+        get spineMaterials2D() {
+            return this._spineMaterials2D;
+        }
+        set spineMaterials2D(value) {
+            this._spineMaterials2D = value || {};
+            this.onSpineMaterialsChanged();
+        }
+        get spineMaterials3D() {
+            return this._spineMaterials3D;
+        }
+        set spineMaterials3D(value) {
+            this._spineMaterials3D = value || {};
+            this.onSpineMaterialsChanged();
+        }
+        get spineMaterialTextures() {
+            return this._spineMaterialTextures;
+        }
+        set spineMaterialTextures(value) {
+            this._spineMaterialTextures = value || {};
+            this._refreshSpineMaterialTextureKeys();
+            this.onSpineMaterialsChanged();
+        }
+        onSpineMaterialsChanged() {
+            this.event(SpineTemplet.EVENT_SPINE_MATERIAL_CHANGE);
+        }
+        _getSpineMaterial(texture, blendMode, premultipliedAlpha, is3D) {
+            if (!texture)
+                return null;
+            let dimension = is3D ? "3D" : "2D";
+            let materials = is3D ? this._spineMaterials3D : this._spineMaterials2D;
+            let material = this._getSpineMaterialByKey(materials, this._getSpineMaterialKey(texture, blendMode, premultipliedAlpha, dimension), is3D);
+            if (material)
+                return material;
+            let keys = this._spineMaterialTextureKeys[texture.id];
+            if (keys) {
+                for (let key of keys) {
+                    material = this._getSpineMaterialByKey(materials, `${key}_${blendMode}_${premultipliedAlpha}_${dimension}`, is3D);
+                    if (material)
+                        return material;
+                }
+            }
+            return null;
+        }
+        _getSpineMaterialByKey(materials, key, is3D) {
+            let material = materials[key];
+            if (material instanceof Laya.Material && material.checkType(is3D ? Laya.ShaderFeatureType.D3 : Laya.ShaderFeatureType.D2_BaseRenderNode2D))
+                return material;
+            return null;
+        }
+        _getSpineMaterialKey(texture, blendMode, premultipliedAlpha, dimension) {
+            return `${texture.id}_${blendMode}_${premultipliedAlpha}_${dimension}`;
+        }
+        getMaterial(texture, blendMode, premultipliedAlpha, is3D = false) {
+            if (!texture) {
+                console.warn("SpineError:cant Find Main Texture");
+                texture = Laya.Texture2D.whiteTexture;
+            }
+            let remapMaterial = this._getSpineMaterial(texture, blendMode, premultipliedAlpha, is3D);
+            if (remapMaterial)
+                return remapMaterial;
+            let key = this._getSpineMaterialKey(texture, blendMode, premultipliedAlpha, is3D ? "3D" : "2D");
+            let mat = this.materialMap.get(key);
+            if (!mat) {
+                mat = new Laya.Material();
+                mat.setShaderName(is3D ? "Spine3D" : "SpineStandard");
+                mat.renderQueue = is3D ? 3000 : 2000;
+                SpineShaderInit.initSpineMaterial(mat);
+                mat.setTextureByIndex(SpineShaderInit.SpineTexture, texture);
+                if (texture.gammaCorrection != 1) {
+                    mat.addDefine(Laya.ShaderDefines2D.GAMMATEXTURE);
+                }
+                else {
+                    mat.removeDefine(Laya.ShaderDefines2D.GAMMATEXTURE);
+                }
+                SpineShaderInit.SetSpineBlendMode(blendMode, mat, premultipliedAlpha);
+                if (premultipliedAlpha) {
+                    mat.addDefine(SpineShaderInit.SPINE_PREMULTIPLYALPHA);
+                }
+                else {
+                    mat.removeDefine(SpineShaderInit.SPINE_PREMULTIPLYALPHA);
+                }
+                mat._addReference();
+                this.materialMap.set(key, mat);
+            }
+            return mat;
+        }
+        getTexture(name) {
+            return this._textures[name];
+        }
+        setTexture(name, tex) {
+            if (!this._textures)
+                this._textures = {};
+            this._textures[name] = tex;
+            this._registerSpineMaterialTexture(name, tex);
+            this.onSpineMaterialsChanged();
+        }
+        registerTexture(texture) {
+            if (!texture)
+                return;
+            let tex2d = texture.bitmap;
+            if (!tex2d)
+                return;
+            this.setTexture(texture.url, tex2d);
+        }
+        _refreshSpineMaterialTextureKeys() {
+            this._spineMaterialTextureKeys = {};
+            if (!this._textures)
+                return;
+            for (let name in this._textures)
+                this._registerSpineMaterialTexture(name, this._textures[name]);
+        }
+        _registerSpineMaterialTexture(name, texture) {
+            if (!texture)
+                return;
+            let keys = this._spineMaterialTextureKeys[texture.id];
+            if (!keys)
+                keys = this._spineMaterialTextureKeys[texture.id] = [];
+            this._addSpineMaterialTextureKey(keys, name);
+            this._addSpineMaterialTextureKey(keys, texture.uuid);
+            this._addSpineMaterialTextureKey(keys, texture.url);
+            for (let id in this._spineMaterialTextures) {
+                if (this._spineMaterialTextures[id] === name)
+                    this._addSpineMaterialTextureKey(keys, id);
+            }
+        }
+        _addSpineMaterialTextureKey(keys, key) {
+            if (key && keys.indexOf(key) === -1)
+                keys.push(key);
+        }
+        getAniNameByIndex(index) {
+            return this.optimize.getAniNameByIndex(index);
+        }
+        getAnimationCount() {
+            return this.optimize.getAnimationCount();
+        }
+        findAnimation(name) {
+            return this.optimize.findAnimation(name);
+        }
+        hasAnimation(name) {
+            return this.optimize.hasAnimation(name);
+        }
+        getSkinIndexByName(skinName) {
+            return this.optimize.getSkinIndexByName(skinName);
+        }
+        checkPremultipliedAlpha() {
+            let premultipliedAlpha = true;
+            let textures = this._textures;
+            for (const key in textures) {
+                const texture2d = textures[key];
+                premultipliedAlpha = texture2d._premultiplyAlpha && premultipliedAlpha;
+            }
+            return premultipliedAlpha;
+        }
+        _disposeResource() {
+            this._parser.destroy();
+            this.optimize.destroy();
+            for (let k in this._textures) {
+                let tex = this._textures[k];
+                if (tex) {
+                    tex._removeReference();
+                }
+            }
+            if (this._referenceCount <= 0) {
+                this.materialMap.forEach(value => {
+                    value._removeReference();
+                });
+                this.materialMap.clear();
+            }
+            else {
+                console.error("SpineTemplet is using");
+            }
+            this._parser = null;
+        }
+    }
+    SpineTemplet.EVENT_SPINE_MATERIAL_CHANGE = "spineMaterialChange";
+
     class SpineConst {
     }
     SpineConst.SPLIT_REGEX = /\r?\n/;
@@ -307,7 +500,7 @@
         if (versionNumber >= 4 && versionNumber2 >= 1) {
             SpineConst.NEED_SLOT = true;
         }
-        SpineConst.ENABLE_WEB_BATCH = !Laya.LayaEnv.isConch || (Laya.LayaEnv.isConch && window.conchConfig.getGraphicsAPI() == 2);
+        SpineConst.ENABLE_WEB_BATCH = window.Laya.BatchManager != null;
         SpineShaderInit.init();
     });
 
@@ -634,6 +827,7 @@
             if (!this._templet)
                 return;
             this._templet._addReference();
+            this._templet.on(SpineTemplet.EVENT_SPINE_MATERIAL_CHANGE, this, this.onSpineMaterialChange);
             if (this._spineRender) {
                 this._spineRender.destroy();
             }
@@ -709,6 +903,10 @@
             }
         }
         play(nameOrIndex, loop, force = true, start = 0, end = 0, freshSkin = true, playAudio = true) {
+            if (!this._templet) {
+                console.warn("Spine2DRenderNode.play: templet is not ready, animation:", nameOrIndex);
+                return;
+            }
             this._playAudio = playAudio;
             start /= 1000;
             end /= 1000;
@@ -862,8 +1060,13 @@
                 }
             }
         }
+        onSpineMaterialChange() {
+            if (this._spineRender)
+                this._spineRender.clearCacheMaterials();
+        }
         reset() {
             this._spineRender.reset();
+            this._templet.off(SpineTemplet.EVENT_SPINE_MATERIAL_CHANGE, this, this.onSpineMaterialChange);
             this._templet._removeReference(1);
             this._templet = null;
             this._pause = true;
@@ -936,8 +1139,10 @@
             if (this._templet) {
                 this.clear();
             }
-            this._spineRender.destroy();
-            this._spineRender = null;
+            if (this._spineRender) {
+                this._spineRender.destroy();
+                this._spineRender = null;
+            }
             if (this._rootBone) {
                 this._rootBone.destroy();
                 this._rootBone = null;
@@ -1121,130 +1326,116 @@
     }
     Laya.ClassUtils.regClass("SpineBakeScript", SpineBakeScript);
 
-    class SpineTemplet extends Laya.Resource {
-        constructor() {
-            super();
-            this.materialMap = new Map();
-            this.x = 0;
-            this.y = 0;
-            this.offsetX = 0;
-            this.offsetY = 0;
-            this._premultipliedAlpha = true;
-        }
-        get premultipliedAlpha() {
-            return this._premultipliedAlpha;
-        }
-        getMaterial(texture, blendMode, premultipliedAlpha, is3D = false) {
-            if (!texture) {
-                console.warn("SpineError:cant Find Main Texture");
-                texture = Laya.Texture2D.whiteTexture;
-            }
-            let key = texture.id + "_" + blendMode + "_" + premultipliedAlpha + "_" + (is3D ? "3D" : "2D");
-            let mat = this.materialMap.get(key);
-            if (!mat) {
-                mat = new Laya.Material();
-                mat.setShaderName(is3D ? "Spine3D" : "SpineStandard");
-                mat.renderQueue = is3D ? 3000 : 2000;
-                SpineShaderInit.initSpineMaterial(mat);
-                mat.setTextureByIndex(SpineShaderInit.SpineTexture, texture);
-                if (texture.gammaCorrection != 1) {
-                    mat.addDefine(Laya.ShaderDefines2D.GAMMATEXTURE);
-                }
-                else {
-                    mat.removeDefine(Laya.ShaderDefines2D.GAMMATEXTURE);
-                }
-                SpineShaderInit.SetSpineBlendMode(blendMode, mat, premultipliedAlpha);
-                if (premultipliedAlpha) {
-                    mat.addDefine(SpineShaderInit.SPINE_PREMULTIPLYALPHA);
-                }
-                else {
-                    mat.removeDefine(SpineShaderInit.SPINE_PREMULTIPLYALPHA);
-                }
-                mat._addReference();
-                this.materialMap.set(key, mat);
-            }
-            return mat;
-        }
-        getTexture(name) {
-            return this._textures[name];
-        }
-        setTexture(name, tex) {
-            this._textures[name] = tex;
-        }
-        registerTexture(texture) {
-            if (!texture)
-                return;
-            let tex2d = texture.bitmap;
-            if (!tex2d)
-                return;
-            if (!this._textures[texture.url]) {
-                this._textures[texture.url] = tex2d;
-            }
-        }
-        getAniNameByIndex(index) {
-            return this.optimize.getAniNameByIndex(index);
-        }
-        getAnimationCount() {
-            return this.optimize.getAnimationCount();
-        }
-        findAnimation(name) {
-            return this.optimize.findAnimation(name);
-        }
-        hasAnimation(name) {
-            return this.optimize.hasAnimation(name);
-        }
-        getSkinIndexByName(skinName) {
-            return this.optimize.getSkinIndexByName(skinName);
-        }
-        checkPremultipliedAlpha() {
-            let premultipliedAlpha = true;
-            let textures = this._textures;
-            for (const key in textures) {
-                const texture2d = textures[key];
-                premultipliedAlpha = texture2d._premultiplyAlpha && premultipliedAlpha;
-            }
-            return premultipliedAlpha;
-        }
-        _disposeResource() {
-            this._parser.destroy();
-            this.optimize.destroy();
-            for (let k in this._textures) {
-                let tex = this._textures[k];
-                if (tex) {
-                    tex._removeReference();
-                }
-            }
-            if (this._referenceCount <= 0) {
-                this.materialMap.forEach(value => {
-                    value._removeReference();
-                });
-                this.materialMap.clear();
-            }
-            else {
-                console.error("SpineTemplet is using");
-            }
-            this._parser = null;
-        }
-    }
-
     class SpineTempletLoader {
         load(task) {
-            let atlasUrl = Laya.Utils.replaceFileExtension(task.url, "atlas");
+            let ext = Laya.Utils.getFileExtension(task.url);
+            if (ext === "json")
+                return task.loader.fetch(task.url, "json", task.progress.createCallback()).then((data) => this.loadSpineSource(task, task.url, data));
+            return this.loadSpineSource(task, task.url);
+        }
+        loadSpineSource(task, url, spineData) {
+            return Laya.AssetDb.inst.resolveURL(url).then(resolvedUrl => this.loadSpineSourceResolved(task, resolvedUrl || url, spineData));
+        }
+        loadSpineSourceResolved(task, url, spineData) {
+            let atlasUrl = Laya.Utils.replaceFileExtension(url, "atlas");
+            let ext = Laya.Utils.getFileExtension(url);
             return Promise.all([
-                task.loader.fetch(task.url, task.ext == "skel" ? "arraybuffer" : "json", task.progress.createCallback()),
+                spineData !== undefined ? Promise.resolve(spineData) : task.loader.fetch(url, ext == "skel" || ext == "bin" ? "arraybuffer" : "json", task.progress.createCallback()),
                 task.loader.fetch(atlasUrl, "text", task.progress.createCallback())
             ]).then(res => {
                 if (!res[0] || !res[1])
                     return null;
                 let parser = SpineConst.factory.createSpineTempletParser();
-                let urls = parser.collectTextures(res[1], task);
+                let sourceTask = url === task.url ? task : Object.assign(Object.create(task), { url });
+                let urls = parser.collectTextures(res[1], sourceTask);
                 return Laya.Laya.loader.load(urls, null, task.progress.createCallback()).then((textures) => {
-                    return parser.create(res[0], textures);
+                    let templet = parser.create(res[0], textures);
+                    return this.loadRuntimeMeta(task, url).then(data => SpineTempletLoader.applyRuntimeData(templet, data, task));
                 });
             });
         }
+        async loadRuntimeMeta(task, resolvedUrl) {
+            let data = Laya.AssetDb.inst.metaMap[task.url] || Laya.AssetDb.inst.metaMap[resolvedUrl];
+            if (!data && task.uuid)
+                data = await Laya.AssetDb.inst.getMeta(task.url, task.uuid);
+            return data;
+        }
+        static async applyRuntimeData(templet, data, task) {
+            if (!templet)
+                return templet;
+            if (!data) {
+                templet.spineMaterialTextures = {};
+                templet.spineMaterials2D = {};
+                templet.spineMaterials3D = {};
+                return templet;
+            }
+            templet.spineMaterialTextures = data.spineMaterialTextures || {};
+            let [materials2D, materials3D] = await Promise.all([
+                SpineTempletLoader.loadMaterialMap(data.spineMaterials2D, templet, task),
+                SpineTempletLoader.loadMaterialMap(data.spineMaterials3D, templet, task)
+            ]);
+            templet.spineMaterials2D = materials2D || {};
+            templet.spineMaterials3D = materials3D || {};
+            return templet;
+        }
+        static async loadMaterialMap(data, templet, task) {
+            var _a;
+            if (!data)
+                return null;
+            let result = {};
+            let promises = [];
+            for (let key in data) {
+                if (key.indexOf("_$") === 0)
+                    continue;
+                let runtimeKey = SpineTempletLoader.getRuntimeMaterialKey(key, templet);
+                let url = SpineTempletLoader.getMaterialURL(data[key]);
+                if (!url) {
+                    result[runtimeKey] = null;
+                    continue;
+                }
+                promises.push(Laya.Laya.loader.load(url, Laya.Loader.MATERIAL, (_a = task === null || task === void 0 ? void 0 : task.progress) === null || _a === void 0 ? void 0 : _a.createCallback()).then((material) => {
+                    result[runtimeKey] = material || null;
+                }));
+            }
+            await Promise.all(promises);
+            return result;
+        }
+        static getRuntimeMaterialKey(key, templet) {
+            let match = /^(.*)_([0-3])_(true|false)_(2D|3D)$/.exec(key);
+            if (!match)
+                return key;
+            let texture = SpineTempletLoader.getTextureByStorageKey(match[1], templet);
+            if (!texture)
+                return key;
+            return `${texture.id}_${match[2]}_${match[3]}_${match[4]}`;
+        }
+        static getTextureByStorageKey(key, templet) {
+            var _a;
+            let textures = templet === null || templet === void 0 ? void 0 : templet._textures;
+            if (!textures)
+                return null;
+            let name = (_a = templet.spineMaterialTextures) === null || _a === void 0 ? void 0 : _a[key];
+            if (name && textures[name])
+                return textures[name];
+            for (let name in textures) {
+                let texture = textures[name];
+                if (texture && (name === key || texture.url === key || texture.uuid === key || String(texture.id) === key))
+                    return texture;
+            }
+            return null;
+        }
+        static getMaterialURL(ref) {
+            if (!ref)
+                return null;
+            let url = typeof ref === "string" ? ref : ref._$uuid;
+            if (!url)
+                return null;
+            if (url.indexOf("://") == -1 && url.indexOf("/") == -1 && url.indexOf(".") == -1)
+                url = "res://" + url;
+            return url;
+        }
     }
-    Laya.Loader.registerLoader(["skel"], SpineTempletLoader, Laya.Loader.SPINE);
+    Laya.Loader.registerLoader(["skel", "json"], SpineTempletLoader, Laya.Loader.SPINE);
 
     exports.ERenderProxyType = void 0;
     (function (ERenderProxyType) {
@@ -1314,6 +1505,7 @@
             indexbuffer._byteLength = 0;
             let state = mesh._bufferState;
             state.applyState(vertexBuffers, indexbuffer);
+            mesh.lock = true;
             return mesh;
         }
         static _updateSpineSubMesh(mesh, frameData) {
@@ -1542,12 +1734,13 @@
                 }
             });
             resetSlots.forEach(slotId => {
-                var _a;
                 let slot = slots[slotId];
-                if (slot && slot.attachment) {
-                    let attach = (_a = map.get(slotId)) === null || _a === void 0 ? void 0 : _a.get(slot.attachment.name);
-                    if (attach) {
-                        skindata.vb.resetVB(attach.attachment);
+                if (slot) {
+                    let posMap = map.get(slotId);
+                    if (posMap) {
+                        posMap.forEach((pos, attachment) => {
+                            skindata.vb.resetVB(pos.attachment);
+                        });
                     }
                 }
             });
@@ -1662,7 +1855,7 @@
         set premultipliedAlpha(value) {
             if (this._premultipliedAlpha === value)
                 return;
-            this.updater._clearCacheMaterials();
+            this.clearCacheMaterials();
             this._premultipliedAlpha = value;
         }
         constructor() {
@@ -2038,6 +2231,9 @@
             }
             this._enableCache = false;
         }
+        clearCacheMaterials() {
+            this.updater._clearCacheMaterials();
+        }
         setSlotTexture(slotName, texture, createAttachment) {
             if (this._mode !== exports.ESpineRenderMode.Normal) {
                 console.log("setSlotTexture: mode is not Normal, return");
@@ -2133,8 +2329,8 @@
     class RigidBodySpineRenderer extends SpineBaseRenderer {
         constructor() {
             super(...arguments);
-            this._matrix_0 = new Laya.Vector3(1, 0, 0);
-            this._matrix_1 = new Laya.Vector3(0, 1, 0);
+            this._matrix_0 = new Laya.Vector4(1, 0, 0);
+            this._matrix_1 = new Laya.Vector4(0, 1, 0);
         }
         leave() {
             this._shaderData.removeDefine(SpineShaderInit.SPINE_RB);
@@ -2142,8 +2338,8 @@
         change() {
             this._shaderData.addDefine(SpineShaderInit.SPINE_RB);
             this.updater.needUpdate = true;
-            this._shaderData.setVector3(SpineShaderInit.BONEMAT_0, this._matrix_0);
-            this._shaderData.setVector3(SpineShaderInit.BONEMAT_1, this._matrix_1);
+            this._shaderData.setVector(SpineShaderInit.BONEMAT_0, this._matrix_0);
+            this._shaderData.setVector(SpineShaderInit.BONEMAT_1, this._matrix_1);
         }
         render(curTime, offsetX = 0, offsetY = 0) {
             if (!this.updater)
@@ -2169,8 +2365,8 @@
             this._matrix_1.x = bone.c;
             this._matrix_1.y = bone.d;
             this._matrix_1.z = y;
-            this._shaderData.setVector3(SpineShaderInit.BONEMAT_0, this._matrix_0);
-            this._shaderData.setVector3(SpineShaderInit.BONEMAT_1, this._matrix_1);
+            this._shaderData.setVector(SpineShaderInit.BONEMAT_0, this._matrix_0);
+            this._shaderData.setVector(SpineShaderInit.BONEMAT_1, this._matrix_1);
         }
         afterRender(optimizeRender) {
             if (this.updater.needUpdate) {
@@ -2762,7 +2958,7 @@
                 subMeshBuffer.indexLength = block.indexLength;
                 this.uploadBuffer(subMeshBuffer, true);
                 geometry.clearRenderParams();
-                geometry.setDrawArrayParams(0, block.indexLength);
+                geometry.setDrawElemenParams(block.indexLength, 0);
                 if (i < cache.materials.length) {
                     batch.material = cache.materials[i];
                     batch.materialIndex = i;
@@ -2859,7 +3055,7 @@
                     const currentBatch = this.batches[this._currentBatchIndex];
                     if (currentBatch && currentBatch.buffer.vertexLength > 0) {
                         currentBatch.geometry.clearRenderParams();
-                        currentBatch.geometry.setDrawArrayParams(0, currentBatch.buffer.indexLength);
+                        currentBatch.geometry.setDrawElemenParams(currentBatch.buffer.indexLength, 0);
                         this.uploadBuffer(currentBatch.buffer);
                     }
                 }
@@ -2988,7 +3184,7 @@
             if (this._currentBatchIndex >= 0) {
                 const currentBatch = this.batches[this._currentBatchIndex];
                 currentBatch.geometry.clearRenderParams();
-                currentBatch.geometry.setDrawArrayParams(0, currentBatch.buffer.indexLength);
+                currentBatch.geometry.setDrawElemenParams(currentBatch.buffer.indexLength, 0);
                 this.uploadBuffer(currentBatch.buffer);
             }
             const totalBatchCount = this._currentBatchIndex + 1;

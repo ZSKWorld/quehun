@@ -798,10 +798,11 @@ window.Laya = (function (exports) {
 
     class LayaEnv {
     }
-    LayaEnv.version = "3.4.0-beta.3";
+    LayaEnv.version = "3.4.0";
     LayaEnv.isPlaying = true;
     LayaEnv.isPreview = false;
     LayaEnv.isConch = window ? (window.conch != null) : false;
+    LayaEnv.isModernAPIs = window ? (window.conchLayaXDevice != null) : false;
     LayaEnv.isEditor = false;
 
     exports.StatElement = void 0;
@@ -5728,6 +5729,7 @@ window.Laya = (function (exports) {
         BaseRender2DType[BaseRender2DType["spineSimple"] = 3] = "spineSimple";
         BaseRender2DType[BaseRender2DType["graphics"] = 4] = "graphics";
         BaseRender2DType[BaseRender2DType["spinenormal"] = 5] = "spinenormal";
+        BaseRender2DType[BaseRender2DType["sequenceFrame2D"] = 6] = "sequenceFrame2D";
     })(exports.BaseRender2DType || (exports.BaseRender2DType = {}));
     exports.SubPassFlag = void 0;
     (function (SubPassFlag) {
@@ -5798,6 +5800,7 @@ window.Laya = (function (exports) {
     const gridTexY = [0, 0, 0, 0];
     const gridX = [0, 0, 0, 0];
     const gridY = [0, 0, 0, 0];
+    const atlasUVEdgeEpsilon = 1e-7;
     function genSliceMesh(vb, contentRect, uvRect, gridRect, tileGridIndice) {
         const sourceW = vb.mainTex.sourceWidth;
         const sourceH = vb.mainTex.sourceHeight;
@@ -5809,6 +5812,7 @@ window.Laya = (function (exports) {
         gridTexX.push(uvRect.x, uvRect.x + gridRect.x * sx, uvRect.x + xMax * sx, uvRect.right);
         gridTexY.length = 0;
         gridTexY.push(uvRect.y, uvRect.y + gridRect.y * sy, uvRect.y + yMax * sy, uvRect.bottom);
+        insetZeroGridAtlasEdgeUVs(vb, sourceW, sourceH, gridRect, gridTexX, gridTexY);
         gridX[0] = contentRect.x;
         if (contentRect.width >= (sourceW - gridRect.width)) {
             gridX[1] = gridX[0] + gridRect.x;
@@ -5887,6 +5891,52 @@ window.Laya = (function (exports) {
         vb.triangulateQuad(qi);
         tmpRect.recover();
         tmpUV.recover();
+    }
+    function insetZeroGridAtlasEdgeUVs(vb, sourceW, sourceH, gridRect, texX, texY) {
+        const texture = vb.mainTex;
+        if (!texture || texture._dynamic)
+            return;
+        const uvrect = texture.uvrect;
+        if (!uvrect || (uvrect[0] === 0 && uvrect[1] === 0 && uvrect[2] === 1 && uvrect[3] === 1))
+            return;
+        const bitmap = texture.bitmap;
+        if (!bitmap || bitmap.width <= 0 || bitmap.height <= 0)
+            return;
+        const minU = uvrect[0];
+        const minV = uvrect[1];
+        const maxU = minU + uvrect[2];
+        const maxV = minV + uvrect[3];
+        const halfU = Math.min(0.5 / bitmap.width, uvrect[2] * 0.5);
+        const halfV = Math.min(0.5 / bitmap.height, uvrect[3] * 0.5);
+        if (isZeroGridSize(gridRect.x)) {
+            texX[0] = insetAtlasEdgeUV(texX[0], minU, maxU, halfU);
+            texX[1] = insetAtlasEdgeUV(texX[1], minU, maxU, halfU);
+        }
+        if (isZeroGridSize(sourceW - gridRect.right)) {
+            texX[2] = insetAtlasEdgeUV(texX[2], minU, maxU, halfU);
+            texX[3] = insetAtlasEdgeUV(texX[3], minU, maxU, halfU);
+        }
+        if (isZeroGridSize(gridRect.y)) {
+            texY[0] = insetAtlasEdgeUV(texY[0], minV, maxV, halfV);
+            texY[1] = insetAtlasEdgeUV(texY[1], minV, maxV, halfV);
+        }
+        if (isZeroGridSize(sourceH - gridRect.bottom)) {
+            texY[2] = insetAtlasEdgeUV(texY[2], minV, maxV, halfV);
+            texY[3] = insetAtlasEdgeUV(texY[3], minV, maxV, halfV);
+        }
+    }
+    function isZeroGridSize(value) {
+        return Math.abs(value) <= atlasUVEdgeEpsilon;
+    }
+    function insetAtlasEdgeUV(value, min, max, halfTexel) {
+        if (isNearUVEdge(value, min))
+            return min + halfTexel;
+        if (isNearUVEdge(value, max))
+            return max - halfTexel;
+        return value;
+    }
+    function isNearUVEdge(value, edge) {
+        return Math.abs(value - edge) <= atlasUVEdgeEpsilon;
     }
 
     class ColorUtils {
@@ -7215,20 +7265,6 @@ window.Laya = (function (exports) {
                 vb.contentRect.setTo(0, 0, w, h);
                 if (this.color)
                     vb.color.setABGR(this.color);
-                let uvrect = this.texture.uvrect;
-                if (!this.texture._dynamic
-                    && (uvrect[0] !== 0 || uvrect[1] !== 0 || uvrect[2] !== 1 || uvrect[3] !== 1)) {
-                    let bitmapW = this.texture.bitmap.width;
-                    let bitmapH = this.texture.bitmap.height;
-                    if (bitmapW > 0 && bitmapH > 0) {
-                        let halfTexelU = 0.5 / bitmapW;
-                        let halfTexelV = 0.5 / bitmapH;
-                        vb.uvRect.x += halfTexelU;
-                        vb.uvRect.y += halfTexelV;
-                        vb.uvRect.width -= halfTexelU * 2;
-                        vb.uvRect.height -= halfTexelV * 2;
-                    }
-                }
                 let gridRect = Rectangle.create();
                 let sourceWidth = vb.mainTex.sourceWidth;
                 let sourceHeight = vb.mainTex.sourceHeight;
@@ -11433,11 +11469,18 @@ window.Laya = (function (exports) {
             return this.moduleData.renderState;
         }
         constructor(owner, compiledObj) {
+            var _a;
             super(owner, owner._owner.name, compiledObj);
             this._statefirst = false;
             this.moduleData = LayaGL.unitRenderModuleDataFactory.createShaderPass(this);
             this.moduleData.validDefine = this._validDefine;
             this.moduleData.name = this.name;
+            let shaderType = (_a = owner._owner) === null || _a === void 0 ? void 0 : _a.shaderType;
+            if (shaderType === exports.ShaderFeatureType.D2_TextureSV
+                || shaderType === exports.ShaderFeatureType.D2_primitive
+                || shaderType === exports.ShaderFeatureType.D2_BaseRenderNode2D) {
+                this.moduleData.is2D = true;
+            }
         }
         static createShaderInstance(shaderpass, is2D, compileDefine) {
             _defineStrings.length = 0;
@@ -11705,15 +11748,33 @@ window.Laya = (function (exports) {
             this._uniformDefaultValue = uniformDefaultValue;
             this._uniformMap = new Map();
             for (const key in uniformMap) {
-                if (typeof uniformMap[key] == "object") {
-                    let block = (uniformMap[key]);
-                    for (const uniformName in block) {
-                        let uniformType = block[uniformName];
-                        this.addUniform(uniformName, uniformType);
+                const entry = uniformMap[key];
+                if (typeof entry == "object" && entry !== null) {
+                    if (isUniformMeta(entry)) {
+                        let meta = entry;
+                        this.addUniform(key, meta.type, { format: meta.format, access: meta.access });
+                        if (meta.type == exports.ShaderDataType.Texture2D || meta.type == exports.ShaderDataType.TextureCube || meta.type == exports.ShaderDataType.Texture3D || meta.type == exports.ShaderDataType.Texture2DArray) {
+                            let textureGammaDefine = Shader3D.getDefineByName(`Gamma_${key}`);
+                            let uniformIndex = Shader3D.propertyNameToID(key);
+                            LayaGL.renderEngine.addTexGammaDefine(uniformIndex, textureGammaDefine);
+                        }
+                    }
+                    else {
+                        let block = entry;
+                        for (const uniformName in block) {
+                            let item = block[uniformName];
+                            if (typeof item == "object" && isUniformMeta(item)) {
+                                let meta = item;
+                                this.addUniform(uniformName, meta.type, { format: meta.format, access: meta.access });
+                            }
+                            else {
+                                this.addUniform(uniformName, item);
+                            }
+                        }
                     }
                 }
                 else {
-                    let unifromType = uniformMap[key];
+                    let unifromType = entry;
                     this.addUniform(key, unifromType);
                     if (unifromType == exports.ShaderDataType.Texture2D || unifromType == exports.ShaderDataType.TextureCube || unifromType == exports.ShaderDataType.Texture3D || unifromType == exports.ShaderDataType.Texture2DArray) {
                         let textureGammaDefine = Shader3D.getDefineByName(`Gamma_${key}`);
@@ -11724,7 +11785,7 @@ window.Laya = (function (exports) {
             }
             this.moduleData.setUniformMap(this._uniformMap);
         }
-        addUniform(name, type) {
+        addUniform(name, type, options) {
             let uniformName = name;
             let arrayLength = getArrayLength$1(name);
             if (arrayLength > 0) {
@@ -11734,7 +11795,9 @@ window.Laya = (function (exports) {
                 id: Shader3D.propertyNameToID(uniformName),
                 propertyName: uniformName,
                 uniformtype: type,
-                arrayLength: arrayLength
+                arrayLength: arrayLength,
+                format: options === null || options === void 0 ? void 0 : options.format,
+                access: options === null || options === void 0 ? void 0 : options.access
             };
             this._uniformMap.set(uniform.id, uniform);
             if (type == exports.ShaderDataType.Texture2D || type == exports.ShaderDataType.TextureCube || type == exports.ShaderDataType.Texture3D || type == exports.ShaderDataType.Texture2DArray) {
@@ -11749,8 +11812,8 @@ window.Laya = (function (exports) {
             var shaderPass = new ShaderPass(this, compiledObj);
             shaderPass.pipelineMode = pipelineMode;
             this._passes.push(shaderPass);
-            this.moduleData.addShaderPass(shaderPass.moduleData);
             this._addIncludeUniform(compiledObj.includeNames);
+            this.moduleData.addShaderPass(shaderPass.moduleData);
             return shaderPass;
         }
         _addIncludeUniform(includemap) {
@@ -11799,6 +11862,15 @@ window.Laya = (function (exports) {
             }
         }
         return 0;
+    }
+    function isUniformMeta(o) {
+        if (o === null || typeof o !== "object" || typeof o.type !== "number")
+            return false;
+        for (const k in o) {
+            if (k !== "type" && k !== "format" && k !== "access")
+                return false;
+        }
+        return true;
     }
 
     exports.ShaderFeatureType = void 0;
@@ -12021,6 +12093,7 @@ window.Laya = (function (exports) {
             ShaderDefines2D.UNIFORM_SIZE = Shader3D.propertyNameToID("u_size");
             ShaderDefines2D.UNIFORM_VERTALPHA = Shader3D.propertyNameToID("u_VertAlpha");
             ShaderDefines2D.VIEW2D = Shader3D.propertyNameToID("u_view2D");
+            ShaderDefines2D.UNIFORM_TIME = Shader3D.propertyNameToID("u_Time");
             const commandUniform = LayaGL.renderDeviceFactory.createGlobalUniformMap("Sprite2D");
             commandUniform.addShaderUniform(ShaderDefines2D.UNIFORM_NMATRIX_0, "u_NMatrix_0", exports.ShaderDataType.Vector3);
             commandUniform.addShaderUniform(ShaderDefines2D.UNIFORM_NMATRIX_1, "u_NMatrix_1", exports.ShaderDataType.Vector3);
@@ -12031,6 +12104,7 @@ window.Laya = (function (exports) {
             passUniformMap.addShaderUniform(ShaderDefines2D.UNIFORM_SIZE, "u_size", exports.ShaderDataType.Vector2);
             passUniformMap.addShaderUniform(ShaderDefines2D.UNIFORM_INVERTMAT_0, "u_InvertMat_0", exports.ShaderDataType.Vector3);
             passUniformMap.addShaderUniform(ShaderDefines2D.UNIFORM_INVERTMAT_1, "u_InvertMat_1", exports.ShaderDataType.Vector3);
+            passUniformMap.addShaderUniform(ShaderDefines2D.UNIFORM_TIME, "u_Time", exports.ShaderDataType.Float);
             ShaderDefines2D.UNIFORM_MATERIAL_CLIPMATDIR = Shader3D.propertyNameToID("u_mClipMatDir");
             ShaderDefines2D.UNIFORM_MATERIAL_CLIPMATPOS = Shader3D.propertyNameToID("u_mClipMatPos");
             ShaderDefines2D.UNIFORM_VERTEX_SIZE = Shader3D.propertyNameToID("u_vertexSize");
@@ -13344,8 +13418,8 @@ window.Laya = (function (exports) {
     }
     function drawTestChar(ctx, char, fontSize, margin, pixelBBX, onlyH) {
         let charWidth = ctx.measureText(char).width;
-        let width = charWidth + margin * 2;
-        let height = fontSize + margin * 2;
+        let width = Math.floor(charWidth + margin * 2);
+        let height = Math.floor(fontSize + margin * 2);
         ctx.clearRect(0, 0, width, height);
         ctx.fillText(char, margin, margin + fontSize / 2);
         let bmp = ctx.getImageData(0, 0, width, height);
@@ -15628,15 +15702,16 @@ window.Laya = (function (exports) {
         removePass(pass) {
             this._manager.removePass(pass);
         }
-        apply(context2D) {
+        apply(context2D, renderTime = Render2DProcessor.renderTime) {
             let t = performance.now();
-            this._manager.apply(context2D);
+            this._manager.apply(context2D, renderTime);
             LayaGL.statAgent.recordTimeData(exports.StatElement.T_2DPass, performance.now() - t);
         }
         clear() {
             this._manager.clear();
         }
     }
+    Render2DProcessor.renderTime = 0;
 
     const className$7 = "FillTextCmd";
     class FillTextCmd {
@@ -17267,7 +17342,13 @@ window.Laya = (function (exports) {
         }
         _create() {
             this._renderTarget = LayaGL.textureContext.createRenderTargetInternal(this.width, this.height, this._colorFormat, this.depthStencilFormat, false, false, this._multiSamples, false);
-            this._texture = this._renderTarget._textures[0];
+            if (this._renderTarget._texturesResolve) {
+                this._texture = this._renderTarget._texturesResolve[0];
+                this._renderTarget._textures[0].gammaCorrection = 2.2;
+            }
+            else {
+                this._texture = this._renderTarget._textures[0];
+            }
             this._texture.gammaCorrection = 2.2;
         }
         clear(r = 0.0, g = 0.0, b = 0.0, a = 1.0) {
@@ -18985,6 +19066,11 @@ window.Laya = (function (exports) {
             material._setOwner2DElement(element);
             element.materialShaderData = material._shaderValues;
         }
+        static _removeRenderElement2DMaterial(element, material) {
+            if (material && !material.destroyed) {
+                material._removeOwnerElement(element);
+            }
+        }
         get renderLayer() {
             return this._renderLayer;
         }
@@ -19054,7 +19140,17 @@ window.Laya = (function (exports) {
                 this._removeRenderFromLightManager();
             super._onDisable();
         }
+        _getElementMaterial(index) {
+            return this._materials[index] || this._materials[0];
+        }
         _onDestroy() {
+            for (let i = 0, n = this._renderElements.length; i < n; i++) {
+                let element = this._renderElements[i];
+                if (element) {
+                    BaseRenderNode2D._removeRenderElement2DMaterial(element, this._getElementMaterial(i));
+                }
+            }
+            this._struct.renderElements = [];
             for (var i = 0, n = this._materials.length; i < n; i++) {
                 let m = this._materials[i];
                 m && !m.destroyed && m._removeReference();
@@ -19145,6 +19241,9 @@ window.Laya = (function (exports) {
                 return;
             const lastValue = this._materials[0];
             if (lastValue !== value) {
+                if (this._renderElements[0]) {
+                    BaseRenderNode2D._removeRenderElement2DMaterial(this._renderElements[0], this._getElementMaterial(0));
+                }
                 this._materials[0] = value;
                 this._changeMaterialReference(lastValue, value);
                 this._renderElements[0] && BaseRenderNode2D._setRenderElement2DMaterial(this._renderElements[0], value);
@@ -19422,6 +19521,10 @@ window.Laya = (function (exports) {
                 return this._sp.globalToLocal(tmpPoint$1.setTo(x, y));
             }
         }
+        destroy() {
+            this._sp = null;
+            this._matrix = null;
+        }
     }
     SpriteGlobalTransform.CHANGED = "globalTransChanged";
     const tmpPoint$1 = new Point();
@@ -19444,7 +19547,7 @@ window.Laya = (function (exports) {
             this.owner.on(SpriteGlobalTransform.CHANGED, this, this._onOwnerTransformChanged);
         }
         _onOwnerTransformChanged(type) {
-            if (type & exports.TransformKind.Layout && this._display) {
+            if (type & exports.TransformKind.Layout && this._display && this.owner._struct.enabled) {
                 if (this.graphics && this.graphics.getLayoutRepaintCount() > 0) {
                     this.graphics.repaint();
                 }
@@ -19593,7 +19696,7 @@ window.Laya = (function (exports) {
             });
             this._submits.destroy();
             this.texturesMap.forEach(inf => {
-                inf.texture.off("dispose", this, this._resourceRepaint);
+                inf.texture.off(Event.CHANGE, this, this._resourceRepaint);
             });
             this.texturesMap.clear();
             this.graphics = null;
@@ -19728,10 +19831,10 @@ window.Laya = (function (exports) {
             this._renderElement.textureKey = 0;
         }
         _updateRenderOffset(rect, oriRect, scaleX, scaleY) {
-            rect.cloneTo(this._rtRect);
-            if (!oriRect.equals(this._oriRect)) {
+            if (!rect.equals(this._rtRect) || !oriRect.equals(this._oriRect) || scaleX !== this._scaleX || scaleY !== this._scaleY) {
                 this._needUpdateVertexSize = true;
             }
+            rect.cloneTo(this._rtRect);
             oriRect.cloneTo(this._oriRect);
             this._scaleX = scaleX;
             this._scaleY = scaleY;
@@ -19779,6 +19882,7 @@ window.Laya = (function (exports) {
             this._handle.mask = (_a = this._sprite.mask) === null || _a === void 0 ? void 0 : _a._struct;
             if (this._submit._key.blendShader !== this._subStruct.blendMode) {
                 this._submit._key.blendShader = this._subStruct.blendMode;
+                BlendModeHandler.setShaderData(this._subStruct.blendMode, this._shaderData);
                 BlendModeHandler.setShaderData(this._subStruct.blendMode, this._internalInfo.shaderData);
             }
             if (this._internalInfo.textureHost == destRT && !this._needUpdateVertexSize)
@@ -19790,21 +19894,19 @@ window.Laya = (function (exports) {
                 this._renderElement.textureKey = 0;
             }
             this._internalInfo.textureHost = destRT;
-            let oriRect = this._oriRect;
+            let rtRect = this._rtRect;
             let vSize = Vector4.TEMP;
-            vSize.x = oriRect.x;
-            vSize.y = oriRect.y;
+            vSize.x = rtRect.x / this._scaleX;
+            vSize.y = rtRect.y / this._scaleY;
             let width = destRT.sourceWidth;
             let height = destRT.sourceHeight;
             if (width > 0 && height > 0) {
-                vSize.z = Math.round(width / this._scaleX);
-                vSize.w = Math.round(height / this._scaleY);
-                vSize.x -= (vSize.z - oriRect.width) / 2;
-                vSize.y -= (vSize.w - oriRect.height) / 2;
+                vSize.z = width / this._scaleX;
+                vSize.w = height / this._scaleY;
             }
             else {
-                vSize.z = oriRect.width;
-                vSize.w = oriRect.height;
+                vSize.z = rtRect.width / this._scaleX;
+                vSize.w = rtRect.height / this._scaleY;
             }
             this._internalInfo.vertexSize = vSize;
             this._needUpdateVertexSize = false;
@@ -20471,6 +20573,20 @@ window.Laya = (function (exports) {
             let uniformIndex = Shader3D.propertyNameToID(name);
             return this.getTextureByIndex(uniformIndex);
         }
+        setDeviceBufferByIndex(uniformIndex, buffer) {
+            this.shaderData.setDeviceBuffer(uniformIndex, buffer);
+        }
+        getDeviceBufferByIndex(uniformIndex) {
+            return this.shaderData.getStorageBuffer(uniformIndex);
+        }
+        setDeviceBuffer(name, buffer) {
+            let uniformIndex = Shader3D.propertyNameToID(name);
+            this.setDeviceBufferByIndex(uniformIndex, buffer);
+        }
+        getDeviceBuffer(name) {
+            let uniformIndex = Shader3D.propertyNameToID(name);
+            return this.getDeviceBufferByIndex(uniformIndex);
+        }
         getBufferByIndex(uniformIndex) {
             return this.shaderData.getBuffer(uniformIndex);
         }
@@ -20908,6 +21024,9 @@ window.Laya = (function (exports) {
         get sharedMaterial() {
             return this._materials[0];
         }
+        _getElementMaterial(index) {
+            return this._materials[index] || Mesh2DRender.mesh2DDefaultMaterial;
+        }
         _applyUnitQuad(value) {
             this._useUnitQuad = value;
             if (value) {
@@ -20938,6 +21057,7 @@ window.Laya = (function (exports) {
             if (submeshNum < this._renderElements.length) {
                 for (var i = this._renderElements.length, n = submeshNum; n < i; i--) {
                     let element = this._renderElements[i - 1];
+                    BaseRenderNode2D._removeRenderElement2DMaterial(element, this._getElementMaterial(i - 1));
                     element.destroy();
                 }
                 this._renderElements.length = submeshNum;
@@ -20948,7 +21068,7 @@ window.Laya = (function (exports) {
                     element = this._renderElements[i] = LayaGL.render2DRenderPassFactory.createRenderElement2D();
                 element.geometry = mesh.getSubMesh(i);
                 element.value2DShaderData = this._spriteShaderData;
-                BaseRenderNode2D._setRenderElement2DMaterial(element, this._materials[i] ? this._materials[i] : Mesh2DRender.mesh2DDefaultMaterial);
+                BaseRenderNode2D._setRenderElement2DMaterial(element, this._getElementMaterial(i));
                 element.renderStateIsBySprite = false;
                 element.nodeCommonMap = this._getcommonUniformMap();
                 element.owner = this._struct;
@@ -21079,7 +21199,7 @@ window.Laya = (function (exports) {
             Blit2DCMD._blitShaderData = LayaGL.renderDeviceFactory.createShaderData();
             Blit2DCMD._defaultShader = Shader3D.find("Blit2DCMD");
         }
-        static create(source, dest, offsetScale = null, shader = null, shaderData = null) {
+        static create(source, dest, offsetScale = null, shader = null, shaderData = null, invert = false) {
             if (!Blit2DCMD._blitShaderData)
                 Blit2DCMD.__init__();
             let cmd = Blit2DCMD._pool.take();
@@ -21087,6 +21207,7 @@ window.Laya = (function (exports) {
             cmd.dest = dest;
             cmd.offsetScale = offsetScale;
             cmd.setshader(shader, shaderData);
+            cmd._renderElement.geometry = invert ? Blit2DCMD.InvertQuadGeometry : Blit2DCMD.QuadGeometry;
             return cmd;
         }
         constructor() {
@@ -21099,7 +21220,7 @@ window.Laya = (function (exports) {
             this._renderElement = LayaGL.render2DRenderPassFactory.createRenderElement2D();
             this._blitQuadCMDData = LayaGL.render2DRenderPassFactory.createBlit2DQuadCMDData();
             this._blitQuadCMDData.element = this._renderElement;
-            this._renderElement.geometry = !LayaGL.renderEngine._screenInvertY ? Blit2DCMD.QuadGeometry : Blit2DCMD.InvertQuadGeometry;
+            this._renderElement.geometry = Blit2DCMD.QuadGeometry;
             this._renderElement.nodeCommonMap = null;
             this._renderElement.renderStateIsBySprite = false;
         }
@@ -21551,8 +21672,8 @@ window.Laya = (function (exports) {
             cmd._commandBuffer = this;
             cmd.getRenderCMD && this._renderCMDs.push(cmd.getRenderCMD());
         }
-        blitTextureQuad(source, dest, offsetScale, shader, shaderData) {
-            let cmd = Blit2DCMD.create(source, dest, offsetScale, shader, shaderData);
+        blitTextureQuad(source, dest, offsetScale, shader, shaderData, invert) {
+            let cmd = Blit2DCMD.create(source, dest, offsetScale, shader, shaderData, invert);
             this._commands.push(cmd);
             cmd._commandBuffer = this;
             cmd.getRenderCMD && this._renderCMDs.push(cmd.getRenderCMD());
@@ -21869,7 +21990,14 @@ window.Laya = (function (exports) {
                 this._drawOriRT = null;
             }
             this.setGraphics(null);
-            this._struct = null;
+            if (this._struct) {
+                this._struct.destroy();
+                this._struct = null;
+            }
+            if (this._globalTrans) {
+                this._globalTrans.destroy();
+                this._globalTrans = null;
+            }
         }
         get parent() {
             return this._$parent;
@@ -22545,6 +22673,7 @@ window.Laya = (function (exports) {
                 return;
             if (this._oriRenderPass)
                 this._oriRenderPass.repaint = true;
+            const parentPassRepaint = this._struct.inheritedEnableCulling || this._struct.inheritedDcOptimize;
             if (kind !== exports.TransformKind.Pos && kind !== exports.TransformKind.Anchor) {
                 this._tfChanged = true;
                 if ((kind & exports.TransformKind.Size) !== 0 && this._graphics)
@@ -22552,11 +22681,11 @@ window.Laya = (function (exports) {
                 else if ((this._renderType & SpriteConst.DRAW2RT) !== 0)
                     this.repaint();
                 else {
-                    this.parentRepaint();
+                    this.parentRepaint(parentPassRepaint);
                 }
             }
             else {
-                this.parentRepaint();
+                this.parentRepaint(parentPassRepaint);
             }
             (_a = this._maskParent) === null || _a === void 0 ? void 0 : _a.repaint(exports.RepaintFlag.ChildChange);
             if ((kind & exports.TransformKind.TRS) !== 0
@@ -22754,8 +22883,19 @@ window.Laya = (function (exports) {
                 out = new Rectangle();
             if (this._graphics != null)
                 out.union(this._graphics.getBounds(), out);
-            if (this._texture != null)
-                out.union(tmpRect.setTo(0, 0, this._width || this._texture.width, this._height || this._texture.height), out);
+            if (this._texture != null) {
+                let tex = this._texture;
+                let width = this._isWidthSet ? this._width : tex.sourceWidth;
+                let height = this._isHeightSet ? this._height : tex.sourceHeight;
+                if (tex.sourceWidth !== 0 && tex.sourceHeight !== 0) {
+                    let wRate = width / tex.sourceWidth;
+                    let hRate = height / tex.sourceHeight;
+                    out.union(tmpRect.setTo(tex.offsetX * wRate, tex.offsetY * hRate, tex.width * wRate, tex.height * hRate), out);
+                }
+                else {
+                    out.union(tmpRect.setTo(0, 0, width, height), out);
+                }
+            }
             if (this._renderNode != null) {
                 let rect = this._renderNode.rect;
                 Rectangle.minMaxRect(rect.x, rect.y, rect.z, rect.w, tmpRect);
@@ -22910,7 +23050,7 @@ window.Laya = (function (exports) {
         _needRepaint() {
             return !!(this._repaint >= Stat.loopCount && this._repaintCount >= LayaGL.renderEngine._framePassCount && this._previousType === 0);
         }
-        parentRepaint() {
+        parentRepaint(repaintPass = true) {
             let p = this._parent;
             if (!p)
                 return;
@@ -22924,7 +23064,7 @@ window.Laya = (function (exports) {
                         pStruct.setRepaint();
                     }
                 }
-                else
+                else if (repaintPass)
                     pStruct.setRepaint();
             }
         }
@@ -22982,9 +23122,13 @@ window.Laya = (function (exports) {
                 p = p._parent;
             }
         }
-        _processVisible() {
-            let b = this._visible && !this._getBit(hiddenBits);
+        _processVisible(parentVisible) {
+            if (parentVisible == null)
+                parentVisible = !(this._parent instanceof Sprite) || this._parent._struct.enabled;
+            let b = parentVisible && this._visible && !this._getBit(hiddenBits);
+            let changed = false;
             if (this._struct && this._struct.enabled !== b) {
+                changed = true;
                 this._struct.enabled = b;
                 if (b) {
                     this.repaint();
@@ -22995,9 +23139,15 @@ window.Laya = (function (exports) {
                 this.parentRepaint();
                 this._checkSubRenderPass();
                 this._refreshRenderPass();
-                return true;
+                this._processChildrenVisible(b);
             }
-            return false;
+            return changed;
+        }
+        _processChildrenVisible(parentVisible) {
+            for (let child of this._children) {
+                if (child instanceof Sprite)
+                    child._processVisible(parentVisible);
+            }
         }
         _setUnBelongScene() {
             if (this._ownerArea != null) {
@@ -23166,6 +23316,7 @@ window.Laya = (function (exports) {
             this._globalTrans._spTransChanged(exports.TransformKind.TRS);
             super._setParent(value, index);
             this._setStructParent(value, index);
+            this._processVisible();
             if (value && (this._mouseState === 2 || this._mouseState === 0 && this._getBit(NodeFlags.CHECK_INPUT))
                 && !value._getBit(NodeFlags.CHECK_INPUT)) {
                 this.setMouseEnabledUp();
@@ -24646,6 +24797,7 @@ window.Laya = (function (exports) {
             LayaGL.renderEngine.endFrame();
         }
         _render2d() {
+            var _a;
             for (let i = 0, n = this._scene2Ds.length; i < n; i++) {
                 this._scene2Ds[i].render(0, 0);
             }
@@ -24694,7 +24846,8 @@ window.Laya = (function (exports) {
                     sprite._graphicsRenderer._render(Render2DProcessor.runner);
                 }
             }
-            this.passManager.apply(Render2DProcessor.rendercontext2D);
+            Render2DProcessor.renderTime += (((_a = ILaya.timer) === null || _a === void 0 ? void 0 : _a.delta) || 0) * 0.001;
+            this.passManager.apply(Render2DProcessor.rendercontext2D, Render2DProcessor.renderTime);
             PostProcess2D.postRenderAll();
             this._graphicUpdateList.clear();
             this._subpassUpdateList.clear();
@@ -24778,6 +24931,657 @@ window.Laya = (function (exports) {
             return value > 0 ? 1 : -1;
         return value;
     }
+
+    class Texture3D extends BaseTexture {
+        static get defaultTexture() {
+            return this._defaultTexture;
+        }
+        static __init__() {
+            if (LayaGL.renderEngine.getCapable(exports.RenderCapable.Texture3D)) {
+                this._defaultTexture = new Texture3D(1, 1, 1, exports.TextureFormat.R8G8B8A8, false, false);
+                this._defaultTexture.lock = true;
+                this._defaultTexture.setPixelsData(new Uint8Array([255, 255, 255, 255]));
+            }
+        }
+        constructor(width, height, depth, format, mipmap = true, sRGB = false) {
+            super(width, height, format);
+            this._dimension = exports.TextureDimension.Tex3D;
+            this.depth = depth;
+            this._gammaSpace = sRGB;
+            let context = LayaGL.textureContext;
+            this._texture = context.createTexture3DInternal(this._dimension, width, height, depth, format, mipmap, sRGB, false);
+        }
+        setPixelsData(source) {
+            let texture = this._texture;
+            let context = LayaGL.textureContext;
+            context.setTexture3DPixelsData(texture, source, this.depth, false, false);
+        }
+        setSubPixelsData(xOffset, yOffset, zOffset, width, height, depth, pixels, mipmapLevel, generateMipmap) {
+            let texture = this._texture;
+            let context = LayaGL.textureContext;
+            context.setTexture3DSubPixelsData(texture, pixels, mipmapLevel, generateMipmap, xOffset, yOffset, zOffset, width, height, depth, false, false);
+        }
+    }
+
+    var SequenceFrame2DFS = "#define SHADER_NAME SequenceFrame2DFS\n#if defined(GL_FRAGMENT_PRECISION_HIGH)\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n#include \"Sprite2DFrag.glsl\";\nvarying vec2 v_texcoord;varying vec4 v_color;uniform sampler2D u_baseRender2DTexture;\n#ifdef LIGHT2D_ENABLE\nvarying vec2 v_lightUV;uniform vec3 u_LightDirection;uniform vec4 u_LightAndShadow2DAmbient;uniform sampler2D u_LightAndShadow2D;\n#ifdef LIGHT2D_SCENEMODE_ADD\nuniform sampler2D u_LightAndShadow2D_AddMode;\n#endif\n#ifdef LIGHT2D_SCENEMODE_SUB\nuniform sampler2D u_LightAndShadow2D_SubMode;\n#endif\n#ifdef LIGHT2D_NORMAL_PARAM\nuniform sampler2D u_normal2DTexture;uniform float u_normal2DStrength;\n#endif\nvoid applySequenceFrameLight(inout vec4 color){\n#ifdef LIGHT2D_EMPTY\ncolor.rgb*=u_LightAndShadow2DAmbient.rgb;\n#else\nvec2 uv=v_lightUV;vec2 tt=step(vec2(0.0),uv)*step(uv,vec2(1.0));float side=tt.x*tt.y;vec3 ambient=color.rgb*u_LightAndShadow2DAmbient.rgb;color.rgb=color.rgb*texture2D(u_LightAndShadow2D,uv).rgb*side;side*=color.a;\n#ifdef LIGHT2D_SCENEMODE_ADD\ncolor.rgb=min(vec3(1.0),color.rgb+texture2D(u_LightAndShadow2D_AddMode,uv).rgb*side);\n#endif\n#ifdef LIGHT2D_SCENEMODE_SUB\ncolor.rgb=max(vec3(0.0),color.rgb-texture2D(u_LightAndShadow2D_SubMode,uv).rgb*side);\n#endif\n#ifdef LIGHT2D_NORMAL_PARAM\nvec3 dr=normalize(u_LightDirection);vec3 normal=normalize(texture2D(u_normal2DTexture,v_texcoord).rgb*2.0-1.0);color.rgb=color.rgb*((1.0-u_normal2DStrength)+abs(dot(dr,normal.rgb))*u_normal2DStrength);\n#endif\ncolor.rgb=min(vec3(1.0),color.rgb+ambient);\n#endif\n}\n#endif\nvoid setSequenceFrameColor(in vec4 color){color.a*=v_color.w;vec4 transColor=v_color;\n#ifndef GAMMASPACE\ntransColor=gammaToLinear(v_color);\n#endif\ncolor.rgb*=transColor.rgb;gl_FragColor=color;}void main(){clip();vec4 textureColor=texture2D(u_baseRender2DTexture,v_texcoord);\n#ifdef LIGHT2D_ENABLE\napplySequenceFrameLight(textureColor);\n#endif\nsetSequenceFrameColor(textureColor);}";
+
+    var SequenceFrame2DVS = "#define SHADER_NAME SequenceFrame2DVS\n#include \"Sprite2DVertex.glsl\";\nvarying vec2 v_texcoord;uniform float u_Time;struct sequenceFrameVertexInfo{vec2 pos;vec2 uv;vec4 color;vec2 lightUV;};void getSequenceFrameGlobalPosition(in vec2 positionOS,out vec2 globalPos){transfrom(positionOS,a_SequenceFrameMatrix0.xyz,a_SequenceFrameMatrix1.xyz,globalPos);}vec4 getSequenceFramePosition(in vec2 rawGlobalPos){vec2 globalPos=rawGlobalPos;clip(globalPos);vec2 viewPos;getViewPos(globalPos,viewPos);vec4 projectPos;getProjectPos(viewPos,projectPos);return projectPos;}\n#ifdef LIGHT2D_ENABLE\nvarying vec2 v_lightUV;uniform vec4 u_LightAndShadow2DParam;void getSequenceFrameLightUV(in vec2 globalPos,out vec2 lightUV){lightUV.x=(globalPos.x-u_LightAndShadow2DParam.x)/u_LightAndShadow2DParam.z;lightUV.y=1.0-(globalPos.y-u_LightAndShadow2DParam.y)/u_LightAndShadow2DParam.w;}void applySequenceFrameLightUV(in sequenceFrameVertexInfo info){v_lightUV=info.lightUV;}\n#endif\nvoid getSequenceFrameVertexInfo(inout sequenceFrameVertexInfo info){float unitPixels=max(a_SequenceFrameColorUnit.w,0.0001);vec2 sourceFramePixels=max(a_SequenceFrameSizeTiles.xy,vec2(1.0));vec2 displaySize=sourceFramePixels/max(max(sourceFramePixels.x,sourceFramePixels.y),0.0001)*unitPixels;vec2 localOffset=a_SequenceFramePositionUV.xy*displaySize;info.pos=localOffset+vec2(a_SequenceFrameMatrix0.w,a_SequenceFrameMatrix1.w);float elapsedAge=max(u_Time-a_SequenceFrameRuntime.x,0.0);float lifeTime=max(a_SequenceFramePlayback.y,0.0001);float playbackState=a_SequenceFrameRuntime.w;float runningAge=mix(elapsedAge,mod(elapsedAge,lifeTime),step(1.5,playbackState));float age=clamp(mix(a_SequenceFrameRuntime.z,runningAge,step(0.5,playbackState)),0.0,lifeTime);float alpha=clamp(a_SequenceFrameRuntime.y,0.0,1.0);float startFrame=max(a_SequenceFramePlayback.x,0.0);float cycles=max(a_SequenceFramePlayback.z,0.0);float tilesX=max(floor(a_SequenceFrameSizeTiles.z+0.5),1.0);float tilesY=max(floor(a_SequenceFrameSizeTiles.w+0.5),1.0);float frameCount=max(floor(a_SequenceFramePlayback.w+0.5),1.0);float normalizedAge=min(age/lifeTime,0.999999);float frame=mod(floor(normalizedAge*cycles*frameCount)+floor(startFrame),frameCount);float indexX=floor(mod(frame,tilesX));float indexY=floor(frame/tilesX);vec2 gridUV=vec2(1.0/tilesX,1.0/tilesY);vec2 innerFrameUV=(a_SequenceFramePositionUV.zw*max(sourceFramePixels-vec2(1.0),vec2(0.0))+vec2(0.5))/sourceFramePixels;vec2 frameUV=(innerFrameUV+vec2(indexX,indexY))*gridUV;info.uv=a_SequenceFrameUVRect.xy+frameUV*a_SequenceFrameUVRect.zw;vec4 renderColor=linearToGamma(vec4(a_SequenceFrameColorUnit.rgb,alpha));renderColor.rgb*=renderColor.a;info.color=renderColor;}void main(){sequenceFrameVertexInfo info;getSequenceFrameVertexInfo(info);v_texcoord=info.uv;v_color=info.color;vec2 globalPos;getSequenceFrameGlobalPosition(info.pos,globalPos);\n#ifdef LIGHT2D_ENABLE\ngetSequenceFrameLightUV(globalPos,info.lightUV);applySequenceFrameLightUV(info);\n#endif\ngl_Position=getSequenceFramePosition(globalPos);}";
+
+    exports.SequenceFrame2DVertex = void 0;
+    (function (SequenceFrame2DVertex) {
+        SequenceFrame2DVertex[SequenceFrame2DVertex["PositionUV"] = 0] = "PositionUV";
+        SequenceFrame2DVertex[SequenceFrame2DVertex["Matrix0"] = 1] = "Matrix0";
+        SequenceFrame2DVertex[SequenceFrame2DVertex["Matrix1"] = 2] = "Matrix1";
+        SequenceFrame2DVertex[SequenceFrame2DVertex["Runtime"] = 3] = "Runtime";
+        SequenceFrame2DVertex[SequenceFrame2DVertex["Playback"] = 4] = "Playback";
+        SequenceFrame2DVertex[SequenceFrame2DVertex["SizeTiles"] = 5] = "SizeTiles";
+        SequenceFrame2DVertex[SequenceFrame2DVertex["ColorUnit"] = 6] = "ColorUnit";
+        SequenceFrame2DVertex[SequenceFrame2DVertex["UVRect"] = 7] = "UVRect";
+    })(exports.SequenceFrame2DVertex || (exports.SequenceFrame2DVertex = {}));
+    class SequenceFrame2DShader {
+        static __init__() {
+            if (SequenceFrame2DShader._inited) {
+                return;
+            }
+            SequenceFrame2DShader._inited = true;
+            const attributeMap = {
+                "a_SequenceFramePositionUV": [exports.SequenceFrame2DVertex.PositionUV, exports.ShaderDataType.Vector4],
+                "a_SequenceFrameMatrix0": [exports.SequenceFrame2DVertex.Matrix0, exports.ShaderDataType.Vector4],
+                "a_SequenceFrameMatrix1": [exports.SequenceFrame2DVertex.Matrix1, exports.ShaderDataType.Vector4],
+                "a_SequenceFrameRuntime": [exports.SequenceFrame2DVertex.Runtime, exports.ShaderDataType.Vector4],
+                "a_SequenceFramePlayback": [exports.SequenceFrame2DVertex.Playback, exports.ShaderDataType.Vector4],
+                "a_SequenceFrameSizeTiles": [exports.SequenceFrame2DVertex.SizeTiles, exports.ShaderDataType.Vector4],
+                "a_SequenceFrameColorUnit": [exports.SequenceFrame2DVertex.ColorUnit, exports.ShaderDataType.Vector4],
+                "a_SequenceFrameUVRect": [exports.SequenceFrame2DVertex.UVRect, exports.ShaderDataType.Vector4],
+            };
+            const uniformMap = {};
+            const shader = Shader3D.add("SequenceFrame2D", true, false);
+            shader.shaderType = exports.ShaderFeatureType.Default;
+            const subShader = new SubShader(attributeMap, uniformMap, {});
+            shader.addSubShader(subShader);
+            subShader.addShaderPass(SequenceFrame2DVS, SequenceFrame2DFS);
+            SequenceFrame2DShader.baseDeclaration = new VertexDeclaration(16, [
+                new VertexElement(0, VertexElementFormat.Vector4, exports.SequenceFrame2DVertex.PositionUV),
+            ]);
+            SequenceFrame2DShader.runtimeDeclaration = new VertexDeclaration(SequenceFrame2DShader.RUNTIME_FLOAT_STRIDE * 4, [
+                new VertexElement(0, VertexElementFormat.Vector4, exports.SequenceFrame2DVertex.Matrix0),
+                new VertexElement(16, VertexElementFormat.Vector4, exports.SequenceFrame2DVertex.Matrix1),
+                new VertexElement(32, VertexElementFormat.Vector4, exports.SequenceFrame2DVertex.Runtime),
+            ]);
+            SequenceFrame2DShader.configDeclaration = new VertexDeclaration(SequenceFrame2DShader.CONFIG_FLOAT_STRIDE * 4, [
+                new VertexElement(0, VertexElementFormat.Vector4, exports.SequenceFrame2DVertex.Playback),
+                new VertexElement(16, VertexElementFormat.Vector4, exports.SequenceFrame2DVertex.SizeTiles),
+                new VertexElement(32, VertexElementFormat.Vector4, exports.SequenceFrame2DVertex.ColorUnit),
+                new VertexElement(48, VertexElementFormat.Vector4, exports.SequenceFrame2DVertex.UVRect),
+            ]);
+            const vertexData = new Float32Array([
+                -0.5, -0.5, 0, 0,
+                0.5, -0.5, 1, 0,
+                0.5, 0.5, 1, 1,
+                -0.5, 0.5, 0, 1,
+            ]);
+            const indexData = new Uint16Array([0, 1, 2, 0, 2, 3]);
+            const vertexBuffer = SequenceFrame2DShader._vbs = LayaGL.renderDeviceFactory.createVertexBuffer(exports.BufferUsage.Static);
+            vertexBuffer.vertexDeclaration = SequenceFrame2DShader.baseDeclaration;
+            vertexBuffer.instanceBuffer = false;
+            vertexBuffer.setDataLength(vertexData.byteLength);
+            vertexBuffer.setData(vertexData.buffer, 0, 0, vertexData.byteLength);
+            const indexBuffer = SequenceFrame2DShader._ibs = LayaGL.renderDeviceFactory.createIndexBuffer(exports.BufferUsage.Static);
+            indexBuffer._setIndexDataLength(indexData.byteLength);
+            indexBuffer._setIndexData(indexData, 0);
+        }
+    }
+    SequenceFrame2DShader.RUNTIME_FLOAT_STRIDE = 12;
+    SequenceFrame2DShader.CONFIG_FLOAT_STRIDE = 16;
+    SequenceFrame2DShader.INSTANCE_FLOAT_STRIDE = SequenceFrame2DShader.RUNTIME_FLOAT_STRIDE + SequenceFrame2DShader.CONFIG_FLOAT_STRIDE;
+    SequenceFrame2DShader._inited = false;
+
+    class SequenceFrame2DRender extends BaseRenderNode2D {
+        static __init__() {
+            if (SequenceFrame2DRender.defaultMaterial)
+                return;
+            SequenceFrame2DShader.__init__();
+            const mat = SequenceFrame2DRender.defaultMaterial = new Material();
+            mat.lock = true;
+            mat.setShaderName("SequenceFrame2D");
+            mat.setBoolByIndex(Shader3D.DEPTH_WRITE, false);
+            mat.setIntByIndex(Shader3D.DEPTH_TEST, RenderState.DEPTHTEST_OFF);
+            mat.setIntByIndex(Shader3D.BLEND, RenderState.BLEND_ENABLE_ALL);
+            mat.setIntByIndex(Shader3D.BLEND_EQUATION, RenderState.BLENDEQUATION_ADD);
+            mat.setIntByIndex(Shader3D.BLEND_SRC, RenderState.BLENDPARAM_ONE);
+            mat.setIntByIndex(Shader3D.BLEND_DST, RenderState.BLENDPARAM_ONE_MINUS_SRC_ALPHA);
+            mat.setIntByIndex(Shader3D.CULL, RenderState.CULL_NONE);
+        }
+        static _allocateInstanceID(renderer) {
+            const id = SequenceFrame2DRender._freeInstanceIDs.length > 0
+                ? SequenceFrame2DRender._freeInstanceIDs.pop()
+                : SequenceFrame2DRender._nextInstanceID++;
+            SequenceFrame2DRender._ensureInstanceCapacity(id + 1);
+            SequenceFrame2DRender._activeRenderers[id] = renderer;
+            return id;
+        }
+        static _releaseInstanceID(id) {
+            if (id < 0)
+                return;
+            SequenceFrame2DRender._activeRenderers[id] = null;
+            SequenceFrame2DRender._freeInstanceIDs.push(id);
+        }
+        static _ensureInstanceCapacity(requiredCount) {
+            var _a;
+            if (requiredCount <= SequenceFrame2DRender._instanceCapacity)
+                return;
+            let newCapacity = SequenceFrame2DRender._instanceCapacity || 256;
+            while (newCapacity < requiredCount)
+                newCapacity <<= 1;
+            const runtimeBuffer = new Float32Array(newCapacity * SequenceFrame2DShader.RUNTIME_FLOAT_STRIDE);
+            const configBuffer = new Float32Array(newCapacity * SequenceFrame2DShader.CONFIG_FLOAT_STRIDE);
+            runtimeBuffer.set(SequenceFrame2DRender._runtimeDataBuffer);
+            configBuffer.set(SequenceFrame2DRender._configDataBuffer);
+            SequenceFrame2DRender._runtimeDataBuffer = runtimeBuffer;
+            SequenceFrame2DRender._configDataBuffer = configBuffer;
+            SequenceFrame2DRender._instanceCapacity = newCapacity;
+            const renderers = SequenceFrame2DRender._activeRenderers;
+            for (let i = 0, n = renderers.length; i < n; i++)
+                (_a = renderers[i]) === null || _a === void 0 ? void 0 : _a._bindInstanceDataViews();
+        }
+        get cycles() {
+            return this._cycles;
+        }
+        set cycles(value) {
+            value = Math.max(0, value || 0);
+            if (this._cycles === value)
+                return;
+            this._cycles = value;
+            this._markConfigDirty();
+        }
+        get tiles() {
+            return this._tiles;
+        }
+        set tiles(value) {
+            const x = value ? Math.max(1, Math.floor(value.x || 1)) : 1;
+            const y = value ? Math.max(1, Math.floor(value.y || 1)) : 1;
+            if (this._tiles.x === x && this._tiles.y === y)
+                return;
+            this._tiles.setValue(x, y);
+            this._markConfigDirty(true);
+        }
+        get startFrame() {
+            return this._startFrame;
+        }
+        set startFrame(value) {
+            value = Math.max(0, Math.floor(value || 0));
+            if (this._startFrame === value)
+                return;
+            this._startFrame = value;
+            this._markConfigDirty();
+        }
+        get lifeTime() {
+            return this._lifeTime;
+        }
+        set lifeTime(value) {
+            value = Math.max(0.0001, value || 0.0001);
+            if (this._lifeTime === value)
+                return;
+            this._lifeTime = value;
+            this._elapsedTime = Math.min(this._getPlaybackAge(), value);
+            this._startTime = this._getCurrentTime() - this._elapsedTime;
+            this._needRuntimeUpload = true;
+            this._markConfigDirty();
+        }
+        get playOnAwake() {
+            return this._playOnAwake;
+        }
+        set playOnAwake(value) {
+            this._playOnAwake = !!value;
+        }
+        get loop() {
+            return this._loop;
+        }
+        set loop(value) {
+            this._loop = !!value;
+            this._needRuntimeUpload = true;
+            this._notifyDataChange();
+        }
+        get autoDestroyAtComplete() {
+            return this._autoDestroyAtComplete;
+        }
+        set autoDestroyAtComplete(value) {
+            this._autoDestroyAtComplete = !!value;
+        }
+        get unitPixels() {
+            return this._unitPixels;
+        }
+        set unitPixels(value) {
+            value = Math.max(0.0001, value || 0.0001);
+            if (this._unitPixels === value)
+                return;
+            this._unitPixels = value;
+            this._markConfigDirty(true);
+        }
+        get color() {
+            return this._color;
+        }
+        set color(value) {
+            (value || Color.WHITE).cloneTo(this._color);
+            this._needRuntimeUpload = true;
+            this._markConfigDirty();
+        }
+        get texture() {
+            return this._texture;
+        }
+        set texture(value) {
+            if (this._texture instanceof Texture)
+                this._texture._removeReference();
+            this._texture = value;
+            if (value instanceof Texture) {
+                value._addReference();
+                this._baseRender2DTexture = value.bitmap || Texture2D.whiteTexture;
+                this._textureUVRect.setValue(value.uvrect[0], value.uvrect[1], value.uvrect[2], value.uvrect[3]);
+            }
+            else {
+                this._baseRender2DTexture = value || Texture2D.whiteTexture;
+                this._textureUVRect.setValue(0, 0, 1, 1);
+            }
+            this._applyTextureToShaderData(this._baseRender2DTexture);
+            this._markConfigDirty(true);
+        }
+        get isPlaying() {
+            return this._playing;
+        }
+        get sharedMaterial() {
+            return this._materials[0];
+        }
+        set sharedMaterial(value) {
+            if (value && !this._isMaterialVaild(value))
+                return;
+            const lastValue = this._materials[0];
+            if (lastValue === value)
+                return;
+            const element = this._renderElements[0];
+            if (element)
+                BaseRenderNode2D._removeRenderElement2DMaterial(element, this._getElementMaterial(0));
+            this._materials[0] = value;
+            lastValue && lastValue._removeReference();
+            value && value._addReference();
+            if (element)
+                BaseRenderNode2D._setRenderElement2DMaterial(element, this._getElementMaterial(0));
+            this._notifyDataChange();
+        }
+        get activeInstanceCount() {
+            return this._activeInstanceCount;
+        }
+        get instanceID() {
+            return this._instanceID;
+        }
+        get runtimeBufferData() {
+            return this._runtimeBufferData;
+        }
+        get configBufferData() {
+            return this._configBufferData;
+        }
+        get configVersion() {
+            return this._configVersion;
+        }
+        _copyRuntimeDataRange(target, targetOffset, startID, count) {
+            const stride = SequenceFrame2DShader.RUNTIME_FLOAT_STRIDE;
+            const start = startID * stride;
+            target.set(SequenceFrame2DRender._runtimeDataBuffer.subarray(start, start + count * stride), targetOffset);
+        }
+        _copyConfigDataRange(target, targetOffset, startID, count) {
+            const stride = SequenceFrame2DShader.CONFIG_FLOAT_STRIDE;
+            const start = startID * stride;
+            target.set(SequenceFrame2DRender._configDataBuffer.subarray(start, start + count * stride), targetOffset);
+        }
+        _uploadRuntimeDataRange(vertexBuffer, startID, count) {
+            const stride = SequenceFrame2DShader.RUNTIME_FLOAT_STRIDE * 4;
+            vertexBuffer.setData(SequenceFrame2DRender._runtimeDataBuffer.buffer, 0, startID * stride, count * stride);
+        }
+        _uploadConfigDataRange(vertexBuffer, startID, count) {
+            const stride = SequenceFrame2DShader.CONFIG_FLOAT_STRIDE * 4;
+            vertexBuffer.setData(SequenceFrame2DRender._configDataBuffer.buffer, 0, startID * stride, count * stride);
+        }
+        _ensureInstanceID() {
+            if (this._instanceID >= 0)
+                return;
+            this._instanceID = SequenceFrame2DRender._allocateInstanceID(this);
+            this._bindInstanceDataViews();
+            this._needRuntimeUpload = true;
+            this._needConfigUpload = true;
+            if (this._renderGeometry)
+                this._renderGeometry.instanceCount = this._activeInstanceCount;
+        }
+        _releaseInstanceID() {
+            if (this._instanceID < 0)
+                return;
+            SequenceFrame2DRender._releaseInstanceID(this._instanceID);
+            this._instanceID = -1;
+            this._activeInstanceCount = 0;
+            this._runtimeBufferData = null;
+            this._configBufferData = null;
+            this._lastMatrix.fill(NaN);
+            this._lastAlpha = NaN;
+            if (this._renderGeometry)
+                this._renderGeometry.instanceCount = 0;
+        }
+        _bindInstanceDataViews() {
+            if (this._instanceID < 0)
+                return;
+            const runtimeStride = SequenceFrame2DShader.RUNTIME_FLOAT_STRIDE;
+            const configStride = SequenceFrame2DShader.CONFIG_FLOAT_STRIDE;
+            const runtimeOffset = this._instanceID * runtimeStride;
+            const configOffset = this._instanceID * configStride;
+            this._runtimeBufferData = SequenceFrame2DRender._runtimeDataBuffer.subarray(runtimeOffset, runtimeOffset + runtimeStride);
+            this._configBufferData = SequenceFrame2DRender._configDataBuffer.subarray(configOffset, configOffset + configStride);
+        }
+        _setInstanceActive(active) {
+            const count = active && this._instanceID >= 0 ? 1 : 0;
+            if (this._activeInstanceCount === count) {
+                if (this._renderGeometry)
+                    this._renderGeometry.instanceCount = count;
+                return;
+            }
+            this._activeInstanceCount = count;
+            if (this._renderGeometry)
+                this._renderGeometry.instanceCount = count;
+        }
+        constructor() {
+            super();
+            this._cycles = 1;
+            this._tiles = new Vector2(1, 1);
+            this._startFrame = 0;
+            this._lifeTime = 1;
+            this._playOnAwake = true;
+            this._loop = false;
+            this._autoDestroyAtComplete = false;
+            this._unitPixels = 50;
+            this._color = new Color(1, 1, 1, 1);
+            this._textureUVRect = new Vector4(0, 0, 1, 1);
+            this._elapsedTime = 0;
+            this._startTime = 0;
+            this._playing = false;
+            this._paused = false;
+            this._needRuntimeUpload = true;
+            this._needConfigUpload = true;
+            this._configVersion = 0;
+            this._instanceID = -1;
+            this._lastMatrix = new Float32Array([NaN, NaN, NaN, NaN, NaN, NaN]);
+            this._lastAlpha = NaN;
+            this._activeInstanceCount = 0;
+            this._renderType = exports.BaseRender2DType.sequenceFrame2D;
+            this._renderElements = [];
+            this._materials = [];
+        }
+        _getElementMaterial(index) {
+            return this._materials[index] || SequenceFrame2DRender.defaultMaterial;
+        }
+        _isMaterialVaild(value) {
+            return value.checkType(exports.ShaderFeatureType.Default);
+        }
+        _getcommonUniformMap() {
+            return ["BaseRender2D"];
+        }
+        _initDefaultRenderData() {
+            SequenceFrame2DRender.__init__();
+            this._spriteShaderData.removeDefine(BaseRenderNode2D.SHADERDEFINE_BASERENDER2D);
+            this._initRender();
+            this.texture = this._texture || Texture2D.whiteTexture;
+            this._needConfigUpload = true;
+            this._needRuntimeUpload = true;
+        }
+        play(restart = true) {
+            var _a;
+            if (this._renderGeometry && this.enabled && ((_a = this.owner) === null || _a === void 0 ? void 0 : _a.activeInHierarchy))
+                this._ensureInstanceID();
+            const now = this._getCurrentTime();
+            this._elapsedTime = restart ? 0 : this._getPlaybackAge(now);
+            this._startTime = now - this._elapsedTime;
+            this._playing = true;
+            this._paused = false;
+            this._setInstanceActive(true);
+            this._markRuntimeDirty();
+        }
+        pause() {
+            if (this._playing && !this._paused) {
+                this._elapsedTime = this._getPlaybackAge();
+                this._paused = true;
+                this._markRuntimeDirty();
+                return;
+            }
+            this._paused = true;
+        }
+        resume() {
+            if (!this._playing || !this._paused)
+                return;
+            this._startTime = this._getCurrentTime() - this._elapsedTime;
+            this._paused = false;
+            this._markRuntimeDirty();
+        }
+        stop(resetFrame = true) {
+            const holdAge = this._getPlaybackAge();
+            this._playing = false;
+            this._paused = false;
+            this._elapsedTime = resetFrame ? 0 : holdAge;
+            this._startTime = this._getCurrentTime() - this._elapsedTime;
+            this._setInstanceActive(false);
+            this._markRuntimeDirty();
+        }
+        renderUpdate(_context) {
+            if (!this._renderGeometry)
+                return;
+            const now = this._getCurrentTime();
+            if (this._playing && !this._paused && !this._loop && now - this._startTime >= this._lifeTime)
+                this._completePlayback();
+            if (this._needConfigUpload) {
+                this._needConfigUpload = false;
+                this._updateConfigData();
+            }
+            if (this._activeInstanceCount > 0 && (this._needRuntimeUpload || this.boundsChange || this._isRuntimeStateDirty())) {
+                this._needRuntimeUpload = false;
+                this._updateRuntimeData();
+            }
+            else if (this._activeInstanceCount <= 0) {
+                this._needRuntimeUpload = false;
+                this.boundsChange = false;
+            }
+            this._updateLight();
+        }
+        onEnable() {
+            this._ensureInstanceID();
+            if (LayaEnv.isPlaying && this._playOnAwake)
+                this.play(true);
+            else
+                this._markRuntimeDirty();
+        }
+        onDisable() {
+            this.stop(true);
+            this._releaseInstanceID();
+        }
+        onDestroy() {
+            var _a, _b, _c, _d, _e;
+            this._releaseInstanceID();
+            if (this._texture instanceof Texture)
+                this._texture._removeReference();
+            (_a = this._runtimeVertexBuffer) === null || _a === void 0 ? void 0 : _a.destroy();
+            (_b = this._configVertexBuffer) === null || _b === void 0 ? void 0 : _b.destroy();
+            (_d = (_c = this._renderGeometry) === null || _c === void 0 ? void 0 : _c.bufferState) === null || _d === void 0 ? void 0 : _d.destroy();
+            (_e = this._renderGeometry) === null || _e === void 0 ? void 0 : _e.destroy();
+            this._runtimeVertexBuffer = null;
+            this._configVertexBuffer = null;
+            this._renderGeometry = null;
+            this._runtimeBufferData = null;
+            this._configBufferData = null;
+            this._texture = null;
+            this._baseRender2DTexture = null;
+        }
+        _cloneTo(dest) {
+            super._cloneTo(dest);
+            dest.cycles = this._cycles;
+            dest.tiles = this._tiles;
+            dest.startFrame = this._startFrame;
+            dest.lifeTime = this._lifeTime;
+            dest.playOnAwake = this._playOnAwake;
+            dest.loop = this._loop;
+            dest.autoDestroyAtComplete = this._autoDestroyAtComplete;
+            dest.unitPixels = this._unitPixels;
+            dest.color = this._color;
+            dest.texture = this._texture;
+        }
+        _canBatchWith(other) {
+            return this._baseRender2DTexture === other._baseRender2DTexture;
+        }
+        _markRuntimeDirty() {
+            this._needRuntimeUpload = true;
+            this._notifyDataChange();
+        }
+        _markConfigDirty(boundsChange = false) {
+            this._needConfigUpload = true;
+            this._configVersion++;
+            if (boundsChange)
+                this.boundsChange = true;
+            this._notifyDataChange();
+        }
+        _getCurrentTime() {
+            return Render2DProcessor.renderTime;
+        }
+        _getPlaybackAge(now = this._getCurrentTime()) {
+            const age = this._playing && !this._paused ? now - this._startTime : this._elapsedTime;
+            if (this._playing && !this._paused && this._loop)
+                return ((age % this._lifeTime) + this._lifeTime) % this._lifeTime;
+            return Math.min(Math.max(age, 0), this._lifeTime);
+        }
+        _completePlayback() {
+            this._elapsedTime = this._lifeTime;
+            this._playing = false;
+            this._paused = false;
+            this._setInstanceActive(false);
+            this._needRuntimeUpload = false;
+            this._notifyDataChange();
+            const owner = this.owner;
+            owner === null || owner === void 0 ? void 0 : owner.event(Event.COMPLETE);
+            if (this._autoDestroyAtComplete && owner && !owner.destroyed)
+                ILaya.timer.callLater(owner, owner.destroy, [true]);
+        }
+        _isRuntimeStateDirty() {
+            const matrix = this.owner._globalTrans.getMatrix();
+            const alpha = this._color.a * this._struct.globalAlpha;
+            const last = this._lastMatrix;
+            return matrix.a !== last[0] || matrix.b !== last[1] || matrix.c !== last[2]
+                || matrix.d !== last[3] || matrix.tx !== last[4] || matrix.ty !== last[5]
+                || alpha !== this._lastAlpha;
+        }
+        _initRender() {
+            this._resizeInstanceBuffers();
+            const geometry = this._renderGeometry = LayaGL.renderDeviceFactory.createRenderGeometryElement(exports.MeshTopology.Triangles, exports.DrawType.DrawElementInstance);
+            geometry.bufferState = LayaGL.renderDeviceFactory.createBufferState();
+            geometry.indexFormat = exports.IndexFormat.UInt16;
+            geometry.setDrawElemenParams(6, 0);
+            geometry.instanceCount = this._activeInstanceCount;
+            geometry.bufferState.applyState([SequenceFrame2DShader._vbs, this._runtimeVertexBuffer, this._configVertexBuffer], SequenceFrame2DShader._ibs);
+            const renderElement = LayaGL.render2DRenderPassFactory.createRenderElement2D();
+            renderElement.geometry = geometry;
+            renderElement.value2DShaderData = this._spriteShaderData;
+            renderElement.renderStateIsBySprite = false;
+            renderElement.nodeCommonMap = this._getcommonUniformMap();
+            renderElement.owner = this._struct;
+            renderElement._sequenceFrame2DRender = this;
+            BaseRenderNode2D._setRenderElement2DMaterial(renderElement, this._getElementMaterial(0));
+            this._renderElements[0] = renderElement;
+            this._struct.renderElements = this._renderElements;
+        }
+        _resizeInstanceBuffers() {
+            if (!this._runtimeVertexBuffer)
+                this._runtimeVertexBuffer = LayaGL.renderDeviceFactory.createVertexBuffer(exports.BufferUsage.Dynamic);
+            if (!this._configVertexBuffer)
+                this._configVertexBuffer = LayaGL.renderDeviceFactory.createVertexBuffer(exports.BufferUsage.Dynamic);
+            this._runtimeVertexBuffer.vertexDeclaration = SequenceFrame2DShader.runtimeDeclaration;
+            this._runtimeVertexBuffer.instanceBuffer = true;
+            this._configVertexBuffer.vertexDeclaration = SequenceFrame2DShader.configDeclaration;
+            this._configVertexBuffer.instanceBuffer = true;
+            const runtimeStride = SequenceFrame2DShader.RUNTIME_FLOAT_STRIDE;
+            const configStride = SequenceFrame2DShader.CONFIG_FLOAT_STRIDE;
+            this._runtimeVertexBuffer.setDataLength(runtimeStride * 4);
+            this._configVertexBuffer.setDataLength(configStride * 4);
+            this._bindInstanceDataViews();
+            if (this._renderGeometry)
+                this._renderGeometry.bufferState.applyState([SequenceFrame2DShader._vbs, this._runtimeVertexBuffer, this._configVertexBuffer], SequenceFrame2DShader._ibs);
+        }
+        _applyTextureToShaderData(value) {
+            if (!this._spriteShaderData || !value)
+                return;
+            this._spriteShaderData.setTexture(BaseRenderNode2D.BASERENDER2DTEXTURE, value);
+            if (value.gammaCorrection !== 1)
+                this._spriteShaderData.addDefine(ShaderDefines2D.GAMMATEXTURE);
+            else
+                this._spriteShaderData.removeDefine(ShaderDefines2D.GAMMATEXTURE);
+        }
+        _updateRuntimeData() {
+            if (this._activeInstanceCount <= 0) {
+                if (this._renderGeometry)
+                    this._renderGeometry.instanceCount = 0;
+                this.boundsChange = false;
+                return;
+            }
+            this._ensureInstanceID();
+            const matrix = this.owner._globalTrans.getMatrix();
+            const data = this._runtimeBufferData;
+            const alpha = this._color.a * this._struct.globalAlpha;
+            const last = this._lastMatrix;
+            data[0] = last[0] = matrix.a;
+            data[1] = last[2] = matrix.c;
+            data[2] = last[4] = matrix.tx;
+            data[3] = 0;
+            data[4] = last[1] = matrix.b;
+            data[5] = last[3] = matrix.d;
+            data[6] = last[5] = matrix.ty;
+            data[7] = 0;
+            data[8] = this._startTime;
+            data[9] = this._lastAlpha = alpha;
+            data[10] = this._getPlaybackAge();
+            data[11] = this._playing && !this._paused ? (this._loop ? 2 : 1) : 0;
+            this._setInstanceActive(true);
+            this._runtimeVertexBuffer.setData(data.buffer, 0, data.byteOffset, SequenceFrame2DShader.RUNTIME_FLOAT_STRIDE * 4);
+            this.boundsChange = false;
+        }
+        _updateConfigData() {
+            this._ensureInstanceID();
+            const tilesX = Math.max(1, Math.floor(this._tiles.x || 1));
+            const tilesY = Math.max(1, Math.floor(this._tiles.y || 1));
+            const frameCount = tilesX * tilesY;
+            const unitPixels = Math.max(0.0001, this._unitPixels);
+            const texture = this._texture instanceof Texture ? this._texture : this._baseRender2DTexture;
+            const sourceFrameWidth = ((texture && texture.width) ? texture.width : unitPixels * tilesX) / tilesX;
+            const sourceFrameHeight = ((texture && texture.height) ? texture.height : unitPixels * tilesY) / tilesY;
+            const maxSourceFrameSize = Math.max(sourceFrameWidth, sourceFrameHeight, 0.0001);
+            const displayWidth = sourceFrameWidth / maxSourceFrameSize * unitPixels;
+            const displayHeight = sourceFrameHeight / maxSourceFrameSize * unitPixels;
+            const data = this._configBufferData;
+            data[0] = this._startFrame;
+            data[1] = this._lifeTime;
+            data[2] = this._cycles;
+            data[3] = frameCount;
+            data[4] = sourceFrameWidth;
+            data[5] = sourceFrameHeight;
+            data[6] = tilesX;
+            data[7] = tilesY;
+            data[8] = this._color.r;
+            data[9] = this._color.g;
+            data[10] = this._color.b;
+            data[11] = unitPixels;
+            data[12] = this._textureUVRect.x;
+            data[13] = this._textureUVRect.y;
+            data[14] = this._textureUVRect.z;
+            data[15] = this._textureUVRect.w;
+            this._configVertexBuffer.setData(data.buffer, 0, data.byteOffset, SequenceFrame2DShader.CONFIG_FLOAT_STRIDE * 4);
+            this._rect.setValue(-displayWidth * 0.5, -displayHeight * 0.5, displayWidth * 0.5, displayHeight * 0.5);
+            this.boundsChange = false;
+        }
+    }
+    SequenceFrame2DRender._instanceCapacity = 0;
+    SequenceFrame2DRender._nextInstanceID = 0;
+    SequenceFrame2DRender._freeInstanceIDs = [];
+    SequenceFrame2DRender._activeRenderers = [];
+    SequenceFrame2DRender._runtimeDataBuffer = new Float32Array(0);
+    SequenceFrame2DRender._configDataBuffer = new Float32Array(0);
 
     exports.TextureCubeFace = void 0;
     (function (TextureCubeFace) {
@@ -25672,6 +26476,7 @@ window.Laya = (function (exports) {
             RenderTexture2D.__init__();
             TextureCube.__init__();
             Texture2DArray.__init__();
+            Texture3D.__init__();
             HalfFloatUtils.__init__();
             Scene.__init__();
             Render2DProcessor.__init__();
@@ -25680,6 +26485,7 @@ window.Laya = (function (exports) {
             PostProcess2D.init();
             Material.__initDefine__();
             Mesh2DRender.__init__();
+            SequenceFrame2DRender.__init__();
             InputManager.__init__();
             SoundManager.__init__();
         }
@@ -27977,7 +28783,7 @@ window.Laya = (function (exports) {
             this._lines = [];
             this._padding = [0, 0, 0, 0];
             this._fontSizeScale = 1;
-            this.graphics._useSpriteRect = true;
+            this.graphics._useSpriteRect = false;
         }
         static registerBitmapFont(name, bitmapFont) {
             bitmapFont._addReference();
@@ -34536,6 +35342,7 @@ window.Laya = (function (exports) {
             return cgmap;
         }
         static bindCG(shaderObj, cgmap) {
+            var _a, _b, _c;
             let passArray = shaderObj.shaderPass;
             if (passArray) {
                 passArray.forEach(element => {
@@ -34588,14 +35395,28 @@ window.Laya = (function (exports) {
                     }
                     if (entry.default != null)
                         defaultmap[k] = ShaderParser.getDefaultData(dataType, entry.default);
+                    let format;
+                    let access;
+                    if (dataType == exports.ShaderDataType.StorageTexture2D) {
+                        format = (_a = entry.format) !== null && _a !== void 0 ? _a : "rgba8";
+                        access = (_b = entry.access) !== null && _b !== void 0 ? _b : "writeonly";
+                    }
+                    else if (dataType == exports.ShaderDataType.DeviceBuffer) {
+                        access = (_c = entry.access) !== null && _c !== void 0 ? _c : "readwrite";
+                        if (access == "readonly")
+                            dataType = exports.ShaderDataType.ReadOnlyDeviceBuffer;
+                    }
+                    let value = (format !== undefined || access !== undefined)
+                        ? { type: dataType, format, access }
+                        : dataType;
                     if (entry.block) {
                         let block = newUniformMap[entry.block];
                         if (!block)
                             newUniformMap[entry.block] = block = {};
-                        block[k] = dataType;
+                        block[k] = value;
                     }
                     else
-                        newUniformMap[k] = dataType;
+                        newUniformMap[k] = value;
                 }
             }
         }
@@ -35269,7 +36090,8 @@ window.Laya = (function (exports) {
         }
         evaluateColorRGB(lerpFactor, out, startSearchIndex = 0, reverseSearch = false) {
             lerpFactor = Math.min(Math.max(lerpFactor, 0.0), 1.0);
-            var rgbElements = this._rgbElements;
+            var rgbElements = this._rgbElementDatas;
+            !rgbElements && (rgbElements = this._rgbElementDatas = new Float32Array(0));
             var curIndex = startSearchIndex;
             if (reverseSearch) {
                 for (var i = curIndex; i >= 0; i--) {
@@ -35367,7 +36189,8 @@ window.Laya = (function (exports) {
         }
         evaluateColorAlpha(lerpFactor, outColor, startSearchIndex = 0, reverseSearch = false) {
             lerpFactor = Math.min(Math.max(lerpFactor, 0.0), 1.0);
-            var alphaElements = this._alphaElements;
+            var alphaElements = this._alphaElementDatas;
+            !alphaElements && (alphaElements = this._alphaElementDatas = new Float32Array(0));
             var curIndex = startSearchIndex;
             if (reverseSearch) {
                 for (var i = curIndex; i >= 0; i--) {
@@ -36350,6 +37173,7 @@ window.Laya = (function (exports) {
     c("Curve", Curve);
     c("PostProcess2D", PostProcess2D);
     c("PostProcess2DEffect", PostProcess2DEffect);
+    c("SequenceFrame2DRender", SequenceFrame2DRender);
     c("COMPUTESHADER", ComputeShader);
 
     class SetRendertarget2DCMD {
@@ -37562,7 +38386,9 @@ window.Laya = (function (exports) {
                 uniformsMap.forEach((uniform, id) => {
                     let dataType = uniform.uniformtype;
                     let uniformName = uniform.propertyName;
-                    if (uniform.arrayLength > 0) ;
+                    if (uniform.arrayLength > 0) {
+                        uniformName = `${uniformName}[${uniform.arrayLength}]`;
+                    }
                     let typeStr = GLSLCodeGenerator.getAttributeType(dataType);
                     if (typeStr != "") {
                         uniformsStr += `uniform ${typeStr} ${uniformName};\n`;
@@ -39423,6 +40249,7 @@ ${materialUniformGlsl}`;
             let values = this.commands.values();
             let cmd = values.next().value;
             let ids = [];
+            let cacheInvertY = Render2DProcessor.rendercontext2D.invertY;
             while (cmd && (force || Laya.stage.getTimeFromFrameStart() < 30)) {
                 this.cmdBuffer.addCacheCommand(cmd);
                 this.cmdBuffer.applyOne(true);
@@ -39431,6 +40258,7 @@ ${materialUniformGlsl}`;
                 ids.push(cmd.source.id);
                 cmd = values.next().value;
             }
+            Render2DProcessor.rendercontext2D.invertY = cacheInvertY;
             this.commands.size || this._doDestoryTex();
             return ids;
         }
@@ -39549,12 +40377,7 @@ ${materialUniformGlsl}`;
             const height = this.height;
             const offsetScale = new Vector4();
             offsetScale.x = Math.max(0, x - expand) / width;
-            if (LayaGL.renderEngine._screenInvertY) {
-                offsetScale.y = Math.max(0, y - expand) / height;
-            }
-            else {
-                offsetScale.y = Math.max(0, height - y - h - expand) / height;
-            }
+            offsetScale.y = Math.max(0, height - y - h - expand) / height;
             offsetScale.z = (w + expand * 2) / width;
             offsetScale.w = (h + expand * 2) / height;
             let sd = TextureMergeShaderInit._sdNotChange;
@@ -39574,7 +40397,7 @@ ${materialUniformGlsl}`;
                     sd = TextureMergeShaderInit._sdNotChange;
                 }
             }
-            let cmd = Blit2DCMD.create(smallTex, this, offsetScale, this._shader, sd);
+            let cmd = Blit2DCMD.create(smallTex, this, offsetScale, this._shader, sd, false);
             this.commands.add(cmd);
             if (this.immediately) {
                 this.onUpdate(true);
@@ -40093,7 +40916,7 @@ ${materialUniformGlsl}`;
             this.usedCapacity = 0;
         }
         createLargeTex(largeTextureIndex, sRGB, gammaCorrection) {
-            const mipMap = this.mipMap;
+            const mipMap = this.mipMap && !!LayaGL.renderEngine.gl;
             const texMode = this.texMode;
             const anisoLevel = this.texAnisoLevel;
             sRGB = sRGB ? sRGB : this.sRGB;
@@ -40539,7 +41362,7 @@ ${materialUniformGlsl}`;
 
     class TextureInfo {
         recover() {
-            this.owner.removeTexture(this.source.id, -1, false);
+            this.owner.removeByTexture2DId(this.textureId, -1, false);
         }
     }
     class DynamicAtlasManager {
@@ -40721,14 +41544,19 @@ ${materialUniformGlsl}`;
             }
             return successCount;
         }
-        removeTexture(textureId, largeTextureIndex = -1, event = true) {
+        removeTexture(texture, largeTextureIndex = -1, event = true) {
             if (this._isDestroyed)
                 return false;
-            let textureInfo = this._textureMap.get(textureId);
+            return this.removeByTexture2DId(this._getTexture2DId(typeof texture === 'number' ? texture : texture.id), largeTextureIndex);
+        }
+        removeByTexture2DId(texture2DId, largeTextureIndex = -1, event = true) {
+            if (this._isDestroyed)
+                return false;
+            let textureInfo = this._textureMap.get(texture2DId);
             if (!textureInfo)
                 return false;
-            this._largeTexManager.removeTexture(textureId, largeTextureIndex);
-            this._textureMap.delete(textureId);
+            this._largeTexManager.removeTexture(texture2DId, largeTextureIndex);
+            this._textureMap.delete(texture2DId);
             let otexture2d = textureInfo.source;
             if (!otexture2d || otexture2d.destroyed) {
                 if (textureInfo.url) {
@@ -40755,11 +41583,11 @@ ${materialUniformGlsl}`;
             let texture = Laya.loader.getRes(url, Loader.IMAGE);
             if (texture && texture._dynamic) {
                 let textureInfo = texture._dynamic;
-                return this.removeTexture(textureInfo.textureId, largeTextureIndex);
+                return this.removeByTexture2DId(textureInfo.textureId, largeTextureIndex);
             }
             for (let [textureId, textureInfo] of this._textureMap) {
                 if (textureInfo.url === url) {
-                    return this.removeTexture(textureId, largeTextureIndex);
+                    return this.removeByTexture2DId(textureId, largeTextureIndex);
                 }
             }
             console.warn(`DynamicAtlasManager: 纹理 ${url} 未在图集中找到`);
@@ -40898,7 +41726,7 @@ ${materialUniformGlsl}`;
                 }
             }
             for (const textureId of textureIdsToRemove) {
-                if (this.removeTexture(textureId)) {
+                if (this.removeByTexture2DId(textureId)) {
                     cleanedCount++;
                 }
             }
@@ -41686,6 +42514,8 @@ ${materialUniformGlsl}`;
             let ele = this.element = HTMLVideoPlayer.createElement();
             ele.addEventListener("loadedmetadata", () => this.setLoaded(this.element.videoWidth, this.element.videoHeight, Browser.onLayaRuntime));
             ele.addEventListener("canplay", () => {
+                if (!this._loaded && this.element.videoWidth > 0 && this.element.videoHeight > 0)
+                    this.setLoaded(this.element.videoWidth, this.element.videoHeight, Browser.onLayaRuntime);
                 this.event("canplay");
                 if (!this._playing)
                     this.render(true);
@@ -42889,37 +43719,6 @@ ${materialUniformGlsl}`;
             this._dimension = exports.TextureDimension.Cube;
             this._renderTarget = LayaGL.textureContext.createRenderTargetCubeInternal(this.width, this._format, this._depthStencilFormat, this._generateMipmap, this._gammaSpace, this._multiSamples);
             this._texture = this._renderTarget._textures[0];
-        }
-    }
-
-    class Texture3D extends BaseTexture {
-        static get defaultTexture() {
-            return this._defaultTexture;
-        }
-        static __init__() {
-            if (LayaGL.renderEngine.getCapable(exports.RenderCapable.Texture3D)) {
-                this._defaultTexture = new Texture3D(1, 1, 1, exports.TextureFormat.R8G8B8A8, false, false);
-                this._defaultTexture.lock = true;
-                this._defaultTexture.setPixelsData(new Uint8Array([255, 255, 255, 255]));
-            }
-        }
-        constructor(width, height, depth, format, mipmap = true, sRGB = false) {
-            super(width, height, format);
-            this._dimension = exports.TextureDimension.Tex3D;
-            this.depth = depth;
-            this._gammaSpace = sRGB;
-            let context = LayaGL.textureContext;
-            this._texture = context.createTexture3DInternal(this._dimension, width, height, depth, format, mipmap, sRGB, false);
-        }
-        setPixelsData(source) {
-            let texture = this._texture;
-            let context = LayaGL.textureContext;
-            context.setTexture3DPixelsData(texture, source, this.depth, false, false);
-        }
-        setSubPixelsData(xOffset, yOffset, zOffset, width, height, depth, pixels, mipmapLevel, generateMipmap) {
-            let texture = this._texture;
-            let context = LayaGL.textureContext;
-            context.setTexture3DSubPixelsData(texture, pixels, mipmapLevel, generateMipmap, xOffset, yOffset, zOffset, width, height, depth, false, false);
         }
     }
 
@@ -44230,7 +45029,7 @@ ${materialUniformGlsl}`;
             this._txt.text = strArray.join("\n");
         }
         render() {
-            this._pass && this._pass.fowardRender(Render2DProcessor.rendercontext2D);
+            this._pass && this._pass.fowardRender(Render2DProcessor.rendercontext2D, Render2DProcessor.renderTime);
         }
     }
     const strArray = [];
@@ -44600,6 +45399,8 @@ ${materialUniformGlsl}`;
     exports.Scene = Scene;
     exports.Scene2DSpecialManager = Scene2DSpecialManager;
     exports.Script = Script;
+    exports.SequenceFrame2DRender = SequenceFrame2DRender;
+    exports.SequenceFrame2DShader = SequenceFrame2DShader;
     exports.SerializeUtil = SerializeUtil;
     exports.Set2DDefineCMD = Set2DDefineCMD;
     exports.Set2DRTCMD = Set2DRTCMD;

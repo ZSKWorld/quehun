@@ -1579,15 +1579,15 @@
         }
     }
 
-    var TileMapVS = "#define SHADER_NAME TileMap2DVS\n#include \"TileMapVertex.glsl\"\nuniform vec2 u_TileSize;void main(){vertexInfo info;getVertexInfoTileMap(info);vec4 wordpos=getPosition(info.pos);setVertexInfo(info);\n#ifdef LIGHT2D_ENABLE\nlightAndShadow(info);\n#endif\ngl_Position=wordpos;}";
+    var TileMapVS = "#define SHADER_NAME TileMap2DVS\n#include \"TileMapVertex.glsl\"\nvoid main(){vertexInfo info;getVertexInfoTileMap(info);vec4 wordpos=getPosition(info.pos);setVertexInfo(info);\n#ifdef LIGHT2D_ENABLE\nlightAndShadow(info);\n#endif\ngl_Position=wordpos;}";
 
-    var TileMapFS = "#define SHADER_NAME TileMap2DFS\n#include \"TileMapFragment.glsl\"\nvoid main(){clip();vec4 textureColor=getTextureColor(v_texcoord);vec4 finalColor=textureColor*v_color;\n#ifdef LIGHT2D_ENABLE\nlightAndShadow(finalColor);\n#endif\ngl_FragColor=finalColor;}";
+    var TileMapFS = "#define SHADER_NAME TileMap2DFS\n#include \"TileMapFragment.glsl\"\nvoid main(){clip();vec4 textureColor=getTextureColor(v_texcoord);textureColor=transspaceColor(textureColor);vec4 transV=v_color;\n#ifndef GAMMASPACE\ntransV=gammaToLinear(v_color);\n#endif\nvec4 finalColor=textureColor*transV;\n#ifdef LIGHT2D_ENABLE\nlightAndShadow(finalColor);\n#endif\ngl_FragColor=finalColor;}";
 
     var TileMapCommonGLSL = "varying vec2 v_pos;";
 
     var TileMapVertexGLSL = "\n#include \"Sprite2DVertex.glsl\";\n#include \"TileMapCommon.glsl\";\nvec2 getVertexPos(){float x=a_cellPosScale.x+a_position.x*a_cellPosScale.z;float y=a_cellPosScale.y+a_position.y*a_cellPosScale.w;return vec2(x,y);}vec2 getVertexUv(){float u=a_cellUVOriScale.z*dot(a_texcoord,a_celluvTrans.xy)+a_cellUVOriScale.x;float v=a_cellUVOriScale.w*dot(a_texcoord,a_celluvTrans.zw)+a_cellUVOriScale.y;return vec2(u,v);}vec4 getVertexColor(){return a_color*a_cellColor;}void getVertexInfoTileMap(inout vertexInfo info){info.pos=getVertexPos();info.color=getVertexColor();info.uv=getVertexUv();\n#ifdef LIGHT2D_ENABLE\nvec2 global;getGlobalPos(info.pos,global);info.lightUV.x=(global.x-u_LightAndShadow2DParam.x)/u_LightAndShadow2DParam.z;info.lightUV.y=1.0-(global.y-u_LightAndShadow2DParam.y)/u_LightAndShadow2DParam.w;\n#endif\n}void setVertexInfo(in vertexInfo info){v_texcoord=info.uv;v_color=info.color;v_pos=info.pos;}";
 
-    var TileMapFragmentGLSL = "#include \"TileMapCommon.glsl\"\n#include \"Sprite2DFrag.glsl\";\nuniform sampler2D u_render2DTexture;vec4 getTextureColor(in vec2 uv){return texture2D(u_render2DTexture,uv);}";
+    var TileMapFragmentGLSL = "#include \"TileMapCommon.glsl\"\n#include \"Sprite2DFrag.glsl\";\nvec4 getTextureColor(in vec2 uv){return texture2D(u_render2DTexture,uv);}";
 
     class TileMapShaderInit {
         static __init__() {
@@ -1603,9 +1603,13 @@
             Laya.Shader3D.addInclude("TileMapCommon.glsl", TileMapCommonGLSL);
             Laya.Shader3D.addInclude("TileMapVertex.glsl", TileMapVertexGLSL);
             Laya.Shader3D.addInclude("TileMapFragment.glsl", TileMapFragmentGLSL);
+            let uniformMap = {
+                'u_render2DTexture': Laya.ShaderDataType.Texture2D,
+                'u_TileSize': Laya.ShaderDataType.Vector2,
+            };
             let shader = Laya.Shader3D.add("TileMapLayer", false, false);
-            shader.shaderType = Laya.ShaderFeatureType.Effect;
-            let subShader = new Laya.SubShader(attributeMap, {}, {});
+            shader.shaderType = Laya.ShaderFeatureType.D2_BaseRenderNode2D;
+            let subShader = new Laya.SubShader(attributeMap, uniformMap, {});
             shader.addSubShader(subShader);
             subShader.addShaderPass(TileMapVS, TileMapFS);
             TileMapShaderInit._tileMapPositionUVColorDec = new Laya.VertexDeclaration(32, [
@@ -3991,11 +3995,14 @@
             if (this._tileSet == value) {
                 return;
             }
-            if (this._tileSet)
+            if (this._tileSet) {
                 this._tileSet._removeOwner(this);
+                this._tileSet._removeReference();
+            }
             this._tileSet = value;
             if (value) {
-                this.tileSet._addOwner(this);
+                this._tileSet._addOwner(this);
+                this._tileSet._addReference();
                 this._initialTileSet();
             }
         }
@@ -4155,6 +4162,7 @@
             super.onDestroy();
             this._tileMapPhysics.destroy();
             this._tileMapOccluder.destroy();
+            this.tileSet = null;
         }
         _globalChangeHandler() {
             this._needUpdateDirtys[exports.DirtyFlagType.PHYSICS] = true;

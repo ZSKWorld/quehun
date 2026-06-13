@@ -1187,6 +1187,8 @@
             this._rotationEuler = new Laya.Vector3(0, 0, 0);
             this._worldMatrix = new Laya.Matrix4x4();
             this._rtSyncFlag = 0;
+            this._notifyFrame = 0;
+            this._hasTransformChangedListener = false;
             this._isDefaultMatrix = false;
             this._faceInvert = false;
             this._frontFaceValue = 1;
@@ -1202,6 +1204,11 @@
             this.setWorldLossyScale(this._scale);
             this.localRotation = this._localRotation;
         }
+        onStartListeningToType(type) {
+            super.onStartListeningToType(type);
+            if (type === Laya.Event.TRANSFORM_CHANGED)
+                this._hasTransformChangedListener = true;
+        }
         get isDefaultMatrix() {
             if (this._getTransformFlag(Laya.Transform3D.TRANSFORM_LOCALMATRIX)) {
                 this.localMatrix;
@@ -1209,10 +1216,18 @@
             return this._isDefaultMatrix;
         }
         _setTransformFlag(type, value) {
-            this._nativeObj.setTransformFlag(type, value);
+            let flag = this._nativeUInt32Buffer[RTTransform3D.TRANSFORM_CHANGEFLAG_DATAOFFSET];
+            if (value)
+                flag |= type;
+            else
+                flag &= ~type;
+            this._nativeUInt32Buffer[RTTransform3D.TRANSFORM_CHANGEFLAG_DATAOFFSET] = flag;
         }
         _getTransformFlag(type) {
-            return (this._nativeUInt32Buffer[RTTransform3D.TRANSFORM_CHANGEFLAG_DATAOFFSET] & type) != 0;
+            return (this._getTransformChangeFlag() & type) != 0;
+        }
+        _getTransformChangeFlag() {
+            return this._nativeUInt32Buffer[RTTransform3D.TRANSFORM_CHANGEFLAG_DATAOFFSET];
         }
         _getRTSyncFlag(type) {
             return (this._nativeUInt32Buffer[RTTransform3D.TRANSFORM_RT_SYNC_FLAG_DATAOFFSET] & type) != 0;
@@ -1226,7 +1241,7 @@
             this._nativeUInt32Buffer[RTTransform3D.TRANSFORM_RT_SYNC_FLAG_DATAOFFSET] = flag;
         }
         get _RTtransformFlag() {
-            return this._nativeUInt32Buffer[RTTransform3D.TRANSFORM_CHANGEFLAG_DATAOFFSET];
+            return this._getTransformChangeFlag();
         }
         get localPositionX() {
             return this.localPosition.x;
@@ -1458,7 +1473,8 @@
         _onWorldPositionRotationTransform() {
             if (!this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDPOSITION) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDQUATERNION) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDEULER)) {
                 this._setTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX | Laya.Transform3D.TRANSFORM_WORLDPOSITION | Laya.Transform3D.TRANSFORM_WORLDQUATERNION | Laya.Transform3D.TRANSFORM_WORLDEULER, true);
-                this.event(Laya.Event.TRANSFORM_CHANGED, this._RTtransformFlag);
+                if (this._hasTransformChangedListener)
+                    this.event(Laya.Event.TRANSFORM_CHANGED, this._getTransformChangeFlag());
             }
             for (var i = 0, n = this._children.length; i < n; i++)
                 this._children[i]._onWorldPositionRotationTransform();
@@ -1466,7 +1482,8 @@
         _onWorldPositionScaleTransform() {
             if (!this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDPOSITION) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDSCALE)) {
                 this._setTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX | Laya.Transform3D.TRANSFORM_WORLDPOSITION | Laya.Transform3D.TRANSFORM_WORLDSCALE, true);
-                this.event(Laya.Event.TRANSFORM_CHANGED, this._RTtransformFlag);
+                if (this._hasTransformChangedListener)
+                    this.event(Laya.Event.TRANSFORM_CHANGED, this._getTransformChangeFlag());
             }
             for (var i = 0, n = this._children.length; i < n; i++)
                 this._children[i]._onWorldPositionScaleTransform();
@@ -1474,31 +1491,64 @@
         _onWorldPositionTransform() {
             if (!this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDPOSITION)) {
                 this._setTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX | Laya.Transform3D.TRANSFORM_WORLDPOSITION, true);
-                this.event(Laya.Event.TRANSFORM_CHANGED, this._RTtransformFlag);
+                if (this._hasTransformChangedListener)
+                    this.event(Laya.Event.TRANSFORM_CHANGED, this._getTransformChangeFlag());
             }
-            for (var i = 0, n = this._children.length; i < n; i++)
-                this._children[i]._onWorldPositionTransform();
+            if (Laya.Transform3D._inAnimatorBatch) {
+                if (this._lastAnimatorFrame === Laya.Transform3D._currentAnimatorFrame)
+                    return;
+                this._lastAnimatorFrame = Laya.Transform3D._currentAnimatorFrame;
+                for (var i = 0, n = this._children.length; i < n; i++)
+                    this._children[i]._onWorldTransform();
+                return;
+            }
+            for (var j = 0, m = this._children.length; j < m; j++)
+                this._children[j]._onWorldPositionTransform();
         }
         _onWorldRotationTransform() {
             if (!this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDQUATERNION) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDEULER)) {
                 this._setTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX | Laya.Transform3D.TRANSFORM_WORLDQUATERNION | Laya.Transform3D.TRANSFORM_WORLDEULER, true);
-                this.event(Laya.Event.TRANSFORM_CHANGED, this._RTtransformFlag);
+                if (this._hasTransformChangedListener)
+                    this.event(Laya.Event.TRANSFORM_CHANGED, this._getTransformChangeFlag());
             }
-            for (var i = 0, n = this._children.length; i < n; i++)
-                this._children[i]._onWorldPositionRotationTransform();
+            if (Laya.Transform3D._inAnimatorBatch) {
+                if (this._lastAnimatorFrame === Laya.Transform3D._currentAnimatorFrame)
+                    return;
+                this._lastAnimatorFrame = Laya.Transform3D._currentAnimatorFrame;
+                for (var i = 0, n = this._children.length; i < n; i++)
+                    this._children[i]._onWorldTransform();
+                return;
+            }
+            for (var j = 0, m = this._children.length; j < m; j++)
+                this._children[j]._onWorldPositionRotationTransform();
         }
         _onWorldScaleTransform() {
             if (!this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDSCALE)) {
                 this._setTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX | Laya.Transform3D.TRANSFORM_WORLDSCALE, true);
-                this.event(Laya.Event.TRANSFORM_CHANGED, this._RTtransformFlag);
+                if (this._hasTransformChangedListener)
+                    this.event(Laya.Event.TRANSFORM_CHANGED, this._getTransformChangeFlag());
             }
-            for (var i = 0, n = this._children.length; i < n; i++)
-                this._children[i]._onWorldPositionScaleTransform();
+            if (Laya.Transform3D._inAnimatorBatch) {
+                if (this._lastAnimatorFrame === Laya.Transform3D._currentAnimatorFrame)
+                    return;
+                this._lastAnimatorFrame = Laya.Transform3D._currentAnimatorFrame;
+                for (var i = 0, n = this._children.length; i < n; i++)
+                    this._children[i]._onWorldTransform();
+                return;
+            }
+            for (var j = 0, m = this._children.length; j < m; j++)
+                this._children[j]._onWorldPositionScaleTransform();
         }
         _onWorldTransform() {
             if (!this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDPOSITION) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDQUATERNION) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDEULER) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDSCALE)) {
                 this._setTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX | Laya.Transform3D.TRANSFORM_WORLDPOSITION | Laya.Transform3D.TRANSFORM_WORLDQUATERNION | Laya.Transform3D.TRANSFORM_WORLDEULER | Laya.Transform3D.TRANSFORM_WORLDSCALE, true);
-                this.event(Laya.Event.TRANSFORM_CHANGED, this._RTtransformFlag);
+                if (this._hasTransformChangedListener)
+                    this.event(Laya.Event.TRANSFORM_CHANGED, this._getTransformChangeFlag());
+            }
+            if (Laya.Transform3D._inAnimatorBatch) {
+                if (this._lastAnimatorFrame === Laya.Transform3D._currentAnimatorFrame)
+                    return;
+                this._lastAnimatorFrame = Laya.Transform3D._currentAnimatorFrame;
             }
             for (var i = 0, n = this._children.length; i < n; i++)
                 this._children[i]._onWorldTransform();
@@ -1764,13 +1814,10 @@
             this._nativeObj.visibalMax = value;
         }
         get ismoved() {
-            let value = this._nativeObj.ismoved;
-            this._ismoved.x = value.x;
-            this._ismoved.y = value.y;
             return this._ismoved;
         }
         set ismoved(value) {
-            this._ismoved = value;
+            this._ismoved.setValue(value.x, value.y);
             this._nativeObj.ismoved = value;
         }
         setNodeCustomData(dataSlot, data) {

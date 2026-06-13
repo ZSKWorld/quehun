@@ -1406,9 +1406,9 @@
             super._childChanged(child);
             this.setLayoutChangedFlag(exports.LayoutChangedReason.Hierarchy);
         }
-        _processVisible() {
+        _processVisible(parentVisible) {
             var _a, _b, _c;
-            if (super._processVisible()) {
+            if (super._processVisible(parentVisible)) {
                 if (((_a = this.parent) === null || _a === void 0 ? void 0 : _a._nodeType) == 2)
                     (_c = (_b = this.parent).setLayoutChangedFlag) === null || _c === void 0 ? void 0 : _c.call(_b, exports.LayoutChangedReason.Visible);
                 return true;

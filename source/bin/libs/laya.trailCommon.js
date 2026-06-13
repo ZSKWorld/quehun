@@ -68,9 +68,11 @@
             this._vertexBuffer1 = Laya.LayaGL.renderDeviceFactory.createVertexBuffer(Laya.BufferUsage.Dynamic);
             this._vertexBuffer1.vertexDeclaration = vertexDeclaration1;
             this._vertexBuffer1.setDataLength(vertexbuffer1Size);
+            this._vertexBuffer1.setData(this._vertices1.buffer, 0, 0, vertexbuffer1Size);
             this._vertexBuffer2 = Laya.LayaGL.renderDeviceFactory.createVertexBuffer(Laya.BufferUsage.Dynamic);
             this._vertexBuffer2.vertexDeclaration = vertexDeclaration2;
             this._vertexBuffer2.setDataLength(vertexbuffer2Size);
+            this._vertexBuffer2.setData(this._vertices2.buffer, 0, 0, vertexbuffer2Size);
             vertexBuffers.push(this._vertexBuffer1);
             vertexBuffers.push(this._vertexBuffer2);
             this._bufferState.applyState(vertexBuffers, null);

@@ -117,6 +117,9 @@
             this._sceneData = null;
             this._cameraData = null;
             this._globalShaderData = null;
+            this._sceneOffsetMatrix = new Laya.Matrix4x4();
+            this._bridgePlaneWidth = 1;
+            this._bridgePlaneHeight = 1;
             this._color = null;
             this._renderTarget2D = null;
             this._invertMat0_a = 1;
@@ -148,6 +151,16 @@
         }
         setGlobalShaderData(data) {
             this._globalShaderData = data;
+        }
+        setBridgeProjectionData(sceneOffsetMatrix, bridgePlaneWidth, bridgePlaneHeight) {
+            if (sceneOffsetMatrix) {
+                sceneOffsetMatrix.cloneTo(this._sceneOffsetMatrix);
+            }
+            else {
+                this._sceneOffsetMatrix.identity();
+            }
+            this._bridgePlaneWidth = bridgePlaneWidth || 1;
+            this._bridgePlaneHeight = bridgePlaneHeight || 1;
         }
         setRenderTarget2D(rt) {
             this._renderTarget2D = rt;
@@ -288,6 +301,15 @@
         }
         get globalShaderData() {
             return this._globalShaderData;
+        }
+        get sceneOffsetMatrix() {
+            return this._sceneOffsetMatrix;
+        }
+        get bridgePlaneWidth() {
+            return this._bridgePlaneWidth;
+        }
+        get bridgePlaneHeight() {
+            return this._bridgePlaneHeight;
         }
         setBridge3DLightData(lightTexture, lightPixels) {
             this._bridge3DLightTexture = lightTexture;
@@ -465,24 +487,29 @@
             const bridge3DElement = element;
             const bridge3DContext = bridge3DElement.bridge3DContext;
             this._projCorrected = false;
-            if (this._hasInvertMatrix) {
-                const cameraData = bridge3DContext.cameraData;
-                const origProj = cameraData.getMatrix4x4(Laya.BaseCamera.PROJECTMATRIX);
-                const origProjView = cameraData.getMatrix4x4(Laya.BaseCamera.VIEWPROJECTMATRIX);
-                if (origProj && origProjView) {
-                    origProj.cloneTo(WebBridge3DRenderProcess._savedProjMatrix);
-                    origProjView.cloneTo(WebBridge3DRenderProcess._savedProjViewMatrix);
+            const cameraData = bridge3DContext.cameraData;
+            const origProj = cameraData.getMatrix4x4(Laya.BaseCamera.PROJECTMATRIX);
+            const origProjView = cameraData.getMatrix4x4(Laya.BaseCamera.VIEWPROJECTMATRIX);
+            if (origProj && origProjView) {
+                origProj.cloneTo(WebBridge3DRenderProcess._savedProjMatrix);
+                origProjView.cloneTo(WebBridge3DRenderProcess._savedProjViewMatrix);
+                const sceneCorrection = WebBridge3DRenderProcess._sceneCorrectionMatrix;
+                this._computeSceneCorrectionMatrix(bridge3DContext, sceneCorrection);
+                let correctionMatrix = sceneCorrection;
+                if (this._hasInvertMatrix) {
                     bridge3DContext.setInvertMatrix(this._invA, this._invB, this._invC, this._invD, this._invTx, this._invTy);
                     const corrMat = Bridge3DContext._correctionMatrix;
                     bridge3DContext.computeCorrectionMatrix(this._vpW, this._vpH, this._rtW, this._rtH, corrMat);
-                    const correctedProj = Bridge3DContext._tempCorrectedProj;
-                    Laya.Matrix4x4.multiply(corrMat, origProj, correctedProj);
-                    const correctedProjView = Bridge3DContext._tempCorrectedProjView;
-                    Laya.Matrix4x4.multiply(corrMat, origProjView, correctedProjView);
-                    cameraData.setMatrix4x4(Laya.BaseCamera.PROJECTMATRIX, correctedProj);
-                    cameraData.setMatrix4x4(Laya.BaseCamera.VIEWPROJECTMATRIX, correctedProjView);
-                    this._projCorrected = true;
+                    correctionMatrix = WebBridge3DRenderProcess._combinedCorrectionMatrix;
+                    Laya.Matrix4x4.multiply(corrMat, sceneCorrection, correctionMatrix);
                 }
+                const correctedProj = Bridge3DContext._tempCorrectedProj;
+                Laya.Matrix4x4.multiply(correctionMatrix, origProj, correctedProj);
+                const correctedProjView = Bridge3DContext._tempCorrectedProjView;
+                Laya.Matrix4x4.multiply(correctionMatrix, origProjView, correctedProjView);
+                cameraData.setMatrix4x4(Laya.BaseCamera.PROJECTMATRIX, correctedProj);
+                cameraData.setMatrix4x4(Laya.BaseCamera.VIEWPROJECTMATRIX, correctedProjView);
+                this._projCorrected = true;
             }
             this._hasShaderClip = false;
             const ownerStruct = bridge3DElement.owner;
@@ -522,6 +549,31 @@
             else {
                 bridge3DElement._clipCacheValid = false;
             }
+        }
+        _computeSceneCorrectionMatrix(bridge3DContext, out) {
+            const sceneW = bridge3DContext.bridgePlaneWidth;
+            const sceneH = bridge3DContext.bridgePlaneHeight;
+            const stageW = this._vpW || this._rtW || 1;
+            const stageH = this._vpH || this._rtH || 1;
+            const src = bridge3DContext.sceneOffsetMatrix.elements;
+            const e = out.elements;
+            const a = src[0], b = src[1], c = src[4], d = src[5], tx = src[12], ty = src[13];
+            e[0] = a * sceneW / stageW;
+            e[1] = b * sceneW / stageH;
+            e[2] = 0;
+            e[3] = 0;
+            e[4] = c * sceneH / stageW;
+            e[5] = d * sceneH / stageH;
+            e[6] = 0;
+            e[7] = 0;
+            e[8] = 0;
+            e[9] = 0;
+            e[10] = 1;
+            e[11] = 0;
+            e[12] = (a * sceneW + c * sceneH + 2 * tx) / stageW - 1;
+            e[13] = (b * sceneW + d * sceneH + 2 * ty) / stageH - 1;
+            e[14] = 0;
+            e[15] = 1;
         }
         renderBridge3DForward(element, context2d, context3d) {
             const bridge3DElement = element;
@@ -582,6 +634,123 @@
     WebBridge3DRenderProcess._tempScissor = new Laya.Vector4(0, 0, 0, 0);
     WebBridge3DRenderProcess._savedProjMatrix = new Laya.Matrix4x4();
     WebBridge3DRenderProcess._savedProjViewMatrix = new Laya.Matrix4x4();
+    WebBridge3DRenderProcess._sceneCorrectionMatrix = new Laya.Matrix4x4();
+    WebBridge3DRenderProcess._combinedCorrectionMatrix = new Laya.Matrix4x4();
+
+    class LayaXBridge3DRenderProcess {
+        get render3DManager() { return this._render3DManager; }
+        set render3DManager(value) {
+            this._render3DManager = value;
+            this._nativeObj.renderManager = value._nativeObj;
+        }
+        constructor() {
+            this._bridgeElements = [];
+            this._nativeObj = new window.conchLayaXBridge3DProcess();
+            this._dirShadowRP = new Laya.LayaXDirCascadeShadowRP();
+            this._spotShadowRP = new Laya.LayaXBaseSpotRP();
+            this._nativeObj.setDirectLightShadowPass(this._dirShadowRP._nativeObj);
+            this._nativeObj.setSpotLightShadowPass(this._spotShadowRP._nativeObj);
+            this._defaultShadowMap = Laya.ShadowUtils.getTemporaryShadowTexture(1, 1, Laya.ShadowMapFormat.bit16);
+            this._nativeObj.setDefaultShadowMap(this._defaultShadowMap._renderTarget._nativeObj);
+        }
+        addBridgeElement(element) {
+            this._bridgeElements.push(element);
+        }
+        removeBridgeElement(element) {
+            const idx = this._bridgeElements.indexOf(element);
+            if (idx !== -1)
+                this._bridgeElements.splice(idx, 1);
+        }
+        fowardRender(context3d, camera) {
+            const scene = camera._scene;
+            if (!scene)
+                return;
+            Laya.LayaXRender3DProcess._flushDirtyProbes();
+            const cameraData = camera._shaderValues;
+            if (cameraData && Laya.RenderContext3D.GammaCorrect) {
+                cameraData.addDefine(Laya.RenderContext3D.GammaCorrect);
+            }
+            camera._renderDataModule.syncProjection();
+            const bridge3DContext = scene.bridge3DContext;
+            bridge3DContext.invertY = context3d.invertY;
+            bridge3DContext.prepareForRender(camera, context3d);
+            const nativeCtx3d = context3d._nativeObj;
+            for (const element of this._bridgeElements) {
+                element._nativeObj.setContext3D(nativeCtx3d);
+            }
+            if (!scene.enableLight)
+                return;
+            if (this._bridgeElements.length === 0)
+                return;
+            scene._setCullCamera(camera);
+            this.render3DManager = scene.sceneRenderableManager._sceneManagerOBJ;
+            this.renderShadows(context3d, camera);
+            scene.recaculateCullCamera();
+        }
+        renderShadows(context, camera) {
+            const scene = camera._scene;
+            if (!scene) {
+                return;
+            }
+            if (Laya.Config3D._multiLighting) {
+                Laya.Cluster.instance.update(camera, scene);
+            }
+            const enableShadow = (Laya.Scene3D._updateMark % scene._ShadowMapupdateFrequency === 0);
+            this._nativeObj.shadowCastPass = enableShadow;
+            if (!enableShadow) {
+                window.conchLayaXRT3DRenderProcess._removePreDrawUniformMap("Shadow", context._nativeObj);
+                context.preDrawUniformMaps = context.preDrawUniformMaps;
+                return;
+            }
+            const mainDirLight = scene._mainDirectionLight;
+            const needDirectionShadow = mainDirLight && mainDirLight.shadowMode !== Laya.ShadowMode.None;
+            this._nativeObj.enableDirectLightShadow = needDirectionShadow;
+            if (needDirectionShadow) {
+                const dirLight = mainDirLight._dataModule;
+                const camData = camera._renderDataModule;
+                dirLight.syncShadow();
+                this._dirShadowRP.setRPData(dirLight, camData, context);
+                this._dirShadowRP.setCameraCullInfo(this._render3DManager);
+            }
+            const mainSpotLight = scene._mainSpotLight;
+            const needSpotShadow = mainSpotLight && mainSpotLight.shadowMode !== Laya.ShadowMode.None;
+            this._nativeObj.enableSpotLightShadowPass = needSpotShadow;
+            if (needSpotShadow) {
+                this._spotShadowRP.setRPData(mainSpotLight._dataModule, context);
+                this._spotShadowRP.setCameraCullInfo(this._render3DManager);
+            }
+            if (needDirectionShadow || needSpotShadow) {
+                window.conchLayaXRT3DRenderProcess._addPreDrawUniformMap("Shadow", context._nativeObj);
+            }
+            else {
+                window.conchLayaXRT3DRenderProcess._removePreDrawUniformMap("Shadow", context._nativeObj);
+            }
+            context.preDrawUniformMaps = context.preDrawUniformMaps;
+            this._nativeObj.renderShadows(context._nativeObj);
+        }
+        render(element, context2d, context3d) {
+            this._nativeObj.render(element._nativeObj, context2d._nativeObj, context3d._nativeObj);
+        }
+        destroy() {
+            if (this._dirShadowRP) {
+                this._dirShadowRP.destroy();
+                this._dirShadowRP = null;
+            }
+            if (this._spotShadowRP) {
+                this._spotShadowRP.destroy();
+                this._spotShadowRP = null;
+            }
+            if (this._defaultShadowMap) {
+                this._defaultShadowMap.destroy();
+                this._defaultShadowMap = null;
+            }
+            this._render3DManager = null;
+            if (this._nativeObj) {
+                this._nativeObj.destroy();
+                this._nativeObj = null;
+            }
+        }
+    }
 
     class Bridge3DCamera extends Laya.Camera {
         static __init__() {
@@ -594,7 +763,13 @@
         }
         constructor() {
             super();
-            if (Laya.LayaEnv.isConch && window.conchConfig.getGraphicsAPI() != 2) {
+            this._sceneOffsetMatrix = new Laya.Matrix4x4();
+            this._sceneOffsetIsIdentity = true;
+            this._projectionChangeHandler = null;
+            if (Laya.LayaEnv.isModernAPIs) {
+                this._bridge3DRenderProcess = new LayaXBridge3DRenderProcess();
+            }
+            else if (Laya.LayaEnv.isConch && window.conchConfig.getGraphicsAPI() != 2) {
                 this._bridge3DRenderProcess = new RTBridge3DRenderProcess();
             }
             else {
@@ -614,14 +789,55 @@
         get bridge3DRenderProcess() {
             return this._bridge3DRenderProcess;
         }
+        setProjectionChangeHandler(handler) {
+            this._projectionChangeHandler = handler;
+        }
+        get fieldOfView() {
+            return super.fieldOfView;
+        }
+        set fieldOfView(value) {
+            super.fieldOfView = value;
+            if (this._projectionChangeHandler) {
+                this._projectionChangeHandler();
+            }
+        }
+        setSceneOffsetFrom2DMatrix(a, b, c, d, tx, ty, renderHeight, sceneHeight = renderHeight) {
+            const e = this._sceneOffsetMatrix.elements;
+            e[0] = a;
+            e[1] = -b;
+            e[2] = 0;
+            e[3] = 0;
+            e[4] = -c;
+            e[5] = d;
+            e[6] = 0;
+            e[7] = 0;
+            e[8] = 0;
+            e[9] = 0;
+            e[10] = 1;
+            e[11] = 0;
+            e[12] = c * sceneHeight + tx;
+            e[13] = renderHeight - d * sceneHeight - ty;
+            e[14] = 0;
+            e[15] = 1;
+            this._sceneOffsetIsIdentity =
+                a === 1 && b === 0 && c === 0 && d === 1 && tx === 0 && ty === 0;
+        }
+        get sceneOffsetMatrix() {
+            return this._sceneOffsetMatrix;
+        }
+        get sceneOffsetIsIdentity() {
+            return this._sceneOffsetIsIdentity;
+        }
         render(scene) {
             if (!scene)
                 return;
             const context = Laya.RenderContext3D._instance;
             context.scene = scene;
             context.camera = this;
+            context.invertY = Laya.LayaEnv.isModernAPIs;
             this._prepareCameraToRender();
-            this._applyViewProject(this.viewMatrix, this.projectionMatrix, context.invertY);
+            let viewMat = this.viewMatrix;
+            this._applyViewProject(viewMat, this.projectionMatrix, context.invertY);
             this._contextApply(context);
             this._bridge3DRenderProcess.fowardRender(context._contextOBJ, this);
         }
@@ -642,6 +858,7 @@
         constructor() {
             this._cameraZDistance = 100;
             this._cameraFarPlane = 1000;
+            this._orthographicCamera = true;
             this._scene3dSettingsData = { skyRenderer: {} };
             this._cameraSettingsData = {};
         }
@@ -657,6 +874,12 @@
         set cameraFarPlane(value) {
             this._cameraFarPlane = value;
         }
+        get orthographicCamera() {
+            return this._orthographicCamera;
+        }
+        set orthographicCamera(value) {
+            this._orthographicCamera = value;
+        }
         get scene3dSettings() {
             return this._scene3dSettingsData;
         }
@@ -665,6 +888,118 @@
         }
     }
     Laya.ClassUtils.regClass('Bridge3DData', Bridge3DData);
+
+    class LayaXBridge3DContext {
+        constructor() {
+            this._invertY = false;
+            this._nativeObj = new window.conchLayaXBridge3DContext();
+        }
+        setSceneModuleData(data) {
+            this._nativeObj.setSceneModuleData(data ? data._nativeObj : null);
+        }
+        setCameraModuleData(data) {
+            this._nativeObj.setCameraModuleData(data ? data._nativeObj : null);
+        }
+        setSceneData(data) {
+            this._nativeObj.setSceneData(data ? data._nativeObj : null);
+        }
+        setCameraData(data) {
+            this._nativeObj.setCameraData(data ? data._nativeObj : null);
+        }
+        setGlobalShaderData(data) {
+            this._nativeObj.setGlobalShaderData(data ? data._nativeObj : null);
+        }
+        setBridgeProjectionData(sceneOffsetMatrix, bridgePlaneWidth, bridgePlaneHeight) {
+            this._nativeObj.setBridgeProjectionData(sceneOffsetMatrix, bridgePlaneWidth, bridgePlaneHeight);
+        }
+        setRenderTarget2D(rt) {
+        }
+        getRenderTarget2D() {
+            return null;
+        }
+        setViewPort(vp) {
+            this._nativeObj.setViewport(vp);
+        }
+        setScissor(sc) {
+            this._nativeObj.setScissor(sc);
+        }
+        setClearData(flag, color, depthValue, stencilValue) {
+            this._nativeObj.clearDepthBeforeRender = (flag & Laya.RenderClearFlag.Depth) !== 0;
+            this._nativeObj.clearDepth = depthValue;
+            this._nativeObj.clearStencil = stencilValue;
+        }
+        setInvertMatrix(a, b, c, d, tx, ty) {
+        }
+        applyToContext(context) {
+        }
+        get clearDepthBeforeRender() {
+            return this._nativeObj.clearDepthBeforeRender;
+        }
+        set clearDepthBeforeRender(value) {
+            this._nativeObj.clearDepthBeforeRender = value;
+        }
+        get clearDepth() {
+            return this._nativeObj.clearDepth;
+        }
+        set clearDepth(value) {
+            this._nativeObj.clearDepth = value;
+        }
+        get clearStencil() {
+            return this._nativeObj.clearStencil;
+        }
+        set clearStencil(value) {
+            this._nativeObj.clearStencil = value;
+        }
+        get pipelineMode() {
+            return null;
+        }
+        set pipelineMode(value) {
+        }
+        get invertY() {
+            return this._invertY;
+        }
+        set invertY(value) {
+            if (this._invertY !== value) {
+                this._invertY = value;
+                this._nativeObj.setInvertY(value);
+            }
+        }
+        get sceneModuleData() {
+            return null;
+        }
+        get cameraModuleData() {
+            return null;
+        }
+        get sceneData() {
+            return null;
+        }
+        get cameraData() {
+            return null;
+        }
+        get globalShaderData() {
+            return null;
+        }
+        setBridge3DLightData(lightTexture, lightPixels) {
+        }
+        get bridge3DLightTexture() {
+            return null;
+        }
+        get bridge3DLightPixels() {
+            return null;
+        }
+        updateFromCamera(camera) {
+            if (!camera)
+                return;
+            const viewport = camera.viewport;
+            const vp = new Laya.Viewport(viewport.x, viewport.y, viewport.width, viewport.height);
+            this._nativeObj.setViewport(vp);
+            const sc = new Laya.Vector4(viewport.x, viewport.y, viewport.width, viewport.height);
+            this._nativeObj.setScissor(sc);
+        }
+        prepareForRender(camera, context3d) {
+            this._nativeObj.prepareForRender(context3d._nativeObj, camera.viewport.x, camera.viewport.y, camera.viewport.width, camera.viewport.height, Laya.RenderState2D.width, Laya.RenderState2D.height);
+        }
+    }
 
     class RTBridge3DContext {
         constructor() {
@@ -684,6 +1019,9 @@
         }
         setGlobalShaderData(data) {
             this._nativeObj.setGlobalShaderData(data ? data._nativeObj : null);
+        }
+        setBridgeProjectionData(sceneOffsetMatrix, bridgePlaneWidth, bridgePlaneHeight) {
+            this._nativeObj.setBridgeProjectionData(sceneOffsetMatrix, bridgePlaneWidth, bridgePlaneHeight);
         }
         setRenderTarget2D(rt) {
         }
@@ -787,6 +1125,8 @@
             super();
             this._renderToBridgeMap = new Map();
             this._cameraZDistance = 100;
+            this._orthographicCamera = true;
+            this._updatingCameraProjection = false;
             this._bridge3DLightTexture = null;
             this._holder = holder;
             if (Laya.Config3D._multiLighting) {
@@ -795,7 +1135,10 @@
                 this._bridge3DLightTexture = Laya.Utils3D._createFloatTextureBuffer(width, maxLightCount);
                 this._bridge3DLightTexture.lock = true;
             }
-            if (Laya.LayaEnv.isConch && window.conchConfig.getGraphicsAPI() != 2) {
+            if (Laya.LayaEnv.isModernAPIs) {
+                this._bridge3DContext = new LayaXBridge3DContext();
+            }
+            else if (Laya.LayaEnv.isConch && window.conchConfig.getGraphicsAPI() != 2) {
                 this._bridge3DContext = new RTBridge3DContext();
             }
             else {
@@ -804,7 +1147,12 @@
             this._bridge3DContext.setBridge3DLightData(this._bridge3DLightTexture, this._getLightPixels());
             this.ambientMode = Laya.AmbientMode.SolidColor;
             this._sharedCamera = new Bridge3DCamera();
-            this._sharedCamera.orthographic = true;
+            this._sharedCamera.setProjectionChangeHandler(() => {
+                if (!this._updatingCameraProjection) {
+                    this._updateCameraProjectionAndPosition();
+                }
+            });
+            this._sharedCamera.orthographic = this._orthographicCamera;
             this.addChild(this._sharedCamera);
             this.updateContext();
             this.setupCamera();
@@ -813,8 +1161,15 @@
         applyCameraZDistance(value) {
             if (this._cameraZDistance !== value) {
                 this._cameraZDistance = value;
-                this._updateCameraPosition();
+                this._updateCameraProjectionAndPosition();
             }
+        }
+        applyOrthographicCamera(value) {
+            value = value !== false;
+            if (this._orthographicCamera !== value) {
+                this._orthographicCamera = value;
+            }
+            this._updateCameraProjectionAndPosition();
         }
         applyCameraFarPlane(value) {
             this._sharedCamera.farPlane = value;
@@ -825,6 +1180,7 @@
             this._bridge3DContext.setSceneModuleData(this._sceneModuleData);
             this._bridge3DContext.setCameraModuleData(this._sharedCamera._renderDataModule);
             this._bridge3DContext.updateFromCamera(this._sharedCamera);
+            this._bridge3DContext.setBridgeProjectionData(this._sharedCamera.sceneOffsetMatrix, this._getBridgePlaneWidth(), this._getBridgePlaneHeight());
         }
         _addRenderObject(render) {
             super._addRenderObject(render);
@@ -855,23 +1211,72 @@
                 this._renderToBridgeMap.delete(render);
             }
         }
-        _updateCameraPosition() {
-            const width = Laya.RenderState2D.width || Laya.ILaya.stage.width;
-            const height = Laya.RenderState2D.height || Laya.ILaya.stage.height;
+        _getRenderHeight() {
+            return this._scene2D && this._scene2D.height ? this._scene2D.height : (Laya.RenderState2D.height || Laya.ILaya.stage.height);
+        }
+        _getRenderWidth() {
+            return this._scene2D && this._scene2D.width ? this._scene2D.width : (Laya.RenderState2D.width || Laya.ILaya.stage.width);
+        }
+        _getBridgePlaneWidth() {
+            return this._getRenderWidth();
+        }
+        _getBridgePlaneHeight() {
+            return this._getRenderHeight();
+        }
+        _getMinPerspectiveCameraZ(height) {
+            const halfFov = Bridge3DScene3D._maxPerspectiveFieldOfView * Math.PI / 180 * 0.5;
+            const tanHalfFov = Math.tan(halfFov);
+            return tanHalfFov > 0 ? height * 0.5 / tanHalfFov : height;
+        }
+        _getEffectiveCameraZ(height) {
+            if (this._orthographicCamera) {
+                return this._cameraZDistance;
+            }
+            return Math.max(this._cameraZDistance, this._getMinPerspectiveCameraZ(height), this._sharedCamera.nearPlane + 0.0001);
+        }
+        _getPerspectiveFieldOfView(height, cameraZ) {
+            return Math.atan(height * 0.5 / cameraZ) * 2 * 180 / Math.PI;
+        }
+        _updateCameraProjectionAndPosition() {
+            if (this._updatingCameraProjection)
+                return;
+            this._updatingCameraProjection = true;
+            try {
+                const height = this._getRenderHeight();
+                const width = this._getRenderWidth();
+                const aspect = height > 0 ? width / height : 1;
+                this._sharedCamera.aspectRatio = aspect;
+                this._sharedCamera.orthographic = this._orthographicCamera;
+                if (this._orthographicCamera) {
+                    this._sharedCamera.orthographicVerticalSize = height;
+                }
+                else {
+                    const cameraZ = this._getEffectiveCameraZ(height);
+                    const fieldOfView = this._getPerspectiveFieldOfView(height, cameraZ);
+                    if (Math.abs(this._sharedCamera.fieldOfView - fieldOfView) > 0.0001) {
+                        this._sharedCamera.fieldOfView = fieldOfView;
+                    }
+                }
+                this._updateCameraPosition(width, height);
+                this._bridge3DContext.updateFromCamera(this._sharedCamera);
+                this._bridge3DContext.setBridgeProjectionData(this._sharedCamera.sceneOffsetMatrix, this._getBridgePlaneWidth(), this._getBridgePlaneHeight());
+            }
+            finally {
+                this._updatingCameraProjection = false;
+            }
+        }
+        _updateCameraPosition(width = this._getRenderWidth(), height = this._getRenderHeight()) {
             const centerX = width / 2;
             const centerY = height / 2;
             let localPosition = this._sharedCamera.transform.localPosition;
             localPosition.x = centerX;
             localPosition.y = centerY;
-            localPosition.z = this._cameraZDistance;
+            localPosition.z = this._getEffectiveCameraZ(height);
             this._sharedCamera.transform.localPosition = localPosition;
         }
         setupCamera() {
-            const height = Laya.RenderState2D.height || Laya.ILaya.stage.height;
-            this._sharedCamera.orthographic = true;
-            this._sharedCamera.orthographicVerticalSize = height;
             this._sharedCamera.nearPlane = 0.1;
-            this._updateCameraPosition();
+            this._updateCameraProjectionAndPosition();
             let rotationEuler = this._sharedCamera.transform.rotationEuler;
             rotationEuler.x = 0;
             rotationEuler.y = 0;
@@ -879,15 +1284,15 @@
             this._sharedCamera.transform.rotationEuler = rotationEuler;
         }
         onStageResize() {
-            Laya.RenderState2D.width || Laya.ILaya.stage.width;
-            const height = Laya.RenderState2D.height || Laya.ILaya.stage.height;
-            this._sharedCamera.orthographicVerticalSize = height;
-            this._updateCameraPosition();
+            this._updateCameraProjectionAndPosition();
         }
         renderSubmit() {
             if (this._renderByEditor)
                 return;
             Laya.Scene3D._updateMark++;
+            if (Laya.LayaEnv.isModernAPIs) {
+                this._prepareLayaXActiveCameras();
+            }
             this._prepareSceneToRender();
             this._sharedCamera.render(this);
         }
@@ -903,6 +1308,9 @@
                 this._volumeManager.reCaculateAllRenderObjects(this._sceneRenderManager.list);
             else
                 this._volumeManager.handleMotionlist();
+            this.componentElementMap.forEach((value) => {
+                value.update(delta);
+            });
             const bridge3DList = this._holder.bridge3DList;
             for (let i = 0, l = bridge3DList.length; i < l; i++) {
                 bridge3DList[i]._renderUpdate();
@@ -930,13 +1338,52 @@
             super.destroy(destroyChild);
         }
     }
+    Bridge3DScene3D._maxPerspectiveFieldOfView = 90;
 
     class Bridge3DSceneInternal {
         constructor(scene) {
             this._scene3d = null;
             this._bridge3DList = [];
             this._isAddedToStage = false;
+            this._offsetListenersHooked = false;
+            this._updateSceneOffset = () => {
+                if (!this._scene3d || !this._scene2D)
+                    return;
+                const cam = this._scene3d.sharedCamera;
+                if (!cam)
+                    return;
+                const m = this._scene2D.globalTrans.getMatrix();
+                const renderH = Laya.RenderState2D.height || Laya.ILaya.stage.height;
+                const sceneH = this._scene2D.height || renderH;
+                cam.setSceneOffsetFrom2DMatrix(m.a, m.b, m.c, m.d, m.tx, m.ty, renderH, sceneH);
+                this._scene3d.updateContext();
+            };
+            this._onScene2DResize = () => {
+                if (this._scene3d) {
+                    this._scene3d.onStageResize();
+                }
+                this._updateSceneOffset();
+                for (let i = 0, len = this._bridge3DList.length; i < len; i++) {
+                    this._bridge3DList[i]._onScene2DResize();
+                }
+            };
             this._scene2D = scene;
+        }
+        _hookOffsetListeners() {
+            if (this._offsetListenersHooked)
+                return;
+            this._scene2D.on(Laya.Event.TRANSFORM_CHANGED, this, this._updateSceneOffset);
+            this._scene2D.on(Laya.Event.RESIZE, this, this._onScene2DResize);
+            Laya.ILaya.stage.on(Laya.Event.RESIZE, this, this._updateSceneOffset);
+            this._offsetListenersHooked = true;
+        }
+        _unhookOffsetListeners() {
+            if (!this._offsetListenersHooked)
+                return;
+            this._scene2D && this._scene2D.off(Laya.Event.TRANSFORM_CHANGED, this, this._updateSceneOffset);
+            this._scene2D && this._scene2D.off(Laya.Event.RESIZE, this, this._onScene2DResize);
+            Laya.ILaya.stage && Laya.ILaya.stage.off(Laya.Event.RESIZE, this, this._updateSceneOffset);
+            this._offsetListenersHooked = false;
         }
         _onAdded() {
             if (!this._isAddedToStage && this._bridge3DList.length > 0) {
@@ -965,9 +1412,14 @@
                 this._scene3d._scene2D = this._scene2D;
                 const holder = this._scene2D.bridge3D;
                 if (holder) {
+                    this._scene3d.applyCameraZDistance(holder.cameraZDistance);
+                    this._scene3d.applyCameraFarPlane(holder.cameraFarPlane);
                     this._applySettingsTo(this._scene3d, holder.scene3dSettings);
                     this._applySettingsTo(this._scene3d.sharedCamera, holder.cameraSettings);
+                    this._scene3d.applyOrthographicCamera(holder.orthographicCamera);
                 }
+                this._hookOffsetListeners();
+                this._updateSceneOffset();
             }
             return this._scene3d;
         }
@@ -1036,6 +1488,7 @@
             if (data) {
                 this._scene3d.applyCameraZDistance(data.cameraZDistance);
                 this._scene3d.applyCameraFarPlane(data.cameraFarPlane);
+                this._scene3d.applyOrthographicCamera(data.orthographicCamera);
                 const s3d = data.scene3dSettings;
                 if (s3d && !s3d._applyCache) {
                     this._applySettingsTo(this._scene3d, s3d);
@@ -1044,10 +1497,12 @@
                 if (cam && !cam._applyCache) {
                     this._applySettingsTo(this._scene3d.sharedCamera, cam);
                 }
+                this._scene3d.applyOrthographicCamera(data.orthographicCamera);
             }
             else {
                 this._scene3d.applyCameraZDistance(100);
                 this._scene3d.applyCameraFarPlane(1000);
+                this._scene3d.applyOrthographicCamera(true);
             }
         }
         finalizeSetup() {
@@ -1055,11 +1510,15 @@
                 return;
             const holder = this._scene2D.bridge3D;
             if (holder) {
+                this._scene3d.applyCameraZDistance(holder.cameraZDistance);
+                this._scene3d.applyCameraFarPlane(holder.cameraFarPlane);
                 this._applySettingsTo(this._scene3d, holder.scene3dSettings);
                 this._applySettingsTo(this._scene3d.sharedCamera, holder.cameraSettings);
+                this._scene3d.applyOrthographicCamera(holder.orthographicCamera);
             }
         }
         destroy() {
+            this._unhookOffsetListeners();
             if (this._scene3d) {
                 if (this._isAddedToStage) {
                     Laya.ILaya.stage.removeChild(this._scene3d);
@@ -1183,10 +1642,107 @@
         }
     }
 
-    class RTBridge3DRenderElement {
+    class LayaXBridge3DRenderElement {
+        set geometry(v) {
+            this._geometry = v;
+            this._nativeObj.setGeometry(v ? v._nativeObj : null);
+        }
+        get geometry() {
+            return this._geometry;
+        }
         constructor() {
             this.type = 0;
+            this._geometry = null;
+            this.materialShaderData = null;
+            this.value2DShaderData = null;
+            this.globalShaderData = null;
+            this.subShader = null;
+            this.renderStateIsBySprite = true;
+            this.nodeCommonMap = [];
+            this._renderProcess = null;
+            this._owner = null;
+            this._baseRenderList = new Laya.SingletonList();
+            this._bridge3DContext = null;
+            this._nativeObj = new window.conchLayaXBridge3DElement2D();
+            this._opaqueList = new Laya.RenderListQueue(false);
+            this._transparentList = new Laya.RenderListQueue(true);
+        }
+        get owner() {
+            return this._owner;
+        }
+        set owner(value) {
+            this._owner = value;
+            this._nativeObj.setOwner(value ? value._nativeObj : null);
+        }
+        addBaseRenderNode(node) {
+            this._baseRenderList.add(node);
+            this._nativeObj.addBaseRenderNode(node._nativeObj);
+        }
+        removeBaseRenderNode(node) {
+            this._baseRenderList.remove(node);
+            this._nativeObj.removeBaseRenderNode(node._nativeObj);
+        }
+        setBridge3DContext(context) {
+            if (context instanceof LayaXBridge3DContext) {
+                if (this._bridge3DContext !== context) {
+                    this._bridge3DContext = context;
+                    this._nativeObj.setBridge3DContext(context._nativeObj);
+                }
+            }
+        }
+        setRenderProcess(process) {
+            this._renderProcess = process;
+            this._nativeObj.setRenderProcess(process ? process._nativeObj : null);
+        }
+        getBaseRenderList() {
+            return this._baseRenderList;
+        }
+        getOpaqueList() {
+            return this._opaqueList;
+        }
+        getTransparentList() {
+            return this._transparentList;
+        }
+        get bridge3DContext() {
+            return this._bridge3DContext;
+        }
+        collectElements(context3d) {
+            return this._nativeObj.collectFromNodes(context3d._nativeObj);
+        }
+        _prepare(context) {
+        }
+        _render(context) {
+        }
+        destroy() {
+            var _a, _b, _c;
+            (_a = this._opaqueList) === null || _a === void 0 ? void 0 : _a.destroy();
+            (_b = this._transparentList) === null || _b === void 0 ? void 0 : _b.destroy();
+            this._opaqueList = null;
+            this._transparentList = null;
+            this._bridge3DContext = null;
+            this._renderProcess = null;
+            this._owner = null;
             this.geometry = null;
+            this.materialShaderData = null;
+            this.value2DShaderData = null;
+            this.globalShaderData = null;
+            this.subShader = null;
+            (_c = this._nativeObj) === null || _c === void 0 ? void 0 : _c.destroy();
+            this._nativeObj = null;
+        }
+    }
+
+    class RTBridge3DRenderElement {
+        set geometry(v) {
+            this._geometry = v;
+            this._nativeObj.setGeometry(v ? v._nativeObj : null);
+        }
+        get geometry() {
+            return this._geometry;
+        }
+        constructor() {
+            this.type = 0;
+            this._geometry = null;
             this.materialShaderData = null;
             this.value2DShaderData = null;
             this.globalShaderData = null;
@@ -1255,94 +1811,28 @@
             this._transparentList = null;
             this._bridge3DContext = null;
             this._renderProcess = null;
-            (_c = this._nativeObj) === null || _c === void 0 ? void 0 : _c.destroy();
-            this._nativeObj = null;
             this._owner = null;
             this.geometry = null;
             this.materialShaderData = null;
             this.value2DShaderData = null;
             this.globalShaderData = null;
             this.subShader = null;
-        }
-    }
-
-    class Bridge3DCoordinate {
-        static logicTo3D(x, y, z = 0, out) {
-            if (!out) {
-                out = new Laya.Vector3();
-            }
-            const stage = Laya.ILaya.stage;
-            const scaleX = stage.scaleX;
-            const scaleY = stage.scaleY;
-            out.x = x * scaleX;
-            out.y = Laya.RenderState2D.height - y * scaleY;
-            out.z = z;
-            return out;
-        }
-        static worldTo2D(worldPos) {
-            const stage = Laya.ILaya.stage;
-            const scaleX = stage.scaleX;
-            const scaleY = stage.scaleY;
-            return {
-                x: worldPos.x / scaleX,
-                y: (Laya.RenderState2D.height - worldPos.y) / scaleY
-            };
-        }
-        static getScale() {
-            const stage = Laya.ILaya.stage;
-            return {
-                scaleX: stage.scaleX,
-                scaleY: stage.scaleY
-            };
-        }
-        static getRenderInfo() {
-            const stage = Laya.ILaya.stage;
-            return {
-                logicWidth: stage.width,
-                logicHeight: stage.height,
-                renderWidth: Laya.RenderState2D.width,
-                renderHeight: Laya.RenderState2D.height,
-                scaleX: stage.scaleX,
-                scaleY: stage.scaleY
-            };
-        }
-        static screenTo3D(screenX, screenY, camera, depth = 0, out) {
-            if (!out) {
-                out = new Laya.Vector3();
-            }
-            const renderWidth = Laya.RenderState2D.width;
-            const renderHeight = Laya.RenderState2D.height;
-            const ndcX = (screenX / renderWidth) * 2 - 1;
-            const ndcY = 1 - (screenY / renderHeight) * 2;
-            if (camera.orthographic) {
-                const halfHeight = camera.orthographicVerticalSize * 0.5;
-                const halfWidth = halfHeight * camera.aspectRatio;
-                const viewX = ndcX * halfWidth;
-                const viewY = ndcY * halfHeight;
-                const camPos = camera.transform.position;
-                out.x = camPos.x + viewX;
-                out.y = camPos.y + viewY;
-                out.z = depth;
-            }
-            return out;
-        }
-        static debugInfo() {
-            const info = Bridge3DCoordinate.getRenderInfo();
-            console.log("=== Bridge3D Coordinate System Info ===");
-            console.log(`Logic Size: ${info.logicWidth} × ${info.logicHeight}`);
-            console.log(`Render Size: ${info.renderWidth} × ${info.renderHeight}`);
-            console.log(`Scale: ${info.scaleX.toFixed(3)} × ${info.scaleY.toFixed(3)}`);
-            console.log("=======================================");
+            (_c = this._nativeObj) === null || _c === void 0 ? void 0 : _c.destroy();
+            this._nativeObj = null;
         }
     }
 
     class Bridge3DSprite extends Laya.Sprite {
         static createBridge3DRenderElement() {
-            if (Laya.LayaEnv.isConch && window.conchConfig.getGraphicsAPI() != 2) {
+            if (Laya.LayaEnv.isModernAPIs) {
+                return new LayaXBridge3DRenderElement();
+            }
+            else if (Laya.LayaEnv.isConch && window.conchConfig.getGraphicsAPI() != 2) {
                 return new RTBridge3DRenderElement();
             }
-            else
+            else {
                 return new Bridge3DRenderElement();
+            }
         }
         constructor() {
             super();
@@ -1432,19 +1922,36 @@
             super._transChanged(flag);
             this._syncTransform2DTo3D();
         }
+        _computeSceneLocalMatrix(out) {
+            const selfGlobal = this.globalTrans.getMatrix();
+            const scene = this._scene;
+            if (!scene) {
+                selfGlobal.copyTo(out);
+                return out;
+            }
+            const sceneInv = Bridge3DSprite._tmpSceneInv;
+            scene.globalTrans.getMatrixInv(sceneInv);
+            Laya.Matrix.mul(selfGlobal, sceneInv, out);
+            return out;
+        }
+        _getSceneHeight() {
+            const scene = this._scene;
+            return scene && scene.height ? scene.height : Laya.RenderState2D.height;
+        }
         _syncTransform2DTo3D() {
             const transform = this._containerSprite3D.transform;
-            const globalMatrix = this.globalTrans.getMatrix();
-            const a = globalMatrix.a;
-            const b = globalMatrix.b;
-            const c = globalMatrix.c;
-            const d = globalMatrix.d;
-            const tx = globalMatrix.tx;
-            const ty = globalMatrix.ty;
+            const sceneLocalMatrix = this._computeSceneLocalMatrix(Bridge3DSprite._tmpSceneLocal);
+            const a = sceneLocalMatrix.a;
+            const b = sceneLocalMatrix.b;
+            const c = sceneLocalMatrix.c;
+            const d = sceneLocalMatrix.d;
+            const tx = sceneLocalMatrix.tx;
+            const ty = sceneLocalMatrix.ty;
             const scale = this._ppu;
             const pos3D = Laya.Vector3.TEMP;
+            const sceneH = this._getSceneHeight();
             pos3D.x = tx;
-            pos3D.y = Laya.RenderState2D.height - ty;
+            pos3D.y = sceneH - ty;
             pos3D.z = 0;
             const matrix = transform.localMatrix;
             const e = matrix.elements;
@@ -1466,6 +1973,9 @@
             e[15] = 1;
             transform.localMatrix = matrix;
             this._markBoundsDirty();
+        }
+        _onScene2DResize() {
+            this._syncTransform2DTo3D();
         }
         _addRenderObject(render) {
             this._list.add(render);
@@ -1511,13 +2021,19 @@
         _project3DTo2D() {
             const min3D = this._bounds3D.min;
             const max3D = this._bounds3D.max;
-            const min2D = Bridge3DCoordinate.worldTo2D(min3D);
-            const max2D = Bridge3DCoordinate.worldTo2D(max3D);
+            const sceneH = this._getSceneHeight();
+            const scene = this._scene;
+            const projectCorner = (wx, wy, p) => {
+                p.setTo(wx, sceneH - wy);
+                if (scene) {
+                    scene.localToGlobal(p);
+                }
+                this.globalToLocal(p);
+            };
             const p = _boundsPoint;
             let minX = Infinity, minY = Infinity;
             let maxX = -Infinity, maxY = -Infinity;
-            p.setTo(min2D.x, min2D.y);
-            this.globalToLocal(p);
+            projectCorner(min3D.x, min3D.y, p);
             if (p.x < minX)
                 minX = p.x;
             if (p.x > maxX)
@@ -1526,8 +2042,7 @@
                 minY = p.y;
             if (p.y > maxY)
                 maxY = p.y;
-            p.setTo(max2D.x, min2D.y);
-            this.globalToLocal(p);
+            projectCorner(max3D.x, min3D.y, p);
             if (p.x < minX)
                 minX = p.x;
             if (p.x > maxX)
@@ -1536,8 +2051,7 @@
                 minY = p.y;
             if (p.y > maxY)
                 maxY = p.y;
-            p.setTo(min2D.x, max2D.y);
-            this.globalToLocal(p);
+            projectCorner(min3D.x, max3D.y, p);
             if (p.x < minX)
                 minX = p.x;
             if (p.x > maxX)
@@ -1546,8 +2060,7 @@
                 minY = p.y;
             if (p.y > maxY)
                 maxY = p.y;
-            p.setTo(max2D.x, max2D.y);
-            this.globalToLocal(p);
+            projectCorner(max3D.x, max3D.y, p);
             if (p.x < minX)
                 minX = p.x;
             if (p.x > maxX)
@@ -1585,6 +2098,8 @@
         }
     }
     Bridge3DSprite.defaultPixelsPerUnit = 10;
+    Bridge3DSprite._tmpSceneLocal = new Laya.Matrix();
+    Bridge3DSprite._tmpSceneInv = new Laya.Matrix();
     class BridgeContainerSprite3D extends Laya.Sprite3D {
         _childChanged(child) {
             super._childChanged(child);
@@ -1606,6 +2121,90 @@
         Bridge3DCamera.__init__();
     });
 
+    class Bridge3DCoordinate {
+        static logicTo3D(x, y, z = 0, out, sceneHeight = Laya.RenderState2D.height) {
+            if (!out) {
+                out = new Laya.Vector3();
+            }
+            out.x = x;
+            out.y = sceneHeight - y;
+            out.z = z;
+            return out;
+        }
+        static worldTo2D(worldPos, sceneHeight = Laya.RenderState2D.height) {
+            return {
+                x: worldPos.x,
+                y: sceneHeight - worldPos.y
+            };
+        }
+        static getScale() {
+            const stage = Laya.ILaya.stage;
+            return {
+                scaleX: stage.scaleX,
+                scaleY: stage.scaleY
+            };
+        }
+        static getRenderInfo() {
+            const stage = Laya.ILaya.stage;
+            return {
+                logicWidth: stage.width,
+                logicHeight: stage.height,
+                renderWidth: Laya.RenderState2D.width,
+                renderHeight: Laya.RenderState2D.height,
+                scaleX: stage.scaleX,
+                scaleY: stage.scaleY
+            };
+        }
+        static screenTo3D(screenX, screenY, camera, depth = 0, out) {
+            if (!out) {
+                out = new Laya.Vector3();
+            }
+            const renderWidth = Laya.RenderState2D.width;
+            const renderHeight = Laya.RenderState2D.height;
+            const ndcX = (screenX / renderWidth) * 2 - 1;
+            const ndcY = 1 - (screenY / renderHeight) * 2;
+            const cameraPos = camera.transform.position;
+            if (camera.orthographic) {
+                const halfHeight = camera.orthographicVerticalSize * 0.5;
+                const halfWidth = halfHeight * camera.aspectRatio;
+                out.x = cameraPos.x + ndcX * halfWidth;
+                out.y = cameraPos.y + ndcY * halfHeight;
+                out.z = depth;
+            }
+            else {
+                const distance = cameraPos.z - depth;
+                if (distance <= 0) {
+                    return out;
+                }
+                const halfFov = camera.fieldOfView * Math.PI / 180 * 0.5;
+                const halfHeight = Math.tan(halfFov) * distance;
+                const halfWidth = halfHeight * camera.aspectRatio;
+                out.x = cameraPos.x + ndcX * halfWidth;
+                out.y = cameraPos.y + ndcY * halfHeight;
+                out.z = depth;
+            }
+            const bridgeCamera = camera;
+            if (bridgeCamera.sceneOffsetMatrix && !bridgeCamera.sceneOffsetIsIdentity) {
+                bridgeCamera.sceneOffsetMatrix.invert(Bridge3DCoordinate._tmpInvOffset);
+                Bridge3DCoordinate._tmpScreenPoint.x = out.x;
+                Bridge3DCoordinate._tmpScreenPoint.y = out.y;
+                Bridge3DCoordinate._tmpScreenPoint.z = out.z;
+                Laya.Vector3.transformCoordinate(Bridge3DCoordinate._tmpScreenPoint, Bridge3DCoordinate._tmpInvOffset, out);
+            }
+            return out;
+        }
+        static debugInfo() {
+            const info = Bridge3DCoordinate.getRenderInfo();
+            console.log("=== Bridge3D Coordinate System Info ===");
+            console.log(`Logic Size: ${info.logicWidth} x ${info.logicHeight}`);
+            console.log(`Render Size: ${info.renderWidth} x ${info.renderHeight}`);
+            console.log(`Scale: ${info.scaleX.toFixed(3)} x ${info.scaleY.toFixed(3)}`);
+            console.log("=======================================");
+        }
+    }
+    Bridge3DCoordinate._tmpInvOffset = new Laya.Matrix4x4();
+    Bridge3DCoordinate._tmpScreenPoint = new Laya.Vector3();
+
     exports.Bridge3DCamera = Bridge3DCamera;
     exports.Bridge3DContext = Bridge3DContext;
     exports.Bridge3DCoordinate = Bridge3DCoordinate;
@@ -1614,6 +2213,9 @@
     exports.Bridge3DScene3D = Bridge3DScene3D;
     exports.Bridge3DSceneInternal = Bridge3DSceneInternal;
     exports.Bridge3DSprite = Bridge3DSprite;
+    exports.LayaXBridge3DContext = LayaXBridge3DContext;
+    exports.LayaXBridge3DRenderElement = LayaXBridge3DRenderElement;
+    exports.LayaXBridge3DRenderProcess = LayaXBridge3DRenderProcess;
     exports.RTBridge3DContext = RTBridge3DContext;
     exports.RTBridge3DRenderElement = RTBridge3DRenderElement;
     exports.RTBridge3DRenderProcess = RTBridge3DRenderProcess;

@@ -1111,6 +1111,12 @@
             super._onInActive();
             Laya.LayaGL.statAgent.recordCountData(Laya.StatElement.C_Sprite3DCount, -1);
         }
+        _onActiveInScene() {
+            this._transform.activeInScene();
+        }
+        _onInActiveInScene() {
+            this._transform.inActiveInScene();
+        }
         _onAdded() {
             if (this._parent instanceof Sprite3D) {
                 var parent3D = this._parent;
@@ -1441,6 +1447,9 @@
         get sceneReflectionProbe() {
             return this._sceneReflectionProbe;
         }
+        hasUserProbe() {
+            return this._reflectionProbes.length > 0;
+        }
         set sceneReflectionProbe(value) {
             this._sceneReflectionProbe = value;
             this._needUpdateAllRender = true;
@@ -1668,6 +1677,9 @@
             this._GIVolumes = new Laya.SingletonList();
             this._needUpdateAllRender = true;
         }
+        hasVolume() {
+            return this._GIVolumes.length > 0;
+        }
         removeVolumetricGI(renderer) {
             let shaderData = renderer._baseRenderNode.shaderData;
             shaderData.removeDefine(VolumetricGI.SHADERDEFINE_VOLUMETRICGI);
@@ -1780,14 +1792,31 @@
         addMotionObject(renderObj) {
             this._motionObjects.add(renderObj);
         }
+        needUpdateMotionObject(renderObj) {
+            if (this._volumeList.length > 0) {
+                return true;
+            }
+            if (renderObj._surportReflectionProbe && renderObj.reflectionMode == 1
+                && (this._reflectionProbeManager.hasUserProbe() || !renderObj.probReflection)) {
+                return true;
+            }
+            if (renderObj._supportVolumetricGI) {
+                return this._volumetricGIManager.hasVolume();
+            }
+            return false;
+        }
         removeMotionObject(renderObj) {
             this._motionObjects.remove(renderObj);
         }
         _updateRenderObject(baseRender) {
+            if (this._volumeList.length == 0) {
+                baseRender.volume = null;
+                return;
+            }
             let elements = this._volumeList.elements;
             let renderBounds = baseRender.bounds;
             let center = renderBounds.getCenter();
-            let mainVolume;
+            let mainVolume = null;
             for (var i = 0, n = this._volumeList.length; i < n; i++) {
                 let volume = elements[i];
                 let bounds = volume.bounds;
@@ -1799,9 +1828,14 @@
             baseRender.volume = mainVolume;
         }
         handleMotionlist() {
+            if (this._motionObjects.length == 0) {
+                return;
+            }
             var elements = this._motionObjects.elements;
-            for (var i = 0, n = this._motionObjects.length; i < n; i++) {
-                this._updateRenderObject(elements[i]);
+            if (this._volumeList.length > 0) {
+                for (var i = 0, n = this._motionObjects.length; i < n; i++) {
+                    this._updateRenderObject(elements[i]);
+                }
             }
             if (!this.reflectionProbeManager._needUpdateAllRender)
                 this.reflectionProbeManager.handleMotionlist(this._motionObjects);
@@ -2191,6 +2225,7 @@
             else {
                 this._baseRenderNode.lightmap = null;
             }
+            this._baseRenderNode._applyLightMapParams && this._baseRenderNode._applyLightMapParams();
             this._getIrradientMode();
             this._batchRender && this._batchRender.updateProperty(this, exports.propertyChangeFlag.lightmap);
         }
@@ -2510,7 +2545,10 @@
                 this._addReflectionProbeUpdate();
         }
         _addReflectionProbeUpdate() {
-            this._scene && this._scene._volumeManager.addMotionObject(this);
+            let volumeManager = this._scene && this._scene._volumeManager;
+            if (volumeManager && volumeManager.needUpdateMotionObject(this)) {
+                volumeManager.addMotionObject(this);
+            }
         }
         _setBelongScene(scene) {
             this._scene = scene;
@@ -4097,6 +4135,10 @@
     }
 
     class Transform3D extends Laya.EventDispatcher {
+        onStartListeningToType(type) {
+            if (type === Laya.Event.TRANSFORM_CHANGED)
+                this._hasTransformChangedListener = true;
+        }
         get isDefaultMatrix() {
             if (this._getTransformFlag(Transform3D.TRANSFORM_LOCALMATRIX)) {
                 this.localMatrix;
@@ -4394,6 +4436,7 @@
         }
         constructor(owner) {
             super();
+            this._lastAnimatorFrame = -1;
             this._localPosition = new Laya.Vector3(0, 0, 0);
             this._localRotation = new Laya.Quaternion(0, 0, 0, 1);
             this._localScale = new Laya.Vector3(1, 1, 1);
@@ -4410,6 +4453,7 @@
             this._frontFaceValue = 1;
             this._parent = null;
             this._transformFlag = 0;
+            this._hasTransformChangedListener = false;
             this._owner = owner;
             this._children = [];
             this._initProperty();
@@ -4438,6 +4482,9 @@
         _getTransformFlag(type) {
             return (this._transformFlag & type) != 0;
         }
+        _getTransformChangeFlag() {
+            return this._transformFlag;
+        }
         _setParent(value) {
             if (this._parent !== value) {
                 if (this._parent) {
@@ -4455,7 +4502,8 @@
         _onWorldPositionRotationTransform() {
             if (!this._getTransformFlag(Transform3D.TRANSFORM_WORLDMATRIX) || !this._getTransformFlag(Transform3D.TRANSFORM_WORLDPOSITION) || !this._getTransformFlag(Transform3D.TRANSFORM_WORLDQUATERNION) || !this._getTransformFlag(Transform3D.TRANSFORM_WORLDEULER)) {
                 this._setTransformFlag(Transform3D.TRANSFORM_WORLDMATRIX | Transform3D.TRANSFORM_WORLDPOSITION | Transform3D.TRANSFORM_WORLDQUATERNION | Transform3D.TRANSFORM_WORLDEULER, true);
-                this.event(Laya.Event.TRANSFORM_CHANGED, this._transformFlag);
+                if (this._hasTransformChangedListener)
+                    this.event(Laya.Event.TRANSFORM_CHANGED, this._getTransformChangeFlag());
             }
             for (var i = 0, n = this._children.length; i < n; i++)
                 this._children[i]._onWorldPositionRotationTransform();
@@ -4463,7 +4511,8 @@
         _onWorldPositionScaleTransform() {
             if (!this._getTransformFlag(Transform3D.TRANSFORM_WORLDMATRIX) || !this._getTransformFlag(Transform3D.TRANSFORM_WORLDPOSITION) || !this._getTransformFlag(Transform3D.TRANSFORM_WORLDSCALE)) {
                 this._setTransformFlag(Transform3D.TRANSFORM_WORLDMATRIX | Transform3D.TRANSFORM_WORLDPOSITION | Transform3D.TRANSFORM_WORLDSCALE, true);
-                this.event(Laya.Event.TRANSFORM_CHANGED, this._transformFlag);
+                if (this._hasTransformChangedListener)
+                    this.event(Laya.Event.TRANSFORM_CHANGED, this._getTransformChangeFlag());
             }
             for (var i = 0, n = this._children.length; i < n; i++)
                 this._children[i]._onWorldPositionScaleTransform();
@@ -4471,31 +4520,64 @@
         _onWorldPositionTransform() {
             if (!this._getTransformFlag(Transform3D.TRANSFORM_WORLDMATRIX) || !this._getTransformFlag(Transform3D.TRANSFORM_WORLDPOSITION)) {
                 this._setTransformFlag(Transform3D.TRANSFORM_WORLDMATRIX | Transform3D.TRANSFORM_WORLDPOSITION, true);
-                this.event(Laya.Event.TRANSFORM_CHANGED, this._transformFlag);
+                if (this._hasTransformChangedListener)
+                    this.event(Laya.Event.TRANSFORM_CHANGED, this._getTransformChangeFlag());
             }
-            for (var i = 0, n = this._children.length; i < n; i++)
-                this._children[i]._onWorldPositionTransform();
+            if (Transform3D._inAnimatorBatch) {
+                if (this._lastAnimatorFrame === Transform3D._currentAnimatorFrame)
+                    return;
+                this._lastAnimatorFrame = Transform3D._currentAnimatorFrame;
+                for (var i = 0, n = this._children.length; i < n; i++)
+                    this._children[i]._onWorldTransform();
+                return;
+            }
+            for (var j = 0, m = this._children.length; j < m; j++)
+                this._children[j]._onWorldPositionTransform();
         }
         _onWorldRotationTransform() {
             if (!this._getTransformFlag(Transform3D.TRANSFORM_WORLDMATRIX) || !this._getTransformFlag(Transform3D.TRANSFORM_WORLDQUATERNION) || !this._getTransformFlag(Transform3D.TRANSFORM_WORLDEULER)) {
                 this._setTransformFlag(Transform3D.TRANSFORM_WORLDMATRIX | Transform3D.TRANSFORM_WORLDQUATERNION | Transform3D.TRANSFORM_WORLDEULER, true);
-                this.event(Laya.Event.TRANSFORM_CHANGED, this._transformFlag);
+                if (this._hasTransformChangedListener)
+                    this.event(Laya.Event.TRANSFORM_CHANGED, this._getTransformChangeFlag());
             }
-            for (var i = 0, n = this._children.length; i < n; i++)
-                this._children[i]._onWorldPositionRotationTransform();
+            if (Transform3D._inAnimatorBatch) {
+                if (this._lastAnimatorFrame === Transform3D._currentAnimatorFrame)
+                    return;
+                this._lastAnimatorFrame = Transform3D._currentAnimatorFrame;
+                for (var i = 0, n = this._children.length; i < n; i++)
+                    this._children[i]._onWorldTransform();
+                return;
+            }
+            for (var j = 0, m = this._children.length; j < m; j++)
+                this._children[j]._onWorldPositionRotationTransform();
         }
         _onWorldScaleTransform() {
             if (!this._getTransformFlag(Transform3D.TRANSFORM_WORLDMATRIX) || !this._getTransformFlag(Transform3D.TRANSFORM_WORLDSCALE)) {
                 this._setTransformFlag(Transform3D.TRANSFORM_WORLDMATRIX | Transform3D.TRANSFORM_WORLDSCALE, true);
-                this.event(Laya.Event.TRANSFORM_CHANGED, this._transformFlag);
+                if (this._hasTransformChangedListener)
+                    this.event(Laya.Event.TRANSFORM_CHANGED, this._getTransformChangeFlag());
             }
-            for (var i = 0, n = this._children.length; i < n; i++)
-                this._children[i]._onWorldPositionScaleTransform();
+            if (Transform3D._inAnimatorBatch) {
+                if (this._lastAnimatorFrame === Transform3D._currentAnimatorFrame)
+                    return;
+                this._lastAnimatorFrame = Transform3D._currentAnimatorFrame;
+                for (var i = 0, n = this._children.length; i < n; i++)
+                    this._children[i]._onWorldTransform();
+                return;
+            }
+            for (var j = 0, m = this._children.length; j < m; j++)
+                this._children[j]._onWorldPositionScaleTransform();
         }
         _onWorldTransform() {
             if (!this._getTransformFlag(Transform3D.TRANSFORM_WORLDMATRIX) || !this._getTransformFlag(Transform3D.TRANSFORM_WORLDPOSITION) || !this._getTransformFlag(Transform3D.TRANSFORM_WORLDQUATERNION) || !this._getTransformFlag(Transform3D.TRANSFORM_WORLDEULER) || !this._getTransformFlag(Transform3D.TRANSFORM_WORLDSCALE)) {
                 this._setTransformFlag(Transform3D.TRANSFORM_WORLDMATRIX | Transform3D.TRANSFORM_WORLDPOSITION | Transform3D.TRANSFORM_WORLDQUATERNION | Transform3D.TRANSFORM_WORLDEULER | Transform3D.TRANSFORM_WORLDSCALE, true);
-                this.event(Laya.Event.TRANSFORM_CHANGED, this._transformFlag);
+                if (this._hasTransformChangedListener)
+                    this.event(Laya.Event.TRANSFORM_CHANGED, this._getTransformChangeFlag());
+            }
+            if (Transform3D._inAnimatorBatch) {
+                if (this._lastAnimatorFrame === Transform3D._currentAnimatorFrame)
+                    return;
+                this._lastAnimatorFrame = Transform3D._currentAnimatorFrame;
             }
             for (var i = 0, n = this._children.length; i < n; i++)
                 this._children[i]._onWorldTransform();
@@ -4673,6 +4755,10 @@
                 return true;
             }
         }
+        activeInScene() {
+        }
+        inActiveInScene() {
+        }
         get scale() {
             console.warn("Transfrm3D: discard function,please use getWorldLossyScale instead.");
             return this.getWorldLossyScale();
@@ -4693,6 +4779,8 @@
     Transform3D.TRANSFORM_LOCALPOS = 0x100;
     Transform3D.TRANSFORM_LOCALSCALE = 0x200;
     Transform3D._angleToRandin = 180 / Math.PI;
+    Transform3D._inAnimatorBatch = false;
+    Transform3D._currentAnimatorFrame = 0;
     const _tempVector30$3 = new Laya.Vector3();
     const _tempQuaternion0 = new Laya.Quaternion();
     const _tempMatrix0$1 = new Laya.Matrix4x4();
@@ -7224,6 +7312,7 @@
             this._renderElement._subShaderIndex = subShader;
         }
         run() {
+            var _a;
             var source;
             if (!this._source) {
                 if (!this._commandBuffer._camera._internalRenderTexture)
@@ -7259,6 +7348,9 @@
                 }
             }
             this._renderElement.setGeometry(invertY ? ScreenQuad.InvertInstance : ScreenQuad.instance);
+            if (source && ((_a = this._blitQuadCMDData._nativeObj) === null || _a === void 0 ? void 0 : _a.setTexelSize)) {
+                this._blitQuadCMDData._nativeObj.setTexelSize(1.0 / source.width, 1.0 / source.height, source.width, source.height);
+            }
         }
         recover() {
             BlitScreenQuadCMD._pool.recover(this);
@@ -7341,7 +7433,6 @@
             cmd.material = material;
             cmd.subMeshIndex = subMeshIndex;
             cmd._subShaderIndex = subShaderIndex;
-            cmd._meshRender.probReflection = RenderContext3D._instance.scene.sceneReflectionProb;
             cmd.mesh = mesh;
             cmd._commandBuffer = commandBuffer;
             return cmd;
@@ -7357,7 +7448,9 @@
             super();
             this._drawRenderCMDDData = Laya3DRender.Render3DPassFactory.createDrawNodeCMDData();
             this._transform = Laya3DRender.Render3DModuleDataFactory.createTransform(null);
+            this._transform.activeInScene();
             this._meshRender = new MeshRenderer();
+            this._meshRender._baseRenderNode.transform = this._transform;
         }
         set material(value) {
             this._material && this._material._removeReference(1);
@@ -7388,6 +7481,7 @@
             this._meshRender._baseRenderNode.transform = this._transform;
             this._meshRender._baseRenderNode.ismoved.setValue(Laya.Stat.loopCount, Laya.LayaGL.renderEngine._framePassCount);
             this._meshRender.renderUpdate(RenderContext3D._instance);
+            this._meshRender.probReflection = RenderContext3D._instance.scene && RenderContext3D._instance.scene.sceneReflectionProb;
             this._drawRenderCMDDData.destSubShader = this.material.shader.getSubShaderAt(this._subShaderIndex);
             this._drawRenderCMDDData.destShaderData = this.material.shaderData;
             this._drawRenderCMDDData.node = this._meshRender._baseRenderNode;
@@ -7396,8 +7490,9 @@
             DrawMeshCMD._pool.recover(this);
             super.recover();
             this._material && (this.material = null);
-            this._mesh && (this.mesh = null);
+            this._meshRender.probReflection = null;
             this._meshRender.lightProbe = null;
+            this._mesh && (this.mesh = null);
         }
         destroy() {
             super.destroy();
@@ -7593,7 +7688,13 @@
             if (this._subMeshIndex == -1) {
                 for (let i = 0, n = submeshs.length; i < n; i++) {
                     let element = this._instanceRenderElementArray[i] = this._instanceRenderElementArray[i] ? this._instanceRenderElementArray[i] : new RenderElement();
-                    let geometry = this._instanceGeometryArray[i] = this._instanceGeometryArray[i] ? this._instanceGeometryArray[i] : new MeshInstanceGeometry(submeshs[i]);
+                    let geometry = this._instanceGeometryArray[i];
+                    if (geometry) {
+                        geometry.subMesh = submeshs[i];
+                    }
+                    else {
+                        geometry = this._instanceGeometryArray[i] = new MeshInstanceGeometry(submeshs[i]);
+                    }
                     geometry.bufferState = this._instanceBufferState;
                     geometry.instanceCount = this._drawnums;
                     element.setGeometry(geometry);
@@ -7606,7 +7707,13 @@
             }
             else {
                 let element = this._instanceRenderElementArray[0] = this._instanceRenderElementArray[0] ? this._instanceRenderElementArray[0] : new RenderElement();
-                let geometry = this._instanceGeometryArray[0] = this._instanceGeometryArray[0] ? this._instanceGeometryArray[0] : new MeshInstanceGeometry(submeshs[this._subMeshIndex]);
+                let geometry = this._instanceGeometryArray[0];
+                if (geometry) {
+                    geometry.subMesh = submeshs[this._subMeshIndex];
+                }
+                else {
+                    geometry = this._instanceGeometryArray[0] = new MeshInstanceGeometry(submeshs[this._subMeshIndex]);
+                }
                 geometry.bufferState = this._instanceBufferState;
                 geometry.instanceCount = this._drawnums;
                 element.setGeometry(geometry);
@@ -7708,10 +7815,6 @@
             this._material = null;
             this._instanceBufferState.destroy();
             this._instanceBufferState = null;
-            delete this._instanceRenderElementArray;
-            this._instanceRenderElementArray = [];
-            delete this._instanceGeometryArray;
-            this._instanceGeometryArray = [];
             this._drawElementCMDData.setRenderelements([]);
             this.mesh = null;
         }
@@ -7721,10 +7824,21 @@
             this._material = null;
             this._instanceBufferState.destroy();
             this._instanceBufferState = null;
-            delete this._instanceRenderElementArray;
-            this._instanceRenderElementArray = [];
-            delete this._instanceGeometryArray;
-            this._instanceGeometryArray = [];
+            for (let i = 0, n = this._instanceRenderElementArray.length; i < n; i++) {
+                let element = this._instanceRenderElementArray[i];
+                if (element) {
+                    element._renderElementOBJ.destroy();
+                    element.destroy();
+                }
+            }
+            this._instanceRenderElementArray.length = 0;
+            for (let i = 0, n = this._instanceGeometryArray.length; i < n; i++) {
+                let geometry = this._instanceGeometryArray[i];
+                if (geometry) {
+                    geometry.destroy();
+                }
+            }
+            this._instanceGeometryArray.length = 0;
             this.mesh = null;
         }
     }
@@ -8382,6 +8496,10 @@
                 this._boundFrustum.matrix = this._projectionViewMatrix;
             }
             this._renderDataModule.setProjectionViewMatrix(this._projectionViewMatrix);
+            if (this._renderDataModule.setForward) {
+                this.transform.getForward(Laya.Vector3.TEMP);
+                this._renderDataModule.setForward(Laya.Vector3.TEMP.x, Laya.Vector3.TEMP.y, Laya.Vector3.TEMP.z);
+            }
         }
         get boundFrustum() {
             this.updateViewProjectionMatrix();
@@ -8658,9 +8776,9 @@
             }
             else {
                 Laya.Matrix4x4.multiply(proMat, viewMat, this._projectionViewMatrix);
-                this._renderDataModule.setProjectionViewMatrix(this._projectionViewMatrix);
                 projectView = this._projectionViewMatrix;
             }
+            this._renderDataModule.setProjectionViewMatrix(projectView);
             this._shaderValues.setMatrix4x4(BaseCamera.VIEWMATRIX, viewMat);
             this._shaderValues.setMatrix4x4(BaseCamera.PROJECTMATRIX, proMat);
             this._shaderValues.setMatrix4x4(BaseCamera.VIEWPROJECTMATRIX, projectView);
@@ -8872,6 +8990,9 @@
             this._offScreenRenderTexture = null;
             if (this._opaqueTexture) {
                 Laya.RenderTexture.recoverToPool(this._opaqueTexture);
+            }
+            if (this._renderDataModule && this._renderDataModule.destroy) {
+                this._renderDataModule.destroy();
             }
             this._Render3DProcess.destroy();
             this.transform.off(Laya.Event.TRANSFORM_CHANGED, this, this._onTransformChanged);
@@ -9798,6 +9919,9 @@
             this._prepareSceneToRender();
             var i, n;
             Scene3D._updateMark++;
+            if (Laya.LayaEnv.isModernAPIs) {
+                this._prepareLayaXActiveCameras();
+            }
             for (i = 0, n = this._cameraPool.length, n - 1; i < n; i++) {
                 var camera = this._cameraPool[i];
                 if (camera.enableRender && camera.activeInHierarchy) {
@@ -9815,6 +9939,32 @@
                 }
             }
             Laya.RenderTexture.clearPool();
+        }
+        _prepareLayaXActiveCameras() {
+            const nativeCamera = window.conchLayaXCameraNodeData;
+            if (!nativeCamera || !nativeCamera.prepareActiveCameras)
+                return;
+            let handles = Scene3D._layaxActiveCameraHandles;
+            let count = 0;
+            for (let i = 0, n = this._cameraPool.length; i < n; i++) {
+                const camera = this._cameraPool[i];
+                if (!camera.enableRender || !camera.activeInHierarchy)
+                    continue;
+                const moduleData = camera._renderDataModule;
+                const handle = moduleData ? moduleData.handle : 0;
+                if (!handle)
+                    continue;
+                if (count >= handles.length) {
+                    const next = new Float64Array(handles.length << 1);
+                    next.set(handles);
+                    handles = next;
+                    Scene3D._layaxActiveCameraHandles = handles;
+                }
+                handles[count++] = handle;
+            }
+            if (count > 0) {
+                nativeCamera.prepareActiveCameras(handles.buffer, count);
+            }
         }
         blitMainCanvas(source, normalizeViewPort, camera) {
             if (!source)
@@ -9870,6 +10020,7 @@
         }
     }
     Scene3D.physicsSettings = new PhysicsSettings();
+    Scene3D._layaxActiveCameraHandles = new Float64Array(8);
     Scene3D.mainCavansViewPort = new Laya.Viewport(0, 0, 1, 1);
     Scene3D.componentManagerMap = new Map();
 
@@ -10985,11 +11136,28 @@
             return PrimitiveMesh._createMesh(vertexDeclaration, vertices, indices);
         }
         static createQuad(long = 1, width = 1) {
-            var vertexDeclaration = Laya.VertexMesh.getVertexDeclaration("POSITION,NORMAL,UV");
+            var vertexDeclaration = Laya.VertexMesh.getVertexDeclaration("POSITION,NORMAL,UV,TANGENT");
             var halfLong = long / 2;
             var halfWidth = width / 2;
-            var vertices = new Float32Array([-halfLong, halfWidth, 0, 0, 0, 1, 0, 0, halfLong, halfWidth, 0, 0, 0, 1, 1, 0, -halfLong, -halfWidth, 0, 0, 0, 1, 0, 1, halfLong, -halfWidth, 0, 0, 0, 1, 1, 1]);
+            var vertices = new Float32Array([
+                -halfLong, halfWidth, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1,
+                halfLong, halfWidth, 0, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+                -halfLong, -halfWidth, 0, 0, 0, 1, 0, 1, 1, 0, 0, 1,
+                halfLong, -halfWidth, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1,
+            ]);
             var indices = new Uint16Array([0, 1, 2, 3, 2, 1]);
+            return PrimitiveMesh._createMesh(vertexDeclaration, vertices, indices);
+        }
+        static createTriangle(long = 1, width = 1) {
+            var vertexDeclaration = Laya.VertexMesh.getVertexDeclaration("POSITION,NORMAL,UV,TANGENT");
+            var halfLong = long / 2;
+            var halfWidth = width / 2;
+            var vertices = new Float32Array([
+                0, halfWidth * 3, 0, 0, 0, 1, 0.5, -1, 1, 0, 0, 1,
+                -halfLong * 2, -halfWidth, 0, 0, 0, 1, -0.5, 1, 1, 0, 0, 1,
+                halfLong * 2, -halfWidth, 0, 0, 0, 1, 1.5, 1, 1, 0, 0, 1,
+            ]);
+            var indices = new Uint16Array([0, 1, 2]);
             return PrimitiveMesh._createMesh(vertexDeclaration, vertices, indices);
         }
         static createSphere(radius = 0.5, stacks = 32, slices = 32) {
@@ -11608,10 +11776,8 @@
             Laya.LayaGL.statAgent.recordCountData(Laya.StatElement.C_SkinnedMeshRenderCount, -1);
         }
         renderUpdate(context) {
-            let t = performance.now();
             super.renderUpdate(context);
             this._isISkinRenderNode() && this._ownerSkinRenderNode.computeSkinnedData();
-            Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_SkinBoneUpdate, performance.now() - t);
         }
         _cloneTo(dest) {
             let getCommomParent = (rootNode, rootCheckNode) => {
@@ -12594,6 +12760,8 @@
             this._ownerPath = [];
             this._propertys = [];
             this._keyFrames = [];
+            this._isPlainHermite = false;
+            this._isPlainHermiteResolved = false;
         }
         get ownerPathCount() {
             return this._ownerPath.length;
@@ -12820,6 +12988,32 @@
     AnimationClipParser03._BLOCK = { count: 0 };
     AnimationClipParser03._DATA = { offset: 0, size: 0 };
 
+    let _ownerDataCreator = null;
+    function registerOwnerDataCreator(creator) {
+        _ownerDataCreator = creator;
+    }
+    function createOwnerData() {
+        return _ownerDataCreator ? _ownerDataCreator() : new PlainOwnerData();
+    }
+    class PlainOwnerData {
+        constructor() {
+            this.value = null;
+            this.defaultValue = null;
+            this.crossFixedValue = null;
+            this.maskActive = true;
+        }
+    }
+    const _clipDestroyCallbacks = new Set();
+    function registerClipDestroyCallback(fn) {
+        _clipDestroyCallbacks.add(fn);
+        return () => {
+            _clipDestroyCallbacks.delete(fn);
+        };
+    }
+    function notifyClipDestroyed(clipHandle) {
+        _clipDestroyCallbacks.forEach(callback => callback(clipHandle));
+    }
+
     exports.KeyFrameValueType = void 0;
     (function (KeyFrameValueType) {
         KeyFrameValueType[KeyFrameValueType["None"] = -1] = "None";
@@ -12837,6 +13031,14 @@
         KeyFrameValueType[KeyFrameValueType["MaterialRef"] = 11] = "MaterialRef";
     })(exports.KeyFrameValueType || (exports.KeyFrameValueType = {}));
     class KeyframeNodeOwner {
+        get defaultValue() { return this._data.defaultValue; }
+        set defaultValue(v) { this._data.defaultValue = v; }
+        get value() { return this._data.value; }
+        set value(v) { this._data.value = v; }
+        get crossFixedValue() { return this._data.crossFixedValue; }
+        set crossFixedValue(v) { this._data.crossFixedValue = v; }
+        get maskActive() { return this._data.maskActive; }
+        set maskActive(v) { this._data.maskActive = v; }
         constructor() {
             this.indexInList = -1;
             this.referenceCount = 0;
@@ -12846,9 +13048,7 @@
             this.nodePath = null;
             this.propertyOwner = null;
             this.property = null;
-            this.defaultValue = null;
-            this.value = null;
-            this.crossFixedValue = null;
+            this._data = createOwnerData();
             this.isMaterial = false;
         }
         saveCrossFixedValue() {
@@ -13511,6 +13711,89 @@
         _weightModeHermite(weightMode, nextweightMode) {
             return (((weightMode & Laya.WeightedMode.Out) == 0) && ((nextweightMode & Laya.WeightedMode.In) == 0));
         }
+        static _resolvePlainHermite(node) {
+            if (node._isPlainHermiteResolved)
+                return;
+            node._isPlainHermiteResolved = true;
+            const type = node.type;
+            if (type === exports.KeyFrameValueType.Boolean || type === exports.KeyFrameValueType.PathPoint) {
+                node._isPlainHermite = true;
+                return;
+            }
+            const frames = node._keyFrames;
+            let plain = true;
+            for (let i = 0, n = frames.length; i < n && plain; i++) {
+                const f = frames[i];
+                const wm = f.weightedMode;
+                if (wm != null) {
+                    if (typeof wm === "number") {
+                        if (wm !== 0) {
+                            plain = false;
+                            break;
+                        }
+                    }
+                    else {
+                        if ((wm.x | 0) !== 0 || (wm.y | 0) !== 0
+                            || (wm.z !== undefined && (wm.z | 0) !== 0)
+                            || (wm.w !== undefined && (wm.w | 0) !== 0)) {
+                            plain = false;
+                            break;
+                        }
+                    }
+                }
+                const it = f.inTangent, ot = f.outTangent;
+                if (typeof it === "number") {
+                    if (!Number.isFinite(it) || !Number.isFinite(ot)) {
+                        plain = false;
+                        break;
+                    }
+                }
+                else if (it) {
+                    if (!Number.isFinite(it.x) || !Number.isFinite(ot.x)) {
+                        plain = false;
+                        break;
+                    }
+                    if (it.y !== undefined && (!Number.isFinite(it.y) || !Number.isFinite(ot.y))) {
+                        plain = false;
+                        break;
+                    }
+                    if (it.z !== undefined && (!Number.isFinite(it.z) || !Number.isFinite(ot.z))) {
+                        plain = false;
+                        break;
+                    }
+                    if (it.w !== undefined && (!Number.isFinite(it.w) || !Number.isFinite(ot.w))) {
+                        plain = false;
+                        break;
+                    }
+                }
+            }
+            node._isPlainHermite = plain;
+        }
+        _hermiteInterpolateV3Plain(frame, nextFrame, t, dur, out) {
+            const p0 = frame.value, p1 = nextFrame.value;
+            const tan0 = frame.outTangent, tan1 = nextFrame.inTangent;
+            const t2 = t * t, t3 = t2 * t;
+            const a = 2.0 * t3 - 3.0 * t2 + 1.0;
+            const b = t3 - 2.0 * t2 + t;
+            const c = t3 - t2;
+            const d = -2.0 * t3 + 3.0 * t2;
+            out.x = a * p0.x + b * tan0.x * dur + c * tan1.x * dur + d * p1.x;
+            out.y = a * p0.y + b * tan0.y * dur + c * tan1.y * dur + d * p1.y;
+            out.z = a * p0.z + b * tan0.z * dur + c * tan1.z * dur + d * p1.z;
+        }
+        _hermiteInterpolateQuaternionPlain(frame, nextFrame, t, dur, out) {
+            const p0 = frame.value, p1 = nextFrame.value;
+            const tan0 = frame.outTangent, tan1 = nextFrame.inTangent;
+            const t2 = t * t, t3 = t2 * t;
+            const a = 2.0 * t3 - 3.0 * t2 + 1.0;
+            const b = t3 - 2.0 * t2 + t;
+            const c = t3 - t2;
+            const d = -2.0 * t3 + 3.0 * t2;
+            out.x = a * p0.x + b * tan0.x * dur + c * tan1.x * dur + d * p1.x;
+            out.y = a * p0.y + b * tan0.y * dur + c * tan1.y * dur + d * p1.y;
+            out.z = a * p0.z + b * tan0.z * dur + c * tan1.z * dur + d * p1.z;
+            out.w = a * p0.w + b * tan0.w * dur + c * tan1.w * dur + d * p1.w;
+        }
         _hermiteInterpolate(frame, nextFrame, t, dur) {
             var t0 = frame.outTangent, t1 = nextFrame.inTangent;
             if (Number.isFinite(t0) && Number.isFinite(t1)) {
@@ -13752,7 +14035,7 @@
                 return this._hermiteCurveSplineWeight(frame.value, frame.time, frame.outWeight, frame.outTangent, nextFrame.value, nextFrame.time, nextFrame.inWeight, nextFrame.inTangent, t);
             }
         }
-        _evaluateClipDatasRealTime(nodes, playCurTime, realTimeCurrentFrameIndexes, addtive, frontPlay, outDatas, avatarMask) {
+        _evaluateClipDatasRealTime(nodes, playCurTime, realTimeCurrentFrameIndexes, addtive, frontPlay, outDatas, avatarMask, skipTransform = false) {
             for (var i = 0, n = nodes.count; i < n; i++) {
                 var node = nodes.getNodeByIndex(i);
                 var type = node.type;
@@ -13761,6 +14044,9 @@
                 var keyFramesCount = keyFrames.length;
                 var frameIndex = realTimeCurrentFrameIndexes[i];
                 if (avatarMask && (!avatarMask.getTransformActive(node.nodePath))) {
+                    continue;
+                }
+                if (skipTransform && (type === exports.KeyFrameValueType.Position || type === exports.KeyFrameValueType.Rotation || type === exports.KeyFrameValueType.Scale || type === exports.KeyFrameValueType.RotationEuler)) {
                     continue;
                 }
                 if (frontPlay) {
@@ -13857,7 +14143,9 @@
                     case exports.KeyFrameValueType.RotationEuler:
                     case exports.KeyFrameValueType.Vector3:
                         var clipData = outDatas[i];
-                        this._evaluateFrameNodeVector3DatasRealTime(keyFrames, frameIndex, isEnd, playCurTime, clipData);
+                        if (!node._isPlainHermiteResolved)
+                            AnimationClip._resolvePlainHermite(node);
+                        this._evaluateFrameNodeVector3DatasRealTime(keyFrames, frameIndex, isEnd, playCurTime, clipData, node._isPlainHermite);
                         if (addtive) {
                             var firstFrameValue = keyFrames[0].value;
                             clipData.x -= firstFrameValue.x;
@@ -13867,7 +14155,9 @@
                         break;
                     case exports.KeyFrameValueType.Rotation:
                         var clipQuat = outDatas[i];
-                        this._evaluateFrameNodeQuaternionDatasRealTime(keyFrames, frameIndex, isEnd, playCurTime, clipQuat);
+                        if (!node._isPlainHermiteResolved)
+                            AnimationClip._resolvePlainHermite(node);
+                        this._evaluateFrameNodeQuaternionDatasRealTime(keyFrames, frameIndex, isEnd, playCurTime, clipQuat, node._isPlainHermite);
                         if (addtive) {
                             var tempQuat = AnimationClip._tempQuaternion0;
                             var firstFrameValueQua = keyFrames[0].value;
@@ -13877,7 +14167,9 @@
                         break;
                     case exports.KeyFrameValueType.Scale:
                         clipData = outDatas[i];
-                        this._evaluateFrameNodeVector3DatasRealTime(keyFrames, frameIndex, isEnd, playCurTime, clipData);
+                        if (!node._isPlainHermiteResolved)
+                            AnimationClip._resolvePlainHermite(node);
+                        this._evaluateFrameNodeVector3DatasRealTime(keyFrames, frameIndex, isEnd, playCurTime, clipData, node._isPlainHermite);
                         if (addtive) {
                             firstFrameValue = keyFrames[0].value;
                             clipData.x /= firstFrameValue.x;
@@ -13911,7 +14203,7 @@
                 }
             }
         }
-        _evaluateFrameNodeVector3DatasRealTime(keyFrames, frameIndex, isEnd, playCurTime, outDatas) {
+        _evaluateFrameNodeVector3DatasRealTime(keyFrames, frameIndex, isEnd, playCurTime, outDatas, isPlain) {
             if (frameIndex !== -1) {
                 var frame = keyFrames[frameIndex];
                 if (isEnd) {
@@ -13929,7 +14221,10 @@
                         t = (playCurTime - startTime) / d;
                     else
                         t = 0;
-                    this._hermiteInterpolateVector3(frame, nextKeyFrame, t, d, outDatas);
+                    if (isPlain)
+                        this._hermiteInterpolateV3Plain(frame, nextKeyFrame, t, d, outDatas);
+                    else
+                        this._hermiteInterpolateVector3(frame, nextKeyFrame, t, d, outDatas);
                 }
             }
             else {
@@ -13995,7 +14290,7 @@
                 outDatas.w = firstFrameDatas.w;
             }
         }
-        _evaluateFrameNodeQuaternionDatasRealTime(keyFrames, frameIndex, isEnd, playCurTime, outDatas) {
+        _evaluateFrameNodeQuaternionDatasRealTime(keyFrames, frameIndex, isEnd, playCurTime, outDatas, isPlain) {
             if (frameIndex !== -1) {
                 var frame = keyFrames[frameIndex];
                 if (isEnd) {
@@ -14014,7 +14309,10 @@
                         t = (playCurTime - startTime) / d;
                     else
                         t = 0;
-                    this._hermiteInterpolateQuaternion(frame, nextKeyFrame, t, d, outDatas);
+                    if (isPlain)
+                        this._hermiteInterpolateQuaternionPlain(frame, nextKeyFrame, t, d, outDatas);
+                    else
+                        this._hermiteInterpolateQuaternion(frame, nextKeyFrame, t, d, outDatas);
                 }
             }
             else {
@@ -14046,6 +14344,7 @@
             this._animationEvents.splice(index, 0, event);
         }
         _disposeResource() {
+            notifyClipDestroyed(this._id);
             this._nodes = null;
             this._nodesMap = null;
         }
@@ -15097,9 +15396,6 @@
                 preLODLength = (this._size / lod.mincullRate) / maxYDistance * cameraFarLength;
                 preLODLength *= preLODLength;
                 lod.maxVisibalDistance = preLODLength;
-                if (i == this.lods.length - 1) {
-                    lod.maxVisibalDistance = cameraFarLength * cameraFarLength;
-                }
             }
         }
         onPreRender() {
@@ -15638,7 +15934,9 @@
             return this._avatarMask;
         }
         set avatarMask(value) {
+            var _a;
             this._avatarMask = value;
+            (_a = this._animator) === null || _a === void 0 ? void 0 : _a._refreshLayerAvatarMask(this);
         }
         get defaultStateName() {
             if (!this._defaultState) {
@@ -15793,1521 +16091,284 @@
     AnimatorControllerLayer.BLENDINGMODE_OVERRIDE = 0;
     AnimatorControllerLayer.BLENDINGMODE_ADDTIVE = 1;
 
-    class AnimatorResource {
-        static getAnimatorResource(sprite, propertyKey) {
-            switch (propertyKey) {
-                case "simpleSkinnedMeshRenderer":
-                    return sprite.getComponent(SimpleSkinnedMeshRenderer);
-                default:
-                    return sprite.getComponent(Laya.ClassUtils.getClass(propertyKey));
+    exports.LayerTaskType = void 0;
+    (function (LayerTaskType) {
+        LayerTaskType[LayerTaskType["Idle"] = 0] = "Idle";
+        LayerTaskType[LayerTaskType["Normal"] = 1] = "Normal";
+        LayerTaskType[LayerTaskType["Cross"] = 2] = "Cross";
+        LayerTaskType[LayerTaskType["FixedCross"] = 3] = "FixedCross";
+    })(exports.LayerTaskType || (exports.LayerTaskType = {}));
+    class LayerTask {
+        constructor() {
+            this.type = exports.LayerTaskType.Idle;
+            this.state = null;
+            this.destState = null;
+            this.weight = 1.0;
+            this.playState = null;
+            this.crossPlayState = null;
+            this.crossWeight = 0;
+        }
+    }
+    class TaskSlot {
+        constructor(ctx, activeList, dirtyList) {
+            this._updateMark = 0;
+            this._layers = [];
+            this._activeLayerCount = 0;
+            this._inActive = false;
+            this._inDirty = false;
+            this._slotHandle = 0;
+            this._onResize = null;
+            this._ctx = ctx;
+            this._activeList = activeList;
+            this._dirtyList = dirtyList;
+        }
+        resizeLayers(count) {
+            const layers = this._layers;
+            const cur = layers.length;
+            if (cur === count)
+                return;
+            if (cur < count) {
+                for (let i = cur; i < count; i++)
+                    layers.push(new LayerTask());
+            }
+            else {
+                for (let i = count; i < cur; i++) {
+                    if (layers[i].type !== exports.LayerTaskType.Idle)
+                        this._activeLayerCount--;
+                }
+                layers.length = count;
+                this._syncListMembership(this._activeLayerCount > 0);
+            }
+            if (this._onResize)
+                this._onResize(count);
+        }
+        submitAllIdle() {
+            const layers = this._layers;
+            let changed = false;
+            for (let i = 0, n = layers.length; i < n; i++) {
+                const lt = layers[i];
+                if (lt.type !== exports.LayerTaskType.Idle) {
+                    lt.type = exports.LayerTaskType.Idle;
+                    lt.state = null;
+                    lt.destState = null;
+                    lt.playState = null;
+                    lt.crossPlayState = null;
+                    lt.weight = 1.0;
+                    lt.crossWeight = 0;
+                    changed = true;
+                }
+            }
+            if (changed)
+                this._markDirty();
+            this._activeLayerCount = 0;
+            this._syncListMembership(false);
+        }
+        submitLayerIdle(layerIndex) {
+            const lt = this._layers[layerIndex];
+            if (!lt)
+                return;
+            const wasActive = lt.type !== exports.LayerTaskType.Idle;
+            if (wasActive) {
+                this._markDirty();
+                this._activeLayerCount--;
+            }
+            lt.type = exports.LayerTaskType.Idle;
+            lt.state = null;
+            lt.destState = null;
+            lt.playState = null;
+            lt.crossPlayState = null;
+            lt.weight = 1.0;
+            lt.crossWeight = 0;
+            this._syncListMembership(this._activeLayerCount > 0);
+        }
+        submitLayerNormal(layerIndex, state, playState, weight) {
+            const lt = this._layers[layerIndex];
+            if (!lt)
+                return;
+            const wasIdle = lt.type === exports.LayerTaskType.Idle;
+            let dirty = false;
+            if (lt.type !== exports.LayerTaskType.Normal) {
+                lt.type = exports.LayerTaskType.Normal;
+                dirty = true;
+            }
+            if (lt.state !== state) {
+                lt.state = state;
+                dirty = true;
+            }
+            if (lt.destState !== null) {
+                lt.destState = null;
+                dirty = true;
+            }
+            if (lt.weight !== weight) {
+                lt.weight = weight;
+                dirty = true;
+            }
+            lt.playState = playState;
+            lt.crossPlayState = null;
+            lt.crossWeight = 0;
+            if (wasIdle)
+                this._activeLayerCount++;
+            if (dirty)
+                this._markDirty();
+            this._syncListMembership(true);
+        }
+        submitLayerCross(layerIndex, srcState, srcPlayState, destState, destPlayState, crossWeight) {
+            const lt = this._layers[layerIndex];
+            if (!lt)
+                return;
+            const wasIdle = lt.type === exports.LayerTaskType.Idle;
+            let dirty = false;
+            if (lt.type !== exports.LayerTaskType.Cross) {
+                lt.type = exports.LayerTaskType.Cross;
+                dirty = true;
+            }
+            if (lt.state !== srcState) {
+                lt.state = srcState;
+                dirty = true;
+            }
+            if (lt.destState !== destState) {
+                lt.destState = destState;
+                dirty = true;
+            }
+            lt.playState = srcPlayState;
+            lt.crossPlayState = destPlayState;
+            lt.crossWeight = crossWeight;
+            if (wasIdle)
+                this._activeLayerCount++;
+            if (dirty)
+                this._markDirty();
+            this._syncListMembership(true);
+        }
+        submitLayerFixedCross(layerIndex, destState, destPlayState, crossWeight) {
+            const lt = this._layers[layerIndex];
+            if (!lt)
+                return;
+            const wasIdle = lt.type === exports.LayerTaskType.Idle;
+            let dirty = false;
+            if (lt.type !== exports.LayerTaskType.FixedCross) {
+                lt.type = exports.LayerTaskType.FixedCross;
+                dirty = true;
+            }
+            if (lt.state !== null) {
+                lt.state = null;
+                dirty = true;
+            }
+            if (lt.destState !== destState) {
+                lt.destState = destState;
+                dirty = true;
+            }
+            lt.playState = null;
+            lt.crossPlayState = destPlayState;
+            lt.crossWeight = crossWeight;
+            if (wasIdle)
+                this._activeLayerCount++;
+            if (dirty)
+                this._markDirty();
+            this._syncListMembership(true);
+        }
+        _clearDirty() {
+            this._inDirty = false;
+        }
+        _markDirty() {
+            if (!this._inDirty) {
+                this._dirtyList.add(this);
+                this._inDirty = true;
+            }
+        }
+        _syncListMembership(active) {
+            if (active && !this._inActive) {
+                this._activeList.add(this);
+                this._inActive = true;
+            }
+            else if (!active && this._inActive) {
+                this._activeList.remove(this);
+                this._inActive = false;
             }
         }
     }
 
-    class Animator extends Laya.Component {
-        get controller() {
-            return this._controller;
-        }
-        set controller(val) {
-            if (this._controller)
-                this._controller._removeReference();
-            this._controller = val;
-            if (val) {
-                val._addReference();
-                val.updateTo(this);
-            }
-        }
-        get speed() {
-            return this._speed;
-        }
-        set speed(value) {
-            this._speed = value;
-        }
-        set updateMode(value) {
-            this._updateMode = value;
-        }
-        set lowUpdateDelty(value) {
-            this._lowUpdateDelty = value;
-        }
-        get controllerLayerCount() {
-            return this._controllerLayers.length;
-        }
-        get animatorParams() {
-            return this._animatorParams;
-        }
-        set animatorParams(values) {
-            this._animatorParams = values;
-        }
-        get sleep() {
-            return this._finishSleep;
-        }
-        set sleep(value) {
-            this._finishSleep = value;
-        }
+    class WebAnimatorEvaluator {
         constructor() {
-            super();
-            this._keyframeNodeOwners = [];
-            this._updateMode = Laya.AnimatorUpdateMode.Normal;
-            this._lowUpdateDelty = 20;
-            this._animatorParams = {};
-            this._linkAvatarSpritesData = {};
-            this._linkAvatarSprites = [];
-            this.cullingMode = Animator.CULLINGMODE_CULLCOMPLETELY;
-            this._finishSleep = false;
-            this._LateUpdateEvents = new Laya.Delegate();
-            this._controllerLayers = [];
-            this._speed = 1.0;
-            this._keyframeNodeOwnerMap = {};
-            this._updateMark = 0;
+            this._scope = 'all';
         }
-        _addKeyframeNodeOwner(clipOwners, node, propertyOwner) {
-            var nodeIndex = node._indexInList;
-            var fullPath = node.fullPath;
-            var keyframeNodeOwner = this._keyframeNodeOwnerMap[fullPath];
-            let mat = false;
-            if (keyframeNodeOwner) {
-                keyframeNodeOwner.referenceCount++;
-                clipOwners[nodeIndex] = keyframeNodeOwner;
-            }
-            else {
-                var property = propertyOwner;
-                for (var i = 0, n = node.propertyCount; i < n; i++) {
-                    if (node.type === exports.KeyFrameValueType.MaterialRef)
-                        break;
-                    if (mat) {
-                        const shaderPropId = node.getMaterialPropertyId(i);
-                        const type = node.type;
-                        switch (type) {
-                            case exports.KeyFrameValueType.Color: {
-                                const color = property.shaderData.getColor(shaderPropId);
-                                if (color != null) {
-                                    _tempVector4.x = color.r;
-                                    _tempVector4.y = color.g;
-                                    _tempVector4.z = color.b;
-                                    _tempVector4.w = color.a;
-                                    property = _tempVector4;
-                                }
-                                else {
-                                    property = null;
-                                }
-                                break;
-                            }
-                            case exports.KeyFrameValueType.Vector2:
-                                property = property.shaderData.getVector2(shaderPropId);
-                                break;
-                            case exports.KeyFrameValueType.Vector3:
-                                property = property.shaderData.getVector3(shaderPropId);
-                                break;
-                            case exports.KeyFrameValueType.Vector4:
-                                property = property.shaderData.getVector(shaderPropId);
-                                break;
-                            case exports.KeyFrameValueType.Float:
-                                property = property.shaderData.getNumber(shaderPropId);
-                                break;
-                            case exports.KeyFrameValueType.Boolean:
-                                property = property.shaderData.getBool(shaderPropId);
-                                break;
-                        }
-                    }
-                    else {
-                        property = property[node.getPropertyByIndex(i)];
-                    }
-                    if (property instanceof Laya.Material) {
-                        mat = true;
-                    }
-                    if (!property)
-                        break;
-                }
-                keyframeNodeOwner = this._keyframeNodeOwnerMap[fullPath] = new KeyframeNodeOwner();
-                keyframeNodeOwner.isMaterial = mat;
-                keyframeNodeOwner.fullPath = fullPath;
-                keyframeNodeOwner.indexInList = this._keyframeNodeOwners.length;
-                keyframeNodeOwner.referenceCount = 1;
-                keyframeNodeOwner.propertyOwner = propertyOwner;
-                keyframeNodeOwner.nodePath = node.nodePath;
-                keyframeNodeOwner.callbackFunData = node.callbackFunData;
-                keyframeNodeOwner.callParams = node.callParams;
-                keyframeNodeOwner.getCallbackNode();
-                var propertyCount = node.propertyCount;
-                var propertys = [];
-                for (i = 0; i < propertyCount; i++)
-                    propertys[i] = node.getPropertyByIndex(i);
-                keyframeNodeOwner.property = propertys;
-                keyframeNodeOwner.type = node.type;
-                if (node.type === exports.KeyFrameValueType.MaterialRef) {
-                    for (let ki = 0, kn = node.keyFramesCount; ki < kn; ki++) {
-                        const kf = node.getKeyframeByIndex(ki);
-                        if (kf === null || kf === void 0 ? void 0 : kf.value) {
-                            const alreadyCached = Laya.ILaya.loader.getRes(kf.value) ||
-                                (!kf.value.startsWith("res://") && Laya.ILaya.loader.getRes("res://" + kf.value));
-                            if (!alreadyCached) {
-                                Laya.ILaya.loader.load(kf.value, { type: Laya.Loader.MATERIAL });
-                            }
-                        }
-                    }
-                }
-                if (property) {
-                    if (node.type === exports.KeyFrameValueType.Float || node.type === exports.KeyFrameValueType.Boolean || node.type === exports.KeyFrameValueType.PathPoint) {
-                        keyframeNodeOwner.defaultValue = property;
-                    }
-                    else if (node.type === exports.KeyFrameValueType.MaterialRef) {
-                        keyframeNodeOwner.defaultValue = "";
-                    }
-                    else {
-                        var defaultValue = new property.constructor();
-                        property.cloneTo(defaultValue);
-                        keyframeNodeOwner.defaultValue = defaultValue;
-                        keyframeNodeOwner.value = new property.constructor();
-                        keyframeNodeOwner.crossFixedValue = new property.constructor();
-                    }
-                }
-                else if (mat) {
-                    switch (node.type) {
-                        case exports.KeyFrameValueType.Color:
-                        case exports.KeyFrameValueType.Vector4:
-                            keyframeNodeOwner.defaultValue = new Laya.Vector4();
-                            keyframeNodeOwner.value = new Laya.Vector4();
-                            keyframeNodeOwner.crossFixedValue = new Laya.Vector4();
-                            break;
-                        case exports.KeyFrameValueType.Vector3:
-                            keyframeNodeOwner.defaultValue = new Laya.Vector3();
-                            keyframeNodeOwner.value = new Laya.Vector3();
-                            keyframeNodeOwner.crossFixedValue = new Laya.Vector3();
-                            break;
-                        case exports.KeyFrameValueType.Vector2:
-                            keyframeNodeOwner.defaultValue = new Laya.Vector2();
-                            keyframeNodeOwner.value = new Laya.Vector2();
-                            keyframeNodeOwner.crossFixedValue = new Laya.Vector2();
-                            break;
-                        case exports.KeyFrameValueType.Float:
-                        case exports.KeyFrameValueType.Boolean:
-                            keyframeNodeOwner.defaultValue = 0;
-                            keyframeNodeOwner.value = 0;
-                            keyframeNodeOwner.crossFixedValue = 0;
-                            break;
-                        case exports.KeyFrameValueType.Rotation:
-                            keyframeNodeOwner.defaultValue = new Laya.Quaternion();
-                            keyframeNodeOwner.value = new Laya.Quaternion();
-                            keyframeNodeOwner.crossFixedValue = new Laya.Quaternion();
-                            break;
-                    }
-                }
-                this._keyframeNodeOwners.push(keyframeNodeOwner);
-                clipOwners[nodeIndex] = keyframeNodeOwner;
-            }
-        }
-        _removeKeyframeNodeOwner(nodeOwners, node) {
-            var fullPath = node.fullPath;
-            var keyframeNodeOwner = this._keyframeNodeOwnerMap[fullPath];
-            if (keyframeNodeOwner) {
-                keyframeNodeOwner.referenceCount--;
-                if (keyframeNodeOwner.referenceCount === 0) {
-                    delete this._keyframeNodeOwnerMap[fullPath];
-                    this._keyframeNodeOwners.splice(this._keyframeNodeOwners.indexOf(keyframeNodeOwner), 1);
-                }
-                nodeOwners[node._indexInList] = null;
-            }
-        }
-        _getOwnersByClip(clipStateInfo) {
-            if (!clipStateInfo._clip)
-                return;
-            var frameNodes = clipStateInfo._clip._nodes;
-            var frameNodesCount = frameNodes.count;
-            var nodeOwners = clipStateInfo._nodeOwners;
-            nodeOwners.length = frameNodesCount;
-            for (var i = 0; i < frameNodesCount; i++) {
-                var node = frameNodes.getNodeByIndex(i);
-                var property = this.owner;
-                for (var j = 0, m = node.ownerPathCount; j < m; j++) {
-                    var ownPat = node.getOwnerPathByIndex(j);
-                    if (ownPat === "") {
-                        break;
-                    }
-                    else {
-                        property = property.getChild(ownPat);
-                        if (!property)
-                            break;
-                    }
-                }
-                if (property) {
-                    var propertyOwner = node.propertyOwner;
-                    const oriProperty = property;
-                    (propertyOwner) && (property = property[propertyOwner]);
-                    if (!property) {
-                        property = AnimatorResource.getAnimatorResource(oriProperty, propertyOwner);
-                    }
-                    property && this._addKeyframeNodeOwner(nodeOwners, node, property);
-                }
-            }
-        }
-        _updatePlayer(animatorState, playState, elapsedTime, islooping, layerIndex) {
-            var clipDuration = animatorState._clip._duration * (animatorState.clipEnd - animatorState.clipStart);
-            var lastElapsedTime = playState._elapsedTime;
-            var elapsedPlaybackTime = lastElapsedTime + elapsedTime;
-            playState._lastElapsedTime = lastElapsedTime;
-            playState._elapsedTime = elapsedPlaybackTime;
-            var normalizedTime = elapsedPlaybackTime / clipDuration;
-            playState._normalizedTime = normalizedTime;
-            var playTime = normalizedTime % 1.0;
-            const normalizedPlayTime = playTime < 0 ? playTime + 1.0 : playTime;
-            playState._normalizedPlayTime = normalizedPlayTime;
-            playState._duration = clipDuration;
-            if (elapsedPlaybackTime >= clipDuration) {
-                if (!islooping) {
-                    playState._finish = true;
-                    playState._elapsedTime = clipDuration;
-                    playState._normalizedPlayTime = animatorState.clipEnd;
-                }
-                else {
-                    let loopNum = Math.floor(elapsedPlaybackTime / clipDuration);
-                    let pLoopNum = Math.floor(lastElapsedTime / clipDuration);
-                    if (pLoopNum != loopNum) {
-                        this._updateDefaultValues();
-                        animatorState._eventLoop();
-                    }
-                }
-            }
-            (!playState._finish) && animatorState._eventStateUpdate(playState._normalizedPlayTime);
-            this._applyTransition(animatorState, layerIndex, animatorState._eventtransition(playState._normalizedPlayTime, this.animatorParams));
-            return;
-        }
-        _applyTransition(state, layerindex, transition) {
-            if (!transition) {
-                if (state.curTransition)
-                    state.curTransition = null;
-                return;
-            }
-            if (transition == state.curTransition)
-                return;
-            state.curTransition = transition;
-            this._LateUpdateEvents.add(this.crossFade, this, [transition.destState.name, transition.transduration, layerindex, transition.transstartoffset]);
-        }
-        _updateStateFinish(animatorState, playState) {
-            if (playState._finish) {
-                animatorState._eventExit();
-            }
-        }
-        _switchState(parentState, currentState) {
-            if (parentState) {
-                parentState._eventSwitch(currentState);
-            }
-        }
-        _updateEventScript(stateInfo, playStateInfo) {
-            if (!this.owner._getBit(Laya.NodeFlags.HAS_SCRIPT))
-                return;
-            let clip = stateInfo._clip;
-            let events = clip._animationEvents;
-            if (!events || 0 == events.length || null == playStateInfo.animatorState)
-                return;
-            let clipDuration = playStateInfo._duration;
-            let time = playStateInfo.animatorState.clipStart * clipDuration + playStateInfo._normalizedPlayTime * clipDuration;
-            let parentPlayTime = playStateInfo._parentPlayTime;
-            if (null == parentPlayTime) {
-                parentPlayTime = clipDuration * playStateInfo.animatorState.clipStart;
-            }
-            if (time < parentPlayTime) {
-                this._eventScript(events, parentPlayTime, clipDuration * playStateInfo.animatorState.clipEnd);
-                parentPlayTime = clipDuration * playStateInfo.animatorState.clipStart;
-            }
-            this._eventScript(events, parentPlayTime, time);
-            playStateInfo._parentPlayTime = time;
-        }
-        _eventScript(events, parentPlayTime, currPlayTime) {
-            let scripts = this.owner.components;
-            for (let i = 0, len = events.length; i < len; i++) {
-                let e = events[i];
-                if (e.time > parentPlayTime && e.time <= currPlayTime) {
-                    for (let j = 0, m = scripts.length; j < m; j++) {
-                        let script = scripts[j];
-                        if (script._isScript()) {
-                            let fun = script[e.eventName];
-                            (fun) && (fun.apply(script, e.params));
-                        }
-                    }
-                }
-                else if (e.time > currPlayTime) {
+        evaluateLayer(layerTask, controllerLayer) {
+            const skipTransform = this._scope === 'non-transform-only';
+            switch (layerTask.type) {
+                case exports.LayerTaskType.Normal:
+                    this._sample(layerTask.state, layerTask.playState, controllerLayer, skipTransform);
                     break;
-                }
-            }
-        }
-        _updateClipDatas(animatorState, addtive, playStateInfo, animatorMask = null) {
-            var clip = animatorState._clip;
-            var clipDuration = clip._duration;
-            var curPlayTime = animatorState.clipStart * clipDuration + playStateInfo._normalizedPlayTime * playStateInfo._duration;
-            var currentFrameIndices = animatorState._currentFrameIndices;
-            var frontPlay = playStateInfo._elapsedTime > playStateInfo._lastElapsedTime;
-            clip._evaluateClipDatasRealTime(clip._nodes, curPlayTime, currentFrameIndices, addtive, frontPlay, animatorState._realtimeDatas, animatorMask);
-        }
-        _applyFloat(defaultValue, nodeOwner, additive, weight, isFirstLayer, data) {
-            if (nodeOwner.updateMark === this._updateMark) {
-                if (additive) {
-                    defaultValue += weight * data;
-                }
-                else {
-                    var oriValue = defaultValue;
-                    defaultValue = oriValue + weight * (data - oriValue);
-                }
-            }
-            else {
-                if (isFirstLayer) {
-                    if (additive)
-                        defaultValue = nodeOwner.defaultValue + data;
-                    else
-                        defaultValue = data;
-                }
-                else {
-                    if (additive) {
-                        defaultValue = nodeOwner.defaultValue + weight * (data);
-                    }
-                    else {
-                        var defValue = nodeOwner.defaultValue;
-                        defaultValue = defValue + weight * (data - defValue);
-                    }
-                }
-            }
-            return defaultValue;
-        }
-        _applyVec2(defaultValue, nodeOwner, additive, weight, isFirstLayer, data) {
-            if (!defaultValue)
-                return null;
-            if (nodeOwner.updateMark === this._updateMark) {
-                if (additive) {
-                    defaultValue.x += weight * data.x;
-                    defaultValue.y += weight * data.y;
-                }
-                else {
-                    var oriValue = defaultValue;
-                    defaultValue.x = oriValue.x + weight * (data.x - oriValue.x);
-                    defaultValue.y = oriValue.y + weight * (data.y - oriValue.y);
-                }
-            }
-            else {
-                if (isFirstLayer) {
-                    if (additive) {
-                        defaultValue.x = nodeOwner.defaultValue.x + data.x;
-                        defaultValue.y = nodeOwner.defaultValue.y + data.y;
-                    }
-                    else
-                        data.cloneTo(defaultValue);
-                }
-                else {
-                    if (additive) {
-                        defaultValue.x = nodeOwner.defaultValue.x + weight * (data.x);
-                        defaultValue.y = nodeOwner.defaultValue.y + weight * (data.y);
-                    }
-                    else {
-                        var defValue = nodeOwner.defaultValue;
-                        defaultValue.x = defValue.x + weight * (data.x - defValue.x);
-                        defaultValue.y = defValue.y + weight * (data.y - defValue.y);
-                    }
-                }
-            }
-            return defaultValue;
-        }
-        _applyVec3(defaultValue, nodeOwner, additive, weight, isFirstLayer, data) {
-            if (!defaultValue)
-                return null;
-            if (nodeOwner.updateMark === this._updateMark) {
-                if (additive) {
-                    defaultValue.x += weight * data.x;
-                    defaultValue.y += weight * data.y;
-                    defaultValue.z += weight * data.z;
-                }
-                else {
-                    var oriValue = defaultValue;
-                    defaultValue.x = oriValue.x + weight * (data.x - oriValue.x);
-                    defaultValue.y = oriValue.y + weight * (data.y - oriValue.y);
-                    defaultValue.z = oriValue.z + weight * (data.z - oriValue.z);
-                }
-            }
-            else {
-                if (isFirstLayer) {
-                    if (additive) {
-                        defaultValue.x = nodeOwner.defaultValue.x + data.x;
-                        defaultValue.y = nodeOwner.defaultValue.y + data.y;
-                        defaultValue.z = nodeOwner.defaultValue.z + data.z;
-                    }
-                    else
-                        data.cloneTo(defaultValue);
-                }
-                else {
-                    if (additive) {
-                        defaultValue.x = nodeOwner.defaultValue.x + weight * (data.x);
-                        defaultValue.y = nodeOwner.defaultValue.y + weight * (data.y);
-                        defaultValue.z = nodeOwner.defaultValue.z + weight * (data.z);
-                    }
-                    else {
-                        var defValue = nodeOwner.defaultValue;
-                        defaultValue.x = defValue.x + weight * (data.x - defValue.x);
-                        defaultValue.y = defValue.y + weight * (data.y - defValue.y);
-                        defaultValue.z = defValue.z + weight * (data.z - defValue.z);
-                    }
-                }
-            }
-            return defaultValue;
-        }
-        _applyVec4(defaultValue, nodeOwner, additive, weight, isFirstLayer, data) {
-            if (!defaultValue)
-                return null;
-            if (nodeOwner.updateMark === this._updateMark) {
-                if (additive) {
-                    defaultValue.x += weight * data.x;
-                    defaultValue.y += weight * data.y;
-                    defaultValue.z += weight * data.z;
-                    defaultValue.w += weight * data.w;
-                }
-                else {
-                    var oriValue = defaultValue;
-                    defaultValue.x = oriValue.x + weight * (data.x - oriValue.x);
-                    defaultValue.y = oriValue.y + weight * (data.y - oriValue.y);
-                    defaultValue.z = oriValue.z + weight * (data.z - oriValue.z);
-                    defaultValue.w = oriValue.w + weight * (data.w - oriValue.w);
-                }
-            }
-            else {
-                if (isFirstLayer) {
-                    if (additive) {
-                        defaultValue.x = nodeOwner.defaultValue.x + data.x;
-                        defaultValue.y = nodeOwner.defaultValue.y + data.y;
-                        defaultValue.z = nodeOwner.defaultValue.z + data.z;
-                        defaultValue.w = nodeOwner.defaultValue.w + data.w;
-                    }
-                    else
-                        data.cloneTo(defaultValue);
-                }
-                else {
-                    if (additive) {
-                        defaultValue.x = nodeOwner.defaultValue.x + weight * (data.x);
-                        defaultValue.y = nodeOwner.defaultValue.y + weight * (data.y);
-                        defaultValue.z = nodeOwner.defaultValue.z + weight * (data.z);
-                        defaultValue.w = nodeOwner.defaultValue.w + weight * (data.w);
-                    }
-                    else {
-                        var defValue = nodeOwner.defaultValue;
-                        defaultValue.x = defValue.x + weight * (data.x - defValue.x);
-                        defaultValue.y = defValue.y + weight * (data.y - defValue.y);
-                        defaultValue.z = defValue.z + weight * (data.z - defValue.z);
-                        defaultValue.w = defValue.w + weight * (data.w - defValue.w);
-                    }
-                }
-            }
-            return defaultValue;
-        }
-        _applyColor(defaultValue, nodeOwner, additive, weight, isFirstLayer, data) {
-            if (!defaultValue)
-                return null;
-            if (!nodeOwner.defaultValue)
-                nodeOwner.defaultValue = new Laya.Vector4(defaultValue.r, defaultValue.g, defaultValue.b, defaultValue.a);
-            if (nodeOwner.updateMark === this._updateMark) {
-                if (additive) {
-                    defaultValue.r += weight * data.x;
-                    defaultValue.g += weight * data.y;
-                    defaultValue.b += weight * data.z;
-                    defaultValue.a += weight * data.w;
-                }
-                else {
-                    var oriValue = defaultValue;
-                    defaultValue.r = oriValue.r + weight * (data.x - oriValue.r);
-                    defaultValue.g = oriValue.g + weight * (data.y - oriValue.g);
-                    defaultValue.b = oriValue.b + weight * (data.z - oriValue.b);
-                    defaultValue.a = oriValue.a + weight * (data.w - oriValue.a);
-                }
-            }
-            else {
-                if (isFirstLayer) {
-                    if (additive) {
-                        defaultValue.r = nodeOwner.defaultValue.x + data.x;
-                        defaultValue.g = nodeOwner.defaultValue.y + data.y;
-                        defaultValue.b = nodeOwner.defaultValue.z + data.z;
-                        defaultValue.a = nodeOwner.defaultValue.w + data.w;
-                    }
-                    else {
-                        defaultValue.setValue(data.x, data.y, data.z, data.w);
-                    }
-                }
-                else {
-                    if (additive) {
-                        defaultValue.r = nodeOwner.defaultValue.x + weight * (data.x);
-                        defaultValue.g = nodeOwner.defaultValue.y + weight * (data.y);
-                        defaultValue.b = nodeOwner.defaultValue.z + weight * (data.z);
-                        defaultValue.a = nodeOwner.defaultValue.w + weight * (data.w);
-                    }
-                    else {
-                        var defValue = nodeOwner.defaultValue;
-                        defaultValue.r = defValue.x + weight * (data.x - defValue.x);
-                        defaultValue.g = defValue.y + weight * (data.y - defValue.y);
-                        defaultValue.b = defValue.z + weight * (data.z - defValue.z);
-                        defaultValue.a = defValue.w + weight * (data.w - defValue.w);
-                    }
-                }
-            }
-            return defaultValue;
-        }
-        _applyPositionAndRotationEuler(nodeOwner, additive, weight, isFirstLayer, data, out) {
-            if (nodeOwner.updateMark === this._updateMark) {
-                if (additive) {
-                    out.x += weight * data.x;
-                    out.y += weight * data.y;
-                    out.z += weight * data.z;
-                }
-                else {
-                    var oriX = out.x;
-                    var oriY = out.y;
-                    var oriZ = out.z;
-                    out.x = oriX + weight * (data.x - oriX);
-                    out.y = oriY + weight * (data.y - oriY);
-                    out.z = oriZ + weight * (data.z - oriZ);
-                }
-            }
-            else {
-                if (isFirstLayer) {
-                    if (additive) {
-                        var defValue = nodeOwner.defaultValue;
-                        out.x = defValue.x + data.x;
-                        out.y = defValue.y + data.y;
-                        out.z = defValue.z + data.z;
-                    }
-                    else {
-                        out.x = data.x;
-                        out.y = data.y;
-                        out.z = data.z;
-                    }
-                }
-                else {
-                    defValue = nodeOwner.defaultValue;
-                    if (additive) {
-                        out.x = defValue.x + weight * data.x;
-                        out.y = defValue.y + weight * data.y;
-                        out.z = defValue.z + weight * data.z;
-                    }
-                    else {
-                        var defX = defValue.x;
-                        var defY = defValue.y;
-                        var defZ = defValue.z;
-                        out.x = defX + weight * (data.x - defX);
-                        out.y = defY + weight * (data.y - defY);
-                        out.z = defZ + weight * (data.z - defZ);
-                    }
-                }
-            }
-        }
-        _applyRotation(nodeOwner, additive, weight, isFirstLayer, clipRot, localRotation) {
-            if (nodeOwner.updateMark === this._updateMark) {
-                if (additive) {
-                    Utils3D.quaternionWeight(clipRot, weight, _tempQuaternion1);
-                    _tempQuaternion1.normalize(_tempQuaternion1);
-                    Laya.Quaternion.multiply(localRotation, _tempQuaternion1, localRotation);
-                }
-                else {
-                    Laya.Quaternion.lerp(localRotation, clipRot, weight, localRotation);
-                }
-            }
-            else {
-                if (isFirstLayer) {
-                    if (additive) {
-                        var defaultRot = nodeOwner.defaultValue;
-                        Laya.Quaternion.multiply(defaultRot, clipRot, localRotation);
-                    }
-                    else {
-                        localRotation.x = clipRot.x;
-                        localRotation.y = clipRot.y;
-                        localRotation.z = clipRot.z;
-                        localRotation.w = clipRot.w;
-                    }
-                }
-                else {
-                    defaultRot = nodeOwner.defaultValue;
-                    if (additive) {
-                        Utils3D.quaternionWeight(clipRot, weight, _tempQuaternion1);
-                        _tempQuaternion1.normalize(_tempQuaternion1);
-                        Laya.Quaternion.multiply(defaultRot, _tempQuaternion1, localRotation);
-                    }
-                    else {
-                        Laya.Quaternion.lerp(defaultRot, clipRot, weight, localRotation);
-                    }
-                }
-            }
-        }
-        _applyScale(nodeOwner, additive, weight, isFirstLayer, clipSca, localScale) {
-            if (nodeOwner.updateMark === this._updateMark) {
-                if (additive) {
-                    Utils3D.scaleWeight(clipSca, weight, _tempVector31);
-                    localScale.x = localScale.x * _tempVector31.x;
-                    localScale.y = localScale.y * _tempVector31.y;
-                    localScale.z = localScale.z * _tempVector31.z;
-                }
-                else {
-                    Utils3D.scaleBlend(localScale, clipSca, weight, localScale);
-                }
-            }
-            else {
-                if (isFirstLayer) {
-                    if (additive) {
-                        var defaultSca = nodeOwner.defaultValue;
-                        localScale.x = defaultSca.x * clipSca.x;
-                        localScale.y = defaultSca.y * clipSca.y;
-                        localScale.z = defaultSca.z * clipSca.z;
-                    }
-                    else {
-                        localScale.x = clipSca.x;
-                        localScale.y = clipSca.y;
-                        localScale.z = clipSca.z;
-                    }
-                }
-                else {
-                    defaultSca = nodeOwner.defaultValue;
-                    if (additive) {
-                        Utils3D.scaleWeight(clipSca, weight, _tempVector31);
-                        localScale.x = defaultSca.x * _tempVector31.x;
-                        localScale.y = defaultSca.y * _tempVector31.y;
-                        localScale.z = defaultSca.z * _tempVector31.z;
-                    }
-                    else {
-                        Utils3D.scaleBlend(defaultSca, clipSca, weight, localScale);
-                    }
-                }
-            }
-        }
-        _applyCrossData(nodeOwner, additive, weight, isFirstLayer, srcValue, desValue, crossWeight) {
-            var pro = nodeOwner.propertyOwner;
-            let lastpro;
-            if (pro) {
-                switch (nodeOwner.type) {
-                    case exports.KeyFrameValueType.PathPoint:
-                        console.log("Animator:PathPoint not support3");
-                        break;
-                    case exports.KeyFrameValueType.Boolean:
-                        console.log("Animator:Boolean not support3");
-                        break;
-                    case exports.KeyFrameValueType.MaterialRef: {
-                        const srcStr = typeof srcValue === "string" && srcValue ? srcValue : null;
-                        const desStr = typeof desValue === "string" && desValue ? desValue : null;
-                        const matPath = (srcStr && crossWeight < 0.5) ? srcStr : desStr;
-                        if (!matPath)
-                            break;
-                        let mat = Laya.ILaya.loader.getRes(matPath);
-                        if (!mat && !matPath.startsWith("res://"))
-                            mat = Laya.ILaya.loader.getRes("res://" + matPath);
-                        if (!mat) {
-                            Laya.ILaya.loader.load(matPath, { type: Laya.Loader.MATERIAL });
-                            break;
-                        }
-                        const pn = nodeOwner.property[0];
-                        const idx = parseInt(nodeOwner.property[nodeOwner.property.length - 1]);
-                        const mats = pro[pn];
-                        if (Array.isArray(mats)) {
-                            if (mats[idx] !== mat) {
-                                mats[idx] = mat;
-                                pro[pn] = mats;
-                            }
-                        }
-                        else {
-                            pro[pn] = mat;
-                        }
-                        nodeOwner.value = matPath;
-                        break;
-                    }
-                    case exports.KeyFrameValueType.Float:
-                        var proPat = nodeOwner.property;
-                        var m = proPat.length - 1;
-                        for (var j = 0; j < m; j++) {
-                            pro = pro[proPat[j]];
-                            if (!pro)
-                                break;
-                        }
-                        var crossValue = srcValue + crossWeight * (desValue - srcValue);
-                        nodeOwner.value = crossValue;
-                        lastpro = proPat[m];
-                        if (!nodeOwner.isMaterial) {
-                            pro && (pro[lastpro] = this._applyFloat(pro[lastpro], nodeOwner, additive, weight, isFirstLayer, crossValue));
-                        }
-                        else {
-                            pro && pro.setFloat(lastpro, this._applyFloat(pro.getFloat(lastpro), nodeOwner, additive, weight, isFirstLayer, crossValue));
-                        }
-                        if (nodeOwner.callbackFun) {
-                            nodeOwner.animatorDataSetCallBack();
-                        }
-                        break;
-                    case exports.KeyFrameValueType.Position:
-                        var localPos = pro.localPosition;
-                        var position = nodeOwner.value;
-                        var srcX = srcValue.x, srcY = srcValue.y, srcZ = srcValue.z;
-                        position.x = srcX + crossWeight * (desValue.x - srcX);
-                        position.y = srcY + crossWeight * (desValue.y - srcY);
-                        position.z = srcZ + crossWeight * (desValue.z - srcZ);
-                        this._applyPositionAndRotationEuler(nodeOwner, additive, weight, isFirstLayer, position, localPos);
-                        pro.localPosition = localPos;
-                        break;
-                    case exports.KeyFrameValueType.Rotation:
-                        var localRot = pro.localRotation;
-                        var rotation = nodeOwner.value;
-                        Laya.Quaternion.lerp(srcValue, desValue, crossWeight, rotation);
-                        this._applyRotation(nodeOwner, additive, weight, isFirstLayer, rotation, localRot);
-                        pro.localRotation = localRot;
-                        break;
-                    case exports.KeyFrameValueType.Scale:
-                        var localSca = pro.localScale;
-                        var scale = nodeOwner.value;
-                        Utils3D.scaleBlend(srcValue, desValue, crossWeight, scale);
-                        this._applyScale(nodeOwner, additive, weight, isFirstLayer, scale, localSca);
-                        pro.localScale = localSca;
-                        break;
-                    case exports.KeyFrameValueType.RotationEuler:
-                        var localEuler = pro.localRotationEuler;
-                        var rotationEuler = nodeOwner.value;
-                        srcX = srcValue.x, srcY = srcValue.y, srcZ = srcValue.z;
-                        rotationEuler.x = srcX + crossWeight * (desValue.x - srcX);
-                        rotationEuler.y = srcY + crossWeight * (desValue.y - srcY);
-                        rotationEuler.z = srcZ + crossWeight * (desValue.z - srcZ);
-                        this._applyPositionAndRotationEuler(nodeOwner, additive, weight, isFirstLayer, rotationEuler, localEuler);
-                        pro.localRotationEuler = localEuler;
-                        break;
-                    case exports.KeyFrameValueType.Color:
-                        var proPat = nodeOwner.property;
-                        var m = proPat.length - 1;
-                        for (var j = 0; j < m; j++) {
-                            pro = pro[proPat[j]];
-                            if (!pro)
-                                break;
-                        }
-                        let v44 = nodeOwner.value;
-                        v44.x = srcValue.x + crossWeight * (desValue.x - srcValue.x);
-                        v44.y = srcValue.y + crossWeight * (desValue.y - srcValue.y);
-                        v44.z = srcValue.z + crossWeight * (desValue.z - srcValue.z);
-                        v44.w = srcValue.w + crossWeight * (desValue.w - srcValue.w);
-                        nodeOwner.value = v44;
-                        lastpro = proPat[m];
-                        if (!nodeOwner.isMaterial) {
-                            pro && (pro[lastpro] = this._applyColor(pro[lastpro], nodeOwner, additive, weight, isFirstLayer, v44));
-                        }
-                        else {
-                            const crossColor = pro && pro.getColor(lastpro);
-                            if (crossColor != null) {
-                                pro.setColor(lastpro, this._applyColor(crossColor, nodeOwner, additive, weight, isFirstLayer, v44));
-                            }
-                        }
-                        if (nodeOwner.callbackFun) {
-                            nodeOwner.animatorDataSetCallBack();
-                        }
-                        break;
-                    case exports.KeyFrameValueType.Vector2:
-                        var proPat = nodeOwner.property;
-                        var m = proPat.length - 1;
-                        for (var j = 0; j < m; j++) {
-                            pro = pro[proPat[j]];
-                            if (!pro)
-                                break;
-                        }
-                        let v2 = nodeOwner.value;
-                        v2.x = srcValue.x + crossWeight * (desValue.x - srcValue.x);
-                        v2.y = srcValue.y + crossWeight * (desValue.y - srcValue.y);
-                        nodeOwner.value = v2;
-                        lastpro = proPat[m];
-                        if (!nodeOwner.isMaterial) {
-                            pro && (pro[lastpro] = this._applyVec2(pro[lastpro], nodeOwner, additive, weight, isFirstLayer, v2));
-                        }
-                        else {
-                            const crossV2 = pro && pro.getVector2(lastpro);
-                            crossV2 && pro.setVector2(lastpro, this._applyVec2(crossV2, nodeOwner, additive, weight, isFirstLayer, v2));
-                        }
-                        if (nodeOwner.callbackFun) {
-                            nodeOwner.animatorDataSetCallBack();
-                        }
-                        break;
-                    case exports.KeyFrameValueType.Vector4:
-                        var proPat = nodeOwner.property;
-                        var m = proPat.length - 1;
-                        for (var j = 0; j < m; j++) {
-                            pro = pro[proPat[j]];
-                            if (!pro)
-                                break;
-                        }
-                        let v4 = nodeOwner.value;
-                        v4.x = srcValue.x + crossWeight * (desValue.x - srcValue.x);
-                        v4.y = srcValue.y + crossWeight * (desValue.y - srcValue.y);
-                        v4.z = srcValue.z + crossWeight * (desValue.z - srcValue.z);
-                        v4.w = srcValue.w + crossWeight * (desValue.w - srcValue.w);
-                        nodeOwner.value = v4;
-                        lastpro = proPat[m];
-                        if (!nodeOwner.isMaterial) {
-                            pro && (pro[lastpro] = this._applyVec4(pro[lastpro], nodeOwner, additive, weight, isFirstLayer, v4));
-                        }
-                        else {
-                            const crossV4 = pro && pro.getVector4(lastpro);
-                            crossV4 && pro.setVector4(lastpro, this._applyVec4(crossV4, nodeOwner, additive, weight, isFirstLayer, v4));
-                        }
-                        if (nodeOwner.callbackFun) {
-                            nodeOwner.animatorDataSetCallBack();
-                        }
-                        break;
-                    case exports.KeyFrameValueType.Vector3:
-                        var proPat = nodeOwner.property;
-                        var m = proPat.length - 1;
-                        for (var j = 0; j < m; j++) {
-                            pro = pro[proPat[j]];
-                            if (!pro)
-                                break;
-                        }
-                        let v3 = nodeOwner.value;
-                        v3.x = srcValue.x + crossWeight * (desValue.x - srcValue.x);
-                        v3.y = srcValue.y + crossWeight * (desValue.y - srcValue.y);
-                        v3.z = srcValue.z + crossWeight * (desValue.z - srcValue.z);
-                        nodeOwner.value = v3;
-                        lastpro = proPat[m];
-                        if (!nodeOwner.isMaterial) {
-                            pro && (pro[lastpro] = this._applyVec3(pro[lastpro], nodeOwner, additive, weight, isFirstLayer, v3));
-                        }
-                        else {
-                            const crossV3 = pro && pro.getVector3(lastpro);
-                            crossV3 && pro.setVector3(lastpro, this._applyVec3(crossV3, nodeOwner, additive, weight, isFirstLayer, v3));
-                        }
-                        if (nodeOwner.callbackFun) {
-                            nodeOwner.animatorDataSetCallBack();
-                        }
-                        break;
-                }
-                nodeOwner.updateMark = this._updateMark;
-            }
-        }
-        _setClipDatasToNode(stateInfo, additive, weight, isFirstLayer, controllerLayer = null) {
-            var realtimeDatas = stateInfo._realtimeDatas;
-            var nodes = stateInfo._clip._nodes;
-            var nodeOwners = stateInfo._nodeOwners;
-            const n = nodes.count;
-            for (let mi = 0; mi < n; mi++) {
-                const mo = nodeOwners[mi];
-                if (!mo || mo.type !== exports.KeyFrameValueType.MaterialRef)
-                    continue;
-                const mn = nodes.getNodeByIndex(mi);
-                if (controllerLayer.avatarMask && !controllerLayer.avatarMask.getTransformActive(mn.nodePath))
-                    continue;
-                const mp = mo.propertyOwner;
-                if (!mp)
-                    continue;
-                const matUrl = realtimeDatas[mi];
-                if (!matUrl)
-                    continue;
-                let mat = Laya.ILaya.loader.getRes(matUrl);
-                if (!mat && !matUrl.startsWith("res://"))
-                    mat = Laya.ILaya.loader.getRes("res://" + matUrl);
-                if (mat) {
-                    const pn = mo.property[0];
-                    const idx = parseInt(mo.property[mo.property.length - 1]);
-                    const mats = mp[pn];
-                    if (Array.isArray(mats)) {
-                        if (mats[idx] !== mat) {
-                            mats[idx] = mat;
-                            mp[pn] = mats;
-                        }
-                    }
-                    else {
-                        mp[pn] = mat;
-                    }
-                    mo.value = matUrl;
-                }
-                else {
-                    Laya.ILaya.loader.load(matUrl, { type: Laya.Loader.MATERIAL });
-                }
-                mo.updateMark = this._updateMark;
-            }
-            for (var i = 0; i < n; i++) {
-                var nodeOwner = nodeOwners[i];
-                if (nodeOwner) {
-                    var node = nodes.getNodeByIndex(i);
-                    if (controllerLayer.avatarMask && (!controllerLayer.avatarMask.getTransformActive(node.nodePath))) {
-                        continue;
-                    }
-                    var pro = nodeOwner.propertyOwner;
-                    let value;
-                    if (pro) {
-                        switch (nodeOwner.type) {
-                            case exports.KeyFrameValueType.PathPoint:
-                                const realData = realtimeDatas[i];
-                                const pos = realData.pos;
-                                const rotation = realData.rotation;
-                                if (rotation) {
-                                    const ro = pro.transform.localRotationEuler;
-                                    ro.x = rotation.x;
-                                    ro.y = rotation.y;
-                                    ro.z = rotation.z;
-                                    pro.transform.localRotationEuler = ro;
-                                }
-                                const position = pro.transform.position;
-                                position.x = pos.x;
-                                position.y = pos.y;
-                                position.z = pos.z;
-                                pro.transform.position = position;
-                                break;
-                            case exports.KeyFrameValueType.Boolean:
-                                var proPat = nodeOwner.property;
-                                var m = proPat.length - 1;
-                                for (var j = 0; j < m; j++) {
-                                    pro = pro[proPat[j]];
-                                    if (!pro)
-                                        break;
-                                }
-                                let lastBoolPro = proPat[m];
-                                if (!nodeOwner.isMaterial) {
-                                    pro && (pro[lastBoolPro] = realtimeDatas[i]);
-                                }
-                                break;
-                            case exports.KeyFrameValueType.MaterialRef:
-                                nodeOwner.value = realtimeDatas[i];
-                                break;
-                            case exports.KeyFrameValueType.Float:
-                                var proPat = nodeOwner.property;
-                                var m = proPat.length - 1;
-                                for (var j = 0; j < m; j++) {
-                                    pro = pro[proPat[j]];
-                                    if (!pro)
-                                        break;
-                                }
-                                let lastpro = proPat[m];
-                                if (!nodeOwner.isMaterial) {
-                                    pro && (pro[lastpro] = this._applyFloat(pro[lastpro], nodeOwner, additive, weight, isFirstLayer, realtimeDatas[i]));
-                                    if (nodeOwner.callbackFun) {
-                                        nodeOwner.animatorDataSetCallBack();
-                                    }
-                                }
-                                else {
-                                    pro && pro.setFloat(lastpro, this._applyFloat(0, nodeOwner, additive, weight, isFirstLayer, realtimeDatas[i]));
-                                }
-                                break;
-                            case exports.KeyFrameValueType.Position:
-                                var localPos = pro.localPosition;
-                                this._applyPositionAndRotationEuler(nodeOwner, additive, weight, isFirstLayer, realtimeDatas[i], localPos);
-                                pro.localPosition = localPos;
-                                break;
-                            case exports.KeyFrameValueType.Rotation:
-                                var localRot = pro.localRotation;
-                                this._applyRotation(nodeOwner, additive, weight, isFirstLayer, realtimeDatas[i], localRot);
-                                pro.localRotation = localRot;
-                                break;
-                            case exports.KeyFrameValueType.Scale:
-                                var localSca = pro.localScale;
-                                this._applyScale(nodeOwner, additive, weight, isFirstLayer, realtimeDatas[i], localSca);
-                                pro.localScale = localSca;
-                                break;
-                            case exports.KeyFrameValueType.RotationEuler:
-                                var localEuler = pro.localRotationEuler;
-                                this._applyPositionAndRotationEuler(nodeOwner, additive, weight, isFirstLayer, realtimeDatas[i], localEuler);
-                                pro.localRotationEuler = localEuler;
-                                break;
-                            case exports.KeyFrameValueType.Vector2:
-                                var proPat = nodeOwner.property;
-                                var m = proPat.length - 1;
-                                for (var j = 0; j < m; j++) {
-                                    pro = pro[proPat[j]];
-                                    if (!pro)
-                                        break;
-                                }
-                                value = proPat[m];
-                                if (!nodeOwner.isMaterial) {
-                                    pro && (pro[value] = this._applyVec2(pro[value], nodeOwner, additive, weight, isFirstLayer, realtimeDatas[i]));
-                                    if (nodeOwner.callbackFun) {
-                                        nodeOwner.animatorDataSetCallBack();
-                                    }
-                                }
-                                else {
-                                    pro && pro.getVector2(value) && pro.setVector2(value, this._applyVec2(pro.getVector2(value), nodeOwner, additive, weight, isFirstLayer, realtimeDatas[i]));
-                                }
-                                break;
-                            case exports.KeyFrameValueType.Vector3:
-                                var proPat = nodeOwner.property;
-                                var m = proPat.length - 1;
-                                for (var j = 0; j < m; j++) {
-                                    pro = pro[proPat[j]];
-                                    if (!pro)
-                                        break;
-                                }
-                                value = proPat[m];
-                                if (!nodeOwner.isMaterial) {
-                                    pro && (pro[value] = this._applyVec3(pro[value], nodeOwner, additive, weight, isFirstLayer, realtimeDatas[i]));
-                                    if (nodeOwner.callbackFun) {
-                                        nodeOwner.animatorDataSetCallBack();
-                                    }
-                                }
-                                else {
-                                    pro && pro.getVector3(value) && pro.setVector3(value, this._applyVec3(pro.getVector3(value), nodeOwner, additive, weight, isFirstLayer, realtimeDatas[i]));
-                                }
-                                break;
-                            case exports.KeyFrameValueType.Vector4:
-                                var proPat = nodeOwner.property;
-                                var m = proPat.length - 1;
-                                for (var j = 0; j < m; j++) {
-                                    pro = pro[proPat[j]];
-                                    if (!pro)
-                                        break;
-                                }
-                                value = proPat[m];
-                                if (!nodeOwner.isMaterial) {
-                                    pro && (pro[value] = this._applyVec4(pro[value], nodeOwner, additive, weight, isFirstLayer, realtimeDatas[i]));
-                                    if (nodeOwner.callbackFun) {
-                                        nodeOwner.animatorDataSetCallBack();
-                                    }
-                                }
-                                else {
-                                    pro && pro.getVector4(value) && pro.setVector4(value, this._applyVec4(pro.getVector4(value), nodeOwner, additive, weight, isFirstLayer, realtimeDatas[i]));
-                                }
-                                break;
-                            case exports.KeyFrameValueType.Color:
-                                var proPat = nodeOwner.property;
-                                var m = proPat.length - 1;
-                                for (var j = 0; j < m; j++) {
-                                    pro = pro[proPat[j]];
-                                    if (!pro)
-                                        break;
-                                }
-                                value = proPat[m];
-                                if (!nodeOwner.isMaterial) {
-                                    pro && (pro[value] = this._applyColor(pro[value], nodeOwner, additive, weight, isFirstLayer, realtimeDatas[i]));
-                                    if (nodeOwner.callbackFun) {
-                                        nodeOwner.animatorDataSetCallBack();
-                                    }
-                                }
-                                else {
-                                    const color = pro && pro.getColor(value);
-                                    if (color) {
-                                        _tempColor.r = color.r;
-                                        _tempColor.g = color.g;
-                                        _tempColor.b = color.b;
-                                        _tempColor.a = color.a;
-                                        pro.setColor(value, this._applyColor(_tempColor, nodeOwner, additive, weight, isFirstLayer, realtimeDatas[i]));
-                                    }
-                                }
-                                break;
-                        }
-                        nodeOwner.updateMark = this._updateMark;
-                    }
-                }
-            }
-        }
-        _setCrossClipDatasToNode(controllerLayer, srcState, destState, crossWeight, isFirstLayer) {
-            var nodeOwners = controllerLayer._crossNodesOwners;
-            var ownerCount = controllerLayer._crossNodesOwnersCount;
-            var additive = controllerLayer.blendingMode !== AnimatorControllerLayer.BLENDINGMODE_OVERRIDE;
-            var weight = controllerLayer.defaultWeight;
-            var destRealtimeDatas = destState._realtimeDatas;
-            var destDataIndices = controllerLayer._destCrossClipNodeIndices;
-            var destNodeOwners = destState._nodeOwners;
-            var srcRealtimeDatas = srcState._realtimeDatas;
-            var srcDataIndices = controllerLayer._srcCrossClipNodeIndices;
-            var srcNodeOwners = srcState._nodeOwners;
-            for (var i = 0; i < ownerCount; i++) {
-                var nodeOwner = nodeOwners[i];
-                if (nodeOwner) {
-                    var srcIndex = srcDataIndices[i];
-                    var destIndex = destDataIndices[i];
-                    if (-1 == srcIndex && -1 == destIndex)
-                        continue;
-                    var srcValue = srcIndex !== -1 ? srcRealtimeDatas[srcIndex] : destNodeOwners[destIndex].defaultValue;
-                    if (null == srcValue)
-                        continue;
-                    var desValue = destIndex !== -1 ? destRealtimeDatas[destIndex] : srcNodeOwners[srcIndex].defaultValue;
-                    if (!desValue) {
-                        desValue = srcNodeOwners[srcIndex].defaultValue;
-                    }
-                    if (null == desValue)
-                        continue;
-                    if (!controllerLayer.avatarMask || controllerLayer.avatarMask.getTransformActive(nodeOwner.nodePath)) {
-                        this._applyCrossData(nodeOwner, additive, weight, isFirstLayer, srcValue, desValue, crossWeight);
-                    }
-                }
-            }
-        }
-        _setFixedCrossClipDatasToNode(controllerLayer, destState, crossWeight, isFirstLayer) {
-            var nodeOwners = controllerLayer._crossNodesOwners;
-            var ownerCount = controllerLayer._crossNodesOwnersCount;
-            var additive = controllerLayer.blendingMode !== AnimatorControllerLayer.BLENDINGMODE_OVERRIDE;
-            var weight = controllerLayer.defaultWeight;
-            var destRealtimeDatas = destState._realtimeDatas;
-            var destDataIndices = controllerLayer._destCrossClipNodeIndices;
-            for (var i = 0; i < ownerCount; i++) {
-                var nodeOwner = nodeOwners[i];
-                if (nodeOwner) {
-                    var destIndex = destDataIndices[i];
-                    var srcValue = nodeOwner.crossFixedValue;
-                    var desValue;
-                    if (destIndex == -1 || !destRealtimeDatas[destIndex]) {
-                        desValue = nodeOwner.defaultValue;
-                    }
-                    else {
-                        desValue = destRealtimeDatas[destIndex];
-                    }
-                    this._applyCrossData(nodeOwner, additive, weight, isFirstLayer, srcValue, desValue, crossWeight);
-                }
-            }
-        }
-        _revertDefaultKeyframeNodes(clipStateInfo) {
-            var nodeOwners = clipStateInfo._nodeOwners;
-            for (var i = 0, n = nodeOwners.length; i < n; i++) {
-                var nodeOwner = nodeOwners[i];
-                if (nodeOwner) {
-                    var pro = nodeOwner.propertyOwner;
-                    let value;
-                    if (pro) {
-                        switch (nodeOwner.type) {
-                            case exports.KeyFrameValueType.PathPoint:
-                                console.log("Animator:PathPoint not support2");
-                                break;
-                            case exports.KeyFrameValueType.Boolean:
-                                console.log("Animator:Boolean not support2");
-                                break;
-                            case exports.KeyFrameValueType.Float:
-                                var proPat = nodeOwner.property;
-                                var m = proPat.length - 1;
-                                for (var j = 0; j < m; j++) {
-                                    pro = pro[proPat[j]];
-                                    if (!pro)
-                                        break;
-                                }
-                                let lastpro = proPat[m];
-                                if (!nodeOwner.isMaterial) {
-                                    pro && (pro[lastpro] = nodeOwner.defaultValue);
-                                    if (nodeOwner.callbackFun) {
-                                        nodeOwner.animatorDataSetCallBack();
-                                    }
-                                }
-                                else {
-                                    pro && pro.setFloat(lastpro, nodeOwner.defaultValue);
-                                }
-                                break;
-                            case exports.KeyFrameValueType.Position:
-                                var locPos = pro.localPosition;
-                                var def = nodeOwner.defaultValue;
-                                locPos.x = def.x;
-                                locPos.y = def.y;
-                                locPos.z = def.z;
-                                pro.localPosition = locPos;
-                                break;
-                            case exports.KeyFrameValueType.Rotation:
-                                var locRot = pro.localRotation;
-                                var defQua = nodeOwner.defaultValue;
-                                locRot.x = defQua.x;
-                                locRot.y = defQua.y;
-                                locRot.z = defQua.z;
-                                locRot.w = defQua.w;
-                                pro.localRotation = locRot;
-                                break;
-                            case exports.KeyFrameValueType.Scale:
-                                var locSca = pro.localScale;
-                                def = nodeOwner.defaultValue;
-                                locSca.x = def.x;
-                                locSca.y = def.y;
-                                locSca.z = def.z;
-                                pro.localScale = locSca;
-                                break;
-                            case exports.KeyFrameValueType.RotationEuler:
-                                var locEul = pro.localRotationEuler;
-                                def = nodeOwner.defaultValue;
-                                locEul.x = def.x;
-                                locEul.y = def.y;
-                                locEul.z = def.z;
-                                pro.localRotationEuler = locEul;
-                                break;
-                            case exports.KeyFrameValueType.Vector2:
-                                var proPat = nodeOwner.property;
-                                var m = proPat.length - 1;
-                                for (var j = 0; j < m; j++) {
-                                    pro = pro[proPat[j]];
-                                    if (!pro)
-                                        break;
-                                }
-                                value = proPat[m];
-                                if (!nodeOwner.isMaterial) {
-                                    pro && (pro[value] = nodeOwner.defaultValue);
-                                    if (nodeOwner.callbackFun) {
-                                        nodeOwner.animatorDataSetCallBack();
-                                    }
-                                }
-                                else {
-                                    pro && pro.getVector2(value) && pro.setVector2(value, nodeOwner.defaultValue);
-                                }
-                                break;
-                            case exports.KeyFrameValueType.Vector3:
-                                var proPat = nodeOwner.property;
-                                var m = proPat.length - 1;
-                                for (var j = 0; j < m; j++) {
-                                    pro = pro[proPat[j]];
-                                    if (!pro)
-                                        break;
-                                }
-                                value = proPat[m];
-                                if (!nodeOwner.isMaterial) {
-                                    pro && (pro[value] = nodeOwner.defaultValue);
-                                    if (nodeOwner.callbackFun) {
-                                        nodeOwner.animatorDataSetCallBack();
-                                    }
-                                }
-                                else {
-                                    pro && pro.getVector3(value) && pro.setVector3(value, nodeOwner.defaultValue);
-                                }
-                                break;
-                            case exports.KeyFrameValueType.Vector4:
-                                var proPat = nodeOwner.property;
-                                var m = proPat.length - 1;
-                                for (var j = 0; j < m; j++) {
-                                    pro = pro[proPat[j]];
-                                    if (!pro)
-                                        break;
-                                }
-                                value = proPat[m];
-                                if (!nodeOwner.isMaterial) {
-                                    pro && (pro[value] = nodeOwner.defaultValue);
-                                    if (nodeOwner.callbackFun) {
-                                        nodeOwner.animatorDataSetCallBack();
-                                    }
-                                }
-                                else {
-                                    pro && pro.getVector4(value) && pro.setVector4(value, nodeOwner.defaultValue);
-                                }
-                                break;
-                            case exports.KeyFrameValueType.Color:
-                                var proPat = nodeOwner.property;
-                                var m = proPat.length - 1;
-                                for (var j = 0; j < m; j++) {
-                                    pro = pro[proPat[j]];
-                                    if (!pro)
-                                        break;
-                                }
-                                value = proPat[m];
-                                if (!nodeOwner.defaultValue)
-                                    break;
-                                _tempColor.r = nodeOwner.defaultValue.x;
-                                _tempColor.g = nodeOwner.defaultValue.y;
-                                _tempColor.b = nodeOwner.defaultValue.z;
-                                _tempColor.a = nodeOwner.defaultValue.w;
-                                if (!nodeOwner.isMaterial) {
-                                    pro && (pro[value] = _tempColor);
-                                    if (nodeOwner.callbackFun) {
-                                        nodeOwner.animatorDataSetCallBack();
-                                    }
-                                }
-                                else {
-                                    pro && pro.getColor(value) && pro.setColor(value, _tempColor);
-                                }
-                                break;
-                            case exports.KeyFrameValueType.MaterialRef:
-                                break;
-                            default:
-                                throw "Animator:unknown type.";
-                        }
-                    }
-                }
-            }
-        }
-        onAfterDeserialize() {
-            let arr = this.controllerLayers;
-            if (!arr || null != this.controller)
-                return;
-            delete this.controllerLayers;
-            this._controllerLayers.length = 0;
-            for (let layer of arr) {
-                this.addControllerLayer(layer);
-            }
-        }
-        _onEnable() {
-            for (let i = 0, n = this._controllerLayers.length; i < n; i++) {
-                if (this._controllerLayers[i].playOnWake) {
-                    let defaultClip = this.getDefaultState(i);
-                    (defaultClip) && (this.play(null, i, defaultClip.cycleOffset));
-                }
-            }
-        }
-        _onDestroy() {
-            if (this._controller) {
-                this._controller._removeReference();
-                this._controller = null;
-            }
-            for (let i = 0, n = this._controllerLayers.length; i < n; i++)
-                this._controllerLayers[i]._removeReference();
-        }
-        _applyUpdateMode(delta) {
-            let ret;
-            switch (this._updateMode) {
-                case Laya.AnimatorUpdateMode.Normal:
-                    ret = delta;
+                case exports.LayerTaskType.Cross:
+                    this._sample(layerTask.state, layerTask.playState, controllerLayer, skipTransform);
+                    this._sample(layerTask.destState, layerTask.crossPlayState, controllerLayer, skipTransform);
                     break;
-                case Laya.AnimatorUpdateMode.LowFrame:
-                    ret = (Laya.Stat.loopCount % this._lowUpdateDelty == 0) ? delta * this._lowUpdateDelty : 0;
-                    break;
-                case Laya.AnimatorUpdateMode.UnScaleTime:
-                    ret = 0;
+                case exports.LayerTaskType.FixedCross:
+                    this._sample(layerTask.destState, layerTask.crossPlayState, controllerLayer, skipTransform);
                     break;
             }
-            return ret;
         }
-        _handleSpriteOwnersBySprite(isLink, path, sprite) {
-            for (var i = 0, n = this._controllerLayers.length; i < n; i++) {
-                if (!this._controllerLayers[i].enable)
-                    continue;
-                var clipStateInfos = this._controllerLayers[i]._states;
-                for (var j = 0, m = clipStateInfos.length; j < m; j++) {
-                    var clipStateInfo = clipStateInfos[j];
-                    var clip = clipStateInfo._clip;
-                    var nodePath = path.join("/");
-                    var ownersNodes = clip._nodesMap[nodePath];
-                    if (ownersNodes) {
-                        var nodeOwners = clipStateInfo._nodeOwners;
-                        for (var k = 0, p = ownersNodes.length; k < p; k++) {
-                            if (isLink)
-                                this._addKeyframeNodeOwner(nodeOwners, ownersNodes[k], sprite);
-                            else
-                                this._removeKeyframeNodeOwner(nodeOwners, ownersNodes[k]);
-                        }
-                    }
-                }
-            }
+        _sample(state, playState, controllerLayer, skipTransform) {
+            const clip = state._clip;
+            const clipDuration = clip._duration;
+            const curPlayTime = state.clipStart * clipDuration
+                + playState._normalizedPlayTime * playState._duration;
+            const additive = controllerLayer.blendingMode !== AnimatorControllerLayer.BLENDINGMODE_OVERRIDE;
+            const frontPlay = playState._elapsedTime > playState._lastElapsedTime;
+            clip._evaluateClipDatasRealTime(clip._nodes, curPlayTime, state._currentFrameIndices, additive, frontPlay, state._realtimeDatas, controllerLayer.avatarMask, skipTransform);
         }
-        onUpdate() {
-            performance.now();
-            let timer = this.owner._scene.timer;
-            let delta = timer.delta / 1000.0;
-            delta = this._applyUpdateMode(delta);
-            var i, n;
-            if (this._speed === 0 || delta === 0) {
-                for (i = 0, n = this._controllerLayers.length; i < n; i++) {
-                    var controllerLayer = this._controllerLayers[i];
-                    if (!controllerLayer.enable)
-                        continue;
-                    var playStateInfo = controllerLayer._playStateInfo;
-                    if (playStateInfo._finish && controllerLayer._playType == 0) {
-                        var animatorState = playStateInfo.currentState;
-                        this._applyTransition(animatorState, i, animatorState._eventtransition(playStateInfo._normalizedPlayTime, this.animatorParams));
-                    }
-                }
-                this._LateUpdateEvents.invoke();
-                this._LateUpdateEvents.clear();
-                return;
-            }
-            if (!Laya.Stat.enableAnimatorUpdate)
-                return;
-            this._updateMark++;
-            for (i = 0, n = this._controllerLayers.length; i < n; i++) {
-                var controllerLayer = this._controllerLayers[i];
-                if (!controllerLayer.enable)
-                    continue;
-                var playStateInfo = controllerLayer._playStateInfo;
-                if (this.sleep && playStateInfo._finish && controllerLayer._playType == 0) {
-                    var animatorState = playStateInfo.currentState;
-                    this._applyTransition(animatorState, i, animatorState._eventtransition(playStateInfo._normalizedPlayTime, this.animatorParams));
-                    continue;
-                }
-                var crossPlayStateInfo = controllerLayer._crossPlayStateInfo;
-                addtive = controllerLayer.blendingMode !== AnimatorControllerLayer.BLENDINGMODE_OVERRIDE;
-                switch (controllerLayer._playType) {
-                    case 0:
-                        var animatorState = playStateInfo.currentState;
-                        animatorState._clip;
-                        var speed = this._speed * animatorState.speed;
-                        var finish = playStateInfo._finish;
-                        if (finish) {
-                            this._applyTransition(animatorState, i, animatorState._eventtransition(playStateInfo._normalizedPlayTime, this.animatorParams));
-                        }
-                        else {
-                            this._updatePlayer(animatorState, playStateInfo, delta * speed, animatorState.islooping, i);
-                        }
-                        {
-                            var addtive = controllerLayer.blendingMode !== AnimatorControllerLayer.BLENDINGMODE_OVERRIDE;
-                            this._updateClipDatas(animatorState, addtive, playStateInfo, controllerLayer.avatarMask);
-                            this._setClipDatasToNode(animatorState, addtive, controllerLayer.defaultWeight, i === 0, controllerLayer);
-                            finish || this._updateEventScript(animatorState, playStateInfo);
-                        }
-                        finish || this._updateStateFinish(animatorState, playStateInfo);
-                        break;
-                    case 1:
-                        animatorState = playStateInfo.currentState;
-                        animatorState._clip;
-                        var crossState = controllerLayer._crossPlayState;
-                        var crossClip = crossState._clip;
-                        var crossDuratuion = controllerLayer._crossDuration;
-                        var startPlayTime = crossPlayStateInfo._startPlayTime;
-                        var crossClipDuration = crossClip._duration - startPlayTime;
-                        var crossScale = (crossDuratuion > crossClipDuration && 0 != crossClipDuration) ? crossClipDuration / crossDuratuion : 1.0;
-                        var crossSpeed = this._speed * crossState.speed;
-                        this._updatePlayer(crossState, crossPlayStateInfo, delta * crossScale * crossSpeed, crossClip.islooping, i);
-                        var crossWeight = ((crossPlayStateInfo._elapsedTime - startPlayTime) / crossScale) / crossDuratuion;
-                        var needUpdateFinishcurrentState = false;
-                        if (crossWeight >= 1.0) {
-                            {
-                                this._updateClipDatas(crossState, addtive, crossPlayStateInfo, controllerLayer.avatarMask);
-                                this._setClipDatasToNode(crossState, addtive, controllerLayer.defaultWeight, i === 0, controllerLayer);
-                                controllerLayer._playType = 0;
-                                playStateInfo.currentState = crossState;
-                                this._switchState(animatorState, crossState);
-                                crossPlayStateInfo._cloneTo(playStateInfo);
-                            }
-                        }
-                        else {
-                            if (!playStateInfo._finish) {
-                                speed = this._speed * animatorState.speed;
-                                needUpdateFinishcurrentState = true;
-                                this._updatePlayer(animatorState, playStateInfo, delta * speed, animatorState.islooping, i);
-                                this._updateClipDatas(animatorState, addtive, playStateInfo, controllerLayer.avatarMask);
-                            }
-                            {
-                                this._updateClipDatas(crossState, addtive, crossPlayStateInfo, controllerLayer.avatarMask);
-                                this._setCrossClipDatasToNode(controllerLayer, animatorState, crossState, crossWeight, i === 0);
-                            }
-                        }
-                        {
-                            this._updateEventScript(animatorState, playStateInfo);
-                            this._updateEventScript(crossState, crossPlayStateInfo);
-                        }
-                        this._updateStateFinish(crossState, crossPlayStateInfo);
-                        needUpdateFinishcurrentState && this._updateStateFinish(playStateInfo.currentState, playStateInfo);
-                        break;
-                    case 2:
-                        crossState = controllerLayer._crossPlayState;
-                        crossClip = crossState._clip;
-                        crossDuratuion = controllerLayer._crossDuration;
-                        startPlayTime = crossPlayStateInfo._startPlayTime;
-                        crossClipDuration = crossClip._duration - startPlayTime;
-                        crossScale = crossDuratuion > crossClipDuration ? crossClipDuration / crossDuratuion : 1.0;
-                        crossSpeed = this._speed * crossState.speed;
-                        this._updatePlayer(crossState, crossPlayStateInfo, delta * crossScale * crossSpeed, crossState.islooping, i);
-                        {
-                            crossWeight = ((crossPlayStateInfo._elapsedTime - startPlayTime) / crossScale) / crossDuratuion;
-                            if (crossWeight >= 1.0) {
-                                this._updateClipDatas(crossState, addtive, crossPlayStateInfo, controllerLayer.avatarMask);
-                                this._setClipDatasToNode(crossState, addtive, 1.0, i === 0, controllerLayer);
-                                controllerLayer._playType = 0;
-                                playStateInfo.currentState = crossState;
-                                this._switchState(animatorState, crossState);
-                                crossPlayStateInfo._cloneTo(playStateInfo);
-                            }
-                            else {
-                                this._updateClipDatas(crossState, addtive, crossPlayStateInfo, controllerLayer.avatarMask);
-                                this._setFixedCrossClipDatasToNode(controllerLayer, crossState, crossWeight, i === 0);
-                            }
-                            this._updateEventScript(crossState, crossPlayStateInfo);
-                        }
-                        this._updateStateFinish(crossState, crossPlayStateInfo);
-                        break;
-                }
-            }
-            this._LateUpdateEvents.invoke();
-            this._LateUpdateEvents.clear();
+    }
+
+    function isTransformType(type) {
+        return type === exports.KeyFrameValueType.Position
+            || type === exports.KeyFrameValueType.Rotation
+            || type === exports.KeyFrameValueType.Scale
+            || type === exports.KeyFrameValueType.RotationEuler;
+    }
+
+    const _tempVector31 = new Laya.Vector3();
+    const _tempColor = new Laya.Color();
+    const _tempQuaternion1 = new Laya.Quaternion();
+    class WebAnimatorApplier {
+        constructor() {
+            this._scope = 'all';
+            this._currentUpdateMark = 0;
+            this._nonTransformIdxCache = new WeakMap();
         }
-        _cloneTo(dest) {
-            dest.cullingMode = this.cullingMode;
-            for (var i = 0, n = this._controllerLayers.length; i < n; i++) {
-                var controllLayer = this._controllerLayers[i];
-                dest.addControllerLayer(controllLayer.clone());
-                var animatorStates = controllLayer._states;
-                for (var j = 0, m = animatorStates.length; j < m; j++) {
-                    var state = animatorStates[j].clone();
-                    var cloneLayer = dest.getControllerLayer(i);
-                    cloneLayer.addState(state);
-                    (j === 0) && (cloneLayer.defaultState = state);
-                }
+        _getNonTransformIndices(clip) {
+            let cached = this._nonTransformIdxCache.get(clip);
+            if (cached)
+                return cached;
+            const nodes = clip._nodes;
+            if (!nodes) {
+                cached = new Int32Array(0);
             }
-            dest.controller = this._controller;
+            else {
+                const count = nodes.count;
+                const tmp = [];
+                for (let i = 0; i < count; i++) {
+                    if (!isTransformType(nodes.getNodeByIndex(i).type))
+                        tmp.push(i);
+                }
+                cached = new Int32Array(tmp);
+            }
+            this._nonTransformIdxCache.set(clip, cached);
+            return cached;
         }
-        _updateDefaultValues() {
-            for (let i = 0, n = this._keyframeNodeOwners.length; i < n; i++) {
-                let nodeOwner = this._keyframeNodeOwners[i];
+        applyNormal(layerTask, controllerLayer, isFirstLayer, updateMark) {
+            this._applyNormal(controllerLayer, layerTask.state, controllerLayer.blendingMode !== AnimatorControllerLayer.BLENDINGMODE_OVERRIDE, layerTask.weight, isFirstLayer, updateMark, this._scope === 'non-transform-only');
+        }
+        applyCross(layerTask, controllerLayer, isFirstLayer, updateMark) {
+            this._applyCross(controllerLayer, layerTask.state, layerTask.destState, layerTask.crossWeight, isFirstLayer, updateMark, this._scope === 'non-transform-only');
+        }
+        applyFixedCross(layerTask, controllerLayer, isFirstLayer, updateMark) {
+            this._applyFixedCross(controllerLayer, layerTask.destState, layerTask.crossWeight, isFirstLayer, updateMark, this._scope === 'non-transform-only');
+        }
+        updateDefaultValues(owners) {
+            const skipTransform = this._scope === 'non-transform-only';
+            for (let i = 0, n = owners.length; i < n; i++) {
+                const nodeOwner = owners[i];
                 if (!nodeOwner || !nodeOwner.propertyOwner || !nodeOwner.property)
+                    continue;
+                if (skipTransform && isTransformType(nodeOwner.type))
                     continue;
                 let pro = nodeOwner.propertyOwner;
                 switch (nodeOwner.type) {
@@ -17365,6 +16426,1636 @@
                 }
             }
         }
+        revertDefaultKeyframeNodes(state) {
+            const skipTransform = this._scope === 'non-transform-only';
+            const nodeOwners = state._nodeOwners;
+            const clip = state._clip;
+            const indices = (skipTransform && clip) ? this._getNonTransformIndices(clip) : null;
+            const loopCount = indices !== null ? indices.length : nodeOwners.length;
+            for (let k = 0; k < loopCount; k++) {
+                const i = indices !== null ? indices[k] : k;
+                const nodeOwner = nodeOwners[i];
+                if (!nodeOwner)
+                    continue;
+                if (skipTransform && indices === null && isTransformType(nodeOwner.type))
+                    continue;
+                let pro = nodeOwner.propertyOwner;
+                let value;
+                if (!pro)
+                    continue;
+                switch (nodeOwner.type) {
+                    case exports.KeyFrameValueType.PathPoint:
+                        console.log("Animator:PathPoint not support2");
+                        break;
+                    case exports.KeyFrameValueType.Boolean:
+                        console.log("Animator:Boolean not support2");
+                        break;
+                    case exports.KeyFrameValueType.Float:
+                        var proPat = nodeOwner.property;
+                        var m = proPat.length - 1;
+                        for (var j = 0; j < m; j++) {
+                            pro = pro[proPat[j]];
+                            if (!pro)
+                                break;
+                        }
+                        let lastpro = proPat[m];
+                        if (!nodeOwner.isMaterial) {
+                            pro && (pro[lastpro] = nodeOwner.defaultValue);
+                            if (nodeOwner.callbackFun) {
+                                nodeOwner.animatorDataSetCallBack();
+                            }
+                        }
+                        else {
+                            pro && pro.setFloat(lastpro, nodeOwner.defaultValue);
+                        }
+                        break;
+                    case exports.KeyFrameValueType.Position:
+                        var locPos = pro.localPosition;
+                        var def = nodeOwner.defaultValue;
+                        locPos.x = def.x;
+                        locPos.y = def.y;
+                        locPos.z = def.z;
+                        pro.localPosition = locPos;
+                        break;
+                    case exports.KeyFrameValueType.Rotation:
+                        var locRot = pro.localRotation;
+                        var defQua = nodeOwner.defaultValue;
+                        locRot.x = defQua.x;
+                        locRot.y = defQua.y;
+                        locRot.z = defQua.z;
+                        locRot.w = defQua.w;
+                        pro.localRotation = locRot;
+                        break;
+                    case exports.KeyFrameValueType.Scale:
+                        var locSca = pro.localScale;
+                        def = nodeOwner.defaultValue;
+                        locSca.x = def.x;
+                        locSca.y = def.y;
+                        locSca.z = def.z;
+                        pro.localScale = locSca;
+                        break;
+                    case exports.KeyFrameValueType.RotationEuler:
+                        var locEul = pro.localRotationEuler;
+                        def = nodeOwner.defaultValue;
+                        locEul.x = def.x;
+                        locEul.y = def.y;
+                        locEul.z = def.z;
+                        pro.localRotationEuler = locEul;
+                        break;
+                    case exports.KeyFrameValueType.Vector2:
+                        proPat = nodeOwner.property;
+                        m = proPat.length - 1;
+                        for (j = 0; j < m; j++) {
+                            pro = pro[proPat[j]];
+                            if (!pro)
+                                break;
+                        }
+                        value = proPat[m];
+                        if (!nodeOwner.isMaterial) {
+                            pro && (pro[value] = nodeOwner.defaultValue);
+                            if (nodeOwner.callbackFun) {
+                                nodeOwner.animatorDataSetCallBack();
+                            }
+                        }
+                        else {
+                            pro && pro.getVector2(value) && pro.setVector2(value, nodeOwner.defaultValue);
+                        }
+                        break;
+                    case exports.KeyFrameValueType.Vector3:
+                        proPat = nodeOwner.property;
+                        m = proPat.length - 1;
+                        for (j = 0; j < m; j++) {
+                            pro = pro[proPat[j]];
+                            if (!pro)
+                                break;
+                        }
+                        value = proPat[m];
+                        if (!nodeOwner.isMaterial) {
+                            pro && (pro[value] = nodeOwner.defaultValue);
+                            if (nodeOwner.callbackFun) {
+                                nodeOwner.animatorDataSetCallBack();
+                            }
+                        }
+                        else {
+                            pro && pro.getVector3(value) && pro.setVector3(value, nodeOwner.defaultValue);
+                        }
+                        break;
+                    case exports.KeyFrameValueType.Vector4:
+                        proPat = nodeOwner.property;
+                        m = proPat.length - 1;
+                        for (j = 0; j < m; j++) {
+                            pro = pro[proPat[j]];
+                            if (!pro)
+                                break;
+                        }
+                        value = proPat[m];
+                        if (!nodeOwner.isMaterial) {
+                            pro && (pro[value] = nodeOwner.defaultValue);
+                            if (nodeOwner.callbackFun) {
+                                nodeOwner.animatorDataSetCallBack();
+                            }
+                        }
+                        else {
+                            pro && pro.getVector3(value) && pro.setVector3(value, nodeOwner.defaultValue);
+                        }
+                        break;
+                    case exports.KeyFrameValueType.Color:
+                        proPat = nodeOwner.property;
+                        m = proPat.length - 1;
+                        for (j = 0; j < m; j++) {
+                            pro = pro[proPat[j]];
+                            if (!pro)
+                                break;
+                        }
+                        value = proPat[m];
+                        if (!nodeOwner.defaultValue)
+                            break;
+                        _tempColor.r = nodeOwner.defaultValue.x;
+                        _tempColor.g = nodeOwner.defaultValue.y;
+                        _tempColor.b = nodeOwner.defaultValue.z;
+                        _tempColor.a = nodeOwner.defaultValue.w;
+                        if (!nodeOwner.isMaterial) {
+                            pro && (pro[value] = _tempColor);
+                            if (nodeOwner.callbackFun) {
+                                nodeOwner.animatorDataSetCallBack();
+                            }
+                        }
+                        else {
+                            pro && pro.getColor(value) && pro.setColor(value, _tempColor);
+                        }
+                        break;
+                    default:
+                        throw "Animator:unknown type.";
+                }
+            }
+        }
+        _applyNormal(controllerLayer, stateInfo, additive, weight, isFirstLayer, updateMark, skipTransform) {
+            this._currentUpdateMark = updateMark;
+            const realtimeDatas = stateInfo._realtimeDatas;
+            const clip = stateInfo._clip;
+            const nodes = clip._nodes;
+            const nodeOwners = stateInfo._nodeOwners;
+            const indices = skipTransform ? this._getNonTransformIndices(clip) : null;
+            const loopCount = indices !== null ? indices.length : nodes.count;
+            for (let k = 0; k < loopCount; k++) {
+                const i = indices !== null ? indices[k] : k;
+                const nodeOwner = nodeOwners[i];
+                if (!nodeOwner)
+                    continue;
+                const node = nodes.getNodeByIndex(i);
+                if (controllerLayer.avatarMask && (!controllerLayer.avatarMask.getTransformActive(node.nodePath)))
+                    continue;
+                let pro = nodeOwner.propertyOwner;
+                let value;
+                if (!pro)
+                    continue;
+                switch (nodeOwner.type) {
+                    case exports.KeyFrameValueType.PathPoint:
+                        const realData = realtimeDatas[i];
+                        const pos = realData.pos;
+                        const rotation = realData.rotation;
+                        if (rotation) {
+                            const ro = pro.transform.localRotationEuler;
+                            ro.x = rotation.x;
+                            ro.y = rotation.y;
+                            ro.z = rotation.z;
+                            pro.transform.localRotationEuler = ro;
+                        }
+                        const position = pro.transform.position;
+                        position.x = pos.x;
+                        position.y = pos.y;
+                        position.z = pos.z;
+                        pro.transform.position = position;
+                        break;
+                    case exports.KeyFrameValueType.Boolean: {
+                        const proPat = nodeOwner.property;
+                        const m = proPat.length - 1;
+                        for (let j = 0; j < m; j++) {
+                            pro = pro[proPat[j]];
+                            if (!pro)
+                                break;
+                        }
+                        const lastBoolPro = proPat[m];
+                        if (!nodeOwner.isMaterial) {
+                            pro && (pro[lastBoolPro] = realtimeDatas[i]);
+                        }
+                        break;
+                    }
+                    case exports.KeyFrameValueType.Float: {
+                        const proPat = nodeOwner.property;
+                        const m = proPat.length - 1;
+                        for (let j = 0; j < m; j++) {
+                            pro = pro[proPat[j]];
+                            if (!pro)
+                                break;
+                        }
+                        const lastpro = proPat[m];
+                        if (!nodeOwner.isMaterial) {
+                            pro && (pro[lastpro] = this._applyFloat(pro[lastpro], nodeOwner, additive, weight, isFirstLayer, realtimeDatas[i]));
+                            if (nodeOwner.callbackFun) {
+                                nodeOwner.animatorDataSetCallBack();
+                            }
+                        }
+                        else {
+                            pro && pro.setFloat(lastpro, this._applyFloat(0, nodeOwner, additive, weight, isFirstLayer, realtimeDatas[i]));
+                        }
+                        break;
+                    }
+                    case exports.KeyFrameValueType.Position: {
+                        const localPos = pro.localPosition;
+                        this._applyPositionAndRotationEuler(nodeOwner, additive, weight, isFirstLayer, realtimeDatas[i], localPos);
+                        pro.localPosition = localPos;
+                        break;
+                    }
+                    case exports.KeyFrameValueType.Rotation: {
+                        const localRot = pro.localRotation;
+                        this._applyRotation(nodeOwner, additive, weight, isFirstLayer, realtimeDatas[i], localRot);
+                        pro.localRotation = localRot;
+                        break;
+                    }
+                    case exports.KeyFrameValueType.Scale: {
+                        const localSca = pro.localScale;
+                        this._applyScale(nodeOwner, additive, weight, isFirstLayer, realtimeDatas[i], localSca);
+                        pro.localScale = localSca;
+                        break;
+                    }
+                    case exports.KeyFrameValueType.RotationEuler: {
+                        const localEuler = pro.localRotationEuler;
+                        this._applyPositionAndRotationEuler(nodeOwner, additive, weight, isFirstLayer, realtimeDatas[i], localEuler);
+                        pro.localRotationEuler = localEuler;
+                        break;
+                    }
+                    case exports.KeyFrameValueType.Vector2: {
+                        const proPat = nodeOwner.property;
+                        const m = proPat.length - 1;
+                        for (let j = 0; j < m; j++) {
+                            pro = pro[proPat[j]];
+                            if (!pro)
+                                break;
+                        }
+                        value = proPat[m];
+                        if (!nodeOwner.isMaterial) {
+                            pro && (pro[value] = this._applyVec2(pro[value], nodeOwner, additive, weight, isFirstLayer, realtimeDatas[i]));
+                            if (nodeOwner.callbackFun) {
+                                nodeOwner.animatorDataSetCallBack();
+                            }
+                        }
+                        else {
+                            pro && pro.getVector2(value) && pro.setVector2(value, this._applyVec2(pro.getVector2(value), nodeOwner, additive, weight, isFirstLayer, realtimeDatas[i]));
+                        }
+                        break;
+                    }
+                    case exports.KeyFrameValueType.Vector3: {
+                        const proPat = nodeOwner.property;
+                        const m = proPat.length - 1;
+                        for (let j = 0; j < m; j++) {
+                            pro = pro[proPat[j]];
+                            if (!pro)
+                                break;
+                        }
+                        value = proPat[m];
+                        if (!nodeOwner.isMaterial) {
+                            pro && (pro[value] = this._applyVec3(pro[value], nodeOwner, additive, weight, isFirstLayer, realtimeDatas[i]));
+                            if (nodeOwner.callbackFun) {
+                                nodeOwner.animatorDataSetCallBack();
+                            }
+                        }
+                        else {
+                            pro && pro.getVector3(value) && pro.setVector3(value, this._applyVec3(pro.getVector3(value), nodeOwner, additive, weight, isFirstLayer, realtimeDatas[i]));
+                        }
+                        break;
+                    }
+                    case exports.KeyFrameValueType.Vector4: {
+                        const proPat = nodeOwner.property;
+                        const m = proPat.length - 1;
+                        for (let j = 0; j < m; j++) {
+                            pro = pro[proPat[j]];
+                            if (!pro)
+                                break;
+                        }
+                        value = proPat[m];
+                        if (!nodeOwner.isMaterial) {
+                            pro && (pro[value] = this._applyVec4(pro[value], nodeOwner, additive, weight, isFirstLayer, realtimeDatas[i]));
+                            if (nodeOwner.callbackFun) {
+                                nodeOwner.animatorDataSetCallBack();
+                            }
+                        }
+                        else {
+                            pro && pro.getVector4(value) && pro.setVector4(value, this._applyVec4(pro.getVector4(value), nodeOwner, additive, weight, isFirstLayer, realtimeDatas[i]));
+                        }
+                        break;
+                    }
+                    case exports.KeyFrameValueType.Color: {
+                        const proPat = nodeOwner.property;
+                        const m = proPat.length - 1;
+                        for (let j = 0; j < m; j++) {
+                            pro = pro[proPat[j]];
+                            if (!pro)
+                                break;
+                        }
+                        value = proPat[m];
+                        if (!nodeOwner.isMaterial) {
+                            pro && (pro[value] = this._applyColor(pro[value], nodeOwner, additive, weight, isFirstLayer, realtimeDatas[i]));
+                            if (nodeOwner.callbackFun) {
+                                nodeOwner.animatorDataSetCallBack();
+                            }
+                        }
+                        else {
+                            const color = pro.getColor(value);
+                            if (pro && color) {
+                                _tempColor.r = color.r;
+                                _tempColor.g = color.g;
+                                _tempColor.b = color.b;
+                                _tempColor.a = color.a;
+                                pro.setColor(value, this._applyColor(_tempColor, nodeOwner, additive, weight, isFirstLayer, realtimeDatas[i]));
+                            }
+                        }
+                        break;
+                    }
+                }
+                nodeOwner.updateMark = this._currentUpdateMark;
+            }
+        }
+        _applyCross(controllerLayer, srcState, destState, crossWeight, isFirstLayer, updateMark, skipTransform) {
+            this._currentUpdateMark = updateMark;
+            const nodeOwners = controllerLayer._crossNodesOwners;
+            const ownerCount = controllerLayer._crossNodesOwnersCount;
+            const additive = controllerLayer.blendingMode !== AnimatorControllerLayer.BLENDINGMODE_OVERRIDE;
+            const weight = controllerLayer.defaultWeight;
+            const destRealtimeDatas = destState._realtimeDatas;
+            const destDataIndices = controllerLayer._destCrossClipNodeIndices;
+            const destNodeOwners = destState._nodeOwners;
+            const srcRealtimeDatas = srcState._realtimeDatas;
+            const srcDataIndices = controllerLayer._srcCrossClipNodeIndices;
+            const srcNodeOwners = srcState._nodeOwners;
+            for (let i = 0; i < ownerCount; i++) {
+                const nodeOwner = nodeOwners[i];
+                if (!nodeOwner)
+                    continue;
+                if (skipTransform && isTransformType(nodeOwner.type))
+                    continue;
+                const srcIndex = srcDataIndices[i];
+                const destIndex = destDataIndices[i];
+                if (-1 == srcIndex && -1 == destIndex)
+                    continue;
+                let srcValue = srcIndex !== -1 ? srcRealtimeDatas[srcIndex] : destNodeOwners[destIndex].defaultValue;
+                if (null == srcValue)
+                    continue;
+                let desValue = destIndex !== -1 ? destRealtimeDatas[destIndex] : srcNodeOwners[srcIndex].defaultValue;
+                if (!desValue) {
+                    desValue = srcNodeOwners[srcIndex].defaultValue;
+                }
+                if (null == desValue)
+                    continue;
+                if (!controllerLayer.avatarMask || controllerLayer.avatarMask.getTransformActive(nodeOwner.nodePath)) {
+                    this._applyCrossData(nodeOwner, additive, weight, isFirstLayer, srcValue, desValue, crossWeight);
+                }
+            }
+        }
+        _applyFixedCross(controllerLayer, destState, crossWeight, isFirstLayer, updateMark, skipTransform) {
+            this._currentUpdateMark = updateMark;
+            const nodeOwners = controllerLayer._crossNodesOwners;
+            const ownerCount = controllerLayer._crossNodesOwnersCount;
+            const additive = controllerLayer.blendingMode !== AnimatorControllerLayer.BLENDINGMODE_OVERRIDE;
+            const weight = controllerLayer.defaultWeight;
+            const destRealtimeDatas = destState._realtimeDatas;
+            const destDataIndices = controllerLayer._destCrossClipNodeIndices;
+            for (let i = 0; i < ownerCount; i++) {
+                const nodeOwner = nodeOwners[i];
+                if (!nodeOwner)
+                    continue;
+                if (skipTransform && isTransformType(nodeOwner.type))
+                    continue;
+                const destIndex = destDataIndices[i];
+                const srcValue = nodeOwner.crossFixedValue;
+                let desValue;
+                if (destIndex == -1 || !destRealtimeDatas[destIndex]) {
+                    desValue = nodeOwner.defaultValue;
+                }
+                else {
+                    desValue = destRealtimeDatas[destIndex];
+                }
+                this._applyCrossData(nodeOwner, additive, weight, isFirstLayer, srcValue, desValue, crossWeight);
+            }
+        }
+        _applyFloat(defaultValue, nodeOwner, additive, weight, isFirstLayer, data) {
+            if (nodeOwner.updateMark === this._currentUpdateMark) {
+                if (additive) {
+                    defaultValue += weight * data;
+                }
+                else {
+                    var oriValue = defaultValue;
+                    defaultValue = oriValue + weight * (data - oriValue);
+                }
+            }
+            else {
+                if (isFirstLayer) {
+                    if (additive)
+                        defaultValue = nodeOwner.defaultValue + data;
+                    else
+                        defaultValue = data;
+                }
+                else {
+                    if (additive) {
+                        defaultValue = nodeOwner.defaultValue + weight * (data);
+                    }
+                    else {
+                        var defValue = nodeOwner.defaultValue;
+                        defaultValue = defValue + weight * (data - defValue);
+                    }
+                }
+            }
+            return defaultValue;
+        }
+        _applyVec2(defaultValue, nodeOwner, additive, weight, isFirstLayer, data) {
+            if (!defaultValue)
+                return null;
+            if (nodeOwner.updateMark === this._currentUpdateMark) {
+                if (additive) {
+                    defaultValue.x += weight * data.x;
+                    defaultValue.y += weight * data.y;
+                }
+                else {
+                    var oriValue = defaultValue;
+                    defaultValue.x = oriValue.x + weight * (data.x - oriValue.x);
+                    defaultValue.y = oriValue.y + weight * (data.y - oriValue.y);
+                }
+            }
+            else {
+                if (isFirstLayer) {
+                    if (additive) {
+                        defaultValue.x = nodeOwner.defaultValue.x + data.x;
+                        defaultValue.y = nodeOwner.defaultValue.y + data.y;
+                    }
+                    else
+                        data.cloneTo(defaultValue);
+                }
+                else {
+                    if (additive) {
+                        defaultValue.x = nodeOwner.defaultValue.x + weight * (data.x);
+                        defaultValue.y = nodeOwner.defaultValue.y + weight * (data.y);
+                    }
+                    else {
+                        var defValue = nodeOwner.defaultValue;
+                        defaultValue.x = defValue.x + weight * (data.x - defValue.x);
+                        defaultValue.y = defValue.y + weight * (data.y - defValue.y);
+                    }
+                }
+            }
+            return defaultValue;
+        }
+        _applyVec3(defaultValue, nodeOwner, additive, weight, isFirstLayer, data) {
+            if (!defaultValue)
+                return null;
+            if (nodeOwner.updateMark === this._currentUpdateMark) {
+                if (additive) {
+                    defaultValue.x += weight * data.x;
+                    defaultValue.y += weight * data.y;
+                    defaultValue.z += weight * data.z;
+                }
+                else {
+                    var oriValue = defaultValue;
+                    defaultValue.x = oriValue.x + weight * (data.x - oriValue.x);
+                    defaultValue.y = oriValue.y + weight * (data.y - oriValue.y);
+                    defaultValue.z = oriValue.z + weight * (data.z - oriValue.z);
+                }
+            }
+            else {
+                if (isFirstLayer) {
+                    if (additive) {
+                        defaultValue.x = nodeOwner.defaultValue.x + data.x;
+                        defaultValue.y = nodeOwner.defaultValue.y + data.y;
+                        defaultValue.z = nodeOwner.defaultValue.z + data.z;
+                    }
+                    else
+                        data.cloneTo(defaultValue);
+                }
+                else {
+                    if (additive) {
+                        defaultValue.x = nodeOwner.defaultValue.x + weight * (data.x);
+                        defaultValue.y = nodeOwner.defaultValue.y + weight * (data.y);
+                        defaultValue.z = nodeOwner.defaultValue.z + weight * (data.z);
+                    }
+                    else {
+                        var defValue = nodeOwner.defaultValue;
+                        defaultValue.x = defValue.x + weight * (data.x - defValue.x);
+                        defaultValue.y = defValue.y + weight * (data.y - defValue.y);
+                        defaultValue.z = defValue.z + weight * (data.z - defValue.z);
+                    }
+                }
+            }
+            return defaultValue;
+        }
+        _applyVec4(defaultValue, nodeOwner, additive, weight, isFirstLayer, data) {
+            if (!defaultValue)
+                return null;
+            if (nodeOwner.updateMark === this._currentUpdateMark) {
+                if (additive) {
+                    defaultValue.x += weight * data.x;
+                    defaultValue.y += weight * data.y;
+                    defaultValue.z += weight * data.z;
+                    defaultValue.w += weight * data.w;
+                }
+                else {
+                    var oriValue = defaultValue;
+                    defaultValue.x = oriValue.x + weight * (data.x - oriValue.x);
+                    defaultValue.y = oriValue.y + weight * (data.y - oriValue.y);
+                    defaultValue.z = oriValue.z + weight * (data.z - oriValue.z);
+                    defaultValue.w = oriValue.w + weight * (data.w - oriValue.w);
+                }
+            }
+            else {
+                if (isFirstLayer) {
+                    if (additive) {
+                        defaultValue.x = nodeOwner.defaultValue.x + data.x;
+                        defaultValue.y = nodeOwner.defaultValue.y + data.y;
+                        defaultValue.z = nodeOwner.defaultValue.z + data.z;
+                        defaultValue.w = nodeOwner.defaultValue.w + data.w;
+                    }
+                    else
+                        data.cloneTo(defaultValue);
+                }
+                else {
+                    if (additive) {
+                        defaultValue.x = nodeOwner.defaultValue.x + weight * (data.x);
+                        defaultValue.y = nodeOwner.defaultValue.y + weight * (data.y);
+                        defaultValue.z = nodeOwner.defaultValue.z + weight * (data.z);
+                        defaultValue.w = nodeOwner.defaultValue.w + weight * (data.w);
+                    }
+                    else {
+                        var defValue = nodeOwner.defaultValue;
+                        defaultValue.x = defValue.x + weight * (data.x - defValue.x);
+                        defaultValue.y = defValue.y + weight * (data.y - defValue.y);
+                        defaultValue.z = defValue.z + weight * (data.z - defValue.z);
+                        defaultValue.w = defValue.w + weight * (data.w - defValue.w);
+                    }
+                }
+            }
+            return defaultValue;
+        }
+        _applyColor(defaultValue, nodeOwner, additive, weight, isFirstLayer, data) {
+            if (!defaultValue)
+                return null;
+            if (!nodeOwner.defaultValue)
+                nodeOwner.defaultValue = new Laya.Vector4(defaultValue.r, defaultValue.g, defaultValue.b, defaultValue.a);
+            if (nodeOwner.updateMark === this._currentUpdateMark) {
+                if (additive) {
+                    defaultValue.r += weight * data.x;
+                    defaultValue.g += weight * data.y;
+                    defaultValue.b += weight * data.z;
+                    defaultValue.a += weight * data.w;
+                }
+                else {
+                    var oriValue = defaultValue;
+                    defaultValue.r = oriValue.r + weight * (data.x - oriValue.r);
+                    defaultValue.g = oriValue.g + weight * (data.y - oriValue.g);
+                    defaultValue.b = oriValue.b + weight * (data.z - oriValue.b);
+                    defaultValue.a = oriValue.a + weight * (data.w - oriValue.a);
+                }
+            }
+            else {
+                if (isFirstLayer) {
+                    if (additive) {
+                        defaultValue.r = nodeOwner.defaultValue.x + data.x;
+                        defaultValue.g = nodeOwner.defaultValue.y + data.y;
+                        defaultValue.b = nodeOwner.defaultValue.z + data.z;
+                        defaultValue.a = nodeOwner.defaultValue.w + data.w;
+                    }
+                    else {
+                        defaultValue.setValue(data.x, data.y, data.z, data.w);
+                    }
+                }
+                else {
+                    if (additive) {
+                        defaultValue.r = nodeOwner.defaultValue.x + weight * (data.x);
+                        defaultValue.g = nodeOwner.defaultValue.y + weight * (data.y);
+                        defaultValue.b = nodeOwner.defaultValue.z + weight * (data.z);
+                        defaultValue.a = nodeOwner.defaultValue.w + weight * (data.w);
+                    }
+                    else {
+                        var defValue = nodeOwner.defaultValue;
+                        defaultValue.r = defValue.x + weight * (data.x - defValue.x);
+                        defaultValue.g = defValue.y + weight * (data.y - defValue.y);
+                        defaultValue.b = defValue.z + weight * (data.z - defValue.z);
+                        defaultValue.a = defValue.w + weight * (data.w - defValue.w);
+                    }
+                }
+            }
+            return defaultValue;
+        }
+        _applyPositionAndRotationEuler(nodeOwner, additive, weight, isFirstLayer, data, out) {
+            if (nodeOwner.updateMark === this._currentUpdateMark) {
+                if (additive) {
+                    out.x += weight * data.x;
+                    out.y += weight * data.y;
+                    out.z += weight * data.z;
+                }
+                else {
+                    var oriX = out.x;
+                    var oriY = out.y;
+                    var oriZ = out.z;
+                    out.x = oriX + weight * (data.x - oriX);
+                    out.y = oriY + weight * (data.y - oriY);
+                    out.z = oriZ + weight * (data.z - oriZ);
+                }
+            }
+            else {
+                if (isFirstLayer) {
+                    if (additive) {
+                        var defValue = nodeOwner.defaultValue;
+                        out.x = defValue.x + data.x;
+                        out.y = defValue.y + data.y;
+                        out.z = defValue.z + data.z;
+                    }
+                    else {
+                        out.x = data.x;
+                        out.y = data.y;
+                        out.z = data.z;
+                    }
+                }
+                else {
+                    defValue = nodeOwner.defaultValue;
+                    if (additive) {
+                        out.x = defValue.x + weight * data.x;
+                        out.y = defValue.y + weight * data.y;
+                        out.z = defValue.z + weight * data.z;
+                    }
+                    else {
+                        var defX = defValue.x;
+                        var defY = defValue.y;
+                        var defZ = defValue.z;
+                        out.x = defX + weight * (data.x - defX);
+                        out.y = defY + weight * (data.y - defY);
+                        out.z = defZ + weight * (data.z - defZ);
+                    }
+                }
+            }
+        }
+        _applyRotation(nodeOwner, additive, weight, isFirstLayer, clipRot, localRotation) {
+            if (nodeOwner.updateMark === this._currentUpdateMark) {
+                if (additive) {
+                    Utils3D.quaternionWeight(clipRot, weight, _tempQuaternion1);
+                    _tempQuaternion1.normalize(_tempQuaternion1);
+                    Laya.Quaternion.multiply(localRotation, _tempQuaternion1, localRotation);
+                }
+                else {
+                    Laya.Quaternion.lerp(localRotation, clipRot, weight, localRotation);
+                }
+            }
+            else {
+                if (isFirstLayer) {
+                    if (additive) {
+                        var defaultRot = nodeOwner.defaultValue;
+                        Laya.Quaternion.multiply(defaultRot, clipRot, localRotation);
+                    }
+                    else {
+                        localRotation.x = clipRot.x;
+                        localRotation.y = clipRot.y;
+                        localRotation.z = clipRot.z;
+                        localRotation.w = clipRot.w;
+                    }
+                }
+                else {
+                    defaultRot = nodeOwner.defaultValue;
+                    if (additive) {
+                        Utils3D.quaternionWeight(clipRot, weight, _tempQuaternion1);
+                        _tempQuaternion1.normalize(_tempQuaternion1);
+                        Laya.Quaternion.multiply(defaultRot, _tempQuaternion1, localRotation);
+                    }
+                    else {
+                        Laya.Quaternion.lerp(defaultRot, clipRot, weight, localRotation);
+                    }
+                }
+            }
+        }
+        _applyScale(nodeOwner, additive, weight, isFirstLayer, clipSca, localScale) {
+            if (nodeOwner.updateMark === this._currentUpdateMark) {
+                if (additive) {
+                    Utils3D.scaleWeight(clipSca, weight, _tempVector31);
+                    localScale.x = localScale.x * _tempVector31.x;
+                    localScale.y = localScale.y * _tempVector31.y;
+                    localScale.z = localScale.z * _tempVector31.z;
+                }
+                else {
+                    Utils3D.scaleBlend(localScale, clipSca, weight, localScale);
+                }
+            }
+            else {
+                if (isFirstLayer) {
+                    if (additive) {
+                        var defaultSca = nodeOwner.defaultValue;
+                        localScale.x = defaultSca.x * clipSca.x;
+                        localScale.y = defaultSca.y * clipSca.y;
+                        localScale.z = defaultSca.z * clipSca.z;
+                    }
+                    else {
+                        localScale.x = clipSca.x;
+                        localScale.y = clipSca.y;
+                        localScale.z = clipSca.z;
+                    }
+                }
+                else {
+                    defaultSca = nodeOwner.defaultValue;
+                    if (additive) {
+                        Utils3D.scaleWeight(clipSca, weight, _tempVector31);
+                        localScale.x = defaultSca.x * _tempVector31.x;
+                        localScale.y = defaultSca.y * _tempVector31.y;
+                        localScale.z = defaultSca.z * _tempVector31.z;
+                    }
+                    else {
+                        Utils3D.scaleBlend(defaultSca, clipSca, weight, localScale);
+                    }
+                }
+            }
+        }
+        _applyCrossData(nodeOwner, additive, weight, isFirstLayer, srcValue, desValue, crossWeight) {
+            var pro = nodeOwner.propertyOwner;
+            let lastpro;
+            if (pro) {
+                switch (nodeOwner.type) {
+                    case exports.KeyFrameValueType.PathPoint:
+                        console.log("Animator:PathPoint not support3");
+                        break;
+                    case exports.KeyFrameValueType.Boolean:
+                        console.log("Animator:Boolean not support3");
+                        break;
+                    case exports.KeyFrameValueType.Float:
+                        var proPat = nodeOwner.property;
+                        var m = proPat.length - 1;
+                        for (var j = 0; j < m; j++) {
+                            pro = pro[proPat[j]];
+                            if (!pro)
+                                break;
+                        }
+                        var crossValue = srcValue + crossWeight * (desValue - srcValue);
+                        nodeOwner.value = crossValue;
+                        lastpro = proPat[m];
+                        if (!nodeOwner.isMaterial) {
+                            pro && (pro[lastpro] = this._applyFloat(pro[lastpro], nodeOwner, additive, weight, isFirstLayer, crossValue));
+                        }
+                        else {
+                            pro && pro.setFloat(lastpro, this._applyFloat(pro.getFloat(lastpro), nodeOwner, additive, weight, isFirstLayer, crossValue));
+                        }
+                        if (nodeOwner.callbackFun) {
+                            nodeOwner.animatorDataSetCallBack();
+                        }
+                        break;
+                    case exports.KeyFrameValueType.Position:
+                        var localPos = pro.localPosition;
+                        var position = nodeOwner.value;
+                        var srcX = srcValue.x, srcY = srcValue.y, srcZ = srcValue.z;
+                        position.x = srcX + crossWeight * (desValue.x - srcX);
+                        position.y = srcY + crossWeight * (desValue.y - srcY);
+                        position.z = srcZ + crossWeight * (desValue.z - srcZ);
+                        this._applyPositionAndRotationEuler(nodeOwner, additive, weight, isFirstLayer, position, localPos);
+                        pro.localPosition = localPos;
+                        break;
+                    case exports.KeyFrameValueType.Rotation:
+                        var localRot = pro.localRotation;
+                        var rotation = nodeOwner.value;
+                        Laya.Quaternion.lerp(srcValue, desValue, crossWeight, rotation);
+                        this._applyRotation(nodeOwner, additive, weight, isFirstLayer, rotation, localRot);
+                        pro.localRotation = localRot;
+                        break;
+                    case exports.KeyFrameValueType.Scale:
+                        var localSca = pro.localScale;
+                        var scale = nodeOwner.value;
+                        Utils3D.scaleBlend(srcValue, desValue, crossWeight, scale);
+                        this._applyScale(nodeOwner, additive, weight, isFirstLayer, scale, localSca);
+                        pro.localScale = localSca;
+                        break;
+                    case exports.KeyFrameValueType.RotationEuler:
+                        var localEuler = pro.localRotationEuler;
+                        var rotationEuler = nodeOwner.value;
+                        srcX = srcValue.x, srcY = srcValue.y, srcZ = srcValue.z;
+                        rotationEuler.x = srcX + crossWeight * (desValue.x - srcX);
+                        rotationEuler.y = srcY + crossWeight * (desValue.y - srcY);
+                        rotationEuler.z = srcZ + crossWeight * (desValue.z - srcZ);
+                        this._applyPositionAndRotationEuler(nodeOwner, additive, weight, isFirstLayer, rotationEuler, localEuler);
+                        pro.localRotationEuler = localEuler;
+                        break;
+                    case exports.KeyFrameValueType.Color:
+                        proPat = nodeOwner.property;
+                        m = proPat.length - 1;
+                        for (j = 0; j < m; j++) {
+                            pro = pro[proPat[j]];
+                            if (!pro)
+                                break;
+                        }
+                        let v44 = nodeOwner.value;
+                        v44.x = srcValue.x + crossWeight * (desValue.x - srcValue.x);
+                        v44.y = srcValue.y + crossWeight * (desValue.y - srcValue.y);
+                        v44.z = srcValue.z + crossWeight * (desValue.z - srcValue.z);
+                        v44.w = srcValue.w + crossWeight * (desValue.w - srcValue.w);
+                        nodeOwner.value = v44;
+                        lastpro = proPat[m];
+                        if (!nodeOwner.isMaterial) {
+                            pro && (pro[lastpro] = this._applyColor(pro[lastpro], nodeOwner, additive, weight, isFirstLayer, v44));
+                        }
+                        else {
+                            pro && pro.setColor(lastpro, this._applyColor(pro.getColor(lastpro), nodeOwner, additive, weight, isFirstLayer, v44));
+                        }
+                        if (nodeOwner.callbackFun) {
+                            nodeOwner.animatorDataSetCallBack();
+                        }
+                        break;
+                    case exports.KeyFrameValueType.Vector2:
+                        proPat = nodeOwner.property;
+                        m = proPat.length - 1;
+                        for (j = 0; j < m; j++) {
+                            pro = pro[proPat[j]];
+                            if (!pro)
+                                break;
+                        }
+                        let v2 = nodeOwner.value;
+                        v2.x = srcValue.x + crossWeight * (desValue.x - srcValue.x);
+                        v2.y = srcValue.y + crossWeight * (desValue.y - srcValue.y);
+                        nodeOwner.value = v2;
+                        lastpro = proPat[m];
+                        if (!nodeOwner.isMaterial) {
+                            pro && (pro[lastpro] = this._applyVec2(pro[lastpro], nodeOwner, additive, weight, isFirstLayer, v2));
+                        }
+                        else {
+                            pro && pro.setVector2(lastpro, this._applyVec2(pro.getVector2(lastpro), nodeOwner, additive, weight, isFirstLayer, v2));
+                        }
+                        if (nodeOwner.callbackFun) {
+                            nodeOwner.animatorDataSetCallBack();
+                        }
+                        break;
+                    case exports.KeyFrameValueType.Vector4:
+                        proPat = nodeOwner.property;
+                        m = proPat.length - 1;
+                        for (j = 0; j < m; j++) {
+                            pro = pro[proPat[j]];
+                            if (!pro)
+                                break;
+                        }
+                        let v4 = nodeOwner.value;
+                        v4.x = srcValue.x + crossWeight * (desValue.x - srcValue.x);
+                        v4.y = srcValue.y + crossWeight * (desValue.y - srcValue.y);
+                        v4.z = srcValue.z + crossWeight * (desValue.z - srcValue.z);
+                        v4.w = srcValue.w + crossWeight * (desValue.w - srcValue.w);
+                        nodeOwner.value = v4;
+                        lastpro = proPat[m];
+                        if (!nodeOwner.isMaterial) {
+                            pro && (pro[lastpro] = this._applyVec4(pro[lastpro], nodeOwner, additive, weight, isFirstLayer, v4));
+                        }
+                        else {
+                            pro && pro.setVector4(lastpro, this._applyVec4(pro.getVector4(lastpro), nodeOwner, additive, weight, isFirstLayer, v4));
+                        }
+                        if (nodeOwner.callbackFun) {
+                            nodeOwner.animatorDataSetCallBack();
+                        }
+                        break;
+                    case exports.KeyFrameValueType.Vector3:
+                        proPat = nodeOwner.property;
+                        m = proPat.length - 1;
+                        for (j = 0; j < m; j++) {
+                            pro = pro[proPat[j]];
+                            if (!pro)
+                                break;
+                        }
+                        let v3 = nodeOwner.value;
+                        v3.x = srcValue.x + crossWeight * (desValue.x - srcValue.x);
+                        v3.y = srcValue.y + crossWeight * (desValue.y - srcValue.y);
+                        v3.z = srcValue.z + crossWeight * (desValue.z - srcValue.z);
+                        nodeOwner.value = v3;
+                        lastpro = proPat[m];
+                        if (!nodeOwner.isMaterial) {
+                            pro && (pro[lastpro] = this._applyVec3(pro[lastpro], nodeOwner, additive, weight, isFirstLayer, v3));
+                        }
+                        else {
+                            pro && pro.setVector3(lastpro, this._applyVec3(pro.getVector3(lastpro), nodeOwner, additive, weight, isFirstLayer, v3));
+                        }
+                        if (nodeOwner.callbackFun) {
+                            nodeOwner.animatorDataSetCallBack();
+                        }
+                        break;
+                }
+                nodeOwner.updateMark = this._currentUpdateMark;
+            }
+        }
+    }
+
+    class AnimatorResource {
+        static getAnimatorResource(sprite, propertyKey) {
+            switch (propertyKey) {
+                case "simpleSkinnedMeshRenderer":
+                    return sprite.getComponent(SimpleSkinnedMeshRenderer);
+                default:
+                    return sprite.getComponent(Laya.ClassUtils.getClass(propertyKey));
+            }
+        }
+    }
+
+    function addKeyframeNodeOwner(ctx, clipOwners, node, propertyOwner) {
+        const nodeIndex = node._indexInList;
+        const fullPath = node.fullPath;
+        const ownerMap = ctx.ownerMap;
+        const ownerList = ctx.owners;
+        let keyframeNodeOwner = ownerMap[fullPath];
+        let mat = false;
+        if (keyframeNodeOwner) {
+            keyframeNodeOwner.referenceCount++;
+            clipOwners[nodeIndex] = keyframeNodeOwner;
+            return;
+        }
+        let property = propertyOwner;
+        for (let i = 0, n = node.propertyCount; i < n; i++) {
+            if (mat) {
+                const shaderPropId = node.getMaterialPropertyId(i);
+                switch (node.type) {
+                    case exports.KeyFrameValueType.Color:
+                        const color = property.shaderData.getColor(shaderPropId);
+                        property = new Laya.Vector4(color.r, color.g, color.b, color.a);
+                        break;
+                    case exports.KeyFrameValueType.Vector2:
+                        property = property.shaderData.getVector2(shaderPropId);
+                        break;
+                    case exports.KeyFrameValueType.Vector3:
+                        property = property.shaderData.getVector3(shaderPropId);
+                        break;
+                    case exports.KeyFrameValueType.Vector4:
+                        property = property.shaderData.getVector(shaderPropId);
+                        break;
+                    case exports.KeyFrameValueType.Float:
+                        property = property.shaderData.getNumber(shaderPropId);
+                        break;
+                    case exports.KeyFrameValueType.Boolean:
+                        property = property.shaderData.getBool(shaderPropId);
+                        break;
+                }
+            }
+            else {
+                property = property[node.getPropertyByIndex(i)];
+            }
+            if (property instanceof Laya.Material)
+                mat = true;
+            if (!property)
+                break;
+        }
+        keyframeNodeOwner = ownerMap[fullPath] = new KeyframeNodeOwner();
+        keyframeNodeOwner.isMaterial = mat;
+        keyframeNodeOwner.fullPath = fullPath;
+        keyframeNodeOwner.indexInList = ownerList.length;
+        keyframeNodeOwner.referenceCount = 1;
+        keyframeNodeOwner.propertyOwner = propertyOwner;
+        keyframeNodeOwner.nodePath = node.nodePath;
+        keyframeNodeOwner.callbackFunData = node.callbackFunData;
+        keyframeNodeOwner.callParams = node.callParams;
+        keyframeNodeOwner.getCallbackNode();
+        const propertyCount = node.propertyCount;
+        const propertys = [];
+        for (let i = 0; i < propertyCount; i++)
+            propertys[i] = node.getPropertyByIndex(i);
+        keyframeNodeOwner.property = propertys;
+        keyframeNodeOwner.type = node.type;
+        if (property) {
+            if (node.type === exports.KeyFrameValueType.Float || node.type === exports.KeyFrameValueType.Boolean || node.type === exports.KeyFrameValueType.PathPoint) {
+                keyframeNodeOwner.defaultValue = property;
+            }
+            else {
+                const defaultValue = new property.constructor();
+                property.cloneTo(defaultValue);
+                keyframeNodeOwner.defaultValue = defaultValue;
+                keyframeNodeOwner.value = new property.constructor();
+                keyframeNodeOwner.crossFixedValue = new property.constructor();
+            }
+        }
+        ownerList.push(keyframeNodeOwner);
+        clipOwners[nodeIndex] = keyframeNodeOwner;
+    }
+    function removeKeyframeNodeOwner(ctx, nodeOwners, node) {
+        const fullPath = node.fullPath;
+        const ownerMap = ctx.ownerMap;
+        const ownerList = ctx.owners;
+        const keyframeNodeOwner = ownerMap[fullPath];
+        if (!keyframeNodeOwner)
+            return;
+        keyframeNodeOwner.referenceCount--;
+        if (keyframeNodeOwner.referenceCount === 0) {
+            delete ownerMap[fullPath];
+            ownerList.splice(ownerList.indexOf(keyframeNodeOwner), 1);
+        }
+        nodeOwners[node._indexInList] = null;
+    }
+    function prepareStateOwners(ctx, clipStateInfo) {
+        if (!clipStateInfo._clip)
+            return;
+        const frameNodes = clipStateInfo._clip._nodes;
+        const frameNodesCount = frameNodes.count;
+        const nodeOwners = clipStateInfo._nodeOwners;
+        nodeOwners.length = frameNodesCount;
+        for (let i = 0; i < frameNodesCount; i++) {
+            const node = frameNodes.getNodeByIndex(i);
+            let property = ctx.sprite;
+            for (let j = 0, m = node.ownerPathCount; j < m; j++) {
+                const ownPat = node.getOwnerPathByIndex(j);
+                if (ownPat === "")
+                    break;
+                property = property.getChild(ownPat);
+                if (!property)
+                    break;
+            }
+            if (property) {
+                const propertyOwner = node.propertyOwner;
+                const oriProperty = property;
+                (propertyOwner) && (property = property[propertyOwner]);
+                if (!property) {
+                    property = AnimatorResource.getAnimatorResource(oriProperty, propertyOwner);
+                }
+                property && addKeyframeNodeOwner(ctx, nodeOwners, node, property);
+            }
+        }
+    }
+    function handleSpriteOwnersBySprite(ctx, isLink, path, sprite) {
+        const controllerLayers = ctx.layers;
+        const nodePath = path.join("/");
+        for (let i = 0, n = controllerLayers.length; i < n; i++) {
+            if (!controllerLayers[i].enable)
+                continue;
+            const clipStateInfos = controllerLayers[i]._states;
+            for (let j = 0, m = clipStateInfos.length; j < m; j++) {
+                const clip = clipStateInfos[j]._clip;
+                const ownersNodes = clip._nodesMap[nodePath];
+                if (!ownersNodes)
+                    continue;
+                const nodeOwners = clipStateInfos[j]._nodeOwners;
+                for (let k = 0, p = ownersNodes.length; k < p; k++) {
+                    if (isLink)
+                        addKeyframeNodeOwner(ctx, nodeOwners, ownersNodes[k], sprite);
+                    else
+                        removeKeyframeNodeOwner(ctx, nodeOwners, ownersNodes[k]);
+                }
+            }
+        }
+    }
+
+    class WebAnimatorFactory {
+        constructor() {
+            this._evaluator = new WebAnimatorEvaluator();
+            this._applier = new WebAnimatorApplier();
+            this._activeList = new Laya.FastSinglelist();
+            this._dirtyList = new Laya.FastSinglelist();
+            this._slotMap = new WeakMap();
+            registerOwnerDataCreator(() => new PlainOwnerData());
+        }
+        bindAnimator(ctx) {
+            let slot = this._slotMap.get(ctx);
+            if (!slot) {
+                slot = new TaskSlot(ctx, this._activeList, this._dirtyList);
+                slot.resizeLayers(ctx.layers.length);
+                this._slotMap.set(ctx, slot);
+            }
+            return slot;
+        }
+        unbindAnimator(ctx) {
+            const slot = this._slotMap.get(ctx);
+            if (!slot)
+                return;
+            if (slot._inActive) {
+                this._activeList.remove(slot);
+                slot._inActive = false;
+            }
+            if (slot._inDirty) {
+                this._dirtyList.remove(slot);
+                slot._inDirty = false;
+            }
+            this._slotMap.delete(ctx);
+        }
+        prepareStateOwners(ctx, state) {
+            prepareStateOwners(ctx, state);
+        }
+        handleSpriteOwnersBySprite(ctx, isLink, path, sprite) {
+            handleSpriteOwnersBySprite(ctx, isLink, path, sprite);
+        }
+        addKeyframeNodeOwner(ctx, clipOwners, node, propertyOwner) {
+            addKeyframeNodeOwner(ctx, clipOwners, node, propertyOwner);
+        }
+        removeKeyframeNodeOwner(ctx, nodeOwners, node) {
+            removeKeyframeNodeOwner(ctx, nodeOwners, node);
+        }
+        flushEvaluate() {
+            const slots = this._activeList.elements;
+            const evaluator = this._evaluator;
+            for (let i = 0, n = this._activeList.length; i < n; i++) {
+                const slot = slots[i];
+                const layers = slot._layers;
+                const ctlLayers = slot._ctx.layers;
+                for (let j = 0, m = layers.length; j < m; j++) {
+                    const lt = layers[j];
+                    if (lt.type !== exports.LayerTaskType.Idle) {
+                        evaluator.evaluateLayer(lt, ctlLayers[j]);
+                    }
+                }
+            }
+        }
+        flushApply() {
+            const slots = this._activeList.elements;
+            const applier = this._applier;
+            for (let i = 0, n = this._activeList.length; i < n; i++) {
+                const slot = slots[i];
+                const layers = slot._layers;
+                const ctlLayers = slot._ctx.layers;
+                const updateMark = slot._updateMark;
+                for (let j = 0, m = layers.length; j < m; j++) {
+                    const lt = layers[j];
+                    if (lt.type === exports.LayerTaskType.Idle)
+                        continue;
+                    const cl = ctlLayers[j];
+                    const isFirstLayer = j === 0;
+                    switch (lt.type) {
+                        case exports.LayerTaskType.Normal:
+                            applier.applyNormal(lt, cl, isFirstLayer, updateMark);
+                            break;
+                        case exports.LayerTaskType.Cross:
+                            applier.applyCross(lt, cl, isFirstLayer, updateMark);
+                            break;
+                        case exports.LayerTaskType.FixedCross:
+                            applier.applyFixedCross(lt, cl, isFirstLayer, updateMark);
+                            break;
+                    }
+                }
+            }
+            this._clearDirty();
+        }
+        _clearDirty() {
+            const slots = this._dirtyList.elements;
+            for (let i = 0, n = this._dirtyList.length; i < n; i++) {
+                slots[i]._clearDirty();
+            }
+            this._dirtyList.clear();
+        }
+        updateDefaultValues(owners) {
+            this._applier.updateDefaultValues(owners);
+        }
+        revertDefaultKeyframeNodes(state) {
+            this._applier.revertDefaultKeyframeNodes(state);
+        }
+        destroy() {
+            this._activeList.clear();
+            this._dirtyList.clear();
+        }
+    }
+
+    class AnimatorManager {
+        constructor() {
+            this.name = AnimatorManager.__managerName;
+            this._activeAnimators = [];
+            this._pendingSwitches = [];
+            this._factory = AnimatorManager.factoryCreator();
+        }
+        Init(_data) { }
+        update(_dt) {
+            const list = this._activeAnimators;
+            for (let i = 0, n = list.length; i < n; i++) {
+                this.tickOne(list[i]);
+            }
+            this._factory.flushEvaluate();
+            Transform3D._currentAnimatorFrame++;
+            Transform3D._inAnimatorBatch = true;
+            this._factory.flushApply();
+            Transform3D._inAnimatorBatch = false;
+            this._drainPendingSwitches();
+            this._drainLateUpdates(list);
+        }
+        addAnimator(animator) {
+            if (this._activeAnimators.indexOf(animator) === -1) {
+                this._activeAnimators.push(animator);
+            }
+        }
+        removeAnimator(animator) {
+            const idx = this._activeAnimators.indexOf(animator);
+            if (idx >= 0) {
+                this._activeAnimators.splice(idx, 1);
+            }
+        }
+        destroy() {
+            this._activeAnimators.length = 0;
+            this._pendingSwitches.length = 0;
+            this._factory.destroy();
+        }
+        tickOne(animator) {
+            const slot = animator._taskSlot;
+            const scene = animator.owner._scene;
+            const timer = scene.timer;
+            let delta = timer.delta / 1000.0;
+            delta = this._applyUpdateMode(animator, delta);
+            if (animator._speed === 0 || delta === 0 || !Laya.Stat.enableAnimatorUpdate) {
+                slot.submitAllIdle();
+                return;
+            }
+            slot._updateMark++;
+            const layers = animator._controllerLayers;
+            for (let i = 0, n = layers.length; i < n; i++) {
+                const controllerLayer = layers[i];
+                if (!controllerLayer.enable) {
+                    slot.submitLayerIdle(i);
+                    continue;
+                }
+                const playStateInfo = controllerLayer._playStateInfo;
+                if (animator.sleep && playStateInfo._finish && controllerLayer._playType == 0) {
+                    slot.submitLayerIdle(i);
+                    continue;
+                }
+                const crossPlayStateInfo = controllerLayer._crossPlayStateInfo;
+                switch (controllerLayer._playType) {
+                    case 0:
+                        this._tickPlayTypeNormal(animator, controllerLayer, playStateInfo, delta, i);
+                        break;
+                    case 1:
+                        this._tickPlayTypeCross(animator, controllerLayer, playStateInfo, crossPlayStateInfo, delta, i);
+                        break;
+                    case 2:
+                        this._tickPlayTypeFixedCross(animator, controllerLayer, playStateInfo, crossPlayStateInfo, delta, i);
+                        break;
+                }
+            }
+        }
+        _tickPlayTypeNormal(animator, controllerLayer, playStateInfo, delta, layerIdx) {
+            const slot = animator._taskSlot;
+            const weight = controllerLayer.defaultWeight;
+            const animatorState = playStateInfo.currentState;
+            const speed = animator._speed * animatorState.speed;
+            const finish = playStateInfo._finish;
+            if (finish) {
+                this._applyTransition(animator, animatorState, layerIdx, animatorState._eventtransition(playStateInfo._normalizedPlayTime, animator.animatorParams));
+            }
+            else {
+                this._updatePlayer(animator, animatorState, playStateInfo, delta * speed, animatorState.islooping, layerIdx);
+            }
+            slot.submitLayerNormal(layerIdx, animatorState, playStateInfo, weight);
+            if (!finish) {
+                this._updateEventScript(animator, animatorState, playStateInfo);
+                this._updateStateFinish(animatorState, playStateInfo);
+            }
+        }
+        _tickPlayTypeCross(animator, controllerLayer, playStateInfo, crossPlayStateInfo, delta, layerIdx) {
+            const slot = animator._taskSlot;
+            const weight = controllerLayer.defaultWeight;
+            const animatorState = playStateInfo.currentState;
+            const crossState = controllerLayer._crossPlayState;
+            const crossClip = crossState._clip;
+            const crossDuration = controllerLayer._crossDuration;
+            const startPlayTime = crossPlayStateInfo._startPlayTime;
+            const crossClipDuration = crossClip._duration - startPlayTime;
+            const crossScale = (crossDuration > crossClipDuration && 0 != crossClipDuration) ? crossClipDuration / crossDuration : 1.0;
+            const crossSpeed = animator._speed * crossState.speed;
+            this._updatePlayer(animator, crossState, crossPlayStateInfo, delta * crossScale * crossSpeed, crossClip.islooping, layerIdx);
+            const crossWeight = ((crossPlayStateInfo._elapsedTime - startPlayTime) / crossScale) / crossDuration;
+            let needUpdateFinishCurrentState = false;
+            if (crossWeight >= 1.0) {
+                slot.submitLayerNormal(layerIdx, crossState, crossPlayStateInfo, weight);
+                this._pendingSwitches.push({
+                    controllerLayer,
+                    fromState: animatorState,
+                    toState: crossState,
+                    playStateInfo,
+                    crossPlayStateInfo,
+                });
+            }
+            else {
+                if (!playStateInfo._finish) {
+                    const speed = animator._speed * animatorState.speed;
+                    needUpdateFinishCurrentState = true;
+                    this._updatePlayer(animator, animatorState, playStateInfo, delta * speed, animatorState.islooping, layerIdx);
+                }
+                slot.submitLayerCross(layerIdx, animatorState, playStateInfo, crossState, crossPlayStateInfo, crossWeight);
+            }
+            this._updateEventScript(animator, animatorState, playStateInfo);
+            this._updateEventScript(animator, crossState, crossPlayStateInfo);
+            this._updateStateFinish(crossState, crossPlayStateInfo);
+            needUpdateFinishCurrentState && this._updateStateFinish(playStateInfo.currentState, playStateInfo);
+        }
+        _tickPlayTypeFixedCross(animator, controllerLayer, playStateInfo, crossPlayStateInfo, delta, layerIdx) {
+            const slot = animator._taskSlot;
+            const animatorState = playStateInfo.currentState;
+            const crossState = controllerLayer._crossPlayState;
+            const crossClip = crossState._clip;
+            const crossDuration = controllerLayer._crossDuration;
+            const startPlayTime = crossPlayStateInfo._startPlayTime;
+            const crossClipDuration = crossClip._duration - startPlayTime;
+            const crossScale = crossDuration > crossClipDuration ? crossClipDuration / crossDuration : 1.0;
+            const crossSpeed = animator._speed * crossState.speed;
+            this._updatePlayer(animator, crossState, crossPlayStateInfo, delta * crossScale * crossSpeed, crossState.islooping, layerIdx);
+            const crossWeight = ((crossPlayStateInfo._elapsedTime - startPlayTime) / crossScale) / crossDuration;
+            if (crossWeight >= 1.0) {
+                slot.submitLayerNormal(layerIdx, crossState, crossPlayStateInfo, 1.0);
+                this._pendingSwitches.push({
+                    controllerLayer,
+                    fromState: animatorState,
+                    toState: crossState,
+                    playStateInfo,
+                    crossPlayStateInfo,
+                });
+            }
+            else {
+                slot.submitLayerFixedCross(layerIdx, crossState, crossPlayStateInfo, crossWeight);
+            }
+            this._updateEventScript(animator, crossState, crossPlayStateInfo);
+            this._updateStateFinish(crossState, crossPlayStateInfo);
+        }
+        _drainPendingSwitches() {
+            const list = this._pendingSwitches;
+            for (let i = 0, n = list.length; i < n; i++) {
+                const s = list[i];
+                s.controllerLayer._playType = 0;
+                s.playStateInfo.currentState = s.toState;
+                if (s.fromState)
+                    s.fromState._eventSwitch(s.toState);
+                s.crossPlayStateInfo._cloneTo(s.playStateInfo);
+            }
+            list.length = 0;
+        }
+        _drainLateUpdates(animators) {
+            for (let i = 0, n = animators.length; i < n; i++) {
+                const a = animators[i];
+                a._LateUpdateEvents.invoke();
+                a._LateUpdateEvents.clear();
+            }
+        }
+        _applyUpdateMode(animator, delta) {
+            switch (animator._updateMode) {
+                case Laya.AnimatorUpdateMode.Normal:
+                    return delta;
+                case Laya.AnimatorUpdateMode.LowFrame:
+                    return (Laya.Stat.loopCount % animator._lowUpdateDelty == 0) ? delta * animator._lowUpdateDelty : 0;
+                case Laya.AnimatorUpdateMode.UnScaleTime:
+                    return 0;
+            }
+            return delta;
+        }
+        _updatePlayer(animator, animatorState, playState, elapsedTime, islooping, layerIndex) {
+            const clipDuration = animatorState._clip._duration * (animatorState.clipEnd - animatorState.clipStart);
+            const lastElapsedTime = playState._elapsedTime;
+            const elapsedPlaybackTime = lastElapsedTime + elapsedTime;
+            playState._lastElapsedTime = lastElapsedTime;
+            playState._elapsedTime = elapsedPlaybackTime;
+            const normalizedTime = elapsedPlaybackTime / clipDuration;
+            playState._normalizedTime = normalizedTime;
+            const playTime = normalizedTime % 1.0;
+            const normalizedPlayTime = playTime < 0 ? playTime + 1.0 : playTime;
+            playState._normalizedPlayTime = normalizedPlayTime;
+            playState._duration = clipDuration;
+            if (elapsedPlaybackTime >= clipDuration) {
+                if (!islooping) {
+                    playState._finish = true;
+                    playState._elapsedTime = clipDuration;
+                    playState._normalizedPlayTime = animatorState.clipEnd;
+                }
+                else {
+                    const loopNum = Math.floor(elapsedPlaybackTime / clipDuration);
+                    const pLoopNum = Math.floor(lastElapsedTime / clipDuration);
+                    if (pLoopNum != loopNum) {
+                        if (animator._controllerLayers[layerIndex].blendingMode === AnimatorControllerLayer.BLENDINGMODE_ADDTIVE) {
+                            this._factory.updateDefaultValues(animator._keyframeNodeOwners);
+                        }
+                        animatorState._eventLoop();
+                    }
+                }
+            }
+            (!playState._finish) && animatorState._eventStateUpdate(playState._normalizedPlayTime);
+            this._applyTransition(animator, animatorState, layerIndex, animatorState._eventtransition(playState._normalizedPlayTime, animator.animatorParams));
+        }
+        _applyTransition(animator, state, layerIndex, transition) {
+            if (!transition) {
+                if (state.curTransition)
+                    state.curTransition = null;
+                return;
+            }
+            if (transition == state.curTransition)
+                return;
+            state.curTransition = transition;
+            animator._LateUpdateEvents.add(animator.crossFade, animator, [transition.destState.name, transition.transduration, layerIndex, transition.transstartoffset]);
+        }
+        _updateStateFinish(animatorState, playState) {
+            if (playState._finish) {
+                animatorState._eventExit();
+            }
+        }
+        _updateEventScript(animator, stateInfo, playStateInfo) {
+            if (!animator.owner._getBit(Laya.NodeFlags.HAS_SCRIPT))
+                return;
+            const clip = stateInfo._clip;
+            const events = clip._animationEvents;
+            if (!events || 0 == events.length || null == playStateInfo.animatorState)
+                return;
+            const clipDuration = playStateInfo._duration;
+            const time = playStateInfo.animatorState.clipStart * clipDuration + playStateInfo._normalizedPlayTime * clipDuration;
+            let parentPlayTime = playStateInfo._parentPlayTime;
+            if (null == parentPlayTime) {
+                parentPlayTime = clipDuration * playStateInfo.animatorState.clipStart;
+            }
+            if (time < parentPlayTime) {
+                this._eventScript(animator, events, parentPlayTime, clipDuration * playStateInfo.animatorState.clipEnd);
+                parentPlayTime = clipDuration * playStateInfo.animatorState.clipStart;
+            }
+            this._eventScript(animator, events, parentPlayTime, time);
+            playStateInfo._parentPlayTime = time;
+        }
+        _eventScript(animator, events, parentPlayTime, currPlayTime) {
+            const scripts = animator.owner.components;
+            for (let i = 0, len = events.length; i < len; i++) {
+                const e = events[i];
+                if (e.time > parentPlayTime && e.time <= currPlayTime) {
+                    for (let j = 0, m = scripts.length; j < m; j++) {
+                        const script = scripts[j];
+                        if (script._isScript()) {
+                            const fun = script[e.eventName];
+                            (fun) && (fun.apply(script, e.params));
+                        }
+                    }
+                }
+                else if (e.time > currPlayTime) {
+                    break;
+                }
+            }
+        }
+    }
+    AnimatorManager.__managerName = "AnimatorManager";
+    AnimatorManager.factoryCreator = () => new WebAnimatorFactory();
+    Scene3D.regManager(AnimatorManager.__managerName, AnimatorManager);
+
+    class Animator extends Laya.Component {
+        get controller() {
+            return this._controller;
+        }
+        set controller(val) {
+            if (this._controller)
+                this._controller._removeReference();
+            this._controller = val;
+            if (val) {
+                val._addReference();
+                val.updateTo(this);
+            }
+        }
+        get speed() {
+            return this._speed;
+        }
+        set speed(value) {
+            this._speed = value;
+        }
+        set updateMode(value) {
+            this._updateMode = value;
+        }
+        set lowUpdateDelty(value) {
+            this._lowUpdateDelty = value;
+        }
+        get controllerLayerCount() {
+            return this._controllerLayers.length;
+        }
+        get animatorParams() {
+            return this._animatorParams;
+        }
+        set animatorParams(values) {
+            this._animatorParams = values;
+        }
+        get sleep() {
+            return this._finishSleep;
+        }
+        set sleep(value) {
+            this._finishSleep = value;
+        }
+        constructor() {
+            super();
+            this._keyframeNodeOwners = [];
+            this._updateMode = Laya.AnimatorUpdateMode.Normal;
+            this._lowUpdateDelty = 20;
+            this._LateUpdateEvents = new Laya.Delegate();
+            this._taskSlot = null;
+            this._animatorParams = {};
+            this._finishSleep = false;
+            this._manager = null;
+            this._pendingPrepareStates = [];
+            this.cullingMode = Animator.CULLINGMODE_CULLCOMPLETELY;
+            this._controllerLayers = [];
+            this._speed = 1.0;
+            this._keyframeNodeOwnerMap = {};
+        }
+        get _bindContext() {
+            let ctx = this._cachedBindContext;
+            if (!ctx) {
+                ctx = this._cachedBindContext = {
+                    sprite: this.owner,
+                    ownerMap: this._keyframeNodeOwnerMap,
+                    owners: this._keyframeNodeOwners,
+                    layers: this._controllerLayers,
+                };
+            }
+            ctx.sprite = this.owner;
+            return ctx;
+        }
+        _removeKeyframeNodeOwner(nodeOwners, node) {
+            var _a;
+            (_a = this._manager) === null || _a === void 0 ? void 0 : _a._factory.removeKeyframeNodeOwner(this._bindContext, nodeOwners, node);
+        }
+        _getOwnersByClip(clipStateInfo) {
+            var _a;
+            const factory = (_a = this._manager) === null || _a === void 0 ? void 0 : _a._factory;
+            if (factory) {
+                factory.prepareStateOwners(this._bindContext, clipStateInfo);
+            }
+            else {
+                this._pendingPrepareStates.push(clipStateInfo);
+            }
+        }
+        _handleSpriteOwnersBySprite(isLink, path, sprite) {
+            var _a;
+            (_a = this._manager) === null || _a === void 0 ? void 0 : _a._factory.handleSpriteOwnersBySprite(this._bindContext, isLink, path, sprite);
+        }
+        _refreshLayerAvatarMask(layer) {
+            var _a, _b, _c;
+            (_c = (_a = this._manager) === null || _a === void 0 ? void 0 : (_b = _a._factory).refreshLayerMask) === null || _c === void 0 ? void 0 : _c.call(_b, this._bindContext, layer);
+        }
+        _saveCrossFixedValues(owners, count) {
+            var _a, _b, _c;
+            (_c = (_a = this._manager) === null || _a === void 0 ? void 0 : (_b = _a._factory).saveCrossFixedValues) === null || _c === void 0 ? void 0 : _c.call(_b, owners, count);
+        }
+        _updateDefaultValues() {
+            var _a;
+            (_a = this._manager) === null || _a === void 0 ? void 0 : _a._factory.updateDefaultValues(this._keyframeNodeOwners);
+        }
+        _revertDefaultKeyframeNodes(clipStateInfo) {
+            var _a;
+            (_a = this._manager) === null || _a === void 0 ? void 0 : _a._factory.revertDefaultKeyframeNodes(clipStateInfo);
+        }
+        onAfterDeserialize() {
+            let arr = this.controllerLayers;
+            if (!arr || null != this.controller)
+                return;
+            delete this.controllerLayers;
+            this._controllerLayers.length = 0;
+            for (let layer of arr) {
+                this.addControllerLayer(layer);
+            }
+        }
+        _onEnable() {
+            this._resolveManager();
+            if (!this._manager)
+                return;
+            this._manager.addAnimator(this);
+            this._taskSlot = this._manager._factory.bindAnimator(this._bindContext);
+            this._taskSlot.resizeLayers(this._controllerLayers.length);
+            if (this._pendingPrepareStates.length > 0) {
+                const factory = this._manager._factory;
+                const ctx = this._bindContext;
+                const pending = this._pendingPrepareStates;
+                for (let i = 0, n = pending.length; i < n; i++) {
+                    factory.prepareStateOwners(ctx, pending[i]);
+                }
+                pending.length = 0;
+            }
+            for (let i = 0, n = this._controllerLayers.length; i < n; i++) {
+                if (this._controllerLayers[i].playOnWake) {
+                    let defaultClip = this.getDefaultState(i);
+                    (defaultClip) && (this.play(null, i, defaultClip.cycleOffset));
+                }
+            }
+        }
+        _onDisable() {
+            var _a;
+            if (this._manager)
+                this._manager.removeAnimator(this);
+            (_a = this._taskSlot) === null || _a === void 0 ? void 0 : _a.submitAllIdle();
+        }
+        _onDestroy() {
+            if (this._manager) {
+                this._manager.removeAnimator(this);
+                this._manager._factory.unbindAnimator(this._bindContext);
+                this._manager = null;
+            }
+            this._taskSlot = null;
+            if (this._controller) {
+                this._controller._removeReference();
+                this._controller = null;
+            }
+            for (let i = 0, n = this._controllerLayers.length; i < n; i++)
+                this._controllerLayers[i]._removeReference();
+        }
+        _resolveManager() {
+            var _a;
+            if (this._manager)
+                return;
+            const scene = (_a = this.owner) === null || _a === void 0 ? void 0 : _a.scene;
+            if (!scene)
+                return;
+            this._manager = scene.getComponentElementManager(AnimatorManager.__managerName);
+        }
+        _cloneTo(dest) {
+            dest.cullingMode = this.cullingMode;
+            for (var i = 0, n = this._controllerLayers.length; i < n; i++) {
+                var controllLayer = this._controllerLayers[i];
+                dest.addControllerLayer(controllLayer.clone());
+                var animatorStates = controllLayer._states;
+                for (var j = 0, m = animatorStates.length; j < m; j++) {
+                    var state = animatorStates[j].clone();
+                    var cloneLayer = dest.getControllerLayer(i);
+                    cloneLayer.addState(state);
+                    (j === 0) && (cloneLayer.defaultState = state);
+                }
+            }
+            dest.controller = this._controller;
+        }
         resetAdditiveBaseValues() {
             this._updateDefaultValues();
         }
@@ -17383,9 +18074,11 @@
             console.warn("Animator:this function is discard,please use animatorControllerLayer.removeState() instead.");
         }
         addControllerLayer(controllerLayer) {
+            var _a;
             this._controllerLayers.push(controllerLayer);
             controllerLayer._animator = this;
             controllerLayer._addReference();
+            (_a = this._taskSlot) === null || _a === void 0 ? void 0 : _a.resizeLayers(this._controllerLayers.length);
             var states = controllerLayer._states;
             for (var i = 0, n = states.length; i < n; i++)
                 this._getOwnersByClip(states[i]);
@@ -17426,15 +18119,12 @@
                         playStateInfo._resetPlayState(clipDuration * animatorState.clipStart, calclipduration);
                     }
                 }
-                this._switchState(curPlayState, animatorState);
-                animatorState._scripts;
+                if (curPlayState)
+                    curPlayState._eventSwitch(animatorState);
                 animatorState._eventStart(this, layerIndex);
             }
             else {
                 console.warn("Invalid layerIndex " + layerIndex + ".");
-            }
-            if (this.owner._scene) {
-                this.onUpdate();
             }
         }
         crossFade(name, transitionDuration, layerIndex = 0, normalizedTime = Number.NEGATIVE_INFINITY) {
@@ -17531,6 +18221,7 @@
                                     }
                                 }
                             }
+                            this._saveCrossFixedValues(crossNodeOwners, crossCount);
                             break;
                     }
                     controllerLayer._crossNodesOwnersCount = crossCount;
@@ -17588,10 +18279,6 @@
     }
     Animator.CULLINGMODE_ALWAYSANIMATE = 0;
     Animator.CULLINGMODE_CULLCOMPLETELY = 2;
-    const _tempVector31 = new Laya.Vector3();
-    const _tempVector4 = new Laya.Vector4();
-    const _tempColor = new Laya.Color();
-    const _tempQuaternion1 = new Laya.Quaternion();
 
     class AnimatorState extends Laya.EventDispatcher {
         get clip() {
@@ -18372,24 +19059,17 @@
         constructor() {
             super();
             this.updateRT = false;
+            this._contentOffsetX = 0;
+            this._contentOffsetY = 0;
             this._genMipMap = false;
         }
         updateRenderTexture() {
             let rect = Laya.Rectangle.TEMP;
-            if (this.mask) {
-                Laya.SpriteUtils.getRect(this.mask, false, rect);
-                rect.x += this.mask._pivotX;
-                rect.y += this.mask._pivotY;
-            }
-            else {
-                Laya.SpriteUtils.getRect(this, false, rect);
-                rect.x += this._pivotX;
-                rect.y += this._pivotY;
-            }
+            rect.setTo(this._contentOffsetX, this._contentOffsetY, this._rtWidth, this._rtHeight);
+            this._subStructRender._updateRenderOffset(rect, rect, 1, 1);
             let oldRT = this._drawOriRT;
-            let maskRect = this._subStructRender._rtRect;
             if (oldRT) {
-                if (maskRect.width === rect.width && maskRect.height === rect.height) {
+                if (this._rtWidth === oldRT.width && this._rtHeight === oldRT.height) {
                     return false;
                 }
                 oldRT.destroy();
@@ -18428,11 +19108,28 @@
                 return;
             this._uisprite = value;
             this._shellSprite.removeChildren(0, this._shellSprite.numChildren - 1);
-            if (value)
+            if (value) {
                 this._shellSprite.addChild(value);
+                this._updateContentOffset(value);
+            }
+            else {
+                this._shellSprite._contentOffsetX = 0;
+                this._shellSprite._contentOffsetY = 0;
+            }
             this._resizeRT();
             this._shellSprite.repaint();
             this.boundsChange = true;
+        }
+        _updateContentOffset(sp) {
+            let offsetX = sp.x;
+            let offsetY = sp.y;
+            if (offsetX === 0 && offsetY === 0 && sp.numChildren === 1) {
+                let child = sp.getChildAt(0);
+                offsetX = child.x;
+                offsetY = child.y;
+            }
+            this._shellSprite._contentOffsetX = offsetX;
+            this._shellSprite._contentOffsetY = offsetY;
         }
         get prefab() {
             return this._prefab;
@@ -18543,6 +19240,7 @@
             this._shellSprite._setBit(Laya.NodeFlags.DISPLAYED_INSTAGE, true);
             this._shellSprite._setBit(Laya.NodeFlags.ACTIVE_INHIERARCHY, true);
             this._shellSprite.cacheAs = "bitmap";
+            this._shellSprite._struct.renderMatrix = this._shellSprite.globalTrans.getMatrix();
             this._baseRenderNode.shaderData.addDefine(MeshSprite3DShaderDeclaration.SHADERDEFINE_UV0);
             this._matrix = new Laya.Matrix4x4();
             this._scale = new Laya.Vector3(1.0, 1.0, 1.0);
@@ -18602,6 +19300,8 @@
             normalizeHitHeight = v + 0.5;
             let cx = normalizeHitWidth * this._rendertexure2D.width;
             let cy = (1.0 - normalizeHitHeight) * this._rendertexure2D.height;
+            cx += this._shellSprite._contentOffsetX - this._uisprite.x;
+            cy += this._shellSprite._contentOffsetY - this._uisprite.y;
             let target = Laya.InputManager.inst.getSpriteUnderPoint(this._uisprite, cx, cy);
             if (target)
                 return target;
@@ -18652,7 +19352,12 @@
                 if (this.billboard) {
                     this._sizeChange = false;
                     let camera = this.owner.scene.cullInfoCamera;
-                    Laya.Matrix4x4.createAffineTransformation(this._transform.position, camera.transform.rotation, this._scale, this._matrix);
+                    let e = this._transform.worldMatrix.elements;
+                    let sx = Math.sqrt(e[0] * e[0] + e[1] * e[1] + e[2] * e[2]);
+                    let sy = Math.sqrt(e[4] * e[4] + e[5] * e[5] + e[6] * e[6]);
+                    let finalScale = tempVec3;
+                    finalScale.setValue(this._scale.x * sx, this._scale.y * sy, 1);
+                    Laya.Matrix4x4.createAffineTransformation(this._transform.position, camera.transform.rotation, finalScale, this._matrix);
                 }
                 else if (this._sizeChange) {
                     this._sizeChange = false;
@@ -19776,6 +20481,7 @@
     c("SkyRenderer", SkyRenderer);
     c("PostProcess", PostProcess);
     c("PostProcessEffect", PostProcessEffect);
+    void AnimatorManager.__managerName;
 
     class WebXRCamera extends Camera {
         constructor() {
@@ -20445,6 +21151,734 @@
         onStateSwitch(currentState) {
         }
         onStateLoop() {
+        }
+    }
+
+    class RTBatchSyncBuffer {
+        constructor(nativeEvaluator) {
+            this._ptTime = 0;
+            this._ptFront = true;
+            this._nativeEvaluator = nativeEvaluator;
+            const layer = this._allocLayerBuffer(64);
+            this._layerBufferI32 = layer.i32;
+            this._layerBufferF32 = layer.f32;
+            this._layerBufferCapRecords = layer.cap;
+            const slot = this._allocSlotBuffer(32);
+            this._slotBufferI32 = slot.i32;
+            this._slotBufferCapRecords = slot.cap;
+        }
+        sync(active, bindingMap) {
+            var _a, _b;
+            const slotCount = active.length;
+            if (slotCount === 0) {
+                this._nativeEvaluator.syncBatch(this._layerBufferI32, 0, this._slotBufferI32, 0);
+                return;
+            }
+            let totalLayerRecords = 0;
+            for (let i = 0; i < slotCount; i++)
+                totalLayerRecords += active.elements[i]._layers.length;
+            if (totalLayerRecords > this._layerBufferCapRecords) {
+                const newCap = Math.max(totalLayerRecords, this._layerBufferCapRecords * 2);
+                const buf = this._allocLayerBuffer(newCap);
+                this._layerBufferI32 = buf.i32;
+                this._layerBufferF32 = buf.f32;
+                this._layerBufferCapRecords = buf.cap;
+            }
+            if (slotCount > this._slotBufferCapRecords) {
+                const newCap = Math.max(slotCount, this._slotBufferCapRecords * 2);
+                const buf = this._allocSlotBuffer(newCap);
+                this._slotBufferI32 = buf.i32;
+                this._slotBufferCapRecords = buf.cap;
+            }
+            const i32 = this._layerBufferI32;
+            const f32 = this._layerBufferF32;
+            const slotI32 = this._slotBufferI32;
+            const STRIDE = RTBatchSyncBuffer.LAYER_RECORD_WORDS;
+            const SLOT_STRIDE = RTBatchSyncBuffer.SLOT_RECORD_WORDS;
+            let recOff = 0;
+            let slotOff = 0;
+            for (let i = 0; i < slotCount; i++) {
+                const slot = active.elements[i];
+                const slotHandle = slot._slotHandle;
+                if (!slotHandle)
+                    continue;
+                const stateMap = bindingMap.get(slot._ctx);
+                const layers = slot._layers;
+                let hasNonIdle = false;
+                for (let j = 0, m = layers.length; j < m; j++) {
+                    const lt = layers[j];
+                    if (lt.type !== exports.LayerTaskType.Idle)
+                        hasNonIdle = true;
+                    const bindingId = (lt.state && stateMap) ? ((_a = stateMap.get(lt.state)) !== null && _a !== void 0 ? _a : 0) : 0;
+                    const destBindingId = (lt.destState && stateMap) ? ((_b = stateMap.get(lt.destState)) !== null && _b !== void 0 ? _b : 0) : 0;
+                    this._computePlayTime(lt.state, lt.playState);
+                    const time = this._ptTime;
+                    const frontPlay = this._ptFront;
+                    this._computePlayTime(lt.destState, lt.crossPlayState);
+                    const destTime = this._ptTime;
+                    const destFrontPlay = this._ptFront;
+                    const cl = slot._ctx.layers[j];
+                    const additive = !!(cl && cl.blendingMode === AnimatorControllerLayer.BLENDINGMODE_ADDTIVE);
+                    i32[recOff + 0] = slotHandle;
+                    i32[recOff + 1] = j;
+                    i32[recOff + 2] = lt.type;
+                    i32[recOff + 3] = bindingId;
+                    i32[recOff + 4] = destBindingId;
+                    f32[recOff + 5] = lt.weight;
+                    f32[recOff + 6] = lt.crossWeight;
+                    f32[recOff + 7] = time;
+                    f32[recOff + 8] = destTime;
+                    i32[recOff + 9] = additive ? 1 : 0;
+                    i32[recOff + 10] = frontPlay ? 1 : 0;
+                    i32[recOff + 11] = destFrontPlay ? 1 : 0;
+                    recOff += STRIDE;
+                }
+                slotI32[slotOff + 0] = slotHandle;
+                slotI32[slotOff + 1] = hasNonIdle ? 1 : 0;
+                slotOff += SLOT_STRIDE;
+            }
+            this._nativeEvaluator.syncBatch(i32, recOff / STRIDE, slotI32, slotOff / SLOT_STRIDE);
+        }
+        _computePlayTime(state, playState) {
+            var _a, _b, _c, _d, _e, _f;
+            if (!state || !playState) {
+                this._ptTime = 0;
+                this._ptFront = true;
+                return;
+            }
+            const clip = state._clip;
+            const clipDuration = (_a = clip === null || clip === void 0 ? void 0 : clip._duration) !== null && _a !== void 0 ? _a : 0;
+            const clipStart = (_b = state.clipStart) !== null && _b !== void 0 ? _b : 0;
+            const normalizedPlayTime = (_c = playState._normalizedPlayTime) !== null && _c !== void 0 ? _c : 0;
+            const playDuration = (_d = playState._duration) !== null && _d !== void 0 ? _d : 0;
+            this._ptTime = clipStart * clipDuration + normalizedPlayTime * playDuration;
+            this._ptFront = ((_e = playState._elapsedTime) !== null && _e !== void 0 ? _e : 0) > ((_f = playState._lastElapsedTime) !== null && _f !== void 0 ? _f : 0);
+        }
+        _allocLayerBuffer(records) {
+            const ab = new ArrayBuffer(records * RTBatchSyncBuffer.LAYER_RECORD_WORDS * 4);
+            return { i32: new Int32Array(ab), f32: new Float32Array(ab), cap: records };
+        }
+        _allocSlotBuffer(records) {
+            return { i32: new Int32Array(records * RTBatchSyncBuffer.SLOT_RECORD_WORDS), cap: records };
+        }
+    }
+    RTBatchSyncBuffer.LAYER_RECORD_WORDS = 12;
+    RTBatchSyncBuffer.SLOT_RECORD_WORDS = 2;
+
+    class IdPool {
+        constructor() {
+            this._next = 0;
+            this._free = [];
+        }
+        alloc() {
+            return this._free.length > 0 ? this._free.pop() : ++this._next;
+        }
+        free(id) {
+            if (id > 0)
+                this._free.push(id);
+        }
+    }
+    const rtSlotPool = new IdPool();
+    const rtOwnerPool = new IdPool();
+    const rtBindingPool = new IdPool();
+    const rtClipPool = new IdPool();
+    const rtLiveHandles = {
+        slot: new Map(),
+        owner: new Map(),
+        binding: new Map(),
+        clip: new Map()
+    };
+    let rtFactoryIdSeed = 0;
+    function markRTHandle(kind, handle, factoryId) {
+        const owners = rtLiveHandles[kind];
+        const current = owners.get(handle);
+        if (current !== undefined && current !== factoryId) {
+            console.warn(`[RTAnimatorFactory] ${kind} handle collision: handle=${handle}, ownerFactory=${current}, newFactory=${factoryId}`);
+        }
+        owners.set(handle, factoryId);
+    }
+    function unmarkRTHandle(kind, handle, factoryId) {
+        const owners = rtLiveHandles[kind];
+        const current = owners.get(handle);
+        if (current !== undefined && current !== factoryId) {
+            console.warn(`[RTAnimatorFactory] ${kind} handle release mismatch: handle=${handle}, ownerFactory=${current}, releaseFactory=${factoryId}`);
+        }
+        owners.delete(handle);
+    }
+    class RTAnimatorFactory {
+        constructor() {
+            this._factoryId = ++rtFactoryIdSeed;
+            this._slotPool = rtSlotPool;
+            this._ownerPool = rtOwnerPool;
+            this._bindingPool = rtBindingPool;
+            this._clipPool = rtClipPool;
+            this._slotHandles = new Set();
+            this._ownerHandleSet = new Set();
+            this._bindingHandles = new Set();
+            this._clipHandles = new Set();
+            this._ctxToSlotHandle = new WeakMap();
+            this._clipHandleMap = new Map();
+            this._ownerHandles = new WeakMap();
+            this._bindingMap = new WeakMap();
+            this._stateBindings = new WeakMap();
+            this._statePropertyOwnersCache = new WeakMap();
+            this._notifyFrame = 0;
+            this._syncBuffer = null;
+            this._unregisterClipDestroyCallback = null;
+            this._destroyed = false;
+            this._web = new WebAnimatorFactory();
+            const preparerCtor = window.conchRTAnimatorPreparer;
+            if (typeof preparerCtor === "function") {
+                this._nativePreparer = new preparerCtor();
+            }
+            else {
+                console.warn("[RTAnimatorFactory] window.conchRTAnimatorPreparer not implemented; falling back to Web.");
+                this._nativePreparer = null;
+            }
+            const evaluatorCtor = window.conchRTAnimatorEvaluator;
+            if (typeof evaluatorCtor === "function") {
+                this._nativeEvaluator = new evaluatorCtor();
+            }
+            else {
+                console.warn("[RTAnimatorFactory] window.conchRTAnimatorEvaluator not implemented; falling back to Web.");
+                this._nativeEvaluator = null;
+            }
+            const applierCtor = window.conchRTAnimatorApplier;
+            if (typeof applierCtor === "function") {
+                this._nativeApplier = new applierCtor();
+            }
+            else {
+                console.warn("[RTAnimatorFactory] window.conchRTAnimatorApplier not implemented; falling back to Web.");
+                this._nativeApplier = null;
+            }
+            const ownerDataCtor = window.conchRTAnimatorOwnerData;
+            if (typeof ownerDataCtor === "function") {
+                registerOwnerDataCreator(() => new ownerDataCtor());
+            }
+            else {
+                registerOwnerDataCreator(() => new PlainOwnerData());
+            }
+            if (window.conchLayaXTransform)
+                this._transformBackend = 'layax';
+            else if (window.conchRTTransform)
+                this._transformBackend = 'jsrt';
+            else
+                this._transformBackend = null;
+            if (this._nativeEvaluator)
+                this._web._evaluator._scope = 'non-transform-only';
+            if (this._nativeApplier)
+                this._web._applier._scope = 'non-transform-only';
+            this._unregisterClipDestroyCallback = registerClipDestroyCallback((clipId) => {
+                this._releaseClipById(clipId);
+            });
+            if (this._nativeEvaluator) {
+                this._syncBuffer = new RTBatchSyncBuffer(this._nativeEvaluator);
+            }
+        }
+        bindAnimator(ctx) {
+            const slot = this._web.bindAnimator(ctx);
+            if (this._nativePreparer && !this._ctxToSlotHandle.has(ctx)) {
+                const slotHandle = this._slotPool.alloc();
+                this._ctxToSlotHandle.set(ctx, slotHandle);
+                this._slotHandles.add(slotHandle);
+                markRTHandle("slot", slotHandle, this._factoryId);
+                slot._slotHandle = slotHandle;
+                this._nativePreparer.uploadSlot(slotHandle);
+                this._nativePreparer.resizeSlot(slotHandle, ctx.layers.length);
+                slot._onResize = (count) => {
+                    this._nativePreparer.resizeSlot(slotHandle, count);
+                };
+            }
+            return slot;
+        }
+        unbindAnimator(ctx) {
+            const slotHandle = this._ctxToSlotHandle.get(ctx);
+            if (this._nativePreparer && slotHandle !== undefined) {
+                const stateMap = this._bindingMap.get(ctx);
+                if (stateMap) {
+                    for (const [state, bindingId] of stateMap) {
+                        this._releaseBinding(bindingId, state);
+                    }
+                    this._bindingMap.delete(ctx);
+                }
+                for (const owner of ctx.owners.slice())
+                    this._releaseOwner(owner);
+                ctx.owners.length = 0;
+                for (const key in ctx.ownerMap)
+                    delete ctx.ownerMap[key];
+                this._releaseSlot(slotHandle);
+                this._ctxToSlotHandle.delete(ctx);
+            }
+            this._web.unbindAnimator(ctx);
+        }
+        prepareStateOwners(ctx, state) {
+            this._web.prepareStateOwners(ctx, state);
+            const clip = state._clip;
+            if (!clip)
+                return;
+            if (this._nativePreparer) {
+                const clipHandle = this._ensureClipUploaded(clip);
+                this._syncOwnersToNative(ctx, state);
+                this._ensureBindingUploaded(ctx, state, clipHandle);
+            }
+            if (this._nativeApplier) {
+                this._rebuildStateTransformPropertyOwners(state);
+            }
+        }
+        _syncOwnersToNative(_ctx, state) {
+            const owners = state._nodeOwners;
+            if (!owners)
+                return;
+            for (let i = 0; i < owners.length; i++) {
+                const owner = owners[i];
+                if (!owner)
+                    continue;
+                if (!isTransformType(owner.type))
+                    continue;
+                if (this._ownerHandles.has(owner))
+                    continue;
+                const ownerHandle = this._ownerPool.alloc();
+                this._ownerHandles.set(owner, ownerHandle);
+                this._ownerHandleSet.add(ownerHandle);
+                markRTHandle("owner", ownerHandle, this._factoryId);
+                this._uploadOwner(ownerHandle, owner, owner.propertyOwner);
+            }
+        }
+        _ensureBindingUploaded(ctx, state, clipHandle) {
+            var _a;
+            let stateMap = this._bindingMap.get(ctx);
+            if (!stateMap) {
+                stateMap = new Map();
+                this._bindingMap.set(ctx, stateMap);
+            }
+            if (stateMap.has(state))
+                return;
+            const owners = state._nodeOwners;
+            if (!owners)
+                return;
+            const bindingId = this._bindingPool.alloc();
+            stateMap.set(state, bindingId);
+            this._bindingHandles.add(bindingId);
+            markRTHandle("binding", bindingId, this._factoryId);
+            let stateBindings = this._stateBindings.get(state);
+            if (!stateBindings) {
+                stateBindings = new Set();
+                this._stateBindings.set(state, stateBindings);
+            }
+            stateBindings.add(bindingId);
+            const handles = new Uint32Array(owners.length);
+            for (let i = 0; i < owners.length; i++) {
+                const o = owners[i];
+                handles[i] = (_a = (o && this._ownerHandles.get(o))) !== null && _a !== void 0 ? _a : 0;
+            }
+            this._nativePreparer.uploadBinding(bindingId, clipHandle, handles);
+            const avatarMask = this._findLayerAvatarMask(ctx, state);
+            this._nativePreparer.uploadBindingMask(bindingId, this._buildBindingMaskBytes(owners, avatarMask));
+        }
+        _buildBindingMaskBytes(owners, avatarMask) {
+            const mask = new Uint8Array(owners.length);
+            for (let i = 0; i < owners.length; i++) {
+                if (!avatarMask) {
+                    mask[i] = 1;
+                    continue;
+                }
+                const o = owners[i];
+                mask[i] = (o && o.nodePath != null && avatarMask.getTransformActive(o.nodePath)) ? 1 : 0;
+            }
+            return mask;
+        }
+        _findLayerAvatarMask(ctx, state) {
+            var _a;
+            const layers = ctx.layers;
+            for (let i = 0, n = layers.length; i < n; i++) {
+                if (layers[i]._states.indexOf(state) >= 0)
+                    return (_a = layers[i].avatarMask) !== null && _a !== void 0 ? _a : null;
+            }
+            return null;
+        }
+        _ensureClipUploaded(clip) {
+            var _a, _b;
+            const existing = this._clipHandleMap.get(clip._id);
+            if (existing !== undefined)
+                return existing;
+            const clipHandle = this._clipPool.alloc();
+            this._clipHandleMap.set(clip._id, clipHandle);
+            this._clipHandles.add(clipHandle);
+            markRTHandle("clip", clipHandle, this._factoryId);
+            const np = this._nativePreparer;
+            const nodes = clip._nodes;
+            const nodeCount = nodes ? nodes.count : 0;
+            np.beginUploadClip(clipHandle, (_a = clip._duration) !== null && _a !== void 0 ? _a : 0, (_b = clip._frameRate) !== null && _b !== void 0 ? _b : 0, clip.islooping, nodeCount);
+            if (nodes) {
+                for (let i = 0; i < nodeCount; i++) {
+                    this._uploadCurve(clipHandle, i, nodes.getNodeByIndex(i));
+                }
+            }
+            return clipHandle;
+        }
+        _uploadCurve(clipHandle, curveIdx, node) {
+            const np = this._nativePreparer;
+            const nodePath = node._joinOwnerPath('/');
+            const propertyPath = node._joinProperty('/');
+            const frameCount = node.keyFramesCount;
+            let hasWeighted = false;
+            if (frameCount > 0) {
+                const first = node.getKeyframeByIndex(0);
+                hasWeighted = first && first.weightedMode != null;
+            }
+            np.uploadCurveHeader(clipHandle, curveIdx, node.type, nodePath, propertyPath, frameCount, hasWeighted);
+            for (let f = 0; f < frameCount; f++) {
+                this._uploadKeyframe(clipHandle, curveIdx, f, node.type, node.getKeyframeByIndex(f), hasWeighted);
+            }
+        }
+        _uploadKeyframe(clipHandle, curveIdx, frameIdx, type, kf, hasWeighted) {
+            var _a, _b, _c, _d, _e, _f;
+            const np = this._nativePreparer;
+            switch (type) {
+                case exports.KeyFrameValueType.Float:
+                case exports.KeyFrameValueType.Boolean:
+                    np.uploadKfFloat(clipHandle, curveIdx, frameIdx, kf.time, (_a = kf.value) !== null && _a !== void 0 ? _a : 0, (_b = kf.inTangent) !== null && _b !== void 0 ? _b : 0, (_c = kf.outTangent) !== null && _c !== void 0 ? _c : 0, (_d = kf.weightedMode) !== null && _d !== void 0 ? _d : 0, (_e = kf.inWeight) !== null && _e !== void 0 ? _e : 0.33333, (_f = kf.outWeight) !== null && _f !== void 0 ? _f : 0.33333);
+                    break;
+                case exports.KeyFrameValueType.Vector2: {
+                    const v = kf.value, it = kf.inTangent, ot = kf.outTangent;
+                    np.uploadKfV2(clipHandle, curveIdx, frameIdx, kf.time, v.x, v.y, it.x, it.y, ot.x, ot.y);
+                    if (hasWeighted && kf.weightedMode) {
+                        const iw = kf.inWeight, ow = kf.outWeight, wm = kf.weightedMode;
+                        np.uploadKfV2Weight(clipHandle, curveIdx, frameIdx, iw.x, iw.y, ow.x, ow.y, wm.x, wm.y);
+                    }
+                    break;
+                }
+                case exports.KeyFrameValueType.Position:
+                case exports.KeyFrameValueType.Scale:
+                case exports.KeyFrameValueType.RotationEuler:
+                case exports.KeyFrameValueType.Vector3: {
+                    const v = kf.value, it = kf.inTangent, ot = kf.outTangent;
+                    np.uploadKfV3(clipHandle, curveIdx, frameIdx, kf.time, v.x, v.y, v.z, it.x, it.y, it.z, ot.x, ot.y, ot.z);
+                    if (hasWeighted && kf.weightedMode) {
+                        const iw = kf.inWeight, ow = kf.outWeight, wm = kf.weightedMode;
+                        np.uploadKfV3Weight(clipHandle, curveIdx, frameIdx, iw.x, iw.y, iw.z, ow.x, ow.y, ow.z, wm.x, wm.y, wm.z);
+                    }
+                    break;
+                }
+                case exports.KeyFrameValueType.Vector4:
+                case exports.KeyFrameValueType.Color: {
+                    const v = kf.value, it = kf.inTangent, ot = kf.outTangent;
+                    np.uploadKfV4(clipHandle, curveIdx, frameIdx, kf.time, v.x, v.y, v.z, v.w, it.x, it.y, it.z, it.w, ot.x, ot.y, ot.z, ot.w);
+                    if (hasWeighted && kf.weightedMode) {
+                        const iw = kf.inWeight, ow = kf.outWeight, wm = kf.weightedMode;
+                        np.uploadKfV4Weight(clipHandle, curveIdx, frameIdx, iw.x, iw.y, iw.z, iw.w, ow.x, ow.y, ow.z, ow.w, wm.x, wm.y, wm.z, wm.w);
+                    }
+                    break;
+                }
+                case exports.KeyFrameValueType.Rotation: {
+                    const v = kf.value, it = kf.inTangent, ot = kf.outTangent;
+                    np.uploadKfQuat(clipHandle, curveIdx, frameIdx, kf.time, v.x, v.y, v.z, v.w, it.x, it.y, it.z, it.w, ot.x, ot.y, ot.z, ot.w);
+                    if (hasWeighted && kf.weightedMode) {
+                        const iw = kf.inWeight, ow = kf.outWeight, wm = kf.weightedMode;
+                        np.uploadKfQuatWeight(clipHandle, curveIdx, frameIdx, iw.x, iw.y, iw.z, iw.w, ow.x, ow.y, ow.z, ow.w, wm.x, wm.y, wm.z, wm.w);
+                    }
+                    break;
+                }
+            }
+        }
+        handleSpriteOwnersBySprite(ctx, isLink, path, sprite) {
+            this._web.handleSpriteOwnersBySprite(ctx, isLink, path, sprite);
+            if (!this._nativePreparer && !this._nativeApplier)
+                return;
+            const stateMap = this._bindingMap.get(ctx);
+            if (stateMap) {
+                for (const state of stateMap.keys()) {
+                    if (this._nativePreparer)
+                        this._syncOwnersToNative(ctx, state);
+                    if (this._nativeApplier)
+                        this._rebuildStateTransformPropertyOwners(state);
+                }
+            }
+        }
+        addKeyframeNodeOwner(ctx, clipOwners, node, propertyOwner) {
+            this._web.addKeyframeNodeOwner(ctx, clipOwners, node, propertyOwner);
+            if (!this._nativePreparer)
+                return;
+            if (!isTransformType(node.type))
+                return;
+            const owner = clipOwners[node._indexInList];
+            if (!owner)
+                return;
+            if (this._ownerHandles.has(owner))
+                return;
+            const ownerHandle = this._ownerPool.alloc();
+            this._ownerHandles.set(owner, ownerHandle);
+            this._ownerHandleSet.add(ownerHandle);
+            markRTHandle("owner", ownerHandle, this._factoryId);
+            this._uploadOwner(ownerHandle, owner, propertyOwner);
+        }
+        _uploadOwner(ownerHandle, owner, propertyOwner) {
+            var _a, _b;
+            const np = this._nativePreparer;
+            const nodePath = (_a = owner.nodePath) !== null && _a !== void 0 ? _a : '';
+            const propertyPath = ((_b = owner.property) !== null && _b !== void 0 ? _b : []).join('/');
+            np.uploadOwnerHeader(ownerHandle, owner.type, !!owner.maskActive, nodePath, propertyPath);
+            const nativeTransform = propertyOwner ? propertyOwner._nativeObj : null;
+            if (nativeTransform && this._transformBackend === 'layax') {
+                np.bindOwnerLayaXTransform(ownerHandle, nativeTransform);
+            }
+            else if (nativeTransform && this._transformBackend === 'jsrt') {
+                np.bindOwnerJSRTTransform(ownerHandle, nativeTransform);
+            }
+            const def = owner.defaultValue;
+            if (def == null)
+                return;
+            switch (owner.type) {
+                case exports.KeyFrameValueType.Position:
+                case exports.KeyFrameValueType.Scale:
+                case exports.KeyFrameValueType.RotationEuler:
+                    np.setOwnerDefaultV3(ownerHandle, def.x, def.y, def.z);
+                    break;
+                case exports.KeyFrameValueType.Rotation:
+                    np.setOwnerDefaultQuat(ownerHandle, def.x, def.y, def.z, def.w);
+                    break;
+            }
+        }
+        removeKeyframeNodeOwner(ctx, nodeOwners, node) {
+            const fullPath = node.fullPath;
+            const ownerBefore = ctx.ownerMap[fullPath];
+            this._web.removeKeyframeNodeOwner(ctx, nodeOwners, node);
+            if (!this._nativePreparer)
+                return;
+            if (!ownerBefore || !isTransformType(ownerBefore.type))
+                return;
+            if (ownerBefore.referenceCount !== 0)
+                return;
+            const handle = this._ownerHandles.get(ownerBefore);
+            if (handle !== undefined)
+                this._releaseOwner(ownerBefore);
+        }
+        _releaseSlot(slotHandle) {
+            var _a;
+            if (!this._slotHandles.has(slotHandle))
+                return;
+            (_a = this._nativePreparer) === null || _a === void 0 ? void 0 : _a.releaseSlot(slotHandle);
+            this._slotHandles.delete(slotHandle);
+            unmarkRTHandle("slot", slotHandle, this._factoryId);
+            this._slotPool.free(slotHandle);
+        }
+        _releaseBinding(bindingId, state) {
+            var _a;
+            if (!this._bindingHandles.has(bindingId))
+                return;
+            (_a = this._nativePreparer) === null || _a === void 0 ? void 0 : _a.releaseBinding(bindingId);
+            this._bindingHandles.delete(bindingId);
+            unmarkRTHandle("binding", bindingId, this._factoryId);
+            this._bindingPool.free(bindingId);
+            if (state) {
+                const stateBindings = this._stateBindings.get(state);
+                if (stateBindings) {
+                    stateBindings.delete(bindingId);
+                    if (stateBindings.size === 0)
+                        this._stateBindings.delete(state);
+                }
+            }
+        }
+        _releaseOwner(owner) {
+            const handle = this._ownerHandles.get(owner);
+            if (handle === undefined)
+                return;
+            this._ownerHandles.delete(owner);
+            this._releaseOwnerHandle(handle);
+        }
+        _releaseOwnerHandle(ownerHandle) {
+            var _a, _b;
+            if (!this._ownerHandleSet.has(ownerHandle))
+                return;
+            (_a = this._nativePreparer) === null || _a === void 0 ? void 0 : _a.unbindOwnerTransform(ownerHandle);
+            (_b = this._nativePreparer) === null || _b === void 0 ? void 0 : _b.releaseOwner(ownerHandle);
+            this._ownerHandleSet.delete(ownerHandle);
+            unmarkRTHandle("owner", ownerHandle, this._factoryId);
+            this._ownerPool.free(ownerHandle);
+        }
+        _releaseClipById(clipId) {
+            const clipHandle = this._clipHandleMap.get(clipId);
+            if (clipHandle === undefined)
+                return;
+            this._clipHandleMap.delete(clipId);
+            this._releaseClipHandle(clipHandle);
+        }
+        _releaseClipHandle(clipHandle) {
+            var _a;
+            if (!this._clipHandles.has(clipHandle))
+                return;
+            (_a = this._nativePreparer) === null || _a === void 0 ? void 0 : _a.releaseClip(clipHandle);
+            this._clipHandles.delete(clipHandle);
+            unmarkRTHandle("clip", clipHandle, this._factoryId);
+            this._clipPool.free(clipHandle);
+        }
+        flushEvaluate() {
+            if (this._nativeEvaluator && this._syncBuffer) {
+                this._syncBuffer.sync(this._web._activeList, this._bindingMap);
+                this._nativeEvaluator.flush();
+            }
+            this._web.flushEvaluate();
+        }
+        flushApply() {
+            if (this._nativeApplier) {
+                this._nativeApplier.flush();
+                this._notifyJsTransformChanged();
+            }
+            this._web.flushApply();
+        }
+        _notifyJsTransformChanged() {
+            const active = this._web._activeList;
+            if (active.length === 0)
+                return;
+            const frame = ++this._notifyFrame;
+            const cache = this._statePropertyOwnersCache;
+            for (let i = 0, n = active.length; i < n; i++) {
+                const slot = active.elements[i];
+                const layers = slot._layers;
+                for (let j = 0, m = layers.length; j < m; j++) {
+                    const lt = layers[j];
+                    if (lt.type === exports.LayerTaskType.Idle)
+                        continue;
+                    if (lt.state) {
+                        const list = cache.get(lt.state);
+                        if (list)
+                            for (let k = 0, kn = list.length; k < kn; k++)
+                                this._dispatchTransformEvent(list[k], frame);
+                    }
+                    if (lt.destState) {
+                        const list = cache.get(lt.destState);
+                        if (list)
+                            for (let k = 0, kn = list.length; k < kn; k++)
+                                this._dispatchTransformEvent(list[k], frame);
+                    }
+                }
+            }
+        }
+        _dispatchTransformEvent(pro, frame) {
+            if (pro._notifyFrame === frame)
+                return;
+            pro._notifyFrame = frame;
+            if (pro._hasTransformChangedListener)
+                pro.event(Laya.Event.TRANSFORM_CHANGED, pro._RTtransformFlag);
+            const children = pro._children;
+            if (children)
+                for (let i = 0, n = children.length; i < n; i++) {
+                    this._dispatchTransformEvent(children[i], frame);
+                }
+        }
+        _rebuildStateTransformPropertyOwners(state) {
+            const owners = state._nodeOwners;
+            if (!owners) {
+                this._statePropertyOwnersCache.delete(state);
+                return;
+            }
+            const seen = new Set();
+            const result = [];
+            for (let i = 0, n = owners.length; i < n; i++) {
+                const o = owners[i];
+                if (!o || !isTransformType(o.type))
+                    continue;
+                const pro = o.propertyOwner;
+                if (pro && !seen.has(pro)) {
+                    seen.add(pro);
+                    result.push(pro);
+                }
+            }
+            this._statePropertyOwnersCache.set(state, result);
+        }
+        refreshLayerMask(ctx, layer) {
+            var _a;
+            if (!this._nativePreparer)
+                return;
+            const stateMap = this._bindingMap.get(ctx);
+            if (!stateMap)
+                return;
+            const avatarMask = (_a = layer.avatarMask) !== null && _a !== void 0 ? _a : null;
+            const states = layer._states;
+            for (let i = 0, n = states.length; i < n; i++) {
+                const bindingId = stateMap.get(states[i]);
+                if (bindingId === undefined)
+                    continue;
+                const owners = states[i]._nodeOwners;
+                if (!owners)
+                    continue;
+                this._nativePreparer.uploadBindingMask(bindingId, this._buildBindingMaskBytes(owners, avatarMask));
+            }
+        }
+        saveCrossFixedValues(owners, count) {
+            if (!this._nativePreparer)
+                return;
+            const handles = new Uint32Array(count);
+            let n = 0;
+            for (let i = 0; i < count; i++) {
+                const h = this._ownerHandles.get(owners[i]);
+                if (h !== undefined)
+                    handles[n++] = h;
+            }
+            if (n > 0)
+                this._nativePreparer.saveCrossFixedValue(handles.subarray(0, n));
+        }
+        updateDefaultValues(owners) {
+            if (this._nativeApplier) {
+                const handles = new Uint32Array(owners.length);
+                let count = 0;
+                for (const o of owners) {
+                    const h = this._ownerHandles.get(o);
+                    if (h !== undefined)
+                        handles[count++] = h;
+                }
+                if (count > 0) {
+                    this._nativeApplier.updateDefaultValues(handles.subarray(0, count));
+                }
+            }
+            this._web.updateDefaultValues(owners);
+        }
+        revertDefaultKeyframeNodes(state) {
+            if (this._nativeApplier) {
+                const stateBindings = this._stateBindings.get(state);
+                if (stateBindings) {
+                    for (const bindingId of stateBindings) {
+                        this._nativeApplier.revertDefaultByBinding(bindingId);
+                    }
+                }
+            }
+            this._web.revertDefaultKeyframeNodes(state);
+        }
+        destroy() {
+            var _a;
+            if (this._destroyed)
+                return;
+            this._destroyed = true;
+            (_a = this._unregisterClipDestroyCallback) === null || _a === void 0 ? void 0 : _a.call(this);
+            this._unregisterClipDestroyCallback = null;
+            for (const bindingId of Array.from(this._bindingHandles))
+                this._releaseBinding(bindingId);
+            for (const slotHandle of Array.from(this._slotHandles))
+                this._releaseSlot(slotHandle);
+            for (const ownerHandle of Array.from(this._ownerHandleSet))
+                this._releaseOwnerHandle(ownerHandle);
+            for (const clipId of Array.from(this._clipHandleMap.keys()))
+                this._releaseClipById(clipId);
+            for (const clipHandle of Array.from(this._clipHandles))
+                this._releaseClipHandle(clipHandle);
+            this._clipHandleMap.clear();
+            this._syncBuffer = null;
+            this._web.destroy();
+        }
+    }
+    Laya.Laya.addBeforeInitCallback(() => {
+        createConchAnimatorFactory();
+    });
+    function createConchAnimatorFactory() {
+        const hasNativeTransform = !!window.conchLayaXTransform || !!window.conchRTTransform;
+        const hasNativeAnimator = !!window.conchRTAnimatorPreparer
+            || !!window.conchRTAnimatorEvaluator
+            || !!window.conchRTAnimatorApplier;
+        if (hasNativeAnimator && hasNativeTransform) {
+            AnimatorManager.factoryCreator = () => new RTAnimatorFactory();
+        }
+        else if (hasNativeAnimator && !hasNativeTransform) {
+            console.log("[RTAnimatorFactory] Native animator components detected but no native transform backend; using WebAnimatorFactory for full JS evaluation.");
         }
     }
 
@@ -21808,6 +23242,7 @@
     exports.Animator = Animator;
     exports.AnimatorController = AnimatorController;
     exports.AnimatorControllerLayer = AnimatorControllerLayer;
+    exports.AnimatorManager = AnimatorManager;
     exports.AnimatorPlayState = AnimatorPlayState;
     exports.AnimatorResource = AnimatorResource;
     exports.AnimatorState = AnimatorState;
@@ -21872,6 +23307,7 @@
     exports.LODInfo = LODInfo;
     exports.Laya3D = Laya3D;
     exports.Laya3DRender = Laya3DRender;
+    exports.LayerTask = LayerTask;
     exports.LengencyRenderEngine3DFactory = LengencyRenderEngine3DFactory;
     exports.Light = Light;
     exports.LightQueue = LightQueue;
@@ -21907,12 +23343,15 @@
     exports.PixelLineRenderer = PixelLineRenderer;
     exports.PixelLineSprite3D = PixelLineSprite3D;
     exports.PixelLineVertex = PixelLineVertex;
+    exports.PlainOwnerData = PlainOwnerData;
     exports.Plane = Plane;
     exports.PointLightCom = PointLightCom;
     exports.PostProcess = PostProcess;
     exports.PostProcessEffect = PostProcessEffect;
     exports.PostProcessRenderContext = PostProcessRenderContext;
     exports.PrimitiveMesh = PrimitiveMesh;
+    exports.RTAnimatorFactory = RTAnimatorFactory;
+    exports.RTBatchSyncBuffer = RTBatchSyncBuffer;
     exports.RandX = RandX;
     exports.Ray = Ray;
     exports.ReflectionProbe = ReflectionProbe;
@@ -21969,6 +23408,7 @@
     exports.SubMesh = SubMesh;
     exports.SubMeshInstanceBatch = SubMeshInstanceBatch;
     exports.SubMeshRenderElement = SubMeshRenderElement;
+    exports.TaskSlot = TaskSlot;
     exports.TextMesh = TextMesh;
     exports.Texture2DArrayLoader = Texture2DArrayLoader;
     exports.TextureGenerator = TextureGenerator;
@@ -21985,6 +23425,9 @@
     exports.VolumeManager = VolumeManager;
     exports.VolumetricGI = VolumetricGI;
     exports.VolumetricGIManager = VolumetricGIManager;
+    exports.WebAnimatorApplier = WebAnimatorApplier;
+    exports.WebAnimatorEvaluator = WebAnimatorEvaluator;
+    exports.WebAnimatorFactory = WebAnimatorFactory;
     exports.WebXRCamera = WebXRCamera;
     exports.WebXRCameraInfo = WebXRCameraInfo;
     exports.WebXRCameraManager = WebXRCameraManager;
@@ -21993,6 +23436,16 @@
     exports.WebXRInputManager = WebXRInputManager;
     exports.WebXRRenderTexture = WebXRRenderTexture;
     exports.WebXRSessionManager = WebXRSessionManager;
+    exports.addKeyframeNodeOwner = addKeyframeNodeOwner;
+    exports.createConchAnimatorFactory = createConchAnimatorFactory;
+    exports.createOwnerData = createOwnerData;
+    exports.handleSpriteOwnersBySprite = handleSpriteOwnersBySprite;
+    exports.isTransformType = isTransformType;
+    exports.notifyClipDestroyed = notifyClipDestroyed;
+    exports.prepareStateOwners = prepareStateOwners;
+    exports.registerClipDestroyCallback = registerClipDestroyCallback;
+    exports.registerOwnerDataCreator = registerOwnerDataCreator;
+    exports.removeKeyframeNodeOwner = removeKeyframeNodeOwner;
     exports.skinnedMatrixCache = skinnedMatrixCache;
     exports.volumeIntersectInfo = volumeIntersectInfo;
 

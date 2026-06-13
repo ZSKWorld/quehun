@@ -35,7 +35,7 @@
                 u_TilingOffset: Laya.ShaderDataType.Vector4,
             };
             let shader = Laya.Shader3D.add("PhysicsLineShader", true, false);
-            shader.shaderType = Laya.ShaderFeatureType.Default;
+            shader.shaderType = Laya.ShaderFeatureType.D2_BaseRenderNode2D;
             let subShader = new Laya.SubShader(attributeMap, uniformMap, {});
             shader.addSubShader(subShader);
             subShader.addShaderPass(PhysicsLineVs, PhysicsLineFs);
@@ -443,10 +443,15 @@
         constructor() {
             this._lineWidth = 3;
             this._matrix = new Laya.Matrix();
+            this._meshAccums = new Map();
+            this._lineAccums = new Map();
             this._cmdDrawLineList = [];
             this._linePointsList = [];
             this._cmdDrawMeshList = [];
             this._meshList = [];
+            this._pendingMeshCmdRing = [];
+            this._pendingMeshRing = [];
+            this._pendingLineCmdRing = [];
             this._camera = {};
             this._camera.m_center = new Laya.Vector2(0, 0);
             this._camera.m_extent = 25;
@@ -454,6 +459,30 @@
             this._camera.m_width = 1280;
             this._camera.m_height = 800;
             this._cmdBuffer = new Laya.CommandBuffer2D("Physics2DDebugDraw");
+        }
+        _colorToKey(color) {
+            return ((color.r * 255 + 0.5) | 0) * 16777216 +
+                ((color.g * 255 + 0.5) | 0) * 65536 +
+                ((color.b * 255 + 0.5) | 0) * 256 +
+                ((color.a * 255 + 0.5) | 0);
+        }
+        _getMeshAccum(color) {
+            let key = this._colorToKey(color);
+            let accum = this._meshAccums.get(key);
+            if (!accum) {
+                accum = { vertices: [], indices: [], vertexCount: 0, color: color.clone() };
+                this._meshAccums.set(key, accum);
+            }
+            return accum;
+        }
+        _getLineAccum(color) {
+            let key = this._colorToKey(color);
+            let accum = this._lineAccums.get(key);
+            if (!accum) {
+                accum = { points: [], color: color.clone() };
+                this._lineAccums.set(key, accum);
+            }
+            return accum;
         }
         setActive(value) {
             if (value) {
@@ -463,10 +492,112 @@
                 Laya.Laya.timer.clear(this, this.render);
             }
         }
+        appendCircle(cx, cy, radius, color, numSegments = 24) {
+            if (radius <= 0 || numSegments < 3)
+                return;
+            let accum = this._getMeshAccum(color);
+            let base = accum.vertexCount;
+            const twoPi = Math.PI * 2;
+            const verts = accum.vertices;
+            const idxs = accum.indices;
+            for (let i = 0; i < numSegments; i++) {
+                const angle = twoPi * i / numSegments;
+                const cos = Math.cos(angle);
+                const sin = Math.sin(angle);
+                verts.push(cx + radius * cos, cy + radius * sin, 0, 0.5 + 0.5 * cos, 0.5 + 0.5 * sin);
+            }
+            verts.push(cx, cy, 0, 0.5, 0.5);
+            const centerIdx = base + numSegments;
+            for (let i = 0; i < numSegments; i++) {
+                idxs.push(centerIdx, base + i, base + ((i + 1) % numSegments));
+            }
+            accum.vertexCount += numSegments + 1;
+        }
+        appendPolygon(points, pointCount, color) {
+            if (pointCount < 3)
+                return;
+            let accum = this._getMeshAccum(color);
+            let base = accum.vertexCount;
+            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+            for (let i = 0; i < pointCount; i++) {
+                const x = points[i * 2], y = points[i * 2 + 1];
+                if (x < minX)
+                    minX = x;
+                if (x > maxX)
+                    maxX = x;
+                if (y < minY)
+                    minY = y;
+                if (y > maxY)
+                    maxY = y;
+            }
+            const w = maxX - minX || 1;
+            const h = maxY - minY || 1;
+            const verts = accum.vertices;
+            const idxs = accum.indices;
+            for (let i = 0; i < pointCount; i++) {
+                const x = points[i * 2];
+                const y = points[i * 2 + 1];
+                verts.push(x, y, 0, (x - minX) / w, (y - minY) / h);
+            }
+            for (let i = 1; i < pointCount - 1; i++) {
+                idxs.push(base, base + i, base + i + 1);
+            }
+            accum.vertexCount += pointCount;
+        }
+        appendLineSegment(x1, y1, x2, y2, color) {
+            let accum = this._getLineAccum(color);
+            accum.points.push(x1, y1, x2, y2);
+        }
+        appendLinePoints(points, color) {
+            if (points.length < 4)
+                return;
+            let accum = this._getLineAccum(color);
+            let arr = accum.points;
+            for (let i = 0, len = points.length; i < len; i++) {
+                arr.push(points[i]);
+            }
+        }
         render() {
             this._matrix.identity();
             this._matrix.scale(Physics2D.toRenderX(1), Physics2D.toRenderY(1));
+            if (this._pendingMeshCmdRing.length >= Physics2DDebugDraw._RETAIN_FRAMES) {
+                const oldestMeshCmds = this._pendingMeshCmdRing.shift();
+                for (let i = 0; i < oldestMeshCmds.length; i++)
+                    oldestMeshCmds[i].recover();
+                const oldestMeshes = this._pendingMeshRing.shift();
+                for (let i = 0; i < oldestMeshes.length; i++)
+                    oldestMeshes[i].destroy();
+                const oldestLineCmds = this._pendingLineCmdRing.shift();
+                for (let i = 0; i < oldestLineCmds.length; i++)
+                    oldestLineCmds[i].recover();
+            }
             let area2D = this._scene._area2Ds.size > 0 ? this._scene._area2Ds.values().next().value._struct : null;
+            let frameMeshCmds = [];
+            let frameMeshes = [];
+            let frameLineCmds = [];
+            const declaration = Laya.VertexMesh2D.getVertexDeclaration(["POSITION,UV"], false)[0];
+            this._meshAccums.forEach(accum => {
+                if (accum.vertexCount === 0)
+                    return;
+                const verts = new Float32Array(accum.vertices);
+                const useUint32 = accum.vertexCount > 65535;
+                const indices = useUint32 ? new Uint32Array(accum.indices) : new Uint16Array(accum.indices);
+                const mesh = Laya.Mesh2D.createMesh2DByPrimitive([verts], [declaration], indices, useUint32 ? Laya.IndexFormat.UInt32 : Laya.IndexFormat.UInt16, [{ length: indices.length, start: 0 }]);
+                const cmd = Laya.DrawMesh2DCMD.create(mesh, this._matrix, Laya.Texture2D.whiteTexture, accum.color, this._material);
+                if (cmd)
+                    frameMeshCmds.push(cmd);
+                frameMeshes.push(mesh);
+                accum.vertices.length = 0;
+                accum.indices.length = 0;
+                accum.vertexCount = 0;
+            });
+            this._lineAccums.forEach(accum => {
+                if (accum.points.length < 4)
+                    return;
+                const cmd = PhysicsDrawLine2DCMD.create(accum.points, this._matrix, accum.color, this._lineWidth);
+                if (cmd)
+                    frameLineCmds.push(cmd);
+            });
             this._cmdBuffer.setRenderTarget(null, false);
             for (let i = 0; i < this._cmdDrawMeshList.length; i++) {
                 let cmd = this._cmdDrawMeshList[i];
@@ -474,26 +605,29 @@
                     cmd._renderElements[0] && (cmd._renderElements[0].owner = area2D);
                 this._cmdBuffer.addCacheCommand(cmd);
             }
+            for (let i = 0; i < frameMeshCmds.length; i++) {
+                let cmd = frameMeshCmds[i];
+                if (area2D)
+                    cmd._renderElements[0] && (cmd._renderElements[0].owner = area2D);
+                this._cmdBuffer.addCacheCommand(cmd);
+            }
             for (let i = 0; i < this._cmdDrawLineList.length; i++) {
                 let cmd = this._cmdDrawLineList[i];
                 if (area2D)
                     cmd._renderElements[0] && (cmd._renderElements[0].owner = area2D);
                 this._cmdBuffer.addCacheCommand(cmd);
             }
+            for (let i = 0; i < frameLineCmds.length; i++) {
+                let cmd = frameLineCmds[i];
+                if (area2D)
+                    cmd._renderElements[0] && (cmd._renderElements[0].owner = area2D);
+                this._cmdBuffer.addCacheCommand(cmd);
+            }
             this._cmdBuffer.apply(true);
             this._cmdBuffer.clear(false);
-            for (let i = 0; i < this._cmdDrawMeshList.length; i++) {
-                let cmd = this._cmdDrawMeshList[i];
-                cmd.recover();
-            }
-            for (let i = 0; i < this._meshList.length; i++) {
-                let mesh = this._meshList[i];
-                mesh.destroy();
-            }
-            for (let i = 0; i < this._cmdDrawLineList.length; i++) {
-                let cmd = this._cmdDrawLineList[i];
-                cmd.recover();
-            }
+            this._pendingMeshCmdRing.push(this._cmdDrawMeshList.slice().concat(frameMeshCmds));
+            this._pendingMeshRing.push(this._meshList.slice().concat(frameMeshes));
+            this._pendingLineCmdRing.push(this._cmdDrawLineList.slice().concat(frameLineCmds));
             for (let i = 0; i < this._linePointsList.length; i++) {
                 this._linePointsList[i] = null;
             }
@@ -501,6 +635,7 @@
             this._cmdDrawMeshList.length = 0;
             this._meshList.length = 0;
             this._linePointsList.length = 0;
+            this._lineAccums.forEach(accum => { accum.points.length = 0; });
         }
         createMesh2DByVertices(vertices) {
             const pointCount = vertices.length / 2;
@@ -597,17 +732,17 @@
             this._material && this._material.destroy();
             this._material = null;
             this._cmdBuffer = null;
-            if (this._meshList) {
-                for (let i = 0; i < this._meshList.length; i++) {
-                    this._meshList[i].destroy();
-                }
-                this._meshList.length = 0;
-            }
             if (this._cmdDrawMeshList) {
                 for (let i = 0; i < this._cmdDrawMeshList.length; i++) {
                     this._cmdDrawMeshList[i].recover();
                 }
                 this._cmdDrawMeshList.length = 0;
+            }
+            if (this._meshList) {
+                for (let i = 0; i < this._meshList.length; i++) {
+                    this._meshList[i].destroy();
+                }
+                this._meshList.length = 0;
             }
             if (this._cmdDrawLineList) {
                 for (let i = 0; i < this._cmdDrawLineList.length; i++) {
@@ -616,8 +751,29 @@
                 this._cmdDrawLineList.length = 0;
             }
             this._linePointsList && (this._linePointsList.length = 0);
+            this._meshAccums.clear();
+            this._lineAccums.clear();
+            for (let i = 0; i < this._pendingMeshCmdRing.length; i++) {
+                const cmds = this._pendingMeshCmdRing[i];
+                for (let j = 0; j < cmds.length; j++)
+                    cmds[j].recover();
+            }
+            for (let i = 0; i < this._pendingLineCmdRing.length; i++) {
+                const cmds = this._pendingLineCmdRing[i];
+                for (let j = 0; j < cmds.length; j++)
+                    cmds[j].recover();
+            }
+            for (let i = 0; i < this._pendingMeshRing.length; i++) {
+                const meshes = this._pendingMeshRing[i];
+                for (let j = 0; j < meshes.length; j++)
+                    meshes[j].destroy();
+            }
+            this._pendingMeshCmdRing.length = 0;
+            this._pendingLineCmdRing.length = 0;
+            this._pendingMeshRing.length = 0;
         }
     }
+    Physics2DDebugDraw._RETAIN_FRAMES = 6;
 
     class Physics2DWorldManager {
         get box2DWorld() {
@@ -637,6 +793,8 @@
             this._worldDef = new box2DWorldDef();
             this._eventList = [];
             this._allowWorldSleep = false;
+            this._tempColor = new Laya.Color();
+            this._tempPoints = [];
             const configlayer = (_a = Laya.PlayerConfig.physics2D) === null || _a === void 0 ? void 0 : _a.defaultConfig;
             this._worldDef.pixelRatio = this._pixelRatio = (_b = configlayer === null || configlayer === void 0 ? void 0 : configlayer.pixelRatio) !== null && _b !== void 0 ? _b : Physics2DOption.pixelRatio;
             this._RePixelRatio = 1 / this._pixelRatio;
@@ -817,18 +975,19 @@
             Physics2D.I._factory.RayCast(this._box2DWorld, this._JSRayCastcallback, startPos, endPos);
         }
         destroy() {
-            Physics2D.I._factory.removeBody(this._box2DWorld, Physics2D.I._emptyBody);
-            Physics2D.I._emptyBody = null;
-            let box2DWorld = this._box2DWorld;
-            Laya.Laya.timer.callLater(this, () => {
-                Physics2D.I._factory.destroyWorld(box2DWorld);
-            });
+            if (!this._box2DWorld)
+                return;
+            if (Physics2D.I._emptyBody) {
+                Physics2D.I._factory.removeBody(this._box2DWorld, Physics2D.I._emptyBody);
+                Physics2D.I._emptyBody = null;
+            }
             if (this._debugDraw) {
                 this._debugDraw.destroy();
                 this._debugDraw = null;
                 this._jsDraw = null;
             }
             Physics2D.I._factory.worldMap.delete(this._box2DWorld._indexInMap);
+            Physics2D.I._factory.destroyWorld(this._box2DWorld);
             this._box2DWorld = null;
             this._eventList = null;
         }
@@ -862,14 +1021,11 @@
             return contactListener;
         }
         _makeStyleString(color, alpha = -1) {
-            let outColor = new Laya.Color();
             let colorData = Physics2D.I._factory.warpPoint(color, exports.Ebox2DType.b2Color);
-            let r = colorData.r;
-            let g = colorData.g;
-            let b = colorData.b;
-            outColor.r = r;
-            outColor.g = g;
-            outColor.b = b;
+            let outColor = this._tempColor;
+            outColor.r = colorData.r;
+            outColor.g = colorData.g;
+            outColor.b = colorData.b;
             outColor.a = alpha;
             return outColor;
         }
@@ -899,37 +1055,28 @@
             v = Physics2D.I._factory.warpPoint(p2, exports.Ebox2DType.b2Vec2);
             let p2x = this.physics2DToLaya(v.x);
             let p2y = this.physics2DToLaya(v.y);
-            let points = [];
-            points.push(p1x);
-            points.push(p1y);
-            points.push(p2x);
-            points.push(p2y);
             let outColor = this._makeStyleString(color, 1);
-            this._debugDraw.addLineDebugDrawCMD(points, outColor);
+            this._debugDraw.appendLineSegment(p1x, p1y, p2x, p2y, outColor);
         }
         _debugDrawPolygon(vertices, vertexCount, color) {
-            let points = [];
+            let points = this._tempPoints;
+            points.length = 0;
             for (let i = 0; i < vertexCount; i++) {
                 let vert = Physics2D.I._factory.warpPoint(vertices + (i * 8), exports.Ebox2DType.b2Vec2);
-                vert.x = this.physics2DToLaya(vert.x);
-                vert.y = this.physics2DToLaya(vert.y);
-                points.push(vert.x, vert.y);
+                points.push(this.physics2DToLaya(vert.x), this.physics2DToLaya(vert.y));
             }
             let outColor = this._makeStyleString(color, 1);
-            let mesh2d = this._debugDraw.createMesh2DByVertices(points);
-            this._debugDraw.addMeshDebugDrawCMD(mesh2d, outColor);
+            this._debugDraw.appendPolygon(points, vertexCount, outColor);
         }
         _debugDrawSolidPolygon(vertices, vertexCount, color) {
-            let points = [];
+            let points = this._tempPoints;
+            points.length = 0;
             for (let i = 0; i < vertexCount; i++) {
                 let vert = Physics2D.I._factory.warpPoint(vertices + (i * 8), exports.Ebox2DType.b2Vec2);
-                vert.x = this.physics2DToLaya(vert.x);
-                vert.y = this.physics2DToLaya(vert.y);
-                points.push(vert.x, vert.y);
+                points.push(this.physics2DToLaya(vert.x), this.physics2DToLaya(vert.y));
             }
             let outColor = this._makeStyleString(color, 0.5);
-            let mesh2D = this._debugDraw.createMesh2DByVertices(points);
-            this._debugDraw.addMeshDebugDrawCMD(mesh2D, outColor);
+            this._debugDraw.appendPolygon(points, vertexCount, outColor);
         }
         _debugDrawCircle(center, radius, color) {
             let centerV = Physics2D.I._factory.warpPoint(center, exports.Ebox2DType.b2Vec2);
@@ -937,8 +1084,7 @@
             let y = this.physics2DToLaya(centerV.y);
             radius = this.physics2DToLaya(radius);
             let outColor = this._makeStyleString(color, 1);
-            let mesh2D = this._debugDraw.createCircleMeshByVertices({ x: x, y: y }, radius, 100);
-            this._debugDraw.addMeshDebugDrawCMD(mesh2D, outColor);
+            this._debugDraw.appendCircle(x, y, radius, outColor);
         }
         _debugDrawSolidCircle(center, radius, axis, color) {
             let v = Physics2D.I._factory.warpPoint(center, exports.Ebox2DType.b2Vec2);
@@ -946,8 +1092,7 @@
             let cy = this.physics2DToLaya(v.y);
             radius = this.physics2DToLaya(radius);
             let outColor = this._makeStyleString(color, 0.5);
-            let mesh2d = this._debugDraw.createCircleMeshByVertices({ x: cx, y: cy }, radius, 100);
-            this._debugDraw.addMeshDebugDrawCMD(mesh2d, outColor);
+            this._debugDraw.appendCircle(cx, cy, radius, outColor);
         }
         _debugDrawTransform(xf) {
             xf = Physics2D.I._factory.warpPoint(xf, exports.Ebox2DType.b2Transform);
@@ -960,18 +1105,8 @@
             let xAxisEndY = y + this.physics2DToLaya(length * sinAngle);
             let yAxisEndX = x + this.physics2DToLaya(length * (-sinAngle));
             let yAxisEndY = y + this.physics2DToLaya(length * cosAngle);
-            let point0 = [];
-            point0.push(x);
-            point0.push(y);
-            point0.push(xAxisEndX);
-            point0.push(xAxisEndY);
-            this._debugDraw.addLineDebugDrawCMD(point0, Laya.Color.RED);
-            let point1 = [];
-            point1.push(x);
-            point1.push(y);
-            point1.push(yAxisEndX);
-            point1.push(yAxisEndY);
-            this._debugDraw.addLineDebugDrawCMD(point1, Laya.Color.GREEN);
+            this._debugDraw.appendLineSegment(x, y, xAxisEndX, xAxisEndY, Laya.Color.RED);
+            this._debugDraw.appendLineSegment(x, y, yAxisEndX, yAxisEndY, Laya.Color.GREEN);
         }
         _debugDrawPoint(p, size, color) {
             p = Physics2D.I._factory.warpPoint(p, exports.Ebox2DType.b2Vec2);
@@ -979,24 +1114,14 @@
             size /= this._debugDraw._camera.m_extent;
             var hsize = size / 2;
             let outColor = this._makeStyleString(color, 1);
-            let point = [];
-            point.push(this.physics2DToLaya(p.x - hsize));
-            point.push(this.physics2DToLaya(p.y - hsize));
-            point.push(this.physics2DToLaya(p.x + hsize));
-            point.push(this.physics2DToLaya(p.y - hsize));
-            point.push(this.physics2DToLaya(p.x + hsize));
-            point.push(this.physics2DToLaya(p.y - hsize));
-            point.push(this.physics2DToLaya(p.x + hsize));
-            point.push(this.physics2DToLaya(p.y + hsize));
-            point.push(this.physics2DToLaya(p.x + hsize));
-            point.push(this.physics2DToLaya(p.y + hsize));
-            point.push(this.physics2DToLaya(p.x - hsize));
-            point.push(this.physics2DToLaya(p.y + hsize));
-            point.push(this.physics2DToLaya(p.x - hsize));
-            point.push(this.physics2DToLaya(p.y + hsize));
-            point.push(this.physics2DToLaya(p.x - hsize));
-            point.push(this.physics2DToLaya(p.y - hsize));
-            this._debugDraw.addLineDebugDrawCMD(point, outColor);
+            let lx = this.physics2DToLaya(p.x - hsize);
+            let rx = this.physics2DToLaya(p.x + hsize);
+            let ty = this.physics2DToLaya(p.y - hsize);
+            let by = this.physics2DToLaya(p.y + hsize);
+            this._debugDraw.appendLineSegment(lx, ty, rx, ty, outColor);
+            this._debugDraw.appendLineSegment(rx, ty, rx, by, outColor);
+            this._debugDraw.appendLineSegment(rx, by, lx, by, outColor);
+            this._debugDraw.appendLineSegment(lx, by, lx, ty, outColor);
         }
         _debugDrawAABB(min, max, color) {
             let v = Physics2D.I._factory.warpPoint(min, exports.Ebox2DType.b2Vec2);
@@ -1008,30 +1133,14 @@
             var hw = (maxX - minX) * 0.5;
             var hh = (maxY - minY) * 0.5;
             let outColor = this._makeStyleString(color, 1);
-            let point0 = [];
-            point0.push(this.physics2DToLaya(cx - hw));
-            point0.push(this.physics2DToLaya(cy - hh));
-            point0.push(this.physics2DToLaya(cx + hw));
-            point0.push(this.physics2DToLaya(cy - hh));
-            this._debugDraw.addLineDebugDrawCMD(point0, outColor);
-            let point1 = [];
-            point1.push(this.physics2DToLaya(cx - hw));
-            point1.push(this.physics2DToLaya(cy + hh));
-            point1.push(this.physics2DToLaya(cx + hw));
-            point1.push(this.physics2DToLaya(cy + hh));
-            this._debugDraw.addLineDebugDrawCMD(point1, outColor);
-            let point2 = [];
-            point2.push(this.physics2DToLaya(cx - hw));
-            point2.push(this.physics2DToLaya(cy - hh));
-            point2.push(this.physics2DToLaya(cx - hw));
-            point2.push(this.physics2DToLaya(cy + hh));
-            this._debugDraw.addLineDebugDrawCMD(point2, outColor);
-            let point3 = [];
-            point3.push(this.physics2DToLaya(cx + hw));
-            point3.push(this.physics2DToLaya(cy - hh));
-            point3.push(this.physics2DToLaya(cx + hw));
-            point3.push(this.physics2DToLaya(cy + hh));
-            this._debugDraw.addLineDebugDrawCMD(point3, outColor);
+            let lx = this.physics2DToLaya(cx - hw);
+            let rx = this.physics2DToLaya(cx + hw);
+            let ty = this.physics2DToLaya(cy - hh);
+            let by = this.physics2DToLaya(cy + hh);
+            this._debugDraw.appendLineSegment(lx, ty, rx, ty, outColor);
+            this._debugDraw.appendLineSegment(lx, by, rx, by, outColor);
+            this._debugDraw.appendLineSegment(lx, ty, lx, by, outColor);
+            this._debugDraw.appendLineSegment(rx, ty, rx, by, outColor);
         }
         _dispatchEvent(type, contact) {
             let contactShapeA = Physics2D.I._factory.getContactShapeA(contact);
@@ -1427,20 +1536,20 @@
             _tempP0.x = pos.x;
             _tempP0.y = pos.y;
             let globalPos = this.owner.parent.localToGlobal(_tempP0);
-            factory.set_RigibBody_Transform(this._box2DBody, Physics2D.toPhysicsX(globalPos.x), Physics2D.toPhysicsY(globalPos.y), rotateValue);
+            factory.set_RigibBody_Transform(this._box2DBody, globalPos.x, globalPos.y, rotateValue);
             factory.set_rigidBody_Awake(this._box2DBody, true);
             Physics2D.I._addRigidBody(this);
         }
         get position() {
             if (!this._box2DBody) {
-                _tempP0.x = this.owner.globalTrans.x;
-                _tempP0.y = this.owner.globalTrans.y;
+                _tempP0.x = this.owner.x;
+                _tempP0.y = this.owner.y;
                 return _tempP0;
             }
             var pos = Laya.Vector2.TEMP;
             Physics2D.I._factory.get_RigidBody_Position(this._box2DBody, pos);
-            _tempP0.x = Physics2D.toRenderX(pos.x);
-            _tempP0.y = Physics2D.toRenderY(pos.y);
+            _tempP0.x = pos.x;
+            _tempP0.y = pos.y;
             let localPos = this.owner.parent.globalToLocal(_tempP0);
             _tempP0.x = localPos.x;
             _tempP0.y = localPos.y;
@@ -3069,6 +3178,8 @@
             if (!Laya.LayaEnv.isPlaying)
                 return;
             this._createShape();
+            if (!this._box2DShape)
+                return;
             Physics2D.I._factory.set_shape_collider(this._box2DShape, this._body);
             this._updateFilterData();
             this.x = this._x;
@@ -3202,8 +3313,6 @@
             this._shapeDef.shapeType = exports.EPhysics2DShape.ChainShape;
         }
         _createShape() {
-            this._box2DShape = Physics2D.I._factory.createShape(this._physics2DManager.box2DWorld, this._box2DBody, exports.EPhysics2DShape.ChainShape, this._box2DShapeDef);
-            this._updateShapeData();
         }
         _updateShapeData() {
             if (!Laya.LayaEnv.isPlaying || !this._body || !this._box2DBody)
@@ -3214,8 +3323,20 @@
             var pointCount = len >> 1;
             if (pointCount < 2 || (this._loop && pointCount < 3))
                 return;
-            let shape = this._box2DShape ? Physics2D.I._factory.getShape(this._box2DShape, this._shapeDef.shapeType) : Physics2D.I._factory.getShapeByDef(this._box2DShapeDef, this._shapeDef.shapeType);
-            Physics2D.I._factory.set_ChainShape_data(shape, this.pivotoffx, this.pivotoffy, this._datas, this._loop, this.scaleX, this.scaleY);
+            if (this._box2DShape) {
+                Physics2D.I._factory.destroyShape(this._physics2DManager.box2DWorld, this._box2DBody, this._box2DShape);
+                this._box2DShape = null;
+            }
+            let defShape = Physics2D.I._factory.getShapeByDef(this._box2DShapeDef, this._shapeDef.shapeType);
+            Physics2D.I._factory.set_ChainShape_data(defShape, this.pivotoffx, this.pivotoffy, this._datas, this._loop, this.scaleX, this.scaleY);
+            this._box2DShape = Physics2D.I._factory.createShape(this._physics2DManager.box2DWorld, this._box2DBody, exports.EPhysics2DShape.ChainShape, this._box2DShapeDef);
+            Physics2D.I._factory.set_shape_collider(this._box2DShape, this._body);
+            this.filterData = this.filterData;
+            this.density = this.density;
+            this.friction = this.friction;
+            this.isSensor = this.isSensor;
+            this.restitution = this.restitution;
+            this.restitutionThreshold = this.restitutionThreshold;
         }
         clone() {
             let dest = new ChainShape2D();

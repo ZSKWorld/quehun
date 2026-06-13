@@ -18,9 +18,9 @@ loadLib("libs/laya.trailCommon.js");
 loadLib("libs/laya.trail2D.js");
 loadLib("libs/laya.particleCommon.js");
 loadLib("libs/laya.particle.js");
+// loadLib("libs/laya.tilemap.js");
 loadLib("libs/laya.physics2D.js");
 loadLib("libs/laya.box2D.wasm.js");
-// loadLib("libs/laya.tilemap.js");
 loadLib("libs/spine-core-4.2.js");
 loadLib("libs/laya.spine.js");
 loadLib("libs/laya.spine3D.js");
@@ -35,6 +35,7 @@ loadLib("libs/laya.bullet.wasm.js");
 loadLib("libs/laya.navMesh3d.js");
 // loadLib("libs/laya.gltf.js");
 loadLib("libs/laya.device.js");
+loadLib("libs/laya.legacyParser.js");
 loadLib("libs/laya.bridge.js");
 
 //libs game

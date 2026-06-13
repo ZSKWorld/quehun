@@ -610,31 +610,31 @@
             }
             {
                 Particle2DShader.VelocityOverLifetimeDef = Laya.Shader3D.getDefineByName("VELOCITYOVERLIFETIME");
-                Particle2DShader.VelocityCurveMinX = addUniformArray("u_VelocityCurveMinX", Laya.ShaderDataType.Vector4, 4);
-                Particle2DShader.VelocityCurveMinY = addUniformArray("u_VelocityCurveMinY", Laya.ShaderDataType.Vector4, 4);
-                Particle2DShader.VelocityCurveMaxX = addUniformArray("u_VelocityCurveMaxX", Laya.ShaderDataType.Vector4, 4);
-                Particle2DShader.VelocityCurveMaxY = addUniformArray("u_VelocityCurveMaxY", Laya.ShaderDataType.Vector4, 4);
+                Particle2DShader.VelocityCurveMinX = addUniformArray("u_VelocityCurveMinX", Laya.ShaderDataType.Vector4, 2);
+                Particle2DShader.VelocityCurveMinY = addUniformArray("u_VelocityCurveMinY", Laya.ShaderDataType.Vector4, 2);
+                Particle2DShader.VelocityCurveMaxX = addUniformArray("u_VelocityCurveMaxX", Laya.ShaderDataType.Vector4, 2);
+                Particle2DShader.VelocityCurveMaxY = addUniformArray("u_VelocityCurveMaxY", Laya.ShaderDataType.Vector4, 2);
                 Particle2DShader.VelocityOverLifetimeSpace = addUniform("u_VelocityOverLifetimeSpace", Laya.ShaderDataType.Float);
             }
             {
                 Particle2DShader.SizeOverLifetimeDef = Laya.Shader3D.getDefineByName("SIZEOVERLIFETIME");
-                Particle2DShader.SizeCurveMinX = addUniformArray("u_SizeCurveMinX", Laya.ShaderDataType.Vector4, 4);
-                Particle2DShader.SizeCurveMinY = addUniformArray("u_SizeCurveMinY", Laya.ShaderDataType.Vector4, 4);
+                Particle2DShader.SizeCurveMinX = addUniformArray("u_SizeCurveMinX", Laya.ShaderDataType.Vector4, 2);
+                Particle2DShader.SizeCurveMinY = addUniformArray("u_SizeCurveMinY", Laya.ShaderDataType.Vector4, 2);
                 Particle2DShader.SizeCurveMinTimeRange = addUniform("u_SizeCurveMinTimeRange", Laya.ShaderDataType.Vector4);
-                Particle2DShader.SizeCurveMaxX = addUniformArray("u_SizeCurveMaxX", Laya.ShaderDataType.Vector4, 4);
-                Particle2DShader.SizeCurveMaxY = addUniformArray("u_SizeCurveMaxY", Laya.ShaderDataType.Vector4, 4);
+                Particle2DShader.SizeCurveMaxX = addUniformArray("u_SizeCurveMaxX", Laya.ShaderDataType.Vector4, 2);
+                Particle2DShader.SizeCurveMaxY = addUniformArray("u_SizeCurveMaxY", Laya.ShaderDataType.Vector4, 2);
                 Particle2DShader.SizeCurveMaxTimeRange = addUniform("u_SizeCurveMaxTimeRange", Laya.ShaderDataType.Vector4);
             }
             {
                 Particle2DShader.RotationOverLifetimeDef = Laya.Shader3D.getDefineByName("ROTATIONOVERLIFETIME");
-                Particle2DShader.RotationCurveMin = addUniformArray("u_RotationCurveMin", Laya.ShaderDataType.Vector4, 4);
-                Particle2DShader.RotationCurveMax = addUniformArray("u_RotationCurveMax", Laya.ShaderDataType.Vector4, 4);
+                Particle2DShader.RotationCurveMin = addUniformArray("u_RotationCurveMin", Laya.ShaderDataType.Vector4, 2);
+                Particle2DShader.RotationCurveMax = addUniformArray("u_RotationCurveMax", Laya.ShaderDataType.Vector4, 2);
             }
             {
                 Particle2DShader.TextureSheetAnimationDef = Laya.Shader3D.getDefineByName("TEXTURESHEETANIMATION");
                 Particle2DShader.TextureSheetFrameData = addUniform("u_TextureSheetFrameData", Laya.ShaderDataType.Vector4);
-                Particle2DShader.TextureSheetFrame = addUniformArray("u_TextureSheetFrame", Laya.ShaderDataType.Vector4, 4);
-                Particle2DShader.TextureSheetFrameMax = addUniformArray("u_TextureSheetFrameMax", Laya.ShaderDataType.Vector4, 4);
+                Particle2DShader.TextureSheetFrame = addUniformArray("u_TextureSheetFrame", Laya.ShaderDataType.Vector4, 2);
+                Particle2DShader.TextureSheetFrameMax = addUniformArray("u_TextureSheetFrameMax", Laya.ShaderDataType.Vector4, 2);
                 Particle2DShader.TextureSheetFrameRange = addUniform("u_TextureSheetFrameRange", Laya.ShaderDataType.Vector4);
             }
         }
@@ -1786,7 +1786,9 @@
             this._createRenderElements();
         }
         _createRenderElements() {
+            let mat = this._materials[0];
             this._renderElements.forEach(element => {
+                Laya.BaseRenderNode2D._removeRenderElement2DMaterial(element, mat);
                 element.destroy();
             });
             this._renderElements.length = 0;
@@ -1879,7 +1881,9 @@
                     this._renderElements.forEach(element => {
                         element.geometry.clearRenderParams();
                         let drawCount = particleCount * meshIndexCount;
-                        element.geometry.setDrawElemenParams(drawCount, startActive * meshIndexCount * 2);
+                        if (drawCount > 0) {
+                            element.geometry.setDrawElemenParams(drawCount, startActive * meshIndexCount * 2);
+                        }
                     });
                 }
                 else {

@@ -1093,7 +1093,7 @@
     class LightGenShader2D {
         static __init__() {
             this.renderShader = Laya.Shader3D.add('LightGen2D', false, false);
-            this.renderShader.shaderType = Laya.ShaderFeatureType.Default;
+            this.renderShader.shaderType = Laya.ShaderFeatureType.D2_BaseRenderNode2D;
             const subShader = new Laya.SubShader(this.RenderAttribute, {}, {});
             this.renderShader.addSubShader(subShader);
             subShader.addShaderPass(lightGen_vs, lightGen_ps);
@@ -1111,7 +1111,7 @@
     class ShadowGenShader2D {
         static __init__() {
             this.renderShader = Laya.Shader3D.add('ShadowGen2D', false, false);
-            this.renderShader.shaderType = Laya.ShaderFeatureType.Default;
+            this.renderShader.shaderType = Laya.ShaderFeatureType.D2_BaseRenderNode2D;
             const subShader = new Laya.SubShader(this.RenderAttribute, this.RenderUniform, {});
             this.renderShader.addSubShader(subShader);
             subShader.addShaderPass(shadowGen2D_vs, shadowGen2D_ps);
@@ -1138,7 +1138,7 @@
     class LightAndShadowGenShader2D {
         static __init__() {
             this.renderShader = Laya.Shader3D.add('LightAndShadowGen2D', false, false);
-            this.renderShader.shaderType = Laya.ShaderFeatureType.Default;
+            this.renderShader.shaderType = Laya.ShaderFeatureType.D2_BaseRenderNode2D;
             const subShader = new Laya.SubShader(this.RenderAttribute, this.RenderUniform, {});
             this.renderShader.addSubShader(subShader);
             subShader.addShaderPass(lightAndShadowGen2D_vs, lightAndShadowGen2D_ps);

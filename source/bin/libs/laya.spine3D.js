@@ -1,7 +1,7 @@
 (function (exports, Laya) {
     'use strict';
 
-    var spine3DVertex = "#if !defined(SpineVertex_lib)\n#define SpineVertex_lib\n#include \"SpineVertexCommon.glsl\";\nuniform mat4 u_WorldMat;uniform vec4 u_WorldInvertFront;struct Vertex{vec3 positionOS;vec3 normalOS;vec2 texCoord0;\n#ifdef UV1\nvec2 texCoord1;\n#endif\nvec4 vertexColor;\n#ifdef LIGHTMAP\nvec4 lightmapScaleOffset;\n#endif LIGHTMAP\n};\n#ifdef LIGHTMAP\n#ifndef GPU_INSTANCE\nuniform vec4 u_LightmapScaleOffset;\n#endif\nvec4 getLightmapScaleOffset(){\n#ifdef GPU_INSTANCE\nreturn a_LightmapScaleOffset;\n#else\nreturn u_LightmapScaleOffset;\n#endif\n}\n#endif\nvoid getVertexParams(inout Vertex vertex){vec4 spinePos2D=getSpinePos();vertex.positionOS=vec3(spinePos2D.xy,0.0);vertex.normalOS=vec3(0.0,0.0,1.0);vertex.vertexColor=vec4(1.0,1.0,1.0,1.0);vertex.vertexColor=a_color;vertex.vertexColor.rgb*=a_color.a;vertex.texCoord0=a_uv;\n#ifdef UV1\nvertex.texCoord1=a_Texcoord1;\n#endif\n#ifdef LIGHTMAP\nvertex.lightmapScaleOffset=getLightmapScaleOffset();\n#endif LIGHTMAP\n}\n#endif\n";
+    var spine3DVertex = "#if !defined(SpineVertex_lib)\n#define SpineVertex_lib\n#include \"SpineVertexCommon.glsl\";\nuniform mat4 u_WorldMat;uniform vec4 u_WorldInvertFront;struct Vertex{vec3 positionOS;vec3 normalOS;vec2 texCoord0;\n#ifdef UV1\nvec2 texCoord1;\n#endif\nvec4 vertexColor;\n#ifdef LIGHTMAP\nvec4 lightmapScaleOffset;\n#endif LIGHTMAP\n};\n#ifdef LIGHTMAP\n#ifndef GPU_INSTANCE\nuniform vec4 u_LightmapScaleOffset;\n#endif\nvec4 getLightmapScaleOffset(){\n#ifdef GPU_INSTANCE\nreturn a_LightmapScaleOffset;\n#else\nreturn u_LightmapScaleOffset;\n#endif\n}\n#endif\nvoid getVertexParams(inout Vertex vertex){vec4 spinePos2D=getSpinePos();vertex.positionOS=vec3(spinePos2D.xy,0.0);vertex.normalOS=vec3(0.0,0.0,1.0);vertex.vertexColor=vec4(1.0,1.0,1.0,1.0);vertex.vertexColor=a_color;vertex.vertexColor.rgb*=a_color.a;vertex.texCoord0=a_uv;\n#ifdef LIGHTMAP\nvertex.lightmapScaleOffset=getLightmapScaleOffset();\n#endif LIGHTMAP\n}\n#endif\n";
 
     var spine3DVS = "#define SHADER_NAME Spine3DVS\n#include \"Math.glsl\";\n#include \"Scene.glsl\";\n#include \"SceneFogInput.glsl\";\n#include \"Camera.glsl\";\n#include \"Spine3DVertex.glsl\";\n#ifdef SPINE_BILLBOARD\nuniform mat4 u_spineBillboardMatrix;\n#endif\nvarying vec2 v_texcoord;varying vec4 v_color;varying vec4 v_color2;mat4 getWorldMatrix(){\n#ifdef SPINE_BILLBOARD\nreturn u_spineBillboardMatrix;\n#else\n#ifdef GPU_INSTANCE\nmat4 worldMat=a_WorldMat;\n#else\nmat4 worldMat=u_WorldMat;\n#endif\nreturn worldMat;\n#endif\n}void main(){Vertex vertex;getVertexParams(vertex);v_texcoord=vertex.texCoord0;v_color=vertex.vertexColor;\n#ifdef COLOR2\nv_color2=a_color2;\n#else\nv_color2=vec4(0.0,0.0,0.0,1.0);\n#endif\n#ifdef PREMULTIPLYALPHA\nv_color2.xyz=v_color2.xyz*v_color.a;\n#endif\nmat4 worldMat=getWorldMatrix();vec4 pos=worldMat*vec4(vertex.positionOS,1.0);vec3 positionWS=pos.xyz/pos.w;gl_Position=getPositionCS(positionWS);gl_Position=remapPositionZ(gl_Position);\n#ifdef FOG\nFogHandle(gl_Position.z);\n#endif\n}";
 
@@ -56,6 +56,7 @@
         }
         constructor() {
             super();
+            this.physicsUpdate = 0;
             this._maxDeltaTime = 0.1;
             this._pause = true;
             this._needUpdate = false;
@@ -71,6 +72,9 @@
             this._cacheMoved = new Laya.Vector2(-1, -1);
             this._worldParams = new Laya.Vector4();
             this._playAudio = false;
+            this._skeletonPosition = new Laya.Vector2();
+            this._lastSkeletonWorldPosition = new Laya.Vector3();
+            this._hasSkeletonWorldPosition = false;
             this._geometryBounds = new Laya.Bounds();
             this._premultipliedAlpha = true;
             this._setPreAlphaFlag = false;
@@ -278,6 +282,7 @@
             if (!this._templet)
                 return;
             this._templet._addReference();
+            this._templet.on(Laya.SpineTemplet.EVENT_SPINE_MATERIAL_CHANGE, this, this.onSpineMaterialChange);
             if (this._spineRender) {
                 this._spineRender.destroy();
             }
@@ -285,6 +290,7 @@
             this._spineRender.init(templet);
             this._spineRender.mode = this._useFastRender ? Laya.ESpineRenderMode.Optimize : Laya.ESpineRenderMode.Normal;
             this._spineRender.premultipliedAlpha = this._setPreAlphaFlag ? this._premultipliedAlpha : this._templet.premultipliedAlpha;
+            this._resetSkeletonPosition();
             if (this._enableCache) {
                 this._spineRender.enableCache();
             }
@@ -359,6 +365,10 @@
             this._baseRenderNode.baseGeometryBounds = this._geometryBounds;
         }
         play(nameOrIndex, loop, force = true, start = 0, end = 0, playAudio = false) {
+            if (!this._templet) {
+                console.warn("Spine2DRenderNode.play: templet is not ready, animation:", nameOrIndex);
+                return;
+            }
             this._playAudio = playAudio;
             start /= 1000;
             end /= 1000;
@@ -394,11 +404,12 @@
                 timerDelta = this._maxDeltaTime;
             let delta = timerDelta * this._playbackRate;
             let currentPlayTime = this._spineRender.currentTime;
+            this._syncSkeletonPosition();
             this._spineRender.update(delta);
             if (this.destroyed) {
                 return;
             }
-            this._spineRender.render(currentPlayTime, 2);
+            this._spineRender.render(currentPlayTime, this.physicsUpdate);
         }
         getAnimNum() {
             return this._templet.getAnimationCount();
@@ -444,10 +455,61 @@
             }
         }
         onTransformChanged() {
+            this._syncSkeletonPosition();
+        }
+        _resetSkeletonPosition() {
+            this._skeletonPosition.setValue(0, 0);
+            this._lastSkeletonWorldPosition.setValue(0, 0, 0);
+            this._hasSkeletonWorldPosition = false;
+        }
+        _syncSkeletonPosition() {
             if (!this._spineRender)
                 return;
             let matrix = this.owner.transform.worldMatrix;
-            this._spineRender.setSkeletonPosition(matrix.elements[12], matrix.elements[13]);
+            let elements = matrix.elements;
+            let worldX = elements[12];
+            let worldY = elements[13];
+            let worldZ = elements[14];
+            if (!this._isPhysicsSyncEnabled()) {
+                this._lastSkeletonWorldPosition.setValue(worldX, worldY, worldZ);
+                this._hasSkeletonWorldPosition = true;
+                return;
+            }
+            if (!this._hasSkeletonWorldPosition) {
+                this._lastSkeletonWorldPosition.setValue(worldX, worldY, worldZ);
+                this._hasSkeletonWorldPosition = true;
+                this._spineRender.setSkeletonPosition(this._skeletonPosition.x, this._skeletonPosition.y);
+                return;
+            }
+            let deltaX = worldX - this._lastSkeletonWorldPosition.x;
+            let deltaY = worldY - this._lastSkeletonWorldPosition.y;
+            let deltaZ = worldZ - this._lastSkeletonWorldPosition.z;
+            if (deltaX !== 0 || deltaY !== 0 || deltaZ !== 0) {
+                let skeletonDeltaX = 0;
+                let skeletonDeltaY = 0;
+                let xAxisX = elements[0];
+                let xAxisY = elements[1];
+                let xAxisZ = elements[2];
+                let yAxisX = elements[4];
+                let yAxisY = elements[5];
+                let yAxisZ = elements[6];
+                let xAxisLengthSq = xAxisX * xAxisX + xAxisY * xAxisY + xAxisZ * xAxisZ;
+                let yAxisLengthSq = yAxisX * yAxisX + yAxisY * yAxisY + yAxisZ * yAxisZ;
+                if (xAxisLengthSq > 0)
+                    skeletonDeltaX = (deltaX * xAxisX + deltaY * xAxisY + deltaZ * xAxisZ) / xAxisLengthSq;
+                if (yAxisLengthSq > 0)
+                    skeletonDeltaY = (deltaX * yAxisX + deltaY * yAxisY + deltaZ * yAxisZ) / yAxisLengthSq;
+                if (skeletonDeltaX !== 0 || skeletonDeltaY !== 0) {
+                    this._skeletonPosition.x += skeletonDeltaX;
+                    this._skeletonPosition.y += skeletonDeltaY;
+                    this._spineRender.physicsTranslate(skeletonDeltaX, skeletonDeltaY);
+                }
+            }
+            this._lastSkeletonWorldPosition.setValue(worldX, worldY, worldZ);
+            this._spineRender.setSkeletonPosition(this._skeletonPosition.x, this._skeletonPosition.y);
+        }
+        _isPhysicsSyncEnabled() {
+            return this.physicsUpdate === 1 || this.physicsUpdate === 2;
         }
         setSlotAttachment(slotName, attachmentName) {
             this.useFastRender = false;
@@ -456,10 +518,16 @@
         clear() {
             this.reset();
         }
+        onSpineMaterialChange() {
+            if (this._spineRender)
+                this._spineRender.clearCacheMaterials();
+        }
         reset() {
             this._spineRender.reset();
+            this._templet.off(Laya.SpineTemplet.EVENT_SPINE_MATERIAL_CHANGE, this, this.onSpineMaterialChange);
             this._templet._removeReference(1);
             this._templet = null;
+            this._resetSkeletonPosition();
             this._pause = true;
             this._needUpdate = false;
         }

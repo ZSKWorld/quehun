@@ -17,7 +17,7 @@
             };
             let uniformMap = {};
             let shader = Laya.Shader3D.add("LineShader", true, false);
-            shader.shaderType = Laya.ShaderFeatureType.Default;
+            shader.shaderType = Laya.ShaderFeatureType.D2_BaseRenderNode2D;
             let subShader = new Laya.SubShader(attributeMap, uniformMap, {});
             shader.addSubShader(subShader);
             subShader.addShaderPass(LineVs, LineFs);
@@ -175,7 +175,10 @@
         }
         set sharedMaterial(value) {
             super.sharedMaterial = value;
-            Laya.BaseRenderNode2D._setRenderElement2DMaterial(this._renderElements[0], this._materials[0] ? this._materials[0] : Line2DRender.defaultLine2DMaterial);
+            Laya.BaseRenderNode2D._setRenderElement2DMaterial(this._renderElements[0], this._getElementMaterial(0));
+        }
+        _getElementMaterial(index) {
+            return this._materials[index] || Line2DRender.defaultLine2DMaterial;
         }
         _updateDashValue() {
             if (this._isdashed) {
@@ -186,7 +189,7 @@
             }
         }
         _isMaterialVaild(value) {
-            return value.checkType(Laya.ShaderFeatureType.Default);
+            return value.checkType(Laya.ShaderFeatureType.D2_BaseRenderNode2D);
         }
         _getcommonUniformMap() {
             return ["BaseRender2D", "Line2DRender"];
@@ -267,7 +270,7 @@
             renderElement.renderStateIsBySprite = false;
             renderElement.nodeCommonMap = this._getcommonUniformMap();
             renderElement.owner = this._struct;
-            Laya.BaseRenderNode2D._setRenderElement2DMaterial(renderElement, this._materials[0] ? this._materials[0] : Line2DRender.defaultLine2DMaterial);
+            Laya.BaseRenderNode2D._setRenderElement2DMaterial(renderElement, this._getElementMaterial(0));
             this._renderElements[0] = renderElement;
             this._struct.renderElements = this._renderElements;
         }

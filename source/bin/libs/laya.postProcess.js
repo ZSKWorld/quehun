@@ -192,6 +192,12 @@
         set dirtIntensity(value) {
             this._dirtIntensity = Math.max(value, 0.0);
         }
+        get resolutionScale() {
+            return this._resolutionScale;
+        }
+        set resolutionScale(value) {
+            this._resolutionScale = Math.min(Math.max(value, 0.125), 2.0);
+        }
         constructor() {
             super();
             this._shader = null;
@@ -211,6 +217,7 @@
             this._shaderSetting = new Laya.Vector4();
             this._dirtTileOffset = new Laya.Vector4();
             this._fastMode = false;
+            this._resolutionScale = 1.0;
             this._dirtTexture = null;
             this._singleton = true;
             this.active = true;
@@ -243,8 +250,9 @@
             var ratio = this._anamorphicRatio;
             var rw = ratio < 0 ? -ratio : 0;
             var rh = ratio > 0 ? ratio : 0;
-            var tw = Math.floor(viewport.width / (2 - rw));
-            var th = Math.floor(viewport.height / (2 - rh));
+            var invScale = 2 / this._resolutionScale;
+            var tw = Math.floor(viewport.width / Math.max(invScale - rw, 1));
+            var th = Math.floor(viewport.height / Math.max(invScale - rh, 1));
             var s = Math.max(tw, th);
             var logs;
             logs = Math.log2(s) + this._diffusion - 10;
@@ -337,9 +345,9 @@
 
     var BlitScreenVS = "#define SHADER_NAME BlitVS\nvarying vec2 v_Texcoord0;void main(){gl_Position=vec4(u_OffsetScale.x*2.0-1.0+(a_PositionTexcoord.x+1.0)*u_OffsetScale.z,(1.0-((u_OffsetScale.y*2.0-1.0+(-a_PositionTexcoord.y+1.0)*u_OffsetScale.w)+1.0)/2.0)*2.0-1.0,0.0,1.0);v_Texcoord0=a_PositionTexcoord.zw;}";
 
-    var BlitLUTShader = "#define SHADER_NAME BlitLUTFS\n#include \"Color.glsl\";\nuniform sampler2D u_Lut;uniform vec4 u_LutParams;\n#include \"ColorGrading.glsl\";\n#include \"LUT.glsl\";\n#ifdef CUSTOMLUT\nuniform sampler2D u_CustomLut;uniform vec4 u_CustomLutParams;\n#endif\nvarying vec2 v_Texcoord0;void main(){gl_FragColor=texture2D(u_MainTex,v_Texcoord0);\n#ifdef Gamma_u_MainTex\ngl_FragColor=gammaToLinear(gl_FragColor);\n#endif\nvec3 color=gl_FragColor.rgb;color*=u_LutParams.w;color=applyLut(linearToLogC(color),u_LutParams.xyz);\n#ifdef CUSTOMLUT\nfloat contrib=u_CustomLutParams.w;vec3 gamma=linearToGamma(color);vec3 userLut=applyLut(u_CustomLut,gamma,u_CustomLutParams);gamma=mix(gamma,userLut,contrib);color=gammaToLinear(gamma);\n#endif\ngl_FragColor.rgb=color;gl_FragColor=outputTransform(gl_FragColor);}";
+    var BlitLUTShader = "#define SHADER_NAME BlitLUTFS\n#include \"Color.glsl\";\n#include \"ColorGrading.glsl\";\n#include \"LUT.glsl\";\nvarying vec2 v_Texcoord0;void main(){gl_FragColor=texture2D(u_MainTex,v_Texcoord0);\n#ifdef Gamma_u_MainTex\ngl_FragColor=gammaToLinear(gl_FragColor);\n#endif\nvec3 color=gl_FragColor.rgb;color*=u_LutParams.w;color=applyLut(linearToLogC(color),u_LutParams.xyz);\n#ifdef CUSTOMLUT\nfloat contrib=u_CustomLutParams.w;vec3 gamma=linearToGamma(color);vec3 userLut=applyLut(u_CustomLut,gamma,u_CustomLutParams);gamma=mix(gamma,userLut,contrib);color=gammaToLinear(gamma);\n#endif\ngl_FragColor.rgb=color;gl_FragColor=outputTransform(gl_FragColor);}";
 
-    var ColorGradingGLSL = "#if !defined(ColorGrading_lib)\n#define ColorGrading_lib\nconst float ACEScc_MAX=1.4679964;const float ACEScc_MIDGRAY=0.4135884;const float LogC_cut=0.011361;const float LogC_a=5.555556;const float LogC_b=0.047996;const float LogC_c=0.244161;const float LogC_d=0.386036;const float LogC_e=5.301883;const float LogC_f=0.092819;float linearToLogC(float x){float o;if(x>LogC_cut){o=LogC_c*log10(max(LogC_a*x+LogC_b,0.0))+LogC_d;}else{o=LogC_e*x+LogC_f;}return o;}vec3 linearToLogC(vec3 x){vec3 logc;logc.x=linearToLogC(x.x);logc.y=linearToLogC(x.y);logc.z=linearToLogC(x.z);return logc;}float logCToLinear(float x){float o;if(x>LogC_e*LogC_cut+LogC_f)o=(pow(10.0,(x-LogC_d)/LogC_c)-LogC_b)/LogC_a;else o=(x-LogC_f)/LogC_e;return o;}vec3 logCToLinear(vec3 x){vec3 linear;linear.x=logCToLinear(x.x);linear.y=logCToLinear(x.y);linear.z=logCToLinear(x.z);return linear;}vec3 RgbToHsv(vec3 c){const vec4 K=vec4(0.0,-1.0/3.0,2.0/3.0,-1.0);vec4 p=mix(vec4(c.bg,K.wz),vec4(c.gb,K.xy),step(c.b,c.g));vec4 q=mix(vec4(p.xyw,c.r),vec4(c.r,p.yzx),step(p.x,c.r));float d=q.x-min(q.w,q.y);const float e=1.0e-4;return vec3(abs(q.z+(q.w-q.y)/(6.0*d+e)),d/(q.x+e),q.x);}vec3 HsvToRgb(vec3 c){const vec4 K=vec4(1.0,2.0/3.0,1.0/3.0,3.0);vec3 p=abs(fract(vec3(c.x)+K.xyz)*6.0-K.www);return c.z*mix(vec3(K.x),saturate(p-vec3(K.x)),c.y);}float RotateHue(float value,float low,float hi){return(value<low)? value+hi:(value>hi)? value-hi: value;}const mat3 Linear_to_LMS_MAT=mat3(vec3(3.90405e-1,7.08416e-2,2.31082e-2),vec3(5.49941e-1,9.63172e-1,1.28021e-1),vec3(8.92632e-3,1.35775e-3,9.36245e-1));const mat3 LMS_to_Linear_MAT=mat3(vec3(2.85847e+0,-2.10182e-1,-4.18120e-2),vec3(-1.62879e+0,1.15820e+0,-1.18169e-1),vec3(-2.48910e-2,3.24281e-4,1.06867e+0));uniform vec3 u_ColorBalance;uniform vec4 u_SplitShadows;uniform vec3 u_Splithighlights;uniform vec3 u_Shadows;uniform vec3 u_Midtones;uniform vec3 u_Highlights;uniform vec4 u_Limits;uniform vec3 u_Lift;uniform vec3 u_Gamma;uniform vec3 u_Gain;uniform vec4 u_ColorFilter;uniform vec4 u_HueSatCon;float luminance(in vec3 color){\n#ifdef ACES\nfloat luma=dot(color,AP1_RGB2Y);\n#else\nfloat luma=dot(color,vec3(0.2126729,0.7151522,0.0721750));\n#endif\nreturn luma;}vec3 softlight(vec3 base,vec3 blend){vec3 r1=2.0*base*blend+base*base*(1.0-2.0*blend);vec3 r2=sqrt(base)*(2.0*blend-1.0)+2.0*base*(1.0-blend);vec3 t=step(0.5,blend);return r2*t+(1.0-t)*r1;}vec3 colorGrade(in vec3 color){vec3 colorLMS=Linear_to_LMS_MAT*color;colorLMS*=u_ColorBalance.xyz;color=LMS_to_Linear_MAT*colorLMS;\n#ifdef ACES\nvec3 colorLog=ACES_to_ACEScc(sRGB_to_AP0_MAT*color);\n#else\nvec3 colorLog=linearToLogC(color);\n#endif\ncolorLog=(colorLog-vec3(ACEScc_MIDGRAY))*u_HueSatCon.z+vec3(ACEScc_MIDGRAY);\n#ifdef ACES\ncolor=AP0_to_AP1_MAT*ACEScc_to_ACES(colorLog);\n#else\ncolor=logCToLinear(colorLog);\n#endif\ncolor=color*u_ColorFilter.rgb;color=max(vec3(0.0),color);float balance=u_SplitShadows.w;vec3 gamma=linearToGamma(color);float splitLuma=saturate(luminance(color))+balance;vec3 splitShadows=mix(vec3(0.5,0.5,0.5),u_SplitShadows.xyz,1.0-splitLuma);vec3 splitHeighlights=mix(vec3(0.5,0.5,0.5),u_Splithighlights.xyz,splitLuma);gamma=softlight(gamma,splitShadows);gamma=softlight(gamma,splitHeighlights);color=gammaToLinear(gamma);float luma=luminance(color);float shadowFactor=1.0-smoothstep(u_Limits.x,u_Limits.y,luma);float highlightsFactor=smoothstep(u_Limits.z,u_Limits.w,luma);float midtonesFactor=1.0-shadowFactor-highlightsFactor;color=color*u_Shadows.xyz*shadowFactor+color*u_Midtones.xyz*midtonesFactor+color*u_Highlights.xyz*highlightsFactor;color=color*u_Gain.xyz+u_Lift.xyz;color=sign(color)*pow(abs(color),u_Gamma.xyz);vec3 hsv=RgbToHsv(color);float hue=hsv.x+u_HueSatCon.x;hsv.x=RotateHue(hsv.x,0.0,1.0);color=HsvToRgb(hsv);luma=luminance(color);color=vec3(luma)+(vec3(u_HueSatCon.y))*(color-vec3(luma));return color;}\n#endif\n";
+    var ColorGradingGLSL = "#if !defined(ColorGrading_lib)\n#define ColorGrading_lib\nconst float ACEScc_MAX=1.4679964;const float ACEScc_MIDGRAY=0.4135884;const float LogC_cut=0.011361;const float LogC_a=5.555556;const float LogC_b=0.047996;const float LogC_c=0.244161;const float LogC_d=0.386036;const float LogC_e=5.301883;const float LogC_f=0.092819;float linearToLogC(float x){float o;if(x>LogC_cut){o=LogC_c*log10(max(LogC_a*x+LogC_b,0.0))+LogC_d;}else{o=LogC_e*x+LogC_f;}return o;}vec3 linearToLogC(vec3 x){vec3 logc;logc.x=linearToLogC(x.x);logc.y=linearToLogC(x.y);logc.z=linearToLogC(x.z);return logc;}float logCToLinear(float x){float o;if(x>LogC_e*LogC_cut+LogC_f)o=(pow(10.0,(x-LogC_d)/LogC_c)-LogC_b)/LogC_a;else o=(x-LogC_f)/LogC_e;return o;}vec3 logCToLinear(vec3 x){vec3 linear;linear.x=logCToLinear(x.x);linear.y=logCToLinear(x.y);linear.z=logCToLinear(x.z);return linear;}vec3 RgbToHsv(vec3 c){const vec4 K=vec4(0.0,-1.0/3.0,2.0/3.0,-1.0);vec4 p=mix(vec4(c.bg,K.wz),vec4(c.gb,K.xy),step(c.b,c.g));vec4 q=mix(vec4(p.xyw,c.r),vec4(c.r,p.yzx),step(p.x,c.r));float d=q.x-min(q.w,q.y);const float e=1.0e-4;return vec3(abs(q.z+(q.w-q.y)/(6.0*d+e)),d/(q.x+e),q.x);}vec3 HsvToRgb(vec3 c){const vec4 K=vec4(1.0,2.0/3.0,1.0/3.0,3.0);vec3 p=abs(fract(vec3(c.x)+K.xyz)*6.0-K.www);return c.z*mix(vec3(K.x),saturate(p-vec3(K.x)),c.y);}float RotateHue(float value,float low,float hi){return(value<low)? value+hi:(value>hi)? value-hi: value;}const mat3 Linear_to_LMS_MAT=mat3(vec3(3.90405e-1,7.08416e-2,2.31082e-2),vec3(5.49941e-1,9.63172e-1,1.28021e-1),vec3(8.92632e-3,1.35775e-3,9.36245e-1));const mat3 LMS_to_Linear_MAT=mat3(vec3(2.85847e+0,-2.10182e-1,-4.18120e-2),vec3(-1.62879e+0,1.15820e+0,-1.18169e-1),vec3(-2.48910e-2,3.24281e-4,1.06867e+0));float luminance(in vec3 color){\n#ifdef ACES\nfloat luma=dot(color,AP1_RGB2Y);\n#else\nfloat luma=dot(color,vec3(0.2126729,0.7151522,0.0721750));\n#endif\nreturn luma;}vec3 softlight(vec3 base,vec3 blend){vec3 r1=2.0*base*blend+base*base*(1.0-2.0*blend);vec3 r2=sqrt(base)*(2.0*blend-1.0)+2.0*base*(1.0-blend);vec3 t=step(0.5,blend);return r2*t+(1.0-t)*r1;}vec3 colorGrade(in vec3 color){vec3 colorLMS=Linear_to_LMS_MAT*color;colorLMS*=u_ColorBalance.xyz;color=LMS_to_Linear_MAT*colorLMS;\n#ifdef ACES\nvec3 colorLog=ACES_to_ACEScc(sRGB_to_AP0_MAT*color);\n#else\nvec3 colorLog=linearToLogC(color);\n#endif\ncolorLog=(colorLog-vec3(ACEScc_MIDGRAY))*u_HueSatCon.z+vec3(ACEScc_MIDGRAY);\n#ifdef ACES\ncolor=AP0_to_AP1_MAT*ACEScc_to_ACES(colorLog);\n#else\ncolor=logCToLinear(colorLog);\n#endif\ncolor=color*u_ColorFilter.rgb;color=max(vec3(0.0),color);float balance=u_SplitShadows.w;vec3 gamma=linearToGamma(color);float splitLuma=saturate(luminance(color))+balance;vec3 splitShadows=mix(vec3(0.5,0.5,0.5),u_SplitShadows.xyz,1.0-splitLuma);vec3 splitHeighlights=mix(vec3(0.5,0.5,0.5),u_Splithighlights.xyz,splitLuma);gamma=softlight(gamma,splitShadows);gamma=softlight(gamma,splitHeighlights);color=gammaToLinear(gamma);float luma=luminance(color);float shadowFactor=1.0-smoothstep(u_Limits.x,u_Limits.y,luma);float highlightsFactor=smoothstep(u_Limits.z,u_Limits.w,luma);float midtonesFactor=1.0-shadowFactor-highlightsFactor;color=color*u_Shadows.xyz*shadowFactor+color*u_Midtones.xyz*midtonesFactor+color*u_Highlights.xyz*highlightsFactor;color=color*u_Gain.xyz+u_Lift.xyz;color=sign(color)*pow(abs(color),u_Gamma.xyz);vec3 hsv=RgbToHsv(color);float hue=hsv.x+u_HueSatCon.x;hsv.x=RotateHue(hsv.x,0.0,1.0);color=HsvToRgb(hsv);luma=luminance(color);color=vec3(luma)+(vec3(u_HueSatCon.y))*(color-vec3(luma));return color;}\n#endif\n";
 
     var TonemappingGLSL = "#if !defined(Tonemapping_lib)\n#define Tonemapping_lib\nvec3 tonemap(in vec3 ap1){vec3 color=ap1;\n#ifdef ACES\nvec3 aces=AP1_to_AP0_MAT*color;vec3 oces=RRT(aces);color=ODT_sRGB_100nits(oces);\n#endif\nreturn color;}\n#endif\n";
 
@@ -387,6 +395,20 @@
             Laya.Shader3D.addInclude("ColorGrading.glsl", ColorGradingGLSL);
             Laya.Shader3D.addInclude("Tonemapping.glsl", TonemappingGLSL);
             Laya.Shader3D.addInclude("LUT.glsl", LUTGLSL);
+            Laya.SubShader.regIncludeBindUnifrom("ColorGrading.glsl", {
+                "u_ColorBalance": Laya.ShaderDataType.Vector3,
+                "u_SplitShadows": Laya.ShaderDataType.Vector4,
+                "u_Splithighlights": Laya.ShaderDataType.Vector3,
+                "u_Shadows": Laya.ShaderDataType.Vector3,
+                "u_Midtones": Laya.ShaderDataType.Vector3,
+                "u_Highlights": Laya.ShaderDataType.Vector3,
+                "u_Limits": Laya.ShaderDataType.Vector4,
+                "u_Lift": Laya.ShaderDataType.Vector3,
+                "u_Gamma": Laya.ShaderDataType.Vector3,
+                "u_Gain": Laya.ShaderDataType.Vector3,
+                "u_ColorFilter": Laya.ShaderDataType.Color,
+                "u_HueSatCon": Laya.ShaderDataType.Vector4,
+            }, {});
             let attributeMap = {
                 "a_PositionTexcoord": [Laya.VertexMesh.MESH_POSITION0, Laya.ShaderDataType.Vector4]
             };
@@ -394,6 +416,10 @@
                 "u_OffsetScale": Laya.ShaderDataType.Vector4,
                 "u_MainTex": Laya.ShaderDataType.Texture2D,
                 "u_MainTex_TexelSize": Laya.ShaderDataType.Vector4,
+                "u_Lut": Laya.ShaderDataType.Texture2D,
+                "u_LutParams": Laya.ShaderDataType.Vector4,
+                "u_CustomLut": Laya.ShaderDataType.Texture2D,
+                "u_CustomLutParams": Laya.ShaderDataType.Vector4,
             };
             let shader = Laya.Shader3D.add("blitLUTShader");
             shader.shaderType = Laya.ShaderFeatureType.PostProcess;
@@ -410,7 +436,7 @@
             let uniformMap = {
                 "u_OffsetScale": Laya.ShaderDataType.Vector4,
                 "u_Lut": Laya.ShaderDataType.Texture2D,
-                "u_LutParams": Laya.ShaderDataType.Vector4
+                "u_LutParams": Laya.ShaderDataType.Vector4,
             };
             let attributeMap = {
                 "a_PositionTexcoord": [Laya.VertexMesh.MESH_POSITION0, Laya.ShaderDataType.Vector4]

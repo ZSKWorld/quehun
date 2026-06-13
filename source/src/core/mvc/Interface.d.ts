@@ -199,9 +199,9 @@ declare interface IFacade {
 	offAllCaller(caller: any): void;
 	dispatch(eventName: string, data?: any): void;
 	/** 设置caller是否可用装饰器{@link InjectGlobalEvent}注册{@link EGlobalEvent}事件 */
-	setNotifyDecoratorEnable(caller: any, enable: boolean): void;
+	setGlobalEventDecoratorEnable(caller: any, enable: boolean): void;
 	/** 设置caller是否可用装饰器{@link InjectNetEvent}注册{@link ENetMessage}或{@link ENetNotify}事件 */
-	setMessageDecoratorEnable(caller: any, enable: boolean): void;
+	setNetEventDecoratorEnable(caller: any, enable: boolean): void;
 	/** 设置caller是否可用装饰器{@link InjectUserEvent}注册{@link EUserEvent}事件 */
 	setUserEventDecoratorEnable(caller: any, enable: boolean): void;
 }

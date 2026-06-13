@@ -101,8 +101,8 @@ export class UIUtil extends Singleton<UIUtil>() implements IUIUtil {
 	popAlphaOut(panel: fgui.GObject) {
 		return new Promise<void>(resolve => {
 			Laya.Tween.create()
-				.parallel(panel).duration(150).ease(Laya.Ease.backIn).to("alpha", 0)
-				.parallel(panel).duration(150).ease(Laya.Ease.backIn).to("scaleX", 0.6).to("scaleY", 0.6)
+				.parallel(panel).duration(100).ease(Laya.Ease.sineOut).to("alpha", 0)
+				.parallel(panel).duration(100).ease(Laya.Ease.sineOut).to("scaleX", 0.6).to("scaleY", 0.6)
 				.then(v => (v.owner.recover(), resolve()));
 		});
 	}

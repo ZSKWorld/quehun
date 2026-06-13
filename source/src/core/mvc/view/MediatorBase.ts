@@ -61,16 +61,16 @@ export abstract class MediatorBase<V extends IView = IView, D = any> extends Ext
 
 	protected override _onEnable() {
 		super._onEnable();
-		$facade.setNotifyDecoratorEnable(this, true);
-		$facade.setMessageDecoratorEnable(this, true);
+		$facade.setGlobalEventDecoratorEnable(this, true);
+		$facade.setNetEventDecoratorEnable(this, true);
 		$facade.setUserEventDecoratorEnable(this, true);
 		MediatorDIExtend.registerDeviceEvent(this);
 	}
 
 	protected override _onDisable() {
 		super._onDisable();
-		$facade.setNotifyDecoratorEnable(this, false);
-		$facade.setMessageDecoratorEnable(this, false);
+		$facade.setGlobalEventDecoratorEnable(this, false);
+		$facade.setNetEventDecoratorEnable(this, false);
 		$facade.setUserEventDecoratorEnable(this, false);
 		MediatorDIExtend.offDeviceEvent(this);
 	}

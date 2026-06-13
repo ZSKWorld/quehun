@@ -78,7 +78,6 @@
     <component id="ktwpob9t" name="UIMail.xml" path="/" exported="true"/>
     <component id="ktwpob9u" name="UIRank.xml" path="/" exported="true"/>
     <component id="ktwpob9v" name="UIAnnouncement.xml" path="/" exported="true"/>
-    <component id="ktwpob9w" name="UISetting.xml" path="/" exported="true"/>
     <component id="ktwpob9x" name="UIHelp.xml" path="/" exported="true"/>
     <component id="ktwpob9y" name="UICamera.xml" path="/" exported="true"/>
     <component id="ktwpob9z" name="UIAchievement.xml" path="/" exported="true"/>

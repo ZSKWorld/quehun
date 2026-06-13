@@ -6,6 +6,7 @@ export interface IItemOpenJumpInfo {
 	goTitle: string;
 	goDesc: string;
 	goBtn: boolean;
+	goViewID: EViewID,
 }
 
 export const enum EUIItemDetailMsg {

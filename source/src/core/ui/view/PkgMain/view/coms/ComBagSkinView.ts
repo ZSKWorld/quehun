@@ -33,7 +33,7 @@ export class ComBagSkinView extends ExtensionClass<IView, ComBagSkin>(ComBagSkin
 	}
 
 	override onEnable() {
-		this.backToCharList();
+		this.backToCharList(true);
 	}
 
 	private refreshListChar() {
@@ -55,9 +55,9 @@ export class ComBagSkinView extends ExtensionClass<IView, ComBagSkin>(ComBagSkin
 
 	private refreshListSkin() {
 		const charId = this._showChars[this._showIndex];
-		if (!charId) return this.backToCharList();
+		if (!charId) return this.backToCharList(true);
 		const skins = this._charSkins[charId];
-		if (!skins) return this.backToCharList();
+		if (!skins) return this.backToCharList(true);
 		const onlyOwn = this.btn_own.selected;
 		const cfgChar = $cfgMgr.item_definition.character[charId];
 		const ownSkins = skins.filter(v => $user.character.hasSkin(v));
@@ -87,7 +87,7 @@ export class ComBagSkinView extends ExtensionClass<IView, ComBagSkin>(ComBagSkin
 
 	}
 
-	private backToCharList(refresh = true) {
+	private backToCharList(refresh: boolean) {
 		refresh && this.refreshListChar();
 		this.ctrl_type.selectedIndex = 0;
 	}

@@ -305,6 +305,7 @@
     <image id="q9u3obja" name="img_2370.png" path="/Texture/" exported="true"/>
     <image id="lkqmobjb" name="img_2364.png" path="/Texture/" exported="true"/>
     <image id="lkqmobjc" name="img_2368.png" path="/Texture/" exported="true"/>
+    <component id="ktwpob9w" name="UISetting.xml" path="/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

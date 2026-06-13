@@ -101,10 +101,10 @@ export class Facade extends Singleton<Facade>() implements IFacade {
 		this._controller.execute(eventName, data);
 	}
 
-	setNotifyDecoratorEnable(caller: any, enable: boolean) {
+	setGlobalEventDecoratorEnable(caller: any, enable: boolean) {
 		this.setDecoratorEnable(caller, DecoratorKeyMap.Notify, this._notifyListener, enable);
 	}
-	setMessageDecoratorEnable(caller: any, enable: boolean) {
+	setNetEventDecoratorEnable(caller: any, enable: boolean) {
 		this.setDecoratorEnable(caller, DecoratorKeyMap.Message, this._messageListener, enable);
 	}
 	setUserEventDecoratorEnable(caller: any, enable: boolean) {

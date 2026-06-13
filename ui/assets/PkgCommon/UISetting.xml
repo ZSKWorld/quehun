@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0ejdu67plnfc" designImageAlpha="36">
+  <displayList>
+    <component id="n5_cnou" name="mask" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" xy="0,0" size="1920,1080"/>
+    <component id="n3_cnou" name="n3" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" xy="959,540" pivot="0.5,0.5" anchor="true" size="1437,992"/>
+    <component id="n4_cnou" name="close" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" xy="1555,77" size="70,70">
+      <relation target="n3_cnou" sidePair="right-right,top-top"/>
+      <Button icon="ui://vx9zwserj0ddob7b"/>
+    </component>
+  </displayList>
+</component>

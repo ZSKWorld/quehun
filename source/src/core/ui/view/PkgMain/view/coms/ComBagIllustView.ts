@@ -10,10 +10,10 @@ export class ComBagIllustView extends ExtensionClass<IView, ComBagIllust>(ComBag
 	override onCreate() {
 		const { list_illust } = this;
 		$uiUtil.setList(list_illust, true, this, this.onListIllustItemRenderer, this.onListIllustItemClick);
-		$facade.on(EUserEvent.OnCGUsingChanged, this, this.refresh);
 	}
 
 	override onEnable() {
+		$facade.on(EUserEvent.OnCGUsingChanged, this, this.onCGUsingChanged);
 		const items = $cfgMgr.item_definition.loading_image.filter(v => {
 			return v.unlock_items.some(id => id && $user.bag.getItemCount(id) > 0);
 		});
@@ -22,7 +22,11 @@ export class ComBagIllustView extends ExtensionClass<IView, ComBagIllust>(ComBag
 		this.list_illust.numItems = this._items.length;
 	}
 
-	private refresh() {
+	override onDisable() {
+		$facade.offAllCaller(this);
+	}
+
+	private onCGUsingChanged() {
 		this.list_illust.refreshVirtualList();
 	}
 

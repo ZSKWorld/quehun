@@ -12,6 +12,15 @@ export class ComBagItemView extends ExtensionClass<IView, ComBagItem>(ComBagItem
 	}
 
 	override onEnable() {
+		$facade.on(EUserEvent.OnBagItemsChanged, this, this.refresh);
+		this.refresh();
+	}
+
+	override onDisable() {
+		$facade.offAllCaller(this);
+	}
+
+	private refresh() {
 		this._items = $user.bag.getItemByCategory(EItemCategory.Item, true);
 		this.list_item.numItems = this._items.length;
 	}

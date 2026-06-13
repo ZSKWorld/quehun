@@ -92,6 +92,8 @@ import { UIPaymentView } from "../core/ui/view/PkgCommon/view/uis/UIPaymentView"
 import { UIPaymentMediator } from "../core/ui/view/PkgCommon/mediator/uis/UIPaymentMediator";
 import { UIRechargeView } from "../core/ui/view/PkgCommon/view/uis/UIRechargeView";
 import { UIRechargeMediator } from "../core/ui/view/PkgCommon/mediator/uis/UIRechargeMediator";
+import { UISettingView } from "../core/ui/view/PkgCommon/view/uis/UISettingView";
+import { UISettingMediator } from "../core/ui/view/PkgCommon/mediator/uis/UISettingMediator";
 import { UITestView } from "../core/ui/view/PkgCommon/view/uis/UITestView";
 import { UITestMediator } from "../core/ui/view/PkgCommon/mediator/uis/UITestMediator";
 import { UIChooseServerView } from "../core/ui/view/PkgEntrance/view/uis/UIChooseServerView";
@@ -134,8 +136,6 @@ import { UIPaipuView } from "../core/ui/view/PkgMain/view/uis/UIPaipuView";
 import { UIPaipuMediator } from "../core/ui/view/PkgMain/mediator/uis/UIPaipuMediator";
 import { UIRankView } from "../core/ui/view/PkgMain/view/uis/UIRankView";
 import { UIRankMediator } from "../core/ui/view/PkgMain/mediator/uis/UIRankMediator";
-import { UISettingView } from "../core/ui/view/PkgMain/view/uis/UISettingView";
-import { UISettingMediator } from "../core/ui/view/PkgMain/mediator/uis/UISettingMediator";
 import { UISevenDayView } from "../core/ui/view/PkgMain/view/uis/UISevenDayView";
 import { UISevenDayMediator } from "../core/ui/view/PkgMain/mediator/uis/UISevenDayMediator";
 import { UIShopView } from "../core/ui/view/PkgMain/view/uis/UIShopView";
@@ -238,6 +238,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.UILoading2View, EViewType.UI, UILoading2View, UILoading2Mediator);
 		register(EViewID.UIPaymentView, EViewType.UI, UIPaymentView, UIPaymentMediator);
 		register(EViewID.UIRechargeView, EViewType.UI, UIRechargeView, UIRechargeMediator);
+		register(EViewID.UISettingView, EViewType.UI, UISettingView, UISettingMediator);
 		register(EViewID.UITestView, EViewType.UI, UITestView, UITestMediator);
 		register(EViewID.UIChooseServerView, EViewType.UI, UIChooseServerView, UIChooseServerMediator);
 		register(EViewID.UIEntranceView, EViewType.UI, UIEntranceView, UIEntranceMediator);
@@ -259,7 +260,6 @@ export class InitViewCommand extends Command {
 		register(EViewID.UIObserverView, EViewType.UI, UIObserverView, UIObserverMediator);
 		register(EViewID.UIPaipuView, EViewType.UI, UIPaipuView, UIPaipuMediator);
 		register(EViewID.UIRankView, EViewType.UI, UIRankView, UIRankMediator);
-		register(EViewID.UISettingView, EViewType.UI, UISettingView, UISettingMediator);
 		register(EViewID.UISevenDayView, EViewType.UI, UISevenDayView, UISevenDayMediator);
 		register(EViewID.UIShopView, EViewType.UI, UIShopView, UIShopMediator);
 		register(EViewID.UITreasureView, EViewType.UI, UITreasureView, UITreasureMediator);

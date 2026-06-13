@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0exmej7plojs" designImageOffsetY="40" designImageAlpha="0">
-  <controller name="desc" pages="0,,1," selected="1"/>
-  <controller name="open" pages="0,,1,,2," selected="2"/>
+<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0exmej7plojs" designImageAlpha="0">
+  <controller name="desc" pages="0,,1," selected="0"/>
+  <controller name="open" pages="0,,1,,2," selected="0"/>
   <controller name="go" pages="0,,1," selected="1"/>
   <displayList>
     <graph id="n23_si7r" name="bg" xy="0,-1" size="1920,1080" alpha="0" type="rect"/>
@@ -22,18 +22,18 @@
     <component id="n21_si7r" name="item" src="q5yiobc2" fileName="Component/Component/物品/ComItem1.xml" xy="623,386" size="242,242" touchable="false">
       <relation target="n0_j0dd" sidePair="top-top"/>
     </component>
-    <component id="n14_j0dd" name="open1" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="708,683" size="209,90" visible="false">
+    <component id="n14_j0dd" name="open1" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="855,683" size="209,90">
       <gearDisplay controller="open" pages="1,2"/>
       <gearXY controller="open" pages="1,2" values="855,683|708,683" default="855,683"/>
       <Button title="打开" titleColor="#6d2e3a" titleFontSize="38" icon="ui://vx9zwserj0ddob73"/>
     </component>
-    <component id="n24_xmej" name="open10" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="1007,683" size="209,90" visible="false">
+    <component id="n24_xmej" name="open10" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="1007,683" size="209,90">
       <gearDisplay controller="open" pages="2"/>
       <Button title="打开x10" titleColor="#6d2e3a" titleFontSize="38" icon="ui://vx9zwserj0ddob73"/>
     </component>
     <component id="n31_xmej" name="goto" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="1089,726" size="170,67">
       <gearDisplay controller="go" pages="1"/>
-      <Button title="前往" titleColor="#6d2e3a" titleFontSize="31" icon="ui://vx9zwserj0ddob73"/>
+      <Button title="前往" titleColor="#6d2e3a" titleFontSize="39" icon="ui://vx9zwserj0ddob73"/>
     </component>
     <text id="n12_j0dd" name="name" xy="960,305" pivot="0.5,0.5" anchor="true" size="244,64" font="ui://vx9zwserrpakobeu" fontSize="48" color="#edb26f" align="center" vAlign="middle" leading="0" singleLine="true" text="香喷喷曲奇">
       <relation target="n0_j0dd" sidePair="top-top"/>

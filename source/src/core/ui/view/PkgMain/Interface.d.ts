@@ -37,6 +37,7 @@ declare interface IUIHelpData {
 }
 
 declare interface IUILiaoSheData {
+	/** 0:角色，1:装扮 */
 	type: 0 | 1,
 }
 

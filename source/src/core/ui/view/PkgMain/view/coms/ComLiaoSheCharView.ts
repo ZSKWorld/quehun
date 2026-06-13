@@ -19,10 +19,17 @@ export class ComLiaoSheCharView extends ExtensionClass<IView, ComLiaoSheChar>(Co
 		btn_filter.onClick(this, this.sendEvent, [EComLiaoSheCharMsg.OnBtnFilterClick]);
 		btn_star.onClick(this, this.onBtnStarClick);
 		$uiUtil.setList(list_chars, true, this, this.onListCharsRender, this.onListCharsClick);
+	}
+
+	override onEnable() {
 		$facade.on(EUserEvent.OnClientValueChanged, this, this.refresh, [false]);
 		$facade.on(EUserEvent.OnCharacterChanged, this, this.refresh, [false]);
 		$facade.on(EUserEvent.OnCharacterSortChanged, this, this.refresh, [false]);
 		$facade.on(EUserEvent.OnMainCharacterChanged, this, this.refresh, [false]);
+	}
+
+	override onDisable() {
+		$facade.offAllCaller(this);
 	}
 
 	refresh(resetSelect: boolean) {

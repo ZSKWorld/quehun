@@ -1,15 +1,15 @@
+import { Observer } from "../mvc/provider/Observer";
+
 /** 
  * 麻将牌背&牌面图集资源加载器
  */
-export class MjpAtlasLoader extends Singleton<MjpAtlasLoader>() {
+@SingletonClass
+export class MjpAtlasLoader extends Observer {
+	static readonly Inst: MjpAtlasLoader;
+
 	private _mjpBack: number;
 	private _mjpFront: number;
 	private _tableCloth: number;
-
-	protected constructor() {
-		super();
-		$facade.setUserEventDecoratorEnable(this, true);
-	}
 
 	init() {
 

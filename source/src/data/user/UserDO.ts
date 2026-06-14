@@ -12,10 +12,8 @@ import { MailDO } from "./MailDO";
 import { RechargeDO } from "./RechargeDO";
 import { ServerSettingDO } from "./ServerSettingDO";
 
+@SingletonClass
 export class UserDO extends BaseDO implements DO.IUserDO {
-	private static _inst: UserDO;
-	static get Inst() { return this._inst || (this._inst = new UserDO()); }
-
 	/** 正在进行的游戏信息 */
 	game_info: IGameConnectInfo;
 	/** 有未读公告 */
@@ -45,8 +43,6 @@ export class UserDO extends BaseDO implements DO.IUserDO {
 	mail = new MailDO();
 	bag = new BagDO();
 	achievement = new AchievementDO();
-
-	protected constructor() { super(); }
 
 	@InjectNetEvent(ENetMessage.login)
 	@InjectNetEvent(ENetMessage.oauth2Login)

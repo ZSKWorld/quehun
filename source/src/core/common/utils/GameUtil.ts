@@ -3,7 +3,8 @@
 const EncryptList: ReadonlyArray<string> = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+{}[]|\:;<>,.?/~".split("");
 const EncryptMap: Readonly<number> = EncryptList.reduce((pv, cv, i) => (pv[cv] = i, pv), {}) as Readonly<number>;
 
-export class GameUtil extends Singleton<GameUtil>() implements IGameUtil {
+@SingletonClass
+export class GameUtil implements IGameUtil {
 
 	encrypt(str: string) {
 		if (!str) return str;

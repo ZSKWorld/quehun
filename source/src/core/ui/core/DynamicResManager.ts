@@ -1,9 +1,9 @@
 /** 动态资源管理，负责引用计数和卸载 */
-export class DynamicResManager extends Singleton<DynamicResManager>() implements IDynamicResManager {
+@SingletonClass
+export class DynamicResManager implements IDynamicResManager {
 	private _resMap: Map<string, number> = new Map();
 
-	protected constructor() {
-		super();
+	constructor() {
 		Laya.timer.loop(30 * 1000, this, this.checkUnload);
 	}
 

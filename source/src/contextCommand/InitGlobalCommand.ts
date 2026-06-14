@@ -23,26 +23,26 @@ import { SceneManager } from "../scene/SceneManager";
 
 export class InitGlobalCommand extends Command {
 	override execute(notifyName: string, data?: any) {
-		$windowImmit("$facade", Facade.Inst);
-		$windowImmit("$uiUtil", UIUtil.Inst);
-		$windowImmit("$itemUtil", ItemUtil.Inst);
-		$windowImmit("$netMgr", NetManager.Inst);
-		$windowImmit("$timeUtil", TimeUtil.Inst);
-		$windowImmit("$uiMgr", UIManager.Inst);
-		$windowImmit("$pbMgr", PbManager.Inst);
-		$windowImmit("$user", UserDO.Inst);
-		$windowImmit("$gameUtil", GameUtil.Inst);
-		$windowImmit("$tipMgr", TipManager.Inst);
-		$windowImmit("$mathUtil", MathUtil.Inst);
-		$windowImmit("$loadMgr", LoadManager.Inst);
-		$windowImmit("$gameMgr", GameManager.Inst);
-		$windowImmit("$cfgMgr", ConfigManager.Inst);
-		$windowImmit("$spineMgr", SpineManager.Inst);
-		$windowImmit("$sceneMgr", SceneManager.Inst);
-		$windowImmit("$redDotMgr", RedDotManager.Inst);
-		$windowImmit("$skeletonMgr", SkeletonManager.Inst);
-		$windowImmit("$localDataMgr", LocalDataManager.Inst);
-		$windowImmit("$dynamicResMgr", DynamicResManager.Inst);
+		$windowImmit("$facade", new Facade());
+		$windowImmit("$uiUtil", new UIUtil());
+		$windowImmit("$itemUtil", new ItemUtil());
+		$windowImmit("$netMgr", new NetManager());
+		$windowImmit("$timeUtil", new TimeUtil());
+		$windowImmit("$uiMgr", new UIManager());
+		$windowImmit("$pbMgr", new PbManager());
+		$windowImmit("$user", new UserDO());
+		$windowImmit("$gameUtil", new GameUtil());
+		$windowImmit("$tipMgr", new TipManager());
+		$windowImmit("$mathUtil", new MathUtil());
+		$windowImmit("$loadMgr", new LoadManager());
+		$windowImmit("$gameMgr", new GameManager());
+		$windowImmit("$cfgMgr", new ConfigManager());
+		$windowImmit("$spineMgr", new SpineManager());
+		$windowImmit("$sceneMgr", new SceneManager());
+		$windowImmit("$redDotMgr", new RedDotManager());
+		$windowImmit("$skeletonMgr", new SkeletonManager());
+		$windowImmit("$localDataMgr", new LocalDataManager());
+		$windowImmit("$dynamicResMgr", new DynamicResManager());
 
 		this.registerConfirm("$confirmBig", EViewID.UIConfirmBigView);
 		this.registerConfirm("$confirmMid", EViewID.UIConfirmMiddleView);

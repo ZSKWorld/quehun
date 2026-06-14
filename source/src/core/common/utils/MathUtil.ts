@@ -1,6 +1,7 @@
 
 /** 数学工具类 */
-export class MathUtil extends Singleton<MathUtil>() implements IMathUtil {
+@SingletonClass
+export class MathUtil implements IMathUtil {
 	// 等比数列求和公式：Sn=a1(1-q^n)/(1-q)（q≠1)。
 	// 等差数列求和公式：Sn=na1+n(n-1)d/2。
 	// 二级等差数列第n项 => a1 + (a2 - a1) * (n - 1) + (a3 - 2 * a2 + a1) * (n - 1) * (n - 2) / 2

@@ -53,7 +53,7 @@ class UICache {
 }
 
 /** UI管理类 */
-export class UIManager extends Singleton<UIManager>() implements IUIManager {
+export class UIManager implements IUIManager {
 	private _layerMap: { [key in ELayer]: fgui.GComponent };
 
 	/** 缓存池 */
@@ -75,8 +75,7 @@ export class UIManager extends Singleton<UIManager>() implements IUIManager {
 	private get topView() { return this._openedViews[0]; }
 	private get topViewId() { return this.topView?.viewId as EUIViewID; }
 
-	protected constructor() {
-		super();
+	constructor() {
 		this._layerMap = {} as any;
 		const gRoot = fgui.GRoot.inst;
 		Laya.stage.addChild(gRoot.displayObject);

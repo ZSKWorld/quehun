@@ -8,21 +8,13 @@ const enum DecoratorKeyMap {
 }
 
 /** mvc门面类 */
-export class Facade extends Singleton<Facade>() implements IFacade {
-	private _viewMgr: ViewManager;
-	private _controller: Controller;
-	private _notifyListener: Laya.EventDispatcher;
-	private _messageListener: Laya.EventDispatcher;
-	private _userEventListener: Laya.EventDispatcher;
-
-	protected constructor() {
-		super();
-		this._viewMgr = ViewManager.Inst;
-		this._controller = Controller.Inst;
-		this._notifyListener = new Laya.EventDispatcher();
-		this._messageListener = new Laya.EventDispatcher();
-		this._userEventListener = new Laya.EventDispatcher();
-	}
+@SingletonClass
+export class Facade implements IFacade {
+	private _viewMgr = new ViewManager();
+	private _controller = new Controller();
+	private _notifyListener=new Laya.EventDispatcher();
+	private _messageListener= new Laya.EventDispatcher();
+	private _userEventListener=new Laya.EventDispatcher();
 
 	//#region View
 	registerView(viewId: EViewID, viewType: EViewType, viewCls: IViewClass, mediatorCls?: IMediatorClass) {

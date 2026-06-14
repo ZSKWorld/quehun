@@ -9,7 +9,8 @@ const enum ESpineAnimation {
 	IdleCelebrate = "idle+celebrate",
 }
 
-export class SpineManager extends Singleton<SpineManager>() implements ISpineManager {
+@SingletonClass
+export class SpineManager implements ISpineManager {
 	private _templetMap = new Map<string, Laya.SpineTemplet>();
 	private _unusedPool = new Map<number, ISpineController[]>();
 	private _usingPool = new Map<number, ISpineController[]>();

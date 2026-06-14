@@ -2,10 +2,8 @@ import { Observer } from "../../mvc/provider/Observer";
 import { RedDotNode } from "./RedDotNode";
 import { RDTriggerManager } from "./register/RDTriggerManager";
 
+@SingletonClass
 export class RedDotManager extends Observer implements IRedDotManager {
-	private static _inst: RedDotManager;
-	static get Inst() { return this._inst || (this._inst = new RedDotManager()); }
-
 	private _checkListener = new Laya.EventDispatcher();
 	private _triggerListener = new Laya.EventDispatcher();
 	private _rdMap: Record<ERDName, IRedDotNode> = {} as any;
@@ -13,8 +11,6 @@ export class RedDotManager extends Observer implements IRedDotManager {
 
 	get checkListener() { return this._checkListener; }
 	get triggerListener() { return this._triggerListener; }
-
-	protected constructor() { super(); }
 
 	setTriggered(type: ERDTriggerType, triggered: boolean | number) {
 		this._triggers.set(type, triggered);

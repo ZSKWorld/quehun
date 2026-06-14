@@ -4,10 +4,8 @@ const enum EClientMessageType {
 	RoomInvite = 1,
 }
 
+@SingletonClass
 export class GameManager extends Observer implements IGameManager {
-	private static _inst: GameManager;
-	static get Inst() { return this._inst || (this._inst = new GameManager()); }
-
 	private _inDmm = false;
 	private _deviceId: string;
 	private _clientEndPoint: ProtoObject<INetworkEndpoint>;
@@ -98,8 +96,6 @@ export class GameManager extends Observer implements IGameManager {
 	private _hangOutTime = 0;
 	private _lastHeatBeatTime = $timeUtil.second;
 	private _lastMousePoint = new Laya.Point();
-
-	protected constructor() { super(); }
 
 	init(ipIndex: number, config: IConfig) {
 		this._ipIndex = ipIndex;

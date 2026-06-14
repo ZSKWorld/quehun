@@ -1,4 +1,6 @@
-export class ViewManager extends Singleton<ViewManager>() {
+@SingletonClass
+export class ViewManager {
+
 	private _viewClsMap: { [viewId in EViewID]?: IViewClass; } = {};
 	private _mediatorClsMap: { [viewId in EViewID]?: IMediatorClass; } = {};
 

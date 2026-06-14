@@ -1,4 +1,6 @@
-export class Controller extends Singleton<Controller>() {
+@SingletonClass
+export class Controller {
+
 	private _commandMap: { [key: string]: ICommandClass[]; } = {};
 
 	register(notifyName: string, cls: ICommandClass) {

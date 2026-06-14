@@ -1,4 +1,7 @@
-export class LoadingBgLoader extends Singleton<LoadingBgLoader>() {
+@SingletonClass
+export class LoadingBgLoader {
+	static readonly Inst: LoadingBgLoader;
+
 	private _cg: string;
 	private _left: string;
 	private _mid: string;

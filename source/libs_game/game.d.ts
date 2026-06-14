@@ -51,9 +51,8 @@ declare function $windowImmit(name: string, obj: any): void;
  */
 declare function ExtensionClass<E, T>(cls: Class<T>): Class<T & E>;
 
-/** 不可使用，只在Singleton返回值中当作类构造约束使用，无具体实现 */
-declare class ProtectedClass { protected constructor(); }
-declare function Singleton<T>(): typeof ProtectedClass & { get Inst(): T; };
+/** 单例类装饰器 */
+declare function SingletonClass<T>(constructor: T): T;
 
 /** 把proto数据转成普通object对象 */
 declare function $decodeProtoData<T extends IProto | IProto[]>(data: T): ProtoObject<T>;

@@ -5,7 +5,8 @@ const WeekSec = DaySec * 7;
 const MonthSec = WeekSec * 30;
 const YearSec = MonthSec * 12;
 
-export class TimeUtil extends Singleton<TimeUtil>() implements ITimeUtil {
+@SingletonClass
+export class TimeUtil implements ITimeUtil {
 	private _date = new Date();
 	private _serverDelta: number = 0;
 
@@ -68,7 +69,7 @@ export class TimeUtil extends Singleton<TimeUtil>() implements ITimeUtil {
 		if (second >= DaySec) return Math.floor(second / DaySec) + $lang(2022);
 		if (second >= HourSec) return Math.floor(second / HourSec) + $lang(2021);
 		if (second >= MinSec) return Math.floor(second / MinSec) + $lang(2020);
-		return Math.floor(second) + $lang(2019)
+		return Math.floor(second) + $lang(2019);
 	}
 
 	timeFormat5(second: number) {

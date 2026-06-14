@@ -4,13 +4,25 @@ function $windowImmit(name, obj) { window[name] = obj; }
 //用于扩展类字段，在外部定义的字段在内部可读，扩展的字段或方法不能在构造期间调用
 function ExtensionClass(cls) { return cls; };
 
-function Singleton() {
-	return class Singleton {
-		constructor() { }
-		static get Inst() {
-			return this._inst || (this._inst = new this());
+function SingletonClass(constructor) {
+	let inst;
+	class cls extends constructor {
+		constructor(...args) {
+			if (inst) {
+				Logger.error(constructor.name + " 单例类只能实例化一次");
+				return inst;
+			}
+			super(...args);
+			inst = this;
 		}
 	};
+	Object.defineProperty(cls, 'Inst', {
+		get: function () {
+			return inst || (inst = new cls());
+		},
+		configurable: false,
+	});
+	return cls;
 }
 
 function setEvent(name, list, func, once, args) {

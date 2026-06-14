@@ -1,6 +1,7 @@
 
 /** UI工具类 */
-export class UIUtil extends Singleton<UIUtil>() implements IUIUtil {
+@SingletonClass
+export class UIUtil implements IUIUtil {
 	/**
 	 * 获取gui图集贴图
 	 * @param pkg 包名

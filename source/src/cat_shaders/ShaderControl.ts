@@ -54,7 +54,7 @@ import MaterialFactoryWaveWarp from "./WaveWarp/MaterialFactoryWaveWarp";
  * shader控制
  * 生成项目使用到的shader
  */
-export class ShaderControl extends Singleton<ShaderControl>() {
+export class ShaderControl {
 
 	private __registerShader: { [name: string]: new () => MaterialFactory<any> };
 

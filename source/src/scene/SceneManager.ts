@@ -1,7 +1,8 @@
 import { LoadingBgLoader } from "../core/game/LoadingBgLoader";
 
 /** 逻辑场景管理类 */
-export class SceneManager extends Singleton<SceneManager>() implements ISceneManager {
+@SingletonClass
+export class SceneManager implements ISceneManager {
 	private _currentType: ESceneType;
 	private _sceneMap = new Map<ESceneType, IScene>();
 	private _isSwitching = false;

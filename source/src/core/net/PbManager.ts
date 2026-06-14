@@ -1,4 +1,5 @@
-export class PbManager extends Singleton<PbManager>() implements IPbManager {
+@SingletonClass
+export class PbManager implements IPbManager {
 	private _root: protobuf.Root;
 	private _methodMap: KeyMap<protobuf.Method>;
 	private _seriveMethods: { [key in EServiceType]: protobuf.Method[] };

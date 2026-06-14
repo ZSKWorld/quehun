@@ -24,7 +24,8 @@ const ARRAY_METHODS = [
 	"indexOf", "lastIndexOf", "map", "reduce", "slice", "some",
 ];
 
-export class ConfigManager extends Singleton<ConfigManager>() implements IConfigManager {
+@SingletonClass
+export class ConfigManager implements IConfigManager {
 	//#region tables
 	readonly ab_match: ITable_AbMatch;
 	readonly achievement: ITable_Achievement;

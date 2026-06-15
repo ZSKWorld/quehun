@@ -1,5 +1,5 @@
 /** 动态资源管理，负责引用计数和卸载 */
-@SingletonClass
+@Singleton
 export class DynamicResManager implements IDynamicResManager {
 	private _resMap: Map<string, number> = new Map();
 

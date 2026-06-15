@@ -1,4 +1,4 @@
-@SingletonClass
+@Singleton
 export class LoadingBgLoader {
 	static readonly Inst: LoadingBgLoader;
 

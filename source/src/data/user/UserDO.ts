@@ -12,7 +12,7 @@ import { MailDO } from "./MailDO";
 import { RechargeDO } from "./RechargeDO";
 import { ServerSettingDO } from "./ServerSettingDO";
 
-@SingletonClass
+@Singleton
 export class UserDO extends BaseDO implements DO.IUserDO {
 	/** 正在进行的游戏信息 */
 	game_info: IGameConnectInfo;

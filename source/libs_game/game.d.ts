@@ -52,7 +52,7 @@ declare function $windowImmit(name: string, obj: any): void;
 declare function ExtendClass<E, T>(cls: Class<T>): Class<T & E>;
 
 /** 单例类装饰器 */
-declare function SingletonClass<T>(constructor: T): T;
+declare function Singleton<T extends Class<any>>(constructor: T): T;
 
 /** 把proto数据转成普通object对象 */
 declare function $decodeProtoData<T extends IProto | IProto[]>(data: T): ProtoObject<T>;

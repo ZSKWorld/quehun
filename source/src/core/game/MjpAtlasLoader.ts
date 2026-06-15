@@ -3,7 +3,7 @@ import { Observer } from "../mvc/provider/Observer";
 /** 
  * 麻将牌背&牌面图集资源加载器
  */
-@SingletonClass
+@Singleton
 export class MjpAtlasLoader extends Observer {
 	static readonly Inst: MjpAtlasLoader;
 

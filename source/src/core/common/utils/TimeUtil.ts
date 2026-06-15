@@ -5,7 +5,7 @@ const WeekSec = DaySec * 7;
 const MonthSec = WeekSec * 30;
 const YearSec = MonthSec * 12;
 
-@SingletonClass
+@Singleton
 export class TimeUtil implements ITimeUtil {
 	private _date = new Date();
 	private _serverDelta: number = 0;

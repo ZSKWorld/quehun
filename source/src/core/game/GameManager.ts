@@ -4,7 +4,7 @@ const enum EClientMessageType {
 	RoomInvite = 1,
 }
 
-@SingletonClass
+@Singleton
 export class GameManager extends Observer implements IGameManager {
 	private _inDmm = false;
 	private _deviceId: string;

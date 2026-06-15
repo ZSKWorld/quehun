@@ -1,4 +1,4 @@
-@SingletonClass
+@Singleton
 export class Controller {
 
 	private _commandMap: { [key: string]: ICommandClass[]; } = {};

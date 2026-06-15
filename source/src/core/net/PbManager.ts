@@ -1,4 +1,4 @@
-@SingletonClass
+@Singleton
 export class PbManager implements IPbManager {
 	private _root: protobuf.Root;
 	private _methodMap: KeyMap<protobuf.Method>;

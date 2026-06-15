@@ -1,4 +1,4 @@
-@SingletonClass
+@Singleton
 export class ItemUtil implements IItemUtil {
 
 	getItemType(id: number) {

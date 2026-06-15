@@ -1,4 +1,4 @@
-@SingletonClass
+@Singleton
 export class ViewManager {
 
 	private _viewClsMap: { [viewId in EViewID]?: IViewClass; } = {};

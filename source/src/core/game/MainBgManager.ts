@@ -1,6 +1,6 @@
 import { Observer } from "../mvc/provider/Observer";
 
-@SingletonClass
+@Singleton
 export class MainBgManager extends Observer {
 
 }

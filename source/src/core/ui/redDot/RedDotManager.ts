@@ -2,7 +2,7 @@ import { Observer } from "../../mvc/provider/Observer";
 import { RedDotNode } from "./RedDotNode";
 import { RDTriggerManager } from "./register/RDTriggerManager";
 
-@SingletonClass
+@Singleton
 export class RedDotManager extends Observer implements IRedDotManager {
 	private _checkListener = new Laya.EventDispatcher();
 	private _triggerListener = new Laya.EventDispatcher();

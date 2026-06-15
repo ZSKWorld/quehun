@@ -74,6 +74,7 @@ declare interface IUIShopData {
 declare interface IUITreasureData {
 
 }
+
 declare interface IUIVideoData {
 	skinId: number;
 	characterId?: number;

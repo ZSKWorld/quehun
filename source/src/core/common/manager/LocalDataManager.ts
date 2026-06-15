@@ -1,4 +1,4 @@
-@SingletonClass
+@Singleton
 export class LocalDataManager implements ILocalDataManager {
 	getNum(key: ELocalDataKey, defaultValue: number = 0): number {
 		const value = this.getItem(key);

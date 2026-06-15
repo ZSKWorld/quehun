@@ -1,6 +1,6 @@
 
 /** UI工具类 */
-@SingletonClass
+@Singleton
 export class UIUtil implements IUIUtil {
 	/**
 	 * 获取gui图集贴图

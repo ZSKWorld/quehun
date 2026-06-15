@@ -1,7 +1,7 @@
 import { LoadingBgLoader } from "../core/game/LoadingBgLoader";
 
 /** 逻辑场景管理类 */
-@SingletonClass
+@Singleton
 export class SceneManager implements ISceneManager {
 	private _currentType: ESceneType;
 	private _sceneMap = new Map<ESceneType, IScene>();
@@ -61,7 +61,7 @@ export class SceneManager implements ISceneManager {
 			$facade.dispatch(EGlobalEvent.OnSceneEnterBegin, type);
 			await newScene.enter(data);
 			$facade.dispatch(EGlobalEvent.OnSceneEnterEnd, type);
-			
+
 			this.isSwitching = false;
 		} catch (e) {
 			const retry = await $confirmSma(0, `${ type } 场景加载失败，是否重试?`, "提示");

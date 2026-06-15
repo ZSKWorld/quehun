@@ -1,6 +1,10 @@
 import { Observer } from "../mvc/provider/Observer";
 
-@SingletonClass
+@Singleton
 export class AFKManager extends Observer {
+	static readonly Inst: AFKManager;
 
+	init() {
+
+	}
 }

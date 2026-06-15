@@ -1,6 +1,6 @@
 
 /** 数学工具类 */
-@SingletonClass
+@Singleton
 export class MathUtil implements IMathUtil {
 	// 等比数列求和公式：Sn=a1(1-q^n)/(1-q)（q≠1)。
 	// 等差数列求和公式：Sn=na1+n(n-1)d/2。

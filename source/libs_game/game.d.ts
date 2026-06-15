@@ -49,7 +49,7 @@ declare function $windowImmit(name: string, obj: any): void;
  * @param cls 要扩展的类
  * @returns 扩展后的类
  */
-declare function ExtensionClass<E, T>(cls: Class<T>): Class<T & E>;
+declare function ExtendClass<E, T>(cls: Class<T>): Class<T & E>;
 
 /** 单例类装饰器 */
 declare function SingletonClass<T>(constructor: T): T;

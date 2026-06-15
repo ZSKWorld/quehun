@@ -5,7 +5,7 @@ export const enum EUILoadingMsg {
 
 }
 
-export class UILoadingView extends ExtensionClass<IView, UILoading>(UILoading) implements IView {
+export class UILoadingView extends ExtendClass<IView, UILoading>(UILoading) implements IView {
 
 	override onCreate() {
 

@@ -19,12 +19,15 @@ export class InitGameCommand extends Command {
 			Laya.StatElement.M_GPUMemory,
 			Laya.StatElement.M_RenderTexture,
 		]);
+
+		const stage = Laya.stage;
 		const onResize = () => {
-			Laya.Stat._statUI._sp.pos(0, Laya.stage.height - Laya.Stat._statUI._sp.height);
+			Laya.Stat._statUI._sp.pos(0, stage.height - Laya.Stat._statUI._sp.height);
 		};
 		onResize();
-		Laya.stage.on(Laya.Event.RESIZE, this, onResize);
-		ShaderManager.init();
+		stage.on(Laya.Event.RESIZE, this, onResize);
+
+		ShaderManager.Inst.init();
 		MjpAtlasLoader.Inst.init();
 
 		const [config] = await Promise.all([

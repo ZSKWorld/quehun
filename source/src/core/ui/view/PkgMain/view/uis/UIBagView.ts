@@ -5,7 +5,7 @@ export const enum EUIBagMsg {
 	OnComBackClick = "EUILiaoSheMsg_OnComBackClick",
 }
 
-export class UIBagView extends ExtensionClass<IView, UIBag>(UIBag) implements IView {
+export class UIBagView extends ExtendClass<IView, UIBag>(UIBag) implements IView {
 	private _tabGroup = new RadioGroup();
 	get tabBtns() {
 		return [this.btn_daoJu, this.btn_liWu, this.btn_zhuangBan, this.btn_fuShi, this.btn_chaHua];

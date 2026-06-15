@@ -4,10 +4,10 @@ export const enum ERenderShopSkinMsg {
 
 }
 
-export class RenderShopSkinView extends ExtensionClass<IView, RenderShopSkin>(RenderShopSkin) implements IView {
+export class RenderShopSkinView extends ExtendClass<IView, RenderShopSkin>(RenderShopSkin) implements IView {
 
 	override onCreate() {
-		
+
 	}
 
 }

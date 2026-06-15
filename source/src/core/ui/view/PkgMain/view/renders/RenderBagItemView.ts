@@ -4,7 +4,7 @@ export const enum ERenderBagItemMsg {
 
 }
 
-export class RenderBagItemView extends ExtensionClass<IView, RenderBagItem>(RenderBagItem) implements IView {
+export class RenderBagItemView extends ExtendClass<IView, RenderBagItem>(RenderBagItem) implements IView {
 
 	override onCreate() {
 
@@ -16,7 +16,7 @@ export class RenderBagItemView extends ExtensionClass<IView, RenderBagItem>(Rend
 		this.txt_count.visible = true;
 	}
 
-	refreshWithoutCount(id:number) {
+	refreshWithoutCount(id: number) {
 		this.com_item.refresh(id);
 		this.txt_count.visible = false;
 	}

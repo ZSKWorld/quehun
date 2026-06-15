@@ -2,7 +2,7 @@
 function $windowImmit(name, obj) { window[name] = obj; }
 
 //用于扩展类字段，在外部定义的字段在内部可读，扩展的字段或方法不能在构造期间调用
-function ExtensionClass(cls) { return cls; };
+function ExtendClass(cls) { return cls; };
 
 function SingletonClass(constructor) {
 	let inst;
@@ -85,22 +85,22 @@ function InjectViewEvent(name, once, args) {
 
 function InjectGlobalEvent(eventName, once, args) {
 	return function (target, propertyKey, descriptor) {
-		target.__notifyMap ||= {};
-		target.__notifyMap[eventName] ||= [];
+		target.__globalEventMap ||= {};
+		target.__globalEventMap[eventName] ||= [];
 
 		const func = descriptor.value;
-		const list = target.__notifyMap[eventName];
+		const list = target.__globalEventMap[eventName];
 		setEvent(eventName, list, func, once, args);
 	};
 };
 
 function InjectNetEvent(msgName, once, args) {
 	return function (target, propertyKey, descriptor) {
-		target.__messageMap ||= {};
-		target.__messageMap[msgName] ||= [];
+		target.__netEventMap ||= {};
+		target.__netEventMap[msgName] ||= [];
 
 		const func = descriptor.value;
-		const list = target.__messageMap[msgName];
+		const list = target.__netEventMap[msgName];
 		setEvent(msgName, list, func, once, args);
 	};
 };

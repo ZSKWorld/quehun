@@ -14,7 +14,7 @@ const paymentIconMap: Record<EPaymentType, string> = {
 	[EPaymentType.XinYongKa]: "ui://vx9zwserq9u3obj9",
 };
 
-export class UIPaymentView extends ExtensionClass<IView, UIPayment>(UIPayment) implements IView {
+export class UIPaymentView extends ExtendClass<IView, UIPayment>(UIPayment) implements IView {
 	private _paymentTypes: EPaymentType[];
 
 	override onCreate() {

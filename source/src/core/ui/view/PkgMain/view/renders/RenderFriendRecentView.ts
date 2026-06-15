@@ -1,7 +1,7 @@
 import RenderFriendRecent from "../../../../ui/PkgMain/RenderFriendRecent";
 
 
-export class RenderFriendRecentView extends ExtensionClass<IView, RenderFriendRecent>(RenderFriendRecent) implements IView {
+export class RenderFriendRecentView extends ExtendClass<IView, RenderFriendRecent>(RenderFriendRecent) implements IView {
 
 	private _playerData: IPlayerBaseView;
 

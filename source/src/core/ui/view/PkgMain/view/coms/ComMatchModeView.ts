@@ -14,7 +14,7 @@ export const enum EComMatchModeMsg {
 	OnBtnFriendModeClick = "ComMatchMode_OnBtnFriendModeClick",
 }
 
-export class ComMatchModeView extends ExtensionClass<IView, ComMatchMode>(ComMatchMode) implements IView {
+export class ComMatchModeView extends ExtendClass<IView, ComMatchMode>(ComMatchMode) implements IView {
 	get transModeIn() { return this.trans_modeIn; }
 	get transModeOut() { return this.trans_modeOut; }
 

@@ -4,7 +4,7 @@ export const enum EComTipInfoMsg {
 
 }
 
-export class ComTipInfoView extends ExtensionClass<IView, ComTipInfo>(ComTipInfo) implements IView {
+export class ComTipInfoView extends ExtendClass<IView, ComTipInfo>(ComTipInfo) implements IView {
 
 	override onCreate() {
 

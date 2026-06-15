@@ -1,6 +1,6 @@
 import ComCurrency from "../../../../ui/PkgCommon/ComCurrency";
 
-export class ComCurrencyView extends ExtensionClass<IView, ComCurrency>(ComCurrency) implements IView {
+export class ComCurrencyView extends ExtendClass<IView, ComCurrency>(ComCurrency) implements IView {
 	private _currencyType: ECurrencyType;
 
 	override onCreate() {

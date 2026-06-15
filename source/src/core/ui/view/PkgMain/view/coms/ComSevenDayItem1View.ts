@@ -4,13 +4,13 @@ export const enum EComSevenDayItem1Msg {
 
 }
 
-export class ComSevenDayItem1View extends ExtensionClass<IView, ComSevenDayItem1>(ComSevenDayItem1) implements IView {
+export class ComSevenDayItem1View extends ExtendClass<IView, ComSevenDayItem1>(ComSevenDayItem1) implements IView {
 
 	override onCreate() {
-		
+
 	}
 
-	refresh(id:number, count:number) {
+	refresh(id: number, count: number) {
 		this.com_item.refreshItemIcon(id);
 		this.txt_count.text = count.toString();
 	}

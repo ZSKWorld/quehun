@@ -1,7 +1,7 @@
 import UIAnnouncement from "../../../../ui/PkgMain/UIAnnouncement";
 import { EUIAnnounceEvent } from "../../Definition";
 
-export class UIAnnouncementView extends ExtensionClass<IView, UIAnnouncement>(UIAnnouncement) implements IView {
+export class UIAnnouncementView extends ExtendClass<IView, UIAnnouncement>(UIAnnouncement) implements IView {
 	private _announcements: ProtoObject<IAnnouncement>[];
 
 	override onCreate() {

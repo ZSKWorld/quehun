@@ -4,10 +4,10 @@ export const enum EComBagGiftMsg {
 
 }
 
-export class ComBagGiftView extends ExtensionClass<IView, ComBagGift>(ComBagGift) implements IView {
+export class ComBagGiftView extends ExtendClass<IView, ComBagGift>(ComBagGift) implements IView {
 
 	override onCreate() {
-		
+
 	}
 
 }

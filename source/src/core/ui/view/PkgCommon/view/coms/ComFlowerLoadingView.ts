@@ -4,10 +4,10 @@ export const enum EComFlowerLoadingMsg {
 
 }
 
-export class ComFlowerLoadingView extends ExtensionClass<IView, ComFlowerLoading>(ComFlowerLoading) implements IView {
+export class ComFlowerLoadingView extends ExtendClass<IView, ComFlowerLoading>(ComFlowerLoading) implements IView {
 
 	override onCreate() {
-		
+
 	}
 
 }

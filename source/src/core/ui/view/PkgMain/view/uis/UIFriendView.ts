@@ -7,7 +7,7 @@ export const enum EUIFriendMsg {
 	OnBtnFindClick = "EUILiaoSheMsg_OnBtnFindClick",
 }
 
-export class UIFriendView extends ExtensionClass<IView, UIFriend>(UIFriend) implements IView {
+export class UIFriendView extends ExtendClass<IView, UIFriend>(UIFriend) implements IView {
 	get tabBtns() {
 		return [this.btn_friendList, this.btn_friendApply, this.btn_searchFriend, this.btn_recentMatch];
 	}

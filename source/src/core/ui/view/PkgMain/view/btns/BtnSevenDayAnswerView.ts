@@ -4,7 +4,7 @@ export const enum EBtnSevenDayAnswerMsg {
 
 }
 
-export class BtnSevenDayAnswerView extends ExtensionClass<IView, BtnSevenDayAnswer>(BtnSevenDayAnswer) implements IView {
+export class BtnSevenDayAnswerView extends ExtendClass<IView, BtnSevenDayAnswer>(BtnSevenDayAnswer) implements IView {
 
 	override onCreate() {
 

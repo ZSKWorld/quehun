@@ -5,7 +5,7 @@ export const enum EComMatchItemMsg {
 	OnBtnInfoClick = "ComMatchItem_OnBtnInfoClick",
 }
 
-export class ComMatchItemView extends ExtensionClass<IView, ComMatchItem>(ComMatchItem) implements IView {
+export class ComMatchItemView extends ExtendClass<IView, ComMatchItem>(ComMatchItem) implements IView {
 
 	override onCreate() {
 		const { btn_bg, btn_info } = this;

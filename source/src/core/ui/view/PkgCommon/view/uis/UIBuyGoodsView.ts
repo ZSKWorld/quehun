@@ -15,7 +15,7 @@ export const enum EUIBuyGoodsType {
 	Multi2,
 }
 
-export class UIBuyGoodsView extends ExtensionClass<IView, UIBuyGoods>(UIBuyGoods) implements IView {
+export class UIBuyGoodsView extends ExtendClass<IView, UIBuyGoods>(UIBuyGoods) implements IView {
 
 	override onCreate() {
 		const { btn_mask, btn_close, btn_sub10, btn_sub1, btn_add1, btn_add10, btn_buy } = this;

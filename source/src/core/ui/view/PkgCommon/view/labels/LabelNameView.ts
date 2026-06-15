@@ -4,13 +4,13 @@ export const enum ELabelNameMsg {
 
 }
 
-export class LabelNameView extends ExtensionClass<IView, LabelName>(LabelName) implements IView {
+export class LabelNameView extends ExtendClass<IView, LabelName>(LabelName) implements IView {
 
 	override onCreate() {
-		
+
 	}
 
-	refresh(data: { nickname: string, verified: number }) {
+	refresh(data: { nickname: string, verified: number; }) {
 		const { img_vip } = this;
 		this.title = data.nickname;
 		const isVip = !!data.verified;

@@ -15,7 +15,7 @@ export const enum EUIItemDetailMsg {
 	OnBtnGoToClick = "UIItemDetail_OnBtnGoToClick",
 }
 
-export class UIItemDetailView extends ExtensionClass<IView, UIItemDetail>(UIItemDetail) implements IView {
+export class UIItemDetailView extends ExtendClass<IView, UIItemDetail>(UIItemDetail) implements IView {
 
 	override onCreate() {
 		const { graph_bg, btn_close, btn_open1, btn_open10, btn_goto } = this;

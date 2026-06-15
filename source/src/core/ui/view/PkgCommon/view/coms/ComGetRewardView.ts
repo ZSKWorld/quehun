@@ -4,7 +4,7 @@ export const enum EComGetRewardMsg {
 
 }
 
-export class ComGetRewardView extends ExtensionClass<IView, ComGetReward>(ComGetReward) implements IView {
+export class ComGetRewardView extends ExtendClass<IView, ComGetReward>(ComGetReward) implements IView {
 
 	async showRewards(rewards: IRewardSlot[]) {
 		const {
@@ -26,7 +26,7 @@ export class ComGetRewardView extends ExtensionClass<IView, ComGetReward>(ComGet
 		await $timeUtil.wait(100);
 	}
 
-	hideRewards() { 
+	hideRewards() {
 		return $uiUtil.playTrans(this.trans_hide);
 	}
 }

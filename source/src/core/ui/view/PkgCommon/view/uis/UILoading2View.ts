@@ -4,10 +4,10 @@ export const enum EUILoading2Msg {
 
 }
 
-export class UILoading2View extends ExtensionClass<IView, UILoading2>(UILoading2) implements IView {
+export class UILoading2View extends ExtendClass<IView, UILoading2>(UILoading2) implements IView {
 
 	override onCreate() {
-		
+
 	}
 
 }

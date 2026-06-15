@@ -5,7 +5,7 @@ export const enum EUIChooseServerMsg {
 	OnBtnLastServerClick = "EUIChooseServerMsg_OnBtnLastServerClick",
 }
 
-export class UIChooseServerView extends ExtensionClass<IView, UIChooseServer>(UIChooseServer) implements IView {
+export class UIChooseServerView extends ExtendClass<IView, UIChooseServer>(UIChooseServer) implements IView {
 	get listServer() { return this.list_server; }
 	private _ipNames: string[];
 

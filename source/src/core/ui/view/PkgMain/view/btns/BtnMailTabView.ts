@@ -4,7 +4,7 @@ export const enum EBtnMailTabMsg {
 
 }
 
-export class BtnMailTabView extends ExtensionClass<IView, BtnMailTab>(BtnMailTab) implements IView {
+export class BtnMailTabView extends ExtendClass<IView, BtnMailTab>(BtnMailTab) implements IView {
 
 	override onCreate() {
 

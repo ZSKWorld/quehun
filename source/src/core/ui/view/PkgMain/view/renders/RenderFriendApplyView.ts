@@ -1,6 +1,6 @@
 import RenderFriendApply from "../../../../ui/PkgMain/RenderFriendApply";
 
-export class RenderFriendApplyView extends ExtensionClass<IView, RenderFriendApply>(RenderFriendApply) implements IView {
+export class RenderFriendApplyView extends ExtendClass<IView, RenderFriendApply>(RenderFriendApply) implements IView {
 
 	private _playerData: IPlayerBaseView;
 

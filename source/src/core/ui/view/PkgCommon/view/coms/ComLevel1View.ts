@@ -4,7 +4,7 @@ export const enum EComLevel1Msg {
 
 }
 
-export class ComLevel1View extends ExtensionClass<IView, ComLevel1>(ComLevel1) implements IView {
+export class ComLevel1View extends ExtendClass<IView, ComLevel1>(ComLevel1) implements IView {
 
 	override onCreate() {
 

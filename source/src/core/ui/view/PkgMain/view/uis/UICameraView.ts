@@ -4,7 +4,7 @@ export const enum EUICameraMsg {
 
 }
 
-export class UICameraView extends ExtensionClass<IView, UICamera>(UICamera) implements IView {
+export class UICameraView extends ExtendClass<IView, UICamera>(UICamera) implements IView {
 
 	override onCreate() {
 		const { btn_close } = this;

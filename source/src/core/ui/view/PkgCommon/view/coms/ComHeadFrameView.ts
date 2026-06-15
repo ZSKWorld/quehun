@@ -4,7 +4,7 @@ export const enum EComHeadFrameMsg {
 
 }
 
-export class ComHeadFrameView extends ExtensionClass<IView, ComHeadFrame>(ComHeadFrame) implements IView {
+export class ComHeadFrameView extends ExtendClass<IView, ComHeadFrame>(ComHeadFrame) implements IView {
 
 	refreshIcon(id: number) {
 		const d_item = $cfgMgr.item_definition.item[id];

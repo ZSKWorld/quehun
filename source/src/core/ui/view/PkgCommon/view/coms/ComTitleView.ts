@@ -4,7 +4,7 @@ export const enum EComTitle1Msg {
 
 }
 
-export class ComTitleView extends ExtensionClass<IView, ComTitle>(ComTitle) implements IView {
+export class ComTitleView extends ExtendClass<IView, ComTitle>(ComTitle) implements IView {
 
 	/** 刷新指定路径icon */
 	refreshSkin(url: string) {

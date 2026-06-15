@@ -2,8 +2,8 @@ import { Controller } from "./controller/Controller";
 import { ViewManager } from "./view/ViewManager";
 
 const enum DecoratorKeyMap {
-	Notify = "__notifyMap",
-	Message = "__messageMap",
+	GlobalEvent = "__globalEventMap",
+	NetEvent = "__netEventMap",
 	UserEvent = "__userEventMap",
 }
 
@@ -12,8 +12,8 @@ const enum DecoratorKeyMap {
 export class Facade implements IFacade {
 	private _viewMgr = new ViewManager();
 	private _controller = new Controller();
-	private _notifyListener=new Laya.EventDispatcher();
-	private _messageListener= new Laya.EventDispatcher();
+	private _globalEventListener=new Laya.EventDispatcher();
+	private _netEventListener= new Laya.EventDispatcher();
 	private _userEventListener=new Laya.EventDispatcher();
 
 	//#region View
@@ -70,34 +70,34 @@ export class Facade implements IFacade {
 
 	//#region Event
 	on(type: string, caller: any, listener: Function, args?: any[], once?: boolean) {
-		if (once) this._notifyListener.once(type, caller, listener, args);
-		else this._notifyListener.on(type, caller, listener, args);
+		if (once) this._globalEventListener.once(type, caller, listener, args);
+		else this._globalEventListener.on(type, caller, listener, args);
 	}
 
 	off(type: string, caller: any, listener: Function) {
-		this._notifyListener.off(type, caller, listener);
+		this._globalEventListener.off(type, caller, listener);
 	}
 
 	offAll(type: string) {
-		this._notifyListener.offAll(type);
+		this._globalEventListener.offAll(type);
 	}
 
 	offAllCaller(caller: any) {
-		this._notifyListener.offAllCaller(caller);
+		this._globalEventListener.offAllCaller(caller);
 	}
 
 	dispatch(eventName: string, data?: any) {
-		this._notifyListener.event(eventName, data);
-		this._messageListener.event(eventName, data);
+		this._globalEventListener.event(eventName, data);
+		this._netEventListener.event(eventName, data);
 		this._userEventListener.event(eventName, data);
 		this._controller.execute(eventName, data);
 	}
 
 	setGlobalEventDecoratorEnable(caller: any, enable: boolean) {
-		this.setDecoratorEnable(caller, DecoratorKeyMap.Notify, this._notifyListener, enable);
+		this.setDecoratorEnable(caller, DecoratorKeyMap.GlobalEvent, this._globalEventListener, enable);
 	}
 	setNetEventDecoratorEnable(caller: any, enable: boolean) {
-		this.setDecoratorEnable(caller, DecoratorKeyMap.Message, this._messageListener, enable);
+		this.setDecoratorEnable(caller, DecoratorKeyMap.NetEvent, this._netEventListener, enable);
 	}
 	setUserEventDecoratorEnable(caller: any, enable: boolean) {
 		this.setDecoratorEnable(caller, DecoratorKeyMap.UserEvent, this._userEventListener, enable);

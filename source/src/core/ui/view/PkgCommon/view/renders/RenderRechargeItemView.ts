@@ -4,10 +4,10 @@ export const enum ERenderRechargeItemMsg {
 
 }
 
-export class RenderRechargeItemView extends ExtensionClass<IView, RenderRechargeItem>(RenderRechargeItem) implements IView {
+export class RenderRechargeItemView extends ExtendClass<IView, RenderRechargeItem>(RenderRechargeItem) implements IView {
 
 	override onCreate() {
-		
+
 	}
 
 	refresh(id: number, count: number, gotReward: boolean) {

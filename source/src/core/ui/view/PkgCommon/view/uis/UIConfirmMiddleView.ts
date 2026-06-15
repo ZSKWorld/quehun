@@ -6,7 +6,7 @@ export const enum EUIConfirmMiddleMsg {
 	OnBtnCancelClick = "UIConfirmMiddle_OnBtnCancelClick",
 }
 
-export class UIConfirmMiddleView extends ExtensionClass<IView, UIConfirmMiddle>(UIConfirmMiddle) implements IView {
+export class UIConfirmMiddleView extends ExtendClass<IView, UIConfirmMiddle>(UIConfirmMiddle) implements IView {
 
 	override onCreate() {
 		const { btn_close, btn_confirm, btn_cancel } = this;

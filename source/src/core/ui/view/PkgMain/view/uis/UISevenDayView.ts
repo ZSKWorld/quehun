@@ -2,7 +2,7 @@ import { RadioGroup } from "../../../../extention/RadioGroup";
 import UISevenDay from "../../../../ui/PkgMain/UISevenDay";
 import { EUISevenDayEvent, EUISevenDayRenderClickEvent } from "../../Definition";
 
-export class UISevenDayView extends ExtensionClass<IView, UISevenDay>(UISevenDay) implements IView {
+export class UISevenDayView extends ExtendClass<IView, UISevenDay>(UISevenDay) implements IView {
 	private _tabGroup = new RadioGroup();
 
 	override onCreate() {

@@ -5,7 +5,7 @@ export const enum EComAnnounceLeftMsg {
 
 }
 
-export class ComAnnounceLeftView extends ExtensionClass<IView, ComAnnounceLeft>(ComAnnounceLeft) implements IView {
+export class ComAnnounceLeftView extends ExtendClass<IView, ComAnnounceLeft>(ComAnnounceLeft) implements IView {
 	private _announcements: [number, string, boolean][];
 
 	override onCreate() {

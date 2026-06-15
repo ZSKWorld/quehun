@@ -4,7 +4,7 @@ export const enum EComAnnounceContentMsg {
 
 }
 
-export class ComAnnounceContentView extends ExtensionClass<IView, ComAnnounceContent>(ComAnnounceContent) implements IView {
+export class ComAnnounceContentView extends ExtendClass<IView, ComAnnounceContent>(ComAnnounceContent) implements IView {
 
 	override onCreate() {
 		this.rtxt_content.on(Laya.Event.LINK, this, this.onContentHref);

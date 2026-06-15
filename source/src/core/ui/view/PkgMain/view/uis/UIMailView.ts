@@ -8,7 +8,7 @@ export const enum EUIMailMsg {
 	OnBtnDeleteClick = "UIMail_OnBtnDeleteClick",
 }
 
-export class UIMailView extends ExtensionClass<IView, UIMail>(UIMail) implements IView {
+export class UIMailView extends ExtendClass<IView, UIMail>(UIMail) implements IView {
 
 	private _mails: ProtoObject<IMail>[];
 

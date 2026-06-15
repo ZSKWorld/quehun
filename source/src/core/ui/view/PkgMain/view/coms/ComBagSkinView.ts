@@ -6,7 +6,7 @@ export const enum EComBagSkinMsg {
 
 }
 
-export class ComBagSkinView extends ExtensionClass<IView, ComBagSkin>(ComBagSkin) implements IView {
+export class ComBagSkinView extends ExtendClass<IView, ComBagSkin>(ComBagSkin) implements IView {
 	private _allChars: ISheetData_ItemDefinition_Character[];
 	private _charSkins: KeyMap<number[]> = {};
 	private _showChars: number[] = [];

@@ -1,10 +1,11 @@
+import { ScriptObserver } from "../provider/ScriptObserver";
 import { MediatorDIExtend } from "./MediatorDIExtend";
 
 /**
  * 中介基类
  * 该组件为可回收组件。鼠标、键盘交互事件可使用装饰器注册 => InjectViewKeyEvent, InjectViewMouseEvent
  */
-export abstract class MediatorBase<V extends IView = IView, D = any> extends ExtensionClass<IMediator, Laya.Script>(Laya.Script) implements IMediator {
+export abstract class MediatorBase<V extends IView = IView, D = any> extends ExtendClass<IMediator, ScriptObserver>(ScriptObserver) implements IMediator {
 	override _singleton = true;
 	/** 控制器数据 */
 	private _data: D;
@@ -61,17 +62,11 @@ export abstract class MediatorBase<V extends IView = IView, D = any> extends Ext
 
 	protected override _onEnable() {
 		super._onEnable();
-		$facade.setGlobalEventDecoratorEnable(this, true);
-		$facade.setNetEventDecoratorEnable(this, true);
-		$facade.setUserEventDecoratorEnable(this, true);
 		MediatorDIExtend.registerDeviceEvent(this);
 	}
 
 	protected override _onDisable() {
 		super._onDisable();
-		$facade.setGlobalEventDecoratorEnable(this, false);
-		$facade.setNetEventDecoratorEnable(this, false);
-		$facade.setUserEventDecoratorEnable(this, false);
 		MediatorDIExtend.offDeviceEvent(this);
 	}
 

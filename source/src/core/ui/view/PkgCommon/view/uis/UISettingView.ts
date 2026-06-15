@@ -4,7 +4,7 @@ export const enum EUISettingMsg {
 
 }
 
-export class UISettingView extends ExtensionClass<IView, UISetting>(UISetting) implements IView {
+export class UISettingView extends ExtendClass<IView, UISetting>(UISetting) implements IView {
 
 	override onCreate() {
 		const { btn_mask, btn_close } = this;

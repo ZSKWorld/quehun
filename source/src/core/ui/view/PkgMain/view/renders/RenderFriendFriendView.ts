@@ -1,7 +1,7 @@
 import RenderFriendFriend from "../../../../ui/PkgMain/RenderFriendFriend";
 
 
-export class RenderFriendFriendView extends ExtensionClass<IView, RenderFriendFriend>(RenderFriendFriend) implements IView {
+export class RenderFriendFriendView extends ExtendClass<IView, RenderFriendFriend>(RenderFriendFriend) implements IView {
 
 	private _friendData: ProtoObject<IFriend>;
 

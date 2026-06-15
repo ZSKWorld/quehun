@@ -4,7 +4,7 @@ export const enum EComMatchContentMsg {
 
 }
 
-export class ComMatchContentView extends ExtensionClass<IView, ComMatchContent>(ComMatchContent) implements IView {
+export class ComMatchContentView extends ExtendClass<IView, ComMatchContent>(ComMatchContent) implements IView {
 
 	override onCreate() {
 
@@ -12,7 +12,7 @@ export class ComMatchContentView extends ExtensionClass<IView, ComMatchContent>(
 
 	async transIn() {
 		const { com_item0, com_item1, com_item2, com_item3, com_item4, scrollPane } = this;
-		scrollPane.percY = 0
+		scrollPane.percY = 0;
 		const coms = [com_item4, com_item3, com_item2, com_item1, com_item0];
 		for (let i = 0; i < coms.length; i++) {
 			const com = coms[i];

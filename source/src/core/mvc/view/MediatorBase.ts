@@ -1,11 +1,11 @@
-import { ScriptObserver } from "../provider/ScriptObserver";
+import { ScriptObserverOnEnable } from "../provider/ScriptObserverOnEnable";
 import { MediatorDIExtend } from "./MediatorDIExtend";
 
 /**
  * 中介基类
  * 该组件为可回收组件。鼠标、键盘交互事件可使用装饰器注册 => InjectViewKeyEvent, InjectViewMouseEvent
  */
-export abstract class MediatorBase<V extends IView = IView, D = any> extends ExtendClass<IMediator, ScriptObserver>(ScriptObserver) implements IMediator {
+export abstract class MediatorBase<V extends IView = IView, D = any> extends ExtendClass<IMediator, ScriptObserverOnEnable>(ScriptObserverOnEnable) implements IMediator {
 	override _singleton = true;
 	/** 控制器数据 */
 	private _data: D;

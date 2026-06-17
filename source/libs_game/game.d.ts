@@ -54,9 +54,6 @@ declare function ExtendClass<E, T>(cls: Class<T>): Class<T & E>;
 /** 单例类装饰器 */
 declare function Singleton<T extends Class<any>>(constructor: T): T;
 
-/** 把proto数据转成普通object对象 */
-declare function $decodeProtoData<T extends IProto | IProto[]>(data: T): ProtoObject<T>;
-
 declare namespace CryptoJS {
 	class AES {
 		static encrypt(message: string, key: string): any;

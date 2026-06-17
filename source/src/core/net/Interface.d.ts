@@ -1,3 +1,6 @@
+/** 把proto数据转成普通object对象 */
+declare function $decodeProtoData<T extends IProto | IProto[]>(data: T): ProtoObject<T>;
+
 declare interface IPbManager {
 	get methodMap(): KeyMap<protobuf.Method>;
 	get method2Service(): KeyMap<EServiceType>;

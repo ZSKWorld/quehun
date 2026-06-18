@@ -4,7 +4,7 @@ function $windowImmit(name, obj) { window[name] = obj; }
 //用于扩展类字段，在外部定义的字段在内部可读，扩展的字段或方法不能在构造期间调用
 function ExtendClass(cls) { return cls; };
 
-function SingletonClass(constructor) {
+function Singleton(constructor) {
 	let inst;
 	class cls extends constructor {
 		constructor(...args) {

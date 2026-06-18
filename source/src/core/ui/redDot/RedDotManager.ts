@@ -1,24 +1,24 @@
 import { Observer } from "../../mvc/provider/Observer";
 import { RedDotNode } from "./RedDotNode";
-import { RDTriggerManager } from "./register/RDTriggerManager";
+import { RDCheckerManager } from "./checker/RDCheckerManager";
 
 @Singleton
 export class RedDotManager extends Observer implements IRedDotManager {
 	private _checkListener = new Laya.EventDispatcher();
 	private _triggerListener = new Laya.EventDispatcher();
-	private _rdMap: Record<ERDName, IRedDotNode> = {} as any;
-	private _triggers = new Map<ERDTriggerType, boolean | number>();
+	private _rdNodes: Record<ERDName, IRedDotNode> = {} as any;
+	private _rdCounter = new Map<ERDTriggerType, number>();
 
 	get checkListener() { return this._checkListener; }
 	get triggerListener() { return this._triggerListener; }
 
-	setTriggered(type: ERDTriggerType, triggered: boolean | number) {
-		this._triggers.set(type, triggered);
+	setRDCount(type: ERDTriggerType, rdCount: number) {
+		this._rdCounter.set(type, rdCount);
 		Laya.timer.callLater(this, this.callTrigger);
 	}
 
 	private callTrigger() {
-		const { _triggers } = this;
+		const { _rdCounter: _triggers } = this;
 		for (const [k, v] of _triggers) {
 			this._triggerListener.event(k, [k, v]);
 		}
@@ -27,34 +27,34 @@ export class RedDotManager extends Observer implements IRedDotManager {
 
 	@InjectGlobalEvent(EGlobalEvent.OnInitGameCompleted)
 	private onInitGameCompleted() {
-		const rdMap = this._rdMap;
-		const rdRegisters = RDTriggerManager.getTriggers();
-		const rdInfos = rdRegisters.reduce((pre, cur) => pre.concat(cur.rdInfos), [] as IRDTriggerInfo[]);
+		const rdNodes = this._rdNodes;
+		const rdRegisters = RDCheckerManager.getCheckers();
+		const rdInfos = rdRegisters.reduce((pre, cur) => pre.concat(cur.rdInfos), [] as IRDCheckInfo[]);
 		while (rdInfos.length > 0) {
 			const info = rdInfos.shift();
 			const parentName = info[1];
-			if (parentName && !rdMap[parentName]) {
+			if (parentName && !rdNodes[parentName]) {
 				rdInfos.push(info);
 			} else {
 				const name = info[0];
 				const path = info[2];
 				const triggers = info[3];
-				const parent = parentName ? rdMap[parentName] : null;
+				const parent = parentName ? rdNodes[parentName] : null;
 				const node = RedDotNode.create(parent, path, triggers);
-				rdMap[name] = node;
+				rdNodes[name] = node;
 			}
 		}
 	}
 
 	@InjectGlobalEvent(EGlobalEvent.RedDotCompAwake)
 	private onRedDotCompAwake(comp: fgui.GComponent) {
-		const data = this.getRDByComp(this._rdMap[ERDName.Root], comp);
+		const data = this.getRDByComp(this._rdNodes[ERDName.Root], comp);
 		data && data.refresh();
 	}
 
 	@InjectGlobalEvent(EGlobalEvent.RedDotCompDestroy)
 	private onRedDotCompDestroy(comp: fgui.GComponent) {
-		const data = this.getRDByComp(this._rdMap[ERDName.Root], comp);
+		const data = this.getRDByComp(this._rdNodes[ERDName.Root], comp);
 		data && data.recover();
 	}
 

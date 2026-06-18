@@ -150,13 +150,12 @@ export class RedDotNode implements IRedDotNode {
 	/**
 	 * 红点事件触发回调
 	 * @param type 事件类型
-	 * @param triggered 是否检测出了红点
+	 * @param rdCount 红点数量
 	 */
-	private onTrigger(type: ERDTriggerType, triggered: boolean | number) {
+	private onTrigger(type: ERDTriggerType, rdCount: number) {
 		if (!this.hasTrigger) return;
 		if (this.triggers.indexOf(type) >= 0) {
-			const count = typeof triggered === "boolean" ? +!!triggered : triggered;
-			this._triggeredMap.set(type, count);
+			this._triggeredMap.set(type, rdCount);
 			this.calculateCountLater();
 		}
 	}

@@ -16,10 +16,10 @@ declare interface IRedDotNode {
 	recover(): void;
 }
 
-declare type IRDTriggerInfo = [ERDName, ERDName?, string?, ERDTriggerType[]?];
-declare interface IRDTrigger {
+declare type IRDCheckInfo = [ERDName, ERDName?, string?, ERDTriggerType[]?];
+declare interface IRDChecker {
 	/** [name, parentName, path, triggers] */
-	get rdInfos(): IRDTriggerInfo[];
+	get rdInfos(): IRDCheckInfo[];
 }
 
 declare interface IRedDotManager {
@@ -27,5 +27,5 @@ declare interface IRedDotManager {
 	get checkListener(): Laya.EventDispatcher;
 	/** 红点刷新事件监听器 */
 	get triggerListener(): Laya.EventDispatcher;
-	setTriggered(type: ERDTriggerType, triggered: boolean | number): void;
+	setRDCount(type: ERDTriggerType, rdCount: number): void;
 }

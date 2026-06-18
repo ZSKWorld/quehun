@@ -1,7 +1,7 @@
-import { RDTriggerBase } from "./RDTriggerBase";
+import { Base_RDChecker } from "./Base_RDChecker";
 
-export class UIMain_RDTrigger extends RDTriggerBase {
-	override get rdInfos(): IRDTriggerInfo[] {
+export class UIMain_RDChecker extends Base_RDChecker {
+	override get rdInfos(): IRDCheckInfo[] {
 		return [
 			[ERDName.Main_SevenDay, ERDName.Root, "UIBottom.UIMainView.qiri"],
 			[ERDName.Main_Mail, ERDName.Root, "UIBottom.UIMainView.mail", [ERDTriggerType.MailNotRead, ERDTriggerType.MailHaveReward]],
@@ -12,13 +12,13 @@ export class UIMain_RDTrigger extends RDTriggerBase {
 	@InjectUserEvent(EUserEvent.OnMailChanged)
 	private checkMail() {
 		const mails = $user.mail.mails;
-		this.setTriggered(ERDTriggerType.MailNotRead, mails.some(v => v.state == 0));
-		this.setTriggered(ERDTriggerType.MailHaveReward, mails.some(v => v.attachments.length && !v.take_attachment));
+		this.setRDCheck(ERDTriggerType.MailNotRead, mails.some(v => v.state == 0));
+		this.setRDCheck(ERDTriggerType.MailHaveReward, mails.some(v => v.attachments.length && !v.take_attachment));
 	}
 
 	@InjectUserEvent(EUserEvent.OnAnnouncementChanged)
 	private checkAnnouncement() {
 		const announcement = $user.announcement;
-		this.setTriggered(ERDTriggerType.AnnouncementHaveNotRead, announcement.announcements.some(v => !announcement.isRead(v.id)));
+		this.setRDCheck(ERDTriggerType.AnnouncementHaveNotRead, announcement.announcements.some(v => !announcement.isRead(v.id)));
 	}
 }

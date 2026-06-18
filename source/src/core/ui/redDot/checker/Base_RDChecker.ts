@@ -1,9 +1,9 @@
 import { Observer } from "../../../mvc/provider/Observer";
 
-export abstract class RDTriggerBase extends Observer implements IRDTrigger {
+export abstract class Base_RDChecker extends Observer implements IRDChecker {
 	private _triggerEventMap: KeyMap<Function[]>;
 
-	get rdInfos(): IRDTriggerInfo[] {
+	get rdInfos(): IRDCheckInfo[] {
 		return [];
 	}
 
@@ -15,7 +15,8 @@ export abstract class RDTriggerBase extends Observer implements IRDTrigger {
 		}
 	}
 
-	protected setTriggered(type: ERDTriggerType, triggered: boolean | number) {
-		$redDotMgr.setTriggered(type, triggered);
+	protected setRDCheck(type: ERDTriggerType, checked: boolean | number) {
+		const count = typeof checked === "boolean" ? +!!checked : checked;
+		$redDotMgr.setRDCount(type, count);
 	}
 }

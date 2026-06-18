@@ -1,7 +1,7 @@
-import { RDTriggerBase } from "./RDTriggerBase";
+import { Base_RDChecker } from "./Base_RDChecker";
 
-export class UISevenDay_RDTrigger extends RDTriggerBase {
-	override get rdInfos(): IRDTriggerInfo[] {
+export class UISevenDay_RDChecker extends Base_RDChecker {
+	override get rdInfos(): IRDCheckInfo[] {
 		return [
 			[ERDName.SevenDay_Day0, ERDName.Main_SevenDay, "UIBottom.UISevenDayView.day0", [ERDTriggerType.SevenDay0HaveReward]],
 			[ERDName.SevenDay_Day1, ERDName.Main_SevenDay, "UIBottom.UISevenDayView.day1", [ERDTriggerType.SevenDay1HaveReward]],
@@ -15,37 +15,38 @@ export class UISevenDay_RDTrigger extends RDTriggerBase {
 
 	@InjectUserEvent(EUserEvent.OnActivityPeriodTaskProgressChanged)
 	private checkSevenDay() {
-		let triggered0 = false;
-		let triggered1 = false;
-		let triggered2 = false;
-		let triggered3 = false;
-		let triggered4 = false;
-		let triggered5 = false;
-		let triggered6 = false;
+		let checked0 = false;
+		let checked1 = false;
+		let checked2 = false;
+		let checked3 = false;
+		let checked4 = false;
+		let checked5 = false;
+		let checked6 = false;
 
 		const activity = $user.activity;
 		activity.sevenDayDO.datas.forEach((v, i) => {
-			if (v.some(vv => {
+			const haveReward = v.some(vv => {
 				const taskInfo = activity.getPeriodTaskInfo(vv.period_task_id);
 				return taskInfo.achieved && !taskInfo.rewarded;
-			})) {
+			});
+			if (haveReward) {
 				switch (i) {
-					case 0: triggered0 = true; break;
-					case 1: triggered1 = true; break;
-					case 2: triggered2 = true; break;
-					case 3: triggered3 = true; break;
-					case 4: triggered4 = true; break;
-					case 5: triggered5 = true; break;
-					case 6: triggered6 = true; break;
+					case 0: checked0 = true; break;
+					case 1: checked1 = true; break;
+					case 2: checked2 = true; break;
+					case 3: checked3 = true; break;
+					case 4: checked4 = true; break;
+					case 5: checked5 = true; break;
+					case 6: checked6 = true; break;
 				}
 			}
 		});
-		this.setTriggered(ERDTriggerType.SevenDay0HaveReward, triggered0);
-		this.setTriggered(ERDTriggerType.SevenDay1HaveReward, triggered1);
-		this.setTriggered(ERDTriggerType.SevenDay2HaveReward, triggered2);
-		this.setTriggered(ERDTriggerType.SevenDay3HaveReward, triggered3);
-		this.setTriggered(ERDTriggerType.SevenDay4HaveReward, triggered4);
-		this.setTriggered(ERDTriggerType.SevenDay5HaveReward, triggered5);
-		this.setTriggered(ERDTriggerType.SevenDay6HaveReward, triggered6);
+		this.setRDCheck(ERDTriggerType.SevenDay0HaveReward, checked0);
+		this.setRDCheck(ERDTriggerType.SevenDay1HaveReward, checked1);
+		this.setRDCheck(ERDTriggerType.SevenDay2HaveReward, checked2);
+		this.setRDCheck(ERDTriggerType.SevenDay3HaveReward, checked3);
+		this.setRDCheck(ERDTriggerType.SevenDay4HaveReward, checked4);
+		this.setRDCheck(ERDTriggerType.SevenDay5HaveReward, checked5);
+		this.setRDCheck(ERDTriggerType.SevenDay6HaveReward, checked6);
 	}
 }

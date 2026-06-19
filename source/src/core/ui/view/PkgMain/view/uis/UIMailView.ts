@@ -22,7 +22,7 @@ export class UIMailView extends ExtendClass<IView, UIMail>(UIMail) implements IV
 		btn_delete.onClick(this, this.sendEvent, [EUIMailMsg.OnBtnDeleteClick]);
 
 		$uiUtil.setList(list_tab, true, this, this.onListTabRender, this.onListTabItemClick);
-		$uiUtil.setList(list_reward, true, this, this.onListRewardRender);
+		$uiUtil.setList(list_reward, true, this, this.onListRewardRender, this.onListRewardClick);
 	}
 
 	override onEnable() {
@@ -67,6 +67,11 @@ export class UIMailView extends ExtendClass<IView, UIMail>(UIMail) implements IV
 		const { attachments, take_attachment } = this.curMail;
 		const reward = attachments[index];
 		item.refresh(reward.id, reward.count, take_attachment, true);
+	}
+
+	private onListRewardClick(_, __, index: number) {
+		const reward = this.curMail.attachments[index];
+		this.openView<IUIItemDetailData>(EViewID.UIItemDetailView, { id: reward.id });
 	}
 
 	private getExpireDesc(second: number) {

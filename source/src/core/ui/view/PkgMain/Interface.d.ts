@@ -67,10 +67,6 @@ declare interface IUIShopData {
 	currencyType?: ECurrencyType;
 }
 
-declare interface IUIShopData {
-
-}
-
 declare interface IUITreasureData {
 
 }

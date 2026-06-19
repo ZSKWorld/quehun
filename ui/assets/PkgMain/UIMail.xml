@@ -27,7 +27,7 @@
     <image id="n12_hk7r" name="n12" src="mde1b7e" fileName="Texture/img_544.png" pkg="vx9zwser" xy="680,670" size="960,160" group="n22_hk7r">
       <gearDisplay controller="body" pages="2,3"/>
     </image>
-    <image id="n19_hk7r" name="time" src="hk7robb0" fileName="Texture/img_402.png" pkg="vx9zwser" xy="1009,970" group="n22_hk7r">
+    <image id="n19_hk7r" name="time" src="hk7robb0" fileName="Texture/img_402.png" pkg="vx9zwser" xy="1007,970" group="n22_hk7r">
       <relation target="n20_hk7r" sidePair="left-left"/>
     </image>
     <list id="n9_pt3a" name="tab" xy="254,190" size="352,800" group="n22_hk7r" overflow="scroll" lineGap="-6" defaultItem="ui://vith2b66pt3aobb0" autoClearItems="true">
@@ -69,8 +69,8 @@
       <Button title="删除" titleColor="#e5b673" titleFontSize="42" icon="ui://vx9zwsermde1b71"/>
     </component>
     <text id="n10_pt3a" name="title" xy="1077,200" pivot="0.5,0.5" size="164,54" group="n22_hk7r" fontSize="40" color="#edb26f" singleLine="true" text="邮件标题"/>
-    <text id="n20_hk7r" name="expire" xy="1035,963" pivot="0.5,0.5" size="280,36" group="n22_hk7r" fontSize="26" color="#8a94ad" text="29天23小时59分后过期"/>
-    <group id="n22_hk7r" name="n22" xy="254,190" size="1386,809" advanced="true">
+    <text id="n20_hk7r" name="expire" xy="1175,983" pivot="0.5,0.5" anchor="true" size="280,36" group="n22_hk7r" fontSize="26" color="#8a94ad" vAlign="middle" singleLine="true" text="29天23小时59分后过期"/>
+    <group id="n22_hk7r" name="n22" xy="254,190" size="1386,811" advanced="true">
       <gearDisplay controller="empty" pages="0"/>
     </group>
   </displayList>

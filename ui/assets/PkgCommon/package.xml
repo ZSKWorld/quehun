@@ -139,7 +139,7 @@
     <image id="gsi2obct" name="img_918.png" path="/Texture/" exported="true"/>
     <image id="gsi2obcu" name="img_841.png" path="/Texture/" exported="true"/>
     <image id="gsi2obcv" name="img_836.png" path="/Texture/" exported="true"/>
-    <image id="gsi2obcw" name="img_764.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obcw" name="img_764.png" path="/Texture/" exported="true" scale="9grid" scale9grid="21,2,4,23"/>
     <image id="gsi2obcx" name="img_761.png" path="/Texture/" exported="true"/>
     <image id="gsi2obcy" name="img_760.png" path="/Texture/" exported="true"/>
     <image id="gsi2obcz" name="img_685.png" path="/Texture/" exported="true"/>
@@ -291,7 +291,7 @@
     <image id="sxdbobiv" name="img_1841.png" path="/Texture/" exported="true"/>
     <image id="sxdbobiw" name="img_667.png" path="/Texture/" exported="true" scale="9grid" scale9grid="1,1,48,21"/>
     <component id="sxdbobix" name="BtnRechargeVip.xml" path="/Component/UIRecharge/"/>
-    <image id="tggzobiy" name="img_244.png" path="/Texture/" exported="true"/>
+    <image id="tggzobiy" name="img_244.png" path="/Texture/" exported="true" scale="9grid" scale9grid="1,80,0,-6"/>
     <component id="hraoobiz" name="UIBuyGoods.xml" path="/" exported="true"/>
     <image id="hraoobj0" name="img_1755.png" path="/Texture/" exported="true"/>
     <image id="hraoobj1" name="img_848.png" path="/Texture/" exported="true" scale="9grid" scale9grid="15,15,10,10"/>
@@ -306,6 +306,7 @@
     <image id="lkqmobjb" name="img_2364.png" path="/Texture/" exported="true"/>
     <image id="lkqmobjc" name="img_2368.png" path="/Texture/" exported="true"/>
     <component id="ktwpob9w" name="UISetting.xml" path="/" exported="true"/>
+    <image id="pg12objd" name="img_3196.png" path="/Texture/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

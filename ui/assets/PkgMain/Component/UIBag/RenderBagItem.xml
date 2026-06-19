@@ -2,10 +2,11 @@
 <component size="166,166" pivot="0.5,0.5" extention="Button" designImage="ui://ca43vz0eq5yi7plojm" designImageOffsetX="-442" designImageOffsetY="-207">
   <displayList>
     <component id="n0_q5yi" name="item" src="q5yiobc2" fileName="Component/Component/物品/ComItem1.xml" pkg="vx9zwser" xy="0,0" size="166,166" aspect="true">
+      <relation target="" sidePair="width-width,height-height"/>
       <property target="icon" propertyId="1" value="ui://ca43vz0eq5yi7plojn"/>
     </component>
     <text id="n1_q5yi" name="count" xy="136,123" pivot="1,0.5" size="22,42" fontSize="30" color="#ffffff" align="right" leading="0" singleLine="true" text="5">
-      <relation target="" sidePair="width-width,height-height"/>
+      <relation target="" sidePair="right-right,bottom-bottom"/>
     </text>
   </displayList>
   <Button downEffect="scale" downEffectValue="0.95"/>

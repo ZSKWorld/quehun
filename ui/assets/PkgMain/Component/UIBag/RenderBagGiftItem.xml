@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="231,207" pivot="0.5,0.56" designImage="ui://ca43vz0eq5yi7plojo" designImageOffsetX="-439" designImageOffsetY="-374" designImageAlpha="25">
+  <controller name="type" pages="0,,1,,3,ban" selected="2"/>
   <displayList>
-    <component id="n0_q5yi" name="item" src="q5yiobc2" fileName="Component/Component/物品/ComItem.xml" pkg="vx9zwser" xy="24,24" pivot="0.5,0.5" size="182,182" aspect="true">
-      <property target="icon" propertyId="1" value="ui://ca43vz0eq5yi7plojp"/>
-    </component>
-    <component id="n2_q5yi" name="delete" src="w29kob8e" fileName="Component/Button/BtnIconFitNoScale.xml" pkg="vx9zwser" xy="170,0" size="61,61">
+    <component id="n6_pg12" name="item" src="q5yiobbn" fileName="Component/UIBag/RenderBagItem.xml" xy="24,24" size="182,182"/>
+    <image id="n8_pg12" name="n8" src="pg12objd" fileName="Texture/img_3196.png" pkg="vx9zwser" xy="29,29" size="172,172">
+      <gearDisplay controller="type" pages="3"/>
+    </image>
+    <component id="n2_q5yi" name="delete" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="170,0" size="61,61">
+      <gearDisplay controller="type" pages="1"/>
       <Button icon="ui://vx9zwserq5yiobc4"/>
     </component>
-    <component id="n3_q5yi" name="add" src="w29kob8e" fileName="Component/Button/BtnIconFitNoScale.xml" pkg="vx9zwser" xy="0,0" size="61,61">
-      <Button icon="ui://vx9zwserq5yiobc5"/>
-    </component>
-    <text id="n1_q5yi" name="total" xy="176,159" pivot="1,0" size="22,42" fontSize="30" color="#ffffff" align="right" strokeColor="#000000" strokeSize="2" text="8"/>
-    <text id="n5_q5yi" name="count" xy="19,10" pivot="0.5,0.5" size="22,42" fontSize="30" color="#0d0c0c" align="center" vAlign="middle" singleLine="true" text="3"/>
+    <image id="n7_pg12" name="n7" src="q5yiobc5" fileName="Texture/img_1138.png" pkg="vx9zwser" xy="0,0" size="61,61">
+      <gearDisplay controller="type" pages="1"/>
+    </image>
+    <text id="n5_q5yi" name="count" xy="19,10" pivot="0.5,0.5" size="22,42" fontSize="30" color="#0d0c0c" align="center" vAlign="middle" singleLine="true" text="3">
+      <gearDisplay controller="type" pages="1"/>
+    </text>
   </displayList>
 </component>

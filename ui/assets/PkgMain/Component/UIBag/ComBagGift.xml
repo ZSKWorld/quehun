@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1359,780" designImage="ui://ca43vz0eq5yi7plojk" designImageOffsetX="-425" designImageOffsetY="-192" designImageAlpha="88">
-  <controller name="type" exported="true" pages="0,,1,奉纳" selected="0"/>
+<component size="1359,780" designImage="ui://ca43vz0eq5yi7plojk" designImageOffsetX="-425" designImageOffsetY="-192" designImageAlpha="0">
+  <controller name="type" exported="true" pages="0,,1,奉纳1,2,奉纳2" selected="1"/>
   <displayList>
-    <list id="n12_gsi2" name="n12" xy="15,103" size="1344,677" layout="flow_hz" overflow="scroll" scrollBarRes="ui://vx9zwserhdeoobbj," lineGap="3" colGap="-21" defaultItem="ui://vith2b66q5yiobbp" autoClearItems="true">
+    <list id="n12_gsi2" name="item" xy="15,103" size="1344,677" layout="flow_hz" overflow="scroll" scrollBarRes="ui://vx9zwserhdeoobbj," lineGap="3" colGap="-21" defaultItem="ui://vith2b66q5yiobbp" autoClearItems="true">
       <item/>
       <item/>
       <item/>
@@ -38,34 +38,36 @@
       <item/>
       <item/>
     </list>
-    <loader id="n13_gsi2" name="n13" xy="0,11" size="46,46" aspect="true" url="ui://ca43vz0egsi27plojq" fill="scaleFree"/>
+    <component id="n13_gsi2" name="icon" src="rpakobf5" fileName="Component/Component/物品/ComItem.xml" pkg="vx9zwser" xy="0,11" size="46,46" aspect="true">
+      <property target="icon" propertyId="1" value="ui://ca43vz0egsi27plojq"/>
+    </component>
     <image id="n24_mk4a" name="n24" src="rpakobf6" fileName="Texture/img_195.png" xy="26,84" size="1294,4"/>
-    <component id="n19_gsi2" name="n19" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="1138,0" size="183,70">
+    <component id="n19_gsi2" name="start" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="1138,0" size="183,70">
       <gearDisplay controller="type" pages="0"/>
       <Button title="礼物奉纳" titleColor="#fcba72" titleFontSize="31" icon="ui://vx9zwsergsi2obee" controller="type" page="1"/>
     </component>
-    <component id="n21_gsi2" name="n21" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="759,0" size="183,70">
-      <gearDisplay controller="type" pages="1"/>
+    <component id="n21_gsi2" name="clear" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="759,0" size="183,70">
+      <gearDisplay controller="type" pages="2"/>
       <Button title="清除选择" titleColor="#fcba72" titleFontSize="31" icon="ui://vx9zwsergsi2obee"/>
     </component>
-    <component id="n22_gsi2" name="n22" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="949,0" size="183,70">
-      <gearDisplay controller="type" pages="1"/>
+    <component id="n22_gsi2" name="sell" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="949,0" size="183,70">
+      <gearDisplay controller="type" pages="2"/>
       <Button title="礼物奉纳" titleColor="#fcba72" titleFontSize="31" icon="ui://vx9zwsergsi2obee"/>
     </component>
-    <component id="n23_gsi2" name="n23" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="1139,0" size="183,70">
-      <gearDisplay controller="type" pages="1"/>
+    <component id="n23_gsi2" name="back" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="1139,0" size="183,70">
+      <gearDisplay controller="type" pages="1,2"/>
       <Button title="返回" titleColor="#fcba72" titleFontSize="31" icon="ui://vx9zwsergsi2obee" controller="type" page="0"/>
     </component>
-    <text id="n14_gsi2" name="n14" xy="46,13" size="39,42" fontSize="30" color="#e4b777" vAlign="middle" leading="0" singleLine="true" text="x0"/>
-    <text id="n15_gsi2" name="n15" xy="88,21" size="32,33" fontSize="23" color="#5acf6c" leading="0" text="+9">
-      <gearDisplay controller="type" pages="1"/>
+    <text id="n14_gsi2" name="count" xy="46,17" pivot="0,0.5" size="39,42" fontSize="30" color="#e4b777" vAlign="middle" leading="0" singleLine="true" text="x0"/>
+    <text id="n15_gsi2" name="add" xy="88,22" pivot="0,0.5" size="32,33" fontSize="23" color="#5acf6c" vAlign="middle" leading="0" singleLine="true" text="+9">
+      <gearDisplay controller="type" pages="1,2"/>
       <relation target="n14_gsi2" sidePair="left-right"/>
     </text>
     <text id="n17_gsi2" name="n17" xy="271,19" pivot="0.5,0.5" size="859,35" fontSize="25" color="#81b3c2" align="center" vAlign="middle" leading="0" autoSize="shrink" singleLine="true" text="奉纳可以将你不需要的礼物分解为星之粉尘">
       <gearDisplay controller="type" pages="0"/>
     </text>
     <text id="n20_gsi2" name="n20" xy="492,19" pivot="1,0" size="255,36" fontSize="26" color="#81b3c2" vAlign="middle" leading="0" letterSpacing="-1" singleLine="true" text="选择你希望奉纳的礼物">
-      <gearDisplay controller="type" pages="1"/>
+      <gearDisplay controller="type" pages="1,2"/>
     </text>
   </displayList>
 </component>

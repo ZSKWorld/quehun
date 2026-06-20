@@ -540,6 +540,8 @@ declare enum EUserEvent {
 	OnMjpFrontUseChanged = "EUserEvent_OnMjpFrontUseChanged",
 	/** 使用中的桌布变化 */
 	OnTableClothUseChanged = "EUserEvent_OnTableClothUseChanged",
+	/** 使用中的大厅背景变化 */
+	OnLobbyBgChanged = "EUserEvent_OnLobbyBgChanged",
 	/** 使用中的装扮变化 */
 	OnViewUseChanged = "EUserEvent_OnViewUseChanged",
 	/** 装扮数据变化 */

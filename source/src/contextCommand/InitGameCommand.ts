@@ -1,4 +1,5 @@
 import { AFKManager } from "../core/game/AFKManager";
+import { LobbyBgManager } from "../core/game/LobbyBgManager";
 import { MjpAtlasLoader } from "../core/game/MjpAtlasLoader";
 import { Command } from "../core/mvc/controller/Command";
 import { ShaderManager } from "../core/shader/ShaderManager";
@@ -31,6 +32,7 @@ export class InitGameCommand extends Command {
 		ShaderManager.Inst.init();
 		MjpAtlasLoader.Inst.init();
 		AFKManager.Inst.init();
+		LobbyBgManager.Inst.init();
 
 		const [config] = await Promise.all([
 			$loadMgr.fetch<IConfig>(ResPath.EConfigPath.GameConfig, Laya.Loader.JSON),

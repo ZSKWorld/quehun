@@ -30,6 +30,7 @@ import { RenderHelpItem1View } from "../core/ui/view/PkgMain/view/renders/Render
 import { RenderLiaoSheCharView } from "../core/ui/view/PkgMain/view/renders/RenderLiaoSheCharView";
 import { RenderLiaoSheDecoItemView } from "../core/ui/view/PkgMain/view/renders/RenderLiaoSheDecoItemView";
 import { RenderLiaoSheDecoTabView } from "../core/ui/view/PkgMain/view/renders/RenderLiaoSheDecoTabView";
+import { RenderLiaoSheDecoTypeView } from "../core/ui/view/PkgMain/view/renders/RenderLiaoSheDecoTypeView";
 import { RenderMailItemView } from "../core/ui/view/PkgMain/view/renders/RenderMailItemView";
 import { RenderRankItemView } from "../core/ui/view/PkgMain/view/renders/RenderRankItemView";
 import { RenderSevenDayItemView } from "../core/ui/view/PkgMain/view/renders/RenderSevenDayItemView";
@@ -186,6 +187,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.RenderLiaoSheCharView, EViewType.Render, RenderLiaoSheCharView);
 		register(EViewID.RenderLiaoSheDecoItemView, EViewType.Render, RenderLiaoSheDecoItemView);
 		register(EViewID.RenderLiaoSheDecoTabView, EViewType.Render, RenderLiaoSheDecoTabView);
+		register(EViewID.RenderLiaoSheDecoTypeView, EViewType.Render, RenderLiaoSheDecoTypeView);
 		register(EViewID.RenderMailItemView, EViewType.Render, RenderMailItemView);
 		register(EViewID.RenderRankItemView, EViewType.Render, RenderRankItemView);
 		register(EViewID.RenderSevenDayItemView, EViewType.Render, RenderSevenDayItemView);

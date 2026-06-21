@@ -155,7 +155,7 @@
     <component id="ik7bobfl" name="RenderLiaoSheDecoTab.xml" path="/Component/UILiaoShe/"/>
     <image id="glpbobfm" name="img_860.png" path="/Texture/" scale="9grid" scale9grid="18,18,4,4"/>
     <image id="glpbobfn" name="img_2406.png" path="/Texture/" scale="9grid" scale9grid="22,34,21,68"/>
-    <component id="glpbobfo" name="RenderLiaoSheDecoItem.xml" path="/Component/UILiaoShe/"/>
+    <component id="glpbobfo" name="RenderLiaoSheDecoType.xml" path="/Component/UILiaoShe/"/>
     <image id="glpbobfp" name="img_859.png" path="/Texture/"/>
     <image id="glpbobfq" name="img_1672.png" path="/Texture/"/>
     <image id="glpbobfr" name="img_2849.png" path="/Texture/"/>
@@ -245,6 +245,7 @@
     <component id="rg6eobia" name="BtnSevenDayAnswer.xml" path="/Component/UISevenDay/"/>
     <component id="jonfobib" name="BtnSevenDay.xml" path="/Component/UIMain/"/>
     <component id="giq1obic" name="UICheckCurrency.xml" path="/" exported="true"/>
+    <component id="lswhobie" name="RenderLiaoSheDecoItem.xml" path="/Component/UILiaoShe/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

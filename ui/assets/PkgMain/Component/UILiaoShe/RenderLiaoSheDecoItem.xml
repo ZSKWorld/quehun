@@ -1,15 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="655,133" extention="Button" designImage="ui://ca43vz0eik7b7plok4" designImageOffsetX="-363" designImageOffsetY="-729">
-  <controller name="button" exported="true" pages="0,up,1,down" selected="0"/>
+<component size="180,180" extention="Button" designImage="ui://ca43vz0eik7b7plok2" designImageOffsetX="-1076" designImageOffsetY="-424" designImageAlpha="0" designImageLayer="1">
+  <controller name="type" exported="true" pages="0,item,1,bgm" selected="0"/>
+  <controller name="button" exported="true" pages="0,up,1,down" selected="1"/>
   <displayList>
-    <image id="n8_glpb" name="n8" src="glpbobfm" fileName="Texture/img_860.png" xy="9,9" size="614,115"/>
-    <image id="n11_glpb" name="n11" src="glpbobfn" fileName="Texture/img_2406.png" xy="0,0" size="655,133">
-      <gearDisplay controller="button" pages="1"/>
+    <image id="n41_lswh" name="n41" src="lswhobji" fileName="Texture/img_1536.png" pkg="vx9zwser" xy="18,18" size="144,144">
+      <gearSize controller="type" pages="1" values="668,115,1,1" default="144,144,1,1"/>
     </image>
-    <image id="n9_glpb" name="n9" src="glpbobfk" fileName="Texture/img_44.png" pkg="vx9zwser" xy="177,22" size="4,89"/>
-    <component id="n10_glpb" name="item" src="rpakobf5" fileName="Component/Component/物品/ComItem.xml" pkg="vx9zwser" xy="518,20" size="93,93"/>
-    <text id="n12_glpb" name="title" xy="98,66" pivot="0.5,0.5" anchor="true" size="66,43" font="ui://vx9zwserrpakobeu" fontSize="31" color="#b58c37" align="center" vAlign="middle" leading="0" singleLine="true" text="桌布"/>
-    <text id="n13_glpb" name="name" xy="191,65" pivot="0,0.5" anchor="true" size="170,36" fontSize="26" color="#b58c37" vAlign="middle" leading="0" singleLine="true" text="桌布-萤火之森"/>
+    <component id="n32_lswh" name="n32" src="q5yiobc2" fileName="Component/Component/物品/ComItem1.xml" pkg="vx9zwser" xy="15,15" size="150,150">
+      <gearXY controller="type" pages="0,1" values="15,15|28,29"/>
+      <gearSize controller="type" pages="0,1" values="150,150,1,1|94,94,1,1"/>
+    </component>
+    <image id="n29_lswh" name="n29" src="lswhobjg" fileName="Texture/img_223.png" pkg="vx9zwser" xy="18,18" size="144,144">
+      <relation target="n41_lswh" sidePair="width-width,height-height"/>
+    </image>
+    <image id="n31_lswh" name="n31" src="lswhobjf" fileName="Texture/img_1161.png" pkg="vx9zwser" xy="112,112" size="50,50">
+      <gearXY controller="type" pages="1" values="78,79" default="112,112"/>
+      <gearSize controller="type" pages="1" values="41,41,1,1" default="50,50,1,1"/>
+    </image>
+    <image id="n30_lswh" name="n30" src="lswhobje" fileName="Texture/img_1160.png" pkg="vx9zwser" xy="112,112" size="50,50">
+      <gearXY controller="type" pages="1" values="78,79" default="112,112"/>
+      <gearSize controller="type" pages="1" values="41,41,1,1" default="50,50,1,1"/>
+    </image>
+    <image id="n34_lswh" name="n34" src="lswhobjh" fileName="Texture/img_807.png" pkg="vx9zwser" xy="0,0" pivot="0.5,0.5" size="57,57" group="n40_lswh" aspect="true" rotation="-90"/>
+    <image id="n33_lswh" name="n33" src="lswhobjh" fileName="Texture/img_807.png" pkg="vx9zwser" xy="122,0" pivot="0.5,0.5" size="57,57" group="n40_lswh" aspect="true">
+      <relation target="" sidePair="right-right"/>
+    </image>
+    <image id="n35_lswh" name="n35" src="lswhobjh" fileName="Texture/img_807.png" pkg="vx9zwser" xy="0,123" pivot="0.5,0.5" size="57,57" group="n40_lswh" aspect="true" rotation="180">
+      <relation target="" sidePair="bottom-bottom"/>
+    </image>
+    <image id="n36_lswh" name="n36" src="lswhobjh" fileName="Texture/img_807.png" pkg="vx9zwser" xy="123,123" pivot="0.5,0.5" size="57,57" group="n40_lswh" aspect="true" rotation="90">
+      <relation target="" sidePair="right-right,bottom-bottom"/>
+    </image>
+    <group id="n40_lswh" name="n40" xy="0,0" size="180,180" advanced="true">
+      <gearDisplay controller="button" pages="1"/>
+    </group>
+    <component id="n44_lswh" name="n44" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="567,25">
+      <gearDisplay controller="type" pages="1"/>
+      <Button icon="ui://vx9zwsergsi2obdu" selectedIcon="ui://vx9zwsergsi2obcr"/>
+    </component>
   </displayList>
   <Button mode="Radio"/>
+  <relation target="n41_lswh" sidePair="width-width,height-height"/>
 </component>

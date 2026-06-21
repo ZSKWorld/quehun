@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1743,788" designImage="ui://ca43vz0eik7b7plok4" designImageOffsetX="-64" designImageOffsetY="-195">
+<component size="1743,788" designImage="ui://ca43vz0eik7b7plok2" designImageOffsetX="-64" designImageOffsetY="-195" designImageAlpha="0" designImageLayer="1">
   <displayList>
+    <image id="n15_glpb" name="n15" src="glpbobfm" fileName="Texture/img_860.png" xy="979,0" size="764,784"/>
+    <image id="n27_glpb" name="n27" src="glpbobft" fileName="Texture/img_3418.png" xy="293,16"/>
+    <image id="n39_lswh" name="n39" src="glpbobfk" fileName="Texture/img_44.png" pkg="vx9zwser" xy="1029,81" size="670,3"/>
+    <component id="n26_glpb" name="editViewName" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="607,32" size="35,35">
+      <relation target="n24_glpb" sidePair="right-right"/>
+      <Button icon="ui://vith2b66glpbobfs"/>
+    </component>
+    <component id="n23_glpb" name="save" src="108ab6i" fileName="Component/Button/BtnNormal.xml" pkg="vx9zwser" xy="479,706" size="254,82">
+      <Button title="保存" titleColor="#613422" titleFontSize="40" icon="ui://vith2b66glpbobfr"/>
+    </component>
+    <component id="n18_glpb" name="preview" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1470,9" size="74,74" group="n41_lswh">
+      <Button icon="ui://vith2b66glpbobfq"/>
+    </component>
+    <component id="n19_glpb" name="random" src="glpbobfo" fileName="Component/Button/BtnSwitch1.xml" pkg="vx9zwser" xy="1556,27" group="n41_lswh"/>
+    <group id="n41_lswh" name="n41" xy="1470,9" size="227,74" advanced="true" layout="hz" colGap="12" excludeInvisibles="true">
+      <relation target="" sidePair="right-right"/>
+    </group>
+    <text id="n24_glpb" name="viewName" xy="574,24" pivot="0.5,0.5" size="26,49" fontSize="36" color="#f2c797" vAlign="middle" leading="0" singleLine="true" text="1"/>
+    <text id="n20_glpb" name="title" xy="1029,45" pivot="0,0.5" anchor="true" size="80,52" font="ui://vx9zwserrpakobeu" fontSize="38" color="#e7ab5d" text="桌布"/>
     <list id="n6_ik7b" name="tab" xy="0,2" size="276,784" overflow="scroll" lineGap="4" defaultItem="ui://vith2b66ik7bobfl" autoItemSize="false" align="right" autoClearItems="true">
       <item controllers="button,1"/>
       <item/>
@@ -27,24 +46,30 @@
       <item/>
       <item/>
     </list>
-    <image id="n15_glpb" name="n15" src="glpbobfm" fileName="Texture/img_860.png" xy="979,0" size="764,784"/>
-    <image id="n27_glpb" name="n27" src="glpbobft" fileName="Texture/img_3418.png" xy="293,16"/>
-    <component id="n23_glpb" name="save" src="108ab6i" fileName="Component/Button/BtnNormal.xml" pkg="vx9zwser" xy="479,706" size="254,82">
-      <Button title="保存" titleColor="#613422" titleFontSize="40" icon="ui://vith2b66glpbobfr"/>
-    </component>
-    <image id="n16_glpb" name="n16" src="glpbobfl" fileName="Texture/img_28.png" pkg="vx9zwser" xy="984,84" size="755,695"/>
-    <component id="n18_glpb" name="preview" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1470,9" size="74,74">
-      <Button icon="ui://vith2b66glpbobfq"/>
-    </component>
-    <component id="n19_glpb" name="random" src="glpbobfo" fileName="Component/Button/BtnSwitch1.xml" pkg="vx9zwser" xy="1556,27"/>
-    <component id="n21_glpb" name="closePreview" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1639,93" size="70,70">
+    <list id="n28_lswh" name="item" xy="1022,91" size="699,673" layout="flow_hz" overflow="scroll" scrollBarRes="ui://vx9zwserj0ddob7h," lineGap="-15" colGap="-15" defaultItem="ui://vith2b66lswhobie" autoClearItems="true">
+      <item controllers="type,0"/>
+      <item/>
+      <item controllers="type,0"/>
+      <item/>
+      <item controllers="type,0"/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+    </list>
+    <image id="n16_glpb" name="n16" src="glpbobfl" fileName="Texture/img_28.png" pkg="vx9zwser" xy="984,84" size="755,695" group="n40_lswh"/>
+    <component id="n21_glpb" name="closePreview" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1639,93" size="70,70" group="n40_lswh">
       <Button icon="ui://vx9zwserj0ddob7b"/>
     </component>
-    <component id="n26_glpb" name="editViewName" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="607,32" size="35,35">
-      <relation target="n24_glpb" sidePair="right-right"/>
-      <Button icon="ui://vith2b66glpbobfs"/>
-    </component>
-    <text id="n24_glpb" name="viewName" xy="574,24" pivot="0.5,0.5" size="26,49" fontSize="36" color="#f2c797" vAlign="middle" leading="0" singleLine="true" text="1"/>
-    <text id="n20_glpb" name="title" xy="1029,45" pivot="0,0.5" anchor="true" size="80,52" font="ui://vx9zwserrpakobeu" fontSize="38" color="#e7ab5d" text="桌布"/>
+    <group id="n40_lswh" name="n40" xy="984,84" size="755,695" visible="false" advanced="true"/>
   </displayList>
 </component>

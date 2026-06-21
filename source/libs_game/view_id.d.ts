@@ -33,6 +33,7 @@ declare enum EViewID {
 	RenderLiaoSheCharView = "RenderLiaoSheCharView",
 	RenderLiaoSheDecoItemView = "RenderLiaoSheDecoItemView",
 	RenderLiaoSheDecoTabView = "RenderLiaoSheDecoTabView",
+	RenderLiaoSheDecoTypeView = "RenderLiaoSheDecoTypeView",
 	RenderMailItemView = "RenderMailItemView",
 	RenderRankItemView = "RenderRankItemView",
 	RenderSevenDayItemView = "RenderSevenDayItemView",

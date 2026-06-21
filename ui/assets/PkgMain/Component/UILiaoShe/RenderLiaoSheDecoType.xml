@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="655,133" extention="Button" designImage="ui://ca43vz0eik7b7plok4" designImageOffsetX="-363" designImageOffsetY="-729" designImageAlpha="0">
+  <controller name="button" exported="true" pages="0,up,1,down" selected="0"/>
+  <displayList>
+    <image id="n8_glpb" name="n8" src="glpbobfm" fileName="Texture/img_860.png" xy="9,9" size="614,115"/>
+    <image id="n11_glpb" name="n11" src="glpbobfn" fileName="Texture/img_2406.png" xy="0,0" size="655,133">
+      <gearDisplay controller="button" pages="1"/>
+    </image>
+    <image id="n9_glpb" name="n9" src="glpbobfk" fileName="Texture/img_44.png" pkg="vx9zwser" xy="177,22" size="4,89"/>
+    <component id="n10_glpb" name="item" src="rpakobf5" fileName="Component/Component/物品/ComItem.xml" pkg="vx9zwser" xy="518,20" size="93,93"/>
+    <text id="n12_glpb" name="title" xy="98,66" pivot="0.5,0.5" anchor="true" size="66,43" font="ui://vx9zwserrpakobeu" fontSize="31" color="#b58c37" align="center" vAlign="middle" leading="0" singleLine="true" text="桌布"/>
+    <text id="n13_glpb" name="name" xy="191,65" pivot="0,0.5" anchor="true" size="170,36" fontSize="26" color="#b58c37" vAlign="middle" leading="0" singleLine="true" text="桌布-萤火之森"/>
+  </displayList>
+  <Button mode="Radio"/>
+</component>

@@ -1,6 +1,7 @@
 import ComLiaoSheDecorate from "../../../../ui/PkgMain/ComLiaoSheDecorate";
 import { RenderLiaoSheDecoItemView } from "../renders/RenderLiaoSheDecoItemView";
 import { RenderLiaoSheDecoTabView } from "../renders/RenderLiaoSheDecoTabView";
+import { RenderLiaoSheDecoTypeView } from "../renders/RenderLiaoSheDecoTypeView";
 
 export const enum EComLiaoSheDecorateMsg {
 	OnBtnSaveClick = "ComLiaoSheDecorate_OnBtnSaveClick",
@@ -20,7 +21,12 @@ const SlotIcons = [
 	'ui://PkgMain/img_3205',
 	'ui://PkgMain/img_3200',
 	'ui://PkgMain/img_3204',
-	'', '', '', '', ''];
+	'', '', '', '', ''
+];
+const ItemPreview = [
+	[false, true], [false, true], [false, true], [false, true], [false, true], [false, true],
+	[true, false], [true, true], [true, true], [true, true], [true, false]
+];
 
 class DecoViewData implements IResAllcommonViews_Views {
 	name: string;
@@ -59,7 +65,7 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 	private _curData = new DecoViewData();
 
 	override onCreate() {
-		const { btn_save, btn_preview, btn_random, btn_closePreview, btn_editViewName, list_tab, list_view } = this;
+		const { btn_save, btn_preview, btn_random, btn_closePreview, btn_editViewName, list_tab, list_view, list_item } = this;
 		btn_save.onClick(this, this.sendEvent, [EComLiaoSheDecorateMsg.OnBtnSaveClick]);
 		btn_preview.onClick(this, this.sendEvent, [EComLiaoSheDecorateMsg.OnBtnPreviewClick]);
 		btn_random.onClick(this, this.sendEvent, [EComLiaoSheDecorateMsg.OnBtnRandomClick]);
@@ -67,6 +73,7 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 		btn_editViewName.onClick(this, this.sendEvent, [EComLiaoSheDecorateMsg.OnBtnEditViewNameClick]);
 		$uiUtil.setList(list_tab, false, this, this.onListTabRender, this.onListTabClick);
 		$uiUtil.setList(list_view, false, this, this.onListViewRender, this.onListViewClick);
+		$uiUtil.setList(list_item, false, this, this.onListItemRender, this.onListItemClick);
 	}
 
 	refresh() {
@@ -90,7 +97,14 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 	}
 
 	private refreshItem(index: number) {
+		const { _curData, txt_title, btn_preview, btn_random, list_item } = this;
+		txt_title.text = $lang(SlotTitles[index]);
+		btn_preview.visible = ItemPreview[index][0];
+		btn_random.visible = ItemPreview[index][1];
 
+		const items = $user.bag.getItemByCategoryType(EItemCategory.Common, _curData.values[index].slot, true);
+		list_item.numItems = items.length;
+		list_item.selectedIndex = -1;
 	}
 
 	private onListTabRender(index: number, item: RenderLiaoSheDecoTabView) {
@@ -102,12 +116,21 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 		this.refreshView(index);
 	}
 
-	private onListViewRender(index: number, item: RenderLiaoSheDecoItemView) {
+	private onListViewRender(index: number, item: RenderLiaoSheDecoTypeView) {
 		const slotData = this._curData.values[index];
 		item.refresh(slotData, SlotTitles[index], SlotNames[index], slotData.type == 1 ? SlotIconRandom : SlotIcons[index]);
 	}
 
-	private onListViewClick(item, evt, index: number) {
+	private onListViewClick(item: RenderLiaoSheDecoTypeView, evt: Laya.Event, index: number) {
 		this.refreshItem(index);
+	}
+
+	private onListItemRender(index: number, item: RenderLiaoSheDecoItemView) {
+		// const slotData = this._curData.values[index];
+		// item.refresh(slotData, SlotTitles[index], SlotNames[index], slotData.type == 1 ? SlotIconRandom : SlotIcons[index]);
+	}
+
+	private onListItemClick(item: RenderLiaoSheDecoItemView, evt: Laya.Event, index: number) {
+		// this.refreshItem(index);
 	}
 }

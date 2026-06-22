@@ -95,6 +95,7 @@ export class CommonViewDO extends BaseDO implements DO.ICommonViewDO {
 				} else {
 					if (s.item_id == 0)
 						s.item_id = this.getDefultViewId(sid);
+					s.item_id_list = s.item_id_list.map(id => id == 0 ? this.getDefultViewId(sid) : id);
 				}
 			});
 			slots.sort((a, b) => slotIds.indexOf(a.slot) - slotIds.indexOf(b.slot));

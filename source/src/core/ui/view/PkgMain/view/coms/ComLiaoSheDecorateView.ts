@@ -63,6 +63,7 @@ class DecoViewData implements IResAllcommonViews_Views {
 
 export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorate>(ComLiaoSheDecorate) implements IView {
 	private _curData = new DecoViewData();
+	private _items: ProtoObject<IItem>[];
 
 	override onCreate() {
 		const { btn_save, btn_preview, btn_random, btn_closePreview, btn_editViewName, list_tab, list_view, list_item } = this;
@@ -97,12 +98,12 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 	}
 
 	private refreshItem(index: number) {
-		const { _curData, txt_title, btn_preview, btn_random, list_item } = this;
+		const { txt_title, btn_preview, btn_random, list_item } = this;
 		txt_title.text = $lang(SlotTitles[index]);
 		btn_preview.visible = ItemPreview[index][0];
 		btn_random.visible = ItemPreview[index][1];
 
-		const items = $user.bag.getItemByCategoryType(EItemCategory.Common, _curData.values[index].slot, true);
+		const items = this._items = this.getItemList(index);
 		list_item.numItems = items.length;
 		list_item.selectedIndex = -1;
 	}
@@ -128,9 +129,16 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 	private onListItemRender(index: number, item: RenderLiaoSheDecoItemView) {
 		// const slotData = this._curData.values[index];
 		// item.refresh(slotData, SlotTitles[index], SlotNames[index], slotData.type == 1 ? SlotIconRandom : SlotIcons[index]);
+		item.refresh();
 	}
 
 	private onListItemClick(item: RenderLiaoSheDecoItemView, evt: Laya.Event, index: number) {
 		// this.refreshItem(index);
+	}
+
+	private getItemList(index: number) {
+		const type = this._curData.values[index].slot;
+		const items = $user.bag.getItemByCategoryType(EItemCategory.Common, type, true);
+		return items;
 	}
 }

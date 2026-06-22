@@ -103,7 +103,8 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 		btn_preview.visible = ItemPreview[index][0];
 		btn_random.visible = ItemPreview[index][1];
 
-		const items = this._items = this.getItemList(index);
+		const items = this.getItemList(index);
+		this._items = items;
 		list_item.numItems = items.length;
 		list_item.selectedIndex = -1;
 	}
@@ -129,7 +130,8 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 	private onListItemRender(index: number, item: RenderLiaoSheDecoItemView) {
 		// const slotData = this._curData.values[index];
 		// item.refresh(slotData, SlotTitles[index], SlotNames[index], slotData.type == 1 ? SlotIconRandom : SlotIcons[index]);
-		item.refresh();
+		const data = this._items[index];
+		item.refresh(data.item_id);
 	}
 
 	private onListItemClick(item: RenderLiaoSheDecoItemView, evt: Laya.Event, index: number) {
@@ -139,6 +141,8 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 	private getItemList(index: number) {
 		const type = this._curData.values[index].slot;
 		const items = $user.bag.getItemByCategoryType(EItemCategory.Common, type, true);
+		const defaultId = $user.commonView.getDefultViewId(type);
+		if (defaultId) items.unshift({ item_id: defaultId, stack: 1 });
 		return items;
 	}
 }

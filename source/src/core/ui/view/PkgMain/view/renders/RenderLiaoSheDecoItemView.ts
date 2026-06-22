@@ -10,7 +10,7 @@ export class RenderLiaoSheDecoItemView extends ExtendClass<IView, RenderLiaoSheD
 
 	}
 
-	refresh() {
-
+	refresh(id:number) {
+		this.com_item.refresh(id);
 	}
 }

@@ -34,6 +34,12 @@ export class CommonViewDO extends BaseDO implements DO.ICommonViewDO {
 	get curTableCloth() { return this._curTableCloth; }
 	get curLobbyBg() { return this._curLobbyBg; }
 
+	isDefaultView(id: number) {
+		const cfgItem = $cfgMgr.item_definition.item[id];
+		if (!cfgItem) return false;
+		return cfgItem.category == EItemCategory.Common && this.getDefultViewId(cfgItem.type) == id;
+	}
+
 	getDefultViewId(type: EItemCommonType) {
 		return DefaultViewIdMap[type] ?? 0;
 	}

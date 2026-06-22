@@ -1,9 +1,12 @@
 {
   "libview.firstColumnWidth": 232,
-  "gridSize": 10,
+  "snapToGrid": true,
   "libview.iconScale": 0,
   "doc.openedDocs": [
     "ui://vith2b66gsi2obbr",
+    "ui://vith2b66co9gob9l",
+    "ui://vith2b66glpbobfu",
+    "ui://vith2b66lswhobie",
     "ui://vith2b66q5yiobbp",
     "ui://vith2b66gsi2obbt",
     "ui://vith2b66q5yiobbn",
@@ -20,7 +23,7 @@
   "test.device": "iPhone 8 Plus",
   "canvasColor": 10066329,
   "auxline2": true,
-  "doc.activeDoc": "ui://vith2b66gsi2obbr",
+  "doc.activeDoc": "ui://vith2b66lswhobie",
   "libview.twoColumn": true,
   "libview.expandedNodes": [
     "vx9zwser",
@@ -57,7 +60,7 @@
     "/商店/"
   ],
   "showGrid": false,
-  "snapToGrid": true,
+  "gridSize": 10,
   "test.orientation": "landscape",
   "backgroundColor": 6710886,
   "libview.currentGroup": "",

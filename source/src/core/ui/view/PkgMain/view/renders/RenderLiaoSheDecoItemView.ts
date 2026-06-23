@@ -10,7 +10,12 @@ export class RenderLiaoSheDecoItemView extends ExtendClass<IView, RenderLiaoSheD
 
 	}
 
-	refresh(id:number) {
-		this.com_item.refresh(id);
+	refresh(id: number, random: boolean, selected: boolean, isBgm: boolean) {
+		const { ctrl_type, com_item, img_select, img_selected, txt_bgmName } = this;
+		ctrl_type.selectedIndex = isBgm ? 1 : 0;
+		com_item.refresh(id);
+		img_select.visible = random;
+		img_selected.visible = random && selected;
+		txt_bgmName.text = $itemUtil.getItemInfo(id).name;
 	}
 }

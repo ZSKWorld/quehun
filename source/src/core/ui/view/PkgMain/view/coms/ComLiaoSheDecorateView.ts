@@ -3,14 +3,6 @@ import { RenderLiaoSheDecoItemView } from "../renders/RenderLiaoSheDecoItemView"
 import { RenderLiaoSheDecoTabView } from "../renders/RenderLiaoSheDecoTabView";
 import { RenderLiaoSheDecoTypeView } from "../renders/RenderLiaoSheDecoTypeView";
 
-export const enum EComLiaoSheDecorateMsg {
-	OnBtnSaveClick = "ComLiaoSheDecorate_OnBtnSaveClick",
-	OnBtnPreviewClick = "ComLiaoSheDecorate_OnBtnPreviewClick",
-	OnBtnRandomClick = "ComLiaoSheDecorate_OnBtnRandomClick",
-	OnBtnClosePreviewClick = "ComLiaoSheDecorate_OnBtnClosePreviewClick",
-	OnBtnEditViewNameClick = "ComLiaoSheDecorate_OnBtnEditViewNameClick",
-}
-
 const SlotTitles = [2193, 2194, 2195, 1901, 2214, 2624, 2856, 2412, 2413, 3917, 2826];
 const SlotNames = [411, 412, 413, 417, 414, 415, 416, 0, 0, 0, 0];
 const SlotIconRandom = "ui://PkgMain/img_3198";
@@ -65,13 +57,15 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 	private _curData = new DecoViewData();
 	private _items: ProtoObject<IItem>[];
 
+	private get slotData() { return this._curData.values[this.list_view.selectedIndex]; }
+
 	override onCreate() {
 		const { btn_save, btn_preview, btn_random, btn_closePreview, btn_editViewName, list_tab, list_view, list_item } = this;
-		btn_save.onClick(this, this.sendEvent, [EComLiaoSheDecorateMsg.OnBtnSaveClick]);
-		btn_preview.onClick(this, this.sendEvent, [EComLiaoSheDecorateMsg.OnBtnPreviewClick]);
-		btn_random.onClick(this, this.sendEvent, [EComLiaoSheDecorateMsg.OnBtnRandomClick]);
-		btn_closePreview.onClick(this, this.sendEvent, [EComLiaoSheDecorateMsg.OnBtnClosePreviewClick]);
-		btn_editViewName.onClick(this, this.sendEvent, [EComLiaoSheDecorateMsg.OnBtnEditViewNameClick]);
+		btn_save.onClick(this, this.onBtnSaveClick);
+		btn_preview.onClick(this, this.onBtnPreviewClick);
+		btn_random.onClick(this, this.onBtnRandomClick);
+		btn_closePreview.onClick(this, this.onBtnClosePreviewClick);
+		btn_editViewName.onClick(this, this.onBtnEditorNameClick);
 		$uiUtil.setList(list_tab, false, this, this.onListTabRender, this.onListTabClick);
 		$uiUtil.setList(list_view, false, this, this.onListViewRender, this.onListViewClick);
 		$uiUtil.setList(list_item, false, this, this.onListItemRender, this.onListItemClick);
@@ -103,10 +97,16 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 		btn_preview.visible = ItemPreview[index][0];
 		btn_random.visible = ItemPreview[index][1];
 
-		const items = this.getItemList(index);
+		const { slot: itemType, type: slotType, item_id, item_id_list } = this.slotData;
+		const items = $user.bag.getItemByCategoryType(EItemCategory.Common, itemType, true);
+		const defaultId = $user.commonView.getDefultViewId(itemType);
+		if (defaultId) items.unshift({ item_id: defaultId, stack: 1 });
+
+		btn_random.selected = !!slotType;
 		this._items = items;
 		list_item.numItems = items.length;
-		list_item.selectedIndex = -1;
+		const startIndex = items.findIndex(v => v.item_id == (slotType ? item_id_list[0] : item_id));
+		list_item.selectedIndex = startIndex;
 	}
 
 	private onListTabRender(index: number, item: RenderLiaoSheDecoTabView) {
@@ -128,21 +128,33 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 	}
 
 	private onListItemRender(index: number, item: RenderLiaoSheDecoItemView) {
-		// const slotData = this._curData.values[index];
-		// item.refresh(slotData, SlotTitles[index], SlotNames[index], slotData.type == 1 ? SlotIconRandom : SlotIcons[index]);
-		const data = this._items[index];
-		item.refresh(data.item_id);
+		const slotData = this.slotData;
+		const itemData = this._items[index];
+		item.refresh(itemData.item_id, slotData.type == 1, slotData.item_id_list.includes(itemData.item_id), slotData.slot == EItemCommonType.LiZhiMusic);
 	}
 
 	private onListItemClick(item: RenderLiaoSheDecoItemView, evt: Laya.Event, index: number) {
 		// this.refreshItem(index);
 	}
 
-	private getItemList(index: number) {
-		const type = this._curData.values[index].slot;
-		const items = $user.bag.getItemByCategoryType(EItemCategory.Common, type, true);
-		const defaultId = $user.commonView.getDefultViewId(type);
-		if (defaultId) items.unshift({ item_id: defaultId, stack: 1 });
-		return items;
+	//#region button click
+	private onBtnEditorNameClick() {
+
 	}
+	private onBtnSaveClick() {
+
+	}
+	private onBtnPreviewClick() {
+
+	}
+	private onBtnRandomClick() {
+		this.slotData.type = this.btn_random.selected ? 1 : 0;
+		// this.list_view.numItems = this.list_view.numItems;
+		// this.list_item.numItems = this.list_item.numItems;
+		// this.refreshView(this.list_tab.selectedIndex);
+	}
+	private onBtnClosePreviewClick() {
+
+	}
+	//#endregion
 }

@@ -1,10 +1,10 @@
 import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
-import { EUILoginQueueMsg, UILoginQueueView } from "../../view/uis/UILoginQueueView";
+import { UILoginQueueView } from "../../view/uis/UILoginQueueView";
 
 export class UILoginQueueMediator extends MediatorBase<UILoginQueueView, IUILoginQueueData> {
 	private _time = 0;
 	override onAwake() {
-		this.addEvent(EUILoginQueueMsg.OnBtnQuitClick, this.onBtnQuitClick);
+
 	}
 
 	override onEnable() {
@@ -18,10 +18,6 @@ export class UILoginQueueMediator extends MediatorBase<UILoginQueueView, IUILogi
 			this._time = 10 * 1000;
 			$netMgr.requests.fetchQueueInfo();
 		}
-	}
-
-	private onBtnQuitClick() {
-		this.closeSelf();
 	}
 
 	@InjectNetEvent(ENetNotify.NotifyLoginQueueFinished)

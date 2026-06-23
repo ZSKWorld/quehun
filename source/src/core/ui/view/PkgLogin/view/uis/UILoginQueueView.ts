@@ -1,14 +1,14 @@
 import UILoginQueue from "../../../../ui/PkgLogin/UILoginQueue";
 
 export const enum EUILoginQueueMsg {
-	OnBtnQuitClick = "UILoginQueue_OnBtnQuitClick",
+
 }
 
 export class UILoginQueueView extends ExtendClass<IView, UILoginQueue>(UILoginQueue) implements IView {
 
 	override onCreate() {
 		const { btn_quit } = this;
-		btn_quit.onClick(this, this.sendEvent, [EUILoginQueueMsg.OnBtnQuitClick]);
+		btn_quit.onClick(this, this.closeSelf);
 	}
 
 	refresh(data?: IResFetchQueueInfo) {

@@ -45,7 +45,7 @@ export class CommonViewDO extends BaseDO implements DO.ICommonViewDO {
 	}
 
 	@InjectNetEvent(ENetMessage.fetchAllCommonViews)
-	private onFetchClientValue(res: IResAllcommonViews) {
+	private onFetchAllCommonViews(res: IResAllcommonViews) {
 		const decodeRes = $decodeProtoData(res);
 		this._use = decodeRes.use;
 		this._views = decodeRes.views;
@@ -91,17 +91,17 @@ export class CommonViewDO extends BaseDO implements DO.ICommonViewDO {
 			const slots = view.values;
 			slotIds.forEach(sid => {
 				const s = slots.find(s => s.slot == sid);
+				const defaultId = this.getDefultViewId(sid);
 				if (!s) {
 					slots.push({
 						slot: sid,
-						item_id: this.getDefultViewId(sid),
+						item_id: defaultId,
 						type: 0,
 						item_id_list: [],
 					});
 				} else {
 					if (s.item_id == 0)
-						s.item_id = this.getDefultViewId(sid);
-					s.item_id_list = s.item_id_list.map(id => id == 0 ? this.getDefultViewId(sid) : id);
+						s.item_id = defaultId;
 				}
 			});
 			slots.sort((a, b) => slotIds.indexOf(a.slot) - slotIds.indexOf(b.slot));

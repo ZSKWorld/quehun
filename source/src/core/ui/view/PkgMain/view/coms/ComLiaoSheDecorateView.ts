@@ -66,9 +66,28 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 		btn_random.onClick(this, this.onBtnRandomClick);
 		btn_closePreview.onClick(this, this.onBtnClosePreviewClick);
 		btn_editViewName.onClick(this, this.onBtnEditorNameClick);
-		$uiUtil.setList(list_tab, false, this, this.onListTabRender, this.onListTabClick);
-		$uiUtil.setList(list_view, false, this, this.onListViewRender, this.onListViewClick);
-		$uiUtil.setList(list_item, false, this, this.onListItemRender, this.onListItemClick);
+
+		$uiUtil.setList(list_tab, true, this, (index: number, item: RenderLiaoSheDecoTabView) => {
+			const { use, views } = $user.commonView;
+			item.refresh(views[index], views[index].index == use);
+		}, (_, __, index) => {
+			this.refreshView(index, 0);
+		});
+
+		$uiUtil.setList(list_view, true, this, (index: number, item: RenderLiaoSheDecoTypeView) => {
+			const slotData = this._curData.values[index];
+			item.refresh(slotData, SlotTitles[index], SlotNames[index], slotData.type == 1 ? SlotIconRandom : SlotIcons[index]);
+		}, (_, __, index: number) => {
+			this.refreshItem(index);
+		});
+
+		$uiUtil.setList(list_item, true, this, (index: number, item: RenderLiaoSheDecoItemView) => {
+			const slotData = this.slotData;
+			const itemData = this._items[index];
+			item.refresh(itemData.item_id, slotData.type == 1, slotData.item_id_list.includes(itemData.item_id), slotData.slot == EItemCommonType.LiZhiMusic);
+		}, (item: RenderLiaoSheDecoItemView, evt: Laya.Event, index: number) => {
+			// this.refreshItem(index);
+		});
 	}
 
 	refresh() {
@@ -78,17 +97,17 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 		const index = views.findIndex(v => v.index == use);
 		list_tab.selectedIndex = index;
 		list_tab.scrollToView(index, false);
-		this.refreshView(index);
+		this.refreshView(index, 0);
 	}
 
-	private refreshView(index: number) {
+	private refreshView(index: number, selectIndex: number) {
 		const { list_view, txt_viewName, _curData } = this;
 		_curData.init($user.commonView.views[index]);
 		list_view.numItems = _curData.values.length;
-		list_view.selectedIndex = 0;
-		list_view.scrollPane.posY = 0;
+		list_view.selectedIndex = selectIndex;
+		list_view.scrollToView(selectIndex, false);
 		txt_viewName.text = _curData.name;
-		this.refreshItem(0);
+		this.refreshItem(selectIndex);
 	}
 
 	private refreshItem(index: number) {
@@ -109,34 +128,6 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 		list_item.selectedIndex = startIndex;
 	}
 
-	private onListTabRender(index: number, item: RenderLiaoSheDecoTabView) {
-		const { use, views } = $user.commonView;
-		item.refresh(views[index], views[index].index == use);
-	}
-
-	private onListTabClick(item, evt, index: number) {
-		this.refreshView(index);
-	}
-
-	private onListViewRender(index: number, item: RenderLiaoSheDecoTypeView) {
-		const slotData = this._curData.values[index];
-		item.refresh(slotData, SlotTitles[index], SlotNames[index], slotData.type == 1 ? SlotIconRandom : SlotIcons[index]);
-	}
-
-	private onListViewClick(item: RenderLiaoSheDecoTypeView, evt: Laya.Event, index: number) {
-		this.refreshItem(index);
-	}
-
-	private onListItemRender(index: number, item: RenderLiaoSheDecoItemView) {
-		const slotData = this.slotData;
-		const itemData = this._items[index];
-		item.refresh(itemData.item_id, slotData.type == 1, slotData.item_id_list.includes(itemData.item_id), slotData.slot == EItemCommonType.LiZhiMusic);
-	}
-
-	private onListItemClick(item: RenderLiaoSheDecoItemView, evt: Laya.Event, index: number) {
-		// this.refreshItem(index);
-	}
-
 	//#region button click
 	private onBtnEditorNameClick() {
 
@@ -148,10 +139,11 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 
 	}
 	private onBtnRandomClick() {
-		this.slotData.type = this.btn_random.selected ? 1 : 0;
-		// this.list_view.numItems = this.list_view.numItems;
-		// this.list_item.numItems = this.list_item.numItems;
-		// this.refreshView(this.list_tab.selectedIndex);
+		const { slotData, list_tab, list_view, list_item, btn_random } = this;
+		slotData.type = btn_random.selected ? 1 : 0;
+		list_view.refreshVirtualList();
+		list_item.refreshVirtualList();
+		this.refreshView(list_tab.selectedIndex, list_view.selectedIndex);
 	}
 	private onBtnClosePreviewClick() {
 

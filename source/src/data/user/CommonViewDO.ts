@@ -90,19 +90,21 @@ export class CommonViewDO extends BaseDO implements DO.ICommonViewDO {
 
 			const slots = view.values;
 			slotIds.forEach(sid => {
-				const s = slots.find(s => s.slot == sid);
+				let s = slots.find(s => s.slot == sid);
 				const defaultId = this.getDefultViewId(sid);
 				if (!s) {
-					slots.push({
+					s = {
 						slot: sid,
 						item_id: defaultId,
 						type: 0,
 						item_id_list: [],
-					});
-				} else {
-					if (s.item_id == 0)
-						s.item_id = defaultId;
+					};
+					slots.push(s);
 				}
+				if (s.item_id == 0)
+					s.item_id = defaultId;
+				if (s.item_id_list.length == 0 && s.item_id != 0)
+					s.item_id_list.push(s.item_id);
 			});
 			slots.sort((a, b) => slotIds.indexOf(a.slot) - slotIds.indexOf(b.slot));
 		}

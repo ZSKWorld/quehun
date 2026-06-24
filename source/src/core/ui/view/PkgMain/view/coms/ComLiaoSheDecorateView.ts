@@ -71,7 +71,7 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 			const { use, views } = $user.commonView;
 			item.refresh(views[index], views[index].index == use);
 		}, (_, __, index) => {
-			this.refreshView(index, 0);
+			this.refreshView(index, true);
 		});
 
 		$uiUtil.setList(list_view, true, this, (index: number, item: RenderLiaoSheDecoTypeView) => {
@@ -97,13 +97,14 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 		const index = views.findIndex(v => v.index == use);
 		list_tab.selectedIndex = index;
 		list_tab.scrollToView(index, false);
-		this.refreshView(index, 0);
+		this.refreshView(index, true);
 	}
 
-	private refreshView(index: number, selectIndex: number) {
+	private refreshView(index: number, initData: boolean) {
 		const { list_view, txt_viewName, _curData } = this;
-		_curData.init($user.commonView.views[index]);
+		initData && _curData.init($user.commonView.views[index]);
 		list_view.numItems = _curData.values.length;
+		const selectIndex = initData ? 0 : list_view.selectedIndex;
 		list_view.selectedIndex = selectIndex;
 		list_view.scrollToView(selectIndex, false);
 		txt_viewName.text = _curData.name;
@@ -124,7 +125,7 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 		btn_random.selected = !!slotType;
 		this._items = items;
 		list_item.numItems = items.length;
-		const startIndex = items.findIndex(v => v.item_id == (slotType ? item_id_list[0] : item_id));
+		const startIndex = items.findIndex(v => slotType ? item_id_list.includes(v.item_id) : v.item_id == item_id);
 		list_item.selectedIndex = startIndex;
 	}
 
@@ -143,7 +144,7 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 		slotData.type = btn_random.selected ? 1 : 0;
 		list_view.refreshVirtualList();
 		list_item.refreshVirtualList();
-		this.refreshView(list_tab.selectedIndex, list_view.selectedIndex);
+		this.refreshView(list_tab.selectedIndex, false);
 	}
 	private onBtnClosePreviewClick() {
 

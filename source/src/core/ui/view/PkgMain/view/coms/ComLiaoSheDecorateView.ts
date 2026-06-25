@@ -67,21 +67,21 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 		btn_closePreview.onClick(this, this.onBtnClosePreviewClick);
 		btn_editViewName.onClick(this, this.onBtnEditorNameClick);
 
-		$uiUtil.setList(list_tab, true, this, (index: number, item: RenderLiaoSheDecoTabView) => {
+		$uiUtil.setList(list_tab, false, this, (index: number, item: RenderLiaoSheDecoTabView) => {
 			const { use, views } = $user.commonView;
 			item.refresh(views[index], views[index].index == use);
 		}, (_, __, index) => {
-			this.refreshView(index, true);
+			this.refreshView(index);
 		});
 
-		$uiUtil.setList(list_view, true, this, (index: number, item: RenderLiaoSheDecoTypeView) => {
+		$uiUtil.setList(list_view, false, this, (index: number, item: RenderLiaoSheDecoTypeView) => {
 			const slotData = this._curData.values[index];
 			item.refresh(slotData, SlotTitles[index], SlotNames[index], slotData.type == 1 ? SlotIconRandom : SlotIcons[index]);
 		}, (_, __, index: number) => {
 			this.refreshItem(index);
 		});
 
-		$uiUtil.setList(list_item, true, this, (index: number, item: RenderLiaoSheDecoItemView) => {
+		$uiUtil.setList(list_item, false, this, (index: number, item: RenderLiaoSheDecoItemView) => {
 			const slotData = this.slotData;
 			const itemData = this._items[index];
 			item.refresh(itemData.item_id, slotData.type == 1, slotData.item_id_list.includes(itemData.item_id), slotData.slot == EItemCommonType.LiZhiMusic);
@@ -97,14 +97,14 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 		const index = views.findIndex(v => v.index == use);
 		list_tab.selectedIndex = index;
 		list_tab.scrollToView(index, false);
-		this.refreshView(index, true);
+		this.refreshView(index);
 	}
 
-	private refreshView(index: number, initData: boolean) {
+	private refreshView(index: number) {
 		const { list_view, txt_viewName, _curData } = this;
-		initData && _curData.init($user.commonView.views[index]);
+		_curData.init($user.commonView.views[index]);
 		list_view.numItems = _curData.values.length;
-		const selectIndex = initData ? 0 : list_view.selectedIndex;
+		const selectIndex = 0;
 		list_view.selectedIndex = selectIndex;
 		list_view.scrollToView(selectIndex, false);
 		txt_viewName.text = _curData.name;
@@ -140,11 +140,10 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 
 	}
 	private onBtnRandomClick() {
-		const { slotData, list_tab, list_view, list_item, btn_random } = this;
+		const { slotData, list_view, list_item, btn_random } = this;
 		slotData.type = btn_random.selected ? 1 : 0;
-		list_view.refreshVirtualList();
-		list_item.refreshVirtualList();
-		this.refreshView(list_tab.selectedIndex, false);
+		list_view.numItems = list_view.numItems;
+		list_item.numItems = list_item.numItems;
 	}
 	private onBtnClosePreviewClick() {
 

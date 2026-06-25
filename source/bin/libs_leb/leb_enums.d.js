@@ -390,6 +390,7 @@ EUserEvent = {
 	OnMjpBackUseChanged: "EUserEvent_OnMjpBackUseChanged",
 	OnMjpFrontUseChanged: "EUserEvent_OnMjpFrontUseChanged",
 	OnTableClothUseChanged: "EUserEvent_OnTableClothUseChanged",
+	OnLobbyBgChanged: "EUserEvent_OnLobbyBgChanged",
 	OnViewUseChanged: "EUserEvent_OnViewUseChanged",
 	OnCommonViewChanged: "EUserEvent_OnCommonViewChanged",
 	OnClientValueChanged: "EUserEvent_OnClientValueChanged",

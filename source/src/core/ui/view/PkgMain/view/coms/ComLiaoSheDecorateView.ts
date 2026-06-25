@@ -82,9 +82,9 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 		});
 
 		$uiUtil.setList(list_item, false, this, (index: number, item: RenderLiaoSheDecoItemView) => {
-			const slotData = this.slotData;
 			const itemData = this._items[index];
-			item.refresh(itemData.item_id, slotData.type == 1, slotData.item_id_list.includes(itemData.item_id), slotData.slot == EItemCommonType.LiZhiMusic);
+			const { type, item_id_list, slot } = this.slotData;
+			item.refresh(itemData.item_id, !!type, item_id_list.includes(itemData.item_id), slot == EItemCommonType.LiZhiMusic);
 		}, (item: RenderLiaoSheDecoItemView, evt: Laya.Event, index: number) => {
 			// this.refreshItem(index);
 		});

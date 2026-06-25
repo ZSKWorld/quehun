@@ -135,6 +135,7 @@ message ReqSelfOperation {
   repeated string change_tiles = 8; // 换三张-待换的牌
   repeated int32 tile_states = 9;   // 换三张-待换的牌的明牌暗牌
   uint32 gap_type = 10;             // 川麻：定缺
+  bool auto_operation = 11; // 是否托管操作
 }
 
 // 请求：玩家吃碰明杠

@@ -2581,6 +2581,14 @@ declare interface ISheet_Str_Str {
 	5029: ISheetData_Str_Str;
 	5030: ISheetData_Str_Str;
 	5031: ISheetData_Str_Str;
+	5032: ISheetData_Str_Str;
+	5033: ISheetData_Str_Str;
+	5034: ISheetData_Str_Str;
+	5035: ISheetData_Str_Str;
+	5036: ISheetData_Str_Str;
+	5037: ISheetData_Str_Str;
+	5038: ISheetData_Str_Str;
+	5039: ISheetData_Str_Str;
 	5040: ISheetData_Str_Str;
 	5041: ISheetData_Str_Str;
 	5042: ISheetData_Str_Str;
@@ -4859,13 +4867,13 @@ declare interface ISheet_Str_Str {
 	26065011: ISheetData_Str_Str;
 	26065012: ISheetData_Str_Str;
 	26065013: ISheetData_Str_Str;
-	26065014: ISheetData_Str_Str;
-	26065015: ISheetData_Str_Str;
-	26065016: ISheetData_Str_Str;
-	26065017: ISheetData_Str_Str;
-	26065018: ISheetData_Str_Str;
-	26065019: ISheetData_Str_Str;
-	26065020: ISheetData_Str_Str;
+	26069001: ISheetData_Str_Str;
+	26069002: ISheetData_Str_Str;
+	26069003: ISheetData_Str_Str;
+	26069004: ISheetData_Str_Str;
+	26069005: ISheetData_Str_Str;
+	26069006: ISheetData_Str_Str;
+	26069007: ISheetData_Str_Str;
 }
 declare interface ISheetData_Str_Str extends ISheetDataBase {
 	id: number;

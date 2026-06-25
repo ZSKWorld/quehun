@@ -55,6 +55,8 @@ declare interface ISheetData_Chest_Chest extends ISheetDataBase {
 	id: number;
 	/** 卡池类型 */
 	type: number;
+	/** 数字越大越靠上 */
+	sort: number;
 	name_chs: string;
 	name_jp: string;
 	name_en: string;
@@ -80,8 +82,6 @@ declare interface ISheetData_Chest_Chest extends ISheetDataBase {
 	faith_id: number;
 	/** 0国服，1外服 */
 	zone: number;
-	/** 数字越大越靠上 */
-	sort: number;
 }
 //#endregion
 
@@ -1173,6 +1173,11 @@ declare interface ISheet_Chest_ChestShop {
 	1513: ISheetData_Chest_ChestShop;
 	1514: ISheetData_Chest_ChestShop;
 	1515: ISheetData_Chest_ChestShop;
+	1516: ISheetData_Chest_ChestShop;
+	1517: ISheetData_Chest_ChestShop;
+	1518: ISheetData_Chest_ChestShop;
+	1519: ISheetData_Chest_ChestShop;
+	1520: ISheetData_Chest_ChestShop;
 	1999: ISheetData_Chest_ChestShop;
 	3001: ISheetData_Chest_ChestShop;
 	3002: ISheetData_Chest_ChestShop;
@@ -1683,6 +1688,11 @@ declare interface ISheet_Chest_ChestShop {
 	3513: ISheetData_Chest_ChestShop;
 	3514: ISheetData_Chest_ChestShop;
 	3515: ISheetData_Chest_ChestShop;
+	3516: ISheetData_Chest_ChestShop;
+	3517: ISheetData_Chest_ChestShop;
+	3518: ISheetData_Chest_ChestShop;
+	3519: ISheetData_Chest_ChestShop;
+	3520: ISheetData_Chest_ChestShop;
 	3999: ISheetData_Chest_ChestShop;
 }
 declare interface ISheetData_Chest_ChestShop extends ISheetDataBase {

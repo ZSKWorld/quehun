@@ -13,9 +13,11 @@ service ServerRpc {
 
   // ws-gateway => *
   rpc forwardAccountRequest (ReqForwardAccountMessage) returns (ResForwardAccountMessage);
+  rpc forwardServerRequest (ReqForwardServerMessage) returns (ResForwardServerMessage);
   rpc forwardManagerRequest (ReqForwardAccountMessage) returns (ResForwardAccountMessage);
 
   rpc forwardAccountActivityRequest(ReqForwardAccountActivityRequest) returns (ResForwardAccountActivityRequest);
+  rpc forwardServerActivityRequest(ReqForwardAccountActivityRequest) returns (ResForwardAccountActivityRequest);
   rpc fetchAccountActivityData(ReqSrvFetchAccountActivityData) returns (ResSrvFetchAccountActivityData);
   rpc modifyAccountActivityData(ReqSrvModifyAccountActivityData) returns (ResCommon);
   // ==DevDebug Start==
@@ -23,6 +25,7 @@ service ServerRpc {
   rpc fetchAccountRecentActivityDataDebug(ReqSrvFetchAccountRecentActivityDataDebug) returns (ResSrvFetchAccountRecentActivityDataDebug);
   // ==DevDebug End==
   rpc deleteAccountActivityData(ReqDeleteAccountActivityData) returns (ResCommon);
+  rpc srvMajClubActivityAddCharacter(ReqSrvMajClubActivityAddCharacter) returns (ResCommon);
 
   // ws-gateway => session-manger
   rpc sessionClose(ReqCommon) returns (ResCommon);
@@ -314,6 +317,12 @@ message ReqForwardAccountMessage {
   bytes request = 3;
 }
 
+message ReqForwardServerMessage {
+  uint32 account_id = 1;
+  string method = 2;
+  bytes request = 3;
+}
+
 message ReqForwardAccountActivityRequest {
   uint32 account_id = 1;
   string method = 2;
@@ -325,6 +334,7 @@ message ResForwardAccountActivityRequest {
   Error error = 1;
   bytes response = 2;
   bytes activity_data = 3;
+  NotifyActivityChanges notify = 4;
 }
 
 message ReqSrvFetchAccountActivityData {
@@ -369,7 +379,19 @@ message ReqDeleteAccountActivityData {
   uint32 activity_id = 3;
 }
 
+message ReqSrvMajClubActivityAddCharacter {
+  string type = 1;
+  uint32 account_id = 2;
+  uint32 character_id = 3;
+  uint32 activity_id = 4;
+}
+
 message ResForwardAccountMessage {
+  Error error = 1;
+  bytes response = 2;
+}
+
+message ResForwardServerMessage {
   Error error = 1;
   bytes response = 2;
 }
@@ -990,6 +1012,20 @@ message ReqNotifyPlayerMatchTimeout {
   string sid = 2;
 }
 
+message TimeuseStatistic {
+  uint32 account_id = 1; // 账号id
+  float timeuse_avg = 2; // 平均耗时
+  float timeuse_avg_before_liqi = 3; // 平均耗时（立直之前）
+  float timeuse_avg_after_liqi = 4; // 平均耗时（立直之后）
+  float timeuse_max = 5; // 最大耗时
+  float timeuse_min = 6; // 最小耗时
+  float timeuse_variance = 7; // 耗时方差
+  float timeuse_median = 8; // 耗时中位数
+  uint32 total_count = 9; // 总次数
+  repeated uint32 timeuse_count = 10; // [0,1), [1,3), [3,5), [5,8), [8,12), [12, 16), [16,+∞)的耗时次数
+
+}
+
 message ReqHandleGameFinished {
   GameFinalSnapshot snapshot = 1;
   bytes record = 2;
@@ -997,6 +1033,7 @@ message ReqHandleGameFinished {
   RecordAnalysisedData analysis_record = 4;
 
   repeated ClientDeviceInfoLog user_client_info = 5;
+  repeated TimeuseStatistic timeuse_statistic = 6;
 }
 
 message ResHandleGameFinished {
@@ -1019,6 +1056,7 @@ message ReqHandleAccountGameFinished {
   RecordAnalysisedData analysis_record = 4;
   uint32 category = 5;
   repeated uint32 need_kicked = 6;
+  repeated TimeuseStatistic timeuse_statistic = 7;
 }
 message ResHandleAccountGameFinished {
   Error error = 1;

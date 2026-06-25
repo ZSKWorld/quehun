@@ -21,7 +21,6 @@ message ReqRequestConnection {
   string route_id = 3; // 线路ID
   uint64 timestamp = 4; // 时间戳（毫秒）
   // ConnectionChangeInfo change_info = 5; // 线路切换信息
-  string platform = 6; // 客户端平台
 }
 
 message ResRequestConnection {

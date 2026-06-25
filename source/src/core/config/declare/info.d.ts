@@ -25,6 +25,7 @@ declare interface ISheet_Info_Error {
 	9: ISheetData_Info_Error;
 	14: ISheetData_Info_Error;
 	15: ISheetData_Info_Error;
+	20: ISheetData_Info_Error;
 	101: ISheetData_Info_Error;
 	102: ISheetData_Info_Error;
 	103: ISheetData_Info_Error;

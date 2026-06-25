@@ -2649,7 +2649,6 @@ message TransparentData {
   bytes data = 2;
   string session = 3;
   NetworkEndpoint remote = 4;
-  string platform = 5;
 }
 
 // message AmuletTile {
@@ -3271,4 +3270,97 @@ message BannerActivityData {
   uint32 type = 9; // banner活动类型枚举 1-大会室入口
   uint32 sort = 10; // 排序
   uint32 need_popout = 11; // 是否需要进入大厅时弹窗 1-是 2-否
+}
+
+message ActivityMajClubCustomerData {
+  uint32 id = 1;
+  uint32 power = 2;
+  uint32 patience = 3;
+}
+
+message ActivityMajClubCharacterRoomData {
+  uint32 character_id = 1;
+  uint32 room_id = 2;
+  uint32 desktop_id = 3;
+}
+
+message ActivityMajClubCharacterRoomDataArrayDirty {
+  bool dirty = 1;
+  repeated ActivityMajClubCharacterRoomData value = 2;
+}
+
+message ActivityMajClubGameData {
+  uint32 level = 1;
+  repeated ActivityMajClubCharacterRoomData character_room_data = 2;
+
+  // 服务端数据，不会发送给客户端
+  repeated ActivityMajClubCustomerData customers = 100;
+  uint32 start_time = 101;
+}
+
+message ActivityMajClubGameDataChanges {
+  UInt32Dirty level = 1;
+  ActivityMajClubCharacterRoomDataArrayDirty character_room_data = 2;
+}
+
+message ActivityMajClubRoomData {
+  uint32 id = 1;
+  uint32 desktop_count_level = 2; // 已解锁麻将桌等级
+  uint32 desktop_fee_level = 3; // 麻将桌台费等级
+}
+
+message ActivityMajClubCharacterData {
+  uint32 id = 1;
+  repeated uint32 tags = 2; // 已解锁标签
+  uint32 power = 3; // 雀力
+}
+
+message ActivityMajClubUpgradeData {
+  repeated ActivityMajClubRoomData rooms = 1;
+  repeated ActivityMajClubCharacterData characters = 2;
+  uint32 wait_zone_level = 3;
+}
+
+message ActivityMajClubRoomDataArrayDirty {
+  bool dirty = 1;
+  repeated ActivityMajClubRoomData value = 2;
+}
+
+message ActivityMajClubCharacterDataArrayDirty {
+  bool dirty = 1;
+  repeated ActivityMajClubCharacterData value = 2;
+}
+
+message ActivityMajClubUpgradeDataChanges {
+  ActivityMajClubRoomDataArrayDirty rooms = 1;
+  ActivityMajClubCharacterDataArrayDirty characters = 2;
+  UInt32Dirty wait_zone_level = 4;
+}
+
+message ActivityMajClubIllustratedBookData {
+  repeated uint32 unlocked_customer_level_1 = 1; // 已相遇顾客图鉴
+  repeated uint32 unlocked_customer_level_2 = 2; // 已熟知顾客图鉴（同时也会出现在已相遇中）
+  uint32 highest_income = 3;
+  uint32 total_customer_count = 4;
+}
+
+message ActivityMajClubIllustratedBookDataChanges {
+  UInt32ArrayDirty unlocked_customer_level_1 = 1;
+  UInt32ArrayDirty unlocked_customer_level_2 = 2;
+  UInt32Dirty highest_income = 3;
+  UInt32Dirty total_customer_count = 4;
+}
+
+message ActivityMajClubChanges {
+  ActivityMajClubGameDataChanges game = 1;
+  ActivityMajClubUpgradeDataChanges upgrade = 2;
+  ActivityMajClubIllustratedBookDataChanges illustrated_book = 3;
+}
+
+// 修改同时也需要修改 BlobMajClubActivity
+message ActivityMajClubData {
+  uint32 activity_id = 1;
+  ActivityMajClubGameData game = 2;
+  ActivityMajClubUpgradeData upgrade = 3;
+  ActivityMajClubIllustratedBookData illustrated_book = 4;
 }

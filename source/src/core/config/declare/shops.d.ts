@@ -690,6 +690,14 @@ declare interface ISheet_Shops_Goods {
 	5462: ISheetData_Shops_Goods;
 	5463: ISheetData_Shops_Goods;
 	5464: ISheetData_Shops_Goods;
+	5465: ISheetData_Shops_Goods;
+	5466: ISheetData_Shops_Goods;
+	5467: ISheetData_Shops_Goods;
+	5468: ISheetData_Shops_Goods;
+	5469: ISheetData_Shops_Goods;
+	5470: ISheetData_Shops_Goods;
+	5471: ISheetData_Shops_Goods;
+	5472: ISheetData_Shops_Goods;
 	6001: ISheetData_Shops_Goods;
 	6002: ISheetData_Shops_Goods;
 	6003: ISheetData_Shops_Goods;
@@ -778,6 +786,7 @@ declare interface ISheet_Shops_Goods {
 	9077: ISheetData_Shops_Goods;
 	9078: ISheetData_Shops_Goods;
 	9079: ISheetData_Shops_Goods;
+	9080: ISheetData_Shops_Goods;
 }
 declare interface ISheetData_Shops_Goods extends ISheetDataBase {
 	id: number;
@@ -871,6 +880,7 @@ declare interface ISheetData_Shops_ItemPackage extends ISheetDataBase {
 declare interface ISheet_Shops_SelectedPackage {
 	[key: string]: ISheetData_Shops_SelectedPackage[];
 	5399: ISheetData_Shops_SelectedPackage[];
+	5465: ISheetData_Shops_SelectedPackage[];
 }
 declare interface ISheetData_Shops_SelectedPackage extends ISheetDataBase {
 	/** 自选服饰商品id */

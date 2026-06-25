@@ -424,3 +424,7 @@ message NotifyCustomizedContestPlanCancel {
   uint32 unique_id = 1; // 大会室唯一id
   string uuid = 2; // 对局uuid
 }
+
+message NotifyActivityChanges {
+  ActivityMajClubChanges club = 1;
+}

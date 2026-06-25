@@ -165,6 +165,8 @@ declare interface ITable_Activity {
 	choose_up_activity: CfgExt<ISheet_Activity_ChooseUpActivity>;
 	/** 自选卡池概率替换  ---  group */
 	choose_up_replace: CfgExtGroup<ISheet_Activity_ChooseUpReplace>;
+	/** 进度  ---  group */
+	progress: CfgExtGroup<ISheet_Activity_Progress>;
 	/** 根据进度领奖  ---  group */
 	progress_reward: CfgExtGroup<ISheet_Activity_ProgressReward>;
 	/** group */
@@ -1378,6 +1380,29 @@ declare interface ISheet_Activity_Activity {
 	260652: ISheetData_Activity_Activity;
 	260670: ISheetData_Activity_Activity;
 	260691: ISheetData_Activity_Activity;
+	260692: ISheetData_Activity_Activity;
+	260693: ISheetData_Activity_Activity;
+	260694: ISheetData_Activity_Activity;
+	260695: ISheetData_Activity_Activity;
+	260696: ISheetData_Activity_Activity;
+	260697: ISheetData_Activity_Activity;
+	260701: ISheetData_Activity_Activity;
+	260702: ISheetData_Activity_Activity;
+	260710: ISheetData_Activity_Activity;
+	260711: ISheetData_Activity_Activity;
+	260712: ISheetData_Activity_Activity;
+	260720: ISheetData_Activity_Activity;
+	260721: ISheetData_Activity_Activity;
+	260722: ISheetData_Activity_Activity;
+	260723: ISheetData_Activity_Activity;
+	260724: ISheetData_Activity_Activity;
+	260725: ISheetData_Activity_Activity;
+	260730: ISheetData_Activity_Activity;
+	260731: ISheetData_Activity_Activity;
+	260732: ISheetData_Activity_Activity;
+	260733: ISheetData_Activity_Activity;
+	260734: ISheetData_Activity_Activity;
+	260735: ISheetData_Activity_Activity;
 }
 declare interface ISheetData_Activity_Activity extends ISheetDataBase {
 	/** 活动id */
@@ -2979,6 +3004,12 @@ declare interface ISheet_Activity_ChestUp {
 	260525: ISheetData_Activity_ChestUp[];
 	260620: ISheetData_Activity_ChestUp[];
 	260621: ISheetData_Activity_ChestUp[];
+	260720: ISheetData_Activity_ChestUp[];
+	260721: ISheetData_Activity_ChestUp[];
+	260722: ISheetData_Activity_ChestUp[];
+	260723: ISheetData_Activity_ChestUp[];
+	260724: ISheetData_Activity_ChestUp[];
+	260725: ISheetData_Activity_ChestUp[];
 }
 declare interface ISheetData_Activity_ChestUp extends ISheetDataBase {
 	/** 活动id */
@@ -6929,6 +6960,15 @@ declare interface ISheet_Activity_PeriodTask {
 	26060348: ISheetData_Activity_PeriodTask;
 	26060349: ISheetData_Activity_PeriodTask;
 	26060350: ISheetData_Activity_PeriodTask;
+	26069401: ISheetData_Activity_PeriodTask;
+	26069402: ISheetData_Activity_PeriodTask;
+	26069403: ISheetData_Activity_PeriodTask;
+	26069501: ISheetData_Activity_PeriodTask;
+	26069601: ISheetData_Activity_PeriodTask;
+	26069602: ISheetData_Activity_PeriodTask;
+	26069603: ISheetData_Activity_PeriodTask;
+	26069604: ISheetData_Activity_PeriodTask;
+	26069605: ISheetData_Activity_PeriodTask;
 }
 declare interface ISheetData_Activity_PeriodTask extends ISheetDataBase {
 	/** 活动任务id */
@@ -7011,6 +7051,9 @@ declare interface ISheet_Activity_RandomTaskPool {
 	2507011: ISheetData_Activity_RandomTaskPool[];
 	2507012: ISheetData_Activity_RandomTaskPool[];
 	2507013: ISheetData_Activity_RandomTaskPool[];
+	2607011: ISheetData_Activity_RandomTaskPool[];
+	2607012: ISheetData_Activity_RandomTaskPool[];
+	2607013: ISheetData_Activity_RandomTaskPool[];
 }
 declare interface ISheetData_Activity_RandomTaskPool extends ISheetDataBase {
 	/** 任务池ID */
@@ -7053,6 +7096,7 @@ declare interface ISheet_Activity_RandomTaskInfo {
 	241202: ISheetData_Activity_RandomTaskInfo;
 	250502: ISheetData_Activity_RandomTaskInfo;
 	250701: ISheetData_Activity_RandomTaskInfo;
+	260701: ISheetData_Activity_RandomTaskInfo;
 }
 declare interface ISheetData_Activity_RandomTaskInfo extends ISheetDataBase {
 	/** 活动ID */
@@ -10155,6 +10199,7 @@ declare interface ISheet_Activity_MineActivity {
 	240202: ISheetData_Activity_MineActivity;
 	241002: ISheetData_Activity_MineActivity;
 	250702: ISheetData_Activity_MineActivity;
+	260702: ISheetData_Activity_MineActivity;
 }
 declare interface ISheetData_Activity_MineActivity extends ISheetDataBase {
 	/** activity_id */
@@ -10180,6 +10225,7 @@ declare interface ISheet_Activity_MineReward {
 	240202: ISheetData_Activity_MineReward[];
 	241002: ISheetData_Activity_MineReward[];
 	250702: ISheetData_Activity_MineReward[];
+	260702: ISheetData_Activity_MineReward[];
 }
 declare interface ISheetData_Activity_MineReward extends ISheetDataBase {
 	group_id: number;
@@ -10413,6 +10459,8 @@ declare interface ISheet_Activity_VoteActivity {
 	240452: ISheetData_Activity_VoteActivity;
 	250890: ISheetData_Activity_VoteActivity;
 	250891: ISheetData_Activity_VoteActivity;
+	260692: ISheetData_Activity_VoteActivity;
+	260693: ISheetData_Activity_VoteActivity;
 }
 declare interface ISheetData_Activity_VoteActivity extends ISheetDataBase {
 	/** 活动id */
@@ -10575,6 +10623,7 @@ declare interface ISheet_Activity_ActivityItem {
 	260412: ISheetData_Activity_ActivityItem;
 	260542: ISheetData_Activity_ActivityItem;
 	260612: ISheetData_Activity_ActivityItem;
+	260712: ISheetData_Activity_ActivityItem;
 }
 declare interface ISheetData_Activity_ActivityItem extends ISheetDataBase {
 	/** 活动id */
@@ -10803,6 +10852,7 @@ declare interface ISheet_Activity_RewardMail {
 	260403: ISheetData_Activity_RewardMail;
 	260513: ISheetData_Activity_RewardMail;
 	260603: ISheetData_Activity_RewardMail;
+	260696: ISheetData_Activity_RewardMail;
 }
 declare interface ISheetData_Activity_RewardMail extends ISheetDataBase {
 	/** 活动ID */
@@ -11261,6 +11311,12 @@ declare interface ISheet_Activity_ChestReplaceUp {
 	260535: ISheetData_Activity_ChestReplaceUp[];
 	260630: ISheetData_Activity_ChestReplaceUp[];
 	260631: ISheetData_Activity_ChestReplaceUp[];
+	260730: ISheetData_Activity_ChestReplaceUp[];
+	260731: ISheetData_Activity_ChestReplaceUp[];
+	260732: ISheetData_Activity_ChestReplaceUp[];
+	260733: ISheetData_Activity_ChestReplaceUp[];
+	260734: ISheetData_Activity_ChestReplaceUp[];
+	260735: ISheetData_Activity_ChestReplaceUp[];
 }
 declare interface ISheetData_Activity_ChestReplaceUp extends ISheetDataBase {
 	/** 宝箱ID（索引） */
@@ -12068,6 +12124,9 @@ declare interface ISheet_Activity_ActivityBanner {
 	260401: ISheetData_Activity_ActivityBanner;
 	260511: ISheetData_Activity_ActivityBanner;
 	260601: ISheetData_Activity_ActivityBanner;
+	260692: ISheetData_Activity_ActivityBanner;
+	260701: ISheetData_Activity_ActivityBanner;
+	260702: ISheetData_Activity_ActivityBanner;
 }
 declare interface ISheetData_Activity_ActivityBanner extends ISheetDataBase {
 	/** id */
@@ -12211,10 +12270,22 @@ declare interface ISheetData_Activity_ChooseUpReplace extends ISheetDataBase {
 }
 //#endregion
 
+//#region progress
+declare interface ISheet_Activity_Progress {
+	[key: string]: ISheetData_Activity_Progress[];
+	250895: ISheetData_Activity_Progress[];
+	260697: ISheetData_Activity_Progress[];
+}
+declare interface ISheetData_Activity_Progress extends ISheetDataBase {
+
+}
+//#endregion
+
 //#region progress_reward
 declare interface ISheet_Activity_ProgressReward {
 	[key: string]: ISheetData_Activity_ProgressReward[];
 	250895: ISheetData_Activity_ProgressReward[];
+	260697: ISheetData_Activity_ProgressReward[];
 }
 declare interface ISheetData_Activity_ProgressReward extends ISheetDataBase {
 	/** 活动id */

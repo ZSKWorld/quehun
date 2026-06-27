@@ -1,6 +1,5 @@
 {
   "libview.firstColumnWidth": 232,
-  "auxline1": true,
   "libview.iconScale": 0,
   "doc.openedDocs": [
     "ui://vith2b66gsi2obbr",
@@ -59,6 +58,7 @@
     "ca43vz0e",
     "/商店/"
   ],
+  "auxline1": true,
   "showGrid": false,
   "snapToGrid": true,
   "test.orientation": "landscape",

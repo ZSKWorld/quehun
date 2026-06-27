@@ -16,10 +16,10 @@ export class GameManager extends Observer implements IGameManager {
 	get language() { return ELanguage.CHS; }
 	get clientType() { return EClientType.CHST; }
 	get version() {
-		return "4.0.44";
+		return "4.0.45";
 	}
 	get clientVersion() {
-		return 'WebGL_2022-0.16.238';
+		return 'WebGL_2022-0.16.242';
 	}
 	get currency() {
 		const info = $cfgMgr.mall.channel_config[this.payChannelId];

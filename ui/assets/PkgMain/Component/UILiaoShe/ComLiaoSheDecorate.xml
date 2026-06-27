@@ -8,6 +8,12 @@
       <relation target="n24_glpb" sidePair="right-right"/>
       <Button icon="ui://vith2b66glpbobfs"/>
     </component>
+    <component id="n42_ld4d" name="using" src="108ab6i" fileName="Component/Button/BtnNormal.xml" pkg="vx9zwser" xy="479,706" size="254,82" touchable="false" grayed="true">
+      <Button title="使用中" titleColor="#613422" titleFontSize="40" icon="ui://vith2b66glpbobfr"/>
+    </component>
+    <component id="n43_ld4d" name="use" src="108ab6i" fileName="Component/Button/BtnNormal.xml" pkg="vx9zwser" xy="479,706" size="254,82">
+      <Button title="使用" titleColor="#613422" titleFontSize="40" icon="ui://vith2b66glpbobfr"/>
+    </component>
     <component id="n23_glpb" name="save" src="108ab6i" fileName="Component/Button/BtnNormal.xml" pkg="vx9zwser" xy="479,706" size="254,82">
       <Button title="保存" titleColor="#613422" titleFontSize="40" icon="ui://vith2b66glpbobfr"/>
     </component>
@@ -20,7 +26,7 @@
     </group>
     <text id="n24_glpb" name="viewName" xy="574,24" pivot="0.5,0.5" size="26,49" fontSize="36" color="#f2c797" vAlign="middle" leading="0" singleLine="true" text="1"/>
     <text id="n20_glpb" name="title" xy="1029,45" pivot="0,0.5" anchor="true" size="80,52" font="ui://vx9zwserrpakobeu" fontSize="38" color="#e7ab5d" text="桌布"/>
-    <list id="n6_ik7b" name="tab" xy="0,2" size="276,784" overflow="scroll" lineGap="4" defaultItem="ui://vith2b66ik7bobfl" autoItemSize="false" align="right" autoClearItems="true">
+    <list id="n6_ik7b" name="tab" xy="0,2" size="276,784" overflow="scroll" lineGap="4" defaultItem="ui://vith2b66ik7bobfl" autoItemSize="false" align="right" autoClearItems="true" scrollItemToViewOnClick="false">
       <item controllers="button,1"/>
       <item/>
       <item/>

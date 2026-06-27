@@ -20,8 +20,26 @@ export class FGUIRepair {
 					this._displayObject.text = value;
 					this.ensureSizeCorrect();
 				},
+			},
+			"color": {
+				get() {
+					return this._color;
+				},
+				set(value) {
+					if (this._color != value) {
+						this._color = value;
+						this.updateGear(4);
+						// if (this.grayed)
+						//     this._displayObject.color = "#AAAAAA";
+						// else
+						this._displayObject.color = this._color;
+					}
+				},
 			}
 		});
+		prototype["handleGrayedChanged"] = function () {
+            fgui.ToolSet.setColorFilter(this._displayObject, this._grayed);
+		};
 		labelPadding.length = 0;
 		labelPadding.push(0, 0, 0, 0);
 	}

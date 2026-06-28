@@ -25,15 +25,17 @@ class DecoViewData implements IResAllcommonViews_Views {
 	index: number;
 	values: IViewSlot[];
 
-	get changed() {
-		return !this.equals($user.commonView.views.find(v => v.index == this.index));
-	}
-
 	init(data: IResAllcommonViews_Views) {
 		const newData = structuredClone(data);
 		this.name = newData.name;
 		this.index = newData.index;
 		this.values = newData.values;
+		this.values.forEach(v => {
+			if (v.item_id_list.length == 0 && !v.item_id) {
+				const items = $user.bag.getItemByCategoryType(EItemCategory.Common, v.slot, true);
+				items.length > 0 && v.item_id_list.push(items[0].item_id);
+			}
+		});
 	}
 
 	equals(other: IResAllcommonViews_Views) {
@@ -60,9 +62,12 @@ class DecoViewData implements IResAllcommonViews_Views {
 
 export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorate>(ComLiaoSheDecorate) implements IView {
 	private _curData = new DecoViewData();
+	private _originData = new DecoViewData();
 	private _items: number[];
 
+	private get dataChanged() { return !this._curData.equals(this._originData); }
 	private get slotData() { return this._curData.values[this.list_view.selectedIndex]; }
+	private get originSlotData() { return this._originData.values[this.list_view.selectedIndex]; }
 
 	override onCreate() {
 		const { btn_use, btn_save, btn_preview, btn_random, btn_closePreview, btn_editViewName, list_tab, list_view, list_item } = this;
@@ -77,10 +82,10 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 			const { use, views } = $user.commonView;
 			item.refresh(views[index], views[index].index == use);
 		}, (_, __, index) => {
-			const { _curData, list_tab } = this;
+			const { _curData, dataChanged, list_tab } = this;
 			const oldIndex = $user.commonView.views.findIndex(v => v.index == _curData.index);
 			if (oldIndex == index) return;
-			if (_curData.changed) {
+			if (dataChanged) {
 				list_tab.selectedIndex = oldIndex;
 				$confirmSma(3, $lang(3022)).then(v => {
 					v && this.refreshView(index);
@@ -92,7 +97,7 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 
 		$uiUtil.setList(list_view, false, this, (index: number, item: RenderLiaoSheDecoTypeView) => {
 			const slotData = this._curData.values[index];
-			item.refresh(slotData, SlotTitles[index], SlotNames[index], slotData.type == 1 ? SlotIconRandom : SlotIcons[index]);
+			item.refresh(slotData, SlotTitles[index], SlotNames[index], slotData.type ? SlotIconRandom : SlotIcons[index]);
 		}, (_, __, index: number) => {
 			this.refreshItem(index);
 		});
@@ -144,10 +149,12 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 	}
 
 	private refreshView(index: number) {
-		const { _curData, list_tab, list_view, txt_viewName } = this;
+		const { _curData, _originData, list_tab, list_view, txt_viewName } = this;
 		list_tab.selectedIndex = index;
 		list_tab.scrollToView(index, false);
-		_curData.init($user.commonView.views[index]);
+		const data = $user.commonView.views[index];
+		_curData.init(data);
+		_originData.init(data);
 		list_view.numItems = _curData.values.length;
 		const selectIndex = 0;
 		list_view.selectedIndex = selectIndex;
@@ -173,6 +180,9 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 		list_item.numItems = items.length;
 		const startIndex = items.findIndex(v => slotType ? item_id_list.includes(v) : v == item_id);
 		list_item.selectedIndex = startIndex;
+
+		btn_random.grayed = items.length == 0;
+		btn_random.touchable = items.length > 0;
 	}
 
 	//#region button click
@@ -183,7 +193,21 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 
 	}
 	private onBtnSaveClick() {
-
+		// const commonView = $user.commonView;
+		// const { name, index, values } = this._curData;
+		// const views: IViewSlot[] = [];
+		// for (const e of values) {
+		// 	const validItemId = e.item_id && !commonView.isDefaultView(e.item_id);
+		// 	const itemList = e.item_id_list.filter(v => !commonView.isDefaultView(v));
+		// 	const validItemList = itemList.length > 0;
+		// 	if (!validItemId && !validItemList) continue;
+		// }
+		// $netMgr.requests.saveCommonViews({
+		// 	name,
+		// 	is_use: index == commonView.usingView.index ? 1 : 0,
+		// 	save_index: index,
+		// 	views,
+		// });
 	}
 	private onBtnPreviewClick() {
 
@@ -204,8 +228,7 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 	}
 
 	private onDataChanged() {
-		const { btn_using, btn_use, btn_save, _curData } = this;
-		const dataChanged = _curData.changed;
+		const { _curData, dataChanged, btn_using, btn_use, btn_save } = this;
 		const usingIndex = $user.commonView.usingView.index;
 		btn_using.visible = _curData.index == usingIndex && !dataChanged;
 		btn_use.visible = _curData.index != usingIndex && !dataChanged;

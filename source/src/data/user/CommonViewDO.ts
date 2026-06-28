@@ -100,7 +100,8 @@ export class CommonViewDO extends BaseDO implements DO.ICommonViewDO {
 						item_id_list: [],
 					};
 					slots.push(s);
-				}
+				} else
+					s.item_id_list.length && (s.item_id_list = s.item_id_list.filter(v => v != 0));
 				if (s.item_id == 0)
 					s.item_id = defaultId;
 				if (s.item_id_list.length == 0 && s.item_id != 0)

@@ -1,6 +1,7 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
 import UITest from "./UITest";
+import UITextInput from "./UITextInput";
 import ComHeadFrame from "./ComHeadFrame";
 import ComRedDot1 from "./ComRedDot1";
 import ComRechargeVIP from "./ComRechargeVIP";
@@ -42,6 +43,7 @@ import RenderRechargeItem from "./RenderRechargeItem";
 import PbLoading3 from "./PbLoading3";
 import PbLoading2 from "./PbLoading2";
 import { UITestView } from "../../view/PkgCommon/view/uis/UITestView";
+import { UITextInputView } from "../../view/PkgCommon/view/uis/UITextInputView";
 import { ComHeadFrameView } from "../../view/PkgCommon/view/coms/ComHeadFrameView";
 import { ComRedDot1View } from "../../view/PkgCommon/view/coms/ComRedDot1View";
 import { ComRechargeVIPView } from "../../view/PkgCommon/view/coms/ComRechargeVIPView";
@@ -82,6 +84,7 @@ import { RenderRechargeItemView } from "../../view/PkgCommon/view/renders/Render
 export default class PkgCommonBinder {
 	public static bindAll(): void {
 		fgui.UIObjectFactory.setExtension(UITest.url, UITestView);
+		fgui.UIObjectFactory.setExtension(UITextInput.url, UITextInputView);
 		fgui.UIObjectFactory.setExtension(ComHeadFrame.url, ComHeadFrameView);
 		fgui.UIObjectFactory.setExtension(ComRedDot1.url, ComRedDot1View);
 		fgui.UIObjectFactory.setExtension(ComRechargeVIP.url, ComRechargeVIPView);

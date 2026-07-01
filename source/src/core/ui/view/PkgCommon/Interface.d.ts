@@ -64,3 +64,18 @@ declare interface IUIPaymentData {
 	id: number;
 	debtId?: string;
 }
+
+declare interface IUITextInputData {
+	/** 标题 */
+	title: string;
+	/** 输入内容 */
+	text: string;
+	/** 提示信息 */
+	placeholder?: string;
+	/** 限制类型 */
+	restrict?: string;
+	/** 最大长度 */
+	maxLength?: number;
+	/** 输入完成回调 */
+	callback?: Laya.Handler | ((text: string) => void);
+}

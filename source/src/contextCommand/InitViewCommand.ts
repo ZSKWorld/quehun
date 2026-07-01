@@ -97,6 +97,8 @@ import { UISettingView } from "../core/ui/view/PkgCommon/view/uis/UISettingView"
 import { UISettingMediator } from "../core/ui/view/PkgCommon/mediator/uis/UISettingMediator";
 import { UITestView } from "../core/ui/view/PkgCommon/view/uis/UITestView";
 import { UITestMediator } from "../core/ui/view/PkgCommon/mediator/uis/UITestMediator";
+import { UITextInputView } from "../core/ui/view/PkgCommon/view/uis/UITextInputView";
+import { UITextInputMediator } from "../core/ui/view/PkgCommon/mediator/uis/UITextInputMediator";
 import { UIChooseServerView } from "../core/ui/view/PkgEntrance/view/uis/UIChooseServerView";
 import { UIChooseServerMediator } from "../core/ui/view/PkgEntrance/mediator/uis/UIChooseServerMediator";
 import { UIEntranceView } from "../core/ui/view/PkgEntrance/view/uis/UIEntranceView";
@@ -242,6 +244,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.UIRechargeView, EViewType.UI, UIRechargeView, UIRechargeMediator);
 		register(EViewID.UISettingView, EViewType.UI, UISettingView, UISettingMediator);
 		register(EViewID.UITestView, EViewType.UI, UITestView, UITestMediator);
+		register(EViewID.UITextInputView, EViewType.UI, UITextInputView, UITextInputMediator);
 		register(EViewID.UIChooseServerView, EViewType.UI, UIChooseServerView, UIChooseServerMediator);
 		register(EViewID.UIEntranceView, EViewType.UI, UIEntranceView, UIEntranceMediator);
 		register(EViewID.UIBindPhoneView, EViewType.UI, UIBindPhoneView, UIBindPhoneMediator);

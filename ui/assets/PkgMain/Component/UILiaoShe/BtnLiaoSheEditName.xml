@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="643,64" pivot="0.5,0.5" extention="Button">
+  <displayList>
+    <image id="n27_glpb" name="n27" src="glpbobft" fileName="Texture/img_3418.png" xy="0,0"/>
+    <image id="n26_glpb" name="n26" src="glpbobfs" fileName="Texture/img_682.png" xy="314,16" size="35,35">
+      <relation target="n24_glpb" sidePair="right-right"/>
+    </image>
+    <text id="n24_glpb" name="title" xy="281,8" pivot="0.5,0.5" size="26,49" fontSize="36" color="#f2c797" vAlign="middle" leading="0" singleLine="true" text="1"/>
+  </displayList>
+  <Button downEffect="scale" downEffectValue="0.95"/>
+</component>

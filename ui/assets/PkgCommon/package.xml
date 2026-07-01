@@ -312,6 +312,7 @@
     <image id="lswhobjg" name="img_223.png" path="/Texture/" exported="true" scale="9grid" scale9grid="7,7,2,2"/>
     <image id="lswhobjh" name="img_807.png" path="/Texture/" exported="true"/>
     <image id="lswhobji" name="img_1536.png" path="/Texture/" exported="true" scale="9grid" scale9grid="10,10,0,209"/>
+    <component id="a7sxobjj" name="UITextInput.xml" path="/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

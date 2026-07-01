@@ -68,7 +68,7 @@ export class CommonViewDO extends BaseDO implements DO.ICommonViewDO {
 			slot: v.slot,
 			item_id: v.item_id,
 			type: v.type,
-			item_id_list: [...v.item_id_list],
+			item_id_list: v.item_id_list.slice(),
 		}));
 		if (req.is_use) {
 			this._use = req.save_index;
@@ -84,9 +84,11 @@ export class CommonViewDO extends BaseDO implements DO.ICommonViewDO {
 		for (let i = 0; i < 10; i++) {
 			let view = _views.find(v => v.index == i);
 			if (!view) {
-				view = { index: i, name: String(i + 1), values: [], };
+				view = { index: i, name: "", values: [], };
 				_views.push(view);
 			}
+
+			view.name = view.name || String(i + 1);
 
 			const slots = view.values;
 			slotIds.forEach(sid => {

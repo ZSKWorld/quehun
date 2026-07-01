@@ -88,6 +88,7 @@ EViewID = {
 	UIRechargeView: "UIRechargeView",
 	UISettingView: "UISettingView",
 	UITestView: "UITestView",
+	UITextInputView: "UITextInputView",
 	UIChooseServerView: "UIChooseServerView",
 	UIEntranceView: "UIEntranceView",
 	UIBindPhoneView: "UIBindPhoneView",

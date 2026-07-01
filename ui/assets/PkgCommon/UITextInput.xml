@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0ejdu67plnzp" designImageAlpha="0">
+  <controller name="format" pages="4,,5," selected="0"/>
+  <displayList>
+    <component id="n21_a7sx" name="mask" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" xy="0,0" size="1920,1080"/>
+    <component id="n0_j0dd" name="n0" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" xy="536,260" size="847,559"/>
+    <component id="n10_j0dd" name="close" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" xy="1267,293" size="70,70">
+      <Button icon="ui://vx9zwserj0ddob7b"/>
+    </component>
+    <component id="n14_j0dd" name="confirm" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="801,675" size="312,92">
+      <gearDisplay controller="format" pages="0,2,3,4,5,6"/>
+      <Button title="确 定" titleColor="#442334" titleFontSize="43" icon="ui://vx9zwserj0ddob73"/>
+    </component>
+    <image id="n19_a7sx" name="n19" src="puubobff" fileName="Texture/img_811.png" xy="648,435" size="622,111"/>
+    <text id="n20_a7sx" name="input" xy="666,454" size="586,70" font="SimHei" fontSize="40" color="#d4cfcf" vAlign="middle" leading="0" autoSize="none" singleLine="true" text="装扮方案1" input="true" restrict="0-9"/>
+    <text id="n12_j0dd" name="title" xy="968,328" pivot="0.5,0.5" anchor="true" size="244,54" font="ui://vx9zwserrpakobeu" fontSize="40" color="#edb26f" align="center" vAlign="middle" leading="0" singleLine="true" text="修改方案名称">
+      <gearDisplay controller="format" pages="0,1,4,6"/>
+    </text>
+  </displayList>
+</component>

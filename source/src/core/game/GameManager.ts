@@ -19,7 +19,7 @@ export class GameManager extends Observer implements IGameManager {
 		return "4.0.45";
 	}
 	get clientVersion() {
-		return 'WebGL_2022-0.16.242';
+		return 'WebGL_2022-0.16.243';
 	}
 	get currency() {
 		const info = $cfgMgr.mall.channel_config[this.payChannelId];

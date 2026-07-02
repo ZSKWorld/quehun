@@ -170,7 +170,8 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 		const defaultId = $user.commonView.getDefultViewId(itemType);
 		if (defaultId) items.unshift(defaultId);
 
-		btn_random.selected = !!slotType;
+		if (btn_random.visible)
+			btn_random.selected = !!slotType;
 		this._items = items;
 		list_item.numItems = items.length;
 
@@ -246,7 +247,7 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 			const validItemId = e.item_id && !commonView.isDefaultView(e.item_id);
 			const itemList = e.item_id_list.filter(v => v && !commonView.isDefaultView(v));
 			const validItemList = itemList.length > 0;
-			if (!validItemId && !validItemList) continue;
+			if (!validItemId && !validItemList && !e.type) continue;
 			const view: IViewSlot = {
 				slot: e.slot,
 				item_id: commonView.isDefaultView(e.item_id) ? 0 : e.item_id,

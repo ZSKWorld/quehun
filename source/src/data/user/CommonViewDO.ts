@@ -64,12 +64,16 @@ export class CommonViewDO extends BaseDO implements DO.ICommonViewDO {
 	@InjectNetEvent(ENetMessage.saveCommonViews)
 	private onSaveCommonViews(_, req: IReqSaveCommonViews) {
 		const view = this._views.find(v => v.index == req.save_index);
+		view.name = req.name;
 		view.values = req.views.map(v => ({
 			slot: v.slot,
 			item_id: v.item_id,
 			type: v.type,
 			item_id_list: v.item_id_list.slice(),
 		}));
+
+		this.fillDefaultData();
+
 		if (req.is_use) {
 			this._use = req.save_index;
 			this.refreshCurView();

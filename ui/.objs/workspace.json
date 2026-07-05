@@ -2,18 +2,12 @@
   "libview.firstColumnWidth": 232,
   "libview.iconScale": 0,
   "doc.openedDocs": [
-    "ui://vx9zwsera7sxobjj",
-    "ui://vith2b66co9gob9l",
+    "ui://vith2b66fw4wobig",
+    "ui://vx9zwserq5yiobc3",
+    "ui://vith2b66hdeoobb2",
+    "ui://vx9zwsergsi2obeq",
     "ui://vith2b66glpbobfu",
-    "ui://vx9zwserglpbobfo",
-    "ui://vx9zwsermaquobjl",
-    "ui://vx9zwsermaquobjk",
-    "ui://vx9zwser5zjlobgd",
-    "ui://vx9zwserj0ddob7j",
-    "ui://vx9zwserj0ddob7e",
-    "ui://vx9zwserhraoobiz",
-    "ui://vx9zwsersi7robf6",
-    "ui://vith2b66qke2ob9m"
+    "ui://vith2b66hk7robax"
   ],
   "packageGroup.mine": [
     "vx9zwser",
@@ -25,7 +19,7 @@
   "test.device": "iPhone 8 Plus",
   "canvasColor": 10066329,
   "auxline2": true,
-  "doc.activeDoc": "ui://vx9zwsermaquobjk",
+  "doc.activeDoc": "ui://vith2b66fw4wobig",
   "libview.twoColumn": true,
   "libview.expandedNodes": [
     "vx9zwser",
@@ -40,6 +34,8 @@
     "/",
     "vith2b66",
     "/Component/",
+    "vith2b66",
+    "/Component/UILiaoShe/",
     "vith2b66",
     "/Texture/",
     "ca43vz0e",

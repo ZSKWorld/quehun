@@ -42,15 +42,15 @@ export class GameManager extends Observer implements IGameManager {
 	get reportClientType() {
 		switch (this.clientType) {
 			case EClientType.CHST:
-				return 'cn';
+				return EReportTag.CN;
 			case EClientType.JP:
-				return 'jp';
+				return EReportTag.JP;
 			case EClientType.KR:
-				return 'kr';
+				return EReportTag.KR;
 			case EClientType.EN:
-				return 'en';
+				return EReportTag.EN;
 		}
-		return 'unknown';
+		return EReportTag.None;
 	}
 	get deviceId() {
 		this._deviceId = this._deviceId || $localDataMgr.getStr(ELocalDataKey.DeviceId);

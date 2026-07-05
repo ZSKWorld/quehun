@@ -73,6 +73,7 @@ import { ComMatchItemView } from "../core/ui/view/PkgMain/view/coms/ComMatchItem
 import { ComMatchItemMediator } from "../core/ui/view/PkgMain/mediator/coms/ComMatchItemMediator";
 import { ComMatchModeView } from "../core/ui/view/PkgMain/view/coms/ComMatchModeView";
 import { ComMatchModeMediator } from "../core/ui/view/PkgMain/mediator/coms/ComMatchModeMediator";
+import { ComPreviewView } from "../core/ui/view/PkgMain/view/coms/ComPreviewView";
 import { ComSevenDayItem1View } from "../core/ui/view/PkgMain/view/coms/ComSevenDayItem1View";
 import { UIBuyGoodsView } from "../core/ui/view/PkgCommon/view/uis/UIBuyGoodsView";
 import { UIBuyGoodsMediator } from "../core/ui/view/PkgCommon/mediator/uis/UIBuyGoodsMediator";
@@ -231,6 +232,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.ComMatchContentView, EViewType.Component, ComMatchContentView, ComMatchContentMediator);
 		register(EViewID.ComMatchItemView, EViewType.Component, ComMatchItemView, ComMatchItemMediator);
 		register(EViewID.ComMatchModeView, EViewType.Component, ComMatchModeView, ComMatchModeMediator);
+		register(EViewID.ComPreviewView, EViewType.Component, ComPreviewView);
 		register(EViewID.ComSevenDayItem1View, EViewType.Component, ComSevenDayItem1View);
 
 		//UIs

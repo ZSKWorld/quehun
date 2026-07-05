@@ -74,6 +74,7 @@ declare enum EViewID {
 	ComMatchContentView = "ComMatchContentView",
 	ComMatchItemView = "ComMatchItemView",
 	ComMatchModeView = "ComMatchModeView",
+	ComPreviewView = "ComPreviewView",
 	ComSevenDayItem1View = "ComSevenDayItem1View",
 
 	/**UIs */

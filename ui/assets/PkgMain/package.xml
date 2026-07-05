@@ -247,6 +247,7 @@
     <component id="giq1obic" name="UICheckCurrency.xml" path="/" exported="true"/>
     <component id="lswhobie" name="RenderLiaoSheDecoItem.xml" path="/Component/UILiaoShe/"/>
     <component id="a7sxobif" name="BtnLiaoSheEditName.xml" path="/Component/UILiaoShe/"/>
+    <component id="fw4wobig" name="ComPreview.xml" path="/Component/UILiaoShe/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

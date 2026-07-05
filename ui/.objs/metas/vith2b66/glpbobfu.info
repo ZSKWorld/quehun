@@ -3,18 +3,18 @@
     "n43_ld4d": {
       "hidden": true
     },
-    "n40_lswh": {
-      "hidden": true
+    "n41_lswh": {
+      "collapsed": true
     },
     "n23_glpb": {
       "hidden": true
     }
   },
   "designImages": [
-    "ui://ca43vz0eik7b7plok4",
-    "ui://ca43vz0eglpb7plok5",
-    "ui://ca43vz0eik7b7plojz",
     "ui://ca43vz0eik7b7plok0",
-    "ui://ca43vz0eik7b7plok2"
+    "ui://ca43vz0eik7b7plok2",
+    "ui://ca43vz0eglpb7plok5",
+    "ui://ca43vz0eik7b7plok3",
+    "ui://ca43vz0eik7b7plok4"
   ]
 }

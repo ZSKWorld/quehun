@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="748,695" designImage="ui://ca43vz0eik7b7plok3" designImageOffsetX="-1048" designImageOffsetY="-278" designImageAlpha="0" designImageLayer="1">
+  <controller name="type" pages="0,桌布,1,头像框" selected="0"/>
+  <displayList>
+    <image id="n16_glpb" name="n16" src="glpbobfl" fileName="Texture/img_28.png" pkg="vx9zwser" xy="0,0" size="748,695">
+      <relation target="" sidePair="width-width,height-height"/>
+    </image>
+    <component id="n21_glpb" name="close1" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="655,9" size="70,70">
+      <Button icon="ui://vx9zwserj0ddob7b"/>
+    </component>
+    <component id="n52_fw4w" name="close2" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="0,-73" pivot="0,1" size="748,73"/>
+    <component id="n48_fw4w" name="item" src="q5yiobc2" fileName="Component/Component/物品/ComItem1.xml" pkg="vx9zwser" xy="129,78" size="490,490" aspect="true">
+      <gearDisplay controller="type" pages="0"/>
+    </component>
+    <component id="n41_fw4w" name="mjp0" src="ii8iobgf" fileName="Component/Component/麻将/ComMJItem.xml" pkg="vx9zwser" xy="146,95" size="41,66" group="n50_fw4w" aspect="true">
+      <gearDisplay controller="type" pages="0"/>
+    </component>
+    <component id="n42_fw4w" name="mjp1" src="ii8iobgf" fileName="Component/Component/麻将/ComMJItem.xml" pkg="vx9zwser" xy="193,95" size="41,66" group="n50_fw4w" aspect="true">
+      <gearDisplay controller="type" pages="0"/>
+    </component>
+    <component id="n43_fw4w" name="mjp2" src="ii8iobgf" fileName="Component/Component/麻将/ComMJItem.xml" pkg="vx9zwser" xy="240,95" size="41,66" group="n50_fw4w" aspect="true">
+      <gearDisplay controller="type" pages="0"/>
+    </component>
+    <component id="n44_fw4w" name="mjp3" src="ii8iobgf" fileName="Component/Component/麻将/ComMJItem.xml" pkg="vx9zwser" xy="287,95" size="41,66" group="n50_fw4w" aspect="true">
+      <gearDisplay controller="type" pages="0"/>
+    </component>
+    <component id="n45_fw4w" name="mjp4" src="ii8iobgf" fileName="Component/Component/麻将/ComMJItem.xml" pkg="vx9zwser" xy="334,95" size="41,66" group="n50_fw4w" aspect="true">
+      <gearDisplay controller="type" pages="0"/>
+    </component>
+    <group id="n50_fw4w" name="n50" xy="146,95" size="229,66"/>
+    <component id="n51_fw4w" name="head" src="hdeoobbn" fileName="Component/Component/头像/ComHead2.xml" pkg="vx9zwser" xy="311,264" pivot="0.5,0.5" size="125,125" scale="2.24,2.24">
+      <gearDisplay controller="type" pages="1"/>
+      <property target="frame" propertyId="1" value="ui://ca43vz0ehk7r7ploie"/>
+    </component>
+    <text id="n49_fw4w" name="name" xy="374,612" pivot="0.5,0.5" anchor="true" size="199,42" font="SimHei" fontSize="30" color="#cea982" vAlign="middle" leading="0" text="桌布-萤火之森">
+      <gearXY controller="type" pages="0,1" values="374,612|373,487"/>
+    </text>
+  </displayList>
+</component>

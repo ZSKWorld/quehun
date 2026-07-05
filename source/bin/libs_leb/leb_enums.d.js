@@ -44,6 +44,14 @@ EClientType = {
 	KR: "kr",
 }
 
+EReportTag = {
+	None: "",
+	CN: "cn",
+	EN: "en",
+	JP: "jp",
+	KR: "kr",
+}
+
 ELocalDataKey = {
 	LastServer: "LocalDataKey_LastServer",
 	AutoLogin: "LocalDataKey_AutoLogin",

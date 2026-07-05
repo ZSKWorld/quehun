@@ -64,12 +64,11 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 	private get originSlotData() { return this._originData.values[this.list_view.selectedIndex]; }
 
 	override onCreate() {
-		const { btn_use, btn_save, btn_preview, btn_random, btn_closePreview, btn_editName, list_tab, list_view, list_item } = this;
+		const { btn_use, btn_save, btn_preview, btn_random, btn_editName, list_tab, list_view, list_item } = this;
 		btn_use.onClick(this, this.onBtnUseClick);
 		btn_save.onClick(this, this.onBtnSaveClick);
 		btn_preview.onClick(this, this.onBtnPreviewClick);
 		btn_random.onClick(this, this.onBtnRandomClick);
-		btn_closePreview.onClick(this, this.onBtnClosePreviewClick);
 		btn_editName.onClick(this, this.onBtnEditNameClick);
 
 		$uiUtil.setList(list_tab, false, this, (index: number, item: RenderLiaoSheDecoTabView) => {
@@ -160,7 +159,7 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 	}
 
 	private refreshItem(index: number, resetSelect: boolean = true) {
-		const { txt_title, btn_preview, btn_random, list_item } = this;
+		const { txt_title, btn_preview, btn_random, list_item, com_previewPanel } = this;
 		txt_title.text = $lang(SlotTitles[index]);
 		btn_preview.visible = ItemPreview[index][0];
 		btn_random.visible = ItemPreview[index][1];
@@ -183,6 +182,7 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 
 		btn_random.grayed = items.length == 0;
 		btn_random.touchable = items.length > 0;
+		com_previewPanel.close();
 	}
 
 	//#region button click
@@ -209,7 +209,8 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 		$netMgr.requests.saveCommonViews(params);
 	}
 	private onBtnPreviewClick() {
-
+		const id = this._items[this.list_item.selectedIndex];
+		this.com_previewPanel.show(id, this.slotData.slot);
 	}
 	private onBtnRandomClick() {
 		const { slotData, _items, list_view, list_item, btn_random } = this;
@@ -235,9 +236,6 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 		const startIndex = _items.findIndex(v => slotType ? item_id_list.includes(v) : v == item_id);
 		list_item.selectedIndex = startIndex;
 		this.onDataChanged();
-	}
-	private onBtnClosePreviewClick() {
-
 	}
 	private getSaveReqData() {
 		const commonView = $user.commonView;

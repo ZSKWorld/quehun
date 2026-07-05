@@ -59,6 +59,15 @@ declare enum EClientType {
 	KR = "kr",
 }
 
+/** 服务器标签，日志统计用 */
+declare enum EReportTag {
+	None = "",
+	CN = "cn",
+	EN = "en",
+	JP = "jp",
+	KR = "kr",
+}
+
 /** 本地保存数据类型 */
 declare enum ELocalDataKey {
 	/** 上次登录的服务器 */

@@ -1,5 +1,6 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import { ComPreviewView } from "../../view/PkgMain/view/coms/ComPreviewView";
 import { BtnSwitch1View } from "../../view/PkgCommon/view/btns/BtnSwitch1View";
 
 export default class ComLiaoSheDecorate extends fgui.GComponent {
@@ -14,7 +15,7 @@ export default class ComLiaoSheDecorate extends fgui.GComponent {
 	protected list_tab: fgui.GList;
 	protected list_view: fgui.GList;
 	protected list_item: fgui.GList;
-	protected btn_closePreview: fgui.GButton;
+	protected com_previewPanel: ComPreviewView;
 	public static url: string = "ui://vith2b66glpbobfu";
 
 	public static createInstance(): ComLiaoSheDecorate {
@@ -32,6 +33,6 @@ export default class ComLiaoSheDecorate extends fgui.GComponent {
 		this.list_tab = <fgui.GList>(this.getChildAt(10));
 		this.list_view = <fgui.GList>(this.getChildAt(11));
 		this.list_item = <fgui.GList>(this.getChildAt(12));
-		this.btn_closePreview = <fgui.GButton>(this.getChildAt(14));
+		this.com_previewPanel = <ComPreviewView>(this.getChildAt(13));
 	}
 }

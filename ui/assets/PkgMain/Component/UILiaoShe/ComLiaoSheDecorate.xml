@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1743,788" designImage="ui://ca43vz0eik7b7plok2" designImageOffsetX="-64" designImageOffsetY="-195" designImageAlpha="0" designImageLayer="1">
+<component size="1743,788" designImage="ui://ca43vz0eik7b7plok4" designImageOffsetX="-64" designImageOffsetY="-195" designImageAlpha="0" designImageLayer="1">
   <displayList>
     <image id="n15_glpb" name="n15" src="glpbobfm" fileName="Texture/img_860.png" xy="979,0" size="764,784"/>
     <image id="n39_lswh" name="n39" src="glpbobfk" fileName="Texture/img_44.png" pkg="vx9zwser" xy="1029,81" size="670,3"/>
@@ -69,10 +69,6 @@
       <item/>
       <item/>
     </list>
-    <image id="n16_glpb" name="n16" src="glpbobfl" fileName="Texture/img_28.png" pkg="vx9zwser" xy="984,84" size="755,695" group="n40_lswh"/>
-    <component id="n21_glpb" name="closePreview" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1639,93" size="70,70" group="n40_lswh">
-      <Button icon="ui://vx9zwserj0ddob7b"/>
-    </component>
-    <group id="n40_lswh" name="n40" xy="984,84" size="755,695" visible="false" advanced="true"/>
+    <component id="n16_glpb" name="previewPanel" src="fw4wobig" fileName="Component/UILiaoShe/ComPreview.xml" xy="987,81" size="748,695" visible="false"/>
   </displayList>
 </component>

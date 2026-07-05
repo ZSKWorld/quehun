@@ -44,7 +44,7 @@ export class ContextMenuManager extends Observer implements IContextMenuManager 
 		menu.show(TempPoint.x, TempPoint.y);
 	}
 
-	@InjectGlobalEvent(EGlobalEvent.OnInitGameCompleted)
+	// @InjectGlobalEvent(EGlobalEvent.OnInitGameCompleted)
 	private test() {
 		$ctxMenuMgr.bindMenu(fgui.GRoot.inst, [
 			{

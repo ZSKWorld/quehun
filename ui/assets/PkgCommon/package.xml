@@ -119,7 +119,7 @@
     <image id="gsi2obc6" name="img_1026.png" path="/Texture/" exported="true"/>
     <image id="gsi2obc7" name="img_3316.png" path="/Texture/" exported="true"/>
     <image id="gsi2obc8" name="img_33.png" path="/Texture/" exported="true"/>
-    <image id="gsi2obc9" name="img_329.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obc9" name="img_329.png" path="/Texture/" exported="true" scale="9grid" scale9grid="8,7,1,3"/>
     <image id="gsi2obca" name="img_304.png" path="/Texture/" exported="true"/>
     <image id="gsi2obcb" name="img_303.png" path="/Texture/" exported="true"/>
     <image id="gsi2obcc" name="img_2938.png" path="/Texture/" exported="true" scale="9grid" scale9grid="127,0,1,86"/>
@@ -132,7 +132,7 @@
     <image id="gsi2obcj" name="img_2617.png" path="/Texture/" exported="true"/>
     <image id="gsi2obck" name="img_25.png" path="/Texture/" exported="true"/>
     <image id="gsi2obcl" name="img_249.png" path="/Texture/" exported="true"/>
-    <image id="gsi2obcm" name="img_248.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obcm" name="img_248.png" path="/Texture/" exported="true" scale="9grid" scale9grid="7,7,4,2"/>
     <image id="gsi2obcn" name="img_2801.png" path="/Texture/" exported="true"/>
     <image id="gsi2obcr" name="img_986.png" path="/Texture/" exported="true"/>
     <image id="gsi2obcs" name="img_932.png" path="/Texture/" exported="true"/>
@@ -146,8 +146,8 @@
     <image id="gsi2obd0" name="img_650.png" path="/Texture/" exported="true"/>
     <image id="gsi2obd1" name="img_649.png" path="/Texture/" exported="true"/>
     <image id="gsi2obd2" name="img_561.png" path="/Texture/" exported="true"/>
-    <image id="gsi2obd3" name="img_542.png" path="/Texture/" exported="true"/>
-    <image id="gsi2obd4" name="img_541.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obd3" name="img_542.png" path="/Texture/" exported="true" scale="9grid" scale9grid="14,13,0,2"/>
+    <image id="gsi2obd4" name="img_541.png" path="/Texture/" exported="true" scale="9grid" scale9grid="12,13,3,4"/>
     <image id="gsi2obd5" name="img_42.png" path="/Texture/" exported="true" scale="9grid" scale9grid="3,0,4,3"/>
     <image id="gsi2obd6" name="img_407.png" path="/Texture/" exported="true"/>
     <image id="gsi2obd7" name="img_405.png" path="/Texture/" exported="true"/>
@@ -253,7 +253,7 @@
     <image id="fpd2obg4" name="img_2104.png" path="/Texture/" exported="true"/>
     <component id="fpd2obg5" name="VScrollBar5.xml" path="/Component/ScrollBar/" exported="true"/>
     <component id="ffpyobg6" name="HScrollBar1.xml" path="/Component/ScrollBar/" exported="true"/>
-    <image id="ffpyobg7" name="img_312.png" path="/Texture/" exported="true" scale="9grid" scale9grid="7,7,6,6"/>
+    <image id="ffpyobg7" name="img_312.png" path="/Texture/" exported="true" scale="9grid" scale9grid="7,7,3,6"/>
     <component id="ghrrobg8" name="ComFlowerLoading.xml" path="/Component/" exported="true"/>
     <component id="ghrrobg9" name="UILoading2.xml" path="/" exported="true"/>
     <component id="ziglobga" name="ComEmpty.xml" path="/Component/Component/" exported="true"/>
@@ -313,6 +313,8 @@
     <image id="lswhobjh" name="img_807.png" path="/Texture/" exported="true"/>
     <image id="lswhobji" name="img_1536.png" path="/Texture/" exported="true" scale="9grid" scale9grid="10,10,0,209"/>
     <component id="a7sxobjj" name="UITextInput.xml" path="/" exported="true"/>
+    <component id="maquobjk" name="ComContextMenu.xml" path="/Component/Component/右键菜单/" exported="true"/>
+    <component id="maquobjl" name="RenderContextMenuItem.xml" path="/Component/Component/右键菜单/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

@@ -335,7 +335,8 @@ ESceneType = {
 }
 
 EUIPoolKey = {
-	TipInfo: "TipInfo",
+	TipInfo: "EUIPoolKey_TipInfo",
+	ContextMenu: "EUIPoolKey_ContextMenu",
 }
 
 EConstDefine = {

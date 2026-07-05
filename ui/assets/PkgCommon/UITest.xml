@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="1920,1080" bgColor="#000000">
   <displayList>
-    <graph id="n10_vwgm" name="bg" xy="0,0" size="1920,1080" type="rect" lineSize="0"/>
     <component id="n11_5zjl" name="close" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" xy="30,30">
       <Button icon="ui://vx9zwserdwe0ob8k"/>
     </component>
-    <component id="n13_mh2q" name="mjp" src="ii8iobgf" fileName="Component/Component/麻将/ComMJItem.xml" xy="926,545"/>
+    <component id="n23_maqu" name="n23" src="maquobjk" fileName="Component/Component/右键菜单/ComContextMenu.xml" xy="702,202"/>
   </displayList>
 </component>

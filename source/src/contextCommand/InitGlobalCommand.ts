@@ -20,6 +20,7 @@ import { TipManager } from "../core/ui/tool/TipManager";
 import { UIUtil } from "../core/ui/tool/UIUtil";
 import { UserDO } from "../data/user/UserDO";
 import { SceneManager } from "../scene/SceneManager";
+import { ContextMenuManager } from "../core/common/contextMenu/ContextMenuManager";
 
 export class InitGlobalCommand extends Command {
 	override execute(notifyName: string, data?: any) {
@@ -43,6 +44,7 @@ export class InitGlobalCommand extends Command {
 		$windowImmit("$skeletonMgr", new SkeletonManager());
 		$windowImmit("$localDataMgr", new LocalDataManager());
 		$windowImmit("$dynamicResMgr", new DynamicResManager());
+		$windowImmit("$ctxMenuMgr", new ContextMenuManager());
 
 		this.registerConfirm("$confirmBig", EViewID.UIConfirmBigView);
 		this.registerConfirm("$confirmMid", EViewID.UIConfirmMiddleView);

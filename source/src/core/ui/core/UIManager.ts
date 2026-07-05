@@ -84,8 +84,8 @@ export class UIManager implements IUIManager {
 			layer.name = ELayer[key];
 			gRoot.addChild(layer);
 			this._layerMap[layer.name] = layer;
-			layer.displayObject.mouseThrough = true;
-			layer.displayObject.mouseEnabled = true;
+			layer.opaque = false;
+			layer.touchable = true;
 			layer.makeFullScreen();
 		}
 

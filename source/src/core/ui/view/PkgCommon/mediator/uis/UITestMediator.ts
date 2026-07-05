@@ -6,6 +6,12 @@ export interface IUITestData {
 }
 
 export class UITestMediator extends MediatorBase<UITestView, IUITestData> {
+	override onAwake() {
+		
+	}
+}
+
+class TestSpine extends Laya.Script {
 	private _mouseDown = false;
 	private _lastPoint = new Laya.Point();
 	private _spine: ISpineController;
@@ -13,8 +19,7 @@ export class UITestMediator extends MediatorBase<UITestView, IUITestData> {
 	override onEnable() {
 		const spineId = 40012203;
 		$spineMgr.load([spineId]).then(() => {
-			if (this.view.visible == false) return;
-			const spine = this._spine = $spineMgr.create(spineId, this.view);
+			const spine = this._spine = $spineMgr.create(spineId, this.gowner);
 			spine.gowner.setScale(0.15, 0.15);
 			spine.gowner.setXY(Laya.stage.width / 2, Laya.stage.height / 2);
 		});

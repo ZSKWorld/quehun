@@ -43,6 +43,7 @@ declare enum EViewID {
 
 	/**Coms */
 	ComBackView = "ComBackView",
+	ComContextMenuView = "ComContextMenuView",
 	ComCurrencyView = "ComCurrencyView",
 	ComFlowerLoadingView = "ComFlowerLoadingView",
 	ComGetRewardView = "ComGetRewardView",

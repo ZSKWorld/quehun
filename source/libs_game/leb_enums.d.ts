@@ -431,7 +431,9 @@ declare enum ESceneType {
 /** 各种UI对象池标识 */
 declare enum EUIPoolKey {
 	/** 文本提示 */
-	TipInfo = "TipInfo",
+	TipInfo = "EUIPoolKey_TipInfo",
+	/** 菜单 */
+	ContextMenu = "EUIPoolKey_ContextMenu",
 }
 
 /** 全局常量定义 */

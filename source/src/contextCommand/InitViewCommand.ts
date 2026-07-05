@@ -38,6 +38,7 @@ import { RenderShopCGView } from "../core/ui/view/PkgMain/view/renders/RenderSho
 import { RenderShopItemView } from "../core/ui/view/PkgMain/view/renders/RenderShopItemView";
 import { RenderShopSkinView } from "../core/ui/view/PkgMain/view/renders/RenderShopSkinView";
 import { ComBackView } from "../core/ui/view/PkgCommon/view/coms/ComBackView";
+import { ComContextMenuView } from "../core/ui/view/PkgCommon/view/coms/ComContextMenuView";
 import { ComCurrencyView } from "../core/ui/view/PkgCommon/view/coms/ComCurrencyView";
 import { ComFlowerLoadingView } from "../core/ui/view/PkgCommon/view/coms/ComFlowerLoadingView";
 import { ComGetRewardView } from "../core/ui/view/PkgCommon/view/coms/ComGetRewardView";
@@ -199,6 +200,7 @@ export class InitViewCommand extends Command {
 
 		//Coms
 		register(EViewID.ComBackView, EViewType.Component, ComBackView);
+		register(EViewID.ComContextMenuView, EViewType.Component, ComContextMenuView);
 		register(EViewID.ComCurrencyView, EViewType.Component, ComCurrencyView);
 		register(EViewID.ComFlowerLoadingView, EViewType.Component, ComFlowerLoadingView);
 		register(EViewID.ComGetRewardView, EViewType.Component, ComGetRewardView);

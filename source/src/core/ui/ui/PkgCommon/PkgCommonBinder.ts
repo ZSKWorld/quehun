@@ -23,6 +23,7 @@ import UIConfirmBig from "./UIConfirmBig";
 import UIConfirmMiddle from "./UIConfirmMiddle";
 import UIConfirmSmall from "./UIConfirmSmall";
 import UISetting from "./UISetting";
+import ComContextMenu from "./ComContextMenu";
 import BtnCheckTxtRight from "./BtnCheckTxtRight";
 import BtnCheckRichTxtRight from "./BtnCheckRichTxtRight";
 import ComRechargeItem from "./ComRechargeItem";
@@ -63,6 +64,7 @@ import { UIConfirmBigView } from "../../view/PkgCommon/view/uis/UIConfirmBigView
 import { UIConfirmMiddleView } from "../../view/PkgCommon/view/uis/UIConfirmMiddleView";
 import { UIConfirmSmallView } from "../../view/PkgCommon/view/uis/UIConfirmSmallView";
 import { UISettingView } from "../../view/PkgCommon/view/uis/UISettingView";
+import { ComContextMenuView } from "../../view/PkgCommon/view/coms/ComContextMenuView";
 import { BtnCheckTxtRightView } from "../../view/PkgCommon/view/btns/BtnCheckTxtRightView";
 import { BtnCheckRichTxtRightView } from "../../view/PkgCommon/view/btns/BtnCheckRichTxtRightView";
 import { ComRechargeItemView } from "../../view/PkgCommon/view/coms/ComRechargeItemView";
@@ -106,6 +108,7 @@ export default class PkgCommonBinder {
 		fgui.UIObjectFactory.setExtension(UIConfirmMiddle.url, UIConfirmMiddleView);
 		fgui.UIObjectFactory.setExtension(UIConfirmSmall.url, UIConfirmSmallView);
 		fgui.UIObjectFactory.setExtension(UISetting.url, UISettingView);
+		fgui.UIObjectFactory.setExtension(ComContextMenu.url, ComContextMenuView);
 		fgui.UIObjectFactory.setExtension(BtnCheckTxtRight.url, BtnCheckTxtRightView);
 		fgui.UIObjectFactory.setExtension(BtnCheckRichTxtRight.url, BtnCheckRichTxtRightView);
 		fgui.UIObjectFactory.setExtension(ComRechargeItem.url, ComRechargeItemView);

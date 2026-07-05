@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="300,40" extention="Button">
+  <controller name="button" pages="0,up,1,down" selected="0"/>
+  <displayList>
+    <graph id="n18_maqu" name="n18" xy="0,0" size="300,40" touchable="false" type="rect" lineSize="0" lineColor="#ffffffff" fillColor="#ff3a3a3a" corner="15">
+      <gearDisplay controller="button" pages="1,2,3"/>
+      <relation target="" sidePair="width-width,height-height"/>
+    </graph>
+    <loader id="n21_maqu" name="icon" xy="10,5" size="30,30" touchable="false" url="ui://vx9zwsermde1b7o" fill="scale" clearOnPublish="true"/>
+    <text id="n19_maqu" name="title" xy="45,6" pivot="0,0.5" size="230,35" fontSize="25" vAlign="middle" leading="0" autoSize="ellipsis" text="的算法的分类是否的算法的分类是否"/>
+    <graph id="n24_maqu" name="n24" xy="271,10" size="20,20" aspect="true" touchable="false" type="polygon" lineSize="0" fillColor="#ff000000" points="15,10,7,3,10,0,20,10,10,20,7,17">
+      <relation target="" sidePair="right-right"/>
+    </graph>
+  </displayList>
+  <Button mode="Radio"/>
+</component>

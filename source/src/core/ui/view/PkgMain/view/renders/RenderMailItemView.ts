@@ -13,7 +13,7 @@ export class RenderMailItemView extends ExtendClass<IView, RenderMailItem>(Rende
 	refresh(id: number, count: number, gotReward: boolean, clickShowDetail: boolean) {
 		this.touchable = !!clickShowDetail;
 		const { com_item, txt_count, img_gotReward } = this;
-		com_item.refresh(id);
+		com_item.refreshItemIcon(id);
 		txt_count.text = count.toString();
 		img_gotReward.visible = !!gotReward;
 	}

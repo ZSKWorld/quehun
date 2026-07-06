@@ -180,8 +180,7 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 			startIndex > 0 && list_item.scrollToView(startIndex, false);
 		}
 
-		btn_random.grayed = items.length == 0;
-		btn_random.touchable = items.length > 0;
+		btn_random.enabled = items.length > 0;
 		com_previewPanel.close();
 	}
 

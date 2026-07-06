@@ -84,6 +84,10 @@ export class ItemUtil implements IItemUtil {
 								loadingCfg && (itemIcon = loadingCfg.thumb_path);
 								loadingCfg && (resPath = loadingCfg.img_path);
 								break;
+							case EItemCommonType.DaTingBeiJing:
+								viewCfg && (resName = viewCfg.res_name);
+								previewIcon = `myres2/lobby_bg/${ resName }.jpg`;
+								break;
 						}
 						break;
 					case EItemCategory.TimeLimitedTitle:

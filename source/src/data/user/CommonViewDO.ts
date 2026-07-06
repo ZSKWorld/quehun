@@ -121,10 +121,10 @@ export class CommonViewDO extends BaseDO implements DO.ICommonViewDO {
 		const tableClothSlot = view.values.find(v => v.slot == EItemCommonType.TableCloth);
 		const lobbyBgSlot = view.values.find(v => v.slot == EItemCommonType.DaTingBeiJing);
 
-		const mjpBack = mjpBackSlot ? (mjpBackSlot.type == 1 ? mjpBackSlot.item_id_list.random() : mjpBackSlot.item_id) : DefaultViewIdMap[EItemCommonType.MjpBack];
-		const mjpFront = mjpFrontSlot ? (mjpFrontSlot.type == 1 ? mjpFrontSlot.item_id_list.random() : mjpFrontSlot.item_id) : DefaultViewIdMap[EItemCommonType.MjpFront];
-		const tableCloth = tableClothSlot ? (tableClothSlot.type == 1 ? tableClothSlot.item_id_list.random() : tableClothSlot.item_id) : DefaultViewIdMap[EItemCommonType.TableCloth];
-		const lobbyBg = lobbyBgSlot ? (lobbyBgSlot.type == 1 ? lobbyBgSlot.item_id_list.random() : lobbyBgSlot.item_id) : DefaultViewIdMap[EItemCommonType.DaTingBeiJing];
+		const mjpBack = mjpBackSlot ? (mjpBackSlot.type == 1 ? mjpBackSlot.item_id_list[0] : mjpBackSlot.item_id) : DefaultViewIdMap[EItemCommonType.MjpBack];
+		const mjpFront = mjpFrontSlot ? (mjpFrontSlot.type == 1 ? mjpFrontSlot.item_id_list[0] : mjpFrontSlot.item_id) : DefaultViewIdMap[EItemCommonType.MjpFront];
+		const tableCloth = tableClothSlot ? (tableClothSlot.type == 1 ? tableClothSlot.item_id_list[0] : tableClothSlot.item_id) : DefaultViewIdMap[EItemCommonType.TableCloth];
+		const lobbyBg = lobbyBgSlot ? (lobbyBgSlot.type == 1 ? lobbyBgSlot.item_id_list[0] : lobbyBgSlot.item_id) : DefaultViewIdMap[EItemCommonType.DaTingBeiJing];
 
 		if (mjpBack != this._curMjpBack) {
 			this._curMjpBack = mjpBack;

@@ -39,7 +39,7 @@ export class UIBuyGoodsView extends ExtendClass<IView, UIBuyGoods>(UIBuyGoods) i
 		ctrl_c1.selectedIndex = type;
 		const itemInfo = $itemUtil.getItemInfo(id);
 		txt_title.text = title || itemInfo.name;
-		com_item.refresh(id);
+		com_item.refreshItemIcon(id);
 		txt_own.visible = !!showOwn;
 		showOwn && txt_own.langText(2212, $user.bag.getItemCount(id));
 
@@ -75,8 +75,7 @@ export class UIBuyGoodsView extends ExtendClass<IView, UIBuyGoods>(UIBuyGoods) i
 		txt_multiCount.text = (count * priceCount).toString();
 		txt_cost.text = cost.toString();
 		txt_cost.color = txtColor;
-		btn_buy.grayed = ownCount < cost;
-		btn_buy.touchable = ownCount >= cost;
+		btn_buy.enabled = ownCount >= cost;
 	}
 
 	override onOpenAni() { return $uiUtil.popAlphaIn(this); }

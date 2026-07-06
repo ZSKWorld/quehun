@@ -23,6 +23,12 @@ export class ComItemView extends ExtendClass<IView, ComItem>(ComItem) implements
 		$dynamicResMgr.setLoader(this.loader_icon, iconPath);
 	}
 
+	/** 刷新预览图 */
+	refreshPreview(id: number) {
+		const iconPath = $itemUtil.getItemInfo(id).previewIcon;
+		$dynamicResMgr.setLoader(this.loader_icon, iconPath);
+	}
+
 	/** 刷新loading图 */
 	refreshLoadingImage(id: number) {
 		const cfgCg = $cfgMgr.item_definition.loading_image[id];

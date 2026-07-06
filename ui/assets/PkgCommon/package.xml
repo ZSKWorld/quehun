@@ -116,7 +116,7 @@
     <component id="q5yiobc3" name="ComHead.xml" path="/Component/Component/头像/" exported="true"/>
     <image id="q5yiobc4" name="img_1137.png" path="/Texture/" exported="true"/>
     <image id="q5yiobc5" name="img_1138.png" path="/Texture/" exported="true"/>
-    <image id="gsi2obc6" name="img_1026.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obc6" name="img_1026.png" path="/Texture/" exported="true" scale="9grid" scale9grid="18,21,6,6"/>
     <image id="gsi2obc7" name="img_3316.png" path="/Texture/" exported="true"/>
     <image id="gsi2obc8" name="img_33.png" path="/Texture/" exported="true"/>
     <image id="gsi2obc9" name="img_329.png" path="/Texture/" exported="true" scale="9grid" scale9grid="8,7,1,3"/>

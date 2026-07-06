@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="68,110">
   <displayList>
-    <loader id="n1_ii8i" name="front" xy="0,0" size="68,110" fill="scaleFree">
+    <loader id="n1_ii8i" name="front" xy="0,0" size="68,110" url="ui://vx9zwsergsi2obc6" fill="scaleFree" clearOnPublish="true">
       <relation target="" sidePair="width-width,height-height"/>
     </loader>
     <loader id="n0_ii8i" name="back" xy="0,0" size="68,110" fill="scaleFree">

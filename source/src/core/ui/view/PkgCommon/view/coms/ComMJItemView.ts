@@ -26,13 +26,13 @@ export class ComMJItemView extends ExtendClass<IView, ComMJItem>(ComMJItem) impl
 
 	}
 
-	refresh(str: keyof IMjpSignMap) {
+	refresh(str: keyof IMjpSignMap, mjpBack:number = 0, mjpFront:number = 0) {
 		if (MjpSignMap[str] != 1) {
 			Logger.error("unknown mjp sign: " + str);
 			return;
 		}
-		const mjpBack = $user.commonView.curMjpBack;
-		const mjpFront = $user.commonView.curMjpFront;
+		mjpBack = mjpBack || $user.commonView.curMjpBack;
+		mjpFront = mjpFront || $user.commonView.curMjpFront;
 
 		const mjpBackInfo = $itemUtil.getItemInfo(mjpBack);
 		const mjpFrontInfo = $itemUtil.getItemInfo(mjpFront);

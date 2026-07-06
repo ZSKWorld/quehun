@@ -24,8 +24,7 @@ export class RenderFriendFriendView extends ExtendClass<IView, RenderFriendFrien
 		txt_offlineTime.text = playingInfo.text;
 
 		const gameUUID = state?.playing?.game_uuid;
-		btn_ob.touchable = !!gameUUID;
-		btn_ob.grayed = !gameUUID;
+		btn_ob.enabled = !!gameUUID;
 
 		com_head.refresh(base.avatar_id, base.avatar_frame);
 		com_title.refreshIcon(base.title);

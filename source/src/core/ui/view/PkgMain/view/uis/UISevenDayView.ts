@@ -67,7 +67,7 @@ export class UISevenDayView extends ExtendClass<IView, UISevenDay>(UISevenDay) i
 		[this.com_reward0, this.com_reward1, this.com_reward2].forEach((v, i) => {
 			const id = rewardIds[i];
 			v.visible = !!id;
-			v.visible && v.refresh(id);
+			v.visible && v.refreshItemIcon(id);
 			v.visible && v.onClick(this, this.openView, [EViewID.UIItemDetailView, { id }]);
 		});
 	}

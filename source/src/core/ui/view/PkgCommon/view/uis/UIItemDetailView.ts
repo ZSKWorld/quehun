@@ -33,7 +33,7 @@ export class UIItemDetailView extends ExtendClass<IView, UIItemDetail>(UIItemDet
 		const hasFunc = itemView.desc && itemView.func;
 		ctrl_desc.selectedIndex = hasFunc ? 0 : 1;
 		txt_name.text = itemView.name;
-		com_item.refresh(id);
+		com_item.refreshItemIcon(id);
 		txt_desc1.text = hasFunc ? itemView.func : (itemView.desc || itemView.func);
 		txt_desc2.text = itemView.desc;
 

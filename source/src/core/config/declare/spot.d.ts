@@ -347,6 +347,7 @@ declare interface ISheet_Spot_CharacterSpot {
 	20000104: ISheetData_Spot_CharacterSpot;
 	20000105: ISheetData_Spot_CharacterSpot;
 	20000121: ISheetData_Spot_CharacterSpot;
+	20000126: ISheetData_Spot_CharacterSpot;
 	20009992: ISheetData_Spot_CharacterSpot;
 	20009993: ISheetData_Spot_CharacterSpot;
 	20009994: ISheetData_Spot_CharacterSpot;
@@ -480,6 +481,7 @@ declare interface ISheet_Spot_SkinSpot {
 	40010501: ISheetData_Spot_SkinSpot;
 	40011499: ISheetData_Spot_SkinSpot;
 	40012101: ISheetData_Spot_SkinSpot;
+	40012601: ISheetData_Spot_SkinSpot;
 	40999201: ISheetData_Spot_SkinSpot;
 	40999301: ISheetData_Spot_SkinSpot;
 	40999401: ISheetData_Spot_SkinSpot;
@@ -701,6 +703,11 @@ declare interface ISheet_Spot_AudioSpot {
 	202: ISheetData_Spot_AudioSpot;
 	203: ISheetData_Spot_AudioSpot;
 	204: ISheetData_Spot_AudioSpot;
+	205: ISheetData_Spot_AudioSpot;
+	206: ISheetData_Spot_AudioSpot;
+	207: ISheetData_Spot_AudioSpot;
+	208: ISheetData_Spot_AudioSpot;
+	209: ISheetData_Spot_AudioSpot;
 	1001: ISheetData_Spot_AudioSpot;
 	1002: ISheetData_Spot_AudioSpot;
 	6001: ISheetData_Spot_AudioSpot;
@@ -740,6 +747,7 @@ declare interface ISheet_Spot_AudioSpot {
 	20003: ISheetData_Spot_AudioSpot;
 	20004: ISheetData_Spot_AudioSpot;
 	20005: ISheetData_Spot_AudioSpot;
+	20006: ISheetData_Spot_AudioSpot;
 }
 declare interface ISheetData_Spot_AudioSpot extends ISheetDataBase {
 	id: number;

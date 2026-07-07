@@ -247,8 +247,6 @@ declare enum ENetNotify {
 	 ** res: {@link INotifyCustomizedContestPlanCancel}
 	 */
 	NotifyCustomizedContestPlanCancel = "NotifyCustomizedContestPlanCancel",
-	/** res: {@link INotifyActivityChanges} */
-	NotifyActivityChanges = "NotifyActivityChanges",
 	/**
 	 ** 通知新的一场游戏开始了
 	 ** res: {@link INotifyNewGame}
@@ -3257,77 +3255,12 @@ declare enum ENetMessage {
 	 */
 	mmoActivityDebugSetTeamCandidate = "mmoActivityDebugSetTeamCandidate",
 	/**
-	 ** 麻将快闪店
-	 ** req: {@link IReqMajClubActivityFetchData}
-	 ** res: {@link IResMajClubActivityFetchData}
-	 ** method: {@link IReqMethod.majClubActivityFetchData}
+	 ** 获取签到活动详情
+	 ** req: {@link IReqFetchDailySignActivityData}
+	 ** res: {@link IResFetchDailySignActivityData}
+	 ** method: {@link IReqMethod.fetchDailySignActivityData}
 	 */
-	majClubActivityFetchData = "majClubActivityFetchData",
-	/**
-	 ** req: {@link IReqMajClubActivityStartDay}
-	 ** res: {@link IResMajClubActivityStartDay}
-	 ** method: {@link IReqMethod.majClubActivityStartDay}
-	 */
-	majClubActivityStartDay = "majClubActivityStartDay",
-	/**
-	 ** req: {@link IReqMajClubActivityFinishDay}
-	 ** res: {@link IResMajClubActivityFinishDay}
-	 ** method: {@link IReqMethod.majClubActivityFinishDay}
-	 */
-	majClubActivityFinishDay = "majClubActivityFinishDay",
-	/**
-	 ** 解锁房间
-	 ** req: {@link IReqMajClubActivityUnlockRoom}
-	 ** res: {@link IResMajClubActivityUnlockRoom}
-	 ** method: {@link IReqMethod.majClubActivityUnlockRoom}
-	 */
-	majClubActivityUnlockRoom = "majClubActivityUnlockRoom",
-	/**
-	 ** 解锁房间麻将桌
-	 ** req: {@link IReqMajClubActivityUnlockDesktop}
-	 ** res: {@link IResMajClubActivityUnlockDesktop}
-	 ** method: {@link IReqMethod.majClubActivityUnlockDesktop}
-	 */
-	majClubActivityUnlockDesktop = "majClubActivityUnlockDesktop",
-	/**
-	 ** 升级房间桌位费
-	 ** req: {@link IReqMajClubActivityUpgradeRoomFee}
-	 ** res: {@link IResMajClubActivityUpgradeRoomFee}
-	 ** method: {@link IReqMethod.majClubActivityUpgradeRoomFee}
-	 */
-	majClubActivityUpgradeRoomFee = "majClubActivityUpgradeRoomFee",
-	/**
-	 ** req: {@link IReqMajClubActivityUpgradeCharacterPower}
-	 ** res: {@link IResMajClubActivityUpgradeCharacterPower}
-	 ** method: {@link IReqMethod.majClubActivityUpgradeCharacterPower}
-	 */
-	majClubActivityUpgradeCharacterPower = "majClubActivityUpgradeCharacterPower",
-	/**
-	 ** req: {@link IReqMajClubActivityUpgradeCharacterTag}
-	 ** res: {@link IResMajClubActivityUpgradeCharacterTag}
-	 ** method: {@link IReqMethod.majClubActivityUpgradeCharacterTag}
-	 */
-	majClubActivityUpgradeCharacterTag = "majClubActivityUpgradeCharacterTag",
-	/**
-	 ** req: {@link IReqMajClubActivityUpgradeWaiting}
-	 ** res: {@link IResMajClubActivityUpgradeWaiting}
-	 ** method: {@link IReqMethod.majClubActivityUpgradeWaiting}
-	 */
-	majClubActivityUpgradeWaiting = "majClubActivityUpgradeWaiting",
-	/**
-	 ** ==DevDebug Start==
-	 ** debug 协议在正式版本删除
-	 ** req: {@link IReqMajClubActivityFetchDebugData}
-	 ** res: {@link IResMajClubActivityFetchDebugData}
-	 ** method: {@link IReqMethod.majClubActivityFetchDebugData}
-	 */
-	majClubActivityFetchDebugData = "majClubActivityFetchDebugData",
-	/**
-	 ** req: {@link IReqMajClubActivityDebug}
-	 ** res: {@link IResCommon}
-	 ** method: {@link IReqMethod.majClubActivityDebug}
-	 */
-	majClubActivityDebug = "majClubActivityDebug",
+	fetchDailySignActivityData = "fetchDailySignActivityData",
 	/**
 	 ** 验证游戏口令
 	 ** req: {@link IReqAuthGame}
@@ -4097,11 +4030,6 @@ declare interface INotifyCustomizedContestPlanCancel extends INotify {
 	unique_id: number;
 	/** 对局uuid */
 	uuid: string;
-}
-
-/** .lq.NotifyActivityChanges */
-declare interface INotifyActivityChanges extends INotify {
-	club: IActivityMajClubChanges;
 }
 
 /** .lq.Error */
@@ -7473,6 +7401,7 @@ declare interface ITransparentData extends IProto {
 	data: number[];
 	session: string;
 	remote: INetworkEndpoint;
+	platform: string;
 }
 
 /**
@@ -8205,121 +8134,6 @@ declare interface IBannerActivityData extends IProto {
 	sort: number;
 	/** 是否需要进入大厅时弹窗 1-是 2-否 */
 	need_popout: number;
-}
-
-/** .lq.ActivityMajClubCustomerData */
-declare interface IActivityMajClubCustomerData extends IProto {
-	id: number;
-	power: number;
-	patience: number;
-}
-
-/** .lq.ActivityMajClubCharacterRoomData */
-declare interface IActivityMajClubCharacterRoomData extends IProto {
-	character_id: number;
-	room_id: number;
-	desktop_id: number;
-}
-
-/** .lq.ActivityMajClubCharacterRoomDataArrayDirty */
-declare interface IActivityMajClubCharacterRoomDataArrayDirty extends IProto {
-	dirty: boolean;
-	value: IActivityMajClubCharacterRoomData[];
-}
-
-/** .lq.ActivityMajClubGameData */
-declare interface IActivityMajClubGameData extends IProto {
-	level: number;
-	character_room_data: IActivityMajClubCharacterRoomData[];
-	/** 服务端数据，不会发送给客户端 */
-	customers: IActivityMajClubCustomerData[];
-	start_time: number;
-}
-
-/** .lq.ActivityMajClubGameDataChanges */
-declare interface IActivityMajClubGameDataChanges extends IProto {
-	level: IUInt32Dirty;
-	character_room_data: IActivityMajClubCharacterRoomDataArrayDirty;
-}
-
-/** .lq.ActivityMajClubRoomData */
-declare interface IActivityMajClubRoomData extends IProto {
-	id: number;
-	/** 已解锁麻将桌等级 */
-	desktop_count_level: number;
-	/** 麻将桌台费等级 */
-	desktop_fee_level: number;
-}
-
-/** .lq.ActivityMajClubCharacterData */
-declare interface IActivityMajClubCharacterData extends IProto {
-	id: number;
-	/** 已解锁标签 */
-	tags: number[];
-	/** 雀力 */
-	power: number;
-}
-
-/** .lq.ActivityMajClubUpgradeData */
-declare interface IActivityMajClubUpgradeData extends IProto {
-	rooms: IActivityMajClubRoomData[];
-	characters: IActivityMajClubCharacterData[];
-	wait_zone_level: number;
-}
-
-/** .lq.ActivityMajClubRoomDataArrayDirty */
-declare interface IActivityMajClubRoomDataArrayDirty extends IProto {
-	dirty: boolean;
-	value: IActivityMajClubRoomData[];
-}
-
-/** .lq.ActivityMajClubCharacterDataArrayDirty */
-declare interface IActivityMajClubCharacterDataArrayDirty extends IProto {
-	dirty: boolean;
-	value: IActivityMajClubCharacterData[];
-}
-
-/** .lq.ActivityMajClubUpgradeDataChanges */
-declare interface IActivityMajClubUpgradeDataChanges extends IProto {
-	rooms: IActivityMajClubRoomDataArrayDirty;
-	characters: IActivityMajClubCharacterDataArrayDirty;
-	wait_zone_level: IUInt32Dirty;
-}
-
-/** .lq.ActivityMajClubIllustratedBookData */
-declare interface IActivityMajClubIllustratedBookData extends IProto {
-	/** 已相遇顾客图鉴 */
-	unlocked_customer_level_1: number[];
-	/** 已熟知顾客图鉴（同时也会出现在已相遇中） */
-	unlocked_customer_level_2: number[];
-	highest_income: number;
-	total_customer_count: number;
-}
-
-/** .lq.ActivityMajClubIllustratedBookDataChanges */
-declare interface IActivityMajClubIllustratedBookDataChanges extends IProto {
-	unlocked_customer_level_1: IUInt32ArrayDirty;
-	unlocked_customer_level_2: IUInt32ArrayDirty;
-	highest_income: IUInt32Dirty;
-	total_customer_count: IUInt32Dirty;
-}
-
-/** .lq.ActivityMajClubChanges */
-declare interface IActivityMajClubChanges extends IProto {
-	game: IActivityMajClubGameDataChanges;
-	upgrade: IActivityMajClubUpgradeDataChanges;
-	illustrated_book: IActivityMajClubIllustratedBookDataChanges;
-}
-
-/**
- ** .lq.ActivityMajClubData
- ** 修改同时也需要修改 BlobMajClubActivity
- */
-declare interface IActivityMajClubData extends IProto {
-	activity_id: number;
-	game: IActivityMajClubGameData;
-	upgrade: IActivityMajClubUpgradeData;
-	illustrated_book: IActivityMajClubIllustratedBookData;
 }
 
 /**
@@ -14343,133 +14157,34 @@ declare interface IResMMOActivityDebugSetTeamCandidate extends IResponse {
 	changes: IActivityMMODataChanges;
 }
 
-/** .lq.ReqMajClubActivityFetchData */
-declare interface IReqMajClubActivityFetchData extends IRequest {
-	activity_id: number;
+/** .lq.ReqFetchDailySignActivityData */
+declare interface IReqFetchDailySignActivityData extends IRequest {
+	activity_id_list: number[];
 }
 
-/** .lq.ResMajClubActivityFetchData */
-declare interface IResMajClubActivityFetchData extends IResponse {
-	data: IActivityMajClubData;
+/** .lq.ResFetchDailySignActivityData */
+declare interface IResFetchDailySignActivityData extends IResponse {
+	activity_list: IResFetchDailySignActivityData_DailySignActivityData[];
 }
 
-/** .lq.ReqMajClubActivityStartDay */
-declare interface IReqMajClubActivityStartDay extends IRequest {
-	activity_id: number;
-	character_room_data: IActivityMajClubCharacterRoomData[];
-}
-
-/** .lq.ResMajClubActivityStartDay */
-declare interface IResMajClubActivityStartDay extends IResponse {
-	changes: IActivityMajClubChanges;
-	customers: IActivityMajClubCustomerData[];
-}
-
-/** .lq.ReqMajClubActivityFinishDay */
-declare interface IReqMajClubActivityFinishDay extends IRequest {
-	activity_id: number;
-	customer_list: IReqMajClubActivityFinishDay_CustomerData[];
-	/** 营业额 */
-	income: number;
-}
-
-/** .lq.ReqMajClubActivityFinishDay.CustomerData */
-declare interface IReqMajClubActivityFinishDay_CustomerData extends IProto {
+/** .lq.ResFetchDailySignActivityData.DailySignActivityReward */
+declare interface IResFetchDailySignActivityData_DailySignActivityReward extends IProto {
 	id: number;
-	/** 最终心情值 */
-	emo: number;
-	/** 结果 1-成功招待 2-气愤离场 3-到点被赶走 */
-	result: number;
-	/** 支付金币 */
-	payment_amount: number;
+	count: number;
 }
 
-/** .lq.ResMajClubActivityFinishDay */
-declare interface IResMajClubActivityFinishDay extends IResponse {
-	changes: IActivityMajClubChanges;
-	/** 1-成功过关 2-过关失败 */
-	result: number;
+/** .lq.ResFetchDailySignActivityData.DailySignActivityDay */
+declare interface IResFetchDailySignActivityData_DailySignActivityDay extends IProto {
+	day: number;
+	rewards: IResFetchDailySignActivityData_DailySignActivityReward[];
 }
 
-/** .lq.ReqMajClubActivityUnlockRoom */
-declare interface IReqMajClubActivityUnlockRoom extends IRequest {
+/** .lq.ResFetchDailySignActivityData.DailySignActivityData */
+declare interface IResFetchDailySignActivityData_DailySignActivityData extends IProto {
 	activity_id: number;
-	room_id: number;
-}
-
-/** .lq.ResMajClubActivityUnlockRoom */
-declare interface IResMajClubActivityUnlockRoom extends IResponse {
-	changes: IActivityMajClubChanges;
-}
-
-/** .lq.ReqMajClubActivityUnlockDesktop */
-declare interface IReqMajClubActivityUnlockDesktop extends IRequest {
-	activity_id: number;
-	room_id: number;
-}
-
-/** .lq.ResMajClubActivityUnlockDesktop */
-declare interface IResMajClubActivityUnlockDesktop extends IResponse {
-	changes: IActivityMajClubChanges;
-}
-
-/** .lq.ReqMajClubActivityUpgradeRoomFee */
-declare interface IReqMajClubActivityUpgradeRoomFee extends IRequest {
-	activity_id: number;
-	room_id: number;
-}
-
-/** .lq.ResMajClubActivityUpgradeRoomFee */
-declare interface IResMajClubActivityUpgradeRoomFee extends IResponse {
-	changes: IActivityMajClubChanges;
-}
-
-/** .lq.ReqMajClubActivityUpgradeCharacterPower */
-declare interface IReqMajClubActivityUpgradeCharacterPower extends IRequest {
-	activity_id: number;
-	character_id: number;
-}
-
-/** .lq.ResMajClubActivityUpgradeCharacterPower */
-declare interface IResMajClubActivityUpgradeCharacterPower extends IResponse {
-	changes: IActivityMajClubChanges;
-}
-
-/** .lq.ReqMajClubActivityUpgradeCharacterTag */
-declare interface IReqMajClubActivityUpgradeCharacterTag extends IRequest {
-	activity_id: number;
-	character_id: number;
-}
-
-/** .lq.ResMajClubActivityUpgradeCharacterTag */
-declare interface IResMajClubActivityUpgradeCharacterTag extends IResponse {
-	changes: IActivityMajClubChanges;
-}
-
-/** .lq.ReqMajClubActivityUpgradeWaiting */
-declare interface IReqMajClubActivityUpgradeWaiting extends IRequest {
-	activity_id: number;
-}
-
-/** .lq.ResMajClubActivityUpgradeWaiting */
-declare interface IResMajClubActivityUpgradeWaiting extends IResponse {
-	changes: IActivityMajClubChanges;
-}
-
-/** .lq.ReqMajClubActivityFetchDebugData */
-declare interface IReqMajClubActivityFetchDebugData extends IRequest {
-	activity_id: number;
-}
-
-/** .lq.ResMajClubActivityFetchDebugData */
-declare interface IResMajClubActivityFetchDebugData extends IResponse {
-	data: IActivityMajClubData;
-}
-
-/** .lq.ReqMajClubActivityDebug */
-declare interface IReqMajClubActivityDebug extends IRequest {
-	activity_id: number;
-	data: IActivityMajClubData;
+	days: IResFetchDailySignActivityData_DailySignActivityDay[];
+	/** 签到类型 1-普通签到 >1 特殊活动签到 */
+	type: number;
 }
 
 /** .lq.AmuletBadgeData */
@@ -17258,6 +16973,8 @@ declare interface IReqRequestConnection extends IRequest {
 	route_id: string;
 	/** 时间戳（毫秒） */
 	timestamp: number;
+	/** 客户端平台 */
+	platform: string;
 }
 
 /** .lq.ResRequestConnection */

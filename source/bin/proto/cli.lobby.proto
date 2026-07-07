@@ -1121,7 +1121,7 @@ service Lobby {
   rpc snowballActivityUpgrade(ReqSnowballActivityUpgrade) returns (ResSnowballActivityUpgrade);
   rpc snowballActivityReceiveReward(ReqSnowballActivityReceiveReward) returns (ResSnowballActivityReceiveReward);
 
-    // 获取Banner活动详细信息
+  // 获取Banner活动详细信息
   rpc fetchBannerActivityData(ReqFetchBannerActivityData) returns (ResFetchBannerActivityData);
 
   // ==DevDebug Start==
@@ -1154,22 +1154,8 @@ service Lobby {
   rpc mmoActivityDebugSetTeamCandidate(ReqMMOActivityDebugSetTeamCandidate) returns (ResMMOActivityDebugSetTeamCandidate);
   // ==DevDebug End==
 
-  // 麻将快闪店
-  rpc majClubActivityFetchData(ReqMajClubActivityFetchData) returns (ResMajClubActivityFetchData);
-  rpc majClubActivityStartDay(ReqMajClubActivityStartDay) returns (ResMajClubActivityStartDay);
-  rpc majClubActivityFinishDay(ReqMajClubActivityFinishDay) returns (ResMajClubActivityFinishDay);
-  rpc majClubActivityUnlockRoom(ReqMajClubActivityUnlockRoom) returns (ResMajClubActivityUnlockRoom); // 解锁房间
-  rpc majClubActivityUnlockDesktop(ReqMajClubActivityUnlockDesktop) returns (ResMajClubActivityUnlockDesktop); // 解锁房间麻将桌
-  rpc majClubActivityUpgradeRoomFee(ReqMajClubActivityUpgradeRoomFee) returns (ResMajClubActivityUpgradeRoomFee); // 升级房间桌位费
-  rpc majClubActivityUpgradeCharacterPower(ReqMajClubActivityUpgradeCharacterPower) returns (ResMajClubActivityUpgradeCharacterPower);
-  rpc majClubActivityUpgradeCharacterTag(ReqMajClubActivityUpgradeCharacterTag) returns (ResMajClubActivityUpgradeCharacterTag);
-  rpc majClubActivityUpgradeWaiting(ReqMajClubActivityUpgradeWaiting) returns (ResMajClubActivityUpgradeWaiting);
-
-  // ==DevDebug Start==
-  // debug 协议在正式版本删除
-  rpc majClubActivityFetchDebugData(ReqMajClubActivityFetchDebugData) returns (ResMajClubActivityFetchDebugData);
-  rpc majClubActivityDebug(ReqMajClubActivityDebug) returns (ResCommon);
-  // ==DevDebug End==
+  // 获取签到活动详情
+  rpc fetchDailySignActivityData(ReqFetchDailySignActivityData) returns (ResFetchDailySignActivityData);
 }
 
 // 获取客户端连接信息
@@ -5661,123 +5647,31 @@ message ResMMOActivityDebugSetTeamCandidate {
   ActivityMMODataChanges changes = 2;
 }
 
-message ReqMajClubActivityFetchData {
-  uint32 activity_id = 1;
+message ReqFetchDailySignActivityData {
+  repeated uint32 activity_id_list = 1;
 }
 
-message ResMajClubActivityFetchData {
+message ResFetchDailySignActivityData {
   Error error = 1;
-  ActivityMajClubData data = 2;
-}
 
-message ReqMajClubActivityStartDay {
-  uint32 activity_id = 1;
-
-  repeated ActivityMajClubCharacterRoomData character_room_data = 2;
-}
-
-message ResMajClubActivityStartDay {
-  Error error = 1;
-  ActivityMajClubChanges changes = 2;
-  repeated ActivityMajClubCustomerData customers = 3;
-}
-
-message ReqMajClubActivityFinishDay {
-  uint32 activity_id = 1;
-  message CustomerData {
+  message DailySignActivityReward {
     uint32 id = 1;
-    uint32 emo = 2; // 最终心情值
-    uint32 result = 3; // 结果 1-成功招待 2-气愤离场 3-到点被赶走
-    uint32 payment_amount = 4; // 支付金币
+    uint32 count = 2;
   }
-  repeated CustomerData customer_list = 2;
-  uint32 income = 3; // 营业额
+
+  message DailySignActivityDay {
+    uint32 day = 1;
+    repeated DailySignActivityReward rewards = 2;
+  }
+
+  message DailySignActivityData {
+    uint32 activity_id = 1;
+    repeated DailySignActivityDay days = 2;
+    uint32 type = 3; // 签到类型 1-普通签到 >1 特殊活动签到
+  }
+
+  repeated DailySignActivityData activity_list = 2;
 }
-
-message ResMajClubActivityFinishDay {
-  Error error = 1;
-  ActivityMajClubChanges changes = 2;
-  uint32 result = 3; // 1-成功过关 2-过关失败
-}
-
-message ReqMajClubActivityUnlockRoom {
-  uint32 activity_id = 1;
-  uint32 room_id = 2;
-}
-
-message ResMajClubActivityUnlockRoom {
-  Error error = 1;
-  ActivityMajClubChanges changes = 2;
-}
-
-message ReqMajClubActivityUnlockDesktop {
-  uint32 activity_id = 1;
-  uint32 room_id = 2;
-}
-
-message ResMajClubActivityUnlockDesktop {
-  Error error = 1;
-  ActivityMajClubChanges changes = 2;
-}
-
-message ReqMajClubActivityUpgradeRoomFee {
-  uint32 activity_id = 1;
-  uint32 room_id = 2;
-}
-
-message ResMajClubActivityUpgradeRoomFee {
-  Error error = 1;
-  ActivityMajClubChanges changes = 2;
-}
-
-message ReqMajClubActivityUpgradeCharacterPower {
-  uint32 activity_id = 1;
-  uint32 character_id = 2;
-}
-
-message ResMajClubActivityUpgradeCharacterPower {
-  Error error = 1;
-  ActivityMajClubChanges changes = 2;
-}
-
-message ReqMajClubActivityUpgradeCharacterTag {
-  uint32 activity_id = 1;
-  uint32 character_id = 2;
-}
-
-message ResMajClubActivityUpgradeCharacterTag {
-  Error error = 1;
-  ActivityMajClubChanges changes = 2;
-}
-
-message ReqMajClubActivityUpgradeWaiting {
-  uint32 activity_id = 1;
-}
-
-message ResMajClubActivityUpgradeWaiting {
-  Error error = 1;
-  ActivityMajClubChanges changes = 2;
-}
-
-
-// ==DevDebug Start==
-// debug 协议在正式版本删除
-
-message ReqMajClubActivityFetchDebugData {
-  uint32 activity_id = 1;
-}
-
-message ResMajClubActivityFetchDebugData {
-  Error error = 1;
-  ActivityMajClubData data = 2;
-}
-
-message ReqMajClubActivityDebug {
-  uint32 activity_id = 1;
-  ActivityMajClubData data = 2;
-}
-
-// ==DevDebug End==
 /*********************************************************************************************************************************
  ********************************************** next request & response **********************************************************
  *********************************************************************************************************************************/

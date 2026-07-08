@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<packageDescription id="ko8zynrw">
+  <resources>
+    <component id="ktwpob9z" name="UIAchievement.xml" path="/" exported="true"/>
+    <component id="cd64obih" name="UIAchievementDetail.xml" path="/" exported="true"/>
+    <image id="cd640" name="img_1046.png" path="/Texture/"/>
+    <image id="cd641" name="img_812.png" path="/Texture/"/>
+    <image id="cd642" name="img_3973.png" path="/Texture/"/>
+    <image id="cd643" name="img_3941.png" path="/Texture/"/>
+    <image id="cd644" name="img_3819.png" path="/Texture/"/>
+    <image id="cd645" name="img_3776.png" path="/Texture/"/>
+    <image id="cd646" name="img_3775.png" path="/Texture/"/>
+    <image id="cd647" name="img_3774.png" path="/Texture/"/>
+    <image id="cd648" name="img_3773.png" path="/Texture/"/>
+    <image id="cd649" name="img_3772.png" path="/Texture/"/>
+    <image id="cd64a" name="img_3771.png" path="/Texture/"/>
+    <image id="cd64b" name="img_3770.png" path="/Texture/"/>
+    <image id="cd64c" name="img_3769.png" path="/Texture/"/>
+    <image id="cd64d" name="img_951.png" path="/Texture/"/>
+    <image id="cd64e" name="img_3768.png" path="/Texture/"/>
+    <image id="cd64f" name="img_3766.png" path="/Texture/"/>
+    <image id="cd64g" name="img_3765.png" path="/Texture/"/>
+    <image id="cd64h" name="img_3719.png" path="/Texture/"/>
+    <image id="cd64i" name="img_2621.png" path="/Texture/" scale="9grid" scale9grid="0,10,309,30"/>
+    <image id="cd64j" name="img_2570.png" path="/Texture/"/>
+    <image id="cd64k" name="img_2232.png" path="/Texture/"/>
+    <image id="cd64l" name="img_2125.png" path="/Texture/"/>
+    <image id="cd64m" name="img_2024.png" path="/Texture/"/>
+    <image id="cd64n" name="img_1994.png" path="/Texture/"/>
+    <image id="cd64o" name="img_1993.png" path="/Texture/"/>
+    <image id="cd64p" name="img_1992.png" path="/Texture/"/>
+    <image id="cd64q" name="img_1452.png" path="/Texture/"/>
+    <image id="cd64r" name="img_3767.png" path="/Texture/"/>
+    <image id="cd64s" name="img_966.png" path="/Texture/"/>
+    <component id="cd64t" name="BtnAchieveGroup.xml" path="/Component/"/>
+    <component id="cd64u" name="RenderAchieveGroup.xml" path="/Component/"/>
+    <component id="cd64v" name="ComAchieveGroup.xml" path="/Component/"/>
+    <component id="cd64w" name="ComAchieveStat.xml" path="/Component/"/>
+    <component id="cd64x" name="ComAchieveRecent.xml" path="/Component/"/>
+  </resources>
+  <publish name="" genCode="true"/>
+</packageDescription>

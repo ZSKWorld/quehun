@@ -10,6 +10,7 @@ export class SceneMain extends SceneBase<ISceneMainData> {
 	protected override getNormalResArray() {
 		return [
 			ResPath.EPkgPath.PkgMain,
+			ResPath.EPkgPath.PkgAchievement,
 		];
 	}
 

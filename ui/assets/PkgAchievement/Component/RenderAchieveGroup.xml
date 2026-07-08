@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="358,396" extention="Label">
+  <controller name="type" pages="0,,1," selected="0"/>
+  <displayList>
+    <component id="n9_cd64" name="icon" src="cd64t" fileName="Component/BtnAchieveGroup.xml" xy="0,0"/>
+    <graph id="n10_cd64" name="n10" xy="0,293" size="358,103" alpha="0" type="rect" lineSize="0"/>
+    <image id="n2_cd64" name="n2" src="cd64i" fileName="Texture/img_2621.png" xy="24,293" size="309,102"/>
+    <text id="n3_cd64" name="title" xy="92,299" pivot="0.5,0.5" size="174,59" font="ui://vx9zwserrpakobeu" fontSize="44" color="#e3b991" vAlign="middle" leading="0" letterSpacing="-2" singleLine="true" text="成长之旅">
+      <gearXY controller="type" pages="1" values="92,319" default="92,299"/>
+    </text>
+    <text id="n4_cd64" name="percent" xy="155,347" pivot="0.5,0.5" size="48,32" font="SimHei" fontSize="22" color="#e3b991" leading="0" text="0.0%">
+      <gearDisplay controller="type" pages="0"/>
+    </text>
+    <image id="n6_cd64" name="n6" src="cd64o" fileName="Texture/img_1993.png" xy="28,369">
+      <gearDisplay controller="type" pages="0"/>
+    </image>
+    <image id="n7_cd64" name="bar" src="cd64p" fileName="Texture/img_1992.png" xy="27,369" size="300,27" fillMethod="hz" fillAmount="40">
+      <gearDisplay controller="type" pages="0"/>
+    </image>
+    <image id="n11_cd64" name="n11" src="pt3aobaw" fileName="Texture/img_547.png" pkg="vx9zwser" xy="298,289"/>
+  </displayList>
+</component>

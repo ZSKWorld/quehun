@@ -80,7 +80,6 @@
     <component id="ktwpob9v" name="UIAnnouncement.xml" path="/" exported="true"/>
     <component id="ktwpob9x" name="UIHelp.xml" path="/" exported="true"/>
     <component id="ktwpob9y" name="UICamera.xml" path="/" exported="true"/>
-    <component id="ktwpob9z" name="UIAchievement.xml" path="/" exported="true"/>
     <image id="dwe0oba0" name="img_1031.png" path="/Texture/"/>
     <image id="dwe0oba1" name="img_3661.png" path="/Texture/"/>
     <image id="dwe0oba2" name="img_3596.png" path="/Texture/"/>
@@ -149,7 +148,6 @@
     <image id="ik7bobff" name="img_3021.png" path="/Texture/"/>
     <component id="ik7bobfg" name="BtnLiaoSheTab.xml" path="/Component/UILiaoShe/"/>
     <image id="ik7bobfh" name="img_3660.png" path="/Texture/" scale="9grid" scale9grid="70,70,116,116"/>
-    <image id="ik7bobfi" name="img_1541.png" path="/Texture/"/>
     <image id="ik7bobfj" name="img_2817.png" path="/Texture/" scale="9grid" scale9grid="50,45,62,12"/>
     <image id="ik7bobfk" name="img_2818.png" path="/Texture/" scale="9grid" scale9grid="50,45,62,12"/>
     <component id="ik7bobfl" name="RenderLiaoSheDecoTab.xml" path="/Component/UILiaoShe/"/>

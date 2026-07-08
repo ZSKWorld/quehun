@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="559,832" pivot="0,1" overflow="hidden" designImage="ui://ca43vz0ecd647plomd" designImageOffsetX="-27" designImageOffsetY="-222" designImageAlpha="100">
+  <displayList>
+    <image id="n30_cd64" name="n30" src="cd64objo" fileName="Texture/img_1280.png" pkg="vx9zwser" xy="0,0" size="559,832">
+      <relation target="" sidePair="width-width,height-height"/>
+    </image>
+    <image id="n29_cd64" name="n29" src="cd640" fileName="Texture/img_1046.png" xy="15,777">
+      <relation target="" sidePair="bottom-bottom"/>
+    </image>
+    <image id="n34_cd64" name="arrow" src="cd64objq" fileName="Texture/img_204.png" pkg="vx9zwser" xy="526,793" pivot="0.5,0.5" rotation="180">
+      <relation target="" sidePair="right-right,bottom-bottom"/>
+    </image>
+  </displayList>
+</component>

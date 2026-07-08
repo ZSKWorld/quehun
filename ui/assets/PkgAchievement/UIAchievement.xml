@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1920,1080" scroll="horizontal" designImage="ui://ca43vz0ecd647ploma" designImageAlpha="0">
+  <displayList>
+    <component id="n0_p5uz" name="back" src="p5uzob8h" fileName="Component/Component/ComBack.xml" pkg="vx9zwser" xy="10,22">
+      <property target="title" propertyId="0" value="成就"/>
+    </component>
+    <component id="n17_cd64" name="groups" src="cd64v" fileName="Component/ComAchieveGroup.xml" xy="0,182"/>
+    <component id="n19_cd64" name="stat" src="cd64w" fileName="Component/ComAchieveStat.xml" xy="764,50"/>
+    <component id="n30_cd64" name="recent" src="cd64x" fileName="Component/ComAchieveRecent.xml" xy="27,990" size="120,64"/>
+  </displayList>
+  <transition name="show" frameRate="60">
+    <item time="0" type="Alpha" target="n17_cd64" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
+    <item time="0" type="Alpha" target="n19_cd64" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
+    <item time="0" type="Alpha" target="n30_cd64" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
+    <item time="0" type="XY" target="n17_cd64" tween="true" startValue="-,232" endValue="-,182" duration="12"/>
+    <item time="0" type="XY" target="n19_cd64" tween="true" startValue="-,-130" endValue="-,50" duration="12"/>
+    <item time="0" type="XY" target="n30_cd64" tween="true" startValue="-,1040" endValue="-,990" duration="12"/>
+  </transition>
+</component>

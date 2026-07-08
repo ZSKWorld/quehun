@@ -59,8 +59,8 @@
     <image id="ieavob88" name="img_1285.png" path="/Texture/" exported="true"/>
     <image id="ieavob89" name="img_75.png" path="/Texture/" exported="true"/>
     <component id="ieavob8b" name="UILoading.xml" path="/" exported="true"/>
-    <component id="ieavob8c" name="PbLoading1.xml" path="/Component/PbBar/"/>
-    <component id="vwgmob8d" name="PbLoading2.xml" path="/Component/PbBar/"/>
+    <component id="ieavob8c" name="PbLoading1.xml" path="/Component/PbBar/" exported="true"/>
+    <component id="vwgmob8d" name="PbLoading2.xml" path="/Component/PbBar/" exported="true"/>
     <component id="w29kob8e" name="BtnIconFitNoScale.xml" path="/Component/Button/" exported="true"/>
     <font id="gnjqob8f" name="HYWH.ttf" path="/Font/" exported="true" renderMode="" samplePointSize="16"/>
     <component id="z63pob8g" name="BtnEmpty.xml" path="/Component/Button/" exported="true"/>
@@ -100,7 +100,7 @@
     <image id="hdeoobbi" name="img_573.png" path="/Texture/" exported="true"/>
     <component id="hdeoobbj" name="VScrollBar2.xml" path="/Component/ScrollBar/" exported="true"/>
     <image id="hdeoobbk" name="img_677.png" path="/Texture/" exported="true"/>
-    <image id="hdeoobbl" name="img_70.png" path="/Texture/" exported="true" scale="9grid" scale9grid="0,4,6,2"/>
+    <image id="hdeoobbl" name="img_70.png" path="/Texture/" exported="true" scale="9grid" scale9grid="2,3,2,4"/>
     <component id="hdeoobbn" name="ComHead2.xml" path="/Component/Component/头像/" exported="true"/>
     <component id="hdeoobbo" name="ComTitle.xml" path="/Component/Component/称号/" exported="true"/>
     <component id="hdeoobbq" name="ComLevel1.xml" path="/Component/Component/段位/" exported="true"/>
@@ -287,7 +287,7 @@
     <component id="sxdbobiq" name="RenderRechargeItem.xml" path="/Component/UIRecharge/"/>
     <image id="sxdbobir" name="img_1052.png" path="/Texture/" exported="true"/>
     <image id="sxdbobis" name="img_847.png" path="/Texture/" exported="true" scale="9grid" scale9grid="10,10,20,20"/>
-    <component id="sxdbobiu" name="PbLoading3.xml" path="/Component/PbBar/"/>
+    <component id="sxdbobiu" name="PbLoading3.xml" path="/Component/PbBar/" exported="true"/>
     <image id="sxdbobiv" name="img_1841.png" path="/Texture/" exported="true"/>
     <image id="sxdbobiw" name="img_667.png" path="/Texture/" exported="true" scale="9grid" scale9grid="1,1,48,21"/>
     <component id="sxdbobix" name="BtnRechargeVip.xml" path="/Component/UIRecharge/"/>
@@ -315,6 +315,11 @@
     <component id="a7sxobjj" name="UITextInput.xml" path="/" exported="true"/>
     <component id="maquobjk" name="ComContextMenu.xml" path="/Component/Component/右键菜单/" exported="true"/>
     <component id="maquobjl" name="RenderContextMenuItem.xml" path="/Component/Component/右键菜单/" exported="true"/>
+    <image id="ik7bobfi" name="img_1541.png" path="/Texture/" exported="true"/>
+    <component id="cd64objn" name="HScrollBar2.xml" path="/Component/ScrollBar/" exported="true"/>
+    <image id="cd64objo" name="img_1280.png" path="/Texture/" exported="true" scale="9grid" scale9grid="20,20,18,18"/>
+    <image id="cd64objp" name="img_2008.png" path="/Texture/" exported="true" scale="9grid" scale9grid="30,30,30,30"/>
+    <image id="cd64objq" name="img_204.png" path="/Texture/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

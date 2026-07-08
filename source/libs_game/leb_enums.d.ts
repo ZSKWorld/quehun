@@ -583,6 +583,12 @@ declare enum EUserEvent {
 	/** 已领取的vip等级奖励变化 */
 	OnRechargeGainVipLevelChanged = "EUserEvent_OnRechargeGainVipLevelChanged",
 	//#endregion
+
+	//#region 成就相关
+	OnAchievementChanged = "EUserEvent_OnAchievementChanged",
+	OnNewAchievement = "EUserEvent_OnNewAchievement",
+
+	//#endregion
 }
 
 //#region 视频事件

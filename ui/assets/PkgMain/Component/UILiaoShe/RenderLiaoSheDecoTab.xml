@@ -9,7 +9,7 @@
       <gearColor controller="button" pages="0,1" values="#f2c797,#000000|#261b18,#000000"/>
       <relation target="" sidePair="center-center,middle-middle"/>
     </text>
-    <image id="n6_ik7b" name="using" src="ik7bobfi" fileName="Texture/img_1541.png" xy="-16,22">
+    <image id="n6_ik7b" name="using" src="ik7bobfi" fileName="Texture/img_1541.png" xy="-16,22" pkg="vx9zwser">
       <gearXY controller="button" pages="0,1" values="-16,22|-30,22"/>
     </image>
   </displayList>

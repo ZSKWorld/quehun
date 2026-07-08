@@ -980,6 +980,7 @@ declare namespace ResPath {
 	}
 
 	enum EPkgName {
+		PkgAchievement = "PkgAchievement",
 		PkgCommon = "PkgCommon",
 		PkgDesign = "PkgDesign",
 		PkgEntrance = "PkgEntrance",
@@ -989,6 +990,7 @@ declare namespace ResPath {
 	}
 
 	enum EPkgPath {
+		PkgAchievement = "res/ui/PkgAchievement",
 		PkgCommon = "res/ui/PkgCommon",
 		PkgDesign = "res/ui/PkgDesign",
 		PkgEntrance = "res/ui/PkgEntrance",

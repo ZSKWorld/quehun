@@ -19,6 +19,7 @@ EViewID = {
 	LabelNameView: "LabelNameView",
 
 	/**Renders */
+	RenderAchieveGroupView: "RenderAchieveGroupView",
 	RenderGetRewardItemView: "RenderGetRewardItemView",
 	RenderRechargeItemView: "RenderRechargeItemView",
 	RenderBagGiftItemView: "RenderBagGiftItemView",
@@ -42,6 +43,9 @@ EViewID = {
 	RenderShopSkinView: "RenderShopSkinView",
 
 	/**Coms */
+	ComAchieveGroupView: "ComAchieveGroupView",
+	ComAchieveRecentView: "ComAchieveRecentView",
+	ComAchieveStatView: "ComAchieveStatView",
 	ComBackView: "ComBackView",
 	ComContextMenuView: "ComContextMenuView",
 	ComCurrencyView: "ComCurrencyView",
@@ -78,6 +82,8 @@ EViewID = {
 	ComSevenDayItem1View: "ComSevenDayItem1View",
 
 	/**UIs */
+	UIAchievementDetailView: "UIAchievementDetailView",
+	UIAchievementView: "UIAchievementView",
 	UIBuyGoodsView: "UIBuyGoodsView",
 	UIConfirmBigView: "UIConfirmBigView",
 	UIConfirmMiddleView: "UIConfirmMiddleView",
@@ -96,7 +102,6 @@ EViewID = {
 	UIBindPhoneView: "UIBindPhoneView",
 	UILoginQueueView: "UILoginQueueView",
 	UILoginView: "UILoginView",
-	UIAchievementView: "UIAchievementView",
 	UIActivityView: "UIActivityView",
 	UIAnnouncementView: "UIAnnouncementView",
 	UIBagView: "UIBagView",

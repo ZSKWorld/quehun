@@ -980,6 +980,7 @@ ResPath = {
 	},
 
 	EPkgName: {
+		PkgAchievement: "PkgAchievement",
 		PkgCommon: "PkgCommon",
 		PkgDesign: "PkgDesign",
 		PkgEntrance: "PkgEntrance",
@@ -989,6 +990,7 @@ ResPath = {
 	},
 
 	EPkgPath: {
+		PkgAchievement: "res/ui/PkgAchievement",
 		PkgCommon: "res/ui/PkgCommon",
 		PkgDesign: "res/ui/PkgDesign",
 		PkgEntrance: "res/ui/PkgEntrance",

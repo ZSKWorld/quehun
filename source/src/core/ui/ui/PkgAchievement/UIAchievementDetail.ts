@@ -2,13 +2,13 @@
 
 import { ComBackView } from "../../view/PkgCommon/view/coms/ComBackView";
 
-export default class UIAchievement extends fgui.GComponent {
+export default class UIAchievementDetail extends fgui.GComponent {
 
 	protected com_back: ComBackView;
-	public static url: string = "ui://vith2b66ktwpob9z";
+	public static url: string = "ui://ko8zynrwcd64obih";
 
-	public static createInstance(): UIAchievement {
-		return <UIAchievement>(fgui.UIPackage.createObject("PkgMain", "UIAchievement"));
+	public static createInstance(): UIAchievementDetail {
+		return <UIAchievementDetail>(fgui.UIPackage.createObject("PkgAchievement", "UIAchievementDetail"));
 	}
 
 	protected override onConstruct(): void {

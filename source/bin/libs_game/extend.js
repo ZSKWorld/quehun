@@ -30,6 +30,11 @@ Object.defineProperties(String.prototype, {
 })
 
 Object.defineProperties(Array.prototype, {
+	"first": {
+		get() { return this[0]; },
+		enumerable: false,
+		configurable: false,
+	},
 	"last": {
 		get() { return this[this.length - 1]; },
 		enumerable: false,
@@ -67,6 +72,13 @@ Object.defineProperties(Array.prototype, {
 		value: function (value) {
 			const index = this.indexOf(value);
 			if (index < 0) this.push(value);
+		},
+		enumerable: false,
+		configurable: false,
+	},
+	"clear": {
+		value: function (value) {
+			this.length = 0;
 		},
 		enumerable: false,
 		configurable: false,

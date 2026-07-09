@@ -14,7 +14,7 @@ class UIStack {
 	}
 
 	peek() {
-		return this._data[0];
+		return this._data.first;
 	}
 
 	remove(item: EUIViewID) {
@@ -72,7 +72,7 @@ export class UIManager implements IUIManager {
 		this._lockMask.visible = value != 0;
 	}
 
-	private get topView() { return this._openedViews[0]; }
+	private get topView() { return this._openedViews.first; }
 	private get topViewId() { return this.topView?.viewId as EUIViewID; }
 
 	constructor() {

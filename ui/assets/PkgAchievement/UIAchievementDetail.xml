@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" designImage="ui://ca43vz0ejdu67plnfc" designImageAlpha="36">
+<component size="1920,1080" designImage="ui://ca43vz0ecd647plomb" designImageAlpha="36">
   <displayList>
     <component id="n0_p5uz" name="back" src="p5uzob8h" fileName="Component/Component/ComBack.xml" pkg="vx9zwser" xy="10,22">
       <property target="title" propertyId="0" value="成就明细"/>
     </component>
+    <component id="n1_ccli" name="stat" src="cd64w" fileName="Component/ComAchieveStat.xml" xy="764,50"/>
   </displayList>
+  <transition name="show" frameRate="60">
+    <item time="0" type="Alpha" target="n1_ccli" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
+    <item time="0" type="XY" target="n1_ccli" tween="true" startValue="-,-130" endValue="-,50" duration="12"/>
+  </transition>
 </component>

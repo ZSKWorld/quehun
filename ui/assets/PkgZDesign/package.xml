@@ -1739,6 +1739,18 @@
     <image id="cd647plomb" name="2.jpg" path="/成就/"/>
     <image id="cd647plomc" name="3.jpg" path="/成就/"/>
     <image id="cd647plomd" name="4.jpg" path="/成就/"/>
+    <image id="cd64g" name="img_3765.png" path="/成就/"/>
+    <image id="cd64f" name="img_3766.png" path="/成就/"/>
+    <image id="cd64r" name="img_3767.png" path="/成就/"/>
+    <image id="cd64e" name="img_3768.png" path="/成就/"/>
+    <image id="cd64c" name="img_3769.png" path="/成就/"/>
+    <image id="cd64b" name="img_3770.png" path="/成就/"/>
+    <image id="cd64a" name="img_3771.png" path="/成就/"/>
+    <image id="cd649" name="img_3772.png" path="/成就/"/>
+    <image id="cd648" name="img_3773.png" path="/成就/"/>
+    <image id="cd647" name="img_3774.png" path="/成就/"/>
+    <image id="cd646" name="img_3775.png" path="/成就/"/>
+    <image id="cd645" name="img_3776.png" path="/成就/"/>
   </resources>
   <publish name=""/>
 </packageDescription>

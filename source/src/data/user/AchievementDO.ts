@@ -2,7 +2,17 @@ import { BaseDO } from "./BaseDO";
 
 export class AchievementDO extends BaseDO implements DO.IAchievementDO {
 	private _progressMap: Record<number, ProtoObject<IAchievementProgress>> = {};
+	private _statisticsInfo: DO.IAchieveStatisticsInfo = {
+		gold: 0,
+		silver: 0,
+		copper: 0,
+		total: 0,
+		groups: [],
+		groupMap: {}
+	};
 	private _rewardedGroup: number[] = [];
+
+	get statisticsInfo() { return this._statisticsInfo; }
 
 	getProgress(id: number) {
 		return this._progressMap[id];
@@ -19,6 +29,7 @@ export class AchievementDO extends BaseDO implements DO.IAchievementDO {
 			this._progressMap[e.id] = e;
 		}
 		this._rewardedGroup = decodeRes.rewarded_group;
+		this.calculateInfo();
 		this.dispatch(EUserEvent.OnAchievementChanged);
 	}
 
@@ -44,6 +55,47 @@ export class AchievementDO extends BaseDO implements DO.IAchievementDO {
 		if (newAchieves.length) {
 			this.dispatch(EUserEvent.OnNewAchievement, [newAchieves]);
 		}
+		this.calculateInfo();
 		this.dispatch(EUserEvent.OnAchievementChanged);
+	}
+
+	private calculateInfo() {
+		const { _statisticsInfo: info, _rewardedGroup } = this;
+		info.gold = info.silver = info.copper = info.total = info.groups.length = 0;
+		info.groupMap = {};
+		const { groups, groupMap } = info;
+		const groupCfgs = $cfgMgr.achievement.achievement_group.filter(v => !v.deprecated);
+		groupCfgs.sort((a, b) => a.sort - b.sort);
+
+		for (let i = 0; i < groupCfgs.length; i++) {
+			const e = groupCfgs[i];
+			groupMap[e.id] = {
+				id: e.id,
+				progress: 0,
+				haveReward: false,
+				achievements: [],
+			};
+			groups.push(groupMap[e.id]);
+		}
+
+		$cfgMgr.achievement.achievement.forEach(v => {
+			if (v.deprecated || v.hidden) return;
+			info.total++;
+			const pro = this.getProgress(v.id);
+			const group = groupMap[v.group_id];
+			group.achievements.push(v.id);
+			if (pro && pro.achieved) {
+				group.progress++;
+				group.haveReward = group.haveReward || (!pro.rewarded && !!v.reward);
+				if (v.rare == 3) info.gold++;
+				else if (v.rare == 2) info.silver++;
+				else if (v.rare == 1) info.copper++;
+			}
+		});
+
+		for (const e of groups) {
+			e.progress = e.progress / e.achievements.length;
+			e.haveReward = e.haveReward || (e.progress >= 1 && !_rewardedGroup.includes(e.id));
+		}
 	}
 }

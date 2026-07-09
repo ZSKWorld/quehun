@@ -1,12 +1,10 @@
 import UIAchievement from "../../../../ui/PkgAchievement/UIAchievement";
-import { RenderAchieveGroupView } from "../renders/RenderAchieveGroupView";
 
 export const enum EUIAchievementMsg {
 
 }
 
 export class UIAchievementView extends ExtendClass<IView, UIAchievement>(UIAchievement) implements IView {
-	private _groupViews: RenderAchieveGroupView[];
 
 	override onCreate() {
 		const { com_back } = this;
@@ -14,7 +12,9 @@ export class UIAchievementView extends ExtendClass<IView, UIAchievement>(UIAchie
 	}
 
 	refresh() {
-
+		this.com_groups.refresh();
+		const { gold, silver, copper, total } = $user.achievement.statisticsInfo;
+		this.com_stat.refresh(gold, silver, copper, total);
 	}
 
 	override onOpenAni() {

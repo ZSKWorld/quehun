@@ -11,7 +11,7 @@ export class Stack<T = any> {
 	}
 
 	peek() {
-		return this._data[0];
+		return this._data.first;
 	}
 
 	contains(item: T) {
@@ -19,7 +19,7 @@ export class Stack<T = any> {
 	}
 
 	clear() {
-		this._data.length = 0;
+		this._data.clear();
 	}
 
 	*[Symbol.iterator]() {

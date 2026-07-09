@@ -97,11 +97,11 @@ declare interface IViewExtend {
 	/** 添加页面事件 */
 	addEvent(type: string, callback: Function, args?: any[], once?: boolean): void;
 
-	/** 移除页面事件 */
-	removeEvent(type: string, listener: Function): void;
-
 	/** 派发页面事件 */
 	sendEvent(type: string, data?: any): void;
+
+	/** 移除页面事件 */
+	removeEvent(type: string, listener: Function): void;
 
 	/**
 	 * 打开页面

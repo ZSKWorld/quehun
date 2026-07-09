@@ -11,11 +11,11 @@ export class Queue<T = any> {
 	}
 
 	peek() {
-		return this._data[0];
+		return this._data.first;
 	}
 
 	clear() {
-		this._data.length = 0;
+		this._data.clear();
 	}
 
 	contains(item: T) {

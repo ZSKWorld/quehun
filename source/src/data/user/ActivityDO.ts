@@ -46,7 +46,7 @@ class SevenDayDO implements DO.SevenDayDO {
 	get taskId() { return 23060122; }
 	get finishedRewards() {
 		if (!this._totalRewards) {
-			this._totalRewards = $cfgMgr.activity.period_task[this.taskId].reward.split(",").map(v => v.split("-")[0]).map(Number);
+			this._totalRewards = $cfgMgr.activity.period_task[this.taskId].reward.split(",").map(v => v.split("-").first).map(Number);
 		}
 		return this._totalRewards;
 	}

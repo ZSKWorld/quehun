@@ -35,7 +35,7 @@ export class NetManager implements INetManager {
 	}
 
 	private initLobby() {
-		const socket = this._lobbySocket = new WebSocket(this._routes[0], "gateway");
+		const socket = this._lobbySocket = new WebSocket(this._routes.first, "gateway");
 		socket.on(ESocketEvent.Connecting, $facade, $facade.dispatch, [EGlobalEvent.LobbyConnecting]);
 		socket.on(ESocketEvent.Reconnecting, $facade, $facade.dispatch, [EGlobalEvent.LobbyReconnecting]);
 		socket.on(ESocketEvent.Connected, $facade, $facade.dispatch, [EGlobalEvent.LobbyConnected]);
@@ -52,7 +52,7 @@ export class NetManager implements INetManager {
 		});
 	}
 	private initGame() {
-		// const socket = this._gameSocket = new WebSocket(this._routes[0], "gateway");
+		// const socket = this._gameSocket = new WebSocket(this._routes.first, "gateway");
 		// socket.on(ESocketEvent.Connecting, $facade, $facade.dispatch, [EGlobalEvent.GameConnecting]);
 		// socket.on(ESocketEvent.Reconnecting, $facade, $facade.dispatch, [EGlobalEvent.GameReconnecting]);
 		// socket.on(ESocketEvent.Connected, $facade, $facade.dispatch, [EGlobalEvent.GameConnected]);
@@ -66,7 +66,7 @@ export class NetManager implements INetManager {
 		// socket.on(ESocketEvent.Notify, $facade, $facade.dispatch);
 	}
 	private initOb() {
-		// const socket = this._obSocket = new WebSocket(this._routes[0], "gateway");
+		// const socket = this._obSocket = new WebSocket(this._routes.first, "gateway");
 		// socket.on(ESocketEvent.Connecting, $facade, $facade.dispatch, [EGlobalEvent.OBConnecting]);
 		// socket.on(ESocketEvent.Reconnecting, $facade, $facade.dispatch, [EGlobalEvent.OBReconnecting]);
 		// socket.on(ESocketEvent.Connected, $facade, $facade.dispatch, [EGlobalEvent.OBConnected]);

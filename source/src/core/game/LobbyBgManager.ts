@@ -54,7 +54,8 @@ export class LobbyBgManager extends Observer {
 		let newBg: fgui.GLoader;
 		switch (viewId) {
 			case EViewID.UIMainView: newBg = this._bg; break;
-			case EViewID.UIAchievementView: newBg = this._indoor1; break;
+			case EViewID.UIAchievementView:
+			case EViewID.UIAchievementDetailView: newBg = this._indoor1; break;
 			case EViewID.UILiaoSheView:
 			case EViewID.UIBagView:
 			case EViewID.UITreasureView:

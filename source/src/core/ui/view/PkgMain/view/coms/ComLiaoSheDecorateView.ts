@@ -218,13 +218,13 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 		const { type: slotType, item_id, item_id_list } = slotData;
 		if (slotType) {
 			if (item_id_list.length == 0) {
-				item_id_list.push(_items[0]);
+				item_id_list.push(_items.first);
 			}
 		} else {
 			const originData = this.originSlotData;
 			const originType = originData.type;
 			const originList = originData.item_id_list;
-			if (originType == slotType && originList.length == 0 && item_id_list.length == 1 && item_id_list[0] == _items[0]) {
+			if (originType == slotType && originList.length == 0 && item_id_list.length == 1 && item_id_list.first == _items.first) {
 				item_id_list.length = 0;
 			}
 		}

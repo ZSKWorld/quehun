@@ -4,6 +4,8 @@ declare interface Object {
 }
 
 declare interface Array<T> {
+	/** 第一个元素 */
+	get first(): T;
 	/** 最后一个元素 */
 	get last(): T;
 	/** 打乱数组 */
@@ -14,6 +16,8 @@ declare interface Array<T> {
 	remove(value: T): void;
 	/** 添加唯一值 */
 	pushUnique(value: T): void;
+	/** 清除数组 */
+	clear(): void;
 }
 
 declare interface String {

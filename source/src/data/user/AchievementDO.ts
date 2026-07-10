@@ -95,7 +95,8 @@ export class AchievementDO extends BaseDO implements DO.IAchievementDO {
 
 		for (const e of groups) {
 			e.progress = e.progress / e.achievements.length;
-			e.haveReward = e.haveReward || (e.progress >= 1 && !_rewardedGroup.includes(e.id));
+			const cfgGroup = $cfgMgr.achievement.achievement_group[e.id];
+			e.haveReward = e.haveReward || (e.progress >= 1 && cfgGroup.percentage && !_rewardedGroup.includes(e.id));
 		}
 	}
 }

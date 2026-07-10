@@ -1849,7 +1849,7 @@
             if (index >= 0 && index < this._children.length)
                 return this._children[index];
             else
-                throw new Error("Invalid child index");
+                throw new Error("Invalid child index:" + index + "," + this._children.length);
         }
         getChild(name, classType) {
             var cnt = this._children.length;

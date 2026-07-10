@@ -1,14 +1,14 @@
 import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
-import { EUIAchievementDetailMsg, UIAchievementDetailView } from "../../view/uis/UIAchievementDetailView";
-
-export interface IUIAchievementDetailData {
-
-}
+import { UIAchievementDetailView } from "../../view/uis/UIAchievementDetailView";
 
 export class UIAchievementDetailMediator extends MediatorBase<UIAchievementDetailView, IUIAchievementDetailData> {
 
 	override onAwake() {
-		
+
+	}
+
+	override onEnable() {
+		this.view.refresh(this.data);
 	}
 
 }

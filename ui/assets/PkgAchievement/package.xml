@@ -25,6 +25,7 @@
     <component id="cd64v" name="ComAchieveGroup.xml" path="/Component/"/>
     <component id="cd64w" name="ComAchieveStat.xml" path="/Component/"/>
     <component id="cd64x" name="ComAchieveRecent.xml" path="/Component/"/>
+    <component id="oo1iobij" name="RenderAchieveDetailGroup.xml" path="/Component/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

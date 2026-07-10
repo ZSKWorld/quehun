@@ -2,8 +2,12 @@
 <component size="358,358" pivot="0.5,0.5" extention="Button">
   <controller name="button" pages="0,up,1,down,2,over,3,selectedOver" selected="0"/>
   <displayList>
-    <image id="n4_cd64" name="n4" src="cd644" fileName="Texture/img_3819.png" xy="0,0" size="358,358"/>
-    <loader id="n3_cd64" name="icon" xy="0,0" size="358,358" url="ui://ca43vz0ecd64g" fill="scaleFree"/>
+    <image id="n4_cd64" name="n4" src="cd644" fileName="Texture/img_3819.png" xy="0,0" size="358,358">
+      <relation target="" sidePair="width-width,height-height"/>
+    </image>
+    <loader id="n3_cd64" name="icon" xy="0,0" size="358,358" url="ui://ca43vz0ecd64g" fill="scaleFree">
+      <relation target="" sidePair="width-width,height-height"/>
+    </loader>
   </displayList>
   <Button downEffect="scale" downEffectValue="0.95"/>
 </component>

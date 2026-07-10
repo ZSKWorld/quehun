@@ -14,14 +14,17 @@ export class ComBackView extends ExtendClass<IView, ComBack>(ComBack) implements
 
 	override onOpenAni() {
 		return new Promise<void>(resolve => {
-			this.y = OriginPosY - 180;
+			this.alpha = 0;
+			this.y = OriginPosY - 50;
+			this.tweenFade(1, 0.2);
 			this.tweenMoveY(OriginPosY, 0.2).onComplete(resolve);
 		});
 	}
 
 	override onCloseAni() {
 		return new Promise<void>(resolve => {
-			this.tweenMoveY(OriginPosY - 180, 0.2).onComplete(resolve);
+			this.tweenFade(0, 0.2);
+			this.tweenMoveY(OriginPosY - 50, 0.2).onComplete(resolve);
 		});
 	}
 }

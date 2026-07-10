@@ -112,7 +112,7 @@
   <transition name="show" frameRate="60">
     <item time="0" type="Alpha" target="n30_ffpy" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
     <item time="0" type="Alpha" target="n31_ffpy" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
-    <item time="0" type="XY" target="n30_ffpy" tween="true" startValue="-,-123" endValue="-,57" duration="12"/>
+    <item time="0" type="XY" target="n30_ffpy" tween="true" startValue="-,7" endValue="-,57" duration="12"/>
     <item time="0" type="XY" target="n31_ffpy" tween="true" startValue="-,204" endValue="-,154" duration="12" ease="Linear"/>
   </transition>
 </component>

@@ -19,6 +19,7 @@ EViewID = {
 	LabelNameView: "LabelNameView",
 
 	/**Renders */
+	RenderAchieveDetailGroupView: "RenderAchieveDetailGroupView",
 	RenderAchieveGroupView: "RenderAchieveGroupView",
 	RenderGetRewardItemView: "RenderGetRewardItemView",
 	RenderRechargeItemView: "RenderRechargeItemView",

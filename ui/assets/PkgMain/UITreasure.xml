@@ -10,6 +10,6 @@
   </displayList>
   <transition name="show" options="2" frameRate="60">
     <item time="0" type="Alpha" target="n3_fhgq" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
-    <item time="0" type="XY" target="n3_fhgq" tween="true" startValue="-,-141" endValue="-,39" duration="12"/>
+    <item time="0" type="XY" target="n3_fhgq" tween="true" startValue="-,-11" endValue="-,39" duration="12"/>
   </transition>
 </component>

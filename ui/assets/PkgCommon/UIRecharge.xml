@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" designImage="ui://ca43vz0ew6x67plom1" designImageAlpha="100" designImageLayer="1">
+<component size="1920,1080" designImage="ui://ca43vz0ew6x67plom1" designImageAlpha="0" designImageLayer="1">
   <displayList>
     <component id="n0_p5uz" name="back" src="p5uzob8h" fileName="Component/Component/ComBack.xml" xy="10,22">
       <property target="title" propertyId="0" value="商店"/>
@@ -26,7 +26,7 @@
     </component>
     <group id="n33_fhgq" name="n33" xy="81,201" size="336,640" group="n9_fpd2" advanced="true" layout="vt" lineGap="-15" excludeInvisibles="true"/>
     <group id="n9_fpd2" name="n9" xy="81,154" size="1742,857" group="n31_ffpy"/>
-    <list id="n38_n15i" name="item" xy="477,201" size="1292,759" group="n31_ffpy" alpha="0.984" layout="flow_hz" overflow="scroll" margin="15,0,0,0" scrollBarMargin="0,11,0,0" scrollBarRes="ui://vx9zwserpuubobfe," lineGap="39" colGap="51" defaultItem="ui://vx9zwsern15iobik" autoClearItems="true">
+    <list id="n38_n15i" name="item" xy="477,201" size="1292,759" group="n31_ffpy" layout="flow_hz" overflow="scroll" margin="15,0,0,0" scrollBarMargin="0,11,0,0" scrollBarRes="ui://vx9zwserpuubobfe," lineGap="39" colGap="51" defaultItem="ui://vx9zwsern15iobik" autoClearItems="true">
       <item/>
       <item/>
       <item/>
@@ -50,7 +50,7 @@
   <transition name="show" frameRate="60">
     <item time="0" type="Alpha" target="n30_ffpy" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
     <item time="0" type="Alpha" target="n31_ffpy" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
-    <item time="0" type="XY" target="n30_ffpy" tween="true" startValue="-,-123" endValue="-,57" duration="12"/>
+    <item time="0" type="XY" target="n30_ffpy" tween="true" startValue="-,7" endValue="-,57" duration="12"/>
     <item time="0" type="XY" target="n31_ffpy" tween="true" startValue="-,204" endValue="-,154" duration="12" ease="Linear"/>
   </transition>
 </component>

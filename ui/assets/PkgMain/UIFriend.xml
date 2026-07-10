@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="1920,1080" designImage="ui://ca43vz0epuub7ploju" designImageAlpha="75" bgColorEnabled="true" bgColor="#000000">
-  <controller name="type" pages="0,,1,,2,,3," selected="0"/>
+  <controller name="type" pages="0,,1,,2,,3," selected="3"/>
   <displayList>
     <component id="n0_p5uz" name="back" src="p5uzob8h" fileName="Component/Component/ComBack.xml" pkg="vx9zwser" xy="10,22">
       <property target="title" propertyId="0" value="好友"/>
@@ -90,7 +90,7 @@
     <item time="0" type="XY" target="n33_puub" tween="true" startValue="-,258" endValue="-,208" duration="12" ease="Linear"/>
     <item time="0" type="XY" target="n34_puub" tween="true" startValue="-,205" endValue="-,155" duration="12" ease="Linear"/>
     <item time="0" type="XY" target="n35_giyr" tween="true" startValue="-,523" endValue="-,473" duration="12" ease="Linear"/>
-    <item time="0" type="XY" target="n36_xnfa" tween="true" startValue="-,-141" endValue="-,39" duration="12"/>
+    <item time="0" type="XY" target="n36_xnfa" tween="true" startValue="-,-11" endValue="-,39" duration="12"/>
     <item time="0" type="XY" target="n38_jcnm" tween="true" startValue="-,257" endValue="-,207" duration="12" ease="Linear"/>
   </transition>
 </component>

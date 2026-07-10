@@ -7,6 +7,9 @@ export default class UIAchievementDetail extends fgui.GComponent {
 
 	protected com_back: ComBackView;
 	protected com_stat: ComAchieveStatView;
+	protected list_list: fgui.GList;
+	protected img_top: fgui.GImage;
+	protected img_bottom: fgui.GImage;
 	protected trans_show: fgui.Transition;
 	public static url: string = "ui://ko8zynrwcd64obih";
 
@@ -17,6 +20,9 @@ export default class UIAchievementDetail extends fgui.GComponent {
 	protected override onConstruct(): void {
 		this.com_back = <ComBackView>(this.getChildAt(0));
 		this.com_stat = <ComAchieveStatView>(this.getChildAt(1));
+		this.list_list = <fgui.GList>(this.getChildAt(2));
+		this.img_top = <fgui.GImage>(this.getChildAt(3));
+		this.img_bottom = <fgui.GImage>(this.getChildAt(4));
 		this.trans_show = this.getTransitionAt(0);
 	}
 }

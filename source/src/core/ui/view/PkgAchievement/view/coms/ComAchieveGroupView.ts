@@ -12,10 +12,10 @@ export class ComAchieveGroupView extends ExtendClass<IView, ComAchieveGroup>(Com
 		const { _groupViews, graph_empty } = this;
 		$user.achievement.statisticsInfo.groups.forEach((v, i) => {
 			const view = $facade.createView(EViewID.RenderAchieveGroupView) as RenderAchieveGroupView;
-			view.init($cfgMgr.achievement.achievement_group[v.id]);
 			this.addChild(view);
 			view.setXY(160 + i * 220, i % 2 == 0 ? 0 : 350);
 			_groupViews.push(view);
+			view.onClick(this, this.openView, [EViewID.UIAchievementDetailView, i, EViewOpenType.Hide]);
 		});
 		graph_empty.x = _groupViews.last?.x || 0;
 	}
@@ -26,7 +26,7 @@ export class ComAchieveGroupView extends ExtendClass<IView, ComAchieveGroup>(Com
 
 	refresh() {
 		$user.achievement.statisticsInfo.groups.forEach((v, i) => {
-			this._groupViews[i].refresh(v.progress, v.haveReward);
+			this._groupViews[i].refresh(v.id, v.progress, v.haveReward);
 		});
 	}
 }

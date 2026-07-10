@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="286,286" pivot="0.5,0.5" extention="Button" designImage="ui://ca43vz0ecd647plomb" designImageOffsetX="-131" designImageOffsetY="-265" designImageAlpha="0">
+  <controller name="type" pages="0,,1," selected="1"/>
+  <controller name="button" pages="0,up,1,down" selected="0"/>
+  <displayList>
+    <image id="n13_oo1i" name="n13" src="cd644" fileName="Texture/img_3819.png" xy="0,0" size="286,286" color="#555555">
+      <gearColor controller="button" pages="0,1" values="#555555|#ffffff"/>
+    </image>
+    <loader id="n14_oo1i" name="icon" xy="0,0" size="286,286" touchable="false" url="ui://ca43vz0ecd647" fill="scaleFree" color="#555555">
+      <gearColor controller="button" pages="0,1" values="#555555|#ffffff"/>
+    </loader>
+    <image id="n2_cd64" name="n2" src="cd64i" fileName="Texture/img_2621.png" xy="0,195" size="286,65"/>
+    <text id="n3_cd64" name="title" xy="66,208" pivot="0.5,0.5" size="164,54" font="ui://vx9zwserrpakobeu" fontSize="40" color="#e3b991" vAlign="middle" leading="0" singleLine="true" text="神社贵宾">
+      <gearXY controller="type" pages="1" values="66,208" default="66,196"/>
+    </text>
+    <image id="n6_cd64" name="n6" src="cd64o" fileName="Texture/img_1993.png" xy="32,237" size="220,27">
+      <gearDisplay controller="type" pages="0"/>
+    </image>
+    <image id="n7_cd64" name="proBar" src="cd64p" fileName="Texture/img_1992.png" xy="32,237" size="220,27" fillMethod="hz" fillAmount="97">
+      <gearDisplay controller="type" pages="0"/>
+    </image>
+    <image id="n11_cd64" name="redDot" src="pt3aobaw" fileName="Texture/img_547.png" pkg="vx9zwser" xy="256,191"/>
+  </displayList>
+  <Button mode="Check"/>
+</component>

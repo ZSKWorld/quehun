@@ -13,7 +13,7 @@
     <item time="0" type="Alpha" target="n19_cd64" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
     <item time="0" type="Alpha" target="n30_cd64" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
     <item time="0" type="XY" target="n17_cd64" tween="true" startValue="-,232" endValue="-,182" duration="12"/>
-    <item time="0" type="XY" target="n19_cd64" tween="true" startValue="-,-130" endValue="-,50" duration="12"/>
+    <item time="0" type="XY" target="n19_cd64" tween="true" startValue="-,0" endValue="-,50" duration="12"/>
     <item time="0" type="XY" target="n30_cd64" tween="true" startValue="-,1040" endValue="-,990" duration="12"/>
   </transition>
 </component>

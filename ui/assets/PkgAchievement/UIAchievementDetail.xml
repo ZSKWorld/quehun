@@ -1,13 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" designImage="ui://ca43vz0ecd647plomb" designImageAlpha="36">
+<component size="1920,1080" designImage="ui://ca43vz0ecd647plomb" designImageAlpha="0">
   <displayList>
     <component id="n0_p5uz" name="back" src="p5uzob8h" fileName="Component/Component/ComBack.xml" pkg="vx9zwser" xy="10,22">
       <property target="title" propertyId="0" value="成就明细"/>
     </component>
     <component id="n1_ccli" name="stat" src="cd64w" fileName="Component/ComAchieveStat.xml" xy="764,50"/>
+    <list id="n2_oo1i" name="list" xy="136,187" pivot="0.5,0" size="350,828" group="n5_oo1i" alpha="0.982" layout="flow_hz" overflow="scroll" scrollBarFlags="2048" margin="40,0,0,0" lineGap="15" lineItemCount="1" defaultItem="ui://ko8zynrwoo1iobij" align="center" autoClearItems="true">
+      <item controllers="type,4"/>
+      <item controllers="type,4"/>
+      <item controllers="type,4"/>
+      <item controllers="type,4"/>
+    </list>
+    <image id="n3_oo1i" name="top" src="cd64s" fileName="Texture/img_966.png" xy="268,161" pivot="0.5,0" group="n5_oo1i"/>
+    <image id="n4_oo1i" name="bottom" src="cd64s" fileName="Texture/img_966.png" xy="269,1049" pivot="0.5,0" group="n5_oo1i" scale="1,-1"/>
+    <group id="n5_oo1i" name="n5" xy="136,161" size="350,913" advanced="true"/>
   </displayList>
   <transition name="show" frameRate="60">
     <item time="0" type="Alpha" target="n1_ccli" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
+    <item time="0" type="Alpha" target="n5_oo1i" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
     <item time="0" type="XY" target="n1_ccli" tween="true" startValue="-,-130" endValue="-,50" duration="12"/>
+    <item time="0" type="XY" target="n5_oo1i" tween="true" startValue="86,-" endValue="136,-" duration="12"/>
   </transition>
 </component>

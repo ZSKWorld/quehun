@@ -14,18 +14,18 @@ export class RenderAchieveDetailGroupView extends ExtendClass<IView, RenderAchie
 			this.setScale(targetScale, targetScale);
 	}
 
-	refresh(id: number, percent: number, haveReward: boolean) {
+	refresh(data: DO.IAchieveGroupInfo) {
 		const { ctrl_type, img_redDot, img_proBar, _children } = this;
-		const cfgGroup = $cfgMgr.achievement.achievement_group[id];
+		const cfgGroup = $cfgMgr.achievement.achievement_group[data.id];
 
 		$dynamicResMgr.setLoader(this.asLoader, $langRes("myres/achievement/" + cfgGroup.img));
 		this.title = cfgGroup.langField(ECfgLangField.name);
 		const percentage = !!cfgGroup.percentage;
 		ctrl_type.selectedIndex = percentage ? 0 : 1;
-		img_redDot.visible = haveReward;
+		img_redDot.visible = data.haveReward;
 
 		if (!cfgGroup.percentage) return;
-		percent = $mathUtil.clamp01(percent);
+		const percent = $mathUtil.clamp01(data.progress);
 		_children[0].visible = percent >= 1;
 		img_proBar.fillAmount = percent * 0.94 + 0.03;
 	}

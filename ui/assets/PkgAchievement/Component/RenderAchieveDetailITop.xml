@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1214,191">
+  <controller name="state" pages="6,无奖励,0,不可领取,1,可领取,2,已领取" selected="3"/>
+  <displayList>
+    <image id="n6_oo1i" name="n6" src="cd642" fileName="Texture/img_3973.png" xy="0,0" size="1214,191"/>
+    <image id="n8_oo1i" name="n8" src="cd64o" fileName="Texture/img_1993.png" xy="203,67" size="700,27"/>
+    <image id="n9_oo1i" name="bar" src="cd64q" fileName="Texture/img_1452.png" xy="213,77" size="679,6" fillMethod="hz" fillAmount="0"/>
+    <component id="n7_oo1i" name="reward" src="q5yiobc2" fileName="Component/Component/物品/ComItem1.xml" pkg="vx9zwser" xy="22,19" size="153,153" aspect="true">
+      <gearDisplay controller="state" pages="0,1,2"/>
+    </component>
+    <component id="n13_oo1i" name="getReward" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="974,55" size="194,76">
+      <gearDisplay controller="state" pages="0,1"/>
+      <gearLook controller="state" pages="0" values="1,0,1,0" default="1,0,0,1"/>
+      <Button title="领取" titleColor="#241301" titleFontSize="37"/>
+    </component>
+    <text id="n11_oo1i" name="progress" xy="822,30" pivot="1,0.5" size="74,39" font="SimHei" fontSize="28" color="#ffffff" vAlign="middle" leading="0" singleLine="true" text="64.7%"/>
+    <text id="n10_oo1i" name="n10" xy="208,19" pivot="0,0.5" size="156,52" font="ui://vx9zwserrpakobeu" fontSize="38" color="#ffffff" vAlign="middle" leading="0" singleLine="true" text="完成进度"/>
+    <text id="n12_oo1i" name="n12" xy="208,114" pivot="0,0.5" size="396,39" font="SimHei" fontSize="28" color="#ffffff" vAlign="middle" leading="0" singleLine="true" text="完成此分类下所有成就领取奖励"/>
+    <text id="n14_oo1i" name="n14" xy="1005,65" pivot="0.5,0.5" size="130,56" font="ui://vx9zwserrpakobeu" fontSize="42" color="#9fb9dc" vAlign="middle" leading="0" singleLine="true" text="已领取">
+      <gearDisplay controller="state" pages="2"/>
+    </text>
+  </displayList>
+</component>

@@ -82,6 +82,8 @@ declare enum ELocalDataKey {
 	MultiLogin = "LocalDataKey_MultiLogin",
 	/** 主页左上角玩家信息段位显示类型，1-四麻，2-三麻 */
 	PlayerInfoLevelShowType = "LocalDataKey_PlayerInfoLevelShowType",
+	/** 设置 */
+	Setting = "LocalDataKey_Setting",
 }
 
 //#region view相关
@@ -800,7 +802,17 @@ declare enum EPaymentType {
 }
 //#endregion
 
-
+/** 奖励领取状态 */
+declare enum ERewardState {
+	/** 无奖励 */
+	NoReward = -1,
+	/** 不可领取 */
+	CanNotReward = 0,
+	/** 可领取 */
+	CanReward = 1,
+	/** 已领取 */
+	Rewarded = 2,
+}
 
 
 

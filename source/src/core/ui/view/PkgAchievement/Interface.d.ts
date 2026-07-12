@@ -1,1 +1,4 @@
-declare type IUIAchievementDetailData = number;
+declare interface IUIAchievementDetailData {
+	groupId: number;
+	achieveId?: number;
+}

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1187,168">
+  <controller name="icon" pages="3,,0,,1,,2," selected="3"/>
+  <controller name="state" pages="0,无奖进行中,1,有奖进行中,2,有奖可领取,3,无奖已完成,4,有奖已完成" selected="3"/>
+  <displayList>
+    <image id="n15_oo1i" name="n15" src="cd643" fileName="Texture/img_3941.png" xy="0,0" size="1187,168"/>
+    <loader id="n16_oo1i" name="n16" xy="29,28" size="105,100" url="ui://vx9zwsergsi2obdy" fill="scaleFree">
+      <gearIcon controller="icon" pages="3,0,2" values="ui://ko8zynrwcd64k|ui://vx9zwsergsi2obe0|ui://vx9zwsergsi2obdy" default="ui://vx9zwsergsi2obdz"/>
+    </loader>
+    <component id="n19_oo1i" name="reward" src="q5yiobc2" fileName="Component/Component/物品/ComItem1.xml" pkg="vx9zwser" xy="906,37" size="88,88" aspect="true">
+      <gearDisplay controller="state" pages="1,2,4"/>
+    </component>
+    <image id="n27_oo1i" name="n27" src="ik7bobfi" fileName="Texture/img_1541.png" pkg="vx9zwser" xy="911,42" size="78,78">
+      <gearDisplay controller="state" pages="4"/>
+    </image>
+    <component id="n26_oo1i" name="getReward" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="1020,93" size="133,37">
+      <gearDisplay controller="state" pages="2"/>
+      <Button title="领取" titleColor="#241301" titleFontSize="26" icon="ui://vx9zwserfpd2obg4"/>
+    </component>
+    <text id="n17_oo1i" name="name" xy="144,17" pivot="0,0.5" size="327,52" font="SimHei" fontSize="38" color="#bcc9e7" vAlign="middle" leading="0" singleLine="true" text="累计登录365天纪念"/>
+    <text id="n18_oo1i" name="desc" xy="148,78" size="738,36" font="SimHei" fontSize="26" color="#9fb9dc" leading="0" autoSize="height" text="累计登录游戏365天"/>
+    <text id="n22_oo1i" name="progress" xy="1016,65" pivot="0.5,0.5" size="142,36" font="SimHei" fontSize="26" color="#9fb9dc" align="center" vAlign="middle" leading="0" autoSize="height" text="111/111">
+      <gearDisplay controller="state" pages="0,1"/>
+    </text>
+    <text id="n23_oo1i" name="time1" xy="1016,31" pivot="0.5,0.5" size="142,36" font="SimHei" fontSize="26" color="#9fb9dc" align="center" vAlign="middle" leading="0" autoSize="none" singleLine="true" text="2026.04.25">
+      <gearDisplay controller="state" pages="2,3,4"/>
+    </text>
+    <text id="n24_oo1i" name="time2" xy="1016,56" pivot="0.5,0.5" size="142,36" font="SimHei" fontSize="26" color="#9fb9dc" align="center" vAlign="middle" leading="0" autoSize="none" singleLine="true" text="18:59:04">
+      <gearDisplay controller="state" pages="2,3,4"/>
+    </text>
+    <text id="n25_oo1i" name="n25" xy="1049,98" pivot="0.5,0.5" size="82,36" font="ui://vx9zwserrpakobeu" fontSize="26" color="#06ff5e" align="center" vAlign="middle" leading="0" singleLine="true" text="已完成">
+      <gearDisplay controller="state" pages="3,4"/>
+    </text>
+  </displayList>
+</component>

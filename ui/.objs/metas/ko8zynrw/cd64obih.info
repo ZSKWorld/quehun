@@ -1,6 +1,12 @@
 {
+  "objectStatus": {
+    "n27_oo1i": {
+      "hidden": true
+    }
+  },
   "designImages": [
     "ui://ca43vz0ecd647ploma",
+    "ui://ca43vz0ecd647plomc",
     "ui://ca43vz0ecd647plomb"
   ]
 }

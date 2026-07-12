@@ -8,7 +8,7 @@ export class UIAchievementDetailMediator extends MediatorBase<UIAchievementDetai
 	}
 
 	override onEnable() {
-		this.view.refresh(this.data);
+		this.view.refresh(this.data.groupId, this.data.achieveId);
 	}
 
 }

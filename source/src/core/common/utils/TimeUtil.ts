@@ -36,6 +36,20 @@ export class TimeUtil implements ITimeUtil {
 		return new Date(regStr.replace('+', ' utc+')).getTime();
 	}
 
+	dateFormat1(timestamp: number, split?: string) {
+		this._date.setTime(timestamp);
+		const str = this._date.toLocaleDateString();
+		return str.split("/").map(v => v.padStart(2, "0")).join(split || "/");
+	}
+
+	dateFormat2(timestamp: number, split?: string) {
+		this._date.setTime(timestamp);
+		const str = this._date.toLocaleTimeString();
+		if (!split || split == ":")
+			return str;
+		return str.replaceAll(":", split);
+	}
+
 	timeFormat1(timestamp: number) {
 		this._date.setTime(timestamp);
 		return this._date.toLocaleString();

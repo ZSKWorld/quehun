@@ -414,6 +414,8 @@ EUserEvent = {
 	OnRechargeVipExpChanged: "EUserEvent_OnRechargeVipExpChanged",
 	OnRechargeRechargedListChanged: "EUserEvent_OnRechargeRechargedListChanged",
 	OnRechargeGainVipLevelChanged: "EUserEvent_OnRechargeGainVipLevelChanged",
+	OnAchievementChanged: "EUserEvent_OnAchievementChanged",
+	OnNewAchievement: "EUserEvent_OnNewAchievement",
 }
 
 EVideoLoadEvent = {
@@ -572,4 +574,11 @@ EPaymentType = {
 	WeChat: 5,
 	AliPay: 6,
 	XinYongKa: 7,
+}
+
+ERewardState = {
+	NoReward: -1,
+	CanNotReward: 0,
+	CanReward: 1,
+	Rewarded: 2,
 }

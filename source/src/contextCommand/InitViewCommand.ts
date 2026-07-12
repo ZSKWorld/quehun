@@ -18,6 +18,8 @@ import { BtnShopRefreshView } from "../core/ui/view/PkgMain/view/btns/BtnShopRef
 import { BtnXunMiView } from "../core/ui/view/PkgMain/view/btns/BtnXunMiView";
 import { LabelNameView } from "../core/ui/view/PkgCommon/view/labels/LabelNameView";
 import { RenderAchieveDetailGroupView } from "../core/ui/view/PkgAchievement/view/renders/RenderAchieveDetailGroupView";
+import { RenderAchieveDetailItemView } from "../core/ui/view/PkgAchievement/view/renders/RenderAchieveDetailItemView";
+import { RenderAchieveDetailITopView } from "../core/ui/view/PkgAchievement/view/renders/RenderAchieveDetailITopView";
 import { RenderAchieveGroupView } from "../core/ui/view/PkgAchievement/view/renders/RenderAchieveGroupView";
 import { RenderGetRewardItemView } from "../core/ui/view/PkgCommon/view/renders/RenderGetRewardItemView";
 import { RenderRechargeItemView } from "../core/ui/view/PkgCommon/view/renders/RenderRechargeItemView";
@@ -187,6 +189,8 @@ export class InitViewCommand extends Command {
 
 		//Renders
 		register(EViewID.RenderAchieveDetailGroupView, EViewType.Render, RenderAchieveDetailGroupView);
+		register(EViewID.RenderAchieveDetailItemView, EViewType.Render, RenderAchieveDetailItemView);
+		register(EViewID.RenderAchieveDetailITopView, EViewType.Render, RenderAchieveDetailITopView);
 		register(EViewID.RenderAchieveGroupView, EViewType.Render, RenderAchieveGroupView);
 		register(EViewID.RenderGetRewardItemView, EViewType.Render, RenderGetRewardItemView);
 		register(EViewID.RenderRechargeItemView, EViewType.Render, RenderRechargeItemView);

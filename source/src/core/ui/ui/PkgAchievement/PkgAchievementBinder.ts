@@ -7,6 +7,8 @@ import ComAchieveStat from "./ComAchieveStat";
 import ComAchieveRecent from "./ComAchieveRecent";
 import UIAchievement from "./UIAchievement";
 import RenderAchieveDetailGroup from "./RenderAchieveDetailGroup";
+import RenderAchieveDetailITop from "./RenderAchieveDetailITop";
+import RenderAchieveDetailItem from "./RenderAchieveDetailItem";
 import { UIAchievementDetailView } from "../../view/PkgAchievement/view/uis/UIAchievementDetailView";
 import { RenderAchieveGroupView } from "../../view/PkgAchievement/view/renders/RenderAchieveGroupView";
 import { ComAchieveGroupView } from "../../view/PkgAchievement/view/coms/ComAchieveGroupView";
@@ -14,6 +16,8 @@ import { ComAchieveStatView } from "../../view/PkgAchievement/view/coms/ComAchie
 import { ComAchieveRecentView } from "../../view/PkgAchievement/view/coms/ComAchieveRecentView";
 import { UIAchievementView } from "../../view/PkgAchievement/view/uis/UIAchievementView";
 import { RenderAchieveDetailGroupView } from "../../view/PkgAchievement/view/renders/RenderAchieveDetailGroupView";
+import { RenderAchieveDetailITopView } from "../../view/PkgAchievement/view/renders/RenderAchieveDetailITopView";
+import { RenderAchieveDetailItemView } from "../../view/PkgAchievement/view/renders/RenderAchieveDetailItemView";
 
 export default class PkgAchievementBinder {
 	public static bindAll(): void {
@@ -24,5 +28,7 @@ export default class PkgAchievementBinder {
 		fgui.UIObjectFactory.setExtension(ComAchieveRecent.url, ComAchieveRecentView);
 		fgui.UIObjectFactory.setExtension(UIAchievement.url, UIAchievementView);
 		fgui.UIObjectFactory.setExtension(RenderAchieveDetailGroup.url, RenderAchieveDetailGroupView);
+		fgui.UIObjectFactory.setExtension(RenderAchieveDetailITop.url, RenderAchieveDetailITopView);
+		fgui.UIObjectFactory.setExtension(RenderAchieveDetailItem.url, RenderAchieveDetailItemView);
 	}
 }

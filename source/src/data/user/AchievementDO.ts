@@ -8,7 +8,8 @@ export class AchievementDO extends BaseDO implements DO.IAchievementDO {
 		copper: 0,
 		total: 0,
 		groups: [],
-		groupMap: {}
+		groupMap: {},
+		segmentAchieves: {},
 	};
 	private _rewardedGroup: number[] = [];
 
@@ -18,6 +19,15 @@ export class AchievementDO extends BaseDO implements DO.IAchievementDO {
 		return this._progressMap[id];
 	}
 
+	getSegmentAchievesAchieved(segmentId: number) {
+		const achieves = this._statisticsInfo.segmentAchieves[segmentId];
+		if (!achieves || achieves.length == 0) return true;
+		for (let i = 0, n = achieves.length; i < n; i++) {
+			const pro = this.getProgress(achieves[i]);
+			if (!pro || !pro.achieved) return false;
+		}
+		return true;
+	}
 
 	@InjectNetEvent(ENetMessage.fetchAchievement)
 	private onFetchAchievement(res: IResAchievement) {
@@ -63,6 +73,7 @@ export class AchievementDO extends BaseDO implements DO.IAchievementDO {
 		const { _statisticsInfo: info, _rewardedGroup } = this;
 		info.gold = info.silver = info.copper = info.total = info.groups.length = 0;
 		info.groupMap = {};
+		info.segmentAchieves = {};
 		const { groups, groupMap } = info;
 		const groupCfgs = $cfgMgr.achievement.achievement_group.filter(v => !v.deprecated);
 		groupCfgs.sort((a, b) => a.sort - b.sort);
@@ -72,18 +83,34 @@ export class AchievementDO extends BaseDO implements DO.IAchievementDO {
 			groupMap[e.id] = {
 				id: e.id,
 				progress: 0,
+				percentage: e.percentage > 0,
 				haveReward: false,
+				groupRewardState: -1,
+				achieveCount: 0,
 				achievements: [],
 			};
 			groups.push(groupMap[e.id]);
 		}
 
+		const segmentMap: Record<number, number> = {};
 		$cfgMgr.achievement.achievement.forEach(v => {
 			if (v.deprecated || v.hidden) return;
 			info.total++;
-			const pro = this.getProgress(v.id);
 			const group = groupMap[v.group_id];
-			group.achievements.push(v.id);
+			group.achieveCount++;
+			const pro = this.getProgress(v.id);
+			if (v.segment_id) {
+				info.segmentAchieves[v.segment_id] = info.segmentAchieves[v.segment_id] || [];
+				info.segmentAchieves[v.segment_id].push(v.id);
+				if (pro && pro.achieved)
+					group.achievements.push(v.id);
+				else if (segmentMap[v.segment_id] == null) {
+					segmentMap[v.segment_id] = v.id;
+					group.achievements.push(v.id);
+				} else
+					return;
+			} else
+				group.achievements.push(v.id);
 			if (pro && pro.achieved) {
 				group.progress++;
 				group.haveReward = group.haveReward || (!pro.rewarded && !!v.reward);
@@ -94,9 +121,11 @@ export class AchievementDO extends BaseDO implements DO.IAchievementDO {
 		});
 
 		for (const e of groups) {
-			e.progress = e.progress / e.achievements.length;
+			e.achievements.sort((a, b) => $cfgMgr.achievement.achievement[a].sort - $cfgMgr.achievement.achievement[b].sort);
+			e.progress = $mathUtil.clamp01(e.progress / e.achieveCount);
 			const cfgGroup = $cfgMgr.achievement.achievement_group[e.id];
-			e.haveReward = e.haveReward || (e.progress >= 1 && cfgGroup.percentage && !_rewardedGroup.includes(e.id));
+			e.groupRewardState = e.percentage && !!cfgGroup.reward ? (e.progress >= 1 ? (_rewardedGroup.includes(e.id) ? ERewardState.Rewarded : ERewardState.CanReward) : ERewardState.CanNotReward) : ERewardState.NoReward;
+			e.haveReward = e.haveReward || e.groupRewardState == ERewardState.CanReward;
 		}
 	}
 }

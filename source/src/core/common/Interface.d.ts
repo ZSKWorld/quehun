@@ -240,6 +240,8 @@ declare interface IGameUtil {
 	 * @returns 冻结后的对象
 	 */
 	freeze<T>(obj: T, deep?: boolean): T;
+	/** 拆分物品数量字符串 */
+	splitItems(str: string): IItem[];
 }
 
 declare interface ITimeUtil {
@@ -267,6 +269,20 @@ declare interface ITimeUtil {
 	timeFormat4(second: number): string;
 	/** 将秒数转换成 `刚刚`、`10分钟前`、`x小时前`、`x天前`、`x周前`、`x月前` 的格式 */
 	timeFormat5(second: number): string;
+
+	/**
+	 * 将日期转换成 `1970/1/1` 的格式
+	 * @param timestamp 
+	 * @param split 替换 / 符号
+	 */
+	dateFormat1(timestamp: number, split?: string): string;
+	/**
+	 * 将日期转换成 `18:51:05` 的格式
+	 * @param timestamp 
+	 * @param split 替换 : 符号
+	 */
+	dateFormat2(timestamp: number, split?: string): string;
+
 	/** 等待 `milSec` 毫秒 */
 	wait(milSec: number): Promise<void>;
 }

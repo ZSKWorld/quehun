@@ -1,5 +1,6 @@
 declare namespace DO {
 	interface IUserDO {
+		setting: ISettingDO;
 		account: IAccountDO;
 		character: ICharacterDO;
 		activity: IActivityDO;

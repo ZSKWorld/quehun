@@ -6,11 +6,17 @@ export const enum EComAchieveStatMsg {
 
 export class ComAchieveStatView extends ExtendClass<IView, ComAchieveStat>(ComAchieveStat) implements IView {
 
-	override onCreate() {
-
+	override onEnable() {
+		this.refresh();
+		$facade.on(EUserEvent.OnAchievementChanged, this, this.refresh);
 	}
 
-	refresh(gold: number, silver: number, copper: number, total: number) {
+	override onDisable() {
+		$facade.offAllCaller(this);
+	}
+
+	private refresh() {
+		const { gold, silver, copper, total } = $user.achievement.statisticsInfo;
 		this.txt_gold.text = gold.toString();
 		this.txt_silver.text = silver.toString();
 		this.txt_copper.text = copper.toString();

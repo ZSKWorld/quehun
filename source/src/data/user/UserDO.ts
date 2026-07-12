@@ -11,6 +11,7 @@ import { FriendDO } from "./FriendDO";
 import { MailDO } from "./MailDO";
 import { RechargeDO } from "./RechargeDO";
 import { ServerSettingDO } from "./ServerSettingDO";
+import { SettingDO } from "./SettingDO";
 
 @Singleton
 export class UserDO extends BaseDO implements DO.IUserDO {
@@ -43,6 +44,8 @@ export class UserDO extends BaseDO implements DO.IUserDO {
 	mail = new MailDO();
 	bag = new BagDO();
 	achievement = new AchievementDO();
+
+	setting = new SettingDO();
 
 	@InjectNetEvent(ENetMessage.login)
 	@InjectNetEvent(ENetMessage.oauth2Login)

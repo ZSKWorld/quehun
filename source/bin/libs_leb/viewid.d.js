@@ -20,6 +20,8 @@ EViewID = {
 
 	/**Renders */
 	RenderAchieveDetailGroupView: "RenderAchieveDetailGroupView",
+	RenderAchieveDetailItemView: "RenderAchieveDetailItemView",
+	RenderAchieveDetailITopView: "RenderAchieveDetailITopView",
 	RenderAchieveGroupView: "RenderAchieveGroupView",
 	RenderGetRewardItemView: "RenderGetRewardItemView",
 	RenderRechargeItemView: "RenderRechargeItemView",

@@ -628,19 +628,11 @@
     <image id="jdu67plnri" name="【设计稿_宝箱转盘（50%罩黑）】.png" path="/转盘活动/"/>
     <image id="jdu67plnrj" name="【设计稿_占卜转盘（50%罩黑）】.png" path="/转盘活动/"/>
     <image id="jdu67plnrk" name="image-2020-04-17-15-19-24-670.png" path="/转盘活动/"/>
-    <image id="jdu67plnrl" name="设置寮舍角色展示-4.jpg" path="/设置/"/>
-    <image id="jdu67plnrm" name="设置寮舍角色展示-3.jpg" path="/设置/"/>
     <image id="jdu67plnrn" name="1.jpg" path="/辉夜/"/>
-    <image id="jdu67plnro" name="设置寮舍角色展示-2.jpg" path="/设置/"/>
-    <image id="jdu67plnrp" name="注释.jpg" path="/设置/"/>
-    <image id="jdu67plnrq" name="【效果图】一键静音-1.jpg" path="/设置/"/>
-    <image id="jdu67plnrr" name="2.jpg" path="/设置/"/>
-    <image id="jdu67plnrs" name="1.jpg" path="/设置/"/>
     <image id="jdu67plnrt" name="观星之战修改-带光效2.jpg" path="/观星之战/"/>
     <image id="jdu67plnru" name="观星之战修改-带光效1.jpg" path="/观星之战/"/>
     <image id="jdu67plnrv" name="观星之战修改-不带光效2.jpg" path="/观星之战/"/>
     <image id="jdu67plnrw" name="观星之战修改-不带光效1.jpg" path="/观星之战/"/>
-    <image id="jdu67plnrx" name="设置寮舍角色展示-1.jpg" path="/设置/"/>
     <image id="jdu67plnry" name="【效果图】观星之旅-新手引导-4.jpg" path="/观星之战/"/>
     <image id="jdu67plnrz" name="2.jpg" path="/辉夜/"/>
     <image id="jdu67plns0" name="辉夜联动-1.1.jpg" path="/辉夜/"/>
@@ -1751,6 +1743,14 @@
     <image id="cd647" name="img_3774.png" path="/成就/"/>
     <image id="cd646" name="img_3775.png" path="/成就/"/>
     <image id="cd645" name="img_3776.png" path="/成就/"/>
+    <image id="lna17plome" name="1.jpg" path="/设置/"/>
+    <image id="lna17plomf" name="2.jpg" path="/设置/"/>
+    <image id="lna17plomg" name="3.jpg" path="/设置/"/>
+    <image id="lna17plomh" name="4.jpg" path="/设置/"/>
+    <image id="lna17plomi" name="5.jpg" path="/设置/"/>
+    <image id="lna17plomj" name="6.jpg" path="/设置/"/>
+    <image id="lna17plomk" name="7.jpg" path="/设置/"/>
+    <image id="lna17ploml" name="8.jpg" path="/设置/"/>
   </resources>
   <publish name=""/>
 </packageDescription>

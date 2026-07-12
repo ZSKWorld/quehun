@@ -3,6 +3,9 @@
 const EncryptList: ReadonlyArray<string> = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+{}[]|\:;<>,.?/~".split("");
 const EncryptMap: Readonly<number> = EncryptList.reduce((pv, cv, i) => (pv[cv] = i, pv), {}) as Readonly<number>;
 
+/** 奖励字符串格式: {id}-{count},{id}-{count}... */
+const RewardString1 = /^\d+-\d+(,\d+-\d+)*$/;
+
 @Singleton
 export class GameUtil implements IGameUtil {
 
@@ -217,5 +220,17 @@ export class GameUtil implements IGameUtil {
 		}
 
 		return obj;
+	}
+
+	splitItems(str: string) {
+		if (RewardString1.test(str)) {
+			const arr1 = str.split(",");
+			return arr1.map(v => {
+				const [id, count] = v.split("-");
+				const data: IItem = { item_id: +id, stack: +count };
+				return data;
+			});
+		}
+		return null;
 	}
 }

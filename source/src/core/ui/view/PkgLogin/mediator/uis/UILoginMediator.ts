@@ -261,12 +261,13 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 				return;
 			}
 		}
-		this.dispatch(EGlobalEvent.LoginSuccess);
+
 		await Promise.all([
 			$netMgr.requests.fetchClientValue(),
 			$user.announcement.fetchAnnouncement(),
 			$netMgr.requests.fetchInfo(),
 		]);
+		this.dispatch(EGlobalEvent.LoginSuccess);
 		$sceneMgr.enterScene(ESceneType.MainScene);
 	}
 }

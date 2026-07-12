@@ -24,6 +24,8 @@ import { ContextMenuManager } from "../core/common/contextMenu/ContextMenuManage
 
 export class InitGlobalCommand extends Command {
 	override execute(notifyName: string, data?: any) {
+		$windowImmit("$gameUtil", new GameUtil());
+		$windowImmit("$localDataMgr", new LocalDataManager());
 		$windowImmit("$facade", new Facade());
 		$windowImmit("$uiUtil", new UIUtil());
 		$windowImmit("$itemUtil", new ItemUtil());
@@ -32,7 +34,6 @@ export class InitGlobalCommand extends Command {
 		$windowImmit("$uiMgr", new UIManager());
 		$windowImmit("$pbMgr", new PbManager());
 		$windowImmit("$user", new UserDO());
-		$windowImmit("$gameUtil", new GameUtil());
 		$windowImmit("$tipMgr", new TipManager());
 		$windowImmit("$mathUtil", new MathUtil());
 		$windowImmit("$loadMgr", new LoadManager());
@@ -42,7 +43,6 @@ export class InitGlobalCommand extends Command {
 		$windowImmit("$sceneMgr", new SceneManager());
 		$windowImmit("$redDotMgr", new RedDotManager());
 		$windowImmit("$skeletonMgr", new SkeletonManager());
-		$windowImmit("$localDataMgr", new LocalDataManager());
 		$windowImmit("$dynamicResMgr", new DynamicResManager());
 		$windowImmit("$ctxMenuMgr", new ContextMenuManager());
 

@@ -2,7 +2,7 @@
 export class LocalDataManager implements ILocalDataManager {
 	getNum(key: ELocalDataKey, defaultValue: number = 0): number {
 		const value = this.getItem(key);
-		if (value === void 0) return defaultValue;
+		if (value === void 0 || value === null) return defaultValue;
 		const num = +value;
 		return isNaN(num) ? defaultValue : num;
 	}
@@ -12,7 +12,7 @@ export class LocalDataManager implements ILocalDataManager {
 
 	getStr(key: ELocalDataKey, defaultValue: string = ""): string {
 		const value = this.getItem(key);
-		return value === void 0 ? defaultValue : value;
+		return (value === void 0 || value === null) ? defaultValue : value;
 	}
 	setStr(key: ELocalDataKey, value: string): void {
 		this.setItem(key, value);
@@ -20,16 +20,16 @@ export class LocalDataManager implements ILocalDataManager {
 
 	getBool(key: ELocalDataKey, defaultValue: boolean = false): boolean {
 		const value = this.getItem(key);
-		if (value === void 0) return defaultValue;
+		if (value === void 0 || value === null) return defaultValue;
 		return value === "true";
 	}
 	setBool(key: ELocalDataKey, value: boolean): void {
-		this.setItem(key, value.toString());
+		this.setItem(key, (!!value).toString());
 	}
 
 	getObj<T>(key: ELocalDataKey, defaultValue: T = null): T {
 		const value = this.getItem(key);
-		if (!value) return defaultValue;
+		if (value === void 0 || value === null) return defaultValue;
 		try {
 			return JSON.parse(value);
 		} catch (error) {

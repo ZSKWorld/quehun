@@ -16,7 +16,7 @@
     <image id="cd64l" name="img_2125.png" path="/Texture/"/>
     <image id="cd64m" name="img_2024.png" path="/Texture/"/>
     <image id="cd64n" name="img_1994.png" path="/Texture/"/>
-    <image id="cd64o" name="img_1993.png" path="/Texture/"/>
+    <image id="cd64o" name="img_1993.png" path="/Texture/" scale="9grid" scale9grid="20,0,259,27"/>
     <image id="cd64p" name="img_1992.png" path="/Texture/"/>
     <image id="cd64q" name="img_1452.png" path="/Texture/"/>
     <image id="cd64s" name="img_966.png" path="/Texture/"/>
@@ -25,7 +25,9 @@
     <component id="cd64v" name="ComAchieveGroup.xml" path="/Component/"/>
     <component id="cd64w" name="ComAchieveStat.xml" path="/Component/"/>
     <component id="cd64x" name="ComAchieveRecent.xml" path="/Component/"/>
-    <component id="oo1iobij" name="RenderAchieveDetailGroup.xml" path="/Component/" exported="true"/>
+    <component id="oo1iobij" name="RenderAchieveDetailGroup.xml" path="/Component/"/>
+    <component id="oo1iobik" name="RenderAchieveDetailITop.xml" path="/Component/"/>
+    <component id="oo1iobil" name="RenderAchieveDetailItem.xml" path="/Component/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

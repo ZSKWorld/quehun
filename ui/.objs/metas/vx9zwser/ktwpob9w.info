@@ -1,4 +1,9 @@
 {
+  "objectStatus": {
+    "n3_cnou": {
+      "hidden": true
+    }
+  },
   "designImages": [
     "ui://ca43vz0elna17plome"
   ]

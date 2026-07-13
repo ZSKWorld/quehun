@@ -16,9 +16,9 @@ declare interface IRedDotNode {
 	recover(): void;
 }
 
+/** [name, parentName, path, triggers] */
 declare type IRDCheckInfo = [ERDName, ERDName?, string?, ERDTriggerType[]?];
 declare interface IRDChecker {
-	/** [name, parentName, path, triggers] */
 	get rdInfos(): IRDCheckInfo[];
 }
 

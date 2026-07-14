@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="484,200">
+  <displayList>
+    <image id="n0_uw9y" name="n0" src="uw9yobkj" fileName="Texture/img_4257.png" xy="-8,-29" size="500,237">
+      <relation target="" sidePair="width-width,height-height"/>
+    </image>
+    <list id="n1_uw9y" name="list" xy="0,0" size="484,200" overflow="scroll" defaultItem="ui://vx9zwseruw9yobl7">
+      <relation target="" sidePair="width-width"/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+    </list>
+  </displayList>
+  <relation target="n1_uw9y" sidePair="height-height"/>
+</component>

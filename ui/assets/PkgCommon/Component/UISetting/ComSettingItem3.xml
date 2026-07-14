@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1100,90" designImage="ui://ca43vz0elna17plomf" designImageOffsetX="-390" designImageOffsetY="-760" designImageAlpha="0">
+  <controller name="type" pages="0,,1," selected="0"/>
+  <displayList>
+    <image id="n17_uw9y" name="n17" src="uw9yobkn" fileName="Texture/img_4261.png" xy="0,0" size="1100,90"/>
+    <component id="n23_uw9y" name="n23" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" xy="164,25" size="40,40" aspect="true">
+      <gearDisplay controller="type" pages="1"/>
+      <relation target="n20_uw9y" sidePair="right-right"/>
+      <Button icon="ui://vx9zwseruw9yobkv"/>
+    </component>
+    <component id="n21_uw9y" name="n21" src="uw9yobl3" fileName="Component/UISetting/BtnSettingSwitch.xml" xy="598,13"/>
+    <text id="n20_uw9y" name="n20" xy="24,48" pivot="0,0.5" anchor="true" size="140,46" fontSize="34" color="#d4cfcf" vAlign="middle" leading="0" singleLine="true" text="后台静音"/>
+  </displayList>
+</component>

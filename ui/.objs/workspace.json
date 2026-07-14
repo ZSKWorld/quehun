@@ -2,10 +2,10 @@
   "libview.firstColumnWidth": 232,
   "libview.iconScale": 0,
   "doc.openedDocs": [
-    "ui://ko8zynrwoo1iobij",
-    "ui://ko8zynrwcd64obih",
     "ui://vx9zwserktwpob9w",
-    "ui://ko8zynrwoo1iobik"
+    "ui://vx9zwseruw9yobl9",
+    "ui://vx9zwseruw9yobl8",
+    "ui://vx9zwseruw9yobl7"
   ],
   "packageGroup.mine": [
     "vx9zwser",
@@ -20,6 +20,8 @@
   "doc.activeDoc": "ui://vx9zwserktwpob9w",
   "libview.twoColumn": true,
   "libview.expandedNodes": [
+    "ko8zynrw",
+    "/",
     "vx9zwser",
     "/",
     "vx9zwser",
@@ -27,7 +29,13 @@
     "vx9zwser",
     "/Component/Button/",
     "vx9zwser",
+    "/Component/UISetting/",
+    "vx9zwser",
     "/Texture/",
+    "vith2b66",
+    "/",
+    "vith2b66",
+    "/Component/",
     "ca43vz0e",
     "/",
     "ca43vz0e",
@@ -45,7 +53,9 @@
     "ca43vz0e",
     "/七日任务/",
     "ca43vz0e",
-    "/商店/"
+    "/商店/",
+    "ca43vz0e",
+    "/设置/"
   ],
   "auxline1": true,
   "showGrid": false,

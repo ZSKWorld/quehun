@@ -320,6 +320,59 @@
     <image id="cd64objo" name="img_1280.png" path="/Texture/" exported="true" scale="9grid" scale9grid="20,20,18,18"/>
     <image id="cd64objp" name="img_2008.png" path="/Texture/" exported="true" scale="9grid" scale9grid="30,30,30,30"/>
     <image id="cd64objq" name="img_204.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobjr" name="img_4255.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobjs" name="img_4256.png" path="/Texture/" exported="true"/>
+    <component id="uw9yobjt" name="BtnSettingTab.xml" path="/Component/UISetting/" exported="true"/>
+    <component id="uw9yobju" name="ComSettingContent.xml" path="/Component/UISetting/" exported="true"/>
+    <component id="uw9yobjv" name="ComSettingGroup.xml" path="/Component/UISetting/" exported="true"/>
+    <image id="uw9yobjx" name="img_1605.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobjy" name="img_4276.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobjz" name="img_4277.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobk0" name="img_4278.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobk1" name="img_4279.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobk2" name="img_4280.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobk3" name="img_4281.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobk4" name="img_4282.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobk5" name="img_4275.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobk6" name="img_4283.png" path="/Texture/" exported="true" scale="9grid" scale9grid="7,5,2,0"/>
+    <image id="uw9yobk7" name="img_4285.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobk8" name="img_4286.png" path="/Texture/" exported="true" scale="9grid"/>
+    <image id="uw9yobk9" name="img_4287.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobka" name="img_4288.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobkb" name="img_4289.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobkc" name="img_4290.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobkd" name="img_4291.png" path="/Texture/" exported="true" scale="9grid" scale9grid="10,1,280,58"/>
+    <image id="uw9yobke" name="img_4284.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobkf" name="img_4292.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobkg" name="img_4274.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobkh" name="img_4272.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobki" name="img_332.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobkj" name="img_4257.png" path="/Texture/" exported="true" scale="9grid" scale9grid="50,50,20,20"/>
+    <image id="uw9yobkk" name="img_4258.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobkl" name="img_4259.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobkm" name="img_4260.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobkn" name="img_4261.png" path="/Texture/" exported="true" scale="9grid" scale9grid="15,15,20,20"/>
+    <image id="uw9yobko" name="img_4262.png" path="/Texture/" exported="true" scale="9grid" scale9grid="35,1,30,62"/>
+    <image id="uw9yobkp" name="img_4273.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobkq" name="img_4263.png" path="/Texture/" exported="true" scale="9grid" scale9grid="35,1,30,58"/>
+    <image id="uw9yobkr" name="img_4265.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobks" name="img_4266.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobkt" name="img_4267.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobku" name="img_4268.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobkv" name="img_4269.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobkw" name="img_4270.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobkx" name="img_4271.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobky" name="img_4264.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobkz" name="img_4294.png" path="/Texture/" exported="true"/>
+    <component id="uw9yobl0" name="PbSettingSlider.xml" path="/Component/UISetting/" exported="true"/>
+    <component id="uw9yobl1" name="ComSettingItem1.xml" path="/Component/UISetting/" exported="true"/>
+    <component id="uw9yobl2" name="BtnSettingGoto.xml" path="/Component/UISetting/" exported="true"/>
+    <component id="uw9yobl3" name="BtnSettingSwitch.xml" path="/Component/UISetting/" exported="true"/>
+    <component id="uw9yobl4" name="ComSettingItem2.xml" path="/Component/UISetting/" exported="true"/>
+    <component id="uw9yobl6" name="ComSettingItem3.xml" path="/Component/UISetting/" exported="true"/>
+    <component id="uw9yobl7" name="CmbSettingOption_item.xml" path="/Component/UISetting/"/>
+    <component id="uw9yobl8" name="CmbSettingOption_popup.xml" path="/Component/UISetting/"/>
+    <component id="uw9yobl9" name="CmbSettingOption.xml" path="/Component/UISetting/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

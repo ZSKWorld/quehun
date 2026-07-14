@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="484,64" extention="ComboBox" designImage="ui://ca43vz0elna17plomg" designImageOffsetX="-1153" designImageOffsetY="-394" designImageAlpha="63">
+  <controller name="button" pages="0,up,1,down,2,over,3,selectedOver" selected="0"/>
+  <displayList>
+    <image id="n4_uw9y" name="n4" src="uw9yobko" fileName="Texture/img_4262.png" xy="0,0" size="484,64">
+      <relation target="" sidePair="width-width,height-height"/>
+    </image>
+    <image id="n6_uw9y" name="n6" src="uw9yobkl" fileName="Texture/img_4259.png" xy="443,25">
+      <relation target="" sidePair="middle-middle,right-right"/>
+    </image>
+    <text id="n5_uw9y" name="title" xy="242,32" pivot="0.5,0.5" anchor="true" size="124,42" fontSize="30" color="#d4cfcf" align="center" vAlign="middle" leading="0" singleLine="true" text="前往设置">
+      <relation target="" sidePair="center-center,middle-middle"/>
+    </text>
+  </displayList>
+  <ComboBox dropdown="ui://vx9zwseruw9yobl8"/>
+</component>

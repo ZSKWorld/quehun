@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1120,600" designImage="ui://ca43vz0elna17plome" designImageOffsetX="-380" designImageOffsetY="-220" designImageAlpha="0">
+  <displayList>
+    <image id="n0_uw9y" name="n0" src="uw9yobkd" fileName="Texture/img_4291.png" xy="0,0" size="1120,60"/>
+  </displayList>
+</component>

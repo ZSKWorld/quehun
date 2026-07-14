@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="484,64" pivot="0.5,0.5" extention="Button" designImage="ui://ca43vz0elna17plomf" designImageOffsetX="-917" designImageOffsetY="-900" designImageAlpha="0">
+  <controller name="button" pages="0,up,1,down" selected="1"/>
+  <displayList>
+    <image id="n5_uw9y" name="n5" src="uw9yobkq" fileName="Texture/img_4263.png" xy="0,0" size="484,64"/>
+    <image id="n6_uw9y" name="n6" src="uw9yobko" fileName="Texture/img_4262.png" xy="230,0" size="254,64">
+      <gearXY controller="button" pages="1" values="230,0" default="0,0" tween="true"/>
+    </image>
+    <text id="n4_mj5k" name="n4" xy="127,32" pivot="0.5,0.5" anchor="true" size="64,42" fontSize="30" color="#9aa0b1" align="center" vAlign="middle" leading="0" singleLine="true" text="关闭">
+      <gearColor controller="button" pages="1" values="#9aa0b1,#000000" default="#d4cfcf,#000000"/>
+    </text>
+    <text id="n7_uw9y" name="n7" xy="357,32" pivot="0.5,0.5" anchor="true" size="64,42" fontSize="30" color="#d4cfcf" align="center" vAlign="middle" leading="0" singleLine="true" text="开启">
+      <gearColor controller="button" pages="1" values="#d4cfcf,#000000" default="#9aa0b1,#000000"/>
+    </text>
+  </displayList>
+  <Button mode="Check"/>
+</component>

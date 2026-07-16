@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1160,630" overflow="scroll" scrollBarFlags="132" scrollBarRes="ui://vx9zwserj0ddob7h," designImage="ui://ca43vz0elna17plomg" designImageAlpha="0">
+  <displayList>
+    <image id="n1_ejr8" name="n1" src="uw9yobkd" fileName="Texture/img_4291.png" xy="0,0" size="1120,60"/>
+    <image id="n2_ejr8" name="n2" src="uw9yobkn" fileName="Texture/img_4261.png" xy="11,70" size="1100,90"/>
+    <image id="n3_ejr8" name="n3" src="uw9yobkn" fileName="Texture/img_4261.png" xy="11,167" size="1100,90"/>
+    <component id="n8_ejr8" name="n8" src="uw9yobl9" fileName="Component/UISetting/CmbSettingOption.xml" xy="609,83">
+      <ComboBox visibleItemCount="10">
+        <item title="高"/>
+        <item title="低"/>
+      </ComboBox>
+    </component>
+    <component id="n4_ejr8" name="bgMuteOn" src="uw9yobl3" fileName="Component/UISetting/BtnSettingSwitch.xml" xy="609,180"/>
+    <text id="n5_ejr8" name="n5" xy="14,3" pivot="0,0.5" size="84,54" fontSize="40" color="#edb26f" vAlign="middle" leading="0" singleLine="true" text="画面"/>
+    <text id="n6_ejr8" name="n6" xy="35,118" pivot="0,0.5" anchor="true" size="72,46" fontSize="34" color="#d4cfcf" vAlign="middle" leading="0" singleLine="true" text="帧率"/>
+    <text id="n7_ejr8" name="n7" xy="35,215" pivot="0,0.5" anchor="true" size="140,46" fontSize="34" color="#d4cfcf" vAlign="middle" leading="0" singleLine="true" text="活动特效"/>
+  </displayList>
+</component>

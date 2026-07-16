@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1160,630" overflow="scroll" scrollBarFlags="132" scrollBarRes="ui://vx9zwserj0ddob7h," designImage="ui://ca43vz0elna17plomk" designImageOffsetX="-1698" designImageAlpha="0">
+  <displayList>
+    <image id="n1_ejr8" name="n1" src="uw9yobkd" fileName="Texture/img_4291.png" xy="0,0" size="1120,60"/>
+    <image id="n3_ejr8" name="n3" src="uw9yobkn" fileName="Texture/img_4261.png" xy="11,70" size="1100,90"/>
+    <image id="n6_ejr8" name="n6" src="uw9yobkn" fileName="Texture/img_4261.png" xy="11,167" size="1100,90"/>
+    <image id="n9_ejr8" name="n9" src="uw9yobkn" fileName="Texture/img_4261.png" xy="11,264" size="1100,90"/>
+    <image id="n12_ejr8" name="n12" src="uw9yobkn" fileName="Texture/img_4261.png" xy="11,361" size="1100,90"/>
+    <image id="n15_ejr8" name="n15" src="uw9yobkn" fileName="Texture/img_4261.png" xy="11,458" size="1100,90"/>
+    <image id="n18_ejr8" name="n18" src="uw9yobkn" fileName="Texture/img_4261.png" xy="11,555" size="1100,90"/>
+    <image id="n21_ejr8" name="n21" src="uw9yobkn" fileName="Texture/img_4261.png" xy="11,652" size="1100,90"/>
+    <image id="n24_ejr8" name="n24" src="uw9yobkn" fileName="Texture/img_4261.png" xy="11,749" size="1100,90"/>
+    <component id="n4_ejr8" name="yiZhong" src="uw9yobl2" fileName="Component/UISetting/BtnSettingGoto.xml" xy="609,83">
+      <Button title="查看"/>
+    </component>
+    <component id="n7_ejr8" name="giftCode" src="uw9yobl2" fileName="Component/UISetting/BtnSettingGoto.xml" xy="609,180">
+      <Button title="兑换"/>
+    </component>
+    <component id="n10_ejr8" name="keFuCenter" src="uw9yobl2" fileName="Component/UISetting/BtnSettingGoto.xml" xy="609,277">
+      <Button title="跳转"/>
+    </component>
+    <component id="n13_ejr8" name="emailBind" src="uw9yobl2" fileName="Component/UISetting/BtnSettingGoto.xml" xy="609,374">
+      <Button title="已绑定"/>
+    </component>
+    <component id="n16_ejr8" name="userAgreement" src="uw9yobl2" fileName="Component/UISetting/BtnSettingGoto.xml" xy="609,471">
+      <Button title="查看"/>
+    </component>
+    <component id="n19_ejr8" name="privacyPolicy" src="uw9yobl2" fileName="Component/UISetting/BtnSettingGoto.xml" xy="609,568">
+      <Button title="查看"/>
+    </component>
+    <component id="n22_ejr8" name="resetSetting" src="uw9yobl2" fileName="Component/UISetting/BtnSettingGoto.xml" xy="609,665"/>
+    <component id="n25_ejr8" name="streamerOn" src="uw9yobl3" fileName="Component/UISetting/BtnSettingSwitch.xml" xy="609,762"/>
+    <text id="n2_ejr8" name="n2" xy="14,3" pivot="0,0.5" size="84,54" fontSize="40" color="#edb26f" vAlign="middle" leading="0" singleLine="true" text="其他"/>
+    <text id="n5_ejr8" name="n5" xy="35,118" pivot="0,0.5" anchor="true" size="140,46" fontSize="34" color="#d4cfcf" vAlign="middle" leading="0" singleLine="true" text="役种一览"/>
+    <text id="n8_ejr8" name="n8" xy="35,215" pivot="0,0.5" anchor="true" size="106,46" fontSize="34" color="#d4cfcf" vAlign="middle" leading="0" singleLine="true" text="礼品码"/>
+    <text id="n11_ejr8" name="n11" xy="35,312" pivot="0,0.5" anchor="true" size="140,46" fontSize="34" color="#d4cfcf" vAlign="middle" leading="0" singleLine="true" text="客服中心"/>
+    <text id="n14_ejr8" name="n14" xy="35,409" pivot="0,0.5" anchor="true" size="140,46" fontSize="34" color="#d4cfcf" vAlign="middle" leading="0" singleLine="true" text="邮箱认证"/>
+    <text id="n17_ejr8" name="n17" xy="35,506" pivot="0,0.5" anchor="true" size="140,46" fontSize="34" color="#d4cfcf" vAlign="middle" leading="0" singleLine="true" text="用户协议"/>
+    <text id="n20_ejr8" name="n20" xy="35,603" pivot="0,0.5" anchor="true" size="140,46" fontSize="34" color="#d4cfcf" vAlign="middle" leading="0" singleLine="true" text="隐私条款"/>
+    <text id="n23_ejr8" name="n23" xy="35,700" pivot="0,0.5" anchor="true" size="208,46" fontSize="34" color="#d4cfcf" vAlign="middle" leading="0" singleLine="true" text="恢复默认设置"/>
+    <text id="n26_ejr8" name="n26" xy="35,797" pivot="0,0.5" anchor="true" size="140,46" fontSize="34" color="#d4cfcf" vAlign="middle" leading="0" singleLine="true" text="主播模式"/>
+  </displayList>
+</component>

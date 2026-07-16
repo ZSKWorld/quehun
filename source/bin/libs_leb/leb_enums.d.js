@@ -59,6 +59,7 @@ ELocalDataKey = {
 	DeviceId: "LocalDataKey_DeviceId",
 	MultiLogin: "LocalDataKey_MultiLogin",
 	PlayerInfoLevelShowType: "LocalDataKey_PlayerInfoLevelShowType",
+	Setting: "LocalDataKey_Setting",
 }
 
 EKeyCode = {
@@ -535,6 +536,7 @@ EColorString = {
 	_e8af71: "#e8af71",
 	_eab65e: "#eab65e",
 	_ebb661: "#ebb661",
+	_edb26f: "#EDB26F",
 	_f17828: "#f17828",
 	_f56aff: "#f56aff",
 	_f7b75d: "#f7b75d",

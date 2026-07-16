@@ -8,28 +8,30 @@ declare namespace DO {
 		/** 0:顺序播放, 1-随机播放 */
 		mode: 0 | 1;
 		/** 音乐列表 */
-		list: number[];
+		get list(): number[];
+		add(id: number): void;
+		remove(id: number): void;
 	}
 
 	interface IAudioSetting {
 		/** 全局音量 */
-		globalVolume: IVolumeInfo;
+		get globalVolume(): IVolumeInfo;
 		/** 背景音乐音量 */
-		bgmVolume: IVolumeInfo;
+		get bgmVolume(): IVolumeInfo;
 		/** 音效音量 */
-		seVolume: IVolumeInfo;
+		get seVolume(): IVolumeInfo;
 		/** 立直音乐音量 */
-		liqiVolume: IVolumeInfo;
+		get liqiVolume(): IVolumeInfo;
 		/** 角色音量 */
-		charVolume: IVolumeInfo;
+		get charVolume(): IVolumeInfo;
 		/** 角色音量单独设置 */
-		charVolumeMap: Record<number, IVolumeInfo>;
+		get charVolumeMap(): Record<number, IVolumeInfo>;
 		/** 特殊音效 */
 		specialVolume: boolean;
 		/** 大厅背景音乐 */
-		lobbyBgm: IBgmInfo;
+		get lobbyBgm(): IBgmInfo;
 		/** 对局背景音乐 */
-		mjBgm: IBgmInfo;
+		get mjBgm(): IBgmInfo;
 		/** 后台静音 */
 		backgroundMute: boolean;
 	}
@@ -53,9 +55,9 @@ declare namespace DO {
 		language: ELanguage;
 	}
 
-	/** 主播模式 */
-	interface IStreamerInfo {
-		on: boolean;
+	interface IOtherSetting {
+		/** 是否开启主播模式 */
+		streamerOn: boolean;
 		/** 跨服昵称 */
 		foreignNickname: boolean;
 		/** 同服昵称 */
@@ -68,10 +70,6 @@ declare namespace DO {
 		matchNickname: boolean;
 		/** 排行昵称 */
 		rankNickname: boolean;
-	}
-
-	interface IOtherSetting {
-		streamer: IStreamerInfo;
 	}
 
 	interface ISettingDO {

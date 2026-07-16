@@ -16,7 +16,7 @@ export class UIMainView extends ExtendClass<IView, UIMain>(UIMain) implements IV
 		btn_bag.onClick(this, this.openView, [EViewID.UIBagView, null, EViewOpenType.Hide]);
 		btn_shop.onClick(this, this.openView, [EViewID.UIShopView, null, EViewOpenType.Hide]);
 		btn_treasure.onClick(this, this.openView, [EViewID.UITreasureView, null, EViewOpenType.Hide]);
-		btn_setting.onClick(this, this.openView, [EViewID.UISettingView]);
+		btn_setting.onClick(this, this.openView, [EViewID.UISettingView, null]);
 		btn_help.onClick(this, this.openView, [EViewID.UIHelpView]);
 		btn_guide.onClick(this, this.openView, [EViewID.UIGuideView]);
 		btn_camera.onClick(this, this.openView, [EViewID.UICameraView, null, EViewOpenType.Hide]);

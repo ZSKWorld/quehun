@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="484,64" extention="ComboBox" designImage="ui://ca43vz0elna17plomg" designImageOffsetX="-1153" designImageOffsetY="-394" designImageAlpha="63">
-  <controller name="button" pages="0,up,1,down,2,over,3,selectedOver" selected="0"/>
   <displayList>
     <image id="n4_uw9y" name="n4" src="uw9yobko" fileName="Texture/img_4262.png" xy="0,0" size="484,64">
       <relation target="" sidePair="width-width,height-height"/>

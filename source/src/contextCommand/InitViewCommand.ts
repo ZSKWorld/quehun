@@ -62,6 +62,11 @@ import { ComMJItemView } from "../core/ui/view/PkgCommon/view/coms/ComMJItemView
 import { ComRechargeItemView } from "../core/ui/view/PkgCommon/view/coms/ComRechargeItemView";
 import { ComRechargeVIPView } from "../core/ui/view/PkgCommon/view/coms/ComRechargeVIPView";
 import { ComRedDot1View } from "../core/ui/view/PkgCommon/view/coms/ComRedDot1View";
+import { ComSettingAudioView } from "../core/ui/view/PkgCommon/view/coms/ComSettingAudioView";
+import { ComSettingGraphicView } from "../core/ui/view/PkgCommon/view/coms/ComSettingGraphicView";
+import { ComSettingLangView } from "../core/ui/view/PkgCommon/view/coms/ComSettingLangView";
+import { ComSettingOtherView } from "../core/ui/view/PkgCommon/view/coms/ComSettingOtherView";
+import { ComSettingPreferView } from "../core/ui/view/PkgCommon/view/coms/ComSettingPreferView";
 import { ComTipInfoView } from "../core/ui/view/PkgCommon/view/coms/ComTipInfoView";
 import { ComTipInfoMediator } from "../core/ui/view/PkgCommon/mediator/coms/ComTipInfoMediator";
 import { ComTitleView } from "../core/ui/view/PkgCommon/view/coms/ComTitleView";
@@ -235,6 +240,11 @@ export class InitViewCommand extends Command {
 		register(EViewID.ComRechargeItemView, EViewType.Component, ComRechargeItemView);
 		register(EViewID.ComRechargeVIPView, EViewType.Component, ComRechargeVIPView);
 		register(EViewID.ComRedDot1View, EViewType.Component, ComRedDot1View);
+		register(EViewID.ComSettingAudioView, EViewType.Component, ComSettingAudioView);
+		register(EViewID.ComSettingGraphicView, EViewType.Component, ComSettingGraphicView);
+		register(EViewID.ComSettingLangView, EViewType.Component, ComSettingLangView);
+		register(EViewID.ComSettingOtherView, EViewType.Component, ComSettingOtherView);
+		register(EViewID.ComSettingPreferView, EViewType.Component, ComSettingPreferView);
 		register(EViewID.ComTipInfoView, EViewType.Component, ComTipInfoView, ComTipInfoMediator);
 		register(EViewID.ComTitleView, EViewType.Component, ComTitleView);
 		register(EViewID.ComAnnounceContentView, EViewType.Component, ComAnnounceContentView);

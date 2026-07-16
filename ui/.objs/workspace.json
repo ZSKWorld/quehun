@@ -3,9 +3,12 @@
   "libview.iconScale": 0,
   "doc.openedDocs": [
     "ui://vx9zwserktwpob9w",
-    "ui://vx9zwseruw9yobl9",
+    "ui://vx9zwserfip2obld",
+    "ui://vx9zwserfip2oblh",
+    "ui://vx9zwseruw9yobl2",
     "ui://vx9zwseruw9yobl8",
-    "ui://vx9zwseruw9yobl7"
+    "ui://vx9zwseruw9yobl3",
+    "ui://vx9zwseruw9yobl9"
   ],
   "packageGroup.mine": [
     "vx9zwser",
@@ -17,7 +20,7 @@
   "test.device": "iPhone 8 Plus",
   "canvasColor": 10066329,
   "auxline2": true,
-  "doc.activeDoc": "ui://vx9zwserktwpob9w",
+  "doc.activeDoc": "ui://vx9zwserfip2obld",
   "libview.twoColumn": true,
   "libview.expandedNodes": [
     "ko8zynrw",
@@ -28,8 +31,6 @@
     "/Component/",
     "vx9zwser",
     "/Component/Button/",
-    "vx9zwser",
-    "/Component/UISetting/",
     "vx9zwser",
     "/Texture/",
     "vith2b66",

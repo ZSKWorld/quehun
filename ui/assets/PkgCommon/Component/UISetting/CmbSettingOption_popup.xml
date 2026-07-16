@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="484,200">
+<component size="484,217">
   <displayList>
-    <image id="n0_uw9y" name="n0" src="uw9yobkj" fileName="Texture/img_4257.png" xy="-8,-29" size="500,237">
+    <image id="n0_uw9y" name="n0" src="uw9yobkj" fileName="Texture/img_4257.png" xy="-8,-29" size="500,254">
       <relation target="" sidePair="width-width,height-height"/>
     </image>
-    <list id="n1_uw9y" name="list" xy="0,0" size="484,200" overflow="scroll" defaultItem="ui://vx9zwseruw9yobl7">
+    <list id="n1_uw9y" name="list" xy="0,17" size="484,173" overflow="scroll" scrollBarFlags="4" scrollBarRes="ui://vx9zwserj0ddob7h," defaultItem="ui://vx9zwseruw9yobl7" autoClearItems="true">
       <relation target="" sidePair="width-width"/>
-      <item/>
-      <item/>
-      <item/>
-      <item/>
+      <item title="111"/>
+      <item title="222"/>
+      <item title="333"/>
+      <item title="444"/>
       <item/>
       <item/>
       <item/>

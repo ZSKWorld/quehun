@@ -193,13 +193,13 @@ declare interface IFacade {
 	 * @param viewId 
 	 * @param fullScreen default false
 	 */
-	createView(viewId: EViewID, fullScreen?: boolean): IView;
+	createView<T extends IView = IView>(viewId: EViewID, fullScreen?: boolean): T;
 	/**
 	 * 
 	 * @param viewId 
 	 * @param fullScreen default false
 	 */
-	createMediator(viewId: EViewID, fullScreen?: boolean): IMediator;
+	createMediator<T extends IMediator = IMediator>(viewId: EViewID, fullScreen?: boolean): T;
 
 	registerCommand(notifyName: string, cls: ICommandClass): void;
 	hasCommand(notifyName: string): boolean;

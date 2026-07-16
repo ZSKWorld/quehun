@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="305,12" extention="ProgressBar" designImage="ui://ca43vz0elna17plome" designImageOffsetX="-1079" designImageOffsetY="-329" designImageAlpha="0">
+<component size="305,12" extention="Slider" designImage="ui://ca43vz0elna17plome" designImageOffsetX="-1079" designImageOffsetY="-329" designImageAlpha="0">
   <displayList>
     <image id="n2_ieav" name="n2" src="uw9yobk6" fileName="Texture/img_4283.png" xy="0,0" size="305,12">
       <relation target="" sidePair="width-width,height-height"/>
@@ -7,13 +7,12 @@
     <image id="n3_ieav" name="bar" src="uw9yobk8" fileName="Texture/img_4286.png" xy="0,0" size="305,12">
       <relation target="" sidePair="width-width,height-height"/>
     </image>
-    <text id="n5_ieav" name="title" xy="332,9" pivot="0,0.5" anchor="true" size="40,42" fontSize="30" color="#d4cfcf" vAlign="middle" singleLine="true" text="10">
+    <loader id="n6_uw9y" name="grip" xy="293,-19" size="24,50" url="ui://vx9zwseruw9yobke">
+      <relation target="n3_ieav" sidePair="right-right"/>
+    </loader>
+    <text id="n5_ieav" name="title" xy="332,6" pivot="0,0.5" anchor="true" size="40,42" fontSize="30" color="#d4cfcf" vAlign="middle" singleLine="true" text="10">
       <relation target="" sidePair="middle-middle,left-right"/>
     </text>
-    <image id="n6_uw9y" name="n6" src="uw9yobke" fileName="Texture/img_4284.png" xy="293,-19">
-      <relation target="n3_ieav" sidePair="right-right"/>
-    </image>
   </displayList>
-  <ProgressBar titleType="value"/>
-  <transition name="t0" autoPlay="true" autoPlayRepeat="-1" frameRate="60"/>
+  <Slider titleType="value" wholeNumbers="true"/>
 </component>

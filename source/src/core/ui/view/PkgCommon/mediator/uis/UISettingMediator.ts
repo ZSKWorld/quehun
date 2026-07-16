@@ -7,4 +7,7 @@ export class UISettingMediator extends MediatorBase<UISettingView, IUISettingDat
 
 	}
 
+	override onEnable() {
+		this.view.refresh(this.data || 0);
+	}
 }

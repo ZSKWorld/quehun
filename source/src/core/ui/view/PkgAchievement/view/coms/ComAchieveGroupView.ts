@@ -11,7 +11,7 @@ export class ComAchieveGroupView extends ExtendClass<IView, ComAchieveGroup>(Com
 	override onCreate() {
 		const { _groupViews, graph_empty } = this;
 		$user.achievement.statisticsInfo.groups.forEach((v, i) => {
-			const view = $facade.createView(EViewID.RenderAchieveGroupView) as RenderAchieveGroupView;
+			const view = $facade.createView<RenderAchieveGroupView>(EViewID.RenderAchieveGroupView);
 			this.addChild(view);
 			view.setXY(160 + i * 220, i % 2 == 0 ? 0 : 350);
 			_groupViews.push(view);

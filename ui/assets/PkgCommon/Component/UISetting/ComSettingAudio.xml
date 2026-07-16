@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1160,630" overflow="scroll" scrollBarFlags="132" scrollBarRes="ui://vx9zwserj0ddob7h," designImage="ui://ca43vz0elna17plomf" designImageOffsetX="-380" designImageOffsetY="392" designImageAlpha="0">
+  <controller name="globalMute" pages="0,,1," selected="0"/>
+  <displayList>
+    <image id="n1_fip2" name="n1" src="uw9yobkd" fileName="Texture/img_4291.png" xy="0,0" size="1120,60"/>
+    <image id="n35_hsia" name="n35" src="uw9yobkd" fileName="Texture/img_4291.png" xy="0,784" size="1120,60"/>
+    <image id="n47_ejr8" name="n47" src="uw9yobkd" fileName="Texture/img_4291.png" xy="0,1083" size="1120,60"/>
+    <image id="n6_fip2" name="n6" src="uw9yobkn" fileName="Texture/img_4261.png" xy="11,70" size="1100,90"/>
+    <image id="n10_fip2" name="n10" src="uw9yobkn" fileName="Texture/img_4261.png" xy="11,167" size="1100,90"/>
+    <image id="n14_fip2" name="n14" src="uw9yobkn" fileName="Texture/img_4261.png" xy="11,264" size="1100,90"/>
+    <image id="n18_fip2" name="n18" src="uw9yobkn" fileName="Texture/img_4261.png" xy="11,361" size="1100,90"/>
+    <image id="n22_fip2" name="n22" src="uw9yobkn" fileName="Texture/img_4261.png" xy="11,458" size="1100,90"/>
+    <image id="n27_fip2" name="n27" src="uw9yobkn" fileName="Texture/img_4261.png" xy="11,555" size="1100,90"/>
+    <image id="n31_fip2" name="n31" src="uw9yobkn" fileName="Texture/img_4261.png" xy="11,652" size="1100,90"/>
+    <image id="n40_hsia" name="n40" src="uw9yobkn" fileName="Texture/img_4261.png" xy="11,854" size="1100,90"/>
+    <image id="n43_hsia" name="n43" src="uw9yobkn" fileName="Texture/img_4261.png" xy="11,951" size="1100,90"/>
+    <image id="n49_ejr8" name="n49" src="uw9yobkn" fileName="Texture/img_4261.png" xy="11,1153" size="1100,90"/>
+    <image id="n28_fip2" name="n28" src="uw9yobky" fileName="Texture/img_4264.png" xy="37,596"/>
+    <image id="n37_hsia" name="n37" src="uw9yobka" fileName="Texture/img_4288.png" xy="707,802">
+      <relation target="n38_hsia" sidePair="left-left"/>
+    </image>
+    <component id="n7_fip2" name="globalVolumeOn" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" xy="608,83" size="64,64" aspect="true">
+      <Button icon="ui://vx9zwseruw9yobkc" selectedIcon="ui://vx9zwseruw9yobkb"/>
+    </component>
+    <component id="n11_fip2" name="bgmVolumeOn" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" xy="608,180" size="64,64" aspect="true">
+      <Button icon="ui://vx9zwseruw9yobkc" selectedIcon="ui://vx9zwseruw9yobkb"/>
+    </component>
+    <component id="n15_fip2" name="seVolumeOn" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" xy="608,277" size="64,64" aspect="true">
+      <Button icon="ui://vx9zwseruw9yobkc" selectedIcon="ui://vx9zwseruw9yobkb"/>
+    </component>
+    <component id="n19_fip2" name="liqiVolumeOn" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" xy="608,374" size="64,64" aspect="true">
+      <Button icon="ui://vx9zwseruw9yobkc" selectedIcon="ui://vx9zwseruw9yobkb"/>
+    </component>
+    <component id="n23_fip2" name="charVolumeOn" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" xy="608,471" size="64,64" aspect="true">
+      <Button icon="ui://vx9zwseruw9yobkc" selectedIcon="ui://vx9zwseruw9yobkb"/>
+    </component>
+    <component id="n32_fip2" name="specialVolumeTip" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" xy="175,680" size="40,40" aspect="true">
+      <relation target="n34_fip2" sidePair="right-right"/>
+      <Button icon="ui://vx9zwseruw9yobkv"/>
+    </component>
+    <component id="n8_fip2" name="globalVolume" src="uw9yobl0" fileName="Component/UISetting/PbSettingSlider.xml" xy="701,109" size="303,12">
+      <Slider max="100"/>
+    </component>
+    <component id="n12_fip2" name="bgmVolume" src="uw9yobl0" fileName="Component/UISetting/PbSettingSlider.xml" xy="701,206" size="303,12">
+      <Slider max="100"/>
+    </component>
+    <component id="n16_fip2" name="seVolume" src="uw9yobl0" fileName="Component/UISetting/PbSettingSlider.xml" xy="701,303" size="303,12">
+      <Slider max="100"/>
+    </component>
+    <component id="n20_fip2" name="liqiVolume" src="uw9yobl0" fileName="Component/UISetting/PbSettingSlider.xml" xy="701,400" size="303,12">
+      <Slider max="100"/>
+    </component>
+    <component id="n24_fip2" name="charVolume" src="uw9yobl0" fileName="Component/UISetting/PbSettingSlider.xml" xy="701,497" size="303,12">
+      <Slider max="100"/>
+    </component>
+    <component id="n29_fip2" name="charVolumeSet" src="uw9yobl2" fileName="Component/UISetting/BtnSettingGoto.xml" xy="609,568"/>
+    <component id="n33_fip2" name="specialVolumeOn" src="uw9yobl3" fileName="Component/UISetting/BtnSettingSwitch.xml" xy="609,665"/>
+    <component id="n41_hsia" name="lobbyBgmSet" src="uw9yobl2" fileName="Component/UISetting/BtnSettingGoto.xml" xy="609,867"/>
+    <component id="n44_hsia" name="mjBgmSet" src="uw9yobl2" fileName="Component/UISetting/BtnSettingGoto.xml" xy="609,964"/>
+    <component id="n50_ejr8" name="backgroundMuteOn" src="uw9yobl3" fileName="Component/UISetting/BtnSettingSwitch.xml" xy="609,1166"/>
+    <text id="n3_fip2" name="n3" xy="14,3" pivot="0,0.5" size="84,54" fontSize="40" color="#edb26f" vAlign="middle" leading="0" singleLine="true" text="音量"/>
+    <text id="n9_fip2" name="n9" xy="35,92" pivot="0,0.5" size="140,46" fontSize="34" color="#d4cfcf" vAlign="middle" leading="0" singleLine="true" text="全局音量"/>
+    <text id="n13_fip2" name="n13" xy="35,189" pivot="0,0.5" size="140,46" fontSize="34" color="#d4cfcf" vAlign="middle" leading="0" singleLine="true" text="背景音乐"/>
+    <text id="n17_fip2" name="n17" xy="35,286" pivot="0,0.5" size="72,46" fontSize="34" color="#d4cfcf" vAlign="middle" leading="0" singleLine="true" text="音效"/>
+    <text id="n21_fip2" name="n21" xy="35,383" pivot="0,0.5" size="140,46" fontSize="34" color="#d4cfcf" vAlign="middle" leading="0" singleLine="true" text="立直音乐"/>
+    <text id="n25_fip2" name="n25" xy="35,480" pivot="0,0.5" size="140,46" fontSize="34" color="#d4cfcf" vAlign="middle" leading="0" singleLine="true" text="雀士语音"/>
+    <text id="n30_fip2" name="n30" xy="51,603" pivot="0,0.5" anchor="true" size="244,42" fontSize="30" color="#8d99bb" vAlign="middle" leading="0" singleLine="true" text="雀士语音单独配置"/>
+    <text id="n34_fip2" name="n34" xy="35,700" pivot="0,0.5" anchor="true" size="140,46" fontSize="34" color="#d4cfcf" vAlign="middle" leading="0" singleLine="true" text="特殊语音"/>
+    <text id="n36_hsia" name="n36" xy="14,787" pivot="0,0.5" size="164,54" fontSize="40" color="#edb26f" vAlign="middle" leading="0" singleLine="true" text="曲目设置"/>
+    <text id="n38_hsia" name="bgmType" xy="739,793" pivot="1,0.5" size="154,42" fontSize="30" color="#8d99bb" vAlign="middle" singleLine="true" text="大厅音乐：">
+      <relation target="n39_hsia" sidePair="right-left"/>
+    </text>
+    <text id="n39_hsia" name="bgmName" xy="937,793" pivot="1,0.5" size="124,42" fontSize="30" color="#d4cfcf" vAlign="middle" singleLine="true" text="隆冬迎岁"/>
+    <text id="n42_hsia" name="n42" xy="35,902" pivot="0,0.5" anchor="true" size="140,46" fontSize="34" color="#d4cfcf" vAlign="middle" leading="0" singleLine="true" text="大厅曲目"/>
+    <text id="n45_hsia" name="n45" xy="35,999" pivot="0,0.5" anchor="true" size="140,46" fontSize="34" color="#d4cfcf" vAlign="middle" leading="0" singleLine="true" text="对局曲目"/>
+    <text id="n48_ejr8" name="n48" xy="14,1086" pivot="0,0.5" size="164,54" fontSize="40" color="#edb26f" vAlign="middle" leading="0" singleLine="true" text="播放控制"/>
+    <text id="n51_ejr8" name="n51" xy="35,1201" pivot="0,0.5" anchor="true" size="140,46" fontSize="34" color="#d4cfcf" vAlign="middle" leading="0" singleLine="true" text="后台静音"/>
+    <loader id="n52_ejr8" name="n52" xy="11,167" size="1100,90" url="ui://vx9zwseruw9yobku" fill="scaleFree">
+      <gearDisplay controller="globalMute" pages="1"/>
+    </loader>
+    <loader id="n53_ejr8" name="n53" xy="11,264" size="1100,90" url="ui://vx9zwseruw9yobku" fill="scaleFree">
+      <gearDisplay controller="globalMute" pages="1"/>
+    </loader>
+    <loader id="n54_ejr8" name="n54" xy="11,361" size="1100,90" url="ui://vx9zwseruw9yobku" fill="scaleFree">
+      <gearDisplay controller="globalMute" pages="1"/>
+    </loader>
+    <loader id="n55_ejr8" name="n55" xy="11,458" size="1100,90" url="ui://vx9zwseruw9yobku" fill="scaleFree">
+      <gearDisplay controller="globalMute" pages="1"/>
+    </loader>
+    <loader id="n56_ejr8" name="n56" xy="11,555" size="1100,90" url="ui://vx9zwseruw9yobku" fill="scaleFree">
+      <gearDisplay controller="globalMute" pages="1"/>
+    </loader>
+    <loader id="n57_ejr8" name="n57" xy="11,652" size="1100,90" url="ui://vx9zwseruw9yobku" fill="scaleFree">
+      <gearDisplay controller="globalMute" pages="1"/>
+    </loader>
+  </displayList>
+</component>

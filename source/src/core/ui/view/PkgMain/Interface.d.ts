@@ -59,9 +59,7 @@ declare interface IUIPaipuData {
 
 declare type IUIRankData = any;
 
-declare interface IUISettingData {
-
-}
+declare type IUISettingData = 0 | 1 | 2 | 3 | 4;
 
 declare interface IUIShopData {
 	currencyType?: ECurrencyType;

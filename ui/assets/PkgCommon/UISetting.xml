@@ -1,27 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0elna17plome" designImageAlpha="100">
+<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0elna17plome" designImageAlpha="0">
+  <controller name="type" pages="0,,1,,2,,3,,4," selected="4"/>
   <displayList>
     <component id="n5_cnou" name="mask" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" xy="0,0" size="1920,1080"/>
     <component id="n3_cnou" name="n3" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" xy="958,540" pivot="0.5,0.5" anchor="true" size="1295,874"/>
-    <component id="n14_uw9y" name="content" src="uw9yobju" fileName="Component/UISetting/ComSettingContent.xml" xy="380,220" size="1160,630"/>
+    <component id="n18_fip2" name="audio" src="fip2obld" fileName="Component/UISetting/ComSettingAudio.xml" xy="380,220">
+      <gearDisplay controller="type" pages="0"/>
+    </component>
+    <component id="n19_fip2" name="graphic" src="fip2oble" fileName="Component/UISetting/ComSettingGraphic.xml" xy="380,220">
+      <gearDisplay controller="type" pages="1"/>
+    </component>
+    <component id="n20_fip2" name="prefer" src="fip2oblf" fileName="Component/UISetting/ComSettingPrefer.xml" xy="380,220">
+      <gearDisplay controller="type" pages="2"/>
+    </component>
+    <component id="n21_fip2" name="lang" src="fip2oblg" fileName="Component/UISetting/ComSettingLang.xml" xy="380,220">
+      <gearDisplay controller="type" pages="3"/>
+    </component>
+    <component id="n22_fip2" name="other" src="fip2oblh" fileName="Component/UISetting/ComSettingOther.xml" xy="380,220">
+      <gearDisplay controller="type" pages="4"/>
+    </component>
     <component id="n4_cnou" name="close" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" xy="1484,138" size="70,70">
       <relation target="n3_cnou" sidePair="right-right,top-top"/>
       <Button icon="ui://vx9zwserj0ddob7b"/>
     </component>
-    <component id="n8_uw9y" name="tab0" src="uw9yobjt" fileName="Component/UISetting/BtnSettingTab.xml" xy="124,188" group="n13_uw9y">
-      <Button checked="true" title="声音" titleFontSize="40"/>
+    <component id="n8_uw9y" name="n8" src="uw9yobjt" fileName="Component/UISetting/BtnSettingTab.xml" xy="124,188" group="n13_uw9y">
+      <Button title="声音" titleFontSize="40" controller="type" page="0"/>
     </component>
-    <component id="n9_uw9y" name="tab1" src="uw9yobjt" fileName="Component/UISetting/BtnSettingTab.xml" xy="124,296" group="n13_uw9y">
-      <Button title="画面" titleFontSize="40"/>
+    <component id="n9_uw9y" name="n9" src="uw9yobjt" fileName="Component/UISetting/BtnSettingTab.xml" xy="124,296" group="n13_uw9y">
+      <Button title="画面" titleFontSize="40" controller="type" page="1"/>
     </component>
-    <component id="n10_uw9y" name="tab2" src="uw9yobjt" fileName="Component/UISetting/BtnSettingTab.xml" xy="124,404" group="n13_uw9y">
-      <Button title="偏好" titleFontSize="40"/>
+    <component id="n10_uw9y" name="n10" src="uw9yobjt" fileName="Component/UISetting/BtnSettingTab.xml" xy="124,404" group="n13_uw9y">
+      <Button title="偏好" titleFontSize="40" controller="type" page="2"/>
     </component>
-    <component id="n11_uw9y" name="tab3" src="uw9yobjt" fileName="Component/UISetting/BtnSettingTab.xml" xy="124,512" group="n13_uw9y">
-      <Button title="语言" titleFontSize="40"/>
+    <component id="n11_uw9y" name="n11" src="uw9yobjt" fileName="Component/UISetting/BtnSettingTab.xml" xy="124,512" group="n13_uw9y">
+      <Button title="语言" titleFontSize="40" controller="type" page="3"/>
     </component>
-    <component id="n12_uw9y" name="tab4" src="uw9yobjt" fileName="Component/UISetting/BtnSettingTab.xml" xy="124,620" group="n13_uw9y">
-      <Button title="其他" titleFontSize="40"/>
+    <component id="n12_uw9y" name="n12" src="uw9yobjt" fileName="Component/UISetting/BtnSettingTab.xml" xy="124,620" group="n13_uw9y">
+      <Button checked="true" title="其他" titleFontSize="40" controller="type" page="4"/>
     </component>
     <group id="n13_uw9y" name="n13" xy="124,188" size="248,540"/>
     <component id="n16_uw9y" name="logout" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="374,866" size="220,75">
@@ -29,14 +44,5 @@
     </component>
     <text id="n15_uw9y" name="version" xy="1139,882" pivot="1,0.5" size="402,42" fontSize="30" color="#9ba1b2" align="right" vAlign="middle" singleLine="true" text="当前版本v0.16.251.W.4.0.45"/>
     <text id="n7_uw9y" name="n7" xy="909,142" pivot="0.5,0.5" size="100,64" font="ui://vx9zwserrpakobeu" fontSize="48" color="#e0aa6e" vAlign="middle" singleLine="true" text="设置"/>
-    <component id="n17_uw9y" name="n17" src="uw9yobl9" fileName="Component/UISetting/CmbSettingOption.xml" xy="550,250">
-      <ComboBox visibleItemCount="10">
-        <item/>
-        <item/>
-        <item/>
-        <item/>
-        <item/>
-      </ComboBox>
-    </component>
   </displayList>
 </component>

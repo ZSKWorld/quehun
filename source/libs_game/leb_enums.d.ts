@@ -82,8 +82,16 @@ declare enum ELocalDataKey {
 	MultiLogin = "LocalDataKey_MultiLogin",
 	/** 主页左上角玩家信息段位显示类型，1-四麻，2-三麻 */
 	PlayerInfoLevelShowType = "LocalDataKey_PlayerInfoLevelShowType",
-	/** 设置 */
-	Setting = "LocalDataKey_Setting",
+	/** 音效设置 */
+	AudioSetting = "LocalDataKey_AudioSetting",
+	/** 画面设置 */
+	GraphicSetting = "LocalDataKey_GraphicSetting",
+	/** 偏好设置 */
+	PreferSetting = "LocalDataKey_PreferSetting",
+	/** 语言设置 */
+	LangSetting = "LocalDataKey_LangSetting",
+	/** 其他设置 */
+	OtherSetting = "LocalDataKey_OtherSetting",
 }
 
 //#region view相关
@@ -813,6 +821,12 @@ declare enum ERewardState {
 	CanReward = 1,
 	/** 已领取 */
 	Rewarded = 2,
+}
+
+/** 背景音乐类型 */
+declare enum EBgmType {
+	Lobby = "lobby",
+	Mj = "mj",
 }
 
 

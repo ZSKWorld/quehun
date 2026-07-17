@@ -45,8 +45,8 @@ export class ComBagDecoView extends ExtendClass<IView, ComBagDeco>(ComBagDeco) i
 			if (sortA != 11) return cfgItemA.sort - cfgItemB.sort;
 			if (itemTypeA != itemTypeB) return itemTypeA - itemTypeB;
 			if (itemTypeA != EItemCommonType.BeiJingYinYue) return cfgItemA.sort - cfgItemB.sort;
-			const typeA = $cfgMgr.audio.bgm[a.item_id].type == 'lobby' ? 1 : 0;
-			const typeB = $cfgMgr.audio.bgm[b.item_id].type == 'lobby' ? 1 : 0;
+			const typeA = $cfgMgr.audio.bgm[a.item_id].type == EBgmType.Lobby ? 1 : 0;
+			const typeB = $cfgMgr.audio.bgm[b.item_id].type == EBgmType.Lobby ? 1 : 0;
 			return typeB - typeA;
 		});
 		this.refreshListItem();

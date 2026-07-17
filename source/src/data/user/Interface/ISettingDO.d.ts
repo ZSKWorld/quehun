@@ -8,30 +8,28 @@ declare namespace DO {
 		/** 0:顺序播放, 1-随机播放 */
 		mode: 0 | 1;
 		/** 音乐列表 */
-		get list(): number[];
-		add(id: number): void;
-		remove(id: number): void;
+		bgmMap: Record<number, boolean>;
 	}
 
 	interface IAudioSetting {
 		/** 全局音量 */
-		get globalVolume(): IVolumeInfo;
+		globalVolume: IVolumeInfo;
 		/** 背景音乐音量 */
-		get bgmVolume(): IVolumeInfo;
+		bgmVolume: IVolumeInfo;
 		/** 音效音量 */
-		get seVolume(): IVolumeInfo;
+		seVolume: IVolumeInfo;
 		/** 立直音乐音量 */
-		get liqiVolume(): IVolumeInfo;
+		liqiVolume: IVolumeInfo;
 		/** 角色音量 */
-		get charVolume(): IVolumeInfo;
+		charVolume: IVolumeInfo;
 		/** 角色音量单独设置 */
-		get charVolumeMap(): Record<number, IVolumeInfo>;
+		charVolumeMap: Record<number, IVolumeInfo>;
 		/** 特殊音效 */
 		specialVolume: boolean;
 		/** 大厅背景音乐 */
-		get lobbyBgm(): IBgmInfo;
+		lobbyBgm: IBgmInfo;
 		/** 对局背景音乐 */
-		get mjBgm(): IBgmInfo;
+		mjBgm: IBgmInfo;
 		/** 后台静音 */
 		backgroundMute: boolean;
 	}
@@ -78,7 +76,6 @@ declare namespace DO {
 		get prefer(): IPreferSetting;
 		get lang(): ILangSetting;
 		get other(): IOtherSetting;
-
-		save(): void;
+		resetDefaultSetting(): void;
 	}
 }

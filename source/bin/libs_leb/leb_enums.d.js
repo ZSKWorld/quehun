@@ -59,7 +59,11 @@ ELocalDataKey = {
 	DeviceId: "LocalDataKey_DeviceId",
 	MultiLogin: "LocalDataKey_MultiLogin",
 	PlayerInfoLevelShowType: "LocalDataKey_PlayerInfoLevelShowType",
-	Setting: "LocalDataKey_Setting",
+	AudioSetting: "LocalDataKey_AudioSetting",
+	GraphicSetting: "LocalDataKey_GraphicSetting",
+	PreferSetting: "LocalDataKey_PreferSetting",
+	LangSetting: "LocalDataKey_LangSetting",
+	OtherSetting: "LocalDataKey_OtherSetting",
 }
 
 EKeyCode = {
@@ -583,4 +587,9 @@ ERewardState = {
 	CanNotReward: 0,
 	CanReward: 1,
 	Rewarded: 2,
+}
+
+EBgmType = {
+	Lobby: "lobby",
+	Mj: "mj",
 }

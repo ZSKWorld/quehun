@@ -17,13 +17,12 @@ export class TimeUtil implements ITimeUtil {
 	readonly MonthSec = MonthSec;
 	readonly YearSec = YearSec;
 
-	get milliSecond() {
-		return Date.now() + this._serverDelta;
-	}
-
-	get second() {
-		return Math.floor(this.milliSecond / 1000);
-	}
+	get milliSecond() { return Date.now() + this._serverDelta; }
+	get second() { return Math.floor(this.milliSecond / 1000); }
+	get year() { return this._date.setTime(this.milliSecond), this._date.getFullYear(); }
+	get month() { return this._date.setTime(this.milliSecond), this._date.getMonth() + 1; }
+	get date() { return this._date.setTime(this.milliSecond), this._date.getDate(); }
+	get day() { return this._date.setTime(this.milliSecond), this._date.getDay(); }
 
 	setServerTime(time: number) {
 		this._serverDelta = time - Date.now();

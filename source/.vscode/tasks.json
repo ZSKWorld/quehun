@@ -78,8 +78,8 @@
             },
             "problemMatcher": []
         },
-        { //替换spine文件名
-            "label": "替换spine文件名",
+        { //处理res资源
+            "label": "处理res资源",
             "type": "shell",
             "command": "node ../../../laya_framework_tool/bin/js/BatMain.js 12",
             "presentation": {

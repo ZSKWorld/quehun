@@ -21,6 +21,7 @@ import { UIUtil } from "../core/ui/tool/UIUtil";
 import { UserDO } from "../data/user/UserDO";
 import { SceneManager } from "../scene/SceneManager";
 import { ContextMenuManager } from "../core/common/contextMenu/ContextMenuManager";
+import { AudioManager } from "../core/common/manager/AudioManager";
 
 export class InitGlobalCommand extends Command {
 	override execute(notifyName: string, data?: any) {
@@ -39,6 +40,7 @@ export class InitGlobalCommand extends Command {
 		$windowImmit("$loadMgr", new LoadManager());
 		$windowImmit("$gameMgr", new GameManager());
 		$windowImmit("$cfgMgr", new ConfigManager());
+		$windowImmit("$audioMgr", new AudioManager());
 		$windowImmit("$spineMgr", new SpineManager());
 		$windowImmit("$sceneMgr", new SceneManager());
 		$windowImmit("$redDotMgr", new RedDotManager());

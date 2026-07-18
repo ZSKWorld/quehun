@@ -75,7 +75,8 @@ export class GameManager extends Observer implements IGameManager {
 			screen_width: window.innerWidth,
 			user_agent: userAgent,
 			screen_type: 'ontouchstart' in window || navigator.maxTouchPoints > 0 ? 2 : 1,
-			hardware_vendor: ""
+			hardware_vendor: "",
+			device_id: this.deviceId,
 		};
 		/;\s+([a-zA-Z0-9-_\s]+)\s+Build/.exec(userAgent);
 		const type = (RegExp.$1).toLowerCase();

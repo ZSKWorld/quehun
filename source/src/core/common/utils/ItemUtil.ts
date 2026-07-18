@@ -25,68 +25,72 @@ export class ItemUtil implements IItemUtil {
 
 		switch (this.getItemType(id)) {
 			case EItemType.Currency:
-				const currencyCfg = $cfgMgr.item_definition.currency[id];
-				if (!currencyCfg) break;
-				name = currencyCfg.langField(ECfgLangField.name);
-				icon = currencyCfg.icon;
-				itemIcon = currencyCfg.icon_jpg;
-				desc = currencyCfg.langField(ECfgLangField.desc);
+				const cfgCurrency = $cfgMgr.item_definition.currency[id];
+				if (!cfgCurrency) break;
+				name = cfgCurrency.langField(ECfgLangField.name);
+				icon = cfgCurrency.icon;
+				itemIcon = cfgCurrency.icon_jpg;
+				desc = cfgCurrency.langField(ECfgLangField.desc);
 				break;
 			case EItemType.Character:
-				const characterCfg = $cfgMgr.item_definition.character[id];
-				if (!characterCfg) break;
-				name = characterCfg.langField(ECfgLangField.name);
-				desc = characterCfg.langField(ECfgLangField.desc_item);
-				const skinItemInfo = this.getItemInfo(characterCfg.init_skin);
+				const cfgCharacter = $cfgMgr.item_definition.character[id];
+				if (!cfgCharacter) break;
+				name = cfgCharacter.langField(ECfgLangField.name);
+				desc = cfgCharacter.langField(ECfgLangField.desc_item);
+				const skinItemInfo = this.getItemInfo(cfgCharacter.init_skin);
 				icon = skinItemInfo.icon;
 				itemIcon = skinItemInfo.itemIcon;
 				Object.assign(skinInfo, skinItemInfo.skinInfo);
 				break;
 			case EItemType.Item:
-				const itemCfg = $cfgMgr.item_definition.item[id];
-				if (!itemCfg) break;
+				const cfgItem = $cfgMgr.item_definition.item[id];
+				if (!cfgItem) break;
 
-				name = itemCfg.langField(ECfgLangField.name);
-				icon = itemCfg.icon_transparent;
-				itemIcon = itemCfg.icon;
-				desc = itemCfg.langField(ECfgLangField.desc);
-				func = itemCfg.langField(ECfgLangField.desc_func);
+				name = cfgItem.langField(ECfgLangField.name);
+				icon = cfgItem.icon_transparent;
+				itemIcon = cfgItem.icon;
+				desc = cfgItem.langField(ECfgLangField.desc);
+				func = cfgItem.langField(ECfgLangField.desc_func);
 
-				switch (itemCfg.category) {
+				switch (cfgItem.category) {
 					case EItemCategory.Common:
-						const viewCfg = $cfgMgr.item_definition.view[id];
-						switch (itemCfg.type) {
+						const cfgView = $cfgMgr.item_definition.view[id];
+						switch (cfgItem.type) {
 							case EItemCommonType.TableCloth:
-								viewCfg && (resName = viewCfg.res_name);
+								cfgView && (resName = cfgView.res_name);
 								previewIcon = `myres2/tablecloth/${ resName }/preview.png`;
 								break;
 							case EItemCommonType.MjpBack:
-								viewCfg && (resName = viewCfg.res_name);
+								cfgView && (resName = cfgView.res_name);
 								previewIcon = `myres2/mjp/${ resName }/preview.png`;
 								resPath = `myres2/mjp/${ resName }/hand/`;
 								atlasPath = `myres2/mjp/${ resName }/hand.atlas`;
 								atlasTexPath = `myres2/mjp/${ resName }/hand.png`;
 								break;
 							case EItemCommonType.MjpFront:
-								viewCfg && (resName = viewCfg.res_name);
+								cfgView && (resName = cfgView.res_name);
 								previewIcon = `myres2/mjp_surface/${ resName }/preview.png`;
 								resPath = `myres2/mjpm/${ resName }/ui/`;
 								atlasPath = `myres2/mjp_surface/${ resName }/ui.atlas`;
 								atlasTexPath = `myres2/mjp_surface/${ resName }/ui.png`;
 								break;
 							case EItemCommonType.HeadFrame:
-								viewCfg && (resName = viewCfg.res_name);
+								cfgView && (resName = cfgView.res_name);
 								icon = `extendRes/head_frame/${ resName }.png`;
 								break;
 							case EItemCommonType.ChaHuaLoadingTu:
-								const loadingCfg = $cfgMgr.item_definition.loading_image[id];
-								loadingCfg && (icon = loadingCfg.thumb_path);
-								loadingCfg && (itemIcon = loadingCfg.thumb_path);
-								loadingCfg && (resPath = loadingCfg.img_path);
+								const cfgLoading = $cfgMgr.item_definition.loading_image[id];
+								cfgLoading && (icon = cfgLoading.thumb_path);
+								cfgLoading && (itemIcon = cfgLoading.thumb_path);
+								cfgLoading && (resPath = cfgLoading.img_path);
 								break;
 							case EItemCommonType.DaTingBeiJing:
-								viewCfg && (resName = viewCfg.res_name);
+								cfgView && (resName = cfgView.res_name);
 								previewIcon = `myres2/lobby_bg/${ resName }.jpg`;
+								break;
+							case EItemCommonType.BeiJingYinYue:
+								const cfgBgm = $cfgMgr.audio.bgm[id];
+								resPath = `res/audio/${ cfgBgm.path }`;
 								break;
 						}
 						break;
@@ -98,40 +102,40 @@ export class ItemUtil implements IItemUtil {
 				}
 				break;
 			case EItemType.Skin:
-				const skinCfg = $cfgMgr.item_definition.skin[id];
-				if (!skinCfg) break;
-				name = skinCfg.langField(ECfgLangField.name);
-				desc = skinCfg.langField(ECfgLangField.desc);
-				icon = skinCfg.path + "/bighead.png";
+				const cfgSkin = $cfgMgr.item_definition.skin[id];
+				if (!cfgSkin) break;
+				name = cfgSkin.langField(ECfgLangField.name);
+				desc = cfgSkin.langField(ECfgLangField.desc);
+				icon = cfgSkin.path + "/bighead.png";
 				itemIcon = icon;
 
 				skinInfo.bighead = $langRes(icon);
-				skinInfo.full = $langRes(skinCfg.path + "/full.png");
-				skinInfo.half = $langRes(skinCfg.path + "/half.png");
-				skinInfo.smallhead = $langRes(skinCfg.path + "/smallhead.png");
-				skinInfo.smallhead1 = $langRes(skinCfg.path + "/smallhead1.png");
-				skinInfo.smallhead2 = $langRes(skinCfg.path + "/smallhead2.png");
-				skinInfo.smallhead3 = $langRes(skinCfg.path + "/smallhead3.png");
-				skinInfo.waitingroom = $langRes(skinCfg.path + "/waitingroom.png");
-				skinInfo.x = $langRes(skinCfg.path + "/x.png");
+				skinInfo.full = $langRes(cfgSkin.path + "/full.png");
+				skinInfo.half = $langRes(cfgSkin.path + "/half.png");
+				skinInfo.smallhead = $langRes(cfgSkin.path + "/smallhead.png");
+				skinInfo.smallhead1 = $langRes(cfgSkin.path + "/smallhead1.png");
+				skinInfo.smallhead2 = $langRes(cfgSkin.path + "/smallhead2.png");
+				skinInfo.smallhead3 = $langRes(cfgSkin.path + "/smallhead3.png");
+				skinInfo.waitingroom = $langRes(cfgSkin.path + "/waitingroom.png");
+				skinInfo.x = $langRes(cfgSkin.path + "/x.png");
 
 				break;
 			case EItemType.Title:
-				const titleCfg = $cfgMgr.item_definition.title[id];
-				if (!titleCfg) break;
-				name = titleCfg.langField(ECfgLangField.name);
-				desc = titleCfg.langField(ECfgLangField.desc);
-				icon = titleCfg.icon;
-				itemIcon = titleCfg.icon_item;
+				const cfgTitle = $cfgMgr.item_definition.title[id];
+				if (!cfgTitle) break;
+				name = cfgTitle.langField(ECfgLangField.name);
+				desc = cfgTitle.langField(ECfgLangField.desc);
+				icon = cfgTitle.icon;
+				itemIcon = cfgTitle.icon_item;
 				break;
 			case EItemType.FuncItem:
-				const funcItemCfg = $cfgMgr.item_definition.function_item[id];
-				if (!funcItemCfg) break;
-				name = $lang(funcItemCfg.name);
-				icon = funcItemCfg.icon_transparent;
-				itemIcon = funcItemCfg.icon;
-				desc = $lang(funcItemCfg.desc);
-				func = $lang(funcItemCfg.desc_func);
+				const cfgFuncItem = $cfgMgr.item_definition.function_item[id];
+				if (!cfgFuncItem) break;
+				name = $lang(cfgFuncItem.name);
+				icon = cfgFuncItem.icon_transparent;
+				itemIcon = cfgFuncItem.icon;
+				desc = $lang(cfgFuncItem.desc);
+				func = $lang(cfgFuncItem.desc_func);
 				break;
 		}
 

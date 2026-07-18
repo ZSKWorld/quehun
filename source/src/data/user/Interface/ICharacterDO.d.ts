@@ -14,6 +14,7 @@ declare namespace DO {
 		get hiddenChars(): ReadonlyArray<ProtoObject<ICharacter>>;
 		/** 是否拥有指定角色 */
 		hasChar(id: number): boolean;
+		getCharInfo(id: number): ProtoObject<ICharacter>;
 		/** 是否拥有指定皮肤 */
 		hasSkin(id: number): boolean;
 		/** 是否是星标角色 */

@@ -255,7 +255,7 @@ export class SoundManager {
 				var tmp = this._audio_list[i];
 				this._audio_list.splice(i--, 1);
 				if (tmp && tmp.audio) {
-					let start_volume = tmp.audio._volume;
+					let start_volume = tmp.audio.volume();
 					let start_time: number = Laya.timer.currTimer;
 					Laya.timer.frameLoop(1, tmp, () => {
 						let t: number = Laya.timer.currTimer - start_time;

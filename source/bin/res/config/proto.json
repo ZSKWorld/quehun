@@ -3102,6 +3102,10 @@
             "screen_type": {
               "type": "uint32",
               "id": 13
+            },
+            "device_id": {
+              "type": "string",
+              "id": 14
             }
           }
         },

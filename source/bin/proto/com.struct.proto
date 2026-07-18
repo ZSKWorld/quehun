@@ -865,6 +865,7 @@ message ClientDeviceInfo {
   uint32 screen_height = 11;
   string user_agent = 12;
   uint32 screen_type = 13; // 屏幕类型 1-普通屏幕  2-触摸屏幕
+  string device_id = 14; // 等同于 login 的 random_key
 }
 
 message ClientVersionInfo

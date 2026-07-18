@@ -866,6 +866,10 @@ declare interface ISheet_ItemDefinition_Item {
 	30550040: ISheetData_ItemDefinition_Item;
 	30550041: ISheetData_ItemDefinition_Item;
 	30550043: ISheetData_ItemDefinition_Item;
+	30550044: ISheetData_ItemDefinition_Item;
+	30550045: ISheetData_ItemDefinition_Item;
+	30550046: ISheetData_ItemDefinition_Item;
+	30550047: ISheetData_ItemDefinition_Item;
 	30557001: ISheetData_ItemDefinition_Item;
 	30557002: ISheetData_ItemDefinition_Item;
 	30557003: ISheetData_ItemDefinition_Item;
@@ -929,6 +933,10 @@ declare interface ISheet_ItemDefinition_Item {
 	30557063: ISheetData_ItemDefinition_Item;
 	30557064: ISheetData_ItemDefinition_Item;
 	30557065: ISheetData_ItemDefinition_Item;
+	30557066: ISheetData_ItemDefinition_Item;
+	30557067: ISheetData_ItemDefinition_Item;
+	30557068: ISheetData_ItemDefinition_Item;
+	30557069: ISheetData_ItemDefinition_Item;
 	30560001: ISheetData_ItemDefinition_Item;
 	30560002: ISheetData_ItemDefinition_Item;
 	30560003: ISheetData_ItemDefinition_Item;
@@ -1401,6 +1409,10 @@ declare interface ISheet_ItemDefinition_Title {
 	600159: ISheetData_ItemDefinition_Title;
 	600160: ISheetData_ItemDefinition_Title;
 	600162: ISheetData_ItemDefinition_Title;
+	600163: ISheetData_ItemDefinition_Title;
+	600164: ISheetData_ItemDefinition_Title;
+	600165: ISheetData_ItemDefinition_Title;
+	600166: ISheetData_ItemDefinition_Title;
 }
 declare interface ISheetData_ItemDefinition_Title extends ISheetDataBase {
 	id: number;
@@ -2049,6 +2061,10 @@ declare interface ISheet_ItemDefinition_View {
 	30550040: ISheetData_ItemDefinition_View;
 	30550041: ISheetData_ItemDefinition_View;
 	30550043: ISheetData_ItemDefinition_View;
+	30550044: ISheetData_ItemDefinition_View;
+	30550045: ISheetData_ItemDefinition_View;
+	30550046: ISheetData_ItemDefinition_View;
+	30550047: ISheetData_ItemDefinition_View;
 	30560001: ISheetData_ItemDefinition_View;
 	30560002: ISheetData_ItemDefinition_View;
 	30560003: ISheetData_ItemDefinition_View;

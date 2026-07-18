@@ -698,6 +698,12 @@ declare interface ISheet_Shops_Goods {
 	5470: ISheetData_Shops_Goods;
 	5471: ISheetData_Shops_Goods;
 	5472: ISheetData_Shops_Goods;
+	5482: ISheetData_Shops_Goods;
+	5483: ISheetData_Shops_Goods;
+	5484: ISheetData_Shops_Goods;
+	5485: ISheetData_Shops_Goods;
+	5486: ISheetData_Shops_Goods;
+	5487: ISheetData_Shops_Goods;
 	6001: ISheetData_Shops_Goods;
 	6002: ISheetData_Shops_Goods;
 	6003: ISheetData_Shops_Goods;

@@ -5251,6 +5251,8 @@ declare interface IClientDeviceInfo extends IProto {
 	user_agent: string;
 	/** 屏幕类型 1-普通屏幕  2-触摸屏幕 */
 	screen_type: number;
+	/** 等同于 login 的 random_key */
+	device_id: string;
 }
 
 /** .lq.ClientVersionInfo */

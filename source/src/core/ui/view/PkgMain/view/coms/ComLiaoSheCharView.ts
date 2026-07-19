@@ -35,7 +35,6 @@ export class ComLiaoSheCharView extends ExtendClass<IView, ComLiaoSheChar>(ComLi
 	refresh(resetSelect: boolean) {
 		const chars = this.showChars;
 		const { list_chars, btn_star, showStarChar } = this;
-		list_chars.numItems = chars.length;
 		btn_star.selected = showStarChar;
 		let selectedIndex = 0;
 		if (resetSelect || !this._selectedData) {
@@ -45,11 +44,13 @@ export class ComLiaoSheCharView extends ExtendClass<IView, ComLiaoSheChar>(ComLi
 		else {
 			selectedIndex = chars.findIndex(v => v.charid == this._selectedData.charid);
 		}
-		const childIndex = list_chars.itemIndexToChildIndex(selectedIndex);
-		this._selectedItem = childIndex == -1 ? null : list_chars.getChildAt(childIndex) as RenderLiaoSheCharView;
-		list_chars.refreshVirtualList();
-		if (selectedIndex != -1)
+		list_chars.numItems = chars.length;
+		if (selectedIndex != -1) {
 			list_chars.scrollToView(selectedIndex, false);
+			const childIndex = list_chars.itemIndexToChildIndex(selectedIndex);
+			this._selectedItem = childIndex == -1 ? null : list_chars.getChildAt(childIndex) as RenderLiaoSheCharView;
+			list_chars.refreshVirtualList();
+		}
 	}
 
 	private onListCharsRender(index: number, item: RenderLiaoSheCharView) {

@@ -28,7 +28,8 @@ export class LobbyBgManager extends Observer {
 		loader.visible = visible;
 		loader.touchable = false;
 		loader.fill = fgui.LoaderFillType.ScaleFree;
-		loader.setSize(Laya.stage.width / 0.9575, Laya.stage.height / 0.93);
+		loader.setSize(Laya.stage.width, Laya.stage.height);
+		// loader.setSize(Laya.stage.width / 0.9575, Laya.stage.height / 0.93);
 		loader.addRelation(loader.parent, fgui.RelationType.Size);
 		return loader;
 	}

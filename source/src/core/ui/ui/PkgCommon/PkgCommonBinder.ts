@@ -47,6 +47,7 @@ import ComItem from "./ComItem";
 import UIItemDetail from "./UIItemDetail";
 import RenderRechargeItem from "./RenderRechargeItem";
 import PbLoading3 from "./PbLoading3";
+import BtnSettingSwitch from "./BtnSettingSwitch";
 import CmbSettingOption_popup from "./CmbSettingOption_popup";
 import PbLoading2 from "./PbLoading2";
 import { UITestView } from "../../view/PkgCommon/view/uis/UITestView";
@@ -93,6 +94,7 @@ import { ComCurrencyView } from "../../view/PkgCommon/view/coms/ComCurrencyView"
 import { ComItemView } from "../../view/PkgCommon/view/coms/ComItemView";
 import { UIItemDetailView } from "../../view/PkgCommon/view/uis/UIItemDetailView";
 import { RenderRechargeItemView } from "../../view/PkgCommon/view/renders/RenderRechargeItemView";
+import { BtnSettingSwitchView } from "../../view/PkgCommon/view/btns/BtnSettingSwitchView";
 
 export default class PkgCommonBinder {
 	public static bindAll(): void {
@@ -143,6 +145,7 @@ export default class PkgCommonBinder {
 		fgui.UIObjectFactory.setExtension(UIItemDetail.url, UIItemDetailView);
 		fgui.UIObjectFactory.setExtension(RenderRechargeItem.url, RenderRechargeItemView);
 		fgui.UIObjectFactory.setExtension(PbLoading3.url, PbLoading3);
+		fgui.UIObjectFactory.setExtension(BtnSettingSwitch.url, BtnSettingSwitchView);
 		fgui.UIObjectFactory.setExtension(CmbSettingOption_popup.url, CmbSettingOption_popup);
 		fgui.UIObjectFactory.setExtension(PbLoading2.url, PbLoading2);
 	}

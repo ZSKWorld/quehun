@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="1160,630" overflow="scroll" scrollBarFlags="132" scrollBarRes="ui://vx9zwserj0ddob7h," designImage="ui://ca43vz0elna17plomk" designImageOffsetX="-1698" designImageAlpha="0">
+  <controller name="streamer" pages="0,,1," selected="0"/>
   <displayList>
     <image id="n1_ejr8" name="n1" src="uw9yobkd" fileName="Texture/img_4291.png" xy="0,0" size="1120,60"/>
     <image id="n3_ejr8" name="n3" src="uw9yobkn" fileName="Texture/img_4261.png" xy="11,70" size="1100,90"/>
@@ -29,7 +30,9 @@
       <Button title="查看"/>
     </component>
     <component id="n22_ejr8" name="resetSetting" src="uw9yobl2" fileName="Component/UISetting/BtnSettingGoto.xml" xy="609,665"/>
-    <component id="n25_ejr8" name="streamerOn" src="uw9yobl3" fileName="Component/UISetting/BtnSettingSwitch.xml" xy="609,762"/>
+    <component id="n25_ejr8" name="streamerOn" src="uw9yobl3" fileName="Component/UISetting/BtnSettingSwitch.xml" xy="609,762">
+      <Button controller="streamer" page="1"/>
+    </component>
     <text id="n2_ejr8" name="n2" xy="14,3" pivot="0,0.5" size="84,54" fontSize="40" color="#edb26f" vAlign="middle" leading="0" singleLine="true" text="其他"/>
     <text id="n5_ejr8" name="n5" xy="35,118" pivot="0,0.5" anchor="true" size="140,46" fontSize="34" color="#d4cfcf" vAlign="middle" leading="0" singleLine="true" text="役种一览"/>
     <text id="n8_ejr8" name="n8" xy="35,215" pivot="0,0.5" anchor="true" size="106,46" fontSize="34" color="#d4cfcf" vAlign="middle" leading="0" singleLine="true" text="礼品码"/>
@@ -39,5 +42,56 @@
     <text id="n20_ejr8" name="n20" xy="35,603" pivot="0,0.5" anchor="true" size="140,46" fontSize="34" color="#d4cfcf" vAlign="middle" leading="0" singleLine="true" text="隐私条款"/>
     <text id="n23_ejr8" name="n23" xy="35,700" pivot="0,0.5" anchor="true" size="208,46" fontSize="34" color="#d4cfcf" vAlign="middle" leading="0" singleLine="true" text="恢复默认设置"/>
     <text id="n26_ejr8" name="n26" xy="35,797" pivot="0,0.5" anchor="true" size="140,46" fontSize="34" color="#d4cfcf" vAlign="middle" leading="0" singleLine="true" text="主播模式"/>
+    <image id="n27_rsad" name="n27" src="uw9yobkn" fileName="Texture/img_4261.png" xy="11,0" size="1100,90" group="n59_rsad"/>
+    <image id="n33_rsad" name="n33" src="uw9yobkn" fileName="Texture/img_4261.png" xy="11,97" size="1100,90" group="n59_rsad"/>
+    <image id="n39_rsad" name="n39" src="uw9yobkn" fileName="Texture/img_4261.png" xy="11,194" size="1100,90" group="n59_rsad"/>
+    <image id="n43_rsad" name="n43" src="uw9yobkn" fileName="Texture/img_4261.png" xy="11,291" size="1100,90" group="n59_rsad"/>
+    <image id="n47_rsad" name="n47" src="uw9yobkn" fileName="Texture/img_4261.png" xy="11,388" size="1100,90" group="n59_rsad"/>
+    <image id="n51_rsad" name="n51" src="uw9yobkn" fileName="Texture/img_4261.png" xy="11,485" size="1100,90" group="n59_rsad"/>
+    <image id="n55_rsad" name="n55" src="uw9yobkn" fileName="Texture/img_4261.png" xy="11,582" size="1100,90" group="n59_rsad"/>
+    <image id="n31_rsad" name="n31" src="uw9yobkq" fileName="Texture/img_4263.png" xy="609,13" pivot="0.5,0.5" size="484,64" group="n59_rsad"/>
+    <image id="n28_rsad" name="n28" src="uw9yobky" fileName="Texture/img_4264.png" xy="37,41" group="n59_rsad"/>
+    <image id="n34_rsad" name="n34" src="uw9yobky" fileName="Texture/img_4264.png" xy="37,138" group="n59_rsad"/>
+    <image id="n40_rsad" name="n40" src="uw9yobky" fileName="Texture/img_4264.png" xy="37,235" group="n59_rsad"/>
+    <image id="n44_rsad" name="n44" src="uw9yobky" fileName="Texture/img_4264.png" xy="37,332" group="n59_rsad"/>
+    <image id="n48_rsad" name="n48" src="uw9yobky" fileName="Texture/img_4264.png" xy="37,429" group="n59_rsad"/>
+    <image id="n52_rsad" name="n52" src="uw9yobky" fileName="Texture/img_4264.png" xy="37,526" group="n59_rsad"/>
+    <image id="n56_rsad" name="n56" src="uw9yobky" fileName="Texture/img_4264.png" xy="37,623" group="n59_rsad"/>
+    <component id="n38_rsad" name="foreignNickname" src="uw9yobl3" fileName="Component/UISetting/BtnSettingSwitch.xml" xy="609,110" group="n59_rsad">
+      <property target="title1" propertyId="0" value="隐藏"/>
+      <property target="title2" propertyId="0" value="显示"/>
+    </component>
+    <component id="n42_rsad" name="localNickname" src="uw9yobl3" fileName="Component/UISetting/BtnSettingSwitch.xml" xy="609,207" group="n59_rsad">
+      <property target="title1" propertyId="0" value="隐藏"/>
+      <property target="title2" propertyId="0" value="显示"/>
+    </component>
+    <component id="n46_rsad" name="replayNickname" src="uw9yobl3" fileName="Component/UISetting/BtnSettingSwitch.xml" xy="609,304" group="n59_rsad">
+      <property target="title1" propertyId="0" value="隐藏"/>
+      <property target="title2" propertyId="0" value="显示"/>
+    </component>
+    <component id="n50_rsad" name="observeNickname" src="uw9yobl3" fileName="Component/UISetting/BtnSettingSwitch.xml" xy="609,401" group="n59_rsad">
+      <property target="title1" propertyId="0" value="隐藏"/>
+      <property target="title2" propertyId="0" value="显示"/>
+    </component>
+    <component id="n54_rsad" name="matchNickname" src="uw9yobl3" fileName="Component/UISetting/BtnSettingSwitch.xml" xy="609,498" group="n59_rsad">
+      <property target="title1" propertyId="0" value="隐藏"/>
+      <property target="title2" propertyId="0" value="显示"/>
+    </component>
+    <component id="n58_rsad" name="rankNickname" src="uw9yobl3" fileName="Component/UISetting/BtnSettingSwitch.xml" xy="609,595" group="n59_rsad">
+      <property target="title1" propertyId="0" value="隐藏"/>
+      <property target="title2" propertyId="0" value="显示"/>
+    </component>
+    <text id="n32_rsad" name="n32" xy="851,45" pivot="0.5,0.5" anchor="true" size="64,42" group="n59_rsad" fontSize="30" color="#d4cfcf" align="center" vAlign="middle" leading="0" singleLine="true" text="隐藏"/>
+    <text id="n30_rsad" name="n30" xy="51,48" pivot="0,0.5" anchor="true" size="244,42" group="n59_rsad" fontSize="30" color="#8d99bb" vAlign="middle" leading="0" singleLine="true" text="友人场陌生人昵称"/>
+    <text id="n35_rsad" name="n35" xy="51,145" pivot="0,0.5" anchor="true" size="124,42" group="n59_rsad" fontSize="30" color="#8d99bb" vAlign="middle" leading="0" singleLine="true" text="跨服昵称"/>
+    <text id="n41_rsad" name="n41" xy="51,242" pivot="0,0.5" anchor="true" size="244,42" group="n59_rsad" fontSize="30" color="#8d99bb" vAlign="middle" leading="0" singleLine="true" text="本服匹配对局昵称"/>
+    <text id="n45_rsad" name="n45" xy="51,339" pivot="0,0.5" anchor="true" size="124,42" group="n59_rsad" fontSize="30" color="#8d99bb" vAlign="middle" leading="0" singleLine="true" text="牌谱昵称"/>
+    <text id="n49_rsad" name="n49" xy="51,436" pivot="0,0.5" anchor="true" size="124,42" group="n59_rsad" fontSize="30" color="#8d99bb" vAlign="middle" leading="0" singleLine="true" text="观战昵称"/>
+    <text id="n53_rsad" name="n53" xy="51,533" pivot="0,0.5" anchor="true" size="124,42" group="n59_rsad" fontSize="30" color="#8d99bb" vAlign="middle" leading="0" singleLine="true" text="赛事昵称"/>
+    <text id="n57_rsad" name="n57" xy="51,630" pivot="0,0.5" anchor="true" size="154,42" group="n59_rsad" fontSize="30" color="#8d99bb" vAlign="middle" leading="0" singleLine="true" text="排行榜昵称"/>
+    <group id="n59_rsad" name="n59" xy="11,0" size="1100,672" advanced="true">
+      <gearDisplay controller="streamer" pages="1"/>
+      <gearXY controller="streamer" pages="0" values="11,0" default="11,846"/>
+    </group>
   </displayList>
 </component>

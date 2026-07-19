@@ -45,12 +45,12 @@ export class Facade implements IFacade {
 		return this._viewMgr.getViewCategory(viewId);
 	}
 
-	createView(viewId: EViewID, fullScreen = false) {
-		return this._viewMgr.createView(viewId, fullScreen);
+	createView<T extends IView = IView>(viewId: EViewID, fullScreen = false) {
+		return this._viewMgr.createView(viewId, fullScreen) as T;
 	}
 
-	createMediator(viewId: EViewID, fullScreen = false) {
-		return this.createView(viewId, fullScreen)?.mediator;
+	createMediator<T extends IMediator = IMediator>(viewId: EViewID, fullScreen = false) {
+		return this.createView(viewId, fullScreen)?.mediator as T;
 	}
 	//#endregion
 

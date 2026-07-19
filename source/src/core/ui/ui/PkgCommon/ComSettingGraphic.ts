@@ -1,8 +1,11 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import { BtnSettingSwitchView } from "../../view/PkgCommon/view/btns/BtnSettingSwitchView";
+
 export default class ComSettingGraphic extends fgui.GComponent {
 
-	protected btn_bgMuteOn: fgui.GButton;
+	protected cmb_fps: fgui.GComboBox;
+	protected btn_activityEffect: BtnSettingSwitchView;
 	public static url: string = "ui://vx9zwserfip2oble";
 
 	public static createInstance(): ComSettingGraphic {
@@ -10,6 +13,7 @@ export default class ComSettingGraphic extends fgui.GComponent {
 	}
 
 	protected override onConstruct(): void {
-		this.btn_bgMuteOn = <fgui.GButton>(this.getChildAt(4));
+		this.cmb_fps = <fgui.GComboBox>(this.getChildAt(3));
+		this.btn_activityEffect = <BtnSettingSwitchView>(this.getChildAt(4));
 	}
 }

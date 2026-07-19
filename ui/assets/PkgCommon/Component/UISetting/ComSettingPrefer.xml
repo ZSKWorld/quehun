@@ -10,7 +10,7 @@
     <image id="n20_ejr8" name="n20" src="uw9yobkn" fileName="Texture/img_4261.png" xy="11,563" size="1100,90"/>
     <image id="n23_ejr8" name="n23" src="uw9yobkn" fileName="Texture/img_4261.png" xy="11,660" size="1100,90"/>
     <image id="n27_ejr8" name="n27" src="uw9yobkn" fileName="Texture/img_4261.png" xy="11,757" size="1100,90"/>
-    <component id="n6_ejr8" name="dealCardMode" src="uw9yobl9" fileName="Component/UISetting/CmbSettingOption.xml" xy="609,83">
+    <component id="n6_ejr8" name="dealCardMode" src="uw9yobl9" fileName="Component/UISetting/CmbSettingOptionDown.xml" xy="609,83">
       <ComboBox visibleItemCount="10">
         <item title="点击出牌"/>
         <item title="双击出牌"/>
@@ -20,14 +20,14 @@
     <component id="n15_ejr8" name="rightClickPass" src="uw9yobl3" fileName="Component/UISetting/BtnSettingSwitch.xml" xy="609,277"/>
     <component id="n18_ejr8" name="charShowSet" src="uw9yobl2" fileName="Component/UISetting/BtnSettingGoto.xml" xy="609,479"/>
     <component id="n21_ejr8" name="dynamicSkin" src="uw9yobl3" fileName="Component/UISetting/BtnSettingSwitch.xml" xy="609,576"/>
-    <component id="n25_ejr8" name="aiLookMode" src="uw9yobl9" fileName="Component/UISetting/CmbSettingOption.xml" xy="609,673">
-      <ComboBox visibleItemCount="10">
+    <component id="n25_ejr8" name="aiLookMode" src="uw9yobl9" fileName="Component/UISetting/CmbSettingOptionDown.xml" xy="609,673">
+      <ComboBox visibleItemCount="10" direction="up">
         <item title="从已有雀士中随机"/>
         <item title="一姬的初始形象"/>
       </ComboBox>
     </component>
-    <component id="n28_ejr8" name="clickEffectMode" src="uw9yobl9" fileName="Component/UISetting/CmbSettingOption.xml" xy="609,770">
-      <ComboBox visibleItemCount="10">
+    <component id="n28_ejr8" name="clickEffectMode" src="uw9yobl9" fileName="Component/UISetting/CmbSettingOptionDown.xml" xy="609,770">
+      <ComboBox visibleItemCount="10" direction="up">
         <item title="与大厅绑定"/>
         <item title="默认点击特效"/>
       </ComboBox>

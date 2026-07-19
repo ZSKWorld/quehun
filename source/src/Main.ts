@@ -15,6 +15,7 @@ class Main {
 		Laya.SpineConst.PREMULTIPLIED_ALPHA_DEFAULT = true;
 		Laya.InputManager.multiTouchEnabled = false;
 		Laya.Config.defaultFont = ResPath.EFontName.HYWH;
+		Laya.Config.audioBufferCacheMaxSize = 10 * 1024 * 1024;
 
 		fgui.UIConfig.packageFileExtension = "zip";
 

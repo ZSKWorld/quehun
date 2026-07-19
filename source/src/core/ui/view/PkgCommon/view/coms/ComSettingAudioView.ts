@@ -51,11 +51,11 @@ export class ComSettingAudioView extends ExtendClass<IView, ComSettingAudio>(Com
 		btn_liqiVolumeOn.selected = liqiVolume.on;
 		btn_charVolumeOn.selected = charVolume.on;
 
-		slider_globalVolume.value = globalVolume.value * 100;
-		slider_bgmVolume.value = bgmVolume.value * 100;
-		slider_seVolume.value = seVolume.value * 100;
-		slider_liqiVolume.value = liqiVolume.value * 100;
-		slider_charVolume.value = charVolume.value * 100;
+		slider_globalVolume.value = Math.round(globalVolume.value * 100);
+		slider_bgmVolume.value = Math.round(bgmVolume.value * 100);
+		slider_seVolume.value = Math.round(seVolume.value * 100);
+		slider_liqiVolume.value = Math.round(liqiVolume.value * 100);
+		slider_charVolume.value = Math.round(charVolume.value * 100);
 
 		btn_specialVolumeOn.selected = specialVolume;
 		btn_backgroundMuteOn.selected = backgroundMute;

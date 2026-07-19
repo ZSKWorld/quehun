@@ -1,5 +1,7 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import { BtnSettingSwitchView } from "../../view/PkgCommon/view/btns/BtnSettingSwitchView";
+
 export default class ComSettingAudio extends fgui.GComponent {
 
 	protected ctrl_globalMute: fgui.Controller;
@@ -15,10 +17,10 @@ export default class ComSettingAudio extends fgui.GComponent {
 	protected slider_liqiVolume: fgui.GSlider;
 	protected slider_charVolume: fgui.GSlider;
 	protected btn_charVolumeSet: fgui.GButton;
-	protected btn_specialVolumeOn: fgui.GButton;
+	protected btn_specialVolumeOn: BtnSettingSwitchView;
 	protected btn_lobbyBgmSet: fgui.GButton;
 	protected btn_mjBgmSet: fgui.GButton;
-	protected btn_backgroundMuteOn: fgui.GButton;
+	protected btn_backgroundMuteOn: BtnSettingSwitchView;
 	protected txt_bgmType: fgui.GTextField;
 	protected txt_bgmName: fgui.GTextField;
 	public static url: string = "ui://vx9zwserfip2obld";
@@ -41,10 +43,10 @@ export default class ComSettingAudio extends fgui.GComponent {
 		this.slider_liqiVolume = <fgui.GSlider>(this.getChildAt(24));
 		this.slider_charVolume = <fgui.GSlider>(this.getChildAt(25));
 		this.btn_charVolumeSet = <fgui.GButton>(this.getChildAt(26));
-		this.btn_specialVolumeOn = <fgui.GButton>(this.getChildAt(27));
+		this.btn_specialVolumeOn = <BtnSettingSwitchView>(this.getChildAt(27));
 		this.btn_lobbyBgmSet = <fgui.GButton>(this.getChildAt(28));
 		this.btn_mjBgmSet = <fgui.GButton>(this.getChildAt(29));
-		this.btn_backgroundMuteOn = <fgui.GButton>(this.getChildAt(30));
+		this.btn_backgroundMuteOn = <BtnSettingSwitchView>(this.getChildAt(30));
 		this.txt_bgmType = <fgui.GTextField>(this.getChildAt(40));
 		this.txt_bgmName = <fgui.GTextField>(this.getChildAt(41));
 	}

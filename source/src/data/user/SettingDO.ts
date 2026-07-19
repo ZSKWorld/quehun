@@ -1,20 +1,35 @@
 import { BaseDO } from "./BaseDO";
 
+/** 获取对象及其子对象的所有字段名路径 */
+type DeepPaths<T> =
+	T extends Array<infer U>
+	? DeepPaths<U>
+	: T extends object
+	? {
+		[K in keyof T & string]:
+		T[K] extends object
+		? K | `${ K }.${ DeepPaths<T[K]> }`
+		: K
+	}[keyof T & string]
+	: never;
+
+
 const HadSyncKey = Symbol("HadSyncKey");
-function settingProxy<T extends object>(target: T, caller: any, listener: Function): T {
+function settingProxy<T extends object>(target: T, caller: any, onValueChanged: (pPath: DeepPaths<T>, newV: any, oldV: any) => void, keyPath: string = ""): T {
 	if (target != null && typeof target === "object" && !target[HadSyncKey]) {
 		target[HadSyncKey] = true;
-		Object.keys(target).forEach(key => target[key] = settingProxy(target[key], caller, listener));
+		Object.keys(target).forEach(key => target[key] = settingProxy(target[key], caller, onValueChanged, `${ keyPath }${ key }.`));
 		const result = new Proxy(target, {
-			set(target: any, p: string, value: any, receiver: any) {
+			set(target: any, pName: string, value: any, receiver: any) {
 				const typeStr = typeof value;
 				if (typeStr != "number" && typeStr != "string" && typeStr != "boolean") {
-					Logger.error("设置数据只能是number,string,boolean:", p, value);
+					Logger.error("设置数据只能是number,string,boolean:", pName, value);
 					return false;
 				}
-				if (target[p] == value) return;
-				target[p] = value;
-				listener.call(caller);
+				if (target[pName] == value) return;
+				const oldV = target[pName];
+				target[pName] = value;
+				onValueChanged.call(caller, `${ keyPath }${ pName }`, value, oldV);
 				return true;
 			},
 		});
@@ -80,11 +95,19 @@ export class SettingDO extends BaseDO implements DO.ISettingDO {
 		return setting;
 	}
 	private getGraphicDefaultSetting() {
-		const setting: DO.IGraphicSetting = { fps: 60, activityEffect: true };
+		const setting: DO.IGraphicSetting = { frameRate: "fast", activityEffect: true };
 		return setting;
 	}
 	private getPreferDefaultSetting() {
-		const setting: DO.IPreferSetting = { dealCardMode: 0, doubleClickPass: false, rightClickPass: false };
+		const setting: DO.IPreferSetting = {
+			dealCardMode: 0,
+			doubleClickPass: false,
+			rightClickPass: false,
+			hiddenChar: {},
+			dynamicSkin: true,
+			aiLook: 0,
+			clickEffect: 0,
+		};
 		return setting;
 	}
 	private getLangDefaultSetting() {
@@ -116,11 +139,18 @@ export class SettingDO extends BaseDO implements DO.ISettingDO {
 				audio.mjBgm.bgmMap[v.id] = true;
 		});
 
-		this._audio = settingProxy(this._audio, this, () => this._audioChanged = true);
-		this._graphic = settingProxy(this._graphic, this, () => this._graphicChanged = true);
-		this._prefer = settingProxy(this._prefer, this, () => this._preferChanged = true);
-		this._lang = settingProxy(this._lang, this, () => this._langChanged = true);
-		this._other = settingProxy(this._other, this, () => this._otherChanged = true);
+		Laya.stage.frameRate = this._graphic.frameRate;
+
+		this._audio = settingProxy(this._audio, this, (pPath) => this._audioChanged = true);
+		this._graphic = settingProxy(this._graphic, this, (pPath, newV) => {
+			if (pPath == "frameRate") {
+				Laya.stage.frameRate = newV;
+			}
+			this._graphicChanged = true;
+		});
+		this._prefer = settingProxy(this._prefer, this, (pPath) => this._preferChanged = true);
+		this._lang = settingProxy(this._lang, this, (pPath) => this._langChanged = true);
+		this._other = settingProxy(this._other, this, (pPath) => this._otherChanged = true);
 
 		Laya.timer.loop(500, this, this.checkSaveSetting);
 	}

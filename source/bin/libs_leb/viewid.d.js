@@ -5,6 +5,7 @@ EViewID = {
 	BtnBuyView: "BtnBuyView",
 	BtnCheckRichTxtRightView: "BtnCheckRichTxtRightView",
 	BtnCheckTxtRightView: "BtnCheckTxtRightView",
+	BtnSettingSwitchView: "BtnSettingSwitchView",
 	BtnSwitch1View: "BtnSwitch1View",
 	BtnBagSkinCheckView: "BtnBagSkinCheckView",
 	BtnDengLongView: "BtnDengLongView",

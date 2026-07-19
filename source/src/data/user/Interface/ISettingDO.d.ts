@@ -35,7 +35,8 @@ declare namespace DO {
 	}
 
 	interface IGraphicSetting {
-		fps: number;
+		/** 高低帧率 */
+		frameRate: "fast" | "slow";
 		/** 是否开启活动特效 */
 		activityEffect: boolean;
 	}
@@ -47,6 +48,14 @@ declare namespace DO {
 		doubleClickPass: boolean;
 		/** 右键过牌 */
 		rightClickPass: boolean;
+		/** 寮舍隐藏的雀士 */
+		hiddenChar: Record<number, boolean>;
+		/** 动态服饰 */
+		dynamicSkin: boolean;
+		/** 电脑形象，0-已有雀士中随机， 1-一姬的初始形象 */
+		aiLook: 0 | 1;
+		/** 点击特效，0-大厅绑定，1-默认点击特效 */
+		clickEffect: 0 | 1;
 	}
 
 	interface ILangSetting {

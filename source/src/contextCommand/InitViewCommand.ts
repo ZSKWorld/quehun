@@ -7,6 +7,7 @@ import PkgMainBinder from "../core/ui/ui/PkgMain/PkgMainBinder";
 import { BtnBuyView } from "../core/ui/view/PkgCommon/view/btns/BtnBuyView";
 import { BtnCheckRichTxtRightView } from "../core/ui/view/PkgCommon/view/btns/BtnCheckRichTxtRightView";
 import { BtnCheckTxtRightView } from "../core/ui/view/PkgCommon/view/btns/BtnCheckTxtRightView";
+import { BtnSettingSwitchView } from "../core/ui/view/PkgCommon/view/btns/BtnSettingSwitchView";
 import { BtnSwitch1View } from "../core/ui/view/PkgCommon/view/btns/BtnSwitch1View";
 import { BtnBagSkinCheckView } from "../core/ui/view/PkgMain/view/btns/BtnBagSkinCheckView";
 import { BtnDengLongView } from "../core/ui/view/PkgMain/view/btns/BtnDengLongView";
@@ -179,6 +180,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.BtnBuyView, EViewType.Button, BtnBuyView);
 		register(EViewID.BtnCheckRichTxtRightView, EViewType.Button, BtnCheckRichTxtRightView);
 		register(EViewID.BtnCheckTxtRightView, EViewType.Button, BtnCheckTxtRightView);
+		register(EViewID.BtnSettingSwitchView, EViewType.Button, BtnSettingSwitchView);
 		register(EViewID.BtnSwitch1View, EViewType.Button, BtnSwitch1View);
 		register(EViewID.BtnBagSkinCheckView, EViewType.Button, BtnBagSkinCheckView);
 		register(EViewID.BtnDengLongView, EViewType.Button, BtnDengLongView);

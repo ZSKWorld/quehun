@@ -67,3 +67,7 @@ export const enum EUISevenDayEvent {
 	OnQABtnAnswerClick = "EUISevenDayEvent_OnQABtnAnswerClick",
 	OnQABtnSkipClick = "EUISevenDayEvent_OnQABtnSkipClick",
 }
+
+export const enum EUILiaoSheEvent {
+	OnLiaoSheCharSelected = "EUILiaoSheEvent_OnLiaoSheCharSelected",
+}

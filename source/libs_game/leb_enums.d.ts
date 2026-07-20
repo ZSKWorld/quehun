@@ -735,6 +735,7 @@ declare enum ECfgLangField {
 	name = "name",
 	desc = "desc",
 	desc2 = "desc2",
+	desc_cv = "desc_cv",
 	desc_item = "desc_item",
 	desc_func = "desc_func",
 	first_desc = "first_desc",

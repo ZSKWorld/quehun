@@ -1,4 +1,5 @@
 import ComLiaoSheChar from "../../../../ui/PkgMain/ComLiaoSheChar";
+import { EUILiaoSheEvent } from "../../Definition";
 import { RenderLiaoSheCharView } from "../renders/RenderLiaoSheCharView";
 
 export const enum EComLiaoSheCharMsg {
@@ -35,10 +36,11 @@ export class ComLiaoSheCharView extends ExtendClass<IView, ComLiaoSheChar>(ComLi
 	refresh(resetSelect: boolean) {
 		const chars = this.showChars;
 		const { list_chars, btn_star, showStarChar } = this;
+		const mainCharId = $user.character.mainCharId;
 		btn_star.selected = showStarChar;
 		let selectedIndex = 0;
 		if (resetSelect || !this._selectedData) {
-			selectedIndex = chars.findIndex(v => v.charid == $user.character.mainCharId);
+			selectedIndex = chars.findIndex(v => v.charid == mainCharId);
 			this._selectedData = chars[selectedIndex];
 		}
 		else {
@@ -48,9 +50,10 @@ export class ComLiaoSheCharView extends ExtendClass<IView, ComLiaoSheChar>(ComLi
 		if (selectedIndex != -1) {
 			list_chars.scrollToView(selectedIndex, false);
 			const childIndex = list_chars.itemIndexToChildIndex(selectedIndex);
-			this._selectedItem = childIndex == -1 ? null : list_chars.getChildAt(childIndex) as RenderLiaoSheCharView;
-			list_chars.refreshVirtualList();
-		}
+			const item = list_chars.getChildAt(childIndex) as RenderLiaoSheCharView;
+			this.onListCharsClick(item, null, selectedIndex);
+		} else
+			this.event(EUILiaoSheEvent.OnLiaoSheCharSelected, mainCharId);
 	}
 
 	private onListCharsRender(index: number, item: RenderLiaoSheCharView) {
@@ -69,6 +72,7 @@ export class ComLiaoSheCharView extends ExtendClass<IView, ComLiaoSheChar>(ComLi
 		if (_selectedData == data && data.charid != $user.character.mainCharId) {
 			$netMgr.requests.changeMainCharacter({ character_id: data.charid });
 		}
+		this.event(EUILiaoSheEvent.OnLiaoSheCharSelected, data.charid);
 	}
 
 	private onBtnStarClick() {

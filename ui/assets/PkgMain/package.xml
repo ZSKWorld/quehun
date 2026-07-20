@@ -246,6 +246,13 @@
     <component id="lswhobie" name="RenderLiaoSheDecoItem.xml" path="/Component/UILiaoShe/"/>
     <component id="a7sxobif" name="BtnLiaoSheEditName.xml" path="/Component/UILiaoShe/"/>
     <component id="fw4wobig" name="ComPreview.xml" path="/Component/UILiaoShe/"/>
+    <image id="i7zfobih" name="img_2931.png" path="/Texture/"/>
+    <image id="i7zfobii" name="img_3024.png" path="/Texture/"/>
+    <image id="i7zfobij" name="img_3384.png" path="/Texture/"/>
+    <movieclip id="i7zfobik" name="MCLiaoSheFlipFront.jta" path="/Component/UILiaoShe/"/>
+    <movieclip id="i7zfobil" name="MCLiaoSheFlipBack.jta" path="/Component/UILiaoShe/"/>
+    <image id="i7zfobim" name="img_2702.png" path="/Texture/"/>
+    <image id="i7zfobin" name="img_2717.png" path="/Texture/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

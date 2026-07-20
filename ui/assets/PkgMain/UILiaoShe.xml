@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" designImage="ui://ca43vz0eglpb7plok5" designImageAlpha="36">
+<component size="1920,1080" designImage="ui://ca43vz0eglpb7plok5" designImageAlpha="0">
   <controller name="type" pages="0,角色,1,装扮" selected="0"/>
   <displayList>
     <component id="n0_p5uz" name="back" src="p5uzob8h" fileName="Component/Component/ComBack.xml" pkg="vx9zwser" xy="10,22">
@@ -17,7 +17,15 @@
     <component id="n16_k5qe" name="dynamic" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="28,494" size="100,100" group="n17_k5qe">
       <Button icon="ui://vith2b66s5z8obg6" selectedIcon="ui://vith2b66s5z8obg7"/>
     </component>
-    <group id="n17_k5qe" name="n17" xy="28,232" size="100,362" advanced="true">
+    <image id="n21_i7zf" name="n21" src="i7zfobii" fileName="Texture/img_3024.png" xy="126,963" group="n27_gqjo"/>
+    <image id="n20_i7zf" name="n20" src="i7zfobij" fileName="Texture/img_3384.png" xy="80,906" group="n27_gqjo"/>
+    <component id="n26_gqjo" name="visit" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="18,874" size="150,145" group="n27_gqjo">
+      <Button icon="ui://vith2b66i7zfobim"/>
+    </component>
+    <text id="n22_i7zf" name="name" xy="163,914" pivot="0,0.5" size="261,66" group="n27_gqjo" font="ui://vx9zwserrpakobev" fontSize="50" color="#e7e3df" align="center" vAlign="middle" autoSize="none" singleLine="true" text="二阶堂美树"/>
+    <text id="n24_i7zf" name="cvName" xy="238,979" pivot="0.5,0.5" size="110,42" group="n27_gqjo" font="ui://vx9zwserrpakobev" fontSize="30" color="#e7e3df" vAlign="middle" singleLine="true" text="CV:子安"/>
+    <group id="n27_gqjo" name="n27" xy="18,874" size="564,151" group="n17_k5qe"/>
+    <group id="n17_k5qe" name="n17" xy="18,232" size="564,793" advanced="true">
       <gearDisplay controller="type" pages="0"/>
     </group>
     <component id="n2_ik7b" name="char" src="ik7bobfg" fileName="Component/UILiaoShe/BtnLiaoSheTab.xml" xy="1293,66" group="n18_k5qe">
@@ -35,44 +43,37 @@
     </component>
     <group id="n18_k5qe" name="n18" xy="64,66" size="1806,974" advanced="true"/>
   </displayList>
-  <transition name="show1" options="4" frameRate="60">
+  <transition name="show" options="4" frameRate="60">
     <item time="0" type="Alpha" target="n13_c90s" tween="true" startValue="0" endValue="0.6" duration="12" ease="Linear"/>
     <item time="0" type="Alpha" target="n17_k5qe" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
     <item time="0" type="Alpha" target="n18_k5qe" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
     <item time="0" type="XY" target="n17_k5qe" tween="true" startValue="-22,-" endValue="28,-" duration="12" ease="Linear"/>
     <item time="0" type="XY" target="n18_k5qe" tween="true" startValue="114,66" endValue="64,66" duration="12" ease="Linear"/>
   </transition>
-  <transition name="show2" options="4" frameRate="60">
-    <item time="0" type="Alpha" target="n13_c90s" tween="true" startValue="0" endValue="0.6" duration="12" ease="Linear"/>
-    <item time="0" type="Alpha" target="n18_k5qe" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
-    <item time="0" type="XY" target="n18_k5qe" tween="true" startValue="64,116" endValue="64,66" duration="12" ease="Linear"/>
-  </transition>
-  <transition name="close1" options="4" frameRate="60">
+  <transition name="close" options="4" frameRate="60">
     <item time="0" type="Alpha" target="n13_c90s" tween="true" startValue="0.6" endValue="0" duration="12" ease="Linear"/>
     <item time="0" type="Alpha" target="n17_k5qe" tween="true" startValue="1" endValue="0" duration="12" ease="Linear"/>
     <item time="0" type="Alpha" target="n18_k5qe" tween="true" startValue="1" endValue="0" duration="12" ease="Linear"/>
     <item time="0" type="XY" target="n17_k5qe" tween="true" startValue="29,-" endValue="-22,-" duration="12" ease="Linear"/>
     <item time="0" type="XY" target="n18_k5qe" tween="true" startValue="65,66" endValue="114,66" duration="12" ease="Linear"/>
   </transition>
-  <transition name="close2" options="4" frameRate="60">
-    <item time="0" type="Alpha" target="n13_c90s" tween="true" startValue="0.6" endValue="0" duration="12" ease="Linear"/>
-    <item time="0" type="Alpha" target="n18_k5qe" tween="true" startValue="1" endValue="0" duration="12" ease="Linear"/>
-    <item time="0" type="XY" target="n18_k5qe" tween="true" startValue="64,66" endValue="64,116" duration="12" ease="Linear"/>
-  </transition>
   <transition name="toChar" options="1" frameRate="60">
     <item time="0" type="Alpha" target="n17_k5qe" value="0"/>
     <item time="0" type="Alpha" target="n6_ik7b" tween="true" startValue="1" endValue="0" duration="12" ease="Linear"/>
     <item time="0" type="Alpha" target="n7_s5z8" value="0"/>
-    <item time="0" type="Size" target="n4_ik7b" tween="true" startValue="1580,-" endValue="764,-" duration="12" ease="Linear"/>
-    <item time="0" type="XY" target="n17_k5qe" value="28,232"/>
-    <item time="12" type="Alpha" target="n17_k5qe" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
-    <item time="12" type="Alpha" target="n7_s5z8" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
+    <item time="0" type="Size" target="n4_ik7b" tween="true" startValue="1580,-" endValue="764,-" duration="12"/>
+    <item time="0" type="XY" target="n17_k5qe" value="28,-"/>
+    <item time="0" type="XY" target="n6_ik7b" tween="true" startValue="64,-" endValue="879,-" duration="12"/>
+    <item time="12" type="Alpha" target="n17_k5qe" tween="true" startValue="0" endValue="1" duration="6" ease="Linear"/>
+    <item time="12" type="Alpha" target="n7_s5z8" tween="true" startValue="0" endValue="1" duration="6" ease="Linear"/>
+    <item time="12" type="XY" target="n17_k5qe" tween="true" startValue="-22,-" endValue="28,-" duration="6"/>
   </transition>
   <transition name="toDeco" options="1" frameRate="60">
-    <item time="0" type="Alpha" target="n17_k5qe" tween="true" startValue="1" endValue="0" duration="12" ease="Linear"/>
-    <item time="0" type="Alpha" target="n6_ik7b" value="0"/>
-    <item time="0" type="Alpha" target="n7_s5z8" tween="true" startValue="1" endValue="0" duration="12" ease="Linear"/>
-    <item time="0" type="Size" target="n4_ik7b" tween="true" startValue="764,-" endValue="1580,-" duration="12" ease="Linear"/>
-    <item time="12" type="Alpha" target="n6_ik7b" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
+    <item time="0" type="Alpha" target="n17_k5qe" tween="true" startValue="1" endValue="0" duration="6" ease="Linear"/>
+    <item time="0" type="Alpha" target="n6_ik7b" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
+    <item time="0" type="Alpha" target="n7_s5z8" tween="true" startValue="1" endValue="0" duration="6" ease="Linear"/>
+    <item time="0" type="Size" target="n4_ik7b" tween="true" startValue="764,-" endValue="1580,-" duration="12"/>
+    <item time="0" type="XY" target="n17_k5qe" tween="true" startValue="28,-" endValue="-22,-" duration="6"/>
+    <item time="0" type="XY" target="n6_ik7b" tween="true" startValue="880,-" endValue="64,-" duration="12"/>
   </transition>
 </component>

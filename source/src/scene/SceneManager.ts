@@ -64,11 +64,12 @@ export class SceneManager implements ISceneManager {
 
 			this.isSwitching = false;
 		} catch (e) {
-			const retry = await $confirmSma(0, `${ type } 场景加载失败，是否重试?`, "提示");
+			this.isSwitching = false;
+			const retry = await $confirmSma(0, `${ type } 场景加载失败，是否重试?` + e, "提示");
 			if (retry) {
-				this.isSwitching = false;
 				this.enterScene(type, data);
 			} else {
+				this.isSwitching = true;
 				await newScene.exit();
 				this.isSwitching = false;
 			}

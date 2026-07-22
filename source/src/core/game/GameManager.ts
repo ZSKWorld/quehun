@@ -15,11 +15,14 @@ export class GameManager extends Observer implements IGameManager {
 	get inDmm() { return this._inDmm; }
 	get language() { return ELanguage.CHS; }
 	get clientType() { return EClientType.CHST; }
-	get version() {
+	get packageVersion() {
 		return "4.0.45";
 	}
-	get clientVersion() {
-		return 'WebGL_2022-0.16.251';
+	get resourceVersion() {
+		return "0.16.255";
+	}
+	get clientVersionStr() {
+		return "WebGL_2022-" + this.resourceVersion;
 	}
 	get currency() {
 		const info = $cfgMgr.mall.channel_config[this.payChannelId];
@@ -63,18 +66,18 @@ export class GameManager extends Observer implements IGameManager {
 	get deviceInfo() {
 		const userAgent = navigator.userAgent;
 		const device: ProtoObject<IClientDeviceInfo> = {
-			hardware: 'pc',
-			platform: 'pc',
-			os: 'windows',
-			os_version: 'win10',
-			sale_platform: 'web',
+			hardware: "pc",
+			platform: "pc",
+			os: "windows",
+			os_version: "win10",
+			sale_platform: "web",
 			is_browser: true,
-			software: 'Chrome',
-			model_number: '',
+			software: "Chrome",
+			model_number: "",
 			screen_height: window.innerHeight,
 			screen_width: window.innerWidth,
 			user_agent: userAgent,
-			screen_type: 'ontouchstart' in window || navigator.maxTouchPoints > 0 ? 2 : 1,
+			screen_type: "ontouchstart" in window || navigator.maxTouchPoints > 0 ? 2 : 1,
 			hardware_vendor: "",
 			device_id: this.deviceId,
 		};

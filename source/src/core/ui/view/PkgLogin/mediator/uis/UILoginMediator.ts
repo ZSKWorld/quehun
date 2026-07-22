@@ -38,7 +38,8 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 			_phoneInput.password = _loginInfo.password;
 		}
 		this.setLoginType(_loginInfo.loginType);
-		autoLogin && this.toLogin();
+		if (autoLogin) this.toLogin();
+		else this.cancelLogin();
 	}
 
 	private onBtnLoginClick() {
@@ -158,15 +159,15 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 			device: $gameMgr.deviceInfo,
 			random_key: $gameMgr.deviceId,
 			client_version: {
-				resource: $gameMgr.version,
-				package: "",
+				package: $gameMgr.packageVersion,
+				resource: $gameMgr.resourceVersion,
 			},
 			gen_access_token: true,
 			currency_platforms: $gameMgr.currency,
 			type: 0,
-			client_version_string: $gameMgr.clientVersion,
-			tag: $gameMgr.reportClientType,
 			version: 0,
+			client_version_string: $gameMgr.clientVersionStr,
+			tag: $gameMgr.reportClientType,
 		});
 		if (res.error) return false;
 		//协议
@@ -192,10 +193,10 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 				advertise_str: "",
 				device: $gameMgr.deviceInfo,
 				client_version: {
-					resource: $gameMgr.version,
-					package: "",
+					package: $gameMgr.packageVersion,
+					resource: $gameMgr.resourceVersion,
 				},
-				client_version_string: $gameMgr.clientVersion,
+				client_version_string: $gameMgr.clientVersionStr,
 				tag: $gameMgr.reportClientType
 			});
 			if (res.error) return false;
@@ -207,13 +208,13 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 			device: $gameMgr.deviceInfo,
 			random_key: $gameMgr.deviceId,
 			client_version: {
-				resource: $gameMgr.version,
-				package: "",
+				package: $gameMgr.packageVersion,
+				resource: $gameMgr.resourceVersion,
 			},
 			gen_access_token: false,
 			currency_platforms: $gameMgr.currency,
 			version: 0,
-			client_version_string: $gameMgr.clientVersion,
+			client_version_string: $gameMgr.clientVersionStr,
 			tag: $gameMgr.reportClientType
 		});
 		if (res2.error) return false;

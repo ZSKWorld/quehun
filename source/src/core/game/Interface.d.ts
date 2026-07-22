@@ -34,10 +34,11 @@ declare interface IGameManager {
 	get language(): ELanguage;
 	/** 客户端类型 */
 	get clientType(): EClientType;
-	/** 资源版本 */
-	get version(): string;
-	/** 客户端版本 */
-	get clientVersion(): string;
+	/** 包体版本 */
+	get packageVersion(): string;
+	/** 热更版本 */
+	get resourceVersion(): string;
+	get clientVersionStr(): string;
 	/** 使用的货币 */
 	get currency(): number[];
 	/** 支付通道 */

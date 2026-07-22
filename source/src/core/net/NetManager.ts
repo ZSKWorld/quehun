@@ -97,7 +97,7 @@ export class NetManager implements INetManager {
 	private async fetchRoutes() {
 		const gateways = $gameMgr.ipInfo.gateways;
 		const routes = await Promise.race(gateways.map(v => {
-			const url = `${ v.url }/api/clientgate/routes?platform=Web&version=${ $gameMgr.version }&lang=${ $gameMgr.clientType }`;
+			const url = `${ v.url }/api/clientgate/routes?platform=Web&version=${ $gameMgr.packageVersion }&lang=${ $gameMgr.clientType }`;
 			return $loadMgr.fetch(url, Laya.Loader.JSON, null, { ignoreCache: true }).then(res => ({ routes: res?.data?.routes, url }));
 		}));
 		this._routes = routes.routes || [];
@@ -113,7 +113,7 @@ export class NetManager implements INetManager {
 		const err = res.error;
 		if (!err) return;
 		if (this._ignoreErrRequest.has(method)) return;
-		Logger.error(method, err);
+		Logger.error(method, res, req);
 		const { code, u32_params, str_params, json_param } = err;
 		if (code == -1) {
 			$confirmSma(2, $lang(2061));

@@ -25,6 +25,8 @@ declare interface IConfig {
 
 declare interface IGameManager {
 	get released(): boolean;
+	get platform(): string;
+	get detailPlatform(): string;
 	get inDmm(): boolean;
 	/** 设备id */
 	get deviceId(): string;

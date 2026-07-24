@@ -12,6 +12,8 @@ export class GameManager extends Observer implements IGameManager {
 	private _config: IConfig;
 	private _ipIndex: number;
 	get released() { return false; }
+	get platform() { return "WebGL"; };
+	get detailPlatform() { return "Web"; };
 	get inDmm() { return this._inDmm; }
 	get language() { return ELanguage.CHS; }
 	get clientType() { return EClientType.CHST; }
@@ -19,10 +21,10 @@ export class GameManager extends Observer implements IGameManager {
 		return "4.0.45";
 	}
 	get resourceVersion() {
-		return "0.16.255";
+		return "0.16.257";
 	}
 	get clientVersionStr() {
-		return "WebGL_2022-" + this.resourceVersion;
+		return this.platform + "_2022-" + this.resourceVersion;
 	}
 	get currency() {
 		const info = $cfgMgr.mall.channel_config[this.payChannelId];

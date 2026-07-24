@@ -4,12 +4,13 @@ import { ESocketEvent, WebSocket } from "./WebSocket";
 export class NetManager implements INetManager {
 	private _gateway: string;
 	private _routes: IRouteInfo[];
+	private _requests: IReqMethod;
+
 	private _lobbySocket: WebSocket;
 	private _gameSocket: WebSocket;
 	private _obSocket: WebSocket;
 
-	requests: IReqMethod;
-
+	get requests() { return this._requests; };
 	get lobbyConnected() { return this._lobbySocket?.connected; }
 	get gameConnected() { return this._gameSocket?.connected; }
 	get obConnected() { return this._obSocket?.connected; }
@@ -31,22 +32,33 @@ export class NetManager implements INetManager {
 			else continue;
 			reqs[key] = data => socket.send(ENetMessage[key], data || {});
 		}
-		this.requests = $gameUtil.freeze(reqs);
+		this._requests = $gameUtil.freeze(reqs);
 	}
 
 	private initLobby() {
-		const socket = this._lobbySocket = new WebSocket(this._routes.first, "gateway");
-		socket.on(ESocketEvent.Connecting, $facade, $facade.dispatch, [EGlobalEvent.LobbyConnecting]);
-		socket.on(ESocketEvent.Reconnecting, $facade, $facade.dispatch, [EGlobalEvent.LobbyReconnecting]);
-		socket.on(ESocketEvent.Connected, $facade, $facade.dispatch, [EGlobalEvent.LobbyConnected]);
-		socket.on(ESocketEvent.Closed, $facade, $facade.dispatch, [EGlobalEvent.LobbyClosed]);
-		socket.on(ESocketEvent.Response, this, (method: string, res: IResponse, req: IRequest) => {
+		const info = this._routes.first;
+		const socket = this._lobbySocket = new WebSocket(info, "gateway");
+		socket.on(ESocketEvent.OnConnecting, $facade, $facade.dispatch, [EGlobalEvent.LobbyConnecting]);
+		socket.on(ESocketEvent.OnReconnecting, $facade, $facade.dispatch, [EGlobalEvent.LobbyReconnecting]);
+		socket.on(ESocketEvent.OnConnect, this, () => {
+			$facade.dispatch(EGlobalEvent.LobbyConnected);
+			this._requests.requestConnection({
+				type: 1,
+				route_id: info.id,
+				timestamp: $timeUtil.second,
+				platform: $gameMgr.detailPlatform
+			}).then(res => {
+				// Logger.error("requestConnection", res);
+			});
+		});
+		socket.on(ESocketEvent.OnClosed, $facade, $facade.dispatch, [EGlobalEvent.LobbyClosed]);
+		socket.on(ESocketEvent.OnResponse, this, (method: string, res: IResponse, req: IRequest) => {
 			if (res.error)
 				this.onResponseError(method, res, req);
 			else
 				$facade.dispatch(method, [res, req]);
 		});
-		socket.on(ESocketEvent.Notify, this, (notify: string, res: INotify) => {
+		socket.on(ESocketEvent.OnNotify, this, (notify: string, res: INotify) => {
 			Logger.error("on notify", notify, res);
 			$facade.dispatch(notify, res);
 		});
@@ -97,8 +109,8 @@ export class NetManager implements INetManager {
 	private async fetchRoutes() {
 		const gateways = $gameMgr.ipInfo.gateways;
 		const routes = await Promise.race(gateways.map(v => {
-			const url = `${ v.url }/api/clientgate/routes?platform=Web&version=${ $gameMgr.packageVersion }&lang=${ $gameMgr.clientType }`;
-			return $loadMgr.fetch(url, Laya.Loader.JSON, null, { ignoreCache: true }).then(res => ({ routes: res?.data?.routes, url }));
+			const url = `${ v.url }/api/clientgate/routes?platform=${ $gameMgr.detailPlatform }&version=${ $gameMgr.packageVersion }&lang=${ $gameMgr.clientType }`;
+			return $loadMgr.fetch(url, Laya.Loader.JSON, null, { ignoreCache: true }).then(res => ({ routes: res?.data?.routes, url: v.url }));
 		}));
 		this._routes = routes.routes || [];
 		this._gateway = routes.url;

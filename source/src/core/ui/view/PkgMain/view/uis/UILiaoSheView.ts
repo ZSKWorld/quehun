@@ -8,7 +8,9 @@ export const enum EUILiaoSheMsg {
 export class UILiaoSheView extends ExtendClass<IView, UILiaoShe>(UILiaoShe) implements IView {
 
 	override onCreate() {
-		const { com_back, btn_char, btn_deco, com_character } = this;
+		const { com_back, btn_dynamic, btn_char, btn_deco, com_character } = this;
+		btn_dynamic.mode = fgui.ButtonMode.Check;
+		btn_dynamic.onClick(this, () => $user.setting.prefer.dynamicSkin = btn_dynamic.selected);
 		com_back.onBackClick(this, this.closeSelf);
 		btn_char.onClick(this, this.refreshContent, [0, true]);
 		btn_deco.onClick(this, this.refreshContent, [1, true]);
@@ -18,7 +20,8 @@ export class UILiaoSheView extends ExtendClass<IView, UILiaoShe>(UILiaoShe) impl
 	refreshContent(type: 0 | 1, anim: boolean) {
 		if (anim && this.ctrl_type.selectedIndex == type) return;
 		const showChar = type == 0;
-		const { ctrl_type, btn_char, btn_deco, trans_toChar, trans_toDeco, com_character, com_decorate } = this;
+		const { ctrl_type, btn_dynamic, btn_char, btn_deco, trans_toChar, trans_toDeco, com_character, com_decorate } = this;
+		btn_dynamic.selected = $user.setting.prefer.dynamicSkin;
 		btn_char.selected = showChar;
 		btn_deco.selected = !showChar;
 		btn_char.sortingOrder = +showChar;
@@ -39,12 +42,10 @@ export class UILiaoSheView extends ExtendClass<IView, UILiaoShe>(UILiaoShe) impl
 	override onOpenAni() {
 		this.com_character.alpha = 0;
 		this.com_decorate.alpha = 0;
-		this.trans_show.play();
-		return this.com_back.onOpenAni();
+		return $uiUtil.playTrans(this.trans_show);
 	}
 
 	override onCloseAni() {
-		this.trans_close.play();
-		return this.com_back.onCloseAni();
+		return $uiUtil.playTrans(this.trans_close);
 	}
 }

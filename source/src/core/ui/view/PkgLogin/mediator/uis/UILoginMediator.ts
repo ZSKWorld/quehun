@@ -138,10 +138,10 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 		let loginSuccess = false;
 		if (_loginInfo.loginType == ELoginType.Account) {
 			view.setCtrlPage(2);
-			if (!_loginInfo.access_token) {
-				loginSuccess = await this.loginByAccount();
-			} else {
+			if (_loginInfo.access_token) {
 				loginSuccess = await this.loginByToken();
+			} else {
+				loginSuccess = await this.loginByAccount();
 			}
 		}
 		if (loginSuccess)

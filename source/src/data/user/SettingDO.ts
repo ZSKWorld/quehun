@@ -14,10 +14,10 @@ type DeepPaths<T> =
 	: never;
 
 
-const HadSyncKey = Symbol("HadSyncKey");
+const HadProxyKey = Symbol("HadProxyKey");
 function settingProxy<T extends object>(target: T, caller: any, onValueChanged: (pPath: DeepPaths<T>, newV: any, oldV: any) => void, keyPath: string = ""): T {
-	if (target != null && typeof target === "object" && !target[HadSyncKey]) {
-		target[HadSyncKey] = true;
+	if (target != null && typeof target === "object" && !target[HadProxyKey]) {
+		target[HadProxyKey] = true;
 		Object.keys(target).forEach(key => target[key] = settingProxy(target[key], caller, onValueChanged, `${ keyPath }${ key }.`));
 		const result = new Proxy(target, {
 			set(target: any, pName: string, value: any, receiver: any) {

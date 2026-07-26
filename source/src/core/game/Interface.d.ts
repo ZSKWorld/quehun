@@ -55,4 +55,5 @@ declare interface IGameManager {
 	get zoneIds(): number[];
 	init(ipIndex: number, config: IConfig): void;
 	showConfirm(msg: string): Promise<boolean>;
+	logout(): void;
 }

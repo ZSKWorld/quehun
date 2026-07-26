@@ -15,7 +15,7 @@
       <Button icon="ui://vith2b66k5qeobgf"/>
     </component>
     <component id="n16_k5qe" name="dynamic" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="28,494" size="100,100" group="n17_k5qe">
-      <Button icon="ui://vith2b66s5z8obg6" selectedIcon="ui://vith2b66s5z8obg7"/>
+      <Button icon="ui://vith2b66s5z8obg7" selectedIcon="ui://vith2b66s5z8obg6"/>
     </component>
     <image id="n21_i7zf" name="n21" src="i7zfobii" fileName="Texture/img_3024.png" xy="126,963" group="n27_gqjo"/>
     <image id="n20_i7zf" name="n20" src="i7zfobij" fileName="Texture/img_3384.png" xy="80,906" group="n27_gqjo"/>
@@ -44,16 +44,20 @@
     <group id="n18_k5qe" name="n18" xy="64,66" size="1806,974" advanced="true"/>
   </displayList>
   <transition name="show" options="4" frameRate="60">
+    <item time="0" type="Alpha" target="n0_p5uz" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
     <item time="0" type="Alpha" target="n13_c90s" tween="true" startValue="0" endValue="0.6" duration="12" ease="Linear"/>
     <item time="0" type="Alpha" target="n17_k5qe" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
     <item time="0" type="Alpha" target="n18_k5qe" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
+    <item time="0" type="XY" target="n0_p5uz" tween="true" startValue="-,-28" endValue="-,22" duration="12" ease="Linear"/>
     <item time="0" type="XY" target="n17_k5qe" tween="true" startValue="-22,-" endValue="28,-" duration="12" ease="Linear"/>
     <item time="0" type="XY" target="n18_k5qe" tween="true" startValue="114,66" endValue="64,66" duration="12" ease="Linear"/>
   </transition>
   <transition name="close" options="4" frameRate="60">
+    <item time="0" type="Alpha" target="n0_p5uz" tween="true" startValue="1" endValue="0" duration="12" ease="Linear"/>
     <item time="0" type="Alpha" target="n13_c90s" tween="true" startValue="0.6" endValue="0" duration="12" ease="Linear"/>
     <item time="0" type="Alpha" target="n17_k5qe" tween="true" startValue="1" endValue="0" duration="12" ease="Linear"/>
     <item time="0" type="Alpha" target="n18_k5qe" tween="true" startValue="1" endValue="0" duration="12" ease="Linear"/>
+    <item time="0" type="XY" target="n0_p5uz" tween="true" startValue="-,22" endValue="-,-28" duration="12" ease="Linear"/>
     <item time="0" type="XY" target="n17_k5qe" tween="true" startValue="29,-" endValue="-22,-" duration="12" ease="Linear"/>
     <item time="0" type="XY" target="n18_k5qe" tween="true" startValue="65,66" endValue="114,66" duration="12" ease="Linear"/>
   </transition>

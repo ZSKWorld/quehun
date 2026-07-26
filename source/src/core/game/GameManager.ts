@@ -112,6 +112,13 @@ export class GameManager extends Observer implements IGameManager {
 		return Promise.resolve(confirm(msg));
 	}
 
+	logout() {
+		$netMgr.requests.logout();
+		$netMgr.closeAll();
+		$localDataMgr.setBool(ELocalDataKey.AutoLogin, false);
+		window.location.reload();
+	}
+
 	@InjectGlobalEvent(EGlobalEvent.LoginSuccess)
 	private loginSuccess() {
 		$netMgr.requests.fetchConnectionInfo();
@@ -162,11 +169,6 @@ export class GameManager extends Observer implements IGameManager {
 	private onNotifyAnotherLogin() {
 		$netMgr.closeAll();
 		$localDataMgr.setBool(ELocalDataKey.AutoLogin, false);
-		const loginInfo = $localDataMgr.getObj<ILoginInfo>(ELocalDataKey.LastLoginData);
-		if (loginInfo) {
-			loginInfo.access_token = "";
-			$localDataMgr.setObj(ELocalDataKey.LastLoginData, loginInfo);
-		}
 		$confirmSma(2, $lang(2324)).then(v => {
 			// window.location.reload();
 		});

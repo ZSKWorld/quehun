@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="79,66" pivot="0.5,0.5" extention="Button" designImage="ui://ca43vz0e9c0b7plomo" designImageOffsetX="-1091" designImageOffsetY="-192" designImageAlpha="0">
+  <controller name="char" exported="true" pages="0,普通,1,四贵人" selected="1"/>
+  <controller name="type" exported="true" pages="0,,1," selected="0"/>
+  <displayList>
+    <loader id="n3_108ab" name="n3" xy="0,0" size="79,66" url="ui://vx9zwsergsi2obdd" fill="scaleFree">
+      <gearSize controller="char" pages="1" values="79,66,1,1" default="77,67,1,1"/>
+      <gearIcon controller="char" pages="1" values="ui://vx9zwsergsi2obdd" default="ui://vx9zwsergsi2obdm"/>
+    </loader>
+    <loader id="n7_9c0b" name="n7" xy="0,0" size="79,66" url="ui://vx9zwsergsi2obdc" fill="scaleFree" fillMethod="vt" fillOrigin="1">
+      <gearDisplay controller="type" pages="0"/>
+      <gearIcon controller="char" pages="0,1" values="ui://vx9zwsergsi2obdn|ui://vx9zwsergsi2obdc"/>
+      <relation target="n3_108ab" sidePair="width-width,height-height"/>
+    </loader>
+    <loader id="n13_9c0b" name="n13" xy="0,0" size="79,66" url="ui://vx9zwsergsi2obdt" fill="scaleFree">
+      <gearDisplay controller="type" pages="1"/>
+      <gearIcon controller="char" pages="0,1" values="ui://vx9zwsergsi2obdl|ui://vx9zwsergsi2obdt"/>
+      <relation target="n3_108ab" sidePair="width-width,height-height"/>
+    </loader>
+  </displayList>
+  <Button mode="Check" downEffect="scale" downEffectValue="0.95"/>
+  <relation target="n3_108ab" sidePair="width-width,height-height"/>
+</component>

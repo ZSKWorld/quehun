@@ -42,10 +42,12 @@ export class UILiaoSheView extends ExtendClass<IView, UILiaoShe>(UILiaoShe) impl
 	override onOpenAni() {
 		this.com_character.alpha = 0;
 		this.com_decorate.alpha = 0;
-		return $uiUtil.playTrans(this.trans_show);
+		this.trans_show.play();
+		return this.com_back.onOpenAni();
 	}
 
 	override onCloseAni() {
-		return $uiUtil.playTrans(this.trans_close);
+		this.trans_close.play();
+		return this.com_back.onCloseAni();
 	}
 }

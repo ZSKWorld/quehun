@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1920,1080" designImage="ui://ca43vz0e9c0b7plomq" designImageAlpha="0">
+  <controller name="type" pages="0,档案,1,语音,2,传记" selected="0"/>
+  <displayList>
+    <component id="n0_9c0b" name="back" src="p5uzob8h" fileName="Component/Component/ComBack.xml" pkg="vx9zwser" xy="10,22">
+      <property target="title" propertyId="0" value="拜访"/>
+    </component>
+    <image id="n3_9c0b" name="n3" src="9c0bobiq" fileName="Texture/img_136.png" xy="1091,159" size="740,878"/>
+    <image id="n1_9c0b" name="n1" src="9c0bobis" fileName="Texture/img_754.png" xy="1041,158" size="11,516"/>
+    <image id="n2_9c0b" name="n2" src="9c0bobir" fileName="Texture/img_3540.png" xy="1041,146" size="840,915"/>
+    <component id="n4_9c0b" name="tab0" src="9c0bobiv" fileName="Component/UIVisit/BtnVisitTab.xml" xy="986,183">
+      <Button checked="true" icon="ui://vith2b669c0bobiu" selectedIcon="ui://vith2b669c0bobit" controller="type" page="0"/>
+    </component>
+    <component id="n5_9c0b" name="tab1" src="9c0bobiv" fileName="Component/UIVisit/BtnVisitTab.xml" xy="986,323">
+      <Button title="语音" icon="ui://vith2b669c0bobiu" selectedIcon="ui://vith2b669c0bobit" controller="type" page="1"/>
+    </component>
+    <component id="n6_9c0b" name="tab2" src="9c0bobiv" fileName="Component/UIVisit/BtnVisitTab.xml" xy="986,465">
+      <Button title="传记" icon="ui://vith2b669c0bobiu" selectedIcon="ui://vith2b669c0bobit" controller="type" page="2"/>
+    </component>
+    <component id="n9_9c0b" name="intro" src="9c0bobj7" fileName="Component/UIVisit/ComVisitIntro.xml" xy="1094,161">
+      <gearDisplay controller="type" pages="0"/>
+    </component>
+    <list id="n7_9c0b" name="voice" xy="1123,189" size="679,820" overflow="scroll" autoClearItems="true">
+      <gearDisplay controller="type" pages="1"/>
+    </list>
+    <list id="n8_9c0b" name="spot" xy="1123,189" size="679,820" overflow="scroll" autoClearItems="true">
+      <gearDisplay controller="type" pages="2"/>
+    </list>
+  </displayList>
+</component>

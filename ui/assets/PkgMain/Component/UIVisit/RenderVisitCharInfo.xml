@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="150,150">
+  <controller name="type" pages="0,,1," selected="1"/>
+  <displayList>
+    <loader id="n26_9c0b" name="icon" xy="1,1" size="148,148"/>
+    <image id="n22_9c0b" name="n22" src="ieavob7l" fileName="Texture/img_112.png" pkg="vx9zwser" xy="0,0" size="150,150" alpha="0.7">
+      <gearDisplay controller="type" pages="0"/>
+    </image>
+    <image id="n23_9c0b" name="n23" src="gsi2ober" fileName="Texture/img_755.png" pkg="vx9zwser" xy="52,52" size="44,43">
+      <gearDisplay controller="type" pages="0"/>
+    </image>
+    <image id="n21_9c0b" name="n21" src="9c0boblk" fileName="Texture/img_1563.png" pkg="vx9zwser" xy="1,1"/>
+    <image id="n24_9c0b" name="n24" src="gsi2obby" fileName="Texture/img_1420.png" xy="1,108" size="148,35">
+      <gearDisplay controller="type" pages="0"/>
+    </image>
+    <image id="n20_9c0b" name="n20" src="9c0boblj" fileName="Texture/img_135.png" pkg="vx9zwser" xy="0,0" size="150,150"/>
+    <text id="n25_9c0b" name="desc" xy="21,108" pivot="0.5,0.5" size="108,36" font="ui://vx9zwserrpakobeu" fontSize="26" color="#040c11" vAlign="middle" leading="0" singleLine="true" text="缔结契约">
+      <gearDisplay controller="type" pages="0"/>
+    </text>
+  </displayList>
+</component>

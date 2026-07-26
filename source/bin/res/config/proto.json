@@ -906,6 +906,14 @@
             }
           }
         },
+        "NotifyActivityChanges": {
+          "fields": {
+            "club": {
+              "type": "ActivityMajClubChanges",
+              "id": 1
+            }
+          }
+        },
         "Error": {
           "fields": {
             "code": {
@@ -9237,6 +9245,256 @@
             }
           }
         },
+        "ActivityMajClubCustomerData": {
+          "fields": {
+            "id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "power": {
+              "type": "uint32",
+              "id": 2
+            },
+            "patience": {
+              "type": "uint32",
+              "id": 3
+            }
+          }
+        },
+        "ActivityMajClubCharacterRoomData": {
+          "fields": {
+            "character_id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "room_id": {
+              "type": "uint32",
+              "id": 2
+            },
+            "desktop_id": {
+              "type": "uint32",
+              "id": 3
+            }
+          }
+        },
+        "ActivityMajClubCharacterRoomDataArrayDirty": {
+          "fields": {
+            "dirty": {
+              "type": "bool",
+              "id": 1
+            },
+            "value": {
+              "rule": "repeated",
+              "type": "ActivityMajClubCharacterRoomData",
+              "id": 2
+            }
+          }
+        },
+        "ActivityMajClubGameData": {
+          "fields": {
+            "level": {
+              "type": "uint32",
+              "id": 1
+            },
+            "character_room_data": {
+              "rule": "repeated",
+              "type": "ActivityMajClubCharacterRoomData",
+              "id": 2
+            },
+            "customers": {
+              "rule": "repeated",
+              "type": "ActivityMajClubCustomerData",
+              "id": 100
+            },
+            "start_time": {
+              "type": "uint32",
+              "id": 101
+            }
+          }
+        },
+        "ActivityMajClubGameDataChanges": {
+          "fields": {
+            "level": {
+              "type": "UInt32Dirty",
+              "id": 1
+            },
+            "character_room_data": {
+              "type": "ActivityMajClubCharacterRoomDataArrayDirty",
+              "id": 2
+            }
+          }
+        },
+        "ActivityMajClubRoomData": {
+          "fields": {
+            "id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "desktop_count_level": {
+              "type": "uint32",
+              "id": 2
+            },
+            "desktop_fee_level": {
+              "type": "uint32",
+              "id": 3
+            }
+          }
+        },
+        "ActivityMajClubCharacterData": {
+          "fields": {
+            "id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "tags": {
+              "rule": "repeated",
+              "type": "uint32",
+              "id": 2
+            },
+            "power": {
+              "type": "uint32",
+              "id": 3
+            }
+          }
+        },
+        "ActivityMajClubUpgradeData": {
+          "fields": {
+            "rooms": {
+              "rule": "repeated",
+              "type": "ActivityMajClubRoomData",
+              "id": 1
+            },
+            "characters": {
+              "rule": "repeated",
+              "type": "ActivityMajClubCharacterData",
+              "id": 2
+            },
+            "wait_zone_level": {
+              "type": "uint32",
+              "id": 3
+            }
+          }
+        },
+        "ActivityMajClubRoomDataArrayDirty": {
+          "fields": {
+            "dirty": {
+              "type": "bool",
+              "id": 1
+            },
+            "value": {
+              "rule": "repeated",
+              "type": "ActivityMajClubRoomData",
+              "id": 2
+            }
+          }
+        },
+        "ActivityMajClubCharacterDataArrayDirty": {
+          "fields": {
+            "dirty": {
+              "type": "bool",
+              "id": 1
+            },
+            "value": {
+              "rule": "repeated",
+              "type": "ActivityMajClubCharacterData",
+              "id": 2
+            }
+          }
+        },
+        "ActivityMajClubUpgradeDataChanges": {
+          "fields": {
+            "rooms": {
+              "type": "ActivityMajClubRoomDataArrayDirty",
+              "id": 1
+            },
+            "characters": {
+              "type": "ActivityMajClubCharacterDataArrayDirty",
+              "id": 2
+            },
+            "wait_zone_level": {
+              "type": "UInt32Dirty",
+              "id": 4
+            }
+          }
+        },
+        "ActivityMajClubIllustratedBookData": {
+          "fields": {
+            "unlocked_customer_level_1": {
+              "rule": "repeated",
+              "type": "uint32",
+              "id": 1
+            },
+            "unlocked_customer_level_2": {
+              "rule": "repeated",
+              "type": "uint32",
+              "id": 2
+            },
+            "highest_income": {
+              "type": "uint32",
+              "id": 3
+            },
+            "total_customer_count": {
+              "type": "uint32",
+              "id": 4
+            }
+          }
+        },
+        "ActivityMajClubIllustratedBookDataChanges": {
+          "fields": {
+            "unlocked_customer_level_1": {
+              "type": "UInt32ArrayDirty",
+              "id": 1
+            },
+            "unlocked_customer_level_2": {
+              "type": "UInt32ArrayDirty",
+              "id": 2
+            },
+            "highest_income": {
+              "type": "UInt32Dirty",
+              "id": 3
+            },
+            "total_customer_count": {
+              "type": "UInt32Dirty",
+              "id": 4
+            }
+          }
+        },
+        "ActivityMajClubChanges": {
+          "fields": {
+            "game": {
+              "type": "ActivityMajClubGameDataChanges",
+              "id": 1
+            },
+            "upgrade": {
+              "type": "ActivityMajClubUpgradeDataChanges",
+              "id": 2
+            },
+            "illustrated_book": {
+              "type": "ActivityMajClubIllustratedBookDataChanges",
+              "id": 3
+            }
+          }
+        },
+        "ActivityMajClubData": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "game": {
+              "type": "ActivityMajClubGameData",
+              "id": 2
+            },
+            "upgrade": {
+              "type": "ActivityMajClubUpgradeData",
+              "id": 3
+            },
+            "illustrated_book": {
+              "type": "ActivityMajClubIllustratedBookData",
+              "id": 4
+            }
+          }
+        },
         "Lobby": {
           "methods": {
             "fetchConnectionInfo": {
@@ -10970,6 +11228,54 @@
             "fetchDailySignActivityData": {
               "requestType": "ReqFetchDailySignActivityData",
               "responseType": "ResFetchDailySignActivityData"
+            },
+            "majClubActivityFetchData": {
+              "requestType": "ReqMajClubActivityFetchData",
+              "responseType": "ResMajClubActivityFetchData"
+            },
+            "majClubActivityStartDay": {
+              "requestType": "ReqMajClubActivityStartDay",
+              "responseType": "ResMajClubActivityStartDay"
+            },
+            "majClubActivityFinishDay": {
+              "requestType": "ReqMajClubActivityFinishDay",
+              "responseType": "ResMajClubActivityFinishDay"
+            },
+            "majClubActivityUnlockRoom": {
+              "requestType": "ReqMajClubActivityUnlockRoom",
+              "responseType": "ResMajClubActivityCommon"
+            },
+            "majClubActivityUnlockDesktop": {
+              "requestType": "ReqMajClubActivityUnlockDesktop",
+              "responseType": "ResMajClubActivityCommon"
+            },
+            "majClubActivityUpgradeRoomFee": {
+              "requestType": "ReqMajClubActivityUpgradeRoomFee",
+              "responseType": "ResMajClubActivityCommon"
+            },
+            "majClubActivityUpgradeCharacterPower": {
+              "requestType": "ReqMajClubActivityUpgradeCharacterPower",
+              "responseType": "ResMajClubActivityCommon"
+            },
+            "majClubActivityUpgradeCharacterTag": {
+              "requestType": "ReqMajClubActivityUpgradeCharacterTag",
+              "responseType": "ResMajClubActivityCommon"
+            },
+            "majClubActivityUpgradeWaiting": {
+              "requestType": "ReqMajClubActivityUpgradeWaiting",
+              "responseType": "ResMajClubActivityCommon"
+            },
+            "majClubActivitySaveRoomData": {
+              "requestType": "ReqMajClubActivitySaveRoomData",
+              "responseType": "ResMajClubActivityCommon"
+            },
+            "majClubActivityFetchDebugData": {
+              "requestType": "ReqMajClubActivityFetchDebugData",
+              "responseType": "ResMajClubActivityFetchDebugData"
+            },
+            "majClubActivityDebug": {
+              "requestType": "ReqMajClubActivityDebug",
+              "responseType": "ResCommon"
             }
           }
         },
@@ -22287,6 +22593,236 @@
                   "id": 3
                 }
               }
+            }
+          }
+        },
+        "ReqMajClubActivityFetchData": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            }
+          }
+        },
+        "ResMajClubActivityFetchData": {
+          "fields": {
+            "error": {
+              "type": "Error",
+              "id": 1
+            },
+            "data": {
+              "type": "ActivityMajClubData",
+              "id": 2
+            }
+          }
+        },
+        "ReqMajClubActivityStartDay": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "character_room_data": {
+              "rule": "repeated",
+              "type": "ActivityMajClubCharacterRoomData",
+              "id": 2
+            }
+          }
+        },
+        "ResMajClubActivityStartDay": {
+          "fields": {
+            "error": {
+              "type": "Error",
+              "id": 1
+            },
+            "changes": {
+              "type": "ActivityMajClubChanges",
+              "id": 2
+            },
+            "customers": {
+              "rule": "repeated",
+              "type": "ActivityMajClubCustomerData",
+              "id": 3
+            }
+          }
+        },
+        "ReqMajClubActivityFinishDay": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "customer_list": {
+              "rule": "repeated",
+              "type": "CustomerData",
+              "id": 2
+            },
+            "income": {
+              "type": "uint32",
+              "id": 3
+            }
+          },
+          "nested": {
+            "CustomerData": {
+              "fields": {
+                "id": {
+                  "type": "uint32",
+                  "id": 1
+                },
+                "emo": {
+                  "type": "uint32",
+                  "id": 2
+                },
+                "result": {
+                  "type": "uint32",
+                  "id": 3
+                },
+                "payment_amount": {
+                  "type": "uint32",
+                  "id": 4
+                }
+              }
+            }
+          }
+        },
+        "ResMajClubActivityFinishDay": {
+          "fields": {
+            "error": {
+              "type": "Error",
+              "id": 1
+            },
+            "changes": {
+              "type": "ActivityMajClubChanges",
+              "id": 2
+            },
+            "result": {
+              "type": "uint32",
+              "id": 3
+            }
+          }
+        },
+        "ReqMajClubActivityUnlockRoom": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "room_id": {
+              "type": "uint32",
+              "id": 2
+            }
+          }
+        },
+        "ReqMajClubActivityUnlockDesktop": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "room_id": {
+              "type": "uint32",
+              "id": 2
+            }
+          }
+        },
+        "ReqMajClubActivityUpgradeRoomFee": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "room_id": {
+              "type": "uint32",
+              "id": 2
+            }
+          }
+        },
+        "ReqMajClubActivityUpgradeCharacterPower": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "character_id": {
+              "type": "uint32",
+              "id": 2
+            }
+          }
+        },
+        "ReqMajClubActivityUpgradeCharacterTag": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "character_id": {
+              "type": "uint32",
+              "id": 2
+            }
+          }
+        },
+        "ReqMajClubActivityUpgradeWaiting": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            }
+          }
+        },
+        "ReqMajClubActivitySaveRoomData": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "character_room_data": {
+              "rule": "repeated",
+              "type": "ActivityMajClubCharacterRoomData",
+              "id": 2
+            }
+          }
+        },
+        "ResMajClubActivityCommon": {
+          "fields": {
+            "error": {
+              "type": "Error",
+              "id": 1
+            },
+            "changes": {
+              "type": "ActivityMajClubChanges",
+              "id": 2
+            }
+          }
+        },
+        "ReqMajClubActivityFetchDebugData": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            }
+          }
+        },
+        "ResMajClubActivityFetchDebugData": {
+          "fields": {
+            "error": {
+              "type": "Error",
+              "id": 1
+            },
+            "data": {
+              "type": "ActivityMajClubData",
+              "id": 2
+            }
+          }
+        },
+        "ReqMajClubActivityDebug": {
+          "fields": {
+            "activity_id": {
+              "type": "uint32",
+              "id": 1
+            },
+            "data": {
+              "type": "ActivityMajClubData",
+              "id": 2
             }
           }
         },

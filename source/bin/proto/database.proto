@@ -284,6 +284,13 @@ message BlobActivity {
   repeated lq.ActivityMMOData mmo_activity = 27; // mmo 活动
 }
 
+message BlobMajClubActivity {
+  uint32 activity_id = 1;
+  lq.ActivityMajClubGameData game = 2;
+  lq.ActivityMajClubUpgradeData upgrade = 3;
+  lq.ActivityMajClubIllustratedBookData illustrated_book = 4;
+}
+
 message BlobAmuletActivity {
   uint32 activity_id = 1;
   lq.AmuletGameData game = 2; // 游戏对局信息

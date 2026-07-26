@@ -13,9 +13,11 @@ service ServerRpc {
 
   // ws-gateway => *
   rpc forwardAccountRequest (ReqForwardAccountMessage) returns (ResForwardAccountMessage);
+  rpc forwardServerRequest (ReqForwardServerMessage) returns (ResForwardServerMessage);
   rpc forwardManagerRequest (ReqForwardAccountMessage) returns (ResForwardAccountMessage);
 
   rpc forwardAccountActivityRequest(ReqForwardAccountActivityRequest) returns (ResForwardAccountActivityRequest);
+  rpc forwardServerActivityRequest(ReqForwardAccountActivityRequest) returns (ResForwardAccountActivityRequest);
   rpc fetchAccountActivityData(ReqSrvFetchAccountActivityData) returns (ResSrvFetchAccountActivityData);
   rpc modifyAccountActivityData(ReqSrvModifyAccountActivityData) returns (ResCommon);
   // ==DevDebug Start==
@@ -23,6 +25,7 @@ service ServerRpc {
   rpc fetchAccountRecentActivityDataDebug(ReqSrvFetchAccountRecentActivityDataDebug) returns (ResSrvFetchAccountRecentActivityDataDebug);
   // ==DevDebug End==
   rpc deleteAccountActivityData(ReqDeleteAccountActivityData) returns (ResCommon);
+  rpc srvMajClubActivityAddCharacter(ReqSrvMajClubActivityAddCharacter) returns (ResCommon);
 
   // ws-gateway => session-manger
   rpc sessionClose(ReqCommon) returns (ResCommon);
@@ -314,6 +317,12 @@ message ReqForwardAccountMessage {
   bytes request = 3;
 }
 
+message ReqForwardServerMessage {
+  uint32 account_id = 1;
+  string method = 2;
+  bytes request = 3;
+}
+
 message ReqForwardAccountActivityRequest {
   uint32 account_id = 1;
   string method = 2;
@@ -325,6 +334,7 @@ message ResForwardAccountActivityRequest {
   Error error = 1;
   bytes response = 2;
   bytes activity_data = 3;
+  NotifyActivityChanges notify = 4;
 }
 
 message ReqSrvFetchAccountActivityData {
@@ -369,7 +379,19 @@ message ReqDeleteAccountActivityData {
   uint32 activity_id = 3;
 }
 
+message ReqSrvMajClubActivityAddCharacter {
+  string type = 1;
+  uint32 account_id = 2;
+  uint32 character_id = 3;
+  uint32 activity_id = 4;
+}
+
 message ResForwardAccountMessage {
+  Error error = 1;
+  bytes response = 2;
+}
+
+message ResForwardServerMessage {
   Error error = 1;
   bytes response = 2;
 }

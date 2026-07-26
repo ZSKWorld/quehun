@@ -2774,6 +2774,8 @@ declare interface ISheetData_ItemDefinition_Skin extends ISheetDataBase {
 	illust_data: string;
 	/** 传记眨眼 */
 	blink: number;
+	/** 皮肤版本 */
+	skin_version: number;
 }
 //#endregion
 

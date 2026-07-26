@@ -2951,6 +2951,84 @@ declare interface IReqMethod {
 	 */
 	fetchDailySignActivityData(data?: IReqFetchDailySignActivityData): Promise<IResFetchDailySignActivityData>;
 	/**
+	 ** 麻将快闪店
+	 ** req: {@link IReqMajClubActivityFetchData}
+	 ** res: {@link IResMajClubActivityFetchData}
+	 ** msgId: {@link ENetMessage.majClubActivityFetchData}
+	 */
+	majClubActivityFetchData(data?: IReqMajClubActivityFetchData): Promise<IResMajClubActivityFetchData>;
+	/**
+	 ** req: {@link IReqMajClubActivityStartDay}
+	 ** res: {@link IResMajClubActivityStartDay}
+	 ** msgId: {@link ENetMessage.majClubActivityStartDay}
+	 */
+	majClubActivityStartDay(data?: IReqMajClubActivityStartDay): Promise<IResMajClubActivityStartDay>;
+	/**
+	 ** req: {@link IReqMajClubActivityFinishDay}
+	 ** res: {@link IResMajClubActivityFinishDay}
+	 ** msgId: {@link ENetMessage.majClubActivityFinishDay}
+	 */
+	majClubActivityFinishDay(data?: IReqMajClubActivityFinishDay): Promise<IResMajClubActivityFinishDay>;
+	/**
+	 ** 解锁房间
+	 ** req: {@link IReqMajClubActivityUnlockRoom}
+	 ** res: {@link IResMajClubActivityCommon}
+	 ** msgId: {@link ENetMessage.majClubActivityUnlockRoom}
+	 */
+	majClubActivityUnlockRoom(data?: IReqMajClubActivityUnlockRoom): Promise<IResMajClubActivityCommon>;
+	/**
+	 ** 解锁房间麻将桌
+	 ** req: {@link IReqMajClubActivityUnlockDesktop}
+	 ** res: {@link IResMajClubActivityCommon}
+	 ** msgId: {@link ENetMessage.majClubActivityUnlockDesktop}
+	 */
+	majClubActivityUnlockDesktop(data?: IReqMajClubActivityUnlockDesktop): Promise<IResMajClubActivityCommon>;
+	/**
+	 ** 升级房间桌位费
+	 ** req: {@link IReqMajClubActivityUpgradeRoomFee}
+	 ** res: {@link IResMajClubActivityCommon}
+	 ** msgId: {@link ENetMessage.majClubActivityUpgradeRoomFee}
+	 */
+	majClubActivityUpgradeRoomFee(data?: IReqMajClubActivityUpgradeRoomFee): Promise<IResMajClubActivityCommon>;
+	/**
+	 ** req: {@link IReqMajClubActivityUpgradeCharacterPower}
+	 ** res: {@link IResMajClubActivityCommon}
+	 ** msgId: {@link ENetMessage.majClubActivityUpgradeCharacterPower}
+	 */
+	majClubActivityUpgradeCharacterPower(data?: IReqMajClubActivityUpgradeCharacterPower): Promise<IResMajClubActivityCommon>;
+	/**
+	 ** req: {@link IReqMajClubActivityUpgradeCharacterTag}
+	 ** res: {@link IResMajClubActivityCommon}
+	 ** msgId: {@link ENetMessage.majClubActivityUpgradeCharacterTag}
+	 */
+	majClubActivityUpgradeCharacterTag(data?: IReqMajClubActivityUpgradeCharacterTag): Promise<IResMajClubActivityCommon>;
+	/**
+	 ** req: {@link IReqMajClubActivityUpgradeWaiting}
+	 ** res: {@link IResMajClubActivityCommon}
+	 ** msgId: {@link ENetMessage.majClubActivityUpgradeWaiting}
+	 */
+	majClubActivityUpgradeWaiting(data?: IReqMajClubActivityUpgradeWaiting): Promise<IResMajClubActivityCommon>;
+	/**
+	 ** req: {@link IReqMajClubActivitySaveRoomData}
+	 ** res: {@link IResMajClubActivityCommon}
+	 ** msgId: {@link ENetMessage.majClubActivitySaveRoomData}
+	 */
+	majClubActivitySaveRoomData(data?: IReqMajClubActivitySaveRoomData): Promise<IResMajClubActivityCommon>;
+	/**
+	 ** ==DevDebug Start==
+	 ** debug 协议在正式版本删除
+	 ** req: {@link IReqMajClubActivityFetchDebugData}
+	 ** res: {@link IResMajClubActivityFetchDebugData}
+	 ** msgId: {@link ENetMessage.majClubActivityFetchDebugData}
+	 */
+	majClubActivityFetchDebugData(data?: IReqMajClubActivityFetchDebugData): Promise<IResMajClubActivityFetchDebugData>;
+	/**
+	 ** req: {@link IReqMajClubActivityDebug}
+	 ** res: {@link IResCommon}
+	 ** msgId: {@link ENetMessage.majClubActivityDebug}
+	 */
+	majClubActivityDebug(data?: IReqMajClubActivityDebug): Promise<IResCommon>;
+	/**
 	 ** 验证游戏口令
 	 ** req: {@link IReqAuthGame}
 	 ** res: {@link IResAuthGame}

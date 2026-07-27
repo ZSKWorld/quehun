@@ -14,6 +14,7 @@ EViewID = {
 	BtnSevenDayTabView: "BtnSevenDayTabView",
 	BtnSevenDayView: "BtnSevenDayView",
 	BtnShopRefreshView: "BtnShopRefreshView",
+	BtnVisitHeartView: "BtnVisitHeartView",
 	BtnXunMiView: "BtnXunMiView",
 
 	/**Labels */
@@ -45,6 +46,7 @@ EViewID = {
 	RenderShopCGView: "RenderShopCGView",
 	RenderShopItemView: "RenderShopItemView",
 	RenderShopSkinView: "RenderShopSkinView",
+	RenderVisitCharInfoView: "RenderVisitCharInfoView",
 
 	/**Coms */
 	ComAchieveGroupView: "ComAchieveGroupView",
@@ -89,6 +91,7 @@ EViewID = {
 	ComMatchModeView: "ComMatchModeView",
 	ComPreviewView: "ComPreviewView",
 	ComSevenDayItem1View: "ComSevenDayItem1View",
+	ComVisitIntroView: "ComVisitIntroView",
 
 	/**UIs */
 	UIAchievementDetailView: "UIAchievementDetailView",
@@ -115,6 +118,7 @@ EViewID = {
 	UIAnnouncementView: "UIAnnouncementView",
 	UIBagView: "UIBagView",
 	UICameraView: "UICameraView",
+	UIChangeSkinView: "UIChangeSkinView",
 	UICheckCurrencyView: "UICheckCurrencyView",
 	UIFriendView: "UIFriendView",
 	UIGuideView: "UIGuideView",
@@ -129,4 +133,5 @@ EViewID = {
 	UIShopView: "UIShopView",
 	UITreasureView: "UITreasureView",
 	UIVideoView: "UIVideoView",
+	UIVisitView: "UIVisitView",
 }

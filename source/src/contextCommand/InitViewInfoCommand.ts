@@ -43,7 +43,9 @@ export class InitViewInfoCommand extends Command {
 			[EViewID.UIPaymentView]: [UIBottom, Popup],
 			[EViewID.UICheckCurrencyView]: [UIBottom, Popup],
 			[EViewID.UITextInputView]: [UIBottom, Popup],
-			[EViewID.UIAchievementDetailView]: []
+			[EViewID.UIAchievementDetailView]: [],
+			[EViewID.UIChangeSkinView]: [],
+			[EViewID.UIVisitView]: []
 		};
 		for (const viewId in viewMap) {
 			const [layer, category] = viewMap[viewId];

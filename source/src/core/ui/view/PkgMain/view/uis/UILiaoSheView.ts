@@ -6,14 +6,16 @@ export const enum EUILiaoSheMsg {
 }
 
 export class UILiaoSheView extends ExtendClass<IView, UILiaoShe>(UILiaoShe) implements IView {
+	private _curCharId = -1;
 
 	override onCreate() {
-		const { com_back, btn_dynamic, btn_char, btn_deco, com_character } = this;
+		const { com_back, btn_dynamic, btn_char, btn_deco, btn_visit, com_character } = this;
 		btn_dynamic.mode = fgui.ButtonMode.Check;
 		btn_dynamic.onClick(this, () => $user.setting.prefer.dynamicSkin = btn_dynamic.selected);
 		com_back.onBackClick(this, this.closeSelf);
 		btn_char.onClick(this, this.refreshContent, [0, true]);
 		btn_deco.onClick(this, this.refreshContent, [1, true]);
+		btn_visit.onClick(this, this.onBtnVisitClick);
 		com_character.on(EUILiaoSheEvent.OnLiaoSheCharSelected, this, this.onLiaoSheCharSelected);
 	}
 
@@ -33,21 +35,30 @@ export class UILiaoSheView extends ExtendClass<IView, UILiaoShe>(UILiaoShe) impl
 	}
 
 	private onLiaoSheCharSelected(charId: number) {
+		this._curCharId = charId;
 		const cfgChar = $cfgMgr.item_definition.character[charId];
 		const { txt_name, txt_cvName } = this;
 		txt_name.text = cfgChar.langField(ECfgLangField.name);
 		txt_cvName.text = "CV: " + cfgChar.langField(ECfgLangField.desc_cv);
 	}
 
+	private onBtnVisitClick() {
+		this.openView<IUIVisitData>(EViewID.UIVisitView, { charId: this._curCharId }, EViewOpenType.Hide);
+	}
+
 	override onOpenAni() {
 		this.com_character.alpha = 0;
 		this.com_decorate.alpha = 0;
-		this.trans_show.play();
-		return this.com_back.onOpenAni();
+		return Promise.all([
+			$uiUtil.playTrans(this.trans_show),
+			this.com_back.onOpenAni(),
+		]);
 	}
 
 	override onCloseAni() {
-		this.trans_close.play();
-		return this.com_back.onCloseAni();
+		return Promise.all([
+			$uiUtil.playTrans(this.trans_close),
+			this.com_back.onCloseAni(),
+		]);
 	}
 }

@@ -29,7 +29,7 @@ export class PbManager implements IPbManager {
 				this._methodMap[m.name] = m;
 				this._method2Service[m.name] = s.fullName as EServiceType;
 			});
-			this._seriveMethods[s.fullName] = [...s.methodsArray];
+			this._seriveMethods[s.fullName] = s.methodsArray.slice();
 		});
 
 		this._wrapperCtor = this._root.lookupType('lq.Wrapper');

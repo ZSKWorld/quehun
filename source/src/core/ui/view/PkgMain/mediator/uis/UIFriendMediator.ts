@@ -48,7 +48,7 @@ export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> 
 		switch (index) {
 			case 0: this.view.refreshFriends(); break;
 			case 1:
-				this._applyPlayerLoader.intro = [...$user.friend.applies];
+				this._applyPlayerLoader.intro = $user.friend.applies.slice();
 				this._applyPlayerLoader.loadNext();
 				const brifesLen = this._applyPlayerLoader.briefs.length;
 				this.view.refreshApply(brifesLen);

@@ -2,8 +2,12 @@
 <component size="121,164" pivot="0.5,0.5" extention="Button" designImage="ui://ca43vz0e9c0b7plomo" designImageOffsetX="-1091" designImageOffsetY="-192" designImageAlpha="0">
   <controller name="button" pages="0,up,1,down" selected="0"/>
   <displayList>
-    <loader id="n3_108ab" name="icon" xy="0,0" size="121,164" aspect="true" url="ui://vith2b669c0bobit" fill="scaleFree"/>
-    <text id="n4_mj5k" name="title" xy="60,83" pivot="0.5,0.5" anchor="true" size="60,97" font="ui://vx9zwserrpakobeu" fontSize="38" color="#2a1e25" align="center" vAlign="middle" leading="-2" autoSize="height" text="档案"/>
+    <loader id="n3_108ab" name="icon" xy="0,0" size="121,164" aspect="true" url="ui://vith2b669c0bobit" fill="scaleFree">
+      <relation target="" sidePair="center-center,middle-middle"/>
+    </loader>
+    <text id="n4_mj5k" name="title" xy="60,83" pivot="0.5,0.5" anchor="true" size="60,97" font="ui://vx9zwserrpakobeu" fontSize="38" color="#2a1e25" align="center" vAlign="middle" leading="-2" autoSize="height" text="档案">
+      <relation target="" sidePair="center-center,middle-middle"/>
+    </text>
   </displayList>
-  <Button mode="Check" downEffect="scale" downEffectValue="0.95"/>
+  <Button mode="Radio"/>
 </component>

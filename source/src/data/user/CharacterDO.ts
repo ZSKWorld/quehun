@@ -55,8 +55,8 @@ export class CharacterDO extends BaseDO implements DO.ICharacterDO {
 	changeCharStar(id: number) {
 		if (!this.hasChar(id)) return;
 		if (this.isHiddenChar(id)) return;
-		const _characterSort = [...this._characterSort];
-		const _otherCharacterSort = [...this._otherCharacterSort];
+		const _characterSort = this._characterSort.slice();
+		const _otherCharacterSort = this._otherCharacterSort.slice();
 
 		const starIndex = _characterSort.indexOf(id);
 		if (starIndex > -1) {

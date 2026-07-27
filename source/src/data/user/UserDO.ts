@@ -56,8 +56,8 @@ export class UserDO extends BaseDO implements DO.IUserDO {
 		this.signup_time = res.signup_time;
 		this.is_id_card_authed = res.is_id_card_authed;
 		this.country = res.country;
-		this.logined_version = [...res.logined_version];
-		this.rewarded_version = [...res.rewarded_version];
+		this.logined_version = res.logined_version.slice();
+		this.rewarded_version = res.rewarded_version.slice();
 	}
 
 	@InjectNetEvent(ENetNotify.NotifyAccountUpdate)

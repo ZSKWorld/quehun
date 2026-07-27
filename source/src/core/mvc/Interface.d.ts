@@ -155,12 +155,12 @@ declare interface IView extends fgui.GComponent, IViewExtend {
 	 ** 页面打开动画
 	 ** 该方法为虚方法，使用时重写即可
 	 */
-	onOpenAni(): Promise<void>;
+	onOpenAni(): Promise<any>;
 	/**
 	 ** 页面关闭动画
 	 ** 该方法为虚方法，使用时重写即可
 	 */
-	onCloseAni(): Promise<void>;
+	onCloseAni(): Promise<any>;
 
 	getPath(): string;
 }

@@ -41,11 +41,10 @@ export class InitGameCommand extends Command {
 		]);
 		config.ip.forEach(v => (v.zone_ids = v.zone_ids || []));
 
-		// const ipIndex = await new Promise<number>(resolve => {
-		// 	$uiMgr.openView<IUIChooseServerData>(EViewID.UIChooseServerView, { ipInfos: config.ip, callback: resolve });
-		// });
+		const ipIndex = await new Promise<number>(resolve => {
+			$uiMgr.openView<IUIChooseServerData>(EViewID.UIChooseServerView, { ipInfos: config.ip, callback: resolve });
+		});
 
-		const ipIndex = 0;
 		$gameMgr.init(ipIndex, config);
 
 		$uiMgr.openView(EViewID.UIEntranceView);

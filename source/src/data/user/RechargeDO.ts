@@ -68,13 +68,13 @@ export class RechargeDO extends BaseDO implements DO.IRechargeDO {
 
 	@InjectNetEvent(ENetMessage.fetchMisc)
 	private onFetchMisc(res: IResMisc) {
-		this._rechargedList = [...res.recharged_list];
+		this._rechargedList = res.recharged_list.slice();
 		this.dispatch(EUserEvent.OnRechargeRechargedListChanged);
 	}
 
 	@InjectNetEvent(ENetMessage.fetchVipReward)
 	private onFetchVipReward(res: IResVipReward) {
-		this._gainedVipLevels = [...res.gained_vip_levels];
+		this._gainedVipLevels = res.gained_vip_levels.slice();
 		this.dispatch(EUserEvent.OnRechargeGainVipLevelChanged);
 	}
 

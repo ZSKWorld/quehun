@@ -750,6 +750,7 @@ declare enum EColorString {
 	_000080 = "#000080",
 	_00aaff = "#00aaff",
 	_00ff00 = "#00ff00",
+	_2a1e25 = "#2a1e25",
 	_51f1ff = "#51f1ff",
 	_58c4db = "#58c4db",
 	_66ccff = "#66ccff",

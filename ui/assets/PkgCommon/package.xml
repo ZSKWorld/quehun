@@ -62,7 +62,7 @@
     <component id="ieavob8c" name="PbLoading1.xml" path="/Component/PbBar/" exported="true"/>
     <component id="vwgmob8d" name="PbLoading2.xml" path="/Component/PbBar/" exported="true"/>
     <component id="w29kob8e" name="BtnIconFitNoScale.xml" path="/Component/Button/" exported="true"/>
-    <font id="gnjqob8f" name="HYWH.ttf" path="/Font/" exported="true" renderMode="" samplePointSize="16"/>
+    <font id="gnjqob8f" name="HYWH.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
     <component id="z63pob8g" name="BtnEmpty.xml" path="/Component/Button/" exported="true"/>
     <component id="p5uzob8h" name="ComBack.xml" path="/Component/Component/" exported="true"/>
     <image id="p5uzob8i" name="img_2441.png" path="/Texture/" exported="true"/>
@@ -208,7 +208,7 @@
     <image id="mde1b7g" name="img_716.png" path="/Texture/" exported="true" scale="9grid" scale9grid="15,15,6,5"/>
     <image id="rpakobes" name="img_1673.png" path="/Texture/" exported="true"/>
     <image id="rpakobet" name="img_1674.png" path="/Texture/" exported="true"/>
-    <font id="rpakobeu" name="fengyu.ttf" path="/Font/" exported="true" renderMode="" samplePointSize="16"/>
+    <font id="rpakobeu" name="fengyu.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
     <font id="rpakobev" name="hanyi.ttf" path="/Font/" renderMode="" samplePointSize="16"/>
     <font id="rpakobew" name="haolong.otf" path="/Font/" renderMode="" samplePointSize="16"/>
     <font id="rpakobex" name="HYYANKAIW.TTF" path="/Font/" renderMode="" samplePointSize="16"/>

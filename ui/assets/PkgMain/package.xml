@@ -256,7 +256,7 @@
     <component id="9c0bobio" name="UIChangeSkin.xml" path="/" exported="true"/>
     <component id="9c0bobip" name="UIVisit.xml" path="/" exported="true"/>
     <image id="9c0bobiq" name="img_136.png" path="/Texture/" scale="9grid" scale9grid="4,4,2,2"/>
-    <image id="9c0bobir" name="img_3540.png" path="/Texture/" scale="9grid"/>
+    <image id="9c0bobir" name="img_3540.png" path="/Texture/" scale="9grid" scale9grid="67,36,122,126"/>
     <image id="9c0bobis" name="img_754.png" path="/Texture/" scale="9grid" scale9grid="0,7,12,6"/>
     <image id="9c0bobit" name="img_2499.png" path="/Texture/"/>
     <image id="9c0bobiu" name="img_2500.png" path="/Texture/"/>

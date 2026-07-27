@@ -1,5 +1,10 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import UIChangeSkin from "./UIChangeSkin";
+import UIVisit from "./UIVisit";
+import BtnVisitHeart from "./BtnVisitHeart";
+import RenderVisitCharInfo from "./RenderVisitCharInfo";
+import ComVisitIntro from "./ComVisitIntro";
 import UISevenDay from "./UISevenDay";
 import BtnSevenDayTab from "./BtnSevenDayTab";
 import RenderSevenDayItem from "./RenderSevenDayItem";
@@ -60,6 +65,11 @@ import BtnDengLong from "./BtnDengLong";
 import ComMatchMode from "./ComMatchMode";
 import ComAnnounceContent from "./ComAnnounceContent";
 import ComMatchContent from "./ComMatchContent";
+import { UIChangeSkinView } from "../../view/PkgMain/view/uis/UIChangeSkinView";
+import { UIVisitView } from "../../view/PkgMain/view/uis/UIVisitView";
+import { BtnVisitHeartView } from "../../view/PkgMain/view/btns/BtnVisitHeartView";
+import { RenderVisitCharInfoView } from "../../view/PkgMain/view/renders/RenderVisitCharInfoView";
+import { ComVisitIntroView } from "../../view/PkgMain/view/coms/ComVisitIntroView";
 import { UISevenDayView } from "../../view/PkgMain/view/uis/UISevenDayView";
 import { BtnSevenDayTabView } from "../../view/PkgMain/view/btns/BtnSevenDayTabView";
 import { RenderSevenDayItemView } from "../../view/PkgMain/view/renders/RenderSevenDayItemView";
@@ -123,6 +133,11 @@ import { ComMatchContentView } from "../../view/PkgMain/view/coms/ComMatchConten
 
 export default class PkgMainBinder {
 	public static bindAll(): void {
+		fgui.UIObjectFactory.setExtension(UIChangeSkin.url, UIChangeSkinView);
+		fgui.UIObjectFactory.setExtension(UIVisit.url, UIVisitView);
+		fgui.UIObjectFactory.setExtension(BtnVisitHeart.url, BtnVisitHeartView);
+		fgui.UIObjectFactory.setExtension(RenderVisitCharInfo.url, RenderVisitCharInfoView);
+		fgui.UIObjectFactory.setExtension(ComVisitIntro.url, ComVisitIntroView);
 		fgui.UIObjectFactory.setExtension(UISevenDay.url, UISevenDayView);
 		fgui.UIObjectFactory.setExtension(BtnSevenDayTab.url, BtnSevenDayTabView);
 		fgui.UIObjectFactory.setExtension(RenderSevenDayItem.url, RenderSevenDayItemView);

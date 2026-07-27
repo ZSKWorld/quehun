@@ -16,6 +16,7 @@ import { BtnSevenDayView } from "../core/ui/view/PkgMain/view/btns/BtnSevenDayVi
 import { BtnSevenDayAnswerView } from "../core/ui/view/PkgMain/view/btns/BtnSevenDayAnswerView";
 import { BtnSevenDayTabView } from "../core/ui/view/PkgMain/view/btns/BtnSevenDayTabView";
 import { BtnShopRefreshView } from "../core/ui/view/PkgMain/view/btns/BtnShopRefreshView";
+import { BtnVisitHeartView } from "../core/ui/view/PkgMain/view/btns/BtnVisitHeartView";
 import { BtnXunMiView } from "../core/ui/view/PkgMain/view/btns/BtnXunMiView";
 import { LabelNameView } from "../core/ui/view/PkgCommon/view/labels/LabelNameView";
 import { RenderAchieveDetailGroupView } from "../core/ui/view/PkgAchievement/view/renders/RenderAchieveDetailGroupView";
@@ -43,6 +44,7 @@ import { RenderSevenDayItemView } from "../core/ui/view/PkgMain/view/renders/Ren
 import { RenderShopCGView } from "../core/ui/view/PkgMain/view/renders/RenderShopCGView";
 import { RenderShopItemView } from "../core/ui/view/PkgMain/view/renders/RenderShopItemView";
 import { RenderShopSkinView } from "../core/ui/view/PkgMain/view/renders/RenderShopSkinView";
+import { RenderVisitCharInfoView } from "../core/ui/view/PkgMain/view/renders/RenderVisitCharInfoView";
 import { ComAchieveGroupView } from "../core/ui/view/PkgAchievement/view/coms/ComAchieveGroupView";
 import { ComAchieveRecentView } from "../core/ui/view/PkgAchievement/view/coms/ComAchieveRecentView";
 import { ComAchieveStatView } from "../core/ui/view/PkgAchievement/view/coms/ComAchieveStatView";
@@ -89,6 +91,7 @@ import { ComMatchModeView } from "../core/ui/view/PkgMain/view/coms/ComMatchMode
 import { ComMatchModeMediator } from "../core/ui/view/PkgMain/mediator/coms/ComMatchModeMediator";
 import { ComPreviewView } from "../core/ui/view/PkgMain/view/coms/ComPreviewView";
 import { ComSevenDayItem1View } from "../core/ui/view/PkgMain/view/coms/ComSevenDayItem1View";
+import { ComVisitIntroView } from "../core/ui/view/PkgMain/view/coms/ComVisitIntroView";
 import { UIAchievementView } from "../core/ui/view/PkgAchievement/view/uis/UIAchievementView";
 import { UIAchievementMediator } from "../core/ui/view/PkgAchievement/mediator/uis/UIAchievementMediator";
 import { UIAchievementDetailView } from "../core/ui/view/PkgAchievement/view/uis/UIAchievementDetailView";
@@ -137,6 +140,8 @@ import { UIBagView } from "../core/ui/view/PkgMain/view/uis/UIBagView";
 import { UIBagMediator } from "../core/ui/view/PkgMain/mediator/uis/UIBagMediator";
 import { UICameraView } from "../core/ui/view/PkgMain/view/uis/UICameraView";
 import { UICameraMediator } from "../core/ui/view/PkgMain/mediator/uis/UICameraMediator";
+import { UIChangeSkinView } from "../core/ui/view/PkgMain/view/uis/UIChangeSkinView";
+import { UIChangeSkinMediator } from "../core/ui/view/PkgMain/mediator/uis/UIChangeSkinMediator";
 import { UICheckCurrencyView } from "../core/ui/view/PkgMain/view/uis/UICheckCurrencyView";
 import { UICheckCurrencyMediator } from "../core/ui/view/PkgMain/mediator/uis/UICheckCurrencyMediator";
 import { UIFriendView } from "../core/ui/view/PkgMain/view/uis/UIFriendView";
@@ -165,6 +170,8 @@ import { UITreasureView } from "../core/ui/view/PkgMain/view/uis/UITreasureView"
 import { UITreasureMediator } from "../core/ui/view/PkgMain/mediator/uis/UITreasureMediator";
 import { UIVideoView } from "../core/ui/view/PkgMain/view/uis/UIVideoView";
 import { UIVideoMediator } from "../core/ui/view/PkgMain/mediator/uis/UIVideoMediator";
+import { UIVisitView } from "../core/ui/view/PkgMain/view/uis/UIVisitView";
+import { UIVisitMediator } from "../core/ui/view/PkgMain/mediator/uis/UIVisitMediator";
 import { Command } from "../core/mvc/controller/Command";
 
 export class InitViewCommand extends Command {
@@ -189,6 +196,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.BtnSevenDayAnswerView, EViewType.Button, BtnSevenDayAnswerView);
 		register(EViewID.BtnSevenDayTabView, EViewType.Button, BtnSevenDayTabView);
 		register(EViewID.BtnShopRefreshView, EViewType.Button, BtnShopRefreshView);
+		register(EViewID.BtnVisitHeartView, EViewType.Button, BtnVisitHeartView);
 		register(EViewID.BtnXunMiView, EViewType.Button, BtnXunMiView);
 
 		//Labels
@@ -220,6 +228,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.RenderShopCGView, EViewType.Render, RenderShopCGView);
 		register(EViewID.RenderShopItemView, EViewType.Render, RenderShopItemView);
 		register(EViewID.RenderShopSkinView, EViewType.Render, RenderShopSkinView);
+		register(EViewID.RenderVisitCharInfoView, EViewType.Render, RenderVisitCharInfoView);
 
 		//Coms
 		register(EViewID.ComAchieveGroupView, EViewType.Component, ComAchieveGroupView);
@@ -264,6 +273,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.ComMatchModeView, EViewType.Component, ComMatchModeView, ComMatchModeMediator);
 		register(EViewID.ComPreviewView, EViewType.Component, ComPreviewView);
 		register(EViewID.ComSevenDayItem1View, EViewType.Component, ComSevenDayItem1View);
+		register(EViewID.ComVisitIntroView, EViewType.Component, ComVisitIntroView);
 
 		//UIs
 		register(EViewID.UIAchievementView, EViewType.UI, UIAchievementView, UIAchievementMediator);
@@ -290,6 +300,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.UIAnnouncementView, EViewType.UI, UIAnnouncementView, UIAnnouncementMediator);
 		register(EViewID.UIBagView, EViewType.UI, UIBagView, UIBagMediator);
 		register(EViewID.UICameraView, EViewType.UI, UICameraView, UICameraMediator);
+		register(EViewID.UIChangeSkinView, EViewType.UI, UIChangeSkinView, UIChangeSkinMediator);
 		register(EViewID.UICheckCurrencyView, EViewType.UI, UICheckCurrencyView, UICheckCurrencyMediator);
 		register(EViewID.UIFriendView, EViewType.UI, UIFriendView, UIFriendMediator);
 		register(EViewID.UIGuideView, EViewType.UI, UIGuideView, UIGuideMediator);
@@ -304,5 +315,6 @@ export class InitViewCommand extends Command {
 		register(EViewID.UIShopView, EViewType.UI, UIShopView, UIShopMediator);
 		register(EViewID.UITreasureView, EViewType.UI, UITreasureView, UITreasureMediator);
 		register(EViewID.UIVideoView, EViewType.UI, UIVideoView, UIVideoMediator);
+		register(EViewID.UIVisitView, EViewType.UI, UIVisitView, UIVisitMediator);
 	}
 }

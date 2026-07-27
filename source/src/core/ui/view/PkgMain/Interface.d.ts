@@ -75,3 +75,6 @@ declare interface IUIVideoData {
 	callback?: SimpleHandler;
 }
 
+declare interface IUIVisitData {
+	charId: number;
+}

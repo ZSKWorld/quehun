@@ -14,6 +14,7 @@ declare enum EViewID {
 	BtnSevenDayTabView = "BtnSevenDayTabView",
 	BtnSevenDayView = "BtnSevenDayView",
 	BtnShopRefreshView = "BtnShopRefreshView",
+	BtnVisitHeartView = "BtnVisitHeartView",
 	BtnXunMiView = "BtnXunMiView",
 
 	/**Labels */
@@ -45,6 +46,7 @@ declare enum EViewID {
 	RenderShopCGView = "RenderShopCGView",
 	RenderShopItemView = "RenderShopItemView",
 	RenderShopSkinView = "RenderShopSkinView",
+	RenderVisitCharInfoView = "RenderVisitCharInfoView",
 
 	/**Coms */
 	ComAchieveGroupView = "ComAchieveGroupView",
@@ -89,6 +91,7 @@ declare enum EViewID {
 	ComMatchModeView = "ComMatchModeView",
 	ComPreviewView = "ComPreviewView",
 	ComSevenDayItem1View = "ComSevenDayItem1View",
+	ComVisitIntroView = "ComVisitIntroView",
 
 	/**UIs */
 	UIAchievementDetailView = "UIAchievementDetailView",
@@ -115,6 +118,7 @@ declare enum EViewID {
 	UIAnnouncementView = "UIAnnouncementView",
 	UIBagView = "UIBagView",
 	UICameraView = "UICameraView",
+	UIChangeSkinView = "UIChangeSkinView",
 	UICheckCurrencyView = "UICheckCurrencyView",
 	UIFriendView = "UIFriendView",
 	UIGuideView = "UIGuideView",
@@ -129,6 +133,7 @@ declare enum EViewID {
 	UIShopView = "UIShopView",
 	UITreasureView = "UITreasureView",
 	UIVideoView = "UIVideoView",
+	UIVisitView = "UIVisitView",
 }
 
 declare type EButtonViewID = Extract<EViewID, `Btn${ string }`>;

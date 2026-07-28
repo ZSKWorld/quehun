@@ -37,10 +37,10 @@ export class CommonViewDO extends BaseDO implements DO.ICommonViewDO {
 	isDefaultView(id: number) {
 		const cfgItem = $cfgMgr.item_definition.item[id];
 		if (!cfgItem) return false;
-		return cfgItem.category == EItemCategory.Common && this.getDefultViewId(cfgItem.type) == id;
+		return cfgItem.category == EItemCategory.Common && this.getDefaultViewId(cfgItem.type) == id;
 	}
 
-	getDefultViewId(type: EItemCommonType) {
+	getDefaultViewId(type: EItemCommonType) {
 		return DefaultViewIdMap[type] ?? 0;
 	}
 
@@ -97,7 +97,7 @@ export class CommonViewDO extends BaseDO implements DO.ICommonViewDO {
 			const slots = view.values;
 			slotIds.forEach(sid => {
 				let s = slots.find(s => s.slot == sid);
-				const defaultId = this.getDefultViewId(sid);
+				const defaultId = this.getDefaultViewId(sid);
 				if (!s) {
 					s = { slot: sid, item_id: defaultId, type: 0, item_id_list: [], };
 					slots.push(s);

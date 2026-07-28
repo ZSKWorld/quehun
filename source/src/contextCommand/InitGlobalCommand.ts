@@ -1,10 +1,12 @@
+import { ContextMenuManager } from "../core/common/contextMenu/ContextMenuManager";
+import { AudioManager } from "../core/common/manager/AudioManager";
 import { LoadManager } from "../core/common/manager/LoadManager";
 import { LocalDataManager } from "../core/common/manager/LocalDataManager";
-import { MathUtil } from "../core/common/utils/MathUtil";
 import { SkeletonManager } from "../core/common/skeleton/SkeletonManager";
 import { SpineManager } from "../core/common/spine/SpineManager";
 import { GameUtil } from "../core/common/utils/GameUtil";
 import { ItemUtil } from "../core/common/utils/ItemUtil";
+import { MathUtil } from "../core/common/utils/MathUtil";
 import { TimeUtil } from "../core/common/utils/TimeUtil";
 import { ConfigManager } from "../core/config/ConfigManager";
 import { GameManager } from "../core/game/GameManager";
@@ -20,8 +22,6 @@ import { TipManager } from "../core/ui/tool/TipManager";
 import { UIUtil } from "../core/ui/tool/UIUtil";
 import { UserDO } from "../data/user/UserDO";
 import { SceneManager } from "../scene/SceneManager";
-import { ContextMenuManager } from "../core/common/contextMenu/ContextMenuManager";
-import { AudioManager } from "../core/common/manager/AudioManager";
 
 export class InitGlobalCommand extends Command {
 	override execute(notifyName: string, data?: any) {
@@ -59,8 +59,7 @@ export class InitGlobalCommand extends Command {
 				s = d_excel[$gameMgr.language];
 				if (args) {
 					for (let i = 0; i < args.length; i++) {
-						const reg = new RegExp(`\\{${ i }\\}`, 'g');
-						s = s.replace(reg, args[i]);
+						s = s.replaceAll(`{${ i }}`, args[i]);
 					}
 				}
 			}
@@ -74,8 +73,7 @@ export class InitGlobalCommand extends Command {
 				s = d_excel[$gameMgr.language];
 				if (args) {
 					for (let i = 0; i < args.length; i++) {
-						const reg = new RegExp(`{${ i }}`, 'g');
-						s = s.replace(reg, args[i]);
+						s = s.replaceAll(`{${ i }}`, args[i]);
 					}
 				}
 			}

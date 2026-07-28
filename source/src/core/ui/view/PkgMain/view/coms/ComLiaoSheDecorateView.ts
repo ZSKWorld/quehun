@@ -103,7 +103,7 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 			const { _items, slotData, list_view, list_item } = this;
 			const id = _items[index];
 			if (!slotData.type) {
-				const defaultId = $user.commonView.getDefultViewId(slotData.slot);
+				const defaultId = $user.commonView.getDefaultViewId(slotData.slot);
 				const targetId = defaultId || id != slotData.item_id ? id : 0;
 				if (targetId == slotData.item_id) return;
 				slotData.item_id = targetId;
@@ -166,7 +166,7 @@ export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorat
 
 		const { slot: itemType, type: slotType, item_id, item_id_list } = this.slotData;
 		const items = $user.bag.getItemByCategoryType(EItemCategory.Common, itemType, true).map(v => v.item_id);
-		const defaultId = $user.commonView.getDefultViewId(itemType);
+		const defaultId = $user.commonView.getDefaultViewId(itemType);
 		if (defaultId) items.unshift(defaultId);
 
 		if (btn_random.visible)

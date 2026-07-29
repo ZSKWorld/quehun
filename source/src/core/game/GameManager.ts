@@ -108,6 +108,10 @@ export class GameManager extends Observer implements IGameManager {
 		this._config = config;
 	}
 
+	exit() {
+		window.location.reload();
+	}
+
 	showConfirm(msg: string) {
 		return Promise.resolve(confirm(msg));
 	}
@@ -116,7 +120,7 @@ export class GameManager extends Observer implements IGameManager {
 		$netMgr.requests.logout();
 		$netMgr.closeAll();
 		$localDataMgr.setBool(ELocalDataKey.AutoLogin, false);
-		window.location.reload();
+		this.exit();
 	}
 
 	@InjectGlobalEvent(EGlobalEvent.LoginSuccess)

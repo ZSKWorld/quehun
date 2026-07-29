@@ -1,0 +1,18 @@
+{
+    "$schema": "https://opencode.ai/config.json",
+    "provider": {
+        "myprovider": {
+            "options": {
+                "baseURL": "https://api.deepseek.com",
+                "apiKey": "sk-73fbd8fcdb684c348e6293e09b6deef2"
+            },
+            "models": {
+                "model-name": {
+                    "name": "deepseek-v4-pro",
+                    "id": "1"
+                }
+            }
+        }
+    },
+    "model": "myprovider/deepseek-v4-pro"
+}

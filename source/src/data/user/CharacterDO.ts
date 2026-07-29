@@ -24,29 +24,13 @@ export class CharacterDO extends BaseDO implements DO.ICharacterDO {
 	private _hiddenCharacters: number[] = [];
 
 	get mainCharId() { return this._mainCharId; }
-	get mainChar() {
-		const _chars = this._chars;
-		const _mainCharId = this._mainCharId;
-		const len = _chars.length;
-		for (let i = 0; i < len; i++) {
-			if (_chars[i].charid == _mainCharId)
-				return _chars[i];
-		}
-	}
+	get mainChar() { return this.getCharInfo(this._mainCharId); }
 	get chars() { return this._chars; }
 	get starChars() { return this._starChars; }
 	get showChars() { return this._showChars; }
 	get hiddenChars() { return this._hiddenChars; }
 
-	hasChar(id: number) {
-		const chars = this._chars;
-		const len = chars.length;
-		for (let i = 0; i < len; i++) {
-			if (chars[i].charid == id)
-				return true;
-		}
-		return false;
-	}
+	hasChar(id: number) { return !!this.getCharInfo(id); }
 	getCharInfo(id: number) { return this._chars.find(v => v.charid == id); }
 	hasSkin(id: number) { return !!this._skins[id]; }
 	isStarChar(id: number) { return this._characterSort.includes(id); }

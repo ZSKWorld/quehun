@@ -1,5 +1,20 @@
+/** 物品字符串格式: {id}-{count},{id}-{count}... */
+const ItemString1 = /^\d+-\d+(,\d+-\d+)*$/;
+
 @Singleton
 export class ItemUtil implements IItemUtil {
+
+	splitItems(str: string) {
+		if (ItemString1.test(str)) {
+			const arr1 = str.split(",");
+			return arr1.map(v => {
+				const [id, count] = v.split("-");
+				const data: IItem = { item_id: +id, stack: +count };
+				return data;
+			});
+		}
+		return null;
+	}
 
 	getItemType(id: number) {
 		const n = id > 1000000 ? Math.floor(id / 1000000) : Math.floor(id / 10000);

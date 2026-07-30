@@ -1,19 +1,5 @@
 import { BaseDO } from "./BaseDO";
 
-/** 获取对象及其子对象的所有字段名路径 */
-type DeepPaths<T> =
-	T extends Array<infer U>
-	? DeepPaths<U>
-	: T extends object
-	? {
-		[K in keyof T & string]:
-		T[K] extends object
-		? K | `${ K }.${ DeepPaths<T[K]> }`
-		: K
-	}[keyof T & string]
-	: never;
-
-
 const HadProxyKey = Symbol("HadProxyKey");
 function settingProxy<T extends object>(target: T, caller: any, onValueChanged: (pPath: DeepPaths<T>, newV: any, oldV: any) => void, keyPath: string = ""): T {
 	if (target != null && typeof target === "object" && !target[HadProxyKey]) {

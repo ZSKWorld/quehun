@@ -19,7 +19,7 @@ export class RenderAchieveDetailITopView extends ExtendClass<IView, RenderAchiev
 		ctrl_state.selectedIndex = data.groupRewardState + 1;
 		if (data.groupRewardState != ERewardState.NoReward) {
 			const cfgGroup = $cfgMgr.achievement.achievement_group[data.id];
-			const item = $gameUtil.splitItems(cfgGroup.reward)[0];
+			const item = $itemUtil.splitItems(cfgGroup.reward)[0];
 			com_reward.refreshItemIcon(item.item_id);
 		}
 	}

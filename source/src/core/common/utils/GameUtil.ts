@@ -1,10 +1,5 @@
-
-
 const EncryptList: ReadonlyArray<string> = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+{}[]|\:;<>,.?/~".split("");
 const EncryptMap: Readonly<number> = EncryptList.reduce((pv, cv, i) => (pv[cv] = i, pv), {}) as Readonly<number>;
-
-/** 奖励字符串格式: {id}-{count},{id}-{count}... */
-const RewardString1 = /^\d+-\d+(,\d+-\d+)*$/;
 
 @Singleton
 export class GameUtil implements IGameUtil {
@@ -102,7 +97,6 @@ export class GameUtil implements IGameUtil {
 		});
 	}
 
-	/** 随机颜色字符串 */
 	randomColor() {
 		return `#${ Math.floor(Math.random() * 0xffffff).toString(16).padStart(6, "0") }`;
 	}
@@ -124,7 +118,6 @@ export class GameUtil implements IGameUtil {
 		return !accountId || accountId < 1000;
 	}
 
-	/** 获取账号区域id */
 	getZoneId(accoundId: number) {
 		if (this.isAI(accoundId)) return 0;
 		const z = accoundId >> 23;
@@ -142,7 +135,6 @@ export class GameUtil implements IGameUtil {
 		}
 	}
 
-	/** 是否是同区域(同服) */
 	isSameZone(accountId1: number, accountId2: number) {
 		if (this.isAI(accountId1) || this.isAI(accountId2)) return true;
 
@@ -222,18 +214,6 @@ export class GameUtil implements IGameUtil {
 		return obj;
 	}
 
-	splitItems(str: string) {
-		if (RewardString1.test(str)) {
-			const arr1 = str.split(",");
-			return arr1.map(v => {
-				const [id, count] = v.split("-");
-				const data: IItem = { item_id: +id, stack: +count };
-				return data;
-			});
-		}
-		return null;
-	}
-
 	safeCall(callback: SimpleHandler, ...args: any[]) {
 		if (!callback) return;
 		if (callback instanceof Laya.Handler) {
@@ -241,5 +221,18 @@ export class GameUtil implements IGameUtil {
 		} else {
 			return callback(...args);
 		}
+	}
+
+	downloadTxt(fileName: string, text: string) {
+		const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = fileName;
+		a.target = "_blank";
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+		URL.revokeObjectURL(url);
 	}
 }

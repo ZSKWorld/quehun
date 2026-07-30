@@ -29,7 +29,7 @@ export class RenderAchieveDetailItemView extends ExtendClass<IView, RenderAchiev
 		txt_desc.text = locked ? $lang(3338) : cfgAchieve.langField(ECfgLangField.desc);
 
 		if (cfgAchieve.reward) {
-			const item = $gameUtil.splitItems(cfgAchieve.reward)[0];
+			const item = $itemUtil.splitItems(cfgAchieve.reward)[0];
 			com_reward.refreshItemIcon(item.item_id);
 			this._rewardId = item.item_id;
 		}

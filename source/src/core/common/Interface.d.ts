@@ -240,8 +240,8 @@ declare interface IGameUtil {
 	 * @returns 冻结后的对象
 	 */
 	freeze<T>(obj: T, deep?: boolean): T;
-	/** 拆分物品数量字符串 */
-	splitItems(str: string): IItem[];
+	/** 下载文本 */
+	downloadTxt(fileName: string, text: string): void;
 }
 
 declare interface ITimeUtil {
@@ -313,6 +313,8 @@ declare interface ILocalDataManager {
 }
 
 declare interface IItemUtil {
+	/** 拆分物品数量字符串 */
+	splitItems(str: string): IItem[];
 	getItemType(id: number): EItemType;
 	getItemInfo(id: number): ReadonlyAll<IItemInfo>;
 }

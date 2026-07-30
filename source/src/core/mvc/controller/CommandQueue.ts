@@ -7,9 +7,7 @@ export abstract class CommandQueue extends Command {
 		this.initialize();
 	}
 
-	protected initialize() {
-
-	}
+	protected abstract initialize(): void;
 
 	protected addSubCommand(commandCls: ICommandClass) {
 		if (this._queue.includes(commandCls)) return;

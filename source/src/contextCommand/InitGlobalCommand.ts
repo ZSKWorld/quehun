@@ -1,4 +1,4 @@
-import { ContextMenuManager } from "../core/common/contextMenu/ContextMenuManager";
+import { MenuManager } from "../core/common/contextMenu/MenuManager";
 import { AudioManager } from "../core/common/manager/AudioManager";
 import { LoadManager } from "../core/common/manager/LoadManager";
 import { LocalDataManager } from "../core/common/manager/LocalDataManager";
@@ -46,7 +46,7 @@ export class InitGlobalCommand extends Command {
 		$windowImmit("$redDotMgr", new RedDotManager());
 		$windowImmit("$skeletonMgr", new SkeletonManager());
 		$windowImmit("$dynamicResMgr", new DynamicResManager());
-		$windowImmit("$ctxMenuMgr", new ContextMenuManager());
+		$windowImmit("$menuMgr", new MenuManager());
 
 		this.registerConfirm("$confirmBig", EViewID.UIConfirmBigView);
 		this.registerConfirm("$confirmMid", EViewID.UIConfirmMiddleView);

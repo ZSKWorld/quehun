@@ -42,7 +42,7 @@ declare const $mathUtil: IMathUtil;
 declare const $spineMgr: ISpineManager;
 declare const $uiUtil: IUIUtil;
 declare const $dynamicResMgr: IDynamicResManager;
-declare const $ctxMenuMgr: IContextMenuManager;
+declare const $menuMgr: IContextMenuManager;
 declare const $audioMgr: IAudioManager;
 
 /** 注入全局变量 */

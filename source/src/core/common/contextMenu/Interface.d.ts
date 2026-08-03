@@ -1,22 +1,20 @@
-declare interface IMenuItemData {
+declare interface IMenuItem {
 	title: string;
 	icon?: string;
-	disabled?: boolean;
-	children?: IMenuItemData[];
+	children?: IMenuItem[]; // 子菜单数据
+	isSeparator?: boolean;
 	onClick?: () => void;
 }
 
-declare interface IContextMenu {
-	init(root: fgui.GComponent, data: IMenuItemData[]): void;
+declare interface IMenuPanel {
+	get view(): fgui.GObject;
 	show(x: number, y: number): void;
-	/**
-	 * 
-	 * @param ani default true
-	 */
-	close(): void;
+	checkHit(target: Laya.Node): boolean;
+	hide(): void;
+	recover(): void;
 }
 
 declare interface IContextMenuManager {
-	bindMenu(target: fgui.GObject, data: IMenuItemData[]): IContextMenu;
+	bindMenu(target: fgui.GObject, data: IMenuItem[]): IMenuPanel;
 	unbindMenu(target: fgui.GObject): void;
 }

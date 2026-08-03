@@ -7,13 +7,13 @@ declare interface IMenuItemData {
 }
 
 declare interface IContextMenu {
-	init(root: fgui.GComponent, target: fgui.GObject, data: IMenuItemData[]): void;
+	init(root: fgui.GComponent, data: IMenuItemData[]): void;
 	show(x: number, y: number): void;
 	/**
 	 * 
 	 * @param ani default true
 	 */
-	close(ani?: boolean): void;
+	close(): void;
 }
 
 declare interface IContextMenuManager {

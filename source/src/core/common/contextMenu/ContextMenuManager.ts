@@ -23,7 +23,7 @@ export class ContextMenuManager extends Observer implements IContextMenuManager 
 		let menu = this._menus.get(target);
 		if (menu) return menu;
 		menu = Laya.Pool.getItemByClass(EUIPoolKey.ContextMenu, ContextMenu);
-		menu.init(this._root, target, data);
+		menu.init(this._root, data);
 		this._menus.set(target, menu);
 		target.on(Laya.Event.RIGHT_MOUSE_UP, this, this.onRightMouseUp, [target]);
 		return menu;
@@ -44,8 +44,9 @@ export class ContextMenuManager extends Observer implements IContextMenuManager 
 		menu.show(TempPoint.x, TempPoint.y);
 	}
 
-	// @InjectGlobalEvent(EGlobalEvent.OnInitGameCompleted)
+	@InjectGlobalEvent(EGlobalEvent.OnInitGameCompleted)
 	private test() {
+		return;
 		$ctxMenuMgr.bindMenu(fgui.GRoot.inst, [
 			{
 				title: "测试菜单1",

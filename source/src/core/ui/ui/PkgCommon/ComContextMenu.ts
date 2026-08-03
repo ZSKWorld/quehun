@@ -10,6 +10,6 @@ export default class ComContextMenu extends fgui.GComponent {
 	}
 
 	protected override onConstruct(): void {
-		this.list_list = <fgui.GList>(this.getChildAt(1));
+		this.list_list = <fgui.GList>(this.getChildAt(2));
 	}
 }

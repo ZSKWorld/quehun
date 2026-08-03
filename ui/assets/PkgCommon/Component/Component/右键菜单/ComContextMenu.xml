@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="300,500">
+<component size="300,500" mask="n10_jmak">
   <displayList>
-    <graph id="n6_maqu" name="n6" xy="0,0" size="300,500" type="rect" lineSize="2" fillColor="#f2ffffff" corner="15">
+    <graph id="n10_jmak" name="n10" xy="0,0" size="300,500" touchable="false" type="rect" lineSize="0" fillColor="#f200ff00">
       <relation target="" sidePair="width-width,height-height"/>
     </graph>
-    <list id="n9_maqu" name="list" xy="5,10" size="290,480" overflow="scroll" scrollBarFlags="128" defaultItem="ui://vx9zwsermaquobjl">
+    <graph id="n6_maqu" name="n6" xy="0,0" size="300,500" type="rect" lineSize="2" fillColor="#f2ffffff" corner="10">
+      <relation target="" sidePair="width-width,height-height"/>
+    </graph>
+    <list id="n9_maqu" name="list" xy="0,0" size="300,500" overflow="scroll" scrollBarFlags="128" defaultItem="ui://vx9zwsermaquobjl">
       <relation target="" sidePair="width-width,height-height"/>
       <item/>
       <item/>

@@ -45,6 +45,7 @@ import { RenderShopCGView } from "../core/ui/view/PkgMain/view/renders/RenderSho
 import { RenderShopItemView } from "../core/ui/view/PkgMain/view/renders/RenderShopItemView";
 import { RenderShopSkinView } from "../core/ui/view/PkgMain/view/renders/RenderShopSkinView";
 import { RenderVisitCharInfoView } from "../core/ui/view/PkgMain/view/renders/RenderVisitCharInfoView";
+import { RenderVisitVoiceInfoView } from "../core/ui/view/PkgMain/view/renders/RenderVisitVoiceInfoView";
 import { ComAchieveGroupView } from "../core/ui/view/PkgAchievement/view/coms/ComAchieveGroupView";
 import { ComAchieveRecentView } from "../core/ui/view/PkgAchievement/view/coms/ComAchieveRecentView";
 import { ComAchieveStatView } from "../core/ui/view/PkgAchievement/view/coms/ComAchieveStatView";
@@ -229,6 +230,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.RenderShopItemView, EViewType.Render, RenderShopItemView);
 		register(EViewID.RenderShopSkinView, EViewType.Render, RenderShopSkinView);
 		register(EViewID.RenderVisitCharInfoView, EViewType.Render, RenderVisitCharInfoView);
+		register(EViewID.RenderVisitVoiceInfoView, EViewType.Render, RenderVisitVoiceInfoView);
 
 		//Coms
 		register(EViewID.ComAchieveGroupView, EViewType.Component, ComAchieveGroupView);

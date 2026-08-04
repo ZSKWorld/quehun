@@ -35,12 +35,12 @@ export class LobbyBgManager extends Observer {
 	}
 
 	@InjectGlobalEvent(EGlobalEvent.OnSceneEnterBegin)
-	private onEnterScene(type: ESceneType) {
+	private onEnterSceneBegin(type: ESceneType) {
 		this._inLobby = type == ESceneType.MainScene;
 	}
 
 	@InjectGlobalEvent(EGlobalEvent.OnSceneExitBegin)
-	private onExitScene(type: ESceneType) {
+	private onExitSceneBegin(type: ESceneType) {
 		if (type != ESceneType.MainScene) return;
 		this._curBg = null;
 		this._inLobby = false;
@@ -50,7 +50,7 @@ export class LobbyBgManager extends Observer {
 	}
 
 	@InjectGlobalEvent(EGlobalEvent.OnViewOpenBegin)
-	private onOpenView(viewId: EViewID) {
+	private onOpenViewBegin(viewId: EViewID) {
 		if (!this._inLobby) return;
 		let newBg: fgui.GLoader;
 		switch (viewId) {
@@ -75,8 +75,8 @@ export class LobbyBgManager extends Observer {
 		fgui.GTween.kill(curBg, true);
 		newBg.alpha = 0;
 		newBg.visible = true;
-		newBg.tweenFade(1, 0.3);
-		curBg && curBg.tweenFade(0, 0.3).onComplete(() => {
+		newBg.tweenFade(1, 0.5);
+		curBg && curBg.tweenFade(0, 0.5).onComplete(() => {
 			curBg.visible = false;
 		});
 		this._curBg = newBg;

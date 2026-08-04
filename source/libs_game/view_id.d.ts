@@ -47,6 +47,7 @@ declare enum EViewID {
 	RenderShopItemView = "RenderShopItemView",
 	RenderShopSkinView = "RenderShopSkinView",
 	RenderVisitCharInfoView = "RenderVisitCharInfoView",
+	RenderVisitVoiceInfoView = "RenderVisitVoiceInfoView",
 
 	/**Coms */
 	ComAchieveGroupView = "ComAchieveGroupView",

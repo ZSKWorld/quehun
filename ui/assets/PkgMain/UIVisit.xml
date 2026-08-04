@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" designImage="ui://ca43vz0e9c0b7plomq" designImageAlpha="0">
-  <controller name="type" pages="0,档案,1,语音,2,传记" selected="2"/>
+<component size="1920,1080" designImage="ui://ca43vz0e9c0b7plomn" designImageAlpha="100">
+  <controller name="type" pages="0,档案,1,语音,2,传记" selected="1"/>
   <displayList>
     <component id="n0_9c0b" name="back" src="p5uzob8h" fileName="Component/Component/ComBack.xml" pkg="vx9zwser" xy="10,22">
       <property target="title" propertyId="0" value="拜访"/>
@@ -12,21 +12,39 @@
       <Button icon="ui://vith2b669c0bobiu" selectedIcon="ui://vith2b669c0bobit" controller="type" page="0"/>
     </component>
     <component id="n5_9c0b" name="tab1" src="9c0bobiv" fileName="Component/UIVisit/BtnVisitTab.xml" xy="996,337" size="100,135" group="n10_c0ii" aspect="true">
-      <Button title="语音" icon="ui://vith2b669c0bobiu" selectedIcon="ui://vith2b669c0bobit" controller="type" page="1"/>
+      <Button checked="true" title="语音" icon="ui://vith2b669c0bobiu" selectedIcon="ui://vith2b669c0bobit" controller="type" page="1"/>
     </component>
     <component id="n6_9c0b" name="tab2" src="9c0bobiv" fileName="Component/UIVisit/BtnVisitTab.xml" xy="996,479" size="100,135" group="n10_c0ii" aspect="true">
-      <Button checked="true" title="传记" icon="ui://vith2b669c0bobiu" selectedIcon="ui://vith2b669c0bobit" controller="type" page="2"/>
+      <Button title="传记" icon="ui://vith2b669c0bobiu" selectedIcon="ui://vith2b669c0bobit" controller="type" page="2"/>
     </component>
     <component id="n9_9c0b" name="intro" src="9c0bobj7" fileName="Component/UIVisit/ComVisitIntro.xml" xy="1094,161" group="n10_c0ii">
       <gearDisplay controller="type" pages="0"/>
     </component>
-    <list id="n7_9c0b" name="voice" xy="1123,189" size="679,820" group="n10_c0ii" overflow="scroll" autoClearItems="true">
+    <list id="n7_9c0b" name="voice" xy="1123,189" size="679,820" group="n10_c0ii" overflow="scroll" scrollBarRes="ui://vx9zwserhdeoobbj," defaultItem="ui://vith2b66efxiobj8" autoClearItems="true">
       <gearDisplay controller="type" pages="1"/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
     </list>
     <list id="n8_9c0b" name="spot" xy="1123,189" size="679,820" group="n10_c0ii" overflow="scroll" autoClearItems="true">
       <gearDisplay controller="type" pages="2"/>
     </list>
-    <group id="n10_c0ii" name="n10" xy="996,146" size="884,915" advanced="true"/>
+    <group id="n10_c0ii" name="n10" xy="996,146" size="885,915" advanced="true"/>
   </displayList>
   <transition name="show" options="4" frameRate="60">
     <item time="0" type="Alpha" target="n10_c0ii" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>

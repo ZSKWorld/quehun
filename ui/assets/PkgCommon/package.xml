@@ -324,7 +324,7 @@
     <image id="uw9yobjs" name="img_4256.png" path="/Texture/" exported="true"/>
     <component id="uw9yobjt" name="BtnSettingTab.xml" path="/Component/UISetting/" exported="true"/>
     <image id="uw9yobjx" name="img_1605.png" path="/Texture/" exported="true"/>
-    <image id="uw9yobjy" name="img_4276.png" path="/Texture/" exported="true"/>
+    <image id="uw9yobjy" name="img_4276.png" path="/Texture/" exported="true" scale="9grid" scale9grid="0,1,100,2"/>
     <image id="uw9yobjz" name="img_4277.png" path="/Texture/" exported="true"/>
     <image id="uw9yobk0" name="img_4278.png" path="/Texture/" exported="true"/>
     <image id="uw9yobk1" name="img_4279.png" path="/Texture/" exported="true"/>

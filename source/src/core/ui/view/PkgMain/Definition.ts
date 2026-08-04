@@ -71,3 +71,7 @@ export const enum EUISevenDayEvent {
 export const enum EUILiaoSheEvent {
 	OnLiaoSheCharSelected = "EUILiaoSheEvent_OnLiaoSheCharSelected",
 }
+
+export const enum EUIVisitEvent {
+	
+}

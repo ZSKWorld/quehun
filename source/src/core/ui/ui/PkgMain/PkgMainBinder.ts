@@ -10,6 +10,7 @@ import BtnSevenDayTab from "./BtnSevenDayTab";
 import RenderSevenDayItem from "./RenderSevenDayItem";
 import ComSevenDayItem1 from "./ComSevenDayItem1";
 import UILiaoShe from "./UILiaoShe";
+import RenderVisitVoiceInfo from "./RenderVisitVoiceInfo";
 import ComMainPlayerInfo from "./ComMainPlayerInfo";
 import UIGuide from "./UIGuide";
 import BtnShopRefresh from "./BtnShopRefresh";
@@ -75,6 +76,7 @@ import { BtnSevenDayTabView } from "../../view/PkgMain/view/btns/BtnSevenDayTabV
 import { RenderSevenDayItemView } from "../../view/PkgMain/view/renders/RenderSevenDayItemView";
 import { ComSevenDayItem1View } from "../../view/PkgMain/view/coms/ComSevenDayItem1View";
 import { UILiaoSheView } from "../../view/PkgMain/view/uis/UILiaoSheView";
+import { RenderVisitVoiceInfoView } from "../../view/PkgMain/view/renders/RenderVisitVoiceInfoView";
 import { ComMainPlayerInfoView } from "../../view/PkgMain/view/coms/ComMainPlayerInfoView";
 import { UIGuideView } from "../../view/PkgMain/view/uis/UIGuideView";
 import { BtnShopRefreshView } from "../../view/PkgMain/view/btns/BtnShopRefreshView";
@@ -143,6 +145,7 @@ export default class PkgMainBinder {
 		fgui.UIObjectFactory.setExtension(RenderSevenDayItem.url, RenderSevenDayItemView);
 		fgui.UIObjectFactory.setExtension(ComSevenDayItem1.url, ComSevenDayItem1View);
 		fgui.UIObjectFactory.setExtension(UILiaoShe.url, UILiaoSheView);
+		fgui.UIObjectFactory.setExtension(RenderVisitVoiceInfo.url, RenderVisitVoiceInfoView);
 		fgui.UIObjectFactory.setExtension(ComMainPlayerInfo.url, ComMainPlayerInfoView);
 		fgui.UIObjectFactory.setExtension(UIGuide.url, UIGuideView);
 		fgui.UIObjectFactory.setExtension(BtnShopRefresh.url, BtnShopRefreshView);

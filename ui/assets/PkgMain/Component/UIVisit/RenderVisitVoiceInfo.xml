@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="644,82" designImage="ui://ca43vz0e9c0b7plomn" designImageOffsetX="-1123" designImageOffsetY="-505" designImageAlpha="0">
+  <controller name="type" exported="true" pages="0,未解锁,1,已解锁" selected="1"/>
+  <controller name="playing" pages="0,,1," selected="1"/>
+  <displayList>
+    <image id="n11_efxi" name="n11" src="glpbobfp" fileName="Texture/img_859.png" xy="0,0" size="644,82"/>
+    <image id="n15_efxi" name="n15" src="uw9yobjy" fileName="Texture/img_4276.png" pkg="vx9zwser" xy="391,42" pivot="1,1" size="248,34">
+      <gearDisplay controller="type" pages="0"/>
+    </image>
+    <component id="n14_efxi" name="play" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="570,14" size="53,53" aspect="true">
+      <gearDisplay controller="type" pages="1"/>
+      <gearIcon controller="playing" pages="1" values="ui://vx9zwsergsi2obcr" default="ui://vx9zwsergsi2obdu"/>
+      <Button icon="ui://vx9zwsergsi2obcr"/>
+    </component>
+    <text id="n12_efxi" name="name" xy="23,19" pivot="0,0.5" size="60,39" font="SimHei" fontSize="28" color="#ffffff" vAlign="middle" leading="0" singleLine="true" text="拔北"/>
+    <text id="n16_efxi" name="lock" xy="488,41" pivot="1,0.5" size="143,39" font="ui://vx9zwserrpakobeu" fontSize="28" leading="0" text="羁绊lv1解锁">
+      <gearDisplay controller="type" pages="0"/>
+    </text>
+  </displayList>
+</component>

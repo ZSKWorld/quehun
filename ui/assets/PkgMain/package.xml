@@ -154,7 +154,7 @@
     <image id="glpbobfm" name="img_860.png" path="/Texture/" scale="9grid" scale9grid="18,18,4,4"/>
     <image id="glpbobfn" name="img_2406.png" path="/Texture/" scale="9grid" scale9grid="22,34,21,68"/>
     <component id="glpbobfo" name="RenderLiaoSheDecoType.xml" path="/Component/UILiaoShe/"/>
-    <image id="glpbobfp" name="img_859.png" path="/Texture/"/>
+    <image id="glpbobfp" name="img_859.png" path="/Texture/" scale="9grid" scale9grid="18,18,3,3"/>
     <image id="glpbobfq" name="img_1672.png" path="/Texture/"/>
     <image id="glpbobfr" name="img_2849.png" path="/Texture/"/>
     <image id="glpbobfs" name="img_682.png" path="/Texture/"/>
@@ -273,6 +273,7 @@
     <component id="9c0bobj5" name="RenderVisitCharInfo.xml" path="/Component/UIVisit/"/>
     <image id="9c0bobj6" name="img_2987.png" path="/Texture/" scale="9grid" scale9grid="70,70,12,12"/>
     <component id="9c0bobj7" name="ComVisitIntro.xml" path="/Component/UIVisit/"/>
+    <component id="efxiobj8" name="RenderVisitVoiceInfo.xml" path="/Component/UIVisit/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

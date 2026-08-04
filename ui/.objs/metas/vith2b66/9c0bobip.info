@@ -1,8 +1,13 @@
 {
+  "objectStatus": {
+    "n3_9c0b": {
+      "hidden": true
+    }
+  },
   "designImages": [
     "ui://ca43vz0eglpb7plok5",
-    "ui://ca43vz0e9c0b7plomn",
     "ui://ca43vz0e9c0b7plomo",
-    "ui://ca43vz0e9c0b7plomq"
+    "ui://ca43vz0e9c0b7plomq",
+    "ui://ca43vz0e9c0b7plomn"
   ]
 }

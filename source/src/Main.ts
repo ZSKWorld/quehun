@@ -32,7 +32,7 @@ class Main {
 			designWidth: 1920,
 			designHeight: 1080,
 			scaleMode: Laya.Stage.SCALE_SHOWALL,
-			screenMode: Laya.Stage.SCREEN_NONE,
+			screenMode: Laya.Stage.SCREEN_HORIZONTAL,
 			alignV: Laya.Stage.ALIGN_MIDDLE,
 			alignH: Laya.Stage.ALIGN_CENTER,
 			backgroundColor: EColorString._000000,

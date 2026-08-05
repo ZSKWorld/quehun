@@ -28,6 +28,10 @@ export class InitGameCommand extends Command {
 		};
 		onResize();
 		stage.on(Laya.Event.RESIZE, this, onResize);
+		if (!Laya.Browser.onPC) {
+			const sc = await $gameUtil.loadScript("https://unpkg.com/vconsole@latest/dist/vconsole.min.js");
+			sc && new window["VConsole"]();
+		}
 
 		ShaderManager.Inst.init();
 		MjpAtlasLoader.Inst.init();
@@ -37,8 +41,9 @@ export class InitGameCommand extends Command {
 		const [config] = await Promise.all([
 			$loadMgr.fetch<IConfig>(ResPath.EConfigPath.GameConfig, Laya.Loader.JSON),
 			$loadMgr.loadPackage([ResPath.EPkgPath.PkgCommon, ResPath.EPkgPath.PkgEntrance]),
-			$loadMgr.load([ResPath.EFontPath.HYWH, ResPath.EFontPath.Fengyu, ResPath.EFontPath.HYYANKAIW, ResPath.EFontPath.Hanyi]),
 		]);
+
+		await $loadMgr.load([ResPath.EFontPath.HYWH, ResPath.EFontPath.Fengyu, ResPath.EFontPath.HYYANKAIW, ResPath.EFontPath.Hanyi]);
 		config.ip.forEach(v => (v.zone_ids = v.zone_ids || []));
 
 		const ipIndex = await new Promise<number>(resolve => {

@@ -8,6 +8,10 @@ export class AudioManager extends Observer implements IAudioManager {
 	private _charVoiceInfo: Record<string, string> = {};
 
 	private _audioMap: Record<number, Laya.SoundChannel> = {};
+	constructor() {
+		super();
+		Laya.PAL.media.touchToStart = false;
+	}
 	getAudioPath(id: number) {
 		if (this._audioPathMap[id])
 			return this._audioPathMap[id];

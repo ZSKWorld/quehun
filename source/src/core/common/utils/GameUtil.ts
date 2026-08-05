@@ -235,4 +235,15 @@ export class GameUtil implements IGameUtil {
 		document.body.removeChild(a);
 		URL.revokeObjectURL(url);
 	}
+
+	loadScript(url: string) {
+		return new Promise<boolean>(resolve => {
+			const script = document.createElement("script");
+			script.async = false;
+			script.onload = () => resolve(true);
+			script.onerror = () => resolve(false);
+			script.src = url;
+			document.body.appendChild(script);
+		});
+	}
 }

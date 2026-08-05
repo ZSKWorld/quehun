@@ -127,16 +127,23 @@ export class SettingDO extends BaseDO implements DO.ISettingDO {
 
 		Laya.stage.frameRate = this._graphic.frameRate;
 
-		this._audio = settingProxy(this._audio, this, (pPath) => this._audioChanged = true);
+		this._audio = settingProxy(this._audio, this, (pPath, newV) => {
+			switch (pPath) {
+				case "backgroundMute": Laya.SoundManager.autoStopMusic = newV; break;
+			}
+			this._audioChanged = true;
+		});
 		this._graphic = settingProxy(this._graphic, this, (pPath, newV) => {
-			if (pPath == "frameRate") {
-				Laya.stage.frameRate = newV;
+			switch (pPath) {
+				case "frameRate": Laya.stage.frameRate = newV; break;
 			}
 			this._graphicChanged = true;
 		});
 		this._prefer = settingProxy(this._prefer, this, (pPath) => this._preferChanged = true);
 		this._lang = settingProxy(this._lang, this, (pPath) => this._langChanged = true);
 		this._other = settingProxy(this._other, this, (pPath) => this._otherChanged = true);
+
+		Laya.SoundManager.autoStopMusic = this._audio.backgroundMute;
 
 		Laya.timer.loop(500, this, this.checkSaveSetting);
 	}

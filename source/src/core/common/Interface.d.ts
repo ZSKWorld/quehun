@@ -242,6 +242,8 @@ declare interface IGameUtil {
 	freeze<T>(obj: T, deep?: boolean): T;
 	/** 下载文本 */
 	downloadTxt(fileName: string, text: string): void;
+	/** 加载脚本 */
+	loadScript(url: string): Promise<boolean>;
 }
 
 declare interface ITimeUtil {

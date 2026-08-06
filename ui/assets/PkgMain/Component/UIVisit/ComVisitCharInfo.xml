@@ -1,30 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="678,645" overflow="scroll" scrollBarMargin="23,10,0,0" scrollBarRes="ui://vx9zwserhdeoobbj," designImage="ui://ca43vz0e9c0b7plomp" designImageOffsetX="-1125" designImageOffsetY="215" designImageAlpha="0">
+<component size="678,645" overflow="scroll" scrollBarMargin="23,10,0,0" scrollBarRes="ui://vx9zwserhdeoobbj," designImage="ui://ca43vz0e9c0b7plomo" designImageOffsetX="-1125" designImageOffsetY="-371" designImageAlpha="100">
   <displayList>
     <image id="n0_9c0b" name="n0" src="9c0bobli" fileName="Texture/img_2372.png" pkg="vx9zwser" xy="0,10"/>
-    <image id="n18_9c0b" name="n18" src="9c0bobli" fileName="Texture/img_2372.png" pkg="vx9zwser" xy="0,539">
+    <image id="n18_9c0b" name="n18" src="9c0bobli" fileName="Texture/img_2372.png" pkg="vx9zwser" xy="0,479">
       <relation target="n16_9c0b" sidePair="top-bottom"/>
     </image>
-    <text id="n1_9c0b" name="n1" xy="17,14" pivot="0,0.5" size="140,46" font="ui://vx9zwserrpakobeu" fontSize="34" color="#ffd562" vAlign="middle" leading="0" singleLine="true" text="人物介绍"/>
-    <text id="n19_9c0b" name="n19" xy="19,538" pivot="0,0.5" size="140,46" font="ui://vx9zwserrpakobeu" fontSize="34" color="#ffd562" vAlign="middle" leading="0" singleLine="true" text="聊天表情">
+    <text id="n1_9c0b" name="n1" xy="17,10" pivot="0,0.5" size="140,46" font="ui://vx9zwserrpakobeu" fontSize="34" color="#ffd562" vAlign="middle" leading="0" singleLine="true" text="人物介绍"/>
+    <text id="n19_9c0b" name="n19" xy="19,479" pivot="0,0.5" size="140,46" font="ui://vx9zwserrpakobeu" fontSize="34" color="#ffd562" vAlign="middle" leading="0" singleLine="true" text="聊天表情">
       <relation target="n16_9c0b" sidePair="top-bottom"/>
     </text>
-    <text id="n3_9c0b" name="n3" xy="1,77" pivot="0,0.5" size="84,39" group="n17_9c0b" font="ui://vx9zwserrpakobeu" fontSize="28" color="#a27d3d" vAlign="middle" leading="0" letterSpacing="-2" singleLine="true" text="身高："/>
-    <text id="n4_9c0b" name="n4" xy="1,114" pivot="0,0.5" size="84,39" group="n17_9c0b" font="ui://vx9zwserrpakobeu" fontSize="28" color="#a27d3d" vAlign="middle" leading="0" letterSpacing="-2" singleLine="true" text="生日："/>
-    <text id="n5_9c0b" name="n5" xy="1,150" pivot="0,0.5" size="84,39" group="n17_9c0b" font="ui://vx9zwserrpakobeu" fontSize="28" color="#a27d3d" vAlign="middle" leading="0" letterSpacing="-2" singleLine="true" text="年龄："/>
-    <text id="n6_9c0b" name="n6" xy="1,186" pivot="0,0.5" size="84,39" group="n17_9c0b" font="ui://vx9zwserrpakobeu" fontSize="28" color="#a27d3d" vAlign="middle" leading="0" letterSpacing="-2" singleLine="true" text="血型："/>
-    <text id="n7_9c0b" name="n7" xy="1,223" pivot="0,0.5" size="84,39" group="n17_9c0b" font="ui://vx9zwserrpakobeu" fontSize="28" color="#a27d3d" vAlign="middle" leading="0" letterSpacing="-2" singleLine="true" text="声优："/>
-    <text id="n8_9c0b" name="n8" xy="1,258" pivot="0,0.5" size="84,39" group="n17_9c0b" font="ui://vx9zwserrpakobeu" fontSize="28" color="#a27d3d" vAlign="middle" leading="0" letterSpacing="-2" singleLine="true" text="爱好："/>
+    <text id="n3_9c0b" name="n3" xy="2,77" pivot="0,0.5" size="84,39" group="n17_9c0b" font="ui://vx9zwserrpakobeu" fontSize="28" color="#a27d3d" vAlign="middle" leading="0" letterSpacing="-2" singleLine="true" text="身高："/>
+    <text id="n4_9c0b" name="n4" xy="2,113" pivot="0,0.5" size="84,39" group="n17_9c0b" font="ui://vx9zwserrpakobeu" fontSize="28" color="#a27d3d" vAlign="middle" leading="0" letterSpacing="-2" singleLine="true" text="生日："/>
+    <text id="n5_9c0b" name="n5" xy="2,149" pivot="0,0.5" size="84,39" group="n17_9c0b" font="ui://vx9zwserrpakobeu" fontSize="28" color="#a27d3d" vAlign="middle" leading="0" letterSpacing="-2" singleLine="true" text="年龄："/>
+    <text id="n6_9c0b" name="n6" xy="2,185" pivot="0,0.5" size="84,39" group="n17_9c0b" font="ui://vx9zwserrpakobeu" fontSize="28" color="#a27d3d" vAlign="middle" leading="0" letterSpacing="-2" singleLine="true" text="血型："/>
+    <text id="n7_9c0b" name="n7" xy="2,221" pivot="0,0.5" size="84,39" group="n17_9c0b" font="ui://vx9zwserrpakobeu" fontSize="28" color="#a27d3d" vAlign="middle" leading="0" letterSpacing="-2" singleLine="true" text="声优："/>
+    <text id="n8_9c0b" name="n8" xy="2,257" pivot="0,0.5" size="84,39" group="n17_9c0b" font="ui://vx9zwserrpakobeu" fontSize="28" color="#a27d3d" vAlign="middle" leading="0" letterSpacing="-2" singleLine="true" text="爱好："/>
     <text id="n9_9c0b" name="n9" xy="1,305" pivot="0,0.5" size="84,39" group="n17_9c0b" font="ui://vx9zwserrpakobeu" fontSize="28" color="#a27d3d" vAlign="middle" leading="0" letterSpacing="-2" singleLine="true" text="简介："/>
-    <text id="n10_9c0b" name="n10" xy="90,79" pivot="0,0.5" size="95,36" group="n17_9c0b" font="SimHei" fontSize="26" color="#b2aeac" vAlign="middle" leading="0" singleLine="true" text="162厘米"/>
-    <text id="n11_9c0b" name="n11" xy="90,116" pivot="0,0.5" size="108,36" group="n17_9c0b" font="SimHei" fontSize="26" color="#b2aeac" vAlign="middle" leading="0" singleLine="true" text="10月11日"/>
-    <text id="n12_9c0b" name="n12" xy="90,152" pivot="0,0.5" size="30,36" group="n17_9c0b" font="SimHei" fontSize="26" color="#b2aeac" vAlign="middle" leading="0" singleLine="true" text="21"/>
-    <text id="n13_9c0b" name="n13" xy="90,188" pivot="0,0.5" size="17,36" group="n17_9c0b" font="SimHei" fontSize="26" color="#b2aeac" vAlign="middle" leading="0" singleLine="true" text="A"/>
-    <text id="n14_9c0b" name="n14" xy="90,225" pivot="0,0.5" size="82,36" group="n17_9c0b" font="SimHei" fontSize="26" color="#b2aeac" vAlign="middle" leading="0" singleLine="true" text="古贺葵"/>
-    <text id="n15_9c0b" name="n15" xy="90,260" pivot="0,0.5" size="186,36" group="n17_9c0b" font="SimHei" fontSize="26" color="#b2aeac" vAlign="middle" leading="0" singleLine="true" text="争夺别人的东西"/>
-    <text id="n16_9c0b" name="n16" xy="32,335" size="576,186" group="n17_9c0b" font="SimHei" fontSize="26" color="#b2aeac" vAlign="middle" leading="-1" autoSize="height" text="国立枫知大学出名的病美人，平日备受师生们关 爱，身边的人总会不自觉地答应她的需求，甚至主动想要为她做些什么。就算偶尔感到哪里不对，看到她楚楚可怜的眼神便会愧疚不已……这么单纯善良的弥拉，怎么可能是那种故意示弱的心机女孩 呢？"/>
-    <group id="n17_9c0b" name="n17" xy="1,77" size="607,443"/>
-    <list id="n26_9c0b" name="n26" xy="0,610" size="629,615" alpha="0.531" layout="flow_hz" overflow="scroll" lineGap="5" colGap="5" lineItemCount="4" defaultItem="ui://vith2b669c0bobj5" autoClearItems="true">
+    <text id="n10_9c0b" name="height" xy="90,78" pivot="0,0.5" size="95,36" group="n17_9c0b" font="SimHei" fontSize="26" color="#b2aeac" vAlign="middle" leading="0" singleLine="true" text="153厘米"/>
+    <text id="n11_9c0b" name="birthday" xy="90,114" pivot="0,0.5" size="95,36" group="n17_9c0b" font="SimHei" fontSize="26" color="#b2aeac" vAlign="middle" leading="0" singleLine="true" text="3月21日"/>
+    <text id="n12_9c0b" name="age" xy="90,150" pivot="0,0.5" size="30,36" group="n17_9c0b" font="SimHei" fontSize="26" color="#b2aeac" vAlign="middle" leading="0" singleLine="true" text="21"/>
+    <text id="n13_9c0b" name="blood" xy="90,186" pivot="0,0.5" size="17,36" group="n17_9c0b" font="SimHei" fontSize="26" color="#b2aeac" vAlign="middle" leading="0" singleLine="true" text="A"/>
+    <text id="n14_9c0b" name="cv" xy="90,222" pivot="0,0.5" size="108,36" group="n17_9c0b" font="SimHei" fontSize="26" color="#b2aeac" vAlign="middle" leading="0" singleLine="true" text="堀江由衣"/>
+    <text id="n15_9c0b" name="hobby" xy="90,258" pivot="0,0.5" size="134,36" group="n17_9c0b" font="SimHei" fontSize="26" color="#b2aeac" vAlign="middle" leading="0" singleLine="true" text="咖啡、玩偶"/>
+    <text id="n16_9c0b" name="brief" xy="32,335" size="576,126" group="n17_9c0b" font="SimHei" fontSize="26" color="#b2aeac" vAlign="middle" leading="-1" autoSize="height" text="和叔叔一起生活在一番市的少女，受其父亲的影响对咖啡十分喜爱并且有天赋，所以日常会在叔叔的咖啡厅帮忙经营。在叔叔的咖啡厅帮忙经营。在叔叔的咖啡厅帮忙经营。"/>
+    <group id="n17_9c0b" name="n17" xy="1,77" size="607,384"/>
+    <list id="n26_9c0b" name="emo" xy="0,550" size="629,615" alpha="0.531" layout="flow_hz" overflow="scroll" lineGap="5" colGap="5" lineItemCount="4" defaultItem="ui://vith2b669c0bobj5" autoClearItems="true">
+      <relation target="n16_9c0b" sidePair="top-bottom"/>
       <item/>
       <item/>
       <item/>
@@ -40,5 +41,9 @@
       <item/>
       <item/>
     </list>
+    <component id="n28_nsj8" name="head" src="gsi2obeq" fileName="Component/Component/头像/ComHead1.xml" pkg="vx9zwser" xy="405,81" size="210,210" aspect="true" touchable="false" controller="type,1"/>
+    <component id="n30_nsj8" name="skin" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="546,220" size="75,75" aspect="true">
+      <Button icon="ui://vx9zwsernsj8oblm"/>
+    </component>
   </displayList>
 </component>

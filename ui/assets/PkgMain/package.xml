@@ -270,7 +270,7 @@
     <image id="9c0bobj2" name="img_2351.png" path="/Texture/"/>
     <image id="9c0bobj3" name="img_2352.png" path="/Texture/"/>
     <component id="9c0bobj4" name="ComVisitCharInfo.xml" path="/Component/UIVisit/"/>
-    <component id="9c0bobj5" name="RenderVisitCharInfo.xml" path="/Component/UIVisit/"/>
+    <component id="9c0bobj5" name="RenderVisitEmo.xml" path="/Component/UIVisit/"/>
     <image id="9c0bobj6" name="img_2987.png" path="/Texture/" scale="9grid" scale9grid="70,70,12,12"/>
     <component id="9c0bobj7" name="ComVisitIntro.xml" path="/Component/UIVisit/"/>
     <component id="efxiobj8" name="RenderVisitVoiceInfo.xml" path="/Component/UIVisit/"/>

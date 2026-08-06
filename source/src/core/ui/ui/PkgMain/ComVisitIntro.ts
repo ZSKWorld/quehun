@@ -1,11 +1,13 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import { ComVisitCharInfoView } from "../../view/PkgMain/view/coms/ComVisitCharInfoView";
 import { BtnVisitHeartView } from "../../view/PkgMain/view/btns/BtnVisitHeartView";
 
 export default class ComVisitIntro extends fgui.GComponent {
 
 	protected ctrl_char: fgui.Controller;
 	protected ctrl_gift: fgui.Controller;
+	protected com_charInfo: ComVisitCharInfoView;
 	protected btn_close: fgui.GButton;
 	protected btn_heart0: BtnVisitHeartView;
 	protected btn_heart1: BtnVisitHeartView;
@@ -23,6 +25,7 @@ export default class ComVisitIntro extends fgui.GComponent {
 	protected override onConstruct(): void {
 		this.ctrl_char = this.getControllerAt(0);
 		this.ctrl_gift = this.getControllerAt(1);
+		this.com_charInfo = <ComVisitCharInfoView>(this.getChildAt(0));
 		this.btn_close = <fgui.GButton>(this.getChildAt(2));
 		this.btn_heart0 = <BtnVisitHeartView>(this.getChildAt(7));
 		this.btn_heart1 = <BtnVisitHeartView>(this.getChildAt(8));

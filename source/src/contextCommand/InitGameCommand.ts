@@ -29,7 +29,7 @@ export class InitGameCommand extends Command {
 		onResize();
 		stage.on(Laya.Event.RESIZE, this, onResize);
 		if (!Laya.Browser.onPC) {
-			const sc = await $gameUtil.loadScript("https://unpkg.com/vconsole@latest/dist/vconsole.min.js");
+			const sc = await $gameUtil.loadScript("libs_game/vconsole.min.js");
 			sc && new window["VConsole"]();
 		}
 

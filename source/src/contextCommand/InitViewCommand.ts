@@ -44,7 +44,7 @@ import { RenderSevenDayItemView } from "../core/ui/view/PkgMain/view/renders/Ren
 import { RenderShopCGView } from "../core/ui/view/PkgMain/view/renders/RenderShopCGView";
 import { RenderShopItemView } from "../core/ui/view/PkgMain/view/renders/RenderShopItemView";
 import { RenderShopSkinView } from "../core/ui/view/PkgMain/view/renders/RenderShopSkinView";
-import { RenderVisitCharInfoView } from "../core/ui/view/PkgMain/view/renders/RenderVisitCharInfoView";
+import { RenderVisitEmoView } from "../core/ui/view/PkgMain/view/renders/RenderVisitEmoView";
 import { RenderVisitVoiceInfoView } from "../core/ui/view/PkgMain/view/renders/RenderVisitVoiceInfoView";
 import { ComAchieveGroupView } from "../core/ui/view/PkgAchievement/view/coms/ComAchieveGroupView";
 import { ComAchieveRecentView } from "../core/ui/view/PkgAchievement/view/coms/ComAchieveRecentView";
@@ -92,6 +92,7 @@ import { ComMatchModeView } from "../core/ui/view/PkgMain/view/coms/ComMatchMode
 import { ComMatchModeMediator } from "../core/ui/view/PkgMain/mediator/coms/ComMatchModeMediator";
 import { ComPreviewView } from "../core/ui/view/PkgMain/view/coms/ComPreviewView";
 import { ComSevenDayItem1View } from "../core/ui/view/PkgMain/view/coms/ComSevenDayItem1View";
+import { ComVisitCharInfoView } from "../core/ui/view/PkgMain/view/coms/ComVisitCharInfoView";
 import { ComVisitIntroView } from "../core/ui/view/PkgMain/view/coms/ComVisitIntroView";
 import { UIAchievementView } from "../core/ui/view/PkgAchievement/view/uis/UIAchievementView";
 import { UIAchievementMediator } from "../core/ui/view/PkgAchievement/mediator/uis/UIAchievementMediator";
@@ -229,7 +230,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.RenderShopCGView, EViewType.Render, RenderShopCGView);
 		register(EViewID.RenderShopItemView, EViewType.Render, RenderShopItemView);
 		register(EViewID.RenderShopSkinView, EViewType.Render, RenderShopSkinView);
-		register(EViewID.RenderVisitCharInfoView, EViewType.Render, RenderVisitCharInfoView);
+		register(EViewID.RenderVisitEmoView, EViewType.Render, RenderVisitEmoView);
 		register(EViewID.RenderVisitVoiceInfoView, EViewType.Render, RenderVisitVoiceInfoView);
 
 		//Coms
@@ -275,6 +276,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.ComMatchModeView, EViewType.Component, ComMatchModeView, ComMatchModeMediator);
 		register(EViewID.ComPreviewView, EViewType.Component, ComPreviewView);
 		register(EViewID.ComSevenDayItem1View, EViewType.Component, ComSevenDayItem1View);
+		register(EViewID.ComVisitCharInfoView, EViewType.Component, ComVisitCharInfoView);
 		register(EViewID.ComVisitIntroView, EViewType.Component, ComVisitIntroView);
 
 		//UIs

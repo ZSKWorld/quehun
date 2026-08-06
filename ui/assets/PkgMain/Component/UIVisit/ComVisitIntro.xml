@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="734,874" designImage="ui://ca43vz0e9c0b7plomr" designImageOffsetX="-1094" designImageOffsetY="-160">
-  <controller name="char" pages="0,普通,1,四贵人" selected="1">
+<component size="734,874" designImage="ui://ca43vz0e9c0b7plomo" designImageOffsetX="-1094" designImageOffsetY="-161" designImageAlpha="100">
+  <controller name="char" pages="0,普通,1,四贵人" selected="0">
     <action type="change_page" fromPage="" toPage="" objectId="n13_9c0b" controller="char" targetPage="~1"/>
     <action type="change_page" fromPage="" toPage="" objectId="n14_9c0b" controller="char" targetPage="~1"/>
     <action type="change_page" fromPage="" toPage="" objectId="n15_9c0b" controller="char" targetPage="~1"/>
@@ -9,7 +9,7 @@
   </controller>
   <controller name="gift" pages="0,,1,契约,2,赠礼" selected="0"/>
   <displayList>
-    <component id="n22_9c0b" name="n22" src="9c0bobj4" fileName="Component/UIVisit/ComVisitCharInfo.xml" xy="31,210" size="678,645"/>
+    <component id="n22_9c0b" name="charInfo" src="9c0bobj4" fileName="Component/UIVisit/ComVisitCharInfo.xml" xy="31,210" size="678,645"/>
     <image id="n23_9c0b" name="n23" src="9c0bobj6" fileName="Texture/img_2987.png" xy="10,164" size="715,700" group="n25_9c0b">
       <gearDisplay controller="gift" pages="1,2"/>
     </image>
@@ -24,10 +24,10 @@
       <gearDisplay controller="gift" pages="2"/>
     </text>
     <group id="n25_9c0b" name="n25" xy="10,164" size="715,700"/>
-    <loader id="n9_9c0b" name="n9" xy="10,12" size="715,152" url="ui://vith2b669c0bobiz">
+    <loader id="n9_9c0b" name="n9" xy="10,12" size="715,152" url="ui://vith2b669c0bobiy">
       <gearIcon controller="char" pages="1" values="ui://vith2b669c0bobiz" default="ui://vith2b669c0bobiy"/>
     </loader>
-    <loader id="n10_9c0b" name="n10" xy="144,43" size="440,102" aspect="true" url="ui://vith2b669c0bobix" fill="scaleFree">
+    <loader id="n10_9c0b" name="n10" xy="144,43" size="440,102" aspect="true" url="ui://vith2b669c0bobiw" fill="scaleFree">
       <gearIcon controller="char" pages="1" values="ui://vith2b669c0bobix" default="ui://vith2b669c0bobiw"/>
     </loader>
     <component id="n13_9c0b" name="heart0" src="9c0bobj0" fileName="Component/UIVisit/BtnVisitHeart.xml" xy="164,60" size="79,66" controller="char,0,type,0"/>

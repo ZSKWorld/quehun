@@ -1,11 +1,6 @@
 {
-  "objectStatus": {
-    "n17_9c0b": {
-      "collapsed": true
-    }
-  },
   "designImages": [
-    "ui://ca43vz0e9c0b7plomo",
-    "ui://ca43vz0e9c0b7plomp"
+    "ui://ca43vz0e9c0b7plomp",
+    "ui://ca43vz0e9c0b7plomo"
   ]
 }

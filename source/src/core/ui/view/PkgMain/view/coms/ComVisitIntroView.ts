@@ -13,5 +13,6 @@ export class ComVisitIntroView extends ExtendClass<IView, ComVisitIntro>(ComVisi
 
 	refresh(charId: number) {
 		this.ctrl_gift.selectedIndex = 0;
+		this.com_charInfo.refresh(charId);
 	}
 }

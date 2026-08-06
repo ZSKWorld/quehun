@@ -46,7 +46,7 @@ EViewID = {
 	RenderShopCGView: "RenderShopCGView",
 	RenderShopItemView: "RenderShopItemView",
 	RenderShopSkinView: "RenderShopSkinView",
-	RenderVisitCharInfoView: "RenderVisitCharInfoView",
+	RenderVisitEmoView: "RenderVisitEmoView",
 	RenderVisitVoiceInfoView: "RenderVisitVoiceInfoView",
 
 	/**Coms */
@@ -92,6 +92,7 @@ EViewID = {
 	ComMatchModeView: "ComMatchModeView",
 	ComPreviewView: "ComPreviewView",
 	ComSevenDayItem1View: "ComSevenDayItem1View",
+	ComVisitCharInfoView: "ComVisitCharInfoView",
 	ComVisitIntroView: "ComVisitIntroView",
 
 	/**UIs */

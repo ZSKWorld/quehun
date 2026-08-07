@@ -29,12 +29,12 @@ export class UISevenDayMediator extends MediatorBase<UISevenDayView, IUISevenDay
 	private showTask() {
 		this.view.setShowType(0);
 		this.refreshTask();
-		this.view.refreshRewards($user.activity.sevenDayDO.finishedRewards);
+		this.view.refreshRewards($user.activity.sevenDay.finishedRewards);
 	}
 
 	@InjectUserEvent(EUserEvent.OnActivityPeriodTaskProgressChanged)
 	private refreshTask() {
-		const finishDays = $user.activity.sevenDayDO.datas.map(v => {
+		const finishDays = $user.activity.sevenDay.datas.map(v => {
 			return v.every(vv => $user.activity.getPeriodTaskInfo(vv.period_task_id).rewarded);
 		});
 		this.view.refreshTask(this._tabIndex, finishDays);
@@ -44,7 +44,7 @@ export class UISevenDayMediator extends MediatorBase<UISevenDayView, IUISevenDay
 
 	private onTabSelectChanged(index: number) {
 		this._tabIndex = index;
-		this.view.refreshTaskItem($user.activity.sevenDayDO.datas[index]);
+		this.view.refreshTaskItem($user.activity.sevenDay.datas[index]);
 	}
 
 	@InjectNetEvent(ENetMessage.completePeriodActivityTask)

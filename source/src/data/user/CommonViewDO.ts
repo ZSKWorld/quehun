@@ -20,11 +20,11 @@ const DefaultViewIdMap: Record<EItemCommonType, number> = {
 export class CommonViewDO extends BaseDO implements DO.ICommonViewDO {
 	private _use: number = 0;
 	private _views: ProtoObject<IResAllcommonViews_Views>[] = [];
-	private _usingView: ProtoObject<IResAllcommonViews_Views>;
-	private _curMjpBack: number;
-	private _curMjpFront: number;
-	private _curTableCloth: number;
-	private _curLobbyBg: number;
+	private _usingView: ProtoObject<IResAllcommonViews_Views> = { values: [], index: 0, name: "" };
+	private _curMjpBack: number = 0;
+	private _curMjpFront: number = 0;
+	private _curTableCloth: number = 0;
+	private _curLobbyBg: number = 0;
 
 	get use() { return this._use; }
 	get views() { return this._views; }

@@ -25,11 +25,11 @@ function settingProxy<T extends object>(target: T, caller: any, onValueChanged: 
 }
 
 export class SettingDO extends BaseDO implements DO.ISettingDO {
-	private _audio: DO.IAudioSetting;
-	private _graphic: DO.IGraphicSetting;
-	private _prefer: DO.IPreferSetting;
-	private _lang: DO.ILangSetting;
-	private _other: DO.IOtherSetting;
+	private _audio = this.getAudioDefaultSetting();
+	private _graphic = this.getGraphicDefaultSetting();
+	private _prefer = this.getPreferDefaultSetting();
+	private _lang = this.getLangDefaultSetting();
+	private _other = this.getOtherDefaultSetting();
 	private _audioChanged: boolean = false;
 	private _graphicChanged: boolean = false;
 	private _preferChanged: boolean = false;
@@ -43,11 +43,11 @@ export class SettingDO extends BaseDO implements DO.ISettingDO {
 
 	@InjectGlobalEvent(EGlobalEvent.OnInitGameCompleted)
 	private onInitGameCompleted() {
-		this._audio = $localDataMgr.getObj(ELocalDataKey.AudioSetting, this.getAudioDefaultSetting());
-		this._graphic = $localDataMgr.getObj(ELocalDataKey.GraphicSetting, this.getGraphicDefaultSetting());
-		this._prefer = $localDataMgr.getObj(ELocalDataKey.PreferSetting, this.getPreferDefaultSetting());
-		this._lang = $localDataMgr.getObj(ELocalDataKey.LangSetting, this.getLangDefaultSetting());
-		this._other = $localDataMgr.getObj(ELocalDataKey.OtherSetting, this.getOtherDefaultSetting());
+		this._audio = $localDataMgr.getObj(ELocalDataKey.AudioSetting, this._audio);
+		this._graphic = $localDataMgr.getObj(ELocalDataKey.GraphicSetting, this._graphic);
+		this._prefer = $localDataMgr.getObj(ELocalDataKey.PreferSetting, this._prefer);
+		this._lang = $localDataMgr.getObj(ELocalDataKey.LangSetting, this._lang);
+		this._other = $localDataMgr.getObj(ELocalDataKey.OtherSetting, this._other);
 		this.processAfterInitData();
 	}
 

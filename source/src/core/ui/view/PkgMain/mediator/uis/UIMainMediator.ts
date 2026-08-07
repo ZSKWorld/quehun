@@ -20,6 +20,6 @@ export class UIMainMediator extends MediatorBase<UIMainView, IUIMainData> {
 
 	@InjectUserEvent(EUserEvent.OnActivityPeriodTaskProgressChanged)
 	private refreshQiRi() {
-		this.view.refreshQiRi(!$user.activity.sevenDayDO.completed);
+		this.view.refreshQiRi(!$user.activity.sevenDay.completed);
 	}
 }

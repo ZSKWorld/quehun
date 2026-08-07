@@ -1,7 +1,7 @@
 import { BaseDO } from "./BaseDO";
 
 export class ServerSettingDO extends BaseDO implements DO.IServerSettingDO {
-	private _nickname_setting: ProtoObject<INicknameSetting>;
+	private _nickname_setting: ProtoObject<INicknameSetting> = { enable: 0, nicknames: [] };
 
 	get nickname_setting() { return this._nickname_setting; }
 

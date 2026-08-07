@@ -39,7 +39,7 @@ interface IActivityData {
 	mmo_data: IActivityMMOData[];
 }
 
-class SevenDayDO implements DO.SevenDayDO {
+class SevenDayDO implements DO.ISevenDayDO {
 	private _totalRewards: number[];
 	private _datas: ISheetData_Activity_TaskDisplay[][];
 	get activityId() { return 230601; }
@@ -110,7 +110,8 @@ export class ActivityDO extends BaseDO implements DO.IActivityDO {
 	private _activityBuff: KeyMap<ProtoObject<IActivityBuffData>> = {};
 	private _activityInterval: KeyMap<ProtoObject<IResFetchActivityInterval_ActivityInterval>> = {};
 
-	sevenDayDO = new SevenDayDO();
+	private _sevenDay = new SevenDayDO();
+	get sevenDay() { return this._sevenDay; }
 
 	isRunning(activityId: number) {
 		if ($gameMgr.regionLimited) {

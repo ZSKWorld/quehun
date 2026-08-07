@@ -1,5 +1,5 @@
 declare namespace DO {
-	interface SevenDayDO {
+	interface ISevenDayDO {
 		get activityId(): number;
 		get taskId(): number;
 		get finishedRewards(): number[];
@@ -8,7 +8,7 @@ declare namespace DO {
 	}
 
 	interface IActivityDO {
-		sevenDayDO: SevenDayDO;
+		readonly sevenDay: ISevenDayDO;
 		isRunning(activityId: number): boolean;
 		getTaskInfo(taskId: number): ITaskProgress;
 		getTaskList(activityId: number): ITaskProgress[];

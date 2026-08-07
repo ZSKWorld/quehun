@@ -24,7 +24,7 @@ export class UISevenDay_RDChecker extends Base_RDChecker {
 		let checked6 = false;
 
 		const activity = $user.activity;
-		activity.sevenDayDO.datas.forEach((v, i) => {
+		activity.sevenDay.datas.forEach((v, i) => {
 			const haveReward = v.some(vv => {
 				const taskInfo = activity.getPeriodTaskInfo(vv.period_task_id);
 				return taskInfo.achieved && !taskInfo.rewarded;

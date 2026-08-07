@@ -180,35 +180,52 @@ declare interface ICommand {
 }
 
 declare interface IFacade {
-
+	/** 注册页面类 */
 	registerView(viewId: EViewID, viewType: EViewType, viewCls: IViewClass, mediatorCls?: IMediatorClass): void;
+	/** 注册页面信息，（层级(layer), 种类(category), ... 后续有其他信息再添加） */
 	registerViewInfo(viewId: EUIViewID, layer?: ELayer, category?: EViewCategory): void;
+	/** mediator是否存在 */
 	hasMediator(viewId: EViewID): boolean;
+	/** 获取mediator类 */
 	getMediatorClass(viewId: EViewID): IMediatorClass;
+	/** 获取view类型 */
 	getViewType(viewId: EViewID): EViewType;
+	/** 获取view层级 */
 	getViewLayer(viewId: EViewID): ELayer;
+	/** 获取view种类 */
 	getViewCategory(viewId: EViewID): EViewCategory;
 	/**
-	 * 
+	 * 创建view实例
 	 * @param viewId 
-	 * @param fullScreen default false
+	 * @param fullScreen 是否全屏 default false
 	 */
 	createView<T extends IView = IView>(viewId: EViewID, fullScreen?: boolean): T;
 	/**
-	 * 
+	 * 创建mediator实例
 	 * @param viewId 
-	 * @param fullScreen default false
+	 * @param fullScreen 是否全屏 default false
 	 */
 	createMediator<T extends IMediator = IMediator>(viewId: EViewID, fullScreen?: boolean): T;
 
+	/** 注册命令 */
 	registerCommand(notifyName: string, cls: ICommandClass): void;
+	/** 命令是否存在 */
 	hasCommand(notifyName: string): boolean;
+	/**
+	 * 移除命令
+	 * @param notifyName 
+	 * @param cls 不为空只移除cls对应的命令，为空移除notifyName所有命令
+	 */
 	removeCommand(notifyName: string, cls?: ICommandClass): void;
-
+	/** 注册全局事件 */
 	on(type: string, caller: any, listener: Function, args?: any[], once?: boolean): void;
+	/** 移除指定type类型全局事件 */
 	off(type: string, caller: any, listener: Function): void;
+	/** 移除所有type类型全局事件 */
 	offAll(type: string): void;
+	/** 移除caller身上所有全局事件 */
 	offAllCaller(caller: any): void;
+	/** 派发事件（包括全局事件，网络事件，用户事件，命令事件） */
 	dispatch(eventName: string, data?: any): void;
 	/** 设置caller是否可用装饰器{@link InjectGlobalEvent}注册{@link EGlobalEvent}事件 */
 	setGlobalEventDecoratorEnable(caller: any, enable: boolean): void;

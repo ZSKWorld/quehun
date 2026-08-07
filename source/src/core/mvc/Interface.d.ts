@@ -76,7 +76,7 @@ declare interface IScriptObserver extends IScriptNotifier {
 
 }
 
-declare interface IScriptObserverOnEnable extends IScriptNotifier {
+declare interface IScriptObserverOnEnable extends IScriptObserver {
 
 }
 

@@ -1,6 +1,6 @@
 import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
+import { PlayerViewLoader } from "../../../../extention/PlayerViewLoader";
 import { RadioGroup } from "../../../../extention/RadioGroup";
-import { PlayerViewLoader } from "../../../../tool/PlayerViewLoader";
 import { RenderFriendApplyView } from "../../view/renders/RenderFriendApplyView";
 import { RenderFriendRecentView } from "../../view/renders/RenderFriendRecentView";
 import { EUIFriendMsg, UIFriendView } from "../../view/uis/UIFriendView";

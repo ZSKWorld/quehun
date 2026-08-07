@@ -1,6 +1,6 @@
 import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
+import { PlayerViewLoader } from "../../../../extention/PlayerViewLoader";
 import { RadioGroup } from "../../../../extention/RadioGroup";
-import { PlayerViewLoader } from "../../../../tool/PlayerViewLoader";
 import { EUIRankType } from "../../Definition";
 import { RenderRankItemView } from "../../view/renders/RenderRankItemView";
 import { UIRankView } from "../../view/uis/UIRankView";

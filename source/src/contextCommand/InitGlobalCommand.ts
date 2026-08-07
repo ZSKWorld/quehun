@@ -17,9 +17,9 @@ import { PbManager } from "../core/net/PbManager";
 import { DynamicResManager } from "../core/ui/core/DynamicResManager";
 import { UIManager } from "../core/ui/core/UIManager";
 import { RedDotManager } from "../core/ui/redDot/RedDotManager";
-import { RichText } from "../core/ui/tool/RichText";
-import { TipManager } from "../core/ui/tool/TipManager";
-import { UIUtil } from "../core/ui/tool/UIUtil";
+import { RichText } from "../core/ui/core/RichText";
+import { TipManager } from "../core/ui/core/TipManager";
+import { UIUtil } from "../core/ui/core/UIUtil";
 import { UserDO } from "../data/user/UserDO";
 import { SceneManager } from "../scene/SceneManager";
 

@@ -53,6 +53,7 @@ class UICache {
 }
 
 /** UI管理类 */
+@Singleton
 export class UIManager implements IUIManager {
 	private _layerMap: { [key in ELayer]: fgui.GComponent };
 

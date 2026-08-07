@@ -1,6 +1,7 @@
+let RDNodeID = 0;
+
 export class RedDotNode implements IRedDotNode {
-	private static _gid: number = 0;
-	private _id = ++RedDotNode._gid;
+	private readonly _id = ++RDNodeID;
 	private _enable = false;
 	private _nameList: string[];
 	private _parent: RedDotNode;

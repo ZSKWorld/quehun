@@ -373,7 +373,7 @@
     <component id="fip2oblf" name="ComSettingPrefer.xml" path="/Component/UISetting/" exported="true"/>
     <component id="fip2oblg" name="ComSettingLang.xml" path="/Component/UISetting/" exported="true"/>
     <component id="fip2oblh" name="ComSettingOther.xml" path="/Component/UISetting/" exported="true"/>
-    <image id="9c0bobli" name="img_2372.png" path="/Texture/" exported="true"/>
+    <image id="9c0bobli" name="img_2372.png" path="/Texture/" exported="true" scale="9grid" scale9grid="14,0,16,52"/>
     <image id="9c0boblj" name="img_135.png" path="/Texture/" exported="true" scale="9grid" scale9grid="4,4,2,2"/>
     <image id="9c0boblk" name="img_1563.png" path="/Texture/" exported="true"/>
     <image id="9c0bobll" name="img_888.png" path="/Texture/" exported="true"/>

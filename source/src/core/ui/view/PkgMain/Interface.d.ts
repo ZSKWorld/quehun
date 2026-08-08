@@ -78,3 +78,7 @@ declare interface IUIVideoData {
 declare interface IUIVisitData {
 	charId: number;
 }
+
+declare interface IUIChangeSkinData {
+	charId: number;
+}

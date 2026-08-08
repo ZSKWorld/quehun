@@ -68,18 +68,6 @@ declare interface IObserver extends INotifier {
 
 }
 
-declare interface IScriptNotifier extends Laya.Script, INotifier {
-
-}
-
-declare interface IScriptObserver extends IScriptNotifier {
-
-}
-
-declare interface IScriptObserverOnEnable extends IScriptObserver {
-
-}
-
 /**页面扩展 */
 declare interface IViewExtend {
 	readonly viewId: EViewID;
@@ -166,7 +154,7 @@ declare interface IView extends fgui.GComponent, IViewExtend {
 }
 
 /**中介类 */
-declare interface IMediator<V extends IView = IView, D = any> extends IScriptObserverOnEnable, IViewExtend {
+declare interface IMediator<V extends IView = IView, D = any> extends Laya.Script, IViewExtend {
 	readonly owner: Laya.Sprite;
 	/** 页面数据 */
 	data: D;

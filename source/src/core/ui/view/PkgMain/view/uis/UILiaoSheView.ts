@@ -9,13 +9,14 @@ export class UILiaoSheView extends ExtendClass<IView, UILiaoShe>(UILiaoShe) impl
 	private _curCharId = -1;
 
 	override onCreate() {
-		const { com_back, btn_dynamic, btn_char, btn_deco, btn_visit, com_character } = this;
+		const { com_back, btn_dynamic, btn_visit, btn_skin, btn_char, btn_deco, com_character } = this;
 		btn_dynamic.mode = fgui.ButtonMode.Check;
 		btn_dynamic.onClick(this, () => $user.setting.prefer.dynamicSkin = btn_dynamic.selected);
 		com_back.onBackClick(this, this.closeSelf);
+		btn_visit.onClick(this, this.onBtnVisitClick);
+		btn_skin.onClick(this, this.onBtnSkinClick);
 		btn_char.onClick(this, this.refreshContent, [0, true]);
 		btn_deco.onClick(this, this.refreshContent, [1, true]);
-		btn_visit.onClick(this, this.onBtnVisitClick);
 		com_character.on(EUILiaoSheEvent.OnLiaoSheCharSelected, this, this.onLiaoSheCharSelected);
 	}
 
@@ -44,6 +45,10 @@ export class UILiaoSheView extends ExtendClass<IView, UILiaoShe>(UILiaoShe) impl
 
 	private onBtnVisitClick() {
 		this.openView<IUIVisitData>(EViewID.UIVisitView, { charId: this._curCharId }, EViewOpenType.Hide);
+	}
+
+	private onBtnSkinClick() {
+		this.openView<IUIChangeSkinData>(EViewID.UIChangeSkinView, { charId: this._curCharId }, EViewOpenType.Hide);
 	}
 
 	override onOpenAni() {

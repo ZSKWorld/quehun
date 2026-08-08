@@ -23,20 +23,20 @@ export class MjpVO {
 			const isDora = str[0] == "0";
 			num = isDora ? 5 : +str.charAt(0) as MjpNum;
 
+			if (num < 1 || num > 9)
+				throw new Error("MjpVO num error: " + num);
+
 			switch (str[1]) {
-				case "z": type = EMjpType.Z; break;
-				case "m": type = EMjpType.M; break;
-				case "s": type = EMjpType.S; break;
-				case "p": type = EMjpType.P; break;
+				case EMjpType.Z:
+				case EMjpType.M:
+				case EMjpType.S:
+				case EMjpType.P: type = str[1]; break;
 				default:
-					if (str == "bd") type = EMjpType.BD;
+					if (str == EMjpType.BD) type = str;
+					else throw new Error("MjpVO type error: " + str);
 					break;
 			}
 
-			if (num < 1 || num > 9)
-				throw new Error("MjpVO num error: " + num);
-			if (type != EMjpType.Z && type != EMjpType.M && type != EMjpType.S && type != EMjpType.P && type != EMjpType.BD)
-				throw new Error("MjpVO type error: " + type);
 			if (isDora && type != EMjpType.M && type != EMjpType.P && type != EMjpType.S)
 				throw new Error("MjpVO num error: " + num + ", type error: " + type);
 

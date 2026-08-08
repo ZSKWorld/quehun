@@ -35,19 +35,6 @@ export abstract class MediatorBase<V extends IView = IView, D = any> extends Ext
 		return this._parent;
 	}
 
-	override addEvent(type: string, listener: Function, args?: any[], once?: boolean) {
-		const caller = this.view;
-		if (!caller) return;
-		if (once) caller.once(type, this, listener, args);
-		else caller.on(type, this, listener, args);
-	}
-	override removeEvent(type: string, listener: Function) {
-		this.view?.off(type, this, listener);
-	}
-	override sendEvent(type: string, data?: any) {
-		this.view?.event(type, data);
-	}
-
 	override onReset() {
 		this._data = null;
 		this._parent = null;

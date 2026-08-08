@@ -82,15 +82,6 @@ declare interface IViewExtend {
 	 */
 	dispatch(eventName: string, data?: any): void;
 
-	/** 添加页面事件 */
-	addEvent(type: string, callback: Function, args?: any[], once?: boolean): void;
-
-	/** 派发页面事件 */
-	sendEvent(type: string, data?: any): void;
-
-	/** 移除页面事件 */
-	removeEvent(type: string, listener: Function): void;
-
 	/**
 	 * 打开页面
 	 * @param viewId 页面id
@@ -139,17 +130,23 @@ declare interface IView extends fgui.GComponent, IViewExtend {
 	 */
 	onDestroy(): void;
 
+
+	/** 派发页面事件 */
+	sendEvent(type: string, data?: any): void;
+
 	/**
 	 ** 页面打开动画
 	 ** 该方法为虚方法，使用时重写即可
 	 */
 	onOpenAni(): Promise<any>;
+
 	/**
 	 ** 页面关闭动画
 	 ** 该方法为虚方法，使用时重写即可
 	 */
 	onCloseAni(): Promise<any>;
 
+	/** 获取节点路径 */
 	getPath(): string;
 }
 
@@ -160,6 +157,15 @@ declare interface IMediator<V extends IView = IView, D = any> extends Laya.Scrip
 	data: D;
 	/** 控制器挂载的ui页面 */
 	get view(): V;
+
+	/** 添加页面事件 */
+	addEvent(type: string, listener: Function, args?: any[], once?: boolean): void;
+	/** 移除页面事件 */
+	removeEvent(type: string, listener: Function): void;
+
+	onShow(...args: any[]): void;
+	onReshow(): void;
+	onHide(...args: any[]): void;
 }
 
 /** 命令流 */

@@ -120,12 +120,12 @@ export class UIManager implements IUIManager {
 		this.lockMark--;
 	}
 
-	async closeView(viewId: EUIViewID, openStack = true) {
+	async closeView(viewId: EUIViewID) {
 		if (!viewId) return;
 
 		this.lockMark++;
 		await this.removeView(viewId, true);
-		if (openStack && this.isStackView(viewId)) {
+		if (this.isStackView(viewId)) {
 			const nextViewId = this._openedStack.peek();
 			const topViewId = this.topViewId;
 			if (nextViewId && nextViewId != topViewId)
@@ -169,7 +169,7 @@ export class UIManager implements IUIManager {
 		}
 
 		if (!this.isStackView(topId)) {
-			this.closeView(topId, false);
+			this.closeView(topId);
 			return this.dealTopView(viewId, data, openType);
 		}
 
@@ -207,7 +207,7 @@ export class UIManager implements IUIManager {
 		mediator.view.removeFromParent();
 		!reopen && (mediator.data = data);
 		this.addToLayer(mediator.view, mediator.view.viewLayer || ELayer.UIBottom);
-		await mediator.view.onOpenAni?.();
+		await mediator.view.onOpenAni();
 		$facade.dispatch(EGlobalEvent.OnViewOpenEnd, viewId);
 	}
 
@@ -218,7 +218,7 @@ export class UIManager implements IUIManager {
 		const mediator = this._openedViews[index];
 		this._openedViews.splice(index, 1);
 		removeStack && this._openedStack.remove(viewId);
-		await mediator.view.onCloseAni?.();
+		await mediator.view.onCloseAni();
 		this._cache.cache(mediator);
 		mediator.view.removeFromParent();
 		$facade.dispatch(EGlobalEvent.OnViewCloseEnd, viewId);

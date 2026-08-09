@@ -163,9 +163,9 @@ declare interface IMediator<V extends IView = IView, D = any> extends Laya.Scrip
 	/** 移除页面事件 */
 	removeEvent(type: string, listener: Function): void;
 
-	onShow(...args: any[]): void;
+	onShow(): void;
 	onReshow(): void;
-	onHide(...args: any[]): void;
+	onClose(): void;
 }
 
 /** 命令流 */

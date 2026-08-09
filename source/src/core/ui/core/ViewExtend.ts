@@ -51,8 +51,8 @@ export class ViewExtend {
 		prototype.openView = function (...args) {
 			return $uiMgr.openView(...args);
 		};
-		prototype.closeView = function (...args) {
-			return $uiMgr.closeView(...args);
+		prototype.closeView = function (viewId) {
+			return $uiMgr.closeView(viewId);
 		};
 		prototype.closeSelf = function () {
 			const { viewId, viewType } = (<IViewExtend>this);
@@ -67,6 +67,8 @@ export class ViewExtend {
 			prototype.sendEvent = function (type: string, data?: any) {
 				(<IView>this).event(type, data);
 			};
+			prototype.onOpenAni = function () { return Promise.resolve(); };
+			prototype.onCloseAni = function () { return Promise.resolve(); };
 		} else {
 			prototype = <IMediator>prototype;
 			prototype.addEvent = function (type, listener, args?, once?) {
@@ -80,6 +82,10 @@ export class ViewExtend {
 				if (!view) return;
 				view.off(type, this, listener);
 			};
+
+			prototype.onShow = function () { };
+			prototype.onReshow = function () { };
+			prototype.onClose = function () { };
 		}
 	}
 }

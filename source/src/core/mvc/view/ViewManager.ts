@@ -9,59 +9,71 @@ export class ViewManager {
 			Logger.error("viewCls 不能为空", viewId, viewCls);
 			return;
 		}
-		if (this._viewClsMap[viewId]) {
+		if (this.getViewClass(viewId)) {
 			Logger.error("重复注册view", viewId);
 			return;
 		}
-		(<IViewExtend>viewCls.prototype).viewId = viewId;
-		(<IViewExtend>viewCls.prototype).viewType = viewType;
-		mediatorCls && ((<IViewExtend>mediatorCls.prototype).viewId = viewId);
-		mediatorCls && ((<IViewExtend>mediatorCls.prototype).viewType = viewType);
+		(viewCls.prototype.viewId as any) = viewId;
+		(viewCls.prototype.viewType as any) = viewType;
+		mediatorCls && ((mediatorCls.prototype.viewId as any) = viewId);
+		mediatorCls && ((mediatorCls.prototype.viewType as any) = viewType);
 		this._viewClsMap[viewId] = viewCls;
 		this._mediatorClsMap[viewId] = mediatorCls;
 	}
 
 	registerInfo(viewId: EUIViewID, layer = ELayer.UIBottom, category = EViewCategory.FullScreen) {
-		const ViewCls = this._viewClsMap[viewId];
-		const mediatorCls = this._mediatorClsMap[viewId];
-		if (ViewCls) {
-			(<IViewExtend>ViewCls.prototype).viewLayer = layer;
-			(<IViewExtend>ViewCls.prototype).viewCategory = category;
+		const viewCls = this.getViewClass(viewId);
+		const mediatorCls = this.getMediatorClass(viewId);
+		if (viewCls) {
+			(viewCls.prototype.viewLayer as any) = layer;
+			(viewCls.prototype.viewCategory as any) = category;
 		}
 		if (mediatorCls) {
-			(<IViewExtend>mediatorCls.prototype).viewLayer = layer;
-			(<IViewExtend>mediatorCls.prototype).viewCategory = category;
+			(mediatorCls.prototype.viewLayer as any) = layer;
+			(mediatorCls.prototype.viewCategory as any) = category;
 		}
 	}
 
 	getViewType(viewId: EViewID) {
-		const ViewCls = this._viewClsMap[viewId];
-		if (!ViewCls) return;
-		return (<IViewExtend>ViewCls.prototype).viewType;
+		const viewCls = this.getViewClass(viewId);
+		if (!viewCls) return;
+		return viewCls.prototype.viewType;
 	}
 
 	getViewLayer(viewId: EViewID) {
-		const ViewCls = this._viewClsMap[viewId];
-		if (!ViewCls) return;
-		return (<IViewExtend>ViewCls.prototype).viewLayer;
+		const viewCls = this.getViewClass(viewId);
+		if (!viewCls) return;
+		return viewCls.prototype.viewLayer;
 	}
 
 	getViewCategory(viewId: EViewID) {
-		const ViewCls = this._viewClsMap[viewId];
-		if (!ViewCls) return;
-		return (<IViewExtend>ViewCls.prototype).viewCategory;
+		const viewCls = this.getViewClass(viewId);
+		if (!viewCls) return;
+		return viewCls.prototype.viewCategory;
+	}
+
+	hasView(viewId: EViewID) {
+		return this.getViewClass(viewId) != null;
+	}
+
+	getViewClass(viewId: EViewID) {
+		if (!viewId) return null;
+		return this._viewClsMap[viewId];
 	}
 
 	hasMediator(viewId: EViewID) {
-		return !!this._mediatorClsMap[viewId];
+		return this.getMediatorClass(viewId) != null;
 	}
 
 	getMediatorClass(viewId: EViewID) {
+		if (!viewId) return null;
 		return this._mediatorClsMap[viewId];
 	}
 
 	createView(viewId: EViewID, fullScreen: boolean = false) {
-		const viewInst = this._viewClsMap[viewId].createInstance();
+		const viewCls = this.getViewClass(viewId);
+		if (!viewCls) return null;
+		const viewInst = viewCls.createInstance();
 		viewInst && (viewInst.name = viewId);
 		viewInst && fullScreen && viewInst.makeFullScreen();
 		return viewInst;
@@ -69,6 +81,7 @@ export class ViewManager {
 
 	createMediator(viewId: EViewID, fullScreen: boolean = false) {
 		const viewInst = this.createView(viewId, fullScreen);
+		if (!viewInst) return null;
 		return viewInst.mediator;
 	}
 }

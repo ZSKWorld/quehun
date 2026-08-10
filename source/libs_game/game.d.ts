@@ -20,7 +20,7 @@ declare type ReadonlyAll<T> = { readonly [P in keyof T]: T[P] extends Function ?
 /** 设置对象上所有字段可选 */
 declare type PartialAll<T> = { [P in keyof T]?: Partial<T[P]>; };
 declare type KeyMap<T> = { [key: string]: T; };
-declare type Class<T> = new (...args: any[]) => T;
+declare type Class<T> = { new(...args: any[]): T; prototype: T; };
 
 declare const $gameMgr: IGameManager;
 declare const $netMgr: INetManager;

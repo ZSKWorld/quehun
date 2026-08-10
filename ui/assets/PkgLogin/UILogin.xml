@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="1920,1080" designImage="ui://ca43vz0ejdu67plo08" designImageAlpha="0" bgColorEnabled="true" bgColor="#000000">
-  <controller name="page" pages="0,,1,,2," selected="0"/>
+  <controller name="page" pages="0,,1,,2," selected="1"/>
   <displayList>
     <graph id="n0_mde1" name="scene" xy="0,0" size="100,100" alpha="0" type="rect" lineSize="0"/>
     <image id="n8_h638" name="n8" src="mde1b7r" fileName="Texture/img_1065.png" xy="1189,237" size="620,476" group="n30_10mro"/>
@@ -43,14 +43,14 @@
     <image id="n31_10mro" name="n31" src="10mrob6y" fileName="Texture/img_2422.png" pkg="vx9zwser" xy="1434,448" pivot="0.5,0.5" anchor="true" size="219,219" group="n34_10mro" scale="1.2,1.2">
       <gearDisplay controller="page" pages="1,2"/>
     </image>
-    <component id="n33_10mro" name="logout" src="108ab6i" fileName="Component/Button/BtnNormal.xml" pkg="vx9zwser" xy="1434,657" pivot="0.5,0.5" anchor="true" size="276,100" group="n34_10mro">
+    <component id="n33_10mro" name="logout" src="hhnzob7r" fileName="Component/UILogin/BtnLoginout.xml" xy="1434,657" pivot="0.5,0.5" anchor="true" group="n34_10mro">
       <gearDisplay controller="page" pages="1"/>
       <Button title="登出账号" titleColor="#c3bac5" titleFontSize="27" icon="ui://vs9845atmde1b73"/>
     </component>
     <text id="n32_10mro" name="n32" xy="1434,448" pivot="0.5,0.5" anchor="true" size="154,66" group="n34_10mro" fontSize="50" color="#a6f69f" vAlign="middle" leading="0" singleLine="true" text="登入中">
       <gearDisplay controller="page" pages="1,2"/>
     </text>
-    <group id="n34_10mro" name="n34" xy="1296,338" size="276,368" advanced="true"/>
+    <group id="n34_10mro" name="n34" xy="1306,338" size="256,354" advanced="true"/>
   </displayList>
   <transition name="t0" autoPlay="true" autoPlayRepeat="-1" frameRate="60">
     <item time="0" type="Rotation" target="n31_10mro" tween="true" startValue="0" endValue="360" duration="120" ease="Linear"/>

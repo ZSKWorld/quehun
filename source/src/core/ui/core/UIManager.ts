@@ -110,13 +110,13 @@ export class UIManager implements IUIManager {
 
 	isTopView(viewId: EViewID) { return this.topViewId == viewId; }
 
-	async openView<T = any>(viewId: EUIViewID, data?: T, openType = EViewOpenType.None, reopen?: boolean) {
+	async openView<T = any>(viewId: EUIViewID, data?: T, openType = EViewOpenType.None) {
 		if (!viewId) return;
 		if (!$facade.hasMediator(viewId)) return;
 
 		this.lockMark++;
 		const success = await this.dealTopView(viewId, data, openType);
-		success && await this.addView(viewId, data, reopen);
+		success && await this.addView(viewId, data);
 		this.lockMark--;
 	}
 
@@ -127,9 +127,10 @@ export class UIManager implements IUIManager {
 		await this.removeView(viewId, true);
 		if (this.isStackView(viewId)) {
 			const nextViewId = this._openedStack.peek();
-			const topViewId = this.topViewId;
-			if (nextViewId && nextViewId != topViewId)
-				await this.openView(this._openedStack.pop(), null, EViewOpenType.None, true);
+			if (nextViewId && nextViewId != this.topViewId) {
+				const mediator = this._openedViews.find(v => v.viewId == nextViewId) || this._cache.get(nextViewId);
+				await this.openView(this._openedStack.pop(), mediator?.data);
+			}
 		}
 		this.lockMark--;
 	}
@@ -197,15 +198,14 @@ export class UIManager implements IUIManager {
 		return mediator;
 	}
 
-	private async addView(viewId: EUIViewID, data?: any, reopen?: boolean) {
+	private async addView(viewId: EUIViewID, data?: any) {
 		const mediator = this.getOrCreateMediator(viewId);
 		if (!mediator) return;
 		$facade.dispatch(EGlobalEvent.OnViewOpenBegin, viewId);
 		if (this.isStackView(viewId))
 			this._openedStack.push(viewId);
 		this._openedViews.unshift(mediator);
-		mediator.view.removeFromParent();
-		!reopen && (mediator.data = data);
+		mediator.data = data;
 		this.addToLayer(mediator.view, mediator.view.viewLayer || ELayer.UIBottom);
 		await mediator.view.onOpenAni();
 		$facade.dispatch(EGlobalEvent.OnViewOpenEnd, viewId);

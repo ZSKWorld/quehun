@@ -42,6 +42,7 @@
     <component id="6eqpb8d" name="UILoginQueue.xml" path="/" exported="true"/>
     <component id="ieavb8e" name="UIBindPhone.xml" path="/" exported="true"/>
     <image id="ieavob7q" name="img_3920.png" path="/Texture/" scale="9grid" scale9grid="10,10,453,282"/>
+    <component id="hhnzob7r" name="BtnLoginout.xml" path="/Component/UILogin/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

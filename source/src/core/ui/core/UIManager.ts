@@ -1,3 +1,5 @@
+import { Notifier } from "../../mvc/provider/Notifier";
+
 class UIStack {
 	private _data: EUIViewID[] = [];
 	get count() { return this._data.length; }
@@ -54,7 +56,7 @@ class UICache {
 
 /** UI管理类 */
 @Singleton
-export class UIManager implements IUIManager {
+export class UIManager extends Notifier implements IUIManager {
 	private _layerMap: { [key in ELayer]: fgui.GComponent };
 
 	/** 缓存池 */
@@ -77,6 +79,7 @@ export class UIManager implements IUIManager {
 	private get topViewId() { return this.topView?.viewId as EUIViewID; }
 
 	constructor() {
+		super();
 		this._layerMap = {} as any;
 		const gRoot = fgui.GRoot.inst;
 		Laya.stage.addChild(gRoot.displayObject);
@@ -201,26 +204,26 @@ export class UIManager implements IUIManager {
 	private async addView(viewId: EUIViewID, data?: any) {
 		const mediator = this.getOrCreateMediator(viewId);
 		if (!mediator) return;
-		$facade.dispatch(EGlobalEvent.OnViewOpenBegin, viewId);
+		this.dispatch(EGlobalEvent.OnViewOpenBegin, viewId);
 		if (this.isStackView(viewId))
 			this._openedStack.push(viewId);
 		this._openedViews.unshift(mediator);
 		mediator.data = data;
 		this.addToLayer(mediator.view, mediator.view.viewLayer || ELayer.UIBottom);
 		await mediator.view.onOpenAni();
-		$facade.dispatch(EGlobalEvent.OnViewOpenEnd, viewId);
+		this.dispatch(EGlobalEvent.OnViewOpenEnd, viewId);
 	}
 
 	private async removeView(viewId: EUIViewID, removeStack: boolean) {
 		const index = this._openedViews.findIndex(v => v.viewId == viewId);
 		if (index <= -1) return;
-		$facade.dispatch(EGlobalEvent.OnViewCloseBegin, viewId);
+		this.dispatch(EGlobalEvent.OnViewCloseBegin, viewId);
 		const mediator = this._openedViews[index];
 		this._openedViews.splice(index, 1);
 		removeStack && this._openedStack.remove(viewId);
 		await mediator.view.onCloseAni();
 		this._cache.cache(mediator);
 		mediator.view.removeFromParent();
-		$facade.dispatch(EGlobalEvent.OnViewCloseEnd, viewId);
+		this.dispatch(EGlobalEvent.OnViewCloseEnd, viewId);
 	}
 }

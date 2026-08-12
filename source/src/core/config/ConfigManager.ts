@@ -1,3 +1,15 @@
+/** 表类型 */
+const enum ECategory {
+	/** 唯一 */
+	Unique = "unique",
+	/** 无键 */
+	NoKey = "nokey",
+	/** 分组 */
+	Group = "group",
+	/** KV对 */
+	KV = "kv",
+}
+
 interface ISheetRawData {
 	/** excel 名字 */
 	table: string;
@@ -5,8 +17,7 @@ interface ISheetRawData {
 	sheet: string;
 	/** sheet meta 信息 */
 	meta: {
-		/** 四种类型：唯一、无键、分组、KV对 */
-		category: "unique" | "nokey" | "group" | "kv";
+		category: ECategory;
 		key: string;
 	};
 	/** sheet 结构信息 */
@@ -97,18 +108,18 @@ export class ConfigManager implements IConfigManager {
 			// 创建原型对象，承载 Array 方法和原始 rows
 			const proto: any = Object.create(sheetProto);
 			proto.rows = rows;
-			const groups: any[][] = category === "group" ? (proto.groups = []) : null;
+			const groups: any[][] = category === ECategory.Group ? (proto.groups = []) : null;
 
 			const configSheet = Object.create(proto);
 
 			// 索引逻辑优化
 			switch (category) {
-				case "unique":
+				case ECategory.Unique:
 					// 如果 key 是数字，排序后再索引
 					rows.sort((a, b) => (a[key] || 0) - (b[key] || 0));
 					for (const row of rows) configSheet[row[key]] = row;
 					break;
-				case "group":
+				case ECategory.Group:
 					for (const row of rows) {
 						const groupKey = row[key];
 						if (!configSheet[groupKey]) {
@@ -118,11 +129,12 @@ export class ConfigManager implements IConfigManager {
 						configSheet[groupKey].push(row);
 					}
 					break;
-				case "kv":
-				case "nokey":
+				case ECategory.KV:
+				case ECategory.NoKey:
 					for (const row of rows) {
 						const rowKey = row[key];
-						if (rowKey !== undefined) configSheet[rowKey] = row;
+						if (rowKey !== undefined)
+							configSheet[rowKey] = row;
 					}
 					break;
 			}

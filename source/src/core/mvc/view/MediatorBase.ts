@@ -39,30 +39,6 @@ export abstract class MediatorBase<V extends IView = IView, D = any> extends Lay
 		}
 		return this._parent;
 	}
-
-	dispatch(eventName: string, data?: any): void {
-		$facade.dispatch(eventName, data);
-	}
-	addEvent(type: string, listener: Function, args?: any[], once?: boolean) {
-		if (once) this.view?.once(type, this, listener, args);
-		else this.view?.on(type, this, listener, args);
-	}
-	removeEvent(type: string, listener: Function) {
-		this.view?.off(type, this, listener);
-	}
-	openView<T = any>(viewId: EUIViewID, data?: T, openType?: EViewOpenType) {
-		return $uiMgr.openView(viewId, data, openType);
-	}
-	closeView(viewId: EUIViewID) {
-		return $uiMgr.closeView(viewId);
-	}
-	closeSelf() {
-		const { viewId, viewType } = this;
-		if (viewType == EViewType.UI)
-			return $uiMgr.closeView(viewId as EUIViewID);
-		else
-			return Promise.resolve();
-	}
 	onShow() { }
 	onReshow() { }
 	onClose() { }
@@ -96,6 +72,52 @@ export abstract class MediatorBase<V extends IView = IView, D = any> extends Lay
 
 	protected onDataChanged(data: D, oldData?: D) {
 
+	}
+
+	/**
+	 * 派发全局事件
+	 * @param eventName 
+	 * @param data （可选）回调数据。注意：如果是需要传递多个参数 p1,p2,p3,...可以使用数组结构如：[p1,p2,p3,...] ；如果需要回调单个参数 p ，且 p 是一个数组，则需要使用结构如：[p]，其他的单个参数 p ，可以直接传入参数 p。
+	 */
+	protected dispatch(eventName: string, data?: any): void {
+		$facade.dispatch(eventName, data);
+	}
+
+	/** 添加页面事件 */
+	protected addEvent(type: string, listener: Function, args?: any[], once?: boolean) {
+		if (once) this.view?.once(type, this, listener, args);
+		else this.view?.on(type, this, listener, args);
+	}
+
+	/** 移除页面事件 */
+	protected removeEvent(type: string, listener: Function) {
+		this.view?.off(type, this, listener);
+	}
+
+	/**
+	 * 打开页面
+	 * @param viewId 页面id
+	 * @param data 传入参数, default: null
+	 * @param openType 页面打开对当前页面操作的类型, default: {@link EViewOpenType.None}
+	 */
+	protected openView<T = any>(viewId: EUIViewID, data?: T, openType?: EViewOpenType) {
+		return $uiMgr.openView(viewId, data, openType);
+	}
+
+	/** 移除页面
+	 * @param viewId 页面id
+	 */
+	protected closeView(viewId: EUIViewID) {
+		return $uiMgr.closeView(viewId);
+	}
+
+	/** 移除当前页面，只有UI界面才能移除自身，其他Com，Btn，Render之类的无效 */
+	protected closeSelf() {
+		const { viewId, viewType } = this;
+		if (viewType == EViewType.UI)
+			return $uiMgr.closeView(viewId as EUIViewID);
+		else
+			return Promise.resolve();
 	}
 
 	private setViewEventDecoratorEnable(enable: boolean) {

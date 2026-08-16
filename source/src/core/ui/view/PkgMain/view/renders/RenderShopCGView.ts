@@ -4,7 +4,7 @@ export const enum ERenderShopCGMsg {
 
 }
 
-export class RenderShopCGView extends ExtendClass<IView, RenderShopCG>(RenderShopCG) implements IView {
+export class RenderShopCGView extends RenderShopCG {
 
 	override onCreate() {
 

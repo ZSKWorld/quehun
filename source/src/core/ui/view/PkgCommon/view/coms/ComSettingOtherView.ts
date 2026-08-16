@@ -11,7 +11,7 @@ export const enum EComSettingOtherMsg {
 	OnBtnStreamerOnClick = "ComSettingOther_OnBtnStreamerOnClick",
 }
 
-export class ComSettingOtherView extends ExtendClass<IView, ComSettingOther>(ComSettingOther) implements IView {
+export class ComSettingOtherView extends ComSettingOther {
 
 	override onCreate() {
 		const {

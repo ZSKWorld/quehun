@@ -1,7 +1,7 @@
 import RenderSevenDayItem from "../../../../ui/PkgMain/RenderSevenDayItem";
 import { EUISevenDayEvent, EUISevenDayRenderClickEvent } from "../../Definition";
 
-export class RenderSevenDayItemView extends ExtendClass<IView, RenderSevenDayItem>(RenderSevenDayItem) implements IView {
+export class RenderSevenDayItemView extends RenderSevenDayItem {
 	private _data: ISheetData_Activity_TaskDisplay;
 	private _clickEventType: EUISevenDayRenderClickEvent;
 

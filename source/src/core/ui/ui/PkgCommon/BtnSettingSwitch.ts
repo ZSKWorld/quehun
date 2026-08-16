@@ -1,6 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-export default class BtnSettingSwitch extends fgui.GButton {
+import { ViewBase } from "../../core/viewBase/ViewBase";
+
+export default class BtnSettingSwitch extends ViewBase(fgui.GButton) {
 
 	protected txt_title1: fgui.GTextField;
 	protected txt_title2: fgui.GTextField;

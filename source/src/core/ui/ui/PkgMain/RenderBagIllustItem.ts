@@ -1,8 +1,9 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import { ViewBase } from "../../core/viewBase/ViewBase";
 import { ComItemView } from "../../view/PkgCommon/view/coms/ComItemView";
 
-export default class RenderBagIllustItem extends fgui.GComponent {
+export default class RenderBagIllustItem extends ViewBase(fgui.GComponent) {
 
 	protected ctrl_type: fgui.Controller;
 	protected com_item: ComItemView;

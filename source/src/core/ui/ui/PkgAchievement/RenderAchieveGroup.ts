@@ -1,6 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-export default class RenderAchieveGroup extends fgui.GLabel {
+import { ViewBase } from "../../core/viewBase/ViewBase";
+
+export default class RenderAchieveGroup extends ViewBase(fgui.GLabel) {
 
 	protected ctrl_type: fgui.Controller;
 	protected txt_percent: fgui.GTextField;

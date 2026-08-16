@@ -1,6 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-export default class ComBagDeco extends fgui.GComponent {
+import { ViewBase } from "../../core/viewBase/ViewBase";
+
+export default class ComBagDeco extends ViewBase(fgui.GComponent) {
 
 	protected list_item: fgui.GList;
 	protected cmb_type: fgui.GComboBox;

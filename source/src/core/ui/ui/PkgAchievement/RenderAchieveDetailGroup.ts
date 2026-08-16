@@ -1,6 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-export default class RenderAchieveDetailGroup extends fgui.GButton {
+import { ViewBase } from "../../core/viewBase/ViewBase";
+
+export default class RenderAchieveDetailGroup extends ViewBase(fgui.GButton) {
 
 	protected ctrl_type: fgui.Controller;
 	protected img_proBar: fgui.GImage;

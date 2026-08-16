@@ -1,6 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-export default class ComAchieveGroup extends fgui.GComponent {
+import { ViewBase } from "../../core/viewBase/ViewBase";
+
+export default class ComAchieveGroup extends ViewBase(fgui.GComponent) {
 
 	protected graph_empty: fgui.GGraph;
 	public static url: string = "ui://ko8zynrwcd64v";

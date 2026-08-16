@@ -1,9 +1,10 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import { ViewBase } from "../../core/viewBase/ViewBase";
 import { BtnBagSkinCheckView } from "../../view/PkgMain/view/btns/BtnBagSkinCheckView";
 import { RenderBagSkinItem1View } from "../../view/PkgMain/view/renders/RenderBagSkinItem1View";
 
-export default class ComBagSkin extends fgui.GComponent {
+export default class ComBagSkin extends ViewBase(fgui.GComponent) {
 
 	protected ctrl_type: fgui.Controller;
 	protected list_char: fgui.GList;

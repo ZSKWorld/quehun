@@ -1,10 +1,11 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import { ViewBase } from "../../core/viewBase/ViewBase";
 import { ComAchieveStatView } from "../../view/PkgAchievement/view/coms/ComAchieveStatView";
 import { RenderAchieveDetailITopView } from "../../view/PkgAchievement/view/renders/RenderAchieveDetailITopView";
 import { ComBackView } from "../../view/PkgCommon/view/coms/ComBackView";
 
-export default class UIAchievementDetail extends fgui.GComponent {
+export default class UIAchievementDetail extends ViewBase(fgui.GComponent) {
 
 	protected ctrl_type: fgui.Controller;
 	protected com_back: ComBackView;

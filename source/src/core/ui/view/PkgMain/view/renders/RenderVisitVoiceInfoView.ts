@@ -1,6 +1,6 @@
 import RenderVisitVoiceInfo from "../../../../ui/PkgMain/RenderVisitVoiceInfo";
 
-export class RenderVisitVoiceInfoView extends ExtendClass<IView, RenderVisitVoiceInfo>(RenderVisitVoiceInfo) implements IView {
+export class RenderVisitVoiceInfoView extends RenderVisitVoiceInfo {
 	get playing() { return this.ctrl_playing.selectedIndex === 1; }
 	set playing(v) { this.ctrl_playing.selectedIndex = v ? 1 : 0; }
 

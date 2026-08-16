@@ -4,7 +4,7 @@ export const enum EBtnSettingSwitchMsg {
 
 }
 
-export class BtnSettingSwitchView extends ExtendClass<IView, BtnSettingSwitch>(BtnSettingSwitch) implements IView {
+export class BtnSettingSwitchView extends BtnSettingSwitch {
 
 	override onCreate() {
 		

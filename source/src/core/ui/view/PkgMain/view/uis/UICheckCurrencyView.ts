@@ -5,7 +5,7 @@ export const enum EUICheckCurrencyMsg {
 	OnBtnConfirmClick = "UICheckCurrency_OnBtnConfirmClick",
 }
 
-export class UICheckCurrencyView extends ExtendClass<IView, UICheckCurrency>(UICheckCurrency) implements IView {
+export class UICheckCurrencyView extends UICheckCurrency {
 
 	override onCreate() {
 		const { btn_mask, btn_close, btn_buy, btn_confirm } = this;

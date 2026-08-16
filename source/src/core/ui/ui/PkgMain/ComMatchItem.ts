@@ -1,6 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-export default class ComMatchItem extends fgui.GComponent {
+import { ViewBase } from "../../core/viewBase/ViewBase";
+
+export default class ComMatchItem extends ViewBase(fgui.GComponent) {
 
 	protected btn_bg: fgui.GButton;
 	protected loader_icon: fgui.GLoader;

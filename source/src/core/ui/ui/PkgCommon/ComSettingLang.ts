@@ -1,6 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-export default class ComSettingLang extends fgui.GComponent {
+import { ViewBase } from "../../core/viewBase/ViewBase";
+
+export default class ComSettingLang extends ViewBase(fgui.GComponent) {
 
 	protected btn_langSet: fgui.GButton;
 	public static url: string = "ui://vx9zwserfip2oblg";

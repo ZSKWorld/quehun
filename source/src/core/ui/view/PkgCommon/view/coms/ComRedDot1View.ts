@@ -4,7 +4,7 @@ export const enum EComRedDotMsg {
 
 }
 
-export class ComRedDot1View extends ExtendClass<IView, ComRedDot1>(ComRedDot1) implements IView {
+export class ComRedDot1View extends ComRedDot1 {
 
 	override onCreate() {
 

@@ -4,7 +4,7 @@ export const enum EUILoginQueueMsg {
 
 }
 
-export class UILoginQueueView extends ExtendClass<IView, UILoginQueue>(UILoginQueue) implements IView {
+export class UILoginQueueView extends UILoginQueue {
 
 	override onCreate() {
 		const { btn_quit } = this;

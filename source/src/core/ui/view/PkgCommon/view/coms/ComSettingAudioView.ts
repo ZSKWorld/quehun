@@ -7,7 +7,7 @@ export const enum EComSettingAudioMsg {
 	OnBtnMjBgmSetClick = "ComSettingAudio_OnBtnMjBgmSetClick",
 }
 
-export class ComSettingAudioView extends ExtendClass<IView, ComSettingAudio>(ComSettingAudio) implements IView {
+export class ComSettingAudioView extends ComSettingAudio {
 
 	override onCreate() {
 		const {

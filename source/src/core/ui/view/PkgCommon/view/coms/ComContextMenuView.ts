@@ -4,6 +4,6 @@ export const enum EComContextMenuMsg {
 
 }
 
-export class ComContextMenuView extends ExtendClass<IView, ComContextMenu>(ComContextMenu) implements IView {
+export class ComContextMenuView extends ComContextMenu {
 	get list() { return this.list_list; }
 }

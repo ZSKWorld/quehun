@@ -1,6 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-export default class BtnMailTab extends fgui.GButton {
+import { ViewBase } from "../../core/viewBase/ViewBase";
+
+export default class BtnMailTab extends ViewBase(fgui.GButton) {
 
 	protected ctrl_open: fgui.Controller;
 	protected img_redDot: fgui.GImage;

@@ -1,6 +1,6 @@
 import ComVisitCharInfo from "../../../../ui/PkgMain/ComVisitCharInfo";
 
-export class ComVisitCharInfoView extends ExtendClass<IView, ComVisitCharInfo>(ComVisitCharInfo) implements IView {
+export class ComVisitCharInfoView extends ComVisitCharInfo {
 	private _charId: number = 0;
 
 	override onCreate() {

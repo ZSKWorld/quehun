@@ -1,6 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-export default class UIConfirmBig extends fgui.GComponent {
+import { ViewBase } from "../../core/viewBase/ViewBase";
+
+export default class UIConfirmBig extends ViewBase(fgui.GComponent) {
 
 	protected ctrl_format: fgui.Controller;
 	protected btn_close: fgui.GButton;

@@ -1,6 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-export default class ComFlowerLoading extends fgui.GComponent {
+import { ViewBase } from "../../core/viewBase/ViewBase";
+
+export default class ComFlowerLoading extends ViewBase(fgui.GComponent) {
 
 	protected trans_t0: fgui.Transition;
 	public static url: string = "ui://vx9zwserghrrobg8";

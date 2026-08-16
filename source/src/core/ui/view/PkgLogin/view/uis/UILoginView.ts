@@ -14,7 +14,7 @@ export const enum EUILoginMsg {
 	OnAccountInputEnter = "UILogin_OnAccountInputEnter",
 }
 
-export class UILoginView extends ExtendClass<IView, UILogin>(UILogin) implements IView {
+export class UILoginView extends UILogin {
 
 	get accountTxt() { return this.itxt_account.text; }
 	get passwordTxt() { return this.itxt_password.text; }

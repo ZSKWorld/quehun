@@ -1,6 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-export default class UIChooseServer extends fgui.GComponent {
+import { ViewBase } from "../../core/viewBase/ViewBase";
+
+export default class UIChooseServer extends ViewBase(fgui.GComponent) {
 
 	protected list_server: fgui.GList;
 	protected btn_enterGame: fgui.GButton;

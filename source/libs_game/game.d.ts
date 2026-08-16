@@ -48,13 +48,6 @@ declare const $audioMgr: IAudioManager;
 /** 注入全局变量 */
 declare function $windowImmit(name: string, obj: any): void;
 
-/**
- * 扩展类字段，用于在外部定义的字段在内部可读，扩展的字段或方法不能在构造期间调用
- * @param cls 要扩展的类
- * @returns 扩展后的类
- */
-declare function ExtendClass<E, T>(cls: Class<T>): Class<T & E>;
-
 /** 单例类装饰器 */
 declare function Singleton<T extends Class<any>>(constructor: T): T;
 

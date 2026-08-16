@@ -4,7 +4,7 @@ export const enum ERenderMailItemMsg {
 
 }
 
-export class RenderMailItemView extends ExtendClass<IView, RenderMailItem>(RenderMailItem) implements IView {
+export class RenderMailItemView extends RenderMailItem {
 
 	override onCreate() {
 

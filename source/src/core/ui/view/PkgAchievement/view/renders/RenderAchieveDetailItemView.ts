@@ -1,6 +1,6 @@
 import RenderAchieveDetailItem from "../../../../ui/PkgAchievement/RenderAchieveDetailItem";
 
-export class RenderAchieveDetailItemView extends ExtendClass<IView, RenderAchieveDetailItem>(RenderAchieveDetailItem) implements IView {
+export class RenderAchieveDetailItemView extends RenderAchieveDetailItem {
 	private _achieveId: number;
 	private _rewardId: number;
 

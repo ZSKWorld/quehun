@@ -4,7 +4,7 @@ export const enum EUIObserverMsg {
 	OnComBackClick = "EUILiaoSheMsg_OnComBackClick",
 }
 
-export class UIObserverView extends ExtendClass<IView, UIObserver>(UIObserver) implements IView {
+export class UIObserverView extends UIObserver {
 
 	override onCreate() {
 		const { com_back } = this;

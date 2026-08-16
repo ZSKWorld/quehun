@@ -5,7 +5,7 @@ export const enum EComAchieveGroupMsg {
 
 }
 
-export class ComAchieveGroupView extends ExtendClass<IView, ComAchieveGroup>(ComAchieveGroup) implements IView {
+export class ComAchieveGroupView extends ComAchieveGroup {
 	private _groupViews: RenderAchieveGroupView[] = [];
 
 	override onCreate() {

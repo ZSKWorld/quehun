@@ -1,6 +1,6 @@
 import RenderAchieveGroup from "../../../../ui/PkgAchievement/RenderAchieveGroup";
 
-export class RenderAchieveGroupView extends ExtendClass<IView, RenderAchieveGroup>(RenderAchieveGroup) implements IView {
+export class RenderAchieveGroupView extends RenderAchieveGroup {
 
 	override onCreate() {
 

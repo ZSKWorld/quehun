@@ -4,7 +4,7 @@ export const enum ERenderLiaoSheDecoTypeMsg {
 
 }
 
-export class RenderLiaoSheDecoTypeView extends ExtendClass<IView, RenderLiaoSheDecoType>(RenderLiaoSheDecoType) implements IView {
+export class RenderLiaoSheDecoTypeView extends RenderLiaoSheDecoType {
 
 	override onCreate() {
 

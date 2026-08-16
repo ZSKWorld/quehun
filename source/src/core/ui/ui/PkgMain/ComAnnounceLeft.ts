@@ -1,6 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-export default class ComAnnounceLeft extends fgui.GComponent {
+import { ViewBase } from "../../core/viewBase/ViewBase";
+
+export default class ComAnnounceLeft extends ViewBase(fgui.GComponent) {
 
 	protected ctrl_type: fgui.Controller;
 	protected list_tab: fgui.GList;

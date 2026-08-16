@@ -1,7 +1,7 @@
 import ComRechargeItem from "../../../../ui/PkgCommon/ComRechargeItem";
 import { EUIRechargeEvent, EUIRechargeTabType } from "../../Definition";
 
-export class ComRechargeItemView extends ExtendClass<IView, ComRechargeItem>(ComRechargeItem) implements IView {
+export class ComRechargeItemView extends ComRechargeItem {
 
 	private _rechargeEvent: EUIRechargeEvent;
 

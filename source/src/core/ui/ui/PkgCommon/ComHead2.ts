@@ -1,9 +1,10 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import { ViewBase } from "../../core/viewBase/ViewBase";
 import { ComHeadView } from "../../view/PkgCommon/view/coms/ComHeadView";
 import { ComHeadFrameView } from "../../view/PkgCommon/view/coms/ComHeadFrameView";
 
-export default class ComHead2 extends fgui.GComponent {
+export default class ComHead2 extends ViewBase(fgui.GComponent) {
 
 	protected com_head: ComHeadView;
 	protected com_frame: ComHeadFrameView;

@@ -4,7 +4,7 @@ export const enum EComAchieveRecentMsg {
 
 }
 
-export class ComAchieveRecentView extends ExtendClass<IView, ComAchieveRecent>(ComAchieveRecent) implements IView {
+export class ComAchieveRecentView extends ComAchieveRecent {
 
 	private _opened: boolean = false;
 	override onCreate() {

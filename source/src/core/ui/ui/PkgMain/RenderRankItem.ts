@@ -1,11 +1,12 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import { ViewBase } from "../../core/viewBase/ViewBase";
 import { ComHead2View } from "../../view/PkgCommon/view/coms/ComHead2View";
 import { LabelNameView } from "../../view/PkgCommon/view/labels/LabelNameView";
 import { ComTitleView } from "../../view/PkgCommon/view/coms/ComTitleView";
 import { ComLevel1View } from "../../view/PkgCommon/view/coms/ComLevel1View";
 
-export default class RenderRankItem extends fgui.GComponent {
+export default class RenderRankItem extends ViewBase(fgui.GComponent) {
 
 	protected loader_top3: fgui.GLoader;
 	protected com_head: ComHead2View;

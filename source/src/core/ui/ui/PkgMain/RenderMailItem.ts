@@ -1,8 +1,9 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import { ViewBase } from "../../core/viewBase/ViewBase";
 import { ComItem1View } from "../../view/PkgCommon/view/coms/ComItem1View";
 
-export default class RenderMailItem extends fgui.GComponent {
+export default class RenderMailItem extends ViewBase(fgui.GComponent) {
 
 	protected com_item: ComItem1View;
 	protected img_gotReward: fgui.GImage;

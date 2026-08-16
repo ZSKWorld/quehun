@@ -5,7 +5,7 @@ export const enum EUILiaoSheMsg {
 	OnComBackClick = "EUILiaoSheMsg_OnComBackClick",
 }
 
-export class UILiaoSheView extends ExtendClass<IView, UILiaoShe>(UILiaoShe) implements IView {
+export class UILiaoSheView extends UILiaoShe {
 	private _curCharId = -1;
 
 	override onCreate() {

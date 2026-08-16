@@ -1,8 +1,9 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import { ViewBase } from "../../core/viewBase/ViewBase";
 import { ComItemView } from "../../view/PkgCommon/view/coms/ComItemView";
 
-export default class ComItem1 extends fgui.GComponent {
+export default class ComItem1 extends ViewBase(fgui.GComponent) {
 
 	protected com_item: ComItemView;
 	public static url: string = "ui://vx9zwserq5yiobc2";

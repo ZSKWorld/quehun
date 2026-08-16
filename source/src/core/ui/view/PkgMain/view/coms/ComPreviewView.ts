@@ -1,6 +1,6 @@
 import ComPreview from "../../../../ui/PkgMain/ComPreview";
 
-export class ComPreviewView extends ExtendClass<IView, ComPreview>(ComPreview) implements IView {
+export class ComPreviewView extends ComPreview {
 
 	override onCreate() {
 		const { btn_close1, btn_close2 } = this;

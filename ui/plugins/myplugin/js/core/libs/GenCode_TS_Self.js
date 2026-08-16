@@ -114,6 +114,9 @@ function customMemberVarName(member) {
         return MemberTypeMap[extType] + varName;
     return "com_" + varName;
 }
+function customSuperClassName(superClassName) {
+    return `ViewBase(${superClassName})`;
+}
 function GenCode_TS_Self(handler) {
     let settings = handler.project.GetSettings("Publish").codeGeneration;
     let codePkgName = handler.ToFilename(handler.pkg.name); //convert chinese to pinyin, remove special chars etc.
@@ -136,13 +139,14 @@ function GenCode_TS_Self(handler) {
         let references = classInfo.references;
         writer.reset();
         let refCount = references.Count;
+        references.Insert(0, "/../core/viewBase/ViewBase");
         genReferenceExt(writer, references);
         if (isThree) {
             writer.writeln('import * as fgui from "fairygui-three";');
             if (refCount == 0)
                 writer.writeln();
         }
-        writer.writeln('export default class %s extends %s', classInfo.className, classInfo.superClassName);
+        writer.writeln('export default class %s extends %s', classInfo.className, customSuperClassName(classInfo.superClassName));
         writer.startBlock();
         writer.writeln();
         const protectedProperty = signArr.some(v => classInfo.className.startsWith(v));

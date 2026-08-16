@@ -4,7 +4,7 @@ export const enum EComSettingLangMsg {
 	OnBtnLangSetClick = "ComSettingLang_OnBtnLangSetClick",
 }
 
-export class ComSettingLangView extends ExtendClass<IView, ComSettingLang>(ComSettingLang) implements IView {
+export class ComSettingLangView extends ComSettingLang {
 
 	override onCreate() {
 		const { btn_langSet } = this;

@@ -4,7 +4,7 @@ export const enum EBtnBuyMsg {
 
 }
 
-export class BtnBuyView extends ExtendClass<IView, BtnBuy>(BtnBuy) implements IView {
+export class BtnBuyView extends BtnBuy {
 
 	override onCreate() {
 

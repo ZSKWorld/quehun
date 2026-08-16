@@ -5,7 +5,7 @@ export const enum EComBagItemMsg {
 
 }
 
-export class ComBagItemView extends ExtendClass<IView, ComBagItem>(ComBagItem) implements IView {
+export class ComBagItemView extends ComBagItem {
 	private _items: ProtoObject<IItem>[];
 	override onCreate() {
 		$uiUtil.setList(this.list_item, true, this, this.onListItemRender, this.onListItemClick);

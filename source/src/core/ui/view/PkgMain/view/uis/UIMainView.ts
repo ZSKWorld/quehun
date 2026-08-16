@@ -1,7 +1,7 @@
 import UIMain from "../../../../ui/PkgMain/UIMain";
 import { EUIMainEvent } from "../../Definition";
 
-export class UIMainView extends ExtendClass<IView, UIMain>(UIMain) implements IView {
+export class UIMainView extends UIMain {
 
 	override onCreate() {
 		const {

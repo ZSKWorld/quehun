@@ -1,6 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-export default class ComAnnounceContent extends fgui.GComponent {
+import { ViewBase } from "../../core/viewBase/ViewBase";
+
+export default class ComAnnounceContent extends ViewBase(fgui.GComponent) {
 
 	protected loader_header: fgui.GLoader;
 	protected txt_title: fgui.GTextField;

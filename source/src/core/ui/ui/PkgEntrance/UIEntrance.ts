@@ -1,6 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-export default class UIEntrance extends fgui.GComponent {
+import { ViewBase } from "../../core/viewBase/ViewBase";
+
+export default class UIEntrance extends ViewBase(fgui.GComponent) {
 
 	protected trans_t0: fgui.Transition;
 	public static url: string = "ui://8tw6j59fnrcf0";

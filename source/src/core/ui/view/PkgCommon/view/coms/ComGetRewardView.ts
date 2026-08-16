@@ -4,7 +4,7 @@ export const enum EComGetRewardMsg {
 
 }
 
-export class ComGetRewardView extends ExtendClass<IView, ComGetReward>(ComGetReward) implements IView {
+export class ComGetRewardView extends ComGetReward {
 
 	async showRewards(rewards: IRewardSlot[]) {
 		const {

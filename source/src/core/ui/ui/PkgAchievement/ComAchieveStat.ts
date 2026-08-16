@@ -1,6 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-export default class ComAchieveStat extends fgui.GComponent {
+import { ViewBase } from "../../core/viewBase/ViewBase";
+
+export default class ComAchieveStat extends ViewBase(fgui.GComponent) {
 
 	protected txt_gold: fgui.GTextField;
 	protected txt_silver: fgui.GTextField;

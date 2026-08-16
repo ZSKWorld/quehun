@@ -1,6 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-export default class ComContextMenu extends fgui.GComponent {
+import { ViewBase } from "../../core/viewBase/ViewBase";
+
+export default class ComContextMenu extends ViewBase(fgui.GComponent) {
 
 	protected list_list: fgui.GList;
 	public static url: string = "ui://vx9zwsermaquobjk";

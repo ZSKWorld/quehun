@@ -4,7 +4,7 @@ export const enum EBtnXunMiMsg {
 
 }
 
-export class BtnXunMiView extends ExtendClass<IView, BtnXunMi>(BtnXunMi) implements IView {
+export class BtnXunMiView extends BtnXunMi {
 
 	override onCreate() {
 

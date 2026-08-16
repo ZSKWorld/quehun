@@ -4,7 +4,7 @@ export const enum EBtnCheckRichTxtRightMsg {
 
 }
 
-export class BtnCheckRichTxtRightView extends ExtendClass<IView, BtnCheckRichTxtRight>(BtnCheckRichTxtRight) implements IView {
+export class BtnCheckRichTxtRightView extends BtnCheckRichTxtRight {
 
 	override onCreate() {
 

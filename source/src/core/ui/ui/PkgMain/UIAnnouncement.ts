@@ -1,9 +1,10 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import { ViewBase } from "../../core/viewBase/ViewBase";
 import { ComAnnounceLeftView } from "../../view/PkgMain/view/coms/ComAnnounceLeftView";
 import { ComAnnounceContentView } from "../../view/PkgMain/view/coms/ComAnnounceContentView";
 
-export default class UIAnnouncement extends fgui.GComponent {
+export default class UIAnnouncement extends ViewBase(fgui.GComponent) {
 
 	protected ctrl_empty: fgui.Controller;
 	protected btn_mask: fgui.GButton;

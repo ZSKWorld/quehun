@@ -1,9 +1,10 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import { ViewBase } from "../../core/viewBase/ViewBase";
 import { BtnShopRefreshView } from "../../view/PkgMain/view/btns/BtnShopRefreshView";
 import { ComBackView } from "../../view/PkgCommon/view/coms/ComBackView";
 
-export default class UIShop extends fgui.GComponent {
+export default class UIShop extends ViewBase(fgui.GComponent) {
 
 	protected ctrl_c1: fgui.Controller;
 	protected com_back: ComBackView;

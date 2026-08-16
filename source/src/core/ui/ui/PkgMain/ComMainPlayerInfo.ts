@@ -1,9 +1,10 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import { ViewBase } from "../../core/viewBase/ViewBase";
 import { ComTitleView } from "../../view/PkgCommon/view/coms/ComTitleView";
 import { LabelNameView } from "../../view/PkgCommon/view/labels/LabelNameView";
 
-export default class ComMainPlayerInfo extends fgui.GComponent {
+export default class ComMainPlayerInfo extends ViewBase(fgui.GComponent) {
 
 	protected ctrl_ht: fgui.Controller;
 	protected ctrl_star: fgui.Controller;

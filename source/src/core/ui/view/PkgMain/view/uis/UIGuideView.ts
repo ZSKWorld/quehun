@@ -3,7 +3,7 @@ import UIGuide from "../../../../ui/PkgMain/UIGuide";
 export const enum EUIGuideMsg {
 }
 
-export class UIGuideView extends ExtendClass<IView, UIGuide>(UIGuide) implements IView {
+export class UIGuideView extends UIGuide {
 
 	override onCreate() {
 		const { btn_bg, btn_close } = this;

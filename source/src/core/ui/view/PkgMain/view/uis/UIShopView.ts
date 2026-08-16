@@ -7,7 +7,7 @@ export const enum EUIShopMsg {
 	OnBtnZhwRefreshClick = "UIShop_OnBtnZhwRefreshClick",
 }
 
-export class UIShopView extends ExtendClass<IView, UIShop>(UIShop) implements IView {
+export class UIShopView extends UIShop {
 	private _tabGroup = new RadioGroup();
 
 	get tabIndex() { return this._tabGroup.selectIndex; }

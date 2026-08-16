@@ -1,8 +1,9 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import { ViewBase } from "../../core/viewBase/ViewBase";
 import { ComHeadView } from "../../view/PkgCommon/view/coms/ComHeadView";
 
-export default class ComHead1 extends fgui.GComponent {
+export default class ComHead1 extends ViewBase(fgui.GComponent) {
 
 	protected ctrl_type: fgui.Controller;
 	protected loader_bg: fgui.GLoader;

@@ -4,7 +4,7 @@ export const enum ERenderVisitEmoMsg {
 
 }
 
-export class RenderVisitEmoView extends ExtendClass<IView, RenderVisitEmo>(RenderVisitEmo) implements IView {
+export class RenderVisitEmoView extends RenderVisitEmo {
 
 	override onCreate() {
 		

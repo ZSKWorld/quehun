@@ -38,7 +38,7 @@ const PointPopIcons = [
 	"myres/rules_point/illustration10.png",
 ];
 
-export class UIHelpView extends ExtendClass<IView, UIHelp>(UIHelp) implements IView {
+export class UIHelpView extends UIHelp {
 	private _courseIndex = 0;
 	private _tabGroup = new RadioGroup();
 	private _fanGroup = new RadioGroup();

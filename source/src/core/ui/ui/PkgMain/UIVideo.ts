@@ -1,6 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-export default class UIVideo extends fgui.GComponent {
+import { ViewBase } from "../../core/viewBase/ViewBase";
+
+export default class UIVideo extends ViewBase(fgui.GComponent) {
 
 	protected com_videoRoot: fgui.GComponent;
 	protected img_aniItem1: fgui.GImage;

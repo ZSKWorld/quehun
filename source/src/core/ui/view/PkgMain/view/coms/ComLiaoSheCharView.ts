@@ -7,7 +7,7 @@ export const enum EComLiaoSheCharMsg {
 	OnBtnFilterClick = "ComLiaoSheChar_OnBtnFilterClick",
 }
 
-export class ComLiaoSheCharView extends ExtendClass<IView, ComLiaoSheChar>(ComLiaoSheChar) implements IView {
+export class ComLiaoSheCharView extends ComLiaoSheChar {
 
 	private _selectedData: ProtoObject<ICharacter>;
 	private _selectedItem: RenderLiaoSheCharView;

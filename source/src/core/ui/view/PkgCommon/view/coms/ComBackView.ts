@@ -2,7 +2,7 @@ import ComBack from "../../../../ui/PkgCommon/ComBack";
 
 const OriginPosX = 10;
 const OriginPosY = 22;
-export class ComBackView extends ExtendClass<IView, ComBack>(ComBack) implements IView {
+export class ComBackView extends ComBack {
 
 	override onAwake() {
 		this.setXY(OriginPosX, OriginPosY);

@@ -4,7 +4,7 @@ export const enum EUIEntranceMsg {
 
 }
 
-export class UIEntranceView extends ExtendClass<IView, UIEntrance>(UIEntrance) implements IView {
+export class UIEntranceView extends UIEntrance {
 
 	get transT0Duration() {
 		return this.trans_t0.totalDuration * 1000;

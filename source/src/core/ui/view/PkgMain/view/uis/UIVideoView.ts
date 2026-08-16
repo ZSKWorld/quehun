@@ -3,7 +3,7 @@ import UIVideo from "../../../../ui/PkgMain/UIVideo";
 export const enum EUIVideoMsg {
 }
 
-export class UIVideoView extends ExtendClass<IView, UIVideo>(UIVideo) implements IView {
+export class UIVideoView extends UIVideo {
 	get transShow() { return this.trans_show; }
 	get transHide() { return this.trans_hide; }
 	get videoRoot() { return this.com_videoRoot; }

@@ -6,7 +6,7 @@ export const enum EUIConfirmBigMsg {
 	OnBtnCancelClick = "UIConfirmBig_OnBtnCancelClick",
 }
 
-export class UIConfirmBigView extends ExtendClass<IView, UIConfirmBig>(UIConfirmBig) implements IView {
+export class UIConfirmBigView extends UIConfirmBig {
 
 	override onCreate() {
 		const { btn_close, btn_confirm, btn_cancel } = this;

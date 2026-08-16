@@ -4,7 +4,7 @@ export const enum EComAchieveStatMsg {
 
 }
 
-export class ComAchieveStatView extends ExtendClass<IView, ComAchieveStat>(ComAchieveStat) implements IView {
+export class ComAchieveStatView extends ComAchieveStat {
 
 	override onEnable() {
 		this.refresh();

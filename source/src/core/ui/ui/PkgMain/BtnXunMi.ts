@@ -1,6 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-export default class BtnXunMi extends fgui.GButton {
+import { ViewBase } from "../../core/viewBase/ViewBase";
+
+export default class BtnXunMi extends ViewBase(fgui.GButton) {
 
 	protected trans_t0: fgui.Transition;
 	public static url: string = "ui://vith2b66vwgmj";

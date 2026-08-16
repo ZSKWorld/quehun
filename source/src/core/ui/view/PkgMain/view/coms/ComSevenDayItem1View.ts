@@ -4,7 +4,7 @@ export const enum EComSevenDayItem1Msg {
 
 }
 
-export class ComSevenDayItem1View extends ExtendClass<IView, ComSevenDayItem1>(ComSevenDayItem1) implements IView {
+export class ComSevenDayItem1View extends ComSevenDayItem1 {
 
 	override onCreate() {
 

@@ -4,7 +4,7 @@ export const enum ERenderBagGiftItemMsg {
 
 }
 
-export class RenderBagGiftItemView extends ExtendClass<IView, RenderBagGiftItem>(RenderBagGiftItem) implements IView {
+export class RenderBagGiftItemView extends RenderBagGiftItem {
 
 	override onCreate() {
 

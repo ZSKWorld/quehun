@@ -4,7 +4,7 @@ export const enum EUIPaipuMsg {
 	OnComBackClick = "EUILiaoSheMsg_OnComBackClick",
 }
 
-export class UIPaipuView extends ExtendClass<IView, UIPaipu>(UIPaipu) implements IView {
+export class UIPaipuView extends UIPaipu {
 
 	override onCreate() {
 		const { com_back } = this;

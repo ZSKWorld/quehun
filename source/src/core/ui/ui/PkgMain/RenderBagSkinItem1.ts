@@ -1,8 +1,9 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import { ViewBase } from "../../core/viewBase/ViewBase";
 import { ComHead1View } from "../../view/PkgCommon/view/coms/ComHead1View";
 
-export default class RenderBagSkinItem1 extends fgui.GButton {
+export default class RenderBagSkinItem1 extends ViewBase(fgui.GButton) {
 
 	protected com_head: ComHead1View;
 	public static url: string = "ui://vith2b66gsi2obbq";

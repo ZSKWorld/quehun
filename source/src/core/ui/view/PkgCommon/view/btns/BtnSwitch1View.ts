@@ -4,7 +4,7 @@ export const enum EBtnSwitch1Msg {
 
 }
 
-export class BtnSwitch1View extends ExtendClass<IView, BtnSwitch1>(BtnSwitch1) implements IView {
+export class BtnSwitch1View extends BtnSwitch1 {
 
 	override get selected() { return super.selected; }
 	override set selected(v) {

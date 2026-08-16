@@ -1,9 +1,10 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import { ViewBase } from "../../core/viewBase/ViewBase";
 import { ComPreviewView } from "../../view/PkgMain/view/coms/ComPreviewView";
 import { BtnSwitch1View } from "../../view/PkgCommon/view/btns/BtnSwitch1View";
 
-export default class ComLiaoSheDecorate extends fgui.GComponent {
+export default class ComLiaoSheDecorate extends ViewBase(fgui.GComponent) {
 
 	protected btn_editName: fgui.GButton;
 	protected btn_using: fgui.GButton;

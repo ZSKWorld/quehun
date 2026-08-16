@@ -4,7 +4,7 @@ export const enum ERenderRechargeItemMsg {
 
 }
 
-export class RenderRechargeItemView extends ExtendClass<IView, RenderRechargeItem>(RenderRechargeItem) implements IView {
+export class RenderRechargeItemView extends RenderRechargeItem {
 
 	override onCreate() {
 

@@ -5,7 +5,7 @@ export const enum EComBagDecoMsg {
 
 }
 
-export class ComBagDecoView extends ExtendClass<IView, ComBagDeco>(ComBagDeco) implements IView {
+export class ComBagDecoView extends ComBagDeco {
 	private _items: ProtoObject<IItem>[];
 	private _showItems: ProtoObject<IItem>[] = [];
 	private _showTypes: number[] = [

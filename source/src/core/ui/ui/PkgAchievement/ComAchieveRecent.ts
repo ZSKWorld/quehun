@@ -1,6 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-export default class ComAchieveRecent extends fgui.GComponent {
+import { ViewBase } from "../../core/viewBase/ViewBase";
+
+export default class ComAchieveRecent extends ViewBase(fgui.GComponent) {
 
 	protected img_arrow: fgui.GImage;
 	public static url: string = "ui://ko8zynrwcd64x";

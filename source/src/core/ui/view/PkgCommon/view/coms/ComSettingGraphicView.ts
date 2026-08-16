@@ -4,7 +4,7 @@ export const enum EComSettingGraphicMsg {
 	OnBtnBgMuteOnClick = "ComSettingGraphic_OnBtnBgMuteOnClick",
 }
 
-export class ComSettingGraphicView extends ExtendClass<IView, ComSettingGraphic>(ComSettingGraphic) implements IView {
+export class ComSettingGraphicView extends ComSettingGraphic {
 
 	override onCreate() {
 		const { cmb_fps, btn_activityEffect } = this;

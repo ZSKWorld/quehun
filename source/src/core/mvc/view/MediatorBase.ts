@@ -4,21 +4,26 @@ import { MediatorDIExtend } from "./MediatorDIExtend";
  * 中介基类
  * 该组件为可回收组件。鼠标、键盘交互事件可使用装饰器注册 => InjectViewKeyEvent, InjectViewMouseEvent
  */
-export abstract class MediatorBase<V extends IView = IView, D = any> extends ExtendClass<IMediator, Laya.Script>(Laya.Script) implements IMediator {
+export abstract class MediatorBase<V extends IView = IView, D = any> extends Laya.Script implements IMediator {
 	override _singleton = true;
+	override readonly owner: Laya.Sprite;
+	readonly viewId: EViewID;
+	readonly viewType: EViewType;
+	readonly viewLayer: ELayer;
+	readonly viewCategory: EViewCategory;
 	/** 控制器数据 */
 	private _data: D;
 	private _parent: MediatorBase;
 	/** 页面装饰器注册的消息映射 */
 	private __viewEventMap: KeyMap<Function[]>;
 
-	override get data() { return this._data; }
-	override set data(value) {
+	get data() { return this._data; }
+	set data(value) {
 		const oldData = this._data;
 		this._data = value;
 		this.onDataChanged(value, oldData);
 	}
-	override get view() { return this.gowner as V; }
+	get view() { return this.gowner as V; }
 	protected get parent() {
 		if (this.viewType == EViewType.UI) return null;
 		if (this._parent) return this._parent;
@@ -34,6 +39,33 @@ export abstract class MediatorBase<V extends IView = IView, D = any> extends Ext
 		}
 		return this._parent;
 	}
+
+	dispatch(eventName: string, data?: any): void {
+		$facade.dispatch(eventName, data);
+	}
+	addEvent(type: string, listener: Function, args?: any[], once?: boolean) {
+		if (once) this.view?.once(type, this, listener, args);
+		else this.view?.on(type, this, listener, args);
+	}
+	removeEvent(type: string, listener: Function) {
+		this.view?.off(type, this, listener);
+	}
+	openView<T = any>(viewId: EUIViewID, data?: T, openType?: EViewOpenType) {
+		return $uiMgr.openView(viewId, data, openType);
+	}
+	closeView(viewId: EUIViewID) {
+		return $uiMgr.closeView(viewId);
+	}
+	closeSelf() {
+		const { viewId, viewType } = this;
+		if (viewType == EViewType.UI)
+			return $uiMgr.closeView(viewId as EUIViewID);
+		else
+			return Promise.resolve();
+	}
+	onShow() { }
+	onReshow() { }
+	onClose() { }
 
 	override onReset() {
 		this._data = null;
@@ -62,6 +94,10 @@ export abstract class MediatorBase<V extends IView = IView, D = any> extends Ext
 		MediatorDIExtend.offDeviceEvent(this);
 	}
 
+	protected onDataChanged(data: D, oldData?: D) {
+
+	}
+
 	private setViewEventDecoratorEnable(enable: boolean) {
 		const vem = this.__viewEventMap;
 		if (!vem) return;
@@ -77,6 +113,4 @@ export abstract class MediatorBase<V extends IView = IView, D = any> extends Ext
 			}
 		}
 	}
-
-	protected onDataChanged(data: D, oldData?: D) { }
 }

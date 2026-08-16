@@ -1,11 +1,12 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import { ViewBase } from "../../core/viewBase/ViewBase";
 import { ComAchieveGroupView } from "../../view/PkgAchievement/view/coms/ComAchieveGroupView";
 import { ComAchieveStatView } from "../../view/PkgAchievement/view/coms/ComAchieveStatView";
 import { ComAchieveRecentView } from "../../view/PkgAchievement/view/coms/ComAchieveRecentView";
 import { ComBackView } from "../../view/PkgCommon/view/coms/ComBackView";
 
-export default class UIAchievement extends fgui.GComponent {
+export default class UIAchievement extends ViewBase(fgui.GComponent) {
 
 	protected com_back: ComBackView;
 	protected com_groups: ComAchieveGroupView;

@@ -4,7 +4,7 @@ export const enum ERenderAchieveDetailGroupMsg {
 
 }
 
-export class RenderAchieveDetailGroupView extends ExtendClass<IView, RenderAchieveDetailGroup>(RenderAchieveDetailGroup) implements IView {
+export class RenderAchieveDetailGroupView extends RenderAchieveDetailGroup {
 	setSelect(select: boolean, ani: boolean) {
 		fgui.GTween.kill(this);
 		const targetScale = select ? 1.2 : 1;

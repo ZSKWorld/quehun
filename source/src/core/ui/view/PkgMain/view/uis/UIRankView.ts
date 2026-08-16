@@ -4,7 +4,7 @@ import { EUIRankType } from "../../Definition";
 export const enum EUIRankMsg {
 }
 
-export class UIRankView extends ExtendClass<IView, UIRank>(UIRank) implements IView {
+export class UIRankView extends UIRank {
 	get listRank() { return this.list_rank; }
 	get btnSiMa() { return this.btn_siMa; }
 	get btnSanMa() { return this.btn_sanMa; }

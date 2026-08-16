@@ -1,9 +1,10 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import { ViewBase } from "../../core/viewBase/ViewBase";
 import PbLoading1 from "./PbLoading1";
 import PbLoading2 from "./PbLoading2";
 
-export default class UILoading extends fgui.GComponent {
+export default class UILoading extends ViewBase(fgui.GComponent) {
 
 	protected ctrl_state: fgui.Controller;
 	protected txt_tip: fgui.GTextField;

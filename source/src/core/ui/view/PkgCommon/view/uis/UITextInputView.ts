@@ -4,7 +4,7 @@ export const enum EUITextInputMsg {
 	OnBtnClick = "UITextInput_OnBtnClick",
 }
 
-export class UITextInputView extends ExtendClass<IView, UITextInput>(UITextInput) implements IView {
+export class UITextInputView extends UITextInput {
 
 	override onCreate() {
 		const { btn_mask, btn_close, btn_confirm } = this;

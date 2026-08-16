@@ -3,7 +3,7 @@ import UIRecharge from "../../../../ui/PkgCommon/UIRecharge";
 import { EUIRechargeEvent, EUIRechargeTabType } from "../../Definition";
 import { ComRechargeItemView } from "../coms/ComRechargeItemView";
 
-export class UIRechargeView extends ExtendClass<IView, UIRecharge>(UIRecharge) implements IView {
+export class UIRechargeView extends UIRecharge {
 	private _tabGroup = new RadioGroup();
 	private _itemIds: number[];
 

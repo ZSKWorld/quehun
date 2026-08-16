@@ -1,6 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-export default class ComMJItem extends fgui.GComponent {
+import { ViewBase } from "../../core/viewBase/ViewBase";
+
+export default class ComMJItem extends ViewBase(fgui.GComponent) {
 
 	protected loader_front: fgui.GLoader;
 	protected loader_back: fgui.GLoader;

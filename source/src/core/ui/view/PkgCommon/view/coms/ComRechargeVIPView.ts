@@ -1,7 +1,7 @@
 import ComRechargeVIP from "../../../../ui/PkgCommon/ComRechargeVIP";
 import { RenderRechargeItemView } from "../renders/RenderRechargeItemView";
 
-export class ComRechargeVIPView extends ExtendClass<IView, ComRechargeVIP>(ComRechargeVIP) implements IView {
+export class ComRechargeVIPView extends ComRechargeVIP {
 
 	private _curLevel: number = 1;
 	private _vipRewards: IRewardSlot[];

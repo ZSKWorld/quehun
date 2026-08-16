@@ -5,7 +5,7 @@ export const enum ERenderHelpItem1Msg {
 
 }
 
-export class RenderHelpItem1View extends ExtendClass<IView, RenderHelpItem1>(RenderHelpItem1) implements IView {
+export class RenderHelpItem1View extends RenderHelpItem1 {
 
 	private _mjps: ComMJItemView[] = [];
 

@@ -4,7 +4,7 @@ export const enum EComBigHeadMsg {
 
 }
 
-export class ComHeadView extends ExtendClass<IView, ComHead>(ComHead) implements IView {
+export class ComHeadView extends ComHead {
 
 	refreshFull(skinId: number) {
 		this.refresh($itemUtil.getItemInfo(skinId).skinInfo.full);

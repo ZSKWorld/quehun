@@ -4,7 +4,7 @@ export const enum ERenderGetRewardItemMsg {
 
 }
 
-export class RenderGetRewardItemView extends ExtendClass<IView, RenderGetRewardItem>(RenderGetRewardItem) implements IView {
+export class RenderGetRewardItemView extends RenderGetRewardItem {
 
 	refresh(data: IRewardSlot) {
 		this.visible = !!data;

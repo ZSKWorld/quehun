@@ -59,18 +59,18 @@ CustomSetting_1.CustomSetting.Init();
 MenuBase_Doc_1.MenuBase_Doc.AddSeperator();
 MenuBase_Lib_1.MenuBase_Lib.AddSeperator();
 function onPublishStart(pkgs) {
-    console.log("[color=#00ff00]on publish start[/color]", pkgs.Length);
+    // console.log("[color=#00ff00]on publish start[/color]", pkgs.Length);
 }
 //自定义发布代码
 function onPublish(handler) {
     if (!handler.genCode)
         return;
-    console.log("[color=#ffff00]on publish code[/color] => [u][b]" + handler.pkg.name + "[/b][/u]");
+    // console.log("[color=#ffff00]on publish code[/color] => [u][b]" + handler.pkg.name + "[/b][/u]");
     handler.genCode = false; //prevent default output
     (0, GenCode_TS_Self_1.GenCode_TS_Self)(handler); //do it myself
 }
 function onPublishEnd(pkgs) {
-    console.log("[color=#00ff00]on publish end[/color]", pkgs.Length);
+    // console.log("[color=#00ff00]on publish end[/color]", pkgs.Length);
 }
 function onDestroy() {
     BaseClass_1.BaseClass[Const_1.DestroyInstanceMethodName]();

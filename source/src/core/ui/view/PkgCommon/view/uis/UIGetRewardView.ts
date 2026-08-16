@@ -4,7 +4,7 @@ export const enum EUIGetRewardMsg {
 	OnBtnBgClick = "UIGetReward_OnBtnBgClick",
 }
 
-export class UIGetRewardView extends ExtendClass<IView, UIGetReward>(UIGetReward) implements IView {
+export class UIGetRewardView extends UIGetReward {
 
 	override onCreate() {
 		const { btn_bg } = this;

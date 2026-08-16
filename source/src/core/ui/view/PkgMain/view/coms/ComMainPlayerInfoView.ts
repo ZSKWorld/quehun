@@ -6,7 +6,7 @@ const enum EUIMainPlayerInfoLevelShowType {
 	SanMa = 2,
 }
 
-export class ComMainPlayerInfoView extends ExtendClass<IView, ComMainPlayerInfo>(ComMainPlayerInfo) implements IView {
+export class ComMainPlayerInfoView extends ComMainPlayerInfo {
 
 	override onCreate() {
 		const { btn_level, btn_info } = this;

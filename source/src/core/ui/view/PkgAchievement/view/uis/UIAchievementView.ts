@@ -4,7 +4,7 @@ export const enum EUIAchievementMsg {
 
 }
 
-export class UIAchievementView extends ExtendClass<IView, UIAchievement>(UIAchievement) implements IView {
+export class UIAchievementView extends UIAchievement {
 
 	override onCreate() {
 		const { com_back } = this;

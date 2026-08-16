@@ -1,7 +1,7 @@
 import UISetting from "../../../../ui/PkgCommon/UISetting";
 
 
-export class UISettingView extends ExtendClass<IView, UISetting>(UISetting) implements IView {
+export class UISettingView extends UISetting {
 	override onCreate() {
 		const { btn_mask, btn_close, btn_logout, txt_version } = this;
 		btn_mask.onClick(this, this.closeSelf);

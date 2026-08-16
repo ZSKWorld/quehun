@@ -1,8 +1,9 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import { ViewBase } from "../../core/viewBase/ViewBase";
 import { ComItem1View } from "../../view/PkgCommon/view/coms/ComItem1View";
 
-export default class RenderAchieveDetailITop extends fgui.GComponent {
+export default class RenderAchieveDetailITop extends ViewBase(fgui.GComponent) {
 
 	protected ctrl_state: fgui.Controller;
 	protected img_bar: fgui.GImage;

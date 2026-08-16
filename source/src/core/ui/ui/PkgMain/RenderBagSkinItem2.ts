@@ -1,8 +1,9 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import { ViewBase } from "../../core/viewBase/ViewBase";
 import { ComHeadView } from "../../view/PkgCommon/view/coms/ComHeadView";
 
-export default class RenderBagSkinItem2 extends fgui.GButton {
+export default class RenderBagSkinItem2 extends ViewBase(fgui.GButton) {
 
 	protected ctrl_lock: fgui.Controller;
 	protected ctrl_dynamic: fgui.Controller;

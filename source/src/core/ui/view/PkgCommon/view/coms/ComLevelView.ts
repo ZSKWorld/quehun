@@ -4,7 +4,7 @@ export const enum EComLevelMsg {
 
 }
 
-export class ComLevelView extends ExtendClass<IView, ComLevel>(ComLevel) implements IView {
+export class ComLevelView extends ComLevel {
 
 	refresh(data: IAccountLevel) {
 		const { ctrl_ht, ctrl_star, loader_icon, txt_htLevel } = this;

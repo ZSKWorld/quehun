@@ -1,8 +1,9 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import { ViewBase } from "../../core/viewBase/ViewBase";
 import { BtnSettingSwitchView } from "../../view/PkgCommon/view/btns/BtnSettingSwitchView";
 
-export default class ComSettingPrefer extends fgui.GComponent {
+export default class ComSettingPrefer extends ViewBase(fgui.GComponent) {
 
 	protected cmb_dealCardMode: fgui.GComboBox;
 	protected btn_doubleClickPass: BtnSettingSwitchView;

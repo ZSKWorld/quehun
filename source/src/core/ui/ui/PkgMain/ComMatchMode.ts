@@ -1,8 +1,9 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import { ViewBase } from "../../core/viewBase/ViewBase";
 import { ComMatchContentView } from "../../view/PkgMain/view/coms/ComMatchContentView";
 
-export default class ComMatchMode extends fgui.GComponent {
+export default class ComMatchMode extends ViewBase(fgui.GComponent) {
 
 	protected ctrl_type: fgui.Controller;
 	protected btn_rankMode: fgui.GButton;

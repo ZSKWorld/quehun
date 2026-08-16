@@ -4,7 +4,7 @@ export const enum EUIActivityMsg {
 
 }
 
-export class UIActivityView extends ExtendClass<IView, UIActivity>(UIActivity) implements IView {
+export class UIActivityView extends UIActivity {
 
 	override onCreate() {
 		const { btn_back } = this;

@@ -4,7 +4,7 @@ export const enum EComBigHead1Msg {
 
 }
 
-export class ComHead1View extends ExtendClass<IView, ComHead1>(ComHead1) implements IView {
+export class ComHead1View extends ComHead1 {
 
 	override onCreate() {
 

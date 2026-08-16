@@ -4,7 +4,7 @@ export const enum EComMatchContentMsg {
 
 }
 
-export class ComMatchContentView extends ExtendClass<IView, ComMatchContent>(ComMatchContent) implements IView {
+export class ComMatchContentView extends ComMatchContent {
 
 	override onCreate() {
 

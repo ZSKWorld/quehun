@@ -1,6 +1,6 @@
 import ComSettingPrefer from "../../../../ui/PkgCommon/ComSettingPrefer";
 
-export class ComSettingPreferView extends ExtendClass<IView, ComSettingPrefer>(ComSettingPrefer) implements IView {
+export class ComSettingPreferView extends ComSettingPrefer {
 
 	override onCreate() {
 		const {

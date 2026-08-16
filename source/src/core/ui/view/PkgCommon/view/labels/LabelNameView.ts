@@ -4,7 +4,7 @@ export const enum ELabelNameMsg {
 
 }
 
-export class LabelNameView extends ExtendClass<IView, LabelName>(LabelName) implements IView {
+export class LabelNameView extends LabelName {
 
 	override onCreate() {
 

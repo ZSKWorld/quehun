@@ -54,7 +54,7 @@ class DecoViewData implements IResAllcommonViews_Views {
 	}
 }
 
-export class ComLiaoSheDecorateView extends ExtendClass<IView, ComLiaoSheDecorate>(ComLiaoSheDecorate) implements IView {
+export class ComLiaoSheDecorateView extends ComLiaoSheDecorate {
 	private _curData = new DecoViewData();
 	private _originData = new DecoViewData();
 	private _items: number[];

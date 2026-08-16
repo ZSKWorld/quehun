@@ -1,12 +1,13 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import { ViewBase } from "../../core/viewBase/ViewBase";
 import { ComSettingAudioView } from "../../view/PkgCommon/view/coms/ComSettingAudioView";
 import { ComSettingGraphicView } from "../../view/PkgCommon/view/coms/ComSettingGraphicView";
 import { ComSettingPreferView } from "../../view/PkgCommon/view/coms/ComSettingPreferView";
 import { ComSettingLangView } from "../../view/PkgCommon/view/coms/ComSettingLangView";
 import { ComSettingOtherView } from "../../view/PkgCommon/view/coms/ComSettingOtherView";
 
-export default class UISetting extends fgui.GComponent {
+export default class UISetting extends ViewBase(fgui.GComponent) {
 
 	protected ctrl_type: fgui.Controller;
 	protected btn_mask: fgui.GButton;

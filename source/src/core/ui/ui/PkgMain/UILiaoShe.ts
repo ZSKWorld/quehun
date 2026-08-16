@@ -1,10 +1,11 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import { ViewBase } from "../../core/viewBase/ViewBase";
 import { ComLiaoSheCharView } from "../../view/PkgMain/view/coms/ComLiaoSheCharView";
 import { ComLiaoSheDecorateView } from "../../view/PkgMain/view/coms/ComLiaoSheDecorateView";
 import { ComBackView } from "../../view/PkgCommon/view/coms/ComBackView";
 
-export default class UILiaoShe extends fgui.GComponent {
+export default class UILiaoShe extends ViewBase(fgui.GComponent) {
 
 	protected ctrl_type: fgui.Controller;
 	protected com_back: ComBackView;

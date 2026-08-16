@@ -1,6 +1,6 @@
 import RenderLiaoSheChar from "../../../../ui/PkgMain/RenderLiaoSheChar";
 
-export class RenderLiaoSheCharView extends ExtendClass<IView, RenderLiaoSheChar>(RenderLiaoSheChar) implements IView {
+export class RenderLiaoSheCharView extends RenderLiaoSheChar {
 
 	override onCreate() {
 

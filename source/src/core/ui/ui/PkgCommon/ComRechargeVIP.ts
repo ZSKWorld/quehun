@@ -1,9 +1,10 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import { ViewBase } from "../../core/viewBase/ViewBase";
 import { ComTitleView } from "../../view/PkgCommon/view/coms/ComTitleView";
 import PbLoading3 from "./PbLoading3";
 
-export default class ComRechargeVIP extends fgui.GComponent {
+export default class ComRechargeVIP extends ViewBase(fgui.GComponent) {
 
 	protected ctrl_type: fgui.Controller;
 	protected com_title: ComTitleView;

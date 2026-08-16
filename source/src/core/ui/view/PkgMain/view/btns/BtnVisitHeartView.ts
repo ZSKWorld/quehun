@@ -4,7 +4,7 @@ export const enum EBtnVisitHeartMsg {
 
 }
 
-export class BtnVisitHeartView extends ExtendClass<IView, BtnVisitHeart>(BtnVisitHeart) implements IView {
+export class BtnVisitHeartView extends BtnVisitHeart {
 
 	override onCreate() {
 		

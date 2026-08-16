@@ -5,7 +5,7 @@ export const enum EComBagGiftMsg {
 
 }
 
-export class ComBagGiftView extends ExtendClass<IView, ComBagGift>(ComBagGift) implements IView {
+export class ComBagGiftView extends ComBagGift {
 	private _items: ProtoObject<IItem>[];
 	private _selling = false;
 	private _sells = new Map<number, number>();

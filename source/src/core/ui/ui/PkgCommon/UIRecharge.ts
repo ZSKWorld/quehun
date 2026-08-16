@@ -1,9 +1,10 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import { ViewBase } from "../../core/viewBase/ViewBase";
 import { ComBackView } from "../../view/PkgCommon/view/coms/ComBackView";
 import { ComRechargeVIPView } from "../../view/PkgCommon/view/coms/ComRechargeVIPView";
 
-export default class UIRecharge extends fgui.GComponent {
+export default class UIRecharge extends ViewBase(fgui.GComponent) {
 
 	protected com_back: ComBackView;
 	protected btn_tab0: fgui.GButton;

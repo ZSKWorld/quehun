@@ -1,5 +1,6 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import { ViewBase } from "../../core/viewBase/ViewBase";
 import { ComMatchModeView } from "../../view/PkgMain/view/coms/ComMatchModeView";
 import { BtnDengLongView } from "../../view/PkgMain/view/btns/BtnDengLongView";
 import { BtnXunMiView } from "../../view/PkgMain/view/btns/BtnXunMiView";
@@ -7,7 +8,7 @@ import { ComMainPlayerInfoView } from "../../view/PkgMain/view/coms/ComMainPlaye
 import { BtnSevenDayView } from "../../view/PkgMain/view/btns/BtnSevenDayView";
 import { ComCurrencyView } from "../../view/PkgCommon/view/coms/ComCurrencyView";
 
-export default class UIMain extends fgui.GComponent {
+export default class UIMain extends ViewBase(fgui.GComponent) {
 
 	protected com_matchMode: ComMatchModeView;
 	protected btn_setting: fgui.GButton;

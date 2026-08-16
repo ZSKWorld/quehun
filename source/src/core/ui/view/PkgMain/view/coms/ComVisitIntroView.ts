@@ -3,7 +3,7 @@ import ComVisitIntro from "../../../../ui/PkgMain/ComVisitIntro";
 export const enum EComVisitIntroMsg {
 }
 
-export class ComVisitIntroView extends ExtendClass<IView, ComVisitIntro>(ComVisitIntro) implements IView {
+export class ComVisitIntroView extends ComVisitIntro {
 
 	override onCreate() {
 		const { btn_qiyue, btn_zengli, btn_close, ctrl_gift } = this;

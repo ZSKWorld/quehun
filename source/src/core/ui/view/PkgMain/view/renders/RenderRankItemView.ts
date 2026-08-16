@@ -5,7 +5,7 @@ export const enum ERenderRankItemMsg {
 
 }
 
-export class RenderRankItemView extends ExtendClass<IView, RenderRankItem>(RenderRankItem) implements IView {
+export class RenderRankItemView extends RenderRankItem {
 
 	override onCreate() {
 

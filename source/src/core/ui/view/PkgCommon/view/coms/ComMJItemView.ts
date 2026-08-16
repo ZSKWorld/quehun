@@ -20,7 +20,7 @@ export const enum EComMJItemMsg {
 
 }
 
-export class ComMJItemView extends ExtendClass<IView, ComMJItem>(ComMJItem) implements IView {
+export class ComMJItemView extends ComMJItem {
 
 	override onCreate() {
 

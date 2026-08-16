@@ -4,7 +4,7 @@ export const enum EComFlowerLoadingMsg {
 
 }
 
-export class ComFlowerLoadingView extends ExtendClass<IView, ComFlowerLoading>(ComFlowerLoading) implements IView {
+export class ComFlowerLoadingView extends ComFlowerLoading {
 
 	override onCreate() {
 

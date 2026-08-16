@@ -4,7 +4,7 @@ export const enum ERenderShopItemMsg {
 	OnBtnBugClick = "RenderShopItem_OnBtnBugClick",
 }
 
-export class RenderShopItemView extends ExtendClass<IView, RenderShopItem>(RenderShopItem) implements IView {
+export class RenderShopItemView extends RenderShopItem {
 
 	override onCreate() {
 		const { btn_bug } = this;

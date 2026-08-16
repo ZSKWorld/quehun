@@ -4,7 +4,7 @@ import { RenderVisitVoiceInfoView } from "../renders/RenderVisitVoiceInfoView";
 export const enum EUIVisitMsg {
 }
 
-export class UIVisitView extends ExtendClass<IView, UIVisit>(UIVisit) implements IView {
+export class UIVisitView extends UIVisit {
 	private _charId: number;
 	private _voices: ISheetData_Voice_Sound[];
 	private _playingIndex: number = -1;

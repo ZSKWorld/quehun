@@ -5,7 +5,7 @@ export const enum EComBagIllustMsg {
 
 }
 
-export class ComBagIllustView extends ExtendClass<IView, ComBagIllust>(ComBagIllust) implements IView {
+export class ComBagIllustView extends ComBagIllust {
 	private _items: ISheetData_ItemDefinition_LoadingImage[];
 	override onCreate() {
 		const { list_illust } = this;

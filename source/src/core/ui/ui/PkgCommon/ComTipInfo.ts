@@ -1,6 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-export default class ComTipInfo extends fgui.GComponent {
+import { ViewBase } from "../../core/viewBase/ViewBase";
+
+export default class ComTipInfo extends ViewBase(fgui.GComponent) {
 
 	protected rtxt_content: fgui.GRichTextField;
 	public static url: string = "ui://vx9zwserq4bcobfi";

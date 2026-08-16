@@ -1,8 +1,9 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
+import { ViewBase } from "../../core/viewBase/ViewBase";
 import { RenderBagItemView } from "../../view/PkgMain/view/renders/RenderBagItemView";
 
-export default class RenderBagGiftItem extends fgui.GComponent {
+export default class RenderBagGiftItem extends ViewBase(fgui.GComponent) {
 
 	protected ctrl_type: fgui.Controller;
 	protected btn_item: RenderBagItemView;

@@ -1,6 +1,6 @@
 import RenderAchieveDetailITop from "../../../../ui/PkgAchievement/RenderAchieveDetailITop";
 
-export class RenderAchieveDetailITopView extends ExtendClass<IView, RenderAchieveDetailITop>(RenderAchieveDetailITop) implements IView {
+export class RenderAchieveDetailITopView extends RenderAchieveDetailITop {
 	private _groupId: number;
 
 	override onCreate() {

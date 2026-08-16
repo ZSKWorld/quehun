@@ -6,7 +6,7 @@ export const enum EUIAchievementDetailMsg {
 
 }
 
-export class UIAchievementDetailView extends ExtendClass<IView, UIAchievementDetail>(UIAchievementDetail) implements IView {
+export class UIAchievementDetailView extends UIAchievementDetail {
 	private _selectItem: RenderAchieveDetailGroupView;
 
 	override onCreate() {
@@ -22,7 +22,7 @@ export class UIAchievementDetailView extends ExtendClass<IView, UIAchievementDet
 			this.refreshItem(index);
 		});
 		list_group.on(fgui.Events.SCROLL, this, this.onListGroupScrolled);
-		
+
 		$uiUtil.setList(list_item, true, this, (index, item: RenderAchieveDetailItemView) => {
 			const groupData = $user.achievement.statisticsInfo.groups[list_group.selectedIndex];
 			const id = groupData.achievements[index];

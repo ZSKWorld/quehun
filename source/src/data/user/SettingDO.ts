@@ -9,7 +9,7 @@ function settingProxy<T extends object>(target: T, caller: any, onValueChanged: 
 			set(target: any, pName: string, value: any, receiver: any) {
 				const typeStr = typeof value;
 				if (typeStr != "number" && typeStr != "string" && typeStr != "boolean") {
-					Logger.error("设置数据只能是number,string,boolean:", pName, value);
+					$logger.error("设置数据只能是number,string,boolean:", pName, value);
 					return false;
 				}
 				if (target[pName] == value) return;

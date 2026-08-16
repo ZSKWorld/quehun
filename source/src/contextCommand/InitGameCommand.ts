@@ -43,6 +43,7 @@ export class InitGameCommand extends Command {
 			$loadMgr.loadPackage([ResPath.EPkgPath.PkgCommon, ResPath.EPkgPath.PkgEntrance]),
 		]);
 
+		$logger.setEnable(true);
 		await $loadMgr.load([ResPath.EFontPath.HYWH, ResPath.EFontPath.Fengyu, ResPath.EFontPath.HYYANKAIW, ResPath.EFontPath.Hanyi]);
 		config.ip.forEach(v => (v.zone_ids = v.zone_ids || []));
 

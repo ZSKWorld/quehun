@@ -18,7 +18,7 @@ export class UIVideoMediator extends MediatorBase<UIVideoView, IUIVideoData> {
 		}
 
 		if (!ResPath.ESpineVideoPath[targetSkinId]) {
-			Logger.error("视频路径不存在:", targetSkinId);
+			$logger.error("视频路径不存在:", targetSkinId);
 			this.closeSelf();
 			return;
 		}

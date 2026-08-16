@@ -45,14 +45,14 @@ export class UIVisitView extends UIVisit {
 		this.stopVoice();
 		this._playingIndex = index;
 		Laya.timer.once(3000, this, this.stopVoice);
-		Logger.error("播放音频", index);
+		$logger.error("播放音频", index);
 		Laya.timer.callLater(this.list_voice, this.list_voice.refreshVirtualList);
 	}
 
 	private stopVoice() {
 		if (this._playingIndex < 0)
 			return;
-		Logger.error("停止音频", this._playingIndex);
+		$logger.error("停止音频", this._playingIndex);
 		this._playingIndex = -1;
 		Laya.timer.callLater(this.list_voice, this.list_voice.refreshVirtualList);
 	}

@@ -26,7 +26,7 @@ export class SceneManager implements ISceneManager {
 
 	registerScene(type: ESceneType, sceneCls: Class<IScene>) {
 		if (this._sceneMap.has(type))
-			Logger.error("重复注册scene:", sceneCls, type);
+			$logger.error("重复注册scene:", sceneCls, type);
 		else {
 			(sceneCls.prototype.type as any) = type;
 			this._sceneMap.set(type, new sceneCls());

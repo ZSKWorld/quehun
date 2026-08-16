@@ -189,7 +189,7 @@ export class GameManager extends Observer implements IGameManager {
 	@InjectNetEvent(ENetNotify.NotifyClientMessage)
 	private onNotifyClientMessage(data: INotifyClientMessage) {
 		if (data.type == EClientMessageType.RoomInvite) {
-			Logger.error("有邀请", data);
+			$logger.error("有邀请", data);
 		}
 	}
 

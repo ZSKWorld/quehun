@@ -44,7 +44,6 @@ loadLib("libs_game/rawinflate.min.js");
 loadLib("libs_game/fairygui.js");
 // loadLib("libs_game/howler.js");
 loadLib("libs_game/extend.js");
-loadLib("libs_game/logger.js");
 loadLib("libs_game/mygame.js");
 loadLib("libs_game/protobuf.js");
 

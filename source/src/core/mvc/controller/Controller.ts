@@ -5,13 +5,13 @@ export class Controller {
 
 	register(notifyName: string, cls: ICommandClass) {
 		if (!cls) {
-			Logger.error("cls 不能为空", notifyName, cls);
+			$logger.error("cls 不能为空", notifyName, cls);
 			return;
 		}
 		const commandMap = this._commandMap;
 
 		if (commandMap[notifyName]?.includes(cls)) {
-			Logger.error("重复注册command", notifyName, cls);
+			$logger.error("重复注册command", notifyName, cls);
 			return;
 		}
 

@@ -15,18 +15,12 @@ declare interface ILoadManager {
 	clearTextureRes(url: string): void;
 }
 
-declare class Logger {
-	private constructor(name: string, enable?: boolean);
-	static create(name: string, enable?: boolean): Logger;
-	static setEnable(enable: boolean): void;
-	static log(...args: any[]): void;
-	static warn(...args: any[]): void;
-	static error(...args: any[]): void;
-	static assert(assert: boolean, tipText?: string): void;
+declare interface ILogger {
 	log(...args: any[]): void;
 	warn(...args: any[]): void;
 	error(...args: any[]): void;
 	assert(assert: boolean, tipText?: string): void;
+	setEnable(enable: boolean): void;
 }
 
 declare interface ISkeletonManager {

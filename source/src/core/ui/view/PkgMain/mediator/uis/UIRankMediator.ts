@@ -50,7 +50,7 @@ export class UIRankMediator extends MediatorBase<UIRankView, IUIRankData> {
 	}
 
 	private onListRankItemClick(_, e: any, index: number) {
-		Logger.error("Click rank item:", index + 1);
+		$logger.error("Click rank item:", index + 1);
 	}
 
 	private onListRankScroll() {

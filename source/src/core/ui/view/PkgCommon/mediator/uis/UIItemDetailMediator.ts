@@ -28,10 +28,10 @@ export class UIItemDetailMediator extends MediatorBase<UIItemDetailView, IUIItem
 		if (d_item.type == EItemNormalType.SelectReward) {
 			if (d_item.func == "selectskin") {
 				// UI_OpenSkin.Inst.show(this.item_id);
-				Logger.error("open skin");
+				$logger.error("open skin");
 			} else {
 				// UI_OpenBox.Inst.show(this.item_id);
-				Logger.error("open box");
+				$logger.error("open box");
 			}
 		} else if (d_item.type == EItemNormalType.RandomReward) {
 			this.openBlessingBag(1);
@@ -45,7 +45,7 @@ export class UIItemDetailMediator extends MediatorBase<UIItemDetailView, IUIItem
 	}
 
 	private onBtnGoToClick() {
-		Logger.error("go to " + this._info.goViewID);
+		$logger.error("go to " + this._info.goViewID);
 	}
 
 	private getItemOpenJumpInfo() {

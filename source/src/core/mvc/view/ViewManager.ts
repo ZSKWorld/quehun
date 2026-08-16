@@ -6,11 +6,11 @@ export class ViewManager {
 
 	register(viewId: EViewID, viewType: EViewType, viewCls: IViewClass, mediatorCls?: IMediatorClass) {
 		if (!viewCls) {
-			Logger.error("viewCls 不能为空", viewId, viewCls);
+			$logger.error("viewCls 不能为空", viewId, viewCls);
 			return;
 		}
 		if (this.getViewClass(viewId)) {
-			Logger.error("重复注册view", viewId);
+			$logger.error("重复注册view", viewId);
 			return;
 		}
 		(viewCls.prototype.viewId as any) = viewId;

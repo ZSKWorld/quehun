@@ -26,9 +26,9 @@ export class ComMJItemView extends ComMJItem {
 
 	}
 
-	refresh(str: keyof IMjpSignMap, mjpBack:number = 0, mjpFront:number = 0) {
+	refresh(str: keyof IMjpSignMap, mjpBack: number = 0, mjpFront: number = 0) {
 		if (MjpSignMap[str] != 1) {
-			Logger.error("unknown mjp sign: " + str);
+			$logger.error("unknown mjp sign: " + str);
 			return;
 		}
 		mjpBack = mjpBack || $user.commonView.curMjpBack;

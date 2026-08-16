@@ -48,7 +48,7 @@ export class NetManager implements INetManager {
 				timestamp: $timeUtil.second,
 				platform: $gameMgr.detailPlatform
 			}).then(res => {
-				// Logger.error("requestConnection", res);
+				// $logger.error("requestConnection", res);
 			});
 		});
 		socket.on(ESocketEvent.OnClosed, $facade, $facade.dispatch, [EGlobalEvent.LobbyClosed]);
@@ -59,7 +59,7 @@ export class NetManager implements INetManager {
 				$facade.dispatch(method, [res, req]);
 		});
 		socket.on(ESocketEvent.OnNotify, this, (notify: string, res: INotify) => {
-			Logger.error("on notify", notify, res);
+			$logger.error("on notify", notify, res);
 			$facade.dispatch(notify, res);
 		});
 	}
@@ -125,7 +125,7 @@ export class NetManager implements INetManager {
 		const err = res.error;
 		if (!err) return;
 		if (this._ignoreErrRequest.has(method)) return;
-		Logger.error(method, res, req);
+		$logger.error(method, res, req);
 		const { code, u32_params, str_params, json_param } = err;
 		if (code == -1) {
 			$confirmSma(2, $lang(2061));

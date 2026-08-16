@@ -72,7 +72,7 @@ export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> 
 			navigator.clipboard.writeText(eid)
 				.then(() => $tipMgr.showTip($lang(2125)));
 		} catch (error) {
-			Logger.error("复制失败", error);
+			$logger.error("复制失败", error);
 		}
 	}
 

@@ -33,7 +33,7 @@ export class LocalDataManager implements ILocalDataManager {
 		try {
 			return JSON.parse(value);
 		} catch (error) {
-			Logger.error("LocalDataManager get error", key, error);
+			$logger.error("LocalDataManager get error", key, error);
 			return defaultValue;
 		}
 	}
@@ -41,7 +41,7 @@ export class LocalDataManager implements ILocalDataManager {
 		try {
 			this.setItem(key, JSON.stringify(value));
 		} catch (error) {
-			Logger.error("LocalDataManager set error", key, value, error);
+			$logger.error("LocalDataManager set error", key, value, error);
 		}
 	}
 

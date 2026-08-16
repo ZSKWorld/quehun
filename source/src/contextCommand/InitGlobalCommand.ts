@@ -6,6 +6,7 @@ import { SkeletonManager } from "../core/common/skeleton/SkeletonManager";
 import { SpineManager } from "../core/common/spine/SpineManager";
 import { GameUtil } from "../core/common/utils/GameUtil";
 import { ItemUtil } from "../core/common/utils/ItemUtil";
+import { Logger } from "../core/common/utils/Logger";
 import { MathUtil } from "../core/common/utils/MathUtil";
 import { TimeUtil } from "../core/common/utils/TimeUtil";
 import { ConfigManager } from "../core/config/ConfigManager";
@@ -15,16 +16,17 @@ import { Facade } from "../core/mvc/Facade";
 import { NetManager } from "../core/net/NetManager";
 import { PbManager } from "../core/net/PbManager";
 import { DynamicResManager } from "../core/ui/core/DynamicResManager";
-import { UIManager } from "../core/ui/core/UIManager";
-import { RedDotManager } from "../core/ui/redDot/RedDotManager";
 import { RichText } from "../core/ui/core/RichText";
 import { TipManager } from "../core/ui/core/TipManager";
+import { UIManager } from "../core/ui/core/UIManager";
 import { UIUtil } from "../core/ui/core/UIUtil";
+import { RedDotManager } from "../core/ui/redDot/RedDotManager";
 import { UserDO } from "../data/user/UserDO";
 import { SceneManager } from "../scene/SceneManager";
 
 export class InitGlobalCommand extends Command {
 	override execute(notifyName: string, data?: any) {
+		$windowImmit("$logger", new Logger());
 		$windowImmit("$gameUtil", new GameUtil());
 		$windowImmit("$localDataMgr", new LocalDataManager());
 		$windowImmit("$facade", new Facade());

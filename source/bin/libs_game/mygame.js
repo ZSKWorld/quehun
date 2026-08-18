@@ -26,11 +26,11 @@ function setEvent(name, list, func, once, args) {
 	if (list.indexOf(func) >= 0) return;
 	list.push(func);
 	if (once) {
-		func[name] ||= {};
+		func[name] = func[name] || {};
 		func[name].__once = once;
 	}
 	if (args) {
-		func[name] ||= {};
+		func[name] = func[name] || {};
 		func[name].__args = args;
 	}
 };
@@ -48,9 +48,9 @@ function RDTriggerEvent(eventName) {
 
 function InjectViewKeyEvent(name, key = -1, once = false, args = null) {
 	return function (target, propertyKey, descriptor) {
-		target.__viewKeyEventMap ||= {};
-		target.__viewKeyEventMap[name] ||= {};
-		target.__viewKeyEventMap[name][key] ||= [];
+		target.__viewKeyEventMap = target.__viewKeyEventMap || {};
+		target.__viewKeyEventMap[name] = target.__viewKeyEventMap[name] || {};
+		target.__viewKeyEventMap[name][key] = target.__viewKeyEventMap[name][key] || [];
 
 		const func = descriptor.value;
 		const list = target.__viewKeyEventMap[name][key];
@@ -60,8 +60,8 @@ function InjectViewKeyEvent(name, key = -1, once = false, args = null) {
 
 function InjectViewMouseEvent(name, once, args) {
 	return function (target, propertyKey, descriptor) {
-		target.__viewMouseEventMap ||= {};
-		target.__viewMouseEventMap[name] ||= [];
+		target.__viewMouseEventMap = target.__viewMouseEventMap || {};
+		target.__viewMouseEventMap[name] = target.__viewMouseEventMap[name] || [];
 
 		const func = descriptor.value;
 		const list = target.__viewMouseEventMap[name];
@@ -71,8 +71,8 @@ function InjectViewMouseEvent(name, once, args) {
 
 function InjectViewEvent(name, once, args) {
 	return function (target, propertyKey, descriptor) {
-		target.__viewEventMap ||= {};
-		target.__viewEventMap[name] ||= [];
+		target.__viewEventMap = target.__viewEventMap || {};
+		target.__viewEventMap[name] = target.__viewEventMap[name] || [];
 
 		const func = descriptor.value;
 		const list = target.__viewEventMap[name];
@@ -82,8 +82,8 @@ function InjectViewEvent(name, once, args) {
 
 function InjectGlobalEvent(eventName, once, args) {
 	return function (target, propertyKey, descriptor) {
-		target.__globalEventMap ||= {};
-		target.__globalEventMap[eventName] ||= [];
+		target.__globalEventMap = target.__globalEventMap || {};
+		target.__globalEventMap[eventName] = target.__globalEventMap[eventName] || [];
 
 		const func = descriptor.value;
 		const list = target.__globalEventMap[eventName];
@@ -93,8 +93,8 @@ function InjectGlobalEvent(eventName, once, args) {
 
 function InjectNetEvent(msgName, once, args) {
 	return function (target, propertyKey, descriptor) {
-		target.__netEventMap ||= {};
-		target.__netEventMap[msgName] ||= [];
+		target.__netEventMap = target.__netEventMap || {};
+		target.__netEventMap[msgName] = target.__netEventMap[msgName] || [];
 
 		const func = descriptor.value;
 		const list = target.__netEventMap[msgName];
@@ -104,8 +104,8 @@ function InjectNetEvent(msgName, once, args) {
 
 function InjectUserEvent(eventName, once, args) {
 	return function (target, propertyKey, descriptor) {
-		target.__userEventMap ||= {};
-		target.__userEventMap[eventName] ||= [];
+		target.__userEventMap = target.__userEventMap || {};
+		target.__userEventMap[eventName] = target.__userEventMap[eventName] || [];
 
 		const func = descriptor.value;
 		const list = target.__userEventMap[eventName];

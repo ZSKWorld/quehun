@@ -80,13 +80,13 @@ declare interface IView extends fgui.GComponent {
 	readonly mediator: IMediator;
 
 	/**
-	 ** 页面打开动画
+	 ** 打开动画
 	 ** 该方法为虚方法，使用时重写即可
 	 */
 	onOpenAni(): Promise<any>;
 
 	/**
-	 ** 页面关闭动画
+	 ** 关闭动画
 	 ** 该方法为虚方法，使用时重写即可
 	 */
 	onCloseAni(): Promise<any>;

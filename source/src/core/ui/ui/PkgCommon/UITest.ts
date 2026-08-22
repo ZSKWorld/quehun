@@ -1,8 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GComponentView } from "../../core/viewBase/GComponentView";
 
-export default class UITest extends ViewBase(fgui.GComponent) {
+export default class UITest extends GComponentView {
 
 	protected btn_close: fgui.GButton;
 	public static url: string = "ui://vx9zwser5zjlobgd";

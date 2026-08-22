@@ -1,10 +1,10 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GComponentView } from "../../core/viewBase/GComponentView";
 import { ComVisitCharInfoView } from "../../view/PkgMain/view/coms/ComVisitCharInfoView";
 import { BtnVisitHeartView } from "../../view/PkgMain/view/btns/BtnVisitHeartView";
 
-export default class ComVisitIntro extends ViewBase(fgui.GComponent) {
+export default class ComVisitIntro extends GComponentView {
 
 	protected ctrl_char: fgui.Controller;
 	protected ctrl_gift: fgui.Controller;

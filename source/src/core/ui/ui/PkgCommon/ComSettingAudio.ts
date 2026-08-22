@@ -1,9 +1,9 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GComponentView } from "../../core/viewBase/GComponentView";
 import { BtnSettingSwitchView } from "../../view/PkgCommon/view/btns/BtnSettingSwitchView";
 
-export default class ComSettingAudio extends ViewBase(fgui.GComponent) {
+export default class ComSettingAudio extends GComponentView {
 
 	protected ctrl_globalMute: fgui.Controller;
 	protected btn_globalVolumeOn: fgui.GButton;

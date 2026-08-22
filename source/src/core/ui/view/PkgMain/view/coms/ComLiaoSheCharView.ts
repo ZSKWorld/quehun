@@ -16,8 +16,8 @@ export class ComLiaoSheCharView extends ComLiaoSheChar {
 
 	override onCreate() {
 		const { btn_sort, btn_filter, btn_star, list_chars } = this;
-		btn_sort.onClick(this, this.sendEvent, [EComLiaoSheCharMsg.OnBtnSortClick]);
-		btn_filter.onClick(this, this.sendEvent, [EComLiaoSheCharMsg.OnBtnFilterClick]);
+		btn_sort.onClick(this, this.event, [EComLiaoSheCharMsg.OnBtnSortClick]);
+		btn_filter.onClick(this, this.event, [EComLiaoSheCharMsg.OnBtnFilterClick]);
 		btn_star.onClick(this, this.onBtnStarClick);
 		$uiUtil.setList(list_chars, true, this, this.onListCharsRender, this.onListCharsClick);
 	}

@@ -1,9 +1,9 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GComponentView } from "../../core/viewBase/GComponentView";
 import { ComLevelView } from "../../view/PkgCommon/view/coms/ComLevelView";
 
-export default class ComLevel1 extends ViewBase(fgui.GComponent) {
+export default class ComLevel1 extends GComponentView {
 
 	protected ctrl_ht: fgui.Controller;
 	protected ctrl_star: fgui.Controller;

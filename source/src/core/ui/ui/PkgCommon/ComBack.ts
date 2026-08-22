@@ -1,8 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GComponentView } from "../../core/viewBase/GComponentView";
 
-export default class ComBack extends ViewBase(fgui.GComponent) {
+export default class ComBack extends GComponentView {
 
 	protected btn_back: fgui.GButton;
 	protected txt_title: fgui.GTextField;

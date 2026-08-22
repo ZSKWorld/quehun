@@ -114,8 +114,20 @@ function customMemberVarName(member) {
         return MemberTypeMap[extType] + varName;
     return "com_" + varName;
 }
+const SuperClassNameMap = {
+    "fgui.GComponent": "GComponentView",
+    "fgui.GButton": "GButtonView",
+    "fgui.GComboBox": "GComboBoxView",
+    "fgui.GLabel": "GLabelView",
+    "fgui.GProgressBar": "GProgressBarView",
+    "fgui.GScrollBar": "GScrollBarView",
+    "fgui.GSlider": "GSliderView",
+};
 function customSuperClassName(superClassName) {
-    return `ViewBase(${superClassName})`;
+    if (SuperClassNameMap[superClassName])
+        return SuperClassNameMap[superClassName];
+    console.error("not found super class:", superClassName);
+    return superClassName;
 }
 function GenCode_TS_Self(handler) {
     let settings = handler.project.GetSettings("Publish").codeGeneration;
@@ -139,14 +151,15 @@ function GenCode_TS_Self(handler) {
         let references = classInfo.references;
         writer.reset();
         let refCount = references.Count;
-        references.Insert(0, "/../core/viewBase/ViewBase");
+        const superClassName = customSuperClassName(classInfo.superClassName);
+        references.Insert(0, `/../core/viewBase/${superClassName}`);
         genReferenceExt(writer, references);
         if (isThree) {
             writer.writeln('import * as fgui from "fairygui-three";');
             if (refCount == 0)
                 writer.writeln();
         }
-        writer.writeln('export default class %s extends %s', classInfo.className, customSuperClassName(classInfo.superClassName));
+        writer.writeln('export default class %s extends %s', classInfo.className, superClassName);
         writer.startBlock();
         writer.writeln();
         const protectedProperty = signArr.some(v => classInfo.className.startsWith(v));

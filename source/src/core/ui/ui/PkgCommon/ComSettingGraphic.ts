@@ -1,9 +1,9 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GComponentView } from "../../core/viewBase/GComponentView";
 import { BtnSettingSwitchView } from "../../view/PkgCommon/view/btns/BtnSettingSwitchView";
 
-export default class ComSettingGraphic extends ViewBase(fgui.GComponent) {
+export default class ComSettingGraphic extends GComponentView {
 
 	protected cmb_fps: fgui.GComboBox;
 	protected btn_activityEffect: BtnSettingSwitchView;

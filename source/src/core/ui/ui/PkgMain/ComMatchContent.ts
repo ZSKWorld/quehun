@@ -1,9 +1,9 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GComponentView } from "../../core/viewBase/GComponentView";
 import { ComMatchItemView } from "../../view/PkgMain/view/coms/ComMatchItemView";
 
-export default class ComMatchContent extends ViewBase(fgui.GComponent) {
+export default class ComMatchContent extends GComponentView {
 
 	protected com_item0: ComMatchItemView;
 	protected com_item1: ComMatchItemView;

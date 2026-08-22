@@ -1,8 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GButtonView } from "../../core/viewBase/GButtonView";
 
-export default class BtnVisitHeart extends ViewBase(fgui.GButton) {
+export default class BtnVisitHeart extends GButtonView {
 
 	protected ctrl_char: fgui.Controller;
 	protected ctrl_type: fgui.Controller;

@@ -1,8 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GComponentView } from "../../core/viewBase/GComponentView";
 
-export default class UIHelp extends ViewBase(fgui.GComponent) {
+export default class UIHelp extends GComponentView {
 
 	protected ctrl_tab: fgui.Controller;
 	protected ctrl_pointTab: fgui.Controller;

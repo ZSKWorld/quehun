@@ -1,8 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GComponentView } from "../../core/viewBase/GComponentView";
 
-export default class ComLiaoSheChar extends ViewBase(fgui.GComponent) {
+export default class ComLiaoSheChar extends GComponentView {
 
 	protected list_chars: fgui.GList;
 	protected btn_sort: fgui.GButton;

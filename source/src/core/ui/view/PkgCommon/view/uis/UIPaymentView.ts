@@ -57,6 +57,6 @@ export class UIPaymentView extends UIPayment {
 	}
 
 	private onListPaymentClick(_, __, index: number) {
-		this.sendEvent(EUIPaymentMsg.OnListPaymentClick, this._paymentTypes[index]);
+		this.event(EUIPaymentMsg.OnListPaymentClick, this._paymentTypes[index]);
 	}
 }

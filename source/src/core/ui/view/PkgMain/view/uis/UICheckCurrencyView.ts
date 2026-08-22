@@ -11,7 +11,7 @@ export class UICheckCurrencyView extends UICheckCurrency {
 		const { btn_mask, btn_close, btn_buy, btn_confirm } = this;
 		btn_mask.onClick(this, this.closeSelf);
 		btn_close.onClick(this, this.closeSelf);
-		btn_buy.onClick(this, this.sendEvent, [EUICheckCurrencyMsg.OnBtnBuyClick]);
+		btn_buy.onClick(this, this.event, [EUICheckCurrencyMsg.OnBtnBuyClick]);
 		btn_confirm.onClick(this, this.closeSelf);
 	}
 

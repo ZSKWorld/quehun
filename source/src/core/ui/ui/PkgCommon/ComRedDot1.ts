@@ -1,8 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GComponentView } from "../../core/viewBase/GComponentView";
 
-export default class ComRedDot1 extends ViewBase(fgui.GComponent) {
+export default class ComRedDot1 extends GComponentView {
 
 	protected loader_icon: fgui.GLoader;
 	protected trans_t0: fgui.Transition;

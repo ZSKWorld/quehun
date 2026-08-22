@@ -1,8 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GComponentView } from "../../core/viewBase/GComponentView";
 
-export default class UIChooseServer extends ViewBase(fgui.GComponent) {
+export default class UIChooseServer extends GComponentView {
 
 	protected list_server: fgui.GList;
 	protected btn_enterGame: fgui.GButton;

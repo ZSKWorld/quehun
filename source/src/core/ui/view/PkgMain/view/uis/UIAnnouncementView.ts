@@ -33,7 +33,7 @@ export class UIAnnouncementView extends UIAnnouncement {
 	}
 
 	private onTabSelectChanged(index: number) {
-		this.sendEvent(EUIAnnounceEvent.OnTabSelectChanged, index);
+		this.event(EUIAnnounceEvent.OnTabSelectChanged, index);
 	}
 
 	override onOpenAni() { return $uiUtil.popAlphaIn(this); }

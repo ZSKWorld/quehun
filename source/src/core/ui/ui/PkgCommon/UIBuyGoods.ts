@@ -1,10 +1,10 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GComponentView } from "../../core/viewBase/GComponentView";
 import { ComItem1View } from "../../view/PkgCommon/view/coms/ComItem1View";
 import { ComItemView } from "../../view/PkgCommon/view/coms/ComItemView";
 
-export default class UIBuyGoods extends ViewBase(fgui.GComponent) {
+export default class UIBuyGoods extends GComponentView {
 
 	protected ctrl_c1: fgui.Controller;
 	protected btn_mask: fgui.GButton;

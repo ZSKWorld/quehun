@@ -19,12 +19,12 @@ export class ComSettingOtherView extends ComSettingOther {
 			btn_resetSetting, btn_streamerOn, btn_foreignNickname, btn_localNickname, btn_replayNickname,
 			btn_observeNickname, btn_matchNickname, btn_rankNickname
 		} = this;
-		btn_yiZhong.onClick(this, this.sendEvent, [EComSettingOtherMsg.OnBtnYiZhongClick]);
-		btn_giftCode.onClick(this, this.sendEvent, [EComSettingOtherMsg.OnBtnGiftCodeClick]);
-		btn_keFuCenter.onClick(this, this.sendEvent, [EComSettingOtherMsg.OnBtnKeFuCenterClick]);
-		btn_emailBind.onClick(this, this.sendEvent, [EComSettingOtherMsg.OnBtnEmailBindClick]);
-		btn_userAgreement.onClick(this, this.sendEvent, [EComSettingOtherMsg.OnBtnUserAgreementClick]);
-		btn_privacyPolicy.onClick(this, this.sendEvent, [EComSettingOtherMsg.OnBtnPrivacyPolicyClick]);
+		btn_yiZhong.onClick(this, this.event, [EComSettingOtherMsg.OnBtnYiZhongClick]);
+		btn_giftCode.onClick(this, this.event, [EComSettingOtherMsg.OnBtnGiftCodeClick]);
+		btn_keFuCenter.onClick(this, this.event, [EComSettingOtherMsg.OnBtnKeFuCenterClick]);
+		btn_emailBind.onClick(this, this.event, [EComSettingOtherMsg.OnBtnEmailBindClick]);
+		btn_userAgreement.onClick(this, this.event, [EComSettingOtherMsg.OnBtnUserAgreementClick]);
+		btn_privacyPolicy.onClick(this, this.event, [EComSettingOtherMsg.OnBtnPrivacyPolicyClick]);
 		btn_resetSetting.onClick(this, this.onBtnResetSettingClick);
 
 		btn_streamerOn.onClick(this, () => $user.setting.other.streamerOn = btn_streamerOn.selected);

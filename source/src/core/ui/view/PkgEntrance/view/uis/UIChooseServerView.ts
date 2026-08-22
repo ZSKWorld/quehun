@@ -11,7 +11,7 @@ export class UIChooseServerView extends UIChooseServer {
 
 	override onCreate() {
 		const { btn_lastServer, listServer } = this;
-		btn_lastServer.onClick(this, this.sendEvent, [EUIChooseServerMsg.OnBtnLastServerClick]);
+		btn_lastServer.onClick(this, this.event, [EUIChooseServerMsg.OnBtnLastServerClick]);
 		$uiUtil.setList(listServer, false, this, this.onListServerRender, this.onListServerClick);
 	}
 
@@ -26,6 +26,6 @@ export class UIChooseServerView extends UIChooseServer {
 	}
 
 	private onListServerClick(_, __, index: number) {
-		this.sendEvent(EUIChooseServerMsg.OnListServerClick, index);
+		this.event(EUIChooseServerMsg.OnListServerClick, index);
 	}
 }

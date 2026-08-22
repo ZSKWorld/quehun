@@ -1,8 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GLabelView } from "../../core/viewBase/GLabelView";
 
-export default class LabelName extends ViewBase(fgui.GLabel) {
+export default class LabelName extends GLabelView {
 
 	protected img_vip: fgui.GImage;
 	public static url: string = "ui://vx9zwserpuubobfa";

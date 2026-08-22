@@ -8,7 +8,7 @@ export class ComSettingLangView extends ComSettingLang {
 
 	override onCreate() {
 		const { btn_langSet } = this;
-		btn_langSet.onClick(this, this.sendEvent, [EComSettingLangMsg.OnBtnLangSetClick]);
+		btn_langSet.onClick(this, this.event, [EComSettingLangMsg.OnBtnLangSetClick]);
 	}
 
 }

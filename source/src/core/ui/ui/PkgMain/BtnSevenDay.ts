@@ -1,9 +1,9 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GButtonView } from "../../core/viewBase/GButtonView";
 import { ComRedDot1View } from "../../view/PkgCommon/view/coms/ComRedDot1View";
 
-export default class BtnSevenDay extends ViewBase(fgui.GButton) {
+export default class BtnSevenDay extends GButtonView {
 
 	protected com_redDot: ComRedDot1View;
 	public static url: string = "ui://vith2b66jonfobib";

@@ -1,8 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GButtonView } from "../../core/viewBase/GButtonView";
 
-export default class BtnShopRefresh extends ViewBase(fgui.GButton) {
+export default class BtnShopRefresh extends GButtonView {
 
 	protected img_currency: fgui.GImage;
 	protected txt_refresh: fgui.GTextField;

@@ -1,10 +1,10 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GComponentView } from "../../core/viewBase/GComponentView";
 import { RenderFriendRecentView } from "../../view/PkgMain/view/renders/RenderFriendRecentView";
 import { ComBackView } from "../../view/PkgCommon/view/coms/ComBackView";
 
-export default class UIFriend extends ViewBase(fgui.GComponent) {
+export default class UIFriend extends GComponentView {
 
 	protected ctrl_type: fgui.Controller;
 	protected com_back: ComBackView;

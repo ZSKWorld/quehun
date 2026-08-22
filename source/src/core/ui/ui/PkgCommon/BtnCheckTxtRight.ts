@@ -1,8 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GButtonView } from "../../core/viewBase/GButtonView";
 
-export default class BtnCheckTxtRight extends ViewBase(fgui.GButton) {
+export default class BtnCheckTxtRight extends GButtonView {
 
 	protected loader_bg: fgui.GLoader;
 	public static url: string = "ui://vx9zwsermj5kb6q";

@@ -1,5 +1,4 @@
 import { InitContextCommand } from "./contextCommand/InitContextCommand";
-import { ViewExtend } from "./core/ui/core/ViewExtend";
 import { FGUIExtend } from "./engine/FGUIExtend";
 import { FGUIRepair } from "./engine/FGUIRepair";
 import { LayaExtend } from "./engine/LayaExtend";
@@ -23,7 +22,6 @@ class Main {
 		LayaExtend.extends();
 		FGUIRepair.repair();
 		FGUIExtend.extends();
-		ViewExtend.extends();
 
 		document.body.style.backgroundColor = EColorString._000000;
 		document.body.style.backgroundImage = `url(${ ResPath.ETexturePath.JPG_Background })`;

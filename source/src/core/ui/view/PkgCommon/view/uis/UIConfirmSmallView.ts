@@ -10,9 +10,9 @@ export class UIConfirmSmallView extends UIConfirmSmall {
 
 	override onCreate() {
 		const { btn_close, btn_confirm, btn_cancel } = this;
-		btn_close.onClick(this, this.sendEvent, [EUIConfirmSmallMsg.OnBtnCloseClick]);
-		btn_confirm.onClick(this, this.sendEvent, [EUIConfirmSmallMsg.OnBtnConfirmClick]);
-		btn_cancel.onClick(this, this.sendEvent, [EUIConfirmSmallMsg.OnBtnCancelClick]);
+		btn_close.onClick(this, this.event, [EUIConfirmSmallMsg.OnBtnCloseClick]);
+		btn_confirm.onClick(this, this.event, [EUIConfirmSmallMsg.OnBtnConfirmClick]);
+		btn_cancel.onClick(this, this.event, [EUIConfirmSmallMsg.OnBtnCancelClick]);
 	}
 
 	override onOpenAni() { return $uiUtil.popAlphaIn(this); }

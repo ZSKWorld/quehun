@@ -22,8 +22,8 @@ export class UIFriendView extends UIFriend {
 			list_friend, btn_copy, btn_find
 		} = this;
 		com_back.onBackClick(this, this.closeSelf);
-		btn_copy.onClick(this, this.sendEvent, [EUIFriendMsg.OnBtnCopyClick]);
-		btn_find.onClick(this, this.sendEvent, [EUIFriendMsg.OnBtnFindClick]);
+		btn_copy.onClick(this, this.event, [EUIFriendMsg.OnBtnCopyClick]);
+		btn_find.onClick(this, this.event, [EUIFriendMsg.OnBtnFindClick]);
 		$uiUtil.setList(list_friend, true, this, this.onListFriendRender);
 
 		txt_myID.text = $gameUtil.encodeAccountId($user.account.accountId).toString();

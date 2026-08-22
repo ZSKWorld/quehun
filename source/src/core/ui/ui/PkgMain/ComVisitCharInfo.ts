@@ -1,9 +1,9 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GComponentView } from "../../core/viewBase/GComponentView";
 import { ComHead1View } from "../../view/PkgCommon/view/coms/ComHead1View";
 
-export default class ComVisitCharInfo extends ViewBase(fgui.GComponent) {
+export default class ComVisitCharInfo extends GComponentView {
 
 	protected txt_height: fgui.GTextField;
 	protected txt_birthday: fgui.GTextField;

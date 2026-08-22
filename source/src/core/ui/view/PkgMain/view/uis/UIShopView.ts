@@ -18,7 +18,7 @@ export class UIShopView extends UIShop {
 			btn_tab4, btn_tab5, btn_tab6
 		} = this;
 		com_back.onBackClick(this, this.closeSelf);
-		btn_zhwRefresh.onClick(this, this.sendEvent, [EUIShopMsg.OnBtnZhwRefreshClick]);
+		btn_zhwRefresh.onClick(this, this.event, [EUIShopMsg.OnBtnZhwRefreshClick]);
 
 		this._tabGroup.init([
 			btn_tab0, btn_tab1, btn_tab2, btn_tab3,
@@ -62,7 +62,7 @@ export class UIShopView extends UIShop {
 	}
 
 	private onTabChanged(type: EUIShopTabType) {
-		this.sendEvent(EUIShopMsg.OnTabSelectChanged, type);
+		this.event(EUIShopMsg.OnTabSelectChanged, type);
 	}
 
 	override onOpenAni() {

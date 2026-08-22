@@ -1,9 +1,9 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GComponentView } from "../../core/viewBase/GComponentView";
 import { ComSevenDayItem1View } from "../../view/PkgMain/view/coms/ComSevenDayItem1View";
 
-export default class RenderSevenDayItem extends ViewBase(fgui.GComponent) {
+export default class RenderSevenDayItem extends GComponentView {
 
 	protected ctrl_type: fgui.Controller;
 	protected com_item: ComSevenDayItem1View;

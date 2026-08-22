@@ -1,9 +1,9 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GComponentView } from "../../core/viewBase/GComponentView";
 import { ComFlowerLoadingView } from "../../view/PkgCommon/view/coms/ComFlowerLoadingView";
 
-export default class UILoading2 extends ViewBase(fgui.GComponent) {
+export default class UILoading2 extends GComponentView {
 
 	protected com_loading: ComFlowerLoadingView;
 	public static url: string = "ui://vx9zwserghrrobg9";

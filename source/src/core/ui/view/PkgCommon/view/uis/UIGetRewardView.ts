@@ -8,7 +8,7 @@ export class UIGetRewardView extends UIGetReward {
 
 	override onCreate() {
 		const { btn_bg } = this;
-		btn_bg.onClick(this, this.sendEvent, [EUIGetRewardMsg.OnBtnBgClick]);
+		btn_bg.onClick(this, this.event, [EUIGetRewardMsg.OnBtnBgClick]);
 	}
 
 	async showRewards(rewards: IRewardSlot[]) {

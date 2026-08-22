@@ -1,8 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GComponentView } from "../../core/viewBase/GComponentView";
 
-export default class UILogin extends ViewBase(fgui.GComponent) {
+export default class UILogin extends GComponentView {
 
 	protected ctrl_page: fgui.Controller;
 	protected graph_scene: fgui.GGraph;

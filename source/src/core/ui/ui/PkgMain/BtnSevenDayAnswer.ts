@@ -1,8 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GButtonView } from "../../core/viewBase/GButtonView";
 
-export default class BtnSevenDayAnswer extends ViewBase(fgui.GButton) {
+export default class BtnSevenDayAnswer extends GButtonView {
 
 	protected ctrl_type: fgui.Controller;
 	public static url: string = "ui://vith2b66rg6eobia";

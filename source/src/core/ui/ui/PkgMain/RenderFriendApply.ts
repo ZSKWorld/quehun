@@ -1,12 +1,12 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GComponentView } from "../../core/viewBase/GComponentView";
 import { ComHead2View } from "../../view/PkgCommon/view/coms/ComHead2View";
 import { ComTitleView } from "../../view/PkgCommon/view/coms/ComTitleView";
 import { ComLevelView } from "../../view/PkgCommon/view/coms/ComLevelView";
 import { LabelNameView } from "../../view/PkgCommon/view/labels/LabelNameView";
 
-export default class RenderFriendApply extends ViewBase(fgui.GComponent) {
+export default class RenderFriendApply extends GComponentView {
 
 	protected txt_offlineTime: fgui.GTextField;
 	protected com_head: ComHead2View;

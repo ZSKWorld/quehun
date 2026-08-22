@@ -1,8 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GComponentView } from "../../core/viewBase/GComponentView";
 
-export default class CmbSettingOption_popup extends ViewBase(fgui.GComponent) {
+export default class CmbSettingOption_popup extends GComponentView {
 
 	public list_list: fgui.GList;
 	public static url: string = "ui://vx9zwseruw9yobl8";

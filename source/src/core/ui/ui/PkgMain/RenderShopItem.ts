@@ -1,10 +1,10 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GComponentView } from "../../core/viewBase/GComponentView";
 import { ComItem1View } from "../../view/PkgCommon/view/coms/ComItem1View";
 import { BtnBuyView } from "../../view/PkgCommon/view/btns/BtnBuyView";
 
-export default class RenderShopItem extends ViewBase(fgui.GComponent) {
+export default class RenderShopItem extends GComponentView {
 
 	protected com_item: ComItem1View;
 	protected btn_bug: BtnBuyView;

@@ -1,11 +1,11 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GComponentView } from "../../core/viewBase/GComponentView";
 import { ComHead2View } from "../../view/PkgCommon/view/coms/ComHead2View";
 import { ComTitleView } from "../../view/PkgCommon/view/coms/ComTitleView";
 import { LabelNameView } from "../../view/PkgCommon/view/labels/LabelNameView";
 
-export default class RenderFriendRecent extends ViewBase(fgui.GComponent) {
+export default class RenderFriendRecent extends GComponentView {
 
 	protected com_head: ComHead2View;
 	protected com_title: ComTitleView;

@@ -23,7 +23,7 @@ export class UITextInputView extends UITextInput {
 	}
 
 	private onBtnClick() {
-		this.sendEvent(EUITextInputMsg.OnBtnClick, this.itxt_input.text);
+		this.event(EUITextInputMsg.OnBtnClick, this.itxt_input.text);
 	}
 
 	override onOpenAni() { return $uiUtil.popAlphaIn(this); }

@@ -1,9 +1,9 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GComponentView } from "../../core/viewBase/GComponentView";
 import { ComGetRewardView } from "../../view/PkgCommon/view/coms/ComGetRewardView";
 
-export default class UIGetReward extends ViewBase(fgui.GComponent) {
+export default class UIGetReward extends GComponentView {
 
 	protected btn_bg: fgui.GButton;
 	protected com_content: ComGetRewardView;

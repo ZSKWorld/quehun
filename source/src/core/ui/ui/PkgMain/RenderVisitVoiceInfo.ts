@@ -1,8 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GComponentView } from "../../core/viewBase/GComponentView";
 
-export default class RenderVisitVoiceInfo extends ViewBase(fgui.GComponent) {
+export default class RenderVisitVoiceInfo extends GComponentView {
 
 	protected ctrl_type: fgui.Controller;
 	protected ctrl_playing: fgui.Controller;

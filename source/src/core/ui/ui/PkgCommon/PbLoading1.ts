@@ -1,8 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GProgressBarView } from "../../core/viewBase/GProgressBarView";
 
-export default class PbLoading1 extends ViewBase(fgui.GProgressBar) {
+export default class PbLoading1 extends GProgressBarView {
 
 	public img_block: fgui.GImage;
 	public trans_t0: fgui.Transition;

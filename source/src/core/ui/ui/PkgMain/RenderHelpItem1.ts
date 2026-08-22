@@ -1,8 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GComponentView } from "../../core/viewBase/GComponentView";
 
-export default class RenderHelpItem1 extends ViewBase(fgui.GComponent) {
+export default class RenderHelpItem1 extends GComponentView {
 
 	protected txt_name: fgui.GTextField;
 	protected txt_desc: fgui.GTextField;

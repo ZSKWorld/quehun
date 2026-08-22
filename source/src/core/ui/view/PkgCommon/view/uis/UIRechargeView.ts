@@ -47,7 +47,7 @@ export class UIRechargeView extends UIRecharge {
 	}
 
 	private onTabChanged(type: EUIRechargeTabType) {
-		this.sendEvent(EUIRechargeEvent.OnTabSelectChanged, type);
+		this.event(EUIRechargeEvent.OnTabSelectChanged, type);
 	}
 
 	private onListItemRender(index: number, item: ComRechargeItemView) {
@@ -57,7 +57,7 @@ export class UIRechargeView extends UIRecharge {
 	private onListItemClick(item: ComRechargeItemView, _, index: number) {
 		const eventName = item.rechargeEvent;
 		if (eventName)
-			this.sendEvent(eventName, this._itemIds[index]);
+			this.event(eventName, this._itemIds[index]);
 	}
 
 	override onOpenAni() {

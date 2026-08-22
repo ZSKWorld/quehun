@@ -1,8 +1,8 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GComponentView } from "../../core/viewBase/GComponentView";
 
-export default class UIRank extends ViewBase(fgui.GComponent) {
+export default class UIRank extends GComponentView {
 
 	protected btn_mask: fgui.GButton;
 	protected list_rank: fgui.GList;

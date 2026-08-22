@@ -20,10 +20,10 @@ export class ComMatchModeView extends ComMatchMode {
 
 	override onCreate() {
 		const { btn_rankMode, btn_matchMode, btn_friendMode, btn_back } = this;
-		btn_rankMode.onClick(this, this.sendEvent, [EComMatchModeMsg.OnBtnRankModeClick]);
-		btn_matchMode.onClick(this, this.sendEvent, [EComMatchModeMsg.OnBtnMatchModeClick]);
-		btn_friendMode.onClick(this, this.sendEvent, [EComMatchModeMsg.OnBtnFriendModeClick]);
-		btn_back.onClick(this, this.sendEvent, [EComMatchModeMsg.OnBtnBackClick]);
+		btn_rankMode.onClick(this, this.event, [EComMatchModeMsg.OnBtnRankModeClick]);
+		btn_matchMode.onClick(this, this.event, [EComMatchModeMsg.OnBtnMatchModeClick]);
+		btn_friendMode.onClick(this, this.event, [EComMatchModeMsg.OnBtnFriendModeClick]);
+		btn_back.onClick(this, this.event, [EComMatchModeMsg.OnBtnBackClick]);
 	}
 
 	async setShowType(type: EComMatchModeShowType, lastType: EComMatchModeShowType) {

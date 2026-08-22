@@ -14,9 +14,9 @@ export class UISevenDayView extends UISevenDay {
 		btn_mask.onClick(this, this.closeSelf);
 		btn_close.onClick(this, this.closeSelf);
 
-		btn_qaClose.onClick(this, this.sendEvent, [EUISevenDayEvent.OnQABtnCloseClick]);
-		btn_qaSkip.onClick(this, this.sendEvent, [EUISevenDayEvent.OnQABtnSkipClick]);
-		[btn_answer0, btn_answer1, btn_answer2].forEach((v, i) => v.onClick(this, this.sendEvent, [EUISevenDayEvent.OnQABtnAnswerClick, i]));
+		btn_qaClose.onClick(this, this.event, [EUISevenDayEvent.OnQABtnCloseClick]);
+		btn_qaSkip.onClick(this, this.event, [EUISevenDayEvent.OnQABtnSkipClick]);
+		[btn_answer0, btn_answer1, btn_answer2].forEach((v, i) => v.onClick(this, this.event, [EUISevenDayEvent.OnQABtnAnswerClick, i]));
 		[com_task0, com_task1, com_task2].forEach(v => v.on(EUISevenDayEvent.OnTaskBtnClick, this, this.onTaskBtnClick));
 
 		_tabGroup.init([
@@ -73,11 +73,11 @@ export class UISevenDayView extends UISevenDay {
 	}
 
 	private onTabSelectChanged(index: number) {
-		this.sendEvent(EUISevenDayEvent.OnTabSelectChanged, index);
+		this.event(EUISevenDayEvent.OnTabSelectChanged, index);
 	}
 
 	private onTaskBtnClick(event: EUISevenDayRenderClickEvent, data: ISheetData_Activity_TaskDisplay) {
-		this.sendEvent(EUISevenDayEvent.OnTaskBtnClick, [event, data]);
+		this.event(EUISevenDayEvent.OnTaskBtnClick, [event, data]);
 	}
 
 	override onOpenAni() { return $uiUtil.popAlphaIn(this); }

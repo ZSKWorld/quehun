@@ -8,7 +8,7 @@ export class RenderShopItemView extends RenderShopItem {
 
 	override onCreate() {
 		const { btn_bug } = this;
-		btn_bug.onClick(this, this.sendEvent, [ERenderShopItemMsg.OnBtnBugClick]);
+		btn_bug.onClick(this, this.event, [ERenderShopItemMsg.OnBtnBugClick]);
 	}
 
 }

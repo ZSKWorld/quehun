@@ -1,10 +1,10 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GComponentView } from "../../core/viewBase/GComponentView";
 import { ComVisitIntroView } from "../../view/PkgMain/view/coms/ComVisitIntroView";
 import { ComBackView } from "../../view/PkgCommon/view/coms/ComBackView";
 
-export default class UIVisit extends ViewBase(fgui.GComponent) {
+export default class UIVisit extends GComponentView {
 
 	protected ctrl_type: fgui.Controller;
 	protected com_back: ComBackView;

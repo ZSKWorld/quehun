@@ -21,7 +21,7 @@ export class GameManager extends Observer implements IGameManager {
 		return "4.0.46";
 	}
 	get resourceVersion() {
-		return "0.16.262";
+		return "0.16.269";
 	}
 	get clientVersionStr() {
 		return this.platform + "_2022-" + this.resourceVersion;
@@ -138,9 +138,9 @@ export class GameManager extends Observer implements IGameManager {
 		const mousePoint = Laya.stage.getMousePoint();
 		if (mousePoint.x != _lastMousePoint.x || mousePoint.y != _lastMousePoint.y) {
 			//当玩家长时间不动，突然动了，通知一下服务器
-			if (t > 2400) {
-				$netMgr.requests.heatbeat({ no_operation_counter: 0 });
-			}
+			// if (t > 2400) {
+				// $netMgr.requests.heatbeat({ no_operation_counter: 0 });
+			// }
 			this._lastHeatBeatTime = $timeUtil.second;
 			_lastMousePoint.setTo(mousePoint.x, mousePoint.y);
 		}
@@ -150,7 +150,7 @@ export class GameManager extends Observer implements IGameManager {
 		//23/12/27新增，每6分钟同步服务器时间
 		if (_hangOutTime % 360 == 0) {
 			$netMgr.requests.fetchServerTime();
-			$netMgr.requests.heatbeat({ no_operation_counter: t });
+			// $netMgr.requests.heatbeat({ no_operation_counter: t });
 			//客户端有能力断线的话，超过50分钟就断线
 			if (t >= 3000) {
 				this.onNotifyAccountLogout();

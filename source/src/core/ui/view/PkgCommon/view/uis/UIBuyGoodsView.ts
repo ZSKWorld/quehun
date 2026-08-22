@@ -21,11 +21,11 @@ export class UIBuyGoodsView extends UIBuyGoods {
 		const { btn_mask, btn_close, btn_sub10, btn_sub1, btn_add1, btn_add10, btn_buy } = this;
 		btn_mask.onClick(this, this.closeSelf);
 		btn_close.onClick(this, this.closeSelf);
-		btn_sub10.onClick(this, this.sendEvent, [EUIBuyGoodsMsg.OnBtnSub10Click, -10]);
-		btn_sub1.onClick(this, this.sendEvent, [EUIBuyGoodsMsg.OnBtnSub1Click, -1]);
-		btn_add1.onClick(this, this.sendEvent, [EUIBuyGoodsMsg.OnBtnAdd1Click, 1]);
-		btn_add10.onClick(this, this.sendEvent, [EUIBuyGoodsMsg.OnBtnAdd10Click, 10]);
-		btn_buy.onClick(this, this.sendEvent, [EUIBuyGoodsMsg.OnBtnBuyClick]);
+		btn_sub10.onClick(this, this.event, [EUIBuyGoodsMsg.OnBtnSub10Click, -10]);
+		btn_sub1.onClick(this, this.event, [EUIBuyGoodsMsg.OnBtnSub1Click, -1]);
+		btn_add1.onClick(this, this.event, [EUIBuyGoodsMsg.OnBtnAdd1Click, 1]);
+		btn_add10.onClick(this, this.event, [EUIBuyGoodsMsg.OnBtnAdd10Click, 10]);
+		btn_buy.onClick(this, this.event, [EUIBuyGoodsMsg.OnBtnBuyClick]);
 	}
 
 	refresh(data: IUIBuyGoodsData) {

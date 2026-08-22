@@ -1,6 +1,6 @@
 import { MediatorBase } from "../../../../mvc/view/MediatorBase";
 
-interface IConfirmView extends IView {
+interface IConfirmView {
 	ctrl_format: fgui.Controller;
 	txt_title: fgui.GTextField;
 	txt_content?: fgui.GTextField;

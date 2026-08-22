@@ -32,10 +32,10 @@ export class ComSettingAudioView extends ComSettingAudio {
 		btn_specialVolumeOn.onClick(this, () => $user.setting.audio.specialVolume = btn_specialVolumeOn.selected);
 		btn_backgroundMuteOn.onClick(this, () => $user.setting.audio.backgroundMute = btn_backgroundMuteOn.selected);
 
-		btn_specialVolumeTip.onClick(this, this.sendEvent, [EComSettingAudioMsg.OnBtnSpecialVolumeTipClick]);
-		btn_charVolumeSet.onClick(this, this.sendEvent, [EComSettingAudioMsg.OnBtnCharVolumeSetClick]);
-		btn_lobbyBgmSet.onClick(this, this.sendEvent, [EComSettingAudioMsg.OnBtnLobbyBgmSetClick]);
-		btn_mjBgmSet.onClick(this, this.sendEvent, [EComSettingAudioMsg.OnBtnMjBgmSetClick]);
+		btn_specialVolumeTip.onClick(this, this.event, [EComSettingAudioMsg.OnBtnSpecialVolumeTipClick]);
+		btn_charVolumeSet.onClick(this, this.event, [EComSettingAudioMsg.OnBtnCharVolumeSetClick]);
+		btn_lobbyBgmSet.onClick(this, this.event, [EComSettingAudioMsg.OnBtnLobbyBgmSetClick]);
+		btn_mjBgmSet.onClick(this, this.event, [EComSettingAudioMsg.OnBtnMjBgmSetClick]);
 	}
 
 	override onEnable() {

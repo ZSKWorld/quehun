@@ -24,17 +24,17 @@ export class UILoginView extends UILogin {
 			btn_login, btn_announce, btn_help, btn_loginByAccount, btn_loginBtnPhone,
 			btn_register, btn_forgotPassword, btn_forgotAccount, itxt_account, itxt_password,
 			btn_logout } = this;
-		btn_login.onClick(this, this.sendEvent, [EUILoginMsg.OnBtnLoginClick]);
-		btn_announce.onClick(this, this.sendEvent, [EUILoginMsg.OnBtnAnnounceClick]);
-		btn_help.onClick(this, this.sendEvent, [EUILoginMsg.OnBtnHelpClick]);
-		btn_loginByAccount.onClick(this, this.sendEvent, [EUILoginMsg.OnBtnLoginByAccountClick]);
-		btn_loginBtnPhone.onClick(this, this.sendEvent, [EUILoginMsg.OnBtnLoginBtnPhoneClick]);
-		btn_register.onClick(this, this.sendEvent, [EUILoginMsg.OnBtnRegisterClick]);
-		btn_forgotPassword.onClick(this, this.sendEvent, [EUILoginMsg.OnBtnForgotPasswordClick]);
-		btn_forgotAccount.onClick(this, this.sendEvent, [EUILoginMsg.OnBtnForgotAccountClick]);
-		btn_logout.onClick(this, this.sendEvent, [EUILoginMsg.OnBtnLogoutClick]);
-		itxt_account.on(Laya.Event.ENTER, this, this.sendEvent, [EUILoginMsg.OnAccountInputEnter]);
-		itxt_password.on(Laya.Event.ENTER, this, this.sendEvent, [EUILoginMsg.OnAccountInputEnter]);
+		btn_login.onClick(this, this.event, [EUILoginMsg.OnBtnLoginClick]);
+		btn_announce.onClick(this, this.event, [EUILoginMsg.OnBtnAnnounceClick]);
+		btn_help.onClick(this, this.event, [EUILoginMsg.OnBtnHelpClick]);
+		btn_loginByAccount.onClick(this, this.event, [EUILoginMsg.OnBtnLoginByAccountClick]);
+		btn_loginBtnPhone.onClick(this, this.event, [EUILoginMsg.OnBtnLoginBtnPhoneClick]);
+		btn_register.onClick(this, this.event, [EUILoginMsg.OnBtnRegisterClick]);
+		btn_forgotPassword.onClick(this, this.event, [EUILoginMsg.OnBtnForgotPasswordClick]);
+		btn_forgotAccount.onClick(this, this.event, [EUILoginMsg.OnBtnForgotAccountClick]);
+		btn_logout.onClick(this, this.event, [EUILoginMsg.OnBtnLogoutClick]);
+		itxt_account.on(Laya.Event.ENTER, this, this.event, [EUILoginMsg.OnAccountInputEnter]);
+		itxt_password.on(Laya.Event.ENTER, this, this.event, [EUILoginMsg.OnAccountInputEnter]);
 	}
 
 	setCtrlPage(index: 0 | 1 | 2) {

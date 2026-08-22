@@ -1,6 +1,6 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GComponentView } from "../../core/viewBase/GComponentView";
 import { ComBagItemView } from "../../view/PkgMain/view/coms/ComBagItemView";
 import { ComBagGiftView } from "../../view/PkgMain/view/coms/ComBagGiftView";
 import { ComBagDecoView } from "../../view/PkgMain/view/coms/ComBagDecoView";
@@ -8,7 +8,7 @@ import { ComBagSkinView } from "../../view/PkgMain/view/coms/ComBagSkinView";
 import { ComBagIllustView } from "../../view/PkgMain/view/coms/ComBagIllustView";
 import { ComBackView } from "../../view/PkgCommon/view/coms/ComBackView";
 
-export default class UIBag extends ViewBase(fgui.GComponent) {
+export default class UIBag extends GComponentView {
 
 	protected ctrl_type: fgui.Controller;
 	protected com_back: ComBackView;

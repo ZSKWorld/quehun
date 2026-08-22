@@ -1,11 +1,11 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GComponentView } from "../../core/viewBase/GComponentView";
 import { ComItem1View } from "../../view/PkgCommon/view/coms/ComItem1View";
 import { ComItemView } from "../../view/PkgCommon/view/coms/ComItemView";
 import { ComHead2View } from "../../view/PkgCommon/view/coms/ComHead2View";
 
-export default class ComPreview extends ViewBase(fgui.GComponent) {
+export default class ComPreview extends GComponentView {
 
 	protected ctrl_type: fgui.Controller;
 	protected btn_close1: fgui.GButton;

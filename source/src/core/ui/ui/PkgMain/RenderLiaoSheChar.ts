@@ -1,9 +1,9 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GComponentView } from "../../core/viewBase/GComponentView";
 import { ComHeadView } from "../../view/PkgCommon/view/coms/ComHeadView";
 
-export default class RenderLiaoSheChar extends ViewBase(fgui.GComponent) {
+export default class RenderLiaoSheChar extends GComponentView {
 
 	protected img_selected: fgui.GImage;
 	protected loader_bg: fgui.GLoader;

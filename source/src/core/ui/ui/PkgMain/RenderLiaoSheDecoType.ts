@@ -1,9 +1,9 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
-import { ViewBase } from "../../core/viewBase/ViewBase";
+import { GButtonView } from "../../core/viewBase/GButtonView";
 import { ComItemView } from "../../view/PkgCommon/view/coms/ComItemView";
 
-export default class RenderLiaoSheDecoType extends ViewBase(fgui.GButton) {
+export default class RenderLiaoSheDecoType extends GButtonView {
 
 	protected com_item: ComItemView;
 	protected txt_name: fgui.GTextField;

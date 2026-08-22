@@ -21,9 +21,9 @@ export class UIItemDetailView extends UIItemDetail {
 		const { graph_bg, btn_close, btn_open1, btn_open10, btn_goto } = this;
 		graph_bg.onClick(this, this.closeSelf);
 		btn_close.onClick(this, this.closeSelf);
-		btn_open1.onClick(this, this.sendEvent, [EUIItemDetailMsg.OnBtnOpen1Click]);
-		btn_open10.onClick(this, this.sendEvent, [EUIItemDetailMsg.OnBtnOpen10Click]);
-		btn_goto.onClick(this, this.sendEvent, [EUIItemDetailMsg.OnBtnGoToClick]);
+		btn_open1.onClick(this, this.event, [EUIItemDetailMsg.OnBtnOpen1Click]);
+		btn_open10.onClick(this, this.event, [EUIItemDetailMsg.OnBtnOpen10Click]);
+		btn_goto.onClick(this, this.event, [EUIItemDetailMsg.OnBtnGoToClick]);
 
 	}
 

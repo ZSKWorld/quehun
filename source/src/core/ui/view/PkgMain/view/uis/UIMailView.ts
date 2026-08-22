@@ -18,8 +18,8 @@ export class UIMailView extends UIMail {
 		const { btn_mask, btn_back, btn_getReward, btn_delete, list_tab, list_reward } = this;
 		btn_mask.onClick(this, this.closeSelf);
 		btn_back.onClick(this, this.closeSelf);
-		btn_getReward.onClick(this, this.sendEvent, [EUIMailMsg.OnBtnGetRewardClick]);
-		btn_delete.onClick(this, this.sendEvent, [EUIMailMsg.OnBtnDeleteClick]);
+		btn_getReward.onClick(this, this.event, [EUIMailMsg.OnBtnGetRewardClick]);
+		btn_delete.onClick(this, this.event, [EUIMailMsg.OnBtnDeleteClick]);
 
 		$uiUtil.setList(list_tab, true, this, this.onListTabRender, this.onListTabItemClick);
 		$uiUtil.setList(list_reward, true, this, this.onListRewardRender, this.onListRewardClick);
@@ -60,7 +60,7 @@ export class UIMailView extends UIMail {
 		img_time.visible = txt_expire.visible = data.expire_time > 0;
 		txt_expire.text = this.getExpireDesc(data.expire_time - $timeUtil.second);
 
-		this.sendEvent(EUIMailMsg.OnTabSelectChanged, index);
+		this.event(EUIMailMsg.OnTabSelectChanged, index);
 	}
 
 	private onListRewardRender(index: number, item: RenderMailItemView) {

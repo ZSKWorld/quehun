@@ -9,8 +9,8 @@ export class ComMatchItemView extends ComMatchItem {
 
 	override onCreate() {
 		const { btn_bg, btn_info } = this;
-		btn_bg.onClick(this, this.sendEvent, [EComMatchItemMsg.OnBtnBgClick]);
-		btn_info.onClick(this, this.sendEvent, [EComMatchItemMsg.OnBtnInfoClick]);
+		btn_bg.onClick(this, this.event, [EComMatchItemMsg.OnBtnBgClick]);
+		btn_info.onClick(this, this.event, [EComMatchItemMsg.OnBtnInfoClick]);
 	}
 
 }

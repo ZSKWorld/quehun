@@ -5314,6 +5314,11 @@
               "rule": "repeated",
               "type": "uint32",
               "id": 8
+            },
+            "enabled_emoji": {
+              "rule": "repeated",
+              "type": "uint32",
+              "id": 9
             }
           }
         },
@@ -5498,6 +5503,11 @@
                   "rule": "repeated",
                   "type": "string",
                   "id": 5
+                },
+                "disabled_platform": {
+                  "rule": "repeated",
+                  "type": "string",
+                  "id": 6
                 }
               }
             },
@@ -5535,6 +5545,11 @@
                   "rule": "repeated",
                   "type": "string",
                   "id": 8
+                },
+                "disabled_platform": {
+                  "rule": "repeated",
+                  "type": "string",
+                  "id": 9
                 }
               }
             }
@@ -11276,6 +11291,10 @@
             "majClubActivityDebug": {
               "requestType": "ReqMajClubActivityDebug",
               "responseType": "ResCommon"
+            },
+            "fetchRechargeInfo": {
+              "requestType": "ReqCommon",
+              "responseType": "ResFetchRechargeInfo"
             }
           }
         },
@@ -18226,13 +18245,76 @@
         },
         "ReqLogReport": {
           "fields": {
-            "success": {
-              "type": "uint32",
-              "id": 1
+            "emoji": {
+              "rule": "repeated",
+              "type": "EmojiStat",
+              "id": 3
             },
-            "failed": {
+            "m": {
               "type": "uint32",
-              "id": 2
+              "id": 4
+            },
+            "d": {
+              "type": "uint32",
+              "id": 5
+            },
+            "e": {
+              "type": "uint32",
+              "id": 6
+            },
+            "f": {
+              "type": "uint32",
+              "id": 7
+            },
+            "t": {
+              "type": "uint32",
+              "id": 8
+            },
+            "g": {
+              "type": "uint32",
+              "id": 9
+            },
+            "uuid": {
+              "type": "string",
+              "id": 10
+            },
+            "x": {
+              "type": "uint32",
+              "id": 11
+            },
+            "y": {
+              "type": "uint32",
+              "id": 12
+            },
+            "z": {
+              "type": "uint32",
+              "id": 13
+            },
+            "a": {
+              "type": "uint32",
+              "id": 14
+            },
+            "c": {
+              "type": "ClientDeviceInfo",
+              "id": 15
+            },
+            "v": {
+              "type": "uint32",
+              "id": 16
+            }
+          },
+          "nested": {
+            "EmojiStat": {
+              "fields": {
+                "id": {
+                  "type": "uint32",
+                  "id": 1
+                },
+                "count": {
+                  "type": "uint32",
+                  "id": 2
+                }
+              }
             }
           }
         },
@@ -18831,6 +18913,10 @@
             "annual_report_info": {
               "type": "ResFetchAnnualReportInfo",
               "id": 34
+            },
+            "recharge_info": {
+              "type": "ResFetchRechargeInfo",
+              "id": 35
             }
           }
         },
@@ -19528,6 +19614,10 @@
             "match_end_time": {
               "type": "uint32",
               "id": 15
+            },
+            "version": {
+              "type": "uint32",
+              "id": 16
             }
           },
           "nested": {
@@ -22823,6 +22913,28 @@
             "data": {
               "type": "ActivityMajClubData",
               "id": 2
+            }
+          }
+        },
+        "ResFetchRechargeInfo": {
+          "fields": {
+            "error": {
+              "type": "Error",
+              "id": 1
+            },
+            "time_range": {
+              "rule": "repeated",
+              "type": "uint32",
+              "id": 2
+            },
+            "recharged_list": {
+              "rule": "repeated",
+              "type": "uint32",
+              "id": 3
+            },
+            "now": {
+              "type": "uint32",
+              "id": 4
             }
           }
         },
@@ -26539,6 +26651,10 @@
             "emo": {
               "type": "uint32",
               "id": 3
+            },
+            "emo_id": {
+              "type": "uint32",
+              "id": 4
             },
             "operation": {
               "type": "GameSelfOperation",

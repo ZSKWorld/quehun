@@ -3342,6 +3342,13 @@ declare enum ENetMessage {
 	 */
 	majClubActivityDebug = "majClubActivityDebug",
 	/**
+	 ** 首充时间范围
+	 ** req: {@link IReqCommon}
+	 ** res: {@link IResFetchRechargeInfo}
+	 ** method: {@link IReqMethod.fetchRechargeInfo}
+	 */
+	fetchRechargeInfo = "fetchRechargeInfo",
+	/**
 	 ** 验证游戏口令
 	 ** req: {@link IReqAuthGame}
 	 ** res: {@link IResAuthGame}
@@ -6358,8 +6365,11 @@ declare interface ICharacter extends IProto {
 	skin: number;
 	/** 是否已经突破过了 */
 	is_upgraded: boolean;
+	/** 已废弃，表情通过物品进行判断，保留此处用于兼容老版本客户端 */
 	extra_emoji: number[];
 	rewarded_level: number[];
+	/** 用于服务端判断对局内可使用表情 */
+	enabled_emoji: number[];
 }
 
 /**
@@ -6473,6 +6483,8 @@ declare interface IPaymentSettingV2_PaymentMaintain extends IProto {
 	goods_click_action: number;
 	goods_click_text: string;
 	enabled_channel: string[];
+	/** 禁用包体: "web", "steamWin", "steamMac", "apple", "android", "google", "windows", "web_dmm" */
+	disabled_platform: string[];
 }
 
 /** .lq.PaymentSettingV2.PaymentSettingUnit */
@@ -6493,6 +6505,8 @@ declare interface IPaymentSettingV2_PaymentSettingUnit extends IProto {
 	 ** }
 	 */
 	enabled_channel: string[];
+	/** 禁用包体: "web", "steamWin", "steamMac", "apple", "android", "google", "windows", "web_dmm" */
+	disabled_platform: string[];
 }
 
 /** .lq.PaymentSetting */
@@ -12358,8 +12372,42 @@ declare interface IResReceiveActivitySpotReward_RewardItem extends IProto {
 
 /** .lq.ReqLogReport */
 declare interface IReqLogReport extends IRequest {
-	success: number;
-	failed: number;
+	/** 玩家发送表情统计数据 */
+	emoji: IReqLogReport_EmojiStat[];
+	/** 点击偏好 0=单击，1=双击 */
+	m: number;
+	/** 鼠标移动事件 */
+	d: number;
+	/** 屏幕高度的一半 */
+	e: number;
+	/** 屏幕宽度的一半 */
+	f: number;
+	/** 最短双击时间（毫秒） */
+	t: number;
+	/** 最长双击时间（毫秒） */
+	g: number;
+	/** 牌谱id */
+	uuid: string;
+	/** 场 */
+	x: number;
+	/** 局 */
+	y: number;
+	/** 本 */
+	z: number;
+	/** 本次配牌的时间 */
+	a: number;
+	/** 设备 device */
+	c: IClientDeviceInfo;
+	/** 版本 */
+	v: number;
+}
+
+/** .lq.ReqLogReport.EmojiStat */
+declare interface IReqLogReport_EmojiStat extends IProto {
+	/** 表情ID */
+	id: number;
+	/** 发送次数 */
+	count: number;
 }
 
 /** .lq.ReqBindOauth2 */
@@ -12599,6 +12647,7 @@ declare interface IResFetchInfo extends IResponse {
 	maintenance_info: IResFetchServerMaintenanceInfo;
 	seer_info: IResFetchSeerInfo;
 	annual_report_info: IResFetchAnnualReportInfo;
+	recharge_info: IResFetchRechargeInfo;
 }
 
 /** .lq.ResFetchSeerInfo */
@@ -12913,6 +12962,8 @@ declare interface IResFetchManagerCustomizedContest extends IResponse {
 	match_start_time: number;
 	/** 自动匹配结束时间 */
 	match_end_time: number;
+	/** 版本 >=2 时个人赛支持累计总分、团队赛支持最佳连续N战 */
+	version: number;
 }
 
 /** .lq.ResFetchManagerCustomizedContest.SeasonInfo */
@@ -14497,6 +14548,16 @@ declare interface IResMajClubActivityFetchDebugData extends IResponse {
 declare interface IReqMajClubActivityDebug extends IRequest {
 	activity_id: number;
 	data: IActivityMajClubData;
+}
+
+/** .lq.ResFetchRechargeInfo */
+declare interface IResFetchRechargeInfo extends IResponse {
+	/** [开始时间，结束时间] 0 表示无穷，当前服务器时间大于结束时间时需要重新调用本协议更新 */
+	time_range: number[];
+	/** 已首充的金额列表 */
+	recharged_list: number[];
+	/** 当前服务器时间 */
+	now: number;
 }
 
 /** .lq.AmuletBadgeData */
@@ -16335,6 +16396,7 @@ declare interface IGameUserInput extends IProto {
 	 */
 	type: number;
 	emo: number;
+	emo_id: number;
 	operation: IGameSelfOperation;
 	cpg: IGameChiPengGang;
 	vote: IGameVoteGameEnd;

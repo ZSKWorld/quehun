@@ -9,6 +9,7 @@ declare interface IConfigManager {
 	readonly audio: ITable_Audio;
 	readonly character: ITable_Character;
 	readonly chest: ITable_Chest;
+	readonly club: ITable_Club;
 	readonly compose: ITable_Compose;
 	readonly contest: ITable_Contest;
 	readonly desktop: ITable_Desktop;

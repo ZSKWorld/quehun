@@ -126,6 +126,7 @@ declare interface ISheet_LevelDefinition_Character {
 	200076: ISheetData_LevelDefinition_Character[];
 	200095: ISheetData_LevelDefinition_Character[];
 	20000112: ISheetData_LevelDefinition_Character[];
+	20000121: ISheetData_LevelDefinition_Character[];
 }
 declare interface ISheetData_LevelDefinition_Character extends ISheetDataBase {
 	level: number;

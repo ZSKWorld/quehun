@@ -249,6 +249,7 @@ declare interface ISheet_Info_Error {
 	2015: ISheetData_Info_Error;
 	2018: ISheetData_Info_Error;
 	2019: ISheetData_Info_Error;
+	2020: ISheetData_Info_Error;
 	2201: ISheetData_Info_Error;
 	2202: ISheetData_Info_Error;
 	2203: ISheetData_Info_Error;
@@ -261,6 +262,7 @@ declare interface ISheet_Info_Error {
 	2210: ISheetData_Info_Error;
 	2211: ISheetData_Info_Error;
 	2212: ISheetData_Info_Error;
+	2213: ISheetData_Info_Error;
 	2215: ISheetData_Info_Error;
 	2216: ISheetData_Info_Error;
 	2217: ISheetData_Info_Error;

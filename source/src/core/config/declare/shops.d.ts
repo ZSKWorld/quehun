@@ -698,12 +698,32 @@ declare interface ISheet_Shops_Goods {
 	5470: ISheetData_Shops_Goods;
 	5471: ISheetData_Shops_Goods;
 	5472: ISheetData_Shops_Goods;
+	5473: ISheetData_Shops_Goods;
+	5474: ISheetData_Shops_Goods;
+	5475: ISheetData_Shops_Goods;
+	5476: ISheetData_Shops_Goods;
+	5477: ISheetData_Shops_Goods;
+	5478: ISheetData_Shops_Goods;
+	5479: ISheetData_Shops_Goods;
+	5480: ISheetData_Shops_Goods;
+	5481: ISheetData_Shops_Goods;
 	5482: ISheetData_Shops_Goods;
 	5483: ISheetData_Shops_Goods;
 	5484: ISheetData_Shops_Goods;
 	5485: ISheetData_Shops_Goods;
 	5486: ISheetData_Shops_Goods;
 	5487: ISheetData_Shops_Goods;
+	5488: ISheetData_Shops_Goods;
+	5489: ISheetData_Shops_Goods;
+	5490: ISheetData_Shops_Goods;
+	5491: ISheetData_Shops_Goods;
+	5492: ISheetData_Shops_Goods;
+	5493: ISheetData_Shops_Goods;
+	5494: ISheetData_Shops_Goods;
+	5495: ISheetData_Shops_Goods;
+	5496: ISheetData_Shops_Goods;
+	5497: ISheetData_Shops_Goods;
+	5498: ISheetData_Shops_Goods;
 	6001: ISheetData_Shops_Goods;
 	6002: ISheetData_Shops_Goods;
 	6003: ISheetData_Shops_Goods;
@@ -716,6 +736,7 @@ declare interface ISheet_Shops_Goods {
 	6010: ISheetData_Shops_Goods;
 	6011: ISheetData_Shops_Goods;
 	6012: ISheetData_Shops_Goods;
+	6013: ISheetData_Shops_Goods;
 	9001: ISheetData_Shops_Goods;
 	9002: ISheetData_Shops_Goods;
 	9003: ISheetData_Shops_Goods;
@@ -793,6 +814,9 @@ declare interface ISheet_Shops_Goods {
 	9078: ISheetData_Shops_Goods;
 	9079: ISheetData_Shops_Goods;
 	9080: ISheetData_Shops_Goods;
+	9081: ISheetData_Shops_Goods;
+	9082: ISheetData_Shops_Goods;
+	9083: ISheetData_Shops_Goods;
 }
 declare interface ISheetData_Shops_Goods extends ISheetDataBase {
 	id: number;

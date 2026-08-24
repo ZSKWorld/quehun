@@ -3029,6 +3029,13 @@ declare interface IReqMethod {
 	 */
 	majClubActivityDebug(data?: IReqMajClubActivityDebug): Promise<IResCommon>;
 	/**
+	 ** 首充时间范围
+	 ** req: {@link IReqCommon}
+	 ** res: {@link IResFetchRechargeInfo}
+	 ** msgId: {@link ENetMessage.fetchRechargeInfo}
+	 */
+	fetchRechargeInfo(data?: IReqCommon): Promise<IResFetchRechargeInfo>;
+	/**
 	 ** 验证游戏口令
 	 ** req: {@link IReqAuthGame}
 	 ** res: {@link IResAuthGame}

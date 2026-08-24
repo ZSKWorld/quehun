@@ -1819,9 +1819,11 @@ message Character {
 
   bool is_upgraded = 6; // 是否已经突破过了
 
-  repeated uint32 extra_emoji = 7;
+  repeated uint32 extra_emoji = 7; // 已废弃，表情通过物品进行判断，保留此处用于兼容老版本客户端
 
   repeated uint32 rewarded_level = 8;
+
+  repeated uint32 enabled_emoji = 9; // 用于服务端判断对局内可使用表情
 }
 
 // 购买记录
@@ -1890,6 +1892,7 @@ message PaymentSettingV2 {
     uint32 goods_click_action = 3;
     string goods_click_text = 4;
     repeated string enabled_channel = 5;
+    repeated string disabled_platform = 6; // 禁用包体: "web", "steamWin", "steamMac", "apple", "android", "google", "windows", "web_dmm"
   }
 
   message PaymentSettingUnit {
@@ -1910,6 +1913,7 @@ message PaymentSettingV2 {
       }
     */
     repeated string enabled_channel = 8;
+    repeated string disabled_platform = 9; // 禁用包体: "web", "steamWin", "steamMac", "apple", "android", "google", "windows", "web_dmm"
   }
 
   repeated PaymentSettingUnit payment_platforms = 2;

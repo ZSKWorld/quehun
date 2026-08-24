@@ -35,6 +35,7 @@ declare interface ISheet_OutfitConfig_Ron {
 	30520006: ISheetData_OutfitConfig_Ron;
 	30520007: ISheetData_OutfitConfig_Ron;
 	30520009: ISheetData_OutfitConfig_Ron;
+	30520013: ISheetData_OutfitConfig_Ron;
 }
 declare interface ISheetData_OutfitConfig_Ron extends ISheetDataBase {
 	/** 道具id */

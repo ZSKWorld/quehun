@@ -208,6 +208,7 @@ message GameUserInput {
   uint32 type = 2;
 
   uint32 emo = 3;
+  uint32 emo_id = 4;
   GameSelfOperation operation = 10;
   GameChiPengGang cpg = 11;
   GameVoteGameEnd vote = 12;

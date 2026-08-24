@@ -516,6 +516,7 @@ ENetMessage = {
 	majClubActivitySaveRoomData: "majClubActivitySaveRoomData",
 	majClubActivityFetchDebugData: "majClubActivityFetchDebugData",
 	majClubActivityDebug: "majClubActivityDebug",
+	fetchRechargeInfo: "fetchRechargeInfo",
 	authGame: "authGame",
 	enterGame: "enterGame",
 	syncGame: "syncGame",

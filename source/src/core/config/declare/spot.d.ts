@@ -346,7 +346,6 @@ declare interface ISheet_Spot_CharacterSpot {
 	[key: string]: ISheetData_Spot_CharacterSpot;
 	20000104: ISheetData_Spot_CharacterSpot;
 	20000105: ISheetData_Spot_CharacterSpot;
-	20000121: ISheetData_Spot_CharacterSpot;
 	20000126: ISheetData_Spot_CharacterSpot;
 	20009992: ISheetData_Spot_CharacterSpot;
 	20009993: ISheetData_Spot_CharacterSpot;

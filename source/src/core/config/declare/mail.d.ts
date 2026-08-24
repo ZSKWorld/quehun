@@ -51,12 +51,18 @@ declare interface ISheet_Mail_MailTemplate {
 	141: ISheetData_Mail_MailTemplate;
 	142: ISheetData_Mail_MailTemplate;
 	143: ISheetData_Mail_MailTemplate;
+	144: ISheetData_Mail_MailTemplate;
+	145: ISheetData_Mail_MailTemplate;
 	10001: ISheetData_Mail_MailTemplate;
 	10002: ISheetData_Mail_MailTemplate;
 	10003: ISheetData_Mail_MailTemplate;
 	10004: ISheetData_Mail_MailTemplate;
 	10005: ISheetData_Mail_MailTemplate;
 	10006: ISheetData_Mail_MailTemplate;
+	10007: ISheetData_Mail_MailTemplate;
+	10008: ISheetData_Mail_MailTemplate;
+	10009: ISheetData_Mail_MailTemplate;
+	10010: ISheetData_Mail_MailTemplate;
 }
 declare interface ISheetData_Mail_MailTemplate extends ISheetDataBase {
 	/** 邮件模板ID */

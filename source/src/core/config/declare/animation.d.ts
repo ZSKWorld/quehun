@@ -143,6 +143,36 @@ declare interface ISheet_Animation_Animation {
 	1002703: ISheetData_Animation_Animation;
 	1002704: ISheetData_Animation_Animation;
 	1002705: ISheetData_Animation_Animation;
+	1002801: ISheetData_Animation_Animation;
+	1002802: ISheetData_Animation_Animation;
+	1002803: ISheetData_Animation_Animation;
+	1002804: ISheetData_Animation_Animation;
+	1002805: ISheetData_Animation_Animation;
+	1002901: ISheetData_Animation_Animation;
+	1002902: ISheetData_Animation_Animation;
+	1002903: ISheetData_Animation_Animation;
+	1002904: ISheetData_Animation_Animation;
+	1002905: ISheetData_Animation_Animation;
+	1003001: ISheetData_Animation_Animation;
+	1003002: ISheetData_Animation_Animation;
+	1003003: ISheetData_Animation_Animation;
+	1003004: ISheetData_Animation_Animation;
+	1003005: ISheetData_Animation_Animation;
+	1003101: ISheetData_Animation_Animation;
+	1003102: ISheetData_Animation_Animation;
+	1003103: ISheetData_Animation_Animation;
+	1003104: ISheetData_Animation_Animation;
+	1003105: ISheetData_Animation_Animation;
+	1003201: ISheetData_Animation_Animation;
+	1003202: ISheetData_Animation_Animation;
+	1003203: ISheetData_Animation_Animation;
+	1003204: ISheetData_Animation_Animation;
+	1003205: ISheetData_Animation_Animation;
+	1003301: ISheetData_Animation_Animation;
+	1003302: ISheetData_Animation_Animation;
+	1003303: ISheetData_Animation_Animation;
+	1003304: ISheetData_Animation_Animation;
+	1003305: ISheetData_Animation_Animation;
 }
 declare interface ISheetData_Animation_Animation extends ISheetDataBase {
 	id: number;

@@ -1174,6 +1174,9 @@ service Lobby {
   rpc majClubActivityFetchDebugData(ReqMajClubActivityFetchDebugData) returns (ResMajClubActivityFetchDebugData);
   rpc majClubActivityDebug(ReqMajClubActivityDebug) returns (ResCommon);
   // ==DevDebug End==
+
+  // 首充时间范围
+  rpc fetchRechargeInfo(ReqCommon) returns (ResFetchRechargeInfo);
 }
 
 // 获取客户端连接信息
@@ -4008,8 +4011,24 @@ message ResReceiveActivitySpotReward {
 }
 
 message ReqLogReport {
-  uint32 success = 1;
-  uint32 failed = 2;
+  message EmojiStat {
+      uint32 id = 1;            // 表情ID
+      uint32 count = 2;         // 发送次数
+  }
+  repeated EmojiStat emoji = 3; // 玩家发送表情统计数据
+  uint32 m = 4;                 // 点击偏好 0=单击，1=双击
+  uint32 d = 5;                 // 鼠标移动事件
+  uint32 e = 6;                 // 屏幕高度的一半
+  uint32 f = 7;                 // 屏幕宽度的一半
+  uint32 t = 8;                 // 最短双击时间（毫秒）
+  uint32 g = 9;                 // 最长双击时间（毫秒）
+  string uuid = 10;             // 牌谱id
+  uint32 x = 11;                // 场
+  uint32 y = 12;                // 局
+  uint32 z = 13;                // 本
+  uint32 a = 14;                // 本次配牌的时间 
+  ClientDeviceInfo c = 15;      // 设备 device
+  uint32 v = 16;                // 版本
 }
 
 message ReqBindOauth2 {
@@ -4230,6 +4249,7 @@ message ResFetchInfo {
   ResFetchServerMaintenanceInfo maintenance_info = 32;
   ResFetchSeerInfo seer_info = 33;
   ResFetchAnnualReportInfo annual_report_info = 34;
+  ResFetchRechargeInfo recharge_info = 35;
 }
 
 message ResFetchSeerInfo {
@@ -4494,6 +4514,7 @@ message ResFetchManagerCustomizedContest {
   SeasonInfo season = 13;
   uint32 match_start_time = 14; // 自动匹配开始时间
   uint32 match_end_time = 15; // 自动匹配结束时间
+  uint32 version = 16; // 版本 >=2 时个人赛支持累计总分、团队赛支持最佳连续N战 
 }
 
 message ReqUpdateManagerCustomizedContest {
@@ -5787,6 +5808,14 @@ message ReqMajClubActivityDebug {
 }
 
 // ==DevDebug End==
+
+message ResFetchRechargeInfo {
+  Error error = 1;
+
+  repeated uint32 time_range = 2; // [开始时间，结束时间] 0 表示无穷，当前服务器时间大于结束时间时需要重新调用本协议更新
+  repeated uint32 recharged_list = 3; // 已首充的金额列表
+  uint32 now = 4; // 当前服务器时间
+}
 /*********************************************************************************************************************************
  ********************************************** next request & response **********************************************************
  *********************************************************************************************************************************/

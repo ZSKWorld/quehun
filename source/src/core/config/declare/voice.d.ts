@@ -130,10 +130,12 @@ declare interface ISheet_Voice_Sound {
 	118: ISheetData_Voice_Sound[];
 	119: ISheetData_Voice_Sound[];
 	120: ISheetData_Voice_Sound[];
+	121: ISheetData_Voice_Sound[];
 	122: ISheetData_Voice_Sound[];
 	123: ISheetData_Voice_Sound[];
 	124: ISheetData_Voice_Sound[];
 	125: ISheetData_Voice_Sound[];
+	126: ISheetData_Voice_Sound[];
 }
 declare interface ISheetData_Voice_Sound extends ISheetDataBase {
 	id: number;

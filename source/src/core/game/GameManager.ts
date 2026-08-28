@@ -21,7 +21,7 @@ export class GameManager extends Observer implements IGameManager {
 		return "4.0.46";
 	}
 	get resourceVersion() {
-		return "0.16.270";
+		return "0.16.272";
 	}
 	get clientVersionStr() {
 		return this.platform + "_2022-" + this.resourceVersion;

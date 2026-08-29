@@ -10,6 +10,9 @@
         constructor() {
             this._bridgeElements = [];
             this._nativeObj = new window.conchGLESBridge3DRenderProcess();
+            this._mem = new Laya.NativeMemory(3 * 4, false);
+            this._i32 = this._mem.int32Array;
+            this._nativeObj.bindPropertyBuffer(this._mem._buffer);
             this._dirShadowRP = new Laya.RTDirCascadeShadowRP();
             this._spotShadowRP = new Laya.RTBaseSpotRP();
             this._nativeObj.setDirectLightShadowPass(this._dirShadowRP._nativeObj);
@@ -52,7 +55,7 @@
                 Laya.Cluster.instance.update(camera, scene);
             }
             const enableShadow = (Laya.Scene3D._updateMark % scene._ShadowMapupdateFrequency === 0);
-            this._nativeObj.shadowCastPass = enableShadow;
+            this._i32[0] = enableShadow ? 1 : 0;
             if (!enableShadow) {
                 window.conchRT3DRenderProcess._removePreDrawUniformMap("Shadow", context._nativeObj);
                 context.preDrawUniformMaps = context.preDrawUniformMaps;
@@ -60,14 +63,14 @@
             }
             const mainDirLight = scene._mainDirectionLight;
             const needDirectionShadow = mainDirLight && mainDirLight.shadowMode !== Laya.ShadowMode.None;
-            this._nativeObj.enableDirectLightShadow = needDirectionShadow;
+            this._i32[1] = needDirectionShadow ? 1 : 0;
             if (needDirectionShadow) {
                 this._dirShadowRP.setRPData(mainDirLight._dataModule, camera._renderDataModule, context);
                 this._dirShadowRP.setCameraCullInfo(this._render3DManager);
             }
             const mainSpotLight = scene._mainSpotLight;
             const needSpotShadow = mainSpotLight && mainSpotLight.shadowMode !== Laya.ShadowMode.None;
-            this._nativeObj.enableSpotLightShadowPass = needSpotShadow;
+            this._i32[2] = needSpotShadow ? 1 : 0;
             if (needSpotShadow) {
                 this._spotShadowRP.setRPData(mainSpotLight._dataModule, context);
                 this._spotShadowRP.setCameraCullInfo(this._render3DManager);
@@ -128,8 +131,6 @@
             this._invertMat1_b = 0;
             this._invertMat1_d = 1;
             this._invertMat1_ty = 0;
-            this._clipInfo = null;
-            this._hasClip = false;
             this._invertY2D = false;
             this._bridge3DLightTexture = null;
             this._bridge3DLightPixels = null;
@@ -175,16 +176,6 @@
             this._invertMat1_b = b;
             this._invertMat1_d = d;
             this._invertMat1_ty = ty;
-        }
-        setClipInfo(clipInfo, hasClip) {
-            this._clipInfo = clipInfo;
-            this._hasClip = hasClip;
-        }
-        getClipInfo() {
-            return this._clipInfo;
-        }
-        get hasClip() {
-            return this._hasClip;
         }
         set invertY2D(value) {
             this._invertY2D = value;
@@ -343,7 +334,6 @@
             this._invTx = 0;
             this._invTy = 0;
             this._projCorrected = false;
-            this._hasShaderClip = false;
             this._hasGammaCorrect = false;
             this._defaultShadowMap = Laya.ShadowUtils.getTemporaryShadowTexture(1, 1, Laya.ShadowMapFormat.bit16);
             this._dirShadowRP = new Laya.WebDirCascadeShadowRP();
@@ -458,7 +448,7 @@
             }
             bridge3DContext.applyToContext(context3d);
             const clearFlag = bridge3DContext.clearDepthBeforeRender
-                ? Laya.RenderClearFlag.Depth | Laya.RenderClearFlag.Stencil
+                ? Laya.RenderClearFlag.Depth
                 : Laya.RenderClearFlag.Nothing;
             context3d.setRenderTarget(this._rt2d, clearFlag);
             context3d.pipelineMode = context2d.pipelineMode;
@@ -511,44 +501,6 @@
                 cameraData.setMatrix4x4(Laya.BaseCamera.VIEWPROJECTMATRIX, correctedProjView);
                 this._projCorrected = true;
             }
-            this._hasShaderClip = false;
-            const ownerStruct = bridge3DElement.owner;
-            if (ownerStruct && typeof ownerStruct.getClipInfo === 'function') {
-                if (ownerStruct.hasClip()) {
-                    const info = ownerStruct.getClipInfo();
-                    const clipReuse = bridge3DElement._clipCacheValid &&
-                        bridge3DElement._cachedClipUpdateFrame === info._updateFrame &&
-                        bridge3DElement._cachedRtH === this._rtH &&
-                        bridge3DElement._cachedPassData === context2d.passData;
-                    if (!clipReuse) {
-                        const clipDir = info.clipMatDir;
-                        const clipPos = info.clipMatPos;
-                        bridge3DElement._cachedRtClipPos.x = this._invA * clipPos.x + this._invC * clipPos.y + this._invTx;
-                        bridge3DElement._cachedRtClipPos.y = this._invB * clipPos.x + this._invD * clipPos.y + this._invTy;
-                        bridge3DElement._cachedRtClipPos.z = this._rtH;
-                        bridge3DElement._cachedRtClipPos.w = 0;
-                        bridge3DElement._cachedRtClipDir.x = this._invA * clipDir.x + this._invC * clipDir.y;
-                        bridge3DElement._cachedRtClipDir.y = this._invB * clipDir.x + this._invD * clipDir.y;
-                        bridge3DElement._cachedRtClipDir.z = this._invA * clipDir.z + this._invC * clipDir.w;
-                        bridge3DElement._cachedRtClipDir.w = this._invB * clipDir.z + this._invD * clipDir.w;
-                        bridge3DElement._cachedClipUpdateFrame = info._updateFrame;
-                        bridge3DElement._cachedRtH = this._rtH;
-                        bridge3DElement._cachedPassData = context2d.passData;
-                        bridge3DElement._clipCacheValid = true;
-                    }
-                    const cameraData = bridge3DContext.cameraData;
-                    cameraData.addDefine(Bridge3DCamera.BRIDGE3D_CLIP);
-                    cameraData.setVector(Bridge3DCamera.BRIDGE3D_CLIPDIR, bridge3DElement._cachedRtClipDir);
-                    cameraData.setVector(Bridge3DCamera.BRIDGE3D_CLIPPOS, bridge3DElement._cachedRtClipPos);
-                    this._hasShaderClip = true;
-                }
-                else {
-                    bridge3DElement._clipCacheValid = false;
-                }
-            }
-            else {
-                bridge3DElement._clipCacheValid = false;
-            }
         }
         _computeSceneCorrectionMatrix(bridge3DContext, out) {
             const sceneW = bridge3DContext.bridgePlaneWidth;
@@ -580,18 +532,20 @@
             const bridge3DContext = bridge3DElement.bridge3DContext;
             const opaqueList = bridge3DElement.getOpaqueList();
             const transparentList = bridge3DElement.getTransparentList();
-            if (opaqueList.elements.length > 0) {
-                opaqueList.renderQueueOnly(context3d);
+            bridge3DElement.applyStencilClipTo3DRenderStates();
+            try {
+                if (opaqueList.elements.length > 0) {
+                    opaqueList.renderQueueOnly(context3d);
+                }
+                if (transparentList.elements.length > 0) {
+                    transparentList.renderQueueOnly(context3d);
+                }
             }
-            if (transparentList.elements.length > 0) {
-                transparentList.renderQueueOnly(context3d);
+            finally {
+                bridge3DElement.restoreStencilClipTo3DRenderStates();
             }
             if (this._hasGammaCorrect) {
                 bridge3DContext.cameraData.removeDefine(Laya.RenderContext3D.GammaCorrect);
-            }
-            if (this._hasShaderClip) {
-                const cameraData = bridge3DContext.cameraData;
-                cameraData.removeDefine(Bridge3DCamera.BRIDGE3D_CLIP);
             }
             if (this._projCorrected) {
                 const cameraData = bridge3DContext.cameraData;
@@ -640,12 +594,17 @@
     class LayaXBridge3DRenderProcess {
         get render3DManager() { return this._render3DManager; }
         set render3DManager(value) {
+            if (this._render3DManager === value)
+                return;
             this._render3DManager = value;
             this._nativeObj.renderManager = value._nativeObj;
         }
         constructor() {
+            this._shadowBuf = new ArrayBuffer(3 * 4);
+            this._shadowI32 = new Int32Array(this._shadowBuf);
             this._bridgeElements = [];
             this._nativeObj = new window.conchLayaXBridge3DProcess();
+            this._nativeObj.bindPropertyBuffer(this._shadowBuf);
             this._dirShadowRP = new Laya.LayaXDirCascadeShadowRP();
             this._spotShadowRP = new Laya.LayaXBaseSpotRP();
             this._nativeObj.setDirectLightShadowPass(this._dirShadowRP._nativeObj);
@@ -674,9 +633,8 @@
             const bridge3DContext = scene.bridge3DContext;
             bridge3DContext.invertY = context3d.invertY;
             bridge3DContext.prepareForRender(camera, context3d);
-            const nativeCtx3d = context3d._nativeObj;
             for (const element of this._bridgeElements) {
-                element._nativeObj.setContext3D(nativeCtx3d);
+                element.setContext3D(context3d);
             }
             if (!scene.enableLight)
                 return;
@@ -696,7 +654,7 @@
                 Laya.Cluster.instance.update(camera, scene);
             }
             const enableShadow = (Laya.Scene3D._updateMark % scene._ShadowMapupdateFrequency === 0);
-            this._nativeObj.shadowCastPass = enableShadow;
+            this._shadowI32[0] = enableShadow ? 1 : 0;
             if (!enableShadow) {
                 window.conchLayaXRT3DRenderProcess._removePreDrawUniformMap("Shadow", context._nativeObj);
                 context.preDrawUniformMaps = context.preDrawUniformMaps;
@@ -704,7 +662,7 @@
             }
             const mainDirLight = scene._mainDirectionLight;
             const needDirectionShadow = mainDirLight && mainDirLight.shadowMode !== Laya.ShadowMode.None;
-            this._nativeObj.enableDirectLightShadow = needDirectionShadow;
+            this._shadowI32[1] = needDirectionShadow ? 1 : 0;
             if (needDirectionShadow) {
                 const dirLight = mainDirLight._dataModule;
                 const camData = camera._renderDataModule;
@@ -714,7 +672,7 @@
             }
             const mainSpotLight = scene._mainSpotLight;
             const needSpotShadow = mainSpotLight && mainSpotLight.shadowMode !== Laya.ShadowMode.None;
-            this._nativeObj.enableSpotLightShadowPass = needSpotShadow;
+            this._shadowI32[2] = needSpotShadow ? 1 : 0;
             if (needSpotShadow) {
                 this._spotShadowRP.setRPData(mainSpotLight._dataModule, context);
                 this._spotShadowRP.setCameraCullInfo(this._render3DManager);
@@ -726,7 +684,7 @@
                 window.conchLayaXRT3DRenderProcess._removePreDrawUniformMap("Shadow", context._nativeObj);
             }
             context.preDrawUniformMaps = context.preDrawUniformMaps;
-            this._nativeObj.renderShadows(context._nativeObj);
+            this._nativeObj.renderShadows();
         }
         render(element, context2d, context3d) {
             this._nativeObj.render(element._nativeObj, context2d._nativeObj, context3d._nativeObj);
@@ -754,12 +712,6 @@
 
     class Bridge3DCamera extends Laya.Camera {
         static __init__() {
-            Bridge3DCamera.BRIDGE3D_CLIP = Laya.Shader3D.getDefineByName("BRIDGE3D_CLIP");
-            Bridge3DCamera.BRIDGE3D_CLIPDIR = Laya.Shader3D.propertyNameToID("u_Bridge3DClipDir");
-            Bridge3DCamera.BRIDGE3D_CLIPPOS = Laya.Shader3D.propertyNameToID("u_Bridge3DClipPos");
-            let camerauniformMap = Laya.LayaGL.renderDeviceFactory.createGlobalUniformMap(Laya.BaseCamera.cameraBlockName);
-            camerauniformMap.addShaderUniform(Bridge3DCamera.BRIDGE3D_CLIPDIR, "u_Bridge3DClipDir", Laya.ShaderDataType.Vector4);
-            camerauniformMap.addShaderUniform(Bridge3DCamera.BRIDGE3D_CLIPPOS, "u_Bridge3DClipPos", Laya.ShaderDataType.Vector4);
         }
         constructor() {
             super();
@@ -891,8 +843,12 @@
 
     class LayaXBridge3DContext {
         constructor() {
+            this._clearBuf = new ArrayBuffer(3 * 4);
+            this._clearI32 = new Int32Array(this._clearBuf);
+            this._clearF32 = new Float32Array(this._clearBuf);
             this._invertY = false;
             this._nativeObj = new window.conchLayaXBridge3DContext();
+            this._nativeObj.bindPropertyBuffer(this._clearBuf);
         }
         setSceneModuleData(data) {
             this._nativeObj.setSceneModuleData(data ? data._nativeObj : null);
@@ -918,37 +874,35 @@
             return null;
         }
         setViewPort(vp) {
-            this._nativeObj.setViewport(vp);
         }
         setScissor(sc) {
-            this._nativeObj.setScissor(sc);
         }
         setClearData(flag, color, depthValue, stencilValue) {
-            this._nativeObj.clearDepthBeforeRender = (flag & Laya.RenderClearFlag.Depth) !== 0;
-            this._nativeObj.clearDepth = depthValue;
-            this._nativeObj.clearStencil = stencilValue;
+            this._clearI32[0] = (flag & Laya.RenderClearFlag.Depth) !== 0 ? 1 : 0;
+            this._clearF32[1] = depthValue;
+            this._clearI32[2] = stencilValue;
         }
         setInvertMatrix(a, b, c, d, tx, ty) {
         }
         applyToContext(context) {
         }
         get clearDepthBeforeRender() {
-            return this._nativeObj.clearDepthBeforeRender;
+            return this._clearI32[0] !== 0;
         }
         set clearDepthBeforeRender(value) {
-            this._nativeObj.clearDepthBeforeRender = value;
+            this._clearI32[0] = value ? 1 : 0;
         }
         get clearDepth() {
-            return this._nativeObj.clearDepth;
+            return this._clearF32[1];
         }
         set clearDepth(value) {
-            this._nativeObj.clearDepth = value;
+            this._clearF32[1] = value;
         }
         get clearStencil() {
-            return this._nativeObj.clearStencil;
+            return this._clearI32[2];
         }
         set clearStencil(value) {
-            this._nativeObj.clearStencil = value;
+            this._clearI32[2] = value;
         }
         get pipelineMode() {
             return null;
@@ -988,22 +942,21 @@
             return null;
         }
         updateFromCamera(camera) {
-            if (!camera)
-                return;
-            const viewport = camera.viewport;
-            const vp = new Laya.Viewport(viewport.x, viewport.y, viewport.width, viewport.height);
-            this._nativeObj.setViewport(vp);
-            const sc = new Laya.Vector4(viewport.x, viewport.y, viewport.width, viewport.height);
-            this._nativeObj.setScissor(sc);
         }
         prepareForRender(camera, context3d) {
-            this._nativeObj.prepareForRender(context3d._nativeObj, camera.viewport.x, camera.viewport.y, camera.viewport.width, camera.viewport.height, Laya.RenderState2D.width, Laya.RenderState2D.height);
+            this._nativeObj.prepareForRender(Laya.RenderState2D.width, Laya.RenderState2D.height);
         }
     }
 
     class RTBridge3DContext {
         constructor() {
             this._nativeObj = new window.conchGLESBridge3DContext();
+            this._mem = new Laya.NativeMemory(3 * 4, false);
+            this._f32 = this._mem.float32Array;
+            this._i32 = this._mem.int32Array;
+            this._nativeObj.bindPropertyBuffer(this._mem._buffer);
+            this._i32[0] = 1;
+            this._f32[1] = 1.0;
         }
         setSceneModuleData(data) {
             this._nativeObj.setSceneModuleData(data ? data._nativeObj : null);
@@ -1035,9 +988,9 @@
             this._nativeObj.setScissor(sc);
         }
         setClearData(flag, color, depthValue, stencilValue) {
-            this._nativeObj.clearDepthBeforeRender = (flag & Laya.RenderClearFlag.Depth) !== 0;
-            this._nativeObj.clearDepth = depthValue;
-            this._nativeObj.clearStencil = stencilValue;
+            this._i32[0] = (flag & Laya.RenderClearFlag.Depth) !== 0 ? 1 : 0;
+            this._f32[1] = depthValue;
+            this._i32[2] = stencilValue | 0;
         }
         setInvertMatrix(a, b, c, d, tx, ty) {
         }
@@ -1047,22 +1000,22 @@
         computeCorrectionMatrix(vpW, vpH, rtW, rtH, out) {
         }
         get clearDepthBeforeRender() {
-            return this._nativeObj.clearDepthBeforeRender;
+            return this._i32[0] !== 0;
         }
         set clearDepthBeforeRender(value) {
-            this._nativeObj.clearDepthBeforeRender = value;
+            this._i32[0] = value ? 1 : 0;
         }
         get clearDepth() {
-            return this._nativeObj.clearDepth;
+            return this._f32[1];
         }
         set clearDepth(value) {
-            this._nativeObj.clearDepth = value;
+            this._f32[1] = value;
         }
         get clearStencil() {
-            return this._nativeObj.clearStencil;
+            return this._i32[2];
         }
         set clearStencil(value) {
-            this._nativeObj.clearStencil = value;
+            this._i32[2] = value | 0;
         }
         get pipelineMode() {
             return null;
@@ -1542,17 +1495,13 @@
             this.globalShaderData = null;
             this.subShader = null;
             this.renderStateIsBySprite = true;
+            this.stencilClipState = null;
             this.nodeCommonMap = [];
             this.owner = null;
             this._baseRenderList = new Laya.SingletonList();
             this._renderProcess = null;
             this._bridge3DContext = null;
-            this._cachedPassData = null;
-            this._cachedRtClipDir = new Laya.Vector4();
-            this._cachedRtClipPos = new Laya.Vector4();
-            this._cachedRtH = -1;
-            this._cachedClipUpdateFrame = -1;
-            this._clipCacheValid = false;
+            this._stencilRestoreList = [];
             this._opaqueList = new Laya.RenderListQueue(false);
             this._transparentList = new Laya.RenderListQueue(true);
         }
@@ -1614,6 +1563,86 @@
             this._transparentList.sort();
             return -1;
         }
+        applyStencilClipTo3DRenderStates() {
+            this.restoreStencilClipTo3DRenderStates();
+            const state = this.stencilClipState;
+            if (!state || !state.enabled)
+                return;
+            this._applyStencilClipToQueue(this._opaqueList, state);
+            this._applyStencilClipToQueue(this._transparentList, state);
+        }
+        restoreStencilClipTo3DRenderStates() {
+            const restores = this._stencilRestoreList;
+            for (let i = 0, n = restores.length; i < n; i++) {
+                const item = restores[i];
+                const shaderData = item.shaderData;
+                const data = shaderData.getData();
+                this._restoreShaderDataField(shaderData, data, Laya.Shader3D.STENCIL_TEST, item.hasStencilTest, item.stencilTest);
+                this._restoreShaderDataField(shaderData, data, Laya.Shader3D.STENCIL_WRITE, item.hasStencilWrite, item.stencilWrite);
+                this._restoreShaderDataField(shaderData, data, Laya.Shader3D.STENCIL_Ref, item.hasStencilRef, item.stencilRef);
+                this._restoreShaderDataField(shaderData, data, Laya.Shader3D.STENCIL_READ_MASK, item.hasStencilReadMask, item.stencilReadMask);
+                this._restoreShaderDataField(shaderData, data, Laya.Shader3D.STENCIL_WRITE_MASK, item.hasStencilWriteMask, item.stencilWriteMask);
+                if (item.hasStencilOp) {
+                    if (item.stencilOp)
+                        shaderData.setVector3(Laya.Shader3D.STENCIL_Op, item.stencilOp);
+                    else {
+                        data[Laya.Shader3D.STENCIL_Op] = item.stencilOp;
+                        shaderData._renderStateChanged = true;
+                    }
+                }
+                else {
+                    delete data[Laya.Shader3D.STENCIL_Op];
+                    shaderData._renderStateChanged = true;
+                }
+            }
+            restores.length = 0;
+        }
+        _applyStencilClipToQueue(queue, state) {
+            const list = queue.elements;
+            for (let i = 0, n = list.length; i < n; i++) {
+                const element = list.elements[i];
+                const shaderData = element && element.materialShaderData;
+                if (shaderData)
+                    this._applyStencilClipToShaderData(shaderData, state);
+            }
+        }
+        _applyStencilClipToShaderData(shaderData, state) {
+            const restores = this._stencilRestoreList;
+            for (let i = 0, n = restores.length; i < n; i++) {
+                if (restores[i].shaderData === shaderData)
+                    return;
+            }
+            const data = shaderData.getData();
+            const stencilOp = data[Laya.Shader3D.STENCIL_Op];
+            restores.push({
+                shaderData,
+                hasStencilTest: Object.prototype.hasOwnProperty.call(data, Laya.Shader3D.STENCIL_TEST),
+                stencilTest: data[Laya.Shader3D.STENCIL_TEST],
+                hasStencilWrite: Object.prototype.hasOwnProperty.call(data, Laya.Shader3D.STENCIL_WRITE),
+                stencilWrite: data[Laya.Shader3D.STENCIL_WRITE],
+                hasStencilRef: Object.prototype.hasOwnProperty.call(data, Laya.Shader3D.STENCIL_Ref),
+                stencilRef: data[Laya.Shader3D.STENCIL_Ref],
+                hasStencilReadMask: Object.prototype.hasOwnProperty.call(data, Laya.Shader3D.STENCIL_READ_MASK),
+                stencilReadMask: data[Laya.Shader3D.STENCIL_READ_MASK],
+                hasStencilWriteMask: Object.prototype.hasOwnProperty.call(data, Laya.Shader3D.STENCIL_WRITE_MASK),
+                stencilWriteMask: data[Laya.Shader3D.STENCIL_WRITE_MASK],
+                hasStencilOp: Object.prototype.hasOwnProperty.call(data, Laya.Shader3D.STENCIL_Op),
+                stencilOp: stencilOp ? new Laya.Vector3(stencilOp.x, stencilOp.y, stencilOp.z) : null
+            });
+            shaderData.setInt(Laya.Shader3D.STENCIL_TEST, state.test);
+            shaderData.setBool(Laya.Shader3D.STENCIL_WRITE, false);
+            shaderData.setInt(Laya.Shader3D.STENCIL_Ref, state.ref);
+            shaderData.setInt(Laya.Shader3D.STENCIL_READ_MASK, state.readMask);
+            shaderData.setInt(Laya.Shader3D.STENCIL_WRITE_MASK, 0x00);
+            shaderData.setVector3(Laya.Shader3D.STENCIL_Op, Bridge3DRenderElement._stencilKeepOp);
+        }
+        _restoreShaderDataField(shaderData, data, index, hasValue, value) {
+            if (hasValue)
+                data[index] = value;
+            else
+                delete data[index];
+            shaderData._renderStateChanged = true;
+        }
         _prepare(context) {
         }
         _render(context) {
@@ -1631,8 +1660,8 @@
             this._transparentList = null;
             this._bridge3DContext = null;
             this._renderProcess = null;
-            this._cachedPassData = null;
-            this._clipCacheValid = false;
+            this._stencilRestoreList.length = 0;
+            this.stencilClipState = null;
             this.owner = null;
             this.geometry = null;
             this.materialShaderData = null;
@@ -1641,6 +1670,7 @@
             this.subShader = null;
         }
     }
+    Bridge3DRenderElement._stencilKeepOp = new Laya.Vector3(Laya.RenderState.STENCILOP_KEEP, Laya.RenderState.STENCILOP_KEEP, Laya.RenderState.STENCILOP_KEEP);
 
     class LayaXBridge3DRenderElement {
         set geometry(v) {
@@ -1663,6 +1693,7 @@
             this._owner = null;
             this._baseRenderList = new Laya.SingletonList();
             this._bridge3DContext = null;
+            this._context3dNative = null;
             this._nativeObj = new window.conchLayaXBridge3DElement2D();
             this._opaqueList = new Laya.RenderListQueue(false);
             this._transparentList = new Laya.RenderListQueue(true);
@@ -1694,6 +1725,13 @@
             this._renderProcess = process;
             this._nativeObj.setRenderProcess(process ? process._nativeObj : null);
         }
+        setContext3D(context3d) {
+            const native = context3d ? context3d._nativeObj : null;
+            if (this._context3dNative === native)
+                return;
+            this._context3dNative = native;
+            this._nativeObj.setContext3D(native);
+        }
         getBaseRenderList() {
             return this._baseRenderList;
         }
@@ -1707,7 +1745,7 @@
             return this._bridge3DContext;
         }
         collectElements(context3d) {
-            return this._nativeObj.collectFromNodes(context3d._nativeObj);
+            return this._nativeObj.collectFromNodes();
         }
         _prepare(context) {
         }

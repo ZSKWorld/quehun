@@ -137,27 +137,35 @@
                 else {
                     var delVector3 = Laya.TrailGeometry._tempVector36;
                     var pointAtoBVector3 = Laya.TrailGeometry._tempVector35;
+                    let canAddTrail = false;
                     switch (this.alignment) {
                         case exports.TrailAlignment.View:
-                            var cameraMatrix = state.camera.viewMatrix;
+                            const camera = scene.cullInfoCamera;
+                            if (!camera || camera.destroyed)
+                                break;
+                            const cameraMatrix = camera.viewMatrix;
                             Laya.Vector3.transformCoordinate(curPos, cameraMatrix, Laya.TrailGeometry._tempVector33);
                             Laya.Vector3.transformCoordinate(this._trialGeometry._lastFixedVertexPosition, cameraMatrix, Laya.TrailGeometry._tempVector34);
                             Laya.Vector3.subtract(Laya.TrailGeometry._tempVector33, Laya.TrailGeometry._tempVector34, delVector3);
                             pointAtoBVector3.x = -delVector3.y;
                             pointAtoBVector3.y = delVector3.x;
                             pointAtoBVector3.z = 0;
+                            canAddTrail = true;
                             break;
                         case exports.TrailAlignment.TransformZ:
                             Laya.Vector3.subtract(curPos, this._trialGeometry._lastFixedVertexPosition, delVector3);
                             var forward = Laya.TrailGeometry._tempVector33;
                             this._ownerRender.owner.transform.getForward(forward);
+                            canAddTrail = true;
                             Laya.Vector3.cross(delVector3, forward, pointAtoBVector3);
                             break;
                     }
-                    Laya.Vector3.normalize(pointAtoBVector3, pointAtoBVector3);
-                    Laya.Vector3.scale(pointAtoBVector3, this._widthMultiplier / 2, pointAtoBVector3);
-                    var delLength = Laya.Vector3.scalarLength(delVector3);
-                    this._trialGeometry._addTrailByNextPosition(curPos, this._curtime, this._minVertexDistance, pointAtoBVector3, delLength);
+                    if (canAddTrail) {
+                        Laya.Vector3.normalize(pointAtoBVector3, pointAtoBVector3);
+                        Laya.Vector3.scale(pointAtoBVector3, this._widthMultiplier / 2, pointAtoBVector3);
+                        var delLength = Laya.Vector3.scalarLength(delVector3);
+                        this._trialGeometry._addTrailByNextPosition(curPos, this._curtime, this._minVertexDistance, pointAtoBVector3, delLength);
+                    }
                 }
             }
             this._trialGeometry._updateVertexBufferUV(this._colorGradient, this._textureMode);
@@ -195,7 +203,10 @@
 
     class TrailRenderer extends Laya.BaseRender {
         constructor() {
+            var _a, _b, _c, _d;
             super();
+            (_b = (_a = this._baseRenderNode).disableNativeBoundsCallback) === null || _b === void 0 ? void 0 : _b.call(_a);
+            (_d = (_c = this._baseRenderNode).setBoundsMode) === null || _d === void 0 ? void 0 : _d.call(_c, 1);
         }
         _isMaterialVaild(value) {
             return value.checkType(Laya.ShaderFeatureType.Effect);
@@ -259,6 +270,10 @@
         }
         renderUpdate(context) {
             this._calculateBoundingBox();
+            if (this._baseRenderNode.setWorldBounds) {
+                const min = this._bounds.getMin(), max = this._bounds.getMax();
+                this._baseRenderNode.setWorldBounds(min.x, min.y, min.z, max.x, max.y, max.z);
+            }
             this._renderElements.forEach((element, index) => {
                 var _a, _b;
                 element._geometry;

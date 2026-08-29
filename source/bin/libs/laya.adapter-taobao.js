@@ -355,7 +355,7 @@
                 url = this.checkSubpackagePrefix(url);
                 return old.call(this, url);
             };
-            if (Laya.Browser.onVVMiniGame || Laya.Browser.onQGMiniGame)
+            if (Laya.Browser.onVVMiniGame || Laya.Browser.onQGMiniGame || Laya.Browser.onTBMiniGame)
                 this.supportSubPackageMultiLevelFolders = false;
             if (Laya.Browser.onWXMiniGame || Laya.Browser.onHWMiniGame || Laya.Browser.onTTMiniGame)
                 this.escapeZhCharsInURL = false;
@@ -424,22 +424,25 @@
             }
             this.cacheManager.getFile(url).then(cacheFilePath => {
                 if (cacheFilePath)
-                    super.image(owner, cacheFilePath, originalUrl, onProgress, onComplete);
+                    super.image(owner, this.encodeLocalPath(cacheFilePath), originalUrl, onProgress, onComplete);
                 else {
                     this.downloadFile(url, onProgress, (filePath, error) => {
                         if (filePath)
-                            super.image(owner, filePath, originalUrl, onProgress, onComplete);
+                            super.image(owner, this.encodeLocalPath(filePath), originalUrl, onProgress, onComplete);
                         else
                             onComplete(null, error);
                     });
                 }
             });
         }
+        encodeLocalPath(path) {
+            return path;
+        }
         package(path, onProgress, onComplete) {
             let packageName = path;
             if (!this.supportSubPackageMultiLevelFolders) {
                 packageName = path.replace(/\//g, ".");
-                if (packageName !== path) {
+                if (!Laya.Browser.onVVMiniGame && packageName !== path) {
                     if (!this.subPackages)
                         this.subPackages = {};
                     this.subPackages[path] = packageName;
@@ -621,11 +624,13 @@
             else
                 this.webSocketClass = null;
             let platform = "";
+            let systemName = "";
             let systemInfo = Laya.PAL.hasAPI("getSystemInfoSync") ? Laya.PAL.g.getSystemInfoSync() : null;
             if (systemInfo) {
                 this._pixelRatio = systemInfo.pixelRatio;
                 this._orientation = systemInfo.deviceOrientation === "landscape" ? "landscape-primary" : "portrait-primary";
                 platform = systemInfo.platform || "";
+                systemName = systemInfo.system || "";
             }
             else if (Laya.PAL.hasAPI("getWindowInfo")) {
                 let windowInfo = Laya.PAL.g.getWindowInfo();
@@ -633,16 +638,17 @@
                 if (Laya.PAL.g.getDeviceInfo) {
                     let deviceInfo = Laya.PAL.g.getDeviceInfo();
                     platform = deviceInfo.platform || "";
+                    systemName = deviceInfo.system || "";
                 }
             }
             if (Laya.Browser.onVVMiniGame || Laya.Browser.onQGMiniGame) {
                 this._pixelRatio = window.devicePixelRatio;
             }
-            this.setPlatform("", platform);
+            this.setPlatform("", this.normalizePlatform(platform, systemName));
             systemInfo = systemInfo || {};
-            const { SDKVersion } = Laya.PAL.hasAPI("getAppBaseInfo") ? Laya.PAL.g.getAppBaseInfo() : systemInfo;
+            const { SDKVersion } = (Laya.PAL.hasAPI("getAppBaseInfo") ? Laya.PAL.g.getAppBaseInfo() : null) || systemInfo;
             Laya.Browser.SDKVersion = SDKVersion || "";
-            const { system } = Laya.PAL.hasAPI("getDeviceInfo") ? Laya.PAL.g.getDeviceInfo() : systemInfo;
+            const { system } = (Laya.PAL.hasAPI("getDeviceInfo") ? Laya.PAL.g.getDeviceInfo() : null) || systemInfo;
             const systemVersionArr = system ? system.split(' ') : [];
             Laya.Browser.systemVersion = systemVersionArr.length ? systemVersionArr[systemVersionArr.length - 1] : '';
             if (Laya.Browser.onHWMiniGame) {
@@ -664,13 +670,25 @@
             });
             if (Laya.PAL.hasAPI("onWindowResize")) {
                 Laya.PAL.g.onWindowResize(result => {
+                    let info = Laya.PAL.hasAPI("getWindowInfo") ? Laya.PAL.g.getWindowInfo()
+                        : (Laya.PAL.hasAPI("getSystemInfoSync") ? Laya.PAL.g.getSystemInfoSync() : null);
+                    let w = result ? result.windowWidth : 0;
+                    let h = result ? result.windowHeight : 0;
+                    if ((!w || !h) && info) {
+                        w = info.windowWidth;
+                        h = info.windowHeight;
+                    }
+                    if (w && h) {
+                        window.innerWidth = w;
+                        window.innerHeight = h;
+                    }
                     this.event(Laya.Event.RESIZE);
                 });
             }
         }
         start() {
             var _a;
-            let downloader = Laya.Loader.downloader = new MgDownloader(Laya.PAL.hasAPI("getFileSystemManager") && Laya.PAL.hasAPI(Laya.PAL.g.getFileSystemManager(), "writeFile") && Laya.PAL.hasAPI(Laya.PAL.g.getFileSystemManager(), "readdir"));
+            let downloader = Laya.Loader.downloader = new MgBrowserAdapter.downloaderClass(Laya.PAL.hasAPI("getFileSystemManager") && Laya.PAL.hasAPI(Laya.PAL.g.getFileSystemManager(), "writeFile") && Laya.PAL.hasAPI(Laya.PAL.g.getFileSystemManager(), "readdir"));
             this.setupWasmSupport();
             (_a = MgBrowserAdapter.afterInit) === null || _a === void 0 ? void 0 : _a.call(MgBrowserAdapter);
             if (downloader.cacheManager)
@@ -679,7 +697,7 @@
                 return Promise.resolve();
         }
         onInitRender() {
-            if (Laya.Browser.onTBMiniGame) {
+            if (Laya.Browser.onTBMiniGame && !Laya.Browser.isIOSHighPerformanceMode) {
                 Laya.LayaGL.renderEngine._supportCapatable.turnOffSRGB();
             }
             if (Laya.Browser.onAlipayMiniGame) {
@@ -818,6 +836,8 @@
             return this._supportCreateArrayBufferURL;
         }
         createBufferURL(data) {
+            if (!this.supportArrayBufferURL)
+                return null;
             return Laya.PAL.g.createBufferURL(data);
         }
         revokeBufferURL(url) {
@@ -844,6 +864,24 @@
                     Laya.PAL.g.offUnhandledRejection(func);
             }
         }
+        normalizePlatform(platform, system) {
+            let p = (platform || "").toLowerCase();
+            if (p.indexOf("openharmony") !== -1 || p.indexOf("harmonyos") !== -1)
+                return "ohos";
+            if (p.indexOf("iphone") !== -1 || p.indexOf("ipad") !== -1)
+                return "ios";
+            if (p.indexOf("ios") !== -1 || p.indexOf("android") !== -1 || p.indexOf("ohos") !== -1
+                || p.indexOf("mac") !== -1 || p.indexOf("win") !== -1 || p === "devtools")
+                return platform;
+            let s = (system || "").toLowerCase();
+            if (s.indexOf("android") !== -1 || s.indexOf("adr") !== -1)
+                return "android";
+            if (s.indexOf("ios") !== -1 || s.indexOf("iphone") !== -1 || s.indexOf("ipad") !== -1)
+                return "ios";
+            if (s.indexOf("ohos") !== -1 || s.indexOf("openharmony") !== -1 || s.indexOf("harmonyos") !== -1)
+                return "ohos";
+            return platform;
+        }
         alert(msg) {
             if (typeof (window.alert) === "function") {
                 window.alert.call(null, msg);
@@ -853,6 +891,7 @@
             }
         }
     }
+    MgBrowserAdapter.downloaderClass = MgDownloader;
     Laya.PAL.register("browser", MgBrowserAdapter);
 
     class MgDeviceAdapter extends Laya.DeviceAdapter {
@@ -1137,6 +1176,10 @@
             else
                 this._ctx.play();
         }
+        onPlaybackRateChanged() {
+            if (this._ctx)
+                this._ctx.playbackRate = this.playbackRate;
+        }
         createContext() {
             return Laya.PAL.g.createInnerAudioContext();
         }
@@ -1365,10 +1408,104 @@
     }
     Laya.PAL.register("textInput", TbTextInputAdapter);
 
+    const _B64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    const _MARK = "B64:";
+    function _ab2b64(buf) {
+        const bytes = new Uint8Array(buf);
+        let res = "";
+        for (let i = 0; i < bytes.length; i += 3) {
+            const b0 = bytes[i], b1 = i + 1 < bytes.length ? bytes[i + 1] : 0, b2 = i + 2 < bytes.length ? bytes[i + 2] : 0;
+            res += _B64[b0 >> 2] + _B64[((b0 & 3) << 4) | (b1 >> 4)];
+            res += i + 1 < bytes.length ? _B64[((b1 & 15) << 2) | (b2 >> 6)] : "=";
+            res += i + 2 < bytes.length ? _B64[b2 & 63] : "=";
+        }
+        return res;
+    }
+    function _b642ab(b64) {
+        const lookup = {};
+        for (let i = 0; i < _B64.length; i++)
+            lookup[_B64[i]] = i;
+        b64 = String(b64).replace(/[^A-Za-z0-9+/]/g, "");
+        const bytes = [];
+        for (let j = 0; j < b64.length; j += 4) {
+            const c0 = lookup[b64[j]], c1 = lookup[b64[j + 1]], c2 = lookup[b64[j + 2]], c3 = lookup[b64[j + 3]];
+            bytes.push((c0 << 2) | (c1 >> 4));
+            if (b64[j + 2] !== undefined)
+                bytes.push(((c1 & 15) << 4) | (c2 >> 2));
+            if (b64[j + 3] !== undefined)
+                bytes.push(((c2 & 3) << 6) | c3);
+        }
+        return new Uint8Array(bytes).buffer;
+    }
+    function _hasMark(u8) {
+        return u8.length >= 4 && u8[0] === 66 && u8[1] === 54 && u8[2] === 52 && u8[3] === 58;
+    }
+    function _isHighPerf() {
+        return !!Laya.Browser.isIOSHighPerformanceMode;
+    }
+    function _isIOSHighPerf() {
+        return !!Laya.Browser.isIOSHighPerformanceMode && Laya.Browser.onIOS;
+    }
+    function _encPath(p) {
+        if (!p || !_isIOSHighPerf())
+            return p;
+        try {
+            return encodeURI(encodeURI(p));
+        }
+        catch (e) {
+            return p;
+        }
+    }
+    class TbFileSystemAdapter extends MgFileSystemAdapter {
+        static _isManifest(path) {
+            return /\/manifest-\d+\.bin$/.test(path);
+        }
+        writeFile(path, data, encoding) {
+            if (TbFileSystemAdapter._isManifest(path) && typeof data !== "string" && _isIOSHighPerf()) {
+                return super.writeFile(path, _MARK + _ab2b64(data), "utf8");
+            }
+            return super.writeFile(path, data, encoding);
+        }
+        readFile(path, encoding) {
+            if (!TbFileSystemAdapter._isManifest(path)) {
+                return super.readFile(_encPath(path), encoding);
+            }
+            return super.readFile(path).then((buf) => {
+                const u8 = new Uint8Array(buf);
+                if (_hasMark(u8)) {
+                    let s = "";
+                    for (let i = 4; i < u8.length; i++)
+                        s += String.fromCharCode(u8[i]);
+                    return _b642ab(s);
+                }
+                return buf;
+            });
+        }
+        copyFile(srcPath, destPath) {
+            if (!_isHighPerf())
+                return super.copyFile(srcPath, destPath);
+            return super.exists(destPath)
+                .then(ex => ex ? super.unlink(destPath).catch(() => { }) : null)
+                .then(() => super.copyFile(srcPath, destPath));
+        }
+    }
+    Laya.PAL.register("fs", TbFileSystemAdapter);
+    class TbDownloader extends MgDownloader {
+        encodeLocalPath(path) {
+            return _encPath(path);
+        }
+    }
     MgBrowserAdapter.beforeInit = function () {
-        Laya.Config.useWebGL2 = false;
-        Laya.Browser.onTBMiniGame = true;
+        var _a, _b;
         Laya.PAL.g = window.my;
+        if (!Laya.PAL.g.loadSubpackage && Laya.PAL.g.loadSubPackage)
+            Laya.PAL.g.loadSubpackage = Laya.PAL.g.loadSubPackage;
+        Laya.Browser.isIOSHighPerformanceMode = !!((_b = (_a = Laya.PAL.g) === null || _a === void 0 ? void 0 : _a.env) === null || _b === void 0 ? void 0 : _b.isHighPerformanceMode);
+        if (!Laya.Browser.isIOSHighPerformanceMode) {
+            Laya.Config.useWebGL2 = false;
+        }
+        Laya.Browser.onTBMiniGame = true;
+        MgBrowserAdapter.downloaderClass = TbDownloader;
     };
 
     exports.MgBrowserAdapter = MgBrowserAdapter;

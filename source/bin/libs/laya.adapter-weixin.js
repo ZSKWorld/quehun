@@ -355,7 +355,7 @@
                 url = this.checkSubpackagePrefix(url);
                 return old.call(this, url);
             };
-            if (Laya.Browser.onVVMiniGame || Laya.Browser.onQGMiniGame)
+            if (Laya.Browser.onVVMiniGame || Laya.Browser.onQGMiniGame || Laya.Browser.onTBMiniGame)
                 this.supportSubPackageMultiLevelFolders = false;
             if (Laya.Browser.onWXMiniGame || Laya.Browser.onHWMiniGame || Laya.Browser.onTTMiniGame)
                 this.escapeZhCharsInURL = false;
@@ -424,22 +424,25 @@
             }
             this.cacheManager.getFile(url).then(cacheFilePath => {
                 if (cacheFilePath)
-                    super.image(owner, cacheFilePath, originalUrl, onProgress, onComplete);
+                    super.image(owner, this.encodeLocalPath(cacheFilePath), originalUrl, onProgress, onComplete);
                 else {
                     this.downloadFile(url, onProgress, (filePath, error) => {
                         if (filePath)
-                            super.image(owner, filePath, originalUrl, onProgress, onComplete);
+                            super.image(owner, this.encodeLocalPath(filePath), originalUrl, onProgress, onComplete);
                         else
                             onComplete(null, error);
                     });
                 }
             });
         }
+        encodeLocalPath(path) {
+            return path;
+        }
         package(path, onProgress, onComplete) {
             let packageName = path;
             if (!this.supportSubPackageMultiLevelFolders) {
                 packageName = path.replace(/\//g, ".");
-                if (packageName !== path) {
+                if (!Laya.Browser.onVVMiniGame && packageName !== path) {
                     if (!this.subPackages)
                         this.subPackages = {};
                     this.subPackages[path] = packageName;
@@ -621,11 +624,13 @@
             else
                 this.webSocketClass = null;
             let platform = "";
+            let systemName = "";
             let systemInfo = Laya.PAL.hasAPI("getSystemInfoSync") ? Laya.PAL.g.getSystemInfoSync() : null;
             if (systemInfo) {
                 this._pixelRatio = systemInfo.pixelRatio;
                 this._orientation = systemInfo.deviceOrientation === "landscape" ? "landscape-primary" : "portrait-primary";
                 platform = systemInfo.platform || "";
+                systemName = systemInfo.system || "";
             }
             else if (Laya.PAL.hasAPI("getWindowInfo")) {
                 let windowInfo = Laya.PAL.g.getWindowInfo();
@@ -633,16 +638,17 @@
                 if (Laya.PAL.g.getDeviceInfo) {
                     let deviceInfo = Laya.PAL.g.getDeviceInfo();
                     platform = deviceInfo.platform || "";
+                    systemName = deviceInfo.system || "";
                 }
             }
             if (Laya.Browser.onVVMiniGame || Laya.Browser.onQGMiniGame) {
                 this._pixelRatio = window.devicePixelRatio;
             }
-            this.setPlatform("", platform);
+            this.setPlatform("", this.normalizePlatform(platform, systemName));
             systemInfo = systemInfo || {};
-            const { SDKVersion } = Laya.PAL.hasAPI("getAppBaseInfo") ? Laya.PAL.g.getAppBaseInfo() : systemInfo;
+            const { SDKVersion } = (Laya.PAL.hasAPI("getAppBaseInfo") ? Laya.PAL.g.getAppBaseInfo() : null) || systemInfo;
             Laya.Browser.SDKVersion = SDKVersion || "";
-            const { system } = Laya.PAL.hasAPI("getDeviceInfo") ? Laya.PAL.g.getDeviceInfo() : systemInfo;
+            const { system } = (Laya.PAL.hasAPI("getDeviceInfo") ? Laya.PAL.g.getDeviceInfo() : null) || systemInfo;
             const systemVersionArr = system ? system.split(' ') : [];
             Laya.Browser.systemVersion = systemVersionArr.length ? systemVersionArr[systemVersionArr.length - 1] : '';
             if (Laya.Browser.onHWMiniGame) {
@@ -664,13 +670,25 @@
             });
             if (Laya.PAL.hasAPI("onWindowResize")) {
                 Laya.PAL.g.onWindowResize(result => {
+                    let info = Laya.PAL.hasAPI("getWindowInfo") ? Laya.PAL.g.getWindowInfo()
+                        : (Laya.PAL.hasAPI("getSystemInfoSync") ? Laya.PAL.g.getSystemInfoSync() : null);
+                    let w = result ? result.windowWidth : 0;
+                    let h = result ? result.windowHeight : 0;
+                    if ((!w || !h) && info) {
+                        w = info.windowWidth;
+                        h = info.windowHeight;
+                    }
+                    if (w && h) {
+                        window.innerWidth = w;
+                        window.innerHeight = h;
+                    }
                     this.event(Laya.Event.RESIZE);
                 });
             }
         }
         start() {
             var _a;
-            let downloader = Laya.Loader.downloader = new MgDownloader(Laya.PAL.hasAPI("getFileSystemManager") && Laya.PAL.hasAPI(Laya.PAL.g.getFileSystemManager(), "writeFile") && Laya.PAL.hasAPI(Laya.PAL.g.getFileSystemManager(), "readdir"));
+            let downloader = Laya.Loader.downloader = new MgBrowserAdapter.downloaderClass(Laya.PAL.hasAPI("getFileSystemManager") && Laya.PAL.hasAPI(Laya.PAL.g.getFileSystemManager(), "writeFile") && Laya.PAL.hasAPI(Laya.PAL.g.getFileSystemManager(), "readdir"));
             this.setupWasmSupport();
             (_a = MgBrowserAdapter.afterInit) === null || _a === void 0 ? void 0 : _a.call(MgBrowserAdapter);
             if (downloader.cacheManager)
@@ -679,7 +697,7 @@
                 return Promise.resolve();
         }
         onInitRender() {
-            if (Laya.Browser.onTBMiniGame) {
+            if (Laya.Browser.onTBMiniGame && !Laya.Browser.isIOSHighPerformanceMode) {
                 Laya.LayaGL.renderEngine._supportCapatable.turnOffSRGB();
             }
             if (Laya.Browser.onAlipayMiniGame) {
@@ -818,6 +836,8 @@
             return this._supportCreateArrayBufferURL;
         }
         createBufferURL(data) {
+            if (!this.supportArrayBufferURL)
+                return null;
             return Laya.PAL.g.createBufferURL(data);
         }
         revokeBufferURL(url) {
@@ -844,6 +864,24 @@
                     Laya.PAL.g.offUnhandledRejection(func);
             }
         }
+        normalizePlatform(platform, system) {
+            let p = (platform || "").toLowerCase();
+            if (p.indexOf("openharmony") !== -1 || p.indexOf("harmonyos") !== -1)
+                return "ohos";
+            if (p.indexOf("iphone") !== -1 || p.indexOf("ipad") !== -1)
+                return "ios";
+            if (p.indexOf("ios") !== -1 || p.indexOf("android") !== -1 || p.indexOf("ohos") !== -1
+                || p.indexOf("mac") !== -1 || p.indexOf("win") !== -1 || p === "devtools")
+                return platform;
+            let s = (system || "").toLowerCase();
+            if (s.indexOf("android") !== -1 || s.indexOf("adr") !== -1)
+                return "android";
+            if (s.indexOf("ios") !== -1 || s.indexOf("iphone") !== -1 || s.indexOf("ipad") !== -1)
+                return "ios";
+            if (s.indexOf("ohos") !== -1 || s.indexOf("openharmony") !== -1 || s.indexOf("harmonyos") !== -1)
+                return "ohos";
+            return platform;
+        }
         alert(msg) {
             if (typeof (window.alert) === "function") {
                 window.alert.call(null, msg);
@@ -853,6 +891,7 @@
             }
         }
     }
+    MgBrowserAdapter.downloaderClass = MgDownloader;
     Laya.PAL.register("browser", MgBrowserAdapter);
 
     class MgDeviceAdapter extends Laya.DeviceAdapter {
@@ -1137,6 +1176,10 @@
             else
                 this._ctx.play();
         }
+        onPlaybackRateChanged() {
+            if (this._ctx)
+                this._ctx.playbackRate = this.playbackRate;
+        }
         createContext() {
             return Laya.PAL.g.createInnerAudioContext();
         }
@@ -1347,6 +1390,7 @@
                 if (this._loop)
                     this.decoder.stop().then(() => this.decoder.start(this._startOption));
                 else {
+                    this.pause();
                     this._ended = true;
                     this.event("ended");
                 }
@@ -1362,10 +1406,46 @@
             return this._currentTime;
         }
         set currentTime(value) {
-            this.decoder.seek(value * 1000);
+            this._ended = false;
+            if (value === 0 && this._loaded) {
+                this.restartDecoder();
+                return;
+            }
+            this.decoder.seek(value * 1000).then(() => {
+                if (this._playing)
+                    this.decoder.wait(false);
+            }).catch(err => {
+                console.warn("MgVideoTexture seek: " + err.message);
+            });
+        }
+        restartDecoder() {
+            if (this._restartPromise)
+                return;
+            this._waitFirstFrame = true;
+            const promise = this._restartPromise = this.decoder.stop().then(() => {
+                if (this._restartPromise !== promise)
+                    return null;
+                return this.decoder.start(this._startOption);
+            });
+            promise.then(() => {
+                if (this._restartPromise !== promise)
+                    return;
+                this._restartPromise = null;
+                if (this._playing)
+                    this.decoder.wait(false);
+            }).catch(err => {
+                if (this._restartPromise === promise) {
+                    this._restartPromise = null;
+                    this._waitFirstFrame = false;
+                    if (this._playing)
+                        this.pause();
+                }
+                console.warn("MgVideoTexture restart: " + err.message);
+            });
         }
         onLoad(url) {
             let src = this._source;
+            this._restartPromise = null;
             this._ended = false;
             this._waitFirstFrame = false;
             if (this._loaded)
@@ -1386,7 +1466,8 @@
             });
         }
         onPlay() {
-            this.decoder.wait(false);
+            if (!this._restartPromise)
+                this.decoder.wait(false);
         }
         onPause() {
             this.decoder.wait(true);
@@ -1405,6 +1486,7 @@
                 return false;
         }
         onDestroy() {
+            this._restartPromise = null;
             this.decoder.remove();
         }
     }

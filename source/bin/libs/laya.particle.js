@@ -809,6 +809,7 @@
     }
 
     const _globalPoint = new Laya.Point();
+    const _simulateStep = 1.0 / 60.0;
     exports.Particle2DSystemDirtyFlagBits = void 0;
     (function (Particle2DSystemDirtyFlagBits) {
         Particle2DSystemDirtyFlagBits[Particle2DSystemDirtyFlagBits["Velocity2DOverLifetimeBit"] = 1] = "Velocity2DOverLifetimeBit";
@@ -1105,11 +1106,10 @@
             }
         }
         _update(deltaTime) {
+            this._updateParticles(deltaTime * this.main.simulationSpeed);
+        }
+        _updateParticles(deltaTime) {
             if (this.isPlaying) {
-                {
-                    let simulationSpeed = this.main.simulationSpeed;
-                    deltaTime *= simulationSpeed;
-                }
                 if (deltaTime <= 0) {
                     return;
                 }
@@ -1134,13 +1134,47 @@
                 }
             }
         }
+        _getMaxCurveValue(curve) {
+            let maxValue = Math.max(0, curve.constant, curve.constantMin, curve.constantMax);
+            let gradients = [curve.curveMin, curve.curveMax];
+            for (let gradient of gradients) {
+                for (let i = 0; i < gradient.gradientCount; i++) {
+                    maxValue = Math.max(maxValue, gradient.getValueByIndex(i));
+                }
+            }
+            return Number.isFinite(maxValue) ? maxValue : 0;
+        }
+        _skipCompletedLoops(time) {
+            let duration = this.main.duration;
+            if (!this.main.looping || duration <= 0) {
+                return time;
+            }
+            let maxLifetime = this._getMaxCurveValue(this.main.startLifetime);
+            let maxStartDelay = this._getMaxCurveValue(this.main.startDelay);
+            let simulationWindow = Math.max(duration * 2, duration + maxLifetime + maxStartDelay);
+            let skippedLoopCount = Math.floor((time - simulationWindow) / duration);
+            if (skippedLoopCount <= 0) {
+                return time;
+            }
+            return time - skippedLoopCount * duration;
+        }
         simulate(time, restart = true) {
-            if (this.isPlaying) {
+            if (this.isPlaying && Number.isFinite(time)) {
                 if (restart) {
                     this.stop();
                     this.play();
                 }
-                this._update(time);
+                let remainingTime = Math.max(0, time);
+                if (restart) {
+                    remainingTime = this._skipCompletedLoops(remainingTime);
+                }
+                while (remainingTime > _simulateStep && this.isPlaying) {
+                    this._updateParticles(_simulateStep);
+                    remainingTime -= _simulateStep;
+                }
+                if (this.isPlaying) {
+                    this._updateParticles(remainingTime);
+                }
                 this.pause();
             }
         }

@@ -2812,9 +2812,10 @@
         }
         createChildren() {
             this._content = new Box();
-            if (!Laya.LayaEnv.isPlaying)
+            if (!Laya.LayaEnv.isPlaying) {
                 this._content.hideFlags = Laya.HideFlags.HideAndDontSave;
-            this._content.mouseThrough = true;
+                this._content.mouseThrough = true;
+            }
             this.addChild(this._content);
         }
         _transChanged(kind) {
@@ -4093,11 +4094,12 @@
                 return;
             if (!this._valueArr)
                 return;
-            this.graphics.clear(true);
             let texture;
             texture = this._sources[0];
-            if (!texture)
+            if (!texture) {
+                this.graphics.clear(true);
                 return;
+            }
             var isHorizontal = (this._direction === "horizontal");
             if (isHorizontal) {
                 this._wordsW = this._valueArr.length * (texture.sourceWidth + this.spaceX);
@@ -4120,6 +4122,7 @@
                         dX = 0;
                 }
             }
+            this.graphics.clear(true);
             for (let i = 0, sz = this._valueArr.length; i < sz; i++) {
                 let index = this._indexMap[this._valueArr.charAt(i)];
                 texture = this._sources[index];
@@ -4128,7 +4131,7 @@
                 if (isHorizontal)
                     this.graphics.drawImage(texture, dX + i * (texture.sourceWidth + this.spaceX), 0, texture.sourceWidth, texture.sourceHeight);
                 else
-                    this.graphics.drawImage(texture, 0 + dX, i * (texture.sourceHeight + this.spaceY), texture.sourceWidth, texture.sourceHeight);
+                    this.graphics.drawImage(texture, dX, i * (texture.sourceHeight + this.spaceY), texture.sourceWidth, texture.sourceHeight);
             }
             if (!this._isWidthSet) {
                 this._widget.resetLayoutX();

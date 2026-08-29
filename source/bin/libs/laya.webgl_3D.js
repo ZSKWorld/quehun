@@ -224,6 +224,12 @@
         _calculateBoundingBox() {
             this._caculateBoundingBoxFun.call(this._caculateBoundingBoxCall);
         }
+        _setTransformWorldMatrix(value) {
+            this.shaderData.setMatrix4x4(Laya.Sprite3D.WORLDMATRIX, value);
+        }
+        _setTransformWorldInvertFront(value) {
+            this.shaderData.setVector(Laya.Sprite3D.WORLDINVERTFRONT, value);
+        }
         get bounds() {
             if (this.boundsChange) {
                 this._calculateBoundingBox();
@@ -364,6 +370,8 @@
         _applyReflection() {
             if (!this.probeReflection || this.reflectionMode == Laya.ReflectionProbeMode.off)
                 return;
+            if (!this.probeReflection.shaderData)
+                return;
             if (this.probeReflection.needUpdate()) {
                 this.probeReflection.applyRenderData();
             }
@@ -429,9 +437,9 @@
                     this._applyLightProb();
                     if (this.ismoved.x > this._cacheMoved.x || (this.ismoved.x == this._cacheMoved.x && this.ismoved.y > this._cacheMoved.y)) {
                         let trans = this.transform;
-                        this.shaderData.setMatrix4x4(Laya.Sprite3D.WORLDMATRIX, trans.worldMatrix);
+                        this._setTransformWorldMatrix(trans.worldMatrix);
                         this._worldParams.x = trans.getFrontFaceValue();
-                        this.shaderData.setVector(Laya.Sprite3D.WORLDINVERTFRONT, this._worldParams);
+                        this._setTransformWorldInvertFront(this._worldParams);
                         this.ismoved.cloneTo(this._cacheMoved);
                     }
                 }
@@ -493,8 +501,12 @@
             value && value.cloneTo(this._ambientColor);
         }
         applyRenderData() {
+            if (!this.shaderData)
+                return;
             this._updateMaskFlag = this.updateMark;
             let data = this.shaderData;
+            if (!data)
+                return;
             if (!this.boxProjection) {
                 data.removeDefine(Laya.Sprite3DRenderDeclaration.SHADERDEFINE_SPECCUBE_BOX_PROJECTION);
             }
@@ -596,8 +608,8 @@
                     }
                     this._applyLightProb();
                     this._applyReflection();
-                    this.shaderData.setMatrix4x4(Laya.Sprite3D.WORLDMATRIX, mat);
-                    this.shaderData.setVector(Laya.Sprite3D.WORLDINVERTFRONT, worldParams);
+                    this._setTransformWorldMatrix(mat);
+                    this._setTransformWorldInvertFront(worldParams);
                 }
             };
         return CLSSK;
@@ -636,6 +648,8 @@
         }
         applyRenderData() {
             let data = this.shaderData;
+            if (!data)
+                return;
             data.addDefine(Laya.VolumetricGI.SHADERDEFINE_VOLUMETRICGI);
             data.setVector3(Laya.VolumetricGI.VOLUMETRICGI_PROBECOUNTS, this._probeCounts);
             data.setVector3(Laya.VolumetricGI.VOLUMETRICGI_PROBESTEPS, this._probeStep);
@@ -674,8 +688,8 @@
                     let worldMat = this.transform.worldMatrix;
                     let worldParams = this._worldParams;
                     worldParams.x = this.transform.getFrontFaceValue();
-                    shaderData.setMatrix4x4(Laya.Sprite3D.WORLDMATRIX, worldMat);
-                    shaderData.setVector(Laya.Sprite3D.WORLDINVERTFRONT, worldParams);
+                    this._setTransformWorldMatrix(worldMat);
+                    this._setTransformWorldInvertFront(worldParams);
                     this._applyLightProb();
                     this._applyReflection();
                     shaderData.setVector(Laya.SimpleSkinnedMeshSprite3D.SIMPLE_SIMPLEANIMATORPARAMS, this._simpleAnimatorParams);
@@ -1640,12 +1654,10 @@
             this._invertFront = this._getInvertFront();
             if (this.materialShaderData) {
                 if (Laya.Config.matUseUBO) {
-                    this.materialShaderData.uploadCache();
                     if (this.materialUBO) {
-                        if (this.materialUBO.destroyed) {
+                        if (!this.materialUBO.descriptor) {
                             this._handleMaterialChange();
                         }
-                        this.materialUBO.upload();
                     }
                 }
                 if (this.materialShaderData.renderStateChanged) {

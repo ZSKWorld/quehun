@@ -51,10 +51,10 @@
             this._nativeObj.depthNormalPipelineMode = value;
         }
         get depthTextureMode() {
-            return this._nativeObj.depthTextureMode;
+            return this._u32[0];
         }
         set depthTextureMode(value) {
-            this._nativeObj.depthTextureMode = value;
+            this._u32[0] = value;
         }
         get depthTarget() {
             return this._depthTarget;
@@ -78,22 +78,22 @@
             this._nativeObj.setDepthNormalTarget(value._nativeObj);
         }
         get enableCMD() {
-            return this._nativeObj.enableCMD;
+            return this._i32[1] !== 0;
         }
         set enableCMD(value) {
-            this._nativeObj.enableCMD = value;
+            this._i32[1] = value ? 1 : 0;
         }
         get enableOpaque() {
-            return this._nativeObj.enableOpaque;
+            return this._i32[2] !== 0;
         }
         set enableOpaque(value) {
-            this._nativeObj.enableOpaque = value;
+            this._i32[2] = value ? 1 : 0;
         }
         get enableTransparent() {
-            return this._nativeObj.enableTransparent;
+            return this._i32[3] !== 0;
         }
         set enableTransparent(value) {
-            this._nativeObj.enableTransparent = value;
+            this._i32[3] = value ? 1 : 0;
         }
         get skyRenderNode() {
             return this._skyRenderNode;
@@ -114,14 +114,17 @@
         }
         set clearColor(value) {
             this._clearColor = value;
-            this._nativeObj.setClearColor(value);
+            this._f32[12] = value.r;
+            this._f32[13] = value.g;
+            this._f32[14] = value.b;
+            this._f32[15] = value.a;
         }
         get clearFlag() {
             return this._clearFlag;
         }
         set clearFlag(value) {
             this._clearFlag = value;
-            this._nativeObj.setClearFlag(value);
+            this._u32[16] = value;
         }
         setCameraCullInfo(value, sceneManager) {
             this._cameraCullInfo.position = value._transform.position;
@@ -132,10 +135,16 @@
             this._nativeObj.setCameraCullInfo(this._cameraCullInfo, sceneManager._nativeObj);
         }
         setViewPort(value) {
-            this._nativeObj.setViewPort(value);
+            this._f32[4] = value.x;
+            this._f32[5] = value.y;
+            this._f32[6] = value.width;
+            this._f32[7] = value.height;
         }
         setScissor(value) {
-            this._nativeObj.setScissor(value);
+            this._f32[8] = value.x;
+            this._f32[9] = value.y;
+            this._f32[10] = value.z;
+            this._f32[11] = value.w;
         }
         _getRenderCMDArray(cmds) {
             let nativeobCMDs = [];
@@ -183,6 +192,17 @@
         constructor() {
             this._cameraCullInfo = new Laya.CameraCullInfo();
             this._nativeObj = new window.conchRTForwardAddClusterRP();
+            this._mem = new Laya.NativeMemory(17 * 4, false);
+            this._f32 = this._mem.float32Array;
+            this._i32 = this._mem.int32Array;
+            this._u32 = this._mem.Uint32Array;
+            this._nativeObj.bindPropertyBuffer(this._mem._buffer);
+            this._i32[2] = 1;
+            this._i32[3] = 1;
+            this._f32[12] = 1;
+            this._f32[13] = 1;
+            this._f32[14] = 1;
+            this._f32[15] = 1;
         }
         destroy() {
             this._nativeObj = null;
@@ -208,28 +228,28 @@
 
     class RTForwardAddRP {
         get shadowCastPass() {
-            return this._nativeObj.shadowCastPass;
+            return this._i32[0] !== 0;
         }
         set shadowCastPass(value) {
-            this._nativeObj.shadowCastPass = value;
+            this._i32[0] = value ? 1 : 0;
         }
         get enableDirectLightShadow() {
-            return this._nativeObj.enableDirectLightShadow;
+            return this._i32[1] !== 0;
         }
         set enableDirectLightShadow(value) {
-            this._nativeObj.enableDirectLightShadow = value;
+            this._i32[1] = value ? 1 : 0;
         }
         get enableSpotLightShadowPass() {
-            return this._nativeObj.enableSpotLightShadowPass;
+            return this._i32[2] !== 0;
         }
         set enableSpotLightShadowPass(value) {
-            this._nativeObj.enableSpotLightShadowPass = value;
+            this._i32[2] = value ? 1 : 0;
         }
         get enablePostProcess() {
-            return this._nativeObj.enablePostProcess;
+            return this._i32[3] !== 0;
         }
         set enablePostProcess(value) {
-            this._nativeObj.enablePostProcess = value;
+            this._i32[3] = value ? 1 : 0;
         }
         get postProcess() {
             return this._postProcess;
@@ -271,6 +291,9 @@
         constructor() {
             this._finalize = new Laya.CommandBuffer();
             this._nativeObj = new window.conchRTForwardAddRP();
+            this._mem = new Laya.NativeMemory(4 * 4, false);
+            this._i32 = this._mem.int32Array;
+            this._nativeObj.bindPropertyBuffer(this._mem._buffer);
             this.shadowCastPass = false;
             this.enableDirectLightShadow = false;
             this.enableSpotLightShadowPass = false;
@@ -598,14 +621,20 @@
         }
         set viewport(value) {
             value.cloneTo(this._viewport);
-            this._nativeObj.setViewport(value);
+            this._f32[0] = value.x;
+            this._f32[1] = value.y;
+            this._f32[2] = value.width;
+            this._f32[3] = value.height;
         }
         get scissor() {
             return this._scissor;
         }
         set scissor(value) {
             value.cloneTo(this._scissor);
-            this._nativeObj.setScissor(value);
+            this._f32[4] = value.x;
+            this._f32[5] = value.y;
+            this._f32[6] = value.z;
+            this._f32[7] = value.w;
         }
         get source() {
             return this._source;
@@ -619,7 +648,10 @@
         }
         set offsetScale(value) {
             value.cloneTo(this._offsetScale);
-            this._nativeObj.setOffsetScale(this._offsetScale);
+            this._f32[8] = value.x;
+            this._f32[9] = value.y;
+            this._f32[10] = value.z;
+            this._f32[11] = value.w;
         }
         get element() {
             return this._element;
@@ -635,6 +667,9 @@
             this._scissor = new Laya.Vector4();
             this._offsetScale = new Laya.Vector4();
             this._nativeObj = new window.conchGLESBlitQuadCMDData();
+            this._mem = new Laya.NativeMemory(12 * 4, false);
+            this._f32 = this._mem.float32Array;
+            this._nativeObj.bindPropertyBuffer(this._mem._buffer);
         }
     }
     class GLESDrawElementCMDData extends Laya.DrawElementCMDData {
@@ -760,16 +795,16 @@
             this._nativeObj.setCameraData(value ? value._nativeObj : null);
         }
         get sceneUpdateMask() {
-            return this._nativeObj._sceneUpdateMask;
+            return this._u32[1];
         }
         set sceneUpdateMask(value) {
-            this._nativeObj._sceneUpdateMask = value;
+            this._u32[1] = value;
         }
         get cameraUpdateMask() {
-            return this._nativeObj._cameraUpdateMask;
+            return this._u32[0];
         }
         set cameraUpdateMask(value) {
-            this._nativeObj._cameraUpdateMask = value;
+            this._u32[0] = value;
         }
         get pipelineMode() {
             return this._nativeObj._pipelineMode;
@@ -778,14 +813,18 @@
             this._nativeObj._pipelineMode = value;
         }
         get invertY() {
-            return this._nativeObj._invertY;
+            return this._i32[2] !== 0;
         }
         set invertY(value) {
-            this._nativeObj._invertY = value;
+            this._i32[2] = value ? 1 : 0;
         }
         constructor() {
             this._tempList = [];
             this._nativeObj = new window.conchGLESRenderContext3D();
+            this._mem = new Laya.NativeMemory(3 * 4, false);
+            this._i32 = this._mem.int32Array;
+            this._u32 = this._mem.Uint32Array;
+            this._nativeObj.bindPropertyBuffer(this._mem._buffer);
             this._nativeObj.setGlobalConfigShaderData(Laya.Shader3D._configDefineValues._nativeObj);
             this.cameraUpdateMask = 0;
         }
@@ -863,16 +902,16 @@
             return this._transform;
         }
         get isRender() {
-            return this._nativeObj.isRender;
+            return this._i32[0] !== 0;
         }
         set isRender(data) {
-            this._nativeObj.isRender = data;
+            this._i32[0] = data ? 1 : 0;
         }
         get materialRenderQueue() {
-            return this._nativeObj.materialRenderQueue;
+            return this._u32[2];
         }
         set materialRenderQueue(value) {
-            this._nativeObj.materialRenderQueue = value;
+            this._u32[2] = value;
         }
         get owner() {
             return this._owner;
@@ -890,19 +929,23 @@
                 this._nativeObj.setSubShader(value.moduleData._nativeObj);
         }
         get canDynamicBatch() {
-            return this._nativeObj.canDynamicBatch;
+            return this._i32[1] !== 0;
         }
         set canDynamicBatch(value) {
-            this._nativeObj.canDynamicBatch = value;
+            this._i32[1] = value ? 1 : 0;
         }
         get materialId() {
-            return this._nativeObj.materialId;
+            return this._u32[3];
         }
         set materialId(value) {
-            this._nativeObj.materialId = value;
+            this._u32[3] = value;
         }
         constructor() {
             this.init();
+            this._mem = new Laya.NativeMemory(4 * 4, false);
+            this._i32 = this._mem.int32Array;
+            this._u32 = this._mem.Uint32Array;
+            this._nativeObj.bindPropertyBuffer(this._mem._buffer);
             window.conchGLESRenderElement3D.setCompileDefine(Laya.RTShaderPass.getGlobalCompileDefine()._nativeObj);
         }
         destroy() {
@@ -1131,45 +1174,53 @@
             this._nativeObj.setTransform(value._nativeObj);
         }
         get farplane() {
-            return this._nativeObj._farplane;
+            return this._f32[16];
         }
         set farplane(value) {
-            this._nativeObj._farplane = value;
+            this._f32[16] = value;
         }
         get nearplane() {
-            return this._nativeObj._nearplane;
+            return this._f32[17];
         }
         set nearplane(value) {
-            this._nativeObj._nearplane = value;
+            this._f32[17] = value;
         }
         get fieldOfView() {
-            return this._nativeObj._fieldOfView;
+            return this._f32[18];
         }
         set fieldOfView(value) {
-            this._nativeObj._fieldOfView = value;
+            this._f32[18] = value;
         }
         get aspectRatio() {
-            return this._nativeObj._aspectRatio;
+            return this._f32[19];
         }
         set aspectRatio(value) {
-            this._nativeObj._aspectRatio = value;
+            this._f32[19] = value;
         }
         constructor() {
             this._nativeObj = new window.conchRTCameraNodeData();
+            this._mem = new Laya.NativeMemory(20 * 4, false);
+            this._f32 = this._mem.float32Array;
+            this._nativeObj.bindPropertyBuffer(this._mem._buffer);
         }
         setProjectionViewMatrix(value) {
-            value && this._nativeObj.setProjectionViewMatrix(value);
+            if (value)
+                this._f32.set(value.elements, 0);
         }
     }
     class RTSceneNodeData {
         get lightmapDirtyFlag() {
-            return this._nativeObj._lightmapDirtyFlag;
+            return this._i32[0];
         }
         set lightmapDirtyFlag(value) {
-            this._nativeObj._lightmapDirtyFlag = value;
+            this._i32[0] = value;
         }
         constructor() {
             this._nativeObj = new window.conchRTSceneNodeData();
+            this._mem = new Laya.NativeMemory(1 * 4, false);
+            this._i32 = this._mem.int32Array;
+            this._nativeObj.bindPropertyBuffer(this._mem._buffer);
+            this._i32[0] = -1;
         }
     }
 
@@ -1187,7 +1238,6 @@
             this._rotationEuler = new Laya.Vector3(0, 0, 0);
             this._worldMatrix = new Laya.Matrix4x4();
             this._rtSyncFlag = 0;
-            this._notifyFrame = 0;
             this._hasTransformChangedListener = false;
             this._isDefaultMatrix = false;
             this._faceInvert = false;
@@ -1239,9 +1289,6 @@
             else
                 flag &= ~type;
             this._nativeUInt32Buffer[RTTransform3D.TRANSFORM_RT_SYNC_FLAG_DATAOFFSET] = flag;
-        }
-        get _RTtransformFlag() {
-            return this._getTransformChangeFlag();
         }
         get localPositionX() {
             return this.localPosition.x;
@@ -1473,8 +1520,7 @@
         _onWorldPositionRotationTransform() {
             if (!this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDPOSITION) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDQUATERNION) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDEULER)) {
                 this._setTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX | Laya.Transform3D.TRANSFORM_WORLDPOSITION | Laya.Transform3D.TRANSFORM_WORLDQUATERNION | Laya.Transform3D.TRANSFORM_WORLDEULER, true);
-                if (this._hasTransformChangedListener)
-                    this.event(Laya.Event.TRANSFORM_CHANGED, this._getTransformChangeFlag());
+                this._notifyTransformChanged();
             }
             for (var i = 0, n = this._children.length; i < n; i++)
                 this._children[i]._onWorldPositionRotationTransform();
@@ -1482,8 +1528,7 @@
         _onWorldPositionScaleTransform() {
             if (!this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDPOSITION) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDSCALE)) {
                 this._setTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX | Laya.Transform3D.TRANSFORM_WORLDPOSITION | Laya.Transform3D.TRANSFORM_WORLDSCALE, true);
-                if (this._hasTransformChangedListener)
-                    this.event(Laya.Event.TRANSFORM_CHANGED, this._getTransformChangeFlag());
+                this._notifyTransformChanged();
             }
             for (var i = 0, n = this._children.length; i < n; i++)
                 this._children[i]._onWorldPositionScaleTransform();
@@ -1491,8 +1536,7 @@
         _onWorldPositionTransform() {
             if (!this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDPOSITION)) {
                 this._setTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX | Laya.Transform3D.TRANSFORM_WORLDPOSITION, true);
-                if (this._hasTransformChangedListener)
-                    this.event(Laya.Event.TRANSFORM_CHANGED, this._getTransformChangeFlag());
+                this._notifyTransformChanged();
             }
             if (Laya.Transform3D._inAnimatorBatch) {
                 if (this._lastAnimatorFrame === Laya.Transform3D._currentAnimatorFrame)
@@ -1508,8 +1552,7 @@
         _onWorldRotationTransform() {
             if (!this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDQUATERNION) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDEULER)) {
                 this._setTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX | Laya.Transform3D.TRANSFORM_WORLDQUATERNION | Laya.Transform3D.TRANSFORM_WORLDEULER, true);
-                if (this._hasTransformChangedListener)
-                    this.event(Laya.Event.TRANSFORM_CHANGED, this._getTransformChangeFlag());
+                this._notifyTransformChanged();
             }
             if (Laya.Transform3D._inAnimatorBatch) {
                 if (this._lastAnimatorFrame === Laya.Transform3D._currentAnimatorFrame)
@@ -1525,8 +1568,7 @@
         _onWorldScaleTransform() {
             if (!this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDSCALE)) {
                 this._setTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX | Laya.Transform3D.TRANSFORM_WORLDSCALE, true);
-                if (this._hasTransformChangedListener)
-                    this.event(Laya.Event.TRANSFORM_CHANGED, this._getTransformChangeFlag());
+                this._notifyTransformChanged();
             }
             if (Laya.Transform3D._inAnimatorBatch) {
                 if (this._lastAnimatorFrame === Laya.Transform3D._currentAnimatorFrame)
@@ -1542,8 +1584,7 @@
         _onWorldTransform() {
             if (!this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDPOSITION) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDQUATERNION) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDEULER) || !this._getTransformFlag(Laya.Transform3D.TRANSFORM_WORLDSCALE)) {
                 this._setTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX | Laya.Transform3D.TRANSFORM_WORLDPOSITION | Laya.Transform3D.TRANSFORM_WORLDQUATERNION | Laya.Transform3D.TRANSFORM_WORLDEULER | Laya.Transform3D.TRANSFORM_WORLDSCALE, true);
-                if (this._hasTransformChangedListener)
-                    this.event(Laya.Event.TRANSFORM_CHANGED, this._getTransformChangeFlag());
+                this._notifyTransformChanged();
             }
             if (Laya.Transform3D._inAnimatorBatch) {
                 if (this._lastAnimatorFrame === Laya.Transform3D._currentAnimatorFrame)
@@ -1629,40 +1670,40 @@
             this._transform = value;
         }
         get distanceForSort() {
-            return this._nativeObj.distanceForSort;
+            return this._f32[0];
         }
         set distanceForSort(value) {
-            this._nativeObj.distanceForSort = value;
+            this._f32[0] = value;
         }
         get sortingFudge() {
-            return this._nativeObj.sortingFudge;
+            return this._f32[1];
         }
         set sortingFudge(value) {
-            this._nativeObj.sortingFudge = value;
+            this._f32[1] = value;
         }
         get castShadow() {
-            return this._nativeObj.castShadow;
+            return this._i32[2] !== 0;
         }
         set castShadow(value) {
-            this._nativeObj.castShadow = value;
+            this._i32[2] = value ? 1 : 0;
         }
         get enable() {
-            return this._nativeObj.enable;
+            return this._i32[4] !== 0;
         }
         set enable(value) {
-            this._nativeObj.enable = value;
+            this._i32[4] = value ? 1 : 0;
         }
         get renderbitFlag() {
-            return this._nativeObj.renderbitFlag;
+            return this._u32[5];
         }
         set renderbitFlag(value) {
-            this._nativeObj.renderbitFlag = value;
+            this._u32[5] = value;
         }
         get layer() {
-            return this._nativeObj.layer;
+            return this._u32[9];
         }
         set layer(value) {
-            this._nativeObj.layer = value;
+            this._u32[9] = value;
         }
         get bounds() {
             if (this.boundsChange) {
@@ -1683,28 +1724,28 @@
             this._nativeObj.setBaseGeometryBounds(value._imp._nativeObj);
         }
         get boundsChange() {
-            return this._nativeObj.boundsChange;
+            return this._i32[17] !== 0;
         }
         set boundsChange(value) {
-            this._nativeObj.boundsChange = value;
+            this._i32[17] = value ? 1 : 0;
         }
         get customCull() {
-            return this._nativeObj._customCull;
+            return this._i32[28] !== 0;
         }
         set customCull(value) {
-            this._nativeObj._customCull = value;
+            this._i32[28] = value ? 1 : 0;
         }
         get customCullResoult() {
-            return this._nativeObj._customCullResoult;
+            return this._i32[29] !== 0;
         }
         set customCullResoult(value) {
-            this._nativeObj._customCullResoult = value;
+            this._i32[29] = value ? 1 : 0;
         }
         get staticMask() {
-            return this._nativeObj.staticMask;
+            return this._u32[11];
         }
         set staticMask(value) {
-            this._nativeObj.staticMask = value;
+            this._u32[11] = value;
         }
         get shaderData() {
             return this._shaderData;
@@ -1714,10 +1755,10 @@
             this._nativeObj.setShaderData(value._nativeObj);
         }
         get lightmapIndex() {
-            return this._nativeObj.lightmapIndex;
+            return this._i32[12];
         }
         set lightmapIndex(value) {
-            this._nativeObj.lightmapIndex = value;
+            this._i32[12] = value;
         }
         get lightmap() {
             return this._lightmap;
@@ -1731,33 +1772,33 @@
         }
         set probeReflection(value) {
             this._probeReflection = value;
-            this._nativeObj.setProbeReflection(value._nativeObj);
+            this._nativeObj.setProbeReflection(value ? value._nativeObj : null);
         }
         get reflectionMode() {
-            return this._nativeObj.reflectionMode;
+            return this._u32[13];
         }
         set reflectionMode(value) {
-            this._nativeObj.reflectionMode = value;
+            this._u32[13] = value;
         }
         get volumetricGI() {
             return this._volumetricGI;
         }
         set volumetricGI(value) {
             this._volumetricGI = value;
-            this._nativeObj.setVolumetricGI(value._nativeObj);
+            this._nativeObj.setVolumetricGI(value ? value._nativeObj : null);
         }
         get lightProbUpdateMark() {
-            return this._nativeObj.lightProbUpdateMark;
+            return this._i32[14];
         }
         set lightProbUpdateMark(value) {
-            this._nativeObj.lightProbUpdateMark = value;
+            this._i32[14] = value;
         }
         get irradientMode() {
             return this._irradientMode;
         }
         set irradientMode(value) {
             this._irradientMode = value;
-            this._nativeObj.irradianceMode = value;
+            this._u32[15] = value;
         }
         set_renderUpdatePreCall(call, fun) {
             this._renderUpdatePrebindFun = fun.bind(call, Laya.RenderContext3D._instance._contextOBJ);
@@ -1781,44 +1822,56 @@
             }
         }
         get perCameraUpdate() {
-            return this._nativeObj.perCameraUpdate;
+            return this._i32[16] !== 0;
         }
         set perCameraUpdate(value) {
-            this._nativeObj.perCameraUpdate = value;
+            this._i32[16] = value ? 1 : 0;
         }
         constructor() {
             this._additionShaderData = new Map();
             this._ismoved = new Laya.Vector2();
             this._worldParams = new Laya.Vector4();
             this._getNativeObj();
+            this._initPropertyBuffer();
             this._defaultBaseGeometryBounds = new Laya.Bounds();
             this.baseGeometryBounds = this._defaultBaseGeometryBounds;
             this.renderelements = [];
         }
+        _initPropertyBuffer() {
+            this._mem = new Laya.NativeMemory(30 * 4, false);
+            this._f32 = this._mem.float32Array;
+            this._i32 = this._mem.int32Array;
+            this._u32 = this._mem.Uint32Array;
+            this._nativeObj.bindPropertyBuffer(this._mem._buffer);
+            this._i32[12] = -1;
+            this._i32[14] = -1;
+            this._f32[24] = 1;
+        }
         get visibalRangeBit() {
-            return this._nativeObj.visibalRangeBit;
+            return this._u32[6];
         }
         set visibalRangeBit(value) {
-            this._nativeObj.visibalRangeBit = value;
+            this._u32[6] = value;
         }
         get visibalMin() {
-            return this._nativeObj.visibalMin;
+            return this._f32[7];
         }
         set visibalMin(value) {
-            this._nativeObj.visibalMin = value;
+            this._f32[7] = value;
         }
         get visibalMax() {
-            return this._nativeObj.visibalMax;
+            return this._f32[8];
         }
         set visibalMax(value) {
-            this._nativeObj.visibalMax = value;
+            this._f32[8] = value;
         }
         get ismoved() {
             return this._ismoved;
         }
         set ismoved(value) {
             this._ismoved.setValue(value.x, value.y);
-            this._nativeObj.ismoved = value;
+            this._f32[18] = value.x;
+            this._f32[19] = value.y;
         }
         setNodeCustomData(dataSlot, data) {
             switch (dataSlot) {
@@ -1832,19 +1885,22 @@
                     this._worldParams.w = data;
                     break;
             }
-            this._nativeObj.worldParams = this._worldParams;
+            this._f32[20] = this._worldParams.x;
+            this._f32[21] = this._worldParams.y;
+            this._f32[22] = this._worldParams.z;
+            this._f32[23] = this._worldParams.w;
         }
         get renderNodeType() {
-            return this._nativeObj.renderNodeType;
+            return this._u32[10];
         }
         set renderNodeType(value) {
-            this._nativeObj.renderNodeType = value;
+            this._u32[10] = value;
         }
         get receiveShadow() {
-            return this._nativeObj.receiveShadow;
+            return this._i32[3] !== 0;
         }
         set receiveShadow(value) {
-            this._nativeObj.receiveShadow = value;
+            this._i32[3] = value ? 1 : 0;
         }
         _applyLightProb() {
             this._nativeObj._applyLightProb();
@@ -1863,7 +1919,10 @@
             this._nativeObj.setRenderElements(tempArray);
         }
         setLightmapScaleOffset(value) {
-            this._nativeObj.setLightmapScaleOffset(value);
+            this._f32[24] = value.x;
+            this._f32[25] = value.y;
+            this._f32[26] = value.z;
+            this._f32[27] = value.w;
         }
         setCommonUniformMap(value) {
             this._nativeObj.setCommonUniformMap(value);
@@ -1889,16 +1948,16 @@
 
     class RTDirectLight {
         get shadowNearPlane() {
-            return this._nativeObj._shadowNearPlane;
+            return this._f32[0];
         }
         set shadowNearPlane(value) {
-            this._nativeObj._shadowNearPlane = value;
+            this._f32[0] = value;
         }
         get shadowCascadesMode() {
-            return this._nativeObj._shadowCascadesMode;
+            return this._i32[1];
         }
         set shadowCascadesMode(value) {
-            this._nativeObj._shadowCascadesMode = value;
+            this._i32[1] = value;
         }
         get transform() {
             return this._transform;
@@ -1908,55 +1967,63 @@
             this._nativeObj.setTransform(value._nativeObj);
         }
         get shadowResolution() {
-            return this._nativeObj._shadowResolution;
+            return this._i32[2];
         }
         set shadowResolution(value) {
-            this._nativeObj._shadowResolution = value;
+            this._i32[2] = value;
         }
         get shadowDistance() {
-            return this._nativeObj._shadowDistance;
+            return this._f32[3];
         }
         set shadowDistance(value) {
-            this._nativeObj._shadowDistance = value;
+            this._f32[3] = value;
         }
         get shadowMode() {
-            return this._nativeObj._shadowMode;
+            return this._i32[4];
         }
         set shadowMode(value) {
-            this._nativeObj._shadowMode = value;
+            this._i32[4] = value;
         }
         get shadowStrength() {
-            return this._nativeObj._shadowStrength;
+            return this._f32[5];
         }
         set shadowStrength(value) {
-            this._nativeObj._shadowStrength = value;
+            this._f32[5] = value;
         }
         get shadowDepthBias() {
-            return this._nativeObj._shadowDepthBias;
+            return this._f32[6];
         }
         set shadowDepthBias(value) {
-            this._nativeObj._shadowDepthBias = value;
+            this._f32[6] = value;
         }
         get shadowNormalBias() {
-            return this._nativeObj._shadowNormalBias;
+            return this._f32[7];
         }
         set shadowNormalBias(value) {
-            this._nativeObj._shadowNormalBias = value;
+            this._f32[7] = value;
         }
         get shadowTwoCascadeSplits() {
-            return this._nativeObj._shadowTwoCascadeSplits;
+            return this._f32[8];
         }
         set shadowTwoCascadeSplits(value) {
-            this._nativeObj._shadowTwoCascadeSplits = value;
+            this._f32[8] = value;
         }
         setShadowFourCascadeSplits(value) {
-            value && this._nativeObj.setShadowFourCascadeSplits(value);
+            if (!value)
+                return;
+            this._f32[9] = value.x;
+            this._f32[10] = value.y;
+            this._f32[11] = value.z;
         }
         setDirection(value) {
             value && this._nativeObj.setDirection(value);
         }
         constructor() {
             this._nativeObj = new window.conchRTDirectLight();
+            this._mem = new Laya.NativeMemory(12 * 4, false);
+            this._f32 = this._mem.float32Array;
+            this._i32 = this._mem.int32Array;
+            this._nativeObj.bindPropertyBuffer(this._mem._buffer);
         }
     }
 
@@ -1995,66 +2062,70 @@
             this._nativeObj.setTransform(value._nativeObj);
         }
         get range() {
-            return this._nativeObj.range;
+            return this._f32[0];
         }
         set range(value) {
-            this._nativeObj.range = value;
+            this._f32[0] = value;
         }
         get shadowResolution() {
-            return this._nativeObj.shadowResolution;
+            return this._f32[1];
         }
         set shadowResolution(value) {
-            this._nativeObj.shadowResolution = value;
+            this._f32[1] = value;
         }
         get shadowDistance() {
-            return this._nativeObj.shadowDistance;
+            return this._f32[2];
         }
         set shadowDistance(value) {
-            this._nativeObj.shadowDistance = value;
+            this._f32[2] = value;
         }
         ;
         get shadowMode() {
-            return this._nativeObj.shadowMode;
+            return this._i32[3];
         }
         set shadowMode(value) {
-            this._nativeObj.shadowMode = value;
+            this._i32[3] = value;
         }
         ;
         get shadowStrength() {
-            return this._nativeObj.shadowStrength;
+            return this._f32[4];
         }
         set shadowStrength(value) {
-            this._nativeObj.shadowStrength = value;
+            this._f32[4] = value;
         }
         get shadowDepthBias() {
-            return this._nativeObj.shadowDepthBias;
+            return this._f32[5];
         }
         set shadowDepthBias(value) {
-            this._nativeObj.shadowDepthBias = value;
+            this._f32[5] = value;
         }
         get shadowNormalBias() {
-            return this._nativeObj.shadowNormalBias;
+            return this._f32[6];
         }
         set shadowNormalBias(value) {
-            this._nativeObj.shadowNormalBias = value;
+            this._f32[6] = value;
         }
         get shadowNearPlane() {
-            return this._nativeObj.shadowNearPlane;
+            return this._f32[7];
         }
         set shadowNearPlane(value) {
-            this._nativeObj.shadowNearPlane = value;
+            this._f32[7] = value;
         }
         constructor() {
             this._nativeObj = new window.conchRTPointLight();
+            this._mem = new Laya.NativeMemory(8 * 4, false);
+            this._f32 = this._mem.float32Array;
+            this._i32 = this._mem.int32Array;
+            this._nativeObj.bindPropertyBuffer(this._mem._buffer);
         }
     }
 
     class RTReflectionProb {
         get boxProjection() {
-            return this._nativeObj._boxProjection;
+            return this._i32[0] !== 0;
         }
         set boxProjection(value) {
-            this._nativeObj._boxProjection = value;
+            this._i32[0] = value ? 1 : 0;
         }
         get bound() {
             return this._bound;
@@ -2064,22 +2135,22 @@
             this._nativeObj.setBounds(value._imp._nativeObj);
         }
         get ambientMode() {
-            return this._nativeObj._ambientMode;
+            return this._i32[1];
         }
         set ambientMode(value) {
-            this._nativeObj._ambientMode = value;
+            this._i32[1] = value;
         }
         get ambientIntensity() {
-            return this._nativeObj._ambientIntensity;
+            return this._f32[2];
         }
         set ambientIntensity(value) {
-            this._nativeObj._ambientIntensity = value;
+            this._f32[2] = value;
         }
         get reflectionIntensity() {
-            return this._nativeObj._reflectionIntensity;
+            return this._f32[3];
         }
         set reflectionIntensity(value) {
-            this._nativeObj._reflectionIntensity = value;
+            this._f32[3] = value;
         }
         get reflectionTexture() {
             return this._reflectionTexture;
@@ -2104,22 +2175,31 @@
             this._nativeObj.setIblTex(value._nativeObj);
         }
         get updateMark() {
-            return this._nativeObj._updateMark;
+            return this._u32[4];
         }
         set updateMark(value) {
-            this._nativeObj._updateMark = value;
+            this._u32[4] = value;
         }
         get iblTexRGBD() {
-            return this._nativeObj._iblTexRGBD;
+            return this._i32[5] !== 0;
         }
         set iblTexRGBD(value) {
-            this._nativeObj._iblTexRGBD = value;
+            this._i32[5] = value ? 1 : 0;
         }
         setProbePosition(value) {
-            value && this._nativeObj.setProbePosition(value);
+            if (!value)
+                return;
+            this._f32[6] = value.x;
+            this._f32[7] = value.y;
+            this._f32[8] = value.z;
         }
         setAmbientColor(value) {
-            value && this._nativeObj.setAmbientColor(value);
+            if (!value)
+                return;
+            this._f32[9] = value.r;
+            this._f32[10] = value.g;
+            this._f32[11] = value.b;
+            this._f32[12] = value.a;
         }
         setAmbientSH(value) {
             this._ambientSH = value;
@@ -2128,6 +2208,11 @@
         constructor() {
             this._id = ++RTReflectionProb._idCounter;
             this._nativeObj = new window.conchRTReflectionProb();
+            this._mem = new Laya.NativeMemory(13 * 4, false);
+            this._f32 = this._mem.float32Array;
+            this._i32 = this._mem.int32Array;
+            this._u32 = this._mem.Uint32Array;
+            this._nativeObj.bindPropertyBuffer(this._mem._buffer);
             this.shaderData = Laya.LayaGL.renderDeviceFactory.createShaderData();
         }
         get shaderData() {
@@ -2135,7 +2220,7 @@
         }
         set shaderData(value) {
             this._shaderData = value;
-            this._nativeObj.shaderData = value ? this._shaderData._nativeObj : null;
+            this._nativeObj.setShaderData(value ? this._shaderData._nativeObj : null);
         }
         destroy() {
             this._nativeObj.destroy();
@@ -2225,61 +2310,65 @@
             this._transform = value;
         }
         get shadowResolution() {
-            return this._nativeObj._shadowResolution;
+            return this._f32[0];
         }
         set shadowResolution(value) {
-            this._nativeObj._shadowResolution = value;
+            this._f32[0] = value;
         }
         get shadowDistance() {
-            return this._nativeObj._shadowDistance;
+            return this._f32[1];
         }
         set shadowDistance(value) {
-            this._nativeObj._shadowDistance = value;
+            this._f32[1] = value;
         }
         get shadowMode() {
-            return this._nativeObj._shadowMode;
+            return this._i32[2];
         }
         set shadowMode(value) {
-            this._nativeObj._shadowMode = value;
+            this._i32[2] = value;
         }
         get shadowStrength() {
-            return this._nativeObj._shadowStrength;
+            return this._f32[3];
         }
         set shadowStrength(value) {
-            this._nativeObj._shadowStrength = value;
+            this._f32[3] = value;
         }
         get shadowDepthBias() {
-            return this._nativeObj._shadowDepthBias;
+            return this._f32[4];
         }
         set shadowDepthBias(value) {
-            this._nativeObj._shadowDepthBias = value;
+            this._f32[4] = value;
         }
         get shadowNormalBias() {
-            return this._nativeObj._shadowNormalBias;
+            return this._f32[5];
         }
         set shadowNormalBias(value) {
-            this._nativeObj._shadowNormalBias = value;
+            this._f32[5] = value;
         }
         get shadowNearPlane() {
-            return this._nativeObj._shadowNearPlane;
+            return this._f32[6];
         }
         set shadowNearPlane(value) {
-            this._nativeObj._shadowNearPlane = value;
+            this._f32[6] = value;
         }
         get spotRange() {
-            return this._nativeObj._spotRange;
+            return this._f32[7];
         }
         set spotRange(value) {
-            this._nativeObj._spotRange = value;
+            this._f32[7] = value;
         }
         get spotAngle() {
-            return this._nativeObj._spotAngle;
+            return this._f32[8];
         }
         set spotAngle(value) {
-            this._nativeObj._spotAngle = value;
+            this._f32[8] = value;
         }
         constructor() {
             this._nativeObj = new window.conchRTSpotLight();
+            this._mem = new Laya.NativeMemory(9 * 4, false);
+            this._f32 = this._mem.float32Array;
+            this._i32 = this._mem.int32Array;
+            this._nativeObj.bindPropertyBuffer(this._mem._buffer);
         }
         setDirection(value) {
             this._nativeObj.setDirection(value);
@@ -2309,20 +2398,20 @@
             this._nativeObj.setBounds(value ? value._imp._nativeObj : null);
         }
         get intensity() {
-            return this._nativeObj._intensity;
+            return this._f32[0];
         }
         set intensity(value) {
-            this._nativeObj._intensity = value;
+            this._f32[0] = value;
         }
         get updateMark() {
-            return this._nativeObj._updateMark;
+            return this._u32[1];
         }
         set updateMark(value) {
-            this._nativeObj._updateMark = value;
+            this._u32[1] = value;
         }
         set shaderData(value) {
             this._shaderData = value;
-            this._nativeObj.shaderData = this._shaderData._nativeObj;
+            this._nativeObj.setShaderData(this._shaderData._nativeObj);
         }
         get shaderData() {
             return this._shaderData;
@@ -2330,18 +2419,29 @@
         constructor() {
             this._id = ++RTVolumetricGI._idCounter;
             this._nativeObj = new window.conchRTVolumetricGI();
+            this._mem = new Laya.NativeMemory(12 * 4, false);
+            this._f32 = this._mem.float32Array;
+            this._u32 = this._mem.Uint32Array;
+            this._nativeObj.bindPropertyBuffer(this._mem._buffer);
             this.shaderData = Laya.LayaGL.renderDeviceFactory.createShaderData();
             this._defaultBounds = new Laya.Bounds();
             this.bound = this._defaultBounds;
         }
         setParams(value) {
-            this._nativeObj.setParams(value);
+            this._f32[8] = value.x;
+            this._f32[9] = value.y;
+            this._f32[10] = value.z;
+            this._f32[11] = value.w;
         }
         setProbeCounts(value) {
-            this._nativeObj.setProbeCounts(value);
+            this._f32[2] = value.x;
+            this._f32[3] = value.y;
+            this._f32[4] = value.z;
         }
         setProbeStep(value) {
-            this._nativeObj.setProbeStep(value);
+            this._f32[5] = value.x;
+            this._f32[6] = value.y;
+            this._f32[7] = value.z;
         }
         destroy() {
             this._nativeObj.destroy();

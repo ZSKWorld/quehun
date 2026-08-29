@@ -1520,8 +1520,9 @@
                 probe.destroy();
             }
             this._reflectionProbes.length = 0;
-            this._sceneReflectionProbe.destroy();
+            const sceneReflectionProbe = this._sceneReflectionProbe;
             this._sceneReflectionProbe = null;
+            sceneReflectionProbe === null || sceneReflectionProbe === void 0 ? void 0 : sceneReflectionProbe._destroyByManager();
         }
     }
 
@@ -1927,6 +1928,7 @@
             super();
             this._ambientColor = new Laya.Color();
             this._isScene = false;
+            this._destroyedByManager = false;
             this._importance = 0;
             this._type = VolumeManager.ReflectionProbeVolumeType;
             this._dataModule = Laya3DRender.Render3DModuleDataFactory.createReflectionProbe();
@@ -2058,6 +2060,19 @@
         _onEnable() {
             super._onEnable();
             this._dataModule.updateMark = Laya.ILaya.Scene3D._updateMark;
+        }
+        destroy() {
+            if (this._isScene) {
+                console.warn("Scene reflection probe can not be destroyed directly.");
+                return;
+            }
+            super.destroy();
+        }
+        _destroyByManager() {
+            if (this._destroyedByManager)
+                return;
+            this._destroyedByManager = true;
+            super.destroy();
         }
         _onDestroy() {
             this.iblTex = null;
@@ -2566,6 +2581,8 @@
         _setUnBelongScene() {
             this._statRemove();
             this._scene._volumeManager.removeMotionObject(this);
+            this.probReflection = null;
+            this.lightProbe = null;
             let batch = this._batchRender;
             this._batchRender = batch;
             this._scene = null;
@@ -4139,6 +4156,34 @@
             if (type === Laya.Event.TRANSFORM_CHANGED)
                 this._hasTransformChangedListener = true;
         }
+        static _beginAnimatorBatch(eventCollector) {
+            this._currentAnimatorFrame++;
+            this._animatorEventCollector = eventCollector;
+            this._inAnimatorBatch = true;
+        }
+        static _endAnimatorBatch() {
+            this._inAnimatorBatch = false;
+            this._animatorEventCollector = null;
+        }
+        _notifyTransformChanged() {
+            var _a;
+            if (!this._hasTransformChangedListener)
+                return;
+            const changeFlag = this._getTransformChangeFlag();
+            if (Transform3D._inAnimatorBatch) {
+                (_a = Transform3D._animatorEventCollector) === null || _a === void 0 ? void 0 : _a._addAnimatorTransformEvent(this, changeFlag);
+            }
+            else {
+                this.event(Laya.Event.TRANSFORM_CHANGED, changeFlag);
+            }
+        }
+        _getAnimatorTransformChangeFlag() {
+            return this._getTransformChangeFlag();
+        }
+        _dispatchAnimatorTransformChanged(changeFlag) {
+            if (this._hasTransformChangedListener)
+                this.event(Laya.Event.TRANSFORM_CHANGED, changeFlag);
+        }
         get isDefaultMatrix() {
             if (this._getTransformFlag(Transform3D.TRANSFORM_LOCALMATRIX)) {
                 this.localMatrix;
@@ -4437,6 +4482,8 @@
         constructor(owner) {
             super();
             this._lastAnimatorFrame = -1;
+            this._lastAnimatorNotifyFrame = -1;
+            this._animatorNotifyIndex = -1;
             this._localPosition = new Laya.Vector3(0, 0, 0);
             this._localRotation = new Laya.Quaternion(0, 0, 0, 1);
             this._localScale = new Laya.Vector3(1, 1, 1);
@@ -4502,8 +4549,7 @@
         _onWorldPositionRotationTransform() {
             if (!this._getTransformFlag(Transform3D.TRANSFORM_WORLDMATRIX) || !this._getTransformFlag(Transform3D.TRANSFORM_WORLDPOSITION) || !this._getTransformFlag(Transform3D.TRANSFORM_WORLDQUATERNION) || !this._getTransformFlag(Transform3D.TRANSFORM_WORLDEULER)) {
                 this._setTransformFlag(Transform3D.TRANSFORM_WORLDMATRIX | Transform3D.TRANSFORM_WORLDPOSITION | Transform3D.TRANSFORM_WORLDQUATERNION | Transform3D.TRANSFORM_WORLDEULER, true);
-                if (this._hasTransformChangedListener)
-                    this.event(Laya.Event.TRANSFORM_CHANGED, this._getTransformChangeFlag());
+                this._notifyTransformChanged();
             }
             for (var i = 0, n = this._children.length; i < n; i++)
                 this._children[i]._onWorldPositionRotationTransform();
@@ -4511,8 +4557,7 @@
         _onWorldPositionScaleTransform() {
             if (!this._getTransformFlag(Transform3D.TRANSFORM_WORLDMATRIX) || !this._getTransformFlag(Transform3D.TRANSFORM_WORLDPOSITION) || !this._getTransformFlag(Transform3D.TRANSFORM_WORLDSCALE)) {
                 this._setTransformFlag(Transform3D.TRANSFORM_WORLDMATRIX | Transform3D.TRANSFORM_WORLDPOSITION | Transform3D.TRANSFORM_WORLDSCALE, true);
-                if (this._hasTransformChangedListener)
-                    this.event(Laya.Event.TRANSFORM_CHANGED, this._getTransformChangeFlag());
+                this._notifyTransformChanged();
             }
             for (var i = 0, n = this._children.length; i < n; i++)
                 this._children[i]._onWorldPositionScaleTransform();
@@ -4520,8 +4565,7 @@
         _onWorldPositionTransform() {
             if (!this._getTransformFlag(Transform3D.TRANSFORM_WORLDMATRIX) || !this._getTransformFlag(Transform3D.TRANSFORM_WORLDPOSITION)) {
                 this._setTransformFlag(Transform3D.TRANSFORM_WORLDMATRIX | Transform3D.TRANSFORM_WORLDPOSITION, true);
-                if (this._hasTransformChangedListener)
-                    this.event(Laya.Event.TRANSFORM_CHANGED, this._getTransformChangeFlag());
+                this._notifyTransformChanged();
             }
             if (Transform3D._inAnimatorBatch) {
                 if (this._lastAnimatorFrame === Transform3D._currentAnimatorFrame)
@@ -4537,8 +4581,7 @@
         _onWorldRotationTransform() {
             if (!this._getTransformFlag(Transform3D.TRANSFORM_WORLDMATRIX) || !this._getTransformFlag(Transform3D.TRANSFORM_WORLDQUATERNION) || !this._getTransformFlag(Transform3D.TRANSFORM_WORLDEULER)) {
                 this._setTransformFlag(Transform3D.TRANSFORM_WORLDMATRIX | Transform3D.TRANSFORM_WORLDQUATERNION | Transform3D.TRANSFORM_WORLDEULER, true);
-                if (this._hasTransformChangedListener)
-                    this.event(Laya.Event.TRANSFORM_CHANGED, this._getTransformChangeFlag());
+                this._notifyTransformChanged();
             }
             if (Transform3D._inAnimatorBatch) {
                 if (this._lastAnimatorFrame === Transform3D._currentAnimatorFrame)
@@ -4554,8 +4597,7 @@
         _onWorldScaleTransform() {
             if (!this._getTransformFlag(Transform3D.TRANSFORM_WORLDMATRIX) || !this._getTransformFlag(Transform3D.TRANSFORM_WORLDSCALE)) {
                 this._setTransformFlag(Transform3D.TRANSFORM_WORLDMATRIX | Transform3D.TRANSFORM_WORLDSCALE, true);
-                if (this._hasTransformChangedListener)
-                    this.event(Laya.Event.TRANSFORM_CHANGED, this._getTransformChangeFlag());
+                this._notifyTransformChanged();
             }
             if (Transform3D._inAnimatorBatch) {
                 if (this._lastAnimatorFrame === Transform3D._currentAnimatorFrame)
@@ -4571,8 +4613,7 @@
         _onWorldTransform() {
             if (!this._getTransformFlag(Transform3D.TRANSFORM_WORLDMATRIX) || !this._getTransformFlag(Transform3D.TRANSFORM_WORLDPOSITION) || !this._getTransformFlag(Transform3D.TRANSFORM_WORLDQUATERNION) || !this._getTransformFlag(Transform3D.TRANSFORM_WORLDEULER) || !this._getTransformFlag(Transform3D.TRANSFORM_WORLDSCALE)) {
                 this._setTransformFlag(Transform3D.TRANSFORM_WORLDMATRIX | Transform3D.TRANSFORM_WORLDPOSITION | Transform3D.TRANSFORM_WORLDQUATERNION | Transform3D.TRANSFORM_WORLDEULER | Transform3D.TRANSFORM_WORLDSCALE, true);
-                if (this._hasTransformChangedListener)
-                    this.event(Laya.Event.TRANSFORM_CHANGED, this._getTransformChangeFlag());
+                this._notifyTransformChanged();
             }
             if (Transform3D._inAnimatorBatch) {
                 if (this._lastAnimatorFrame === Transform3D._currentAnimatorFrame)
@@ -4780,6 +4821,7 @@
     Transform3D.TRANSFORM_LOCALSCALE = 0x200;
     Transform3D._angleToRandin = 180 / Math.PI;
     Transform3D._inAnimatorBatch = false;
+    Transform3D._animatorEventCollector = null;
     Transform3D._currentAnimatorFrame = 0;
     const _tempVector30$3 = new Laya.Vector3();
     const _tempQuaternion0 = new Laya.Quaternion();
@@ -9170,6 +9212,18 @@
             this._sceneManagerOBJ.destroy();
         }
     }
+    if (Laya.Profiler.enabled) {
+        const renderUpdate = SceneRenderManager.prototype.renderUpdate;
+        SceneRenderManager.prototype.renderUpdate = function () {
+            let profileZone = Laya.Profiler.start("scene/render_update");
+            try {
+                renderUpdate.call(this);
+            }
+            finally {
+                Laya.Profiler.end(profileZone);
+            }
+        };
+    }
 
     class UI3DManager {
         constructor() {
@@ -9617,6 +9671,7 @@
             this.componentElementMap.forEach((value) => {
                 value.update(delta);
             });
+            this._componentDriver.callAfterSceneUpdate();
             this._sceneRenderManager.renderUpdate();
             this.skyRenderer.renderUpdate(RenderContext3D._instance);
             if (!this._renderByEditor)
@@ -10023,6 +10078,59 @@
     Scene3D._layaxActiveCameraHandles = new Float64Array(8);
     Scene3D.mainCavansViewPort = new Laya.Viewport(0, 0, 1, 1);
     Scene3D.componentManagerMap = new Map();
+    if (Laya.Profiler.enabled) {
+        Scene3D.prototype._update = function () {
+            var delta = this.timer.delta / 1000;
+            this._time += delta;
+            this._shaderValues.setNumber(Scene3D.TIME, this._time);
+            if (Laya.LayaEnv.isPlaying) {
+                this._physicsStepTime += delta;
+                let steps = Math.floor(this._physicsStepTime / Scene3D.physicsSettings.fixedTimeStep);
+                steps = Math.min(steps, Scene3D.physicsSettings.maxSubSteps);
+                if (steps > 0) {
+                    let physicsManager = this._physicsManager;
+                    if (Laya.ILaya.Laya3D.enablePhysics && Laya.Stat.enablePhysicsUpdate) {
+                        physicsManager.update(steps * Scene3D.physicsSettings.fixedTimeStep);
+                    }
+                    this._physicsStepTime -= steps * Scene3D.physicsSettings.fixedTimeStep;
+                }
+            }
+            let profileZone = Laya.Profiler.start("scene/component_driver");
+            try {
+                this._componentDriver.callStart();
+                this._componentDriver.callUpdate();
+                this._componentDriver.callLateUpdate();
+                this._componentDriver.callDestroy();
+            }
+            finally {
+                Laya.Profiler.end(profileZone);
+            }
+            profileZone = Laya.Profiler.start("scene/volume_update");
+            try {
+                if (this._volumeManager.needreCaculateAllRenderObjects())
+                    this._volumeManager.reCaculateAllRenderObjects(this._sceneRenderManager.list);
+                else
+                    this._volumeManager.handleMotionlist();
+            }
+            finally {
+                Laya.Profiler.end(profileZone);
+            }
+            profileZone = Laya.Profiler.start("scene/component_elements_update");
+            try {
+                this.componentElementMap.forEach((value) => {
+                    value.update(delta);
+                });
+                this._componentDriver.callAfterSceneUpdate();
+            }
+            finally {
+                Laya.Profiler.end(profileZone);
+            }
+            this._sceneRenderManager.renderUpdate();
+            this.skyRenderer.renderUpdate(RenderContext3D._instance);
+            if (!this._renderByEditor)
+                this._UI3DManager.update();
+        };
+    }
 
     class SubMeshInstanceBatch extends GeometryElement {
         static __init__() {
@@ -10044,6 +10152,179 @@
         }
     }
     SubMeshInstanceBatch.maxInstanceCount = 1024;
+
+    class IndexBuffer3D {
+        get indexType() {
+            return this._indexType;
+        }
+        get indexTypeByteCount() {
+            return this._indexTypeByteCount;
+        }
+        get indexCount() {
+            return this._indexCount;
+        }
+        get canRead() {
+            return this._canRead;
+        }
+        constructor(indexType, indexCount, bufferUsage = Laya.BufferUsage.Static, canRead = false) {
+            this._indexType = Laya.IndexFormat.UInt16;
+            this._deviceBuffer = Laya.LayaGL.renderDeviceFactory.createIndexBuffer(bufferUsage);
+            this._deviceBuffer.indexType = this._indexType = indexType;
+            this._deviceBuffer.indexCount = this._indexCount = indexCount;
+            this._canRead = canRead;
+            this.bufferUsage = bufferUsage;
+            switch (indexType) {
+                case Laya.IndexFormat.UInt32:
+                    this._indexTypeByteCount = 4;
+                    break;
+                case Laya.IndexFormat.UInt16:
+                    this._indexTypeByteCount = 2;
+                    break;
+                case Laya.IndexFormat.UInt8:
+                    this._indexTypeByteCount = 1;
+                    break;
+                default:
+                    throw new Error("unknown index type: " + indexType);
+            }
+            var byteLength = this._indexTypeByteCount * indexCount;
+            this._byteLength = byteLength;
+            this._deviceBuffer._setIndexDataLength(byteLength);
+            if (canRead) {
+                switch (indexType) {
+                    case Laya.IndexFormat.UInt32:
+                        this._buffer = new Uint32Array(indexCount);
+                        break;
+                    case Laya.IndexFormat.UInt16:
+                        this._buffer = new Uint16Array(indexCount);
+                        break;
+                    case Laya.IndexFormat.UInt8:
+                        this._buffer = new Uint8Array(indexCount);
+                        break;
+                }
+            }
+        }
+        setData(data, bufferOffset = 0, dataStartIndex = 0, dataCount = 4294967295) {
+            var byteCount = this._indexTypeByteCount;
+            const needSubData = dataStartIndex !== 0 || dataCount !== 4294967295;
+            if (needSubData) {
+                switch (this._indexType) {
+                    case Laya.IndexFormat.UInt32:
+                        data = new Uint32Array(data.buffer, dataStartIndex * byteCount, dataCount);
+                        break;
+                    case Laya.IndexFormat.UInt16:
+                        data = new Uint16Array(data.buffer, dataStartIndex * byteCount, dataCount);
+                        break;
+                    case Laya.IndexFormat.UInt8:
+                        data = new Uint8Array(data.buffer, dataStartIndex * byteCount, dataCount);
+                        break;
+                }
+            }
+            if (this._canRead) {
+                let uploadCount;
+                if (bufferOffset !== 0 || needSubData || data.length !== this._buffer.length) {
+                    var maxLength = this._buffer.length - bufferOffset;
+                    uploadCount = needSubData ? dataCount : data.length;
+                    if (uploadCount > maxLength)
+                        uploadCount = maxLength;
+                    if (typeof data == typeof this._buffer && data.length == uploadCount)
+                        this._buffer.set(data, bufferOffset);
+                    else
+                        for (var i = 0; i < uploadCount; i++)
+                            this._buffer[bufferOffset + i] = data[i];
+                }
+                else {
+                    this._buffer = data;
+                    uploadCount = data.length;
+                }
+                const uploadByteStart = bufferOffset * byteCount;
+                const uploadByteEnd = uploadByteStart + uploadCount * byteCount;
+                const alignedByteStart = Math.floor(uploadByteStart / 4) * 4;
+                const alignedByteEnd = Math.min(Math.ceil(uploadByteEnd / 4) * 4, this._byteLength);
+                this._deviceBuffer.setData(this._buffer.buffer, alignedByteStart, this._buffer.byteOffset + alignedByteStart, alignedByteEnd - alignedByteStart);
+            }
+            else {
+                this._deviceBuffer._setIndexData(data, bufferOffset * byteCount);
+            }
+        }
+        getData() {
+            if (this._canRead)
+                return this._buffer;
+            else
+                throw new Laya.NotReadableError();
+        }
+        destroy() {
+            this._deviceBuffer.destroy();
+            this._buffer = null;
+            this._byteLength = 0;
+            this._indexCount = 0;
+        }
+    }
+
+    class VertexBuffer3D {
+        get vertexDeclaration() {
+            return this._deviceBuffer.vertexDeclaration;
+        }
+        set vertexDeclaration(value) {
+            this._deviceBuffer.vertexDeclaration = value;
+        }
+        get instanceBuffer() {
+            return this._deviceBuffer.instanceBuffer;
+        }
+        set instanceBuffer(value) {
+            this._deviceBuffer.instanceBuffer = value;
+        }
+        get canRead() {
+            return this._canRead;
+        }
+        constructor(byteLength, bufferUsage, canRead = false) {
+            this._float32Reader = null;
+            this._deviceBuffer = Laya.LayaGL.renderDeviceFactory.createVertexBuffer(bufferUsage);
+            this._canRead = canRead;
+            this._byteLength = byteLength;
+            this._deviceBuffer.setDataLength(byteLength);
+            this.bufferUsage = bufferUsage;
+            if (this._canRead) {
+                this._buffer = new Uint8Array(byteLength);
+                this._float32Reader = new Float32Array(this._buffer.buffer);
+            }
+        }
+        setData(buffer, bufferOffset = 0, dataStartIndex = 0, dataCount = Number.MAX_SAFE_INTEGER) {
+            this._deviceBuffer.setData(buffer, bufferOffset, dataStartIndex, dataCount);
+            var needSubData = dataStartIndex !== 0 || dataCount !== Number.MAX_SAFE_INTEGER;
+            if (needSubData) {
+                var subData = new Uint8Array(buffer, dataStartIndex, dataCount);
+                if (this._canRead)
+                    this._buffer.set(subData, bufferOffset);
+            }
+            else {
+                if (this._canRead)
+                    this._buffer.set(new Uint8Array(buffer), bufferOffset);
+            }
+        }
+        getUint8Data() {
+            if (this._canRead)
+                return this._buffer;
+            else
+                throw new Laya.NotReadableError();
+        }
+        getFloat32Data() {
+            if (this._canRead)
+                return this._float32Reader;
+            else
+                throw new Laya.NotReadableError();
+        }
+        markAsUnreadbale() {
+            this._canRead = false;
+            this._buffer = null;
+            this._float32Reader = null;
+        }
+        destroy() {
+            this._deviceBuffer.destroy();
+            this._buffer = null;
+            this._float32Reader = null;
+            this._byteLength = 0;
+        }
+    }
 
     class InstanceRenderElement extends RenderElement {
         static create() {
@@ -10736,12 +11017,12 @@
         static _createMesh(vertexDeclaration, vertices, indices) {
             var mesh = new Mesh();
             var subMesh = new SubMesh(mesh);
-            var vertexBuffer = Laya3DRender.renderOBJCreate.createVertexBuffer3D(vertices.length * 4, Laya.BufferUsage.Static, true);
+            var vertexBuffer = new VertexBuffer3D(vertices.length * 4, Laya.BufferUsage.Static, true);
             vertexBuffer.vertexDeclaration = vertexDeclaration;
             vertexBuffer.setData(vertices.buffer);
             mesh._vertexBuffer = vertexBuffer;
             mesh._vertexCount = vertexBuffer._byteLength / vertexDeclaration.vertexStride;
-            var indexBuffer = Laya3DRender.renderOBJCreate.createIndexBuffer3D(Laya.IndexFormat.UInt16, indices.length, Laya.BufferUsage.Static, true);
+            var indexBuffer = new IndexBuffer3D(Laya.IndexFormat.UInt16, indices.length, Laya.BufferUsage.Static, true);
             indexBuffer.setData(indices);
             mesh._indexBuffer = indexBuffer;
             mesh._setBuffer(vertexBuffer, indexBuffer);
@@ -12577,168 +12858,6 @@
         }
         apply(context) {
             throw new Laya.NotImplementedError();
-        }
-    }
-
-    class IndexBuffer3D {
-        get indexType() {
-            return this._indexType;
-        }
-        get indexTypeByteCount() {
-            return this._indexTypeByteCount;
-        }
-        get indexCount() {
-            return this._indexCount;
-        }
-        get canRead() {
-            return this._canRead;
-        }
-        constructor(indexType, indexCount, bufferUsage = Laya.BufferUsage.Static, canRead = false) {
-            this._indexType = Laya.IndexFormat.UInt16;
-            this._deviceBuffer = Laya.LayaGL.renderDeviceFactory.createIndexBuffer(bufferUsage);
-            this._deviceBuffer.indexType = this._indexType = indexType;
-            this._deviceBuffer.indexCount = this._indexCount = indexCount;
-            this._canRead = canRead;
-            this.bufferUsage = bufferUsage;
-            switch (indexType) {
-                case Laya.IndexFormat.UInt32:
-                    this._indexTypeByteCount = 4;
-                    break;
-                case Laya.IndexFormat.UInt16:
-                    this._indexTypeByteCount = 2;
-                    break;
-                case Laya.IndexFormat.UInt8:
-                    this._indexTypeByteCount = 1;
-                    break;
-                default:
-                    throw new Error("unknown index type: " + indexType);
-            }
-            var byteLength = this._indexTypeByteCount * indexCount;
-            this._byteLength = byteLength;
-            this._deviceBuffer._setIndexDataLength(byteLength);
-            if (canRead) {
-                switch (indexType) {
-                    case Laya.IndexFormat.UInt32:
-                        this._buffer = new Uint32Array(indexCount);
-                        break;
-                    case Laya.IndexFormat.UInt16:
-                        this._buffer = new Uint16Array(indexCount);
-                        break;
-                    case Laya.IndexFormat.UInt8:
-                        this._buffer = new Uint8Array(indexCount);
-                        break;
-                }
-            }
-        }
-        setData(data, bufferOffset = 0, dataStartIndex = 0, dataCount = 4294967295) {
-            var byteCount = this._indexTypeByteCount;
-            if (dataStartIndex !== 0 || dataCount !== 4294967295) {
-                switch (this._indexType) {
-                    case Laya.IndexFormat.UInt32:
-                        data = new Uint32Array(data.buffer, dataStartIndex * byteCount, dataCount);
-                        break;
-                    case Laya.IndexFormat.UInt16:
-                        data = new Uint16Array(data.buffer, dataStartIndex * byteCount, dataCount);
-                        break;
-                    case Laya.IndexFormat.UInt8:
-                        data = new Uint8Array(data.buffer, dataStartIndex * byteCount, dataCount);
-                        break;
-                }
-            }
-            this._deviceBuffer._setIndexData(data, bufferOffset * byteCount);
-            if (this._canRead) {
-                if (bufferOffset !== 0 || dataStartIndex !== 0 || dataCount !== 4294967295) {
-                    var maxLength = this._buffer.length - bufferOffset;
-                    if (dataCount > maxLength)
-                        dataCount = maxLength;
-                    if (typeof data == typeof this._buffer && data.length == dataCount)
-                        this._buffer.set(data, bufferOffset);
-                    else
-                        for (var i = 0; i < dataCount; i++)
-                            this._buffer[bufferOffset + i] = data[i];
-                }
-                else {
-                    this._buffer = data;
-                }
-            }
-        }
-        getData() {
-            if (this._canRead)
-                return this._buffer;
-            else
-                throw new Laya.NotReadableError();
-        }
-        destroy() {
-            this._deviceBuffer.destroy();
-            this._buffer = null;
-            this._byteLength = 0;
-            this._indexCount = 0;
-        }
-    }
-
-    class VertexBuffer3D {
-        get vertexDeclaration() {
-            return this._deviceBuffer.vertexDeclaration;
-        }
-        set vertexDeclaration(value) {
-            this._deviceBuffer.vertexDeclaration = value;
-        }
-        get instanceBuffer() {
-            return this._deviceBuffer.instanceBuffer;
-        }
-        set instanceBuffer(value) {
-            this._deviceBuffer.instanceBuffer = value;
-        }
-        get canRead() {
-            return this._canRead;
-        }
-        constructor(byteLength, bufferUsage, canRead = false) {
-            this._float32Reader = null;
-            this._deviceBuffer = Laya.LayaGL.renderDeviceFactory.createVertexBuffer(bufferUsage);
-            this._canRead = canRead;
-            this._byteLength = byteLength;
-            this._deviceBuffer.setDataLength(byteLength);
-            this.bufferUsage = bufferUsage;
-            if (this._canRead) {
-                this._buffer = new Uint8Array(byteLength);
-                this._float32Reader = new Float32Array(this._buffer.buffer);
-            }
-        }
-        setData(buffer, bufferOffset = 0, dataStartIndex = 0, dataCount = Number.MAX_SAFE_INTEGER) {
-            this._deviceBuffer.setData(buffer, bufferOffset, dataStartIndex, dataCount);
-            var needSubData = dataStartIndex !== 0 || dataCount !== Number.MAX_SAFE_INTEGER;
-            if (needSubData) {
-                var subData = new Uint8Array(buffer, dataStartIndex, dataCount);
-                if (this._canRead)
-                    this._buffer.set(subData, bufferOffset);
-            }
-            else {
-                if (this._canRead)
-                    this._buffer.set(new Uint8Array(buffer), bufferOffset);
-            }
-        }
-        getUint8Data() {
-            if (this._canRead)
-                return this._buffer;
-            else
-                throw new Laya.NotReadableError();
-        }
-        getFloat32Data() {
-            if (this._canRead)
-                return this._float32Reader;
-            else
-                throw new Laya.NotReadableError();
-        }
-        markAsUnreadbale() {
-            this._canRead = false;
-            this._buffer = null;
-            this._float32Reader = null;
-        }
-        destroy() {
-            this._deviceBuffer.destroy();
-            this._buffer = null;
-            this._float32Reader = null;
-            this._byteLength = 0;
         }
     }
 
@@ -16331,44 +16450,84 @@
         constructor() {
             this._scope = 'all';
             this._currentUpdateMark = 0;
-            this._nonTransformIdxCache = new WeakMap();
+            this._applyIndicesCache = new WeakMap();
+            this._crossApplyIndicesCache = new WeakMap();
         }
-        _getNonTransformIndices(clip) {
-            let cached = this._nonTransformIdxCache.get(clip);
+        _getApplyIndices(clip) {
+            let cached = this._applyIndicesCache.get(clip);
             if (cached)
                 return cached;
+            const transform = [];
+            const nonTransform = [];
+            let transformCount = 0;
+            let nonTransformCount = 0;
             const nodes = clip._nodes;
-            if (!nodes) {
-                cached = new Int32Array(0);
-            }
-            else {
+            if (nodes) {
                 const count = nodes.count;
-                const tmp = [];
                 for (let i = 0; i < count; i++) {
-                    if (!isTransformType(nodes.getNodeByIndex(i).type))
-                        tmp.push(i);
+                    if (isTransformType(nodes.getNodeByIndex(i).type))
+                        transform[transformCount++] = i;
+                    else
+                        nonTransform[nonTransformCount++] = i;
                 }
-                cached = new Int32Array(tmp);
             }
-            this._nonTransformIdxCache.set(clip, cached);
+            cached = {
+                transform: new Int32Array(transform),
+                nonTransform: new Int32Array(nonTransform)
+            };
+            this._applyIndicesCache.set(clip, cached);
             return cached;
         }
-        applyNormal(layerTask, controllerLayer, isFirstLayer, updateMark) {
-            this._applyNormal(controllerLayer, layerTask.state, controllerLayer.blendingMode !== AnimatorControllerLayer.BLENDINGMODE_OVERRIDE, layerTask.weight, isFirstLayer, updateMark, this._scope === 'non-transform-only');
+        _getScopedIndices(clip, scope) {
+            if (scope === 'all')
+                return null;
+            const indices = this._getApplyIndices(clip);
+            return scope === 'transform-only' ? indices.transform : indices.nonTransform;
         }
-        applyCross(layerTask, controllerLayer, isFirstLayer, updateMark) {
-            this._applyCross(controllerLayer, layerTask.state, layerTask.destState, layerTask.crossWeight, isFirstLayer, updateMark, this._scope === 'non-transform-only');
+        _getCrossScopedIndices(controllerLayer, scope) {
+            if (scope === 'all')
+                return null;
+            const ownerCount = controllerLayer._crossNodesOwnersCount;
+            let cached = this._crossApplyIndicesCache.get(controllerLayer);
+            if (!cached || cached.crossMark !== controllerLayer._crossMark || cached.ownerCount !== ownerCount) {
+                const transform = [];
+                const nonTransform = [];
+                let transformCount = 0;
+                let nonTransformCount = 0;
+                const owners = controllerLayer._crossNodesOwners;
+                for (let i = 0; i < ownerCount; i++) {
+                    const owner = owners[i];
+                    if (owner && isTransformType(owner.type))
+                        transform[transformCount++] = i;
+                    else
+                        nonTransform[nonTransformCount++] = i;
+                }
+                cached = {
+                    crossMark: controllerLayer._crossMark,
+                    ownerCount,
+                    transform: new Int32Array(transform),
+                    nonTransform: new Int32Array(nonTransform)
+                };
+                this._crossApplyIndicesCache.set(controllerLayer, cached);
+            }
+            return scope === 'transform-only' ? cached.transform : cached.nonTransform;
         }
-        applyFixedCross(layerTask, controllerLayer, isFirstLayer, updateMark) {
-            this._applyFixedCross(controllerLayer, layerTask.destState, layerTask.crossWeight, isFirstLayer, updateMark, this._scope === 'non-transform-only');
+        applyNormal(layerTask, controllerLayer, isFirstLayer, updateMark, scope = this._scope) {
+            this._applyNormal(controllerLayer, layerTask.state, controllerLayer.blendingMode !== AnimatorControllerLayer.BLENDINGMODE_OVERRIDE, layerTask.weight, isFirstLayer, updateMark, scope);
+        }
+        applyCross(layerTask, controllerLayer, isFirstLayer, updateMark, scope = this._scope) {
+            this._applyCross(controllerLayer, layerTask.state, layerTask.destState, layerTask.crossWeight, isFirstLayer, updateMark, scope);
+        }
+        applyFixedCross(layerTask, controllerLayer, isFirstLayer, updateMark, scope = this._scope) {
+            this._applyFixedCross(controllerLayer, layerTask.destState, layerTask.crossWeight, isFirstLayer, updateMark, scope);
         }
         updateDefaultValues(owners) {
-            const skipTransform = this._scope === 'non-transform-only';
             for (let i = 0, n = owners.length; i < n; i++) {
                 const nodeOwner = owners[i];
                 if (!nodeOwner || !nodeOwner.propertyOwner || !nodeOwner.property)
                     continue;
-                if (skipTransform && isTransformType(nodeOwner.type))
+                const transformType = isTransformType(nodeOwner.type);
+                if (this._scope === 'transform-only' ? !transformType : this._scope === 'non-transform-only' && transformType)
                     continue;
                 let pro = nodeOwner.propertyOwner;
                 switch (nodeOwner.type) {
@@ -16427,28 +16586,27 @@
             }
         }
         revertDefaultKeyframeNodes(state) {
-            const skipTransform = this._scope === 'non-transform-only';
             const nodeOwners = state._nodeOwners;
             const clip = state._clip;
-            const indices = (skipTransform && clip) ? this._getNonTransformIndices(clip) : null;
+            const indices = clip ? this._getScopedIndices(clip, this._scope) : null;
             const loopCount = indices !== null ? indices.length : nodeOwners.length;
             for (let k = 0; k < loopCount; k++) {
                 const i = indices !== null ? indices[k] : k;
                 const nodeOwner = nodeOwners[i];
                 if (!nodeOwner)
                     continue;
-                if (skipTransform && indices === null && isTransformType(nodeOwner.type))
-                    continue;
+                if (indices === null && this._scope !== 'all') {
+                    const transformType = isTransformType(nodeOwner.type);
+                    if (this._scope === 'transform-only' ? !transformType : transformType)
+                        continue;
+                }
                 let pro = nodeOwner.propertyOwner;
                 let value;
                 if (!pro)
                     continue;
                 switch (nodeOwner.type) {
                     case exports.KeyFrameValueType.PathPoint:
-                        console.log("Animator:PathPoint not support2");
-                        break;
                     case exports.KeyFrameValueType.Boolean:
-                        console.log("Animator:Boolean not support2");
                         break;
                     case exports.KeyFrameValueType.Float:
                         var proPat = nodeOwner.property;
@@ -16589,13 +16747,13 @@
                 }
             }
         }
-        _applyNormal(controllerLayer, stateInfo, additive, weight, isFirstLayer, updateMark, skipTransform) {
+        _applyNormal(controllerLayer, stateInfo, additive, weight, isFirstLayer, updateMark, scope) {
             this._currentUpdateMark = updateMark;
             const realtimeDatas = stateInfo._realtimeDatas;
             const clip = stateInfo._clip;
             const nodes = clip._nodes;
             const nodeOwners = stateInfo._nodeOwners;
-            const indices = skipTransform ? this._getNonTransformIndices(clip) : null;
+            const indices = this._getScopedIndices(clip, scope);
             const loopCount = indices !== null ? indices.length : nodes.count;
             for (let k = 0; k < loopCount; k++) {
                 const i = indices !== null ? indices[k] : k;
@@ -16776,7 +16934,8 @@
                 nodeOwner.updateMark = this._currentUpdateMark;
             }
         }
-        _applyCross(controllerLayer, srcState, destState, crossWeight, isFirstLayer, updateMark, skipTransform) {
+        _applyCross(controllerLayer, srcState, destState, crossWeight, isFirstLayer, updateMark, scope) {
+            var _a, _b;
             this._currentUpdateMark = updateMark;
             const nodeOwners = controllerLayer._crossNodesOwners;
             const ownerCount = controllerLayer._crossNodesOwnersCount;
@@ -16784,35 +16943,34 @@
             const weight = controllerLayer.defaultWeight;
             const destRealtimeDatas = destState._realtimeDatas;
             const destDataIndices = controllerLayer._destCrossClipNodeIndices;
-            const destNodeOwners = destState._nodeOwners;
             const srcRealtimeDatas = srcState._realtimeDatas;
             const srcDataIndices = controllerLayer._srcCrossClipNodeIndices;
-            const srcNodeOwners = srcState._nodeOwners;
-            for (let i = 0; i < ownerCount; i++) {
+            const indices = this._getCrossScopedIndices(controllerLayer, scope);
+            const loopCount = indices !== null ? indices.length : ownerCount;
+            for (let k = 0; k < loopCount; k++) {
+                const i = indices !== null ? indices[k] : k;
                 const nodeOwner = nodeOwners[i];
                 if (!nodeOwner)
-                    continue;
-                if (skipTransform && isTransformType(nodeOwner.type))
                     continue;
                 const srcIndex = srcDataIndices[i];
                 const destIndex = destDataIndices[i];
                 if (-1 == srcIndex && -1 == destIndex)
                     continue;
-                let srcValue = srcIndex !== -1 ? srcRealtimeDatas[srcIndex] : destNodeOwners[destIndex].defaultValue;
-                if (null == srcValue)
-                    continue;
-                let desValue = destIndex !== -1 ? destRealtimeDatas[destIndex] : srcNodeOwners[srcIndex].defaultValue;
-                if (!desValue) {
-                    desValue = srcNodeOwners[srcIndex].defaultValue;
-                }
-                if (null == desValue)
+                const srcValue = srcIndex !== -1
+                    ? ((_a = srcRealtimeDatas[srcIndex]) !== null && _a !== void 0 ? _a : nodeOwner.defaultValue)
+                    : nodeOwner.defaultValue;
+                const desValue = destIndex !== -1
+                    ? ((_b = destRealtimeDatas[destIndex]) !== null && _b !== void 0 ? _b : nodeOwner.defaultValue)
+                    : nodeOwner.defaultValue;
+                if (null == srcValue || null == desValue)
                     continue;
                 if (!controllerLayer.avatarMask || controllerLayer.avatarMask.getTransformActive(nodeOwner.nodePath)) {
                     this._applyCrossData(nodeOwner, additive, weight, isFirstLayer, srcValue, desValue, crossWeight);
                 }
             }
         }
-        _applyFixedCross(controllerLayer, destState, crossWeight, isFirstLayer, updateMark, skipTransform) {
+        _applyFixedCross(controllerLayer, destState, crossWeight, isFirstLayer, updateMark, scope) {
+            var _a;
             this._currentUpdateMark = updateMark;
             const nodeOwners = controllerLayer._crossNodesOwners;
             const ownerCount = controllerLayer._crossNodesOwnersCount;
@@ -16820,21 +16978,20 @@
             const weight = controllerLayer.defaultWeight;
             const destRealtimeDatas = destState._realtimeDatas;
             const destDataIndices = controllerLayer._destCrossClipNodeIndices;
-            for (let i = 0; i < ownerCount; i++) {
+            const indices = this._getCrossScopedIndices(controllerLayer, scope);
+            const loopCount = indices !== null ? indices.length : ownerCount;
+            for (let k = 0; k < loopCount; k++) {
+                const i = indices !== null ? indices[k] : k;
                 const nodeOwner = nodeOwners[i];
                 if (!nodeOwner)
                     continue;
-                if (skipTransform && isTransformType(nodeOwner.type))
-                    continue;
                 const destIndex = destDataIndices[i];
                 const srcValue = nodeOwner.crossFixedValue;
-                let desValue;
-                if (destIndex == -1 || !destRealtimeDatas[destIndex]) {
-                    desValue = nodeOwner.defaultValue;
-                }
-                else {
-                    desValue = destRealtimeDatas[destIndex];
-                }
+                const desValue = destIndex !== -1
+                    ? ((_a = destRealtimeDatas[destIndex]) !== null && _a !== void 0 ? _a : nodeOwner.defaultValue)
+                    : nodeOwner.defaultValue;
+                if (null == srcValue || null == desValue)
+                    continue;
                 this._applyCrossData(nodeOwner, additive, weight, isFirstLayer, srcValue, desValue, crossWeight);
             }
         }
@@ -17174,10 +17331,7 @@
             if (pro) {
                 switch (nodeOwner.type) {
                     case exports.KeyFrameValueType.PathPoint:
-                        console.log("Animator:PathPoint not support3");
-                        break;
                     case exports.KeyFrameValueType.Boolean:
-                        console.log("Animator:Boolean not support3");
                         break;
                     case exports.KeyFrameValueType.Float:
                         var proPat = nodeOwner.property;
@@ -17491,6 +17645,153 @@
         }
     }
 
+    let _notifyFrame = 0;
+    class AnimatorTransformEventDispatcher {
+        constructor() {
+            this._stateTransformOwnersCache = new WeakMap();
+            this._nodeOwnersStateMap = new WeakMap();
+            this._buffers = [{ frame: 0, transforms: new Laya.FastSinglelist(), flags: new Laya.FastSinglelist() }];
+            this._trackStateOwners = false;
+            this._depth = 0;
+        }
+        registerState(state) {
+            if (!this._trackStateOwners)
+                return;
+            this._nodeOwnersStateMap.set(state._nodeOwners, state);
+            this.rebuildState(state);
+        }
+        rebuildContext(ctx) {
+            if (!this._trackStateOwners)
+                return;
+            const layers = ctx.layers;
+            for (let i = 0, n = layers.length; i < n; i++) {
+                const states = layers[i]._states;
+                for (let j = 0, m = states.length; j < m; j++)
+                    this.registerState(states[j]);
+            }
+        }
+        rebuildByNodeOwners(nodeOwners) {
+            if (!this._trackStateOwners)
+                return;
+            const state = this._nodeOwnersStateMap.get(nodeOwners);
+            if (state)
+                this.rebuildState(state);
+        }
+        rebuildState(state) {
+            const owners = state._nodeOwners;
+            const seen = new Set();
+            let transforms = this._stateTransformOwnersCache.get(state);
+            if (transforms)
+                transforms.clear();
+            else
+                transforms = new Laya.FastSinglelist();
+            for (let i = 0, n = owners.length; i < n; i++) {
+                const owner = owners[i];
+                if (!owner || !isTransformType(owner.type))
+                    continue;
+                const transform = owner.propertyOwner;
+                if (transform && !seen.has(transform)) {
+                    seen.add(transform);
+                    transforms.add(transform);
+                }
+            }
+            this._stateTransformOwnersCache.set(state, transforms);
+        }
+        begin() {
+            const buffer = this._getBuffer();
+            buffer.frame = ++_notifyFrame;
+            buffer.transforms.clear();
+            buffer.flags.clear();
+        }
+        abort() {
+            const buffer = this._getBuffer();
+            buffer.transforms.clear();
+            buffer.flags.clear();
+        }
+        _addAnimatorTransformEvent(transform, changeFlag) {
+            const buffer = this._getBuffer();
+            if (transform._lastAnimatorNotifyFrame === buffer.frame) {
+                const index = transform._animatorNotifyIndex;
+                if (index >= 0) {
+                    buffer.flags.elements[index] |= changeFlag;
+                    return;
+                }
+            }
+            else {
+                transform._lastAnimatorNotifyFrame = buffer.frame;
+            }
+            transform._animatorNotifyIndex = buffer.transforms.length;
+            buffer.transforms.add(transform);
+            buffer.flags.add(changeFlag);
+        }
+        notifyActiveSlots(activeList) {
+            if (activeList.length === 0)
+                return;
+            this._trackStateOwners = true;
+            this.begin();
+            const buffer = this._getBuffer();
+            const slots = activeList.elements;
+            for (let i = 0, n = activeList.length; i < n; i++) {
+                const layers = slots[i]._layers;
+                for (let j = 0, m = layers.length; j < m; j++) {
+                    const layer = layers[j];
+                    if (layer.type === exports.LayerTaskType.Idle)
+                        continue;
+                    if (layer.state)
+                        this._collectStateSubtrees(layer.state, buffer);
+                    if (layer.destState)
+                        this._collectStateSubtrees(layer.destState, buffer);
+                }
+            }
+            this.flush();
+        }
+        flush() {
+            const buffer = this._getBuffer();
+            this._depth++;
+            try {
+                for (let i = 0, n = buffer.transforms.length; i < n; i++)
+                    buffer.transforms.elements[i]._dispatchAnimatorTransformChanged(buffer.flags.elements[i]);
+            }
+            finally {
+                this._depth--;
+                buffer.transforms.clear();
+                buffer.flags.clear();
+            }
+        }
+        _collectStateSubtrees(state, buffer) {
+            let owners = this._stateTransformOwnersCache.get(state);
+            if (!owners) {
+                this.registerState(state);
+                owners = this._stateTransformOwnersCache.get(state);
+            }
+            for (let i = 0, n = owners.length; i < n; i++)
+                this._collectSubtree(owners.elements[i], buffer);
+        }
+        _collectSubtree(transform, buffer) {
+            if (transform._lastAnimatorNotifyFrame === buffer.frame)
+                return;
+            transform._lastAnimatorNotifyFrame = buffer.frame;
+            transform._animatorNotifyIndex = -1;
+            if (transform._hasTransformChangedListener) {
+                transform._animatorNotifyIndex = buffer.transforms.length;
+                buffer.transforms.add(transform);
+                buffer.flags.add(transform._getAnimatorTransformChangeFlag());
+            }
+            const children = transform._children;
+            if (children)
+                for (let i = 0, n = children.length; i < n; i++)
+                    this._collectSubtree(children[i], buffer);
+        }
+        _getBuffer() {
+            let buffer = this._buffers[this._depth];
+            if (!buffer) {
+                buffer = { frame: 0, transforms: new Laya.FastSinglelist(), flags: new Laya.FastSinglelist() };
+                this._buffers[this._depth] = buffer;
+            }
+            return buffer;
+        }
+    }
+
     class WebAnimatorFactory {
         constructor() {
             this._evaluator = new WebAnimatorEvaluator();
@@ -17498,6 +17799,7 @@
             this._activeList = new Laya.FastSinglelist();
             this._dirtyList = new Laya.FastSinglelist();
             this._slotMap = new WeakMap();
+            this._transformEventDispatcher = new AnimatorTransformEventDispatcher();
             registerOwnerDataCreator(() => new PlainOwnerData());
         }
         bindAnimator(ctx) {
@@ -17525,15 +17827,19 @@
         }
         prepareStateOwners(ctx, state) {
             prepareStateOwners(ctx, state);
+            this._transformEventDispatcher.registerState(state);
         }
         handleSpriteOwnersBySprite(ctx, isLink, path, sprite) {
             handleSpriteOwnersBySprite(ctx, isLink, path, sprite);
+            this._transformEventDispatcher.rebuildContext(ctx);
         }
         addKeyframeNodeOwner(ctx, clipOwners, node, propertyOwner) {
             addKeyframeNodeOwner(ctx, clipOwners, node, propertyOwner);
+            this._transformEventDispatcher.rebuildByNodeOwners(clipOwners);
         }
         removeKeyframeNodeOwner(ctx, nodeOwners, node) {
             removeKeyframeNodeOwner(ctx, nodeOwners, node);
+            this._transformEventDispatcher.rebuildByNodeOwners(nodeOwners);
         }
         flushEvaluate() {
             const slots = this._activeList.elements;
@@ -17550,7 +17856,7 @@
                 }
             }
         }
-        flushApply() {
+        _flushApplyScope(scope) {
             const slots = this._activeList.elements;
             const applier = this._applier;
             for (let i = 0, n = this._activeList.length; i < n; i++) {
@@ -17566,18 +17872,45 @@
                     const isFirstLayer = j === 0;
                     switch (lt.type) {
                         case exports.LayerTaskType.Normal:
-                            applier.applyNormal(lt, cl, isFirstLayer, updateMark);
+                            applier.applyNormal(lt, cl, isFirstLayer, updateMark, scope);
                             break;
                         case exports.LayerTaskType.Cross:
-                            applier.applyCross(lt, cl, isFirstLayer, updateMark);
+                            applier.applyCross(lt, cl, isFirstLayer, updateMark, scope);
                             break;
                         case exports.LayerTaskType.FixedCross:
-                            applier.applyFixedCross(lt, cl, isFirstLayer, updateMark);
+                            applier.applyFixedCross(lt, cl, isFirstLayer, updateMark, scope);
                             break;
                     }
                 }
             }
+        }
+        flushApply() {
+            const applier = this._applier;
+            const originalScope = applier._scope;
+            if (originalScope !== 'all') {
+                this._flushApplyScope(originalScope);
+                this._clearDirty();
+                return;
+            }
+            const eventDispatcher = this._transformEventDispatcher;
+            let transformApplyCompleted = false;
+            eventDispatcher.begin();
+            Transform3D._beginAnimatorBatch(eventDispatcher);
+            try {
+                this._flushApplyScope('transform-only');
+                transformApplyCompleted = true;
+            }
+            finally {
+                Transform3D._endAnimatorBatch();
+                if (!transformApplyCompleted)
+                    eventDispatcher.abort();
+            }
+            eventDispatcher.flush();
+            this._flushApplyScope('non-transform-only');
             this._clearDirty();
+        }
+        _notifyAnimatorTransformChanged() {
+            this._transformEventDispatcher.notifyActiveSlots(this._activeList);
         }
         _clearDirty() {
             const slots = this._dirtyList.elements;
@@ -17612,10 +17945,7 @@
                 this.tickOne(list[i]);
             }
             this._factory.flushEvaluate();
-            Transform3D._currentAnimatorFrame++;
-            Transform3D._inAnimatorBatch = true;
             this._factory.flushApply();
-            Transform3D._inAnimatorBatch = false;
             this._drainPendingSwitches();
             this._drainLateUpdates(list);
         }
@@ -17975,6 +18305,16 @@
             var _a;
             (_a = this._manager) === null || _a === void 0 ? void 0 : _a._factory.updateDefaultValues(this._keyframeNodeOwners);
         }
+        _hasAdditiveLayer() {
+            const layers = this._controllerLayers;
+            for (let i = 0, n = layers.length; i < n; i++) {
+                const layer = layers[i];
+                if (layer && layer.enable && layer.blendingMode !== AnimatorControllerLayer.BLENDINGMODE_OVERRIDE) {
+                    return true;
+                }
+            }
+            return false;
+        }
         _revertDefaultKeyframeNodes(clipStateInfo) {
             var _a;
             (_a = this._manager) === null || _a === void 0 ? void 0 : _a._factory.revertDefaultKeyframeNodes(clipStateInfo);
@@ -18096,9 +18436,11 @@
                 var curPlayState = playStateInfo.currentState;
                 var animatorState = name ? controllerLayer.getAnimatorState(name) : defaultState;
                 if (!animatorState || !animatorState._clip) {
-                    throw new Error("Animator:must have clip value,please set clip property.");
+                    console.warn("Animator:must have clip value,please set clip property.");
+                    return;
                 }
-                this._updateDefaultValues();
+                if (this._hasAdditiveLayer())
+                    this._updateDefaultValues();
                 var clipDuration = animatorState._clip._duration;
                 var calclipduration = animatorState._clip._duration * (animatorState.clipEnd - animatorState.clipStart);
                 if (curPlayState !== animatorState) {
@@ -18137,7 +18479,8 @@
                         this.play(name, layerIndex, normalizedTime);
                         return;
                     }
-                    this._updateDefaultValues();
+                    if (this._hasAdditiveLayer())
+                        this._updateDefaultValues();
                     var crossPlayStateInfo = controllerLayer._crossPlayStateInfo;
                     var crossNodeOwners = controllerLayer._crossNodesOwners;
                     var crossNodeOwnerIndicesMap = controllerLayer._crossNodesOwnersIndicesMap;
@@ -19224,6 +19567,7 @@
             return this._camera;
         }
         constructor() {
+            var _a, _b, _c, _d;
             super();
             this._sizeChange = true;
             this._view = true;
@@ -19237,6 +19581,7 @@
             this._shellSprite = new UI3DShellSprite();
             this._shellSprite.name = "UI3D";
             this._shellSprite._parent = Laya.ILaya.stage;
+            this._shellSprite._syncTransParent();
             this._shellSprite._setBit(Laya.NodeFlags.DISPLAYED_INSTAGE, true);
             this._shellSprite._setBit(Laya.NodeFlags.ACTIVE_INHIERARCHY, true);
             this._shellSprite.cacheAs = "bitmap";
@@ -19244,6 +19589,15 @@
             this._baseRenderNode.shaderData.addDefine(MeshSprite3DShaderDeclaration.SHADERDEFINE_UV0);
             this._matrix = new Laya.Matrix4x4();
             this._scale = new Laya.Vector3(1.0, 1.0, 1.0);
+            (_b = (_a = this._baseRenderNode).disableNativeBoundsCallback) === null || _b === void 0 ? void 0 : _b.call(_a);
+            (_d = (_c = this._baseRenderNode).setBoundsMode) === null || _d === void 0 ? void 0 : _d.call(_c, 1);
+        }
+        _pushWorldBoundsToNative() {
+            if (!this._baseRenderNode.setWorldBounds)
+                return;
+            this._calculateBoundingBox();
+            const min = this._bounds.getMin(), max = this._bounds.getMax();
+            this._baseRenderNode.setWorldBounds(min.x, min.y, min.z, max.x, max.y, max.z);
         }
         _isMaterialVaild(value) {
             return value.checkType(Laya.ShaderFeatureType.D3);
@@ -19328,6 +19682,7 @@
             }
         }
         onPreRender() {
+            let matrixUpdated = true;
             if (this._isCameraSpaceMode()) {
                 this.boundsChange = true;
                 let cameraforward = Laya.Vector3.TEMP;
@@ -19365,7 +19720,11 @@
                     Laya.Matrix4x4.createScaling(this._scale, tempMatrix$1);
                     Laya.Matrix4x4.multiply(this._transform.worldMatrix, tempMatrix$1, this._matrix);
                 }
+                else {
+                    matrixUpdated = false;
+                }
             }
+            matrixUpdated && this._pushWorldBoundsToNative();
         }
         getUITexture() {
             return this._rendertexure2D;
@@ -19430,7 +19789,10 @@
         _onDestroy() {
             super._onDestroy();
             this._rendertexure2D && this._rendertexure2D.destroy();
-            this._shellSprite && (this._shellSprite._parent = null);
+            if (this._shellSprite) {
+                this._shellSprite._parent = null;
+                this._shellSprite._syncTransParent();
+            }
             this._uisprite && this._uisprite.destroy();
             this._shellSprite && this._shellSprite.destroy();
             this._ui3DMat && this._ui3DMat.destroy();
@@ -19486,6 +19848,7 @@
                 if (task.ext == "cubemap")
                     url = Laya.AssetDb.inst.getSubAssetURL(url, task.uuid, "0", "ktx");
                 return task.loader.fetch(url, "arraybuffer", task.progress.createCallback(), task.options).then(data => {
+                    var _a;
                     if (!data)
                         return null;
                     let ktxInfo = Laya.KTXTextureInfo.getKTXTextureInfo(data);
@@ -19493,7 +19856,10 @@
                         Laya.Loader.warn("ktxInfo.dimension != TextureDimension.Cube! " + task.url);
                         return null;
                     }
-                    let tex = new Laya.TextureCube(ktxInfo.width, ktxInfo.format, ktxInfo.mipmapCount > 1, ktxInfo.sRGB);
+                    let constructParams = task.options.constructParams;
+                    let mipmapRequested = (_a = constructParams === null || constructParams === void 0 ? void 0 : constructParams[3]) !== null && _a !== void 0 ? _a : true;
+                    let mipmap = mipmapRequested && ktxInfo.mipmapCount > 1;
+                    let tex = new Laya.TextureCube(ktxInfo.width, ktxInfo.format, mipmap, ktxInfo.sRGB);
                     tex.setKTXData(ktxInfo);
                     let obsoluteInst = task.obsoluteInst;
                     if (obsoluteInst && (obsoluteInst instanceof Laya.TextureCube))
@@ -21321,8 +21687,6 @@
             this._ownerHandles = new WeakMap();
             this._bindingMap = new WeakMap();
             this._stateBindings = new WeakMap();
-            this._statePropertyOwnersCache = new WeakMap();
-            this._notifyFrame = 0;
             this._syncBuffer = null;
             this._unregisterClipDestroyCallback = null;
             this._destroyed = false;
@@ -21420,9 +21784,6 @@
                 const clipHandle = this._ensureClipUploaded(clip);
                 this._syncOwnersToNative(ctx, state);
                 this._ensureBindingUploaded(ctx, state, clipHandle);
-            }
-            if (this._nativeApplier) {
-                this._rebuildStateTransformPropertyOwners(state);
             }
         }
         _syncOwnersToNative(_ctx, state) {
@@ -21590,8 +21951,6 @@
                 for (const state of stateMap.keys()) {
                     if (this._nativePreparer)
                         this._syncOwnersToNative(ctx, state);
-                    if (this._nativeApplier)
-                        this._rebuildStateTransformPropertyOwners(state);
                 }
             }
         }
@@ -21722,69 +22081,9 @@
         flushApply() {
             if (this._nativeApplier) {
                 this._nativeApplier.flush();
-                this._notifyJsTransformChanged();
+                this._web._notifyAnimatorTransformChanged();
             }
             this._web.flushApply();
-        }
-        _notifyJsTransformChanged() {
-            const active = this._web._activeList;
-            if (active.length === 0)
-                return;
-            const frame = ++this._notifyFrame;
-            const cache = this._statePropertyOwnersCache;
-            for (let i = 0, n = active.length; i < n; i++) {
-                const slot = active.elements[i];
-                const layers = slot._layers;
-                for (let j = 0, m = layers.length; j < m; j++) {
-                    const lt = layers[j];
-                    if (lt.type === exports.LayerTaskType.Idle)
-                        continue;
-                    if (lt.state) {
-                        const list = cache.get(lt.state);
-                        if (list)
-                            for (let k = 0, kn = list.length; k < kn; k++)
-                                this._dispatchTransformEvent(list[k], frame);
-                    }
-                    if (lt.destState) {
-                        const list = cache.get(lt.destState);
-                        if (list)
-                            for (let k = 0, kn = list.length; k < kn; k++)
-                                this._dispatchTransformEvent(list[k], frame);
-                    }
-                }
-            }
-        }
-        _dispatchTransformEvent(pro, frame) {
-            if (pro._notifyFrame === frame)
-                return;
-            pro._notifyFrame = frame;
-            if (pro._hasTransformChangedListener)
-                pro.event(Laya.Event.TRANSFORM_CHANGED, pro._RTtransformFlag);
-            const children = pro._children;
-            if (children)
-                for (let i = 0, n = children.length; i < n; i++) {
-                    this._dispatchTransformEvent(children[i], frame);
-                }
-        }
-        _rebuildStateTransformPropertyOwners(state) {
-            const owners = state._nodeOwners;
-            if (!owners) {
-                this._statePropertyOwnersCache.delete(state);
-                return;
-            }
-            const seen = new Set();
-            const result = [];
-            for (let i = 0, n = owners.length; i < n; i++) {
-                const o = owners[i];
-                if (!o || !isTransformType(o.type))
-                    continue;
-                const pro = o.propertyOwner;
-                if (pro && !seen.has(pro)) {
-                    seen.add(pro);
-                    result.push(pro);
-                }
-            }
-            this._statePropertyOwnersCache.set(state, result);
         }
         refreshLayerMask(ctx, layer) {
             var _a;
@@ -21884,8 +22183,10 @@
 
     class HLODRender extends BaseRender {
         constructor() {
+            var _a, _b;
             super();
             this._singleton = false;
+            (_b = (_a = this._baseRenderNode).disableNativeBoundsCallback) === null || _b === void 0 ? void 0 : _b.call(_a);
         }
         get curHLODRS() {
             return this._curHLODRS;
@@ -21924,6 +22225,7 @@
             for (let i = 0, n = lodMesh.batchSubMeshInfo.length; i < n; i++) {
                 this._curSubBatchMeshBounds[i] = this._curSubBatchMeshBounds[i] ? this._curSubBatchMeshBounds[i] : new Bounds();
             }
+            this.geometryBounds = lodMesh.batchMesh.bounds;
         }
         _applyLightMapParams() {
             if (!this._scene)
@@ -22409,8 +22711,10 @@
             staticMesh.bounds.cloneTo(this.bounds);
         }
         constructor() {
+            var _a, _b;
             super();
             this._singleton = false;
+            (_b = (_a = this._baseRenderNode).disableNativeBoundsCallback) === null || _b === void 0 ? void 0 : _b.call(_a);
         }
         _calculateBoundingBox() {
         }
@@ -23247,6 +23551,7 @@
     exports.AnimatorResource = AnimatorResource;
     exports.AnimatorState = AnimatorState;
     exports.AnimatorStateScript = AnimatorStateScript;
+    exports.AnimatorTransformEventDispatcher = AnimatorTransformEventDispatcher;
     exports.AnimatorTransition = AnimatorTransition;
     exports.AreaLightCom = AreaLightCom;
     exports.AvatarMask = AvatarMask;

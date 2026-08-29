@@ -942,7 +942,7 @@
         render(context) {
             let cmd = context.command;
             this._setupShaderValue(context);
-            let source = context.source;
+            let source = context.indirectTarget;
             let shader = this._shader;
             let shaderData = this._shaderData;
             let dataTexFormat = Laya.RenderTargetFormat.R16G16B16A16;
@@ -1132,7 +1132,6 @@
             let subshader = new Laya.SubShader(attribute, uniformMap, defaultValue);
             shader.addSubShader(subshader);
             let pass = subshader.addShaderPass(LensFlareVS, LensFlareFS);
-            pass.statefirst = true;
             pass.renderState.cull = Laya.RenderState.CULL_NONE;
         }
     }
@@ -1523,7 +1522,7 @@
             }
             depthNormalTexture.wrapModeU = Laya.WrapMode.Clamp;
             depthNormalTexture.wrapModeV = Laya.WrapMode.Clamp;
-            let source = context.source;
+            let source = context.indirectTarget;
             let width = source.width;
             let height = source.height;
             let textureFormat = source.colorFormat;
@@ -1531,13 +1530,13 @@
             let finalTex = Laya.RenderTexture.createFromPool(width, height, textureFormat, depthFormat, false, 1);
             let shader = this._shader;
             let shaderData = this._shaderData;
-            cmd.blitScreenTriangle(context.source, finalTex, null, shader, shaderData, 0);
+            cmd.blitScreenTriangle(source, finalTex, null, shader, shaderData, 0);
             let blurTex = Laya.RenderTexture.createFromPool(width, height, textureFormat, depthFormat, false, 1);
             cmd.blitScreenTriangle(finalTex, blurTex, null, this._aoBlurHorizontalShader, shaderData, 0);
             cmd.setShaderDataVector2(shaderData, ScalableAO.BlurDelty, ScalableAO.deltyVector);
             cmd.blitScreenTriangle(blurTex, finalTex, null, this._aoBlurHorizontalShader, this._shaderData, 0);
             cmd.setShaderDataTexture(shaderData, ScalableAO.aoTexture, finalTex);
-            cmd.blitScreenTriangle(context.source, context.destination, null, this._aoComposition, this._shaderData, 0);
+            cmd.blitScreenTriangle(source, context.destination, null, this._aoComposition, this._shaderData, 0);
             context.deferredReleaseTextures.push(finalTex);
             context.deferredReleaseTextures.push(blurTex);
         }

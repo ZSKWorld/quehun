@@ -1453,8 +1453,7 @@
         }
         destroy() {
             if (this._tex) {
-                if (this._owner._getBit(Laya.NodeFlags.EDITING_NODE))
-                    this._tex.off("reload", this, this.onTextureReload);
+                this._tex.off("reload", this, this.onTextureReload);
                 this._tex = null;
             }
             if (this._drawCmd) {
@@ -1463,12 +1462,11 @@
             }
         }
         setTexture(value) {
-            if (this._tex && this._owner._getBit(Laya.NodeFlags.EDITING_NODE))
+            if (this._tex)
                 this._tex.off("reload", this, this.onTextureReload);
             this._tex = value;
             if (value) {
-                if (this._owner._getBit(Laya.NodeFlags.EDITING_NODE))
-                    value.on("reload", this, this.onTextureReload);
+                value.on("reload", this, this.onTextureReload);
                 this.createCmd();
             }
             else {
@@ -2328,7 +2326,7 @@
                     let rt = new Laya.RenderTexture2D(this.iconWidth, this.iconHeight, Laya.RenderTargetFormat.R8G8B8A8);
                     this._rt = new Laya.Texture(rt);
                 }
-                icon.drawToRenderTexture2D(this._rt.width, this._rt.height, 0, 0, this._rt.bitmap);
+                icon.drawToRenderTexture2D(this._rt.width, this._rt.height, 0, 0, this._rt.bitmap, true, true);
                 this.agent.texture = this._rt;
             }
             this.agent.size(iconWidth || this.iconWidth, iconHeight || this.iconHeight);
@@ -8047,7 +8045,7 @@
             this._decelerationRate = UIConfig2.defaultScrollDecelerationRate;
             this._barDisplay = UIConfig2.defaultScrollBarDisplay;
             this._touchEffect = UIConfig2.defaultScrollTouchEffect;
-            this._bouncebackEffect = UIConfig2.defaultScrollTouchEffect;
+            this._bouncebackEffect = UIConfig2.defaultScrollBounceEffect;
         }
         get owner() {
             return this._owner;

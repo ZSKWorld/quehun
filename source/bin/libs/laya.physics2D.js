@@ -125,6 +125,64 @@
         static toPhysicsY(v) { return v / Laya.ILaya.stage.clientScaleY; }
         static toRenderX(v) { return v * Laya.ILaya.stage.clientScaleX; }
         static toRenderY(v) { return v * Laya.ILaya.stage.clientScaleY; }
+        static getDesignScaleX(sprite) {
+            let scale = 1;
+            let node = sprite;
+            while (node && node !== Laya.ILaya.stage) {
+                scale *= node.scaleX;
+                node = node.parent instanceof Laya.Sprite ? node.parent : null;
+            }
+            return scale;
+        }
+        static getDesignScaleY(sprite) {
+            let scale = 1;
+            let node = sprite;
+            while (node && node !== Laya.ILaya.stage) {
+                scale *= node.scaleY;
+                node = node.parent instanceof Laya.Sprite ? node.parent : null;
+            }
+            return scale;
+        }
+        static getDesignRotation(sprite) {
+            let rotation = 0;
+            let node = sprite;
+            while (node && node !== Laya.ILaya.stage) {
+                rotation += node.rotation;
+                node = node.parent instanceof Laya.Sprite ? node.parent : null;
+            }
+            return rotation;
+        }
+        static setDesignRotation(sprite, rotation) {
+            let parentRotation = 0;
+            let node = sprite.parent instanceof Laya.Sprite ? sprite.parent : null;
+            while (node && node !== Laya.ILaya.stage) {
+                parentRotation += node.rotation;
+                node = node.parent instanceof Laya.Sprite ? node.parent : null;
+            }
+            sprite.rotation = rotation - parentRotation;
+        }
+        static getDesignPosition(sprite, out) {
+            out.setTo(sprite.pivotX, sprite.pivotY);
+            return sprite.localToGlobal(out);
+        }
+        static setDesignPosition(sprite, x, y, out) {
+            out.setTo(x, y);
+            const parent = sprite.parent;
+            if (parent instanceof Laya.Sprite)
+                parent.globalToLocal(out);
+            sprite.pos(out.x, out.y);
+        }
+        static localToDesignPoint(sprite, x, y, out) {
+            out.setTo(sprite.pivotX + x, sprite.pivotY + y);
+            return sprite.localToGlobal(out);
+        }
+        static designToLocalPoint(sprite, x, y, out) {
+            out.setTo(x, y);
+            sprite.globalToLocal(out);
+            out.x -= sprite.pivotX;
+            out.y -= sprite.pivotY;
+            return out;
+        }
     }
     Laya.Laya.addInitCallback(() => Physics2D.I.enable());
 
@@ -373,6 +431,7 @@
             super();
             this._renderElements = [];
             this._material = new Laya.Material();
+            this._material._addReference();
             this._material.setShaderName("PhysicsLineShader");
             this._material.cull = Laya.CullMode.Off;
             this._material.setBoolByIndex(Laya.Shader3D.DEPTH_WRITE, false);
@@ -386,10 +445,6 @@
             this._drawElementData = Laya.LayaGL.render2DRenderPassFactory.createDraw2DElementCMDData();
             this._shaderData = Laya.LayaGL.renderDeviceFactory.createShaderData();
             this._shaderData.addDefine(Laya.BaseRenderNode2D.SHADERDEFINE_BASERENDER2D);
-            let temp = Laya.Vector4.TEMP.setValue(0, 0, 0, 0);
-            this._shaderData.setVector(Laya.ShaderDefines2D.UNIFORM_CLIPMATPOS, temp);
-            temp.x = temp.w = Laya.Const.MAX_CLIP_SIZE;
-            this._shaderData.setVector(Laya.ShaderDefines2D.UNIFORM_CLIPMATDIR, temp);
             this._struct = Laya.LayaGL.render2DRenderPassFactory.createRenderStruct2D();
             this._renderElements[0] = Laya.LayaGL.render2DRenderPassFactory.createRenderElement2D();
             this._physicsGeometry = new PhysicsLineGemetry();
@@ -1185,6 +1240,7 @@
     Laya.Scene.regManager(Physics2DWorldManager.__managerName, Physics2DWorldManager);
 
     const _tempWorldPoint = new Laya.Point();
+    const _tempBodyPosition = new Laya.Vector2();
     class ColliderBase extends Laya.Component {
         get isConnectedJoint() {
             return this._isConnectedJoint;
@@ -1266,10 +1322,10 @@
             this._box2DBody && Physics2D.I._factory.set_rigidBody_Awake(this._box2DBody, value);
         }
         get scaleX() {
-            return this.owner.globalTrans.scaleX;
+            return Physics2D.getDesignScaleX(this.owner);
         }
         get scaleY() {
-            return this.owner.globalTrans.scaleY;
+            return Physics2D.getDesignScaleY(this.owner);
         }
         get pivotoffx() {
             return this._x - this.owner.pivotX;
@@ -1306,6 +1362,8 @@
             this._x = 0;
             this._y = 0;
             this._isConnectedJoint = false;
+            this._lastPhysicsScaleX = NaN;
+            this._lastPhysicsScaleY = NaN;
             this._shapeDef = new Box2DShapeDef();
             this._isSensor = false;
             this._density = 10;
@@ -1327,27 +1385,58 @@
             this._getPhysicsManager();
             this._box2DBodyDef = Physics2D.I._factory.createBodyDef(this._physics2DManager.box2DWorld, this._bodyDef);
             this._box2DBody = Physics2D.I._factory.createBody(this._physics2DManager.box2DWorld, this._box2DBodyDef);
-            this.owner.on(Laya.SpriteGlobalTransform.CHANGED, this, this._needupdataShapeAttribute);
+            this.owner.on(Laya.SpriteGlobalTransform.CHANGED, this, this._onOwnerGlobalTransformChanged);
+            this._lastPhysicsScaleX = this.scaleX;
+            this._lastPhysicsScaleY = this.scaleY;
         }
         _getPhysicsManager() {
             var _a, _b;
             this._physics2DManager = (_b = (_a = this.owner) === null || _a === void 0 ? void 0 : _a.scene) === null || _b === void 0 ? void 0 : _b.getComponentElementManager(Physics2DWorldManager.__managerName);
         }
         getWorldPoint(x, y) {
-            let p = this.owner.globalTrans.localToGlobal(x, y);
-            return _tempWorldPoint.setTo(Physics2D.toPhysicsX(p.x), Physics2D.toPhysicsY(p.y));
+            return Physics2D.localToDesignPoint(this.owner, x, y, _tempWorldPoint);
         }
-        _needupdataShapeAttribute(flag) {
+        _onOwnerGlobalTransformChanged() {
+            const scaleX = this.scaleX;
+            const scaleY = this.scaleY;
+            const scaleChanged = Math.abs(scaleX - this._lastPhysicsScaleX) > 1e-6
+                || Math.abs(scaleY - this._lastPhysicsScaleY) > 1e-6;
+            if (scaleChanged) {
+                this._lastPhysicsScaleX = scaleX;
+                this._lastPhysicsScaleY = scaleY;
+                this._onPhysicsScaleChanged();
+                this.owner.event("shapeChange");
+            }
+            this._updateStaticBodyTransform();
+        }
+        _onPhysicsScaleChanged() {
             if (this._rigidbody && this._rigidbody.applyOwnerColliderComponent) {
                 this.createShape(this._rigidbody);
             }
-            var sp = this.owner;
-            if (this._type != "dynamic" && (flag & (Laya.TransformKind.Pos | Laya.TransformKind.Rotation | Laya.TransformKind.Scale))) {
-                if (flag & (Laya.TransformKind.Pos | Laya.TransformKind.Rotation | Laya.TransformKind.Scale)) {
-                    this._box2DBody && Physics2D.I._factory.set_RigibBody_Transform(this._box2DBody, Physics2D.toPhysicsX(sp.globalTrans.x), Physics2D.toPhysicsY(sp.globalTrans.y), Laya.Utils.toRadian(this.owner.globalTrans.rotation));
-                    this._box2DBody && Physics2D.I._factory.set_rigidBody_Awake(this._box2DBody, true);
+        }
+        _updateStaticBodyTransform() {
+            const sp = this.owner;
+            if (this._box2DBody) {
+                Physics2D.getDesignPosition(sp, _tempWorldPoint);
+                const factory = Physics2D.I._factory;
+                factory.get_RigidBody_Position(this._box2DBody, _tempBodyPosition);
+                const angle = Physics2D.getDesignRotation(sp) * Math.PI / 180;
+                const oldAngle = factory.get_RigidBody_Angle(this._box2DBody);
+                if (Math.abs(_tempBodyPosition.x - _tempWorldPoint.x) > 1e-4
+                    || Math.abs(_tempBodyPosition.y - _tempWorldPoint.y) > 1e-4
+                    || Math.abs(oldAngle - angle) > 1e-6) {
+                    factory.set_RigibBody_Transform(this._box2DBody, _tempWorldPoint.x, _tempWorldPoint.y, angle);
+                    factory.set_rigidBody_Awake(this._box2DBody, true);
                 }
             }
+        }
+        _needupdataShapeAttribute() {
+            if (this._rigidbody && this._rigidbody.applyOwnerColliderComponent) {
+                this.createShape(this._rigidbody);
+            }
+            this._lastPhysicsScaleX = this.scaleX;
+            this._lastPhysicsScaleY = this.scaleY;
+            this._updateStaticBodyTransform();
             this.owner.event("shapeChange");
         }
         _onDisable() {
@@ -1355,7 +1444,7 @@
             this._box2DBody = null;
             this._box2DBodyDef && Physics2D.I._factory.destroyData(this._box2DBodyDef);
             this._box2DBodyDef = null;
-            this.owner.off(Laya.SpriteGlobalTransform.CHANGED, this, this._needupdataShapeAttribute);
+            this.owner.off(Laya.SpriteGlobalTransform.CHANGED, this, this._onOwnerGlobalTransformChanged);
         }
         _onDestroy() {
             this._box2DBody && Physics2D.I._factory.removeBody(this._physics2DManager.box2DWorld, this._box2DBody);
@@ -1604,14 +1693,33 @@
         _globalChangeHandler(flag) {
             this._updatePhysicsTransformToRender();
         }
+        _onPhysicsScaleChanged() {
+            if (this.applyOwnerColliderComponent) {
+                for (let i = 0, n = this._colliders.length; i < n; i++) {
+                    this._colliders[i].createShape(this);
+                }
+            }
+            else if (this._shapes) {
+                for (let i = 0, n = this._shapes.length; i < n; i++) {
+                    this._shapes[i].setCollider(this);
+                }
+                if (this._useAutoMass) {
+                    this._box2DBody && Physics2D.I._factory.retSet_rigidBody_MassData(this._box2DBody);
+                }
+                else {
+                    this._box2DBody && Physics2D.I._factory.set_rigidBody_Mass(this._box2DBody, this._mass, this._centerOfMass, this._inertia, this._massData);
+                }
+            }
+        }
         _onAwake() {
             this.owner.globalTrans.cache = true;
         }
         _setBodyDefValue() {
             if (this._type == "static") {
                 let owner = this.owner;
-                this._bodyDef.position.setValue(Physics2D.toPhysicsX(owner.globalTrans.x), Physics2D.toPhysicsY(owner.globalTrans.y));
-                this._bodyDef.angle = Laya.Utils.toRadian(owner.globalTrans.rotation);
+                Physics2D.getDesignPosition(owner, _tempP0);
+                this._bodyDef.position.setValue(_tempP0.x, _tempP0.y);
+                this._bodyDef.angle = Laya.Utils.toRadian(Physics2D.getDesignRotation(owner));
                 this._bodyDef.allowSleep = false;
                 this._bodyDef.angularVelocity = 0;
                 this._bodyDef.angularDamping = 0;
@@ -1623,8 +1731,9 @@
                 return;
             }
             let owner = this.owner;
-            this._bodyDef.position.setValue(Physics2D.toPhysicsX(owner.globalTrans.x), Physics2D.toPhysicsY(owner.globalTrans.y));
-            this._bodyDef.angle = Laya.Utils.toRadian(owner.globalTrans.rotation);
+            Physics2D.getDesignPosition(owner, _tempP0);
+            this._bodyDef.position.setValue(_tempP0.x, _tempP0.y);
+            this._bodyDef.angle = Laya.Utils.toRadian(Physics2D.getDesignRotation(owner));
             this._bodyDef.fixedRotation = !this._allowRotation;
             this._bodyDef.allowSleep = this._allowSleep;
             this._bodyDef.angularVelocity = this._angularVelocity;
@@ -1672,9 +1781,8 @@
             if (Physics2D.I._factory.get_rigidBody_IsAwake(this._box2DBody)) {
                 var pos = Laya.Vector2.TEMP;
                 factory.get_RigidBody_Position(this._box2DBody, pos);
-                pos.setValue(Physics2D.toRenderX(pos.x), Physics2D.toRenderY(pos.y));
-                this.owner.globalTrans.setPos(pos.x, pos.y);
-                this.owner.globalTrans.rotation = Laya.Utils.toAngle(factory.get_RigidBody_Angle(this._box2DBody));
+                Physics2D.setDesignPosition(this.owner, pos.x, pos.y, _tempP0);
+                Physics2D.setDesignRotation(this.owner, Laya.Utils.toAngle(factory.get_RigidBody_Angle(this._box2DBody)));
             }
         }
         _destroyAllShape() {
@@ -1758,7 +1866,8 @@
             if (!this._box2DBody)
                 return;
             var factory = Physics2D.I._factory;
-            factory.set_RigibBody_Transform(this._box2DBody, Physics2D.toPhysicsX(this.owner.globalTrans.x), Physics2D.toPhysicsY(this.owner.globalTrans.y), Laya.Utils.toRadian(value));
+            Physics2D.getDesignPosition(this.owner, _tempP0);
+            factory.set_RigibBody_Transform(this._box2DBody, _tempP0.x, _tempP0.y, Laya.Utils.toRadian(value));
             factory.set_rigidBody_Awake(this._box2DBody, true);
         }
         getMass() {
@@ -1782,11 +1891,10 @@
             return center;
         }
         getWorldPoint(x, y) {
-            let p = this.owner.globalTrans.localToGlobal(x, y);
-            return _tempP0.setTo(Physics2D.toPhysicsX(p.x), Physics2D.toPhysicsY(p.y));
+            return Physics2D.localToDesignPoint(this.owner, x, y, _tempP0);
         }
         getLocalPoint(x, y) {
-            return this.owner.globalTrans.globalToLocal(Physics2D.toRenderX(x), Physics2D.toRenderY(y));
+            return Physics2D.designToLocalPoint(this.owner, x, y, _tempP0);
         }
     }
 
@@ -1819,8 +1927,9 @@
         }
         _setBodyDefValue() {
             let owner = this.owner;
-            this._bodyDef.position.setValue(Physics2D.toPhysicsX(owner.globalTrans.x), Physics2D.toPhysicsY(owner.globalTrans.y));
-            this._bodyDef.angle = Laya.Utils.toRadian(owner.globalTrans.rotation);
+            Physics2D.getDesignPosition(owner, _tempPosition);
+            this._bodyDef.position.setValue(_tempPosition.x, _tempPosition.y);
+            this._bodyDef.angle = Laya.Utils.toRadian(Physics2D.getDesignRotation(owner));
             this._bodyDef.allowSleep = false;
             this._bodyDef.angularVelocity = 0;
             this._bodyDef.angularDamping = 0;
@@ -1849,6 +1958,17 @@
             if (this.isConnectedJoint) {
                 this.owner.event("bodyCreated");
                 this.isConnectedJoint = false;
+            }
+        }
+        _onPhysicsScaleChanged() {
+            if (this._rigidbody) {
+                super._onPhysicsScaleChanged();
+                return;
+            }
+            if (!this._shapes)
+                return;
+            for (let i = 0, n = this._shapes.length; i < n; i++) {
+                this._shapes[i].setCollider(this);
             }
         }
         _removeShapeAndDestroyData() {
@@ -1935,6 +2055,7 @@
             this._shapeDef.filter.mask = collider.mask;
         }
     }
+    const _tempPosition = new Laya.Point();
 
     class BoxCollider extends StaticCollider {
         get width() {
@@ -2187,17 +2308,8 @@
             return isvalid;
         }
         getBodyAnchor(body, anchorx, anchory) {
-            Laya.Point.TEMP.setTo(anchorx, anchory);
-            let node = body.owner;
-            if (node) {
-                if (node.transform) {
-                    node.transform.transformPointN(Laya.Point.TEMP);
-                }
-                else {
-                    Laya.Point.TEMP.x *= node.scaleX;
-                    Laya.Point.TEMP.y *= node.scaleY;
-                }
-            }
+            const node = body.owner;
+            Laya.Point.TEMP.setTo(anchorx * Physics2D.getDesignScaleX(node), anchory * Physics2D.getDesignScaleY(node));
             return Laya.Point.TEMP;
         }
         _onAdded() {
@@ -3115,10 +3227,10 @@
             this._box2DShape && Physics2D.I._factory.set_shape_isSensor(this._box2DShape, value);
         }
         get scaleX() {
-            return Physics2D.toPhysicsX(this._body.owner.globalScaleX);
+            return Physics2D.getDesignScaleX(this._body.owner);
         }
         get scaleY() {
-            return Physics2D.toPhysicsY(this._body.owner.globalScaleY);
+            return Physics2D.getDesignScaleY(this._body.owner);
         }
         get pivotoffx() {
             return this._x - this._body.owner.pivotX;

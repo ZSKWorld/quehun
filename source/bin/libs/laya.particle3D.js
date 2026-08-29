@@ -2666,6 +2666,41 @@
 
     const tempV3$1 = new Laya.Vector3();
     class ShurikenParticleSystem extends Laya.GeometryElement {
+        get dragType() { return this._dragType; }
+        set dragType(value) {
+            this._dragType = value;
+            this._ownerRender && this._ownerRender._onParticleConfigChanged();
+        }
+        get dragSpeedConstantMin() { return this._dragSpeedConstantMin; }
+        set dragSpeedConstantMin(value) {
+            this._dragSpeedConstantMin = value;
+            this._ownerRender && this._ownerRender._onParticleConfigChanged();
+        }
+        get dragSpeedConstantMax() { return this._dragSpeedConstantMax; }
+        set dragSpeedConstantMax(value) {
+            this._dragSpeedConstantMax = value;
+            this._ownerRender && this._ownerRender._onParticleConfigChanged();
+        }
+        get threeDStartRotation() { return this._threeDStartRotation; }
+        set threeDStartRotation(value) {
+            this._threeDStartRotation = value;
+            this._ownerRender && this._ownerRender._onParticleConfigChanged();
+        }
+        get gravityModifier() { return this._gravityModifier; }
+        set gravityModifier(value) {
+            this._gravityModifier = value;
+            this._ownerRender && this._ownerRender._onParticleConfigChanged();
+        }
+        get simulationSpace() { return this._simulationSpace; }
+        set simulationSpace(value) {
+            this._simulationSpace = value;
+            this._ownerRender && this._ownerRender._onParticleConfigChanged();
+        }
+        get scaleMode() { return this._scaleMode; }
+        set scaleMode(value) {
+            this._scaleMode = value;
+            this._ownerRender && this._ownerRender._onParticleConfigChanged();
+        }
         get gradientKeyCount8() {
             return this._gradientKeyCount8;
         }
@@ -2715,6 +2750,7 @@
                 else
                     this._ownerRender._baseRenderNode.shaderData.removeDefine(ShuriKenParticle3DShaderDeclaration.SHADERDEFINE_SHAPE);
                 this._shape = value;
+                this._ownerRender._onParticleConfigChanged();
             }
         }
         get isAlive() {
@@ -3364,10 +3400,10 @@
             this.startSpeedConstant = 0;
             this.startSpeedConstantMin = 0;
             this.startSpeedConstantMax = 0;
-            this.dragType = 0;
+            this._dragType = 0;
             this.dragConstant = 0;
-            this.dragSpeedConstantMin = 0;
-            this.dragSpeedConstantMax = 0;
+            this._dragSpeedConstantMin = 0;
+            this._dragSpeedConstantMax = 0;
             this.threeDStartSize = false;
             this.startSizeType = 0;
             this.startSizeConstant = 0;
@@ -3376,7 +3412,7 @@
             this.startSizeConstantMax = 0;
             this.startSizeConstantMinSeparate = null;
             this.startSizeConstantMaxSeparate = null;
-            this.threeDStartRotation = false;
+            this._threeDStartRotation = false;
             this.startRotationType = 0;
             this.startRotationConstant = 0;
             this.startRotationConstantSeparate = null;
@@ -3392,10 +3428,10 @@
             this.startColorGradient = new Laya.Gradient();
             this.startColorGradientMin = new Laya.Gradient();
             this.startColorGradientMax = new Laya.Gradient();
-            this.gravityModifier = 0;
-            this.simulationSpace = 0;
+            this._gravityModifier = 0;
+            this._simulationSpace = 0;
             this.simulationSpeed = 1.0;
-            this.scaleMode = 1;
+            this._scaleMode = 1;
             this.playOnAwake = false;
             this.randomSeed = null;
             this.autoRandomSeed = false;
@@ -3685,17 +3721,15 @@
         set customBounds(value) {
             if (value) {
                 this._useCustomBounds = true;
-                if (!this._customBounds) {
-                    this._customBounds = new Laya.Bounds(new Laya.Vector3(), new Laya.Vector3());
-                    this._ownerRender.geometryBounds = this._customBounds;
-                }
                 this._customBounds = value;
+                this._ownerRender && (this._ownerRender.geometryBounds = value);
             }
             else {
                 this._useCustomBounds = false;
                 this._customBounds = null;
-                this._ownerRender.geometryBounds = null;
+                this._ownerRender && (this._ownerRender.geometryBounds = null);
             }
+            this._ownerRender && this._ownerRender._syncBoundsToNative();
         }
         _simulationSupported() {
             if (this.simulationSpace == 0 && this._emission.emissionRateOverDistance > 0) {
@@ -3869,10 +3903,14 @@
             }
         }
         _initBufferDatas() {
-            if (this._vertexBuffer && this._vertexBuffer._buffer) {
-                var memorySize = this._vertexBuffer._byteLength + this._indexBuffer.indexCount * 2;
+            if (this._vertexBuffer) {
+                var memorySize = this._vertexBuffer._byteLength + (this._indexBuffer ? this._indexBuffer._byteLength : 0);
                 this._vertexBuffer.destroy();
-                this._indexBuffer.destroy();
+                this._vertexBuffer = null;
+                if (this._indexBuffer) {
+                    this._indexBuffer.destroy();
+                    this._indexBuffer = null;
+                }
                 Laya.Resource._addMemory(-memorySize, -memorySize);
             }
             var render = this._ownerRender;
@@ -3987,7 +4025,10 @@
             this._emission.destroy();
             this._bounds = null;
             this._customBounds = null;
-            this._bufferState = null;
+            if (this._bufferState) {
+                this._bufferState.destroy();
+                this._bufferState = null;
+            }
             this._owner = null;
             this._vertices = null;
             this._indexBuffer = null;
@@ -4360,6 +4401,7 @@
             }
             this._frameRateTime = this._currentTime + this._playStartDelay;
             this._startUpdateLoopCount = Laya.Stat.loopCount;
+            this._ownerRender && this._ownerRender._syncBoundsToNative();
         }
         pause() {
             this._isPaused = true;
@@ -5098,6 +5140,20 @@
     ShurikenParticleMaterial.RENDERMODE_ADDTIVE = 1;
 
     class ShurikenParticleRenderer extends Laya.BaseRender {
+        get stretchedBillboardSpeedScale() {
+            return this._stretchedBillboardSpeedScale;
+        }
+        set stretchedBillboardSpeedScale(value) {
+            this._stretchedBillboardSpeedScale = value;
+            this._onParticleConfigChanged();
+        }
+        get stretchedBillboardLengthScale() {
+            return this._stretchedBillboardLengthScale;
+        }
+        set stretchedBillboardLengthScale(value) {
+            this._stretchedBillboardLengthScale = value;
+            this._onParticleConfigChanged();
+        }
         get particleSystem() {
             return this._particleSystem;
         }
@@ -5146,6 +5202,7 @@
                 }
                 var parSys = this._particleSystem;
                 (parSys) && (parSys._initBufferDatas());
+                this._syncBoundsToNative();
             }
         }
         get mesh() {
@@ -5157,6 +5214,7 @@
                 this._mesh = value;
                 (value) && (value._addReference());
                 this._particleSystem._initBufferDatas();
+                this._syncBoundsToNative();
             }
         }
         get pivot() {
@@ -5164,18 +5222,95 @@
         }
         set pivot(value) {
             value.cloneTo(this._pivot);
+            this._onParticleConfigChanged();
         }
         constructor() {
+            var _a, _b;
             super();
             this._finalGravity = new Laya.Vector3();
             this._dragConstant = new Laya.Vector2();
             this._mesh = null;
             this._pivot = new Laya.Vector3(0, 0, 0);
+            this._transformUniformDirty = true;
+            this._cacheWorldPos = new Laya.Vector3(NaN, NaN, NaN);
+            this._cacheWorldRot = new Laya.Quaternion(NaN, NaN, NaN, NaN);
+            this._cachePositionScale = new Laya.Vector3(NaN, NaN, NaN);
+            this._cacheSizeScale = new Laya.Vector3(NaN, NaN, NaN);
             this.stretchedBillboardCameraSpeedScale = 0;
-            this.stretchedBillboardSpeedScale = 0;
-            this.stretchedBillboardLengthScale = 2;
+            this._stretchedBillboardSpeedScale = 0;
+            this._stretchedBillboardLengthScale = 2;
             this.renderMode = 0;
             this._baseRenderNode.renderNodeType = Laya.BaseRenderType.ParticleRender;
+            (_b = (_a = this._baseRenderNode).disableNativeBoundsCallback) === null || _b === void 0 ? void 0 : _b.call(_a);
+        }
+        _onWorldMatNeedChange(flag) {
+            super._onWorldMatNeedChange(flag);
+            this._transformUniformDirty = true;
+            const vol = this._particleSystem && this._particleSystem.velocityOverLifetime;
+            if (vol && vol.enable && vol.space == 1)
+                this._syncBoundsToNative();
+        }
+        _syncBoundsToNative() {
+            const node = this._baseRenderNode;
+            const ps = this._particleSystem;
+            if (!node.setBoundsMode || !ps)
+                return;
+            if (ps._useCustomBounds) {
+                this.geometryBounds = ps.customBounds;
+                node.setBoundsWorldPad(0, 0, 0, 0, 0, 0);
+                node.setBoundsMode(0);
+            }
+            else if (ps._simulationSupported()) {
+                ps._generateBounds();
+                this.geometryBounds = ps._bounds;
+                if (ps.gravityModifier != 0) {
+                    const go = ps._gravityOffset;
+                    node.setBoundsWorldPad(0, -go.y, 0, 0, -go.x, 0);
+                }
+                else {
+                    node.setBoundsWorldPad(0, 0, 0, 0, 0, 0);
+                }
+                node.setBoundsMode(0);
+            }
+            else {
+                node.setBoundsMode(2);
+            }
+        }
+        static _v3Changed(v, cache) {
+            if (v.x !== cache.x || v.y !== cache.y || v.z !== cache.z) {
+                cache.x = v.x;
+                cache.y = v.y;
+                cache.z = v.z;
+                return true;
+            }
+            return false;
+        }
+        _applyConfigShaderData() {
+            let ps = this._particleSystem;
+            if (!ps)
+                return;
+            let sv = this._baseRenderNode.shaderData;
+            sv.setBool(ShuriKenParticle3DShaderDeclaration.SHAPE, !!(ps.shape && ps.shape.enable));
+            if (ps.dragType === 0 || ps.dragType === 2) {
+                let dragY = ps.dragType === 0 ? ps.dragSpeedConstantMin : ps.dragSpeedConstantMax;
+                this._dragConstant.setValue(ps.dragSpeedConstantMin, dragY);
+                sv.setVector2(ShuriKenParticle3DShaderDeclaration.DRAG, this._dragConstant);
+            }
+            Laya.Vector3.scale(ShurikenParticleRenderer.gravity, ps.gravityModifier, this._finalGravity);
+            sv.setVector3(ShuriKenParticle3DShaderDeclaration.GRAVITY, this._finalGravity);
+            sv.setInt(ShuriKenParticle3DShaderDeclaration.SIMULATIONSPACE, ps.simulationSpace);
+            sv.setBool(ShuriKenParticle3DShaderDeclaration.THREEDSTARTROTATION, ps.threeDStartRotation);
+            sv.setInt(ShuriKenParticle3DShaderDeclaration.SCALINGMODE, ps.scaleMode);
+            sv.setNumber(ShuriKenParticle3DShaderDeclaration.STRETCHEDBILLBOARDLENGTHSCALE, this.stretchedBillboardLengthScale);
+            sv.setNumber(ShuriKenParticle3DShaderDeclaration.STRETCHEDBILLBOARDSPEEDSCALE, this.stretchedBillboardSpeedScale);
+            sv.setVector3(ShuriKenParticle3DShaderDeclaration.PIVOT, this._pivot);
+        }
+        _onParticleConfigChanged() {
+            if (!this._particleSystem)
+                return;
+            this._applyConfigShaderData();
+            this._transformUniformDirty = true;
+            this._syncBoundsToNative();
         }
         _isMaterialVaild(value) {
             return value.checkType(Laya.ShaderFeatureType.Effect);
@@ -5197,9 +5332,11 @@
             element.setGeometry(this._particleSystem);
             element.material = ShurikenParticleMaterial.defaultMaterial;
             this._setRenderElements();
+            this._applyConfigShaderData();
         }
         _onEnable() {
             super._onEnable();
+            this._syncBoundsToNative();
             (this._particleSystem.playOnAwake && Laya.LayaEnv.isPlaying) && (this._particleSystem.play());
         }
         _onDisable() {
@@ -5258,65 +5395,55 @@
             var particleSystem = this._particleSystem;
             var sv = this._baseRenderNode.shaderData;
             var transform = this.owner.transform;
-            switch (particleSystem.simulationSpace) {
-                case 0:
-                    break;
-                case 1:
-                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.WORLDPOSITION, transform.position);
-                    sv.setShaderData(ShuriKenParticle3DShaderDeclaration.WORLDROTATION, Laya.ShaderDataType.Vector4, transform.rotation);
-                    break;
-                default:
-                    throw new Error("ShurikenParticleMaterial: SimulationSpace value is invalid.");
-            }
-            if (particleSystem.shape && particleSystem.shape.enable) {
-                sv.setBool(ShuriKenParticle3DShaderDeclaration.SHAPE, true);
-            }
-            else {
-                sv.setBool(ShuriKenParticle3DShaderDeclaration.SHAPE, false);
-            }
-            switch (particleSystem.scaleMode) {
-                case 0:
-                    var scale = transform.getWorldLossyScale();
-                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.POSITIONSCALE, scale);
-                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.SIZESCALE, scale);
-                    break;
-                case 1:
-                    var localScale = transform.localScale;
-                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.POSITIONSCALE, localScale);
-                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.SIZESCALE, localScale);
-                    break;
-                case 2:
-                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.POSITIONSCALE, transform.getWorldLossyScale());
-                    sv.setVector3(ShuriKenParticle3DShaderDeclaration.SIZESCALE, Laya.Vector3.ONE);
-                    break;
-            }
-            switch (particleSystem.dragType) {
-                case 0:
-                    this._dragConstant.setValue(particleSystem.dragSpeedConstantMin, particleSystem.dragSpeedConstantMin);
-                    sv.setVector2(ShuriKenParticle3DShaderDeclaration.DRAG, this._dragConstant);
-                    break;
-                case 2:
-                    this._dragConstant.setValue(particleSystem.dragSpeedConstantMin, particleSystem.dragSpeedConstantMax);
-                    sv.setVector2(ShuriKenParticle3DShaderDeclaration.DRAG, this._dragConstant);
-                    break;
-                default:
-                    this._dragConstant.setValue(0, 0);
-                    break;
-            }
-            Laya.Vector3.scale(ShurikenParticleRenderer.gravity, particleSystem.gravityModifier, this._finalGravity);
-            sv.setVector3(ShuriKenParticle3DShaderDeclaration.GRAVITY, this._finalGravity);
-            sv.setInt(ShuriKenParticle3DShaderDeclaration.SIMULATIONSPACE, particleSystem.simulationSpace);
-            sv.setBool(ShuriKenParticle3DShaderDeclaration.THREEDSTARTROTATION, particleSystem.threeDStartRotation);
-            sv.setInt(ShuriKenParticle3DShaderDeclaration.SCALINGMODE, particleSystem.scaleMode);
-            sv.setNumber(ShuriKenParticle3DShaderDeclaration.STRETCHEDBILLBOARDLENGTHSCALE, this.stretchedBillboardLengthScale);
-            sv.setNumber(ShuriKenParticle3DShaderDeclaration.STRETCHEDBILLBOARDSPEEDSCALE, this.stretchedBillboardSpeedScale);
             sv.setNumber(ShuriKenParticle3DShaderDeclaration.CURRENTTIME, particleSystem._currentTime);
-            sv.setVector3(ShuriKenParticle3DShaderDeclaration.PIVOT, this._pivot);
+            if (this._transformUniformDirty) {
+                let simSpace = particleSystem.simulationSpace;
+                if (simSpace === 1) {
+                    let pos = transform.position;
+                    if (ShurikenParticleRenderer._v3Changed(pos, this._cacheWorldPos)) {
+                        sv.setVector3(ShuriKenParticle3DShaderDeclaration.WORLDPOSITION, pos);
+                    }
+                    let rot = transform.rotation;
+                    if (rot.x !== this._cacheWorldRot.x || rot.y !== this._cacheWorldRot.y || rot.z !== this._cacheWorldRot.z || rot.w !== this._cacheWorldRot.w) {
+                        sv.setShaderData(ShuriKenParticle3DShaderDeclaration.WORLDROTATION, Laya.ShaderDataType.Vector4, rot);
+                        rot.cloneTo(this._cacheWorldRot);
+                    }
+                }
+                else if (simSpace !== 0) {
+                    throw new Error("ShurikenParticleMaterial: SimulationSpace value is invalid.");
+                }
+                switch (particleSystem.scaleMode) {
+                    case 0: {
+                        let scale = transform.getWorldLossyScale();
+                        if (ShurikenParticleRenderer._v3Changed(scale, this._cachePositionScale))
+                            sv.setVector3(ShuriKenParticle3DShaderDeclaration.POSITIONSCALE, scale);
+                        if (ShurikenParticleRenderer._v3Changed(scale, this._cacheSizeScale))
+                            sv.setVector3(ShuriKenParticle3DShaderDeclaration.SIZESCALE, scale);
+                        break;
+                    }
+                    case 1: {
+                        let localScale = transform.localScale;
+                        if (ShurikenParticleRenderer._v3Changed(localScale, this._cachePositionScale))
+                            sv.setVector3(ShuriKenParticle3DShaderDeclaration.POSITIONSCALE, localScale);
+                        if (ShurikenParticleRenderer._v3Changed(localScale, this._cacheSizeScale))
+                            sv.setVector3(ShuriKenParticle3DShaderDeclaration.SIZESCALE, localScale);
+                        break;
+                    }
+                    case 2: {
+                        let worldScale = transform.getWorldLossyScale();
+                        if (ShurikenParticleRenderer._v3Changed(worldScale, this._cachePositionScale))
+                            sv.setVector3(ShuriKenParticle3DShaderDeclaration.POSITIONSCALE, worldScale);
+                        if (ShurikenParticleRenderer._v3Changed(Laya.Vector3.ONE, this._cacheSizeScale))
+                            sv.setVector3(ShuriKenParticle3DShaderDeclaration.SIZESCALE, Laya.Vector3.ONE);
+                        break;
+                    }
+                }
+                this._transformUniformDirty = false;
+            }
         }
         renderUpdate(context) {
             this._renderElements.forEach(element => {
                 element._renderElementOBJ.isRender = element._geometry._prepareRender(context);
-                element._geometry._prepareRender(context);
                 element._geometry._updateRenderParams(context);
             });
         }

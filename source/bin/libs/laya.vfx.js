@@ -157,6 +157,7 @@
             this.extraOutputs = [];
             this.textureUniforms = [];
             this.bufferUniforms = [];
+            this.meshPointBuffers = [];
             this.outputEvents = [];
         }
     }
@@ -286,6 +287,7 @@
         constructor(params) {
             var _a, _b;
             super(Laya.MeshTopology.Triangles, Laya.DrawType.DrawElementIndirect);
+            this._particleVertex = null;
             this.bounds = new Laya.Bounds(new Laya.Vector3(-0.5, -0.5, -0.5), new Laya.Vector3(0.5, 0.5, 0.5));
             this.blendMode = "Alpha";
             this.outputType = "outputMesh";
@@ -298,6 +300,7 @@
             this._mesh = params.mesh;
             this.indexFormat = params.mesh.indexFormat;
             const particleVertex = params.particleBuffer;
+            this._particleVertex = particleVertex;
             const meshIndexBuffer = (_a = params.mesh.indexBuffer) !== null && _a !== void 0 ? _a : params.mesh._indexBuffer;
             const meshVertexBuffer = (_b = params.mesh.vertexBuffer) !== null && _b !== void 0 ? _b : params.mesh._vertexBuffer;
             findGpuVertexBuffer(meshVertexBuffer);
@@ -320,6 +323,37 @@
         _updateRenderParams(state) {
             this.clearRenderParams();
             this._geometryElementOBj.setIndirectDrawBuffer(this.indirectBuffer.deviceBuffer, 0);
+        }
+        setMesh(mesh) {
+            var _a, _b, _c, _d, _e, _f;
+            if (!mesh || mesh === this._mesh)
+                return;
+            const meshIndexBuffer = (_a = mesh.indexBuffer) !== null && _a !== void 0 ? _a : mesh._indexBuffer;
+            const meshVertexBuffer = (_b = mesh.vertexBuffer) !== null && _b !== void 0 ? _b : mesh._vertexBuffer;
+            if (!meshIndexBuffer || !meshVertexBuffer) {
+                console.warn("[VFX] VFXGeometry.setMesh: 新 mesh 无 vertex/index buffer，跳过", mesh);
+                return;
+            }
+            try {
+                (_d = (_c = mesh)._addReference) === null || _d === void 0 ? void 0 : _d.call(_c);
+            }
+            catch (_g) { }
+            try {
+                (_f = (_e = this._mesh) === null || _e === void 0 ? void 0 : _e._removeReference) === null || _f === void 0 ? void 0 : _f.call(_e);
+            }
+            catch (_h) { }
+            this._mesh = mesh;
+            this.indexFormat = mesh.indexFormat;
+            const oldState = this.bufferState;
+            this.bufferState = new Laya.BufferState();
+            this.bufferState.applyState([meshVertexBuffer, this._particleVertex], meshIndexBuffer);
+            try {
+                oldState === null || oldState === void 0 ? void 0 : oldState.destroy();
+            }
+            catch (_j) { }
+            const indirectData = new Uint32Array(5);
+            indirectData[0] = meshIndexBuffer.indexCount;
+            this.indirectBuffer.deviceBuffer.setData(indirectData.buffer, 0, 0, indirectData.byteLength);
         }
         destroy() {
             var _a;
@@ -695,15 +729,13 @@
             if (VFXRenderer._patchedTextureUrls.has(url))
                 return;
             VFXRenderer._patchedTextureUrls.add(url);
-            console.log("[VFX alpha] start url=", url);
             try {
-                const buffer = await Laya.Laya.loader.load(url, Laya.Loader.BUFFER);
+                const buffer = await Laya.Laya.loader.fetch(url, "arraybuffer");
                 if (!buffer || !(buffer instanceof ArrayBuffer)) {
-                    console.warn("[VFX alpha] loader returned non-ArrayBuffer:", typeof buffer);
+                    console.warn("[VFX alpha] fetch returned non-ArrayBuffer:", typeof buffer);
                     return;
                 }
                 if (!url.toLowerCase().endsWith(".png")) {
-                    console.log("[VFX alpha] skip - not png");
                     return;
                 }
                 const blob = new Blob([buffer], { type: "image/png" });
@@ -724,7 +756,6 @@
                         break;
                     }
                 }
-                console.log("[VFX alpha] allOpaque=", allOpaque, "pixels.length=", pixels.length);
                 if (!allOpaque)
                     return;
                 let blackCount = 0;
@@ -735,7 +766,6 @@
                 }
                 const blackRatio = blackCount / pixelCount;
                 const isFlameStyle = blackRatio > 0.15;
-                console.log("[VFX alpha] blackRatio=", blackRatio.toFixed(3), "isFlameStyle=", isFlameStyle);
                 let modified = false;
                 for (let i = 0; i < pixels.length; i += 4) {
                     const r = pixels[i], g = pixels[i + 1], b = pixels[i + 2];
@@ -765,7 +795,6 @@
                 const t2d = (tex.bitmap || tex);
                 if (t2d && t2d.setPixelsData) {
                     t2d.setPixelsData(new Uint8Array(pixels.buffer), false, false);
-                    console.log("[VFX] alpha patched from luminance:", url, "size=", canvas.width, "x", canvas.height);
                 }
                 else {
                     console.warn("[VFX alpha] no setPixelsData on bitmap, t2d=", t2d, "tex=", tex);
@@ -842,9 +871,47 @@
             }
             return mat;
         }
-        static getCustomShaderMaterial(shaderName, blendMode = "Alpha") {
+        static _syncMeshAttrDefines(mat, geometry) {
+            try {
+                const mesh = geometry && (geometry._mesh || geometry.mesh);
+                if (!mesh || !mat)
+                    return;
+                const vb = mesh.vertexBuffer || mesh._vertexBuffer;
+                const decl = vb && vb.vertexDeclaration;
+                const elems = decl && (decl._vertexElements || decl.vertexElements);
+                if (!elems || !elems.length)
+                    return;
+                const usages = new Set();
+                for (const e of elems)
+                    usages.add(e.elementUsage !== undefined ? e.elementUsage : e._elementUsage);
+                let meshDefs = null;
+                try {
+                    meshDefs = [];
+                    Laya.MeshUtil.getMeshDefine(mesh, meshDefs);
+                }
+                catch (e) {
+                    meshDefs = null;
+                }
+                const sync = (defName, usage) => {
+                    const def = Laya.Shader3D.getDefineByName(defName);
+                    if (!def)
+                        return;
+                    const has = meshDefs ? meshDefs.indexOf(def) >= 0 : usages.has(usage);
+                    if (has || usages.has(usage))
+                        mat.addDefine(def);
+                    else
+                        mat.removeDefine(def);
+                };
+                sync("COLOR", 1);
+                sync("UV", 2);
+                sync("UV1", 7);
+                sync("TANGENT", 4);
+            }
+            catch (e) { }
+        }
+        static getCustomShaderMaterial(shaderName, blendMode = "Alpha", instanceKey = "", variant = "instanced") {
             var _a, _b, _c, _d, _e, _f;
-            const key = `${shaderName}__${blendMode}`;
+            const key = `${shaderName}__${blendMode}__${instanceKey}__${variant}`;
             let mat = VFXRenderer._customShaderMaterialCache.get(key);
             if (mat)
                 return mat;
@@ -864,10 +931,47 @@
                         .then(() => console.log(`[VFX Renderer] custom shader '${shaderName}' loaded (url=${url})`))
                         .catch((err) => console.warn(`[VFX Renderer] custom shader '${shaderName}' load failed`, err));
                 }
-                return VFXRenderer.getCustomShaderMaterial("VFXUnlit", blendMode);
+                return VFXRenderer.getCustomShaderMaterial("VFXUnlit", blendMode, instanceKey, variant);
             }
             mat = new Laya.Material();
             mat.setShaderName(shaderName);
+            if (variant !== "strip") {
+                const vfxDef = Laya.Shader3D.getDefineByName("VFX_INSTANCED");
+                if (vfxDef)
+                    mat.addDefine(vfxDef);
+            }
+            else {
+                const uvDef = Laya.Shader3D.getDefineByName("UV");
+                if (uvDef)
+                    mat.addDefine(uvDef);
+            }
+            const colorDef = Laya.Shader3D.getDefineByName("COLOR");
+            if (colorDef)
+                mat.addDefine(colorDef);
+            const emissionDef = Laya.Shader3D.getDefineByName("EMISSION");
+            if (emissionDef)
+                mat.addDefine(emissionDef);
+            mat.setColor("u_Color", new Laya.Color(1, 1, 1, 1));
+            mat.setTexture("u_AlbedoTexture", VFXRenderer.getDefaultDotTexture());
+            mat.renderQueue = 3000;
+            mat.cull = Laya.RenderState.CULL_NONE;
+            applyBlendMode(mat, blendMode);
+            VFXRenderer._customShaderMaterialCache.set(key, mat);
+            return mat;
+        }
+        static getMeshTexturedMaterial(blendMode = "Alpha", mainTextureUrl = "", uvMode = "Default", flipbookSize = null) {
+            const fbKey = flipbookSize ? `${flipbookSize.x}x${flipbookSize.y}` : "";
+            const key = `__meshtex__${blendMode}__${mainTextureUrl}__${uvMode}__${fbKey}`;
+            let mat = VFXRenderer._customShaderMaterialCache.get(key);
+            if (mat)
+                return mat;
+            const shader = Laya.Shader3D.find("VFXUnlit");
+            if (!shader) {
+                console.error("[VFX Renderer] built-in 'VFXUnlit' shader not registered");
+                return null;
+            }
+            mat = new Laya.Material();
+            mat.setShaderName("VFXUnlit");
             const vfxDef = Laya.Shader3D.getDefineByName("VFX_INSTANCED");
             if (vfxDef)
                 mat.addDefine(vfxDef);
@@ -879,11 +983,18 @@
             mat.renderQueue = 3000;
             mat.cull = Laya.RenderState.CULL_NONE;
             applyBlendMode(mat, blendMode);
+            applyFlipbook(mat, uvMode, flipbookSize);
             VFXRenderer._customShaderMaterialCache.set(key, mat);
+            if (mainTextureUrl) {
+                VFXRenderer._tryLoadTextureOnce(mainTextureUrl, tex => {
+                    if (mat)
+                        mat.setTexture("u_AlbedoTexture", tex);
+                });
+            }
             return mat;
         }
         static getStripMaterial(blendMode = "Alpha", mainTextureUuid = "", colorMapping = "Default", uvScale, uvBias, gradientStops, tilingMode = "Stretch", tilingSegments = 1) {
-            var _a, _b, _c, _d, _e;
+            var _a, _b, _c, _d;
             const gradHash = (gradientStops && gradientStops.length > 0)
                 ? gradientStops.map(s => `${s.t.toFixed(3)}:${s.color.map(c => c.toFixed(2)).join(",")}`).join("|")
                 : "";
@@ -906,20 +1017,18 @@
             const useGradient = colorMapping === "GradientMapped" && gradientStops && gradientStops.length > 0;
             const gradDef = Laya.Shader3D.getDefineByName("VFX_STRIP_GRADIENT_MAPPED");
             const sbDef = Laya.Shader3D.getDefineByName("VFX_STRIP_UV_SCALE_BIAS");
-            console.log(`[VFX Strip Mat] colorMapping=${colorMapping}, useGradient=${useGradient}, gradDef=${!!gradDef}, sbDef=${!!sbDef}, stops=${(_a = gradientStops === null || gradientStops === void 0 ? void 0 : gradientStops.length) !== null && _a !== void 0 ? _a : 0}`);
             if (useGradient) {
                 if (gradDef)
                     mat.addDefine(gradDef);
                 const gradTex = bakeGradientTexture256(gradientStops);
                 mat.setTexture("u_VfxStripGradient", gradTex);
-                console.log(`[VFX Strip Mat] gradient texture baked, hasDefine=${gradDef ? mat.hasDefine(gradDef) : "noDef"}`);
             }
             const useScaleBias = (uvScale && (uvScale.x !== 1 || uvScale.y !== 1)) || (uvBias && (uvBias.x !== 0 || uvBias.y !== 0));
             if (useScaleBias) {
                 if (sbDef)
                     mat.addDefine(sbDef);
-                mat.setVector2("u_VfxUVScale", new Laya.Vector2((_b = uvScale === null || uvScale === void 0 ? void 0 : uvScale.x) !== null && _b !== void 0 ? _b : 1, (_c = uvScale === null || uvScale === void 0 ? void 0 : uvScale.y) !== null && _c !== void 0 ? _c : 1));
-                mat.setVector2("u_VfxUVBias", new Laya.Vector2((_d = uvBias === null || uvBias === void 0 ? void 0 : uvBias.x) !== null && _d !== void 0 ? _d : 0, (_e = uvBias === null || uvBias === void 0 ? void 0 : uvBias.y) !== null && _e !== void 0 ? _e : 0));
+                mat.setVector2("u_VfxUVScale", new Laya.Vector2((_a = uvScale === null || uvScale === void 0 ? void 0 : uvScale.x) !== null && _a !== void 0 ? _a : 1, (_b = uvScale === null || uvScale === void 0 ? void 0 : uvScale.y) !== null && _b !== void 0 ? _b : 1));
+                mat.setVector2("u_VfxUVBias", new Laya.Vector2((_c = uvBias === null || uvBias === void 0 ? void 0 : uvBias.x) !== null && _c !== void 0 ? _c : 0, (_d = uvBias === null || uvBias === void 0 ? void 0 : uvBias.y) !== null && _d !== void 0 ? _d : 0));
             }
             const repeatDef = Laya.Shader3D.getDefineByName("VFX_STRIP_REPEAT_PER_SEGMENT");
             if (repeatDef) {
@@ -1011,10 +1120,8 @@
             const supportedCompute = Laya.LayaGL.renderEngine.getCapable(Laya.RenderCapable.ComputeShader);
             if (!supportedCompute)
                 return;
-            const shaderData = this._baseRenderNode.shaderData;
             for (const geo of this._geometries) {
                 if (geo instanceof VFXGeometry) {
-                    addMeshDefines(geo.mesh, shaderData);
                     VFXRenderer.smoothMeshNormals(geo.mesh);
                     VFXRenderer.smoothMeshVertexColors(geo.mesh, 8, 0.5);
                 }
@@ -1049,7 +1156,7 @@
             this._updateMergedBounds();
             const meshMaterial = (_a = this.sharedMaterials[0]) !== null && _a !== void 0 ? _a : this.sharedMaterial;
             this._renderElements.forEach((element, index) => {
-                var _a, _b, _c, _d, _e, _f, _g;
+                var _a, _b, _c, _d, _e, _f;
                 const geometry = element._geometry;
                 element._renderElementOBJ.isRender = geometry._prepareRender(context);
                 geometry._updateRenderParams(context);
@@ -1057,16 +1164,8 @@
                 if (geometry instanceof VFXStripGeometry || outType === "outputPoint" || outType === "outputLine" || outType === "outputLineStrip") {
                     const mode = geometry.blendMode || "Alpha";
                     const stripCustomShader = geometry.customShaderName || "";
-                    if (!this._stripLogOnce) {
-                        this._stripLogOnce = true;
-                        console.log(`[VFX Renderer] Strip path: isStripGeo=${geometry instanceof VFXStripGeometry}, outType=${outType}, mode=${mode}, customShader=${stripCustomShader}, isRender=${element._renderElementOBJ.isRender}`);
-                    }
-                    if (!this._stripDebug2) {
-                        this._stripDebug2 = true;
-                        console.log(`[VFX Strip Debug] meshMaterial=${meshMaterial ? (_a = meshMaterial._shader) === null || _a === void 0 ? void 0 : _a.name : 'NULL'}, stripCustomShader='${stripCustomShader}'`);
-                    }
                     if (stripCustomShader && stripCustomShader !== "VFXStrip") {
-                        element.material = VFXRenderer.getCustomShaderMaterial(stripCustomShader, mode);
+                        element.material = VFXRenderer.getCustomShaderMaterial(stripCustomShader, mode, geometry.matInstanceKey || "", "strip");
                     }
                     else {
                         const stripMainTex = geometry.mainTexture || "";
@@ -1075,13 +1174,13 @@
                         const stripUvBias = geometry.stripUvBias;
                         const stripGradientStops = geometry.stripGradientStops;
                         const stripTilingMode = geometry.stripTilingMode || "Stretch";
-                        const stripPpsc = Number((_b = geometry.stripPpsc) !== null && _b !== void 0 ? _b : 0);
+                        const stripPpsc = Number((_a = geometry.stripPpsc) !== null && _a !== void 0 ? _a : 0);
                         const stripTilingSegments = stripPpsc > 1 ? stripPpsc - 1 : 1;
                         const strip = VFXRenderer.getStripMaterial(mode, stripMainTex, stripColorMapping, stripUvScale, stripUvBias, stripGradientStops, stripTilingMode, stripTilingSegments);
                         if (strip) {
                             if (!this._stripTexApplied) {
                                 const mats = this.sharedMaterials;
-                                const curMat = (_c = mats === null || mats === void 0 ? void 0 : mats[0]) !== null && _c !== void 0 ? _c : this.sharedMaterial;
+                                const curMat = (_b = mats === null || mats === void 0 ? void 0 : mats[0]) !== null && _b !== void 0 ? _b : this.sharedMaterial;
                                 if (curMat) {
                                     const texPropID = Laya.Shader3D.propertyNameToID("u_AlbedoTexture");
                                     const userSD = curMat._shaderValues;
@@ -1104,7 +1203,8 @@
                     const bbPrim = geometry.primitive || "";
                     const isBillboardProcedural = outType === "outputBillboard" && !!bbPrim;
                     if (customShaderName) {
-                        const mat = VFXRenderer.getCustomShaderMaterial(customShaderName, mode);
+                        const mat = VFXRenderer.getCustomShaderMaterial(customShaderName, mode, geometry.matInstanceKey || "");
+                        VFXRenderer._syncMeshAttrDefines(mat, geometry);
                         element.material = mat;
                     }
                     else if (outType === "outputCube") {
@@ -1114,19 +1214,19 @@
                     }
                     else if (outType === "outputDistortion") {
                         const dMode = geometry.distortionMode || "Procedural";
-                        const dStrength = (_d = geometry.cropFactor) !== null && _d !== void 0 ? _d : 0.05;
+                        const dStrength = (_c = geometry.cropFactor) !== null && _c !== void 0 ? _c : 0.05;
                         const dMat = VFXRenderer.getDistortionMaterial(dMode, mode, dStrength);
                         if (dMat)
                             element.material = dMat;
                     }
                     else if (isBillboardProcedural) {
-                        const cropF = (_e = geometry.cropFactor) !== null && _e !== void 0 ? _e : 0.146;
+                        const cropF = (_d = geometry.cropFactor) !== null && _d !== void 0 ? _d : 0.146;
                         const mainTex = geometry.mainTexture;
                         const uvMode = geometry.uvMode || "Default";
                         const fbSize = geometry.flipbookSize;
                         const fbW = (fbSize && fbSize.x) || 4;
                         const fbH = (fbSize && fbSize.y) || 4;
-                        const geoUid = (_f = geometry._uid) !== null && _f !== void 0 ? _f : (geometry._uid = (VFXRenderer._geoUidNext++));
+                        const geoUid = (_e = geometry._uid) !== null && _e !== void 0 ? _e : (geometry._uid = (VFXRenderer._geoUidNext++));
                         const bbMat = VFXRenderer.getBillboardProceduralMaterial(bbPrim, mode, cropF, mainTex || "", uvMode, fbW, fbH, geoUid);
                         if (bbMat) {
                             if (mainTex) {
@@ -1143,7 +1243,7 @@
                             applySoftParticle(bbMat, softFade);
                             applySubpixelAA(bbMat, !!geometry.subpixelAA);
                             const useAlphaClip = !!geometry.useAlphaClipping;
-                            const alphaThresh = Number((_g = geometry.alphaThreshold) !== null && _g !== void 0 ? _g : 0.5);
+                            const alphaThresh = Number((_f = geometry.alphaThreshold) !== null && _f !== void 0 ? _f : 0.5);
                             const acDef = Laya.Shader3D.getDefineByName("VFX_ALPHA_CLIP");
                             if (acDef) {
                                 if (useAlphaClip)
@@ -1159,7 +1259,13 @@
                         element.material = VFXRenderer.getBillboardMaterial(mode);
                     }
                     else if (!meshMaterial) {
-                        element.material = VFXRenderer.getCustomShaderMaterial("VFXUnlit", mode);
+                        const meshMainTex = geometry.mainTexture || "";
+                        if (meshMainTex) {
+                            element.material = VFXRenderer.getMeshTexturedMaterial(mode, meshMainTex, geometry.uvMode || "Default", geometry.flipbookSize);
+                        }
+                        else {
+                            element.material = VFXRenderer.getCustomShaderMaterial("VFXUnlit", mode);
+                        }
                     }
                     else {
                         if (meshMaterial) {
@@ -1180,6 +1286,18 @@
                                 if (!existing) {
                                     meshMaterial.setTexture("u_AlbedoTexture", VFXRenderer.getDefaultDotTexture());
                                 }
+                            }
+                        }
+                        if (meshMaterial && outType !== "outputBillboard") {
+                            const meshFieldTex = geometry.mainTexture;
+                            if (meshFieldTex) {
+                                VFXRenderer._tryLoadTextureOnce(meshFieldTex, tex => {
+                                    if (tex) {
+                                        meshMaterial.setTexture("MainTexture", tex);
+                                        meshMaterial.setTexture("_MainTexture", tex);
+                                        meshMaterial.setTexture("u_AlbedoTexture", tex);
+                                    }
+                                });
                             }
                         }
                         const softFade = geometry.softParticleFade || 0;
@@ -1277,6 +1395,17 @@
                 sd.addDefine(opaqueDef);
             return;
         }
+        if (mode === "AlphaClip") {
+            if (sd && opaqueDef)
+                sd.removeDefine(opaqueDef);
+            mat.materialRenderMode = Laya.MaterialRenderMode.RENDERMODE_TRANSPARENT;
+            mat.blend = RS.BLEND_ENABLE_ALL;
+            mat.blendSrc = RS.BLENDPARAM_SRC_ALPHA;
+            mat.blendDst = RS.BLENDPARAM_ONE_MINUS_SRC_ALPHA;
+            mat.depthWrite = true;
+            mat.depthTest = RS.DEPTHTEST_LESS;
+            return;
+        }
         if (sd && opaqueDef)
             sd.removeDefine(opaqueDef);
         mat.materialRenderMode = Laya.MaterialRenderMode.RENDERMODE_TRANSPARENT;
@@ -1350,16 +1479,6 @@
             sd.addDefine(def);
         else
             sd.removeDefine(def);
-    }
-    function addMeshDefines(mesh, definesData) {
-        if (mesh) {
-            const defs = Laya.MeshFilter._meshVerticeDefine;
-            defs.length = 0;
-            Laya.MeshUtil.getMeshDefine(mesh, defs);
-            defs.forEach(def => {
-                definesData.addDefine(def);
-            });
-        }
     }
 
     exports.VFXEventAttributeType = void 0;
@@ -1734,7 +1853,7 @@
 
     var VFXRenderVertexGLSL = "\n#include \"VFXRenderCommon.glsl\";\nvec3 rotateByQuat(vec3 v,vec4 q){vec3 t=2.0*cross(q.xyz,v);return v+q.w*t+cross(q.xyz,t);}VFXParticle getVFXParticle(){VFXParticle p;p.position=a_AttrPosition.xyz;p.normalizedAge=a_AttrPosition.w;p.color=a_AttrColor;p.rotation=a_AttrRotation;p.scale=a_AttrScale.xyz;p.texIndex=a_AttrScale.w;p.pivot=a_AttrPivot.xyz;return p;}VFXParticle vfxProcessVertex(inout Vertex vertex){VFXParticle p=getVFXParticle();vec3 v=vertex.positionOS-p.pivot;v=v*p.scale;v=rotateByQuat(v,p.rotation);vertex.positionOS=v+p.position;return p;}vec3 vfxWorldPosition(Vertex vertex,mat4 worldMat){vec4 pos=worldMat*vec4(vertex.positionOS,1.0);return pos.xyz/pos.w;}";
 
-    var BlueprintPixelVertexVFXGLSL = "#if !defined(BlueprintPixelVertexVFX_lib)\n#define BlueprintPixelVertexVFX_lib\n#include \"shaderBlueprint/lib/BlueprintPixel.glsl\";\n#ifdef VFX_INSTANCED\nvarying float v_TexIndex;varying float v_NormalizedAge;struct VFXParticle{vec3 position;float normalizedAge;vec4 color;vec4 rotation;vec3 scale;float texIndex;vec3 pivot;};vec3 vfxRotateByQuat(vec3 v,vec4 q){vec3 t=2.0*cross(q.xyz,v);return v+q.w*t+cross(q.xyz,t);}VFXParticle vfxGetParticle(){VFXParticle p;p.position=a_AttrPosition.xyz;p.normalizedAge=a_AttrPosition.w;p.color=a_AttrColor;p.rotation=a_AttrRotation;p.scale=a_AttrScale.xyz;p.texIndex=a_AttrScale.w;p.pivot=a_AttrPivot.xyz;return p;}VFXParticle vfxTransformVertex(inout Vertex vertex){VFXParticle p=vfxGetParticle();v_TexIndex=p.texIndex;v_NormalizedAge=p.normalizedAge;vec3 vp=vertex.positionOS-p.pivot;vp=vp*p.scale;vp=vfxRotateByQuat(vp,p.rotation);vertex.positionOS=vp+p.position;vertex.normalOS=vfxRotateByQuat(vertex.normalOS,p.rotation);\n#ifdef TANGENT\nvec3 t=vfxRotateByQuat(vertex.tangentOS.xyz,p.rotation);vertex.tangentOS=vec4(t,vertex.tangentOS.w);\n#endif\n#ifdef COLOR\nvertex.vertexColor.r*=p.color.r;vertex.vertexColor.g*=p.color.g;vertex.vertexColor.b=p.color.b;vertex.vertexColor.a*=p.color.a;\n#endif\nreturn p;}\n#endif\n#endif\n";
+    var BlueprintPixelVertexVFXGLSL = "#if !defined(BlueprintPixelVertexVFX_lib)\n#define BlueprintPixelVertexVFX_lib\n#include \"shaderBlueprint/lib/BlueprintPixel.glsl\";\nvarying float v_TexIndex;varying float v_NormalizedAge;\n#ifdef VFX_INSTANCED\nstruct VFXParticle{vec3 position;float normalizedAge;vec4 color;vec4 rotation;vec3 scale;float texIndex;vec3 pivot;};vec3 vfxRotateByQuat(vec3 v,vec4 q){vec3 t=2.0*cross(q.xyz,v);return v+q.w*t+cross(q.xyz,t);}VFXParticle vfxGetParticle(){VFXParticle p;p.position=a_AttrPosition.xyz;p.normalizedAge=a_AttrPosition.w;p.color=a_AttrColor;p.rotation=a_AttrRotation;p.scale=a_AttrScale.xyz;p.texIndex=a_AttrScale.w;p.pivot=a_AttrPivot.xyz;return p;}VFXParticle vfxTransformVertex(inout Vertex vertex){VFXParticle p=vfxGetParticle();v_TexIndex=p.texIndex;v_NormalizedAge=p.normalizedAge;vec3 vp=vertex.positionOS-p.pivot;vp=vp*p.scale;vp=vfxRotateByQuat(vp,p.rotation);vertex.positionOS=vp+p.position;vertex.normalOS=vfxRotateByQuat(vertex.normalOS,p.rotation);\n#ifdef TANGENT\nvec3 t=vfxRotateByQuat(vertex.tangentOS.xyz,p.rotation);vertex.tangentOS=vec4(t,vertex.tangentOS.w);\n#endif\n#ifdef COLOR\nvertex.vertexColor.r*=p.color.r;vertex.vertexColor.g*=p.color.g;vertex.vertexColor.b=p.color.b;vertex.vertexColor.a*=p.color.a;\n#endif\nreturn p;}\n#endif\n#endif\n";
 
     class VFXShaderInit {
         static init() {
@@ -2000,6 +2119,7 @@
             u_VfxInvViewProjection: Laya.Shader3D.propertyNameToID("u_VfxInvViewProjection"),
             u_OrientCameraPos: Laya.Shader3D.propertyNameToID("u_OrientCameraPos"),
             u_OrientCameraDir: Laya.Shader3D.propertyNameToID("u_OrientCameraDir"),
+            u_OrientCameraUp: Laya.Shader3D.propertyNameToID("u_OrientCameraUp"),
             u_ParticlePerStrip: Laya.Shader3D.propertyNameToID("u_ParticlePerStrip"),
             u_StripCapacity: Laya.Shader3D.propertyNameToID("u_StripCapacity"),
             u_NewLoop: Laya.Shader3D.propertyNameToID("u_NewLoop"),
@@ -2048,6 +2168,7 @@
             this.particlePerStripCount = 128;
             this.stripCapacity = 1;
             this.blendMode = "Alpha";
+            this.matInstanceKey = "s" + (VFXParticleSystem._matUidCounter++);
             this.softParticleFade = 0;
             this.uvMode = "Default";
             this.flipbookSize = new Laya.Vector2(4, 4);
@@ -2088,7 +2209,6 @@
             this.outputEventAccumulatorBuffer = null;
             this.outputEventAccumulatorBufferID = -1;
             this.outputEventAccumulatorSlots = 0;
-            this._outputLogOnce = false;
             this.initializeDatas = [Laya.LayaGL.renderDeviceFactory.createShaderData()];
             this.updateDatas = [Laya.LayaGL.renderDeviceFactory.createShaderData()];
             this.outputDatas = [Laya.LayaGL.renderDeviceFactory.createShaderData()];
@@ -2295,17 +2415,19 @@
                 }
             }
         }
-        setOrientCamera(cmd, cameraWorldPos, cameraForward) {
+        setOrientCamera(cmd, cameraWorldPos, cameraForward, cameraUp) {
             var _a;
             for (const sd of this.outputDatas) {
                 cmd.addSetShaderDataCommand(sd, ID.u_OrientCameraPos, Laya.ShaderDataType.Vector3, cameraWorldPos);
                 cmd.addSetShaderDataCommand(sd, ID.u_OrientCameraDir, Laya.ShaderDataType.Vector3, cameraForward);
+                cmd.addSetShaderDataCommand(sd, ID.u_OrientCameraUp, Laya.ShaderDataType.Vector3, cameraUp);
             }
             for (const extra of this.extraOutputs) {
                 const esd = (_a = extra.outputDatas) === null || _a === void 0 ? void 0 : _a[0];
                 if (esd) {
                     cmd.addSetShaderDataCommand(esd, ID.u_OrientCameraPos, Laya.ShaderDataType.Vector3, cameraWorldPos);
                     cmd.addSetShaderDataCommand(esd, ID.u_OrientCameraDir, Laya.ShaderDataType.Vector3, cameraForward);
+                    cmd.addSetShaderDataCommand(esd, ID.u_OrientCameraUp, Laya.ShaderDataType.Vector3, cameraUp);
                 }
             }
         }
@@ -2406,7 +2528,6 @@
             if (!isNoOutput) {
                 try {
                     if (isStrip) {
-                        console.log(`[VFX] Creating StripGeometry: capacity=${capacity}, stripCap=${this.stripCapacity}, perStrip=${this.particlePerStripCount}, blend=${this.blendMode}`);
                         const stripParams = new VFXStripGeometryParams();
                         stripParams.capacity = capacity;
                         stripParams.stripVertexBuffer = this.renderBuffer;
@@ -2424,7 +2545,6 @@
                         this.geometry.stripGradientStops = this.stripGradientStops;
                         this.geometry.stripTilingMode = this.stripTilingMode;
                         this.geometry.stripPpsc = this.particlePerStripCount;
-                        console.log(`[VFX] StripGeometry created:`, this.geometry ? "OK" : "FAILED");
                     }
                     else if (isPoint) {
                         const pointParams = new VFXPointGeometryParams();
@@ -2493,6 +2613,8 @@
                         this.geometry.subpixelAA = this.subpixelAA;
                         this.geometry.customShaderName = this.customShaderName;
                     }
+                    if (this.geometry)
+                        this.geometry.matInstanceKey = this.matInstanceKey;
                 }
                 catch (e) {
                     console.warn("VFXParticleSystem: geometry creation failed, compute pipeline will still run.", e);
@@ -2535,6 +2657,15 @@
                 this.gpuEventDispatchBuffer.deviceBuffer.setData(initDispatch.buffer, 0, 0, 12);
             }
             this.setupOutputEventBuffers();
+        }
+        setMesh(mesh) {
+            if (!mesh)
+                return;
+            const geo = this.geometry;
+            if (geo && typeof geo.setMesh === "function") {
+                this.mesh = mesh;
+                geo.setMesh(mesh);
+            }
         }
         receiveInitializeEvent(attr) {
             let spawnCount = Math.floor(attr.getFloat("spawnCount"));
@@ -2614,11 +2745,6 @@
             this.eventCount = 0;
         }
         outputPhase(state, cmd) {
-            var _a, _b;
-            if (!this._outputLogOnce && this.isStripOutput) {
-                this._outputLogOnce = true;
-                console.log(`[VFX OutputPhase] type=${this.outputType}, hasShader=${!!this.outputShader}, hasAlive=${!!this.aliveListBufferRead}, hasRender=${!!this.renderBuffer}, hasIndirect=${!!this.indirectBuffer}, isStrip=${this.isStripOutput}, geometry=${(_b = (_a = this.geometry) === null || _a === void 0 ? void 0 : _a.constructor) === null || _b === void 0 ? void 0 : _b.name}`);
-            }
             if (this.outputType === "none" || !this.outputShader)
                 return;
             if (!this.aliveListBufferRead || !this.renderBuffer || !this.indirectBuffer)
@@ -2895,6 +3021,7 @@
             }
         }
     }
+    VFXParticleSystem._matUidCounter = 0;
     function DispatchCommand(cmd, shader, shaderDatas, dispatch) {
         cmd.addDispatchCommand(shader, shaderDatas[0].getDefineData(), shaderDatas, dispatch);
     }
@@ -3145,6 +3272,13 @@
             this._tmpVec3 = new Laya.Vector3();
             this._tmpColor = new Laya.Color();
         }
+        setMesh(mesh) {
+            if (!mesh)
+                return;
+            this.desc.mesh = mesh;
+            if (this._meshFilter)
+                this._meshFilter.sharedMesh = mesh;
+        }
         init() {
             var _a;
             if (this._child)
@@ -3158,18 +3292,17 @@
             if (this.desc.mesh)
                 this._meshFilter.sharedMesh = this.desc.mesh;
             if (this.desc.materialUuid) {
-                const matUrl = this.desc.materialUuid.startsWith("res://") ? this.desc.materialUuid : "res://" + this.desc.materialUuid;
-                Laya.Laya.loader.load(matUrl).then((mat) => {
+                Laya.Laya.loader.load(this.desc.materialUuid).then((mat) => {
                     if (mat && this._meshRenderer) {
                         this._meshRenderer.sharedMaterial = mat;
                         this._applyBindings();
                     }
                     else if (this._meshRenderer) {
-                        console.warn(`[VFXStaticMeshSystem] load returned null for ${matUrl}, fallback unlit`);
+                        console.warn(`[VFXStaticMeshSystem] load returned null for ${this.desc.materialUuid}, fallback unlit`);
                         this._applyFallbackMaterial();
                     }
                 }).catch((e) => {
-                    console.error(`[VFXStaticMeshSystem] load failed for ${matUrl}`, e);
+                    console.error(`[VFXStaticMeshSystem] load failed for ${this.desc.materialUuid}`, e);
                     this._applyFallbackMaterial();
                 });
             }
@@ -3297,6 +3430,7 @@
             this.sleeping = false;
         }
         internalInit(rand) {
+            this.sleeping = false;
             this.nextTriggerTime = sampleRange(this.delay, rand);
             this.sampledCount = Math.round(sampleRange(this.count, rand));
         }
@@ -3460,10 +3594,9 @@
     }
 
     class VFXAssetParser {
-        async parse(data) {
+        async parse(data, baseUrl) {
             var _a, _b, _c, _d, _e, _f, _g, _h;
             const vfxAsset = new VFXAsset();
-            console.log(`[VFX-DBG] runtime parse systems=${(data.systems || []).length}`, (data.systems || []).map((s, i) => `${i}:${s.type}${s.capacity != null ? `(cap=${s.capacity})` : ""}`).join(","));
             let updateMode = exports.VFXUpdateMode.FixedDeltaTime;
             if (data.fixedDeltaTime === false) {
                 updateMode |= exports.VFXUpdateMode.DeltaTime;
@@ -3556,9 +3689,11 @@
                     }
                     case exports.VFXSystemType.Particle: {
                         const desc = new VFXParticleSystemDesc();
-                        const initializeUrl = sys.initializeShader;
-                        const updateUrl = sys.updateShader;
-                        const outputUrl = sys.outputShader;
+                        const initializeUrl = Laya.URL.join(baseUrl, sys.initializeShader);
+                        const updateUrl = Laya.URL.join(baseUrl, sys.updateShader);
+                        const outputUrl = Laya.URL.join(baseUrl, sys.outputShader);
+                        const prepareDispatchUrl = Laya.URL.join(baseUrl, sys.prepareDispatchShader);
+                        const updateStripsUrl = Laya.URL.join(baseUrl, sys.updateStripsShader);
                         desc.capacity = sys.capacity;
                         desc.attributeBytesPerParticle = sys.attributeBytesPerParticle;
                         desc.outputType = sys.outputType || "outputMesh";
@@ -3589,7 +3724,7 @@
                             desc.flipbookSize = new Laya.Vector2(sys.flipbookSize[0] || 4, sys.flipbookSize[1] || 4);
                         }
                         if (typeof sys.mainTexture === "string" && sys.mainTexture) {
-                            desc.mainTexture = sys.mainTexture;
+                            desc.mainTexture = Laya.URL.join(baseUrl, sys.mainTexture);
                         }
                         if (sys.subpixelAA)
                             desc.subpixelAA = true;
@@ -3597,8 +3732,8 @@
                             desc.customShaderName = sys.customShaderName;
                         }
                         if (typeof sys.customShaderRes === "string" && sys.customShaderRes) {
-                            desc.customShaderRes = sys.customShaderRes;
-                            const shaderUrl = sys.customShaderRes;
+                            const shaderUrl = Laya.URL.join(baseUrl, sys.customShaderRes);
+                            desc.customShaderRes = shaderUrl;
                             loadPromises.push(Laya.Laya.loader.load(shaderUrl).then(() => { console.log(`[VFX Parser] preloaded custom shader '${sys.customShaderName}' from ${shaderUrl}`); }, (err) => { console.warn(`[VFX Parser] failed preloading custom shader '${sys.customShaderName}' from ${shaderUrl}`, err); }));
                         }
                         if (sys.shaderPropertyBindings && typeof sys.shaderPropertyBindings === "object") {
@@ -3607,9 +3742,12 @@
                         if (sys.shaderPropertyDefaults && typeof sys.shaderPropertyDefaults === "object") {
                             const entries = {};
                             for (const uniformName in sys.shaderPropertyDefaults) {
-                                const url = sys.shaderPropertyDefaults[uniformName];
-                                if (typeof url !== "string" || !url)
+                                if (uniformName === "mesh")
                                     continue;
+                                const path = sys.shaderPropertyDefaults[uniformName];
+                                if (typeof path !== "string" || !path)
+                                    continue;
+                                const url = Laya.URL.join(baseUrl, path);
                                 const entry = { url, texture: null };
                                 entries[uniformName] = entry;
                                 loadPromises.push(Laya.Laya.loader.load(url).then((tex) => { if (tex)
@@ -3691,11 +3829,11 @@
                         if (outputUrl) {
                             shaderUrls.push(outputUrl);
                         }
-                        if (sys.prepareDispatchShader) {
-                            shaderUrls.push(sys.prepareDispatchShader);
+                        if (prepareDispatchUrl) {
+                            shaderUrls.push(prepareDispatchUrl);
                         }
-                        if (sys.updateStripsShader) {
-                            shaderUrls.push(sys.updateStripsShader);
+                        if (updateStripsUrl) {
+                            shaderUrls.push(updateStripsUrl);
                         }
                         const loadCompute = Laya.Laya.loader.load(shaderUrls).then((shaders) => {
                             desc.initializeShader = shaders[0];
@@ -3704,15 +3842,15 @@
                             if (outputUrl) {
                                 desc.outputShader = shaders[nextIdx++];
                             }
-                            if (sys.prepareDispatchShader && shaders[nextIdx]) {
+                            if (prepareDispatchUrl && shaders[nextIdx]) {
                                 desc.prepareDispatchShader = shaders[nextIdx++];
                             }
-                            if (sys.updateStripsShader && shaders[nextIdx]) {
+                            if (updateStripsUrl && shaders[nextIdx]) {
                                 desc.updateStripsShader = shaders[nextIdx];
                             }
                         });
                         loadPromises.push(loadCompute);
-                        const meshUrl = sys.mesh;
+                        const meshUrl = Laya.URL.join(baseUrl, sys.mesh);
                         const isProceduralGeometry = (desc.outputType === "outputBillboard" || desc.outputType === "outputCube" || desc.outputType === "outputDistortion") && !!desc.billboardPrimitive;
                         const buildMeshFallback = () => {
                             if (desc.outputType === "outputMesh" || desc.outputType === "outputStaticMesh") {
@@ -3737,23 +3875,27 @@
                             desc.mesh = buildBuiltinMesh(builtinName) || buildMeshFallback();
                         }
                         else if (meshUrl && !isProceduralGeometry) {
-                            const resolved = meshUrl.startsWith("res://") ? meshUrl : "res://" + meshUrl;
-                            const loadMesh = Laya.Laya.loader.load(resolved).then(mesh => {
+                            const loadMesh = Laya.Laya.loader.load(meshUrl).then(mesh => {
                                 if (mesh) {
                                     desc.mesh = mesh;
                                 }
                                 else {
-                                    console.error(`[VFX] mesh load returned null: ${resolved} (system mesh) — fallback to builtin`);
+                                    console.error(`[VFX] mesh load returned null: ${meshUrl} (system mesh) — fallback to builtin`);
                                     desc.mesh = buildMeshFallback();
                                 }
                             }).catch(err => {
-                                console.error(`[VFX] mesh load failed: ${resolved} (system mesh)`, err);
+                                console.error(`[VFX] mesh load failed: ${meshUrl} (system mesh)`, err);
                                 desc.mesh = buildMeshFallback();
                             });
                             loadPromises.push(loadMesh);
                         }
                         else if (!isProceduralGeometry) {
-                            desc.mesh = buildMeshFallback();
+                            if (desc.outputType === "outputMesh" || desc.outputType === "outputStaticMesh") {
+                                desc.outputType = "none";
+                            }
+                            else {
+                                desc.mesh = buildMeshFallback();
+                            }
                         }
                         if (sys.textureUniforms && Array.isArray(sys.textureUniforms)) {
                             for (const tu of sys.textureUniforms) {
@@ -3766,6 +3908,10 @@
                                 if (skinnedMeshMatch) {
                                     entry.skinnedMeshSource = uuid;
                                     entry.skinnedMeshRole = skinnedMeshMatch[1];
+                                    continue;
+                                }
+                                if (textureType === "Transform") {
+                                    entry.transformSource = uuid;
                                     continue;
                                 }
                                 if (textureType === "InlineGradient") {
@@ -3792,57 +3938,60 @@
                                 }
                                 if (!uuid)
                                     continue;
+                                const resourceUrl = Laya.URL.join(baseUrl, uuid);
                                 const meshPCMatch = /^Mesh(SurfacePoints|VolumePoints)$/.exec(textureType);
                                 const meshRoleMatch = !meshPCMatch ? /^Mesh(Pos|Position|Normal|Tangent|Uv|UV|Color|Index)$/.exec(textureType) : null;
                                 const pointCacheMatch = (!meshPCMatch && !meshRoleMatch) ? /^PointCache_(.+)$/.exec(textureType) : null;
                                 if (meshPCMatch) {
                                     const pcRole = meshPCMatch[1] === "SurfacePoints" ? "surface" : "volume";
                                     const pointCount = Math.max(16, Math.min(8192, Number(tu.pointCount) || 1024));
-                                    const meshUrl = uuid.startsWith("res://") ? uuid : "res://" + uuid;
-                                    const loadMeshTex = Laya.Laya.loader.load(meshUrl).then((mesh) => {
-                                        if (mesh)
+                                    const meshScale = _resolveMeshScale(Number(tu.meshScale), uuid);
+                                    if (uuid.startsWith("builtin:")) {
+                                        const builtinMesh = buildBuiltinMesh(uuid.slice(8));
+                                        if (builtinMesh)
                                             entry.texture = pcRole === "surface"
-                                                ? bakeMeshSurfacePoints(mesh, pointCount)
-                                                : bakeMeshVolumePoints(mesh, pointCount);
+                                                ? bakeMeshSurfacePoints(builtinMesh, pointCount, meshScale)
+                                                : bakeMeshVolumePoints(builtinMesh, pointCount, meshScale);
                                         else
-                                            console.warn(`[VFX] setPositionMesh(${pcRole}): failed to load mesh ${meshUrl}`);
-                                    });
-                                    loadPromises.push(loadMeshTex);
+                                            console.warn(`[VFX] setPositionMesh(${pcRole}): unknown builtin mesh ${uuid}`);
+                                    }
+                                    else {
+                                        const loadMeshTex = Laya.Laya.loader.load(resourceUrl).then((mesh) => {
+                                            if (mesh)
+                                                entry.texture = pcRole === "surface"
+                                                    ? bakeMeshSurfacePoints(mesh, pointCount, meshScale)
+                                                    : bakeMeshVolumePoints(mesh, pointCount, meshScale);
+                                            else
+                                                console.warn(`[VFX] setPositionMesh(${pcRole}): failed to load mesh ${resourceUrl}`);
+                                        });
+                                        loadPromises.push(loadMeshTex);
+                                    }
                                 }
                                 else if (meshRoleMatch) {
                                     const role = meshRoleMatch[1].toLowerCase();
                                     const normalizedRole = role === "pos" ? "position" : (role === "uv" ? "uv" : role);
-                                    const meshUrl = uuid.startsWith("res://") ? uuid : "res://" + uuid;
-                                    const loadMeshTex = Laya.Laya.loader.load(meshUrl).then((mesh) => {
+                                    const loadMeshTex = Laya.Laya.loader.load(resourceUrl).then((mesh) => {
                                         if (mesh) {
                                             entry.texture = bakeMeshAttributeTexture(mesh, normalizedRole);
-                                            const positions = [];
-                                            try {
-                                                mesh.getPositions(positions);
-                                            }
-                                            catch (_a) { }
-                                            console.log(`[VFX] sampleMesh OK: ${meshUrl} role=${normalizedRole} vertexCount=${positions.length} firstVert=${positions[0] ? `(${positions[0].x.toFixed(2)},${positions[0].y.toFixed(2)},${positions[0].z.toFixed(2)})` : 'null'}`);
                                         }
                                         else {
-                                            console.warn(`[VFX] sampleMesh: failed to load mesh ${meshUrl}`);
+                                            console.warn(`[VFX] sampleMesh: failed to load mesh ${resourceUrl}`);
                                         }
                                     });
                                     loadPromises.push(loadMeshTex);
                                 }
                                 else if (pointCacheMatch) {
                                     const attrName = pointCacheMatch[1];
-                                    const pcacheUrl = uuid.startsWith("res://") ? uuid : "res://" + uuid;
-                                    const loadPCache = Laya.Laya.loader.fetch(pcacheUrl, "json", null).then((pcache) => {
+                                    const loadPCache = Laya.Laya.loader.fetch(resourceUrl, "json", null).then((pcache) => {
                                         if (pcache)
                                             entry.texture = bakePointCacheTexture(pcache, attrName);
                                         else
-                                            console.warn(`[VFX] samplePointCache: failed to load ${pcacheUrl}`);
+                                            console.warn(`[VFX] samplePointCache: failed to load ${resourceUrl}`);
                                     });
                                     loadPromises.push(loadPCache);
                                 }
                                 else {
-                                    const texUrl = uuid.startsWith("res://") ? uuid : "res://" + uuid;
-                                    const loadTex = Laya.Laya.loader.load(texUrl).then((tex) => {
+                                    const loadTex = Laya.Laya.loader.load(resourceUrl).then((tex) => {
                                         entry.texture = tex;
                                     });
                                     loadPromises.push(loadTex);
@@ -3851,10 +4000,29 @@
                         }
                         if (sys.bufferUniforms && Array.isArray(sys.bufferUniforms)) {
                             for (const bu of sys.bufferUniforms) {
-                                desc.bufferUniforms.push({
-                                    uniformName: bu.uniformName,
-                                    propertyName: bu.propertyName,
-                                });
+                                if (bu.meshProp) {
+                                    const mpEntry = { uniformName: bu.uniformName, buffer: null };
+                                    desc.meshPointBuffers.push(mpEntry);
+                                    const pcUuid = String(bu.meshProp);
+                                    const pcUrl = Laya.URL.join(baseUrl, pcUuid);
+                                    const pcRole = String(bu.meshRole || "surfacePoints");
+                                    const pcCount = Math.max(16, Math.min(8192, Number(bu.pointCount) || 1024));
+                                    const pcScale = _resolveMeshScale(Number(bu.meshScale), pcUuid);
+                                    loadPromises.push(Laya.Laya.loader.load(pcUrl).then((mesh) => {
+                                        if (mesh)
+                                            mpEntry.buffer = pcRole === "volumePoints"
+                                                ? bakeMeshVolumePointsBuffer(mesh, pcCount, pcScale)
+                                                : bakeMeshSurfacePointsBuffer(mesh, pcCount, pcScale);
+                                        else
+                                            console.warn(`[VFX] setPositionMesh(buffer): failed to load mesh ${pcUrl}`);
+                                    }));
+                                }
+                                else {
+                                    desc.bufferUniforms.push({
+                                        uniformName: bu.uniformName,
+                                        propertyName: bu.propertyName,
+                                    });
+                                }
                             }
                         }
                         if (sys.outputEvents && Array.isArray(sys.outputEvents)) {
@@ -3881,15 +4049,15 @@
                                     extra.flipbookSize = new Laya.Vector2(eo.flipbookSize[0] || 4, eo.flipbookSize[1] || 4);
                                 }
                                 if (typeof eo.mainTexture === "string" && eo.mainTexture) {
-                                    extra.mainTexture = eo.mainTexture;
+                                    extra.mainTexture = Laya.URL.join(baseUrl, eo.mainTexture);
                                 }
                                 if (eo.subpixelAA)
                                     extra.subpixelAA = true;
                                 if (eo.customShaderName)
                                     extra.customShaderName = eo.customShaderName;
                                 if (typeof eo.customShaderRes === "string" && eo.customShaderRes) {
-                                    extra.customShaderRes = eo.customShaderRes;
-                                    const exShaderUrl = eo.customShaderRes;
+                                    const exShaderUrl = Laya.URL.join(baseUrl, eo.customShaderRes);
+                                    extra.customShaderRes = exShaderUrl;
                                     loadPromises.push(Laya.Laya.loader.load(exShaderUrl).then(() => { console.log(`[VFX Parser] preloaded extra custom shader '${eo.customShaderName}' from ${exShaderUrl}`); }, (err) => { console.warn(`[VFX Parser] failed preloading extra custom shader '${eo.customShaderName}' from ${exShaderUrl}`, err); }));
                                 }
                                 extra.stripCapacity = Number(eo.stripCapacity) || 1;
@@ -3904,12 +4072,13 @@
                                 extra.uvScale = eo.uvScale;
                                 extra.uvBias = eo.uvBias;
                                 if (eo.outputShader) {
-                                    const loadExtraShader = Laya.Laya.loader.load(eo.outputShader).then((shader) => {
+                                    const outputShaderUrl = Laya.URL.join(baseUrl, eo.outputShader);
+                                    const loadExtraShader = Laya.Laya.loader.load(outputShaderUrl).then((shader) => {
                                         extra.outputShader = shader;
                                     });
                                     loadPromises.push(loadExtraShader);
                                 }
-                                const meshUrl = eo.mesh;
+                                const meshUrl = Laya.URL.join(baseUrl, eo.mesh);
                                 const buildExtraMeshFallback = () => {
                                     return extra.outputType === "outputMesh" || extra.outputType === "outputStaticMesh"
                                         ? Laya.PrimitiveMesh.createSphere(0.5, 12, 12)
@@ -3920,17 +4089,16 @@
                                     extra.mesh = buildBuiltinMesh(builtinName) || buildExtraMeshFallback();
                                 }
                                 else if (meshUrl) {
-                                    const resolved = meshUrl.startsWith("res://") ? meshUrl : "res://" + meshUrl;
-                                    const loadMesh = Laya.Laya.loader.load(resolved).then((mesh) => {
+                                    const loadMesh = Laya.Laya.loader.load(meshUrl).then((mesh) => {
                                         if (mesh) {
                                             extra.mesh = mesh;
                                         }
                                         else {
-                                            console.error(`[VFX] mesh load returned null: ${resolved} (extra output) — fallback to builtin`);
+                                            console.error(`[VFX] mesh load returned null: ${meshUrl} (extra output) — fallback to builtin`);
                                             extra.mesh = buildExtraMeshFallback();
                                         }
                                     }).catch(err => {
-                                        console.error(`[VFX] mesh load failed: ${resolved} (extra output)`, err);
+                                        console.error(`[VFX] mesh load failed: ${meshUrl} (extra output)`, err);
                                         extra.mesh = buildExtraMeshFallback();
                                     });
                                     loadPromises.push(loadMesh);
@@ -3946,11 +4114,11 @@
                     }
                     case exports.VFXSystemType.StaticMesh: {
                         const desc = new VFXStaticMeshSystemDesc();
-                        desc.materialUuid = String(sys.materialUuid || "");
+                        desc.materialUuid = Laya.URL.join(baseUrl, String(sys.materialUuid || ""));
                         if (Array.isArray(sys.bindings)) {
                             desc.bindings = sys.bindings;
                         }
-                        const meshUrl = sys.mesh;
+                        const meshUrl = Laya.URL.join(baseUrl, sys.mesh);
                         const buildStaticBuiltin = (name) => {
                             switch (name) {
                                 case "Sphere": return Laya.PrimitiveMesh.createSphere(0.5, 12, 12);
@@ -3967,17 +4135,16 @@
                             desc.mesh = buildStaticBuiltin(meshUrl.slice(8)) || Laya.PrimitiveMesh.createSphere(0.5, 12, 12);
                         }
                         else if (meshUrl) {
-                            const resolved = meshUrl.startsWith("res://") ? meshUrl : "res://" + meshUrl;
-                            const loadMesh = Laya.Laya.loader.load(resolved).then(mesh => {
+                            const loadMesh = Laya.Laya.loader.load(meshUrl).then(mesh => {
                                 if (mesh) {
                                     desc.mesh = mesh;
                                 }
                                 else {
-                                    console.error(`[VFX] mesh load returned null: ${resolved} (StaticMesh) — fallback to sphere`);
+                                    console.error(`[VFX] mesh load returned null: ${meshUrl} (StaticMesh) — fallback to sphere`);
                                     desc.mesh = Laya.PrimitiveMesh.createSphere(0.5, 12, 12);
                                 }
                             }).catch(err => {
-                                console.error(`[VFX] mesh load failed: ${resolved} (StaticMesh)`, err);
+                                console.error(`[VFX] mesh load failed: ${meshUrl} (StaticMesh)`, err);
                                 desc.mesh = Laya.PrimitiveMesh.createSphere(0.5, 12, 12);
                             });
                             loadPromises.push(loadMesh);
@@ -4038,11 +4205,12 @@
                             break;
                         }
                         case exports.VFXPropertyType.Texture2D: {
-                            let url = null;
+                            let path = null;
                             if (Array.isArray(d) && typeof d[0] === "string")
-                                url = d[0];
+                                path = d[0];
                             else if (typeof d === "string")
-                                url = d;
+                                path = d;
+                            const url = path ? Laya.URL.join(baseUrl, path) : null;
                             desc.default = url ? [url] : [];
                             desc.texture = null;
                             if (url) {
@@ -4084,7 +4252,8 @@
                 }
             }
             if (data.bakedTexture) {
-                const loadBakedTex = Laya.Laya.loader.load(data.bakedTexture).then((tex) => {
+                const bakedTextureUrl = Laya.URL.join(baseUrl, data.bakedTexture);
+                const loadBakedTex = Laya.Laya.loader.load(bakedTextureUrl).then((tex) => {
                     vfxAsset.bakedTexture = tex;
                 });
                 loadPromises.push(loadBakedTex);
@@ -4094,27 +4263,37 @@
             return vfxAsset;
         }
     }
+    const _f16ScratchF32 = new Float32Array(1);
+    const _f16ScratchU32 = new Uint32Array(_f16ScratchF32.buffer);
+    function _f32ToF16(v) {
+        _f16ScratchF32[0] = v;
+        const bits = _f16ScratchU32[0];
+        const sign = (bits >> 16) & 0x8000;
+        const exp = ((bits >> 23) & 0xff) - 127 + 15;
+        const frac = bits & 0x7fffff;
+        if (exp <= 0) {
+            if (exp < -10)
+                return sign;
+            const m = (frac | 0x800000) >> (1 - exp);
+            return sign | (m >> 13);
+        }
+        if (exp >= 31)
+            return sign | 0x7c00;
+        return sign | (exp << 10) | (frac >> 13);
+    }
     function bakeInlineGradientTexture(stops) {
         const width = 256;
-        const data = new Uint8Array(width * 4);
+        const data = new Uint16Array(width * 4);
         const rawKeys = stops.length >= 2 ? stops : [
             { t: 0, color: [1, 1, 1, 1] },
             { t: 1, color: [1, 1, 1, 0] },
         ];
-        const normalizeStop = (c) => {
-            const r = Math.max(0, c[0]);
-            const g = Math.max(0, c[1]);
-            const b = Math.max(0, c[2]);
-            const a = Math.max(0, Math.min(1, c[3]));
-            const maxRGB = Math.max(r, g, b);
-            if (maxRGB > 1) {
-                return [r / maxRGB, g / maxRGB, b / maxRGB, a];
-            }
-            return [r, g, b, a];
-        };
+        const sanitizeStop = (c) => [
+            Math.max(0, c[0]), Math.max(0, c[1]), Math.max(0, c[2]), Math.max(0, Math.min(1, c[3])),
+        ];
         const keys = rawKeys.map(k => ({
             t: k.t,
-            color: normalizeStop(k.color),
+            color: sanitizeStop(k.color),
         }));
         for (let i = 0; i < width; i++) {
             const t = i / (width - 1);
@@ -4132,12 +4311,12 @@
             const g = a.color[1] + (b.color[1] - a.color[1]) * u;
             const bB = a.color[2] + (b.color[2] - a.color[2]) * u;
             const aA = a.color[3] + (b.color[3] - a.color[3]) * u;
-            data[i * 4] = Math.round(r * 255);
-            data[i * 4 + 1] = Math.round(g * 255);
-            data[i * 4 + 2] = Math.round(bB * 255);
-            data[i * 4 + 3] = Math.round(aA * 255);
+            data[i * 4] = _f32ToF16(r);
+            data[i * 4 + 1] = _f32ToF16(g);
+            data[i * 4 + 2] = _f32ToF16(bB);
+            data[i * 4 + 3] = _f32ToF16(aA);
         }
-        const tex = new Laya.Texture2D(width, 1, Laya.TextureFormat.R8G8B8A8, false, false, false, false);
+        const tex = new Laya.Texture2D(width, 1, Laya.TextureFormat.R16G16B16A16, false, false, false, false);
         tex.setPixelsData(data, false, false);
         tex.wrapModeU = Laya.WrapMode.Clamp;
         tex.wrapModeV = Laya.WrapMode.Clamp;
@@ -4478,14 +4657,6 @@
             return null;
         }
     }
-    function _triArea(a, b, c) {
-        const ux = b.x - a.x, uy = b.y - a.y, uz = b.z - a.z;
-        const vx = c.x - a.x, vy = c.y - a.y, vz = c.z - a.z;
-        const cx = uy * vz - uz * vy;
-        const cy = uz * vx - ux * vz;
-        const cz = ux * vy - uy * vx;
-        return 0.5 * Math.sqrt(cx * cx + cy * cy + cz * cz);
-    }
     function _rayTri(ox, oy, oz, dx, dy, dz, a, b, c) {
         const e1x = b.x - a.x, e1y = b.y - a.y, e1z = b.z - a.z;
         const e2x = c.x - a.x, e2y = c.y - a.y, e2z = c.z - a.z;
@@ -4509,9 +4680,35 @@
         const t = (e2x * qx + e2y * qy + e2z * qz) * inv;
         return t > 1e-6 ? t : null;
     }
+    const _f16f32buf = new Float32Array(1);
+    const _f16i32buf = new Int32Array(_f16f32buf.buffer);
+    function _f32tof16(val) {
+        _f16f32buf[0] = val;
+        const x = _f16i32buf[0];
+        let bits = (x >> 16) & 0x8000;
+        let m = (x >> 12) & 0x07ff;
+        const e = (x >> 23) & 0xff;
+        if (e < 103)
+            return bits;
+        if (e > 142) {
+            bits |= 0x7c00;
+            return bits;
+        }
+        if (e < 113) {
+            m |= 0x0800;
+            bits |= (m >> (114 - e)) + ((m >> (113 - e)) & 1);
+            return bits;
+        }
+        bits |= ((e - 112) << 10) | (m >> 1);
+        bits += m & 1;
+        return bits;
+    }
     function _makePointTexture(data, count) {
-        const tex = new Laya.Texture2D(count, 1, Laya.TextureFormat.R32G32B32A32, false, false, false, false);
-        tex.setPixelsData(new Uint8Array(data.buffer, data.byteOffset, data.byteLength), false, false);
+        const half = new Uint16Array(count * 4);
+        for (let i = 0; i < count * 4; i++)
+            half[i] = _f32tof16(data[i]);
+        const tex = new Laya.Texture2D(count, 1, Laya.TextureFormat.R16G16B16A16, false, false, false, false);
+        tex.setPixelsData(new Uint8Array(half.buffer, half.byteOffset, half.byteLength), false, false);
         tex.wrapModeU = Laya.WrapMode.Clamp;
         tex.wrapModeV = Laya.WrapMode.Clamp;
         tex.filterMode = Laya.FilterMode.Point;
@@ -4522,38 +4719,18 @@
         data[3] = 1;
         return _makePointTexture(data, 1);
     }
-    function bakeMeshSurfacePoints(mesh, count) {
+    function _computeSurfacePointsData(mesh, count, scale) {
         const tri = getMeshTriangles(mesh);
-        if (!tri || tri.indices.length < 3) {
-            console.warn("[VFX] bakeMeshSurfacePoints: mesh has no triangles, fallback to single point");
-            return _fallbackPointTexture();
-        }
+        if (!tri || tri.indices.length < 3)
+            return null;
         const { positions, indices } = tri;
         const triCount = (indices.length / 3) | 0;
-        const cdf = new Float32Array(triCount);
-        let total = 0;
-        for (let i = 0; i < triCount; i++) {
-            const a = positions[indices[i * 3]];
-            const b = positions[indices[i * 3 + 1]];
-            const c = positions[indices[i * 3 + 2]];
-            if (a && b && c)
-                total += _triArea(a, b, c);
-            cdf[i] = total;
-        }
-        if (total <= 0)
-            return _fallbackPointTexture();
+        if (triCount <= 0)
+            return null;
+        const _S = (typeof scale === "number" && scale > 0) ? scale : 1;
         const data = new Float32Array(count * 4);
         for (let p = 0; p < count; p++) {
-            const r = Math.random() * total;
-            let lo = 0, hi = triCount - 1;
-            while (lo < hi) {
-                const mid = (lo + hi) >> 1;
-                if (cdf[mid] < r)
-                    lo = mid + 1;
-                else
-                    hi = mid;
-            }
-            const ti = lo;
+            const ti = Math.min((Math.random() * triCount) | 0, triCount - 1);
             const a = positions[indices[ti * 3]];
             const b = positions[indices[ti * 3 + 1]];
             const c = positions[indices[ti * 3 + 2]];
@@ -4565,19 +4742,18 @@
                 v = 1 - v;
             }
             const w = 1 - u - v;
-            data[p * 4] = w * a.x + u * b.x + v * c.x;
-            data[p * 4 + 1] = w * a.y + u * b.y + v * c.y;
-            data[p * 4 + 2] = w * a.z + u * b.z + v * c.z;
+            data[p * 4] = (w * a.x + u * b.x + v * c.x) * _S;
+            data[p * 4 + 1] = (w * a.y + u * b.y + v * c.y) * _S;
+            data[p * 4 + 2] = (w * a.z + u * b.z + v * c.z) * _S;
             data[p * 4 + 3] = 1;
         }
-        return _makePointTexture(data, count);
+        return data;
     }
-    function bakeMeshVolumePoints(mesh, count) {
+    function _computeVolumePointsData(mesh, count, scale) {
+        const _S = (typeof scale === "number" && scale > 0) ? scale : 1;
         const tri = getMeshTriangles(mesh);
-        if (!tri || tri.indices.length < 3) {
-            console.warn("[VFX] bakeMeshVolumePoints: mesh has no triangles, fallback to single point");
-            return _fallbackPointTexture();
-        }
+        if (!tri || tri.indices.length < 3)
+            return null;
         const { positions, indices } = tri;
         const triCount = (indices.length / 3) | 0;
         let minX = Infinity, minY = Infinity, minZ = Infinity;
@@ -4599,7 +4775,7 @@
                 maxZ = p.z;
         }
         if (!isFinite(minX))
-            return _fallbackPointTexture();
+            return null;
         const triA = new Array(triCount);
         const triB = new Array(triCount);
         const triC = new Array(triCount);
@@ -4626,17 +4802,15 @@
                     crossings++;
             }
             if ((crossings & 1) === 1) {
-                data[written * 4] = px;
-                data[written * 4 + 1] = py;
-                data[written * 4 + 2] = pz;
+                data[written * 4] = px * _S;
+                data[written * 4 + 1] = py * _S;
+                data[written * 4 + 2] = pz * _S;
                 data[written * 4 + 3] = 1;
                 written++;
             }
         }
-        if (written === 0) {
-            console.warn(`[VFX] bakeMeshVolumePoints: no inside point hit after ${attempts} attempts (mesh non-watertight?), fallback to surface points`);
-            return bakeMeshSurfacePoints(mesh, count);
-        }
+        if (written === 0)
+            return _computeSurfacePointsData(mesh, count, scale);
         for (let i = written; i < count; i++) {
             const src = (i % written) * 4;
             data[i * 4] = data[src];
@@ -4644,7 +4818,49 @@
             data[i * 4 + 2] = data[src + 2];
             data[i * 4 + 3] = 1;
         }
-        return _makePointTexture(data, count);
+        return data;
+    }
+    function _fallbackPointData(count) {
+        const data = new Float32Array(count * 4);
+        for (let i = 0; i < count; i++)
+            data[i * 4 + 3] = 1;
+        return data;
+    }
+    const MESH_CMUNIT_FALLBACK = { "e38d2d0d-ea52-4bc0-ae3f-09506c2cde20": 0.01 };
+    function _resolveMeshScale(rawScale, uuid) {
+        if (typeof rawScale === "number" && rawScale > 0 && rawScale !== 1)
+            return rawScale;
+        if (uuid) {
+            const bare = String(uuid).replace(/^res:\/\//, "").replace(/@.*$/, "");
+            if (MESH_CMUNIT_FALLBACK[bare])
+                return MESH_CMUNIT_FALLBACK[bare];
+        }
+        return (typeof rawScale === "number" && rawScale > 0) ? rawScale : 1;
+    }
+    function bakeMeshSurfacePoints(mesh, count, scale) {
+        const data = _computeSurfacePointsData(mesh, count, scale);
+        if (!data)
+            console.warn("[VFX] bakeMeshSurfacePoints: mesh has no triangles, fallback to single point");
+        return data ? _makePointTexture(data, count) : _fallbackPointTexture();
+    }
+    function bakeMeshVolumePoints(mesh, count, scale) {
+        const data = _computeVolumePointsData(mesh, count, scale);
+        if (!data)
+            console.warn("[VFX] bakeMeshVolumePoints: mesh has no triangles, fallback to single point");
+        return data ? _makePointTexture(data, count) : _fallbackPointTexture();
+    }
+    function _makePointBuffer(data, count) {
+        const buf = new Laya.DeviceBuffer(count * 16, Laya.EDeviceBufferUsage.STORAGE | Laya.EDeviceBufferUsage.COPY_DST);
+        buf.deviceBuffer.setData(data.buffer, 0, 0, count * 16);
+        return buf;
+    }
+    function bakeMeshSurfacePointsBuffer(mesh, count, scale) {
+        const data = _computeSurfacePointsData(mesh, count, scale) || _fallbackPointData(count);
+        return _makePointBuffer(data, count);
+    }
+    function bakeMeshVolumePointsBuffer(mesh, count, scale) {
+        const data = _computeVolumePointsData(mesh, count, scale) || _fallbackPointData(count);
+        return _makePointBuffer(data, count);
     }
     function normalizePropertyType(raw) {
         const s = String(raw || "").toLowerCase();
@@ -4764,9 +4980,9 @@
                     result = Math.floor(ctx.totalTime * 60);
                     break;
                 case "GlobalTimeRatio":
-                    result = ctx.hasContinuousSpawn
+                    result = ((n.continuous != null) ? n.continuous : ctx.hasContinuousSpawn)
                         ? (ctx.totalTime - Math.floor(ctx.totalTime))
-                        : Math.min(ctx.totalTime, 1);
+                        : Math.min(ctx.totalTime / (n.duration || 1), 1);
                     break;
                 case "Random": {
                     const min = Number(this._evalNode(n.inputs[0], nodes, cache, ctx)) || 0;
@@ -4785,8 +5001,14 @@
                 }
                 case "SampleCurve": {
                     const curve = this._evalNode(n.inputs[0], nodes, cache, ctx);
-                    const t = Number(this._evalNode(n.inputs[1], nodes, cache, ctx)) || 0;
-                    result = this._sampleCurve(curve, t);
+                    const timeNode = nodes[n.inputs[1]];
+                    if (timeNode && timeNode.kind === "Constant" && timeNode.slotName === ShaderExpressionEvaluator.AGE_MEDIAN_SLOT_NAME) {
+                        result = this._sampleCurveAverage(curve);
+                    }
+                    else {
+                        const t = Number(this._evalNode(n.inputs[1], nodes, cache, ctx)) || 0;
+                        result = this._sampleCurve(curve, t);
+                    }
                     break;
                 }
                 case "Add":
@@ -4931,6 +5153,17 @@
             const u = (clamp - f0.time) / denom;
             return f0.value + (f1.value - f0.value) * u;
         }
+        static _sampleCurveAverage(c) {
+            if (!c || !c.frames || c.frames.length === 0)
+                return 0;
+            if (c.frames.length === 1)
+                return c.frames[0].value;
+            const N = this.CURVE_AVERAGE_SAMPLE_COUNT;
+            let sum = 0;
+            for (let i = 0; i < N; i++)
+                sum += this._sampleCurve(c, (i + 0.5) / N);
+            return sum / N;
+        }
         static _binOp(kind, a, b) {
             const isVec = (v) => v && typeof v === "object" && ("r" in v || "x" in v);
             if (isVec(a) || isVec(b)) {
@@ -4990,6 +5223,8 @@
             return out;
         }
     }
+    ShaderExpressionEvaluator.AGE_MEDIAN_SLOT_NAME = "ageMedian";
+    ShaderExpressionEvaluator.CURVE_AVERAGE_SAMPLE_COUNT = 32;
 
     class VFXState {
         constructor() {
@@ -5003,6 +5238,7 @@
 
     const globalRand = new Laya.Rand((Math.random() * 0xFFFFFFFF) >>> 0);
     const _tempCamForward = new Laya.Vector3();
+    const _tempCamUp = new Laya.Vector3();
     class VisualEffect extends Laya.Script {
         get asset() {
             return this._asset;
@@ -5026,6 +5262,8 @@
             return this._initialEvent;
         }
         set initialEvent(value) {
+            if (!value)
+                value = (this._asset && this._asset.initialEventName) || "OnPlay";
             this._initialEvent = value;
             this.initialEventID = Laya.Shader3D.propertyNameToID(this._initialEvent);
         }
@@ -5046,6 +5284,12 @@
             if (tex)
                 tex.destroy();
             this._skinnedMeshBoneTextures.delete(name);
+        }
+        setTransformSource(name, node) {
+            this._transformSources.set(name, node);
+        }
+        clearTransformSource(name) {
+            this._transformSources.delete(name);
         }
         setCustomSpawnCallback(name, callback) {
             this._customSpawnCallbacks.set(name, callback);
@@ -5281,6 +5525,8 @@
                     type: prop.type,
                     value: Array.isArray(v) ? [...v] : [],
                     cached,
+                    defaultCached: cached,
+                    defaultRawGradientStops: prop.type === exports.VFXPropertyType.Gradient ? (prop.gradientStops || []) : undefined,
                     rawGradientStops: prop.type === exports.VFXPropertyType.Gradient ? (prop.gradientStops || []) : undefined,
                     rawCurveFrames: prop.type === exports.VFXPropertyType.Curve ? (prop.curveFrames || []) : undefined,
                 });
@@ -5310,7 +5556,8 @@
                 const customShaderName = sys.customShaderName;
                 const blendMode = sys.blendMode || "Alpha";
                 if (customShaderName) {
-                    const mat = VFXRenderer.getCustomShaderMaterial(customShaderName, blendMode);
+                    const variant = VisualEffect._matVariantOf(sys);
+                    const mat = VFXRenderer.getCustomShaderMaterial(customShaderName, blendMode, sys.matInstanceKey || "", variant);
                     if (mat && mat.shaderData && allDatas.indexOf(mat.shaderData) === -1)
                         allDatas.push(mat.shaderData);
                 }
@@ -5321,6 +5568,9 @@
                     const ids = [Laya.Shader3D.propertyNameToID(uniformName)];
                     if (uniformName.startsWith("_"))
                         ids.push(Laya.Shader3D.propertyNameToID(uniformName.substring(1)));
+                    const noUnderscoreTex = uniformName.replace(/_/g, "");
+                    if (noUnderscoreTex !== uniformName && noUnderscoreTex !== uniformName.substring(1))
+                        ids.push(Laya.Shader3D.propertyNameToID(noUnderscoreTex));
                     for (const sd of allDatas) {
                         for (const aid of ids)
                             sd.setTexture(aid, entry.texture);
@@ -5331,6 +5581,25 @@
             this._applyPropertyOverrides();
         }
         _applyPropertyOverrides() {
+            if (this.asset && this._propertyValues) {
+                for (const prop of this.asset.properties) {
+                    const entry = this._propertyValues.get(prop.name);
+                    if (!entry)
+                        continue;
+                    if (Array.isArray(prop.default) && Array.isArray(entry.value)) {
+                        for (let i = 0; i < entry.value.length && i < prop.default.length; i++)
+                            entry.value[i] = prop.default[i];
+                    }
+                    if (entry.type === exports.VFXPropertyType.Gradient || entry.type === exports.VFXPropertyType.Texture2D) {
+                        if (entry.defaultCached !== undefined) {
+                            entry.cached = entry.defaultCached;
+                            if (entry.type === exports.VFXPropertyType.Gradient)
+                                entry.rawGradientStops = entry.defaultRawGradientStops;
+                            this._bindPropertyTextureToShaders(prop.name, entry.id, entry.cached);
+                        }
+                    }
+                }
+            }
             if (!this.propertyOverrides)
                 return;
             let overrides;
@@ -5347,21 +5616,33 @@
                 return;
             for (const name in overrides) {
                 const value = overrides[name];
-                if (!Array.isArray(value))
-                    continue;
-                switch (value.length) {
-                    case 1:
-                        this.setPropertyFloat(name, value[0]);
-                        break;
-                    case 2:
-                        this.setPropertyVec2(name, value[0], value[1]);
-                        break;
-                    case 3:
-                        this.setPropertyVec3(name, value[0], value[1], value[2]);
-                        break;
-                    case 4:
-                        this.setPropertyVec4(name, value[0], value[1], value[2], value[3]);
-                        break;
+                if (Array.isArray(value)) {
+                    switch (value.length) {
+                        case 1:
+                            this.setPropertyFloat(name, value[0]);
+                            break;
+                        case 2:
+                            this.setPropertyVec2(name, value[0], value[1]);
+                            break;
+                        case 3:
+                            this.setPropertyVec3(name, value[0], value[1], value[2]);
+                            break;
+                        case 4:
+                            this.setPropertyVec4(name, value[0], value[1], value[2], value[3]);
+                            break;
+                    }
+                }
+                else if (typeof value === "string" && value) {
+                    const _entry = this._propertyValues.get(name);
+                    if (_entry && String(_entry.type).toLowerCase() === "mesh") {
+                        this.setPropertyMesh(name, value);
+                    }
+                    else {
+                        this.setPropertyTexture(name, value);
+                    }
+                }
+                else if (value && typeof value === "object" && Array.isArray(value.stops)) {
+                    this.setPropertyGradient(name, value.stops);
                 }
             }
         }
@@ -5401,20 +5682,19 @@
             this._skinnedMeshSources = new Map();
             this._skinnedMeshBoneTextures = new Map();
             this._skinnedMeshVertexBaked = new Set();
+            this._transformSources = new Map();
             this._invEmitterWorldMatrix = new Laya.Matrix4x4();
             this._propertyValues = new Map();
             this._tmpExprVec4 = new Laya.Vector4();
             this._pause = false;
             this.initialEvent = "OnPlay";
         }
+        static _matVariantOf(sys) {
+            const t = sys.outputType;
+            return (t === "outputTrail" || t === "outputParticleStripSGQuad" || t === "outputPoint" || t === "outputLine" || t === "outputLineStrip")
+                ? "strip" : "instanced";
+        }
         onStart() {
-            console.log("VisualEffect onStart", this, this.asset);
-            console.log(`[VFX-DBG] VE onStart systems=${this.systems.length}`, this.systems.map((s, i) => {
-                var _a;
-                const cap = (_a = s.capacity) !== null && _a !== void 0 ? _a : (s.desc && s.desc.capacity);
-                const t = s.constructor.name;
-                return `${i}:${t}${cap != null ? `(cap=${cap})` : ""}`;
-            }).join(","));
         }
         onAwake() {
             var _a, _b;
@@ -5427,6 +5707,14 @@
             const isNonMeshOutput = (t) => t === "outputTrail" || t === "outputParticleStripSGQuad" || t === "outputPoint" || t === "outputLine";
             let hasStrip = false;
             let hasMesh = false;
+            for (let system of this.systems) {
+                const sysAny = system;
+                if (system instanceof VFXParticleSystem && sysAny.geometry && sysAny.customShaderName
+                    && !isNonMeshOutput(sysAny.outputType)) {
+                    const _m = VFXRenderer.getCustomShaderMaterial(sysAny.customShaderName, sysAny.blendMode || "Alpha", sysAny.matInstanceKey || "");
+                    VFXRenderer._syncMeshAttrDefines(_m, sysAny.geometry);
+                }
+            }
             for (let system of this.systems) {
                 if (system instanceof VFXParticleSystem && system.geometry) {
                     if (isNonMeshOutput(system.outputType)) {
@@ -5636,6 +5924,7 @@
             }
         }
         processInitialize(evt, state) {
+            evt.id = this.initialEventID;
             this.processEvent(evt, state);
             this.asset.prewarmDeltaTime;
             this.asset.prewarmStepCount;
@@ -5663,7 +5952,7 @@
             this._evaluateShaderExpressions();
         }
         _evaluateShaderExpressions() {
-            var _a;
+            var _a, _b, _c;
             const totalTime = this.state.totalTime;
             const deltaTime = this.frameTime.deltaTime;
             const propertyValues = this._propertyValues;
@@ -5691,18 +5980,125 @@
                 const customShaderName = sys.customShaderName;
                 const blendMode = sys.blendMode || "Alpha";
                 if (customShaderName) {
-                    const mat = VFXRenderer.getCustomShaderMaterial(customShaderName, blendMode);
+                    const variant = VisualEffect._matVariantOf(sys);
+                    const mat = VFXRenderer.getCustomShaderMaterial(customShaderName, blendMode, sys.matInstanceKey || "", variant);
                     if (mat && mat.shaderData && allDatas.indexOf(mat.shaderData) === -1)
                         allDatas.push(mat.shaderData);
                 }
                 for (const uniformName in expressions) {
                     const graph = expressions[uniformName];
+                    if (VisualEffect.PER_PARTICLE_AGE_CURVE_UNIFORMS.has(uniformName)) {
+                        let curveNode = null, mult = 1;
+                        const g = graph;
+                        for (const nid in g.nodes) {
+                            const nd = g.nodes[nid];
+                            if (nd.kind === "Constant" && nd.outputType === "Curve")
+                                curveNode = nd;
+                            else if (nd.kind === "VFXParameter") {
+                                const pv = (propertyValues && propertyValues.get) ? propertyValues.get(nd.exposedName) : undefined;
+                                mult = (typeof pv === "number") ? pv : (typeof nd.defaultValue === "number" ? nd.defaultValue : 1);
+                            }
+                        }
+                        if (curveNode && curveNode.value) {
+                            const c = curveNode.value;
+                            const s = (t) => mult * (ShaderExpressionEvaluator._sampleCurve(c, t) || 0);
+                            const _base = uniformName.replace(/[^A-Za-z0-9]/g, "");
+                            const tId = Laya.Shader3D.propertyNameToID(VisualEffect.AGE_CURVE_UNIFORM_PREFIX + _base + VisualEffect.AGE_CURVE_TIMES_SUFFIX);
+                            const vId = Laya.Shader3D.propertyNameToID(VisualEffect.AGE_CURVE_UNIFORM_PREFIX + _base + VisualEffect.AGE_CURVE_VALS_SUFFIX);
+                            const ts = VisualEffect.AGE_CURVE_SAMPLE_TIMES;
+                            const tv = new Laya.Vector4(ts[0], ts[1], ts[2], ts[3]);
+                            const vv = new Laya.Vector4(s(ts[0]), s(ts[1]), s(ts[2]), s(ts[3]));
+                            for (const sd of allDatas) {
+                                sd.setVector(tId, tv);
+                                sd.setVector(vId, vv);
+                            }
+                        }
+                    }
+                    if (uniformName === "_Disappear" || uniformName === "Disappear") {
+                        const g = graph;
+                        const root = g.nodes && g.nodes[g.rootNodeId];
+                        if (root && root.kind === "SampleCurve" && root.inputs && root.inputs.length > 0) {
+                            const cnode = g.nodes[root.inputs[0]];
+                            const curve = cnode && cnode.kind === "Constant" ? cnode.value : null;
+                            if (curve && Array.isArray(curve.frames) && curve.frames.length > 0) {
+                                let times = curve.frames.map((f) => Number(f.time) || 0).sort((a, b) => a - b);
+                                if (times.length > 4)
+                                    times = [0, 1 / 3, 2 / 3, 1];
+                                while (times.length < 4)
+                                    times.push((_b = times[times.length - 1]) !== null && _b !== void 0 ? _b : 1);
+                                const sc = (t) => ShaderExpressionEvaluator._sampleCurve(curve, t) || 0;
+                                const eId = Laya.Shader3D.propertyNameToID("u_VfxDisCurveEnable");
+                                const tId3 = Laya.Shader3D.propertyNameToID("u_VfxDisTimes");
+                                const vId3 = Laya.Shader3D.propertyNameToID("u_VfxDisVals");
+                                const tv3 = new Laya.Vector4(times[0], times[1], times[2], times[3]);
+                                const vv3 = new Laya.Vector4(sc(times[0]), sc(times[1]), sc(times[2]), sc(times[3]));
+                                for (const sd of allDatas) {
+                                    sd.setNumber(eId, 1);
+                                    sd.setVector(tId3, tv3);
+                                    sd.setVector(vId3, vv3);
+                                }
+                            }
+                        }
+                    }
+                    if (VisualEffect.PER_PARTICLE_COLOR_GRADIENT_UNIFORMS.has(uniformName)) {
+                        const g = graph;
+                        const root = g.nodes && g.nodes[g.rootNodeId];
+                        if (root && root.kind === "SampleGradient" && root.inputs && root.inputs.length > 0) {
+                            const gnode = g.nodes[root.inputs[0]];
+                            let grad = null;
+                            if (gnode && gnode.kind === "VFXParameter") {
+                                const pv = (propertyValues && gnode.exposedName) ? propertyValues.get(gnode.exposedName) : null;
+                                if (pv && pv.rawGradientStops && pv.rawGradientStops.length > 0) {
+                                    grad = { __layaGradientStops: pv.rawGradientStops };
+                                }
+                                else if (gnode.defaultValue && (gnode.defaultValue.colorKeys || gnode.defaultValue.alphaKeys)) {
+                                    grad = gnode.defaultValue;
+                                }
+                            }
+                            if (grad) {
+                                const tSet = new Set();
+                                if (grad.__layaGradientStops) {
+                                    for (const s of grad.__layaGradientStops)
+                                        tSet.add(Number(s.t) || 0);
+                                }
+                                else {
+                                    for (const k of grad.colorKeys || [])
+                                        tSet.add(Number(k.time) || 0);
+                                    for (const k of grad.alphaKeys || [])
+                                        tSet.add(Number(k.time) || 0);
+                                }
+                                let times = [...tSet].sort((a, b) => a - b);
+                                if (times.length > 4)
+                                    times = [0, 1 / 3, 2 / 3, 1];
+                                while (times.length < 4)
+                                    times.push((_c = times[times.length - 1]) !== null && _c !== void 0 ? _c : 1);
+                                const sampler = ShaderExpressionEvaluator._sampleGradient.bind(ShaderExpressionEvaluator);
+                                const eId = Laya.Shader3D.propertyNameToID(VisualEffect.COLOR_GRAD_ENABLE_UNIFORM);
+                                const tId2 = Laya.Shader3D.propertyNameToID(VisualEffect.COLOR_GRAD_TIMES_UNIFORM);
+                                const tv2 = new Laya.Vector4(times[0], times[1], times[2], times[3]);
+                                for (const sd of allDatas) {
+                                    sd.setNumber(eId, 1);
+                                    sd.setVector(tId2, tv2);
+                                }
+                                for (let ci = 0; ci < 4; ci++) {
+                                    const col = sampler(grad, times[ci]) || { r: 1, g: 1, b: 1, a: 1 };
+                                    const cId = Laya.Shader3D.propertyNameToID(VisualEffect.COLOR_GRAD_COLOR_UNIFORMS[ci]);
+                                    const cv = new Laya.Vector4(col.r, col.g, col.b, col.a);
+                                    for (const sd of allDatas)
+                                        sd.setVector(cId, cv);
+                                }
+                            }
+                        }
+                    }
                     const result = ShaderExpressionEvaluator.evaluate(graph, { totalTime, deltaTime, propertyValues, hasContinuousSpawn });
                     if (result == null)
                         continue;
                     const ids = [Laya.Shader3D.propertyNameToID(uniformName)];
                     if (uniformName.startsWith("_"))
                         ids.push(Laya.Shader3D.propertyNameToID(uniformName.substring(1)));
+                    const noUnderscore = uniformName.replace(/_/g, "");
+                    if (noUnderscore !== uniformName && noUnderscore !== uniformName.substring(1))
+                        ids.push(Laya.Shader3D.propertyNameToID(noUnderscore));
                     if (graph.outputType === "float") {
                         const v = Number(result) || 0;
                         for (const sd of allDatas)
@@ -5733,6 +6129,7 @@
                 }
             }
             this._updateSkinnedMeshTextures();
+            this._updateTransformSources();
             state.emitterWorldMatrix = this.owner.transform.worldMatrix;
             state.emitterWorldMatrix.invert(this._invEmitterWorldMatrix);
             state.invEmitterWorldMatrix = this._invEmitterWorldMatrix;
@@ -5779,9 +6176,10 @@
                 const camTransform = cameraModuleData.transform;
                 const cameraWorldPos = camTransform.position;
                 camTransform.getForward(_tempCamForward);
+                camTransform.getUp(_tempCamUp);
                 for (let system of this.systems) {
                     if (system instanceof VFXParticleSystem) {
-                        system.setOrientCamera(this.cmd, cameraWorldPos, _tempCamForward);
+                        system.setOrientCamera(this.cmd, cameraWorldPos, _tempCamForward, _tempCamUp);
                     }
                 }
             }
@@ -5902,6 +6300,73 @@
                 entry.value[3] = w;
             }
         }
+        _bindPropertyTextureToShaders(name, id, texture) {
+            if (!texture)
+                return;
+            for (const sys of this.systems) {
+                if (!(sys instanceof VFXParticleSystem))
+                    continue;
+                const bindings = sys.shaderPropertyBindings;
+                const shaderUniformName = bindings ? bindings[name] : null;
+                const aliasIds = shaderUniformName
+                    ? [id, Laya.Shader3D.propertyNameToID(shaderUniformName)]
+                    : [id];
+                for (const sd of sys.getAllShaderDatas()) {
+                    for (const aid of aliasIds)
+                        sd.setTexture(aid, texture);
+                }
+            }
+        }
+        setPropertyTexture(name, url) {
+            const entry = this._propertyValues.get(name);
+            if (!entry || !url)
+                return;
+            Laya.Laya.loader.load(url).then((res) => {
+                const tex = res ? (res.bitmap || res._image || res._source || res) : null;
+                if (!tex) {
+                    console.warn(`[VFX] setPropertyTexture('${name}') load returned null: ${url}`);
+                    return;
+                }
+                entry.cached = tex;
+                this._bindPropertyTextureToShaders(name, entry.id, tex);
+            }, (err) => {
+                console.warn(`[VFX] setPropertyTexture('${name}') load failed: ${url}`, err);
+            });
+        }
+        setPropertyMesh(name, url) {
+            const entry = this._propertyValues.get(name);
+            if (!entry || !url)
+                return;
+            Laya.Laya.loader.load(url).then((mesh) => {
+                if (!mesh) {
+                    console.warn(`[VFX] setPropertyMesh('${name}') load returned null: ${url}`);
+                    return;
+                }
+                entry.cached = mesh;
+                for (const system of this.systems) {
+                    if (typeof system.setMesh === "function")
+                        system.setMesh(mesh);
+                }
+            }, (err) => {
+                console.warn(`[VFX] setPropertyMesh('${name}') load failed: ${url}`, err);
+            });
+        }
+        setPropertyGradient(name, stops) {
+            const entry = this._propertyValues.get(name);
+            if (!entry || !Array.isArray(stops))
+                return;
+            const engineStops = stops.map((s) => {
+                const c = s && s.color;
+                const color = Array.isArray(c)
+                    ? [Number(c[0]) || 0, Number(c[1]) || 0, Number(c[2]) || 0, c[3] != null ? Number(c[3]) : 1]
+                    : [Number(c && c.r) || 0, Number(c && c.g) || 0, Number(c && c.b) || 0, (c && c.a != null) ? Number(c.a) : 1];
+                return { t: Number(s && s.t) || 0, color };
+            });
+            engineStops.sort((a, b) => a.t - b.t);
+            entry.rawGradientStops = engineStops;
+            entry.cached = bakeGradientTexture(engineStops);
+            this._bindPropertyTextureToShaders(name, entry.id, entry.cached);
+        }
         setBuffer(name, buffer) {
             const asset = this.asset;
             if (!asset)
@@ -5958,6 +6423,8 @@
                     continue;
                 const allDatas = system.getAllShaderDatas();
                 for (const tu of textureUniforms) {
+                    if (tu.transformSource)
+                        continue;
                     const id = Laya.Shader3D.propertyNameToID(tu.uniformName);
                     let texture = tu.texture;
                     if (!texture) {
@@ -5976,6 +6443,53 @@
                     for (const sd of allDatas) {
                         sd.setTexture(id, texture);
                     }
+                }
+            }
+            for (let i = 0; i < this.systems.length; i++) {
+                const system = this.systems[i];
+                const desc = descs[i];
+                if (!(system instanceof VFXParticleSystem))
+                    continue;
+                if (!(desc === null || desc === void 0 ? void 0 : desc.meshPointBuffers) || desc.meshPointBuffers.length === 0)
+                    continue;
+                const allDatas = system.getAllShaderDatas();
+                for (const mpb of desc.meshPointBuffers) {
+                    if (!mpb.buffer)
+                        continue;
+                    const id = Laya.Shader3D.propertyNameToID(mpb.uniformName + "Buffer");
+                    for (const sd of allDatas) {
+                        sd.setDeviceBuffer(id, mpb.buffer.deviceBuffer);
+                    }
+                }
+            }
+        }
+        _updateTransformSources() {
+            if (this._transformSources.size === 0)
+                return;
+            const asset = this.asset;
+            if (!asset)
+                return;
+            const descs = asset.systems;
+            for (let i = 0; i < this.systems.length; i++) {
+                const system = this.systems[i];
+                const desc = descs[i];
+                if (!(system instanceof VFXParticleSystem))
+                    continue;
+                if (!(desc === null || desc === void 0 ? void 0 : desc.textureUniforms))
+                    continue;
+                for (const tu of desc.textureUniforms) {
+                    if (!tu.transformSource)
+                        continue;
+                    const node = this._transformSources.get(tu.transformSource);
+                    if (!node)
+                        continue;
+                    const tr = node.transform || (node.owner && node.owner.transform);
+                    if (!tr)
+                        continue;
+                    const id = Laya.Shader3D.propertyNameToID(tu.uniformName);
+                    const wm = tr.worldMatrix;
+                    for (const sd of system.getAllShaderDatas())
+                        sd.setMatrix4x4(id, wm);
                 }
             }
         }
@@ -6074,27 +6588,46 @@
             }
         }
     }
+    VisualEffect.PER_PARTICLE_AGE_CURVE_UNIFORMS = new Set(["Alpha_Multiplier"]);
+    VisualEffect.AGE_CURVE_SAMPLE_TIMES = [0, 1 / 3, 2 / 3, 1];
+    VisualEffect.AGE_CURVE_UNIFORM_PREFIX = "u";
+    VisualEffect.AGE_CURVE_TIMES_SUFFIX = "CurveTimes";
+    VisualEffect.AGE_CURVE_VALS_SUFFIX = "CurveVals";
+    VisualEffect.PER_PARTICLE_COLOR_GRADIENT_UNIFORMS = new Set(["_MainTextureColor"]);
+    VisualEffect.COLOR_GRAD_ENABLE_UNIFORM = "u_VfxColorGradEnable";
+    VisualEffect.COLOR_GRAD_TIMES_UNIFORM = "u_VfxColorGradTimes";
+    VisualEffect.COLOR_GRAD_COLOR_UNIFORMS = ["u_VfxColorGradC0", "u_VfxColorGradC1", "u_VfxColorGradC2", "u_VfxColorGradC3"];
+    const _veF16F32 = new Float32Array(1);
+    const _veF16U32 = new Uint32Array(_veF16F32.buffer);
+    function _veF32ToF16(v) {
+        _veF16F32[0] = v;
+        const bits = _veF16U32[0];
+        const sign = (bits >> 16) & 0x8000;
+        const exp = ((bits >> 23) & 0xff) - 127 + 15;
+        const frac = bits & 0x7fffff;
+        if (exp <= 0) {
+            if (exp < -10)
+                return sign;
+            const m = (frac | 0x800000) >> (1 - exp);
+            return sign | (m >> 13);
+        }
+        if (exp >= 31)
+            return sign | 0x7c00;
+        return sign | (exp << 10) | (frac >> 13);
+    }
     function bakeGradientTexture(stops) {
         const width = 256;
-        const data = new Uint8Array(width * 4);
+        const data = new Uint16Array(width * 4);
         const rawKeys = stops.length >= 2 ? stops : [
             { t: 0, color: [1, 1, 1, 1] },
             { t: 1, color: [1, 1, 1, 0] },
         ];
-        const normalizeStop = (c) => {
-            const r = Math.max(0, c[0]);
-            const g = Math.max(0, c[1]);
-            const b = Math.max(0, c[2]);
-            const a = Math.max(0, Math.min(1, c[3]));
-            const maxRGB = Math.max(r, g, b);
-            if (maxRGB > 1) {
-                return [r / maxRGB, g / maxRGB, b / maxRGB, a];
-            }
-            return [r, g, b, a];
-        };
+        const sanitizeStop = (c) => [
+            Math.max(0, c[0]), Math.max(0, c[1]), Math.max(0, c[2]), Math.max(0, Math.min(1, c[3])),
+        ];
         const keys = rawKeys.map(k => ({
             t: k.t,
-            color: normalizeStop(k.color),
+            color: sanitizeStop(k.color),
         }));
         for (let i = 0; i < width; i++) {
             const t = i / (width - 1);
@@ -6112,12 +6645,12 @@
             const g = a.color[1] + (b.color[1] - a.color[1]) * u;
             const bB = a.color[2] + (b.color[2] - a.color[2]) * u;
             const aA = a.color[3] + (b.color[3] - a.color[3]) * u;
-            data[i * 4] = Math.round(r * 255);
-            data[i * 4 + 1] = Math.round(g * 255);
-            data[i * 4 + 2] = Math.round(bB * 255);
-            data[i * 4 + 3] = Math.round(aA * 255);
+            data[i * 4] = _veF32ToF16(r);
+            data[i * 4 + 1] = _veF32ToF16(g);
+            data[i * 4 + 2] = _veF32ToF16(bB);
+            data[i * 4 + 3] = _veF32ToF16(aA);
         }
-        const tex = new Laya.Texture2D(width, 1, Laya.TextureFormat.R8G8B8A8, false, false, false, false);
+        const tex = new Laya.Texture2D(width, 1, Laya.TextureFormat.R16G16B16A16, false, false, false, false);
         tex.setPixelsData(data, false, false);
         tex.wrapModeU = Laya.WrapMode.Clamp;
         tex.wrapModeV = Laya.WrapMode.Clamp;
@@ -6130,17 +6663,14 @@
         VFXEvent.init();
         VFXShaderInit.init();
         ensureIDs();
-        if (typeof globalThis.IEditorEnv === "undefined") {
-            const builtinUuids = [
-                "13d6c5e4-ff1f-4739-b21d-0d64931564cb",
-                "356f6643-fab9-4626-b04f-9e07482f5b53",
-                "046c3dc9-8ef4-4e3b-bce3-df93e11bd86e",
-                "9e6cee89-5666-43e3-a064-7c26d8ce36d8",
-                "7b8f3d2e-a415-4c6b-9d8f-2e1a5c3b4d6a",
-            ];
-            for (const uuid of builtinUuids) {
-                Laya.Laya.loader.load("res://" + uuid).catch(() => { });
-            }
+        if (Laya.LayaEnv.isPlaying) {
+            Laya.Laya.loader.load([
+                "VFXBillboardProcedural.shader",
+                "VFXCubeProcedural.shader",
+                "VFXDistortionQuad.shader",
+                "VFXUnlit.shader",
+                "VFXStrip.shader",
+            ].map(s => "internal/vfx/" + s));
         }
     };
     Laya.Laya.addAfterInitCallback(VFXInit);
@@ -6152,12 +6682,13 @@
 
     class VFXLoader {
         load(task) {
-            return task.loader.fetch(task.url, "json", task.progress.createCallback(0.5), task.options).then(data => {
-                return new VFXAssetParser().parse(data);
+            let url = Laya.AssetDb.inst.getSubAssetURL(task.url, task.uuid, "0", "lvfx");
+            return task.loader.fetch(url, "json", task.progress.createCallback(), task.options).then(data => {
+                return new VFXAssetParser().parse(data, Laya.URL.getPath(task.url));
             });
         }
     }
-    Laya.Loader.registerLoader(["lvfx"], VFXLoader, "LVFX");
+    Laya.Loader.registerLoader(["vfx"], VFXLoader, "VFXGraph");
 
     exports.ShaderExpressionEvaluator = ShaderExpressionEvaluator;
     exports.VFXAsset = VFXAsset;

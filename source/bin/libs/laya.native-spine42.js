@@ -75,7 +75,7 @@
         }
     }
 
-    var spineVertexCommon = "#if !defined(SpineVertexCommon_lib)\n#define SpineVertexCommon_lib\nuniform vec4 u_color;\n#ifdef SPINE_RB\nuniform vec4 u_sBone0;uniform vec4 u_sBone1;\n#endif\nvoid transfrom(vec2 pos,vec4 xDir,vec4 yDir,out vec2 outPos){outPos.x=xDir.x*pos.x+xDir.y*pos.y+xDir.z;outPos.y=yDir.x*pos.x+yDir.y*pos.y+yDir.z;}\n#ifdef SPINE_SIMPLE\nuniform vec4 u_SimpleAnimatorParams;uniform sampler2D u_SimpleAnimatorTexture;uniform float u_SimpleAnimatorTextureSize;vec4 getBonePosBake(float FramePos,float boneIndices,float weight,vec2 pos,float offset){vec2 uv=vec2(0.0,0.0);float PixelPos=FramePos+boneIndices*2.0;float halfOffset=offset*0.5;float uvoffset=PixelPos/u_SimpleAnimatorTextureSize;uv.y=floor(uvoffset)*offset+halfOffset;uv.x=mod(PixelPos,u_SimpleAnimatorTextureSize)*offset+halfOffset;vec4 up=texture2D(u_SimpleAnimatorTexture,uv);uv.x+=offset;vec4 down=texture2D(u_SimpleAnimatorTexture,uv);vec2 outPos;transfrom(pos,up,down,outPos);outPos=outPos*weight;return vec4(outPos,0.,1.0);}\n#endif\n#ifdef SPINE_FAST\nuniform vec4 u_sBone[200];vec4 getBonePos(float fboneId,float weight,vec2 pos){int boneId=int(fboneId);vec4 up=u_sBone[boneId*2];vec4 down=u_sBone[boneId*2+1];vec2 outPos;transfrom(pos,up,down,outPos);outPos=outPos*weight;return vec4(outPos,0.,1.0);}\n#endif\nvec4 getSpinePos(){\n#ifdef SPINE_SIMPLE\n#ifdef GPU_INSTANCE\nfloat currentPixelPos=a_SimpleTextureParams.x+a_SimpleTextureParams.y;\n#else\nfloat currentPixelPos=u_SimpleAnimatorParams.x+u_SimpleAnimatorParams.y;\n#endif\nfloat offset=1.0/u_SimpleAnimatorTextureSize;return getBonePosBake(currentPixelPos,a_BoneId,a_weight,a_position,offset)+getBonePosBake(currentPixelPos,a_PosWeightBoneID_2.w,a_PosWeightBoneID_2.z,a_PosWeightBoneID_2.xy,offset)+getBonePosBake(currentPixelPos,a_PosWeightBoneID_3.w,a_PosWeightBoneID_3.z,a_PosWeightBoneID_3.xy,offset)+getBonePosBake(currentPixelPos,a_PosWeightBoneID_4.w,a_PosWeightBoneID_4.z,a_PosWeightBoneID_4.xy,offset);\n#else\n#ifdef SPINE_FAST\nreturn getBonePos(a_BoneId,a_weight,a_position)+getBonePos(a_PosWeightBoneID_2.w,a_PosWeightBoneID_2.z,a_PosWeightBoneID_2.xy)+getBonePos(a_PosWeightBoneID_3.w,a_PosWeightBoneID_3.z,a_PosWeightBoneID_3.xy)+getBonePos(a_PosWeightBoneID_4.w,a_PosWeightBoneID_4.z,a_PosWeightBoneID_4.xy);\n#endif\n#ifdef SPINE_RB\nvec2 pos;transfrom(a_position,u_sBone0,u_sBone1,pos);return vec4(pos,0.,1.);\n#endif\n#endif\nreturn vec4(a_position.x,a_position.y,0.,1.);}\n#endif\n";
+    var spineVertexCommon = "#if !defined(SpineVertexCommon_lib)\n#define SpineVertexCommon_lib\n#ifdef SPINE_RB\nuniform vec4 u_sBone0;uniform vec4 u_sBone1;\n#endif\nvoid transfrom(vec2 pos,vec4 xDir,vec4 yDir,out vec2 outPos){outPos.x=xDir.x*pos.x+xDir.y*pos.y+xDir.z;outPos.y=yDir.x*pos.x+yDir.y*pos.y+yDir.z;}\n#ifdef SPINE_SIMPLE\nuniform vec4 u_SimpleAnimatorParams;uniform sampler2D u_SimpleAnimatorTexture;uniform float u_SimpleAnimatorTextureSize;vec4 getBonePosBake(float FramePos,float boneIndices,float weight,vec2 pos,float offset){vec2 uv=vec2(0.0,0.0);float PixelPos=FramePos+boneIndices*2.0;float halfOffset=offset*0.5;float uvoffset=PixelPos/u_SimpleAnimatorTextureSize;uv.y=floor(uvoffset)*offset+halfOffset;uv.x=mod(PixelPos,u_SimpleAnimatorTextureSize)*offset+halfOffset;vec4 up=texture2D(u_SimpleAnimatorTexture,uv);uv.x+=offset;vec4 down=texture2D(u_SimpleAnimatorTexture,uv);vec2 outPos;transfrom(pos,up,down,outPos);outPos=outPos*weight;return vec4(outPos,0.,1.0);}\n#endif\n#ifdef SPINE_FAST\nuniform vec4 u_sBone[200];vec4 getBonePos(float fboneId,float weight,vec2 pos){int boneId=int(fboneId);vec4 up=u_sBone[boneId*2];vec4 down=u_sBone[boneId*2+1];vec2 outPos;transfrom(pos,up,down,outPos);outPos=outPos*weight;return vec4(outPos,0.,1.0);}\n#endif\nvec4 getSpinePos(){\n#ifdef SPINE_SIMPLE\n#ifdef GPU_INSTANCE\nfloat currentPixelPos=a_SimpleTextureParams.x+a_SimpleTextureParams.y;\n#else\nfloat currentPixelPos=u_SimpleAnimatorParams.x+u_SimpleAnimatorParams.y;\n#endif\nfloat offset=1.0/u_SimpleAnimatorTextureSize;return getBonePosBake(currentPixelPos,a_BoneId,a_weight,a_position,offset)+getBonePosBake(currentPixelPos,a_PosWeightBoneID_2.w,a_PosWeightBoneID_2.z,a_PosWeightBoneID_2.xy,offset)+getBonePosBake(currentPixelPos,a_PosWeightBoneID_3.w,a_PosWeightBoneID_3.z,a_PosWeightBoneID_3.xy,offset)+getBonePosBake(currentPixelPos,a_PosWeightBoneID_4.w,a_PosWeightBoneID_4.z,a_PosWeightBoneID_4.xy,offset);\n#else\n#ifdef SPINE_FAST\nreturn getBonePos(a_BoneId,a_weight,a_position)+getBonePos(a_PosWeightBoneID_2.w,a_PosWeightBoneID_2.z,a_PosWeightBoneID_2.xy)+getBonePos(a_PosWeightBoneID_3.w,a_PosWeightBoneID_3.z,a_PosWeightBoneID_3.xy)+getBonePos(a_PosWeightBoneID_4.w,a_PosWeightBoneID_4.z,a_PosWeightBoneID_4.xy);\n#endif\n#ifdef SPINE_RB\nvec2 pos;transfrom(a_position,u_sBone0,u_sBone1,pos);return vec4(pos,0.,1.);\n#endif\n#endif\nreturn vec4(a_position.x,a_position.y,0.,1.);}\n#endif\n";
 
     var spineFragment = "#if !defined(SpineFragment_lib)\n#define SpineFragment_lib\n#include \"Sprite2DFrag.glsl\";\nvec4 getColor(){vec4 color=texture2D(u_spineTexture,v_texcoord.xy);\n#ifndef GAMMATEXTURE\n#ifdef GAMMASPACE\ncolor.xyz=linearToGamma(color.xyz);\n#endif\n#else\n#ifndef GAMMASPACE\ncolor.xyz=gammaToLinear(color.xyz);\n#endif\n#endif\nvec4 final;\n#ifdef TWOCOLORTINT\nfinal.a=color.a*v_color.a;final.xyz=((color.a-1.0)*v_color2.a+1.0-color.xyz)*v_color2.xyz+color.xyz*v_color.xyz;\n#else\nfinal=color*v_color;\n#endif\nreturn final;}\n#endif\n";
 
@@ -128,6 +128,7 @@
             SpineShaderInit.BONEMAT_0 = Laya.Shader3D.propertyNameToID("u_sBone0");
             SpineShaderInit.BONEMAT_1 = Laya.Shader3D.propertyNameToID("u_sBone1");
             SpineShaderInit.SpineTexture = Laya.Shader3D.propertyNameToID("u_spineTexture");
+            SpineShaderInit.COLOR = Laya.Shader3D.propertyNameToID("u_color");
             SpineShaderInit.SPINE_RENDER_SIZE = Laya.Shader3D.propertyNameToID("u_spineRenderSize");
             SpineShaderInit.SPINE_FAST = Laya.Shader3D.getDefineByName("SPINE_FAST");
             SpineShaderInit.SPINE_RB = Laya.Shader3D.getDefineByName("SPINE_RB");
@@ -144,8 +145,9 @@
             SpineShaderInit.SPINE_COLOR2 = Laya.Shader3D.getDefineByName("COLOR2");
             const commandUniform = Laya.LayaGL.renderDeviceFactory.createGlobalUniformMap("Spine2D");
             commandUniform.addShaderUniformArray(SpineShaderInit.BONEMAT, "u_sBone", Laya.ShaderDataType.Vector4, 200);
-            commandUniform.addShaderUniform(SpineShaderInit.BONEMAT_0, "u_sBone0", Laya.ShaderDataType.Vector3);
-            commandUniform.addShaderUniform(SpineShaderInit.BONEMAT_1, "u_sBone1", Laya.ShaderDataType.Vector3);
+            commandUniform.addShaderUniform(SpineShaderInit.BONEMAT_0, "u_sBone0", Laya.ShaderDataType.Vector4);
+            commandUniform.addShaderUniform(SpineShaderInit.BONEMAT_1, "u_sBone1", Laya.ShaderDataType.Vector4);
+            commandUniform.addShaderUniform(SpineShaderInit.COLOR, "u_color", Laya.ShaderDataType.Vector4);
             commandUniform.addShaderUniform(SpineShaderInit.SIMPLE_SIMPLEANIMATORPARAMS, "u_SimpleAnimatorParams", Laya.ShaderDataType.Vector4);
             commandUniform.addShaderUniform(SpineShaderInit.SIMPLE_SIMPLEANIMATORTEXTURE, "u_SimpleAnimatorTexture", Laya.ShaderDataType.Texture2D);
             commandUniform.addShaderUniform(SpineShaderInit.SIMPLE_SIMPLEANIMATORTEXTURESIZE, "u_SimpleAnimatorTextureSize", Laya.ShaderDataType.Float);
@@ -382,7 +384,19 @@
             let tex2d = texture.bitmap;
             if (!tex2d)
                 return;
-            this.setTexture(texture.url, tex2d);
+            this._registerTextureByName(texture.url, tex2d);
+            this._registerTextureByName(tex2d.url, tex2d);
+        }
+        _registerTextureByName(name, texture) {
+            if (!name)
+                return;
+            let previous = this._textures && this._textures[name];
+            if (previous === texture)
+                return;
+            if (previous)
+                previous._removeReference();
+            texture._addReference();
+            this.setTexture(name, texture);
         }
         _refreshSpineMaterialTextureKeys() {
             this._spineMaterialTextureKeys = {};
@@ -434,8 +448,8 @@
             return premultipliedAlpha;
         }
         _disposeResource() {
-            this._parser.destroy();
             this.optimize.destroy();
+            this._parser.destroy();
             for (let k in this._textures) {
                 let tex = this._textures[k];
                 if (tex) {
@@ -460,7 +474,7 @@
     }
     SpineConst.SPLIT_REGEX = /\r?\n/;
     SpineConst.PMA_REGEX = /^pma:\s*(true|false)$/i;
-    SpineConst.PREMULTIPLIED_ALPHA_DEFAULT = false;
+    SpineConst.PREMULTIPLIED_ALPHA_DEFAULT = true;
     SpineConst.VERSION = "3.8";
     SpineConst.VersionFirst = 3;
     SpineConst.VersionSecond = 8;
@@ -492,12 +506,12 @@
         ESpineRenderState[ESpineRenderState["Playing"] = 2] = "Playing";
     })(exports.ESpineRenderState || (exports.ESpineRenderState = {}));
     Laya.Laya.addAfterInitCallback(() => {
-        let versionString = SpineConst.VERSION.split('.');
-        let versionNumber = Math.floor(Number(versionString[0]));
-        let versionNumber2 = Math.floor(Number(versionString[1]));
+        const versionMatch = /^(\d+)\.(\d+)/.exec(SpineConst.VERSION);
+        const versionNumber = Number(versionMatch[1]);
+        const versionNumber2 = Number(versionMatch[2]);
         SpineConst.VersionFirst = versionNumber;
         SpineConst.VersionSecond = versionNumber2;
-        if (versionNumber >= 4 && versionNumber2 >= 1) {
+        if (versionNumber > 4 || (versionNumber === 4 && versionNumber2 >= 1)) {
             SpineConst.NEED_SLOT = true;
         }
         SpineConst.ENABLE_WEB_BATCH = window.Laya.BatchManager != null;
@@ -515,14 +529,18 @@
             this._maxDeltaTime = 0.1;
             this._pause = true;
             this._needUpdate = false;
+            this._leakReleased = false;
+            this._releasedTemplet = null;
             this._playbackRate = 1.0;
             this._playAudio = true;
             this._soundChannelArr = [];
             this.trackIndex = 0;
             this._skinName = "default";
             this._loop = true;
+            this._playState = exports.ESpineRenderState.Stopped;
             this._renderOffset = new Laya.Vector2();
             this._offset = new Laya.Vector2();
+            this._transformDirty = true;
             this._setPreAlphaFlag = false;
             this._premultipliedAlpha = true;
             this._useFastRender = true;
@@ -538,8 +556,7 @@
             return ["BaseRender2D", "Spine2D"];
         }
         _createRenderHandle() {
-            let handle = Laya.LayaGL.render2DRenderPassFactory.createSpineRenderDataHandle();
-            return handle;
+            return SpineConst.factory.createSpineRenderDataHandle();
         }
         get createBone() {
             return this._createBone;
@@ -723,12 +740,7 @@
             return this._spineRender.currentTime;
         }
         get playState() {
-            if (this._pause)
-                if (this.currentTime)
-                    return exports.ESpineRenderState.Paused;
-                else
-                    return exports.ESpineRenderState.Stopped;
-            return exports.ESpineRenderState.Playing;
+            return this._playState;
         }
         get useFastRender() {
             return this._useFastRender;
@@ -758,7 +770,7 @@
                 this._renderHandle.offset = this._renderOffset;
             }
             this.boundsChange = true;
-            if (this.playState !== Spine2DRenderNode.PLAYING) {
+            if (this.playState !== exports.ESpineRenderState.Playing) {
                 this.owner.repaint(Laya.RepaintFlag.UpdateRT);
             }
         }
@@ -810,17 +822,35 @@
             this.owner.pivot(Math.round(this._templet.offsetX), Math.round(-this._templet.offsetY));
         }
         onEnable() {
+            this._transformDirty = true;
             this.owner.on(Laya.Event.TRANSFORM_CHANGED, this, this.onTransformChanged);
+            if (this._leakReleased && this._releasedTemplet && !this._releasedTemplet.destroyed && !this._spineRender && !this.destroyed) {
+                this.init(this._releasedTemplet);
+            }
             if (this._spineRender && Laya.LayaEnv.isPlaying && this._animationName !== undefined)
                 this.play(this._animationName, this._loop, true);
         }
         onDisable() {
             this.owner.off(Laya.Event.TRANSFORM_CHANGED, this, this.onTransformChanged);
+            if (!this.destroyed && this._templet && this._spineRender && !this._leakReleased) {
+                this._leakReleased = true;
+                this._releasedTemplet = this._templet;
+                if (this._renderHandle)
+                    this._renderHandle.skeleton = null;
+                this.clear();
+                if (this._rootBone) {
+                    this._rootBone.destroy();
+                    this._rootBone = null;
+                    this._bones = null;
+                }
+            }
         }
         init(templet) {
             if (this.destroyed)
                 return;
-            if (this._templet) {
+            this._leakReleased = false;
+            this._releasedTemplet = null;
+            if (this._templet || this._spineRender) {
                 this.clear();
             }
             this._templet = templet;
@@ -828,9 +858,6 @@
                 return;
             this._templet._addReference();
             this._templet.on(SpineTemplet.EVENT_SPINE_MATERIAL_CHANGE, this, this.onSpineMaterialChange);
-            if (this._spineRender) {
-                this._spineRender.destroy();
-            }
             this._struct.renderElements = [];
             this._struct.setRepaint();
             this._spineRender = SpineConst.factory.createSpineRender2D(this);
@@ -865,9 +892,13 @@
                 dispose: (entry) => {
                 },
                 complete: (entry) => {
+                    const spineRender = this._spineRender;
                     this.owner.event(Laya.Event.END);
+                    if (spineRender !== this._spineRender) {
+                        return;
+                    }
                     if (entry.loop) {
-                        this._spineRender.complete();
+                        spineRender.complete();
                         this.owner.event(Laya.Event.COMPLETE);
                     }
                     else {
@@ -886,9 +917,13 @@
                         balance: event.balance,
                         volume: event.volume
                     };
+                    const spineRender = this._spineRender;
                     this.owner.event(Laya.Event.LABEL, eventData);
+                    if (spineRender !== this._spineRender) {
+                        return;
+                    }
                     if (this._playAudio && eventData.audioValue) {
-                        let channel = Laya.SoundManager.playSound(eventData.audioValue, 1, Laya.Handler.create(this, this._onAniSoundStoped), null, (this._spineRender.currentTime * 1000 - eventData.time) / 1000);
+                        let channel = Laya.SoundManager.playSound(eventData.audioValue, 1, Laya.Handler.create(this, this._onAniSoundStoped), null, (spineRender.currentTime * 1000 - eventData.time) / 1000);
                         Laya.SoundManager.playbackRate = this._playbackRate;
                         channel && this._soundChannelArr.push(channel);
                     }
@@ -933,23 +968,36 @@
                     this._pause = false;
                     this._needUpdate = true;
                 }
+                this._playState = exports.ESpineRenderState.Playing;
                 this._update();
                 this.owner.event(Laya.Event.PLAYED);
             }
         }
         _update() {
-            let timerDelta = Laya.Laya.timer.delta / 1000 * this._playbackRate;
-            if (timerDelta > this._maxDeltaTime)
-                timerDelta = this._maxDeltaTime;
-            let delta = timerDelta * this._playbackRate;
-            let currentPlayTime = this._spineRender.currentTime;
-            this._spineRender.update(delta);
-            if (this.destroyed) {
-                return;
-            }
-            this._spineRender.render(currentPlayTime, this.physicsUpdate);
-            this._updateBones();
             this.owner.repaint(Laya.RepaintFlag.UpdateRT);
+        }
+        onPreRender() {
+            if (this._needUpdate) {
+                const spineRender = this._spineRender;
+                if (!spineRender) {
+                    return;
+                }
+                if (this._transformDirty) {
+                    let matrix = this.owner.globalTrans.getMatrix();
+                    spineRender.setSkeletonPosition(matrix.tx, matrix.ty);
+                    this._transformDirty = false;
+                }
+                let timerDelta = Laya.Laya.timer.delta / 1000;
+                if (timerDelta > this._maxDeltaTime)
+                    timerDelta = this._maxDeltaTime;
+                let delta = timerDelta * this._playbackRate;
+                spineRender.update(delta);
+                if (this.destroyed || spineRender !== this._spineRender) {
+                    return;
+                }
+                spineRender.render(spineRender.currentTime, this.physicsUpdate);
+                this._updateBones();
+            }
         }
         _updateBones() {
             if (!this._createBone || !this._bones)
@@ -1006,15 +1054,14 @@
             this._spineRender.showSkinByIndex(skinIndex);
         }
         stop() {
-            if (!this._pause) {
-                this._pause = true;
-                this._needUpdate = false;
-                this._spineRender.update(-this._spineRender.currentTime);
-                this._spineRender.currentTime = 0;
-                this.owner.event(Laya.Event.STOPPED);
-                if (this._soundChannelArr.length > 0) {
-                    this._onAniSoundStoped(true);
-                }
+            if (this._playState === exports.ESpineRenderState.Stopped)
+                return;
+            this._pause = true;
+            this._needUpdate = false;
+            this._playState = exports.ESpineRenderState.Stopped;
+            this.owner.event(Laya.Event.STOPPED);
+            if (this._soundChannelArr.length > 0) {
+                this._onAniSoundStoped(true);
             }
         }
         onUpdate() {
@@ -1024,6 +1071,7 @@
             if (!this._pause) {
                 this._pause = true;
                 this._needUpdate = false;
+                this._playState = exports.ESpineRenderState.Paused;
                 this.owner.event(Laya.Event.PAUSED);
                 if (this._soundChannelArr.length > 0) {
                     for (let len = this._soundChannelArr.length, i = 0; i < len; i++) {
@@ -1036,9 +1084,10 @@
             }
         }
         resume() {
-            if (this._pause) {
+            if (this._playState === exports.ESpineRenderState.Paused) {
                 this._pause = false;
                 this._needUpdate = true;
+                this._playState = exports.ESpineRenderState.Playing;
                 if (this._soundChannelArr.length > 0) {
                     for (let len = this._soundChannelArr.length, i = 0; i < len; i++) {
                         let channel = this._soundChannelArr[i];
@@ -1065,12 +1114,16 @@
                 this._spineRender.clearCacheMaterials();
         }
         reset() {
-            this._spineRender.reset();
-            this._templet.off(SpineTemplet.EVENT_SPINE_MATERIAL_CHANGE, this, this.onSpineMaterialChange);
-            this._templet._removeReference(1);
-            this._templet = null;
+            var _a;
+            (_a = this._spineRender) === null || _a === void 0 ? void 0 : _a.reset();
+            if (this._templet) {
+                this._templet.off(SpineTemplet.EVENT_SPINE_MATERIAL_CHANGE, this, this.onSpineMaterialChange);
+                this._templet._removeReference(1);
+                this._templet = null;
+            }
             this._pause = true;
             this._needUpdate = false;
+            this._playState = exports.ESpineRenderState.Stopped;
             if (this._soundChannelArr.length > 0)
                 this._onAniSoundStoped(true);
             this.owner.repaint();
@@ -1084,12 +1137,20 @@
             this._animationName = animationName;
             this._spineRender.addAnimation(animationName, loop, delay, this.trackIndex);
         }
-        setSlotTexture(slotName, texture, createAttachment = true) {
+        setSlotTexture(slotName, texture, createAttachment = true, updateAttachmentSize = true) {
             if (this._useFastRender) {
                 console.log("setSlotTexture: useFastRender is true, return");
                 return;
             }
-            this._spineRender.setSlotTexture(slotName, texture, createAttachment);
+            this._spineRender.setSlotTexture(slotName, texture, createAttachment, updateAttachmentSize);
+        }
+        restoreSlotTexture(slotName) {
+            var _a, _b;
+            if (this._useFastRender) {
+                console.log("restoreSlotTexture: useFastRender is true, return");
+                return false;
+            }
+            return (_b = (_a = this._spineRender) === null || _a === void 0 ? void 0 : _a.restoreSlotTexture(slotName)) !== null && _b !== void 0 ? _b : false;
         }
         setTempletAttachment(templet, targetSlotName, skinName, attachmentName) {
             if (this._useFastRender) {
@@ -1114,16 +1175,18 @@
             return this._spineRender.findBone(boneName);
         }
         getSkeleton() {
-            return this._spineRender.getSkeleton();
+            return this._spineRender ? this._spineRender.getSkeleton() : null;
+        }
+        updateWorldTransform(physicsUpdate = this.physicsUpdate) {
+            if (this._spineRender) {
+                this._spineRender.updateWorldTransform(physicsUpdate);
+            }
         }
         physicsTranslate(x, y) {
             this._spineRender.physicsTranslate(x, y);
         }
         onTransformChanged() {
-            if (this._spineRender) {
-                let matrix = this.owner.globalTrans.getMatrix();
-                this._spineRender.setSkeletonPosition(matrix.tx, matrix.ty);
-            }
+            this._transformDirty = true;
         }
         setSlotAttachment(slotName, attachmentName) {
             this.useFastRender = false;
@@ -1131,17 +1194,19 @@
         }
         clear() {
             var _a;
-            this.reset();
-            (_a = this.owner) === null || _a === void 0 ? void 0 : _a.repaint();
+            this._needUpdate = false;
+            this._pause = true;
+            const spineRender = this._spineRender;
+            this._spineRender = null;
             this._struct.renderElements = this._renderElements;
+            (_a = this.owner) === null || _a === void 0 ? void 0 : _a.repaint();
+            spineRender === null || spineRender === void 0 ? void 0 : spineRender.destroy();
+            this.reset();
         }
         onDestroy() {
-            if (this._templet) {
+            this._releasedTemplet = null;
+            if (this._templet || this._spineRender) {
                 this.clear();
-            }
-            if (this._spineRender) {
-                this._spineRender.destroy();
-                this._spineRender = null;
             }
             if (this._rootBone) {
                 this._rootBone.destroy();
@@ -1267,6 +1332,9 @@
         }
         getSkeleton() {
             return this._spineComponent.getSkeleton();
+        }
+        updateWorldTransform(physicsUpdate = this._spineComponent.physicsUpdate) {
+            this._spineComponent.updateWorldTransform(physicsUpdate);
         }
         setSlotAttachment(slotName, attachmentName) {
             this._spineComponent.setSlotAttachment(slotName, attachmentName);
@@ -1437,6 +1505,96 @@
     }
     Laya.Loader.registerLoader(["skel", "json"], SpineTempletLoader, Laya.Loader.SPINE);
 
+    class NativeSpineRenderDataHandle {
+        constructor() {
+            this._needUseMatrix = true;
+            this._lightReceive = false;
+            this._offset = new Laya.Vector2();
+            this._baseColor = new Laya.Color(1, 1, 1, 1);
+            this.renderMatrixVersion = -1;
+            this._nativeObj = new window.conchRTSpineRenderDataHandle();
+            this._nativeObj.needUseMatrix = true;
+        }
+        get needUseMatrix() {
+            return this._needUseMatrix;
+        }
+        set needUseMatrix(value) {
+            if (this._needUseMatrix === value)
+                return;
+            this._needUseMatrix = value;
+            this._nativeObj.needUseMatrix = value;
+        }
+        get lightReceive() {
+            return this._lightReceive;
+        }
+        set lightReceive(value) {
+            if (this._lightReceive === value)
+                return;
+            this._lightReceive = value;
+            if (value)
+                this._owner.spriteShaderData.addDefine(Laya.BaseRenderNode2D.SHADERDEFINE_LIGHT2D_ENABLE);
+            else
+                this._owner.spriteShaderData.removeDefine(Laya.BaseRenderNode2D.SHADERDEFINE_LIGHT2D_ENABLE);
+        }
+        get baseColor() {
+            return this._baseColor;
+        }
+        set baseColor(value) {
+            if (value !== this._baseColor && this._baseColor.equal(value))
+                return;
+            value = value || Laya.Color.BLACK;
+            value.cloneTo(this._baseColor);
+            this._owner.spriteShaderData.setColor(Laya.BaseRenderNode2D.BASERENDER2DCOLOR, this._baseColor);
+            this._nativeObj.setBaseColor(this._baseColor);
+        }
+        get owner() {
+            return this._owner;
+        }
+        set owner(value) {
+            if (value === this._owner)
+                return;
+            this._setOwnerLocal(value);
+            this._nativeObj.setOwner(value ? value._nativeObj : null);
+        }
+        _setOwnerLocal(value) {
+            if (value === this._owner)
+                return;
+            if (this._owner && this._owner.spriteShaderData) {
+                let shaderData = this._owner.spriteShaderData;
+                shaderData.removeDefine(Laya.BaseRenderNode2D.SHADERDEFINE_BASERENDER2D);
+                shaderData.removeDefine(SpineShaderInit.SPINE_UV);
+                shaderData.removeDefine(SpineShaderInit.SPINE_COLOR);
+                shaderData.removeDefine(Laya.BaseRenderNode2D.SHADERDEFINE_LIGHT2D_ENABLE);
+            }
+            this._owner = value;
+            if (this._owner) {
+                let shaderData = this._owner.spriteShaderData;
+                shaderData.addDefine(Laya.BaseRenderNode2D.SHADERDEFINE_BASERENDER2D);
+                shaderData.addDefine(SpineShaderInit.SPINE_UV);
+                shaderData.addDefine(SpineShaderInit.SPINE_COLOR);
+                if (this._lightReceive)
+                    shaderData.addDefine(Laya.BaseRenderNode2D.SHADERDEFINE_LIGHT2D_ENABLE);
+            }
+        }
+        get offset() {
+            return this._offset;
+        }
+        set offset(value) {
+            this._offset = value;
+            this._nativeObj.setOffset(value);
+        }
+        inheriteRenderData(context) {
+            this._nativeObj.inheriteRenderData(context._nativeObj);
+        }
+        destroy() {
+            var _a;
+            this.owner = null;
+            this.skeleton = null;
+            (_a = this._nativeObj) === null || _a === void 0 ? void 0 : _a.destroy();
+            this._nativeObj = null;
+        }
+    }
+
     class NativeSkeletonOptimise {
         static __init__() {
             let dec = SpineShaderInit.getAllVertexDeclarations();
@@ -1507,6 +1665,12 @@
         }
         checkMainAttach(skeleton, skeletonData) {
         }
+        registerTexturePage(textureId, pageName, pageWidth, pageHeight) {
+            this._nativeOptimise.registerTexturePage(textureId, pageName, pageWidth, pageHeight);
+        }
+        registerTextureRegion(pageName, textureName, width, height, originalWidth, originalHeight, offsetX, offsetY, u, v, u2, v2) {
+            this._nativeOptimise.registerTextureRegion(pageName, textureName, width, height, originalWidth, originalHeight, offsetX, offsetY, u, v, u2, v2);
+        }
         registerTexture(texture) {
             let isTexture = false;
             let texture2d;
@@ -1517,40 +1681,48 @@
             else
                 texture2d = texture;
             if (!texture2d)
-                return;
-            let bitmapUrl = texture2d.url;
-            let page = this._registTextures.get(bitmapUrl);
-            if (!page) {
-                page = new Set();
-                this._registTextures.set(bitmapUrl, page);
+                return null;
+            let bitmapUrl = texture2d.url || "texture";
+            let textureName = this._getTextureName(texture);
+            if (this._registTextures.get(bitmapUrl) !== texture2d.id) {
+                this._registTextures.set(bitmapUrl, texture2d.id);
+                this.registerTexturePage(texture2d.id, bitmapUrl, texture2d.width, texture2d.height);
             }
-            let textureName = texture.url;
-            if (!page.has(textureName)) {
-                page.add(textureName);
-                let width = texture.width;
-                let height = texture.height;
-                let originalWidth = texture.width;
-                let originalHeight = texture.height;
-                let offsetX = 0;
-                let offsetY = 0;
-                let u = 0;
-                let v = 0;
-                let u2 = 1.0;
-                let v2 = 1.0;
-                if (isTexture) {
-                    originalWidth = texture.sourceWidth;
-                    originalHeight = texture.sourceHeight;
-                    offsetX = texture.offsetX;
-                    offsetY = texture.offsetY;
-                    if (texture.uv && texture.uv.length >= 8) {
-                        u = texture.uv[0];
-                        v = texture.uv[1];
-                        u2 = texture.uv[4];
-                        v2 = texture.uv[5];
-                    }
+            let width = texture.width;
+            let height = texture.height;
+            let originalWidth = texture.width;
+            let originalHeight = texture.height;
+            let offsetX = 0;
+            let offsetY = 0;
+            let u = 0;
+            let v = 0;
+            let u2 = 1.0;
+            let v2 = 1.0;
+            if (isTexture) {
+                originalWidth = texture.sourceWidth;
+                originalHeight = texture.sourceHeight;
+                offsetX = texture.offsetX;
+                offsetY = texture.offsetY;
+                if (texture.uv && texture.uv.length >= 8) {
+                    u = texture.uv[0];
+                    v = texture.uv[1];
+                    u2 = texture.uv[4];
+                    v2 = texture.uv[5];
                 }
-                this._nativeOptimise.registerTexture(texture2d.id, bitmapUrl, textureName, width, height, originalWidth, originalHeight, offsetX, offsetY, u, v, u2, v2);
             }
+            this.registerTextureRegion(bitmapUrl, textureName, width, height, originalWidth, originalHeight, offsetX, offsetY, u, v, u2, v2);
+            return {
+                textureId: texture2d.id,
+                pageName: bitmapUrl,
+                textureName
+            };
+        }
+        _getTextureName(texture) {
+            let textureName = texture.name;
+            if (!textureName && texture.url) {
+                textureName = texture.url.split("/").pop().split("\\").pop();
+            }
+            return textureName || "texture";
         }
         initMaterials(textureUrls, textures) {
             if (textureUrls.length === 0 || textures.length === 0) {
@@ -1618,7 +1790,7 @@
             const lines = atlasText.split(SpineConst.SPLIT_REGEX);
             const textureInfos = [];
             const urls = [];
-            let currentPma = true;
+            let currentPma = this._premultipliedAlpha;
             for (let i = 0; i < lines.length; i++) {
                 const trimmed = lines[i].trim();
                 if (!trimmed)
@@ -1658,13 +1830,17 @@
             const isBinary = desc instanceof ArrayBuffer;
             let textureUrls = this._cachedTextureUrls;
             if (textureUrls.length > 0 && textures.length > 0) {
+                let currentPma = this._premultipliedAlpha;
                 const minLength = Math.min(textureUrls.length, textures.length);
                 for (let i = 0; i < minLength; i++) {
                     const texture = textures[i];
                     if (texture) {
-                        this._nativeParser.addTextureSizeInfo(textureUrls[i], texture.width, texture.height);
+                        currentPma = currentPma && texture._premultiplyAlpha;
+                        this._nativeParser.addTextureSizeInfo(textureUrls[i], texture.width, texture.height, texture.id);
+                        texture._addReference();
                     }
                 }
+                this._premultipliedAlpha = currentPma;
             }
             const optimize = new NativeSkeletonOptimise();
             const rtSkeletonOptimize = optimize._getNativeOptimise();
@@ -1681,7 +1857,14 @@
                 parseSuccess = this._nativeParser.parseBinary(rtSkeletonOptimize, desc, this._atlasTextContent, parseResultBuffer);
             }
             else {
-                parseSuccess = this._nativeParser.parse(rtSkeletonOptimize, JSON.stringify(desc), this._atlasTextContent, parseResultBuffer);
+                const jsonData = typeof desc === "string" ? JSON.parse(desc) : desc;
+                const skeletonData = jsonData && jsonData.skeleton;
+                const hasSkeletonBounds = !!skeletonData
+                    && skeletonData.x !== undefined
+                    && skeletonData.y !== undefined
+                    && skeletonData.width !== undefined
+                    && skeletonData.height !== undefined;
+                parseSuccess = this._nativeParser.parse(rtSkeletonOptimize, JSON.stringify(desc), this._atlasTextContent, hasSkeletonBounds, parseResultBuffer);
             }
             if (!parseSuccess) {
                 console.error("Failed to parse Spine skeleton data");
@@ -1705,8 +1888,10 @@
             return templet;
         }
         destroy() {
-            this._nativeParser.destroy();
-            this._nativeParser = null;
+            if (this._nativeParser) {
+                this._nativeParser.destroy();
+                this._nativeParser = null;
+            }
         }
     }
 
@@ -1733,21 +1918,29 @@
             this._owner = owner;
             this._nativeRender = nativeRender;
         }
-        setSlotTexture(slotName, texture, createAttachment) {
+        setSlotTexture(slotName, texture, createAttachment, updateAttachmentSize = true) {
             if (!this._templet || !texture) {
                 return;
             }
             this._templet.registerTexture(texture);
             let optimize = this._templet.optimize;
-            optimize.registerTexture(texture);
-            let tex2d = texture.bitmap;
-            this._nativeRender.setSlotTexture(slotName, tex2d._id, createAttachment);
+            let newRegion = optimize.registerTexture(texture);
+            if (!newRegion) {
+                return;
+            }
+            this._nativeRender.setSlotTexture(slotName, newRegion.textureId, newRegion.pageName, newRegion.textureName, createAttachment, updateAttachmentSize);
+        }
+        restoreSlotTexture(slotName) {
+            if (!this._nativeRender || !slotName) {
+                return false;
+            }
+            return !!this._nativeRender.restoreSlotTexture(slotName);
         }
         setTempletAttachment(templet, targetSlotName, skinName, attachmentName) {
             if (!this._templet || !templet || !targetSlotName || !skinName || !attachmentName) {
                 return;
             }
-            let optimize = this._templet.optimize;
+            let sourceOptimize = templet.optimize;
             if (templet._textures) {
                 for (let textureName in templet._textures) {
                     let texture2d = templet._textures[textureName];
@@ -1756,7 +1949,7 @@
                     }
                 }
             }
-            this._nativeRender.setTempletAttachment(optimize._getNativeOptimise(), targetSlotName, skinName, attachmentName);
+            this._nativeRender.setTempletAttachment(sourceOptimize._getNativeOptimise(), targetSlotName, skinName, attachmentName);
         }
         getSkeleton() {
             return null;
@@ -1823,11 +2016,21 @@
             this._nativeRender.setMix(fromAnimation, toAnimation, duration);
         }
         update(delta) {
+            const nativeRender = this._nativeRender;
+            if (!nativeRender) {
+                return;
+            }
+            nativeRender.update(delta);
+            if (nativeRender !== this._nativeRender) {
+                return;
+            }
+            this._updateTrackEntry();
+        }
+        updateWorldTransform(physicsUpdate) {
             if (!this._nativeRender) {
                 return;
             }
-            this._nativeRender.update(delta);
-            this._updateTrackEntry();
+            this._nativeRender.updateWorldTransform(physicsUpdate);
         }
         _updateTrackEntry() {
             this.trackEntry.animationStart = this._sharedTrackEntryBuffer[0];
@@ -1965,11 +2168,12 @@
             return this._mode;
         }
         set mode(value) {
-            if (this._mode === value)
-                return;
-            this._mode = value;
             if (this._nativeRender && this._nativeRender.setMode) {
                 this._nativeRender.setMode(value);
+                this._mode = this._nativeRender.getMode ? this._nativeRender.getMode() : value;
+            }
+            else {
+                this._mode = value;
             }
         }
         complete() {
@@ -1982,11 +2186,30 @@
             if (!this._nativeRender) {
                 return;
             }
+            this._nativeRender.resetBakeData();
+            if (!obj) {
+                if (this._nativeRender.setMode) {
+                    this._nativeRender.setMode(exports.ESpineRenderMode.Optimize);
+                    this._mode = this._nativeRender.getMode ? this._nativeRender.getMode() : exports.ESpineRenderMode.Optimize;
+                }
+                else {
+                    this._mode = exports.ESpineRenderMode.Optimize;
+                }
+                return;
+            }
             this._nativeRender.setBakeBonesNums(obj.bonesNums);
             let animationMap = obj.aniOffsetMap;
             for (const key in animationMap) {
-                this._nativeRender.setBakeAniOffset(key, animationMap[key]);
+                const offset = animationMap[key];
+                if (key === "textureWidth" || typeof offset !== "number" || !isFinite(offset)) {
+                    continue;
+                }
+                this._nativeRender.setBakeAniOffset(key, offset);
             }
+            if (this._nativeRender.initBake) {
+                this._nativeRender.initBake();
+            }
+            this._mode = this._nativeRender.getMode ? this._nativeRender.getMode() : exports.ESpineRenderMode.Bake;
         }
         setEventListener(listeners) {
             if (!this._nativeRender) {
@@ -1995,42 +2218,68 @@
             this._listeners = listeners;
             if (listeners.start && this._nativeRender.setOnStart) {
                 this._nativeRender.setOnStart((nativeEntry) => {
+                    this._updateTrackEntry();
                     listeners.start(this.trackEntry);
                 });
             }
             if (listeners.interrupt && this._nativeRender.setOnInterrupt) {
                 this._nativeRender.setOnInterrupt((nativeEntry) => {
+                    this._updateTrackEntry();
                     listeners.interrupt(this.trackEntry);
                 });
             }
             if (listeners.end && this._nativeRender.setOnEnd) {
                 this._nativeRender.setOnEnd((nativeEntry) => {
+                    this._updateTrackEntry();
                     listeners.end(this.trackEntry);
                 });
             }
             if (listeners.dispose && this._nativeRender.setOnDispose) {
                 this._nativeRender.setOnDispose((nativeEntry) => {
+                    this._updateTrackEntry();
                     listeners.dispose(this.trackEntry);
                 });
             }
             if (listeners.complete && this._nativeRender.setOnComplete) {
                 this._nativeRender.setOnComplete((nativeEntry) => {
+                    this._updateTrackEntry();
                     listeners.complete(this.trackEntry);
                 });
             }
             if (listeners.event && this._nativeRender.setOnEvent) {
                 this._nativeRender.setOnEvent((nativeEntry, nativeEvent) => {
-                    listeners.event(this.trackEntry, nativeEvent);
+                    this._updateTrackEntry();
+                    listeners.event(this.trackEntry, this._normalizeNativeEvent(nativeEvent || nativeEntry));
                 });
             }
         }
+        _normalizeNativeEvent(nativeEvent) {
+            if (!nativeEvent) {
+                nativeEvent = {};
+            }
+            let name = nativeEvent.name || "";
+            let audioPath = nativeEvent.audioPath || "";
+            return {
+                data: {
+                    name: name,
+                    audioPath: audioPath
+                },
+                intValue: nativeEvent.intValue || 0,
+                floatValue: nativeEvent.floatValue || 0,
+                stringValue: nativeEvent.stringValue || "",
+                time: nativeEvent.time || 0,
+                balance: nativeEvent.balance || 0,
+                volume: nativeEvent.volume || 0
+            };
+        }
         destroy() {
-            if (this._nativeRender) {
-                if (this._listeners && this._nativeRender.removeEventListener) {
-                    this._nativeRender.removeEventListener();
+            const nativeRender = this._nativeRender;
+            this._nativeRender = null;
+            if (nativeRender) {
+                if (this._listeners && nativeRender.removeEventListener) {
+                    nativeRender.removeEventListener();
                 }
-                this._nativeRender.destroy();
-                this._nativeRender = null;
+                nativeRender.destroy();
             }
             this._listeners = null;
             this._templet = null;
@@ -2096,6 +2345,10 @@
             if (!this._nativeRender) {
                 return;
             }
+            if (!obj) {
+                super.initBake(obj);
+                return;
+            }
             let shaderData = this._owner._spriteShaderData;
             let texture = obj.texture2d;
             shaderData.setTexture(SpineShaderInit.SIMPLE_SIMPLEANIMATORTEXTURE, texture);
@@ -2112,6 +2365,10 @@
             if (!this._nativeRender) {
                 return;
             }
+            if (!obj) {
+                super.initBake(obj);
+                return;
+            }
             let shaderData = this._owner.shaderData;
             let texture = obj.texture2d;
             shaderData.setTexture(SpineShaderInit.SIMPLE_SIMPLEANIMATORTEXTURE, texture);
@@ -2126,6 +2383,9 @@
         }
         createSpineTempletParser() {
             return new NativeSpineTempletParser();
+        }
+        createSpineRenderDataHandle() {
+            return new NativeSpineRenderDataHandle();
         }
         createSpineRender2D(owner) {
             const handle = owner._getRenderHandle();
@@ -2157,8 +2417,9 @@
             Spine3DShaderInit.SPINE_BILLBOARD_MATRIX = Laya.Shader3D.propertyNameToID("u_spineBillboardMatrix");
             const commandUniform3D = Laya.LayaGL.renderDeviceFactory.createGlobalUniformMap("Spine3D");
             commandUniform3D.addShaderUniformArray(SpineShaderInit.BONEMAT, "u_sBone", Laya.ShaderDataType.Vector4, 200);
-            commandUniform3D.addShaderUniform(SpineShaderInit.BONEMAT_0, "u_sBone0", Laya.ShaderDataType.Vector3);
-            commandUniform3D.addShaderUniform(SpineShaderInit.BONEMAT_1, "u_sBone1", Laya.ShaderDataType.Vector3);
+            commandUniform3D.addShaderUniform(SpineShaderInit.COLOR, "u_color", Laya.ShaderDataType.Vector4);
+            commandUniform3D.addShaderUniform(SpineShaderInit.BONEMAT_0, "u_sBone0", Laya.ShaderDataType.Vector4);
+            commandUniform3D.addShaderUniform(SpineShaderInit.BONEMAT_1, "u_sBone1", Laya.ShaderDataType.Vector4);
             commandUniform3D.addShaderUniform(SpineShaderInit.SIMPLE_SIMPLEANIMATORPARAMS, "u_SimpleAnimatorParams", Laya.ShaderDataType.Vector4);
             commandUniform3D.addShaderUniform(SpineShaderInit.SIMPLE_SIMPLEANIMATORTEXTURE, "u_SimpleAnimatorTexture", Laya.ShaderDataType.Texture2D);
             commandUniform3D.addShaderUniform(SpineShaderInit.SIMPLE_SIMPLEANIMATORTEXTURESIZE, "u_SimpleAnimatorTextureSize", Laya.ShaderDataType.Float);
@@ -2182,6 +2443,7 @@
     exports.NativeSpineOptimizeRender2D = NativeSpineOptimizeRender2D;
     exports.NativeSpineOptimizeRender3D = NativeSpineOptimizeRender3D;
     exports.NativeSpineOptimizeRenderBase = NativeSpineOptimizeRenderBase;
+    exports.NativeSpineRenderDataHandle = NativeSpineRenderDataHandle;
     exports.NativeSpineTempletParser = NativeSpineTempletParser;
     exports.Spine2DRenderNode = Spine2DRenderNode;
     exports.Spine3DShaderInit = Spine3DShaderInit;

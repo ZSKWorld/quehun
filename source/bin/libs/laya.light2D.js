@@ -2894,6 +2894,7 @@
                 }
                 this._getWorldRange();
                 const mesh = this._createMesh(this._falloffRange * FreeformLight2D.FALLOF_WIDTH, 8, (_a = this._cmdMesh) === null || _a === void 0 ? void 0 : _a.mesh, this._needToRecover);
+                mesh.lock = true;
                 if (!this._cmdMesh)
                     this._cmdMesh = Laya.DrawMesh2DCMD.create(mesh, Laya.Matrix.EMPTY, Laya.Texture2D.whiteTexture, Laya.Color.WHITE, this._material);
                 else
@@ -3267,6 +3268,7 @@
                     this._cmdMesh = Laya.DrawMesh2DCMD.create(mesh, Laya.Matrix.EMPTY, Laya.Texture2D.whiteTexture, Laya.Color.WHITE, this._material);
                 else
                     this._cmdMesh.mesh = mesh;
+                mesh.lock = true;
                 this._cmdBuffer.addCacheCommand(this._cmdRT);
                 this._cmdBuffer.addCacheCommand(this._cmdMesh);
                 this._cmdBuffer.apply(true);

@@ -235,7 +235,9 @@
             this._geometryElementOBj.clearRenderParams();
             var start = this._activeIndex * 2;
             var count = this._endIndex * 2 - start;
-            this._geometryElementOBj.setDrawArrayParams(start, count);
+            if (count > 0) {
+                this._geometryElementOBj.setDrawArrayParams(start, count);
+            }
         }
         destroy() {
             this._geometryElementOBj.destroy();

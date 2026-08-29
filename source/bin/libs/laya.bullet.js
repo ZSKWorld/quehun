@@ -116,15 +116,19 @@
         setCollisionGroup(value) {
             if (value != this._collisionGroup && this._btColliderShape) {
                 this._collisionGroup = value;
-                this._physicsManager.removeCollider(this);
-                this._physicsManager.addCollider(this);
+                if (this._isSimulate) {
+                    this._physicsManager.removeCollider(this);
+                    this._physicsManager.addCollider(this);
+                }
             }
         }
         setCanCollideWith(value) {
             if (value != this._canCollideWith && this._btColliderShape) {
                 this._canCollideWith = value;
-                this._physicsManager.removeCollider(this);
-                this._physicsManager.addCollider(this);
+                if (this._isSimulate) {
+                    this._physicsManager.removeCollider(this);
+                    this._physicsManager.addCollider(this);
+                }
             }
         }
         _initCollider() {
@@ -266,7 +270,7 @@
                 this._transformFlag &= ~type;
         }
         transformChanged(flag) {
-            this._transformFlag = flag;
+            this._transformFlag |= flag;
             if (this.inPhysicUpdateListIndex == -1 && !this._enableProcessCollisions) {
                 this._physicsManager._physicsUpdateList.add(this);
             }
@@ -2833,7 +2837,9 @@
             btStatics.bt.btCollisionWorld_removeCollisionObject(this._btCollisionWorld, character._btCollider);
             btStatics.bt.btDynamicsWorld_removeAction(this._btCollisionWorld, character._btKinematicCharacter);
             var characters = this._characters;
-            characters.splice(characters.indexOf(character), 1);
+            const idx = characters.indexOf(character);
+            if (idx !== -1)
+                characters.splice(idx, 1);
         }
     }
 

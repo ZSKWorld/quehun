@@ -14,8 +14,9 @@
             Spine3DShaderInit.SPINE_BILLBOARD_MATRIX = Laya.Shader3D.propertyNameToID("u_spineBillboardMatrix");
             const commandUniform3D = Laya.LayaGL.renderDeviceFactory.createGlobalUniformMap("Spine3D");
             commandUniform3D.addShaderUniformArray(Laya.SpineShaderInit.BONEMAT, "u_sBone", Laya.ShaderDataType.Vector4, 200);
-            commandUniform3D.addShaderUniform(Laya.SpineShaderInit.BONEMAT_0, "u_sBone0", Laya.ShaderDataType.Vector3);
-            commandUniform3D.addShaderUniform(Laya.SpineShaderInit.BONEMAT_1, "u_sBone1", Laya.ShaderDataType.Vector3);
+            commandUniform3D.addShaderUniform(Laya.SpineShaderInit.COLOR, "u_color", Laya.ShaderDataType.Vector4);
+            commandUniform3D.addShaderUniform(Laya.SpineShaderInit.BONEMAT_0, "u_sBone0", Laya.ShaderDataType.Vector4);
+            commandUniform3D.addShaderUniform(Laya.SpineShaderInit.BONEMAT_1, "u_sBone1", Laya.ShaderDataType.Vector4);
             commandUniform3D.addShaderUniform(Laya.SpineShaderInit.SIMPLE_SIMPLEANIMATORPARAMS, "u_SimpleAnimatorParams", Laya.ShaderDataType.Vector4);
             commandUniform3D.addShaderUniform(Laya.SpineShaderInit.SIMPLE_SIMPLEANIMATORTEXTURE, "u_SimpleAnimatorTexture", Laya.ShaderDataType.Texture2D);
             commandUniform3D.addShaderUniform(Laya.SpineShaderInit.SIMPLE_SIMPLEANIMATORTEXTURESIZE, "u_SimpleAnimatorTextureSize", Laya.ShaderDataType.Float);
@@ -64,6 +65,7 @@
             this.trackIndex = 0;
             this._skinName = "default";
             this._loop = true;
+            this._playState = Laya.ESpineRenderState.Stopped;
             this._useFastRender = true;
             this._billboard = false;
             this._enableCache = false;
@@ -225,12 +227,7 @@
             return this._spineRender.currentTime;
         }
         get playState() {
-            if (this._pause)
-                if (this.currentTime)
-                    return Laya.ESpineRenderState.Paused;
-                else
-                    return Laya.ESpineRenderState.Stopped;
-            return Laya.ESpineRenderState.Playing;
+            return this._playState;
         }
         get useFastRender() {
             return this._useFastRender;
@@ -275,7 +272,7 @@
         init(templet) {
             if (this.destroyed)
                 return;
-            if (this._templet) {
+            if (this._templet || this._spineRender) {
                 this.clear();
             }
             this._templet = templet;
@@ -283,9 +280,6 @@
                 return;
             this._templet._addReference();
             this._templet.on(Laya.SpineTemplet.EVENT_SPINE_MATERIAL_CHANGE, this, this.onSpineMaterialChange);
-            if (this._spineRender) {
-                this._spineRender.destroy();
-            }
             this._spineRender = Laya.SpineConst.factory.createSpineRender3D(this._baseRenderNode);
             this._spineRender.init(templet);
             this._spineRender.mode = this._useFastRender ? Laya.ESpineRenderMode.Optimize : Laya.ESpineRenderMode.Normal;
@@ -395,21 +389,25 @@
                     this._pause = false;
                     this._needUpdate = true;
                 }
+                this._playState = Laya.ESpineRenderState.Playing;
                 this._update();
             }
         }
         _update() {
-            let timerDelta = this._enableCache ? Laya.SpineConst.SPINE_STEP : Laya.Laya.timer.delta / 1000 * this._playbackRate;
+            const spineRender = this._spineRender;
+            if (this.destroyed || !spineRender)
+                return;
+            let timerDelta = this._enableCache ? Laya.SpineConst.SPINE_STEP : Laya.Laya.timer.delta / 1000;
             if (timerDelta > this._maxDeltaTime)
                 timerDelta = this._maxDeltaTime;
             let delta = timerDelta * this._playbackRate;
-            let currentPlayTime = this._spineRender.currentTime;
+            let currentPlayTime = spineRender.currentTime;
             this._syncSkeletonPosition();
-            this._spineRender.update(delta);
-            if (this.destroyed) {
+            spineRender.update(delta);
+            if (this.destroyed || spineRender !== this._spineRender) {
                 return;
             }
-            this._spineRender.render(currentPlayTime, this.physicsUpdate);
+            spineRender.render(currentPlayTime, this.physicsUpdate);
         }
         getAnimNum() {
             return this._templet.getAnimationCount();
@@ -430,13 +428,12 @@
             this._spineRender.showSkinByIndex(skinIndex);
         }
         stop() {
-            if (!this._pause) {
-                this._pause = true;
-                this._needUpdate = false;
-                this._spineRender.update(-this._spineRender.currentTime);
-                this._spineRender.currentTime = 0;
-                this.owner.event(Laya.Event.STOPPED);
-            }
+            if (this._playState === Laya.ESpineRenderState.Stopped)
+                return;
+            this._pause = true;
+            this._needUpdate = false;
+            this._playState = Laya.ESpineRenderState.Stopped;
+            this.owner.event(Laya.Event.STOPPED);
         }
         onUpdate() {
             this._needUpdate && this._update();
@@ -445,13 +442,15 @@
             if (!this._pause) {
                 this._pause = true;
                 this._needUpdate = false;
+                this._playState = Laya.ESpineRenderState.Paused;
                 this.owner.event(Laya.Event.PAUSED);
             }
         }
         resume() {
-            if (this._pause) {
+            if (this._playState === Laya.ESpineRenderState.Paused) {
                 this._pause = false;
                 this._needUpdate = true;
+                this._playState = Laya.ESpineRenderState.Playing;
             }
         }
         onTransformChanged() {
@@ -516,6 +515,11 @@
             this._spineRender.setAttachment(slotName, attachmentName);
         }
         clear() {
+            this._needUpdate = false;
+            this._pause = true;
+            const spineRender = this._spineRender;
+            this._spineRender = null;
+            spineRender === null || spineRender === void 0 ? void 0 : spineRender.destroy();
             this.reset();
         }
         onSpineMaterialChange() {
@@ -523,20 +527,22 @@
                 this._spineRender.clearCacheMaterials();
         }
         reset() {
-            this._spineRender.reset();
-            this._templet.off(Laya.SpineTemplet.EVENT_SPINE_MATERIAL_CHANGE, this, this.onSpineMaterialChange);
-            this._templet._removeReference(1);
-            this._templet = null;
+            var _a;
+            (_a = this._spineRender) === null || _a === void 0 ? void 0 : _a.reset();
+            if (this._templet) {
+                this._templet.off(Laya.SpineTemplet.EVENT_SPINE_MATERIAL_CHANGE, this, this.onSpineMaterialChange);
+                this._templet._removeReference(1);
+                this._templet = null;
+            }
             this._resetSkeletonPosition();
             this._pause = true;
             this._needUpdate = false;
+            this._playState = Laya.ESpineRenderState.Stopped;
         }
         _onDestroy() {
-            if (this._templet) {
+            if (this._templet || this._spineRender) {
                 this.clear();
             }
-            this._spineRender.destroy();
-            this._spineRender = null;
             super._onDestroy();
         }
         addAnimation(nameOrIndex, loop = false, delay = 0) {
@@ -565,6 +571,11 @@
         }
         getSkeleton() {
             return this._spineRender.getSkeleton();
+        }
+        updateWorldTransform(physicsUpdate = this.physicsUpdate) {
+            if (this._spineRender) {
+                this._spineRender.updateWorldTransform(physicsUpdate);
+            }
         }
         physicsTranslate(x, y) {
             this._spineRender.physicsTranslate(x, y);

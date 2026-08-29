@@ -309,10 +309,6 @@
             this._drawElementData = Laya.LayaGL.render2DRenderPassFactory.createDraw2DElementCMDData();
             this._shaderData = Laya.LayaGL.renderDeviceFactory.createShaderData();
             this._shaderData.addDefine(Laya.BaseRenderNode2D.SHADERDEFINE_BASERENDER2D);
-            let temp = Laya.Vector4.TEMP.setValue(0, 0, 0, 0);
-            this._shaderData.setVector(Laya.ShaderDefines2D.UNIFORM_CLIPMATPOS, temp);
-            temp.x = temp.w = Laya.Const.MAX_CLIP_SIZE;
-            this._shaderData.setVector(Laya.ShaderDefines2D.UNIFORM_CLIPMATDIR, temp);
             this._struct = Laya.LayaGL.render2DRenderPassFactory.createRenderStruct2D();
             this._line2DRender = new Line2DRender;
             this._line2DRender._struct = this._struct;

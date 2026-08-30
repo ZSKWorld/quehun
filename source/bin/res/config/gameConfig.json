@@ -1,739 +1,739 @@
 {
-    "ip": [
-        {
-            "name": "玩家线上服",
-            "gateways": [
-                {
-                    "id": "route-2",
-                    "url": "https://route-2.maj-soul.com"
-                },
-                {
-                    "id": "route-3",
-                    "url": "https://route-3.maj-soul.com:8443"
-                },
-                {
-                    "id": "route-4",
-                    "url": "https://route-4.maj-soul.com"
-                },
-                {
-                    "id": "route-5",
-                    "url": "https://route-5.maj-soul.com"
-                },
-                {
-                    "id": "route-6",
-                    "url": "https://route-6.maj-soul.com"
-                }
-            ],
-            "zone_ids": [
-                0,
-                7,
-                13,
-                16
-            ],
-            "system_email_url": "https://common-v2.maj-soul.com",
-            "prefix_url": "https://record-old.maj-soul.com:9443/majsoul/game_record",
-            "dhs_url": "https://www.maj-soul.com/contest-login/"
-        },
-        {
-            "name": "九条璃雨-主备",
-            "gateways": [
-                {
-                    "id": "test1",
-                    "url": "http://47.111.77.111:7895"
-                }
-            ],
-            "zone_ids": [
-                0,
-                7,
-                13,
-                16
-            ],
-            "system_email_url": "http://47.111.77.111:12317",
-            "dhs_url": "http://riu-test.majsoul.net:8090/contest-login/"
-        },
-        {
-            "name": "一姬服了",
-            "gateways": [
-                {
-                    "id": "route-1",
-                    "url": "http://ichihime-route-1.majsoul.net"
-                },
-                {
-                    "id": "route-2",
-                    "url": "http://ichihime-route-2.majsoul.net"
-                }
-            ],
-            "zone_ids": [
-                0,
-                7,
-                13,
-                16
-            ],
-            "system_email_url": "http://47.111.77.111:12317",
-            "dhs_url": "http://ichihime-test.majsoul.net:8090/contest-login/"
-        },
-        {
-            "name": "八木唯",
-            "gateways": [
-                {
-                    "id": "route-1",
-                    "url": "http://yui-route-1.majsoul.net"
-                },
-                {
-                    "id": "route-2",
-                    "url": "http://yui-route-2.majsoul.net"
-                }
-            ],
-            "zone_ids": [
-                0,
-                7,
-                13,
-                16
-            ],
-            "system_email_url": "http://47.111.77.111:12317",
-            "dhs_url": "http://contest-login.catint.local/"
-        },
-        {
-            "name": "千织服-台服",
-            "gateways": [
-                {
-                    "id": "route-1",
-                    "url": "http://chiori-route-1.majsoul.net"
-                },
-                {
-                    "id": "route-2",
-                    "url": "http://chiori-route-2.majsoul.net"
-                }
-            ],
-            "zone_ids": [
-                0,
-                7,
-                13,
-                16
-            ],
-            "system_email_url": "http://47.111.77.111:12317",
-            "dhs_url": "http://chiori-contest-cn.majsoul.net:8090/contest-login/"
-        },
-        {
-            "name": "二之宫花服",
-            "gateways": [
-                {
-                    "id": "route-1",
-                    "url": "http://hana-route-1.majsoul.net"
-                },
-                {
-                    "id": "route-2",
-                    "url": "http://hana-route-2.majsoul.net"
-                }
-            ],
-            "zone_ids": [
-                0,
-                7,
-                13,
-                16
-            ],
-            "system_email_url": "http://47.111.77.111:12317",
-            "dhs_url": "http://hana-test.majsoul.net:8090/contest-login/"
-        },
-        {
-            "name": "九条璃雨服",
-            "gateways": [
-                {
-                    "id": "route-1",
-                    "url": "http://alitest-route-1.majsoul.net"
-                },
-                {
-                    "id": "route-2",
-                    "url": "http://alitest-route-2.majsoul.net"
-                },
-                {
-                    "id": "route-3",
-                    "url": "http://alitest-route-3.majsoul.net"
-                },
-                {
-                    "id": "route-4",
-                    "url": "http://alitest-route-4.majsoul.net"
-                },
-                {
-                    "id": "route-5",
-                    "url": "http://alitest-route-5.majsoul.net"
-                }
-            ],
-            "zone_ids": [
-                0,
-                7,
-                13,
-                16
-            ],
-            "system_email_url": "http://47.111.77.111:12317",
-            "dhs_url": "http://riu-test.majsoul.net:8090/contest-login/"
-        },
-        {
-            "name": "yaya",
-            "gateways": [
-                {
-                    "id": "route-1",
-                    "url": "http://yaya-route-1.majsoul.net"
-                },
-                {
-                    "id": "route-2",
-                    "url": "http://yaya-route-2.majsoul.net"
-                }
-            ],
-            "zone_ids": [
-                0,
-                7,
-                13,
-                16
-            ],
-            "system_email_url": "http://47.111.77.111:12317",
-            "prefix_url": "http://192.168.10.158"
-        },
-        {
-            "name": "航航服",
-            "gateways": [
-                {
-                    "id": "test1",
-                    "url": "http://192.168.10.127:7991"
-                }
-            ],
-            "zone_ids": [
-                0,
-                7,
-                13,
-                16
-            ],
-            "system_email_url": "http://47.111.77.111:12317",
-            "prefix_url": "http://192.168.10.158"
-        },
-        {
-            "name": "大鹏服",
-            "gateways": [
-                {
-                    "id": "route-1",
-                    "url": "http://dapeng-route-1.majsoul.net"
-                },
-                {
-                    "id": "route-2",
-                    "url": "http://dapeng-route-2.majsoul.net"
-                }
-            ],
-            "zone_ids": [
-                0,
-                7,
-                13,
-                16
-            ],
-            "system_email_url": "http://47.111.77.111:12317",
-            "prefix_url": "http://192.168.10.158"
-        },
-        {
-            "name": "日本测试服-a",
-            "gateways": [
-                {
-                    "id": "route-1",
-                    "url": "https://mjjptesta-1.mahjongsoul.com"
-                },
-                {
-                    "id": "route-2",
-                    "url": "https://mjjptesta-2.mahjongsoul.com"
-                }
-            ],
-            "zone_ids": [
-                0,
-                2,
-                3,
-                4
-            ],
-            "system_email_url": "http://47.111.77.111:12317"
-        },
-        {
-            "name": "北美测试服-a",
-            "gateways": [
-                {
-                    "id": "route-1",
-                    "url": "https://mjentesta-1.mahjongsoul.com"
-                },
-                {
-                    "id": "route-2",
-                    "url": "https://mjentesta-2.mahjongsoul.com"
-                }
-            ],
-            "zone_ids": [
-                0,
-                2,
-                3,
-                4
-            ],
-            "system_email_url": "http://47.111.77.111:12317"
-        },
-        {
-            "name": "日本测试服-b",
-            "gateways": [
-                {
-                    "id": "route-1",
-                    "url": "https://mjjptestb-1.mahjongsoul.com"
-                },
-                {
-                    "id": "route-2",
-                    "url": "https://mjjptestb-2.mahjongsoul.com"
-                }
-            ],
-            "zone_ids": [
-                0,
-                2,
-                3,
-                4
-            ],
-            "system_email_url": "http://47.111.77.111:12317"
-        },
-        {
-            "name": "北美测试服-b",
-            "gateways": [
-                {
-                    "id": "route-1",
-                    "url": "https://mjentestb-1.mahjongsoul.com"
-                },
-                {
-                    "id": "route-2",
-                    "url": "https://mjentestb-2.mahjongsoul.com"
-                }
-            ],
-            "zone_ids": [
-                0,
-                2,
-                3,
-                4
-            ],
-            "system_email_url": "http://47.111.77.111:12317"
-        },
-        {
-            "name": "日本测试服-c",
-            "gateways": [
-                {
-                    "id": "route-1",
-                    "url": "https://mjjptestc-1.mahjongsoul.com"
-                },
-                {
-                    "id": "route-2",
-                    "url": "https://mjjptestc-2.mahjongsoul.com"
-                }
-            ],
-            "zone_ids": [
-                0,
-                7,
-                13,
-                19
-            ],
-            "system_email_url": "http://47.111.77.111:12317"
-        },
-        {
-            "name": "北美测试服-c",
-            "gateways": [
-                {
-                    "id": "route-1",
-                    "url": "https://mjentestc-1.mahjongsoul.com"
-                },
-                {
-                    "id": "route-2",
-                    "url": "https://mjentestc-2.mahjongsoul.com"
-                }
-            ],
-            "zone_ids": [
-                0,
-                7,
-                13,
-                19
-            ],
-            "contest_chat_url": "wss://mj-en-test-c.mahjongsoul.com/client",
-            "dhs_url": "https://mj-en-test-c.mahjongsoul.com/contest_login/index.html"
-        },
-        {
-            "name": "正式-日本",
-            "gateways": [
-                {
-                    "id": "route-main",
-                    "url": "https://jpgs.mahjongsoul.com"
-                },
-                {
-                    "id": "route-bk",
-                    "url": "https://jpgsbk.mahjongsoul.com"
-                }
-            ],
-            "zone_ids": [
-                0,
-                7,
-                13,
-                16
-            ],
-            "system_email_url": "http://47.111.77.111:12317"
-        },
-        {
-            "name": "正式-北美",
-            "gateways": [
-                {
-                    "id": "route-main",
-                    "url": "https://engs.mahjongsoul.com"
-                },
-                {
-                    "id": "route-bk",
-                    "url": "https://engsbk.mahjongsoul.com"
-                }
-            ],
-            "zone_ids": [
-                0,
-                7,
-                13,
-                16
-            ],
-            "system_email_url": "http://47.111.77.111:12317"
-        },
-        {
-            "name": "韩服提审",
-            "gateways": [
-                {
-                    "id": "kr1",
-                    "url": "https://mjkraudit-server.mahjongsoul.com:7891"
-                }
-            ],
-            "zone_ids": [
-                0,
-                2,
-                3,
-                4
-            ]
-        },
-        {
-            "name": "恢复演练-台服",
-            "gateways": [
-                {
-                    "id": "tw1",
-                    "url": "http://47.52.91.88:30088"
-                }
-            ],
-            "zone_ids": [
-                0,
-                7,
-                13,
-                16
-            ],
-            "system_email_url": "http://47.52.91.88:30067"
-        },
-        {
-            "name": "三服测试服-台服",
-            "gateways": [
-                {
-                    "id": "route-1",
-                    "url": "http://sanfuali-cn-route-1.majsoul.net:80"
-                },
-                {
-                    "id": "route-2",
-                    "url": "http://sanfuali-cn-route-2.majsoul.net:80"
-                },
-                {
-                    "id": "route-3",
-                    "url": "http://sanfuali-cn-route-3.majsoul.net:80"
-                },
-                {
-                    "id": "route-4",
-                    "url": "http://sanfuali-cn-route-4.majsoul.net:80"
-                },
-                {
-                    "id": "route-5",
-                    "url": "http://sanfuali-cn-route-5.majsoul.net:80"
-                }
-            ],
-            "zone_ids": [
-                0,
-                7,
-                13,
-                16
-            ],
-            "system_email_url": "http://192.168.3.44:6367",
-            "dhs_url": "http://sanfuali-cn.majsoul.net:8090/contest-login/"
-        },
-        {
-            "name": "三服测试服-日服",
-            "gateways": [
-                {
-                    "id": "route-1",
-                    "url": "http://sanfuali-jp-route-1.majsoul.net:80"
-                },
-                {
-                    "id": "route-2",
-                    "url": "http://sanfuali-jp-route-2.majsoul.net:80"
-                },
-                {
-                    "id": "route-3",
-                    "url": "http://sanfuali-jp-route-3.majsoul.net:80"
-                },
-                {
-                    "id": "route-4",
-                    "url": "http://sanfuali-jp-route-4.majsoul.net:80"
-                },
-                {
-                    "id": "route-5",
-                    "url": "http://sanfuali-jp-route-5.majsoul.net:80"
-                }
-            ],
-            "zone_ids": [
-                0,
-                7,
-                13,
-                16
-            ],
-            "system_email_url": "http://192.168.3.44:5367",
-            "dhs_url": "http://contest-login-sanfu-jp.catint.local/contest-login/"
-        },
-        {
-            "name": "三服测试服-美服",
-            "gateways": [
-                {
-                    "id": "route-1",
-                    "url": "http://sanfuali-en-route-1.majsoul.net"
-                },
-                {
-                    "id": "route-2",
-                    "url": "http://sanfuali-en-route-2.majsoul.net"
-                },
-                {
-                    "id": "route-3",
-                    "url": "http://sanfuali-en-route-3.majsoul.net"
-                },
-                {
-                    "id": "route-4",
-                    "url": "http://sanfuali-en-route-4.majsoul.net"
-                },
-                {
-                    "id": "route-5",
-                    "url": "http://sanfuali-en-route-5.majsoul.net"
-                }
-            ],
-            "zone_ids": [
-                0,
-                7,
-                13,
-                16
-            ],
-            "system_email_url": "http://192.168.3.44:8367",
-            "dhs_url": "http://contest-login-sanfu-us.catint.local/contest-login/"
-        },
-        {
-            "name": "日服预发布服",
-            "gateways": [
-                {
-                    "id": "jp1",
-                    "url": "https://mj-jp-staging.yo-star.com:7891"
-                }
-            ],
-            "zone_ids": [
-                0,
-                7,
-                13,
-                16
-            ],
-            "system_email_url": "http://192.168.3.44:8367"
-        },
-        {
-            "name": "国服预发布服",
-            "gateways": [
-                {
-                    "id": "cn1",
-                    "url": "https://staging-cn-route-1.majsoul.net"
-                },
-                {
-                    "id": "cn2",
-                    "url": "https://staging-cn-route-2.majsoul.net"
-                }
-            ],
-            "system_email_url": "https://mj-gateway-staging.majsoul.net:443"
-        },
-        {
-            "name": "压测服",
-            "gateways": [
-                {
-                    "id": "route-1",
-                    "url": "http://mj-yace-route-1.majsoul.net"
-                },
-                {
-                    "id": "route-2",
-                    "url": "http://mj-yace-route-2.majsoul.net"
-                }
-            ],
-            "zone_ids": [
-                0,
-                2,
-                3,
-                4
-            ]
-        },
-        {
-            "name": "卡维服-台服",
-            "gateways": [
-                {
-                    "id": "route-1",
-                    "url": "http://kavi-route-1.majsoul.net"
-                },
-                {
-                    "id": "route-2",
-                    "url": "http://kavi-route-2.majsoul.net"
-                }
-            ],
-            "zone_ids": [
-                0,
-                7,
-                13,
-                16
-            ],
-            "system_email_url": "http://47.114.14.140:40027"
-        },
-        {
-            "name": "Sara服",
-            "gateways": [
-                {
-                    "id": "route-1",
-                    "url": "http://sara-route-1.majsoul.net"
-                },
-                {
-                    "id": "route-2",
-                    "url": "http://sara-route-2.majsoul.net"
-                }
-            ],
-            "zone_ids": [
-                0,
-                7,
-                13,
-                16
-            ],
-            "system_email_url": "http://47.114.14.140:40027",
-            "dhs_url": "http://sara-test.majsoul.net:8090/contest-login/"
-        },
-        {
-            "name": "港服",
-            "gateways": [
-                {
-                    "id": "route-1",
-                    "url": "https://hktest-route-1.majsoul.net:443"
-                },
-                {
-                    "id": "route-2",
-                    "url": "https://hktest-route-2.majsoul.net:443"
-                }
-            ],
-            "zone_ids": [
-                0,
-                7,
-                13,
-                16
-            ],
-            "system_email_url": "http://hktest.majsoul.net:30027",
-            "dhs_url": "http://test.majsoul.net:27005/dhs/#/login/",
-            "contest_chat_url": "ws://192.168.3.42:12301/client"
-        },
-        {
-            "name": "白石奈奈服",
-            "gateways": [
-                {
-                    "id": "route-1",
-                    "url": "http://nana-route-1.majsoul.net"
-                },
-                {
-                    "id": "route-2",
-                    "url": "http://nana-route-2.majsoul.net"
-                }
-            ],
-            "zone_ids": [
-                0,
-                7,
-                13,
-                16
-            ],
-            "system_email_url": "http://nana-test.majsoul.net:8090",
-            "dhs_url": " http://nana-test.majsoul.net:8090/contest-login/",
-            "contest_chat_url": "ws://nana-test.majsoul.net:8090/contest-chat"
-        },
-        {
-            "name": "阳菜服",
-            "gateways": [
-                {
-                    "id": "route-1",
-                    "url": "http://nana-route-1.majsoul.net"
-                },
-                {
-                    "id": "route-2",
-                    "url": "http://nana-route-2.majsoul.net"
-                }
-            ],
-            "zone_ids": [
-                0,
-                7,
-                13,
-                16
-            ],
-            "system_email_url": "http://haruna-test.majsoul.net:8090",
-            "dhs_url": " http://haruna-test.majsoul.net:8090/contest-login/",
-            "contest_chat_url": "ws://haruna-test.majsoul.net:8090/contest-chat"
-        },
-        {
-            "name": "姬川响服",
-            "gateways": [
-                {
-                    "id": "route-1",
-                    "url": "http://hibiki-route-1.majsoul.net:80"
-                },
-                {
-                    "id": "route-2",
-                    "url": "http://hibiki-route-2.majsoul.net:80"
-                }
-            ],
-            "zone_ids": [
-                0,
-                7,
-                13,
-                16
-            ],
-            "system_email_url": "http://47.111.77.111:12317",
-            "dhs_url": "http://test.majsoul.net:27005/dhs/#/login/"
-        },
-        {
-            "name": "伊莉亚服",
-            "gateways": [
-                {
-                    "id": "route-1",
-                    "url": "http://illya-route-1.majsoul.net:80"
-                },
-                {
-                    "id": "route-2",
-                    "url": "http://illya-route-2.majsoul.net:80"
-                }
-            ],
-            "zone_ids": [
-                0,
-                7,
-                13,
-                16
-            ],
-            "system_email_url": "http://47.111.77.111:12317",
-            "dhs_url": "http://test.majsoul.net:27005/dhs/#/login/"
-        }
-    ],
-    "goods_sheleve_id": "shelves_001",
-    "yo_service_url": [
-        "https://passporttest.mahjongsoul.com"
-    ],
-    "yo_sdk_js": "yo_acc.stg_ja.js",
-    "jp_shop_js": "https://stg.static.mul-pay.jp/ext/js/token.js",
-    "jp_shop_id": "tshop00037465",
-    "checkoutShopperUrl": "https://checkoutshopper-live.adyen.com",
-    "emergency_url": "https://majsoul-hk-game.oss-accelerate.aliyuncs.com/app/misc",
-    "awsc_sdk_js": "https://g.alicdn.com/AWSC/AWSC/awsc.js",
-    "nec_sdk_js": "https://cstaticdun.126.net/load.min.js",
-    "tracker_url": "cn-hangzhou.log.aliyuncs.com/majsoul-test/client",
-    "wapchat_url": "https://ykf-webchat.7moor.com/wapchat.html",
-    "mycard_url": "https://www.mycard520.com.tw/MyCardPay/",
-    "kr_privacy_link_url": "https://mahjongsoul.yo-star.com/kr/privacy/",
-    "homepage_url": "https://www.maj-soul.com",
-    "fb_oauth_url": "https://www.facebook.com/dialog/oauth",
-    "fb_sdk_js": "https://connect.facebook.net/en_US/sdk.js",
-    "sgoogle_redirect_uri": "http://localhost:5000/bin/index.html"
+	"ip": [
+		{
+			"name": "玩家线上服",
+			"gateways": [
+				{
+					"id": "route-2",
+					"url": "https://route-2.maj-soul.com"
+				},
+				{
+					"id": "route-3",
+					"url": "https://route-3.maj-soul.com:8443"
+				},
+				{
+					"id": "route-4",
+					"url": "https://route-4.maj-soul.com"
+				},
+				{
+					"id": "route-5",
+					"url": "https://route-5.maj-soul.com"
+				},
+				{
+					"id": "route-6",
+					"url": "https://route-6.maj-soul.com"
+				}
+			],
+			"zone_ids": [
+				0,
+				7,
+				13,
+				16
+			],
+			"system_email_url": "https://common-v2.maj-soul.com",
+			"prefix_url": "https://record-old.maj-soul.com:9443/majsoul/game_record",
+			"dhs_url": "https://www.maj-soul.com/contest-login/"
+		},
+		{
+			"name": "九条璃雨-主备",
+			"gateways": [
+				{
+					"id": "test1",
+					"url": "http://47.111.77.111:7895"
+				}
+			],
+			"zone_ids": [
+				0,
+				7,
+				13,
+				16
+			],
+			"system_email_url": "http://47.111.77.111:12317",
+			"dhs_url": "http://riu-test.majsoul.net:8090/contest-login/"
+		},
+		{
+			"name": "一姬服了",
+			"gateways": [
+				{
+					"id": "route-1",
+					"url": "http://ichihime-route-1.majsoul.net"
+				},
+				{
+					"id": "route-2",
+					"url": "http://ichihime-route-2.majsoul.net"
+				}
+			],
+			"zone_ids": [
+				0,
+				7,
+				13,
+				16
+			],
+			"system_email_url": "http://47.111.77.111:12317",
+			"dhs_url": "http://ichihime-test.majsoul.net:8090/contest-login/"
+		},
+		{
+			"name": "八木唯",
+			"gateways": [
+				{
+					"id": "route-1",
+					"url": "http://yui-route-1.majsoul.net"
+				},
+				{
+					"id": "route-2",
+					"url": "http://yui-route-2.majsoul.net"
+				}
+			],
+			"zone_ids": [
+				0,
+				7,
+				13,
+				16
+			],
+			"system_email_url": "http://47.111.77.111:12317",
+			"dhs_url": "http://contest-login.catint.local/"
+		},
+		{
+			"name": "千织服-台服",
+			"gateways": [
+				{
+					"id": "route-1",
+					"url": "http://chiori-route-1.majsoul.net"
+				},
+				{
+					"id": "route-2",
+					"url": "http://chiori-route-2.majsoul.net"
+				}
+			],
+			"zone_ids": [
+				0,
+				7,
+				13,
+				16
+			],
+			"system_email_url": "http://47.111.77.111:12317",
+			"dhs_url": "http://chiori-contest-cn.majsoul.net:8090/contest-login/"
+		},
+		{
+			"name": "二之宫花服",
+			"gateways": [
+				{
+					"id": "route-1",
+					"url": "http://hana-route-1.majsoul.net"
+				},
+				{
+					"id": "route-2",
+					"url": "http://hana-route-2.majsoul.net"
+				}
+			],
+			"zone_ids": [
+				0,
+				7,
+				13,
+				16
+			],
+			"system_email_url": "http://47.111.77.111:12317",
+			"dhs_url": "http://hana-test.majsoul.net:8090/contest-login/"
+		},
+		{
+			"name": "九条璃雨服",
+			"gateways": [
+				{
+					"id": "route-1",
+					"url": "http://alitest-route-1.majsoul.net"
+				},
+				{
+					"id": "route-2",
+					"url": "http://alitest-route-2.majsoul.net"
+				},
+				{
+					"id": "route-3",
+					"url": "http://alitest-route-3.majsoul.net"
+				},
+				{
+					"id": "route-4",
+					"url": "http://alitest-route-4.majsoul.net"
+				},
+				{
+					"id": "route-5",
+					"url": "http://alitest-route-5.majsoul.net"
+				}
+			],
+			"zone_ids": [
+				0,
+				7,
+				13,
+				16
+			],
+			"system_email_url": "http://47.111.77.111:12317",
+			"dhs_url": "http://riu-test.majsoul.net:8090/contest-login/"
+		},
+		{
+			"name": "yaya",
+			"gateways": [
+				{
+					"id": "route-1",
+					"url": "http://yaya-route-1.majsoul.net"
+				},
+				{
+					"id": "route-2",
+					"url": "http://yaya-route-2.majsoul.net"
+				}
+			],
+			"zone_ids": [
+				0,
+				7,
+				13,
+				16
+			],
+			"system_email_url": "http://47.111.77.111:12317",
+			"prefix_url": "http://192.168.10.158"
+		},
+		{
+			"name": "航航服",
+			"gateways": [
+				{
+					"id": "test1",
+					"url": "http://192.168.10.127:7991"
+				}
+			],
+			"zone_ids": [
+				0,
+				7,
+				13,
+				16
+			],
+			"system_email_url": "http://47.111.77.111:12317",
+			"prefix_url": "http://192.168.10.158"
+		},
+		{
+			"name": "大鹏服",
+			"gateways": [
+				{
+					"id": "route-1",
+					"url": "http://dapeng-route-1.majsoul.net"
+				},
+				{
+					"id": "route-2",
+					"url": "http://dapeng-route-2.majsoul.net"
+				}
+			],
+			"zone_ids": [
+				0,
+				7,
+				13,
+				16
+			],
+			"system_email_url": "http://47.111.77.111:12317",
+			"prefix_url": "http://192.168.10.158"
+		},
+		{
+			"name": "日本测试服-a",
+			"gateways": [
+				{
+					"id": "route-1",
+					"url": "https://mjjptesta-1.mahjongsoul.com"
+				},
+				{
+					"id": "route-2",
+					"url": "https://mjjptesta-2.mahjongsoul.com"
+				}
+			],
+			"zone_ids": [
+				0,
+				2,
+				3,
+				4
+			],
+			"system_email_url": "http://47.111.77.111:12317"
+		},
+		{
+			"name": "北美测试服-a",
+			"gateways": [
+				{
+					"id": "route-1",
+					"url": "https://mjentesta-1.mahjongsoul.com"
+				},
+				{
+					"id": "route-2",
+					"url": "https://mjentesta-2.mahjongsoul.com"
+				}
+			],
+			"zone_ids": [
+				0,
+				2,
+				3,
+				4
+			],
+			"system_email_url": "http://47.111.77.111:12317"
+		},
+		{
+			"name": "日本测试服-b",
+			"gateways": [
+				{
+					"id": "route-1",
+					"url": "https://mjjptestb-1.mahjongsoul.com"
+				},
+				{
+					"id": "route-2",
+					"url": "https://mjjptestb-2.mahjongsoul.com"
+				}
+			],
+			"zone_ids": [
+				0,
+				2,
+				3,
+				4
+			],
+			"system_email_url": "http://47.111.77.111:12317"
+		},
+		{
+			"name": "北美测试服-b",
+			"gateways": [
+				{
+					"id": "route-1",
+					"url": "https://mjentestb-1.mahjongsoul.com"
+				},
+				{
+					"id": "route-2",
+					"url": "https://mjentestb-2.mahjongsoul.com"
+				}
+			],
+			"zone_ids": [
+				0,
+				2,
+				3,
+				4
+			],
+			"system_email_url": "http://47.111.77.111:12317"
+		},
+		{
+			"name": "日本测试服-c",
+			"gateways": [
+				{
+					"id": "route-1",
+					"url": "https://mjjptestc-1.mahjongsoul.com"
+				},
+				{
+					"id": "route-2",
+					"url": "https://mjjptestc-2.mahjongsoul.com"
+				}
+			],
+			"zone_ids": [
+				0,
+				7,
+				13,
+				19
+			],
+			"system_email_url": "http://47.111.77.111:12317"
+		},
+		{
+			"name": "北美测试服-c",
+			"gateways": [
+				{
+					"id": "route-1",
+					"url": "https://mjentestc-1.mahjongsoul.com"
+				},
+				{
+					"id": "route-2",
+					"url": "https://mjentestc-2.mahjongsoul.com"
+				}
+			],
+			"zone_ids": [
+				0,
+				7,
+				13,
+				19
+			],
+			"contest_chat_url": "wss://mj-en-test-c.mahjongsoul.com/client",
+			"dhs_url": "https://mj-en-test-c.mahjongsoul.com/contest_login/index.html"
+		},
+		{
+			"name": "正式-日本",
+			"gateways": [
+				{
+					"id": "route-main",
+					"url": "https://jpgs.mahjongsoul.com"
+				},
+				{
+					"id": "route-bk",
+					"url": "https://jpgsbk.mahjongsoul.com"
+				}
+			],
+			"zone_ids": [
+				0,
+				7,
+				13,
+				16
+			],
+			"system_email_url": "http://47.111.77.111:12317"
+		},
+		{
+			"name": "正式-北美",
+			"gateways": [
+				{
+					"id": "route-main",
+					"url": "https://engs.mahjongsoul.com"
+				},
+				{
+					"id": "route-bk",
+					"url": "https://engsbk.mahjongsoul.com"
+				}
+			],
+			"zone_ids": [
+				0,
+				7,
+				13,
+				16
+			],
+			"system_email_url": "http://47.111.77.111:12317"
+		},
+		{
+			"name": "韩服提审",
+			"gateways": [
+				{
+					"id": "kr1",
+					"url": "https://mjkraudit-server.mahjongsoul.com:7891"
+				}
+			],
+			"zone_ids": [
+				0,
+				2,
+				3,
+				4
+			]
+		},
+		{
+			"name": "恢复演练-台服",
+			"gateways": [
+				{
+					"id": "tw1",
+					"url": "http://47.52.91.88:30088"
+				}
+			],
+			"zone_ids": [
+				0,
+				7,
+				13,
+				16
+			],
+			"system_email_url": "http://47.52.91.88:30067"
+		},
+		{
+			"name": "三服测试服-台服",
+			"gateways": [
+				{
+					"id": "route-1",
+					"url": "http://sanfuali-cn-route-1.majsoul.net:80"
+				},
+				{
+					"id": "route-2",
+					"url": "http://sanfuali-cn-route-2.majsoul.net:80"
+				},
+				{
+					"id": "route-3",
+					"url": "http://sanfuali-cn-route-3.majsoul.net:80"
+				},
+				{
+					"id": "route-4",
+					"url": "http://sanfuali-cn-route-4.majsoul.net:80"
+				},
+				{
+					"id": "route-5",
+					"url": "http://sanfuali-cn-route-5.majsoul.net:80"
+				}
+			],
+			"zone_ids": [
+				0,
+				7,
+				13,
+				16
+			],
+			"system_email_url": "http://192.168.3.44:6367",
+			"dhs_url": "http://sanfuali-cn.majsoul.net:8090/contest-login/"
+		},
+		{
+			"name": "三服测试服-日服",
+			"gateways": [
+				{
+					"id": "route-1",
+					"url": "http://sanfuali-jp-route-1.majsoul.net:80"
+				},
+				{
+					"id": "route-2",
+					"url": "http://sanfuali-jp-route-2.majsoul.net:80"
+				},
+				{
+					"id": "route-3",
+					"url": "http://sanfuali-jp-route-3.majsoul.net:80"
+				},
+				{
+					"id": "route-4",
+					"url": "http://sanfuali-jp-route-4.majsoul.net:80"
+				},
+				{
+					"id": "route-5",
+					"url": "http://sanfuali-jp-route-5.majsoul.net:80"
+				}
+			],
+			"zone_ids": [
+				0,
+				7,
+				13,
+				16
+			],
+			"system_email_url": "http://192.168.3.44:5367",
+			"dhs_url": "http://contest-login-sanfu-jp.catint.local/contest-login/"
+		},
+		{
+			"name": "三服测试服-美服",
+			"gateways": [
+				{
+					"id": "route-1",
+					"url": "http://sanfuali-en-route-1.majsoul.net"
+				},
+				{
+					"id": "route-2",
+					"url": "http://sanfuali-en-route-2.majsoul.net"
+				},
+				{
+					"id": "route-3",
+					"url": "http://sanfuali-en-route-3.majsoul.net"
+				},
+				{
+					"id": "route-4",
+					"url": "http://sanfuali-en-route-4.majsoul.net"
+				},
+				{
+					"id": "route-5",
+					"url": "http://sanfuali-en-route-5.majsoul.net"
+				}
+			],
+			"zone_ids": [
+				0,
+				7,
+				13,
+				16
+			],
+			"system_email_url": "http://192.168.3.44:8367",
+			"dhs_url": "http://contest-login-sanfu-us.catint.local/contest-login/"
+		},
+		{
+			"name": "日服预发布服",
+			"gateways": [
+				{
+					"id": "jp1",
+					"url": "https://mj-jp-staging.yo-star.com:7891"
+				}
+			],
+			"zone_ids": [
+				0,
+				7,
+				13,
+				16
+			],
+			"system_email_url": "http://192.168.3.44:8367"
+		},
+		{
+			"name": "国服预发布服",
+			"gateways": [
+				{
+					"id": "cn1",
+					"url": "https://staging-cn-route-1.majsoul.net"
+				},
+				{
+					"id": "cn2",
+					"url": "https://staging-cn-route-2.majsoul.net"
+				}
+			],
+			"system_email_url": "https://mj-gateway-staging.majsoul.net:443"
+		},
+		{
+			"name": "压测服",
+			"gateways": [
+				{
+					"id": "route-1",
+					"url": "http://mj-yace-route-1.majsoul.net"
+				},
+				{
+					"id": "route-2",
+					"url": "http://mj-yace-route-2.majsoul.net"
+				}
+			],
+			"zone_ids": [
+				0,
+				2,
+				3,
+				4
+			]
+		},
+		{
+			"name": "卡维服-台服",
+			"gateways": [
+				{
+					"id": "route-1",
+					"url": "http://kavi-route-1.majsoul.net"
+				},
+				{
+					"id": "route-2",
+					"url": "http://kavi-route-2.majsoul.net"
+				}
+			],
+			"zone_ids": [
+				0,
+				7,
+				13,
+				16
+			],
+			"system_email_url": "http://47.114.14.140:40027"
+		},
+		{
+			"name": "Sara服",
+			"gateways": [
+				{
+					"id": "route-1",
+					"url": "http://sara-route-1.majsoul.net"
+				},
+				{
+					"id": "route-2",
+					"url": "http://sara-route-2.majsoul.net"
+				}
+			],
+			"zone_ids": [
+				0,
+				7,
+				13,
+				16
+			],
+			"system_email_url": "http://47.114.14.140:40027",
+			"dhs_url": "http://sara-test.majsoul.net:8090/contest-login/"
+		},
+		{
+			"name": "港服",
+			"gateways": [
+				{
+					"id": "route-1",
+					"url": "https://hktest-route-1.majsoul.net:443"
+				},
+				{
+					"id": "route-2",
+					"url": "https://hktest-route-2.majsoul.net:443"
+				}
+			],
+			"zone_ids": [
+				0,
+				7,
+				13,
+				16
+			],
+			"system_email_url": "http://hktest.majsoul.net:30027",
+			"dhs_url": "http://test.majsoul.net:27005/dhs/#/login/",
+			"contest_chat_url": "ws://192.168.3.42:12301/client"
+		},
+		{
+			"name": "白石奈奈服",
+			"gateways": [
+				{
+					"id": "route-1",
+					"url": "http://nana-route-1.majsoul.net"
+				},
+				{
+					"id": "route-2",
+					"url": "http://nana-route-2.majsoul.net"
+				}
+			],
+			"zone_ids": [
+				0,
+				7,
+				13,
+				16
+			],
+			"system_email_url": "http://nana-test.majsoul.net:8090",
+			"dhs_url": " http://nana-test.majsoul.net:8090/contest-login/",
+			"contest_chat_url": "ws://nana-test.majsoul.net:8090/contest-chat"
+		},
+		{
+			"name": "阳菜服",
+			"gateways": [
+				{
+					"id": "route-1",
+					"url": "http://nana-route-1.majsoul.net"
+				},
+				{
+					"id": "route-2",
+					"url": "http://nana-route-2.majsoul.net"
+				}
+			],
+			"zone_ids": [
+				0,
+				7,
+				13,
+				16
+			],
+			"system_email_url": "http://haruna-test.majsoul.net:8090",
+			"dhs_url": " http://haruna-test.majsoul.net:8090/contest-login/",
+			"contest_chat_url": "ws://haruna-test.majsoul.net:8090/contest-chat"
+		},
+		{
+			"name": "姬川响服",
+			"gateways": [
+				{
+					"id": "route-1",
+					"url": "http://hibiki-route-1.majsoul.net:80"
+				},
+				{
+					"id": "route-2",
+					"url": "http://hibiki-route-2.majsoul.net:80"
+				}
+			],
+			"zone_ids": [
+				0,
+				7,
+				13,
+				16
+			],
+			"system_email_url": "http://47.111.77.111:12317",
+			"dhs_url": "http://test.majsoul.net:27005/dhs/#/login/"
+		},
+		{
+			"name": "伊莉亚服",
+			"gateways": [
+				{
+					"id": "route-1",
+					"url": "http://illya-route-1.majsoul.net:80"
+				},
+				{
+					"id": "route-2",
+					"url": "http://illya-route-2.majsoul.net:80"
+				}
+			],
+			"zone_ids": [
+				0,
+				7,
+				13,
+				16
+			],
+			"system_email_url": "http://47.111.77.111:12317",
+			"dhs_url": "http://test.majsoul.net:27005/dhs/#/login/"
+		}
+	],
+	"goods_sheleve_id": "shelves_001",
+	"yo_service_url": [
+		"https://passporttest.mahjongsoul.com"
+	],
+	"yo_sdk_js": "yo_acc.stg_ja.js",
+	"jp_shop_js": "https://stg.static.mul-pay.jp/ext/js/token.js",
+	"jp_shop_id": "tshop00037465",
+	"checkoutShopperUrl": "https://checkoutshopper-live.adyen.com",
+	"emergency_url": "https://majsoul-hk-game.oss-accelerate.aliyuncs.com/app/misc",
+	"awsc_sdk_js": "https://g.alicdn.com/AWSC/AWSC/awsc.js",
+	"nec_sdk_js": "https://cstaticdun.126.net/load.min.js",
+	"tracker_url": "cn-hangzhou.log.aliyuncs.com/majsoul-test/client",
+	"wapchat_url": "https://ykf-webchat.7moor.com/wapchat.html",
+	"mycard_url": "https://www.mycard520.com.tw/MyCardPay/",
+	"kr_privacy_link_url": "https://mahjongsoul.yo-star.com/kr/privacy/",
+	"homepage_url": "https://www.maj-soul.com",
+	"fb_oauth_url": "https://www.facebook.com/dialog/oauth",
+	"fb_sdk_js": "https://connect.facebook.net/en_US/sdk.js",
+	"sgoogle_redirect_uri": "http://localhost:5000/bin/index.html"
 }

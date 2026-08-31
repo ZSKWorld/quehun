@@ -2,21 +2,21 @@
 
 declare interface ITable_Compose {
 	/** unique */
-	characompose: CfgExt<ISheet_Compose_Characompose>;
+	readonly characompose: CfgExt<ISheet_Compose_Characompose>;
 }
 
 //#region characompose
 declare interface ISheet_Compose_Characompose {
-	[key: string]: ISheetData_Compose_Characompose;
-	1: ISheetData_Compose_Characompose;
+	readonly [key: string]: ISheetData_Compose_Characompose;
+	readonly 1: ISheetData_Compose_Characompose;
 }
 declare interface ISheetData_Compose_Characompose extends ISheetDataBase {
-	id: number;
+	readonly id: number;
 	/** 碎片id */
-	item_id: number;
+	readonly item_id: number;
 	/** 碎片数量 */
-	item_num: number;
+	readonly item_num: number;
 	/** 对应角色id */
-	chara_id: number;
+	readonly chara_id: number;
 }
 //#endregion

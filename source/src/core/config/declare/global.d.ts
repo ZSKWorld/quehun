@@ -2,21 +2,21 @@
 
 declare interface ITable_Global {
 	/** unique */
-	global: CfgExt<ISheet_Global_Global>;
+	readonly global: CfgExt<ISheet_Global_Global>;
 }
 
 //#region global
 declare interface ISheet_Global_Global {
-	[key: string]: ISheetData_Global_Global;
-	1: ISheetData_Global_Global;
-	2: ISheetData_Global_Global;
-	3: ISheetData_Global_Global;
-	4: ISheetData_Global_Global;
-	5: ISheetData_Global_Global;
+	readonly [key: string]: ISheetData_Global_Global;
+	readonly 1: ISheetData_Global_Global;
+	readonly 2: ISheetData_Global_Global;
+	readonly 3: ISheetData_Global_Global;
+	readonly 4: ISheetData_Global_Global;
+	readonly 5: ISheetData_Global_Global;
 }
 declare interface ISheetData_Global_Global extends ISheetDataBase {
-	id: number;
+	readonly id: number;
 	/** 参数 */
-	args: string;
+	readonly args: string;
 }
 //#endregion

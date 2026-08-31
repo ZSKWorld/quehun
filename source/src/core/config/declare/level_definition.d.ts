@@ -2,191 +2,191 @@
 
 declare interface ITable_LevelDefinition {
 	/** unique */
-	level_definition: CfgExt<ISheet_LevelDefinition_LevelDefinition>;
+	readonly level_definition: CfgExt<ISheet_LevelDefinition_LevelDefinition>;
 	/** 角色通用等级表  ---  group */
-	character: CfgExtGroup<ISheet_LevelDefinition_Character>;
+	readonly character: CfgExtGroup<ISheet_LevelDefinition_Character>;
 	/** 试炼头像对应表  ---  unique */
-	trail: CfgExt<ISheet_LevelDefinition_Trail>;
+	readonly trail: CfgExt<ISheet_LevelDefinition_Trail>;
 	/** 顺位分变动表  ---  group */
-	top_rank: CfgExtGroup<ISheet_LevelDefinition_TopRank>;
+	readonly top_rank: CfgExtGroup<ISheet_LevelDefinition_TopRank>;
 }
 
 //#region level_definition
 declare interface ISheet_LevelDefinition_LevelDefinition {
-	[key: string]: ISheetData_LevelDefinition_LevelDefinition;
-	10101: ISheetData_LevelDefinition_LevelDefinition;
-	10102: ISheetData_LevelDefinition_LevelDefinition;
-	10103: ISheetData_LevelDefinition_LevelDefinition;
-	10201: ISheetData_LevelDefinition_LevelDefinition;
-	10202: ISheetData_LevelDefinition_LevelDefinition;
-	10203: ISheetData_LevelDefinition_LevelDefinition;
-	10301: ISheetData_LevelDefinition_LevelDefinition;
-	10302: ISheetData_LevelDefinition_LevelDefinition;
-	10303: ISheetData_LevelDefinition_LevelDefinition;
-	10401: ISheetData_LevelDefinition_LevelDefinition;
-	10402: ISheetData_LevelDefinition_LevelDefinition;
-	10403: ISheetData_LevelDefinition_LevelDefinition;
-	10501: ISheetData_LevelDefinition_LevelDefinition;
-	10502: ISheetData_LevelDefinition_LevelDefinition;
-	10503: ISheetData_LevelDefinition_LevelDefinition;
-	10601: ISheetData_LevelDefinition_LevelDefinition;
-	10701: ISheetData_LevelDefinition_LevelDefinition;
-	10702: ISheetData_LevelDefinition_LevelDefinition;
-	10703: ISheetData_LevelDefinition_LevelDefinition;
-	10704: ISheetData_LevelDefinition_LevelDefinition;
-	10705: ISheetData_LevelDefinition_LevelDefinition;
-	10706: ISheetData_LevelDefinition_LevelDefinition;
-	10707: ISheetData_LevelDefinition_LevelDefinition;
-	10708: ISheetData_LevelDefinition_LevelDefinition;
-	10709: ISheetData_LevelDefinition_LevelDefinition;
-	10710: ISheetData_LevelDefinition_LevelDefinition;
-	10711: ISheetData_LevelDefinition_LevelDefinition;
-	10712: ISheetData_LevelDefinition_LevelDefinition;
-	10713: ISheetData_LevelDefinition_LevelDefinition;
-	10714: ISheetData_LevelDefinition_LevelDefinition;
-	10715: ISheetData_LevelDefinition_LevelDefinition;
-	10716: ISheetData_LevelDefinition_LevelDefinition;
-	10717: ISheetData_LevelDefinition_LevelDefinition;
-	10718: ISheetData_LevelDefinition_LevelDefinition;
-	10719: ISheetData_LevelDefinition_LevelDefinition;
-	10720: ISheetData_LevelDefinition_LevelDefinition;
-	20101: ISheetData_LevelDefinition_LevelDefinition;
-	20102: ISheetData_LevelDefinition_LevelDefinition;
-	20103: ISheetData_LevelDefinition_LevelDefinition;
-	20201: ISheetData_LevelDefinition_LevelDefinition;
-	20202: ISheetData_LevelDefinition_LevelDefinition;
-	20203: ISheetData_LevelDefinition_LevelDefinition;
-	20301: ISheetData_LevelDefinition_LevelDefinition;
-	20302: ISheetData_LevelDefinition_LevelDefinition;
-	20303: ISheetData_LevelDefinition_LevelDefinition;
-	20401: ISheetData_LevelDefinition_LevelDefinition;
-	20402: ISheetData_LevelDefinition_LevelDefinition;
-	20403: ISheetData_LevelDefinition_LevelDefinition;
-	20501: ISheetData_LevelDefinition_LevelDefinition;
-	20502: ISheetData_LevelDefinition_LevelDefinition;
-	20503: ISheetData_LevelDefinition_LevelDefinition;
-	20601: ISheetData_LevelDefinition_LevelDefinition;
-	20701: ISheetData_LevelDefinition_LevelDefinition;
-	20702: ISheetData_LevelDefinition_LevelDefinition;
-	20703: ISheetData_LevelDefinition_LevelDefinition;
-	20704: ISheetData_LevelDefinition_LevelDefinition;
-	20705: ISheetData_LevelDefinition_LevelDefinition;
-	20706: ISheetData_LevelDefinition_LevelDefinition;
-	20707: ISheetData_LevelDefinition_LevelDefinition;
-	20708: ISheetData_LevelDefinition_LevelDefinition;
-	20709: ISheetData_LevelDefinition_LevelDefinition;
-	20710: ISheetData_LevelDefinition_LevelDefinition;
-	20711: ISheetData_LevelDefinition_LevelDefinition;
-	20712: ISheetData_LevelDefinition_LevelDefinition;
-	20713: ISheetData_LevelDefinition_LevelDefinition;
-	20714: ISheetData_LevelDefinition_LevelDefinition;
-	20715: ISheetData_LevelDefinition_LevelDefinition;
-	20716: ISheetData_LevelDefinition_LevelDefinition;
-	20717: ISheetData_LevelDefinition_LevelDefinition;
-	20718: ISheetData_LevelDefinition_LevelDefinition;
-	20719: ISheetData_LevelDefinition_LevelDefinition;
-	20720: ISheetData_LevelDefinition_LevelDefinition;
+	readonly [key: string]: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10101: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10102: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10103: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10201: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10202: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10203: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10301: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10302: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10303: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10401: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10402: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10403: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10501: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10502: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10503: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10601: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10701: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10702: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10703: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10704: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10705: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10706: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10707: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10708: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10709: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10710: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10711: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10712: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10713: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10714: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10715: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10716: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10717: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10718: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10719: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 10720: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20101: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20102: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20103: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20201: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20202: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20203: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20301: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20302: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20303: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20401: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20402: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20403: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20501: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20502: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20503: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20601: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20701: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20702: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20703: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20704: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20705: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20706: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20707: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20708: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20709: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20710: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20711: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20712: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20713: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20714: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20715: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20716: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20717: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20718: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20719: ISheetData_LevelDefinition_LevelDefinition;
+	readonly 20720: ISheetData_LevelDefinition_LevelDefinition;
 }
 declare interface ISheetData_LevelDefinition_LevelDefinition extends ISheetDataBase {
-	id: number;
-	type: number;
-	primary_level: number;
-	secondary_level: number;
-	init_point: number;
-	end_point: number;
-	primary_icon: string;
-	name_chs: string;
-	name_chs_t: string;
-	name_jp: string;
-	name_en: string;
-	name_kr: string;
-	full_name_chs: string;
-	full_name_chs_t: string;
-	full_name_jp: string;
-	full_name_en: string;
-	full_name_kr: string;
-	can_degrade: number;
-	can_upgrade: number;
-	can_getpoint: number;
+	readonly id: number;
+	readonly type: number;
+	readonly primary_level: number;
+	readonly secondary_level: number;
+	readonly init_point: number;
+	readonly end_point: number;
+	readonly primary_icon: string;
+	readonly name_chs: string;
+	readonly name_chs_t: string;
+	readonly name_jp: string;
+	readonly name_en: string;
+	readonly name_kr: string;
+	readonly full_name_chs: string;
+	readonly full_name_chs_t: string;
+	readonly full_name_jp: string;
+	readonly full_name_en: string;
+	readonly full_name_kr: string;
+	readonly can_degrade: number;
+	readonly can_upgrade: number;
+	readonly can_getpoint: number;
 	/** 东风场4位扣分 */
-	rankpt1: number;
+	readonly rankpt1: number;
 	/** 南风场4位扣分 */
-	rankpt2: number;
+	readonly rankpt2: number;
 	/** top_rank规则的id */
-	top_rank_id: number;
+	readonly top_rank_id: number;
 }
 //#endregion
 
 //#region character
 declare interface ISheet_LevelDefinition_Character {
-	[key: string]: ISheetData_LevelDefinition_Character[];
-	0: ISheetData_LevelDefinition_Character[];
-	200052: ISheetData_LevelDefinition_Character[];
-	200061: ISheetData_LevelDefinition_Character[];
-	200076: ISheetData_LevelDefinition_Character[];
-	200095: ISheetData_LevelDefinition_Character[];
-	20000112: ISheetData_LevelDefinition_Character[];
-	20000121: ISheetData_LevelDefinition_Character[];
+	readonly [key: string]: ISheetData_LevelDefinition_Character[];
+	readonly 0: ISheetData_LevelDefinition_Character[];
+	readonly 200052: ISheetData_LevelDefinition_Character[];
+	readonly 200061: ISheetData_LevelDefinition_Character[];
+	readonly 200076: ISheetData_LevelDefinition_Character[];
+	readonly 200095: ISheetData_LevelDefinition_Character[];
+	readonly 20000112: ISheetData_LevelDefinition_Character[];
+	readonly 20000121: ISheetData_LevelDefinition_Character[];
 }
 declare interface ISheetData_LevelDefinition_Character extends ISheetDataBase {
-	level: number;
-	character_id: number;
+	readonly level: number;
+	readonly character_id: number;
 	/** 经验槽 */
-	exp: number;
+	readonly exp: number;
 	/** 升级好感后的奖励道具 */
-	reward: string;
+	readonly reward: string;
 	/** 升级后说的话 */
-	unlock_says: number;
+	readonly unlock_says: number;
 	/** 解锁时的描述 */
-	unlock_desc_chs: string;
-	unlock_desc_chs_t: string;
-	unlock_desc_jp: string;
-	unlock_desc_en: string;
-	unlock_desc_kr: string;
+	readonly unlock_desc_chs: string;
+	readonly unlock_desc_chs_t: string;
+	readonly unlock_desc_jp: string;
+	readonly unlock_desc_en: string;
+	readonly unlock_desc_kr: string;
 }
 //#endregion
 
 //#region trail
 declare interface ISheet_LevelDefinition_Trail {
-	[key: string]: ISheetData_LevelDefinition_Trail;
-	1: ISheetData_LevelDefinition_Trail;
-	2: ISheetData_LevelDefinition_Trail;
-	3: ISheetData_LevelDefinition_Trail;
-	4: ISheetData_LevelDefinition_Trail;
-	5: ISheetData_LevelDefinition_Trail;
-	6: ISheetData_LevelDefinition_Trail;
-	7: ISheetData_LevelDefinition_Trail;
-	8: ISheetData_LevelDefinition_Trail;
-	9: ISheetData_LevelDefinition_Trail;
-	10: ISheetData_LevelDefinition_Trail;
-	11: ISheetData_LevelDefinition_Trail;
-	12: ISheetData_LevelDefinition_Trail;
-	13: ISheetData_LevelDefinition_Trail;
+	readonly [key: string]: ISheetData_LevelDefinition_Trail;
+	readonly 1: ISheetData_LevelDefinition_Trail;
+	readonly 2: ISheetData_LevelDefinition_Trail;
+	readonly 3: ISheetData_LevelDefinition_Trail;
+	readonly 4: ISheetData_LevelDefinition_Trail;
+	readonly 5: ISheetData_LevelDefinition_Trail;
+	readonly 6: ISheetData_LevelDefinition_Trail;
+	readonly 7: ISheetData_LevelDefinition_Trail;
+	readonly 8: ISheetData_LevelDefinition_Trail;
+	readonly 9: ISheetData_LevelDefinition_Trail;
+	readonly 10: ISheetData_LevelDefinition_Trail;
+	readonly 11: ISheetData_LevelDefinition_Trail;
+	readonly 12: ISheetData_LevelDefinition_Trail;
+	readonly 13: ISheetData_LevelDefinition_Trail;
 }
 declare interface ISheetData_LevelDefinition_Trail extends ISheetDataBase {
-	id: number;
+	readonly id: number;
 	/** 初始等级 */
-	init_level: number;
+	readonly init_level: number;
 	/** 截止等级 */
-	end_level: number;
+	readonly end_level: number;
 	/** 图标 */
-	trail_icon: number;
+	readonly trail_icon: number;
 	/** 火数 */
-	trail_fire: number;
+	readonly trail_fire: number;
 }
 //#endregion
 
 //#region top_rank
 declare interface ISheet_LevelDefinition_TopRank {
-	[key: string]: ISheetData_LevelDefinition_TopRank[];
-	1001: ISheetData_LevelDefinition_TopRank[];
+	readonly [key: string]: ISheetData_LevelDefinition_TopRank[];
+	readonly 1001: ISheetData_LevelDefinition_TopRank[];
 }
 declare interface ISheetData_LevelDefinition_TopRank extends ISheetDataBase {
-	id: number;
+	readonly id: number;
 	/** 第一名获得pt */
-	rank_pt: number[];
+	readonly rank_pt: number[];
 	/** 巅峰对决第一名 */
-	top_rank_pt: number[];
-	mode: number;
+	readonly top_rank_pt: number[];
+	readonly mode: number;
 }
 //#endregion

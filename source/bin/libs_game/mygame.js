@@ -3,7 +3,7 @@ function $windowImmit(name, obj) { window[name] = obj; }
 
 function Singleton(constructor) {
 	let inst;
-	class cls extends constructor {
+	class SingletonClass extends constructor {
 		constructor(...args) {
 			if (inst) {
 				Logger.error(constructor.name + " 单例类只能实例化一次");
@@ -13,13 +13,20 @@ function Singleton(constructor) {
 			inst = this;
 		}
 	};
-	Object.defineProperty(cls, 'Inst', {
+	Object.defineProperty(SingletonClass, 'Inst', {
 		get: function () {
-			return inst || (inst = new cls());
+			return inst || (inst = new SingletonClass());
 		},
 		configurable: false,
 	});
-	return cls;
+	Object.defineProperties(SingletonClass.prototype, {
+		"$name": {
+			get() { return constructor.name; },
+			enumerable: false,
+			configurable: false,
+		}
+	});
+	return SingletonClass;
 }
 
 function setEvent(name, list, func, once, args) {

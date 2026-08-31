@@ -2,90 +2,90 @@
 
 declare interface ITable_Mail {
 	/** 邮件模板  ---  unique */
-	mail_template: CfgExt<ISheet_Mail_MailTemplate>;
+	readonly mail_template: CfgExt<ISheet_Mail_MailTemplate>;
 }
 
 //#region mail_template
 declare interface ISheet_Mail_MailTemplate {
-	[key: string]: ISheetData_Mail_MailTemplate;
-	101: ISheetData_Mail_MailTemplate;
-	102: ISheetData_Mail_MailTemplate;
-	103: ISheetData_Mail_MailTemplate;
-	104: ISheetData_Mail_MailTemplate;
-	105: ISheetData_Mail_MailTemplate;
-	106: ISheetData_Mail_MailTemplate;
-	107: ISheetData_Mail_MailTemplate;
-	108: ISheetData_Mail_MailTemplate;
-	109: ISheetData_Mail_MailTemplate;
-	110: ISheetData_Mail_MailTemplate;
-	111: ISheetData_Mail_MailTemplate;
-	112: ISheetData_Mail_MailTemplate;
-	113: ISheetData_Mail_MailTemplate;
-	114: ISheetData_Mail_MailTemplate;
-	115: ISheetData_Mail_MailTemplate;
-	116: ISheetData_Mail_MailTemplate;
-	117: ISheetData_Mail_MailTemplate;
-	118: ISheetData_Mail_MailTemplate;
-	119: ISheetData_Mail_MailTemplate;
-	120: ISheetData_Mail_MailTemplate;
-	121: ISheetData_Mail_MailTemplate;
-	122: ISheetData_Mail_MailTemplate;
-	123: ISheetData_Mail_MailTemplate;
-	124: ISheetData_Mail_MailTemplate;
-	125: ISheetData_Mail_MailTemplate;
-	126: ISheetData_Mail_MailTemplate;
-	127: ISheetData_Mail_MailTemplate;
-	128: ISheetData_Mail_MailTemplate;
-	129: ISheetData_Mail_MailTemplate;
-	130: ISheetData_Mail_MailTemplate;
-	131: ISheetData_Mail_MailTemplate;
-	132: ISheetData_Mail_MailTemplate;
-	133: ISheetData_Mail_MailTemplate;
-	134: ISheetData_Mail_MailTemplate;
-	135: ISheetData_Mail_MailTemplate;
-	136: ISheetData_Mail_MailTemplate;
-	137: ISheetData_Mail_MailTemplate;
-	138: ISheetData_Mail_MailTemplate;
-	139: ISheetData_Mail_MailTemplate;
-	140: ISheetData_Mail_MailTemplate;
-	141: ISheetData_Mail_MailTemplate;
-	142: ISheetData_Mail_MailTemplate;
-	143: ISheetData_Mail_MailTemplate;
-	144: ISheetData_Mail_MailTemplate;
-	145: ISheetData_Mail_MailTemplate;
-	10001: ISheetData_Mail_MailTemplate;
-	10002: ISheetData_Mail_MailTemplate;
-	10003: ISheetData_Mail_MailTemplate;
-	10004: ISheetData_Mail_MailTemplate;
-	10005: ISheetData_Mail_MailTemplate;
-	10006: ISheetData_Mail_MailTemplate;
-	10007: ISheetData_Mail_MailTemplate;
-	10008: ISheetData_Mail_MailTemplate;
-	10009: ISheetData_Mail_MailTemplate;
-	10010: ISheetData_Mail_MailTemplate;
+	readonly [key: string]: ISheetData_Mail_MailTemplate;
+	readonly 101: ISheetData_Mail_MailTemplate;
+	readonly 102: ISheetData_Mail_MailTemplate;
+	readonly 103: ISheetData_Mail_MailTemplate;
+	readonly 104: ISheetData_Mail_MailTemplate;
+	readonly 105: ISheetData_Mail_MailTemplate;
+	readonly 106: ISheetData_Mail_MailTemplate;
+	readonly 107: ISheetData_Mail_MailTemplate;
+	readonly 108: ISheetData_Mail_MailTemplate;
+	readonly 109: ISheetData_Mail_MailTemplate;
+	readonly 110: ISheetData_Mail_MailTemplate;
+	readonly 111: ISheetData_Mail_MailTemplate;
+	readonly 112: ISheetData_Mail_MailTemplate;
+	readonly 113: ISheetData_Mail_MailTemplate;
+	readonly 114: ISheetData_Mail_MailTemplate;
+	readonly 115: ISheetData_Mail_MailTemplate;
+	readonly 116: ISheetData_Mail_MailTemplate;
+	readonly 117: ISheetData_Mail_MailTemplate;
+	readonly 118: ISheetData_Mail_MailTemplate;
+	readonly 119: ISheetData_Mail_MailTemplate;
+	readonly 120: ISheetData_Mail_MailTemplate;
+	readonly 121: ISheetData_Mail_MailTemplate;
+	readonly 122: ISheetData_Mail_MailTemplate;
+	readonly 123: ISheetData_Mail_MailTemplate;
+	readonly 124: ISheetData_Mail_MailTemplate;
+	readonly 125: ISheetData_Mail_MailTemplate;
+	readonly 126: ISheetData_Mail_MailTemplate;
+	readonly 127: ISheetData_Mail_MailTemplate;
+	readonly 128: ISheetData_Mail_MailTemplate;
+	readonly 129: ISheetData_Mail_MailTemplate;
+	readonly 130: ISheetData_Mail_MailTemplate;
+	readonly 131: ISheetData_Mail_MailTemplate;
+	readonly 132: ISheetData_Mail_MailTemplate;
+	readonly 133: ISheetData_Mail_MailTemplate;
+	readonly 134: ISheetData_Mail_MailTemplate;
+	readonly 135: ISheetData_Mail_MailTemplate;
+	readonly 136: ISheetData_Mail_MailTemplate;
+	readonly 137: ISheetData_Mail_MailTemplate;
+	readonly 138: ISheetData_Mail_MailTemplate;
+	readonly 139: ISheetData_Mail_MailTemplate;
+	readonly 140: ISheetData_Mail_MailTemplate;
+	readonly 141: ISheetData_Mail_MailTemplate;
+	readonly 142: ISheetData_Mail_MailTemplate;
+	readonly 143: ISheetData_Mail_MailTemplate;
+	readonly 144: ISheetData_Mail_MailTemplate;
+	readonly 145: ISheetData_Mail_MailTemplate;
+	readonly 10001: ISheetData_Mail_MailTemplate;
+	readonly 10002: ISheetData_Mail_MailTemplate;
+	readonly 10003: ISheetData_Mail_MailTemplate;
+	readonly 10004: ISheetData_Mail_MailTemplate;
+	readonly 10005: ISheetData_Mail_MailTemplate;
+	readonly 10006: ISheetData_Mail_MailTemplate;
+	readonly 10007: ISheetData_Mail_MailTemplate;
+	readonly 10008: ISheetData_Mail_MailTemplate;
+	readonly 10009: ISheetData_Mail_MailTemplate;
+	readonly 10010: ISheetData_Mail_MailTemplate;
 }
 declare interface ISheetData_Mail_MailTemplate extends ISheetDataBase {
 	/** 邮件模板ID */
-	id: number;
+	readonly id: number;
 	/** 标题 */
-	title: string;
-	title_chs: string;
-	title_chs_t: string;
-	title_jp: string;
-	title_en: string;
-	title_kr: string;
+	readonly title: string;
+	readonly title_chs: string;
+	readonly title_chs_t: string;
+	readonly title_jp: string;
+	readonly title_en: string;
+	readonly title_kr: string;
 	/** 正文模板 */
-	content_template: string;
-	content_template_chs: string;
-	content_template_chs_t: string;
-	content_template_jp: string;
-	content_template_en: string;
-	content_template_kr: string;
+	readonly content_template: string;
+	readonly content_template_chs: string;
+	readonly content_template_chs_t: string;
+	readonly content_template_jp: string;
+	readonly content_template_en: string;
+	readonly content_template_kr: string;
 	/** 过期类型 */
-	expire_type: number;
+	readonly expire_type: number;
 	/** 过期参数 */
-	expire_param: string;
+	readonly expire_param: string;
 	/** 附件列表 */
-	attachments: string[];
+	readonly attachments: string[];
 }
 //#endregion

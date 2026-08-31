@@ -2,59 +2,59 @@
 
 declare interface ITable_RankIntroduce {
 	/** unique */
-	rank: CfgExt<ISheet_RankIntroduce_Rank>;
+	readonly rank: CfgExt<ISheet_RankIntroduce_Rank>;
 	/** unique */
-	rank3: CfgExt<ISheet_RankIntroduce_Rank3>;
+	readonly rank3: CfgExt<ISheet_RankIntroduce_Rank3>;
 }
 
 //#region rank
 declare interface ISheet_RankIntroduce_Rank {
-	[key: string]: ISheetData_RankIntroduce_Rank;
-	1: ISheetData_RankIntroduce_Rank;
-	2: ISheetData_RankIntroduce_Rank;
-	3: ISheetData_RankIntroduce_Rank;
-	4: ISheetData_RankIntroduce_Rank;
-	5: ISheetData_RankIntroduce_Rank;
-	6: ISheetData_RankIntroduce_Rank;
-	7: ISheetData_RankIntroduce_Rank;
-	8: ISheetData_RankIntroduce_Rank;
-	9: ISheetData_RankIntroduce_Rank;
-	10: ISheetData_RankIntroduce_Rank;
-	11: ISheetData_RankIntroduce_Rank;
-	12: ISheetData_RankIntroduce_Rank;
-	13: ISheetData_RankIntroduce_Rank;
-	14: ISheetData_RankIntroduce_Rank;
-	15: ISheetData_RankIntroduce_Rank;
-	16: ISheetData_RankIntroduce_Rank;
+	readonly [key: string]: ISheetData_RankIntroduce_Rank;
+	readonly 1: ISheetData_RankIntroduce_Rank;
+	readonly 2: ISheetData_RankIntroduce_Rank;
+	readonly 3: ISheetData_RankIntroduce_Rank;
+	readonly 4: ISheetData_RankIntroduce_Rank;
+	readonly 5: ISheetData_RankIntroduce_Rank;
+	readonly 6: ISheetData_RankIntroduce_Rank;
+	readonly 7: ISheetData_RankIntroduce_Rank;
+	readonly 8: ISheetData_RankIntroduce_Rank;
+	readonly 9: ISheetData_RankIntroduce_Rank;
+	readonly 10: ISheetData_RankIntroduce_Rank;
+	readonly 11: ISheetData_RankIntroduce_Rank;
+	readonly 12: ISheetData_RankIntroduce_Rank;
+	readonly 13: ISheetData_RankIntroduce_Rank;
+	readonly 14: ISheetData_RankIntroduce_Rank;
+	readonly 15: ISheetData_RankIntroduce_Rank;
+	readonly 16: ISheetData_RankIntroduce_Rank;
 }
 declare interface ISheetData_RankIntroduce_Rank extends ISheetDataBase {
-	id: number;
-	info: string[];
+	readonly id: number;
+	readonly info: string[];
 }
 //#endregion
 
 //#region rank3
 declare interface ISheet_RankIntroduce_Rank3 {
-	[key: string]: ISheetData_RankIntroduce_Rank3;
-	1: ISheetData_RankIntroduce_Rank3;
-	2: ISheetData_RankIntroduce_Rank3;
-	3: ISheetData_RankIntroduce_Rank3;
-	4: ISheetData_RankIntroduce_Rank3;
-	5: ISheetData_RankIntroduce_Rank3;
-	6: ISheetData_RankIntroduce_Rank3;
-	7: ISheetData_RankIntroduce_Rank3;
-	8: ISheetData_RankIntroduce_Rank3;
-	9: ISheetData_RankIntroduce_Rank3;
-	10: ISheetData_RankIntroduce_Rank3;
-	11: ISheetData_RankIntroduce_Rank3;
-	12: ISheetData_RankIntroduce_Rank3;
-	13: ISheetData_RankIntroduce_Rank3;
-	14: ISheetData_RankIntroduce_Rank3;
-	15: ISheetData_RankIntroduce_Rank3;
-	16: ISheetData_RankIntroduce_Rank3;
+	readonly [key: string]: ISheetData_RankIntroduce_Rank3;
+	readonly 1: ISheetData_RankIntroduce_Rank3;
+	readonly 2: ISheetData_RankIntroduce_Rank3;
+	readonly 3: ISheetData_RankIntroduce_Rank3;
+	readonly 4: ISheetData_RankIntroduce_Rank3;
+	readonly 5: ISheetData_RankIntroduce_Rank3;
+	readonly 6: ISheetData_RankIntroduce_Rank3;
+	readonly 7: ISheetData_RankIntroduce_Rank3;
+	readonly 8: ISheetData_RankIntroduce_Rank3;
+	readonly 9: ISheetData_RankIntroduce_Rank3;
+	readonly 10: ISheetData_RankIntroduce_Rank3;
+	readonly 11: ISheetData_RankIntroduce_Rank3;
+	readonly 12: ISheetData_RankIntroduce_Rank3;
+	readonly 13: ISheetData_RankIntroduce_Rank3;
+	readonly 14: ISheetData_RankIntroduce_Rank3;
+	readonly 15: ISheetData_RankIntroduce_Rank3;
+	readonly 16: ISheetData_RankIntroduce_Rank3;
 }
 declare interface ISheetData_RankIntroduce_Rank3 extends ISheetDataBase {
-	id: number;
-	info: string[];
+	readonly id: number;
+	readonly info: string[];
 }
 //#endregion

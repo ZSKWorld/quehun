@@ -2,146 +2,146 @@
 
 declare interface ITable_Marathon {
 	/** 活动索引  ---  unique */
-	marathon_info: CfgExt<ISheet_Marathon_MarathonInfo>;
+	readonly marathon_info: CfgExt<ISheet_Marathon_MarathonInfo>;
 	/** 活动分数  ---  group */
-	marathon_reward: CfgExtGroup<ISheet_Marathon_MarathonReward>;
+	readonly marathon_reward: CfgExtGroup<ISheet_Marathon_MarathonReward>;
 	/** 单张麻将牌出现的权重  ---  group */
-	marathon_tile_group: CfgExtGroup<ISheet_Marathon_MarathonTileGroup>;
+	readonly marathon_tile_group: CfgExtGroup<ISheet_Marathon_MarathonTileGroup>;
 	/** 牌墙生成  ---  group */
-	marathon_wall_group: CfgExtGroup<ISheet_Marathon_MarathonWallGroup>;
+	readonly marathon_wall_group: CfgExtGroup<ISheet_Marathon_MarathonWallGroup>;
 	/** 关卡内道具权重  ---  group */
-	marathon_item_group: CfgExtGroup<ISheet_Marathon_MarathonItemGroup>;
+	readonly marathon_item_group: CfgExtGroup<ISheet_Marathon_MarathonItemGroup>;
 }
 
 //#region marathon_info
 declare interface ISheet_Marathon_MarathonInfo {
-	[key: string]: ISheetData_Marathon_MarathonInfo;
-	260201: ISheetData_Marathon_MarathonInfo;
+	readonly [key: string]: ISheetData_Marathon_MarathonInfo;
+	readonly 260201: ISheetData_Marathon_MarathonInfo;
 }
 declare interface ISheetData_Marathon_MarathonInfo extends ISheetDataBase {
 	/** 活动id */
-	activity_id: number;
+	readonly activity_id: number;
 	/** 一秒多少tick */
-	tick: number;
+	readonly tick: number;
 	/** gameover的手牌数 */
-	hands_count: number;
+	readonly hands_count: number;
 	/** 起始倒计时（tick） */
-	start_time: number;
+	readonly start_time: number;
 	/** fever time 期间速度（两面墙之间tick数） */
-	fever_speed: number;
+	readonly fever_speed: number;
 	/** fevertime期间的分数倍率，百分比 */
-	fever_time_bonus: number;
+	readonly fever_time_bonus: number;
 	/** 持续墙的面数 */
-	fever_time_duration: number;
+	readonly fever_time_duration: number;
 	/** 一面墙有多少张牌 */
-	wall_tile_count: number;
+	readonly wall_tile_count: number;
 	/** 一面墙最多能有多少张相同牌 */
-	wall_max_same_tile: number;
+	readonly wall_max_same_tile: number;
 	/** 关卡组 */
-	wall_group_id: number;
+	readonly wall_group_id: number;
 	/** 牌组 */
-	tile_group: number;
+	readonly tile_group: number;
 	/** 分数 */
-	reward_group: number;
+	readonly reward_group: number;
 	/** 道具 */
-	item_group: number;
+	readonly item_group: number;
 	/** 胡萝卜id */
-	point_item_id: number;
+	readonly point_item_id: number;
 	/** fevertime期间的道具类型 */
-	fever_item_type: number;
+	readonly fever_item_type: number;
 	/** 训练度id */
-	distance_item_id: number;
+	readonly distance_item_id: number;
 	/** 单轮游戏每N距离获得1训练度 */
-	distance_reward_rate: number;
+	readonly distance_reward_rate: number;
 	/** 单轮游戏获得训练度数量上限 */
-	max_distance_reward: number;
+	readonly max_distance_reward: number;
 	/** 无效牌位置 */
-	wall_empty_pos: number[];
+	readonly wall_empty_pos: number[];
 }
 //#endregion
 
 //#region marathon_reward
 declare interface ISheet_Marathon_MarathonReward {
-	[key: string]: ISheetData_Marathon_MarathonReward[];
-	3001: ISheetData_Marathon_MarathonReward[];
+	readonly [key: string]: ISheetData_Marathon_MarathonReward[];
+	readonly 3001: ISheetData_Marathon_MarathonReward[];
 }
 declare interface ISheetData_Marathon_MarathonReward extends ISheetDataBase {
 	/** 分数组 */
-	group_id: number;
-	type: number;
-	point: number;
+	readonly group_id: number;
+	readonly type: number;
+	readonly point: number;
 	/** tick每秒30 */
-	time: number;
+	readonly time: number;
 }
 //#endregion
 
 //#region marathon_tile_group
 declare interface ISheet_Marathon_MarathonTileGroup {
-	[key: string]: ISheetData_Marathon_MarathonTileGroup[];
-	2001: ISheetData_Marathon_MarathonTileGroup[];
+	readonly [key: string]: ISheetData_Marathon_MarathonTileGroup[];
+	readonly 2001: ISheetData_Marathon_MarathonTileGroup[];
 }
 declare interface ISheetData_Marathon_MarathonTileGroup extends ISheetDataBase {
 	/** 牌组 */
-	group_id: number;
+	readonly group_id: number;
 	/** 牌 */
-	tile: string;
+	readonly tile: string;
 	/** 基础权重 */
-	weight: number;
+	readonly weight: number;
 	/** 福牌权重 */
-	fever_weight: number;
+	readonly fever_weight: number;
 }
 //#endregion
 
 //#region marathon_wall_group
 declare interface ISheet_Marathon_MarathonWallGroup {
-	[key: string]: ISheetData_Marathon_MarathonWallGroup[];
-	1001: ISheetData_Marathon_MarathonWallGroup[];
+	readonly [key: string]: ISheetData_Marathon_MarathonWallGroup[];
+	readonly 1001: ISheetData_Marathon_MarathonWallGroup[];
 }
 declare interface ISheetData_Marathon_MarathonWallGroup extends ISheetDataBase {
 	/** 牌墙组 */
-	group_id: number;
+	readonly group_id: number;
 	/** 下限(闭区间) */
-	lower: number;
+	readonly lower: number;
 	/** 上限（闭区间，0表示无穷大） */
-	upper: number;
+	readonly upper: number;
 	/** 速度（两面墙之间消耗几个tick） */
-	speed: number;
+	readonly speed: number;
 	/** 期间的分数倍率，百分比 */
-	speed_bonus: number;
+	readonly speed_bonus: number;
 	/** 终局模式，福牌必定不会出现，不使用仓检 */
-	final_mode: number;
+	readonly final_mode: number;
 	/** 福牌额外权重 */
-	fever_weight_addition: number;
+	readonly fever_weight_addition: number;
 	/** 福牌相邻牌额外权重 */
-	near_fever_weight_addition: number;
+	readonly near_fever_weight_addition: number;
 	/** 必定出现福牌次数 */
-	must_fever_count: number;
+	readonly must_fever_count: number;
 	/** 完成检查概率% */
-	finish_hands_check: number;
+	readonly finish_hands_check: number;
 	/** 强仓检概率% */
-	strong_hands_check: number;
+	readonly strong_hands_check: number;
 	/** 弱仓检概率% */
-	weak_hands_check: number;
+	readonly weak_hands_check: number;
 	/** 生成道具概率% */
-	item_rate: number;
+	readonly item_rate: number;
 	/** 道具组 */
-	item_group_id: number;
+	readonly item_group_id: number;
 }
 //#endregion
 
 //#region marathon_item_group
 declare interface ISheet_Marathon_MarathonItemGroup {
-	[key: string]: ISheetData_Marathon_MarathonItemGroup[];
-	4001: ISheetData_Marathon_MarathonItemGroup[];
-	4002: ISheetData_Marathon_MarathonItemGroup[];
-	4003: ISheetData_Marathon_MarathonItemGroup[];
+	readonly [key: string]: ISheetData_Marathon_MarathonItemGroup[];
+	readonly 4001: ISheetData_Marathon_MarathonItemGroup[];
+	readonly 4002: ISheetData_Marathon_MarathonItemGroup[];
+	readonly 4003: ISheetData_Marathon_MarathonItemGroup[];
 }
 declare interface ISheetData_Marathon_MarathonItemGroup extends ISheetDataBase {
 	/** 道具组 */
-	group_id: number;
+	readonly group_id: number;
 	/** 道具类型 */
-	type: number;
+	readonly type: number;
 	/** 权重 */
-	weight: number;
+	readonly weight: number;
 }
 //#endregion

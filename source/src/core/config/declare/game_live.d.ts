@@ -2,68 +2,68 @@
 
 declare interface ITable_GameLive {
 	/** 观战选项过滤  ---  unique */
-	select_filters: CfgExt<ISheet_GameLive_SelectFilters>;
+	readonly select_filters: CfgExt<ISheet_GameLive_SelectFilters>;
 }
 
 //#region select_filters
 declare interface ISheet_GameLive_SelectFilters {
-	[key: string]: ISheetData_GameLive_SelectFilters;
-	101: ISheetData_GameLive_SelectFilters;
-	102: ISheetData_GameLive_SelectFilters;
-	201: ISheetData_GameLive_SelectFilters;
-	202: ISheetData_GameLive_SelectFilters;
-	203: ISheetData_GameLive_SelectFilters;
-	204: ISheetData_GameLive_SelectFilters;
-	205: ISheetData_GameLive_SelectFilters;
-	206: ISheetData_GameLive_SelectFilters;
-	207: ISheetData_GameLive_SelectFilters;
-	208: ISheetData_GameLive_SelectFilters;
-	209: ISheetData_GameLive_SelectFilters;
-	210: ISheetData_GameLive_SelectFilters;
-	211: ISheetData_GameLive_SelectFilters;
-	212: ISheetData_GameLive_SelectFilters;
-	213: ISheetData_GameLive_SelectFilters;
-	214: ISheetData_GameLive_SelectFilters;
-	215: ISheetData_GameLive_SelectFilters;
-	216: ISheetData_GameLive_SelectFilters;
-	217: ISheetData_GameLive_SelectFilters;
-	218: ISheetData_GameLive_SelectFilters;
-	219: ISheetData_GameLive_SelectFilters;
-	220: ISheetData_GameLive_SelectFilters;
-	221: ISheetData_GameLive_SelectFilters;
-	222: ISheetData_GameLive_SelectFilters;
-	223: ISheetData_GameLive_SelectFilters;
-	224: ISheetData_GameLive_SelectFilters;
-	225: ISheetData_GameLive_SelectFilters;
-	226: ISheetData_GameLive_SelectFilters;
-	227: ISheetData_GameLive_SelectFilters;
-	228: ISheetData_GameLive_SelectFilters;
+	readonly [key: string]: ISheetData_GameLive_SelectFilters;
+	readonly 101: ISheetData_GameLive_SelectFilters;
+	readonly 102: ISheetData_GameLive_SelectFilters;
+	readonly 201: ISheetData_GameLive_SelectFilters;
+	readonly 202: ISheetData_GameLive_SelectFilters;
+	readonly 203: ISheetData_GameLive_SelectFilters;
+	readonly 204: ISheetData_GameLive_SelectFilters;
+	readonly 205: ISheetData_GameLive_SelectFilters;
+	readonly 206: ISheetData_GameLive_SelectFilters;
+	readonly 207: ISheetData_GameLive_SelectFilters;
+	readonly 208: ISheetData_GameLive_SelectFilters;
+	readonly 209: ISheetData_GameLive_SelectFilters;
+	readonly 210: ISheetData_GameLive_SelectFilters;
+	readonly 211: ISheetData_GameLive_SelectFilters;
+	readonly 212: ISheetData_GameLive_SelectFilters;
+	readonly 213: ISheetData_GameLive_SelectFilters;
+	readonly 214: ISheetData_GameLive_SelectFilters;
+	readonly 215: ISheetData_GameLive_SelectFilters;
+	readonly 216: ISheetData_GameLive_SelectFilters;
+	readonly 217: ISheetData_GameLive_SelectFilters;
+	readonly 218: ISheetData_GameLive_SelectFilters;
+	readonly 219: ISheetData_GameLive_SelectFilters;
+	readonly 220: ISheetData_GameLive_SelectFilters;
+	readonly 221: ISheetData_GameLive_SelectFilters;
+	readonly 222: ISheetData_GameLive_SelectFilters;
+	readonly 223: ISheetData_GameLive_SelectFilters;
+	readonly 224: ISheetData_GameLive_SelectFilters;
+	readonly 225: ISheetData_GameLive_SelectFilters;
+	readonly 226: ISheetData_GameLive_SelectFilters;
+	readonly 227: ISheetData_GameLive_SelectFilters;
+	readonly 228: ISheetData_GameLive_SelectFilters;
 }
 declare interface ISheetData_GameLive_SelectFilters extends ISheetDataBase {
-	id: number;
+	readonly id: number;
 	/** 游戏分类 */
-	category: number;
+	readonly category: number;
 	/** 匹配模式id */
-	mode_id: number;
+	readonly mode_id: number;
 	/** 游戏模式（好友模式） */
-	mode: number;
+	readonly mode: number;
 	/** 联赛id */
-	tournament_id: number;
+	readonly tournament_id: number;
 	/** 开关 */
-	open: number;
+	readonly open: number;
 	/** 初始选项 */
-	initial: number;
+	readonly initial: number;
 	/** 选项名字1 */
-	name1_chs: string;
-	name1_chs_t: string;
-	name1_jp: string;
-	name1_en: string;
-	name1_kr: string;
+	readonly name1_chs: string;
+	readonly name1_chs_t: string;
+	readonly name1_jp: string;
+	readonly name1_en: string;
+	readonly name1_kr: string;
 	/** 选项名字2 */
-	name2_chs: string;
-	name2_chs_t: string;
-	name2_jp: string;
-	name2_en: string;
-	name2_kr: string;
+	readonly name2_chs: string;
+	readonly name2_chs_t: string;
+	readonly name2_jp: string;
+	readonly name2_en: string;
+	readonly name2_kr: string;
 }
 //#endregion

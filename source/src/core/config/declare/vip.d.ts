@@ -2,61 +2,61 @@
 
 declare interface ITable_Vip {
 	/** unique */
-	vip: CfgExt<ISheet_Vip_Vip>;
+	readonly vip: CfgExt<ISheet_Vip_Vip>;
 }
 
 //#region vip
 declare interface ISheet_Vip_Vip {
-	[key: string]: ISheetData_Vip_Vip;
-	1: ISheetData_Vip_Vip;
-	2: ISheetData_Vip_Vip;
-	3: ISheetData_Vip_Vip;
-	4: ISheetData_Vip_Vip;
-	5: ISheetData_Vip_Vip;
-	6: ISheetData_Vip_Vip;
-	7: ISheetData_Vip_Vip;
-	8: ISheetData_Vip_Vip;
-	9: ISheetData_Vip_Vip;
-	10: ISheetData_Vip_Vip;
-	11: ISheetData_Vip_Vip;
-	12: ISheetData_Vip_Vip;
-	13: ISheetData_Vip_Vip;
-	14: ISheetData_Vip_Vip;
-	15: ISheetData_Vip_Vip;
+	readonly [key: string]: ISheetData_Vip_Vip;
+	readonly 1: ISheetData_Vip_Vip;
+	readonly 2: ISheetData_Vip_Vip;
+	readonly 3: ISheetData_Vip_Vip;
+	readonly 4: ISheetData_Vip_Vip;
+	readonly 5: ISheetData_Vip_Vip;
+	readonly 6: ISheetData_Vip_Vip;
+	readonly 7: ISheetData_Vip_Vip;
+	readonly 8: ISheetData_Vip_Vip;
+	readonly 9: ISheetData_Vip_Vip;
+	readonly 10: ISheetData_Vip_Vip;
+	readonly 11: ISheetData_Vip_Vip;
+	readonly 12: ISheetData_Vip_Vip;
+	readonly 13: ISheetData_Vip_Vip;
+	readonly 14: ISheetData_Vip_Vip;
+	readonly 15: ISheetData_Vip_Vip;
 }
 declare interface ISheetData_Vip_Vip extends ISheetDataBase {
-	id: number;
+	readonly id: number;
 	/** 称号名称 */
-	name_chs: string;
-	name_chs_t: string;
-	name_jp: string;
-	name_en: string;
-	name_kr: string;
+	readonly name_chs: string;
+	readonly name_chs_t: string;
+	readonly name_jp: string;
+	readonly name_en: string;
+	readonly name_kr: string;
 	/** 称号图标 */
-	img: string;
+	readonly img: string;
 	/** 等级描述 */
-	desc_chs: string;
-	desc_chs_t: string;
-	desc_jp: string;
-	desc_en: string;
-	desc_kr: string;
+	readonly desc_chs: string;
+	readonly desc_chs_t: string;
+	readonly desc_jp: string;
+	readonly desc_en: string;
+	readonly desc_kr: string;
 	/** 所需累计充值金额 */
-	charge: number;
+	readonly charge: number;
 	/** 每日送礼次数上限 */
-	gift_limit: number;
+	readonly gift_limit: number;
 	/** 增加好友上限 */
-	friend_added: number;
+	readonly friend_added: number;
 	/** 商店每日免费刷新次数 */
-	shop_free_refresh: number;
+	readonly shop_free_refresh: number;
 	/** 商店每日刷新次数上限 */
-	shop_refresh_limit: number;
+	readonly shop_refresh_limit: number;
 	/** 对局好感度加成 */
-	buddy_bonus: number;
+	readonly buddy_bonus: number;
 	/** 牌谱收藏上限 */
-	favourite_limit: number;
+	readonly favourite_limit: number;
 	/** 称号ID */
-	title_id: number;
+	readonly title_id: number;
 	/** VIP领取奖励 */
-	rewards: string[];
+	readonly rewards: string[];
 }
 //#endregion

@@ -2,112 +2,112 @@
 
 declare interface ITable_Exchange {
 	/** unique */
-	exchange: CfgExt<ISheet_Exchange_Exchange>;
+	readonly exchange: CfgExt<ISheet_Exchange_Exchange>;
 	/** unique */
-	searchexchange: CfgExt<ISheet_Exchange_Searchexchange>;
+	readonly searchexchange: CfgExt<ISheet_Exchange_Searchexchange>;
 	/** unique */
-	fushiquanexchange: CfgExt<ISheet_Exchange_Fushiquanexchange>;
+	readonly fushiquanexchange: CfgExt<ISheet_Exchange_Fushiquanexchange>;
 }
 
 //#region exchange
 declare interface ISheet_Exchange_Exchange {
-	[key: string]: ISheetData_Exchange_Exchange;
-	2001: ISheetData_Exchange_Exchange;
-	2002: ISheetData_Exchange_Exchange;
-	2003: ISheetData_Exchange_Exchange;
-	2004: ISheetData_Exchange_Exchange;
-	2005: ISheetData_Exchange_Exchange;
-	2006: ISheetData_Exchange_Exchange;
+	readonly [key: string]: ISheetData_Exchange_Exchange;
+	readonly 2001: ISheetData_Exchange_Exchange;
+	readonly 2002: ISheetData_Exchange_Exchange;
+	readonly 2003: ISheetData_Exchange_Exchange;
+	readonly 2004: ISheetData_Exchange_Exchange;
+	readonly 2005: ISheetData_Exchange_Exchange;
+	readonly 2006: ISheetData_Exchange_Exchange;
 }
 declare interface ISheetData_Exchange_Exchange extends ISheetDataBase {
-	id: number;
+	readonly id: number;
 	/** 源币种 */
-	source_currency: number;
+	readonly source_currency: number;
 	/** 金额 */
-	source_value: number;
+	readonly source_value: number;
 	/** 目标币种 */
-	target_currency: number;
+	readonly target_currency: number;
 	/** 金额 */
-	target_value: number;
+	readonly target_value: number;
 	/** 图标 */
-	icon: string;
+	readonly icon: string;
 	/** 名称 */
-	name_chs: string;
-	name_chs_t: string;
-	name_jp: string;
-	name_en: string;
-	name_kr: string;
+	readonly name_chs: string;
+	readonly name_chs_t: string;
+	readonly name_jp: string;
+	readonly name_en: string;
+	readonly name_kr: string;
 	/** 描述 */
-	desc_chs: string;
-	desc_chs_t: string;
-	desc_jp: string;
-	desc_en: string;
-	desc_kr: string;
+	readonly desc_chs: string;
+	readonly desc_chs_t: string;
+	readonly desc_jp: string;
+	readonly desc_en: string;
+	readonly desc_kr: string;
 }
 //#endregion
 
 //#region searchexchange
 declare interface ISheet_Exchange_Searchexchange {
-	[key: string]: ISheetData_Exchange_Searchexchange;
-	3001: ISheetData_Exchange_Searchexchange;
-	3002: ISheetData_Exchange_Searchexchange;
+	readonly [key: string]: ISheetData_Exchange_Searchexchange;
+	readonly 3001: ISheetData_Exchange_Searchexchange;
+	readonly 3002: ISheetData_Exchange_Searchexchange;
 }
 declare interface ISheetData_Exchange_Searchexchange extends ISheetDataBase {
-	id: number;
+	readonly id: number;
 	/** 源币种 */
-	source_currency: number;
+	readonly source_currency: number;
 	/** 金额 */
-	source_value: number;
+	readonly source_value: number;
 	/** 目标币种 */
-	target_currency: number;
+	readonly target_currency: number;
 	/** 金额 */
-	target_value: number;
+	readonly target_value: number;
 	/** 图标 */
-	icon: string;
+	readonly icon: string;
 	/** 名称 */
-	name_chs: string;
-	name_chs_t: string;
-	name_jp: string;
-	name_en: string;
-	name_kr: string;
+	readonly name_chs: string;
+	readonly name_chs_t: string;
+	readonly name_jp: string;
+	readonly name_en: string;
+	readonly name_kr: string;
 	/** 描述 */
-	desc_chs: string;
-	desc_chs_t: string;
-	desc_jp: string;
-	desc_en: string;
-	desc_kor: string;
+	readonly desc_chs: string;
+	readonly desc_chs_t: string;
+	readonly desc_jp: string;
+	readonly desc_en: string;
+	readonly desc_kor: string;
 }
 //#endregion
 
 //#region fushiquanexchange
 declare interface ISheet_Exchange_Fushiquanexchange {
-	[key: string]: ISheetData_Exchange_Fushiquanexchange;
-	4001: ISheetData_Exchange_Fushiquanexchange;
+	readonly [key: string]: ISheetData_Exchange_Fushiquanexchange;
+	readonly 4001: ISheetData_Exchange_Fushiquanexchange;
 }
 declare interface ISheetData_Exchange_Fushiquanexchange extends ISheetDataBase {
-	id: number;
+	readonly id: number;
 	/** 源币种 */
-	source_currency: number;
+	readonly source_currency: number;
 	/** 金额 */
-	source_value: number;
+	readonly source_value: number;
 	/** 目标币种 */
-	target_currency: number;
+	readonly target_currency: number;
 	/** 金额 */
-	target_value: number;
+	readonly target_value: number;
 	/** 图标 */
-	icon: string;
+	readonly icon: string;
 	/** 名称 */
-	name_chs: string;
-	name_chs_t: string;
-	name_jp: string;
-	name_en: string;
-	name_kr: string;
+	readonly name_chs: string;
+	readonly name_chs_t: string;
+	readonly name_jp: string;
+	readonly name_en: string;
+	readonly name_kr: string;
 	/** 描述 */
-	desc_chs: string;
+	readonly desc_chs: string;
 	/** 描述 */
-	desc_chs_t: string;
-	desc_jp: string;
-	desc_en: string;
-	desc_kr: string;
+	readonly desc_chs_t: string;
+	readonly desc_jp: string;
+	readonly desc_en: string;
+	readonly desc_kr: string;
 }
 //#endregion

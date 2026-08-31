@@ -5,9 +5,9 @@ declare namespace protobuf {
 	 * @param name Short name as in `google/protobuf/[name].proto` or full file name
 	 * @param json JSON definition within `google.protobuf` if a short name, otherwise the file's root definition
 	 */
-	declare function common(name: string, json: { [k: string]: any }): void;
+	function common(name: string, json: { [k: string]: any; }): void;
 
-	declare namespace common {
+	namespace common {
 
 		/** Properties of a google.protobuf.Any message. */
 		interface IAny {
@@ -33,7 +33,7 @@ declare namespace protobuf {
 
 		/** Properties of a google.protobuf.Struct message. */
 		interface IStruct {
-			fields?: { [k: string]: IValue };
+			fields?: { [k: string]: IValue; };
 		}
 
 		/** Properties of a google.protobuf.Value message. */
@@ -116,7 +116,7 @@ declare namespace protobuf {
 	}
 
 	/** Runtime message from/to plain object converters. */
-	declare namespace converter {
+	namespace converter {
 
 		/**
 		 * Generates a plain object to runtime message converter specific to the specified message type.
@@ -138,17 +138,17 @@ declare namespace protobuf {
 	 * @param mtype Message type
 	 * @returns Codegen instance
 	 */
-	declare function decoder(mtype: Type): Codegen;
+	function decoder(mtype: Type): Codegen;
 
 	/**
 	 * Generates an encoder specific to the specified message type.
 	 * @param mtype Message type
 	 * @returns Codegen instance
 	 */
-	declare function encoder(mtype: Type): Codegen;
+	function encoder(mtype: Type): Codegen;
 
 	/** Reflected enum. */
-	declare class Enum extends ReflectionObject {
+	class Enum extends ReflectionObject {
 
 		/**
 		 * Constructs a new enum instance.
@@ -158,19 +158,19 @@ declare namespace protobuf {
 		 * @param [comment] The comment for this enum
 		 * @param [comments] The value comments for this enum
 		 */
-		constructor(name: string, values?: { [k: string]: number }, options?: { [k: string]: any }, comment?: string, comments?: { [k: string]: string });
+		constructor(name: string, values?: { [k: string]: number; }, options?: { [k: string]: any; }, comment?: string, comments?: { [k: string]: string; });
 
 		/** Enum values by id. */
-		public valuesById: { [k: number]: string };
+		public valuesById: { [k: number]: string; };
 
 		/** Enum values by name. */
-		public values: { [k: string]: number };
+		public values: { [k: string]: number; };
 
 		/** Enum comment text. */
 		public comment: (string | null);
 
 		/** Value comment texts, if any. */
-		public comments: { [k: string]: string };
+		public comments: { [k: string]: string; };
 
 		/** Reserved ranges, if any. */
 		public reserved: (number[] | string)[];
@@ -227,17 +227,17 @@ declare namespace protobuf {
 	}
 
 	/** Enum descriptor. */
-	declare interface IEnum {
+	interface IEnum {
 
 		/** Enum values */
-		values: { [k: string]: number };
+		values: { [k: string]: number; };
 
 		/** Enum options */
-		options?: { [k: string]: any };
+		options?: { [k: string]: any; };
 	}
 
 	/** Reflected message field. */
-	declare class Field extends FieldBase {
+	class Field extends FieldBase {
 
 		/**
 		 * Constructs a new message field instance. Note that {@link MapField|map fields} have their own class.
@@ -248,7 +248,7 @@ declare namespace protobuf {
 		 * @param [extend] Extended type if different from parent
 		 * @param [options] Declared options
 		 */
-		constructor(name: string, id: number, type: string, rule?: (string | { [k: string]: any }), extend?: (string | { [k: string]: any }), options?: { [k: string]: any });
+		constructor(name: string, id: number, type: string, rule?: (string | { [k: string]: any; }), extend?: (string | { [k: string]: any; }), options?: { [k: string]: any; });
 
 		/**
 		 * Constructs a field from a field descriptor.
@@ -283,7 +283,7 @@ declare namespace protobuf {
 	}
 
 	/** Base class of all reflected message fields. This is not an actual class but here for the sake of having consistent type definitions. */
-	declare class FieldBase extends ReflectionObject {
+	class FieldBase extends ReflectionObject {
 
 		/**
 		 * Not an actual constructor. Use {@link Field} instead.
@@ -295,7 +295,7 @@ declare namespace protobuf {
 		 * @param [options] Declared options
 		 * @param [comment] Comment associated with this field
 		 */
-		constructor(name: string, id: number, type: string, rule?: (string | { [k: string]: any }), extend?: (string | { [k: string]: any }), options?: { [k: string]: any }, comment?: string);
+		constructor(name: string, id: number, type: string, rule?: (string | { [k: string]: any; }), extend?: (string | { [k: string]: any; }), options?: { [k: string]: any; }, comment?: string);
 
 		/** Field rule, if any. */
 		public rule?: string;
@@ -367,7 +367,7 @@ declare namespace protobuf {
 	}
 
 	/** Field descriptor. */
-	declare interface IField {
+	interface IField {
 
 		/** Field rule */
 		rule?: string;
@@ -379,11 +379,11 @@ declare namespace protobuf {
 		id: number;
 
 		/** Field options */
-		options?: { [k: string]: any };
+		options?: { [k: string]: any; };
 	}
 
 	/** Extension field descriptor. */
-	declare interface IExtensionField extends IField {
+	interface IExtensionField extends IField {
 
 		/** Extended type */
 		extend: string;
@@ -410,7 +410,7 @@ declare namespace protobuf {
 	 * @param callback Callback function
 	 * @see {@link Root#load}
 	 */
-	declare function load(filename: (string | string[]), root: Root, callback: LoadCallback): void;
+	function load(filename: (string | string[]), root: Root, callback: LoadCallback): void;
 
 	/**
 	 * Loads one or multiple .proto or preprocessed .json files into a common root namespace and calls the callback.
@@ -418,7 +418,7 @@ declare namespace protobuf {
 	 * @param callback Callback function
 	 * @see {@link Root#load}
 	 */
-	declare function load(filename: (string | string[]), callback: LoadCallback): void;
+	function load(filename: (string | string[]), callback: LoadCallback): void;
 
 	/**
 	 * Loads one or multiple .proto or preprocessed .json files into a common root namespace and returns a promise.
@@ -427,7 +427,7 @@ declare namespace protobuf {
 	 * @returns Promise
 	 * @see {@link Root#load}
 	 */
-	declare function load(filename: (string | string[]), root?: Root): Promise<Root>;
+	function load(filename: (string | string[]), root?: Root): Promise<Root>;
 
 	/**
 	 * Synchronously loads one or multiple .proto or preprocessed .json files into a common root namespace (node only).
@@ -437,16 +437,16 @@ declare namespace protobuf {
 	 * @throws {Error} If synchronous fetching is not supported (i.e. in browsers) or if a file's syntax is invalid
 	 * @see {@link Root#loadSync}
 	 */
-	declare function loadSync(filename: (string | string[]), root?: Root): Root;
+	function loadSync(filename: (string | string[]), root?: Root): Root;
 
 	/** Build type, one of `"full"`, `"light"` or `"minimal"`. */
-	declare const build: string;
+	const build: string;
 
 	/** Reconfigures the library according to the environment. */
-	declare function configure(): void;
+	function configure(): void;
 
 	/** Reflected map field. */
-	declare class MapField extends FieldBase {
+	class MapField extends FieldBase {
 
 		/**
 		 * Constructs a new map field instance.
@@ -457,7 +457,7 @@ declare namespace protobuf {
 		 * @param [options] Declared options
 		 * @param [comment] Comment associated with this field
 		 */
-		constructor(name: string, id: number, keyType: string, type: string, options?: { [k: string]: any }, comment?: string);
+		constructor(name: string, id: number, keyType: string, type: string, options?: { [k: string]: any; }, comment?: string);
 
 		/** Key type. */
 		public keyType: string;
@@ -488,25 +488,25 @@ declare namespace protobuf {
 		 * @param fieldValueType Field value type
 		 * @returns Decorator function
 		 */
-		public static d<T extends { [key: string]: number | Long | string | boolean | Uint8Array | Buffer | number[] | Message<{}> }>(fieldId: number, fieldKeyType: ("int32" | "uint32" | "sint32" | "fixed32" | "sfixed32" | "int64" | "uint64" | "sint64" | "fixed64" | "sfixed64" | "bool" | "string"), fieldValueType: ("double" | "float" | "int32" | "uint32" | "sint32" | "fixed32" | "sfixed32" | "int64" | "uint64" | "sint64" | "fixed64" | "sfixed64" | "bool" | "string" | "bytes" | object | Constructor<{}>)): FieldDecorator;
+		public static d<T extends { [key: string]: number | Long | string | boolean | Uint8Array | Buffer | number[] | Message<{}>; }>(fieldId: number, fieldKeyType: ("int32" | "uint32" | "sint32" | "fixed32" | "sfixed32" | "int64" | "uint64" | "sint64" | "fixed64" | "sfixed64" | "bool" | "string"), fieldValueType: ("double" | "float" | "int32" | "uint32" | "sint32" | "fixed32" | "sfixed32" | "int64" | "uint64" | "sint64" | "fixed64" | "sfixed64" | "bool" | "string" | "bytes" | object | Constructor<{}>)): FieldDecorator;
 	}
 
 	/** Map field descriptor. */
-	declare interface IMapField extends IField {
+	interface IMapField extends IField {
 
 		/** Key type */
 		keyType: string;
 	}
 
 	/** Extension map field descriptor. */
-	declare interface IExtensionMapField extends IMapField {
+	interface IExtensionMapField extends IMapField {
 
 		/** Extended type */
 		extend: string;
 	}
 
 	/** Abstract runtime message. */
-	declare class Message<T extends object> {
+	class Message<T extends object> {
 
 		/**
 		 * Constructs a new message instance.
@@ -525,7 +525,7 @@ declare namespace protobuf {
 		 * @param [properties] Properties to set
 		 * @returns Message instance
 		 */
-		public static create<T extends Message<T>>(this: Constructor<T>, properties?: { [k: string]: any }): Message<T>;
+		public static create<T extends Message<T>>(this: Constructor<T>, properties?: { [k: string]: any; }): Message<T>;
 
 		/**
 		 * Encodes a message of this type.
@@ -533,7 +533,7 @@ declare namespace protobuf {
 		 * @param [writer] Writer to use
 		 * @returns Writer
 		 */
-		public static encode<T extends Message<T>>(this: Constructor<T>, message: (T | { [k: string]: any }), writer?: Writer): Writer;
+		public static encode<T extends Message<T>>(this: Constructor<T>, message: (T | { [k: string]: any; }), writer?: Writer): Writer;
 
 		/**
 		 * Encodes a message of this type preceeded by its length as a varint.
@@ -541,7 +541,7 @@ declare namespace protobuf {
 		 * @param [writer] Writer to use
 		 * @returns Writer
 		 */
-		public static encodeDelimited<T extends Message<T>>(this: Constructor<T>, message: (T | { [k: string]: any }), writer?: Writer): Writer;
+		public static encodeDelimited<T extends Message<T>>(this: Constructor<T>, message: (T | { [k: string]: any; }), writer?: Writer): Writer;
 
 		/**
 		 * Decodes a message of this type.
@@ -562,14 +562,14 @@ declare namespace protobuf {
 		 * @param message Plain object to verify
 		 * @returns `null` if valid, otherwise the reason why it is not
 		 */
-		public static verify(message: { [k: string]: any }): (string | null);
+		public static verify(message: { [k: string]: any; }): (string | null);
 
 		/**
 		 * Creates a new message of this type from a plain object. Also converts values to their respective internal types.
 		 * @param object Plain object
 		 * @returns Message instance
 		 */
-		public static fromObject<T extends Message<T>>(this: Constructor<T>, object: { [k: string]: any }): T;
+		public static fromObject<T extends Message<T>>(this: Constructor<T>, object: { [k: string]: any; }): T;
 
 		/**
 		 * Creates a plain object from a message of this type. Also converts values to other types if specified.
@@ -577,17 +577,17 @@ declare namespace protobuf {
 		 * @param [options] Conversion options
 		 * @returns Plain object
 		 */
-		public static toObject<T extends Message<T>>(this: Constructor<T>, message: T, options?: IConversionOptions): { [k: string]: any };
+		public static toObject<T extends Message<T>>(this: Constructor<T>, message: T, options?: IConversionOptions): { [k: string]: any; };
 
 		/**
 		 * Converts this message to JSON.
 		 * @returns JSON object
 		 */
-		public toJSON(): { [k: string]: any };
+		public toJSON(): { [k: string]: any; };
 	}
 
 	/** Reflected service method. */
-	declare class Method extends ReflectionObject {
+	class Method extends ReflectionObject {
 
 		/**
 		 * Constructs a new service method instance.
@@ -600,7 +600,7 @@ declare namespace protobuf {
 		 * @param [options] Declared options
 		 * @param [comment] The comment for this method
 		 */
-		constructor(name: string, type: (string | undefined), requestType: string, responseType: string, requestStream?: (boolean | { [k: string]: any }), responseStream?: (boolean | { [k: string]: any }), options?: { [k: string]: any }, comment?: string);
+		constructor(name: string, type: (string | undefined), requestType: string, responseType: string, requestStream?: (boolean | { [k: string]: any; }), responseStream?: (boolean | { [k: string]: any; }), options?: { [k: string]: any; }, comment?: string);
 
 		/** Method type. */
 		public type: string;
@@ -644,7 +644,7 @@ declare namespace protobuf {
 	}
 
 	/** Method descriptor. */
-	declare interface IMethod {
+	interface IMethod {
 
 		/** Method type */
 		type?: string;
@@ -662,18 +662,18 @@ declare namespace protobuf {
 		responseStream?: boolean;
 
 		/** Method options */
-		options?: { [k: string]: any };
+		options?: { [k: string]: any; };
 	}
 
 	/** Reflected namespace. */
-	declare class Namespace extends NamespaceBase {
+	class Namespace extends NamespaceBase {
 
 		/**
 		 * Constructs a new namespace instance.
 		 * @param name Namespace name
 		 * @param [options] Declared options
 		 */
-		constructor(name: string, options?: { [k: string]: any });
+		constructor(name: string, options?: { [k: string]: any; });
 
 		/**
 		 * Constructs a namespace from JSON.
@@ -682,7 +682,7 @@ declare namespace protobuf {
 		 * @returns Created namespace
 		 * @throws {TypeError} If arguments are invalid
 		 */
-		public static fromJSON(name: string, json: { [k: string]: any }): Namespace;
+		public static fromJSON(name: string, json: { [k: string]: any; }): Namespace;
 
 		/**
 		 * Converts an array of reflection objects to JSON.
@@ -690,7 +690,7 @@ declare namespace protobuf {
 		 * @param [toJSONOptions] JSON conversion options
 		 * @returns JSON object or `undefined` when array is empty
 		 */
-		public static arrayToJSON(array: ReflectionObject[], toJSONOptions?: IToJSONOptions): ({ [k: string]: any } | undefined);
+		public static arrayToJSON(array: ReflectionObject[], toJSONOptions?: IToJSONOptions): ({ [k: string]: any; } | undefined);
 
 		/**
 		 * Tests if the specified id is reserved.
@@ -710,10 +710,10 @@ declare namespace protobuf {
 	}
 
 	/** Base class of all reflection objects containing nested objects. This is not an actual class but here for the sake of having consistent type definitions. */
-	declare abstract class NamespaceBase extends ReflectionObject {
+	abstract class NamespaceBase extends ReflectionObject {
 
 		/** Nested objects by name. */
-		public nested?: { [k: string]: ReflectionObject };
+		public nested?: { [k: string]: ReflectionObject; };
 
 		/** Nested objects of this namespace as an array for iteration. */
 		public readonly nestedArray: ReflectionObject[];
@@ -730,7 +730,7 @@ declare namespace protobuf {
 		 * @param nestedJson Any nested object descriptors
 		 * @returns `this`
 		 */
-		public addJSON(nestedJson: { [k: string]: AnyNestedObject }): Namespace;
+		public addJSON(nestedJson: { [k: string]: AnyNestedObject; }): Namespace;
 
 		/**
 		 * Gets the nested object of the specified name.
@@ -746,7 +746,7 @@ declare namespace protobuf {
 		 * @returns Enum values
 		 * @throws {Error} If there is no such enum
 		 */
-		public getEnum(name: string): { [k: string]: number };
+		public getEnum(name: string): { [k: string]: number; };
 
 		/**
 		 * Adds a nested object to this namespace.
@@ -835,13 +835,13 @@ declare namespace protobuf {
 	}
 
 	/** Namespace descriptor. */
-	declare interface INamespace {
+	interface INamespace {
 
 		/** Namespace options */
-		options?: { [k: string]: any };
+		options?: { [k: string]: any; };
 
 		/** Nested object descriptors */
-		nested?: { [k: string]: AnyNestedObject };
+		nested?: { [k: string]: AnyNestedObject; };
 	}
 
 	/** Any extension field descriptor. */
@@ -851,10 +851,10 @@ declare namespace protobuf {
 	type AnyNestedObject = (IEnum | IType | IService | AnyExtensionField | INamespace);
 
 	/** Base class of all reflection objects. */
-	declare abstract class ReflectionObject {
+	abstract class ReflectionObject {
 
 		/** Options. */
-		public options?: { [k: string]: any };
+		public options?: { [k: string]: any; };
 
 		/** Unique name within its namespace. */
 		public name: string;
@@ -881,7 +881,7 @@ declare namespace protobuf {
 		 * Converts this reflection object to its descriptor representation.
 		 * @returns Descriptor
 		 */
-		public toJSON(): { [k: string]: any };
+		public toJSON(): { [k: string]: any; };
 
 		/**
 		 * Called when this object is added to a parent.
@@ -923,7 +923,7 @@ declare namespace protobuf {
 		 * @param [ifNotSet] Sets an option only if it isn't currently set
 		 * @returns `this`
 		 */
-		public setOptions(options: { [k: string]: any }, ifNotSet?: boolean): ReflectionObject;
+		public setOptions(options: { [k: string]: any; }, ifNotSet?: boolean): ReflectionObject;
 
 		/**
 		 * Converts this instance to its string representation.
@@ -933,7 +933,7 @@ declare namespace protobuf {
 	}
 
 	/** Reflected oneof. */
-	declare class OneOf extends ReflectionObject {
+	class OneOf extends ReflectionObject {
 
 		/**
 		 * Constructs a new oneof instance.
@@ -942,7 +942,7 @@ declare namespace protobuf {
 		 * @param [options] Declared options
 		 * @param [comment] Comment associated with this field
 		 */
-		constructor(name: string, fieldNames?: (string[] | { [k: string]: any }), options?: { [k: string]: any }, comment?: string);
+		constructor(name: string, fieldNames?: (string[] | { [k: string]: any; }), options?: { [k: string]: any; }, comment?: string);
 
 		/** Field names that belong to this oneof. */
 		public oneof: string[];
@@ -992,13 +992,13 @@ declare namespace protobuf {
 	}
 
 	/** Oneof descriptor. */
-	declare interface IOneOf {
+	interface IOneOf {
 
 		/** Oneof field names */
 		oneof: string[];
 
 		/** Oneof options */
-		options?: { [k: string]: any };
+		options?: { [k: string]: any; };
 	}
 
 	/**
@@ -1014,10 +1014,10 @@ declare namespace protobuf {
 	 * @param [options] Parse options. Defaults to {@link parse.defaults} when omitted.
 	 * @returns Parser result
 	 */
-	declare function parse(source: string, options?: IParseOptions): IParserResult;
+	function parse(source: string, options?: IParseOptions): IParserResult;
 
 	/** Result object returned from {@link parse}. */
-	declare interface IParserResult {
+	interface IParserResult {
 
 		/** Package name, if declared */
 		package: (string | undefined);
@@ -1036,7 +1036,7 @@ declare namespace protobuf {
 	}
 
 	/** Options modifying the behavior of {@link parse}. */
-	declare interface IParseOptions {
+	interface IParseOptions {
 
 		/** Keeps field casing instead of converting to camel case */
 		keepCase?: boolean;
@@ -1046,7 +1046,7 @@ declare namespace protobuf {
 	}
 
 	/** Options modifying the behavior of JSON serialization. */
-	declare interface IToJSONOptions {
+	interface IToJSONOptions {
 
 		/** Serializes comments. */
 		keepComments?: boolean;
@@ -1059,10 +1059,10 @@ declare namespace protobuf {
 	 * @param [options] Parse options. Defaults to {@link parse.defaults} when omitted.
 	 * @returns Parser result
 	 */
-	declare function parse(source: string, root: Root, options?: IParseOptions): IParserResult;
+	function parse(source: string, root: Root, options?: IParseOptions): IParserResult;
 
 	/** Wire format reader using `Uint8Array` if available, otherwise `Array`. */
-	declare class Reader {
+	class Reader {
 
 		/**
 		 * Constructs a new reader instance using the specified buffer.
@@ -1193,7 +1193,7 @@ declare namespace protobuf {
 	}
 
 	/** Wire format reader using node buffers. */
-	declare class BufferReader extends Reader {
+	class BufferReader extends Reader {
 
 		/**
 		 * Constructs a new buffer reader instance.
@@ -1209,13 +1209,13 @@ declare namespace protobuf {
 	}
 
 	/** Root namespace wrapping all types, enums, services, sub-namespaces etc. that belong together. */
-	declare class Root extends NamespaceBase {
+	class Root extends NamespaceBase {
 
 		/**
 		 * Constructs a new root namespace instance.
 		 * @param [options] Top level options
 		 */
-		constructor(options?: { [k: string]: any });
+		constructor(options?: { [k: string]: any; });
 
 		/** Deferred extension fields. */
 		public deferred: Field[];
@@ -1278,10 +1278,10 @@ declare namespace protobuf {
 	 * This is where pbjs stores generated structures (the option `-r, --root` specifies a name).
 	 * Can also be used manually to make roots available accross modules.
 	 */
-	declare let roots: { [k: string]: Root };
+	let roots: { [k: string]: Root; };
 
 	/** Streaming RPC helpers. */
-	declare namespace rpc {
+	namespace rpc {
 
 		/**
 		 * A service method callback as used by {@link rpc.ServiceMethod|ServiceMethod}.
@@ -1355,7 +1355,7 @@ declare namespace protobuf {
 	type RPCImplCallback = (error: (Error | null), response?: (Uint8Array | null)) => void;
 
 	/** Reflected service. */
-	declare class Service extends NamespaceBase {
+	class Service extends NamespaceBase {
 
 		/**
 		 * Constructs a new service instance.
@@ -1363,10 +1363,10 @@ declare namespace protobuf {
 		 * @param [options] Service options
 		 * @throws {TypeError} If arguments are invalid
 		 */
-		constructor(name: string, options?: { [k: string]: any });
+		constructor(name: string, options?: { [k: string]: any; });
 
 		/** Service methods. */
-		public methods: { [k: string]: Method };
+		public methods: { [k: string]: Method; };
 
 		/**
 		 * Constructs a service from a service descriptor.
@@ -1398,10 +1398,10 @@ declare namespace protobuf {
 	}
 
 	/** Service descriptor. */
-	declare interface IService extends INamespace {
+	interface IService extends INamespace {
 
 		/** Method descriptors */
-		methods: { [k: string]: IMethod };
+		methods: { [k: string]: IMethod; };
 	}
 
 	/**
@@ -1439,7 +1439,7 @@ declare namespace protobuf {
 	type TokenizerHandleCmnt = (line?: number) => (string | null);
 
 	/** Handle object returned from {@link tokenize}. */
-	declare interface ITokenizerHandle {
+	interface ITokenizerHandle {
 
 		/** Gets the next token and advances (`null` on eof) */
 		next: TokenizerHandleNext;
@@ -1466,9 +1466,9 @@ declare namespace protobuf {
 	 * @param alternateCommentMode Whether we should activate alternate comment parsing mode.
 	 * @returns Tokenizer handle
 	 */
-	declare function tokenize(source: string, alternateCommentMode: boolean): ITokenizerHandle;
+	function tokenize(source: string, alternateCommentMode: boolean): ITokenizerHandle;
 
-	declare namespace tokenize {
+	namespace tokenize {
 
 		/**
 		 * Unescapes a string.
@@ -1479,20 +1479,20 @@ declare namespace protobuf {
 	}
 
 	/** Reflected message type. */
-	declare class Type extends NamespaceBase {
+	class Type extends NamespaceBase {
 
 		/**
 		 * Constructs a new reflected message type instance.
 		 * @param name Message name
 		 * @param [options] Declared options
 		 */
-		constructor(name: string, options?: { [k: string]: any });
+		constructor(name: string, options?: { [k: string]: any; });
 
 		/** Message fields. */
-		public fields: { [k: string]: Field };
+		public fields: { [k: string]: Field; };
 
 		/** Oneofs declared within this namespace, if any. */
-		public oneofs: { [k: string]: OneOf };
+		public oneofs: { [k: string]: OneOf; };
 
 		/** Extension ranges, if any. */
 		public extensions: number[][];
@@ -1501,7 +1501,7 @@ declare namespace protobuf {
 		public reserved: (number[] | string)[];
 
 		/** Message fields by id. */
-		public readonly fieldsById: { [k: number]: Field };
+		public readonly fieldsById: { [k: number]: Field; };
 
 		/** Fields of this message as an array for iteration. */
 		public readonly fieldsArray: Field[];
@@ -1574,7 +1574,7 @@ declare namespace protobuf {
 		 * @param [properties] Properties to set
 		 * @returns Message instance
 		 */
-		public create(properties?: { [k: string]: any }): Message<{}>;
+		public create(properties?: { [k: string]: any; }): Message<{}>;
 
 		/**
 		 * Sets up {@link Type#encode|encode}, {@link Type#decode|decode} and {@link Type#verify|verify}.
@@ -1588,7 +1588,7 @@ declare namespace protobuf {
 		 * @param [writer] Writer to encode to
 		 * @returns writer
 		 */
-		public encode(message: (Message<{}> | { [k: string]: any }), writer?: Writer): Writer;
+		public encode(message: (Message<{}> | { [k: string]: any; }), writer?: Writer): Writer;
 
 		/**
 		 * Encodes a message of this type preceeded by its byte length as a varint. Does not implicitly {@link Type#verify|verify} messages.
@@ -1596,7 +1596,7 @@ declare namespace protobuf {
 		 * @param [writer] Writer to encode to
 		 * @returns writer
 		 */
-		public encodeDelimited(message: (Message<{}> | { [k: string]: any }), writer?: Writer): Writer;
+		public encodeDelimited(message: (Message<{}> | { [k: string]: any; }), writer?: Writer): Writer;
 
 		/**
 		 * Decodes a message of this type.
@@ -1622,14 +1622,14 @@ declare namespace protobuf {
 		 * @param message Plain object to verify
 		 * @returns `null` if valid, otherwise the reason why it is not
 		 */
-		public verify(message: { [k: string]: any }): (null | string);
+		public verify(message: { [k: string]: any; }): (null | string);
 
 		/**
 		 * Creates a new message of this type from a plain object. Also converts values to their respective internal types.
 		 * @param object Plain object to convert
 		 * @returns Message instance
 		 */
-		public fromObject(object: { [k: string]: any }): Message<{}>;
+		public fromObject(object: { [k: string]: any; }): Message<{}>;
 
 		/**
 		 * Creates a plain object from a message of this type. Also converts values to other types if specified.
@@ -1637,7 +1637,7 @@ declare namespace protobuf {
 		 * @param [options] Conversion options
 		 * @returns Plain object
 		 */
-		public toObject(message: Message<{}>, options?: IConversionOptions): { [k: string]: any };
+		public toObject(message: Message<{}>, options?: IConversionOptions): { [k: string]: any; };
 
 		/**
 		 * Type decorator (TypeScript).
@@ -1648,13 +1648,13 @@ declare namespace protobuf {
 	}
 
 	/** Message type descriptor. */
-	declare interface IType extends INamespace {
+	interface IType extends INamespace {
 
 		/** Oneof descriptors */
-		oneofs?: { [k: string]: IOneOf };
+		oneofs?: { [k: string]: IOneOf; };
 
 		/** Field descriptors */
-		fields: { [k: string]: IField };
+		fields: { [k: string]: IField; };
 
 		/** Extension ranges */
 		extensions?: number[][];
@@ -1667,7 +1667,7 @@ declare namespace protobuf {
 	}
 
 	/** Conversion options as used by {@link Type#toObject} and {@link Message.toObject}. */
-	declare interface IConversionOptions {
+	interface IConversionOptions {
 
 		/**
 		 * Long conversion type.
@@ -1713,7 +1713,7 @@ declare namespace protobuf {
 	type TypeDecorator<T extends Message<T>> = (target: Constructor<T>) => void;
 
 	/** Common type constants. */
-	declare namespace types {
+	namespace types {
 
 		/** Basic type wire types. */
 		const basic: {
@@ -1731,7 +1731,7 @@ declare namespace protobuf {
 			"sfixed64": number,
 			"bool": number,
 			"string": number,
-			"bytes": number
+			"bytes": number;
 		};
 
 		/** Basic type defaults. */
@@ -1751,7 +1751,7 @@ declare namespace protobuf {
 			"bool": boolean,
 			"string": string,
 			"bytes": number[],
-			"message": null
+			"message": null;
 		};
 
 		/** Basic long type wire types. */
@@ -1760,7 +1760,7 @@ declare namespace protobuf {
 			"uint64": number,
 			"sint64": number,
 			"fixed64": number,
-			"sfixed64": number
+			"sfixed64": number;
 		};
 
 		/** Allowed types for map keys with their associated wire type. */
@@ -1776,7 +1776,7 @@ declare namespace protobuf {
 			"fixed64": number,
 			"sfixed64": number,
 			"bool": number,
-			"string": number
+			"string": number;
 		};
 
 		/** Allowed types for packed repeated fields with their associated wire type. */
@@ -1793,12 +1793,12 @@ declare namespace protobuf {
 			"sint64": number,
 			"fixed64": number,
 			"sfixed64": number,
-			"bool": number
+			"bool": number;
 		};
 	}
 
 	/** Constructor type. */
-	declare interface Constructor<T> extends Function {
+	interface Constructor<T> extends Function {
 		new(...params: any[]): T; prototype: T;
 	}
 
@@ -1809,14 +1809,14 @@ declare namespace protobuf {
 	 * Any compatible Buffer instance.
 	 * This is a minimal stand-alone definition of a Buffer instance. The actual type is that declareed by node's typings.
 	 */
-	declare interface Buffer extends Uint8Array {
+	interface Buffer extends Uint8Array {
 	}
 
 	/**
 	 * Any compatible Long instance.
 	 * This is a minimal stand-alone definition of a Long instance. The actual type is that declareed by long.js.
 	 */
-	declare interface Long {
+	interface Long {
 
 		/** Low bits */
 		low: number;
@@ -1841,7 +1841,7 @@ declare namespace protobuf {
 	type OneOfSetter = (value: (string | undefined)) => void;
 
 	/** Various utility functions. */
-	declare namespace util {
+	namespace util {
 
 		/** Helper class for working with the low and high bits of a 64 bit value. */
 		class LongBits {
@@ -2019,7 +2019,7 @@ declare namespace protobuf {
 		 * @param [ifNotSet=false] Merges only if the key is not already set
 		 * @returns Destination object
 		 */
-		function merge(dst: { [k: string]: any }, src: { [k: string]: any }, ifNotSet?: boolean): { [k: string]: any };
+		function merge(dst: { [k: string]: any; }, src: { [k: string]: any; }, ifNotSet?: boolean): { [k: string]: any; };
 
 		/**
 		 * Converts the first character of a string to lower case.
@@ -2043,7 +2043,7 @@ declare namespace protobuf {
 			 * @param message Error message
 			 * @param [properties] Additional properties
 			 */
-			constructor(message: string, properties?: { [k: string]: any });
+			constructor(message: string, properties?: { [k: string]: any; });
 
 			/** So far decoded message instance. */
 			public instance: Message<T>;
@@ -2081,21 +2081,21 @@ declare namespace protobuf {
 		let toJSONOptions: IConversionOptions;
 
 		/** Node's fs module if available. */
-		let fs: { [k: string]: any };
+		let fs: { [k: string]: any; };
 
 		/**
 		 * Converts an object's values to an array.
 		 * @param object Object to convert
 		 * @returns Converted array
 		 */
-		function toArray(object: { [k: string]: any }): any[];
+		function toArray(object: { [k: string]: any; }): any[];
 
 		/**
 		 * Converts an array of keys immediately followed by their respective value to an object, omitting undefined values.
 		 * @param array Array to convert
 		 * @returns Converted object
 		 */
-		function toObject(array: any[]): { [k: string]: any };
+		function toObject(array: any[]): { [k: string]: any; };
 
 		/**
 		 * Tests whether the specified name is a reserved word in JS.
@@ -2419,17 +2419,17 @@ declare namespace protobuf {
 	 * @param mtype Message type
 	 * @returns Codegen instance
 	 */
-	declare function verifier(mtype: Type): Codegen;
+	function verifier(mtype: Type): Codegen;
 
 	/** Wrappers for common types. */
-	declare const wrappers: { [k: string]: IWrapper };
+	const wrappers: { [k: string]: IWrapper; };
 
 	/**
 	 * From object converter part of an {@link IWrapper}.
 	 * @param object Plain object
 	 * @returns Message instance
 	 */
-	type WrapperFromObjectConverter = (this: Type, object: { [k: string]: any }) => Message<{}>;
+	type WrapperFromObjectConverter = (this: Type, object: { [k: string]: any; }) => Message<{}>;
 
 	/**
 	 * To object converter part of an {@link IWrapper}.
@@ -2437,10 +2437,10 @@ declare namespace protobuf {
 	 * @param [options] Conversion options
 	 * @returns Plain object
 	 */
-	type WrapperToObjectConverter = (this: Type, message: Message<{}>, options?: IConversionOptions) => { [k: string]: any };
+	type WrapperToObjectConverter = (this: Type, message: Message<{}>, options?: IConversionOptions) => { [k: string]: any; };
 
 	/** Common type wrapper part of {@link wrappers}. */
-	declare interface IWrapper {
+	interface IWrapper {
 
 		/** From object converter */
 		fromObject?: WrapperFromObjectConverter;
@@ -2450,7 +2450,7 @@ declare namespace protobuf {
 	}
 
 	/** Wire format writer using `Uint8Array` if available, otherwise `Array`. */
-	declare class Writer {
+	class Writer {
 
 		/** Constructs a new writer instance. */
 		constructor();
@@ -2617,7 +2617,7 @@ declare namespace protobuf {
 	}
 
 	/** Wire format writer using node buffers. */
-	declare class BufferWriter extends Writer {
+	class BufferWriter extends Writer {
 
 		/** Constructs a new buffer writer instance. */
 		constructor();
@@ -2650,7 +2650,7 @@ declare namespace protobuf {
 	 * @returns Itself or the generated function if finished
 	 * @throws {Error} If format parameter counts do not match
 	 */
-	type Codegen = (formatStringOrScope?: (string | { [k: string]: any }), ...formatParams: any[]) => (Codegen | Function);
+	type Codegen = (formatStringOrScope?: (string | { [k: string]: any; }), ...formatParams: any[]) => (Codegen | Function);
 
 	/**
 	 * Event listener as used by {@link util.EventEmitter}.
@@ -2666,7 +2666,7 @@ declare namespace protobuf {
 	type FetchCallback = (error: Error, contents?: string) => void;
 
 	/** Options as used by {@link util.fetch}. */
-	declare interface IFetchOptions {
+	interface IFetchOptions {
 
 		/** Whether expecting a binary response */
 		binary?: boolean;

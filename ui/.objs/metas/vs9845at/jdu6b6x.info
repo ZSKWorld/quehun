@@ -1,8 +1,14 @@
 {
+  "objectStatus": {
+    "n34_10mro": {
+      "collapsed": true
+    }
+  },
   "adaptiveTest": true,
   "designImages": [
     "ui://ca43vz0ejdu67plo03",
-    "ui://ca43vz0ejdu67plo08"
+    "ui://ca43vz0ejdu67plo08",
+    "ui://ca43vz0eesu97plomt"
   ],
   "fitScreen": "FitSize"
 }

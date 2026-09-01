@@ -18,6 +18,7 @@ export default class UILogin extends GComponentView {
 	protected txt_routeDelay: fgui.GTextField;
 	protected itxt_account: fgui.GTextInput;
 	protected itxt_password: fgui.GTextInput;
+	protected txt_version: fgui.GTextField;
 	protected btn_logout: fgui.GButton;
 	protected trans_t0: fgui.Transition;
 	public static url: string = "ui://vs9845atjdu6b6x";
@@ -41,7 +42,8 @@ export default class UILogin extends GComponentView {
 		this.txt_routeDelay = <fgui.GTextField>(this.getChildAt(16));
 		this.itxt_account = <fgui.GTextInput>(this.getChildAt(17));
 		this.itxt_password = <fgui.GTextInput>(this.getChildAt(18));
-		this.btn_logout = <fgui.GButton>(this.getChildAt(21));
+		this.txt_version = <fgui.GTextField>(this.getChildAt(19));
+		this.btn_logout = <fgui.GButton>(this.getChildAt(22));
 		this.trans_t0 = this.getTransitionAt(0);
 	}
 }

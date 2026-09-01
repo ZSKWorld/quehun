@@ -25,7 +25,11 @@ export class AccountDO extends BaseDO implements DO.IAccountDO {
 	private _achievementCount: ProtoObject<IAccount_AchievementCount>[] = [];
 	private _favoriteHu: ProtoObject<IFavoriteHu>[] = [];
 	private _badges: ProtoObject<IAccount_Badge>[] = [];
-	private _refundOrderInfo: DO.IRefundInfo;
+	private _refundOrderInfo: DO.IRefundInfo = {
+		orders: [],
+		clearDeadline: 0,
+		message: []
+	};
 
 	get accountId() { return this._accountId; }
 	get nickName() { return this._nickName; }

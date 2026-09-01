@@ -1758,6 +1758,7 @@
     <image id="9c0b7plomq" name="12.jpg" path="/设置/"/>
     <image id="9c0b7plomr" name="13.jpg" path="/设置/"/>
     <image id="9c0b7ploms" name="14.jpg" path="/设置/"/>
+    <image id="esu97plomt" name="1.jpg" path="/11/登录/"/>
   </resources>
   <publish name=""/>
 </packageDescription>

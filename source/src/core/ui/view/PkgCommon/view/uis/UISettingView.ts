@@ -6,19 +6,20 @@ export class UISettingView extends UISetting {
 		const { btn_mask, btn_close, btn_logout, txt_version } = this;
 		btn_mask.onClick(this, this.closeSelf);
 		btn_close.onClick(this, this.closeSelf);
-		btn_logout.onClick(this, () => {
-			$confirmSma(3, $lang(2718)).then(v => {
-				if (!v) return;
-				$gameMgr.logout();
-			});
-		});
+		btn_logout.onClick(this, this.onBtnLogoutClick);
 
-		const { resourceVersion, platform, packageVersion } = $gameMgr;
-		txt_version.text = $lang(2040) + "v" + resourceVersion + "." + platform[0] + "." + packageVersion;
+		txt_version.text = $lang(2040) + $gameMgr.displayVersionStr;
 	}
 
 	refresh(type: 0 | 1 | 2 | 3 | 4) {
 		this.ctrl_type.selectedIndex = type;
+	}
+
+	private onBtnLogoutClick() {
+		$confirmSma(3, $lang(2718)).then(v => {
+			if (!v) return;
+			$gameMgr.logout();
+		});
 	}
 
 	override onOpenAni() { return $uiUtil.popAlphaIn(this); }

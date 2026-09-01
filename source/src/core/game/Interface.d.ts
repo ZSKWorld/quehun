@@ -40,7 +40,10 @@ declare interface IGameManager {
 	get packageVersion(): string;
 	/** 热更版本 */
 	get resourceVersion(): string;
+	/** 登录相关协议版本字符串 */
 	get clientVersionStr(): string;
+	/** ui显示的版本字符串 */
+	get displayVersionStr(): string;
 	/** 使用的货币 */
 	get currency(): number[];
 	/** 支付通道 */

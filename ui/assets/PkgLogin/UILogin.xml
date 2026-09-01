@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" designImage="ui://ca43vz0ejdu67plo08" designImageAlpha="0" bgColorEnabled="true" bgColor="#000000">
-  <controller name="page" pages="0,,1,,2," selected="1"/>
+<component size="1920,1080" designImage="ui://ca43vz0eesu97plomt" designImageAlpha="100" bgColorEnabled="true" bgColor="#000000">
+  <controller name="page" pages="0,,1,,2," selected="0"/>
   <displayList>
     <graph id="n0_mde1" name="scene" xy="0,0" size="100,100" alpha="0" type="rect" lineSize="0"/>
     <image id="n8_h638" name="n8" src="mde1b7r" fileName="Texture/img_1065.png" xy="1189,237" size="620,476" group="n30_10mro"/>
@@ -37,7 +37,10 @@
     <text id="n24_nxde" name="routeDelay" xy="1515,518" pivot="0.5,0.5" size="99,35" group="n30_10mro" fontSize="25" color="#40bf79" leading="0" text="1024ms"/>
     <text id="n29_10mro" name="account" xy="1242,287" size="366,48" group="n30_10mro" fontSize="35" color="#ffffff" vAlign="middle" leading="0" autoSize="none" singleLine="true" text="17839225725@163.com" input="true" prompt="用户名"/>
     <text id="n28_nxde" name="password" xy="1242,405" size="366,48" group="n30_10mro" fontSize="35" color="#ffffff" vAlign="middle" leading="0" autoSize="none" singleLine="true" text="" input="true" prompt="密码" password="true"/>
-    <group id="n30_10mro" name="n30" xy="1189,26" size="705,687" advanced="true">
+    <text id="n35_esu9" name="version" xy="1604,1019" size="220,33" group="n30_10mro" font="SimHei" fontSize="23" color="#7f7f7f" text="v0.16.273.W.4.0.46">
+      <relation target="" sidePair="right-right,bottom-bottom"/>
+    </text>
+    <group id="n30_10mro" name="n30" xy="1189,26" size="705,1026" advanced="true">
       <gearDisplay controller="page" pages="0"/>
     </group>
     <image id="n31_10mro" name="n31" src="10mrob6y" fileName="Texture/img_2422.png" pkg="vx9zwser" xy="1434,448" pivot="0.5,0.5" anchor="true" size="219,219" group="n34_10mro" scale="1.2,1.2">

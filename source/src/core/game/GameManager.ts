@@ -26,6 +26,9 @@ export class GameManager extends Observer implements IGameManager {
 	get clientVersionStr() {
 		return this.platform + "_2022-" + this.resourceVersion;
 	}
+	get displayVersionStr() {
+		return "v" + this.resourceVersion + "." + this.platform[0] + "." + this.packageVersion;
+	}
 	get currency() {
 		const info = $cfgMgr.mall.channel_config[this.payChannelId];
 		if (!info.currency_platforms) return [];
@@ -139,7 +142,7 @@ export class GameManager extends Observer implements IGameManager {
 		if (mousePoint.x != _lastMousePoint.x || mousePoint.y != _lastMousePoint.y) {
 			//当玩家长时间不动，突然动了，通知一下服务器
 			// if (t > 2400) {
-				// $netMgr.requests.heatbeat({ no_operation_counter: 0 });
+			// $netMgr.requests.heatbeat({ no_operation_counter: 0 });
 			// }
 			this._lastHeatBeatTime = $timeUtil.second;
 			_lastMousePoint.setTo(mousePoint.x, mousePoint.y);

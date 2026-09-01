@@ -2,11 +2,11 @@ import { GradientColor_FS as fs, GradientColor_VS as vs } from "../Shader2DDefin
 
 export class GradientColorMaterial extends Laya.Material {
 	private static readonly ShaderName = "GradientColor";
-	private static DEF_xture: Laya.ShaderDefine;
+	private static DEF_texture: Laya.ShaderDefine;
 	private static DEF_NoiseTex: Laya.ShaderDefine;
 
 	static init() {
-		GradientColorMaterial.DEF_xture = Laya.Shader3D.getDefineByName("DEF_xture");
+		GradientColorMaterial.DEF_texture = Laya.Shader3D.getDefineByName("DEF_texture");
 		GradientColorMaterial.DEF_NoiseTex = Laya.Shader3D.getDefineByName("DEF_NoiseTex");
 
 		const uniformMap = {
@@ -18,7 +18,7 @@ export class GradientColorMaterial extends Laya.Material {
 			u_LightWidth: 0,
 		};
 		const shader = Laya.Shader3D.add(GradientColorMaterial.ShaderName);
-		shader.shaderType = Laya.ShaderFeatureType.D3;
+		shader.shaderType = Laya.ShaderFeatureType.D2_TextureSV;
 		const subShader = new Laya.SubShader(Laya.SubShader.DefaultAttributeMap, uniformMap, defaultValue);
 		shader.addSubShader(subShader);
 		subShader.addShaderPass(vs, fs);
@@ -34,7 +34,7 @@ export class GradientColorMaterial extends Laya.Material {
 	set u_LightWidth(value) { this.setFloat("u_LightWidth", value); }
 	get texture() { return this.getTexture("texture"); }
 	set texture(value) {
-		this.setDefine(GradientColorMaterial.DEF_xture, !!value);
+		this.setDefine(GradientColorMaterial.DEF_texture, !!value);
 		this.setTexture("texture", value);
 	}
 	get u_NoiseTex() { return this.getTexture("u_NoiseTex"); }

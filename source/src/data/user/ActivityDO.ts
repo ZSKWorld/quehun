@@ -273,19 +273,19 @@ export class ActivityDO extends BaseDO implements DO.IActivityDO {
 	private onNotifyActivityChange(data: INotifyActivityChange) {
 		const activityList = this._activityList;
 		const { new_activities, end_activities } = $decodeProtoData(data);
-		if (new_activities && new_activities.length) {
+		if (new_activities?.length > 0) {
 			new_activities.forEach(v => {
 				activityList[v.activity_id] = v;
 			});
 		}
 
-		if (end_activities && end_activities.length) {
+		if (end_activities?.length > 0) {
 			end_activities.forEach(v => {
 				delete activityList[v];
 			});
 		}
 
-		const changed = (new_activities && new_activities.length > 0) || (end_activities && end_activities.length > 0);
+		const changed = new_activities?.length > 0 || end_activities?.length > 0;
 		changed && this.dispatch(EUserEvent.OnActivityListChanged);
 	}
 
@@ -294,11 +294,11 @@ export class ActivityDO extends BaseDO implements DO.IActivityDO {
 		if (data.exchange_records) {
 			activityData.exchange_records = data.exchange_records;
 		}
-		if (data.task_progress_list) {
+		if (data.task_progress_list?.length > 0) {
 			data.task_progress_list.forEach(v => {
 				activityData.task_progress_list[v.id] = v;
 			});
-			data.task_progress_list.length && this.dispatch(EUserEvent.OnActivityTaskProgressChanged);
+			this.dispatch(EUserEvent.OnActivityTaskProgressChanged);
 		}
 		if (data.accumulated_point_list) {
 			activityData.accumulated_point_list = data.accumulated_point_list;
@@ -306,11 +306,11 @@ export class ActivityDO extends BaseDO implements DO.IActivityDO {
 		if (data.rank_data_list) {
 			activityData.rank_data_list = data.rank_data_list;
 		}
-		if (data.flip_task_progress_list) {
+		if (data.flip_task_progress_list?.length > 0) {
 			data.flip_task_progress_list.forEach(v => {
 				activityData.flip_task_progress_list[v.id] = v;
 			});
-			data.flip_task_progress_list.length && this.dispatch(EUserEvent.OnActivityFlipTaskProgressChanged);
+			this.dispatch(EUserEvent.OnActivityFlipTaskProgressChanged);
 		}
 		if (data.sign_in_data) {
 			activityData.sign_in_data = data.sign_in_data;
@@ -318,17 +318,17 @@ export class ActivityDO extends BaseDO implements DO.IActivityDO {
 		if (data.richman_data) {
 			activityData.richman_data = data.richman_data;
 		}
-		if (data.period_task_progress_list) {
+		if (data.period_task_progress_list?.length > 0) {
 			data.period_task_progress_list.forEach(v => {
 				activityData.period_task_progress_list[v.id] = v;
 			});
-			data.period_task_progress_list.length && this.dispatch(EUserEvent.OnActivityPeriodTaskProgressChanged);
+			this.dispatch(EUserEvent.OnActivityPeriodTaskProgressChanged);
 		}
-		if (data.random_task_progress_list) {
+		if (data.random_task_progress_list?.length > 0) {
 			data.random_task_progress_list.forEach(v => {
 				activityData.random_task_progress_list[v.id] = v;
 			});
-			data.random_task_progress_list.length && this.dispatch(EUserEvent.OnActivityRandomTaskProgressChanged);
+			this.dispatch(EUserEvent.OnActivityRandomTaskProgressChanged);
 		}
 		if (data.chest_up_data) {
 			activityData.chest_up_data = data.chest_up_data;
@@ -348,11 +348,11 @@ export class ActivityDO extends BaseDO implements DO.IActivityDO {
 		if (data.feed_data) {
 			activityData.feed_data = data.feed_data;
 		}
-		if (data.segment_task_progress_list) {
+		if (data.segment_task_progress_list?.length > 0) {
 			data.segment_task_progress_list.forEach(v => {
 				activityData.segment_task_progress_list[v.id] = v;
 			});
-			data.segment_task_progress_list.length && this.dispatch(EUserEvent.OnActivitySegmentTaskProgressChanged);
+			this.dispatch(EUserEvent.OnActivitySegmentTaskProgressChanged);
 		}
 		if (data.vote_records) {
 			activityData.vote_records = data.vote_records;

@@ -22,6 +22,9 @@ declare type PartialAll<T> = { [P in keyof T]?: Partial<T[P]>; };
 declare type KeyMap<T> = { [key: string]: T; };
 declare type Class<T> = { new(...args: any[]): T; prototype: T; };
 
+declare type Name = string;
+declare type ID = number;
+
 declare const $logger: ILogger;
 declare const $gameMgr: IGameManager;
 declare const $netMgr: INetManager;

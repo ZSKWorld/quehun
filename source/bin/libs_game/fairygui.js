@@ -1849,7 +1849,7 @@
             if (index >= 0 && index < this._children.length)
                 return this._children[index];
             else
-                throw new Error("Invalid child index:" + index + "," + this._children.length);
+                throw new Error("Invalid child index");
         }
         getChild(name, classType) {
             var cnt = this._children.length;
@@ -2263,7 +2263,7 @@
         }
         setMask(value, reversed) {
             if (this._mask && this._mask != value) {
-                if (this._mask.blendMode == "destination-out")
+                if (this._mask.blendMode == "destination-out" || this._mask.blendMode == "destinationOut")
                     this._mask.blendMode = null;
             }
             this._mask = value;
@@ -7235,6 +7235,9 @@
         }
         setSkeleton(skeleton, anchor) {
             this.url = null;
+            let comp = skeleton.getComponent(Laya.Spine2DRenderNode);
+            if (comp)
+                comp.autoAdjust = true;
             this._content = skeleton;
             this._container.addChild(this._content);
             this._content.pos(anchor.x, anchor.y);
@@ -14321,7 +14324,8 @@ const labelPadding = [2, 2, 2, 2];
         _transChanged(kind) {
             //@ts-ignore 3.3 add this
             super._transChanged(kind);
-            this.markChanged(1);
+            if (kind !== Laya.TransformKind.Pos)
+                this.markChanged(1);
         }
         get texture() {
             return this._source;
@@ -17000,6 +17004,51 @@ const labelPadding = [2, 2, 2, 2];
             return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
         }
         static setColorFilter(obj, color) {
+            if (Laya.PostProcess2D) {
+                if (typeof (color) === "string") {
+                    if (Laya.Color.stringToHex(color) === 0xFFFFFF)
+                        color = null;
+                }
+                if (typeof (color) === "boolean") {
+                    if (color) {
+                        if (!obj.postProcess)
+                            obj.postProcess = new Laya.PostProcess2D();
+                        let effect = obj.postProcess.getEffect(Laya.GrayscaleEffect2D);
+                        if (!effect)
+                            effect = obj.postProcess.addEffect(new Laya.GrayscaleEffect2D());
+                    }
+                    else {
+                        if (obj.postProcess) {
+                            let effect = obj.postProcess.getEffect(Laya.GrayscaleEffect2D);
+                            if (effect) {
+                                obj.postProcess.removeEffect(effect);
+                            }
+                        }
+                    }
+                }
+                else {
+                    if (color) {
+                        if (!obj.postProcess)
+                            obj.postProcess = new Laya.PostProcess2D();
+                        let effect = obj.postProcess.getEffect(Laya.ColorEffect2D);
+                        if (!effect)
+                            effect = obj.postProcess.addEffect(new Laya.ColorEffect2D());
+                        if (Array.isArray(color))
+                            effect.setByMatrix(getColorMatrix(color[0], color[1], color[2], color[3]));
+                        else
+                            effect.setColor(color);
+                    }
+                    else {
+                        if (obj.postProcess) {
+                            let effect = obj.postProcess.getEffect(Laya.ColorEffect2D);
+                            if (effect) {
+                                obj.postProcess.removeEffect(effect);
+                            }
+                        }
+                    }
+                }
+                return;
+            }
             var filters = obj.filters;
             var index = filters ? filters.findIndex(f => f instanceof Laya.ColorFilter) : -1;
             var filter = index !== -1 ? filters[index] : null;

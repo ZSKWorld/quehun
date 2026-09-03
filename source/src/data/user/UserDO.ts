@@ -9,6 +9,7 @@ import { ClientValueDO } from "./ClientValueDO";
 import { CommonViewDO } from "./CommonViewDO";
 import { FriendDO } from "./FriendDO";
 import { MailDO } from "./MailDO";
+import { QuestionnaireDO } from "./QuestionnaireDO";
 import { RechargeDO } from "./RechargeDO";
 import { ServerSettingDO } from "./ServerSettingDO";
 import { SettingDO } from "./SettingDO";
@@ -44,6 +45,7 @@ export class UserDO extends BaseDO implements DO.IUserDO {
 	mail = new MailDO();
 	bag = new BagDO();
 	achievement = new AchievementDO();
+	questionnaire = new QuestionnaireDO();
 
 	setting = new SettingDO();
 

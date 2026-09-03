@@ -7,15 +7,14 @@ export class AnnouncementDO extends BaseDO implements DO.IAnnouncementDO {
 	private get lang() {
 		return $gameMgr.clientType == EClientType.EN && $gameMgr.language == ELanguage.KR ? 'us-kr' : $gameMgr.language.toString();
 	}
-	private get platform() { return $gameMgr.inDmm ? 'web_dmm' : 'web'; }
 	get announcements() { return this._announcements; }
 
 	isRead(id: number) { return this._readList.indexOf(id) != -1; }
 
 	fetchAnnouncement() {
-		$netMgr.requests.fetchAnnouncement({
+		return $netMgr.requests.fetchAnnouncement({
 			lang: this.lang,
-			platform: this.platform,
+			platform: $gameMgr.reqPlatform,
 		});
 	}
 
@@ -39,7 +38,7 @@ export class AnnouncementDO extends BaseDO implements DO.IAnnouncementDO {
 	private onAnnouncementUpdate(data: INotifyAnnouncementUpdate) {
 		for (let i = 0; i < data.update_list.length; i++) {
 			const e = data.update_list[i];
-			if (e.lang == this.lang && e.platform == this.platform) {
+			if (e.lang == this.lang && e.platform == $gameMgr.reqPlatform) {
 				this.fetchAnnouncement();
 				break;
 			}

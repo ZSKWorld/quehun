@@ -13,5 +13,6 @@ declare namespace DO {
 		mail: IMailDO;
 		bag: IBagDO;
 		achievement: IAchievementDO;
+		questionnaire: IQuestionnaireDO;
 	}
 }

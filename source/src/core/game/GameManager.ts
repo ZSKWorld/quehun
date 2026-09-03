@@ -13,6 +13,10 @@ export class GameManager extends Observer implements IGameManager {
 	private _ipIndex: number;
 	get released() { return false; }
 	get platform() { return "WebGL"; };
+	get reqPlatform() {
+		if (this.inDmm) return "web_dmm";
+		return "web";
+	}
 	get detailPlatform() { return "Web"; };
 	get inDmm() { return this._inDmm; }
 	get language() { return ELanguage.CHS; }
@@ -21,7 +25,7 @@ export class GameManager extends Observer implements IGameManager {
 		return "4.0.46";
 	}
 	get resourceVersion() {
-		return "0.16.273";
+		return "0.16.274";
 	}
 	get clientVersionStr() {
 		return this.platform + "_2022-" + this.resourceVersion;

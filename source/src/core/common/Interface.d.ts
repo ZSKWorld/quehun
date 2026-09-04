@@ -198,6 +198,8 @@ declare interface IItemInfo_SkinInfo {
 }
 
 declare interface IGameUtil {
+	/** 空函数 */
+	emptyFunc(): void;
 	/** 加密标准字符串，若出现不认识的字符，原样保留 */
 	encrypt(str: string): string;
 	/** 解密标准字符，与加密配合使用 */

@@ -55,8 +55,9 @@ export class InitGlobalCommand extends Command {
 		this.registerConfirm("$confirmSma", EViewID.UIConfirmSmallView);
 
 		$windowImmit("$lang", function (id: number, ...args: any[]) {
-			const d_excel = $cfgMgr.str.str[id];
 			let s = "";
+			if (!$cfgMgr || !$cfgMgr.str || !$cfgMgr.str.str) return s;
+			const d_excel = $cfgMgr.str.str[id];
 			if (d_excel) {
 				s = d_excel[$gameMgr.language];
 				if (args) {
@@ -69,8 +70,9 @@ export class InitGlobalCommand extends Command {
 		});
 
 		$windowImmit("$langNet", function (id: number, ...args: any[]) {
-			const d_excel = $cfgMgr.info.error[id];
 			let s = "";
+			if (!$cfgMgr || !$cfgMgr.info || !$cfgMgr.info.error) return s;
+			const d_excel = $cfgMgr.info.error[id];
 			if (d_excel) {
 				s = d_excel[$gameMgr.language];
 				if (args) {

@@ -18,7 +18,7 @@ export class UISettingView extends UISetting {
 	private onBtnLogoutClick() {
 		$confirmSma(3, $lang(2718)).then(v => {
 			if (!v) return;
-			$gameMgr.logout();
+			$gameMgr.exitGame(true);
 		});
 	}
 

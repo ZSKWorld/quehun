@@ -3,6 +3,7 @@ const EncryptMap: Readonly<number> = EncryptList.reduce((pv, cv, i) => (pv[cv] =
 
 @Singleton
 export class GameUtil implements IGameUtil {
+	emptyFunc() { }
 
 	encrypt(str: string) {
 		if (!str) return str;

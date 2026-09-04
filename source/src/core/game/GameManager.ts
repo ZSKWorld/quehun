@@ -106,63 +106,40 @@ export class GameManager extends Observer implements IGameManager {
 	get ipInfo() { return this._config.ip[this._ipIndex]; }
 	get zoneIds() { return this.ipInfo.zone_ids; }
 
-	private _hangOutTime = 0;
-	private _lastHeatBeatTime = $timeUtil.second;
-	private _lastMousePoint = new Laya.Point();
-
 	init(ipIndex: number, config: IConfig) {
 		this._ipIndex = ipIndex;
 		this._config = config;
-	}
-
-	exit() {
-		window.location.reload();
 	}
 
 	showConfirm(msg: string) {
 		return Promise.resolve(confirm(msg));
 	}
 
-	logout() {
-		$netMgr.requests.logout();
+	@InjectNetEvent(ENetNotify.NotifyAnotherLogin, false, [true, 2324])
+	@InjectNetEvent(ENetNotify.NotifyAccountLogout, false, [false, 2329])
+	exitGame(logout: boolean, tipLangId?: number) {
+		if (logout) {
+			$netMgr.requests.logout();
+			$localDataMgr.setBool(ELocalDataKey.AutoLogin, false);
+		}
 		$netMgr.closeAll();
-		$localDataMgr.setBool(ELocalDataKey.AutoLogin, false);
-		this.exit();
+		if (tipLangId) {
+			$confirmSma(2, $lang(tipLangId)).then(() => {
+				// window.location.reload();
+			});
+		} else {
+			// window.location.reload();
+		}
 	}
 
 	@InjectGlobalEvent(EGlobalEvent.LoginSuccess)
 	private loginSuccess() {
 		$netMgr.requests.fetchConnectionInfo();
-		Laya.timer.loop(1000, this, this.secondCheckLoop);
-	}
-
-	private secondCheckLoop() {
-		if (!$netMgr.lobbyConnected) return;
-		this._hangOutTime += 1;
-		const { _hangOutTime, _lastHeatBeatTime, _lastMousePoint } = this;
-		const t = $timeUtil.second - _lastHeatBeatTime;
-
-		const mousePoint = Laya.stage.getMousePoint();
-		if (mousePoint.x != _lastMousePoint.x || mousePoint.y != _lastMousePoint.y) {
-			//当玩家长时间不动，突然动了，通知一下服务器
-			// if (t > 2400) {
-			// $netMgr.requests.heatbeat({ no_operation_counter: 0 });
-			// }
-			this._lastHeatBeatTime = $timeUtil.second;
-			_lastMousePoint.setTo(mousePoint.x, mousePoint.y);
-		}
-
-		$localDataMgr.setNum(ELocalDataKey.MultiLogin, $timeUtil.second);
-
-		//23/12/27新增，每6分钟同步服务器时间
-		if (_hangOutTime % 360 == 0) {
+		//每6分钟同步服务器时间
+		Laya.timer.loop(360 * 1000, this, () => {
+			if (!$netMgr.lobbyConnected) return;
 			$netMgr.requests.fetchServerTime();
-			// $netMgr.requests.heatbeat({ no_operation_counter: t });
-			//客户端有能力断线的话，超过50分钟就断线
-			if (t >= 3000) {
-				this.onNotifyAccountLogout();
-			}
-		}
+		});
 	}
 
 	@InjectNetEvent(ENetMessage.fetchConnectionInfo)
@@ -174,23 +151,6 @@ export class GameManager extends Observer implements IGameManager {
 	@InjectNetEvent(ENetMessage.oauth2Login)
 	private onLogin() {
 		$netMgr.requests.loginBeat({ contract: this.p2 });
-	}
-
-	@InjectNetEvent(ENetNotify.NotifyAnotherLogin)
-	private onNotifyAnotherLogin() {
-		$netMgr.closeAll();
-		$localDataMgr.setBool(ELocalDataKey.AutoLogin, false);
-		$confirmSma(2, $lang(2324)).then(v => {
-			// window.location.reload();
-		});
-	}
-
-	@InjectNetEvent(ENetNotify.NotifyAccountLogout)
-	private onNotifyAccountLogout() {
-		$netMgr.closeAll();
-		$confirmSma(2, $lang(2329)).then(v => {
-			window.location.reload();
-		});
 	}
 
 	@InjectNetEvent(ENetNotify.NotifyClientMessage)

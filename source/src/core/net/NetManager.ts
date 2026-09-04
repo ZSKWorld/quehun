@@ -4,16 +4,21 @@ import { ESocketEvent, WebSocket } from "./WebSocket";
 export class NetManager implements INetManager {
 	private _gateway: string;
 	private _routes: IRouteInfo[];
-	private _requests: IReqMethod;
+	private _requests: IReqMethod = new Proxy({} as any, {
+		get: (target: Object, prop) => {
+			if (target[prop] !== void 0) return target[prop];
+			return $gameUtil.emptyFunc;
+		}
+	});
 
 	private _lobbySocket: WebSocket;
 	private _gameSocket: WebSocket;
 	private _obSocket: WebSocket;
 
 	get requests() { return this._requests; };
-	get lobbyConnected() { return this._lobbySocket?.connected; }
-	get gameConnected() { return this._gameSocket?.connected; }
-	get obConnected() { return this._obSocket?.connected; }
+	get lobbyConnected() { return !!this._lobbySocket?.connected; }
+	get gameConnected() { return !!this._gameSocket?.connected; }
+	get obConnected() { return !!this._obSocket?.connected; }
 
 	async init() {
 		await this.fetchRoutes();
@@ -32,7 +37,14 @@ export class NetManager implements INetManager {
 			else continue;
 			reqs[key] = data => socket.send(ENetMessage[key], data || {});
 		}
-		this._requests = $gameUtil.freeze(reqs);
+		this._requests = $gameUtil.freeze(new Proxy(reqs, {
+			get: (target: Object, prop) => {
+				if (target[prop] !== void 0)
+					return target[prop];
+				$logger.error("请求方法不存在", prop);
+				return $gameUtil.emptyFunc;
+			}
+		}));
 	}
 
 	private initLobby() {

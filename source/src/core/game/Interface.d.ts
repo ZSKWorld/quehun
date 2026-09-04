@@ -58,7 +58,6 @@ declare interface IGameManager {
 	get ipInfo(): IIPInfo;
 	get zoneIds(): number[];
 	init(ipIndex: number, config: IConfig): void;
-	exit(): void;
 	showConfirm(msg: string): Promise<boolean>;
-	logout(): void;
+	exitGame(logout: boolean, tipLangId?: number): void;
 }

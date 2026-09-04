@@ -69,7 +69,7 @@ export class ComLiaoSheCharView extends ComLiaoSheChar {
 		this._selectedData = data;
 		this._selectedItem = item;
 		item.refreshSelected(true, data.charid);
-		if (_selectedData == data && data.charid != $user.character.mainCharId) {
+		if (evt && _selectedData == data && data.charid != $user.character.mainCharId) {
 			$netMgr.requests.changeMainCharacter({ character_id: data.charid });
 		}
 		this.event(EUILiaoSheEvent.OnLiaoSheCharSelected, data.charid);

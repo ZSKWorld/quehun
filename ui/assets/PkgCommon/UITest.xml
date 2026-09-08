@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" bgColor="#000000">
-  <displayList>
-    <component id="n11_5zjl" name="close" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" xy="30,30">
-      <Button icon="ui://vx9zwserdwe0ob8k"/>
-    </component>
-    <component id="n23_maqu" name="n23" src="maquobjk" fileName="Component/Component/右键菜单/ComContextMenu.xml" xy="702,202"/>
-  </displayList>
-</component>

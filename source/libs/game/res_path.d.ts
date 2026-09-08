@@ -987,6 +987,7 @@ declare namespace ResPath {
 		PkgEntrance = "PkgEntrance",
 		PkgLogin = "PkgLogin",
 		PkgMain = "PkgMain",
+		PkgTest = "PkgTest",
 		PkgZDesign = "PkgZDesign",
 	}
 
@@ -997,6 +998,7 @@ declare namespace ResPath {
 		PkgEntrance = "res/ui/PkgEntrance",
 		PkgLogin = "res/ui/PkgLogin",
 		PkgMain = "res/ui/PkgMain",
+		PkgTest = "res/ui/PkgTest",
 		PkgZDesign = "res/ui/PkgZDesign",
 	}
 }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<packageDescription id="mz6x8cs5">
+  <resources>
+    <component id="5zjlobgd" name="UITestMain.xml" path="/" exported="true"/>
+    <component id="ol8q1" name="UITestBezier.xml" path="/" exported="true"/>
+    <component id="ol8q2" name="UITestSpine.xml" path="/" exported="true"/>
+    <component id="ol8q3" name="BtnNormalFit.xml" path="/Component/" exported="true"/>
+    <component id="ol8q5" name="ComBezierPoint.xml" path="/Component/Bezier/" exported="true"/>
+  </resources>
+  <publish name="" genCode="true"/>
+</packageDescription>

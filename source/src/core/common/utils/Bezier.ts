@@ -7,6 +7,50 @@ interface IPoint {
 
 /** 匀速贝塞尔曲线，文档：https://www.freesion.com/article/2280255606/ */
 export class Bezier {
+	/**
+	 * 获取 n 阶贝塞尔曲线在参数 t 处的点
+	 * @param t 参数值，范围 [0, 1]
+	 * @param controlPoints 控制点数组，长度为 n+1，每个点是一个坐标数组
+	 * @returns 曲线上 t 时刻对应的点坐标（与输入点维度相同）
+	 * @throws 当 t 超出范围或控制点列表为空时抛出错误
+	 */
+	static nBezierPoint2D(t: number, controlPoints: IPoint[]) {
+		if (t < 0 || t > 1) {
+			throw new Error('参数 t 必须在 [0, 1] 范围内');
+		}
+		if (controlPoints.length === 0) {
+			throw new Error('至少需要一个控制点');
+		}
+
+		// 复制控制点，避免修改原数组
+		let points = controlPoints;
+		let n = points.length;
+
+		// 逐层降阶，直到只剩一个点
+		while (n > 1) {
+			const newPoints: IPoint[] = [];
+			for (let i = 0; i < n - 1; i++) {
+				const p1 = points[i];
+				const p2 = points[i + 1];
+				// 线性插值： (1-t)*p1 + t*p2
+				const interpolated = { x: (1 - t) * p1.x + t * p2.x, y: (1 - t) * p1.y + t * p2.y };
+				newPoints.push(interpolated);
+			}
+			points = newPoints;
+			n = points.length;
+		}
+
+		return points[0];
+	}
+
+	static nBezierPoints2D(controlPoints: IPoint[], pointNum: number) {
+		const points: IPoint[] = [];
+		for (let i = 0; i <= pointNum; i++) {
+			points.push(this.nBezierPoint2D(i / pointNum, controlPoints));
+		}
+		return points;
+	}
+
 	/** 普通2d贝塞尔点 */
 	static bezierPoint2D(start: IPoint, end: IPoint, control: IPoint, t: number, out?: IPoint) {
 		const u = 1 - t;
@@ -31,7 +75,7 @@ export class Bezier {
 	static bezierPoints2D(start: IPoint, end: IPoint, control: IPoint, pointNum: number) {
 		const points: IPoint[] = [];
 		for (let i = 0; i <= pointNum; i++) {
-			points.push(this.bezierPoint2D(start, end, control, i / pointNum))
+			points.push(this.bezierPoint2D(start, end, control, i / pointNum));
 		}
 		return points;
 	}

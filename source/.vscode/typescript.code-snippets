@@ -83,6 +83,14 @@
 			"//#endregion",
 		],
 	},
+	"创建debug块": {
+		"prefix": "debug",
+		"body": [
+			"//#if DEBUG",
+			"${0}",
+			"//#end",
+		],
+	},
 	"uisetlist": {
 		"prefix": "uisetlist",
 		"body": [

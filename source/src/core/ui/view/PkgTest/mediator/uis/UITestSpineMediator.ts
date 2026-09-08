@@ -1,14 +1,16 @@
 import { MediatorBase } from "../../../../../mvc/view/MediatorBase";
-import { UITestView } from "../../view/uis/UITestView";
+import { UITestSpineView } from "../../view/uis/UITestSpineView";
 
-export interface IUITestData {
+export interface IUITestSpineData {
 
 }
 
-export class UITestMediator extends MediatorBase<UITestView, IUITestData> {
+export class UITestSpineMediator extends MediatorBase<UITestSpineView, IUITestSpineData> {
+
 	override onAwake() {
-		
+
 	}
+
 }
 
 class TestSpine extends Laya.Script {

@@ -748,6 +748,7 @@ declare enum ECfgLangField {
 declare enum EColorString {
 	_000000 = "#000000",
 	_000080 = "#000080",
+	_0000ff = "#0000ff",
 	_00aaff = "#00aaff",
 	_00ff00 = "#00ff00",
 	_2a1e25 = "#2a1e25",

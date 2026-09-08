@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1920,1080" bgColor="#000000">
+  <displayList>
+    <graph id="n17_ol8q" name="n17" xy="0,0" size="1920,1080" type="rect" lineSize="0" fillColor="#ff999999"/>
+    <component id="n11_5zjl" name="close" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="0,0">
+      <Button icon="ui://vx9zwserdwe0ob8k"/>
+    </component>
+    <component id="n13_ol8q" name="spineTest" src="ol8q3" fileName="Component/BtnNormalFit.xml" xy="810,440" group="n15_ol8q">
+      <Button title="spine测试" titleFontSize="35"/>
+    </component>
+    <component id="n14_ol8q" name="bezierTest" src="ol8q3" fileName="Component/BtnNormalFit.xml" xy="810,540" group="n15_ol8q">
+      <Button title="贝塞尔曲线测试" titleFontSize="35"/>
+    </component>
+    <group id="n15_ol8q" name="n15" xy="810,440" size="300,200" advanced="true" layout="vt" excludeInvisibles="true">
+      <relation target="" sidePair="center-center,middle-middle"/>
+    </group>
+  </displayList>
+</component>

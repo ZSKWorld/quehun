@@ -28,10 +28,12 @@ export class InitGameCommand extends Command {
 		};
 		onResize();
 		stage.on(Laya.Event.RESIZE, this, onResize);
+		//#if DEBUG
 		if (!Laya.Browser.onPC) {
 			const sc = await $gameUtil.loadScript("libs_game/vconsole.min.js");
 			sc && new window["VConsole"]();
 		}
+		//#end
 
 		ShaderManager.Inst.init();
 		MjpAtlasLoader.Inst.init();
@@ -40,8 +42,25 @@ export class InitGameCommand extends Command {
 
 		const [config] = await Promise.all([
 			$loadMgr.fetch<IConfig>(ResPath.EConfigPath.GameConfig, Laya.Loader.JSON),
-			$loadMgr.loadPackage([ResPath.EPkgPath.PkgCommon, ResPath.EPkgPath.PkgEntrance]),
+			$loadMgr.loadPackage([
+				//#if DEBUG
+				ResPath.EPkgPath.PkgTest,
+				//#end
+				ResPath.EPkgPath.PkgCommon,
+				ResPath.EPkgPath.PkgEntrance
+			]),
 		]);
+
+		//#if DEBUG
+		const btn = fgui.UIPackage.createObject("PkgTest", "BtnNormalFit").asButton;
+		btn.title = "测试";
+		btn.setSize(130, 80);
+		btn.setXY(1790, 1000);
+		$uiMgr.addToLayer(btn, ELayer.UITop);
+		btn.onClick(this, () => {
+			$uiMgr.openView(EViewID.UITestMainView);
+		});
+		//#end
 
 		$logger.setEnable(true);
 		await $loadMgr.load([ResPath.EFontPath.HYWH, ResPath.EFontPath.Fengyu, ResPath.EFontPath.HYYANKAIW, ResPath.EFontPath.Hanyi]);

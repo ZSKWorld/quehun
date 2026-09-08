@@ -4,6 +4,7 @@ import PkgCommonBinder from "../core/ui/ui/PkgCommon/PkgCommonBinder";
 import PkgEntranceBinder from "../core/ui/ui/PkgEntrance/PkgEntranceBinder";
 import PkgLoginBinder from "../core/ui/ui/PkgLogin/PkgLoginBinder";
 import PkgMainBinder from "../core/ui/ui/PkgMain/PkgMainBinder";
+import PkgTestBinder from "../core/ui/ui/PkgTest/PkgTestBinder";
 import { BtnBuyView } from "../core/ui/view/PkgCommon/view/btns/BtnBuyView";
 import { BtnCheckRichTxtRightView } from "../core/ui/view/PkgCommon/view/btns/BtnCheckRichTxtRightView";
 import { BtnCheckTxtRightView } from "../core/ui/view/PkgCommon/view/btns/BtnCheckTxtRightView";
@@ -120,8 +121,6 @@ import { UIRechargeView } from "../core/ui/view/PkgCommon/view/uis/UIRechargeVie
 import { UIRechargeMediator } from "../core/ui/view/PkgCommon/mediator/uis/UIRechargeMediator";
 import { UISettingView } from "../core/ui/view/PkgCommon/view/uis/UISettingView";
 import { UISettingMediator } from "../core/ui/view/PkgCommon/mediator/uis/UISettingMediator";
-import { UITestView } from "../core/ui/view/PkgCommon/view/uis/UITestView";
-import { UITestMediator } from "../core/ui/view/PkgCommon/mediator/uis/UITestMediator";
 import { UITextInputView } from "../core/ui/view/PkgCommon/view/uis/UITextInputView";
 import { UITextInputMediator } from "../core/ui/view/PkgCommon/mediator/uis/UITextInputMediator";
 import { UIChooseServerView } from "../core/ui/view/PkgEntrance/view/uis/UIChooseServerView";
@@ -174,6 +173,12 @@ import { UIVideoView } from "../core/ui/view/PkgMain/view/uis/UIVideoView";
 import { UIVideoMediator } from "../core/ui/view/PkgMain/mediator/uis/UIVideoMediator";
 import { UIVisitView } from "../core/ui/view/PkgMain/view/uis/UIVisitView";
 import { UIVisitMediator } from "../core/ui/view/PkgMain/mediator/uis/UIVisitMediator";
+import { UITestBezierView } from "../core/ui/view/PkgTest/view/uis/UITestBezierView";
+import { UITestBezierMediator } from "../core/ui/view/PkgTest/mediator/uis/UITestBezierMediator";
+import { UITestMainView } from "../core/ui/view/PkgTest/view/uis/UITestMainView";
+import { UITestMainMediator } from "../core/ui/view/PkgTest/mediator/uis/UITestMainMediator";
+import { UITestSpineView } from "../core/ui/view/PkgTest/view/uis/UITestSpineView";
+import { UITestSpineMediator } from "../core/ui/view/PkgTest/mediator/uis/UITestSpineMediator";
 import { Command } from "../core/mvc/controller/Command";
 
 export class InitViewCommand extends Command {
@@ -183,6 +188,7 @@ export class InitViewCommand extends Command {
 		PkgEntranceBinder.bindAll();
 		PkgLoginBinder.bindAll();
 		PkgMainBinder.bindAll();
+		PkgTestBinder.bindAll();
 
 		const register = $facade.registerView.bind($facade) as typeof $facade.registerView;
 		//Btns
@@ -293,7 +299,6 @@ export class InitViewCommand extends Command {
 		register(EViewID.UIPaymentView, EViewType.UI, UIPaymentView, UIPaymentMediator);
 		register(EViewID.UIRechargeView, EViewType.UI, UIRechargeView, UIRechargeMediator);
 		register(EViewID.UISettingView, EViewType.UI, UISettingView, UISettingMediator);
-		register(EViewID.UITestView, EViewType.UI, UITestView, UITestMediator);
 		register(EViewID.UITextInputView, EViewType.UI, UITextInputView, UITextInputMediator);
 		register(EViewID.UIChooseServerView, EViewType.UI, UIChooseServerView, UIChooseServerMediator);
 		register(EViewID.UIEntranceView, EViewType.UI, UIEntranceView, UIEntranceMediator);
@@ -320,5 +325,8 @@ export class InitViewCommand extends Command {
 		register(EViewID.UITreasureView, EViewType.UI, UITreasureView, UITreasureMediator);
 		register(EViewID.UIVideoView, EViewType.UI, UIVideoView, UIVideoMediator);
 		register(EViewID.UIVisitView, EViewType.UI, UIVisitView, UIVisitMediator);
+		register(EViewID.UITestBezierView, EViewType.UI, UITestBezierView, UITestBezierMediator);
+		register(EViewID.UITestMainView, EViewType.UI, UITestMainView, UITestMainMediator);
+		register(EViewID.UITestSpineView, EViewType.UI, UITestSpineView, UITestSpineMediator);
 	}
 }

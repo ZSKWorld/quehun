@@ -109,7 +109,6 @@ EViewID = {
 	UIPaymentView: "UIPaymentView",
 	UIRechargeView: "UIRechargeView",
 	UISettingView: "UISettingView",
-	UITestView: "UITestView",
 	UITextInputView: "UITextInputView",
 	UIChooseServerView: "UIChooseServerView",
 	UIEntranceView: "UIEntranceView",
@@ -136,4 +135,7 @@ EViewID = {
 	UITreasureView: "UITreasureView",
 	UIVideoView: "UIVideoView",
 	UIVisitView: "UIVisitView",
+	UITestBezierView: "UITestBezierView",
+	UITestMainView: "UITestMainView",
+	UITestSpineView: "UITestSpineView",
 }

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1920,1080" bgColor="#000000">
+  <displayList>
+    <graph id="n12_ol8q" name="n12" xy="0,0" size="1920,1080" type="rect" lineSize="0" fillColor="#ff000000"/>
+    <component id="n11_5zjl" name="close" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="0,0">
+      <Button icon="ui://vx9zwserdwe0ob8k"/>
+    </component>
+    <graph id="n13_ol8q" name="canvas" xy="110,110" size="1200,860" type="rect" lineSize="0"/>
+    <component id="n15_ol8q" name="add" src="ol8q3" fileName="Component/BtnNormalFit.xml" xy="1515,110" size="200,100">
+      <Button title="添加点"/>
+    </component>
+    <component id="n16_ol8q" name="remove" src="ol8q3" fileName="Component/BtnNormalFit.xml" xy="1513,213" size="200,100">
+      <Button title="删除点"/>
+    </component>
+  </displayList>
+</component>

@@ -13,7 +13,6 @@ export class InitViewInfoCommand extends Command {
 			[EViewID.UIItemDetailView]: [UIBottom, Popup],
 			[EViewID.UILoadingView]: [UITop],
 			[EViewID.UILoading2View]: [UITop],
-			[EViewID.UITestView]: [],
 			[EViewID.UIChooseServerView]: [],
 			[EViewID.UIEntranceView]: [],
 			[EViewID.UIBindPhoneView]: [],
@@ -45,7 +44,11 @@ export class InitViewInfoCommand extends Command {
 			[EViewID.UITextInputView]: [UIBottom, Popup],
 			[EViewID.UIAchievementDetailView]: [],
 			[EViewID.UIChangeSkinView]: [],
-			[EViewID.UIVisitView]: []
+			[EViewID.UIVisitView]: [],
+
+			[EViewID.UITestBezierView]: [UITop],
+			[EViewID.UITestMainView]: [UITop],
+			[EViewID.UITestSpineView]: [UITop]
 		};
 		for (const viewId in viewMap) {
 			const [layer, category] = viewMap[viewId];

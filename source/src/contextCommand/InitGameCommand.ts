@@ -3,6 +3,7 @@ import { LobbyBgManager } from "../core/game/LobbyBgManager";
 import { MjpAtlasLoader } from "../core/game/MjpAtlasLoader";
 import { Command } from "../core/mvc/controller/Command";
 import { ShaderManager } from "../core/shader/ShaderManager";
+import { ActivityOverviewManager } from "../core/ui/view/PkgActivityOverview/script/ActivityOverviewManager";
 
 
 export class InitGameCommand extends Command {
@@ -83,6 +84,6 @@ export class InitGameCommand extends Command {
 
 		$netMgr.connectLobby();
 
-		$facade.dispatch(EGlobalEvent.OnInitGameCompleted);
+		$facade.dispatch(EGlobalEvent.OnGameInited);
 	}
 }

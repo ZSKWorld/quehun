@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1120,750" designImage="ui://ca43vz0ehf797plomw" designImageOffsetX="-596" designImageOffsetY="-212">
+  <displayList>
+    <loader id="n1_hf79" name="bg" xy="0,0" size="1120,750" fill="scaleFree"/>
+    <component id="n2_hf79" name="go" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="371,599" size="382,124">
+      <Button icon="ui://iooyyksihf79obao"/>
+    </component>
+  </displayList>
+</component>

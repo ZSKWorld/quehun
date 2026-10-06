@@ -74,7 +74,6 @@
     <component id="qke2ob9p" name="UIBag.xml" path="/" exported="true"/>
     <component id="qke2ob9q" name="UIShop.xml" path="/" exported="true"/>
     <component id="qke2ob9r" name="UITreasure.xml" path="/" exported="true"/>
-    <component id="ktwpob9s" name="UIActivity.xml" path="/" exported="true"/>
     <component id="ktwpob9t" name="UIMail.xml" path="/" exported="true"/>
     <component id="ktwpob9u" name="UIRank.xml" path="/" exported="true"/>
     <component id="ktwpob9v" name="UIAnnouncement.xml" path="/" exported="true"/>
@@ -87,20 +86,15 @@
     <image id="dwe0oba4" name="img_3594.png" path="/Texture/"/>
     <image id="dwe0oba5" name="img_3593.png" path="/Texture/"/>
     <image id="dwe0oba6" name="img_3356.png" path="/Texture/"/>
-    <image id="dwe0oba7" name="img_2985.png" path="/Texture/"/>
-    <image id="dwe0oba8" name="img_2919.png" path="/Texture/"/>
     <image id="dwe0oba9" name="img_285.png" path="/Texture/"/>
     <image id="dwe0obaa" name="img_2609.png" path="/Texture/"/>
     <image id="dwe0obab" name="img_2504.png" path="/Texture/"/>
-    <image id="dwe0obac" name="img_2266.png" path="/Texture/"/>
-    <image id="dwe0obad" name="img_2080.png" path="/Texture/"/>
     <image id="dwe0obae" name="img_2034.png" path="/Texture/"/>
     <image id="dwe0obaf" name="img_2033.png" path="/Texture/"/>
     <image id="dwe0obag" name="img_2032.png" path="/Texture/"/>
     <image id="dwe0obah" name="img_2031.png" path="/Texture/"/>
     <image id="dwe0obai" name="img_18.png" path="/Texture/"/>
     <image id="dwe0obal" name="img_1676.png" path="/Texture/"/>
-    <image id="dwe0obam" name="img_1428.png" path="/Texture/"/>
     <image id="dwe0oban" name="img_1072.png" path="/Texture/"/>
     <image id="dwe0obao" name="img_4026.png" path="/Texture/"/>
     <image id="dwe0obar" name="img_1831.png" path="/Texture/"/>

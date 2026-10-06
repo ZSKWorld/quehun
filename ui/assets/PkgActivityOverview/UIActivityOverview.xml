@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0ejdu67plnou" designImageAlpha="0">
+  <displayList>
+    <component id="n8_gbhe" name="mask" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="0,0" size="1920,1080" aspect="true" alpha="0.5"/>
+    <graph id="n7_gbhe" name="n7" xy="0,0" size="1903,1053" type="polygon" lineSize="0" fillColor="#00ffffff" points="142.4919,937.381,141.638,906.8361,152.2685,885.5146,151.1738,206.57,80.10043,161.4496,60.77702,135.4701,20,43,409.3673,76.1179,712.4781,86.18268,723.4119,75.33174,1196.217,75.09716,1209.069,86.71955,1549.038,74.10896,1903,43,1854.362,134.1116,1839.285,154.3239,1883.964,154.8311,1883.573,349.5945,1766.304,349.4031,1766.016,883.8082,1776.906,916.6042,1777.027,957.4308,1813.489,943.9705,1818.951,998.3741,1839.406,1022.881,1839.439,1051.606,77,1053,77,1013"/>
+    <loader id="n1_dwe0" name="bg" xy="9,39" size="1902,1034" touchable="false" url="ui://ca43vz0edwe0obap" fill="scaleFree"/>
+    <component id="n2_dwe0" name="back" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1759,153" pivot="0.5,0" size="120,192">
+      <Button icon="ui://iooyyksidwe0oba7"/>
+    </component>
+    <image id="n3_dwe0" name="n3" src="dwe0oba8" fileName="Texture/img_2919.png" xy="872,58"/>
+    <image id="n4_dwe0" name="n4" src="dwe0obaj" fileName="Texture/img_1703.png" pkg="vx9zwser" xy="1727,951" pivot="0.5,0.5" rotation="2"/>
+    <image id="n5_dwe0" name="n5" src="dwe0obaj" fileName="Texture/img_1703.png" pkg="vx9zwser" xy="119,961" pivot="0.5,0.5" size="67,49" aspect="true" scale="-1,1" rotation="-1"/>
+    <list id="n6_gbhe" name="list" xy="180,212" size="368,748" overflow="scroll" lineGap="-12" defaultItem="ui://iooyyksi9vb33" autoClearItems="true">
+      <item/>
+      <item/>
+    </list>
+    <component id="n9_9vb3" name="content" src="ziglobga" fileName="Component/Component/ComEmpty.xml" pkg="vx9zwser" xy="596,212" size="1120,750"/>
+  </displayList>
+</component>

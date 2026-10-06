@@ -21,7 +21,7 @@ export class UIMainView extends UIMain {
 		btn_guide.onClick(this, this.openView, [EViewID.UIGuideView]);
 		btn_camera.onClick(this, this.openView, [EViewID.UICameraView, null, EViewOpenType.Hide]);
 		btn_achieve.onClick(this, this.openView, [EViewID.UIAchievementView, null, EViewOpenType.Hide]);
-		btn_activity.onClick(this, this.openView, [EViewID.UIActivityView]);
+		btn_activity.onClick(this, this.openView, [EViewID.UIActivityOverviewView]);
 		btn_mail.onClick(this, this.openView, [EViewID.UIMailView]);
 		btn_rank.onClick(this, this.openView, [EViewID.UIRankView]);
 		btn_announcement.onClick(this, this.openView, [EViewID.UIAnnouncementView]);

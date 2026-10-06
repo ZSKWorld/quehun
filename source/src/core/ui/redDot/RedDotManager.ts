@@ -25,7 +25,7 @@ export class RedDotManager extends Observer implements IRedDotManager {
 		_triggers.clear();
 	}
 
-	@InjectGlobalEvent(EGlobalEvent.OnInitGameCompleted)
+	@InjectGlobalEvent(EGlobalEvent.OnGameInited)
 	private onInitGameCompleted() {
 		const rdNodes = this._rdNodes;
 		const rdRegisters = RDCheckerManager.getCheckers();

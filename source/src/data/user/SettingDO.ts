@@ -41,7 +41,7 @@ export class SettingDO extends BaseDO implements DO.ISettingDO {
 	get lang() { return this._lang; }
 	get other() { return this._other; }
 
-	@InjectGlobalEvent(EGlobalEvent.OnInitGameCompleted)
+	@InjectGlobalEvent(EGlobalEvent.OnGameInited)
 	private onInitGameCompleted() {
 		this._audio = $localDataMgr.getObj(ELocalDataKey.AudioSetting, this._audio);
 		this._graphic = $localDataMgr.getObj(ELocalDataKey.GraphicSetting, this._graphic);

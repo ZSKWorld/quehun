@@ -16,5 +16,6 @@ declare namespace DO {
 		getPeriodTaskList(activity_id: number): ITaskProgress[];
 		getRandomTaskInfo(taskId: number): ITaskProgress;
 		getRandomTaskList(activity_id: number): ITaskProgress[];
+		getOpenedActivityIds(): number[];
 	}
 }

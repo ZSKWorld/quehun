@@ -109,6 +109,7 @@ ResPath = {
 		Beijing_wuan: "res/main_bg/beijing_wuan.jpg",
 		Beijing_wuhui: "res/main_bg/beijing_wuhui.jpg",
 		Beijing_xiaripaidui: "res/main_bg/beijing_xiaripaidui.jpg",
+		Beijing_yanxiapubu: "res/main_bg/beijing_yanxiapubu.jpg",
 		Beijing_yinghuo: "res/main_bg/beijing_yinghuo.jpg",
 		Beijing_yuanlin: "res/main_bg/beijing_yuanlin.jpg",
 		Beijing_zhongxia: "res/main_bg/beijing_zhongxia.jpg",
@@ -982,6 +983,7 @@ ResPath = {
 
 	EPkgName: {
 		PkgAchievement: "PkgAchievement",
+		PkgActivityOverview: "PkgActivityOverview",
 		PkgCommon: "PkgCommon",
 		PkgDesign: "PkgDesign",
 		PkgEntrance: "PkgEntrance",
@@ -993,6 +995,7 @@ ResPath = {
 
 	EPkgPath: {
 		PkgAchievement: "res/ui/PkgAchievement",
+		PkgActivityOverview: "res/ui/PkgActivityOverview",
 		PkgCommon: "res/ui/PkgCommon",
 		PkgDesign: "res/ui/PkgDesign",
 		PkgEntrance: "res/ui/PkgEntrance",

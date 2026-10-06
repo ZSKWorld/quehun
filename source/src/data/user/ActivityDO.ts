@@ -173,6 +173,19 @@ export class ActivityDO extends BaseDO implements DO.IActivityDO {
 		return list;
 	}
 
+	getOpenedActivityIds() {
+		const ids = Object.keys(this._activityList)
+			.map(Number)
+			.filter(v => this.isRunning(v));
+		return [...new Set([1, 3, 4, 5, 6, 7, ...ids])].sort((a, b) => {
+			const cfgA = $cfgMgr.activity.activity_banner[a];
+			const cfgB = $cfgMgr.activity.activity_banner[b];
+			const sortA = cfgA ? cfgA.sort : 0;
+			const sortB = cfgB ? cfgB.sort : 0;
+			return sortB - sortA;
+		});
+	}
+
 	@InjectNetEvent(ENetMessage.fetchActivityList)
 	private onFetchActivityList(res: IResActivityList) {
 		this.onNotifyActivityChange({ new_activities: res.activities, end_activities: null });

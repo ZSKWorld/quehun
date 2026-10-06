@@ -377,6 +377,7 @@
     <image id="9c0boblk" name="img_1563.png" path="/Texture/" exported="true"/>
     <image id="9c0bobll" name="img_888.png" path="/Texture/" exported="true"/>
     <image id="nsj8oblm" name="img_1507.png" path="/Texture/" exported="true"/>
+    <image id="9vb3oblo" name="img_2495.png" path="/Texture/" exported="true" scale="9grid" scale9grid="0,5,300,36"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

@@ -10,27 +10,6 @@ type DIMediator = IMediator & {
  * 中介类设备（鼠标、键盘）交互事件扩展 MediatorDIExtend => MediatorDeviceInteractionExtend的缩写
   */
 export class MediatorDIExtend {
-	private static readonly KEY_EVENT_PAIRS: EKeyEvent[] = [
-		EKeyEvent.KeyDown,
-		EKeyEvent.KeyPress,
-		EKeyEvent.KeyUp,
-	];
-
-	private static readonly MOUSE_EVENT_PAIRS: EMouseEvent[] = [
-		EMouseEvent.MouseDown,
-		EMouseEvent.MouseUp,
-		EMouseEvent.MouseMove,
-		EMouseEvent.MouseClick,
-		EMouseEvent.MouseDoubleClick,
-		EMouseEvent.MouseRightClick,
-		EMouseEvent.RightMouseDown,
-		EMouseEvent.RightMouseUp,
-		EMouseEvent.MouseOver,
-		EMouseEvent.MouseOut,
-		EMouseEvent.MouseWheel,
-		EMouseEvent.MouseDrag,
-		EMouseEvent.MouseDragEnd,
-	];
 
 	/**
 	 * 注册设备交互事件
@@ -90,8 +69,8 @@ export class MediatorDIExtend {
 		const vkem = mediator.__viewKeyEventMap;
 		if (!vkem) return;
 		const func = this.doKeyEvent;
-		for (let i = 0; i < this.KEY_EVENT_PAIRS.length; i++) {
-			const eventType = this.KEY_EVENT_PAIRS[i];
+		for (const key in EKeyEvent) {
+			const eventType = EKeyEvent[key];
 			if (!vkem[eventType]) continue;
 			if (enable) Laya.stage.on(eventType, mediator, func);
 			else Laya.stage.off(eventType, mediator, func);
@@ -103,8 +82,8 @@ export class MediatorDIExtend {
 		if (!vmem) return;
 		const mouseFunc = this.doMouseEvent;
 		const owner = mediator.owner;
-		for (let i = 0; i < this.MOUSE_EVENT_PAIRS.length; i++) {
-			const eventType = this.MOUSE_EVENT_PAIRS[i];
+		for (const key in EMouseEvent) {
+			const eventType = EMouseEvent[key];
 			if (!vmem[eventType]) continue;
 			if (enable) owner.on(eventType, mediator, mouseFunc);
 			else owner.off(eventType, mediator, mouseFunc);

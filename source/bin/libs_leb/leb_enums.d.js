@@ -361,7 +361,7 @@ EGlobalEvent = {
 	OnGameHide: "EGlobalEvent_OnGameHide",
 	RedDotCompAwake: "EGlobalEvent_RedDotCompAwake",
 	RedDotCompDestroy: "EGlobalEvent_RedDotCompDestroy",
-	OnInitGameCompleted: "EGlobalEvent_OnInitGameCompleted",
+	OnGameInited: "EGlobalEvent_OnGameInited",
 	LobbyConnecting: "EGlobalEvent_LobbyConnectting",
 	LobbyReconnecting: "EGlobalEvent_LobbyReconnecting",
 	LobbyConnected: "EGlobalEvent_LobbyConnected",
@@ -724,4 +724,10 @@ EVoiceType = {
 	ingame_beiman: "ingame_beiman",
 	lobby_room_in: "lobby_room_in",
 	lobby_room_ready: "lobby_room_ready",
+}
+
+EQuestionnaireType = {
+	Normal: 1,
+	SiXiang: 2,
+	Official: 3,
 }

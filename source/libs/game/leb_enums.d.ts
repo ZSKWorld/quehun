@@ -473,7 +473,7 @@ declare enum EGlobalEvent {
 	/** 红点组件销毁 */
 	RedDotCompDestroy = "EGlobalEvent_RedDotCompDestroy",
 	/** 初始完成 */
-	OnInitGameCompleted = "EGlobalEvent_OnInitGameCompleted",
+	OnGameInited = "EGlobalEvent_OnGameInited",
 
 	//#region 网络相关
 	LobbyConnecting = "EGlobalEvent_LobbyConnectting",
@@ -1086,4 +1086,14 @@ declare enum EVoiceType {
 	lobby_room_in = "lobby_room_in",
 	/** 特殊语音 - 友人房内准备 */
 	lobby_room_ready = "lobby_room_ready",
+}
+
+/** 问卷类型 */
+declare enum EQuestionnaireType {
+	/** 普通问卷 */
+	Normal = 1,
+	/** 四象问卷 */
+	SiXiang = 2,
+	/** 赛事问卷 */
+	Official = 3,
 }

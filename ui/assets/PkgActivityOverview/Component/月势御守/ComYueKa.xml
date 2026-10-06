@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1120,750" designImage="ui://ca43vz0ejdu67plneo" designImageOffsetX="-596" designImageOffsetY="-212" designImageAlpha="24">
+  <controller name="state" pages="0,未购买,1,已购买,2,即将到期" selected="1"/>
+  <controller name="reward" pages="0,未领取,1,已领取" selected="1"/>
+  <displayList>
+    <loader id="n1_sf50" name="bg" xy="0,0" size="1120,750" fill="scaleFree"/>
+    <image id="n2_sf50" name="n2" src="dwe0obac" fileName="Texture/img_2266.png" xy="-4,7" size="314,61" group="n5_sf50"/>
+    <image id="n3_sf50" name="n3" src="dwe0obam" fileName="Texture/img_1428.png" xy="40,6" group="n5_sf50"/>
+    <text id="n4_sf50" name="n4" xy="118,16" pivot="0,0.5" size="124,42" group="n5_sf50" fontSize="30" color="#fff0d0" vAlign="middle" leading="0" singleLine="true" text="即将到期"/>
+    <group id="n5_sf50" name="n5" xy="-4,6" size="314,62" advanced="true">
+      <gearDisplay controller="state" pages="2"/>
+    </group>
+    <image id="n6_sf50" name="n6" src="sf50obaf" fileName="Texture/img_2330.png" xy="405,564" group="n11_sf50"/>
+    <component id="n9_sf50" name="buy" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="355,608" size="331,102" group="n11_sf50">
+      <Button icon="ui://iooyyksisf50obag"/>
+    </component>
+    <group id="n11_sf50" name="n11" xy="355,564" size="331,145" advanced="true">
+      <gearXY controller="state" pages="0" values="544,564" default="355,564"/>
+    </group>
+    <image id="n7_sf50" name="n7" src="sf50obae" fileName="Texture/img_2329.png" xy="777,564" group="n12_sf50"/>
+    <component id="n10_sf50" name="get" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="732,608" size="331,102" group="n12_sf50">
+      <gearIcon controller="reward" pages="1" values="ui://iooyyksisf50obai" default="ui://iooyyksisf50obah"/>
+      <Button icon="ui://iooyyksisf50obai"/>
+    </component>
+    <text id="n8_sf50" name="lastTime" xy="899,559" pivot="0.5,0.5" size="28,54" group="n12_sf50" fontSize="40" color="#fec64f" vAlign="middle" leading="0" singleLine="true" text="3">
+      <gearColor controller="state" pages="2" values="#ff554c,#000000" default="#fec64f,#000000"/>
+    </text>
+    <group id="n12_sf50" name="n12" xy="732,559" size="331,151" advanced="true">
+      <gearDisplay controller="state" pages="1,2"/>
+    </group>
+  </displayList>
+</component>

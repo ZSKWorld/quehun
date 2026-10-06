@@ -35,7 +35,6 @@ import RenderLiaoSheDecoTab from "./RenderLiaoSheDecoTab";
 import RenderFriendRecent from "./RenderFriendRecent";
 import BtnSevenDay from "./BtnSevenDay";
 import ComLiaoSheChar from "./ComLiaoSheChar";
-import UIActivity from "./UIActivity";
 import UIMail from "./UIMail";
 import UIRank from "./UIRank";
 import UIAnnouncement from "./UIAnnouncement";
@@ -102,7 +101,6 @@ import { RenderLiaoSheDecoTabView } from "../../view/PkgMain/view/renders/Render
 import { RenderFriendRecentView } from "../../view/PkgMain/view/renders/RenderFriendRecentView";
 import { BtnSevenDayView } from "../../view/PkgMain/view/btns/BtnSevenDayView";
 import { ComLiaoSheCharView } from "../../view/PkgMain/view/coms/ComLiaoSheCharView";
-import { UIActivityView } from "../../view/PkgMain/view/uis/UIActivityView";
 import { UIMailView } from "../../view/PkgMain/view/uis/UIMailView";
 import { UIRankView } from "../../view/PkgMain/view/uis/UIRankView";
 import { UIAnnouncementView } from "../../view/PkgMain/view/uis/UIAnnouncementView";
@@ -172,7 +170,6 @@ export default class PkgMainBinder {
 		fgui.UIObjectFactory.setExtension(RenderFriendRecent.url, RenderFriendRecentView);
 		fgui.UIObjectFactory.setExtension(BtnSevenDay.url, BtnSevenDayView);
 		fgui.UIObjectFactory.setExtension(ComLiaoSheChar.url, ComLiaoSheCharView);
-		fgui.UIObjectFactory.setExtension(UIActivity.url, UIActivityView);
 		fgui.UIObjectFactory.setExtension(UIMail.url, UIMailView);
 		fgui.UIObjectFactory.setExtension(UIRank.url, UIRankView);
 		fgui.UIObjectFactory.setExtension(UIAnnouncement.url, UIAnnouncementView);

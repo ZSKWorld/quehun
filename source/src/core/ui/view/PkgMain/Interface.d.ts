@@ -10,7 +10,7 @@ declare interface IUIAchievementData {
 
 }
 
-declare interface IUIActivityData {
+declare interface IUIActivityOverviewData {
 
 }
 

@@ -36,10 +36,10 @@ export class GComponentView extends fgui.GComponent implements IGComponentView {
 	protected onDisable() { }
 	protected onDestroy() { }
 	onOpenAni() {
-		return Promise.resolve();
+		return Promise.resolve(null);
 	}
 	onCloseAni() {
-		return Promise.resolve();
+		return Promise.resolve(null);
 	}
 
 	protected dispatch(eventName: string, data?: any) {

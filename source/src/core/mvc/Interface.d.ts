@@ -92,22 +92,6 @@ declare interface IView extends fgui.GComponent {
 	onCloseAni(): Promise<any>;
 }
 
-type TGButton = fgui.GButton & IView;
-type TGComboBox = fgui.GComboBox & IView;
-type TGComponent = fgui.GComponent & IView;
-type TGLabel = fgui.GLabel & IView;
-type TGProgressBar = fgui.GProgressBar & IView;
-type TGScrollBar = fgui.GScrollBar & IView;
-type TGSlider = fgui.GSlider & IView;
-
-declare interface IGButtonView extends TGButton {}
-declare interface IGComboBoxView extends TGComboBox {}
-declare interface IGComponentView extends TGComponent {}
-declare interface IGLabelView extends TGLabel {}
-declare interface IGProgressBarView extends TGProgressBar {}
-declare interface IGScrollBarView extends TGScrollBar {}
-declare interface IGSliderView extends TGSlider {}
-
 /** 页面中介 */
 declare interface IMediator<V extends IView = IView, D = any> extends Laya.Script {
 	readonly viewId: EViewID;

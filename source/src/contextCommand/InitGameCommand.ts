@@ -52,11 +52,13 @@ export class InitGameCommand extends Command {
 			]),
 		]);
 
+
 		//#if DEBUG
 		const btn = fgui.UIPackage.createObject("PkgTest", "BtnNormalFit").asButton;
 		btn.title = "测试";
-		btn.setSize(130, 80);
-		btn.setXY(1790, 1000);
+		btn.titleFontSize = 25;
+		btn.setSize(80, 50);
+		btn.setXY(1840, 1030);
 		$uiMgr.addToLayer(btn, ELayer.UITop);
 		btn.onClick(this, () => {
 			$uiMgr.openView(EViewID.UITestMainView);

@@ -60,4 +60,12 @@ export class LocalDataManager implements ILocalDataManager {
 	private setItem(key: string, value: string): void {
 		Laya.LocalStorage.setItem($gameUtil.encrypt(key), $gameUtil.encrypt(value));
 	}
+
+	private print() {
+		const keys = Object.keys(localStorage);
+		for (const key of keys) {
+			const k = $gameUtil.decrypt(key);
+			$logger.log(k + " => " + this.getItem(k));
+		}
+	}
 }

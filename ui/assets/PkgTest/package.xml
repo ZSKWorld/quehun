@@ -6,6 +6,8 @@
     <component id="ol8q2" name="UITestSpine.xml" path="/" exported="true"/>
     <component id="ol8q3" name="BtnNormalFit.xml" path="/Component/" exported="true"/>
     <component id="ol8q5" name="ComBezierPoint.xml" path="/Component/Bezier/" exported="true"/>
+    <component id="pxuvobge" name="UITestAStar.xml" path="/" exported="true"/>
+    <component id="ffc7obgf" name="UITestSnake.xml" path="/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

@@ -24,6 +24,7 @@ declare namespace fgui {
 		once(type: string, caller: any, listener: Function, args?: any[]): Laya.EventDispatcher;
 		offAll(type?: string): Laya.EventDispatcher;
 		offAllCaller(caller: any): Laya.EventDispatcher;
+		getPath(): string;
 	}
 
 	interface GComponent {

@@ -7,10 +7,12 @@ export const enum EUITestMainMsg {
 export class UITestMainView extends UITestMain {
 
 	override onCreate() {
-		const { btn_close, btn_spineTest, btn_bezierTest } = this;
+		const { btn_close, btn_spineTest, btn_bezierTest, btn_astarTest,btn_snakeTest } = this;
 		btn_close.onClick(this, this.closeSelf);
 		btn_spineTest.onClick(this, this.openView, [EViewID.UITestSpineView]);
 		btn_bezierTest.onClick(this, this.openView, [EViewID.UITestBezierView]);
+		btn_astarTest.onClick(this, this.openView, [EViewID.UITestAStarView]);
+		btn_snakeTest.onClick(this, this.openView, [EViewID.UITestSnakeView]);
 	}
 
 }

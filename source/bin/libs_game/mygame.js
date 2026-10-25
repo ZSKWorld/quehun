@@ -1,12 +1,72 @@
 //注入全局变量
 function $windowImmit(name, obj) { window[name] = obj; }
 
+$windowImmit("$logger", (() => {
+	const ELogType = {
+		assert: "assert",
+		clear: "clear",
+		count: "count",
+		countReset: "countReset",
+		debug: "debug",
+		dir: "dir",
+		dirxml: "dirxml",
+		error: "error",
+		group: "group",
+		groupCollapsed: "groupCollapsed",
+		groupEnd: "groupEnd",
+		info: "info",
+		log: "log",
+		table: "table",
+		time: "time",
+		timeEnd: "timeEnd",
+		timeLog: "timeLog",
+		timeStamp: "timeStamp",
+		trace: "trace",
+		warn: "warn",
+		// profile: "profile",
+		// profileEnd: "profileEnd",
+		// context: "context",
+		// createTask: "createTask",
+		memory: "memory",
+	};
+
+	/** 日志打印工具 */
+	class Logger {
+		_enable = false;
+		_funcs = {};
+
+		constructor() {
+			const funcs = this._funcs;
+			const emptyFunc = function (funName) {
+				return function (...args) {
+					$logger.warn("请使用日志管理器 $logger 打印日志", funName);
+					$logger[funName](...args);
+				};
+			};
+			Object.keys(ELogType).forEach(v => {
+				funcs[v] = console[v];
+				console[v] = emptyFunc(v);
+				this[v] = (...args) => this.emit(v, ...args);
+			});
+		}
+
+		setEnable(enable) { this._enable = enable; }
+
+		emit(type, ...args) {
+			if (!this._enable) return;
+			const func = this._funcs[type];
+			func(...args);
+		}
+	}
+	return new Logger();
+})());
+
 function Singleton(constructor) {
 	let inst;
 	class SingletonClass extends constructor {
 		constructor(...args) {
 			if (inst) {
-				Logger.error(constructor.name + " 单例类只能实例化一次");
+				$logger.warn(constructor.name + " 单例类只能实例化一次");
 				return inst;
 			}
 			super(...args);

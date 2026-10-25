@@ -21,5 +21,4 @@ export class GScrollBarView extends fgui.GScrollBar implements IView {
 	}
 	protected closeView(viewId: EUIViewID) { return Promise.resolve(); }
 	protected closeSelf() { return Promise.resolve(); }
-	protected getPath() { return ""; }
 }

@@ -123,4 +123,10 @@ export class TimeUtil implements ITimeUtil {
 			Laya.timer.once(milSec, null, resolve);
 		});
 	}
+
+	waitFrame(frame: number) {
+		return new Promise<void>(resolve => {
+			Laya.timer.frameOnce(frame, null, resolve);
+		});
+	}
 }

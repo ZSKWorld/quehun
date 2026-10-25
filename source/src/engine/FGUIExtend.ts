@@ -67,6 +67,20 @@ export class FGUIExtend {
 		prototype.offAllCaller = function (caller: any) {
 			return this._displayObject.offAllCaller(caller);
 		};
+		prototype.getPath = function () {
+			let _this: fgui.GObject = this;
+			let path = [];
+			while (_this) {
+				if (_this.name) path.push(_this.name);
+				else if (!_this.parent) path.push(_this.$name);
+				else path.push(_this.parent.getChildIndex(_this));
+
+				_this = _this.parent;
+				if (_this == fgui.GRoot.inst)
+					break;
+			}
+			return path.reverse().join(".");
+		};
 	}
 
 	private static addGTextLangText() {
@@ -87,7 +101,7 @@ export class FGUIExtend {
 			const _this = this as fgui.GList;
 			const index = _this.childIndexToItemIndex(_this.getChildIndex(item));
 			_this.displayObject.event(fgui.Events.CLICK_ITEM, [item, evt, index]);
-		}
+		};
 	}
 
 	private static gbuttonDownEffect() {

@@ -5,13 +5,19 @@
     <component id="n11_5zjl" name="close" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="0,0">
       <Button icon="ui://vx9zwserdwe0ob8k"/>
     </component>
-    <component id="n13_ol8q" name="spineTest" src="ol8q3" fileName="Component/BtnNormalFit.xml" xy="810,440" group="n15_ol8q">
+    <component id="n13_ol8q" name="spineTest" src="ol8q3" fileName="Component/BtnNormalFit.xml" xy="810,340" group="n15_ol8q">
       <Button title="spine测试" titleFontSize="35"/>
     </component>
-    <component id="n14_ol8q" name="bezierTest" src="ol8q3" fileName="Component/BtnNormalFit.xml" xy="810,540" group="n15_ol8q">
+    <component id="n14_ol8q" name="bezierTest" src="ol8q3" fileName="Component/BtnNormalFit.xml" xy="810,440" group="n15_ol8q">
       <Button title="贝塞尔曲线测试" titleFontSize="35"/>
     </component>
-    <group id="n15_ol8q" name="n15" xy="810,440" size="300,200" advanced="true" layout="vt" excludeInvisibles="true">
+    <component id="n18_pxuv" name="astarTest" src="ol8q3" fileName="Component/BtnNormalFit.xml" xy="810,540" group="n15_ol8q">
+      <Button title="A*寻路测试" titleFontSize="35"/>
+    </component>
+    <component id="n19_ffc7" name="snakeTest" src="ol8q3" fileName="Component/BtnNormalFit.xml" xy="810,640" group="n15_ol8q">
+      <Button title="贪吃蛇测试" titleFontSize="35"/>
+    </component>
+    <group id="n15_ol8q" name="n15" xy="810,340" size="300,400" advanced="true" layout="vt" excludeInvisibles="true">
       <relation target="" sidePair="center-center,middle-middle"/>
     </group>
   </displayList>

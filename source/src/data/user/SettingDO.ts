@@ -151,7 +151,25 @@ export class SettingDO extends BaseDO implements DO.ISettingDO {
 	private checkSaveSetting() {
 		if (this._audioChanged) {
 			this._audioChanged = false;
-			$localDataMgr.setObj(ELocalDataKey.AudioSetting, this._audio);
+			const audio = JSON.parse(JSON.stringify(this._audio));
+			for (const key in audio.charVolumeMap) {
+				const v = audio.charVolumeMap[key];
+				if (v.on === true && v.value === 0.5)
+					delete audio.charVolumeMap[key];
+			}
+
+			for (const key in audio.lobbyBgm.bgmMap) {
+				const v = audio.lobbyBgm.bgmMap[key];
+				if (v === true)
+					delete audio.lobbyBgm.bgmMap[key];
+			}
+
+			for (const key in audio.mjBgm.bgmMap) {
+				const v = audio.mjBgm.bgmMap[key];
+				if (v === true)
+					delete audio.mjBgm.bgmMap[key];
+			}
+			$localDataMgr.setObj(ELocalDataKey.AudioSetting, audio);
 		}
 		if (this._graphicChanged) {
 			this._graphicChanged = false;

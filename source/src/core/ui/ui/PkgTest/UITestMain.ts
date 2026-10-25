@@ -7,6 +7,8 @@ export default class UITestMain extends GComponentView {
 	protected btn_close: fgui.GButton;
 	protected btn_spineTest: fgui.GButton;
 	protected btn_bezierTest: fgui.GButton;
+	protected btn_astarTest: fgui.GButton;
+	protected btn_snakeTest: fgui.GButton;
 	public static url: string = "ui://mz6x8cs55zjlobgd";
 
 	public static createInstance(): UITestMain {
@@ -17,5 +19,7 @@ export default class UITestMain extends GComponentView {
 		this.btn_close = <fgui.GButton>(this.getChildAt(1));
 		this.btn_spineTest = <fgui.GButton>(this.getChildAt(2));
 		this.btn_bezierTest = <fgui.GButton>(this.getChildAt(3));
+		this.btn_astarTest = <fgui.GButton>(this.getChildAt(4));
+		this.btn_snakeTest = <fgui.GButton>(this.getChildAt(5));
 	}
 }

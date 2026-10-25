@@ -49,6 +49,9 @@ declare const $dynamicResMgr: IDynamicResManager;
 declare const $menuMgr: IContextMenuManager;
 declare const $audioMgr: IAudioManager;
 
+declare function $recyclable<T>(cls: Class<T>): T;
+declare function $recycle(...objs: any[]): void;
+
 /** 注入全局变量 */
 declare function $windowImmit(name: string, obj: any): void;
 

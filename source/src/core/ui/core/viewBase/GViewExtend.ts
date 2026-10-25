@@ -15,15 +15,6 @@ function closeSelf() {
 	else
 		return Promise.resolve();
 };
-function getPath() {
-	let _this: fgui.GComponent = this;
-	let path = _this.name;
-	while (_this.parent) {
-		_this = _this.parent;
-		path = (_this.name ? _this.name + "." : "") + path;
-	}
-	return path;
-};
 
 export function GViewExtend<T extends Class<any>>(constructor: T) {
 	const prototype = constructor.prototype;
@@ -56,6 +47,5 @@ export function GViewExtend<T extends Class<any>>(constructor: T) {
 	prototype.openView = openView;
 	prototype.closeView = closeView;
 	prototype.closeSelf = closeSelf;
-	prototype.getPath = getPath;
 	return constructor;
 }

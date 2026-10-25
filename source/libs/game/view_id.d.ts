@@ -143,8 +143,10 @@ declare enum EViewID {
 	UITreasureView = "UITreasureView",
 	UIVideoView = "UIVideoView",
 	UIVisitView = "UIVisitView",
+	UITestAStarView = "UITestAStarView",
 	UITestBezierView = "UITestBezierView",
 	UITestMainView = "UITestMainView",
+	UITestSnakeView = "UITestSnakeView",
 	UITestSpineView = "UITestSpineView",
 }
 

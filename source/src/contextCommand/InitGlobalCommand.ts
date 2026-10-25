@@ -6,8 +6,8 @@ import { SkeletonManager } from "../core/common/skeleton/SkeletonManager";
 import { SpineManager } from "../core/common/spine/SpineManager";
 import { GameUtil } from "../core/common/utils/GameUtil";
 import { ItemUtil } from "../core/common/utils/ItemUtil";
-import { Logger } from "../core/common/utils/Logger";
 import { MathUtil } from "../core/common/utils/MathUtil";
+import { recyclable, recycle } from "../core/common/utils/Recyclable";
 import { TimeUtil } from "../core/common/utils/TimeUtil";
 import { ConfigManager } from "../core/config/ConfigManager";
 import { GameManager } from "../core/game/GameManager";
@@ -26,7 +26,6 @@ import { SceneManager } from "../scene/SceneManager";
 
 export class InitGlobalCommand extends Command {
 	override execute(notifyName: string, data?: any) {
-		$windowImmit("$logger", new Logger());
 		$windowImmit("$gameUtil", new GameUtil());
 		$windowImmit("$localDataMgr", new LocalDataManager());
 		$windowImmit("$facade", new Facade());
@@ -115,6 +114,9 @@ export class InitGlobalCommand extends Command {
 			});
 			return result;
 		});
+
+		$windowImmit("$recyclable", recyclable);
+		$windowImmit("$recycle", recycle);
 	}
 
 	private registerConfirm(name: string, viewId: EUIViewID) {

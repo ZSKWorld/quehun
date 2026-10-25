@@ -182,10 +182,14 @@ import { UIVideoView } from "../core/ui/view/PkgMain/view/uis/UIVideoView";
 import { UIVideoMediator } from "../core/ui/view/PkgMain/mediator/uis/UIVideoMediator";
 import { UIVisitView } from "../core/ui/view/PkgMain/view/uis/UIVisitView";
 import { UIVisitMediator } from "../core/ui/view/PkgMain/mediator/uis/UIVisitMediator";
+import { UITestAStarView } from "../core/ui/view/PkgTest/view/uis/UITestAStarView";
+import { UITestAStarMediator } from "../core/ui/view/PkgTest/mediator/uis/UITestAStarMediator";
 import { UITestBezierView } from "../core/ui/view/PkgTest/view/uis/UITestBezierView";
 import { UITestBezierMediator } from "../core/ui/view/PkgTest/mediator/uis/UITestBezierMediator";
 import { UITestMainView } from "../core/ui/view/PkgTest/view/uis/UITestMainView";
 import { UITestMainMediator } from "../core/ui/view/PkgTest/mediator/uis/UITestMainMediator";
+import { UITestSnakeView } from "../core/ui/view/PkgTest/view/uis/UITestSnakeView";
+import { UITestSnakeMediator } from "../core/ui/view/PkgTest/mediator/uis/UITestSnakeMediator";
 import { UITestSpineView } from "../core/ui/view/PkgTest/view/uis/UITestSpineView";
 import { UITestSpineMediator } from "../core/ui/view/PkgTest/mediator/uis/UITestSpineMediator";
 import { Command } from "../core/mvc/controller/Command";
@@ -343,8 +347,10 @@ export class InitViewCommand extends Command {
 		register(EViewID.UITreasureView, EViewType.UI, UITreasureView, UITreasureMediator);
 		register(EViewID.UIVideoView, EViewType.UI, UIVideoView, UIVideoMediator);
 		register(EViewID.UIVisitView, EViewType.UI, UIVisitView, UIVisitMediator);
+		register(EViewID.UITestAStarView, EViewType.UI, UITestAStarView, UITestAStarMediator);
 		register(EViewID.UITestBezierView, EViewType.UI, UITestBezierView, UITestBezierMediator);
 		register(EViewID.UITestMainView, EViewType.UI, UITestMainView, UITestMainMediator);
+		register(EViewID.UITestSnakeView, EViewType.UI, UITestSnakeView, UITestSnakeMediator);
 		register(EViewID.UITestSpineView, EViewType.UI, UITestSpineView, UITestSpineMediator);
 	}
 }

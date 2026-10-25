@@ -1,4 +1,13 @@
 declare type LoadURL = string | Laya.ILoadURL | (string | Readonly<Laya.ILoadURL>)[];
+
+/** 可复用对象, 通过{@link $recyclable}获取，{@link $recycle}回收 */
+declare interface IRecyclable {
+	/** 复用时调用 */
+	onUse(): void;
+	/** 回收时调用 */
+	onRecycle(): void;
+}
+
 declare interface ILoadManager {
 	fetch<D = any>(url: string, contentType: keyof Laya.ContentTypeMap, onProgress?: Laya.ProgressCallback, options?: Laya.ILoadOptions): Promise<D>;
 
@@ -16,11 +25,33 @@ declare interface ILoadManager {
 }
 
 declare interface ILogger {
-	log(...args: any[]): void;
-	warn(...args: any[]): void;
-	error(...args: any[]): void;
-	assert(assert: boolean, tipText?: string): void;
 	setEnable(enable: boolean): void;
+
+	assert: typeof console.assert;
+	clear: typeof console.clear;
+	count: typeof console.count;
+	countReset: typeof console.countReset;
+	debug: typeof console.debug;
+	dir: typeof console.dir;
+	dirxml: typeof console.dirxml;
+	error: typeof console.error;
+	group: typeof console.group;
+	groupCollapsed: typeof console.groupCollapsed;
+	groupEnd: typeof console.groupEnd;
+	info: typeof console.info;
+	log: typeof console.log;
+	table: typeof console.table;
+	time: typeof console.time;
+	timeEnd: typeof console.timeEnd;
+	timeLog: typeof console.timeLog;
+	timeStamp: typeof console.timeStamp;
+	trace: typeof console.trace;
+	warn: typeof console.warn;
+	// profile:typeof console.profile;
+	// profileEnd:typeof console.profileEnd;
+	// context: typeof console.context;
+	// createTask: typeof console.createTask;
+	memory?: { totalJSHeapSize: number, usedJSHeapSize: number, jsHeapSizeLimit: number; };
 }
 
 declare interface ISkeletonManager {
@@ -110,12 +141,19 @@ declare interface IMathUtil {
 	groupNumber(num: number, fixed?: number): string;
 
 	/**
-	 * 
-	 * @param num 
-	 * @param dp default 3
+	 * 把数字转成带字母后缀的字符串表示。
+	 * 规则：|num| >= 1e6 时，除以 1e6，剩余部分用 26 进制字母表示额外的 10 的幂次，
+	 * 每个字母位权贡献 3 个 10 的幂次。
+	 * @param num 输入数字
+	 * @param decimals 小数保留位数，默认 3，负数按 0 处理
 	 */
-	num2Letter(num: number, dp?: number): string;
+	num2Letter(num: number, decimals?: number): string;
 
+	/**
+	 * 把带字母后缀的数字字符串解析回数字。
+	 * 是 num2Letter 的逆运算。
+	 * @param str 输入字符串，格式如 "1.234abc"、"-5.6a"、"123"
+	 */
 	letter2Num(str: string): number;
 
 	/**
@@ -291,6 +329,9 @@ declare interface ITimeUtil {
 
 	/** 等待 `milSec` 毫秒 */
 	wait(milSec: number): Promise<void>;
+
+	/** 等待 `frame` 帧 */
+	waitFrame(frame: number): Promise<void>;
 }
 
 declare interface ILocalDataManager {

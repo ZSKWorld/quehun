@@ -7,20 +7,6 @@ export class DynamicResManager implements IDynamicResManager {
 		Laya.timer.loop(30 * 1000, this, this.checkUnload);
 	}
 
-	add(path: string) {
-		if (!path) return;
-		const count = this._resMap.get(path) || 0;
-		this._resMap.set(path, count + 1);
-	}
-
-	remove(path: string) {
-		if (!path) return;
-		const count = this._resMap.get(path);
-		if (count) {
-			this._resMap.set(path, count - 1);
-		}
-	}
-
 	setLoader(loader: fgui.GLoader, path: string) {
 		if (!loader) return;
 		path = path || "";
@@ -46,13 +32,29 @@ export class DynamicResManager implements IDynamicResManager {
 		loaders.forEach(v => this.clearLoader(v));
 	}
 
+	private add(path: string) {
+		if (!path) return;
+		const count = this._resMap.get(path) || 0;
+		this._resMap.set(path, count + 1);
+	}
+
+	private remove(path: string) {
+		if (!path) return;
+		const count = this._resMap.get(path);
+		if (count) {
+			this._resMap.set(path, count - 1);
+		}
+	}
+
 	private checkUnload() {
-		this._resMap.forEach((count, path) => {
+		for (const e of this._resMap) {
+			const count = e[1];
+			const path = e[0];
 			if (count <= 0) {
 				$loadMgr.cancelLoadByUrl(path);
 				$loadMgr.clearRes(path);
 				this._resMap.delete(path);
 			}
-		});
+		}
 	}
 }

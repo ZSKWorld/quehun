@@ -8,7 +8,7 @@ export class RechargeDO extends BaseDO implements DO.IRechargeDO {
 	private _gainedVipLevels: number[] = [];
 	// private _paymentSetting: ProtoObject<IPaymentSetting> = {};
 	private _paymentSettingV2: ProtoObject<IPaymentSettingV2> = { open_payment: 0, payment_platforms: [] };
-	private _paymentSettingMap: Record<EPaymentPlatform, ProtoObject<IPaymentSettingV2_PaymentSettingUnit>> = {} as any;
+	private _paymentSettingMap: Record<EPaymentPlatform, ProtoObject<IPaymentSettingV2.IPaymentSettingUnit>> = {} as any;
 
 	get vipExp() { return this._vipExp; }
 	private set vipExp(value) {

@@ -1,6 +1,6 @@
 declare namespace DO {
 	interface IRefundInfo {
-		get orders(): ProtoObject<IResFetchRefundOrder_OrderInfo>[];
+		get orders(): ProtoObject<IResFetchRefundOrder.IOrderInfo>[];
 		get clearDeadline(): number;
 		get message(): ProtoObject<II18nContext>[];
 	}
@@ -30,12 +30,12 @@ declare namespace DO {
 		get avatarFrame(): number;
 		/** 名人认证 */
 		get verified(): number;
-		get challengeLevels(): ProtoObject<IAccount_ChallengeLevel>[];
+		get challengeLevels(): ProtoObject<IAccount.IChallengeLevel>[];
 		get frozenState(): number;
-		get achievementCount(): ProtoObject<IAccount_AchievementCount>[];
+		get achievementCount(): ProtoObject<IAccount.IAchievementCount>[];
 		get favoriteHu(): ProtoObject<IFavoriteHu>[];
 		/** 勋章列表 */
-		get badges(): ProtoObject<IAccount_Badge>[];
+		get badges(): ProtoObject<IAccount.IBadge>[];
 
 		/** 是否是冻结账户 */
 		get isFrozen(): boolean;

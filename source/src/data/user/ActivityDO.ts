@@ -6,12 +6,12 @@ interface IActivityData {
 	accumulated_point_list: IActivityAccumulatedPointData[];
 	rank_data_list: IActivityRankPointData[];
 	flip_task_progress_list: KeyMap<ITaskProgress>;
-	sign_in_data: IResAccountActivityData_ActivitySignInData[];
-	richman_data: IResAccountActivityData_ActivityRichmanData[];
+	sign_in_data: IResAccountActivityData.IActivitySignInData[];
+	richman_data: IResAccountActivityData.IActivityRichmanData[];
 	period_task_progress_list: KeyMap<ITaskProgress>;
 	random_task_progress_list: KeyMap<ITaskProgress>;
-	chest_up_data: IResAccountActivityData_ChestUpData[];
-	sns_data: IResAccountActivityData_ActivitySNSData;
+	chest_up_data: IResAccountActivityData.IChestUpData[];
+	sns_data: IResAccountActivityData.IActivitySNSData;
 	mine_data: IMineActivityData[];
 	rpg_data: IRPGActivity[];
 	arena_data: IActivityArenaData[];
@@ -108,7 +108,7 @@ export class ActivityDO extends BaseDO implements DO.IActivityDO {
 		mmo_data: []
 	};
 	private _activityBuff: KeyMap<ProtoObject<IActivityBuffData>> = {};
-	private _activityInterval: KeyMap<ProtoObject<IResFetchActivityInterval_ActivityInterval>> = {};
+	private _activityInterval: KeyMap<ProtoObject<IResFetchActivityInterval.IActivityInterval>> = {};
 
 	private _sevenDay = new SevenDayDO();
 	get sevenDay() { return this._sevenDay; }

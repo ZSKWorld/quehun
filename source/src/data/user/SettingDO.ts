@@ -139,7 +139,12 @@ export class SettingDO extends BaseDO implements DO.ISettingDO {
 			}
 			this._graphicChanged = true;
 		});
-		this._prefer = settingProxy(this._prefer, this, (pPath) => this._preferChanged = true);
+		this._prefer = settingProxy(this._prefer, this, (pPath) => {
+			switch (pPath) {
+				case "dynamicSkin": this.dispatch(EUserEvent.OnDynamicSkinChanged); break;
+			}
+			this._preferChanged = true;
+		});
 		this._lang = settingProxy(this._lang, this, (pPath) => this._langChanged = true);
 		this._other = settingProxy(this._other, this, (pPath) => this._otherChanged = true);
 

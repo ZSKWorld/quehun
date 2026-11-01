@@ -567,7 +567,8 @@ declare enum EUserEvent {
 	OnViewUseChanged = "EUserEvent_OnViewUseChanged",
 	/** 装扮数据变化 */
 	OnCommonViewChanged = "EUserEvent_OnCommonViewChanged",
-
+	/** 动皮开关变化 */
+	OnDynamicSkinChanged = "EUserEvent_OnDynamicSkinChanged",
 	//#endregion
 
 	//#region client_value相关

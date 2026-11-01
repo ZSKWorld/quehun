@@ -538,3 +538,10 @@ ENetMessage = {
 	requestRouteChange: "requestRouteChange",
 	heartbeat: "heartbeat",
 }
+
+GamePlayerState = {
+	NULL: 0,
+	AUTH: 1,
+	SYNCING: 2,
+	READY: 3,
+}

@@ -10,6 +10,6 @@
         "args": { "optional": true }
     },
     ".lq.ReqReadAnnouncement":{
-        "announcement_list": { "optional": true }
+        "announcement_list": { "optional": true, "type":"" }
     }
 }

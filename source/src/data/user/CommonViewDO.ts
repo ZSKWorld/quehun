@@ -19,8 +19,8 @@ const DefaultViewIdMap: Record<EItemCommonType, number> = {
 
 export class CommonViewDO extends BaseDO implements DO.ICommonViewDO {
 	private _use: number = 0;
-	private _views: ProtoObject<IResAllcommonViews_Views>[] = [];
-	private _usingView: ProtoObject<IResAllcommonViews_Views> = { values: [], index: 0, name: "" };
+	private _views: ProtoObject<IResAllcommonViews.IViews>[] = [];
+	private _usingView: ProtoObject<IResAllcommonViews.IViews> = { values: [], index: 0, name: "" };
 	private _curMjpBack: number = 0;
 	private _curMjpFront: number = 0;
 	private _curTableCloth: number = 0;

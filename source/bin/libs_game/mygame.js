@@ -39,7 +39,7 @@ $windowImmit("$logger", (() => {
 			const funcs = this._funcs;
 			const emptyFunc = function (funName) {
 				return function (...args) {
-					$logger.warn("请使用日志管理器 $logger 打印日志", funName);
+					// $logger.warn("请使用日志管理器 $logger 打印日志", funName);
 					$logger[funName](...args);
 				};
 			};

@@ -4,7 +4,7 @@ export class FriendDO extends BaseDO implements DO.IFriendDO {
 	private _friends: ProtoObject<IFriend>[] = [];
 	private _friendMaxCount: number = 0;
 	private _friendCount: number = 0;
-	private _applies: ProtoObject<IResFriendApplyList_FriendApply>[] = [];
+	private _applies: ProtoObject<IResFriendApplyList.IFriendApply>[] = [];
 	private _applied = new Set<number>();
 
 	get friends() { return this._friends; }

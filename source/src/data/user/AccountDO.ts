@@ -20,11 +20,11 @@ export class AccountDO extends BaseDO implements DO.IAccountDO {
 	private _level3: ProtoObject<IAccountLevel>;
 	private _avatarFrame: number = 0;
 	private _verified: number = 0;
-	private _challengeLevels: ProtoObject<IAccount_ChallengeLevel>[] = [];
+	private _challengeLevels: ProtoObject<IAccount.IChallengeLevel>[] = [];
 	private _frozenState: number = 0;
-	private _achievementCount: ProtoObject<IAccount_AchievementCount>[] = [];
+	private _achievementCount: ProtoObject<IAccount.IAchievementCount>[] = [];
 	private _favoriteHu: ProtoObject<IFavoriteHu>[] = [];
-	private _badges: ProtoObject<IAccount_Badge>[] = [];
+	private _badges: ProtoObject<IAccount.IBadge>[] = [];
 	private _refundOrderInfo: DO.IRefundInfo = {
 		orders: [],
 		clearDeadline: 0,

@@ -2,8 +2,8 @@ declare namespace DO {
 	interface ICommonViewDO {
 
 		get use(): number;
-		get views(): ProtoObject<IResAllcommonViews_Views>[];
-		get usingView(): ProtoObject<IResAllcommonViews_Views>;
+		get views(): ProtoObject<IResAllcommonViews.IViews>[];
+		get usingView(): ProtoObject<IResAllcommonViews.IViews>;
 		get curMjpBack(): number;
 		get curMjpFront(): number;
 		get curTableCloth(): number;

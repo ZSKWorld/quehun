@@ -3489,7 +3489,7 @@ declare enum ENetMessage {
 	heartbeat = "heartbeat",
 }
 
-declare const enum GamePlayerState {
+declare enum GamePlayerState {
 	/** 无连接 */
 	NULL = 0,
 	/** 验证成功 */

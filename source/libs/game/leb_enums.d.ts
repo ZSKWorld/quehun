@@ -214,14 +214,26 @@ declare enum EMouseEvent {
 	MouseMove = "mousemove",
 	MouseClick = "click",
 	MouseDoubleClick = "doubleclick",
-	MouseRightClick = "rightclick",
 	RightMouseDown = "rightmousedown",
 	RightMouseUp = "rightmouseup",
+	RightMouseClick = "rightclick",
 	MouseOver = "mouseover",
 	MouseOut = "mouseout",
 	MouseWheel = "mousewheel",
 	MouseDrag = "mousedrag",
 	MouseDragEnd = "mousedragend",
+
+	//扩展其他鼠标事件，鼠标滚轮键 & 鼠标前进键 & 鼠标后退键
+	WheelMouseDown = "wheelmousedown",
+	WheelMouseUp = "wheelmouseup",
+	WheelMouseClick = "wheelclick",
+
+	ForwardMouseDown = "forwardmousedown",
+	ForwardMouseUp = "forwardmouseup",
+	ForwardMouseClick = "forwardclick",
+	BackMouseDown = "backmousedown",
+	BackMouseUp = "backmouseup",
+	BackMouseClick = "backclick",
 }
 
 /** 页面打开对当前页面操作的类型 */

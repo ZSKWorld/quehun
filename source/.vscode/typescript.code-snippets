@@ -83,14 +83,6 @@
 			"//#endregion",
 		],
 	},
-	"创建debug块": {
-		"prefix": "debug",
-		"body": [
-			"//#if DEBUG",
-			"${0}",
-			"//#end",
-		],
-	},
 	"uisetlist": {
 		"prefix": "uisetlist",
 		"body": [
@@ -113,4 +105,24 @@
 			"}",
 		],
 	},
+
+	// v2.x 版本支持完整的条件分支：
+	// // #if <表达式>
+	// 	// #elseif <表达式>
+	// 	// #else
+	// 	// #endif
+	// 表达式是构建时用 JavaScript 求值的，所以可以写任意 JS 表达式，比如 // #if BUILD_ENV === 'production' && ENABLE_LOG。
+	"ifdebug": {
+		"prefix": "ifdebug",
+		"body": [
+			"//#if DEBUG",
+			"${0}",
+			"//#elseif",
+			"",
+			"//#else",
+			"",
+			"//#endif",
+		],
+	},
+
 }

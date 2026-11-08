@@ -33,7 +33,7 @@ export class InitGameCommand extends Command {
 			const sc = await $gameUtil.loadScript("libs_game/vconsole.min.js");
 			sc && new window["VConsole"]();
 		}
-		//#end
+		//#endif
 
 		ShaderManager.Inst.init();
 		MjpAtlasLoader.Inst.init();
@@ -45,14 +45,16 @@ export class InitGameCommand extends Command {
 			$loadMgr.loadPackage([
 				//#if DEBUG
 				ResPath.EPkgPath.PkgTest,
-				//#end
+				//#endif
 				ResPath.EPkgPath.PkgCommon,
 				ResPath.EPkgPath.PkgEntrance
 			]),
 		]);
 
 
-		//#if DEBUG
+		//#if !DEBUG
+		$logger.setEnable(false);
+		//#else
 		const btn = fgui.UIPackage.createObject("PkgTest", "BtnNormalFit").asButton;
 		btn.title = "测试";
 		btn.titleFontSize = 25;
@@ -62,9 +64,9 @@ export class InitGameCommand extends Command {
 		btn.onClick(this, () => {
 			$uiMgr.openView(EViewID.UITestMainView);
 		});
-		//#end
-
 		$logger.setEnable(true);
+		//#endif
+
 		await $loadMgr.load([ResPath.EFontPath.HYWH, ResPath.EFontPath.Fengyu, ResPath.EFontPath.HYYANKAIW, ResPath.EFontPath.Hanyi]);
 		config.ip.forEach(v => (v.zone_ids = v.zone_ids || []));
 

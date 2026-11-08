@@ -14,8 +14,16 @@ const gulp = require(ideModuleDir + "gulp");
 const rollup = require(ideModuleDir + "rollup");
 const typescript = require(ideModuleDir + 'rollup-plugin-typescript2');//typescript2 plugin
 const glsl = require(ideModuleDir + 'rollup-plugin-glsl');
+const conditional = require(ideModuleDir + 'rollup-plugin-conditional-compilation');
 const path = require('path');
 const fs = require('fs');
+
+//读取宏定义
+const macroDefinitionPath = path.join(workSpaceDir, "bin/macro_definition.jsonc");
+let macroDefinition = {};
+if (fs.existsSync(macroDefinitionPath)) {
+	macroDefinition = JSON.parse(fs.readFileSync(macroDefinitionPath, "utf-8").replace(/\/\/.*|\/\*[\s\S]*?\*\//g, ''));
+}
 
 // 如果是发布时调用编译功能，增加prevTasks
 let prevTasks = "";
@@ -48,6 +56,9 @@ gulp.task("compile", prevTasks, function () {
 				include: /.*(.glsl|.vs|.fs)$/,
 				sourceMap: false,
 				compress:false
+			}),
+			conditional({
+				variables: macroDefinition
 			}),
 			typescript({
 				tsconfig:workSpaceDir + "/tsconfig.json",

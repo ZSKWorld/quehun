@@ -11,7 +11,13 @@ export class GameManager extends Observer implements IGameManager {
 	private _clientEndPoint: ProtoObject<INetworkEndpoint>;
 	private _config: IConfig;
 	private _ipIndex: number;
-	get released() { return false; }
+	get released() {
+		//#if !RELEASE
+		return false;
+		//#else
+		return true;
+		//#endif
+	}
 	get platform() { return "WebGL"; };
 	get reqPlatform() {
 		if (this.inDmm) return "web_dmm";
@@ -25,7 +31,7 @@ export class GameManager extends Observer implements IGameManager {
 		return "4.0.51";
 	}
 	get resourceVersion() {
-		return "0.16.289";
+		return "0.16.290";
 	}
 	get clientVersionStr() {
 		return this.platform + "_2022-" + this.resourceVersion;
@@ -123,12 +129,17 @@ export class GameManager extends Observer implements IGameManager {
 			$localDataMgr.setBool(ELocalDataKey.AutoLogin, false);
 		}
 		$netMgr.closeAll();
+		const reload = () => {
+			//#if !DEBUG
+			return;
+			//#else
+			window.location.reload();
+			//#endif
+		};
 		if (tipLangId) {
-			$confirmSma(2, $lang(tipLangId)).then(() => {
-				// window.location.reload();
-			});
+			$confirmSma(2, $lang(tipLangId)).then(reload);
 		} else {
-			// window.location.reload();
+			reload();
 		}
 	}
 

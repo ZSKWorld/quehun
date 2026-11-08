@@ -189,6 +189,12 @@ EMouseEvent = {
 	MouseWheel: "mousewheel",
 	MouseDrag: "mousedrag",
 	MouseDragEnd: "mousedragend",
+	ForwardMouseDown: "forwardmousedown",
+	ForwardMouseUp: "forwardmouseup",
+	ForwardClick: "forwardclick",
+	BackMouseDown: "backmousedown",
+	BackMouseUp: "backmouseup",
+	BackClick: "backclick",
 }
 
 EViewOpenType = {
@@ -407,6 +413,7 @@ EUserEvent = {
 	OnLobbyBgChanged: "EUserEvent_OnLobbyBgChanged",
 	OnViewUseChanged: "EUserEvent_OnViewUseChanged",
 	OnCommonViewChanged: "EUserEvent_OnCommonViewChanged",
+	OnDynamicSkinChanged: "EUserEvent_OnDynamicSkinChanged",
 	OnClientValueChanged: "EUserEvent_OnClientValueChanged",
 	OnActivityListChanged: "EUserEvent_OnActivityListChanged",
 	OnActivityIntervalChanged: "EUserEvent_OnActivityIntervalChanged",
